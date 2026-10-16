@@ -204,7 +204,11 @@ B[5]=function(T,st,lv){const S=SP[5],H=T.H,rb=T.rb;
  const nL=ri(2,3),a0=rr(0,TAU),hc=vary(pick(S.leaf),.02,.05,.04),cy=T.y0+H*.8;
  for(let k=0;k<nL;k++){const a=a0+k/nL*TAU+rr(-.4,.4),pts=treeGrow({x:top.x,y:top.y-.4,z:top.z},dirOf(a,rr(.5,.9)),T.crownR*rr(.7,1.1),rAt(hB/H)*.55,.08,5,-.02,.25);
   if(lv===2)limb(S,pts,st,{fam:'xbark0',seg:7,flutes:4,fluteA:.18,twist:1.2});else BIO.beam('rod',P3(pts[0]),P3(pts[5]),pts[0].r,.1,rodCol(S,k));
-  for(let i=2;i<=5;i++){const p=pts[i];for(let c=0,m=lv===2?2:1;c<m;c++){clumpAt('olive',p.x+rr(-1,1),p.y+rr(0,1),p.z+rr(-1,1),rr(1.6,2.4),.55,hc,T.x,cy,T.z,T.crownR,H*.3,C(pick(PAL.irid.SG)));st.clumps++;}}}
+  for(let i=2;i<=5;i++){const p=pts[i];for(let c=0,m=lv===2?2:1;c<m;c++){clumpAt('olive',p.x+rr(-1,1),p.y+rr(0,1),p.z+rr(-1,1),rr(1.6,2.4),.55,hc,T.x,cy,T.z,T.crownR,H*.3,C(pick(PAL.irid.SG)));st.clumps++;}
+   // the olives: striped like the bole, hanging in twos and threes under the silver leaves, near trees only (the kit's
+   // hash h3, not the shared rng, so the trees built after this one keep their draws)
+   if(lv===2&&(i===3||i===5)){const nO=2+Math.floor(h3(T.seed,k,i)*2);for(let f=0;f<nO;f++){const u=h3(T.seed+f*7.1,k+.31,i+.57),v=h3(T.seed-f*3.3,k+.77,i+.13),ao=u*TAU,d=.4+v*1.1,s=.11+.05*h3(f,T.seed,i+k);
+    BIO.put('whorlolive',[p.x+Math.cos(ao)*d,p.y-.4-v*.5,p.z+Math.sin(ao)*d],qEuler(.3*(u-.5),ao,.4*(v-.5)),s,C(0xffffff).multiplyScalar(.92+.16*u));st.fruit=(st.fruit||0)+1;}}}}
  T.spread=T.crownR;if(lv===2)reg(S,T);};
 // 6 the AGATE TREE: a tall smooth bole whose bark is banded rust, ochre, violet and slate like a cut agate (it shimmers), a vase of rising boughs, a jade-green crown
 B[6]=function(T,st,lv){const S=SP[6],H=T.H,rb=T.rb;

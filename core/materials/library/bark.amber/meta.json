@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.391,
+    1.18
+   ],
+   "seam_before": [
+    1.346,
+    1.924
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.5,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.amber",
+  "metal": 0,
+  "roughness": 0.5,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark-amber.webp",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+  "reuse": "bark of translucent amber and resin plates: a resin tree (the spice's kin), a fossil-amber cult object",
+  "sha1": "e598643451d3dcd2f6e962bb08f98585c54cf0a4"
+ }
+}

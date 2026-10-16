@@ -11,36 +11,52 @@ Built output (never open it; edit `src/` and rebuild): `mavs-refuge.html`
 Build: `cd settlements/mavs-refuge && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 6 |  |
+| `00-head.html` | 5 |  |
 | `05-palette.js` | 7 | 0. PALETTE (1) |
 | `10-core.js` | 8 | 1. CORE (1); 2. WORLD CONSTANTS (78); 3. TERRAIN FIELD (149) |
 | `20-stage.js` | 15 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (289) |
 | `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 30 | 5. LAYOUT (1); PLATFORMS (102); SATELLITES + BRIDGES (167); STAIR BAYS (246); DECK LOTS + ROOMS (281); SPIRALS: gate ramps + the council stair (349); ROOSTS (393); NAV GRAPH (415) |
 | `32-branches.js` | 8 | 6. BRANCH SKELETONS (1) |
-| `45-kit.js` | 25 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
-| `47-texture.js` | 8 | 11. TEXTURES (1) |
+| `45-kit.js` | 36 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
+| `47-texture.js` | 10 | 11. TEXTURES (1) |
 | `50-structure.js` | 18 | 12. STRUCTURE (1) |
-| `53-furnish.js` | 8 | 13a. FURNITURE: PLACED from the catalog, not dra (1) |
-| `55-arch.js` | 60 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (130); 2. FURNITURE + MIDDLE ZONES (355); 3. MAV'S CROWN (508); 4. THE COUNCIL CHAMBER (643); 5. SATELLITES (748) |
-| `56-levels.js` | 67 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (146); GOAL B: THE GATE TREES (555) |
+| `53-furnish.js` | 10 | 13a. FURNITURE: PLACED from the catalog, not dra (1) |
+| `55-arch.js` | 63 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (130); 2. FURNITURE + MIDDLE ZONES (376); 3. MAV'S CROWN (529); 4. THE COUNCIL CHAMBER (664); 5. SATELLITES (785) |
+| `56-levels.js` | 69 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (146); GOAL B: THE GATE TREES (582) |
+| `57a-interiors.js` | 30 **big** | 13c. INTERIORS (DATA): rooms people live and wor (1) |
+| `57c-interiors-draw.js` | 26 | 13c. INTERIORS (DRAWING): the rooms near the cam (1) |
 | `60-trees.js` | 40 **big** | 14. TREES (1) |
 | `62-jungle.js` | 45 **big** | 15. JUNGLE (1) |
 | `63-trails.js` | 3 | 16b. GROUND TRAILS (1) |
 | `72-lights.js` | 3 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 6 | 20. EMIT + GROUND + RIVER (1) |
-| `78-life.js` | 50 **big** | 78. LIFE (2) |
+| `78-life.js` | 51 **big** | 78. LIFE (2) |
 | `79-spiders.js` | 60 **big** | 19. SPIDER-RIDERS (1) |
-| `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (146) |
-| `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
+| `80-camera.js` | 7 | 25. CAMERA: MAV'S REFUGE ON core/host (1) |
+| `81-glow.js` | 6 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
-| `84-flyers.js` | 81 **big** | 84. FLYERS (1) |
+| `84-flyers.js` | 23 | 84. FLYERS (1) |
+| `84a-flyers-routes.js` | 15 |  |
+| `84b-flyers-animals.js` | 21 |  |
+| `84c-flyers-update.js` | 15 |  |
+| `84d-flyers-hooks.js` | 7 |  |
 | `85-probe.js` | <1 | 29. PROBE (1) |
-| `86-inspect.js` | 3 | 27. DEV INSPECTOR (1) |
+| `86-inspect.js` | 3 | 27. INSPECTOR WORDS (core/host's inspector) (1) |
 | `87-pathviz.js` | 3 | 28. PATH VISUALIZER (1) |
-| `98-start.js` | <1 | 99. START (1) |
+| `98-start.js` | 8 | 99. START: MAV'S REFUGE ON core/host (1) |
 | `99-tail.html` | <1 |  |

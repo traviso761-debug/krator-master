@@ -34,6 +34,8 @@
      catalog.anchorY(key, variant, { floorY, surfaceY, ceilingY }) -> y
      catalog.build(placement, room)               -> host object (only IX.buildRoom calls it)
 
+     catalog.top(key, variant)                    OPTIONAL: a host's surface height (what stands on it stands there),
+                                                  null when it has none (it then hosts nothing); else its h
      catalog.lights(key, variant, { seed, wealth })  OPTIONAL: the lights a piece carries, in its own
                                                   frame [{ lx, ly, lz, color, intensity, distance }]
 
@@ -77,7 +79,10 @@
   function describe(catalog, d, v, room) {
     const dm = catalog.dims(d.key, v);
     const type = d.type || 'other';
-    return { key: d.key, desc: d, variant: v, w: dm.w, d: dm.d, h: dm.h, type: type, anchor: d.anchor || 'floor',
+    /* a host's surface: none when the catalog says so (surface: false: a jar, a vat) or when what is drawn has no flat top; else the
+       height of what is drawn (catalog.top), else its declared h */
+    const top = d.surface === false ? null : IX.SURFACE_HOSTS.indexOf(type) >= 0 && catalog.top ? catalog.top(d.key, v) : dm.h;
+    return { key: d.key, desc: d, variant: v, w: dm.w, d: dm.d, h: dm.h, top: top, type: type, anchor: d.anchor || 'floor',
       culture: d.culture, clear: d.clearance || {},
       usable: IX.NO_ACCESS_TYPES.indexOf(type) < 0 && (d.anchor || 'floor') !== 'ceiling' && d.anchor !== 'surface' };
   }
@@ -263,7 +268,7 @@
         grid.stamp(Q.fp, +1);
         if (!reachAll(Q)) { grid.stamp(Q.fp, -1); return null; }
       }
-      Q.top = (Q.layer === 'surface' ? hostQ.top : room.y) + P.h;
+      Q.top = Q.layer === 'surface' ? hostQ.top + P.h : P.top == null ? null : room.y + P.top;   /* a floor piece's: its surface (null: none) */
       placed.push(Q); nFurn++;
       return Q;
     }
@@ -283,6 +288,7 @@
     function wallSlots(P, role) {
       const back = (P.clear.back || 0) + WALL_GAP, out = [];
       for (const W of room.walls) {
+        if (W.open) continue;   /* an open side: no wall to stand against (20-rooms.js) */
         const lo = P.w / 2 + 0.03, hi = W.len - P.w / 2 - 0.03;
         if (hi < lo) continue;
         const us = [];
@@ -350,7 +356,8 @@
     function surfaceSlots(P) {
       const out = [];
       for (const H of placed) {
-        if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0) continue;
+        if (H.layer !== 'floor' || H.fixture || IX.SURFACE_HOSTS.indexOf(H.P.type) < 0 || H.top == null) continue;   /* no top to stand a thing on */
+        if (H.P.desc && H.P.desc.surface === false) continue;   /* no flat top (a jar, a vat, a basket): nothing is set on it */
         for (const o of [0, -0.3, 0.3]) {
           const c = Math.cos(H.ry), s = Math.sin(H.ry), lx = o * H.P.w;
           out.push({ x: H.x + lx * c, z: H.z - lx * s, ry: H.ry, host: H, s: rng() });
@@ -421,7 +428,8 @@
     let nItem = 0;
     for (const rq of reqs) {
       const L = levels(fallback).map(function (lv) {
-        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0); }) };
+        /* rq.anchors: only pieces with one of these anchors (a food store that is not a surface piece: the residence rule's) */
+        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0) && (!rq.anchors || rq.anchors.indexOf(d.anchor || 'floor') >= 0); }) };
       }).filter(function (lv) { return lv.list.length; });
       const rec = { need: rq.need, types: rq.types, n: rq.n || 1, placed: 0 };
       report.required.push(rec);
@@ -461,7 +469,11 @@
             });
             if (list.length && (Q = attempt(list, null))) break;
           }
-          if (Q) { counts[gi]++; added++; } else dead[gi] = true;
+          if (Q) {
+            counts[gi]++; added++;
+            /* a desk is used from a chair: one is tried at once (a seat stands at a placed desk, IX.ROLES) */
+            if (Q.P.type === 'desk') for (const lv of own) { const chairs = lv.list.filter(function (d) { return d.type === 'chair'; }); if (chairs.length && attempt(chairs, null)) break; }
+          } else dead[gi] = true;
         }
         if (!any) break;
       }
@@ -478,6 +490,17 @@
       const p = { id: Q.id, key: P.key, variant: P.variant, seed: 1 + ((seed + i * 7919) % 99991), x: Q.x, z: Q.z, ry: Q.ry, y: R3(y),
         anchor: P.anchor, type: P.type, role: Q.role, catRole: P.desc.role || null, culture: P.culture, need: Q.need || null, host: Q.host,
         w: R3(P.w), d: R3(P.d), h: R3(P.h), clearance: P.clear };
+      /* a stretching piece (catalog stretch: a cord of pennants) runs the free length of its wall: the run between the wall's ends
+         and its doors that holds it, up to 8 m, about where it was placed (it hangs over the floor pieces, so it is placed as declared
+         and only drawn longer: its footprint, w, stays the declared one, so the checks see what the placer placed) */
+      if (P.desc.stretch && P.anchor === 'wall') {
+        let W = null, bd = 1e9;for (const V of room.walls) { if (V.open || Math.abs(normAng(V.ry - Q.ry)) > 0.05) continue;const dd = G.segDist(Q.x, Q.z, V.a, V.b);if (dd < bd) { bd = dd;W = V; } }
+        if (W) {
+          const u = (Q.x - W.a[0]) * W.t[0] + (Q.z - W.a[1]) * W.t[1];let lo = 0.15, hi = W.len - 0.15;
+          for (const D of room.doors) { if (D.wall !== W.i) continue;const a = D.u - D.w / 2 - 0.2, b = D.u + D.w / 2 + 0.2;if (b <= u) lo = Math.max(lo, b);else if (a >= u) hi = Math.min(hi, a); }
+          const sp = Math.min(8, 2 * Math.min(u - lo, hi - u));if (sp > P.w) p.span = R3(sp);
+        }
+      }
       const L = catalog.lights ? catalog.lights(P.key, P.variant, { seed: p.seed, wealth: room.wealth }) : null;
       if (L && L.length) {
         const c = Math.cos(p.ry), s = Math.sin(p.ry);

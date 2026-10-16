@@ -6,12 +6,14 @@
 // group moves merged meshes and instances together. See buildPerch for a
 // worked example -- a tower standing on a podium 90 m up.
 function buildSkyE(scene,gx,gz,d,gy,noPlinth,hcut){reseed(9140+d);gy=gy||0;KOFF=[gx,gy,gz];const G=new THREE.Group();G.position.set(gx,gy,gz);scene.add(G);const dd=d>0?1:0;
- const H=360,Y0=10;REGISTER({name:'Skyscraper E — the Sail ('+(d===2?'toppled':STATE(d))+')',x:0,y:gy,z:0,r:120,h:H+40});
+ const H=360,Y0=10;REGISTER({name:'Skyscraper E — the Sail ('+(d===2?'toppled':STATE(d))+')',x:0,y:gy,z:0,r:60,h:H+40});
  // PLINTH. The lens is 68 m across its long axis (aF(0)=34) and 26 deep; its
  // concrete edge fins add 3. Nothing else reaches the podium. 105 was a circle
  // three times the width of the building it carried; 48 puts the column ring at
  // 44.6, just outboard of the fins.
- const PR=48;
+ // RESTAND (A-H): 44, ring at 40.9, 3 m clear of the fins' outer faces at the
+ // foot (the lens only narrows and turns as it rises). Registered 120 -> 60.
+ const PR=44;
  if(!noPlinth)skyPlinth(G,dd,PR);
  const aF=y=>34*(1-.45*Math.pow(clamp(y/H,0,1),1.3)),bF=y=>13*(1-.3*clamp(y/H,0,1)),rot=y=>.8*clamp(y/H,0,1);
  const PT=(u,y,s)=>{const a=aF(y),b=bF(y),r=rot(y);const x=(u-.5)*2*a,z=s*b*(1-Math.pow(u*2-1,2));return[x*Math.cos(r)-z*Math.sin(r),y,x*Math.sin(r)+z*Math.cos(r)];};

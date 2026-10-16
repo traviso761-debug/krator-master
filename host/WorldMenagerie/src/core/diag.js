@@ -5,7 +5,7 @@ let errBox=null;
 export function report(where,e){const msg=where+': '+(e&&e.message?e.message:e)+'\n'+(e&&e.stack?e.stack.split('\n').slice(0,4).join('\n'):'');if(seen.has(msg))return;seen.add(msg);
   if(!errBox)errBox=document.getElementById('errs');if(errBox){errBox.style.display='block';errBox.textContent+=msg+'\n\n';}else console.error(msg);}
 export function installErrorHandlers(){window.addEventListener('error',ev=>report('window',ev.error||ev.message));window.addEventListener('unhandledrejection',ev=>report('promise',ev.reason));}
-export function section(name,fn){try{fn();}catch(e){report(name,e);}}
+export function section(name,fn){const was=globalThis.__stage;globalThis.__stage=name;try{fn();}catch(e){report(name,e);}finally{globalThis.__stage=was;}}   // __stage: which stage is running (drawstats.js labels by it)
 export const LOAD={t0:performance.now(),last:performance.now(),paint:performance.now(),name:'terrain',times:[]};
 // ---------- the loading screen ----------
 // Two lines. The top one says what the build is doing right now and comes from `labels`; the bottom one is

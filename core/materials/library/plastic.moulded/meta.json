@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.401,
+    1.137
+   ],
+   "seam_before": [
+    1.286,
+    1.168
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 0.8,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "plastic",
+  "id": "plastic.moulded",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Weathered Gray Industrial Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Gray Industrial Texture.png",
+  "prompt": "Prompt row plastic.moulded in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "scrap, Screamer and post-apoc crates and chairs; also reads as scuffed render or concrete",
+  "sha1": "94f9a63fcfba8694f141a203dfa10450f7f59d3e"
+ }
+}

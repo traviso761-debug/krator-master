@@ -46,6 +46,8 @@ FURN({
   variants: 2, variantNames: ['plain', 'backed'],
   anchor: 'floor',              // floor | wall | ceiling | surface (on a table/shelf)
   clearance: { front: 0.8 },    // metres kept free for use (seating, doors, drawers): front back left right
+  surface: false,               // optional: no flat top (a jar, a vat, a basket), so no piece is set on it
+                                //   (tables, counters, shelves, desks and storage are surface hosts otherwise)
   materials: ['timber'],        // canonical names from the material registry (core/README.md)
   build(F) { … }                // origin = footprint centre on the anchor plane, +z = front
 });
@@ -93,7 +95,7 @@ mounts it (`kits/catalog/README.md`, and `furnAnchorY()` in the engine).
   between `/* PALETTE */` and `/* END PALETTE */`: the one place a literal colour may appear.
   `verify.py` asserts no literal anywhere else, kit included.
 - **Materials by culture** (the user's brief): generic wood and generic scrap for the poor;
-  nacre and mother-of-pearl for Hykkousoi (palette only, not built yet); hyper-mahogany for Iziz
+  nacre and mother-of-pearl for Hykkousoi (fourteen bespoke pieces so far, no style sheets yet); hyper-mahogany for Iziz
   and the Beast Riders; bamboo for Republicans, Rustic Highlanders and the north-western cultures
   still to be defined; reed for Reed Lake and the East Abyss; a little gold for middle-class
   Xanadu. The canonical names are in `CATALOG_MATERIALS`.

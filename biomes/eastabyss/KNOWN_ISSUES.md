@@ -35,7 +35,14 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The east river's climb up the slope is a ribbon in the water material with no
       cataracts; the west river has no slope reach at all (it stays in the basin).
 - [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list.
-- [ ] No fauna yet.
+- [ ] The fauna (75, 2026-10) is a first pass: rigid parts (a flamingo's neck is two stiff
+      segments, a lizard's tail never curls and its front legs hang in the air when it runs
+      upright), birds of a flock and lizards can pass through each other, and the skeins fly a
+      fixed ellipse (they never land or take off). Past 1.5 km (flocks), 3 km (skeins) or 900 m
+      (lizards) from `BIO.eye()` a group keeps its last pose. In this host's pink lake (hue 0) the
+      flamingos read poorly against the water.
+- [ ] `BIO.dynamic` (core) sets no `userData.kit`; 75 sets it on its own meshes so `BIO.export({kit})`
+      keeps them.
 - [ ] The mat-reed beds are registered per bed (a few hundred volumes); a world that
       registers its own structures densely may want only `EASTABYSS.REEDBEDS`.
 - [ ] The beard oak's boughs are clamped 1.2 m above terrainH point by point; on a
@@ -52,8 +59,12 @@ Read before changing anything here. `build.py` prints the open count.
       too and have no impostor), and seen from outside the ring the far canopy's blobs
       hide most of that bole. Only six sky scale-trees stand in the ring at q=1 (the jungle
       barely reaches 1.9 km from the spine); the preset "The far ring" frames them.
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): scalefruit, fern-egg, tideheart, salt-cone kernels. Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'eastabyss'`). Scalefruit pods already hang on skyscale, forktree and bellbark, and the fern-eggs, the waterpalm fruit head and the cycad cone are drawn too. What is missing is harvest tags (nhighlands' `HV()`) linking each species to its catalog piece.
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`), 2026-10-06: every species carries a harvest tag (`EASTABYSS.HARVEST`,
+      `S.tags.harvest`; the inspector shows it for a tree's volume) naming its catalog piece: scalefruit (skyscale, forktree,
+      bellbark), fern-egg (seedfern), tideheart (waterpalm), salt-cone kernels (cycad). All were already drawn. The probe's
+      `fruit tagged, catalogued and drawn` check (with three negatives) holds it. Edible parts with no catalog piece are named in
+      the tags (tree-fern pith, palmetto heart, pickled jade leaves, araucaria seeds, mat-reed shoots). Worlds that read this kit
+      in place (`settlements/locus`, `mungo`, `verge`) need a rebuild to pick the tags up.
 
 ## Done
 
@@ -88,3 +99,4 @@ Read before changing anything here. `build.py` prints the open count.
       savannah no longer show them.
 - [x] The flats' river is damp, not marsh: the knee-trees stay out of it, the jade and
       the rosettes line it.
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.

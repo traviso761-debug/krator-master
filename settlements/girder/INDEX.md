@@ -6,29 +6,48 @@ Girder: an outlying Beast Rider village in the central-crater hyperjungle.
 
 Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `girder.html`
+Built output (never open it; edit `src/` and rebuild): `girder-hero.html`, `girder.html`
 
 Build: `cd settlements/girder && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
+
+## Top-level sources
+
+Read by `build.py` in its own order (`SOURCES`), and loaded by path by other builds, so they stay here.
+
+| File | KB | Sections (line) |
+|---|---|---|
+| `girder.tex.girder-2.js` | 1229 **big** |  |
+| `girder.tex.girder.js` | 14510 **big** |  |
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 7 |  |
+| `00-head.html` | 6 |  |
 | `05-palette.js` | 10 | 0. PALETTE (1) |
 | `10-core.js` | 8 | 1. CORE (1); 2. WORLD CONSTANTS (79); 3. TERRAIN FIELD (140) |
 | `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (285) |
 | `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
-| `30-layout.js` | 22 | 5. LAYOUT — GIRDER (1); THE RUIN (41); THE TERRACE (147); THE FOREST (181); NAV GRAPH (216) |
+| `30-layout.js` | 24 | 5. LAYOUT — GIRDER (1); THE RUIN (41); THE TERRACE (148); THE FOREST (182); NAV GRAPH (217) |
 | `32-branches.js` | 5 | 6. BRANCH SKELETONS (1) |
-| `45-kit.js` | 31 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (176) |
+| `45-kit.js` | 33 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (176) |
 | `47-texture.js` | 14 | 11. TEXTURES (1) |
 | `48-detail.js` | 7 | 11b. DETAIL MAPS: the library on meshes without  (1) |
 | `50-structure.js` | 19 | 12. STRUCTURE — GIRDER (1) |
-| `53-furnish.js` | 10 | 13b. FURNITURE (CATALOG PIECES AS DATA) (1) |
+| `53-furnish.js` | 12 | 13b. FURNITURE (CATALOG PIECES AS DATA) (1) |
 | `55-arch.js` | 53 **big** | 14. ARCHITECTURE — GIRDER (1) |
-| `56-interiors.js` | 17 | 13c. INTERIORS (THE INTERIORS KIT) (1) |
+| `56-interiors.js` | 19 | 13c. INTERIORS (THE INTERIORS KIT) (1) |
 | `58-overgrowth.js` | 14 | 15. OVERGROWTH — GIRDER (1) |
 | `60-trees.js` | 41 **big** | 14. TREES (1) |
 | `62-jungle.js` | 47 **big** | 15. JUNGLE (Girder) (1) |
@@ -36,14 +55,18 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `72-lights.js` | 3 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 13 | 20. EMIT + GROUND + RIVER (1) |
 | `78-life.js` | 61 **big** | 78. LIFE — GIRDER (2) |
-| `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (151) |
-| `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
+| `80-camera.js` | 8 | 25. CAMERA: GIRDER ON core/host (1) |
+| `81-glow.js` | 6 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-walk.js` | 19 | 25b. WALK MODE (1) |
-| `84-flyers.js` | 91 **big** | 84. FLYERS (1) |
+| `84-flyers.js` | 24 | 84. FLYERS (1) |
+| `84a-flyers-routes.js` | 20 |  |
+| `84b-flyers-animals.js` | 21 |  |
+| `84c-flyers-update.js` | 17 |  |
+| `84d-flyers-hooks.js` | 10 |  |
 | `85-probe.js` | <1 | 29. PROBE (1) |
-| `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
+| `86-inspect.js` | 4 | 27. INSPECTOR WORDS (core/host's inspector) (1) |
 | `87-pathviz.js` | 3 | 28. PATH VISUALIZER (1) |
 | `90-atmos-host.js` | 2 | ATMOS: the shared atmosphere module, bound to Gi (1) |
-| `98-start.js` | <1 | 99. START (1) |
+| `98-start.js` | 8 | 99. START: GIRDER ON core/host (1) |
 | `99-tail.html` | <1 |  |

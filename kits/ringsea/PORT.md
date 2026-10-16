@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 0 (0%) | 6 (3%) | 0 (0%) | 49 (21%) | 174 (76%) |
+| KB | 1 (0%) | 6 (2%) | 0 (0%) | 48 (17%) | 225 (80%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,11 +16,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/10-core.js` | 2.5 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/12-stats.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/30-kit.js` | 3.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 2 | 2 | 5 | 0 | 0 | 0 |  |
-| `src/40-rs-core.js` | 18.4 | [draw] | 26 | 1 | 0 | 0 | 0 | 10 | 6 | 0 | 0 | 0 | 0 |  |
+| `src/40-rs-core.js` | 13.8 | [draw] | 26 | 1 | 0 | 0 | 0 | 10 | 6 | 0 | 0 | 0 | 0 |  |
 | `src/41-rs-tex.js` | 10.7 | [draw] | 14 | 9 | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/42-rs-hull.js` | 5.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/43-rs-rig.js` | 11.3 | [draw] | 16 | 0 | 0 | 0 | 0 | 6 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/44-rs-parts.js` | 4.6 | [draw] | 5 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/45y-rs-matlib.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/60-rs-hyk-trireme.js` | 6.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/61-rs-iziz-turtle.js` | 5.7 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-rs-xanadu-swan.js` | 4.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -42,11 +43,21 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/78-rs-hyk-corbita.js` | 5.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/79-rs-xanadu-carrack.js` | 4.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/80-rs-iziz-lighter.js` | 3.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/90-rs-scene.js` | 9.2 | [web] | 20 | 1 | 1 | 0 | 0 | 5 | 11 | 1 | 0 | 0 | 0 |  |
+| `src/81-rs-voth-junk.js` | 3.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/82-rs-hyk-galleon.js` | 6.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/83-rs-voth-ferry.js` | 2.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/84-rs-voth-taxi.js` | 2.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/85-rs-voth-barge.js` | 2.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/86-rs-voth-pleasure.js` | 3.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/87-rs-voth-dhow.js` | 3.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/88-rs-islander-drua.js` | 9.6 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-rs-islander-korakora.js` | 8.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89b-rs-islander-lanong.js` | 11.5 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/90-rs-scene.js` | 8.1 | [web] | 21 | 1 | 1 | 0 | 0 | 5 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/91-rs-probe.js` | 13.2 | [web] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 9.8 | [web] | 12 | 0 | 20 | 14 | 4 | 2 | 0 | 1 | 3 | 0 | 0 |  |
 | `src/93-labels.js` | 6.3 | [G shader] | 7 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
-| `src/94-rs-anim.js` | 9.7 | [web] | 5 | 1 | 2 | 1 | 1 | 1 | 2 | 2 | 0 | 0 | 0 |  |
+| `src/94-rs-anim.js` | 9.9 | [web] | 5 | 1 | 2 | 1 | 1 | 1 | 2 | 2 | 0 | 0 | 0 |  |
 | `src/95-rs-deck.js` | 9.8 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

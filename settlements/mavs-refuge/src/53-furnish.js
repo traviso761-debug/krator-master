@@ -13,9 +13,8 @@
    (core/furnish) {id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting, room, job}; kept in BRF.placed and on
    the open building (brfIn(name) ... brfDone(site): site.furniture). A key the catalog lacks is counted in
    BRF.missing, never thrown. ?furniture=0 places nothing (the records are still kept).
-   Interiors: brfInterior(setKey, x, z, ry, baseY, site) plans and furnishes the rooms of a TOP-LEVEL building
-   from the interiors kit's beast-rider set (kits/interiors/sets/beast-rider.js) with ?interiors=1 (off by
-   default: the roofs hide it). Only the builders whose walls match a set item call it (API.md, Furniture). */
+   Interiors: the rooms inside the buildings and the levels are 57a-interiors.js (each builder's own shell, planned
+   by the interiors kit and kept as records) and 57c (drawn near the camera); ?interiors=0 turns them off. */
 KratorFurniture.setDetail(.5);   /* settlement-scale: half the segments on round furniture parts */
 /* the catalog recentred some harvested pieces on their footprint (F.shift(dx,dz) in the piece's build): the
    placement undoes it, so the piece stands where the builder drew it */
@@ -24,10 +23,13 @@ var BRF_SHIFT = { br_h_viewing_stand:[0,-0.1], br_h_reviewing_dais:[0,-0.36], br
   br_h_barrel_cluster:function(v){ return [-0.443, v?0.304:-0.069]; }, br_h_hitching_rail:function(v){ return v?null:[0.43,-0.43]; } };
 /* the placement pass is core/furnish (50-core-furnish.js: the record, the recentring above, the missing count, the
    id); this is Mav's Refuge's adapter onto it: its seed rule (a hash of the spot), the open building, and the lamps */
-var BRF = KFURN.create(Object.assign(KFURN.flags(false), {
+regFlush();   /* the sites registered before core/tags' vocabulary loaded (45-kit.js REGISTER) */
+var BRF = KFURN.create(Object.assign(KFURN.flags(true), {
   catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors, shift: BRF_SHIFT,
+  tags: (KTAGS.page = KTAGS.page || KTAGS.create({ build:'mavs-refuge' })),   /* every piece registered in core/tags (core/tags/README.md); the sites are already there (45-kit.js REGISTER) */
   seed: function(o, ctx, R, x, y, z){ return 1 + Math.floor(phash(x, y, z, 7.7)*999983); },
   draw: function(rec, ctx, o){
+    if(brfVetoed(KTAGS.page.get(rec.id))){ BEDIT.vetoed.push(rec.id); return; }   /* the owner's edits: moved or removed (98-start.js) */
     var w = o.wealth==null ? 0.5 : o.wealth;
     KFURN.drawRec(BRF, rec, w);
     if(o.lamp){
@@ -37,7 +39,22 @@ var BRF = KFURN.create(Object.assign(KFURN.flags(false), {
   }
 }));
 Object.assign(BRF, { cur: null, stack: [], frame: null });
-KFURN.useBatch(BRF, KratorFurniture, KratorInteriors);
+/* ---------------------------------------------------------------- the owner's edits, as the page is made (as Girder's 53-furnish.js)
+   KHOST_EDITS (39-host-edits.js, written by core/host/host.py from edits.json or this browser's draft) is a core/edits log.
+   A piece merged into the batch cannot be taken out of it afterwards, so a piece the log moves or removes is not drawn
+   at all (its record stays, for the log to find); an interior piece likewise is left out of its unit's drawing
+   (57a-interiors.js piecesNow). 98-start.js applies the log: the moved piece is drawn on its own where it went, an added
+   one likewise. A target is its core/tags uid, else its key within 1.5 m (core/edits/README.md). */
+var BEDIT = { log: (typeof KHOST_EDITS !== 'undefined' && KHOST_EDITS && KHOST_EDITS.ops) ? KHOST_EDITS : null, vetoed: [] };
+BEDIT.hits = BEDIT.log ? BEDIT.log.ops.filter(function(op){ return (op.op==='REMOVE' || op.op==='MOVE') && op.target && (op.target['class']==='furniture' || op.target['class']==='flora'); }) : [];
+function brfVetoed(r){
+  if(!BEDIT.hits.length || !r) return false;
+  for(var i=0;i<BEDIT.hits.length;i++){ var t=BEDIT.hits[i].target;
+    if(t.uid != null){ if(t.uid === r.uid) return true; }
+    else if(t.at && t.key === r.key && Math.hypot(t.at[0]-r.at[0], t.at[2]-r.at[2]) < 1.5 && Math.abs((t.at[1]||0)-r.at[1]) < 1.5) return true; }
+  return false;
+}
+KFURN.useBatch(BRF, KratorFurniture, KratorInteriors, { indexed: true });   /* indexed meshes (kits/catalog/README.md) */
 window._brf = BRF;                                                     /* read-only, for probes and the console */
 /* the pieces the many small benches, tables and spear racks use (one place to trade look for triangles) */
 var BRF_BENCH = 'br_bench', BRF_TABLE = 'br_table', BRF_SPEARS = 'br_weapon_rack';
@@ -60,21 +77,20 @@ function brfPlace(key, x, y, z, ry, o, loc){
   o = o || {};
   return BRF.place(key, x, y, z, ry, o, loc, { building: BRF.cur ? BRF.cur.name : (o.building||'street'), list: BRF.cur ? BRF.cur.furniture : null });
 }
-/* the interiors hook: plan + furnish a top-level building's rooms from its set item, at its placement */
-function brfInterior(key, x, z, ry, baseY, site){
-  if(!BRF.interiors || !BRF.on) return null;
-  var it = KratorInteriors.sets.find(key);
-  if(!it || it.skip) return null;
-  var r = BRF.interior(it, x, z, ry||0, BRF.adapter, { baseY:baseY||0, prefix:'mr.'+BRF.buildings.length+'.' }).summary;
-  var rec = { key:key, x:x, z:z, ry:ry||0, baseY:baseY||0, rooms:r.rooms, pieces:r.pieces, residence:r.residence };
-  if(site) site.interior = rec;
-  return rec;
-}
 /* the batch becomes meshes once, when the kit is emitted (75-terrain.js). Shaded like the kit: the kit's surfaces
    are vertex colour x a grayscale sRGB texture, the catalog's are bare vertex colour, so each furniture family is
    a Lambert material tinted by the mean (linear) brightness of the kit family it reads as, and takes the night
-   light volume */
-var BRF_FAM = { wood:'timber', plank:'plank', cloth:'cloth', hide:'cloth', stone:'rock', thatch:'thatch', leafy:'leafy', rope:'rope' };
+   light volume. brfMaterial(fam) is that material, one per family (the interiors, 57c, draw with the same ones) */
+var BRF_FAM = { wood:'timber', plank:'plank', cloth:'cloth', hide:'cloth', stone:'rock', thatch:'thatch', leafy:'leafy', rope:'rope',
+                ixwall:'wall', ixwood:'plank' };
+var BRF_MAT = {};
+function brfMaterial(fam){
+  if(BRF_MAT[fam]) return BRF_MAT[fam];
+  var kf = BRF_FAM[fam] || 'timber', tint = BRF.tint || (BRF.tint = {});
+  var k = tint[kf] || (tint[kf] = brfTexMean(kf)), mt = new THREE.MeshLambertMaterial({ vertexColors:true, color:new THREE.Color(k, k, k) });
+  mt.userData.family = fam;
+  return (BRF_MAT[fam] = nlMaterial(mt, 'furn-'+fam));
+}
 function brfTexMean(fam){
   var t = FAMMAT[fam] && FAMMAT[fam].tex, c = t && t.image;
   if(!c || !c.getContext) return 0.5;
@@ -84,17 +100,14 @@ function brfTexMean(fam){
 }
 var brfEmit0 = emitBuckets;
 emitBuckets = function(){
-  var g = BRF.batch.flush(scene), tint = {}; BRF.group = g;
+  var g = BRF.batch.flush(scene); BRF.group = g;
   g.children.forEach(function(m){
-    var fam = m.material.userData.family, kf = BRF_FAM[fam] || 'timber';
-    if(fam !== 'glow'){
-      var k = tint[kf] || (tint[kf] = brfTexMean(kf)), mt = new THREE.MeshLambertMaterial({ vertexColors:true, color:new THREE.Color(k, k, k) });
-      mt.userData.family = fam; m.material.dispose(); m.material = nlMaterial(mt, 'furn-'+fam);
-    }
+    var fam = m.material.userData.family;
+    if(fam !== 'glow'){ m.material.dispose(); m.material = brfMaterial(fam); }
+    else BRF_MAT.glow = m.material;
     m.castShadow = m.receiveShadow = !FAST; m.frustumCulled = false; m.userData.fam = 'Furniture';
   });
-  BRF.tint = tint;
-  var tris = 0; g.children.forEach(function(m){ tris += m.geometry.attributes.position.count/3; });
+  var tris = 0; g.children.forEach(function(m){ var q = m.geometry; tris += (q.index ? q.index.count : q.attributes.position.count)/3; });
   window._furniture = { placed:BRF.placed.length, tris:tris|0, meshes:g.children.length, lights:BRF.lights, missing:BRF.missing,
                         interiors:BRF.buildings.length, interiorPieces:BRF.buildings.reduce(function(a,b){ return a+b.interior.pieces; }, 0),
                         byKey:BRF.placed.reduce(function(a,r){ a[r.key]=(a[r.key]||0)+1; return a; }, {}) };

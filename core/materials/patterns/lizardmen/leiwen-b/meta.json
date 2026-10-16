@@ -1,0 +1,52 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1244,
+    1247
+   ],
+   "seam_after": [
+    3.841,
+    2.067
+   ],
+   "seam_before": [
+    3.191,
+    1.508
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.75,
+   "rough_var": 0.25,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "id": "patterns/lizardmen/leiwen-b"
+ },
+ "source": {
+  "file": "7.webp",
+  "sha1": "43bd954f7f456208bc7bb941b7d17ce53624796f"
+ }
+}

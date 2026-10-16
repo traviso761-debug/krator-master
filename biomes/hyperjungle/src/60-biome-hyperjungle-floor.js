@@ -173,16 +173,17 @@ function treeFern(x,y,z,lv){const H=lv===2?rr(4,11):rr(4,8),r=.28+H*.04,la=rr(0,
  if(lv===2){card(tx,ty+1.2,tz,2.2,1.8,bright(shade(hc,.25),1.5),.2);
   for(let k=0,n=ri(2,4);k<n;k++){const a=rr(0,TAU);BIO.put('ribbon',[tx+Math.cos(a)*r*1.2,ty-.6,tz+Math.sin(a)*r*1.2],qEuler(0,rr(0,TAU),0),[rr(.8,1.4),rr(2,4),1],shade(vary(0x8a7a4a,.03,.1,.06),-.2));}}}
 // a SCREWPINE: a short trunk on a cone of stilt roots, heads of stiff strap
-// leaves (old ones out and drooping, young ones upright), a hanging fruit head
+// leaves (old ones out and drooping, young ones upright), a hanging fruit head of pandan keys
 function screwpine(x,y,z,lv){const H=rr(3,8),r=.22+H*.05,hc=vary(pick(PAL.screwpine),.04,.12,.06),tt=trunkTint(0x6a5a44,.8);
  BIO.put('trunk',[x,y+H*.3-.2,z],qUp([0,1,0]),[r/.4,H*.7+.2,r/.4],tt);
  const tc=rodCol();for(let k=0,n=lv===2?ri(5,8):4;k<n;k++){const a=k/n*TAU+rr(-.3,.3),d=H*rr(.35,.6),gx=x+Math.cos(a)*d,gz=z+Math.sin(a)*d;
   BIO.beam('rod',[x+Math.cos(a)*r*.6,y+H*rr(.28,.42),z+Math.sin(a)*r*.6],[gx,Y(gx,gz)-.4,gz],r*.32,r*.22,tc);}
  const heads=[[x,y+H,z]];
- if(H>5.5&&lv===2){const a=rr(0,TAU),fk=H*.55;heads.push([x+Math.cos(a)*H*.3,y+fk+H*.35,z+Math.sin(a)*H*.3]);BIO.beam('rod',[x,y+fk,z],heads[1],r*.7,r*.5,tt);}
+ if(H>5.5&&lv===2){const a=rr(0,TAU),fk=H*.55;heads.push([x+Math.cos(a)*H*.3,y+fk+H*.35,z+Math.sin(a)*H*.3]);BIO.beam('rod',[x,y+fk,z],heads[1],r*.7,r*.5,shade(C(0x6a5a44),-.25));}   // untextured: the trunk's colour itself, not its texture tint (that rendered white)
  heads.forEach(h=>{const L=rr(3,5.5);frondCrown(h[0],h[1],h[2],L,lv===2?ri(9,12):6,-.35,.05,bright(hc,1.5));
   frondCrown(h[0],h[1]+.4,h[2],L*.7,lv===2?6:4,.55,1.05,bright(shade(hc,.08),1.55));
-  if(lv===2&&rng()<.4)BIO.put('fungus',[h[0]+rr(-.5,.5),h[1]-.6,h[2]+rr(-.5,.5)],qEuler(Math.PI,rr(0,TAU),0),[.9,1.3,.9],shade(0xd08a3a,-.15));});}
+  // the hanging pandan-key head (biomes/FRUIT.md); the same draws as the stand-in it replaced, so nothing else moves
+  if(lv===2&&rng()<.4){const fx=h[0]+rr(-.5,.5),fz=h[2]+rr(-.5,.5);BIO.put('pandankeys',[fx,h[1]-.3,fz],qEuler(0,rr(0,TAU),0),1.6,shade(0xffffff,-.15));}});}
 // a HELICONIA / GINGER clump: tall paddle leaves in a loose fan, the
 // inflorescences (zigzag bracts, 'bract' item) hanging off short stems
 function ginger(x,y,z,lv){const hc=vary(pick(PAL.ginger),.04,.12,.06),S=rr(4,8),n=lv===2?ri(4,6):3,a0=rr(0,TAU);
@@ -296,24 +297,30 @@ HYPERJUNGLE.buildFloor=function(R,q){
  // ---- 2. the understorey: three rings of jittered grid ----
  // type mix (Girder's): sub-canopy tree 7 %, palm 7 %, fern ~30 %, shrub 16 %, aroid 16 %,
  // ground tuft 10 %, fungi 5.5 %, boulders 4 %, the rest shrubs
+ // the inspector's names for the near and mid plants (BIO.nameAt): kind, radius, height in metres
+ // (and HYPERJUNGLE.PLANTS' key, for its tags)
+ const FN={subtrees:['Understorey tree',9,40],palms:['Palm',6,15],treeferns:['Giant tree fern',5,12,'treefern'],screwpines:['Screwpine',4,9,'screwpine'],
+  gingers:['Heliconia and ginger',4,8,'ginger'],ferns:['Fern',4,3],shrubs:['Shrub',4,6],aroids:['Aroid',4,7]},FLOORN=[];
  function plant(x,y,z,d,lv){
+  const ch=(k,fn)=>{charge(k,fn);if(FN[k])FLOORN.push({name:FN[k][0],plant:FN[k][3]||null,x:x,z:z,y:y,r:FN[k][1],h:FN[k][2]});};
   if(!okGround(x,z,1.2))return;
   const t=rng(),patch=fbm(x*.006-11,z*.006+5,31,2);
-  if(t<.05){if(lv>=1&&nearHero(x,z)>12&&okGround(x,z,4)){charge('subtrees',()=>subTree(x,y,z,lv));st.subtrees++;}else{charge('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
-  else if(t<.12){if(lv===2||rng()<.5){charge('palms',()=>palm(x,y,z,lv));st.palms++;}else{charge('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
-  else if(t<.155){if(okGround(x,z,3)){charge('treeferns',()=>treeFern(x,y,z,lv));st.treeferns++;}else{charge('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
-  else if(t<.18){if(dampK(x,z)>.45&&okGround(x,z,3)){charge('screwpines',()=>screwpine(x,y,z,lv));st.screwpines++;}else{charge('gingers',()=>ginger(x,y,z,lv));st.gingers++;}}
-  else if(t<.215+.06*(openK(x,z)-.6)){charge('gingers',()=>ginger(x,y,z,lv));st.gingers++;}
-  else if(t<.44+.1*(patch-.5)){charge('ferns',()=>fern(x,y,z,lv));st.ferns++;}
-  else if(t<.60){const big=rng()<.2;charge('shrubs',()=>shrub(x,y,z,lv,big));st.shrubs++;}
-  else if(t<.76){charge('aroids',()=>aroid(x,y,z,lv));st.aroids++;}
-  else if(t<.86){charge('tufts',()=>{tuft(x,y,z,rr(2.2,4.2));if(lv===2&&rng()<.25)blooms(x,y+.5,z,1.5,ri(2,4));});st.tufts++;}
-  else if(t<.915){if(dampK(x,z)>.5)charge('fungi',()=>fungi(x,y,z,lv,st));else{charge('tufts',()=>tuft(x,y,z,rr(2,3.5)));st.tufts++;}}
-  else if(t<.945){charge('boulders',()=>boulder(x,y,z,lv,st));}
-  else{charge('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
+  if(t<.05){if(lv>=1&&nearHero(x,z)>12&&okGround(x,z,4)){ch('subtrees',()=>subTree(x,y,z,lv));st.subtrees++;}else{ch('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
+  else if(t<.12){if(lv===2||rng()<.5){ch('palms',()=>palm(x,y,z,lv));st.palms++;}else{ch('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
+  else if(t<.155){if(okGround(x,z,3)){ch('treeferns',()=>treeFern(x,y,z,lv));st.treeferns++;}else{ch('ferns',()=>fern(x,y,z,lv));st.ferns++;}}
+  else if(t<.18){if(dampK(x,z)>.45&&okGround(x,z,3)){ch('screwpines',()=>screwpine(x,y,z,lv));st.screwpines++;}else{ch('gingers',()=>ginger(x,y,z,lv));st.gingers++;}}
+  else if(t<.215+.06*(openK(x,z)-.6)){ch('gingers',()=>ginger(x,y,z,lv));st.gingers++;}
+  else if(t<.44+.1*(patch-.5)){ch('ferns',()=>fern(x,y,z,lv));st.ferns++;}
+  else if(t<.60){const big=rng()<.2;ch('shrubs',()=>shrub(x,y,z,lv,big));st.shrubs++;}
+  else if(t<.76){ch('aroids',()=>aroid(x,y,z,lv));st.aroids++;}
+  else if(t<.86){ch('tufts',()=>{tuft(x,y,z,rr(2.2,4.2));if(lv===2&&rng()<.25)blooms(x,y+.5,z,1.5,ri(2,4));});st.tufts++;}
+  else if(t<.915){if(dampK(x,z)>.5)ch('fungi',()=>fungi(x,y,z,lv,st));else{ch('tufts',()=>tuft(x,y,z,rr(2,3.5)));st.tufts++;}}
+  else if(t<.945){ch('boulders',()=>boulder(x,y,z,lv,st));}
+  else{ch('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
  // near: full detail; mid: fewer parts; both patchy, thinner (never bare) in the openings
  BIO.grid(7.4,0,nearR,(x,z,d)=>.92*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,2),{patch:.9,patchScale:.016,pad:1.5});
  BIO.grid(15,nearR,lodR,(x,z,d)=>mix(.6,.3,smooth(nearR,lodR,d))*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,1),{patch:.9,patchScale:.016,pad:1.5});
+ if(BIO.nameSet)BIO.nameSet('hyperjungle.floor',FLOORN);
  // ground cover between the plants: squashed cards and moss in the damp, cheap, so the litter is never a lawn
  const cover=(x,y,z,s)=>{if(!okGround(x,z,.5))return;
   if(dampK(x,z)>.52&&rng()<.3){charge('moss',()=>groundMoss(x,y,z,rr(1.2,2.8)));st.moss++;}

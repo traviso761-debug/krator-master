@@ -13,21 +13,27 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 2 |  |
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
-| `32-surfaces.js` | 7 | surfaces (1) |
-| `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
+| `32-surfaces.js` | 8 | surfaces (1) |
+| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
-| `38-helpers2.js` | 3 | v2 helpers (1) |
+| `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
 | `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
 | `69d-dalab-mat.js` | 22 | textures (39); materials (177); geometry (202); kit items (209) |
@@ -48,20 +54,23 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-port-chapterhouse.js` | 17 |  |
 | `81-sky.js` | 10 |  |
 | `86-bio-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
-| `86-bio-20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
+| `86-bio-20-core-kit.js` | 15 | merged buckets (46); indexed buckets (140); bake (163) |
 | `86-bio-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `86-bio-40-core-place.js` | 6 | surface sampling (53) |
 | `86-bio-45-init.js` | 2 |  |
-| `86-bio-50-biome-swlowlands-species.js` | 50 **big** | the climate this biome reads (23); palettes (33); the tree species (102); leaf textures (165); TWO-TONE BARK (279); geometries local to this biome (403); materials (443); instanced items (502) |
+| `86-bio-50-biome-swlowlands-species.js` | 50 **big** | the climate this biome reads (23); palettes (33); the tree species (102); leaf textures (165); TWO-TONE BARK (279); geometries local to this biome (403); materials (443); instanced items (505) |
 | `86-bio-55-biome-swlowlands-trees.js` | 57 **big** | zones from the fields (16); colour (35); keep-clear between trees (56); the LIMB (67); foliage and epiphytes (84); the crown, ON its branches (105); the builders (142); impostors (the far canopy) (456); the pass (495) |
 | `86-bio-60-biome-swlowlands-floor.js` | 24 | small plants (31); the understorey (under the crowns) (108); the zone planters (130); the pass (198) |
 | `86-bio-65-biome-swlowlands-dress.js` | 8 |  |
 | `86-bio-70-biome-swlowlands.js` | <1 |  |
+| `88y-dalab-matlib.js` | 2 |  |
 | `90-scene.js` | 3 | scene (1); build every site the target lists (31) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
-| `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
+| `91t-dalab-tags.js` | 3 | CORE TAGS: DALAB'S REG (1) |
+| `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
 | `94-dalab-light.js` | 5 | the biome (gardens), the mounds, the windmills (38) |
+| `99-start.js` | 2 | 99. the take: Dalab on core/host (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/

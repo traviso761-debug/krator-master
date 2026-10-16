@@ -72,7 +72,13 @@ var PLACED = [], PLACE_STATS = { scheduled:0, frontage:0, backlot:0, yards:0, re
   var seedN = 1;
 
   /* ---------------- 1. THE SCHEDULE ---------------- */
-  SITES_L.forEach(function(S){ var r=put(S.key, S.x, S.z, S.ry, S.variant, 7000+seedN++*13, S.name, S.tag, S.tag==='rich'?0.9:0.7); if(r){ S.rec=r; PLACE_STATS.scheduled++; } });
+  /* the buggy park (30-layout PARKING, yard:true) has no building: a shade shelter over the north side and fuel drums
+     at the east end; the buggies are the life layer's (84-life.js) */
+  (function(){ var P=PARKING; if(!P) return; var ry=P.ry, a=loc(P.x,P.z,-8,-P.d/2+3,ry), b=loc(P.x,P.z,8,-P.d/2+3,ry), c=loc(P.x,P.z,P.w/2-3,-P.d/2+3,ry);
+    put('prop_hangar', a[0], a[1], ry+Math.PI, 0, 871, 'Buggy shelter', 'parking', 0.7);
+    put('prop_hangar', b[0], b[1], ry+Math.PI, 0, 872, 'Buggy shelter', 'parking', 0.7);
+    put('prop_drum_stack', c[0], c[1], ry, 1, 873, 'Fuel drums', 'parking', 0.7); })();
+  SITES_L.forEach(function(S){ if(S.yard) return; var r=put(S.key, S.x, S.z, S.ry, S.variant, 7000+seedN++*13, S.name, S.tag, S.tag==='rich'?0.9:0.7); if(r){ S.rec=r; PLACE_STATS.scheduled++; } });
   BRIDGES.forEach(function(B){ LOCUS_BRIDGE(B); });
   /* the refinery yard inside the ring: drum stacks, shades for the Geomancers, a pipe rack out to the tanks */
   (function(){ var n=0, tries=0; reseed(681001);

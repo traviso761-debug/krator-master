@@ -29,6 +29,18 @@ function setHour(h){YSCLOCK.hour=((h%24)+24)%24;ysSkyTick();}
 FRAME_HOOKS.push(ysSkyTick);
 // builders animate (a beacon's beam, a windmill's sails) by pushing fn(dt,t) onto window.YS_TICKS; the same loop runs them
 window.YS_TICKS=window.YS_TICKS||[];FRAME_HOOKS.push((dt,t)=>{for(const f of window.YS_TICKS)f(dt,t);});
+// the vendored kit's own frame hook (10-core.js tick(); the firelight in 69-mat-salvage reads NIGHT, the kit camera's flag)
+FRAME_HOOKS.push((dt,t)=>{window.NIGHT=!!YS_NIGHT;for(const f of TICKS)f(Math.min(dt,.1),t);});
+// ---------------------------------------------------------------- core/atmos for the sea (core/water, 71w-port-sea.js)
+// its clock (on FRAME_HOOKS), the open-water wave field and the sky's light: the skylight captures a copy of the Krator sky
+// (the same materials, about the origin) and is given to the water only (YS_ENV), so the tuned materials are unchanged;
+// it recaptures when the hour moves or the night switches
+ATMOS.init({THREE,scene,camera,hour:()=>YSCLOCK.hour,onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:7111,
+ err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
+const YS_SKY=new THREE.Scene(),YS_ENV={environment:null},YS_SKYC=ysSkyGroup.clone();YS_SKY.add(YS_SKYC);
+ATMOS.hook(()=>{YS_SKYC.position.set(0,0,0);ysSkyGroup.children.forEach((o,i)=>{const c=YS_SKYC.children[i];   // the copy follows the sun, the moon, the giant
+ c.position.copy(o.position);c.quaternion.copy(o.quaternion);c.scale.copy(o.scale);c.visible=o.visible;});});
+ATMOS.skylight({renderer,sky:YS_SKY,scene:YS_ENV,ground:()=>new THREE.Color(0x0e2a2c),key:()=>YS_NIGHT?'n':'d'});
 // ---------------------------------------------------------------- the port: stamps, terrain, sea, builders, bake
 portUnderwaterPatch();
 const PORT_LAYOUT=(typeof PORT_LAYOUT_DEF!=='undefined'&&PORT_LAYOUT_DEF)||{items:[],stamps:[],runs:[]};
@@ -45,7 +57,11 @@ for(const s of (PORT_LAYOUT.stamps||[]))portStampAdd(s,0,0,'layout');
 TSTAT.cur='env/0';
 let PORT_TERRAIN=null;
 try{PORT_TERRAIN=portBuildTerrain(scene,PORT_LAYOUT);}catch(e){reportErr('terrain '+e.stack);}
-if(PORT_TERRAIN){for(const m of PORT_TERRAIN.chunks)m.userData.isGround=true;groundM=PORT_TERRAIN.chunks[0]||null;if(PORT_TERRAIN.sea)PORT_TERRAIN.sea.userData.isGround=true;}
+if(PORT_TERRAIN){for(const m of PORT_TERRAIN.chunks)m.userData.isGround=true;groundM=PORT_TERRAIN.chunks[0]||null;}
+// the sea's pick plane: the water mesh (core/water) does not raycast, so the inspector and the polygon tool hit this flat,
+// invisible plane at sea level ('sea': the inspector names it the open sea)
+{const pk=new THREE.Mesh(new THREE.PlaneGeometry(40000,40000),new THREE.MeshBasicMaterial({visible:false}));pk.rotation.x=-Math.PI/2;
+ pk.name='sea';pk.userData.probeSkip=true;pk.userData.isGround=true;scene.add(pk);}
 TSTAT.cur=null;
 for(const it of PORT_LAYOUT.items){const R=portRegOf(it.key);if(!R)continue;const d=it.d;
  const key=portStatKey(it.key,d);it.stat=key;TSTAT.cur=key;const _r0=REG.length;

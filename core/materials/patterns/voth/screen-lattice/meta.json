@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1238,
+    1011
+   ],
+   "seam_after": [
+    0.776,
+    1.562
+   ],
+   "seam_before": [
+    5.905,
+    9.433
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "voth/screen-lattice",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.88,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__voth__screen-lattice.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/screen-lattice` (delivered as \"Ornate Walnut Lattice on Parchment.png\")",
+  "reuse": "a parchment-backed lattice screen anywhere (Hykkousoi, Highlands shoji-like panels)",
+  "sha1": "1e121f9d1fce7ce2bff6d396b26bf5c83b9b701d"
+ }
+}

@@ -35,7 +35,7 @@ reseed(630001);
     build:function(F){ F.box(0,0.55,0, 0.96, 0.07, 0.66, 0, PLANKC[3], 'plank');
       legs(F, 0.96, 0.66, 0.55, 0.045, TIMBERC[0]);
       var n=F.variant+2; for(var i=0;i<n;i++){ var lx=(i-(n-1)/2)*0.32;
-        F.lathe('tile', lx, 0, [[0.09,0.62],[0.17,0.74],[0.19,0.88],[0.12,1.02],[0.08,1.10],[0.11,1.16]], F.pick(TILEC), {seg:10}); } } });
+        F.lathe('clay', lx, 0, [[0.09,0.62],[0.17,0.74],[0.19,0.88],[0.12,1.02],[0.08,1.10],[0.11,1.16]], F.pick(TILEC), {seg:10}); } } });
 
   /* ---------- yuni-court: the Emir, the oligarchs, the high houses ---------- */
   FURN({ key:'court_mosaic_divan', name:'Mosaic divan', culture:'yuni-court', room:'court',
@@ -102,14 +102,14 @@ reseed(630001);
     w:1.9, d:1.0, h:0.40, variants:2, variantNames:['bare','blanket'],
     build:function(F){ for(var s=-1;s<=1;s+=2){ F.box(s*0.86,0,0, 0.12, 0.28, 0.92, 0, ADOBEC[1], 'adobe'); }
       for(var i=0;i<9;i++) F.rod(-0.90, 0.30, -0.44+i*0.11, 0.90, 0.30, -0.44+i*0.11, 0.035, THATCHC[2], 'thatch');
-      F.box(0,0.33,0, 1.76, 0.05, 0.90, 0, THATCHC[0], 'thatch');
+      F.box(0,0.33,0, 1.76, 0.05, 0.90, 0, THATCHC[0], 'reedmat');
       if(F.variant===1) F.box(0,0.37,0.08, 1.60, 0.05, 0.70, 0, F.pick(CLOTHC), 'cloth'); } });
 
   FURN({ key:'poor_hearth_stones', name:'Three-stone hearth', culture:'yuni-poor', room:'kitchen',
     w:1.0, d:1.0, h:0.55, variants:1,
     build:function(F){ F.cyl(0,0,0, 0.42, 0.06, 0, ADOBEC[3], 'adobe');
       for(var i=0;i<3;i++){ var a=i/3*TAU+0.5; F.blob(Math.cos(a)*0.26, 0.02, Math.sin(a)*0.26, 0.13, 0.22, a, PAL.concrete[3], 'rock'); }
-      F.lathe('tile', 0,0, [[0.16,0.24],[0.24,0.34],[0.22,0.46],[0.15,0.52]], TILEC[1], {seg:10});
+      F.lathe('clay', 0,0, [[0.16,0.24],[0.24,0.34],[0.22,0.46],[0.15,0.52]], TILEC[1], {seg:10});
       F.lamp(0, 0.20, 0, 0.42, 3.2); } });
 
   /* ---------- salvaged Ancient parts, re-made by Yuni hands ---------- */

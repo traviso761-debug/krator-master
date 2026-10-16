@@ -104,13 +104,26 @@ scene.add(terrain);
   m.frustumCulled=false; m.receiveShadow=!FAST; m.userData.inspectLabel='Road'; scene.add(m);
 })();
 
-/* ---- THE WATER: one sheet at y 0, vertex-coloured by depth and by salt vs fresh ---- */
+/* ---- THE WATER: one sheet at y 0, vertex-coloured by depth and by salt vs fresh. Since 2026-10-13 the open lake is
+   core/water's (90w-lake.js) and this sheet draws the river, the delta's channels, the canal and the pools ---- */
 var waterUni = {
   uTime:{value:0}, uSun:{value:new THREE.Vector3(0.4,0.8,-0.4)}, uCam:{value:new THREE.Vector3()},
-  uSky:{value:new THREE.Color(0xd2dcd6)}, uFogCol:{value:new THREE.Color(PAL.haze)}, uFogDen:{value:PAL.fogDensity}, uDay:{value:1}
+  uSky:{value:new THREE.Color(0xd2dcd6)}, uFogCol:{value:new THREE.Color(PAL.haze)}, uFogDen:{value:PAL.fogDensity}, uDay:{value:1},
+  uLakeMask:{value:null}, uLakeBox:{value:new THREE.Vector4(-2e9,-2e9,-1e9,-1e9)}   /* 90w-lake.js: where the lake (core/water) takes over */
 };
+/* the shoreline both water shaders split on (90w-lake.js bakes the mask): R > .5 is the open lake, drawn by core/water;
+   the sheet draws the rest. West of the mask's box is lake, east of it land and river; with no mask nothing is lake */
+var LAKE_GLSL = 'uniform sampler2D uLakeMask; uniform vec4 uLakeBox;\n' +
+  'vec4 lakeMask(vec2 p){ vec2 uv=(p-uLakeBox.xy)/(uLakeBox.zw-uLakeBox.xy); if(uv.x<0.0) return vec4(1.0,0.0,0.0,1.0); if(uv.x>1.0) return vec4(0.0); return texture2D(uLakeMask, clamp(uv,0.0,1.0)); }\n';
 var WATER_SHALLOW=new THREE.Color().setHSL(EASTABYSS_LAKE.hue,.78,.47), WATER_MID=new THREE.Color().setHSL(EASTABYSS_LAKE.hue,.80,.33), WATER_DEEP=new THREE.Color().setHSL(EASTABYSS_LAKE.hue,.68,.14), WATER_PALE=new THREE.Color().setHSL(EASTABYSS_LAKE.hue+.02,.50,.70);
 var RIVER_COL=new THREE.Color().setHSL((EASTABYSS_LAKE.hue+.5)%1,.38,.30), POOL_COL=new THREE.Color().setHSL(EASTABYSS_LAKE.hue,.5,.30).lerp(new THREE.Color(0x3a3a26),.68);
+/* how much of the shared wave field (core/atmos, 90-atmos-host.js) a point of water takes: the open lake, away from the
+   shore, the river's fresh water and the pools. The river and the pools keep the sheet's own ripple (a flow is not a sea). */
+function waterOpenAt(x,z){
+  var ld=lakeDist(x,z), rd=riverDist(x,z), cd=canalDist(x,z);
+  var fresh = Math.max(smooth(30, 2, rd)*(1-smooth(-60,-360,ld)), smooth(10,2,cd));
+  return (1-fresh)*smooth(-8,-70,ld);
+}
 function waterColorAt(x,z,out){
   var h=terrainH(x,z), d=Math.max(0,-h), ld=lakeDist(x,z), rd=riverDist(x,z), cd=canalDist(x,z);
   var fresh = Math.max(smooth(30, 2, rd)*(1-smooth(-60,-360,ld)), smooth(10,2,cd));
@@ -123,18 +136,21 @@ function waterColorAt(x,z,out){
 var water = (function(){
   if(SHEET) return null;
   var L=[]; (function(){ var half=[0], c=18, x=0; while(x < 2900){ x+=c; half.push(x); } while(x < 13000){ c*=1.18; x+=c; half.push(x); } for(var i=half.length-1;i>0;i--) L.push(-half[i]); L=L.concat(half); })();
-  var N=L.length, pos=new Float32Array(N*N*3), col=new Float32Array(N*N*3), H=new Float32Array(N*N), idx=[], c=new THREE.Color();
+  var N=L.length, pos=new Float32Array(N*N*3), col=new Float32Array(N*N*3), H=new Float32Array(N*N), OPN=new Float32Array(N*N), idx=[], c=new THREE.Color();
   for(var j=0;j<N;j++) for(var i=0;i<N;i++){ var x=L[i], z=L[j], o=j*N+i, h = Math.abs(x)>HW*1.05||Math.abs(z)>HW*1.05 ? (lakeDist(x,z)<0 ? -10 : 5) : terrainH(x,z); H[o]=h;
-    pos[o*3]=x; pos[o*3+1]=0; pos[o*3+2]=z; waterColorAt(Math.max(-HW,Math.min(HW,x)), Math.max(-HW,Math.min(HW,z)), c).convertSRGBToLinear(); col[o*3]=c.r; col[o*3+1]=c.g; col[o*3+2]=c.b; }
+    pos[o*3]=x; pos[o*3+1]=0; pos[o*3+2]=z; waterColorAt(Math.max(-HW,Math.min(HW,x)), Math.max(-HW,Math.min(HW,z)), c).convertSRGBToLinear(); col[o*3]=c.r; col[o*3+1]=c.g; col[o*3+2]=c.b;
+    OPN[o] = Math.abs(x)>HW||Math.abs(z)>HW ? (lakeDist(x,z)<0 ? 1 : 0) : waterOpenAt(x,z); }
   /* only the quads where the ground actually dips under the plane */
   for(j=0;j<N-1;j++) for(i=0;i<N-1;i++){ var a=j*N+i, b=a+1, d=a+N, e=d+1; if(Math.min(H[a],H[b],H[d],H[e]) > 0.35) continue; idx.push(a,d,b, b,d,e); }
-  var g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos,3)); g.setAttribute('color', new THREE.BufferAttribute(col,3)); g.setIndex(idx); g.computeBoundingSphere();
+  var g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos,3)); g.setAttribute('color', new THREE.BufferAttribute(col,3)); g.setAttribute('aOpen', new THREE.BufferAttribute(OPN,1)); g.setIndex(idx); g.computeBoundingSphere();
   var mat = new THREE.ShaderMaterial({ uniforms:waterUni, transparent:false, vertexColors:true,
-    vertexShader:['varying vec3 vW; varying vec3 vCol;','void main(){ vCol=color; vec4 wp=modelMatrix*vec4(position,1.0); vW=wp.xyz; gl_Position=projectionMatrix*viewMatrix*wp; }'].join('\n'),
-    fragmentShader:['precision highp float;','uniform float uTime,uFogDen,uDay; uniform vec3 uSun,uCam,uSky,uFogCol; varying vec3 vW; varying vec3 vCol;',
+    vertexShader:['attribute float aOpen; varying vec3 vW; varying vec3 vCol; varying float vOpen;','void main(){ vCol=color; vOpen=aOpen; vec4 wp=modelMatrix*vec4(position,1.0); vW=wp.xyz; gl_Position=projectionMatrix*viewMatrix*wp; }'].join('\n'),
+    fragmentShader:['precision highp float;','#include <atmos_waves>','uniform float uTime,uFogDen,uDay; uniform vec3 uSun,uCam,uSky,uFogCol; varying vec3 vW; varying vec3 vCol; varying float vOpen;',LAKE_GLSL,
       'void main(){',
+      '  if(lakeMask(vW.xz).r > 0.5) discard;   /* the open lake is core/water\'s (90w-lake.js) */',
       '  float dcam=length(uCam-vW); float rk=1.0-smoothstep(120.0,420.0,dcam);',
       '  vec3 n=normalize(vec3(rk*(0.035*sin(vW.x*0.31+uTime*1.1)+0.02*sin(vW.z*0.53-uTime*0.7+vW.x*0.11)),1.0,rk*(0.035*cos(vW.z*0.27+uTime*0.9)+0.02*sin(vW.x*0.47+uTime*1.3))));',
+      '  if(vOpen > 0.002) n=normalize(mix(n, atmWaveNormal(vW.xz, dcam, 2.0), vOpen));   /* the open lake: the shared wave field (shading only: no swell under the reed decks) */',
       '  vec3 V=normalize(uCam-vW); float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
       '  vec3 col=mix(vCol*(0.30+0.70*uDay), uSky*(0.25+0.75*uDay), 0.08+fr*0.55);',
       '  vec3 Hh=normalize(uSun+V); col+=pow(max(dot(n,Hh),0.0),140.0)*0.75*vec3(1.0,0.96,0.86)*uDay;',

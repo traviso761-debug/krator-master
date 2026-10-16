@@ -12,13 +12,14 @@ KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round
 // adapter onto it: its seed rule (the record's place in the list), the murals' keep-clear boxes, full detail outside
 const HLF=KFURN.create(Object.assign(KFURN.flags(false),{
  catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,
+ tags:(KTAGS.page=KTAGS.create({build:'highlands'})),   // every piece registered in core/tags (core/tags/README.md)
  seed:(o,ctx,R)=>R.placed.length+1,
  onRecord:(rec,ctx,o,A,dm)=>{const c=ctx.vern;   // murals fitted after the builder (hlFlush) keep clear of the piece
   if(c&&!c.noRec)(c.inst||(c.inst=[])).push(['vWood',[rec.lx,rec.ly+dm.h/2,rec.lz],qEuler(0,rec.lry,0),[dm.w,dm.h,dm.d]]);},
  // a builder's pieces stand outside, seen whole: full detail (at half, a disc drawn as a rod, a shield or a target face,
  // is a 4-sided diamond); the interiors' many pieces keep the half detail set above
  draw:(rec,ctx)=>{KFURN.drawRec(HLF,rec,ctx.wealth,{detail:1,after:.5});}}));
-KFURN.useBatch(HLF,KratorFurniture,KratorInteriors);
+KFURN.useBatch(HLF,KratorFurniture,KratorInteriors,{indexed:true});   // indexed meshes (kits/catalog/README.md)
 function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;o=o||{};if(!c&&!o.world){reportErr('FURNISH '+key+' outside a builder');return null;}
  if(!c)return hlfWorld(key,lx,ly,lz,lry||0,o);
  const s=c.o.scale||1,p=loc(c.x,c.z,lx*s,lz*s,c.ry);

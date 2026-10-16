@@ -43,6 +43,7 @@ var TOWER_HALF = 24, TOWER_N = 30, TOWER_FH = 5.0, TOWER_OFF = 60;      /* 48 m 
 var COL_LINES = [-24+1.6, -8, 8, 24-1.6];                                 /* 4x4 cyclopean columns, 3.2 m square */
 var CORE_HALF = 8;                                                        /* the centre bay: stairs */
 var GALLERY_IN = 19.6;                                                    /* rooms stop here; the open gallery runs outside it */
+var GALLERY_WALK = GALLERY_IN + 0.6;   /* the gallery's walk loop: between the rooms' fronts and the columns' inner faces (20.8), not on the column line */
 var DECK_W = 15, DECK_K = 29;                                             /* roost deck: width, and the floor it is level with */
 var FLOOR_USE = (function(){
   var d=[]; for(var k=0;k<TOWER_N;k++) d.push(0);
@@ -254,11 +255,18 @@ var NAV_GY = SETTLE_Y + 0.05, NAVROAD = [];
   var trunk = NAVROAD.concat(pr);
   PLOTS.forEach(function(p){ p.node=navNode(p.x,NAV_GY,p.z,null,-2,'field'); p.node.plot=p.id;
     var e=navNode(p.x + (Math.abs(p.x)>Math.abs(p.z)? -Math.sign(p.x):0)*p.w/2, NAV_GY, p.z + (Math.abs(p.x)>Math.abs(p.z)?0:-Math.sign(p.z))*p.d/2, null,-2,'field');
-    navEdge(p.node,e,'ground'); navEdge(e,navNearest(trunk,e.x,e.z),'ground'); p.edge=e; });
+    /* the edge node is in the fence's gate gap (55-arch.js); an apron node 1.5 m outside it keeps the link to the
+       road from running back along or through the fence */
+    var ox=(Math.abs(p.x)>Math.abs(p.z)? -Math.sign(p.x):0), oz=(Math.abs(p.x)>Math.abs(p.z)?0:-Math.sign(p.z)),
+        ap=navNode(e.x+ox*1.5, NAV_GY, e.z+oz*1.5, null,-2,'field');
+    navEdge(p.node,e,'ground'); navEdge(e,ap,'ground'); navEdge(ap,navNearest(trunk,ap.x,ap.z),'ground'); p.edge=e; });
   if(HOUSES.length && !HOUSES.some(function(h){ return h.kind==='longhouse'; })) HOUSES.slice().sort(function(a,b){ return b.w*b.d-a.w*a.d; })[0].kind='longhouse';
   HOUSES.forEach(function(h){ var nr=navNearest(NAVROAD,h.x,h.z), dx=nr.x-h.x, dz=nr.z-h.z;
     if(Math.abs(dx)>Math.abs(dz)){ h.ox=Math.sign(dx); h.oz=0; } else { h.ox=0; h.oz=Math.sign(dz); }
-    h.door=navNode(h.x+h.ox*(h.w/2-3), NAV_GY, h.z+h.oz*(h.d/2-3), null,-2,'housedoor'); h.door.house=h.id; navEdge(h.door,nr,'ground'); });
+    h.door=navNode(h.x+h.ox*(h.w/2-3), NAV_GY, h.z+h.oz*(h.d/2-3), null,-2,'housedoor'); h.door.house=h.id;
+    /* out through the yard's gate (the fence gap on the door side, 55-arch.js) before turning for the road */
+    var ap=navNode(h.x+h.ox*(h.w/2+1.2), NAV_GY, h.z+h.oz*(h.d/2+1.2), null,-2,'housedoor');
+    navEdge(h.door,ap,'ground'); navEdge(ap,nr,'ground'); });
   STALLS.forEach(function(s){ s.node=navNode(s.x - Math.sin(s.ry)*0 + (-s.x/Math.hypot(s.x,s.z))*3, NAV_GY, s.z + (-s.z/Math.hypot(s.x,s.z))*3, null,-2,'market'); navEdge(s.node,navNearest(hring,s.x,s.z),'ground'); });
 
   /* --- towers --- */
@@ -268,17 +276,19 @@ var NAV_GY = SETTLE_Y + 0.05, NAVROAD = [];
     var prevTop=null;
     for(var k=0;k<TOWER_N;k++){
       var sp=stairPts(T,k), F=T.floors[k];
+      /* the last flight climbs to the ragged roof plate, which has no floor over the core: the graph stops at the
+         top storey's core node */
+      if(k===TOWER_N-1){ var nt=navNode(sp[0][0],sp[0][1],sp[0][2],T.deck,k,'core'); if(prevTop) navEdge(prevTop,nt,'deck'); T.nav.core[k]=nt; break; }
       var n0=navNode(sp[0][0],sp[0][1],sp[0][2],T.deck,k,'core'), n1=navNode(sp[1][0],sp[1][1],sp[1][2],T.deck,k,'stair'),
           n2=navNode(sp[2][0],sp[2][1],sp[2][2],T.deck,k,'stair'), n3=navNode(sp[3][0],sp[3][1],sp[3][2],T.deck,k+1,'stair');
       navEdge(n0,n1,'stair'); navEdge(n1,n2,'deck'); navEdge(n2,n3,'stair');
       if(prevTop) navEdge(prevTop,n0,'deck');
       prevTop=n3; T.nav.core[k]=n0;
-      if(k===TOWER_N-1) T.nav.core[TOWER_N]=n3;
     }
     /* gallery loops on inhabited floors (and the ground floor), reached from the core along the west corridor */
     T.floors.forEach(function(F){
       if(F.kind!=='inhabited') return;
-      var g=22.0, loop=[], per=8;
+      var g=GALLERY_WALK, loop=[], per=8;
       [[-1,-1,1,0],[1,-1,0,1],[1,1,-1,0],[-1,1,0,-1]].forEach(function(c){ for(var i=0;i<per;i++){ var t=i/per*2*g;
         loop.push(navNode(T.x+c[0]*g+c[2]*t, F.y, T.z+c[1]*g+c[3]*t, T.deck, F.k, 'gallery')); } });
       loop.forEach(function(n,i){ navEdge(n,loop[(i+1)%loop.length],'deck'); });
@@ -296,13 +306,24 @@ var NAV_GY = SETTLE_Y + 0.05, NAVROAD = [];
     var P=T.deck, dw=P.inner+3.0, walk=[], per2=10;
     [[-1,-1,1,0],[1,-1,0,1],[1,1,-1,0],[-1,1,0,-1]].forEach(function(c){ for(var i=0;i<per2;i++){ var t=i/per2*2*dw;
       walk.push(navNode(T.x+c[0]*dw+c[2]*t, P.y, T.z+c[1]*dw+c[3]*t, P, 0, 'deckwalk')); } });
+    /* the deck is notched 2.6 m round the lift shaft (83-walk.js, 50-structure.js): walk nodes in the notch step out
+       to its outer side, where the deck carries on */
+    var Lw=T.lift, lsx=Math.sign(Lw.x-T.x)||1;
+    walk.forEach(function(n){ if(Math.abs(n.x-Lw.x)<3.3 && Math.abs(n.z-Lw.z)<3.3) n.x=Lw.x+lsx*3.4; });
     walk.forEach(function(n,i){ navEdge(n,walk[(i+1)%walk.length],'deck'); }); P.nav={ walk:walk };
-    [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(f){ navEdge(navNearest(walk,T.x+f[0]*dw,T.z+f[1]*dw), navNearest(T.nav.gallery[DECK_K],T.x+f[0]*22,T.z+f[1]*22),'deck'); });
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(f){ navEdge(navNearest(walk,T.x+f[0]*dw,T.z+f[1]*dw), navNearest(T.nav.gallery[DECK_K],T.x+f[0]*GALLERY_WALK,T.z+f[1]*GALLERY_WALK),'deck'); });
     P.heads.forEach(function(h){ h.node=navNode(h.x,h.y,h.z,P,0,'bridgehead'); navEdge(h.node,navNearest(walk,h.x,h.z),'deck'); });
-    ROOSTS.forEach(function(R){ if(R.plat!==P) return; R.node=navNode(R.x-R.ox*6.5,P.y,R.z-R.oz*6.5,P,0,'roost'); navEdge(R.node,navNearest(walk,R.node.x,R.node.z),'deck'); });
-    /* the lift */
+    /* a rider tends the beast from the stall's open back, by the deck walk: the bedding, bales, tack rack and trough
+       (55-arch.js) fill the stall between there and the perch */
+    ROOSTS.forEach(function(R){ if(R.plat!==P) return; R.node=navNode(R.x-R.ox*8.4,P.y,R.z-R.oz*8.4,P,0,'roost'); navEdge(R.node,navNearest(walk,R.node.x,R.node.z),'deck'); });
+    /* the lift; its foot reaches the road round the capstan (r 1.1, 11 m out) when the straight line would cross it */
     var Lf=T.lift; Lf.foot=navNode(Lf.x+Lf.ox*2.6,NAV_GY,Lf.z,null,-2,'liftfoot'); Lf.head=navNode(Lf.x-Lf.ox*0,Lf.y1,Lf.z,P,0,'lifthead');
-    navEdge(Lf.foot,navNearest(NAVROAD,Lf.foot.x,Lf.foot.z),'ground'); navEdge(Lf.head,navNearest(walk,Lf.head.x,Lf.head.z),'deck');
+    var fr=navNearest(NAVROAD,Lf.foot.x,Lf.foot.z), C=Lf.capstan, fdx=fr.x-Lf.foot.x, fdz=fr.z-Lf.foot.z, fl2=fdx*fdx+fdz*fdz,
+        ft=clamp(((C.x-Lf.foot.x)*fdx+(C.z-Lf.foot.z)*fdz)/(fl2||1),0,1);
+    if(Math.hypot(Lf.foot.x+fdx*ft-C.x, Lf.foot.z+fdz*ft-C.z) < 1.8){
+      var by=navNode(C.x, NAV_GY, C.z+(Math.sign(fr.z-C.z)||1)*2.8, null,-2,'liftfoot'); navEdge(Lf.foot,by,'ground'); navEdge(by,fr,'ground');
+    } else navEdge(Lf.foot,fr,'ground');
+    navEdge(Lf.head,navNearest(walk,Lf.head.x,Lf.head.z),'deck');
     Lf.edge=navEdge(Lf.foot,Lf.head,'lift',{ lift:Lf.id });
   });
   BRIDGES.forEach(function(br){ br.edge=navEdge(br.a.node,br.b.node,'bridge',{ bridge:br.id }); });

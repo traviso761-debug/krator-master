@@ -28,5 +28,5 @@ function buildLibrary(scene,gx,gz,d){reseed(d>0?9801:9800);KOFF=[gx,0,gz];REGIST
  mesh(gridSurface((u,v)=>[42+u*18,7.2+.4*Math.sin(u*9),(v-.5)*10],16,4,{hole:d>0?(u,v)=>fbm(u*5,v*2,520,2)<.35:null}),skin,G);
  kput('archOpen',[34.5,4,0],qFacing([1,0,0]),[.5,.5,1],null);
  if(d>0){mossOnRing(0,2.4,0,36,40,2);scatterMoss(0,0,0,44,110,90,2);trees(0,0,60,120,12);vinesOnRing(0,36,0,16,12,20);}
- figures(0,60,6,8);KOFF=[0,0,0];return G;}
+ figures(0,60,6,8);civFlatten(G);KOFF=[0,0,0];return G;}
 

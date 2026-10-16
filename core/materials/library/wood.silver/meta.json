@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.251,
+    1.319
+   ],
+   "seam_before": [
+    1.11,
+    3.228
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.3,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "wood.silver",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1.4,
+   1.4
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Weathered Driftwood Grain Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Ancient wind-polished deadwood: bare trunk wood weathered silver-grey (#b8b0a4) with deep twisting spiral grain, rust and amber resin streaks (#a8643a), fine sand-blasted ridges, a few checks. (Row wood.silver of core/materials/PLAN.md, Eastern badlands.) Delivered 2026-10-06 in ebadlands.zip as 'Weathered Driftwood Grain Texture.png'.",
+  "reuse": "the bristlecone here, `wood.driftwood` (Mav's design-only row), dead snags and fallen logs anywhere",
+  "sha1": "67f14b0cdb76d2a48f609d30268786abe19d9ab3"
+ }
+}

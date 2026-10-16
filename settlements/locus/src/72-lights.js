@@ -56,6 +56,9 @@ var FIXED_LAMPS = 0, ELECTRIC_LAMPS = 0;
   /* the refinery ring's inner verge: the Geomancers' arc standards, cool white */
   for(var m=0;m<12;m++){ var a=m/12*TAU+0.13, x=Math.cos(a)*(RING0_R-RING_W/2-1.2), z=Math.sin(a)*(RING0_R-RING_W/2-1.2);
     if(placedAt(x,z,0.5)) continue; ARCPOST(x, terrainH(x,z), z, 6.2, 1.8, 26); FIXED_LAMPS++; ELECTRIC_LAMPS++; }
+  /* the buggy park: four arc standards at its corners, cool white (it is on the Geomancers' grid) */
+  if(PARKING){ [[-15,-8],[15,-8],[-15,8],[15,8]].forEach(function(p){ var q=loc(PARKING.x,PARKING.z,p[0],p[1],PARKING.ry); if(placedAt(q[0],q[1],0.4)) return;
+      ARCPOST(q[0], terrainH(q[0],q[1]), q[1], 5.6, 1.6, 24); FIXED_LAMPS++; ELECTRIC_LAMPS++; }); }
   /* the market square: oil lanterns on posts round the rim */
   for(m=0;m<10;m++){ var a2=m/10*TAU, x2=MARKET.x+Math.cos(a2)*(MARKET.r-2), z2=MARKET.z+Math.sin(a2)*(MARKET.r-2);
     if(placedAt(x2,z2,0.5)) continue; LAMPPOST(x2, terrainH(x2,z2), z2, 3.8, 1.2, 18, false); FIXED_LAMPS++; }

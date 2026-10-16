@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.251,
+    1.13
+   ],
+   "seam_before": [
+    1.948,
+    1.739
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.cap.orange",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "organic-cap-orange.webp",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP",
+  "reuse": "the top of an orange mushroom cap, radial, cracked (the gill-parasol, the stilt parasol); any orange fungal skin",
+  "sha1": "cb8dd69ddfa1c99d66ddfb1fbb1c54b12ebec327"
+ }
+}

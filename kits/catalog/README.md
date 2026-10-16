@@ -6,8 +6,8 @@ furniture sets** (2026-10): a parametric furniture kit and one file per culture.
 It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
-furniture entry and every variant, and `verify.py --assert` passes: all 1503 furniture pieces
-(2266 instances over five pages, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
+furniture entry and every variant, and `verify.py --assert` passes: all 1642 furniture pieces
+(2456 instances over five pages, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
 their declared size, keep their anchor's geometry, carry their tags, and sit on exactly one page. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
 
@@ -24,14 +24,15 @@ The Beast Rider buildings place their furniture as catalog pieces with `F.furn` 
 |---|---|
 | `krator-symbols.js` | VENDORED from `core/sockets/38-symbols.js`: the culture symbols (`SYMBOLS`, `SYMBOL_OF`) the hangings paint |
 | `krator-furniture-core.js` | the half of the engine with no page in it (split out 2026-10): `TAU`/`shade`, `mat()`, the geometry kit `mk*` (and `mkDecal`), the registries and vocabularies, `CATALOG_MATERIALS`, `FPAL`, the frame `makeFrame()` (`F.*`, `F.furn`), `buildFurn/buildPlant/buildAsset`, `rebuildInstance`, `measureInstance`. Loaded BEFORE the engine |
+| `krator-furniture-detail.js`, `materials.json`, `tex/` | the material library on catalog furniture, opt-in: `furniture_bundle.bundle(cultures, tex=True)` inlines `KF_TEX` (47 families, about 1 MB) and the detail pass; a batch's `flush` then gives each family's mesh its set as a triplanar detail map keyed by texture family, then render family. `KF.setTextures(false)` turns it off, `KF.textureInfo()` reports. Default off: the bundle is byte-identical without it. Re-pack with `python3 tools/textures/pack.py kits/catalog` after editing `materials.json`; a host's own rows win by using its own adapter |
 | `krator-furniture-runtime.js`, `furniture_bundle.py` | the catalog's furniture inside another build: `furniture_bundle.bundle(cultures)` wraps the core, the symbols, the kit, the culture files and the runtime in one closure exposing only `KratorFurniture` (batches merged per render family). See "Furniture in a kit build" |
-| `krator-asset-engine.js` | the page: scene, camera, controls, ground, labels, frame loop; with the core: geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, `F.shift`, and `F.decal`: a painted canvas panel, cached per key), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
+| `krator-asset-engine.js` | the page: scene, camera, controls, ground, labels, frame loop; with the core: geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, the soft furnishings `F.pillow` (a stuffed cushion: domed faces, rounded corners, an optional boxed wall; returns its top height and its seams for piping) and `F.bolster` (gathered ends; banded by sections), `F.shift`, and `F.decal`: a painted canvas panel, cached per key), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
 | `krator-furniture-kit.js` | **the furniture kit `FK`**: one parametric builder per role (bed, throne, hearth, tapestry, wall art ...) driven by a culture's style sheet, motif and finial helpers, `FK.ROLES` per tier and `FK.set()`, which registers a whole tier for a culture. Read its header before writing a set |
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
-| `krator-master-furniture.js` | 122 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 58, Ancients 4) |
-| `krator-master-furniture-<culture>.js` | **one file per culture** (17 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette only. See "Furniture by culture" |
-| `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (33, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
-| `krator-master-furniture-jobs.js` | **work items by trade** (2026-10): not a culture file; each entry keeps its real `culture` and carries `job` (`FURN_JOBS`). 10 pieces harvested from Locus (oil drums lying, sheaf racks, salt heap and tubs, bales, net frames, fish tray). See "Rugs and Jobs" |
+| `krator-master-furniture.js` | 128 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 64, Ancients 4) |
+| `krator-master-furniture-<culture>.js` | **one file per culture** (18 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette and fourteen shell-grown bespoke pieces (lathes and tubes, ported from Ys). See "Furniture by culture" |
+| `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (40, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
+| `krator-master-furniture-jobs.js` | **work items by trade** (2026-10): not a culture file; each entry keeps its real `culture` and carries `job` (`FURN_JOBS`). 13 pieces: 10 harvested from Locus (oil drums lying, sheaf racks, salt heap and tubs, bales, net frames, fish tray) and 3 carpentry pieces for the abyss builders' yard (`job_pole_rack`, `job_plank_stack`, `job_saw_bench`, 2026-10). See "Rugs and Jobs" |
 | `krator-master-plants.js`, `krator-master-buildings-voth.js`, `krator-master-buildings-beast-rider.js` | kept, **not built** (above); the building files carry `ASSET({...})` entries tagged by culture, `types: [...]` and `family` for the pages that load them |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
 | `three.min.js` | three.js r128, the copy every other build uses |
@@ -135,7 +136,9 @@ FURN({
 - **Frame.** The origin is the footprint centre at the bottom of the piece, +z is
   the front. Every piece is authored in this floor frame. `anchor` says where it
   mounts: `floor` stands on the floor; `wall` stands at floor level with its back
-  (local z = -d/2) flush to a wall; `ceiling` hangs, top at the ceiling
+  (local z = -d/2) flush to a wall, except the hung roles (`FURN_WALL_HUNG`: art at eye height; friezes,
+  pennants, scrolls, banners, tapestries and wall rugs with their top near the wall's top), which `furnAnchorY`
+  lifts; `ceiling` hangs, top at the ceiling
   (`furnAnchorY` lifts it to `ceilingY - h`); `surface` stands on a table or shelf
   top (`surfaceY`). A piece authored off-centre calls `F.shift(-cx, -cz)` first.
 - **Rooms** use the `kits/interiors/SPEC.md` room kinds (`hall bedroom kitchen
@@ -165,9 +168,18 @@ FURN({
   a plate, a painted panel, a mounted skull. Tapestries and hangings are `banner`. Cups, jugs and
   bowls are `vessel`, candles `lamp`.
 - **Job** (optional, 2026-10). `job: '<trade>'` from `FURN_JOBS` (`farming fishing salt oil smithing milling
-  warehousing brewing weaving tanning pottery carpentry mining herding trading`) marks a work item: the piece goes on the
+  warehousing brewing weaving tanning pottery carpentry mining herding trading`, and the Zeijani trades of 2026-10-07:
+  `fungiculture alchemy dyeing masonry lampmaking knapping ropemaking`) marks a work item: the piece goes on the
   sheet's Jobs page, a row per job. Every entry of `krator-master-furniture-jobs.js` carries one; `verify.py`
-  rejects a job not in the list. `KratorFurniture.FURN_JOBS` exposes the list to a host.
+  rejects a job not in the list. `KratorFurniture.FURN_JOBS` exposes the list to a host. `alchemy` was added 2026-10
+  (`voth_still_cluster`); the kit's `still` role stays under `brewing`.
+- **Task** (2026-10, for the simulation layer). `task: [..]` from `FURN_TASKS` (`sleeping resting eating drinking
+  cooking socializing praying reading writing storage feeding melee-training ranged-training`) is what an NPC does AT the piece, so a building holding one is a
+  destination for that task. A job is a trade; a task is any NPC's activity. `FURN()` derives it when an entry leaves it
+  out: `FURN_ROLE_TASK[role]` first (kit pieces; `[]` means none), then `FURN_TYPE_TASK[type]`, then `storage` for a
+  vessel, supply or tool whose name is a container (`FURN_STORAGE_NAME`). `food` pieces get `eating`, `drink` pieces
+  `drinking`; a trough, manger, hay rack or feed basket (by name, `FURN_FEED_NAME`, or role) adds `feeding` for beasts. Set `task: []` for none. `verify.py` rejects a
+  task not in the list. `KratorFurniture.FURN_TASKS` exposes the list.
 - **Tier.** `tier: 'poor' | 'common' | 'court'` and `wealth: [lo, hi]`; `FURN()` fills them in from
   the culture name (`yuni-court`, `yuni-poor`) or `FURN_TIERS` when an entry leaves them out. Buildings carry `types` from `BUILDING_TYPES` (`civic market shop
   tavern inn industry farm dwelling-single dwelling-multi infrastructure religious
@@ -185,7 +197,17 @@ outbuilding is **furniture**: a catalog piece placed as data and built by the ca
   setting})`, `B.flush(scene)`, `KF.setDetail(k)`, `KF.has`, `KF.entryDims`, `KF.furnAnchorY`). Nothing
   else leaks: the core's names stay inside the closure. A batch merges every piece's triangles into one
   mesh per render family (vertex colours), keeps the lights as data, and keeps painted panels
-  (`F.decal`) as their own meshes. The build's glue defines `FURNISH(key, lx, ly, lz, lry, {v, seed,
+  (`F.decal`) as their own meshes (those sharing a material merged into one). **Indexed batches**
+  (2026-10, ROADMAP stage 1): by default a batch unrolls every piece into a triangle soup (one vertex per
+  corner, no index: 1.5 times a box's vertices, up to 6 times a smooth cylinder's), and that default
+  stays, since code outside the furnished builds (the Voth branch) may read the soup. `KF.batch({indexed: true})`
+  (or `KFURN.useBatch(R, KF, KI, {indexed: true})`) keeps each source mesh's vertices once and its index,
+  offset: the same triangles in the same order, with a Uint16 index (Uint32 past 65535 vertices), an `idx`
+  buffer on each bucket, and indexed merged panels; `B.tris` counts as before. Code that copies a batch's
+  arrays must carry the index (Girder's `gixAccum`, Mav's Refuge's `mixBuild`/`mixRebuild` do). On: Girder,
+  Mav's Refuge, Locus, Highlands, Post-Apoc, Noah's Regret, Verge, the Ancients kit's interiors, Scyvoi, the
+  Desert and Ash Nomads, Zeijani and Dhelv. Still soup: `IX.runtimeAdapter`'s own measuring batch (`top()`),
+  the adapters only furnishing with (never flushed), and every caller not listed. The build's glue defines `FURNISH(key, lx, ly, lz, lry, {v, seed,
   setting})` in its builders' local frame; with `?interiors=1` it also furnishes the rooms from
   `kits/interiors` (`kit_bundle.py`, `IX.sets`). Worked examples: `settlements/highlands`
   (`89y-hl-furnish.js`), `settlements/locus` (`66-locus-furnish.js`), `settlements/girder`,
@@ -196,6 +218,79 @@ outbuilding is **furniture**: a catalog piece placed as data and built by the ca
   `userData.furniture` (`userData.missingFurniture` for a key the catalog lacks: nothing drawn).
   **The height is the caller's**: `F.furn` does not apply the piece's anchor, so pass the floor, the
   top it stands on, or the beam a hanging piece meets.
+
+### Size-aware segments (2026-10-12, ROADMAP stage 1)
+
+The round primitives used to take fixed segment counts (`mkCyl` 16, `mkCone` 14, `mkDome` 16 x 10, `mkBall` 14 x 10,
+`mkBlob` 10 x 8, `mkEll` 12 x 8, `mkRod` 8), so a 3 cm chair leg had a palace column's. Now (`krator-furniture-core.js`,
+`_fit` and `_ring`) a part of radius r gets the fewest segments that keep its silhouette error (the sagitta, how far
+a facet's middle sits inside the true circle) under the 3.8 mm the 16-sided cylinder already has at r = 0.2 m,
+rounded up to an even count, never under 6 round and never over the old count. So a cylinder of r >= 0.15 m is
+unchanged (a ball or cone from 0.11 m, an ellipsoid from 8 cm, a blob from 5 cm, a rod from 3 cm), 0.05 to 0.15 m
+keeps 50 to 90 % of the count, a 4 cm leg gets 8, and a 2.5 cm spindle, a bead or a finial 6. A sphere's rows follow its count round in the old proportion
+(a 6-round ball is 6 x 4, 36 triangles instead of 252). `KF.setDetail(d)` then scales the count as before, with
+the same floors, so no part ever gets more segments than it had.
+
+- **Radius only.** The count does not grow with a cylinder's length or a dome's height (a dome's rows do): a ring
+  round a leg, a rim on a jar and a dome on a post must keep the count of the part they sit on.
+- **Coaxial parts share a count** (`_ring`): an upright cylinder, cone or dome on the axis of one already built in the
+  same piece, touching it, with a radius within cos(PI / 6) of it, takes that one's count. Two polygons of one count
+  and one turn nest; of different counts, the inner one's corners poke through the outer one's faces (a band 3 %
+  wider than its jar would show the jar's corners). Parts given different turns (`xanadu_common_prayer_wheels`
+  turns each drum at random) can still poke, as they did before at detail 0.5.
+- **Kept at their counts:** lathes and tubes (their callers pass `nu` and `seg`, and their flutes and lobes are drawn
+  by them: the Hykkousoi shell pieces), frustums (`sides` is a shape: a square or hexagonal block), pillows and
+  bolsters (their floors are their silhouette), boxes and beams.
+
+`node kits/catalog/tests/test-segments.js` builds all 2073 pieces at detail 1 and 0.5 and checks that every round part
+is within the old count and the floors and that no coaxial cylinders of one turn poke; it prints the census. Measured
+over the catalog (each piece once, the mean of its variants):
+
+| | detail 1 | detail 0.5 |
+|---|---|---|
+| before | 4 531 285 | 1 593 819 |
+| after | 1 961 154 (57 % less) | 1 343 168 (16 % less) |
+| balls | 2 751 105 -> 505 321 (82 %) | 611 357 -> 398 482 (35 %) |
+| cylinders | 293 909 -> 182 840 (38 %) | 146 955 -> 117 785 (20 %) |
+| blobs, domes, cones, rods | 715 400 -> 502 746 (30 %) | 246 838 -> 238 233 (3 %) |
+
+Most of the catalog's triangles were small balls: beads, studs and rosettes (balls under 2 cm were 48 % of all
+triangles at detail 1; the court beds, friezes and tables carry hundreds). By piece type at detail 1: tables, beds,
+banners and desks 73 to 76 % less, chairs 63 %, storage and shelves about 40 %, rugs, wells and fountains about 0.
+At detail 0.5 (every settlement) the floors already bound most parts, so the saving there is 16 % of the census;
+the furnished pages' own numbers are below.
+
+Furniture triangles on the furnished pages (2026-10-12, headless; the batch's own count: `core/furnish/fingerprint.py`
+`batchTris`, Girder's interiors `window._interiors.tris` once all 353 buildings are furnished, the kits'
+`window._build.furniture.tris`). Placement records, counts, lights and missing keys are the same on every page; only
+the geometry hashes moved.
+
+| Page (detail) | before | after | less |
+|---|---|---|---|
+| Highlands, interiors on (0.5) | 5 568 375 | 4 230 995 | 24.0 % |
+| Highlands, interiors off | 1 022 986 | 771 082 | 24.6 % |
+| Roketstad, interiors off (0.5) | 3 502 168 | 3 346 194 | 4.5 % |
+| Girder, outdoor and interiors (0.5) | 1 495 219 | 1 230 292 | 17.7 % |
+| (Girder interiors alone, 3817 pieces) | 1 388 061 | 1 129 088 | 18.7 % |
+| Mav's Refuge (0.5) | 1 277 994 | 1 218 198 | 4.7 % |
+| Locus, interiors on (0.5) | 1 094 958 | 997 982 | 8.9 % |
+| Abyss kit, interiors on (0.5) | 824 847 | 760 125 | 7.8 % |
+| Locus kit, interiors on (0.5) | 105 228 | 97 032 | 7.8 % |
+| Post-Apoc, interiors on (0.5) | 452 465 | 443 816 | 1.9 % |
+| Zeijani (0.6) | 913 874 | 709 497 | 22.4 % |
+| Desert Nomads (0.6) | 858 714 | 829 608 | 3.4 % |
+| Ash Nomads (0.6) | 743 582 | 654 354 | 12.0 % |
+| Scyvoi (0.6) | 573 582 | 475 195 | 17.2 % |
+| Noah's Regret, the batch (0.5) | 388 811 | 378 228 | 2.7 % |
+| **all of the above** | 17 799 817 | 15 371 516 | **13.6 %** |
+
+So Gemini's 65 to 75 % (ROADMAP claim 18) holds only at detail 1, where the catalog sheet and the interiors demos
+draw: 57 % over the catalog. The settlements already halve the round parts (`setDetail(.5)`), and the 6-segment
+floor then leaves 25 % on a cylinder and 35 % on a small ball; boxes, pillows, beams, lathes and frustums do not
+change. The pages that gain most are the ones rich in beads and turned work (Highlands, Zeijani, Girder's
+interiors); box- and cushion-heavy ones (Post-Apoc, the Desert Nomads, Noah's Regret) barely move. Roketstad with
+its interiors (21 M triangles) did not load headless on a loaded machine (a crash before, a 15-minute timeout after),
+so it is not in the table.
 
 ### Harvested from the kits (2026-10)
 
@@ -272,7 +367,7 @@ and the `generic_basket` flat tray. Floor containers stand beside a 0.8 m table 
 | food | bread, bread_basket, cheese, cured_meat, roast, fish, fruit_bowl, veg_basket, produce, eggs, pie, cake, stew_pot, meal, preserves, dairy, snack_bowl, pastries, condiments, mushrooms (surface); hanging_larder (ceiling) |
 | drink | wine, ale, spirits, tea_set, water (surface) |
 | supply | candle_supply, lamp_oil, soap, medicine, herb_bundles, tobacco, writing_supplies, sewing, rations (surface) |
-| biome fruit | 33 `generic_fruit_*` (surface). Each has `biome` and `source` fields naming the kit and the species: `biomes/FRUIT.md`. Putting the fruit into the biome kits themselves is still open (each kit's `KNOWN_ISSUES.md`) |
+| biome fruit | 40 `generic_fruit_*` (surface). Each has `biome` and `source` fields naming the kit and the species: `biomes/FRUIT.md`. Putting the fruit into the biome kits themselves is still open (each kit's `KNOWN_ISSUES.md`) |
 
 Shared shapes are `KGEN` (bottle, jar, cloth-capped jar, plate, bowl, mug, goblet, crate, heap, fish, capsule,
 fruit) at the top of `-generic-goods.js`, and `KFRUIT` (leaf, half, ridged pod, wedge, studded head) at the
@@ -295,7 +390,7 @@ tapestries (`banner`) and wall art (`art`) for its rich and court rooms. The set
 | `beast-rider` | common, court | Amerindian; Javan; big animal skulls | lashed hardwood, hide, bone and horn; court: hyper-mahogany, bone inlay, skulls | beast-rider |
 | `lizardmen` | common, court | reptilian motifs; Amerindian | driftwood, woven reed, basalt, olive clay, jade and turquoise scale inlay | – |
 | `eastabyss` | common, court | Maghrebi; Arab | cedar, reed, lime plaster, zellige tile, brass; court: gilt, indigo and saffron silk | – |
-| `nomad` | common, court | pueblo; Arab (the Eastern Nomads) | poplar, hide, felt, adobe, red clay, copper, bone | – |
+| `nomad` | common, court | pueblo; Arab; Moroccan (the Eastern Nomads: the desert and abyssal nomads, kits/desert-nomads) | poplar, hide, felt, adobe, red clay, copper, bone | – |
 | `xanadu` | common, court | Mughal; Yuan; Tibetan | rosewood, celadon, turquoise tile, a little gold; court: red lacquer, gold, jade, marble | xanadu |
 | `screamer` | common, court | primitive; Amazonian; heavy scrap | bark timber, vine, hide, feathers, bone, rusted and plastic scrap | generic |
 | `islander` | common, court | Polynesian; Ashlander | koa, pandanus, tapa, coir, gourd, shell, lava stone; court: shell-pearl | ringsea-islander |
@@ -304,16 +399,19 @@ tapestries (`banner`) and wall art (`art`) for its rich and court rooms. The set
 | `painted` | common, court | Tlingit (the Painted Men) | red cedar, painted hide, copper, abalone shell | – |
 | `reedlake` | common, court | the floating reed village | bundled reed, rush, driftwood, lake clay, fish silver, shell | – |
 | `post-apoc` | common, court | high-value salvaged Ancients goods | alloy, steel, glass, synthetic cloth, white ceramic; court: gilt | generic |
-| `hykkousoi` | (palette only) | Greek; Polynesian; organic | nacre and mother-of-pearl, olive wood, sea-linen, bronze | hykkousoi |
+| `scyvoi` | common, court | Kazakh; Kyrgyz; Mongol; Bedouin; Moroccan (the Baer-San, salamander riders of the crater drylands) | felt, wool, velvet, leather, poplar and walnut, red lacquer, brass, copper, black iron, mosaic glass, bone and horn; court: crimson velvet, gold, knotted carpets | – |
+| `zeijani` | common, court | Cappadocia; Petra; Ethiopian rock churches; fantasy dwarves; Pueblo and kiva (style only); Ashlander; Varanasi; Babylon (the cave-dwellers of the Throne, `kits/zeijani`) | carved tuff and basalt, polished oxide stone, kipuka hardwood, fleece, hide, felt, terracotta and turquoise glaze, copper, obsidian, bone; court: polished red and purple oxide, bronze | zeijani |
+| `ashnomad` | common, court | Nazca; Morrowind Ashlander and Dunmer; Bedouin (the Ash Nomads, beetle riders of the ash plains: kits/ash-nomads) | beetle carapace and millipede plate (glossy chitin, hide-bound), hide, felt, black and ash-grey cloth with ochre, saffron and vermilion, bone, black iron, red clay, paper lanterns; court: lacquered amber chitin, gold, red and yellow silk | – |
+| `hykkousoi` | (14 bespoke pieces) | Greek; Polynesian; organic | nacre and mother-of-pearl, olive wood, sea-linen, bronze | hykkousoi |
 
 The harvested cultures (`yuni-*`, `sahelian`, `order`, `ancient`, `ancients-salvage`) keep their
-pieces; Yuni's own tiers are its culture tags. Hykkousoi is in progress and has no pieces yet;
-its file says how to add them.
+pieces; Yuni's own tiers are its culture tags. Hykkousoi has fourteen bespoke pieces ported from the Ys settlement and no kit style sheets yet;
+its file says what is still to add.
 
 **Tiers and wealth.** Every piece carries `tier` (`poor | common | court`) and `wealth: [lo, hi]`
 (`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The sheet is 1051 pieces: 86 generic goods and biome fruit, 731 kit and bespoke
 pieces of the first pass, 112 hangings of the second, and the 122 harvested ones (the interiors pass; with the
-kit harvests, the trade roles, the tent rug and the jobs file it is 1503). The poor tier is the two generic sets:
+kit harvests, the trade roles, the tent rug and the jobs file it is 1503; with the Mungo pass's reed tavern pieces, the builders' yard's carpentry pieces and its bricks, lime and reed bundles, 1514; with the six re-harvested Yuni interiors pieces, 1520; with the Scyvoi set, 76 kit and trade pieces and 33 bespoke ones, 1635; with the Scyvoi tanning pieces, 1641; with the nine Ancient arcology fittings Noah's Regret carries (bollard, capstan, quay lamp standard, deck ventilator, planting bed, plaza fountain, engine-room control stand, chain heap, stowed anchor), 1650; with the fruit pass's crater drylands and north-west bay fruit, 1655; with the 19 Ancient interior pieces the Ancients kit's intact buildings are furnished with (pod chair, desk, shelving, archive wall, galley, cold pantry, lockers, wardrobe, couch, low table, sleeping platform, crew bunk, ward bed, lab bench, server rack, weapon rack, wall screen, reception counter, cargo pods), 1674). The poor tier is the two generic sets:
 a culture's poor buildings pull from them through `kits/interiors`' culture chain
 (`IX.CULTURE_FAMILY`), and the placer tries a culture's in-band pieces before its other tiers.
 The sheet, the hover inspector (T) and the interiors adapter all carry the tier.
@@ -376,6 +474,17 @@ sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<cu
 | ancient | ancients_workstation (wall) |
 | voth | tavern_table, tavern_bench, tavern_stool, tavern_bar, offering_table, candle_stand, prayer_mat, lantern_bracket (wall); tableware, candles (surface) |
 | beast-rider | br_tool_set (surface) |
+| reedlake | bar, jar_rack, long_bench, long_table (common); sleeping_mat (poor): the Mungo pass, for Reed's Local and the Reed Lake interiors set |
+| eastabyss | abyss_reed_bundles, abyss_brick_stack, abyss_lime_sacks (outdoor): the Mungo pass, for the Builders' yard |
+| scyvoi | the tent furnishings the Scyvoi building kit places by key: floor_cushion, bolster, toshak (wall), pouf, bedding_stack (wall), tray_table, low_round_table, painted_chest, floor_lantern, hanging_lantern and glass_chandelier (ceiling; the chandelier is court), tea_set (surface), samovar, ger_stove (flue 2.6 m or 3.6 m), fire_pit, brazier, smoke_bowl, cauldron (outdoor), saddle_rack, tack_pegs (wall), lance_stand, water_skins, fruit_baskets (fire-fruit, a placeholder until the crater-drylands biome's fruit lands), supply_bales, wall_felt (wall, a painted shyrdak), felt_rug_round, bellows (job smithing), tying_post and tying_boulder (outdoor, type `pen`), spirit_pole (outdoor statue), shaman_drum (type `shrine`), bone_rack (wall art), herb_bundles (ceiling, type `supply`) |
+| zeijani | (2026-10-07, `kits/zeijani`) 43 loose pieces besides the three FK sets: home (fleece bed, water olla, jar cradle, tuff stool and bench); brewing and fungi (mash tun, fermenting crocks, alecap spawn rack, drying trays, basket of alecaps); the alchemist (retort bench, specimen shelf, mortar with Ranj resin, glow-culture jar); light (glow-fungus basin, slipper lamp, hanging copper lamp: lights as data); crafts (mealing bins, dye vat, yarn rack, kick wheel, pot stack, knapping bench, obsidian mirror, rope rack and coils, mason's banker, lampwright's and leatherworker's benches); the sacred (spirit masks: a Hidden One, the Lamp Mother, the Serpent; ancestor figurines, prayer sticks, cloud-terrace altar, Ranj censer, drum, kiva ladder, staffs); the dead (ossuary box, mummy bundle, stacked bones, funerary lamp); the scouts' map table; the cistern's dipping sweep. Carved benches, bed shelves, niches and the kiva's great incense burner are the kit's fixtures, not furniture |
+| scyvoi | the hidemaker's tanning set (2026-10-06, job tanning): hide_frame (a hide laced in a stretching frame; goat or salamander), fleshing_beam, tanning_vat (bark liquor or lime), hide_stack, drying_line, smoking_frame (hides sewn round a smudge, lit). Hides are flat F.pillow ovals |
+| scyvoi | the cartwright's set (2026-10-07, job carpentry): `scyvoi_wheel_jig`, `scyvoi_wheel_stack`, `scyvoi_spoke_rack`, `scyvoi_cart_frame` (a cart bed on trestles, no wheels yet), `scyvoi_shaving_horse`, `scyvoi_tyre_fire` (an iron tyre glowing on a ring fire), `scyvoi_axle_bench`; the `SCYVOI_CART` helpers draw the 1.5 m ten-spoke wheels |
+| nomad | trade roles (`nomad_trade_*`, 20) and the Desert Nomads kit's tent furnishings (2026-10-07), muted (sadu rust, black, cream, ochre, a little indigo; camel and goat browns; dull brass): majlis_mattress (wall), floor_cushion, arm_cushion (masnad), pouf, camel_saddle_seat, tray_table, low_table, tea_set (surface), coffee_set, hookah, hookah_grand (court) |
+| nomad | storage and light: studded_chest, bedding_stack (wall), saddle_bags, grain_sacks, water_skins, water_jars, date_baskets, supply_bales; floor_lantern, hanging_lantern and lantern_cluster (ceiling; the cluster court), oil_lamp; textiles and fire: kilim (Rugs page), sadu_hanging (wall), tent_divider (the qata), mashrabiya_screen; coffee_hearth, brazier, saj_oven (outdoor), incense_burner |
+| nomad | riders, work, the hidemaker and the seer: camel, horse and lizard saddle racks, tack_pegs (wall), spear_rack, hobble_post and tying_stone (outdoor, type pen); ground_loom, quern, butter_churn, spindle_basket, bellows (smithing); hide_frame, fleshing_beam, tanning_vat, hide_stack, drying_line (tanning); sand_table, amulet_strings (ceiling), star_chart, astrolabe. Court tier cloth muted |
+| ashnomad | the Ash Nomads kit's tent and camp furnishings (2026-10-07): floor_cushion, bolster, sleeping_mat (wall), carapace_stool, chitin_bench, carapace_table, mess_table and serving_counter (the mess hall), brew_set (surface), cookpot, chitin_chest, bedding_stack (wall), saddle_bags, grub_jars, egg_basket, water_gourds, supply_bales; paper_lantern, hanging_lantern (ceiling), chitin_lamp, lantern_pole (outdoor); hanging_banner (ceiling), ash_screen, rug, wall_hanging (wall); fire_pit, brazier, smoke_rack (outdoor) |
+| ashnomad | riders, herders, crafts, the shaman and the court: beetle_saddle_rack, tack_pegs (wall), spear_rack, tying_post and grub_trough (outdoor, type pen); chitin_bench_work, plate_stack, carapace_stack (carpentry), ground_loom, hide_frame, fleshing_beam, tanning_vat, hide_stack, drying_line (tanning), bellows; spirit_pole, shaman_drum, bone_rack, herb_bundles (ceiling), smoke_bowl, skull_shrine; chief_seat, chief_divan, war_standard. Patterns painted by ASHNOMAD_FX: step-frets and Nazca figures in red and yellow on black |
 
 ### Trades and households (the 2026-10 interiors-sets pass)
 
@@ -426,7 +535,8 @@ harvested from `settlements/yuni/src/64-interiors.js` "NEW PIECES": rope_bed, ca
 cooking_hearth, wall_shelves, shop_counter, tavern_table, workbench, grain_sacks, carpet,
 clay_pots, rug_pile; from `63-furniture.js`: reed_mat_bed, hearth_stones, panel_table. The
 rest are new. Loose items that overran a Yuni piece's height (jars on the counter, a jug
-on the tavern table) became the surface pieces.
+on the tavern table) became the surface pieces. Re-harvested 2026-10-05: the interiors pass's lidded_basket,
+food_pot, sleeping_mat, grain_bin, reed_mat and kilim (`yuni_poor_*`, `yuni_common_*`).
 
 The frame convention and geometry-kit caveats are in the engine's header comment.
 Read it before writing a piece.

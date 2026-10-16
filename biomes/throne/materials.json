@@ -1,0 +1,1368 @@
+{
+ "build": "throne",
+ "note": "The Throne kit's adapter onto the material library (core/materials/PLAN.md, The Throne): the owner's textures of 2026-10-06 (tools/textures/batches/owner-2026-10-throne*.json). leaf.* and card.* replace or add to the kit's procedural cards when the page carries this pack (the showcase; an open world loads the kit without it and keeps the procedural ones); the kit cuts single cells from the 3 x 3 and 4 x 4 sheets. bark.* replace the bark buckets' canvases (keep 0 under the species' vertex colours) except bark.molten, whose cracks keep their colour and glow at night. ground.* are the ground's eleven library layers, blended per vertex (84-host-ground.js) by the flow age, the plume, the vents and the acid. Run python3 tools/textures/pack.py biomes/throne after any change, then python3 build.py. ground.scoria is the young cones' cinder, ground.ripples the deepest ash under the plume; stone.pumice the boulders and stones; card.tendril the ash creepers' rosettes. Station 4 (the geyser isle): ground.sinter is the geyser basin's sinter flats (the popcorn clay's nodules read as geyserite), ground.rim the hot pools' scalloped rims and the runoff terraces, ground.mud the mud pots' field, ground.canopy the forest seen from above on the isle's far slopes (the skirt past the map). bark.palm (palm rings) is the palm frill tree's trunk, bark.mangrove (ghostwood's lenticels, greyed by the species colour) the hyper-mangrove's; card.kelp0-2 the isle's kelp, standing in the shallows and cast flat on the sand as wrack. bark.coir (the owner's, full colour) is the coconut palm's trunk; card.frond.coconut its fronds (three across the sheet, cut to thirds); card.seaweed the isle's seaweed in the shallows and its wrack on the sand. Station 5 (the cloud forest): card.mosshang (card.moss.hanging) the moss curtains on the elfin trees, card.ferngreen the ferns of its floor, card.weeper the veil trees' glowing veils, bark.elfin (the owner's bark.mossy, full colour) the elfin trees, ground.rockwet the ravine's wet walls, ground.gravel its stream beds, ground.moss3 the moss over its rocks. Station 6 (the savanna): ground.savgrass (ground.withered_grass) the tall grass seen from afar, ground.csand (ground.gravelly_sand) the lahar channels' sand; card.grassdry (card.grass.dry) the tall grass tussocks, card.flowerspike the flush of flowers after a fire. card.aloeflower (the owner's card.flower.staraloe; its upright six) the star aloes' blossoms. cap.funnel (the owner's organic.funnel.trumpet, radial, mapped from above) the trumpet trees' funnels. Station 7 (the ash desert): ground.rhyo (rock.sandstone.navajo, its cross-bedded bands) the striped rhyolite hills, ground.matfloor (ground.mycelium.crimson) the mat on the CO2 hollow's floor. Station 8 (vent country): ground.sinter is now the owner's own sinter (it was ground.clay.popcorn standing in), here and on the geyser isle; ground.thermal (ground.mat.thermal) the mats in the hot pools' runoff; bark.brimstone the brimstone candelabras; card.reedbrim (card.reed.brimstone, its nine stands) the brimstone reeds. Station 9 (the glacier): ground.snow and ground.snow2 (ground.snow011, ground.snow015), ground.moraine (rock.rocks013), ground.cliff (rock.rock_face); ground.ice (the owner's ice.glacier) the glacier's surface, ground.iceclear (ice.clear) its seracs, icebergs, ice towers, ice caves and arch. cap.gillcoral (the owner's organic.cap.gillcoral, radial, mapped from above) the gill-coral trees' caps.",
+ "size": 512,
+ "families": {
+  "leaf.needle": {
+   "lib": "card.pine",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.fern": {
+   "lib": "card.fern",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.broom": {
+   "lib": "card.broom",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.shelf": {
+   "lib": "card.shelf.glow",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.glowshroom": {
+   "lib": "card.mushroom.glow",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.alienflora": {
+   "lib": "card.alienflora.glow",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.carnivore": {
+   "lib": "card.flower.carnivorous",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.specimens": {
+   "lib": "card.fungus.specimens",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.drip": {
+   "lib": "card.fungus.drip",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.lavaleaf": {
+   "lib": "card.lavaleaf",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.distressed": {
+   "lib": "card.leaf.distressed",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.succulent": {
+   "lib": "card.succulent.spotted",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "bark.charcoal": {
+   "lib": "bark.lava.charcoal",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.armored": {
+   "lib": "bark.armored",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.charred": {
+   "lib": "bark.lava.charred",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.molten": {
+   "lib": "bark.lava.molten",
+   "scale": [
+    1.4,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "wood.sulphur": {
+   "lib": "wood.sulphur",
+   "scale": [
+    1.0,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.lava": {
+   "lib": "ground.lava.aa",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.veins": {
+   "lib": "ground.lava.veins",
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.ash": {
+   "lib": "ground.ash.gravel",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.mycelium": {
+   "lib": "ground.ash.mycelium",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.ember": {
+   "lib": "ground.grass.ember",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.shoulder": {
+   "lib": "ground.sparse_grass",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.sulphur": {
+   "lib": "ground.sulphur",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.tufa": {
+   "lib": "stone.travertine.tufa",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.glowcarpet": {
+   "lib": "ground.mushroom.glow",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.scoria": {
+   "lib": "ground.scoria",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.ripples": {
+   "lib": "ground.ash.ripples",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "stone.pumice": {
+   "lib": "stone.pumice",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "card.tendril": {
+   "lib": "card.tendril",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.moltensucc": {
+   "lib": "card.succulent.molten",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.moss": {
+   "lib": "card.moss.carnivorous",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.carnplants": {
+   "lib": "card.carnivore.plants",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.coral": {
+   "lib": "card.flora.coral",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.mushalien": {
+   "lib": "card.mushroom.alien",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "bark.honeycomb": {
+   "lib": "bark.honeycomb",
+   "scale": [
+    1.4,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.twisted": {
+   "lib": "bark.twisted.red",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "flesh.porous": {
+   "lib": "bark.sulphur.porous",
+   "scale": [
+    1.2,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "cap.disc": {
+   "lib": "organic.cap.orange",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.75,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "cap.tier": {
+   "lib": "organic.cap.glossy",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "cap.bell": {
+   "lib": "organic.cap.porous",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "pitcher.cells": {
+   "lib": "organic.flesh.cells",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.25,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "card.trumpets": {
+   "lib": "card.fungus.trumpets",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.treefern": {
+   "lib": "card.treefern",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.bromeliad": {
+   "lib": "card.bromeliad",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.screwpine": {
+   "lib": "card.screwpine",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.mossclump": {
+   "lib": "card.moss",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "ground.wetmoss": {
+   "lib": "ground.moss002",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.laterite": {
+   "lib": "ground.redsoil",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.litter": {
+   "lib": "leaf.forest_leaves_04",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.42
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "card.ruff": {
+   "lib": "card.frond.frill",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "bark.frillcol": {
+   "lib": "bark.wavy.slate",
+   "scale": [
+    1.6,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "card.fractal": {
+   "lib": "card.frond.fractal",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.petal": {
+   "lib": "card.petal.coral",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.angel": {
+   "lib": "card.flower.angeltrumpet",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.spiderlily": {
+   "lib": "card.flower.spiderlily",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "ground.sandblack": {
+   "lib": "ground.sand.black",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.olivine": {
+   "lib": "ground.olivine",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.lichenrock": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.burnt": {
+   "lib": "ground.burn",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.packed": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.ruts": {
+   "lib": "ground.road.ruts",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.sinter": {
+   "lib": "ground.sinter",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.rim": {
+   "lib": "ground.travertine.acid",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "mapOnly": true
+  },
+  "ground.mud": {
+   "lib": "ground.brown_mud_02",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.0,
+   "specular": 0.4,
+   "mapOnly": true
+  },
+  "ground.canopy": {
+   "lib": "ground.jungle.canopy",
+   "scale": [
+    36.0,
+    36.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.palm": {
+   "lib": "bark.palm_tree_bark",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.mangrove": {
+   "lib": "bark.ghostwood",
+   "scale": [
+    1.6,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "card.kelp0": {
+   "lib": "card.kelp.1",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp1": {
+   "lib": "card.kelp.4",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp2": {
+   "lib": "card.kelp.7",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "roof.thatch": {
+   "lib": "roof.thatch",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "bark.coir": {
+   "lib": "bark.coir",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "card.seaweed": {
+   "lib": "card.seaweed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3
+  },
+  "card.frond.coconut": {
+   "lib": "card.frond.coconut",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "ground.rockwet": {
+   "lib": "rock.wet.dark",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "specular": 0.35,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravel042",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.moss3": {
+   "lib": "ground.moss003",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "bark.elfin": {
+   "lib": "bark.mossy",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "card.mosshang": {
+   "lib": "card.moss.hanging",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 1024
+  },
+  "card.ferngreen": {
+   "lib": "card.fern.green",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.weeper": {
+   "lib": "card.weeper",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "ground.savgrass": {
+   "lib": "ground.withered_grass",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.45,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "ground.csand": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.4,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "card.grassdry": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.15
+  },
+  "card.flowerspike": {
+   "lib": "card.flowerspike",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.15
+  },
+  "card.aloeflower": {
+   "lib": "card.flower.staraloe",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "cap.funnel": {
+   "lib": "organic.funnel.trumpet",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.35,
+   "mapOnly": true
+  },
+  "ground.rhyo": {
+   "lib": "rock.sandstone.navajo",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "ground.matfloor": {
+   "lib": "ground.mycelium.crimson",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.snow": {
+   "lib": "ground.snow011",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.snow2": {
+   "lib": "ground.snow015",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.moraine": {
+   "lib": "rock.rocks013",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.cliff": {
+   "lib": "rock.rock_face",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.thermal": {
+   "lib": "ground.mat.thermal",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.ice": {
+   "lib": "ice.glacier",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.iceclear": {
+   "lib": "ice.clear",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "bark.brimstone": {
+   "lib": "bark.brimstone",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "card.reedbrim": {
+   "lib": "card.reed.brimstone",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "cap.gillcoral": {
+   "lib": "organic.cap.gillcoral",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.35,
+   "mapOnly": true
+  }
+ }
+}

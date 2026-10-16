@@ -52,7 +52,7 @@
     opt = opt || {};
     const keep = opt.lights === 'keep';
     let cache = null;
-    const lightCache = {}, hasLights = {};
+    const lightCache = {}, hasLights = {}, tops = {};
     function probe(key, v, seed, wealth) {      /* build once at the origin, read its lights, throw it away */
       const g = buildFurn(key, 0, 0, 0, { variant: v, seed: seed, y: 0, wealth: wealth });
       if (!g) return [];
@@ -73,11 +73,20 @@
           return { key: A.key, name: A.name, culture: A.culture, type: A.type, setting: A.setting, rooms: A.rooms.slice(),
             anchor: A.anchor || 'floor', clearance: A.clearance || {},
             tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined, role: roleOf(A),
-            variants: variantsOf(A) };
+            variants: variantsOf(A), surface: A.surface !== false, stretch: !!A.stretch };
         });
         return cache;
       },
       dims: function (key, v) { return entryDims(FURN_BY_KEY[key], v); },
+      /* a host's surface height (IX.measureTop, runtime-adapter.js; built once at the origin, thrown away), or null */
+      top: function (key, v) {
+        const k = key + '|' + (v | 0);if (k in tops) return tops[k];
+        if (!IX.measureTop) return tops[k] = entryDims(FURN_BY_KEY[key], v).h;
+        const g = buildFurn(key, 0, 0, 0, { variant: v | 0, seed: 1, y: 0, wealth: 0.5 });if (!g) return tops[k] = null;
+        stripLights(g);const t = IX.measureTop(g, entryDims(FURN_BY_KEY[key], v));
+        scene.remove(g);const i = INSTANCES.indexOf(g); if (i >= 0) INSTANCES.splice(i, 1);g.traverse(function (o) { if (o.geometry) o.geometry.dispose(); });
+        return tops[k] = t;
+      },
       anchorY: function (key, v, at) { return furnAnchorY(FURN_BY_KEY[key], v, at); },
       lights: function (key, v, o) {
         o = o || {};
@@ -90,7 +99,7 @@
         return lightCache[ck];
       },
       build: function (p, room) {
-        const g = buildFurn(p.key, p.x, p.z, p.ry, { variant: p.variant, seed: p.seed, y: p.y, wealth: room ? room.wealth : 0.5 });
+        const g = buildFurn(p.key, p.x, p.z, p.ry, { variant: p.variant, seed: p.seed, y: p.y, wealth: room ? room.wealth : 0.5, span: p.span || 0 });
         if (g) {
           g.userData.interior = { room: room ? room.id : null, placement: p.id, need: p.need, role: p.role };
           if (!keep) g.userData.interior.strippedLights = stripLights(g).length;

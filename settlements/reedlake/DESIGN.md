@@ -42,6 +42,7 @@ poles, **chakana discs** as finials and gate signs (`hRLChakana`), the painted *
 | Farms | `rl_farmhouse` · `rl_farm` floating gardens · `rl_pen` · `rl_granary` · `rl_fishfarm` fish weir and duck run |
 | Island platforms | `rl_island_a` small round · `rl_island_b` oval · `rl_island_c` large with a cove · `rl_island_d` long · `rl_island_e` ring with a lagoon |
 | Floating village | `rl_village` — six islands, the kit on them, pontoon bridges, boats, the gardens and the weir on the open water |
+| Hospitality | `rl_tavern` **Reed's Local** — the drinking hall: a great mudhif (L 28, span 11.5, crown 9.4) with built-in mat benches along both walls and a cook-fire on a mud slab, a smaller mudhif joined at its right for the kitchen and the store, a mat terrace, and a covered landing on bundle pontoons out over the water (the def's `landing: 6.5` m past the +z edge) where the canoes tie up, under the woven sign REED'S LOCAL |
 
 ## Rules
 
@@ -51,4 +52,7 @@ poles, **chakana discs** as finials and gate signs (`hRLChakana`), the painted *
 * **Fire on mud.** Every hearth, brazier and forge sits on a clay slab (`hnRLHearth`, `hnRLBrazier`).
 * **No electric light** — fire-cages and hearths only. `lit:false` on every def.
 * **Tags**: `culture: 'reed-lake'`, `kit: 'reedlake'`, `type`, `wealth`, `lit`; every instance registers through `vnReg`.
-* Seeds 25000–25999 (dwellings 250xx, halls 251xx, work 252xx, farms 253xx, islands 254xx, village 255xx, scene 25990).
+* Seeds 25000–25999 (dwellings 250xx, halls 251xx, work 252xx, farms 253xx, islands 254xx, village 255xx, the tavern 25600–25649, scene 25990).
+* **Interiors are data**, in `kits/interiors/sets/reedlake.js` (one item per def, or a `skip` with the reason). A builder
+  draws structure (floors, ribs, walls, fixed benches, fire slabs); the set furnishes the rooms from the catalog's
+  `reedlake` furniture. Outdoor dressing (stock, nets, boats) stays kit items.

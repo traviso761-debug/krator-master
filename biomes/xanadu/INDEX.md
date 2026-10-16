@@ -11,22 +11,25 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 18 | the map (46); the sacred river (100); terrain (133); the climate fields (151); the field cache (18 m lattice; terrainH stays ex (174); the host binding (182) |
-| `46-host-ground.js` | 11 | the lake (67); the river (93) |
-| `50-biome-xanadu-species.js` | 53 **big** | THE LAKE COLOUR (21); the tree species (74); leaf and flower textures (183); an iridescent bark (shared hook; the Rift kit's) (331); bark textures (344); geometries local to this biome (393); materials (468); instanced items (525) |
-| `55-biome-xanadu-trees.js` | 66 **big** | zones from the fields (17); colour (34); polyline helpers (56); keep-clear between trees (72); foliage helpers (79); the builders (109); impostors (the far canopy) (502); the pass (534); one tree at a point (additive, for a world's gar (622) |
-| `60-biome-xanadu-floor.js` | 19 | small plants (34); the zone planters (99); the pass (166) |
+| `46-host-ground.js` | 11 | the lake (71); the river (97) |
+| `50-biome-xanadu-species.js` | 60 **big** | THE LAKE COLOUR (21); the tree species (74); harvest (biomes/FRUIT.md) (184); leaf and flower textures (247); an iridescent bark (395); bark textures (398); geometries local to this biome (447); materials (540); instanced items (600) |
+| `55-biome-xanadu-trees.js` | 67 **big** | zones from the fields (17); colour (34); polyline helpers (56); keep-clear between trees (72); foliage helpers (79); the builders (109); impostors (the far canopy) (506); the pass (538); one tree at a point (additive, for a world's gar (626) |
+| `60-biome-xanadu-floor.js` | 20 | small plants (34); the zone planters (99); the pass (166) |
 | `65-biome-xanadu-dress.js` | 5 |  |
 | `70-biome-xanadu.js` | <1 |  |
 | `82-host-sky.js` | 12 | the Vale painter (6) |
 | `85-host-dome.js` | 4 |  |
 | `86-host-fountain.js` | 2 |  |
 | `88-host-build.js` | 1 |  |
-| `90-host-camera.js` | 9 |  |
-| `91-host-probe.js` | 3 |  |
+| `99-host-take.js` | 11 | the inspector's words (44); the probe's budgets and the kit's own checks (ve (57); the host's own checks (verify.py runs them), eac (65); the page, handed to the host (89) |
 | `99-tail.html` | <1 |  |

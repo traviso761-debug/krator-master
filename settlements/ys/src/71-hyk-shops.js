@@ -18,10 +18,7 @@ function hykShopPodAt(P,pod,cx,cz,th,y,out){const b=P.b,e1=P.e1||1,sq=P.sq||1;le
  out=out||0;return {p:[p[0]+cx+n.x*out,p[1]+n.y*out,p[2]+cz+n.z*out],n:[n.x,n.y,n.z]};}
 // the same on a lathe L (its own azimuth runs from +x; ours from +z toward +x), on the modulated surface (lobes, flutes,
 // rings, noise), not the nominal radius, so a ledge hinged on a fluted cone meets it
-function hykShopLatheAt(L,th,y,out){const tl=Math.PI/2-th;const yl=y-(L.yBase||0);const q=hykLatheAt(L,tl,yl);let k=1;const u=((tl/TAU)%1+1)%1;
- if(L.lobes)k*=1+L.lobes.amp*Math.cos(L.lobes.n*tl+(L.lobes.ph||0));if(L.flute)k*=1+L.flute.amp*Math.pow(.5+.5*Math.cos(L.flute.n*tl+(L.twist||0)*yl),L.flute.sharp||2);
- if(L.rings)k*=1+L.rings.amp*Math.sin(yl/L.H*L.rings.n*TAU);if(L.noise)k*=1+L.noise.amp*(fbm(u*(L.noise.su||3)+(L.noise.seed||0),yl/(L.noise.sv||2),L.noise.seed||1,2)-.5)*2;
- const r=L.rFn(yl)*k;const p=[(L.cx||0)+r*Math.cos(tl),q.p[1],(L.cz||0)+r*Math.sin(tl)];out=out||0;return {p:[p[0]+q.n[0]*out,p[1]+q.n[1]*out,p[2]+q.n[2]*out],n:q.n};}
+function hykShopLatheAt(L,th,y,out){const q=hykLatheAt(L,Math.PI/2-th,y-(L.yBase||0));out=out||0;return {p:[q.p[0]+q.n[0]*out,q.p[1]+q.n[1]*out,q.p[2]+q.n[2]*out],n:q.n};}   /* on the skin: 61's hykLatheAt */
 // the horizontal radius factor of a pod at local height y (0..1 of a / c), for floors and room polygons
 function hykShopPodK(P,y){const sq=P.sq||1,e1=P.e1||1;let dy=y-P.cy;if(dy<0)dy/=sq;const t=Math.abs(dy)/P.b;if(t>=1)return 0;return Math.pow(1-Math.pow(t,2/e1),e1/2);}
 // a scallop fan hinged on a shell: hinge(t), t in -1..1, a point on the shell; dir(t) the outward horizontal direction

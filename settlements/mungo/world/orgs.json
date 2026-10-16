@@ -1,0 +1,15 @@
+[
+{"id":"abyss_caravans","name":"Abyssal salt caravans","faction":"mungo","kind":"caravan company","resident":false},
+{"id":"geomancers_mungo","name":"The Geomancers' chapter at Mungo","faction":"geomancers","kind":"guild chapter"},
+{"id":"iziz_traders","name":"Izani traders","faction":"iziz","kind":"caravan company","resident":false},
+{"id":"monks_mungo","name":"Monks of History on the road","faction":"monks_of_history","kind":"pilgrim caravan","resident":false},
+{"id":"mungo_headman","name":"The headman's household","faction":"mungo","kind":"household"},
+{"id":"mungo_reedfolk","name":"The reed folk of Mungo","faction":"mungo","kind":"people","_note":"LORE 6.10, the lake people: cousins of the abyssal culture"},
+{"id":"mungo_shorefolk","name":"The shore folk of Mungo","faction":"mungo","kind":"people","_note":"LORE 6.9, the abyssal people"},
+{"id":"mungo_traders","name":"The keepers of Mungo's shops and inns","faction":"mungo","kind":"trade"},
+{"id":"mungo_watch","name":"The city watch","faction":"mungo","kind":"watch"},
+{"id":"nomad_caravans","name":"Nomad caravans","faction":"eastern_nomads","kind":"caravan company","resident":false},
+{"id":"nomad_riders","name":"Nomad lizard riders","faction":"eastern_nomads","kind":"clan riders","resident":false},
+{"id":"yuni_caravans","name":"Yuni caravan houses","faction":"yuni","kind":"caravan company","resident":false},
+{"id":"yuni_residents","name":"The Yuni households by the chapterhouse","faction":"yuni","kind":"households"}
+]

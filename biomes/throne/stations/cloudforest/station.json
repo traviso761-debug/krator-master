@@ -1,0 +1,12 @@
+{
+ "name": "The cloud forest (station 5): the windward cloud belt, its elfin woods, veil trees, the ravine of the falls, the ridge the cloud pours over, the natives' trail and cairns",
+ "out": "throne-cloud.html",
+ "core": [],
+ "atmos": [
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-3-particles.js",
+  "89-atmos-4-weather.js",
+  "89-atmos-9-host.js"
+ ]
+}

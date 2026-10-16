@@ -1,0 +1,15 @@
+[
+{"id":"acolyte","org":"aquifer_wardens","count":24,"homes":["shrine"],"deal":"round","sched":[[0,"SLEEP"],[4,"WORSHIP"],[8,"FETCH_WATER"],[10,"CRAFT"],[18,"WORSHIP"],[21,"SLEEP"]]},
+{"id":"artisan","org":"shade_clans","count":140,"homes":["petra","pueblo","cliff-sw","cliff-se"],"deal":"round","sched":[[0,"SLEEP"],[6,"CRAFT"],[12,"EAT"],[13,"CRAFT"],[18,"SOCIALIZE"],[21,"SLEEP"]]},
+{"id":"caravaneer","org":"caravaneers","count":60,"homes":["khan"],"deal":"round","sched":[[0,"SLEEP"],[6,"WATER_CAMELS"],[7,"TRADE"],[12,"EAT"],[13,"REST"],[16,"TRADE"],[20,"EAT"],[21,"SOCIALIZE"],[23,"SLEEP"]],"_note":"visitors (their org is not resident) lodged at the Khan, made with the residents: Shade counts them among its 1,060 people and in every hour's capacity. Not SIM-transient, which is for people an event brings"},
+{"id":"child","org":"shade_clans","count":170,"homes":["petra","pueblo","tents","cliff-nw","cliff-se"],"deal":"round","sched":[[0,"SLEEP"],[7,"EAT"],[8,"PLAY"],[12,"EAT"],[13,"PLAY"],[19,"EAT"],[20,"SLEEP"]]},
+{"id":"elder","org":"shade_clans","count":80,"homes":["petra","pueblo","cliff-se","cliff-en"],"deal":"round","sched":[[0,"SLEEP"],[6,"WORSHIP"],[8,"SOCIALIZE"],[12,"REST"],[16,"SOCIALIZE"],[19,"EAT"],[21,"SLEEP"]]},
+{"id":"farmer","org":"shade_clans","count":300,"homes":["petra","pueblo","tents","cliff-nw","cliff-se"],"deal":"round","sched":[[0,"SLEEP"],[5,"FARM"],[11,"REST"],[15,"FARM"],[19,"EAT"],[20,"SOCIALIZE"],[22,"SLEEP"]]},
+{"id":"guard_day","org":"canyon_guard","count":30,"homes":["pueblo"],"deal":"round","sched":[[0,"SLEEP"],[6,"PATROL"],[18,"EAT"],[19,"SOCIALIZE"],[22,"SLEEP"]]},
+{"id":"guard_night","org":"canyon_guard","count":30,"homes":["tents"],"deal":"round","sched":[[0,"PATROL"],[6,"EAT"],[7,"SLEEP"],[15,"REST"],[17,"EAT"],[18,"PATROL"]]},
+{"id":"herder","org":"shade_clans","count":90,"homes":["tents"],"deal":"round","sched":[[0,"SLEEP"],[5,"HERD"],[12,"REST"],[14,"HERD"],[19,"EAT"],[21,"SLEEP"]]},
+{"id":"priest","org":"aquifer_wardens","count":6,"homes":["shrine"],"deal":"round","sched":[[0,"SLEEP"],[4,"WORSHIP"],[12,"TRADE"],[14,"REST"],[18,"WORSHIP"],[21,"SLEEP"]]},
+{"id":"raider","org":"dune_raiders","name":"Dune raider","transient":true,"sched":[[0,"REST"]],"_note":"made only by the raider convoy (events.json), one per camel; its itinerary moves it, so the schedule is never read"},
+{"id":"shopkeeper","org":"shade_clans","count":90,"homes":["pueblo","petra"],"deal":"round","sched":[[0,"SLEEP"],[6,"TRADE"],[12,"EAT"],[13,"REST"],[16,"TRADE"],[20,"SOCIALIZE"],[22,"SLEEP"]]},
+{"id":"water_carrier","org":"shade_clans","count":40,"homes":["pueblo","tents"],"deal":"round","sched":[[0,"SLEEP"],[5,"FETCH_WATER"],[10,"REST"],[16,"FETCH_WATER"],[19,"EAT"],[21,"SLEEP"]]}
+]

@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.flower.spiderlily",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-flower-spiderlily.webp",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+  "reuse": "nine red spider lilies seen from above (3 x 3): a red bloom on any floor, a funerary flower",
+  "sha1": "d155949bcc9ae9c08caeddd10d8768c06afa37ed"
+ }
+}

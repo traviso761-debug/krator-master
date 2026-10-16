@@ -90,6 +90,67 @@ CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (co
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+# the material records and the library loader (core/materials/record; core/README.md). Not 24-tex-def.js: it declares a
+# global TEX, and this lineage's TEX is the canvas-texture table (core/materials/20-textures.js).
+RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
+# core/rand (KRAND: the tags' uid is its hash) and core/tags (the registry REG is read into: src/96t-screamers-tags.js), for a
+# target without the Post-Apoc bundle: the village's bundle brings its own copy and sets window.KTAGS itself (70e)
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[0].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks (they replace
+# the old 93-polytool.js), pictures, minimap and cutaway, with core/clock and core/minimap, as Iziz takes them. Not core/space:
+# the vendored hyperjungle's scatter takes another path when it is on the page (settlements/iziz/KNOWN_ISSUES.md, 2026-10-13).
+# Not core/edits: no editor world yet.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+TEX_DIR = os.path.join(HERE, 'tex')                 # the library pack: tools/textures/pack.py writes it from materials.json
+MATLIB_PACK = '72b-matlib-pack.js'                  # GENERATED (matlib_pack()), never written to src/; 72c-matlib.js applies it
+# GENERATED, never written to src/ (virtual_bodies()): the catalog's furniture and the interiors core with the Post-Apoc
+# interior set (70d: globals KratorFurniture, KratorInteriors, ROOM, furnishRoom), then the Post-Apoc set itself (70e: the
+# global KratorPostApoc, kits/post-apoc/apoc_bundle.py). 71a-apoc-homes.js places the salvage homes with it. All three are
+# closures with their own PRNG streams: the build rules (reseed, shared names) do not apply to them.
+FURN_CULTURES = ['screamer', 'scrap', 'beast-rider', 'post-apoc', 'generic']   # 'screamer' and its fallback chain (kits/interiors IX.CULTURE_FAMILY)
+INTERIOR_SETS = ['post-apoc']
+APOC_DEFS = ['40-dw-small.js', '42-lg-dwell.js']   # the small and large dwellings
+VIRTUAL = {'70d-furniture-bundle.js', '70e-apoc-bundle.js'}
+
+
+def virtual_bodies():
+    for d in (('kits', 'catalog'), ('kits', 'interiors'), ('kits', 'post-apoc')):
+        sys.path.insert(0, os.path.join(ROOT, *d))
+    import furniture_bundle, kit_bundle, apoc_bundle
+    return {'70d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS),
+            '70e-apoc-bundle.js': apoc_bundle.bundle(APOC_DEFS)}
+
+
+def matlib_pack(empty=False):
+    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack('screamers', ...)),
+    with each family's MAT keys and its detail flag from materials.json. It reads the committed tex/ files only, never
+    the library or an image encoder, so the build stays deterministic."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if empty or not os.path.isfile(pj):
+        return ("/* no tex/pack.json: the Hexahedron runs on its procedural textures */\n"
+                "KMAT.pack('screamers', {});\nconst SMLIB_FAMILIES = [];\n")
+    pack = json.load(open(pj, encoding='utf-8'))
+    cfg = json.load(open(os.path.join(HERE, 'materials.json'), encoding='utf-8'))['families']
+    out = []
+    for fam in sorted(pack['families']):
+        e, c = pack['families'][fam], cfg.get(fam, {})
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
+             'tint': e['tint']['keep'], 'mean': e['tint']['mean'], 'mat': c.get('mat', []), 'detail': bool(c.get('detail')),
+             'table': c.get('table', 'MAT'), 'color': c.get('color')}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set,\n'
+            '   its processed maps and the MAT keys it dresses. Do not edit; edit materials.json and repack. */\n'
+            "KMAT.pack('screamers', {\n" + ',\n'.join(out) + '\n});\n'
+            'const SMLIB_FAMILIES = %s;\n' % json.dumps(sorted(pack['families'])))
 
 
 def srcpath(f, base=None):
@@ -118,13 +179,18 @@ DETERMINISTIC = {
     # planting functions draw from the PRNG only when a builder calls them, so
     # they run inside that builder's own reseeded stream.
     '71b-flora.js',
-    '91-probe.js', '92-camera.js', '70c-furniture.js', '72a-wind.js', '93-polytool.js', '95-pathviz.js', '99-tail.html',
+    '23-mat-record.js', '25-matlib-host.js', MATLIB_PACK, '72c-matlib.js',   # the material library (no rng())
+    '71a-apoc-homes.js',   # the salvage homes: sited on a fixed ring, built by KratorPostApoc on its own stream (no rng())
+    '91-probe.js', '92-camera.js', '70c-furniture.js', '72a-wind.js', '95-pathviz.js', '99-tail.html',
+    '99-start.js', '96t-screamers-tags.js',   # the take (core/host); REG into core/tags (reads only)
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
 # do not add one without an accompanying KNOWN_ISSUES entry.
+DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES)   # core/host, core/rand, core/tags: no rng()
+
 SEED_COLLISION_EXCEPTIONS = {
     ('48-library.js', '76-campus.js'),   # both claim 9800/9801 - see KNOWN_ISSUES.md
     ('60-gate.js', '87-mega.js'),        # 9995+d vs 9996+d overlap  - see KNOWN_ISSUES.md
@@ -172,7 +238,7 @@ def check(order, bodies):
         # local helper; the biome tree's own build.py greps them for THIS kit's
         # names instead. Do not edit a biome fragment here -- edit it in the
         # biome tree and copy it back, or the two drift.
-        if '-biome-' in f:
+        if '-biome-' in f or f in VIRTUAL or f in CORE_HOST:   # core/host: each file one IIFE (KHOST)
             continue
         body = bodies[f]
 
@@ -209,7 +275,7 @@ def check(order, bodies):
     # 2. shared-scope collisions
     decl = {}
     for f in order:
-        if not f.endswith('.js') or '-biome-' in f:      # biome fragments: closures, see above
+        if not f.endswith('.js') or '-biome-' in f or f in VIRTUAL or f in CORE_HOST:      # biome fragments, bundles, core/host: closures, see above
             continue
         for rx in (RE_DECL, RE_DECL_MULTI):
             for m in rx.finditer(bodies[f]):
@@ -232,15 +298,23 @@ def build_one(target, do_checks, assert_origin):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
+    src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
+    if target != 'screamers':   # the village's Post-Apoc bundle brings core/rand and core/tags (above)
+        src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
     paths = dict(src); paths.update(tgt)
-    order = sorted(paths)
+    vb = virtual_bodies() if target == 'screamers' else {}   # the furniture catalogue page places no salvage homes
+    order = sorted(list(paths) + [MATLIB_PACK] + list(vb))
 
-    bodies = {}
+    bodies = {MATLIB_PACK: matlib_pack(empty=(target != 'screamers'))}   # the furniture catalogue keeps its canvases
+    bodies.update(vb)
     for f in order:
+        if f in bodies:
+            continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
 

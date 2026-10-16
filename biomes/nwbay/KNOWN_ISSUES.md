@@ -47,10 +47,51 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] Verified only under SwiftShader (headless); the iridescent prism-gum leaves, the lotus
       fringe's iridescence and the limestone's vertex colours at grazing angles are untested
       on real hardware.
+- [ ] THE TSINGY'S CANYONS ARE GAPS, NOT CUTS. The ground mesh (11 m cells) cannot draw a 2-7 m
+      canyon, so the canyon floors are the massif's plateau, level with the fissures; Bemaraha's
+      canyons are tens of metres deep. A real cut needs its own fine floor strip (as the travertine
+      reach has) or the fins standing taller beside a canyon.
+- [ ] THE FINS ARE NOT SOLID TO ANYTHING: terrainH is the ground between them (the camera can fly
+      through a blade), they are not obstacles (a crown can grow into one; only the foot is kept out,
+      by the mask), and they are not dressed (no moss, no figs on the blades; Bemaraha's blades are
+      mostly bare, but their tops carry Pachypodium and lichen).
+- [ ] A SINKHOLE'S WALL IS A LATHE like a stack's: no caves, no arches, no overhang beyond the bell;
+      a tiankeng's floor trees can push their crowns into the wall (the mask keeps feet 12 m off it).
+      The lip hides the ground mesh's cut with a polygon offset; at a grazing angle from far off the
+      cut's jagged edge can show through.
+- [ ] VARIANTS GROW ON FLAT GROUND: the ironbark's surface roots, the pandan's stilt roots and the
+      mangrove's prop roots are grown in the nursery on level ground (or in level water) and stamped
+      onto the slope as they are, so on a steep site a root floats or sinks a little. The cliff fig's
+      curtains are the only per-site part.
+- [ ] DRAW CALLS: 276 at the first view (99 before; the budget was 130, now 300): 208 baked meshes, of
+      which ~140 are variant parts, each one InstancedMesh, plus the host's stacks, fins and dolines. Merging
+      a species' variants per material into one geometry with per-instance offsets would cut it to
+      ~60, at the cost of the Godot shape (one MultiMesh per variant part).
+- [ ] THE MADAGASCARENE FLORA HAS NO IMPOSTOR OF ITS OWN: past the hero range the four species are
+      the generic blobs (a column for the spinewand, a flat disc for the avenue baobab). The avenue
+      baobabs stand in stands, not in Morondava's lines: there is no road for them to line.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of `dist/nwbay.html`;
       `publish.py` strips the page wrapper 00-head.html carries.
 
 ## Done
+
+- [x] FRUIT (2026-10-06): every species carries a harvest tag (`NWBAY.HARVEST`; the inspector shows it under a
+      tree); the cliff figs bear figs (`fig` items, clusters under the crown's spots, placed by a hash of the tree so
+      nothing else moved), the gate and avenue baobabs their pods, the pandans their orange heads and the traveller's
+      fans their blue arils (all drawn before). Catalog: `generic_fruit_cliff_fig`, `generic_fruit_avenue_baobab`,
+      `generic_fruit_traveller_aril`, and the shared `generic_fruit_gatepod` and `generic_fruit_pandan_keys`. The probe
+      checks it (`fruit-tagged-catalogued-drawn`, with two negatives). Not drawn as fruit, named in the tags: prism-gum
+      nectar, fern fiddleheads, thorn gum, mangrove propagules, lotus petals, mat-reed shoots; the sea-grape on the
+      shore has no tag yet (the kit tags no floor plants).
+- [x] INVERTED POLYGONS (2026-10-05). The twelve karst stacks (faces and domes) were wound clockwise from
+      outside, so their near walls were culled and each drew as its own hollow back wall; dress() read
+      their domes as ceilings. The travertine reach's fine ground strip faced down (culled from above).
+      Both flipped (45-host-stage); every other host mesh checked by the share of its faces pointing out
+      of its centroid and up.
+- [x] THE TSINGY, THE DOLINES, THE MADAGASCARENE FLORA (2026-10-05): see NOTES.md, the section of that name;
+      the probe checks `nothing-in-a-blade`, `nothing-on-a-sinkhole-wall`, `madagascarene-flora`.
+- [x] TREES AS VARIANTS (2026-10-05): six per species and level, grown once, stamped (56-variants); the probe
+      checks `heroes-are-variants`.
 
 - [x] The core fragments (10–40) were byte-identical to swbay's (a world vendors them once). Superseded
       by the entry below: nwbay now reads them from `core/biome/`.
@@ -81,3 +122,4 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] The semi-aquatic zone: mangroves in the shallows, pandans, pipe reeds, mat-reed beds
       (exported), lotus trumpets on the banks, sea-grape and salt scrub, lily pads, pneumatophores.
 - [x] The height ceiling holds (probe: `height-ceiling`); nothing is Girder-sized.
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.

@@ -2,6 +2,7 @@
 BUDGET.showcase={tris:ER.BUDGET,calls:1800};
 BUDGET.cls.city=ER.BUDGET;for(const k in TSTAT.by){BUDGET.type[k.split('/')[0]]='city';}
 const PATHS={on:false,tex:null};
+window._masks=()=>({mask:KMASK.hash(mv),klass:KMASK.hash(kv),ops:KMASK.ops(mv).length+KMASK.ops(kv).length});   // core/mask: the proof two loads painted the same
 function pathsTexture(){if(PATHS.tex)return PATHS.tex;const c=document.createElement('canvas');c.width=c.height=CS;const g=c.getContext('2d');
  const COL={0:'#26221e',1:'#c8a860',2:'#2e7a3a',3:'#e8e0d0',4:'#c8c0b0',5:'#f0d8a0',6:'#a89878',7:'#6a6a3a',8:'#1a3a3a',9:'#a08868',10:'#4a2a2a',11:'#3a3430',12:'#6a5a2a',13:'#2a8a8a'};
  const img=g.createImageData(CS,CS);const d=img.data;for(let i=0;i<CS*CS;i++){const k=kData[i*4];const col=COL[k]||'#000';d[i*4]=parseInt(col.slice(1,3),16);d[i*4+1]=parseInt(col.slice(3,5),16);d[i*4+2]=parseInt(col.slice(5,7),16);d[i*4+3]=255;}

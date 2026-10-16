@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.222,
+    1.193
+   ],
+   "seam_before": [
+    1.405,
+    1.524
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.35,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "_note": "the coilbark's wrung trunk: the ridges run diagonally, so wrapped round a lathe they wind as helices",
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.wrung",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark-wrung.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Tree bark twisted like a wrung cloth, smooth mauve-brown bark in broad diagonal ridges that all run at the same slant, deep creases between the ridges, streaks of bright green moss and malachite-green lichen following the creases. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. (Row bark.wrung of core/materials/PLAN.md, Southern highlands.) Pasted into the chat 2026-10-06 as a 1254 px webp.",
+  "reuse": "the southern highlands' coilbark; any twisted or spiral-grained trunk (juniper, bristlecone, olive, a wind-wrung cliff tree), moss and all",
+  "sha1": "c6447e2520e1e629532b0fcb54963b6b2c63c24a"
+ }
+}

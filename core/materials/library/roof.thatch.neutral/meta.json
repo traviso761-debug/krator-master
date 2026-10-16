@@ -1,7 +1,7 @@
 {
  "maps": {
   "map": "albedo.jpg",
-  "normalMap": "../roof.thatch/normal.png",
+  "normalMap": "../roof.thatch/normal.jpg",
   "roughnessMap": "../roof.thatch/roughness.png"
  },
  "processing": {

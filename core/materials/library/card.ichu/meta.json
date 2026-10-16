@@ -1,0 +1,39 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.02,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   843,
+   843
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.ichu",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-ichu.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Grass card: nine tufts of tall stiff high-altitude bunchgrass, each a fountain of fine wiry blades fanning up and out from a tight base, a few thin seed plumes, standing up from the bottom of each cell, in a 3 by 3 grid, pale cream-white only so they can be tinted, on a solid flat bright magenta (#ff00ff) background so they can be cut out, no magenta, pink or purple in the subject, no grey or white background. Square, 2048x2048; no other objects. (Row card.ichu of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 843 px RGBA (it came with a real transparent background, so it is not keyed) WebP; converted to PNG.",
+  "reuse": "the ichu; any steppe, puna or alpine tussock grass (tinted)",
+  "sha1": "3b61cd0aec28aee67c36c9a0699f53c890beff48"
+ }
+}

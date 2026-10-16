@@ -1,5 +1,5 @@
 /* ======================================================================
-   Voth — Building Registry (13 keys / 17 build "looks")
+   Voth — Building Registry (27 keys / 31 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -215,6 +215,7 @@ ASSET({
 
       /* external stair + landing up the left flank, and a back buttress */
       const sx = -faceAt(7.1, 5.9, 7.6, 3.0) - 0.4;
+      if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(sx, 0, -1.9), b: P(sx + 0.7, 4.0, 4.0), w: 1.6 }); }   /* a walk record (the Voth city's stairs are navigable) */
       for (let i = 0; i < 6; i++) {
         F.box(sx + 0.1 * i, i * 0.62, -1.4 + i * 0.95, 1.6, 0.62, 1.0, 0, shade(c, -0.16), 'stone');
       }
@@ -653,6 +654,7 @@ ASSET({
         F.box(p[0] * 7.0, 20.2, p[1] * 5.8, 0.9, 1.1, 0.9, 0, cornice, 'stone');
       });
       /* external stair to a first-floor door on the right flank */
+      if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(11.4, 0.6, 6.05), b: P(11.4, 6.62, -3.0), w: 2.0 }); }   /* a walk record (the Voth city's stairs are navigable) */
       for (let i = 0; i < 7; i++) {
         F.box(11.4, 0.6 + i * 0.86, 5.4 - i * 1.25, 2.0, 0.86, 1.3, 0, shade(c, -0.14), 'stone');
       }
@@ -1258,6 +1260,7 @@ ASSET({
     });
 
     /* external stair to the first-floor room door on the right flank */
+    if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(10.4, 0.55, 6.75), b: P(10.2, 7.85, -3.0), w: 1.1 }); }   /* a walk record (the Voth city's stairs are navigable) */
     for (let i = 0; i < 6; i++) {
       F.box(10.4, 0.55 + i * 1.15, 6 - i * 1.4, 1.1, 0.35, 1.5, 0, shade(c, -0.1), 'wood');
       if (i % 2 === 0) F.rod(11.0, 0.9 + i * 1.15, 6 - i * 1.4, 11.0, 2.0 + i * 1.15, 6 - i * 1.4, 0.07, timber, 'metal');
@@ -1524,5 +1527,700 @@ ASSET({
     [-1, 1].forEach(function (s) {
       F.box(s * 4.6, 2.0, -14.6, 0.25, 1.6, 1.2, 0, doorC, 'wood');
     });
+  }
+});
+
+/* ======================================================================
+   The citizen simulation's buildings (owner, 2026-10-12, SIM-ROADMAP.md Q4): the watchhouse, the caravanserai, the
+   coast-guard berth and the trades the production chains need (weaver, tannery, brewery, butcher, bakery). Each
+   carries `ix`: the shell its interior is planned in (settlements/voth 41-vc-building-interiors.js), the main
+   block { block: [x, z, w, d] } in the building's frame, its floor `y`, its height `h` and its `storeys`, so the
+   planner never has to guess it from the model. The street door is mid-front (+z) on every one.
+   ====================================================================== */
+
+ASSET({
+  key: 'voth_bldg_watchhouse', name: 'Watchhouse', culture: 'voth', family: 'defensive', types: ['civic', 'infrastructure'],
+  districts: ['common', 'gate', 'market'], wealth: [0.3, 0.6], w: 15.6, d: 13.6, h: 17.2, variants: 1,
+  ix: { block: [0, 0, 12, 10], y: 0.6, h: 7.4, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0x5e5a54, 0x66605a, 0x57534d]), trim = shade(c, -0.2), dark = shade(c, -0.34);
+    const doorC = 0x1f1b16, timber = 0x4a3a28, iron = 0x3a3630, banner = 0x7a2028, glow = 0xffcf87;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s, bars) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.22, cz + n[1] * 0.14, flat ? ww + 0.5 : 0.8, 0.22, flat ? 0.8 : ww + 0.5, 0, trim, 'stone');
+      if (bars) for (let k = -1; k <= 1; k++) F.box(cx + n[0] * 0.2 + (flat ? k * ww * 0.3 : 0), cy, cz + n[1] * 0.2 + (flat ? 0 : k * ww * 0.3), flat ? 0.07 : 0.07, wh, 0.07, 0, iron, 'metal');
+    }
+    /* plinth, the guard hall and its upper storey, a battlemented parapet */
+    F.box(0, 0, 0, 13, 0.6, 11, 0, dark, 'stone');
+    F.box(0, 0.6, 0, 12, 3.9, 10, 0, c, 'stone');
+    F.box(0, 4.3, 0, 12.4, 0.3, 10.4, 0, trim, 'stone');
+    F.box(0, 4.6, 0, 12, 3.4, 10, 0, shade(c, 0.05), 'stone');
+    F.box(0, 8.0, 0, 12.5, 0.35, 10.5, 0, trim, 'stone');
+    for (let i = -5; i <= 5; i += 2) { F.box(i, 8.35, 5.0, 1.0, 0.9, 0.5, 0, c, 'stone'); F.box(i, 8.35, -5.0, 1.0, 0.9, 0.5, 0, c, 'stone'); }
+    for (let i = -4; i <= 4; i += 2) { F.box(6.0, 8.35, i, 0.5, 0.9, 1.0, 0, c, 'stone'); F.box(-6.0, 8.35, i, 0.5, 0.9, 1.0, 0, c, 'stone'); }
+    /* the lookout tower at the back corner: a square shaft, an open lantern stage under a pyramid roof */
+    F.box(4.2, 8.35, -3.2, 3.6, 5.2, 3.6, 0, shade(c, -0.04), 'stone');
+    F.box(4.2, 13.55, -3.2, 4.0, 0.3, 4.0, 0, trim, 'stone');
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) { F.box(4.2 + q[0] * 1.75, 13.85, -3.2 + q[1] * 1.75, 0.4, 1.9, 0.4, 0, timber, 'wood'); });
+    F.pyrRoof(4.2, 15.75, -3.2, 4.6, 1.45, 4.6, 0, 0x4a3a2e, 'roof');
+    F.ball(4.2, 14.5, -3.2, 0.42, glow, 'glow');
+    W(4.2, 10.4, -1.35, 0.9, 1.4, 0, true); W(6.05, 10.4, -3.2, 0.9, 1.4, 2, true);
+    /* the door under a stone hood, the watch's banners either side, lanterns */
+    F.box(0, 0.6, 5.1, 2.6, 3.0, 0.4, 0, dark, 'stone');
+    F.box(0, 0.6, 5.32, 1.8, 2.5, 0.22, 0, doorC, 'wood');
+    F.box(0, 3.6, 5.3, 3.2, 0.35, 0.9, 0, trim, 'stone');
+    [-2.6, 2.6].forEach(function (px) {
+      F.box(px, 4.9, 5.12, 1.1, 2.6, 0.08, 0, banner, 'cloth');
+      F.box(px, 7.5, 5.15, 1.3, 0.12, 0.25, 0, iron, 'metal');
+      F.rod(px * 1.55, 3.4, 5.1, px * 1.55, 3.4, 5.7, 0.06, iron, 'metal'); F.ball(px * 1.55, 3.15, 5.7, 0.24, glow, 'glow');
+    });
+    /* barred windows below, shuttered above, on all four faces */
+    [-3.6, 3.6].forEach(function (px) { W(px, 1.9, 5.05, 1.0, 1.3, 0, true); W(px, 5.7, 5.05, 1.1, 1.5, 0, false); });
+    [-3.6, 0, 3.6].forEach(function (px) { W(px, 1.9, -5.05, 1.0, 1.3, 1, true); W(px, 5.7, -5.05, 1.1, 1.5, 1, false); });
+    [-2.4, 2.4].forEach(function (pz) { W(6.05, 1.9, pz, 1.0, 1.3, 2, true); W(-6.05, 1.9, pz, 1.0, 1.3, 3, true); W(6.05, 5.7, pz, 1.1, 1.5, 2, false); W(-6.05, 5.7, pz, 1.1, 1.5, 3, false); });
+    /* a weapon rack and a mounting block by the door, a water butt on the flank */
+    F.box(-4.6, 0, 6.0, 2.2, 0.15, 0.5, 0, timber, 'wood'); F.box(-4.6, 1.5, 6.0, 2.2, 0.12, 0.3, 0, timber, 'wood');
+    for (let k = 0; k < 5; k++) F.rod(-5.5 + k * 0.45, 0.1, 6.0, -5.5 + k * 0.45, 2.0, 6.0, 0.035, iron, 'metal');
+    F.box(4.8, 0, 6.2, 1.4, 0.6, 1.0, 0, trim, 'stone');
+    F.cyl(-6.9, 0, -2.5, 0.6, 1.2, 0, 0x5a4a34, 'wood'); F.cyl(-6.9, 1.2, -2.5, 0.62, 0.08, 0, iron, 'metal');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_caravanserai', name: 'Caravanserai', culture: 'voth', family: 'trade', types: ['inn', 'market', 'infrastructure'],
+  districts: ['gate', 'market'], wealth: [0.3, 0.6], w: 42, d: 42, h: 12.6, variants: 1,
+  ix: { block: [0, -14.5, 38, 10], y: 0.5, h: 7.4, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0xa08c6c, 0x9a8466, 0xa89474]), trim = shade(c, -0.16), dark = shade(c, -0.3);
+    const doorC = 0x231c15, timber = 0x4a3a28, cloth = F.pick([0x8a2f2a, 0x2f5a86, 0xb08d3c]), roofC = 0x6a4a36;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    /* the court's paving, then four ranges round it: the lodging range at the back (two storeys), stables either side,
+       the gate range at the front */
+    F.box(0, 0, 0, 42, 0.5, 42, 0, dark, 'stone');
+    F.box(0, 0.5, 0, 22, 0.08, 18, 0, shade(c, 0.1), 'stone');
+    F.box(0, 0.5, -14.5, 38, 7.4, 10, 0, c, 'stone');
+    F.box(0, 4.0, -14.5, 38.4, 0.3, 10.4, 0, trim, 'stone');
+    F.box(0, 7.9, -14.5, 38.6, 0.35, 10.6, 0, trim, 'stone');
+    F.pyrRoof(0, 8.25, -14.5, 39, 3.4, 11, 0, roofC, 'roof');
+    [-1, 1].forEach(function (s) {
+      F.box(s * 15.5, 0.5, 2.5, 9, 4.6, 24, 0, shade(c, -0.04), 'stone');
+      F.box(s * 15.5, 5.1, 2.5, 9.4, 0.3, 24.4, 0, trim, 'stone');
+      F.pyrRoof(s * 15.5, 5.4, 2.5, 9.8, 2.2, 24.8, 0, roofC, 'roof');
+      /* the stalls open to the court: posts, mangers, a feed rack */
+      for (let k = -2; k <= 2; k++) {
+        const pz = 2.5 + k * 4.6;
+        F.box(s * 10.8, 0.5, pz + 2.3, 0.45, 4.4, 0.45, 0, timber, 'wood');
+        F.box(s * 11.6, 0.5, pz, 1.2, 0.9, 3.0, 0, shade(timber, 0.1), 'wood');
+        W(s * 20.05, 2.6, pz, 1.0, 1.0, s > 0 ? 2 : 3);
+      }
+    });
+    F.box(0, 0.5, 18.5, 22, 5.6, 5, 0, shade(c, 0.03), 'stone');
+    F.box(0, 6.1, 18.5, 22.4, 0.3, 5.4, 0, trim, 'stone');
+    /* the great gate: an arch through the front range, iron-bound leaves standing open, a carved lintel */
+    F.box(0, 0.5, 21.05, 6.4, 5.6, 0.3, 0, dark, 'stone');
+    F.box(0, 0.5, 21.15, 4.6, 4.4, 0.25, 0, 0x14110d, 'wood');
+    [-1, 1].forEach(function (s) { F.box(s * 3.0, 0.5, 22.0, 0.25, 4.2, 2.2, s * 0.35, doorC, 'wood'); F.box(s * 3.6, 0.5, 21.4, 1.0, 6.4, 1.0, 0, trim, 'stone'); });
+    F.box(0, 6.4, 21.2, 7.6, 1.2, 0.9, 0, trim, 'stone');
+    F.box(0, 6.6, 21.7, 3.4, 0.7, 0.12, 0, 0xb08d3c, 'metal');
+    /* the lodging range's gallery over the court and its stair, its doors and windows round all four faces */
+    F.box(0, 3.9, -8.9, 36, 0.3, 1.6, 0, timber, 'wood');
+    for (let k = -4; k <= 4; k++) F.box(k * 4.2, 0.5, -8.2, 0.3, 3.4, 0.3, 0, timber, 'wood');
+    for (let i = 0; i < 6; i++) F.box(-16.5 + i * 0.9, 0.5 + i * 0.6, -8.0, 0.9, 0.3, 1.4, 0, shade(timber, 0.1), 'wood');
+    if (typeof window !== 'undefined' && window.KWALK_REC) { const c = Math.cos(F.ry), s = Math.sin(F.ry), P = (x, y, z) => [F.x + x * c + z * s, F.z - x * s + z * c, F.y + y]; window.KWALK_REC.push({ kind: 'stair', a: P(-16.95, 0.5, -8.0), b: P(-11.55, 3.8, -8.0), w: 1.4 }); }   /* a walk record (the Voth city's stairs are navigable) */
+    [-14, -7, 0, 7, 14].forEach(function (px) { W(px, 0.5, -9.45, 1.4, 2.4, 0); W(px + 2.1, 4.4, -9.45, 1.2, 2.2, 0); W(px, 2.4, -19.55, 1.0, 1.3, 1); W(px, 5.4, -19.55, 1.0, 1.3, 1); });
+    [-16.5, -12.5].forEach(function (pz) { W(19.05, 2.4, pz, 1.0, 1.3, 2); W(-19.05, 2.4, pz, 1.0, 1.3, 3); W(19.05, 5.4, pz, 1.0, 1.3, 2); W(-19.05, 5.4, pz, 1.0, 1.3, 3); });
+    [-8, -4, 4, 8].forEach(function (px) { W(px, 2.4, 21.05, 1.0, 1.2, 0); W(px, 2.4, 15.95, 1.0, 1.2, 1); });
+    /* the court: a well under a canopy, a drinking trough, bales and the caravan's goods */
+    F.cyl(0, 0.5, 0, 1.3, 0.9, 0, trim, 'stone'); F.cyl(0, 1.4, 0, 1.35, 0.12, 0, dark, 'stone');
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (q) { F.rod(q[0] * 1.6, 0.5, q[1] * 1.6, q[0] * 1.6, 3.6, q[1] * 1.6, 0.09, timber, 'wood'); });
+    F.box(0, 3.6, 0, 3.8, 0.15, 3.8, 0, cloth, 'cloth');
+    F.box(-6, 0.5, 4, 3.6, 0.7, 1.0, 0, trim, 'stone');
+    F.box(5.5, 0.5, 5.5, 1.4, 1.0, 1.0, 0.3, 0xc2a56a, 'cloth'); F.box(6.6, 0.5, 4.3, 1.4, 1.0, 1.0, -0.2, 0xc2a56a, 'cloth');
+    F.box(-5.5, 0.5, -4.5, 1.3, 1.2, 1.3, 0.2, shade(timber, 0.15), 'wood'); F.box(-4.2, 0.5, -5.2, 1.0, 1.0, 1.0, -0.3, shade(timber, 0.05), 'wood');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_coastguard_berth', name: 'Coast-Guard Berth', culture: 'voth', family: 'defensive', types: ['infrastructure', 'civic'],
+  districts: ['harbour'], wealth: [0.4, 0.7], w: 34, d: 44, h: 15.4, variants: 1,
+  ix: { block: [-11, -12, 11, 18], y: 0.6, h: 7.4, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0x4c4a48, 0x55524e]), trim = shade(c, -0.2), dark = shade(c, -0.34), green = 0x2f5a3a, gold = 0xb08d3c;
+    const doorC = 0x1c1915, timber = 0x3e3226, roofC = 0x2e3a30, iron = 0x3a3630, glow = 0xbfffc8;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    /* the quay apron the berth stands on */
+    F.box(0, 0, 0, 34, 0.6, 44, 0, dark, 'stone');
+    /* the crew house: two storeys in the Ordinators' black, green and gold */
+    F.box(-11, 0.6, -12, 11, 7.4, 18, 0, c, 'stone');
+    F.box(-11, 4.2, -12, 11.3, 0.3, 18.3, 0, trim, 'stone');
+    F.box(-11, 8.0, -12, 11.6, 0.35, 18.6, 0, gold, 'metal');
+    F.pyrRoof(-11, 8.35, -12, 12, 3.2, 19, 0, roofC, 'roof');
+    F.box(-11, 0.6, -2.85, 2.4, 3.0, 0.3, 0, dark, 'stone'); F.box(-11, 0.6, -2.7, 1.7, 2.6, 0.2, 0, doorC, 'wood');
+    F.box(-11, 3.7, -2.75, 2.9, 0.3, 0.8, 0, gold, 'metal');
+    [-14.5, -7.5].forEach(function (px) { W(px, 1.9, -2.95, 1.0, 1.4, 0); W(px, 5.4, -2.95, 1.0, 1.5, 0); W(px, 1.9, -21.05, 1.0, 1.4, 1); W(px, 5.4, -21.05, 1.0, 1.5, 1); });
+    [-18, -12, -6].forEach(function (pz) { W(-16.55, 1.9, pz, 1.0, 1.4, 3); W(-16.55, 5.4, pz, 1.0, 1.5, 3); W(-5.45, 5.4, pz, 1.0, 1.5, 2); });
+    /* the covered slip: a long open shed on piers over the water side (+z beyond the apron's front half), the
+       flagship's cradle and capstan, the green banners of the Ordinators' fleet */
+    const sx = 7.5, sz = 4, sw = 15, sl = 36;
+    for (let k = 0; k <= 6; k++) {
+      const pz = sz - sl / 2 + k * sl / 6;
+      [-1, 1].forEach(function (s) { F.box(sx + s * sw / 2, 0.6, pz, 0.8, 8.0, 0.8, 0, trim, 'stone'); });
+    }
+    [-1, 1].forEach(function (s) { F.box(sx + s * sw / 2, 8.6, sz, 1.0, 0.6, sl + 1, 0, trim, 'stone'); });
+    F.pyrRoof(sx, 9.2, sz, sw + 2, 3.2, sl + 2, 0, roofC, 'roof');
+    F.box(sx, 0.1, sz + 2, sw - 2.4, 0.5, sl - 6, 0, 0x2a4048, 'stone');
+    for (let k = -3; k <= 3; k++) F.box(sx, 0.6, sz + k * 4.4, 3.4, 0.8, 0.6, 0, timber, 'wood');
+    F.cyl(sx - 4, 0.6, sz - sl / 2 + 2, 0.8, 1.3, 0, timber, 'wood'); F.cyl(sx - 4, 1.9, sz - sl / 2 + 2, 1.1, 0.2, 0, iron, 'metal');
+    F.rod(sx - 4, 1.4, sz - sl / 2 + 2, sx, 1.0, sz - 8, 0.06, 0x6b5a3a, 'rope');
+    [-1, 1].forEach(function (s) {
+      F.box(sx + s * (sw / 2 + 0.45), 4.0, sz + sl / 2 - 1, 0.08, 4.2, 1.6, 0, green, 'cloth');
+      F.ball(sx + s * (sw / 2 + 0.6), 7.4, sz + sl / 2, 0.3, glow, 'glow');
+    });
+    /* an armoury chest, oars racked against the crew house, bollards on the apron's edge */
+    F.box(-4.6, 0.6, -6, 0.6, 2.6, 4.2, 0, timber, 'wood');
+    for (let k = 0; k < 6; k++) F.rod(-4.3, 0.7, -7.8 + k * 0.7, -4.3, 3.6, -7.6 + k * 0.7, 0.05, 0x8a6a42, 'wood');
+    F.box(-8, 0.6, 2, 1.6, 0.9, 1.0, 0, 0x5a4028, 'wood'); F.box(-8, 1.5, 2, 1.65, 0.1, 1.05, 0, iron, 'metal');
+    [-14, -8, -2].forEach(function (px) { F.cyl(px, 0.6, 21, 0.35, 1.0, 0, iron, 'metal'); });
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_weaver', name: "Weaver's House", culture: 'voth', family: 'trade', types: ['shop', 'industry', 'dwelling-single'],
+  districts: ['common', 'craft'], wealth: [0.25, 0.55], w: 15.2, d: 13.4, h: 11.6, variants: 1,
+  ix: { block: [0, -0.5, 12, 10], y: 0.5, h: 7.2, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0xb0a088, 0xa89878, 0xbca88c]), trim = shade(c, -0.18), dark = shade(c, -0.32);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x7a5038;
+    const DYE = [0x7a2028, 0x2f5a86, 0xb08d3c, 0x3e6b3a, 0x6a3a6a, 0xc8a050];
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s, shut) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+      if (shut) for (let k = -1; k <= 1; k += 2) F.box(cx + (flat ? k * (ww / 2 + 0.22) : n[0] * 0.15), cy, cz + (flat ? n[1] * 0.15 : k * (ww / 2 + 0.22)), flat ? 0.4 : 0.12, wh, flat ? 0.12 : 0.4, 0, DYE[(k + 1) % DYE.length], 'wood');
+    }
+    F.box(0, 0, -0.5, 12.8, 0.5, 10.8, 0, dark, 'stone');
+    F.box(0, 0.5, -0.5, 12, 3.8, 10, 0, c, 'stone');
+    F.box(0, 4.3, -0.5, 12.3, 0.3, 10.3, 0, trim, 'stone');
+    F.box(0, 4.6, -0.5, 12, 3.1, 10, 0, shade(c, 0.05), 'stone');
+    F.box(0, 7.7, -0.5, 12.4, 0.3, 10.4, 0, trim, 'stone');
+    F.pyrRoof(0, 8.0, -0.5, 13, 3.0, 11, 0, roofC, 'roof');
+    /* the loom room's wide windows on the street, the door under a dyed awning, the guild's spindle sign */
+    F.box(-1.5, 0.5, 4.6, 1.8, 2.7, 0.3, 0, doorC, 'wood');
+    F.box(-1.5, 3.2, 4.65, 2.3, 0.3, 0.6, 0, trim, 'stone');
+    F.box(1.5, 3.5, 5.3, 8.6, 0.12, 1.6, 0, DYE[1], 'cloth');
+    [-2.8, 5.8].forEach(function (px) { F.rod(px, 0.5, 6.0, px, 3.5, 6.0, 0.08, timber, 'wood'); });
+    W(2.8, 1.4, 4.55, 3.2, 1.8, 0, false);
+    F.rod(-3.5, 4.0, 4.6, -3.5, 4.0, 5.6, 0.05, 0x3a2f22, 'metal'); F.cyl(-3.5, 3.0, 5.6, 0.18, 0.9, 0, 0x8a6a42, 'wood'); F.ball(-3.5, 3.45, 5.6, 0.32, DYE[2], 'cloth');
+    [-3.6, 0, 3.6].forEach(function (px) { W(px, 5.4, 4.55, 1.1, 1.5, 0, true); W(px, 1.8, -5.55, 1.0, 1.3, 1, false); W(px, 5.4, -5.55, 1.1, 1.5, 1, true); });
+    [-3, 2].forEach(function (pz) { W(6.05, 1.8, pz, 1.0, 1.3, 2, false); W(-6.05, 1.8, pz, 1.0, 1.3, 3, false); W(6.05, 5.4, pz, 1.1, 1.5, 2, true); W(-6.05, 5.4, pz, 1.1, 1.5, 3, true); });
+    /* the drying yard on the flank: lines of dyed cloth between posts, a dye vat and a skein rack */
+    [[6.9, -4.2], [6.9, 3.2]].forEach(function (p) { F.rod(p[0] + 0.3, 0.5, p[1], p[0] + 0.3, 3.4, p[1], 0.08, timber, 'wood'); });
+    F.rod(7.2, 3.3, -4.2, 7.2, 3.3, 3.2, 0.03, 0x6b5a3a, 'rope');
+    for (let k = 0; k < 6; k++) F.box(7.2, 1.7, -3.6 + k * 1.15, 0.05, 1.6, 0.95, 0, DYE[k % DYE.length], 'cloth');
+    F.cyl(-6.9, 0.5, 2.6, 0.7, 0.9, 0, 0x5a4a34, 'wood'); F.cyl(-6.9, 1.35, 2.6, 0.62, 0.05, 0, DYE[0], 'cloth');
+    F.box(-6.9, 0.5, -2.2, 0.4, 2.0, 2.4, 0, timber, 'wood');
+    for (let k = 0; k < 4; k++) F.cyl(-6.75, 0.9 + k * 0.4, -2.2, 0.16, 0.3, 0, DYE[(k + 2) % DYE.length], 'cloth');
+    /* the roof terrace's drying frame */
+    F.box(0, 11.0, -0.5, 0.25, 0.25, 6, 0, timber, 'wood');
+    for (let k = 0; k < 3; k++) F.box(0, 9.6, -2.3 + k * 1.8, 0.04, 1.3, 1.5, 0, DYE[(k + 3) % DYE.length], 'cloth');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_tannery', name: 'Tannery', culture: 'voth', family: 'industrial', types: ['industry'],
+  districts: ['industry', 'shore'], wealth: [0.1, 0.4], w: 20, d: 15.4, h: 9.4, variants: 1,
+  ix: { block: [-3, -1.5, 12, 11], y: 0.4, h: 5.2, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0x8a7a62, 0x80705a]), trim = shade(c, -0.18), dark = shade(c, -0.32);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x5a5248, hide = 0x9a6a42, hide2 = 0x7a5232, liquor = 0x5a4a2a, lime = 0xd8d2c0;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    F.box(0, 0, 0, 20, 0.4, 15.4, 0, dark, 'stone');
+    /* the beam house: one tall storey, louvred vents along its ridge for the stench */
+    F.box(-3, 0.4, -1.5, 12, 5.2, 11, 0, c, 'stone');
+    F.box(-3, 5.6, -1.5, 12.4, 0.3, 11.4, 0, trim, 'stone');
+    F.pyrRoof(-3, 5.9, -1.5, 13, 2.6, 12, 0, roofC, 'roof');
+    for (let k = -1; k <= 1; k++) { F.box(-3 + k * 3.6, 7.6, -1.5, 1.6, 0.9, 1.6, 0, shade(roofC, -0.15), 'wood'); F.box(-3 + k * 3.6, 8.5, -1.5, 2.0, 0.15, 2.0, 0, shade(roofC, -0.25), 'wood'); }
+    F.box(-3, 0.4, 4.05, 3.0, 3.4, 0.3, 0, dark, 'stone'); F.box(-3, 0.4, 4.2, 2.4, 3.0, 0.2, 0, doorC, 'wood');
+    F.box(-3, 3.8, 4.15, 3.4, 0.3, 0.6, 0, trim, 'stone');
+    [-7, 1].forEach(function (px) { W(px, 2.2, 4.05, 1.4, 1.2, 0); W(px, 2.2, -7.05, 1.4, 1.2, 1); });
+    W(-3, 2.2, -7.05, 1.4, 1.2, 1);
+    [-4.5, 1.5].forEach(function (pz) { W(-9.05, 2.2, pz, 1.4, 1.2, 3); W(3.05, 2.2, pz, 1.4, 1.2, 2); });
+    /* the yard: lime pits, tan vats sunk in a stone kerb, hides stretched on frames, a bark pile */
+    F.box(6.6, 0.4, -1, 6, 0.5, 13, 0, trim, 'stone');
+    for (let r = 0; r < 2; r++) for (let k = 0; k < 3; k++) {
+      const vx = 5.1 + r * 3.0, vz = -5.0 + k * 3.6;
+      F.cyl(vx, 0.4, vz, 1.15, 0.7, 0, dark, 'stone');
+      F.cyl(vx, 1.02, vz, 1.0, 0.04, 0, r ? liquor : lime, 'stone');
+    }
+    [[9.4, 4.9], [9.4, 6.5]].forEach(function (p, i) {
+      F.rod(p[0] - 1.2, 0.4, p[1], p[0] - 1.2, 3.0, p[1], 0.08, timber, 'wood'); F.rod(p[0] + 0.2, 0.4, p[1], p[0] + 0.2, 3.0, p[1], 0.08, timber, 'wood');
+      F.box(p[0] - 0.5, 1.0, p[1], 1.3, 1.8, 0.04, 0, i ? hide2 : hide, 'cloth');
+    });
+    F.blob(4.4, 0.4, 6.4, 1.3, 0.9, 0, 0x5a3a22, 'wood');
+    F.box(-9.6, 0.4, 5.4, 0.8, 1.0, 1.6, 0, timber, 'wood'); F.box(-9.6, 1.4, 5.4, 0.8, 0.3, 1.6, 0, hide2, 'cloth');
+    F.rod(-9.5, 0.4, -6.4, -9.5, 3.2, -6.4, 0.07, timber, 'wood'); F.rod(-9.5, 3.1, -6.4, -9.5, 3.1, 0.4, 0.03, 0x6b5a3a, 'rope');
+    for (let k = 0; k < 3; k++) F.box(-9.5, 1.9, -5.3 + k * 2.1, 0.04, 1.2, 1.6, 0, k % 2 ? hide : hide2, 'cloth');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_brewery', name: 'Brewery', culture: 'voth', family: 'industrial', types: ['industry', 'tavern'],
+  districts: ['common', 'industry'], wealth: [0.3, 0.6], w: 19.6, d: 15, h: 15.6, variants: 1,
+  ix: { block: [0, -1, 16, 12], y: 0.5, h: 8.2, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0x9a8a70, 0x8e7e66, 0xa49276]), trim = shade(c, -0.16), dark = shade(c, -0.3);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x6a4a36, copper = 0xa8683a, iron = 0x3a3630, glow = 0xffcf87;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    F.box(0, 0, -1, 16.8, 0.5, 12.8, 0, dark, 'stone');
+    F.box(0, 0.5, -1, 16, 4.4, 12, 0, c, 'stone');
+    F.box(0, 4.9, -1, 16.3, 0.3, 12.3, 0, trim, 'stone');
+    F.box(0, 5.2, -1, 16, 3.5, 12, 0, shade(c, 0.05), 'stone');
+    F.box(0, 8.7, -1, 16.4, 0.35, 12.4, 0, trim, 'stone');
+    F.pyrRoof(0, 9.05, -1, 17, 3.0, 13, 0, roofC, 'roof');
+    /* the copper house rising through the roof at the back: its drum, its dome and the flue */
+    F.cyl(4.5, 8.7, -4.2, 2.2, 3.2, 0, shade(c, -0.05), 'stone');
+    F.dome(4.5, 11.9, -4.2, 2.3, 1.7, 0, copper, 'metal');
+    F.cyl(4.5, 13.4, -4.2, 0.45, 2.2, 0, iron, 'metal');
+    F.box(-5.5, 9.05, -5.0, 1.4, 5.0, 1.4, 0, dark, 'stone'); F.box(-5.5, 14.05, -5.0, 1.8, 0.4, 1.8, 0, trim, 'stone');
+    /* the cart doors and the tap-room door, a hanging barrel sign */
+    F.box(-3.5, 0.5, 5.05, 4.2, 4.0, 0.3, 0, dark, 'stone');
+    [-1, 1].forEach(function (s) { F.box(-3.5 + s * 1.0, 0.5, 5.2, 1.9, 3.6, 0.2, 0, doorC, 'wood'); });
+    F.box(3.5, 0.5, 5.05, 1.8, 2.8, 0.3, 0, doorC, 'wood'); F.box(3.5, 3.3, 5.1, 2.3, 0.3, 0.6, 0, trim, 'stone');
+    F.rod(5.0, 4.4, 5.1, 5.0, 4.4, 6.0, 0.06, iron, 'metal');
+    F.cyl(5.0, 3.2, 6.0, 0.42, 1.0, 0, 0x6a4a2a, 'wood'); F.cyl(5.0, 3.5, 6.0, 0.44, 0.08, 0, iron, 'metal');
+    F.rod(2.0, 3.8, 5.1, 2.0, 3.8, 5.6, 0.05, iron, 'metal'); F.ball(2.0, 3.55, 5.6, 0.26, glow, 'glow');
+    [-5.5, -1.5, 1.5, 5.5].forEach(function (px) { W(px, 6.0, 5.05, 1.1, 1.6, 0); W(px, 1.9, -7.05, 1.1, 1.4, 1); W(px, 6.0, -7.05, 1.1, 1.6, 1); });
+    [-4.5, 0, 3.5].forEach(function (pz) { W(8.05, 1.9, pz, 1.1, 1.4, 2); W(-8.05, 1.9, pz, 1.1, 1.4, 3); W(8.05, 6.0, pz, 1.1, 1.6, 2); W(-8.05, 6.0, pz, 1.1, 1.6, 3); });
+    /* the yard: barrels racked and stacked, sacks of grain, a malt kiln's hearth by the flank */
+    for (let k = 0; k < 4; k++) { F.cyl(-9.0, 0.5, -4.5 + k * 1.5, 0.6, 1.2, 0, 0x5a4a34, 'wood'); F.cyl(-9.0, 1.1, -4.5 + k * 1.5, 0.62, 0.08, 0, iron, 'metal'); }
+    for (let k = 0; k < 3; k++) { F.cyl(-9.0, 1.7, -3.75 + k * 1.5, 0.6, 1.2, 0, 0x5a4a34, 'wood'); }
+    [[8.9, 5.6], [9.5, 6.4], [8.6, 6.6]].forEach(function (p) { F.blob(p[0], 0.5, p[1], 0.5, 0.7, 0, 0xc2a56a, 'cloth'); });
+    F.box(9.3, 0.5, -5.2, 1.4, 1.2, 2.2, 0, dark, 'stone'); F.blob(9.3, 1.7, -5.2, 0.4, 0.4, 0, 0xffb066, 'glow');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_butcher', name: "Butcher's Shop", culture: 'voth', family: 'trade', types: ['shop', 'dwelling-single'],
+  districts: ['common', 'market'], wealth: [0.25, 0.55], w: 12.4, d: 12.8, h: 11.2, variants: 1,
+  ix: { block: [0, -1, 10, 9], y: 0.4, h: 7.0, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0xa89478, 0x9c8a70, 0xb09c80]), trim = shade(c, -0.18), dark = shade(c, -0.32);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x7a5038, iron = 0x3a3630, meat = 0x8a2f2a, fat = 0xd8c8a8, tile = 0xd8d2c0;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    F.box(0, 0, -1, 10.8, 0.4, 9.8, 0, dark, 'stone');
+    F.box(0, 0.4, -1, 10, 3.7, 9, 0, c, 'stone');
+    F.box(0, 4.1, -1, 10.3, 0.3, 9.3, 0, trim, 'stone');
+    F.box(0, 4.4, -1, 10, 3.0, 9, 0, shade(c, 0.05), 'stone');
+    F.box(0, 7.4, -1, 10.4, 0.3, 9.4, 0, trim, 'stone');
+    F.pyrRoof(0, 7.7, -1, 11, 2.8, 10, 0, roofC, 'roof');
+    F.box(3.2, 7.7, -3.5, 0.9, 2.6, 0.9, 0, dark, 'stone');
+    /* the shop front: a wide opening with a tiled counter under an awning, meat on hooks from the awning rail */
+    F.box(-1.0, 0.4, 3.55, 6.4, 3.0, 0.2, 0, 0x14110d, 'wood');
+    F.box(-1.0, 0.4, 4.2, 6.2, 1.0, 1.1, 0, tile, 'stone');
+    F.box(-1.0, 1.4, 4.2, 6.4, 0.1, 1.2, 0, shade(tile, -0.1), 'stone');
+    F.box(-1.0, 3.5, 5.0, 7.0, 0.12, 2.4, 0, 0x8a2f2a, 'cloth');
+    [-4.4, 2.4].forEach(function (px) { F.rod(px, 0.4, 6.1, px, 3.5, 6.1, 0.08, timber, 'wood'); });
+    F.rod(-4.0, 3.2, 5.2, 2.0, 3.2, 5.2, 0.05, iron, 'metal');
+    for (let k = 0; k < 5; k++) { F.rod(-3.4 + k * 1.2, 3.2, 5.2, -3.4 + k * 1.2, 2.8, 5.2, 0.02, iron, 'metal'); F.ell(-3.4 + k * 1.2, 2.45, 5.2, 0.28, 0.4, 0.2, 0, k % 2 ? meat : shade(meat, -0.1), 'cloth'); }
+    F.box(3.9, 0.4, 3.55, 1.6, 2.7, 0.2, 0, doorC, 'wood'); F.box(3.9, 3.1, 3.6, 2.0, 0.3, 0.5, 0, trim, 'stone');
+    [-3, 0, 3].forEach(function (px) { W(px, 5.2, 3.55, 1.0, 1.4, 0); W(px, 1.7, -5.55, 0.9, 1.1, 1); W(px, 5.2, -5.55, 1.0, 1.4, 1); });
+    [-3.5, 1].forEach(function (pz) { W(5.05, 1.7, pz, 0.9, 1.1, 2); W(-5.05, 1.7, pz, 0.9, 1.1, 3); W(5.05, 5.2, pz, 1.0, 1.4, 2); W(-5.05, 5.2, pz, 1.0, 1.4, 3); });
+    /* the yard behind: a chopping block, a salting trough, a smoke house */
+    F.cyl(-3, 0.4, -7.2, 0.5, 0.9, 0, 0x6a4a2a, 'wood'); F.box(-3, 1.3, -7.2, 0.12, 0.3, 0.6, 0.6, iron, 'metal');
+    F.box(0.5, 0.4, -7.3, 2.6, 0.7, 0.9, 0, timber, 'wood'); F.box(0.5, 1.1, -7.3, 2.4, 0.05, 0.7, 0, fat, 'stone');
+    F.box(4.4, 0.4, -7.0, 1.8, 2.2, 1.8, 0, dark, 'stone'); F.pyrRoof(4.4, 2.6, -7.0, 2.2, 0.9, 2.2, 0, roofC, 'roof');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_bakery', name: 'Bakery', culture: 'voth', family: 'trade', types: ['shop', 'dwelling-single'],
+  districts: ['common', 'market'], wealth: [0.25, 0.55], w: 15.4, d: 12.4, h: 11.8, variants: 1,
+  ix: { block: [-1.5, -0.5, 11, 10], y: 0.4, h: 7.0, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0xc0ac8c, 0xb4a084, 0xc8b496]), trim = shade(c, -0.18), dark = shade(c, -0.32);
+    const doorC = 0x231c15, timber = 0x4a3a28, roofC = 0x7a5038, iron = 0x3a3630, bread = 0xc08a48, glow = 0xffb066;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, doorC, 'wood');
+      F.box(cx + n[0] * 0.14, cy - 0.2, cz + n[1] * 0.14, flat ? ww + 0.4 : 0.7, 0.2, flat ? 0.7 : ww + 0.4, 0, trim, 'stone');
+    }
+    F.box(-1.5, 0, -0.5, 11.8, 0.4, 10.8, 0, dark, 'stone');
+    F.box(-1.5, 0.4, -0.5, 11, 3.7, 10, 0, c, 'stone');
+    F.box(-1.5, 4.1, -0.5, 11.3, 0.3, 10.3, 0, trim, 'stone');
+    F.box(-1.5, 4.4, -0.5, 11, 3.0, 10, 0, shade(c, 0.05), 'stone');
+    F.box(-1.5, 7.4, -0.5, 11.4, 0.3, 10.4, 0, trim, 'stone');
+    F.pyrRoof(-1.5, 7.7, -0.5, 12, 2.8, 11, 0, roofC, 'roof');
+    /* the oven house on the flank: a vaulted brick oven under its own dome, the flue rising past the eaves */
+    F.box(6.0, 0.4, -1.5, 4.0, 3.2, 6.0, 0, shade(c, -0.08), 'stone');
+    F.dome(6.0, 3.6, -1.5, 2.2, 1.6, 0, 0x8a5a3a, 'stone');
+    F.box(6.0, 3.2, -4.0, 1.0, 7.4, 1.0, 0, dark, 'stone'); F.box(6.0, 10.6, -4.0, 1.4, 0.4, 1.4, 0, trim, 'stone');
+    F.box(6.0, 0.9, 1.55, 1.2, 1.0, 0.2, 0, 0x1a1410, 'stone'); F.blob(6.0, 1.1, 1.5, 0.45, 0.4, 0, glow, 'glow');
+    F.box(6.0, 0.4, 2.4, 2.2, 0.9, 1.2, 0, dark, 'stone');
+    /* the shop window with its bread shelf and an awning, the door, a wheat-sheaf sign */
+    F.box(-3.5, 0.4, 4.55, 4.4, 2.6, 0.2, 0, 0x14110d, 'wood');
+    F.box(-3.5, 1.1, 4.85, 4.2, 0.1, 0.6, 0, timber, 'wood');
+    for (let k = 0; k < 6; k++) F.ell(-5.2 + k * 0.68, 1.3, 4.85, 0.26, 0.14, 0.18, 0, k % 2 ? bread : shade(bread, -0.12), 'cloth');
+    F.box(-3.5, 3.2, 5.6, 5.4, 0.12, 2.0, 0, 0xb08d3c, 'cloth');
+    F.box(1.5, 0.4, 4.55, 1.6, 2.7, 0.2, 0, doorC, 'wood'); F.box(1.5, 3.1, 4.6, 2.0, 0.3, 0.5, 0, trim, 'stone');
+    F.rod(3.1, 4.2, 4.6, 3.1, 4.2, 5.5, 0.05, iron, 'metal'); F.cyl(3.1, 3.3, 5.5, 0.35, 0.9, 0, 0xc8a050, 'cloth');
+    [-5, -1.5, 2].forEach(function (px) { W(px, 5.2, 4.55, 1.0, 1.4, 0); W(px, 1.7, -5.55, 0.9, 1.1, 1); W(px, 5.2, -5.55, 1.0, 1.4, 1); });
+    [-3, 2].forEach(function (pz) { W(-7.05, 1.7, pz, 0.9, 1.1, 3); W(-7.05, 5.2, pz, 1.0, 1.4, 3); W(4.05, 5.2, pz, 1.0, 1.4, 2); });
+    /* a firewood stack and flour sacks by the oven, a cooling rack by the door */
+    for (let k = 0; k < 3; k++) F.box(6.0, 0.4 + k * 0.35, -5.4, 3.4, 0.35, 0.9, 0, shade(timber, 0.05 * k), 'wood');
+    [[8.5, 0.2], [8.6, 1.1]].forEach(function (p) { F.blob(p[0], 0.4, p[1], 0.45, 0.6, 0, 0xe0d8c8, 'cloth'); });
+    F.box(3.0, 0.4, 6.0, 1.4, 1.2, 0.5, 0, timber, 'wood');
+  }
+});
+
+ASSET({
+  key: 'voth_bldg_power_station', name: 'Power Station', culture: 'voth', family: 'industrial', types: ['industry', 'infrastructure'],
+  districts: ['industry'], wealth: [0.3, 0.6], w: 46, d: 34, h: 27.5, variants: 1,
+  /* owner, 2026-10-12: "make a larger power house": its turbine hall holds the census's stokers and engineers */
+  ix: { block: [0, -2, 40, 22], y: 0.6, h: 10, storeys: 2 },
+  build: function (F) {
+    const c = F.pick([0x6e665c, 0x756c60, 0x665e55]), trim = shade(c, -0.18), dark = shade(c, -0.34);
+    const doorC = 0x1c1915, iron = 0x3a3630, copper = 0xa8683a, roofC = 0x4e4a46, glass = 0x2a3a3a, glow = 0xffcf87;
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    function W(cx, cy, cz, ww, wh, s) {
+      const n = nrm(s), flat = n[1] !== 0;
+      F.box(cx, cy, cz, flat ? ww : 0.3, wh, flat ? 0.3 : ww, 0, glass, 'stone');
+      F.box(cx + n[0] * 0.14, cy - 0.25, cz + n[1] * 0.14, flat ? ww + 0.5 : 0.8, 0.25, flat ? 0.8 : ww + 0.5, 0, trim, 'stone');
+      F.box(cx + n[0] * 0.14, cy + wh, cz + n[1] * 0.14, flat ? ww + 0.5 : 0.8, 0.35, flat ? 0.8 : ww + 0.5, 0, trim, 'stone');
+    }
+    /* the plinth and the turbine hall: two storeys under a clerestory, pilasters between tall windows */
+    F.box(0, 0, -4, 46, 0.6, 30, 0, dark, 'stone');
+    F.box(0, 0.6, -2, 40, 10, 22, 0, c, 'stone');
+    F.box(0, 5.3, -2, 40.3, 0.3, 22.3, 0, trim, 'stone');
+    F.box(0, 10.6, -2, 40.6, 0.45, 22.6, 0, trim, 'stone');
+    F.box(0, 11.05, -2, 30, 2.4, 6, 0, shade(c, 0.05), 'stone');
+    for (let k = -6; k <= 6; k++) F.box(k * 2.2, 11.6, 1.02, 1.2, 1.3, 0.2, 0, glass, 'stone');
+    F.pyrRoof(0, 11.05, -2, 41, 2.6, 23, 0, roofC, 'roof');
+    F.pyrRoof(0, 13.45, -2, 31, 1.6, 7, 0, shade(roofC, -0.1), 'roof');
+    for (let k = -4; k <= 4; k++) {
+      F.box(k * 4.6, 0.6, 9.1, 0.8, 10, 0.4, 0, trim, 'stone'); F.box(k * 4.6, 0.6, -13.1, 0.8, 10, 0.4, 0, trim, 'stone');
+      if (k < 4) { W(k * 4.6 + 2.3, 1.8, 9.05, 2.4, 2.8, 0); W(k * 4.6 + 2.3, 6.2, 9.05, 2.4, 3.6, 0); W(k * 4.6 + 2.3, 6.2, -13.05, 2.4, 3.6, 1); }
+    }
+    [-9, -4.5, 0, 4.5].forEach(function (pz) { W(20.05, 6.2, pz, 2.4, 3.6, 2); W(-20.05, 6.2, pz, 2.4, 3.6, 3); W(20.05, 1.8, pz, 2.4, 2.8, 2); });
+    /* the great doors on the front, the loading dock and its crane rail */
+    [-6, 6].forEach(function (px) {
+      F.box(px, 0.6, 9.05, 5.2, 6.2, 0.35, 0, dark, 'stone'); F.box(px, 0.6, 9.25, 4.4, 5.6, 0.2, 0, doorC, 'wood');
+      F.box(px, 6.8, 9.2, 5.8, 0.5, 0.8, 0, trim, 'stone');
+    });
+    F.box(0, 0, 11.5, 22, 1.3, 4.6, 0, dark, 'stone');
+    F.box(0, 1.3, 13.5, 22, 0.15, 0.6, 0, iron, 'metal');
+    [-10, 10].forEach(function (px) { F.box(px, 1.3, 11.5, 0.5, 6.5, 0.5, 0, iron, 'metal'); });
+    F.box(0, 7.8, 11.5, 21, 0.5, 0.5, 0, iron, 'metal');
+    F.box(-6, 7.8, 11.5, 1.2, 0.8, 1.0, 0, shade(iron, 0.1), 'metal'); F.rod(-6, 7.8, 11.5, -6, 3.0, 11.5, 0.05, 0x6b5a3a, 'rope');
+    /* the boiler house behind, its two chimneys, the coal bunker */
+    F.box(-11, 0.6, -16.5, 16, 13, 7, 0, shade(c, -0.06), 'stone');
+    F.box(-11, 13.6, -16.5, 16.4, 0.4, 7.4, 0, trim, 'stone');
+    [-15.5, -6.5].forEach(function (px) {
+      F.cyl(px, 0.6, -18.2, 1.5, 26, 0, shade(c, -0.12), 'stone');
+      F.cyl(px, 24.0, -18.2, 1.75, 0.8, 0, trim, 'stone'); F.cyl(px, 26.6, -18.2, 1.2, 0.3, 0, iron, 'metal');
+    });
+    [-16, -11, -6].forEach(function (px) { W(px, 6.5, -20.05, 1.8, 3.0, 1); });
+    F.box(-11, 0.6, -20.6, 8, 2.4, 1.6, 0, iron, 'metal');
+    /* the fumarole vent house and the copper steam mains into the hall */
+    F.box(12, 0.6, -16.5, 9, 6, 7, 0, shade(c, 0.04), 'stone');
+    F.pyrRoof(12, 6.6, -16.5, 9.6, 2.2, 7.6, 0, roofC, 'roof');
+    [9.5, 14.5].forEach(function (px) { F.cyl(px, 0.6, -20.4, 0.55, 9.5, 0, copper, 'metal'); F.cyl(px, 10.1, -20.4, 0.75, 0.5, 0, shade(copper, -0.15), 'metal'); });
+    F.box(12, 4.2, -13.2, 0.9, 0.9, 1.0, 0, copper, 'metal');
+    /* the cooling tanks on the flank, the conduit masts out front with their copper insulators */
+    [[-21, -4], [-21, 3]].forEach(function (p) { F.cyl(p[0], 0.6, p[1], 2.4, 5.5, 0, shade(iron, 0.15), 'metal'); F.cyl(p[0], 6.1, p[1], 2.5, 0.3, 0, iron, 'metal'); });
+    [-18, 18].forEach(function (px) {
+      F.box(px, 0, 12.5, 0.6, 9.5, 0.6, 0, iron, 'metal'); F.box(px, 9.2, 12.5, 4.2, 0.3, 0.4, 0, iron, 'metal');
+      [-1.6, 0, 1.6].forEach(function (dx) { F.cyl(px + dx, 9.5, 12.5, 0.18, 0.6, 0, copper, 'metal'); });
+    });
+    [-3, 3].forEach(function (px) { F.rod(px, 6.6, 9.4, px, 6.6, 10.2, 0.06, iron, 'metal'); F.ball(px, 6.3, 10.2, 0.3, glow, 'glow'); });
+  }
+});
+
+/* ======================================================================
+   The rest day's worship (owner, 2026-10-12: "3 [services] with half [attending]; make 2 new unique temple models to
+   accomodate the halls and place one on the west side and one on the southeast side at the pre-street phase ... Make
+   a house size chapel that can go in the villages"). Each temple's hall is its `ix` block: about 3,500 m2 of floor, a
+   congregation of some 1,400 standing (the Voth city's simulation, 2.5 m2 a worshipper).
+   ====================================================================== */
+ASSET({
+  key: 'voth_bldg_temple_ash', name: 'Temple of the Ash Saints', culture: 'voth', family: 'religious', types: ['temple', 'civic'],
+  districts: ['temple', 'common'], wealth: [0.4, 0.9], w: 76, d: 80, h: 46, variants: 1,
+  /* a Velothi stepped temple: the great square hall under three receding tiers and a drummed dome, four fire pylons at
+     its corners, a pillared portico and a broad stair up its plinth */
+  ix: { block: [0, -2, 60, 58], y: 1.6, h: 12, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0x8a7f6c, 0x857a66, 0x91866f]), trim = shade(c, -0.16), dark = shade(c, -0.32), lt = shade(c, 0.12);
+    const domeC = 0xa08a4a, doorC = 0x1c1915, fire = 0xffa040, glow = 0xffcf87, gilt = 0xc9a24a;
+    /* the plinth and its stair */
+    F.box(0, 0, -2, 70, 1.6, 68, 0, dark, 'stone');
+    for (let i = 0; i < 6; i++) F.box(0, 0, 33.2 + i * 0.55, 30 - i * 0.6, 1.6 - i * 0.27, 0.6, 0, i % 2 ? trim : shade(trim, 0.04), 'stone');
+    /* the hall: a tapered square block, buttressed, its band of tall windows */
+    F.frustum(0, 1.6, -2, 30, 28.8, 13, 0, c, 'stone', 4);
+    F.box(0, 14.4, -2, 59, 0.6, 59, 0, trim, 'stone');
+    /* the hall's faces lean in from 30 m at its foot to 28.8 m at 13 m: a buttress stands proud of each face every 8 m,
+       a tall window between them set into the face where it stands (r(y) = 30 - 1.2 y / 13 from the hall's centre) */
+    const rAt = function (y) { return 30 - 1.2 * y / 13; }, hz = -2;
+    [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(function (n) {
+      const along = n[0] ? [0, 1] : [1, 0];
+      for (let k = -3; k <= 3; k++) {
+        const u = k * 8, rb = rAt(6) + 0.5, bx = n[0] * rb + along[0] * u, bz = hz + n[1] * rb + along[1] * u;
+        F.box(bx, 1.6, bz, n[0] ? 1.4 : 1.6, 12.8, n[0] ? 1.6 : 1.4, 0, trim, 'stone');                      /* the buttress */
+        if (k < 3) {
+          const rw = rAt(8.6) + 0.05, wx = n[0] * rw + along[0] * (u + 4), wz = hz + n[1] * rw + along[1] * (u + 4);
+          F.box(wx, 5.5, wz, n[0] ? 0.7 : 1.8, 6.2, n[0] ? 1.8 : 0.7, 0, 0x2a2622, 'stone');                   /* the window */
+          F.box(wx + n[0] * 0.2, 11.7, wz + n[1] * 0.2, n[0] ? 0.8 : 2.4, 0.4, n[0] ? 2.4 : 0.8, 0, trim, 'stone');
+        }
+      }
+    });
+    /* three receding tiers and the drum */
+    F.frustum(0, 15, -2, 24, 21, 5, 0, shade(c, 0.04), 'stone', 4);
+    F.box(0, 20, -2, 43, 0.5, 43, 0, trim, 'stone');
+    F.frustum(0, 20.5, -2, 18, 15.5, 4.5, 0, shade(c, 0.07), 'stone', 4);
+    F.box(0, 25, -2, 31.5, 0.5, 31.5, 0, trim, 'stone');
+    F.cyl(0, 25.5, -2, 11, 5, 0, lt, 'stone');
+    for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; F.box(Math.sin(a) * 10.9, 26.6, -2 + Math.cos(a) * 10.9, 1.1, 2.6, 0.3, -a, 0x2a2622, 'stone'); }
+    F.cyl(0, 30.5, -2, 11.6, 0.6, 0, trim, 'stone');
+    F.dome(0, 31.1, -2, 11.2, 11, 0, domeC, 'roof');
+    F.cyl(0, 42, -2, 1.2, 1.6, 0, gilt, 'metal'); F.cone(0, 43.6, -2, 1.0, 2.4, 0, gilt, 'metal');
+    /* the four fire pylons at the hall's corners */
+    [[-29, 25], [29, 25], [-29, -29], [29, -29]].forEach(function (p) {
+      F.frustum(p[0], 1.6, p[1], 2.6, 1.7, 22, 0, shade(c, -0.05), 'stone', 4);
+      F.box(p[0], 23.6, p[1], 4.2, 0.5, 4.2, 0, trim, 'stone');
+      F.frustum(p[0], 24.1, p[1], 1.6, 2.2, 1.0, 0, 0x3a3630, 'metal', 8);
+      F.ball(p[0], 25.4, p[1], 1.1, fire, 'glow');
+    });
+    /* the portico: eight pillars, an entablature, the bronze doors */
+    for (let i = 0; i < 8; i++) { const x = -15.75 + i * 4.5; F.cyl(x, 1.6, 31.5, 0.8, 10.4, 0, lt, 'stone'); F.box(x, 1.6, 31.5, 2.0, 0.6, 2.0, 0, trim, 'stone'); }
+    F.box(0, 12, 30.2, 36, 1.4, 5.4, 0, trim, 'stone');
+    F.pyrRoof(0, 13.4, 30.2, 36.4, 3.2, 5.8, 0, shade(domeC, -0.25), 'roof');
+    F.box(0, 1.6, 27.3, 9, 9.5, 0.6, 0, dark, 'stone');
+    F.box(0, 1.6, 27.65, 7.2, 8.6, 0.25, 0, 0x6b4a2a, 'metal');
+    [-1, 1].forEach(function (s) { F.box(s * 7, 1.6, 27.4, 2.4, 6, 0.5, 0, doorC, 'wood'); F.rod(s * 6, 9, 33, s * 6, 7.8, 33, 0.05, 0x3a2f22, 'metal'); F.ball(s * 6, 7.5, 33, 0.35, glow, 'glow'); });
+    /* the sacristy at the back */
+    F.box(0, 1.6, -35, 22, 8, 6, 0, shade(c, -0.04), 'stone');
+    F.box(0, 9.6, -35, 22.4, 0.5, 6.4, 0, trim, 'stone');
+  }
+});
+ASSET({
+  key: 'voth_bldg_temple_tide', name: 'Temple of the Tide Mother', culture: 'voth', family: 'religious', types: ['temple', 'civic'],
+  districts: ['temple', 'common', 'harbor'], wealth: [0.4, 0.9], w: 82, d: 76, h: 40, variants: 1,
+  /* a Hlaalu basilica: the long nave and its aisles under copper hip roofs and a clerestory, an apse at the head, a
+     square bell-and-fire tower beside the front, a colonnaded forecourt with a basin */
+  ix: { block: [0, -6, 64, 54], y: 1.2, h: 11, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0xb8ab90, 0xb0a286, 0xc0b398]), trim = shade(c, -0.2), dark = shade(c, -0.38), copper = 0x5f7a5c, wood = 0x5a3e2a, glass = 0x2a3a46, glow = 0xffcf87, gilt = 0xc9a24a;
+    F.box(0, 0, -1.5, 76, 1.2, 75, 0, dark, 'stone');                                  /* the plinth, the forecourt on it */
+    /* the aisles and the nave */
+    F.box(0, 1.2, -6, 64, 9, 54, 0, c, 'stone');
+    F.box(0, 10.2, -6, 64.6, 0.5, 54.6, 0, trim, 'stone');
+    F.hipRoof(0, 10.7, -6, 66, 4.5, 56, 0, copper, 'roof');
+    F.box(0, 12.2, -6, 24, 9, 54, 0, shade(c, 0.05), 'stone');                          /* the clerestory */
+    for (let k = -6; k <= 6; k++) [-1, 1].forEach(function (s) { F.box(s * 12.05, 15, -6 + k * 4, 0.3, 3.6, 2.0, 0, glass, 'stone'); });
+    F.box(0, 21.2, -6, 24.6, 0.5, 54.6, 0, trim, 'stone');
+    F.hipRoof(0, 21.7, -6, 26, 6.5, 56, 0, shade(copper, 0.06), 'roof');
+    for (let k = -6; k <= 6; k++) [-1, 1].forEach(function (s) {
+      F.box(s * 32.2, 1.2, -6 + k * 4, 0.8, 9, 0.8, 0, trim, 'stone');
+      if (k < 6) { F.box(s * 32.05, 3.2, -4 + k * 4, 0.3, 5.2, 1.8, 0, glass, 'stone'); F.box(s * 32.3, 8.4, -4 + k * 4, 0.6, 0.4, 2.4, 0, trim, 'stone'); }
+    });
+    /* the apse at the head */
+    F.cyl(0, 1.2, -33, 14, 16, 0, shade(c, 0.03), 'stone');
+    F.dome(0, 17.2, -33, 14.4, 7, 0, copper, 'roof');
+    for (let i = 0; i < 9; i++) { const a = Math.PI + (i - 4) * 0.28; F.box(Math.sin(a) * 13.9, 4, -33 + Math.cos(a) * 13.9, 1.4, 6, 0.3, -a, glass, 'stone'); }
+    /* the west front: a gabled screen with a rose window and three doors */
+    F.box(0, 1.2, 21.2, 66, 12, 0.8, 0, shade(c, 0.06), 'stone');
+    F.pyrRoof(0, 13.2, 21.2, 26, 9, 1.2, 0, shade(c, 0.06), 'stone');
+    F.cyl(0, 13, 21.65, 3.2, 0.3, 0, trim, 'stone'); F.cyl(0, 13.1, 21.8, 2.6, 0.2, 0, glass, 'stone');
+    [-14, 0, 14].forEach(function (x, i) { F.box(x, 1.2, 21.65, i === 1 ? 6 : 4, i === 1 ? 8 : 6, 0.3, 0, wood, 'wood'); F.box(x, i === 1 ? 9.2 : 7.2, 21.8, i === 1 ? 7 : 5, 0.6, 0.6, 0, trim, 'stone'); });
+    /* the tower beside the front */
+    F.box(36, 1.2, 14, 10, 28, 10, 0, shade(c, -0.03), 'stone');
+    for (let y = 8; y < 28; y += 7) F.box(36, y, 14, 10.4, 0.4, 10.4, 0, trim, 'stone');
+    [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (n) { F.box(36 + n[0] * 5.05, 23, 14 + n[1] * 5.05, n[0] ? 0.3 : 3, 3.5, n[0] ? 3 : 0.3, 0, 0x2a2622, 'stone'); });
+    F.hipRoof(36, 29.2, 14, 11, 6, 11, 0, copper, 'roof');
+    F.cone(36, 35.2, 14, 0.5, 3, 0, gilt, 'metal'); F.ball(36, 25, 14, 1.0, 0xffa040, 'glow');
+    /* the forecourt: a colonnade on three sides, the basin */
+    for (let i = 0; i <= 10; i++) { const x = -30 + i * 6; F.cyl(x, 1.2, 33.5, 0.45, 5, 0, shade(c, 0.1), 'stone'); }
+    [-1, 1].forEach(function (s) { for (let i = 1; i < 3; i++) F.cyl(s * 30, 1.2, 33.5 - i * 5.5, 0.45, 5, 0, shade(c, 0.1), 'stone'); });
+    F.box(0, 6.2, 33.5, 61, 0.7, 2.2, 0, trim, 'stone');
+    F.cyl(0, 1.2, 27.5, 4, 0.7, 0, trim, 'stone'); F.cyl(0, 1.55, 27.5, 3.5, 0.4, 0, 0x3f5e60, 'water');
+    F.cyl(0, 1.2, 27.5, 0.5, 2.6, 0, shade(c, 0.1), 'stone'); F.ball(0, 4.1, 27.5, 0.6, gilt, 'metal');
+    [-1, 1].forEach(function (s) { F.rod(s * 5, 6.9, 33.5, s * 5, 5.6, 33.5, 0.05, 0x3a2f22, 'metal'); F.ball(s * 5, 5.3, 33.5, 0.35, glow, 'glow'); });
+  }
+});
+ASSET({
+  key: 'voth_bldg_village_chapel', name: 'Village chapel', culture: 'voth', family: 'religious', types: ['temple', 'dwelling-single'],
+  districts: ['village', 'farm'], wealth: [0, 0.5], w: 14, d: 11, h: 9.5, variants: 1,
+  /* a house-sized chapel for the villages: a plastered nave with a low dome, a bell cote over the door, a porch */
+  ix: { block: [0, -0.5, 11, 8], y: 0.4, h: 4.6, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0xb8a88a, 0xc0b092, 0xae9e80]), trim = shade(c, -0.22), dark = shade(c, -0.36), domeC = 0x8f7a54, wood = 0x5a3e2a, glow = 0xffcf87;
+    F.box(0, 0, -0.5, 12, 0.4, 9, 0, dark, 'stone');
+    F.box(0, 0.4, -0.5, 11, 4.6, 8, 0, c, 'plaster');
+    F.box(0, 5, -0.5, 11.3, 0.3, 8.3, 0, trim, 'stone');
+    F.cyl(0, 5.3, -0.5, 3, 0.8, 0, shade(c, 0.05), 'plaster');
+    F.dome(0, 6.1, -0.5, 3.1, 2.4, 0, domeC, 'roof');
+    F.ball(0, 8.6, -0.5, 0.18, 0xc9a24a, 'metal');
+    /* the bell cote over the door */
+    F.box(0, 5.3, 3.3, 2.4, 2.2, 0.6, 0, shade(c, 0.05), 'plaster');
+    F.box(0, 5.9, 3.3, 1.0, 1.1, 0.7, 0, 0x2a2622, 'stone');
+    F.cyl(0, 6.1, 3.3, 0.32, 0.6, 0, 0x8a6a3a, 'metal');
+    F.pyrRoof(0, 7.5, 3.3, 2.8, 0.9, 1.0, 0, domeC, 'roof');
+    /* the porch and the door */
+    F.box(0, 0.4, 3.55, 2.2, 3.0, 0.15, 0, wood, 'wood');
+    F.box(0, 0.4, 4.6, 4, 0.2, 2.2, 0, trim, 'stone');
+    [-1.6, 1.6].forEach(function (x) { F.box(x, 0.6, 5.4, 0.3, 2.8, 0.3, 0, wood, 'wood'); });
+    F.box(0, 3.4, 4.6, 4.2, 0.25, 2.4, 0, wood, 'wood');
+    F.ball(1.2, 2.9, 3.7, 0.12, glow, 'glow');
+    /* windows down the flanks */
+    [-3, 0, 3].forEach(function (z) { [-1, 1].forEach(function (s) { F.box(s * 5.55, 1.8, z - 0.5, 0.15, 1.8, 0.8, 0, 0x2a2622, 'stone'); F.box(s * 5.62, 3.7, z - 0.5, 0.2, 0.25, 1.1, 0, trim, 'stone'); }); });
+  }
+});
+ASSET({
+  key: 'voth_bldg_village_shrine', name: 'Village shrine', culture: 'voth', family: 'religious', types: ['temple'],
+  districts: ['village', 'farm', 'poor', 'common'], wealth: [0, 0.6], w: 26, d: 22, h: 12, variants: 1,
+  /* a village-sized shrine (owner, 2026-10-12: "a couple village size shrines" for the rest day's overflow): a walled
+     precinct on a low platform, a pillared hall at its back under a hipped roof and a lantern cupola, the forecourt
+     before it with a stele, an offering basin and two braziers, a gate in its front wall */
+  ix: { block: [0, -4.5, 20.6, 10.6], y: 0.5, h: 5.4, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0xb4a284, 0xbcab8c, 0xa99878]), trim = shade(c, -0.22), dark = shade(c, -0.38), roofC = 0x7c5a3a, domeC = 0x8f7a54, wood = 0x5a3e2a, glow = 0xffcf87, gilt = 0xc9a24a, soot = 0x2a2622;
+    F.box(0, 0, 0, 26, 0.5, 22, 0, dark, 'stone');                                        /* the platform */
+    /* the hall */
+    F.box(0, 0.5, -4.5, 22, 5.5, 12, 0, c, 'plaster');
+    F.box(0, 0.5, -4.5, 22.4, 0.5, 12.4, 0, trim, 'stone');                               /* its plinth course */
+    F.box(0, 6, -4.5, 22.6, 0.4, 12.6, 0, trim, 'stone');                                 /* the cornice */
+    F.pyrRoof(0, 6.4, -4.5, 22.6, 2.6, 12.6, 0, roofC, 'roof');
+    F.cyl(0, 8.1, -4.5, 1.5, 1.4, 0, shade(c, 0.05), 'plaster');                           /* the lantern cupola */
+    [0, 1, 2, 3, 4, 5].forEach(function (i) { const a = i / 6 * TAU; F.box(Math.cos(a) * 1.5, 8.5, -4.5 + Math.sin(a) * 1.5, 0.35, 0.6, 0.12, -(a + TAU / 4), glow, 'glow'); });
+    F.dome(0, 9.5, -4.5, 1.6, 1.4, 0, domeC, 'roof');
+    F.ball(0, 11.1, -4.5, 0.22, gilt, 'metal');
+    /* pilasters and windows on the flanks and the back */
+    [-1, 1].forEach(function (s) {
+      [-9, -4.5, 0].forEach(function (z) { F.box(s * 11.05, 0.5, z, 0.3, 5.5, 0.7, 0, trim, 'stone'); });
+      [-6.75, -2.25].forEach(function (z) { F.box(s * 11.05, 2.2, z, 0.15, 2.0, 1.2, 0, soot, 'stone'); F.box(s * 11.12, 4.4, z, 0.2, 0.25, 1.6, 0, trim, 'stone'); });
+    });
+    [-8, -4, 0, 4, 8].forEach(function (x) { F.box(x, 0.5, -10.55, 0.7, 5.5, 0.3, 0, trim, 'stone'); });
+    [-6, -2, 2, 6].forEach(function (x) { F.box(x, 2.2, -10.55, 1.2, 2.0, 0.15, 0, soot, 'stone'); F.box(x, 4.4, -10.62, 1.6, 0.25, 0.2, 0, trim, 'stone'); });
+    /* the portico: four columns, a deep lintel, the door between */
+    [-6, -2, 2, 6].forEach(function (x) { F.cyl(x, 0.5, 2.9, 0.38, 4.7, 0, shade(c, 0.08), 'stone'); F.box(x, 5.2, 2.9, 1.0, 0.25, 1.0, 0, trim, 'stone'); });
+    F.box(0, 5.45, 2.2, 15, 0.55, 2.4, 0, trim, 'stone');
+    F.box(0, 6.0, 2.2, 15.4, 0.3, 2.7, 0, dark, 'stone');
+    F.box(0, 0.5, 1.58, 3.0, 3.8, 0.15, 0, wood, 'wood');
+    F.box(0, 4.3, 1.58, 3.6, 0.5, 0.2, 0, trim, 'stone');
+    [-1, 1].forEach(function (s) { F.ball(s * 2.2, 3.4, 1.8, 0.16, glow, 'glow'); });
+    /* the forecourt's walls and its gate */
+    [-1, 1].forEach(function (s) {
+      F.box(s * 12.6, 0.5, 6.2, 0.6, 1.2, 9.2, 0, c, 'plaster'); F.box(s * 12.6, 1.7, 6.2, 0.8, 0.15, 9.4, 0, trim, 'stone');
+      F.box(s * 8.25, 0.5, 10.6, 8.1, 1.2, 0.6, 0, c, 'plaster'); F.box(s * 8.25, 1.7, 10.6, 8.3, 0.15, 0.8, 0, trim, 'stone');
+      F.box(s * 3.9, 0.5, 10.6, 0.9, 2.6, 0.9, 0, trim, 'stone');                       /* the gate posts, a lamp on each */
+      F.box(s * 3.9, 3.1, 10.6, 1.1, 0.2, 1.1, 0, dark, 'stone');
+      F.ball(s * 3.9, 3.55, 10.6, 0.3, glow, 'glow');
+    });
+    /* the stele, the offering basin, two braziers */
+    F.box(0, 0.5, 6.0, 1.6, 0.4, 1.0, 0, dark, 'stone');
+    F.box(0, 0.9, 6.0, 1.0, 2.6, 0.45, 0, shade(c, 0.12), 'stone');
+    F.pyrRoof(0, 3.5, 6.0, 1.2, 0.5, 0.65, 0, trim, 'stone');
+    F.box(0, 2.6, 6.24, 0.5, 0.5, 0.05, 0, gilt, 'metal');
+    F.cyl(0, 0.5, 8.3, 1.0, 0.55, 0, trim, 'stone'); F.cyl(0, 1.0, 8.3, 0.8, 0.08, 0, 0x3f5e60, 'water');
+    [-1, 1].forEach(function (s) {
+      F.cyl(s * 5, 0.5, 6.5, 0.22, 1.3, 0, 0x3a2f22, 'metal'); F.cyl(s * 5, 1.8, 6.5, 0.5, 0.25, 0, 0x3a2f22, 'metal');
+      F.ball(s * 5, 2.15, 6.5, 0.3, glow, 'glow');
+    });
+  }
+});
+ASSET({
+  key: 'voth_bldg_shipwright', name: "Shipwright's Dock", culture: 'voth', family: 'industrial', types: ['workshop', 'shop', 'infrastructure'],
+  districts: ['harbour', 'river port'], wealth: [0.2, 0.6], w: 30, d: 40, h: 14, variants: 1,
+  /* the owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars, kayaks". The yard on the
+     shore (its back, -z, to the street), a slipway stepping down into the water (+z) with a hull on the stocks, the
+     sheerlegs over it, a timber shed with a sawpit and a steam box, and the shop at the landward corner: oars and
+     kayaks racked outside it for sale */
+  ix: { block: [8.5, -14.5, 10, 9], y: 0.5, h: 4.4, storeys: 1 },
+  build: function (F) {
+    const c = F.pick([0x8a7a62, 0x92826a]), trim = shade(c, -0.22), dark = shade(c, -0.36), timber = 0x5c4630, plank = 0x7a5e3e, pale = 0xa48a62;
+    const roofC = 0x6a4a32, doorC = 0x2a2018, rope = 0x8a7350, iron = 0x3a3630, glow = 0xffcf87;
+    /* the yard: a stone-edged apron on the shore */
+    F.box(0, 0, -9, 30, 0.5, 22, 0, dark, 'stone');
+    F.box(0, 0.5, -19.7, 30, 0.4, 0.6, 0, trim, 'stone');
+    /* the slipway: two timber ways stepping down into the water, the hull's cradle on them */
+    for (let k = 0; k < 9; k++) {
+      const z = 1 + k * 2.2, y = -0.25 * k;
+      [-2.2, 2.2].forEach(function (x) { F.box(x, y - 0.4, z, 0.7, 0.9, 2.3, 0, timber, 'wood'); });
+      F.box(0, y - 0.6, z, 6.4, 0.3, 2.0, 0, shade(timber, -0.15), 'wood');
+    }
+    /* the hull on the stocks: the keel, stem and sternpost, the frames, the lower strakes planked */
+    const hz0 = -4, hz1 = 15, hy = 1.0;
+    F.box(0, hy - 0.4, (hz0 + hz1) / 2, 0.5, 0.5, hz1 - hz0, 0, timber, 'wood');
+    F.box(0, hy, hz1 + 0.3, 0.5, 5.0, 0.6, 0, timber, 'wood');
+    F.box(0, hy, hz0 - 0.2, 0.5, 4.2, 0.6, 0, timber, 'wood');
+    for (let k = 1; k < 9; k++) {
+      const z = hz0 + k * (hz1 - hz0) / 9, beam = 2.6 * Math.sin(Math.PI * k / 9) + 0.6;
+      [-1, 1].forEach(function (s) {
+        F.rod(0, hy, z, s * beam * 0.8, hy + 1.2, z, 0.1, pale, 'wood');
+        F.rod(s * beam * 0.8, hy + 1.2, z, s * beam, hy + 3.6, z, 0.1, pale, 'wood');
+      });
+      if (k > 1 && k < 8) [-1, 1].forEach(function (s) { F.box(s * beam * 0.62, hy + 0.7, z, 0.12, 1.2, (hz1 - hz0) / 9 + 0.1, 0, plank, 'wood'); });
+    }
+    [-1, 1].forEach(function (s) { for (let k = 0; k < 4; k++) F.box(s * 3.4, -0.3, hz0 + 2 + k * 4.5, 0.3, hy + 0.6, 0.3, 0, iron, 'metal'); });   /* the shores propping it */
+    /* the sheerlegs over the slip, a block and tackle */
+    F.rod(-5, 0.5, 2, 0, 13.4, 5, 0.18, timber, 'wood'); F.rod(5, 0.5, 2, 0, 13.4, 5, 0.18, timber, 'wood');
+    F.rod(0, 13.4, 5, 0, 0.5, -6, 0.06, rope, 'rope'); F.rod(0, 13.4, 5, 0, 5.2, 5, 0.04, rope, 'rope');
+    F.box(0, 4.6, 5, 0.5, 0.7, 0.4, 0, iron, 'metal');
+    /* the timber shed: an open front, the sawpit, the steam box, a stack of planks */
+    F.box(-9.5, 0.5, -13, 10, 0.2, 12, 0, shade(dark, 0.08), 'stone');
+    [[-14.3, -18.8], [-4.7, -18.8], [-14.3, -7.2], [-4.7, -7.2]].forEach(function (p) { F.box(p[0], 0.5, p[1], 0.5, 5.4, 0.5, 0, timber, 'wood'); });
+    F.box(-9.5, 0.5, -18.9, 9.6, 4.0, 0.25, 0, plank, 'wood');
+    F.box(-14.4, 0.5, -13, 0.25, 4.0, 11.6, 0, plank, 'wood');
+    F.pyrRoof(-9.5, 5.9, -13, 11, 2.0, 13, 0, roofC, 'roof');
+    F.box(-9.5, 0.3, -11, 1.2, 0.3, 6, 0, doorC, 'wood');                                          /* the sawpit and its log */
+    F.box(-9.5, 0.95, -11, 0.7, 0.7, 5.5, 0, timber, 'wood');
+    F.box(-6.6, 0.7, -16.5, 1.2, 1.2, 4.4, 0, shade(timber, 0.1), 'wood'); F.cyl(-6.6, 1.9, -14.6, 0.25, 1.8, 0, iron, 'metal');
+    F.ball(-6.6, 3.9, -14.6, 0.35, 0xd8d0c4, 'glow');
+    for (let k = 0; k < 5; k++) F.box(-12.4, 0.7 + k * 0.28, -14, 2.6, 0.24, 6.5 - k * 0.4, 0, k % 2 ? plank : pale, 'wood');
+    /* the shop: plastered, a door to the street, a sign, a window to the yard */
+    F.box(8.5, 0.5, -14.5, 10, 4.4, 9, 0, c, 'plaster');
+    F.box(8.5, 4.9, -14.5, 10.4, 0.3, 9.4, 0, trim, 'stone');
+    F.pyrRoof(8.5, 5.2, -14.5, 10.6, 2.4, 9.6, 0, roofC, 'roof');
+    F.box(8.5, 0.5, -19.05, 1.8, 2.8, 0.2, 0, doorC, 'wood'); F.box(8.5, 3.5, -19.1, 2.6, 0.35, 0.25, 0, trim, 'stone');
+    F.box(8.5, 3.9, -19.25, 2.2, 0.8, 0.12, 0, plank, 'wood');
+    F.ball(10.2, 3.2, -19.3, 0.16, glow, 'glow');
+    [5.5, 11.5].forEach(function (x) { F.box(x, 2.0, -9.95, 1.4, 1.4, 0.15, 0, doorC, 'stone'); F.box(x, 2.0, -19.05, 1.2, 1.2, 0.15, 0, doorC, 'stone'); });
+    [-12.5, -16.5].forEach(function (z) { F.box(13.55, 2.0, z, 0.15, 1.3, 1.3, 0, doorC, 'stone'); F.box(3.45, 2.0, z, 0.15, 1.3, 1.3, 0, doorC, 'stone'); });
+    /* for sale: oars racked against the shop, kayaks on trestles */
+    for (let k = 0; k < 8; k++) F.rod(13.9, 0.6, -18 + k * 0.9, 14.4, 4.2, -17.6 + k * 0.9, 0.06, pale, 'wood');
+    [[9, -6.5], [9, -3.5]].forEach(function (p) {
+      [-2.2, 2.2].forEach(function (dx) { F.box(p[0] + dx, 0.5, p[1], 0.3, 0.8, 1.2, 0, timber, 'wood'); });
+      F.box(p[0], 1.3, p[1], 5.4, 0.45, 0.7, 0, 0x6e8a5a, 'wood'); F.box(p[0], 1.75, p[1], 1.0, 0.1, 0.5, 0, doorC, 'wood');
+    });
+    /* bollards and a capstan on the waterfront edge */
+    [-13, 13].forEach(function (x) { F.cyl(x, 0.5, 1.5, 0.35, 1.0, 0, iron, 'metal'); });
+    F.cyl(-8, 0.5, -2, 0.7, 1.1, 0, timber, 'wood'); F.cyl(-8, 1.6, -2, 0.95, 0.18, 0, iron, 'metal');
   }
 });

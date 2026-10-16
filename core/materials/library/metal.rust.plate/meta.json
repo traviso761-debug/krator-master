@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.316,
+    1.057
+   ],
+   "seam_before": [
+    2.474,
+    1.493
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.3,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.rust.plate",
+  "metal": 0.4,
+  "roughness": 0.75,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Seamless Riveted Rusted Steel Panels.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Seamless Riveted Rusted Steel Panels.png",
+  "prompt": "Prompt row metal.rust.plate in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Girder and Mavs weathering steel; post-apoc, Port, Ring Sea plating",
+  "sha1": "935de2d6a3cd39af508165212b498612e8a80497"
+ }
+}

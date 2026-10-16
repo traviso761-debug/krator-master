@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1242,
+    1098
+   ],
+   "seam_after": [
+    0.876,
+    0.636
+   ],
+   "seam_before": [
+    2.348,
+    3.212
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "wood.log.carved",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2.0,
+   1.77
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "wood-log-carved.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image)",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id wood.log.carved).",
+  "reuse": "round-log walls: Highlands, Dalab, Reed Lake, Ys; log cabins anywhere",
+  "sha1": "01cee84edc00d74cbdbd8c8cfcfb030e274668ae"
+ }
+}

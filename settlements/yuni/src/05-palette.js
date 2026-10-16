@@ -133,10 +133,20 @@ var FAMMAT = {
   leafy  : { tex:null, scale:[3.0,3.0] },
   bark   : { tex:null, scale:[1.5,3.0] },
   dark   : { tex:null, scale:[1,1] },         /* openings */
-  glowmat: { tex:null, scale:[1,1], basic:true }
+  glowmat: { tex:null, scale:[1,1], basic:true },
+  /* the interiors' own surfaces (2026-10-05, the material-library pass): each has a library set (materials.json) and,
+     under ?mat=proc or with no set, the procedural map of the family it was drawn with before (`proc`), so the old
+     look is unchanged. clay, rug and reedmat are furniture families (64-interiors.js); 'fl-' families are floors
+     only (76-doors.js intMat takes 'fl-<fam>' from here when it exists, else from <fam>) */
+  clay   : { tex:null, scale:[1.0,1.0], proc:'tile' },     /* fired clay: pots, jars, terracotta floor tiles */
+  rug    : { tex:null, scale:[1.5,1.5], proc:'cloth' },    /* knotted carpets and kilims */
+  reedmat: { tex:null, scale:[1.2,1.2], proc:'thatch' },   /* woven reed mats, sleeping mats */
+  basket : { tex:null, scale:[0.6,0.6], proc:'thatch' },   /* coiled grass baskets and lids */
+  'fl-adobe': { tex:null, scale:[4.0,4.0], proc:'adobe' }, /* packed-earth floors */
+  'fl-tile' : { tex:null, scale:[1.0,1.0], proc:'tile' }   /* fired-clay floor tiles */
 };
 
-var BUDGET = { drawCalls: 190, triangles: 7000000, instances: 460000 };
+var BUDGET = { drawCalls: 190, triangles: 10000000, instances: 460000 };   /* triangles 7 M -> 10 M with the eastern badlands biome (2026-10-06), as Locus took its biome */
 
 var GILDC=PAL.gild, BLUEGREYC=PAL.blueGrey, STONEC=PAL.stoneWarm, THORNC=PAL.thorn;
 var ADOBEC=PAL.adobe, ADOBEREDC=PAL.adobeRed, WHITEC=PAL.whitewash, BLUELC=PAL.bluewashL, BLUEDC=PAL.bluewashD,

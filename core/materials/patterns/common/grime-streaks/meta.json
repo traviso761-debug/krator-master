@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.0,
+    0.0
+   ],
+   "seam_before": [
+    0.0,
+    0.0
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "mask",
+  "id": "common/grime-streaks",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "patterns__common__grime-streaks.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `patterns/common/grime-streaks` (the redo) (delivered as \"Grayscale Drip Texture Grid.png\"); the magenta ground keyed to white, as the installed mask",
+  "reuse": "the break-up hook's `grime` (core/materials/record 25-matlib-host.js)",
+  "sha1": "106c31d4036c8c7395b4c263be31d36109d38952"
+ }
+}

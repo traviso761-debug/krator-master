@@ -277,6 +277,7 @@ for(const g of INSTANCES.slice()){
       if(miss.length)r.fail.push('materials missing '+[...new Set(miss)].join(','));}
     if(A.variantNames&&A.variantNames.length!==A.variants)r.fail.push('variantNames length');
     if(A.job!=null&&FURN_JOBS.indexOf(A.job)<0)r.fail.push('bad job '+A.job);
+    if(!Array.isArray(A.task)||!A.task.every(t=>FURN_TASKS.indexOf(t)>=0))r.fail.push('bad task '+JSON.stringify(A.task));
     /* every palette key the piece names exists in its culture's palette */
     const pal=FPAL[A.culture]||{}, miss=(cfg.palKeys[u.key]||[]).filter(k=>pal[k]==null);
     if(!FPAL[A.culture])r.fail.push('palette: no FPAL for culture '+A.culture);

@@ -1,5 +1,5 @@
 /* ============================== 15. FLORA (first pass) ==============================
-   Mediterranean: cypress, olive, a maritime-pine lookalike, scrub. Built from
+   Planted trees: cypress avenues, park trees, olive groves (the wild valley is the eastern badlands kit's: 69z). Built from
    kit parts (trunk + crowns), placed by zone, and kept out of everything the
    mask reserves. TREE_SITES is published so the building pass can respect the
    avenue trees that are already standing.                                   */
@@ -45,20 +45,18 @@ function SHRUB(x,z,s){ BLOB(x, terrainH(x,z)-0.15, z, s, s*0.7, rnd()*TAU, pick(
      of the largest piece plus its yard. */
   PARKS.forEach(function(P){ for(var i=0;i<46;i++){ var a=rnd()*TAU, d=P.r*(0.46 + 0.54*Math.sqrt(rnd()))*0.92, x=P.x+Math.cos(a)*d, z=P.z+Math.sin(a)*d; if(onStreet(x,z,2)) continue;
       var q=rnd(); if(q<0.3) CYPRESS(x,z,rr(9,14)); else if(q<0.6) PINE(x,z,rr(10,15)); else if(q<0.8) OLIVE(x,z,rr(4.5,6.5)); else SHRUB(x,z,rr(1.2,2.4)); } });
-  /* 3. the valley: pine woods on the hills and the talus, olive groves in rows on the floor, scrub everywhere, poplar-like cypress by the river */
-  var N=FAST?9000:15000, tries=0, placed=0;
-  while(placed<N && tries++<N*6){
+  /* 3. the valley's OLIVE GROVES: planted in rows on the gentle floor, snapped to a grid. Only what people planted
+     is Yuni's own: the wild valley (the woods on the hills, the scrub, the riverside trees, the butte's wooded talus)
+     is the eastern badlands kit's (69b-yuni-biohost.js, 69z-yuni-badlands.js), which keeps off these groves through
+     TREE_SITES. Until 2026-10-05 this pass also planted pines, scrub and riverside cypress, and a fourth pass a pine
+     ring round the butte: the first-pass stand-ins for the region's flora. */
+  var N=FAST?2700:4500, tries=0, placed=0;
+  while(placed<N && tries++<N*30){
     var x=rr(-2500,2500), z=rr(-2500,2500), r0=Math.hypot(x,z); if(r0 < 770 || r0 > 2500) continue; if(!clear(x,z,0) || onStreet(x,z,3)) continue;
     var h=terrainH(x,z), sl=slope(x,z), wood=fbm(x*0.0030+9, z*0.0030-4), bd=Math.hypot(x-BUTTE.x,z-BUTTE.z), rd=riverDist(x,z);
-    if(h > 420) continue;
-    if(bd < 560 || (wood > 0.55 && sl > 0.04) || sl > 0.16){ if(rnd() < (bd<560?0.9:0.55)){ PINE(x,z,rr(12,22)); placed++; } else { SHRUB(x,z,rr(1.2,3)); placed++; } }
-    else if(rd < 70 && rnd()<0.6){ if(rnd()<0.5) CYPRESS(x,z,rr(12,18)); else OLIVE(x,z,rr(5,7)); placed++; }
-    else if(wood < 0.42 && sl < 0.06){ /* an olive grove: snap to a planted grid */
-      var gx=Math.round(x/9)*9+ (phash(Math.round(x/9),0,Math.round(z/9),1)-0.5)*1.5, gz=Math.round(z/9)*9; if(phash(Math.round(x/90),3,Math.round(z/90),7) < 0.35 && clear(gx,gz,0)){ OLIVE(gx,gz,rr(4.5,6.5)); placed++; } }
-    else if(rnd()<0.35){ SHRUB(x,z,rr(1,2.6)); placed++; }
+    if(h > 420 || bd < 560 || rd < 70 || sl > 0.06 || wood >= 0.42) continue;
+    var gx=Math.round(x/9)*9+ (phash(Math.round(x/9),0,Math.round(z/9),1)-0.5)*1.5, gz=Math.round(z/9)*9;
+    if(phash(Math.round(x/90),3,Math.round(z/90),7) < 0.35 && clear(gx,gz,0)){ OLIVE(gx,gz,rr(4.5,6.5)); placed++; }
   }
-  /* 4. a wooded talus ring (the Devil's Tower skirt) */
-  for(var i=0;i<(FAST?700:1300);i++){ var a=rnd()*TAU, d=rr(300,545), x2=BUTTE.x+Math.cos(a)*d, z2=BUTTE.z+Math.sin(a)*d;
-    if(angDist(a,-Math.PI/2) < 1.25 || !clear(x2,z2,0) || Math.hypot(x2,z2) < RW+40) continue; PINE(x2,z2,rr(11,20)); }
   window._flora = FLORA;
 })();

@@ -1,0 +1,224 @@
+[
+ {
+  "src": "ground-clay-popcorn.png",
+  "out": "core/materials/library/ground.clay.popcorn",
+  "record": {
+   "id": "ground.clay.popcorn",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Weathered bentonite badland clay seen from above: a crust of small puffy \"popcorn\" clay nodules over dry cracked mudstone, fine rills running one way where rain has washed it, a few pebbles. Neutral pale grey-buff (#c8beb0) with soft lighter and darker patches, so it can be tinted to pink, cream, gold, grey and maroon beds. (Row ground.clay.popcorn of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "sedesert badland patches, Korona, any badland or eroded clay slope"
+   }
+  },
+  "options": {
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "rock-sandstone-navajo.png",
+  "out": "core/materials/library/rock.sandstone.navajo",
+  "record": {
+   "id": "rock.sandstone.navajo",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    6,
+    6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Cross-bedded aeolian sandstone cliff face: sweeping inclined cross-beds in sets a metre or two thick, fine parallel laminae, rust-red (#b0583a) grading through salmon (#c87a58) to a bleached cream (#e2d2b4) toward the top, dark desert-varnish streaks (#4a2e24) hanging down from ledges, a few small honeycomb weathering pits. (Row rock.sandstone.navajo of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "Zion-type canyon walls here, sedesert mesas, Shade's cliffs"
+   }
+  },
+  "options": {
+   "rough": 0.88,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "ground-sulphur.png",
+  "out": "core/materials/library/ground.sulphur",
+  "record": {
+   "id": "ground.sulphur",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Volcanic sulphur flat seen from above: lumpy bright sulphur-yellow crust (#e8d040) with paler cream salt (#f0ece0) blisters, rust-orange iron oxide (#c07030) bleeding through in patches, a few small round vent holes ringed in yellow, fine polygonal cracks. Full colour (do not mute). (Row ground.sulphur of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "Korona, Throne/Volcano, any geothermal ground"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.1
+  }
+ },
+ {
+  "src": "ground-travertine-acid.png",
+  "out": "core/materials/library/ground.travertine.acid",
+  "record": {
+   "id": "ground.travertine.acid",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Rim of an acid hot pool seen from above: thin terraced mineral crust in scalloped ledges, acid lime-green (#9ad030) wet film on white-cream (#e8e4d4) mineral, yellow (#d8b030) and orange-brown (#a86028) stained edges, glossy where damp. Full colour. (Row ground.travertine.acid of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "the sulphur pools' margins; any hot spring"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.35,
+   "lift": 0.1
+  }
+ },
+ {
+  "src": "ground-playa-red.png",
+  "out": "core/materials/library/ground.playa.red",
+  "record": {
+   "id": "ground.playa.red",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Cracked desert playa seen from above: dry pinkish-red clay (#c49a7e) split into polygon plates 20-40 cm across with curled edges, pale dust (#d8b8a0) in the cracks, a few small stones. (Row ground.playa.red of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "the hot waste here, sedesert's pond rim, crater drylands, any dry lake bed"
+   }
+  },
+  "options": {
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "ground-steppe.png",
+  "out": "core/materials/library/ground.steppe",
+  "record": {
+   "id": "ground.steppe",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Cold desert steppe soil seen from above: pale grey-tan silty soil (#a8a088) with a dark lumpy biological crust (#5a5444) in patches, scattered small angular gravel, a few dry grass stems and fallen grey sage leaves. (Row ground.steppe of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "sagebrush steppe here, crater drylands, highland basins"
+   }
+  },
+  "options": {
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "ground-needles.png",
+  "out": "core/materials/library/ground.needles",
+  "record": {
+   "id": "ground.needles",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Conifer forest floor seen from above: a thick mat of fallen brown pine and spruce needles (#7a5a3e, #8a6a48), a few cones, small twigs and bark flakes, patches of darker damp duff (#3e3226) and a little moss. (Row ground.needles of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1125 px image; converted to PNG.",
+    "reuse": "spruce-fir and ponderosa floors here, `biomes/nhighlands`, Highlands"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.15,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "ground-tundra.png",
+  "out": "core/materials/library/ground.tundra",
+  "record": {
+   "id": "ground.tundra",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Alpine tundra seen from above: low mat of olive and russet cushion plants and moss (#6a6844, #8a5a3a), grey-green and orange crustose lichen on small flat stones, patches of grey gravel (#8a8478), a few tiny white and pink flowers. (Row ground.tundra of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1125 px image; converted to PNG.",
+    "reuse": "the treeline and tundra here, `biomes/nhighlands`, the outer rim"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ }
+]

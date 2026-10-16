@@ -13,60 +13,71 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`, `opt/69a-world-uv.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 2 |  |
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
-| `32-surfaces.js` | 7 | surfaces (1) |
-| `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
+| `32-surfaces.js` | 8 | surfaces (1) |
+| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
-| `38-helpers2.js` | 3 | v2 helpers (1) |
+| `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `40-factory-extras.js` | 4 |  |
-| `42-offices.js` | 11 |  |
+| `42-offices.js` | 15 |  |
 | `46-bunker.js` | 5 |  |
 | `48-library.js` | 4 |  |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
-| `52-sky-abc.js` | 20 |  |
+| `52-sky-abc.js` | 29 |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `56-sky-d.js` | 5 |  |
+| `56-sky-d.js` | 6 |  |
 | `57-sky-e.js` | 3 |  |
-| `58-sky-f.js` | 4 |  |
-| `64-houses-def.js` | 5 |  |
+| `58-sky-f.js` | 5 |  |
+| `64-houses-def.js` | 9 |  |
 | `66-office-c.js` | 2 |  |
-| `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
+| `69f-iziz-fixtures.js` | 3 |  |
 | `70-vern-dwellings.js` | 20 | POOR (9); MIDDLE (61); RICH (126) |
 | `71-vern-trade.js` | 18 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (42); workshops (70); scrap smithy: forge under a salvaged roof on pip (103); market canopy: a great two-tier rain roof over r (131); warehouse: long timber shed clad in board and sh (154) |
 | `72-vern-civic.js` | 17 | school: hall with a bell tower, two classroom wi (13); hospital: a long ward block with deep verandas b (45); barracks and drill yard: palisade, two barrack b (72); the alchemist's compound: walled; house with a d (109) |
 | `73-police.js` | 5 |  |
 | `73-vern-infra.js` | 9 | grain silos: four stave silos on stilts under th (5); storage tank: a reclaimed Ancient tank on a ston (24); electric generator: stone engine house, a reclai (47) |
 | `74-vern-guilds.js` | 35 **big** | local helpers (LOCAL frame, y = base of the piec (8); Farmers' Guild: half-timber hall on a stone plin (86); Beast Hunters' Guild: trophy hall with a towerin (140); caravanserai: walled court, gatehouse with a two (190); Forgemaster's Hall: tall stone hall with a 9 m o (238) |
+| `74b-vern-frontier.js` | 38 **big** | local helpers (LOCAL frame, y = base of the piec (9); the Governor's Palace: walled forecourt, iron ga (41); the guard tower and barracks: a square stone tow (99); the watch house: a two-storey city-watch post, s (141); the toll house: at the trailhead, a toll window  (161); the palisade: ONE modular segment, o.len metres  (194); the palisade gate: two log towers either side of (205); the mustering ground: an open drill yard inside  (230); the rest stop on the cliff trail. v0: cut into t (259) |
 | `75-port-embassy.js` | 24 | textures (near-grey, tinted per instance; 128 px (10); materials (35); geometry (43); kit items (58); local helpers (vp prefix) (68); the embassy (84) |
-| `76-campus.js` | 9 |  |
+| `76-campus.js` | 11 |  |
 | `76-port-chapterhouse.js` | 17 |  |
 | `77-anc-guilds.js` | 20 | THE SALVAGERS' GUILD — the Reliquary (74); THE MERCENARY GUILD — the Watch (121) |
-| `77z-iziz-style.js` | 52 **big** | ANCIENT IZIZ STYLE (1) |
+| `77z-iziz-style.js` | 53 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `78-transplant.js` | 25 |  |
-| `79-government.js` | 4 |  |
+| `79-government.js` | 8 |  |
 | `79-iziz-original.js` | 23 |  |
-| `80-aa-battery.js` | <1 |  |
-| `81-houses-abc.js` | 5 |  |
+| `80-aa-battery.js` | 1 |  |
+| `81-houses-abc.js` | 6 |  |
 | `81-sky.js` | 10 |  |
 | `82-apartments.js` | 8 |  |
-| `83-amphitheater.js` | 5 |  |
+| `83-amphitheater.js` | 8 |  |
 | `84-fuel.js` | 4 |  |
 | `88-factory.js` | 9 |  |
-| `89-lab.js` | 6 |  |
+| `88y-iziz-matlib.js` | 5 |  |
+| `89-lab.js` | 7 |  |
 | `90-scene.js` | 3 | scene (1); build every site the target lists (31) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
-| `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
+| `91t-iziz-tags.js` | 5 | CORE TAGS: IZIZ'S REG (1) |
+| `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
+| `99-start.js` | 2 | 99. the take: Iziz on core/host (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
@@ -75,8 +86,8 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-35-core-anim.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-58-biome-hyperjungle-fauna.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js` | 274 |
-| `vernacular` | `89z-rows.js`, `91z-views.js` | 3 |
+| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-35-core-anim.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-58-biome-hyperjungle-fauna.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js`, `94-city-export.js` | 319 |
+| `vernacular` | `89z-rows.js`, `91z-views.js` | 5 |
 | `wA` | `89z-rows.js`, `91z-views.js` | 2 |
 | `wB` | `89z-rows.js`, `91z-views.js` | 1 |
 | `wC` | `89z-rows.js`, `91z-views.js` | 2 |

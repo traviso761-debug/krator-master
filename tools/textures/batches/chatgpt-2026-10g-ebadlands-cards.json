@@ -1,0 +1,334 @@
+[
+ {
+  "src": "card-pine.png",
+  "out": "core/materials/library/card.pine",
+  "record": {
+   "id": "card.pine",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Pine leaf card: nine short twigs of a pine, each a tuft of stiff dark green needles (#4a5e34, #55703a) in bundles radiating from the twig tip, a small brown cone on two of them, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.pine of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "pinyon, ponderosa, bristlecone here; any pine"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-pine-a.png",
+  "out": "core/materials/library/card.pine.b",
+  "record": {
+   "id": "card.pine.b",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Pine leaf card: nine short twigs of a pine, each a tuft of stiff dark green needles (#4a5e34, #55703a) in bundles radiating from the twig tip, a small brown cone on two of them, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.pine of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG. A second delivery of the same row: a variant.",
+    "reuse": "pinyon, ponderosa, bristlecone here; any pine"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-spruce.png",
+  "out": "core/materials/library/card.spruce",
+  "record": {
+   "id": "card.spruce",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Spruce leaf card: nine flat spruce branch sprays, each a main stem with side shoots densely covered in short blue-green needles (#3a5444, #46644e), drooping slightly at the tips, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.spruce of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "spruce and fir here; `biomes/nhighlands` spruces and cedars"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 90,
+   "key_hi": 240
+  }
+ },
+ {
+  "src": "card-juniper.png",
+  "out": "core/materials/library/card.juniper",
+  "record": {
+   "id": "card.juniper",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Juniper leaf card: nine sprays of juniper scale foliage, blue-grey-green (#6a7e62) braided twigs with a few powder-blue berries (#8a9ab8), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.juniper of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "Utah juniper here; cypress, cedar, any scale-leaved conifer"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-aspen.png",
+  "out": "core/materials/library/card.aspen",
+  "record": {
+   "id": "card.aspen",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Aspen leaf card: nine short twigs of round, finely toothed aspen leaves on flat stalks, five twigs bright green (#7a9a40) and four turned gold (#e0b030), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.aspen of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "aspen and cottonwood here; poplar, birch in any temperate biome"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all"
+  }
+ },
+ {
+  "src": "card-lobed.png",
+  "out": "core/materials/library/card.lobed",
+  "record": {
+   "id": "card.lobed",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Lobed leaf card: nine leafy twigs, five of deeply lobed oak leaves in dark green (#5e7a34) and four of five-pointed maple leaves in red and orange (#c84a28, #e08a34), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.lobed of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "gambel oak and bigtooth maple here; any temperate broadleaf"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all"
+  }
+ },
+ {
+  "src": "card-sage.png",
+  "out": "core/materials/library/card.sage",
+  "record": {
+   "id": "card.sage",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Sagebrush leaf card: nine sprigs of big sagebrush, many small silvery grey-green three-toothed leaves (#9aa890, #a8b4a0) on woody grey twigs, a few with tiny yellow flower spikes, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.sage of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "sagebrush and rabbitbrush here; saltbush and creosote in sedesert"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-ember.png",
+  "out": "core/materials/library/card.ember",
+  "record": {
+   "id": "card.ember",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Alien leaf card: nine round pompoms of long curling flame-shaped spikes radiating from a centre, glowing orange (#f06a1a) at the base to yellow (#ffb030) at the tips, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. Full colour. (Row card.ember of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG. Delivered as one compound pompom filling the sheet, not nine separate ones: used as one card.",
+    "reuse": "the ember crown; any fiery alien crown"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all"
+  }
+ },
+ {
+  "src": "card-weeper.png",
+  "out": "core/materials/library/card.weeper",
+  "record": {
+   "id": "card.weeper",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Alien leaf card: nine long hanging feathery strands like pink willow fronds, a central stem with soft fine side filaments, rose-pink (#d87888) to pale pink (#e8a0b0), each hung from the top edge of its cell, on a solid flat bright green (#00ff00) background (not magenta: the leaves are pink) so they can be cut out. Square, 2048x2048; no other objects. (Row card.weeper of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "the rose weeper; any pink weeping alien tree"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "top",
+   "pad": 0.02,
+   "key": "#00ff00",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 160
+  }
+ },
+ {
+  "src": "card-mirage.png",
+  "out": "core/materials/library/card.mirage",
+  "record": {
+   "id": "card.mirage",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Alien grass card: nine tall translucent feathery plumes on thin stems, pale pinkish-white (#f0d8e0) with a pearly sheen, the plumes see-through at their edges, standing upright from the bottom of each cell, on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.mirage of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "mirage grass; pampas-like plumes anywhere"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "bottom",
+   "pad": 0.02,
+   "key": "#00ff00",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 160
+  }
+ },
+ {
+  "src": "card-spiral.png",
+  "out": "core/materials/library/card.spiral",
+  "record": {
+   "id": "card.spiral",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Alien groundcover card: nine flat rosettes seen from directly above, frilled serrated leaves spiralling out from the centre, each leaf a different hue round the colour wheel (teal, green, gold, orange, magenta, violet) with an iridescent sheen, on a solid flat bright green (#00ff00) background (not magenta: the leaves are pink) so they can be cut out. Square, 2048x2048; no other objects. Full colour. (Row card.spiral of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+    "reuse": "the spiral mat"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#00ff00"
+  }
+ }
+]

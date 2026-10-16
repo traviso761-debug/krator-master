@@ -1,0 +1,86 @@
+[
+ {
+  "src": "ground-lava-crust.png",
+  "out": "core/materials/library/ground.lava.crust",
+  "record": {
+   "id": "ground.lava.crust",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Molten Lava Crust Texture.png\", 2026-10-06",
+    "reuse": "an active flow's crust, glowing in its cracks; a lava lake; a crater floor at night"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-mycelium-crimson.png",
+  "out": "core/materials/library/ground.mycelium.crimson",
+  "record": {
+   "id": "ground.mycelium.crimson",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Crimson Mycelium Texture Network.png\", 2026-10-06",
+    "reuse": "the mat's ground under the plume; a crimson fungal floor; flesh-like alien walls"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-mycelium-pale.png",
+  "out": "core/materials/library/ground.mycelium.pale",
+  "record": {
+   "id": "ground.mycelium.pale",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Intricate Fungal Mycelium Texture.png\", 2026-10-06",
+    "reuse": "pale mycelium over the plume's old soil; rotting wood; fungal cave floors"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

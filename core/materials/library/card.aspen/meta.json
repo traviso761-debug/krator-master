@@ -1,0 +1,41 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.aspen",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card-aspen.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Aspen leaf card: nine short twigs of round, finely toothed aspen leaves on flat stalks, five twigs bright green (#7a9a40) and four turned gold (#e0b030), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.aspen of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+  "reuse": "aspen and cottonwood here; poplar, birch in any temperate biome",
+  "sha1": "45fddc510a4f9b968a6800be8cf4ffd40f858427"
+ }
+}

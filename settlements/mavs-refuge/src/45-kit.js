@@ -141,47 +141,71 @@ var NL_WINDOWS = [];                  /* [x,y,z, nx,nz, w,h, hOn, hOff, allNight
 function nlLampAdd(x,y,z,amp,rad,cool){ NL_LAMPS.push([x,y,z, amp==null?1:amp, rad==null?16:rad, cool?1:0]); }
 /* a lit window pane: centre, outward horizontal normal, size. Registered by
    WINPANE (below) — every window in the build goes through it. */
-function nlWinAdd(x,y,z,nx,nz,w,h,cool){
-  NL_WINDOWS.push([x,y,z,nx,nz,w,h, phash(x,y,z,1.7), phash(x,y,z,5.3), phash(x,y,z,11.9) < 0.05, cool?1:0]);
+function nlWinAdd(x,y,z,nx,nz,w,h,cool,open){
+  NL_WINDOWS.push([x,y,z,nx,nz,w,h, phash(x,y,z,1.7), phash(x,y,z,5.3), phash(x,y,z,11.9) < 0.05, cool?1:0, open?1:0]);
 }
-function WINPANE(x,y,z,nx,nz,w,h,cool){ nlWinAdd(x,y,z,nx,nz,w,h,cool); }
+/* open: the wall behind the pane is cut (a real window: 81-glow draws its pane as glass) */
+function WINPANE(x,y,z,nx,nz,w,h,cool,open){ nlWinAdd(x,y,z,nx,nz,w,h,cool,open); }
+/* the lamps and hearths INSIDE the rooms (57-interiors): [x,y,z, amp, radius]. They go into the window-spill channel,
+   so a room's light follows the evening's lit-window schedule (uNlWin) and shows through its windows. Added before
+   the bake (from the baked interiors) or after it, a batch at a time (nlvAddIx). */
+var NL_IX = [];
+function nlIxAdd(x,y,z,amp,rad){ NL_IX.push([x,y,z, amp==null?0.7:amp, rad==null?7:rad]); }
 
 var nlvTex = new THREE.DataTexture(new Uint8Array(NLV_RES*NLV_COLS*NLV_RES*NLV_ROWS*4),
                                    NLV_RES*NLV_COLS, NLV_RES*NLV_ROWS, THREE.RGBAFormat);
 nlvTex.minFilter = nlvTex.magFilter = THREE.LinearFilter;
 nlvTex.wrapS = nlvTex.wrapT = THREE.ClampToEdgeWrapping;
 nlvTex.generateMipmaps = false; nlvTex.flipY = false; nlvTex.needsUpdate = true;
-var NLV_U = { uNlMap:{ value:nlvTex }, uNlNight:{ value:0 }, uNlWin:{ value:0 } };
+/* NIGHT LIGHT POOL: the few interior lights nearest the camera, lit per fragment in every material (applyNightGlow),
+   each kept to its own room's floor-to-ceiling band. NL_POOL slots; 57-interiors fills them each frame.
+   uIxP = (x,y,z, radius), uIxC = (r,g,b, 0) times intensity, uIxF = (floor y, ceiling y), uIxN = how many are set. */
+var NL_POOL = 8;
+var NLV_U = { uNlMap:{ value:nlvTex }, uNlNight:{ value:0 }, uNlWin:{ value:0 },
+              uIxP:{ value:[] }, uIxC:{ value:[] }, uIxF:{ value:[] }, uIxN:{ value:0 } };
+for(var _ixk=0; _ixk<NL_POOL; _ixk++){ NLV_U.uIxP.value.push(new THREE.Vector4()); NLV_U.uIxC.value.push(new THREE.Vector4()); NLV_U.uIxF.value.push(new THREE.Vector2()); }
 
-function nlvBake(){
-  var N = NLV_RES, S = N/(2*NLV_EXT), AW = N*NLV_COLS;
-  var acc = [new Float32Array(N*N*NLV_NS), new Float32Array(N*N*NLV_NS), new Float32Array(N*N*NLV_NS)];
-  function splat(ch, x,y,z, amp, rad){
-    var cx=(x+NLV_EXT)*S, cz=(z+NLV_EXT)*S, pr=Math.max(1.3, rad*S), pr2=pr*pr;
-    var i0=Math.max(0,Math.floor(cx-pr)), i1=Math.min(N-1,Math.ceil(cx+pr));
-    var j0=Math.max(0,Math.floor(cz-pr)), j1=Math.min(N-1,Math.ceil(cz+pr));
-    var f=(y-NLV_Y0)/NLV_DY, s0=Math.floor(f), fr=f-s0, A=acc[ch];
-    for(var ds=0; ds<2; ds++){
-      var sl=s0+ds, wv = ds ? fr : 1-fr; if(sl<0||sl>=NLV_NS||wv<=0) continue;
-      var base=sl*N*N;
-      for(var j=j0;j<=j1;j++){ var dz=(j+0.5)-cz;
-        for(var i=i0;i<=i1;i++){ var dx=(i+0.5)-cx, d2=dx*dx+dz*dz; if(d2>=pr2) continue;
-          var t=1-d2/pr2; A[base+j*N+i] += amp*wv*t*t; } }
-    }
+var NLV_ACC = null;                   /* the summed intensities, kept after the bake so lights can be added later */
+function nlvSplat(ch, x,y,z, amp, rad){
+  var N = NLV_RES, S = N/(2*NLV_EXT);
+  var cx=(x+NLV_EXT)*S, cz=(z+NLV_EXT)*S, pr=Math.max(1.3, rad*S), pr2=pr*pr;
+  var i0=Math.max(0,Math.floor(cx-pr)), i1=Math.min(N-1,Math.ceil(cx+pr));
+  var j0=Math.max(0,Math.floor(cz-pr)), j1=Math.min(N-1,Math.ceil(cz+pr));
+  var f=(y-NLV_Y0)/NLV_DY, s0=Math.floor(f), fr=f-s0, A=NLV_ACC[ch];
+  for(var ds=0; ds<2; ds++){
+    var sl=s0+ds, wv = ds ? fr : 1-fr; if(sl<0||sl>=NLV_NS||wv<=0) continue;
+    var base=sl*N*N;
+    for(var j=j0;j<=j1;j++){ var dz=(j+0.5)-cz;
+      for(var i=i0;i<=i1;i++){ var dx=(i+0.5)-cx, d2=dx*dx+dz*dz; if(d2>=pr2) continue;
+        var t=1-d2/pr2; A[base+j*N+i] += amp*wv*t*t; } }
   }
-  NL_LAMPS.forEach(function(L){ splat(L[5]?2:0, L[0],L[1],L[2], L[3], L[4]); });
-  NL_WINDOWS.forEach(function(W){ splat(1, W[0]+W[3]*2.5, W[1]-0.6, W[2]+W[4]*2.5, NLV_WIN_AMP, NLV_WIN_RAD); });
-  var d = nlvTex.image.data, peak=[0,0,0];
+}
+function nlvEncode(){
+  var N = NLV_RES, AW = N*NLV_COLS, d = nlvTex.image.data, peak=[0,0,0];
   for(var sl=0; sl<NLV_NS; sl++){
     var tc = sl % NLV_COLS, tr = Math.floor(sl/NLV_COLS);
     for(var j=0;j<N;j++) for(var i=0;i<N;i++){
       var o = ((tr*N + j)*AW + tc*N + i)*4, k = sl*N*N + j*N + i;
-      for(var ch=0; ch<3; ch++){ var v=acc[ch][k]; if(v>peak[ch]) peak[ch]=v; d[o+ch] = v>0 ? Math.min(255, Math.round(v/NLV_MAX*255)) : 0; }
+      for(var ch=0; ch<3; ch++){ var v=NLV_ACC[ch][k]; if(v>peak[ch]) peak[ch]=v; d[o+ch] = v>0 ? Math.min(255, Math.round(v/NLV_MAX*255)) : 0; }
       d[o+3] = 255;
     }
   }
   nlvTex.needsUpdate = true;
-  return { lamps:NL_LAMPS.length, windows:NL_WINDOWS.length, peak:peak.map(function(v){ return +v.toFixed(2); }) };
+  return peak;
+}
+function nlvBake(){
+  var n = NLV_RES*NLV_RES*NLV_NS;
+  NLV_ACC = [new Float32Array(n), new Float32Array(n), new Float32Array(n)];
+  NL_LAMPS.forEach(function(L){ nlvSplat(L[5]?2:0, L[0],L[1],L[2], L[3], L[4]); });
+  NL_WINDOWS.forEach(function(W){ nlvSplat(1, W[0]+W[3]*2.5, W[1]-0.6, W[2]+W[4]*2.5, NLV_WIN_AMP, NLV_WIN_RAD); });
+  NL_IX.forEach(function(L){ nlvSplat(1, L[0],L[1],L[2], L[3], L[4]); });
+  var peak = nlvEncode();
+  return { lamps:NL_LAMPS.length, windows:NL_WINDOWS.length, interior:NL_IX.length, peak:peak.map(function(v){ return +v.toFixed(2); }) };
+}
+/* interior lights found after the bake: splat them and re-encode (tens of ms: call it with a batch, not per light) */
+function nlvAddIx(list){
+  list.forEach(function(L){ NL_IX.push(L); if(NLV_ACC) nlvSplat(1, L[0],L[1],L[2], L[3], L[4]); });
+  if(NLV_ACC && list.length) nlvEncode();
 }
 /* Shader hook. Lambert in r128 is Gouraud, but the BRDF multiply happens in
    the fragment shader; `#include <aomap_fragment>` is the last line before
@@ -190,17 +214,23 @@ function nlvBake(){
 function applyNightGlow(sh, wpName){
   var wp = wpName || 'vNlWP';
   sh.uniforms.uNlMap = NLV_U.uNlMap; sh.uniforms.uNlNight = NLV_U.uNlNight; sh.uniforms.uNlWin = NLV_U.uNlWin;
+  sh.uniforms.uIxP = NLV_U.uIxP; sh.uniforms.uIxC = NLV_U.uIxC; sh.uniforms.uIxF = NLV_U.uIxF; sh.uniforms.uIxN = NLV_U.uIxN;
+  /* a lit material on the shared position varying also passes its world normal: an interior light (the pool below)
+     then lights only the faces turned toward it, so a lamp in a room does not light the outside of its own wall */
+  var useN = !wpName && /Lambert|Standard|Phong/.test(sh.shaderName || '');
   if(!wpName){
     sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vNlWP;')
+      .replace('#include <common>', '#include <common>\nvarying vec3 vNlWP;' + (useN ? '\nvarying vec3 vNlN;' : ''))
       .replace('#include <project_vertex>',
         '#ifdef USE_INSTANCING\n  vNlWP = (modelMatrix * instanceMatrix * vec4(transformed,1.0)).xyz;\n' +
-        '#else\n  vNlWP = (modelMatrix * vec4(transformed,1.0)).xyz;\n#endif\n#include <project_vertex>');
-    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vNlWP;');
+        '#else\n  vNlWP = (modelMatrix * vec4(transformed,1.0)).xyz;\n#endif\n' +
+        (useN ? '  vNlN = (vec4(transformedNormal, 0.0) * viewMatrix).xyz;\n' : '') + '#include <project_vertex>');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vNlWP;' + (useN ? '\nvarying vec3 vNlN;' : ''));
   }
   var C = PAL.flame, T = (NLV_RES).toFixed(1);
   sh.fragmentShader = sh.fragmentShader
-    .replace('#include <common>', '#include <common>\nuniform sampler2D uNlMap;\nuniform float uNlNight;\nuniform float uNlWin;')
+    .replace('#include <common>', '#include <common>\nuniform sampler2D uNlMap;\nuniform float uNlNight;\nuniform float uNlWin;\n' +
+             'uniform vec4 uIxP[' + NL_POOL + '];\nuniform vec4 uIxC[' + NL_POOL + '];\nuniform vec2 uIxF[' + NL_POOL + '];\nuniform float uIxN;')
     .replace('#include <aomap_fragment>', [
       'if(uNlNight > 0.002){',
       '  vec2 _nuv = (' + wp + '.xz + ' + NLV_EXT.toFixed(1) + ') / ' + (2*NLV_EXT).toFixed(1) + ';',
@@ -218,6 +248,13 @@ function applyNightGlow(sh, wpName){
       '       + _cool*_p.b*' + NLV_COOL_GAIN.toFixed(3) + ') * uNlNight * diffuseColor.rgb;',
       '  }',
       '}',
+      'for(int _i = 0; _i < ' + NL_POOL + '; _i++){',
+      '  if(float(_i) >= uIxN) break;',
+      '  if(' + wp + '.y < uIxF[_i].x - 0.05 || ' + wp + '.y > uIxF[_i].y + 0.05) continue;',
+      '  vec3 _d = ' + wp + ' - uIxP[_i].xyz; float _q = dot(_d,_d) / (uIxP[_i].w*uIxP[_i].w);',
+      (useN ? '  float _fc = dot(normalize(vNlN), -_d) / max(1e-4, length(_d)); if(_fc <= 0.0) continue;' : '  float _fc = 1.0;'),
+      '  if(_q < 1.0){ float _t = 1.0 - _q; reflectedLight.indirectDiffuse += uIxC[_i].rgb * (_t*_t) * (0.35 + 0.65*_fc) * diffuseColor.rgb; }',
+      '}',
       '#include <aomap_fragment>'
     ].join('\n'));
 }
@@ -229,6 +266,24 @@ function nlMaterial(mat, key, extraHook, wpName){
   return mat;
 }
 
+/* one material for a FAMMAT family, as Girder's 45-kit.js: a library family (47-texture.js mtexLibrary) gets the set's
+   colour, normal and roughness maps on a MeshStandardMaterial; a procedural one keeps the MeshLambertMaterial it always
+   had, with the same parameters, so ?mat=proc is the old look. opt: vertexColors, alphaTest, side. */
+function famMaterial(fm, opt){
+  opt = opt || {};
+  if(fm.lib){
+    var T = fm.libTex, L = fm.lib;
+    var m = new THREE.MeshStandardMaterial({ color:0xffffff, vertexColors:!!opt.vertexColors, map:T.map, normalMap:T.normalMap,
+      roughnessMap:T.roughnessMap, roughness:1, metalness:L.metal||0, alphaTest:opt.alphaTest||0, side:opt.side||THREE.FrontSide });
+    if(T.normalMap) m.normalScale.set(L.normalScale||1, L.normalScale||1);
+    m.userData.lib = L.lib;
+    return m;
+  }
+  var p = { color:0xffffff, map: fm.tex || null, alphaTest: opt.alphaTest||0, side: opt.side||THREE.FrontSide };
+  if(opt.vertexColors) p.vertexColors = true; else p.transparent = false;
+  return new THREE.MeshLambertMaterial(p);
+}
+
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
 function emitBuckets(){
   var total=0, meshes=0;
@@ -238,14 +293,13 @@ function emitBuckets(){
     var geo = SHAPES[B.shape]();
     var fm  = FAMMAT[B.fam] || {};
     var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
-            : new THREE.MeshLambertMaterial({ color:0xffffff, map: fm.tex || null,
-                  transparent:false, alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
+            : famMaterial(fm, { alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
     mat.userData.fam = B.fam;
     if(!fm.basic){
       (function(needsUV, needsSway, sc){
-        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); applyNightGlow(sh); };
-        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv'; };
-      })(!!fm.tex, B.fam==='cloth', fm.scale || [3,3]);
+        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.libHooks(sh, fm.lib); applyNightGlow(sh); };
+        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : ''); };
+      })(!!fm.tex, B.fam==='cloth', fm.lib ? fm.lib.scale : (fm.scale || [3,3]));   /* a library map tiles at its own size */
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
@@ -340,6 +394,59 @@ function RING_HOLES(fam, P, r0,r1, yb,yt, col, holes, opt){
     if(h.r1 < r1-0.01) SECTOR(fam,P,h.r1,r1,h.a0,h.a1,yb,yt,col,o2);
   }
 }
+/* WALLS WITH REAL OPENINGS (the windows you can see through: 55-arch, 56-levels, 57-interiors).
+   A hole is { a (centre angle) | u (metres along a flat wall), hw (half width, metres), y0, y1 (absolute) }.
+   MQUAD_TO: a quad whose normal points toward (or with away=true, away from) the point ref. */
+function MQUAD_TO(fam, a,b,c,d, col, ref, away){
+  var ux=b[0]-a[0], uy=b[1]-a[1], uz=b[2]-a[2], vx=d[0]-a[0], vy=d[1]-a[1], vz=d[2]-a[2];
+  var nx=uy*vz-uz*vy, ny=uz*vx-ux*vz, nz=ux*vy-uy*vx;
+  var s=nx*(ref[0]-(a[0]+c[0])/2) + ny*(ref[1]-(a[1]+c[1])/2) + nz*(ref[2]-(a[2]+c[2])/2);
+  if((s >= 0) !== !!away) MQUAD(fam,a,b,c,d,col); else MQUAD(fam,a,d,c,b,col);
+}
+/* an arc face at radius r, a0..a1, yb..yt, in platform P's polar frame, with holes; dir +1 looks outward (to larger r,
+   SECTOR's 'o'), -1 inward (SECTOR's 'i'). The arc between holes is cut every `step` metres as SECTOR does */
+function ARC_WALL(fam, P, r, a0, a1, yb, yt, col, dir, holes, step){
+  var cc = mbCol(col), A = a0;
+  function pt(a,y){ var p=platXZ(P,r,a); return [p[0],y,p[1]]; }
+  function face(aA,aB,y0,y1){ if(aB-aA<1e-6 || y1-y0<1e-3) return;
+    if(dir>0) MQUAD(fam,pt(aA,y0),pt(aA,y1),pt(aB,y1),pt(aB,y0),cc); else MQUAD(fam,pt(aA,y0),pt(aB,y0),pt(aB,y1),pt(aA,y1),cc); }
+  function span(aA,aB){ var n=Math.max(1,Math.ceil((aB-aA)*Math.max(r,1)/(step||4.5))); for(var i=0;i<n;i++) face(aA+(aB-aA)*i/n, aA+(aB-aA)*(i+1)/n, yb, yt); }
+  (holes||[]).slice().sort(function(p,q){ return p.a-q.a; }).forEach(function(h){
+    var hA=Math.max(A, h.a-h.hw/r), hB=Math.min(a1, h.a+h.hw/r); if(hB<=hA) return;
+    span(A,hA); face(hA,hB,yb,Math.max(yb,Math.min(yt,h.y0))); face(hA,hB,Math.min(yt,Math.max(yb,h.y1)),yt); A=hB; });
+  if(a1>A) span(A,a1);
+}
+/* the reveal of an arc-wall hole between radii rA < rB: two jambs, the sill and the head, facing into the opening */
+function ARC_REVEAL(fam, P, rA, rB, h, col){
+  var rm=(rA+rB)/2, c=platXZ(P,rm,h.a), ref=[c[0],(h.y0+h.y1)/2,c[1]], cc=mbCol(col);
+  function p(r,s,y){ var q=platXZ(P,r,h.a+s*h.hw/r); return [q[0],y,q[1]]; }
+  MQUAD_TO(fam, p(rA,-1,h.y0), p(rB,-1,h.y0), p(rB,-1,h.y1), p(rA,-1,h.y1), cc, ref);
+  MQUAD_TO(fam, p(rA, 1,h.y0), p(rB, 1,h.y0), p(rB, 1,h.y1), p(rA, 1,h.y1), cc, ref);
+  MQUAD_TO(fam, p(rA,-1,h.y0), p(rB,-1,h.y0), p(rB, 1,h.y0), p(rA, 1,h.y0), cc, ref);
+  MQUAD_TO(fam, p(rA,-1,h.y1), p(rB,-1,h.y1), p(rB, 1,h.y1), p(rA, 1,h.y1), cc, ref);
+}
+/* a flat face p0 -> p1 (x,z), yb..yt, its normal toward ref (away=true: away from it), with holes at u along it */
+function PLANE_WALL(fam, p0, p1, yb, yt, col, ref, away, holes){
+  var L=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]); if(L<1e-4) return;
+  var tx=(p1[0]-p0[0])/L, tz=(p1[1]-p0[1])/L, cc=mbCol(col), U=0;
+  function P(u,y){ return [p0[0]+tx*u, y, p0[1]+tz*u]; }
+  function f(u0,u1,y0,y1){ if(u1-u0<1e-3 || y1-y0<1e-3) return; MQUAD_TO(fam,P(u0,y0),P(u1,y0),P(u1,y1),P(u0,y1),cc,ref,away); }
+  (holes||[]).slice().sort(function(p,q){ return p.u-q.u; }).forEach(function(h){
+    var h0=Math.max(U,h.u-h.hw), h1=Math.min(L,h.u+h.hw); if(h1<=h0) return;
+    f(U,h0,yb,yt); f(h0,h1,yb,h.y0); f(h0,h1,h.y1,yt); U=h1; });
+  f(U,L,yb,yt);
+}
+/* the reveal of a flat-wall hole: the wall runs p0 -> p1 and is `depth` thick along the unit vector n */
+function PLANE_REVEAL(fam, p0, p1, n, depth, h, col){
+  var L=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]), tx=(p1[0]-p0[0])/L, tz=(p1[1]-p0[1])/L, cc=mbCol(col);
+  function P(s,d,y){ var u=h.u+s*h.hw; return [p0[0]+tx*u+n[0]*d, y, p0[1]+tz*u+n[1]*d]; }
+  var ref=[p0[0]+tx*h.u+n[0]*depth/2, (h.y0+h.y1)/2, p0[1]+tz*h.u+n[1]*depth/2];
+  MQUAD_TO(fam, P(-1,0,h.y0), P(-1,depth,h.y0), P(-1,depth,h.y1), P(-1,0,h.y1), cc, ref);
+  MQUAD_TO(fam, P( 1,0,h.y0), P( 1,depth,h.y0), P( 1,depth,h.y1), P( 1,0,h.y1), cc, ref);
+  MQUAD_TO(fam, P(-1,0,h.y0), P(-1,depth,h.y0), P( 1,depth,h.y0), P( 1,0,h.y0), cc, ref);
+  MQUAD_TO(fam, P(-1,0,h.y1), P(-1,depth,h.y1), P( 1,depth,h.y1), P( 1,0,h.y1), cc, ref);
+}
+
 /* Hipped roof over a sector footprint (with overhang). Ridge runs along the
    mid-radius arc. h = ridge height above yb; opt.over = eave overhang;
    opt.ridge = 0..1 fraction of the arc the ridge spans (0 = pyramid point). */
@@ -429,9 +536,9 @@ function emitMerged(){
     g.setAttribute('color',    new THREE.Float32BufferAttribute(K.col,3));
     g.computeBoundingSphere();
     var fm = FAMMAT[fam] || {};
-    var mat = new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, map:fm.tex||null,
-                  alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    nlMaterial(mat, 'mb'+fam);
+    var mat = famMaterial(fm, { vertexColors:true, alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
+    nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std'+KMAT.libKey(fm.lib) : ''),
+      fm.lib ? (function(L){ return function(sh){ KMAT.libHooks(sh, L); }; })(fm.lib) : null);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
@@ -444,6 +551,33 @@ function emitMerged(){
 /* ------------------------------------------------------------------ site registry
    Every named thing registers a volume here so the inspector (86) can name
    whatever is under the cursor: REGISTER({name, kind, x,y,z, r, h, plat}) —
-   a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins. */
+   a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins.
+   Each is also a core/tags record (core/tags/README.md; rule: everything placed is registered there before it is
+   drawn), its id kept on the site as `rid` (as Girder's 45-kit.js): the host's inspector, minimap and editor read the
+   records. A span (seg) is a turned box along it. The class comes from the kind (REG_CLASS; a platform's levels and
+   the rooms in them, which carry lvl, are parts; the rest features). */
 var SITES = [];
-function REGISTER(o){ SITES.push(o); return o; }
+var REG_CLASS = { central:'building', res:'building', rook:'building', spider:'building', gate:'building', council:'building', sat:'building',
+  home:'building', shop:'building', fancy:'building', tavern:'building', barracks:'building', mess:'building', armoury:'building',
+  silkhouse:'building', store:'building', inn:'building', stall:'building', shrine:'building', hut:'building', shed:'building',
+  vault:'building', storehouse:'building', dorm:'building', gatehouse:'building', guardhut:'building', guardpost:'building',
+  bridge:'infrastructure', landing:'infrastructure', ramp:'infrastructure', lift:'infrastructure', capstan:'infrastructure',
+  ladder:'infrastructure', signal:'infrastructure', waypost:'infrastructure', winch:'infrastructure',
+  well:'fixture', totem:'fixture', rostrum:'fixture', brazier:'fixture', tree:'flora' };
+var REG_Q = [];   /* sites registered before core/tags' vocabulary has loaded (the builders sort before 52-core-tags-vocab.js) */
+function REGISTER(o){
+  SITES.push(o);
+  if(!KTAGS.VOCAB){ REG_Q.push(o); return o; }
+  regFlush(); regRecord(o);
+  return o;
+}
+function regFlush(){ var q = REG_Q; REG_Q = []; q.forEach(regRecord); }   /* 53-furnish.js calls it before the first catalog piece */
+function regRecord(o){
+  var T = KTAGS.page || (KTAGS.page = KTAGS.create({ build:'mavs-refuge' }));
+  var cls = o.lvl != null ? 'part' : (REG_CLASS[o.kind] || 'feature');   /* a platform's level, or a room in it, is a part of the platform */
+  var rec = { 'class':cls, kind:o.kind||null, name:o.name, at:[o.x, o.y||0, o.z], note:o.label||null, frag:'45-kit.js REGISTER' };
+  if(cls==='building' || cls==='landmark' || cls==='infrastructure' || cls==='part') rec.tags = { culture:'beast-rider' };
+  if(o.seg){ var dx=o.seg[2]-o.seg[0], dz=o.seg[3]-o.seg[1]; rec.at=[(o.seg[0]+o.seg[2])/2, o.y||0, (o.seg[1]+o.seg[3])/2]; rec.ry=Math.atan2(dx,dz); rec.size=[o.seg[4]||2, Math.hypot(dx,dz), o.h||2]; }
+  else if(o.r != null){ rec.r = o.r; rec.h = o.h; }
+  o.rid = T.add(rec).id;
+}

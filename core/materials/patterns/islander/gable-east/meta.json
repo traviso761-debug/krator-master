@@ -1,0 +1,69 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    930,
+    938
+   ],
+   "seam_after": [
+    0.82,
+    1.899
+   ],
+   "seam_before": [
+    4.593,
+    8.269
+   ],
+   "source_size": [
+    942,
+    950
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.7,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "fibre",
+  "id": "islander/gable-east",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   2.2,
+   2.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "islander-gable-east.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 14.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to three diamond periods across (310 px) and two down (469 px), 930 x 938 before processing, so the sheet repeats on its own period.",
+  "original_file": "14.webp",
+  "original_sha1": "211a436c6a0bef4def12c9c393cac0c3fbcdb27d",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a woven split-bamboo house facade as on an Ede or Sumba house: a cream (#e6d8b8) woven field in horizontal bands, alternating rows of large nested diamonds in black (#1e1a18) and ochre (#c8922e) with a small dark red (#6e1a12) heart, and rows of triple zigzag lines, thin black bands between the rows, visible weave in every strip. The pattern repeats horizontally. Full colour.",
+  "reuse": "the East's woven facades (patGableE); Sumba and Ede woven panels",
+  "sha1": "4462ce843961246d274def15a6b3ceb9e9d73e5d"
+ }
+}

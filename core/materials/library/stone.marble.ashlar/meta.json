@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1244,
+    1245
+   ],
+   "seam_after": [
+    0.715,
+    0.746
+   ],
+   "seam_before": [
+    2.666,
+    4.651
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.2,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.marble.ashlar",
+  "metal": 0,
+  "roughness": 0.3,
+  "scale": [
+   2.4,
+   2.4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Warm Ivory Marble Running Bond Tiles.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Warm Ivory Marble Running Bond Tiles.png",
+  "prompt": "Prompt row stone.marble.trim in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Jimjam trim; marble ashlar, floors and cladding in Voth, Iziz, Xanadu, Ys",
+  "sha1": "1e404991b2ade42751da9a24489ead1c04aa629a"
+ }
+}

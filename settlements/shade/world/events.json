@@ -1,0 +1,3 @@
+[
+{"id":"raider_convoy","name":"Dune raider convoy","kind":"riders","org":"dune_raiders","every":[72,144],"from":["canyon_east"],"to":["plateau_north"],"size":[12,12],"beasts":1,"mount":"camel","legs":[{"activity":"WATER_CAMELS","mins":30},{"activity":"TRADE","mins":90},{"activity":"REST","mins":120}],"unit":[{"role":"raider","n":1}],"layer":"pedestrian","mode":"ride","speed":2.0,"maxLive":1,"_note":"every 3 to 6 days (72 to 144 world hours) 12 riders on camels come up the canyon, water, trade and rest, and leave by the switchback. The legs are the stops, each at the nearest place offering its activity to the stop before; SIM.fire takes the group through them, and 84-host-life routes them on the grid for the audit"}
+]

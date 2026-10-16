@@ -10,6 +10,9 @@
 //   W.floor({rect:[x0,x1,z0,z1], y, name, tag})        a level floor
 //   W.strip({a:[x,z,y], b:[x,z,y], w, name, tag})      a strip between two points whose floor rises along it
 //                                                      (a passage, a stair, a ramp, a bridge); w is its full width
+//   W.poly({pts:[[x,z,y],...], name, tag})            a floor over a polygon (kits/zeijani: the carved rooms, round and
+//                                                      rounded): any simple polygon when every y is the same; CONVEX when
+//                                                      the heights differ, its floor then planar per fan triangle from pts[0]
 //   W.block([x0,x1,z0,z1,y0,y1], tag)                  a solid a walker cannot enter (a pillar, a hearth, a house)
 //   W.floorsAt(x,z)               every floor over (x,z): [[y, rec], ...], highest first
 //   W.floorBelow(x,z,y,step)      the highest floor at or below y+step (0.6): [y, rec], or null
@@ -51,6 +54,22 @@
       floors.push(rec);
       put(rec,Math.min(a[0],b[0])-h,Math.max(a[0],b[0])+h,Math.min(a[1],b[1])-h,Math.max(a[1],b[1])+h);return rec;
     }
+    function poly(o){
+      var P=o.pts;if(!P||P.length<3)throw new Error('KWALK.poly: pts [[x,z,y],...] (3 or more) required');
+      var pts=P.map(function(p,i){if(!p||p.length!==3)throw new Error('KWALK.poly: point '+i+' is not [x,z,y]');
+        return [num(p[0],'poly x'),num(p[1],'poly z'),num(p[2],'poly y')];});
+      var x0=1e300,x1=-1e300,z0=1e300,z1=-1e300,level=true,area=0;
+      for(var i=0;i<pts.length;i++){var q=pts[i],n=pts[(i+1)%pts.length];x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);z0=Math.min(z0,q[1]);z1=Math.max(z1,q[1]);
+        if(q[2]!==pts[0][2])level=false;area+=q[0]*n[1]-n[0]*q[1];}
+      if(Math.abs(area)<1e-9)throw new Error('KWALK.poly: degenerate polygon');
+      if(!level){// a sloped floor must be convex: every turn the same way as the winding
+        for(var k=0;k<pts.length;k++){var a=pts[k],b=pts[(k+1)%pts.length],c=pts[(k+2)%pts.length];
+          var cr=(b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]);if(cr*area<-1e-9)throw new Error('KWALK.poly: a sloped floor must be convex');}}
+      var rec={kind:'poly',pts:pts,level:level,box:null,bbox:[x0,x1,z0,z1],name:o.name||'',tag:o.tag||'',seq:seq++};
+      floors.push(rec);put(rec,x0,x1,z0,z1);return rec;
+    }
+    function inPoly(P,x,z){var c=false;for(var i=0,j=P.length-1;i<P.length;j=i++){var a=P[i],b=P[j];
+      if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;}
     function block(bx,tag){
       if(!bx||bx.length!==6)throw new Error('KWALK.block: [x0,x1,z0,z1,y0,y1] required');
       var rec={box:[Math.min(bx[0],bx[1]),Math.max(bx[0],bx[1]),Math.min(bx[2],bx[3]),Math.max(bx[2],bx[3]),
@@ -60,6 +79,13 @@
     // the floor height of one record at (x,z), or null when (x,z) is off it
     function heightOn(f,x,z){
       if(f.kind==='rect'){var r=f.rect;return x>=r[0]&&x<=r[1]&&z>=r[2]&&z<=r[3]?f.y:null;}
+      if(f.kind==='poly'){var bb=f.bbox;if(x<bb[0]||x>bb[1]||z<bb[2]||z>bb[3]||!inPoly(f.pts,x,z))return null;
+        var P=f.pts;if(f.level)return P[0][2];
+        for(var t=1;t<P.length-1;t++){// the fan triangle (P0, Pt, Pt+1) holding (x,z): barycentric height
+          var A=P[0],B=P[t],C=P[t+1],d=(B[1]-C[1])*(A[0]-C[0])+(C[0]-B[0])*(A[1]-C[1]);if(Math.abs(d)<1e-12)continue;
+          var l1=((B[1]-C[1])*(x-C[0])+(C[0]-B[0])*(z-C[1]))/d,l2=((C[1]-A[1])*(x-C[0])+(A[0]-C[0])*(z-C[1]))/d,l3=1-l1-l2;
+          if(l1>=-1e-9&&l2>=-1e-9&&l3>=-1e-9)return l1*A[2]+l2*B[2]+l3*C[2];}
+        return null;}
       var a=f.a,b=f.b,dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz;
       var t=L2>0?((x-a[0])*dx+(z-a[1])*dz)/L2:0;if(t<0||t>1)return null;
       var px=a[0]+dx*t-x,pz=a[1]+dz*t-z;if(px*px+pz*pz>f.w*f.w/4)return null;
@@ -67,7 +93,7 @@
     }
     function floorsAt(x,z){
       var out=[],c=near(x,z);
-      for(var i=0;i<c.length;i++){var f=c[i];if(f.box)continue;var y=heightOn(f,x,z);if(y!==null)out.push([y,f]);}
+      for(var i=0;i<c.length;i++){var f=c[i];if(f.box||f.kind===undefined)continue;var y=heightOn(f,x,z);if(y!==null)out.push([y,f]);}
       out.sort(function(p,q){return q[0]-p[0]||q[1].seq-p[1].seq;});return out;
     }
     function floorBelow(x,z,y,step){
@@ -79,7 +105,7 @@
     function candidates(x,y,z,r,h){
       var out=[],seen=new Set(),i0=Math.floor((x-r)/CELL),i1=Math.floor((x+r)/CELL),j0=Math.floor((z-r)/CELL),j1=Math.floor((z+r)/CELL);
       for(var i=i0;i<=i1;i++)for(var j=j0;j<=j1;j++){var a=grid.get(key(i,j));if(!a)continue;
-        for(var k=0;k<a.length;k++){var b=a[k];if(!b.box||seen.has(b))continue;seen.add(b);
+        for(var k=0;k<a.length;k++){var b=a[k];if(!b.box||b.kind||seen.has(b))continue;seen.add(b);
           if(b.box[5]>y&&b.box[4]<y+h)out.push(b);}}
       out.sort(function(p,q){return p.seq-q.seq;});return out;
     }
@@ -104,7 +130,7 @@
     }
     function bounds(){
       var b=null;function grow(x0,x1,z0,z1){if(!b)b=[x0,x1,z0,z1];else{b[0]=Math.min(b[0],x0);b[1]=Math.max(b[1],x1);b[2]=Math.min(b[2],z0);b[3]=Math.max(b[3],z1);}}
-      floors.forEach(function(f){if(f.kind==='rect')grow.apply(null,f.rect);
+      floors.forEach(function(f){if(f.kind==='rect')grow.apply(null,f.rect);else if(f.kind==='poly')grow.apply(null,f.bbox);
         else{var h=f.w/2;grow(Math.min(f.a[0],f.b[0])-h,Math.max(f.a[0],f.b[0])+h,Math.min(f.a[1],f.b[1])-h,Math.max(f.a[1],f.b[1])+h);}});
       blocks.forEach(function(k){grow(k.box[0],k.box[1],k.box[2],k.box[3]);});
       return b;
@@ -113,11 +139,12 @@
       return {format:'krator-walk',version:1,
         convention:{units:'m',up:'+y',x:'east',z:'south',handed:'right'},
         floors:floors.map(function(f){return f.kind==='rect'?{kind:'rect',rect:f.rect.slice(),y:f.y,name:f.name,tag:f.tag}
+          :f.kind==='poly'?{kind:'poly',pts:f.pts.map(function(p){return p.slice();}),name:f.name,tag:f.tag}
           :{kind:'strip',a:f.a.slice(),b:f.b.slice(),w:f.w,name:f.name,tag:f.tag};}),
         blocks:blocks.map(function(k){return {box:k.box.slice(),tag:k.tag};})};
     }
     function clear(){floors.length=0;blocks.length=0;grid.clear();seq=0;}
-    return {floor:floor,strip:strip,block:block,floorsAt:floorsAt,floorBelow:floorBelow,blocked:blocked,push:push,
+    return {floor:floor,strip:strip,poly:poly,block:block,floorsAt:floorsAt,floorBelow:floorBelow,blocked:blocked,push:push,
       bounds:bounds,export:exp,clear:clear,floors:floors,blocks:blocks,heightOn:heightOn};
   }
   var W=create();W.create=create;

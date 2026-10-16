@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.lotus.bloom",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Nine Lotus Blossoms on Magenta.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet; card.lotus holds the pads and flat flowers seen from above",
+  "original_title": "Nine Lotus Blossoms on Magenta.png",
+  "prompt": "card.palm / card.lotus prompt (core/materials/PROMPTS-ready.md, the frond and flower cards)",
+  "reuse": "lotus and water-lily flowers seen from the side (pink, red, blue, white): nwbay, xanadu ponds; any flowering water plant (full colour)",
+  "sha1": "c3577794a1bb1be77545ed9905216ef68c0ab23e"
+ }
+}

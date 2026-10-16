@@ -21,6 +21,28 @@ var clock := {"dawn": [5.5, 7.2], "dusk": [17.2, 18.8], "nightDim": 0.82}
 var wind := {"base": [0.8, 0.35], "gustAmp": 0.55, "veer": [0.22, 0.021, 0.1, 0.057]}
 var loaded_from := ""
 
+# presets.waves (89-atmos-0p-presets.js), the open-water wave field: shaders/atmos_waves.gdshaderinc bakes these numbers
+# in (tools/atmos_waves.js writes it); wave_height/wave_slope below are its CPU twin. load_presets() overwrites
+const WAVES := {"period": 600, "amp": 0.22, "tilt": 1.77, "warpAmp": 6,
+	"chop": [[0.24, 0.18, 86, 0.5], [-0.16, 0.27, 117, 0.32], [0.44, -0.31, 162, 0.18]],
+	"mid": [[0.1015, 0.0369, 62, 0.45], [-0.0248, 0.1406, 72, 0.33], [0.0735, -0.0515, 79, 0.22]],
+	"swell": [[0.0364, 0.0209, 44, 0.46], [-0.0119, 0.0328, 38, 0.33], [0.024, 0.0343, 50, 0.21]],
+	"group": [[0.021, 0.013, 14], [-0.011, 0.024, 11], [0.0152, -0.0262, 17]],
+	"warp": [[0.0141, -0.0083, 9], [0.0067, 0.0126, 7]],
+	"gain": {"chop": 1, "mid": 4, "swell": 2}, "groupMix": {"chop": [0.55, 0.9], "mid": [0.45, 0.75], "swell": [0.5, 0.8]},
+	"crestMix": {"chop": [0.35, 0.65], "mid": [0.32, 0.58], "swell": [0, 0.45]}, "crestNorm": 0.72, "skip": 0.01,
+	"fade": {"chop": [150, 480], "mid": [420, 1100], "swell": [1400, 3000]}}
+var waves: Dictionary = WAVES.duplicate(true)
+
+# presets.clouddeck (89-atmos-0p-presets.js), the cloud deck: shaders/atmos_clouddeck.gdshaderinc bakes these numbers in
+# (tools/atmos_clouddeck.js writes it); deck_height/deck_slope below are its CPU twin. load_presets() overwrites
+const CLOUDDECK := {"period": 51200, "lattice": 64, "cell": 640, "drift": [2, -1], "evolve": [-1, 2], "up": 44, "down": 26,
+	"heap": 2.1, "tilt": 3.2, "gain": 2.25, "puff": true, "billows": [[1, 0.5], [2, 0.28], [4, 0.15], [8, 0.07]], "warp": {"amp": 230, "seedA": 21, "seedB": 22},
+	"detail": [[10, 0.5], [20, 0.32], [40, 0.18]], "detailAmp": 2.5,
+	"fade": [600, 2500], "top": [0.99, 0.985, 0.97], "shade": [0.49, 0.56, 0.66], "ground": [-6, 45], "fogK": 0.55,
+	"mesh": {"radius": 9000, "cells": 180, "snap": 300}, "clear": {"size": 160, "span": 5200}}
+var clouddeck: Dictionary = CLOUDDECK.duplicate(true)
+
 # THE WEATHER (89-atmos-4-weather.js). Off until set_weather(mode) or an export with a weather record turns it on.
 # W: mode, rain, fog, wet (rises in rain, dries after), flash (lightning), wind (1 calm .. 2.4 storm: scales the wind)
 const MODES := ["auto", "clear", "rain", "storm", "fog"]
@@ -43,6 +65,10 @@ func load_presets(export: Dictionary) -> void:
 		wind = p["wind"]
 		if wind.has("weather"):
 			weather_wind = wind["weather"]
+	if p.has("waves"):
+		waves = p["waves"]
+	if p.has("clouddeck"):
+		clouddeck = p["clouddeck"]
 	for f in export.get("fx", []):
 		if f.get("type") == "weather":
 			set_weather(str(f.get("mode", "auto")))
@@ -113,6 +139,8 @@ func reset_defaults() -> void:
 	flash = 0.0
 	clock = {"dawn": [5.5, 7.2], "dusk": [17.2, 18.8], "nightDim": 0.82}
 	wind = {"base": [0.8, 0.35], "gustAmp": 0.55, "veer": [0.22, 0.021, 0.1, 0.057]}
+	waves = WAVES.duplicate(true)
+	clouddeck = CLOUDDECK.duplicate(true)
 	loaded_from = ""
 
 
@@ -152,6 +180,218 @@ func wind_now() -> Vector2:
 	return Vector2(bx * cos(veer) - bz * sin(veer), bx * sin(veer) + bz * cos(veer)) * wind_scale
 
 
+# THE WAVE FIELD's CPU twin (89-atmos-a-waves.js: ATMOS.waveWrap, waveHeight, waveSlope), for buoyancy and tests.
+# A wave is [kx, kz, c, a]; in turns [kx/TAU, kz/TAU, c/period], and phase = TAU*(fract(x*k0)+fract(z*k1)+fract(t*k2)),
+# so every argument stays small. t is the module clock (wrapped here); x, z world metres. All in 64-bit floats (no
+# Vector2/Vector3 inside: they are 32-bit), so the twin matches the JavaScript to the last few bits.
+func wave_wrap(tt: float) -> float:
+	var p := float(waves["period"])
+	return fmod(fmod(tt, p) + p, p)
+
+
+static func _fr(x: float) -> float:
+	return x - floor(x)
+
+
+func _wph(x: float, z: float, tt: float, w: Array) -> float:
+	return TAU * (_fr(x * (float(w[0]) / TAU)) + _fr(z * (float(w[1]) / TAU)) + _fr(tt * (float(w[2]) / float(waves["period"]))))
+
+
+func _wwarp(x: float, z: float, tt: float) -> PackedFloat64Array:
+	var a := _wph(x, z, tt, waves["warp"][0])
+	var b := _wph(x, z, tt, waves["warp"][1])
+	var wa := float(waves["warpAmp"])
+	return PackedFloat64Array([x + wa * (sin(a) + 0.6 * cos(b)), z + wa * (sin(b) - 0.6 * cos(a))])
+
+
+func _wgroup(x: float, z: float, tt: float) -> float:
+	var G: Array = waves["group"]
+	return 0.52 + 0.48 * sin(_wph(x, z, tt, G[0])) * (0.62 * sin(_wph(x, z, tt, G[1])) + 0.38 * sin(_wph(x, z, tt, G[2])))
+
+
+# one family at a point, per unit amplitude: (crest, dh/dx, dh/dz)
+func _wfam(F: Array, x: float, z: float, tt: float) -> PackedFloat64Array:
+	var c := 0.0
+	var sx := 0.0
+	var sz := 0.0
+	for w in F:
+		var p := _wph(x, z, tt, w)
+		c += sin(p) * float(w[3])
+		sx += cos(p) * float(w[3]) * float(w[0])
+		sz += cos(p) * float(w[3]) * float(w[1])
+	return PackedFloat64Array([c, sx, sz])
+
+
+# metres above the still water at world (x, z), module clock tt: the swell, plus the chop where chop_w > 0
+func wave_height(x: float, z: float, tt: float, chop_w := 0.0) -> float:
+	var G: Dictionary = waves["gain"]
+	var M: Dictionary = waves["groupMix"]
+	var amp := float(waves["amp"])
+	tt = wave_wrap(tt)
+	var q := _wwarp(x, z, tt)
+	var g := _wgroup(q[0], q[1], tt)
+	var h := _wfam(waves["swell"], q[0], q[1], tt)[0] * amp * float(G["swell"]) * (float(M["swell"][0]) + float(M["swell"][1]) * g)
+	if chop_w > 0.0:
+		h += _wfam(waves["chop"], x, z, tt)[0] * amp * float(G["chop"]) * chop_w * (float(M["chop"][0]) + float(M["chop"][1]) * g)
+	return h
+
+
+# [dh/dx, dh/dz, crest] seen from camera distance d: each family faded by d; crest 0.5 is still water
+func wave_slope(x: float, z: float, tt: float, d: float) -> PackedFloat64Array:
+	tt = wave_wrap(tt)
+	var fams := ["chop", "mid", "swell"]
+	var wt := {}
+	var any := false
+	var skip := float(waves["skip"])
+	for f in fams:
+		var fd: Array = waves["fade"][f]
+		wt[f] = 1.0 - _ss(float(fd[0]), float(fd[1]), d)
+		if wt[f] > skip:
+			any = true
+	var o := PackedFloat64Array([0.0, 0.0, 0.0])
+	if any:
+		var q := _wwarp(x, z, tt)
+		var g := _wgroup(q[0], q[1], tt)
+		for f in fams:
+			if wt[f] > skip:
+				var r := _wfam(waves["chop"], x, z, tt) if f == "chop" else _wfam(waves[f], q[0], q[1], tt)
+				var M: Array = waves["groupMix"][f]
+				var C: Array = waves["crestMix"][f]
+				var k := float(waves["amp"]) * float(waves["gain"][f]) * float(wt[f]) * (float(M[0]) + float(M[1]) * g)
+				o[0] += r[1] * k
+				o[1] += r[2] * k
+				o[2] += r[0] * float(wt[f]) * (float(C[0]) + float(C[1]) * g)
+	o[2] = o[2] * float(waves["crestNorm"]) * 0.5 + 0.5
+	return o
+
+
+# THE CLOUD DECK's CPU twin (89-atmos-d-clouddeck.js: ATMOS.deckWrap, deckHeight, deckSlope): is a point inside the
+# cloud, a flyer skimming the tops, the tests. Gradient noise on a lattice repeating every `lattice` cells, each corner's
+# gradient from the lowbias32 integer hash: the same bits as Math.imul in the JavaScript and uint in the shaders. GDScript
+# has no unsigned 32-bit type, so _mul32 multiplies in 16-bit halves (every product stays under 2^48). The rest in
+# 64-bit floats, as the JavaScript.
+func deck_wrap(tt: float) -> float:
+	var p := float(clouddeck["period"])
+	return fmod(fmod(tt, p) + p, p)
+
+
+static func _mul32(a: int, b: int) -> int:
+	return (a * (b & 0xFFFF) + (((a * (b >> 16)) & 0xFFFF) << 16)) & 0xFFFFFFFF
+
+
+static func _dhash(x: int, y: int, s: int) -> int:
+	var h := _mul32(x, 1597334677) ^ _mul32(y, 3812015801) ^ _mul32(s, 2654435769)
+	h ^= h >> 16
+	h = _mul32(h, 2146121005)
+	h ^= h >> 15
+	h = _mul32(h, 2221713035)
+	return h ^ (h >> 16)
+
+
+# gradient noise at (x, y) in lattice units, seed s: (value, d/dx, d/dy)
+func _dnoise(x: float, y: float, s: int) -> PackedFloat64Array:
+	var m := int(clouddeck["lattice"]) - 1
+	var ix := int(floor(x))
+	var iy := int(floor(y))
+	var fx := x - floorf(x)
+	var fy := y - floorf(y)
+	var x0 := ix & m
+	var y0 := iy & m
+	var x1 := (ix + 1) & m
+	var y1 := (iy + 1) & m
+	var ha := _dhash(x0, y0, s)
+	var hb := _dhash(x1, y0, s)
+	var hc := _dhash(x0, y1, s)
+	var hd := _dhash(x1, y1, s)
+	var gax := (ha & 65535) / 32767.5 - 1.0
+	var gay := (ha >> 16) / 32767.5 - 1.0
+	var gbx := (hb & 65535) / 32767.5 - 1.0
+	var gby := (hb >> 16) / 32767.5 - 1.0
+	var gcx := (hc & 65535) / 32767.5 - 1.0
+	var gcy := (hc >> 16) / 32767.5 - 1.0
+	var gdx := (hd & 65535) / 32767.5 - 1.0
+	var gdy := (hd >> 16) / 32767.5 - 1.0
+	var va := gax * fx + gay * fy
+	var vb := gbx * (fx - 1.0) + gby * fy
+	var vc := gcx * fx + gcy * (fy - 1.0)
+	var vd := gdx * (fx - 1.0) + gdy * (fy - 1.0)
+	var ux := fx * fx * fx * (fx * (fx * 6.0 - 15.0) + 10.0)
+	var uy := fy * fy * fy * (fy * (fy * 6.0 - 15.0) + 10.0)
+	var dux := 30.0 * fx * fx * (fx * (fx - 2.0) + 1.0)
+	var duy := 30.0 * fy * fy * (fy * (fy - 2.0) + 1.0)
+	var k := va - vb - vc + vd
+	return PackedFloat64Array([va + ux * (vb - va) + uy * (vc - va) + ux * uy * k,
+		gax + ux * (gbx - gax) + uy * (gcx - gax) + ux * uy * (gax - gbx - gcx + gdx) + dux * (uy * k + vb - va),
+		gay + ux * (gby - gay) + uy * (gcy - gay) + ux * uy * (gay - gby - gcy + gdy) + duy * (ux * k + vc - va)])
+
+
+# octaves [div, amp] of cell `cell`/div at world (x, z), drifting dir (whole lattice periods per clock period), clock
+# fraction fr: (sum amp*n / sum amp, d/dx, d/dz) in world metres; seeds from seed0 up. puff: billow noise 2|n| - 0.5
+func _dfbm(O: Array, x: float, z: float, fr: float, dir: Array, seed0: int, puff := false) -> PackedFloat64Array:
+	var s := 0.0
+	var sx := 0.0
+	var sz := 0.0
+	var n := 0.0
+	for i in O.size():
+		var div := float(O[i][0])
+		var a := float(O[i][1])
+		var c := float(clouddeck["cell"]) / div
+		var L := float(clouddeck["lattice"]) * div
+		var v := _dnoise(x / c - float(dir[0]) * fr * L, z / c - float(dir[1]) * fr * L, seed0 + i)
+		var k := (-2.0 if v[0] < 0.0 else 2.0) if puff else 1.0
+		s += a * ((2.0 * absf(v[0]) - 0.5) if puff else v[0])
+		sx += a * k * v[1] / c
+		sz += a * k * v[2] / c
+		n += a
+	return PackedFloat64Array([s / n, sx / n, sz / n])
+
+
+# the warped point and the warp's Jacobian (q.x, q.z, dqx/dx, dqx/dz, dqz/dx, dqz/dz)
+func _dwarp(x: float, z: float, fr: float) -> PackedFloat64Array:
+	var W: Dictionary = clouddeck["warp"]
+	var amp := float(W["amp"])
+	var a := _dfbm([[1, 1]], x, z, fr, clouddeck["evolve"], int(W["seedA"]))
+	var b := _dfbm([[1, 1]], x, z, fr, clouddeck["evolve"], int(W["seedB"]))
+	return PackedFloat64Array([x + amp * a[0], z + amp * b[0], 1.0 + amp * a[1], amp * a[2], amp * b[1], 1.0 + amp * b[2]])
+
+
+static func _dback(J: PackedFloat64Array, gx: float, gz: float) -> PackedFloat64Array:
+	return PackedFloat64Array([gx * J[2] + gz * J[4], gx * J[3] + gz * J[5]])
+
+
+# the heaped crest u^heap (0..1) and its slope in metres per metre (0 where u is clamped)
+func _dheap(J: PackedFloat64Array, fr: float) -> PackedFloat64Array:
+	var f := _dfbm(clouddeck["billows"], J[0], J[1], fr, clouddeck["drift"], 1, bool(clouddeck.get("puff", false)))
+	var hp := float(clouddeck["heap"])
+	var gain := float(clouddeck["gain"])
+	var r := 0.5 + 0.5 * gain * f[0]
+	var u := clampf(r, 1e-4, 1.0)
+	var k := 0.0
+	if r > 1e-4 and r < 1.0:
+		k = (float(clouddeck["up"]) + float(clouddeck["down"])) * hp * pow(u, hp - 1.0) * 0.5 * gain
+	var g := _dback(J, f[1] * k, f[2] * k)
+	return PackedFloat64Array([pow(u, hp), g[0], g[1]])
+
+
+# the deck's top in metres at world (x, z), module clock tt, for a deck at level y
+func deck_height(x: float, z: float, tt: float, y: float) -> float:
+	var fr := deck_wrap(tt) / float(clouddeck["period"])
+	return y - float(clouddeck["down"]) + (float(clouddeck["up"]) + float(clouddeck["down"])) * _dheap(_dwarp(x, z, fr), fr)[0]
+
+
+# (dh/dx, dh/dz, the crest 0..1, the detail's crest 0..1) at camera distance d
+func deck_slope(x: float, z: float, tt: float, d: float) -> PackedFloat64Array:
+	var fr := deck_wrap(tt) / float(clouddeck["period"])
+	var J := _dwarp(x, z, fr)
+	var h := _dheap(J, fr)
+	var fd: Array = clouddeck["fade"]
+	var w := 1.0 - _ss(float(fd[0]), float(fd[1]), d)
+	var D := _dfbm(clouddeck["detail"], J[0], J[1], fr, clouddeck["drift"], 11, bool(clouddeck.get("puff", false)))
+	var g := _dback(J, D[1], D[2])
+	var a := float(clouddeck["detailAmp"])
+	return PackedFloat64Array([h[1] + a * g[0] * w, h[2] + a * g[1] * w, h[0], 0.5 + 0.5 * D[0]])
+
+
 func _process(delta: float) -> void:
 	if not paused:
 		t += delta * scale
@@ -184,3 +424,6 @@ func _process(delta: float) -> void:
 	RenderingServer.global_shader_parameter_set("atm_fog", fog)
 	RenderingServer.global_shader_parameter_set("atm_flash", flash)
 	RenderingServer.global_shader_parameter_set("atm_sun_dir", sun_dir.normalized())
+	RenderingServer.global_shader_parameter_set("atm_wave_t", wave_wrap(t))
+	RenderingServer.global_shader_parameter_set("atm_wave_amp", float(waves["amp"]))
+	RenderingServer.global_shader_parameter_set("atm_deck_t", deck_wrap(t))

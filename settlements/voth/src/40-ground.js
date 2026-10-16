@@ -12,8 +12,14 @@ function inCity(x,z){ return Math.abs(x) < CITY_EXT && Math.abs(z) < CITY_EXT; }
 
 var gcv = document.createElement('canvas'); gcv.width=gcv.height=TEX;
 var gx  = gcv.getContext('2d');
-var mcv = document.createElement('canvas'); mcv.width=mcv.height=MSK;
+/* the placement mask is core/mask, not a canvas: hard-edged by pixel centre, so the same bytes on a
+   GPU or a CPU canvas and in Godot (core/mask/README.md). The ground texture (gcv) stays a real canvas. */
+var mcv = KMASK.xform(KMASK.canvas(MSK, MSK));
 var mx  = mcv.getContext('2d');
+/* each shape painted into the mask is grown by MASK_EDGE px across (half of it on each side): the soft-edged canvas this replaced
+   shut a pixel from about 21% coverage (maskAt > 200 is open), which is a pixel centre up to ~0.27 px outside
+   the shape, so the hard-edged mask keeps the same buildable area to within a pixel's rounding */
+var MASK_EDGE = 0.55;
 
 /* ---- base ground colouring, shared with the far-terrain vertex colours ----
    groundTone() is the one true colour at every point on the map, at full
@@ -67,27 +73,27 @@ function groundTone(x,z){
 
 /* ---- mask: white is buildable ---- */
 mx.fillStyle='#fff'; mx.fillRect(0,0,MSK,MSK);
+/* the shore, low ground and the city limit, sampled on a 400 grid and painted as blocks of MSK/400 px
+   (what a 400 px canvas drawn up without smoothing gave), one rect per run of shut cells in a row */
 (function(){
-  var S=400, tmp=document.createElement('canvas'); tmp.width=tmp.height=S;
-  var tg=tmp.getContext('2d');
-  tg.fillStyle='#fff'; tg.fillRect(0,0,S,S);
-  tg.fillStyle='#000';
+  var S=400, sc=MSK/S;
+  mx.fillStyle='#000';
   for(var j=0;j<S;j++){
-    var z=P2W(j+0.5,S);
-    for(var i=0;i<S;i++){
+    var z=P2W(j+0.5,S), run=-1;
+    for(var i=0;i<=S;i++){
       var x=P2W(i+0.5,S);
-      if(landDist(x,z) < 22 || terrainH(x,z) < 3.0 ||
-         Math.abs(x)>CITY_LIM || Math.abs(z)>CITY_LIM) tg.fillRect(i,j,1,1);
+      var shut = i<S && (landDist(x,z) < 22 || terrainH(x,z) < 3.0 ||
+                         Math.abs(x)>CITY_LIM || Math.abs(z)>CITY_LIM);
+      if(shut && run<0) run=i;
+      else if(!shut && run>=0){ mx.fillRect(run*sc, j*sc, (i-run)*sc, sc); run=-1; }
     }
   }
-  mx.imageSmoothingEnabled=false;
-  mx.drawImage(tmp,0,0,MSK,MSK);
 })();
 
 /* ---- farm fields, and the marsh where the river spreads into the bay ---- */
 function fillRect(ctx, size, x, z, w, h, ry, col){
   ctx.save(); ctx.translate(W2P(x,size), W2P(z,size)); ctx.rotate(-ry);
-  ctx.fillStyle = col; var sw = w*(size/CE2), sh = h*(size/CE2);
+  ctx.fillStyle = col; var grow = ctx === mx ? MASK_EDGE : 0, sw = w*(size/CE2) + grow, sh = h*(size/CE2) + grow;
   ctx.fillRect(-sw/2, -sh/2, sw, sh); ctx.restore();
 }
 (function(){
@@ -135,7 +141,7 @@ function fillRect(ctx, size, x, z, w, h, ry, col){
 /* ROADCOL lives in 05-palette.js (PAL.road). */
 function strokePoly(ctx, pts, size, w, col, cap){
   if(pts.length<2) return;
-  ctx.strokeStyle=col; ctx.lineWidth=Math.max(1, w*(size/CE2));
+  ctx.strokeStyle=col; ctx.lineWidth=Math.max(1, w*(size/CE2)) + (ctx === mx ? MASK_EDGE : 0);
   ctx.lineJoin='round'; ctx.lineCap=cap||'round';
   ctx.beginPath(); ctx.moveTo(W2P(pts[0][0],size), W2P(pts[0][1],size));
   for(var i=1;i<pts.length;i++) ctx.lineTo(W2P(pts[i][0],size), W2P(pts[i][1],size));

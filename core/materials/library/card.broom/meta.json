@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.broom",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card-broom.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Shrub card: nine sprigs of flowering broom, thin green rush-like twigs (#5a6a34) crowded with small bright yellow pea flowers (#f0d020), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.broom of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+  "reuse": "the ash broom here; gorse and broom in Mediterranean and highland scrub",
+  "sha1": "38259bb43de00b30af97c1fb752d4d213c7aa926"
+ }
+}

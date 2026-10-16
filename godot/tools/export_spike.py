@@ -9,11 +9,12 @@ Each case loads a built page headless (software GL, so a page takes one to five 
 window._ready, calls the page's own exporter, and writes godot/data/<case>/. The cases are chosen to
 cover the routes the plan names and to differ from each other:
 
-  hyperjungle  krator-biome JSON (BIO.export), a 300 m tile round a hero hypertree; DataTexture leaf atlases; no LOD chunks
+  hyperjungle  krator-biome JSON (BIO.export), a 360 m tile round two hero hypertrees; DataTexture leaf atlases; no LOD chunks
   rift         krator-biome JSON, one tile; every mesh LOD-chunked; hooked materials (irid bark, far impostors)
+  sedesert     krator-biome JSON, a 300 m tile round the pond, whose ground carries the page's core/terrain field (krator-field)
   girder       glTF (three's own GLTFExporter over a region) plus its material records (KMAT.table) and pack (tex/)
   iziz         krator-atmos JSON (ATMOS.export) for the whole city, plus a glTF region of the city round it
-  yuni         KRATOR_EXPORT records (fixtures and one building's interior): ids, tags, nav, no meshes at all
+  yuni         KRATOR_EXPORT records (fixtures, core/tags records, one building's interior): ids, tags, nav, no meshes at all
 
 The biome tiles carry their own ground (BIO.export's `ground`, since 2026-10-05). Girder and Iziz also write
 terrain.json: the page's ground height sampled on a grid (krator-heightfield, a spike-only stand-in for the
@@ -42,12 +43,16 @@ HEIGHT_JS = """([box, step, fn]) => { const h = eval(fn); const nx = Math.floor(
 
 CASES = {
     "hyperjungle": dict(page="biomes/hyperjungle/dist/hyperjungle.html", kind="biome",
-                        box=[12, -897, 312, -597]),   # centred on a hero hypertree (162, -747)
+                        box=[-750, -450, -390, -90]),   # a ghostwood (-633, -178) and a gate baobab (-506, -355) hero, saplings of all six species (was [12, -897, 312, -597]: one prism gum)
     "rift": dict(page="biomes/rift/dist/rift.html", kind="biome",
                  box=[-450, 150, -150, 450]),
+    # the first page on a core/terrain field (2026-10-08): its export's ground carries the baked heightmap (`field`)
+    "sedesert": dict(page="biomes/sedesert/dist/sedesert.html", kind="biome",
+                     box=[80, 490, 380, 790]),   # centred on the rain-shadow pond (230, 640): water, its hollow, the oasis
     "girder": dict(page="settlements/girder/girder.html", kind="gltf",
                    box=[-30, -30, 30, 30], height="(x,z)=>_api.terrainH(x,z)", step=1,
-                   kmat="girder", tex="settlements/girder/tex"),   # the material library pilot: records and its pack
+                   kmat="girder", tex="settlements/girder/tex",   # the material library pilot: records and its pack
+                   lamps="b => _api.lamps(b)", lamp_margin=20),   # its flames and halos as data (lamps.json)
     "iziz": dict(page="settlements/iziz/dist/iziz.html", kind="atmos",
                  box=[-80, -80, 80, 80], height="(x,z)=>terrainH(x,z)", step=2,
                  hbox=[-440, -620, 620, 450], hstep=4),
@@ -132,16 +137,23 @@ async def run_case(browser, port, name, c, log):
         if c["kind"] == "atmos":
             files["atmos.json"] = write_json(os.path.join(out, "atmos.json"), await pg.evaluate("ATMOS.export({stage: false})"))
         # the stage (KSTAGE): light, fog, tonemapping, the sky from above the region, and the ground's look on the same
-        # grid as terrain.json, so the importer can texture the sampled ground
+        # grid as terrain.json, so the importer can texture the sampled ground. The panorama starts at the glTF region's
+        # edge, not the terrain's (Iziz's terrain box is far wider than its region): what the region leaves out, the
+        # city beyond it, is in the sky; nearer terrain the panorama repeats lies under Godot's own heightfield
         hb, hs = c.get("hbox", c["box"]), c.get("hstep", c["step"])
         st = await pg.evaluate("""([box, region, step, fn]) => { const h = eval(fn), cx = (region[0] + region[2]) / 2, cz = (region[1] + region[3]) / 2;
-            return KSTAGE.capture({ at: [cx, h(cx, cz) + 40, cz], sky: 1024, box, step, ground: h }); }""", [hb, c["box"], hs, c["height"]])
+            const skyNear = Math.min(region[2] - region[0], region[3] - region[1]) / 2;
+            return KSTAGE.capture({ at: [cx, h(cx, cz) + 40, cz], sky: 1024, skyNear, box, step, ground: h }); }""", [hb, c["box"], hs, c["height"]])
         files["stage.json"] = write_json(os.path.join(out, "stage.json"), st)
         g = await pg.evaluate("([box, name]) => KSPIKE.gltf(box, {name})", [c["box"], name])
         with open(os.path.join(out, "region.glb"), "wb") as f:
             f.write(base64.b64decode(g["b64"]))
         files["region.glb"] = g["bytes"]
         write_json(os.path.join(out, "region.dropped.json"), {"box": c["box"], "stats": g["stats"], "dropped": g["dropped"]})
+        if c.get("lamps"):   # the page's lamps (halos and flames its own shaders light): krator-lamps, krator/lamps_import.gd
+            m = c.get("lamp_margin", 0)
+            lb = [c["box"][0] - m, c["box"][1] - m, c["box"][2] + m, c["box"][3] + m]
+            files["lamps.json"] = write_json(os.path.join(out, "lamps.json"), await pg.evaluate(c["lamps"], lb))
         if c.get("kmat"):   # the material records (KMAT.table) and the pack the Godot side rebuilds library surfaces from
             files["materials.json"] = write_json(os.path.join(out, "materials.json"), await pg.evaluate("b => KMAT.table(b)", c["kmat"]))
         if c.get("tex"):
@@ -152,8 +164,13 @@ async def run_case(browser, port, name, c, log):
         log(f"{name}: glb {g['stats']} dropped {g['dropped']}")
     elif c["kind"] == "records":
         files["fixtures.json"] = write_json(os.path.join(out, "fixtures.json"), await pg.evaluate("KRATOR_EXPORT.fixtures()"))
+        # the core/tags registry (core/tags/README.md): the record every node carries as its "krator" metadata
+        files["tags.json"] = write_json(os.path.join(out, "tags.json"), await pg.evaluate("KRATOR_EXPORT.tags()"))
         files["building.json"] = write_json(os.path.join(out, "building.json"),
                                             await pg.evaluate("id => KRATOR_EXPORT.building(id)", c["building"]))
+    if c["kind"] != "records" and await pg.evaluate("typeof KTAGS !== 'undefined' && !!KTAGS.page"):
+        # the page's core/tags registry (core/tags/README.md): every record the page placed, as data beside the region
+        files["tags.json"] = write_json(os.path.join(out, "tags.json"), await pg.evaluate("KTAGS.page.export()"))
     if c.get("height"):
         hb = c.get("hbox", c.get("box"))
         hf = await pg.evaluate(HEIGHT_JS, [hb, c.get("hstep", c["step"]), c["height"]])

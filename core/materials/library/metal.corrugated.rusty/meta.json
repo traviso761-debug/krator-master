@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1119,
+    1247
+   ],
+   "seam_after": [
+    1.127,
+    1.03
+   ],
+   "seam_before": [
+    1.508,
+    2.192
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.corrugated.rusty",
+  "metal": 0.1,
+  "roughness": 0.85,
+  "scale": [
+   1.1,
+   1.1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Weathered Rusty Corrugated Steel Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Rusty Corrugated Steel Texture.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id metal.corrugated.rusty).",
+  "reuse": "Post-Apoc corrugate, container walls and patch sheets; Screamers scrap; shanty walls",
+  "sha1": "2465b7edc1ac54d15ad852868738e090847d9720"
+ }
+}

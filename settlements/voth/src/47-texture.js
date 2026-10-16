@@ -355,3 +355,34 @@ FAMMAT.fungus.tex  = TEX_FUNGUS;
 FAMMAT.metal.tex   = TEX_METAL;
 
 window._tex = { size:TEXSZ, families:Object.keys(FAMMAT).filter(function(k){ return !!FAMMAT[k].tex; }).length };
+
+/* ---- the material library (core/materials/record, materials.json; Girder's 47-texture.js is the model): where the
+   pack has a family (unless ?mat=proc), its maps replace the procedural canvas above, repeating at the set's own tile
+   size. 45-kit.js vothLibMaterial() gives such a family a MeshStandardMaterial with the set's normal and roughness maps.
+   trunk and leaf (the willows) stay procedural. ---- */
+(function(){
+  if(typeof KMAT === 'undefined' || KMAT.mode !== 'lib') return;
+  Object.keys(FAMMAT).forEach(function(fam){
+    var L = KMAT.packed('voth', fam); if(!L) return;
+    var fm = FAMMAT[fam], T = KMAT.textures(L, { aniso: FAST ? 1 : 8 }), sc = fm.scale || [4,4];
+    [T.map, T.normalMap, T.roughnessMap].forEach(function(t){ if(t) t.repeat.set(sc[0]/L.scale[0], sc[1]/L.scale[1]); });
+    fm.tex = T.map; fm.lib = L; fm.libTex = T;
+  });
+})();
+/* a piece in a colour-carrying pattern family (tapestry, kilim) is drawn white over the pattern; without the pack, in c */
+function vothPatCol(fam, c){ return FAMMAT[fam] && FAMMAT[fam].lib ? 0xffffff : c; }
+/* the adapter: every family as a material record, for the export (window._materials) */
+(function(){
+  if(typeof KMAT === 'undefined') return;
+  var recs = {};
+  Object.keys(FAMMAT).forEach(function(fam){
+    var fm = FAMMAT[fam], L = fm.lib;
+    recs[fam] = { id:'voth.'+fam, family:fam, scale: L ? L.scale : fm.scale, tint:true, roughness: L ? 1 : Math.min(1, fm.rough||1),
+      metal: L ? (L.metal||0) : 0, specular: L ? L.specular : 0.5, normalScale: L ? L.normalScale : 1, breakup: L ? (L.breakup||null) : null,
+      lib: L ? L.lib : null, tex: L ? null : (fm.tex ? 'voth.'+fam : null), bake: !L && !!fm.tex,
+      hook: fam === 'cloth' ? 'world-uv+cloth-sway' : 'world-uv', note: L ? 'library set, tint keep '+L.tint : (fm.tex ? 'procedural map' : 'untextured') };
+  });
+  KMAT.adapter('voth', recs);
+  window._fammat = FAMMAT;   /* dev handle: the families and their maps (inspection and the brightness measure) */
+  window._materials = KMAT.table('voth');
+})();

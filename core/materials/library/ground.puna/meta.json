@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.324,
+    1.386
+   ],
+   "seam_before": [
+    1.553,
+    1.502
+   ],
+   "source_size": [
+    1125,
+    1125
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.puna",
+  "metal": 0,
+  "roughness": 0.92,
+  "scale": [
+   2.4,
+   2.4
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground-puna.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "High cold plateau ground seen from above: bare brown volcanic soil with fine grey pumice grit and small dark angular stones, the bases of golden bunchgrass tussocks spaced a hand apart with bare soil between them, a few dry blades lying flat, small frost-heaved crumbs of soil. Full colour: soil brown (#8a7656, #6e5c44), grass gold (#b8a062, #a88e50), stones dark grey; natural and not tinted. (Row ground.puna of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1125 px WebP; converted to PNG.",
+  "reuse": "the puna here; any cold steppe, high desert plain or dry mountain ground",
+  "sha1": "a8b233d73565f6f11e61b98456a566cfe43a4095"
+ }
+}

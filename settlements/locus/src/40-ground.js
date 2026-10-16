@@ -9,7 +9,7 @@ reseed(400001);
 
 var GC_RES = FAST ? 2048 : 4096, MASK_RES = 2400;
 var GROUND_CANVAS = document.createElement('canvas'); GROUND_CANVAS.width = GROUND_CANVAS.height = GC_RES;
-var MASK_CANVAS = document.createElement('canvas'); MASK_CANVAS.width = MASK_CANVAS.height = MASK_RES;
+var MASK_CANVAS = KMASK.xform(KMASK.canvas(MASK_RES, MASK_RES));   /* core/mask: hard-edged, the same bytes on any machine and in Godot */
 var MASK_DATA = null;
 function maskAt(x,z){
   if(!MASK_DATA) return 0;
@@ -59,6 +59,13 @@ var FARM_PLOTS = [];
   SITES_L.forEach(function(Q){ if(Q.tag==='prop') return;
     both(function(c,isMask){ c.fillStyle = isMask ? code(4) : (Q.tag==='farm' ? 'rgba(0,0,0,0)' : hex(Q.tag==='pumpjack' ? shade(PAL.mudBrown[1],-0.1) : PAL.lane[1])); rect(c, Q, Q.tag==='pumpjack'?2:1.2); });
   });
+  /* ---- 4b. the buggy park: oil-dark packed gravel, painted bays, oil stains (colour only: the mask has it as a site) ---- */
+  if(PARKING) both(function(c,isMask){ if(isMask) return; var Q=PARKING;
+    c.fillStyle=hex(shade(PAL.mudBrown[3],-0.22)); rect(c, Q, 0.6);
+    c.save(); c.translate(Q.x,Q.z); c.rotate(-Q.ry); c.strokeStyle='rgba(226,214,180,0.55)'; c.lineWidth=0.18;
+    for(var b=0;b<=6;b++){ var bx=-Q.w/2+2+b*(Q.w-4)/6; c.beginPath(); c.moveTo(bx,Q.d/2-1); c.lineTo(bx,Q.d/2-7); c.stroke(); }
+    for(var s2=0;s2<40;s2++){ c.fillStyle='rgba(16,12,10,'+(0.10+0.15*phash(s2,Q.x,1,2)).toFixed(2)+')'; c.beginPath(); c.ellipse(-Q.w/2+Q.w*phash(s2,1,Q.z,3), -Q.d/2+Q.d*phash(s2,2,Q.x,4), 0.6+1.4*phash(s2,3,5,6), 0.4+0.8*phash(s2,4,6,7), 0, 0, TAU); c.fill(); }
+    c.restore(); });
   /* ---- 5. streets: kerb stroke, then surface; widest last so junctions read cleanly ---- */
   var order=['track','lane','alley','street','road','boulevard','ring','highway'];
   var surf={ track:PAL.lane[0], lane:PAL.lane[0], alley:PAL.lane[2], street:PAL.paving[1], road:PAL.lane[2], boulevard:PAL.paving[0], ring:shade(PAL.mudBrown[4],0.1), highway:PAL.paving[3] };

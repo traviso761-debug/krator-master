@@ -81,3 +81,172 @@ FURN({
     F.box(0, 0.4, -0.08, 0.5, 0.62, 0.04, 0, F.col('clothVothPurple'), 'cloth');       /* the skirt of the robe */
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed voth_training_<role> */
+FK.set({ culture: 'voth', tier: 'common', roles: 'training', prefix: 'voth_training_', S: VOTH_COMMON, names: {
+  training_dummy: 'Cane-wrapped practice post', archery_butt: 'Reed-bundle archery butt' } });
+
+/* trades and households (2026-10-09, for the Voth city plan's canton interiors: settlements/voth,
+   targets/voth-city/40-vc-interiors.js): the FK.ROLES.trade pieces in Voth's common style sheet, keyed voth_trade_<role> */
+FK.set({ culture: 'voth', tier: 'common', roles: 'trade', prefix: 'voth_trade_', S: VOTH_COMMON, names: {
+  forge: 'Ash-brick forge', anvil: 'Anvil on a walnut block', trough: 'Quench trough', stall: 'Beetle stall', hayrack: 'Fodder rack',
+  display: 'Wares table', armour_stand: 'Armour stand', weapon_rack: 'Spear and blade rack', vat: 'Dye vat', still: 'Alembic still',
+  bin: 'Grain bin', larder: 'Larder', bunk: 'Garrison bunk', locker: 'Walnut locker', lathe: 'Pole lathe', press: 'Screw press',
+  kiln: 'Glaze kiln', grindstone: 'Grindstone', altar: 'Ancestor altar', barrel: 'Barrel rack' } });
+
+/* the canton interiors' own pieces (2026-10-09): a bakery's oven, a cell's grate, a tomb's sarcophagus, a catacomb's
+   ossuary shelves */
+FURN({
+  key: 'voth_bread_oven', name: 'Ash-brick bread oven', culture: 'voth', tier: 'common', type: 'stove', role: 'oven', setting: 'indoor',
+  rooms: ['kitchen', 'bakery'], anchor: 'wall', clearance: { front: 1.4 },
+  materials: ['stone', 'ceramic', 'metal', 'emissive', 'timber'],
+  w: 2.6, d: 1.9, h: 2.3, variants: 1,
+  build: function (F) {
+    const br = F.col('stoneGraphite'), ash = F.col('ceramicAsh'), soot = F.shade(br, -0.6);
+    F.box(0, 0, -0.1, 2.6, 0.9, 1.7, 0, F.shade(br, 0.05), 'stone');                      /* the hearth plinth */
+    F.frustum(0, 0.9, -0.03, 0.9, 0.62, 1.0, 0, ash, 'ceramic', 12);                       /* the beehive dome, inside the back plane */
+    F.ball(0, 1.78, -0.03, 0.5, F.shade(ash, -0.08), 'ceramic');
+    F.box(0, 0.95, 0.8, 0.9, 0.62, 0.18, 0, soot, 'stone');                                /* the mouth */
+    F.box(0, 1.0, 0.82, 0.7, 0.4, 0.12, 0, F.col('ember'), 'glow');
+    F.box(0, 1.6, 0.86, 1.1, 0.14, 0.16, 0, F.shade(br, 0.12), 'stone');                   /* the arch */
+    F.cyl(0.5, 1.75, -0.5, 0.14, 0.52, 0, soot, 'stone');                                  /* the flue */
+    F.box(-1.05, 0.9, 0.4, 0.5, 0.06, 0.9, 0, F.col('timberWalnut'), 'wood');               /* the peel rest and a peel */
+    F.box(-1.05, 0.96, 0.25, 0.32, 0.03, 0.32, 0, F.col('timberWalnut'), 'wood');
+    F.lamp(0, 1.0, 0.8, 0.6, 4);
+  }
+});
+FURN({
+  key: 'voth_cell_grate', name: 'Cell grate', culture: 'voth', tier: 'common', type: 'screen', setting: 'indoor',
+  rooms: ['cell', 'jail'], anchor: 'wall', clearance: {},
+  materials: ['metal', 'stone'],
+  w: 2.4, d: 0.25, h: 2.6, variants: 1,
+  build: function (F) {
+    const iron = F.col('iron'), st = F.col('stoneGraphite');
+    F.box(0, 0, 0, 2.4, 0.12, 0.25, 0, st, 'stone');
+    F.box(0, 2.48, 0, 2.4, 0.12, 0.25, 0, st, 'stone');
+    for (let i = 0; i < 11; i++) F.cyl(-1.1 + i * 0.22, 0.12, 0, 0.025, 2.36, 0, iron, 'metal');
+    for (const y of [0.9, 1.7]) F.box(0, y, 0, 2.3, 0.06, 0.08, 0, iron, 'metal');
+    F.box(0.55, 1.1, 0.06, 0.12, 0.2, 0.06, 0, F.shade(iron, 0.2), 'metal');                /* the lock */
+  }
+});
+FURN({
+  key: 'voth_sarcophagus', name: 'Ancestor sarcophagus', culture: 'voth', tier: 'common', type: 'tomb', setting: 'indoor',
+  rooms: ['tomb', 'catacomb', 'shrine'], anchor: 'floor', clearance: { front: 0.8, left: 0.5, right: 0.5 },
+  materials: ['stone', 'ceramic', 'metal'],
+  w: 1.3, d: 2.6, h: 1.25, variants: 2, variantNames: ['plain', 'effigy'],
+  build: function (F) {
+    const st = F.col('stoneGraphite'), lid = F.shade(st, 0.12), ash = F.col('ceramicAsh');
+    F.box(0, 0, 0, 1.3, 0.2, 2.6, 0, F.shade(st, -0.1), 'stone');                           /* the plinth */
+    F.box(0, 0.2, 0, 1.12, 0.72, 2.42, 0, st, 'stone');                                      /* the chest */
+    for (let i = 0; i < 4; i++) F.box(0, 0.36 + i * 0.12, 1.22, 1.0, 0.04, 0.02, 0, F.shade(st, 0.18), 'stone');   /* the stepped fret */
+    F.box(0, 0.92, 0, 1.24, 0.14, 2.56, 0, lid, 'stone');                                    /* the lid */
+    if (F.variant === 1) {
+      F.box(0, 1.06, -0.1, 0.5, 0.16, 1.7, 0, F.shade(lid, 0.08), 'stone');                 /* the effigy, lying */
+      F.ball(0, 1.12, 0.92, 0.17, F.shade(lid, 0.1), 'stone');
+    } else F.frustum(0, 1.06, 0, 0.5, 0.28, 0.14, 0, F.shade(lid, 0.06), 'stone', 4);
+    F.frustum(0.42, 1.06, 1.0, 0.07, 0.11, 0.18, 0, ash, 'ceramic', 8);                       /* an urn of ash at its head */
+  }
+});
+FURN({
+  key: 'voth_ossuary_shelves', name: 'Ossuary niches', culture: 'voth', tier: 'common', type: 'shelf', setting: 'indoor',
+  rooms: ['catacomb', 'tomb', 'shrine'], anchor: 'wall', clearance: { front: 0.7 },
+  materials: ['stone', 'ceramic', 'plaster'],
+  w: 2.4, d: 0.6, h: 2.4, variants: 1,
+  build: function (F) {
+    const st = F.col('stoneGraphite'), ash = F.col('ceramicAsh'), bone = F.col('clothBone');
+    F.box(0, 0, -0.05, 2.4, 2.4, 0.5, 0, st, 'stone');
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) {
+      const x = -0.9 + c * 0.6, y = 0.25 + r * 0.72;
+      F.box(x, y, 0.12, 0.46, 0.52, 0.16, 0, F.shade(st, -0.55), 'stone');                  /* a niche */
+      if ((r + c) % 3) F.frustum(x, y, 0.16, 0.1, 0.07, 0.24, 0, F.shade(ash, ((r * 4 + c) % 3) * 0.05), 'ceramic', 8);   /* its urn */
+      else F.ball(x, y + 0.12, 0.17, 0.11, bone, 'plaster');                                  /* or a skull */
+    }
+  }
+});
+
+/* ---------------------------------------------------------------- small shrines for the parks and the clan courtyards
+   (owner, 2026-10-12: "make 3 small tomb size shrines as furniture to distribute around parks that 2-3 people can use at
+   a time. Clan compounds can also take this furniture shrine"): each about a sarcophagus's size, `holds` the people who
+   can worship at it at once (the Voth city's simulation reads it); role 'yard shrine' (a clan compound's shrine room
+   asks for one) */
+FURN({
+  key: 'voth_shrine_stele', name: 'Ash-saint stele', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
+  rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 3,
+  materials: ['stone', 'ceramic', 'metal', 'emissive'],
+  w: 2.0, d: 1.4, h: 2.5, variants: 1,
+  build: function (F) {
+    const st = F.col('stoneGraphite'), lt = F.shade(st, 0.22), ash = F.col('ceramicAsh');
+    F.box(0, 0, -0.1, 2.0, 0.16, 1.2, 0, F.shade(st, -0.1), 'stone');                  /* the stepped base */
+    F.box(0, 0.16, -0.25, 1.5, 0.14, 0.8, 0, st, 'stone');
+    F.box(0, 0.3, -0.42, 0.9, 1.8, 0.28, 0, lt, 'stone');                              /* the stele */
+    F.pyrRoof(0, 2.1, -0.42, 1.0, 0.3, 0.4, 0, lt, 'stone');                            /* its capstone, as deep as the stele */
+    F.box(0, 0.85, -0.27, 0.5, 0.8, 0.05, 0, F.shade(st, -0.45), 'stone');             /* the niche */
+    F.frustum(0, 0.87, -0.29, 0.1, 0.06, 0.5, 0, F.shade(lt, 0.1), 'stone', 8);        /* the saint */
+    F.ball(0, 1.44, -0.29, 0.08, F.shade(lt, 0.14), 'stone');
+    for (let i = 0; i < 4; i++) F.box(-0.3 + i * 0.2, 1.84, -0.27, 0.1, 0.07, 0.03, 0, F.col('gilt'), 'metal');   /* the glyphs */
+    F.frustum(0, 0.3, 0.18, 0.13, 0.21, 0.18, 0, ash, 'ceramic', 10);                  /* the offering bowl */
+    F.ball(0, 0.53, 0.18, 0.07, F.col('ember'), 'glow');
+    for (const s of [-1, 1]) F.box(s * 0.62, 0, 0.52, 0.42, 0.1, 0.32, 0, F.shade(st, -0.04), 'stone');   /* two kneeling stones */
+  }
+});
+FURN({
+  key: 'voth_shrine_lantern', name: 'Lantern shrine', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
+  rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 2,
+  materials: ['stone', 'timber', 'cloth', 'emissive', 'roofTile', 'ceramic', 'plaster', 'metal'],
+  w: 1.9, d: 1.9, h: 2.7, variants: 1,
+  build: function (F) {
+    const st = F.col('stoneGraphite'), wd = F.col('timberWalnut'), cl = F.col('clothVothPurple');
+    F.box(0, 0, 0, 1.7, 0.12, 1.7, 0, F.shade(st, -0.08), 'stone');                   /* the paving */
+    for (const x of [-0.72, 0.72]) for (const z of [-0.72, 0.72]) F.box(x, 0.12, z, 0.12, 2.0, 0.12, 0, wd, 'wood');   /* four posts */
+    F.pyrRoof(0, 2.12, 0, 1.9, 0.52, 1.9, 0, F.col('lacquerBlack'), 'roof');            /* the little roof */
+    F.ball(0, 2.66, 0, 0.07, F.col('gilt'), 'metal');
+    F.cyl(0, 0.12, -0.3, 0.13, 0.78, 0, F.shade(st, 0.12), 'stone');                    /* the lantern's column */
+    F.box(0, 0.9, -0.3, 0.42, 0.36, 0.42, 0, F.shade(st, 0.2), 'stone');               /* the lantern */
+    F.box(0, 0.97, -0.08, 0.22, 0.22, 0.02, 0, F.col('flame'), 'glow');
+    F.pyrRoof(0, 1.26, -0.3, 0.56, 0.2, 0.56, 0, F.shade(st, 0.06), 'stone');
+    F.box(0, 0.12, 0.38, 1.0, 0.04, 0.56, 0, cl, 'cloth');                             /* the prayer mat */
+    F.frustum(0.5, 0.12, -0.35, 0.08, 0.06, 0.15, 0, F.col('ceramicAsh'), 'ceramic', 8);   /* incense */
+    F.rod(0.5, 0.27, -0.35, 0.5, 0.47, -0.35, 0.007, F.col('clothBone'), 'plaster');
+  }
+});
+FURN({
+  key: 'voth_shrine_urn', name: 'Ancestor urn shrine', culture: 'voth', tier: 'common', type: 'shrine', role: 'yard shrine', setting: 'both',
+  rooms: ['shrine', 'yard', 'court', 'garden', 'plaza', 'street'], anchor: 'floor', clearance: { front: 1.0 }, holds: 3,
+  materials: ['stone', 'ceramic', 'metal', 'emissive'],
+  w: 1.8, d: 1.8, h: 2.5, variants: 1,
+  build: function (F) {
+    const st = F.col('stoneGraphite'), ash = F.col('ceramicAsh');
+    F.cyl(0, 0, 0, 0.9, 0.14, 0, F.shade(st, -0.1), 'stone');                         /* two round steps */
+    F.cyl(0, 0.14, 0, 0.72, 0.14, 0, st, 'stone');
+    for (let i = 0; i < 3; i++) { const a = i / 3 * Math.PI * 2 + Math.PI / 6; F.cyl(Math.sin(a) * 0.56, 0.28, Math.cos(a) * 0.56, 0.07, 1.55, 0, F.shade(st, 0.18), 'stone'); }   /* three columns */
+    F.cyl(0, 1.83, 0, 0.72, 0.12, 0, F.shade(st, 0.1), 'stone');
+    F.dome(0, 1.95, 0, 0.68, 0.46, 0, F.shade(ash, -0.12), 'stone');                   /* the dome */
+    F.ball(0, 2.45, 0, 0.06, F.col('gilt'), 'metal');
+    F.frustum(0, 0.28, 0, 0.2, 0.3, 0.42, 0, ash, 'ceramic', 12);                      /* the great urn */
+    F.frustum(0, 0.7, 0, 0.3, 0.15, 0.24, 0, F.shade(ash, 0.06), 'ceramic', 12);
+    F.cyl(0, 0.94, 0, 0.12, 0.05, 0, F.col('brass'), 'metal');
+    for (const a of [0.4, 2.1, 4.0]) F.ball(Math.sin(a) * 0.4, 0.32, Math.cos(a) * 0.4, 0.04, F.col('flame'), 'glow');   /* candles on the step */
+  }
+});
+/* an ornamental plant in a glazed pot (owner, 2026-10-15: "ornamental plants are also noted, both here [the wealthy
+   houses] and more extensively in the palace"): the foyers, halls, reception rooms and atria take a few */
+FURN({
+  key: 'voth_planter', name: 'Ornamental planter', culture: 'voth', tier: 'common', type: 'planter', setting: 'both',
+  rooms: ['hall', 'court', 'foyer', 'antechamber', 'library', 'atrium', 'reception', 'banquet', 'apartment', 'study'], anchor: 'floor', clearance: {}, wealth: [0.35, 1],
+  materials: ['ceramic', 'foliage', 'stone'],
+  w: 1.3, d: 1.3, h: 2.4, variants: 2,
+  build: function (F) {
+    const pot = F.variant ? F.col('stoneGraphite') : F.col('ceramicAsh');
+    F.frustum(0, 0, 0, 0.34, 0.46, 0.7, 0, pot, 'ceramic', 10);
+    F.cyl(0, 0.7, 0, 0.5, 0.1, 0, F.shade(pot, 0.12), 'ceramic');
+    F.cyl(0, 0.3, 0, 0.42, 0.08, 0, F.col('clothVothPurple'), 'ceramic');                       /* the glaze band */
+    F.cyl(0, 0.8, 0, 0.4, 0.04, 0, F.col('stoneUmber'), 'stone');                                /* the soil */
+    /* the plant: a fan of broad blades from the middle, a few drooping, and a flower spike */
+    for (let i = 0; i < 9; i++) {
+      const a = i / 9 * F.TAU + F.rr(-0.2, 0.2), r = 0.12 + (i % 3) * 0.1, h = 0.9 + F.rr(0, 0.6);
+      F.blob(Math.cos(a) * r, 0.84 + h * 0.5, Math.sin(a) * r, 0.1, h, a, F.pick(['leafMadder', 'leaf', 'leafOchre']), 'leafy');
+    }
+    F.rod(0, 0.84, 0, 0.08, 2.1, 0.05, 0.02, F.col('leaf'), 'plant');
+    F.ball(0.08, 2.18, 0.05, 0.12, F.variant ? F.col('clothCrimson') : F.col('clothGold'), 'plant');
+  }
+});

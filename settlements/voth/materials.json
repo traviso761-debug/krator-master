@@ -1,0 +1,988 @@
+{
+ "build": "voth",
+ "note": "Voth's adapter onto the material library (core/materials/PLAN.md). Run python3 tools/textures/pack.py settlements/voth after a change, then python3 build.py. The Voth site editor (targets/voth-site) and the city plan take the sets as grey detail maps under Voth's own colours, in world space: stone (cantons, bridges, causeways), ground, grass (the city's parks: a grey detail under the park green, 50-site-scene.js VIEW.hook), rock (slopes), sand (beaches). The Voth city plan's streets take the road_* sets (paving and cart-road surfaces), one per street class (55-vc-host.js HOST.ROADTEX). The city page's canton interiors (40-vc-interiors.js; 56-vc-interiors-host.js VC.intMats) take the int_* sets as grey detail under each canton's own colours (walls, floors, ceilings, steps, timber, gilt) and the tap_*, inlay_*, medallion_sun and lantern_paper sheets in full colour as UV-mapped panels (tapestries, banners, rugs, dado bands, lantern paper); the street canopies and the hung banners take int_canopy and the tap_* sheets (56f-vc-street-host.js). The owner's delivery of 2026-10-15 (vothtex.zip): the Palace's green stucco, green tiles and jade inlay (pal_*) and the carved inlaid columns as full-colour sets (VC.intSetMat colour mode); the tapestries (Tzintzun, the procession, the Temple's, the masks), the three brothers' frescoes (fresco_brothers, fresco_ascent: the Chichani, the Zeijani and the Andaru), the carpet, the chandelier drum, the icon, the shrine mural, the glyph banners (blue, rust, lavender), the ancestor relief, the screen lattice, the damask, the filigrees, the ringed-giant mosaic, the mudcloth and the brown kilim as sheets; the stall awning and the hide canopy on the streets.",
+ "size": 512,
+ "families": {
+  "stone": {
+   "lib": "stone.cut",
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.25
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "ground": {
+   "lib": "ground.dirt",
+   "scale": [
+    7.0,
+    7.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.2
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "grass": {
+   "lib": "ground.grass_ground",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.4
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "rock": {
+   "lib": "rock.rock_face",
+   "scale": [
+    16.0,
+    16.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.3
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "sand": {
+   "lib": "ground.coast_sand_01",
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.2
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "road_flag": {
+   "lib": "paving.flagstone",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.55,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "road_cobble": {
+   "lib": "paving.cobblestone_01",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.55,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "road_paving": {
+   "lib": "paving.pavement_01",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.55,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "road_alley": {
+   "lib": "paving.grassy_cobblestone",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.55,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "road_ruts": {
+   "lib": "ground.road.ruts",
+   "scale": [
+    10.0,
+    10.0
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "int_wall": {
+   "lib": "earth.banco.eroded",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.5,
+    "contrast": 1.45
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_relief": {
+   "lib": "plaster.patterned_clay_plaster",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.7
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_floor": {
+   "lib": "paving.tiles144",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.5,
+    "contrast": 1.25
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_stone": {
+   "lib": "stone.travertine",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.5,
+    "contrast": 1.2
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_beam": {
+   "lib": "wood.beam",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.5,
+    "contrast": 1.2
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_carved": {
+   "lib": "wood.carved",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.5,
+    "contrast": 1.25
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_gilt": {
+   "lib": "metal.gold",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.0,
+   "specular": 0.6,
+   "metal": 0.9
+  },
+  "int_rug": {
+   "lib": "cloth.rug.pile",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.2
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_silk": {
+   "lib": "cloth.silk",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_canopy": {
+   "lib": "cloth.tarp",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.2
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "tap_solar": {
+   "lib": "patterns/voth/banner-solar",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "tap_voth": {
+   "lib": "patterns/voth/banner",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "tap_ordinator": {
+   "lib": "patterns/voth/banner-ordinator",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "tap_kilim": {
+   "lib": "patterns/voth/kilim-star",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "inlay_voth": {
+   "lib": "patterns/voth/inlay",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "inlay_jade": {
+   "lib": "patterns/common/zellige-lotus-teal",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "medallion_sun": {
+   "lib": "patterns/common/medallion-sunray",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "lantern_paper": {
+   "lib": "patterns/common/lantern-paper",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_banco": {
+   "lib": "earth.banco",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.6
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_blocks": {
+   "lib": "rock.large_sandstone_blocks",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.3
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "canopy_kilim": {
+   "lib": "patterns/voth/kilim-tri",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "frieze_red": {
+   "lib": "patterns/common/frieze-palmette-red",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "jali": {
+   "lib": "patterns/common/jali-diamond",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "pal_stucco": {
+   "lib": "patterns/voth/stucco-green-relief",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "pal_tile": {
+   "lib": "patterns/voth/tile-green-glazed",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "pal_inlay": {
+   "lib": "patterns/voth/inlay-jade-gold",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "column_inlaid": {
+   "lib": "patterns/voth/column-carved-inlaid",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "screen_lattice": {
+   "lib": "patterns/voth/screen-lattice",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "relief_ancestors": {
+   "lib": "patterns/voth/relief-ancestors",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "awning_stall": {
+   "lib": "patterns/voth/awning-stall",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "hide_canopy": {
+   "lib": "cloth.hide.canopy",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.3
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "tap_tzintzun": {
+   "lib": "patterns/voth/tapestry-tzintzun",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "tap_procession": {
+   "lib": "patterns/voth/tapestry-procession",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "tap_temple": {
+   "lib": "patterns/voth/tapestry-temple",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "tap_masks": {
+   "lib": "patterns/voth/tapestry-masks",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "carpet_palace": {
+   "lib": "patterns/voth/carpet-palace",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "chandelier_drum": {
+   "lib": "patterns/voth/chandelier-drum",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "icon_sanctuary": {
+   "lib": "patterns/voth/icon-sanctuary",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "mural_shrine": {
+   "lib": "patterns/voth/mural-shrine",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "banner_blue": {
+   "lib": "patterns/voth/banner-glyph-blue",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "banner_rust": {
+   "lib": "patterns/voth/banner-glyph-rust",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "banner_lavender": {
+   "lib": "patterns/voth/banner-glyph-lavender",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "fresco_brothers": {
+   "lib": "patterns/voth/fresco-three-brothers",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "fresco_ascent": {
+   "lib": "patterns/voth/fresco-brothers-ascent",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "damask_purple": {
+   "lib": "patterns/voth/damask-purple-gold",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "mosaic_giant": {
+   "lib": "patterns/voth/mosaic-ringed-giant",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "filigree_crimson": {
+   "lib": "patterns/voth/filigree-crimson",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "filigree_purple": {
+   "lib": "patterns/voth/filigree-purple",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "mudcloth": {
+   "lib": "patterns/common/mudcloth",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "kilim_brown": {
+   "lib": "patterns/common/kilim-banded-brown",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_ashlar": {
+   "lib": "stone.sandstone.ashlar",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.2
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_paving": {
+   "lib": "paving.pavement_01",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.3
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_wood": {
+   "lib": "wood.old_wooden_floor_02",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_earth": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.3
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_stucco": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.4
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_tuff": {
+   "lib": "stone.tuff.polished",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_basalt": {
+   "lib": "stone.basalt.polished",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.15
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_oldwall": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.15
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_flag": {
+   "lib": "paving.flagstone",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_mosaic": {
+   "lib": "paving.marble_mosaic_tiles",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  }
+ }
+}

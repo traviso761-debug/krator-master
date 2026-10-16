@@ -117,7 +117,10 @@ var butteMesh = null;
   var g=new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv,2));
   g.setAttribute('color', new THREE.Float32BufferAttribute(col,3)); g.setIndex(idx); g.computeVertexNormals(); g.computeBoundingSphere();
-  var mat = nlMaterial(new THREE.MeshLambertMaterial({ vertexColors:true, map:FAMMAT.column.tex, side:THREE.DoubleSide }), 'butte');
+  /* the columnar jointing: the library's rock.columnar (materials.json 'column') on a standard material, or the procedural map */
+  var CL = FAMMAT.column.lib;
+  var mat = nlMaterial(famMaterial(FAMMAT.column, { vertexColors:true, side:THREE.DoubleSide }), 'butte' + (CL ? '|std'+KMAT.libKey(CL) : ''),
+                       CL ? function(sh){ KMAT.libHooks(sh, CL); } : null);
   butteMesh = new THREE.Mesh(g, mat); butteMesh.castShadow=!FAST; butteMesh.receiveShadow=!FAST; butteMesh.frustumCulled=false;
   butteMesh.userData.inspectLabel='The Butte (columnar rock)'; scene.add(butteMesh);
   REGISTER({ name:'The Butte', kind:'landform', label:'volcanic plug, '+BUTTE.H+' m', x:BUTTE.x, y:GROUND0-10, z:BUTTE.z, r:BUTTE.rFoot*1.1, h:BUTTE.H+30 });

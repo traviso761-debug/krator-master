@@ -16,6 +16,8 @@ window._biome=null;
  // curtains off the rim (long: the faces are 40-130 m), moss and ferns on the
  // faces, beards under the notch's overhang
  if(typeof STACK_GEOS!=='undefined'&&STACK_GEOS.length){try{NWBAY.dress(STACK_GEOS,{seed:3,karst:true,ledges:{moss:1200,plants:500,edges:560,hang:46,treeH:9,size:2.2,mossR:3},soffits:{n:260,mossR:2,hang:5},walls:{n:1400,hang:30}});}catch(e){reportErr('dress stacks: '+e.stack);}}
+ // the sinkholes' walls (above any water): root curtains off the rim, ferns and moss down the faces
+ if(typeof SINK_GEOS!=='undefined'&&SINK_GEOS.length){try{NWBAY.dress(SINK_GEOS,{seed:5,karst:true,ledges:{moss:300,plants:160,edges:200,hang:24,treeH:7,size:2,mossR:2.4},soffits:{n:120,mossR:2,hang:4},walls:{n:900,hang:24}});}catch(e){reportErr('dress sinkholes: '+e.stack);}}
  const b=BIO.bake();
  window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
  REGISTER({name:'The north-west bay (ideal type)',x:CENTER[0],z:CENTER[1],r:TERR.R,h:420});

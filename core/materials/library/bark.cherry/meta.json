@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.511,
+    1.105
+   ],
+   "seam_before": [
+    2.024,
+    1.388
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.65,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.cherry",
+  "metal": 0,
+  "roughness": 0.65,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Seamless Cherry Bark Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Seamless Cherry Bark Texture.png",
+  "prompt": "Prompt row bark.cherry in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "copper ringbark (swlowlands); cherry and birch-cherry trunks; full colour",
+  "sha1": "fca3379f236b3e0f5b46c29500811a6064dd6e04"
+ }
+}

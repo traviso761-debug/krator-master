@@ -448,7 +448,7 @@ function guildHallsDeck(c, y, hw){
       var pp3 = loc(hx, hz, w*0.5+1.0, s*(d*0.30), ry);
       var poleH = h*0.62;
       CYL(pp3[0], y, pp3[1], 0.28, poleH, 0, shade(TRUNKC[0],-0.15), 'wood');
-      BOX(pp3[0], y+poleH-6.0, pp3[1], 0.16, 6.0, 2.6, ry, pick([BANNERC[0],BANNERC[1]]), 'cloth');
+      BOX(pp3[0], y+poleH-6.0, pp3[1], 0.16, 6.0, 2.6, ry, vothPatCol('tapestry', pick([BANNERC[0],BANNERC[1]])), 'tapestry');
     });
     /* shield/blazon plaques, flush on the wall either side of the door */
     [-1,1].forEach(function(s){
@@ -520,7 +520,7 @@ function guildHallsDeck(c, y, hw){
       var p = loc(sx,sz, cc[0]*sw*0.42, cc[1]*sd*0.42, mry);
       BOX(p[0], y, p[1], 0.30, postH, 0.30, mry, pick(TRUNKC), 'wood');
     });
-    FR8(sx, y+postH, sz, sw*1.3, 0.7, sd*1.3, mry, pick(BANNERC), 'cloth');
+    FR8(sx, y+postH, sz, sw*1.3, 0.7, sd*1.3, mry, vothPatCol('kilim', pick(BANNERC)), 'kilim');
     if(chance(0.7)) stallGoods(sx, sz, y+counterH, sw, sd, mry, pick(stallKinds));
   }
 
@@ -797,11 +797,11 @@ function guildHallsDeck(c, y, hw){
     for(var bi=0; bi<4; bi++){
       var bt = (bi-1.5)*loomW*0.30;
       var bp = loc(lp[0], lp[1], 0.5, bt, ry);
-      BOX(bp[0], y+loomH-1.9, bp[1], 0.5, 2.6, 1.0, ry, pick(BANNERC), 'cloth');
+      BOX(bp[0], y+loomH-1.9, bp[1], 0.5, 2.6, 1.0, ry, vothPatCol('tapestry', pick(BANNERC)), 'tapestry');
     }
     /* a second small display: folded/stacked bolts just outside the door */
     var fp = loc(hx, hz, w*0.5+1.6, d*0.34, ry);
-    FR8(fp[0], y+0.6, fp[1], 2.2, 1.2, 1.6, ry, pick(BANNERC), 'cloth');
+    FR8(fp[0], y+0.6, fp[1], 2.2, 1.2, 1.6, ry, vothPatCol('kilim', pick(BANNERC)), 'kilim');
     /* the weaver, at the loom — falls through to updateGuildWorkers()'s
        generic tender idle-wander branch (78-life.js), same as the
        alchemist's rooftop tender: reads fine as "tending the loom"

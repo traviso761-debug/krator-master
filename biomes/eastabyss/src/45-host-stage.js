@@ -1,4 +1,8 @@
 // ================================================================= HOST — stage
+// the ground's detail and crack layers from the material library (materials.json groundDetail, groundCrack) when this page
+// carries the kit's pack; otherwise the procedural ones, which are painted either way (the random stream is unchanged)
+function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('eastabyss',n):null;if(!L)return fb;
+ const c=hostGroundLib.c||(hostGroundLib.c={});return c[n]||(c[n]=KMAT.textures(L,{aniso:8}).map);}
 // The ideal-type host for the EASTERN ABYSS: everything a world provides that
 // a biome does not. Renderer, lights, fog, the zoned basin terrain with
 // terrainH(), the climate fields the biome asks for (wet / salt / upland /
@@ -26,7 +30,7 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;document.body.appendChild(renderer.domElement);
@@ -85,12 +89,13 @@ const FIELD={
  flow:(x,z)=>clamp(smooth(150,30,riverD(x,z)),0,1)};
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
+BIO.init({tags:'eastabyss',THREE:THREE,scene:scene,terrainH:terrainH,
  mask:(x,z)=>{const h=terrainH(x,z);return h<.12?0:h<.6?(h-.12)/.48:1;},   // nothing rooted under water
  obstacles:OBSTACLES,ticks:tick,seed:7,
  // the LOD spine: a row of origins along z=0 from the west marsh to the shelf
  origin:[[-2900,0],[-2000,0],[-1100,0],[-200,0],[700,0],[1500,0],[2200,0],[2800,0],[3300,0]],center:[0,0],
- fields:FIELD,err:reportErr});
+ fields:FIELD,err:reportErr,
+ register:REGISTER,eye:()=>[camera.position.x,camera.position.y,camera.position.z]});   // the fauna (75) registers its flocks and reads the viewer
 BIO.setSun([-1200,900,-600]);
 // ---------------------------------------------------------------- the ground
 // One mesh. Painted by zone from a coarse cache of the fields (the fields cost
@@ -133,7 +138,7 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j];if(Math.hypot(a[0]-b[0],a[1]-b[1])>w*.4)continue;if(rng()<.45)continue;
   g.lineWidth=rr(1.2,2.6);for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){g.beginPath();g.moveTo(a[0]+k*w,a[1]+m*h);g.quadraticCurveTo((a[0]+b[0])/2+rr(-18,18)+k*w,(a[1]+b[1])/2+rr(-18,18)+m*h,b[0]+k*w,b[1]+m*h);g.stroke();}}});
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;varying float vCrack;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85)*mix(vec3(1.0),ck,vCrack);}');};

@@ -58,18 +58,48 @@ CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # A kit that lists nothing keeps its own src/ copies and builds as before.
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
+# core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
+CORE_SPACE=['20-core-space.js']
+CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+# core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
+# set, instance and registered volume the kit places is a core/tags record (core/biome/20-core-kit.js). A src/ copy wins.
+CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
+for f,d in CORE_TAGS.items():
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,f))
+# core/export (core/export/README.md): the krator-world container (EXPORT.world); the biome core fills its items, buckets,
+# materials, textures and terrain (42-core-export.js), 43 its stage, the adapters its registry. A src/ copy wins.
+CORE_EXPORT=['07-core-export.js','09-core-export-adapters.js']
+for f in CORE_EXPORT:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
+for f in CORE_SPACE:
+    if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
+# the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
+import host as khost
+CORE_HOST=khost.SHELL
+khost.resolve(PATH,CORE_HOST)
+# the material library (core/materials/record: KMAT and the loader) and the GENERATED pack of the textures materials.json
+# names (tools/textures/matlib_pack.py from tex/, written by tools/textures/pack.py). Without tex/pack.json the pack is
+# empty and the kit keeps its procedural textures (as it does in the open world, which carries no pack).
+for f in ('23-mat-record.js','25-matlib-host.js'):
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record',f))
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
+import matlib_pack
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'swbay')}
+for f in VIRTUAL: PATH[f]=None
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
 frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:
-    s=open(PATH[f],encoding='utf8').read()
+    s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
     n=int(re.match(r'(\d+)',f).group(1))
     if 10<=n<80 and '-host-' not in f:
         for w in FORBID:

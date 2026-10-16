@@ -7,7 +7,7 @@
 --neutral SRC DST   a near-grey, albedo-only copy of library/SRC as library/DST. Iziz and Voth colour every
                     instance by a tint over a near-grey texture, so a tinted copy of a full-colour set would
                     be doubly coloured. DST holds only albedo.jpg and meta.json: its meta points `maps` at the
-                    sibling set's normal and roughness (../SRC/...), so the 2 MB of PNGs are not stored twice.
+                    sibling set's normal and roughness (../SRC/...), so those maps are not stored twice.
                     The colour is muted with process.py's formula (--mute, default 0.9) and the mean luminance
                     set to --lum (default 0.65: a tint multiplies, so the base must not be dark).
 --polyhaven DIR B   B is a list of {slug, id, family?, mute?, neutral?, scale?, tint?, note?, rough_lift?, rough_floor?, metal?}. For each, the set
@@ -57,7 +57,7 @@ def neutral(src_id, dst_id, amount=0.9, mean_lum=0.65):
     save_albedo(mute(a, amount, mean_lum), os.path.join(dd, 'albedo.jpg'))
     rec = dict(meta['record']); rec.update(id=dst_id, tint=True, colour='#ffffff')
     out = {'record': rec,
-           'maps': {'map': 'albedo.jpg', 'normalMap': '../%s/normal.png' % src_id, 'roughnessMap': '../%s/roughness.png' % src_id},
+           'maps': {'map': 'albedo.jpg', 'normalMap': '../%s/normal.jpg' % src_id, 'roughnessMap': '../%s/roughness.png' % src_id},
            'source': dict(meta['source'], derived_from=src_id),
            'processing': {'script': 'tools/textures/adopt.py', 'version': 1,
                           'options': {'neutral_of': src_id, 'mute': amount, 'mean_luminance': mean_lum},
@@ -80,7 +80,8 @@ def adopt_polyhaven(ingest, batch):
         os.makedirs(dd, exist_ok=True)
         a = read_albedo(os.path.join(sd, 'albedo.jpg'))
         save_albedo(mute(a, amount) if amount > 0 else a, os.path.join(dd, 'albedo.jpg'))
-        shutil.copyfile(os.path.join(sd, 'normal.png'), os.path.join(dd, 'normal.png'))
+        nm = meta.get('maps', {}).get('normalMap', 'normal.jpg')
+        shutil.copyfile(os.path.join(sd, nm), os.path.join(dd, os.path.basename(nm)))
         lift, floor = job.get('rough_lift', 0.0), job.get('rough_floor', 0.0)
         if lift > 0 or floor > 0:       # scan roughness maps run wet under sun and environment light: r' = max(r + (1-r)*lift, floor)
             r = np.asarray(Image.open(os.path.join(sd, 'roughness.png')).convert('L')).astype(np.float64) / 255.0

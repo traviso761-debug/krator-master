@@ -87,8 +87,8 @@ BUILDERS = {
     'customsHouse':      (X(0, 2, 3), None, 'civic', 'Customs house'),
     'buildGuildRowHall': (X(1, 2, 4), "'guildHall_'+(a[0]&&a[0].name)", 'guild', 'Guild row hall'),
     'stallGoods':        (X(0, 1, 5), "'stall_'+a[6]", 'shop', 'Market stall goods'),
-    'siltStriderStation':(X(0, 2, 3), None, 'civic', 'Silt strider station'),
-    'striderStationBuild':('__fObj(0)', None, 'civic', 'Silt strider station (built)'),
+    'siltStriderStation':(X(0, 2, 3), None, 'civic', 'Elephant bug station'),
+    'striderStationBuild':('__fObj(0)', None, 'civic', 'Elephant bug station (built)'),
     # --- farm, industry
     'granary':           (X(0, 2, 3), None, 'rural', 'Granary'),
     'windmill':          (X(0, 2, 3), None, 'rural', 'Windmill'),

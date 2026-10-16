@@ -1,4 +1,4 @@
-/* ============================== SILT STRIDER STATIONS (static) =============
+/* ============================== ELEPHANT BUG STATIONS (static) =============
    Route 1's 6 interior stops each get a real building — a stone platform, 4
    wood posts holding a peaked shelter roof, and a short stepped ramp up
    from ground level — instead of a bare marker. Built entirely from
@@ -130,7 +130,7 @@ var STRIDER_R1_STATIONS = STRIDER_R1_STATIONS_RAW.map(function(p){
   shrineTriptych(sp[0], sy, sp[1], ry+Math.PI/2, shade(pick(TONES), 0.08), {w:11, d:4});
 })();
 
-/* ============================== SILT STRIDER STATIONS (Route 2) ===========
+/* ============================== ELEPHANT BUG STATIONS (Route 2) ===========
    Second route, same station template, same shared registry. Route 2's
    5 interior points — coordinates and road tangents (nearestStreet(),
    sampled live) exactly like Route 1's own list above. Footprints already
@@ -165,7 +165,7 @@ var STRIDER_R2_STATIONS = STRIDER_R2_STATIONS_RAW.map(function(p){
   return st;
 });
 
-/* ============================== SILT STRIDER STATIONS (Route 3) ===========
+/* ============================== ELEPHANT BUG STATIONS (Route 3) ===========
    Third route, same station template, same shared registry — this is the
    whole point of the Route 2 generalization: adding Route 3 is just new
    data plus a call into the same builders. Route 3's 11-point list (owner-

@@ -9,8 +9,10 @@
   that only `krator-master-furniture-generic-goods.js` defines (FPAL generic). A build that bundles `generic-fruit`
   without `generic-goods` places the pieces but draws nothing (found in Girder, 2026-10-03; it now bundles both). Move
   the fruit colours into the fruit file, or have `furniture_bundle.py` add `generic-goods` when `generic-fruit` is asked.
-- [ ] **Hykkousoi has a palette and no pieces** (`krator-master-furniture-hykkousoi.js`): the culture is in
-  progress and its sets are deliberately not built yet. The file says what to add.
+- [ ] **Hykkousoi has fourteen pieces and no style sheets** (`krator-master-furniture-hykkousoi.js`): the pieces are the Ys
+  settlement's (ported 2026-10; Ys keeps its own copy in `settlements/ys/src/66-hyk-furniture.js`), drawn with the core's
+  `F.lathe`, `F.tube` and `F.ell`. Their lit pearls and coals are glowing balls with no point light, and `lens` is the
+  catalog's translucent glass. HYK_COMMON / HYK_COURT style sheets and the `FK.set()` tiers are still to write.
 - [ ] **The sheet is heavy.** 853 furniture pieces, 1129 instances and about 33 000 draw calls on the `all`
   sheet; `verify.py --assert` takes about 15 minutes under SwiftShader and a screenshot of the whole sheet
   several minutes each. Partial runs are cheap: `?cultures=xanadu,voth` (verify.py `--query cultures=...`)
@@ -141,7 +143,23 @@ Girder carry no size declarations, so there is nothing there to sync. The catalo
   rest on a corner instead of burying it.
 
 ## Open (2026-10-01): not addressed
-- [ ] Yuni's interiors pass (settlements/yuni, 64-interiors) added six furniture pieces (`poor_lidded_basket`,
+- [x] Yuni's interiors pass (settlements/yuni, 64-interiors) added six furniture pieces (`poor_lidded_basket`,
       `poor_food_pot`, `poor_sleeping_mat`, `common_grain_bin`, `poor_reed_mat`, `common_kilim`) and replaced the
-      `storage` type with `container-item` / `container-food` plus `capacity`. The harvested Yuni set in
-      `krator-master-furniture.js` predates both. Re-harvest Yuni. See settlements/yuni/KNOWN_ISSUES.md.
+      `storage` type with `container-item` / `container-food` plus `capacity`. **Re-harvested 2026-10-05** into
+      `krator-master-furniture.js` (end of the Yuni section) as `yuni_<culture>_<name>`, with the material-library
+      pass's families (fired clay `ceramic`, reed mats `reed`, coiled baskets `wicker`). Yuni's container types are the
+      catalog's `storage` plus a `role` the interiors kit reads (`pots` and `bin`: food; `trunk`, the lidded basket
+      Yuni keeps belongings in: items). The catalog has no `capacity` field; Yuni keeps its numbers. Yuni turns pots
+      and baskets on a lathe: here a stack of frustum rings (`yuniLathe`). `yuni-common` gained `thatchStraw` and
+      `thatchFlax` (the grain bin's lid).
+- [x] **The kit's beds shared faces** (the blanket on the mattress, the turned-down band on the blanket, the stone slab flush
+      with the corner legs): z-fighting. Each layer now stands a few millimetres clear (`krator-furniture-kit.js`, the bed).
+      Every culture's kit bed changes when its build is rebuilt.
+- [x] **The Zeijani mortar's resin shared the mortar's top face; the fleece bed's layers floated apart at their thin edges.**
+      Fixed in `krator-master-furniture-zeijani.js`.
+- [ ] **`stretch` and `F.span`**: a piece marked `stretch` (the kit's pennants) is drawn to the placer's span along its wall;
+      the catalog page draws it at its declared width.
+- [x] **Every painted panel (`F.decal`) was its own mesh, one draw each** (a cord of pennants: one a flag; the stretched
+      cords carry up to 23, and Highlands' interiors went from 462 meshes to 580). `Batch.flush` now merges the panels that
+      share a material (one canvas map each) into one mesh, the transforms baked in (Dhelv: 1746 panels in 152 meshes).
+      `batch.textured` is still the list of placed panel meshes until the flush (Girder and Mav's Refuge read it).

@@ -16,6 +16,9 @@ biome needed (an abyss or a hyperjungle fragment runs unchanged on it):
   river that descends, or a pond in a hollow, hands its own level in. `BIO.waterH(x,z)`
   and `BIO.depth(x,z)` (= waterH − terrainH, positive under water) are what a fragment
   reads; the default is 0, so the old kits' `terrainH<0` and `depth>0` agree.
+- `field` and `placeH` (2026-10-08): this kit's host bakes its ground into a `core/terrain` field and reads it
+  (`terrainH`); `placeH` is the closure it baked from, which `BIO.depth`, the default mask and this host's mask and
+  field cache decide on, so the plants keep their places and only take the field's height. `BIO.depth` is waterH − placeH.
 - A field a world does not bind reads 0 (`wet`, `salt` and `upland` keep their old
   defaults); `BIO.hasField(name)` says whether it was bound.
 - `register(o)`: the world's inspector / probe hook; a biome calls `BIO.register({name,x,z,y,r,h})`
@@ -63,6 +66,8 @@ BIO.init({
   scene,
   terrainH: (x,z)=>y,           // ground height, world space
   waterH:   (x,z)=>y,           // the water surface there (-1e9 where there is none)
+  field:    KFIELD field,       // optional (2026-10-08): the baked ground terrainH reads; BIO.export adds it as ground.field
+  placeH:   (x,z)=>y,           // optional (2026-10-08): the height placement DECIDES on (mask, BIO.depth); terrainH if omitted
   mask:     (x,z)=>0..1,        // density multiplier: 0 where nothing roots (water, footprints)
   obstacles:[{x,z,r,y0,y1}],    // cylinders nothing may grow inside
   ticks:    fn=>void,           // per-frame fn(dt,t) for the wind
@@ -127,7 +132,8 @@ SEDESERT.standOf(x,z)               // which big succulent's stand this is (0 ca
 SEDESERT.nearestTree(sp,x,z,minH)   // the nearest built hero of a species (a camera preset wants one)
 SEDESERT.spiresOf(T)                // a twist-candle clump's far impostor as data: [{x,z,foot,top,...}] per spire
                                     //   (any clump, hero or not: a host checks the footing against its drawn water)
-SEDESERT.FAUNA                      // the four fauna kinds (tagged); SEDESERT.ROCKS the basking places the floor left
+SEDESERT.FAUNA                      // the six fauna kinds (tagged); SEDESERT.ROCKS the basking places the floor left
+SEDESERT.FAUNA_LAYOUT               // after build: thermals, flocks, bands, herds, packs, and the deer and coyote walkers (data)
 SEDESERT.blooms / leafCol / small   // the shared plant helpers the floor and the dressing use
 ```
 
@@ -139,6 +145,22 @@ wadi swifts in flocks over the pond and the river's water; sand striders, long-l
 in bands pacing the canyon floor and the pond; rock lizards basking on the floor's boulders.
 The static kind is put like any item; the moving kinds are dynamic instanced meshes driven
 by one `BIO.tick`. Thermals and bands are registered volumes, so the inspector names them.
+
+Two more kinds (2026-10): **canyon mule deer** (1 m at the shoulder; bucks carry forked antlers) in
+herds of 3-8 in the riparian strip and at the pond (`rip`, `oasis`, `bank`), each deer walking its
+own loop between the herd's browse points in the bosque and the scrub beside it, head down to browse
+and up for a glance; and **coyotes** (0.6 m), singly or in pairs travelling in file, trotting long
+loops (140-1000 m) through the `scrub`, the canyon floor and the badland, pausing to sniff or look
+round. Both are WALKERS: a closed polyline, a trapezoid speed and stops at its vertices, and the pose
+is a pure function of the BIO clock (`BIO.WIND.t`: the host's `clock()` when it binds one), so a port
+replays it from the clock and the layout (`FAUNA_LAYOUT.deer`, `.coyotes`: `W.pts`, `W.tl`, `W.gy`).
+Their ground is dry (`BIO.depth < -.3`), gentle (`slope < .45`), unmasked (`BIO.mask > .5`), clear of
+the obstacles and the tree trunks; every 3 m of a path is tested, so a host's `mask` keeps them out of
+its footprints. `build({fauna})`: `false` builds no fauna; a function `(kind,x,z)->bool` ('deer',
+'coyote') is a host's own filter on top. Legs are their own instances swinging on the hips (this kit
+does not load `35-core-anim.js`: its walk hook would need per-instance attributes the dynamic meshes
+do not carry, and a CPU pose exports as plain matrices). Herds and loops are registered volumes
+(`kind:'fauna'`, with the kind's `tags`). The presets 'Mule deer' and 'Coyotes' frame one where it is.
 
 Then `BIO.bake()` once. Draw calls: one per instanced item + one per merged family (~45).
 
@@ -163,7 +185,7 @@ This kit is `tropic`, `abyssal:false` throughout. A plant is never part of a bui
 60-biome-sedesert-floor.js     the floor by zone; reeds in the shallows; hoodoos; fallen mesquites
 65-biome-sedesert-dress.js     growth on structures (lichen, ledge plants, a hanging succulent)
 70-biome-sedesert.js           SEDESERT.build / dress / canopyH
-75-biome-sedesert-fauna.js     the fauna: kites, swifts, striders, lizards; one tick drives the moving kinds
+75-biome-sedesert-fauna.js     the fauna: kites, swifts, striders, lizards; deer and coyotes (walkers); BIO.kitEnd
 45-host-stage.js (ideal type only): renderer, the desert terrain (mountains, canyon, butte, mesas,
                                     badland, dunes, the Abyss), the fields (cached), the river ribbon,
                                     the pond, the cataract with its mist, the painted ground, BIO.init
@@ -173,3 +195,7 @@ This kit is `tropic`, `abyssal:false` throughout. A plant is never part of a bui
 
 To port: copy 10–75 (and 00-head/99-tail if starting fresh), write `BIO.init({...fields, waterH})`,
 set `SEDESERT_WATER`, call `SEDESERT.build`, then `BIO.bake()`. Read KNOWN_ISSUES.md first.
+
+## One tree alone (open worlds)
+
+`SEDESERT.make(sp,x,y,z) / grow(T,lv)`: one tree alone (an open world's variants): the pass's record, then the builder at level lv (2,1,0). Additive: `build()` never calls them, and the kit builds exactly what it built before (checked by `verify.py --baseline`). `openworld/little-demo/src/84-world-nursery.js` is the user.

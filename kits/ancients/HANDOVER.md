@@ -1,5 +1,10 @@
 # Krator Ancients — handover
 
+## INTERIORS — PAUSED 2026-10-07 (user's request) — read kits/ancients-interiors/HANDOFF.md
+Rooms inside the original kit's buildings (target `interiors`): plans done for the Police station, the houses, the lab,
+the Foundry, the Assembler, the Vault and the Starfish; offices, apartments, government, library, bunker, cultural
+centre, hospital, hotel and campus not yet (a tested-only-for-syntax civic draft is in kits/ancients-interiors/wip/).
+
 ## ROUND 3 (2026-10-01, user-approved) — in flight, one agent each
 - Shared-code pass: soffit bounce kit-wide, holeFn height term, shared rbeam, meshMerged colours, apron
   material override, new rubble shape, darker MAT.dark, one shared moulding() helper, kit row re-spacing.

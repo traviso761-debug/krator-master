@@ -1,0 +1,184 @@
+[
+ {
+  "src": "skin-sky-ray.png",
+  "out": "core/materials/library/skin.sky-ray",
+  "record": {
+   "id": "skin.sky-ray",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id skin.sky-ray).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "the hyperjungle sky ray (Iziz fauna_ray); any ray, whale or leathery wing underside"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "hide-fuzz-pterosaur.png",
+  "out": "core/materials/library/hide.fuzz.pterosaur",
+  "record": {
+   "id": "hide.fuzz.pterosaur",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id hide.fuzz.pterosaur).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "pterosaur body fuzz (Girder fly_q_fuzz); short fur on any small mammal, felted hide"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "cloth-canvas-striped.png",
+  "out": "core/materials/library/cloth.canvas.striped",
+  "record": {
+   "id": "cloth.canvas.striped",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.18
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id cloth.canvas.striped).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "tinted awning, rug and bolster stripes: Iziz, Highlands, Dalab, Reed Lake, Xanadu, Ys, Verge"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "concrete-ancient.png",
+  "out": "core/materials/library/concrete.ancient",
+  "record": {
+   "id": "concrete.ancient",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id concrete.ancient).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "the Ancients board-formed concrete with tie holes (54-mat-concrete.js) in every Ancients-lineage build"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.8,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "concrete-ancient-b.png",
+  "out": "core/materials/library/concrete.ancient.b",
+  "record": {
+   "id": "concrete.ancient.b",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    3.25,
+    3.07
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id concrete.ancient).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "a second board-formed concrete without tie holes: break-up for concrete.ancient, or plain board-marked walls anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.8,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "wood-log-carved.png",
+  "out": "core/materials/library/wood.log.carved",
+  "record": {
+   "id": "wood.log.carved",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.0,
+    1.77
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id wood.log.carved).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "round-log walls: Highlands, Dalab, Reed Lake, Ys; log cabins anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.6,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ }
+]

@@ -7,14 +7,6 @@
 // Shared by the three agent-E builders (74c, 74d, 74e): hykTideStair, hykTideRail, hykTideAng.
 // the shortest signed angle from a to b
 function hykTideAng(a,b){return Math.atan2(Math.sin(b-a),Math.cos(b-a));}
-// a point and outward normal on a lathe at azimuth th and height y, ON the modulated surface: hykLatheAt reads the bare
-// profile, so on a lobed, fluted or ringed shell its point sits off the skin (a crest 5 % proud, a trough 5 % sunk) and
-// the lip floats. This scales the point by the lathe's lobe, flute and ring factors (the noise is left out: ±1 %).
-function hykTideAt(L,th,y){const q=hykLatheAt(L,th,y);let k=1;
- if(L.lobes)k*=1+L.lobes.amp*Math.cos(L.lobes.n*th+(L.lobes.ph||0));
- if(L.flute)k*=1+L.flute.amp*Math.pow(.5+.5*Math.cos(L.flute.n*th+(L.twist||0)*y),L.flute.sharp||2);
- if(L.rings)k*=1+L.rings.amp*Math.sin(y/L.H*L.rings.n*TAU);
- const cx=L.cx||0,cz=L.cz||0;q.p=[cx+(q.p[0]-cx)*k,q.p[1],cz+(q.p[2]-cz)*k];return q;}
 // a straight flight: treads from the lower end a to the upper end b (local points), w wide, rise .19, run from the
 // length; a rail tube on posts along o.rails ('both' | 'left' | 'right', seen climbing). o.inside puts the rail in
 // the interior bucket.
@@ -49,7 +41,7 @@ function buildHykTempleTides(G,o){reseed(30650+(o.v|0));
  const prof=y=>R0*Math.pow(Math.max(0,1-Math.pow(Math.max(0,y)/HD,1.7)),.55)+.15;   // the vault: parabolic, vertical at the springing
  const D={H:HD,yBase:PL,rFn:prof,nu:224,nv:72,lobes:{n:NL,amp:.055},rings:{n:9,amp:.012},noise:{amp:.012,su:5,sv:3,seed:7},col:cShell};
  const P={H:PL,yBase:0,rFn:y=>R0+1.6-1.0*(y/PL),nu:224,nv:6,lobes:{n:NL,amp:.055},col:(u,v)=>v<.28?cCrust:cTeal};   // the plinth: scale mosaic over a tide crust
- const at=(L,th,y)=>hykTideAt(L,th,y);const lob=th=>1+.055*Math.cos(NL*th);
+ const at=(L,th,y)=>hykLatheAt(L,th,y);const lob=th=>1+.055*Math.cos(NL*th);
  // ---- the openings on the dome (3D points: the plinth and the inner skin share them)
  const arch=at(D,Math.PI/2,5.0);arch.r=4.8;arch.ky=1.05;                     // the mouth, framed by the two front ribs: 9.6 wide, 10 tall, its foot on the plinth
  const ocu=at(D,Math.PI/2,16.5);ocu.r=3.6;ocu.ky=1;                          // the oculus above the mouth: the pearl shows through it

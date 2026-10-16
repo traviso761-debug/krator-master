@@ -116,7 +116,7 @@ var APS = LIFE_PEOPLE_SCALE;
    braced leg reads as a swing; rolling a cylinder reads as a leaning
    cylinder).
 
-   Built the way 79-striders.js builds the silt strider: many small primitives
+   Built the way 79-striders.js builds the elephant bug: many small primitives
    merged once with lifeMergeGeoms(), per-part vertex colour, one buffer, one
    draw call, ~500 triangles a fighter at 21 slots.
 

@@ -4,6 +4,26 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [x] (2026-10-15) **Shade is on core/host** (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`). `build.py` takes
+      the whole interface less `core/edits` (no editor world yet) and adds `core/rand` and `core/tags`: the camera, the loop,
+      the panel, the inspector, marks, the minimap and the probe are the host's. `src/90-host-camera.js` is gone (its name
+      would have overridden the shell's camera); `src/91-host-probe.js` is `src/91-shade-probe.js` (its `window._api`
+      fields, handed to the host as `api`; setView, views and go are the host's); `src/89t-shade-tags.js` makes `KTAGS.page`
+      from REG and PLACES (619 records: 63 buildings, 522 trees, 9 life volumes, 25 features; zero unknown tags; the culture
+      `eastern-nomad` is the vocabulary's `nomad`, a building's place is its `district`); `src/99-shade-take.js` is the take.
+      Proof: `verify.py --assert` 84 PASS, 0 FAIL, as before; the baseline delta is build time only (triangles 3254283,
+      draw calls 48 unchanged); the scene census at four views equals the old page's exactly (old against old: also 0
+      differences); the inspector names the Khan (`bld_00017`) and a tent from their records, the minimap draws 602 records,
+      a mark measures, no errors.
+- [ ] (2026-10-15) What changed with the host: the polygon tool and its panel are gone (the host's marks, P, measure and
+      save areas, lines and points); the Inspector, Places and Routes boxes are the bar's hover button (on, as before) and
+      its layers (places, routes, flora and fauna, buildings, sky); the HUD's camera line is the stats panel. The keys are
+      the host's (W A S D, Q / E, F walk, G and double-click the pin, I hover, P marks, M minimap). The places are records
+      but the inspector and minimap skip them (a place's box would hold the Khan's own building); they are in the tags export.
+- [ ] (2026-10-15) The marks are read from `../marks.json` (where `tools/edits/serve.py` saves them) only when the page is served
+      from the repo root; elsewhere (verify.py serves `dist/` alone) from an empty data URL, so the page reads this browser's
+      draft. The host's default, `marks.json` beside the page, is `dist/marks.json` for a page in `dist/` (a core/host question).
+
 - [x] BUILDINGS (second pass). 52 buildings in nine families from a seeded plan (44),
       built before the walkable grid (80), one mesh per material. Checked: inside their
       places, no overlap in plan and height, rock behind every carved front, every
@@ -38,7 +58,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] Only the alcove dwellings take the hood's shade, and from the analytic `floorOcc`/`floorSun`
       in their vertex tints, not marched: their top storeys are as dark as their foot. The hall
       and the shrine in their niches, and the run blocks beside an alcove, are not shaded at all.
-- [ ] A camera orbiting into a hood's rock is lifted onto the cliff top above it (90): correct,
+- [ ] A camera orbiting into a hood's rock is lifted onto the cliff top above it (99-shade-take.js `clampCam`): correct,
       but it pops. Pull it back along its view ray instead.
 - [ ] The carve checks sample one point per patch (the void at mid depth, the rock 2 m over the
       ceiling), not the whole void; a hood thinner than 2 m somewhere would pass.
@@ -53,6 +73,15 @@ Read before changing anything here. `build.py` prints the open count.
       with jobs and hourly schedules, the raider convoy routed leg by leg. Moving
       instanced people (Voth's `78f-life-citizens.js` is the model to port) come after
       the buildings, so they have doors to walk to.
+- [x] The life layer is on SIM (core/simulation, Oct 2026) and SIM steps it: the probe
+      decides all 1,060 residents at 2, 8, 13 and 20 h (none stuck, no route failed) and
+      runs the raider convoy minute by minute through its legs (ford, Khan, Khan, out by
+      the switchback), each with a negative. The convoy has its `raider` role; DEPART and
+      IDLE are in `world/activities.json` (so `_life.OUT.activities` is 15, not 13).
+- [ ] Nothing steps SIM per frame yet: the clock is held at noon and only the probe
+      runs `LIFE.run(minutes)`. Stepping it in the frame loop belongs with drawing the
+      people (the item above; PLAN.md Phase 3b), so the CPU is not spent on walkers no
+      one sees.
 - [x] Building navigation shadows are applied before the 1.5 m walkable grid is
       built. The door approaches and Khan court stay open; the probe checks every
       building entrance from the Khan.
@@ -62,8 +91,9 @@ Read before changing anything here. `build.py` prints the open count.
       clock reads yet (Shade has no day/night cycle; the sun is the sky's fixed WNW one).
 - [ ] The places' polygons are rectangles typed by hand against the layout. The
       probe checks every one, but moving the basin means moving them.
-- [ ] Hover inspection names registered volumes (trees, the falls, the pool), places and
-      terrain zones; a floor plant has no volume and is named only on a click (a full raycast).
+- [ ] The inspector (core/host 93) names the smallest core/tags record holding the point (a building, a tree, the
+      falls, the pool, a carve patch), else the place, the switchback or the terrain zone (99-shade-take.js); a floor
+      plant has no record, so it is named by its mesh's label only.
 - [ ] The switchback's legs are straight at a constant depth into the slope, so each leg
       is cut in at one end and built out at the other by ~4 m; the cut and fill faces are
       the terrain's steep blend, not retaining walls. Dry-stone retaining walls are
@@ -78,3 +108,4 @@ Read before changing anything here. `build.py` prints the open count.
       gained `BIO.kit` hooks, so `--vendor-check` reports the core and the hooked fragments as drift.
       The kit's geometry is unchanged (mesh fingerprints, `core/README.md`). Re-vendor, or read
       `core/biome` through a `CORE_BIOME` list, when this world is next rebuilt and verified.
+- [ ] (2026-10-06) The nomad kit takes the material library as colour maps (materials.json; src/78b-host-matlib.js swaps NOMAD.MAT's maps; the kit stays Lambert, so no normal maps). The sedesert flora is not wired yet. verify --assert passes.

@@ -19,6 +19,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `10-core.js` | 2 | error panel (1); rng + noise (7) |
 | `20-tex.js` | 11 | procedural textures (1) |
 | `22-mat.js` | 8 | materials (1); the palette (culture-neutral) (40); animated materials (shader-side only: geometry a (56) |
+| `29y-pa-matlib.js` | <1 | the material library (core/materials/PLAN.md) (1) |
 | `30-geo.js` | 19 | geometry engine (1) |
 | `32-cores.js` | 11 | the reclaimed large objects (1) |
 | `34-adds.js` | 23 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (151); TYRE FURNITURE (stools, chairs, tables): stacked (179) |

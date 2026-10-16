@@ -3,7 +3,7 @@
    The biome's sun follows the world's day (SKY_STATE.keyDir), and every biome mesh is given the
    project's inspector classification and tags (flora · climate · aridity · abyssal · riparian). */
 reseed(699001);
-var LOCUS_BIOME = null;
+var LOCUS_BIOME = null, LOCUS_TOWN_SITES = [];
 (function(){
   if(SHEET) return;
   var t0=performance.now();
@@ -28,9 +28,15 @@ var LOCUS_BIOME = null;
     for(var j=0;j<40;j++){ var a2=rnd()*TAU, r2=MARKET.r+rr(4,12); tryAt(MARKET.x+Math.cos(a2)*r2, MARKET.z+Math.sin(a2)*r2, 0.6); }
     /* 3. yards and gaps between the houses */
     for(var x=-470; x<=470; x+=10) for(var z=-470; z<=470; z+=10){ if(Math.hypot(x,z) > 470) continue; tryAt(x+rr(-4,4), z+rr(-4,4), 0.10); }
-    EASTABYSS.SITES = sites;
+    LOCUS_TOWN_SITES = sites;
   })();
   try{ LOCUS_BIOME = EASTABYSS.build({ R:2750, quality: FAST ? 0.42 : 0.66 }); }catch(e){ ERR('biome build: '+(e&&e.stack||e)); }
+  /* the town trees, grown one by one after the biome's own passes (EASTABYSS.make / grow: no keep-clear entry, the
+     town is masked out of the passes anyway). H and crownR cap the draw; the trunk keeps to the species' slimmest. */
+  try{ BIO.fn.reseed(699102); var nTown=0; LOCUS_TOWN_SITES.forEach(function(s){ var y=terrainH(s.x,s.z); if(y<.3 || EASTABYSS.blocked(s.x,s.z,1.2)) return;
+    var T=EASTABYSS.make(s.sp,s.x,y,s.z), S=EASTABYSS.SPECIES[s.sp]; if(s.H) T.H=Math.min(T.H,s.H); if(s.crownR) T.crownR=Math.min(T.crownR,s.crownR);
+    T.rb=Math.min(T.rb, Math.max(S.rb[0], T.H*.06)); EASTABYSS.grow(T, BIO.lodD(s.x,s.z) < 1100 ? 2 : 1); nTown++; });
+    if(LOCUS_BIOME) LOCUS_BIOME.townTrees = nTown; }catch(e){ ERR('biome town trees: '+(e&&e.stack||e)); }
   var b=null; try{ b=BIO.bake(); }catch(e){ ERR('biome bake: '+(e&&e.stack||e)); }
   /* tags: species by name, and the biome-wide set for the floor items */
   var TAGBY = {};

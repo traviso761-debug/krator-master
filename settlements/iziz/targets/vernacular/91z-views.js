@@ -19,4 +19,9 @@ const VIEWS={
  'Voth Embassy and Order Chapterhouse':RV(12,72,40,8),'Embassy — eye level':EYE('port_voth_embassy',26,5),'Chapterhouse — eye level':EYE('port_order_chapterhouse',26,-5),
  "Salvagers' Guild (Ancient laboratory)":RV(13,90,50,20),"Salvagers' — yard":EYE('anc_salvagers_guild',42,6),
  'Mercenary Guild (Ancient police station)':RV(14,90,50,12),'Mercenary — gate':EYE('anc_mercenary_guild',50,3),
+ 'Frontier — palace, guard tower, watch, toll':RV(15,96,46,8),"Governor's Palace — eye level":EYE('vern_governor_palace',34,4),'Guard tower — eye level':EYE('vern_guard_tower',24,5),
+ 'Watch and toll — eye level':(()=>{const S=SITES.find(s=>s.key==='vern_toll_house');return[S.x+15,1.7,S.z+9,S.x-8,3,S.z];})(),
+ 'Frontier — palisade, gate, mustering ground':RV(16,74,36,4),'Palisade gate — eye level':EYE('vern_palisade_gate',18,2),
+ 'Frontier — rest stops':RV(17,36,14,4),'Rest stop (rock) — eye level':EYE('vern_rest_stop',13,2),
+ 'Rest stop (cliff) — from the drop':[20,6,ROWZ[17]+18,14,4,ROWZ[17]],
 };

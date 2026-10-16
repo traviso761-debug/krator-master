@@ -188,6 +188,59 @@ RIFT.SPECIES=[
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
 ];
 
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields, as ebadlands' HV() has it (wood, edible parts, medicinal, a note), plus `fruit`: the
+// catalog piece its fruit is (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws.
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+RIFT.HV=HV;
+RIFT.HARVEST={
+ frilltree:HV('none (too great to fell)',[],false,'The fins are leather-tough; nothing eats them.'),
+ bellpalm:HV('fibre, thatch',['bell dates'],false,'Sticky olive-gold dates hang in strands inside each fan bell.','generic_fruit_bell_date'),
+ lobetree:HV('fuel',[],false,'The hanging pods are bitter: left to the bats.'),
+ trumpet:HV('pipes (the hollow stems)',[],false,'The ribbed stems are cut for water pipes and flutes.'),
+ pagoda:HV('timber',[],false,'Straight tiered timber; the fibre bark twists into rope.'),
+ curly:HV('none',[],true,'The sap soothes burns.'),
+ prismbush:HV('none',[],false,'Ornamental: the sprays change colour as you walk past.'),
+ candle:HV('none',[],false,'The lavender brushes are dried for tinder.'),
+ baobab:HV('cord (the bark)',['fruit pulp','leaves'],true,'The pale pods hold a dry, tart pulp (not in the catalog yet); the bark is stripped for cord without killing the tree.'),
+ araucaria:HV('timber',['seeds (roasted)'],false,'The heavy cones break apart on the ground for their nuts (not drawn).'),
+ purplefan:HV('none',[],false,'A purple dye from the leaves.'),
+ dragon:HV('none',[],true,'The red resin is a dye, a varnish and a wound dressing.'),
+ aloetree:HV('none',[],true,'The gel dresses burns.'),
+ acacia:HV('fuel, thorn fences',['pods (famine)','gum'],true,'The pods and the gum are not drawn.'),
+ groundsel:HV('fuel (the dead leaves)',[],false,'The dead leaves cloak the stem and burn hot.'),
+ cycad:HV('none',['starch (leached)'],false,'The pith is poison until leached for days; famine food (not drawn).'),
+ pine:HV('timber, fuel',[],true,'The pitch seals pots and dresses cuts.'),
+ parasol:HV('timber',[],false,'The wide crowns shade the camps.'),
+ croton:HV('none',[],false,'Ornamental; the sap stings.'),
+ anemonestalk:HV('none',[],false,'The red heads sting like their namesakes.'),
+ pinesucculent:HV('none',[],false,''),
+ carrotfrill:HV('none',['frillpods'],false,'Hot-pink pods under the flower head, eaten raw: they fizz on the tongue.','generic_fruit_frillpod'),
+ violetdome:HV('timber',[],false,''),
+ cloudfrill:HV('none',[],false,''),
+ cloudbell:HV('fibre, thatch',['bell dates'],false,'The cloud form of the bell palm: the same dates in its bells.','generic_fruit_bell_date'),
+ cloudlobe:HV('fuel',[],false,''),
+ cloudparasol:HV('timber',[],false,''),
+ beardtree:HV('fuel',[],true,'The beard moss is bedding, tinder and a wound pad.'),
+ cloudfern:HV('none',['fiddleheads'],false,'The young fronds are boiled (not drawn).'),
+ lanterntree:HV('light timber',['lantern fruit'],false,'A papery husk round one berry, in every colour of the tree.','generic_fruit_lantern_fruit'),
+ barrelfrill:HV('none',[],false,'The pores hold rain water after a storm.'),
+ fantree:HV('none',[],false,''),
+ stonepine:HV('timber, fuel',['pine nuts'],false,'Nuts from the cones (not drawn).'),
+ silverscrub:HV('fuel',[],true,'A bitter aromatic tea.'),
+};
+RIFT.SPECIES.forEach(S=>{S.tags.harvest=RIFT.HARVEST[S.key]||HV('none');});
+// the small plants that bear catalog fruit (the floor places them; `items` names the instanced items that draw them)
+RIFT.PLANTS={
+ ballvine:{name:'Ball vine',items:['ball','melonhalf','melonflesh'],
+  tags:{climate:'hypertropic',aridity:'humid',abyssal:true,riparian:'both',
+   harvest:HV('none',['ballmelons'],false,'Ribbed green melons over the rocks, yellow-fleshed; a few lie split open on the vine.','generic_fruit_ballmelon')}},
+};
+RIFT.plantOfItem=item=>{for(const k in RIFT.PLANTS)if(RIFT.PLANTS[k].items.indexOf(item)>=0)return RIFT.PLANTS[k];return null;};
+RIFT.speciesByName=name=>RIFT.SPECIES.find(S=>S.name===name)||null;
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+RIFT.FRUIT_KEYS=[...new Set(RIFT.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(RIFT.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
+
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
 // tints them. Names say the habit.
@@ -342,20 +395,9 @@ RIFT.PORETEX=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#4aa0b8';g.fillRect(0,
   g.fillStyle='#6ac0d0';g.beginPath();g.arc(x,y,12.5,0,TAU);g.fill();g.fillStyle='#18404c';g.beginPath();g.arc(x,y+1,9,0,TAU);g.fill();g.fillStyle='#0c2830';g.beginPath();g.arc(x,y+2,6,0,TAU);g.fill();}});
 
 // ---------------------------------------------------------------- an iridescent bark
-// A bole whose colour shifts with the view angle (and slowly with the wind):
-// colA facing the eye, colB at grazing angles. The frill tree's column goes
+// A bole whose colour shifts with the view angle (and slowly with the wind): BIO.iridBarkMat, the core's 'irid' kind
+// (core/biome/30-core-foliage.js): colA facing the eye, colB at grazing angles. The frill tree's column goes
 // teal to violet; the bell palm's pale trunk only a little.
-BIO.iridBarkMat=function(tex,key,colA,colB){const m=BIO.barkMat(tex);
- const A=colA||[0.78,1.18,0.92],B=colB||[1.45,0.82,0.74];
- m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vIWP;varying vec3 vIWN;')
-   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
-    'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
-    'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
- m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};   // what it is, as data (42-core-export: a Godot shader of this kind)
- const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 // the four iridescent barks' pairs (facing the eye, at grazing angles); the impostors read them too (55-trees)
 RIFT.IRIDBARK={frill:[[0.80,1.16,1.06],[1.22,0.86,1.30]],bell:[[1.0,1.02,0.98],[1.08,0.96,1.12]],carrot:[[0.92,1.14,0.96],[1.18,0.90,1.22]],trumpet:[[1.0,1.08,0.9],[1.1,1.0,1.2]]};
 // THE FAR CANOPY'S MATERIAL: vertex-coloured Lambert whose colour shifts with the view, so the impostors keep the
@@ -477,6 +519,10 @@ G.curl=function(){const pos=[],nor=[],uv=[],col=[];const NS=20,SEG=4,turns=2.3;
 G.barrel=function(){const g=new T3.SphereGeometry(1,8,5);g.scale(1,1.5,1);g.translate(0,1.4,0);return g;};
 // a BALL: the green ball vine's fruit
 G.ball=function(){return new T3.SphereGeometry(1,5,4);};
+// a split ballmelon: an open rind cup (the dome down, the cut at y=0, 18 tris) and its flesh face (6 tris, facing up);
+// both six-sided from the same start angle, so the flesh's rim sits on the rind's
+G.melonhalf=function(){const g=new T3.SphereGeometry(1,6,2,0,TAU,0,Math.PI*.5);g.rotateX(Math.PI);return g;};
+G.melonflesh=function(){const g=new T3.CircleGeometry(1,6);g.rotateX(-Math.PI*.5);return g;};
 // the same rosette with uvs along each leaf (u base..tip, v across) for a skinned bromeliad
 G.rosetteUV=function(){const pos=[],nor=[],uv=[],col=[];
  const tiers=[[10,1.0,.30,.55],[8,.70,.55,.40],[6,.42,.85,.28]];
@@ -551,6 +597,9 @@ RIFT.MAT={
  pinecone:BIO.leafMat(null,'pinecone',{aN:true,irid:true,vertexColors:true,alphaTest:0,swayW:'0.0',swayA:0}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'rift' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+RIFT.LIB=BIO.libSwap('rift',RIFT.MAT);
 const M=RIFT.MAT;
 ['Scale bark','Fibrous bark','Pale bark','Stringy bark','Ribbed stems'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:4,i===0?9:6]}));
 BIO.bucket('barkF',M.barkFrill,{label:'Frill tree column (iridescent)',uvScale:[5,8]});
@@ -575,6 +624,8 @@ BIO.def('curl',G.curl(),M.curl,{attrs:['aN','aC2'],label:'Curl succulents'});
 BIO.def('irosette',G.rosette(),M.irosette,{attrs:['aN','aC2'],label:'Iridescent rosettes'});
 BIO.def('barrel',G.barrel(),M.barrel,{label:'Honeycomb barrels'});
 BIO.def('ball',G.ball(),M.solid,{label:'Ball vine fruit'});
+BIO.def('melonhalf',G.melonhalf(),M.solid,{label:'Split ballmelon (rind)'});
+BIO.def('melonflesh',G.melonflesh(),M.solid,{label:'Split ballmelon (flesh)'});
 BIO.def('bigfrond',BIO.geo.frond(4),M.bigfrond,{label:'Tree-fern fronds'});
 BIO.def('cycfrond',BIO.geo.frond(2),M.cycfrond,{label:'Cycad fronds'});
 BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Fern fronds'});

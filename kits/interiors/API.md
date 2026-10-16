@@ -69,9 +69,13 @@ const catalog = {
   list() {             // every piece, once (cache it): the placer filters it
     return [{ key, name, culture, type, setting /* indoor|outdoor|both */, rooms: [...],
               anchor /* floor|wall|ceiling|surface */, clearance: { front, back, left, right }, variants,
-              tier, wealth: [lo, hi] /* OPTIONAL: a piece in band for the room's wealth is tried first */ }];
+              tier, wealth: [lo, hi] /* OPTIONAL: a piece in band for the room's wealth is tried first */,
+              surface /* OPTIONAL: false: no flat top, nothing is set on it (a jar, a vat) */ }];
   },
   dims(key, variant) { return { w, d, h }; },                    // declared footprint and height
+  top(key, variant) { return y; },                               // OPTIONAL: a host's surface height (what stands on it
+                                                                 //   stands there), null when it has none; else its h.
+                                                                 //   Both adapters measure what is drawn (IX.measureTop)
   anchorY(key, variant, { floorY, surfaceY, ceilingY }) { return y; },
   build(placement, room) { return hostObject; },                 // only IX.buildRoom() calls it
   lights(key, variant, { seed, wealth }) {                       // OPTIONAL: the lights the piece carries,

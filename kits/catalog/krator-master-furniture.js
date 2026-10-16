@@ -1,5 +1,5 @@
 /* ======================================================================
-   Krator Master Furniture Registry — 122 pieces
+   Krator Master Furniture Registry — 128 pieces
    Harvested from Voth, Iziz, Mav's Refuge, Girder, Yuni and the Ancients kit.
    Requires krator-asset-engine.js to be loaded first (defines FURN(), F.*, etc).
    Every piece is tagged with culture: one of ancient, ancients-salvage,
@@ -120,36 +120,57 @@ FURN({
 });
 
 FURN({
-  key: 'voth_wayside_shrine', name: 'Wayside Shrine (Triptych)', culture: 'voth', type: 'shrine', setting: 'outdoor',
+  key: 'voth_wayside_shrine', name: 'Wayside Shrine (Mural)', culture: 'voth', type: 'shrine', setting: 'outdoor',
   rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 1.5 },
-  materials: ['stone', 'plaster', 'emissive'],
-  w: 8, d: 3.2, h: 4.2, variants: 1,
+  materials: ['stone', 'plaster', 'emissive', 'foliage', 'cloth', 'metal'],
+  w: 8, d: 3.2, h: 5.6, variants: 1,
+  /* the owner's reference (2026-10-15, "shrine-lantern"): a recess between two tall stone pylons, its back wall a
+     painted mural of the deity among rays and glyph columns, two candle pedestals and planters before it, a cord of
+     coloured lanterns strung between the pylons' heads */
   build: function (F) {
-    const stone = F.col('stoneKhakiLight'), dark = F.shade(stone, -0.1), deep = F.col('stoneGraphite');
-    F.box(0, 0, 0, 8, 0.34, 3.2, 0, dark, 'stone');
-    F.box(0, 0.34, 0, 7.4, 0.17, 2.8, 0, F.shade(stone, -0.02), 'stone');
-    const bays = [[-2.4, 0.7, 2.0], [0, 0.82, 3.1], [2.4, 0.7, 2.0]];
-    for (let i = 0; i < bays.length; i++) {
-      const bx = bays[i][0], hw = bays[i][1], hh = bays[i][2];
-      /* jambs plus a back slab, so the niche is a real void seen from the front */
-      F.box(bx - hw + 0.16, 0.51, 0, 0.32, hh, 0.66, 0, stone, 'stone');
-      F.box(bx + hw - 0.16, 0.51, 0, 0.32, hh, 0.66, 0, stone, 'stone');
-      F.box(bx, 0.51, -0.26, 2 * hw - 0.3, hh, 0.14, 0, F.shade(stone, -0.14), 'stone');
-      F.box(bx, 0.51 + hh, 0, 2 * hw + 0.24, 0.2, 0.92, 0, dark, 'stone');
-      F.cone(bx, 0.51 + hh + 0.2, 0, hw + 0.06, i === 1 ? 0.36 : 0.3, 0, F.shade(stone, 0.06), 'stone');
-      /* idol standing clear of the back slab */
-      F.frustum(bx, 0.62, 0.02, 0.2, 0.12, hh * 0.58, 0, F.shade(stone, 0.08), 'stone', 8);
-      F.ball(bx, 0.62 + hh * 0.58 + 0.12, 0.02, 0.13, F.shade(stone, 0.12), 'stone');
-      /* offering ledge out in front, with a stub candle on it */
-      F.box(bx, 0.51, 0.36, 2 * hw - 0.2, 0.11, 0.26, 0, F.shade(stone, -0.06), 'stone');
-      if (i === 1) {
-        F.cyl(bx + hw * 0.55, 0.62, 0.36, 0.05, 0.12, 0, F.col('plasterBone'), 'plaster');
-        F.ball(bx + hw * 0.55, 0.76, 0.36, 0.035, F.col('flame'), 'glow');
-      }
-      /* carved band on the rear face, so the back is not a blank wall */
-      F.box(bx, 0.51 + hh * 0.55, -0.36, 2 * hw - 0.5, 0.16, 0.05, 0, deep, 'stone');
+    const stone = F.col('stoneKhakiLight'), dark = F.shade(stone, -0.12), deep = F.col('stoneGraphite');
+    F.box(0, 0, 0, 8, 0.3, 3.2, 0, dark, 'stone');                                                /* the plinth */
+    F.box(0, 0.3, -0.2, 7.4, 0.16, 2.6, 0, F.shade(stone, -0.03), 'stone');
+    for (let s = -1; s <= 1; s += 2) {
+      F.frustum(s * 3.3, 0.3, -0.3, 0.8, 0.62, 5.1, 0, stone, 'stone', 4);                        /* a battered pylon */
+      F.box(s * 3.3, 5.4, -0.3, 1.5, 0.2, 1.5, 0, F.shade(stone, 0.08), 'stone');                  /* its cap */
+      F.box(s * 1.9, 0.46, -1.2, 0.9, 0.5, 0.5, 0, F.shade(stone, -0.08), 'stone');                /* a planter either side of the mural */
+      for (let k = 0; k < 4; k++) F.blob(s * 1.9 + F.rr(-0.2, 0.2), 1.0, -1.2 + F.rr(-0.14, 0.14), 0.12, 0.42, F.rr(0, 6), F.pick(['leafMadder', 'leaf', 'clothPlum']), 'leafy');
     }
-    F.lamp(0, 1.1, 0.5, 0.7, 9);
+    /* the back wall and its mural (the deity, a sun of rays, the trees of the two shores, glyph columns) */
+    F.box(0, 0.46, -1.35, 4.6, 4.2, 0.5, 0, F.shade(stone, -0.06), 'stone');
+    F.box(0, 4.66, -1.35, 4.9, 0.3, 0.7, 0, dark, 'stone');
+    F.decal(0, 0.5, -1.08, 4.2, 3.9, 0, 'voth:shrinemural', function (g, cw, ch) {
+      const sand = '#cbb48a', ink = '#3a2e22', red = '#8a2f2a';
+      g.fillStyle = sand; g.fillRect(0, 0, cw, ch);
+      g.fillStyle = '#b9a278'; for (let i = 0; i < 40; i++) g.fillRect(Math.random() * cw, Math.random() * ch, 3, 3);
+      const cx = cw / 2, cy = ch * 0.42;
+      /* the rays */
+      g.strokeStyle = ink; g.lineWidth = Math.max(1, cw / 140);
+      for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2, r0 = cw * 0.11, r1 = cw * (0.2 + (i % 2) * 0.05); g.beginPath(); g.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); g.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); g.stroke(); }
+      /* the figure: a robed deity with arms raised */
+      g.fillStyle = ink; g.beginPath(); g.arc(cx, cy - cw * 0.17, cw * 0.045, 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.moveTo(cx - cw * 0.05, cy - cw * 0.12); g.lineTo(cx + cw * 0.05, cy - cw * 0.12); g.lineTo(cx + cw * 0.11, ch * 0.78); g.lineTo(cx - cw * 0.11, ch * 0.78); g.closePath(); g.fill();
+      g.lineWidth = Math.max(2, cw / 60); g.beginPath(); g.moveTo(cx - cw * 0.05, cy - cw * 0.1); g.lineTo(cx - cw * 0.19, cy - cw * 0.2); g.moveTo(cx + cw * 0.05, cy - cw * 0.1); g.lineTo(cx + cw * 0.19, cy - cw * 0.2); g.stroke();
+      g.fillStyle = red; g.fillRect(cx - cw * 0.06, cy + cw * 0.02, cw * 0.12, ch * 0.03);
+      /* the trees of the two shores, as fans of fronds */
+      for (let s = -1; s <= 1; s += 2) { const tx = cx + s * cw * 0.33, ty = ch * 0.8; g.strokeStyle = ink; g.lineWidth = Math.max(1, cw / 110); for (let k = -3; k <= 3; k++) { g.beginPath(); g.moveTo(tx, ty); g.quadraticCurveTo(tx + k * cw * 0.03, ty - ch * 0.12, tx + k * cw * 0.06, ty - ch * 0.2); g.stroke(); } }
+      /* the glyph columns */
+      g.fillStyle = ink;
+      for (let s = -1; s <= 1; s += 2) for (let k = 0; k < 9; k++) { const gx = cx + s * cw * 0.43, gy = ch * 0.1 + k * ch * 0.07; g.fillRect(gx - cw * 0.012, gy, cw * 0.024, ch * 0.035); if (k % 2) g.fillRect(gx - cw * 0.03, gy + ch * 0.015, cw * 0.06, ch * 0.012); }
+      g.fillStyle = red; g.fillRect(0, 0, cw, ch * 0.03); g.fillRect(0, ch * 0.97, cw, ch * 0.03);
+    }, 'plaster');
+    /* the offering sill, the candle pedestals and their flames, the bowl between them */
+    F.box(0, 0.46, -0.65, 4.0, 0.18, 0.6, 0, F.shade(stone, -0.02), 'stone');
+    for (let s = -1; s <= 1; s += 2) {
+      F.cyl(s * 1.1, 0.46, 0.2, 0.22, 1.0, 0, deep, 'stone'); F.cyl(s * 1.1, 1.46, 0.2, 0.3, 0.1, 0, F.shade(deep, 0.2), 'stone');
+      F.cyl(s * 1.1, 1.56, 0.2, 0.05, 0.16, 0, F.col('plasterBone'), 'plaster'); F.ball(s * 1.1, 1.76, 0.2, 0.045, F.col('flame'), 'glow');
+    }
+    F.cyl(0, 0.64, -0.6, 0.18, 0.08, 0, F.col('brass'), 'metal');
+    /* a cord between the pylons with three coloured lanterns on it */
+    F.rod(-3.3, 5.2, 0.3, 3.3, 5.2, 0.3, 0.025, F.col('clothKhaki'), 'cloth');
+    [[-1.8, 'clothCrimson'], [0, 'clothTeal'], [1.8, 'clothGold']].forEach(function (l) { F.rod(l[0], 5.2, 0.3, l[0], 4.85, 0.3, 0.012, F.col('iron'), 'metal'); F.box(l[0], 4.45, 0.3, 0.36, 0.4, 0.36, 0, F.col(l[1]), 'glow'); F.box(l[0], 4.43, 0.3, 0.4, 0.04, 0.4, 0, F.col('iron'), 'metal'); F.box(l[0], 4.85, 0.3, 0.4, 0.04, 0.4, 0, F.col('iron'), 'metal'); });
+    F.lamp(0, 1.6, 0.4, 0.7, 9);
   }
 });
 
@@ -244,7 +265,7 @@ FURN({
 });
 
 FURN({
-  key: 'voth_strider_station', name: "Silt Strider Transit Station", culture: 'voth', type: 'shelter', setting: 'outdoor',
+  key: 'voth_strider_station', name: "Elephant Bug Transit Station", culture: 'voth', type: 'shelter', setting: 'outdoor',
   rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 3 },
   materials: ['timber', 'cloth'],
   w: 10, d: 16, h: 5.6, variants: 1,
@@ -378,57 +399,70 @@ FURN({
 FURN({
   key: 'voth_market_stall', name: 'Market Stall (Produce)', culture: 'voth', type: 'stall', setting: 'outdoor',
   rooms: ['market', 'street'], anchor: 'floor', clearance: { front: 1.5 },
-  materials: ['timber', 'stone', 'metal', 'cloth', 'foliage'],
+  materials: ['timber', 'stone', 'metal', 'cloth', 'foliage', 'ceramic', 'bone', 'emissive', 'wicker'],
   w: 4.5, d: 4.5, h: 3.45, variants: 2,
+  /* the owner's reference (2026-10-15, "market stall"): poles leaning in to a ridge, a red woven awning draped over
+     it and down to the front with horn finials at its corners, a patterned rug hung on one side for a wall, a low
+     counter chest with the goods on it, baskets stacked behind */
   build: function (F) {
     const exotic = F.variant === 1;
-    const counterC = F.col('timberMud'), postC = F.col('timberUmber');
-    /* counter: top, front boards, four legs, rails and a shelf beneath */
-    F.box(0, 0.8, 0.6, 3.6, 0.12, 1.0, 0, counterC, 'wood');
-    F.box(0, 0.16, 1.06, 3.5, 0.66, 0.07, 0, F.shade(counterC, -0.15), 'wood');
-    F.box(0, 0.4, 0.6, 3.3, 0.06, 0.8, 0, F.shade(counterC, -0.1), 'wood');
+    const postC = F.col('timberUmber'), counterC = F.col('timberMud'), rope = F.col('clothKhaki');
+    /* four poles leaning in from the corners to the ridge, lashed at the top */
+    [[-2.05, -1.7], [2.05, -1.7], [-2.05, 1.7], [2.05, 1.7]].forEach(function (p) { F.rod(p[0], 0, p[1], p[0] * 0.22, 3.22, p[1] * 0.18, 0.055, postC, 'wood'); });
+    F.rod(-0.75, 3.28, 0, 0.75, 3.28, 0, 0.05, postC, 'wood');                                              /* the ridge */
+    [-0.45, 0.45].forEach(function (x) { F.cyl(x, 3.1, 0, 0.09, 0.3, 0, rope, 'cloth'); });               /* the lashings */
+    /* the awning: a woven sheet over the ridge, the front slope longer and lower, a dark valance at its edges */
+    const clothC = exotic ? F.col('clothPlum') : F.col('clothCrimson'), dark = F.shade(clothC, -0.3);
+    F.beam(0, 3.33, -0.05, 0, 2.3, 2.05, 4.3, 0.06, clothC, 'cloth');                                        /* the front slope */
+    F.beam(0, 3.33, 0.05, 0, 2.55, -1.95, 4.3, 0.06, F.shade(clothC, -0.08), 'cloth');                      /* the back slope */
+    F.box(0, 2.1, 2.08, 4.34, 0.2, 0.05, 0, dark, 'cloth');                                                  /* the front hem */
+    F.box(0, 2.38, -1.95, 4.34, 0.17, 0.05, 0, dark, 'cloth');
     for (let s = -1; s <= 1; s += 2) {
-      for (let t = -1; t <= 1; t += 2) {
-        F.box(s * 1.65, 0, 0.6 + t * 0.4, 0.13, 0.8, 0.13, 0, F.shade(counterC, -0.22), 'wood');
+      /* a stripe of the weave's pattern along each slope, and the horn finials at the front corners */
+      F.beam(s * 1.2, 3.3, 0, s * 1.2, 2.33, 2.0, 0.5, 0.012, F.shade(clothC, 0.22), 'cloth');
+      F.rod(s * 2.1, 2.25, 2.02, s * 2.2, 2.75, 2.15, 0.05, F.col('plasterBone'), 'bone');
+      F.cone(s * 2.2, 2.72, 2.15, 0.06, 0.3, 0, F.col('plasterBone'), 'bone');
+    }
+    /* the rug hung on the stall's left side for a wall: a rod between the poles and a painted kilim */
+    F.rod(-2.0, 2.3, -1.6, -2.0, 2.3, 1.6, 0.035, postC, 'wood');
+    F.decal(-1.96, 0.35, 0, 2.9, 1.9, Math.PI / 2, 'voth:stallrug:' + (exotic ? 1 : 0), function (g, cw, ch) {
+      const base = exotic ? '#4b2a6e' : '#7a2028', ink = '#1c1814', cream = '#e8d9a0', teal = '#2f6b66';
+      g.fillStyle = base; g.fillRect(0, 0, cw, ch);
+      g.fillStyle = ink; g.fillRect(0, 0, cw, ch * 0.08); g.fillRect(0, ch * 0.92, cw, ch * 0.08);
+      g.fillStyle = cream; g.fillRect(0, ch * 0.09, cw, ch * 0.025); g.fillRect(0, ch * 0.885, cw, ch * 0.025);
+      const n = 4, cell = cw / n;
+      for (let i = 0; i < n; i++) {
+        const cx = cell * (i + 0.5), cy = ch * 0.5, r = cell * 0.36;
+        for (let k = 0; k < 3; k++) {
+          const rr = r * (1 - k * 0.3); g.fillStyle = k === 0 ? cream : k === 1 ? teal : ink;
+          g.beginPath(); g.moveTo(cx, cy - rr * 1.4); g.lineTo(cx + rr, cy); g.lineTo(cx, cy + rr * 1.4); g.lineTo(cx - rr, cy); g.closePath(); g.fill();
+        }
+        g.fillStyle = cream; g.fillRect(cx - 2, ch * 0.16, 4, ch * 0.1); g.fillRect(cx - 2, ch * 0.74, 4, ch * 0.1);
       }
+    }, 'cloth');
+    /* the counter: a brass-banded chest, its lid the counter, with trays, jars and a cash dish on it */
+    F.box(0, 0, 1.3, 2.5, 0.72, 0.8, 0, counterC, 'wood');
+    F.box(0, 0.72, 1.3, 2.6, 0.08, 0.9, 0, F.shade(counterC, 0.1), 'wood');
+    for (let s = -1; s <= 1; s += 2) F.box(s * 0.9, 0.1, 1.71, 0.08, 0.55, 0.03, 0, F.col('brass'), 'metal');
+    F.box(0, 0.36, 1.71, 2.4, 0.06, 0.03, 0, F.col('brass'), 'metal');
+    for (let i = 0; i < 3; i++) {
+      const x = -0.85 + i * 0.85;
+      F.cyl(x, 0.8, 1.3, 0.26, 0.08, 0, F.shade(counterC, 0.14), 'wood');                                    /* a tray */
+      for (let j = 0; j < 3; j++) F.ball(x + F.rr(-0.14, 0.14), 0.94, 1.3 + F.rr(-0.12, 0.12), 0.07, exotic ? F.pick(['clothGold', 'clothTeal', 'clothPlum']) : F.pick(['leafMadder', 'leaf', 'leafOchre']), exotic ? 'cloth' : 'leafy');
     }
-    const posts = [[-2, -1.8], [2, -1.8], [-2, 1.8], [2, 1.8]];
-    for (const p of posts) {
-      F.cyl(p[0], 0, p[1], 0.1, 2.5, 0, postC, 'wood');
-      F.beam(p[0], 2.42, p[1], p[0] * 0.72, 2.0, p[1] * 0.72, 0.07, 0.07, postC, 'wood');
-    }
-    const clothC = exotic ? F.col('clothJade') : F.pick(['clothOrange', 'clothCrimson', 'clothTeal']);
-    F.box(0, 2.5, 0, 4.4, 0.16, 4.4, 0, clothC, 'cloth');
-    F.cone(0, 2.66, 0, 2.2, 0.68, 0, F.shade(clothC, -0.1), 'cloth');
-    /* valance on all four sides so the canopy reads from behind too */
-    for (let i = 0; i < 4; i++) {
-      const a = i * F.TAU / 4;
-      F.box(Math.sin(a) * 2.14, 2.24, Math.cos(a) * 2.14, 4.3, 0.26, 0.05, a, F.shade(clothC, -0.18), 'cloth');
-    }
-    /* back shelf with stock, visible from the rear */
-    F.box(0, 1.2, -1.75, 3.4, 0.08, 0.4, 0, counterC, 'wood');
-    for (let i = 0; i < 2; i++) {
-      F.cyl(-0.9 + i * 1.8, 1.28, -1.75, 0.13, 0.32, 0, F.pick(['timberTeakLight', 'steel', 'timberTeak']), 'wood');
-    }
-    /* produce trays on the counter */
-    for (let i = 0; i < 2; i++) {
-      const x = -0.9 + i * 1.6;
-      F.cyl(x, 0.92, 0.6, 0.28, 0.1, 0, F.shade(counterC, 0.08), 'wood');
-      for (let j = 0; j < 2; j++) {
-        F.blob(x + F.rr(-0.16, 0.16), 1.06, 0.6 + F.rr(-0.16, 0.16), 0.1, 0.12, 0,
-          F.pick(['leafMadder', 'leaf', 'leafOchre']), 'leafy');
-      }
-    }
-    F.cyl(1.4, 0.92, 0.3, 0.09, 0.2, 0, F.col('steel'), 'metal');
+    F.cyl(1.05, 0.8, 1.55, 0.09, 0.26, 0, F.col('ceramicAsh'), 'ceramic'); F.cyl(-1.1, 0.8, 1.55, 0.11, 0.3, 0, F.shade('ceramicAsh', -0.2), 'ceramic');   /* jars */
+    F.cyl(0.35, 0.8, 1.62, 0.1, 0.04, 0, F.col('brass'), 'metal');                                            /* the cash dish */
+    /* baskets and sacks stacked behind, under the back slope */
+    F.cyl(-1.2, 0, -1.3, 0.34, 0.5, 0, F.col('timberSand'), 'wicker'); F.cyl(-1.2, 0.5, -1.3, 0.3, 0.42, 0, F.shade('timberSand', -0.1), 'wicker');
+    F.cyl(-0.4, 0, -1.4, 0.3, 0.46, 0, F.shade('timberSand', 0.05), 'wicker');
+    F.blob(0.7, 0.22, -1.3, 0.38, 0.44, 0, F.col('clothKhaki'), 'cloth'); F.blob(1.35, 0.2, -1.15, 0.34, 0.4, 0.4, F.shade('clothKhaki', -0.12), 'cloth');
     if (exotic) {
-      F.box(-1.5, 0.92, 1.1, 0.5, 0.5, 0.45, 0.2, F.col('clothPlum'), 'cloth');
-      F.box(1.5, 0.92, 1.1, 0.4, 0.42, 0.38, -0.15, F.col('clothIndigo'), 'cloth');
-      F.box(0, 0.92, 1.1, 0.3, 0.2, 0.28, 0, F.col('stoneMist'), 'stone');
-      F.cyl(-1.95, 0, 1.2, 0.3, 1.2, 0, F.col('stoneKhaki'), 'stone');
-      F.cone(-1.95, 1.2, 1.2, 0.26, 0.22, 0, F.col('stoneMud'), 'stone');
-      F.box(-2.02, 1.7, -1.75, 0.04, 0.5, 0.9, 0, F.col('clothGold'), 'cloth');
-      F.box(2.02, 1.7, -1.75, 0.04, 0.5, 0.9, 0, F.col('clothCrimson'), 'cloth');
+      F.cyl(1.95, 0, 0.9, 0.3, 1.1, 0, F.col('stoneKhaki'), 'stone'); F.cone(1.95, 1.1, 0.9, 0.26, 0.2, 0, F.col('stoneMud'), 'stone');   /* a tall jar */
+      F.box(1.6, 0.8, 0.9, 0.4, 0.42, 0.38, -0.15, F.col('clothIndigo'), 'cloth');
     }
+    /* a lantern hung from the ridge */
+    F.rod(0.6, 3.25, 0, 0.6, 2.95, 0, 0.012, F.col('iron'), 'metal'); F.box(0.6, 2.62, 0, 0.26, 0.34, 0.26, 0, F.col('clothOrange'), 'glow');
+    F.lamp(0.6, 2.75, 0, 0.5, 5);
   }
 });
 
@@ -482,7 +516,7 @@ FURN({
   key: 'voth_still_cluster', name: "Alchemist's Still Cluster", culture: 'voth', type: 'workstation', setting: 'both',
   rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 1 },
   materials: ['timber', 'stone', 'metal', 'glass', 'cloth', 'emissive'],
-  w: 2.5, d: 1.2, h: 1.45, variants: 1,
+  w: 2.5, d: 1.2, h: 1.45, variants: 1, job: 'alchemy',
   build: function (F) {
     const stone = F.col('stoneGrey'), jade = F.col('stoneJade'), metal = F.col('steel'), glass = F.col('glassMist');
     /* bench: top slab, apron and four stub legs */
@@ -2609,7 +2643,7 @@ FURN({
   }
 });
 
-/* ================= Yuni (58 pieces) ================= */
+/* ================= Yuni (64 pieces) ================= */
 
 FURN({
   key: 'yuni_common_low_table', name: 'Low round table', culture: 'yuni-common', type: 'table', setting: 'indoor',
@@ -4337,7 +4371,102 @@ FURN({
   }
 });
 
-/* ================= Ancients kit extras (4 pieces) ================= */
+/* ---------- re-harvest (2026-10-05): the six pieces Yuni's interiors pass added (src/64-interiors.js, the
+   minimum kit), with the material-library pass's families: fired clay ('ceramic'), reed mats ('reed'), coiled
+   baskets ('wicker'). Yuni's container-item / container-food types are the catalog's 'storage' plus a role
+   (kits/interiors 30-programs.js FOOD_ROLES / ITEM_ROLES); Yuni turns pots and baskets on a lathe, which is
+   a stack of frustum rings here, one ring per profile segment. ---------- */
+/* a lathe profile [[r, y], ...] as frustum rings about the piece's origin */
+function yuniLathe(F, x, z, pts, color, family, sides) {
+  for (let i = 0; i + 1 < pts.length; i++) {
+    F.frustum(x, pts[i][1], z, pts[i][0], pts[i + 1][0], pts[i + 1][1] - pts[i][1], 0, color, family, sides || 10);
+  }
+}
+
+FURN({
+  key: 'yuni_poor_lidded_basket', name: 'Lidded storage basket', culture: 'yuni-poor', type: 'storage', role: 'trunk', setting: 'indoor',
+  rooms: ['bedroom', 'store', 'hall'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['wicker', 'timber', 'cloth'],
+  w: 0.55, d: 0.55, h: 0.74, variants: 2, variantNames: ['plain', 'bundle on the lid'],
+  build: function (F) {
+    /* a lidded basket kept as a trunk (belongings), as Yuni's huts use it: role 'trunk', an item container */
+    const c = F.pick(['thatchStraw', 'thatchFlax']);
+    yuniLathe(F, 0, 0, [[0.15, 0], [0.24, 0.08], [0.26, 0.36], [0.23, 0.48]], c, 'wicker');
+    yuniLathe(F, 0, 0, [[0.25, 0.47], [0.26, 0.52], [0.15, 0.58], [0.04, 0.61]], F.shade(c, -0.12), 'wicker');
+    F.box(0, 0.24, 0.25, 0.04, 0.05, 0.04, 0, F.col('timberWalnut'), 'wood');   /* the toggle */
+    if (F.variant === 1) F.blob(0.02, 0.58, 0, 0.17, 0.14, 0.3, F.pick(['clothIndigo', 'clothMadder', 'clothSaffron']), 'cloth');
+  }
+});
+
+FURN({
+  key: 'yuni_poor_food_pot', name: 'Covered food pot', culture: 'yuni-poor', type: 'storage', role: 'pots', setting: 'both',
+  rooms: ['kitchen', 'store', 'bedroom'], anchor: 'floor', clearance: { front: 0.3 },
+  materials: ['ceramic', 'wicker', 'plaster'],
+  w: 0.55, d: 0.55, h: 0.78, variants: 1,
+  build: function (F) {
+    const c = F.pick(['stoneClay', 'stoneLaterite', 'stoneClayLight']);
+    F.box(0, 0, 0, 0.5, 0.04, 0.5, 0, F.shade(F.col('plasterTan'), -0.2), 'plaster');   /* the mud stand */
+    yuniLathe(F, 0, 0, [[0.12, 0.04], [0.25, 0.22], [0.24, 0.5], [0.14, 0.64], [0.17, 0.7]], c, 'ceramic');
+    F.cyl(0, 0.7, 0, 0.19, 0.05, 0, F.pick(['thatchStraw', 'thatchFlax']), 'wicker');   /* the coiled lid */
+  }
+});
+
+FURN({
+  key: 'yuni_poor_sleeping_mat', name: 'Rolled-out sleeping mat', culture: 'yuni-poor', type: 'bed', setting: 'indoor',
+  rooms: ['bedroom', 'hall'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['reed', 'cloth'],
+  w: 1.85, d: 0.8, h: 0.18, variants: 1,
+  build: function (F) {
+    F.box(0, 0, 0, 1.85, 0.05, 0.8, 0, F.shade(F.col('thatchStraw'), 0.08), 'reed');
+    F.box(0, 0.05, 0.05, 1.7, 0.04, 0.66, 0, F.pick(['clothIndigo', 'clothMadder', 'clothOrange', 'clothSaffron']), 'cloth');
+    F.rod(-0.72, 0.1, -0.3, -0.72, 0.1, 0.3, 0.08, F.col('clothIvory'), 'cloth');   /* the rolled headcloth */
+  }
+});
+
+FURN({
+  key: 'yuni_common_grain_bin', name: 'Mud-brick grain bin', culture: 'yuni-common', type: 'storage', role: 'bin', setting: 'both',
+  rooms: ['store', 'yard', 'kitchen'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['plaster', 'thatch', 'timber'],
+  w: 1.3, d: 1.3, h: 1.8, variants: 1,
+  build: function (F) {
+    const c = F.pick(['plasterTan', 'plasterTanLight', 'plasterBirch']);
+    F.box(0, 0, 0, 1.0, 0.12, 1.0, 0, F.shade(c, -0.15), 'plaster');
+    yuniLathe(F, 0, 0, [[0.48, 0.12], [0.62, 0.25], [0.62, 1.15], [0.46, 1.45], [0.2, 1.55]], c, 'plaster');
+    F.cone(0, 1.5, 0, 0.42, 0.28, 0, F.pick(['thatchStraw', 'thatchFlax']), 'thatch');
+    F.box(0, 0.85, 0.57, 0.36, 0.36, 0.1, 0, F.col('timberPine'), 'wood');   /* the draw hatch */
+  }
+});
+
+FURN({
+  key: 'yuni_poor_reed_mat', name: 'Woven reed floor mat', culture: 'yuni-poor', type: 'rug', setting: 'indoor',
+  rooms: ['bedroom', 'hall', 'kitchen'], anchor: 'floor', clearance: {},
+  materials: ['reed', 'cloth'],
+  w: 2.2, d: 1.5, h: 0.03, variants: 2, variantNames: ['plain', 'red runner'],
+  build: function (F) {
+    const c = F.pick(['thatchStraw', 'thatchFlax']);
+    F.box(0, 0, 0, 2.2, 0.018, 1.5, 0, F.shade(c, 0.1), 'reed');
+    for (let k = 0; k < 5; k++) F.box(0, 0.006, -0.6 + k * 0.3, 2.1, 0.016, 0.07, 0, F.shade(c, -0.18), 'reed');   /* binding cords */
+    if (F.variant === 1) F.box(0, 0.01, 0, 0.5, 0.016, 1.4, 0, F.col('clothMadder'), 'cloth');
+  }
+});
+
+FURN({
+  key: 'yuni_common_kilim', name: 'Flat-woven kilim', culture: 'yuni-common', type: 'rug', setting: 'indoor',
+  rooms: ['hall', 'bedroom', 'court'], anchor: 'floor', clearance: {},
+  materials: ['cloth'],
+  w: 2.6, d: 1.7, h: 0.03, variants: 2, variantNames: ['red lozenges', 'blue lozenges'],
+  build: function (F) {
+    const field = F.pick(['clothIndigo', 'clothMadder', 'clothSaffron', 'clothJade', 'clothViolet', 'clothOrange']);
+    const lozenge = F.variant ? F.col('stoneSky') : F.col('clothMadder'), ivory = F.col('clothIvory');
+    F.box(0, 0, 0, 2.6, 0.012, 1.7, 0, F.shade(ivory, -0.05), 'cloth');
+    F.box(0, 0.006, 0, 2.3, 0.012, 1.4, 0, field, 'cloth');
+    F.box(0, 0.012, 0, 0.9, 0.01, 0.9, Math.PI / 4, lozenge, 'cloth');
+    F.box(0, 0.016, 0, 0.42, 0.01, 0.42, Math.PI / 4, ivory, 'cloth');
+    for (const s of [-1, 1]) F.box(s * 0.85, 0.012, 0, 0.3, 0.01, 0.3, Math.PI / 4, lozenge, 'cloth');
+  }
+});
+
+/* ================= Ancients kit extras (32 pieces) ================= */
 
 FURN({
   key: 'ancients_light_strip_ring', name: 'Corridor light-strip ring', culture: 'ancient', type: 'lamp', setting: 'indoor',
@@ -4522,5 +4651,573 @@ FURN({
       F.lamp(0, 1.15, 0, 0.5, 4);
     }
     F.rod(0.62, 0.0, -0.4, 0.62, 0.8, -0.4, 0.03, F.shade(tarn, -0.2), 'metal');   /* cable trunk */
+  }
+});
+
+/* ---------- the arcology's fittings (Noah's Regret, 2026-10) ----------
+   Deck and harbour gear, the greenhouse's beds and the engine rooms' stand, as the ship carries them. Colours are
+   the 'ancient' palette's arcology keys (paintGrey, soil, the leaf greens, fruitRed, water, rust). Mooring and deck
+   gear is type 'tool'. */
+
+FURN({
+  key: 'ancients_bollard', name: 'Mooring bollard', culture: 'ancient', tier: 'common', type: 'tool', setting: 'outdoor',
+  rooms: ['quay', 'deck', 'pier'], anchor: 'floor', clearance: {},
+  materials: ['metal', 'rustSteel'],
+  w: 0.9, d: 0.9, h: 0.84, variants: 1,
+  build: function (F) {
+    const PAINT = F.col('paintGrey'), RUST = F.col('rust');
+    /* a bolted foot, the waisted post a line is thrown over, its cap */
+    F.cyl(0, 0, 0, 0.42, 0.06, 0, F.shade(PAINT, -0.15), 'metal');
+    for (let i = 0; i < 6; i++) { const a = i * F.TAU / 6; F.cyl(Math.cos(a) * 0.36, 0.06, Math.sin(a) * 0.36, 0.035, 0.03, 0, F.shade(PAINT, 0.1), 'metal'); }
+    F.frustum(0, 0.06, 0, 0.3, 0.25, 0.32, 0, PAINT, 'metal', 16);
+    F.frustum(0, 0.38, 0, 0.25, 0.3, 0.32, 0, PAINT, 'metal', 16);
+    F.cyl(0, 0.7, 0, 0.4, 0.12, 0, PAINT, 'metal');
+    /* paint worn to rust where the lines run */
+    F.cyl(0, 0.36, 0, 0.255, 0.05, 0, RUST, 'rust');
+    F.blob(F.rr(-0.2, 0.2), 0.8, F.rr(-0.2, 0.2), 0.12, 0.04, F.rnd() * F.TAU, RUST, 'rust');
+  }
+});
+
+FURN({
+  key: 'ancients_capstan', name: 'Deck capstan', culture: 'ancient', tier: 'common', type: 'tool', setting: 'outdoor',
+  rooms: ['quay', 'deck', 'pier'], anchor: 'floor', clearance: { front: 0.8, back: 0.8, left: 0.8, right: 0.8 },
+  materials: ['metal', 'rustSteel'],
+  w: 1.5, d: 1.5, h: 1.06, variants: 1,
+  build: function (F) {
+    const PAINT = F.col('paintGrey'), DARK = F.col('blackIron'), RUST = F.col('rust');
+    F.cyl(0, 0, 0, 0.72, 0.1, 0, F.shade(PAINT, -0.12), 'metal');
+    /* the waisted drum, its whelps (the ribs the warp grips on) and the cap with bar sockets */
+    F.frustum(0, 0.1, 0, 0.5, 0.4, 0.4, 0, PAINT, 'metal', 16);
+    F.frustum(0, 0.5, 0, 0.4, 0.46, 0.4, 0, PAINT, 'metal', 16);
+    for (let i = 0; i < 8; i++) {
+      const a = i * F.TAU / 8;
+      F.beam(Math.cos(a) * 0.5, 0.12, Math.sin(a) * 0.5, Math.cos(a) * 0.43, 0.88, Math.sin(a) * 0.43, 0.08, 0.06, F.shade(PAINT, 0.08), 'metal');
+    }
+    F.cyl(0, 0.9, 0, 0.62, 0.14, 0, PAINT, 'metal');
+    for (let i = 0; i < 4; i++) { const a = i * F.TAU / 4 + 0.4; F.box(Math.cos(a) * 0.5, 0.94, Math.sin(a) * 0.5, 0.14, 0.1, 0.14, -a, DARK, 'metal'); }
+    F.cyl(0, 1.04, 0, 0.16, 0.02, 0, F.shade(PAINT, 0.15), 'metal');
+    F.blob(F.rr(-0.4, 0.4), 0.12, 0.62, 0.14, 0.04, F.rnd() * F.TAU, RUST, 'rust');
+  }
+});
+
+FURN({
+  key: 'ancients_lamp_standard', name: 'Quay lamp standard', culture: 'ancient', tier: 'common', type: 'lamp', setting: 'outdoor',
+  rooms: ['quay', 'pier', 'plaza', 'deck'], anchor: 'floor', clearance: {},
+  materials: ['metal', 'glass', 'emissive'],
+  w: 0.7, d: 0.7, h: 4.8, variants: 2, variantNames: ['dead', 'lit'],
+  build: function (F) {
+    const WHITE = F.col('alloy'), lit = F.variant === 1;
+    /* a white stem on a flared foot, a collar, the round head */
+    F.frustum(0, 0, 0, 0.3, 0.15, 0.5, 0, WHITE, 'metal', 16);
+    F.cyl(0, 0.5, 0, 0.11, 3.7, 0, WHITE, 'metal');
+    F.cyl(0, 4.1, 0, 0.17, 0.08, 0, F.shade(WHITE, -0.12), 'metal');
+    F.ball(0, 4.47, 0, 0.32, lit ? F.col('whiteHot') : F.shade(F.col('glassSky'), -0.3), lit ? 'glow' : 'glass');
+    F.cyl(0, 4.76, 0, 0.08, 0.03, 0, WHITE, 'metal');
+    if (lit) F.lamp(0, 4.47, 0, 0.8, 12);
+  }
+});
+
+FURN({
+  key: 'ancients_deck_vent', name: 'Mushroom deck ventilator', culture: 'ancient', tier: 'common', type: 'tool', setting: 'outdoor',
+  rooms: ['deck', 'rooftop', 'plaza'], anchor: 'floor', clearance: {},
+  materials: ['metal'],
+  w: 1.1, d: 1.1, h: 1.28, variants: 1,
+  build: function (F) {
+    const WHITE = F.col('alloy'), DARK = F.col('steel');
+    /* a coaming on the deck, the trunk, a louvred band under the cap, the mushroom cap */
+    F.cyl(0, 0, 0, 0.36, 0.12, 0, F.shade(WHITE, -0.1), 'metal');
+    F.cyl(0, 0.12, 0, 0.28, 0.72, 0, WHITE, 'metal');
+    F.cyl(0, 0.84, 0, 0.3, 0.1, 0, DARK, 'metal');
+    for (let i = 0; i < 12; i++) { const a = i * F.TAU / 12; F.box(Math.cos(a) * 0.3, 0.84, Math.sin(a) * 0.3, 0.03, 0.1, 0.04, -a, WHITE, 'metal'); }
+    F.cyl(0, 0.94, 0, 0.53, 0.04, 0, F.shade(WHITE, -0.15), 'metal');
+    F.dome(0, 0.98, 0, 0.53, 0.28, 0, WHITE, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_planting_bed', name: 'Greenhouse planting bed', culture: 'ancient', tier: 'common', type: 'planter', setting: 'both',
+  rooms: ['greenhouse', 'garden', 'plaza'], anchor: 'floor', clearance: { front: 0.7, back: 0.7 },
+  materials: ['concrete', 'stone', 'foliage', 'food', 'timber'],
+  w: 2.4, d: 1.2, h: 1.5, variants: 3, variantNames: ['greens', 'staked vines', 'leeks'],
+  build: function (F) {
+    const KERB = F.col('alloy'), SOIL = F.col('soil');
+    const greens = F.cols(['leafGreen', 'leafLight', 'leafDark']);
+    /* a white moulded kerb round a raised bed of earth */
+    F.box(0, 0, 0.56, 2.4, 0.42, 0.08, 0, KERB, 'concrete');
+    F.box(0, 0, -0.56, 2.4, 0.42, 0.08, 0, KERB, 'concrete');
+    for (const s of [-1, 1]) F.box(s * 1.16, 0, 0, 0.08, 0.42, 1.04, 0, KERB, 'concrete');
+    F.box(0, 0, 0, 2.24, 0.36, 1.04, 0, SOIL, 'stone');
+    if (F.variant === 0) {
+      /* low leafy greens, two rows */
+      for (let i = 0; i < 7; i++) for (const z of [-0.26, 0.26]) {
+        const r = F.rr(0.13, 0.18);
+        F.blob(-0.9 + i * 0.3 + F.rr(-0.04, 0.04), 0.4, z + F.rr(-0.04, 0.04), r, F.rr(0.18, 0.28), F.rnd() * F.TAU, F.pick(greens), 'leafy');
+      }
+    } else if (F.variant === 1) {
+      /* staked vines: a stake per plant, leaves up it, ripe fruit hanging */
+      for (let i = 0; i < 5; i++) for (const z of [-0.25, 0.25]) {
+        const x = -0.88 + i * 0.44;
+        F.rod(x, 0.36, z, x, 1.4, z, 0.015, F.col('timberOak'), 'wood');
+        for (let k = 0; k < 4; k++) F.blob(x + F.rr(-0.06, 0.06), 0.55 + k * 0.24, z + F.rr(-0.06, 0.06), F.rr(0.1, 0.14), F.rr(0.14, 0.2), F.rnd() * F.TAU, F.pick(greens), 'leafy');
+        for (let k = 0; k < 2; k++) F.ball(x + F.rr(-0.1, 0.1), F.rr(0.6, 1.1), z + F.rr(-0.1, 0.1), 0.04, F.col('fruitRed'), 'food');
+      }
+    } else {
+      /* leeks: close rows of upright blades */
+      for (let i = 0; i < 9; i++) for (const z of [-0.32, 0, 0.32]) {
+        const x = -0.96 + i * 0.24 + F.rr(-0.03, 0.03);
+        F.cyl(x, 0.36, z, 0.025, 0.2, 0, F.col('clothBone'), 'leafy');
+        F.cone(x, 0.56, z, 0.05, F.rr(0.3, 0.42), F.rnd() * F.TAU, F.pick(greens), 'leafy');
+      }
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_plaza_fountain', name: 'Plaza fountain', culture: 'ancient', tier: 'common', type: 'fountain', setting: 'outdoor',
+  rooms: ['plaza', 'garden', 'atrium'], anchor: 'floor', clearance: { front: 1, back: 1, left: 1, right: 1 },
+  materials: ['concrete', 'glass', 'stone'],
+  w: 3.2, d: 3.2, h: 1.95, variants: 2, variantNames: ['water', 'dry'],
+  build: function (F) {
+    const WHITE = F.col('alloy'), WATER = F.col('water'), wet = F.variant === 0;
+    /* a round basin: its floor, a rim of moulded segments, the pool or a dry silted bottom */
+    F.cyl(0, 0, 0, 1.56, 0.26, 0, F.shade(WHITE, -0.1), 'concrete');
+    const n = 18;
+    for (let i = 0; i < n; i++) {
+      const a0 = i / n * F.TAU, a1 = (i + 1) / n * F.TAU;
+      F.box((Math.cos(a0) + Math.cos(a1)) * 0.74, 0.26, (Math.sin(a0) + Math.sin(a1)) * 0.74, 0.54, 0.26, 0.18, -(a0 + a1) / 2 + Math.PI / 2, WHITE, 'concrete');
+    }
+    if (wet) F.cyl(0, 0.26, 0, 1.4, 0.18, 0, WATER, 'glass');
+    else for (let i = 0; i < 4; i++) { const a = F.rnd() * F.TAU, r = F.rr(0.4, 1.1); F.blob(Math.cos(a) * r, 0.27, Math.sin(a) * r, F.rr(0.2, 0.4), 0.04, F.rnd() * F.TAU, F.col('stoneTaupe'), 'stone'); }
+    /* the column, an upper bowl and a finial */
+    F.frustum(0, 0.26, 0, 0.32, 0.18, 0.95, 0, WHITE, 'concrete', 16);
+    F.frustum(0, 1.21, 0, 0.2, 0.72, 0.26, 0, WHITE, 'concrete', 20);
+    if (wet) F.cyl(0, 1.4, 0, 0.66, 0.04, 0, WATER, 'glass');
+    F.cyl(0, 1.47, 0, 0.1, 0.24, 0, WHITE, 'concrete');
+    F.ball(0, 1.8, 0, 0.13, WHITE, 'concrete');
+    /* water falling from the bowl's lip into the pool */
+    if (wet) for (let i = 0; i < 8; i++) { const a = i * F.TAU / 8; F.rod(Math.cos(a) * 0.72, 1.44, Math.sin(a) * 0.72, Math.cos(a) * 0.86, 0.46, Math.sin(a) * 0.86, 0.025, F.shade(WATER, 0.25), 'glass'); }
+  }
+});
+
+FURN({
+  key: 'ancients_control_stand', name: 'Engine-room control stand', culture: 'ancient', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['engine', 'bridge', 'workshop'], anchor: 'floor', clearance: { front: 1.0 },
+  materials: ['metal', 'glass', 'emissive'],
+  w: 1.4, d: 0.9, h: 1.42, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const WHITE = F.col('alloy'), DARK = F.col('steel'), lit = F.variant === 0;
+    const GLOW = F.cols(['electric', 'amber', 'verdigris']);
+    /* a plinth, the cabinet, a raked instrument face toward the front (+z) */
+    F.box(0, 0, -0.05, 1.2, 0.1, 0.7, 0, DARK, 'metal');
+    F.box(0, 0.1, -0.08, 1.16, 0.84, 0.6, 0, WHITE, 'metal');
+    F.beam(0, 0.94, 0.2, 0, 1.24, -0.36, 1.16, 0.06, F.shade(WHITE, -0.08), 'metal');
+    F.beam(0, 0.97, 0.18, 0, 1.25, -0.34, 1.0, 0.02, F.col('glassBlack'), 'glass');
+    /* dials and lamps along the face */
+    for (let i = 0; i < 5; i++) {
+      const x = -0.4 + i * 0.2, t = (i % 2) * 0.4 + 0.25;
+      F.ball(x, 0.98 + t * 0.3 * 0.9, 0.18 - t * 0.56 * 0.9, 0.045, lit ? F.pick(GLOW) : F.col('unlit'), lit ? 'glow' : 'glass');
+    }
+    /* the two telegraph levers and their quadrants, and a hand rail along the front */
+    for (const s of [-1, 1]) {
+      F.cyl(s * 0.42, 0.94, 0.28, 0.06, 0.06, 0, DARK, 'metal');
+      F.rod(s * 0.42, 1.0, 0.28, s * 0.42, 1.3, 0.3 + F.rr(-0.08, 0.08), 0.02, F.col('pewter'), 'metal');
+      F.ball(s * 0.42, 1.33, 0.3, 0.045, F.col('blackIron'), 'metal');
+    }
+    for (const s of [-1, 1]) F.rod(s * 0.62, 0.1, 0.4, s * 0.62, 0.92, 0.4, 0.02, DARK, 'metal');
+    F.rod(-0.62, 0.92, 0.4, 0.62, 0.92, 0.4, 0.022, F.col('pewter'), 'metal');
+    if (lit) F.lamp(0, 1.2, 0.2, 0.25, 3);
+  }
+});
+
+FURN({
+  key: 'ancients_chain_heap', name: 'Anchor chain heap', culture: 'ancient', tier: 'common', type: 'stack', setting: 'both',
+  rooms: ['chainlocker', 'hold', 'quay', 'deck'], anchor: 'floor', clearance: {},
+  materials: ['metal', 'rustSteel'],
+  w: 1.7, d: 1.7, h: 0.52, variants: 1,
+  build: function (F) {
+    const IRON = F.col('blackIron'), RUST = F.col('rust');
+    /* chain flaked down in a settling coil: alternate links lie flat and stand on edge */
+    let a = F.rnd() * F.TAU, k = 0;
+    for (let layer = 0; layer < 4; layer++) {
+      const r = 0.68 - layer * 0.14, y = 0.06 + layer * 0.11, steps = Math.max(6, Math.round(r * F.TAU / 0.17));
+      for (let i = 0; i < steps; i++, k++) {
+        const a1 = a + F.TAU / steps;
+        const x0 = Math.cos(a) * r, z0 = Math.sin(a) * r, x1 = Math.cos(a1) * r, z1 = Math.sin(a1) * r;
+        const col = F.chance(0.3) ? RUST : F.shade(IRON, F.rr(-0.05, 0.12)), fam = col === RUST ? 'rust' : 'metal';
+        if (k % 2) F.beam(x0, y, z0, x1, y, z1, 0.12, 0.04, col, fam);
+        else F.beam(x0, y - 0.04, z0, x1, y + 0.04, z1, 0.04, 0.12, col, fam);
+        a = a1;
+      }
+    }
+    /* the bitter end trailing off the heap */
+    F.beam(0.66, 0.06, 0, 0.78, 0.03, 0.1, 0.11, 0.04, IRON, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_stowed_anchor', name: 'Stowed bower anchor', culture: 'ancient', tier: 'common', type: 'monument', setting: 'both',
+  rooms: ['plaza', 'quay', 'chainlocker', 'deck'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['metal', 'rustSteel', 'concrete'],
+  w: 2.3, d: 0.9, h: 2.5, variants: 1,
+  build: function (F) {
+    const IRON = F.col('blackIron'), RUST = F.col('rust'), WHITE = F.col('alloy');
+    /* a stockless anchor stood on its crown in a white chock, the shackle at the top */
+    F.box(0, 0, 0, 1.7, 0.3, 0.8, 0, WHITE, 'concrete');
+    F.beam(0, 0.3, 0, 0, 2.2, 0, 0.22, 0.18, IRON, 'metal');
+    F.box(0, 0.3, 0, 0.6, 0.3, 0.3, 0, F.shade(IRON, 0.08), 'metal');
+    for (const s of [-1, 1]) {
+      F.beam(s * 0.2, 0.42, 0, s * 0.82, 0.95, 0, 0.18, 0.16, IRON, 'metal');
+      F.beam(s * 0.78, 0.82, 0, s * 0.98, 1.45, 0, 0.36, 0.1, F.shade(IRON, 0.06), 'metal');
+    }
+    /* the shackle: a rough square of bar */
+    F.rod(-0.16, 2.2, 0, -0.16, 2.44, 0, 0.035, IRON, 'metal');
+    F.rod(0.16, 2.2, 0, 0.16, 2.44, 0, 0.035, IRON, 'metal');
+    F.rod(-0.16, 2.44, 0, 0.16, 2.44, 0, 0.035, IRON, 'metal');
+    for (let i = 0; i < 3; i++) F.blob(F.rr(-0.6, 0.6), F.rr(0.5, 1.8) * (i ? 1 : 0.6), 0.1, F.rr(0.08, 0.14), 0.05, F.rnd() * F.TAU, RUST, 'rust');
+  }
+});
+
+/* ---------- the intact buildings' interiors (2026-10) ----------
+   What the Ancients furnished their offices, flats, wards, barracks and labs with, for the Ancients kit's interiors
+   (kits/ancients-interiors 37-ai-kit.js): the house rules of Yuni's Ancient pieces (settlements/yuni/src/61e-ancients-
+   furniture.js, harvested above as yuni_ancient_*): metres, a seat 0.44 m off the floor, a table 0.76, a locker 2.0;
+   white moulded alloy with pewter trim growing out of a flared foot; screens of black glass. Variant 0 is LIT (an intact
+   building has power), variant 1 DEAD. Roles: the pantry is a food container, the locker and wardrobe item containers,
+   the bunk sleeps two. */
+
+FURN({
+  key: 'ancients_chair', name: 'Moulded pod chair', culture: 'ancient', tier: 'common', type: 'chair', setting: 'indoor',
+  rooms: ['study', 'hall', 'school', 'library', 'bedroom', 'living', 'tavern', 'kitchen', 'antechamber', 'brig', 'sickbay', 'chartroom', 'mess'],
+  anchor: 'floor', clearance: { front: 0.5 }, materials: ['metal', 'cloth'],
+  w: 0.56, d: 0.56, h: 0.9, variants: 2, variantNames: ['dove seat', 'slate seat'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), C = F.col(F.variant ? 'clothSlate' : 'clothDove');
+    /* the flared foot and its stem, the moulded pan, a cushion, the back sweeping up from the pan's rear */
+    F.frustum(0, 0, 0, 0.26, 0.07, 0.07, 0, T, 'metal', 14);
+    F.cyl(0, 0.07, 0, 0.05, 0.29, 0, T, 'metal');
+    F.box(0, 0.34, 0, 0.5, 0.06, 0.5, 0, W, 'metal');
+    F.box(0, 0.4, 0.01, 0.46, 0.04, 0.44, 0, C, 'cloth');
+    F.beam(0, 0.38, -0.24, 0, 0.88, -0.27, 0.46, 0.05, W, 'metal');
+    F.beam(0, 0.47, -0.21, 0, 0.8, -0.23, 0.38, 0.03, C, 'cloth');
+  }
+});
+
+FURN({
+  key: 'ancients_desk', name: 'Moulded desk with a glass screen', culture: 'ancient', tier: 'common', type: 'desk', setting: 'indoor',
+  rooms: ['study', 'school', 'library', 'chartroom', 'hall', 'bedroom', 'sickbay', 'antechamber'],
+  anchor: 'wall', clearance: { front: 0.9 }, materials: ['metal', 'glass', 'emissive'],
+  w: 1.5, d: 0.72, h: 1.22, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), G = F.col('glassBlack'), lit = F.variant === 0;
+    /* the top (0.76), a drawer pedestal on the right, a moulded panel leg on the left, the screen standing at the back */
+    F.box(0, 0.7, 0, 1.5, 0.06, 0.72, 0, W, 'metal');
+    F.box(0.46, 0, 0.0, 0.52, 0.7, 0.64, 0, W, 'metal');
+    for (let i = 0; i < 3; i++) F.box(0.46, 0.08 + i * 0.21, 0.325, 0.44, 0.012, 0.01, 0, T, 'metal');
+    F.box(-0.7, 0, 0.0, 0.08, 0.7, 0.64, 0, W, 'metal');
+    F.frustum(-0.7, 0, 0, 0.1, 0.05, 0.05, 0, T, 'metal', 10);
+    F.box(0, 0.76, -0.3, 0.12, 0.08, 0.1, 0, T, 'metal');
+    F.box(0, 0.8, -0.335, 1.1, 0.42, 0.03, 0, G, 'glass');
+    F.box(0, 0.83, -0.318, 1.0, 0.02, 0.006, 0, lit ? F.col('electric') : F.col('unlit'), lit ? 'glow' : 'metal');
+    if (lit) F.box(0, 0.98, -0.318, 0.9, 0.2, 0.004, 0, F.shade(F.col('glassSky'), -0.25), 'glow');
+  }
+});
+
+FURN({
+  key: 'ancients_shelf', name: 'Moulded open shelving', culture: 'ancient', tier: 'common', type: 'shelf', setting: 'indoor',
+  rooms: ['store', 'study', 'library', 'kitchen', 'workshop', 'hall', 'shop', 'sickbay', 'chartroom', 'living', 'school'],
+  anchor: 'wall', clearance: { front: 0.7 }, materials: ['metal', 'glass'],
+  w: 1.6, d: 0.42, h: 2.0, variants: 2, variantNames: ['canisters', 'data slates'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter');
+    F.box(0, 0, -0.2, 1.6, 2.0, 0.02, 0, F.shade(W, -0.06), 'metal');
+    for (const s of [-1, 1]) F.box(s * 0.775, 0, 0, 0.05, 2.0, 0.42, 0, W, 'metal');
+    for (let i = 0; i < 5; i++) F.box(0, 0.04 + i * 0.44, 0, 1.5, 0.04, 0.4, 0, W, 'metal');
+    for (let i = 0; i < 4; i++) {
+      const y = 0.08 + i * 0.44;
+      for (let k = 0; k < 6; k++) {
+        if (F.chance(0.25)) continue;
+        const x = -0.6 + k * 0.24 + F.rr(-0.03, 0.03);
+        if (F.variant === 0) F.cyl(x, y, F.rr(-0.06, 0.06), F.rr(0.06, 0.09), F.rr(0.14, 0.3), 0, F.pick([T, W, F.col('steelLight')]), 'metal');
+        else F.box(x, y, 0, 0.03, F.rr(0.22, 0.32), 0.26, F.rr(-0.1, 0.1), F.col('glassBlack'), 'glass');
+      }
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_archive', name: 'Archive wall of data slates', culture: 'ancient', tier: 'court', type: 'shelf', setting: 'indoor',
+  rooms: ['library', 'study', 'chartroom', 'hall'],
+  anchor: 'wall', clearance: { front: 0.9 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.0, d: 0.5, h: 2.4, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), G = F.col('glassBlack'), lit = F.variant === 0;
+    F.box(0, 0, -0.2, 2.0, 2.4, 0.1, 0, F.shade(W, -0.08), 'metal');
+    for (const s of [-1, 1]) F.box(s * 0.97, 0, 0, 0.06, 2.4, 0.5, 0, W, 'metal');
+    F.box(0, 0, 0, 2.0, 0.12, 0.5, 0, W, 'metal');
+    F.box(0, 2.3, 0, 2.0, 0.1, 0.5, 0, W, 'metal');
+    /* five ranks of slates on edge in moulded bays, each bay with its index strip */
+    for (let r = 0; r < 5; r++) {
+      const y = 0.16 + r * 0.42;
+      F.box(0, y - 0.03, 0, 1.9, 0.03, 0.42, 0, W, 'metal');
+      for (let k = 0; k < 18; k++) if (!F.chance(0.12)) F.box(-0.85 + k * 0.1, y, 0.02, 0.025, F.rr(0.28, 0.34), 0.34, 0, G, 'glass');
+      F.box(0, y + 0.36, 0.24, 1.86, 0.018, 0.012, 0, lit ? F.col('verdigris') : F.col('unlit'), lit ? 'glow' : 'metal');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_galley', name: 'Galley block with induction rings', culture: 'ancient', tier: 'common', type: 'stove', setting: 'indoor',
+  rooms: ['kitchen', 'living', 'cottage', 'mess'], role: 'hearth',
+  anchor: 'wall', clearance: { front: 1.0 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.0, d: 0.66, h: 1.5, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    /* the block on a recessed toe, the worktop, three rings and a sink, the splash panel behind */
+    F.box(0, 0, 0.0, 1.92, 0.1, 0.56, 0, F.shade(T, -0.2), 'metal');
+    F.box(0, 0.1, 0.0, 2.0, 0.8, 0.66, 0, W, 'metal');
+    F.box(0, 0.9, 0.0, 2.0, 0.05, 0.66, 0, F.shade(W, -0.1), 'metal');
+    for (let i = 0; i < 3; i++) F.cyl(-0.65 + i * 0.32, 0.95, 0.04, 0.12, 0.008, 0, lit ? F.col('amber') : F.col('unlit'), lit ? 'glow' : 'metal');
+    F.box(0.6, 0.93, 0.04, 0.5, 0.025, 0.4, 0, F.col('glassBlack'), 'glass');
+    F.rod(0.6, 0.95, -0.22, 0.6, 1.2, -0.1, 0.015, T, 'metal');
+    F.box(0, 0.95, -0.31, 2.0, 0.55, 0.04, 0, F.shade(W, -0.04), 'metal');
+    for (let i = 0; i < 4; i++) F.box(-0.75 + i * 0.5, 0.2, 0.332, 0.44, 0.6, 0.006, 0, F.shade(W, -0.12), 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_pantry', name: 'Sealed cold pantry', culture: 'ancient', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['kitchen', 'living', 'store', 'cottage', 'mess'], role: 'pantry',
+  anchor: 'wall', clearance: { front: 0.8 }, materials: ['metal', 'glass', 'emissive'],
+  w: 0.9, d: 0.64, h: 2.0, variants: 2, variantNames: ['cold', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    F.box(0, 0, 0, 0.84, 0.08, 0.58, 0, T, 'metal');
+    F.box(0, 0.08, 0, 0.9, 1.92, 0.64, 0, W, 'metal');
+    F.box(0, 0.12, 0.322, 0.8, 1.06, 0.01, 0, F.shade(W, -0.08), 'metal');
+    F.box(0, 1.22, 0.322, 0.8, 0.72, 0.01, 0, F.col('glassSky'), 'glass');
+    F.box(0.32, 0.6, 0.33, 0.04, 0.5, 0.02, 0, T, 'metal');
+    F.box(-0.3, 1.9, 0.33, 0.12, 0.03, 0.01, 0, lit ? F.col('ice') : F.col('unlit'), lit ? 'glow' : 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_locker', name: 'Pair of personal lockers', culture: 'ancient', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['barracks', 'dormitory', 'bedroom', 'store', 'workshop', 'sickbay', 'school'], role: 'locker',
+  anchor: 'wall', clearance: { front: 0.8 }, materials: ['metal', 'emissive'],
+  w: 1.0, d: 0.55, h: 2.0, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    F.box(0, 0, 0, 1.0, 0.08, 0.5, 0, F.shade(T, -0.2), 'metal');
+    for (const s of [-1, 1]) {
+      F.box(s * 0.25, 0.08, 0, 0.48, 1.92, 0.55, 0, W, 'metal');
+      F.box(s * 0.25, 0.12, 0.277, 0.42, 1.82, 0.006, 0, F.shade(W, -0.07), 'metal');
+      for (let k = 0; k < 4; k++) F.box(s * 0.25, 1.55 + k * 0.06, 0.282, 0.3, 0.02, 0.006, 0, T, 'metal');
+      F.box(s * 0.25 - s * 0.15, 1.0, 0.285, 0.03, 0.14, 0.01, 0, lit ? F.col('verdigris') : F.col('unlit'), lit ? 'glow' : 'metal');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_wardrobe', name: 'Moulded wardrobe', culture: 'ancient', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['bedroom', 'living', 'dormitory'], role: 'wardrobe',
+  anchor: 'wall', clearance: { front: 0.8 }, materials: ['metal'],
+  w: 1.4, d: 0.62, h: 2.1, variants: 1,
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter');
+    F.box(0, 0, 0, 1.32, 0.08, 0.56, 0, T, 'metal');
+    F.box(0, 0.08, 0, 1.4, 1.84, 0.62, 0, W, 'metal');
+    F.box(0, 1.92, 0, 1.36, 0.18, 0.6, 0, F.shade(W, -0.04), 'metal');
+    for (const s of [-1, 1]) {
+      F.box(s * 0.345, 0.14, 0.312, 0.64, 1.74, 0.006, 0, F.shade(W, -0.06), 'metal');
+      F.box(s * 0.05, 0.85, 0.32, 0.03, 0.4, 0.02, 0, T, 'metal');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_couch', name: 'Curved lounge couch', culture: 'ancient', tier: 'common', type: 'seating', setting: 'indoor',
+  rooms: ['living', 'hall', 'antechamber', 'tavern', 'study'],
+  anchor: 'floor', clearance: { front: 0.8 }, materials: ['metal', 'cloth'],
+  w: 2.2, d: 0.9, h: 0.82, variants: 2, variantNames: ['teal', 'slate'],
+  build: function (F) {
+    const W = F.col('alloy'), C = F.col(F.variant ? 'clothSlate' : 'clothTeal');
+    /* a shallow arc of moulded seat sections on a plinth, the back following it, rounded arms */
+    const n = 5;
+    for (let i = 0; i < n; i++) {
+      const a = (i - (n - 1) / 2) * 0.13, x = Math.sin(a) * 2.6, z = 0.12 - (1 - Math.cos(a)) * 2.6;
+      F.box(x, 0.06, z, 0.4, 0.3, 0.62, a, W, 'metal');
+      F.box(x, 0.36, z + 0.03, 0.4, 0.1, 0.56, a, C, 'cloth');
+      F.box(x - Math.sin(a) * 0.3, 0.36, z - 0.3 * Math.cos(a) - 0.0, 0.42, 0.42, 0.1, a, C, 'cloth');
+    }
+    F.box(0, 0, 0, 2.0, 0.06, 0.6, 0, F.shade(W, -0.2), 'metal');
+    for (const s of [-1, 1]) F.blob(s * 1.0, 0.36, -0.06, 0.13, 0.5, 0, W, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_low_table', name: 'Oval low table', culture: 'ancient', tier: 'common', type: 'table', setting: 'indoor',
+  rooms: ['living', 'hall', 'antechamber', 'study', 'tavern'],
+  anchor: 'floor', clearance: { front: 0.5, back: 0.5 }, materials: ['metal', 'glass'],
+  w: 1.2, d: 0.7, h: 0.42, variants: 1,
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter');
+    F.frustum(0, 0, 0, 0.3, 0.12, 0.06, 0, T, 'metal', 12);
+    F.cyl(0, 0.06, 0, 0.1, 0.3, 0, T, 'metal');
+    F.box(0, 0.36, 0, 0.5, 0.05, 0.7, 0, W, 'metal');
+    for (const s of [-1, 1]) F.cyl(s * 0.25, 0.36, 0, 0.35, 0.05, 0, W, 'metal');
+    F.box(0, 0.41, 0, 0.9, 0.01, 0.5, 0, F.col('glassBlack'), 'glass');
+  }
+});
+
+FURN({
+  key: 'ancients_bed', name: 'Moulded sleeping platform', culture: 'ancient', tier: 'common', type: 'bed', setting: 'indoor',
+  rooms: ['bedroom', 'cottage'],
+  anchor: 'floor', clearance: { front: 0.6, left: 0.5, right: 0.5 }, materials: ['metal', 'cloth', 'emissive'],
+  w: 1.7, d: 2.2, h: 0.95, variants: 2, variantNames: ['dove', 'slate'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), C = F.col(F.variant ? 'clothSlate' : 'clothDove');
+    /* head at -z: the platform on a recessed plinth, the mattress, two pillows, a curved headboard with a reading strip */
+    F.box(0, 0, 0.04, 1.5, 0.1, 2.0, 0, F.shade(T, -0.2), 'metal');
+    F.box(0, 0.1, 0.04, 1.7, 0.22, 2.1, 0, W, 'metal');
+    F.box(0, 0.32, 0.06, 1.58, 0.16, 2.0, 0, C, 'cloth');
+    for (const s of [-1, 1]) F.box(s * 0.38, 0.48, -0.78, 0.62, 0.1, 0.34, 0, F.shade(C, 0.12), 'cloth');
+    F.box(0, 0.1, -1.04, 1.7, 0.85, 0.1, 0, W, 'metal');
+    F.box(0, 0.78, -0.985, 1.4, 0.03, 0.01, 0, F.col('electric'), 'glow');
+  }
+});
+
+FURN({
+  key: 'ancients_bunk', name: 'Two-tier crew bunk', culture: 'ancient', tier: 'common', type: 'bed', setting: 'indoor',
+  rooms: ['barracks', 'dormitory', 'crew', 'bunkroom'], role: 'bunk',
+  anchor: 'floor', clearance: { front: 0.7 }, materials: ['metal', 'cloth'],
+  w: 1.0, d: 2.1, h: 1.95, variants: 1,
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), C = F.col('clothSlate');
+    for (const s of [-1, 1]) F.box(s * 0.47, 0, 0, 0.06, 1.95, 2.1, 0, W, 'metal');
+    for (const y of [0.25, 1.2]) { F.box(0, y, 0, 0.88, 0.08, 2.04, 0, W, 'metal'); F.box(0, y + 0.08, 0.02, 0.84, 0.12, 1.94, 0, C, 'cloth'); }
+    F.box(0, 1.88, 0, 0.88, 0.07, 2.04, 0, F.shade(W, -0.05), 'metal');
+    for (let k = 0; k < 5; k++) F.rod(0.3, 0.3 + k * 0.32, 1.04, 0.42, 0.3 + k * 0.32, 1.04, 0.015, T, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_med_bed', name: 'Ward bed with a monitor arm', culture: 'ancient', tier: 'common', type: 'bed', setting: 'indoor',
+  rooms: ['sickbay'],
+  anchor: 'floor', clearance: { front: 0.6, left: 0.6, right: 0.6 }, materials: ['metal', 'cloth', 'glass', 'emissive'],
+  w: 1.1, d: 2.2, h: 1.7, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    F.frustum(0, 0, 0.1, 0.32, 0.12, 0.1, 0, T, 'metal', 12);
+    F.cyl(0, 0.1, 0.1, 0.1, 0.4, 0, T, 'metal');
+    F.box(0, 0.5, 0.06, 0.95, 0.1, 2.05, 0, W, 'metal');
+    F.box(0, 0.6, 0.08, 0.86, 0.12, 1.96, 0, F.col('clothDove'), 'cloth');
+    F.beam(0, 0.64, -0.6, 0, 0.82, -0.96, 0.86, 0.1, F.col('clothDove'), 'cloth');
+    F.box(0, 0.5, -1.05, 1.0, 0.7, 0.08, 0, W, 'metal');
+    /* the monitor arm from the head, its screen turned to the bed */
+    F.rod(0.4, 1.2, -1.04, 0.36, 1.5, -0.9, 0.025, T, 'metal');
+    F.box(0.34, 1.42, -0.86, 0.36, 0.26, 0.03, 0.5, F.col('glassBlack'), 'glass');
+    F.box(0.34, 1.46, -0.84, 0.28, 0.02, 0.01, 0.5, lit ? F.col('glowGreen') : F.col('unlit'), lit ? 'glow' : 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_lab_bench', name: 'Laboratory bench under a hood', culture: 'ancient', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['workshop', 'study', 'sickbay'],
+  anchor: 'wall', clearance: { front: 1.0 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.0, d: 0.8, h: 2.1, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    F.box(0, 0, 0, 2.0, 0.86, 0.8, 0, W, 'metal');
+    F.box(0, 0.86, 0, 2.0, 0.05, 0.8, 0, F.col('glassBlack'), 'glass');
+    F.box(0, 0.91, -0.38, 2.0, 1.19, 0.04, 0, F.shade(W, -0.05), 'metal');
+    F.box(0, 1.9, -0.12, 2.0, 0.2, 0.56, 0, W, 'metal');
+    F.box(0, 1.88, -0.05, 1.8, 0.02, 0.4, 0, lit ? F.col('whiteHot') : F.col('unlit'), lit ? 'glow' : 'metal');
+    for (let i = 0; i < 6; i++) {
+      const x = -0.8 + i * 0.3 + F.rr(-0.05, 0.05);
+      F.cyl(x, 0.91, F.rr(-0.1, 0.15), F.rr(0.03, 0.05), F.rr(0.12, 0.26), 0, F.pick([F.col('glassSky'), F.col('glowViolet'), F.col('ice')]), 'glass');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_server_rack', name: 'Server rack', culture: 'ancient', tier: 'common', type: 'rack', setting: 'indoor',
+  rooms: ['workshop', 'store', 'study'],
+  anchor: 'wall', clearance: { front: 1.0 }, materials: ['metal', 'glass', 'emissive'],
+  w: 0.8, d: 1.0, h: 2.2, variants: 2, variantNames: ['running', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), G = F.col('glassBlack'), lit = F.variant === 0;
+    F.box(0, 0, 0, 0.8, 2.2, 1.0, 0, F.shade(W, -0.1), 'metal');
+    F.box(0, 0.06, 0.502, 0.7, 2.06, 0.01, 0, G, 'glass');
+    for (let r = 0; r < 14; r++) for (let k = 0; k < 4; k++) {
+      if (!lit && !F.chance(0.05)) continue;
+      if (F.chance(0.35)) continue;
+      F.box(-0.24 + k * 0.16, 0.16 + r * 0.14, 0.51, 0.05, 0.02, 0.008, 0, F.pick([F.col('glowGreen'), F.col('electric'), F.col('amber')]), 'glow');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_weapon_rack', name: 'Stowed rifles and helmets', culture: 'ancient', tier: 'common', type: 'weapon', setting: 'indoor',
+  rooms: ['armoury', 'barracks', 'brig'],
+  anchor: 'wall', clearance: { front: 0.8 }, materials: ['metal'],
+  w: 1.6, d: 0.36, h: 1.95, variants: 1,
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), D = F.col('steel');
+    F.box(0, 0, -0.16, 1.6, 1.95, 0.04, 0, W, 'metal');
+    F.box(0, 0.1, 0.0, 1.6, 0.08, 0.32, 0, W, 'metal');
+    F.box(0, 1.5, 0.0, 1.6, 0.05, 0.32, 0, W, 'metal');
+    for (let i = 0; i < 6; i++) { const x = -0.6 + i * 0.24; F.rod(x, 0.18, 0.06, x, 1.36, 0.02, 0.025, D, 'metal'); F.box(x, 0.7, 0.07, 0.05, 0.22, 0.08, 0, T, 'metal'); }
+    for (let i = 0; i < 4; i++) F.dome(-0.54 + i * 0.36, 1.55, 0.0, 0.13, 0.15, 0, F.pick([W, T]), 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_board', name: 'Wall display screen', culture: 'ancient', tier: 'common', type: 'board', setting: 'indoor',
+  rooms: ['school', 'study', 'hall', 'chartroom', 'antechamber', 'sickbay'],
+  anchor: 'wall', clearance: { front: 1.2 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.4, d: 0.12, h: 2.3, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), lit = F.variant === 0;
+    F.box(0, 0.85, -0.04, 2.4, 1.45, 0.04, 0, W, 'metal');
+    F.box(0, 0.92, -0.01, 2.2, 1.3, 0.03, 0, F.col('glassBlack'), 'glass');
+    if (lit) for (let i = 0; i < 5; i++) F.box(F.rr(-0.4, 0.2), 1.1 + i * 0.2, 0.012, F.rr(0.6, 1.4), 0.05, 0.004, 0, F.pick([F.col('electric'), F.col('verdigris')]), 'glow');
+    F.box(0, 0.8, 0.0, 2.4, 0.05, 0.12, 0, W, 'metal');
+    for (const s of [-1, 1]) F.box(s * 1.15, 0, -0.04, 0.06, 0.85, 0.04, 0, F.col('pewter'), 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_counter', name: 'Curved reception counter', culture: 'ancient', tier: 'common', type: 'counter', setting: 'indoor',
+  rooms: ['hall', 'shop', 'tavern', 'antechamber', 'kitchen', 'sickbay', 'mess'],
+  anchor: 'floor', clearance: { front: 1.0, back: 0.8 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.6, d: 0.9, h: 1.12, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    /* a shallow arc of moulded panels bowed to the front, a glass top, the staff shelf behind */
+    const n = 6;
+    for (let i = 0; i < n; i++) {
+      const a = (i - (n - 1) / 2) * 0.16, x = Math.sin(a) * 2.6, z = 0.1 - (1 - Math.cos(a)) * 2.6;
+      F.box(x, 0, z, 0.44, 1.05, 0.14, a, W, 'metal');
+      F.box(x, 1.05, z - 0.08, 0.45, 0.05, 0.42, a, F.col('glassBlack'), 'glass');
+      F.box(x, 0.55, z + 0.072, 0.4, 0.02, 0.006, a, lit ? F.col('electric') : F.col('unlit'), lit ? 'glow' : 'metal');
+    }
+    F.box(0, 0.7, -0.2, 2.0, 0.04, 0.4, 0, T, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_cargo_pods', name: 'Stack of cargo pods', culture: 'ancient', tier: 'common', type: 'stack', setting: 'both',
+  rooms: ['store', 'workshop', 'hold', 'quay'], role: 'crates',
+  anchor: 'floor', clearance: { front: 0.6 }, materials: ['metal'],
+  w: 1.7, d: 1.2, h: 1.3, variants: 2, variantNames: ['three', 'five'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter');
+    const spots = F.variant ? [[-0.42, 0, 0], [0.42, 0, 0], [-0.42, 0.62, 0], [0.42, 0.62, 0], [0, 1.24, 0]] : [[-0.42, 0, 0], [0.42, 0, 0], [0, 0.62, 0]];
+    for (const s of spots) {
+      const y = s[1];
+      if (y > 1.1) { F.box(s[0], 0.62, s[2], 0.8, 0.06, 1.1, 0, T, 'metal'); continue; }
+      F.box(s[0], y, s[2], 0.8, 0.58, 1.1, 0, F.pick([W, F.shade(W, -0.08)]), 'metal');
+      F.box(s[0], y + 0.2, s[2] + 0.555, 0.6, 0.06, 0.01, 0, T, 'metal');
+    }
   }
 });

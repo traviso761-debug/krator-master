@@ -1,0 +1,69 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    627,
+    643
+   ],
+   "seam_after": [
+    1.185,
+    0.844
+   ],
+   "seam_before": [
+    5.423,
+    0.864
+   ],
+   "source_size": [
+    639,
+    655
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "islander/kowhaiwhai",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.7,
+  "scale": [
+   0.72,
+   0.72
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "islander-kowhaiwhai.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 13.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one period each way (627 x 643 px: two scroll bands) before processing, so the sheet repeats on its own period.",
+  "original_file": "13.webp",
+  "original_sha1": "4eb6ce2ccf1afcd5646808ca018b52c6387e1d03",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Maori kowhaiwhai rafter painting: flowing white (#efe6d2) koru scrolls outlined in black (#1e1a18) on red earth (#9a2a1e), each scroll's stem curling into the next in a continuous running pattern, painted on smooth wood. The pattern repeats horizontally. Full colour.",
+  "reuse": "rafter and beam bands (patBand); painted koru scrolls",
+  "sha1": "3f6a03f8ceaf7d287e19d911f31d555e07eb301b"
+ }
+}

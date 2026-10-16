@@ -2,10 +2,12 @@
 
 Code shared by more than one build, kept here once instead of copied into each:
 `materials/` (the Ancients-lineage materials), `biome/` (the biome core every biome kit
-runs on), `terrain/` (carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
-dressing), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
+runs on), `terrain/` (the baked terrain field, carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
+dressing), `water/` (every wet surface: open water on a CDLOD mesh, the CPU twins things float on), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
 blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
-(the one generator, hash and noise a Godot port can reproduce) and `clock/` (the world clock).
+(the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock), `tags/` (what a placed
+thing is: ids, class, tags), `space/` (the one spatial index placement passes share) and `export/` (the one
+`krator-world` container every module gives its part to, for Godot).
 
 ## `materials/`
 
@@ -99,16 +101,18 @@ additions are in it, each marked with the kit it came from:
 |---|---|
 | `10-core-head.js` | `BIO`, `BIO.fn` (rng, noise...), `BIO.init` and the host binding: fields (wet, salt, upland, flow, mist, cold, rock), `waterH`/`depth`, `register`, detail radii (`BIO.radii()`), windows, `eye`, the world's `clock` and `wind` (one wind for leaves and atmosphere) |
 | `20-core-kit.js` | kits (`BIO.kit`, `BIO.kitEnd`), items and buckets on Float32 stores, extra per-instance vec4s, the runtime LOD (`BIO.LOD`, `BIO.range`, `BIO.lodTick`), indexed bake, `BIO.dynamic`/`BIO.tick` |
-| `30-core-foliage.js` | leaf textures and cards, the foliage and bark hooks, the wind clock, `BIO.col` |
+| `30-core-foliage.js` | leaf textures and cards, the foliage and bark hooks (`leafMat`, `barkMat`, the iridescent `iridBarkMat`: the `irid` kind, tints `colA`/`colB`), the wind clock, `BIO.col` |
 | `35-core-anim.js` | animated items (orbit, flit, walk; flapping wings, swinging legs) for fauna |
-| `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear, surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
-| `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, each check with a negative |
-| `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
+| `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear (`BIO.clearOf`, `clearOf3`; both and `scatter`'s spacing read a `core/space` grid when the page loads it), surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
+| `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, and keep-clear and scatter on `KSPACE` equal to the linear scans they replaced (frozen in the test), each check with a negative |
+| `test-tags.js` | `node core/biome/test-tags.js`: the biome core on core/tags (one kit built with tags and without: identical meshes; every instance names its set and the uid of its own position; the export's ids), each check with a negative |
+| `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`); `BIO.exportParts`, the same parts given to core/export's `krator-world` (items, buckets, materials, textures, terrain) |
 | `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME`. With a box it also adds `stage` to `BIO.export` |
 | `44-core-stage.js` | `KSTAGE` ([web], export time only): the page's look as data, so Godot can match it: lights, fog, tonemapping, the sky (a cube render saved as a panorama) and the ground's material, uvs and colours on the export's grid (`biomes/GODOT.md`, "The stage"). Also used by `core/atmos/89-atmos-9-host.js`. List it after `43-core-export-host.js` |
 
-**Used by** all nine kits in `biomes/`: each lists the files in `CORE_BIOME` in its
-`build.py`, read from here unless its `src/` has a copy of the same name (none does).
+**Used by** every kit in `biomes/`: each lists the files in `CORE_BIOME` in its
+`build.py`, read from here unless its `src/` has a copy of the same name (none does), and `core/space`'s
+`20-core-space.js` in `CORE_SPACE` beside it (openworld/little-demo lists it in its `ORDER`).
 hyperjungle also lists `35-core-anim.js`, and takes the core's helpers as globals in its
 own `41-hyperjungle-globals.js` (it was written when the core declared them). `build.py`
 stops if any of the four base files is missing (the syntax check cannot see an absent fragment).
@@ -120,6 +124,22 @@ its exported functions run in that registry, and material cache keys carry its n
 (`BIO.kitKey`), so two kits' `grass` cannot share one compiled shader. Mesh names stay
 `biome:<name>`; `userData.kit` says whose.
 
+**Keep-clear and scatter read `core/space`** (Oct 2026). `BIO.clearOf`/`clearOf3` read `BIO.host.obstacles` through
+a `KSPACE` grid (24 m cells) that files whatever was pushed since the last query (a swapped array, a shorter one or a
+changed last entry is filed afresh; an entry or a query whose x, z or r is not a number goes to the plain scan; eight
+obstacles or fewer are scanned), and `BIO.scatter` tests its spacing through a grid of cell `minD`, so neither grows
+with the square of the count. The candidates come back in insertion order and take the same test, so the answers are
+the scans' exactly (`test-place.js`, and every kit's baked geometry hashed the same before and after). An obstacle
+changed in place after it was pushed is not seen: push a new one. A page without `core/space` (the settlements that
+read this folder: Yuni, Locus, Mungo, Verge, Dhelv, Voth) runs the scans as before.
+
+**Records (core/tags, 2026-10-12).** With `BIO.init({tags: '<build>'})` (and core/rand and core/tags in the build:
+`CORE_TAGS` in each kit's `build.py`) every item a kit puts is one core/tags item set, its instances read from the
+item's own matrices, and every volume a kit registers (`BIO.register`, `BIO.record` from the host's `REGISTER`) a
+record; a baked mesh names its set (`userData.krator`) and `BIO.recordsOf(mesh)` gives each row's uid and index
+(`20-core-kit.js`, "core/tags: what a kit places, as records"; `biomes/GODOT.md`, "Records"). Without `tags` nothing
+runs: the worlds that take this core but not core/tags draw and export exactly as before.
+
 **`BIO.LOD`** is both the runtime LOD's settings (`chunk`, `scale`) and, called, the detail
 radii (sedesert's `BIO.LOD()`, the same as `BIO.radii()`), so sedesert's fragments and
 Shade's copies of them run unchanged.
@@ -129,7 +149,11 @@ Compare the baked geometry instead: every biome mesh's attributes and instance b
 hashed per mesh name, before and after (fauna moved every frame by a script are hashed by
 their geometry only). Identical means the change moved nothing.
 
-Worlds that vendored a kit (dalab from swlowlands, locus and the Ancients kit from
+Locus and Mungo read this folder and `biomes/eastabyss/src` in place (since 2026-10-05: `BIO_CANON` in their
+`build.py`, under Locus's old slot names `69a*`, `69c*`; their town trees use `EASTABYSS.make` / `grow`).
+Yuni reads this folder and `biomes/ebadlands/src` the same way (since 2026-10-06, `BIO_CANON` in its `build.py`, `69a*`
+and `69c*`; its host binding is `src/69b-yuni-biohost.js`, the planting `src/69z-yuni-badlands.js`).
+Worlds that vendored a kit (dalab from swlowlands, the Ancients kit from
 eastabyss, iziz, screamers and the Ancients kit from hyperjungle, Shade from sedesert, the
 xanadu settlement) keep their copies. dalab's, iziz's and Shade's `--vendor-check` compare
 their core with this folder and report the drift; each records it in its `KNOWN_ISSUES.md`.
@@ -142,6 +166,9 @@ Godot (`biomes/GODOT.md`).
 
 | File | What |
 |---|---|
+| `30-core-field.js` | the terrain field (global `KFIELD`, [G data]: no THREE, no DOM): a world's `terrainH` baked once onto a Float32 heightmap in metres, with finer insets, named water surfaces and an optional land-cover byte grid; `h(x,z)` is bilinear sampling, `export()` the `krator-field` file Godot reads. Below |
+| `test-field.js`, `golden-field.json` | `node core/terrain/test-field.js` (each check with a negative; `--write` rewrites the golden file): the contract, and the golden vectors `kfield.gd` is held to |
+| `kfield.gd`, `kfield_test.gd` | the GDScript twin (`class_name KField`: `from_export`, `h`, `normal`, `water_at`, `water_h`, `cover_at`, insets) and its test on the same golden file; the project's copies are `godot/tests/terrain/` (`godot/tools/sync_core.py`), passing in Godot 4.5 and, merged into `full-refactor` (2026-10-12), in 4.7.2 |
 | `36-core-carve.js` | carve patches: overhangs (alcoves, niches, undercuts, or a shape a build registers) on a heightfield world. Global `KCARVE`; with the biome core loaded also `BIO.carve` |
 | `test-carve.js` | `node core/terrain/test-carve.js`: the module's contract on a synthetic cliff, each check with a negative |
 | `38-core-relief.js` | relief functions, all plain maths of (x,z) and a seed (global `KRELIEF`): `range` (a wall of mountains along a line: steep sides, broad serrated top, eased toe, tapered ends), `join` (where ranges meet: the tallest plus a quarter of the rest), `volcano` (a concave cone with gullies and a crater), `fields` (an enclosure lattice: field kinds, crop-row directions and hedge polylines, with missing hedges merging fields), `river` (a water surface that never climbs downstream, with the slope per vertex for foam) |
@@ -175,14 +202,63 @@ build must:
 Shade's `45-host-stage.js` and `84-host-life.js` are the worked example. The
 contract and its tunables are in the header of `36-core-carve.js`.
 
+### The field (`KFIELD`, 2026-10-08)
+
+GODOT-PLAN.md Phase 2 item 2: the ground as data, so the ground a page plants on is the ground Godot draws and
+collides with. A world paints its closure once and then reads the field:
+
+```
+const F = KFIELD.bake((x,z) => myClosure(x,z), [x0,z0,x1,z1], step, {
+  insets: [{box, step}],                      // finer where the world draws finer (a cliff, a cave mouth)
+  water:  {river: (x,z) => wet ? y : NaN, sea: -1.5},   // a surface on the lattice (NaN dry), or a level everywhere
+  waterBox: {river: [x0,z0,x1,z1]}});         // bake a surface only where it can be
+function terrainH(x,z){ return F.h(x,z); }    // bilinear, clamped at the edges; F.normal(x,z), F.waterH(x,z), F.coverAt(x,z)
+BIO.init({..., terrainH, field: F});          // a biome kit: BIO.export's ground then carries F.export({box}) as `field`
+```
+
+- **The grid.** Point (i, j) is at x = x0 + i*step, z = z0 + j*step, `heights[j*nx + i]`, Float32, metres, +y up, x east,
+  z south. Choose the step so the world's ground mesh vertices are grid points: there the drawn ground is the closure (to
+  float32: 6e-5 m at 900 m); between grid points the field is bilinear, and anything that reads it moves by that error.
+- **The arithmetic is the contract.** `bilinear()` clamps, takes `floor`, caps the cell at nx-2, then `a+(b-a)*fu` along
+  x and the same along z. `kfield.gd` repeats it operation for operation: on the golden file the two engines agree to
+  2e-15 m (the JSON parse's last bit), not merely 1e-6.
+- **Insets** are fields of their own over a window snapped out to the base lattice; `h` reads the first that holds the
+  point (edges included). The Godot importer leaves the base's cells under an inset out of the mesh and makes its grid
+  points a hole (NaN) in the base's HeightMapShape3D.
+- **Water** is named surfaces: `{level}` everywhere, or a window of the lattice with NaN where dry; `waterAt` is
+  bilinear where all four corners are wet, else the nearest corner. `waterH` is the highest wet surface, else `KFIELD.DRY`.
+- **The export** (`f.export({box})`): `{format:'krator-field', version:1, convention, name, x0, z0, step, nx, nz, min,
+  max, heights (base64 of little-endian Float32), water, cover?, coverNames?, insets?}`. A box crops on the field's own
+  lattice (the grid does not move). `KFIELD.load(json)` reads it back bit for bit; `KField.from_export` in Godot.
+  `godot/krator/field_import.gd` turns it into a terrain mesh and a StaticBody3D with one HeightMapShape3D per grid.
+- **Not yet:** a 16-bit PNG or EXR height export, the carver's floors and blockers, a land-cover map from a real
+  build (the byte grid and its legend are there; no world fills it yet).
+
+**Used by** `biomes/sedesert` (its ground, flora, camera and export; `biomes/sedesert/KNOWN_ISSUES.md` has the measured
+error). The other 41 `terrainH` closures are still closures.
+
 ## `atmos/`
 
 The atmosphere and street-dressing module: evening lights and a glow layer, particles, weather, ivy and window boxes,
 sewer grates, lamps and fountains, InstancedMesh culling, the open-water wave field (`#include <atmos_waves>`) and the
 sky's light on standard materials (`ATMOS.skylight`). One global (`ATMOS`) behind a five-item host binding, so any
 three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
-reads it through `TARGET_CORE`), `settlements/voth` (the bay's waves) and `settlements/girder` (the sky's light); both
-add `core/atmos` to their `build.py` core loop and bind it in `src/90-atmos-host.js`.
+reads it through `TARGET_CORE`), the first Voth (the bay's waves; retired 2026-10-14, its build in `archive/voth-first`), `settlements/girder` (the sky's light) and
+`settlements/locus` with `settlements/mungo` (the lake's waves, shading only); they add `core/atmos` to their `build.py` core
+loop and bind it in `src/90-atmos-host.js`. `kits/ringsea` and `biomes/geyser` take its core, presets, wave field and
+skylight for their sea through `core/water`.
+
+## `water/`
+
+One module for every wet surface (`water/README.md`; the plan is `atmos/WATER.md`). `20-core-water.js` ([G data]) is
+`WATER`: six kinds (open, shore, flow, fall, still, wet) as records, their CPU twins (`WATER.heightAt`, `flowAt`,
+`seaLevel`, the floating helper `WATER.ride`) and `export`. `50-core-water-draw.js` draws open water: a CDLOD mesh
+(instanced 17x17 nodes from 8 m leaves, morphing between levels, the root snapped to the camera) on the shared wave field
+plus Gerstner trochoids, one clock (`atmWaveT`), the sky through `ATMOS.skylight`, Jacobian foam with a decay. It needs
+`core/atmos` (`0-core`, `0p-presets`, `a-waves`, `b-skylight`). **Used by** `kits/ringsea` (the roadstead; the kit's
+Gerstner, `rsSeaH` and `rsRide` moved in) and `biomes/geyser` (the sea off the beach). After a change: `node
+core/water/test-water.js` (it runs the shaders' own GLSL against the twins), then rebuild both and run
+`kits/ringsea/verify.py --assert`. Phases 2 to 6 (shore, flow and falls, still and wet, FFT, Godot) are to do.
 
 ## `lod/`
 
@@ -212,6 +288,53 @@ each lists the three fragments the way it lists `lod/`. `furnish/README.md` has 
 | `test-furnish.js` | `node core/furnish/test-furnish.js` |
 | `fingerprint.py` | every furnished page's records and furniture meshes, compared with `fingerprint.json`: a change to this module must leave them `same` |
 
+## `city/`
+
+The city-layout module (`city/PLAN.md`): a city is an instance, `KCITY.create({tune, site, ground, kit, rules, seed})`
+-> `{plan, raster, index, steps, run(), export()}`, laying out avenues and lots, main streets, side streets, alleys
+and the infill of every block as plain records (ways, lots, greens, the wall) with the step that made each, on one
+occupancy raster and one footprint index (on `space/`). The world gives its data (the site, its ground, its kit, its
+rules); the module has the site layer (steps 0-5: roles, the zone raster, avenues, highways, the wall as records,
+ground deltas), the builder's defaults (6-12), and street and infill strategies behind one interface (`alleys`;
+`frontage-courts`, Ys's). Voth's city plan (`settlements/voth`) is the first world on it; Ys's placement pass takes its
+shared primitives. **Every settlement should eventually be ported to it**: `city/README.md` has the API, the method,
+the porting steps and the module's debts.
+
+| File | What |
+|---|---|
+| `10-city-core.js` | [G data] the `KCITY` namespace, stream PRNG (`SL.stream`, or KRAND), value noise, geometry, the occupancy raster, A* |
+| `12-city-index.js` | [G data] footprints, road segments and fields on `KSPACE` (`KCITY.boxIndex`, `KCITY.segIndex`): exact for any size |
+| `15-city-ground.js` | [G data] the ground through the instance, a per-lot ground predicate, Erewhon's stance (`KCITY.stance`, `stanceAtDoor`) |
+| `20-city-plan.js` | [G data] the plan's records: ways, lots along streets (`SL.tryLot`, `SL.lineLots`), parks and plazas, core/tags |
+| `25-city-site.js` | [G data] the site layer (`KCITY.site`, `KCITY.ground`): roles, the zone, avenues, highways, the wall, pads and banks |
+| `31-city-steps-b.js` | [G data] steps 6-9: civic by `near` scorers, avenue lots, main streets across the voids, main-street lots |
+| `32-city-steps-c.js` | [G data] steps 10-12 (the `alleys` strategy): side streets, lots and alley entrances, alleys and the infill |
+| `33-city-strategies.js` | [G data] the strategies (`alleys`, `frontage-courts`) and their shared primitives (`KCITY.prim`) |
+| `34-city-radial.js` | [G data] the optional radial strategy (the retired toy's rings and spokes) |
+| `40-city-kcity.js` | [G data] the instance: `KCITY.create`, steps as data, `run`, `bind`, the export |
+| `50-city-host-streets.js` | [web] streets, the ground overlay, labels, the step slider |
+| `52-city-host-buildings.js` | [web] lots' kit pieces as instanced LOD prototypes; furniture pieces |
+| `test-city.js`, `golden.json` | `node core/city/test-city.js` (`--write` after a meant change): a synthetic site, each check with a negative |
+
+## `space/`
+
+One spatial index for every placement pass (ROADMAP.md section 8, "One spatial index, not three"): a uniform grid of
+square cells, `KSPACE` ([G data]: no THREE, no DOM).
+
+| File | What |
+|---|---|
+| `20-core-space.js` | `KSPACE.create({cell})` (no default cell): `insert(item, x, z, r)` files an item under the cells its square `[x-r,x+r]x[z-r,z+r]` touches; `query(x, z, pad, out)` returns every item with `|x-ix| <= ir+pad` and `|z-iz| <= ir+pad`, **in insertion order** (acceptance and the PRNG stream can depend on it), each once, exactly what a linear scan returns; `some(x, z, pad, fn)`, `items`, `size()`, `clear()`. Items wider than 64 cells, non-finite numbers and coordinates beyond 2^20 cells are kept on a list every query reads, and a query wider than the grid is a scan, so the answer never depends on the grid. Coordinates are read once, at insert |
+| `test-space.js` | `node core/space/test-space.js`: query equals a linear scan on random sets (three cell sizes, odd pads and radii), with items inserted between queries, under a disc test, with wide items and far coordinates; each check with a negative |
+
+**Used by** `core/biome` (`BIO.clearOf`, `clearOf3`, `BIO.scatter`: every biome kit lists it in `CORE_SPACE`, and
+openworld/little-demo in its `ORDER`) and `core/city` (its footprint, road-segment and field index,
+`city/12-city-index.js`; Voth's placement hash unchanged by the move, 2026-10-14). The biome core falls back to its
+scans on a page that does not load it.
+
+**To move onto it:** openworld/little-demo's flora buckets (`src/85-world-flora.js`, 24 m buckets of its records),
+proven by its placement hash before and after; `core/walk` keeps its own 16 m hash for now. Its GDScript twin comes
+with the biome placement port.
+
 ## `walk/`, `sched/`, `minimap/`: engine-neutral, for the Godot port
 
 Three small modules with no THREE and no DOM in their data side, each with a node test (each check has a negative).
@@ -226,9 +349,13 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 | `minimap/88a-core-minimap-host.js` | the browser panel ([web], moves to `core/host/` in Phase 1): `KMAP.mount(M, op)`, also attached as `M.mount(op)`. Base painted once and repainted when `M.rev()` moves, overlay a few times a second, hover names, click goes there, M toggles. A build takes both files |
 | `walk/test-walk.js`, `sched/test-sched.js`, `minimap/test-minimap.js` | `node core/<dir>/test-*.js` |
 
-**Used by** `settlements/voth` (the minimap: its `build.py` reads `core/minimap/` like `core/lod/`, and
-`src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons). `walk/` and `sched/` have no
-user yet.
+**Used by** the first Voth (retired 2026-10-14; the minimap: its `build.py`, now `archive/voth-first/build.py`, read `core/minimap/` like `core/lod/`, and
+`settlements/voth/src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons), `settlements/locus` and `settlements/mungo`
+(`88b-locus-minimap.js`: the ground, the streets by class, `PLACED`; Mungo adds its reed islands in `MINIMAP_EXTRA`) and `settlements/mungo` (`sched/`:
+its `CORE_MODULES`; the simulation's group formations follow `KSCHED.formation`'s offsets) and `settlements/shade`
+(`sched/` and `clock/` in its `CORE_MODULES`, with the simulation) and `settlements/yuni` (`minimap/` and `sched/`, its
+`CORE_MODULES`: `src/88b-yuni-minimap.js` feeds the minimap the terrain, the river and canal, the street graph, the wall
+and `FIX.buildings`; the volcano's cycle is `KSCHED.eruption`). `walk/` has no user yet.
 
 ## `materials/record/`: material records and the library loader
 
@@ -243,14 +370,34 @@ A subfolder, so the Ancients-lineage builds that take every top-level `core/mate
 | `test-record.js` | `node core/materials/record/test-record.js` |
 
 **Used by** `settlements/girder` (its `build.py` reads this folder like `core/lod/`, and generates `46-matlib-pack.js`
-from `tex/`, which `tools/textures/pack.py` writes from `materials.json`).
+from `tex/`, which `tools/textures/pack.py` writes from `materials.json`), `settlements/yuni` (the same way, since
+2026-10-05: 24 families on library sets, the interiors included; the rest procedural `TEX.def` kinds; `?mat=proc` is
+the old look) and `settlements/screamers` (2026-10-05, the first Ancients-lineage build: `23` and `25` only, since
+`24-tex-def.js`'s global `TEX` would meet the lineage's canvas table; `src/72c-matlib.js` puts each family on its `MAT`
+keys by world-space triplanar projection, the lineage's UVs being in no one unit).
 
 ## `clock/`
 
 The world clock, `KCLOCK` (`GODOT-PLAN.md`, Phase 1, "The world clock"): motion time `t` in seconds, and world time
 (`hour`, `day`) that runs at one world day per 72 real minutes when it runs. The preview holds the hour by default; the
 viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the host steps it with its frame's `dt`.
-`node core/clock/test-clock.js`. **Used by** `settlements/iziz` (city target, `TARGET_CORE`).
+`node core/clock/test-clock.js`. **Used by** `settlements/iziz` (city target, `TARGET_CORE`), `settlements/mungo`
+(the whole page: `MCLOCK` drives the sky, the lights and the simulation; the Run time button), `settlements/locus`
+(`LCLOCK` drives the sky and everything that reads its hour; the sky panel's slider and speed row feed the clock),
+`settlements/shade` (held at noon; its probe steps the simulation with it), `settlements/yuni` (`YCLOCK` in `21-sky.js`
+replaces the sky's own `SKY_T`, so `skyHour()` is the world clock everywhere it is read; held at 10:00, Run time, the sky
+panel's rate row) and `simulation/example/`.
+
+## `host/`
+
+The host shell (ROADMAP.md section 10; GODOT-PLAN.md Phase 1), all `[web]`: `90-host-camera.js` (orbit, pan, fly, walk,
+the pin, the depth range), `91-host-loop.js` (`KHOST.take`, the frame loop, which owns the world clock `KCLOCK` and isolates
+each subscriber's errors, the `TICKS` shim, `window._ready`), `92-host-panel.js` (the bar, foldable panels, layers, time
+controls, inspector, `#errs`, the loading note, `?chrome=0`) and `95-host-probe.js` (`window._api`). Voth's city-plan viewer,
+copied and generalised (Voth's own files are the Voth branch's; `sources.py` says when they change). A build lists
+them with `host.py` (`CORE_HOST = khost.SHELL`, which adds `clock/20-core-clock.js`), hands its page to `KHOST.take`, and
+keeps no camera, loop, panel or probe of its own; `94-host-polytool.js` (the inspect, polygon and path tools) is opt-in.
+Read `host/README.md`. **Used by** every biome kit in `biomes/`, the Throne's eleven pages included.
 
 ## `rand/`
 
@@ -267,19 +414,63 @@ viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the 
 Rules: lattice coordinates and hash inputs are int32; floats are floored. No `Math.sin`, `pow`, `exp`, `log` or
 `random` in the module (the test greps for them). A new build takes `core/rand` from the start (`GODOT-PLAN.md` rule 2).
 **Used by** `settlements/ys` (city target, `TARGET_CORE`: the P3 placement pass draws from it; nothing placed yet,
-so nothing moved).
+so nothing moved), `settlements/yuni` (only `core/tags`' uid hash: no draws; Yuni keeps its own Park-Miller `rnd()` and
+`Math.sin` noise by the owner's decision, `GODOT-PLAN.md` Phase 2 item 1) and `core/simulation` (SIM's decision stream is
+`KRAND.stream` when the module is loaded).
 
 ## `sockets/`
 
 The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,
-builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used by** `kits/post-apoc` (its `build.py` reads `37-sockets.js`, `38-symbols.js` and `80-cultures.js` from here; a local copy with the same name overrides) and, for the symbols alone, `kits/catalog` (vendored as `krator-symbols.js`).
+builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used by** `kits/post-apoc` (its `build.py` reads `37-sockets.js`, `38-symbols.js` and `80-cultures.js` from here; a local copy with the same name overrides; so does `kits/post-apoc/apoc_bundle.py`, the closure `settlements/screamers` loads) and, for the symbols alone, `kits/catalog` (vendored as `krator-symbols.js`).
 
-## `tags/`: planned, designed, not built
+## `tags/`
 
-One engine-neutral registry of what every build places (ids, class, kind, tags), for the inspector, the minimap,
-the exporters and Godot node metadata. `core/tags/PROPOSAL.md` is the design with Travis's decisions;
-`core/tags/HANDOFF.md` is the brief for the session that builds it (the module and its node test first, then Yuni
-on it). Shaped like `furnish/`: a `[G data]` registry, a `[G data]` vocabulary table, a `[web]` label fragment.
+One engine-neutral registry of what every build places (an order id, a position-hash `uid`, class, kind, tags from one
+vocabulary), for the inspector, the minimap, the exporters and Godot node metadata (GODOT-PLAN.md Phase 2 item 3).
+`tags/README.md` has the record, the ids, the uid recipe Godot reproduces, the vocabulary and the adopters;
+`tags/PROPOSAL.md` is the design with Travis's decisions. Needs `rand/` loaded first. **Used by** `settlements/yuni`
+(its fixtures registry forwards into it; `KRATOR_EXPORT.tags()`).
+
+| File | What |
+|---|---|
+| `50-core-tags.js` | [G data] `KTAGS.create({build})`: `add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`; `KTAGS.uid`, `KTAGS.norm`. No THREE, no DOM |
+| `52-core-tags-vocab.js` | [G data] `KTAGS.VOCAB`: the 18 cultures and their aliases, types, wealth, the other tag vocabularies, id prefixes; the catalog's lists copied and checked by the test |
+| `53-core-tags-host.js` | [web] `KTAGS.label(rec, instance)`: the inspector's text, generated |
+| `test-tags.js` | `node core/tags/test-tags.js` (`--write` rewrites `golden.json`) |
+| `ktags.gd`, `ktags_test.gd`, `golden.json` | the uid in GDScript and its vectors (passing in Godot 4.5); copied to `godot/tests/tags/` |
+
+## `export/`
+
+The one exporter (GODOT-PLAN.md Phase 4, ROADMAP.md stage 2d; 2026-10-13): `EXPORT.world({box})` returns one
+`krator-world` object per build or tile, which each module fills with its part through `EXPORT.register(section, fn)`.
+`export/README.md` has the API, the container, the convention, every section's shape (the stubs' contracts too), the
+harness command and the M4 proof. **Used by** the fifteen biome kits other than the Throne (`CORE_EXPORT` in each
+`build.py`); the biome core fills `items`, `buckets`, `materials`, `textures`, `terrain` and `stage`
+(`biome/42-core-export.js`, `43-core-export-host.js`). `python3 tools/harness.py export <page> --out godot/data/<case>/
+--box ...` writes it; `godot/krator/world_import.gd` reads it.
+
+| File | What |
+|---|---|
+| `07-core-export.js` | [G data] `EXPORT`: `register`, `world`, `check` (ids join), `glb` (meshes as glTF with `EXT_mesh_gpu_instancing`, the rest JSON), `compact`, `terrain`, `pack`/`unpack`; the sections, the convention, the stubs' contracts. No THREE, no DOM |
+| `09-core-export-adapters.js` | [G data] the parts of core/tags (`registry`), core/atmos (`atmos`) and the material records (`materials`) until those modules register themselves; `EXPORT.ground` for a build's terrain |
+| `test-export.js` | `node core/export/test-export.js`: a biome page built in node, exported; each check with a negative |
+
+## `mask/`
+
+A city's placement raster (GODOT-PLAN.md Phase 2 item 5): `KMASK.canvas(w, h)` stands in for the canvases the four
+mask-placed cities paint their buildable mask and street classes on, with the same calls, rasterised hard-edged by
+pixel centre so every browser (GPU or CPU canvas) and Godot get the same bytes. `mask/README.md` has the rule.
+**Used by** the city targets of `settlements/iziz`, `dalab`, `xanadu` (Erewhon) and `highlands` (Roketstad), each
+through `TARGET_CORE`, and by `settlements/locus` and `settlements/mungo` (their `MASK_CANVAS`, through the transform layer
+`26-core-mask-xform.js`: `KMASK.xform(cv)` takes the painters' scale/translate/rotate and hands KMASK plain pixel numbers).
+
+| File | What |
+|---|---|
+| `25-core-mask.js` | [G data] `KMASK.canvas`, `hash`, `ops`, `export`; the rasteriser (`disc`, `ring`, `polyline`, `polygons`, `rect`) |
+| `26-core-mask-xform.js` | [G data] `KMASK.xform(cv)`: save/restore, translate/scale/rotate, full ellipses, applied before KMASK sees a point (the ops stay plain numbers, so `kmask.gd` is unchanged); non-portable calls throw |
+| `test-mask.js` | `node core/mask/test-mask.js` (`--write` rewrites `golden.json`) |
+| `test-mask-xform.js` | `node core/mask/test-mask-xform.js`: world-space calls give the same bytes and ops as the shapes in pixels; the negatives throw |
+| `kmask.gd`, `kmask_test.gd`, `golden.json` | the GDScript twin, replaying the ops to the same bytes (passing in Godot 4.5); copied to `godot/tests/mask/` |
 
 ## Planned: a material registry
 
@@ -308,6 +499,32 @@ them against what it builds. Instead:
 
 ## `simulation/`
 
-The World Simulation Layer: documents only for now. `simulation/ROADMAP.md` is the design (factions, activities, schedules,
-routes, events, engine-independent world IR) and `simulation/PLAN.md` is the survey of every current life layer and the
-phased plan to move them onto one shared vocabulary. Read `PLAN.md` before touching any build's life fragment.
+The World Simulation Layer. `simulation/ROADMAP.md` is the design (factions, activities, schedules, routes, events,
+engine-independent world IR) and `simulation/PLAN.md` is the survey of every current life layer and the phased plan to
+move them onto one shared vocabulary. Read `PLAN.md` before touching any build's life fragment, and `SCHEMA.md` before
+writing a settlement's `world/*.json`.
+
+**Phase 1 is built (2026-10-05), with `settlements/mungo` as its first consumer and `settlements/shade` its second.**
+`SIM`, one global, no THREE, no DOM:
+
+| File | What |
+|---|---|
+| `77-sim-0-core.js` | the host binding (`SIM.init`: world hour and day, motion time, seed, error sink), the seeded decision stream, the registries (`SIM.add/get/all`), schedules (`SIM.sched`: spans to 24 hours), the overlay (`SIM.load`: override by id, add, remove; a relation's id defaults to `a>b`) and `SIM.check` (every reference resolves), the decision log |
+| `77-sim-1-world.js` | factions, organisations, directional relations (`SIM.stance`: org over faction, default neutral), presence, `SIM.welcome(actor, place)` |
+| `77-sim-2-places.js` | activities; places offering activities in SLOTS (and a shared `cap`: people present over all of them), hours, indoor flags, spots; `SIM.placesFor`, `reserve`/`release`; `slotsFromFurniture` (furniture jobs and types as slots) |
+| `77-sim-3-actors.js` | roles (`sched`, `prefers`, `cycle`, `fallback`), actors, groups, ports, EVENTS (caravans and rider bands that arrive together, stay on their own schedules, leave together; an itinerary of `legs`, stop to stop together and out; excursions: one resident takes a vehicle out and back); the resolver (`SIM.decide`: pinned, remembered, preferred kinds, any; unreachable places struck off); the motion baked as legs (walk / ride / drive / boat, `via` a boarding place); `SIM.step()` once per simulated minute; `SIM.jump()` when the clock jumps |
+| `77-sim-4-nav.js` | the NAV contract per layer (`pedestrian road water animal ...`): graph layers (A* on a heap, cost per edge kind, width), grid layers by a host route function; node-pair path cache |
+| `77-sim-5-motion.js` | `SIM.pose(actor, t)`: a pure function of motion time (along the legs, or at the spot with a hashed idle wander); group members trail their leader |
+| `77-sim-6-population.js` | `SIM.populate`: residents from the roles' counts and home kinds (or place ids; `deal:'round'` deals them in turn), work dealt round-robin, boats at docks, vehicles at bases; a `fill` role takes the beds left |
+| `77-sim-8-export.js` | `SIM.export()`: `format:'krator-sim'`, the export convention, every record kind in its JSON shape |
+| `77-sim-9-debug.js` | `SIM.audit()` (unknown activities, hourly capacity filled scarcest first with caps shared, unreachable places and ports), a build's own checks on the same report (`SIM.audits`), `SIM.census()`, `window._sim` |
+| `test-sim.js` | `node core/simulation/test-sim.js`: 37 checks on a toy world, each with a negative |
+| `example/` | the smallest world on the module alone (core/rand, core/clock, SIM; a 2D canvas): 20 townsfolk and a caravan. `python3 build.py && python3 check.py` (4 checks and 4 negatives, determinism across loads). The worked example to copy |
+
+A build takes it by listing `simulation` in its core modules (Mungo's `CORE_MODULES`) and putting its own data and
+embodiment after `77-`: Mungo's `78b-mungo-world.js` registers the layers and places from its geometry, `world/*.json`
+(inlined by `build.py` as `78a-world-json.js`) supplies factions, roles and events, `84-mungo-life.js` draws. Shade's
+`84-host-life.js` registers its walkable grid as a grid layer, its places from `44-host-layout.js` and its ports, loads
+`world/*.json` (`83-host-world-json.js`), and adds its own audits (only way up, convoy, commutes) to `SIM.audit()`; its
+`_life.OUT` numbers are the ones it had before SIM. Not yet: tools/sim_scaffold.py and tools/sim_check.py, the
+GDScript twin, LOD tiers, stockpiles.

@@ -73,8 +73,46 @@ EASTABYSS.SPECIES                    // the 21 species (tagged; the mat reed car
 EASTABYSS.REEDBEDS                   // after build: the mat-reed beds [{x,z,r,n,depth,h}] -- a resource a world can harvest
                                      // (within 1.9 km of the LOD spine; past it a bed is a far hull, counted in farBeds, not listed)
 EASTABYSS.hummock(x,z)               // the marsh's drier hummocks (beard oaks), a noise field
+EASTABYSS.make(sp,x,y,z) -> T        // one tree record as the passes make it (H, rb, crownR, seed from the kit's stream)
+EASTABYSS.grow(T,lv)                 // build that one tree at level lv (2 hero, 1 mid, 0 far) into the kit's buckets:
+                                     // no keep-clear entry, no TREES record. Town trees (Locus, Mungo: cap T.H / T.crownR first)
 EASTABYSS.zones(x,z)                 // the zone weights a world can reuse for its own placement
+EASTABYSS.FAUNA                      // the fauna kinds (tagged): flamingo, frilled_lizard
+EASTABYSS.FAUNA_LAYOUT               // after build: flocks, birds (walkers), skeins, flyers, lizards (walkers) -- data
 ```
+
+## The fauna (75, 2026-10)
+
+Ported from Locus's ambient fauna (`settlements/locus/src/83-locus-fauna.js`) onto the contract:
+
+- **Flamingos** (1.3 m): up to eight flocks of 12-60 (scaled by `quality`), 340 m apart, in shallow
+  water (`BIO.depth` .03-.55 m: the lake's margin, the river channels' edges, the delta, the marsh
+  pools) within `LOD.mid` of the spine. Each bird wades its own small loop (a walker: 2-3 points,
+  0.16-0.3 m/s), and at each stop and on each leg it feeds (both necks swing down, the head upside
+  down in the water, the body tips forward, the head sweeps side to side) or stands head up; it eases
+  between the two over 1.5 s. Legs swing as it wades. About one in ten is a greyer juvenile.
+- **Skeins**: up to three V formations of 8-15 flying an ellipse that joins two flocks, 30-55 m over
+  the highest ground or canopy under it (`canopyH`), ~15 m/s, wings flapping.
+- **Frilled lizards** (0.9 m): on dry, unmasked ground near the rivers (`flow`) and on the salt flats'
+  damp, less salty edges, off the marsh and the jungle and clear of the trunks (`EASTABYSS.blocked`).
+  Each basks at the points of a small loop (4-22 s) and dashes between them upright on its hind legs.
+  Inside ~25 m of the viewer (`BIO.eye()`) the frill opens (fully by 16 m), the lizard rears and,
+  when still, turns to face it.
+
+Every pose is a pure function of the BIO clock (`BIO.WIND.t`: the host's `clock()` when it binds
+one, else the core's own), and the frill of the viewer's distance alone: nothing is integrated frame
+to frame, so a port replays the layout (`FAUNA_LAYOUT`: each walker's `W.pts`, `W.tl`, `W.gy`, each
+skein's ellipse and speed) on the same clock. All of it is dynamic instanced meshes (`BIO.dynamic`)
+driven by one `BIO.tick`; `BIO.export` writes them as dynamic items (a snapshot of their matrices).
+The draws come from their own seeded stream (`reseed(750011)`) after the flora's, so the flora does
+not move. A host restricts the fauna three ways: its `mask` (the lizards need `mask > .5` at every
+point of their paths; the flamingos stand in water, where the default mask is 0, so they read
+`BIO.depth` instead), its `obstacles`, and `build({fauna})`: `false` builds none, a function
+`(kind,x,z)->bool` ('flamingo', 'frilled_lizard') is its own filter. Flocks, skeins and lizards are
+registered volumes (`kind:'fauna'`, with the kind's `tags`); the host must hand in `register` and
+`eye` (this ideal host now does). The presets 'Flamingos and a frilled lizard' and 'Flamingos in
+flight' find them where they are.
+
 
 Then `BIO.bake()` once. Draw calls: one per instanced item + one per merged family (~55).
 
@@ -96,11 +134,16 @@ A plant is never part of a building: `dress()` places plants ON geometry the hos
 60-biome-eastabyss-floor.js     the floor by zone; lily pads on still water; fallen scale-trees
 65-biome-eastabyss-dress.js     growth on structures (soffits, ledges, walls)
 70-biome-eastabyss.js           EASTABYSS.build / dress / canopyH
+75-biome-eastabyss-fauna.js     flamingos (flocks and skeins), frilled lizards; BIO.kitEnd (moved here from 70)
 45-host-stage.js (ideal type only): renderer, the zoned basin terrain, the four fields,
                                     the water plane + river ribbon, the painted crust, BIO.init
 80+ host (ideal type only): sky with the abyssal shelf (painted twice: dome + overlay in front of the giant),
                             one Girder tower, build order, camera + inspector, probe
 ```
 
-To port: copy 10–70 (and 00-head/99-tail if starting fresh), write `BIO.init({...fields})`,
+To port: copy 10–75 (and 00-head/99-tail if starting fresh), write `BIO.init({...fields})`,
 set `EASTABYSS_LAKE`, call `EASTABYSS.build`, then `BIO.bake()`. Read KNOWN_ISSUES.md first.
+
+## One tree alone (open worlds)
+
+`EASTABYSS.PASSES`: the tree passes as data, in buildTrees' order; EASTABYSS.make(sp,x,y,z) / grow(T,lv): one tree alone (an open world's variants). Additive: `build()` never calls them, and the kit builds exactly what it built before (checked by `verify.py --baseline`). `openworld/little-demo/src/84-world-nursery.js` is the user.

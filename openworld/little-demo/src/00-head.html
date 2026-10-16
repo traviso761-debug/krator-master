@@ -1,0 +1,42 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Krator Little Demo</title>
+<style>
+:root{color-scheme:dark;--ink:#140f0c;--panel:rgba(24,16,12,.80);--line:#6b4a36;--text:#f1e6d6;--mute:#bfa58c;--accent:#e0954e}
+html,body{margin:0;height:100%;overflow:hidden;background:#b89a7c;font:13px/1.4 system-ui,sans-serif;color:var(--text)}
+canvas{display:block}
+#ui{position:fixed;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;z-index:5;max-width:min(340px,calc(100vw - 20px))}
+.bar{display:flex;flex-wrap:wrap;gap:5px}
+#ui button,#ui select{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:4px;padding:5px 9px;cursor:pointer;font:12px system-ui,sans-serif}
+#ui button:hover{background:#6a4630}
+#ui button[aria-pressed=true]{background:var(--accent);color:#1c0f06;border-color:var(--accent)}
+#cap{background:var(--panel);padding:6px 9px;border-radius:4px;font-size:12px;color:var(--mute)}
+#cap b{color:var(--text);font-weight:600}
+#mapwrap{position:fixed;right:10px;top:10px;z-index:5;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:4px}
+#minimap{display:block;width:220px;height:auto;cursor:crosshair;image-rendering:pixelated}
+#maplegend{font:11px ui-monospace,monospace;color:var(--mute);padding:3px 2px 0;max-width:220px;max-height:38vh;overflow:auto}
+#maplegend b{color:var(--text);font-weight:600}
+#hud{position:fixed;right:10px;bottom:10px;background:var(--panel);padding:6px 9px;border-radius:4px;font:12px ui-monospace,monospace;white-space:pre;z-index:5;max-width:calc(100vw - 20px);overflow:hidden}
+#insp{position:fixed;left:10px;bottom:10px;background:var(--panel);color:#ffd9a8;padding:5px 9px;border-radius:4px;font:12px ui-monospace,monospace;white-space:pre;z-index:5;margin:0;display:none;max-width:60vw}
+#poly{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;background:var(--panel);border:1px solid var(--accent);padding:6px 9px;border-radius:4px;font:12px ui-monospace,monospace;z-index:6;display:none;max-width:70vw}
+#poly textarea{width:min(520px,60vw);height:70px;background:#0e0a08;color:var(--text);border:1px solid var(--line);font:11px ui-monospace,monospace}
+#errs{position:fixed;left:10px;bottom:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.85);color:#fff;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;display:none;z-index:9}
+#load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:8;background:radial-gradient(#3a2a20,#120c09);color:var(--text);font:15px system-ui,sans-serif;flex-direction:column;gap:10px;text-align:center;padding:16px}
+#load small{color:var(--mute);font-size:12px;max-width:440px}
+.lbl{position:fixed;transform:translate(-50%,-100%);font:600 12px system-ui,sans-serif;color:#fff4e4;text-shadow:0 1px 3px #000,0 0 6px #000;pointer-events:none;white-space:nowrap;z-index:4}
+.lbl small{display:block;font-weight:400;font-size:10px;color:#e8cfb2;text-align:center}
+@media (max-width:640px){#mapwrap{display:none}#hud{font-size:10px}}
+</style></head><body>
+<div id="load"><div>Building the eastern desert at 1:1</div><small id="loadmsg">reading the scale model</small></div>
+<div id="ui">
+ <div id="cap"><b>Little Demo</b> · the scale model's eastern desert at 1:1 · drag look · wheel zoom to the cursor · WASD fly · Q/E down/up · Shift fast · F ground · G walk · I inspect · P polygon</div>
+ <div class="bar"><select id="go" aria-label="Go to"></select><button id="bGround" title="Down to eye height (F)">ground</button><button id="bWalk" aria-pressed="false">walk</button><button id="bInsp" aria-pressed="false">inspect</button><button id="bPoly" aria-pressed="false">polygon</button><button id="bFlora" aria-pressed="true">flora</button><select id="ov" aria-label="Map overlay"><option value="0">overlay: none</option><option value="1">overlay: Köppen climate</option><option value="2">overlay: biome regions</option></select></div>
+</div>
+<div id="mapwrap"><canvas id="minimap" aria-label="Region map: click to go there"></canvas><div id="maplegend"></div></div>
+<div id="hud"></div>
+<pre id="insp"></pre>
+<div id="poly"><div>polygon: click the ground to add points · <span id="polyn">0</span> points</div><textarea id="polyout" readonly></textarea><div><button id="polyCopy">copy</button> <button id="polyUndo">undo</button> <button id="polyClear">clear</button></div></div>
+<pre id="errs"></pre>
+<script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
+<script>
+function reportErr(m){const e=document.getElementById('errs');e.style.display='block';e.textContent+=m+'\n';console.error(m);}
+window.addEventListener('error',ev=>reportErr('error: '+(ev.error&&ev.error.stack||ev.message)));

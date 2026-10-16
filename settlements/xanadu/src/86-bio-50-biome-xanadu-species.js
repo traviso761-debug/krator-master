@@ -508,6 +508,9 @@ const M=XANADU.MAT={
  cactus:BIO.solidMat(XANADU.BARKTEX[6]),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'xanadu' pack on the page, the slots it names take library maps
+// (BIO.libSwap; vended back from biomes/xanadu, 2026-10-06). No pack: no change.
+XANADU.LIB=BIO.libSwap('xanadu',XANADU.MAT);
 ['Whorled bark','Agate bark','Mottled bark','Rufous bark','Ribbed stems','Smooth bark','Cactus skin'].forEach((lab,i)=>BIO.bucket('xbark'+i,M.bark[i],{label:lab,uvScale:[i===1?5:4,i===1?7:6]}));
 // the agate tree's bole shimmers like cut agate: warm facing the eye, violet-blue at grazing angles
 BIO.bucket('xbarkA',BIO.iridBarkMat(XANADU.BARKTEX[1],'x-agate',[1.06,1.0,0.94],[0.86,0.92,1.24]),{label:'Agate tree bole (iridescent)',uvScale:[5,7]});

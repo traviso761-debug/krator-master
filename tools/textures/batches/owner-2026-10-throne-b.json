@@ -1,0 +1,142 @@
+[
+ {
+  "src": "ground-scoria.png",
+  "out": "core/materials/library/ground.scoria",
+  "record": {
+   "id": "ground.scoria",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Seamless Volcanic Ash and Pumice Texture.png\", 2026-10-06",
+    "reuse": "cinder cones and scoria fields; red-and-grey cinder paths; a volcano's loose flanks anywhere"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-ash-ripples.png",
+  "out": "core/materials/library/ground.ash.ripples",
+  "record": {
+   "id": "ground.ash.ripples",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Wind-Swept Gray Sand Ripples.png\", 2026-10-06",
+    "reuse": "deep ash under the plume, rippled by the wind; grey dune sand; a dry lake's silt"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-sand-black.png",
+  "out": "core/materials/library/ground.sand.black",
+  "record": {
+   "id": "ground.sand.black",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Dark Volcanic Sand Texture.png\", 2026-10-06",
+    "reuse": "black sand beaches; fresh tephra round a young cone; dark garden paths"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-olivine.png",
+  "out": "core/materials/library/ground.olivine",
+  "record": {
+   "id": "ground.olivine",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Olivine Green Pebble Beach Texture.png\", 2026-10-06",
+    "reuse": "green olivine beaches on the Throne's coast; gully floors where the olivine washes down"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "stone-pumice.png",
+  "out": "core/materials/library/stone.pumice",
+  "record": {
+   "id": "stone.pumice",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Porous Volcanic Pumice Texture.png\", 2026-10-06",
+    "reuse": "vesicular basalt and pumice boulders; spatter; porous volcanic building stone"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

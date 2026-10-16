@@ -744,7 +744,7 @@ function updateLife(dt){
   updateGuildWorkers(dt);
   updateCaravans(dt);
   updateArena(dt);     /* arena gladiator combat — this file's own last section */
-  /* 79-striders.js — silt strider convoys. Guarded (not a bare call) since
+  /* 79-striders.js — elephant bug convoys. Guarded (not a bare call) since
      that fragment loads after this one; function hoisting makes the call
      itself safe either way (see this project's own hoisting-trap notes),
      but the guard keeps this file honest about being the earlier one. */

@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.554,
+    1.302
+   ],
+   "seam_before": [
+    1.516,
+    1.571
+   ],
+   "source_size": [
+    1125,
+    1125
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.35,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.needles",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground-needles.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Conifer forest floor seen from above: a thick mat of fallen brown pine and spruce needles (#7a5a3e, #8a6a48), a few cones, small twigs and bark flakes, patches of darker damp duff (#3e3226) and a little moss. (Row ground.needles of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1125 px image; converted to PNG.",
+  "reuse": "spruce-fir and ponderosa floors here, `biomes/nhighlands`, Highlands",
+  "sha1": "d89cd47a6cc9791fbd6466624d294ba4abe74692"
+ }
+}

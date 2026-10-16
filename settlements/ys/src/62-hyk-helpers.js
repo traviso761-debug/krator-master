@@ -29,9 +29,9 @@ HYK.place=function(scene,key,x,z,ry,o){const D=HYK.defs[key];if(!D){reportErr('H
  o=Object.assign({v:0,y:0,scale:1},o||{});const G=new THREE.Group();G.position.set(x,o.y,z);G.rotation.y=ry||0;if(o.scale!==1)G.scale.setScalar(o.scale);scene.add(G);G.updateMatrix();
  KOFF=[0,0,0];useGroupXF(G);if(o.scale!==1)KXF.s=o.scale;
  const id=HYK_PLACED.length;const rec={key,x,z,ry:ry||0,o,id,name:D.name};HYK_PLACED.push(rec);
- HYK.cur={D,G,x,z,ry:ry||0,o,r0:REG.length,id,key,name:D.name};
+ HYK.cur={D,G,x,z,ry:ry||0,o,r0:REG.length,id,key,name:D.name};const own=hykOwnBegin(id);
  try{D.build(G,o);}catch(e){reportErr(key+' '+e.stack);}
- hykCutDoorways(HYK.cur);endGroupXF();HYK.cur=null;return G;};
+ hykOwnEnd(own);hykCutDoorways(HYK.cur);endGroupXF();HYK.cur=null;return G;};
 // A GROWN-ON building: HYK.placeOn(scene,key,host,{y,a,level,into,v}) builds a `grown:true` def in the G frame: origin
 // on the host's face at bearing `a` (world, 0 = +x) and height `y` (the pod's floor datum: a plate top for a way-in),
 // +z pointing OUT of the face, x along it, y up. The builder gets o = {host,a,rs,y,level,v,way,faceZ,landing}: `faceZ(lx,ly)`
@@ -49,8 +49,13 @@ HYK.placeOn=function(scene,key,host,o){const D=HYK.defs[key];if(!D){reportErr('H
  const ho={host,a,rs,y:o.y,level:o.level,v:o.v,way,
   faceZ:(lx,ly)=>{const r=host.rAt(o.y+(ly||0),a);return Math.sqrt(Math.max(0,r*r-lx*lx))-r;},
   landing:(lx,ly,lz,R,opt)=>{const w=hykW(lx,ly,lz);const pad=hykPad(lx,ly,lz,R,Object.assign({own:host.n},opt||{}));host.landings.push({x:w[0],y:w[1],z:w[2],r:R,level:o.level,a});return pad;}};
- try{D.build(G,ho);}catch(e){reportErr(key+' '+e.stack);}
- hykCutDoorways(HYK.cur);endGroupXF();HYK.cur=null;const f=ysHostInhabit(host,o.y,.6);if(f&&way)f.way=true;return G;};
+ const snapK=host.shelf?Object.keys(KIT.items).map(n=>[n,KIT.items[n].length]):null;   /* a shelf host (the Trays): see below */
+ const own=hykOwnBegin(id);try{D.build(G,ho);}catch(e){reportErr(key+' '+e.stack);}
+ // on a shelf host a pod stands on a tray 2.6 m thick, not against a wall: what it hangs below its floor (the drips, the
+ // crust's specks) would poke out under the tray, so the kit items it put more than .35 m below its floor are dropped
+ // (Oct 12 2026); its body and its landing stay inside the slab
+ if(snapK)for(const [n,k0] of snapK){const L=KIT.items[n];if(L.length>k0)KIT.items[n]=L.slice(0,k0).concat(L.slice(k0).filter(it=>!(it.p&&it.p[1]<o.y-.35)));}
+ hykOwnEnd(own);hykCutDoorways(HYK.cur);endGroupXF();HYK.cur=null;const f=ysHostInhabit(host,o.y,.6);if(f&&way)f.way=true;return G;};
 // local -> world for a point and for a direction (the same rotation as loc(), 69c)
 function hykW(lx,ly,lz){const c=HYK.cur;if(!c)return [lx,ly,lz];const s=c.o.scale||1;const p=loc(c.x,c.z,lx*s,lz*s,c.ry);return [p[0],(c.o.y||0)+ly*s,p[1]];}
 function hykN(nx,ny,nz){const c=HYK.cur;if(!c)return [nx,ny,nz];const ry=c.ry;return [nx*Math.cos(ry)+nz*Math.sin(ry),ny,-nx*Math.sin(ry)+nz*Math.cos(ry)];}

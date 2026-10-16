@@ -47,27 +47,41 @@ function nwT(hour){ return hour >= 12 ? hour : hour + 24; }
 function nwLit(t, W){ var on = NWIN_ON0 + NWIN_ONS*W[7], off = NWIN_OFF0 + NWIN_OFFS*Math.pow(W[8], NWIN_OFFP);
   return t >= on && (t < off || (W[9] && t < NWIN_DAWN)); }
 var paneMesh = null, _pnCol = new THREE.Color(), _pnLit = new THREE.Color(PAL.windowLit), _pnLitC = new THREE.Color(PAL.glowCool),
-    _pnDark = new THREE.Color(PAL.windowDark), PANE_KEY = -1, PANE_LIT = 0;
+    _pnDark = new THREE.Color(PAL.windowDark), PANE_KEY = -1, PANE_LIT = 0, PANE_SETS = [];
+/* two sets: GLASS over a real opening (W[11]: the wall behind is cut, 55-arch / 56-levels), where a dark pane is nearly
+   clear so the room shows through by day and a lit one glows, its alpha rising with its colour; and the old opaque
+   pane over a window drawn on a whole wall (the council chamber, the Crown's tiers, the gate carvings) */
 (function(){
   var n=NL_WINDOWS.length; if(!n) return;
-  paneMesh = new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1), new THREE.MeshBasicMaterial({ color:0xffffff, side:THREE.DoubleSide }), n);
-  var o=new THREE.Object3D();
-  for(var i=0;i<n;i++){ var W=NL_WINDOWS[i];
-    o.position.set(W[0]+W[3]*0.07, W[1], W[2]+W[4]*0.07); o.rotation.set(0, Math.atan2(W[3],W[4]), 0); o.scale.set(W[5],W[6],1); o.updateMatrix();
-    paneMesh.setMatrixAt(i,o.matrix); paneMesh.setColorAt(i,_pnDark); }
-  paneMesh.frustumCulled=false; paneMesh.userData.inspectLabel='Window'; scene.add(paneMesh);
+  var glass = new THREE.MeshBasicMaterial({ color:0xffffff, side:THREE.DoubleSide, transparent:true, depthWrite:false });
+  glass.onBeforeCompile = function(sh){ sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>',
+    '#include <color_fragment>\n  diffuseColor.a = 0.12 + 0.70*max(max(diffuseColor.r, diffuseColor.g), diffuseColor.b);'); };
+  glass.customProgramCacheKey = function(){ return 'pane-glass'; };
+  var solid = new THREE.MeshBasicMaterial({ color:0xffffff, side:THREE.DoubleSide });
+  [[1, glass], [0, solid]].forEach(function(k){
+    var idx=[]; NL_WINDOWS.forEach(function(W,i){ if((W[11]?1:0)===k[0]) idx.push(i); }); if(!idx.length) return;
+    var m = new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1), k[1], idx.length), o=new THREE.Object3D();
+    idx.forEach(function(wi,i){ var W=NL_WINDOWS[wi];
+      o.position.set(W[0]+W[3]*0.07, W[1], W[2]+W[4]*0.07); o.rotation.set(0, Math.atan2(W[3],W[4]), 0); o.scale.set(W[5],W[6],1); o.updateMatrix();
+      m.setMatrixAt(i,o.matrix); m.setColorAt(i,_pnDark); });
+    m.frustumCulled=false; m.userData.inspectLabel='Window'; if(k[0]) m.renderOrder=4; scene.add(m);
+    PANE_SETS.push({ mesh:m, idx:idx });
+  });
+  paneMesh = PANE_SETS[0] ? PANE_SETS[0].mesh : null;
 })();
 function updateGlow(dt, hour, nightK){
   haloMat.uniforms.uK.value = nightK; haloMat.uniforms.uTime.value += dt; haloMat.uniforms.uScale.value = innerHeight*0.5;
   haloPts.visible = nightK > 0.02;
   NLV_U.uNlNight.value = nightK;
-  if(!paneMesh) return;
+  if(!PANE_SETS.length) return;
   var key = Math.floor(hour*12);                       /* re-evaluate every 5 sky-minutes */
   if(key === PANE_KEY) return; PANE_KEY = key;
   var t=nwT(hour), lit=0;
-  for(var i=0;i<NL_WINDOWS.length;i++){ var W=NL_WINDOWS[i], on=nwLit(t,W);
-    if(on) lit++; paneMesh.setColorAt(i, on ? (W[10]?_pnLitC:_pnLit) : _pnDark); }
-  paneMesh.instanceColor.needsUpdate = true; PANE_LIT = lit;
+  PANE_SETS.forEach(function(S){
+    S.idx.forEach(function(wi,i){ var W=NL_WINDOWS[wi], on=nwLit(t,W);
+      if(on) lit++; S.mesh.setColorAt(i, on ? (W[10]?_pnLitC:_pnLit) : _pnDark); });
+    S.mesh.instanceColor.needsUpdate = true; });
+  PANE_LIT = lit;
   NLV_U.uNlWin.value = NL_WINDOWS.length ? lit/NL_WINDOWS.length : 0;
 }
 window._glow = { stats:glowStats, litNow:function(){ return PANE_LIT; }, litAt:function(h){ var t=nwT(h),c=0; NL_WINDOWS.forEach(function(W){ if(nwLit(t,W)) c++; }); return c; } };

@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1242,
+    1172
+   ],
+   "seam_after": [
+    0.878,
+    0.955
+   ],
+   "seam_before": [
+    1.038,
+    1.026
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.8,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "concrete",
+  "id": "concrete.ancient.b",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   3.25,
+   3.07
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "concrete-ancient-b.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image)",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id concrete.ancient).",
+  "reuse": "a second board-formed concrete without tie holes: break-up for concrete.ancient, or plain board-marked walls anywhere",
+  "sha1": "46dc0774c7788548f41cbbc8eab34fb466fc276f"
+ }
+}

@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1006,
+    1247
+   ],
+   "seam_after": [
+    1.043,
+    0.659
+   ],
+   "seam_before": [
+    0.278,
+    3.009
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.88,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "reed",
+  "id": "reed.bundle",
+  "metal": 0,
+  "roughness": 0.88,
+  "scale": [
+   1.5,
+   1.86
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "reed-bundle.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image)",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id reed.bundle).",
+  "reuse": "Reed Lake bundle walls and boats; the catalog reed family (37 pieces); any reed fence or screen",
+  "sha1": "f35ea1d61ea41987ad4dafe0b5a8260caabe93f7"
+ }
+}

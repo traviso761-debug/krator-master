@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.617,
+    0.386
+   ],
+   "seam_before": [
+    2.735,
+    0.994
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.05,
+   "dark_gloss": 0.2,
+   "delight": 0.1,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "_note": "processed without the period crop (it cut the motif): edges cross-faded",
+  "colour": "#ffffff",
+  "family": "ceramic",
+  "id": "zeijani/glazed-frieze",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.35,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "zeijani-glazed-frieze.png",
+  "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Ancient Turquoise Salamander Tile Mural.png\")",
+  "reuse": "glazed relief brick, a striding salamander between rosette bands (Babylon): the capital's portal rim, the temple's processional way",
+  "sha1": "7a39281e64ab8710e2f8c2f000059996d1f5fad8"
+ }
+}

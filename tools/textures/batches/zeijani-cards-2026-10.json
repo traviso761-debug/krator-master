@@ -1,0 +1,96 @@
+[
+ {
+  "src": "card.mushroom.alecap.png",
+  "out": "core/materials/library/card.mushroom.alecap",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 50,
+   "key_hi": 120,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.mushroom.alecap",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "reuse": "the alecap, 3 x 3 clumps on compost: Zeijani beds and wild in caves (a biomes/throne species); any purple fungus",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Purple Mushroom Cluster Reference Sheet.png\"); a sheet on flat magenta (#ff00ff)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.yam.png",
+  "out": "core/materials/library/card.crop.yam",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all"
+  },
+  "record": {
+   "id": "card.crop.yam",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "reuse": "yam vines on stakes, 3 x 3: Zeijani terraces and clearings; any staked climbing crop (beans, yams, gourds)",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Nine Heart-Leaf Vines on Stakes.png\"); a sheet on flat magenta (#ff00ff)"
+   }
+  }
+ },
+ {
+  "src": "zeijani-jali.png",
+  "out": "core/materials/patterns/zeijani/jali",
+  "options": {
+   "size": 1024,
+   "anchor": "tight",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all"
+  },
+  "record": {
+   "id": "zeijani/jali",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "reuse": "a pierced tuff lattice (jali) of stars and hexagons, a cut-out tile: the Zeijani temple's glowing dome and screens; any pierced stone screen",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Beige Stone Lattice on Magenta.png\"); a sheet on flat magenta (#ff00ff)"
+   }
+  }
+ }
+]

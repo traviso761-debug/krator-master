@@ -1,0 +1,409 @@
+[
+ {
+  "src": "reedlake-band.png",
+  "out": "core/materials/patterns/reedlake/band",
+  "record": {
+   "id": "reedlake/band",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    0.62
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id reedlake/band).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Reed Lake woven bands; any Andean belt or strap"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "ground-reedbed.png",
+  "out": "core/materials/library/ground.reedbed",
+  "record": {
+   "id": "ground.reedbed",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id ground.reedbed).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Reed Lake floating-island tops, Mungo; straw-strewn ground, threshing floors, stable litter"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.92,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "reed-layers.png",
+  "out": "core/materials/library/reed.layers",
+  "record": {
+   "id": "reed.layers",
+   "family": "reed",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.31
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id reed.layers).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Reed Lake island sides; reed thatch eaves and stacked reed walls"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.6,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "reed-bundle.png",
+  "out": "core/materials/library/reed.bundle",
+  "record": {
+   "id": "reed.bundle",
+   "family": "reed",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.86
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id reed.bundle).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Reed Lake bundle walls and boats; the catalog reed family (37 pieces); any reed fence or screen"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.88,
+   "mute": 0.6,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "metal-worn.png",
+  "out": "core/materials/library/metal.worn",
+  "record": {
+   "id": "metal.worn",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0.3,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id metal.worn).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "tarnished Ancients white panels; old riveted cladding anywhere (full colour)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.55,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "port-hazard.png",
+  "out": "core/materials/patterns/port/hazard",
+  "record": {
+   "id": "port/hazard",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0.3,
+   "scale": [
+    1,
+    0.99
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id port/hazard).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "hazard striping on Port, Ys and post-apoc edges, barriers and machinery"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "plate-hex.png",
+  "out": "core/materials/library/plate.hex",
+  "record": {
+   "id": "plate.hex",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0.5,
+   "scale": [
+    1,
+    0.98
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id plate.hex).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Ring Sea hex plating; armour, shields, sci-fi floors"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.5,
+   "mute": 0.6,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "port-primer.png",
+  "out": "core/materials/patterns/port/primer",
+  "record": {
+   "id": "port/primer",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0.3,
+   "scale": [
+    2,
+    2.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id port/primer).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Port and Ys hulls in primer; patched steel in post-apoc and Ring Sea"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "concrete-slab.png",
+  "out": "core/materials/library/concrete.slab",
+  "record": {
+   "id": "concrete.slab",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    4,
+    4.32
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id concrete.slab).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "post-apoc yards and floors; any poured slab, plaza or bunker floor"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.8,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "fungus-stalk.png",
+  "out": "core/materials/library/organic.fungus.stalk",
+  "record": {
+   "id": "organic.fungus.stalk",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id organic.fungus.stalk).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Voth and Locus giant-mushroom stalks; bone-like or coral-like fibrous trunks"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "rendered-ruined.png",
+  "out": "core/materials/library/stone.rendered.ruined",
+  "record": {
+   "id": "stone.rendered.ruined",
+   "family": "plaster",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id stone.rendered.ruined).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Highlands ruins; any old rendered wall flaking to brick"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.7
+  }
+ },
+ {
+  "src": "dalab-mural-god-hero.png",
+  "out": "core/materials/patterns/dalab/mural-god-hero",
+  "record": {
+   "id": "dalab/mural-god-hero",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3,
+    1.77
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id dalab/mural-god-hero).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Dalab mural variant 0 (seated god and shield-bearing hero)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "dalab-mosaic__period.png",
+  "out": "core/materials/patterns/dalab/mosaic",
+  "record": {
+   "id": "dalab/mosaic",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    1,
+    1.02
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id dalab/mosaic).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Dalab mosaic floors and dados; diamond checker tile anywhere",
+    "note": "the delivered sheet is not exactly periodic (the diamond grid drifts); cropped by hand to the best two-period window (x 536+637, y 560+651 px) before processing"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.4,
+   "rough_var": 0.15,
+   "normal_strength": 0.7
+  }
+ }
+]

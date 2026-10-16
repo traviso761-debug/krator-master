@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1246,
+    1244
+   ],
+   "seam_after": [
+    1.041,
+    0.88
+   ],
+   "seam_before": [
+    1.109,
+    0.965
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "earth",
+  "id": "earth.rammed",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Layered Rammed Concrete Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Layered Rammed Concrete Texture.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id earth.rammed).",
+  "reuse": "rammed earth with lifts: Dalab dRammed, Xanadu xEarth; pise and tapia walls anywhere",
+  "sha1": "6a087d56019b2fef5344d0da851509519ea91a8b"
+ }
+}

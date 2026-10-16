@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.304,
+    1.404
+   ],
+   "seam_before": [
+    1.615,
+    1.693
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.olivine",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground-olivine.png",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "not recorded: supplied as \"Olivine Green Pebble Beach Texture.png\", 2026-10-06",
+  "reuse": "green olivine beaches on the Throne's coast; gully floors where the olivine washes down",
+  "sha1": "c28689c4884fec7ac6c1b454993350b981460ffd"
+ }
+}

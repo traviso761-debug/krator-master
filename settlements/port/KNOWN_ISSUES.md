@@ -8,9 +8,10 @@ Open items start with `- [ ]` (build.py prints them after every build).
 - [ ] Materials created inside a builder (`new THREE.MeshStandardMaterial` at build time) do not get the underwater fade. Put them in `MAT` at top level.
 - [ ] Rail tracks do not join across an offset junction (each segment lays its own at its own z) and have no buffer stops at a run end.
 - [ ] Natural-coast trees (`portNatureScatter`) are the ancients' leaf-card trees and read as dark blobs from high above.
-- [ ] Water is a single transparent sheet with a fresnel rim: at very low grazing angles it goes milky-pale rather than mirroring the sky.
-- [ ] The dry-pit fade mask is per rect (a polygon `dry` stamp masks its bounding box) and holds 16 rects; more dry stamps than that fade normally beyond the 16th (reported on the error panel).
+- [x] Water is a single transparent sheet with a fresnel rim: at very low grazing angles it goes milky-pale rather than mirroring the sky. — 2026-10-13: the sea is core/water's (`71w-port-sea.js`): it reflects the page's sky through core/atmos's skylight.
+- [ ] The dry-pit fade mask is per rect (a polygon `dry` stamp masks its bounding box) and holds 16 rects; more dry stamps than that fade normally beyond the 16th (reported on the error panel). Since 2026-10-13 the sea (core/water) is cut out of the pits by the same rects, so a polygon `dry` stamp also loses the water over its whole bounding box (the old sheet was cut cell by cell).
 - [ ] Vessels moored by the layout (`portMoor`: the showcase's Panamax and feeder alongside the platform chain) float free at d=1 in deep water - the ruined vessel's own list and settle only; nothing grounds them.
+- [ ] Nothing rides the sea. It is core/water's open water since 2026-10-13 (`WATER.heightAt`, `WATER.ride`), but the vessels and boats are baked (`pbFlush`, `kbake`), so the sea is kept calm (`PORT_SEA_FIELD` .25: at most 14 cm from y=0) and they keep their waterlines. A vessel that rides needs its own group.
 - [ ] The segment-boundary labels are screen-sized sprites: at showcase overview distance neighbouring labels overlap.
 - [ ] A coastal segment does not finish its N (land) edge: with no land block behind, its apron meets natural ground through its stamp's soft ring, as before; with a block behind, the two decks are flush (nothing needed).
 
@@ -23,3 +24,7 @@ Open items start with `- [ ]` (build.py prints them after every build).
       calls with LOD (693 without), the overview 777 (879).
 - [ ] The first zoom-out builds the terrain's proxies, one strip per frame (tens of ms each on a normal machine, about
       10 s in all on the shared SwiftShader box). A verify count should call `LOD.flush()` first.
+- [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
+      which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
+- [ ] **The Port kit takes the material library** (2026-10-06): containers (pkCont, metal.container) and paving (pkPave, concrete.slab), at
+      their metre UVs (tiles 3 and 16 in the bind). The paving set's joints read fainter than the procedural 4 m grid; pkContR and pkPaveR stay procedural.

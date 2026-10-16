@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.179,
+    1.384
+   ],
+   "seam_before": [
+    1.356,
+    2.997
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.4,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.araucaria",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Seamless Weathered Diamond Bark Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Seamless Weathered Diamond Bark Texture.png",
+  "prompt": "Prompt row card.araucaria, bark.araucaria in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "monkey-puzzle trunks (swbay k4, rift); any scale-scarred conifer",
+  "sha1": "0aee5f23252b5b597163386736ef1e5163a52784"
+ }
+}

@@ -197,4 +197,111 @@ reseed(654001);
         ABYSS.furn(F, 'abyss_canvas_bolts', -2.5,0.6, 0, { ly:H }); ABYSS.furn(F, 'abyss_crates', 5.6,-3.8, 0, { ly:H, variant:1 });
         LOCUS.stair(F, -5.2, 2.0+H*1.15, 0,-1, H, 1.2); ABYSS.sign(F, -2.5,H+2.95,-0.9, 0,1, 1.6,0.7, 'sail'); ABYSS.lantern(F, 0.2,H+2.5,-0.6, false); }
     } });
+
+  /* -------------------------------------------------- builders' merchant and timber yard (2026-10, for Mungo) */
+  /* The abyssal builders' merchant: a container office with a counter on a plank deck, and a yard of the eastern-abyss
+     biome's timber (seal-tree and scale-tree poles, sawn planks, the felled logs the lumberjacks deliver), bundled mat reed
+     for thatch, salvaged corrugated sheet, drums, clay bricks and lime, a saw bench or a saw pit. Every loose thing is a
+     catalog piece (kits/catalog: job_pole_rack, job_plank_stack, job_saw_bench in the Jobs file; abyss_reed_bundles,
+     abyss_brick_stack, abyss_lime_sacks, abyss_scrap_stock, abyss_crates in the eastabyss file; pa_drum). The yard is
+     open ground; the shop (the deck under the sail, or the plank shop-front) and the container store are the rooms the
+     interior set plans (abyss_shop_builder, abyss_shop_builder#1). Seeds from 654901. */
+  reseed(654901);
+  /* the board's pictograph: a frame-saw blade with its teeth and handle over a sawn plank (ABYSS.sign has no saw) */
+  function sawSign(F, x,y,z, nx,nz, w,h){ ABYSS.sign(F, x,y,z, nx,nz, w,h, 'saw'); var yaw=Math.atan2(nx,nz), px=-nz, pz=nx, o=0.08, s=Math.min(w,h)*0.8;
+    function bx(u,v,ww,hh,c,r,fam){ F.box(x+px*u+nx*o, y+v-hh/2, z+pz*u+nz*o, ww,hh,0.04, r==null?yaw:[0,yaw,r], c, fam||'metal'); }
+    bx(0.08*s, 0.12*s, 0.62*s, 0.16*s, PAL.abTin);                                                     /* the blade */
+    for(var k=0;k<6;k++) bx(-0.18*s+k*0.1*s, 0.03*s, 0.06*s, 0.06*s, PAL.abTin, PI/4);                  /* its teeth */
+    bx(-0.34*s, 0.14*s, 0.14*s, 0.26*s, PAL.abSailRed, 0, 'timber');                                    /* the handle */
+    bx(0, -0.24*s, 0.8*s, 0.1*s, 0xc9a974, 0, 'plank'); }                                               /* the plank */
+  /* a yard fence of corrugated sheets on the line a..b (the salvage dealer's), open where the caller leaves a gap */
+  function sheetFence(F, a, b){ var L=Math.hypot(b[0]-a[0],b[1]-a[1]), n=Math.max(1,Math.round(L/1.8));
+    for(var i=0;i<n;i++){ var t0=i/n, t1=(i+1)/n, x0=mix(a[0],b[0],t0), z0=mix(a[1],b[1],t0), x1=mix(a[0],b[0],t1), z1=mix(a[1],b[1],t1);
+      F.box((x0+x1)/2,0,(z0+z1)/2, L/n+0.05,F.rr(1.6,2.1),0.06, Math.atan2(x1-x0,z1-z0)+PI/2, ABYSS.rust(F), 'corrugate'); } }
+  /* the yard gate on the street: two posts, a beam, the sign hung under it (a cart passes under the board, 2.8 m) */
+  function yardGate(F, x0,x1, z){ var tc=F.pick(TIMBERC), xm=(x0+x1)/2;
+    LOCUS.pole(F, x0,z, 4.0, 0.12, tc); LOCUS.pole(F, x1,z, 4.0, 0.12, tc); F.box(xm,3.8,z, x1-x0+0.5,0.2,0.22, 0, tc, 'timber');
+    [-0.8,0.8].forEach(function(u){ F.rod(xm+u,3.8,z, xm+u,3.55,z, 0.015, PAL.people.hair[2], 'timber'); });
+    sawSign(F, xm,3.15,z+0.02, 0,1, 2.2,0.8); }
+  ASSET({ key:'abyss_shop_builder', name:"Builders' yard", family:'trade', kit:'abyss', group:G, culture:'abyssal-desert', types:['market/shop','industry'],
+    wealth:[0.3,0.6], w:18, d:14, h:8, variants:2, variantNames:['container office under a sail, timber racks and a saw bench','plank shop-front on a container, a hoist derrick over the log landing'],
+    sim:{ activity:'TRADE', capacity:6 },
+    build:function(F){ var v=F.variant;
+      if(v===0){ var H=0.6;
+        F.box(0,0,0, 17.6,0.08,13.6, 0, PAL.abRubble, 'rubble');
+        /* the office: a 6.1 m container (the store) at the back of a plank deck, the counter in front under a swooping sail,
+           a plank wall closing the deck's left side */
+        ABYSS.platform(F, -8.6,-0.8, -6.6,0.6, H);
+        ABYSS.vessel(F, 'container', -4.7,H,-5.0, { len:6.1, col:ABYSS.cont(F), win:[[-1.8,1.5]], door:'side', doorAt:1.4 });
+        F.box(-8.54,H,-1.55, 0.12,2.6,4.3, 0, F.pick(PLANKC), 'plank');
+        var C=[[-8.38,4.7,-3.6],[-0.95,5.1,-3.6],[-0.95,4.1,0.5],[-8.38,3.9,0.5]];
+        C.forEach(function(c){ LOCUS.pole(F, c[0],c[2], c[1], 0.09); });
+        LOCUS.guy(F, -0.95,3.9,0.5, -0.3,1.4); LOCUS.guy(F, -8.38,3.7,0.5, -8.7,1.5);
+        ABYSS.sail(F, C, PAL.abSailOrange, { swoop:0.7, band:PAL.abSailOrange, bandW:0.6 });
+        ABYSS.furn(F, 'abyss_counter', -4.7,-1.0, 0, { ly:H, setting:'room' });
+        ABYSS.furn(F, 'abyss_hanging_goods', -7.9,-1.6, PI/2, { ly:H, setting:'room' });             /* tools and rope on a rail by the plank wall */
+        LOCUS.stair(F, -2.6, 0.6+H*1.15, 0,-1, H, 1.6);
+        ABYSS.lantern(F, -6.2,H+2.3,-3.55, false); ABYSS.lantern(F, -2.2,H+2.3,-3.55, false);
+        /* the street side: salvaged sheet, reed for thatch, bricks, lime and drums laid out for the buyers */
+        ABYSS.furn(F, 'abyss_scrap_stock', -6.6,2.4, 0, { variant:0 });
+        ABYSS.furn(F, 'abyss_reed_bundles', -6.8,5.6, 0, { variant:0 });
+        ABYSS.furn(F, 'abyss_brick_stack', -3.8,2.6, 0.1, { variant:0 }); ABYSS.furn(F, 'abyss_brick_stack', -3.6,4.2, 0, { variant:1 });
+        ABYSS.furn(F, 'abyss_lime_sacks', -1.8,4.0, -0.2, { variant:0 });
+        ABYSS.furn(F, 'abyss_crates', -3.2,6.0, 0, { variant:2 });
+        ABYSS.furn(F, 'pa_drum', -1.4,2.3, 0); ABYSS.furn(F, 'pa_drum', -0.8,2.8, 0, { variant:1 });
+        /* the timber yard, fenced on its back and right side, open to the street through the gate */
+        sheetFence(F, [-0.6,-6.9], [8.9,-6.9]); sheetFence(F, [8.9,-6.9], [8.9,6.7]);
+        LOCUS.rail(F, 3.95,6.8, 8.85,6.8, 0, F.pick(TIMBERC), 1.1);
+        yardGate(F, -0.5, 3.7, 6.6);
+        ABYSS.furn(F, 'job_pole_rack', 2.2,-5.75, 0, { variant:2 });                                    /* poles stood on end against the back fence */
+        ABYSS.furn(F, 'job_plank_stack', 6.7,-5.6, 0, { variant:1 });
+        ABYSS.furn(F, 'job_pole_rack', 5.6,-3.3, 0, { variant:0 });                                     /* the trestle rack */
+        ABYSS.furn(F, 'job_plank_stack', 2.6,-1.3, 0, { variant:0 });
+        ABYSS.furn(F, 'job_pole_rack', 7.6,1.7, PI/2, { variant:1 });                                   /* felled logs as delivered */
+        ABYSS.furn(F, 'job_saw_bench', 3.4,1.6, 0, { variant:0 });
+        ABYSS.furn(F, 'abyss_reed_bundles', 5.4,5.6, 0, { variant:1 });
+        ABYSS.lantern(F, -0.15,3.4,6.85, false); }
+      else { var H1=0.8;
+        F.box(0,0,0, 17.6,0.08,13.6, 0, PAL.abSalt, 'plaster');
+        /* the office: a container (the store) on a deck, a plank shop-front built onto its front (two plank walls, a
+           corrugated roof falling to the street), the counter across the front */
+        ABYSS.platform(F, 0.8,8.8, -6.9,-0.2, H1);
+        ABYSS.vessel(F, 'container', 4.8,H1,-5.6, { len:6.1, col:ABYSS.cont(F), win:[[2.0,1.5]], door:'side', doorAt:-1.2 });
+        var pk=F.pick(PLANKC);
+        [1.0,8.6].forEach(function(x){ F.box(x,H1,-2.35, 0.15,3.0,3.9, 0, pk, 'plank'); F.box(x,H1,-0.45, 0.24,3.0,0.24, 0, F.pick(TIMBERC), 'timber'); });
+        ABYSS.corrRoof(F, 4.8,H1+3.0,-2.3, 8.4,4.1, 0.45, ABYSS.rust(F));
+        ABYSS.furn(F, 'abyss_counter', 4.8,-1.2, 0, { ly:H1, setting:'room' });
+        ABYSS.furn(F, 'abyss_hanging_goods', 1.55,-2.6, PI/2, { ly:H1, setting:'room' });
+        LOCUS.stair(F, 4.8, -0.2+H1*1.15, 0,-1, H1, 1.8);
+        sawSign(F, 4.8,H1+3.45,-0.12, 0,1, 2.6,0.8); ABYSS.lantern(F, 2.2,H1+2.5,-0.6, false); ABYSS.lantern(F, 7.4,H1+2.5,-0.6, false);
+        /* the street side of the office: sheet, bricks, lime, reed stooks and drums */
+        ABYSS.furn(F, 'abyss_scrap_stock', 6.6,2.2, 0, { variant:0 });
+        ABYSS.furn(F, 'abyss_brick_stack', 2.4,2.4, 0, { variant:0 }); ABYSS.furn(F, 'abyss_brick_stack', 2.4,4.2, -0.1, { variant:1 });
+        ABYSS.furn(F, 'abyss_lime_sacks', 6.4,4.6, 0, { variant:1 });
+        ABYSS.furn(F, 'abyss_reed_bundles', 6.6,6.2, 0, { variant:1 });
+        ABYSS.furn(F, 'pa_drum', 4.4,5.8, 0); ABYSS.furn(F, 'pa_drum', 3.9,6.4, 0);
+        /* the timber yard on the left: the log landing at the back under a hoist derrick, the saw pit under a sail */
+        sheetFence(F, [-8.9,-6.95], [0.7,-6.95]); sheetFence(F, [-8.9,-6.95], [-8.9,6.7]);
+        ABYSS.furn(F, 'job_pole_rack', -4.6,-5.4, 0, { variant:1 });                                    /* the felled logs the lumberjacks deliver */
+        /* the derrick: two seal-tree legs and a back stay to the head, a boom out over the cart lane, a hand winch on the
+           right leg, the rope over the head to a hook with a log in its sling */
+        var tc=F.pick(TIMBERC), hd=[-4.6,7.0,-4.4], bt=[-4.6,6.0,-1.4];
+        [[-7.2,-3.0],[-2.0,-3.0]].forEach(function(p){ F.rod(p[0],0,p[1], hd[0],hd[1],hd[2], 0.13, tc, 'timber'); });
+        F.rod(-4.6,0,-6.85, hd[0],hd[1],hd[2], 0.11, tc, 'timber');
+        F.rod(-4.6,4.6,-3.9, bt[0],bt[1],bt[2], 0.1, tc, 'timber'); F.rod(hd[0],hd[1],hd[2], bt[0],bt[1],bt[2], 0.03, PAL.people.hair[2], 'timber');
+        F.cyl(hd[0],hd[1]-0.1,hd[2], 0.2,0.25, 0, STEELDC[0], 'rust');                                  /* the head block */
+        F.rod(-3.4,0.95,-3.0, -2.8,0.95,-3.0, 0.2, ABYSS.rust(F), 'rust'); F.rod(-2.75,0.95,-3.0, -2.75,1.35,-2.75, 0.03, STEELDC[1], 'rust');   /* the winch drum and its crank */
+        [-3.45,-2.75].forEach(function(x){ F.box(x,0,-3.0, 0.1,1.0,0.3, 0, tc, 'timber'); });
+        F.rod(-3.1,1.15,-3.0, hd[0],hd[1]-0.1,hd[2], 0.015, PAL.people.hair[2], 'timber');
+        F.rod(bt[0],bt[1],bt[2], bt[0],2.6,bt[2], 0.015, PAL.people.hair[2], 'timber'); F.box(bt[0],2.4,bt[2], 0.12,0.2,0.08, 0, STEELDC[2], 'rust');
+        F.rod(bt[0]-0.5,2.4,bt[2], bt[0],2.6,bt[2], 0.012, PAL.people.hair[2], 'timber'); F.rod(bt[0]+0.5,2.4,bt[2], bt[0],2.6,bt[2], 0.012, PAL.people.hair[2], 'timber');
+        F.rod(bt[0]-1.6,2.2,bt[2], bt[0]+1.6,2.2,bt[2], 0.22, 0x505c48, 'bark');                         /* a scale-tree log in the sling */
+        var S=[[-7.2,4.8,-0.4],[-1.6,4.4,-0.4],[-1.6,4.8,2.2],[-7.2,4.4,2.2]];
+        S.forEach(function(c){ LOCUS.pole(F, c[0],c[2], c[1], 0.09); });
+        ABYSS.sail(F, S, PAL.abSailOrange, { swoop:0.6, band:PAL.abSailRed, bandW:0.5 });
+        ABYSS.furn(F, 'job_saw_bench', -4.4,0.9, 0, { variant:1 });                                     /* the saw pit's trestles under the sail */
+        ABYSS.furn(F, 'job_pole_rack', -7.9,4.8, PI/2, { variant:2 });                                  /* poles stood against the left fence */
+        ABYSS.furn(F, 'job_plank_stack', -3.4,4.6, 0, { variant:0 }); ABYSS.furn(F, 'job_plank_stack', -3.0,6.3, 0, { variant:1 });
+        yardGate(F, -1.0, 0.6, 6.7); }
+    } });
 })();

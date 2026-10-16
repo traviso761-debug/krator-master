@@ -1533,7 +1533,7 @@
 },
 {
 "key": "voth_city_silt_strider_station",
-"name": "Silt strider station",
+"name": "Elephant bug station",
 "family": "civic",
 "fn": "siltStriderStation",
 "src": "65-facade.js:877",
@@ -1745,7 +1745,7 @@
 },
 {
 "key": "voth_city_strider_station_build",
-"name": "Silt strider station (built)",
+"name": "Elephant bug station (built)",
 "family": "civic",
 "fn": "striderStationBuild",
 "src": "66-striders.js:76",

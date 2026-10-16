@@ -1,0 +1,41 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.02,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.reed",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Marsh Grass Clump Asset Sheet__keyed.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "note": "the sheet came on flat grey, not magenta: keyed first by a border-connected grey flood (the session scratch greykey.py), then processed with no chroma key",
+  "original_title": "Marsh Grass Clump Asset Sheet.png",
+  "prompt": "Prompt row card.reed in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "marsh reed, cattail and sedge in eleven biomes; Reed Lake and Xanadu ponds",
+  "sha1": "4fe9a37add2c2d35e0b4e95410dccabdda847e25"
+ }
+}

@@ -80,6 +80,14 @@ function rsSymSun(g,cx,cy,R,c1,c2){g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.9
  for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}}
 function rsSymDiamond(g,cx,cy,R,c1){g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,TAU);g.fill();}
 // a faction sail: field, edge bands along the outline, the symbol at the centroid (sym: 'sun' | 'diamond')
+// the Hykkousoi wind and wave, copied from SYMBOLS.windwave (core/sockets/38-symbols.js; build.py --vendor-check compares them)
+function rsSymWindWave(g,cx,cy,R,c1,c2){g.lineCap='round';g.lineJoin='round';g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.08);
+  for(let k=0;k<3;k++){const y=cy-R*(.74-k*.2),x0=cx-R*(.92-k*.14),x1=cx+R*(.42-k*.22),r=R*(.085-k*.012);g.beginPath();g.moveTo(x0,y);g.lineTo(x1,y);g.arc(x1,y-r,r,Math.PI/2,-Math.PI*1.1,true);g.stroke();}
+  const r0=R*.3,a0=-Math.PI*.75,ox=cx+R*.31,oy=cy+R*.23;g.strokeStyle=c2;g.lineWidth=Math.max(2.5,R*.11);g.beginPath();g.moveTo(cx-R*.95,cy+R*.62);
+  g.quadraticCurveTo(cx-R*.3,cy+R*.6,ox+Math.cos(a0)*r0,oy+Math.sin(a0)*r0);
+  for(let i=1;i<=32;i++){const t=i/32,a=a0+t*1.6*Math.PI,rr=r0*(1-.65*t);g.lineTo(ox+Math.cos(a)*rr,oy+Math.sin(a)*rr);}g.stroke();
+  g.beginPath();g.moveTo(ox+r0,oy);g.quadraticCurveTo(ox+r0*1.15,oy+R*.32,cx+R*.95,cy+R*.62);g.stroke();
+  g.lineWidth=Math.max(2,R*.08);g.beginPath();for(let i=0;i<=24;i++){const x=-R*.95+1.9*R*i/24,y=cy+R*.84+Math.sin(x/R*TAU)*R*.05;if(i)g.lineTo(cx+x,y);else g.moveTo(cx+x,y);}g.stroke();}
 function rsFactionSail(g,W,H,P,C,sym,rk){rsCloth(g,W,H,C.field,8,'h');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle=C.edge;g.lineWidth=W*.06;rsPolyPath(g,P);g.stroke();
  g.strokeStyle=C.band;g.lineWidth=W*.018;rsPolyPath(g,rsInset(P,W*.05));g.stroke();const [cx,cy]=rsCentroid(P),R=Math.min(W,H)*(rk||.17);
  if(sym==='sun')rsSymSun(g,cx,cy,R,C.ink,C.ink2);else rsSymDiamond(g,cx,cy,R,C.ink);g.restore();}

@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.147,
+    1.213
+   ],
+   "seam_before": [
+    2.072,
+    1.409
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.7,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.tent.black",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "cloth.tent.black.png",
+  "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+  "licence": "supplied for this project by its owner",
+  "prompt": "core/materials/PLAN.md row cloth.tent.black: coarse black-brown goat-hair cloth, a plain weave with stray hairs",
+  "reuse": "black goat-hair tents: the Scyvoi, the Eastern Nomads (Shade), any desert herders",
+  "sha1": "fb80ef249c204c90051610dba8fe746c56626ce6"
+ }
+}

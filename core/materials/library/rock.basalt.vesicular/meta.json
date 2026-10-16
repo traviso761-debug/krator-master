@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.209,
+    1.407
+   ],
+   "seam_before": [
+    1.385,
+    1.599
+   ],
+   "source_size": [
+    1125,
+    1125
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "rock.basalt.vesicular",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.3,
+   1.3
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "rock-basalt-vesicular.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Dark volcanic basalt seen close up: fine-grained stone full of small round gas holes a few millimetres across, a rusty brown weathering crust in patches, and scattered patches of crustose lichen in bright orange, sulphur yellow and pale green. Full colour: charcoal-grey stone (#4e4a48, #5e5a56), rust (#7a4a3a), lichen (#e8a020, #d8c040, #a8c060); natural and not tinted. (Row rock.basalt.vesicular of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1125 px WebP; converted to PNG.",
+  "reuse": "the tors, scree and boulders here; any lava field, volcanic outcrop or dressed basalt",
+  "sha1": "108f5607ce29344a478f77ab598ac367a4724db0"
+ }
+}

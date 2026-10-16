@@ -1,6 +1,6 @@
 /* ======================== Interior set: Eastern Abyssal (settlements/locus, kit `abyss`) ========================
    The interiors of the Eastern Abyssal building kit (ABYSS-KIT-NOTES.md): one item per the 31 NEW ASSET keys
-   on the abyss sheet (65-abyss-30..90-*.js; the two tag demos abyss_helpers_demo and abyss_wall_run are
+   on the abyss sheet (65-abyss-30..90-*.js, with the five Lower Verge keys of 65-abyss-75-verge.js; the two tag demos abyss_helpers_demo and abyss_wall_run are
    skipped as demos), plus `<key>#n` items where a variant's rooms differ a lot from variant 0. The ten keys
    the abyss sheet shares with the Locus sheet (stilt_poor, stilt_mid, tent_pavilion, sunshade_poles,
    farm_saltrice, infra_fishing_dock, ind_pumpjack, ind_oil_tank, prop_pipe_rack, prop_drum_stack) are in
@@ -258,6 +258,26 @@
       note: 'the plank loft 8 x 4.4 x 5.8 (x -6.5..1.5, z -5.4..-1.0) on the deck at H 0.8: the shop behind the 3.6 m front, the ' +
         'canvas loft above (its front door is a hoist door: the planner fits an inside stair). The drying lines and the bolts on ' +
         'the deck are outside' },
+    { key: 'abyss_shop_builder', name: "Builders' yard", culture: 'eastabyss', wealth: 0.45, types: ['market/shop', 'industry'], lot: [18, 14],
+      rooms: [
+        { id: 'shop', kind: 'shop', poly: rect(7.15, 3.8, -4.675, -1.55), y: 0.6, h: 2.6,
+          doors: [{ at: [-4.675, 0.35], w: 6.0, swing: 'none' }, { at: [-1.1, -1.55], w: 3.0, swing: 'none' }] },
+        { id: 'store', kind: 'store', poly: rect(C6, CW, -4.7, -5.0), y: 0.7, h: 2.4, doors: [{ at: [-3.3, -3.86], w: 0.9 }],
+          windows: [{ at: [-6.5, -3.86], w: 1.1, sill: 1.1, h: 0.8 }] }],
+      note: 'variant 0 (added 2026-10 for Mungo): the plank deck (x -8.6..-0.8, z -6.6..0.6, H 0.6) under a swooping sail on four ' +
+        'corner poles, open to the street and to the yard, a plank wall on its left: the shop; the 6.1 m container at its back (x ' +
+        '-7.75..-1.65, z -6.22..-3.78), side door at x -3.3: the store. The timber yard (racks, plank stacks, saw bench, logs, ' +
+        'bricks, lime, reed, sheet) is open ground, not planned. Variant 1 (a plank shop-front on a container) is abyss_shop_builder#1' },
+    { key: 'abyss_shop_builder#1', name: "Builders' yard (variant 2: plank shop-front on a container, a hoist derrick over the log landing)",
+      culture: 'eastabyss', wealth: 0.45, types: ['market/shop', 'industry'], lot: [18, 14],
+      rooms: [
+        { id: 'shop', kind: 'shop', poly: rect(7.4, 4.0, 4.8, -2.25), y: 0.8, h: 2.9, doors: [{ at: [4.8, -0.25], w: 6.8, swing: 'none' }] },
+        { id: 'store', kind: 'store', poly: rect(C6, CW, 4.8, -5.6), y: 0.9, h: 2.4, doors: [{ at: [3.6, -4.46], w: 0.9 }],
+          windows: [{ at: [6.8, -4.46], w: 1.1, sill: 1.1, h: 0.8 }] }],
+      note: 'the deck (x 0.8..8.8, z -6.9..-0.2, H 0.8): the 6.1 m container at its back (x 1.75..7.85, z -6.82..-4.38, side door ' +
+        'at x 3.6) is the store; the plank shop-front built onto its front (plank walls at x 1.0 and 8.6, a corrugated roof ' +
+        'falling to 3.0 over the deck at the street) is the shop, open along its front. The derrick, the log landing, the saw ' +
+        'pit under its sail and the stacks are the open yard, not planned' },
 
     /* ---------- Hospitality and civic (65-abyss-50-civic.js) */
     { key: 'abyss_inn', name: 'Courtyard inn', culture: 'eastabyss', wealth: 0.5, types: ['tavern/inn', 'multi-family dwelling'], lot: [24, 23],
@@ -382,6 +402,44 @@
       }),
       note: 'the five ground containers (6.1 m, turned along z, x -12.2..12.2) on the yard, each entered by its cargo doors on the ' +
         'front end; one store each. The three containers stacked on them have no door; the sails and the yard are open' },
+
+    /* ---------- Lower Verge (65-abyss-75-verge.js) */
+    { key: 'abyss_mayor_compound', name: 'The Mayor\'s compound', culture: 'eastabyss', wealth: 0.75, types: ['civic', 'single-family dwelling'], lot: [70, 56],
+      bodies: [
+        { id: 'residence', poly: rect(12, 12, -26, -19), y: 0.6, levels: [{ h: 2.95 }, { h: 3.05 }], wall: 0.3, roof: 'flat', slab: 0.3,
+          doors: [{ at: [-26, -13], w: 1.3 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom', 'study']] },
+        { id: 'office', poly: rect(13, 14, 26, -18), y: 0.6, levels: [{ h: 4.0 }], wall: 0.3, roof: 'flat',
+          doors: [{ at: [26, -11], w: 1.4 }], program: [['study', 'library', 'store']] }],
+      rooms: [{ id: 'council-hall', kind: 'hall', poly: rect(29.2, 21.2, 0, -11), y: 1.6, h: 6.5,
+        doors: [{ at: [0, -0.4], w: 10, swing: 'none' }],
+        fixtures: [
+          { id: 'tiers-back', kind: 'bench', x: 0, z: -20.25, ry: 0, w: 23.8, d: 2.7, h: 1.26, reach: false },
+          { id: 'tiers-west', kind: 'bench', x: -13.25, z: -11.45, ry: 0, w: 2.7, d: 14.9, h: 1.26, reach: false },
+          { id: 'tiers-east', kind: 'bench', x: 13.25, z: -11.45, ry: 0, w: 2.7, d: 14.9, h: 1.26, reach: false }] }],
+      note: 'the mayor\'s lime-washed residence (12 x 12, two storeys on a 0.6 m plinth: living room and kitchen, two bedrooms and a study), ' +
+        'the office and records wing (13 x 14, one 4.4 m storey: office, records library, store) and the council hall: the open floor ' +
+        'of the raised (1.6 m) open-sided hall inside its posts, the three built-in tiers of benches as fixtures, entered by the 10 m front ' +
+        'stair. The court, the sail-shaded forecourt and the gate are open' },
+    { key: 'abyss_guard_tower', name: 'Guard tower and barrack', culture: 'eastabyss', wealth: 0.6, types: ['military'], lot: [26, 20],
+      bodies: [
+        { id: 'tower', poly: rect(9, 9, -7.5, -3), y: 0.4, levels: [{ h: 3.1 }, { h: 3.1 }, { h: 3.1 }], wall: 0.6, roof: 'flat', slab: 0.3,
+          doors: [{ at: [-7.5, 1.5], w: 1.2 }], program: [['barracks'], ['barracks'], ['barracks']] },
+        { id: 'barrack', poly: rect(13, 8.5, 3.5, -2.75), y: 0.8, levels: [{ h: 2.9 }], wall: 0.3, roof: 'gable', pitch: 0.8,
+          doors: [{ at: [4.0, 1.5], w: 1.2 }], program: [['dormitory', 'kitchen', 'dormitory']] }],
+      note: 'the three-storey tower (9 x 9: a rubble storey and two of salvaged plate, floors at 0.4, 3.8, 7.2) as three guard rooms (no ' +
+        'stair is drawn: the planner fits one; the roof walk under the cone is open), and the barrack hall attached on its right (13 x 8.5 ' +
+        'on a 0.8 m footing): two dormitories and the mess kitchen. The drill yard is open' },
+    { key: 'abyss_toll_house', name: 'Toll house at the trailhead', culture: 'eastabyss', wealth: 0.55, types: ['civic'], lot: [14, 10],
+      rooms: [
+        { id: 'booth', kind: 'shop', poly: rect(3.05, 4.4, 0.675, -1.0), y: 0.4, h: 2.6,
+          doors: [{ at: [1.6, 1.2], w: 1.0 }, { at: [-0.85, -1.0], w: 0.9 }], windows: [{ at: [2.2, -1.0], w: 2.4, sill: 1.25, h: 1.0 }] },
+        { id: 'strongroom', kind: 'store', poly: rect(3.05, 4.4, -2.675, -1.0), y: 0.4, h: 2.6, doors: [{ at: [-1.15, -1.0], w: 0.9 }] }],
+      note: 'the booth (the toll counter window on +x, the road side; its door on +z) and the strongroom behind its inner door, under one ' +
+        'roof (7 x 5 on a 0.4 m plinth). The sail over the queue and the boom are open' },
+    { key: 'abyss_palisade', name: 'Palisade segment (6 m)', types: ['military', 'infrastructure'], lot: [6, 3],
+      skip: 'a modular palisade segment (stakes, salvaged plate, drums): nothing enclosed' },
+    { key: 'abyss_palisade_gate', name: 'Palisade road gate', types: ['military', 'infrastructure'], lot: [14, 4],
+      skip: 'an open road gate between two solid pylons under a raised stake gate: nothing enclosed' },
 
     /* ---------- Tag demo */
     { key: 'abyss_helpers_demo', name: 'ABYSS helper demo', types: ['prop'], lot: [64, 36],

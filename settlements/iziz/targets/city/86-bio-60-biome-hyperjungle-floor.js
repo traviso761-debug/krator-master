@@ -173,16 +173,17 @@ function treeFern(x,y,z,lv){const H=lv===2?rr(4,11):rr(4,8),r=.28+H*.04,la=rr(0,
  if(lv===2){card(tx,ty+1.2,tz,2.2,1.8,bright(shade(hc,.25),1.5),.2);
   for(let k=0,n=ri(2,4);k<n;k++){const a=rr(0,TAU);BIO.put('ribbon',[tx+Math.cos(a)*r*1.2,ty-.6,tz+Math.sin(a)*r*1.2],qEuler(0,rr(0,TAU),0),[rr(.8,1.4),rr(2,4),1],shade(vary(0x8a7a4a,.03,.1,.06),-.2));}}}
 // a SCREWPINE: a short trunk on a cone of stilt roots, heads of stiff strap
-// leaves (old ones out and drooping, young ones upright), a hanging fruit head
+// leaves (old ones out and drooping, young ones upright), a hanging fruit head of pandan keys
 function screwpine(x,y,z,lv){const H=rr(3,8),r=.22+H*.05,hc=vary(pick(PAL.screwpine),.04,.12,.06),tt=trunkTint(0x6a5a44,.8);
  BIO.put('trunk',[x,y+H*.3-.2,z],qUp([0,1,0]),[r/.4,H*.7+.2,r/.4],tt);
  const tc=rodCol();for(let k=0,n=lv===2?ri(5,8):4;k<n;k++){const a=k/n*TAU+rr(-.3,.3),d=H*rr(.35,.6),gx=x+Math.cos(a)*d,gz=z+Math.sin(a)*d;
   BIO.beam('rod',[x+Math.cos(a)*r*.6,y+H*rr(.28,.42),z+Math.sin(a)*r*.6],[gx,Y(gx,gz)-.4,gz],r*.32,r*.22,tc);}
  const heads=[[x,y+H,z]];
- if(H>5.5&&lv===2){const a=rr(0,TAU),fk=H*.55;heads.push([x+Math.cos(a)*H*.3,y+fk+H*.35,z+Math.sin(a)*H*.3]);BIO.beam('rod',[x,y+fk,z],heads[1],r*.7,r*.5,tt);}
+ if(H>5.5&&lv===2){const a=rr(0,TAU),fk=H*.55;heads.push([x+Math.cos(a)*H*.3,y+fk+H*.35,z+Math.sin(a)*H*.3]);BIO.beam('rod',[x,y+fk,z],heads[1],r*.7,r*.5,shade(C(0x6a5a44),-.25));}   // untextured: the trunk's colour itself, not its texture tint (that rendered white)
  heads.forEach(h=>{const L=rr(3,5.5);frondCrown(h[0],h[1],h[2],L,lv===2?ri(9,12):6,-.35,.05,bright(hc,1.5));
   frondCrown(h[0],h[1]+.4,h[2],L*.7,lv===2?6:4,.55,1.05,bright(shade(hc,.08),1.55));
-  if(lv===2&&rng()<.4)BIO.put('fungus',[h[0]+rr(-.5,.5),h[1]-.6,h[2]+rr(-.5,.5)],qEuler(Math.PI,rr(0,TAU),0),[.9,1.3,.9],shade(0xd08a3a,-.15));});}
+  // the hanging pandan-key head (biomes/FRUIT.md); the same draws as the stand-in it replaced, so nothing else moves
+  if(lv===2&&rng()<.4){const fx=h[0]+rr(-.5,.5),fz=h[2]+rr(-.5,.5);BIO.put('pandankeys',[fx,h[1]-.3,fz],qEuler(0,rr(0,TAU),0),1.6,shade(0xffffff,-.15));}});}
 // a HELICONIA / GINGER clump: tall paddle leaves in a loose fan, the
 // inflorescences (zigzag bracts, 'bract' item) hanging off short stems
 function ginger(x,y,z,lv){const hc=vary(pick(PAL.ginger),.04,.12,.06),S=rr(4,8),n=lv===2?ri(4,6):3,a0=rr(0,TAU);

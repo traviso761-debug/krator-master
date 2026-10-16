@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.22,
+    1.099
+   ],
+   "seam_before": [
+    1.114,
+    1.115
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.turf.polygon",
+  "metal": 0,
+  "roughness": 0.92,
+  "scale": [
+   3.6,
+   3.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground-turf-polygon.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Short alpine sedge turf seen from above, a dense felt of tiny blades a few centimetres high, cracked into irregular polygons about a metre across along narrow dark fissures of bare soil, the polygon rims a little browner and drier than their centres. Full colour: olive-brown turf (#6e6a3e, #5e6436), browner rims (#7a6a44), dark soil in the cracks (#2e2418); natural and not tinted. (Row ground.turf.polygon of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1254 px WebP; converted to PNG.",
+  "reuse": "the sedge turf here; tundra and frost-patterned ground anywhere",
+  "sha1": "1d5f3e70eae2da9caad735439f014d165b5f13d6"
+ }
+}

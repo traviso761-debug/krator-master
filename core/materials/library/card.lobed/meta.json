@@ -1,0 +1,41 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.lobed",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card-lobed.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Lobed leaf card: nine leafy twigs, five of deeply lobed oak leaves in dark green (#5e7a34) and four of five-pointed maple leaves in red and orange (#c84a28, #e08a34), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.lobed of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+  "reuse": "gambel oak and bigtooth maple here; any temperate broadleaf",
+  "sha1": "3d0d1a9097725c1a77f6cddf9037ca3c36debab9"
+ }
+}

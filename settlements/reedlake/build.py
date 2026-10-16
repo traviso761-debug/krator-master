@@ -91,9 +91,30 @@ ORIGIN = os.path.join(HERE, '.origin.html')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
+# the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
+# clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
+# 88x-matlib-pack.js (tools/textures/matlib_pack.py); src/88y-reedlake-matlib.js binds it onto MAT (KMAT.bindMat)
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+MATLIB_PACK = '88x-matlib-pack.js'
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+# core/rand (KRAND: the tags' uid is its hash) and core/tags (the registry REG is read into: src/91t-reedlake-tags.js)
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[0].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap and cutaway, with core/clock and core/minimap, as Highlands takes them. Not core/space and not core/edits (no editor
+# world yet), as on Iziz and Highlands.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+# the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
+# (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the lake is a WATER.open surface
+# (src/90w-rl-lake.js), the troughs' and the wallow's water WATER.still (src/90x-rl-still.js). Listed by name, like core/materials/record above; a src/ copy with the same name wins.
+ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
+CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+WATER_DIR = os.path.join(ROOT, 'core', 'water')
+CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
 
 
 def srcpath(f, base=None):
@@ -115,6 +136,7 @@ TARGET_OUT = {
 }
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '88x-matlib-pack.js', '88y-reedlake-matlib.js',   # the material library (no rnd())
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '09-lod.js', '97-lod-auto.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
@@ -124,7 +146,11 @@ DETERMINISTIC = {
     '74-rl-mat.js', '75-rl-helpers.js',                # the Reed Lake vocabulary
     '90-rl-scene.js', '91-probe.js', '91a-rl-budget.js', '92-camera.js', '93-labels.js', '94-rl-anim.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
+    '90w-rl-lake.js',                     # the lake on core/water
+    '90x-rl-still.js',                    # the troughs' and wallow's still water on core/water (Phase 4)
 }
+DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
+DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-reedlake-tags.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -137,7 +163,7 @@ SEED_COLLISION_EXCEPTIONS = set()
 # reseed rule does not apply either. Matched by filename prefix.
 SCOPED_PREFIXES = ('86-bio-',)
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES)
+    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -233,7 +259,12 @@ def build_one(target, do_checks, assert_origin):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
+    src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
+    src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
+    src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
@@ -245,6 +276,13 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    # the pack beside the pages (reedlake.tex.reedlake.js), one file every page of the build shares; --inline-packs puts it back in
+    # each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+    side = None if '--inline-packs' in sys.argv else {}
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'reedlake', side=side)
+    order = sorted(order + [MATLIB_PACK])
 
     if do_checks:
         errs = check(order, bodies)
@@ -264,6 +302,8 @@ def build_one(target, do_checks, assert_origin):
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
+    if side:
+        html = matlib_pack.write_sidecar(side, html, DIST, 'reedlake.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
@@ -278,6 +318,10 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js',
             '91-probe.js', '92-camera.js', '93-labels.js']          # all from ../highlands/src
 IZIZ_VENDORED = []
+# kept behind upstream on purpose: drift expected, recorded in KNOWN_ISSUES.md. 73-hl-carve.js keeps the drawn
+# furniture helpers (hnTotem, hnWoodpile, hnFirepit, hnMenhir): Highlands' copy places them from the master catalog
+# (FURNISH, its 89y-hl-furnish.js), which this build does not load.
+ADAPTED = {'73-hl-carve.js'}
 
 
 def vendor_manifest():
@@ -298,10 +342,14 @@ def vendor_check():
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % up_name)
             continue
-        drift = [f for f in files if not os.path.exists(srcpath(f, up))
-                 or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
-        print('vendor-check %s: %s' % (up_name, 'all %d identical' % len(files) if not drift
-                                         else 'DRIFT in ' + ', '.join(drift)))
+        diff = [f for f in files if not os.path.exists(srcpath(f, up))
+                or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
+        adapted = [f for f in diff if f in ADAPTED and os.path.exists(srcpath(f, up))]
+        drift = [f for f in diff if f not in adapted]
+        same = '%d identical' % (len(files) - len(diff)) + (', %d adapted on purpose (%s)' % (len(adapted), ', '.join(adapted))
+                                                            if adapted else '')
+        print('vendor-check %s: %s' % (up_name, ('all ' + same) if not diff else same + ('; DRIFT in ' + ', '.join(drift)
+              + ' - re-vendor or add to ADAPTED and note it in KNOWN_ISSUES.md' if drift else '')))
 
 
 def main():

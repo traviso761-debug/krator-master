@@ -1,0 +1,67 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    630,
+    644
+   ],
+   "seam_after": [
+    1.605,
+    1.355
+   ],
+   "seam_before": [
+    1.052,
+    1.681
+   ],
+   "source_size": [
+    637,
+    651
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.7,
+   "pattern": true,
+   "rough": 0.4,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "dalab/mosaic",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.4,
+  "scale": [
+   1,
+   1.02
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "dalab-mosaic__period.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "note": "the delivered sheet is not exactly periodic (the diamond grid drifts); cropped by hand to the best two-period window (x 536+637, y 560+651 px) before processing",
+  "original_title": "(pasted image)",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id dalab/mosaic).",
+  "reuse": "Dalab mosaic floors and dados; diamond checker tile anywhere",
+  "sha1": "8ab363de55ebe5874327e010a7255cd3683e2940"
+ }
+}

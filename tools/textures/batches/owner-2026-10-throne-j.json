@@ -1,0 +1,30 @@
+[
+ {
+  "src": "bark-mossy.webp",
+  "out": "core/materials/library/bark.mossy",
+  "record": {
+   "id": "bark.mossy",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "PROMPTS-ready.md section 6 (bark.mossy); pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "scaly grey-brown bark half under moss and lichen: the cloud forest's elfin trees (in use); any old tree in a wet forest, a temperate rainforest, a mossy ruin's timbers"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

@@ -8,6 +8,8 @@ type the change and press Ctrl+Enter. Each request lands in edits/pending/<id>.j
 `python3 tools/edits/pending.py` lists them for Claude. Built files are served unchanged on disk: the
 <script> tag is added on the way out, so no build, hash or port baseline is touched.
 
+core/host's pages also save their edit log and marks here (POST /__save; tools/edits/README.md, "The host's save route").
+
 Standard library only. Binds to localhost unless --host says otherwise; anyone who can reach the port can
 queue notes and read the repo's files, so do not expose it beyond your own network.
 """
@@ -18,6 +20,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PENDING = os.path.join(ROOT, 'edits', 'pending')
 TAG = b'<script src="/__edits.js"></script>'
 MAX = 1 << 20
+SAVE_MAX = 16 << 20                       # an edit log or a set of marks (core/host's save route)
+SAVE_KINDS = {'edits': ('krator-edits', 'ops'), 'marks': ('krator-marks', 'marks')}
 
 
 def build_of(page):
@@ -49,6 +53,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         path = self.path.split('?', 1)[0]
         if path == '/__edits.js':
             return self.send(open(os.path.join(HERE, 'edit-queue.js'), 'rb').read(), 'text/javascript; charset=utf-8')
+        if path == '/__file':   # core/host's saved marks (94-host-marks.js): the build's marks.json, or 204 when none was saved
+            q = re.search(r'kind=([a-z]+)&page=([^&]+)', self.path)
+            b = build_of(http.server.urllib.parse.unquote(q.group(2))) if q and q.group(1) in SAVE_KINDS else ''
+            f = os.path.join(ROOT, b, q.group(1) + '.json') if b else ''
+            if not f or not os.path.isfile(f):
+                self.send_response(204); self.end_headers(); return
+            return self.send(open(f, 'rb').read(), 'application/json')
         if path == '/__edits':
             q = re.search(r'page=([^&]+)', self.path)
             b = build_of(http.server.urllib.parse.unquote(q.group(1))) if q else None
@@ -62,6 +73,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):
+        if self.path.split('?', 1)[0] == '/__save':
+            return self.save()
         if self.path.split('?', 1)[0] != '/__edits':
             return self.send_error(404)
         n = int(self.headers.get('Content-Length') or 0)
@@ -85,6 +98,31 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             f.write('\n')
         print('queued %s: %s' % (rid, rec['note'][:80]))
         self.send(json.dumps({'id': rid, 'pending': len(pending(build))}).encode(), 'application/json')
+
+    def save(self):
+        """core/host's save route (core/host/98-host-edit.js, 94-host-marks.js): {kind: 'edits' | 'marks', page, data} writes
+        data to <build>/edits.json or <build>/marks.json, the build being the folder with build.py that holds the page.
+        core/host/host.py inlines edits.json into the page at the next build; the marks are read by the page when it loads."""
+        n = int(self.headers.get('Content-Length') or 0)
+        if not 0 < n <= SAVE_MAX:
+            return self.send_error(413)
+        try:
+            req = json.loads(self.rfile.read(n))
+            kind, data = req.get('kind'), req.get('data')
+            assert kind in SAVE_KINDS and isinstance(data, dict)
+            fmt, key = SAVE_KINDS[kind]
+            assert data.get('format') == fmt and isinstance(data.get(key), list)
+        except Exception:
+            return self.send_error(400, 'expected {kind: edits|marks, page, data: a krator-edits or krator-marks object}')
+        build = build_of(str(req.get('page', '')))
+        if not build:
+            return self.send_error(400, 'the page is not inside a build folder (one with build.py)')
+        dest = os.path.join(ROOT, build, kind + '.json')
+        with open(dest, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(data, f, indent=1, ensure_ascii=False)
+            f.write('\n')
+        print('saved %s/%s.json: %d %s' % (build, kind, len(data[key]), key))
+        self.send(json.dumps({'saved': build + '/' + kind + '.json'}).encode(), 'application/json')
 
     def send(self, body, ctype):
         self.send_response(200)

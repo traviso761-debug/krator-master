@@ -1,0 +1,843 @@
+[
+ {
+  "src": "scyvoi felt scroll.png",
+  "out": "core/materials/patterns/scyvoi/felt-scroll",
+  "record": {
+   "id": "scyvoi/felt-scroll",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi brief",
+    "prompt": "not recorded: a seamless shyrdak-style felt applique of ram's-horn scrolls in madder red, teal and black on cream",
+    "licence": "supplied for this project by its owner",
+    "reuse": "felt applique: Scyvoi yurt bands, door felts, floor felts and cushions; any steppe culture's felt"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.95,
+   "rough_var": 0.08,
+   "normal_strength": 0.55,
+   "delight": 0.15,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "scyvoi arch lining.png",
+  "out": "core/materials/patterns/scyvoi/arch-lining",
+  "record": {
+   "id": "scyvoi/arch-lining",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi brief",
+    "prompt": "not recorded: a seamless printed tent lining, cusped arches with flame-leaf sprays in cream, gold and madder on deep green",
+    "licence": "supplied for this project by its owner",
+    "reuse": "printed tent linings (Scyvoi pavilions); Xanadu or Yuni hangings"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.08,
+   "normal_strength": 0.45,
+   "delight": 0.15,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "zellige blue.png",
+  "out": "core/materials/patterns/common/zellige-blue",
+  "record": {
+   "id": "common/zellige-blue",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi brief",
+    "prompt": "not recorded: a seamless zellige star pattern in cobalt, turquoise, rust and cream",
+    "licence": "supplied for this project by its owner",
+    "reuse": "zellige tile or printed cloth: Scyvoi linings and the Baelu's hall floor; Xanadu, Yuni court floors and fountains"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "delight": 0.15,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "zellige black.png",
+  "out": "core/materials/patterns/common/zellige-black",
+  "record": {
+   "id": "common/zellige-black",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi brief",
+    "prompt": "not recorded: a seamless black, grey-marble and cream zellige strapwork with eight-point stars",
+    "licence": "supplied for this project by its owner",
+    "reuse": "zellige tile or printed cloth: Scyvoi shaman's hut and the Baelu; any court floor"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.5,
+   "rough_var": 0.15,
+   "normal_strength": 0.5,
+   "delight": 0.15,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "common_zellige-lotus-teal.png",
+  "out": "core/materials/patterns/common/zellige-lotus-teal",
+  "record": {
+   "id": "common/zellige-lotus-teal",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: blue, teal, cream and gold leaf mosaic with stepped bands",
+    "reuse": "zellige floors and walls: Scyvoi, Xanadu, Yuni court"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "scyvoi_kilim-cold-flame.png",
+  "out": "core/materials/patterns/scyvoi/kilim-cold-flame",
+  "record": {
+   "id": "scyvoi/kilim-cold-flame",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: blue, green and gold kilim with flame motifs on black",
+    "reuse": "kilims, barding, hangings; any steppe or desert culture"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.08,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "common_kilim-star.png",
+  "out": "core/materials/patterns/common/kilim-star",
+  "record": {
+   "id": "common/kilim-star",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: stepped-diamond kilim in madder, saffron, teal, indigo and cream",
+    "reuse": "kilims for any nomad culture (meets the patterns/nomads/kilim row)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.08,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "scyvoi_fire-bloom.png",
+  "out": "core/materials/patterns/scyvoi/fire-bloom",
+  "record": {
+   "id": "scyvoi/fire-bloom",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: purple and saffron flowers with olive leaves in cream strapwork",
+    "reuse": "linings, floor rugs, cushions; Xanadu court cloth"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.08,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "scyvoi_flame-zellige.png",
+  "out": "core/materials/patterns/scyvoi/flame-zellige",
+  "record": {
+   "id": "scyvoi/flame-zellige",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: madder and saffron flames within cream strapwork on black",
+    "reuse": "Scyvoi tile bands; fire temples anywhere"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "common_zellige-rosette-colour.png",
+  "out": "core/materials/patterns/common/zellige-rosette-colour",
+  "record": {
+   "id": "common/zellige-rosette-colour",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: polychrome rosette zellige: cobalt, teal, saffron, madder, cream",
+    "reuse": "court floors and fountains"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "common_zellige-rosette.png",
+  "out": "core/materials/patterns/common/zellige-rosette",
+  "record": {
+   "id": "common/zellige-rosette",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: black and cream rosette strapwork with small flowers",
+    "reuse": "court floors, screens"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "common_tile-lotus-cross.png",
+  "out": "core/materials/patterns/common/tile-lotus-cross",
+  "record": {
+   "id": "common/tile-lotus-cross",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: blue, green, cream and gold stepped cross with lotus leaves",
+    "reuse": "floors, wall dados"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "common_tile-lattice-blue.png",
+  "out": "core/materials/patterns/common/tile-lattice-blue",
+  "record": {
+   "id": "common/tile-lattice-blue",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: blue and green diagonal lattice with leaf corners on cream",
+    "reuse": "floors, wall dados"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "common_tile-lattice-red.png",
+  "out": "core/materials/patterns/common/tile-lattice-red",
+  "record": {
+   "id": "common/tile-lattice-red",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: red and green lattice with leaf corners on cream",
+    "reuse": "floors, wall dados"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "common_tile-lattice-saffron.png",
+  "out": "core/materials/patterns/common/tile-lattice-saffron",
+  "record": {
+   "id": "common/tile-lattice-saffron",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: saffron and red lattice with green leaves on cream",
+    "reuse": "floors, wall dados"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "common_tile-step-black.png",
+  "out": "core/materials/patterns/common/tile-step-black",
+  "record": {
+   "id": "common/tile-step-black",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: black and cream stepped diamonds",
+    "reuse": "floors, thresholds, any austere court"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "common_tile-quatrefoil-black.png",
+  "out": "core/materials/patterns/common/tile-quatrefoil-black",
+  "record": {
+   "id": "common/tile-quatrefoil-black",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: black and cream circles and quatrefoils",
+    "reuse": "floors, thresholds"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "common_celestial-giant.png",
+  "out": "core/materials/patterns/common/celestial-giant",
+  "record": {
+   "id": "common/celestial-giant",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: the ringed gas giant among stars in gold strapwork with blue flowers on indigo",
+    "reuse": "linings, ceilings, astronomers and temples of any Krator culture"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.08,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "common_medallion-sun-amber.png",
+  "out": "core/materials/patterns/common/medallion-sun-amber",
+  "record": {
+   "id": "common/medallion-sun-amber",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: a single amber and cream sun-rose medallion",
+    "reuse": "dais and floor medallions anywhere. A single panel: map it once (0..1 UVs), do not tile"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.5,
+   "rough_var": 0.12,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "common_medallion-cloud-blue.png",
+  "out": "core/materials/patterns/common/medallion-cloud-blue",
+  "record": {
+   "id": "common/medallion-cloud-blue",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: a single blue and gold compass medallion with cream cloud scrolls",
+    "reuse": "floor medallions; Tibetan-style appliqué. A single panel: map it once (0..1 UVs), do not tile"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.5,
+   "rough_var": 0.12,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "scyvoi_medallion-salamander.png",
+  "out": "core/materials/patterns/scyvoi/medallion-salamander",
+  "record": {
+   "id": "scyvoi/medallion-salamander",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: a single medallion: five salamanders round a flame compass rose on blue",
+    "reuse": "the Scyvoi emblem: the chief's dais and carpet. A single panel: map it once (0..1 UVs), do not tile"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.5,
+   "rough_var": 0.12,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "scyvoi_medallion-blades.png",
+  "out": "core/materials/patterns/scyvoi/medallion-blades",
+  "record": {
+   "id": "scyvoi/medallion-blades",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: a single medallion: a compass of crossed blades on blue, black and red",
+    "reuse": "war tents, armouries. A single panel: map it once (0..1 UVs), do not tile"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.5,
+   "rough_var": 0.12,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "common_medallion-star-blue.png",
+  "out": "core/materials/patterns/common/medallion-star-blue",
+  "record": {
+   "id": "common/medallion-star-blue",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: a single pale blue and gold compass medallion with red six-point stars",
+    "reuse": "floor medallions. A single panel: map it once (0..1 UVs), do not tile"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.5,
+   "rough_var": 0.12,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "common_medallion-moon.png",
+  "out": "core/materials/patterns/common/medallion-moon",
+  "record": {
+   "id": "common/medallion-moon",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: a single black and silver medallion of moon phases and stars",
+    "reuse": "shrines, the shaman's floor, night temples. A single panel: map it once (0..1 UVs), do not tile"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.5,
+   "rough_var": 0.12,
+   "normal_strength": 0.45
+  }
+ },
+ {
+  "src": "cloth.tent.black.png",
+  "out": "core/materials/library/cloth.tent.black",
+  "record": {
+   "id": "cloth.tent.black",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "core/materials/PLAN.md row cloth.tent.black: coarse black-brown goat-hair cloth, a plain weave with stray hairs",
+    "reuse": "black goat-hair tents: the Scyvoi, the Eastern Nomads (Shade), any desert herders"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.1,
+   "normal_strength": 0.7,
+   "delight": 0.4,
+   "lift": 0.05
+  }
+ },
+ {
+  "src": "scyvoi_applique-blue.png",
+  "out": "core/materials/patterns/scyvoi/applique-blue",
+  "record": {
+   "id": "scyvoi/applique-blue",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: indigo felt appliqué, six-petal flowers and leaf sprays hand-stitched on cream",
+    "reuse": "appliqué tent panels and felt hangings: the Scyvoi; any steppe culture, Tibetan-style tents"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.55,
+   "delight": 0.15,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "scyvoi_applique-blue.b.png",
+  "out": "core/materials/patterns/scyvoi/applique-blue.b",
+  "record": {
+   "id": "scyvoi/applique-blue.b",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+    "licence": "supplied for this project by its owner",
+    "prompt": "not recorded: indigo felt appliqué, fan flowers and scrolling leaves hand-stitched on cream",
+    "reuse": "appliqué tent panels and felt hangings: the Scyvoi; any steppe culture, Tibetan-style tents"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.55,
+   "delight": 0.15,
+   "lift": 0.0
+  }
+ }
+]

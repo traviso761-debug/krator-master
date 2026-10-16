@@ -1,0 +1,302 @@
+{
+ "00-head.html": [
+  "settlements/verge/src/00-head.html",
+  "76ea193f28c8"
+ ],
+ "08-core-rand.js": [
+  "core/rand/08-core-rand.js",
+  "4a3aa47f25da"
+ ],
+ "10-core-head.js": [
+  "core/biome/10-core-head.js",
+  "59f894e00b20"
+ ],
+ "20-core-clock.js": [
+  "core/clock/20-core-clock.js",
+  "5616fb106090"
+ ],
+ "20-core-kit.js": [
+  "core/biome/20-core-kit.js",
+  "af1dcca206dd"
+ ],
+ "20-core-sched.js": [
+  "core/sched/20-core-sched.js",
+  "932d088efbab"
+ ],
+ "20-core-space.js": [
+  "core/space/20-core-space.js",
+  "30e465e74c51"
+ ],
+ "20-core-walk.js": [
+  "core/walk/20-core-walk.js",
+  "a62f43ac5e15"
+ ],
+ "23-mat-record.js": [
+  "core/materials/record/23-mat-record.js",
+  "ea9d418382b6"
+ ],
+ "25-core-mask.js": [
+  "core/mask/25-core-mask.js",
+  "71cc7d2187d3"
+ ],
+ "25-matlib-host.js": [
+  "core/materials/record/25-matlib-host.js",
+  "3eb25788798a"
+ ],
+ "26-matlib-bind.js": [
+  "core/materials/record/26-matlib-bind.js",
+  "23240bb0a0cb"
+ ],
+ "30-core-foliage.js": [
+  "core/biome/30-core-foliage.js",
+  "ee0fed9cb7f9"
+ ],
+ "35-core-strata.js": [
+  "biomes/sedesert/src/35-core-strata.js",
+  "ff19ab2b49c0"
+ ],
+ "40-core-place.js": [
+  "core/biome/40-core-place.js",
+  "6de80a247190"
+ ],
+ "41-verge-layout.js": [
+  "settlements/verge/src/41-verge-layout.js",
+  "a9dbf7290dc5"
+ ],
+ "42-core-export.js": [
+  "core/biome/42-core-export.js",
+  "47a25c6899a6"
+ ],
+ "43-core-export-host.js": [
+  "core/biome/43-core-export-host.js",
+  "6bad6c1d2f54"
+ ],
+ "44-core-stage.js": [
+  "core/biome/44-core-stage.js",
+  "c218c925d507"
+ ],
+ "45-verge-stage.js": [
+  "settlements/verge/src/45-verge-stage.js",
+  "7a02642dbc83"
+ ],
+ "46-matlib-pack-iziz.js": [
+  "GENERATED: settlements/iziz/tex (maps in verge.tex.js)",
+  "938639d5064d"
+ ],
+ "46-matlib-pack-locus.js": [
+  "GENERATED: settlements/locus/tex (maps in verge.tex.js)",
+  "3722f3ca8df9"
+ ],
+ "46-verge-ground.js": [
+  "settlements/verge/src/46-verge-ground.js",
+  "0d1a453f7b8b"
+ ],
+ "47-verge-water.js": [
+  "settlements/verge/src/47-verge-water.js",
+  "3335f21e25c6"
+ ],
+ "50-core-furnish.js": [
+  "core/furnish/50-core-furnish.js",
+  "7e1532e5f546"
+ ],
+ "50-core-tags.js": [
+  "core/tags/50-core-tags.js",
+  "351884caf5b4"
+ ],
+ "52-core-furnish-draw.js": [
+  "core/furnish/52-core-furnish-draw.js",
+  "949213456277"
+ ],
+ "52-core-tags-vocab.js": [
+  "core/tags/52-core-tags-vocab.js",
+  "d5f78e2e5a34"
+ ],
+ "53-core-furnish-host.js": [
+  "core/furnish/53-core-furnish-host.js",
+  "9ed629d45803"
+ ],
+ "53-core-tags-host.js": [
+  "core/tags/53-core-tags-host.js",
+  "e2cd8a672016"
+ ],
+ "53z-bio-matlib-pack.js": [
+  "GENERATED: biomes/sedesert/tex (maps in verge.tex.js)",
+  "f847ca42c2f9"
+ ],
+ "54a-bio-biome-sedesert-species.js": [
+  "biomes/sedesert/src/50-biome-sedesert-species.js",
+  "abf724370876"
+ ],
+ "54b-bio-biome-sedesert-trees.js": [
+  "biomes/sedesert/src/55-biome-sedesert-trees.js",
+  "f6131305dfb5"
+ ],
+ "54c-bio-biome-sedesert-floor.js": [
+  "biomes/sedesert/src/60-biome-sedesert-floor.js",
+  "363ffc0abbfc"
+ ],
+ "54d-bio-biome-sedesert-dress.js": [
+  "biomes/sedesert/src/65-biome-sedesert-dress.js",
+  "a05b374489b5"
+ ],
+ "54e-bio-biome-sedesert.js": [
+  "biomes/sedesert/src/70-biome-sedesert.js",
+  "e5699c238c95"
+ ],
+ "54f-bio-biome-sedesert-fauna.js": [
+  "biomes/sedesert/src/75-biome-sedesert-fauna.js",
+  "7f30b8d7258e"
+ ],
+ "55z-bio-matlib-pack.js": [
+  "GENERATED: biomes/eastabyss/tex (maps in verge.tex.js)",
+  "cf96790311d0"
+ ],
+ "56a-bio-biome-eastabyss-species.js": [
+  "biomes/eastabyss/src/50-biome-eastabyss-species.js",
+  "2e78e1943adf"
+ ],
+ "56b-bio-biome-eastabyss-trees.js": [
+  "biomes/eastabyss/src/55-biome-eastabyss-trees.js",
+  "9ddd0f7dd041"
+ ],
+ "56c-bio-biome-eastabyss-floor.js": [
+  "biomes/eastabyss/src/60-biome-eastabyss-floor.js",
+  "4f07d2de70de"
+ ],
+ "56d-bio-biome-eastabyss-dress.js": [
+  "biomes/eastabyss/src/65-biome-eastabyss-dress.js",
+  "a5fa09de665e"
+ ],
+ "56e-bio-biome-eastabyss.js": [
+  "biomes/eastabyss/src/70-biome-eastabyss.js",
+  "c36e06194359"
+ ],
+ "56f-bio-biome-eastabyss-fauna.js": [
+  "biomes/eastabyss/src/75-biome-eastabyss-fauna.js",
+  "03d7625a4c67"
+ ],
+ "62-catalog-bundle.js": [
+  "GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni, yuni-town)",
+  "4d2278bfb40d"
+ ],
+ "64-izv-bundle.js": [
+  "GENERATED: settlements/iziz/src/10-core.js, settlements/iziz/src/12-stats.js, core/materials/20-textures.js, core/materials/22-materials.js, settlements/iziz/src/30-kit.js, settlements/iziz/src/32-surfaces.js, settlements/iziz/src/34-kitdefs.js, settlements/iziz/src/38-helpers2.js, settlements/iziz/src/50-registry.js, settlements/iziz/src/54-mat-concrete.js, core/materials/68-mat-v5.js, settlements/iziz/src/69-mat-salvage.js, core/materials/opt/69a-world-uv.js, settlements/iziz/src/69b-vern-mat.js, settlements/iziz/src/69c-vern-helpers.js, settlements/iziz/src/70-vern-dwellings.js, settlements/iziz/src/71-vern-trade.js, settlements/iziz/src/72-vern-civic.js, settlements/iziz/src/73-vern-infra.js, settlements/iziz/src/74-vern-guilds.js, settlements/iziz/src/74b-vern-frontier.js, kits/ancients/src/8ap-funicular.js",
+  "eff8229f2d1e"
+ ],
+ "65-ykit-bundle.js": [
+  "GENERATED: settlements/locus/src/05-palette.js, settlements/locus/src/10-core.js, settlements/locus/src/45-kit.js, settlements/locus/src/47-texture.js, settlements/locus/src/50-structure.js, settlements/locus/src/53-assets.js, settlements/locus/src/56-mid.js, settlements/locus/src/57-poor.js, settlements/locus/src/58-rich.js, settlements/locus/src/59-civic.js, settlements/locus/src/64-locus-chapterhouse.js, settlements/locus/src/64-locus-core.js, settlements/locus/src/64-locus-dwellings.js, settlements/locus/src/64-locus-farm.js, settlements/locus/src/64-locus-infra.js, settlements/locus/src/64-locus-petroleum.js, settlements/locus/src/64-locus-plants.js, settlements/locus/src/64-locus-power.js, settlements/locus/src/65-abyss-00-core.js, settlements/locus/src/65-abyss-20-plants.js, settlements/locus/src/65-abyss-30-housing.js, settlements/locus/src/65-abyss-40-shops.js, settlements/locus/src/65-abyss-50-civic.js, settlements/locus/src/65-abyss-60-temple.js, settlements/locus/src/65-abyss-70-palace.js, settlements/locus/src/65-abyss-75-verge.js, settlements/locus/src/65-abyss-80-military.js, settlements/locus/src/65-abyss-90-farm.js, settlements/locus/src/72-lights.js, settlements/locus/src/81-glow.js",
+  "d54cf3147c0c"
+ ],
+ "69-kcity-bundle.js": [
+  "GENERATED: core/city/10-city-core.js, core/city/12-city-index.js, core/city/15-city-ground.js, core/city/20-city-plan.js, core/city/25-city-site.js, core/city/31-city-steps-b.js, core/city/32-city-steps-c.js, core/city/33-city-strategies.js, core/city/40-city-kcity.js",
+  "26dc6182c764"
+ ],
+ "70-verge-place.js": [
+  "settlements/verge/src/70-verge-place.js",
+  "b8ad776d0783"
+ ],
+ "71-verge-furnish.js": [
+  "settlements/verge/src/71-verge-furnish.js",
+  "df341cd519ee"
+ ],
+ "72-verge-buildings.js": [
+  "settlements/verge/src/72-verge-buildings.js",
+  "ea6d395dcffb"
+ ],
+ "74-verge-sim.js": [
+  "settlements/verge/src/74-verge-sim.js",
+  "ccc6009f0af6"
+ ],
+ "77-verge-rigs.js": [
+  "settlements/verge/src/77-verge-rigs.js",
+  "b5ee2df11648"
+ ],
+ "78-verge-life.js": [
+  "settlements/verge/src/78-verge-life.js",
+  "c63a2808da30"
+ ],
+ "80-verge-skyhost.js": [
+  "settlements/verge/src/80-verge-skyhost.js",
+  "232ac35d2d92"
+ ],
+ "81-verge-sky.js": [
+  "settlements/verge/src/81-verge-sky.js",
+  "fe5deb4a5fc2"
+ ],
+ "82-verge-daynight.js": [
+  "settlements/verge/src/82-verge-daynight.js",
+  "d229021c54d4"
+ ],
+ "87-verge-views.js": [
+  "settlements/verge/src/87-verge-views.js",
+  "cfbde86b37d3"
+ ],
+ "88-core-minimap.js": [
+  "core/minimap/88-core-minimap.js",
+  "ca9a91a25500"
+ ],
+ "88-verge-build.js": [
+  "settlements/verge/src/88-verge-build.js",
+  "52a3b7eadd26"
+ ],
+ "88a-core-minimap-host.js": [
+  "core/minimap/88a-core-minimap-host.js",
+  "1e442710c44f"
+ ],
+ "90-host-camera.js": [
+  "core/host/90-host-camera.js",
+  "5ee8af014319"
+ ],
+ "91-host-loop.js": [
+  "core/host/91-host-loop.js",
+  "3c7fb5c1f35a"
+ ],
+ "91-verge-probe.js": [
+  "settlements/verge/src/91-verge-probe.js",
+  "34798eac0f19"
+ ],
+ "92-host-panel.js": [
+  "core/host/92-host-panel.js",
+  "a4f990ec0c38"
+ ],
+ "93-host-inspect.js": [
+  "core/host/93-host-inspect.js",
+  "11e39ccb6260"
+ ],
+ "93-host-stocks.js": [
+  "core/host/93-host-stocks.js",
+  "27dd6b526848"
+ ],
+ "94-host-marks.js": [
+  "core/host/94-host-marks.js",
+  "66fcb2bedaf5"
+ ],
+ "95-host-probe.js": [
+  "core/host/95-host-probe.js",
+  "94fec2e5025a"
+ ],
+ "96-host-pictures.js": [
+  "core/host/96-host-pictures.js",
+  "1c6b36cc7ca2"
+ ],
+ "97-host-minimap.js": [
+  "core/host/97-host-minimap.js",
+  "bb80eeaa8a43"
+ ],
+ "98-host-edit.js": [
+  "core/host/98-host-edit.js",
+  "66535c6a9cdd"
+ ],
+ "99-host-cutaway.js": [
+  "core/host/99-host-cutaway.js",
+  "5fc10889d24e"
+ ],
+ "99-start.js": [
+  "settlements/verge/src/99-start.js",
+  "66a5bbe54f86"
+ ],
+ "99-tail.html": [
+  "settlements/verge/src/99-tail.html",
+  "bf3a2481959e"
+ ]
+}

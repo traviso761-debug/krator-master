@@ -208,3 +208,7 @@ FURN({
     F.lamp(0, h - 0.2, 0, 1.0, 10);
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed iziz_training_<role> */
+FK.set({ culture: 'iziz', tier: 'common', roles: 'training', prefix: 'iziz_training_', S: IZIZ_COMMON, names: {
+  training_dummy: 'Mahogany drill post', archery_butt: 'Sandbag archery butt' } });

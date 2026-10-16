@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1246,
+    1247
+   ],
+   "seam_after": [
+    1.056,
+    0.639
+   ],
+   "seam_before": [
+    0.952,
+    1.071
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "common/banner-hung",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.9,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Weathered Gray Linen Banner with Fringe.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Gray Linen Banner with Fringe.png",
+  "prompt": "Prompt row cloth.banner.hung in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Iziz and Dalab vpBanner, generic banners; a single panel with its fringed foot at the bottom: map once, tinted",
+  "sha1": "d7941f72bc433728bc52c1cecc02dccf5b0db8a3"
+ }
+}

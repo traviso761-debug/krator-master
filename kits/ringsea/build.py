@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Concatenate src/* (+ core/materials/*) into dist/ringsea.html: the Ring Sea watercraft kit.
+"""Concatenate src/* (+ core/materials/*, core/atmos, core/water) into dist/ringsea.html: the Ring Sea watercraft kit.
 
 Rules it enforces (the same ones the Ancients-lineage builds use):
 
@@ -74,6 +74,18 @@ DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 OUT = 'ringsea'
+# the material library (core/materials/PLAN.md): the record code, and 45x-matlib-pack.js GENERATED from tex/
+# (tools/textures/matlib_pack.py, from materials.json by tools/textures/pack.py); src/45y-rs-matlib.js binds it onto RSMAT
+RECORD = os.path.join(ROOT, 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+MATLIB_PACK = '45x-matlib-pack.js'
+# the shared atmosphere (core/atmos/README.md): its core, presets, the open-water wave field and the sky's light, which the
+# sea takes through core/water; and core/water itself (core/water/README.md): the data side (WATER: the open surface, the
+# CPU twins, WATER.ride) and the drawing side (the CDLOD water mesh). Listed by name, like core/materials/record above.
+ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
+CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+WATER_DIR = os.path.join(ROOT, 'core', 'water')
+CORE_WATER = ['20-core-water.js', '50-core-water-draw.js']
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
 RE_RESEED = re.compile(r'\breseed\(\s*(\d+)\s*\)')
@@ -120,10 +132,17 @@ def check(order, bodies):
 def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(CORE, f) for f in CORE_FILES}
+    paths.update({f: os.path.join(RECORD, f) for f in RECORD_FILES})
+    paths.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS})
+    paths.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER})
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides
-    order = sorted(paths)
-    bodies = {}
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    order = sorted(list(paths) + [MATLIB_PACK])
+    bodies = {MATLIB_PACK: matlib_pack.fragment(HERE, 'ringsea')}
     for f in order:
+        if f == MATLIB_PACK:
+            continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
     if do_checks:
@@ -175,6 +194,7 @@ DELIBERATE = {'src/00-head.html': 'own title',
               'verify.py': 'vessel invariants in _api.extra(), Chromium fallback',
               'jscheck.py': 'pre-installed Chromium fallback'}
 SOCKETS = os.path.join(ROOT, 'core', 'sockets', '80-cultures.js')
+SYMBOLS = os.path.join(ROOT, 'core', 'sockets', '38-symbols.js')
 
 
 def _js_fn_body(src, start):
@@ -220,13 +240,14 @@ def vendor_check():
             print('  !  RS_CULT.%-9s differs from the core/sockets pack in: %s' % (k, ', '.join(diffs))); bad.append('RS_CULT.' + k)
         else:
             print('  =  RS_CULT.%-9s matches the core/sockets pack' % k)
-    for mine, theirs in (('rsSymSun', 'sun'), ('rsSymDiamond', 'diamond')):
+    syms = open(SYMBOLS, encoding='utf-8').read()
+    for mine, theirs in (('rsSymSun', 'sun'), ('rsSymDiamond', 'diamond'), ('rsSymWindWave', 'windwave')):
         a = _js_fn_body(tex, tex.index('function %s(' % mine))
-        b = _js_fn_body(cult, re.search(r'\n %s:\(' % theirs, cult).end())
-        if norm(a) == norm(b):
+        b = _js_fn_body(syms, re.search(r'\n %s:\(' % theirs, syms).end())
+        if norm(a) == norm(b.replace('SYM_TAU', 'TAU')):
             print('  =  %-18s matches SYMBOLS.%s' % (mine, theirs))
         else:
-            print('  !  %-18s differs from SYMBOLS.%s in core/sockets/80-cultures.js' % (mine, theirs)); bad.append(mine)
+            print('  !  %-18s differs from SYMBOLS.%s in core/sockets/38-symbols.js' % (mine, theirs)); bad.append(mine)
     print('vendor-check: ' + ('OK (only the deliberate drift in KNOWN_ISSUES.md)' if not bad else 'DRIFT: ' + ', '.join(bad)))
     return not bad
 

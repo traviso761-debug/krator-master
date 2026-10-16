@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1536,
+   1024
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.palm.coconut",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Three Tropical Palm Fronds.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "note": "a three-frond sheet (1536 x 1024, squared on crop); card.palm holds date-palm fronds and palmetto fans",
+  "original_title": "Three Tropical Palm Fronds.png",
+  "prompt": "card.palm / card.lotus prompt (core/materials/PROMPTS-ready.md, the frond and flower cards)",
+  "reuse": "long arching coconut-palm fronds: tropical palms in the bays, hyperjungle and xanadu (tintable)",
+  "sha1": "38f4baa1deeef50b0f29efeabc6a3e4da4d1f7bb"
+ }
+}

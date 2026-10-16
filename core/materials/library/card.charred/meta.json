@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.charred",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-charred.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Burnt shrub card: nine black charred shrub skeletons after a wildfire, bare forking twigs (#1e1b18) with a faint grey ash coating on their upper sides, a few curled brown scorched leaves on two of them, standing up from the bottom of each cell, on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.charred of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+  "reuse": "the char and the bloom here; burnt hedges and gardens anywhere; bare winter shrubs (tinted grey-brown)",
+  "sha1": "ce7c6fb35101a14081e1db38edd2bf70d427b3d0"
+ }
+}

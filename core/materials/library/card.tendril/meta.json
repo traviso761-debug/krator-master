@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.tendril",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-tendril.png",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "not recorded: supplied as \"Alien Tendril Specimen Grid.png\", 2026-10-06; a sheet on flat magenta (#ff00ff)",
+  "reuse": "pale curling tendril rosettes, 3 x 3: the ash creeper and the plume's floor",
+  "sha1": "453fb74618164e2a7502d17dbac5a54001977dd6"
+ }
+}

@@ -4,11 +4,11 @@
     python3 tools/textures/process.py SOURCE OUT_DIR --id roof.thatch [options]
     python3 tools/textures/process.py --batch tools/textures/batches/beast-riders.json SRC_DIR
 
-Writes OUT_DIR/albedo.jpg, normal.png, roughness.png (all SIZE x SIZE) and meta.json.
+Writes OUT_DIR/albedo.jpg, normal.jpg, roughness.png (all SIZE x SIZE) and meta.json.
 Every step works on a periodic (wrap-around) image, so the outputs tile.
 
 Steps, in order:
-  1. seamless   pattern sheets: crop each axis to the pattern's own period (found by self-similarity),
+  1. seamless   (`--seam-axes x`: across only, the height left whole: a dome's sky) pattern sheets: crop each axis to the pattern's own period (found by self-similarity),
                 so motifs stay whole; everything else: cross-fade a band of the far edge into the near
                 edge (the image loses `--band` of its width and becomes exactly periodic).
   2. delight    divide out the large-scale luminance (a wide periodic blur), so baked lighting gradients
@@ -104,14 +104,19 @@ def process(src, out_dir, opt):
     log = {'source_size': list(img.size), 'seam_before': seam_score(a)}
 
     # 1. seamless
+    # seam_axes 'x': a sheet that wraps across only (a dome's sky, its rim at the bottom edge), its height left whole
+    # seam_axes 'none': a picture that does not repeat (a disc painted for a dome, mapped round its zenith): left whole
+    ys, xs = 'y' in opt['seam_axes'], 'x' in opt['seam_axes']
     if opt['pattern']:
-        Lx, ex = best_period(a, 1); Ly, ey = best_period(a, 0)
+        Lx, ex = best_period(a, 1) if xs else (a.shape[1], 0.0); Ly, ey = best_period(a, 0) if ys else (a.shape[0], 0.0)
         a = a[:Ly, :Lx]
         log['pattern_crop'] = [Lx, Ly]
         # a short cross-fade cleans up the last pixel of mismatch without visible ghosting
-        a = crossfade(crossfade(a, 1, 0.015), 0, 0.015)
+        if xs: a = crossfade(a, 1, 0.015)
+        if ys: a = crossfade(a, 0, 0.015)
     else:
-        a = crossfade(crossfade(a, 1, opt['band']), 0, opt['band'])
+        if xs: a = crossfade(a, 1, opt['band'])
+        if ys: a = crossfade(a, 0, opt['band'])
 
     # 2. delight
     if opt['delight'] > 0:
@@ -164,11 +169,13 @@ def process(src, out_dir, opt):
         Image.fromarray((np.clip(arr, 0, 1) * 255 + 0.5).astype(np.uint8), mode).save(
             os.path.join(out_dir, name), optimize=True)
     # the colour map as high-quality JPEG (a fifth of the PNG size; the engine recompresses it anyway);
-    # normal and roughness stay lossless, since block artefacts in a normal map show as faceting.
+    # the normal map as JPEG q95 with no chroma subsampling: X and Y live in red and green, so 4:2:0 would
+    # halve their resolution (about 5 degrees mean error); 4:4:4 keeps it near 1.6. Roughness stays lossless.
     # The height map is not kept: it is derived from the colour map and can be regenerated.
     Image.fromarray((np.clip(a, 0, 1) * 255 + 0.5).astype(np.uint8)).save(
         os.path.join(out_dir, 'albedo.jpg'), quality=92, subsampling=0, optimize=True)
-    save(n * 0.5 + 0.5, 'normal.png')
+    Image.fromarray((np.clip(n * 0.5 + 0.5, 0, 1) * 255 + 0.5).astype(np.uint8)).save(
+        os.path.join(out_dir, 'normal.jpg'), quality=95, subsampling=0, optimize=True)
     save(r, 'roughness.png', 'L')
 
     log['seam_after'] = seam_score(a)
@@ -179,7 +186,7 @@ def process(src, out_dir, opt):
 
 DEFAULTS = dict(keep_aspect=False, pattern=False, band=0.06, delight=0.6, lift=0.15, size=1024, mute=0.0,
                 height_soften=0.8, invert_height=False, normal_strength=1.0,
-                rough=0.75, rough_var=0.25, dark_gloss=0.0)
+                rough=0.75, rough_var=0.25, dark_gloss=0.0, seam_axes='xy')
 
 
 def run_one(src, out_dir, rec, opt):
@@ -189,7 +196,7 @@ def run_one(src, out_dir, rec, opt):
         sha = hashlib.sha1(fh.read()).hexdigest()
     meta = {
         'record': rec,
-        'maps': {'map': 'albedo.jpg', 'normalMap': 'normal.png', 'roughnessMap': 'roughness.png'},
+        'maps': {'map': 'albedo.jpg', 'normalMap': 'normal.jpg', 'roughnessMap': 'roughness.png'},
         'source': {'file': os.path.basename(src), 'sha1': sha},
         'processing': {'script': 'tools/textures/process.py', 'version': VERSION, 'options': o, 'log': log},
     }

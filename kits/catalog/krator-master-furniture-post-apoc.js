@@ -122,3 +122,7 @@ FURN({
       F.rod(x - 0.06, 0.23, 0.15, x + 0.06, 0.23, 0.15, 0.05, F.col('dialGrey'), 'metal'); }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed post-apoc_training_<role> */
+FK.set({ culture: 'post-apoc', tier: 'common', roles: 'training', prefix: 'post-apoc_training_', S: PA_COMMON, names: {
+  training_dummy: 'Sandbag practice dummy', archery_butt: 'Plate shooting target' } });

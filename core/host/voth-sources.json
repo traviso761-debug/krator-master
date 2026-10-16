@@ -1,0 +1,21 @@
+{
+ "commit": "69fda11f06dbe0b17b689819e3f21a1ca7914c92",
+ "files": {
+  "core/city/50-city-host-streets.js": "12bdc2059f44fcfa0db78f5dd3cbf419fe02628f",
+  "core/city/52-city-host-buildings.js": "d49da758eb478449fbaa0ba5e0d54e20e9192d10",
+  "kits/catalog/krator-asset-engine.js": "666d5790f074437191a41aa0a2446ea00c98ffe5",
+  "settlements/voth/serve.py": "af171a818b9979a684df41b24847cff75f4d435a",
+  "settlements/voth/targets/voth-city/00-head.html": "f4592f89693a533e741ff337fa87b382a71e4681",
+  "settlements/voth/targets/voth-city/55-vc-host.js": "1884524c1c67e804bd2edebcef090f6f221fb878",
+  "settlements/voth/targets/voth-city/56-vc-interiors-host.js": "a05a2ba07210617c9f8286178572fbd3bda1370e",
+  "settlements/voth/targets/voth-city/56d-vc-inspect-host.js": "2d31511a3fa38a2cbc05891c8f4f63c48ed1b84d",
+  "settlements/voth/targets/voth-city/56e-vc-stocks-host.js": "a23296f23a208c0c5712af17589412c83ca077c5",
+  "settlements/voth/targets/voth-city/57-vc-marks.js": "1fd2ba52c17294d1be3373ec16f9c8cae72906c3",
+  "settlements/voth/targets/voth-city/58-vc-tools.js": "6ad728496e825f1a2debf65b6b38d67427eb3ac4",
+  "settlements/voth/targets/voth-city/59-vc-flora-edit.js": "1d05893c405f5fdbc35841c5caf232bff6fbcc05",
+  "settlements/voth/targets/voth-city/98-start.js": "374052d252caed1b886346d03ef8dc1e04623d99",
+  "settlements/voth/targets/voth-site/50-site-scene.js": "f8850516577d71b5b1db1bd88585cca94c0f5c21",
+  "settlements/voth/targets/voth-site/55-site-tools.js": "3490e193e1bf02494ed2224fe06a5f270c9a49a3"
+ },
+ "what": "the Voth files core/host is copied from, at the blob each was read in (ROADMAP.md section 10); python3 core/host/sources.py says which changed since. Re-keyed 2026-10-14 from settlements/streetlab to settlements/voth (the folder's move); serve.py and voth-site/55-site-tools.js were re-recorded then, their only change being the move's path fixes. 2026-10-15: 56d (the citizen card's things) and 56e (what things hold, the stocks panel) added: core/host/93-host-stocks.js ports them (the owner: Voth's new interface is the standard); not ported, on purpose: the pause on K (the host's speed buttons pause), 56b's cut of every building in view (a height grid; 99 cuts one unit), the density overlay (Voth's)"
+}

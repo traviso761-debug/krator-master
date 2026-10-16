@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 250,
+   "key_lo": 100,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.grass.dry",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-grass-dry.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Grass card: nine tufts of dry bunchgrass standing up from the bottom of each cell, fine straw-coloured blades (#c8b47a, #b8a46a) with a few green ones at the base and slender seed heads, on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.grass.dry of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+  "reuse": "the old scrub here; savannah, steppe, every dry grassland kit",
+  "sha1": "2738c5360cd0f4643913ba58bc779f90c63c81f5"
+ }
+}

@@ -1,0 +1,98 @@
+[
+ {
+  "src": "Lichen Texture Grid on Magenta.png",
+  "out": "core/materials/library/card.lichen",
+  "record": {
+   "id": "card.lichen",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.lichen).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Lichen Texture Grid on Magenta.png",
+    "reuse": "lichen patches on rocks and trunks: sedesert, ebadlands, crater (full colour)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Lotus Lily Pad Sprite Grid.png",
+  "out": "core/materials/library/card.lotus",
+  "record": {
+   "id": "card.lotus",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.lotus).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Lotus Lily Pad Sprite Grid.png",
+    "reuse": "single lily pads and lotus flowers on still water: xanadu, nwbay (full colour)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Nine Green Succulent Sprigs Grid.png",
+  "out": "core/materials/library/card.samphire",
+  "record": {
+   "id": "card.samphire",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.samphire).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Nine Green Succulent Sprigs Grid.png",
+    "reuse": "samphire and glasswort on salt flats: eastabyss, rift"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

@@ -1,0 +1,63 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.178,
+    0.867
+   ],
+   "seam_before": [
+    1.349,
+    1.199
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.7,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.55,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "skin",
+  "id": "skin.smooth",
+  "metal": 0,
+  "roughness": 0.55,
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "21.webp",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 21.webp)",
+  "licence": "generated for this project by its owner",
+  "original_file": "21.webp",
+  "original_sha1": "59c2731f7b3889d7c554440997eb0370dbc00a69",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Smooth moist animal skin as on a salamander, a frog or a whale: fine pores, soft wrinkles and creases in loose bands, a few tiny raised bumps, slightly glossy, no scales and no hair. Neutral mid grey so it can be tinted. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+  "reuse": "fauna skin: salamanders, bay swimmer, sky ray, pig, lizards' bellies; eels, frogs, oiled leather",
+  "sha1": "59c2731f7b3889d7c554440997eb0370dbc00a69"
+ }
+}

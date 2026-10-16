@@ -97,3 +97,18 @@ preset per vessel per decay and 'Reclaimed drone carrier — flight deck'.
 fade is masked inside `dry` stamps (up to 16 rects, a uniform array), so dry
 pits can use the normal kit.
 
+**The sea on core/water (2026-10-13).** The sea is core/water's open water (`core/water/README.md`;
+`src/71w-port-sea.js`, which `portBuildTerrain` calls in place of the flat sheet): a `WATER.open` surface at
+`PORT.SEA0` with a calm share of the shared wave field (`PORT_SEA_FIELD` .25: at most 14 cm, so the baked vessels and
+boats keep their waterlines; `PORT_SEA_TILT` 2.4 so the chop reads), no swell of its own, on core/atmos's clock (the
+frame loop runs `PORT_FRAME`), drawn by `WATER.draw` on the CDLOD water mesh. Its bed is baked from `terrainH` after the
+stamps (5 m cells over the layout plus 700 m): the water calms to nothing at the beach and against the moles, laps a
+surf under 1.4 m and fades out over the sand. The depth tint stays painted on the seabed and is seen through the
+part-transparent water, as before (the old sheet's colour, opacity .72, its fresnel opacity at grazing angles);
+`TEX.pkSeaN` is the detail normal map, scrolled whole tiles per period. The sky in the water is core/atmos's skylight,
+a capture of the dome and the giant given to the water only, recaptured when the night switches. Dry pits are cut out
+by the `PK_DRY` rects. `segment` from the sea and the overview, `hbMarina` over the pontoons and at night: the same
+draw calls (73, 144, 68, 92 -> 95 at night), triangles +60 to +95 k (the 2-triangle-a-cell sheet became ~200 CDLOD
+nodes); `verify.py --assert` on `segment` and `showcase` gives the same results before and after (`segment` all PASS:
+scene triangles 945692 -> 945690, the flat sheet's two gone; `showcase` the same two soft OVERs as before, env/0 5716492
+-> 5706254 and 9077036 -> 9066798 scene triangles, the cut sheet gone, draw calls at its camera 801 -> 803). Ys vendors `71w-port-sea.js` and mirrors the call in its adapted `71-port-terrain.js`.

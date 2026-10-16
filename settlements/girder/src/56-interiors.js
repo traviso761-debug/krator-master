@@ -22,12 +22,24 @@
    with another placement seed (twice at most); what still fails is listed in _interiors.residenceFails. */
 var GIX = { jobs:[], total:0, done:0, rooms:0, pieces:0, partitions:0, dropped:[], fallbacks:0, residenceFails:[], retries:0,
             missingItems:{}, ms:0, msPlan:0, t0:0, acc:{}, group:null, mergedTris:0, byKey:{} };
-GIX.batch = KratorFurniture.batch();
+GIX.batch = KratorFurniture.batch({ indexed: true });   /* indexed buckets: gixAccum carries the index */
 GIX.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, GIX.batch);
 (function(){
   var lights0 = GIX.adapter.lights;   /* a piece's lights do not depend on its seed: one build per key and variant, not per placement */
   GIX.adapter.lights = function(key, v){ return lights0(key, v, { seed:1, wealth:0.5 }); };
   if(!GFURN.on) GIX.adapter.build = GFURN.adapter.build;
+  /* every interior piece is a core/tags record too (prefix ixf, its building as parent), so the inspector names it and the
+     owner's edits can move or remove it (53-furnish.js gfVetoed: a vetoed piece is not built) */
+  var gixBuild0 = GIX.adapter.build;
+  GIX.adapter.build = function(p, room){
+    var E = KratorFurniture.FURN_BY_KEY[p.key] || {}, t = { setting:'room' };
+    if(E.culture) t.culture = E.culture; if(E.tier) t.tier = E.tier; if(room && room.id != null) t.room = String(room.id);
+    var r = KTAGS.page.add({ prefix:'ixf', 'class':'furniture', kind:E.type||null, key:p.key, name:E.name||null,
+      parent: room && room.building != null ? String(room.building) : null, at:[p.x, p.y||0, p.z], ry:p.ry||0,
+      size: E.w ? [E.w, E.d, E.h] : undefined, tags:t, frag:'56-interiors.js' });
+    if(gfVetoed(r)){ GEDIT.vetoed.push(r.id); return { key:p.key, variant:p.variant, seed:p.seed, x:p.x, y:p.y, z:p.z, ry:p.ry, building:room?room.building:null, room:room?room.id:null, setting:'indoor', lights:[] }; }
+    return gixBuild0.call(this, p, room);
+  };
 })();
 
 /* FRM-local (55-arch: x = right, z = front) -> the set's frame (the catalog's: x is the mirror) */
@@ -167,27 +179,35 @@ function gixFurnish(J){
   J.owner.interior.residence = { residence:res.residence, beds:res.beds, food:res.food, items:res.items, fails:res.fails.length };
   J.plans = plans; GIX.pieces += n; GIX.done++;
 }
-/* the merged meshes, grown as the frames' batches arrive: one accumulator per render family (vertex colours) and per painted material (decals: uv + map) */
+/* the merged meshes, grown as the frames' batches arrive: one accumulator per render family (vertex colours) and per painted material (decals: uv + map).
+   Each is indexed: a flushed batch mesh brings its vertices and its index (offset by the vertices already there); a non-indexed
+   geometry (a decal: gfDecal) gets sequential indices. A.n counts vertices, A.ni indices (the draw range) */
 var GIX_SPEC = { col:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['color',3,Uint8Array,true]],
                  uv:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['uv',2,Float32Array,false]] };
 function gixAccum(key, kind, material, geo){
-  var spec = GIX_SPEC[kind], A = GIX.acc[key], nv = geo.attributes.position.count;
-  if(!A || A.n + nv > A.cap){
+  var spec = GIX_SPEC[kind], A = GIX.acc[key], nv = geo.attributes.position.count, I = geo.index, ni = I ? I.count : nv, i;
+  if(!A || A.n + nv > A.cap || A.ni + ni > A.icap){
     var cap = Math.max(nv*2, A ? A.cap*2 : 60000); while(A && A.n + nv > cap) cap *= 2;
-    var g2 = new THREE.BufferGeometry(), arrs = {};
+    var icap = Math.max(ni*2, A ? A.icap*2 : 90000); while(A && A.ni + ni > icap) icap *= 2;
+    var g2 = new THREE.BufferGeometry(), arrs = {}, idx = new Uint32Array(icap);
     spec.forEach(function(s){ var a = new s[2](cap*s[1]); if(A) a.set(A.arrs[s[0]].subarray(0, A.n*s[1])); arrs[s[0]] = a; g2.setAttribute(s[0], new THREE.BufferAttribute(a, s[1], s[3])); });
-    if(A){ A.mesh.geometry.dispose(); A.mesh.geometry = g2; A.arrs = arrs; A.cap = cap; A.fresh = true; }
+    if(A) idx.set(A.idx.subarray(0, A.ni));
+    g2.setIndex(new THREE.BufferAttribute(idx, 1));
+    if(A){ A.mesh.geometry.dispose(); A.mesh.geometry = g2; A.arrs = arrs; A.idx = idx; A.cap = cap; A.icap = icap; A.fresh = true; }
     else {
       var mesh = new THREE.Mesh(g2, material); mesh.name = 'interiors:'+key; gixMaterial(mesh, kind);
-      GIX.group.add(mesh); A = GIX.acc[key] = { n:0, cap:cap, arrs:arrs, mesh:mesh, fresh:true, spec:spec };
+      GIX.group.add(mesh); A = GIX.acc[key] = { n:0, ni:0, cap:cap, icap:icap, arrs:arrs, idx:idx, mesh:mesh, fresh:true, spec:spec };
     }
   }
-  var at = A.mesh.geometry.attributes;
+  var at = A.mesh.geometry.attributes, ix = A.mesh.geometry.index;
   spec.forEach(function(s){ A.arrs[s[0]].set(geo.attributes[s[0]].array, A.n*s[1]); var b = at[s[0]];
     if(A.fresh){ b.updateRange.offset = 0; b.updateRange.count = -1; } else { b.updateRange.offset = A.n*s[1]; b.updateRange.count = nv*s[1]; }
     b.needsUpdate = true; });
-  A.fresh = false; A.n += nv;
-  A.mesh.geometry.setDrawRange(0, A.n);
+  if(I){ var src = I.array; for(i=0;i<ni;i++) A.idx[A.ni+i] = src[i] + A.n; } else for(i=0;i<ni;i++) A.idx[A.ni+i] = A.n + i;
+  if(A.fresh){ ix.updateRange.offset = 0; ix.updateRange.count = -1; } else { ix.updateRange.offset = A.ni; ix.updateRange.count = ni; }
+  ix.needsUpdate = true;
+  A.fresh = false; A.n += nv; A.ni += ni;
+  A.mesh.geometry.setDrawRange(0, A.ni);
   A.mesh.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(0,0,0), 1e5);
   geo.dispose();
 }
@@ -203,7 +223,7 @@ function gixMerge(){
   if(!GIX.group){ GIX.group = new THREE.Group(); GIX.group.name = 'interiors-furniture'; GIX.group.userData.inspectLabel = 'Furniture (interiors)'; scene.add(GIX.group); }
   g.children.slice().forEach(function(m){
     if(m.material.map) gixAccum('decal|'+m.material.uuid, 'uv', m.material, gfDecal(m));
-    else { var fam = m.material.userData.family || '', had = !!GIX.acc[fam]; gixAccum(fam, 'col', m.material, m.geometry); if(had) m.material.dispose(); }
+    else { var fam = (m.material.userData.family || '') + (m.material.userData.texFamily ? '/' + m.material.userData.texFamily : ''), had = !!GIX.acc[fam]; gixAccum(fam, 'col', m.material, m.geometry); if(had) m.material.dispose(); }
   });
 }
 GIX.lastMerge = 0;

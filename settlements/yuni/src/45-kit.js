@@ -246,6 +246,24 @@ function nlMaterial(mat, key, extraHook, wpName){
   return mat;
 }
 
+/* one material for a FAMMAT family (Girder's famMaterial). A library family (47-texture.js ytexLibrary) gets the set's
+   colour, normal and roughness maps on a MeshStandardMaterial; a procedural one keeps the MeshLambertMaterial it always
+   had, with the same parameters, so ?mat=proc is the old look. opt: vertexColors, alphaTest, side. */
+function famMaterial(fm, opt){
+  opt = opt || {};
+  if(fm.lib){
+    var T = fm.libTex, L = fm.lib;
+    var m = new THREE.MeshStandardMaterial({ color:0xffffff, vertexColors:!!opt.vertexColors, map:T.map, normalMap:T.normalMap,
+      roughnessMap:T.roughnessMap, roughness:1, metalness:L.metal||0, alphaTest:opt.alphaTest||0, side:opt.side||THREE.FrontSide });
+    if(T.normalMap) m.normalScale.set(L.normalScale||1, L.normalScale||1);
+    m.userData.lib = L.lib;
+    return m;
+  }
+  var p = { color:0xffffff, map: fm.tex || null, alphaTest: opt.alphaTest||0, side: opt.side||THREE.FrontSide };
+  if(opt.vertexColors) p.vertexColors = true; else p.transparent = false;
+  return new THREE.MeshLambertMaterial(p);
+}
+
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
 /* the instance matrix of one kit record (also used by 76-doors.js to re-pose a door leaf) */
 function kitMatrix(r, out){
@@ -271,14 +289,13 @@ function emitBuckets(opt){
     var geo = SHAPES[B.shape]();
     var fm  = FAMMAT[B.fam] || {};
     var mat = opt.mat ? opt.mat(B) : fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
-            : new THREE.MeshLambertMaterial({ color:0xffffff, map: fm.tex || null,
-                  transparent:false, alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
+            : famMaterial(fm, { alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
     mat.userData.fam = B.fam;
     if(!fm.basic && !opt.mat){
-      (function(needsUV, needsSway, sc){
-        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); applyNightGlow(sh); };
-        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv'; };
-      })(!!fm.tex, B.fam==='cloth', fm.scale || [3,3]);
+      (function(needsUV, needsSway, sc, L){
+        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(L) KMAT.libHooks(sh, L); applyNightGlow(sh); };
+        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (L ? '|std'+KMAT.libKey(L) : ''); };
+      })(!!fm.tex, B.fam==='cloth', fm.lib ? fm.lib.scale : (fm.scale || [3,3]), fm.lib || null);   /* a library map tiles at its own size */
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
@@ -459,9 +476,9 @@ function emitMerged(opt){
     g.computeBoundingSphere();
     var fm = FAMMAT[fam] || {};
     var mat = opt.mat ? opt.mat({ fam:fam, shape:'merged' }) : fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
-            : new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, map:fm.tex||null,
-                  alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    if(!fm.basic && !opt.mat) nlMaterial(mat, 'mb'+fam);
+            : famMaterial(fm, { vertexColors:true, alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
+    if(!fm.basic && !opt.mat) nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std'+KMAT.libKey(fm.lib) : ''),
+      fm.lib ? (function(L){ return function(sh){ KMAT.libHooks(sh, L); }; })(fm.lib) : null);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
@@ -476,4 +493,26 @@ function emitMerged(opt){
    whatever is under the cursor: REGISTER({name, kind, x,y,z, r, h, plat}) —
    a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins. */
 var SITES = [];
-function REGISTER(o){ if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK){ INTERIOR_SINK.sites.push(o); return o; } SITES.push(o); return o; }
+/* Each site is also a core/tags record (core/tags/README.md; as Girder's 45-kit.js), its id kept on the site as `rid`:
+   the host's inspector and editor read the records. The buildings and their doors, windows and lights are 51-fixtures.js's
+   records already (FIX_TAGS), so an asset or a fixture site is not registered again; a piece (furniture, plant) built by
+   53-assets.js buildFrom is a turned box (box: [w, d, ry]). A culture core/tags knows is kept as its tag. A site inside an
+   interior being built (INTERIOR_SINK) is the interior's, not the page's. */
+var REG_CLASS = { furniture:'furniture', plant:'flora', bridge:'infrastructure', canal:'infrastructure', gate:'infrastructure', wall:'infrastructure',
+  tower:'infrastructure', lamp:'fixture', vault:'landmark', landform:'feature', park:'feature', plot:'feature', underground:'feature' };
+var REG_Q = [];   /* sites registered before core/tags' vocabulary has loaded */
+function REGISTER(o){ if(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK){ INTERIOR_SINK.sites.push(o); return o; } SITES.push(o);
+  if(o.kind==='asset' || o.kind==='fixture') return o;
+  if(typeof KTAGS === 'undefined' || !KTAGS.VOCAB || !KTAGS.page){ REG_Q.push(o); return o; }
+  regFlush(); regRecord(o); return o; }
+function regFlush(){ var q = REG_Q; REG_Q = []; q.forEach(regRecord); }   /* 98-start.js calls it before the take */
+function regRecord(o){
+  var T = KTAGS.page, V = KTAGS.VOCAB;
+  var rec = { 'class':REG_CLASS[o.kind] || 'feature', kind:o.kind||null, key:o.key||null, name:o.name, at:[o.x, o.y||0, o.z], note:o.label||null, frag:'45-kit.js REGISTER' };
+  if(o.culture && (V.cultures.indexOf(o.culture) >= 0 || V.cultureAlias[o.culture])) rec.tags = { culture:o.culture };
+  if(o.box){ rec.ry = o.box[2]||0; rec.size = [o.box[0], o.box[1], o.ah||o.h||2]; }
+  else if(o.seg){ var dx=o.seg[2]-o.seg[0], dz=o.seg[3]-o.seg[1]; rec.at=[(o.seg[0]+o.seg[2])/2, o.y||0, (o.seg[1]+o.seg[3])/2]; rec.ry=Math.atan2(dx,dz); rec.size=[o.seg[4]||2, Math.hypot(dx,dz), o.h||2]; }
+  else if(o.hx) rec.size = [o.hx*2, o.hz*2, o.h||2];
+  else if(!o.ring && o.r != null){ rec.r = o.r; rec.h = o.h; }
+  o.rid = T.add(rec).id;
+}

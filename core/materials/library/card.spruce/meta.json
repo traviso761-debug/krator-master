@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 240,
+   "key_lo": 90,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.spruce",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-spruce.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Spruce leaf card: nine flat spruce branch sprays, each a main stem with side shoots densely covered in short blue-green needles (#3a5444, #46644e), drooping slightly at the tips, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.spruce of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+  "reuse": "spruce and fir here; `biomes/nhighlands` spruces and cedars",
+  "sha1": "01374235d3b64bf95cec5f1167836dd67dd1446c"
+ }
+}

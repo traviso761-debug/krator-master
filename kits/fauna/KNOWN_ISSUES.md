@@ -1,0 +1,40 @@
+# kits/fauna: known issues
+
+`build.py` prints the open ones (`- [ ]`) after every build.
+
+- [ ] Every animal is here (48 species, 2026-10-06), but the builds still draw their own copies (each entry's `source` says
+      where): point the biome kits and settlements at the bundle, one build at a time, and check each still reads the same.
+- [ ] Wings are rigid: a perched bird's wing is turned back, shortened and rolled down the flank (`flap.sweep`, `foldScale`,
+      `roll`), which reads as folded for the kite, swift and dart; the gull's built-in dihedral fights the roll, so it keeps a plain
+      sweep. The giant flyers, the flamingo and the canopy darter fold in their shape and fly as a `'fly'` pose build. A wrist
+      joint (a `hand` sub-part per wing) would fold every bird the same way.
+- [ ] Parts turn rigidly: no skinning, so knees do not move (legs turn at the hip, the bend is built in), and a rigid neck stops
+      a horse's or grazer's muzzle about 0.4 m above the ground. The octopod and hexapod walks swing whole legs, so feet slide
+      (Mav's spiders plant theirs by IK). A Godot port takes each part as a bone; a skinned version could follow kits/mechs.
+- [ ] `A.tube` turns its section's 'up' from +y to +z where a curve passes near vertical, which can pinch a leg at a bend; the
+      species files build legs from straight segments with joint knobs (`faFmChain`, `faAbLimb`). Its end caps faced inward
+      until 2026-10-06 (fixed in the core; some species files close their ends themselves).
+- [ ] Hens and ducks walk as bipeds and never flap; a frilled lizard's open frill is a variant, not an animation; no couched
+      (kneeling) dromedary pose; a grounded giant bat walks as a biped (its planted wrists do not step).
+- [x] Every bird's plumage was the `feather` family with no map. Fixed 2026-10-14: bodies take `feather.plumage` (`feather`), wings
+      `feather.flight` (`flight`: the runtime gives a wing part's feathers that family). A Meshy-model variant keeps its baked maps.
+- [ ] The goat's long hair is strips and a skirt, not cards with alpha: up close the locks read as ribbons.
+- [x] The salamander's markings were vertex colours on 16-sided rings, blocky at close range. Fixed 2026-10-14: the owner's painted
+      skins are FULL-colour families (`salEmber`, `salDun`, by variant), mapped triplanar in each part's frame; the belly keeps its
+      vertex colour. Without the pack (or `?mat=proc`) the vertex-colour markings show as before.
+- [ ] Yields, masses and life figures: the goat's and the farm animals' are plausible real-animal figures; those of the invented
+      species are the porting agents' judgement (the sources carry none). The owner may want to set them. The hyperjungle sky
+      ray is drawn at the biome's rendered size (span about 19 m), about twice LORE.md's "6-12 m soarers".
+- [ ] No ash-plain biome exists yet: the Ash Nomads' staghorn beetle and ash runner are tagged with the nearest keys,
+      `swbay` (the volcano) and `crater-drylands` (burnt steppe); the millipede adds `crater-drylands` for its ash herd. Retag
+      them when the biome exists. The Zeijani of Dhelv ride the staghorn beetle too, but are not a catalog culture yet, so
+      only `ashnomad` is in its `herdedBy` (a note in its `source` names them).
+- [ ] The Meshy model variants (giant dragonfly #1, quetzalcoatlus #1, giant bat #1, giant archaeopteryx #1, draught millipede #3, cattle #4 and #5, pig #3, sheep #3, hen #4, goat #4, horse #4, water buffalo #2, yak #3, bison #3, duck #3, Dalab lizard #4, dog and cat;
+      `models/*.json`, `models_pack.py`) are heavy next to the procedural ones: 8.5 to 13 thousand triangles each (the kit's
+      budget is 9 000; `data`/`modelData.budget` is 14 000 for them) and about 1 MB of packed geometry and baked maps apiece, so a
+      bundle that takes the flyers and crawlers grows by about 6 MB, and one that takes the farm too by about 5 MB more; models are opt-in, `bundle(groups, mdl=True)`. Fine for a few animals a scene; do not herd them. The
+      wing and shoulder joints carry duplicated bands of faces so no seam opens (a few hundred triangles each). Their textures
+      are Meshy's baked maps, not library sets; a perched wing is a rigid fold (the membrane cannot gather); the bat's and
+      quetzal's perched wings are scaled shorter instead. Their sheet-pose builds (`pose: 'fly'`) are not model-driven: the model
+      flies by `animate(g, t, 'fly')`. Rebuilding one means re-running `rig/` (read `rig/README.md`: working code from one session, tuned by eye per model); `models_pack.py` only repacks a finished GLB.
+

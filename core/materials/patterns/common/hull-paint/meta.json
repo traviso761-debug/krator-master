@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1766,
+    839
+   ],
+   "seam_after": [
+    0.737,
+    0.723
+   ],
+   "seam_before": [
+    1.169,
+    8.766
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "common/hull-paint",
+  "metal": 0.4,
+  "pattern": true,
+  "roughness": 0.6,
+  "scale": [
+   4,
+   1.9
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Weathered Riveted Ship Hull Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Riveted Ship Hull Texture.png",
+  "prompt": "Prompt row patterns/port/hull-paint in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Port, Ring Sea and post-apoc steel hulls; the white boot-stripe sits at the waterline",
+  "sha1": "065795063a555fe596c18b903d5ec09912bae157"
+ }
+}

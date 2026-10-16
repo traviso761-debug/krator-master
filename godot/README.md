@@ -5,7 +5,8 @@ find out what an importer lacks. It is a test bench, not the game: the importers
 reads each contract, and every guess they make is printed as a **gap**. Those gaps are the spike's output; the
 first pass is in `GODOT-PLAN.md` ("The spike: first findings").
 
-Written and run on 2026-10-05 in a cloud container with **Godot 4.5-stable**: headless for the imports and the
+Run on Windows with **Godot 4.7.2-stable** too (2026-10-08: the dhelv case and its tests; Verge's replay passes there). A fresh checkout needs
+`godot --headless --path godot --import` once before a `--script` test, so the class names register. Written and first run on 2026-10-05 in a cloud container with **Godot 4.5-stable**: headless for the imports and the
 `core/rand` test, and the Compatibility renderer (OpenGL on Mesa llvmpipe, under Xvfb) for the screenshots in
 `godot/shots/` (gitignored). Forward+ on a real GPU has **not** been run yet: that, and the look, is tomorrow's job (`CHECKLIST.md`).
 
@@ -14,11 +15,25 @@ Written and run on 2026-10-05 in a cloud container with **Godot 4.5-stable**: he
 Godot 4.3 or later (4.5 tested). From the repo root:
 
 ```
-godot --path godot                                # the window: keys 1-5 switch case
+godot --path godot                                # the window: keys 1-9 switch case
 godot --path godot -- --case=rift                 # start on one case
 godot --headless --path godot -- --check          # import every case, print the gap lists, write spike-report.json
 godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/rand's golden vectors (exits 0 on pass)
-godot --headless --path godot --script res://tests/atmos/atmos_test.gd  # the Atmos autoload against core/atmos (night, hours, weather)
+godot --headless --path godot --script res://tests/tags/ktags_test.gd   # core/tags' uid vectors (exits 0 on pass)
+godot --headless --path godot --script res://tests/tags/records_test.gd   # the hyperjungle case's ids: every MultiMesh instance's uid, recomputed
+godot --headless --path godot --script res://tests/export/world_test.gd   # M4: the world-sedesert case (core/export): uids, materials, terrain
+godot --headless --path godot --script res://tests/export/iziz_test.gd    # M5: the world-iziz case: a city's records, fixtures, owners, materials and hooks
+godot --headless --path godot --script res://tests/shaders/library_test.gd   # the shader library: the hook table; world-sedesert's ground layers and pond
+godot --headless --path godot --script res://tests/water/water_test.gd     # KWater (core/water's twin) against WATER's own heights, frames, foam, bed
+xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/shaders/library_gpu_check.gd   # the includes on a GPU
+godot --headless --path godot --script res://tests/mask/kmask_test.gd   # core/mask's golden grid (exits 0 on pass)
+godot --headless --path godot --script res://tests/terrain/kfield_test.gd        # core/terrain's field: KField against the page's golden samples
+godot --headless --path godot --script res://tests/terrain/field_import_test.gd  # a krator-field to a mesh and HeightMapShape3D collision (rays)
+godot --headless --path godot --script res://tests/atmos/atmos_test.gd  # the Atmos autoload against core/atmos (night, hours, weather, waves)
+godot --headless --path godot --script res://tests/verge/verge_sim_test.gd   # Verge's sim replayed against its golden trace
+godot --headless --path godot --script res://tests/dhelv/dhelv_sim_test.gd   # Dhelv's ramblers: KSim.pose (core/simulation's twin) against the page's trace
+godot --headless --path godot --script res://tests/dhelv/dhelv_nav_test.gd   # Dhelv's walk floors baked to a navmesh: gate to temple, through the braid
+xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
 godot --headless --path godot --script res://tests/character/kchar_test.gd   # kits/characters: records and morphs against the JS golden, a MakeHuman figure from the pieces
 ```
 
@@ -26,18 +41,25 @@ Or open `godot/project.godot` in the editor (Import, then F5). The editor skips 
 spike loads its exports at runtime, and the editor's glTF import of a 20 MB region with LOD generation took over
 twenty minutes. To try the editor's import route, copy a `.glb` out of `data/` (`CHECKLIST.md` item 3).
 
-In the window: right mouse drag to look, WASD to move, Q/E down and up, Shift for x5, wheel for speed. `[` `]` step the
-hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather (or start with `-- --weather=storm`), `F1` hides the help, `F2` prints the case's report.
+In the window: left or right mouse drag to look, middle drag to orbit the point ahead, arrow keys to turn and tilt,
+WASD to move, Q/E down and up, Shift for x5, wheel to zoom (dolly), Ctrl+wheel for speed, `+` `-` to narrow or widen the lens
+(Backspace resets it). `[` `]` step the
+hour, `T` runs a time-lapse, `P` pauses the clock, `F3` cycles the weather (or start with `-- --weather=storm`), `F1` hides the help, `F2` prints the case's report.
 
-## The five cases
+## The cases
 
 | Key | Case | Route | What it tests |
 |---|---|---|---|
-| 1 | `hyperjungle` | `krator-biome` JSON (`BIO.export`) | a 300 m tile round a hero hypertree: DataTexture leaf atlases, the foliage hook (wind, aN normals, prism-gum iridescence), fauna on shader paths |
+| 1 | `hyperjungle` | `krator-biome` JSON (`BIO.export`) | a 300 m tile round a hero hypertree: DataTexture leaf atlases, the foliage hook (wind, aN normals, prism-gum iridescence), fauna on shader paths; since 2026-10-12 every instance's core/tags uid (`krator_records`) and `tags.json` |
 | 2 | `rift` | `krator-biome` JSON | a 300 m tile where every mesh is LOD-chunked; kit hooks with no core kind (iridescent bark, far impostors); 48k instances |
 | 3 | `girder` | glTF from three's `GLTFExporter` | a 60 m region of Girder's centre: the material library's textures, extras, what glTF drops (hooks, instancing, custom attributes) |
 | 4 | `iziz` | `krator-atmos` JSON + glTF | the whole city's atmosphere (lamps, halos, smoke, searchlights, fog banks, 26 prop sets) on the Atmos autoload, over a glTF region of the centre |
 | 5 | `yuni` | `KRATOR_EXPORT` records | every building, door, window and light as tagged records with stable ids, and one compound's interior (rooms, walls with `-col`, furniture, nav links). No meshes at all |
+| 6 | `verge` | `krator-sim` + `krator-verge-place` | the twin cities' buildings as stand-ins; the caravans, porters, nomads and patrols on the exported timetable |
+| 7 | `dhelv` | `krator-dhelv-place`, `krator-walk`, `krator-sim` (its `motion` block), `krator-lights` | the cave city (kits/zeijani): its sites as boxes, its walk floors drawn and baked (Recast) to a NavigationMesh between the outpost's gate and the temple, a NavigationAgent3D walking that way, the 651 ramblers posed each frame by `KSim.pose`, the 48 lamps nearest the temple. Gaps: the cavern's rock (its marching cubes are not ported; the floors stand in), furniture, materials |
+| 8 | `sedesert` | `krator-biome` JSON with a `krator-field` ground | a 300 m tile round the rain-shadow pond: the first export whose ground is the page's baked core/terrain field, imported as a terrain mesh and HeightMapShape3D collision (`--check` casts rays onto it) |
+| 9 | `world-sedesert` | `krator-world` (core/export): `world.json` + `world.glb` + `tex/` | the same tile through the one container (M4, 2026-10-13): the meshes as glb with `EXT_mesh_gpu_instancing`, the records, materials (library maps by reference to the pack in `tex/`), the field, the stage; written by `tools/harness.py export`, read by `krator/world_import.gd`. Since stage 2e the ground's crack and detail layers (a `world-uv` record) and the pond (the `water` section) on the shader library |
+| (by name) | `world-iziz` | `krator-world` (core/export) | M5 (2026-10-13): a 240 m district of Iziz inside the south gate (`tools/shot.sh world-iziz`; keys reach only nine cases): the kit's and the biome's instances, the plain meshes by material, three.js material records drawn on `library.gdshader` with their hooks, Iziz's library pack in `tex/`, the sampled ground with the stage's look, and a `Records` node of `Building_<id>` with its doors, windows and lamps (`core/export/README.md`, "Iziz") |
 
 Each case also loads `terrain.json`: the page's ground height sampled on a grid. No exporter carries the ground yet;
 this stands in for the `core/terrain` bake (Phase 2) so the plants have something to stand on.
@@ -49,19 +71,39 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `project.godot`, `main.tscn`, `spike.gd` | the project, its one scene, and the case loader, HUD, `--check` and `--shot` |
 | `krator/kdata.gd` | decoding shared by the importers: typed arrays, matrices, colours, data-URL textures, three geometry to `ArrayMesh` (winding reversed), the heightfield |
 | `krator/biome_import.gd` | `krator-biome` to MultiMesh and ArrayMesh, per `biomes/GODOT.md` |
-| `krator/atmos.gd` | the `Atmos` autoload: clock, `night()`, a light's and a halo's hours, the veering wind, the weather state machine and lightning, the global shader parameters (`core/atmos/GODOT.md`) |
+| `krator/world_import.gd` | `krator-world` (core/export, `core/export/README.md`) to a tile: the glb through `gltf_instancing.gd`, materials by `KratorBiome._material`, library maps from `tex/`, the terrain by `KratorField`, the atmosphere by `KratorAtmos.build_from`; node metadata as the biome importer's |
+| `krator/field_import.gd` | a `krator-field` (core/terrain's baked heightmap, carried as a biome export's `ground.field`) to a terrain mesh on its own grid and a StaticBody3D with one HeightMapShape3D per grid (insets are holes in the base); `check_collision` casts rays onto it against `KField.h` (`--check` prints it) |
+| `krator/clouddeck.gd` | a krator-atmos `clouddeck` record drawn: the page's grid, following the camera, thinned where the scene's heightfield rises through it (`core/atmos/GODOT.md`, "The cloud deck") |
+| `krator/atmos.gd` | the `Atmos` autoload: clock, `night()`, a light's and a halo's hours, the veering wind, the weather state machine and lightning, the wave field's CPU twin (`wave_height`, `wave_slope`, for buoyancy), the global shader parameters (`core/atmos/GODOT.md`) |
 | `krator/atmos_import.gd`, `atmos_lights.gd` | `krator-atmos` to lights, halos, props, smoke, fog volumes; the lights' hours, flicker and sweeps |
 | `krator/gltf_region.gd` | a `.glb` loaded at runtime, glTF extras copied to node metadata |
 | `krator/gltf_instancing.gd`, `addons/krator_gltf/` | `EXT_mesh_gpu_instancing` (Godot 4.5 has no importer for it): instanced meshes come in as MultiMeshes, at runtime and in the editor's importer (the plugin is enabled in `project.godot`) |
 | `krator/weather_fx.gd` | the weather drawn: rain particles that ride the camera, the lightning bolt on `Atmos.strike` |
 | `krator/stage.gd` | the export's `stage` (or `data/<case>/stage.json`): tonemapping, exposure, sky panorama, sun and fill lights, ambient, fog, matched to the page (`biomes/GODOT.md`, "The stage") |
 | `krator/kmat.gd` | library materials rebuilt on a glTF region from the build's pack (`data/<case>/tex/`), by the `lib` and `fam` the glTF extras keep |
-| `krator/records_import.gd` | Yuni's records to stand-in nodes with every record on its node as metadata |
+| `krator/khooks.gd` | `KHooks`: the shader library's hook table (below), `resolve(hook)` (aliases, `+` lists; an unknown name reported) and `survey(materials)` for an importer's report |
+| `krator/water.gd` | `KWater`: core/water's open surface in GDScript, rebuilt from core/export's `water` section (the twins: `tro_d`, `tro_nj`, `rest`, `surface_at`, `height_at`, `normal_at`, `foam_at`, the bed's depth), and `uniforms()` for `lib/water.gdshaderinc` |
+| `krator/water_import.gd` | `KratorWater`: the `water` section's open surfaces drawn (a grid in world space on `shaders/water.gdshader`), and `check_probes` (the page's own heights against KWater) |
+| `krator/lamps_import.gd` | a page's lamps (`lamps.json`, krator-lamps; Girder's `_api.lamps`): halos on `halo.gdshader` and the nearest 32 as OmniLight3D, run by `atmos_lights.gd` |
+| `krator/records_import.gd` | Yuni's records to stand-in nodes, each node's `krator` metadata its core/tags record (`tags.json`; a MultiMesh keeps its instances' records in a `records` side table) |
 | `krator/character/` | `kchar.gd` (the twin of kits/characters' `KCHAR` for the MakeHuman bodies: morph weights and joints, strangers by people, parts, hidden skin) and `kchar_figure.gd` (a character on one Skeleton3D: morphs as shared blend shapes from `<piece>.gshapes.bin`, skin as one surface of cover regions dropped by `kchar_skin.gdshader`, garments through `kchar_push.gdshader` (their look, the push out of the limbs, the waistband tuck), cloth chains, moved joints and binds, tint, `kchar_eye.gdshader`); data in `data/characters/` (`tools/sync_core.py`: the JSON and golden are tracked, the pieces are copied in and gitignored); body mods (`KChar.mods`, `arms`, `fits`: a second pair of arms or rib gills, drawn as pieces on the lower-arm joints every skeleton has; the lower arms driven from the upper by `_arms2` when the body has four) and a giant (`kit.scale`, the man's clips at its own pace); `tests/character/kchar_test.gd` checks it against the JS golden, `kchar_shot.gd` draws five strangers (`--giant`: three giants) |
 | `krator/fly_camera.gd` | the camera |
-| `shaders/` | `atmos.gdshaderinc` (the shared globals and functions), `foliage`, `bark` (also plain, and the kits' `irid` and `gloss` kinds), `library` (the material library: break-up, specular), `halo`, `terrain`, `ground` (the stage's ground material on the heightfield) |
+| `krator/dhelv_import.gd`, `dhelv_sim_node.gd`, `dhelv_nav.gd` | the dhelv case: stand-ins, the frame (ramblers and the agent), and the walk floors as Recast source (`KratorDhelvNav`: both windings for floors, the blocks' sides; cell 0.25 m, walker 0.25 m by 1.7 m, step 0.6) with DHN's own route for comparison |
+| `shaders/lib/` | **the shader library** (below): one `.gdshaderinc` per hook id, `world-uv`, `breakup`, `foliage`, `bark`, `cloth-sway`, `flag`, `glass`, `coursing`, `water` |
+| `shaders/` | `water` (an open surface from the `water` section, on `lib/water`), `atmos.gdshaderinc` (the shared globals and functions), `atmos_waves.gdshaderinc` (the open-water wave field, generated by `tools/atmos_waves.js`; `lib/water` includes it), `atmos_clouddeck.gdshaderinc` (the cloud deck, generated by `tools/atmos_clouddeck.js`) and `clouddeck` (the deck drawn with it), `foliage` (on `lib/foliage`), `bark` (also plain, and the kits' `irid` and `gloss` kinds; on `lib/bark`), `library` (the material library: specular; break-up and world-unit tiling on `lib/breakup` and `lib/world-uv`), `halo`, `terrain`, `ground` (the stage's ground material on the heightfield, and a ground record's layers on `lib/world-uv`) |
 | `tests/rand/` | copies of `core/rand/krand.gd`, `krand_test.gd`, `golden.json` (`res://` cannot reach outside `godot/`); `tools/sync_core.py --check` reports drift |
-| `tests/atmos/` | `atmos_test.gd` and its `golden.json`, written from core/atmos's JavaScript by `tools/atmos_golden.js` (rerun it after changing core/atmos) |
+| `tests/mask/` | copies of `core/mask/kmask.gd` (the mask rasteriser), `kmask_test.gd`, `golden.json`, kept by `tools/sync_core.py` |
+| `tests/terrain/` | copies of `core/terrain/kfield.gd` (`class_name KField`, the field's sampler: the importer uses it from here), `kfield_test.gd`, `golden-field.json`, kept by `tools/sync_core.py`; `field_import_test.gd` (the importer, here only) |
+| `tests/tags/` | copies of `core/tags/ktags.gd` (the uid), `ktags_test.gd`, `golden.json`, kept by `tools/sync_core.py` the same way; `records_test.gd` (here only): the hyperjungle case imported, every MultiMesh instance carries a uid, each recomputed in GDScript from its exported matrix, every id resolving in `tags.json`, with negatives |
+| `tests/export/` | `world_test.gd` (here only): the M4 proof on the `world-sedesert` case; `iziz_test.gd`: the M5 proof on `world-iziz` (kit uids from TRANSLATION, owners, bucket records, building and fixture nodes at their records and under their buildings, materials, maps and hooks, world-UV tiling, the sampled ground; each with a negative). `world_test.gd`'s checks: every instance's uid recomputed from `world.glb`'s TRANSLATION, every instance drawn at its record, bucket records, every material and map resolved, `KField.h` against the page's probes, collision rays; each with a negative |
+| `tests/sim/` | a copy of `core/simulation/ksim.gd` (`KSim`: SIM.at and SIM.pose, the wander's 32-bit hash), kept by `tools/sync_core.py`; its test reads a world's export (`tests/dhelv/`) |
+| `tests/dhelv/` | `dhelv_sim_test.gd` (3906 rows of the page's trace, 0 differ; a negative: legs 10% faster) and `dhelv_nav_test.gd` (the path reaches the temple through the stone door on a braid strand, within 0.8 to 1.15 of DHN's length; a negative: the stone door's floors left out) |
+| `tests/atmos/` | `atmos_test.gd` and its `golden.json`, written from core/atmos's JavaScript by `tools/atmos_golden.js` (rerun it after changing core/atmos); `waves_gpu_check.gd`, the wave include drawn on a GPU against the CPU twin (needs a renderer: Xvfb + Compatibility) |
+| `tests/shaders/` | `library_test.gd` (headless): every hook has its include, hooks resolve (an unknown one is reported), and on `world-sedesert` the ground's layers sit on the terrain's `ground.gdshader` (maps, scales, gains, the crack weight to a byte of the page's) and the pond on `water.gdshader` (its uniforms; KWater's heights equal the page's probes), each with a negative. `library_gpu_check.gd` (needs a renderer: Xvfb + Compatibility): `lib/water`'s `wtr_height` and `wtr_damp` on three surfaces read back against KWater (and a 5% taller wave that must miss), and the other eight includes compiled together, twenty values against GDScript twins |
+| `tests/water/` | `water_test.gd` and its `golden.json` (written by `tools/water_golden.js` from core/water through core/export's water adapter): KWater against WATER at fixed (x, z, t), with negatives |
+| `tools/water_golden.js` | writes `tests/water/golden.json` (rerun it after changing core/water, core/atmos's waves or the water adapter) |
+| `tools/atmos_waves.js` | writes `shaders/atmos_waves.gdshaderinc` from `ATMOS.waveGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.waves`) |
+| `tools/atmos_clouddeck.js` | writes `shaders/atmos_clouddeck.gdshaderinc` from `ATMOS.deckGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.clouddeck`). With no node on the machine: `python3 tools/node_in_chromium.py godot/tools/atmos_clouddeck.js --write` |
 | `data/<case>/` | the exports (below); `meta.json` says where each came from |
 | `tools/export_spike.py` | writes `data/` from the built pages (headless Chromium; `pip install playwright`) |
 | `tools/spike_export.js`, `tools/vendor/GLTFExporter.r128.js` | the glTF region exporter injected into a page, and three r128's own exporter (MIT, from the three@0.128.0 npm package) |
@@ -69,6 +111,38 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `tools/compare_shots.py` | the web page and the spike side by side from the same camera (`shots/compare/`) |
 | `tools/shot.sh` | a screenshot on a machine with no display (Xvfb + Compatibility) |
 | `shots/` | screenshots from `tools/shot.sh` (gitignored, like every `shots/` in the repo) |
+
+## The shader library
+
+GODOT-PLAN.md Phase 3's library (ROADMAP.md stage 2e, its shader half, 2026-10-13): one `.gdshaderinc` per hook id in
+`shaders/lib/` (here, not `core/godot/shaders/`: `res://` cannot reach outside `godot/`, and the spike's shaders already
+live here, so nothing moved). Each include is pure functions of its arguments (and, for water, its uniforms and the
+atmosphere's globals), guarded, so any shader, spatial or canvas_item, can include it; each is the twin of one three.js
+hook, named in its header. A material record's `hook` (KMAT's, core/export's `materials`; several joined by `+`) selects
+them through `krator/khooks.gd`; an importer reports a hook nothing answers (`world_import.gd`'s report `hooks` and gap
+`hooks`). The rules are the plan's: a cut-out is `ALPHA_SCISSOR_THRESHOLD`, never blending (`transparent` is for glass,
+water and smoke); options are uniforms, not `#define`s; per-instance values ride `COLOR` and `INSTANCE_CUSTOM`; a detail
+normal is `StandardMaterial3D`'s `detail_*` fields fed from a record's `detail`, not a shader, so the library has none
+(no record carries `detail` yet: KMAT's fields lack it, `core/materials/PLAN.md` "From spiderbench").
+
+| Hook | Include | The three.js hook it answers | Record fields it reads | Drawn by |
+|---|---|---|---|---|
+| `world-uv` | `lib/world-uv` | `core/materials/opt/69a-world-uv.js` `vWorldUV` (`wuv_box`); Girder's `applyWorldUV` (`wuv_box_offset`); the biome hosts' ground layers (`wuv_planar`, `wuv_layer`; `core/export`'s `EXPORT.groundLayers`); `wuv_triplanar` for a mesh with no UVs | `scale`, `layers`, `weights` | `library`, `ground` |
+| `breakup` | `lib/breakup` | `core/materials/record/25-matlib-host.js` `KMAT.breakupHook` | `breakup` {mix, macro, cell} | `library` |
+| `foliage` (`leaf`) | `lib/foliage` | `core/biome/30-core-foliage.js` `BIO.foliageHook` | `sway`, `options`, `alphaTest` | `foliage` |
+| `bark` (`irid`, `gloss`, `far`, `hang`) | `lib/bark` | the biome kits' bark kinds (`BIO.iridBarkMat`, `barkMat2`, `RIFT.farMat`, `SWLOW.farMat`, the nhighlands bulbs), named by `core/biome/42-core-export.js` | `kind`, `options` | `bark` |
+| `cloth-sway` (`cloth-flutter`) | `lib/cloth-sway` | Girder's `applyClothSway` (`settlements/girder/src/45-kit.js`; Voth's the same); no `core/` copy | none yet | none yet |
+| `flag` | `lib/flag` | the Ring Sea kit's flag flutter (`kits/ringsea/src/40-rs-core.js`, `RS_AUX_GLSL`); no `core/` copy | none yet | none yet |
+| `glass` | `lib/glass` | `core/materials/22-materials.js` `MAT.glass` (GLASS FRESNEL): the rim as `EMISSION` | none | none yet |
+| `coursing` | `lib/coursing` | none yet: the TEX kind `coursing` (`core/materials/PLAN.md`, "From spiderbench") waits for its pilot, Voth's canton walls (the Voth branch's) | `coursing` {courseH, blockW, slide, joint, tone, seed} | none yet |
+| `water` | `lib/water` | `core/water/50-core-water-draw.js` `WATER.glsl` and `WATER.draw` | core/export's `water` section | `water` |
+
+What it proves: `tests/shaders/library_test.gd` (the table, the resolution, the sedesert case's ground and pond),
+`tests/water/water_test.gd` (KWater equals WATER to 1e-14 m), `tests/shaders/library_gpu_check.gd` (every include
+compiles, and computes what its GDScript twin does: water within 0.5 mm, the rest within 2e-4). Not yet: a record field
+that selects `cloth-sway`, `flag`, `glass` or `coursing` on an exported mesh (no export carries those materials yet: Girder
+and Iziz still go through the glTF route), the fauna's `anim` kind (reported unknown), a texture array for bark variants,
+and pre-compiling the library at load.
 
 ## Driving the editor (Godot MCP)
 
@@ -95,6 +169,25 @@ python3 godot/tools/export_spike.py --list
 
 The pages must be built first (`cd biomes/rift && python3 build.py`, and so on). Tiles and regions are set in
 `CASES` at the top of the script.
+
+The `krator-world` cases (core/export, `core/export/README.md`) go through the shared verify harness instead:
+
+```
+python3 tools/harness.py export biomes/sedesert/dist/sedesert.html --out godot/data/world-sedesert --box 80,490,380,790
+python3 tools/harness.py export settlements/iziz/dist/iziz.html --out godot/data/world-iziz --box=-120,292,120,532
+```
+
+`shaders/library.gdshader` also draws a city's three.js material records (`krator/world_import.gd` `_standard`): uniforms
+`colour` (linear, multiplies the map), `has_albedo`, `flip_v` (the texture's flipY), `emission`, `unlit` (a MeshBasicMaterial)
+and `world_uv_offset` (false: vWorldUV has no per-instance start; Girder's applyWorldUV has one). Their defaults leave the
+Girder pack's surfaces as they were.
+
+Verge and Dhelv write their own data through their verify (their pages expose `_api.exportParts()`):
+
+```
+cd settlements/verge && python3 verify.py dist/verge.html --export ../../godot/data/verge
+cd settlements/dhelv && python3 verify.py dist/dhelv.html --export ../../godot/data/dhelv   # 92-dhelv-export.js: nine parts, about 10 MB
+```
 
 ## Rules
 

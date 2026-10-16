@@ -1,0 +1,53 @@
+// ================================================================= CORE — simulation 5: motion as a function of time
+// PLAN.md 4.5: "decisions step, motion is a function of time". A decision bakes an actor's task: legs of routes with a
+// speed and a start time. Its pose at any motion time t is then a pure function: along the current leg, or at its spot
+// (an open activity wanders a little round it, on a hashed loop of waypoints, also a pure function of t). Nothing here
+// integrates, so a port (Godot) or a test evaluates the same pose from the same task at the same t.
+//
+//   SIM.pose(actor, t) -> {x, y, z, h (heading, radians, atan2(dx,dz)), moving, hidden, mode, act, leg}
+//   SIM.at(route, s) -> {x, y, z, tx, tz}       the point s metres along a route (binary search on its cum)
+//   SIM.WANDER                                   {period, reach}: the idle loop (seconds per waypoint, metres)
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.WANDER = { period:14, reach:1.6 };
+  SIM.at = function(R, s){
+    var P=R.pts, C=R.cum, n=P.length; if(s<=0) return seg(P,0,0); if(s>=R.len) return seg(P,n-2,1);
+    var lo=0, hi=n-1; while(lo<hi-1){ var m=(lo+hi)>>1; if(C[m]<=s) lo=m; else hi=m; }
+    var L=C[lo+1]-C[lo]; return seg(P, lo, L>0 ? (s-C[lo])/L : 0);
+  };
+  function seg(P, i, u){ var a=P[Math.max(0,Math.min(i,P.length-1))], b=P[Math.max(0,Math.min(i+1,P.length-1))], dx=b[0]-a[0], dz=b[2]-a[2], L=Math.hypot(dx,dz)||1;
+    return { x:a[0]+dx*u, y:a[1]+(b[1]-a[1])*u, z:a[2]+dz*u, tx:dx/L, tz:dz/L }; }
+  function straight(L){ var z=L.lazy, a=[z.from.x, z.from.y||0, z.from.z], b=[z.to.x, z.to.y||0, z.to.z], len=Math.hypot(b[0]-a[0], b[2]-a[2]), d=L.dur*L.speed||len;
+    return { pts:[a,b], cum:[0,d], len:d }; }   /* the straight line stretched to the leg's length, so the fraction along it is the time's */
+  function h32(a,b){ var h=Math.imul((a|0)^0x9E3779B1, 0x85ebca6b) ^ Math.imul(b|0, 0xc2b2ae35); h^=h>>>15; h=Math.imul(h,0x27d4eb2d); h^=h>>>13; return (h>>>0)/4294967296; }
+  /* opt.cheap: a lazy leg not yet resolved is read as its straight line (a decision asking where its actor is now does
+     not search a path no one will see) */
+  SIM.pose = function(a, t, opt){
+    var o={ x:0, y:0, z:0, h:a.h0||0, moving:false, hidden:false, mode:'walk', act:a.activity, leg:-1 };
+    var T=a.task;
+    if(!T){ var p=a.pos; if(!p){ var H=SIM.R.place[a.home]; p = H ? H.door : { x:(a.at||[0,0])[0], y:0, z:(a.at||[0,0])[1] }; o.hidden = !!H; }
+      o.x=p.x; o.y=p.y||0; o.z=p.z; if(!a.present) o.hidden=true; return o; }
+    var dt=t-T.t0;
+    for(var i=0;i<T.legs.length;i++){ var L=T.legs[i];
+      if(dt < L.dur){                    /* a group member trails `back` metres behind its leader, and stops there */
+        var Rt=L.route || (opt && opt.cheap ? straight(L) : SIM.legRoute(L));   /* a lazy leg finds its path now (77-sim-3-actors.js) */
+        var s=Math.max(0, Math.min(dt*L.speed, Rt.len) - (L.back||0)), q=SIM.at(Rt, s);
+        o.x=q.x - q.tz*(L.side||0); o.z=q.z + q.tx*(L.side||0); o.y=q.y; o.h=Math.atan2(q.tx, q.tz); o.moving = s>0 && s<Rt.len; o.mode=L.mode; o.leg=i;
+        if(!a.present) o.hidden=true; return o; }
+      dt -= L.dur; }
+    /* arrived: at the spot; a group's member where its walk stopped, `back` metres behind its leader ALONG the way (straight
+       back off the last bend would stand it in a wall where a way turns at its end), so a caravan does not stand in one place */
+    var sp=T.spot, lastL=T.legs[T.legs.length-1], back=lastL?(lastL.back||0):0, side=lastL?(lastL.side||0):0, tx=0, tz=1;
+    var Rl = lastL ? (lastL.route || (lastL.lazy ? straight(lastL) : null)) : null;   /* a lazy leg arrived by its straight line */
+    if(Rl){ var e=SIM.at(Rl, Math.max(0, Rl.len-back)); tx=e.tx; tz=e.tz; o.h=Math.atan2(tx,tz); o.mode = lastL.mode;
+      o.x = e.x - tz*side; o.z = e.z + tx*side; o.y = back ? e.y : (sp.y||0); }
+    else { o.x = sp.x; o.z = sp.z; o.y = sp.y||0; }
+    var W=T.wander; if(W>0 && !T.indoor){ var P=SIM.WANDER.period, k=a.k||0, c=Math.floor((t+k*3.7)/P), u=((t+k*3.7)/P)-c;
+      var ax=(h32(k,c)-0.5)*2*W, az=(h32(k+7919,c)-0.5)*2*W, bx=(h32(k,c+1)-0.5)*2*W, bz=(h32(k+7919,c+1)-0.5)*2*W, f=u<0.55?0:(u-0.55)/0.45, sm=f*f*(3-2*f);
+      o.x += ax+(bx-ax)*sm; o.z += az+(bz-az)*sm; if(sm>0 && sm<1){ o.moving=true; o.h=Math.atan2(bx-ax, bz-az); } }
+    o.hidden = !!T.indoor || !a.present;
+    if(a.inVehicle==='boat' && T.legs.length && lastL && lastL.mode==='boat'){ o.mode='boat'; o.hidden=!a.present; }
+    return o;
+  };
+})(typeof window!=='undefined'?window:globalThis);

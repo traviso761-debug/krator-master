@@ -1,0 +1,701 @@
+{
+ "build": "zeijani",
+ "note": "The Zeijani kit's adapter onto the material library (core/materials/PLAN.md). Families are the kit's material keys (src/27-zj-mat.js MAT): the geometry engine writes UVs in world metres divided by the family's scale (TILE). tint.keep is how much of the set's own colour survives the vertex colour: the rocks keep most of theirs (the finish is a material over the rock's colour, PLAN.md 6.1), the pattern sheets all of it. The cavern's surfaces (core/terrain/39-core-cavern.js meshes) read tuff, tuffHewn, tuffPol, plaster, basalt, basaltPol, lining and oxide triplanar (40-zj-cave.js). The f_* families are detail maps for the catalog furniture. Run python3 tools/textures/pack.py kits/zeijani after any change, then python3 build.py; ?mat=proc shows vertex colours only.",
+ "size": 512,
+ "families": {
+  "tuff": {
+   "lib": "rock.tuff",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.74
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.08,
+    "cell": 6
+   }
+  },
+  "tuffHewn": {
+   "lib": "stone.tuff.hewn",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.72
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.08,
+    "cell": 6
+   }
+  },
+  "tuffPol": {
+   "lib": "stone.tuff.polished",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.76
+   },
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "plaster": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.8
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "basalt": {
+   "lib": "rock.basalt.vesicular",
+   "scale": [
+    1.3,
+    1.3
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.42
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.08,
+    "cell": 6
+   }
+  },
+  "basaltPol": {
+   "lib": "stone.basalt.polished",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.36
+   },
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "lining": {
+   "lib": "rock.basalt.flowbanded",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": 0.5
+   },
+   "roughLift": 0.15,
+   "specular": 0.35
+  },
+  "oxide": {
+   "lib": "rock.basalt.oxidised",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "ashlar": {
+   "lib": "stone.cut",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.78
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "earth": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "paving": {
+   "lib": "paving.flagstone",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.72
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "wood": {
+   "lib": "wood.timber",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "log": {
+   "lib": "wood.log.carved",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.66
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "plank": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.66
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "carved": {
+   "lib": "wood.carved",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "thatch": {
+   "lib": "roof.thatch",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.66
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
+  },
+  "hide": {
+   "lib": "hide.leather009",
+   "scale": [
+    0.7,
+    0.7
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "felt": {
+   "lib": "cloth.felt",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.8
+   },
+   "roughLift": 0.35,
+   "specular": 0.2
+  },
+  "ceramic": {
+   "lib": "ceramic.terracotta",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.62
+   },
+   "roughLift": 0.2,
+   "specular": 0.3
+  },
+  "glaze": {
+   "lib": "ceramic.glaze",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.7
+   },
+   "roughLift": 0.0,
+   "specular": 0.45
+  },
+  "ossuary": {
+   "lib": "bone.ossuary",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.66
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "patLabyrinth": {
+   "lib": "patterns/zeijani/labyrinth-relief",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patFrieze": {
+   "lib": "patterns/zeijani/frieze-spirits",
+   "scale": [
+    1.001,
+    0.9
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patFriezeB": {
+   "lib": "patterns/zeijani/frieze-spirits-b",
+   "scale": [
+    1.742,
+    0.9
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patFriezeC": {
+   "lib": "patterns/zeijani/frieze-spirits-c",
+   "scale": [
+    1.8,
+    0.9
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patSkel": {
+   "lib": "patterns/zeijani/frieze-skeletons",
+   "scale": [
+    0.757,
+    0.9
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patSkyDome": {"lib": "patterns/zeijani/sky-dome", "size": 1024, "scale": [1, 1], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.12},
+  "turf": {"lib": "ground.grass_ground", "scale": [4, 4], "tint": {"keep": 0.85, "mean": null}, "roughLift": 0.2, "specular": 0.1, "_note": "Dhelv: the grassy hills on the wells' floors (89-dhelv-knolls.js)"},
+  "turfPath": {"lib": "ground.grass_path_3", "scale": [3, 3], "tint": {"keep": 0.85, "mean": null}, "roughLift": 0.2, "specular": 0.1, "_note": "Dhelv: the paths over the hills"},
+  "patMural": {
+   "lib": "patterns/zeijani/kiva-mural",
+   "scale": [
+    3.036,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patMuralB": {
+   "lib": "patterns/zeijani/kiva-mural-b",
+   "scale": [
+    3.012,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patMuralC": {
+   "lib": "patterns/zeijani/kiva-mural-c",
+   "scale": [
+    2.844,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patTextile": {
+   "lib": "patterns/zeijani/textile",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patTextileB": {
+   "lib": "patterns/zeijani/textile-b",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patGlazed": {
+   "lib": "patterns/zeijani/glazed-frieze",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.0,
+   "specular": 0.45
+  },
+  "patGlazedDfly": {
+   "lib": "patterns/zeijani/glazed-frieze-dragonfly",
+   "scale": [
+    1.199,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.0,
+   "specular": 0.45
+  },
+  "patGlazedBeetle": {
+   "lib": "patterns/zeijani/glazed-frieze-beetle",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.0,
+   "specular": 0.45
+  },
+  "jali": {
+   "lib": "patterns/zeijani/jali",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "f_cloth": {
+   "lib": "cloth.weave.twill",
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_wood": {
+   "lib": "wood.carved",
+   "scale": [
+    0.7,
+    0.7
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_hide": {
+   "lib": "hide.leather009",
+   "scale": [
+    0.35,
+    0.35
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_stone": {
+   "lib": "rock.tuff",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_metal": {
+   "lib": "metal.bronze",
+   "scale": [
+    0.35,
+    0.35
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.1,
+   "specular": 0.5,
+   "size": 256
+  },
+  "f_bronze": {
+   "lib": "metal.bronze",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.0,
+   "specular": 0.5,
+   "size": 256
+  },
+  "f_ceramic": {
+   "lib": "ceramic.terracotta",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.58
+   },
+   "roughLift": 0.2,
+   "specular": 0.35,
+   "size": 256
+  },
+  "f_rope": {
+   "lib": "fibre.rope",
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_wicker": {
+   "lib": "fibre.wicker",
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_bone": {
+   "lib": "bone.horn",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_food": {
+   "lib": "food.crust",
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_plant": {
+   "lib": "leaf.understorey",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_ash": {
+   "lib": "ash.hearth",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.5
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "cardYam": {
+   "lib": "card.crop.yam",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "cardAlecap": {
+   "lib": "card.mushroom.alecap",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "cardCrop": {
+   "lib": "card.crop",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  }
+ }
+}

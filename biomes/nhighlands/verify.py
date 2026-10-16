@@ -31,72 +31,12 @@ Requires: pip install playwright && python -m playwright install chromium
 import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, threading
 
 # --------------------------------------------------------------------------
-# Harness helpers. Every verify.py in the repo carries this same block: a fix
-# here belongs in all of them (grep for "Harness helpers").
-GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
-# Every page builds its world in one synchronous script, so "load" fires only when
-# the world is built: minutes under software GL on a shared box (Dalab's city took
-# 285 s with seven other agents running; 180 s timed Locus out mid-build).
-LOAD_MS = 900000
-# KRATOR_CHROME names a Chromium to launch. The other names are the ones single
-# copies of this harness used before they were merged; they still work.
-CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
-
-
-async def launch_chromium(p, args=GL_ARGS):
-    """$KRATOR_CHROME (or an older name in CHROME_ENV), else playwright's own
-    build, else a pinned build under /opt/pw-browsers: a cloud container ships
-    one that need not match the pip playwright's pin."""
-    for k in CHROME_ENV:
-        if os.environ.get(k):
-            return await p.chromium.launch(executable_path=os.environ[k], args=args)
-    try:
-        return await p.chromium.launch(args=args)
-    except Exception as e:
-        if "Executable doesn't exist" not in str(e):
-            raise
-        for c in ["/opt/pw-browsers/chromium"] + sorted(
-                glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"), reverse=True):
-            if os.path.exists(c):
-                return await p.chromium.launch(executable_path=c, args=args)
-        raise
-
-
-def local_three(folder):
-    """The pinned three.js r128 to serve in place of the CDN copy: this build's
-    own, the page folder's, else the repo's copy in kits/ancients (a build that
-    keeps none still runs offline). Returns a path that may not exist."""
-    here = os.path.dirname(os.path.abspath(__file__))
-    cands = [os.path.join(here, "three.min.js"), os.path.join(folder, "three.min.js")]
-    d = here
-    for _ in range(4):
-        d = os.path.dirname(d)
-        cands.append(os.path.join(d, "kits", "ancients", "three.min.js"))
-    return next((c for c in cands if os.path.exists(c)), cands[0])
-
-
-def parse_views(spec, names=()):
-    """--views. Names separated by '|' or ';' are taken exactly, so a name may
-    hold commas. Separated by commas, consecutive pieces are joined back up
-    whenever that spells an existing preset's name, longest first: so
-    "Overview,Town types — row, stacked house, well, tower" is two views."""
-    spec = (spec or "").strip()
-    if not spec:
-        return []
-    if "|" in spec or ";" in spec:
-        return [v.strip() for v in re.split(r"[|;]", spec) if v.strip()]
-    names = set(names or ())
-    toks, out, i = spec.split(","), [], 0
-    while i < len(toks):
-        j = next((j for j in range(len(toks), i + 1, -1)
-                  if ",".join(toks[i:j]).strip() in names), i + 1)
-        v = ",".join(toks[i:j]).strip()
-        if v:
-            out.append(v)
-        i = j
-    return out
-
-
+# Harness helpers: the shared copy is tools/harness.py (launching Chromium, the local three.js, --views parsing,
+# the UTF-8 console). A fix there reaches every verify.py that imports it.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
+import harness as _harness
+from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
+local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
 try:
@@ -154,6 +94,11 @@ const R=[];
 // 5. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
+
+// 5b. the host's own checks, when it has any, and their negatives (each must FAIL)
+if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
+  for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
+    detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); }
 
 // 6. THE BIOME'S OWN INVARIANTS (src/91-host-probe.js, biomeChecks)
 { const B=A.biomeChecks();

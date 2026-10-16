@@ -1,0 +1,198 @@
+[
+ {
+  "src": "surface-cushion.png",
+  "out": "core/materials/library/surface.cushion",
+  "record": {
+   "id": "surface.cushion",
+   "family": "surface",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "The surface of a cushion plant seen close up: thousands of tiny tight rosettes of small stiff leaves, each rosette a few millimetres to a centimetre across, packed edge to edge into one hard continuous skin with no gaps, darker in the narrow crevices between them, a few rosettes yellowed or brown, a faint resinous sheen. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. (Row surface.cushion of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the poured cushions, the Mother Cushion and the bog quilt here; moss cushions, topiary, any cushion plant"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "surface-fleece.png",
+  "out": "core/materials/library/surface.fleece",
+  "record": {
+   "id": "surface.fleece",
+   "family": "surface",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "The surface of a woolly alpine plant seen close up: dense felted fleece of fine dead leaves and hairs curled into small soft tufts, slightly matted, a little darker in the hollows between the tufts, like the fleece of a sheep. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. (Row surface.fleece of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the woolbacks and snow wool here; sheepskin, felt, any woolly plant or animal coat"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "bark-ragbark.png",
+  "out": "core/materials/library/bark.ragbark",
+  "record": {
+   "id": "bark.ragbark",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Bark of a gnarled high-mountain tree peeling in many thin papery layers: sheets curling off horizontally and overlapping like the pages of an old book, paler where fresh layers show underneath, dark narrow gaps between the sheets, a twisted vertical grain running through it. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. (Row bark.ragbark of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the ragbark here; paperbark, birch and Polylepis-like barks anywhere (tinted)"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "ground-turf-polygon.png",
+  "out": "core/materials/library/ground.turf.polygon",
+  "record": {
+   "id": "ground.turf.polygon",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    3.6,
+    3.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Short alpine sedge turf seen from above, a dense felt of tiny blades a few centimetres high, cracked into irregular polygons about a metre across along narrow dark fissures of bare soil, the polygon rims a little browner and drier than their centres. Full colour: olive-brown turf (#6e6a3e, #5e6436), browner rims (#7a6a44), dark soil in the cracks (#2e2418); natural and not tinted. (Row ground.turf.polygon of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the sedge turf here; tundra and frost-patterned ground anywhere"
+   }
+  },
+  "options": {
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock-basalt-vesicular.png",
+  "out": "core/materials/library/rock.basalt.vesicular",
+  "record": {
+   "id": "rock.basalt.vesicular",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.3,
+    1.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Dark volcanic basalt seen close up: fine-grained stone full of small round gas holes a few millimetres across, a rusty brown weathering crust in patches, and scattered patches of crustose lichen in bright orange, sulphur yellow and pale green. Full colour: charcoal-grey stone (#4e4a48, #5e5a56), rust (#7a4a3a), lichen (#e8a020, #d8c040, #a8c060); natural and not tinted. (Row rock.basalt.vesicular of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1125 px WebP; converted to PNG.",
+    "reuse": "the tors, scree and boulders here; any lava field, volcanic outcrop or dressed basalt"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-sinter.png",
+  "out": "core/materials/library/ground.sinter",
+  "record": {
+   "id": "ground.sinter",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Geyser sinter seen from above: a pale grey-white silica crust in low scalloped terraces and rims, a thin film of hot water in the shallow pools between them, and bands of microbial mat along the run-off channels, bright orange nearest the hot water grading to green further away. Full colour: sinter white (#e6e2d6), orange mat (#d8782a), green mat (#5a8a3a); natural and not tinted. (Row ground.sinter of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the geyser field here; hot springs and travertine terraces anywhere"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-puna.png",
+  "out": "core/materials/library/ground.puna",
+  "record": {
+   "id": "ground.puna",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "High cold plateau ground seen from above: bare brown volcanic soil with fine grey pumice grit and small dark angular stones, the bases of golden bunchgrass tussocks spaced a hand apart with bare soil between them, a few dry blades lying flat, small frost-heaved crumbs of soil. Full colour: soil brown (#8a7656, #6e5c44), grass gold (#b8a062, #a88e50), stones dark grey; natural and not tinted. (Row ground.puna of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1125 px WebP; converted to PNG.",
+    "reuse": "the puna here; any cold steppe, high desert plain or dry mountain ground"
+   }
+  },
+  "options": {
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

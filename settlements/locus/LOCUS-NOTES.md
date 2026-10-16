@@ -113,3 +113,39 @@ only poles reachable from the generator are built. Each pole: crossarm, two insu
 `72-lights.js` skips its oil posts on `GRID_EDGE` edges and wires every window within 34 m of a pole (cool panes,
 later off-times, one in seven all night). `_grid.stats`.
 
+
+## October 2026 (later): the shared core, and the Geomancers' buggy park
+
+**On the shared core.** The eastern-abyss biome is the canonical one (`core/biome` + `biomes/eastabyss`, read in place by
+`BIO_CANON` in `build.py`; the town trees are grown with `EASTABYSS.make` / `grow` after the biome's passes), the mask is
+`core/mask` (through `KMASK.xform`), the lake shades with `core/atmos`'s wave field (`90-atmos-host.js`), the plan is
+`core/minimap` (`88b-locus-minimap.js`, the M key) and the sky's hour is `core/clock` (`LCLOCK` in `80-camera.js`: held by
+default, Run time for a 72-minute day). Mungo reads all of these by name.
+
+**The buggy park** (`PARKING`, 30-layout): an open yard of six bays behind the chapterhouse, a site with no building
+(`yard:true`), its gate street joined to the nearest street; gravel and bays painted in 40-ground, two shade shelters and
+fuel drums in 68-place, four arc standards in 72-lights. The buggies are the Motor Vehicles kit's (`KratorVehicles`, the
+virtual `65y-vehicles-bundle.js`). In 84-life (section 4b): the park is one of the Geomancers' work stops, where each
+stands at a parked buggy's bonnet; every 2-5 minutes between 8:00 and 17:00 one of them drives a buggy over the streets to
+a highway's end, it is off the map for 1.5-4 minutes, and it comes back (maybe by the other highway) to its bay. Real-time
+timers, like this layer's caravans and riders, so trips run while the world clock is held. `_life.buggies()`,
+`lookBuggy(i)`, `tripNow()`, `simBuggies(sec)` (steps only the buggies: a full trip in simulated time); `verify.py`'s
+`geomancer-buggy-park`. Mungo's buggies do the same on `core/simulation` (`geo_trip`).
+
+## 2026-10-13: the open lake on core/water
+The open salt lake is core/water's open water (`core/water/README.md`; `src/90w-lake.js`, after `90-atmos-host.js`,
+which Mungo reads by name too): a `WATER.open` surface on the water plane with a calm share of the shared wave field
+(`LAKE_FIELD` .12: at most 6 cm, so the reed decks and jetties keep their waterlines; `LAKE_TILT` 8 so its chop shades as
+the old sheet's did), no swell of its own, on core/atmos's clock, its bed baked from `terrainH` over the lake shore (8 m
+cells: the shallows' colour by depth, the water calmed to nothing at the waterline; no surf lap or whitecaps, which on a
+shelf this gentle whitened a band hundreds of metres wide), drawn by `WATER.draw` on the CDLOD water mesh, the sky's
+light (core/atmos's skylight, a capture of `skyScene`) given to the lake only (this is a Lambert world). The river, the
+delta's channels, the canal and the marsh pools stay on `75-terrain.js`'s sheet (core/water's flow and still kinds are
+later phases). The two split on the shoreline through one baked mask (`LAKE_MASK`: R the lake's side of `lakeDist`, G
+the river's fresh water running out into the lake), which both shaders sample the same way; the lake takes the river's
+colour by G, so a mouth meets the sheet in one colour. The life layer's boats ride the lake (`lakeHeave`; their rock now
+runs on core/atmos's clock). core/lod's automatic pass had taken the water mesh for a static mesh and hidden it (it
+moved it off layer 0); core/water's mesh now carries `userData.lodSkip`. From the lake at 120 m, over the delta, at 11 m
+off a mouth and at the fishing docks: draw calls +1 (185 -> 186, 159 -> 160, 104 -> 105, 164 -> 165), triangles +65 to
++95 k of 9 M; `verify.py --assert` the same 13 PASS and budgets before and after (draw calls 178 -> 179 of 190,
+triangles 8.90 M -> 8.98 M of 10 M).

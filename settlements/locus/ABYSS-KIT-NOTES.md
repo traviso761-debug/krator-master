@@ -2,8 +2,8 @@
 
 The buildings of the **abyssal-desert** culture, who live on the salt marshes and river deltas at the edge of the eastern
 abyss, beside the Geomancers' oil works and the ruins of the Ancients. A second kit sheet inside the Locus build:
-target `abyss`, file `abyss-kit.html` (and `publish/abyss-building-kit.html`). Ten Locus assets sit on both sheets; 31
-new assets (plus a helper demo) are on this one only. Open issues: `ABYSS-KIT-KNOWN-ISSUES.md`.
+target `abyss`, file `abyss-kit.html` (and `publish/abyss-building-kit.html`). Ten Locus assets sit on both sheets; 32
+new assets (plus a helper demo) are on this one only (the 32nd, the builders' yard, added 2026-10-05 for Mungo). Open issues: `ABYSS-KIT-KNOWN-ISSUES.md`.
 
 ```
 cd settlements/locus && python3 build.py                       # writes locus.html, locus-kit.html, locus-plants.html, abyss-kit.html
@@ -22,10 +22,11 @@ now in `refs/abyss/` and are compared with the kit under "The reference images" 
 | `65-abyss-00-core.js` | 650001 | `ABYSS.*` helpers, `KIT_ROWS.abyss`, the helper demo asset |
 | `65-abyss-20-plants.js` | 652001 | 3 PLANTs (lily pads, potted herbs, creeper) |
 | `65-abyss-30-housing.js` | 653001 | poor / middle / rich houses |
-| `65-abyss-40-shops.js` | 654001 | eight shops |
+| `65-abyss-40-shops.js` | 654001 | nine shops (the builders' yard: 654901) |
 | `65-abyss-50-civic.js` | 655001 | inn, tavern, caravanserai, library, school, amphitheatre |
 | `65-abyss-60-temple.js` | 656001 | the Temple of the Altar |
 | `65-abyss-70-palace.js` | 657001 | the Headman's palace and plaza |
+| `65-abyss-75-verge.js` | 657501 | Lower Verge (Oct 2026): the mayor's compound, the guard tower, the toll house, the palisade and its gate |
 | `65-abyss-80-military.js` | 658001 | the wall system, the citadel, the barracks |
 | `65-abyss-90-farm.js` | 659001 | farmhouse, granary, windpump, warehouse |
 
@@ -53,6 +54,7 @@ triangles), including placed furniture and plants.
 | | `abyss_shop_salvage` | Salvage dealer and tinker | 2 (scrap yard and container office · tank office and a hoist derrick) | 16 x 14 x 10 | market/shop + industry | 2.6 k | |
 | | `abyss_shop_salt` | Salt and fish merchant | 2 (salt cones under a sail · reed salt-shed on a deck) | 14 x 12 x 7 | market/shop | 3.6 k | |
 | | `abyss_shop_sailmaker` | Sail, canvas and rope maker | 2 (long shed under a swooping sail · canvas loft with drying lines) | 16 x 12 x 9 | market/shop + industry | 2.6 k | |
+| | `abyss_shop_builder` | Builders' yard | 2 (container office under a sail, timber racks and a saw bench · plank shop-front on a container, a hoist derrick over the log landing) | 18 x 14 x 8 | market/shop + industry | 15.7 k * | new 2026-10-05 |
 | Hospitality | `tent_pavilion` | Great pavilion tent | 3 | 18 x 14 x 7 | abyssal-desert · prop + tavern/inn | 1.9 k | old |
 | | `abyss_inn` | Courtyard inn | 2 (stacked containers round a deck court · galleried pastel wings) | 24 x 23 x 15 | tavern/inn + multi-family dwelling | 15.7 k | |
 | | `abyss_tavern` | Sail-platform tavern | 2 (one deck under twin sails · two decks under a great peaked sail) | 22 x 20 x 13 | tavern/inn | 12.1 k | |
@@ -82,12 +84,21 @@ triangles), including placed furniture and plants.
 | Street furniture and docks | `sunshade_poles` | Four-pole sun shade | 3 | 9 x 9 x 4.5 | abyssal-desert · prop | 1.0 k | old |
 | | `infra_fishing_dock` | Fishing dock | 2 | 12 x 34 x 5 | abyssal-desert · infrastructure | 2.5 k | old |
 | | `abyss_helpers_demo` | ABYSS helper demo | 1 | 64 x 36 x 16 | prop · tag demo | 13.7 k | |
+| Lower Verge | `abyss_mayor_compound` | The Mayor's compound | 1 | 70 x 56 x 27 | civic + single-family dwelling | | new |
+| | `abyss_guard_tower` | Guard tower and barrack | 1 | 26 x 20 x 21 | military | | new |
+| | `abyss_toll_house` | Toll house at the trailhead | 1 | 14 x 10 x 8 | civic | | new |
+| | `abyss_palisade` | Palisade segment (6 m) | 2 (stakes and plate · drums and plate) | 6 x 3 x 4.2 | military + infrastructure | | new |
+| | `abyss_palisade_gate` | Palisade road gate | 1 | 14 x 4 x 7.8 | military + infrastructure | | new |
 
-All new assets: culture `abyssal-desert`, `kit:'abyss'`. Counted: **31 new keys, all present; none missing.**
+\* measured 2026-10-05 (15.7 k variant 0, 12.6 k variant 1), after the furniture moved to the catalog: on the same count
+the salvage dealer measures 4.7 k and the general goods 10.2 k today, so the older figures above run low against it.
+
+All new assets: culture `abyssal-desert`, `kit:'abyss'`. Counted: **32 new keys, all present; none missing** (31 at the first pass; `abyss_shop_builder` added 2026-10-05).
 Not on this sheet, by the brief: `ind_refinery`, `ind_generator_house`, `trade_fuel_station`, `civic_geomancer_chapterhouse`,
 `locus_warehouse`, and the whole Yuni base kit (55–59), and none of them was used as a style reference.
 
-Budget on the sheet (`verify.py abyss-kit.html --assert`): 76 items, **103 draw calls, 716 k triangles, 21.6 k instances** (2026-10-01; 102 / 691 k / 20.9 k at the first pass);
+Budget on the sheet (`verify.py abyss-kit.html --assert`): 78 items, **102 draw calls, 618 k triangles, 15.9 k instances** (2026-10-05, with the
+builders' yard; 76 items, 103 / 716 k / 21.6 k on 2026-10-01; 102 / 691 k / 20.9 k at the first pass);
 error panel clean. Largest single asset: the (old) salt-rice farm, 55 k; largest new: the palace, 52 k.
 
 ## The style, as built
@@ -183,6 +194,48 @@ edibility/harvestability tag, shown by the inspector): `abyss_lily_pads` (wet, r
 `abyss_herbs` (potted, mild; edible, medicinal), `abyss_creeper` (mild, riparian both; ornamental). The Locus plants
 (`salt_rice_stand`, `salt_reed`) are placed by the farmhouse.
 
+## The builders' yard (`abyss_shop_builder`, 2026-10-05, for Mungo)
+
+The kit had no building-materials shop; Mungo's market needs one, and its lumberjacks deliver felled timber to it, so it
+doubles as the timber yard. 18 x 14 (x −9..9, z −7..7), +z the street, h 8 (the derrick's head at 7.0). Seeds from 654901.
+
+- **Variant 0 (container office under a sail):** a plank deck (x −8.6..−0.8, z −6.6..0.6, H 0.6) with a 6.1 m container
+  at its back (the store, x −7.75..−1.65, z −6.22..−3.78, side door at x −3.3 facing +z) and a swooping orange sail on four
+  corner poles over the front; the **counter** (`abyss_counter`) at (−4.7, 0.6, −1.0), facing the street; the street
+  stair at x −2.6 lands at the deck edge z 0.6. The yard (x −0.6..9, fenced in corrugated sheet on the back and right, a
+  pole rail along the street) opens through a **gate** (posts at x −0.5 and 3.7, z 6.6, the sign hung under the beam,
+  2.8 m clear) onto: poles stood against the back fence, sawn boards on beams, the trestle pole rack, the stickered plank
+  stack, the felled logs along the right fence, the hand-cranked saw bench, reed stooks. In front of the office, for the
+  buyers: corrugated sheet, lying reed bundles, fired and mud bricks, lime sacks, drums and barrels.
+- **Variant 1 (plank shop-front on a container, a hoist derrick):** the office on the right: a deck (x 0.8..8.8, z −6.9..−0.2,
+  H 0.8), the container store at its back (x 1.75..7.85, z −6.82..−4.38, side door at x 3.6), a plank shop-front built onto
+  it (plank walls at x 1.0 and 8.6, a corrugated roof falling to 3.0 m over the deck), the **counter** at (4.8, 0.8, −1.2),
+  the sign on the roof's front edge, the stair at x 4.8. The yard on the left, fenced on the back and left: the felled logs
+  on skids at the back under a **hoist derrick** (two seal-tree legs and a back stay to a head at 7.0 m, a boom out over the
+  cart lane, a hand winch on the right leg, a scale-tree log in the sling), the saw pit (trestles and a pit saw) under a
+  red-banded sail, poles stood against the left fence, two plank stacks; a small sign gate at x −1.0..0.6, z 6.7.
+- **Furniture:** every loose thing is a catalog piece placed with `ABYSS.furn`. New in the catalog for it (2026-10-05):
+  `kits/catalog/krator-master-furniture-jobs.js` (job `carpentry`, culture eastabyss): `job_pole_rack` (3: poles on
+  trestles / felled logs on skids / poles leaning on a rail), `job_plank_stack` (2: stickered stack / boards on beams),
+  `job_saw_bench` (2: hand-cranked saw bench / saw-pit trestles), with the biome's seal-tree and scale-tree bark colours
+  (`sealBark*`, `scaleBark*`) and the sawn wood (`sawn*`) in its palette block; `krator-master-furniture-eastabyss.js`:
+  `abyss_reed_bundles` (2: lying 4-3-2 / stooks), `abyss_brick_stack` (2: fired bricks on a pallet / mud bricks drying),
+  `abyss_lime_sacks` (2: on a pallet / slaking tub). All are `setting: 'outdoor'`, so the interiors never pick them for a
+  room. Reused: `abyss_counter`, `abyss_hanging_goods`, `abyss_scrap_stock` (the sheet stack), `abyss_crates`, `pa_drum`,
+  `abyss_hanging_lantern` (unlit: a middle-class shop).
+- **The sign:** the kit's `ABYSS.sign` has no saw pictograph; the fragment's local `sawSign()` draws one (a tin blade with
+  teeth, a red handle, a sawn plank) on a bare board (`pict 'saw'` draws none).
+- **Interiors** (`kits/interiors/sets/abyss.js`): `abyss_shop_builder` = the deck under the sail (an open `shop`, 7.15 x 3.8 at
+  y 0.6) + the container (`store`); `abyss_shop_builder#1` = the plank shop-front (an open `shop`, 7.4 x 4.0 at y 0.8) + the
+  container (`store`). The yard is open ground, not a room. The counter and the hanging goods are `setting:'room'`.
+- **`sim`:** `{ activity:'TRADE', capacity:6 }`. The field takes one activity (`53-assets.js`), so the timber deliveries
+  (a `STORE`-like drop-off) are not recorded; nothing reads `sim` yet.
+- **Verified 2026-10-05:** `build.py` clean; `verify.py abyss-kit.html --assert` OK (78 items, 102 calls, 618 k tris);
+  `verify.py locus.html --assert` OK (the world does not place the yard; Mungo will); catalog `verify.py --assert --page jobs`
+  and `--page outdoor`: every invariant passes; interiors `--sets --assert` (both items): every room check ok, the error
+  panel shows a SwiftShader shader-link error that the existing `abyss_shop_salvage` item shows too (the machine, not the
+  item). Looked at: both variants front, eye level and plan, variant 0 at night.
+
 ## The temple and the `sim` fields
 
 `abyss_temple`: a 66 m precinct. The altar (`ABYSS.altar`, 14 x 14 m, 3.6 m, four steps, a stair mid-side on all four
@@ -220,6 +273,34 @@ they face the two runs). `ABYSS.WALL = { L, H, T, walk, gateSegments }`. `abyss_
 through `ABYSS.sub` — segment, tower, segment, gate, segment, corner, segment (the last turned along −z) — and the
 citadel builds its whole circuit (front: segment + gate + segment; other sides four segments; corner towers; joint
 towers mid-side) the same way on a 4 m rubble mound (70 m at the foot, 58.8 m on top).
+
+## Lower Verge (Oct 2026, `65-abyss-75-verge.js`)
+
+Five additions for the lower city of Verge (an elected mayor; Yuni-controlled, built in Yuni and abyssal styles), in their
+own LAST row (`KIT_ROWS.abyss` gets `'Lower Verge'`), so every earlier sheet item keeps its seed (`1000 + index*7`). The
+builders use only the kit API (F, `ABYSS.*`, `LOCUS.*`, PAL, FURNISH); no Locus world globals.
+
+- `abyss_mayor_compound` (70 x 56): court wall (rubble, lime-wash, teal coping) with the gate on +z (9.8 m between painted
+  pylons, a small swoop roof with painted tips, leaves swung in); the COUNCIL HALL on a 1.6 m painted rubble plinth
+  (x -16..16, z -23..1): open sides between teal posts, three built-in tiers of benches (back and both sides), a painted
+  mural wall at the back, the great swoop-and-horn roof with painted gables (`paintcol`) and painted horn tips, no gilt, no
+  spines; a 10 m stair at the front (foot z 2.8). The mayor's residence (12 x 12, two storeys, door (-26, -13)), the office
+  and records wing (13 x 14, door (26, -11), tin-clad back), the forecourt (z 6..18) under three sails with 12 petitioners'
+  benches, lit lantern posts along the path. Doors (F.door): residence, office.
+- `abyss_guard_tower` (26 x 20): square tower 9 x 9 at (-7.5, -3), three storeys (floors 0.4, 3.8, 7.2; rubble then
+  salvaged plate), merlons, a tin-mirror cone with an arch onto the roof walk and an iron beacon basket (a flame and a night
+  lamp) on its head; the barrack hall (13 x 8.5 at (3.5, -2.75)) under a swoop roof whose ridge runs along z. Doors on +z:
+  tower (-7.5, 1.5), barrack (4.0, 1.5). Drill yard z 1.5..10.
+- `abyss_toll_house` (14 x 10): booth (x -1..2.5) and strongroom (x -4.5..-1, tin-clad, barred slit) under one roof on a
+  0.4 m plinth; the COUNTER WINDOW faces +x (the road) with a plank shelf and a canvas flap; door (1.6, 1.5) on +z; a sail
+  over the queue (x 3.6..6.6) and a raised striped boom at (6.4, 4.7).
+- `abyss_palisade` (one 6 m segment): footing x -3..3, everything inside x = +-3; place segments with centres 6 m apart on
+  one line, same yaw. +z = the outside (plate); stakes, drums and braces inside.
+- `abyss_palisade_gate` (14 x 4): a 9 m clear opening (x -4.5..4.5) between pylons (x +-4.5..6.75), 4.2 m clear under the
+  raised stake gate; it takes the place of 14 m of palisade (next segment centres at x +-10).
+
+Interiors: `kits/interiors/sets/abyss.js` (residence, office, the hall's open floor with the tiers as fixtures; the tower's
+three guard rooms and the barrack's two dormitories and mess; the booth and the strongroom); palisade and gate skip.
 
 ## The windpump (animated)
 

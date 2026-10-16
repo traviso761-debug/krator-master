@@ -1,0 +1,878 @@
+# Voth: handoff (2026-10-09, as Streetlab; the citizen simulation from 2026-10-12)
+
+*2026-10-14: this folder was `settlements/streetlab` until today; the paths below are the new ones. The first Voth's
+page and its own docs are in `archive/voth-first`; its `src/` stays here as Voth's source library.*
+
+This note lets a new session take over the Voth city plan work. Read it with `README.md` (the design and every tool), `INDEX.md`
+(fragments and sizes) and `PORT.md` (port tags). The memory file `project-streetlab.md` holds the
+owner's rules in short form.
+
+**Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
+conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
+
+## 2026-10-16: stage 3 step 6b, the tools onto core/host (branch `claude/voth-interiors`)
+
+The city plan's tools are core/host's now (`core/host/README.md`, "Voth onto core/host"; `README.md`, "The tools are
+core/host's"): the inspector and hover tip (I; `93-host-inspect.js` over `VC.describe`, picked by `VC.inspectRay`), what
+things hold and the stocks (O; `93-host-stocks.js` over `KHOST.simHolds(SIM)` with `VC.lotPlaces`, `VC.isContainer`,
+`VC.actorHTML`), the marks (P; `94-host-marks.js`, `marks.json`), the picture menu (`96`, the Voth kit buildings), the
+editor (B; `98-host-edit.js` over `VC.editWorld`: place, plant, paint street, select, move, turn, remove, undo, save to
+`edits.json`) and the cutaway (X; `99-host-cutaway.js` over the cantons and `VC.CUTB`, the lot buildings in view). `build.py`
+takes `host.FULL` and inlines `edits.json` (`host.edits_js`); `97-vc-host-take.js` is the take. Retired: `57-vc-marks.js`,
+58's editor, picture grid and dead pin, 59's flora UI, 56e's panel and its contents, 56's keys and bar, 55's tip, the
+head's panels, `serve.py`'s two old routes (it answers the host's `/__save` and `/__file`), `site/voth-city-edits.json`
+and `site/voth-city-marks.json` (converted: `edits.json`, an empty log; `marks.json`, the four areas).
+
+Proof:
+- `python3 verify.py dist/voth-city.html --assert`: the placement hash **a1a7f008** with the owner's edits applied (as
+  before), every check as before but the two known failures (the embassies Hykkousoi, Iziz, Jimjam, Republic; the Arena
+  not walkable); the cutaway check runs through the host (`VC.cutTo(unit, 1)`: storey 2, shown, the host's bar, off).
+- `node test-edits.js` (12 checks): an old Streetlab file converted by `KEDITS.fromStreetlab` reads back the same
+  (`VC.editsFromLog`), so the page lays out the same with it; the editor's ops read back as the layout's entries.
+- Headless on the GPU (Chromium `--use-angle=d3d11`, about 4 minutes to load): X opens the Palace, ] and [ step it, X
+  closes it (the planes are the host's, `VC.INTD.planes` is them); a click in the cut storey names the room (Household
+  Kitchen, Palace canton, storey 2 of 18) in the inspector and the tip, and the pin lands on its floor (8.2 m); the marks
+  load at their sizes (mines 3.50 km2, quarries 86.8 ha, mush farm 40.8 ha); a kit building placed (aligned), a street
+  painted, a lot removed (hidden at once), saved through `/__save` (3 ops), undone back to nothing; 116 pictures drawn; the
+  stocks read; no page error. Screenshots in the session notes folder (`voth-6b/`: cutaway, cutaway-room, marks, editor,
+  stocks).
+- Every core/host consumer rebuilt (35 pages differ only by the host modules); `core/host/example/check.py` 14 of 14;
+  `node core/edits/test-edits.js`; `tools/port_baseline.py --write` re-keyed them.
+
+Differences the owner may notice: the panels are the host's (the inspector bottom left, the tip, the marks and editor
+bottom right, the stocks top right, the cutaway bar top centre); the editor's delete mode is select + Delete (a lot of the
+plan, a placed building, a painted street, a tree or a plant); R (align the last again) is gone (align is a checkbox
+applied as a building is placed); a tree is planted at its species' height (no height box); the trees and plants have no
+pictures (the kit builds into its store); a lot moved is, on the next load, a deletion where it stood and a placed
+building where it went (placed buildings join at step 3, so the plan round it may reflow, as before); the cutaway's bar
+for the buildings in view counts their storeys up to the tallest cut; the status line names the save
+`voth-city/edits.json` (the take's build name), the file is `settlements/voth/edits.json`.
+
+## 2026-10-16: the Palace's top tiers and summit, and lazy furnishing (branch `claude/voth-interiors`)
+
+The blueprint wiring is finished (`README.md`, "The Palace from its blueprint" and "The summit from sheet F8"):
+- **Tiers 3 and 4** (85 and 67 m, two storeys each; the sheets stop at tier 2) take F7 again, clipped
+  (`TUNE.interiors.blueprint.Palace.tiers`). On a repeated sheet a void with nothing standing up into it from below is laid
+  as floor: a gallery's void an open floor, a garden court's or the dome's a two-storey light court (the dome's shaft stays
+  open only on tier 2, where the suite keeps it over the throne room); a stair shaft the tier's wall cuts is an open
+  landing. Storeys 14 to 17 hold 26, 21, 12 and 9 rooms; the Palace 2,046 rooms (2,042 from the sheets).
+- **The summit (F8)** is laid by `VC.bpSummit` as prims round the captured crown on the deck (a drum 100 m wide, a podium
+  turned 45 degrees, the gilt dome, four obelisks), which F8 did not know: it drew a 70 m deck with a lantern. Every row
+  stands where the sheet drew it if clear, else at the nearest clear spot (the crown tested by each piece's own turned
+  footprint). All ten rows are laid; the Pool of the Sky, the altar and the instruments moved out from under the dome.
+  The walker is blocked by their footprints (`P.summit.blocks`); they are not on the pedestrian layer.
+- **Lazy furnishing** (`56-vc-interiors-host.js` `VC.intFurnish(cn, si)`, `VC.intFurnishStep`, `VC.intDrawStorey`,
+  `VC.intWant`, `TUNE.interiors.lazyMs`): the cutaway furnishes the cut storey and what stands up into it at once, the
+  storeys under it a few ms a frame; the walker its storey, then the ones above and below. Placements are identical to the
+  whole-canton pass (120,555 pieces checked in a headless run, the storeys furnished in reverse in 5 ms steps). The
+  Palace's first cut: 1.0 s (was about 7.5 s of furnishing alone), the next storey 0.4 s.
+
+**Open:** the stairs' heads on the summit (the Stair of the Sun ends on tier 3, the Astronomers' Stair under the deck; the
+core's stair house is the way up, and it rises inside the crown's drum); the summit's pieces are not on the pedestrian
+layer (`43-vc-sim-nav.js`); on tier 4 the clipped F7 leaves the outer band empty (the tier's wall stands at 67 m, the
+sheet's rooms reach 93); the two Inner Guard rooms on storeys 15 and 17 are unreached and dropped. The blueprint's `NEW`
+pieces are still unmapped.
+
+## 2026-10-15 (late): the Palace wired from its blueprint (branch `claude/voth-interiors`)
+
+The owner's blueprint (`palace/`, landed on main from another session) is wired: `palace/export_plan.py` makes
+`targets/voth-city/40c-vc-palace-plan.js`; `40d-vc-blueprint.js` lays each storey's sheet (`README.md`, "The Palace from its
+blueprint", says how). The real stack: tiers of half-width 169, 134, 107, 85, 67 m with 7 (+ the dungeon), 3, 3, 2, 2 storeys of
+6.2, 8.8, 6.8, 8.1, 6.2 m; the sheets were drawn for 200, 140, 95, 70. Not scaled (the stairs must line up), clipped.
+**Open:** F8 (the summit's Dawn Pavilion, altar, high garden) is not laid, and tiers 3 and 4 are still the generic planner's;
+the blueprint's 24 `NEW` pieces (another session's, `kits/catalog`) are not used yet: when they land, map them in
+`TUNE.interiors.dress.kinds` and the programmes; the Palace has 2,102 rooms and 115,000 pieces and took 16 s to furnish headless before the bare and plain
+rooms skipped the placer (not timed alone since): a per-storey lazy furnishing would cut the first view's hitch. `verify.py`'s phase C message now names the failing sub-check; its tool check fails only when a tool broke and was not
+replaced (whether one breaks in two days is the hash's). The same session also gave every sleeping room a bed and divider screen, every home a
+food and an item store, the terrace stairs landings, and the canton interiors their place on the pedestrian layer.
+
+## 2026-10-15: the interiors from the owner's references (branch `claude/voth-interiors`, worktree `../krator-voth-interiors`)
+
+The owner's four zips of reference pictures (palace, temple, wealthy, misc) and the brief: textureless canton interiors, the
+walk-mode clipping, multi-storey open space, the Fortress's training hall, the Palace's and the Temple's programmes, the
+wealthy houses' tapestries, chandeliers and columns, the market stall, the banners, the shrine, canopies and lanterns, and
+(mid-session) "sufficient interior light sources". All in `README.md` ("The canton interiors", "The Palace and the Temple",
+"The wealthy houses' decor", "Canopies, lanterns and hanging banners"). The pieces:
+- `materials.json` + `tex/`: 33 families (21 new: `int_*`, `tap_*`, `inlay_*`, `medallion_sun`, `lantern_paper`, `jali`,
+  `frieze_red`, `canopy_kilim`); `build.py` inlines their colour maps. `core/materials/PROMPTS-ready.md` holds 16 prompts for
+  the sheets the references want (carved green stucco, green tiles, the Tzintzun tapestries, the Temple's hangings and
+  ancestor relief, the glyph banners, the carved column, the screen lattice, the stall awning, the shrine mural, a hide
+  canopy): each names the stand-in it replaces.
+- `40-vc-interiors.js`: atria (`VC.intAtria`), great halls, railings, light wells, the core's ceiling well, keep-outs; the
+  storey heights of the Palace and the Temple (`storeyMinBy`).
+- `40b-vc-suites.js` (new, [G data]): `VC.SUITES` (the two state floors as data), `VC.suiteStorey`, `VC.suiteFinish`, the
+  grand stairs, the inner stair, the exits.
+- `56-vc-interiors-host.js`: `VC.intSetMat` / `intSheetMat` (the library on the shell), `VC.intProto` (merged prototypes),
+  `VC.intDecor` (tapestries, dado bands, nooks, railings, the fittings, the training posts, the suites' decor).
+- `41`, `56b`: the clan atria (`VC.ixAtrium`), the wealthy houses' decor and lanterns (`VC.ixDecor`), the light pool over the
+  lot buildings.
+- `37b-vc-canopies.js` (new, [G data]) and `56f-vc-street-host.js` (new, [draw]): the canopies, the lanterns, the banner
+  records (`20-site-cantons.js` `CANT.banners`, `31-vc-voth.js` `VC.dressBanners`).
+- `targets/voth-site/50-site-scene.js`: the near plane while walking.
+- `kits/catalog`: `voth_market_stall` and `voth_wayside_shrine` redrawn, `voth_planter` new (its `verify.py --assert` passes).
+
+**Checked headless** (`scratchpad/probe.py` under SwiftShader, 3 to 5 minutes a load): all eleven cantons plan, the Fortress's
+walk from its dock door into its training hall completes, the Palace draws 854 rooms in 3.7 s as 2,650 meshes (33,000 before
+the merge), no page errors. **Not reviewed by the owner:** the looks (colours, tile sizes) and the suites' proportions; judge
+them in the preview (`.claude/launch.json` `voth-interiors`, `/dist/voth-city.html`; walk in through the Palace's -x porch at
+(-468, 700, 54) or the Temple's +z porch at (210, 297, 70)).
+
+**The owner's delivery, same day (`Downloads/vothtex.zip`, 32 images).** All sixteen prompts came back, with eleven extras for
+variety and for the myth of the three brothers (the Chichani, the Zeijani and the Andaru), and five redos for other builds.
+- **Wired here** (`materials.json`, 60 families; `TUNE.interiors.look`):
+  - The Palace in green stucco, green crackle tiles and gilt, drawn in their own colour (`VC.INT_COLOUR`). The jade inlay is on the
+    throne room's diagonals and the carved inlaid columns on its pillars. The chandeliers wear the painted drum, and the ringed
+    giant's mosaic is over the sun chandelier. Sun carpets run down the state rooms.
+  - Each canton's look now takes a list of hangings, picked by a hash of the spot: the Tzintzun and procession tapestries with the
+    purple damask in the Palace; the Temple's red hangings and the masks in the Temple; Ordinator banners and masks in the Fortress;
+    the brown kilim and the mudcloth in the Foreign canton and the common ones.
+  - The Temple has the ancestor relief as a 1.6 m dado, the icon behind the altar and crimson filigree screens. The Palace's
+    screens are purple filigree.
+  - The three brothers' frescoes hang high on the end walls, over the doors: their reunion over the Palace foyer's banquet door
+    and over the Temple atrium's sanctuary door, their ascent over the foyer's entrance and over the sanctuary's way in.
+  - The streets: the market canopies are the stall-awning kilim and the others stitched hide. The bridges' banners are the three
+    glyph banners (blue, rust, lavender), and the Temple's dressing is the rust one. The wayside shrine's mural and the stall's rug
+    take the delivered sheets through the catalog's decal cache (`56f` `_texCache` swap).
+  - The wealthy houses' hangings by class: the clans kilims and mudcloth, the rich and manor houses the damask and the procession;
+    their columns are the carved inlaid set.
+- **Not wired (other builds)**: the five redos are in the library only. `GODOT-PLAN.md` "Before an export" lists the re-packs.
+
+**Left (the owner's brief, not done):** the Ordinators' citadel model for the other cities (the "citadel" picture: a stepped
+tower with a tall keep; a `voth_bldg_citadel` in `kits/catalog/krator-master-buildings-voth.js`); the Palace's exits onto the
+face gardens are at the service halls' ends only (one per side); the "grafitti" and "shroom" pictures were not acted on.
+
+## 2026-10-15: the Palace blueprint (`palace/`), to be wired on `claude/voth-interiors`
+
+The owner's programme for the Palace canton, agreed 2026-10-15: `palace/BLUEPRINT.md` (the study of five historical palaces,
+the principles, the floors in one table, "Wiring it", "Assumptions"), `palace/FURNITURE.md` (pieces per room from the catalog's
+Voth sets; the pieces the catalog lacked are the `NEW` list at its end), `palace/floors/F-1.png` to `F8.png` and `section.png`
+(one sheet per floor: every room numbered, named, kinded, with its decor level and area), all generated by `palace/blueprint.py`
+(`FLOORS`: the rooms as data in the suite's frame, u along the axis in from the -x face, v across, metres; `program()`: the
+pieces per room kind; `python3 blueprint.py` redraws the sheets and the manifest). Decisions: kin only, no consorts; the
+ministries in the palace (the Chancery on tier 0's top storey); the big state rooms keep their footprints and only the ruler's
+apartment block is subdivided; a Dawn Pavilion on the summit.
+
+**For the next session (the wiring).** The suite data is `targets/voth-city/40b-vc-suites.js` `VC.SUITES.Palace` on the branch
+`claude/voth-interiors` (worktree `../krator-voth-interiors`, uncommitted edits from the interiors session: stage only your own
+files). The sheets' frame is the suite's, so a rectangle transcribes straight into `rooms`, `halls` and `links`. In order:
+1. F3 to F5: subdivide `apartment` into the vestibule (the Privy Door), the council chamber, the cabinet, the privy antechamber
+   with the Inner Stair and the Secret Stair, the privy court (an open `court` room, kept clear through the tiers above with
+   `keepAbove`), the bedchamber, the bath and the oratory; add the waiting rooms, the kitchen's larder, scullery, buttery and
+   servery; the two service halls' rooms per storey become the named lists on the sheets (today a weighted `purposes` dict is
+   filled at random: a per-storey named list, with the sheet's u extents, wants a small extension of `VC.suiteStorey`). The
+   second-rank rooms (the light courts, the guest suites, the Chancery Stair, the Servants' Way) stand behind the first rank and
+   need a door through a passage room: nothing in `VC.intWalls` makes one yet.
+2. The new room kinds go in three places: `56-vc-interiors-host.js` `VC.intPrograms` (from `program()`), `15-vc-tune.js`
+   `TUNE.census.rooms`, and `TUNE.interiors.dress.by` (a class per kind). Tier 0 takes the dock, household and chancery
+   purposes per quadrant (sheets F0 to F2) through `TUNE.interiors.purposes.Palace`.
+3. Read the real tier radii from `VC.INT.cantons.Palace.tiers` (a headless load takes 3 to 5 minutes; the interiors session's
+   `scratchpad/probe.py` does it under Playwright) and scale the extents if tier 1 is not 140 m in half-width: `blueprint.py`
+   assumes 200, 140, 95, 70. Not yet read when this note was written.
+4. Tier 2 and the summit (F6 to F8) want a second suite entry (`tier: 2`) and a deck programme.
+Rebuild (`python3 build.py`), `python3 verify.py dist/voth-city.html --assert`, and walk in through the -x porch at
+(-468, 700, 54) in the preview (`.claude/launch.json` `voth-interiors`).
+
+**The furniture.** Another session (2026-10-15) built the `NEW` pieces for the catalog (`kits/catalog`, uncommitted on the main
+checkout as this is written): when they land, check their ids against `FURNITURE.md`'s `NEW` list and `program()`, drop the
+delivered ones from `NEW`, and rerun `blueprint.py`.
+
+## 2026-10-15: what things hold, and the stocks panel (o)
+
+The owner: "implement the full interface in Voth so I can do economy tweaks" (ROADMAP.md section 10, "what things hold,
+and the settlement's stocks"). In `README.md`: the inspector ("What things hold") and "Controls" ("Stocks").
+- **The data side, core/simulation's new `77-sim-7-stocks.js`** ([G data], read only; `SCHEMA.md` "What things hold,
+  and the stocks"): `SIM.contents(id)` (a place's store, what it makes from what, its household's food, what it sells; an
+  actor's worn items and wear, tool, things at home, a cart's load, its household's food, its carrier's load; a
+  carrier's lot and cargo), `SIM.stocks()` (by item: production, transit, storage, owned, ordered; days of cover; the
+  last day's and today's change and flows; the low, out and wanting marks), `SIM.holders`, `SIM.placeAt`,
+  `SIM.whereIs`, and a daily snapshot (`SIM.stocksStep` from `SIM.step`, `SIM.stocksJump` from `SIM.jump`). Small hooks
+  elsewhere in core: `SIM.economyUse` (the economy's use a day, exported), the items' `stats.eaten` (meals at home, by
+  food) and `stats.brokenBy` (tools broken, by kind). Nothing decides differently. The flows balance: imported counts
+  as a carrier's lot enters the map (it is in transit from then), exported as its cargo leaves it, so
+  change = made + imported - exported - used up (test-sim has it for a caravan in and a cargo out, with the contents,
+  stocks, holders and marks cases and their negatives).
+- **The host, `56e-vc-stocks-host.js`** ([web]): the stocks panel (o, "stocks (o)" on the bar) and the contents under a
+  building, a container and an outdoor site in the inspector; 56d's citizen card now reads its things from
+  `SIM.contents`. 55's `VC.describe` records what it described (`VC.DESC`), and the furniture picks carry their place
+  (`room.<id>`, `open.<district>`, `ix.<unit>`: 55 and 56b). The panel reads on open and every 4 s while the minute
+  moves; paused, only on "refresh". A full read of 56,950 actors and 13,254 places took 108-142 ms headless.
+- **What the simulation cannot say (so the panel does not):** stock is kept by place, not by piece, so a chest or a
+  stall shows its place's store; a shop or stall has no shelf (it sells from the warehouses); the river's and the timer's
+  imports are "ordered" until they land (no carrier on the map); a household's food bought is a move, not a use (the
+  panel shows both: drawn from the stores, of it into households' stores, eaten at home, used up).
+
+Proof (headless, `tools/harness.py`'s launcher, `?lite=1`, SwiftShader; `VC.simDay` runs days 2 and 3 headless, as
+`verify.py` does; no page error). The panel at 23:59 day 2 (no whole day yet: the change since 00:00 day 2) and at 23:59
+day 3 (the last day, 00:00 day 2 to 00:00 day 3, not partial, no jump):
+
+| item | total day 2 / day 3 | at the site | in transit | in storage | change (day 2) | made | imported | used up | days day 3 |
+|---|---|---|---|---|---|---|---|---|---|
+| wheat | 158,207 / 171,182 | 75,597 | 0 | 95,585 | +15,842 | 65,442 | 20,000 | 69,600 | 4.1 |
+| corn | 283,568 / 318,105 | 145,053 | 11,608 | 161,444 | +59,722 | 97,613 | 0 | 37,891 | 1.2 low |
+| bread | 243,411 / 202,636 | 600 | 0 | 202,036 | +19,771 | 69,600 | 0 | 49,829 | 0.7 low |
+| fish | 193,798 / 170,124 | 31,780 | 1,650 | 136,694 | -30,223 | 32,125 | 0 | 62,348 | 2.0 low |
+| eggs | 260,074 / 259,977 | 21,054 | 42,160 | 196,763 | +37,587 | 59,608 | 20,000 | 42,021 | 1.3 low |
+| cloth | 6,176 / 5,363 | 426 | 0 | 4,937 | +176 | 328 | 0 | 152 | 36.2 |
+| shirt (owned) | 145,851 / 145,844 | | | | -41 (83 bought, 126 worn out) | | | | 12 citizens want one |
+
+(the state columns are day 3's). Households with a food store: 7,079; low 687 at the end of day 2, 101 at the end of day 3,
+5 empty. Every row balances (eggs: 59,608 + 20,000 - 42,021 = +37,587). For the owner's tuning: bread is made only on
+workdays (240 on day 3 by 23:59) and is used at about 57,400 a day, so its cover falls to 0.7 days, and it has no import
+route; nothing went unmet in the two days.
+The inspector: the Bakery (`ix.4017`, hovered with the buildings drawn): "makes bread (from 1 wheat); its store (made,
+not yet hauled): 360 of 20,000; bread 360; its residents eat at a mess; sells bread, peel (no shelf of its own: it sells
+from the settlement's warehouses)". A market stall (`voth_market_stall`, Market 2): "a container: the simulation keeps
+stock by place, not by piece; this one is part of Market 2" and what Market 2 sells. A citizen (`c1000`, opened by
+clicking a holder of shirts in the panel: the camera flew there, the card opened): wears a shirt 69% worn of 400 days,
+trousers 77% of 450, shoes 19% of 380; at home shirt x5, shoes x5, trousers x5; household food bread 205, cheese 1, corn
+76, eggs 76, milk 2, mushrooms 77, peppers 77 (40 people, 3.2 days).
+
+## 2026-10-14: interiors that vanished, kayaks, people on the water
+
+The owner: "interiors are not rendering aside from the cantons; nor are kayaks", "people stand around on the water and
+walk aimlessly". All three were on `Voth-sim` already (pre-existing, not the merge). Found with headless probes (a
+non-lite load, renderer.info, an instance-aware frustum test; a lite census of every body the bodies pass would draw).
+
+- **Interiors: frustum culling.** three r128 culls an InstancedMesh by its geometry's bounding sphere at the mesh's
+  origin, never by its instances. A lot building's walls are a unit box at the lot's origin and its furniture the
+  piece's own geometry there, so the interior vanished whenever the lot's middle left the view (a corner view: 252 of
+  253 meshes in view culled); a canton's walls and furniture sit at the world's origin, so a canton far from it (Port)
+  lost all 1,321. Every interior InstancedMesh is now `frustumCulled = false` (56, 56b: one building or canton shows at
+  a time). And walking into a lot building (F) now shows its interior whole, as walking into a canton does
+  (`VC.ixWalkIn`, 56b): before, a lot building's interior showed only in the cutaway.
+- **People on the water: the outdoor work sites.** `outdoor()` (42) put a site at a point (a pier's middle, a stilt
+  hut in the lake, the city's middle in the bay) at `max(SEA, ground)` and spread its workers in a disc round it with a
+  wander as wide: dockers, fishers, ferrymen, bargemen stood on the water round their piers, the chinampa growers round
+  their huts, the aggregate trades in the bay. Now `VC.simStandSpots` gives each site spots on what is there
+  (`VC.simStandY`: a chinampa bed's top, a pier's deck at the `top` its builder now records in `VOTH.PIERS` (31, 33,
+  34; `LIFE_FISHDOCK_H` exported by build.py), a canton's stack, a bridge, dry ground), each with the same surface a
+  wander's reach round it, the wander halved until spots are found (`TUNE.sim.stand`).
+- **Kayaks: three causes.** (1) `SIM.plan` (core/simulation) started from `a.inVehicle` as the last plan left it,
+  which is the state at that trip's end: an actor asked again before it got there (an interrupt, a wake, a jump that
+  leaves it mid-trip) was planned as if afloat and paddled a straight line from the street over the town (up to 1.9
+  km). `SIM.vehicleAt(a, t)` reads the vehicle off the task (a boat leg afloat, a drive leg in the buggy, else on
+  foot; the trip's end state once arrived); tasks carry `vehFrom`, `veh`; test-sim has the case and its negative;
+  Dhelv's export is byte-identical with and without it. (2) A landing was the street node nearest the beds, so every
+  kayak leg crossed the shore: its door is now the water's edge on the way to the beds (`VC.simShore`, 45). (3) No
+  kayak was drawn: a body on a boat leg of its own is now sat in one (56c, `TUNE.sim.embody.seat`).
+
+Numbers (lite census, every posed body; over water = ground under the lake, the body at the water's level, not on a
+bed): 08:00 1,112 of 10,050 before, 0 of 9,639 after; 17:30 368 of 20,118 (67 afloat with no boat) before, 6 of
+19,730 (2 afloat, in kayaks; 4 walking a causeway's edge) after. Kayak legs over land at 17:30: 20 of 1,070 for 160 m
+in all (worst 16 m) after, against 535 of 1,057 for 15,060 m before. Placement hash unchanged (ff007aab).
+
+## 2026-10-14: the pause, the citizens' inspector, the cutaway on every building in view
+
+The owner's three asks, all in `README.md` (the inspector, "Controls", "Cutaway", "Every building's interior"):
+- **Pause (k, the "pause" button by the clock)**: `56d-vc-inspect-host.js`. Every frame hook gets the page's animation
+  time (`VC.animNow`: real time less the time paused, still while paused; hooks pushed later are wrapped as they come),
+  so the clock's dt is 0 (no motion time, no hour, no `SIM.step`: the minute does not move) and every real-time
+  animation (sails, water, mills, beacons, the plants, the animals' gaits, the weather) holds. A hook that must follow
+  the camera reads `performance.now()` itself: 56c's "who is near" refresh (changed to it), 56b's cutaway refresh, the
+  inspector's card. Proof: paused at 10:00 day 1, two frames five minutes apart are pixel-identical (sim minute 600, 0 steps, 173 bodies shown in both); unpaused, the motion time moves on.
+- **The citizens' inspector (i)**: `VC.pickBody` tests only the bodies drawn this frame (`VC.SIMBODY.list`, its animals
+  `VC.SIMBODY.animals`, which 56c now exposes, and the carts) as points against the cursor's ray, behind the ground or a
+  lot's box left out (55's `VC.pickLot` keeps `VC.pickLotT`). `VC.actorHTML` reads: role, class, home; job, workplace,
+  post (`a.slot.k` of the place's WORK slots), shift, rota day off; the activity and place, the leg (`SIM.pose(..,
+  {cheap:true}).leg`), its mode, layer and end, the arrival, the schedule's next change; the meters (core's new
+  `SIM.needsPeek`, read-only, with `SIM.happiness(a, nd)`), band, efficiency, loyalty, what the meters ask for (the
+  free activities scored as `needsDesire` scores them, without `SIM.desire`, whose place lookups cache); errands; worn
+  items and wear, the tool, the home's spares, the household's food store. Animals: species, pet or pen, household,
+  age. `node core/simulation/test-sim.js` has a needsPeek test.
+- **The cutaway cuts every building in view** (`56b` `VC.CUTALL`): a height grid texture (512 texels over 400 m round
+  the view's middle) that every mesh material tests (`VC.cutInject`, an onBeforeCompile chained after a material's own,
+  its program key kept apart), with a depth material for the opaque shadow casters (and its clone, for the canton's
+  clipping planes); at most 36 buildings within 160 m and in the frustum, 3 interiors drawn a refresh, 150 kept.
+  Proof: below.
+
+Proof (non-lite, headless, `tools/harness.py`'s launcher; SwiftShader on a loaded box: a frame took about three minutes
+at street level): the inspector's card on a citizen (job, post, shift, the leg it is on, the meters and what they ask for, worn items, the household's food), on a penned animal and a pet; the pause as above; the cutaway on a poor house in the city's south-east (a merged page, after the walk-in fix): 37 buildings cut, none left drawing after a few refreshes, 662 materials patched, no page error; 19 cut at a closer view. **Draw calls are far over the estimate above:** 7,266 with 37 cut at storey 1 and 10,750 at storey 2 (about 1,370 without the cut), not about 1,500 extra. Lower `VC.CUTALL.max` or merge an interior's meshes per storey if it is slow on the owner's GPU.
+
+## 2026-10-13: the trades in two half-hour buckets
+
+The owner: "Can we stagger the jobs into 2 buckets separated by 1/2 hour to further reduce that load?"
+`VC.simBuckets` (`TUNE.sim.run.buckets: [0, 30]`; core: an actor's `lagBase` adds to `SIM.LAG`'s jitter): the kinds of
+work dealt largest first to the lighter bucket (11,702 and 11,708 workers), those without a trade by parity; half the
+city's day runs a half-hour later. A same-page A/B of a whole workday (lag on both): the worst minute 1.86 s against
+2.45 s (its decisions about 1,700 against 3,000), but the total 175 s against 161 s (+9%) for the same 644k decisions,
+and p50 70 against 48 ms: the hour's work now touches twenty minutes of every hour, not ten. A smoother day, not a
+cheaper one; `buckets: [0]` turns it off. `verify.py`: workdays' worst minutes 1.8 and 1.7 s, the buckets balanced.
+
+## 2026-10-13: the lag (the hour's turn spread), and the pets
+
+The owner: "Do the decision spreading for further optimization. Also add 1 dog and 1 cat per 40 citizens. Both will
+have no food demand for now but will wander the city and seek socialize (pets) from time to time."
+- **The lag** (core `SIM.LAG`, `TUNE.sim.run.lag` 10): each actor's day runs a hashed 0-10 minutes behind the clock
+  (its schedule, weekday and wake read the lagged minute), so a schedule change falls due over the hour's first
+  minutes. The probe's worst minute fell from about 4 s (6,000 decisions, the budget) to 2.5 s (3,103); nothing
+  waits (2 pending at 10:00), everyone who wants to work is at work.
+- **The pets** (`47-vc-sim-animals.js`, `TUNE.sim.animals.pets`): 1,334 dogs and 1,334 cats (one of each per 40 of
+  the 53,387 citizens and slaves), each in a household by a hash, asleep at home by night, roaming the greens and
+  squares by day (moving on every two hours) and mingling where people gather by their meters; no hunger or thirst. Nowhere
+  to go, they stay home (not the citizens' places). Drawn from the fauna kit's baked dog and cat models: the bundle
+  now takes models for chosen groups only (`mdl=['pets']`), the page 10.4 MB.
+- **Cost** (an A/B on the rest day's morning, 7-12, in one page): the lag leaves the total as it was (43 s against
+  44 s) and lowers the worst minute (2.2 s against 2.6 s), raising p90 a little (210 against 172 ms: the hour's work
+  moves into its next minutes); the pets add about a fifth (44 s against 36 s, 169k decisions against 141k: each is
+  mobile all day and decided about twice an hour), so they now move on every two hours. A pet's decision is a
+  citizen's (a place search and a lazy path); a cheaper wander (a random walk along the street graph near home, no
+  place search) is the next saving if it matters. The verify's rest day is its first after the workdays and reads
+  higher (p50 157 ms) than a second run (69 ms).
+
+## 2026-10-13: phase E session 2 (the carriers) and the animals
+
+The owner: "Continue" (phase E's second session), then, mid-way: "Pull in the fauna work from the other session. We can
+wire up some basic needs for animals as part of their ranch (feeding, idling) and arena (the former, plus a forced
+command to move and engage in combat). In addition to beetle ranches, add pigs, ducks, cow ranches / coops. Cows and
+other appropriate animals to be able to make milk which can be cooked with or converted to cheese, a higher quality
+food item."
+- **The fauna work** (`origin/ccr-05259b8d-kuy4pm`: kits/fauna and the three nomad kits it rebuilt) is merged into
+  `Voth-sim`; the city's page now takes the fauna bundle's `farm` group with `voth`.
+- **The carriers** (README, "The carriers"): caravans and ships carry the road's and the sea's imports, unload into
+  the caravanserai's or the pier's store for the carts, and buy the surplus as they leave; the river's barges wait for
+  a water way (by timer meanwhile); a week's run held. Fixed on the way: a lot landed but not yet hauled no longer
+  sends a second carrier; exports are capped at the last day's surplus (day 1 of the week sold 4,946 cloth).
+- **The animals** (README, "The animals"; `47-vc-sim-animals.js`): 845 animals in 56 pens (beetle ranches drawn empty
+  now, dairy pastures, pig sties, duck coops), 8 beasts in the Arena's stables, all on their needs (core: a role's own
+  `needs.free`), happiness about 90; herds yield by condition (core: a recipe's `herd`, `tended`); the dairymen make
+  cheese; core `SIM.command` and two bouts a day on the sand. Milk, cheese, pork and fowl are scarce next to the
+  staples (a few thousand servings a day against 280,000): shoppers buy by what is on the shelf, and the opening
+  household stores are staples only. Fixed on the way: the tune's essential list named two trades unquoted (the page
+  stopped at load); the beasts walked to the sand under the deck (core: a grid layer's route gets the ends' heights).
+- **Slaughter and birth** (owner, late in the session: "a new animal born every time one is slaughtered for meat, and
+  it takes 1 year to grow up; actual reproduction rates and maturity times later"): pork and fowl now come only by
+  slaughter of grown meat animals (80% of the pigs, 40% of the ducks), a newborn in each one's place, a year to grow;
+  so a herd of N gives at most N/365 a day, and pork and fowl are rare (a pig or two a day city-wide). The herds' eggs
+  and milk count only the grown.
+
+**Next:** the animals' feed as a good (fodder from the fields, drawn by FEED), herds that grow and are slaughtered
+(pork from the herd's size, not a rate), the arena's spectators and `78j`'s bout rounds; the river barges' water way;
+the warehouse → market porters; phase F.
+
+## 2026-10-13: the wake, and phase E session 1 (production, stores, carts, imports)
+
+The owner: "Anything we can do to optimize task finding and per minute load further? Work on phase e."
+- **The wake** (core/simulation `SIM.WAKE`, on by `TUNE.sim.run.wake`): each actor carries the soonest minute its wish
+  could change (`SIM.wakeOf`: its schedule's next change, hourly with an errand or in free time, a failed task's
+  retry, a role's cycle, `SIM.needsWake`, `SIM.itemsWake`) and the stepper skips it until then. A day: 74.4 M of
+  76.9 M questions skipped, 2 stale wishes in 2.5 M checks; `verify.py`'s workdays p50 65 and 64 ms (109 before),
+  p90 about 155-200, the slowest minutes about 3 s (the hour's turn, when thousands decide at once: 6,000 decisions,
+  the minute's budget). The census's pending count stays near 0 (the week check guards a missed wake).
+- **Phase E, session 1:** `77-sim-6-economy.js` and `46-vc-sim-economy.js` (README, "Production, stores, carts,
+  imports"). The stock is real now: purchases, household food and the kitchens' meals draw on the 487 warehouses.
+  Producers by worked hour × efficiency (fields one crop each, chinampas, mushroom farms, fishers' docks, ranches,
+  bakeries from wheat, weavers, tanneries, mines); 50 carts (each to the emptiest of its six nearest warehouses: over
+  all 487 they crossed the city and hauled a third as much); imports sent at under three days and delivered by timer.
+  Calibrated on a three-day run: steady use is about 280k servings a day (140k meals); the first two days run high as
+  households fill their four-day stores. After two workdays no food is short, the kitchens made every meal, wheat and
+  corn need their imports, bread lasts the least. Luxuries run out on the rest day's morning (the treats), so the
+  opening stock and the import lot were raised.
+- **Fixed on the way:** a report's `short` and `outOf` were live references, so verify serialized the rest day's
+  numbers beside day 2's; reports are snapshots now.
+
+**Next** (SIM-ROADMAP 2.6, session 2): carry the imports (caravans, barges, ships and their crews; the map has strider
+ports only, so the sea and river routes need water ports), the warehouse → market porters, the shipwrights' ships as
+production, a week's fast run for stability; then phase F. For the step: the hour's turn (spread the decisions due at
+:00 over the hour's first minutes) and `placesFor`'s cost (0.12 ms a call) are what is left.
+
+## 2026-10-13: phase D session 2: phase D done (meals out, kayaks, the food buffer, the river yard checked)
+
+The owner: "Make sure the river shipwright doesn't actually block the river. After this, finish phase D. And where did
+the low food stocks / under a day of food issue come from?"
+- **The river yard** leaves 95 m of open water beyond its slip, no ferry's way within 15 m of it (the placement
+  requires both, the slip is taken off the boats' grid once it stands, and `verify.py` checks it on the routes as baked).
+- **The low stores** were the trigger, not a shortage: a household went for food when its store fell below one day,
+  which the evening meal often did after the shops had shut (19:00); the trip waited for the morning, and breakfast
+  (5-6) came before the shops opened (7). Every low household had its trip on the way; the start was also hashed as
+  low as half a day. Now a household shops below two days and buys four: scraps 145 meals in two days (1,254 before),
+  5 stores empty.
+- **Phase D finished:** meals out at the taverns, the markets' stalls and the caravanserai (a share that grows with
+  wealth, or for a store that cannot make a meal); the chinampa growers' kayaks (their huts and beds on a straight
+  `kayak` layer through landings at the nearest street: core/simulation's boat `layer`); every item has a seller.
+
+**Where we're at** (`verify.py`, two workdays then the rest day's morning): 18,197 meals eaten out at the 80 taverns,
+the stalls and the caravanserai (about 6% of the meals), 141 scraps, 5 empty stores; 8,314 kayak legs. The step's
+cost has grown with phases C and D: p50 109 ms on a workday (61 before the needs), 173 on the rest day's morning,
+its slowest minute 2.7 s. **Next:** phase E (production, stores, carts, imports: the stock stops being abstract, the
+shipwrights' ships and the farms' crops are made).
+
+## 2026-10-13: phase D session 1: things (clothes, tools, food, shopping)
+
+The owner: "Continue phase d"; then "Shirts and clothes ought to last at least one year under normal conditions but they
+should start with randomized wear so there's still demand" (clothes 380-600 worn days, armour 800-1500; every worn
+item starts at a hashed wear), and "Same with tools" (3,000-5,000 worked hours, about a working year or more; a hashed
+start: over two workdays 35 broke, 23 were replaced during the shift, 12 wait, 6 of them chinampa spades). Done (README "Things: clothes, tools, food, shopping"; SIM-ROADMAP 2.5 status):
+core/simulation `77-sim-6-items.js` (opt-in, its tests in `test-sim.js`, SCHEMA.md "Items"), the city's
+`45-vc-sim-items.js` and `TUNE.sim.items`, the report's "Things", verify's items check. The slaves are issued their
+clothes and tools and run no errands, with no material need (the owner's Q5).
+
+The owner, then: "Make a shipwright's dock that constructs ships and also sells oars, kayaks. Nets could come from
+weaver". `voth_bldg_shipwright` (kits/catalog) by the river port and on the nearest natural shore to the harbour (the
+west bay, about 2 km off: the harbour's coast is its quay deck, 4 m above the water); 14 shipwrights each (their ships
+are phase E's production; the job table shows their posts short: 8 for 28); oars and kayaks there, nets at the
+weavers, the fishers' own nets. No item is without a seller now.
+
+**Where we're at** (`verify.py`, two workdays then the rest day's morning): 1,306 places sell (by kit model), 7,079
+households keep a food store, 1,528 eat at a mess. About 6,800 food trips (16 world minutes on average), 1,944 clothes
+bought against 1,600 worn out, tools as above, 87 poultices for 127 hurt, about
+10,800 treats (pottery, rugs, jewellery). Meals: 92% full (two foods, or a mess), 0.5% scraps; 448 households below a
+day of food at the end. The chinampa growers' huts are off the pedestrian layer: a spade worn out there waits. No shop sells oars, nets or kayaks (said in the report). Happiness 84-92;
+the step's cost p50 83 ms on a workday, 138 on the rest day morning (2.4 s at its 8:00 burst).
+
+**Next:** phase D's rest (eating out at taverns and stalls; the kayak on the water layer with phase F) or phase E
+(production, stores, carts: stock stops being abstract).
+
+## 2026-10-13: phase C session 3: needs, happiness, efficiency, loyalty (and eight village shrines)
+
+The owner: "Put in 6 more village shrines then do next stage of sim build".
+- **Eight village shrines** (`TUNE.sim.place.villageShrine.n`); their estimate now counts Voth's landmark shrines, the
+  funerary temple and the monastery's chapel (not lots: they were missed). The rest day's worship: 35 short at 8:00,
+  294 at 11:00 (209 and 528 with two); with the needs below 43 and 146.
+- **SIM-ROADMAP 2.4 items 4-6** (README "Needs, happiness, efficiency, loyalty"): core/simulation `77-sim-6-needs.js`
+  (opt-in; its tests in `test-sim.js`, SCHEMA.md "Needs") and the city's `TUNE.sim.needs`. Six meters (material waits
+  for phase D), rates by trade, fills by activity, labour (thirst at work: the well trip), eight traits, happiness,
+  efficiency bands, loyalty; free time goes where the meters ask. The report's "Needs and happiness", the clock bar's
+  happiness, verify's second workday.
+- Fixed on the way: the headless day moved the motion clock 3 s a world minute where the page moves it 18 (trips took
+  six times too long in world minutes; `VC.simSecPerMin`); quarters with no kitchen (the cantons' rooms, the monastery's
+  dormitories) eat at their mess; the slaves are fed and watered at their quarters; the country's fields, mines and
+  quarries keep a water barrel.
+
+**Where we're at** (`verify.py`): happiness 89-93 through two workdays (90.4 and 89.5 at 20:00: steady), efficiency
+0.99-1. By class: the clans 96, the rich 93, the poor 90.5, the cantons 85, the monastery 83, the slaves 63 (their
+quarters at the fields, nothing near to socialize or relax: the brief counts them apart). The unhappiest trades are the
+country's labourers: quarrymen 61, farmhands 64, miners 67 (thirst and no company out there). Nobody is left wanting
+what they chose (a free-time choice no place takes settles for what it got). Step cost p50 61 ms, p90 125.
+
+**Next** (SIM-ROADMAP 2.5, phase D): items, inventory, equipment, shopping; the material meter starts then.
+
+## 2026-10-12: phase C session 2, follow-up: benched squares, village shrines, the bread oven
+
+The owner: "Add a couple village size shrines and benched squares for that overflow. Fix the oven." Done (README
+"Benched squares and village shrines"):
+- The overflow, mapped by home: the afternoon's company-seekers with nowhere to go were almost all the cantons' people
+  (Market, Granary, Fortress, Guild, Arsenal, Foreign); the rest day's short worshippers the farms, the suburbs, city
+  NE and SE, the mines.
+- 12 benched squares at the cantons' feet (Fortress 3 from its causeway's land end, Market 3, Guild 2, Granary 2,
+  Arsenal 1, Foreign 1), 34 x 24 m on 30 cleared house lots, 27 benches each round a well, about 258 places each.
+- Two village shrines (`voth_bldg_village_shrine`, a new kit model: a walled precinct, a pillared hall, a forecourt),
+  81 each, placed where an estimate of the citizens' choice leaves the most without room.
+- `voth_bread_oven` stood 0.30 m behind its wall and 0.20 m over its height: its dome and flue are inside its box now
+  (the catalog's verify passes every page). `voth_shrine_lantern` named its materials by the catalog's keys.
+
+**Where we're at** (`verify.py`): at 15:00 on a workday 31,002 socialize out (28,117 before), 2,601 visit at home
+(5,347), 275 go without (571). The rest day's worship: 209 short at 8:00 (208 before), 528 at 11:00 (576). Both
+shrines fill, but the shortfall is spread thin: farms about 150, suburbs 140, city NE 100, city SE 95, the mines 75. My
+estimate (`worshipShort` 2,237 before, 1,030 after) overstates the clan compounds' east: the first shrine stands there.
+Fixing the rest takes either about six more village shrines placed from the simulation's own map, or letting the farms'
+households worship at the village chapels and their homes.
+
+## 2026-10-12: phase C session 2, follow-up: the temples, the chapels, the small shrines (where we're at)
+
+The owner: "3 with half; make 2 new unique temple models to accomodate the halls and place one on the west side and one
+on the southeast side at the pre-street phase; and make 3 small tomb size shrines as furniture to distribute around parks
+that 2-3 people can use at a time. Clan compounds can also take this furniture shrine. Make a house size chapel that can
+go in the villages. Then let's see where we're at". Done (README "The rest day's worship"):
+- Three services (8, 11, 17) with half the city attending, dealt in turn (an actor's `alias` picks its service).
+- The Temple of the Ash Saints on the west side (placed at step 5, after the wall: at step 3 the highways took it down;
+  the west is hilly, so its search allows 12 m of slope and 1.2 km of reach), the Temple of the Tide Mother on the
+  southeast (328 m from its mark); 1,358 and 1,368 standing.
+- Village chapels in S10, S11 and S12; 193 small shrines (6 along the big parks' walks, 187 in pocket parks); a yard
+  shrine in all 54 clan compounds (the small compound's hall is its shrine room).
+- `voth_ossuary_shelves` named no plaster material for its skulls (the catalog's verify failed on it, before this work):
+  fixed.
+
+**Where we're at** (`verify.py`): at the busiest service (8:00) 7,475 want to worship, room for 8,032 at once (the
+temples 2,726, the canton shrine rooms 3,228, the funerary temple 510, the chapels 459 with the monastery's, the shrines
+526, the small shrines about 580, the clan compounds 224 for their own): nobody is short overall, but 208 at 8:00 and
+576 at 11:00 find no room within 1.5 km (the room is uneven: the cantons hold 40% of it). Socializing at 15:00 on a
+workday: 28,117 out, 5,347 visiting, 571 without. Work: 2,187 out of work, 3,979 posts unfilled (from session 1).
+
+## 2026-10-12: phase C session 2, follow-up: more company, the slaves' rest day, worship sized
+
+The owner: "More places to socialize; and maybe people can socialize at home with housemates and neighbors too?",
+"Slaves work a half shift on rest day", "How many more temples and shrines would we need".
+- The 992 plazas and 617 pocket parks are places, their room by area; houses take visitors (VISIT: their own people and
+  neighbours within 60 m) when there is no room out. At 15:00 on a workday 28,594 socialize out (5,000 before), 5,030
+  visit, 511 go without (29,114 before).
+- Slaves work half their shift on the rest day.
+- **Worship at 9:00 on the rest day:** 45,277 want it; the room is 4,698 at once (the canton shrine rooms 3,228, the
+  funerary temple 510, the chapel 366, the five shrines 526, the House of Healing and the parks' shrines the rest; the
+  Temple canton not counted until its interior). A shrine holds about 105. More needed: one service, everyone: 387
+  shrines (or 80 of the funerary temple's size); one service, half the city: 171; three services, everyone: 99; three
+  services, half: 28 (or 6 of the largest).
+
+## 2026-10-12: phase C session 2 (branch `Voth-sim`): the week, running
+
+The owner: "Ok continue build" (and, mid-session, "Items like chairs, stools could be a good target for idle and beds etc
+for rest"). Done (README "Session 2: the week, running"): roadmap 2.4 items 3 and 3b, and the stepping of everyone.
+- Shifts per kind of work, nights for a third of the guards, soldiers, stokers and jailers, the rest day (day 7) for all
+  but 23 essential kinds, a rota day off for every worker; 59 roles. Seats offer IDLE (and RELAX), beds REST; houses are
+  private. The clock has 20x and 60x; the near citizens are drawn.
+- core/simulation: `scheds`/`week`/`off`, the place grid per activity (exact nearest-first; the example's decision hash
+  is unchanged), lazy paths, `access: 'private'`, `SIM.REACH`, `SIM.nav.body`, a batched log; `test-sim.js` checks each
+  with its negative. Shade, Mungo and the example rebuilt; their verifies and checks pass.
+
+**What a workday says** (`verify.py`, `VC.simDay`): at 3:00 52,781 asleep and the night shift (927) at work; at 10:00
+18,774 at work (everyone who wants to), 33,521 idle at home; **at 15:00 29,114 want company and find no free place
+within 1.5 km** (the plazas, parks, wells and taverns hold about 5,000 at once): the largest deficit so far; at 20:00
+36,000 relax at home. The rest day: 6,602 at work (only the essential kinds). A step costs 29 ms (median: every actor is
+asked), 0.8 s at most (6,000 decisions at a shift change); the decisions left waiting clear within about 7 minutes.
+WORSHIP on the rest day finds 78 places' worth of room: the shrines and chapels are few.
+
+**Decisions for the owner:** more places to socialise (taverns, plazas with benches, a bath house?) or fewer hours out;
+temples and shrines for the rest day; the slaves' rest day (now off).
+
+**Next (phase C session 3):** needs and happiness (`77-sim-6-needs.js`: meters, fill tables, the personality trait,
+happiness and efficiency), the resolver's "meter x pull" choice of free time, and the census panel's needs and
+deficits. The buildings' own graphs and the canton interiors on the layer; the chinampa huts on `water`.
+
+## 2026-10-12: phase C session 1, follow-up: the outside stairs are navigable
+
+The owner: "Make sure stairs on house exteriors are also navigable". Every stair and ladder the Voth kit models build on
+their outsides is now a walk record (`settlements/voth/catalog/README.md` "Walk records"): the four Voth registries'
+stair helpers and the hand-built flights of the townhouse, guild hall, tavern, caravanserai and the farmhouse call
+`walkRec`. The city collects them in its model probe and lays them at every lot: 6,826 stairs and 4,715 ladders on 6,365
+lots, every head on the main body of the pedestrian layer; the walker stands on the stairs (core/walk strips). The layer
+is now about 50,700 nodes (27,600 before); the deal is about 4.9 s at load (3 s before), the layer 2.2 s.
+- 1,828 stair feet stand on a gallery or roof that no other outside stair reaches: they are joined through the house
+  (`indoor` edges) until the buildings' own graphs (planBuilding's, with the interior stairs) join the layer.
+- Not records yet: the canton models' own stairs (CANT's flights are), the Voth builders the city calls directly (the
+  monastery, the House of Healing, the shrines), and the ladders for the walker.
+
+## 2026-10-12: phase C session 1 (branch `Voth-sim`): the walkable city and the citizens
+
+The owner: "continue next step". Done (README "The citizens (phase C)"): the pedestrian layer (`43-vc-sim-nav.js`) and
+every census resident as a SIM actor with a home, a job and a commute (`44-vc-sim-people.js`); core/simulation gained
+`yWeight` layers and `SIM.nav.field` (both tested in `test-sim.js` with their negatives; Shade, Mungo and the example
+rebuilt, their verifies and checks pass).
+
+**What the report says** (the "interiors report" button; `verify.py`):
+- 53,355 citizens (the census) in 8,408 homes: 28,125 of working age, 22,894 at work (6,242 live-in, 16,652 dealt by the
+  walk; median commute 67 m, 90th percentile 1,050 m), 3,217 gentry on their means, **2,014 out of work**: no free post
+  within 3 km walked, in city SE (795), the suburb (677), the farms (311), villages S11 and S12. 633 slaves (70% of the
+  farm, mine and quarry posts) at 281 sites whose quarters are not built.
+- **3,967 posts unfilled**, mostly where few live: the market traders (1,668 at 3 markets), porters (808, the Port
+  deck's warehouses), dockers (444), armourers (224), smiths (243), chinampa growers (218), the coast-guard berth (40),
+  the lighthouses (8), the necropolis (11). Workers (not gentry) number about 24,000 against 27,700 posts: some must stay
+  empty, and the walk decides which.
+- 6,306 residents sleep on the floor (their homes' beds fall short: phase A's shortfall, now slept on).
+
+**Decisions for the owner:**
+- The gentry (rich, manor, clan: 4,271 of working age) take only the professions in `TUNE.sim.people.gentryJobs`; 3,217
+  find none and live on their means. Widen the list, or let them be idle?
+- Slaves are counted apart from the census (633 more people) and sleep at their field, mine or quarry, which has no
+  quarters: build slave quarters (a kit model), or house them in the farmsteads and miners' houses?
+- City SE and the suburb have about 1,500 out of work and no posts within 3 km: more workshops there, a longer
+  `walkMax`, or the strider and ferry lines as a commute (the roadmap's "walk or transit minutes", not done yet)?
+- The chinampa huts hold no census residents: their growers come from the shore (median 865 m). Count the huts as
+  homes (`TUNE.census.live`)?
+
+**Next (phase C session 2):** the week and the rota (`KCLOCK.weekday`, `TUNE.sim.shifts`), the fast test clock, and
+stepping everyone. Before stepping 54,000 actors: `SIM.placesFor` scans every place for each free-time decision (13 ms
+at 20:00; 3.5 ms at 8, mostly routing), so core/simulation needs a spatial index of places (or per-activity fields
+from `SIM.nav.field`, refreshed as places fill) and the stepper's `SIM.STEP_MAX` a look; the embodiment (`77-sim-7-lod`)
+draws only those near the camera. The buildings' own graphs and the canton interiors' join the layer; the chinampa
+huts go on `water` with kayaks.
+
+## 2026-10-12: phase B session 2 (branch `Voth-sim`): phase B is done
+
+The owner: "Put caravanserai closer to the river gate, at post-avenue stage. Add more work furniture. Do B session 2".
+- **The caravanserai** is placed at step 3, after the avenues and before any street (`VC.simCaravanserai`, the House of
+  Healing's rule): 280 m from the River Gate's marker, off Avenue 10, in the river port's flat ground; the streets and
+  lots are laid round it, nothing is displaced.
+- **More work furniture:** dense work rooms for the short kinds (`factory`, `enginehall`, `drillhall`, `guardroom`,
+  `alehouse`, `counting`, a stable; the funerary temple on two storeys), the granaries and the mustering ground as work
+  places. A trade no longer converts a lot with a role (a brewery had taken one of the two power houses).
+- **Session 2:** capacity by size, seats round tables, the places' spots (about 110,000 on 8,357 places), reach and
+  wander for the open places, the workplaces per place, the density overlay's work-post mode.
+
+**The power station** (owner: "Make a larger power house and sprinkle it in if needed"): a new kit model,
+`voth_bldg_power_station` (46 x 34 m: a two-storey turbine hall with a clerestory, the boiler house and its two chimneys,
+the fumarole vent house, cooling tanks, conduit masts; `ix` shell 40 x 22 m on two storeys), takes the place of the small
+fumarole house (`voth_generator` v1, 128 m2 inside) in `TUNE.power.houses`; the steam turbine hall (v0) stays. Its
+programme is four engine halls and a store (`TUNE.ix.byKey`), and an engine hall now takes up to 20 workstations (was 12).
+None had to be sprinkled in: the two houses have 274 posts for 260 workplaces.
+
+**The 90% rule now:** every kind of work meets it (24,647 posts for 24,647; 27,366 workplaces).
+
+Plan and furnish takes about 15 s at load now (8 s before): the dense rooms. A bake (as Mav's Refuge's) would bring it
+back if the load matters.
+
+## 2026-10-12: phase B session 1 (branch `Voth-sim`)
+
+The owner: "start phase B". Done (README "The citizens' places (phase B)"), in `targets/voth-city/42-vc-sim-places.js`:
+- **The new buildings are on the plan:** 14 bakeries, 10 butchers, 8 weavers, 4 breweries, 3 tanneries (converted lots,
+  spread over the city), watchhouses east, west and south (and the Fortress's armoury as the central one), the
+  caravanserai 320 m from the Spirit Gate inside the wall in place of 7 houses, the coast-guard berth off the Fortress.
+- **269 wells** (215 on plazas, 52 along the streets, 2 in market squares) and 59 private ones in the manor and clan
+  courtyards.
+- **About 11,100 SIM places** with activities, hours, pull and work posts; core/simulation's `SIM.slotsFromFurniture` takes
+  a world's own map now (`test-sim.js` checks it; Shade, Mungo and the example were rebuilt, their verifies run).
+- **The 90% rule and the full job table** in the report panel and `verify.py`.
+
+**What the 90% audit says:** 23,410 of the 24,556 posts the rule asks for stand. Short: industrial workers (490: the
+industrial lots' census is 15 workers each, their warehouses hold about 7 posts), soldiers (257: barracks, the garrison
+castle and the wall's towers and gates; their patrols are phase F), power-house stokers (201: 130 workplaces a house),
+innkeepers and servers (97), the town guard (32: their patrols are phase F), granary keepers and millers (29), the coast
+guard (24), the caravanserai's grooms (7), the funerary priests (6), guild and customs clerks (2, 1). Each short row names
+the buildings with the most floor per post: where more work furniture would go, or where the census is too generous.
+
+**Decisions for the owner:**
+- ~~The caravanserai~~ moved by the River Gate at step 3 (session 2).
+- The short kinds above: more work furniture, or fewer workplaces in the census (`TUNE.census.jobs`: industrial 15,
+  power 130 are the large ones)?
+- The new buildings' census numbers are first guesses (`TUNE.census.byKey`: a watchhouse 24 guards, the berth 40, a
+  brewery 10...).
+
+**Next (phase B session 2 or phase C):** the places' `spots` (where people stand), the furniture's own capacities in place
+of one post a piece where it matters (a loom, a counter), and phase C's pedestrian nav layer.
+
+## 2026-10-12: phase A session 2 (branch `Voth-sim`): phase A is done but for the Palace and Temple
+
+The owner (2026-10-12): "work on session 2 phase A except the palace/temple interiors". Done (README "Every building's
+interior"):
+- **The fallback shells are gone (18 to 0).** They were the probe's fault, not the models': three.js r128's
+  `Box3.setFromObject` overstated every turned mesh (Voth's tapered blocks are 4-sided cylinders turned 45 degrees, read
+  1.4 times their size and as round), and a block on piles or on a yard platform stood above `TUNE.ix.base`. The probe now
+  measures vertices, a cylinder is round only past 6 sides, and `base` is 2.5 m. No overrides were needed.
+- **The buildings off the lots have interiors:** 6 monastery dormitories (180 monks, 288 beds), its chapel and assembly
+  hall, the funerary temple, 5 shrines, 2 lighthouses and their keepers' cottages, 229 chinampa stilt huts, and the House
+  of Healing counted from its wards (112 cots). `build.py` logs Voth's builders (`VOTH.BUILT`); the city's own models
+  record their shells (`VC.ixSite`); the hut export carries each hut's size.
+- **The eight new Voth kit models** (Q4) are in `kits/catalog/krator-master-buildings-voth.js`: watchhouse, caravanserai,
+  coast-guard berth, weaver, tannery, brewery, butcher, bakery, each with an `ix` shell and a programme
+  (`TUNE.ix.byKey`); four trade room kinds (`brewhouse`, `weaving`, `tanyard`, `butchery`) take their trades' pieces.
+  They are placed in phase B; until then the report plans each as a lot of its class (`TUNE.ix.kitCheck`). The Voth
+  building catalog page shows them (`settlements/voth/catalog/index.html` loads the file).
+
+**The report now:** beds for 86% of the need (22,566 of 26,389), item stores 85%, food stores 67%; 1,482 homes short of
+beds, about 7,600 residents without one: the poor houses (4,544: the census puts 7 in each, and the five poor-house models hold from 1 to 10 beds),
+the clan compounds (1,302), shops (909), farms (380). Middle, rich, manor and craft homes now hold their people.
+
+**For the owner when back at the computer:**
+- The new models' look (one screenshot was taken of them side by side; not reviewed by the owner).
+- The chinampa huts have 229 beds and the census houses no one there (Q3: the growers' homes); the monastery's
+  dormitories hold no food store (the monks eat in the hall), so they show as short of food.
+- Still failing `verify.py --assert`, unchanged: Dalab and Yuni embassies (no room on the Foreign deck), the Arena and
+  Fortress interior walks (below).
+
+**Left of phase A:** the Palace and Temple interiors, when the references arrive.
+
+## 2026-10-12: the citizen simulation, phase A session 1 (branch `Voth-sim`)
+
+The work is `SIM-ROADMAP.md` (the owner's brief, the phases, the answers). Phase A, session 1 is done; what is left of
+phase A is at the end of this section.
+
+**Done (README "Every building's interior"):**
+- `targets/voth-city/41-vc-building-interiors.js` ([G data], `VC.IX`): every standing lot building (8,050) gets an
+  interior. It is planned and furnished once per kit model and programme (111 types, about 6 s at load, no bake needed),
+  placed by each lot's pose. Shells are read off the kit models (`VC.ixShellFrom`); programmes are `TUNE.ix`. Residents
+  come from the census, and the residence rule (per 2 residents a bed, an item store and a food store, and a dining
+  room) is checked per home. A shortfall is a record and a report line, never forced (Q3).
+- `targets/voth-city/56b-vc-building-interiors-host.js` ([web]): the model probe, the drawing, the cutaway (x) on any
+  building, the inspector on its pieces, the density overlay (n), the "interiors report" panel with the job table.
+- `verify.py` prints the report (totals, by class, by district, the job table, the fallback shells) and asserts: every
+  lot with a programme has a unit, no type fails, one unit of each of 12 types draws, the cutaway opens and closes a
+  building, the density legend shows.
+
+**What the report says (for the owner to read, Q3):** beds for 81% of the need (21,188 of 26,299); item stores 80%,
+food stores 63%; 4,320 of 7,449 homes short of something, 2,255 short of beds, about 9,800 of 46,672 lot-building
+residents without a bed. The poor (7 to a house), middle (5) and shop (5) classes and the clan compounds (40) fall
+short; rich, manor and tavern homes hold their people. Workplaces: soldiers, household service, innkeepers, industrial
+and power-house work have fewer posts than 90% of their workplaces (phase B gives each piece its capacity, so these
+are provisional). 18 types read a fallback shell (listed in the report): name overrides in `TUNE.ix.shells` or improve
+`VC.ixShellFrom` for them.
+
+**Fixed on the way (they were failing `verify.py` on `main`):**
+- **The canton decks were empty** (0 granaries, 0 barracks, 0 embassy plots, 2 shops): `VC.capturedHit` (commit 6086ed22,
+  never checked in the page) counted the generic deck buildings that `VC.stripCantons` removes at draw time. The strip is
+  now one data function, `VC.stripSet` (33-vc-country.js), which both use. Decks now hold 9 granaries, a barracks and 8
+  armouries, 16 shops, 22 + 6 Port warehouses and 4 embassies.
+- **The monastery had 2 dormitories of 6**: the extra dormitories and stores were inside the branch that runs only when
+  Voth's compound is *not* placed. Now 6 dormitories and 2 stores (the census gains their monks).
+
+**Still failing `verify.py --assert` (not caused here; left for the owner):**
+- Embassies 4 of 6: Dalab and Yuni do not fit on the Foreign deck. Every spot left is blocked by the stair house, the four
+  embassies and Voth's own stone rails at the deck's corners (kept by the strip, rightly). A design call: smaller embassy
+  plots (`TUNE.decks.embassySize`), letting them turn, or another deck.
+- The Arena interior walk ("ledge" at 28.7 m) and the Fortress walk ("blocked interior:Fortress" at -357, -776) fail as
+  they did before this session.
+
+**Left of phase A (session 2):** interiors for the buildings that are not lots (the chinampa huts, the monastery's
+dormitories, the shrines, the lighthouse, the funerary temple, the House of Healing: they are Voth builders' prims, so
+each needs a shell table); the new Voth kit models of Q4 (watchhouse, caravanserai, coast-guard berth, weaver, tannery,
+brewery, butcher, bakery); overrides for the fallback shells; the Palace and Temple when the references arrive. A bake
+(roadmap A.4) is not needed for the lots; it may be for the unique buildings.
+
+## State
+
+**2026-10-15, stage 3 step 6a: Voth on core/host's shell** (camera, loop, clock, panel, probe; `targets/voth-city/
+97-vc-host-take.js`). What changed and its proof: `core/host/README.md`, "Voth onto core/host". For the page: the title
+bar is the host's (`#bar`, the view select, the time controls drive `VC.clock`); the keys are the host's (F walk, G pin);
+`#clk-pause` and `#wx` are kept. The verify's simulation statistics read slightly differently because they depend on load
+timing (the same on the old page); the placement hash is a1a7f008 as before.
+**2026-10-16, step 6b:** the inspector, the stocks, the marks, the pictures, the editor and the cutaway are the host's too
+(above, "stage 3 step 6b").
+
+**Committed to `main` on 2026-10-09** (branch `claude/city-core`). The street toy (Streetlab's own `src/` then, `dist/streetlab.html`) was
+retired: the owner called it redundant. Its street machinery became **`core/city`**, the city builder and its infill
+(`core/city/README.md`), and the city plan takes it from there.
+
+| Page | Built from | Verify | Last result |
+|---|---|---|---|
+| `dist/voth-site.html` | `targets/voth-site/` | `python3 verify.py dist/voth-site.html --assert` | OK |
+| `dist/voth-city.html` | `CITY_JS` in `build.py` (`core/city`, `targets/voth-site/10,50`, `targets/voth-city/`, `core/simulation`, `core/host` FULL) | `python3 verify.py dist/voth-city.html --assert` | FAIL on the known two only (the embassies; the Arena not walkable), 2026-10-16 |
+
+Build: `cd settlements/voth && python3 build.py`. Serve: `python3 serve.py` (port 8813). The page is
+`/dist/voth-city.html`. It takes about 15 s to lay out and draw.
+
+### Saved owner data (inlined by build.py)
+- `voth-site.json`: the site, made with the site editor. It has districts, including `mines`, `quarries`, `more farms` and `mush farm`, which came from the owner's marks.
+- `marks.json`: the owner's marks on the city plan (core/host's, POST `/__save` kind marks; the page reads it when it opens).
+- `edits.json`: the plan editor's `core/edits` log (POST `/__save` kind edits; a newer browser draft wins until saved). It is
+  empty now (converted from `site/voth-city-edits.json`, which was empty).
+
+### The city plan's 15 steps (0–14)
+| Steps | What | Fragment |
+|---|---|---|
+| 0–5 | site, landmarks, districts, avenues, highways, wall | `30-vc-site.js` |
+| — | Voth's own builders (wall and gates, monastery, chinampas, harbour, river port, shrines, lighthouses) | `31-vc-voth.js` |
+| 6–12 | the street method | `32-vc-city.js` |
+| 13 | the country: suburbs, farms, villages S10/S11/S12, orchards, mines, quarries, mushroom farms, windmills, watermills, ranches | `33-vc-country.js` |
+| 14 | ferry and elephant bug lines as core/simulation `transport` routes | `34-vc-transit.js` |
+| — | runner, plus the owner's edits | `35-vc-steps.js` |
+| — | census | `36-vc-census.js` |
+| — | power and light: power houses (at step 9), electric reach, street lamps | `37-vc-light.js` |
+| — | flora: the swbay biome's mask and climate (parks jungle, environs savannah); built by `VC.drawFlora` (55) | `38-vc-flora.js` |
+| — | park and plaza furniture; the big parks' walks, groves and gardens | `39-vc-furnish.js` |
+| — | the chinampa beds | `31b-vc-chinampa.js` |
+| — | the canton interiors (plans, walls, floors, KWALK) | `40-vc-interiors.js` |
+| — | the cantons read into levels; bridges, causeways, flights, doors, falls (both pages) | `targets/voth-site/20-site-cantons.js` |
+
+Host fragments:
+- `55-vc-host.js`: drawing, sidebar, census table, foldable panels.
+- `56-vc-interiors-host.js`: the interiors furnished and drawn; the cutaway (x).
+- `57-vc-marks.js`: marks (p).
+- `58-vc-tools.js`: Paths, the pin, the editor (b).
+- `59-vc-flora-edit.js`: the editor's flora mode (select, delete, plant).
+- `ringsea.py` (beside `foreign.py`): the Voth watercraft of `kits/ringsea`, sealed (`RINGSEA`).
+
+### 2026-10-09, second session (the owner's nine asks), all in README.md
+1. **Ring Sea vessels:** the ferries, plus moored dhows, barges, junks and hulks (`VC.MOOR`, `VC.drawVessels`).
+2. **Sky:** Voth's own sky, lifted live into `VSKY` (it is not in core/atmos yet).
+3. **Weather:** core/atmos weather with its ash modes.
+4. **Chinampas:** redrawn, with swbay plants.
+5. **Ancestry:**
+   - tombs face inward;
+   - shader waterfalls;
+   - its bridge moved off the falls;
+   - walkable to the summit;
+   - flora from the biome, with a new ash cherry (species 13 in swbay, `SWBAY.treeAt`).
+6. **Bridges and causeways:**
+   - replanned deck to deck (`CANT`);
+   - every canton walkable from its ferry to its top;
+   - no doors buried.
+7. **Canton interiors:** for every canton but the Palace and Temple, and the cutaway (x).
+8. **Markets and parks:**
+   - real market stalls with stock;
+   - the big parks' walks, lanterns, benches, avenues, groves and gardens.
+9. **The flora editor:** select, delete, plant; saved in the edits file.
+
+`verify.py --assert` now also walks every canton (the interiors from the ferry to the top deck; every bridge, the
+terrace chains, the Ancestry and its catacombs), checks the bridges' grade and clearance, and checks the stalls, the
+walks, the vessels and the flora editor's mapping.
+
+### Last session's work, all verified
+- **Dev tools** (`58-vc-tools.js`):
+  - **Paths:** Voth's 87-pathviz, lifted by `build.py voth_pathviz_fragment()`. It shows streets by class, elephant bug and ferry lines with stations and live vehicles, and painted streets.
+  - **The pin:** Dhelv's. Double-click drops it; G recenters on it; F walks from it. Walking follows the ground.
+  - **Plan editor (b):**
+    - place a Voth kit building, aligned to the nearest street and set back off it; Q/E turn it, R re-aligns;
+    - paint a street of any class;
+    - delete a building or a painted street;
+    - undo, save, copy JSON.
+  - The layout applies saved edits in `VC.applyEdits` (step 3) and `VC.applyDeletes` (after step 14). A full save → reload round trip was tested.
+- **Embassies on the Foreign canton:** Hykkousoi, Iziz, Jimjam (the school), Republic, Dalab, Yuni.
+  - `foreign.py` bundles the other builds' kit fragments, each in an IIFE behind a Proxy `window`, about 780 KB. It exposes `window.FOREIGN.place(culture,x,y,z,ry)`.
+  - Sources: Dalab, Iziz, Republic and Yuni from settlements/dalab; Hykkousoi from ys; Jimjam from jimjam.
+- **Canton decks:** granaries and mills, the arsenal, the market square, Port warehouses.
+- **Census:** balanced (pop 46,631, workforce 23,316, jobs 23,219).
+- **Transit:** ferries and elephant bugs follow Voth's collision rules. Elephant bugs queue at an occupied station; ferries berth two to a pier. Elephant bugs are Voth's 79c model with orange awnings.
+- **Models:** rotating lighthouse beacons; better shrine and small-lighthouse models with doors and windows.
+- **Harbour:** ship-spaced long piers (`TUNE.harbour.ship`).
+- **Ring Sea kit** (`kits/ringsea`, verify OK, 28 vessels):
+  - `81-rs-voth-junk.js`
+  - `82-rs-hyk-galleon.js`: the galleon rebuilt as a Hykkousoi vessel
+  - `83`–`87`: Voth ferry, taxi, river barge, pleasure barge, dhow
+  - Seeds: next free is 73800.
+- **core/simulation:**
+  - new `77-sim-5r-routes.js` (the `transport` kind, `SIM.transportQueue`, `SIM.vehiclePose`);
+  - edits to 0-core and 8-export, SCHEMA, PLAN and `test-sim.js` (57 checks pass, through `tools/node_in_chromium.py`; there is no node on this machine);
+  - consumers rebuilt: mungo, shade, `core/simulation/example`.
+
+### Open questions for the owner
+- **Gallery (done 2026-10-09):** the city plan is in the Krator Worlds gallery as "Voth - new"; the old page is now "Voth - old" (`gallery/build_gallery.py` ENTRIES, `gallery/README.md`).
+- **Unemployment:** suggestions 3 and 4 were never done. The owner asked for 1, 2 and 5 only, stopping when even.
+
+## Working rules (owner and repo)
+- **The refactor rules on origin/main** (CLAUDE.md, 2026-10-09, commit acc50484; local main is behind and has another session's staged work, so not pulled here):
+  - don't add repo-wide tooling or rewrite a verify.py's harness block;
+  - leave `core/terrain`, the biome placement core, the furniture batch and Voth's placement mask to the refactor;
+  - new placement draws from `KRAND` cell-seeded, never reads canvas pixels, uses `x == null ? d : x` defaults and registers in `core/tags`;
+  - don't copy infrastructure (camera, PRNG, noise, sky) into a build;
+  - rebuild every build a shared change reaches.
+
+  Streetlab predates this: its own `SL.stream` PRNG and raster are in `core/city/10-city-core.js` (the module's debts are listed in `core/city/README.md`). New work should not add more of that. Day and night (item 5) must take `core/clock` (KCLOCK), not a local clock.
+- Edit only `src/` and `targets/`. Never open `dist/`, `three.min.js`, `archive/` or `*.zip`. Read fragments over 30 KB by section (`grep -n '^/\* ===='`). `33-vc-country.js` is 63 KB.
+- Use no canton-specific Voth pieces. Put regular city buildings on the cantons.
+- Shell gotchas:
+  - Write patch scripts with the Write tool, not heredocs: heredocs eat `\'` and `\n`.
+  - Don't use trailing `//` comments in packed fragments.
+- **Refreshing the indexes:** `tools/audit_port.py` and `tools/make_index.py` rewrite every build's files.
+  1. Back up every INDEX/PORT file first.
+  2. Run the tools.
+  3. Restore all but Voth's (`settlements/voth`).
+
+  `tar` fails here on the `C:` path; use `cp`.
+- After a change to the street method: rebuild, run all three verifies, take one screenshot per meaningful change.
+- On Windows, `window.dispatchEvent` of a synthetic key reaches the window's listeners in registration order. Dispatch on `document.body` to test the capture-phase handlers in `58-vc-tools.js`.
+
+## The owner's to-do list for the next session (in the order given)
+
+**2026-10-12: the work is the citizen simulation** (`SIM-ROADMAP.md`; phase A session 1 is done, see the top of this
+file). The list below is the earlier session's.
+1. ~~**River gate terrain**~~ **done 2026-10-09:** `VC.levelGate` (`30-vc-site.js`) cuts and fills a level pad under any gate on a slope, at the road's height, meeting the ground at `TUNE.wall.padSlope`. It edits TERR's delta and SL.ground. The River Gate was cut 7.1 m; the Harbor and Spirit gates got pads too (the step 5 log lists them).
+2. ~~**The swbay biome**~~ **done 2026-10-09** (README "The flora").
+   - The parks have the jungle; 110 trees in 14.7 ha, sparse. Raise `TUNE.flora.quality` if the owner wants more: it raises the savannah too.
+   - The environs are savannah: about 6000 trees.
+   - The canopy ceiling is `SWBAY_TEMPLE_H` = 40 in `build.py`, with crowns scaled by `TUNE.flora.crownK`.
+   - The kit is read from `core/biome` and `biomes/swbay/src` (nothing vendored). Don't load a second biome kit into this page: `BIO.iridBarkMat` clashes (CLAUDE.md).
+3. ~~**Park and plaza furniture**~~ **done 2026-10-09** (README "Park and plaza furniture"). It places 393 benches, 127 statues, 3 wayside shrines, an obelisk and 2 braziers, from the catalog's Voth section (lifted by `build.py`). `src/52-host-buildings.js` (shared with the toy) now draws `FURN` keys through `buildFurn`.
+4. ~~**Street lighting**~~ **done 2026-10-09**, with the owner's power and light rules (`37-vc-light.js`, README "Power and light"): power houses in the industry district, the electric reach, and street lamps socketed in `SL.addWay`. The lamp kinds are electric, fancy lantern (wealthy streets, canton decks), lantern and torch. The census is even again (power-house staff). **Not done:** lit windows by light kind at night; that belongs with item 5, as do lamp glows dimming by day (`VC.drawLampLight`).
+5. ~~**Day and night**~~ **done 2026-10-09** (README "Day and night"):
+   - One core/clock `KCLOCK` (72-minute day) drives everything, opening at 10:00 and running, with 1x/2x/4x/8x, run/hold and an hour slider. Core's preview default is a held clock; `TUNE.clock.running` holds it.
+   - The sun comes from Voth's own `skySunDir` (lifted), with `PAL.sky` colours and planetshine at night.
+   - Lamp glows are core/atmos `glowAdd`, with per-lamp on and off hours.
+   - Vehicles and SIM read the clock.
+   - **Not done:** lit windows by each building's `light` kind.
+6. ~~**River barge clipping**~~ **done 2026-10-09:** each barge now moors across its pier's head, parallel to the current, `TUNE.bargeClear` off it. It is placed only where every corner floats, and it is in `VOTH.PIERS` (`barge:true`), so the boats steer round it. The step 2 log and verify audit hull against pier: 4 barges, 0 clashes.
+7. ~~**Elephant bugs and bridges**~~ **done 2026-10-09:** the elephant bug nav closes the water within `TUNE.bridgeBand` of a river bridge's line (beside its deck) and under every canton span (`VC.NAV.under`). Elephant bugs cross the river only along a deck, entered from its ends. They are drawn at the deck's height by Voth's own `lifeBridgeY` (lifted from `78a-life-core.js`). The verify audit, "striders and bridges", reports 0 samples in closed water, 598 on decks and 0 off the deck height.
+8. ~~**Rename to "elephant bug"**~~ **done 2026-10-09** (the owner chose "everywhere", but not the hyperjungle's striders, which are a different animal):
+   - **Renamed:** "silt strider" in prose, labels and docs across Voth's src and docs, the Voth building catalog's names (`voth-city-captured.js` and its generator `capture.py`), the furniture catalog's "Elephant Bug Transit Station", `LORE.md`, `core/simulation/ROADMAP.md` and streetlab.
+   - **Streetlab also renamed:**
+     - its labels that said just "strider": station and line names (the saved `site/voth-site.json` too), the site tool, the step names, the logs, the census, the Paths legend and the verify report;
+     - its `TUNE` keys: `bugWade`, `bugSink`, `bugAwning`, `navFreeBug`, `census.jobs.bug` and `bugStation`;
+     - its comment and doc prose.
+   - **Kept:**
+     - the owner's quoted words;
+     - code identifiers (`VSTRIDER`, `STRIDER_*`, `striderPlaceLegs`, `voth_city_silt_strider_station`);
+     - the data ids code matches on (`'strider'` kinds and the nav layer, `TUNE.transit.strider`, `'strider-guild'`, `BOARD_STRIDER`);
+     - file names (`79c-strider-model.js`).
+   - Voth is rebuilt.
+   - The builds that bundle the catalog (`kits/catalog`, `kits/interiors`, `kits/ancients-interiors`, Locus, Mav's Refuge, Mungo, Verge) were rebuilt in the commit.
+9. ~~**Placer menu**~~ **done 2026-10-09:** the editor's place mode shows a searchable grid of all 143 Voth kit pieces with pictures (`VC.edGrid`, `VC.thumbsStart` in `58-vc-tools.js`). Each picture is built once off screen, rendered into a render target on the page's renderer and kept as a data URL. Two are drawn a frame, and the ones a search shows go first. The variant select stays.
+
+Earlier ideas, still open:
+- Moor Ring Sea ships at the harbour piers (`TUNE.harbour.ship` spacing was made for them).
+- Unemployment suggestions 3 and 4.

@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.295,
+    1.157
+   ],
+   "seam_before": [
+    1.697,
+    1.419
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.2,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ash",
+  "id": "ash.hearth",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Ash and Charcoal Ground Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Ash and Charcoal Ground Texture.png",
+  "prompt": "Prompt row ash.hearth in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "every hearth, brazier, forge and stove bed; burnt ground and campfire rings in any biome",
+  "sha1": "bab31cc98186335fb48024b6f3c0a2a53acda1e7"
+ }
+}

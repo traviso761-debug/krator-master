@@ -1,0 +1,142 @@
+[
+ {
+  "src": "bark-char.png",
+  "out": "core/materials/library/bark.char",
+  "record": {
+   "id": "bark.char",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Charred tree bark after a fire: deep black (#1c1a18) bark cracked into blocky \"alligator\" checks a few centimetres across, a faint silvery sheen on the raised blocks, brown unburnt bark (#5a4434) showing in a few deep fissures, fine grey ash in the cracks. (Row bark.char of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the lower trunks of every survivor in this kit, snags and burnt logs; burnt beams and posts in any settlement"
+   }
+  },
+  "options": {
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-pillar.png",
+  "out": "core/materials/library/bark.pillar",
+  "record": {
+   "id": "bark.pillar",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Bark of a fire-proof alien column tree: tough fibrous skin in horizontal raised rings a few centimetres apart, each ring slightly scalloped like overlapping leaf bases, fine vertical fibres between the rings, a waxy sheen. Neutral grey-green so it can be tinted to teal and pale gold bands. (Row bark.pillar of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the pyre pillar; any ringed palm-like or cycad-like trunk"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "rock-granite-tor.png",
+  "out": "core/materials/library/rock.granite.tor",
+  "record": {
+   "id": "rock.granite.tor",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Weathered granite boulder surface: coarse-grained pink-grey granite (#b4a89c) with white feldspar and black biotite flecks, rounded by weathering, shallow pits and a few joint cracks, patches of orange and grey-green crustose lichen (#d88a3a, #9aa090). (Row rock.granite.tor of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the kopjes; any granite outcrop, tor or boulder field; dressed granite blocks"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.2
+  }
+ },
+ {
+  "src": "rock-granite-tor-b.png",
+  "out": "core/materials/library/rock.granite.tor.b",
+  "record": {
+   "id": "rock.granite.tor.b",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "A second delivery of row rock.granite.tor (core/materials/PLAN.md, Crater drylands): finer grain, more lichen. Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the kopjes; any granite outcrop, tor or boulder field; dressed granite blocks"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.2
+  }
+ },
+ {
+  "src": "bark-pine-scale.png",
+  "out": "core/materials/library/bark.pine.scale",
+  "record": {
+   "id": "bark.pine.scale",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Not asked for: a scaly pine bark, grey-brown plates over red-brown inner bark with grey-green lichen; filed for the parasol pine (stone-pine bark). Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the parasol pine (biomes/crater-drylands); stone pine, Scots pine, any old scaly conifer"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.3
+  }
+ }
+]

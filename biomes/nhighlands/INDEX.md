@@ -11,23 +11,25 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `45-host-stage.js` | 14 | the map (47); the stream (87); terrain (121); the climate fields (139); the host binding (170) |
-| `50-biome-nhighlands-species.js` | 51 **big** | palettes (24); the tree species (69); leaf and frond textures (176); bark textures (285); geometries local to this biome (321); an iridescent bark (shared hook; the Rift kit's) (385); materials (398); instanced items (463) |
-| `55-biome-nhighlands-trees.js` | 44 **big** | zones from the fields (26); colour (43); polyline helpers (64); keep-clear between trees (75); foliage and epiphyte helpers (81); the builders (126); impostors (the far canopy) (345); the pass (376) |
+| `50-biome-nhighlands-species.js` | 51 **big** | palettes (24); the tree species (70); leaf and frond textures (182); bark textures (291); geometries local to this biome (327); an iridescent bark (391); materials (394); instanced items (467) |
+| `55-biome-nhighlands-trees.js` | 45 **big** | zones from the fields (26); colour (43); polyline helpers (64); keep-clear between trees (75); foliage and epiphyte helpers (81); the builders (131); impostors (the far canopy) (352); the pass (383) |
 | `60-biome-nhighlands-floor.js` | 19 | small plants (27); the zone planters (91); the pass (171) |
 | `65-biome-nhighlands-dress.js` | 7 |  |
 | `70-biome-nhighlands.js` | 2 |  |
 | `82-host-sky.js` | 34 **big** | the fog (16); the dome (26); the gas giant (187); the far country (273); light modes (371) |
-| `84-host-ground.js` | 17 | the water (95); the mist (129) |
+| `84-host-ground.js` | 17 | the water (99); the mist (133) |
 | `85-host-tower.js` | 5 |  |
 | `86-host-pillars.js` | 3 |  |
 | `88-host-build.js` | 2 |  |
-| `90-host-camera.js` | 12 |  |
-| `91-host-probe.js` | 6 |  |
-| `93-host-polytool.js` | 6 |  |
+| `99-host-take.js` | 17 | the inspector's words (52); the probe's budgets and the kit's own checks (ve (71); the page, handed to the host (129) |
 | `99-tail.html` | <1 |  |

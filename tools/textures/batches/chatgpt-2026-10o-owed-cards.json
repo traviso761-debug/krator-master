@@ -1,0 +1,31 @@
+[
+ {
+  "src": "dalab-banner__keyed.png",
+  "out": "core/materials/patterns/dalab/banner",
+  "record": {
+   "id": "dalab/banner",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id dalab/banner).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "Dalab banners (tinted to the field colour); any hung banner with an eye-and-rays device; map once over the banner quad",
+    "note": "came on flat grey (134): keyed by a border flood at a tight tolerance (5-11 levels; the backdrop varies under 1), so tabs and fringe cut out"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "tight",
+   "pad": 0.0
+  }
+ }
+]

@@ -132,6 +132,23 @@ Geometry checked against the source; file:line as of 36e1afb (the lines have sin
 - [ ] Lit catalog pieces carry their own lamps: the abyss sheet has 244 night lamps, 5 more than before (strings and
       canopies the kit drew without one).
 
+## The builders' yard (`abyss_shop_builder`, 2026-10-05)
+
+- [ ] **No `building` job.** `FURN_JOBS` (`kits/catalog/krator-furniture-core.js`) has `carpentry` but nothing for masonry or
+      thatch: the timber pieces (`job_pole_rack`, `job_plank_stack`, `job_saw_bench`) are in the Jobs file as `carpentry`;
+      the bricks, lime and reed (`abyss_brick_stack`, `abyss_lime_sacks`, `abyss_reed_bundles`) are plain eastabyss pieces
+      on the catalog's Outdoor page. A `building` job would move them to the Jobs page.
+- [ ] **`sim` takes one activity:** the yard is `TRADE`; the lumberjacks' timber deliveries (a drop-off, `STORE`-like) are
+      not recorded. Nothing reads `sim` yet.
+- [ ] The saw pictograph is drawn by the shops fragment's own `sawSign()` (a bare `ABYSS.sign` board with the saw on it),
+      not by `ABYSS.sign` (`65-abyss-00-core.js`, not this pass's file): another trade cannot ask the core for `'saw'`.
+- [ ] The derrick (variant 1), its winch and the log hung in its sling are drawn inline as structure (like the salvage
+      dealer's derrick), not catalog pieces; the hung log's bark is a literal colour (the biome's scale-tree `0x505c48`).
+- [ ] Variant 0's sail sags to about 2.7 m over the deck at its front edge's middle; the interiors plan the shop under it
+      2.6 m high.
+- [ ] The heaviest shop on the sheet (15.7 k triangles, variant 0): most of it is the yard's stock (the stickered plank
+      stack and the mud-brick stack are 40–50 boxes each, the pole racks a rod and two end discs per pole).
+
 ## Against the reference images (2026-10-01), not fixed
 
 - [ ] **Tin-mirror reads as smooth grey sheet at sheet distance.** `recycled_house_closeup.jpg` is a patchwork of

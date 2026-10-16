@@ -46,7 +46,7 @@ function segHitsSite(ax,az,bx,bz,pad){ var n=Math.max(2, Math.ceil(Math.hypot(bx
 var CIRCLES = [];
 function inCircle(x,z,pad){ for(var i=0;i<CIRCLES.length;i++){ var C=CIRCLES[i]; if(Math.hypot(x-C.x,z-C.z) < C.r+(pad||0)) return C; } return null; }
 
-var MARKET = null, PARK = null, CARAVANSERAI = null, REFINERY = null, TANKS = [], GEOCHAPTER = null, GENERATOR = null, FUELSTATION = null;
+var MARKET = null, PARK = null, CARAVANSERAI = null, REFINERY = null, TANKS = [], GEOCHAPTER = null, GENERATOR = null, FUELSTATION = null, PARKING = null;
 (function(){
   if(SHEET) return;
   /* ---- the refinery complex, inside the ring ---- */
@@ -61,6 +61,10 @@ var MARKET = null, PARK = null, CARAVANSERAI = null, REFINERY = null, TANKS = []
   (function(){ var q=polarXZ(52, 67); FUELSTATION = schedule('trade_fuel_station', 0, q[0], q[1], faceRy(q[0],q[1]), 24, 18, 'Fuel station', 'fuel'); })();
   /* ---- round the ring ---- */
   GEOCHAPTER = schedule('civic_geomancer_chapterhouse', 0, 0, -134, 0, 48, 42, "Geomancers' Chapterhouse", 'civic');
+  /* the Geomancers' buggy park (2026-10-05), behind the chapterhouse between the North road and the next avenue: an open
+     yard of six bays and no building (yard:true: 68-place builds nothing, 40-ground paints the gravel and the bays, 84-life
+     parks the Motor Vehicles kit's dune buggies in it). A site, so the streets keep off it and its ground is levelled. */
+  PARKING = schedule('yard', 0, 0, -192, 0, 34, 20, "The Geomancers' buggy park", 'parking', { yard:true });
   var p;
   p=polarXZ(-130, 152); schedule('civic_chapter_house', 0, p[0], p[1], towardHub(p[0],p[1]), 56, 48, "Chapterhouse of the Order of Historians", 'civic');
   p=polarXZ(-45, 142);  schedule('civic_school', 1, p[0], p[1], towardHub(p[0],p[1]), 46, 30, 'School of the Order', 'civic');
@@ -440,6 +444,11 @@ function bridgeDeckAt(x,z){ for(var i=0;i<BRIDGES.length;i++){ var B=BRIDGES[i];
     });
   })();
 
+  /* ---------- 8b. THE BUGGY PARK'S GATE: from its east end to the nearest street node that does not cross a site ---------- */
+  if(PARKING){ var pgq=loc(PARKING.x,PARKING.z,PARKING.w/2+4,0,PARKING.ry), pgN=stNode(pgq[0],pgq[1],'parking'), pgB=null, pgD=1e9;
+    ST.nodes.forEach(function(n){ if(n===pgN || n.tag==='parking') return; var d=Math.hypot(n.x-pgN.x,n.z-pgN.z);
+      if(d < pgD && d < 120 && !segHitsSite(pgN.x,pgN.z,n.x,n.z,1)){ pgD=d; pgB=n; } });
+    if(pgB) stEdge(pgN, pgB, 'street'); PARKING.node=pgN; }
   /* ---------- 9. CONNECTIVITY PASS: no disconnected portions (Yuni's, unchanged) ---------- */
   function latCls(){ return 'lane'; }
   function components(){

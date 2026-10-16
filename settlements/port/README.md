@@ -61,6 +61,10 @@ work around it inside your own fragment.
   (a Long-Beach-like composition: land blocks two deep, platforms off the
   pier), and the agents' dev targets.
 
+The library maps are one shared file, `dist/port.tex.port.js` (2026-10-07), that every target loads by a
+`<script src>` ahead of its code (tools/textures/matlib_pack.py, sidecar packs); `--inline-packs` puts them back
+in every page. The gallery's Port pages are in the Ancients' own artifact (gallery/build_ancients.py).
+
 ## In the page
 
 Click anything to inspect it: a REGISTER volume's name when the point is in

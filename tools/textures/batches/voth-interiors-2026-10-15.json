@@ -1,0 +1,906 @@
+[
+ {
+  "src": "patterns__voth__stucco-green-relief.png",
+  "out": "core/materials/patterns/voth/stucco-green-relief",
+  "record": {
+   "id": "voth/stucco-green-relief",
+   "family": "plaster",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/stucco-green-relief` (delivered as \"Antique Green and Gold Sunburst Relief.png\")",
+    "reuse": "any carved painted stucco in green and gilt: the Voth Palace, a Iziz or Xanadu court room"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__tile-green-glazed.png",
+  "out": "core/materials/patterns/voth/tile-green-glazed",
+  "record": {
+   "id": "voth/tile-green-glazed",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/tile-green-glazed` (delivered as \"Weathered Emerald Crackle Tile Grid.png\")",
+    "reuse": "glazed green floor or wall tile anywhere (a bath, a court, a shrine floor)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.45,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__tapestry-tzintzun.png",
+  "out": "core/materials/patterns/voth/tapestry-tzintzun",
+  "record": {
+   "id": "voth/tapestry-tzintzun",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/tapestry-tzintzun` (delivered as \"Mythic Sun-King Tapestry.png\")",
+    "reuse": "the Palace's great hangings of Tzintzun; a single panel"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__tapestry-procession.png",
+  "out": "core/materials/patterns/voth/tapestry-procession",
+  "record": {
+   "id": "voth/tapestry-procession",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/tapestry-procession` (delivered as \"Mythic Tapestry Procession and Cityscape.png\")",
+    "reuse": "the Palace banquet hall's hangings; any Voth procession tapestry"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__carpet-palace.png",
+  "out": "core/materials/patterns/voth/carpet-palace",
+  "record": {
+   "id": "voth/carpet-palace",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    3,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/carpet-palace` (delivered as \"Ornate Crimson Sunburst Woven Rug.png\")",
+    "reuse": "a court carpet for any sun-worshipping culture (Voth, Iziz)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__inlay-jade-gold.png",
+  "out": "core/materials/patterns/voth/inlay-jade-gold",
+  "record": {
+   "id": "voth/inlay-jade-gold",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/inlay-jade-gold` (delivered as \"Ornate Jade and Gold Sunburst Mosaic.png\")",
+    "reuse": "jade and gold inlay: the throne room; any jade-working culture (Xanadu)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.5,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__chandelier-drum.png",
+  "out": "core/materials/patterns/voth/chandelier-drum",
+  "record": {
+   "id": "voth/chandelier-drum",
+   "family": "glow",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    4,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/chandelier-drum` (delivered as \"Golden Masked King\u2019s Ceremonial Procession.png\")",
+    "reuse": "a lit painted-cloth drum or frieze (chandeliers, lantern shades, a lit window band)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "x",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__tapestry-temple.png",
+  "out": "core/materials/patterns/voth/tapestry-temple",
+  "record": {
+   "id": "voth/tapestry-temple",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/tapestry-temple` (delivered as \"Ancient Red Geometric Totem Tapestry.png\")",
+    "reuse": "the Temple's hangings; any blood-red cult hanging"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__relief-ancestors.png",
+  "out": "core/materials/patterns/voth/relief-ancestors",
+  "record": {
+   "id": "voth/relief-ancestors",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/relief-ancestors` (delivered as \"Weathered Sandstone Warrior Frieze.png\")",
+    "reuse": "a carved sandstone frieze of standing robed figures: the Temple; any ancestor or tomb frieze (Zeijani, Dalab)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 1.0,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__icon-sanctuary.png",
+  "out": "core/materials/patterns/voth/icon-sanctuary",
+  "record": {
+   "id": "voth/icon-sanctuary",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/icon-sanctuary` (delivered as \"Golden Masked Deity Temple Fresco.png\")",
+    "reuse": "the Temple's altar icon and nooks"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__banner-glyph-blue.png",
+  "out": "core/materials/patterns/voth/banner-glyph-blue",
+  "record": {
+   "id": "voth/banner-glyph-blue",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/banner-glyph-blue` (delivered as \"Weathered Indigo Glyph Banner.png\")",
+    "reuse": "tall glyph banners under bridges and from cornices"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__column-carved-inlaid.png",
+  "out": "core/materials/patterns/voth/column-carved-inlaid",
+  "record": {
+   "id": "voth/column-carved-inlaid",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/column-carved-inlaid` (delivered as \"Ornate Wood and Jade Lattice Pattern.png\")",
+    "reuse": "carved openwork with jade backing: columns, panels, screens in any rich house"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__screen-lattice.png",
+  "out": "core/materials/patterns/voth/screen-lattice",
+  "record": {
+   "id": "voth/screen-lattice",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/screen-lattice` (delivered as \"Ornate Walnut Lattice on Parchment.png\")",
+    "reuse": "a parchment-backed lattice screen anywhere (Hykkousoi, Highlands shoji-like panels)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__awning-stall.png",
+  "out": "core/materials/patterns/voth/awning-stall",
+  "record": {
+   "id": "voth/awning-stall",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/awning-stall` (delivered as \"Weathered Red Kilim Diamond Tapestry.png\")",
+    "reuse": "a red woven awning or rug: market stalls, canopies, nomad tents"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__mural-shrine.png",
+  "out": "core/materials/patterns/voth/mural-shrine",
+  "record": {
+   "id": "voth/mural-shrine",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/mural-shrine` (delivered as \"Weathered Mural of a Dancing Sun Deity.png\")",
+    "reuse": "the wayside shrines' painted back wall"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "library__cloth.hide.canopy.png",
+  "out": "core/materials/library/cloth.hide.canopy",
+  "record": {
+   "id": "cloth.hide.canopy",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `cloth.hide.canopy` (delivered as \"Aged Stitched Leather Patchwork Texture.png\")",
+    "reuse": "stitched hide sheets: canopies, tents, awnings, drum skins, any culture (tinted)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.6,
+   "lift": 0.1,
+   "mute": 0.8,
+   "normal_strength": 0.8,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__fresco-three-brothers.png",
+  "out": "core/materials/patterns/voth/fresco-three-brothers",
+  "record": {
+   "id": "voth/fresco-three-brothers",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): the three brothers' reunion and welcome: the Chichani, the Zeijani and the Andaru (delivered as \"Ancient Fresco of Reunion and Welcome.png\")",
+    "reuse": "the Palace's and the Temple's walls; the Zeijani's and the Andaru's own halls (the same myth told from their side)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__fresco-brothers-ascent.png",
+  "out": "core/materials/patterns/voth/fresco-brothers-ascent",
+  "record": {
+   "id": "voth/fresco-brothers-ascent",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): the three brothers ascending the sunlit mountain (delivered as \"Ancient Heroes Ascending the Sunlit Mountain.png\")",
+    "reuse": "as fresco-three-brothers"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__damask-purple-gold.png",
+  "out": "core/materials/patterns/voth/damask-purple-gold",
+  "record": {
+   "id": "voth/damask-purple-gold",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): a purple and gold damask (the Palace's purple) (delivered as \"Antique Gold Baroque on Imperial Purple.png\")",
+    "reuse": "wall hangings and upholstery in any court"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__mosaic-ringed-giant.png",
+  "out": "core/materials/patterns/voth/mosaic-ringed-giant",
+  "record": {
+   "id": "voth/mosaic-ringed-giant",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): a mosaic of the ringed giant in its sky (the sun-giant-Krator system) (delivered as \"Cosmic Ringed Planet Mosaic.png\")",
+    "reuse": "the throne room, observatories, temples of the sky in any culture"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.5,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__filigree-crimson.png",
+  "out": "core/materials/patterns/voth/filigree-crimson",
+  "record": {
+   "id": "voth/filigree-crimson",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): crimson lacquer under gilt filigree (delivered as \"Crimson Gilded Wood Filigree Pattern.png\")",
+    "reuse": "the Temple's screens and doors; any red-lacquer court"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__filigree-purple.png",
+  "out": "core/materials/patterns/voth/filigree-purple",
+  "record": {
+   "id": "voth/filigree-purple",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): purple ground under carved walnut filigree (delivered as \"Ornate Purple Wood Filigree Wallpaper.png\")",
+    "reuse": "the Palace's panelling; any court"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__tapestry-masks.png",
+  "out": "core/materials/patterns/voth/tapestry-masks",
+  "record": {
+   "id": "voth/tapestry-masks",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): a black hanging of ancestor masks and a diamond emblem (delivered as \"Symmetrical Tribal Woven Tapestry.png\")",
+    "reuse": "the Temple, the Ancestry, the Fortress"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__banner-glyph-rust.png",
+  "out": "core/materials/patterns/voth/banner-glyph-rust",
+  "record": {
+   "id": "voth/banner-glyph-rust",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): a rust-red glyph banner (delivered as \"Weathered Rust Tapestry of Ancient Glyphs.png\")",
+    "reuse": "as banner-glyph-blue"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__voth__banner-glyph-lavender.png",
+  "out": "core/materials/patterns/voth/banner-glyph-lavender",
+  "record": {
+   "id": "voth/banner-glyph-lavender",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): a lavender glyph banner (delivered as \"Worn Lavender Rune Tapestry.png\")",
+    "reuse": "as banner-glyph-blue"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.4,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__common__mudcloth.png",
+  "out": "core/materials/patterns/common/mudcloth",
+  "record": {
+   "id": "common/mudcloth",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): a hand-painted mudcloth (bogolan) in black and cream (delivered as \"Hand-Painted Mudcloth Geometric Textile Pattern (1).png\")",
+    "reuse": "Voth's wealthy houses; the Sahelian and Yuni cultures, Dalab, the nomads"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__common__kilim-banded-brown.png",
+  "out": "core/materials/patterns/common/kilim-banded-brown",
+  "record": {
+   "id": "common/kilim-banded-brown",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added for variety (no prompt): a banded brown kilim (delivered as \"Distressed Southwestern Kilim Weave.png\")",
+    "reuse": "Voth's houses; the nomads, Beast Riders, Highlands"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ }
+]

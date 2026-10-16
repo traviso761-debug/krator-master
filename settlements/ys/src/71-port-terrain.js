@@ -108,14 +108,11 @@ TEX.pkGround=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.da
   d[i]=v;d[i+1]=v;d[i+2]=v-4;d[i+3]=255;}
  g.putImageData(id,0,0);});
 MAT.pkGround=new THREE.MeshStandardMaterial({map:TEX.pkGround,vertexColors:true,roughness:1,metalness:0});
-// The sea: one transparent sheet at y=0. There is no depth texture to tint by
-// water depth, so the DEPTH TINT IS PAINTED ON THE SEABED instead (vertex
-// colours go from sand to deep blue-green with depth) and the sheet itself is
-// a constant, part-transparent colour: shallow sand shows through as
-// turquoise, deep water reads dark. A rippled normal map gives the sun a
-// glitter; a fresnel rim (same injection as MAT.glass, r128 anchor, no pow)
-// pales it at grazing angles. The rim colour is a shared uniform that the
-// night hook swings, or the sea would glow at night.
+// The sea is core/water's (71w-port-sea.js: portSea, which portBuildTerrain
+// calls). Its depth tint is PAINTED ON THE SEABED (vertex colours go from
+// sand to deep blue-green with depth) and seen through the part-transparent
+// water: shallow sand shows through as turquoise, deep water reads dark.
+// TEX.pkSeaN, a rippled normal map, is its detail normal map.
 TEX.pkSeaN=(()=>{const W=256,hf=new Float32Array(W*W);
  // a sum of waves with INTEGER frequencies, so the tile wraps without a seam
  // (a non-periodic term here drew a hairline across the sea every 46 m)
@@ -129,6 +126,11 @@ TEX.pkSeaN=(()=>{const W=256,hf=new Float32Array(W*W);
    d[i]=(nx/L*.5+.5)*255;d[i+1]=(ny/L*.5+.5)*255;d[i+2]=(nz/L*.5+.5)*255;d[i+3]=255;}
   g.putImageData(id,0,0);});
  t.encoding=THREE.LinearEncoding;return t;})();
+// MAT.pkSea is the old flat sheet's material, kept for water a target draws
+// on its own (Ys's river strip, targets/city/88b-city-draw.js): a constant,
+// part-transparent colour with a fresnel rim (same injection as MAT.glass,
+// r128 anchor, no pow) that pales it at grazing angles. The rim colour is a
+// shared uniform that the night hook swings, or it would glow at night.
 const PK_SEA_RIM={value:new THREE.Color(.26,.36,.44)};
 MAT.pkSea=new THREE.MeshStandardMaterial({color:0x134a5c,transparent:true,opacity:.68,roughness:.16,metalness:.05,
  normalMap:TEX.pkSeaN,normalScale:new THREE.Vector2(.35,.35),depthWrite:false});
@@ -248,7 +250,7 @@ function portBuildTerrain(scene,layout){
   // slope for colour: the steeper one-sided slope, so a cut bank reads as rock
   const sl=Math.max(Math.abs(sxm||0),Math.abs(sxp||0),Math.abs(szm||0),Math.abs(szp||0));
   const cs=Math.max(i>0?xs[i]-xs[i-1]:0,i<nx-1?xs[i+1]-xs[i]:0,j>0?zs[j]-zs[j-1]:0,j<nz-1?zs[j+1]-zs[j]:0);
-  const c=portGroundColor(xs[i],zs[j],h,Math.min(sl,3),portPaint(xs[i],zs[j]),cs);
+  let c=portGroundColor(xs[i],zs[j],h,Math.min(sl,3),portPaint(xs[i],zs[j]),cs);if(typeof ysGroundTint==='function')c=ysGroundTint(xs[i],zs[j],h,sl,c);   /* Ys: the karst's colours */
   COL[k*3]=c[0];COL[k*3+1]=c[1];COL[k*3+2]=c[2];}
  const CH=96;const chunks=[];
  for(let i0=0;i0<nx-1;i0+=CH){const i1=Math.min(nx-1,i0+CH),cw=i1-i0+1;
@@ -264,30 +266,13 @@ function portBuildTerrain(scene,layout){
   g.setAttribute('uv',new THREE.BufferAttribute(U,2));g.setIndex(new THREE.BufferAttribute(I,1));
   g.computeBoundingSphere();
   const m=mesh(g,MAT.pkGround,scene);m.userData.probeSkip=true;m.name='terrain';chunks.push(m);}
- // THE SEA: one flat sheet at y=0 over the whole grid. It is drawn over land
- // too, where the terrain (above 0) simply hides it. Only a `dry` stamp cuts
- // it. Then every row of cells in the dry stamps' z range is cut at the UNION
- // of all those rows' wet/dry boundaries, so neighbouring rows share their
- // vertices: rows split independently met in T-junctions that showed as
- // hairline cracks across the whole open sea along the pit's z lines (the
- // fix from ddSeaFix, 82-dd-dock.js, folded in here).
- const WP=[],WI=[],WU=[];const dry=PORT_ST.list.filter(s=>s.dry);
- const quad=(xa,xb,za,zb)=>{const b=WP.length/3;WP.push(xa,0,za, xb,0,za, xa,0,zb, xb,0,zb);WI.push(b,b+2,b+1,b+1,b+2,b+3);};
- if(!dry.length)quad(xs[0],xs[nx-1],zs[0],zs[nz-1]);
- else{const zlo=Math.min(...dry.map(s=>s.z0))-1,zhi=Math.max(...dry.map(s=>s.z1))+1,wet=new Map(),cut=new Set([0,nx-1]);
-  for(let j=0;j<nz-1;j++){const zc=(zs[j]+zs[j+1])/2;if(zc<zlo||zc>zhi)continue;const row=new Uint8Array(nx-1);
-   for(let i=0;i<nx-1;i++){row[i]=portDry((xs[i]+xs[i+1])/2,zc)?0:1;if(i>0&&row[i]!==row[i-1])cut.add(i);}wet.set(j,row);}
-  const B=[...cut].sort((a,b)=>a-b);
-  for(let j=0;j<nz-1;j++){const row=wet.get(j);
-   for(let k=0;k<B.length-1;k++){if(row&&!row[B[k]])continue;quad(xs[B[k]],xs[B[k+1]],zs[j],zs[j+1]);}}}
+ // THE SEA: core/water's open water over the whole grid (71w-port-sea.js), its bed baked from the ground the stamps
+ // have just made. It is drawn over land too, where the terrain (above 0) hides it and the bed fades it out. A `dry`
+ // stamp is cut out of it by the rects the underwater fade is masked with.
+ const dry=PORT_ST.list.filter(s=>s.dry);
  dry.slice(0,PK_DRYN).forEach((s,i)=>PK_DRY.value[i].set(s.x0,s.z0,s.x1,s.z1));PK_NDRY.value=Math.min(dry.length,PK_DRYN);
- if(dry.length>PK_DRYN)reportErr('more than '+PK_DRYN+' dry stamps: the underwater fade is only masked in the first '+PK_DRYN);
- const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.Float32BufferAttribute(WP,3));
- for(let q=0;q<WP.length;q+=3)WU.push(WP[q]/46,WP[q+2]/46);
- wg.setAttribute('uv',new THREE.Float32BufferAttribute(WU,2));
- const WN=[];for(let q=0;q<WP.length;q+=3)WN.push(0,1,0);wg.setAttribute('normal',new THREE.Float32BufferAttribute(WN,3));
- wg.setIndex(WP.length/3>65535?new THREE.Uint32BufferAttribute(WI,1):new THREE.Uint16BufferAttribute(WI,1));
- const sea=mesh(wg,MAT.pkSea,scene);sea.userData.probeSkip=true;sea.name='sea';sea.renderOrder=1;
+ if(dry.length>PK_DRYN)reportErr('more than '+PK_DRYN+' dry stamps: the underwater fade and the sea are only masked in the first '+PK_DRYN);
+ const sea=portSea(scene,[X0-700,Z0-300,X1+700,Z1+700]);sea.userData.probeSkip=true;
  if(typeof YS_NAT!=='function')portNatureScatter(X0,X1);   // Ys: the biome plants the natural ground, not the port's scrub
  return {chunks,sea,nx,nz};}
 // Scrub and trees on the NATURAL ground (outside every stamp and its soft

@@ -9,26 +9,36 @@ Built output (never open it; edit `src/` and rebuild): `dist/sedesert.html`
 Build: `cd biomes/sedesert && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
+From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `31-core-field-brush.js`, `36-core-carve.js`
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
+| `00-head.html` | 1 |  |
 | `35-core-strata.js` | 9 |  |
-| `45-host-stage.js` | 30 **big** | the river, the canyon, the butte, the mesas (44); terrain (83); the host binding (138); the ground (148); the water (223) |
-| `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (18); the tree species (70); leaf textures (131); bark, rock, wood textures (207); geometries local to this biome (246); materials (300); instanced items (332) |
-| `55-biome-sedesert-trees.js` | 35 **big** | zones from the fields (16); colour (the maths is the core's, BIO.col) (37); polyline helpers (Girder's) (52); keep-clear between trees (60); foliage helpers (67); the builders (84); impostors (the far canopy) (261); the pass (313); the passes (data: species, cell, acceptance from (343) |
-| `60-biome-sedesert-floor.js` | 14 | fields local to the floor (29); small plants (39); the zone planters (96); the pass (147) |
+| `45-host-stage.js` | 35 **big** | the river, the canyon, the butte, the mesas (48); terrain (87); the host binding (162); the ground (172); the water (254) |
+| `50-biome-sedesert-species.js` | 33 **big** | THE WATER COLOUR (18); the tree species (71); harvest (biomes/FRUIT.md) (132); leaf textures (172); bark, rock, wood textures (248); geometries local to this biome (287); materials (341); instanced items (376) |
+| `55-biome-sedesert-trees.js` | 36 **big** | zones from the fields (16); colour (the maths is the core's, BIO.col) (37); polyline helpers (Girder's) (52); keep-clear between trees (60); foliage helpers (67); the builders (84); impostors (the far canopy) (261); the pass (313); the passes (data: species, cell, acceptance from (343); one tree alone (biomes/WORLD.md: trees as varian (372) |
+| `60-biome-sedesert-floor.js` | 15 | fields local to the floor (29); small plants (39); the zone planters (101); the pass (152) |
 | `65-biome-sedesert-dress.js` | 5 |  |
-| `70-biome-sedesert.js` | <1 |  |
-| `75-biome-sedesert-fauna.js` | 11 | geometries (unit, vertex-coloured) (23); materials (53); the pass (60) |
-| `82-host-sky.js` | 13 | the Inner Wall painter (8) |
+| `70-biome-sedesert.js` | 1 |  |
+| `75-biome-sedesert-fauna.js` | 29 | geometries (unit, vertex-coloured) (32); materials (62); walkers: a pose that is a function of the clock  (69); quadrupeds: deer and coyotes (2026-10) (113); the pass (172) |
+| `82-host-sky.js` | 14 | the Inner Wall painter (8) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 9 |  |
-| `91-host-probe.js` | 8 |  |
+| `89w-host-water.js` | 2 |  |
+| `99-host-take.js` | 21 | the inspector's words (66); the probe's budgets and the kit's own checks (ve (79); the page, handed to the host (155); the editor's world (core/host 98; ROADMAP.md sec (156) |
 | `99-tail.html` | <1 |  |

@@ -94,7 +94,15 @@ LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (cor
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 FURNISH_DIR = os.path.join(ROOT, 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
 FURNISH_FILES = sorted(f for f in os.listdir(FURNISH_DIR) if f[0].isdigit() and f.endswith('.js'))
+RAND_DIR = os.path.join(ROOT, 'core', 'rand')     # KRAND: the tags' uid is its hash
+TAGS_DIR = os.path.join(ROOT, 'core', 'tags')     # the tag registry the furniture is registered in (core/tags/README.md)
+TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
+# the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
+# clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
+# 88x-matlib-pack.js (tools/textures/matlib_pack.py); src/88y-highlands-matlib.js binds it onto MAT (KMAT.bindMat)
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+MATLIB_PACK = '88x-matlib-pack.js'
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 
 
@@ -111,6 +119,28 @@ def srcpath(f, base=None):
 # table and view list, merged into the one sorted filename order. Everything
 # else — core, helpers, all 33 builders — is shared, so a fix to a builder lands
 # in every target that shows it and the two cannot drift.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost   # core/host (core/host/README.md; ROADMAP.md section 10, step 3): the shell and the whole interface, as Iziz takes it
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]   # not core/space (Roketstad's band reads its own copy); no editor world yet
+TARGET_CORE = {'roketstad': ['mask']}   # core/<module> fragments a target takes (core/mask: the placement raster)
+# A target's BIOME, read IN PLACE (biomes/WORLD.md: several kits on one page; as biomes/geyser reads the hyperjungle):
+# core/space, core/biome and one biome kit's fragments, under slot names in the 86-bio- band, so they load after the
+# terrain (84) and the painted masks (85), round the target's own host binding (86-bio-45-init.js, kept local), and
+# before the layout. The band is IIFE-scoped (SCOPED_PREFIXES), as the kits are written. Nothing is vendored, so
+# --vendor-check has nothing to compare: it says where the band is read from. 'kit' also names the material-library
+# pack inlined ahead of it (86-bio-00-matlib-pack.js, from the kit's tex/).
+_BIO = lambda *p: os.path.join(ROOT, *p)
+TARGET_BIO = {'roketstad': {'kit': 'nhighlands', 'files': {
+    '86-bio-05-core-space.js': _BIO('core', 'space', '20-core-space.js'),            # KSPACE: the core's keep-clear index
+    '86-bio-10-core-head.js': _BIO('core', 'biome', '10-core-head.js'),
+    '86-bio-20-core-kit.js': _BIO('core', 'biome', '20-core-kit.js'),
+    '86-bio-30-core-foliage.js': _BIO('core', 'biome', '30-core-foliage.js'),
+    '86-bio-40-core-place.js': _BIO('core', 'biome', '40-core-place.js'),
+    '86-bio-50-biome-nhighlands-species.js': _BIO('biomes', 'nhighlands', 'src', '50-biome-nhighlands-species.js'),
+    '86-bio-55-biome-nhighlands-trees.js': _BIO('biomes', 'nhighlands', 'src', '55-biome-nhighlands-trees.js'),
+    '86-bio-60-biome-nhighlands-floor.js': _BIO('biomes', 'nhighlands', 'src', '60-biome-nhighlands-floor.js'),
+    '86-bio-65-biome-nhighlands-dress.js': _BIO('biomes', 'nhighlands', 'src', '65-biome-nhighlands-dress.js'),
+    '86-bio-70-biome-nhighlands.js': _BIO('biomes', 'nhighlands', 'src', '70-biome-nhighlands.js')}}}
 TARGET_OUT = {
     'highlands': 'highlands.html',            # the whole kit: Republican, Rustic, Tribal rows + the cliff settlement
     'roketstad': 'roketstad.html',            # the town: Roketstad and its spaceport (reclaimed East Highland Republican)
@@ -138,6 +168,7 @@ _OLD_TARGETS = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '86-bio-00-matlib-pack.js', '88x-matlib-pack.js', '88y-highlands-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
@@ -149,8 +180,12 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '89y-hl-furnish.js',                  # furniture placed through the catalog (FURNISH) and the interiors hook
     '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
+    '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
     '81-rk-sky.js', '84-rk-geo.js', '93-rk-ui.js', '93b-rk-lod.js', '82e-anc-aa.js',   # roketstad: the vendored Krator sky, the geometry (noise only), the dev tools
 }
+# core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
+DETERMINISTIC |= set(CORE_HOST) | {'99-start.js', '91h-hl-tags.js'}   # core/host (no rnd()); the take; the sites into core/tags
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -176,7 +211,7 @@ def virtual_bodies():
     import furniture_bundle, kit_bundle
     return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(['highlands'])}
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES) or f in VIRTUAL
+    return f.startswith(SCOPED_PREFIXES) or f in VIRTUAL or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -272,9 +307,21 @@ def build_one(target, do_checks, assert_origin):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
+    src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(FURNISH_DIR, f) for f in FURNISH_FILES if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
+    for mod in TARGET_CORE.get(target, []):
+        mdir = os.path.join(ROOT, 'core', mod)
+        tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
+    bio = TARGET_BIO.get(target)
+    if bio:
+        twice = set(bio['files']) & set(tgt)
+        if twice:
+            sys.exit('target %s keeps a local copy of a fragment it reads in place: %s' % (target, ', '.join(sorted(twice))))
+        tgt.update(bio['files'])
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
@@ -288,6 +335,16 @@ def build_one(target, do_checks, assert_origin):
             continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    # the pack beside the pages (highlands.tex.highlands.js), one file every page of the build shares; --inline-packs puts it back in
+    # each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+    side = None if '--inline-packs' in sys.argv else {}
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'highlands', side=side)
+    order = sorted(order + [MATLIB_PACK])
+    if bio:   # the biome kit's library pack (its tex/), before the biome code
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', bio['kit']), bio['kit'])
+        order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:
         errs = check(order, bodies)
@@ -307,10 +364,12 @@ def build_one(target, do_checks, assert_origin):
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
+    if side:
+        html = matlib_pack.write_sidecar(side, html, DIST, 'highlands.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
-        json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
+        json.dump({f: hashlib.sha1(bodies[f].replace('\r\n', '\n').encode()).hexdigest()[:12] for f in order},   # LF-normalised: one hash on every platform
                   fh, indent=1, sort_keys=True)
     return order, html, out
 
@@ -319,6 +378,9 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src
 IZIZ_VENDORED = ['69b-vern-mat.js', '69c-vern-helpers.js', '91-probe.js', '92-camera.js', '93-labels.js']   # ../iziz/src
+# vendored with a deliberate local edit: drift expected, recorded in KNOWN_ISSUES.md (91-probe.js counts each placed
+# catalog furniture piece, HLF.placed, as a sample of its volume; Iziz places no catalog furniture)
+ADAPTED = {'91-probe.js'}
 
 
 def vendor_manifest():
@@ -326,7 +388,7 @@ def vendor_manifest():
     out = {}
     for f in VENDORED + IZIZ_VENDORED:
         with open(srcpath(f), 'rb') as fh:
-            out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
+            out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out
@@ -339,10 +401,18 @@ def vendor_check():
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % up_name)
             continue
-        drift = [f for f in files if not os.path.exists(srcpath(f, up))
-                 or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
-        print('vendor-check %s: %s' % (up_name, 'all %d identical' % len(files) if not drift
-                                         else 'DRIFT in ' + ', '.join(drift)))
+        diff = [f for f in files if not os.path.exists(srcpath(f, up))
+                or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
+        adapted = [f for f in diff if f in ADAPTED and os.path.exists(srcpath(f, up))]
+        drift = [f for f in diff if f not in adapted]
+        same = '%d identical' % (len(files) - len(diff)) + (', %d adapted on purpose (%s)' % (len(adapted), ', '.join(adapted))
+                                                            if adapted else '')
+        print('vendor-check %s: %s' % (up_name, ('all ' + same) if not diff else same + ('; DRIFT in ' + ', '.join(drift)
+              + ' - re-vendor or add to ADAPTED and note it in KNOWN_ISSUES.md' if drift else '')))
+    for target, bio in sorted(TARGET_BIO.items()):   # read in place: nothing to drift; say so, and that every path is there
+        missing = [p for p in bio['files'].values() if not os.path.isfile(p)]
+        print('vendor-check biome (%s): %d fragments of core/space, core/biome and biomes/%s read in place, none vendored%s'
+              % (target, len(bio['files']), bio['kit'], ('; MISSING ' + ', '.join(missing)) if missing else ''))
 
 
 def main():

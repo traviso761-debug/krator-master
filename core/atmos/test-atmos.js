@@ -23,6 +23,16 @@ const C=A.weatherState('clear');Object.assign(C,{rain:1,fog:1,wet:1,wind:2.4});f
 ok('clearing: rain gone, fog going, wet dries slowly',C.rain<.01&&C.fog<.01&&C.wet>.7&&C.wet<1,C.rain>.5);
 ok('auto mode: the evening shower is on at 20.5 and off at 23',near(A.weatherTarget('auto',20.5).rain,1)&&near(A.weatherTarget('auto',23).rain,0),near(A.weatherTarget('auto',20.5).rain,0));
 ok('auto mode: dawn fog at 6.5',A.weatherTarget('auto',6.5).fog>.6,A.weatherTarget('auto',6.5).fog<.1);
+// ---- the ash (opt-in): older modes never raise it, the ash modes do, and the default mode list is unchanged
+ok('the default modes are unchanged (no ash unless asked)',A.MODES.join()==='auto,clear,rain,storm,fog'&&A.weatherState('auto').MODES===A.MODES,false);
+ok('the older modes never raise the ash',['auto','clear','rain','storm','fog'].every(m=>A.weatherTarget(m,14).ash===0),A.weatherTarget('ash',14).ash===0);
+{const S=A.weatherState('ash');for(let i=0;i<900;i++)A.weatherStep(S,14,1/60);ok('the ash storm eases to full ash, a gale and haze',near(S.ash,1,.02)&&S.wind>2&&S.fog>.4,S.ash<.5);}
+{const S=A.weatherState('ashfall');for(let i=0;i<900;i++)A.weatherStep(S,14,1/60);ok('ashfall eases to a light ash',S.ash>.25&&S.ash<.45&&S.fog<.05,S.ash>.9);}
+// ---- the snow (opt-in, the Throne's glacier): the same rules as the ash
+ok('the older modes and the ash never raise the snow',['auto','clear','rain','storm','fog','ashfall','ash'].every(m=>A.weatherTarget(m,14).snow===0),A.weatherTarget('blizzard',14).snow===0);
+{const S=A.weatherState('blizzard');for(let i=0;i<900;i++)A.weatherStep(S,14,1/60);ok('the blizzard eases to full snow, a gale and a white-out, no ash',near(S.snow,1,.02)&&S.wind>2&&S.fog>.4&&S.ash<.01,S.snow<.5);}
+{const S=A.weatherState('snowfall');for(let i=0;i<900;i++)A.weatherStep(S,14,1/60);ok('snowfall eases to a light snow',S.snow>.3&&S.snow<.5&&S.fog<.05,S.snow>.9);}
+ok('the snow modes are offered apart from the ash',A.SNOW_MODES.join()==='snowfall,blizzard'&&A.ASH_MODES.indexOf('snowfall')<0,false);
 ok('a step of zero time changes nothing (a pinned clock)',(()=>{const S=A.weatherState('rain'),b=JSON.stringify(S);A.weatherStep(S,12,0);return JSON.stringify(S)===b;})(),false);
 ok('the flash: double, then a fade, then dark',A.flashAt(40)===1&&A.flashAt(100)===.25&&A.flashAt(200)===.8&&A.flashAt(400)>0&&A.flashAt(700)===0,A.flashAt(700)>0);
 
@@ -58,6 +68,26 @@ ok('the chunk carries every wave of the presets and the three calls a host uses'
  /float atmWaveHeight\(vec2 p,float chopW\)/.test(WG)&&/vec3 atmWaveSlope\(vec2 p,float d\)/.test(WG)&&/vec3 atmWaveNormal\(vec2 p,float d,float k\)/.test(WG),WG.includes('vec3(9.0,9.0,9.0)'));
 ok('the sky light leaves a build\'s tuned diffuse alone unless asked (PRESETS.skylight.diffuse 0)',typeof A.skylight==='function'&&A.PRESETS.skylight.diffuse===0,A.PRESETS.skylight.diffuse===1);
 
+// ---- the cloud deck (89-atmos-d-clouddeck.js): gradient noise on a repeating lattice with an integer hash. Its drift
+// whole lattice periods per clock period (a seamless wrap), the deck repeating exactly in space, the top inside its band,
+// the analytic slope (the shading normal) agreeing with the height's own finite difference past the detail's fade, and
+// the chunk carrying every octave of the presets
+const PD=A.PRESETS.clouddeck,DY=1120,LSPAN=PD.lattice*PD.cell;
+ok('drift and evolve are whole lattice periods per clock period, the lattice a power of two, every octave an integer division',
+ PD.drift.concat(PD.evolve).every(Number.isInteger)&&(PD.lattice&(PD.lattice-1))===0&&PD.billows.concat(PD.detail).every(o=>Number.isInteger(o[0])),Number.isInteger(.5));
+ok('the deck repeats every lattice span ('+LSPAN+' m) in x and in z',WP.every(p=>near(A.deckHeight(p[0],p[1],77,DY),A.deckHeight(p[0]+LSPAN,p[1],77,DY),1e-9)&&near(A.deckHeight(p[0],p[1],77,DY),A.deckHeight(p[0],p[1]-LSPAN,77,DY),1e-9)),
+ WP.every(p=>near(A.deckHeight(p[0],p[1],77,DY),A.deckHeight(p[0]+LSPAN/2,p[1],77,DY),1e-9)));
+ok('the deck\'s wrap is seamless',WP.every(p=>near(A.deckHeight(p[0],p[1],0,DY),A.deckHeight(p[0],p[1],PD.period,DY),1e-9)),
+ WP.every(p=>near(A.deckHeight(p[0],p[1],0,DY),A.deckHeight(p[0],p[1],PD.period/2,DY),1e-9)));
+{let lo=1e9,hi=-1e9;for(let i=0;i<2000;i++){const v=A.deckHeight(-4000+(i%50)*163,-4000+Math.floor(i/50)*211,i*3.1,DY);lo=Math.min(lo,v);hi=Math.max(hi,v);}
+ ok('the top stays in its band [y-down, y+up] and fills most of it ('+lo.toFixed(1)+' .. '+hi.toFixed(1)+')',lo>=DY-PD.down&&hi<=DY+PD.up&&hi-lo>.6*(PD.up+PD.down),hi-lo<1);}
+ok('the slope is the height\'s own derivative (finite difference, 0.05 m, detail faded out)',WP.every(p=>{const t=57.5,e=.05,s=A.deckSlope(p[0],p[1],t,PD.fade[1]+1);
+ return near(s[0],(A.deckHeight(p[0]+e,p[1],t,DY)-A.deckHeight(p[0]-e,p[1],t,DY))/(2*e),2e-4)&&near(s[1],(A.deckHeight(p[0],p[1]+e,t,DY)-A.deckHeight(p[0],p[1]-e,t,DY))/(2*e),2e-4);}),
+ WP.every(p=>{const s=A.deckSlope(p[0],p[1],57.5,0);return near(s[0],0,1e-9);}));
+const DG=A.deckGLSL();
+ok('the deck chunk carries every octave of the presets and the calls a host uses',PD.billows.concat(PD.detail).every(o=>DG.includes('atmDeckOct'+(PD.puff?'Puff':'')+'(p,'+A.glf(PD.cell/o[0])+','))&&
+ /float atmDeckHeight\(vec2 p,float y\)/.test(DG)&&/vec4 atmDeckSlope\(vec2 p,float d\)/.test(DG)&&/vec3 atmDeckNormal\(vec4 s\)/.test(DG)&&!/TIME|gl_|#/.test(DG),DG.includes('vec3(9.0,9.0,9.0)'));
+
 // ---- placement and export (needs three.js r128)
 const T3=['../../settlements/iziz/three.min.js','../../biomes/sedesert/three.min.js'].map(p=>path.join(__dirname,p)).find(p=>fs.existsSync(p));
 if(!T3)console.log('skip  placement and export (no three.min.js found)');
@@ -74,7 +104,7 @@ else{const THREE=require(T3);
  ok('every record has an id and a type; the export says its colour space',E.fx.every(r=>r.id&&r.type)&&E.convention.colour==='srgb',false);
  ok('moths: one per lamp head times n',A.lamps.length>0&&E.fx.find(r=>r.type==='moths').lamps.length===A.lamps.length,false);
  ok('lamps follow the row: the evening running down it',E.lamps.length===A.lamps.length&&E.lamps[E.lamps.length-1].hours[0]>E.lamps[0].hours[0],E.lamps[0].hours[0]>E.lamps[E.lamps.length-1].hours[0]);
- const GOLD='7bffa080934e178c';   // 2026-10-05: the export gained presets.waves, presets.skylight and the atm_wave_* uniforms (main), and each lamp's halo index and colour (the port spike); nothing placed changed
+ const GOLD='c18fefc5a3b7005c';   // 2026-10-06 (merge): presets.clouddeck and the opt-in ash and snow (presets.ash, presets.snow, the wind's ashfall/ash/snowfall/blizzard scales, atm_ash, atm_snow; biomes/throne). Before: 2026-10-06: the export gained presets.clouddeck (89-atmos-d-clouddeck.js, gradient noise); without it the bytes are 7bffa080934e178c, as before. 2026-10-05: the export gained presets.waves, presets.skylight and the atm_wave_* uniforms (main), and each lamp's halo index and colour (the port spike); nothing placed changed
  ok('export fingerprint '+fp+(fp===GOLD?'':' (golden '+GOLD+'; if the change is meant, take a screenshot diff and update GOLD)'),fp===GOLD,false);}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

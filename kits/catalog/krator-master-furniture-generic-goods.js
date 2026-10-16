@@ -51,6 +51,7 @@ FURN_CULTURE('generic', { palette: {
     /* biome fruit (krator-master-furniture-generic-fruit.js): colours taken from the fruiting part each biome draws */
     fruitScaleRed: 0xc0262a, fruitScaleFlesh: 0xf0b8b0, fruitFernEgg: 0x8a6a3a, fruitFernMeal: 0xe8d8a8,
     fruitTideHusk: 0x7e3030, fruitTideJelly: 0xe8e0c8, fruitCycadRed: 0xb83a2a,
+    fruitCocoHusk: 0x6e8a3a, fruitCocoShell: 0x5a3e26, fruitCocoFlesh: 0xf4f0e4, fruitCocoWater: 0xe8eadc,
     fruitGateRind: 0xe0862a, fruitGatePulp: 0xf2ead0, fruitMahogany: 0x5a3a22, fruitMahoganySeed: 0xc89a5a,
     fruitSilkGreen: 0x7a9a4a, fruitSilkFloss: 0xf0e6d0, fruitPandanKey: 0xd87a2a, fruitPandanTip: 0x5a6a2a, fruitPandanPaste: 0xe8a040,
     fruitAril: 0xd0202a, fruitArilSeed: 0x2e3a2a, fruitRowan: 0xd83a2a, fruitRowanJelly: 0xc8502a, fruitBilberry: 0x2a3a6a,
@@ -61,6 +62,10 @@ FURN_CULTURE('generic', { palette: {
     fruitLanternViolet: 0xd040e0, fruitLanternTeal: 0x30d0c0, fruitBellDate: 0x857e32,
     fruitMesquite: 0xc8b850, fruitMesquiteCake: 0xb08a4a, fruitDate: 0x8a4a22, fruitDateStrand: 0xc88a3a,
     fruitTuna: 0xe86a20, fruitTunaFlesh: 0xd8402a,
+    fruitPinyonCone: 0x8a5a34, fruitPinyonNut: 0x7a4a2a, fruitPinyonKernel: 0xe8d8b0, fruitJuniper: 0x6a7a9a, fruitJuniperTwig: 0x5e7458,
+    fruitJuniperDry: 0x3e3e52, fruitYuccaStalk: 0xc89a4a, fruitYuccaRoast: 0x8a5a2a, fruitYuccaBloom: 0xf0ecd8, fruitGrape: 0x3a2a4a,
+    fruitGrapeLeaf: 0x5a8a3a, fruitRaisin: 0x4a2a2a, fruitStiltPod: 0x5a9a6a, fruitStiltFlesh: 0xf0e8c8, fruitStiltSeed: 0x3a2a1e,
+    fruitUmbelSeed: 0xa8946a, fruitUmbelStalk: 0x8a7a4a,
     fungusCoralOrange: 0xf08a3a, fungusCoralPink: 0xf090b0, fungusCoralViolet: 0x9a70c8, fungusParasol: 0xc8a882,
     fruitMadrone: 0xc82a1e, drinkCider: 0xd8a050, fruitRattlepod: 0x8a2a1c, fruitRattleBean: 0x4a2a1a,
     fruitTamarindShell: 0x4a3424, fruitTamarindPulp: 0x8a4a22, fruitFig: 0x5a3a5a, fruitFigFlesh: 0xd8586a,
@@ -68,7 +73,12 @@ FURN_CULTURE('generic', { palette: {
     fruitPitaya: 0xe0206a, fruitPitayaFlame: 0x7ab040, fruitPitayaFlesh: 0xf4f0ec,
     fruitPlantain: 0xf0d040, fruitPlantainBract: 0x6a2a8a, fruitPlantainFried: 0xd89a3a, fruitWingnut: 0x9ac060,
     fruitArbutusRed: 0xe02a20, fruitArbutusOrange: 0xf08a20, fruitWhorlOlive: 0x6a6a3a, fruitWhorlCream: 0xd8c8a0,
-    fruitLotusPod: 0x8a9a5a, fruitLotusSeed: 0xe8e0c0
+    fruitLotusPod: 0x8a9a5a, fruitLotusSeed: 0xe8e0c0,
+    fruitFireseedHusk: 0xc85a2c, fruitFireseedNut: 0x40281e, fruitFireseedMeal: 0x9a6a44,
+    fruitParasolCone: 0x8a5230, fruitParasolShell: 0x5e3c28, fruitParasolKernel: 0xeee2bc,
+    fruitCliffFig: 0xb4482c, fruitCliffFigRipe: 0x5a2a48, fruitCliffFigFlesh: 0xe07a6a,
+    fruitAvenuePod: 0xa86a30, fruitAvenuePulp: 0xf0e6c4, fruitAvenueSeed: 0x4a3022,
+    fruitTravellerCapsule: 0x6a5034, fruitTravellerAril: 0x2a6ad0
 } });
 /* END PALETTE */
 

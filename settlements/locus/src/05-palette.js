@@ -174,7 +174,9 @@ var FAMMAT = {
   glowmat: { tex:null, scale:[1,1], basic:true }
 };
 
-var BUDGET = { drawCalls: 190, triangles: 7000000, instances: 460000 };
+/* triangles 7 M -> 10 M (2026-10-05): the canonical eastern-abyss biome (core/biome + biomes/eastabyss) has six species the old
+   port lacked (seal-tree, cordaite, seed fern, araucaria, beard oak, water palm): about +3 M headless (KNOWN_ISSUES.md). */
+var BUDGET = { drawCalls: 190, triangles: 10000000, instances: 460000 };
 
 var PASTELC=PAL.pastel, PASTELDC=PAL.pastelDeep, CANVASC=PAL.canvas, CANVASDYEC=PAL.canvasDye, REEDMATC=PAL.reedMat, PILEC=PAL.pile,
     MUDBROWNC=PAL.mudBrown, UMBERC=PAL.umber, SIENNAC=PAL.sienna, STEELDC=PAL.steelDark, PIPEC=PAL.pipeC, OILC=PAL.oil,

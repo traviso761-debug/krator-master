@@ -1,0 +1,69 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    642,
+    586
+   ],
+   "seam_after": [
+    2.206,
+    0.972
+   ],
+   "seam_before": [
+    3.859,
+    2.811
+   ],
+   "source_size": [
+    654,
+    598
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.55,
+   "pattern": true,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "scyvoi/applique-roof",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.92,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "scyvoi-applique-roof.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 17.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one period each way of the staggered knots (642 x 586 px; square-mapped, 9 % narrower than drawn) before processing, so the sheet repeats on its own period.",
+  "original_file": "17.webp",
+  "original_sha1": "766db3e2c5b2c0c9623816b03a6596db5ebe071f",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Tibetan appliqu\u00e9 tent roof: plain heavy white-cream cotton (#f2ece0) sewn with a few large endless knots cut from indigo cloth (#23345a, a little lighter #2a3c66 where the cloth is worn), each knot about a fifth of the frame across with a thin cream couched outline and visible running stitches, the knots spaced widely in a half-drop grid with plenty of plain white cloth between them; faint fold creases and a little smoke grey along the seams. The pattern repeats in both directions. Full colour.",
+  "reuse": "the Scyvoi Tibetan tents' roofs (patRoof); white felt or cotton sewn with blue knots",
+  "sha1": "38d0c0b792385b4ff1373e88a7eca7c4f2764ba7"
+ }
+}

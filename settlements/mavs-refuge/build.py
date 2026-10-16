@@ -24,6 +24,10 @@ Also enforces the rules that make subagent work safe:
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys
+try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -63,6 +67,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
 FURNISH_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
+RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
+TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
+# the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Mav's has no TEX.def
+# painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
+RECORD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
+TEX_DIR = os.path.join(HERE, 'tex')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
+import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
+CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
 OUT = os.path.join(HERE, 'mavs-refuge.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
@@ -70,8 +84,17 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '98-start.js', '99-tail.html'}
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
+DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 PALETTE_FILE = '05-palette.js'
-DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, the interiors hook): no generation of its own
+DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js'}   # core/materials/record and the pack (no rnd())
+DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, brfMaterial): no generation of its own
+DETERMINISTIC |= {'57a-interiors.js', '57c-interiors-draw.js'}   # the rooms inside (data; drawing near the camera): no rnd()
+DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
+# PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
+# continues. A part opens inside the fragment's IIFE, after its reseed(N): the rules read it joined to the fragment it
+# continues, as one fragment (one PRNG stream, one scope), and the page is the same concatenation either way.
+CONTINUES = {f: '84-flyers.js' for f in ('84a-flyers-routes.js', '84b-flyers-animals.js', '84c-flyers-update.js',
+                                         '84d-flyers-hooks.js')}
 
 # GENERATED fragment: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure exposing
 # KratorFurniture, harvested registry included for the older br_* pieces) and the interiors core with the
@@ -81,7 +104,43 @@ DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, the interi
 # chain (kits/interiors IX.CULTURE_FAMILY['beast-rider'] = lizardmen, generic).
 FURN_CULTURES = ['beast-rider', 'lizardmen', 'generic']
 INTERIOR_SETS = ['beast-rider']
-VIRTUAL = {'52-furniture-bundle.js'}
+VIRTUAL = {'52-furniture-bundle.js', '57b-interiors-bake.js', '46-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
+
+# GENERATED fragment 57b: the interiors' bake (README "Furniture that is not always drawn is data first"; API.md,
+# Interiors). interiors-bake.json holds every unit's furniture, written by bake_interiors.py from a loaded page. Its
+# `kit` is the hash of what decides a plan (the furniture/interiors bundle above + src/57a-interiors.js, CRLF read as
+# LF): when it differs the file is stale and is not inlined (the page then computes every unit itself, near the camera
+# first and the rest in idle frames). Each unit also carries its own fingerprint, checked in the page.
+BAKE = os.path.join(HERE, 'interiors-bake.json')
+
+
+def interiors_kit_hash(bundle):
+    with open(os.path.join(SRC, '57a-interiors.js'), encoding='utf-8') as fh:
+        data = fh.read()
+    return hashlib.sha1((bundle + data).replace('\r\n', '\n').encode()).hexdigest()[:12]
+
+
+def matlib_pack():
+    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack), as Girder's build.py.
+    It reads the committed tex/ files only, so the build stays deterministic. With no tex/pack.json, Mav's Refuge runs on
+    its procedural textures."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if not os.path.isfile(pj):
+        return "/* no tex/pack.json: Mav's Refuge runs on its procedural textures */\nKMAT.pack('mavs', {});\n"
+    pack = json.load(open(pj, encoding='utf-8'))
+    out = []
+    for fam in sorted(pack['families']):
+        e = pack['families'][fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
+             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
+            "KMAT.pack('mavs', {\n" + ',\n'.join(out) + '\n});\n')
 
 
 def virtual_bodies():
@@ -89,7 +148,22 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(root, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(root, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
-    return {'52-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, harvested=True) + kit_bundle.bundle(INTERIOR_SETS)}
+    bundle = furniture_bundle.bundle(FURN_CULTURES, harvested=True) + kit_bundle.bundle(INTERIOR_SETS)
+    kit = interiors_kit_hash(bundle)
+    bake = None
+    if os.path.isfile(BAKE):
+        with open(BAKE, encoding='utf-8') as fh:
+            bake = json.load(fh)
+        if bake.get('kit') != kit:
+            print('NOTE: interiors-bake.json is stale (kit %s, now %s): not inlined. Run python3 bake_interiors.py'
+                  % (bake.get('kit'), kit))
+            bake = None
+    else:
+        print('NOTE: no interiors-bake.json: the page computes every interior itself. Run python3 bake_interiors.py')
+    body = ('/* GENERATED by build.py from interiors-bake.json (bake_interiors.py): every unit\'s furniture. Do not edit. */\n'
+            'MIX.adoptBake(%s, %s);\n' % (json.dumps(bake, separators=(',', ':')) if bake else 'null', json.dumps(kit)))
+    return {'52-furniture-bundle.js': bundle, '57b-interiors-bake.js': body, '46-matlib-pack.js': matlib_pack(),
+            khost.EDITS_JS: khost.edits_js(HERE, 'mavs-refuge')}
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
 RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
@@ -114,7 +188,19 @@ def strip_head_comments(text):
     return text[i:]
 
 
+def joined(order, bodies):
+    """The fragments as the rules read them: every part (CONTINUES) appended to the fragment it continues."""
+    bodies = dict(bodies)
+    for f in order:
+        if f in CONTINUES:
+            if CONTINUES[f] not in bodies:
+                sys.exit('build.py: %s continues %s, which is not in the build' % (f, CONTINUES[f]))
+            bodies[CONTINUES[f]] += bodies.pop(f)
+    return [f for f in order if f not in CONTINUES], bodies
+
+
 def check(order, bodies):
+    order, bodies = joined(order, bodies)
     errs, seeds = [], {}
     for f in order:
         if not f.endswith('.js') or f in VIRTUAL:
@@ -164,10 +250,14 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for d in (LOD_DIR, FURNISH_DIR):       # a src/ copy with the same name overrides
+    for f in RECORD_FILES:
+        if f not in paths:
+            paths[f] = os.path.join(RECORD_DIR, f)
+    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR):       # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)
+    khost.resolve(paths, CORE_HOST)        # a src/ copy with a shell file's name would override it (none today)
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:
@@ -187,7 +277,7 @@ def main():
     html = ''.join(bodies[f] for f in order)
     with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
-    with open(MANIFEST, 'w') as fh:
+    with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)
 
@@ -218,7 +308,7 @@ if __name__ == '__main__':
 import os as _os
 _ki = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'KNOWN_ISSUES.md')
 if _os.path.exists(_ki):
-    _open = [l.rstrip() for l in open(_ki) if l.startswith('- [ ]')]
+    _open = [l.rstrip() for l in open(_ki, encoding='utf-8') if l.startswith('- [ ]')]
     if _open:
         print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md - tell the user before making changes:' % len(_open))
         for l in _open: print('  ' + l[6:])

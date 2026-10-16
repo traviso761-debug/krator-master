@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.352,
+    1.166
+   ],
+   "seam_before": [
+    1.38,
+    1.304
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.4,
+   "normal_strength": 0.6,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paper",
+  "id": "paper.parchment",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   0.5,
+   0.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Aged Antique Parchment Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Aged Antique Parchment Texture.png",
+  "prompt": "Prompt row paper.parchment in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "books, scrolls, maps, lantern paper in any culture",
+  "sha1": "a949c6751b3e82ef9a07bf4b3803e4f87c078be9"
+ }
+}

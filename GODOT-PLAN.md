@@ -29,7 +29,7 @@ What already crosses over, or is scaffolded to:
 | `core/lod/` | runtime LOD over a finished scene | Godot-native; nothing to port |
 | `core/rand/` (2026-10-02) | one stream (the lineages' mulberry32, proven equal), an integer hash and noise; golden vectors; node test; GDScript twin `krand.gd`, its arithmetic proven by a Python transliteration, passing in Godot 4.5 headless since 2026-10-05 (`godot/tests/rand/`) | Ys's city takes it for its placement pass |
 | `core/clock/` (2026-10-02) | the world clock (Phase 1's contract); node test | Iziz's city runs on it; becomes `WorldClock.gd` |
-| `core/simulation/` | documents only: `ROADMAP.md`, `PLAN.md` | the life layers' shared vocabulary and `SIM.export()` (`krator-sim`), planned as the fourth exporter |
+| `core/simulation/` | `SIM` (Phase 1 built 2026-10-05: nine fragments, `test-sim.js`; Mungo and Shade run on it), plans in `ROADMAP.md`, `PLAN.md`, `SCHEMA.md` | `SIM.export()` (`krator-sim`); Verge keeps its own `SIM` with a Godot twin (`ROADMAP.md`, stage 5) |
 | `settlements/ys` (the Hykkousoi capital; phases 0–2 built, the city not yet placed) | the layout, the land–sea lattice, the NAV grids and the ground stamps are records and Float32 grids with no three.js in them; every placed thing leaves a record (volumes, doors, windows, lights, rooms, spots, furniture) | no exporter yet. `settlements/ys/GODOT.md` reads the build against this plan: it takes `core/rand` and the terrain bake before its city pass, writes sim data instead of a life layer, and exports on the `KRATOR_EXPORT` shape |
 
 **Field report (Travis, 2026-10-02).** A friend of Travis's imported the Voth city kit models into Godot. That
@@ -197,7 +197,7 @@ The browser-native code becomes one module, `core/host/`, that a build takes the
 
 | Fragment | Replaces | Notes |
 |---|---|---|
-| `90-host-camera.js` | 16 `camera.js` copies | fly and walk modes, pointer lock, key guards (the TODO's input guards land here once) |
+| `90-host-camera.js` | 16 `camera.js` copies | fly and walk modes, pointer lock, key guards (the TODO's input guards land here once); the pin's pick is the ground unless the build hands `take({pick})` (Voth: the interior under the cutaway, 2026-10-16) |
 | `91-host-loop.js` | the render loops | one frame loop with per-subsystem error isolation (TODO), `_ready`, N-frames-since-ready for verify |
 | `92-host-panel.js` | error panel, stats, loader | |
 | `93-host-inspect.js` | 5 `inspect.js`, `92-hover.js` | reads the tag registry (Phase 2) and nothing else |
@@ -257,10 +257,10 @@ twin) checked against the same golden vectors. Each ships with its **first consu
 | Module | First consumer | Status |
 |---|---|---|
 | `core/rand/` | Ys's city placement pass; then one biome kit in the reseeding event | **written 2026-10-02**: node test, golden vectors, `krand.gd` (arithmetic proven in Python; passing in Godot 4.5 since 2026-10-05); Ys's city takes it |
-| `core/terrain/` field | one biome kit's stage (its `terrainH` closure baked) | not started |
-| `core/tags/` | Yuni's `FIX.*` records or Voth's `PLACED` (both exist; map one) | **draft proposal 2026-10-05** (`core/tags/PROPOSAL.md`: the record, ids, vocabularies, adapters, order of adoption, open questions) |
+| `core/terrain/` field | one biome kit's stage (its `terrainH` closure baked) | **written 2026-10-08**: `KFIELD` (`30-core-field.js`, [G data]): a Float32 heightmap on a fixed grid with finer insets, named water surfaces and a land-cover byte grid; bilinear `h`, `normal`, the `krator-field` export (base64 little-endian Float32) and `load`; node test with golden vectors and negatives; the GDScript twin `kfield.gd` (`KField`) agrees with it to 2e-15 m in Godot 4.5. biomes/sedesert bakes its closure at load (8.9 m, half its mesh cell, plus a 1.5 m inset at the lip) and reads it for its ground, flora heights and export; `BIO.export`'s ground carries it as `field`, and `godot/krator/field_import.gd` builds a terrain mesh and HeightMapShape3D collision from it (the spike's `sedesert` case). Placement decisions stay on the closure until the reseeding event (`placeH`); measured errors in `biomes/sedesert/KNOWN_ISSUES.md`. Not yet: 16-bit PNG/EXR, carve floors and blockers, a land-cover map from a real build, the other 41 closures |
+| `core/tags/` | Yuni's `FIX.*` records | **written 2026-10-05**: registry, vocabulary (the catalog's lists copied, drift a failing test), label, node test, the uid's GDScript twin `ktags.gd` (passing in Godot 4.5); Yuni on it (13044 records, zero unknown vocabulary, nothing drawn moved), its export carries `krator-tags` and the spike's `yuni` case puts each record on its node (`core/tags/README.md`); the five core/furnish builds register their furniture (step 3, fingerprints unchanged); Iziz's `REG` and Voth's `PLACED` are read in before the first frame (step 4). Next: the biome kits (`PROPOSAL.md`, order of adoption) |
 | `core/furnish/` | Girder (the material pilot is there too) | **written 2026-10-05**: placement pass, draw helpers, host switches, node test; Girder, Mav's Refuge, Locus, Highlands and Post-Apoc on it with their furniture fingerprints unchanged (`core/furnish/README.md`). The catalog's own `F.furn` keeps its code |
-| `core/mask/` | Iziz's city (M5) | not started |
+| `core/mask/` | Iziz's city (M5) | **written 2026-10-05**: `KMASK.canvas`, a drop-in for the mask canvases, hard-edged by pixel centre; node test, GDScript twin replaying the ops bit for bit; Iziz, Dalab, Erewhon and Roketstad place from it (and Voth since 2026-10-08, its edges grown 0.55 px to match its old open threshold), each with the same placement and mask hashes on a GPU-canvas and a CPU-canvas load, rubble moved once with a screenshot pair (`core/mask/README.md`) |
 
 1. **`core/rand/`**: one PRNG (a 32-bit integer generator, `mulberry32` or `sfc32`, so the arithmetic is
    exact in both engines), one hash (`h3`), value noise and `fbm`, with reseed and the per-cell seeding
@@ -270,6 +270,10 @@ twin) checked against the same golden vectors. Each ships with its **first consu
    so moving a build's draws onto `KRAND.stream` moves nothing; only the hash and the noise move rubble, and only
    when a build switches to them. Golden file `core/rand/golden.json` (digests plus first values). Note that Math-library noise (`Math.sin` based hashes) is not portable
    bit for bit; the port replaces it, so this is the one phase that is expected to move rubble.
+   *Exception (Travis, 2026-10-05):* `settlements/yuni` keeps its own PRNG and noise. Its `rnd()` is Park-Miller
+   (`seed*16807 % 2147483647`), not mulberry32, so `KRAND.stream` would move every placement in the city; it takes
+   `core/rand` for `core/tags`' uid hash only, and its port carries Yuni's generator as it is (or bakes its
+   placements) instead (`settlements/yuni/KNOWN_ISSUES.md`).
 2. **`core/terrain/`** grows a `TERRAIN` field: a heightmap (Float32, metres, a grid at a fixed step) plus
    named carve patches and water levels, with `terrainH(x,z)` as bilinear sampling of it. A world either
    paints its heightmap from its present closure once (the 39 `terrainH` closures become bakes) or, for the
@@ -279,7 +283,10 @@ twin) checked against the same golden vectors. Each ships with its **first consu
    Yuni's), `name`, `class` (building, flora, fauna, furniture, prop, life, infrastructure), `tags`
    (culture, biome, Köppen, type, harvest, indoor/outdoor), `transform`, `footprint`, `parent`. The
    inspector reads it; the exporter writes it as glTF extras; the minimap draws from it. `BIO.register`,
-   Voth's `PLACED`, Yuni's `FIX.*` and the catalog's entries all map onto it.
+   Voth's `PLACED`, Yuni's `FIX.*` and the catalog's entries all map onto it. *As built (2026-10-05):* two ids
+   per record, the order id and a `uid` (a `KRAND.hash` of class, key and position in 10 cm steps, reproduced by
+   `core/tags/ktags.gd`); `at`, `ry`, `size` for transform and footprint; `class` is `building part fixture furniture
+   prop flora life landmark infrastructure feature` (`life` holds animals and citizens). Yuni is the first adopter.
 
 4. **`core/furnish/`**: one furniture glue in place of the six copies (Oct 2026 review). A **placement pass**
    with no THREE and no DOM turns `FURNISH(key, lx, ly, lz, lry, {v, seed, setting})` and the interiors hook
@@ -322,7 +329,7 @@ path, and a GPU and a CPU load give the same placement hash.
   emissive, doubleSided, alphaTest, hook}` where `hook` names a shader from the shared library. `MAT`,
   `FAMMAT` and the catalog's family strings become adapters onto it; the export writes it; Godot reads it as
   a `StandardMaterial3D` or one of the library shaders.
-- **The shader library.** `core/godot/shaders/`: `atmos.gdshaderinc` (already specified), foliage card, bark,
+- **The shader library.** `godot/shaders/lib/` (planned as `core/godot/shaders/`; built there 2026-10-13, status below): `atmos.gdshaderinc` (already specified), foliage card, bark,
   animated fauna body, world-unit UV (triplanar or world-space UV: `vWorldUV` is [G native] in Godot), the
   flag, the glass Fresnel, the water, `breakup` (world-space macro variety: shifted copy, brightness, roughness,
   grime), `coursing` (analytic ashlar and brick joints: no texture repeat, no mip smear). A detail normal is
@@ -383,6 +390,37 @@ sets with colour, normal and roughness maps, the rest as `TEX.def` kinds, `windo
 `?mat=proc` identical to the old page. Not yet: an exporter that writes the table to a file (Phase 4), Iziz as the
 second pilot, the shader-library ids for the hooks (`world-uv`, `cloth-sway` are named, not yet `.gdshader`s).
 
+*Status 2026-10-13 (ROADMAP.md stage 2e, the shader half):* **the shader library exists**, in `godot/shaders/lib/`
+rather than `core/godot/shaders/` (`res://` cannot reach outside `godot/`, and the spike's shaders live there; nothing
+moved): `world-uv`, `breakup`, `foliage`, `bark`, `cloth-sway`, `flag`, `glass`, `coursing` and `water`, one guarded
+`.gdshaderinc` each, each naming the three.js hook it answers; the hook table is `godot/README.md`'s "The shader
+library" and `godot/krator/khooks.gd` (a record's `hook`, `+`-joined, with the biome kinds as aliases, selects them; an
+unknown hook is reported). The spike's `library`, `foliage`, `bark` and `ground` shaders now draw through them, and a new
+`water` shader draws core/export's new `water` section (core/water's open surfaces: waves in turns, the bed's bytes,
+the twin's probes) with `lib/water`, `WATER.glsl`'s maths as uniforms; `krator/water.gd` (`KWater`) is its GDScript twin,
+equal to `WATER.heightAt` within 1e-14 m (`tests/water/water_test.gd`), and the include within 0.5 mm of it on a GPU
+(`tests/shaders/library_gpu_check.gd`). The M4 side-by-side's two gaps are closed on sedesert: its ground's crack and
+detail layers travel as a `world-uv` material record (`EXPORT.groundLayers`) and its pond as a core/water surface.
+Not yet: Iziz as the second material pilot (the other half of stage 2e); records that select `cloth-sway`, `flag`,
+`glass` or `coursing` on an exported mesh (Girder and Iziz still export through glTF); `coursing`'s three.js TEX kind
+(its pilot is Voth's, the Voth branch's); the `detail` record field (no shader by design: `StandardMaterial3D`'s
+`detail_*`); bark variants as a texture array; pre-compiling the library at load.
+
+*Status 2026-10-13 (ROADMAP.md stage 2e, the pilot half): **Iziz is the second pilot.*** Its vernacular, the Ancients MAT
+and the Voth embassy were on the library since 2026-10-06; now the city's own materials too, as `city*` families of
+`settlements/iziz/materials.json` bound through an alias table in `src/88y-iziz-matlib.js` (Verge, which packs Iziz's
+families, leaves them out): the painting's walls, towers, gates and palace on `stone.cut.b` (the scan-style ashlar of
+the Iziz delivery; `stone.cut` already serves the vernacular stone), its rock on `rock.rock_face`, the hills' escarpments
+on `rock.sandstone`, every rust on `metal.rust.fine` (the isotropic rust the plate rusts could not be), the Ancient Iziz
+style's planks and skins on the existing wood, white and concrete families. The other city sets the plan lists are in
+use: `plaster` (the vernacular), `roof.tile` (the embassy), `brick` as `brick.red` (the Ancients MAT), `earth.banco` for
+the banco (`earth.adobe` has no Iziz surface of its own), the paving as `concrete.ancient.b`. Every material is a KMAT
+record naming its library hook (`world-uv`, `breakup`, `glass`), and Iziz's export carries them (Phase 4, "Iziz"). Two
+surfaces have no good library texture and stay as they were, with prompts written for the owner
+(`settlements/iziz/KNOWN_ISSUES.md`): a cast statue bronze (`metal.bronze.cast`) and a rust-streaked concrete
+(`concrete.rust.streaked`). `verify --assert` unchanged; screenshots in that file. Not yet: a ground detail layer for
+Iziz's painted streets; lib/glass wired into the library shader.
+
 **Content and status: `core/materials/PLAN.md`.** That file holds the library itself: about 45 shared PBR
 surfaces tinted per culture, culture pattern sheets, where each comes from (scan libraries, generated
 images, procedural), the generation prompts, and the processing script `tools/textures/process.py`. Status
@@ -423,6 +461,48 @@ directly. The verify harness drives the export headless, so every build's CI run
 
 Done when: one build per lineage (a biome kit, `iziz`, `voth`) opens in Godot from its export with the
 right materials, tags on every node and the terrain under it.
+
+**Built 2026-10-13 (ROADMAP.md stage 2d; `core/export/README.md`): the container and its first lineage.**
+`core/export/07-core-export.js` ([G data]) is `EXPORT`: `register(section, fn, {by})`, `world({box, sections})` (one
+`krator-world` object: `format`, `version`, `build`, `convention` (units, axes, handedness, the matrix layout, winding,
+uv, colour spaces per table, ids, the box rule), a status per section, the contributors' `errors`, then the sections),
+`check` (every id joins), `glb` (the meshes as one binary glTF with `EXT_mesh_gpu_instancing`, the rest as JSON),
+`compact` (a tile's vertex list, finding 10) and `terrain`. A contributor that throws is reported and skipped; an
+unknown section name is refused. What is filled and by whom:
+
+| Section | Status | Filled by |
+|---|---|---|
+| `items`, `buckets` | done | the biome core (`core/biome/42-core-export.js`): `BIO.export`'s records with ids, a tile's buckets compacted; `BIO.export` is now a thin envelope over the same parts (byte-identical output) |
+| `materials`, `textures` | done | the biome core: one vocabulary (core/materials/record's KMAT fields beside the biome's kind, key, options, sway); library maps **by reference** to the build's pack (`tex/pack.json`), PNGs for canvases and DataTextures; the KMAT adapter tables (Girder's) as `kmat:<build>:<name>` |
+| `registry` | done | core/tags (`KTAGS.page.export()`), cropped to the tile's joins and box (an adapter in `core/export/09-core-export-adapters.js` until core/tags registers itself) |
+| `terrain` | done | the biome core: the KFIELD cropped on its lattice where the build bakes one, the page's `h` on a grid, and probes off the lattice; `EXPORT.ground({terrainH, ...})` for any other build |
+| `stage` | done | the biome core's host (`43-core-export-host.js`): `KSTAGE.capture` over the tile, on the terrain grid |
+| `atmos` | done | an adapter over `ATMOS.export()` (unchanged) |
+| `fixtures`, `interiors`, `furniture` | Iziz (M5); a stub elsewhere | Iziz's doors, windows and lamps as children of their buildings, its furniture slots; no interiors (its buildings are shells) |
+| `sim` | stub | a written contract (`EXPORT.CONTRACTS`) |
+| `city` | stub | the Voth branch's (`core/city`); only its registration point is here |
+| `sockets` | not a section yet | — |
+
+The harness writes it: `python3 tools/harness.py export <page> --out godot/data/<case>/ --box x0,z0,x1,z1` (the shared
+Chromium launcher; `world.json`, `world.glb`, the library pack's files in `tex/`, `meta.json`; exit 1 on a section
+error or a failed join). Godot reads it with `godot/krator/world_import.gd`, which composes the spike's importers
+(GLTFDocument with `krator/gltf_instancing.gd`, `KratorBiome._material`, `KratorField`, `KratorAtmos.build_from`,
+`stage.gd`) rather than forking them. Not yet: the Iziz and Voth lineages (M5, M6), the converter to `.tscn`, the
+stubs, and the builds that do not list core/export (the Throne, Verge: the harness injects it).
+
+**M5, 2026-10-13: the city lineage** (`core/export/README.md`, "Iziz"). Iziz is the second contributor
+(`settlements/iziz/targets/city/94-city-export.js`), on the `KRATOR_EXPORT` record shape as this phase's "Cities" asks:
+its `REG` as core/tags buildings (a building in a city placement takes its lot's yaw and size), the doors, windows and
+lamps its vernacular draws as fixtures, children of their buildings (`src/69f-iziz-fixtures.js` notes them in the kit's
+own transform), every baked kit item as an item set whose instances recompute their uid from the exported matrix, the
+furniture slots; and the meshes (kit and biome instances with a per-instance `owners` side table, plain meshes by
+material), the materials with their hooks, the library maps by reference, the sampled ground, the stage and the
+atmosphere. `godot/krator/world_import.gd` reads it without an Iziz-only path (a three.js material record on
+`shaders/library.gdshader`; a `Records` node of `Building_<id>` with its fixtures). The proof is a 240 m district inside
+the south gate (`godot/data/world-iziz`, `godot/tests/export/iziz_test.gd`): 9,638 instances, the kit's 2,158 uids
+recomputed in GDScript with 0 mismatches, 139 fixtures each under its building, every material and map resolving with
+its hook, the ground through its samples to 0 m. Not yet: Voth (M6, the Voth branch's), the Ancients kit's openings as
+fixtures, interiors, records on the biome sets in the city.
 
 ### Phase 5: the simulation layer as data
 
@@ -508,10 +588,21 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
    to belong to the tile that holds their record (blocker 10's records), not be clipped by it. *Compensated
    2026-10-05:* a tile keeps whole bucket pieces (connected runs of triangles) by the foot of each piece
    (`opt.cut`, `'piece'` by default), so nothing is sliced and each piece lands in one tile. Records still replace it.
-4. **No ids or tags** on biome items or buckets: node metadata can carry only name and label (`core/tags`).
+4. **No ids or tags** on biome items or buckets: node metadata can carry only name and label (`core/tags`). *Partly
+   answered 2026-10-05:* `core/tags` exists and Yuni's records arrive as node metadata (`tags.json`); the biome kits
+   adopt it last, once placement writes plant records (an item's record, `flora_00012#37` per instance).
+   *Closed 2026-10-12 for the re-exported cases (ROADMAP stage 2c):* the biome kits register what they place
+   (`core/tags/README.md`, "Item sets"); every biome item names its set and carries a uid per instance aligned with
+   its matrices, every bucket the volumes it merges (`biomes/GODOT.md`, "Records"); glTF nodes carry their record in
+   their extras and a MultiMesh a `krator_records` side table; the importers put them on node metadata, and
+   `spike.gd --check` writes each case's `id_coverage`. A node that merges many records (Girder's furniture batch, one
+   per material) still names none; Iziz's case is not re-exported yet.
 5. **No ground in any export.** The spike samples `terrainH` into a heightfield (`krator-heightfield`, spike-only); the
    `core/terrain` bake (Phase 2 item 2) is what M4 needs first after tags. *Compensated 2026-10-05:* `BIO.export` writes
-   a tile's `ground` (heights and water on a grid), and the importer builds it; the bake still replaces it.
+   a tile's `ground` (heights and water on a grid), and the importer builds it; the bake still replaces it. *Answered
+   for one kit 2026-10-08:* biomes/sedesert's ground is a `core/terrain` field and its export carries it
+   (`ground.field`, krator-field); the importer builds the mesh and a HeightMapShape3D from it. The other kits still
+   sample their closures.
 6. **Kit shader hooks with no core kind** come in plain: rift's iridescent bark and far impostors (their records have
    no `key` either, so the report cannot even name them). Fauna (`anim`, `aP0`/`aP1`) stand still at their path centre.
    *Compensated 2026-10-05:* every kit hook is named as data (`irid`, `gloss`, `far`, `hang`, `anim-phase`:
@@ -563,6 +654,61 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
     `scene.environment` (the skylight) is in the record and Godot reflects the panorama for it; Girder's braziers
     burn on the page and sit dark in Godot (an unlit glow family not crossing: to find); Iziz's library pack holds
     only the two fauna sheets and its materials carry no `userData.lib`, so its export case takes no pack yet.
+    *Later the same day:* the braziers' flames did cross (unlit, orange); what the page shows and the glTF cannot carry
+    is its halo cloud (`81-glow.js`, a Points ShaderMaterial) and the night light volume its own shaders read. Girder's
+    lamps now cross as data (`_api.lamps`, `lamps.json`, `krator/lamps_import.gd`: halos on `halo.gdshader`, the nearest
+    32 as OmniLight3D; `compare_shots.py girder --hour=21` shows them burning and lighting the hall). Still open there:
+    Godot's night is far darker than the page's (the page's night ambient and moonlight are not in the stage record) and
+    its halos are fainter (gain 1.0, to tune against the page). The exporter skips core/lod's render copies at the source; a region's sky panorama starts at the
+    region's edge, not the terrain's (Iziz: 80 m, was 530 m); the wave field is ported (`core/atmos/GODOT.md`). Iziz's
+    pack waits on Iziz adopting the material library, which the Ancients re-vendor session gates (TODO.md, Port: next).
+
+**The spike on a real GPU (2026-10-16, Travis's machine, Godot 4.7.2, Forward+; `godot/CHECKLIST.md`).** The headless
+pre-flight passes on Windows (`krand_test`, `atmos_test`, `--check`: five cases, no script errors).
+
+15. **hyperjungle.** Leaf cards cut out (1a), the right way up (1b), sway and lean together (1c), prism gum iridescent
+    (1d); 30 to 60 fps with the whole tile in view (1f). Found and fixed the same day:
+    - ~~the tile came in drowned~~: the page hands the biome no `waterH`, so the export wrote the core's default sea
+      (y = 0) over a floor at -20 to -27 m, and the importer laid one sheet across the tile at the wet cells' mean.
+      The page now hands in its brook (`45-host-stage.js`), and `kdata.gd` builds a quad per wet cell at its own level.
+      Other kits whose floor dips below 0 without a `waterH` would export the same sea: check before their tiles.
+    - ~~pale species grow brown limbs~~ (on the page too): the "pale" limb map was painted in ironbark's browns, so the
+      limb tint (bole colour / map mean) clipped at white and ghostwood and baobab limbs rendered as raw brown streaks
+      under pale boles. Now each hero's limbs wear its own bole's bark (`limb0`..`limb5`, the bole tint), at the
+      bole's tile (the library's bark where the page has its pack), and each young tree's trunk wears its species' bark too
+      (`saptrunk0`..`saptrunk5`): on the shared limb map a young ghostwood grew a red-brown trunk.
+    - the slice held one prism gum hero and a ghostwood sapling: the tile is now [-750, -450, -390, -90] (a ghostwood
+      and a gate baobab hero, saplings of all six species).
+    - ~~the young ghostwood's leaves read dark and its twigs stuck straight out~~ (1a): the dark look was the water
+      sheet; the twigs were two importer faults. The browser's PNG encoder stores a cut-out's clear texels black (the
+      page fills them grey, `BIO.alphaTex`), so Godot's mipmaps outlined every leaf and stroke in black: `kdata.gd`
+      refills them with the solid texels' mean. And scissored cards had no antialiasing: `foliage.gdshader` now uses
+      alpha to coverage under the project's MSAA, so the thin twig strokes thin out as on the page. Godot's leaves
+      are still a little flatter (less of the page's darker inner shading).
+16. **rift.** No holes at range (2a), but the whole tile changed LOD at once: it lies inside one 1.2 km LOD chunk, and
+    three switches per chunk too. Done in the importer (`biome_import.gd`, 2026-10-16; each item cell keeps its own slice of the core/tags records, a
+    bucket's records stay on one node above its cells, and `world_import.gd`'s chunk-placed nodes keep the chunk's widening): each LOD-chunked item's
+    instances are split into 150 m cells by position, and each bucket's connected pieces by centroid, one node per
+    cell at its centre, ranges widened by the cell's half-diagonal (106 m, was the chunk's 849 m). The rift tile is
+    now 175 item nodes and 47 bucket nodes over 12 cells (51 items, 9 buckets before), the same 48,432 instances
+    and 186,920 triangles; shots flying out from 1,100 to 1,340 m show the far cells go to impostors first and the
+    near ones follow. To recheck on the real GPU. The irid frill trees' frills
+    work; the irid bark is not clearly right (2b, to compare against the page side by side). The far impostors keep
+    their colours (2c) but are often massed wrongly: to look at (pack `c2-rule`, `bark.gdshader` mode 3).
+17. **girder.** Library textures look right (3a); stalls and furniture keep their colours (3b). The friend's Voth route
+    (3d): he had Claude do it and does not remember how, so section 1's field report stays unknown. The editor import
+    route (3c) is next.
+18. **iziz.** Lamps, halos, braziers and smoke at 19:30 (4a: the slice has no wall, so no searchlights); lights and
+    sky follow the hour across dusk and dawn (4b); rain looks right (4d); halos and night look fine (4e, 4f), though
+    the region is sparse: the 160 m box round (0, 0) brings in almost no buildings, so a wider or moved box (with a
+    wall section) is wanted before judging halos against buildings. Fixed the same day: ~~no fog banks (4c)~~, the
+    spike never switched the environment's volumetric fog on, which FogVolumes need (`spike.gd` now does when a case
+    has any; to recheck); ~~Shift+W~~ for the weather also moved the camera: now `F3`.
+19. **yuni.** Opens as intended (translucent building boxes, doors and windows as small panels, the compound's rooms
+    as open-topped boxes), but it cannot be judged by eye: there are no meshes, and a running game has no inspector
+    for the metadata (5a to 5c unchecked). Wanted: an in-game click readout in the spike (the record under the
+    cursor), and a scripted nav check (`bld_00005`: a path from one room to another through a door link) that prints
+    pass or fail, so this case needs no editor work. Meshes for Yuni wait on its second route (gap 13).
 
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
 material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the
@@ -581,6 +727,37 @@ The project, as it grows (Godot 4.x, Forward+; Compatibility only if a web expor
 
 Done when: a tile exported from a biome kit and a settlement load, stream and run in one scene, and the
 golden tests pass in CI.
+
+### Before an export: textures delivered but not wired
+
+Library sets the owner has delivered but no build has re-packed yet. An export reads a build's packed `tex/`, so each of
+these must be re-packed (`python3 tools/textures/pack.py <build>`), rebuilt and verified before its build is exported:
+
+| Set (delivered) | Build to re-pack | Note |
+|---|---|---|
+| `library/ground.travertine.white` (2026-10-15, dry pools) | `biomes/geyser` (`ground.tufa`) | the redo without painted water |
+| `library/hide.sleek` (2026-10-15, neutral grey) | `kits/fauna` (`sleek`) | drop the family's mute if it has one |
+| `patterns/islander/storyboard`, `patterns/islander/gable-east-b` (2026-10-15) | `kits/islanders` (`patStory`, `patGableE2`) | |
+| `patterns/common/grime-streaks` (2026-10-15) | not wired anywhere yet (the break-up hook's `grime`) | 20 x 8 cells, dark on white |
+
+`core/materials/PROMPTS-NEEDED.md` section 0 has the same list. Strike a row when its build is re-packed.
+
+### Before an export: what Voth's in-page pin and inspector read that the export must carry
+
+On 2026-10-16 the city page's pin and inspector were made to work inside the cantons (`settlements/voth/targets/voth-city/
+58-vc-tools.js` `VC.pickInterior`, `97-vc-host-take.js`, core/host's `take({pick})`). The picking itself is [web] and is
+not ported (Phase 6: Godot raycasts against colliders natively, and its cutaway is [G native]). What it reads is [G data],
+and Voth's export case (none yet; Phase 7) must carry it, or Godot's walker and inspector will not have it:
+- **The rooms as tagged records.** The page's inspector names a canton room from `VC.INT.cantons[cn]` directly (its
+  `name`, `bpKind`, `kind`, `decor`, `storey`, rect, `y`, `h`, `tallTo`; the census row of its kind), not from the tag
+  registry Phase 1's `93-host-inspect.js` and Godot's inspector read. Register each room, hall and exit as a `core/tags`
+  record (class `room`, the blueprint's sheet name as its name) so the export and the record-driven inspector name them.
+- **The interior's floors, flights, walls and exits** (`P.floors`, `P.flights`, `P.boxes`, `P.tunnels`, `P.suite.exits`):
+  KWALK's floors and solids today; Godot's walk collision and nav (Phase 5) take them as data, so a pin dropped in the
+  throne room stands on its floor there too. The exits' tunnels run out to the tiers' real faces (`40e-vc-palace-doors.js`
+  `VC.faceOut`), which the export must keep: the stack records alone put them 20 to 60 m inside the stone.
+- **Godot's cutaway must cut the pick too.** The three.js raycast ignores clipping planes, so the page filters hits above
+  the cut by hand; a Godot cutaway done with a shader clip has the same trap (hide the storeys above as nodes instead).
 
 ## 5. Disposition by module
 
@@ -674,11 +851,11 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 | Milestone | Proves |
 |---|---|
 | M1 audit | `PORT-INDEX.md`, a `PORT.md` per build, `check_port.py` running (Phase 0). **Done** |
-| S spike | `krand_test.gd` passes in Godot; one biome export and one atmosphere export open in a Godot scene; the importer's gap list is written here (Phase 7, "The spike"). Comes right after M1. **Underway 2026-10-05:** `krand_test.gd` passes; five exports open headless with gap lists ("The spike: first findings"); the look on a real GPU is next |
+| S spike | `krand_test.gd` passes in Godot; one biome export and one atmosphere export open in a Godot scene; the importer's gap list is written here (Phase 7, "The spike"). Comes right after M1. **Underway 2026-10-05:** `krand_test.gd` passes; five exports open headless with gap lists ("The spike: first findings"). **2026-10-16:** the GPU run (Forward+) is underway: hyperjungle, rift and girder checked (findings 15 to 17) |
 | M2 shell | one `core/host/`, no camera/probe/inspector copies left, hashes or screenshots unchanged (Phase 1) |
 | M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
-| M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start) |
-| M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export; Iziz's export uses the `KRATOR_EXPORT` record shape and the library's city sets |
+| M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start). **Done 2026-10-13:** sedesert's 300 m tile (`godot/data/world-sedesert`): 7,280 instances each with its uid (recomputed in GDScript from the glb, 0 mismatches), every material and map resolved (18 library maps by reference), the terrain the page's field (probes agree to 3e-12 m); `godot/tests/export/world_test.gd` |
+| M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export; Iziz's export uses the `KRATOR_EXPORT` record shape and the library's city sets. **Iziz done 2026-10-13** (`core/export/README.md`, "Iziz"): a district inside the south gate (`godot/data/world-iziz`) opens from `core/export` with its buildings, doors, windows and lamps on the record shape, the kit's item sets (2,158 uids recomputed in GDScript, 0 differ), its materials on the library sets with their hooks, the sampled ground and the atmosphere (`tests/export/iziz_test.gd`). Open: interiors (Iziz has none), Girder's furnished rooms from `furniture` (waits on `wip/furniture-indexed`) |
 | M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5) |
 | M7 one world | two kits and one settlement stream together in Godot from the scale model's terrain (Phase 7, `biomes/WORLD.md`) |
 

@@ -32,10 +32,10 @@ A lost high civilisation, **the Ancients**, built everything that matters and th
 |---|---|
 | Body | A tidally locked moon of a gas giant (Neptune-to-Saturn class). [settlements/voth/src/21-sky.js; dalab/src/81-sky.js] |
 | The giant | Fixed in the sky at altitude ~25°, azimuth ~66° (NE), "over **Korona**". About 30° across ("sixty full moons wide"), banded, stormy and greenish. Its rings sit almost edge-on, seen as a hairline. At night its glow ("giantshine") lights clouds and snow. [dalab/src/81-sky.js:3; biomes/eastabyss/src/82-host-sky.js; biomes/nhighlands/src/82-host-sky.js] |
-| Moons | Two small moons, well away from the giant. The Republic's orrery shows sun, giant, Krator and two moons. [settlements/highlands/NOTES.md:83-92] |
+| Moons | Two small moons, well away from the giant: Krator's sister moons round it. The Republic's orrery shows sun, giant, Krator and two moons. [settlements/highlands/NOTES.md:83-92] Jimjam calls them **the Week** (*Vīkku*: phases every 7 days, an orbit of 6.87 days at ~700,000 km) and **the Thirteen** (*Tarṭīn*: phases every 13 days, an orbit of 12.55 days at ~1,050,000 km). Both are new together every 91 days, when both their shadows cross the giant's face: the Double Dark (§6.14). [the owner, Oct 2026] |
 | Sun | Sets WNW in every kit (canon placement). Eclipses come in seasons round each equinox. |
 | Day | 24 h: one orbit of the giant. |
-| Year and tilt | Tilt ~23°, so seasons are Earth-like. The year is 365 days in the sky docs and `YEAR=360` in the shared sky code (see §12). The southern summer solstice falls on day 350. [jimjam/DESIGN.md:81-91] |
+| Year and tilt | Tilt ~23°, so seasons are Earth-like. The year is **365 days** (the owner, Oct 2026); `YEAR=360` in the shared sky code is a simplification (§12). The southern summer solstice falls on day 350. [jimjam/DESIGN.md:81-91] |
 | Latitude | "Climate, day length and seasons all depend on latitude, not longitude." The reference site (Voth, Jimjam) is at 40° S, in the westerlies, so the sun crosses through the north. |
 | Gravity | 7.4 m/s² (about 0.75 g). |
 | Air | Dense, varying with altitude: ~0.8 atm on the high plateau, ~1.3 at Yuni, ~1.6 on the Voth lowland, ~1.9 on the hypertropic lee shore, ~2.0 on the Ring Sea, thicker still in the Abyss. Krator's climate classes add **X, abyssal** (above 1.9 atm) and **H, hyperalpine** (below 0.6 atm) to Köppen. [mavs-refuge/src/21-sky.js; biomes/WORLD.md] |
@@ -60,7 +60,9 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 - **The Eastern Abyss.** East of the high desert, the plateau ends in a 740 m cliff. The high desert's river pours over it as a cataract onto a basin floor, which holds multiple salt lakes. The basin wall, "the shelf", hides the sun and the giant's ring from Locus. Yuni controls Locus and the southern portion of the Abyss.
 - **The Godthrone.** Massive volcano south of the crater, almost Olympus Mons size. Upper reaches are completely airless.
 - **The Rift.** South of the main crater: a volcanic rift valley, almost as deep as the central crater, forming a long east-west trough of salt lakes (yellow, pink, blue-green), jungle and mesa ridges. As one must climb the Outer wall to get here, it is quite isolated compared to the rest of Krator, but traders covet the riches of the sultans of Xanadu, so they attempt the trek regardless. It is also known for its hostile Lizardmen and strange wildlife deep in its depths.
-- **Korona.** A planned region in the NE, under the giant. It is formed of a type of volcanic structure or ‘corona’ that does not exist on Earth, but does exist elsewhere in the Solar System, forming a crazy quilt of small plateau, depressions, and microclimates. Known to be home to bandits and ghouls.
+- **The scablands (candidate).** In the northern semiarid country a closed basin once held a lake three times the size of Lake Bonneville. When it broke its rim it tore south in one flood, leaving dry falls, coulees and bare scoured rock (`biomes/WORLD.md`). The basin is dry today; when and why the lake filled, and what broke it, is open (§12).
+- **Tuff country (candidate).** The Catch, a dry walled basin SE of the Godthrone and downwind of it, could hold ash plains worn into hoodoos with carved underground cities, if the Godthrone ever erupted explosively. That is a lore decision (`biomes/WORLD.md`).
+- **Korona.** A planned region in the NE, under the giant. It is formed of a type of volcanic structure or ‘corona’ that does not exist on Earth, but does exist elsewhere in the Solar System, forming a crazy quilt of small plateau, depressions, and microclimates. Known to be home to bandits and ghouls. A kaleidoscope of microclimates, tepuis and carnivorous plants, home to many isolated tribes of humans and therian mutants (§6.18). [the owner, Oct 2026]
 
 ### 3.2 Regions [biomes/WORLD.md]
 
@@ -72,10 +74,11 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 | The Rift | Vale of Xanadu | Lizardmen |
 | Southwest bay (central crater) | S highlands (steep) | (Voth's volcanic bay matches its description; see §12) |
 | Southwestern lowlands | NW lowlands, S highlands | Dalab |
+| Crater drylands (two regions: N and W of the Throne; S of it) | SW bay, the savannah south of the hyperjungle | the Scyvoi |
 | East Rift Highlands / Vale of Xanadu | the Rift | the Sultanate of Xanadu (Erewhon) |
-| Northwestern lowlands | SW lowlands, N highlands, Korona | ??? only a sketch at this point |
+| Northwestern lowlands | SW lowlands, N highlands, Korona | Jimjam (by the lake north of The Cut) |
 | Northern highlands | NW lowlands, hyperjungle, NW bay, Korona | Iron Republic, Rustic Clansmen, Painted Men |
-| *In progress / planned:* NW bay, E badlands, Korona, S highlands; *possibly* E highlands, S badlands | | Jimjam, ????, ghouls, bandits, ruffians |
+| *In progress / planned:* NW bay, E badlands, Korona, S highlands, E highlands; *possibly* S badlands | | ????, ghouls, bandits, ruffians; Korona's tepui tribes, human and therian (§6.18) |
 
 The **Krator Scale Model** artifact holds the terrain: 3,098 × 2,786 km at 2 km a pixel, elevation from −2,600 to +17,100 m, plus climate rasters. Its database holds 35 named cultural and political region polygons, among them the **Inner Crater**, the **Empire of Iziz**, **The Rift** and the **Vale of Xanadu**.
 
@@ -147,7 +150,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 1. **Wealth is legible in material.** Each culture has a tiered palette, with poor, common and court tiers in the furniture catalog. Stone and gold go to the top, timber or thatch to the bottom, salvage to the middle and bottom.
 1. **Wealth climbs with height.** Erewhon, Iziz's hills and Yuni's oligarch towers all put the powerful high and the poor and industry low, by the water.
 1. **Caravans.** Caravanserais at Yuni, Iziz, Locus, Shade, Jimjam and the abyss suggest one long-distance trade network across the crater. Major goods include spice, gold, petrol, relics, scrap, and medicines.
-1. **Big beasts do most of the work.** Millipedes turn capstans and are ranched; giant beetles are livestock at Voth; silt striders carry passengers; flyers and riding spiders are ridden.
+1. **Big beasts do most of the work.** Millipedes turn capstans and are ranched; giant beetles are livestock at Voth; elephant bugs carry passengers; flyers and riding spiders are ridden.
 1. **Vehicles are present, but again rare and precious.** Yuni can call on a small fleet of dune buggies; otherwise there are the Izizian mechs, and perhaps a few others here and there, but motor vehicles are otherwise rare. In general, the terrain outside the flat desert limits wheeled vehicles’ utility.
 1. **Firearms:** Present, but not as useful as might seem. The Republic is the most skilled in their production, and generally can make musket and cannon level technology. Though they can maintain ancient automatic weapons, ammunition is vanishingly rare and modern attempts to replicate it, unreliable. Izizian shield technology made projectile weapons of little use as a weapon of war for many centuries; with their downfall, it is beginning to make a comeback.
 
@@ -174,6 +177,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - Daranch: a larger agricultural settlement, true center of their experimental breeding program.
 - Blade, Span: wrecked arcologies that are northern Dalab outposts against the machines and mutants of Ancient’s Valley
 - Ledge: an outpost on the eastern Rift, across the Outer Wall. As the Dalab cope well with altitude, they don’t find it too hard to keep supplied.
+- **Language.** Two tongues. The priests' **high tongue** is our English, held in place because the God only answers to it; that is the root of priestly rule. The peasants' **low tongue** drifted like a creole: *the* fused on as *da-* (*Dalab* = the lab, *Daranch* = the ranch), plural *-dem*, tense particles *di/go/a*. Latin letters; the God's fixed-width letters are holy. The oldest prayers are the staff's prompts; the formula that let the God forget is lost. The lab had a rival at Ys (§6.16). `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.2 The Empire of Iziz: the Izani (hyperjungle)
 
@@ -207,6 +211,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - Hook (ancient port city; recently recaptured from Voth)
   - Verge Upper City
 - **The city of Dilihan (NW crater, “The Cut” region) was settled by Izani colonists and is a loyalist stronghold landlocked and cut off from the main empire. The northern lowlands also had many loyalists.**
+- **Language and script.** Izani: English gone Romance with a Star Wars edge (h lost, w > gu, -ng > ñ, prothetic *is-*, final vowels, *-ar*, plurals in *-z*, x = sh) and a Georgian bite learned from the subject jungle tribes before the Mutiny: ejectives where English glottalises (after s, and stops left unvoiced before the final *-a*: *ist'ar*, *port'a*, *mek'a*; unwritten, so no spelling changed) and q = q'. Since the civil war the court drops an unstressed first vowel (*rrpublik'a*, *kmandar*) and marks a finished act with *da-* from *down* (*dafal*). *Izani* = Iziz + *-ian* > *-ani*; *Duxun* = duke's son. 27 straight-cut capitals, the parent of the Vothic letters and used unchanged by the Republic. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.3 The Iron Republic (highlands of the Inner Wall)
 
@@ -229,6 +234,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - A salvage culture: houses in fuel tanks, rocket stages and hull plate. **Shipbreakers** dismantle the ships "that came down short of the port".
 - Murals: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and **rockets** (Republic only).
 - Landlocked: no ships.
+- **Language.** **Hajlandsk** (Highlandish): the Third Legion's highland auxiliaries' English, gone Norse and Slavic (w > v, th > t, e > je, k > č, syllabic r, postposed *-et* article), with Izani words for law, rank and the state on top (*sidizan* citizen, *serviz*, *guar*; *kiñ* now means tyrant). Motto *Serviz gir sidizan*, “service makes a citizen”. Written in the Izani alphabet unchanged. The **Legion cant**, the Third Legion's camp speech that every citizen speaks: words joined with an apostrophe, the first losing its final vowel, highland and Izani mixed (*jern'knekt* veteran, *lejon'tjen* Legion service, *sid'kiñ* Izani governor, *Rok'stad*); the barracks motto is *Tjen'gir sidizan*. Hajlandsk has no ejectives: Izani *port'a* is Republican *porta*. The Free Clans (§6.4) keep it without the Izani layer; the Painted Men (§6.5) keep the oldest highland words, worn short and sung with two melodies by their Korona neighbours. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.4 The Rustic Clansmen (northeast of the Republic)
 
@@ -243,6 +249,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - **Cliff settlements** hung on rock faces.
 - Formline crests: salmon, orca, thunderbird, bear; poles of eagle, bear and frog. Faces are out ("creepy").
 - Sign: the **raven**. Shamans' houses, warriors' halls, stone circles.
+- **Language.** They sit on the Inner Wall next to Korona (§6.18) and have long traded and married with its tepui tribes. They keep the oldest highland words in the crater, with no Izani layer, but the Hum wore their sound: every word cut to its stressed syllable (*sòl* soldier, *àirn* iron), and a **pitch accent** left by the lost syllables, Swedish-fashion. A word that was always one syllable has one falling melody (*win*); one that lost a syllable keeps a fall-and-rise, written with a grave accent (*wìn* winter, *kìng* kingdom, *ràv* raven). Not tonal: they kept their consonants. They took the Hum's question word *há* whole (*Yu kom, há?*) and whistle across the cliffs in the Hum, not in their own speech. `lore/tongues-of-krator.html` (the Republic tab) [the owner, Oct 2026]
 
 ### 6.6 The Beast Riders (hyperjungle; Mav's Refuge, Girder)
 
@@ -274,6 +281,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - Sign: the **claw** (three talon slashes), green. Skull poles; "simple but not primitive".
 - Barracks are named by **Wing**. Nature shrines: First Bough, Rain Mother, Winged Ones, Deep Root, Green Silence.
 - Ships: a double-hulled voyaging canoe with a flyer's perch; a rookery raft.
+- **Language.** **Tł'aai** (“of the Claw”): Mongol and Apache sounds with a Star Wars edge (cl > tł', th > ł, ejectives, nasal vowels, vowel harmony, h > kh); verbs classify what they carry (*bii-* beast, *istik-* lance). Once one dialect per tribe; under Izani rule it took many Izani words and the Izani letters for trade (with four added marks), and gave Izani its ejectives, which the loans keep (*port'a*, *mek'a*); since Mav, the dialects are levelling into a Council speech on the Quetzal dialect. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.7 The Screamers (north of the central crater; the Hexahedron)
 
@@ -300,6 +308,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - The raiders come as a convoy of camel riders every few days; they water and trade.
 - Faith: the **Shrine of the Deep Aquifer**, carved behind the falls. Worship at dawn and dusk.
 - The Khan (caravanserai), camel lines. Sign: **horns**.
+- **Language and script.** **Dasrī**: English gone Arabic (emphatics, ḥ, q, the article *al-* from *all*, plurals by vowel change generalised from *man/men*: *qamal*, *qumūl*). A cousin of the abyssals' Tabist (§6.9), mutually intelligible like Spanish and Italian, with regular differences (p > b, v > f, g > j; th and dh kept). Heavily Yuni-influenced: Yuni loans for trade, oil and rank (*sarfū* from Yuni *servo*); outsiders' *Emir* for Yuni's ruler is the Dasrī form. Letters learned at Yuni, written as a joined caravan hand told apart by dots, short vowels unwritten. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.9 The abyssal people and the Geomancers (eastern Abyss; Locus; Yuni)
 
@@ -317,6 +326,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Their Chapterhouse holds a rock relief-map table, drill cores and a brass gnomon.
   - In Yuni they hold the Cloisters. Culturally "mostly Yuni".
   - Lizard riders patrol in sixes.
+- **Language and script.** The abyssal people speak **Tabist** (they are the *Ibisen*, one *abis*): the same English as Dasrī (§6.8) gone Berber (nouns in *a-*, feminines in *t-…-t*, plurals in *i-…-en* from *oxen*; p > f, v > b, g kept). Mutually intelligible with Dasrī like Spanish and Italian, and as full of Yuni words. Yuni's letters reduced to painted strokes, rings and dots, like Tifinagh. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.10 Reed Lake: the lake people
 
@@ -340,6 +350,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Gates: Shepherds', Caravan, North, River, Potters'. The slum is **the Thatch**. Desert nomads come to the caravanserai.
 - Sign: the **hyperboloid**, yellow. No ships.
 - Controls Locus, Verge lower city, and an outpost to their north [TBD].
+- **Language and letters.** Yuni is *UNIV.* off the gate: the town grew in an Ancient agricultural and mechanical college, whose people sounded Australian. A thousand years carried those habits on until a modern English speaker cannot follow it: words clipped with *-o* and *-i* (*Labbo*, *Deppo*, *Bildo*), sliding vowels (*dai*, *hoi*, *nau*), phrases run together (*Gdai, mai. Awyagoi?*). The ruler is the *Emmo* (from Emeritus); outsiders say *Emir*, the desert caravaneers' form (§6.8). The walls keep the old spelling. Latin letters in stencil gate capitals; the ampersand counts as a 27th letter. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.12 Voth (SW Bay of Ring Sea)
 
@@ -356,11 +367,12 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Slaves: Nazarites and Wingmen (of the destroyed arcology)
 - **Ancestry canton**: a pyramid necropolis of family tombs and hanging gardens.
 - Palace: "flying buttresses between tiers, skylights and atria, a lot of gold, a teeny bit of porphyry and black trim".
-- Giant beetles are livestock. **Silt striders** carry passengers. **Cliff racers** fly over land.
+- Giant beetles are livestock. **Elephant bugs** carry passengers. **Cliff racers** fly over land.
 - Arena: gladiators from noon to sundown.
 - **Ordinators**: temple guards in green-and-gold armour, about 180 of them. A branch of them forms the secret police. Also purple-robed priests; a crimson-and-gold high priest; grey-robed penitents in threes; monks; pilgrims on shrine circuits.
 - Sign: the **diamond**, ash-white on deep purple. Ships: the Ordinator flagship, chitin biremes, cargo hulks.
 - An embassy (a clan compound) stands in Iziz and Roketstad.
+- **Language and script.** Vothic descends, very distantly, from English; its sounds sit between Purépecha and Morrowind's Dunmer: aspirated stops and affricates (p/ph, t/th, k/kh, tz/tzh, ch/chh), a high central vowel ï, tap r and retroflex rh, a breathed hl, and v, z, dh. Regular changes from English: s- > tz (sun > *tzun*, son > *tzin*: Tzintzun, "Son of the Sun"), st- > tzh, sp- > ph, sk- > kh, sl- > hl, tr- > ch, str- > chh, sh > s, ch/j > sh, f/w > v, final r > rh, final b/d/g devoice, unstressed syllables fall (victory > *Voth*). *-tzan* "realm, place of" is a Chichani survival. The script has 33 letters, Georgian bowls crossed with Daedric blades, in English alphabetical order, each named for a worn-down English word (*Ash*, *Bon* "bone", *Tzun* "sun", *Hlev* "slave"); three marks are systematic: the thorn (aspiration, and hl), the bar (d > dh) and the root (n > ng, r > rh). The full stop is the diamond. Chart, letter names and a transliterator: `lore/tongues-of-krator.html`. [the owner, Oct 2026]
 
 ### 6.13 The Sultanate of Xanadu (East Rift Highlands)
 
@@ -372,18 +384,32 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Erewhon, Pearl of Xanadu** [Ed: city is half built rn as hill placement is broken and haven’t been able to spare a session for it].
   - 20,000 people on a mountain lake.
   - The palace sits on a plateau above a cliff; the prison is in a cliff.
-  - The **Pleasure Dome of the Bay** is a ruined Ancient test dome made whole.
-  - **The Caves of Ice**; the sacred river Alph.
+  - The **Pleasure Dome of the Bay** is the Sultans' own extravagance, built for their feasts. It is not Ancient: no Ancient dome stood there. [the owner, Oct 2026]
+  - **The Caves of Ice** are an Ancient construction, not a natural cave. Something deep inside keeps them unnaturally cold. The sacred river Alph. [the owner, Oct 2026]
+- **Origins:** the Xanadui likely descend from **Theodiga**, the Ancient dam arcology at the valley mouth that harnessed the cascade (§4). *Xanadu*, *Alph* and the *Caves of Ice* are Ancient names, taken from Coleridge's *Kubla Khan*. [the owner, Oct 2026]
 - What to say of the fabled city of Erewhon, Pearl of Xanadu, Queen of Cities? Its great wealth and great remoteness make it a byword for exoticism and luxury among the peoples of the northern crater. The Vale of Xanadu is blessed by geography – a lush vale in an eastern rift lake, rising above the abyssal lakes that stretch west; to the north, rough high passes, often blocked by lava flows or earthquakes, are the most direct way to reach the teeming peoples of the Crater. With this ruggedness, only brave adventurers and traders brave the country, its bandits, and the robotic stalkers rumored to haunt it to venture south to Xanadu. But ah, what rewards! For Xanadu has plentiful gold mines and lush fields of cacao and other spices to match. Even the poorest of Erewhon eat like nobles elsewhere – and the Sultan himself? Well, the feasts and orgies of the Pleasure Dome have made Xanadu a byword for decadence as well. With its closest neighbors being the peaceful History Monks of the chilly Oidong Valley, and the lowlands tribes of Lizardmen who occasionally raid, but find the highland air too thin and chilly, the Sultanate has enjoyed splendid isolation for most of its history; even Iziz at its height was not so arrogant as to try to conquer it.
 - Things may be poised to change however. The current Sultan, a tremendously fat man who relies on 4 servants to carry him around in a palanquin, is such a prodigal spender that even the Sultanate’s ledgers are running in the red; and his longsuffering Grand Vizier has been pulling his beard out trying to muster up more money for guard patrols. The Lizardmen, from as much as can be gathered about that famously hostile race, seem to have new leadership, and their raids grow increasingly bold. While rich, the Sultanate is rather deficient in iron ore and scrap, and their best weapons are always obtained from Izizian and Yuni traders. If something were to cut that trade off, trouble may well come to paradise….
 - Sign: the **eight-spoked wheel**, saffron and maroon. Ships: a swan barge, a dragon boat, a bullion carrack.
+- **Language and script.** Xanadui: the furthest drift of all, with Nepali, Tibetan and Persian sounds (retroflex t/d, breathy stops, q, x, nasal vowels), verb-last, prepositions turned case suffixes (*-bi* by, *-ṭu* to), and evidentials (*-sin* seen, *-se* they say). The Latin letters were lost; the temple grammarians invented a Tocharian-looking syllabary on a sound grid for the prayer wheels. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.14 Jimjam
 
-- An exotic city of red and yellow brick with white marble trim, domes, staged spires and Tudor chimneys.
-- Ruled by **the Raja**.
-- At its heart, a **solstice sun temple** whose arch frames the summer-solstice sunset. Emblem: a gold sun on red banners.
-- Not snowy. Biome and location not yet given. [ed: I keep flip flopping on where to put them but they are not in the central crater or Rift]
+- **Where.** By the lake north of The Cut, in the northwestern lowlands: humid subtropical, about 50 m above the ocean, so the air is dense. Not snowy. Dilihan, the cut-off Izani loyalist city in The Cut (§6.2), is its neighbour to the south and leans on it for trade. Dalab is close on the map but out of reach: the Ancients' Valley lies between them (§4), and no trade goes through it. The Shining Kingdom (§6.17), a separate people, shares the NW lowlands. [the owner, Oct 2026]
+- **The flood made the land.** The Ancients' west dam burst into the long-lake trough and the NW lowlands (§3.1, `biomes/WORLD.md`). The flood scoured every Ancient ruin away and laid down the silt Jimjam is built from. Jimjam is the one people on Krator that does not live in the Ancients' ruins, and its city has no scrap architecture. The broken dam arcologies upstream are its salvage frontier. [the owner, Oct 2026]
+- **Brick.** An exotic city of red and yellow brick with white marble trim, domes, staged spires and Tudor chimneys. The lake beds give both bricks: the iron-rich flood silt fires red and the lake's marl fires yellow. In the dense lowland air a kiln burns hot on little fuel, so over-fired near-black brick is common. White marble is a rich man's trim and is carried in; Korona, where volcanic heat would have cooked limestone, is the likely source.
+- Ruled by **the Raja**. A Raja must be crowned on a day of concordance; one crowned on a bad day is a story waiting to happen.
+- **The calendar.** Jimjam counts days for the whole crater. Four counts run at once:
+  - the **Week** moon's phases name the day (seven names, which are the Ancients' weekday names: *Sanḍē, Manḍē, Ṭyūsḍē, Vensḍē, Tarsḍē, Firaiḍē, Sa'arḍē*);
+  - the **Thirteen** moon's phases number it, one to thirteen;
+  - every day of the **Count** (*Kaunṭu*), 7 × 13 = 91 days, has its own name, such as *Fōr Vensḍē*;
+  - the **year** is four seasons of 91 days plus **the Day Outside** (*Ḍē Auṭsaiḍu*), which belongs to no count: no work, no contracts, no oaths.
+
+  *Van Sanḍē*, when both moons are new, is **the Double Dark** (*Ḍabal Ḍārkku*), and both their shadows cross the giant's face. It comes once every 91 days and falls one day later in the year each year. The day-names and the year come back into step after 91 × 365 days: **the Round** (*Raunḍu*) of **91 years**. Few people see a Round end, and someone who claims to have seen two is a living wonder or a liar. The **Long Count** (*Lōṅ Kaunṭu*) is the days since **the Flood** (*Falaḍu*). It is the only running count since the Ancients fell, and the Order of Historians would give anything for its tables. Whether it is true is open. [the owner, Oct 2026]
+- **The day-keepers** (*kaunṭavan*, "count-men") read a person's birth-day for what they are fit for. Caravans wait for a good day to set out and courts won't sit on a bad one. Jimjam sells **almanacs** along the caravan routes, and contracts across the crater are dated by its reckoning.
+- **The temple arch** frames the summer-solstice sunset. It is the calendar's anchor and an observatory, not a sun god's house. Once a Round the Double Dark falls on that sunset: the **Great Round** (*Gerēṭṭu Raunḍu*). Every kiln and hearth in the city goes out and is relit from the temple: **the New Fire** (*Nyū Faiyar*). The arch was aimed for 40° S; the site is north of that reference, so it is re-aimed once the lake's latitude is fixed (§12).
+- **Emblem:** three interlocking wheels (the sun's, the Week's and the Thirteen's) in gold on red banners.
+- **Name.** *Jimjam* is an echo word: *jam* with its *i*-echo before it, as in *ping-pong*, meaning "the Jam and all round it". The Jam is the old city, built on the bank of wreckage the Flood left. [proposed, Oct 2026]
+- **Language and script.** **Jamṭōkku** ("Jam talk"): English gone Dravidian and Maya. English *t d* are retroflex *ṭ ḍ* and *th* is dental *t d*, the split South Indian English makes. A glottal stop replaces the *t* English swallows (*va'ar* water, *Sa'arḍē*). A cluster at the start of a word splits with an echo of the next vowel (*birikku* brick, *Firaiḍē*). A final consonant takes *-u* and a final stop doubles (*vīkku* week, *ēṭṭu* eight). Dark *l* is *ḷ* (*kiḷnu* kiln), *w* is *v*, *-man* is *-van*. The verb comes first, the only verb-first tongue in the crater. Things are counted with measure words (*ṭū-pīsu birikku* two bricks, *tirī-heḍḍu bī'al* three beetles). Echo words put an *i*-copy before a word for "X and all that" (*ṭikku-ṭōkku* chatter). The script is Jimjam's own, made by the day-keepers for the count, with shapes borrowed from the Latin letters still legible on the broken dam arcologies upstream (the flood left none at home). It is written with a stylus on palm leaf, where a straight stroke splits the leaf, so every letter is rounded, and the letters of a syllable are stacked in one square block, like a day-glyph. Every letter starts with a small head loop; a curl marks the retroflex and hushed sounds (ṭ ḍ ḷ ṅ sh), a tail a long vowel; a sentence ends with three small wheels. `lore/tongues-of-krator.html` [the owner asked for a Mayan and Dravidian tongue, Oct 2026; the script's origin, the owner, Oct 2026]
 
 ### 6.15 The Monks of History (or Order of Historians)
 
@@ -392,24 +418,40 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Their saffron is the Order's colour.
   - Chapterhouses at Dalab, Iziz and Locus.
   - They keep the Ear.
-  - Main monastery is at Oidong (far south, over the outer wall.)
-  - Rumored to have techniques to speed up and slow down time.
+  - Main monastery is **Longsong**, in the Oidong Valley east of Xanadu (owner, 2026-10-15; an older note put Oidong far south over the outer wall). The Ear is at Yuni.
+  - Rumored to have techniques to speed up and slow down time. Some say they can travel in time; authorially they cannot.
+- **Origins and history (owner, 2026-10-15).** Believed to have formed from a commune of scholars who secluded themselves before the Cataclysm; they, and they alone, might know exactly what happened, or once did. The Order of Historians emerged after the Cataclysm and shared preserved knowledge with the peoples of the crater, determined that the mistakes of the past not be repeated. Their original monastery, in the eastern highlands of the Inner Rim, was destroyed when the Lesser Throne erupted and formed a second volcano east of the Throne; many of the oldest archives and the rarest preserved and salvaged technology were lost with it. The Order then moved its headquarters to the Oidong Valley, farther from geopolitical and geological threats; that it put them closer to the Lizardmen, whose effect on the space-time continuum seemed increasingly worrisome, was a bonus. Chapterhouses across Krator; a secondary monastery and de facto operational command at **Keepwell** at Talia in the Izani Empire. Friendly with the Geomancers of Yuni; colder but cordial with the Genepriests of Dalab. Over time they embraced contemplative practice as the key to knowing when and how a Historian should act, hence "History Monks".
+- **Longsong at Oidong** is a training, research, archival and containment facility. Keepwell sends its most promising operatives, proven in the field, to learn the Order's more secretive techniques and relics. It holds the Order's archives and its most powerful technology, much of which it seeks out so it does not fall into the wrong hands, and some of which may not be safe for even the wisest to use. Built in the Xanadu style with the chapterhouses' own forms (drum halls under tile cones, the parabolic gate, the toron spire, the Order's blue) to the overall effect of the Potala: one complex of 400 x 400 m, a walled lower ward with farms and gardens at its foot, a main mass on the rock, the founders' tombs in its red upper palace, vaults for relics, a closed ward for people and a sealed library of forbidden records (the blueprint: `settlements/longsong/`).
+- **Language.** The Historians keep the most careful English in the crater, in a rounded book hand, with a little Xanadui from Oidong (*sar*, dental th) and Xanadu's evidence grammar as margin marks: seen, said, and (their own) inferred. They keep Coleridge's *Kubla Khan*, which the Sultanate's names come from. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.16 Hykkousoi
 
-- **Hykkousoi**: a seafaring people, Greek + Polynesian + organic. Nacre, olive wood, sea-linen, bronze. Sign: the **wave-sun** in gold. Their fleet includes a 162-oar trireme, a siege hexareme and a pearl-diving mother ship. No buildings yet.
+- **Hykkousoi**: a seafaring people, Greek + Polynesian + organic. Nacre, olive wood, sea-linen, bronze. Sign: **wind and wave**: three gold wind-curls over a breaking wave (no sun; the owner, Oct 2026). Their fleet includes a 162-oar trireme, a siege hexareme and a pearl-diving mother ship. No buildings yet.
 - **Capital**: Ys, the half-drowned city [ed: under construction]
 - The Hykkousoi's enemies disparage them as fish-men, but in truth, they are more man than fish. This slur comes from their most well-known quality as a people however: the rib-gills most trueborn Hykkousoi have on their back and chest. A bare-chested Hykkousoi sailor has no fear of drowning, and indeed their most sacred sites are said to lie on the bottom of the Ring Sea. They are still men, not fish, though, and prefer the land - they prefer fire-cooked food and unrusted metal the same as others. But their half-drowned capital of Ys is notoriously hard for outlanders to navigate, with its half-drowned streets, and the Amphitriton, the great assembly hall and refuge of their people, is surrounded by water on all sides and virtually unassailable. The Hykkousoi are also notable in their close friendship to molluscs; Hykkousoi pearldivers and mother-of-pearl workers are the finest in the world, and even their buildings seem more grown than built. Ys, that half-drowned city, resembles nothing so much as a collection of reefs and barnacles growing around the still-standing towers of an Ancient city whose name is long-lost. The Hykkousoi are also the finest sailors in the world. Children may ask, why does a man who breathes water need a ship? You may as well ask why a man who has legs needs a horse. Swimming across the Ring Sea would be a fool's errand, particularly given the monsters that lurk in the depths. But the sailors - and pirates - of this nation are well known throughout all the Ring Isles. The Hykkousoi tend to get painful, and ultimately fatal gill-wither if they tarry too long in dry environments; hence they hug the northwest coast. Inland, in the rain shadow of the Inner Wall, their long time enemies, the nomadic Scyvoi dwell. The Vothic conquests to the south have put them both next in line in their march up the coast. For this, they have sought and obtained an alliance with Iziz. There is tension, however, as the Hykkousoi must always make clear they intend alliance, not fealty, much as the Empire would like it otherwise, particularly as it would re-unite them with the landlocked loyalist city of Dilihan. But the Hykkousoi are proud and intend to stay independent. The Hykkousoi indeed have a reputation for headstrong, even fractious. The major settlements - Ys, Tethys, Trigon - have their own proud histories and maintain separate armies, navies and outposts, and jockey for position amongst themselves. Disputes are settled at the Amphitriton, where their leader the Archon presides. The Archon, who is elected by a complicated tradition involving both elections and the casting of lots, is often an inoffensive compromise candidate, but the newly elected Archon, Jathrocles, is young, vigorous, and has his people ready to resist any Vothic invasion.
+- **Language and script.** Hykkousik: Greek-sounding (aspirates, y = ü, long ē ō, *-oi* plural, doubled stops) with a Star Wars edge. *Hykkousoi* = high coast + *-oi*; *Ys* = isles; *Scyvoi* = scythe + *-oi*. Letters copied from the Greek symbols in the drowned records of an Ancient gene-lab at Ys, Dalab's rival: etched and printed, the only records that needed no power. The least electrical people on the Ring Sea; their biotech is grown. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.17 Peoples known only by name or kit
 
-- **Ring Sea Islanders**: Polynesian and Ashlander. Sign: the **white island moon**. Boats: oruwa, karakoa, lakatoi.
+- **Ring Sea Islanders**: Polynesian and Ashlander. Sign: the **white island moon**. Boats: oruwa, karakoa, lakatoi; the Kautoan drua (great double canoe), the western isles' kora-kora (royal war galley) and the pirates' lanong.
+  - [the owner, Oct 2026] The denizens of the shores and islands of the Ring Sea. At one time the island kingdom of **Kautoa** was a real competitor to the Hykkousoi for naval hegemony, before the Izani Empire. The Islanders have in many cases regained some independence, but their days as a relatively unified cultural force are over; they remain widespread throughout the Ring Sea, a Polynesian and Austronesian people still known as skilled voyagers and, lately, pirates.
+  - Two subcultures, one people (`kits/islanders`): the **West** (the western Ring Sea) builds after the Indonesian rumah: long houses on piles under horned saddle roofs, a village assembly hall of stacked horned roofs, large elaborate dockyards. The **East**, Kautoa, builds tall peaked houses after Sumba, its own village hall, and a palace complex of several courtyards. Both carve their posts and paint their gables with the same motifs, and both patch their poorer buildings with scrap.
 - **Lizardmen**: reptilian, Amerindian. Sign: the **serpent**. Basking slabs instead of beds; jade scale inlay. Live in the deep Rift. Recently united under a warlord according to traveler tales.
 - **The Giant tribes of the SW**: engineered at Dalab (§6.1). Some rebelled and now live independently in Giant Country.
 - **Salvagers**: crews who refloat Ancient hulls.
-- **Scyvoi**: enemies of the Hykkousoi
+- **Scyvoi**: nomadic **human** riders of **theropod-like lizards**, in the crater drylands (`biomes/crater-drylands`). Enemies of the Hykkousoi; some tribes are subjects of Voth (§6.12). They do not overheat easily. They live on the granite kopjes the wildfires go round, come down to reap what blossoms after a burn, and the most daring use the flames to trap game. [the owner, Oct 2026]
+  - **Language.** The Scyvoi call themselves the **Borunsa** (burn + plural *-sa*: the burn-folk; *Scyvoi* is the Hykkousoi's name) and speak **Boruntun**, "burn-tongue": English gone Turkish with a Jurchen edge (vowel harmony, endings stacked and verb last, no consonant clusters at the start: *sıtar* star; p- > f-, k- > h- before a back vowel, -ng > -n, th > s/d, w > v; *ç ş c ı* spelt Turkish-fashion). The tribes under Voth have Vothic loans for tribute and rank (*Sinsun*, *şif*, *vot-* "pay Voth"). They write nothing: each clan has a brand (a tamga) on its lizards and its granite. Their enemies are the *Haykossa*. `lore/tongues-of-krator.html` [the owner asked for a Turkish and Jurchen dialect, Oct 2026]
 - **Post-Apoc settlers**: a culture-neutral salvage society. Its kit has a "big man's" house, a shaman hut, prisoner cages and a **Thunderdome** arena. Shop signs are pictographs, not writing. Sign: the **gear**. [ed: this is a generic kit to flesh out settlements esp reclaimed arcologies]
-- **Shining Kingdom**: Northwestern lowlands, populous, destination for trade routes over the inner Wall. Control a city on the NE ocean known as Farport: mysterious traders visit from time to time, but no one from Krator has ever crossed this sea. Kingdom is vaguely Chinese inspired [ed: or perhaps Assyrian? Very much in flux, I haven’t fleshed them out yet]
+- **Shining Kingdom**: a separate people from Jimjam (§6.14), its neighbour in the Northwestern lowlands [the owner, Oct 2026]; populous, destination for trade routes over the inner Wall. Control a city on the NE ocean known as Farport: mysterious traders visit from time to time, but no one from Krator has ever crossed this sea. Kingdom is vaguely Chinese inspired [ed: or perhaps Assyrian? Very much in flux, I haven’t fleshed them out yet]
+- **The Zeijani and the ash nomads: language.** Brother tongues, cousins of Chichani: on the Throne, before records, the Chichani took to the sea, the Zeijani hid and the ash nomads wandered. Akkadian and Cappadocian in sound (emphatic ṣ ṭ q, θ > š, ð > z, case endings in vowel harmony); the nomads dropped the final *-m* (*ṣunum* / *sunu*). *Zeijanī* = the hidden ones; *Zey'danin* = *Ze-Ṭānin*, the town within (a Zeijani word); *Dhelv* = Vothic for *Delbum* (delve); the nomads are *Andarū*, wanderers. Latin letters chiselled into tuff until every stroke became a wedge. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+
+### 6.18 Korona: the tepui tribes and the Hum
+
+- **The land.** Korona, in the NE under the giant (§3.1): a kaleidoscope of microclimates, tepuis standing alone above their gorges, and carnivorous plants on every ledge. [the owner, Oct 2026]
+- **The peoples.** Many isolated tribes of humans and **therian mutants**, each on its own tepui or in its own hollow, apart for centuries. Their names are not yet on record. [the owner, Oct 2026]
+- **The Hum** (*Hām*, from English *hum*), the trade tongue between them: nobody's mother tongue, everybody's second. The peoples share no throat (a beaked people cannot shape a human's lips, a muzzled one cannot make a beak's clack), but every throat can make pitch, so the meaning rides on the tune. English worn to single syllables that grew **six tones**, the way Middle Chinese and Vietnamese got theirs: the lost voice of a first consonant left a high or low register, a lost final stop a rising contour, a lost final *s* a falling one (*pā pá pâ pa pǎ pà* = pa, pat, pass, bar, bat, bats). Ten consonants left (*p t k m n s h l w y*). The plural, the possessive and *he eats* are a falling tone (*ká* cat, *kâ* cats); a question ends in *há*, from *huh*. It can be spoken, hummed, croaked, piped, or **whistled** across the chasms between tepuis, which keeps the tune and drops the consonants. Korona is *Lo*; a tepui is *té* (from *table*); a flytrap *pāi-tá* (fly-trap, also heard as fire-trap). Saying: *Sōn ko, pí no ko*, "the song crosses where feet cannot". [the owner, Oct 2026]
+- **Home tongues.** Every tribe keeps its own speech, and many have sounds only their own people can make: a beaked people's bill-clack, a throat-sac people's two pitches sung at once. Home speech is for kin; the Hum is for everyone. [the owner, Oct 2026]
+- **Contour carvings.** The Hum is carved on the tepui walls, not written in letters: one groove per syllable, above a guide line for the high register and below it for the low, level, rising or falling; dots give the vowel's colour, a hook a closing *m* or *n*, a notch ends a sentence. Consonants are never carved, so a carving records what a whistle carries, and any people who whistle the Hum can read it. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ## 7. Peoples of Krator (species and kinds)
 
@@ -419,7 +461,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - **Hykkousoi:** famed for rib-gills; water breathers
 - **Giants**: engineered at Dalab, some four-armed.
 - **Lizardmen.**
-- **Mutants, aka ghouls (Korona, Valley of the Ancients)**
+- **Mutants, aka ghouls (Korona, Valley of the Ancients)**; in Korona, therian mutants live in tribes of their own and speak the Hum with their human neighbours (§6.18).
 
 ## 8. Ecology highlights (detail in each `biomes/*/NOTES.md` and `biomes/FRUIT.md`)
 
@@ -431,13 +473,22 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Eastern high desert**: a red US-south-west desert with Socotran flora (dragon trees, boojums, quiver trees). One alien note: glowing pastel **twist-candles**. Desert kites, sand striders.
 - **The Rift**: "the jungle Earth's flora never quite reached". Madagascar and Cretaceous forms, coral and anemone shapes; **iridescence is the rule**. Canon colours: **Vain fronds purple**, the purple fan shrub "sweet-potato purple".
 - **SW bay**: a fungoid canopy (cap-trees 30–62 m), prism gums, a volcano 8 km NE.
+- **Crater drylands** ("kiln country, which is also bloom country"): the crater floor in the rain shadow, ~1.9 atm. At that pressure plants lose about half the water an Earth plant would, and ~0.4 atm of oxygen makes dry scrub burn fast and hot, so the land is a **mosaic of burns of every age**. The burns are the places most alive: fire lilies in the char, then drifts of fireweed, poppies, lupine and flame plumes. **Prism mallee** (a small cousin of the prism gum, iridescent green to orange-red, resprouting from its root crown), **pyre pillars** (banded frond columns), the **frill-tree** that bursts in a fire and throws its fireproof seed, long-trunked parasol pines and ghost gums whose crowns stand above the flames, the **sword spire** that flowers once after a fire. Granite kopjes are the refuges.
+- **NW bay** (the biome of Ys): Krabi's green-topped karst stacks in a turquoise bay, with cliff figs dropping root curtains to the waterline, travertine pools, black lava coves and mangroves. Up the dry slope stands a **tsingy** massif: rows of knife-edged limestone fins with spinewands (octopus trees) and silver rock bottles (Pachypodium) in its fissures. At its edge a **tiankeng**, 84 m deep, holds a rainforest of traveller's fans; in the jungle, **cenotes** reach down to the water table. Avenue baobabs stand on the lowland.
 - **SW lowlands**: the US South turning Californian. What makes it alien is width (sprawl oaks ~80 m across) and red or pale bark. Cork groves are stripped red.
 - **NW lowlands**: Asian and Australian forms at ~1.5× Earth heights; Ediacaran **sea pens** as shrubs; self-lit glow-willows.
 - **Northern highlands**: "ancient, gnarled, never unfriendly"; broadleaf low down, bushy conifers.
   - **Great trumpets** (30–50 m) hold clean water all summer, and travellers drink from them.
   - Glowing bell-bulbs and lantern pods.
+- **Southern highlands**: the spiral biome (the owner, Oct 2026). The Inner Wall's flank above the hyperjungle, where the cloud sea (the jungle's dense air, pooled below the Wall) laps against the scarp every day. Every plant grows in a spiral, and **every spiral turns the same way**: right-handed. A mirror-handed tree is rare, and the people of the Wall count it a sign.
+  - Cloud forest: coilbarks wrung like cloth, **spiral trumpets** (long fluted funnels whose ribs twist; some climb the trunk in a corkscrew of funnels), **volute trees** whose limbs end in leafy scrolls, **spiral frill trees** (the Rift's frill tree come up into the
+    cloud, its fins climbing the column in spirals), crozier tree ferns, screw palms; escargot begonias and corkscrew bells.
+  - Above the cloud, a paramo of giant rosettes: the **ruffle-crown** (one great rosette of coral-edged leaves on a trunk), giant groundsels, spiral lobelias, spiral aloes; the **Whorl Stone**, a tor whose ledges spiral to its top.
+- **Eastern highlands**: the cushion plateau (the owner, Oct 2026): an altiplano at about 0.6 atm under a deep blue sky, snow-capped volcanoes on every horizon. **Everything grows toward the giant**: cushions rise on its side, spikes and towers tilt to it, the ragbark's crowns fan out toward it; a traveller can steer by the plants.
+  - Poured cushions (a llareta grown to Krator's size), and **the Mother Cushion**, one plant over a whole hill; woolbacks (vegetable sheep), thorn cushions, vigil spikes (whole stands flower together, then stand as dead torches), ragbark woods in the gullies, glass towers, hoar cereus; a cushion bog, a frozen tarn, a geyser field.
+  - **Pallidine** (a placeholder name): the glass towers' alkaloid. A fungus in the moth larvae that eat the towers' roots makes it a mild, prized tonic (**wormwick**); the wild bees that work the towers carry it whole into their honey (**tower honey**, the dangerous version).
 - **Vale of Xanadu**: "as if somebody kept it". Untrimmed-bonsai habits, petrified-wood colours, fairy rings, cacao, lotus.
-- **Fauna in towns**: millipedes (draught), giant beetles (Voth), silt striders, cliff racers, the Dalab lizard, salt-lake flamingos and marsh emus (Locus), riding flyers and spiders. All fauna will go to one fauna kit, tagged by biome.
+- **Fauna in towns**: millipedes (draught), giant beetles (Voth), elephant bugs, cliff racers, the Dalab lizard, salt-lake flamingos and marsh emus (Locus), riding flyers and spiders. All fauna will go to one fauna kit, tagged by biome.
 
 ## 9. The Ring Sea fleets
 
@@ -448,7 +499,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 | Xanadu | swan barge, dragon boat, bullion carrack |
 | Iziz | turtle ship, dhoni, wheel galley, salvage lighter |
 | Beast Riders | voyaging canoe, rookery raft |
-| Ring Sea Islanders | oruwa, karakoa, lakatoi |
+| Ring Sea Islanders | oruwa, karakoa, lakatoi, drua (the Kautoan great double canoe), kora-kora (royal war galley of the western isles), lanong (pirate raider) |
 | Salvagers | refloated Ancient steel tug |
 | Not seafaring | the Iron Republic (landlocked), Dalab, Yuni |
 
@@ -464,10 +515,10 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 | Yuni | hyperboloid | yellow (the Order: blue) |
 | Beast Riders | claw | green |
 | Xanadu | eight-spoked wheel (also a sun-and-moon roundel) | saffron, maroon, turquoise, gold |
-| Hykkousoi | wave-sun | gold, pale linen, slate blue |
+| Hykkousoi | wind and wave: three wind-curls over a breaking wave | gold, pale linen, slate blue |
 | Ring Sea Islanders | white moon | bark, sand, sea teal |
 | Dalab | eye in the sun | terracotta, cream, turquoise; The God's cold teal light |
-| Jimjam | gold sun | red banners |
+| Jimjam | three interlocking wheels (the sun's, the Week's, the Thirteen's) | red banners, gold |
 | Screamers | skull | painted dots |
 | Eastern Nomads | horns | |
 | East Abyss | star | red lacquer, teal and gold for the sacred |
@@ -487,6 +538,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Geomancers:** Locus and Yuni.
 - **The Izani Empire and the Iron Republic:** connected by the Mutiny of the 3rd Legion at Roketstad.
 - **Dalab and the NW Giant tribes:** the giants came from Dalab.
+- **Jimjam and Dilihan:** neighbours across The Cut; the loyalist city leans on Jimjam's trade. Jimjam's almanacs travel every caravan route, and contracts are dated by its reckoning.
 - **Caravans:** Yuni and the desert nomads; the Eastern Nomads and the dune raiders.
 - **The Ring Sea:** a shared sea for the Hykkousoi, Voth, Xanadu, Iziz, Beast Riders and Islanders.
 
@@ -494,11 +546,12 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 
 **Contradictions in the repo**
 
-1. **Year length.** The sky docs say 365 days; the shared sky code uses `YEAR=360`. The solstice is day 350.
-1. **Jimjam's latitude.** Specified as 30° (N?), sunset ~297°. As built: 40° S, ~242°.
+1. **Year length.** Resolved (the owner, Oct 2026): 365 days. The shared sky code still uses `YEAR=360` as a simplification; the solstice is day 350.
+1. **Jimjam's latitude.** Specified as 30° (N?), sunset ~297°. As built: 40° S, ~242°. Jimjam now stands by the lake north of The Cut, north of the 40° S reference; the scale model labels latitudes only roughly (~40° S overall, the Rift 48–57° S), so the kit's arch is re-aimed once the site's latitude is fixed.
 1. **Yuni's valley mouth.** Faces NE in one comment, NW in the code.
 1. **When the Ancients fell.** "A thousand years" at Yuni and Iziz, "millennia" elsewhere.
 1. **Hypertree heights.** 290–480 m at Mav's, 150–270 m at Girder, and the Krator mahogany (245–305 m) called "the tallest in the belt".
+1. **The drylands' rain shadow.** §6.16 puts the Scyvoi "in the rain shadow of the Inner Wall"; the crater drylands kit (Oct 2026) puts its desert in the Throne's. Both may hold.
 
 **Open questions (nothing on record)**
 
@@ -507,6 +560,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - Does Tzintzun actually have godlike powers or does he have some secret to make people think he does?
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
-- What is Korona? Who lives in the NW bay, the badlands and the southern highlands?
-- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's sun, and the Beast Riders' nature shrines.
-- Is there a calendar, a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?
+- Who lives in the NW bay, the badlands and the southern highlands? Which tribes, human and therian, live in Korona, and what are their home tongues?
+- When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively, laying the tuff of the Catch?
+- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
+- Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?

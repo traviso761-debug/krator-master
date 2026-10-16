@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.293,
+    1.18
+   ],
+   "seam_before": [
+    1.497,
+    1.722
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.sulphur",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ground-sulphur.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Volcanic sulphur flat seen from above: lumpy bright sulphur-yellow crust (#e8d040) with paler cream salt (#f0ece0) blisters, rust-orange iron oxide (#c07030) bleeding through in patches, a few small round vent holes ringed in yellow, fine polygonal cracks. Full colour (do not mute). (Row ground.sulphur of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+  "reuse": "Korona, Throne/Volcano, any geothermal ground",
+  "sha1": "4d38303d32601aff1ee55a1d74a073987f75c935"
+ }
+}

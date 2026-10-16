@@ -9,7 +9,7 @@ if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
   exit 0
 fi
 
-GODOT_VERSION="4.5-stable"
+GODOT_VERSION="4.7.2-stable"   # the owner's version (2026-10-08); dhelv_nav_test fails on 4.5
 GODOT_DIR="$HOME/.local/godot-$GODOT_VERSION"
 GODOT_BIN="$GODOT_DIR/Godot_v${GODOT_VERSION}_linux.x86_64"
 if [ ! -x "$GODOT_BIN" ]; then

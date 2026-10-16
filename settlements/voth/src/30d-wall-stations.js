@@ -214,7 +214,7 @@ for(var wm=0; wm<WNODES.length-1; wm++){
   reserve((Am.x+Bm.x)/2, (Am.z+Bm.z)/2, 6, Lm/2, Math.atan2(dxm,dzm));
 }
 
-/* ============================== silt strider stations (Route 1) ===========
+/* ============================== elephant bug stations (Route 1) ===========
    Pre-reserved here, well before any procedural scatter (60-land.js) runs,
    so manor buildings/farmsteads/compounds can never grow through a future
    station footprint — same "reserve early, build for real later" pattern
@@ -246,7 +246,7 @@ for(var wm=0; wm<WNODES.length-1; wm++){
   }
 });
 
-/* ============================== silt strider stations (Route 2) ===========
+/* ============================== elephant bug stations (Route 2) ===========
    Same early-reservation pattern as Route 1's own block just above — see
    that block's comment for the full reasoning, not repeated here. Route 2's
    5 interior points (66-striders.js/79-striders.js — the route's own first
@@ -273,7 +273,7 @@ for(var wm=0; wm<WNODES.length-1; wm++){
   reserve(p.x, p.z, 18, 9, ry);
 });
 
-/* ============================== silt strider stations (Route 3) ===========
+/* ============================== elephant bug stations (Route 3) ===========
    Same early-reservation pattern as Routes 1 and 2 just above. Route 3's
    11-point list (owner-given) has 9 interior stops, but a LIVE check against
    the shared position-keyed registry (66-striders.js's striderFindStation(),

@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "choke": 2,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.groundsel",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-groundsel.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Cut-out on a solid flat bright magenta (#ff00ff) background (no magenta, pink or purple anywhere in the subject, no grey or white background), square, 2048x2048, viewed straight from above, flat even shadowless lighting, no cast shadow, no stem or branch beyond the leaves, the subject filling the middle 70% of the frame, every piece fully visible and well separated. Subject: Nine single leaves of an Afroalpine giant groundsel (Dendrosenecio), laid out in a 3x3 grid: long, thick, leathery oblong-lanceolate leaves with blunt tips and broad pale fleshy midribs, margins finely and shallowly toothed, the upper surface a waxy grey-green, a few leaves turned to show the felted silvery-white underside, two older leaves yellowing at the tip and one with a dry brown tip, each leaf narrowing to a short stout base where it was cut. Keep the greens natural but slightly muted and even, so the card can be tinted to different palettes. (core/materials/PROMPTS-ready.md, section 5.) Pasted into the chat 2026-10-06 as a 1254 px WebP; converted to PNG.",
+  "reuse": "the giant groundsel in biomes/rift and Voth; lobelia and any felted alpine rosette (mullein, lamb's ear, silversword) tinted",
+  "sha1": "cfa9573bd50d6a5554dd131c5afddbeecc489805"
+ }
+}

@@ -43,6 +43,12 @@ overrides, and an override goes in its `KNOWN_ISSUES.md`).
 
 This is the shape `core/tags` will register as class `furniture` (Phase 2 item 3) and the exporter will write.
 
+## Tags
+
+With `cfg.tags` (a `KTAGS.create` registry) every record the placement keeps (not a dry run, not one `onRecord`
+defers) is also registered in core/tags as class `furniture`, before it is drawn (`KFURN.tag`; `core/tags/README.md`).
+The furniture record itself is unchanged, so the fingerprint is too. All five builds pass it (2026-10-05).
+
 ## Seeds
 
 A build's seed rule decides how each piece looks (its variant details, wear, colours), so the module does not pick
@@ -63,4 +69,6 @@ python3 core/furnish/fingerprint.py --write    # record the pages as they are (a
 node core/furnish/test-furnish.js
 ```
 
-`fingerprint.json` was written from the pages before the move (2026-10-05). Every build matched it after.
+`fingerprint.json` was written from the pages before the move (2026-10-05). Every build matched it after. Rewritten 2026-10-08
+(the Zeijani branch): the catalog's beds, the interiors' measured host tops and stretched pennants, and the batch merging
+painted panels per material; compared first with main's own pages, which matched it nowhere since main's catalog changes.

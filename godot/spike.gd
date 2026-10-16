@@ -1,6 +1,6 @@
 # The spike's one scene (GODOT-PLAN.md Phase 7): load one export case at a time and show what came through.
 #
-#   godot --path godot                          the window; keys 1-5 switch case, F1 help
+#   godot --path godot                          the window; keys 1-9 switch case, F1 help
 #   godot --path godot -- --case=rift           start on a case
 #   godot --headless --path godot -- --check    load every case, print the reports, write spike-report.json, quit
 #   godot --path godot -- --case=girder --shot=shots/girder.png   render, save a screenshot, quit
@@ -10,16 +10,23 @@
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
 extends Node3D
 
-const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni"]
+const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert", "world-iziz", "world-sedesert-falls"]   # keys 1-9; world-iziz and world-sedesert-falls by name (tools/shot.sh world-iziz)
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
 	"girder": "glTF from three's GLTFExporter: a 60 m region of Girder (material library textures; hooks lost)",
 	"iziz": "krator-atmos JSON for the whole city + a glTF region of the city centre",
 	"yuni": "KRATOR_EXPORT records: every building, door, window and light as tagged records; one interior in full",
+	"verge": "krator-sim + krator-verge-place: the twin cities' buildings as stand-ins and the caravans, porters, nomads and patrols moved by the exported timetable (KratorVergeSim)",
+	"dhelv": "krator-dhelv-place + krator-walk + krator-sim motion: the cave city's sites as stand-ins, its walk floors baked to a navmesh with an agent walking gate to temple, the ramblers posed by KSim (core/simulation's twin)",
+	"sedesert": "krator-biome JSON with a krator-field ground: one sedesert tile round the pond, its ground the page's baked core/terrain field (terrain mesh + HeightMapShape3D)",
+	"world-sedesert-falls": "krator-world (core/export): sedesert's notch, the river's last reach, the cataract and its plunge pool (core/water phases 3 and 4)",
+	"world-sedesert": "krator-world (core/export, M4): the same sedesert tile through the one container: world.json (records, materials, library maps by reference, the field, the stage) beside world.glb (EXT_mesh_gpu_instancing)",
+	"world-iziz": "krator-world (core/export, M5): a district of Iziz through the same container: the kit's instances with their item sets and owners, the plain meshes by material, the library and procedural maps, the sampled ground and its painted look, the buildings with their doors, windows and lamps (Records)",
 }
 
 var current := ""
+var ground: Node3D   # the case's ground (a field, an export's sampled ground or terrain.json), for --check's collision rays
 var world: Node3D
 var cam: Camera3D
 var sun: DirectionalLight3D
@@ -120,7 +127,19 @@ func _load_case(name: String) -> Dictionary:
 		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
 	match name:
-		"hyperjungle", "rift":
+		"world-sedesert", "world-iziz", "world-sedesert-falls":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district
+			var wv := KratorWorld.build(dir + "world.json")
+			world.add_child(wv)
+			report = wv.get_meta("report")
+			var wbox: Array = wv.get_meta("krator", {}).get("box", [0, 0, 0, 0])
+			focus = Vector3((wbox[0] + wbox[2]) * 0.5, 0, (wbox[1] + wbox[3]) * 0.5)
+			if wv.has_meta("stage"):
+				stage = wv.get_meta("stage")
+			if wv.has_meta("ground"):
+				if terrain:
+					terrain.queue_free()
+				terrain = wv.get_meta("ground")
+		"hyperjungle", "rift", "sedesert":
 			var b := KratorBiome.build(dir + "biome.json")
 			world.add_child(b)
 			report = b.get_meta("report")
@@ -146,11 +165,33 @@ func _load_case(name: String) -> Dictionary:
 			report = g.get_meta("report")
 			var box: Array = g.get_meta("krator", {}).get("box", [0, 0, 0, 0])
 			focus = Vector3((box[0] + box[2]) * 0.5, 0, (box[1] + box[3]) * 0.5)
+			if FileAccess.file_exists(dir + "lamps.json"):   # the page's flames and halos as data (krator/lamps_import.gd)
+				var lp := KratorLamps.build(dir + "lamps.json", focus)
+				world.add_child(lp)
+				reports[name + "-lamps"] = lp.get_meta("report")
+				_print_report(name + "-lamps", reports[name + "-lamps"])
+		"verge":
+			var v := KratorVergeSim.build(dir + "sim.json", dir + "place.json")
+			world.add_child(v)
+			report = v.get_meta("report")
+			focus = v.get_meta("focus", Vector3.ZERO)
+		"dhelv":
+			var dv := KratorDhelv.build(dir)
+			world.add_child(dv)
+			report = dv.get_meta("report")
+			focus = dv.get_meta("focus", Vector3.ZERO)
+			if terrain:   # the city is underground: the land over it drawn faint
+				for m in ([terrain] if terrain is MeshInstance3D else []) + terrain.find_children("*", "MeshInstance3D", true, false):
+					var tm := StandardMaterial3D.new()
+					tm.albedo_color = Color(0.45, 0.42, 0.38, 0.18)
+					tm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+					m.material_override = tm
 		"yuni":
 			var r := KratorRecords.build(dir + "fixtures.json", dir + "building.json")
 			world.add_child(r)
 			report = r.get_meta("report")
 			focus = r.get_meta("focus", Vector3.ZERO)
+	ground = terrain
 	if terrain:
 		focus.y = KData.height_at(terrain, focus.x, focus.z)
 	_stage_base = {}
@@ -159,7 +200,11 @@ func _load_case(name: String) -> Dictionary:
 		report["stage"] = _stage_base.get("report", {})
 	else:
 		_default_stage()
-	var span := 60.0 if name in ["girder", "yuni"] else 140.0
+	# FogVolumes (Iziz's fog banks) draw only with the environment's volumetric fog on; its own density stays 0, so only
+	# the volumes show (Forward+ only: the Compatibility renderer ignores both)
+	env.volumetric_fog_enabled = not world.find_children("*", "FogVolume", true, false).is_empty()
+	env.volumetric_fog_density = 0.0
+	var span := 60.0 if name in ["girder", "yuni"] else 900.0 if name == "verge" else 160.0 if name == "dhelv" else 140.0
 	cam.look_from(focus + Vector3(span * 0.6, span * 0.45, span * 0.8), focus)
 	cam.set("speed", span * 0.25)
 	var args := _args()
@@ -195,6 +240,39 @@ func _print_report(name: String, r: Dictionary) -> void:
 		print("  gap [%s] %s" % [k, r["gaps"][k]])
 
 
+# The drawn nodes (MeshInstance3D, MultiMeshInstance3D) under n0 and how many name a core/tags record: a node by its meta
+# krator_record, krator_uid or a non-empty krator_records (a bucket's merged volumes), or the yuni case's "krator" record;
+# a MultiMesh's instances by its side table (krator_records uids, or the yuni case's "records")
+func _count_ids(n0: Node) -> Dictionary:
+	var c := {"nodes": 0, "nodes_with_id": 0, "multimeshes": 0, "instances": 0, "instances_with_id": 0}
+	var stack: Array[Node] = [n0]
+	while stack.size() > 0:
+		var n: Node = stack.pop_back()
+		for ch in n.get_children():
+			stack.append(ch)
+		if n is MultiMeshInstance3D and (n as MultiMeshInstance3D).multimesh:
+			var k: int = (n as MultiMeshInstance3D).multimesh.instance_count
+			c["nodes"] += 1
+			c["multimeshes"] += 1
+			c["instances"] += k
+			var side = n.get_meta("krator_records") if n.has_meta("krator_records") else (n.get_meta("records") if n.has_meta("records") else [])
+			var named := 0
+			if side != null:
+				for u in side:
+					if (u is String and u != "") or (u is Dictionary and (u as Dictionary).has("id")):
+						named += 1
+			c["instances_with_id"] += mini(named, k)
+			if n.has_meta("krator_record") or named > 0:
+				c["nodes_with_id"] += 1
+		elif n is MeshInstance3D:
+			c["nodes"] += 1
+			var rec = n.get_meta("krator") if n.has_meta("krator") else null
+			var side = n.get_meta("krator_records", PackedStringArray())
+			if n.has_meta("krator_record") or n.has_meta("krator_uid") or side.size() > 0 or (rec is Dictionary and (rec as Dictionary).has("id")):
+				c["nodes_with_id"] += 1
+	return c
+
+
 func _check_all() -> void:
 	var ok := true
 	var only = _args().get("case", "")
@@ -209,6 +287,16 @@ func _check_all() -> void:
 		if r.get("gaps", {}).has("load") or r.get("gaps", {}).has("format"):
 			ok = false
 		await get_tree().process_frame
+		r["id_coverage"] = _count_ids(world)   # how many drawn nodes and instances name their core/tags record
+		print("  ids: ", JSON.stringify(r["id_coverage"]))
+		if ground and ground.has_meta("field"):   # a krator-field: rays onto its HeightMapShape3D against KField.h
+			await get_tree().physics_frame
+			await get_tree().physics_frame
+			var col := KratorField.check_collision(ground)
+			r["collision"] = col
+			print("  collision: ", JSON.stringify(col))
+			if col["grid_points"] == 0 or col["missed"] > 0 or col["grid_max"] > 0.01:
+				ok = false
 	var f := FileAccess.open("res://spike-report.json", FileAccess.WRITE)
 	if f:
 		f.store_string(JSON.stringify(reports, "  "))
@@ -243,7 +331,9 @@ func _update_hud() -> void:
 	var s := "%s: %s\nhour %.1f  wind %s  weather %s (rain %.2f fog %.2f)  fps %d" % [current, ABOUT.get(current, ""), Atmos.hour, str(Atmos.wind_now().snapped(Vector2(0.01, 0.01))),
 		Atmos.W["mode"] if Atmos.weather_on else "off", Atmos.rain, Atmos.fog, Engine.get_frames_per_second()]
 	if help_on:
-		s += "\n1-5 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
+		s += "
+1-9 case (%s)   drag look   MMB orbit   arrows turn   WASD QE move   Shift fast   wheel zoom   Ctrl+wheel speed   +/- lens
+[ ] hour   T time-lapse   P pause clock   F3 weather   F1 hide help   F2 print report" % " ".join(CASES)
 	hud.text = s
 
 
@@ -251,7 +341,7 @@ func _unhandled_input(e: InputEvent) -> void:
 	if not (e is InputEventKey and e.pressed and not e.echo):
 		return
 	var k := (e as InputEventKey).keycode
-	if k >= KEY_1 and k <= KEY_5:
+	if k >= KEY_1 and k <= KEY_9 and k - KEY_1 < CASES.size():
 		_load_case(CASES[k - KEY_1])
 	elif k == KEY_F1:
 		help_on = not help_on
@@ -265,7 +355,7 @@ func _unhandled_input(e: InputEvent) -> void:
 		Atmos.hour_rate = 0.0 if Atmos.hour_rate > 0.0 else 1.0
 	elif k == KEY_P:
 		Atmos.paused = not Atmos.paused
-	elif k == KEY_W and (e as InputEventKey).shift_pressed:   # Shift+W: the next weather mode
+	elif k == KEY_F3:   # F3: the next weather mode (Shift+W also moved the camera)
 		var i := Atmos.MODES.find(Atmos.W["mode"]) if Atmos.weather_on else -1
 		Atmos.set_weather(Atmos.MODES[(i + 1) % Atmos.MODES.size()])
 	_update_hud()

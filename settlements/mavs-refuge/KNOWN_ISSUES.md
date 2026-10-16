@@ -2,10 +2,40 @@
 build.py prints every unticked item on each build. Claude: when Travis asks for changes to this world,
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
+- [x] (2026-10-15) Mav's Refuge on core/host (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`; Girder is the worked
+      example): the camera, loop, panel and probe are the host's (`build.py` takes `khost.FULL`); the inspector (I, click)
+      reads core/tags: every REGISTER()ed site is a record (45-kit.js, 3,342 sites), and every interior piece becomes one when
+      its unit's record is made (57a-interiors.js `mixTag`); marks (P) replace the polygon tool; the picture menu (395 catalog
+      pieces), minimap (M), editor (B) and cutaway (X: each platform's levels, `plat-<i>`) are new. Proof: `verify.py --assert`
+      every invariant PASS as before, the budget rows as before (draw calls 100 -> 101 of 110, world triangles 3,531,173 ->
+      3,524,211, furniture 1,218,198 the same); the scene census at four views (Mav's Crown, Market plaza, Residential hold,
+      Overview, with `LOD.flush()`) matches the old page within the old page's own run-to-run noise (only the LOD-proxied
+      `Mesh`, `furniture:rope` and `furniture:thatch` totals move, and they move between two runs of the old page too); the
+      furniture fingerprint (`core/furnish/fingerprint.py mavs-refuge`) identical before and after (geometry 6f039090, 10,991
+      pieces); `KTAGS.page.audit().unknown` 0; an edits.json with a batched piece removed, an interior piece removed, one moved
+      and a piece added: 4 of 4 applied on load, the batched piece vetoed at draw, the interior pieces left out of their unit.
+      Note: `fingerprint.json` itself already differed from this page before the change (batchTris 1,277,994 recorded); not
+      rewritten here.
+- [ ] (2026-10-15) Keys are the host's one keymap: F walks (the host's walker, feet on the ground; the page had no walk), G flies
+      to the pin (double-click to drop one), I is the hover tip (the old Inspector button), P marks, B edits, X cuts, M the map.
+- [ ] (2026-10-15) The editor moves, removes and places catalog pieces only. A piece the page was made with is merged into the
+      furniture batch or its unit's interior drawing, so moving or removing it is marked and applies on reload
+      (`53-furnish.js brfVetoed`, `57a-interiors.js piecesNow`); a placed piece is drawn on its own at once. An op on an interior
+      piece waits until that unit's record is made (98-start.js `mStartEdits`). The interiors' own edit overlay (`MIX.edit`,
+      kept in this browser) is separate from the host's log and is not offered in the editor.
+- [ ] (2026-10-15) The world hour stays the sky's own clock (21-sky.js, the Time of day slider and Pause); the host's speed
+      buttons set the motion time the sky and the life layer advance by.
+- [ ] (2026-10-15) interiors-bake.json was stale before this change (kit cb8c15876eb8) and still is (57a changed again):
+      rerun `python3 bake_interiors.py` (the page computes every unit itself meanwhile).
+
 - [ ] (2026-10-05) Tree tints (60-trees.js, same change as Girder): roots take the trunk's tint at their height above the ground, limbs/boughs/twigs the trunk's tint where they leave it.
       Built, not run (`verify.py` not called) and not looked at.
-- [ ] (2026-10-05) 84-flyers.js has the optional dragonfly-wing hook (`FLYTEX = { wing }` before the fragment) but Mav's Refuge has no material-library machinery
-      (no materials.json, no KMAT, no tex/), so nothing sets it and the wings stay vertex-coloured. Adopting the library here is the larger job.
+- [ ] (2026-10-05) 84-flyers.js has the optional dragonfly-wing hook (`FLYTEX = { wing }` before the fragment); nothing sets it yet, so the wings
+      stay vertex-coloured. 2026-10-06: Mav's now has the library (materials.json: 13 families, Girder's rows; tex/; KMAT), so the wing can be
+      wired the way Girder does (`flywing`).
+- [ ] (2026-10-06) Library adoption, first pass: the architecture, rock, leafy and the four barks take Girder's library sets; web and glowmat stay
+      procedural; the catalog furniture, the flyers and the cards are not wired (Girder's f_*, fly_* and card rows). No ACES tone mapping
+      (Girder's library look adds it); judged in three views against the procedural page and read well.
 - [ ] (2026-10-05) This copy of 84-flyers.js and Girder's differ by about 9 KB (Girder has the roost traffic); the model block and FlyGeo are shared. Any
       model or UV change has to be made in both.
 - [x] Flyers: wingtips clip the gallery posts on landing (84-flyers; Girder's version lands on the beam outside the post line — port it)
@@ -69,10 +99,53 @@ opening view reads 66, inside the budget.
   the potter's clay block, the weavers' hanging cloths, the scaffold's flag, the signal tower's drum and horn.
 - [ ] To do (future, owner's call): the spiders, the spider nests' egg sacs and cocoons, and the other flyers go to a
   fauna kit, not the furniture catalog (`biomes/README.md` "To do: a fauna kit"). Not started.
-- [ ] Interiors (?interiors=1): only 3 deck lots are furnished: the beast-rider set's items are the catalog's fixed
-  rewrites (14 x 10 m deck lot, 9-post shrine ring, 12 m council ring, 12 x 3 m room fronts, 17 x 13 m roost gallery),
-  and only the deck lot fits inside Mav's own walls, and only where it fits (API.md, Furniture). Sector-shaped items
-  for Mav's lots, rooms and the council's annular hall would be needed in kits/interiors/sets/beast-rider.js.
+- [x] Interiors (?interiors=1): only 3 deck lots were furnished (the beast-rider set's fixed rectangles fit few of Mav's sectors).
+  2026-10-05: replaced by 57-interiors.js (API.md, Interiors). Every walled deck lot, apartment, workshop, storehouse,
+  bough-platform lodging and hut (1764 units) is planned from its builder's own shell by the interiors kit's planner
+  and furnished from the catalog near the camera: homes with a living room and bedroom (a bed, food and a chest each,
+  the kit's residence rule), workshops as live/work (the family's rooms behind the trade floor), stores with the
+  clerk's office, shops with the family upstairs or behind, inns with guest rooms, barracks with dormitories, stairs to
+  upper floors. ON by default (?interiors=0 off). verify.py --assert: `interiors-coherent` (every 12th unit) and the
+  `interiorTriangles` budget line. Residents' homes (78-life) are now dwellings only.
+- [x] Interiors at night: the catalog's lamps and hearths inside were not in the night light volume.
+  2026-10-05: every record's lights go into its window channel (from the bake before the volume is baked, `nlvAddIx`
+  after), and the nearest 8 light their rooms per fragment, kept to their storey (`NL_POOL`, 45-kit; 57c `mixLights`).
+- [x] Interiors: the windows were painted panes on solid walls. 2026-10-05: real openings, cut through both faces of the
+  levels' fronts, the lots' walls (with a plastered lining) and the huts', with a reveal; the pane over one is glass;
+  the openings are the planned rooms' windows. The data is apart from the drawing: records, the bake
+  (`bake_interiors.py`, `interiors-bake.json`), idle fill, edits overlay (API.md, Interiors).
+- [ ] Interiors: no walker goes inside (life agents stop at the door nodes) and there is no first-person walk. The records
+  are ready for it: `MIX.slots(i)` gives each home's beds, hearth, table and chest as activity slots.
+- [ ] Interiors: painted panels beyond the 4 commonest designs in view are drawn flat in the design's mean colour (a draw
+  call each would cost ten or more in a busy hold). The interior light pool is per fragment but not occluded: a lamp
+  lights the neighbouring room through a partition (within its 5.5 m radius) though never the storey above or below.
+- [ ] The spaces that keep what their builders drew (assessed 2026-10-05; none started). **Address these, and the walkers
+  going inside (above), when the simulation layer comes to Mav's Refuge** (`core/simulation/PLAN.md`, Phase 3, item 3a):
+  - **Shared kitchens** (~1 in 8 apartment-level rooms, `R.use='kitchen'`): an open-fronted common room with a hearth
+    built into the core wall, a table, benches and a shelf block. Every apartment now has its own hearth (the kit's
+    `living` room requires one), which makes the shared kitchen redundant, and open fires in timber flats sit oddly
+    with it. Decide which: (a) the levels cook communally: give apartments a `living` programme without a hearth
+    (a brazier or none) and plan the kitchen as `kitchen` + `hall` with the built hearth as a fixture, and the
+    simulation's COOK/EAT for that level's homes points at it; or (b) drop the shared kitchens. (a) suits the lore.
+  - **Spider nests** (the Silk Loft's web levels, `lvlWebRoom`): webbed walls, egg sacs, cocoons, floor funnels. Needs
+    the husbandry around the spiders: a handler's station per level, silk reeling (feeding the silk houses and the
+    weavers' loft), an egg-sac nursery kept warm, a prey store, the handlers' bunks. Waits on the owner's call on a fauna
+    kit (above), since the sacs, cocoons and funnels would move there; the human-side rooms could be planned now as
+    `workshop` + `store` + `dormitory` with the web as fixtures.
+  - **Shrines** (23 open nature pavilions on the decks): a sapling or a standing stone, two lanterns, a lamppost. Needs
+    an offering table or altar before the heart, mats or low benches, a keeper's store for incense and offerings, and a
+    keeper (a role in the simulation, WORSHIP slots). The interiors set's 9-post shrine ring does not fit the 12-17 m
+    sector pavilion; plan the pavilion floor as one `shrine` room with its posts and the heart as fixtures, as Girder
+    does (56-interiors.js, the tower shrines).
+  - **The council chamber** (the annular hall round the trunk on P_CC): 44 council seats facing the trunk, two rings of
+    carved posts, 8 lamps, four portals with braziers. It is furnished as a hall but has no rooms: a council needs a
+    dais or speaker's place at the trunk, an antechamber or petitioners' bench at each portal, a records room, a
+    guard post and the stair head from the Crown. The planner cannot take an annulus: plan it as four quarter-sector
+    bodies between the portals (the seats as fixtures), or give the interiors kit a ring footprint.
+  - **The market** (109 stalls in five rings on the Crown, crates, barrels, cisterns, lampposts): open-air stalls, no
+    interiors needed. What is missing is coherence with the rest: each stall's goods by trade (the workshops' products,
+    the gatherers' fruit), the stock in the storehouses next to it, porters between them, opening hours (shuttered at
+    night), and each stall as a simulation place with SELL slots (the catalog's `stall` job already maps to SELL).
 
 Catalog verify pass (2026-10): kits/catalog recentred `br_market_stall` (and other harvested pieces) on their
 footprint and raised some sizes. Mav's Refuge now places these pieces (53-furnish.js) and undoes the recentring

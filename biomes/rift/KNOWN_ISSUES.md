@@ -7,7 +7,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/rift.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
-- [ ] BUDGET. Held vs drawn (the runtime LOD, Oct 2026; 91-host-probe): ceilings of 27M triangles
+- [ ] BUDGET. Held vs drawn (the runtime LOD, Oct 2026; the probe, now 99-host-take): ceilings of 27M triangles
       HELD (in memory, the hero trees' stand-ins included), 17M DRAWN at any one camera and 700 draw
       calls; 19M per pass. Before the runtime LOD the scene held 24.1M and drew all of it from every
       camera in ~64 calls. Now it holds 25.7M (+1.6M: the stand-ins, the small species' far blobs,
@@ -48,15 +48,19 @@ Read before changing anything here. `build.py` prints the open count.
       palms' yellow-green is lost in the blobs.
 - [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list.
 - [ ] No fauna yet.
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): ballmelon, frillpods, lantern fruit, bell dates. Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'rift'`). All are drawn. Add harvest tags. The ballmelon should show its yellow flesh where one has split (a few cut halves on the vine). The stone pine's nuts and the acacia pods are not drawn.
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`), done 2026-10-06: every species carries a harvest tag
+      (`RIFT.HARVEST`; the ball vine in `RIFT.PLANTS`), the four fruit name their catalog keys (`RIFT.FRUIT_KEYS`), the inspector
+      shows the tag, and the probe checks it ("fruit tagged, catalogued and drawn", with two negatives). Split ballmelons: a few
+      near-band vines (14%, from the spot's hash) end in a melon split in two, rind cup and yellow flesh face
+      (`melonhalf` / `melonflesh`, 48 tris a melon; about 180 on the stage). Still not drawn: the stone pine's nuts, the
+      acacia pods, the monkey-puzzle cones; the baobab's pale pods are drawn but have no catalog piece.
 
 ## Done
 
 - [x] Runtime LOD (Oct 2026, xanadu's port): every hero tree drawn within `RIFT.LOD.tree` (1.2 km)
       of its chunk and as a stand-in impostor past it; the far trees per chunk against the view;
       the floor's bands, logs and dress by range, with a far band standing in for the spine's
-      near and mid bands; `BIO.lodTick` in 90-host-camera; the probe's budget as held / drawn / calls.
+      near and mid bands; `BIO.lodTick` (a view subscriber in 99-host-take since core/host); the probe's budget as held / drawn / calls.
 - [x] The small species become far impostors (`buildFarSmall`, a 20-triangle blob shaped by habit)
       instead of stopping at ~1.3 km from the spine, and stand in for their heroes; the curls,
       pinecones and silver scrub (under a pixel there) do not. The frill and carrot frill
@@ -79,3 +83,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] The brain-coral tree replaced by the trumpet tree; a wide-canopy
       parasol tree; the savannah's purple (Vain fronds, heath, pinecone succulents).
 - [x] Every bole lathe ends in a dome ring (inherited lesson, kept).
+
+- [ ] **Frill-tree fins: use the owner's fractal frond** (`card.frond.fractal`) next pass, for the frill tree, carrot frill,
+      cloud frill and barrel frill (`biomes/README.md`, "To do: frill-tree fins"; the Throne's frill tree is the example).
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.

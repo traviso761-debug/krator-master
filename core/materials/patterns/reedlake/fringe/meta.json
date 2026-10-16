@@ -1,65 +1,47 @@
 {
  "maps": {
-  "map": "albedo.jpg",
-  "normalMap": "normal.png",
-  "roughnessMap": "roughness.png"
+  "map": "albedo.png"
  },
  "processing": {
-  "log": {
-   "pattern_crop": [
-    1429,
-    709
-   ],
-   "seam_after": [
-    0.514,
-    0.938
-   ],
-   "seam_before": [
-    3.14,
-    40.904
-   ],
-   "source_size": [
-    1774,
-    887
-   ]
-  },
   "options": {
-   "band": 0.06,
-   "dark_gloss": 0.0,
-   "delight": 0.0,
-   "height_soften": 0.8,
-   "invert_height": false,
-   "keep_aspect": true,
-   "lift": 0.0,
-   "mute": 0.0,
-   "normal_strength": 0.6,
-   "pattern": true,
-   "rough": 0.9,
-   "rough_var": 0.2,
-   "size": 1024
+   "anchor": "tight",
+   "key": "#ff00ff",
+   "key_hi": 230,
+   "key_lo": 120,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "all"
   },
-  "script": "tools/textures/process.py",
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1246,
+   1254
+  ],
   "version": 1
  },
  "record": {
   "colour": "#ffffff",
   "family": "fibre",
   "id": "reedlake/fringe",
+  "kind": "card",
   "metal": 0,
   "pattern": true,
   "roughness": 0.9,
   "scale": [
-   2,
-   2
+   1,
+   0.55
   ],
   "tint": false
  },
  "source": {
-  "file": "reedlake_fringe.png",
-  "generator": "ChatGPT image generation, Oct 2026",
+  "file": "reedlake-fringe.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 3.webp)",
   "licence": "generated for this project by its owner",
-  "original_title": "Golden Straw Fringe Texture.png",
-  "prompt": "core/materials/PLAN.md, patterns/reedlake/fringe (exact wording as delivered not recorded)",
-  "sha1": "4df43e0ccb6ff43c85230a0b6b968140f17e6cfe"
+  "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to its period across (1246 px) before processing, so the sheet repeats on its own period. keyed hard (key 120..230): the strands' shadows on the magenta keep a dark purple-brown edge, the pink fringe of a softer key is gone. The cut-out redo: it replaces the opaque dark-ground fringe.",
+  "original_file": "3.webp",
+  "original_sha1": "5a0b55eeb27d994776973a3f2d73148eeae21b69",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of loose reed ends hanging from an eave: about seventy thin, slightly curved strands, each hanging straight down from the top edge. Lengths are uneven, between half and full height. Each strand leans a little to one side. The strands are pale straw (#cbb36e) or darker straw (#b39c5c), spread randomly on a solid flat bright magenta (#ff00ff) background, so they can be cut out. The strands end ragged and loose. No magenta, pink or purple anywhere in the strands. The pattern repeats horizontally. Full colour.",
+  "reuse": "Reed Lake's eave fringes (rlFringe); any hanging straw or reed fringe",
+  "sha1": "9e16486d952bcc580c51e58eee62f73d7504bc80"
  }
 }

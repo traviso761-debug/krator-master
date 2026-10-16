@@ -21,23 +21,56 @@ KratorFurniture.setDetail(.5);   /* settlement-scale: half the segments on round
 /* the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is Locus's adapter
    onto it: its seed rule (the frame's seed and the spot in it), the open rooms the interiors take over, the night lamps
    and the inspector entry */
+regFlush();   /* the sites registered before core/tags' vocabulary loaded (45-kit.js REGISTER) */
+/* ---------------------------------------------------------------- the owner's edits, as the page is made (as Girder's 53-furnish.js)
+   KHOST_EDITS (39-host-edits.js, written by core/host/host.py from edits.json or this browser's draft) is a core/edits log;
+   the world page only (a kit sheet has no log). A piece merged into the batch cannot be taken out of it afterwards, so a
+   piece the log moves or removes is not drawn at all (its record stays, for the log to find); 98-start.js applies the log:
+   the moved piece is drawn on its own where it went, an added one likewise. A target is its core/tags uid, else its key
+   within 1.5 m (core/edits/README.md). */
+var LEDIT = { log: (!SHEET && typeof KHOST_EDITS !== 'undefined' && KHOST_EDITS && KHOST_EDITS.ops) ? KHOST_EDITS : null, vetoed: [] };
+LEDIT.hits = LEDIT.log ? LEDIT.log.ops.filter(function(op){ return (op.op==='REMOVE' || op.op==='MOVE') && op.target && (op.target['class']==='furniture' || op.target['class']==='flora'); }) : [];
+function locfVetoed(r){
+  if(!LEDIT.hits.length || !r) return false;
+  for(var i=0;i<LEDIT.hits.length;i++){ var t=LEDIT.hits[i].target;
+    if(t.uid != null){ if(t.uid === r.uid) return true; }
+    else if(t.at && t.key === r.key && Math.hypot(t.at[0]-r.at[0], t.at[2]-r.at[2]) < 1.5 && Math.abs((t.at[1]||0)-r.at[1]) < 1.5) return true; }
+  return false;
+}
 var LOCF = KFURN.create(Object.assign(KFURN.flags(false), {
   catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors,
+  tags: (KTAGS.page = KTAGS.page || KTAGS.create({ build:'locus' })),   /* every piece registered in core/tags (core/tags/README.md); the sites are already there (45-kit.js REGISTER) */
   seed: function(o, ctx, R, x, y, z, loc){ return (((ctx.frame.seed||1)*37+Math.round(loc[0]*11+loc[2]*17)+997)&0xffff); },
   onRecord: function(rec, ctx){
     if(rec.setting==='room' && LOCF.interiors && LOCF.item(ctx.building, ctx.top.variant|0)){ rec.deferred='interiors'; LOCF.deferred++; return false; } },
   draw: function(rec, ctx, o, A){
+    if(locfVetoed(KTAGS.page.get(rec.id))){ LEDIT.vetoed.push(rec.id); return; }   /* the owner's edits: moved or removed (98-start.js) */
     var r=KFURN.drawRec(LOCF, rec, ctx.frame.wealth);
     if(r.error) ERR('furniture '+rec.key+': '+r.error);
     r.lights.forEach(function(l){ nlLampAdd(l.x, l.y, l.z, o.lamp?o.lamp[0]:l.intensity, o.lamp?o.lamp[1]:l.distance, false); });
     var dm=KratorFurniture.entryDims(A, rec.variant)||A;
     REGISTER({ name:A.name+(A.variantNames?' — '+A.variantNames[rec.variant%A.variantNames.length]:''), kind:'furniture',
       label:'furniture · catalog · culture: '+A.culture+' · '+(A.type||'')+' · '+rec.setting+' · '+dm.w+' x '+dm.d+' m · key '+rec.key,
-      x:rec.x, y:rec.y-0.2, z:rec.z, r:Math.hypot(dm.w,dm.d)/2+0.4, h:(dm.h||2)+0.6 }); }
+      x:rec.x, y:rec.y-0.2, z:rec.z, r:Math.hypot(dm.w,dm.d)/2+0.4, h:(dm.h||2)+0.6, tid:rec.id }); }   /* tid: its core/tags record (45-kit.js) */
 }));
 Object.assign(LOCF, { stack:[], lastTop:null, deferred:0, unfurnished:{ noItem:{}, skip:{}, none:{} } });
-KFURN.useBatch(LOCF, KratorFurniture, KratorInteriors);
-window._locf = LOCF;   /* for probes: the records, LOCF.missing, LOCF.buildings */
+KFURN.useBatch(LOCF, KratorFurniture, KratorInteriors, { indexed: true });   /* indexed meshes (kits/catalog/README.md) */
+window._locf = LOCF;
+/* every interior piece (?interiors=1) is a core/tags record too (its building as parent), so the inspector names it and the
+   owner's edits can move or remove it (a vetoed piece is not built), as Girder's 56-interiors.js */
+LOCF.ixN = 0;
+if(LOCF.adapter) (function(){
+  var build0 = LOCF.adapter.build;
+  LOCF.adapter.build = function(p, room){
+    var E = KratorFurniture.FURN_BY_KEY[p.key] || {}, t = { setting:'room' };
+    if(E.culture) t.culture = E.culture; if(E.tier) t.tier = E.tier; if(room && room.id != null) t.room = String(room.id);
+    var r = KTAGS.page.add({ id:'ixf_'+('0000'+(++LOCF.ixN)).slice(-5), 'class':'furniture', kind:E.type||null, key:p.key, name:E.name||null,   /* its own ids: core/furnish passes furn_<n> later */
+      parent: room && room.building != null ? String(room.building) : null, at:[p.x, p.y||0, p.z], ry:p.ry||0,
+      size: E.w ? [E.w, E.d, E.h] : undefined, tags:t, frag:'66-locus-furnish.js (interiors)' });
+    if(locfVetoed(r)){ LEDIT.vetoed.push(r.id); return { key:p.key, variant:p.variant, seed:p.seed, x:p.x, y:p.y, z:p.z, ry:p.ry, building:room?room.building:null, room:room?room.id:null, setting:'indoor', lights:[] }; }
+    return build0.call(this, p, room);
+  };
+})();   /* for probes: the records, LOCF.missing, LOCF.buildings */
 /* the interior-set item that furnishes a building of this key and variant (null: none, or skipped). Variant 0 is `<key>`,
    variant n `<key>#n` ONLY: no fallback to `<key>`, whose rooms are measured on variant 0's body */
 LOCF.itemOf = function(key, v){ return KratorInteriors.sets.find(v ? key+'#'+v : key); };

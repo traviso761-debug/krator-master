@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.188,
+    1.056
+   ],
+   "seam_before": [
+    3.423,
+    5.386
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.65,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.cap.gillcoral",
+  "metal": 0,
+  "roughness": 0.65,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "organic-cap-gillcoral.webp",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "PROMPTS-ready.md section 9 (cap.gillcoral); pasted into the chat 2026-10-06 as a WebP",
+  "reuse": "the top of a broad cap with fine radial ridges fanning from a dark knot to a frilled rim, salmon and coral, frost near the rim (radial, centred, not a tile): the gill-coral trees' caps (in use); any plate coral, a gilled fungus seen from below or above, a sea anemone's disc",
+  "sha1": "e808179e7cf30d2fd0f932e73cf5ccb982e60797"
+ }
+}

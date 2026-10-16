@@ -22,6 +22,7 @@ its own site table and view list, merged into one sorted filename order:
 |---|---|---|
 | `kit` | `dist/ancients-kit.html` | the 32-type showcase, rows along +z |
 | `theodiga` | `dist/theodiga.html` | the dam arcology alone, at the origin |
+| `hosts` | `dist/hosts.html` | the five Ancient host types (`src/8ap-host-*`), each also cut and holed as Ys hosts it |
 
 Everything else — core, helpers, all 33 builders — is shared, so a fix to
 `buildDam` or to `lathe()` lands in both and the two cannot drift. A target
@@ -470,6 +471,88 @@ There is none yet. Every builder assumes `y = 0` and sets its own berm or plinth
 by hand where it has one. The brief calls for a `terrainH` hook (default 0) and
 an apron on every structure; that work is open, and tracked in
 `KNOWN_ISSUES.md`. Until it lands, do not add a builder that assumes terrain.
+
+## Interiors (src/8zz-interiors.js, src/92z-interior-ui.js; target `interiors`)
+
+The rooms inside the original kit's buildings. The PLAN is data in `kits/ancients-interiors` (`src/35-ai-plates.js`,
+`src/37-ai-kit*.js`): per type, every storey's rooms, corridors and partitions in the builder's own frame, at every
+decay level (`AI.kitPlan(type, d, { place })`). Skyscrapers, the megastructures and the types with no interior
+(amphitheatre, radar, dish, fuel) have none (`AI.SKIP` says why). The kit DRAWS the plan; no builder knows it exists:
+
+* `interiorBegin(k, d, gx, gz)` runs before each builder (90-scene.js) and marks the kit lists;
+  `interiorPass(m, G)` runs after it (and after `repairPass`) and:
+  * clears the intact dark mass a builder put where the rooms go (the plan's `hollow` boxes: Robotics, the Vault,
+    the Campus wings, the hospital's cores, House B) and, in a ruin, the fake rooms `civRooms` dressed it with;
+  * draws a floor per storey where the builder draws none (`B.floors`), only under standing rooms in a ruin;
+  * draws the partitions as kit instances (`aiPartW`, white panel 0.12 m; `aiPartR` in a ruin), each door a 1.0 m gap
+    with a lintel at 2.15 m; a BROKEN partition is a stub of the plan's height with rubble;
+  * registers the building and its rooms in core/tags (`KTAGS.page`: class building, then class part kind room as
+    its children; culture ancient, the state, the types);
+  * for an INTACT building, makes the furniture records (core/furnish `KFURN`, tagged): `AI.furnishPlan` in the
+    culture `ancient` alone, rooms templated by shape, big halls by the hall recipes.
+* Furniture is data first and DRAWN ON OPENING: a building's records become one catalog batch the first time it is
+  cut open, so the page pays for the rooms you look into.
+* **Ruins break a little differently in every build**: the site's position seeds `AI.ruinStorey` (`place`), which
+  moves each partition's chance by up to 0.15 around the type's own pattern.
+* **The socket.** Only intact buildings are furnished. Every room keeps its kind, so a world furnishes any state in any
+  culture it bundles: `AI.furnishPlan(plan, adapter, { culture, all: true })`, or in this page
+  `_api.interiors.socket('police/3', culture)`.
+
+The cut-away (92z): the "Interior" select opens a building; `[` and `]` step storeys, `x` closes. Everything above
+the storey's cut height inside the building's footprint is clipped (five clipping planes with `clipIntersection`, set
+on every material once). A `VIEWS` preset may carry an eighth element, `{ site: 'police/0', storey: 1 }`.
+
+`_api.interiors()` is the summary (sites, rooms, furnished buildings, pieces, partition pieces, stubs, floors, the
+core/tags audit, per site). `verify.py --assert` adds, on a page with interiors: `interiors-drawn`,
+`interiors-furnished-intact-only`, `interiors-catalog-keys`, `interiors-audit` (every furnishing template through
+kits/interiors' audit, or the recipe audit), `interiors-rooms-inside`, `interiors-ruins-broken`, `interiors-tags`
+(zero unknowns).
+
+Only a target in `INTERIOR_TARGETS` (build.py) takes the generated `8zy-interiors-bundle.js` (the catalog's Ancient
+furniture and goods, kits/interiors with the arcology's set, kits/ancients-interiors) and core/rand, core/tags and
+core/furnish. Every other page builds as before: both interior functions return at once without the bundle.
+
+## The funicular (src/8ap-funicular.js)
+
+A structure type that is not a builder: the rusted, broken remnants of a massive Ancient funicular, made
+for hosts with real terrain (Verge takes it at 1.7 km and 860 m). It sits on whatever ground the host has,
+so it never reads `terrainH` and is never called by the scene loop; the `funicular` target shows it.
+
+```js
+const rec=FUNICULAR.plan({a:[x,y,z], b:[x,y,z], ground:(x,z)=>y, seed, width:12, pierStep:30,
+                          breaks:[0.3,0.7] /* optional fractions; [] = none */,
+                          car:{state:'stuck'|'fallen', at:0.4, track:-1|1} /* optional; false = no car */});
+const grp=FUNICULAR.draw(rec, parent);   // before kbake(): everything but the stairs goes through kput
+FUNICULAR.deckY(rec,x,z)                 // deck-top y on an intact walk strip or station floor, else null
+FUNICULAR.carveY(rec,x,z,y)              // terrain height with the cuttings and station floors cut in
+```
+
+`a` is the upper station's deck point and must stand higher than `b`; `y` may be null (ground + 0.5).
+The track is straight in plan and at a constant grade. `plan()` takes every ground sample and decides
+every placement, with its own hashed stream (no `rng()`, no `reseed`, no THREE); `draw()` only renders
+the record (small detail such as missing sleepers is hashed per item). The record is plain data:
+
+| field | |
+|---|---|
+| `segments[]` | one per span: `{i,s0,s1,a,b,o0,o1,w,kind,state,edge0,edge1,gmin}`. `s` is plan distance from `a`; `a,b` the deck-top centre as it lies now, `o0,o1` as built. `kind` `viaduct` (lattice girders on piers) / `grade` (solid bed) / `cut` (bed in a cutting). `state` `intact` / `gap` (gone) / `collapsed` (lying on the slope: `pieces:[{a,b,roll}]`) / `hanging` (`hinge` 0 = still on its uphill pier, 1 = downhill; `drop`, `roll`) |
+| `piers[]` | `{i,s,x,z,y0,y1,top,w,d,ry,state,legs:[[x,z,y0],..]}`; `state` standing / stump / gone |
+| `beds[]`, `walls[]`, `cuts[]` | embankment chunks under grade decks, retaining walls in cuttings, and `{s0,s1,depth}` per cut span |
+| `debris[]`, `cables[]` | rubble and girder bars under the breaks; the haul cable over each break (sagging, or snapped ends) as polylines |
+| `stations[]` | `{kind:'upper'|'lower',x,y,z,ry,w,d,h,s0,s1,...}` plus their ruin layout (bays, beams, slabs, wheels / steps, frames) |
+| `car` | `{state,track,s,x,y,z,ry,pitch,roll,len,w,n,hc,k}`: origin on the deck top at the car centre, level frame |
+| `walk[]` | `{kind:'track'|'floor',a:[x,z,y],b:[x,z,y],w,s0,s1}` (note **x,z,y**): the intact deck, merged into continuous strips between breaks, and the two station floors. A trail may run on these |
+| `blocks[]` | `[x0,x1,z0,z1,y0,y1]` axis-aligned solids: piers, beds, retaining walls, stations, the car, the fallen and hanging spans, big rubble. The deck itself is not a block; walk on `walk` |
+| `breaks` | the broken runs as `[i0,i1]` span indices |
+
+Breaks: one run per ~420 m by default (or one per given fraction), each 1 to 3 spans (30 to 90 m), only on
+viaduct spans and never within two spans of a station; each span in a run is gone or collapsed; the span
+above a run hangs from its pier with p 0.55, the span below with p 0.35; piers inside a run are stumps,
+standing or gone. Cost: the 400 m target is 35 k triangles; a 1.7 km track about 124 k (95 k instanced
+plus 29 k of merged stairs), 7.5 k instances, 13 InstancedMeshes and 1 mesh.
+
+Materials: `MAT.rust`, `MAT.verdigris`, `MAT.white`, `MAT.dark` (clones, world UVs through `vWorldUV` when
+present), and `TEX.concrete` / `TEX.concreteRM` from `54-mat-concrete.js` **when the build has them**;
+without them the concrete is a flat stained grey.
 
 ## House style
 

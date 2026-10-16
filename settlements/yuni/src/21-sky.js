@@ -19,8 +19,9 @@
 
    This fragment also owns THE CLOCK. 82-daynight.js's dayNightHour() — read
    by the arena, the ordinator drills, the monks, the shopkeepers and the lit
-   windows — now delegates here, so hour/dayOfYear/timeScale are one clock
-   driving everything rather than two competing ones.
+   windows — now delegates here, so hour/dayOfYear/rate are one clock
+   driving everything rather than two competing ones. The clock itself is
+   the shared world clock, core/clock's KCLOCK (YCLOCK, below).
 
    DETERMINISM: every random choice below comes from skyRnd(), a private LCG
    seeded once from SKY_STARSEED. The shared rnd()/rr()/pick() stream is NOT
@@ -72,9 +73,8 @@ var SKY = {
   skyModelK     : 0.86,     /* how much of the baked dome the pressure/sun model replaces above the horizon band */
   forceEclipse  : false,
   showRings     : true,
-  secPerHour    : 5,        /* real seconds per sky hour (the city's own)  */
-  timeScale     : 1,        /* 0 · 1 · 60 · 600                            */
-  paused        : false
+  /* how fast time runs is the world clock's (YCLOCK below: skyRate, skySetRate),
+     no longer secPerHour / timeScale / paused here */
 };
 
 /* ---------------------------------------------------------------- palette
@@ -151,26 +151,31 @@ function skySmooth(lo, hi, x){ var t = Math.max(0, Math.min(1, (x-lo)/(hi-lo)));
 var _skyTmpA = new THREE.Vector3(), _skyTmpB = new THREE.Vector3();
 
 /* ---------------------------------------------------------------- clock
-   One clock. SKY_T is elapsed SKY seconds; hour and dayOfYear are both read
-   off it, so advancing 24 h at 600x rolls the date exactly once. 82's
+   One clock: the world clock, core/clock's KCLOCK (GODOT-PLAN.md, Phase 1,
+   "The world clock"). YCLOCK.t is MOTION time (the volcano's cycle reads
+   it); YCLOCK.hour and .day are WORLD time. The preview HOLDS the hour by
+   default (Travis): "Run time" (80-camera.js) runs it at the 72-minute world
+   day, and the sky panel's 60x / 600x shorten the day. hour and dayOfYear
+   are both read off it, so advancing 24 h rolls the date exactly once. 82's
    dayNightHour() delegates here, which is what keeps the arena crowd, the
    ordinator drills, the monks and the lit windows on the same time as the
    sun. */
 var SKY_DAY0 = 80;                                  /* the equinox: the brief's own reference day */
-var SKY_T    = 10*3600;                             /* opens at 10:00, as 82-daynight.js always did */
-function skyHour(){ return (SKY_T/3600) % 24; }
-function skyDayOfYear(){ return (SKY_DAY0 + Math.floor(SKY_T/86400)) % SKY.yearLengthD; }
-function skyAdvance(dtReal){
-  if(SKY.paused || SKY.timeScale === 0) return;
-  SKY_T += dtReal * (3600/SKY.secPerHour) * SKY.timeScale;
-}
-function skySetHour(h){
-  h = ((h % 24) + 24) % 24;
-  SKY_T = Math.floor(SKY_T/86400)*86400 + h*3600;
-}
+var YCLOCK = KCLOCK.make({ hour:10, running:false });   /* opens at 10:00, as 82-daynight.js always did */
+function skyHour(){ return YCLOCK.hour; }
+function skyDayOfYear(){ return (SKY_DAY0 + YCLOCK.day) % SKY.yearLengthD; }
+function skyTimeH(){ return YCLOCK.day*24 + YCLOCK.hour; }   /* world hours since day 0 (the giant's bands) */
+function skyAdvance(dtReal){ YCLOCK.step(dtReal); }
+function skySetHour(h){ YCLOCK.set(h); }
 function skySetDayOfYear(d){
   d = ((Math.round(d) % SKY.yearLengthD) + SKY.yearLengthD) % SKY.yearLengthD;
-  SKY_DAY0 = ((d - Math.floor(SKY_T/86400)) % SKY.yearLengthD + SKY.yearLengthD) % SKY.yearLengthD;
+  SKY_DAY0 = ((d - YCLOCK.day) % SKY.yearLengthD + SKY.yearLengthD) % SKY.yearLengthD;
+}
+/* how fast world time runs: 0 holds it; k runs it k times the 72-minute day */
+function skyRate(){ return YCLOCK.running ? KCLOCK.DAY_SECONDS/YCLOCK.dayLength : 0; }
+function skySetRate(k){
+  if(!(k > 0)){ YCLOCK.run(false); return; }
+  YCLOCK.dayLength = KCLOCK.DAY_SECONDS/k; YCLOCK.run(true);
 }
 
 /* ---------------------------------------------------------------- scene */
@@ -649,7 +654,7 @@ function updateSky(){
 
   /* --- the giant ----------------------------------------------------- */
   giantMat.uniforms.uSunDir.value.copy(S.sunDir);
-  giantMat.uniforms.uSpin.value = (SKY_T/3600)/SKY.giantSpinH * Math.PI*2;
+  giantMat.uniforms.uSpin.value = skyTimeH()/SKY.giantSpinH * Math.PI*2;
   /* The rim is the eclipse's main feature, but it is NOT only an eclipse
      feature: a new giant is a dark disc with a thin bright edge all round it,
      because the sun is behind it whether or not it is exactly behind it. So
@@ -853,8 +858,8 @@ var SKY_PANEL_REFRESH = null;
     });
     box.appendChild(row);
   }
-  toggleRow([['0x',0],['1x',1],['60x',60],['600x',600]],
-            function(){ return SKY.timeScale; }, function(v){ SKY.timeScale = v; });
+  toggleRow([['hold',0],['1x',1],['60x',60],['600x',600]],          /* x the 72-minute world day */
+            skyRate, skySetRate);
   toggleRow([['eclipse',true],['no eclipse',false]],
             function(){ return SKY.forceEclipse; }, function(v){ SKY.forceEclipse = v; });
   toggleRow([['rings',true],['no rings',false]],
@@ -883,6 +888,7 @@ window._sky = {
   params: SKY, state: SKY_STATE,
   hour: skyHour, dayOfYear: skyDayOfYear,
   setHour: skySetHour, setDay: skySetDayOfYear,
+  clock: function(){ return YCLOCK.state(); }, rate: skyRate, setRate: skySetRate,
   set: function(k, v){ if(k in SKY){ SKY[k] = v; return true; } return false; },
   sunAltAz: skySunAltAz,
   /* recompute without waiting a frame, so a headless probe can sweep hours

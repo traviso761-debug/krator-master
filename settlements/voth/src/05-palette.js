@@ -257,7 +257,12 @@ var FAMMAT = {
      B.fam==='cloth', not a texture hook; tex stays null until a texturing
      pass wants to give it one (the sway code composes with worldUV fine if
      it ever does). */
-  cloth  : { color:0xffffff, rough:0.95, tex:null, scale:[2.0,2.0] }
+  cloth  : { color:0xffffff, rough:0.95, tex:null, scale:[2.0,2.0] },
+  /* the Voth woven patterns (patterns/voth/kilim-star, kilim-tri; materials.json): colour-carrying, so a piece in these
+     families is drawn white when the library pack is on the page (vothPatCol, 47-texture.js) and in its banner colour
+     when it is not. They sway like cloth. */
+  tapestry: { color:0xffffff, rough:0.95, tex:null, scale:[2.6,2.6] },
+  kilim  : { color:0xffffff, rough:0.95, tex:null, scale:[2.0,2.0] }
 };
 
 /* ============================== BUDGET ==============================
@@ -290,13 +295,13 @@ var BUDGET = {
      city's own fabric. This raise is for those objects only; the city's own
      geometry still has to earn its buckets the usual way. Previous note kept.
      owner: "ok to raise draw calls" — 60 -> 72, with the
-     build sitting at 59/60 and the arena combat system, a bespoke silt-strider
+     build sitting at 59/60 and the arena combat system, a bespoke elephant-bug
      model and the palace redesign all still to come, each likely wanting its own
      new (shape,family) bucket. Previous note kept below.
      owner: "what happens if we increase the draw call a little bit more?
                                  it's running fine on my pc still" — bumped 53->60, real headroom
                                  (not just budging the ceiling to paper over an overrun) for the still-
-                                 queued tavern model and a real bespoke silt-strider mesh instead of
+                                 queued tavern model and a real bespoke elephant-bug mesh instead of
                                  the reused/rescaled caravan template. was 44 (30 static bake + 14 life
                                  layer: canoe x2, junk-hull+sails x1,
                                  galleon-hull+sails x1, ship-crew x1, ferry x2, river-barge x1,
@@ -355,7 +360,7 @@ var BUDGET = {
      a third                                                              */
   instances   : 130000,     /* owner: "ok to raise things still run well" -- 100k -> 130k
      with the build sitting at 96.4k and three passes (arena combat, monastery
-     monks + clan-compound workers, the bespoke silt strider) all drawing on the
+     monks + clan-compound workers, the bespoke elephant bug) all drawing on the
      same pool at once, plus the palace redesign and canton-door work still to
      come. Previous note kept below.
      owner: "sure how much do you think you need?" -- raised

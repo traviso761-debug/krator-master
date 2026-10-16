@@ -84,7 +84,7 @@ family: a builder in 77, an entry in 80's `BUILD` table and its nav/door rule.
 | `REGISTER({name,cls,x,z,y,r,h,tags})` | a volume the inspector names on hover (cls: building, flora, fauna, place, water, terrain); 80 registers every building |
 | `TICKS.push(fn(dt,t))` | per-frame work |
 | `OBSTACLES.push({x,z,r,y0,y1})` | a cylinder nothing grows inside (the biome reads it) |
-| `LIFE` | `ACTIVITIES`, `FACTIONS`, `JOBS` (schedule per hour), `PEOPLE`, `EVENTS`, `NAV`, `route(ax,az,bx,bz,block)`, `reach(x,z,block)`, `offering(activity,x,z)`, `ROUTES`, `OUT` (the checks' results) |
+| `LIFE` | `NAV`, `route(ax,az,bx,bz,block)`, `reach(x,z,block)`, `offering(activity,x,z)` (SIM's nearest place offering it), `ROUTES`, `OUT` (the checks' results, `window._life`), `loaded`, `population`, `problems`, `CLOCK` (KCLOCK, held at noon), `run(minutes)` (steps SIM a world minute at a time), `ROUTE_CACHE` (the grid's kept A* searches). The records themselves are SIM's (`core/simulation/SCHEMA.md`): activities, factions, orgs, roles (the old `JOBS`) and events are `world/*.json`; places come from `PLACES`; the people (the old `PEOPLE`) are `SIM.all('actor')`; `window._sim.audit()` gives `OUT`'s numbers afresh |
 | `OVERLAY` | the overlay groups; `ribbonPath(pts,w,color,closed)` for a new one |
 | `window._api` | the probe: `shadeChecks()`, `shadeNegatives()`, `totals`, `typeStats()` |
 

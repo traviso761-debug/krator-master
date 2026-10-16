@@ -38,18 +38,54 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
 3. **The Ancients re-vendor session** (`settlements/iziz/KNOWN_ISSUES.md`): Ancients to Iziz to Highlands to Xanadu
    and Reed Lake, and Jimjam, with `--assert`, screenshots and a new baseline. It gates Iziz's audit and its
    material work (M5).
+   **DONE 2026-10-13** (on `full-refactor`). The Ancients fragments were already current down the chain (the 2026-10-06
+   re-vendor holds: Iziz 35, Highlands 13, Jimjam all match); the session cleared the chain's other drift, each copy's
+   diff read: Iziz's four `core/biome` copies were only behind (re-vendored, `--vendor-bio`); Xanadu's and Reed Lake's
+   `91-probe.js` were behind Highlands (re-vendored; the new line is inert without `HLF`); Highlands' `91-probe.js` and
+   Reed Lake's `73-hl-carve.js` (pre-catalog furniture; Reed Lake has no `FURNISH`) are kept on purpose and named in a
+   new `ADAPTED` set in their build.py. Nothing was fixed upstream in `kits/ancients`. `verify --assert` before and
+   after: identical on Iziz's city, Xanadu, Erewhon and Reed Lake (each build's KNOWN_ISSUES.md); Iziz's verify.py runs
+   again (stage 0b had taken its `GL_ERR`). Every chain build's `--vendor-check` shows only recorded ADAPTED drift.
+   Open: the baseline rewrite for the five changed pages (Iziz's `iziz.html`, Xanadu's `xanadu.html` and `erewhon.html`,
+   Reed Lake's two) when the pages are committed; the composing `useGroupXF` (Iziz's 69c) is still not in
+   `kits/ancients`' 50-registry.js (Jimjam's open item); Dalab and Ys, outside this chain, keep their non-Ancients drift.
 4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03: the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1), **and Girder and Voth** (their `PORT.md`: tags and notes for every fragment over 10 KB, split notes, the Notes paragraph of PRNG, noise, `terrainH` and palette copies). **Iziz DONE 2026-10-05** (its `PORT.md`: tags corrected by reading the code, split notes on 90a, 90b, 90c, 85 and the mask readers, the own-copies Notes; Voth's `68-props.js` split note added). Still to do: Ys. Other builds
    keep provisional tags until a port session touches them.
 5. **The biome reseeding event** (biomes/WORLD.md, Order 6): `KRAND` hash and noise, cell seeding, level-free
    records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
    field with one kit as its first consumer. Needs the spike's findings on terrain.
-6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass.
+6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass. **First pass
+   DONE 2026-10-05** (`88-city-place.js` records, `88b-city-draw.js`): open are the bridge graph, the host types (needs
+   the Ancients chain re-vendored into Ys) and the foreign sets (settlements/ys/KNOWN_ISSUES.md).
 7. **The Girder pilot** (core/materials/PLAN.md). **Material half DONE 2026-10-03:** `core/materials/record/` (`KMAT`,
    `TEX.def`, adapters), `tools/textures/pack.py`, Girder on the library (`?mat=proc` for the old look). Open: the
-   four texture gaps (leafy, web, ghostwood, prism gum) and the owner's look review. **`core/furnish` DONE 2026-10-05:**
+   four texture gaps (leafy, web, ghostwood, prism gum) and the owner's look review. **Iziz, the second pilot, DONE 2026-10-13**
+   (its city materials on the library, every KMAT record naming its hook; two gaps with prompts: `settlements/iziz/KNOWN_ISSUES.md`). **`core/furnish` DONE 2026-10-05:**
    Girder, Mav's Refuge, Locus, Highlands and Post-Apoc place through it, fingerprints unchanged (`core/furnish/README.md`).
-8. **`core/mask` with Iziz's city** as its first consumer, then Iziz's export on the `KRATOR_EXPORT` shape (M5).
+   **`core/tags` steps 1 and 2 DONE 2026-10-05:** the registry, vocabulary, label, node test and uid twin; Yuni on it,
+   its records arriving in Godot as node metadata (`core/tags/README.md`). Steps 3 and 4 DONE the same day: core/furnish's five
+   builds register their furniture (fingerprints unchanged); Iziz's `REG` and Voth's `PLACED` are read in. Next: the biome kits, with the
+   reseeding event (`core/tags/PROPOSAL.md`).
+8. **`core/mask` DONE 2026-10-05** (Iziz, Dalab, Erewhon, Roketstad place from it; Voth since 2026-10-08; `core/mask/README.md`). Next: Iziz's export
+   on the `KRATOR_EXPORT` shape (M5). **M5 DONE 2026-10-13** (`core/export/README.md`, "Iziz"; `godot/tests/export/iziz_test.gd`).
 9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.
+
+**Normal maps after the JPEG switch** *(found 2026-10-06; off the critical path, nothing is broken today)*. The library's
+normal maps became `normal.jpg` (JPEG q95, 4:4:4) in `9b46d9e`. Godot does not read the library yet: `godot/krator/kmat.gd`
+loads each build's `tex/` pack, which is WebP. What is left:
+- **40 sets still on `normal.png`**: the ones added on main after the switch (the eastern badlands' and Ys's sets among them;
+  `git grep -l '"normalMap": "normal.png"' -- 'core/materials/**/meta.json'`). Convert them the same way (Pillow,
+  `quality=95, subsampling=0`) and point their `meta.json` at `normal.jpg`, so the library has one format.
+- **`kmat.gd`'s `_tex()` reads only WebP and PNG** (`load_png_from_buffer` for anything not `.webp`). Add a
+  `load_jpg_from_buffer` branch before Godot reads library sets directly, as `GODOT-PLAN.md` plans.
+- **Packed normals are lossy WebP, which is always 4:2:0** (`tools/textures/pack.py`, `webp(..., 92, 'RGB')`): X and Y
+  live in red and green, so the pack halves their resolution, a bigger loss than the JPEG switch avoided. Write packed
+  normals as lossless WebP or PNG.
+- **Re-packing moves the baseline.** A build that re-runs `pack.py` on a converted set gets very slightly different
+  normals (decoded from the JPEG), so its `PORT-BASELINE.json` hash changes with nothing to see. Re-pack Girder, Iziz,
+  Ys, Yuni, Mechs and Motor Vehicles in one change with one baseline rewrite, after the packed-normal format above.
+- `core/materials/record/23-mat-record.js:59` still names `normal.png` in its convention string; change it in that
+  same change, since it alters Girder's built page.
 
 ## Features
 
@@ -65,6 +101,26 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
     layer to a PNG at export time and ship it with the tile.
   - Optional: a one-time overhead orthographic bake to a texture as the background, for the painted look.
     Hide the sky, fog and inspector helpers during the bake.
+
+## Viewers, interaction and effects *(the owner, 2026-10-07; raised during the Zeijani kit, not started)*
+
+- **Doors that open.** Doors, hatches, gates, shutters and every door-like object open and close with an interact
+  button (in walk mode: look at it, press the key). The door records already exist (`door()`, the interiors kit's
+  door leaves, `core/walk` gaps); a closed leaf is a walk block, an open one is not. **[G data]** for the state and
+  the block, **[G native]** for the animation.
+- **One walk mode and one set of controls in every viewer.** Implement walk (first person on the `core/walk`
+  floors, steps and slopes, collision with its blocks) everywhere, and standardise the UI and the keys across all
+  builds and kit sheets: the same buttons, names and shortcuts (inspector, cut-away, night, polygon tool, walk).
+  The Zeijani kit's page (`kits/zeijani/src/92-camera.js`) is one reference. **[web]**
+- **Interiors in every building kit that has them, with a cut-away.** Integrate `kits/interiors` (its sets, the
+  furniture placer through `core/furnish`) into every building kit whose buildings have a corresponding interior
+  set, each with a cut-away that opens them. **[G data]** for the plans.
+- **One flame and heat-haze effect.** Look at `biomes/crater-drylands` and `biomes/throne` (the caldera) and make a
+  standard flame plus heat-shimmer effect shared by every build (fires, braziers, burners, lamps, lava). **[G shader]**
+- **Water: an audit and one best solution.** Audit the water effects across the builds and settle on the
+  best-looking one that appears to run downhill under gravity, leaves no gaps, fills where it should (basins,
+  channels, pools) and stays out of where it should not (no water through floors, walls or banks). **[G shader]**
+  for the surface, **[G data]** for where it fills.
 
 ## Biomes: the port plan's findings *(GODOT-PLAN.md, re-assessed Oct 2026)*
 
@@ -84,9 +140,11 @@ the audit, the shader kinds, tags and ids, the host, the reseeding event, then v
   then `BIO.put`); `85-host-tower` is a preview prop (a builder); `82-host-sky` becomes a `core/atmos` sky
   preset.
 - **[G shader] One copy of each biome shader hook, in the core.** The iridescent bark `BIO.iridBarkMat` is
-  written in four kits (eastabyss, nhighlands, rift, xanadu), on the shared `BIO`: eastabyss and rift assign
-  it unguarded and with different signatures, so with several kits resident the last kit loaded replaces the
-  others' (a residency bug, not only a port cost). Also the two-tone gloss bark `barkMat2` (nwlowlands,
+  done (2026-10-12): it was written in five kits (eastabyss, rift unguarded with different signatures;
+  nhighlands, shighlands, xanadu guarded), so with several kits resident the last definer loaded won (a residency
+  bug: eastabyss before xanadu gave xanadu's boles eastabyss's tints). It is now the `irid` kind in
+  `core/biome/30-core-foliage.js`, one definition with Rift's signature and eastabyss's tints as the defaults;
+  every kit's baked geometry and tints were proven unchanged. Still to do: the two-tone gloss bark `barkMat2` (nwlowlands,
   swlowlands), the impostor `farMat` (rift: iridescent; swlowlands: gloss), nhighlands' hanging sway on its
   bulbs and pods, and swbay's own `animMat` beside `core/biome/35-core-anim.js`. Move them into
   `30-core-foliage.js` and `35-core-anim.js` as material kinds (`irid`, `gloss`, `far`, `hang`, `anim`) with
@@ -138,7 +196,10 @@ the audit, the shader kinds, tags and ids, the host, the reseeding event, then v
   colour, map, roughness, metal, emissive, doubleSided, alphaTest, hook}`, with `hook` naming a library shader
   (the kinds above); a `convention.colour` per table (the biome export is linear, the atmosphere's sRGB); then
   fold it into `core/export/` as the `krator-world` template. The canvas painters (3 to 9 per kit) bake to
-  PNG, which the export already does.
+  PNG, which the export already does. *Done 2026-10-13 (`core/export/README.md`, M4):* in the `krator-world`
+  container each biome material carries the KMAT vocabulary (family, roughness, metal, specular, hook, lib, scale,
+  tint) beside its own kind and options, and library maps travel by reference; `BIO.export` itself is unchanged.
+  Open: `hook` still names the kit's kind, not a library shader (stage 2e).
 - **[G native] Preview LOD: adopt `core/lod`, stop growing the kits' own.** The plan freezes runtime LOD as
   preview-only. A kit's per-chunk `BIO.range`/`minRange` is data (it becomes Godot's `visibility_range`) and
   stays; `BIO.lodTick` is preview machinery. `core/lod` already knows the biome sets (class `biome`,
@@ -367,6 +428,12 @@ with no extra mesh.
   No Krator build does this (`src/core/shell.js:31-43`). One place for it is `gallery/krator-bar.js` `tune()`.
 - **[web]** Isolate errors per subsystem in the frame loop. In Voth, `updateLife`, `skyAdvance` and the HUD
   sit outside the try (`settlements/voth/src/80-camera.js:303-319`), so one throw means it never draws again.
+- **[web]** Isolate errors per pass in the build, too (`src/core/diag.js`, `section(name, fn)`: the error goes on
+  screen under the pass's name and the next pass runs). In Krator a throw at the top level of one fragment stops
+  every fragment after it, so a broken flora pass leaves a blank world; Locus's `window.onerror`
+  (`settlements/locus/src/00-head.html:96`) reports it but does not carry on. The fragments share one scope, so
+  wrap each pass's call (terrain, buildings, flora, life, dressing), not each file. Belongs in `core/host/`
+  (`GODOT-PLAN.md`, `92-host-panel.js`) beside the loop's isolation above.
 - **[web]** Input guards: clear held keys and pointers on blur and on hidden tabs; end a pointer when
   `buttons===0`; ignore keys while typing (`src/core/input.js`).
 - **[web]** Leave a cut plane installed and park it at `constant=1e7`, instead of swapping `clippingPlanes`
@@ -426,6 +493,39 @@ These are the best Godot candidates: generators whose output is data.
 - **[G data]** Chunks generated from the seed alone, with doors forced at chunk edges
   (`src/backrooms/level.js`). This is the same tile-by-tile loading `biomes/WORLD.md` plans.
 - **[G data]** Timed set pieces as pure functions of t, publishing signals on a bus (`src/fleshpit/incident.js`).
+- **[G data] + [G shader]** Tides: one sea level that everything at the shore reads (`src/beachcity/details.js`,
+  `ctx.sea`). Beach City's holds the tide (high water, half a metre lower twice a day by the clock, or held low or
+  high by a button, easing rather than jumping), a swell of a few centimetres and the events' drain and surge; the
+  water sheet, the surf lines, the boats and the swimmers all follow it, and ground below the waterline is
+  coloured wet sand and sea bed. For Krator: `seaLevel(t)` as a pure function in `core/atmos` beside the wave
+  field, driven by `core/clock`, with the build's shore lines, moorings and wet-ground mask reading it rather
+  than a constant. Port, Ys and the Ring Sea are the first takers. In Godot it is one global shader parameter
+  plus the same function in GDScript for anything that floats.
+
+## Water *(audit of every wet surface and Halcyon, github.com/billpwchan/halcyon, read 2026-10-10; the plan is `core/atmos/WATER.md`)*
+
+**Refactor-scale: it touches `core/atmos`, `core/terrain`, sixteen biome hosts and about thirty-five pages, so it goes
+with `full-refactor`, not on `main` while the refactor is paused.** Thirty-nine builds draw water; five take the shared
+wave field, the rest run ten different ripples or static materials, nine clocks never wrap, nothing but the Ring Sea's
+hulls floats, and no water reflects the sky. `WATER.md` section 1 is the table.
+
+- **Phases 0 and 1 started (2026-10-12): `core/water/` exists** (README, data and twins for the six kinds, the node test,
+  open water on the CDLOD mesh with skylight and Jacobian foam); the Ring Sea kit and the geyser basin take it. Next: the
+  rest of Phase 1's takers (WATER.md section 5), then the shore field.
+- **[G data] + [G shader]** `core/water/`: one module with six kinds (open, shore, flow, fall, still, wet), each with
+  a data side and a CPU twin (`heightAt`, `flowAt`, `seaLevel`), one clock (`atmWaveT`, whole cycles), skylight
+  reflection and depth absorption. A build names its kinds and writes no water shader.
+- **DONE for ringsea and geyser (2026-10-12), `core/water/50-core-water-draw.js`.** **[G native]** A CDLOD water mesh (Halcyon: instanced 17×17 nodes, 13 levels from 8 m): ends ringsea's swell
+  fading past 600 m and Voth's 75 m rim cells. First, and independent of the wave model.
+- **[G data]** A distance-to-shore field (jump-flood on the land mask) driving shoaling, a breaking lip, swash and wet
+  sand. The one visible upgrade for every coast.
+- **[G data] + [G shader]** One flow shader for every river ribbon: a flow field from `KRELIEF.river` (its slope is
+  stored and unread), advected normals, foam from slope, convergence and bank distance. Falls arc; plunge pools churn.
+- **DONE (2026-10-12, core/water open water).** **[G shader]** Foam as the Jacobian with a 1.8 s decay (the Ring Sea kit has the first half).
+- **[web] now, [G shader] later** The FFT ocean as an opt-in second backend behind `atmos_waves` (three 256²
+  cascades, deterministic seed, 76-mode CPU twin), for the worlds whose sea is the subject. After the above.
+- **[web]** A 512² ripple sim for wakes, plunge pools and fountains.
+- `W.wet` is computed by the weather and read by nothing: wet ground is the cheapest row.
 
 ## Lava *(Menagerie: the fire on Kharak, `src/homeworld/kharak.js:15-61`)*
 
@@ -535,6 +635,11 @@ already pure functions of t, and are the model.
 
 ## Testing *(Menagerie)*
 
+- **[web] A route walked by scripted input.** From OhMyGame's QA skill (WhiteTowerAI, GitHub, read 2026-10-10;
+  the rest of it is an agent harness with nothing for Krator): "build success establishes compilation, not a
+  playtest". Krator's verify covers build, logic and the screenshot; the missing kind is interaction. A verify step
+  that sends the walker along a route by scripted keys and asserts the end position and an empty console, on the
+  shared harness when `full-refactor` merges.
 - **[G data]** Layout fingerprints compared with saved goldens, which can prove a refactor changed nothing in
   the world. Refuse an empty fingerprint. Taken over the export, the same fingerprint can check that the Godot
   import placed what three.js built.

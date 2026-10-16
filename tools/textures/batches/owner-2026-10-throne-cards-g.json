@@ -1,0 +1,374 @@
+[
+ {
+  "src": "card-flower-angeltrumpet.webp",
+  "out": "core/materials/library/card.flower.angeltrumpet",
+  "record": {
+   "id": "card.flower.angeltrumpet",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine pale yellow-green hanging trumpet flowers (3 x 3): a datura or brugmansia tree, the spice frontier's gardens, poison"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-flower-bluebell.webp",
+  "out": "core/materials/library/card.flower.bluebell",
+  "record": {
+   "id": "card.flower.bluebell",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine arching teal bell-flower stalks (3 x 3): cloud-forest floor, shaded gullies"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-flower-spiderlily.webp",
+  "out": "core/materials/library/card.flower.spiderlily",
+  "record": {
+   "id": "card.flower.spiderlily",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine red spider lilies seen from above (3 x 3): a red bloom on any floor, a funerary flower"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-flower-wilted.webp",
+  "out": "core/materials/library/card.flower.wilted",
+  "record": {
+   "id": "card.flower.wilted",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine wilted, rotting flowers (3 x 3): the acid fringe, blight, a dead garden"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-fern-green.webp",
+  "out": "core/materials/library/card.fern.green",
+  "record": {
+   "id": "card.fern.green",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine bright green fern fronds, some curled (3 x 3): cloud forest, gullies, any temperate fern"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-leaf-wave.webp",
+  "out": "core/materials/library/card.leaf.wave",
+  "record": {
+   "id": "card.leaf.wave",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "three teal leaves marbled like breaking waves (3 across): a coastal alien, a sea-spray shrub"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-frond-frill.webp",
+  "out": "core/materials/library/card.frond.frill",
+  "record": {
+   "id": "card.frond.frill",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine red-olive spiked fronds in fans (3 x 3): the frill-tree's collar (in use), spiny alien shrubs"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-frond-fractal.webp",
+  "out": "core/materials/library/card.frond.fractal",
+  "record": {
+   "id": "card.frond.fractal",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "three green fractal fronds (3 across): a giant fern, the canopy of an alien tree"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-leaf-redvein.webp",
+  "out": "core/materials/library/card.leaf.redvein",
+  "record": {
+   "id": "card.leaf.redvein",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "three dark leaves with red veins and hooked spines (3 across): a poison shrub, the plume's seam"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-flower-claw.webp",
+  "out": "core/materials/library/card.flower.claw",
+  "record": {
+   "id": "card.flower.claw",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine clawed tulip-like flowers, spotted, in many colours (3 x 3): cloud-forest bloom, gardens"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-moss-hanging.webp",
+  "out": "core/materials/library/card.moss.hanging",
+  "record": {
+   "id": "card.moss.hanging",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine hanging moss and epiphyte curtains (3 x 3): cloud-forest limbs, cave mouths, old ruins"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-frond-needle.webp",
+  "out": "core/materials/library/card.frond.needle",
+  "record": {
+   "id": "card.frond.needle",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "three needled conifer-like fronds (3 across): an alien conifer, a tree fern's fronds, a podocarp"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

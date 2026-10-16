@@ -1,0 +1,31 @@
+[
+ {
+  "src": "fruit-jelly.png",
+  "out": "core/materials/library/fruit.jelly",
+  "record": {
+   "id": "fruit.jelly",
+   "family": "food",
+   "colour": "#ffffff",
+   "roughness": 0.15,
+   "metal": 0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fruit.jelly).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "the biome fruit: tideheart jelly cubes, rowan jelly (f_fruitJelly); any jelly, aspic or set syrup"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.15,
+   "rough": 0.15,
+   "mute": 0.6
+  }
+ }
+]

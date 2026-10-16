@@ -1,0 +1,155 @@
+{
+ "build": "ringsea",
+ "note": "Ring Sea's adapter onto the material library (core/materials/PLAN.md). Families are RSMAT keys (src/41-rs-tex.js), bound in place by src/45y-rs-matlib.js. Ring Sea's UVs are in procedural tiles (rsUV), so scale here is in UV units, not metres: one procedural tile shows 1/scale set tiles, chosen to keep the feature count (16 hull strakes per tile, 8 thatch courses, 8 hexes across). Every map is tinted by the vessel's vertex colours, so the sets go grey (keep 0) at the measured mean of the procedural map they replace (2026-10-06); verdigris keeps 60 % of its own colour. The painted grain (paint) stays procedural (the one painted-wood set runs its planks the wrong way for rails) and so do the per-vessel sails. Run python3 tools/textures/pack.py kits/ringsea after any change, then python3 build.py; ?mat=proc shows the procedural look.",
+ "size": 512,
+ "families": {
+  "wood": {
+   "lib": "wood.siding",
+   "scale": [
+    0.81,
+    0.81
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.79
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "cloth": {
+   "lib": "cloth.canvas",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.852
+   },
+   "metal": 0,
+   "normalScale": 0.6,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "thatch": {
+   "lib": "roof.thatch.reed",
+   "scale": [
+    0.9,
+    0.9
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.651
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "tile": {
+   "lib": "roof.tile",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.744
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "hex": {
+   "lib": "plate.hex",
+   "scale": [
+    0.75,
+    0.75
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.705
+   },
+   "metal": 0.5,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "chitin": {
+   "lib": "organic.chitin.scale",
+   "scale": [
+    0.9,
+    0.9
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.757
+   },
+   "metal": 0.15,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "ancient": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.875
+   },
+   "metal": 0.35,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   },
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "bronze": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.453
+   },
+   "metal": 0.25,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   },
+   "roughLift": 0.1,
+   "specular": 0.4
+  }
+ }
+}

@@ -4,6 +4,23 @@ Open items are `- [ ]`; `build.py` prints them. Close one by ticking it and
 saying what fixed it.
 
 ## Building kit (round 1)
+- [x] (2026-10-15) Dalab on core/host (ROADMAP.md section 10, step 5; core/host/README.md): the camera, the controls, the walk (F,
+      9 m/s as before), the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records), marks (P,
+      they replace the polygon tool) and the minimap (M) are core/host's, as on Iziz (host.FULL without core/space and core/edits).
+      `src/92-camera.js` and `src/00-head.html` are re-vendored from Iziz (only ui, uiButton, setView, Labels stay); `src/99-start.js`
+      is the take (FRAME_HOOKS as before, f(dt, ms), in a tick subscriber; a preset's seventh element, the hour, set by onView);
+      `src/91t-dalab-tags.js` reads REG into KTAGS.page (98 records on the set, 3,377 on the city; 0 unknown). Proof: verify.py
+      --assert passes the same six invariants on both pages (the city's draw calls at its camera 178 before, 182 after: the LOD
+      queue, below). The scene census at four views: the set matches the old page exactly (two old runs match each other too);
+      the city's old page differs from itself at three of four views (the biome's LOD meshes, 3 to 5 names), the new page by 2 to
+      14 names, all core/lod's time-budgeted proxy queue; with `LOD.flush()` before each count, two old runs and the new page
+      match exactly at all four views. Hostcheck: the inspector names "The God — the Ancient lab" and "Round earth hut (peasant)"
+      from their records, minimap and marks work, the error panel is clean.
+- [ ] (2026-10-15) 'dalab' is not a core/tags culture: `91t-dalab-tags.js` gives Dalab's records culture null and style 'dalab', the castes
+      (peasant, noble, priest) as wealth (poor, rich, rich) with the caste as the role, an embassy's guest as its role ('embassy:voth'),
+      the lab's `ancient` as state reclaimed. When core/tags takes the culture (with its test and golden), map it there and drop this.
+- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed
+      to core/host, as it was never run by the old camera either.
 - [x] The mound is a real mesh, one draw call each. **Round 3:** every mound and
       ring bank goes into `DMOUND_GEOS` in world space and `94-dalab-light.js`
       merges them into ONE mesh (`window._mounds` counts them).
@@ -94,7 +111,10 @@ saying what fixed it.
       horizon map in `90a`) with `willReadFrequently`, which keeps them on the CPU
       rasteriser everywhere: CPU and GPU loads both give 875, the same placement
       hash and the same mask hashes. (34-kitdefs' leaf card still uses
-      Math.random, but only for its pixels.)
+      Math.random, but only for its pixels.) **Replaced (2026-10-05):** the mask and
+      class grids are core/mask (`KMASK.canvas`, hard-edged, no canvas at all) and the
+      far forest keeps off the fields by a list of field discs; placement went from
+      3349 to 3378 records, the same on GPU and CPU canvas loads (`core/mask/README.md`).
 - [x] `verify.py --views` splits on commas, so a preset whose name holds a comma
       (the set's row presets 'Town types — row, stacked house, well, tower' and
       friends) cannot be shot by name; the eye-level presets cover the types.
@@ -106,3 +126,11 @@ saying what fixed it.
       for every kit) and the kit gained `BIO.kit` hooks, so `--vendor-check` reports the core and the
       hooked fragments as drift. The kit's geometry is unchanged (mesh fingerprints, `core/README.md`).
       Re-vendor, or read `core/biome` through a `CORE_BIOME` list, when Dalab is next rebuilt and verified.
+- [ ] (2026-10-06) The vernacular MAT keys and dMosaic take the material library (materials.json; src/88y-dalab-matlib.js through core/materials/record/26-matlib-bind.js). The murals, banner and rammed earth keep their painters. verify --assert passes, as before.
+- [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
+      warm ones warm). ?mat=proc shows the old look.
+- [ ] **Dalab's own patterns take the material library** (2026-10-06): the four murals (planes alias the box families), relief-squares,
+      relief-tile-teal, the harlequin checker, god-panel-a, the mosaic and the banner card (88y gives it its alpha test). The lizard mural
+      set stacks three lizard bands where the procedural frieze had one. dRammed, dTurf and dTile stay procedural. ?mat=proc shows the old look.
+- [ ] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
+      vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.

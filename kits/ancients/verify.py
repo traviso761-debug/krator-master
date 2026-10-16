@@ -31,72 +31,12 @@ Requires: pip install playwright && python -m playwright install chromium
 import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, threading
 
 # --------------------------------------------------------------------------
-# Harness helpers. Every verify.py in the repo carries this same block: a fix
-# here belongs in all of them (grep for "Harness helpers").
-GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
-# Every page builds its world in one synchronous script, so "load" fires only when
-# the world is built: minutes under software GL on a shared box (Dalab's city took
-# 285 s with seven other agents running; 180 s timed Locus out mid-build).
-LOAD_MS = 900000
-# KRATOR_CHROME names a Chromium to launch. The other names are the ones single
-# copies of this harness used before they were merged; they still work.
-CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
-
-
-async def launch_chromium(p, args=GL_ARGS):
-    """$KRATOR_CHROME (or an older name in CHROME_ENV), else playwright's own
-    build, else a pinned build under /opt/pw-browsers: a cloud container ships
-    one that need not match the pip playwright's pin."""
-    for k in CHROME_ENV:
-        if os.environ.get(k):
-            return await p.chromium.launch(executable_path=os.environ[k], args=args)
-    try:
-        return await p.chromium.launch(args=args)
-    except Exception as e:
-        if "Executable doesn't exist" not in str(e):
-            raise
-        for c in ["/opt/pw-browsers/chromium"] + sorted(
-                glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"), reverse=True):
-            if os.path.exists(c):
-                return await p.chromium.launch(executable_path=c, args=args)
-        raise
-
-
-def local_three(folder):
-    """The pinned three.js r128 to serve in place of the CDN copy: this build's
-    own, the page folder's, else the repo's copy in kits/ancients (a build that
-    keeps none still runs offline). Returns a path that may not exist."""
-    here = os.path.dirname(os.path.abspath(__file__))
-    cands = [os.path.join(here, "three.min.js"), os.path.join(folder, "three.min.js")]
-    d = here
-    for _ in range(4):
-        d = os.path.dirname(d)
-        cands.append(os.path.join(d, "kits", "ancients", "three.min.js"))
-    return next((c for c in cands if os.path.exists(c)), cands[0])
-
-
-def parse_views(spec, names=()):
-    """--views. Names separated by '|' or ';' are taken exactly, so a name may
-    hold commas. Separated by commas, consecutive pieces are joined back up
-    whenever that spells an existing preset's name, longest first: so
-    "Overview,Town types — row, stacked house, well, tower" is two views."""
-    spec = (spec or "").strip()
-    if not spec:
-        return []
-    if "|" in spec or ";" in spec:
-        return [v.strip() for v in re.split(r"[|;]", spec) if v.strip()]
-    names = set(names or ())
-    toks, out, i = spec.split(","), [], 0
-    while i < len(toks):
-        j = next((j for j in range(len(toks), i + 1, -1)
-                  if ",".join(toks[i:j]).strip() in names), i + 1)
-        v = ",".join(toks[i:j]).strip()
-        if v:
-            out.append(v)
-        i = j
-    return out
-
-
+# Harness helpers: the shared copy is tools/harness.py (launching Chromium, the local three.js, --views parsing,
+# the UTF-8 console). A fix there reaches every verify.py that imports it.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
+import harness as _harness
+from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
+local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
 try:
@@ -154,6 +94,27 @@ const R=[];
 // 5. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
+
+// 6. INTERIORS (a target with the interior bundle: src/8zz-interiors.js, kits/ancients-interiors). Every planned
+//    building drew its rooms; intact buildings are furnished (every catalog key found, the furnishing audited per
+//    template room by kits/interiors: inside, overlap, doors, clearance, reach, required, determinism); nothing else is;
+//    core/tags reads zero unknowns; ruins broke partitions.
+if(A.interiors){ const I=A.interiors(), AI=KratorAncientsInteriors, IX=KratorInteriors;
+  R.push({name:'interiors-drawn', ok:I.sites>0&&!I.errors.length&&I.bySite.every(s=>s.rooms>0),
+          detail:I.sites+' sites, '+I.rooms+' rooms, '+I.walls+' partition pieces, '+I.stubs+' broken stubs, '+I.floors+' floor slabs, '+I.cleared+' fake or dark pieces cleared'+(I.errors.length?'; ERRORS '+I.errors.join(' | '):'')});
+  const wrong=I.bySite.filter(s=>(s.state==='intact')!==(s.pieces>0));
+  R.push({name:'interiors-furnished-intact-only', ok:!wrong.length,
+          detail:wrong.length?wrong.map(s=>s.id+' '+s.state+' '+s.pieces).join(', '):I.furnished+' intact buildings furnished with '+I.pieces+' pieces ('+I.bySite.filter(s=>s.pieces).map(s=>s.id+' '+s.pieces+'/'+s.templates+'t').join(', ')+'); every other state a socket'});
+  R.push({name:'interiors-catalog-keys', ok:!Object.keys(I.missing).length, detail:Object.keys(I.missing).length?JSON.stringify(I.missing):I.records+' furniture records, every key in the catalog'});
+  let fails=[],n=0;
+  for(const S of AIK.sites){if(!S.furniture)continue;const seen={};
+   for(const r of S.furniture.rooms){if(seen[r.template])continue;seen[r.template]=1;n++;const a=r.recipe?AI.audit(r.recipe,S.furniture.catalog):IX.audit(r.room,r.plan,S.furniture.adapter);if(!a.ok)fails.push(S.id+' '+r.R.kind+': '+a.fails.slice(0,2).map(f=>f.check?f.check+' '+f.msg:'recipe '+f).join('; '));}}
+  R.push({name:'interiors-audit', ok:!fails.length, detail:fails.length?fails.slice(0,6).join(' | '):n+' template rooms audited (inside, overlap, doors, clearance, reach, required, determinism)'});
+  let sf=[];for(const S of AIK.sites)for(const B of S.plan.buildings)for(const st of B.storeys){const f=AI.storeyAudit(st,B.inside?(x,z)=>B.inside(x,z,st.y):null);if(f.length)sf.push(S.id+' '+st.id+': '+f[0]);}
+  R.push({name:'interiors-rooms-inside', ok:!sf.length, detail:sf.length?sf.slice(0,6).join(' | '):'every room of every storey has area and lies inside its building'});
+  const ruins=AIK.sites.filter(S=>S.d>=1&&S.d<=4),unbroken=ruins.filter(S=>!S.plan.buildings.some(B=>B.storeys.some(st=>st.walls.some(w=>w.broken))));
+  R.push({name:'interiors-ruins-broken', ok:!unbroken.length, detail:unbroken.length?unbroken.map(s=>s.id).join(', '):ruins.length+' ruined or rehabilitated sites with broken partitions'});
+  R.push({name:'interiors-tags', ok:I.tagUnknown===0&&I.tagMissingCulture===0&&I.tagMissingTypes===0, detail:I.records_tags+' core/tags records, unknown '+I.tagUnknown+', no culture '+I.tagMissingCulture+', no types '+I.tagMissingTypes}); }
 return R;}"""
 
 

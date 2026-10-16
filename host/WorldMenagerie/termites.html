@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>The Termite Mound</title>
+<link rel="stylesheet" href="css/iziz.css">
+<link rel="stylesheet" href="css/chicago.css">
+<style>
+/* the savanna's look: red clay, dry grass, a dark nest */
+html,body{background:#1a110c}
+#loading{background:#1a110c;color:#f0dcc0;font-family:Georgia,serif;letter-spacing:.04em}
+#title{color:#f6e4c8;font-family:Georgia,serif;font-weight:700;letter-spacing:.24em}
+#hint{font-family:Georgia,serif}
+#ui button,#menagerie a{background:rgba(40,22,12,.86);color:#f6e4c8;border-color:#c06a3a;font-family:Georgia,serif;letter-spacing:.06em}
+#ui button[aria-pressed="true"],#ui button[aria-expanded="true"]{background:#b85a2c;color:#fff}
+#views,#events,#card{background:rgba(32,18,10,.94);border-color:#c06a3a;color:#f2e2cc;font-family:Georgia,serif}
+#views button,#events button{background:rgba(52,30,18,.9);color:#f2e2cc;border-color:#7a5a44;font-family:Georgia,serif}
+#views .sub{color:#e0904e;font-family:Georgia,serif;font-weight:700}
+#events{position:fixed;left:50%;bottom:calc(var(--barh,56px) + 4px);transform:translateX(-50%);box-sizing:border-box;width:min(520px,calc(100% - 20px));max-height:calc(100% - 180px);overflow:auto;display:none;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;padding:10px;border:1px solid #c06a3a;border-radius:2px;z-index:6}
+#events.open{display:grid}
+#events button{padding:8px 10px;font-size:13px;border:1px solid #7a5a44;border-radius:2px;cursor:pointer}
+#timebar{background:rgba(32,18,10,.78);border-color:#c06a3a;color:#f2e2cc;font-family:Georgia,serif;letter-spacing:.08em}
+#card h2{font-family:Georgia,serif;font-weight:700;letter-spacing:.08em}
+canvas{cursor:grab}
+</style>
+</head>
+<body>
+<div id="loading">digging…</div>
+<div id="title">THE TERMITE MOUND</div>
+<div id="hint"><span class="for-mouse">Drag to look round, right-drag or shift-drag to pan, the wheel to go nearer or further. WASD and Q/E to move, F to fly, X to cut the mound in half. Views takes you inside; Events is what the colony does.</span><span class="for-touch">Drag to look round, pinch to go nearer or further, two fingers to pan. Views takes you inside; Cutaway cuts the mound in half.</span></div>
+<div id="ui"></div><div id="views" role="dialog" aria-label="Viewpoints"></div><div id="events" role="dialog" aria-label="Events"></div><div id="card" role="dialog" aria-label="Details" aria-live="polite"></div><div id="side"></div><div id="errs"></div>
+<script src="vendor/three/three.min.js"></script>
+<script type="module" src="src/termites/main.js"></script>
+</body>
+</html>

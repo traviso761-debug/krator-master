@@ -93,7 +93,8 @@ are inhabited (use falls toward the middle), 6–24 are wild, 30 is the ragged r
 walls or windows: every floor is open to the air between the columns — the cross-section is the look.
 Perimeter girders hang 0.9–1.5 m below each plate at the edge, so clear height at the rim is ~3.2 m.
 The open **gallery** runs round each floor between r=19.6 (`GALLERY_IN`) and the edge; walkers use
-the loop at ±22.
+the loop at ±20.2 (`GALLERY_WALK`), between the rooms' fronts and the columns' inner faces (the columns stand
+on the ±22.4 and ±8 lines, 3.2 m square).
 
 `SLOTS[]` dwelling lots on inhabited floors: `{id,tower,k,x,z (centre),y,w (x-extent),d (z-extent),H,ox,oz
 (unit: the way its front/door faces = outward),kind:'home'|'store'|'workshop'|'common'|'shrine',high

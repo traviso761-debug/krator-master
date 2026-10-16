@@ -1,48 +1,19 @@
 // ================================================================= HOST — the life layer (data + navigation)
-// No one walks yet. What is here is the part every later pass stands on:
-// factions, jobs, hour-by-hour schedules of ACTIVITIES (never coordinates),
-// the places that offer those activities (44-host-layout, PLACES), the world
-// events, and a walkable grid read from the terrain with A* over it. Every
-// route below is FOUND on the ground, not typed: if the switchback stops being
-// walkable the convoy's exit fails and the probe says so.
+// No one walks yet. What is here is the part every later pass stands on, declared into core/simulation (SIM,
+// PLAN.md Phase 1, Shade its data prototype): the factions and orgs, the roles with hour-by-hour schedules of
+// ACTIVITIES (never coordinates) and the world events are world/*.json (SHADE_WORLD_JSON, 83, made by build.py);
+// the places that offer those activities are 44-host-layout's PLACES; the walkable grid below is read from the
+// terrain, searched with A*, and registered as SIM's 'pedestrian' layer. Every route is FOUND on the ground, not
+// typed: if the switchback stops being walkable the convoy's exit fails and the probe says so.
 //
 // Rules of the data (README: never encode a world rule only in the visuals):
-//   a job asks for an activity at an hour; a place offers activities and a capacity;
-//   the resolver picks the nearest reachable place offering it; an event is a list
-//   of activities between two ports (edges of the settlement), not a path.
+//   a role asks for an activity at an hour; a place offers activities to `cap` people at once (its capacity, shared
+//   by them all); the nearest place offering an activity is resolved by SIM; an event is a list of activities
+//   between two ports (edges of the settlement), not a path.
 const LIFE=(function(){
-const ACTIVITIES=['SLEEP','EAT','REST','FARM','HERD','TRADE','CRAFT','SOCIALIZE','PLAY','WORSHIP','PATROL','FETCH_WATER','WATER_CAMELS'];
-const FACTIONS={
- eastern_nomads:{name:'Eastern Nomads',subs:{
-  shade_clans:{name:'The Shade clans',resident:true},
-  aquifer_wardens:{name:'Wardens of the Deep Aquifer',resident:true},
-  canyon_guard:{name:'The canyon guard',resident:true},
-  caravaneers:{name:'Visiting caravaneers',resident:false},
-  dune_raiders:{name:'Dune raiders',resident:false,hostile:'when provoked'}}}};
-// a schedule is a list of [hour, activity] spans; sched() expands it to 24 hours
-function sched(spans){const out=new Array(24);let a=spans[spans.length-1][1];
- for(let h=0;h<24;h++){for(const s of spans)if(s[0]===h)a=s[1];out[h]=a;}return out;}
-const JOBS={
- farmer:      {sub:'shade_clans',count:300,homes:['petra','pueblo','tents','cliff-nw','cliff-se'],sched:sched([[0,'SLEEP'],[5,'FARM'],[11,'REST'],[15,'FARM'],[19,'EAT'],[20,'SOCIALIZE'],[22,'SLEEP']])},
- herder:      {sub:'shade_clans',count:90, homes:['tents'],sched:sched([[0,'SLEEP'],[5,'HERD'],[12,'REST'],[14,'HERD'],[19,'EAT'],[21,'SLEEP']])},
- shopkeeper:  {sub:'shade_clans',count:90, homes:['pueblo','petra'],sched:sched([[0,'SLEEP'],[6,'TRADE'],[12,'EAT'],[13,'REST'],[16,'TRADE'],[20,'SOCIALIZE'],[22,'SLEEP']])},
- artisan:     {sub:'shade_clans',count:140,homes:['petra','pueblo','cliff-sw','cliff-se'],sched:sched([[0,'SLEEP'],[6,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[18,'SOCIALIZE'],[21,'SLEEP']])},
- water_carrier:{sub:'shade_clans',count:40,homes:['pueblo','tents'],sched:sched([[0,'SLEEP'],[5,'FETCH_WATER'],[10,'REST'],[16,'FETCH_WATER'],[19,'EAT'],[21,'SLEEP']])},
- child:       {sub:'shade_clans',count:170,homes:['petra','pueblo','tents','cliff-nw','cliff-se'],sched:sched([[0,'SLEEP'],[7,'EAT'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[19,'EAT'],[20,'SLEEP']])},
- elder:       {sub:'shade_clans',count:80, homes:['petra','pueblo','cliff-se','cliff-en'],sched:sched([[0,'SLEEP'],[6,'WORSHIP'],[8,'SOCIALIZE'],[12,'REST'],[16,'SOCIALIZE'],[19,'EAT'],[21,'SLEEP']])},
- priest:      {sub:'aquifer_wardens',count:6,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[12,'TRADE'],[14,'REST'],[18,'WORSHIP'],[21,'SLEEP']])},
- acolyte:     {sub:'aquifer_wardens',count:24,homes:['shrine'],sched:sched([[0,'SLEEP'],[4,'WORSHIP'],[8,'FETCH_WATER'],[10,'CRAFT'],[18,'WORSHIP'],[21,'SLEEP']])},
- guard_day:   {sub:'canyon_guard',count:30,homes:['pueblo'],sched:sched([[0,'SLEEP'],[6,'PATROL'],[18,'EAT'],[19,'SOCIALIZE'],[22,'SLEEP']])},
- guard_night: {sub:'canyon_guard',count:30,homes:['tents'],sched:sched([[0,'PATROL'],[6,'EAT'],[7,'SLEEP'],[15,'REST'],[17,'EAT'],[18,'PATROL']])},
- caravaneer:  {sub:'caravaneers',count:60,homes:['khan'],transient:true,sched:sched([[0,'SLEEP'],[6,'WATER_CAMELS'],[7,'TRADE'],[12,'EAT'],[13,'REST'],[16,'TRADE'],[20,'EAT'],[21,'SOCIALIZE'],[23,'SLEEP']])},
-};
-// the residents: one record each, deterministic, homes dealt round-robin
-const PEOPLE=[];(function(){let n=0;for(const j in JOBS){const J=JOBS[j];for(let i=0;i<J.count;i++)PEOPLE.push({id:'p'+(n++),job:j,faction:'eastern_nomads',sub:J.sub,home:J.homes[i%J.homes.length],transient:!!J.transient});}})();
-const EVENTS=[
- {id:'raider_convoy',name:'Dune raider convoy',faction:'eastern_nomads',sub:'dune_raiders',riders:12,mount:'camel',
-  every_days:[3,6],from:'canyon_east',to:'plateau_north',
-  stops:[{activity:'WATER_CAMELS',mins:30},{activity:'TRADE',mins:90},{activity:'REST',mins:120}]}];
-const byId={};PLACES.forEach(p=>byId[p.id]=p);
+// world time from core/clock, held at noon: Shade has no running clock, and SIM is never stepped while no one walks
+const CLOCK=KCLOCK.make({hour:12});
+SIM.init({seed:20261005,hour:()=>CLOCK.hour,day:()=>CLOCK.day,t:()=>CLOCK.t,err:m=>reportErr('sim: '+m)});
 
 // ---------------------------------------------------------------- the walkable grid
 // 1.5 m cells over the settlement and its approaches. A cell is blocked under
@@ -90,43 +61,61 @@ function route(ax,az,bx,bz,block){const s=nearestOpen(ax,az),t=nearestOpen(bx,bz
 // everything reachable from a point (a flood over the same steps)
 function reach(x,z,block){const s=nearestOpen(x,z),seen=new Uint8Array(N);if(s<0)return seen;const q=[s];seen[s]=1;
  while(q.length){const k=q.pop();for(let d=0;d<8;d++){const r=step(k,d,block);if(r>=0&&!seen[r]){seen[r]=1;q.push(r);}}}return seen;}
-const target=p=>{const c=polyCentre(p.poly);return{x:c[0],z:c[1]};};
+// ---------------------------------------------------------------- the world in SIM
+// The grid answers SIM's route() as its 'pedestrian' layer (a grid layer: core/simulation/SCHEMA.md, Navigation).
+// A search is kept per pair of cells (A* is deterministic, so a kept route is the one a new search would find): a
+// thousand people deciding at once ask for a few hundred pairs, their homes and the places' doors.
+const ROUTE_CACHE=new Map();
+SIM.nav.layer('pedestrian',{route:(ax,az,bx,bz,o)=>{if(o&&o.block)return route(ax,az,bx,bz,o.block);
+ const key=nearestOpen(ax,az)+'|'+nearestOpen(bx,bz);if(!ROUTE_CACHE.has(key))ROUTE_CACHE.set(key,route(ax,az,bx,bz));return ROUTE_CACHE.get(key);}});
+// The places, from 44: each walked to at its polygon's centre; its capacity is the people it holds at once over all
+// its activities (SIM's cap), and any one activity may fill it.
+for(const p of PLACES){const c=polyCentre(p.poly),y=terrainH(c[0],c[1]),acts={};for(const a of p.activities)acts[a]=p.capacity;
+ SIM.place({id:p.id,name:p.name,kind:p.kind,x:c[0],z:c[1],y,door:{x:c[0],y,z:c[1]},activities:acts,cap:p.capacity,tags:p.tags});}
+for(const n in PORTS)SIM.port({id:n,name:PORTS[n].name,x:PORTS[n].x,z:PORTS[n].z});
+const loaded=SIM.load(SHADE_WORLD_JSON);
+// the residents: each role's count dealt round-robin over its homes (place ids), as Shade has always dealt them
+const population=SIM.populate({prefix:'p'});
+const place=id=>SIM.get('place',id),KH=place('khan').door;
+SIM.REF={layer:'pedestrian',x:KH.x,z:KH.z,ports:true};   // every place and port must be reachable from the Khan
+const problems=SIM.check();
 // the nearest place offering an activity (straight-line; the route then proves it reachable)
-function offering(act,x,z){let b=null,bd=1e9;for(const p of PLACES){if(p.activities.indexOf(act)<0)continue;const t=target(p),d=Math.hypot(t.x-x,t.z-z);if(d<bd){bd=d;b=p;}}return b;}
+const offering=(act,x,z)=>SIM.placesFor(act,null,null,{near:[x,z],ignoreSlots:true})[0]||null;
+const walk=(a,b)=>SIM.nav.route('pedestrian',{x:a.x,z:a.z},{x:b.x,z:b.z});
 
-// ---------------------------------------------------------------- the checks the probe reads
-const OUT={places:PLACES.length,people:PEOPLE.length,jobs:Object.keys(JOBS).length,activities:ACTIVITIES.length,
- unknownActivities:[],unreachable:[],capacity:[],routes:{},events:{},onlyWayUp:null};
-// every activity a job or event asks for is offered somewhere, and every place's activities are known
-for(const j in JOBS)for(const a of JOBS[j].sched)if(ACTIVITIES.indexOf(a)<0||!PLACES.some(p=>p.activities.indexOf(a)>=0))OUT.unknownActivities.push(j+':'+a);
-for(const p of PLACES)for(const a of p.activities)if(ACTIVITIES.indexOf(a)<0)OUT.unknownActivities.push(p.id+':'+a);
-// capacity: each hour, fill the places offering each activity (scarcest activity first) and report shortfalls
-for(let h=0;h<24;h++){const want={};for(const j in JOBS){const a=JOBS[j].sched[h];want[a]=(want[a]||0)+JOBS[j].count;}
- const room={};PLACES.forEach(p=>room[p.id]=p.capacity);
- const acts=Object.keys(want).sort((a,b)=>PLACES.filter(p=>p.activities.indexOf(a)>=0).length-PLACES.filter(p=>p.activities.indexOf(b)>=0).length);
- for(const a of acts){let need=want[a];for(const p of PLACES){if(need<=0)break;if(p.activities.indexOf(a)<0)continue;const t=Math.min(need,room[p.id]);room[p.id]-=t;need-=t;}
-  if(need>0)OUT.capacity.push({hour:h,activity:a,short:need});}}
-// reachability of every place from the Khan, over the ground
-const KH=target(byId.khan),R0=reach(KH.x,KH.z);
-for(const p of PLACES){const t=target(p),k=nearestOpen(t.x,t.z);if(k<0||!R0[k])OUT.unreachable.push(p.id);}
-for(const n in PORTS){const k=nearestOpen(PORTS[n].x,PORTS[n].z);if(k<0||!R0[k])OUT.unreachable.push('port:'+n);}
-// the switchback is the only way up: block its corridor and the gatehouse must fall out of reach
-{const blk=new Uint8Array(N);let cells=0;for(let k=0;k<N;k++){const [x,z]=xzOf(k);if(x<SWB.x0-12||x>SWB.x1+12||z>SWB.zEdge+14||z<SWB.zEdge-SWB.W-16)continue;const n=swNear(x,z);if(n&&n.d<SWB.bank+1.5){blk[k]=1;cells++;}}
- const G=target(byId.switchback_gate),kg=nearestOpen(G.x,G.z),R1=reach(KH.x,KH.z,blk);
- OUT.onlyWayUp={withSwitchback:!!(kg>=0&&R0[kg]),withoutSwitchback:!!(kg>=0&&R1[kg]),blockedCells:cells};}
-// the convoy: its legs resolved to places and routed on the ground
+// ---------------------------------------------------------------- Shade's own audits, added to SIM.audit()
+// SIM.audit counts the people, places and roles and finds unknown activities, the hourly capacity shortfalls and
+// what the Khan cannot reach. Shade adds: the switchback is the only way up, the convoy routed on the ground, and a
+// daily commute per role. The routes found are drawn by 86 (ROUTES).
 const ROUTES=[];
-for(const E of EVENTS){let x=PORTS[E.from].x,z=PORTS[E.from].z;const legs=[],missing=[];
- const go=(to,label)=>{const r=route(x,z,to.x,to.z);if(!r){missing.push(label);return;}legs.push({to:label,len:Math.round(r.len)});ROUTES.push({key:E.id,label:E.name+': '+label,pts:r.pts,color:0xff5a3c});x=to.x;z=to.z;};
- for(const s of E.stops){const p=offering(s.activity,x,z);if(!p){missing.push(s.activity+' (nowhere)');continue;}go(target(p),s.activity+' at '+p.id);}
- go(PORTS[E.to],'exit '+E.to);
- // does the exit leg climb the switchback? (the share of its length within 3 m of the trail)
- const last=ROUTES[ROUTES.length-1];let on=0,tot=0;if(last&&last.key===E.id)for(let i=1;i<last.pts.length;i++){const a=last.pts[i-1],b=last.pts[i],l=Math.hypot(b[0]-a[0],b[2]-a[2]);tot+=l;const n=swNear((a[0]+b[0])/2,(a[2]+b[2])/2);if(n&&n.d<3)on+=l;}
- OUT.events[E.id]={legs,missing,exitOnSwitchback_m:Math.round(on)};}
-// a daily commute per job: home to each place its schedule sends it, and back
-for(const j in JOBS){const J=JOBS[j],home=byId[J.homes[0]],h=target(home),seen={};let bad=0,len=0;
- for(const a of J.sched){if(seen[a])continue;seen[a]=1;if(home.activities.indexOf(a)>=0)continue;const p=offering(a,h.x,h.z);if(!p){bad++;continue;}const t=target(p),r=route(h.x,h.z,t.x,t.z);if(!r)bad++;else{len+=r.len;if(j==='herder'||j==='guard_day'||j==='farmer')ROUTES.push({key:'commute',label:j+': '+home.id+' to '+p.id,pts:r.pts,color:0x3cc8ff});}}
- OUT.routes[j]={unrouted:bad,metres:Math.round(len)};}
+SIM.audits.push(function(OUT){ROUTES.length=0;
+ // the switchback is the only way up: block its corridor and the gatehouse must fall out of reach
+ {const blk=new Uint8Array(N);let cells=0;for(let k=0;k<N;k++){const [x,z]=xzOf(k);if(x<SWB.x0-12||x>SWB.x1+12||z>SWB.zEdge+14||z<SWB.zEdge-SWB.W-16)continue;const n=swNear(x,z);if(n&&n.d<SWB.bank+1.5){blk[k]=1;cells++;}}
+  const G=place('switchback_gate').door,kg=nearestOpen(G.x,G.z),R0=reach(KH.x,KH.z),R1=reach(KH.x,KH.z,blk);
+  OUT.onlyWayUp={withSwitchback:!!(kg>=0&&R0[kg]),withoutSwitchback:!!(kg>=0&&R1[kg]),blockedCells:cells};}
+ // the events: their legs resolved to places and routed on the ground
+ OUT.events={};
+ for(const E of SIM.all('event')){const P0=SIM.get('port',E.from[0]);let x=P0.x,z=P0.z;const legs=[],missing=[];
+  const go=(to,label)=>{const r=walk({x,z},to);if(!r){missing.push(label);return;}legs.push({to:label,len:Math.round(r.len)});ROUTES.push({key:E.id,label:E.name+': '+label,pts:r.pts,color:0xff5a3c});x=to.x;z=to.z;};
+  for(const s of E.legs||[]){const p=offering(s.activity,x,z);if(!p){missing.push(s.activity+' (nowhere)');continue;}go(p.door,s.activity+' at '+p.id);}
+  go(SIM.get('port',E.to[0]),'exit '+E.to[0]);
+  // does the exit leg climb the switchback? (the share of its length within 3 m of the trail)
+  const last=ROUTES[ROUTES.length-1];let on=0,tot=0;if(last&&last.key===E.id)for(let i=1;i<last.pts.length;i++){const a=last.pts[i-1],b=last.pts[i],l=Math.hypot(b[0]-a[0],b[2]-a[2]);tot+=l;const n=swNear((a[0]+b[0])/2,(a[2]+b[2])/2);if(n&&n.d<3)on+=l;}
+  OUT.events[E.id]={legs,missing,exitOnSwitchback_m:Math.round(on)};}
+ // a daily commute per role: home to each place its schedule sends it, and back
+ OUT.routes={};
+ for(const R of SIM.all('role')){if(R.transient||!R.homes)continue;const home=place(R.homes[0]),h=home.door,seen={};let bad=0,len=0;
+  for(const a of R.sched){if(seen[a])continue;seen[a]=1;if(SIM.offers(home,a))continue;const p=offering(a,h.x,h.z);if(!p){bad++;continue;}const r=walk(h,p.door);if(!r)bad++;else{len+=r.len;if(R.id==='herder'||R.id==='guard_day'||R.id==='farmer')ROUTES.push({key:'commute',label:R.id+': '+home.id+' to '+p.id,pts:r.pts,color:0x3cc8ff});}}
+  OUT.routes[R.id]={unrouted:bad,metres:Math.round(len)};}});
+
+// ---------------------------------------------------------------- the checks the probe reads (window._life)
+// SIM's report (window._sim.audit() gives it afresh) in the shape the probe has always read
+const A=SIM.audit();
+const OUT={places:A.places,people:A.people,jobs:SIM.all('role').filter(R=>!R.transient).length,activities:SIM.all('activity').length,unknownActivities:A.unknownActivities,
+ unreachable:A.unroutable,capacity:A.capacity,routes:A.routes,events:A.events,onlyWayUp:A.onlyWayUp};
 NAV.blocked=BLK;
-return{ACTIVITIES,FACTIONS,JOBS,PEOPLE,EVENTS,NAV,route,reach,offering,ROUTES,OUT,sched};})();
+// SIM stepped a world minute at a time (3 s of motion each: the 72-minute day). The probe runs it; nothing steps it
+// per frame until people are drawn (KNOWN_ISSUES.md). The hour is set mid-minute so SIM.minute() floors exactly.
+function run(minutes){let M=SIM.minute();for(let m=0;m<minutes;m++){M++;CLOCK.day=Math.floor(M/1440);CLOCK.hour=(M%1440+.5)/60;CLOCK.t+=CLOCK.dayLength/1440;SIM.step();}}
+return{NAV,route,reach,offering,ROUTES,OUT,loaded,population,problems,CLOCK,run,ROUTE_CACHE};})();
 window._life=LIFE.OUT;

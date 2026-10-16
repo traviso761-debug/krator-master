@@ -1,4 +1,4 @@
-/* ========================= THE BESPOKE SILT STRIDER MODEL =================
+/* ========================= THE BESPOKE ELEPHANT BUG MODEL =================
    The stand-in is GONE. Every note above about "strider cars REUSE
    lifeCaravanMesh, scaled 2.3x and retinted" describes what this file used
    to do and is kept only as the record of the compromise; what actually
@@ -162,7 +162,7 @@ striderPart(new THREE.CylinderGeometry(0.72,0.72,0.14,8).translate(0,22.9,7.2), 
 var striderBodyGeo = lifeMergeGeoms(striderParts);
 var striderMesh = new THREE.InstancedMesh(striderBodyGeo,
   new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true }), LIFE_STRIDER_CAR_SLOTS);
-striderMesh.userData.life = true; striderMesh.userData.inspectLabel = 'Silt strider';
+striderMesh.userData.life = true; striderMesh.userData.inspectLabel = 'Elephant bug';
 striderMesh.frustumCulled = false;
 scene.add(striderMesh);
 
@@ -177,7 +177,7 @@ scene.add(striderMesh);
 var striderLegGeo = new THREE.CylinderGeometry(0.42,0.62,1,6).translate(0,0.5,0);
 var striderLegMesh = new THREE.InstancedMesh(striderLegGeo,
   new THREE.MeshLambertMaterial({ color: 0x4a3a28 }), LIFE_STRIDER_CAR_SLOTS*STRIDER_BARS_PER_BODY);
-striderLegMesh.userData.life = true; striderLegMesh.userData.inspectLabel = 'Silt strider leg';
+striderLegMesh.userData.life = true; striderLegMesh.userData.inspectLabel = 'Elephant bug leg';
 striderLegMesh.frustumCulled = false;
 scene.add(striderLegMesh);
 

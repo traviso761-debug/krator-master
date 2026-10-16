@@ -1,6 +1,7 @@
 # Yuni's KRATOR_EXPORT records (settlements/yuni/GAME_EXPORT.md) as a Godot scene: no meshes come across, only
-# tagged records with stable ids, so this importer draws stand-ins (boxes, quads, lights) and puts every record's
-# fields on its node as metadata. One building's interior is built in full: rooms, walls with -col collision,
+# tagged records with stable ids, so this importer draws stand-ins (boxes, quads, lights) and puts every thing's
+# core/tags record (tags.json beside fixtures.json, format krator-tags: core/tags/README.md) on its node as the
+# "krator" metadata; an export without tags.json falls back to the fixture record. One building's interior is built in full: rooms, walls with -col collision,
 # furniture markers, and the walk graph as NavigationRegion3D per level plus NavigationLink3D per stair, ladder and door.
 class_name KratorRecords
 extends RefCounted
@@ -19,6 +20,7 @@ static func build(fixtures_path: String, building_path: String) -> Node3D:
 		root.set_meta("report", report)
 		return root
 	root.set_meta("krator", {"schema": fx.get("schema"), "coords": fx.get("coords")})
+	var tags := _tags(fixtures_path.get_base_dir() + "/tags.json", report)
 
 	# buildings: a node each (the tags need a node; a MultiMesh instance cannot carry metadata), a translucent box
 	var bnode := Node3D.new()
@@ -38,7 +40,7 @@ static func build(fixtures_path: String, building_path: String) -> Node3D:
 		for k in b:
 			if k != "doors" and k != "windows" and k != "lights":
 				meta[k] = b[k]
-		n.set_meta("krator", meta)
+		n.set_meta("krator", tags.get(b["id"], meta))
 		var mi := MeshInstance3D.new()
 		var bm := BoxMesh.new()
 		bm.size = Vector3(float(b["w"]), float(b["h"]), float(b["d"]))
@@ -47,11 +49,12 @@ static func build(fixtures_path: String, building_path: String) -> Node3D:
 		mi.material_override = box_mat
 		n.add_child(mi)
 		bnode.add_child(n)
-		cultures[b.get("culture", "?")] = cultures.get(b.get("culture", "?"), 0) + 1
+		var cu = tags[b["id"]]["tags"].get("culture", "?") if tags.has(b["id"]) else b.get("culture", "?")
+		cultures[cu] = cultures.get(cu, 0) + 1
 
 	# doors and windows: thousands, so MultiMeshes (and the finding: per-instance tags need a side table)
-	root.add_child(_fixture_mm("Doors", fx["doors"], Color(0.45, 0.25, 0.1), true))
-	root.add_child(_fixture_mm("Windows", fx["windows"], Color(0.4, 0.6, 0.9), false))
+	root.add_child(_fixture_mm("Doors", fx["doors"], Color(0.45, 0.25, 0.1), true, tags))
+	root.add_child(_fixture_mm("Windows", fx["windows"], Color(0.4, 0.6, 0.9), false, tags))
 	report["gaps"]["instanced tags"] = "doors and windows are MultiMesh instances here; their ids and tags sit in a side table (meta 'records') indexed by instance, since a MultiMesh instance has no metadata"
 
 	# lights: the nearest MAX_LIGHTS to the chosen building become OmniLight3D, the rest only records
@@ -59,13 +62,16 @@ static func build(fixtures_path: String, building_path: String) -> Node3D:
 	var ln := Node3D.new()
 	ln.name = "Lights"
 	root.add_child(ln)
-	ln.set_meta("records", lights)
+	ln.set_meta("records", lights.map(func(l): return tags.get(l["id"], l)))
 
 	# the chosen building in full
 	var bj: Dictionary = KData.read_json(building_path) if FileAccess.file_exists(building_path) else {}
 	var focus := Vector3.ZERO
 	if not bj.is_empty():
 		var interior := _interior(bj, report)
+		var bid = bj.get("building", bj).get("id", "")
+		if tags.has(bid):
+			interior.set_meta("krator", tags[bid])
 		root.add_child(interior)
 		# the stand-in box would hide the interior it stands for
 		var shell := bnode.get_node_or_null("Building_" + str(bj.get("building", bj).get("id", "")))
@@ -84,7 +90,7 @@ static func build(fixtures_path: String, building_path: String) -> Node3D:
 		o.omni_range = float(l.get("radius", 6.0))
 		o.light_energy = float(l.get("amp", 1.0))
 		o.light_color = Color(1.0, 0.72, 0.42) if not l.get("electric", false) else Color(0.95, 0.95, 1.0)
-		o.set_meta("krator", l)
+		o.set_meta("krator", tags.get(l["id"], l))
 		ln.add_child(o)
 	report["gaps"]["light units"] = "light amp and radius are three.js PointLight numbers; Godot's energy and range are not the same units (retune, then put the factor in the export)"
 
@@ -95,7 +101,23 @@ static func build(fixtures_path: String, building_path: String) -> Node3D:
 	return root
 
 
-static func _fixture_mm(nm: String, recs: Array, col: Color, is_door: bool) -> MultiMeshInstance3D:
+# tags.json as {id: record}; empty (and a gap) when the export has none
+static func _tags(path: String, report: Dictionary) -> Dictionary:
+	var out := {}
+	if not FileAccess.file_exists(path):
+		report["gaps"]["tags"] = "no tags.json beside the fixtures: nodes carry the fixture records, not core/tags records"
+		return out
+	var t = KData.read_json(path)
+	if not (t is Dictionary) or t.get("format") != "krator-tags":
+		report["gaps"]["tags"] = "tags.json is not a krator-tags export"
+		return out
+	for r in t["records"]:
+		out[r["id"]] = r
+	report["tags"] = {"format": t["format"], "version": t["version"], "records": out.size()}
+	return out
+
+
+static func _fixture_mm(nm: String, recs: Array, col: Color, is_door: bool, tags: Dictionary) -> MultiMeshInstance3D:
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	var bm := BoxMesh.new()
@@ -116,7 +138,7 @@ static func _fixture_mm(nm: String, recs: Array, col: Color, is_door: bool) -> M
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = col
 	mmi.material_override = mat
-	mmi.set_meta("records", recs)
+	mmi.set_meta("records", recs.map(func(r): return tags.get(r["id"], r)))
 	return mmi
 
 

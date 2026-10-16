@@ -1,0 +1,10 @@
+[
+{"id":"mungo>eastern_nomads","a":"mungo","b":"eastern_nomads","stance":"friendly","trade":true,"travel":true,"_note":"the brief: friendly to eastern nomads"},
+{"id":"mungo>geomancers","a":"mungo","b":"geomancers","stance":"friendly","trade":true,"travel":true,"settle":true,"_note":"the brief: friendly to the Geomancers; they keep a chapterhouse here"},
+{"id":"mungo>iziz","a":"mungo","b":"iziz","stance":"cordial","trade":true,"travel":true,"_note":"the brief: friendly to a lesser extent"},
+{"id":"mungo>monks_of_history","a":"mungo","b":"monks_of_history","stance":"cordial","trade":true,"travel":true,"_note":"the brief: friendly to a lesser extent"},
+{"id":"mungo>yuni","a":"mungo","b":"yuni","stance":"friendly","trade":true,"travel":true,"settle":true,"_note":"the brief: friendly to Yuni; Yuni households live by the chapterhouse"},
+{"id":"eastern_nomads>mungo","a":"eastern_nomads","b":"mungo","stance":"friendly","trade":true,"_note":"returned: the nomads trade here"},
+{"id":"geomancers>mungo","a":"geomancers","b":"mungo","stance":"friendly","_note":"returned"},
+{"id":"yuni>mungo","a":"yuni","b":"mungo","stance":"friendly","_note":"returned"}
+]

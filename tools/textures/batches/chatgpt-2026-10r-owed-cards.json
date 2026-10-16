@@ -1,0 +1,101 @@
+[
+ {
+  "src": "Nine Botanical Seed Pod Clusters.png",
+  "out": "core/materials/library/card.pods",
+  "record": {
+   "id": "card.pods",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.pods).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Nine Botanical Seed Pod Clusters.png",
+    "reuse": "sedesert pods; any hanging seed or bean pods (nine-cell sheet)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Forest Floor Debris Atlas.png",
+  "out": "core/materials/library/card.litter",
+  "record": {
+   "id": "card.litter",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.litter).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Forest Floor Debris Atlas.png",
+    "reuse": "ebadlands and crater drylands ground litter (nine-cell sheet)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Alien Coral Specimen Grid.png",
+  "out": "core/materials/library/card.reef",
+  "record": {
+   "id": "card.reef",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.reef).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Alien Coral Specimen Grid.png",
+    "reuse": "rift and xanadu anemones, frills and candles; nhighlands fins; alien flora (nine-cell sheet)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

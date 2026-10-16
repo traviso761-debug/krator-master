@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1767,
+    871
+   ],
+   "seam_after": [
+    0.796,
+    0.282
+   ],
+   "seam_before": [
+    1.442,
+    1.165
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.4,
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "xanadu/zigzag",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.7,
+  "scale": [
+   2,
+   0.99
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Painted Pink and Gold Chevron Stripes.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Painted Pink and Gold Chevron Stripes.png",
+  "prompt": "Prompt row patterns/xanadu/zigzag in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Xanadu Palopo bands",
+  "sha1": "0fee8dfb853085b695e3bd02e372e01a2981fce1"
+ }
+}

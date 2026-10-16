@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1247
+   ],
+   "seam_after": [
+    1.596,
+    1.045
+   ],
+   "seam_before": [
+    1.789,
+    1.78
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.45,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "scyvoi/kilim-cold-flame",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.9,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "scyvoi_kilim-cold-flame.png",
+  "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+  "licence": "supplied for this project by its owner",
+  "prompt": "not recorded: blue, green and gold kilim with flame motifs on black",
+  "reuse": "kilims, barding, hangings; any steppe or desert culture",
+  "sha1": "78d8c8d0c18e54803f67d6bde5aaad57cc2fc0d1"
+ }
+}

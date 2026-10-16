@@ -1,0 +1,17 @@
+[
+{"id":"CRAFT"},
+{"id":"DEPART","_note":"a visiting group leaving by its port (the last leg of an event)"},
+{"id":"EAT"},
+{"id":"FARM"},
+{"id":"FETCH_WATER"},
+{"id":"HERD"},
+{"id":"IDLE","_note":"SIM's last fallback: at home when nothing else has room. No place offers it"},
+{"id":"PATROL"},
+{"id":"PLAY"},
+{"id":"REST"},
+{"id":"SLEEP"},
+{"id":"SOCIALIZE"},
+{"id":"TRADE"},
+{"id":"WATER_CAMELS"},
+{"id":"WORSHIP"}
+]

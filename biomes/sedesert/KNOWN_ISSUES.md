@@ -4,6 +4,15 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [x] (2026-10-15) The whole core/host interface (ROADMAP.md section 10, step 4; core/host/README.md): the inspector, marks, minimap, and
+      the editor's fauna mode (kits/fauna's desert group, 39-host-fauna.js: this biome's own animals first, put down, moved,
+      turned, removed, idling and grazing) and ground brushes (raise, lower, flatten, smooth on TFIELD: core/terrain's
+      KFIELD.stroke; undo replays from the baked field). Save writes edits.json (tools/edits/serve.py), the next build inlines it.
+      The scene census at four views is unchanged.
+- [ ] (2026-10-15) A ground stroke writes the field and the ground's lattice only: the biome's plants, rocks and dress, the
+      river, the pond, the cataract and the carved cap stay where the page put them (an animal put down in the editor is
+      re-seated). Re-seating the biome's instances needs their records' positions re-read from the field (BIO keeps them in
+      its baked matrices). The field cache (FC) and the painter read the closure, so the ground's paint does not follow a stroke.
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/sedesert.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).
@@ -18,11 +27,37 @@ Read before changing anything here. `build.py` prints the open count.
       to be their own kit.
 - [ ] The zone weights (SEDESERT.zones) are thresholds on the ten fields; a world with
       differently scaled fields will want to retune the smooth() bands in 55-trees.
-- [ ] The river's water is a ribbon of fixed half-width (12 m) at WL(x); the channel
-      is cut 2.6 m below the floor so the ribbon's edges hide under the banks. A world
-      whose channel is wider must widen the ribbon (45-host-stage, `HW`).
-- [ ] The cataract's plunge pool is a flat fan at -703 m with the Abyss floor's rocks
-      standing out of it; the rapids are foam in the ribbon's vertex colour, not geometry.
+- [ ] The river's water is core/water's flow (2026-10-13, `RIVER` in 45, drawn in `89w-host-water.js`): a ribbon
+      22 m wide plus 1.5 m a side under the banks along WL(x); the channel is cut 2.6 m below the floor so its edges hide
+      under the banks. A world whose channel is wider must widen it (`width`). Where WL(x) rises downstream over the
+      bed's noise the line holds its level (the surface never climbs), so a few metres of ribbon may sit under the cut.
+      The rapids are the flow shader's (white where the line steepens), not geometry: the line falls 25 to 98 % down
+      the mountain gorge (x -3440 to -2540), a cascade, so "The wadi gorge" view reads white almost throughout, even after
+      the rapids' foam was toned down (core/water's PRESETS.flow: foam from 1.5 % to 12 % slope, at most 0.6).
+- [ ] The cataract's plunge pool is core/water's still water (a polygon at -703 m, the old fan's outline) with the
+      Abyss floor's rocks standing out of it, and the fall's churn disc where the curtain lands.
+- [ ] THE GROUND IS A BAKED FIELD (2026-10-08, `core/terrain/30-core-field.js`; GODOT-PLAN.md Phase 2 item 2). At
+      load `terrainH0` (the closure, with the cave's recess) is baked once onto a 841 x 841 Float32 grid at 8.905 m
+      (half the ground mesh's 17.8 m cell) over the map's 7480 m square, plus a 145 x 133 inset at 1.484 m over the
+      lip's window (the mesh's 12-way split there), and the river and the pond as the field's water surfaces: ~1 s in
+      the page, 2.9 MB. `terrainH` is `TFIELD.h` (bilinear), and the ground mesh, flora heights, fauna paths, the
+      tower, the camera and `BIO.export` (`ground.field`, the krator-field Godot imports) read it. Measured against
+      the closure: **every ground vertex on a grid point is the closure to 6e-5 m** (float32; 186,504 on the base
+      grid, 19,152 in the inset), but the mesh's fine columns and rows run right across the map outside the lip's
+      window (the lattice is separable), and those **94,070 vertices fall between grid points: they now take the
+      field's 8.9 m line instead of the closure's 1.5 m one (median 5 mm, p99 2.5 m, max 4.5 m**, on the Abyss rim's
+      strip and the strip across the map at the lip's z). At **10,000 random points: mean 0.06 m, median 4 mm, p99
+      1.47 m, max 6.1 m** (the badland terraces, whose steps are discontinuous in the closure); inside the lip's
+      window p99 2.2 m, max 43 m on the promontory's sheer face, where the mesh has the same vertices. **Flora:
+      all 544,452 static instances keep their place and order (identical xz); 508,571 moved in y: mean 0.12 m, median
+      3 mm, p90 0.25 m, p99 1.99 m, max 9.6 m** (a stone on a terrace step), 14,245 by more than 1 m. They sit closer
+      to the ground as drawn than before (distance to the mesh's triangles: mean 0.31 to 0.23 m, p99 6.2 to 4.6 m).
+      To keep the places, the placement DECISIONS still read the closure (`placeH`: the masks' water depth,
+      `BIO.depth`, the field cache's slope, the deer's leg slope); read on the field they flip some acceptances and
+      reshuffle nearly every pass's stream (measured: 67k of 544k instances kept their xz). The reseeding event
+      (biomes/WORLD.md, Order 6) moves them onto the field with the cell seeding, once, and drops `placeH`. The page's
+      `waterH` is still its closure too (the field's surfaces end on the 8.9 m lattice), and `PL` is read from the
+      closure. Not baked: the carve patch (its rock is meshed from `terrainBase`, the closure), land cover.
 - [ ] The strata (35-core-strata) are colour only: harder beds do not stand out as
       ledges and soft ones are not recessed (that needs the heightfield's profile to read
       the column), and the Abyss cliff and the mountains still get the painter's coarse bands.
@@ -34,6 +69,13 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The fauna is a first pass: the kites glide (no flap), the swifts follow a Lissajous
       swarm rather than a boid flock, the striders' legs are two rods swinging fore and aft,
       and the lizards never move. Nothing reacts to the camera.
+- [ ] The deer and coyotes (2026-10) are rigid parts on a walker: legs are single tapered segments
+      (no knee or hock), the head swings with its neck as one piece, the deer's walk uses the
+      trot's diagonal pairs, and nothing avoids anything else (two deer of a herd can cross; a
+      coyote loop can run through a herd). Their paths avoid trunks only at 3 m samples. Past
+      1.6 km from `BIO.eye()` a herd or a loop keeps its last pose (this host binds no eye).
+      `BIO.dynamic` (core) sets no `userData.kit`, so 75 sets it on the new meshes; the older
+      kinds' meshes still export with kit '' (`BIO.export({kit})` drops them).
 - [ ] The floor's planters are cumulative-threshold ladders (`t<.22`, `t<.55` ...) rather
       than weighted tables; inserting a plant means re-deriving the thresholds after it.
       The bottle tree / desert rose and puya / agave builders could share a caudex and a
@@ -47,8 +89,11 @@ Read before changing anything here. `build.py` prints the open count.
       than as the canyon floor above them, and the cave's interior shows no strata.
 - [ ] TODO: `waterH` still reports the river's surface over the cave (canyonU < 1.1, x < RIM+40),
       so the cave floor counts as 63 m under water (it keeps plants off it; nothing else reads it).
-- [ ] TODO: the cataract is a flat ribbon dropping off the lip; the water does not arc off the cap,
-      and no spray rises from the cave's floor behind it.
+- [x] ~~TODO: the cataract is a flat ribbon dropping off the lip; the water does not arc off the cap.~~ 2026-10-13:
+      core/water's fall (`CATARACT`): the water leaves the 26 m lip at 10.5 m/s (the sill's riffle: what clears the
+      promontory) and arcs, a parabola, 730 m down in 11.9 s, landing ~125 m out and widening 29 m a side; 405
+      vertices; the host's rock checks pass on it (none in the rock, the top row on rock; both negatives fail). Still
+      open: no spray rises from the cave's floor behind it (the mist is the page's sprites, on the old path's offsets).
 - [ ] TODO: meshing and baking the undercut takes ~0.9 s at load, on the main thread; the finer
       ground's own cost is not measured.
 - [ ] TODO: the wadi gorge could take alcoves (Shade's are the model); not started.
@@ -59,8 +104,13 @@ Read before changing anything here. `build.py` prints the open count.
       (up to 0.43 m) and 164 end under it (none over 2 m tall: the mint feet and short side
       columns). The far spires carry a 1.5 m skirt for it. A finer strip of ground along the
       river would fix both (the lip's window shows the cost of doing it by refining the grid).
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): mesquite pods, wadi dates, desert tunas. Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'sedesert'`). The mesquite pods and dates are drawn. The prickly pear scrub has only flat blooms: draw the tunas, orange-red fruit along the pad edges (as xanadu's `opuntia` does). Add harvest tags.
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): mesquite pods (`pods`), wadi dates (now their own
+      item `dates`, same clump and material as the plumes), desert tunas (`fruit`: orange-red icosahedra on the prickly pear
+      pads' upper rims, `PAL.tuna` from the catalog's `fruitTuna`, near and mid bands, hashed so the floor's rng stream is
+      unchanged). Harvest tags on all 13 species (`SEDESERT.HARVEST`) and 11 floor plants (`SEDESERT.PLANTS`); the inspector
+      shows them; probe check 'fruit tagged, catalogued and drawn' with two negatives. Left: the cardon's fruit, the agave
+      heart and the Joshua-tree buds are edible but have no catalog piece (listed in the probe's `FRUIT_NOT_DRAWN`); the
+      dates are tinted `fruitDateStrand` (0xc88a3a), not `fruitDate`.
 
 ## Done
 
@@ -106,6 +156,7 @@ Read before changing anything here. `build.py` prints the open count.
       the cliffs in Shade. The random draws are made either way, so nothing else moves.
       Found by Shade's `no-flora-on-cliffs` check (settlements/shade).
 - [x] Fauna: kites, swifts, striders and lizards on the contract (75), driven by BIO.tick.
+- [x] Deer and coyotes (2026-10): walkers whose pose is a function of the BIO clock (75).
 - [x] The quality pass (NOTES.md): typed stores, memoised terrain, BIO.col, data-driven
       impostors, a pass table, shared helpers, host hooks for register / lod / windows.
 - [x] The dragon tree forks six times into a filled umbrella (tufts between the tips as
@@ -120,3 +171,4 @@ Read before changing anything here. `build.py` prints the open count.
       6.8 km disc no longer pay two terrain calls per rejected cell.
 - [x] The water-bound passes (palms, candles, reeds in the shallows, the near floor
       band) are windowed to the river strip and the pond.
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.

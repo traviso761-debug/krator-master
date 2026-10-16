@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1240,
+    1096
+   ],
+   "seam_after": [
+    0.731,
+    0.682
+   ],
+   "seam_before": [
+    2.678,
+    0.917
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.15,
+   "mute": 0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "nomad/sadu-band.green",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.92,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "nomad_sadu-band.green.png",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+  "licence": "generated for this project by its owner",
+  "prompt": "an alternate of patterns/nomad/sadu-band on green (the owner's extra, 2026-10-07) (core/materials/PROMPTS-nomads.md)",
+  "reuse": "the sheikh's tent and the great goat-hair tent; any sadu weave",
+  "sha1": "2fb98ee927e2f8dd15becf3f9e25bdbf39c6b310"
+ }
+}

@@ -13,7 +13,7 @@
 // fw/fd (default 92% of w/d). The hillside row in the showcase (82-xa-hill.js) uses this on every house.
 const XA={
  def(D){D.tags=Object.assign({culture:'xanadu',kit:'xanadu'},D.tags||{});D.family=D.family||'misc';D.kit='xanadu';D.nv=D.nv||(D.tags.wealth==='civic'?3:5);   // variants a def offers (o.v)
-  const inner=D.build;D.build=function(G,o){if(o&&o.drop>0){xnFooting(0,0,D.fw||D.w*.92,D.fd||D.d*.92,0,o.drop);}inner(G,o);};return VERN.def(D);},
+  const inner=D.build;D.build=function(G,o){if(o&&o.drop>0){xnFooting(0,0,D.fw||D.w*.92,D.fd||D.d*.92,0,o.drop,o.footC!=null?xC(o.footC):undefined);}inner(G,o);};return VERN.def(D);},   // o.footC: a world tints the footing to its ground
  keys(){return VERN.order.filter(k=>VERN.defs[k].kit==='xanadu');},
  // families in definition order: [{family, keys:[…]}]
  families(){const out=[],idx={};for(const k of XA.keys()){const f=VERN.defs[k].family;if(idx[f]===undefined){idx[f]=out.length;out.push({family:f,keys:[]});}out[idx[f]].keys.push(k);}return out;},

@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1166,
+    1242
+   ],
+   "seam_after": [
+    0.838,
+    0.511
+   ],
+   "seam_before": [
+    1.505,
+    2.08
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.ancient",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   3.0,
+   3.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "metal.ancient.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row metal.ancient (Ancients and the kits forked from them) (exact wording not recorded)",
+  "reuse": "the Ancients' white panel metal in every Ancients-lineage build (kits/ancients, Iziz Ancient style, Highlands, Dalab, Xanadu, Reed Lake) and the Post-Apoc bulkhead (conc); neutral, tint per instance",
+  "sha1": "c111443b5ddf21772c408ef91605068e88c2d45e"
+ }
+}

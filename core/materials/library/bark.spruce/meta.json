@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.274,
+    1.209
+   ],
+   "seam_before": [
+    1.385,
+    1.397
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.3,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.spruce",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Layered Lichen-Covered Tree Bark Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Spruce bark: thin round grey-brown scales (#5a4e46, #6a5e54) a few centimetres across, loosely overlapping, some flaking to show reddish inner bark (#8a5040), a little grey-green lichen. (Row bark.spruce of core/materials/PLAN.md, Eastern badlands.) Delivered 2026-10-06 in ebadlands.zip as 'Layered Lichen-Covered Tree Bark Texture.png'.",
+  "reuse": "Engelmann spruce and fir here; `biomes/nhighlands` spruces",
+  "sha1": "7e6299609323a578237e23aa39ed24b46190b0ec"
+ }
+}

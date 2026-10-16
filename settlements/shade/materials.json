@@ -1,0 +1,72 @@
+{
+ "build": "shade",
+ "note": "Shade's adapter onto the material library (core/materials/PLAN.md): the nomad kit's materials (NOMAD.MAT, 77a-kit-nomad-core.js) take a library colour map in place (src/78b-host-matlib.js); they are Lambert, so mapOnly. Grey maps (keep 0) normalised to the base brightness of the procedural map each replaces, so the vertex-colour tints keep their tone. Run python3 tools/textures/pack.py settlements/shade after any change, then python3 build.py; ?mat=proc shows the procedural look.",
+ "size": 512,
+ "families": {
+  "stone": {
+   "lib": "stone.chiselled",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.84
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "adobe": {
+   "lib": "earth.adobe.pale",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.84
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "cloth": {
+   "lib": "cloth.tent.black",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.2
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "canvas": {
+   "lib": "cloth.canvas",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.9
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "wood": {
+   "lib": "wood.timber",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.48
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  }
+ }
+}

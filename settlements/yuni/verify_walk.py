@@ -36,10 +36,10 @@ async def run(a):
         three = os.path.join(folder, "three.min.js")
         if os.path.exists(three):
             await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(route.fulfill(path=three, content_type="application/javascript")))
-        await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=180000)
+        await pg.goto(f"http://127.0.0.1:{port}/{name}{a.query}", timeout=180000)
         await pg.wait_for_function("window._ready===true || (document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)", timeout=170000)
         if a.hour is not None:
-            await pg.evaluate("(h)=>{ _api.skySetHour(h); const p=document.getElementById('dnPause'); if(p && !/Resume/.test(p.textContent)) p.click(); }", a.hour)
+            await pg.evaluate("(h)=>{ _api.skySetHour(h); if(window._sky && _sky.setRate) _sky.setRate(0); }", a.hour)
         info = await pg.evaluate(PICK, [a.asset, a.variant])
         print("target:", json.dumps(info))
         if not info:
@@ -90,4 +90,5 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("html"); ap.add_argument("--asset", default="mid_washed_house"); ap.add_argument("--variant", type=int, default=1)
     ap.add_argument("--out", default="shots"); ap.add_argument("--hour", type=float, default=None)
+    ap.add_argument("--query", default="", help="appended to the page URL, e.g. ?mat=proc for the look before the material library")
     sys.exit(asyncio.run(run(ap.parse_args())))

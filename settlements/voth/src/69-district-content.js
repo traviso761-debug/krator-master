@@ -177,7 +177,7 @@ DIST_MARKET.forEach(function(d){
         var p = loc(sx,sz, c[0]*sw*0.42, c[1]*sd*0.42, ry);
         BOX(p[0], sy, p[1], 0.30, postH, 0.30, ry, pick(TRUNKC), 'wood');
       });
-      FR8(sx, sy+postH, sz, sw*1.32, 0.75, sd*1.32, ry, pick(BANNERC), 'cloth');
+      FR8(sx, sy+postH, sz, sw*1.32, 0.75, sd*1.32, ry, vothPatCol('kilim', pick(BANNERC)), 'kilim');
       if(chance(0.65)) stallGoods(sx, sz, sy+counterH, sw, sd, ry, pick(STALL_GOODS));
       DIST_STALLS++;
       MARKET_STALLS.push({ x:sx, z:sz, ry:ry, sd:sd });
@@ -1291,7 +1291,7 @@ function buildGuildRowHall(spec, hx, hz, y, ry, fx, fz){
       for(var i=0;i<3;i++){
         var t = (i+0.5)/3;
         var sp = loc(fp[0],fp[1], 0, mix(-3.0,3.0,t), 0);
-        BOX(sp[0], y+2.4, sp[1], 0.35, 1.4, 0.9, ry, shade(pick(BANNERC),0.15), 'cloth');
+        BOX(sp[0], y+2.4, sp[1], 0.35, 1.4, 0.9, ry, vothPatCol('tapestry', shade(pick(BANNERC),0.15)), 'tapestry');
       }
       /* a copy table with an ink pot and a slanted lectern top */
       var tp = loc(hx,hz, -w*0.5-2.6, d*0.30, ry);

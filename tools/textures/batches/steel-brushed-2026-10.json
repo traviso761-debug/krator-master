@@ -1,0 +1,30 @@
+[
+ {
+  "src": "metal.steel.brushed.webp",
+  "out": "core/materials/library/metal.steel.brushed",
+  "record": {
+   "id": "metal.steel.brushed",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0.8,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner, Oct 2026",
+    "prompt": "prompt not recorded: supplied as a pasted image (neutral grey brushed steel, fine horizontal grain)",
+    "licence": "supplied for this project by its owner",
+    "reuse": "the catalog's steel and alloyWhite keys (post-apoc, scrap, republican furniture: 163 pieces); appliances, counters, railings, machine housings, vehicle trim, any bare sheet steel or aluminium (tinted)"
+   }
+  },
+  "options": {
+   "rough": 0.4,
+   "rough_var": 0.15,
+   "delight": 0.4,
+   "normal_strength": 0.5
+  }
+ }
+]

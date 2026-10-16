@@ -49,23 +49,26 @@ passes its negative cannot fail, and fails the run.
 | `77b..e-kit-nomad-*.js` | the builders: carved (Treasury, crow-step house, rock stair, gallery), pueblo compound, caravanserai, black tent, market stall, cliff pueblo, watch tower |
 | `80-host-buildings.js` | builds `SHADE_PLAN`, sets each on the ground, registers it, pushes obstacles, merges all into one mesh per material; `NAV_BLOCK` for 84 |
 | `82-host-sky.js` | the standard Krator sky (Inner Wall west, gas giant NE), vendored |
-| `84-host-life.js` | factions, jobs, schedules, events, the walkable grid, A*, building navigation shadows |
+| `84-host-life.js` | the life layer declared into SIM (`core/simulation`, PLAN.md Phase 1): the walkable grid and its A* as SIM's `pedestrian` layer, building navigation shadows, the places and ports, the population; Shade's own audits. Factions, orgs, roles (schedules) and events are `world/*.json`, inlined by `build.py` as `83-host-world-json.js` |
 | `86-host-overlay.js` | ribbons for the places and the routes |
 | `87-host-views.js` | the preset views (their camera spots are reserved before the flora grows) |
 | `88-host-build.js` | build order: the biome grows round the buildings' obstacles, then one bake |
-| `90-host-camera.js` | views, orbit/WASD, hover inspector, polygon tool, overlay toggles |
-| `91-host-probe.js` | `window._api`: the checks and their negatives |
+| `89t-shade-tags.js` | the page's core/tags registry (`KTAGS.page`) from REG and `PLACES` |
+| `91-shade-probe.js` | Shade's `window._api` fields: the checks and their negatives (handed to core/host's probe) |
+| `99-shade-take.js` | the take (`KHOST.take`): views, ground, layers, the inspector's words, the probe's fields |
+| core/host (`90..99-host-*`) | the camera, loop, panel, inspector, marks, minimap and probe (`core/host/README.md`) |
 
 Compass: **x east, z south, north is −z**, metres.
 
 ## Dev tools
 
-- **Inspector (hover)**: names what is under the cursor, its class (flora, place,
-  water, terrain, path) and its tags (a species' climate/aridity/riparian tags; a
-  place's activities, capacity, culture and building types). A click does a full
-  raycast as well, so a floor plant with no registered volume is named too.
-- **Polygon tool**: click the ground to add points; the box holds `[[x,z],...]`
-  and the same with heights; Undo, Clear, Copy.
-- **Places** and **Routes**: the reserved places (coloured by kind) with labels,
+The dev tools are core/host's (`core/host/README.md`, "The keys").
+
+- **Inspector** (a click; I or the hover button for the tip, on by default): the smallest core/tags record under the
+  cursor (a building, a tree, the falls, the pool, a carve patch) with its class, culture, types and size; else the
+  place (its activities and capacity), the switchback or the terrain zone.
+- **Marks** (P): areas, lines and points on the ground, measured and saved (the old polygon tool).
+- **Minimap** (M), from the records.
+- **Places** and **Routes** (layers in the bar): the reserved places (coloured by kind) with labels,
   the switchback's centreline, the ports; the raider convoy's route and sample
   commutes, all found by A* on the ground.

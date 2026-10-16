@@ -30,72 +30,12 @@ Requires: pip install playwright && python3 -m playwright install chromium
 import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, threading
 
 # --------------------------------------------------------------------------
-# Harness helpers. Every verify.py in the repo carries this same block: a fix
-# here belongs in all of them (grep for "Harness helpers").
-GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
-# Every page builds its world in one synchronous script, so "load" fires only when
-# the world is built: minutes under software GL on a shared box (Dalab's city took
-# 285 s with seven other agents running; 180 s timed Locus out mid-build).
-LOAD_MS = 900000
-# KRATOR_CHROME names a Chromium to launch. The other names are the ones single
-# copies of this harness used before they were merged; they still work.
-CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
-
-
-async def launch_chromium(p, args=GL_ARGS):
-    """$KRATOR_CHROME (or an older name in CHROME_ENV), else playwright's own
-    build, else a pinned build under /opt/pw-browsers: a cloud container ships
-    one that need not match the pip playwright's pin."""
-    for k in CHROME_ENV:
-        if os.environ.get(k):
-            return await p.chromium.launch(executable_path=os.environ[k], args=args)
-    try:
-        return await p.chromium.launch(args=args)
-    except Exception as e:
-        if "Executable doesn't exist" not in str(e):
-            raise
-        for c in ["/opt/pw-browsers/chromium"] + sorted(
-                glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"), reverse=True):
-            if os.path.exists(c):
-                return await p.chromium.launch(executable_path=c, args=args)
-        raise
-
-
-def local_three(folder):
-    """The pinned three.js r128 to serve in place of the CDN copy: this build's
-    own, the page folder's, else the repo's copy in kits/ancients (a build that
-    keeps none still runs offline). Returns a path that may not exist."""
-    here = os.path.dirname(os.path.abspath(__file__))
-    cands = [os.path.join(here, "three.min.js"), os.path.join(folder, "three.min.js")]
-    d = here
-    for _ in range(4):
-        d = os.path.dirname(d)
-        cands.append(os.path.join(d, "kits", "ancients", "three.min.js"))
-    return next((c for c in cands if os.path.exists(c)), cands[0])
-
-
-def parse_views(spec, names=()):
-    """--views. Names separated by '|' or ';' are taken exactly, so a name may
-    hold commas. Separated by commas, consecutive pieces are joined back up
-    whenever that spells an existing preset's name, longest first: so
-    "Overview,Town types — row, stacked house, well, tower" is two views."""
-    spec = (spec or "").strip()
-    if not spec:
-        return []
-    if "|" in spec or ";" in spec:
-        return [v.strip() for v in re.split(r"[|;]", spec) if v.strip()]
-    names = set(names or ())
-    toks, out, i = spec.split(","), [], 0
-    while i < len(toks):
-        j = next((j for j in range(len(toks), i + 1, -1)
-                  if ",".join(toks[i:j]).strip() in names), i + 1)
-        v = ",".join(toks[i:j]).strip()
-        if v:
-            out.append(v)
-        i = j
-    return out
-
-
+# Harness helpers: the shared copy is tools/harness.py (launching Chromium, the local three.js, --views parsing,
+# the UTF-8 console). A fix there reaches every verify.py that imports it.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
+import harness as _harness
+from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
+local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
 # --------------------------------------------------------------------------
 # --sweep: do the flyers' sample legs (window._legs, 84-flyers.js) pass through
 # anything solid? The solids are NOT mesh bounding boxes: this city is merged
@@ -182,6 +122,12 @@ R.push({name:'nav-connected', ok:A.NAV.reachable===A.NAV.nodes.length, detail:A.
   R.push({name:'two-wild-per-occupied', ok:ratio>=1.7&&ratio<=2.6, detail:(n-occ)+' unoccupied : '+occ+' occupied = '+ratio.toFixed(2)}); }
 { let bad=[]; A.TREES.forEach(T=>{ if(A.riverDist(T.x,T.z) < T.rb*1.6) bad.push(T.id); });
   R.push({name:'trees-out-of-river', ok:!bad.length, detail: bad.length? JSON.stringify(bad):'no trunk stands in the channel'}); }
+// 57-interiors.js: every 12th unit planned and furnished (not drawn). Every unit has rooms, keeps its programme, and
+// every home holds a bed, a food container and an item container.
+{ const I=window._interiors; if(!I||!I.audit) R.push({name:'interiors-coherent', ok:true, detail:'interiors off'});
+  else { const a=I.audit(12), ok=a.checked>0 && !a.noRooms.length && !a.dropped.length && a.homesOk===a.dwellings;
+    R.push({name:'interiors-coherent', ok, detail: ok ? a.checked+' of '+I.units+' units checked ('+JSON.stringify(a.byKind)+'), '+a.homesOk+' homes each with a bed, food and a chest; rooms '+JSON.stringify(a.rooms)+'; '+a.windows+' windows, '+a.lights+' lights; bake '+I.bake+' ('+a.fromBake+' of the checked from it, '+I.stale+' units stale: rerun bake_interiors.py if not 0); '+a.ms+' ms'
+      : JSON.stringify({noRooms:a.noRooms.slice(0,6), dropped:a.dropped, residenceFails:a.residenceFails, missing:a.missing})}); } }
 return R;}"""
 
 # The catalog furniture (53-furnish.js: the 'catalog-furniture' group, meshes tagged userData.furniture) has
@@ -189,12 +135,15 @@ return R;}"""
 # moved into the catalog, so its count EXCLUDES the furniture the camera draws. The furniture's own line counts it at
 # full detail: core/lod keeps each original on layer 30 (unseen; mask bit 0x40000000) and draws copies (userData.lodCopy,
 # carrying the original's userData), so the originals give a figure that does not move with the view.
+# The interiors (57-interiors.js, userData.interiors: the rooms near the camera) have a line of their own too.
 BUDGET_JS = """()=>{const B=(typeof BUDGET!=='undefined')?BUDGET:(window._api&&window._api.BUDGET); if(!B) return null;
 const L30=0x40000000, tri=g=>{ const n=g.index?g.index.count:g.attributes.position.count, dr=g.drawRange; return Math.floor(Math.min(n, dr.count===Infinity?n:dr.count)/3); };
-let ft=0, fd=0, fc=0; scene.traverseVisible(o=>{ if(!o.isMesh||!o.userData.furniture) return;
+let ft=0, fd=0, fc=0, it=0; scene.traverseVisible(o=>{ if(!o.isMesh) return;
+  if(o.userData.interiors){ it+=tri(o.geometry); fd+=tri(o.geometry); return; }
+  if(!o.userData.furniture) return;
   if(!o.userData.lodCopy) ft+=tri(o.geometry);                  /* the furniture at full detail: its budget */
   if(!(o.layers.mask&L30)){ fd+=tri(o.geometry); fc++; } });    /* what the camera draws of it: taken off the world's count */
-return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.triangles-fd, furnTris:ft, furnCalls:fc,
+return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.triangles-fd, furnTris:ft, furnCalls:fc, interiorTris:it,
         instances:(window._stats&&window._stats.instances)||0};}"""
 
 
@@ -257,7 +206,9 @@ async def run(a):
                     rows = [("drawCalls", bg["calls"]), ("triangles", bg["tris"]), ("instances", bg["instances"])]
                     if "furnitureTriangles" in bg["budget"]:
                         rows.append(("furnitureTriangles", bg["furnTris"]))
-                    print("  (triangles = the world without the catalog furniture; drawCalls include its %d meshes)" % bg["furnCalls"])
+                    if "interiorTriangles" in bg["budget"]:
+                        rows.append(("interiorTriangles", bg["interiorTris"]))
+                    print("  (triangles = the world without the catalog furniture and the interiors; drawCalls include their %d + interiors' meshes)" % bg["furnCalls"])
                     for k, cur in rows:
                         lim = bg["budget"][k]
                         ok = cur <= lim

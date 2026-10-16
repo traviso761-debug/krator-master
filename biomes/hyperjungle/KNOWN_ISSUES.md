@@ -8,9 +8,10 @@ Read before changing anything here. `build.py` prints the open count.
       58-biome-hyperjungle-fauna.js maps fur on the sloth, hide on the striders, skin on the sky rays and a wing cut-out on the butterflies. Unset, the fauna is
       exactly the vertex-coloured one. The dart/flitter material takes no texture (wing and body share UVs). Each part's UV repeats once over the part, so the
       fur is set to repeat 2x.
-- [ ] (2026-10-05) Tree tints (55-biome-hyperjungle-trees.js): roots now take the trunk's tint at their height above the ground (band and moss), carried into limb space because they stay in the `limb` bucket (60-floor's `boleProfile` reads the bark bucket, so roots there would push the floor dress away), and limbs, boughs
-      and twigs use the limb tint of the trunk's colour band at the attachment height. The limbs still use the shared pale `limb` texture; only their colour is
-      matched to the trunk. Iziz carries a hand-patched copy.
+- [x] (2026-10-16) Tree tints and bark: a hero's limbs, boughs, twigs and roots now wear its own bole's bark (buckets `limb0`..`limb5` on
+      `MAT.bark[sp]`, with the bole tint; still out of the `bark`+sp buckets, which 60-floor's `boleProfile` reads). Before, they shared one `limb` map
+      painted in ironbark's browns, whose tint clipped at white, so ghostwood and baobab grew brown limbs under pale boles. Young trees' trunks
+      likewise wear their species' bark (items `saptrunk0`..`saptrunk5`, bole tint); `trunk` (the limb map) is left to the floor's palms and small trees. Iziz carries a hand-patched copy of the old fragment: re-vendor (`build.py --vendor-bio`) when its session allows.
 
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/hyperjungle.html`; strip everything before `<title>` and the trailing
@@ -20,8 +21,7 @@ Read before changing anything here. `build.py` prints the open count.
       and kapok canvases are painted near-grey and tinted from SPECIES.bark only;
       repaint the older four the same way. Until then, changing one of those
       canvases changes the rendered bole colour twice.
-- [ ] Ghostwood limbs are slightly warmer than its near-white bole (the pale limb
-      texture cannot be brightened past white).
+- [x] Ghostwood limbs are slightly warmer than its near-white bole: gone with the limbs on the bole's own bark (2026-10-16).
 - [ ] Faint horizontal seams where a bole's lathe sections change texture repeat
       (inherited from Girder).
 - [ ] Saplings beyond 760 m from the origin have clumps on virtual arcs with no
@@ -40,8 +40,14 @@ Read before changing anything here. `build.py` prints the open count.
       follow the hinge, so a flapping wing does not brighten and darken.
 - [ ] Only the hyperjungle is built; the abyssal savannah, Yuni Valley, highlands
       and arctic biomes are to be written against the same core.
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): gatepod, mahogany nut, silkpod, pandan keys (the screwpine). Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'hyperjungle'`). The pods are drawn. Add harvest tags. The screwpine's "hanging fruit head" is drawn as an upside-down fungus item (60-floor.js): give it the pandan-key head (orange keys, green tips).
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`, 2026-10-06): gatepod (baobab pods), mahogany nut (capsules), silkpod
+      (the kapok's burst silk pods, 'bloom' items in the silk colour), pandan keys. Harvest tags on the six species
+      (`HYPERJUNGLE.HARVEST`) and four understorey plants (`HYPERJUNGLE.PLANTS`: screwpine, tree fern, ginger, bromeliad);
+      `FRUIT_KEYS`, `FRUIT_ITEMS`; the inspector shows the tag. The screwpine's fruit head is now the `pandankeys` item
+      (42 wedge keys, green tips, catalog palette fruitPandanKey / fruitPandanTip; 328 triangles) in place of the
+      upside-down fungus, with the same random draws. The probe's `fruit tagged, catalogued and drawn` check (verify.py
+      now runs `hostChecks` and its negatives). Still open: the head is drawn only in the hero ring (lv 2, 40% of heads),
+      and the silkpod has no item of its own (the check on 'bloom' cannot tell silk from flowers).
 
 ## Done
 
@@ -66,3 +72,10 @@ Read before changing anything here. `build.py` prints the open count.
       build time and split at the quantiles for the target shares (six species).
 - [x] Fauna (flocks, flitters, butterflies, motes, herds, sloths) as fragment 58
       on the same contract, with 35-core-anim as the one core extension.
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; the library block in 50-species): the six barks, the boulders, the six species' leaf cards, the understorey cards, and the fauna sheets when no host sets FAUNATEX. limb and wood stay procedural. A host gets them by inlining the biome's pack; the open world carries none and keeps the procedural maps. verify --assert passes.
+- [x] The screwpine's second-head stem rendered nearly white (an untextured rod given the textured trunk's tint): fixed
+      2026-10-06 (60, `screwpine`).
+- [x] **The hypertrees' limbs and the dead wood kept their painted canvases** beside the library's bark (the owner, from Dhelv:
+      "branches not taking bark texture ... a recurring issue with biome imports"): their sets (`limb`, `wood`) were in
+      materials.json but never bound. `50-biome-hyperjungle-species.js` binds them (and the small trunks take the limbs' map).
+      Iziz vendors this kit (`settlements/iziz/targets/city/86-bio-*`): its copy still has the gap until it is re-vendored.

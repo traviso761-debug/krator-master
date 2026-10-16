@@ -9,22 +9,30 @@ Built output (never open it; edit `src/` and rebuild): `dist/jimjam-kit.html`
 Build: `cd settlements/jimjam && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
-| `32-surfaces.js` | 7 | surfaces (1) |
-| `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
+| `32-surfaces.js` | 8 | surfaces (1) |
+| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `37-sockets.js` | 2 | SOCKETS: where a culture's marks go (shared: cor (1) |
-| `38-helpers2.js` | 3 | v2 helpers (1) |
+| `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `60-jj-mat.js` | 16 |  |
+| `60-jj-mat.js` | 19 |  |
 | `61-jj-helpers.js` | 24 |  |
 | `62-jj-culture.js` | 15 | JIMJAM CULTURE PACK (sockets: awning, banner, fl (1) |
 | `63-jj-zfix.js` | 7 |  |
@@ -42,8 +50,10 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `85-jj-flora-placeholder.js` | 2 |  |
 | `90-scene.js` | 4 |  |
 | `91-probe.js` | 6 |  |
-| `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
+| `91t-jj-tags.js` | 2 | CORE TAGS: JIMJAM'S REG (1) |
+| `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
+| `99-start.js` | 2 | 99. the take: Jimjam on core/host (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/

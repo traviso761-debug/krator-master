@@ -8,7 +8,8 @@
 //                 turn and zoom round it - until it is over, you pick a viewpoint, or you press Stop
 //   run(fn)       per-frame work for an event that is running: fn(now, dt) until it returns false
 //   a scheduler   every minute or two one of `order` fires on its own; the Events button turns that off and
-//                 fires any of them now
+//                 fires any of them now - and one fired from there takes the camera to it at once (and follows
+//                 it, if it moves), as the notice's button would
 //   the address   #event=<name> fires one on arrival, and &eventlook goes straight to where it is happening
 //   evspeed       #evspeed=N in the address runs every event's own clock N times faster: a way to watch a long
 //                 chain (Minas Tirith's ships, then the Dead) through in a minute when working on it
@@ -68,6 +69,10 @@ export function createHappenings(api,{events,order,first=25000,every=[60000,1200
   const log=[];
   const on=()=>!active||active();
   const fire=k=>{if(!on())return;try{events[k][1]();log.push(k);}catch(e){api.report&&api.report('event '+k,e);}};
+  // fired by hand: go there. The view is taken a moment after, as for &eventlook, once the event has put its subject
+  // where it belongs; an event that gave no view leaves the camera where it is.
+  const fireAndLook=k=>{const before=lastView;lastView=null;fire(k);
+    setTimeout(()=>{if(lastView&&api.setView){try{api.setView(...lastView());}catch(e){}box.style.display='none';if(lastSubject)follow(...lastSubject);}else if(!lastView)lastView=before;},300);};
   const R=Math.random;
   const auto={on:true,next:performance.now()+first,i:Math.floor(R()*order.length)};
   animHooks.push(now=>{if(!auto.on||now<auto.next)return;if(!on()){auto.next=now+5000;return;}auto.next=now+every[0]+R()*(every[1]-every[0]);fire(order[auto.i++%order.length]);});
@@ -81,12 +86,12 @@ export function createHappenings(api,{events,order,first=25000,every=[60000,1200
     const panel=document.createElement('div');
     panel.style.cssText=`position:fixed;left:10px;bottom:calc(var(--barh,44px) + 14px);z-index:11;display:none;flex-direction:column;gap:4px;background:${C.bg};border:1px solid ${C.edge};padding:8px;font:12px Georgia,serif;color:${C.fg}`;
     const head=document.createElement('div');head.textContent='Make something happen';panel.appendChild(head);
-    for(const [k,[label]] of Object.entries(events))mkBtn(label,panel,()=>{fire(k);panel.style.display='none';});
+    for(const [k,[label]] of Object.entries(events))mkBtn(label,panel,()=>{fireAndLook(k);panel.style.display='none';});
     const ab=mkBtn('On their own: on',panel,()=>{auto.on=!auto.on;ab.textContent='On their own: '+(auto.on?'on':'off');if(auto.on)auto.next=performance.now()+20000;});
     document.body.appendChild(panel);
     const b=mkBtn('Events',ui,()=>{const o=panel.style.display==='none';panel.style.display=o?'flex':'none';b.setAttribute('aria-expanded',String(o));});
     b.setAttribute('aria-expanded','false');b.title=Object.values(events).map(e=>e[0]).join(', ');
     if(active){let shown=true;animHooks.push(()=>{const a=on();if(a===shown)return;shown=a;
       b.style.display=a?'':'none';if(!a){panel.style.display='none';box.style.display='none';if(unfollow)unfollow();b.setAttribute('aria-expanded','false');}});}});
-  return {run,notice,fire,follow,log,auto};
+  return {run,notice,fire,fireAndLook,follow,log,auto};
 }

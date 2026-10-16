@@ -8,7 +8,7 @@ Pillow; OpenEXR (or opencv) is optional and only used to read .exr maps (see "Fo
 
 DOWNLOADS  any folder tree (and .zip files in it): per-asset folders, Poly Haven's "textures/" folders or a
            flat pile. Maps are found by file name: <slug>_<map>_<res>.<ext>, e.g. rock_wall_08_diff_2k.jpg.
-OUT        sets/<slug>/{albedo.jpg, normal.png, roughness.png, meta.json}   (same layout as process.py)
+OUT        sets/<slug>/{albedo.jpg, normal.jpg, roughness.png, meta.json}   (same layout as process.py)
            catalog/sheet-NN.jpg + summary.tsv + summary.json               (what was found and skipped)
 
 Per asset:
@@ -362,7 +362,7 @@ def process_asset(job):
         os.makedirs(out_dir, exist_ok=True)
         Image.fromarray((col * 255 + 0.5).astype(np.uint8)).save(
             os.path.join(out_dir, 'albedo.jpg'), quality=92, subsampling=0, optimize=True)
-        Image.fromarray(((v * 0.5 + 0.5) * 255 + 0.5).astype(np.uint8)).save(os.path.join(out_dir, 'normal.png'), optimize=True)
+        Image.fromarray(((v * 0.5 + 0.5) * 255 + 0.5).astype(np.uint8)).save(os.path.join(out_dir, 'normal.jpg'), quality=95, subsampling=0, optimize=True)
         Image.fromarray((r * 255 + 0.5).astype(np.uint8), 'L').save(os.path.join(out_dir, 'roughness.png'), optimize=True)
 
         files = {k: os.path.basename(c['src'][1] if isinstance(c['src'], tuple) else c['src'])
@@ -371,7 +371,7 @@ def process_asset(job):
             'record': {'id': slug, 'family': (res['suggest'] or 'unsorted').split('.')[0], 'colour': '#ffffff',
                        'roughness': round(float(r.mean()), 3), 'metal': round(metal, 2) if metal > 0.05 else 0,
                        'scale': [2.0, 2.0], 'tint': tint},
-            'maps': {'map': 'albedo.jpg', 'normalMap': 'normal.png', 'roughnessMap': 'roughness.png'},
+            'maps': {'map': 'albedo.jpg', 'normalMap': 'normal.jpg', 'roughnessMap': 'roughness.png'},
             'source': {'library': 'ambientCG' if dc.get('origin') == 'ambientcg' else 'Poly Haven', 'asset': slug,
                        'url': ('https://ambientcg.com/view?id=' if dc.get('origin') == 'ambientcg' else 'https://polyhaven.com/a/') + slug,
                        'licence': 'CC0', 'file': files['diff'], 'sha1': sha1_of(dc['src']), 'files': files},

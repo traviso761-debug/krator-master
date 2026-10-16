@@ -17,3 +17,13 @@
 - Under way: every vessel makes the same speed (1.8 m/s): a row is one train on one racetrack, which is what keeps the
   courses clear. The half-turns are 19.5 m in radius (a quarter of the row spacing), tight for the 56 m flagship and
   the 55 m hexareme. Turned off, a row runs home along its course at up to ~60 m/s for a few seconds.
+- The drua is built on one tack: shunting (carrying the tack to the other end and re-raking the mast) is not animated.
+  Trimmed, her crab-claw turns about the raked mast like every other rig, so the tack swings off the bow instead of staying
+  in its socket. The tanja rigs (kora-kora, lanong) trim about their tripods' apex while the tripods stay put.
+- [ ] **Overview is over the draw-call budget**: 284 / 260 since the three Islander vessels (2026-10-12; it was 253 / 260
+      with 28 vessels). The gate (`showcase-draw-calls`) is measured at the Opening view (223 / 260) and passes; `verify.py
+      --strict-budget` with `--views Overview` would fail. Each vessel costs one draw call per material key; the fix is
+      either a higher showcase budget for a 31-vessel sheet or merging the per-vessel paint/cloth/rope buckets.
+- [ ] **Takes the material library** (materials.json, src/45y-rs-matlib.js): hull wood, awning cloth, thatch, hull tile, hex plate, chitin
+      and the Ancient white and bronze. The painted grain (`paint`, 91 pieces) and the per-vessel sails stay procedural: the one painted-wood
+      set runs its planks across the rails. Judged at about 15 m on five vessels. ?mat=proc shows the old look.

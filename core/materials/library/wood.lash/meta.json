@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1157,
+    1246
+   ],
+   "seam_after": [
+    0.761,
+    0.466
+   ],
+   "seam_before": [
+    3.678,
+    1.67
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "wood.lash",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2.0,
+   2.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "wood.lash.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row wood.lash (Screamers) (exact wording not recorded)",
+  "reuse": "lashed post walls and palisades of any tribal culture: Screamers, Beast Riders (Girder, Mav's Refuge), Ring Sea Islanders, the Highlands tribal set",
+  "sha1": "776168cf13a5dbedf391a944f187134e73cc631a"
+ }
+}

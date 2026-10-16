@@ -26,11 +26,23 @@ W, H = 1600, 900
 # target: world [x, z] (y = the ground there + lift); eye: offset from the target's ground point
 CASES = {
     "hyperjungle": dict(page="biomes/hyperjungle/dist/hyperjungle.html", ground="BIO.terrainH",
-                        target=[162, -747], lift=15, eye=[-60, 25, 70]),
+                        target=[-570, -266], lift=15, eye=[-60, 25, 70]),
     "rift": dict(page="biomes/rift/dist/rift.html", ground="BIO.terrainH",
                  target=[-300, 300], lift=12, eye=[50, 25, 60]),
+    # M4: the sedesert tile through core/export (krator/world_import.gd), round the rain-shadow pond, the eye inside the tile
+    "world-sedesert": dict(page="biomes/sedesert/dist/sedesert.html", ground="BIO.terrainH",
+                           target=[230, 640], lift=4, eye=[-75, 30, 95]),
+    # core/water phases 3 and 4: sedesert's notch through core/export (box 2850,-320,3450,280): the river's last reach, the
+    # cataract arcing off the lip into the Abyss, its plunge pool; the eye 250 m over the lip, out over the Abyss inside the tile,
+    # looking down on the notch: the river's last reach coming over the lip and the curtain falling away under it
+    "world-sedesert-falls": dict(page="biomes/sedesert/dist/sedesert.html", ground="BIO.terrainH",
+                                 target=[3150, -4], lift=0, eye=[200, 250, 100]),
+    # M5: a district of Iziz through core/export, inside the south gate (box -120,292,120,532), the eye in the tile looking at the gate
+    "world-iziz": dict(page="settlements/iziz/dist/iziz.html", ground="terrainH",
+                       target=[0, 470], lift=8, eye=[-55, 22, -95], hour="ATMOS.U.hour.value"),
     "girder": dict(page="settlements/girder/girder.html", ground="_api.terrainH",
-                   target=[-2, 8], lift=2, eye=[-16, 6, 20], hour="_api.skyHour()"),
+                   target=[-2, 8], lift=2, eye=[-16, 6, 20], hour="_api.skyHour()",
+                   set_hour="h => { _api.skySetHour(h); const p = document.getElementById('dnPause'); if (p && !/Resume/.test(p.textContent)) p.click(); }"),
     "iziz": dict(page="settlements/iziz/dist/iziz.html", ground="terrainH",
                  target=[0, 0], lift=10, eye=[90, 60, 110], hour="ATMOS.U.hour.value"),
     "yuni": dict(page="settlements/yuni/yuni.html", ground=None, building="bld_00005",
@@ -91,6 +103,9 @@ async def web(names):
             target = [tx, ty + c["lift"], tz]
             eye = [tx + c["eye"][0], ty + c["eye"][1], tz + c["eye"][2]]
             info = await pg.evaluate(PIN, [eye, target])
+            if HOUR is not None and c.get("set_hour"):   # --hour=h: both sides at that hour (a night pair shows the lamps)
+                await pg.evaluate(c["set_hour"], HOUR)
+                await pg.wait_for_timeout(1500)
             hour = await pg.evaluate(c["hour"]) if c.get("hour") else None
             await pg.wait_for_timeout(6000)   # LOD, culling and late textures settle on the pinned view
             os.makedirs(OUT, exist_ok=True)
@@ -125,9 +140,19 @@ def compose(n):
     out.paste(b.resize((w, h)), (w + 8, 34))
     d = ImageDraw.Draw(out)
     d.text((10, 10), "%s: web (three.js r128, the built page)" % n, fill=(235, 235, 235))
-    d.text((w + 18, 10), "%s: Godot 4.5 spike (Compatibility renderer, software GL)" % n, fill=(235, 235, 235))
-    out.save(os.path.join(OUT, n + ".png"))
+    d.text((w + 18, 10), "%s: Godot %s (Compatibility renderer, software GL)" % (n, GODOT_VERSION), fill=(235, 235, 235))
+    out.save(os.path.join(OUT, n + (("-h%g" % HOUR) if HOUR is not None else "") + ".png"))
 
+
+def _godot_version():
+    try:
+        return subprocess.run([os.environ.get("GODOT", "godot"), "--version"], capture_output=True, text=True, timeout=60).stdout.strip().split(".stable")[0]
+    except Exception:
+        return "?"
+
+
+GODOT_VERSION = _godot_version()
+HOUR = next((float(a.split("=", 1)[1]) for a in sys.argv[1:] if a.startswith("--hour=")), None)
 
 if __name__ == "__main__":
     names = [a for a in sys.argv[1:] if a in CASES] or list(CASES)

@@ -51,6 +51,20 @@ SHARED_MATERIALS = ['20-textures.js', '22-materials.js', '68-mat-v5.js']
 SOCKETS = os.path.join(ROOT, 'core', 'sockets')
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[:1].isdigit())
+# the material records (core/materials/record: KMAT, TEX and the browser loader) and the library pack
+RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # not 24-tex-def.js: its TEX clashes with core/materials 20-textures.js (as in Ys)
+TEX_DIR = os.path.join(HERE, 'tex')        # tools/textures/pack.py writes it from materials.json
+PACK_FRAGMENT = '46-matlib-pack.js'        # GENERATED from tex/ (never written to src/)
+# core/rand and core/tags: the registry core/host's inspector and minimap read (src/91t-jj-tags.js fills KTAGS.page from REG)
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[:1].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap and cutaway, with core/clock, core/space and core/minimap, as Iziz takes them. Not core/edits: no editor world.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
+SHARED_CORE = set(TAGS_FILES) | set(CORE_HOST)   # shared modules: each its own scope (IIFEs), left out of the name rules
 MANIFEST_FILES = [
     '10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
     '36-decor.js', '38-helpers2.js', '50-registry.js', '54-mat-concrete.js',
@@ -70,6 +84,13 @@ def source_paths():
     for f in LOD_FILES:
         if f not in files:
             files[f] = os.path.join(LOD_DIR, f)
+    for f in RECORD_FILES:
+        files[f] = os.path.join(RECORD_DIR, f)
+    for f, p in TAGS_FILES.items():
+        if f not in files:
+            files[f] = p
+    khost.resolve(files, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
+    files[PACK_FRAGMENT] = None             # generated: matlib_pack()
     target_files = {f: os.path.join(TARGET, f) for f in os.listdir(TARGET) if f[:1].isdigit()}
     overlap = set(files) & set(target_files)
     if overlap:
@@ -78,10 +99,36 @@ def source_paths():
     return dict(sorted(files.items()))
 
 
+def matlib_pack():
+    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack), as Girder's build.py
+    does. It reads the committed tex/ files only, never the library or an image encoder, so the build stays
+    deterministic. With no tex/pack.json, Jimjam runs on its procedural maps."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if not os.path.isfile(pj):
+        return "/* no tex/pack.json: Jimjam runs on its procedural textures */\nKMAT.pack('jimjam', {});\n"
+    pack = json.load(open(pj, encoding='utf-8'))
+    out = []
+    for fam in sorted(pack['families']):
+        e = pack['families'][fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
+             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
+            '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
+            "KMAT.pack('jimjam', {\n" + ',\n'.join(out) + '\n});\n')
+
+
 def validate(bodies):
     errors = []
     owners = {}
     for filename, body in bodies.items():
+        if filename in SHARED_CORE:
+            continue
         if filename.endswith('.js'):
             for match in BUILDER.finditer(body):
                 if 'reseed(' not in match.group(2):
@@ -120,6 +167,9 @@ def build():
     paths = source_paths()
     bodies = {}
     for f, path in paths.items():
+        if path is None:
+            bodies[f] = matlib_pack()
+            continue
         with open(path, encoding='utf-8', newline='') as src:
             bodies[f] = src.read()
     validate(bodies)

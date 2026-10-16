@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.252,
+    1.0
+   ],
+   "seam_before": [
+    1.827,
+    1.11
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.4,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "hide",
+  "id": "hide.fuzz.pterosaur",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   0.5,
+   0.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "hide-fuzz-pterosaur.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image)",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id hide.fuzz.pterosaur).",
+  "reuse": "pterosaur body fuzz (Girder fly_q_fuzz); short fur on any small mammal, felted hide",
+  "sha1": "6aee242e4a0581aab01bdc15ae02a576b734d3e7"
+ }
+}

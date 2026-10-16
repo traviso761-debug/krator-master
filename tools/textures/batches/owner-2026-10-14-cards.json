@@ -1,0 +1,240 @@
+[
+ {
+  "src": "reedlake-fringe.png",
+  "out": "core/materials/patterns/reedlake/fringe",
+  "record": {
+   "id": "reedlake/fringe",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    0.55
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 3.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "3.webp",
+    "original_sha1": "5a0b55eeb27d994776973a3f2d73148eeae21b69",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of loose reed ends hanging from an eave: about seventy thin, slightly curved strands, each hanging straight down from the top edge. Lengths are uneven, between half and full height. Each strand leans a little to one side. The strands are pale straw (#cbb36e) or darker straw (#b39c5c), spread randomly on a solid flat bright magenta (#ff00ff) background, so they can be cut out. The strands end ragged and loose. No magenta, pink or purple anywhere in the strands. The pattern repeats horizontally. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to its period across (1246 px) before processing, so the sheet repeats on its own period. keyed hard (key 120..230): the strands' shadows on the magenta keep a dark purple-brown edge, the pink fringe of a softer key is gone. The cut-out redo: it replaces the opaque dark-ground fringe.",
+    "reuse": "Reed Lake's eave fringes (rlFringe); any hanging straw or reed fringe"
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 120,
+   "key_hi": 230,
+   "anchor": "tight",
+   "pad": 0.0
+  }
+ },
+ {
+  "src": "reedlake-reed-lattice.png",
+  "out": "core/materials/patterns/reedlake/reed-lattice",
+  "record": {
+   "id": "reedlake/reed-lattice",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.1,
+    2.1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 5.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "5.webp",
+    "original_sha1": "e1ada633c177594c19051cc4bc4f9c55732d2c74",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of an open diamond lattice, like the front of a reed mudhif: flat reed strips crossing diagonally at 45 degrees in both directions, spaced so the gaps are square diamonds that show a solid flat bright magenta (#ff00ff) background, so the lattice can be cut out. One set of strips is straw gold (#c9b06a), the other slightly darker (#b89c5a). A thin dark brown shadow line (#3c2814) runs along one edge of each strip. No magenta, pink or purple anywhere in the strips. The pattern repeats in both directions. Full colour.",
+    "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to five periods each way (1052 x 1050 px) before processing, so the sheet repeats on its own period.",
+    "reuse": "the mudhif fronts' open diamond lattice (rlLattice); any open reed or cane lattice"
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170,
+   "anchor": "tight",
+   "pad": 0.0
+  }
+ },
+ {
+  "src": "4.webp",
+  "out": "core/materials/library/card.steamcomb",
+  "record": {
+   "id": "card.steamcomb",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 4.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "4.webp",
+    "original_sha1": "5b0fe06ba191c3a2edc4f58d3cceb7b9706b0ac7",
+    "prompt": "A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a fan of very fine, almost hair-thin pale grey-white filaments (#e4e8e0) radiating in a half circle from a small hub at the bottom middle of the cell, like a sea fan or a fine comb, the filaments a little translucent and beaded all over with tiny clear water droplets that catch the light; vary the width and the fullness of the nine fans. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell). The water beads are clear and let the magenta through: they key to a pale mauve-grey; a host that tints (keep 0) loses the cast.",
+    "reuse": "the steam combs' fans; sea fans, alien filter feeders"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170,
+   "anchor": "center",
+   "pad": 0.01
+  }
+ },
+ {
+  "src": "7.webp",
+  "out": "core/materials/library/card.streamer",
+  "record": {
+   "id": "card.streamer",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 7.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "7.webp",
+    "original_sha1": "a386d1ebd3d75531c2d91590139985b5e985038e",
+    "prompt": "A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a clump of long silky streamers of thermophile filaments, the kind that grow in warm runoff from hot springs, combed out straight and parallel by flowing water, rooted together at the bottom of the cell and streaming up to the top, wet and glossy, bright orange (#e0782a) shading to golden (#f0a040) at the tips, a few strands olive-green (#7a8a34); vary the width and the length of the nine clumps. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.",
+    "note": "a nine-cell sheet. Keyed by unmixing (cards.py spill unmix): the translucent strands keep their orange instead of a mauve edge.",
+    "reuse": "the flame streamers in the run-off; waterweed in a current"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "key": "#ff00ff",
+   "spill": "unmix",
+   "key_hi": 230,
+   "anchor": "center",
+   "pad": 0.01
+  }
+ },
+ {
+  "src": "9.webp",
+  "out": "core/materials/library/card.clubmoss",
+  "record": {
+   "id": "card.clubmoss",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 9.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "9.webp",
+    "original_sha1": "a8b5650db0faa34460826aa0734740d482833e55",
+    "prompt": "A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a small clump of nodding clubmoss (Lycopodiella cernua): three to six upright stems like miniature pine trees, each densely clothed in tiny needle-like leaves, yellow-green (#7aa038) with paler new growth, a small pale yellow cone nodding at each branch tip, rooted at the bottom of the cell; vary the heights and the counts between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.",
+    "note": "a nine-cell sheet. Keyed by unmixing (cards.py spill unmix): the hair-thin needles keep their green instead of a pink edge.",
+    "reuse": "the nodding clubmoss on the warm crust; any clubmoss or horsetail understorey"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "key": "#ff00ff",
+   "spill": "unmix",
+   "key_hi": 230,
+   "anchor": "center",
+   "pad": 0.01
+  }
+ },
+ {
+  "src": "10.webp",
+  "out": "core/materials/library/card.strap.pandan",
+  "record": {
+   "id": "card.strap.pandan",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 10.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "10.webp",
+    "original_sha1": "e6df07c79c956680fb82b080a99db5d4ccf74ad5",
+    "prompt": "A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a single long strap leaf of a screwpine (Pandanus), standing upright from its base at the bottom of the cell to its tip near the top, the last third drooping a little to one side, narrow and keeled down the middle, its edges finely toothed, glossy green (#4e7432) shading to yellow-green (#8aa040) toward the base; vary the curve and the width between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.",
+    "note": "a nine-cell sheet, one leaf per cell, base at the bottom.",
+    "reuse": "the stilt pandans' strap leaves; screwpines, yuccas, bromeliads"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170,
+   "anchor": "center",
+   "pad": 0.01
+  }
+ },
+ {
+  "src": "29.webp",
+  "out": "core/materials/library/card.grass.panic",
+  "record": {
+   "id": "card.grass.panic",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 29.webp)",
+    "licence": "generated for this project by its owner",
+    "original_file": "29.webp",
+    "original_sha1": "49c832cc5677b108956e76bc34b345a780dcbb5a",
+    "prompt": "A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a tuft of panic grass, a loose fountain of narrow soft blades arching outward and a few open airy seed panicles on thin stems, the tuft's base sitting exactly on the bottom edge of its cell (not floating in the middle), its top reaching about nine tenths of the cell's height; vary the height, the spread and the number of panicles between the nine. Plain muted grey-green so the sprites can be tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.",
+    "note": "a nine-cell sheet, each tuft's base on its cell's bottom edge. The panicles came pinkish (the magenta shows through them): keyed hard (120..230) they read grey-mauve; a host tints the sheet.",
+    "reuse": "the geyser basin's panic grass; any base-anchored grass tuft"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 120,
+   "key_hi": 230,
+   "anchor": "center",
+   "pad": 0.01
+  }
+ }
+]

@@ -154,7 +154,9 @@ eye-level shot of every building before reporting.
    real obstacles with every deck registering itself, A* + smoothing, the connectivity invariants, and the
    `BERTHS` / `FERRY_STOPS` / `WET_DOORS` records. Built now, walked by nobody until P5, so the life layer
    starts on a finished floor.
-5. `88-city-place.js`: occupancy (OBB), ground tests on the mask, the drowned/land split, the Ancients
+5. **Built Oct 5 2026 (first pass; NOTES.md phase 3):** `88-city-place.js` writes the records on KRAND, `88b-city-draw.js`
+   draws them, `93z-city-api.js` checks them; hosts are Skyscraper A only until the chain is re-vendored, the bridge
+   graph and the foreign sets are still to come (KNOWN_ISSUES.md). `88-city-place.js`: occupancy (OBB), ground tests on the mask, the drowned/land split, the Ancients
    slot tiling by wishlist with scale ranges, the accretion scheduler per host, the Hykkousoi frontage
    walker by wealth ring, the foreign-quarter slots with their swap list, the two guilds and the
    caravanserai placed by name, the four landmarks by name with one legal freedom each.

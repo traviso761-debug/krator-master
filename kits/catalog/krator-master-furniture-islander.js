@@ -59,3 +59,7 @@ FURN({
     F.ball(0.34, 0.07, 0.1, 0.03, F.col('shellWhite'), 'bone');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed islander_training_<role> */
+FK.set({ culture: 'islander', tier: 'common', roles: 'training', prefix: 'islander_training_', S: ISL_COMMON, names: {
+  training_dummy: 'Koa practice post', archery_butt: 'Woven-mat target' } });

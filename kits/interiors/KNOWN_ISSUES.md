@@ -84,6 +84,13 @@ What follows is what the checks do not cover, or what the kit does not do yet.
 
 ## Limits of the checks
 
+- **On a machine with little free memory (2026-10-06, 15 GB RAM, under 2 GB free)** the whole `--sets` run dies with a Python
+  `MemoryError`; run it a set at a time: `verify.py dist/interiors-sets.html --sets --assert --seeds 1 --query "set=<name>"`.
+  Iziz, Locus, Reed Lake, Yuni and Yuni town then pass. Abyss, Beast Rider, Highlands and post-apoc report a SwiftShader shader
+  error with empty logs (`0 35715 false`): the page builds every building at once (Highlands: 742 rooms, 158 249 draw calls,
+  14 M triangles) and the software renderer drops a compile; no program is left failed, and the page before the 2026-10-06
+  catalog texture split fails the same way with identical counts. Judge those sets on a GPU (the in-app browser) instead.
+  Highlands also has one real `residence` failure, the same before and after: `hl_rep_gasholder` holds 4 food containers for 5 units.
 - **Measured-inside** takes every built vertex into the piece's own frame and tests the four corners
   of that box, shrunk by max(6 cm, 4 %), the catalog's own declared-size tolerance plus a
   centimetre. Within that a piece's real geometry may graze a wall.
@@ -104,3 +111,13 @@ What follows is what the checks do not cover, or what the kit does not do yet.
   instead that the real lights equal the lights the plans carry as data (53 at seed 0).
 - **Seeds**: `--assert` audits seeds 0–2 (`--seeds N` for more); room seeds are hashes of room ids,
   so renaming a room re-furnishes it. Planned buildings do not depend on the furnishing seed.
+- [x] **Things floated on tables, shelves and jars** (Dhelv, review 3: a jug and cups over the map table, a basket over a
+      barrel, a bowl on a bottle). A host's surface was its declared height, often its tallest part (a table's 0.95 m over a
+      0.82 m top). The adapters now measure a host's top on what is drawn (`IX.measureTop`, `catalog.top`: rays down on a 5 x 5
+      grid, the commonest height; none when under a third meet it, a sack or a jar or an open vat) and pass the catalog's
+      `surface: false`, which was never read; a host with no top hosts nothing. **Every build that furnishes with this kit places
+      differently once rebuilt** (the surface pieces move onto the drawn tops or go elsewhere).
+- [x] **Wall pieces stood on open sides** (Dhelv's cloisters: a rope rack in mid-air between the pillars). A room may name its
+      open sides (`open: [[x, z], ...]`, a point on each): no piece stands or hangs on them.
+- [x] **A cord of pennants was a 2.4 m fragment on a long wall.** A catalog piece marked `stretch` runs the free length of its
+      wall (between its ends and its doors, up to 8 m, centred where the placer put it): the placement's `span`, which the builder draws to (`F.span`).

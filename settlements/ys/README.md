@@ -1,9 +1,20 @@
 # Ys
 
 The half-drowned capital of the Hykkousoi, on the ruins of an Ancient city at the head of the
-north-west bay of the Ring Sea. **Phases 0–2 are built: the harness, the mockup and the Hykkousoi
-kit (89 pieces and 14 furniture pieces on `dist/kit.html`, `--assert` green). Phase 3 (the city) follows `PLAN.md`;
-its layout, shore and nav are in `targets/city`.**
+north-west bay of the Ring Sea. **Phases 0–3 are built: the harness, the mockup, the Hykkousoi kit (`dist/kit.html`, `--assert` green)
+and the city (`dist/ys.html`): the layout, shore and nav in `targets/city`, the placement pass (`88-city-place.js` records,
+`88b-city-draw.js` draws them), twenty Ancient host types with grown pods, the bridge graph, the harbours and moles, the
+river, the north-west bay biome on the land and the karst, the building editor (the Edit button) and the foreign quarter
+(the Iziz Vernacular, the Republican dwellings, the Voth embassy and townhouses, the Historians' chapterhouse). Phase 4
+(the record and the gallery) and Travis's follow-ups (the central infill, every Trays a podded stump, the drowned grid's
+ruins: Oct 12 2026) are in `NOTES.md`'s last rounds.**
+
+The placement pass walks its frontages, ranks its block candidates and lays its central lattice with **core/city's
+shared primitives** (`core/city/33-city-strategies.js`, `KCITY.prim`: `frontageRun` under `ysPlFront` and
+`ysPlEdgeRun`, `gridCands` under `ysPlCands`, `packPolygon` and `faceNearestStreet` in the central infill; the city
+target takes the one fragment, `build.py` `TARGET_CORE_FILES`). Its placement did not move (2026-10-14: every
+record's hash and the refusals' the same before and after). Ys's method is core/city's `frontage-courts` strategy
+for other cities; Ys keeps its own blocks, boxes, clash rule and kit audit.
 
 ```
 python3 build.py                                    # every target under targets/ -> dist/<name>.html (city -> dist/ys.html)
@@ -21,6 +32,7 @@ python3 verify.py dist/ys.html --marks /tmp/ys-marks.json --eval "()=>window._ap
 * `NOTES.md` — round by round. `KNOWN_ISSUES.md` — what is open (printed by every build).
 * `refs/` — the reference contact sheets (mood; never copy). `refs/index.txt` says what each holds.
 
-In the page: hover to inspect (name · class · tags), Labels, the Polygon tool (copy-pasteable world
-coordinates), Walk (F) at eye height, the hour slider, `n` noon/night, Compass (a rose that turns with the
-camera and a ground gizmo at the orbit target). A preset is `[cx,cy,cz,tx,ty,tz, hour?, compass?]`.
+In the page (core/host since 2026-10-15): I hovers the inspector (name · class · tags), a click inspects, P marks (in
+place of the Polygon tool), M the minimap, X the cutaway (a building with rooms, storey by storey), Walk (F) at eye height;
+the page's own Labels, the hour slider, `n` noon/night, Compass (a rose that turns with the camera and a ground gizmo at
+the orbit target), Inside and Rooms. A preset is `[cx,cy,cz,tx,ty,tz, hour?, compass?, inside?]`.

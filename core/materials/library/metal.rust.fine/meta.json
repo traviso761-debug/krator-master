@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.282,
+    1.078
+   ],
+   "seam_before": [
+    1.197,
+    1.308
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.rust.fine",
+  "metal": 0.15,
+  "roughness": 0.8,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Seamless Weathered Gray Concrete Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Seamless Weathered Gray Concrete Texture.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id metal.rust.fine).",
+  "reuse": "the Ancients MAT rust on stretched beams, tanks and spheres (came out grey: an even fine grain the build tints rust)",
+  "sha1": "8ba1289d85085e08f37556c2b54c89472c14182e"
+ }
+}

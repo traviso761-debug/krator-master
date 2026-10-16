@@ -2,6 +2,40 @@
 build.py prints every unticked item on each build. Claude: when Travis asks for changes to this world,
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
+- [x] (2026-10-15) Girder on core/host (ROADMAP.md section 10, step 2; `core/host/README.md`): the camera, loop, panel and probe are
+      the host's; the inspector (I, click) reads core/tags (every REGISTER()ed site and every interior piece is a record now);
+      marks (P) replace the polygon tool; the picture menu, minimap (M), editor (B) and cutaway (X: a tower's thirty storeys,
+      the houses, the hall) are new. Proof: `verify.py --assert` unchanged (every invariant, the same draw calls); a scene census
+      (every mesh's name, visibility and triangles at four views, the camera to 4 decimals) matches the old page within the old
+      page's own run-to-run difference (the interiors' merge and the life layer); chrome-hidden shots differ only where the
+      wind, the water and the villagers move. The budget row `furn.calls 80 / 54` fails as it did on main before the move.
+- [ ] (2026-10-15) Keys changed with the host's one keymap: **F** walks (it was G), **G** flies to the pin (double-click the
+      ground to drop one), Esc lifts it; I is the hover tip (the old Inspector button), P marks, B edits, X cuts, O is free.
+- [ ] (2026-10-15) The editor moves, removes and places **catalog pieces** only. A piece the page was made with is merged into
+      the furniture batch, so moving or removing it is marked and applies on reload (`53-furnish.js gfVetoed`); a placed piece is
+      drawn on its own at once. Plant mode offers the catalog's planters and shrine saplings: the hypertrees, saplings and
+      undergrowth are woven into shared stores and cannot be edited one by one yet; the plant registry (krator-master-plants.js)
+      needs the asset engine, which Girder does not load.
+- [ ] (2026-10-15) The world hour stays the sky's own clock (21-sky.js, the Time of day slider and Pause); the host's speed
+      buttons (pause, 1x to 8x) set the motion time the sky, the wind and the life layer advance by. One clock is the host's
+      (`KCLOCK`) once the sky takes an hour from it.
+- [x] (2026-10-05) The NAV walk graph against the walk solids (`navAudit()` in Girder Hero, `hero/PORT.md`): 810 of 2,958
+      edges and 184 nodes could not be walked. Fixed in 30-layout.js: the gallery loops ran along the column line (now
+      `GALLERY_WALK`, 20.2 m, inside the columns; 704 edges, 176 nodes), the roost-deck walk crossed the lift notch (its nodes
+      step to the notch's outer side), the last flight climbed to the roof plate's open core (the graph now stops at floor 30's
+      core), roost nodes stood among the stall's furniture (now at the stall's open back), the lift foot ran through the capstan
+      (a node round it), fields and house yards reach the road through an apron node outside the gate. Left: the four below.
+      `verify.py --assert` passes; the villagers now walk the galleries 1.8 m further in and tend the beasts from the stall's back.
+- [ ] (2026-10-05) NAV: 105 gallery edges and 16 gallery nodes run through furniture standing on the gallery lane (20.2 m).
+      The furniture is placed after the graph (53-furnish.js, 56-interiors.js); either keep a lane clear there or repair the
+      graph against the solids after furnishing. Girder Hero detours round them.
+- [ ] (2026-10-05) NAV: 17 field and 2 house links to the road cross a neighbouring plot's fence on the way to a road node up to
+      43 m off (`navNearest`); they want to follow the lanes between the plots.
+- [ ] (2026-10-05) NAV: on each roost deck the walk node moved out of the lift notch sits by a stall partition, so its link back
+      to the walk line clips a post (4 edges).
+- [ ] (2026-10-05) NAV: the lift-head nodes are inside the shaft; the edge to the deck walk is only walkable with the cage up
+      (by design, but `navAudit()` lists it).
+
 - [x] (2026-10-05) Tree tints: roots take the trunk's tint at their height above the ground (colour band and moss) and limbs, boughs and twigs take the trunk's tint
       at the height where the limb leaves it (60-trees.js: `trunkPt(...)`, `lc`); the old lighter-base, darker-outer split along a limb is gone. Looked at in headless
       renders against the committed page (trunk base, root fan, a limb on the ironbark): the limb now reads as the trunk's colour where the old one was darker. Triangles
@@ -22,7 +56,7 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
         lantern-horn on the glow, leaf.understorey, rock face, thatch, earth.floor.packed, terracotta, metal.iron.pitted, fruit.skin.amber on food, bone.skull,
         basket-coil on wicker, metal.gold), the gatepods (fruit.husk), the draught millipedes (chitin.millipede) and the lift cages (fibre.cane).
       - The mounts: FlyGeo.slots maps each colour to a quadrant of a per-species 2x2 atlas (vertex attribute aDetS), sampled by triplanar projection of the
-        BIND-POSE position, so the sheet rides on the flapping wing. Quetzal: hide.strider fuzz, membrane.pterosaur, the crest feathers, bone.horn; bat:
+        BIND-POSE position, so the sheet rides on the flapping wing. Quetzal: hide.fuzz.pterosaur fuzz (2026-10-06; was hide.strider), membrane.pterosaur, the crest feathers, bone.horn; bat:
         fur.bat, membrane.bat, bone.antler; archaeopteryx: the raptor feathers, organic.scale.terracotta; dragonfly: organic.chitin.iridescent, chitin.spider
         legs (wings: wing.dragonfly); rider: the saddle blanket, leather, wood.lamppost lance, rope. One draw call per species, as before.
       - Village dressing (new FAMMAT families; 05-palette.js): rawhides and big-cat pelts on the workshop frames, the clan emblem on the upper galleries'

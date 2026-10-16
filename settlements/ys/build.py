@@ -53,6 +53,59 @@ TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
+CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
+CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook the vendored Iziz vernacular uses (core/README.md)
+# the material records (core/materials/record: KMAT and the browser loader; GODOT-PLAN.md Phase 3). Not 24-tex-def.js:
+# its TEX would clash with the lineage's TEX texture table (core/materials/20-textures.js)
+RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+# the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
+# (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the sea is a WATER.open surface (the port
+# kit's 71w-port-sea.js, vendored). Every target takes them; a src/ copy with the same name wins.
+ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
+CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+WATER_DIR = os.path.join(ROOT, 'core', 'water')
+CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
+# core/rand and core/tags (every target): the registry core/host's inspector and minimap read (src/91t-ys-tags.js fills
+# KTAGS.page from REG). The city took core/rand already (TARGET_CORE below); the same files, so no clash.
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[0].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap and cutaway, with core/clock and core/minimap. Not core/space: the vendored biome core's scatter takes its grid
+# when the module is on the page (Iziz's KNOWN_ISSUES.md, 2026-10-13). Not core/edits: the city's editor is its own.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pack.py writes it from materials.json
+PACK_FRAGMENT = '26-matlib-pack.js'        # GENERATED at build time from tex/, never written to src/
+
+
+sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+import matlib_pack as _mp
+SIDE = {}   # the library packs' maps, written to dist/ys.tex.<key>.js and shared by every target's page
+
+
+def matlib_pack():
+    """The library textures materials.json names, as data URLs (KMAT.pack). It reads the committed tex/ files only,
+    never the library or an image encoder, so the build stays deterministic."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if not os.path.isfile(pj):
+        return '/* no tex/pack.json: Ys runs on its procedural textures */\nKMAT.pack(\'ys\', {});\n'
+    pack = json.load(open(pj, encoding='utf-8'))
+    out = []
+    for fam in sorted(pack['families']):
+        e = pack['families'][fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'), 'card': e.get('card', False), 'tint': e['tint']['keep']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    # the maps go in dist/ys.tex.ys.js beside the pages (SIDE; tools/textures/matlib_pack.py): ys.html would pass the
+    # gallery's 16 MB a file with them inlined
+    SIDE['ys'] = '{\n' + ',\n'.join(out) + '\n}'
+    return _mp.loader('ys')
+
 
 TARGET_OUT = {'city': 'ys.html'}          # every other target builds to dist/<name>.html
 
@@ -60,29 +113,97 @@ TARGET_OUT = {'city': 'ys.html'}          # every other target builds to dist/<n
 # placement pass (PLAN.md P3) draws from KRAND streams and cell seeds, never from the lineage's rng() or the
 # sin-based h3/fbm, so the city's layout reproduces in Godot (GODOT.md item 4; GODOT-PLAN.md Phase 2).
 TARGET_CORE = {'city': ['rand']}
+# single core fragments a target takes (not a whole module): the city's placement pass walks its frontages, ranks its
+# candidates and lays its lattice infill with core/city's shared primitives (33-city-strategies.js: KCITY.prim
+# frontageRun, gridCands, packPolygon, faceNearestStreet), the same functions core/city's strategies run on
+TARGET_CORE_FILES = {'city': ['city/33-city-strategies.js']}
 
 
 def srcpath(f, base=None):
     """Path of fragment f in base (default src/), falling back to core/materials/."""
     p = os.path.join(base or SRC, f)
-    return p if os.path.exists(p) or f not in CORE_FILES else os.path.join(CORE, f)
+    if os.path.exists(p) or f not in CORE_FILES + CORE_OPT_FILES:
+        return p
+    return os.path.join(CORE if f in CORE_FILES else CORE_OPT, f)
 
 
 # fragment -> upstream directory (relative to the repo root)
 VENDORED = {}
-for _f in ['10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js',
-           '38-helpers2.js', '50-registry.js', '52-sky-abc.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html']:
+# the smaller civic ruins for the drowned grid between the stumps (Travis, Oct 5 2026; targets/city/88-city-sunk.js): the
+# kit's alternates (the Bastion Drum, the Watch Cup, the Linked Blocks), the city target alone
+VENDORED_DROWNED = ['8al-alt-05-bunker.js', '8al-alt-10-police.js', '8al-alt-11-hospital.js']
+for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.js', '71-sky-h.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js',
+           '38-helpers2.js', '50-registry.js', '52-sky-abc.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html',
+           # the podded Ancient stumps (Oct 5 2026): Sky E and K, the alternates (the Pierced Stack, the Attraction, the
+           # Undulant house, the office terrace, the library) with the helpers they share, and the worn pass (the Library)
+           '57-sky-e.js', '58-sky-f.js', '89m-sky-k.js', '8aj-alt-a-bole.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
+           '8al-alt-00-lib.js', '8al-alt-01-office-terrace.js', '8al-alt-06-library.js', '69w-worn.js',
+           # the original offices and apartments as land hosts (69j-host-offices.js) and the civic and industrial ruins
+           # in the shallows (64b-ys-ruins.js), with the helpers they need (64-houses-def: domRoom; 80-aa-battery)
+           '82-apartments.js', '66-office-c.js', '64-houses-def.js', '80-aa-battery.js', '62-robotics.js',   # 62: civMergeGeo for the Assembly's hoods
+           '46-bunker.js', '48-library.js', '73-police.js', '74-hospital.js', '75-hotel.js', '79-government.js', '89-lab.js', '72-datacenter.js'] \
+        + VENDORED_DROWNED:
     VENDORED[_f] = 'kits/ancients/src'
-for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
+for _f in ['70-port-core.js', '71-port-terrain.js', '71w-port-sea.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
     VENDORED[_f] = 'settlements/port/src'
 for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
+# the foreign quarter (phase 3, DESIGN §2 and §6; NOTES.md "The foreign quarter"): the Iziz Vernacular dwellings and
+# trade, the Voth embassy and the Historians' chapterhouse (the Yuni-set ports) from Iziz; the Highlands kit's
+# Republican dwellings with the textures, materials, motifs, helpers and carving they need. Byte-identical copies
+# (--vendor-check); the city target alone takes them (TARGET_ONLY). Not taken: 72-vern-civic (nothing in it fits a
+# foreign plot), 73b-hl-frame (74 does not need it, and its overrides of vnWin/vnGableRoof/vnHipRoof would redraw the
+# Iziz houses), 75-rep-trade and 89y-hl-furnish (FURNISH places furniture from the master catalog; 88c stubs it).
+VENDORED_IZIZ_FQ = ['70-vern-dwellings.js', '71-vern-trade.js', '75-port-embassy.js', '76-port-chapterhouse.js']
+VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']
+for _f in VENDORED_IZIZ_FQ:
+    VENDORED[_f] = 'settlements/iziz/src'
+for _f in VENDORED_HL:
+    VENDORED[_f] = 'settlements/highlands/src'
+# Build-time renames in a vendored fragment's body (the file on disk stays byte-identical to its upstream, so
+# --vendor-check stays clean and a re-vendor is a plain copy). Only for collisions in the shared scope that cannot be
+# avoided: Ys's 60-hyk-mat.js already declares `HPAL` (the Hykkousoi palette, read by 88b) and `hC`, both `const`, and
+# the Highlands kit declares the same two names (its formline palette; its hC is vC, exactly what Ys's hC does); the kit
+# also overwrites `MAT.rock` and `MAT.turf` from core/materials/68-mat-v5.js, which 36-decor.js and 64-houses-def.js
+# draw with. Recorded in KNOWN_ISSUES.md. (regex, replacement) pairs, applied in order.
+VENDOR_SUBST = {}
+for _f in VENDORED_HL:
+    VENDOR_SUBST[_f] = [(r'\bHPAL\b', 'HLPAL'), (r'\bMAT\.rock\b', 'MAT.hlRock'), (r'\bMAT\.turf\b', 'MAT.hlTurf')]
+VENDOR_SUBST['71-hl-mat.js'].insert(0, (r'^const hC=vC;', '/* hC: Ys has it (60-hyk-mat.js: hC = vC) */'))
+
+
+def subst(f, body):
+    for rx, rep in VENDOR_SUBST.get(f, []):
+        body = re.sub(rx, rep, body, flags=re.M)
+    return body
+# vendored under another name (Ys's load order: the five host-ready types must sort after 68-mat-v5 and before the city's
+# placer, which reads their HOSTSPEC_* at load): Ys name -> upstream name
+VENDOR_RENAME = {'69h-host-%s.js' % p: '8ap-host-%s.js' % p for p in ['0-lib', 'a-facet', 'b-bastion', 'c-arcades', 'd-stalks', 'e-bellhall']}
+for _f in VENDOR_RENAME:
+    VENDORED[_f] = 'kits/ancients/src'
+# the biome (phase 3, DESIGN §8): the shared biome core from core/biome and the north-west bay kit from biomes/nwbay/src,
+# byte-identical, as src/86-bio-*.js (the dalab pattern). Only the city target takes them (TARGET_ONLY); the city's host
+# binding is targets/city/86-bio-45-city-init.js (THREE before fragment 50) and 89-city-biome.js (the facts, the build).
+BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
+                '50-biome-nwbay-species', '55-biome-nwbay-trees', '56-biome-nwbay-variants', '60-biome-nwbay-floor',
+                '65-biome-nwbay-dress', '70-biome-nwbay', '75-biome-nwbay-fauna']
+for _b in BIO_VENDORED:
+    VENDOR_RENAME['86-bio-%s.js' % _b] = _b + '.js'
+    VENDORED['86-bio-%s.js' % _b] = 'core/biome' if '-core-' in _b else 'biomes/nwbay/src'
+# src fragments only the named targets take: prefix -> targets. The kit sheet and the mock carry no biome and no
+# foreign kits.
+TARGET_ONLY = {'86-bio-': ('city',)}
+for _f in VENDORED_IZIZ_FQ + VENDORED_HL + VENDORED_DROWNED:
+    TARGET_ONLY[_f] = ('city',)
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
-ADAPTED = {'52-sky-abc.js', '71-port-terrain.js', '92-camera.js'}
+ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js',
+           '57-sky-e.js', '58-sky-f.js', '89m-sky-k.js', '8aj-alt-a-bole.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
+           '8al-alt-01-office-terrace.js', '8al-alt-06-library.js',
+           '82-apartments.js', '42-offices.js', '66-office-c.js'}   # the Ys branch draws one building of each, holed for the ways in
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '00-head.html', '08-core-rand.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
+    '00-head.html', '08-core-rand.js', '10-core.js', '69a-world-uv.js', '42-offices.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',
@@ -91,14 +212,26 @@ DETERMINISTIC = {
     '35-furn-frame.js', '84-kit-geo.js', '87-city-layout.js', '84b-city-shore.js', '87b-city-nav.js', '87c-city-paint.js',
     '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '93-ys-ui.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
-    '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js',
+    '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js', '88a-city-floors.js', '88-city-spans.js', '88-city-sunk.js',
+    '86-city-edits.js', '94-city-editor.js',   # the edits as data, and the live editor (no builder, no reseed)
+    '33-city-strategies.js',   # core/city's shared primitives (data only: the city's placement draws its KRAND streams through them)
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '26-matlib-pack.js', '79z-ys-matlib.js', '86-bio-00-matlib-pack.js',   # the material records, the pack, the adapter
+    '69i-host-ancients.js', '69w-worn.js', '8al-alt-00-lib.js',
+    '69j-host-offices.js', '64b-ys-ruins.js', '80-aa-battery.js',   # the office/apartment host specs, the ruin placer, the bunker's AA battery
+    '89-city-biome.js',   # the biome's host binding and build: the biome keeps its own PRNG, the lineage's rng() is never drawn
+    # the foreign quarter: the Highlands kit's textures, materials, motifs, helpers and carving carry no builder; the
+    # city's foreign pass (88c) picks and places from KRAND streams, and every builder it calls reseeds itself
+    '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '88c-city-foreign.js',
+    '71w-port-sea.js',   # the sea on core/water (vendored from the port kit)
 }
+DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
+DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'91t-ys-tags.js', '99-start.js'}   # core/host, core/tags (no rnd()); the records; the take
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
 # declarations live inside a closure and they keep their own PRNG.
 SCOPED_PREFIXES = ('86-bio-',)
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES)
+    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST or f in TAGS_FILES   # core/host, core/tags: each file one IIFE
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -182,21 +315,38 @@ def build_one(target, do_checks):
     tdir = os.path.join(TARGETS, target)
     if not os.path.isdir(tdir):
         sys.exit('no such target: %s' % target)
-    src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()
+           and all(target in tg for pre, tg in TARGET_ONLY.items() if f.startswith(pre))}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
+    src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
+    src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
+    src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
+    src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         src.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js') and f not in src})
-    tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
+    for rel in TARGET_CORE_FILES.get(target, []):
+        f = rel.split('/')[-1]
+        if f not in src:
+            src[f] = os.path.join(ROOT, 'core', *rel.split('/'))
+    tgt ={f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
     paths = dict(src); paths.update(tgt)
-    order = sorted(paths)
-    bodies = {}
+    order = sorted(list(paths) + [PACK_FRAGMENT])
+    SIDE.clear()   # this target's packs only (each target writes its own sidecars; they share names, so no pruning)
+    bodies = {PACK_FRAGMENT: matlib_pack()}
     for f in order:
+        if f == PACK_FRAGMENT:
+            continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
-            bodies[f] = fh.read()
+            bodies[f] = subst(f, fh.read())   # VENDOR_SUBST: the recorded renames, on the body only
+    if any(f.startswith('86-bio-') for f in order):   # the vendored nwbay biome: its library pack, before the biome code
+        bodies['86-bio-00-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'nwbay'), 'nwbay', side=SIDE)
+        order = sorted(order + ['86-bio-00-matlib-pack.js'])
     if do_checks:
         errs = check(order, bodies)
         if errs:
@@ -210,9 +360,10 @@ def build_one(target, do_checks):
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1), html, count=1)
     out = os.path.join(DIST, TARGET_OUT.get(target, target + '.html'))
     os.makedirs(DIST, exist_ok=True)
+    html = _mp.write_sidecar(SIDE, html, DIST, 'ys.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
-    with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8', newline='\n') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order}, fh, indent=1, sort_keys=True)
     return order, html, out
 
@@ -222,10 +373,10 @@ def vendor_manifest():
     for f in sorted(VENDORED):
         p = srcpath(f)
         if os.path.exists(p):
-            with open(p, 'rb') as fh:
-                out[f] = {'sha1': hashlib.sha1(fh.read()).hexdigest()[:12], 'from': VENDORED[f],
+            with open(p, 'rb') as fh:   # CRLF read as LF: a Windows checkout writes the same manifest (tools/port_baseline.py read_lf)
+                out[f] = {'sha1': hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12], 'from': VENDORED[f],
                           'adapted': f in ADAPTED}
-    with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8', newline='\n') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out
 
@@ -233,7 +384,7 @@ def vendor_manifest():
 def vendor_check():
     same, adapted, drift, missing = [], [], [], []
     for f in sorted(VENDORED):
-        up = os.path.join(ROOT, VENDORED[f], f)
+        up = os.path.join(ROOT, VENDORED[f], VENDOR_RENAME.get(f, f))
         here = srcpath(f)
         if not os.path.exists(up):
             missing.append(f); continue
@@ -268,7 +419,7 @@ def main():
         order, html, out = build_one(target, do_checks)
         body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
         chk = os.path.join(HERE, '.syntax-%s.js' % target)
-        with open(chk, 'w', encoding='utf-8') as fh:
+        with open(chk, 'w', encoding='utf-8', newline='\n') as fh:
             fh.write(body)
         try:
             r = subprocess.run(['node', '--check', chk], capture_output=True, text=True)

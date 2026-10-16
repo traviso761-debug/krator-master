@@ -6,7 +6,7 @@
 
 A build's `materials.json` is its adapter: per material family the library set it uses and how (scale in world
 metres per tile, how much of the set's own colour survives the build's tint, how much to lift roughness, metal).
-This script reads each set from core/materials/library/<lib>/ (1024 px albedo.jpg, normal.png, roughness.png),
+This script reads each set from core/materials/library/<lib>/ (1024 px albedo.jpg, normal.jpg, roughness.png),
 and writes small processed copies into <build>/tex/ (WebP, `size` px, default 512) plus tex/pack.json.
 
 The build reads only those committed files (build.py inlines them as data URLs), so the build stays
@@ -18,14 +18,19 @@ Processing, per family:
            (default 0.78, the brightness of the procedural greys the builds were tuned on); out = L*(1-keep) + C*keep.
            keep 0 is a pure grey detail map that the vertex or instance colour colours; keep 1 keeps the set's hue.
            tint.contrast (default 1) scales each pixel's distance from the mean first: a set that reads flat at a
-           distance gets its furrows and seams back.
-  normal   resized and renormalised (OpenGL convention, as the library and Godot use)
+           distance gets its furrows and seams back. tint.colour ('#rrggbb', optional) gives the grey part a hue at the
+           same brightness: for builds whose procedural maps carry their colour (Reed Lake's straw), so a grey set
+           matches the map it replaces under the same instance tint.
+  normal   resized and renormalised (OpenGL convention, as the library and Godot use); written as LOSSLESS WebP of its
+           channels kept to 6 bits (NORMAL_BITS: 0.7 degrees mean error, 40% smaller than 8 bits)
   rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map
   lib      a library id, or a pattern sheet as 'patterns/<culture>/<name>'
-  size     per family: overrides the build's map size
+  size     per family: overrides the build's map size; [w, h] keeps a sheet's shape (a dome's sky, not a tile)
   mapOnly  `"mapOnly": true` writes the colour map only (a sheet the build uses as a plain texture, not a lit material)
   optional a family with `"optional": true` is skipped (with a note) while its library set does not exist yet: the build
            then runs on whatever it did before (fauna sheets are wired this way before they are generated)
+  cell     `"cell": [x0, y0, x1, y1]` (fractions from the sheet's top left): the host shows one cell of a card sheet (a
+           single plant from a nine-plant sheet); passed through to the pack entry
   card     (record.kind 'card', from tools/textures/cards.py) an alpha cut-out: RGBA WebP with lossless alpha
            and the colour kept under it; no normal or roughness map; brightness measured over the opaque pixels.
            tint.mean null keeps the set's own brightness (a colour card such as a flower).
@@ -51,34 +56,49 @@ def sha1(path):
 
 def load(path, size, mode):
     im = Image.open(path).convert(mode)
-    if im.size != (size, size):
+    wh = tuple(size) if isinstance(size, (list, tuple)) else (size, size)
+    if im.size != wh:
         if mode == 'RGBA':      # Pillow resizes RGBA premultiplied, which blanks the colour under alpha 0 (a card's bleed)
-            rgb = im.convert('RGB').resize((size, size), Image.LANCZOS)
-            al = im.getchannel('A').resize((size, size), Image.LANCZOS)
+            rgb = im.convert('RGB').resize(wh, Image.LANCZOS)
+            al = im.getchannel('A').resize(wh, Image.LANCZOS)
             im = Image.merge('RGBA', rgb.split() + (al,))
         else:
-            im = im.resize((size, size), Image.LANCZOS)
+            im = im.resize(wh, Image.LANCZOS)
     return np.asarray(im).astype(np.float64) / 255.0
 
 
-def webp(arr, quality, mode):
-    a = np.clip(np.rint(arr * 255.0), 0, 255).astype(np.uint8)
+NORMAL_BITS = 6   # a normal's channels kept to 6 bits (each value the middle of its step): lossless WebP of it is 40%
+                  # smaller than of 8 bits, for 0.7 degrees mean error (1.3 at the 99th percentile; brick at 512 px,
+                  # 2026-10-14). The pages were three times their lossy size with 8-bit lossless normals
+
+
+def quantize(a, bits):
+    s = 8 - bits
+    return a if s <= 0 else (((a >> s) << s) + (1 << (s - 1))).astype(np.uint8)
+
+
+def webp(arr, quality, mode, lossless=False, bits=8):
+    a = quantize(np.clip(np.rint(arr * 255.0), 0, 255).astype(np.uint8), bits)
     im = Image.fromarray(a, mode)
     buf = io.BytesIO()
-    im.save(buf, 'WEBP', quality=quality, method=6, alpha_quality=100, exact=(mode == 'RGBA'))
+    if lossless:
+        im.save(buf, 'WEBP', lossless=True, quality=100, method=6)
+    else:
+        im.save(buf, 'WEBP', quality=quality, method=6, alpha_quality=100, exact=(mode == 'RGBA'))
     return buf.getvalue()
 
 
 def process(fam, cfg, size):
     lib = cfg['lib']
     d = set_dir(lib)
-    size = int(cfg.get('size', size))      # a family may ask for a smaller map (a detail map on small furniture)
+    sz = cfg.get('size', size)                # a family may ask for a smaller map (a detail map on small furniture), or [w, h]
+    size = [int(v) for v in sz] if isinstance(sz, list) else int(sz)
     meta = json.load(open(os.path.join(d, 'meta.json')))
     rec = meta.get('record', {})
     # map paths come from meta.json 'maps' (a neutral copy points at its sibling's normal and roughness)
     mp = meta.get('maps') or {}
     path = lambda k, default: os.path.normpath(os.path.join(d, mp.get(k, default)))
-    pa, pn, pr = path('map', 'albedo.jpg'), path('normalMap', 'normal.png'), path('roughnessMap', 'roughness.png')
+    pa, pn, pr = path('map', 'albedo.jpg'), path('normalMap', 'normal.jpg'), path('roughnessMap', 'roughness.png')
     out, files = {}, {}
     card = rec.get('kind') == 'card'
     # albedo (a card keeps its alpha; its statistics are taken over the opaque pixels only)
@@ -94,6 +114,10 @@ def process(fam, cfg, size):
     con = float(t.get('contrast', 1.0))            # >1 deepens the set's own light and dark around its mean
     k = (m + (L - m) * con) / np.maximum(L, 1e-4)  # per-pixel factor that applies the contrast to L and to the colour
     grey = np.repeat((L * k / m * target)[..., None], 3, axis=2)
+    if t.get('colour'):   # a hue for the grey part: the procedural map's mean colour, at the same mean brightness
+        hx = t['colour'].lstrip('#')
+        c = np.array([int(hx[i:i + 2], 16) / 255.0 for i in (0, 2, 4)])
+        grey = grey * (c / max(float(c @ np.array([0.2126, 0.7152, 0.0722])), 1e-4))
     col = a * k[..., None] / m * target
     rgb = grey * (1 - keep) + col * keep
     if card:
@@ -104,7 +128,10 @@ def process(fam, cfg, size):
     if os.path.isfile(pn) and not card and not cfg.get('mapOnly'):
         n = load(pn, size, 'RGB') * 2 - 1
         n /= np.maximum(np.linalg.norm(n, axis=2, keepdims=True), 1e-6)
-        out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB')
+        # lossless: lossy WebP is always 4:2:0, which halves the X and Y the normal keeps in red and green (measured on
+        # wood.timber at 512 px: lossy q92 10.9 degrees mean error, 136 KB; lossless 0.14 degrees, 550 KB; 2026-10-08),
+        # its channels kept to NORMAL_BITS
+        out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True, bits=NORMAL_BITS)
     # roughness
     if os.path.isfile(pr) and not card and not cfg.get('mapOnly'):
         r = load(pr, size, 'L')
@@ -119,11 +146,14 @@ def process(fam, cfg, size):
         'specular': cfg.get('specular', 0.5),
         'breakup': cfg.get('breakup'),
         'card': card,
-        'tint': {'keep': keep, 'mean': target, 'contrast': con, 'sourceMean': round(m, 4)},
+        'tint': dict({'keep': keep, 'mean': target, 'contrast': con, 'sourceMean': round(m, 4)},
+                     **({'colour': t['colour']} if t.get('colour') else {})),
         'roughLift': cfg.get('roughLift', 0.0),
         'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) if os.path.isfile(f)},
         'files': {},
     }
+    if cfg.get('cell'):   # a card shown one cell at a time [x0, y0, x1, y1], fractions of the sheet from its top left
+        entry['cell'] = cfg['cell']
     for k, data in out.items():
         name = '%s.%s.webp' % (fam, {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough'}[k])
         entry['files'][k] = name

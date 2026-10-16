@@ -146,4 +146,19 @@ SWBAY.buildFloor=function(R,q){
  BIO.grid(150,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1500)return 0;const Z=zones(x,z);return (Z.hyper*.8+Z.rain*.6+Z.shore*.4+Z.sav*.15)*q;},(x,y,z,d)=>{const Z=zones(x,z),dry=Z.sav>.5;for(let t=0;t<4;t++)if(log(x+rr(-30,30),y,z+rr(-30,30),st,dry))break;},{patch:0,pad:3});
  BIO.range=null;
  return{under:st};};
+// ---------------------------------------------------------------- one plant where a world puts it
+// SWBAY.plantAt(kind, x, y, z, opt): one of the floor's plants at (x, y, z), standing on whatever the world has there
+// (opt.ground(x, z), default y): fern, giantfern, splaylet, shrub, clubmoss, reed, sedge, savgrass, rosette, dragonlet,
+// moss, blooms. Drawn within SWBAY.LOD.floor of its chunk. opt: {seed, lv (detail 0..2, default 2)}. Call between
+// SWBAY.build() and BIO.bake(). Returns false for an unknown kind.
+const PLANTS={fern:(x,y,z,lv)=>fern(x,y,z,lv),giantfern:(x,y,z,lv)=>giantFern(x,y,z,lv),splaylet:splaylet,shrub:(x,y,z,lv)=>shrub(x,y,z,lv),clubmoss:clubmoss,
+ reed:reed,sedge:sedge,savgrass:savgrass,rosette:(x,y,z,lv)=>rosette(x,y,z,lv),dragonlet:dragonlet,moss:(x,y,z)=>groundMoss(x,y,z,rr(.8,1.6)),blooms:(x,y,z)=>blooms(x,y,z,rr(.6,1.4),ri(4,9))};
+SWBAY.plantKinds=Object.keys(PLANTS);
+SWBAY.plantAt=function(kind,x,y,z,opt){opt=opt||{};const f=PLANTS[kind];if(!f)return false;
+ if(SWBAY.veto&&SWBAY.veto('plant',kind,x,z))return false;   /* a world's editor refuses it */
+ const host=BIO.host,keepH=host.terrainH,P={plant:kind,x:x,y0:y,z:z};reseed(opt.seed==null?(Math.floor(x*29.3)*83492791^Math.floor(z*13.7)*2654435761)>>>0:opt.seed);
+ host.terrainH=opt.ground||(()=>y);
+ try{means();if(SWBAY.onFlora)SWBAY.onFlora(P,0);BIO.owner=[x,z];BIO.range=SWBAY.LOD.floor;f(x,y,z,opt.lv==null?2:opt.lv);}
+ finally{host.terrainH=keepH;BIO.owner=null;BIO.range=null;if(SWBAY.onFlora)SWBAY.onFlora(P,1);}
+ return P;};
 })();

@@ -41,3 +41,63 @@ Decisions:
 Result: 29 defs (5 dwellings, 3 halls, 2 sacred/lookout, 4 work, 3 boats, 5 farm, 5 islands, the village),
 ~0.56 M scene triangles, ~120 draw calls on the opening view; the village 220 k triangles. Verified in
 headless Chromium (`verify.py --assert`, every invariant green) and by eye at eye level.
+
+## Round 2 (Oct 5 2026) — Reed's Local, and the interiors set
+
+Brief (for the settlement Mungo, whose offshore district is a floating reed village): one new, large tavern in the
+Reed style labelled **Reed's Local**, put in this kit rather than in a kit of Mungo's own, socketed into the interiors
+and furniture systems; Reed culture had no interiors set, so one was started.
+
+* `81-rl-tavern.js`: `rl_tavern`, family **Hospitality** (a new showcase row; families are rows in definition order, so
+  it comes after the floating village). A great mudhif (L 28, span 11.5, crown 9.4, nine columns each end: the great
+  mudhif's floor is 22 x 8.6) with a mat back; inside, a floor mat, the built-in mat benches along both walls (mud cores,
+  mat tops, a bundle kerb, woven bolsters: the guests sit along the walls, as in a mudhif guest hall), the cook-fire on a
+  mud slab with a tripod pot and a spit of fish, pennant strings across the arch, fire-cages on long ropes, woven cloths
+  high on the back wall. A smaller mudhif joined at its right (L 12, span 6.4) is the kitchen, with a mat partition and a
+  doorway to the store behind. A mat terrace with banded posts, braziers and fire-cages on poles; a thatch lean-to of
+  beer jars and gourds behind the annex; fish rail and sheaves in the left yard.
+* The landing: bundle pontoons under a mat deck, eucalyptus piles, a thatch gable (ridge along z) on six bundle posts,
+  long bundle benches down both sides, braziers on mud at the front corners; two canoes tied along its sides and the
+  great two-headed boat off its right corner. The def declares `landing: 6.5` (the deck reaches 6.5 m past the +z edge).
+* The sign: `TEX.rlTavSign`, a woven board in `RAND` (madder field, black selvedges, white zigzags, stepped diamonds at
+  the ends, REED'S LOCAL in black on an undyed panel), on a thin box so it reads the right way from both faces, hung on
+  ropes under the landing's front gable. Its colours are in the map; the item is never tinted.
+* Its own pad (`hnRLTavPad`): `hnRLPad`'s ellipse left the terrace's corners and the jar store over water, so the
+  tavern's island is a superellipse (n 4, 15 x 20) with a light wobble; with `{pad:false}` it builds none.
+* Structure only inside: the interiors set (`kits/interiors/sets/reedlake.js`) furnishes the hall (a tavern room
+  around the bench and fire fixtures), the kitchen, the store and the landing (a second tavern room). New catalog
+  pieces for it in `kits/catalog/krator-master-furniture-reedlake.js`: `reedlake_common_bar`, `_jar_rack` (a FOOD
+  container), `_long_bench`, `_long_table`, and `reedlake_poor_sleeping_mat` (the lake's bed, for the huts).
+* The interiors set covers all 29 defs (the 28 of round 1 and the tavern): 12 items (four dwellings, two halls, the
+  shaman's house, the weaver's shed, the warehouse, the farmhouse, the granary and the tavern) and 17 skips with their
+  reasons. The mudhif rooms are kept to where the arch is
+  high enough (`archHalf` in the set file). The cone hut is skipped: inside its thatch it is 1.5 m high only within
+  r 1.3, too small for a home (a wider cone or a mat drum under it would do).
+
+Result: `rl_tavern` about 55 k triangles alone with its pad (class `small`, 91a-rl-budget.js); `verify.py --assert`
+green; the sets page plans 18 rooms, 7 of 7 residences pass.
+
+## 2026-10-13: the lake on core/water
+The lake is core/water's open water (`core/water/README.md`; `src/90w-rl-lake.js`, after core/atmos loads, which
+`build.py` lists by name with core/water): a `WATER.open` surface at `RL.WATER` with no swell of its own and a share of
+the shared wave field (`field` .12: the field's swell lifts it 7 cm at most, so the baked canoes, rafts and islands keep
+their waterlines; `tilt` 2.5 so its chop still reads), on the one clock (`atmWaveT`, whole cycles per period), drawn by
+`WATER.draw` on the CDLOD water mesh, with the old lake map's eight whole-tile sinusoids as its detail normal map (8 m
+a tile, as before) and the dome and the giant in it through core/atmos's skylight, given to the water only (the kit's
+standard materials are unchanged). `groundM` is now an invisible flat plane for the camera's picks; the small still
+waters inside the islands (`hRLWaterB`) keep `MAT.rlWater`, whose map now scrolls on the same clock. From the opening
+view and at 2 m over the water off the family mudhif: the same draw calls (101, 94, 66), triangles 409k -> 482k, 376k
+-> 460k, 373k -> 462k (the 2-triangle plane became ~160 CDLOD nodes); the sun's glint is broken by the ripple and the
+far water takes the sky's gradient. `verify.py --assert` passes before and after with the same numbers (615178 scene
+triangles, 101 draw calls, 14716 baked instances).
+
+## 2026-10-13: the troughs and the wallow on core/water (Phase 4, still water)
+The small waters inside the islands (every `hRLWaterB` box: the buffalo wallows, the log trough, the duck pans and the
+vats, 8 in the whole kit) are core/water's still water (`src/90x-rl-still.js`): each box is a `WATER.still` record at its
+top over its turned footprint, so `WATER.heightAt` answers inside them (0.16 m in the pen's wallow, the lake's -0.44 m
+outside) and core/export carries them; their one InstancedMesh now draws with `WATER.stillMaterial` (the sky's capture in
+the water, a faint ripple on the one clock) instead of the scrolled canvas map (`MAT.rlWater` is kept for nothing else).
+`build.py` lists core/water's new files (21, 22, 51). At a camera over the animal pen (12.5, 4.2, 274 -> 7.5, 0.1,
+267.2): the same 159 draw calls and 0.53 M triangles; the wallow and the trough take the sky's gradient where they were a
+flat teal. `verify.py --assert` passes with the same numbers as before (615178 scene triangles, 101 draw calls, 14716
+baked instances, 51 volumes).

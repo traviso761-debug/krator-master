@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1097,
+    1073
+   ],
+   "seam_after": [
+    0.396,
+    0.526
+   ],
+   "seam_before": [
+    1.355,
+    5.953
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "plate.hex",
+  "metal": 0.5,
+  "roughness": 0.5,
+  "scale": [
+   1,
+   0.98
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "plate-hex.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image)",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id plate.hex).",
+  "reuse": "Ring Sea hex plating; armour, shields, sci-fi floors",
+  "sha1": "88ea20d25221ed68b0aa9b2cbf9fdee92f95b720"
+ }
+}

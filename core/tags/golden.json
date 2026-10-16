@@ -1,0 +1,105 @@
+{
+ "note": "core/tags uid vectors: test-tags.js writes them (--write), ktags_test.gd checks them in Godot",
+ "uid": [
+  {
+   "class": "building",
+   "key": "iziz_gate",
+   "at": [
+    212,
+    41.5,
+    -96
+   ],
+   "uid": "7bd10f69"
+  },
+  {
+   "class": "building",
+   "key": null,
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "uid": "6af0613d"
+  },
+  {
+   "class": "part",
+   "key": "a",
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "uid": "08004a77"
+  },
+  {
+   "class": "furniture",
+   "key": "br_bench",
+   "at": [
+    1.04,
+    0,
+    -1.05
+   ],
+   "uid": "b640bd71"
+  },
+  {
+   "class": "furniture",
+   "key": "br_bench",
+   "at": [
+    1.05,
+    0,
+    -1.04
+   ],
+   "uid": "6ebdaad1"
+  },
+  {
+   "class": "flora",
+   "key": "hypertree",
+   "at": [
+    -123.456,
+    7.89,
+    1000.01
+   ],
+   "uid": "acb4fb97"
+  },
+  {
+   "class": "life",
+   "key": "über",
+   "at": [
+    -0.05,
+    -0.04,
+    0.049
+   ],
+   "uid": "78965764"
+  },
+  {
+   "class": "fixture",
+   "key": "door",
+   "at": [
+    3,
+    0,
+    -4.5
+   ],
+   "uid": "d81a6c28"
+  },
+  {
+   "class": "building",
+   "key": "mid_washed_house",
+   "at": [
+    3.3333,
+    0,
+    -7.5
+   ],
+   "uid": "ebc9a7d2"
+  },
+  {
+   "class": "landmark",
+   "key": "Hykkousoi",
+   "at": [
+    52000.25,
+    -310.75,
+    -48000.35
+   ],
+   "uid": "e48ac40e"
+  }
+ ]
+}

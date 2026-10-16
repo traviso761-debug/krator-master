@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.362,
+    1.344
+   ],
+   "seam_before": [
+    2.162,
+    1.959
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.35,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.travertine.acid",
+  "metal": 0,
+  "roughness": 0.45,
+  "scale": [
+   4,
+   4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ground-travertine-acid.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Rim of an acid hot pool seen from above: thin terraced mineral crust in scalloped ledges, acid lime-green (#9ad030) wet film on white-cream (#e8e4d4) mineral, yellow (#d8b030) and orange-brown (#a86028) stained edges, glossy where damp. Full colour. (Row ground.travertine.acid of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+  "reuse": "the sulphur pools' margins; any hot spring",
+  "sha1": "c4f12c6dc2efbb2cec0a46b8b9d4254b0d938c1e"
+ }
+}

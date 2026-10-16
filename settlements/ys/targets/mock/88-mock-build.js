@@ -14,13 +14,13 @@ YS_BUILD.push(function(scene){
  // ---- host A: the Conocylinder. Its face at world y: the podium, the base cone (local 5..64) then the body.
  const rA=y=>{const yl=y-MOCK_A.sink;if(yl<5)return MOCK_A.podium;if(yl<64)return 22-4*(yl-5)/64;const t=clamp((yl-64)/(420-64),0,1);return 40+26*Math.pow(Math.abs(t-.42)/.58,1.7)*(t<.42?1:1.15);};
  const A_L1=12,A_L2=36.35;   // L1 on the cone (no plate there: pods only); L2 is the first plate
- const A=ysPlaceHost(scene,{key:'skyA',builder:buildSkyA,x:MOCK_A.x,z:MOCK_A.z,y:MOCK_A.sink,d:1,cutY:MOCK_A.cut,podium:MOCK_A.podium,cap:{hw:80},rAt:rA,name:'The Conocylinder stump',
+ const A=ysPlaceHost(scene,{key:'skyA',builder:buildSkyA,x:MOCK_A.x,z:MOCK_A.z,y:MOCK_A.sink,d:1,cutY:MOCK_A.cut,podium:MOCK_A.podium,cap:{hw:66},rAt:rA,name:'The Conocylinder stump',
   floors:{y0:64,pitch:8,top:.35,first:2.5},ways:[{a:-Math.PI/2,y:A_L2,R:4.6}],ring:1});
  // ---- host B: the Scallop Stack, lobed: rAt takes the bearing (a crest is 1.3 x the trough); the core at the waterline
  const lobeB=a=>a==null?1.28:1+.3*(.5+.5*Math.cos(12*a));
  const rB=(y,a)=>{const yl=y-MOCK_B.sink;if(yl<32)return 16.5;return (26+10*Math.pow(clamp((yl-32)/300,0,1),1.4))*lobeB(a);};
  const B_L2=37.25,B_A=5*Math.PI/12;   // the plate nearest A's, in a lobe trough on the side facing A
- const B=ysPlaceHost(scene,{key:'skyB',builder:buildSkyB,x:MOCK_B.x,z:MOCK_B.z,y:MOCK_B.sink,d:1,cutY:MOCK_B.cut,podium:MOCK_B.podium,cap:{hw:74},rAt:rB,name:'The Scallop stump',
+ const B=ysPlaceHost(scene,{key:'skyB',builder:buildSkyB,x:MOCK_B.x,z:MOCK_B.z,y:MOCK_B.sink,d:1,cutY:MOCK_B.cut,podium:MOCK_B.podium,cap:{hw:56},rAt:rB,name:'The Scallop stump',
   floors:{y0:37,pitch:5,top:.25},ways:[{a:B_A,y:B_L2,R:4.0}],ring:2});
  reseed(31971);
  hykTideline(A);hykTideline(B);

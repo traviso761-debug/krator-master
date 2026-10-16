@@ -79,7 +79,7 @@ function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.co
   BIO.put('bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.4):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
 const bloomsAt=blooms;SEDESERT.blooms=blooms;
 // the volume the world's inspector names a tree by
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,x:T.x,z:T.z,y:T.y0,r:r,h:h});
+const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});
 
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed} and lv 2 near / 1 mid / 0 far
@@ -218,7 +218,7 @@ B[7]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.14);
  frondCrown('palmfrond',tx,ty,tz,Rf,n,-.15,.35,bright(hc,1.45),1.15);
  if(lv>=1){frondCrown('palmfrond',tx,ty+.5,tz,Rf*.6,lv===2?5:3,.6,1.15,bright(shade(hc,.1),1.45),1);
   for(let k=0,m=lv===2?ri(4,8):3;k<m;k++){const a=rr(0,TAU);BIO.put('strand',[tx+Math.cos(a)*rb*.9,ty-.5,tz+Math.sin(a)*rb*.9],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1,1.8),Rf*rr(.5,.8),1],bright(vary(0x8a7a4a,.02,.1,.06),1.1));}
-  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('plume',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
+  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('dates',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
  st.fronds+=n;if(lv===2)regTree(T,S,Rf,T.H);};
 // 8 the desert rose: a squat swollen caudex on the rock, stubby branches, a head of pink blooms
 B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,bH=H*.55;
@@ -368,4 +368,14 @@ SEDESERT.PASSES=[
  // the twist-candles: in the shallows of the river and the pond (their depth band is on the species record)
  {sp:12,cell:16,accept:(Z)=>(Z.bank+Z.oasis*Z.flow)*.45,opt:{pad:1.5,lodK:.5,patch:.5,patchScale:.02,small:true,water:true}},
 ];
+
+// ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
+// make(sp,x,y,z): the pass's own tree record (H, rb, crownR and seed drawn from the kit's stream: reseed first for a
+// repeatable variant). grow(T,lv): build that one tree into this kit's buckets and items at level lv (2 hero, 1 mid,
+// 0 the far impostor; null when the species has none) and nothing else: no keep-clear entry, no TREES record. An open
+// world grows each species' variants once with these and instances them (openworld/README.md). buildTrees never calls them.
+SEDESERT.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999)};};
+SEDESERT.grow=function(T,lv){means();
+ const st={trunk:0,limb:0,far:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,fronds:0,cols:0,spikes:0,candles:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ T.lv=lv;if(lv===0){const S=SP[T.sp];if(!(S.far&&(!S.farIf||S.farIf(T))))return null;buildFar(T,T.seed%7,st);}else B[T.sp](T,st,lv);return st;};
 })();

@@ -83,6 +83,9 @@ for(const k in ROWS){const R=ROWS[k];
  TSTAT.cur=k+'/'+d;const _r0=REG.length,_x=SITEX(R,d),_l0=d===5?wornLens():null;
  HOLES=(d>=3&&d!==5)?.55:1;      // rehabilitated: the fabric is only part-eaten
  let _G=null;
+ // INTERIORS (src/8zz-interiors.js, only in a target that ships the interior bundle): the mark is taken before the
+ // builder, so the pass can clear the intact dark mass it drew; the pass runs after the repair dressing
+ const _im=typeof interiorBegin==='function'?interiorBegin(k,d,_x,R.z):null;
  try{_G=BUILDERS[k](scene,_x,R.z,d===5?0:d);}catch(e){reportErr(k+' d='+d+' '+e.stack);}
  HOLES=1;
  if(d===5&&_G){KOFF=[_x,0,R.z];try{wornPass(_G,_l0,WORN_PLANTS[k]||0);}catch(e){reportErr(k+' worn '+e.stack);}KOFF=[0,0,0];
@@ -90,6 +93,7 @@ for(const k in ROWS){const R=ROWS[k];
  // The repaired dressing runs on the group the builder returned, so it reaches
  // every type without a builder knowing level 3 exists.
  if(d>=3&&d!==5&&_G){KOFF=[_x,0,R.z];try{repairPass(_G,d);}catch(e){reportErr(k+' repair '+e.stack);}KOFF=[0,0,0];}
+ if(_im&&_G){KOFF=[_x,0,R.z];try{interiorPass(_im,_G);}catch(e){reportErr(k+' interiors '+e.stack);}KOFF=[0,0,0];}
  for(let i=_r0;i<REG.length;i++)REG[i].type=k;           // so --assert can name the owner of an empty volume
  TSTAT.cur=null;}}
 window._registered=REG.length;

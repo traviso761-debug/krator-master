@@ -1,0 +1,86 @@
+[
+ {
+  "src": "bark-honeycomb.webp",
+  "out": "core/materials/library/bark.honeycomb",
+  "record": {
+   "id": "bark.honeycomb",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP",
+    "reuse": "the spice tree (the vent fungus's galleries in its wood); any bark eaten into cells; a fungal-infested trunk"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-twisted-red.webp",
+  "out": "core/materials/library/bark.twisted.red",
+  "record": {
+   "id": "bark.twisted.red",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP",
+    "reuse": "the rope-tree's braided strands; twisted fibrous trunks; old sinewy wood"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-sulphur-porous.webp",
+  "out": "core/materials/library/bark.sulphur.porous",
+  "record": {
+   "id": "bark.sulphur.porous",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP",
+    "reuse": "the bone bells' root curtains in the vents' steam; sulphur-crusted dead wood; bone-like porous growths"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

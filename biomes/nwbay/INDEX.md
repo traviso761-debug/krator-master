@@ -11,22 +11,26 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 2 |  |
-| `45-host-stage.js` | 43 **big** | the bay, the river, the rise (57); the igneous shore (87); the karst (102); terrain (132); the host binding (164); the ground (180); the karst stacks (meshes) (249); the water (291); the columnar basalt (400); the far country (417) |
-| `50-biome-nwbay-species.js` | 44 **big** | THE CANOPY CEILING (24); THE BAY COLOUR (31); the tree species (87); leaf textures (145); bark textures (269); geometries local to this biome (326); materials (392); instanced items (438) |
-| `55-biome-nwbay-trees.js` | 61 **big** | zones from the fields (15); colour (36); polyline helpers (Girder's) (58); keep-clear between trees (67); the karst's edge (74); epiphytes, lianas (86); foliage helpers (105); the builders (118); impostors (the far canopy) (465); the reed beds (503) |
-| `60-biome-nwbay-floor.js` | 19 | fields local to the floor (29); small plants (34); the zone planters (112); the pass (176) |
+| `00-head.html` | 1 |  |
+| `45-host-stage.js` | 61 **big** | the bay, the river, the rise (61); the igneous shore (91); the karst (106); the sinkholes (136); the tsingy (161); terrain (203); the host binding (245); the ground (263); the karst stacks (meshes) (338); the tsingy (meshes) (380) |
+| `50-biome-nwbay-species.js` | 50 **big** | THE CANOPY CEILING (24); THE BAY COLOUR (31); the tree species (96); harvest (biomes/FRUIT.md) (168); leaf textures (198); bark textures (322); geometries local to this biome (379); materials (445); instanced items (494) |
+| `55-biome-nwbay-trees.js` | 73 **big** | zones from the fields (15); colour (40); polyline helpers (Girder's) (62); keep-clear between trees (71); the karst's edge (78); epiphytes, lianas (90); foliage helpers (109); the builders (122); the Madagascarene flora (Bemaraha, the Spiny For (479); impostors (the far canopy) (554) |
+| `56-biome-nwbay-variants.js` | 11 | one tree alone (the open world's contract) (23); capture: what a grow wrote, taken out of the sto (31); the nursery (47); placement (72) |
+| `60-biome-nwbay-floor.js` | 19 | fields local to the floor (29); small plants (34); the zone planters (112); the pass (184) |
 | `65-biome-nwbay-dress.js` | 10 |  |
 | `70-biome-nwbay.js` | 1 |  |
 | `75-biome-nwbay-fauna.js` | 13 | geometries (vertex-coloured, unit-sized) (31); the animated materials (53); the pass (67) |
 | `82-host-sky.js` | 10 |  |
 | `85-host-tower.js` | 5 |  |
-| `86-host-jetty.js` | 3 |  |
+| `86-host-jetty.js` | 4 |  |
 | `88-host-build.js` | 2 |  |
-| `90-host-camera.js` | 8 |  |
-| `91-host-probe.js` | 4 |  |
+| `99-host-take.js` | 13 | the inspector's words (67); the probe's budgets and the kit's own checks (ve (77); the page, handed to the host (126) |
 | `99-tail.html` | <1 |  |

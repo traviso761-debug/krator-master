@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.285,
+    1.228
+   ],
+   "seam_before": [
+    1.191,
+    1.137
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.ruin",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   4.0,
+   4.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ground.ruin.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row ground.ruin (Ancients and the kits forked from them) (exact wording not recorded)",
+  "reuse": "every central-crater build on laterite: Screamers, Girder, Mav's Refuge, the Iziz hyperjungle, the Ancients kit's ground",
+  "sha1": "ae80ab35201e7145f128b2ffa9a96e6508eb1302"
+ }
+}

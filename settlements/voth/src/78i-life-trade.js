@@ -214,11 +214,11 @@ var lifeCaravanParts = [
 var lifeCaravanGeo = lifeMergeGeoms(lifeCaravanParts);
 /* THE 60 BORROWED SLOTS ARE GONE — this mesh is real merchant caravans
    again, nothing else. For several passes it carried a trailing reservation
-   of 60 extra instances that 79-striders.js drove as silt strider "cars"
+   of 60 extra instances that 79-striders.js drove as elephant bug "cars"
    (the caravan's cart+draft-animal template, scaled 2.3x and retinted),
    because the draw-call budget sat at its hard ceiling and a bespoke
    creature needs its own InstancedMesh. The owner has since raised that
-   ceiling, 79-striders.js now builds and drives a real silt strider on two
+   ceiling, 79-striders.js now builds and drives a real elephant bug on two
    meshes of its own, and this reservation has been handed back:
    LIFE_CARAVAN_N drops 150 -> 90, and NOTHING outside this file writes a
    matrix or a colour into lifeCaravanMesh any more.

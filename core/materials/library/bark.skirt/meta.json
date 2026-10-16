@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.246,
+    1.256
+   ],
+   "seam_before": [
+    1.269,
+    2.847
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.3,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.12,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "_note": "dead leaves hanging downward: v runs down the image, so a lathe or tube must map it with the leaves pointing down",
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.skirt",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark-skirt.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "A thick shaggy skirt of dead, dried leaves hanging down a plant stem, long papery straw-coloured and pale brown leaves overlapping in dense downward-pointing layers, a few greyer and more rotted, fibrous edges. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. (Row bark.skirt of core/materials/PLAN.md, Southern highlands.) Pasted into the chat 2026-10-06 as a 1254 px webp.",
+  "reuse": "the giant groundsel's stems; any rosette plant that keeps its dead leaves (Joshua tree and yucca skirts, palm thatch on a trunk, tree aloes); a shaggy thatch eave",
+  "sha1": "7936d1f05caa9429339dbd2cbcada6821a40f4b7"
+ }
+}

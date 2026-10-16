@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1186
+   ],
+   "seam_after": [
+    0.928,
+    0.707
+   ],
+   "seam_before": [
+    1.843,
+    0.5
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.15,
+   "mute": 0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "ashnomad/nazca-panel.blue",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.92,
+  "scale": [
+   2.4,
+   2.4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ashnomad_nazca-panel.blue.png",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+  "licence": "generated for this project by its owner",
+  "prompt": "row patterns/ashnomad/nazca-panel.blue: the blue-led version of nazca-panel (blue the primary, saffron, a vermilion trim line, on black felt) (core/materials/PROMPTS-nomads.md); replaced the interim hue-shifted recolour",
+  "reuse": "the Ash Nomads outside (blue leads, red trims)",
+  "sha1": "b81220d246e4de985e09b803f348df86ceca5b7a"
+ }
+}

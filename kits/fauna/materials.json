@@ -1,0 +1,203 @@
+{
+ "build": "fauna",
+ "note": "The Fauna kit's detail maps (core/materials/PLAN.md): per material family a library set the runtime projects triplanar in each part's own frame (krator-fauna-runtime.js), its colour kept out (keep 0) so the vertex colours stay the animal's and only the grain shows; mean is divided back out. mapOnly: the colour map alone. Run python3 tools/textures/pack.py kits/fauna after a change, then python3 build.py. (2026-10-14, the owner's sets) skin takes skin.smooth (in place of hide.leather033c), sleek hide.sleek (in place of hide.strider; delivered mid-brown, processed muted 0.8 and packed grey, keep 0). The birds: feather (feather.plumage) on bodies, flight (feather.flight) on wings: the runtime gives a wing part's feather mesh the flight family (krator-fauna-runtime.js famOf), so no builder changed. fleece (wool.fleece): the sheep's wool (its body, neck and locks; face and legs stay sleek). salEmber and salDun (patterns/scyvoi/salamander-ember, -dun) are FULL COLOUR (keep 1): the runtime's FULL families take the map as the skin's colour, triplanar like the detail maps, the belly keeping its vertex colour; without the pack the vertex-colour markings show as before.",
+ "size": 256,
+ "families": {
+  "coat": {
+   "lib": "fur.bat",
+   "mapOnly": true,
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "hair": {
+   "lib": "hair.crest",
+   "mapOnly": true,
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "skin": {
+   "lib": "skin.smooth",
+   "mapOnly": true,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "horn": {
+   "lib": "bone.horn",
+   "mapOnly": true,
+   "scale": [
+    0.12,
+    0.12
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "chitin": {
+   "lib": "organic.chitin",
+   "mapOnly": true,
+   "scale": [
+    0.35,
+    0.35
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "scale": {
+   "lib": "organic.scale",
+   "mapOnly": true,
+   "scale": [
+    0.12,
+    0.12
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.0,
+   "specular": 0.45
+  },
+  "sleek": {
+   "lib": "hide.sleek",
+   "mapOnly": true,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.2,
+   "specular": 0.3
+  },
+  "membrane": {
+   "lib": "membrane.bat",
+   "mapOnly": true,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.1,
+   "specular": 0.3
+  },
+  "shag": {
+   "lib": "fur.sloth",
+   "mapOnly": true,
+   "scale": [
+    0.35,
+    0.35
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "feather": {
+   "lib": "feather.plumage",
+   "mapOnly": true,
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "flight": {
+   "lib": "feather.flight",
+   "mapOnly": true,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "fleece": {
+   "lib": "wool.fleece",
+   "mapOnly": true,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "salEmber": {
+   "lib": "patterns/scyvoi/salamander-ember",
+   "mapOnly": true,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "salDun": {
+   "lib": "patterns/scyvoi/salamander-dun",
+   "mapOnly": true,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "specular": 0.4
+  }
+ }
+}

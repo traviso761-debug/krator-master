@@ -1,0 +1,615 @@
+[
+ {
+  "src": "Seamless Birch Bark Texture.png",
+  "out": "core/materials/library/bark.birch",
+  "record": {
+   "id": "bark.birch",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.birch in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Birch Bark Texture.png",
+    "reuse": "birches in nhighlands and nwlowlands; papery white bark anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.25
+  }
+ },
+ {
+  "src": "Seamless White Birch Bark Texture.png",
+  "out": "core/materials/library/bark.birch.b",
+  "record": {
+   "id": "bark.birch.b",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.birch in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless White Birch Bark Texture.png",
+    "reuse": "a second birch, with more chevron scars: alternate trunks"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.25
+  }
+ },
+ {
+  "src": "Pale Birch Bark Texture.png",
+  "out": "core/materials/library/bark.smooth",
+  "record": {
+   "id": "bark.smooth",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.smooth in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Pale Birch Bark Texture.png",
+    "reuse": "smooth thin bark (beech, alder, rowan) in nhighlands, xanadu, eastabyss, rift, the bays and lowlands (\"pale\" kind)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.75,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Seamless Weathered Diamond Bark Texture.png",
+  "out": "core/materials/library/bark.araucaria",
+  "record": {
+   "id": "bark.araucaria",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.araucaria, bark.araucaria in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Weathered Diamond Bark Texture.png",
+    "reuse": "monkey-puzzle trunks (swbay k4, rift); any scale-scarred conifer"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Prehistoric Diamond-Scale Bark Texture.png",
+  "out": "core/materials/library/bark.lepido",
+  "record": {
+   "id": "bark.lepido",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.lepido in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Prehistoric Diamond-Scale Bark Texture.png",
+    "reuse": "scale trees (eastabyss and rift k0); also a reptile-hide look when tinted"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Rugged Layered Cork Bark Texture.png",
+  "out": "core/materials/library/bark.cork",
+  "record": {
+   "id": "bark.cork",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.cork in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Rugged Layered Cork Bark Texture.png",
+    "reuse": "cork oaks (swlowlands); thick furrowed bark anywhere; cork floats and stoppers"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Seamless Mottled Peeling Bark Texture.png",
+  "out": "core/materials/library/bark.madrone",
+  "record": {
+   "id": "bark.madrone",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.madrone in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Mottled Peeling Bark Texture.png",
+    "reuse": "madrone and manzanita (swlowlands flay and ember); full colour"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.7
+  }
+ },
+ {
+  "src": "Seamless Kapok Bark Texture.png",
+  "out": "core/materials/library/bark.kapok",
+  "record": {
+   "id": "bark.kapok",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.kapok in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Kapok Bark Texture.png",
+    "reuse": "kapok (hyperjungle; no thorn bosses: add them as geometry); plane-tree mottle anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Seamless Cherry Bark Texture.png",
+  "out": "core/materials/library/bark.cherry",
+  "record": {
+   "id": "bark.cherry",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.65,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.cherry in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Cherry Bark Texture.png",
+    "reuse": "copper ringbark (swlowlands); cherry and birch-cherry trunks; full colour"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.65
+  }
+ },
+ {
+  "src": "Seamless Mosaic Eucalyptus Bark Texture.png",
+  "out": "core/materials/library/bark.mosaic",
+  "record": {
+   "id": "bark.mosaic",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.paperbark / the alien barks in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Mosaic Eucalyptus Bark Texture.png",
+    "reuse": "mosaic-shedding gums: swlowlands crimson ghost and ribbon gum, nwlowlands paperbark; full colour"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.7
+  }
+ },
+ {
+  "src": "Seamless Fibrous Palm Trunk Texture.png",
+  "out": "core/materials/library/bark.palm",
+  "record": {
+   "id": "bark.palm",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.palm (and bark.treefern) in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Fibrous Palm Trunk Texture.png",
+    "reuse": "wadi and water palms (sedesert, eastabyss); also the tree-fern trunk row (frond-base scars in fibre)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Monkey Puzzle Branch Texture.png",
+  "out": "core/materials/library/leaf.araucaria",
+  "record": {
+   "id": "leaf.araucaria",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.araucaria in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Monkey Puzzle Branch Texture.png",
+    "reuse": "a SURFACE, not a card: wraps the rope-branch geometry of monkey puzzles (swbay, rift, eastabyss araucaria)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Weathered Palm Leaf Woven Pattern.png",
+  "out": "core/materials/library/leaf.palm.thatch",
+  "record": {
+   "id": "leaf.palm.thatch",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.palm (delivered as a surface) / leaf.palm.thatch in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Palm Leaf Woven Pattern.png",
+    "reuse": "palm-frond thatch and screens (Mav's design row leaf.palm.thatch, Screamers, Islander); palm litter on the ground"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Seamless Sage Cactus Rib Texture.png",
+  "out": "core/materials/library/skin.cactus",
+  "record": {
+   "id": "skin.cactus",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row skin.cactus in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Sage Cactus Rib Texture.png",
+    "reuse": "columnar cactus, prickly pear, barrel and pitaya (sedesert, ebadlands, xanadu)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.75,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Seamless Volcanic Sand and Gravel Texture.png",
+  "out": "core/materials/library/ground.cinder",
+  "record": {
+   "id": "ground.cinder",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row ground.cinder in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Volcanic Sand and Gravel Texture.png",
+    "reuse": "black sand beaches and lava fields (nw/swbay); volcanic ash ground in rift and eastabyss"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.15,
+   "rough": 0.92,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Seamless Lotus Pond Lily Pad Pattern.png",
+  "out": "core/materials/library/ground.lilypond",
+  "record": {
+   "id": "ground.lilypond",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.lotus (delivered as a surface) in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Lotus Pond Lily Pad Pattern.png",
+    "reuse": "a pond surface of lily pads and lotus (xanadu, nwbay): lay on still water; full colour"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.5
+  }
+ },
+ {
+  "src": "Layered Slate Gray Feather Texture.png",
+  "out": "core/materials/library/feather.plumage.b",
+  "record": {
+   "id": "feather.plumage.b",
+   "family": "feather",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row feather.plumage (second) in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Layered Slate Gray Feather Texture.png",
+    "reuse": "a second plumage: cloaks, fans, bird fauna (feather.plumage alternates)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Seamless Olive Reptile Scale Texture.png",
+  "out": "core/materials/library/organic.scale.olive.b",
+  "record": {
+   "id": "organic.scale.olive.b",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row organic.scale (lizards) in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Olive Reptile Scale Texture.png",
+    "reuse": "lizards and reptile fauna in sedesert and eastabyss; scaled hide anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Crushed Metal Patchwork Wall Texture.png",
+  "out": "core/materials/library/metal.tin.patchwork",
+  "record": {
+   "id": "metal.tin.patchwork",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0.6,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row metal.tin.patchwork in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Crushed Metal Patchwork Wall Texture.png",
+    "reuse": "Locus tinmirror; scrap and post-apoc walls, shanty roofs"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "Monochrome Stepped Chevron Weave.png",
+  "out": "core/materials/patterns/common/sail-band",
+  "record": {
+   "id": "common/sail-band",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    0.95
+   ],
+   "tint": true,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/common/sail-band in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Monochrome Stepped Chevron Weave.png",
+    "reuse": "Locus sail bands; woven trim and borders in any culture; greyscale, tinted"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "Weathered Gray Linen Banner with Fringe.png",
+  "out": "core/materials/patterns/common/banner-hung",
+  "record": {
+   "id": "common/banner-hung",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row cloth.banner.hung in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Gray Linen Banner with Fringe.png",
+    "reuse": "Iziz and Dalab vpBanner, generic banners; a single panel with its fringed foot at the bottom: map once, tinted"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ }
+]

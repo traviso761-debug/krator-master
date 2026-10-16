@@ -57,19 +57,51 @@ Jungle region
 
 That is the difference between a procedural scene generator and a procedural world simulator.
 
+**Furniture that is not always drawn is data first.** When a build draws furniture only near the camera (interiors
+streamed in and out, anything planned on demand), the drawing is never the furniture's only home. Always:
+1. **Records apart from the drawing.** Each building's plan and pieces are a record (id, key, variant, seed, pose,
+   room, type, job), computed once by a pure function of the building's inputs, kept whatever is drawn, and read by
+   anything that needs them (the simulation's slots, an export) without waiting for the camera.
+2. **A camera-independent index.** Every record exists without anyone looking: baked headless into a committed JSON
+   file the build inlines (fingerprinted per building, so a stale entry is recomputed instead of trusted), with an
+   idle-time fill for what the bake lacks. The lights the pieces carry come from the records too.
+3. **Edits as an overlay.** Changes (the owner's, later the player's) are kept as deltas keyed by piece id, applied
+   to every read of a record, so they survive a building being dropped and rebuilt; a delta names its piece's key and
+   is skipped, not misapplied, when the catalog has changed under it.
+Mav's Refuge is the worked example (`settlements/mavs-refuge/src/57a-interiors.js`, `bake_interiors.py`).
+
 Give people and creatures a schedule, or at least the scaffolding for one, even if night/day is not implemented yet. A dummy schedule can have 'null' or the same activity for every hour.
 Give them a primary faction (eg, Beast Riders) plus sub faction (eg, Quetzal Tribe) and a job (merchant, farmer, etc)
 
 ## Where things are
+**Building on Windows:** a `build.py` must name `encoding='utf-8'` on every `open()` (and `newline='\n'`); without it
+Python writes the local code page and the page's em dashes become byte 0x97 (Locus shipped so once, Oct 2026). Every
+`build.py` names it since 2026-10-08, and `tools/check_encoding.py` (run by `tools/test_all.py` and CI) fails on one that does not.
+
+**Checks and CI.** `python3 tools/test_all.py` runs every check the repo has (the port lint, the insulation check, the
+encoding lint, every node test, a rebuild of every build and the hash baseline); `--nightly` adds the furniture
+fingerprint, `verify.py --assert` on the critical-path builds and the Godot tests. GitHub Actions runs the first on every
+push (`.github/workflows/checks.yml`, which also fails if a committed page is not what its sources build) and the second
+nightly (`nightly.yml`). A verify.py takes its harness from `tools/harness.py`; `python3 tools/harness.py smoke <pages>`
+loads any pages headless and reports their error panels.
+
+**Built pages and texture packs are in Git LFS** (2026-10-08, like the texture library): every `dist/*.html` and
+`dist/*.js`, the pages the Voth lineage writes beside `build.py`, and every packed `tex/*.webp`. A clone needs `git lfs`
+to open a page; `GIT_LFS_SKIP_SMUDGE=1` plus `git lfs pull --include='*/*/tex/*'` is enough to build. LFS stores a
+file once by content, so the same packed set in twenty builds costs one copy.
+
 There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds. If you run into a particularly aggravating or repeat problem and solve it, note it in the file readme so future sessions without context can pick up the trick and note it in the skill file.
 
 `GODOT-PLAN.md` is the repo-wide plan for auditing every module, quarantining the
 browser-native code and porting the rest to Godot; read it before adding a core module or
-starting a build. `INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
+starting a build. `ROADMAP.md` (2026-10-08) is the synthesis of three evaluations of the repo (ChatGPT's and Gemini's are
+in `evals/`): which of their claims hold, what they missed, and the order of work; its section 6 amends `TODO.md`'s "Port: next". `INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
 holds the working rules for agents. `VISUAL-BAR.md` is the look every world is judged against:
 the pillars, the banned outcomes, the measured gates, the delta loop and which engine carries
 each part; read it before a new build or a lighting or texture pass. Settlements are in `settlements/`, building
-kits in `kits/`, biomes in `biomes/`, shared code in `core/`. The gallery of every
+kits in `kits/`, biomes in `biomes/`, shared code in `core/`, and open worlds (a region of the scale model at 1:1,
+streamed, with the biome kits' flora, the built settlements placed in it as tiles baked from their own pages, and
+highways between them) in `openworld/` (`openworld/little-demo/README.md`). The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
 
 **Keep the Krator Worlds gallery current.** Update it automatically only when you

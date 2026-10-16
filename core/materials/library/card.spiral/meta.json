@@ -1,0 +1,40 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#00ff00",
+   "pad": 0.02,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.spiral",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card-spiral.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Alien groundcover card: nine flat rosettes seen from directly above, frilled serrated leaves spiralling out from the centre, each leaf a different hue round the colour wheel (teal, green, gold, orange, magenta, violet) with an iridescent sheen, on a solid flat bright green (#00ff00) background (not magenta: the leaves are pink) so they can be cut out. Square, 2048x2048; no other objects. Full colour. (Row card.spiral of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+  "reuse": "the spiral mat",
+  "sha1": "2e932c7ac04253da8fb63281ae87be98ae997183"
+ }
+}

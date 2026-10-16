@@ -1,4 +1,4 @@
-/* ============================== SILT STRIDER CONVOYS (moving) ==============
+/* ============================== ELEPHANT BUG CONVOYS (moving) ==============
    Route 1: the 8 owner-given waypoints, termini at the ends (turnaround
    points, nudged onto nearby dry/low ground — see STRIDER_R1_TERMINI's own
    comment — but not real stops), 6 real stations in between (66-striders.js,
@@ -12,7 +12,7 @@
    silhouette needs its own geometry, hence its own InstancedMesh, hence a
    new draw call. That compromise was documented here rather than hidden,
    and it is now PAID OFF: the owner raised the ceiling to 72, and the
-   section "THE BESPOKE SILT STRIDER MODEL" below builds a real creature —
+   section "THE BESPOKE ELEPHANT BUG MODEL" below builds a real creature —
    tall arched carapace, segmented thorax, long segmented snout, six long
    spindly legs that actually WALK, and a howdah passenger pod — on two new
    InstancedMeshes of its own (body + animated leg segments). The 60
@@ -62,7 +62,7 @@
 reseed(790001);   /* fragment head seed — build.py enforces this. */
 
 /* ============================== WADING — the one tuning block ==============
-   Every number that decides how deep a silt strider will go, and how deep
+   Every number that decides how deep an elephant bug will go, and how deep
    it LOOKS like it has gone, derived from the model's own dimensions
    rather than picked by eye. Hoisted to the top of the file because
    striderBuildLeg (immediately below) builds every route's legs at load
@@ -84,7 +84,7 @@ reseed(790001);   /* fragment head seed — build.py enforces this. */
    routing limit: water deeper than it cannot be stood in, only swum, so
    the router treats it as an obstacle exactly the way it already treats
    hill country above HILL_MAX. (9.0 against a bay that runs 26-31 deep in
-   places, so the open bay is still firmly out of bounds — a silt strider
+   places, so the open bay is still firmly out of bounds — an elephant bug
    wades rivers, fords and shoals, it does not walk the sea floor.) */
 var STRIDER_WADE_DEPTH = 5.0;
 var STRIDER_FOOT_DROP = 4.0, STRIDER_FOOT_RISE = 3.0;

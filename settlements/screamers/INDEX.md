@@ -13,6 +13,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
@@ -52,9 +58,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `70c-furniture.js` | 7 | catalogue (106) |
 | `71-sky-h.js` | 3 |  |
 | `71-village.js` | 45 **big** | - (170) |
+| `71a-apoc-homes.js` | 4 | the salvage quarter: Post-Apoc homes (1) |
 | `71b-flora.js` | 39 **big** |  |
 | `72-datacenter.js` | 3 |  |
 | `72a-wind.js` | 6 |  |
+| `72c-matlib.js` | 8 | the material library (core/materials/record) (1) |
 | `73-police.js` | 3 |  |
 | `74-hospital.js` | 3 |  |
 | `75-biome-10-core-head.js` | 5 | PRNG (14); noise (24); host binding (41); accounting (69) |
@@ -82,12 +90,13 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `87-mega.js` | 5 |  |
 | `88-factory.js` | 6 |  |
 | `89-lab.js` | 6 |  |
-| `90-scene.js` | 16 | scene (1) |
+| `90-scene.js` | 17 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
-| `92-camera.js` | 5 | camera control (1) |
-| `93-polytool.js` | 7 |  |
+| `92-camera.js` | 2 | what stays of the camera: setView, the title, LO (1) |
 | `94-life.js` | 11 |  |
 | `95-pathviz.js` | 4 |  |
+| `96t-screamers-tags.js` | 3 | CORE TAGS: THE SCREAMERS' REG (1) |
+| `99-start.js` | 2 | 99. the take: the Screamers on core/host (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
@@ -97,4 +106,4 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `furniture` | `89z-rows.js`, `91z-views.js` | <1 |
-| `screamers` | `89z-rows.js`, `91z-views.js` | 3 |
+| `screamers` | `89z-rows.js`, `91z-views.js` | 4 |

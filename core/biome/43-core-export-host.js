@@ -28,6 +28,14 @@ BIO.export=function(opt){const o=_export(opt);opt=opt||{};
  if(opt.stage!==false&&o.box&&typeof KSTAGE!=='undefined'){const b=o.box,cx=(b[0]+b[2])/2,cz=(b[1]+b[3])/2,g=o.ground;
   o.stage=KSTAGE.capture({at:[cx,BIO.terrainH(cx,cz)+40,cz],sky:opt.sky==null?1024:opt.sky,box:b,step:g?g.step:4,ground:BIO.terrainH});}
  return o;};
+// core/export (krator-world): with a box, the stage is its own section, captured over the terrain section's grid (the
+// sections fill in order: terrain before stage), so the ground's look lies on the same samples as the terrain grid
+(function(){const R=typeof window!=='undefined'?window:globalThis;
+ const f=c=>{if(!c.box||c.opt.stage===false||typeof KSTAGE==='undefined')return null;const b=c.box,cx=(b[0]+b[2])/2,cz=(b[1]+b[3])/2,
+  g=c.out.terrain&&c.out.terrain.grid;
+  return KSTAGE.capture({at:[cx,BIO.terrainH(cx,cz)+40,cz],sky:c.opt.sky==null?1024:c.opt.sky,box:b,step:g?g.step:4,ground:BIO.terrainH});};
+ const a=['stage',f,{by:'biome'}];
+ if(typeof EXPORT!=='undefined'&&EXPORT&&EXPORT.register)EXPORT.register.apply(null,a);else (R.EXPORT_QUEUE=R.EXPORT_QUEUE||[]).push(a);})();
 BIO.download=function(name,opt){const o=BIO.export(opt),blob=new Blob([JSON.stringify(o)],{type:'application/json'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(name||'biome')+'.biome.json';document.body.appendChild(a);a.click();
  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);return o.stats;};

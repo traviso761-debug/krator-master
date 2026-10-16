@@ -1,0 +1,214 @@
+[
+ {
+  "src": "Galvanized Chain-Link Fence on Magenta.png",
+  "out": "core/materials/library/card.chainlink",
+  "record": {
+   "id": "card.chainlink",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0.6,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.chainlink in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Galvanized Chain-Link Fence on Magenta.png",
+    "reuse": "post-apoc and Port fences; cages, enclosures"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Nine Botanical Leaf Sprays on Magenta.png",
+  "out": "core/materials/library/card.acacia",
+  "record": {
+   "id": "card.acacia",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.acacia in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Nine Botanical Leaf Sprays on Magenta.png",
+    "reuse": "mesquite, acacia, flame tree and cypress sprays (sedesert, eastabyss, rift, bays, lowlands, xanadu)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Nine Spiky Succulents on Magenta.png",
+  "out": "core/materials/library/card.sword",
+  "record": {
+   "id": "card.sword",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.sword in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Nine Spiky Succulents on Magenta.png",
+    "reuse": "dragon tree, yucca, agave rosettes (sedesert, eastabyss, rift, bays, lowlands)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Nine Hanging Moss Lichen Textures__keyed.png",
+  "out": "core/materials/library/card.beard",
+  "record": {
+   "id": "card.beard",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.beard in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Nine Hanging Moss Lichen Textures.png",
+    "reuse": "beard lichen and Spanish moss (eastabyss, rift, nhighlands, lowlands, bays, xanadu)",
+    "note": "the sheet came on flat grey, not magenta: keyed first by a border-connected grey flood (the session scratch greykey.py), then processed with no chroma key"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  }
+ },
+ {
+  "src": "Marsh Grass Clump Asset Sheet__keyed.png",
+  "out": "core/materials/library/card.reed",
+  "record": {
+   "id": "card.reed",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.reed in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Marsh Grass Clump Asset Sheet.png",
+    "reuse": "marsh reed, cattail and sedge in eleven biomes; Reed Lake and Xanadu ponds",
+    "note": "the sheet came on flat grey, not magenta: keyed first by a border-connected grey flood (the session scratch greykey.py), then processed with no chroma key"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  }
+ },
+ {
+  "src": "Tropical Leaf Specimen Grid__keyed.png",
+  "out": "core/materials/library/card.paddle",
+  "record": {
+   "id": "card.paddle",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.paddle in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Tropical Leaf Specimen Grid.png",
+    "reuse": "banana and elephant-ear leaves (nhighlands aroid, lowlands, bays, xanadu banana)",
+    "note": "the sheet came on flat grey, not magenta: keyed first by a border-connected grey flood (the session scratch greykey.py), then processed with no chroma key"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  }
+ },
+ {
+  "src": "Nine Cream Blossom Botanical Sprigs__keyed.png",
+  "out": "core/materials/library/card.blossom",
+  "record": {
+   "id": "card.blossom",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex (2).zip, delivered 2026-10-06)",
+    "prompt": "Prompt row card.blossom in core/materials/PLAN.md (\"Buildings, vehicles and biomes audit\" or the earlier rows it names). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Nine Cream Blossom Botanical Sprigs.png",
+    "reuse": "cherry blossom twigs and wisteria racemes (lowlands, xanadu); petals pale so they tint",
+    "note": "the sheet came on flat grey, not magenta: keyed first by a border-connected grey flood (the session scratch greykey.py), then processed with no chroma key"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  }
+ }
+]

@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.306,
+    1.243
+   ],
+   "seam_before": [
+    1.261,
+    1.414
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "plaster",
+  "id": "plaster.ochre",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   4,
+   4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Weathered Golden Ochre Stucco Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Golden Ochre Stucco Texture.png",
+  "prompt": "Prompt row plaster.jimjam.ochre in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Jimjam poor houses; ochre lime wash in Dalab, Iziz, Yuni",
+  "sha1": "02815a51e414a8bbabc88ff850243de06619b7f4"
+ }
+}

@@ -5,9 +5,26 @@ saying what fixed it.
 
 ## Open, 2026-10-05
 
+- [ ] (2026-10-15) **The palace citadel's interior, for the Iziz rebuild:** the agreed programme is `settlements/iziz/palace/`
+      (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`): the whole precinct inside the 84 m curtain wall, an open
+      Roman-style imperial family in the tiered block, the general staff and the diplomatic corps in new flank buildings and
+      the base tier's secretariats, a mech depot and the Ancient core in the mesa, the lararium of the emperors off the Aula,
+      the tower. Nothing is built yet: the palace builder (`src/78-transplant.js`) has no interior. Do it with the rebuild,
+      not before (owner, 2026-10-15).
+- [x] (2026-10-15) Iziz on core/host (ROADMAP.md section 10, step 3; core/host/README.md): the camera, the controls, the walk (F),
+      the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records, the full registry of
+      91t-iziz-tags.js), marks (P, they replace the polygon tool) and the minimap (M) are core/host's; `src/92-camera.js` keeps only
+      what the page calls (ui, uiButton, setView, Labels) and `src/99-start.js` is the take. FRAME_HOOKS run as before, f(dt, ms),
+      before the camera. Proof: verify.py --assert unchanged on the vernacular sheet and the city; a scene census (every mesh's
+      name, visibility and triangles, the camera to 4 decimals) at four views of each matches the old pages exactly (both are
+      deterministic: two old runs match each other exactly too). The city's last-frame triangle count moves run to run on the old
+      page as on the new (4.65 M to 4.74 M over three old runs). Not core/space (the biome's scatter takes its grid when the module
+      is on the page, 2026-10-13 below) and no editor or cutaway yet (no catalog furniture, no interiors).
+- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not
+      handed to core/host, as it was never run by the old camera either.
 - [ ] (2026-10-05) Fauna sheets: `settlements/iziz/materials.json` (families fauna_wing, fauna_fur, fauna_hide, fauna_ray; all optional) and `fauna_pack()` in build.py
       write `HYPERJUNGLE.FAUNATEX` as a generated fragment `86-bio-57-fauna-pack.js` (city target only; nothing is written until a sheet exists). Today the sloth
-      (`fur.sloth`) and strider (`hide.strider`) sheets are in; `wing.butterfly` and `skin.sky-ray` are not generated yet, and the darts are not textured by design
+      (`fur.sloth`) and strider (`hide.strider`) sheets are in; `wing.butterfly` and `skin.sky-ray` are in too (2026-10-06), and the darts are not textured by design
       (their wing and body share UVs). Not looked at in a real browser.
 - [ ] (2026-10-05) Tree tints (biome 55-trees, hand-copied into targets/city/86-bio-55-...): roots now take the trunk's tint at their height above the ground (carried into the limb tint, since roots stay in the limb bucket: the floor reads the bark bucket as the bole's profile, and roots there shrank the floor dress by 30k triangles); limbs,
       boughs and twigs take the limb tint of the trunk's colour band where they leave it. The limbs still use the shared pale limb texture, not the species bark
@@ -15,11 +32,22 @@ saying what fixed it.
 - [ ] (2026-10-05) Headless `verify.py dist/iziz.html` ends in `WebGL: CONTEXT_LOST_WEBGL` and FAILED even on the committed page (checked against
       `git show HEAD:settlements/iziz/dist/iziz.html`): the error panel is clean and the counters print (814 draw calls). It is the software GL on the city, not a regression;
       the Iziz page has no headless pass at the moment.
-- [ ] (2026-10-05) `python3 build.py --vendor-bio` crashes in `bio_wrap` ("expected one 'const HYPERJUNGLE={};'") after opening the vendored file for writing, which
+      2026-10-13: since 2026-10-08 `verify.py` could not run at all: stage 0b moved its helpers block to `tools/harness.py`
+      and took this verify's own `GL_ERR` / `GL_IGNORE` with it, so the console handler raised NameError, three.js was never
+      served and the load timed out (900 s). Both are back in verify.py. With them, `verify.py dist/iziz.html --assert`
+      PASSES headless (858 calls / 4.96 M tris at the opening view, error panel clean, no CONTEXT_LOST); left open until
+      the other views (`Palace hill`, `Arena hill`) are run headless too.
+- [x] (2026-10-05) `python3 build.py --vendor-bio` crashes in `bio_wrap` ("expected one 'const HYPERJUNGLE={};'") after opening the vendored file for writing, which
       empties it (restore with git). The 58 and 55 copies were patched by hand (they differ from upstream only in the wrapper line). `build.py --help` also runs a full
       build and rewrites the manifests.
-- [ ] (2026-10-05) 11 Iziz material sets were processed 2026-10-05 (stone.cut, stone.cut.b, plaster, brick, metal.corrugated, roof.tile, metal.iron, metal.bronze, metal.gold,
+      2026-10-08 (the vendor part fixed): the upstream was CRLF in this checkout and the wrap matched LF only; `bio_read` now
+      reads both as LF and `--vendor-bio` wraps before opening the copy. Re-vendored: the hyperjungle's harvest data, its
+      single-tree `make`/`grow`, the pandan keys, and its limbs and dead wood bound to the library's bark (`limb`, `wood`).
+      `--help` still runs a full build.
+- [x] (2026-10-05) 11 Iziz material sets were processed 2026-10-05 (stone.cut, stone.cut.b, plaster, brick, metal.corrugated, roof.tile, metal.iron, metal.bronze, metal.gold,
       patterns/iziz/mosaic-b, glass.frosted.b; PLAN.md) but Iziz has not adopted the library; its materials are still the procedural ones.
+      **Adopted 2026-10-13** (the second material pilot, below): the vernacular, the Ancients MAT and the embassy were bound since 2026-10-06;
+      now the city's own materials too (stone.cut.b on the painting's walls; see "The second material pilot and M5").
 
 ## Vernacular set (round 1)
 - [x] Windows on the battered stone ground storey (Stone manor) sit on the face at
@@ -243,7 +271,7 @@ pole with a crossarm, is a rewrite and has no counterpart here. The closest are 
 mean offsetting every call to keep the city where it is, and would gain nothing. The catalog copy is the centred one.
 
 ## Open after merging main (2026-10-01): not addressed
-- [ ] Ancients vendor drift from main. Main's Ancients work (towers restand, Hanging City, shared-code pass, Hexahedron
+- [x] Ancients vendor drift from main. Main's Ancients work (towers restand, Hanging City, shared-code pass, Hexahedron
       polish) changed `kits/ancients/src`, so `--vendor-check` here reports 28 drifted fragments: 10-core, 32-surfaces,
       34-kitdefs, 36-decor, 38-helpers2, 50-registry, 69-mat-salvage, 77z-iziz-style and the kit-type fragments
       (40-factory-extras through 89-lab). The same shared fragments drift in Highlands (10-core, 32-surfaces,
@@ -251,3 +279,65 @@ mean offsetting every call to keep the city where it is, and would gain nothing.
       Xanadu and Reed Lake vendor from Highlands and will follow. Re-vendor the chain together
       (Ancients -> Iziz -> Highlands -> Xanadu / Reed Lake, and Jimjam), rebuild, `--assert` and look: the changes
       alter geometry and looks. Its own session.
+      — 2026-10-06: re-vendored verbatim from `kits/ancients/src` down the chain (Iziz 28, Highlands 7, Dalab 8 incl.
+      54-mat-concrete, Jimjam 6; Xanadu and Reed Lake their 7 Ancients fragments from Highlands). Every copy was the same
+      stale snapshot, no local edits. Brings the `tick()` frame hook, `apron(...,mat)`, `MAT.darkSurf` tubes and the
+      `bodyGroup` fix (decay 3 stands full height). `--vendor-check`: Iziz 35, Highlands 13, Dalab 13 identical.
+- [x] (2026-10-13) The Ancients re-vendor session (TODO.md item 3). `--vendor-check` before: all 35 Ancients fragments
+      identical (the 2026-10-06 re-vendor holds; `kits/ancients/src` changed since only in files Iziz does not vendor), and
+      BIOME DRIFT in 86-bio-10-core-head, 20-core-kit, 30-core-foliage, 40-core-place. Read: each copy was simply behind
+      `core/biome` (no local edit): the host's `field`/`placeH` (2026-10-08), core/tags records (`tags`, 2026-10-12), the
+      shared iridescent bark (`BIO.iridBarkMat`), `standAt`'s `x == null ? d : x` defaults, and `scatter`/`clearOf`/
+      `clearOf3` reading a `KSPACE` grid when core/space is on the page. All are opt-in or answer the same: Iziz passes no
+      `field`, `placeH` or `tags`, never passes 0 to `standAt`, and does not load core/space. Re-vendored with
+      `build.py --vendor-bio`; only the city page changes. `verify.py dist/iziz.html --assert` before and after: identical
+      (858 calls, 4,957,502 tris, every counter the same but the biome's build time); the opening view looks the same
+      (73 px differ, the LOD streaming count 393 vs 392 at the shot). `--vendor-check`: 35 identical, 11 biome match.
+- [ ] (2026-10-06) The vernacular takes the material library (materials.json; src/88y-iziz-matlib.js binds it onto MAT through core/materials/record/26-matlib-bind.js): wood, woodV, stone, plaster, thatch, shingle and the awning cloth; the ground (dirt) stays procedural. Tint means are estimates from the painters; judged at eye level on the vernacular sheet. The Ancient MAT is bound too (but rust; see below); the port embassy and the city's own materials are not bound yet. The one console shader error the vernacular sheet reports is the same before and after.
+- [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
+      which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
+      2026-10-13: `rust` (and 77z's scrap and rustified panels) takes `metal.rust.fine` (family cityRust, through IZIZ_MATALIAS), the
+      isotropic rust PROMPTS-ready.md asked for: it has no plate or streak direction, so a stretched UV leaves no stripes.
+- [ ] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
+      vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.
+
+## The second material pilot and M5 (2026-10-13; ROADMAP.md stages 2d and 2e)
+
+`verify.py dist/iziz.html --assert` before and after: the same six asserts with the same numbers (766 volumes, 7,288,255
+scene triangles, 858 calls, 760 registered volumes, 122,908 baked instances); only the LOD streaming count at the South
+gate shot moved (4.83 M to 4.81 M managed triangles). The city page grew from 21.0 to 24.6 MB (the four new families'
+maps, base64); it was already over the gallery's 16 MB a file.
+
+- [ ] **The city's own materials take the library** (src/88y-iziz-matlib.js, materials.json families `city*`): the painting's
+      walls, towers, gates and palace (izWall, izWallDark, izCap, izSand) `stone.cut.b` at their 4 m world-UV tile (contrast 2:
+      at 1.0 the courses vanished at the South gate's distance); izRock `rock.rock_face`; the hills' escarpments (90a's izEsc)
+      `rock.sandstone`; MAT.rust, 77z's scrap and the rustified panels `metal.rust.fine` (tinted to the procedural rust's mean,
+      #7b6353); the Ancient Iziz style's planks, sand panels and concrete skins and 79's izConcOrange the existing wood, white
+      and concrete families. Means measured from the maps they replace (TEX.stone 0.691, TEX.concrete 0.703, TEX.rust 0.402;
+      the strata set by eye at 0.62).
+      Looked at: the opening view reads the same; at the South gate the towers and wall read with a finer, slightly flatter
+      grain than the procedural noise (the courses show); close at the palace's grand entrance a wall that drew flat now
+      shows its ashlar. An escarpment close (the palace hill's, verify --cam 365,38,-120,305,36,-130) reads as layered rock
+      where it read as a board grid, a little greyer and cooler than the procedural tan (first packed at contrast 1.3 and
+      the concrete's mean it read near white; now mean 0.62, normal scale 0.6). `?mat=proc`
+      shows the old look. Verge leaves the `city*` families out of its copy of the pack (its build.py), so its page is unchanged.
+- [x] **Two surfaces had no good library texture.** Fixed 2026-10-14 with the owner's sets: `metal.bronze.cast` on the
+      heroic statues (`cityBronze`: MAT.bronze, bronzeDark) and the embassy's gilt and brass (`cityBrass`: vpGilt, vpBrass),
+      `concrete.rust.streaked` on MAT.concRust (`cityConcRust`), bound through IZIZ_MATALIAS (88y). Verge leaves them out.
+- [ ] The painted ground stays the 4 m painted canvas at eye level: the library has the street sets (`ground.road.ruts`,
+      `paving.*`), but Iziz's ground shader has no detail layer to take them (a ground-layer hook weighted by the road mask,
+      core/export's `EXPORT.groundLayers`, is the shape). Not a texture gap.
+- [ ] A world-UV material (vWorldUV, core/materials/opt/69a-world-uv.js) replaces three's uv transform, so a bound map's
+      `repeat` never applies to it: an instance tiles at 1/K m whatever materials.json's `scale` says, a plain mesh at its
+      own UVs. The `city*` families take scale = 1/K so the two agree; the 2026-10-06 families (stone at 2 m with K 0.25,
+      wood at 2 x 1.7 m with K 0.5) do not, and the export records what the page draws (`worldUV: {K}`, repeat 1).
+- [ ] **M5: Iziz exports through core/export** (core/export/README.md, "Iziz"; targets/city/94-city-export.js): a district's
+      kit and biome instances, plain meshes, materials (each with its hook), library maps by reference, ground, stage,
+      atmosphere and records in the `KRATOR_EXPORT` shape: buildings (with their lot's yaw and size), doors, windows and
+      lamps as children of their buildings (src/69f-iziz-fixtures.js notes them as the vernacular helpers draw them), the kit's
+      item sets, the furniture slots. `godot/data/world-iziz` (box -120, 292 to 120, 532) and `godot/tests/export/iziz_test.gd`
+      prove it. Open: the Ancients kit's openings and lamps are not fixtures (the kit draws them merged, through no helper);
+      the hyperjungle's sets in the city carry no records (its BIO.init takes no `tags`: giving it the page's registry would
+      put the flora first and renumber every building id); no building has an interior, so `interiors` is empty; the box
+      holds no REG furniture, so `furniture` reads empty there (it fills where a plaza, statue, fountain or drain stands);
+      records with hook `glass` draw as the plain library surface in Godot (lib/glass is not wired into library.gdshader).

@@ -1,0 +1,398 @@
+{
+ "build": "yuni",
+ "note": "Yuni's adapter onto the material library (core/materials/PLAN.md, 'How a build adopts the library'; Girder is the worked example). Per FAMMAT family: the library set, its tile size in world metres, how much of the set's own colour survives Yuni's palette tint (keep 0 = a grey detail map the instance or vertex colour colours), the roughness lift, metal. tint.mean is the mean brightness of the family's procedural map (measured 2026-10-05 in the page), so a library set keeps the brightness Yuni's palette and lights were tuned on. Families not listed keep their procedural TEX.def map: glass, leafy, dark, glowmat. The six sets delivered 2026-10-05 (tools/textures/batches/chatgpt-2026-10f-yuni.json): mosaic, paintbw, paintcol, relief, metal, column (the butte, 50-structure.js). paintbw and paintcol keep their own colour (keep 1); mean is the procedural map's. Shared sets with Girder (planks, thatch, cloth, rock, rust) use Girder's numbers; timber is the generated wood.beam (2026-10-05) in place of Girder's wood.medieval_wood (planks with nails, wrong on beams and legs). 'ground' is the valley floor's detail map (75-terrain.js). The interiors' families (05-palette.js, with a `proc` fallback): clay (pots, jars), rug (carpets, kilims), reedmat (mats), basket (coiled baskets and lids), fl-adobe and fl-tile (floors only, 76-doors.js intMat). Run python3 tools/textures/pack.py settlements/yuni after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "adobe": {
+   "lib": "earth.banco",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.707
+   },
+   "roughLift": 0.4,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.08,
+    "cell": 5
+   }
+  },
+  "plaster": {
+   "lib": "plaster",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.858
+   },
+   "roughLift": 0.4,
+   "specular": 0.25,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.05,
+    "cell": 5
+   }
+  },
+  "concrete": {
+   "lib": "concrete.board",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.585
+   },
+   "roughLift": 0.5,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.6,
+    "macro": 0.14,
+    "cell": 6
+   }
+  },
+  "tile": {
+   "lib": "roof.tile",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.746
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.1,
+    "cell": 4
+   }
+  },
+  "timber": {
+   "lib": "wood.beam",
+   "scale": [
+    1.2,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.694
+   },
+   "roughLift": 0.45,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.08,
+    "cell": 4
+   }
+  },
+  "plank": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.753
+   },
+   "roughLift": 0.45,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.55,
+    "macro": 0.12,
+    "cell": 5
+   }
+  },
+  "thatch": {
+   "lib": "roof.thatch.neutral",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.641
+   },
+   "roughLift": 0.2,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.55,
+    "macro": 0.12,
+    "cell": 5
+   }
+  },
+  "cloth": {
+   "lib": "cloth.weave.plain",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.749
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.3,
+    "macro": 0.06,
+    "cell": 3
+   }
+  },
+  "rock": {
+   "lib": "rock.rock_face",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.599
+   },
+   "roughLift": 0.6,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.15,
+    "cell": 6
+   }
+  },
+  "rust": {
+   "lib": "metal.rusty_metal_04",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.475
+   },
+   "roughLift": 0.3,
+   "metal": 0,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.12,
+    "cell": 4
+   }
+  },
+  "bark": {
+   "lib": "bark.bark_brown_01",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.602,
+    "contrast": 1.2
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "ground": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.665
+   },
+   "roughLift": 0.5,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.6,
+    "macro": 0.15,
+    "cell": 9
+   }
+  },
+  "mosaic": {
+   "lib": "mosaic.trencadis",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.709
+   },
+   "roughLift": 0.0,
+   "specular": 0.5,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.06,
+    "cell": 4
+   }
+  },
+  "paintbw": {
+   "lib": "patterns/yuni/paintbw",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.427
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "paintcol": {
+   "lib": "patterns/yuni/paintcol",
+   "scale": [
+    4.0,
+    4.3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.566
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "relief": {
+   "lib": "patterns/yuni/relief",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.721
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "metal": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.81
+   },
+   "roughLift": 0.1,
+   "metal": 0,
+   "specular": 0.5,
+   "breakup": {
+    "mix": 0.3,
+    "macro": 0.05,
+    "cell": 6
+   }
+  },
+  "column": {
+   "lib": "rock.columnar",
+   "scale": [
+    40.0,
+    64.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.475,
+    "contrast": 1.15
+   },
+   "roughLift": 0.4,
+   "specular": 0.25,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.12,
+    "cell": 30
+   }
+  },
+  "clay": {
+   "lib": "ceramic.terracotta",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.746
+   },
+   "roughLift": 0.3,
+   "specular": 0.35
+  },
+  "rug": {
+   "lib": "cloth.rug.pile",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.749
+   },
+   "roughLift": 0.3,
+   "specular": 0.1
+  },
+  "reedmat": {
+   "lib": "fibre.reedmat",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.641
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "fl-adobe": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.707
+   },
+   "roughLift": 0.5,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.1,
+    "cell": 3
+   }
+  },
+  "fl-tile": {
+   "lib": "ceramic.terracotta",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.746
+   },
+   "roughLift": 0.3,
+   "specular": 0.35
+  },
+  "basket": {
+   "lib": "fibre.coil",
+   "scale": [
+    0.35,
+    0.35
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.641
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  }
+ }
+}

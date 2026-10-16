@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.014,
+    0.034
+   ],
+   "seam_before": [
+    0.018,
+    0.052
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.0,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0,
+   "normal_strength": 0.45,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.12,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "ashnomad/medallion-sun",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.6,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ashnomad_medallion-sun.png",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+  "licence": "generated for this project by its owner",
+  "prompt": "row patterns/ashnomad/medallion-sun: a sun disc of appliqu\u00e9d felt, a sun-face in a fret ring, red and yellow rays (core/materials/PROMPTS-nomads.md)",
+  "reuse": "the chieftain's dais (the assembly now wants a gas giant); any sun cult",
+  "sha1": "0351f07363180eadfdea9a3453175b51b2ddade5"
+ }
+}

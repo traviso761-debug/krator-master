@@ -1,4 +1,8 @@
 // ================================================================= HOST — a ruined jetty
+// the tower's (or jetty's) concrete, iron and stone from the material library (materials.json towerConcrete, towerRust, jettyStone)
+// when this page carries the kit's pack; the UVs are world metres / 6, so one UV unit is 6 m of the set
+function hostJettyLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nwbay',n):null;if(!L)return fb;
+ const t=KMAT.textures(L,{aniso:8}).map;t.repeat.set(6/L.scale[0],6/L.scale[1]);return t;}
 // A second structure for the biome to grow on: a stone causeway running from
 // the bay's NW shore 150 m out over the water on squat piers, its deck broken
 // away toward the end, a roofless kiosk at the landward head. Host-only, no
@@ -29,7 +33,7 @@ function buildJetty(){
  const pos=[],nor=[],uv=[];
  stone.forEach(g=>{const ng=g.toNonIndexed();const p=ng.attributes.position.array,n=ng.attributes.normal.array;for(let i=0;i<p.length;i++){pos.push(p[i]);nor.push(n[i]);}for(let i=0;i<p.length;i+=3)uv.push((p[i]+p[i+2])/4,p[i+1]/4);});
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
- const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({map:TEXS,color:0x9a968a}));m.userData.inspectLabel='The jetty — stone';m.userData.host=true;scene.add(m);
+ const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({map:hostJettyLib('jettyStone',TEXS),color:0x9a968a}));m.userData.inspectLabel='The jetty — stone';m.userData.host=true;scene.add(m);
  const mid=along(L/2,0);OBSTACLES.push({x:head[0],z:head[1],r:14,y0:-4,y1:8});OBSTACLES.push({x:mid[0],z:mid[1],r:L/2+8,y0:-6,y1:yD+3});
  REGISTER({name:'The jetty (ruined causeway)',x:mid[0],z:mid[1],y:-4,r:L/2+8,h:12});
  window.JETTY={head:head,dir:DIR,L:L};

@@ -21,10 +21,14 @@ const SYMBOLS={
   for(const [yy,r_x] of [[cy-hh,rx],[cy,a],[cy+hh,rx]]){g.beginPath();g.ellipse(cx,yy,r_x,ry*(r_x===a?.8:1),0,0,SYM_TAU);g.stroke();}},
  // three parallel talon slashes (Beast Riders)
  claw:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=-1;k<=1;k++){const x0=cx+k*R*.5;g.beginPath();g.moveTo(x0-R*.2,cy-R*.95);g.quadraticCurveTo(x0+R*.62,cy-R*.15,x0+R*.08,cy+R*1.0);g.quadraticCurveTo(x0+R*.2,cy-R*.05,x0-R*.2,cy-R*.95);g.closePath();g.fill();}},
- // a half sun rising over three waves (Hykkousoi; the hexareme's sail in kits/ringsea): c1 the sun, c2 the waves
- wavesun:(g,cx,cy,R,c1,c2)=>{const y0=cy-R*.1;g.fillStyle=c1;g.beginPath();g.arc(cx,y0,R*.5,Math.PI,0);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.07);
-  for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.62,y0+Math.sin(a)*R*.62);g.lineTo(cx+Math.cos(a)*R*.9,y0+Math.sin(a)*R*.9);g.stroke();}
-  g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.1);for(let k=0;k<3;k++){g.beginPath();for(let i=0;i<=24;i++){const x=-R+2*R*i/24,y=y0+R*.12+k*R*.24+Math.sin(x/R*SYM_TAU)*R*.07;if(i)g.lineTo(cx+x,y);else g.moveTo(cx+x,y);}g.stroke();}},
+ // three wind-curls streaming over a breaking wave (Hykkousoi; the hexareme's sail in kits/ringsea): c1 the wind, c2 the wave
+ windwave:(g,cx,cy,R,c1,c2)=>{g.lineCap='round';g.lineJoin='round';g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.08);
+  for(let k=0;k<3;k++){const y=cy-R*(.74-k*.2),x0=cx-R*(.92-k*.14),x1=cx+R*(.42-k*.22),r=R*(.085-k*.012);g.beginPath();g.moveTo(x0,y);g.lineTo(x1,y);g.arc(x1,y-r,r,Math.PI/2,-Math.PI*1.1,true);g.stroke();}
+  const r0=R*.3,a0=-Math.PI*.75,ox=cx+R*.31,oy=cy+R*.23;g.strokeStyle=c2;g.lineWidth=Math.max(2.5,R*.11);g.beginPath();g.moveTo(cx-R*.95,cy+R*.62);
+  g.quadraticCurveTo(cx-R*.3,cy+R*.6,ox+Math.cos(a0)*r0,oy+Math.sin(a0)*r0);
+  for(let i=1;i<=32;i++){const t=i/32,a=a0+t*1.6*Math.PI,rr=r0*(1-.65*t);g.lineTo(ox+Math.cos(a)*rr,oy+Math.sin(a)*rr);}g.stroke();
+  g.beginPath();g.moveTo(ox+r0,oy);g.quadraticCurveTo(ox+r0*1.15,oy+R*.32,cx+R*.95,cy+R*.62);g.stroke();
+  g.lineWidth=Math.max(2,R*.08);g.beginPath();for(let i=0;i<=24;i++){const x=-R*.95+1.9*R*i/24,y=cy+R*.84+Math.sin(x/R*SYM_TAU)*R*.05;if(i)g.lineTo(cx+x,y);else g.moveTo(cx+x,y);}g.stroke();},
  // the eight-spoked wheel (Xanadu; the carrack's sails): c1 rim and spokes, c2 the hub
  wheel:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.12);g.beginPath();g.arc(cx,cy,R*.78,0,SYM_TAU);g.stroke();g.lineWidth=Math.max(2,R*.07);
   for(let i=0;i<8;i++){const a=i/8*SYM_TAU;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.18,cy+Math.sin(a)*R*.18);g.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95);g.stroke();}
@@ -55,9 +59,16 @@ Object.assign(SYMBOLS, {
  // a skull, teeth and all (Screamers)
  skull:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy-R*.15,R*.62,0,SYM_TAU);g.fill();g.fillRect(cx-R*.4,cy+R*.2,R*.8,R*.5);g.fillStyle=c2;for(const s of [-1,1]){g.beginPath();g.ellipse(cx+s*R*.26,cy-R*.15,R*.17,R*.2,0,0,SYM_TAU);g.fill();}
   g.beginPath();g.moveTo(cx,cy+R*.05);g.lineTo(cx-R*.1,cy+R*.28);g.lineTo(cx+R*.1,cy+R*.28);g.closePath();g.fill();for(let k=0;k<5;k++)g.fillRect(cx-R*.36+k*R*.16,cy+R*.42,R*.06,R*.26);},
+ // a spiral sinking into a stepped arch: the way in (Zeijani): c1 the stepped stone and the spiral, c2 the dark of the opening
+ spiralarch:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.moveTo(cx-R*.95,cy+R*.95);
+  for(const [x,y] of [[-.95,-.35],[-.72,-.35],[-.72,-.6],[-.48,-.6],[-.48,-.85],[.48,-.85],[.48,-.6],[.72,-.6],[.72,-.35],[.95,-.35],[.95,.95]])g.lineTo(cx+x*R,cy+y*R);g.closePath();g.fill();
+  const ow=R*.42,oy=cy-R*.12;g.fillStyle=c2;g.beginPath();g.moveTo(cx-ow,cy+R*.95);g.lineTo(cx-ow,oy);g.arc(cx,oy,ow,SYM_PI,0);g.lineTo(cx+ow,cy+R*.95);g.closePath();g.fill();
+  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.08);g.beginPath();const sx=cx,sy=cy+R*.3;for(let i=0;i<=60;i++){const t=i/60,a=-SYM_PI/2+t*SYM_TAU*2.1,r=R*.34*(1-t*.92);const x=sx+Math.cos(a)*r,y=sy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  g.fillStyle=c1;g.beginPath();g.arc(sx,sy,R*.05,0,SYM_TAU);g.fill();},
  // a toothed gear (post-apoc salvage and scrap)
  gear:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();for(let k=0;k<32;k++){const a=k*SYM_TAU/32,r=(k%4<2)?R*.95:R*.75;g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.45,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
 });
 // the symbol each culture pack draws (mkCulture's `sym`), for code that has a culture key and no pack
-const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'wavesun', xanadu:'wheel',
- 'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear' };
+const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'windwave', xanadu:'wheel',
+ 'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear',
+ zeijani:'spiralarch' };

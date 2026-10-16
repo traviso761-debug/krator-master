@@ -1,77 +1,151 @@
 {
+  "dhelv": {
+    "counts": {
+      "lights": "760 records, 48 lit",
+      "navmesh_bake_ms": 3950,
+      "navmesh_polygons": 6477,
+      "ramblers": 651,
+      "sites": 169,
+      "walk_blocks": 15566,
+      "walk_floors": 2731
+    },
+    "gaps": {
+      "cavern": "the cavern's rock is not meshed: cavern.json is KCAVERN's plan and its marching cubes are not ported; the walk floors stand in",
+      "furniture": "no furniture or interiors exported (IX.exportBuilding, the catalog's records)",
+      "materials": "the material library (tex/pack.json) is not read: flat district colours"
+    },
+    "id_coverage": {
+      "instances": 820,
+      "instances_with_id": 0,
+      "multimeshes": 2,
+      "nodes": 5,
+      "nodes_with_id": 0
+    },
+    "route": "krator-dhelv-place, krator-walk, krator-sim (motion), krator-lights (settlements/dhelv)"
+  },
   "girder": {
     "counts": {
       "extras_keys": {
         "A": 1,
-        "fam": 24,
-        "furniture": 48,
-        "inspectLabel": 4,
+        "fam": 16,
+        "furniture": 38,
+        "inspectLabel": 2,
         "interiors": 28,
-        "kit": 14,
-        "krator_instanced": 17,
+        "kit": 9,
+        "krator_instanced": 11,
         "krator_spike": 1,
         "life": 1,
-        "lodCopy": 24,
-        "merged": 10,
-        "probeSkip": 24,
-        "shape": 14
+        "merged": 7,
+        "shape": 9
       },
-      "images": 26,
+      "images": 48,
       "instances": 521,
-      "load_ms": 489,
-      "materials": 53,
-      "meshes": 53,
-      "multimeshes": 9,
-      "nodes_with_extras": 78,
-      "triangles": 1156661
+      "load_ms": 826,
+      "materials": 57,
+      "meshes": 57,
+      "multimeshes": 11,
+      "nodes_with_extras": 58,
+      "triangles": 909813
     },
     "file": "res://data/girder/region.glb",
     "gaps": {
-      "attributes": "custom vertex attributes dropped: { \"aN\": 10.0, \"aC2\": 2.0, \"aAux\": 1.0, \"aFall\": 1.0, \"aPRO\": 4.0, \"aAnim\": 4.0, \"aGarb\": 4.0, \"aSkin\": 4.0, \"aHair\": 4.0, \"aFlyB\": 6.0, \"aFlyP0\": 6.0, \"aFlyP1\": 6.0, \"aFlyP2\": 6.0, \"aFlyP3\": 6.0 }",
-      "instancing": "9 instanced meshes (521 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
-      "library materials": "12 library surfaces rebuilt from the pack (plank, timber, rope, shingle, cloth, rock, wall, ground) with the break-up; three's other hooks (wind, glow, the night light volume) stay lost",
-      "lod copies": "24 core/lod render copies dropped (the originals are in the file too; the exporter could leave them out)",
-      "shader hooks": "51 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
+      "attributes": "custom vertex attributes dropped: { \"aN\": 5.0, \"aC2\": 1.0, \"aAux\": 1.0, \"aFall\": 1.0, \"aPRO\": 4.0, \"aAnim\": 4.0, \"aGarb\": 4.0, \"aSkin\": 4.0, \"aHair\": 4.0, \"aDetS\": 5.0, \"aFlyB\": 6.0, \"aFlyP0\": 6.0, \"aFlyP1\": 6.0, \"aFlyP2\": 6.0, \"aFlyP3\": 6.0 }",
+      "instancing": "11 instanced meshes (521 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, and a uid each (meta krator_records) where the page placed them as core/tags item sets (0 instances)",
+      "library materials": "16 library surfaces rebuilt from the pack (timber, rope, shingle, totem, awning, lacquer, post, plank, f_stone, life_Cage, inlay, trim, ground) with the break-up; three's other hooks (wind, glow, the night light volume) stay lost",
+      "shader hooks": "55 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
+      "tag nodes": "the core/tags records arrive as data (root meta 'tags', 1331 records), but no node names one: an export from before 2026-10-12, or every mesh in the region merges many records (a furniture batch per material) or has none (the exporter writes ids only on a node that is one record or an instanced item set)",
       "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
+    },
+    "id_coverage": {
+      "instances": 583,
+      "instances_with_id": 0,
+      "multimeshes": 12,
+      "nodes": 59,
+      "nodes_with_id": 0
+    },
+    "ids": {
+      "instances_with_id": 0,
+      "misaligned": 0,
+      "nodes_with_id": 0
     },
     "materials_library": {
       "families": {
-        "cloth": 1,
+        "awning": 1,
+        "f_stone": 1,
         "ground": 1,
-        "plank": 2,
-        "rock": 1,
+        "inlay": 1,
+        "lacquer": 1,
+        "life_Cage": 1,
+        "plank": 1,
+        "post": 1,
         "rope": 1,
         "shingle": 2,
         "timber": 3,
-        "wall": 1
+        "totem": 1,
+        "trim": 1
       },
-      "replaced": 12,
-      "unmatched": {
-
-      },
-      "world_uv": 6
+      "replaced": 16,
+      "unmatched": {},
+      "world_uv": 8
     },
     "route": "glTF (three GLTFExporter r128)",
     "stage": {
+      "environment": "reflections from the sky panorama (the page's envMap: specular 1.0, diffuse 0.0)",
       "lights": "1 directional, 1 hemisphere, 1 ambient, 0 point lights (points not carried)",
       "sky": "the page's sky panorama, from [0.0, 74.5643702376741, 0.0] (nearer than 30.0 m left out)"
+    },
+    "tags": {
+      "build": "girder",
+      "classes": {
+        "furniture": 1331
+      },
+      "records": 1331
     }
+  },
+  "girder-lamps": {
+    "counts": {
+      "lamps": 62,
+      "lights": 32
+    },
+    "file": "res://data/girder/lamps.json",
+    "gaps": {
+      "lamp hours": "the page lights its lamps by its night factor (DAYNIGHT_NIGHT_K), the export by hours [17.2, 30.8] (dusk to dawn)",
+      "lamp light": "the page lights its scene through a baked light volume its own shaders read (45-kit.js); here the nearest 32 lamps are OmniLight3D, energy 1.2 x amp, range the lamp's radius: the spike's choice, to tune against the page"
+    },
+    "route": "krator-lamps JSON"
   },
   "hyperjungle": {
     "counts": {
       "buckets": 3,
       "instances": 4348,
-      "items": 19,
-      "load_ms": 419,
+      "items": 20,
+      "load_ms": 1285,
       "materials": 32,
-      "textures": 21,
+      "textures": 25,
       "triangles": 10738
     },
     "file": "res://data/hyperjungle/biome.json",
     "gaps": {
       "anim": "material kind 'anim' (animated fauna: a path in aP0/aP1) drawn with the bark shader, unanimated",
       "fauna paths": "fauna that fly a path in the shader (aP0, aP1) stand still at their path centre: the anim shader and its second channel are not ported",
-      "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label"
+      "field": "the ground is terrainH sampled on the export's grid: the page bakes no core/terrain field (only biomes/sedesert does, since 2026-10-08)"
+    },
+    "id_coverage": {
+      "instances": 4348,
+      "instances_with_id": 4348,
+      "multimeshes": 20,
+      "nodes": 25,
+      "nodes_with_id": 23
+    },
+    "ids": {
+      "bucket_records": 4,
+      "buckets": 3,
+      "buckets_with_records": 3,
+      "instances": 4348,
+      "instances_with_uid": 4348,
+      "items": 20,
+      "items_with_record": 20,
+      "sets_resolved": 20
     },
     "route": "krator-biome JSON",
     "stage": {
@@ -82,42 +156,65 @@
   "iziz": {
     "counts": {
       "extras_keys": {
-        "atmos": 22,
-        "isGround": 2,
-        "krator_instanced": 193,
+        "atmos": 12,
+        "isGround": 1,
+        "krator_instanced": 122,
         "krator_spike": 1,
-        "lodCopy": 113,
-        "probeSkip": 119,
-        "sectorOf": 89
+        "probeSkip": 6,
+        "sectorOf": 67
       },
       "images": 18,
-      "instances": 6542,
-      "load_ms": 224,
-      "materials": 77,
-      "meshes": 153,
-      "multimeshes": 114,
-      "nodes_with_extras": 234,
-      "triangles": 355320
+      "instances": 6752,
+      "load_ms": 251,
+      "materials": 75,
+      "meshes": 161,
+      "multimeshes": 122,
+      "nodes_with_extras": 129,
+      "triangles": 360183
     },
     "file": "res://data/iziz/region.glb",
     "gaps": {
       "ShaderMaterial": "5 ShaderMaterials (water, sky, glow) became magenta stand-ins",
-      "attributes": "custom vertex attributes dropped: { \"aN\": 14.0, \"aC2\": 2.0, \"aP0\": 9.0, \"aP1\": 9.0, \"aPos\": 1.0, \"aBig\": 1.0, \"aHide\": 1.0, \"ipos\": 4.0, \"pp\": 3.0, \"lt\": 2.0, \"psize\": 1.0 }",
-      "instancing": "114 instanced meshes (6542 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
-      "lod copies": "113 core/lod render copies dropped (the originals are in the file too; the exporter could leave them out)",
-      "shader hooks": "44 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
-      "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
+      "attributes": "custom vertex attributes dropped: { \"aN\": 7.0, \"aC2\": 1.0, \"aP0\": 5.0, \"aP1\": 5.0, \"aPos\": 1.0, \"aBig\": 1.0, \"aHide\": 1.0, \"ipos\": 4.0, \"pp\": 3.0, \"lt\": 2.0, \"psize\": 1.0 }",
+      "instancing": "122 instanced meshes (6752 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, and a uid each (meta krator_records) where the page placed them as core/tags item sets (0 instances)",
+      "shader hooks": "42 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
+      "tag nodes": "the core/tags records arrive as data (root meta 'tags', 784 records), but no node names one: an export from before 2026-10-12, or every mesh in the region merges many records (a furniture batch per material) or has none (the exporter writes ids only on a node that is one record or an instanced item set)",
+      "unlit": "5 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
+    },
+    "id_coverage": {
+      "instances": 9413,
+      "instances_with_id": 0,
+      "multimeshes": 149,
+      "nodes": 189,
+      "nodes_with_id": 0
+    },
+    "ids": {
+      "instances_with_id": 0,
+      "misaligned": 0,
+      "nodes_with_id": 0
     },
     "route": "glTF (three GLTFExporter r128)",
     "stage": {
       "lights": "2 directional, 1 hemisphere, 0 ambient, 4 point lights (points not carried)",
-      "sky": "the page's sky panorama, from [0.0, 59.9951029252427, 0.0] (nearer than 530.0 m left out)"
+      "sky": "the page's sky panorama, from [0.0, 59.9951029252427, 0.0] (nearer than 80.0 m left out)"
+    },
+    "tags": {
+      "build": "iziz/Iziz",
+      "classes": {
+        "building": 592,
+        "feature": 113,
+        "flora": 67,
+        "landmark": 1,
+        "life": 6,
+        "prop": 5
+      },
+      "records": 784
     }
   },
   "iziz-atmos": {
     "counts": {
       "fx": {
-        "banner": 13,
+        "banner": 11,
         "beacon": 1,
         "brazier": 4,
         "drain": 1,
@@ -133,10 +230,10 @@
         "spotcone": 8,
         "weather": 1
       },
-      "glow": 328,
-      "lamps": 70,
-      "load_ms": 30,
-      "prop_instances": 2467,
+      "glow": 322,
+      "lamps": 65,
+      "load_ms": 46,
+      "prop_instances": 2339,
       "prop_sets": 26
     },
     "file": "res://data/iziz/atmos.json",
@@ -161,21 +258,119 @@
       "buckets": 9,
       "instances": 48432,
       "items": 51,
-      "load_ms": 1293,
+      "load_ms": 3920,
       "materials": 51,
-      "textures": 35,
+      "textures": 40,
       "triangles": 186920
     },
     "file": "res://data/rift/biome.json",
     "gaps": {
-      "lod": "LOD is per chunk box in three and per node point in Godot: ranges widened by the chunk half-diagonal (849 m); stand-ins and impostors are not LOD levels of what they replace",
-      "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label"
+      "field": "the ground is terrainH sampled on the export's grid: the page bakes no core/terrain field (only biomes/sedesert does, since 2026-10-08)",
+      "lod": "LOD is per chunk box in three and per node point in Godot: ranges widened by the chunk half-diagonal (849 m); stand-ins and impostors are not LOD levels of what they replace"
+    },
+    "id_coverage": {
+      "instances": 48432,
+      "instances_with_id": 48432,
+      "multimeshes": 51,
+      "nodes": 61,
+      "nodes_with_id": 60
+    },
+    "ids": {
+      "bucket_records": 1042,
+      "buckets": 9,
+      "buckets_with_records": 9,
+      "instances": 48432,
+      "instances_with_uid": 48432,
+      "items": 51,
+      "items_with_record": 51,
+      "sets_resolved": 51
     },
     "route": "krator-biome JSON",
     "stage": {
       "lights": "2 directional, 1 hemisphere, 0 ambient, 0 point lights (points not carried)",
       "sky": "the page's sky panorama, from [-300.0, 223.742704022042, 300.0] (nearer than 150.0 m left out)"
     }
+  },
+  "sedesert": {
+    "collision": {
+      "between_max": 0.9202089603424,
+      "between_points": 200,
+      "grid_max": 0.000160217285042563,
+      "grid_points": 200,
+      "missed": 0,
+      "vertex_slips": 10
+    },
+    "counts": {
+      "buckets": 3,
+      "instances": 7280,
+      "items": 34,
+      "load_ms": 3194,
+      "materials": 35,
+      "textures": 25,
+      "triangles": 47471
+    },
+    "field": {
+      "build_ms": 360,
+      "format": "krator-field",
+      "insets": 0,
+      "look": true,
+      "name": "sedesert",
+      "nx": 36,
+      "nz": 35,
+      "step": 8.90476190476191,
+      "vertices": 1260,
+      "water": [
+        "river",
+        "pond"
+      ]
+    },
+    "file": "res://data/sedesert/biome.json",
+    "gaps": {
+      "fauna": "dynamic items (fauna on aP0/aP1 paths) are placed static: the anim kind has no Godot shader yet"
+    },
+    "id_coverage": {
+      "instances": 7280,
+      "instances_with_id": 7280,
+      "multimeshes": 34,
+      "nodes": 39,
+      "nodes_with_id": 37
+    },
+    "ids": {
+      "bucket_records": 60,
+      "buckets": 3,
+      "buckets_with_records": 3,
+      "instances": 7280,
+      "instances_with_uid": 7280,
+      "items": 34,
+      "items_with_record": 34,
+      "sets_resolved": 34
+    },
+    "route": "krator-biome JSON",
+    "stage": {
+      "lights": "2 directional, 1 hemisphere, 0 ambient, 0 point lights (points not carried)",
+      "sky": "the page's sky panorama, from [230.0, 68.1308669855769, 640.0] (nearer than 150.0 m left out)"
+    }
+  },
+  "verge": {
+    "counts": {
+      "buildings": 1572,
+      "groups": 36,
+      "member_nodes": 647,
+      "nav_nodes": 18205,
+      "places": 1574
+    },
+    "gaps": {
+      "citizens": "the citizens walk by decisions taken at run time (SIM.decide, logged); not replayed here",
+      "rigs": "stand-ins: capsules and boxes, no gait (the page's rigs are three.js; RIGS' API is the contract)"
+    },
+    "id_coverage": {
+      "instances": 1572,
+      "instances_with_id": 0,
+      "multimeshes": 1,
+      "nodes": 650,
+      "nodes_with_id": 0
+    },
+    "route": "krator-sim + krator-verge-place (settlements/verge)"
   },
   "yuni": {
     "counts": {
@@ -184,14 +379,11 @@
         "ancient": 18,
         "nomad": 17,
         "order": 4,
-        "sahelian": 178,
-        "yuni-common": 961,
-        "yuni-court": 96,
-        "yuni-poor": 496
+        "yuni": 1731
       },
       "doors": 1842,
       "lights": 2591,
-      "load_ms": 178,
+      "load_ms": 838,
       "windows": 6841
     },
     "counts_interior": {
@@ -210,6 +402,18 @@
       "meshes": "records carry no geometry: buildings are boxes here; the meshes need a second route (glTF or a builder port)",
       "wall openings": "walls are solid boxes: openings (u, w, y0, y1) need CSG or a wall builder to cut doors and windows"
     },
-    "route": "records (KRATOR_EXPORT)"
+    "id_coverage": {
+      "instances": 8683,
+      "instances_with_id": 8683,
+      "multimeshes": 2,
+      "nodes": 1839,
+      "nodes_with_id": 41
+    },
+    "route": "records (KRATOR_EXPORT)",
+    "tags": {
+      "format": "krator-tags",
+      "records": 13044,
+      "version": 1.0
+    }
   }
 }

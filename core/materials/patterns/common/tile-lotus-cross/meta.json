@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1246,
+    1246
+   ],
+   "seam_after": [
+    0.917,
+    0.838
+   ],
+   "seam_before": [
+    2.345,
+    1.835
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ceramic",
+  "id": "common/tile-lotus-cross",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.55,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "common_tile-lotus-cross.png",
+  "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+  "licence": "supplied for this project by its owner",
+  "prompt": "not recorded: blue, green, cream and gold stepped cross with lotus leaves",
+  "reuse": "floors, wall dados",
+  "sha1": "765b391b6da2a072272ee076e8ea0f6fcb0d5b96"
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "top",
+   "key": "#00ff00",
+   "key_hi": 160,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.weeper",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card-weeper.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Alien leaf card: nine long hanging feathery strands like pink willow fronds, a central stem with soft fine side filaments, rose-pink (#d87888) to pale pink (#e8a0b0), each hung from the top edge of its cell, on a solid flat bright green (#00ff00) background (not magenta: the leaves are pink) so they can be cut out. Square, 2048x2048; no other objects. (Row card.weeper of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+  "reuse": "the rose weeper; any pink weeping alien tree",
+  "sha1": "1ffa130fef19653b043b418c6419567acef08393"
+ }
+}

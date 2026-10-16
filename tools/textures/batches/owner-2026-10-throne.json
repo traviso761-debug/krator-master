@@ -1,0 +1,479 @@
+[
+ {
+  "src": "ground-lava-aa.png",
+  "out": "core/materials/library/ground.lava.aa",
+  "record": {
+   "id": "ground.lava.aa",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Seamless Dark Volcanic Lava Texture.png\" (volc3.zip), 2026-10-06",
+    "reuse": "every lava flow, young to old (aa rubble and pahoehoe crust); basalt scree; a lava field anywhere"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-lava-veins.png",
+  "out": "core/materials/library/ground.lava.veins",
+  "record": {
+   "id": "ground.lava.veins",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Glowing Lava Veins on Volcanic Rock.png\" (volcano.zip), 2026-10-06",
+    "reuse": "a flow still cooling (its veins glow at night); an active vent; forges and furnaces of a fire cult"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-ash-gravel.png",
+  "out": "core/materials/library/ground.ash.gravel",
+  "record": {
+   "id": "ground.ash.gravel",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Volcanic Ash and Gravel Texture.png\" (volc3.zip), 2026-10-06",
+    "reuse": "ash fall ground under a plume; cinder paths; grey gravel anywhere"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-ash-mycelium.png",
+  "out": "core/materials/library/ground.ash.mycelium",
+  "record": {
+   "id": "ground.ash.mycelium",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Glowing Mycelium on Volcanic Ash.png\" (volcano.zip), 2026-10-06",
+    "reuse": "the plume's old ground on the Throne (its mycelium glows at night); fungal ground in caves"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-grass-ember.png",
+  "out": "core/materials/library/ground.grass.ember",
+  "record": {
+   "id": "ground.grass.ember",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Fiery Alien Grass on Volcanic Soil.png\" (volcano.zip), 2026-10-06",
+    "reuse": "the seam on the Throne, where Earth's grass gives way; any red alien grassland"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-mushroom-glow.png",
+  "out": "core/materials/library/ground.mushroom.glow",
+  "record": {
+   "id": "ground.mushroom.glow",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Bioluminescent Mushroom Carpet.png\" (volcano.zip), 2026-10-06",
+    "reuse": "skylights, hollows and gullies under the plume; glowing cave floors"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-mushroom-toxic.png",
+  "out": "core/materials/library/ground.mushroom.toxic",
+  "record": {
+   "id": "ground.mushroom.toxic",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Toxic Mushroom Ground Cover.png\" (volc2.zip), 2026-10-06",
+    "reuse": "the plume's mature ground; fungal swamp edges; ruins overgrown with fungus"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-mycelium-gold.png",
+  "out": "core/materials/library/ground.mycelium.gold",
+  "record": {
+   "id": "ground.mycelium.gold",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Golden Mycelium Veins on Earthy Texture.png\" (volcano.zip), 2026-10-06",
+    "reuse": "steaming ground round a fumarole; a slime mould's sheet; rotting logs"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-obsidian.png",
+  "out": "core/materials/library/ground.obsidian",
+  "record": {
+   "id": "ground.obsidian",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Polished Black Obsidian Pebble Mosaic.png\" (volcano.zip), 2026-10-06",
+    "reuse": "a pit crater's floor, obsidian scree; polished pebble floors and paths"
+   }
+  },
+  "options": {
+   "rough": 0.4,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0,
+   "dark_gloss": 0.5
+  }
+ },
+ {
+  "src": "stone-travertine-tufa.png",
+  "out": "core/materials/library/stone.travertine.tufa",
+  "record": {
+   "id": "stone.travertine.tufa",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Porous Travertine Tufa Texture.png\" (volc3.zip), 2026-10-06",
+    "reuse": "hot-spring rims and terraces; tufa walls; spa architecture"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "stone-petrified.png",
+  "out": "core/materials/library/stone.petrified",
+  "record": {
+   "id": "stone.petrified",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Polished Petrified Wood Agate Texture.png\" (volcano.zip), 2026-10-06",
+    "reuse": "lava-cast tree stumps and petrified logs; inlay, jewellery, polished furniture"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-lava-molten.png",
+  "out": "core/materials/library/bark.lava.molten",
+  "record": {
+   "id": "bark.lava.molten",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Molten Lava Bark Texture.png\" (volcano.zip), 2026-10-06",
+    "reuse": "a native tree with glowing cracks (night); fire-spirit trees"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-lava-charred.png",
+  "out": "core/materials/library/bark.lava.charred",
+  "record": {
+   "id": "bark.lava.charred",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Charred Lava Wood Bark Texture.png\" (volcano.zip), 2026-10-06",
+    "reuse": "fire-hardy trees at a flow's edge; charred posts"
+   }
+  },
+  "options": {
+   "rough": 0.88,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-lava-charcoal.png",
+  "out": "core/materials/library/bark.lava.charcoal",
+  "record": {
+   "id": "bark.lava.charcoal",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Seamless Charcoal Lava Bark Texture.png\" (volc2.zip), 2026-10-06",
+    "reuse": "the ash pine; any dark furrowed bark"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-armored.png",
+  "out": "core/materials/library/bark.armored",
+  "record": {
+   "id": "bark.armored",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Weathered Armored Bark Texture.png\" (volc3.zip), 2026-10-06",
+    "reuse": "the star aloe; scaled palm-like trunks; armoured hide in a pinch"
+   }
+  },
+  "options": {
+   "rough": 0.88,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "wood-sulphur.png",
+  "out": "core/materials/library/wood.sulphur",
+  "record": {
+   "id": "wood.sulphur",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Sulfur-Stained Golden Wood Grain.png\" (volcano.zip), 2026-10-06",
+    "reuse": "trees and dead wood in the vents' steam; golden carved wood"
+   }
+  },
+  "options": {
+   "rough": 0.75,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic-fungus-bracket.png",
+  "out": "core/materials/library/organic.fungus.bracket",
+  "record": {
+   "id": "organic.fungus.bracket",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Seamless Ash-Gray Bracket Fungi Texture.png\" (volcano.zip), 2026-10-06",
+    "reuse": "fungal trunks and shelf-covered logs; a fungus wall"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

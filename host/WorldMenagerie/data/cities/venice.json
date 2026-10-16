@@ -75,7 +75,8 @@
  "streetTrees": 0.15,
  "parkedCars": 0,
  "traffic": 0,
- "people": 1.0,
+ "people": 0,
+ "_people": "the engine's walkers are off: src/core/crowds.js walks the calli instead (crowds below)",
  "lowRiseFar": 4000,
  "bridgeDeck": 1.6,
  "districts": {
@@ -130,10 +131,69 @@
   {
    "name": "Palazzo Ducale",
    "at": [
-    45.43377,
-    12.34012
+    45.433983,
+    12.3403225
    ],
-   "info": "The Doge's Palace: two storeys of arcade holding up a wall, which is the wrong way round and the point of it."
+   "model": "ducale",
+   "corner": [
+    45.4335005,
+    12.3400107
+   ],
+   "turn": 0.2749,
+   "clearArea": {
+    "poly": [
+     [
+      45.4334838,
+      12.3399974
+     ],
+     [
+      45.4336805,
+      12.3409893
+     ],
+     [
+      45.4345935,
+      12.3406429
+     ],
+     [
+      45.4345251,
+      12.3402979
+     ],
+     [
+      45.4343735,
+      12.3403587
+     ],
+     [
+      45.4342416,
+      12.3396934
+     ]
+    ],
+    "minHeight": 3,
+    "_": "the palace's own mapped wings and courtyard pieces; the Basilica beside it and the Porta della Carta passage stay"
+   },
+   "info": "The Doge's Palace:two storeys of arcade holding up a wall, which is the wrong way round and the point of it."
+  },
+  {
+   "name": "Piazza San Marco",
+   "at": [
+    45.4342,
+    12.3379
+   ],
+   "model": "piazza",
+   "grid": 9,
+   "orchestras": [
+    [
+     45.43392,
+     12.33785,
+     0
+    ],
+    [
+     45.43448,
+     12.33805,
+     180
+    ]
+   ],
+   "tables": 30,
+   "info": "The paving is Andrea Tirali's, 1723: trachyte and white Istrian stone. Florian's and Quadri's orchestras play to each other across it."
   },
   {
    "name": "Ponte di Rialto",
@@ -225,6 +285,30 @@
     22
    ]
   ],
+  "The Doge's Palace": [
+   [
+    45.432686,
+    12.339673,
+    22
+   ],
+   [
+    45.433795,
+    12.340318,
+    12
+   ]
+  ],
+  "The Piazzetta": [
+   [
+    45.433583,
+    12.339579,
+    7
+   ],
+   [
+    45.433916,
+    12.339844,
+    12
+   ]
+  ],
   "The Grand Canal at the Rialto": [
    [
     45.4368,
@@ -263,26 +347,38 @@
   ],
   "The calli": [
    [
-    45.436,
-    12.3326,
-    14
+    45.43874,
+    12.34272,
+    1.9
    ],
    [
-    45.4366,
-    12.3338,
-    10
+    45.4386,
+    12.3439,
+    1.8
+   ]
+  ],
+  "Strada Nova": [
+   [
+    45.44031,
+    12.33617,
+    2.0
+   ],
+   [
+    45.44095,
+    12.3348,
+    2.0
    ]
   ],
   "Down a canal": [
    [
-    45.435,
-    12.331,
-    11
+    45.44591,
+    12.32651,
+    1.2
    ],
    [
-    45.4356,
-    12.3326,
-    7
+    45.44549,
+    12.32581,
+    1.0
    ]
   ],
   "The Arsenale": [
@@ -328,8 +424,212 @@
   "_": "the calli and the canals are the subject, and you cannot look along one from above it"
  },
  "streetFurniture": false,
+ "facade": {
+  "bay": 3.4,
+  "floor": 3.3,
+  "shutters": true,
+  "_": "Venetian rhythm: windows close together, green shutters"
+ },
+ "instanceCulling": true,
+ "courtyards": 40,
+ "groundMottle": 0.06,
+ "crowds": {
+  "seed": 1797,
+  "pedestrians": 30,
+  "centre": [
+   45.4362,
+   12.335,
+   1300,
+   6
+  ],
+  "pedestrianMul": 1,
+  "maxPedestrians": 9000,
+  "far": 300,
+  "touristFar": 400,
+  "couples": 0.35,
+  "_sites": "[lat, lon, radius, how many, keep-clear radius]",
+  "sites": [
+   [
+    45.4342,
+    12.3379,
+    80,
+    460
+   ],
+   [
+    45.43365,
+    12.33975,
+    35,
+    160
+   ],
+   [
+    45.4336,
+    12.342,
+    45,
+    170
+   ],
+   [
+    45.4377,
+    12.3356,
+    40,
+    130
+   ],
+   [
+    45.4389,
+    12.3364,
+    30,
+    80
+   ],
+   [
+    45.4318,
+    12.3286,
+    25,
+    70
+   ],
+   [
+    45.4365,
+    12.3264,
+    30,
+    60
+   ],
+   [
+    45.4312,
+    12.3343,
+    30,
+    90
+   ],
+   [
+    45.4342,
+    12.3235,
+    40,
+    70
+   ]
+  ],
+  "keepOut": [
+   [
+    45.43397,
+    12.33896,
+    8
+   ],
+   [
+    45.43449,
+    12.33967,
+    30
+   ],
+   [
+    45.433983,
+    12.3403225,
+    40
+   ],
+   [
+    45.43083,
+    12.33463,
+    24
+   ]
+  ],
+  "pigeons": [
+   [
+    45.4342,
+    12.3379,
+    70,
+    260
+   ]
+  ]
+ },
+ "streetlife": {
+  "seed": 1797,
+  "style": "venice",
+  "water": true,
+  "centre": [
+   45.4365,
+   12.333,
+   1900
+  ],
+  "far": 500,
+  "shops": 0.5,
+  "flowerBoxes": 0.16,
+  "smoke": 0.03,
+  "parks": {
+   "busts": [
+    0,
+    0,
+    0
+   ],
+   "picnicArea": 2000
+  },
+  "_": "src/core/streetlife.js: shopfronts, cafés, Istrian stone, Gothic windows and water gates on the canals, chimney smoke"
+ },
+ "courts": {
+  "seed": 1797,
+  "far": 700,
+  "minCourt": 30,
+  "campoWells": 150,
+  "fountainModels": [],
+  "_": "src/core/courts.js: courtyards (corti) and a wellhead in every campo"
+ },
+ "navmap": {
+  "labels": [
+   "The Campanile of San Marco",
+   "Basilica di San Marco",
+   "Palazzo Ducale",
+   "Ponte di Rialto",
+   "Santa Maria della Salute",
+   "San Giorgio Maggiore",
+   "The Arsenale",
+   "Ponte dell'Accademia",
+   "Santa Maria Gloriosa dei Frari",
+   "Punta della Dogana"
+  ]
+ },
+ "rooftops": false,
+ "palazzi": {
+  "tile": 800,
+  "pitch": 22,
+  "eave": 0.5,
+  "band": 4,
+  "corniceFar": 700,
+  "hipMax": 18,
+  "ridgeMax": 4,
+  "roofColours": [
+   "#a85a3e",
+   "#b4684a",
+   "#9a5038",
+   "#ad6248",
+   "#c07454"
+  ],
+  "_": "src/core/palazzi.js: Venice's roofs are terracotta, pitched low, never flat"
+ },
+ "palette": {
+  "brick": [
+   "#b4644c",
+   "#c47a5a",
+   "#a8553e",
+   "#c98d6a",
+   "#b97060",
+   "#9e5a48"
+  ],
+  "stone": [
+   "#e0c9a6",
+   "#d9b48a",
+   "#e6d3b8",
+   "#cfa98c",
+   "#e8c4a8",
+   "#d6bfa0"
+  ],
+  "_": "Venetian plaster: rose, ochre, terracotta, cream"
+ },
+ "lakeColour": "#3f6a66",
+ "lakeSheen": "#7a9c98",
+ "roadColours": {
+  "pedestrian": "#8f8a81",
+  "trail": "#8f8a81",
+  "unclassified": "#8f8a81"
+ },
+ "areaColours": {
+  "plaza": "#958f85"
+ },
  "boats": {
   "gondolas": 90,
+  "taxis": 18,
   "vaporetti": 14,
   "barges": 26,
   "speed": 2.2,
@@ -337,6 +637,7 @@
  },
  "life": {
   "seed": 1797,
+  "lift": 1.8,
   "chimneys": 2600,
   "bricole": 700,
   "washing": 260,
@@ -347,8 +648,17 @@
   "cell": 8,
   "grow": 8,
   "drop": -1.0,
-  "quay": "#a89d8b",
+  "quay": "#8e877b",
   "water": -0.5,
   "_": "no height grid: the sheet is the lagoon and the islands are rasterised from the buildings, calli and campi"
+ },
+ "commuter": {
+  "body": "#e4e6e2",
+  "band": "#2a5a8a",
+  "cars": 5,
+  "_": "Trenitalia's regionals over the Ponte della Libertà into Santa Lucia"
+ },
+ "el": {
+  "tramColour": "#c8c8c4"
  }
 }

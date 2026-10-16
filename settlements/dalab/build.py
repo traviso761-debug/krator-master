@@ -81,6 +81,11 @@ except Exception:
     pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+# the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
+# clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
+# 88x-matlib-pack.js (tools/textures/matlib_pack.py); src/88y-dalab-matlib.js binds it onto MAT (KMAT.bindMat)
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+MATLIB_PACK = '88x-matlib-pack.js'
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, kits/, settlements/
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
@@ -90,6 +95,15 @@ CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (co
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+# core/rand (KRAND: the tags' uid is its hash) and core/tags (the registry REG is read into: src/91t-dalab-tags.js)
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[0].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap and cutaway, with core/clock and core/minimap, as Iziz takes them. Not core/space: the vendored biome's scatter takes
+# another path when it is on the page (settlements/iziz/KNOWN_ISSUES.md, 2026-10-13). Not core/edits: no editor world yet.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
 
 
 def srcpath(f, base=None):
@@ -102,6 +116,7 @@ def srcpath(f, base=None):
 # table and view list, merged into the one sorted filename order. Everything
 # else — core, helpers, all 33 builders — is shared, so a fix to a builder lands
 # in every target that shows it and the two cannot drift.
+TARGET_CORE = {'city': ['mask']}   # core/<module> fragments a target takes (core/mask: the placement raster)
 TARGET_OUT = {
     'set': 'dalab-set.html',            # the Dalab building kit showcase
     'city': 'dalab.html',               # the settlement
@@ -109,6 +124,7 @@ TARGET_OUT = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '86-bio-00-matlib-pack.js', '88x-matlib-pack.js', '88y-dalab-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
@@ -120,6 +136,9 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '84-city-geo.js', '85-city-paint.js', '93-city-ui.js',   # city target: geometry, the painted ground, dev-tool UI
 }
+# core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
+DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-dalab-tags.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -132,7 +151,7 @@ SEED_COLLISION_EXCEPTIONS = set()
 # reseed rule does not apply either. Matched by filename prefix.
 SCOPED_PREFIXES = ('86-bio-',)   # none yet: the settlement pass vendors a biome the way Iziz's city did
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES)
+    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -228,7 +247,13 @@ def build_one(target, do_checks, assert_origin):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
+    src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
+    for mod in TARGET_CORE.get(target, []):
+        mdir = os.path.join(ROOT, 'core', mod)
+        tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
@@ -239,6 +264,16 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    # the pack beside the pages (dalab.tex.dalab.js), one file every page of the build shares; --inline-packs puts it back in
+    # each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+    side = None if '--inline-packs' in sys.argv else {}
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'dalab', side=side)
+    order = sorted(order + [MATLIB_PACK])
+    if any(f.startswith('86-bio-') for f in order):   # the vendored swlowlands biome: its library pack, before the biome code
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'swlowlands'), 'swlowlands')
+        order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:
         errs = check(order, bodies)
@@ -258,10 +293,12 @@ def build_one(target, do_checks, assert_origin):
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
+    if side:
+        html = matlib_pack.write_sidecar(side, html, DIST, 'dalab.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
-        json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
+        json.dump({f: hashlib.sha1(bodies[f].replace('\r\n', '\n').encode()).hexdigest()[:12] for f in order},   # LF-normalised: one hash on every platform
                   fh, indent=1, sort_keys=True)
     return order, html, out
 
@@ -283,7 +320,7 @@ def vendor_manifest():
     out = {}
     for f in VENDORED + VENDORED_IZIZ + VENDORED_HL + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
         with open(srcpath(f), 'rb') as fh:
-            out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
+            out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out

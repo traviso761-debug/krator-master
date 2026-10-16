@@ -13,6 +13,10 @@ references are as of that commit.
 
 ## 0. What main settled while this plan was drafted
 
+> 2026-10-12: the owner's Voth citizen brief (needs, items, economy, guards, monks, the arena, imports) and the phased
+> plan for it are in `settlements/voth/SIM-ROADMAP.md`. It is this plan's Phase 2 and Phase 5 done on the Voth
+> city page first; the modules it adds (`77-sim-6-needs.js`, `-items.js`, `-economy.js`, `77-sim-7-lod.js`) are core's.
+
 The survey in §1 was taken on a 1 Oct checkout. Between that and `main` on 2 Oct,
 work landed that changes the plan's assumptions. Each item below is folded into
 the sections that follow.
@@ -218,7 +222,7 @@ core/simulation/
     77-sim-3-actors.js    actor, role, schedule, group; behaviour resolution
     77-sim-4-nav.js       the NAV contract, layers, A* with budget, width; grid and graph backends
     77-sim-5-routes.js    transport routes and group routes as functions of t; supply routes
-    77-sim-6-economy.js   stockpiles, production/consumption flows (Phase 5)
+    77-sim-6-economy.js   goods, stores, production by worked hour, carts, imports (written 2026-10-13: Voth phase E)
     77-sim-7-lod.js       tiers 0–2 (Phase 5+)
     77-sim-8-export.js    SIM.export() / SIM.download(), format 'krator-sim' (Phase 7)
     77-sim-9-debug.js     window._sim, census, audits, pathviz hooks
@@ -325,7 +329,8 @@ Group        { id, kind, org, leader, members[], route, activity, state, timer }
 NavLayer     'pedestrian' | 'road' | 'water' | 'climb' | 'animal' | 'air' | 'interior'
 NAV          { nodes:[{id,x,y,z,tag,layer,...}], edges:[{id,a,b,kind,len,w,layer}] }   the Mav/Locus/GAME_EXPORT contract;
              a grid backend (Shade, Voth water, Locus RG) answers the same route() call
-TransportRoute { id, layer, stops[place], period, phase, segments[[dur, ease, from, to]], capacity, faction, vehicle }   TODO.md shape
+TransportRoute { id, layer, stops[place], period, phase, segments[[dur, ease, from, to]], capacity, faction, vehicle }   TODO.md shape;
+               built: kind 'transport', 77-sim-5r-routes.js (stops may be 'port:<id>'; first stop = last makes a loop). First user: Voth's city
 SupplyRoute    { id, origin, destination, resource, qty, freq, faction, security, status }
 Event          { id, type, faction, org, from(port), to(port), stops[{activity, mins}], every_days, consequences[] }   Shade EVENTS + ROADMAP §29
 Stockpile      { settlement, resource, amount, produce, consume }
@@ -402,6 +407,13 @@ To be added to `README.md` under "Life/simulation layer" and enforced by a
 9. Everything the simulation knows is in `SIM.export()`, in the `krator-*`
    export shape, before it is drawn; the export's record shapes are the same as
    the hand-edited `world/*.json`, so either can be the source of a value.
+10. Furniture the camera may not be drawing is read from its records, never
+   from what is drawn (the README rule "Furniture that is not always drawn is
+   data first"): records apart from the drawing, a camera-independent index
+   (a committed bake plus an idle fill, fingerprinted per building), and edits
+   as an overlay keyed by piece id. `slotsFromFurniture` takes those records
+   (Mav's Refuge: `MIX.slots(i)`, `settlements/mavs-refuge/src/57a-interiors.js`),
+   so a bed or a counter exists whether or not anyone is looking.
 
 ---
 
@@ -459,6 +471,16 @@ Deliverables: `SCHEMA.md`, `77-sim-0-core.js`, `77-sim-2-places.js`,
 - Acceptance: `core/simulation/example/` builds a 20-actor sheet (like
   `core/sockets/example/`) that runs on the module alone; Shade's `_life.OUT`
   audit numbers are unchanged when read from `_sim`.
+- Shade moved (2026-10-05): `world/*.json` holds its activities, faction, orgs, roles and
+  convoy; `84-host-life.js` registers its grid as the `pedestrian` layer, its places (a
+  place's capacity is SIM's `cap`, shared by its activities) and ports, and populates with
+  `deal:'round'`; its own audits (only way up, convoy, commutes) ride on `SIM.audits`. Every
+  `_life.OUT` number is unchanged, and `_life` is now a view of `_sim.audit()`. Then the
+  convoy got its rider role and DEPART and IDLE their records (`activities` 15), and SIM.fire
+  follows an event's `legs`; Shade's probe steps everyone and the convoy. Still open: stepping
+  per frame, which waits for the people to be drawn (Phase 3b).
+- The example sheet is `core/simulation/example/` (20 townsfolk, a caravan, a 2D canvas):
+  `python3 build.py && python3 check.py` (4 checks and 4 negatives, determinism across loads).
 
 ### Phase 2: translate Voth (Society)
 
@@ -512,6 +534,27 @@ strider `onboard` counts match the previous build over a 120 s day and
 3. `LIFE_DEST` lists → places from node tags **and** slot/room kinds (home,
    tavern, barracks, store) and the catalog furniture now placed by
    `53-furnish.js`; `'res'` platforms get `SLEEP` slots with capacity.
+   Since 2026-10-05 every lot, level room and hut has planned rooms and
+   furniture as camera-independent records (`57a-interiors.js`): places and
+   slots come from `MIX.slots(i)` (rule 10), each home's beds giving its
+   `SLEEP` capacity.
+3a. **The interiors' open issues, to address in this phase** (assessed
+   2026-10-05; details in `settlements/mavs-refuge/KNOWN_ISSUES.md`):
+   - walkers go inside: a resident walks from the door node through its home's
+     rooms to the piece it uses (`IX.life.nav` joined at the street door, the
+     `interior` layer);
+   - the shared kitchens: decide communal cooking (homes without hearths, the
+     level's kitchen the `COOK`/`EAT` place for its homes) or drop them;
+   - the shrines: an offering table, mats, a keeper's store; a shrine keeper
+     role and `WORSHIP` slots;
+   - the council chamber: a dais, petitioners' benches, a records room and a
+     guard post (four quarter-sector bodies between the portals), and the
+     council's sittings as the `Refuge Council`'s schedule;
+   - the market: each stall's goods by trade, stock held in the storehouses
+     next to it, porters between them, opening hours, stalls as `SELL` places;
+   - the spider nests: the handlers' stations, silk reeling into the silk
+     houses and the weavers' loft, the egg nursery, the prey store and the
+     handlers' bunks (after the owner's call on a fauna kit).
 4. Squads, posts, drill and gatherer routes → `Group` objects; the gatherer
    cycle becomes `GATHER` at a place advertising `resource: fruit`, with the
    satellite choice derived from that instead of the 60–420 m literal.
@@ -604,6 +647,11 @@ Locus is already closest to the target. Make it the mobility reference:
   system deciding what is instanced.
 - Not started until Phases 2–3 prove two builds run from the same vocabulary.
   No Unreal adapter.
+- **Begun (2026-10-08, Dhelv's P7):** `ksim.gd` (`KSim`) is the motion's twin: `SIM.at` and `SIM.pose`,
+  the wander's 32-bit hash through 16-bit halves (krand.gd's idiom). A world exports each actor's baked task
+  (Dhelv's `sim.json` `motion` block: the legs' routes, speeds, durations, the spot, the wander) and a trace of
+  `SIM.pose` from the same snapshot (`golden.json`); `godot/tests/dhelv/dhelv_sim_test.gd` replays it: 3906 rows,
+  0 differ. The decision stepper (`SIM.step`) is not ported: Godot replays the baked tasks, it does not re-plan.
 
 ---
 
@@ -748,3 +796,33 @@ assert on NAV), and authored entries carry `source: authored` and are never
 overwritten by generation. Generated from the registry and `world/*.json`,
 this would be the natural home for 8.1 and 8.4 and a readable export beside
 `dist/<name>.sim.json`.
+
+### 8.9 Off-screen sites: a catch-up clock and an operation log
+
+Source: the Multihog D&D Framework (MultihogAurelius, GitHub, GPL-3, read 2026-10-10), a
+SillyTavern extension whose "maps that evolve while you are away" are LLM-driven: a model
+reads a site snapshot, the elapsed time and prose "world reports" and emits a JSON
+transaction. Nothing of that core transfers (Krator's rules are data, seeded hashes and a
+Godot runtime), and its code is not taken. Three shapes around it are what carries, and
+they land on gaps this plan already names.
+
+- **A per-site catch-up clock.** Each site stamps when it last advanced. On the next
+  visit, or when an interval elapses, it fast-forwards by a pure `advance(site, dt, seed)`
+  whose magnitude scales with elapsed time; short intervals accumulate rather than reset;
+  at most N sites advance per tick, oldest first, and an unpicked site stays due because its
+  clock is not stamped. This is the mechanic the roadmap's LOD tiers (section 22) and
+  "ruins have their own simulation state" (section 28) need and do not yet specify.
+- **The mutation log is a list of operations.** ADD, MOVE, SET and REMOVE on an actor or
+  asset, and SET on a connection, each carrying `cause`, `actor` and a thread status of
+  `open`, `resolved` or `transformed`. This is the concrete delta shape 8.6 leaves open.
+  Its conservation rules go with it: dead stays dead, movement needs an open connection,
+  geometry is append-only, new assets start unrevealed. Open threads are a cheap source of
+  quest hooks for `core/city`'s NPC and quest tool, beside 8.5.
+- **Pressure, not deltas.** The macro layer (the roadmap's Events, section 29) emits
+  directional pressure; a site realizes it locally on its next advance, and a newer event
+  can supersede an older one. Two small rules alongside: the player's current cell is
+  frozen during an advance, and each asset carries a `knowledge` field so objective state
+  and what the player knows are separate records.
+- **Where an LLM could sit:** only downstream of the log. A "what happened here while you
+  were away" panel, or 8.1's personas, written from the operations with their causes; the
+  log is never written by a model.

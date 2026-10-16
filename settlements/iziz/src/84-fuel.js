@@ -1,7 +1,9 @@
 // ================================================================= FUEL STATION — "the Well"
 function buildFuelStation(scene,gx,gz,d){reseed(9970+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  REGISTER({name:'Fuel station — the Well ('+STATE(d)+')',x:0,z:0,r:60,h:30});
- kput('slab',[0,.3,0],null,[52,.6,52],new THREE.Color(d>0?0x4a4038:0x8a8078));
+ // forecourt 52 -> 48 m (round 2, "shrink podiums for density"): it only has to carry
+ // the canopy, pumps, kiosk and the fallen lobe; the storage lobes stand behind it
+ kput('slab',[0,.3,0],null,[48,.6,48],new THREE.Color(d>0?0x4a4038:0x8a8078));
  // canopy: one hyperboloid mast, a lobed hovering disc with a hole, six pump bays under it
  mesh(lathe({rFn:y=>4*Math.sqrt(1+2*Math.pow((y-9)/9,2)),H:18,nu:32,nv:10}),skin,G);
  // THE CANOPY lives in its own group, pivoted on the mast head (y=16.5). In the
@@ -36,6 +38,6 @@ function buildFuelStation(scene,gx,gz,d){reseed(9970+d);KOFF=[gx,0,gz];const G=n
  // kiosk
  mesh(lathe({rFn:y=>5*Math.pow(clamp(1-Math.pow(y/7,2),0,1),.5),H:7,flutes:8,amp:.1,nu:32,nv:8,hole:holeFn(d*.6,920,null,2.5)}),skin,G,34,0,-20);
  kput('archOpen',[29.5,2,-20],qFacing([-1,0,0]),[.3,.35,1],null);stripRing(34,4,-20,3.5,d,10);
- if(d>0){scatterMoss(0,.6,0,0,50,50,1.6);rubbleRing(-42,0,-44,4,20,20,1.5);trees(0,0,60,100,8);}
+ if(d>0){scatterMoss(0,.6,0,0,46,50,1.6);rubbleRing(-42,0,-44,4,20,20,1.5);trees(0,0,60,100,8);}
  figures(0,30,3,4);KOFF=[0,0,0];return G;}
 

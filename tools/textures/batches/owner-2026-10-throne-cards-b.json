@@ -1,0 +1,33 @@
+[
+ {
+  "src": "card-tendril.png",
+  "out": "core/materials/library/card.tendril",
+  "record": {
+   "id": "card.tendril",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Alien Tendril Specimen Grid.png\", 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "pale curling tendril rosettes, 3 x 3: the ash creeper and the plume's floor"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

@@ -92,10 +92,26 @@ CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (co
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+# core/rand (KRAND: the tags' uid is its hash) and core/tags (the registry REG is read into: src/91t-iziz-tags.js)
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[0].isdigit() and f.endswith('.js')}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
-TARGET_CORE = {'city': ['atmos', 'clock']}
+TARGET_CORE = {'city': ['atmos', 'mask', 'export']}   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
+# core/host (core/host/README.md; ROADMAP.md section 10, step 3): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap, editor and cutaway, with core/clock and core/minimap. Not core/space: the hyperjungle's scatter takes another path
+# when it is on the page (KNOWN_ISSUES.md, 2026-10-13), so the inspector scans the records instead. Not core/edits: Iziz has
+# no editor world yet.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+# the material library for the vernacular (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js,
+# whose TEX clashes with core/materials 20-textures.js). materials.json's non-fauna families are packed into the GENERATED
+# 69d-matlib-pack.js, and src/88y-iziz-matlib.js binds them onto MAT (KMAT.bindMat). Every target takes them.
+RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+MATLIB_PACK = '69d-matlib-pack.js'
 
 
 def srcpath(f, base=None):
@@ -148,7 +164,15 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '84-city-geo.js', '93-city-ui.js',    # city target: geometry constants, dev-tool UI
     '86-bio-57-fauna-pack.js',            # generated: the library's fauna sheets as data URLs (fauna_pack)
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '69d-matlib-pack.js', '88y-iziz-matlib.js', '86-bio-00-matlib-pack.js',   # the material library (no rnd())
+    '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
+    '91t-iziz-tags.js',                   # REG into core/tags (reads only)
+    '69f-iziz-fixtures.js',               # the vernacular's doors, windows and lamps noted for core/tags (reads only)
+    '07-core-export.js', '09-core-export-adapters.js', '94-city-export.js',   # core/export and the city's part of it (M5; runs at export time only)
 }
+# core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
+DETERMINISTIC |= set(CORE_HOST) | {'99-start.js'}   # core/host (no rnd()); the take
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -162,9 +186,9 @@ SEED_COLLISION_EXCEPTIONS = {
 # fragments): their column-0 declarations live inside a closure, so the
 # shared-scope name checks do not apply. They keep their own PRNG too, so the
 # reseed rule does not apply either. Matched by filename prefix.
-SCOPED_PREFIXES = ('86-bio-', '89-atmos-')   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG)
+SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '94-city-export')   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES)
+    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -265,7 +289,7 @@ def fauna_pack():
     pj = os.path.join(TEX_DIR, 'pack.json')
     if not os.path.isfile(pj):
         return None
-    fams = json.load(open(pj)).get('families', {})
+    fams = json.load(open(pj, encoding='utf-8')).get('families', {})
     out = []
     for fam, key in sorted(FAUNA_FAMILIES.items(), key=lambda kv: kv[1]):
         e = fams.get(fam)
@@ -280,6 +304,39 @@ def fauna_pack():
     return '\n'.join(head) + '\n' + ',\n'.join(out) + '\n};\n'
 
 
+# the library pack beside the pages (<build>.tex.<key>.js), one file every page of the build shares; --inline-packs puts
+# it back in each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+SIDE = None if '--inline-packs' in sys.argv else {}
+
+
+def matlib_pack(side=None):
+    """GENERATED fragment: materials.json's architecture families (every one but the fauna_* sheets) as data URLs
+    (KMAT.pack('iziz')), as Girder's build.py. It reads the committed tex/ files only, so the build stays deterministic."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    fams = json.load(open(pj, encoding='utf-8')).get('families', {}) if os.path.isfile(pj) else {}
+    out = []
+    for fam in sorted(fams):
+        if fam in FAUNA_FAMILIES:
+            continue
+        e = fams[fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
+             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if side is not None:   # the pack beside the pages (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        side['iziz'] = body
+        return _mp.loader('iziz')
+    return ('/* ============================== 69d. LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
+            "KMAT.pack('iziz', " + body + ');\n')
+
+
 def build_one(target, do_checks, assert_origin):
     tdir = os.path.join(TARGETS, target)
     if not os.path.isdir(tdir):
@@ -288,7 +345,10 @@ def build_one(target, do_checks, assert_origin):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
+    src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
@@ -303,6 +363,13 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    bodies[MATLIB_PACK] = matlib_pack(SIDE)
+    order = sorted(order + [MATLIB_PACK])
+    if target == 'city':   # the vendored hyperjungle biome: its library pack, before the biome code (86-bio-*)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        bodies['86-bio-00-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'hyperjungle'), 'hyperjungle')
+        order = sorted(order + ['86-bio-00-matlib-pack.js'])
     fp = fauna_pack() if target == 'city' else None
     if fp:
         bodies[FAUNA_PACK] = fp
@@ -326,6 +393,10 @@ def build_one(target, do_checks, assert_origin):
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
+    if SIDE:   # the pack beside the pages, one file they all share
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        html = _mp.write_sidecar(SIDE, html, DIST, 'iziz.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
@@ -392,7 +463,7 @@ def bio_paths(f):
 
 def bio_read(p):
     with open(p, encoding='utf-8', newline='') as fh:
-        return fh.read()
+        return fh.read().replace('\r\n', '\n')   # line-ending neutral: a checkout may hold the upstream as CRLF
 
 
 def vendor_manifest():
@@ -442,8 +513,9 @@ def vendor_bio():
     """Rewrite targets/city/86-bio-*.js from ../biomes/hyperjungle/src through bio_wrap()."""
     for f in BIO_VENDORED:
         up, dst = bio_paths(f)
+        s = bio_wrap(f, bio_read(up))   # before the copy is opened: a wrap that fails leaves the copy as it was
         with open(dst, 'w', encoding='utf-8', newline='') as fh:
-            fh.write(bio_wrap(f, bio_read(up)))
+            fh.write(s)
     print('vendor-bio: wrote %d biome fragments' % len(BIO_VENDORED))
 
 

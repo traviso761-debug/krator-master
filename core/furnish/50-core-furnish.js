@@ -31,7 +31,9 @@
 //   onRecord(rec, ctx, o, entry, dims) -> false to place nothing more (deferred to the interiors); collision,
 //              inspector entries and the like go here
 //   draw(rec, ctx, o, entry): the draw adapter (52-core-furnish-draw.js helps), called while R.on and not dry
-//   idPrefix:  'furn' (ids: furn_00001 in placement order) }
+//   idPrefix:  'furn' (ids: furn_00001 in placement order)
+//   tags:      a core/tags registry (KTAGS.create): every placed record onRecord keeps is registered there too, as
+//              class furniture, before it is drawn (GODOT-PLAN.md rule 4; core/tags/README.md). The furniture record is not changed }
 //
 // A record: { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, room, setting, job }.
 // job is the catalog's (FURN_JOBS, through the entry's job or its trade role); room is ctx.room or o.room or null.
@@ -45,6 +47,21 @@ var KFURN = (function(){
    entry: function(key){ return KF.FURN_BY_KEY[key]; },
    dims: function(A, v){ return KF.entryDims(A, v); } }; };
  function pad(n){ const s = String(n); return s.length >= 5 ? s : '00000'.slice(s.length) + s; }
+ // a placed record into core/tags: its id unchanged, the catalog entry's type as kind, its culture, tier and job, the
+ // setting and room, and the placement's 0..1 wealth (core/tags maps it to poor, middle, rich). parent is the building
+ // as the build names it (a key or an id): a build that registers its buildings in core/tags passes their ids.
+ K.tag = function(T, rec, A, dm, ctx){
+   const t = { setting: rec.setting };
+   if(A && A.culture) t.culture = A.culture;
+   if(A && A.tier) t.tier = A.tier;
+   if(rec.job) t.job = rec.job;
+   if(rec.room) t.room = String(rec.room);
+   if(typeof ctx.wealth === 'number') t.wealth = ctx.wealth;
+   if(rec.variant) t.variant = rec.variant;
+   return T.add({ id: rec.id, 'class': 'furniture', kind: (A && A.type) || null, key: rec.key, name: (A && A.name) || null,
+     parent: rec.building == null ? null : String(rec.building), at: [rec.x, rec.y, rec.z], ry: rec.ry,
+     size: dm ? [dm.w, dm.d, dm.h] : undefined, tags: t, frag: 'core/furnish' });
+ };
  K.create = function(cfg){
    const C = cfg.catalog, R = { on: cfg.on !== false, interiors: !!cfg.interiorsOn, placed: [], missing: {}, buildings: [],
      lights: 0, group: null, batch: null, adapter: null, cfg: cfg };
@@ -69,7 +86,8 @@ var KFURN = (function(){
      rec.room = ctx.room || o.room || null;
      rec.job = (A && A.job) || null;
      const dm = A ? C.dims(A, v) : null;
-     if(cfg.onRecord && cfg.onRecord(rec, ctx, o, A, dm) === false) return rec;
+     if(cfg.onRecord && cfg.onRecord(rec, ctx, o, A, dm) === false) return rec;   // deferred: not registered, not drawn
+     if(cfg.tags && rec.id) K.tag(cfg.tags, rec, A, dm, ctx);
      if(ctx.dry || !R.on || !cfg.draw) return rec;
      cfg.draw(rec, ctx, o, A);
      return rec;

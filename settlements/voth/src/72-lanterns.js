@@ -1,6 +1,6 @@
 /* ============================== STATIC LANTERN FIXTURES =====================
    Owner: "Put similar lanterns by clan compound entrances, shrine/temple/
-   chapel entrances, silt strider and ferry stations, intact gates and
+   chapel entrances, elephant bug and ferry stations, intact gates and
    towers, at both ends of bridges and causeways, and at the front and back
    of each large harbor pier — now and going forward... Integrate the light
    source into building architecture as fitting."
@@ -43,7 +43,7 @@ COMPOUNDS.forEach(function(c){
   });
 });
 
-/* ---- silt strider stations: the shelter already has its own posts (66-
+/* ---- elephant bug stations: the shelter already has its own posts (66-
    striders.js, halfLen 18 x halfWid 9) — mount the glow at one post's own
    top rather than dead-centre under the roof peak; centred, it sat behind
    the peaked CONE roof's own opaque geometry from most angles (found live

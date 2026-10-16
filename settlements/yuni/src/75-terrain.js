@@ -62,13 +62,21 @@ var terrGeo = new THREE.BufferGeometry();
   terrGeo.setAttribute('uv', new THREE.BufferAttribute(uv,2)); terrGeo.setIndex(new THREE.BufferAttribute(idx,1));
   terrGeo.computeVertexNormals(); terrGeo.computeBoundingSphere();
 })();
-var terrTex = (function(){
-  var S=256, a=texNoise(S,10,301), b=texNoise(S,48,302), c=texNoise(S,110,303);
-  return texFinish(texFill(S,function(x,y){ return 0.80 + 0.16*(a(x,y)-0.5) + 0.20*(b(x,y)-0.5) + 0.18*(c(x,y)-0.5) + (c(x,y)>0.84?0.08:0); }));
-})();
+/* the valley floor's detail, tiled in world units (UVs are x/9 m) and multiplied over the vertex colour and the painted
+   city ground: the library set materials.json names 'ground' (a MeshStandardMaterial with its normal and roughness),
+   or the procedural TEX.def yuni.ground (47-texture.js) with ?mat=proc. */
+var terrLib = KMAT.mode === 'lib' ? KMAT.packed('yuni', 'ground') : null;
+var terrTex, terrLibTex = null;
+if(terrLib){
+  terrLibTex = KMAT.textures(terrLib, { aniso: FAST ? 1 : 8 });
+  [terrLibTex.map, terrLibTex.normalMap, terrLibTex.roughnessMap].forEach(function(t){ if(t) t.repeat.set(9/terrLib.scale[0], 9/terrLib.scale[1]); });
+  terrTex = terrLibTex.map;
+} else terrTex = texFinish(texFill(YTEX.ground.size, TEX.fn(YTEX.ground)));
 var groundTex = new THREE.CanvasTexture(GROUND_CANVAS);
 groundTex.encoding = THREE.sRGBEncoding; groundTex.anisotropy = FAST?2:8; groundTex.wrapS = groundTex.wrapT = THREE.ClampToEdgeWrapping;
-var terrMat = nlMaterial(new THREE.MeshLambertMaterial({ vertexColors:true, map:terrTex }), 'terrain', function(sh){
+var terrMat = nlMaterial(terrLib ? famMaterial({ lib:terrLib, libTex:terrLibTex }, { vertexColors:true }) : new THREE.MeshLambertMaterial({ vertexColors:true, map:terrTex }),
+                         'terrain' + (terrLib ? '|std'+KMAT.libKey(terrLib) : ''), function(sh){
+  if(terrLib) KMAT.libHooks(sh, terrLib);
   sh.uniforms.uGround = { value:groundTex };
   sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D uGround;')
     .replace('#include <color_fragment>', [ '#include <color_fragment>',

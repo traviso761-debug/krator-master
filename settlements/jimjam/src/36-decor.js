@@ -170,12 +170,14 @@ function trees(gx,gz,rMin,rMax,n){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()
 // APRON. Every structure meets the ground on a hard line without one. This lays
 // a graded skirt from the foot of the mass out to the ground, so the two blend.
 // cx,cz are local to the builder's group, like everything else a builder does.
-function apron(parent,cx,cz,rIn,rOut,d,hIn){
+// `mat` (optional) replaces the default skirt (rock intact, mud in a ruin): a
+// pale rock disc under anything organic reads as paper (QA arcB).
+function apron(parent,cx,cz,rIn,rOut,d,hIn,mat){
  const wx=KOFF[0]+cx,wz=KOFF[2]+cz;
  mesh(gridSurface((u,v)=>{const th=u*TAU,r=lerp(rIn,rOut,v)*(1+.07*fbm(u*7,1.3,17,2));
   const x=r*Math.cos(th),z=r*Math.sin(th);
   return[x,lerp(hIn,0,Math.pow(v,.6))+terrainH(wx+x,wz+z),z];},64,6,{uS:rIn/6,vS:3}),
-  d>0?MAT.mud:MAT.rock,parent,cx,0,cz);}
+  mat||(d>0?MAT.mud:MAT.rock),parent,cx,0,cz);}
 function figures(gx,gz,n,spread){for(let i=0;i<n;i++){const x=gx+rr(-spread,spread),z=gz+rr(-spread,spread);const c=new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5));
  kput('figB',[x,0,z],qEuler(0,rng()*TAU,0),1,c);kput('figH',[x,0,z],null,1,new THREE.Color(0xc9a17e));}}
 function stats(){}

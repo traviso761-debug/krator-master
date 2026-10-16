@@ -186,7 +186,10 @@ XANADU.buildFloor=function(R,q){
  O.forEach((o,oi)=>{BIO.grid(6,0,1e9,(x,z)=>{if(nearest(x,z)!==oi||Math.hypot(x-o[0],z-o[1])>900)return 0;const h=Y(x,z);if(h>-.15||h<-2.6)return 0;
    const fl=BIO.field('flow',x,z);return .5*q*(1-fl)*smooth(.46,.62,fbm(x*.006+1,z*.006-2,808,2));},
   (x,y,z)=>{if(!BIO.clearOf(x,z,1))return;const R2=rr(.5,1.3);BIO.put('lilypad',[x,.03,z],qEuler(rr(-.02,.02),rr(0,TAU),rr(-.02,.02)),[R2,1,R2],bright(vary(C(pick([0x4a8a3a,0x5a9a40,0x6a9a48,0x3e7a3a])),.02,.06,.05),1.05));st.lotus++;
-   if(rng()<.18){const col=bright(C(pick([0xff80b0,0xffa0c8,0xfff0f4,0xff6aa0,0xf8c040])),1.1),h=rr(.2,.7);BIO.put('cup',[x+rr(-.3,.3),h,z+rr(-.3,.3)],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),rr(.35,.6),col);}},
+   if(rng()<.18){const col=bright(C(pick([0xff80b0,0xffa0c8,0xfff0f4,0xff6aa0,0xf8c040])),1.1),h=rr(.2,.7);BIO.put('cup',[x+rr(-.3,.3),h,z+rr(-.3,.3)],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),rr(.35,.6),col);}
+   // after the bloom: the green seed head on its stalk, one or two to a pad (the kit's hash h3, so the draws after it keep)
+   else{const u=h3(x*.37,z*.37,4.1);if(u<.35){for(let k=0,m=u<.08?2:1;k<m;k++){const v=h3(x+k*1.7,z-k*2.3,9.7),a=v*TAU,s=.55+.35*h3(z,x,k+2.2);
+    BIO.put('lotuspod',[x+Math.cos(a)*.35*R2,-.25,z+Math.sin(a)*.35*R2],qEuler(.25*(v-.5),a,.2*(u*3-.5)),s,C(0xffffff).multiplyScalar(.95+.15*v));st.pods=(st.pods||0)+1;}}}},
   {patch:.6,patchScale:.02,noMask:true,pad:.3,center:[0,0],box:[o[0]-900,o[1]-900,o[0]+900,o[1]+900]});});
  // the fairy rings' lawns: a ring of mushrooms, a ring of flowers of one pair
  XANADU.RINGS.forEach(r=>{if(r.lv<1)return;st.rings++;const pr=psyPair(),mc=bright(C(pick(PAL.mush)),1.05),it=pick(['orchid','swirl','ruffle','bloom']);

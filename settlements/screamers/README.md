@@ -48,3 +48,44 @@ draw calls as three.js counts them. Frame times were too noisy under the shared 
 | The village | 83 / 3.27 M | 81 / 2.94 M |
 
 The gain is small here (5-12% of triangles) because the biome already has its own LOD; see `KNOWN_ISSUES.md`.
+
+## Materials: the library (core/materials/record)
+
+`materials.json` is the adapter: per family a library set, the `MAT` keys it dresses (`mat`), its tile in world
+metres, how much of the set's own colour survives (`tint.keep`) and the brightness it is normalised to (`tint.mean`,
+measured from the procedural canvas it replaces, so the Screamer retint in `69-mat-salvage.js` keeps its meaning).
+`python3 tools/textures/pack.py settlements/screamers` writes `tex/` (commit it); `build.py` inlines it as the
+generated `72b-matlib-pack.js`, and `src/72c-matlib.js` attaches each family to its materials in place.
+
+The maps are sampled by **world-space triplanar projection**, not through the UVs: this lineage's UVs are in no one unit
+(lathe tiles at 8 m, kit boxes stretch 0..1 over each face), which is why the board-formed concrete ran at a different
+size on every surface. Colour, normal (reoriented per plane) and roughness, with the tiling break-up. `?mat=proc` is the
+old procedural look; `?breakup=0` turns the break-up off; `window._materials` lists what went where.
+
+| Family | Set | Dresses |
+|---|---|---|
+| concrete | `concrete.board` (4.2 m) | the Hexahedron's fabric: `concrete concreteR hxCell hxSoffR rock` |
+| soil, lawn | `ground.ruin` (own colours), `ground.grass_ground` | the graded village ground (`mud`), the plaza lawn |
+| rust, corrugate | `metal.rusty_metal_05`, `metal.corrugated` | rust plate, salvage sheet (`corrugate scrap`) |
+| timber, tarp, thatch, lash | `wood.weathered_brown_planks`, `cloth.tarp`, `roof.thatch`, `wood.lash` | the tribe's own building |
+| ancient | `metal.ancient` | `MAT.white`, and the Post-Apoc bulkhead (`apoc_conc`) |
+| ironbark, ghostwood, prismgum, baobab | `bark.*` (the generated Girder sets) | the four species' boles |
+| apoc_* | planks, worn corrugated iron, scrap sheet, adobe, medieval wood, bottle glass | the Post-Apoc set's own materials (`KratorPostApoc.MAT`) |
+
+A family may also set `"color"`: the material's tint, for a set whose hues are the surface (the laterite and moss).
+`metal.ancient`, `wood.lash` and `ground.ruin` are the owner's generated sets (`tools/textures/batches/chatgpt-2026-10f-screamers.json`). The biome's own flora (the vendored hyperjungle) and the leaf
+cards keep their procedural textures.
+
+## The salvage quarter: Post-Apoc homes, furnished
+
+Beside each smithy stand three homes from the Post-Apoc set (`kits/post-apoc`): silo house, tyre hut, bulkhead manor,
+bottle cottage, box house, twin silo hall, tank pod, stilt perch, bus house. They come in as ONE closure,
+`KratorPostApoc` (`kits/post-apoc/apoc_bundle.py`, the generated `70e-apoc-bundle.js`): the kit's engine, sockets and
+cultures and its dwelling fragments, with its own `MAT`, `TEX` and seeded stream, so nothing it does moves this page's.
+They wear the **Screamer** culture pack (`core/sockets/80-cultures.js`: ochre rag, black and bone, the skull) and are
+**furnished inside** by the interiors kit (the generated `70d-furniture-bundle.js`: the catalog's furniture with the
+`screamer` culture and its fallbacks, and `KratorInteriors` with the `post-apoc` set), plus their yard furniture.
+`src/71a-apoc-homes.js` sites them (tier 4 in `buildVillage`, before the fields, on a fixed ring round each smithy:
+no draw from the village's rng) and leaves `SCREAM.homes` (each one's front door) and `window._apoc` (homes, pieces,
+rooms, residence fails, missing catalog keys). Views: *Salvage homes*, *A salvage home*, *Inside a salvage home*,
+*Inside the twin silo hall*.

@@ -12,7 +12,11 @@ function buildApartments(scene,gx,gz,d){reseed(9950+d);KOFF=[gx,0,gz];const G=ne
    aSkin.push(lathe({rFn:()=>R,H:4.6,flutes:6,amp:.28,sharp:1,nu:72,nv:3,hole}).translate(ox,y,oz));
    if(d>0)aDark.push(lathe({rFn:()=>R*.9,H:4.6,nu:24,nv:1}).translate(ox,y,oz));
    aSkin.push(gridSurface((u,v)=>{const th=u*TAU;const r=R*(1+.28*(.5+.5*Math.cos(6*th)))*(1+v*.1);return[ox+r*Math.cos(th),y+4.6+.4*v,oz+r*Math.sin(th)];},72,1,{}));
-   for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;const r=R*(1+.28*(.5+.5*Math.cos(6*th)))+.1;if(hole&&hole(k/18,y))continue;kput(d>0?'winSmD':'winSmI',[ox+r*Math.cos(th),y+2.3,oz+r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[2,1.7,1],null);}
+   for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;const r=R*(1+.28*(.5+.5*Math.cos(6*th)))+.1;if(hole&&hole(k/18,2.3))continue;civWin(d>0?'winSmD':'winSmI',[ox+r*Math.cos(th),y+2.3,oz+r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[2,1.7,1],null);}
+   // rooms behind the holes in the tray wall (round 2), between the skin and
+   // the dark liner at .9R; the tray's floor and ceiling slabs bound them
+   if(hole)for(let k=0;k<36;k++){const th=(k+.5)/36*TAU;if(!hole((k+.5)/36,2.3))continue;const r=R*(1+.28*(.5+.5*Math.cos(6*th)));
+    domRoom([ox+r*.97*Math.cos(th),y+.2,oz+r*.97*Math.sin(th)],[Math.cos(th),0,Math.sin(th)],r*.97-R*.9,4.2,d,700+s);}
    if(s%2===0)stripRing(ox,y+3.5,oz,R*.8,d,18);if(d>0)mossOnRing(ox,y+4.8,oz,R*1.1,10,1.5);}
   meshMerged(aSkin,skin,G);meshMerged(aDark,MAT.dark,G);
   if(d>0){mossOnSurface(aSkin,0,0,0,90,1.8);vinesFromLedge(aSkin,0,0,0,40,12);stainsFromLedge(aSkin,0,0,0,30,9);}
@@ -57,13 +61,13 @@ function buildApartments(scene,gx,gz,d){reseed(9950+d);KOFF=[gx,0,gz];const G=ne
    mesh(lathe({rFn:()=>R,H:H-10,cut:cut?cut-10:null,jag:cut?2:0,flutes:6,amp:.3,sharp:1,nu:60,nv:24,hole,seed:730+i}),skin,G,cx+c[0],10,c[1]);
    if(d>0)mesh(lathe({rFn:()=>R*.85,H:H-10,cut:cut?cut-10:null,jag:2,nu:24,nv:4,seed:730+i}),MAT.guts,G,cx+c[0],10,c[1]);
    for(let s=0;s*4<(cut||H)-14;s++){const y=10+s*4;cBands.push(lathe({rFn:()=>R*1.08,H:.6,flutes:6,amp:.3,sharp:1,nu:60,nv:1,hole:d>0?(u,v)=>fbm(u*8+s,i,740+s,2)<.22:null}).translate(cx+c[0],y+3.4,c[1]));
-    for(let k=0;k<6;k++){const th=k/6*TAU;const u=k/6;if(hole&&hole(u,y-10))continue;const r=R*1.3+.1;kput(d>0?'winSmD':'winSmI',[cx+c[0]+r*Math.cos(th),y+1.8,c[1]+r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.6,1.6,1],null);}
+    for(let k=0;k<6;k++){const th=k/6*TAU;const u=k/6;if(hole&&hole(u,y-10))continue;const r=R*1.3+.1;civWin(d>0?'winSmD':'winSmI',[cx+c[0]+r*Math.cos(th),y+1.8,c[1]+r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.6,1.6,1],null);}
     if(s%3===0)stripRing(cx+c[0],y+2.3,c[1],R*.85,d,12);}
    if(!cut){kput('slab',[cx+c[0],H+.2,c[1]],null,[R*1.1,.5,R*1.1],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));mesh(lathe({rFn:y=>R*.6*Math.sqrt(clamp(1-Math.pow(y/3,2),0,1)),H:3,nu:20,nv:5}),skin,G,cx+c[0],H+.4,c[1]);}
    else rubbleRing(cx+c[0],0,c[1],9,24,40,2);});
   meshMerged(cBands,skin,G);
   [[0,1,22],[0,2,18],[0,3,26],[2,4,16],[1,3,24]].forEach(b=>{const A=cols[b[0]],B=cols[b[1]];if(b[2]>Math.min(A[2],B[2])-4)return;if(d>0&&b[0]===0&&b[1]===1)return;
    beam(d>0?'strutR':'strutW',[cx+A[0],b[2],A[1]],[cx+B[0],b[2],B[1]],2.4,3);beam('tube',[cx+A[0],b[2]+2,A[1]],[cx+B[0],b[2]+2,B[1]],2,2);});
-  kput('slab',[cx,.3,0],null,[50,.6,50],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));if(d>0)scatterMoss(cx,.6,0,0,48,40,1.8);}
+  kput('slab',[cx,.3,0],null,[44,.6,44],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));if(d>0)scatterMoss(cx,.6,0,0,42,40,1.8);}
  figures(60,40,5,6);figures(300,60,4,5);if(talus)talus();KOFF=[0,0,0];return G;}
 

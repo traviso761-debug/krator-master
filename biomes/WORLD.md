@@ -24,15 +24,47 @@ scale Krator map for rough placement, not in this repo.
 | northwestern lowlands | `nwlowlands` | swlowlands, nhighlands, korona |
 | northern highlands | `nhighlands` | nwlowlands, hyperjungle (steep), nwbay (steep), korona |
 | *in progress* northwest bay | `nwbay` | nhighlands (steep) |
-| *planned* eastern badlands | `ebadlands` | sedesert |
+| eastern badlands | `ebadlands` | sedesert, eastabyss (its gentle east rim), the outer rim (airless: nothing grows) |
+| crater drylands (two regions) | `crater-drylands` | swbay, the hyperjungle's southern savannah (gentle: the burn mosaic thins into them) |
+| the Steampits (and every geyser field: the West Ring's isles, the Throne's) | `geyser` | hyperjungle (it walls the basins in; the showcase loads it), the abyssal savanna (XV) between the basins, the Ring Sea coast. A shared kit: a world lays out each field from its own data or from a scale-model point (`GEYSER.cluster`) |
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
-| *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
-| *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
+| southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
+| eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
+| *possible* | `sbadlands`, micro-biomes | |
+| *planned* the scablands (in "n semiarid": scale model 4.20) | `scablands` | its basin's long lake to the south |
+| *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
 
 **Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
 structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and
 microclimates. Its neighbours above are as first given; with Korona in the NE, its border with
 the NW lowlands needs checking against the scale model.
+
+**Two candidates read off the scale model (4.19, Travis, Oct 2026).** Both are Earth landforms that are rare
+because their conditions are rare, and Krator has the conditions.
+- **Megaflood scablands in "n semiarid"** (biome region `rmuqm5qn5ek5g`): its west lobe is a closed basin that holds
+  water to 1,160 m (68,000 km^2, ~36,000 km^3 over a 0 m lake level: three Bonnevilles). It spills at map pixel
+  (409,144) and falls 1,160 m south in 95 km into the basin of the long lake on the region's southern edge; the
+  joined basin would spill again SW at (262,292) toward the western lowland sea. The scablands (dry falls, coulees,
+  potholes, giant current ripples, bare basalt channels) go on that 95 km stretch. It is steeper than Washington's
+  (14 m/km), so cataracts and coulees more than braided plains. The basin is semiarid now (~420 mm, BSh), so the
+  flood lake needs a wetter past: a breach in the Ancients' time is a story. The east lobe also closes (at 369 m)
+  and spills into Korona's trenches.
+
+  **Decided (Travis, Oct 2026; scale model 4.20, `tools/scale-model/edit_dams.py`):** the lakes were the Ancients'
+  own, held behind two dam arcologies, and they broke in a cascade in the war that ended them. The east lobe (region
+  'dam 2') held a lake at 1,050 m (~63,000 km^2) behind the east dam in the pass between the lobes (507,110); the west
+  lobe (region 'dam') a lake at 900 m (~48,000 km^2) behind the west dam in its southern saddle (409,144). The east
+  dam burst first; its ~11,500 km^3 raised the west lake ~240 m and overtopped the west dam, which burst into the
+  long-lake trough. The lakes were kept low so their old shores leave land round them. The 4.19 basin did not allow
+  this, so 4.20 cut both passes (~470 m) and raised two ridges on the east lobe's Korona side (it had spilled there at
+  370 m). The scablands run along the two breach channels (`DATA.floods`), the west one the larger (a Grand Coulee:
+  the pass cut to 700 m, then down into the trough); the old shorelines are `DATA.palaeolakes`.
+- **Tuff country in "The Catch"** (geographic region `rmuf346nvpktx`): a dry floor below 1.5 km (31,600 km^2, BSh/BWh,
+  ~300 mm, strong wind) walled by high ground, downwind (SE) of the Godthrone. Distance argues against it: the
+  floor is 300-600 km from the summit, against ~50-100 km for the flows that laid Cappadocia's tuff. An
+  Olympus-Mons shield is also a lava volcano, not an ash one, and its summit is near airless. It works if the
+  Godthrone has had an explosive phase (a lore decision). The two vents just outside the Catch's SW notch, px
+  (716,1128) and (770,1168), are ~180 km off but crosswind of the floor.
 
 A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
 (`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.
@@ -40,13 +72,17 @@ A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build
 ## The terrain and the fields: the scale model (Travis, Oct 2026)
 
 The world's terrain comes from the **Krator Scale Model** artifact's heightmap
-(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q, version 4.14), with a couple of polishing
+(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q, version 4.19), with a couple of polishing
 passes before it goes to Godot. 4.10 and 4.11 softened the Inner Wall's outer flank (the ledge down to the
 highland shelf and basin floor is now a slope reaching about 50 km either side of the 'Inner
 Crater' region's outline; the crater-facing rim is unchanged); 4.12 weathered the four mesas in regions 37 and 38, carved the Bay of Voth off the
 Ring Sea and raised geyser islands over a fifth of the West Ring isles; 4.13 turned region 42 to shallow sea, lowered region 41's plateaus, eased the
 cliff along Crag Men's northern border and joined Spice isle into one landmass; 4.14 bridged Spice isle to the central volcano and added five
-geysers on the western crater floor. Textures are re-shaded
+geysers on the western crater floor; 4.15 made the eastern abyss's rim an escarpment like the Inner Wall's inner rim,
+raised the ranges of the valley of Yuni (4.16 filled its south-eastern head), lowered five lakes that stood above their shores, and (4.17) kept the east rim gentle, raised a saddle across the abyss's floor and cut a
+salt basin east of Verge; 4.18 levelled 'passage' and recomputed rain and climate where the heights changed; 4.19
+set each recomputed cell's class from its own climate, ran the Yuni river from the valley's head into the lake at
+Locus (`DATA.rivers`) and fixed the region tool's point dragging (`tools/scale-model/edit_heights.py`). Textures are re-shaded
 and temperatures lapse-corrected to match: the scripts are in `tools/scale-model/`. The regions
 collection now carries a `kind` (political, geographic or biome), one map layer each. What the artifact holds, as PNG rasters on one grid
 (`fullW` x `fullH` = 1549 x 1393 at 2 km a pixel: 3,098 x 2,786 km):
@@ -75,6 +111,23 @@ What follows for the kits:
   and driven by data (species tables, zone thresholds) to be portable, and what the three.js
   kits export becomes the reference a Godot generator is tested against, tile for tile.
 
+## The first open world: `openworld/little-demo` (Oct 2026)
+
+The owner's "little demo" region of the scale model (the eastern desert, ~1,080 x 1,370 km) at 1:1, in three.js as
+the preview of what Godot will stream. What it settles of the plan above:
+
+- **One host binding** for three kits (sedesert, eastabyss, hyperjungle) on one core: one set of world fields from the
+  rasters (`openworld/little-demo/src/41-world-fields.js`), one per-kit remap (the abyss kit's `upland`), the kit's
+  weight from the biome overlays blended over a few km (the gradual border).
+- **Placement seeded by cell** (blocker 6), **level-free records** (blocker 8) and **trees as variants** (blocker 10):
+  the world reads each kit's pass table and zones, seeds each cell with `KRAND.hash`, and draws each species as four
+  variants the kit grew alone (`KIT.make`, `KIT.grow`, new in each kit's trees fragment), at the kit's own levels.
+  The probe proves a tile is the same built alone or in any order.
+- **The floor as patches**: each kit's `buildFloor` run on a 32 m patch under a zone's field profile, tiled on the
+  near ground by the zones there.
+- **Not yet:** a keep-clear that is order-free, the steep border (it has none: the abyss's edge is soft at 4 km),
+  hero zones, rivers with water, the shared ground shader. `openworld/little-demo/KNOWN_ISSUES.md` has the list.
+
 ## Two kinds of border
 
 - **Gradual (an ecotone).** Most borders. Both kits plant across a band a few hundred
@@ -91,7 +144,7 @@ What follows for the kits:
 ## Regions and climate: the biome tool (planned, Travis)
 
 The full map will be built from two painted layers, marked with a biome tool (the polygon
-and path tool in `nhighlands/src/93-host-polytool.js` is the nearest thing in the repo):
+and path tool, now `core/host/94-host-polytool.js`, is the nearest thing in the repo):
 
 - **Regions.** Which kit owns the ground. A kit's weight `w(x,z)` is its region blurred:
   wide at a gradual border, narrow and keyed to height at a steep one.
@@ -132,6 +185,27 @@ wind. For one world:
   older core (its `KNOWN_ISSUES.md`); the gust fronts (`atmGust`) are not in the leaves yet.
 - **Altitude in the air.** A steep border is also a pressure drop: haze and fog density
   should follow height (thicker below the scarp), which is the weather's business.
+- **Dense air lights the world differently (planned).** The column of air overhead goes as
+  pressure / gravity: at 2 atm and 0.75 g it is about 2.7x Earth's, so it scatters about
+  2.7x as much light. This applies to the low kits: hyperjungle, swbay, nwbay, rift
+  and eastabyss (~1.9 to 2+ atm, `LORE.md` §2; take each kit's pressure from the scale
+  model's pressure raster when the preset is made). Each kit's `82-host-sky.js` already bakes a milky
+  zenith and a thick horizon band, with the same numbers copied in all five. The sky preset they become
+  (`PORT.md`: "becomes a core/atmos sky preset") should take pressure as its one input and
+  also drive what the domes do not do yet:
+  - **The sun is yellow-orange even at noon**, and deeper red-orange near the horizon. The key light's
+    colour should follow sun height and pressure, not only the hour.
+  - **Shadows are soft and blue.** More of the light is skylight, so fill is stronger and
+    bluer, and the key-to-fill ratio is lower than on Earth.
+  - **Distance fades fast.** Ridges a few kilometres off go pale blue-white. Fog density
+    goes up with pressure (and with height across a steep border, above).
+  - **Mirages are about twice as strong.** Denser air bends light about twice as much: a
+    shimmer band and an inferior mirage over hot open ground, and distant ridges that look lifted
+    or stretched. This is the weather's business on hot clear days (the drylands most of all).
+  - **Less UV, more glare at the horizon.** It is a matter of palette: bright white haze at the
+    horizon, not a deep-blue zenith.
+  The highland kits (nhighlands, ~0.8 to 1.3 atm) take the same preset at their own
+  pressure and come out nearly Earth-like, so one preset serves the whole world.
 - **In Godot** the clock and the wind are global shader parameters (`atm_time`, `atm_wind`,
   `atm_gust_amp`, `core/atmos/GODOT.md`), so the ported foliage shader reads them and the
   world has one wind by construction. The three.js change above is for the previews (Iziz).
@@ -174,9 +248,9 @@ Items 1, 2, 3 and 7 are done (Oct 2026); 8 to 11 came from reading the kits agai
     buckets. A tile can be exported as meshes, but the continent's flora is grown at run time, and
     `GODOT-PLAN.md` ports no builder code. *Decided: variants by default, hero trees opt-in
     ("Hero trees: an opt-in", below).*
-11. **Kit shader hooks on the shared `BIO`.** `BIO.iridBarkMat` is written in four kits;
-    eastabyss and rift assign it unguarded with different signatures, so the last kit loaded
-    replaces the others'. The gloss bark (nwlowlands, swlowlands), the impostor materials (rift,
+11. **Kit shader hooks on the shared `BIO`.** `BIO.iridBarkMat` was written in five kits, and the
+    last one loaded replaced the others'; since 2026-10-12 it is the core's `irid` kind
+    (`core/biome/30-core-foliage.js`), one definition. The gloss bark (nwlowlands, swlowlands), the impostor materials (rift,
     swlowlands) and swbay's fauna material are kit copies too.
 
 ## The contract it needs
@@ -273,7 +347,9 @@ here, each an item in `TODO.md` ("Biomes: the port plan's findings"):
 - **Move the plants once.** The integer hash (`core/rand`, Phase 2), cell seeding, level-free
   records and the heightmap terrain (`core/terrain`, Phase 2) each reshuffle every kit. Do them
   as one event with one screenshot set, one baseline rewrite and one gallery update; tune preset
-  views after it.
+  views after it. *2026-10-08:* the field exists (`core/terrain/30-core-field.js`) and sedesert's ground reads it,
+  but its placement decisions stay on the closure (`BIO.init({placeH})`), so its plants kept every place and moved
+  only in y (`biomes/sedesert/KNOWN_ISSUES.md`); moving the decisions onto the field belongs to this event.
 - **Shader hooks name a library shader** (the plan's rule 7). The kits' own hooks become core
   material kinds; that also fixes blocker 11.
 - **The host shell** (Phase 1). The biome hosts (ten `host-*` sets, each its own version) are the

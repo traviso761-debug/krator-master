@@ -165,7 +165,7 @@ function townFacade(p){
         CYL(pp[0], topY, pp[1], 0.14, poleClear, 0, shade(pick(BANNERC),-0.35), 'wood');
         FJ.town++;
       });
-      FR8(x, canopyY, z, topFx*2*1.15, 0.7, topFz*2*1.15, ry, pick(BANNERC), 'cloth');
+      FR8(x, canopyY, z, topFx*2*1.15, 0.7, topFz*2*1.15, ry, vothPatCol('kilim', pick(BANNERC)), 'kilim');
       FJ.town++;
     }
 
@@ -292,7 +292,7 @@ function compoundFacade(c){
     var baseY  = c.y + rr(0.3,0.8);                /* free edge: almost touching the ground */
     var panelH = Math.max(2.5, mountY - baseY);
     var panelW = rr(2.0,2.8);
-    BOX(bp[0], baseY, bp[1], 0.16, panelH, panelW, ry, pick(BANNERC), 'cloth');
+    BOX(bp[0], baseY, bp[1], 0.16, panelH, panelW, ry, vothPatCol('tapestry', pick(BANNERC)), 'tapestry');
     FJ.compound += 2;
   });
 
@@ -461,7 +461,7 @@ function brazierOrnate(x,y,z,ry,col,opt){
   nlLampAdd(x, y+h*0.85+r*0.6, z, 1.15*(r/0.65), 18*Math.sqrt(r/0.65));   /* see brazierPlain above */
 }
 
-/* a silt strider boarding station: a raised platform on posts, a stepped
+/* an elephant bug boarding station: a raised platform on posts, a stepped
    approach, low rails and a small roofed shelter — meant to read as transit
    infrastructure, not a generic shed */
 function siltStriderStation(x,y,z,ry,col,opt){

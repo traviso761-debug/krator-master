@@ -67,3 +67,44 @@ mid-line by a scripted edit swallowed the rest of the line again (syntax error, 
 mast leaves its centre cell empty: the walker's body tests the cell and its four neighbours. Boarding from the water must
 ignore the waterline foam ring and the wales, or the walker stands on them inside the hull.
 
+## 2026-10-12: the sea moves to core/water
+The roadstead is core/water's first open water (`core/water/README.md`, `core/atmos/WATER.md` phases 0 and 1). The kit's
+Gerstner sum, `rsSeaH` and `rsRide` moved into `WATER` (`WATER.PRESETS.swells.ringsea`, `WATER.heightAt`, `WATER.ride`;
+the two kit names stay as one-line aliases). The sea is drawn on the CDLOD water mesh (instanced 17x17 nodes from 8 m
+leaves, split by distance to the camera, morphing between levels), so the swell is displaced wherever the camera is
+instead of fading flat 600 m from the roadstead's centre; plus half the shared wave field (core/atmos) for the chop and
+mid waves; whitecaps from the Jacobian with a 1.8 s decay; the dome and giant reflected through core/atmos's skylight
+(given to the water only, at a fifth: more reads as pale ice from a low camera). One clock: every wave runs whole cycles
+per 600 s and the shaders read `atmWaveT`, ATMOS's clock pinned to the kit's `rsClock()` (so `_api.pause(t)` still
+freezes the sea). The wakes ride `wtrHeight`. `groundM` is now an invisible flat plane for the camera's picks. At the
+"Toward the volcano" view: 233 draw calls before and after, 686k triangles before, 659k after (the sea 115k -> 88k);
+`verify.py --assert` passes before and after (least freeboard 0.07 m -> 0.08 m). The hulls' centres sit 5.5 cm (mean)
+off the sea's height before and 5.4 cm after (the five-sample average); the GLSL height on the GPU is within 0.06 mm of
+`WATER.heightAt`, and the mesh as drawn from each hull's preset view within 6 mm.
+
+## 2026-10-12: three larger Islander vessels
+Travis: "Design them a couple more (larger) boats including a large catamaran". Three new fragments, in the Islander
+vocabulary of the oruwa, karakoa and lakatoi (bark hulls, sand lashings, sea-teal bands, the white island moon):
+- `88-rs-islander-drua.js`, the **drua** of Kautoa (the island kingdom that once rivalled the Hykkousoi at sea): hulls of
+  31 m and 25 m under nine crossbeams and one plank deck, a mat-walled deckhouse under a thatched gable (ends closed),
+  a railed steering stage aft, steering oars over both sterns, carved figure posts with white moon discs and cowrie
+  streamers at all four ends, shell discs on the strakes, and one 21 m crab-claw of plaited pandanus on a mast raked
+  toward the bow. Tack sockets at both ends of the long hull: she shunts.
+- `89-rs-islander-korakora.js`, the **kora-kora**, the royal war galley of the western isles: a 24 m hull whose ends sweep
+  up five metres (a frigate-bird head on the prow), double outriggers on seven booms with three rows of paddlers a side
+  (54, one instanced bank), a raised fighting deck ringed with shields, a mat canopy over the raja, the drum, a royal
+  parasol, and a tanja in teal and sand.
+- `89b-rs-islander-lanong.js`, the **lanong**, the pirates' raider: a beamy 25 m hull in every colour it was stolen in,
+  scrap-iron plates (`rust`) on the bulwarks, bronze swivel guns (lantaka) on the rails, a bow platform behind iron plates
+  with a captured Republic iron gun, outriggers with two rows of paddlers a side, two tripod masts with patched tanja sails
+  (canvas, sackcloth, Voth purple, Hykkousoi blue, a shot hole), the captain's hut hung with other fleets' shields and a
+  stolen bell, a gilded Xanadu swan head lashed under the beak, and the white moon flying over a scorched Voth flag.
+
+The tanja is slung *forward* of its tripod (all three legs rake aft to the apex), so no leg crosses the cloth, trimmed or
+not; a halyard bitt stands at the rig's axis so the walker meets a mast there. No new material families: the guns are
+`metal`, the plates `rust`. Each is a medium vessel (L < 34 m): drua 31k triangles / 7 meshes, kora-kora 35k / 9 (one
+paddle bank), lanong 28k / 11 (one paddle bank; both tanjas share one sail material, and its two flags are one hoist, to
+save draw calls). The scene's eighth row holds them; nothing in the layout changed. Opening before: 208 draw calls, 0.64M
+triangles; after: 223 calls, 0.70M. Overview before: 253 calls; after: 284, over the 260 showcase budget (KNOWN_ISSUES.md).
+All 20 checks pass.
+

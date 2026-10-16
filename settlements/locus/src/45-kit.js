@@ -230,8 +230,19 @@ function nlMaterial(mat, key, extraHook, wpName){
 }
 
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
-/* a family's material: Lambert, or Phong when FAMMAT[fam].phong = { shininess, specular } (ABYSS tin-mirror: a glint, no reflections) */
-function kitMaterial(fm, o){ if(!fm.phong) return new THREE.MeshLambertMaterial(o);
+/* a family's material: Lambert, or Phong when FAMMAT[fam].phong = { shininess, specular } (ABYSS tin-mirror: a glint, no reflections).
+   A library family (47-texture.js ltexLibrary) gets the set's colour, normal and roughness maps on a MeshStandardMaterial, as
+   Yuni's famMaterial(); ?mat=proc keeps the old Lambert or Phong look. */
+function kitMaterial(fm, o){
+  if(fm.lib){
+    var T = fm.libTex, L = fm.lib;
+    var m = new THREE.MeshStandardMaterial({ color:0xffffff, vertexColors:!!o.vertexColors, map:T.map, normalMap:T.normalMap,
+      roughnessMap:T.roughnessMap, roughness:1, metalness:L.metal||0, alphaTest:o.alphaTest||0, side:o.side||THREE.FrontSide });
+    if(T.normalMap) m.normalScale.set(L.normalScale||1, L.normalScale||1);
+    m.userData.lib = L.lib;
+    return m;
+  }
+  if(!fm.phong) return new THREE.MeshLambertMaterial(o);
   o.shininess = fm.phong.shininess; o.specular = new THREE.Color(fm.phong.specular); return new THREE.MeshPhongMaterial(o); }
 function emitBuckets(){
   var total=0, meshes=0;
@@ -246,9 +257,9 @@ function emitBuckets(){
     mat.userData.fam = B.fam;
     if(!fm.basic){
       (function(needsUV, needsSway, sc){
-        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); applyNightGlow(sh); };
-        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv'; };
-      })(!!fm.tex, B.fam==='cloth', fm.scale || [3,3]);
+        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.libHooks(sh, fm.lib); applyNightGlow(sh); };
+        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : ''); };
+      })(!!fm.tex, B.fam==='cloth', fm.lib ? fm.lib.scale : (fm.scale || [3,3]));   /* a library map tiles at its own size */
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
@@ -435,7 +446,8 @@ function emitMerged(){
     var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
             : kitMaterial(fm, { color:0xffffff, vertexColors:true, map:fm.tex||null,
                   alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    if(!fm.basic) nlMaterial(mat, 'mb'+fam);
+    if(!fm.basic) nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std'+KMAT.libKey(fm.lib) : ''),
+      fm.lib ? (function(L){ return function(sh){ KMAT.libHooks(sh, L); }; })(fm.lib) : null);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
@@ -448,6 +460,32 @@ function emitMerged(){
 /* ------------------------------------------------------------------ site registry
    Every named thing registers a volume here so the inspector (86) can name
    whatever is under the cursor: REGISTER({name, kind, x,y,z, r, h, plat}) —
-   a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins. */
+   a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins.
+   Each is also a core/tags record (core/tags/README.md; rule: everything placed is registered there before it is
+   drawn), its id kept on the site as `rid` (as Girder's 45-kit.js): the host's inspector and editor read the records.
+   A building (box: [w, d, ry], 53-assets.js) is a turned box, a span (seg) a turned box along it, a ring a record
+   without an extent; a catalog piece is core/furnish's own record already (tid, 66-locus-furnish.js). The class comes
+   from the kind (REG_CLASS; the rest features); a culture core/tags knows is kept as its tag. */
 var SITES = [];
-function REGISTER(o){ SITES.push(o); return o; }
+var REG_CLASS = { asset:'building', bridge:'infrastructure', tree:'flora', stand:'flora', plant:'flora', part:'part', furniture:'prop' };   /* furniture: a sheet's own piece (buildFurn), not the catalog's */
+var REG_Q = [];   /* sites registered before core/tags' vocabulary has loaded (the builders sort before 52-core-tags-vocab.js) */
+function REGISTER(o){
+  SITES.push(o);
+  if(TARGET === 'verge') return o;   /* Verge's YKIT bundle (settlements/verge/build.py) builds these kits in its own closure: Verge registers its own records */
+  if(typeof KTAGS === 'undefined' || !KTAGS.VOCAB){ REG_Q.push(o); return o; }
+  regFlush(); regRecord(o);
+  return o;
+}
+function regFlush(){ var q = REG_Q; REG_Q = []; q.forEach(regRecord); }   /* 66-locus-furnish.js calls it before the first catalog piece */
+function regRecord(o){
+  if(o.tid){ o.rid = o.tid; return; }   /* a catalog piece: its record is core/furnish's */
+  var T = KTAGS.page || (KTAGS.page = KTAGS.create({ build:'locus' })), V = KTAGS.VOCAB;
+  var cls = o.kind==='asset' && o.fam==='prop' ? 'prop' : (REG_CLASS[o.kind] || 'feature');
+  var rec = { 'class':cls, kind:o.kind==='asset' ? (o.key||null) : (o.kind||null), key:o.key||null, name:o.name, at:[o.x, o.y||0, o.z], note:o.label||null, frag:'45-kit.js REGISTER' };
+  if(o.culture && (V.cultures.indexOf(o.culture) >= 0 || V.cultureAlias[o.culture])) rec.tags = { culture:o.culture };
+  if(o.box){ rec.at = [o.x, (o.y||0)+1, o.z]; rec.ry = o.box[2]||0; rec.size = [o.box[0], o.box[1], o.ah||o.h||2]; }
+  else if(o.seg){ var dx=o.seg[2]-o.seg[0], dz=o.seg[3]-o.seg[1]; rec.at=[(o.seg[0]+o.seg[2])/2, o.y||0, (o.seg[1]+o.seg[3])/2]; rec.ry=Math.atan2(dx,dz); rec.size=[o.seg[4]||2, Math.hypot(dx,dz), o.h||2]; }
+  else if(o.hx) rec.size = [o.hx*2, o.hz*2, o.h||2];
+  else if(!o.ring && o.r != null){ rec.r = o.r; rec.h = o.h; }
+  o.rid = T.add(rec).id;
+}

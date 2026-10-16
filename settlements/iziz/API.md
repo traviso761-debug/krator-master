@@ -63,7 +63,19 @@ inside a builder answers that flag (or `o.lit`), and `vnDoor`/`vnLamp`/
 `vnLampPost` only emit bulbs when it is true.
 
 Seed blocks: dwellings 7100–7399, trade 7400–7499, civic 7500–7599, infra
-7600–7699. Take the next free `xx1` and leave room for variants (`+o.v`).
+7600–7699, guilds 7701–7739, frontier 8001–8079 (`74b-vern-frontier.js`). Take the next free `xx1` and leave room for variants (`+o.v`).
+
+### The frontier set — `74b-vern-frontier.js` (Verge's upper city)
+
+`vern_governor_palace` (42 x 36, walled forecourt, gate on +z), `vern_guard_tower` (26 x 20: three-storey tower at
+-x, two-storey barracks at +x, doors on +z), `vern_watch_house` (10 x 9), `vern_toll_house` (14 x 10: the toll window
+and counter face **+x**, the road side; the raised toll bar stands at the +x/+z corner), `vern_palisade` (ONE segment,
+`o.len` metres along local x, default 6; every part inside x = ±len/2; +z is the outer face, the braces lean to -z),
+`vern_palisade_gate` (14 x 4, a 9 m road opening along z between log towers whose outer faces are at x = ±6.9: butt
+the palisade segments at x = ±7), `vern_mustering_ground` (44 x 32, the wall's gap on +z), `vern_rest_stop` (18 x 12;
+`o.v=0` cut into the rock: the cliff is the plot's -z third, the trail runs along x on +z; `o.v=1` built out on the
+cliff: +z is the drop, the retaining wall goes 5.4 m below y = 0, the trail runs along x on -z). Helpers are `vf*`.
+Verge bundles this fragment with 69b-74, so it uses only their globals (and 74's `vg*` helpers).
 
 ### Kit items — `69b-vern-mat.js` (prefix `v`)
 

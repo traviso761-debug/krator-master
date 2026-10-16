@@ -1,12 +1,14 @@
 // The Atmos autoload's golden vectors, from core/atmos itself: the evening, a light's hours (and a halo's), the
-// weather's targets and eased steps, the lightning flash. godot/tests/atmos/atmos_test.gd checks krator/atmos.gd
+// weather's targets and eased steps, the lightning flash, the wave field (heights and slopes, and the generated
+// shaders/atmos_waves.gdshaderinc, so the test catches an include gone stale), and the cloud deck the same way
+// (its tops and slopes, and shaders/atmos_clouddeck.gdshaderinc). godot/tests/atmos/atmos_test.gd checks krator/atmos.gd
 // against them.   node godot/tools/atmos_golden.js   (writes godot/tests/atmos/golden.json)
 const fs = require('fs'), path = require('path');
 const DIR = path.join(__dirname, '..', '..', 'core', 'atmos');
 const FRAGS = fs.readdirSync(DIR).filter(f => /^89-atmos-.*\.js$/.test(f)).sort();
 global.window = global;
 eval(FRAGS.map(f => fs.readFileSync(path.join(DIR, f), 'utf8')).join('\n') + ';global.ATMOS=ATMOS;');
-const A = ATMOS, out = { source: 'core/atmos (' + FRAGS.join(', ') + ')', presets: { clock: A.PRESETS.clock, wind: A.PRESETS.wind } };
+const A = ATMOS, out = { source: 'core/atmos (' + FRAGS.join(', ') + ')', presets: { clock: A.PRESETS.clock, wind: A.PRESETS.wind, waves: A.PRESETS.waves, clouddeck: A.PRESETS.clouddeck } };
 const H = []; for (let h = 0; h < 24; h += 0.25) H.push(h);
 out.night = H.map(h => [h, A.night(h)]);
 const L = [[17.6, 29.6], [17.05, 22.25], [0, 30], [-1, 30], [18.9, 30.1]];
@@ -24,5 +26,25 @@ run('a storm clearing', 'clear', { rain: 1, fog: 1, wet: 1, wind: 2.4 }, 14, 1 /
 run('auto through the evening', 'auto', null, 18, 0.5, 600, 0.01);
 run('auto through the dawn', 'auto', null, 3, 0.5, 900, 0.01);
 out.flash = [-10, 0, 40, 79.9, 80, 100, 149.9, 150, 200, 229, 230, 400, 599, 600, 700, 5000].map(e => [e, A.flashAt(e)]);
+// the wave field (89-atmos-a-waves.js): the clock's wrap, heights with and without the chop, slopes at camera distances
+// across every fade (5000 m: all three families retired). Points near and far from the origin, clocks negative, past
+// the period and long into a session.
+const WP = [[0, 0], [12.5, -7.25], [-130.4, 88.1], [503.7, 1210.9], [-2400.2, -1733.6], [9876.5, -4321]];
+const WT = [0, 3.7, 299.99, 600, 1234.56, -45.2, 86400.125];
+out.waves = { wrap: WT.concat([-600, 1200, 599.999]).map(t => [t, A.waveWrap(t)]), height: [], slope: [],
+  include: require('./atmos_waves.js').gdshaderinc() };
+for (const [x, z] of WP) for (const t of WT) {
+  for (const c of [0, 0.5, 1]) out.waves.height.push([x, z, t, c, A.waveHeight(x, z, t, c)]);
+  for (const d of [0, 200, 450, 900, 2000, 5000]) out.waves.slope.push([x, z, t, d].concat(A.waveSlope(x, z, t, d)));
+}
+// the cloud deck (89-atmos-d-clouddeck.js): the clock's wrap, the deck's top for two levels, slopes at camera distances
+// across the detail's fade. The same points and clocks as the waves, and the generated include (stale-include check).
+const DY = [1120, -35.5];
+out.deck = { wrap: WT.concat([-1200, 2400, 1199.999]).map(t => [t, A.deckWrap(t)]), height: [], slope: [],
+  include: require('./atmos_clouddeck.js').gdshaderinc() };
+for (const [x, z] of WP) for (const t of WT) {
+  for (const y of DY) out.deck.height.push([x, z, t, y, A.deckHeight(x, z, t, y)]);
+  for (const d of [0, 400, 1200, 3000]) out.deck.slope.push([x, z, t, d].concat(A.deckSlope(x, z, t, d)));
+}
 fs.writeFileSync(path.join(__dirname, '..', 'tests', 'atmos', 'golden.json'), JSON.stringify(out));
-console.log('wrote godot/tests/atmos/golden.json:', out.night.length, 'night,', out.lit.length, 'lit,', out.target.length, 'targets,', out.runs.length, 'runs');
+console.log('wrote godot/tests/atmos/golden.json:', out.night.length, 'night,', out.lit.length, 'lit,', out.target.length, 'targets,', out.runs.length, 'runs,', out.waves.height.length, 'wave heights,', out.waves.slope.length, 'slopes,', out.deck.height.length, 'deck heights,', out.deck.slope.length, 'deck slopes');

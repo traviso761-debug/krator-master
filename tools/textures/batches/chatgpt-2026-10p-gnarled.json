@@ -1,0 +1,30 @@
+[
+ {
+  "src": "wood-gnarled.png",
+  "out": "core/materials/library/wood.gnarled",
+  "record": {
+   "id": "wood.gnarled",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "(none: offered by the owner unprompted)",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "weathered, wind-twisted wood with flowing grain and knots (full colour): driftwood, carved burl furniture, old posts and stumps, gnarled tabletops, rustic handles and bowls"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8
+  }
+ }
+]

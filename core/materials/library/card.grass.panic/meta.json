@@ -1,0 +1,46 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 230,
+   "key_lo": 120,
+   "pad": 0.01,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.grass.panic",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "29.webp",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 29.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet, each tuft's base on its cell's bottom edge. The panicles came pinkish (the magenta shows through them): keyed hard (120..230) they read grey-mauve; a host tints the sheet.",
+  "original_file": "29.webp",
+  "original_sha1": "49c832cc5677b108956e76bc34b345a780dcbb5a",
+  "prompt": "A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a tuft of panic grass, a loose fountain of narrow soft blades arching outward and a few open airy seed panicles on thin stems, the tuft's base sitting exactly on the bottom edge of its cell (not floating in the middle), its top reaching about nine tenths of the cell's height; vary the height, the spread and the number of panicles between the nine. Plain muted grey-green so the sprites can be tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.",
+  "reuse": "the geyser basin's panic grass; any base-anchored grass tuft",
+  "sha1": "49c832cc5677b108956e76bc34b345a780dcbb5a"
+ }
+}

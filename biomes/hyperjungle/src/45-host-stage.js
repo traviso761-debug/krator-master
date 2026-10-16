@@ -10,7 +10,7 @@ window.onerror=(m,s,l,c,e)=>reportErr((e&&e.stack)||(m+' @'+l+':'+c));
 window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&&e.reason.stack||e.reason)));
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);}
+const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too (core/biome/20-core-kit.js)
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);
@@ -34,8 +34,11 @@ function brookDist(x,z){return Math.abs(x-90*Math.sin(z*.0012));}
 // This is the whole contract between a world and a biome. OBSTACLES is filled
 // by whatever the host builds before the biome (the tower, in this file set).
 const OBSTACLES=[];
-BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
+BIO.init({tags:'hyperjungle',THREE:THREE,scene:scene,terrainH:terrainH,
  mask:(x,z)=>{const b=brookDist(x,z);return b<14?0:b<26?(b-14)/12:1;},   // the brook bed is bare
+ // the local water surface: the brook ribbon below (18 m wide, 0.35 m over its bed), no water anywhere else. Without
+ // it the core's default sea at y=0 stood over this floor (which lies below 0) and every exported tile came in drowned
+ waterH:(x,z)=>{const cx=90*Math.sin(z*.0012);return Math.abs(x-cx)<9?terrainH(cx,z)+.35:-1e9;},
  obstacles:OBSTACLES,ticks:tick,seed:7,origin:[0,0],err:reportErr});
 BIO.setSun([-1200,900,-600]);
 // the ground as one mesh, painted dark litter with the brook bed lighter

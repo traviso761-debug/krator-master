@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1243,
+    1155
+   ],
+   "seam_after": [
+    0.615,
+    0.589
+   ],
+   "seam_before": [
+    6.175,
+    11.207
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.2,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "tile.bath.lens",
+  "metal": 0,
+  "roughness": 0.2,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Retro Orange Tiles with Red and Purple Circles.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Retro Orange Tiles with Red and Purple Circles.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id tile.bath.lens).",
+  "reuse": "Xanadu grand bath tiles (xBTile), full colour",
+  "sha1": "b8956e5dd49699d168d9323d89bfc35b3e136675"
+ }
+}

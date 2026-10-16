@@ -24,7 +24,7 @@ var lvlMark = lvlSnap();
 function lvlTally(key){ var s=lvlSnap(); LVL.tri[key]=(LVL.tri[key]||0)+s[0]-lvlMark[0]; LVL.inst[key]=(LVL.inst[key]||0)+s[1]-lvlMark[1]; lvlMark=s; }
 function lvlLamp(x,y,z,amp,rad,cool,hang){ LANTERN(x,y,z,amp,rad,cool,hang); LVL.lamps++; }
 function lvlGlow(x,y,z,amp,rad,cool){ nlLampAdd(x,y,z,amp,rad,cool); LVL.lamps++; }
-function lvlPane(x,y,z,nx,nz,w,h,cool){ WINPANE(x,y,z,nx,nz,w,h,cool); LVL.windows++; }
+function lvlPane(x,y,z,nx,nz,w,h,cool,open){ WINPANE(x,y,z,nx,nz,w,h,cool,open); LVL.windows++; }
 function lvlReg(o){ REGISTER(o); (LVL.rooms[o.kind] = (LVL.rooms[o.kind]||0)+1); }
 
 /* ------------------------------------------------------------------ merged helpers */
@@ -115,7 +115,7 @@ function lvlFrame(P,r,a,y){
 }
 function lvlTreeFrame(T,r,a,y){ var ox=Math.cos(a), oz=Math.sin(a); return { x:T.x+ox*r, z:T.z+oz*r, y:y, ox:ox, oz:oz, tx:-oz, tz:ox, ry:Math.atan2(-oz,ox) }; }
 function lvlFreeFrame(x,z,y,a){ var ox=Math.cos(a), oz=Math.sin(a); return { x:x, z:z, y:y, ox:ox, oz:oz, tx:-oz, tz:ox, ry:Math.atan2(-oz,ox) }; }
-function lvlAt(fr,u,v,dy){ return [fr.x+fr.ox*u+fr.tx*v, fr.y+(dy||0), fr.z+fr.oz*u+fr.tz*v]; }
+function lvlAt(fr,u,v,dy){ if(fr.us) u*=fr.us; return [fr.x+fr.ox*u+fr.tx*v, fr.y+(dy||0), fr.z+fr.oz*u+fr.tz*v]; }
 /* box in a frame: u outward, v tangent; wu deep (along u), wv wide (along v) */
 function lvlFBox(fam,fr,u,v,dy,wu,h,wv,col,faces){ var p=lvlAt(fr,u,v,dy); lvlBox(fam,p[0],p[1],p[2],wu,h,wv,fr.ry,col,faces); }
 function lvlFBeam(fam,fr,u0,v0,y0,u1,v1,y1,w,d,col,caps){ lvlBeam(fam,lvlAt(fr,u0,v0,y0),lvlAt(fr,u1,v1,y1),w,d,col,caps); }
@@ -146,16 +146,32 @@ function lvlShield(fr,u,v,y,r,col){ lvlFur('br_h_shield_rack',fr,u,v,y-1.75,lvlO
 /* ====================================================================== GOAL A: LEVELS */
 
 /* --- a shuttered window on a curved wall at polar (r,a), sill height ys --- */
-function lvlWindow(P,r,a,ys,w,h,cool,shutCol){
-  var ha=(w/2)/r, fa=(w/2+0.12)/r;
-  SECTOR('timber',P,r,r+0.05,a-fa,a+fa,ys-0.12,ys+h+0.12,TIMBERC[2],{faces:'o',step:30});
+/* The opening is REAL: the frame is a ring round it, and `holes` (the room's list) gets { a, hw, y0, y1 } for the wall
+   drawn after it (lvlFront) to cut; R.wins keeps it for the interiors' planner (57), which keeps furniture off it. */
+function lvlWindow(P,r,a,ys,w,h,cool,shutCol,holes){
+  var ha=(w/2)/r, fa=(w/2+0.12)/r, tc=TIMBERC[2];
+  SECTOR('timber',P,r,r+0.05,a-fa,a+fa,ys-0.12,ys,tc,{faces:'otb',step:30});
+  SECTOR('timber',P,r,r+0.05,a-fa,a+fa,ys+h,ys+h+0.12,tc,{faces:'otb',step:30});
+  SECTOR('timber',P,r,r+0.05,a-fa,a-ha,ys,ys+h,tc,{faces:'os',step:30});
+  SECTOR('timber',P,r,r+0.05,a+ha,a+fa,ys,ys+h,tc,{faces:'os',step:30});
+  if(holes) holes.push({ a:a, hw:w/2, y0:ys, y1:ys+h });
   if(shutCol!=null){
     var sw=w*0.48/r;
     SECTOR('plank',P,r,r+0.10,a-fa-sw,a-fa-0.02/r,ys-0.05,ys+h+0.05,shutCol,{faces:'o',step:30});
     SECTOR('plank',P,r,r+0.10,a+fa+0.02/r,a+fa+sw,ys-0.05,ys+h+0.05,shutCol,{faces:'o',step:30});
   }
   var fr=lvlFrame(P,r+0.06,a,ys+h/2);
-  lvlPane(fr.x,fr.y,fr.z,fr.ox,fr.oz,w,h,cool);
+  lvlPane(fr.x,fr.y,fr.z,fr.ox,fr.oz,w,h,cool,!!holes);
+}
+/* a room's front wall r0..r1 (its outer face looks out at r1), a0..a1, with its windows' openings cut through it and a
+   reveal round each, and an inner face seen from the room. `faces` adds SECTOR's t/b/s faces as before */
+function lvlFront(fam,P,r0,r1,a0,a1,yb,yt,col,holes,faces){
+  var hs = (holes||[]).filter(function(h){ return h.a-h.hw/r1 > a0 && h.a+h.hw/r1 < a1 && h.y1 > yb && h.y0 < yt; });
+  ARC_WALL(fam,P,r1,a0,a1,yb,yt,col,1,hs,5);
+  ARC_WALL(fam,P,r0,a0,a1,yb,yt,shade(col,0.06),-1,hs,5);
+  hs.forEach(function(h){ ARC_REVEAL(fam,P,r0,r1,h,shade(col,-0.08)); });
+  var rest = (faces||'').replace(/[oi]/g,'');
+  if(rest) SECTOR(fam,P,r0,r1,a0,a1,yb,yt,col,{faces:rest,step:5});
 }
 function lvlDoor(P,r,a,y,w,h,col){
   var fa=(w/2+0.14)/r, da=(w/2)/r;
@@ -189,11 +205,13 @@ function lvlApt(P,R,Lv){
     lvlGlow(gp[0]+fb.ox*1.5,y+1.4,gp[2]+fb.oz*1.5,0.8,12,false);
     var fm=lvlFrame(P,rmid+0.8,am,y); lvlTable(fm,0,0,1.1,2.6,0.78); lvlBench(fm,-0.95,0,2.4,true); lvlBench(fm,0.95,0,2.4,true);
     brfSkip(1); lvlFur('br_h_workshop_shelves',fb,0.2,arc*0.30,0,lvlOut(fb),{setting:'indoor'});      /* furniture: the shelf block */
+    R.use='kitchen';
     lvlReg({ name:P.name, kind:'kitchen', label:'Shared kitchen & common room', plat:P.id, lvl:R.lvl, x:ctr[0], z:ctr[1], y:y, h:H, r:Math.min(arc,R.r1-R.r0)*0.5 });
     return;
   }
   var fin=ri(0,3), fam = fin===3 ? 'plank' : 'wall', col = fin===1 ? pick(WALLDARKC) : fin===3 ? shade(pick(PLANKC),-0.08) : pick(WALLC);
-  SECTOR(fam,P,r1-0.25,r1,R.a0+th,R.a1-th,y,y+H,col,{faces:'o',step:5});
+  var holes = [];                                             /* the front wall is drawn last, with its windows cut (lvlFront) */
+  R.use='apartment'; R.wcol=fam==='wall'?col:WALLC[1]; R.wins=holes;   /* a home: planned and furnished by 57-interiors.js */
   if(chance(0.4)) SECTOR('timber',P,r1,r1+0.06,R.a0+th,R.a1-th,y+H-0.42,y+H-0.14,chance(0.5)?shade(pick(CLOTHC),-0.15):TIMBERC[2],{faces:'o',step:5});
   /* door at the nav door node */
   if(chance(0.12)){ SECTOR('timber',P,r1,r1+0.05,am-0.64/r1,am+0.64/r1,y,y+2.3,shade(TIMBERC[2],-0.5),{faces:'o',step:30});
@@ -203,7 +221,8 @@ function lvlApt(P,R,Lv){
   var nw = arc>7.2 ? (chance(0.2)?1:2) : 1, shut = chance(0.75) ? (chance(0.5)?shade(pick(AWNINGC),-0.2):shade(pick(PLANKC),-0.25)) : null;
   var side = chance(0.5)?1:-1, wpos=[];
   for(var w=0;w<nw;w++){ var wa = am + (w===0?side:-side)*arc*rr(0.26,0.32)/r1; wpos.push(wa);
-    lvlWindow(P,r1,wa,y+1.15,rr(0.75,1.0),rr(0.9,1.15),false,shut); }
+    lvlWindow(P,r1,wa,y+1.15,rr(0.75,1.0),rr(0.9,1.15),false,shut,holes); }
+  lvlFront(fam,P,r1-0.25,r1,R.a0+th,R.a1-th,y,y+H,col,holes,'');
   /* dressing */
   if(chance(0.33)){ var fl=lvlFrame(P,r1+0.38,am+side*-1.05/r1,y); lvlLamp(fl.x,y+2.45,fl.z,0.7,10,false,0); }
   if(chance(0.30)){ var fw=lvlFrame(P,r1+0.24,wpos[0],y); brfSkip(3); lvlFur('br_h_window_box',fw,0,0,0,lvlOut(fw)); }   /* furniture: a window box */
@@ -217,10 +236,10 @@ function lvlStore(P,R,Lv){
   var r1=R.r1, y=R.y, H=R.H, am=(R.a0+R.a1)/2, arc=(R.a1-R.a0)*r1, th=0.14/r1, rmid=(R.r0+R.r1)/2, ctr=platXZ(P,rmid,am);
   var col=pick(WALLDARKC), open=chance(0.36), dw=Math.min(3.4,arc*0.34), dh=3.5, da=(dw/2)/r1;
   var dcol=shade(pick(PLANKC),-0.3);
+  var holes = [], walls = [];                                 /* the front wall is drawn last, its window cut (lvlFront) */
+  R.use='store'; R.open=open; R.wcol=col; R.wins=holes;      /* 57-interiors.js plans the rooms behind the loading floor */
   if(open){
-    SECTOR('wall',P,r1-0.25,r1,R.a0+th,am-da,y,y+H,col,{faces:'o',step:5});
-    SECTOR('wall',P,r1-0.25,r1,am+da,R.a1-th,y,y+H,col,{faces:'o',step:5});
-    SECTOR('wall',P,r1-0.25,r1,am-da,am+da,y+dh,y+H,col,{faces:'ob',step:5});
+    walls.push([R.a0+th,am-da,y,y+H,''], [am+da,R.a1-th,y,y+H,''], [am-da,am+da,y+dh,y+H,'b']);
     /* leaves folded back flat against the wall */
     SECTOR('plank',P,r1,r1+0.14,am-da-(dw/2+0.05)/r1,am-da-0.05/r1,y+0.05,y+dh-0.05,dcol,{faces:'os',step:30});
     SECTOR('plank',P,r1,r1+0.14,am+da+0.05/r1,am+da+(dw/2+0.05)/r1,y+0.05,y+dh-0.05,dcol,{faces:'os',step:30});
@@ -232,7 +251,7 @@ function lvlStore(P,R,Lv){
       else if(k===1){ lvlBarrel(fi,u,v,0,rr(0.4,0.55),rr(1.0,1.3)); }
       else { brfSkip(1); var two=chance(0.6); if(two) brfSkip(1); lvlFur('br_h_sack_pile',fi,u,v,0,fi.ry,{v:two?1:0,setting:'indoor'}); } }   /* furniture: sacks */
   }else{
-    SECTOR('wall',P,r1-0.25,r1,R.a0+th,R.a1-th,y,y+H,col,{faces:'o',step:5});
+    walls.push([R.a0+th,R.a1-th,y,y+H,'']);
     SECTOR('timber',P,r1,r1+0.05,am-da-0.2/r1,am+da+0.2/r1,y,y+dh+0.22,TIMBERC[0],{faces:'o',step:30});
     SECTOR('plank',P,r1,r1+0.10,am-da,am-0.03/r1,y,y+dh,dcol,{faces:'o',step:30});
     SECTOR('plank',P,r1,r1+0.10,am+0.03/r1,am+da,y,y+dh,shade(dcol,0.06),{faces:'o',step:30});
@@ -247,7 +266,8 @@ function lvlStore(P,R,Lv){
     else if(k2===1) SECTOR('timber',P,r1,r1+0.10,ma-0.08/r1,ma+0.08/r1,y+2.2,y+2.9,shade(CLOTHC[4],-0.2),{faces:'o',step:30});
     else { var fm=lvlFrame(P,r1+0.10,ma,y+2.55); lvlDiscV('timber',fm.x,fm.y,fm.z,fm.ox,fm.oz,0.28,shade(CLOTHC[2],-0.2),6); }
   }
-  if(chance(0.3)) lvlWindow(P,r1,am-(da+(dw/2+1.4)/r1)*(ma>am?1:-1),y+3.7,0.8,0.42,false,null);
+  if(chance(0.3)) lvlWindow(P,r1,am-(da+(dw/2+1.4)/r1)*(ma>am?1:-1),y+3.7,0.8,0.42,false,null,holes);
+  walls.forEach(function(w){ lvlFront('wall',P,r1-0.25,r1,w[0],w[1],w[2],w[3],col,holes,w[4]); });
   /* hoist beam + tackle over the gallery rim */
   if(chance(0.55)){
     var np=lvlPostCount(P,Lv), ah=Math.round(am/TAU*np)/np*TAU;
@@ -294,6 +314,11 @@ function lvlWork(P,R,Lv,trade){
   SECTOR('wall',P,r1-0.36,r1,am+g,R.a1-th,y,y+1.0,cc,{faces:'otis',step:5,colTop:PLANKC[2]});
   /* room-local frame: u from the front wall (negative = inward), v tangential */
   var F=lvlFrame(P,r1,am,y), W=arc*0.42;
+  /* live/work: the family lives in the back LD metres, behind a partition (57-interiors.js plans and furnishes it);
+     the trade floor is drawn into the front, its pieces' depths scaled by F.us (lvlAt) so the deepest (the
+     ropewalk's wheel at u = -11.5) stays clear of that wall */
+  var depth=R.r1-R.r0, LD=clamp(depth*0.36,4.2,5.4);
+  F.us=Math.min(1,(depth-LD-0.9)/11.8); R.use='work'; R.trade=trade; R.LD=LD; R.wcol=cc;
   function fb(u,v,dy,wu,h,wv,col,fam,faces){ lvlFBox(fam||'plank',F,u,v,dy,wu,h,wv,col,faces); }
   var sg = chance(0.5)?1:-1;
   if(trade==='smithy'){
@@ -490,14 +515,16 @@ function lvlWebLevel(P,Lv,last){
 function lvlSatApt(P,R,Lv){
   var r1=R.r1, y=R.y, H=R.H, col=pick(WALLC), gapA = P.bays.length ? P.bays[0].ang : 0, gh = P.bays.length ? (laneW(P)*2+1.2)/Math.max(2,r1)/1 : 0;
   gh = Math.min(gh, 1.2);
-  if(P.bays.length) SECTOR('wall',P,r1-0.2,r1,gapA+gh,gapA-gh+TAU,y,y+H,col,{faces:'os',step:3});
-  else SECTOR('wall',P,r1-0.2,r1,0,TAU,y,y+H,col,{faces:'o',step:3});
+  var holes = [];                                             /* the front wall is drawn last, its windows cut (lvlFront) */
   SECTOR('timber',P,r1,r1+0.06,gapA+gh,gapA-gh+TAU,y+H-0.4,y+H-0.12,shade(pick(CLOTHC),-0.2),{faces:'o',step:3});
   var circ=TAU*r1*(P.sx+P.sz)/2, n=clamp(Math.round(circ/6.5),3,7), a0=gapA+gh, span=TAU-2*gh, shut=shade(pick(AWNINGC),-0.2), doors=0;
+  R.use='lodgings'; R.doorAngs=[]; R.gapA=gapA; R.gh=P.bays.length?gh:0; R.wcol=col; R.wins=holes;   /* one lodging per door (57-interiors.js) */
   for(var i=0;i<n;i++){ var a=a0+span*(i+0.5)/n;
-    if(i%2===0 && doors<3){ lvlDoor(P,r1,a,y,0.95,2.05,shade(pick(TIMBERC),0.1)); doors++;
+    if(i%2===0 && doors<3){ lvlDoor(P,r1,a,y,0.95,2.05,shade(pick(TIMBERC),0.1)); doors++; R.doorAngs.push(a);
       if(chance(0.5)){ var fl=lvlFrame(P,r1+0.35,a+0.9/r1,y); lvlLamp(fl.x,y+2.4,fl.z,0.6,9,P.leafOf&&P.leafOf.kind==='spider',0); } }
-    else lvlWindow(P,r1,a,y+1.15,0.8,1.0,false,shut); }
+    else lvlWindow(P,r1,a,y+1.15,0.8,1.0,false,shut,holes); }
+  if(P.bays.length) lvlFront('wall',P,r1-0.2,r1,gapA+gh,gapA-gh+TAU,y,y+H,col,holes,'s');
+  else lvlFront('wall',P,r1-0.2,r1,0,TAU,y,y+H,col,holes,'');
   if(chance(0.5)) lvlWashing(P,Lv,a0+span*rr(0.2,0.8));
   lvlReg({ name:P.name, kind:'apartment', label:'Bough-platform lodgings', plat:P.id, lvl:R.lvl, x:P.x, z:P.z, y:y, h:H, r:r1 });
 }

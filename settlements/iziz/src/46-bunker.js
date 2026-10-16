@@ -38,8 +38,8 @@ function buildBunker(scene,gx,gz,d){reseed(d>0?9701:9700);KOFF=[gx,0,gz];REGISTE
  for(let k=0;k<5;k++){const th=(k/5)*TAU+.9;const fallen=d>0&&(k===1||k===3);
   const a=[Math.cos(th)*38,26.4,Math.sin(th)*38],b=[Math.cos(th)*9,26+CH*(ccut?.5:.85),Math.sin(th)*9];
   if(!fallen)beam(d>0?'strutR':'strutW',a,b,3.2,2.4);else beam('strutR',[a[0],27.6,a[2]],[a[0]*.3+rr(-6,6),28,a[2]*.3+rr(-6,6)],3.2,2.4);}
- if(!ccut){kput('slab',[0,26+CH+.6,0],null,[22,1.2,22],new THREE.Color(0xd8d4cc));aaBattery(G,d,0,26+CH+1.2,0,2.6);}else{aaBattery(G,d,0,26+ccut-2,0,2.6);}
- aaBattery(G,d,26,26.4,-24,3.2);aaBattery(G,d,-30,26.4,-10,3.2);
+ if(!ccut){kput('slab',[0,26+CH+.6,0],null,[22,1.2,22],new THREE.Color(0xd8d4cc));aaBattery(G,d,0,26+CH+1.2,0,2.6,Math.PI/2);}else{aaBattery(G,d,0,26+ccut-2,0,2.6,Math.PI/2);}
+ aaBattery(G,d,26,26.4,-24,3.2,Math.PI/2-.7);aaBattery(G,d,-30,26.4,-10,3.2,Math.PI/2+.8);
  if(d>0){mossOnRing(0,10.4,0,50,60,2.5);mossOnRing(0,26.3,0,30,30,2);vinesOnRing(0,26,0,R1*1.02,30,12);rubbleRing(0,10,0,50,72,60,2.5);trees(0,0,90,150,14);}
- figures(0,110,6,8);KOFF=[0,0,0];return G;}
+ figures(0,110,6,8);civFlatten(G);KOFF=[0,0,0];return G;}
 

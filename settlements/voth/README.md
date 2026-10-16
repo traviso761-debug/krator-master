@@ -1,103 +1,910 @@
 # Voth
 
-A Venice/Vivec-like Dunmer city on an enclosed brackish bay, generated
-procedurally in Three.js and built into one self-contained HTML file.
-
-## Run it
-
-Open `voth.html` in a browser. That is the whole product — no server needed.
-
-## Change it
-
-`src/` holds the generator as numbered fragments. `build.py` concatenates them
-into `voth.html` and enforces the rules that make parallel work safe.
-`verify.py` loads the result in headless Chromium and measures it.
+The Voth site editor and the Voth city plan: the first world on **`core/city`**, the city builder and its infill
+(`core/city/README.md` has the method, the records, what a world provides, and the plan to port every settlement to it).
 
 ```
-python3 build.py
-python3 verify.py voth.html --assert --baseline baseline.json \
-        --views "Overview,Chinampas" --out ./shots
+python3 build.py                                   # dist/voth-site.html and dist/voth-city.html
+python3 verify.py dist/voth-site.html --assert     # headless: the site editor
+python3 verify.py dist/voth-city.html --assert     # headless: the city plan on the site
+python3 serve.py                                   # serve both pages; the editors save through it
 ```
 
-## Building catalog
+Serve the folder (`python3 serve.py`, port 8813) and open `/dist/voth-site.html` or `/dist/voth-city.html`.
 
-`catalog/` holds every Voth building on one sheet: the structures the city
-builds (captured from a live build), the first-generation registry, and the
-new building types (housing, manors, shops, taverns, warehouses, civic,
-military). It has automatic LOD. See `catalog/README.md` and
-`catalog/CITY_INVENTORY.md`.
+This build grew in `settlements/streetlab`, which began as a street-placement toy on a plain, the test bed for the
+method. The toy is retired: its machinery is `core/city`, and its own steps 0-5 (a triangle of landmarks, a noisy wall,
+ring avenues) are in the history. On 2026-10-14 (the owner: "Rename the folder to voth") Streetlab became
+`settlements/voth`, Voth's home, beside the first Voth's source; the first Voth's page is retired ("The source
+library" below).
 
-The first-generation registry and the `voth_*` furniture and plants live in `kits/catalog/`. Its verify pass
-(2026-10) recentred `voth_bldg_customs_house`, `_guild_hall` (v1), `_townhouse` (v4), `_monastery_hall`, and
-eight furniture pieces (strider station, guild banners, loom display, fisher, miner, sacrifice altar, lantern
-fixture v2). It also raised the declared sizes of `voth_craft_tanner`, `voth_lantern_fixture` and 14 Voth plants.
-None of this was synced into `src/`. The city declares no sizes, and the catalog pieces are rewrites, not copies:
-`siltStriderStation()` (65b) is a 16 x 22 m deck with a ramp, while the catalog station is 10 x 16 m. City
-builders such as `customsHouse()` take their size as arguments and draw in world coordinates. The catalog
-page loads the registry from `kits/catalog/` by path, so it already shows the corrected copies.
-
-## The documents
-
-- `API.md` — the generator's interface. Read before editing any fragment.
-- `SUBAGENT.md` — how work is split between the planner and subagents, the
-  invariants, and the brief template.
-- `.claude/agents/` — four subagent definitions, loaded by Claude Code at
-  session start.
-
-## Layout
-
-`INDEX.md` lists every fragment, its sections and its size. Regenerate it
-with `python3 ../../tools/make_index.py`. Files that share a numeric prefix
-(`78a-`, `78b-`, …) are one fragment split into readable parts; `build.py`
-treats the group as one unit. The main groups are:
-
-| | |
+| Path | What |
 |---|---|
-| `src/05-palette.js` | **frozen**: all colour, materials, budgets |
-| `src/10-core.js`, `15-shore.js` | RNG, noise, water SDF, river, terrain; shoreline arc-length addressing |
-| `src/20-stage.js`, `21-sky.js` | lights, sky, volcano, sun and moon |
-| `src/30a–30d` | city layout, districts, mainland shore, roads, curtain wall, strider stations |
-| `src/45-kit.js`, `47-texture.js` | emit kit and instancing; procedural textures |
-| `src/50a–50f` | cantons, palace, canton types, guild, necropolis, spans |
-| `src/60-land.js`, `61-monastery.js` | compounds and town buildings; the monastery |
-| `src/65a–65l` | smoke, props, flora, docks, shrines, walls and gates, tavern, healing, mills, arena |
-| `src/70-veg.js`, `71-industry.js` | vegetation; wilderness industry |
-| `src/78a–78j` | life layer: nav grid, ships, boats, citizens, clergy, trade, arena combat |
-| `src/79a–79c` | silt strider convoys, their nav grid, the strider model |
-| `src/80`–`87` | camera, day/night, weather, fauna, probe, inspector, path visualizer |
+| `build.py`, `vothlift.py`, `foreign.py`, `ringsea.py` | the build of both pages; what it lifts from `src/` by name; the embassies; the Ring Sea vessels |
+| `targets/voth-site/`, `targets/voth-city/` | the two pages' own fragments |
+| `site/` | the owner's saved site (`serve.py` writes it; the build inlines it) |
+| `edits.json`, `marks.json` | the owner's plan edits (a `core/edits` log) and marks on the city plan, saved by core/host's editor and marks through `serve.py` (or `tools/edits/serve.py`); the build inlines the edits |
+| `src/` | **Voth's source library**: the first Voth's fragments, run whole or lifted by name, never copied |
+| `catalog/` | Voth's building catalog (`catalog/README.md`): `core/city` builds every lot with its registries |
+| `three.min.js` | three.js r128, the copy the pages, the catalog page and the gallery take |
+| `verify.py`, `serve.py`, `test-edits.js` | the headless checks; the save server; the edit log read back as the layout's edits (`node test-edits.js`) |
+| `HANDOFF.md`, `HANDOFF-REFACTOR.md`, `SIM-ROADMAP.md`, `API.md` | the session handoff, the simulation's merge note and its brief, the contract of `src/` |
 
-## Level of detail
+## The Voth site editor (`targets/voth-site`, `dist/voth-site.html`)
 
-The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
-`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into
-frustum-culled chunks that switch to clustered proxies with distance; instanced sets keep one draw call and drop their
-smallest instances by screen size. The originals stay the raycast targets, so the inspector and `_api` see full detail.
-The `LOD` panel (bottom right; `l` toggles it, `measure` renders the view both ways) reads draw calls and triangles.
-`LOD.enabled=false` (or `?lod=0`) puts back the exact scene the build made; `LOD.stats()` and `LOD.measure()` are
-there for verify.
+The ground of Voth with no roads, for marking out where things go before any street is placed. Run
+`python3 serve.py` and open `/dist/voth-site.html`.
 
-## Minimap
+* **The ground is Voth's own.** build.py wraps Voth's data fragments (`05-palette`, `10-core`, `15-shore`, `30a`) in one
+  closure, `VOTH`, and lifts the pure pieces it needs from the others by name:
+  * the islets and river bridges that `30c-roads.js` adds (the islets change `terrainH`);
+  * `groundTone` (`40-ground.js`);
+  * the span constants and `bedAt` (`50a`);
+  * `shade`, `loc` and `rectFrus` (`45-kit.js`);
+  * `span()` and `reclaimedCauseway()` (`50f`).
 
-The Map button (or `m`) opens a plan of the city, bottom left: the shared `KMAP` from `core/minimap/`, which
-`build.py` adds like `core/lod/`. `src/88b-voth-minimap.js` feeds it the terrain (hill-shaded, the bay below `SEA`),
-`ROADS` and `ROADS_X`, every `PLACED` footprint coloured by tag, and the cantons with their names. Hover names what is
-under the pointer; click looks there from the current angle. It draws from data, not from the render, and draws no
-rng, so the world and the budget counters are unchanged. `window._minimap.export()` is the plan as data for the
-Godot port.
+  Nothing is copied, so a change to Voth's terrain or canton layout shows up on the next build. Roads, buildings
+  and the ground canvas are left out.
+* **Cantons** are the city's captured models (`voth_city_canton_*`), each anchored by its plinth on the canton's
+  own position and lake bed.
+* **Bridges and causeways** are Voth's own `span()` and `reclaimedCauseway()` run on its `SPANS`, `CAUSEWAYS` and
+  `RBRIDGES`, with the city's seeds. Left out: the stairs and doors that tie each end into a canton's tiers. The span
+  pylons are simplified.
+* **Districts**: modes 2-6 draw park, market, funerary, plaza and misc districts.
+  * Click the ground or the minimap to add corners. Close with the first corner, a double-click or Enter.
+  * In select mode (1), drag corners, click a mid-edge dot to add a corner, right-click a corner to remove it, and
+    press Delete to remove the selection.
+  * Each district has a name, a type and a note.
+  * **copy as Voth DISTRICTS entry** gives the line for `30a-layout-districts.js`.
+* **Markers**: mode 7 places markers A, B, C... for landmark placement. Each has a letter and a note.
+* **Avenues** (mode 8): polylines with a width, painted on the ground over the districts. Finish with a
+  double-click or Enter. They edit like districts.
+* **Causeways** (mode 9): Voth's nine stand as records (`origin: voth`) that can be reshaped or deleted.
+  * The first edit copies them into the site; until then the site keeps `causeways: null`, meaning Voth's own.
+  * Drawn ones are built by Voth's own builders, chosen in the editor:
+    * `mole`: `reclaimedCauseway`, reclaimed land at the waterline;
+    * `bridge`: `span`, at Voth's causeway height over water, easing to the ground ashore, with a pier pad under
+      each inner corner.
+  * An end inside a canton's square gets Voth's abutment up its flank.
+* **Ground** (R raise, L lower, M smooth): brushes. Hold the left button; `[` and `]` resize the brush, and the
+  slider sets the strength.
+  * Each stroke (`{m, r, s, pts}`) is kept in `site.terrain` and replayed onto a 6 m height-delta grid (`TERR`,
+    `10-site-model.js`). The ground everywhere is Voth's `terrainH` plus that delta.
+  * Edited ground takes its colour from its new height, by `groundTone`'s rules.
+  * Anything that reads the site gets the same ground by replaying the strokes.
+* **Undo** (the button, or Ctrl+Z / Ctrl+Y) covers every change, one brush stroke at a time.
+* **Surfaces** are library sets (`materials.json`) laid as grey detail under Voth's colours, in world space:
+  * `stone.cut` on cantons, bridges and causeways;
+  * `ground.dirt` on the ground, with `rock.rock_face` on slopes and `ground.coast_sand_01` at the shore.
 
-`80-camera.js` sets `window.LOD_OPTIONS`: the life layer's vehicles and crews (`userData.life`) stay outside it, since
-they are rewritten every frame, and the panel sits bottom centre, clear of the view list and the sky panel.
+  The sun casts shadows over the bay.
+* **Saving**:
+  * **save** (Ctrl+S) writes `site/voth-site.json` through `serve.py`. Without the server it downloads the file.
+  * Every change is also kept as a browser draft, offered back with **restore unsaved draft**.
+  * The build inlines `site/voth-site.json`, so commit it with the work.
+  * **import** and **export** take the same JSON. **add Voth's current districts** starts from the ones Voth has now.
 
-Measured 2026-10-01, 1000x640, SwiftShader on a shared 4-core machine (`LOD.flush()` then `LOD.measure()`; triangles and
-draw calls as three.js counts them. Frame times were too noisy under the shared load to quote):
+```
+site      {site: 'voth', version, saved, districts, markers, avenues, causeways (null: Voth's own), terrain}
+district  {id, type: park|market|funerary|plaza|misc, name, note, poly: [[x, z], ...]}   (Voth's frame: x east, z south)
+marker    {id: 'A', x, z, note}
+avenue    {id, name, width, note, pts: [[x, z], ...]}
+causeway  {id, name, kind: mole|bridge, width, note, origin: voth|drawn, pts}
+terrain   [{m: raise|lower|smooth, r, s, pts}, ...]   (brush strokes, replayed in order)
+```
 
-| View | LOD off: calls / triangles | LOD on: calls / triangles |
+`python3 verify.py dist/voth-site.html --assert` checks that:
+* every canton is placed;
+* the bridges are built;
+* the ground is Voth's;
+* the tools draw, letter, undo and redo.
+
+## The Voth city plan (`targets/voth-city`, `dist/voth-city.html`)
+
+The toy's street method run on the owner's site (`site/voth-site.json`), over Voth's own ground with the owner's
+ground edits, then the country round it and the ferry and elephant bug lines. The step slider shows the city after any
+step (0–14). **lots**, **wealth** and **transit** are toggles.
+
+**The tools are core/host's** (since 2026-10-16, ROADMAP.md section 10 step 6b; `core/host/README.md`, "Voth onto core/host";
+`97-vc-host-take.js` hands them Voth's data): the inspector and its hover tip (**I**), what things hold and the stocks
+(**O**), the marks (**P**), the picture menu, the editor (**B**) and the cutaway (**X**), with the camera, the pin, the
+loop, the panel and the probe of step 6a. Voth keeps its own words, picks and drawing; the panels, keys and stores are the
+host's.
+
+**The inspector** (a click; **I** for the hover tip; core/host's `93-host-inspect.js` over Voth's `VC.describe`, picked by
+Voth's own ray tests, `VC.inspectRay`, without a raycast of the city's batches) names what is under the cursor: a lot's building, a piece of furniture, the ground, and (owner,
+2026-10-14) **a citizen, an animal or a cart** among those drawn near the camera. A citizen's card: the id, role, class
+and wealth, the home; the **job** (the kind of work, the workplace, the post held now of how many, the shift and the
+rota day off); **now** (the activity and where, on a trip the leg it is on of how many, its mode and layer, where it
+ends and when it arrives, the schedule's next change, an itinerary's stop); **desires** (each need's meter, happiness,
+efficiency and loyalty, what it wants and whether it has it, what the meters ask for in free time, an errand or an
+interrupt); **things** (what it wears and how worn, its tool, what it keeps at home, a hurt, the household's food store
+and the days it lasts). An animal's: species, pet or livestock, its household or pen, its age, what it is doing, its
+meters. A cart's: its phase, load, site and warehouse. A marker stands over the one described, and the card stays
+current while the cursor rests. Picking tests only the bodies drawn this frame (at most `TUNE.sim.embody.max`) as
+points against the cursor's ray (12 pixels), left out when the ground or another lot's box is nearer; the card only reads
+(the meters through core's `SIM.needsPeek`, nothing that decides is called).
+
+**What things hold (owner, 2026-10-14; core/host's `93-host-stocks.js` since 2026-10-16, ported from `56e-vc-stocks-host.js`,
+which keeps which places a lot is and which furniture holds things).** The inspector lists what a building, a container
+and a citizen hold, read from core/simulation (`SIM.contents`, `77-sim-7-stocks.js`), never from the page's records:
+* **a building** (its lot's simulation places): a producer's store (made here, not yet hauled), what it makes and from
+  what (bread from wheat, boats from wood, cheese from milk), its fill against its cap and the carts bound for it; a
+  warehouse's or a granary's store; a household's food by kind, its people and the days it lasts; what a shop sells
+  (no shelf of its own: it sells from the settlement's warehouses); a mess;
+* **a container** (a chest, a barrel, a rack, a shelf, a counter, a market stall: the catalog's storage types and the
+  like by name): the simulation keeps stock by place, not by piece, so the card says which place the piece is part of
+  and lists that place's store;
+* **an outdoor site** (the ground of a field, a fishers' dock, a mine, a quay or pier where a carrier unloads, the
+  Granary deck's granaries): the nearest place that holds something there (`SIM.placeAt`);
+* **a citizen** (the card's "things"): what it wears with its wear of its life in days, its tool with its wear of its
+  worked hours, what it keeps at home, a cart's load (in transit), its household's food, its carrier's load.
+
+Since 2026-10-14 the city is a `core/city` instance (`35-vc-steps.js`: `VC.city = KCITY.create({...})`, its steps as
+data, its hooks and finish): steps 0-5 call core's site layer with Voth's data (`30-vc-site.js`: the role table
+`VC.ROLES`, the zone, the avenues and rings, the highways, the wall's records; `VC.terrGrid` takes the banks and gate
+pads), steps 6-8 and the infill's reach are core's defaults, and the road, field and footprint hashes are core's index
+on core/space (`VC.clashWide` is folded into `SL.clash`). The placement did not move (hash `ff007aab`, `python3
+verify.py dist/voth-city.html --hash`), and the plan's Export button works (it threw).
+
+The sidebar lists the ferry and elephant bug lines: stops (and the map edges a line enters or leaves by), vehicles and
+the time for one round. Click a line to pick it out on the map.
+
+**marks (P)** is core/host's (`94-host-marks.js`). It draws areas, lines and points on whatever surface is clicked, each
+with a name and a note, and gives a line's length and an area's size and perimeter (also saved, as `length_m` and
+`area_m2`). In its panel: new area, line or point; Backspace takes the last point off; Enter, Esc or a double-click
+finishes; go flies there, edit adds points, × deletes. Under `serve.py` (or `tools/edits/serve.py`) the marks save to
+`marks.json` (POST `/__save`), so Claude can read them, and the page reads that file when it opens; opened any other way,
+they keep in the browser. The owner's four marks (mines, quarries, more farms, mush farm) were carried over from
+`site/voth-city-marks.json`; a point saved as `[x, z]` is put on the ground when it loads. **copy JSON** copies them all.
+Every panel folds to its title with its **–** button. The lighthouses turn Voth's beacon beams (82-daynight.js), always lit here.
+
+The dev tools:
+
+- **Paths** (`58-vc-tools.js`) is Voth's path visualizer (`settlements/voth/src/87-pathviz.js`, lifted by `build.py`). It shows the streets by class, the elephant bug and ferry lines with their stations and each vehicle where it is now, and the painted streets. Pick one or all from its list; it follows the step slider.
+- **The pin** is core/host's (from Dhelv's camera). A double-click drops a pin (inside a cut canton, on the floor under the interior); **G** flies to it; **F** walks from it (Esc clears it). Walking follows the ground and the KWALK floors.
+- **edit (B)** is core/host's editor (`98-host-edit.js`) over Voth's world (`97-vc-host-take.js` `VC.editWorld`). Every edit is a `core/edits` op (ADD, MOVE, REMOVE) on a core/tags record (the lots, the placed buildings, the trees and plants placed one by one, the painted streets), shown at once:
+  - **select**: a click picks a lot, a placed building, a painted street, a tree or a plant (the editor's picks come first); **Delete** removes it, **M** then a click moves it, **Q / E** turn it 15°. A lot of the plan removed or moved is hidden at once and drawn on its own where it went; a tree is hidden by its instances and triangles (`59-vc-flora-edit.js` `VC.flShow`).
+  - **place**: the picture menu (`96-host-pictures.js`) offers every Voth kit building as a picture (drawn off screen two a frame); a click puts the chosen one down, with the variant chosen and, with *align to the nearest street* on, facing that street and standing back off it (`VC.edAlign`). **Q / E** turn the next one.
+  - **plant**: the swbay kit's trees and plants (no pictures: the kit builds into its store); a click plants one on whatever floor is under it (a canton's deck, a park), at the species' own height.
+  - **paint street**: a street of any class (avenue, main, side, alley, lane): click points on the ground; Backspace, Enter or a double-click, Esc.
+  - **undo** (Ctrl+Z), **save**, **export**, **import**, **discard draft**.
+
+  Save writes `edits.json` (POST `/__save`); every change is a draft in the browser meanwhile, and a draft newer than the
+  file wins when the page loads, so an edit shows on the next reload without a rebuild; `build.py` inlines the file
+  (`KHOST_EDITS`). The layout applies the log when the page is made (`VC.editsFromLog` in `35-vc-steps.js`, read back as
+  the old file's shape; `node test-edits.js` proves an old file converted by `KEDITS.fromStreetlab` reads back the same):
+  - painted streets and placed buildings join at step 3, after the avenues, so later streets and lots work round them. A placed building takes out the lots it overlaps and stands on HARD ground. Its class is the kit class that lists its key, so the census counts it.
+  - deletions run once the whole plan is laid. Each takes out the building under its point from the step it was born. A lot moved is a deletion where it stood and a placed building where it went.
+  - the flora's go to the kit's veto (`SWBAY.veto`: a deleted tree keeps its place, index and seed in the pass, so every other tree stays as it was) and `VC.flAddSaved`. The ground cover the kit scatters by itself (ferns, moss) cannot be picked.
+
+At the last step the sidebar shows the **census**: an estimate of residents, the working half of them, and the
+workplaces by kind of work (rates in `TUNE.census`; the Voth cantons' own people are not counted).
+
+**Power and light** (`37-vc-light.js`, `TUNE.power`, `TUNE.light`; owner, 2026-10-09):
+* Voth's power houses (`voth_generator` v0, the steam turbine hall, and `voth_bldg_power_station`, the power station
+  that replaced the small fumarole house on 2026-10-12) are placed at step 9, on the
+  avenues and main streets of the industry district, before its lots fill. They stand on HARD ground, as civic lots do,
+  and the census staffs them (`TUNE.census.jobs.power`). The generator is no longer one of the random `industrial` pieces.
+* Electric light reaches the industry district, the guilds (guild halls, the Guild canton), the clan compounds and wealthy
+  houses within `TUNE.power.reach` of a power house, and the Palace and Temple interiors. Each lot carries `light`
+  (`electric`, `lantern` or `torch`), shown in the inspector.
+* Street lamps are socketed as each street is laid: a wrapper on `SL.addWay` records `way.lamps` at `TUNE.light.every`,
+  sides alternating. Once the city stands, each socket's kind is settled:
+  * electric masts in the industry district;
+  * fancy lantern posts on wealthy streets (wealth at least `TUNE.light.fancy`) and round the canton decks;
+  * plain lantern posts elsewhere;
+  * torches in the alleys and poor quarters.
+
+  A socket that a later street crossed or a building took slides along its street (`TUNE.light.slide`); failing that, it is dropped.
+  The lamps are records (`PLAN.lamps`), drawn from Voth's primitives per step. Their heads glow in the kind's colour
+  (`TUNE.light.glow`), always lit until the day and night cycle dims them.
+
+**The flora** (the south-west bay biome; `38-vc-flora.js`, `VC.drawFlora` in `55-vc-host.js`, `TUNE.flora`; owner, 2026-10-09):
+* `build.py` bundles `core/biome` (10–40) and `biomes/swbay/src` (50–75) into one closure that exports `BIO` and `SWBAY`.
+  The files are read from their own folders. The bootstrap binds THREE before the kit's fragment 50 loads.
+  `SWBAY_TEMPLE_H` = 40 keeps the canopy low: small hypertrees. `VC.flora` scales the canopy species' crowns and boles
+  by the same ratio (`crownK`).
+* **The mask** is its own 4 m grid, rasterised from the plan (no canvas pixels):
+  * 0 on water and on everything built or worked: streets, lanes and highways, lots, fields, the wall, plazas and
+    markets, the works and farm districts, the monastery, the funerary ground, the orchards, the islets' landmarks and the lamps;
+  * inside the wall, open only in the parks;
+  * outside the wall, open on the natural ground.
+* **The climate:** the parks hand the kit wet lowland, so it grows its jungle there (hyper and rain zones). The rest is
+  dry upland, so it grows the savannah: baobabs, monkey puzzles, umbrella thorns, dragon trees, parasols, dry grass.
+* The LOD spine covers the parks, a 700 m lattice over the build zone and a 1 km lattice over the open country. The
+  kit's runtime LOD (`BIO.lodTick`, every frame) draws only the chunks near the camera.
+* The biome builds into one group with the country (step 13). The **flora** layer button hides it.
+
+**Day and night** (`VC.dayNight` in `55-vc-host.js`, `TUNE.clock`; owner, 2026-10-09). One clock drives the page:
+core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/atmos` (`0-core`, `0p-presets`, `2-lights`,
+`3-particles`, `4-weather`, `8-export`, `9-host`, `b-skylight`) as their own scripts.
+* **The sky** is the standard Krator sky, Voth's own: `build.py voth_sky_fragment()` lifts `20-stage.js` section 5 (the baked
+  volcano dome, the sun and moon discs) and `21-sky.js` up to its panel (the gas giant and its rings, the stars, the sun
+  disc, the pressure and eclipse model) into `VSKY`, with Voth's core helpers as a private stream. Nothing is copied. It
+  is not in core/atmos yet: `GODOT-PLAN.md` moves `21-sky.js` there as a sky preset in the refactor.
+  * `VC.dayNight` makes it (`VSKY.make`) and draws its background scene before the city each frame (a wrapper on
+    `renderer.render` for the screen pass only).
+  * The clock sets its hour, day and day of the year (`TUNE.clock.doy`). Its state drives the city's sun: the key light's
+    direction, colour and strength, with planetshine at night and eclipses. It also drives the sky fill, and the fog takes
+    the dome's horizon colour.
+  * `ATMOS.skylight` captures it as every standard material's reflections, recaptured as the hour moves.
+  * The volcano smokes, with a small or large eruption now and then, picked by an integer hash of the clock's quarter
+    hour (`TUNE.weather.eruptLarge`, `eruptSmall`), so the same hour always shows the same sky.
+* **The weather** is core/atmos's (`ATMOS.weather`) with its opt-in ash modes. The **Weather** select in the panel offers
+  auto, clear, rain, storm, fog, ashfall and ash (the ash storm). The page opens clear (`TUNE.weather.mode`).
+  * The module draws the rain and the ash flecks.
+  * `VC.applyHour` does what the weather does to this scene (`TUNE.weather`): it closes the fog in, dims the sun and the
+    fill, browns the haze in ash, lights everything in a lightning flash, and veils the dome (which takes no fog).
+  * An ash storm puts the volcano in Voth's violent bake.
+* **The lamps:** every lamp head is a core/atmos glow (`ATMOS.glowAdd`) with its own on and off hours
+  (`TUNE.light.hours`):
+  * electric switches on at once;
+  * lanterns are lit one by one through the evening;
+  * torches burn out before dawn.
+
+  The lamp heads and the lighthouse beams dim by day.
+* **Motion:** the vehicles run on the clock's motion time (times `TUNE.timeScale`), and SIM reads its hour and day.
+* **Controls:** the panel has the hour, run/hold, 1x/2x/4x/8x (the clock's `scale`: the day and the motion both run
+  faster) and an hour slider. The page opens at 10:00 and runs (`TUNE.clock`).
+* **Stocks (O, or "stocks (o)" on the bar; owner, 2026-10-14; core/host's `93-host-stocks.js` since 2026-10-16, ported from
+  `56e-vc-stocks-host.js`):** a panel listing every good
+  and item in the settlement (food; materials and goods; the citizens' things), its total and where it is: **at the
+  site** (made, not yet hauled: a producer's own store), **in transit** (a cart's load; a caravan's, barge's or ship's
+  load while it is on the map, coming in or going out; a lot landed at the caravanserai, a quay or a pier for the
+  carts), **in storage** (the warehouses and granaries; the households' food stores) and **owned** (what the citizens
+  wear, keep at home and work with); an import sent for by timer shows as "+n" beside the total (ordered, not yet
+  landed, not counted). **Change / day** is the total at one midnight against the one before (core's daily snapshot;
+  before the first whole day, the change since the first snapshot, marked "today"); **days** is days of cover (the
+  warehoused stock over its use a day). **Low** (amber): fewer days of cover than the economy's import threshold
+  (`TUNE.sim.economy.imports.days`, 3); **out** (red): a draw or a purchase went unmet in the last day or today;
+  "n want": citizens short of a kept set or with a broken tool now. Click a column (item, total, change) to sort; click
+  an item for its flows over the last day and today (made, imported, exported, drawn from the stores, of it into
+  households' stores, eaten at home, used up; an item's bought, issued, worn out, broken) and the twelve holding most;
+  click a holder to fly there and open it in the inspector. The panel reads itself when opened and every 4 s while the
+  simulated minute moves (never per frame); paused, only by "refresh". It keeps nothing beyond the page.
+* **Pause (k, or the "pause" button by the clock; owner, 2026-10-14)** freezes everything where it is: the citizens,
+  animals and pets, the carts, the caravans and barges, the ferries and elephant bugs (all poses of the clock's motion
+  time), the hour (the sky, the sun, the lamps), the simulation (`SIM.step` runs only when the clock's minute moves) and
+  everything the page animates from the frame's time: the sails, the water, the windmills, the lighthouse beams, the
+  plants' sway, the animals' gaits, the rain, ash and smoke. `k` again resumes exactly where it stopped. "hold" is not a
+  pause: it holds the hour while motion goes on. How (`56d-vc-inspect-host.js`): every frame hook is handed the page's
+  animation time (`VC.animNow`: the real time less the time spent paused), which stands still while paused; the
+  bodies drawn near the camera and the cutaway still follow the camera, and the inspector, the hour slider and the
+  panels still work. Headless proof (2026-10-14): two shots 8 s apart while paused are pixel-identical.
+
+**Canopies, lanterns and hanging banners** (`37b-vc-canopies.js` lays, `56f-vc-street-host.js` draws; `TUNE.canopy`; owner,
+2026-10-15, from the "canopy", "banner" and "market stall" pictures):
+* **Canopies**: in the market quarter (within `marketReach` of a market district) and the wealthy streets, cloth sheets strung on
+  ropes between the buildings that face each other across a side street or an alley (main streets in the market quarter), the
+  cloth sagging to the middle, paper lanterns hung along the middle rope, lit with the street lamps after dark. The market
+  quarter's are Voth kilims, the wealthy streets' plain hide. Every spot is a KRAND hash; the anchors are the first lot wall each
+  side within `reach` of the kerb, a storey under the lower building.
+* **Banners**: the spans' banners and the Temple's and the Fortress's dressing are records now (`CANT.banners`,
+  `VC.dressBanners`): a tall narrow cloth on a short crossbar off the parapet or the cornice, a weighted hem bar, the glyph
+  sheet of its canton (the Ordinator sheet under the bridges and on the Fortress, the Voth banner on the Temple with a gilt
+  border), in place of the flat tinted boxes.
+* **The market stall** (`kits/catalog` `voth_market_stall`, redrawn): poles leaning in to a ridge, a red woven awning over it with
+  horn finials, a painted kilim hung on one side for a wall, a brass-banded counter chest with the goods, baskets and sacks
+  behind, a lantern on the ridge. **The wayside shrine** (`voth_wayside_shrine`, redrawn from the "shrine" picture): a recess
+  between two battered pylons, a painted mural of the deity among rays and glyph columns, candle pedestals and planters before
+  it, coloured lanterns on a cord between the pylons' heads.
+
+**Park and plaza furniture** (`39-vc-furnish.js`, `TUNE.parkFurn`; owner, 2026-10-09):
+* The pieces are Voth's outdoor pieces from the furniture catalog. `build.py` lifts the Voth section of
+  `kits/catalog/krator-master-furniture.js` by its header, so the page carries no other culture's pieces.
+* **The site's parks:**
+  * benches along the edges, facing in;
+  * a statue at the middle, or the obelisk in the largest park;
+  * statues at the corners, turned to the middle;
+  * a wayside shrine on the longest edge that has room.
+* **The site's plaza:** a ring of benches round the fountain, with statues and braziers at its corners.
+* **The pocket parks and small plazas** the street method leaves get a bench facing in (or facing the fountain), and sometimes a statue.
+* **The big parks** (at least `walkArea`) get gravel walks, painted on the ground overlay and kept bare by the flora mask:
+  * a ring round the middle, with benches facing in;
+  * spokes out to the middles of the longest edges;
+  * lantern posts on alternate sides, benches facing each walk, and an avenue of cherry and dragon trees behind them;
+  * between the walks, a lattice of groves (trees with beds of shrubs and blooms), flower gardens, braziers with benches round them, wells and shrines (`TUNE.parkFurn.grove`).
+
+  The plants are records (`VC.parkFlora`), planted by the host with the biome's own builders. Each choice is a KRAND
+  hash of the park and the spot.
+* **The markets** (the site's market districts and the Market canton's square) have the catalog's canopied stall
+  (`voth_market_stall`, produce or exotic), each with crates, baskets, sacks, jars or barrels of stock beside it
+  (`VC.marketPitch`, `TUNE.market`). One pitch in five keeps a seller's goods laid on the ground.
+* Every piece is a record in `PLAN.districts` (kind `furniture`): inside its green, clear of streets, lots, lamps,
+  fountains and each other. The flora's mask leaves its footprint bare. `core/city/52-city-host-buildings.js` draws a `FURN` key
+  through `buildFurn`: its meshes serve the near and mid levels, and it is not drawn far.
+
+Streets wear library surfaces (`materials.json` road_* sets, `HOST.ROADTEX`): flagstone avenues, cobbled main
+streets, paved side streets, grass-grown alleys, rutted cart roads for the highways and lanes.
+
+`build.py` gives this page a fuller `VOTH` closure:
+* Voth's data fragments run whole.
+* The islet, river-bridge and harbour blocks of `30c-roads.js` are lifted.
+* Every Voth builder the plan uses is lifted by name with its helpers (`vothlift.py`, which reads `settlements/voth/src`).
+  This includes the monastery's parts (`61-monastery.js`) and the fishing dock (`65e`).
+* The islet build and the whole of `55-chinampa.js` are wrapped to run on demand.
+* A hook makes all of Voth's builders stand on the edited ground.
+* The primitive shim turns Voth's `"#rrggbb"` colours into numbers.
+
+The page also loads `core/simulation`: the record core, places, ports, navigation, motion, transport routes and the export.
+
+| Step | What | Whose rule |
 |---|---|---|
-| Down the bay | 67 / 4.25 M | 68 / 1.98 M |
-| Harbour quay | 67 / 4.25 M | 68 / 2.21 M |
-| Far shore | 67 / 4.25 M | 67 / 2.23 M |
+| 0 | The ground: Voth's `terrainH` plus the replayed strokes. An avenue drawn into shallow water gets a bank under it (`TUNE.embank`). Then the raster over the build zone: dry land, under 22° of slope | |
+| 1 | Landmarks at the markers. Shrines A–E (A and B on Voth's shrine islets). LH on Voth's lighthouse islet. I: the garrison castle, with the mustering ground before its gate, facing the nearest avenue. HOH. The funerary temple, facing the Temple canton as Voth does | Voth's builders |
+| 1 | (also) The shrines and the small lighthouse are the plan's own models in Voth's vocabulary (31-vc-voth.js VC.shrineModel, VC.lighthouseModel): a stepped platform, a domed cella with its door, portico, braziers and lancet windows, Voth's four obelisks; a staged tower with windows, a plinth door, a railed gallery, a glazed lamp room, a keeper's cottage. The islets' own Voth models give way to them | |
+| 2 | The Port canton's plain shed() warehouses (deck and quays) give way to kit warehouses round the lighthouse and the Navigator's Guild hall. Deck heights are read off the captured cantons.<br>The rim cantons' decks (Arsenal, Foreign, Granary, Market): Voth's generic deck buildings are stripped from the captured cantons and the decks laid out again: Voth's granary() and three windmills on Granary, barracks and armouries round a drill yard on Arsenal, a paved market square with stalls on Market, six embassies (below) and houses on Foreign.<br>Clan compounds come after the avenues (step 3): one per 14,000 m² of the 'clan compounds' districts, fronting the avenues first.<br>The districts: parks, the plaza (with a fountain), markets (stalls), funerary (temple, tombs, graves).<br>The monastery is walled round its own polygon: a main gate toward the Temple canton and side gates toward avenues. Inside, Voth's chapel, assembly hall, 6 dormitories, stores, a well, pens, 10 coops and up to 30 fields, all kept out of the parks.<br>The ferry stops' piers are booked first. Then the harbour: a quay; long piers spaced for ships (a ship moored either side: a pier's width, two 16 m beams and three 8 m clearances apart, at least 83 m long, and only where the open water ahead leaves a turning basin); fishing docks with moored dhows where no long pier goes, kept a ship's berth off the long ones; kit warehouses and cargo on the quay. The river port: quays square to the current, a barge alongside every other one, sheds.<br>Last, chinampas in Voth's zones, none in the 'chinampa exclusion' polygon | Voth's waterfront, 30c harbours and river docklands, 61-monastery, 65e fishing docks, 55-chinampa |
+| 3 | Avenues as drawn, and rings round each park and market (not joined). Each avenue's loose ends join a nearby avenue or causeway landing. Each river bridge end gets an abutment no lot may take and a short avenue on to the nearest avenue | |
+| 4 | Highways, then S12's road to the city, then the elephant bug stations. Each station stands off its road with a staging lay-by (a 22 m loop off the road and back, 56 m straight beside the platform, so an elephant bug pulls in, stops alongside and pulls out ahead); the platform and its forecourt are kept from the later streets and lots.<br>Highways E-NE, E along the river, NW along the bay (by S10) and S and SW (by S11). Each is an A* on the ground from the avenue point furthest out. It never crosses a landmark, market, monastery, cemetery or park, and passes 30–60 m from a station it must come by. A verge either side keeps lots off it | |
+| 5 | The wall on the west edge of the 'wall' polygon, pushed at least `wall.clear` from the avenues and standing whole. Gates come first: F, G and H at the crossings nearest them, generic gates at the other steep crossings. Each gate is squared to its road, with its towers either side of the road. Then the towers and segments | Voth's 30d/60-land wall |
+| 6–12 | Civic buildings, then lots on the avenues (never on the highways), main streets, side streets and alleys, as in the toy. Main streets use void infill on a 10 m grid, with dead-ends where a void backs onto the zone's edge. Lot mixes follow the districts. Wealth runs richest on the bay shore and round the parks and markets. Outside the wall is a sparse suburb | the toy |
+| 13 | The country:<br>• Mushroom farms (Voth's mushroomFarm) on the gentle ground of 'mush farm'; windmills (Voth's windmill, sails turning) beside a third of the farmsteads and at each village.<br>• Mines (Voth's mineEntrance) on the steep slopes of the 'mines' polygon and quarries (quarryPit) in 'quarries', each with a track to the roads and workers' houses; the 'more farms' polygon filled with farmsteads on tracks, six mushroom farms, and fields squared to the nearest road. Every country track routes round the fields and the big plots, and a field any road still crosses is taken up (`VC.fieldsOffWays`).<br>• S10's village is bigger, with fishing docks; S12 gets a village.<br>• Farming villages by S10 and S11: a green with a well, lanes out from it, cottages, fields round it.<br>• Lanes off each highway beyond the city. Toward the S, SE and NE they carry a suburb that thins with distance (houses with kitchen gardens). Elsewhere, and further out, they are farm tracks to a farmstead among its fields.<br>• Terraced orchards on the slopes of the ridge west of the city.<br>Nothing out here is strung along a highway | Voth's FARMS fields, 19b farmsteads, 70-veg terraced orchards |
+| 14 | Ferry and elephant bug lines as `core/simulation` transport routes (`77-sim-5r-routes.js`).<br>• Each stop is a SIM place (a ferry stop boards at its pier).<br>• A line that enters or leaves by an edge has a SIM port there.<br>• The legs are routed on the `water` and `strider` layers: this page's grids. An elephant bug wades to 9 m, as in Voth's `66-striders.js`.<br>• SIM bakes each timetable, and the host draws every ferry and elephant bug where `SIM.vehiclePose` puts it.<br>• A shore ferry pier gets a paved landing and a street to the nearest street. Every ferry stop has a pier joined to a quay, the shore or a canton (run in under the canton's ledge to its plinth); the four cantons with Voth piers of their own get them built from their records.<br>• Boats keep Voth's boat rule (78b lifeNavBlocked): water deeper than 1.5 m, clear of the cantons' rounded squares, chinampas and every pier deck by 6 m; a smoothed route that would cut a corner falls back to a straighter one.<br>• Elephant bugs walk the roads (cheap) and open ground and wade to 9 m; buildings, cantons, platforms and the wall stop them. They are Voth's own model (79c), legs and gait, with orange awnings | Voth's 65e piers, 66 stations, 78b, 79c |
 
-Voth draws every instanced set with frustum culling off, so with LOD off every view costs the same 4.25 M. With LOD
-on each set is culled by a real bounding sphere, small instances (props, figures, lanterns) drop by screen size, and
-the 72-triangle dome and blob shapes switch to a clustered version far off. Draw calls rise by at most 1 (a far
-version; the terrain's chunks are drawn combined, one draw per level in view). The views look the same with LOD on and off.
+`python3 verify.py dist/voth-city.html --assert` checks:
+* every step runs;
+* the three named gates stand on crossings, and every gate is on its road;
+* the wall is whole and keeps at least 15 m from the avenues;
+* there are five highways, those to the NW and SW pass within 70 m of S10 and S11, and nothing stands on or along them;
+* no buildings overlap, stand in water or stand on the wall, and none stands on a river bridge's end;
+* there are at least 7 clan compounds;
+* no chinampa stands in the exclusion;
+* the monastery has nothing in a park, and at least 4 dormitories, 6 coops and 10 fields;
+* there are at least 4 fishing docks, and the river quays are square to the current;
+* no avenue's ground is under water;
+* the country has suburbs, farms, fields, orchards and two villages;
+* every line is a SIM transport route that routes in full, SIM reports no problems, and a vehicle's pose is a pure function of time.
+
+**The embassies** (Foreign canton) are other builds' own buildings, drawn by their own code: `foreign.py` reads each
+build's kit fragments live from the repo and seals each build in a script of its own (`window.FOREIGN`), so their
+globals never meet the city page's. Dalab's stone hall and the Iziz, Republic and Yuni embassies come from
+`settlements/dalab`, the Hykkousoi Treasury from `settlements/ys`, the Jimjam School from `settlements/jimjam`
+(about 780 KB of their source). A fragment those builds rename or split may need its list in `foreign.py` updated;
+`verify.py` fails if any embassy does not draw.
+
+**The cantons, bridges and stairs** (`targets/voth-site/20-site-cantons.js`, `CANT`; owner, 2026-10-09). Both pages
+read Voth's captured canton models into levels: each canton's tiers, aprons, raised bands and top deck, and the
+Ancestry's spiral walkway as faces. The bridges, causeways and stairs are planned on those levels:
+* **The bridges** run from deck to deck. Each candidate end pair is tested for:
+  * a grade over `CANT.T.gmax`;
+  * clearance from the big captured pieces;
+  * the waterfalls.
+
+  The cheapest clean pair wins. A rim canton prefers its top deck; the Palace and Temple keep their bridges near Voth's `DECK`. The captured rails a bridge lands through are cut. Each bridge has its piers, parapets, bridgehead posts and banners.
+* **The causeways** stop at a canton's apron and climb it by a flight.
+* **Every canton is walkable** from a ferry to its top:
+  * a dock flight from each pier onto the apron;
+  * a chain of terrace flights up the tiers, each landing on a raised band's top;
+  * on the Ancestry, its spiral walkway re-stepped, then a stair to the summit;
+  * a door at the bottom of each face a route uses.
+
+  The buried sea stairs and the old walkway slabs are taken out.
+* **The Ancestry:**
+  * its tombs face inward;
+  * its waterfalls are shader sheets with foam at their feet (`VIEW.falls`), four a side, kept clear by the bridges;
+  * its flora is the swbay biome's: its cherries become the kit's new ash cherry (`SWBAY.treeAt`), its beds the kit's plants.
+* `CANT.walk()` registers it all in core/walk (`KWALK`): floors, strips, blocks and flights. The pin's walker (F) follows those floors, with a ledge guard.
+
+**The chinampas** (`31b-vc-chinampa.js`): each bed is drawn as:
+* a mud and soil body inside wattle stakes and withies;
+* rows of crops (maize, beans, squash, amaranth, marigold, greens, a seedbed);
+* canoes and planks on the canals;
+* a Voth poor house on the mature beds.
+
+The willows, reeds and marsh plants are the swbay kit's. Every choice is a KRAND hash of the bed.
+
+**The canton interiors** (`40-vc-interiors.js` plans, `56-vc-interiors-host.js` furnishes and draws; `TUNE.interiors`;
+owner, 2026-10-09). Every canton is hollowed into storeys (the Palace and the Temple since 2026-10-15: their bridge tier is a
+bespoke state floor, below). Each storey has:
+* a core stair (two flights and a landing each storey);
+* halls with rooms on both sides;
+* tunnels in from the doors;
+* a stair house up to the top deck (on the Fortress, its keep).
+
+Since 2026-10-15 (owner: "canton interiors need work, they are textureless and there is some camera clipping between levels
+seen when using walk mode ... add some multi-storey open space inside them in places"):
+* **Surfaces** (`TUNE.interiors.look`; `VC.intSetMat`, `VC.intSheetMat`): the library's sets (`materials.json`: eroded banco over
+  brick, smooth banco, big sandstone blocks, carved stucco, glazed tiles, travertine, timber beams, carved wood, gold leaf) as
+  grey detail under each canton's own colours, projected by world position; the full-colour pattern sheets (the Voth banners,
+  the solar and the Ordinator sheets, the Voth kilims, the inlay bands, the red palmette frieze, the sun-ray medallion, the
+  diamond jali, lantern paper) on tapestries, banners, rugs, dado bands, screens and lanterns, UV-mapped on turned panels.
+  Each canton has a look: the common ones in ash plaster over tiled ochre floors; the Palace in carved green stucco, green
+  tiles and gilt; the Temple austere pale banco and sandstone with blood-red hangings and candle nooks; the Fortress dark
+  blocks with the Ordinators' green and gold; the Foreign canton timber ceilings and bright kilims.
+  **The owner's sheets (2026-10-15, `Downloads/vothtex.zip`).** The Palace's stucco, tiles, jade inlay and columns, the damask and
+  the filigrees are drawn in their own colour (`VC.INT_COLOUR`: the set as authored, the look's colour a light tint). A look's
+  `tapestry` is a list: each hanging takes one by a hash of its spot. A look may also name `column`, `inlay`, `drum` (a painted
+  cloth drum round its chandeliers), `carpet` (runners down the state rooms), `domeMosaic` (over the throne room's sun chandelier),
+  `screen`, `icon` (behind the altar) and `dadoH` (a taller dado: the Temple's ancestor relief at 1.6 m). The suites' `frescos`
+  hang the myth of the three brothers (the Chichani, the Zeijani and the Andaru) high on their rooms' end walls, over the doors.
+* **Atria** (`TUNE.interiors.atrium`, `VC.intAtria`): on every tier with two storeys or more, the lowest storey's halls on the
+  axis arms are open to the storey above, which keeps a railed gallery along both sides of the void; the top tier's atria have a
+  light well, a parapeted slot in the deck (rare: the owner's "exterior light wells").
+* **Great halls** (`TUNE.interiors.greatHall`): a square hall two storeys tall at the far end of an arm on the first tier, a
+  railed gallery round it above. The Fortress's and the Arena's are training halls (the owner's "training hall" picture: posts
+  with crossbars and ropes on a sand square, banners on the gallery walls, torches, chandeliers); the Guild's a guildhall, the
+  Market's a market hall of stalls, the Arsenal's a drill hall, the Port's a warehouse, the Granary's a granary.
+* **Light** (`TUNE.interiors.lamps`, `VC.intDecor`; owner: "sufficient interior light sources, be they candles, lanterns,
+  chandeliers, or more rarely exterior light wells"): a paper lantern under every room's ceiling (a candle sconce in a cell, a
+  store, a dormitory), lanterns down the halls with torch brackets between, chandeliers in the great halls and over the atria,
+  every fitting drawn lit; a pool of twelve point lights follows the camera onto the nearest fittings.
+* **The core's ceiling** on the ground storey has the stair well cut out (it was a solid slab the walker's head passed through),
+  and **the near plane** stays at 12 cm while walking (`targets/voth-site/50-site-scene.js`: it grew with the camera's height
+  over the ground, so inside a canton 60 m up it stood at 2 m and cut every wall an arm away).
+* **Drawing** (`VC.intProto`): a catalog piece's primitives are merged by material class into vertex-coloured geometries, one
+  InstancedMesh per class, piece and storey (a canton was 30,000 meshes, now about 2,500).
+* **Furniture and clutter** (`VC.intFurnish`, `VC.intDress`, `TUNE.interiors.dress`; owner, 2026-10-15: "waaaaaaay more
+  furniture and decorative clutter ... make it ornate"): a room gets its programme from the placer (kits/interiors: the beds,
+  benches, desks, hearths its kind needs), then a dressing pass of its own: hangings and art on the walls every 2.4 m, seats,
+  cabinets, chests, plants, statues and lamps along them, a piece in each corner, and in the middle what its class lays out
+  (`dress.by`: groups of divans or chairs round a low table on a rug, rows of benches facing the dais in a sanctuary or a court,
+  desks with chairs in a study, work tables in a kitchen or a mess, stacks of stores), jugs, bowls, candles and books on the
+  tables it laid; the court tier's pieces (tapestries, painted hangings, wall rugs, friezes, statues, divans, candelabra) from
+  `dress.court` wealth (the Palace 0.95, the Temple 0.8, the Foreign canton 0.85). A suite's state rooms skip the placer (its
+  search took seconds there and found little) and are laid out by the dressing alone. About 30 pieces a room; the Palace
+  furnishes in about 5 s (29,500 pieces), the Temple in 3 s. The banquet hall has a feast laid (`VC.suiteFeast`,
+  `TUNE.interiors.feast`): four rows of court tables end to end, a chair every 0.95 m both sides, candelabra, ewers and bowls,
+  the high table across the far end.
+  Every room the census sleeps people in has at least one bed (up to four by its sleepers) against a wall with a screen
+  beside it as a room divider, or standing free when no wall is clear; every home (`dress.homes`) a food container and an
+  item container (owner, 2026-10-15: "make sure all canton homes have at least 1 bed", "at least one food and item
+  storage furniture").
+* **Walls and floors** (`TUNE.interiors.look`; owner, 2026-10-15: "the cantons probably need better wall and floor textures as
+  well except the palace"): sandstone ashlar walls in the common cantons, stone paving in their halls, planks where people live
+  and write (`roomFloors`), flagstones where they work, packed earth in the cells; the Temple in stucco over polished tuff, the
+  Fortress in its blocks over polished basalt, the Foreign canton in stucco over planks with mosaic halls, the Ancestry in old
+  fitted stone over flags. These are generic library scans standing in: `core/materials/PROMPTS-ready.md` ("The Voth canton
+  walls and floors") holds eight prompts for the Voth surfaces that replace them.
+* **The pedestrian layer goes inside** (`43-vc-sim-nav.js`, owner: "citizens travel thru what are supposed to be the solid
+  canton walls"): each floor a chain of nodes every `TUNE.sim.nav.inside` m, the open floors joined where they meet, a room by
+  its door, a suite's room by the suite's doors, the flights at their ends, the tunnels' mouths at the canton doors and the
+  suites' exits; a walk to a canton room goes in by a door and up the stairs.
+* **The terrace stairs have landings** (`targets/voth-site/20-site-cantons.js` `CANT.flightRun`, `CANT.flightSegs`; owner,
+  2026-10-15: "make sure all canton external stairs have landings"): every outside flight (terrace, dock, mole, summit) is
+  equal runs of at most `CANT.T.landEvery` (16) steps with a `landLen` (2 m) landing between, and one more at its head
+  (2026-10-16: "a landing at the very top as well"; the pedestrian layer crosses it as its own edge); the drawing, the walker's strips
+  and the planners' run lengths all take the same profile (36 terrace flights, 95 landings; the tallest rises 50 m).
+* **Inside, the pin and the inspector** (`58-vc-tools.js` `VC.pickInterior`, `97-vc-host-take.js`; owner, 2026-10-16: "click eg
+  inside the throne room and be able to start walk mode there"; "the inspector ... not correctly displaying the name of each
+  room"): with a canton's interior shown (the cutaway, or walking in it) a double-click drops the pin on the floor under the
+  interior as drawn below the cut (core/host's new `take({pick})`), so F walks from there; a click (and the hover tip, I) names
+  the room under the cursor (a blueprint room by its sheet name, the suite's big rooms by theirs: "Throne Room: the Octagon of
+  the Sun"), its kind, decor, area, storey and who works or sleeps there, and the piece under the cursor first if there is one.
+* **The Palace's doors onto its terraces** (`40e-vc-palace-doors.js`; owner, 2026-10-16: "there doesn't seem to be any exterior
+  palace entrances aside from the dock level", "stairs may be blocking some of these entrances"): the sheets' garden doors and
+  tier 0's four gates are exits on the first storey of their tier, a tunnel out through the battered, plinthed stone to where
+  it ends (`VC.faceOut`: the stack's frustums and the captured pieces at the door's height, 6 m clear past the last, the door 3 m
+  on) and a porch there; one a flight crosses slides along the wall or is dropped. The suite's own exits were 20 to 60 m inside
+  the stone (their porches buried): they take the same face now, the Temple's too. Ten Palace exits: the bridge porch, four
+  garden doors on the state floor, the four gates onto the apron, one onto tier 1's roof garden.
+
+* **The stone courses** (a captured canton's cornice slabs, which ran through its storeys and showed as red floors) are cut
+  where they cross the hollowed storeys and framed by four stone bands, with a thin slab over the interior at a level's top.
+
+**The Palace and the Temple** (`40b-vc-suites.js` `VC.SUITES`; owner, 2026-10-15, from the reference pictures). Their bridge tier
+(tier 1, where every bridge lands) is a state floor of three tall storeys, laid along a main axis from an entrance on the
+bridge's face:
+* **The Palace** (in from the -x face, the Ancestry's bridge): the foyer, a three-storey atrium with balconies, its six pillars
+  with the ancestors' gilt statues at their feet and grand stairs up each side wall to the first gallery and across the far wall
+  to the second; the two-storey banquet hall with pillars, chandeliers and tapestries hung at 45 degrees from the ceiling; the
+  three-storey octagonal throne room, its corners cut by diagonal walls, a corbelled dome rising through the tier above, the
+  octagonal dais and throne under the sun-giant-Krator chandelier (a jewelled gilt hoop with the three lit orbs); Tzintzun's
+  chambers on two floors with their own inner stair; off the north service hall the two-storey Hall of Judgment (the ruler's dais
+  against the far wall, two plaintiffs' daises against the near one, the spectators' galleries along the long walls). Two
+  service halls run the length of the floor either side, lined on every storey with guest chambers, clerks' offices and a
+  scriptorium, kitchens, servants' dormitories, guard rooms and stores, opened onto the state rooms by cross passages and
+  out onto the terrace gardens at their ends. The dungeon under the ground storey is the ruler's oubliette (cells, a guard
+  room, stores); the lower tiers hold the stores by the dock, guard rooms, offices and quarters.
+* **The Temple** (in from the +z face, the front the terrace flights climb): the three-storey atrium with pillars, a basin and
+  candle nooks; the three-storey sanctuary with the altar's dais and the ancestors' relief behind it, braziers and hangings;
+  the high priest's audience room with ornamental screens, his private chamber and the vestry, each with an upper floor. The
+  service halls hold the priests' quarters (chambers, a dormitory, a kitchen, stores, a library; the other high priests'
+  rooms on the first storey), the prisoners' cells with their guard rooms, and the wing of administrative offices.
+* Everything else (the other tiers, the tunnels from the dock, the stair house, the core) is the generic planner's, with the dome's
+  footprint kept clear on the tier above. The suites' doors, exits (a porch at each, the Palace's main entrance gilt), decor
+  records and galleries are the same records the generic cantons use, so the walker, the cutaway, the furnishing and the
+  census need nothing new; the new room kinds (foyer, banquet, throne, apartment, guest, judgment, scriptorium, sanctuary,
+  atrium, highpriest, vestry) are in `TUNE.census.rooms`.
+* **The Palace from its blueprint** (`palace/BLUEPRINT.md`, the sheets F-1 to F8; `palace/export_plan.py` writes
+  `targets/voth-city/40c-vc-palace-plan.js` from `palace/blueprint.py`; `40d-vc-blueprint.js` lays it out;
+  `TUNE.interiors.blueprint`, `blueprintKinds`). Each storey takes a sheet: the dungeon F-1; tier 0's seven storeys F0, F1 three
+  times, F2 three times; the state floor F3 to F5; tier 2 F6, F7, F7; tiers 3 and 4, which the sheets did not draw (85 and
+  67 m in half-width, two storeys each), F7 again, clipped. On a sheet repeated so, a void with nothing standing up into it
+  from below in that tier is laid as floor: a gallery's void an open floor, a garden court's or the dome's a light court two
+  storeys tall (the dome's shaft stays open only on tier 2, where the suite keeps it clear over the throne room); a stair
+  shaft the tier's wall cuts is laid as an open landing (its flights could not line up; the galleries round it join there). Tier 4 keeps only what fits inside 67 m. The storeys keep the stack's own heights (6.2 m on tier 0, 8.8 m on the state floor,
+  6.8 m on tier 2): the sheets give only the plan, clipped to each tier's wall (tier 0 is 169 m in half-width, the sheets
+  assumed 200: its outermost band is cut off; the stairs keep their places so they line up tier to tier). The suite keeps its
+  four big rooms (foyer, banquet hall, throne room, Hall of Judgment) with their galleries, decor and exits; everything else on
+  the state floor is the sheets'. A hall, a passage, a gallery is an open floor; a `gallery_void` a railed ring of floor round
+  the tall room under it; a room with voids over it stands that tall (the light courts, the Library of the Sun); a tier 0 zone
+  (the sheets' bulk, over 600 m2) is cut into a corridor and rooms 18 m long. The doors are found from the core outward: each
+  room takes its first door from the hall or room it touches that is reached first (the second-rank rooms behind the first);
+  a room nothing reaches is dropped. Every stair shaft the next storey's sheet also has gets two flights and a landing (the
+  Servants' Way dock to tier 2, the Kitchen, Chancery, Gaol, Inner, Secret and Astronomers' stairs). A spine hall runs from the
+  core to the canton door's passage on the ground storey, so the dock walks in. Rooms keep their sheet name and kind
+  (`name`, `bpKind`; the city's kind by `blueprintKinds.kinds`); a room's decor level is its furnishing's wealth, and the bare
+  and plain ones are dressed without the placer (`blueprintPlacer`). The log line: rooms, zones, doors, shafts, flights.
+* **The summit from sheet F8** (`40d-vc-blueprint.js` `VC.bpSummit`, `TUNE.interiors.summit`): the top deck's programme as
+  prims round the captured crown that stands there (a drum 100 m wide, a podium on it turned 45 degrees, the gilt dome,
+  four obelisks, a ring of gilt balls: F8 assumed a 70 m deck with a lantern at its middle). Each row stands where the sheet
+  drew it if that is clear of the crown (by each piece's own turned footprint), the stair house and the rows before it,
+  else at the nearest clear spot on a 3 m lattice, as drawn or turned a quarter, shrunk if it must be: the Dawn Pavilion
+  (gilt columns, a gilt dome, a gilt seat on a porphyry dais facing the sunrise), the Kiosk of the Evening (a hipped roof,
+  divans), the Solar Altar (three steps, a porphyry altar, a gilt sun, four braziers), the astronomers' instruments (a
+  gnomon, a gilt meridian line, a quadrant wall, sighting stones), the Pool of the Sky, the beacon (a tower and its fire
+  basin), the gardeners' store, the guard kiosk, the Grove of the Ancestors (swbay dragon trees in porphyry tubs) and the
+  High Garden (beds of the parks' swbay garden plants inside a gilt railing round the deck, open on the four axes). The
+  planting is the swbay kit's own (owner, 2026-10-16): records (`VC.summitFlora`) the host plants with `SWBAY.treeAt` and
+  `plantAt` (55 `VC.floraPlace`); a new plant goes into `biomes/swbay`, not onto the page. Not laid: the lantern (the crown's dome is
+  there) and the stairs' heads (the core's stair house is the summit's stair). The deck's walker is kept out of each
+  footprint (`P.summit.blocks`).
+* **The kitchens** (owner: "it's also not clear where the kitchens are"): the Palace's great kitchen opens off the banquet
+  hall's north wall and onto the north hall, the ruler's own kitchen beside the chambers; the Temple's priests' kitchen and
+  their refectory off its north hall, the sanctuary reached through the refectory (`greatkitchen`, `mess` in the census). The
+  Palace's floor plan is to be redrawn from the owner's floor-by-floor blueprint (2026-10-15, another session): these two
+  kitchens and the feast are placeholders until then.
+
+The rooms follow each canton's purpose (`TUNE.interiors.purposes`), with some residences among them:
+
+| Canton | Rooms |
+|---|---|
+| Arsenal | barracks, smithies, armouries, workshops (weapon making), a mess, offices, stores |
+| Guild | workshops, shops, stores, a guildhall |
+| Market | shops, stores, a tavern, workshops, a kitchen |
+| Granary | bakeries, granaries, a kitchen, stores |
+| Arena | training rooms, gladiator barracks, stables, a mess, a shrine |
+| Port (the harbour) | warehouses, offices, workshops, a tavern |
+| Fortress | ordinator training rooms, barracks, the jail's cells, offices, an armoury, a shrine |
+| Foreign | diplomatic offices, reception rooms, a library, living rooms and bedrooms |
+
+The Ancestry is catacombs instead: galleries, cross galleries and tomb chambers.
+
+The rooms are furnished by `kits/interiors` (`ROOM`, `furnishRoom`) from the catalog, with new room kinds (`VC.intPrograms`). The Voth set adds pieces:
+* the trade set;
+* a bread oven;
+* a cell grate;
+* a sarcophagus;
+* ossuary shelves.
+
+A canton is drawn when it is first shown: its shell whole, its furniture **storey by storey** (2026-10-16: the Palace's
+2,046 rooms and 120,000 pieces took 7.5 s to furnish before its first view). The cutaway furnishes the storey it cuts and
+any storey with a room standing up into it at once, then the storeys under it a few ms a frame (`TUNE.interiors.lazyMs`);
+the walker its own storey, then the ones above and below (`VC.intWant`). A room's pieces depend on the room alone, so the
+placements are the same as furnishing the whole canton at once (checked: 120,555 pieces, identical, furnished in reverse
+storey order in 5 ms steps). The Palace's first cut now takes 1.0 s (its shell and the state floor's 6,300 pieces), the
+next storey 0.4 s.
+
+**Cutaway (X; core/host's `99-host-cutaway.js` since 2026-10-16):**
+* it shows the canton whose apron holds the view's middle cut at a storey, and every lot building in view round the
+  view's middle (below); away from a canton, the lot buildings alone (the host's unit "the buildings in view", which sets
+  no clipping box: 56b's height grid cuts them);
+* the bar at the top of the view: the canton (or the buildings), the storey of how many, down, up, close; PageUp/PageDown,
+  [ and ] or Shift + the wheel step the storey;
+* clipping planes on every material (the host's, set at the first cut and moved after, never recompiled).
+
+**The Ring Sea vessels** (`ringsea.py`, `RINGSEA`; owner, 2026-10-09). The Voth watercraft of `kits/ringsea` are built by
+that kit's own code, sealed like the embassies (about 100 KB of its source, procedural materials). They are:
+* the ferries on every ferry line (`TUNE.vessels.ferry`);
+* dhows at the fishing docks;
+* barges off the river quays;
+* junks and cargo hulks along the long piers (`VC.berthShips`, `TUNE.harbour.ship`).
+
+The moored ones are records (`VC.MOOR`), each scaled to its berth's length and drawn as one InstancedMesh per mesh of its model (`VC.drawVessels`). Their sails flutter on the kit's clock.
+
+**Every building's interior** (`41-vc-building-interiors.js` records, `56b-vc-building-interiors-host.js` draws; `TUNE.ix`;
+phase A of `SIM-ROADMAP.md`, the owner's brief of 2026-10-12). Every standing lot building gets rooms and furniture, and the
+homes are checked against the brief's rule: per 2 residents a bed, an item store and a food store, and a dining or
+entertaining room where the plan allows. Residents are the census's (`TUNE.census.live`); a home that falls short is
+**reported, not forced** (the owner's answer to Q3).
+
+* **Types, not lots.** A lot draws a kit model (key, variant, slot), so every lot with the same model and programme has the
+  same building. It is planned and furnished once, in the model's frame, and placed by each lot's pose: 8,050 lot
+  buildings and 248 others are 124 types, about 8 s at load (no bake needed).
+* **The shell** is read off the kit model (`VC.ixProbe` builds it once and hands its boxes to `VC.ixShellFrom`): the main
+  block (the biggest volume that spans head height, stands on the ground and is not a thin wall; a round one as the square
+  inside it), its floor on any plinth, storeys of `TUNE.ix.storeyH`, the street door mid-front. The boxes are each mesh's
+  exact vertices (three.js r128's `Box3.setFromObject` overstates a turned mesh, and Voth's tapered blocks are 4-sided
+  cylinders turned 45 degrees). A model with no such block takes `TUNE.ix.fallback` of its footprint and is listed in
+  the report (none do now); `TUNE.ix.shells` overrides any `key|v|slot`.
+* **The programme** is by lot class (`TUNE.ix.programmes`, per storey, the last repeated upward; `TUNE.ix.single` for a
+  one-storey building), or by kit key (`TUNE.ix.byKey`: barracks, school, guild hall, customs house, smithy). A home's
+  bedrooms are `chamber`s: a bed and a chest, then as many more beds (`TUNE.ix.chamber`) and stores as the room holds.
+* **Furnished** by `kits/interiors` (`planBuilding`, `furnishRoom`) from the catalog, as the cantons are; a home that fails the
+  residence rule is furnished again with another seed (three tries).
+* **The cutaway (x)** cuts **every lot building in view** (owner, 2026-10-14), not only the nearest: the buildings with
+  an interior within 160 m of the view's middle and inside the camera's view, the nearest 36, each at the chosen storey
+  (its own top storey when it has fewer), with its interior shown up to it (its walls with their doors and windows,
+  stairs and furniture, drawn the first time it is cut); the building the view's middle is on is always one of them.
+  The storey keys and buttons step them all; the bar says how many are cut. One clipping box cannot hold many
+  buildings, so the cut is a height grid (`56b` `VC.CUTALL`): a 512-texel square texture over the view's middle (400 m,
+  about 0.8 m a texel), each building's footprint (plus 0.8 m) rasterised at its cut height in its own frame, and every
+  mesh material tests its texel and discards what is above (one texture fetch; compiled once, the first time the
+  cutaway opens, as the planes are). The opaque shadow casters take a depth material that does the same, so a cut
+  roof casts no shadow into the room. **The limit and why:** 36 buildings within 160 m: an interior is 10 to 40 draw
+  calls at its shown storeys, so the cut stays under about 1,500 extra calls; 3 new interiors are drawn a refresh (every
+  300 ms), so a first opening spreads over a few seconds instead of stalling a frame; drawn interiors kept for later are
+  capped at 150 (the farthest freed). The canton the view's middle is on keeps its clipping planes. The inspector names
+  the shown pieces.
+* **The wealthy houses' decor** (`VC.ixDecor` in 56b, `TUNE.ix.decor`; owner, 2026-10-15: "wealthy homes and clan compounds ...
+  tapestries are extensive and in the larger spaces, hung at a 45 degree angle; chandeliers and carved and inlaid columns are
+  common. Ornamental plants are also noted"): in the rich, manor, clan, civic, tavern and landmark classes the halls and living
+  rooms are hung with tapestries (the Voth kilim in the clans' halls, at 45 degrees from the ceiling in a grand one), a grand
+  hall gets a chandelier and, in a clan's or a manor's, four carved columns; every room in every building has a paper lantern
+  (the light pool reaches them). The catalog's new `voth_planter` (an ornamental plant in a glazed pot) is offered to halls,
+  foyers, reception rooms and atria. **The clan compounds' atria** (`VC.ixAtrium` in 41, `TUNE.ix.atrium`; owner: "atria again
+  are seen but only in the clan banquet room"): the ground-floor hall is open to the floor above, which keeps a railed gallery
+  round the void; the rooms that stood over it go, and the report counts the beds a compound gives up for it.
+* **Walking into a building (F)** shows its interior whole, as walking into a canton does (`VC.ixWalkIn`); the cutaway
+  leaves it so. Interior meshes are never frustum-culled (2026-10-14): three r128 culls an InstancedMesh by its geometry's
+  sphere at the group's origin, not by its instances, so a building's interior vanished whenever its middle left the view,
+  and a canton's whenever the world's origin did.
+* **The buildings off the lots** (session 2): Voth's own builders the city calls are logged by `build.py` with their
+  arguments (`VOTH.BUILT`: the monastery's dormitories, chapel and assembly hall, the funerary temple, the House of
+  Healing); the city's shrine and lighthouse models record their shells (`VC.ixSite`); the chinampas' stilt huts carry
+  their size (`VC.chin.hutList`). Each is planned as `TUNE.ix.sites` says. The House of Healing is counted from the wards
+  the city already furnished (its cots and dispensaries), not planned again. The huts' beds are reported as room to
+  spare: the census counts the chinampa growers' work, not their homes.
+* **Kit models with their own shell**: an ASSET may carry `ix: { block: [x, z, w, d], y, h, storeys }`, read before any
+  guess. The citizen simulation's eight new models (`kits/catalog/krator-master-buildings-voth.js`: watchhouse,
+  caravanserai, coast-guard berth, weaver, tannery, brewery, butcher, bakery) carry it; they stand nowhere yet (phase B
+  places them), so `VC.ixKitCheck` plans each as a lot of the class in `TUNE.ix.kitCheck` and the report lists them. Their
+  trades have room kinds of their own (`brewhouse`, `weaving`, `tanyard`, `butchery`, beside the cantons' `bakery`), each
+  requiring its trade's pieces by catalog role (the still, barrels and vat; the looms and dye vat; the vats).
+* **The density overlay (n)**: residents per hectare on 50 m cells (a diverging ramp round the city's mean), the homes short
+  of beds hatched; again for workplaces per hectare; again for off. Its legend has the totals.
+* **The report** (the "interiors report" button, and `verify.py`'s output): beds, item and food stores needed and held;
+  the shortfall by lot class and by district; the job table of the brief's 1.2 (a row per kind of work, a column per
+  furniture kind, with the census's workplaces, the 90% target and the posts placed); every type with its shell, storeys,
+  rooms and counts. `VC.ixSlots(i)` is what phase B's places will read; `VC.IX.export()` is all of it as JSON.
+
+**The citizens' places (phase B)** (`42-vc-sim-places.js`; `TUNE.sim`, `TUNE.census.byKey`; `SIM-ROADMAP.md` 2.3). What
+phase C's citizens will need, placed and declared, and its deficits reported before anyone walks:
+* **The buildings** (`VC.simBuildings`, after the street method and the owner's edits, before the census): the new kit
+  models go onto the plan. The trades (14 bakeries, 10 butchers, 8 weavers, 4 breweries, 3 tanneries, `TUNE.sim.place.trades`)
+  take shop, craft and industrial lots whose plot holds their model and whose new footprint clears every other building,
+  front kept on the street, spread over the city (each next lot the farthest from those its trade holds). Three
+  watchhouses take a house near the east, west and south of the city; the central one is the Fortress's armoury. The
+  caravanserai is placed at step 3, right after the avenues (`VC.simCaravanserai`, as the House of Healing is): on the
+  free ground nearest the River Gate's marker, inside the wall's clearance, fronting an avenue, so the streets and lots
+  of steps 6-12 are laid round it (owner, 2026-10-12). The coast-guard berth stands on the water off the Fortress's
+  apron, clear of every bridge, causeway and pier, on a stone footing. A converted lot counts in the census as its new
+  building (`TUNE.census.byKey`).
+* **More work furniture** where the 90% rule fell short (owner, 2026-10-12): dense work rooms used only by those
+  buildings' programmes: `factory` (the industrial lots), `enginehall` (the power houses), `drillhall` (the garrison and
+  barracks), `guardroom` (the watchhouses and the coast-guard berth), `alehouse` (the taverns and the caravanserai),
+  `counting` (the guild hall and the customs house), a stable at the caravanserai, a second storey in the funerary
+  temple; the Granary deck's granaries and the mustering ground are work places too.
+* **The wells** (`VC.wells`, after the park furniture): `voth_well` on the plazas and market squares and every 150 m along
+  the residential streets, none within 90 m of another (or of the parks' and the monastery's wells); the manors and clan
+  compounds have their own, in their courtyards (a DRINK on the home). They are a 'Wells' district's art: drawn and
+  inspected as the other furniture.
+* **The places** (`VC.simPlaces`, after the interiors): every building with an interior, every canton room, every well,
+  park, market and burial ground, the fields, piers, mines, quarries, mills and the wall's towers and gates are
+  `SIM.place`s (about 11,100), each with its activities (its furniture read through `TUNE.sim.furnAct` over
+  core/simulation's `SIM.FURN_ACT`: `SIM.slotsFromFurniture(pieces, map)`), its hours (`TUNE.sim.hours`), its pull for free
+  time (`TUNE.sim.pull`) and its work posts with their kind of work (`TUNE.sim.posts` per piece; a canton room's and the
+  outdoor work's are the census's).
+* **Session 2:** a piece's capacity by its size (`TUNE.sim.postWidth`: a 4.4 m workbench takes two; `seatWidth`: seats
+  round a table's edge), the places' `spots` (where people stand: a step before each work piece, seat, table and bed,
+  the work ones first, at most 48), an open place's reach `r` and `wander`, and each place's `workplaces`. The density
+  overlay's third mode (n) maps work posts against 90% of the workplaces: warm where short, cool where there is room.
+  The power station (`voth_bldg_power_station`, four engine halls of up to 20 workstations) took the small power
+  house's place, and every kind of work now meets the 90% rule.
+* **The 90% rule** (`VC.simWorkAudit`): for every kind of work the census counts, the posts against 90% of its
+  workplaces; a short kind is named with its buildings that have the most floor per post (where more posts would go).
+  In the report panel (the "interiors report" button) and in `verify.py`'s output.
+
+**The citizens (phase C)** (`43-vc-sim-nav.js`, `44-vc-sim-people.js`; `TUNE.sim.nav`, `TUNE.sim.people`; `SIM-ROADMAP.md`
+2.4). Session 1 made the walkable city and the people in it:
+* **The pedestrian layer** (`VC.pedNav`): core/simulation's NAV graph, registered as SIM's `pedestrian` layer (about 27,600
+  nodes and 35,000 edges, built in about a second at load). Every street of the plan, a node every 20 m, with a shared
+  node where two cross and a junction where one stops at another; a dead alley or lane end reached over to the street
+  behind it; each plaza a hub joined to the streets round it (a village's lanes start at its green); the park walks;
+  the cantons: each terrace a ring of nodes, each top deck a grid, the Ancestry ramp, the flights (stairs cost 1.6
+  times), the bridges over their arch, the causeways from canton to street, the canton doors. The layer is `yWeight`ed
+  (core/simulation's new opt-in): a place on a terrace finds its node on that terrace, not on the street under it.
+  `VC.pedAudit` checks it is one body and lists the places far from it. Not joined yet: the canton rooms (the canton
+  interiors' own graph) and the chinampa huts (by kayak, the water layer).
+* **The people** (`VC.simPeople`): every home's census residents become SIM actors (53,355, the census exactly), half
+  of them of working age (all of a barracks' or a dorm's). The jobs are the places' workplaces, dealt: a home that is
+  also a workplace fills its own posts first (not household service, which comes in from outside); 70% of the farm,
+  mine and quarry posts go to slaves, housed at the site and counted apart from the census (the owner's Q5); every other
+  post to the nearest free workers by the walk on the pedestrian layer (`SIM.nav.field`, core/simulation's new
+  multi-source search: one search labels the whole city with its nearest free post), never past 3 km walked. The gentry
+  (rich, manor, clan) take only the professions (`gentryJobs`) and otherwise live on their means. Each actor carries its
+  home, work, class and wealth (the owner's Q6 recommendation) and a plain day's schedule (session 2 brings the week).
+* **The report** (the "interiors report" button, first section; `verify.py`): people by class, workers employed and out
+  of work by district, every kind of work's posts filled and how, unfilled, the commutes in metres walked; the pedestrian
+  layer's counts and what is off it; an A* check of a sample of the commutes. `verify.py --assert` also asks a sample of
+  actors at 8 and at 2 where they go: each worker chooses its work, each sleeper its home.
+* **The outside stairs and ladders** (owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): every
+  kit model records each stair and ladder it builds (its registry's `walkRec`; `settlements/voth/catalog/README.md`
+  "Walk records"); the model probe (`VC.ixProbe`) collects them per model, variant and seed slot (`VC.IX.walks`), and
+  `VC.pedNav` puts them at every standing lot: about 6,800 stairs and 4,700 ladders on 6,400 lots, each a `stairs` (or
+  `ladder`, three times the cost) edge from foot to head. A foot at the lot's ground joins its street; two ends of one lot
+  at one height (a landing between flights, a roof both reach) join each other; a foot up on a gallery or roof no other
+  stair reaches is reached through the house (an `indoor` edge, until the buildings' own graphs are joined). Every head
+  is on the main body. The first-person walker gets each stair as a core/walk strip with a landing at its head (not the
+  ladders). `verify.py --assert` routes a sample of the heads from the city's middle and stands the walker on a sample
+  of the stairs mid-flight.
+* **Session 2: the week, running** (`56c-vc-citizens-host.js`; `TUNE.sim.week`, `TUNE.sim.run`, `TUNE.sim.embody`):
+  every citizen is stepped once a simulated minute from the frame loop (the owner's Q1), on the page's clock; the hour
+  slider re-places everyone. Each kind of work has a shift (`TUNE.sim.week.shifts`, a share on nights for the guards,
+  soldiers, stokers and jailers), and each role three days built from it: `work` (8 hours' sleep ending an hour before
+  the shift, a meal, the shift, a meal, free time), `off` and `rest` (core/simulation's new `scheds` and `week`). Day 7 is
+  the rest day for all but the essential kinds; every worker has a rota day off among the other six (the owner's Q8).
+  Free time: SOCIALIZE out, RELAX, IDLE and REST at home (a chair or a bed: `TUNE.sim.alsoAct`, the owner's "chairs,
+  stools could be a good target for idle and beds etc for rest"); a house is private (`access: 'private'`). The clock
+  has 20x and 60x. The citizens near the view are drawn (up to 1,500 within 220 m: a figure whose tunic says what
+  they are doing). The census is sampled at 3, 10, 15 and 20 each day; the report's "The week, running" shows now,
+  the samples, and what people wanted and did not get. `verify.py --assert` runs a workday and the rest day's morning
+  headless (`VC.simDay`). To keep 54,000 decisions cheap, core/simulation gained a place grid per activity (exact
+  nearest-first, an empty answer remembered for the minute), lazy paths (decided from the straight line, found when
+  drawn), `SIM.REACH`, and a batched log.
+* **More company, the slaves' rest day, worship sized** (owner, 2026-10-12): every plaza and pocket park of the plan is a
+  place, its room by its area (`TUNE.sim.greens`: about 26,000 more places to socialize); a house's seats and table
+  places take VISIT, its own people and the neighbours within `TUNE.sim.visitR` m (core/simulation's `guests` on a
+  private place), and someone who finds no room out visits instead. Slaves work half their shift on the rest day
+  (`TUNE.sim.week.slaveRest`). A shrine's, chapel's, the funerary temple's and a canton shrine room's congregation is its
+  ground floor at 2.5 m2 a worshipper (`TUNE.sim.worship`); `VC.simWorshipNeed` sizes the rest day's worship (in the
+  report and `verify.py`).
+* **The rest day's worship** (owner, 2026-10-12: "3 with half; make 2 new unique temple models ... place one on the west
+  side and one on the southeast side at the pre-street phase; and make 3 small tomb size shrines ... Clan compounds can
+  also take this furniture shrine. Make a house size chapel that can go in the villages"): three services (8, 11, 17),
+  half the city dealt one each (core/simulation's actor `alias`: `TUNE.sim.worship.at`, `share`); the Temple of the Ash
+  Saints (a Velothi stepped hall under a drummed dome, fire pylons, a portico) and the Temple of the Tide Mother (a
+  Hlaalu basilica, its tower and forecourt), kits/catalog, placed at step 5 off an avenue on the west and southeast
+  (`VC.simTemples`, the caravanserai's search: `VC.simPrePlace`), each hall about 1,360 standing; a village chapel in
+  each village (the house nearest its green); three small shrines (`voth_shrine_stele`, `_lantern`, `_urn`, kits/catalog
+  furniture, `holds` 2-3) along the big parks' walks and in every pocket park of 120 m2 or more (`VC.parkShrines`), and
+  in every clan compound's shrine room (`clanshrine`, its hall in the small compound). Worship by floor (2.5 m2) and by
+  each shrine's `holds`.
+* **Benched squares and village shrines** (owner, 2026-10-12: "Add a couple village size shrines and benched squares
+  for that overflow"): the overflow was the cantons' people (nowhere within reach to sit with company on a working
+  afternoon) and the rest day's worshippers in the suburbs, farms and mines. `VC.simSquares` (`TUNE.sim.place.squares`)
+  clears a few house lots at each canton's foot (out from its apron, or from its causeway's land end: the Fortress) for
+  34 x 24 m squares fronting a street: a ring of 10 benches round the well `VC.wells` sets in the middle, benches along
+  the three inner sides, braziers at the corners (27 benches); each is a plaza green (standing room by area) whose
+  benches add seats (`Benched square (<canton>)`). `VC.simVillageShrines` (`TUNE.sim.place.villageShrine`) places the
+  `voth_bldg_village_shrine` (kits/catalog: a walled precinct, a pillared hall with a lantern cupola, a forecourt with a
+  stele, an offering basin and braziers; its nave holds 81) where the most worshippers are left without room when each
+  household's are given to the nearest place with room within 1.5 km, as the citizens choose (`VC.simClearable`,
+  `VC.simClearSpot`: the cleared ground both use).
+* **Needs, happiness, efficiency, loyalty** (phase C session 3; SIM-ROADMAP.md 2.4 items 4-6): core/simulation's new
+  `77-sim-6-needs.js` (opt-in: `SIM.needs`), tuned by `TUNE.sim.needs`. Every citizen carries a meter per need (eat,
+  drink, socialize, relax, contemplate, sleep; material waits for phase D's items), 0 met to 100 desperate, rising by the
+  hour (more for some trades: the monks' contemplation, less for the soldiers' material) and falling by what they do
+  (a meal: hunger and thirst; a tavern or a well: thirst and company; a shrine: contemplation; at home, sitting or
+  resting, there is water). Heavy labour (`labour` by trade, the slaves all of it) adds thirst and some hunger at work,
+  and a labourer whose thirst reaches 75 walks to the nearest drink (a well; the country's fields, mines and quarries
+  keep a water barrel) and back. The free hours of the schedule go where the meters ask: of socializing, relaxing at
+  home, a drink, contemplation at a shrine, rest or sitting at home, the one whose fills times the meters is highest and
+  that an open place within reach offers, held an hour; one no place takes settles for what it got. One trait each
+  (chatty, loner, pious, worldly, glutton, ascetic, restless, steady: a hash of the citizen) weighs a need a third more
+  or less. Happiness is 100 less the meters' weighted pain; its band (content, uneasy, unhappy, restless) sets the
+  efficiency at work (1, 0.92, 0.8, 0.65); loyalty follows it over three days (loyal, wavering, disloyal: their effects
+  are phase F's and G's). The report's "Needs and happiness" gives them by class and by kind of work (with the
+  efficiency of those at work now), the deficits by district and the free-time places full; the clock bar shows the mean
+  happiness; `verify.py` runs a second workday on from the first and checks the meters hold steady.
+* **Things: clothes, tools, food, shopping** (phase D; SIM-ROADMAP.md 2.5): core/simulation's new `77-sim-6-items.js`
+  (opt-in: `SIM.items`), set up by `45-vc-sim-items.js` from `TUNE.sim.items`. Stock was abstract in phase D (the owner's
+  Q7: every purchase succeeded and was logged by shop and item); phase E's economy (below) draws it from the warehouses. A shop sells by
+  its kit model (the alchemist poultices; the clothier, the weaver and the tannery clothes and shoes; the smithy tools,
+  arms and armour; the provisioner, the bakery, the butcher and the markets' stalls food; the trader, the enchanter and
+  the potter luxuries and household goods). Every citizen wears a set (shirt; trousers or a dress; shoes; a hat or hood
+  for some) in the six slots and keeps more at home by class (the owner's Q6: 1 to 6); the armed trades own armour and
+  arms, some of the rich a sword; a worker owns its trade's tool or draws it from the rack; labourers carry a waterskin,
+  chinampa growers a kayak. Clothes wear by the worn day (at least a year of wear: the owner; everyone starts at a hashed wear) and are replaced from home; a set short is bought on time off
+  (and the material meter feels it); a tool (a working year or more of use, at a hashed start) worn out at work is bought during the shift; a worked day may end hurt (a
+  poultice from an alchemist). A household keeps a food store: two foods make a meal worth three servings (the richer
+  table more), one food a bite, none scraps; a store below a day sends one of its people for three days' food. The
+  cantons' rooms, the dormitories, the barracks and the slaves' quarters eat at their mess. The slaves are issued
+  their clothes and tools and run no errands (the owner's Q5). The material meter rises slowly; when it is high a
+  citizen buys the best luxury or household good its wealth reaches. An errand goes when a seller is open and within
+  reach. A household shops when its store falls below two days and buys four (a buffer: a store that runs low after
+  the shops shut lasts the night). A meal is eaten out (a tavern, a market's stalls, the caravanserai) by a share that
+  grows with wealth, or when the store cannot make one. The chinampa growers' huts and beds are on the `kayak` layer
+  through a landing at the nearest street (`VC.simKayaks`): to town by kayak, then on foot. The landing's door is the
+  water's edge on the way from that street to the beds (`VC.simShore`), so no kayak crosses the shore; a paddler is drawn
+  sat in a kayak (56c). The outdoor work sites' people stand on what is there (`VC.simStandSpots`: a pier's deck at its
+  `top`, a chinampa bed, dry ground), their wander kept to it, never on the water round a pier or a hut (2026-10-14). The report's "Things" section; `verify.py` checks the slots, the purchases, the replacements and the meals.
+  **The shipwright's docks** (owner, 2026-10-13: "a shipwright's dock that constructs ships and also sells oars,
+  kayaks. Nets could come from weaver"): `voth_bldg_shipwright` (kits/catalog: a yard on the shore, a slipway into the
+  water with a hull on the stocks, sheerlegs, a timber shed, the shop with oars and kayaks racked), placed by
+  `VC.simShipwrights` (`TUNE.sim.place.shipwright`) at the river port and on the nearest natural shore to the harbour
+  (the harbour's own coast is its quay deck, 4 m above the water: no slip runs off it). Its 14 shipwrights work the
+  slip (the ships they build are phase E's production); it sells oars and kayaks, the weavers nets, and the fishers
+  now own their nets (bought from a weaver when worn out).
+* **Production, stores, carts, imports** (phase E; SIM-ROADMAP.md 2.6): core/simulation's new `77-sim-6-economy.js`
+  (opt-in: `SIM.economy`), set up by `46-vc-sim-economy.js` from `TUNE.sim.economy`. The stock stops being abstract: a
+  shop sells from the settlement's store (the 487 warehouses and the Granary deck's granaries), so a purchase can fail
+  and a kitchen can run out. Food is counted in servings (a meal is two), the craft goods in lots. The producers make
+  their goods by the worked hour, times their workers' efficiency (the needs' band, a missing tool, a hurt), into
+  their own store: the 454 fields one crop each (wheat, corn or peppers by a hash, wheat three times as often), the
+  chinampas corn and peppers (whichever has fewer days left), the mushroom farms, the fishers' docks, the beetle ranches
+  eggs, the bakeries bread from wheat, the weavers cloth, the tanneries leather, the mines metal. Fifty carts (driven
+  actors the stepper leaves to the economy; drawn near the camera as a cart and its hauler) take the site whose good
+  has fewest days left, then the fullest no other cart is bound for, then the nearest, and unload at the emptiest of
+  the six nearest warehouses. Clothes draw cloth, shoes and waterskins leather, tools, arms and armour metal, oars and
+  kayaks wood, poultices herbs, luxuries the imported luxuries; a household's food, a meal out or at a mess the foods.
+  A good with an import route (wheat, corn, peppers, eggs by river or road; cloth and luxuries by sea; leather, metal,
+  wood, herbs) is sent for when it lasts under three days and arrives hours later (the ships, barges and caravans that
+  carry it are the next session's: only strider ports stand on the map's edge now). The report's "Production, stores,
+  carts, imports" section (per good: the warehouses, the sites, made, used and imported a day, days left);
+  `verify.py`'s economy check after two workdays (every producer, the carts, every food made and hauled, none short,
+  none under a day, the kitchens' meals, the imports delivered).
+* **The carriers** (phase E session 2; `TUNE.sim.economy.carriers`, `VC.simCarriers`): an import now comes as a group
+  of people. The road's goods come by caravan (a beetle, its driver and two guards a unit, three to five units) in by
+  the strider ports on the highways; it unloads at the caravanserai, lodges there ten hours and leaves the way it
+  came. The sea's goods come by ship (ten sailors, four marines) from the north edge to the harbour pier nearest it.
+  The lot lands in that place's store and the carts take it on. Leaving, a carrier buys the city's surplus: the good
+  with most days left, no more than the last day's surplus. The river's barges wait for a water way: the `water`
+  layer finds none from the river's upstream end to the quays, so river imports still come by timer (the report says
+  so). Drawn near the camera: a beetle under each driver, a hull under each crew, a mast on a ship. The shipwrights
+  now build boats from wood, and a kayak is bought from their stock. `VC.simDays(d0, n)` runs whole days from the
+  console (the owner's fast clock, Q2): a week held, every food's stock rising, three to four days left.
+* **The animals** (owner, 2026-10-13; `47-vc-sim-animals.js`, `TUNE.sim.animals`, the fauna kit's `farm` and `voth`
+  groups): beside the beetle ranches, dairy-cow pastures, pig sties and duck coops (by a pond) stand beside the
+  farmsteads (`VC.livestock`, `TUNE.country.livestock`), each its trade's work place (dairymen, swineherds, duck
+  keepers). Every pen keeps a herd of actors, the fauna kit's animals, on its own needs (hunger, thirst, sleep, ease):
+  in their free hours they feed at the trough, graze, drink, bed down or loaf by what their meters ask. Their
+  condition is their yield: eggs and milk by the animal-hour while their keepers tend them, and the dairymen make
+  cheese of the milk (four to one). Pork and fowl come by slaughter (owner: "a new animal born every time one is
+  slaughtered for meat, and it takes 1 year to grow up"): a share of the pigs and ducks is raised for meat, slaughtered
+  once grown for the fauna kit's meat (kg, four servings a kilo, times its condition), and a newborn takes its place
+  for a year: the young yield nothing and are drawn small (a pig as a piglet). With one birth a slaughter and a year
+  to grow, a herd of N gives at most N/365 a day: meat is rare until breeding comes. Milk, cheese, pork and fowl are foods: the provisioners, the
+  butchers and the markets sell them, and cheese makes a better meal (`quality`). The Arena's stables keep its beasts
+  (the arena tiger, the pit lizard, the pit beetle) on the same needs; at 11:00 and 16:00 a bout: the keepers' forced
+  command (core `SIM.command`) puts two sound beasts on the sand to fight, the stronger by mass, aggression and
+  condition wins, and the loser heals three days. `VC.arenaBout(a, b)` stages one by hand. The nearest 40 animals are
+  drawn by the fauna kit, walking, grazing, resting or idling as they do. **The pets** (owner, 2026-10-13): a dog and
+  a cat for every 40 citizens, each in a household; asleep at home by night, by day they roam the greens and squares
+  (moving on every two hours) and now and then mingle where people gather, by their own meters; no food yet. Drawn
+  from the fauna kit's baked dog and cat models (`fauna_bundle.bundle(..., mdl=['pets'])`, about 1.9 MB of the page).
+* **The wake** (`TUNE.sim.run.wake`, core/simulation `SIM.WAKE`): an actor is asked what it wants only at the soonest
+  minute it could change (its schedule's next change, an errand's or a dwell's end, a meter's crossing, a role's
+  cycle), not every minute: 74 of the 77 million questions of a day are skipped and the step's p50 fell from 109 ms to
+  about 64 ms on a workday (verify.py); two stale wishes in 2.5 million checks. **The lag** (`TUNE.sim.run.lag`, core
+  `SIM.LAG`): each citizen's day runs a hashed 0 to 10 minutes behind the clock, so nobody leaves on the dot and the
+  hour's decisions spread over its first minutes instead of all falling at :00. **The buckets** (`TUNE.sim.run.buckets`,
+  `VC.simBuckets`; owner: "stagger the jobs into 2 buckets separated by 1/2 hour"): the kinds of work are dealt, the
+  largest first, to the bucket with fewer workers, and half the city's trades keep their day a half-hour later (their
+  shifts, breaks and evenings); those without a trade by parity. Each hour's turn falls in two halves, at :00 and :30:
+  the worst minute 1.9 s against 2.5 s, the day's total about 9% more (a smoother day, not a cheaper one).
+* Phase B's outdoor trades now stand at their own sites (the ferrymen at the ferry stops, the bug handlers at the strider
+  stations, the chinampa growers at the huts, the herders at the ranches, the orchardmen on their hill); every place
+  with workplaces offers WORK; a home whose beds fall short still sleeps its people (on the floor).
+
+## Notes
+
+* **Fountain.** The plaza fountain (`sl_fountain`, `core/city/52-city-host-buildings.js`) is a placeholder piece, not a catalog furniture piece.
+
+## The source library (`src/`) and the first Voth
+
+The first Voth was one page, `voth.html`: the generator in `src/` concatenated inside one `BUILD()` by its own build.py,
+with a life layer (ships, ferries, barges, dhows, citizens, clergy, trade, arena combat, elephant bug convoys), day and
+night, weather, LOD and a minimap. **It was retired on 2026-10-14** (the owner): its page, build, verify, baseline,
+library pack and the docs that describe only that page (its README, INDEX, PORT, KNOWN_ISSUES, PASS5, SUBAGENT and the
+districts and life-layer briefs) are in `archive/voth-first/`. It is not built or checked any more.
+
+Its `src/` stays here, live: `build.py` runs the data fragments whole (`05-palette`, `10-core`, `15-shore`, `30a`) and
+lifts the rest by name (`lift()` and `vothlift.py`: the islets, bridges, harbours, the builders the city places, the
+chinampas, the sky, the elephant bug model, the path visualizer). So a change to a fragment shows in the next build of
+both pages, and `tools/check_port.py` holds its `[G data]` fragments to the port rule (`PORT.md` tags `src/` and
+`targets/` together). `API.md` is its contract: the fields, the shore, the emitters, the palette and the layout
+objects the lifted code reads. What is still worth porting from it (its life layer, collision, props) is ported into the
+targets and `core/`, not added to `src/`.
+
+Things known about the library (from the first Voth's KNOWN_ISSUES, still true of `src/`):
+
+* `catalog/CITY_INVENTORY.md` cites source lines in fragments that were split since (`65-facade.js:2429`,
+  `50-cantons.js:3812`, ...); rerun `catalog/capture/capture.py` (it builds its own instrumented copy from `src/`).
+* The comment at `65d-canton-structures.js:30` says a `45-kit.js` bug makes every cloth instance invisible; that bug was
+  fixed (`applyClothSway`).
+* The first-generation registry and the `voth_*` furniture in `kits/catalog/` were recentred and resized in its verify
+  pass (2026-10) without a sync into `src/`: the catalog pieces are rewrites, not copies (the catalog's strider station
+  is 10 x 16 m, `siltStriderStation()` in `65b` a 16 x 22 m deck), and the city's builders take their sizes as
+  arguments.

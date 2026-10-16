@@ -1,0 +1,14 @@
+{
+ "note": "The owner's highway list (Oct 2026): each settlement and the ones it runs a highway to. A-B and B-A are one road. bake.py routes them (src/42-world-roads.js) into data/roads.json.",
+ "links": {
+  "Yuni": ["Locus", "Mantis", "Veladiga"],
+  "Locus": ["Verge", "Mungo"],
+  "Mungo": ["Verge", "Reed"],
+  "Verge": ["Talia", "Mungo", "Locus"],
+  "Talia": ["Verge"],
+  "Arcbeam": ["Mantis"],
+  "Veladiga": ["Yuni", "Mungo"],
+  "Reed": ["Furrow", "Mungo"],
+  "Furrow": ["Pinnacle Rock"]
+ }
+}

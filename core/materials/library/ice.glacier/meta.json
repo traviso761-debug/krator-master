@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.352,
+    1.279
+   ],
+   "seam_before": [
+    1.415,
+    1.589
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ice",
+  "id": "ice.glacier",
+  "metal": 0,
+  "roughness": 0.35,
+  "scale": [
+   3.0,
+   3.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ice.glacier.webp",
+  "generator": "supplied by the owner, Oct 2026",
+  "licence": "supplied for this project by its owner",
+  "prompt": "prompt not recorded: supplied as a pasted image (milky glacier ice with grit seams)",
+  "reuse": "any cold build: ice-cave floors and crusts (Xanadu's Caves of Ice), frozen ground, glacier faces, the Highlands' snowfields, ice-shelf edges of the Ring Sea",
+  "sha1": "1ed931b2a74128d836d0d5098aec296fc6e9455f"
+ }
+}

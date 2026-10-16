@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.188,
+    1.175
+   ],
+   "seam_before": [
+    1.802,
+    4.301
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.sulphur.porous",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2.0,
+   2.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark-sulphur-porous.webp",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP",
+  "reuse": "the bone bells' root curtains in the vents' steam; sulphur-crusted dead wood; bone-like porous growths",
+  "sha1": "b56614267b0490b51b4007d9f42da79a69541f19"
+ }
+}

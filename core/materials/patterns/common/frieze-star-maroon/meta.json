@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1767,
+    867
+   ],
+   "seam_after": [
+    0.645,
+    0.193
+   ],
+   "seam_before": [
+    1.751,
+    2.174
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.4,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "common/frieze-star-maroon",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.4,
+  "scale": [
+   2,
+   0.98
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Antique Maroon and Gold Star Tile Border.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Antique Maroon and Gold Star Tile Border.png",
+  "prompt": "Prompt row patterns/xanadu/frieze in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "gilded friezes and cornice bands: Xanadu, Iziz, Voth, any court",
+  "sha1": "45d50c610783daba1b9a3ca900a223618ebe5df5"
+ }
+}

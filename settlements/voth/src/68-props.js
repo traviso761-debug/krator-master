@@ -130,7 +130,7 @@ reseed(68040);
   placeNear(HARB_S);                                     /* the harbour quay */
 })();
 
-/* ---- silt strider station: one, near a gate ------------------------------
+/* ---- elephant bug station: one, near a gate ------------------------------
    A ~16x22 footprint is large enough that a single guessed point regularly
    fails against the warren's tight block sizes (900-4000 sq units, per the
    road-graph work) — search several gates x insets x lateral offsets and

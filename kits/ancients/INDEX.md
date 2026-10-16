@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -86,11 +86,19 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `87-mega.js` | 10 |  |
 | `88-factory.js` | 9 |  |
 | `88-plymouth.js` | 58 **big** |  |
+| `88y-ancients-matlib.js` | 1 |  |
 | `89-arcbeam.js` | 59 **big** |  |
 | `89-lab.js` | 7 |  |
-| `89b-arcoindian.js` | 81 **big** |  |
-| `89c-arcoindian2.js` | 82 **big** |  |
-| `89d-arcube.js` | 89 **big** | the dwelling grid (112); krShard (248) |
+| `89b-arcoindian.js` | 26 |  |
+| `89b1-arcoindian-cut.js` | 28 |  |
+| `89b2-arcoindian-plinth.js` | 27 |  |
+| `89c-arcoindian2.js` | 28 |  |
+| `89c1-arcoindian2-lens.js` | 27 |  |
+| `89c2-arcoindian2-stalk.js` | 27 |  |
+| `89d-arcube.js` | 29 | the dwelling grid (112); krShard (248) |
+| `89d1-arcube-faces.js` | 26 |  |
+| `89d2-arcube-elevation.js` | 18 |  |
+| `89d3-arcube-ruin.js` | 17 |  |
 | `89e-hill.js` | 65 **big** | materials (64); kit (159); the landform and the route (172) |
 | `89f-trigon.js` | 52 **big** |  |
 | `89g-monolith.js` | 49 **big** |  |
@@ -136,9 +144,18 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8am-yv-e-hosp.js` | 6 |  |
 | `8an-iz-stumps.js` | 14 |  |
 | `8ao-iz-spaceport.js` | 36 **big** |  |
+| `8ap-funicular.js` | 41 **big** |  |
+| `8ap-host-0-lib.js` | 7 |  |
+| `8ap-host-a-facet.js` | 7 |  |
+| `8ap-host-b-bastion.js` | 12 |  |
+| `8ap-host-c-arcades.js` | 10 |  |
+| `8ap-host-d-stalks.js` | 9 |  |
+| `8ap-host-e-bellhall.js` | 13 |  |
+| `8zz-interiors.js` | 11 |  |
 | `90-scene.js` | 9 | scene (1) |
 | `91-probe.js` | 6 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
+| `92z-interior-ui.js` | 5 |  |
 | `99-tail.html` | <1 |  |
 
 ## targets/
@@ -162,8 +179,11 @@ Each target adds its own fragments to `src/` and builds one output.
 | `drum` | `89z-rows.js`, `91z-views.js` | 6 |
 | `engines` | `89z-rows.js`, `91z-views.js` | 4 |
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
+| `funicular` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 8 |
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
+| `hosts` | `89z-rows.js`, `91z-views.js` | 6 |
+| `interiors` | `89z-rows.js`, `91z-views.js` | 3 |
 | `iziz-style` | `89z-rows.js`, `91z-views.js` | 6 |
 | `iziz-variants` | `89z-rows.js`, `91z-views.js` | 3 |
 | `kit` | `89z-rows.js`, `91z-views.js` | 25 |

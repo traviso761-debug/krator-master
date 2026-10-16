@@ -1,0 +1,69 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1252,
+    1128
+   ],
+   "seam_after": [
+    1.157,
+    0.792
+   ],
+   "seam_before": [
+    1.342,
+    3.592
+   ],
+   "source_size": [
+    1264,
+    1140
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "iziz/sun-banner",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.9,
+  "scale": [
+   2,
+   1.8
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "iziz-sun-banner.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 27.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to two periods each way (1252 x 1128 px: 626 x 564) before processing, so the sheet repeats on its own period. the periodic redo: it replaces the first, non-periodic sheet.",
+  "original_file": "27.webp",
+  "original_sha1": "36fd2a71987fb9de6cbdd3f4bce4f945ac8813cc",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of hand-woven Iziz banner cloth with a visible plain weave, slightly faded and uneven dye: cream (#f1dba6) sixteen-rayed suns in a half-drop grid on Iziz orange (#e07a2a), each sun outlined in deep red (#9c2d2d), with teal (#2f8f8a) stripes running along the top and bottom of each row of suns. Exactly two suns across and two rows down, so the sheet repeats exactly in both directions. Full colour.",
+  "reuse": "Iziz banners, the mechs' banners",
+  "sha1": "34ac7c64861be1c586acfa9900e380a2bbb38e9e"
+ }
+}

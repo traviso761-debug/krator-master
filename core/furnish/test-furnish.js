@@ -57,4 +57,21 @@ const s = JSON.stringify(R.placed);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
 const DIGEST = '3b341b48';
 ok(h.toString(16) === DIGEST, 'records digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
+
+// core/tags: with cfg.tags every placed record is registered there too (core/tags/README.md), and the furniture
+// records are what they are without it (the digest above is unchanged)
+require('../rand/08-core-rand.js');
+const KT = require('../tags/50-core-tags.js'); require('../tags/52-core-tags-vocab.js');
+ENTRIES.bench.culture = 'beast-rider'; ENTRIES.bench.tier = 'common'; ENTRIES.bench.name = 'Bench'; ENTRIES.forge.culture = 'yuni-poor';
+const T = KT.create({ build: 'test' });
+const R2 = K.create({ on: true, catalog, seed: () => 1, tags: T, onRecord: (rec, ctx) => (ctx.deferRooms ? false : undefined) });
+const t1 = R2.place('bench', 1, 0, 2, 0.5, { v: 1, room: 'b1.room.0' }, null, { building: 'bld_00003', wealth: 0.8 });
+R2.place('forge', 0, 0, 0, 0, {}, null, { building: 'b1' });
+R2.place('bench', 0, 0, 0, 0, {}, null, { building: 'b2', dry: true });
+R2.place('bench', 0, 0, 0, 0, {}, null, { building: 'b2', deferRooms: true });   // deferred to the interiors
+const g1 = T.get(t1.id);
+ok(T.records.length === 2 && R2.placed.length === 3 && g1 && g1['class'] === 'furniture' && g1.kind === 'seat' && g1.parent === 'bld_00003', 'tags: placed records registered (a dry run or a deferred piece is not), ids unchanged, kind the entry type');
+ok(g1.tags.culture === 'beast-rider' && g1.tags.wealth === 'rich' && g1.tags.room === 'b1.room.0' && g1.size[0] === 1.98, 'tags: culture, wealth named, room, size from the dims');
+ok(T.get('furn_00002').tags.culture === 'yuni' && T.get('furn_00002').tags.wealth === 'poor' && T.audit().unknown === 0, 'tags: catalog cultures through the aliases, zero unknowns');
+ok(!('uid' in t1) && Object.keys(t1).join() === Object.keys(r1).concat([]).join(), 'tags: the furniture record itself is unchanged');
 process.exit(fails ? 1 : 0);

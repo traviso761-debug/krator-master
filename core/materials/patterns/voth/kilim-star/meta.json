@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1247
+   ],
+   "seam_after": [
+    1.218,
+    0.867
+   ],
+   "seam_before": [
+    1.768,
+    1.47
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "voth/kilim-star",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.9,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "voth-kilim-star.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image 1)",
+  "prompt": "(offered by the owner: Voth cultural textures)",
+  "reuse": "Voth tapestries and door banners: a stepped star medallion in purple, orange and gold on black (full colour)",
+  "sha1": "cdd3061229ded3c7c24f22ea32ad102fcbb6bbaa"
+ }
+}

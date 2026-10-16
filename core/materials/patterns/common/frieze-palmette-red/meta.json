@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1097
+   ],
+   "seam_after": [
+    1.273,
+    0.988
+   ],
+   "seam_before": [
+    1.892,
+    4.358
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "lacquer",
+  "id": "common/frieze-palmette-red",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.45,
+  "scale": [
+   1.5,
+   1.32
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Antique Red and Gold Ornamental Frieze.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Antique Red and Gold Ornamental Frieze.png",
+  "prompt": "Prompt row trim.council in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Mav's council trim; lacquered friezes in Xanadu, Highlands, Iziz",
+  "sha1": "aaed92e57319f35a9097e59c52cca39c1639f605"
+ }
+}

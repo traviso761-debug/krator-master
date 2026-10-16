@@ -209,3 +209,35 @@ function texFill(S, fn){
     FAMMAT.bark.tex = texFinish(texFill(S,function(x,y){ var g=0.5+0.5*Math.sin(x*TAU/S*14 + n1(x,y*0.2)*6);
       return 0.66 + 0.30*(g-0.5) + 0.2*(n2(x,y)-0.5); })); })();
 })();
+
+/* ---- the material library (core/materials/record, materials.json; Yuni's 47-texture.js is the model): where the
+   pack has a family (unless ?mat=proc), its maps replace the procedural one painted above, repeating at the set's own
+   tile size over UVs laid out in FAMMAT.scale metres. 45-kit.js kitMaterial() gives such a family a MeshStandardMaterial
+   with the set's normal and roughness maps. Families with no library row stay procedural. ---- */
+(function(){
+  if(typeof KMAT === 'undefined' || KMAT.mode !== 'lib') return;
+  Object.keys(FAMMAT).forEach(function(fam){
+    var L = KMAT.packed('locus', fam); if(!L) return;
+    ltexLibrary(FAMMAT[fam], L);
+  });
+})();
+function ltexLibrary(fm, L){
+  var T = KMAT.textures(L, { aniso: FAST ? 1 : 8 }), sc = fm.scale || [3,3];
+  [T.map, T.normalMap, T.roughnessMap].forEach(function(t){ if(t) t.repeat.set(sc[0]/L.scale[0], sc[1]/L.scale[1]); });
+  fm.tex = T.map; fm.lib = L; fm.libTex = T;
+}
+/* the adapter: every family as a material record, for the export (window._materials) */
+(function(){
+  if(typeof KMAT === 'undefined') return;
+  var recs = {};
+  Object.keys(FAMMAT).forEach(function(fam){
+    var fm = FAMMAT[fam], L = fm.lib;
+    if(fam === 'glowmat'){ recs[fam] = { id:'locus.glowmat', family:fam, scale:fm.scale, tint:true, hook:'unlit', note:'unlit emissive bits' }; return; }
+    recs[fam] = { id:'locus.'+fam, family:fam, scale: L ? L.scale : fm.scale, tint:true, roughness:1,
+      metal: L ? (L.metal||0) : 0, specular: L ? L.specular : 0, normalScale: L ? L.normalScale : 1, breakup: L ? (L.breakup||null) : null,
+      lib: L ? L.lib : null, tex: L ? null : 'locus.'+fam, bake: !L && !!fm.tex, hook: fam === 'cloth' ? 'world-uv+cloth-sway' : 'world-uv',
+      note: L ? 'library set, tint keep '+L.tint : (fm.tex ? 'procedural map' : 'untextured') };
+  });
+  KMAT.adapter('locus', recs);
+  window._materials = KMAT.table('locus');
+})();

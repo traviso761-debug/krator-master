@@ -1,0 +1,1704 @@
+[
+ {
+  "src": "Warm Rustic Pine Wood Planks.png",
+  "out": "core/materials/library/wood.softwood",
+  "record": {
+   "id": "wood.softwood",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row wood.softwood in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Warm Rustic Pine Wood Planks.png",
+    "reuse": "generic, rustic and republican furniture (pine, larch, birch tints); floors and wall boards anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.75,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Weathered Gray Painted Wood Planks.png",
+  "out": "core/materials/library/wood.painted",
+  "record": {
+   "id": "wood.painted",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row wood.painted in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Gray Painted Wood Planks.png",
+    "reuse": "painted furniture, scrap, shutters, doors and fences in any culture; tint to the paint colour"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.7,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Weathered Gray Industrial Texture.png",
+  "out": "core/materials/library/plastic.moulded",
+  "record": {
+   "id": "plastic.moulded",
+   "family": "plastic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row plastic.moulded in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Gray Industrial Texture.png",
+    "reuse": "scrap, Screamer and post-apoc crates and chairs; also reads as scuffed render or concrete"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "mute": 0.6,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "Worn Off-Road Tire Texture.png",
+  "out": "core/materials/library/rubber.tyre",
+  "record": {
+   "id": "rubber.tyre",
+   "family": "rubber",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row rubber.tyre in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Worn Off-Road Tire Texture.png",
+    "reuse": "every tyre and road wheel (kits/motor-vehicles slot rubber), scrap tyres, hoses, boots"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.3,
+   "normal_strength": 1.3
+  }
+ },
+ {
+  "src": "Ash and Charcoal Ground Texture.png",
+  "out": "core/materials/library/ash.hearth",
+  "record": {
+   "id": "ash.hearth",
+   "family": "ash",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row ash.hearth in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Ash and Charcoal Ground Texture.png",
+    "reuse": "every hearth, brazier, forge and stove bed; burnt ground and campfire rings in any biome"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.95,
+   "normal_strength": 1.2
+  }
+ },
+ {
+  "src": "Weathered Hammered Pewter Metal Texture.png",
+  "out": "core/materials/library/metal.pewter",
+  "record": {
+   "id": "metal.pewter",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0.8,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row metal.pewter in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Hammered Pewter Metal Texture.png",
+    "reuse": "cups, plates, candlesticks and tableware anywhere; dull silver or tin"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.45,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "Artisanal Golden Bread Crust Texture.png",
+  "out": "core/materials/library/food.crust",
+  "record": {
+   "id": "food.crust",
+   "family": "food",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row food.crust in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Artisanal Golden Bread Crust Texture.png",
+    "reuse": "bread, pie, roast meat and cheese rind in every culture (Girder f_food)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.75,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Seamless Silver-Gray Feather Texture.png",
+  "out": "core/materials/library/feather.plumage",
+  "record": {
+   "id": "feather.plumage",
+   "family": "feather",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row feather.plumage in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Silver-Gray Feather Texture.png",
+    "reuse": "Screamer cloaks and fans; any feathered cloak, headdress, bird fauna body"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Earthy Polynesian Tapa Textile Pattern.png",
+  "out": "core/materials/patterns/islander/tapa",
+  "record": {
+   "id": "islander/tapa",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.49
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/islander/tapa in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Earthy Polynesian Tapa Textile Pattern.png",
+    "reuse": "Islander hangings and cloth; any bark-cloth culture"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "Polished Obsidian Swirl Texture.png",
+  "out": "core/materials/library/stone.obsidian",
+  "record": {
+   "id": "stone.obsidian",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.15,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row stone.obsidian in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Polished Obsidian Swirl Texture.png",
+    "reuse": "Voth; volcanic glass in any culture or biome (blades, mirrors, altars)"
+   }
+  },
+  "options": {
+   "lift": 0.05,
+   "rough_var": 0.15,
+   "rough": 0.15,
+   "dark_gloss": 0.3
+  }
+ },
+ {
+  "src": "Weathered Log Cross-Section Texture.png",
+  "out": "core/materials/library/wood.endgrain",
+  "record": {
+   "id": "wood.endgrain",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row wood.endgrain in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Log Cross-Section Texture.png",
+    "reuse": "log ends, stumps, chopping blocks, the builders' yard log stock. One ring centre: map per log face, not as a tile"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Aged Antique Parchment Texture.png",
+  "out": "core/materials/library/paper.parchment",
+  "record": {
+   "id": "paper.parchment",
+   "family": "paper",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row paper.parchment in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Aged Antique Parchment Texture.png",
+    "reuse": "books, scrolls, maps, lantern paper in any culture"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.4,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Cracked Salt Flats with Algae Stains.png",
+  "out": "core/materials/library/ground.salt",
+  "record": {
+   "id": "ground.salt",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row ground.salt in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Cracked Salt Flats with Algae Stains.png",
+    "reuse": "salt pans and dry lakebeds in any desert biome"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.15,
+   "rough": 0.9
+  }
+ },
+ {
+  "src": "Interwoven Mangrove Bark Texture.png",
+  "out": "core/materials/library/bark.mangrove",
+  "record": {
+   "id": "bark.mangrove",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row bark.mangrove in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Interwoven Mangrove Bark Texture.png",
+    "reuse": "mangroves and strangler figs in any coastal or jungle biome; red-lacquer tint for the SW lowlands"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Weathered Beige Wooden Siding Texture.png",
+  "out": "core/materials/library/wood.siding",
+  "record": {
+   "id": "wood.siding",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2,
+    1.7
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row wood.hull in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Beige Wooden Siding Texture.png",
+    "reuse": "Ring Sea hulls (wood.hull), clapboard and plank walls in any culture"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.5,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Rust-Red Container Wall.png",
+  "out": "core/materials/patterns/common/container-red",
+  "record": {
+   "id": "common/container-red",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.65,
+   "metal": 0.4,
+   "scale": [
+    2.4,
+    1.14
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/port/livery in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Rust-Red Container Wall.png",
+    "reuse": "Port and post-apoc containers, Ring Sea deck cargo"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.65,
+   "rough_var": 0.2,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "Weathered Riveted Ship Hull Texture.png",
+  "out": "core/materials/patterns/common/hull-paint",
+  "record": {
+   "id": "common/hull-paint",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0.4,
+   "scale": [
+    4,
+    1.9
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/port/hull-paint in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Riveted Ship Hull Texture.png",
+    "reuse": "Port, Ring Sea and post-apoc steel hulls; the white boot-stripe sits at the waterline"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "Cream Stone Lattice with Black Cutouts.png",
+  "out": "core/materials/patterns/common/jali-diamond",
+  "record": {
+   "id": "common/jali-diamond",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/jali in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Cream Stone Lattice with Black Cutouts.png",
+    "reuse": "pierced screens anywhere (Xanadu, Yuni, Iziz courts); cut out on the black"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Painted Pink and Gold Chevron Stripes.png",
+  "out": "core/materials/patterns/xanadu/zigzag",
+  "record": {
+   "id": "xanadu/zigzag",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    0.99
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/zigzag in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Painted Pink and Gold Chevron Stripes.png",
+    "reuse": "Xanadu Palopo bands"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "normal_strength": 0.4
+  }
+ },
+ {
+  "src": "Hand-Painted Turquoise Diamond Folk Pattern.png",
+  "out": "core/materials/patterns/xanadu/lozenge",
+  "record": {
+   "id": "xanadu/lozenge",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    3,
+    0.9
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/lozenge in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Hand-Painted Turquoise Diamond Folk Pattern.png",
+    "reuse": "Xanadu Palopo bands"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "normal_strength": 0.4
+  }
+ },
+ {
+  "src": "Whimsical Pink Folk-Art Bird.png",
+  "out": "core/materials/patterns/xanadu/bird",
+  "record": {
+   "id": "xanadu/bird",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    1.07
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/bird in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Whimsical Pink Folk-Art Bird.png",
+    "reuse": "Xanadu Palopo bands"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "normal_strength": 0.4
+  }
+ },
+ {
+  "src": "Pixelated Green Stag Emblem.png",
+  "out": "core/materials/patterns/xanadu/deer",
+  "record": {
+   "id": "xanadu/deer",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/deer in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Pixelated Green Stag Emblem.png",
+    "reuse": "Xanadu Palopo bands"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "normal_strength": 0.4
+  }
+ },
+ {
+  "src": "Turquoise Geometric Folk Pattern.png",
+  "out": "core/materials/patterns/xanadu/star",
+  "record": {
+   "id": "xanadu/star",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    0.89
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/star in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Turquoise Geometric Folk Pattern.png",
+    "reuse": "Xanadu Palopo bands"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "normal_strength": 0.4
+  }
+ },
+ {
+  "src": "Antique Maroon and Gold Star Tile Border.png",
+  "out": "core/materials/patterns/common/frieze-star-maroon",
+  "record": {
+   "id": "common/frieze-star-maroon",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    2,
+    0.98
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/frieze in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Antique Maroon and Gold Star Tile Border.png",
+    "reuse": "gilded friezes and cornice bands: Xanadu, Iziz, Voth, any court"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.4,
+   "rough_var": 0.15,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Turquoise Stars on Lapis Tiles.png",
+  "out": "core/materials/patterns/common/mosaic-star-lapis",
+  "record": {
+   "id": "common/mosaic-star-lapis",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/mosaic-star in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Turquoise Stars on Lapis Tiles.png",
+    "reuse": "glazed-tile walls, domes and fountains: Xanadu, Iziz, Scyvoi, Yuni court"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "Cobalt and Turquoise Moorish Tilework.png",
+  "out": "core/materials/patterns/common/mosaic-arabesque-lapis",
+  "record": {
+   "id": "common/mosaic-arabesque-lapis",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    0.8
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/mosaic-arabesque in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Cobalt and Turquoise Moorish Tilework.png",
+    "reuse": "glazed-tile walls, domes and fountains: Xanadu, Iziz, Scyvoi, Yuni court"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "Grayscale Pleated Scalloped Valance Texture.png",
+  "out": "core/materials/patterns/common/valance-scallop",
+  "record": {
+   "id": "common/valance-scallop",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.2,
+    0.54
+   ],
+   "tint": true,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/xanadu/valance in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Grayscale Pleated Scalloped Valance Texture.png",
+    "reuse": "window valances and awning hems in any culture; greyscale, tinted per instance; cut out on the black"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Weathered Red Brick Wall Texture.png",
+  "out": "core/materials/library/brick.red",
+  "record": {
+   "id": "brick.red",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.21
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row brick.jimjam.red in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Red Brick Wall Texture.png",
+    "reuse": "Jimjam; red-brick walls for Port, Highlands, post-apoc, city streets"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Seamless Golden Ochre Brick Wall Texture.png",
+  "out": "core/materials/library/brick.ochre",
+  "record": {
+   "id": "brick.ochre",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.18
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row brick.jimjam.yellow in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Golden Ochre Brick Wall Texture.png",
+    "reuse": "Jimjam; yellow stock brick anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Red Brick Wall Texture(1).png",
+  "out": "core/materials/library/brick.oxblood",
+  "record": {
+   "id": "brick.oxblood",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row brick.jimjam.deep in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Red Brick Wall Texture(1).png",
+    "reuse": "Jimjam plinths, copings and roof slabs; any dark red brick"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Rustic Dark Brick Wall Texture.png",
+  "out": "core/materials/library/brick.dark",
+  "record": {
+   "id": "brick.dark",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row brick.jimjam.dark in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Rustic Dark Brick Wall Texture.png",
+    "reuse": "Jimjam; engineering brick, kilns, chimneys anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Seamless Red Brick Wall with Golden Bands.png",
+  "out": "core/materials/library/brick.red.band",
+  "record": {
+   "id": "brick.red.band",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    0.98
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row brick.jimjam.band in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Red Brick Wall with Golden Bands.png",
+    "reuse": "Jimjam; banded brick for any civic building"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Warm Ivory Marble Running Bond Tiles.png",
+  "out": "core/materials/library/stone.marble.ashlar",
+  "record": {
+   "id": "stone.marble.ashlar",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row stone.marble.trim in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Warm Ivory Marble Running Bond Tiles.png",
+    "reuse": "Jimjam trim; marble ashlar, floors and cladding in Voth, Iziz, Xanadu, Ys"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.3,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "keep_aspect": true,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "Terracotta, Slate, and Gilded Scallop Tiles__terracotta.png",
+  "out": "core/materials/library/roof.scale.terracotta",
+  "record": {
+   "id": "roof.scale.terracotta",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.62
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row roof.dome.tile in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Terracotta, Slate, and Gilded Scallop Tiles.png",
+    "reuse": "Jimjam domes; fish-scale roofs in Highlands, Xanadu, Voth",
+    "note": "cut from a multi-panel sheet (terracotta), a few px inset from the panel edges"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.7,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Terracotta, Slate, and Gilded Scallop Tiles__slate.png",
+  "out": "core/materials/library/roof.scale.slate",
+  "record": {
+   "id": "roof.scale.slate",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.61
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row roof.dome.tile in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Terracotta, Slate, and Gilded Scallop Tiles.png",
+    "reuse": "Jimjam domes; slate fish-scale roofs anywhere (Highlands roof.scale.tinted)",
+    "note": "cut from a multi-panel sheet (slate), a few px inset from the panel edges"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Terracotta, Slate, and Gilded Scallop Tiles__gilt.png",
+  "out": "core/materials/library/roof.scale.gilt",
+  "record": {
+   "id": "roof.scale.gilt",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 1.0,
+   "scale": [
+    1.5,
+    1.63
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row roof.dome.tile in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Terracotta, Slate, and Gilded Scallop Tiles.png",
+    "reuse": "Jimjam domes; gilded domes and onion domes (Xanadu roof.gilt, Republic)",
+    "note": "cut from a multi-panel sheet (gilt), a few px inset from the panel edges"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.3,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Golden Ochre Stucco Texture.png",
+  "out": "core/materials/library/plaster.ochre",
+  "record": {
+   "id": "plaster.ochre",
+   "family": "plaster",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row plaster.jimjam.ochre in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Golden Ochre Stucco Texture.png",
+    "reuse": "Jimjam poor houses; ochre lime wash in Dalab, Iziz, Yuni"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9
+  }
+ },
+ {
+  "src": "Symmetrical Terracotta and Gold Sunburst Mosaic.png",
+  "out": "core/materials/patterns/common/medallion-sunray",
+  "record": {
+   "id": "common/medallion-sunray",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    6,
+    5.99
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row inlay.jimjam.sunray in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Symmetrical Terracotta and Gold Sunburst Mosaic.png",
+    "reuse": "plaza inlays and floor medallions anywhere. A single panel: map it once (0..1 UVs), do not tile"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "Ornamental Terracotta Brick Pattern Mosaic__spiral.png",
+  "out": "core/materials/patterns/jimjam/shaft-spiral",
+  "record": {
+   "id": "jimjam/shaft-spiral",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1.18
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/jimjam/shaft-* (spiral) in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Ornamental Terracotta Brick Pattern Mosaic.png",
+    "reuse": "Jimjam column shafts; carved brick panels for any brick culture",
+    "note": "cut from a multi-panel sheet (spiral), a few px inset from the panel edges"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "Ornamental Terracotta Brick Pattern Mosaic__chevron.png",
+  "out": "core/materials/patterns/jimjam/shaft-chevron",
+  "record": {
+   "id": "jimjam/shaft-chevron",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1.09
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/jimjam/shaft-* (chevron) in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Ornamental Terracotta Brick Pattern Mosaic.png",
+    "reuse": "Jimjam column shafts; carved brick panels for any brick culture",
+    "note": "cut from a multi-panel sheet (chevron), a few px inset from the panel edges"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "Ornamental Terracotta Brick Pattern Mosaic__diamond.png",
+  "out": "core/materials/patterns/jimjam/shaft-diamond",
+  "record": {
+   "id": "jimjam/shaft-diamond",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1.02
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/jimjam/shaft-* (diamond) in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Ornamental Terracotta Brick Pattern Mosaic.png",
+    "reuse": "Jimjam column shafts; carved brick panels for any brick culture",
+    "note": "cut from a multi-panel sheet (diamond), a few px inset from the panel edges"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "Ornamental Terracotta Brick Pattern Mosaic__ogee.png",
+  "out": "core/materials/patterns/jimjam/shaft-ogee",
+  "record": {
+   "id": "jimjam/shaft-ogee",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1.08
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/jimjam/shaft-* (ogee) in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Ornamental Terracotta Brick Pattern Mosaic.png",
+    "reuse": "Jimjam column shafts; carved brick panels for any brick culture",
+    "note": "cut from a multi-panel sheet (ogee), a few px inset from the panel edges"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "Ornamental Terracotta Brick Pattern Mosaic__fleur.png",
+  "out": "core/materials/patterns/jimjam/shaft-fleur",
+  "record": {
+   "id": "jimjam/shaft-fleur",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    0.98
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/jimjam/shaft-* (fleur) in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Ornamental Terracotta Brick Pattern Mosaic.png",
+    "reuse": "Jimjam column shafts; carved brick panels for any brick culture",
+    "note": "cut from a multi-panel sheet (fleur), a few px inset from the panel edges"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "Ornamental Terracotta Brick Pattern Mosaic__tracery.png",
+  "out": "core/materials/patterns/jimjam/shaft-tracery",
+  "record": {
+   "id": "jimjam/shaft-tracery",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    0.85
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row patterns/jimjam/shaft-* (tracery) in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Ornamental Terracotta Brick Pattern Mosaic.png",
+    "reuse": "Jimjam column shafts; carved brick panels for any brick culture",
+    "note": "cut from a multi-panel sheet (tracery), a few px inset from the panel edges"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.2,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "Layered Desert Sandstone Strata.png",
+  "out": "core/materials/library/rock.sandstone",
+  "record": {
+   "id": "rock.sandstone",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    6,
+    6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row rock.sandstone in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Layered Desert Sandstone Strata.png",
+    "reuse": "Shade and sedesert cliffs; layered cliffs in ebadlands and any desert"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.88
+  }
+ },
+ {
+  "src": "Chiseled Limestone Texture Seamless Tile.png",
+  "out": "core/materials/library/stone.chiselled",
+  "record": {
+   "id": "stone.chiselled",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row rock.sandstone.carved in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Chiseled Limestone Texture Seamless Tile.png",
+    "reuse": "carved cliff dwellings (tinted by height); any tooled stone face"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.8
+  }
+ },
+ {
+  "src": "Layered Red Sandstone Texture.png",
+  "out": "core/materials/library/rock.sandstone.red",
+  "record": {
+   "id": "rock.sandstone.red",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row rock.sandstone.boulder in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Layered Red Sandstone Texture.png",
+    "reuse": "sandstone boulders in sedesert, ebadlands, crater drylands"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.88
+  }
+ },
+ {
+  "src": "Rustic Beige Adobe Wall Texture.png",
+  "out": "core/materials/library/earth.adobe.pale",
+  "record": {
+   "id": "earth.adobe.pale",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row earth.pueblo in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Rustic Beige Adobe Wall Texture.png",
+    "reuse": "pueblo walls; smooth adobe in Yuni, Locus, Iziz, Dalab"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "Seamless Warm Brown Wood Grain Texture.png",
+  "out": "core/materials/library/wood.timber",
+  "record": {
+   "id": "wood.timber",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row wood.timber.pueblo in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Warm Brown Wood Grain Texture.png",
+    "reuse": "vigas, ladders, poles, lintels; plain timber in any culture"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.75,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Seamless Golden Thatch Texture.png",
+  "out": "core/materials/library/roof.thatch.reed",
+  "record": {
+   "id": "roof.thatch.reed",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row thatch.reed.mavs in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Golden Thatch Texture.png",
+    "reuse": "Mav's thatch; Ring Sea thatch.reed, Reed Lake roof.reed / roof.thatch.totora, catalog reed family"
+   }
+  },
+  "options": {
+   "lift": 0.2,
+   "rough_var": 0.15,
+   "rough": 0.9,
+   "mute": 0.4,
+   "normal_strength": 1.4
+  }
+ },
+ {
+  "src": "Seamless Natural Rattan Basket Weave.png",
+  "out": "core/materials/library/fibre.rattan",
+  "record": {
+   "id": "fibre.rattan",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row cane.woven in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Natural Rattan Basket Weave.png",
+    "reuse": "Mav's woven cane; baskets, screens, chair seats anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Weathered Cedar Shingle Texture.png",
+  "out": "core/materials/library/roof.shingle.cedar",
+  "record": {
+   "id": "roof.shingle.cedar",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row roof.shingle.shakes in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Cedar Shingle Texture.png",
+    "reuse": "Mav's and Girder shakes; Highlands roof.shingle.onion, Republic"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Seamless Diagonal Twisted Rope Texture.png",
+  "out": "core/materials/library/fibre.rope.twist",
+  "record": {
+   "id": "fibre.rope.twist",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row rope.twist in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Diagonal Twisted Rope Texture.png",
+    "reuse": "rope bindings, lashings, rigging in any culture (a straight twist, where fibre.rope is coiled)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.4,
+   "normal_strength": 1.3
+  }
+ },
+ {
+  "src": "Antique Red and Gold Ornamental Frieze.png",
+  "out": "core/materials/patterns/common/frieze-palmette-red",
+  "record": {
+   "id": "common/frieze-palmette-red",
+   "family": "lacquer",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.32
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row trim.council in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Antique Red and Gold Ornamental Frieze.png",
+    "reuse": "Mav's council trim; lacquered friezes in Xanadu, Highlands, Iziz"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "Seamless Riveted Rusted Steel Panels.png",
+  "out": "core/materials/library/metal.rust.plate",
+  "record": {
+   "id": "metal.rust.plate",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0.4,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+    "prompt": "Prompt row metal.rust.plate in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Riveted Rusted Steel Panels.png",
+    "reuse": "Girder and Mavs weathering steel; post-apoc, Port, Ring Sea plating"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.75,
+   "mute": 0.3
+  }
+ }
+]

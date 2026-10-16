@@ -130,58 +130,15 @@ function rsFigure(B,pos,yaw,cloth,sit,skin){const q=qEuler(0,yaw||0,0),s=skin||0
  if(sit){rsCyl(B,'cloth',.17,.2,.62,P(0,.55,0),q,cloth,7);rsBox(B,'cloth',[.42,.16,.34],P(.18,.26,0),q,cloth);rsSphere(B,'paint',.12,P(.02,.98,0),null,s,8,6);}
  else{rsCyl(B,'cloth',.17,.21,.72,P(0,1.12,0),q,cloth,7);rsCyl(B,'paint',.07,.08,.8,P(0,.4,-.1),q,s,5);rsCyl(B,'paint',.07,.08,.8,P(0,.4,.1),q,s,5);rsSphere(B,'paint',.12,P(0,1.6,0),null,s,8,6);}}
 
-// ---------------------------------------------------------------- the swell, the wind, riding
-// ONE wave function drives the sea's vertex shader and every hull's heave, pitch and roll, so a hull
-// sits in the water it is drawn on. The swell is a sum of Gerstner (trochoidal) waves: a water particle
-// at rest point p0 moves to p0 + sum H_i D_i cos(th_i) horizontally and sum A_i sin(th_i) up, with
-// th_i = k_i D_i.p0 - w_i t + ph_i, deep-water dispersion w = sqrt(g k), and H_i = steep_i / k_i, so the
-// crests sharpen and the troughs flatten (sum of steep < 1 keeps the surface from looping).
-// RS_SWELL.waves are [Dx,Dz,k,A,w,ph,H]; rsSwellSet replaces them. The height at a WORLD point needs the rest
-// point that lands there: rsSeaH solves p0 + d(p0) = p by Newton's method (3 steps on the CPU, 2 in GLSL,
-// both well under a millimetre). fade {cx,cz,r0,r1} (optional) scales the whole swell down beyond r0..r1
-// to the fraction fade.min (default 0: flat).
-// RS_U.uTime is the one clock every animated shader reads (seconds); the host sets it each frame.
-// A host world with its own sea skips the RS sea: it calls rsRide with its own seaH(x,z,t).
+// ---------------------------------------------------------------- the swell, riding: core/water
+// The sea and everything that floats on it are core/water's (core/water/README.md): the roadstead is a WATER.open surface
+// whose four Gerstner waves are WATER.PRESETS.swells.ringsea (they were this kit's RS_SWELL), plus the shared wave field,
+// on the one clock (atmWaveT, whole cycles); WATER.heightAt is the CPU twin of what the CDLOD mesh draws, and WATER.ride
+// (this kit's rsRide, moved) poses a hull on it. The two names stay for the vessels and for a world that imports them:
+//   rsSeaH(x,z,t)                         = WATER.heightAt(x,z,t)
+//   rsRide(G,D,x,z,yaw,t,seaH?,heel?)     = WATER.ride(G,D,x,z,yaw,t,heel,seaH): a world with its own sea passes seaH
+// Both reach WATER only when called, so a page that takes the vessels without core/water (Voth's ringsea.py) still loads.
+// RS_U.uTime is the clock the sails' and the flags' flutter reads (seconds); the host sets it each frame.
 const RS_U={uTime:{value:0}};
-const RS_SWELL={waves:[],fade:null};
-function rsSwellSet(list,fade){RS_SWELL.waves=list.map(([A,lam,deg,ph,st])=>{const k=TAU/lam,a=deg*Math.PI/180;return[Math.cos(a),Math.sin(a),k,A,Math.sqrt(9.81*k),ph||0,(st||0)/k];});RS_SWELL.fade=fade||null;}
-function rsSwellFade(x,z){const F=RS_SWELL.fade;if(!F)return 1;const d=Math.hypot(x-F.cx,z-F.cz);const s=clamp((d-F.r0)/(F.r1-F.r0),0,1);return 1-(1-(F.min||0))*s*s*(3-2*s);}
-// displacement of the rest point (x0,z0) at t: [dx, h, dz, Jxx, Jxz, Jzz] (J = d(p0+d)/dp0, its determinant < 1 on the crests)
-function rsSwellD(x0,z0,t){let dx=0,h=0,dz=0,jxx=1,jxz=0,jzz=1;const f=rsSwellFade(x0,z0);
- for(const w of RS_SWELL.waves){const th=w[2]*(w[0]*x0+w[1]*z0)-w[4]*t+w[5],c=Math.cos(th),s=Math.sin(th),hh=w[6]*f,q=hh*w[2]*s;
-  h+=w[3]*s;dx+=hh*w[0]*c;dz+=hh*w[1]*c;jxx-=q*w[0]*w[0];jxz-=q*w[0]*w[1];jzz-=q*w[1]*w[1];}
- return[dx,h*f,dz,jxx,jxz,jzz];}
-// the rest point that the swell carries to world (x,z): Newton on p0 + d(p0) = p
-function rsSwellRest(x,z,t,n){let x0=x,z0=z;for(let k=0;k<(n||3);k++){const d=rsSwellD(x0,z0,t);const rx=x0+d[0]-x,rz=z0+d[2]-z,det=d[3]*d[5]-d[4]*d[4];
-  x0-=(d[5]*rx-d[4]*rz)/det;z0-=(d[3]*rz-d[4]*rx)/det;}return[x0,z0];}
-function rsSeaH(x,z,t){const p=rsSwellRest(x,z,t);return rsSwellD(p[0],p[1],t)[1];}
-// the same functions in GLSL (needs uniform uRsTime, declared here once):
-//   vec3 rsSwellD(vec2 p0)            displacement (dx, h, dz) of the rest point p0
-//   float rsSwellH(vec2 p)            the height at world point p (2 Newton steps)
-//   vec4 rsSwellNJ(vec2 p0,float mpp) world normal (xyz) and Jacobian determinant (w) at p0, each wave faded out
-//                                     where it is finer than the pixel footprint mpp (metres per pixel)
-// lod (optional) {cx,cz,r:[[r0,r1] per wave]} fades each wave's DISPLACEMENT (not its normal) beyond r0..r1
-// from (cx,cz): a sea mesh whose cells grow toward the horizon cannot draw short waves out there.
-function rsSwellGLSL(lod){const f=n=>(+n).toFixed(6),F=RS_SWELL.fade,W=RS_SWELL.waves;
- const fade=F?`float rsFd(vec2 p){float s=smoothstep(${f(F.r0)},${f(F.r1)},length(p-vec2(${f(F.cx)},${f(F.cz)})));return 1.-${f(1-(F.min||0))}*s;}\n`:'float rsFd(vec2 p){return 1.;}\n';
- const th=(w)=>`${f(w[2]*w[0])}*p.x+${f(w[2]*w[1])}*p.y-${f(w[4])}*uRsTime+${f(w[5])}`;
- let s='#ifndef RS_UTIME\n#define RS_UTIME\nuniform float uRsTime;\n#endif\n'+fade;
- s+='vec3 rsSwellD(vec2 p){vec3 r=vec3(0.);float a,l;float fd=rsFd(p);'+(lod?`float rd=length(p-vec2(${f(lod.cx)},${f(lod.cz)}));`:'')+'\n';
- W.forEach((w,i)=>{s+=` a=${th(w)};l=fd${lod?`*(1.-smoothstep(${f(lod.r[i][0])},${f(lod.r[i][1])},rd))`:''};r+=vec3(cos(a)*${f(w[6]*w[0])},sin(a)*${f(w[3])},cos(a)*${f(w[6]*w[1])})*l;\n`;});
- s+=' return r;}\n';
- s+='vec4 rsSwellNJ(vec2 p,float mpp){float a,c,sn,q,l;float fd=rsFd(p);vec3 gx=vec3(1.,0.,0.),gz=vec3(0.,0.,1.);\n';
- W.forEach(w=>{s+=` a=${th(w)};c=cos(a);sn=sin(a);l=fd*(1.-smoothstep(.35,1.1,${f(w[2])}*mpp));q=${f(w[6]*w[2])}*sn*l;`+
-  `gx+=vec3(-q*${f(w[0]*w[0])},c*${f(w[3]*w[2]*w[0])}*l,-q*${f(w[0]*w[1])});gz+=vec3(-q*${f(w[0]*w[1])},c*${f(w[3]*w[2]*w[1])}*l,-q*${f(w[1]*w[1])});\n`;});
- s+=' return vec4(normalize(cross(gz,gx)),gx.x*gz.z-gx.z*gz.x);}\n';
- // Newton on the horizontal map, with its Jacobian (full amplitude: the hulls and the wakes ride this one)
- s+='float rsSwellH(vec2 p){vec2 p0=p;float a,c,sn,q,fd;vec2 d;vec3 j;\n for(int k=0;k<2;k++){fd=rsFd(p0);d=vec2(0.);j=vec3(1.,0.,1.);\n';
- W.forEach(w=>{s+=`  a=${f(w[2]*w[0])}*p0.x+${f(w[2]*w[1])}*p0.y-${f(w[4])}*uRsTime+${f(w[5])};c=cos(a)*fd;q=${f(w[6]*w[2])}*sin(a)*fd;d+=vec2(${f(w[6]*w[0])},${f(w[6]*w[1])})*c;j-=q*vec3(${f(w[0]*w[0])},${f(w[0]*w[1])},${f(w[1]*w[1])});\n`;});
- s+='  vec2 r=p0+d-p;float det=j.x*j.z-j.y*j.y;p0-=vec2(j.z*r.x-j.y*r.y,j.x*r.y-j.y*r.x)/det;}\n return rsSwellD(p0).y;}\n';
- return s;}
-// ride: pose a vessel group G (definition D: L, B) at world x,z, heading yaw, on the sea seaH at time t.
-// Heave is the mean of five samples (amidships, bow, stern, both beams); pitch and roll are the slopes
-// between them, so a long hull averages short waves out and a canoe follows them. heel (rad, optional)
-// is added to the roll: + lays the starboard side down (a turn to starboard heels into it).
-function rsRide(G,D,x,z,yaw,t,seaH,heel){seaH=seaH||rsSeaH;const lx=D.L*.36,bz=clamp(D.B*.28,.5,6),c=Math.cos(yaw||0),s=Math.sin(yaw||0);
- const at=(f,q)=>seaH(x+c*f+s*q,z-s*f+c*q,t);const h0=at(0,0),hb=at(lx,0),hs=at(-lx,0),hst=at(0,bz),hp=at(0,-bz);
- G.position.set(x,(2*h0+hb+hs+hst+hp)/6,z);G.rotation.set(-Math.atan2(hst-hp,2*bz)+(heel||0),yaw||0,Math.atan2(hb-hs,2*lx),'YXZ');}
+function rsSeaH(x,z,t){return WATER.heightAt(x,z,t);}
+function rsRide(G,D,x,z,yaw,t,seaH,heel){return WATER.ride(G,D,x,z,yaw,t,heel,seaH);}

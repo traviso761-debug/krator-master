@@ -217,33 +217,40 @@ function buildHykTreasury(G,o){reseed(30921+(o.v|0));
  hykReg('The Treasury',0,0,13,13);}
 HYK.def({key:'hyk_treasury',name:'The Treasury',family:'civic',row:'Civic',w:24,d:24,h:13,r:13,inside:true,tags:{type:['civic'],wealth:'civic',lit:true},build:buildHykTreasury});
 // ---------------------------------------------------------------- the Wet Cells: the prison, a barnacle island reached only by water
-// Local y = 0 is the water datum: the island's rock rises from -2.6 (under the sea in the city; buried in the sheet's
-// land shelf) to a top at +1.0 with the tide's crust band and weed round it, drowned cell mouths below the line, and the
-// colony on top: the warders' cone at the centre with the one wet door at +1 and the one cool lamp, nine cell cones
-// clinging to its flank, blind barnacles in the gaps and on its shoulder. No bridge, no landing above the wet datum, no
-// stair up the outside: a lily-pad landing at +1 at the rock's edge, with steps into the water, is the only way in.
+// Local y = 0 is the water datum: the island's rock rises from the bed (o.sink below the datum: 2.6 on the sheet's land
+// shelf, the real depth in the city, where it stands at the foot of the Needle) to a top at +1.0 with the tide's crust
+// band and weed round it, drowned cell mouths below the line, and the colony on top: the warders' cone at the centre with
+// the one wet door at +1 and the one cool lamp, twelve cell cones clinging to its flank, blind barnacles in the gaps and
+// on its shoulder. No bridge, no landing above the wet datum, no stair up the outside: a lily-pad landing at +1 at the
+// rock's edge, with steps into the water, is the only way in. Travis (Oct 5 2026): bigger and more ominous: the rock
+// 15 m across the top, the cone 11 m tall and leaning, darker, and a ring of bone stakes leaning out over the water.
 function buildHykWetCells(G,o){reseed(30941+(o.v|0));
- const grey=k=>hC(hPick(HPAL.barnacle),k||.8);const colR=hC(hPick(HPAL.barnacle),.58),colC=hC(hPick(HPAL.crust)),colWd=hC(hPick(HPAL.weed)),colB=hC(hPick(HPAL.bone),.8),colF=hC(hPick(HPAL.floor),.8);
- const TOP=1.0,FL=1.3,hz=-1.5;
+ const grey=k=>hC(hPick(HPAL.barnacle),k||.78);const colR=hC(hPick(HPAL.barnacle),.7),   /* on hkWet (the dark wet-rock set) the tints are light: the set carries the darkness */colC=hC(hPick(HPAL.crust),.8),colWd=hC(hPick(HPAL.weed),.8),colB=hC(hPick(HPAL.bone),.62),colF=hC(hPick(HPAL.floor),.7);
+ const TOP=1.0,FL=1.3,hz=-1.8,SK=Math.max(2.6,+o.sink||0),R0=15.0;   /* R0: the rock's radius at the top; it flares .55 m per metre down to the bed */
  // the rock: a lobed lathe from the sea bed to the top plate, the crust band straddling the waterline, weed hanging from
- // it, barnacle specks, and six drowned mouths below the line
- const rock={H:TOP+2.6,cx:0,cz:0,yBase:-2.6,rFn:y=>13.8-.55*y,nu:84,nv:10,lobes:{n:5,amp:.07,ph:.4},flute:{n:9,amp:.03,sharp:1.2},noise:{amp:.05,su:6,sv:.8,seed:3},col:colR};
- const mouths=[];for(let i=0;i<6;i++){const th=.35+i*TAU/6;const q=hykLatheAt(rock,th,2.0);mouths.push({p:q.p,n:q.n,r:.7,ky:1.1,kind:'window'});}
- rock.ops=mouths;hykPut('hkBarn',hykLathe(rock));for(const m of mouths)hykWin(m,{open:true,depth:1.6,level:'wet'});
- hykPut('hkBarn',hykDisc(0,TOP,0,12.5,{col:colR,lobes:{n:5,amp:.07},sag:.25,nu:60}));
- hykPut('hkCrust',hykLathe({H:2.1,yBase:-1.3,cx:0,cz:0,rFn:y=>rock.rFn(y-1.3+2.6)*1.0+.12,nu:84,nv:6,lobes:{n:5,amp:.07,ph:.4},noise:{amp:.05,su:7,sv:.6,seed:11},col:colC}));
- for(let i=0;i<44;i++){const a=i/44*TAU+rr(-.1,.1);const r=rock.rFn(.5+2.6)*(1+.07*Math.cos(5*a+.4))+.2;const h=rr(1.2,2.8),w=rr(.5,1.1);kput('hkWeedCard',[r*Math.cos(a),.5-h/2,r*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[w,h,1],colWd);}
- for(let i=0;i<140;i++){const a=rng()*TAU,y=rr(-1.2,1.0);const r=rock.rFn(y+2.6)*(1+.07*Math.cos(5*a+.4))+.06;const s=rr(.08,.22);kput('hkBarnB',[r*Math.cos(a),y,r*Math.sin(a)],null,[s,s*.7,s],grey(.7));}
- // the warders' cone: the wet door on its front at +1, the cells' doors round it on its inner skin
- const H={cx:0,cz:hz,rb:5.8,rt:4.1,h:8.4,yBase:TOP-.3,dir:Math.PI/2+.4,tilt:.17};const hR=y=>H.rb+(H.rt-H.rb)*Math.pow(clamp((y-H.yBase)/H.h,0,1),.75);
+ // it, barnacle specks, and eight drowned mouths below the line
+ const rock={H:TOP+SK,cx:0,cz:0,yBase:-SK,rFn:y=>R0+.55*(TOP+SK-y),nu:96,nv:Math.max(10,Math.round(SK*2.5)),lobes:{n:5,amp:.08,ph:.4},flute:{n:9,amp:.035,sharp:1.3},noise:{amp:.06,su:6,sv:.8,seed:3},col:colR};
+ const rAt=y=>rock.rFn(y+SK);   /* the rock's radius at a local y */
+ const mouths=[];for(let i=0;i<8;i++){const th=.35+i*TAU/8;const q=hykLatheAt(rock,th,SK-.6);mouths.push({p:q.p,n:q.n,r:.8,ky:1.2,kind:'window'});}
+ rock.ops=mouths;hykPut('hkWet',hykLathe(rock));for(const m of mouths)hykWin(m,{open:true,depth:1.6,level:'wet'});
+ hykPut('hkWet',hykDisc(0,TOP,0,R0-1.4,{col:colR,lobes:{n:5,amp:.08},sag:.25,nu:72}));
+ hykPut('hkCrust',hykLathe({H:2.1,yBase:-1.3,cx:0,cz:0,rFn:y=>rAt(y-1.3)*1.0+.12,nu:96,nv:6,lobes:{n:5,amp:.08,ph:.4},noise:{amp:.05,su:7,sv:.6,seed:11},col:colC}));
+ for(let i=0;i<56;i++){const a=i/56*TAU+rr(-.1,.1);const r=rAt(.5)*(1+.08*Math.cos(5*a+.4))+.2;const h=rr(1.2,3.0),w=rr(.5,1.1);kput('hkWeedCard',[r*Math.cos(a),.5-h/2,r*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[w,h,1],colWd);}
+ for(let i=0;i<180;i++){const a=rng()*TAU,y=rr(-1.2,1.0);const r=rAt(y)*(1+.08*Math.cos(5*a+.4))+.06;const s=rr(.08,.22);kput('hkBarnB',[r*Math.cos(a),y,r*Math.sin(a)],null,[s,s*.7,s],grey(.5));}
+ // the stakes: bone stakes round the rim, leaning out over the water, a few snapped
+ for(let i=0;i<22;i++){const a=i/22*TAU+rr(-.08,.08);if(Math.abs(a-Math.PI/2)<.5)continue;   /* not across the landing */const r=rAt(TOP)*(1+.08*Math.cos(5*a+.4))-.3;const h=rr(2.2,3.6)*(rng()<.2?.45:1);const lean=rr(.35,.6);
+  const p0=[r*Math.cos(a),TOP-.3,r*Math.sin(a)],p1=[(r+lean*h)*Math.cos(a),TOP-.3+h*Math.sqrt(1-lean*lean),(r+lean*h)*Math.sin(a)];
+  hykPut('hkBone',hykTube([p0,[(p0[0]+p1[0])/2,(p0[1]+p1[1])/2,(p0[2]+p1[2])/2],p1],t=>.17*(1-t)+.03,{seg:6,col:colB}));}
+ // the warders' cone: tall and leaning, the wet door on its front at +1, the cells' doors round it on its inner skin
+ const H={cx:0,cz:hz,rb:7.0,rt:4.3,h:11.5,yBase:TOP-.3,dir:Math.PI/2+.4,tilt:.2};const hR=y=>H.rb+(H.rt-H.rb)*Math.pow(clamp((y-H.yBase)/H.h,0,1),.75);
  const Lh={cx:0,cz:hz,yBase:H.yBase,rFn:y=>hR(y+H.yBase)};
  const wet=hykLatheAt(Lh,Math.PI/2,FL+1.2-H.yBase);wet.r=1.0;wet.ky=1.2;wet.kind='door';
- const cells=[];const nC=9;for(let i=0;i<nC;i++){const th=Math.PI/2+.62+i*(TAU-1.24)/(nC-1);const rb=rr(2.3,2.75);const dist=hR(2.4)+rb*.86;
-  cells.push({th,rb,rt:rb*.66,h:rr(3.9,5.1),cx:Math.cos(th)*dist,cz:hz+Math.sin(th)*dist,dir:th+rr(-.5,.5),tilt:rr(.14,.24)});}
+ const cells=[];const nC=12;for(let i=0;i<nC;i++){const th=Math.PI/2+.62+i*(TAU-1.24)/(nC-1);const rb=rr(2.3,2.9);const dist=hR(2.4)+rb*.86;
+  cells.push({th,rb,rt:rb*.66,h:rr(4.2,5.8),cx:Math.cos(th)*dist,cz:hz+Math.sin(th)*dist,dir:th+rr(-.5,.5),tilt:rr(.16,.26)});}
  const hallOps=[wet],hallIn=[wet];
  for(const c of cells){const rIn=hR(FL+1.05)*.9;c.door={p:[rIn*Math.cos(c.th),FL+1.05,hz+rIn*Math.sin(c.th)],n:[-Math.cos(c.th),0,-Math.sin(c.th)],r:.85,ky:1.25,kind:'door'};hallIn.push(c.door);
   hallOps.push({p:[hR(FL+1.05)*Math.cos(c.th),FL+1.05,hz+hR(FL+1.05)*Math.sin(c.th)],n:c.door.n,r:.9,ky:1.25});}
- hykCellCone(H,{ops:hallOps,inOps:hallIn,inner:.9,fl:18,seed:5,nu:64,nv:24,col:grey(.78)});hykFloor(0,hz,FL,hR(FL)*.9,{col:colF});
+ hykCellCone(H,{ops:hallOps,inOps:hallIn,inner:.9,fl:18,seed:5,nu:64,nv:24,col:grey(.78),mat:'hkWet'});hykFloor(0,hz,FL,hR(FL)*.9,{col:colF});
  hykDoor(wet,{kind:'wetdoor',level:'wet',room:'warders hall',depth:.7});
  {const A=hykLatheAt(Lh,Math.PI/2+.3,3.7-H.yBase).p;hykLibSconce(A,[Math.cos(Math.PI/2+.3),.1,Math.sin(Math.PI/2+.3)],.45,{cool:true,level:'wet'});}
  // the cells: each a barnacle on the hall's flank with its door through both walls, a vent on its outer side, a bed
@@ -251,22 +258,22 @@ function buildHykWetCells(G,o){reseed(30941+(o.v|0));
  hykSpot(hall,'table',0,hz-.4,0,1.6,.9);hykSpot(hall,'store',-2.1,hz+1.1,.5,1.2,.7);hykSpot(hall,'seat',2.1,hz+.9,-.5,1.0,.9);
  cells.forEach((c,i)=>{const Lc={cx:c.cx,cz:c.cz,yBase:TOP-.25,rFn:y=>c.rb+(c.rt-c.rb)*Math.pow(clamp(y/c.h,0,1),.75)};
   const own=hykLatheAt(Lc,c.th+Math.PI,FL+1.05-Lc.yBase);own.r=.9;own.ky=1.25;const vent=hykLatheAt(Lc,c.th+rr(-.4,.4),3.1-Lc.yBase);vent.r=.22;vent.kind='window';
-  hykCellCone(Object.assign({yBase:Lc.yBase},c),{ops:[own,vent],inner:.88,fl:14,seed:i+7,col:grey(rr(.7,.86))});hykFloor(c.cx,c.cz,FL,c.rb*.8,{col:colF});
+  hykCellCone(Object.assign({yBase:Lc.yBase},c),{ops:[own,vent],inner:.88,fl:14,seed:i+7,col:grey(rr(.7,.86)),mat:'hkWet'});hykFloor(c.cx,c.cz,FL,c.rb*.8,{col:colF});
   hykWin(vent,{open:true,depth:.5,level:'wet'});hykDoor(c.door,{level:'wet',room:'cell '+(i+1),depth:1.5});
   const rm=hykRoom('cell',hykCirclePoly(c.cx,c.cz,c.rb*.75,14),FL,c.h-1.4,{doors:[[own.p[0],own.p[2],1.7,'warders hall']],wealth:.1});
   const d=c.rb*.75-1.0;hykSpot(rm,'bed',c.cx+Math.cos(c.th)*d,c.cz+Math.sin(c.th)*d,-c.th-Math.PI/2,2.1,1.0);});
  // blind barnacles: three in the gaps at the colony's foot, two perched on the hall's shoulder with their own bottoms
- for(const s of [{th:Math.PI/2+.25,r:11.2,rb:1.4,h:2.2},{th:Math.PI+.95,r:11.4,rb:1.7,h:2.8},{th:-Math.PI/2-.3,r:11.6,rb:1.2,h:1.9},{th:-.2,r:10.9,rb:1.0,h:1.6}]){
-  hykCellCone({cx:Math.cos(s.th)*s.r,cz:hz+Math.sin(s.th)*s.r,rb:s.rb,rt:s.rb*.62,h:s.h,yBase:TOP-.2,dir:s.th,tilt:.25},{inner:false,fl:11,seed:(s.th*9|0)+3,col:grey(rr(.68,.84))});}
- for(const s of [{th:Math.PI+.2,y:5.4,rb:1.25,h:2.0},{th:-.45,y:6.0,rb:1.0,h:1.7}]){const r=hR(s.y)+s.rb*.45;const cx=Math.cos(s.th)*r,cz=hz+Math.sin(s.th)*r;
-  hykCellCone({cx,cz,rb:s.rb,rt:s.rb*.6,h:s.h,yBase:s.y,dir:s.th,tilt:.25},{inner:false,flare:false,bottom:true,fl:10,seed:(s.th*5|0)+9,col:grey(.74)});
-  const q=hykLatheAt(Lh,s.th,s.y+.4-H.yBase);hykPut('hkBarn',hykFlare([q.p[0],q.p[1],q.p[2]],[Math.cos(s.th),0,Math.sin(s.th)],s.rb*.8,.7,{col:grey(.74)}));}
+ for(const s of [{th:Math.PI/2+.25,r:13.4,rb:1.6,h:2.5},{th:Math.PI+.95,r:13.6,rb:1.9,h:3.1},{th:-Math.PI/2-.3,r:13.8,rb:1.4,h:2.2},{th:-.2,r:13.1,rb:1.2,h:1.9},{th:Math.PI-.4,r:12.6,rb:1.1,h:1.7}]){
+  hykCellCone({cx:Math.cos(s.th)*s.r,cz:hz+Math.sin(s.th)*s.r,rb:s.rb,rt:s.rb*.62,h:s.h,yBase:TOP-.2,dir:s.th,tilt:.25},{inner:false,fl:11,seed:(s.th*9|0)+3,col:grey(rr(.68,.84)),mat:'hkWet'});}
+ for(const s of [{th:Math.PI+.2,y:5.4,rb:1.25,h:2.0},{th:-.45,y:6.0,rb:1.0,h:1.7},{th:Math.PI/2-.9,y:8.2,rb:.9,h:1.6}]){const r=hR(s.y)+s.rb*.45;const cx=Math.cos(s.th)*r,cz=hz+Math.sin(s.th)*r;
+  hykCellCone({cx,cz,rb:s.rb,rt:s.rb*.6,h:s.h,yBase:s.y,dir:s.th,tilt:.25},{inner:false,flare:false,bottom:true,fl:10,seed:(s.th*5|0)+9,col:grey(.74),mat:'hkWet'});
+  const q=hykLatheAt(Lh,s.th,s.y+.4-H.yBase);hykPut('hkWet',hykFlare([q.p[0],q.p[1],q.p[2]],[Math.cos(s.th),0,Math.sin(s.th)],s.rb*.8,.7,{col:grey(.74)}));}
  // the landing: a lily pad at +1 half on the rock's edge, rails on its flanks on posts, steps into the water. hykPad's
  // geometry is drawn in the current frame, so it takes local coordinates here; its deck record is put into world below
- {const px=0,pz=13.9,PRd=3.0;hykPad(px,TOP,pz,PRd,{col:grey(.72),mat:'hkBarn',stalk:-2.6,lobes:8});
+ {const px=0,pz=rAt(TOP)+2.1,PRd=3.2;hykPad(px,TOP,pz,PRd,{col:grey(.6),mat:'hkWet',stalk:-SK,lobes:8});
   const d=NAV_EXTRA[NAV_EXTRA.length-1];if(d&&d.kind==='pad'){const w=hykW(px,TOP,pz);d.x0=w[0]-PRd;d.z0=w[2]-PRd;d.x1=w[0]+PRd;d.z1=w[2]+PRd;d.y=w[1];d.own='The Wet Cells';}
   for(const arc of [[.2,1.25],[1.9,2.95]]){const pts=[];const n=8;for(let i=0;i<=n;i++){const a=arc[0]+(arc[1]-arc[0])*i/n;pts.push([px+PRd*.9*Math.cos(a),TOP+1.1,pz+PRd*.9*Math.sin(a)]);}
    hykPut('hkBone',hykTube(pts,()=>.07,{seg:6,col:colB}));for(let i=0;i<=n;i+=2){const p=pts[i];kput('hkPost',[p[0],TOP+.55,p[2]],null,[.06,1.1,.06],colB);}}
   for(let i=0;i<4;i++)kput('hkTread',[px,TOP-.1-i*.3,pz+PRd*.8+.1+i*.5],qEuler(0,0,0),[1.8,.14,.6],colB);}
- hykReg('The Wet Cells',0,0,15,10);}
-HYK.def({key:'hyk_wet_cells',name:'The Wet Cells',family:'civic',row:'Civic',w:28,d:31,h:10,r:15,inside:true,tags:{type:['civic'],wealth:'civic',lit:true},build:buildHykWetCells});
+ hykReg('The Wet Cells',0,0,19,13);}
+HYK.def({key:'hyk_wet_cells',name:'The Wet Cells',family:'civic',row:'Civic',w:38,d:42,h:13,r:19,inside:true,tags:{type:['civic'],wealth:'civic',lit:true},build:buildHykWetCells});

@@ -45,7 +45,7 @@ FK.set({ culture: 'lizardmen', tier: 'common', S: LIZ_COMMON, names: {
       const st = F.col('stoneBasalt');
       F.box(0, 0, 0, 1.3, 0.3, 2.0, 0, st, 'stone');
       F.box(0, 0.3, 0, 1.22, 0.06, 1.92, 0, F.shade(st, 0.12), 'stone');
-      for (let i = 0; i < 3; i++) F.box(-0.35 + i * 0.35, 0.1, 0.99, 0.2, 0.1, 0.02, 0, F.col('ember'), 'glow');   /* the warm coals under it */
+      for (let i = 0; i < 3; i++) F.box(-0.35 + i * 0.35, 0.1, 1.02, 0.2, 0.1, 0.03, 0, F.col('ember'), 'glow');   /* the warm coals under it, proud of the face */
       if (F.variant === 1) {
         for (let i = 0; i < 12; i++) F.box(F.rr(-0.4, 0.4), 0.36, F.rr(-0.6, 0.6), F.rr(0.3, 0.6), 0.03, 0.08, F.rr(-1.2, 1.2), F.shade('reedPale', F.rr(-0.15, 0.1)), 'reed');
         F.blob(0, 0.44, 0, 0.5, 0.1, 0, F.col('clothMoss'), 'cloth');
@@ -74,3 +74,7 @@ FURN({
     F.lamp(0, 0.5, 0, 0.3, 3);
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed lizardmen_training_<role> */
+FK.set({ culture: 'lizardmen', tier: 'common', roles: 'training', prefix: 'lizardmen_training_', S: LIZ_COMMON, names: {
+  training_dummy: 'Basalt practice post', archery_butt: 'Scale-hide target' } });

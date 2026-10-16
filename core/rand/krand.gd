@@ -2,7 +2,7 @@
 # GDScript ints are 64-bit signed, so every 32-bit product goes through imul() (16-bit halves) and every value is
 # kept as u32 bits (masked, never negative). Floats are doubles, in the JS file's order of operations.
 # test_rand.py is this file transliterated into Python and passes golden.json; krand_test.gd runs it here.
-# Not yet run inside Godot (no Godot where the repo is built): the first test of the Phase 7 project.
+# Passing inside Godot 4.5 headless since 2026-10-05 (godot/tests/rand/; tools/test_all.py --nightly runs it).
 #
 #   var s := KRand.Stream.new(seed)   s.next() [0,1)  s.u32()  s.range_f(a,b)  s.int_in(a,b)  s.pick(arr)  s.chance(p)
 #   KRand.hash_ints(seed, [a, b, c])  KRand.h3(x,y,z,seed)  KRand.vnoise(x,y,z,seed)  KRand.fbm(x,y,z,octaves,seed)

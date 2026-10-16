@@ -65,7 +65,13 @@ function barrels(x,y,z,lv,st){const n=lv===2?ri(1,3):lv===1?2:1,hc=vary(pick(PAL
   BIO.put('barrel',[bx,Y(bx,bz)-.1,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r,r*rr(.8,1.2),r],bright(vary(hc,.02,.06,.05),1.05));st.barrels++;}}
 function ballvine(x,y,z,lv,st){const n=lv===2?ri(4,7):lv===1?3:3,a=rr(0,TAU),hc=vary(pick(PAL.ball),.02,.08,.05),rc=rodCol(0x6a7a3a);let px=x,pz=z,py=y;
  for(let k=0;k<n;k++){const r=rr(.25,.55),aa=a+rr(-.7,.7),nx=px+Math.cos(aa)*rr(.5,1.1),nz=pz+Math.sin(aa)*rr(.5,1.1),ny=Y(nx,nz)+r*.7;
-  if(lv>=1)BIO.beam('rod',[px,py,pz],[nx,ny,nz],.035,.03,rc);BIO.put('ball',[nx,ny,nz],qEuler(0,rr(0,TAU),0),r,bright(vary(hc,.02,.05,.05),rr(1.0,1.2)));px=nx;pz=nz;py=ny;st.balls++;}}
+  if(lv>=1)BIO.beam('rod',[px,py,pz],[nx,ny,nz],.035,.03,rc);BIO.put('ball',[nx,ny,nz],qEuler(0,rr(0,TAU),0),r,bright(vary(hc,.02,.05,.05),rr(1.0,1.2)));px=nx;pz=nz;py=ny;st.balls++;}
+ // a few near vines end in a big melon split in two, the halves fallen apart with their yellow flesh up (FRUIT.md:
+ // fruitBallmelonFlesh). Drawn from the spot's hash, not rng(), so the rest of the floor keeps its layout. 48 tris each.
+ if(lv===2&&h3(x,z,7.31)<.14){const r=.42+.13*h3(z,x,1.7),a2=h3(x,z,2.9)*TAU,d=r*.62,ex=px+Math.cos(a)*(r+.35),ez=pz+Math.sin(a)*(r+.35);
+  for(const s of [1,-1]){const hx=ex+Math.cos(a2)*d*s,hz=ez-Math.sin(a2)*d*s,hy=Y(hx,hz)+r*.78,q=qEuler(0,a2,-.42*s);
+   BIO.put('melonhalf',[hx,hy,hz],q,r,bright(hc,1.1));BIO.put('melonflesh',[hx,hy,hz],q,r,bright(C(0xf0d850),1.0+.12*h3(hx,hz,.5)));}
+  st.splits++;}}
 function reed(x,y,z,lv,set){const h=rr(1.6,3.2)*(lv===0?1.6:1),n=lv===2?ri(3,5):lv===1?2:1;
  for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.8,2.6):0,hx=x+Math.cos(a)*d,hz=z+Math.sin(a)*d;if(k&&Y(hx,hz)-BIO.waterH(hx,hz)<-.4)continue;
   tuft('reed',hx,y,hz,h*rr(.75,1.1),h*rr(.7,1.1),leafCol(set||PAL.tealGreen,1.3,.025));}}
@@ -205,7 +211,7 @@ function plantSlope(x,y,z,Z,lv,st){const t=rng();
 // ---------------------------------------------------------------- the pass
 RIFT.buildFloor=function(R,q){
  reseed(600011);q=q==null?1:q;R=R||3000;means();
- const st={scalemoss:0,zebras:0,tongues:0,vain:0,rosettes:0,curls:0,barrels:0,balls:0,ferns:0,shrubs:0,reeds:0,tufts:0,glasswort:0,domes:0,purple:0,candles:0,spikes:0,blooms:0,moss:0,boulders:0,spires:0,scum:0,logs:0};
+ const st={scalemoss:0,zebras:0,tongues:0,vain:0,rosettes:0,curls:0,barrels:0,balls:0,splits:0,ferns:0,shrubs:0,reeds:0,tufts:0,glasswort:0,domes:0,purple:0,candles:0,spikes:0,blooms:0,moss:0,boulders:0,spires:0,scum:0,logs:0};
  // one plant of the right zone's mix at (x,z); density by zone
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
   const w=[Z.jung*1.5,Z.shore*.9,Z.sav*1.2,Z.cloud*1.5,Z.peak*1.1,Z.slope*.9],tot=w[0]+w[1]+w[2]+w[3]+w[4]+w[5];if(tot<=0)return;

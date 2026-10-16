@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.264,
+    1.169
+   ],
+   "seam_before": [
+    1.28,
+    1.173
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.3,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 0.35,
+   "pattern": false,
+   "rough": 0.38,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.basalt.polished",
+  "metal": 0,
+  "roughness": 0.38,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "stone.basalt.polished.png",
+  "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Dark Charcoal Terrazzo Stone Texture.png\")",
+  "reuse": "honed near-black basalt: Zeijani hub floors and polished tube walls; any polished dark stone (altars, slate-dark floors)",
+  "sha1": "dfec8e4767ba146cf6b1cb9b32f07fa016dc2e7e"
+ }
+}

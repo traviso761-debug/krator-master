@@ -752,3 +752,7 @@ FURN({
     }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed painted_training_<role> */
+FK.set({ culture: 'painted', tier: 'common', roles: 'training', prefix: 'painted_training_', S: PNT_COMMON, names: {
+  training_dummy: 'Cedar practice post', archery_butt: 'Cedar-plank target' } });
