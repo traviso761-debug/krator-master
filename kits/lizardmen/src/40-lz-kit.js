@@ -60,7 +60,7 @@ function lzRibRoof(L,Wd,eaveY,ridgeY,n,o){o=o||{};const ov=o.over===undefined?.5
    stone walls under its eaves, and stone gables at both ends cut from the SAME section so nothing gaps. o.doors: the +x
    gable's doors [{z, c}] (caste-sized triangles, real openings); o.eyes [[z, y]] spiral eyes on that gable; o.y0 the floor */
 function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o.r||.3,y0=o.y0||0;
- for(const x of xs)for(const s of [-1,1])lzHorn(x,y0,s*hz,s>0?PI:0,h*1.15,r,{curl:.78,lean:.12,mk:o.mk||'ivory',nt:12,ns:9});
+ for(const x of xs)for(const s of [-1,1])lzHorn(x,y0,s*hz,s>0?PI:0,h*1.15,r,{curl:.78,lean:.12,mk:o.mk||'ivory',col:o.tuskCol,nt:12,ns:9});
  const eY=o.eaveY||1.2,rY=h*.86,mk=lzSolid(o.skinMk||'hide'),col=o.skinCol||P('hide'),hz2=hz*.98;
  const sag=v=>.35*Math.sin(PI*v)*(1-v)*.6,topY=v=>eY+(rY-eY)*v-sag(v);
  for(const s of [-1,1]){const f=(u,v)=>[-L/2+L*u,topY(v),s*hz2*(1-v)];
