@@ -686,7 +686,8 @@ pre-flight passes on Windows (`krand_test`, `atmos_test`, `--check`: five cases,
       alpha to coverage under the project's MSAA, so the thin twig strokes thin out as on the page. Godot's leaves
       are still a little flatter (less of the page's darker inner shading).
 16. **rift.** No holes at range (2a), but the whole tile changed LOD at once: it lies inside one 1.2 km LOD chunk, and
-    three switches per chunk too. Done in the importer on branch `claude/biome-lod-cells` (`74b4287b`, not yet merged; `biome_import.gd`, 2026-10-16): each LOD-chunked item's
+    three switches per chunk too. Done in the importer (`biome_import.gd`, 2026-10-16; each item cell keeps its own slice of the core/tags records, a
+    bucket's records stay on one node above its cells, and `world_import.gd`'s chunk-placed nodes keep the chunk's widening): each LOD-chunked item's
     instances are split into 150 m cells by position, and each bucket's connected pieces by centroid, one node per
     cell at its centre, ranges widened by the cell's half-diagonal (106 m, was the chunk's 849 m). The rift tile is
     now 175 item nodes and 47 bucket nodes over 12 cells (51 items, 9 buckets before), the same 48,432 instances

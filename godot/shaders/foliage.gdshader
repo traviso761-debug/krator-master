@@ -65,6 +65,6 @@ void fragment() {
 	// alpha to coverage under the project's MSAA: a scissored card has hard, stair-stepped edges and keeps its thin
 	// twig strokes at full strength into the distance; with coverage they thin and soften as the page's do
 	ALPHA_ANTIALIASING_EDGE = 0.25;
-	ALPHA_TEXTURE_COORDINATE = UV * vec2(textureSize(albedo_tex, 0));
+	ALPHA_TEXTURE_COORDINATE = tuv * vec2(textureSize(albedo_tex, 0));
 	BACKLIGHT = vec3(back_light);
 }
