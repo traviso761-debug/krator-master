@@ -607,7 +607,7 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
    no `key` either, so the report cannot even name them). Fauna (`anim`, `aP0`/`aP1`) stand still at their path centre.
    *Compensated 2026-10-05:* every kit hook is named as data (`irid`, `gloss`, `far`, `hang`, `anim-phase`:
    `biomes/GODOT.md`); `irid`, `gloss`, `far` (both packings) and `hang` (the sway and the night glow) have Godot
-   shaders (`bark.gdshader` modes 1 to 5). Open: both fauna kinds.
+   shaders (`bark.gdshader` modes 1 to 5). Open: both fauna kinds. *The `anim` kind done 2026-10-16* (finding 20).
 7. **`swayW` is GLSL text** in the export. The three values the kits use map to `c + dot(w, position)`; make it data.
    *Done 2026-10-05:* the export adds `sway` as data.
 8. **LOD is measured to the chunk's box in three and to a point in Godot:** the spike widens ranges by the chunk
@@ -709,6 +709,15 @@ pre-flight passes on Windows (`krand_test`, `atmos_test`, `--check`: five cases,
     for the metadata (5a to 5c unchecked). Wanted: an in-game click readout in the spike (the record under the
     cursor), and a scripted nav check (`bld_00005`: a path from one room to another through a door link) that prints
     pass or fail, so this case needs no editor work. Meshes for Yuni wait on its second route (gap 13).
+20. **Fauna motion (2026-10-16).** The core's `anim` kind moves in Godot: `shaders/lib/anim.gdshaderinc` (orbit, flit,
+    walk; wings, legs, billboards; `anim.gdshader`, and `anim_add.gdshader` for the additive motes), each instance's
+    path radius and `aP1` packed by both importers. Its twin `krator/kanim.gd` matches `BIO.animHook`'s own GLSL run on a
+    GPU (`tools/anim_golden.py`, 72 cases; `tests/anim/anim_test.gd`), and on the hyperjungle tile a butterfly pinned at
+    the same clock (`--clock=T`, new) stands on the same pixel in the page and in Godot at 100 s and at 103 s. Not
+    ported, because no shader holds their motion: fauna a kit moves on the CPU each tick (`BIO.dynamic`: eastabyss,
+    sedesert's deer, swifts and striders, Shade), which export a snapshot; walkers of the `anim` kind (their host moves
+    them); swbay's and nwbay's flocks (`anim-phase`), which no export carries. Those want their motion baked to data
+    (keyframed paths, as Stage 5 plans for the sim's tasks) or their ticks ported to GDScript.
 
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
 material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the

@@ -40,6 +40,9 @@ func _generate_scene_node(state: GLTFState, gltf_node: GLTFNode, scene_parent: N
 		# (biomes/GODOT.md, "In Godot"): COLOR = (r, g, b, c2.r), INSTANCE_CUSTOM = (oct(aN).x, oct(aN).y, c2.g, c2.b)
 		var AN := _floats(state, attrs.get("_AN", -1))
 		var C2 := _floats(state, attrs.get("_AC2", -1))
+		# an animated body (kind 'anim'): COLOR.a its path's radius (aP0.w), INSTANCE_CUSTOM = aP1 (shaders/anim_body.gdshaderinc)
+		var P0 := _floats(state, attrs.get("_AP0", -1))
+		var P1 := _floats(state, attrs.get("_AP1", -1))
 		mm.use_colors = true
 		mm.use_custom_data = true
 		mm.mesh = mesh
@@ -63,13 +66,16 @@ func _generate_scene_node(state: GLTFState, gltf_node: GLTFNode, scene_parent: N
 				buf[b + 16] = e.x; buf[b + 17] = e.y
 			buf[b + 18] = C2[i * 3 + 1] if C2.size() > 0 else 1.0
 			buf[b + 19] = C2[i * 3 + 2] if C2.size() > 0 else 1.0
+			if P1.size() > 0:
+				buf[b + 15] = P0[i * 4 + 3] if P0.size() > 0 else 0.0
+				buf[b + 16] = P1[i * 4]; buf[b + 17] = P1[i * 4 + 1]; buf[b + 18] = P1[i * 4 + 2]; buf[b + 19] = P1[i * 4 + 3]
 		mm.buffer = buf
 		var it := MultiMeshInstance3D.new()
 		it.multimesh = mm
 		it.name = gltf_node.resource_name
 		it.set_meta("krator_instances", n)
 		it.set_meta("krator_item", ex["krator_item"])
-		for k in ["_AP0", "_AP1"]:   # a fauna path (biomes/GODOT.md): kept as data; the anim shader is not ported
+		for k in ["_AP0", "_AP1"]:   # a fauna path (biomes/GODOT.md): packed above for the anim shader, and kept as data
 			if attrs.has(k):
 				it.set_meta("krator" + k.to_lower(), _floats(state, attrs[k]))
 		return it

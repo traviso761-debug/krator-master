@@ -178,7 +178,8 @@ and options as data (the hook code still lives in the kit):
 | `gloss` | nwlowlands, swlowlands (`barkMat2`) | `alt` (linear), `mean`, `gain`, `gloss`: the map is data (red brightness, green a mask) | `bark.gdshader` mode 2 |
 | `far` | rift, swlowlands (`farMat`): the far impostors | `pack` (`c2-rule`: rift, `gloss`: swlowlands) and `uv`: what the impostor packs into its uvs | `bark.gdshader` modes 3, 4 |
 | `hang` | nhighlands' glowing bulbs and pods | `swayA`, `swayW`, `night` (the emissive intensity by day and by night); the material's `emissive` | `bark.gdshader` mode 5 |
-| `anim-phase` | swbay, nwbay fauna (`animMat`) | `mode` (bird, swim, walk), `attribute: 'aPh'` | not yet |
+| `anim` | the core (`BIO.animMat`, `core/biome/35-core-anim.js`): hyperjungle's rays, darts, butterflies, motes, striders | `mode` (orbit, flit, walk), `flap` {rate, amp, root}, `legs` {top, amp}, `billboard`, `basic`, `additive`; per instance `aP0.w` (the path's radius) and `aP1` | `anim.gdshader`, `anim_add.gdshader` (`lib/anim`; 2026-10-16) |
+| `anim-phase` | swbay, nwbay fauna (`animMat`) | `mode` (bird, swim, walk), `attribute: 'aPh'` | not yet: their flocks are moved by the kit on the CPU and no export carries them |
 
 They still export `hooked:true`. Each is to become a core kind whose hook lives once in the core, so that `kind`
 names the library shader (`GODOT-PLAN.md`, rule 7), and the record then moves onto the plan's
