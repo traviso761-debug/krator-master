@@ -3,20 +3,20 @@
 
     python3 serve.py [port]          # default 8813; open /dist/voth-site.html
 
-A static server rooted at this folder, plus two writes: POST /save/voth-site with the site JSON writes
+A static server rooted at this folder, plus three writes: POST /save/voth-site with the site JSON writes
 site/voth-site.json (checked to be a site object first). The next build inlines it, so commit it with the work.
-POST /save/voth-city-marks writes site/voth-city-marks.json: the owner's marks on the city plan (areas, lines,
-points with notes), which the city page reads back when it opens. POST /save/voth-city-edits writes
-site/voth-city-edits.json: the city plan editor's placed kit buildings, painted streets and deletions, which the
-layout applies (the city page reads it fresh when it opens; the next build inlines it).
+The city page is on core/host (ROADMAP.md section 10, step 6b), whose save route is tools/edits/serve.py's, answered here
+too: POST /__save {kind: 'marks' | 'edits', page, data} writes marks.json (the owner's marks on the city plan: areas,
+lines, points with notes, which the page reads back when it opens) or edits.json (the editor's core/edits log: placed kit
+buildings, painted streets, deletions, plants, which build.py inlines and the layout applies; a draft in the browser
+wins until then), and GET /__file?kind=marks reads marks.json back (204 when there is none).
 Local use only: it binds 127.0.0.1.
 """
 import http.server, json, os, re, socketserver, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SITES = {'/save/voth-site': os.path.join(HERE, 'site', 'voth-site.json'),
-         '/save/voth-city-marks': os.path.join(HERE, 'site', 'voth-city-marks.json'),
-         '/save/voth-city-edits': os.path.join(HERE, 'site', 'voth-city-edits.json')}
+SITES = {'/save/voth-site': os.path.join(HERE, 'site', 'voth-site.json')}
+SAVE_KINDS = {'edits': ('krator-edits', 'ops'), 'marks': ('krator-marks', 'marks')}   # core/host's (tools/edits/serve.py)
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -31,22 +31,43 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if self.command == 'POST':
             super().log_message(fmt, *a)
 
+    def do_GET(self):
+        if self.path.split('?', 1)[0] == '/__file':   # core/host's marks (94-host-marks.js), or 204 when none was saved
+            q = re.search(r'kind=([a-z]+)', self.path)
+            f = os.path.join(HERE, q.group(1) + '.json') if q and q.group(1) in SAVE_KINDS else ''
+            if not f or not os.path.isfile(f):
+                self.send_response(204); self.end_headers(); return
+            body = open(f, 'rb').read()
+            self.send_response(200); self.send_header('Content-Type', 'application/json'); self.send_header('Content-Length', str(len(body))); self.end_headers()
+            return self.wfile.write(body)
+        return super().do_GET()
+
     def do_POST(self):
-        path = SITES.get(self.path)
         n = int(self.headers.get('Content-Length') or 0)
+        if n <= 0 or n > 16 * 1024 * 1024:
+            return self.send_error(413)
+        if self.path.split('?', 1)[0] == '/__save':   # core/host's save route (98-host-edit.js, 94-host-marks.js)
+            try:
+                req = json.loads(self.rfile.read(n).decode('utf-8'))
+                kind, data = req.get('kind'), req.get('data')
+                assert kind in SAVE_KINDS and isinstance(data, dict)
+                fmt, key = SAVE_KINDS[kind]
+                assert data.get('format') == fmt and isinstance(data.get(key), list)
+            except Exception:
+                return self.send_error(400, 'expected {kind: edits|marks, page, data: a krator-edits or krator-marks object}')
+            with open(os.path.join(HERE, kind + '.json'), 'w', encoding='utf-8', newline='\n') as f:
+                json.dump(data, f, indent=1, ensure_ascii=False)
+                f.write('\n')
+            print('saved %s.json: %d %s' % (kind, len(data[key]), key))
+            body = json.dumps({'saved': 'settlements/voth/' + kind + '.json'}).encode()
+            self.send_response(200); self.send_header('Content-Type', 'application/json'); self.send_header('Content-Length', str(len(body))); self.end_headers()
+            return self.wfile.write(body)
+        path = SITES.get(self.path)
         if not path:
             return self.send_error(404)
-        if n <= 0 or n > 8 * 1024 * 1024:
-            return self.send_error(413)
         try:
             data = json.loads(self.rfile.read(n).decode('utf-8'))
-            if self.path == '/save/voth-city-marks':
-                if not isinstance(data, dict) or not isinstance(data.get('marks'), list):
-                    raise ValueError('not a marks object')
-            elif self.path == '/save/voth-city-edits':
-                if not isinstance(data, dict) or not all(isinstance(data.get(k), list) for k in ('buildings', 'streets', 'del')):
-                    raise ValueError('not an edits object')
-            elif not isinstance(data, dict) or not isinstance(data.get('districts'), list) or not isinstance(data.get('markers'), list):
+            if not isinstance(data, dict) or not isinstance(data.get('districts'), list) or not isinstance(data.get('markers'), list):
                 raise ValueError('not a site object')
         except Exception as e:
             return self.send_error(400, str(e))

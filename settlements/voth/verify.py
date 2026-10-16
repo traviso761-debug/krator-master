@@ -313,7 +313,7 @@ CITY_CHECK = r"""() => {
       const seen = {}, drawErr = []; let drawn = 0;
       VC.IX.units.forEach(u => { if (seen[u.type] || drawn >= 12) return; seen[u.type] = 1; try { const g = VC.ixDraw(u.i); if (!g || !g.userData.stats.rooms) drawErr.push(u.type); else drawn++; VC.ixShow(u.i, false); } catch (e) { drawErr.push(u.type + ': ' + e.message); } });
       const u = VC.IX.units.find(q => q.residents && q.short == null && VC.IX.types[q.type].storeys > 1);
-      if (u) { VC.cutTo(u.i, 1); out.ix.cut = { unit: u.i, storey: VC.INTD.cut.storey, shown: VC.IXD.groups[u.i].visible, bar: document.getElementById('cut-storey').innerText.trim().slice(0, 120) }; VC.cutOff(); out.ix.cut.off = !VC.IXD.groups[u.i].visible; }
+      if (u) { VC.cutTo(u.i, 1); out.ix.cut = { unit: u.i, storey: VC.INTD.cut.storey, shown: VC.IXD.groups[u.i].visible, bar: document.getElementById('khost-cut-storey').innerText.trim().slice(0, 120) }; VC.cutOff(); out.ix.cut.off = !VC.IXD.groups[u.i].visible; }
       out.ix.drawn = drawn; out.ix.drawErr = drawErr;
       VC.ixDensityToggle(); out.ix.density = document.getElementById('ixlegend').innerText.split('\n')[0]; VC.ixDensityToggle(); VC.ixDensityToggle();
       out.ix.densityWork = document.getElementById('ixlegend').innerText.split('\n').slice(0, 4).join(' | '); VC.ixDensityToggle(); out.ix.densityOff = VC.IXD.density === 0;

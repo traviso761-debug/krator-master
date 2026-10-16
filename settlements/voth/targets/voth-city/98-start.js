@@ -9,7 +9,7 @@ var vcGo = function () {
       try {
         if (/[?&]lite=1/.test(location.search)) HOST.layers.buildings = false;
         VC.start();
-        VC.hostTake();   /* core/host's shell (97-vc-host-take.js) */
+        VC.hostTake();   /* core/host's whole interface (97-vc-host-take.js) */
         note.style.display = 'none';
         window._vc = { ready: true, plan: PLAN, log: PLAN.log, stats: PLAN.stats, failed: HOST.failed, wall: VC.wall, transit: PLAN.transit,
           setStep: function (k) { $('step').value = k; $('step').oninput(); } };
@@ -17,10 +17,6 @@ var vcGo = function () {
     }, 30);
   } catch (e) { note.textContent = 'Layout failed: ' + e.message; console.error(e); window._vc = { ready: true, error: String(e.stack || e), log: PLAN && PLAN.log }; }
 };
-/* under serve.py the owner's edits are read fresh (site/voth-city-edits.json), so a saved edit shows on the next
-   reload without a rebuild; opened any other way the page lays out with what build.py inlined (EDITS_INIT) */
-setTimeout(function () {
-  if (location.protocol.indexOf('http') !== 0) return vcGo();
-  fetch('../site/voth-city-edits.json', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(function (j) { VC.EDITS = j; vcGo(); }).catch(function () { vcGo(); });
-}, 50);
+/* the owner's edits are KHOST_EDITS (settlements/voth/edits.json, inlined by build.py; a newer draft in this browser
+   wins until it is saved: core/host/host.py edits_js), which the layout reads (35-vc-steps.js VC.edits) */
+setTimeout(vcGo, 50);

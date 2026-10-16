@@ -6,7 +6,8 @@
      gaps, its stairs, its furniture (one InstancedMesh per piece and part, per storey), in a group posed as the lot.
    - The cutaway (x) cuts every building in view near the middle of the view (VC.CUTALL: at most 36, within 160 m) at
      the chosen storey, by a height grid every material tests (VC.cutInject), and the canton the view's middle is on by
-     the clipping planes; the storey keys and buttons step them all. Walking into a building (VC.ixWalkIn) shows its
+     the clipping planes; the storey keys and buttons step them all (core/host's 99-host-cutaway.js: the buildings are its
+     unit VC.CUTB, which sets no box). Walking into a building (VC.ixWalkIn) shows its
      interior whole, as walking into a canton does, and the cutaway leaves it so. Its meshes are never frustum-culled:
      three r128 tests an InstancedMesh's geometry at the lot's origin, not its instances.
    - The density overlay (n): residents per hectare on a TUNE.ix.density.cell grid, a diverging ramp round the city's
@@ -323,6 +324,7 @@ VC.cutAllTick = function (force) {
     list.forEach(function (u) { var Lv = VC.cutLevels(u), s = Math.min(C.storey, Lv.length - 1); VC.cutRaster(G, u, u.y + Lv[s].y + Math.min(TUNE.interiors.cutAt, Lv[s].h - 0.3)); });
     G.tex.needsUpdate = true; G.u.kcutO.value.set(ox, oz, G.S);
     VC.cutEvict(want, cx, cz);
+    if (!C.canton) VC.cutLevelsN(VC.cutTop());   /* the host's unit: as many storeys as the tallest building cut */
     VC.cutBar();
   }
 };
@@ -347,7 +349,7 @@ VC.ixHide = function (i) { VC.ixShow(i, i === VC.IXD.walkIn, null); };
 VC.cutUnit = function (i, storey) {
   var C = VC.INTD.cut;
   if (C.canton) { VC.showInterior(C.canton, false); C.canton = null; }
-  VC.cutAllOn(); VC.cutPlanes(); VC.cutBox(null);   /* the planes are the canton's: open nowhere */
+  VC.cutAllOn(); VC.cutPlanes();   /* the planes are the canton's: open nowhere (the host's unit has no box) */
   var anchor = i != null && i >= 0 && VC.cutLevels(VC.IX.units[i]) ? i : null;
   if (C.unit != null && C.unit !== anchor && C.unit >= 0) VC.ixHide(C.unit);
   C.unit = anchor; C.on = true;
@@ -355,53 +357,53 @@ VC.cutUnit = function (i, storey) {
   (C.units || []).forEach(function (k) { var L = VC.cutLevels(VC.IX.units[k]); if (L) top = Math.max(top, L.length); });
   C.storey = Math.max(0, Math.min(Math.max(top, TUNE.ix.maxStoreys) - 1, storey | 0));
   VC.cutAllTick(true);
-  VC.cutBar();
 };
-VC.ixCutWrap = function () {
-  var cutTo = VC.cutTo, cutOff = VC.cutOff, cutBar = VC.cutBar, cutPick = VC.cutPick;
-  VC.cutTo = function (cn, storey) {
-    var C = VC.INTD.cut;
-    if (typeof cn === 'number') return VC.cutUnit(cn, storey);
-    if (cn == null && !C.canton) return VC.cutUnit(C.unit, storey);
-    if (C.unit != null && C.unit >= 0) VC.ixHide(C.unit);
-    C.unit = null;
-    var r = cutTo(cn, storey);
-    VC.cutAllOn(); VC.cutAllTick(true);   /* the buildings round the canton, at its storey (their own top when lower) */
-    return r;
-  };
-  VC.cutOff = function () {
-    var C = VC.INTD.cut; (C.units || []).forEach(function (i) { VC.ixHide(i); }); if (C.unit != null && C.unit >= 0) VC.ixHide(C.unit);
+/* ---------------------------------------------------------------- the cutaway's units for core/host (97-vc-host-take.js)
+   The cantons (56) and VC.CUTB, the lot buildings in view: a unit with no box of its own (clip: false: the planes open
+   nowhere, the height grid cuts them), its storeys as many as the tallest building cut (at least TUNE.ix.maxStoreys),
+   opened on the building nearest the view's middle (its anchor) */
+VC.CUTB = { id: 'buildings', name: 'the buildings in view', x: 0, z: 0, w: 1, d: 1, clip: false, anchor: null, levels: [] };
+VC.cutLevelsN = function (n) { var B = VC.CUTB; while (B.levels.length < n) B.levels.push({ y: 0, h: TUNE.ix.storeyH, name: null }); B.levels.length = n; };
+VC.cutTop = function () { var C = VC.INTD.cut, top = TUNE.ix.maxStoreys; (C.units || []).concat(C.unit != null && C.unit >= 0 ? [C.unit] : []).forEach(function (k) { var L = VC.cutLevels(VC.IX.units[k]); if (L) top = Math.max(top, L.length); }); return top; };
+/* VC.cutTo's argument: a canton's name, or a building's index (null: the anchor the cut has) */
+VC.cutUnitOf = function (cn) { if (typeof cn === 'number' || cn == null) { VC.CUTB.anchor = cn == null ? VC.INTD.cut.unit : cn; return VC.CUTB; } return VC.INT.cantons[cn] ? cn : null; };
+/* the host's show hook: a unit cut at storey si, or closed (si null) */
+VC.cutShow = function (u, si) {
+  var C = VC.INTD.cut;
+  if (si == null) {
+    (C.units || []).forEach(function (i) { VC.ixHide(i); }); if (C.unit != null && C.unit >= 0) VC.ixHide(C.unit);
     C.unit = null; C.units = []; C.pending = 0; if (VC.IXD.grid) { VC.IXD.grid.u.kcutO.value.z = 0; VC.IXD.grid.sig = ''; }
-    return cutOff();
-  };
-  VC.cutBar = function () {
-    var C = VC.INTD.cut, n = (C.units || []).length, more = n + ' building' + (n === 1 ? '' : 's') + ' cut' + (C.pending ? ', ' + C.pending + ' more drawing' : '');
-    if (C.canton || !C.on) { cutBar(); if (C.on && C.canton && $('cut-storey')) $('cut-storey').innerHTML += ' <span class="k" style="display:inline">&middot; ' + more + ' round it</span> '; return; }
-    var bar = $('cutbar'); if (!bar) return; bar.style.display = 'block';
-    var top = TUNE.ix.maxStoreys; (C.units || []).forEach(function (k) { top = Math.max(top, VC.cutLevels(VC.IX.units[k]).length); });
-    var u = C.unit != null && C.unit >= 0 ? VC.IX.units[C.unit] : null, line = '';
-    if (u) {
-      var ty = VC.IX.types[u.type], Lv = ty.B.levels, s = Math.min(C.storey, Lv.length - 1), A = ASSET_BY_KEY[u.key] || {};
-      var rk = ty.B.rooms.filter(function (R) { return R.level === s; }).map(function (R) { return R.kind; }).join(', ');
-      line = ' &middot; <b>' + (A.name || u.key) + '</b> (' + u.cls + ', ' + u.district + ', storey ' + (s + 1) + ' of ' + Lv.length + ': ' + rk +
-        (u.residents ? ' &middot; ' + u.residents + ' residents, ' + u.beds + ' beds of ' + u.need + (u.short ? ' <b style="color:#ff9a7a">short</b>' : '') : '') + ')';
-    }
-    $('cut-storey').innerHTML = ' storey <b>' + (C.storey + 1) + '</b> of up to ' + top + ' <span class="k" style="display:inline">' + more + ' (each at its own top storey when lower)' + line + '</span> ';
-    $('cut-down').disabled = C.storey <= 0; $('cut-up').disabled = C.storey >= top - 1;
-    $('cut-down').style.opacity = C.storey <= 0 ? 0.35 : 1; $('cut-up').style.opacity = C.storey >= top - 1 ? 0.35 : 1;
-    $('cut-canton').value = '';
-    var e = $('cut-status'); if (e) e.textContent = n + ' buildings cut, storey ' + (C.storey + 1);
-  };
-  /* the canton whose apron holds the view's middle; else the building whose footprint holds it (or the nearest within
-     12 m) as the anchor; else -1, the view's middle alone */
-  VC.cutPick = function () {
-    var t = ctl.target, cn = cutPick(), best = null, bd = 12;
-    if (cn) { var M = VC.INT.cantons[cn].M; if (Math.hypot(M.x - t.x, M.z - t.z) < (M.apron ? M.apron.ro : M.r)) return cn; }
-    VC.IX.units.forEach(function (u) { if (Math.abs(u.x - t.x) > 40 || Math.abs(u.z - t.z) > 40) return; var d = Math.hypot(u.x - t.x, u.z - t.z); if (d < bd && VC.cutLevels(u)) { bd = d; best = u.i; } });
-    return best != null ? best : -1;
-  };
-  var sel = $('cut-canton');
-  if (sel && !sel.querySelector('option[value=""]')) { var o = document.createElement('option'); o.value = ''; o.textContent = 'a building'; o.disabled = true; sel.insertBefore(o, sel.firstChild); }
+    VC.cutCantonOff(); return;
+  }
+  VC.INTD.planes = KHOST.cut.planes;
+  if (u === VC.CUTB) { VC.cutUnit(u.anchor, si); VC.cutLevelsN(VC.cutTop()); KHOST.cut.storey = C.storey; return; }
+  if (C.unit != null && C.unit >= 0) VC.ixHide(C.unit);
+  C.unit = null;
+  VC.cutCanton(u.id, si);
+  VC.cutAllOn(); VC.cutAllTick(true);   /* the buildings round the canton, at its storey (their own top when lower) */
+};
+/* the canton whose apron holds the view's middle; else the buildings, anchored on the one whose footprint holds it (or
+   the nearest within 12 m), or -1, the view's middle alone */
+VC.cutPickUnit = function () {
+  var t = ctl.target, cn = VC.cutPick(), best = null, bd = 12;
+  if (cn) { var M = VC.INT.cantons[cn].M; if (Math.hypot(M.x - t.x, M.z - t.z) < (M.apron ? M.apron.ro : M.r)) return cn; }
+  VC.IX.units.forEach(function (u) { if (Math.abs(u.x - t.x) > 40 || Math.abs(u.z - t.z) > 40) return; var d = Math.hypot(u.x - t.x, u.z - t.z); if (d < bd && VC.cutLevels(u)) { bd = d; best = u.i; } });
+  VC.CUTB.anchor = best != null ? best : -1;
+  return VC.CUTB;
+};
+/* the host's bar: the canton's storey and the buildings cut round it; or the buildings', with the anchor's line */
+VC.cutBarHTML = function (u, si) {
+  var C = VC.INTD.cut, n = (C.units || []).length, more = n + ' building' + (n === 1 ? '' : 's') + ' cut' + (C.pending ? ', ' + C.pending + ' more drawing' : '');
+  if (u !== VC.CUTB) return VC.cutCantonBar(u.id, si) + ' <span class="k" style="display:inline">&middot; ' + more + ' round it</span> ';
+  var top = VC.cutTop(), b = C.unit != null && C.unit >= 0 ? VC.IX.units[C.unit] : null, line = '';
+  if (b) {
+    var ty = VC.IX.types[b.type], Lv = ty.B.levels, s = Math.min(C.storey, Lv.length - 1), A = ASSET_BY_KEY[b.key] || {};
+    var rk = ty.B.rooms.filter(function (R) { return R.level === s; }).map(function (R) { return R.kind; }).join(', ');
+    line = ' &middot; <b>' + (A.name || b.key) + '</b> (' + b.cls + ', ' + b.district + ', storey ' + (s + 1) + ' of ' + Lv.length + ': ' + rk +
+      (b.residents ? ' &middot; ' + b.residents + ' residents, ' + b.beds + ' beds of ' + b.need + (b.short ? ' <b style="color:#ff9a7a">short</b>' : '') : '') + ')';
+  }
+  var e = $('cut-status'); if (e) e.textContent = n + ' buildings cut, storey ' + (C.storey + 1);
+  return ' storey <b>' + (C.storey + 1) + '</b> of up to ' + top + ' <span class="k" style="display:inline">' + more + ' (each at its own top storey when lower)' + line + '</span> ';
 };
 /* walking into a lot building shows its interior, every storey, and walking out hides it (owner, 2026-10-14: "interiors
    are not rendering aside from the cantons"): as the cantons' own (56-vc-interiors-host.js cutUI's frame hook). The
@@ -715,7 +717,7 @@ VC.peopleReportHTML = function () {
   return h;
 };
 VC.ixUI = function () {
-  VC.ixCutWrap(); VC.ixPickWrap(); VC.ixWalkIn();
+  VC.ixPickWrap(); VC.ixWalkIn();
   var paint = VC.paint; VC.paint = function () { paint(); VC.ixPaint(); };
   var b = $('ly-density'); if (b) b.onclick = VC.ixDensityToggle;
   var r = $('ly-ixrep'), P = $('ix');

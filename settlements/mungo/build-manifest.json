@@ -93,7 +93,7 @@
  ],
  "40-core-edits.js": [
   "core/edits",
-  "2b9d1a27c779"
+  "7fb8d5f0f0ea"
  ],
  "40-ground.js": [
   "mungo (overrides locus)",
@@ -281,7 +281,7 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "efc72b84e442"
+  "5034c7009477"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -533,7 +533,7 @@
  ],
  "90-host-camera.js": [
   "core/host",
-  "26986a9079a2"
+  "5ee8af014319"
  ],
  "90w-lake.js": [
   "locus",
@@ -541,7 +541,7 @@
  ],
  "91-host-loop.js": [
   "core/host",
-  "aace8fb4d8c7"
+  "3c7fb5c1f35a"
  ],
  "92-host-panel.js": [
   "core/host",
@@ -549,15 +549,15 @@
  ],
  "93-host-inspect.js": [
   "core/host",
-  "ad376f74792b"
+  "11e39ccb6260"
  ],
  "93-host-stocks.js": [
   "core/host",
-  "fc92c7abf275"
+  "27dd6b526848"
  ],
  "94-host-marks.js": [
   "core/host",
-  "5347334d0741"
+  "66fcb2bedaf5"
  ],
  "95-host-probe.js": [
   "core/host",
@@ -577,7 +577,7 @@
  ],
  "98-host-edit.js": [
   "core/host",
-  "b0ec7f749a05"
+  "66535c6a9cdd"
  ],
  "98-start.js": [
   "locus",
@@ -585,7 +585,7 @@
  ],
  "99-host-cutaway.js": [
   "core/host",
-  "79b67cff9e25"
+  "5fc10889d24e"
  ],
  "99-tail.html": [
   "locus",

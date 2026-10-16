@@ -8,7 +8,8 @@
    middle open: a section through it at a storey (PageUp/PageDown, or [ and ], step the storey), so its rooms show from
    above. Five clipping planes, intersected, on every material in the scene clip what is above the cut inside the
    canton's square only; the planes are set once and moved, so nothing recompiles as the storey changes. The lot
-   buildings in view round it are cut too, by a height grid (56b-vc-building-interiors-host.js VC.CUTALL). */
+   buildings in view round it are cut too, by a height grid (56b-vc-building-interiors-host.js VC.CUTALL). The keys, the
+   bar and the planes are core/host's (99-host-cutaway.js, since 2026-10-16); what a cut shows is still this file's. */
 VC.INTD = { built: {}, groups: {}, furnished: {}, cut: { on: false, canton: null, storey: 0 }, planes: null, programs: false };
 
 /* ---------------------------------------------------------------- the room kinds the cantons add to kits/interiors */
@@ -1014,56 +1015,41 @@ VC.intLightPool = function () {
   });
 };
 
-/* ---------------------------------------------------------------- the cutaway */
-VC.cutPlanes = function () {
-  if (VC.INTD.planes) return VC.INTD.planes;
-  var P = VC.INTD.planes = [new THREE.Plane(new THREE.Vector3(0, -1, 0), 0), new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0), new THREE.Plane(new THREE.Vector3(1, 0, 0), 0),
-                            new THREE.Plane(new THREE.Vector3(0, 0, -1), 0), new THREE.Plane(new THREE.Vector3(0, 0, 1), 0)];
-  renderer.localClippingEnabled = true;
-  VC.cutBox(null);
-  /* every material in the scene takes the planes, intersected (clipped only where it is above the cut AND inside the box) */
-  var seen = new Set();
-  scene.traverse(function (o) { var ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; ms.forEach(function (m) { if (seen.has(m) || m.isShaderMaterial && !m.clipping) return; seen.add(m); m.clippingPlanes = P; m.clipIntersection = true; m.clipShadows = true; m.needsUpdate = true; }); });
-  VC.INTD.clipMats = seen.size;
-  return P;
-};
+/* ---------------------------------------------------------------- the cutaway: core/host's (99-host-cutaway.js)
+   X (or the cutaway button), the bar at the top of the view (the unit, the storey of how many, down, up, close), ] [
+   PageUp PageDown and Shift + the wheel are the host's since ROADMAP.md section 10, step 6b; 97-vc-host-take.js hands it
+   the cantons with their storeys and the lot buildings in view (56b VC.CUTB). The planes are the host's: five,
+   intersected (clipped only where it is above the cut AND inside the canton's square, grown 20 m), set on every material
+   in the scene at the first cut and moved after, so nothing recompiles as the storey changes; VC.INTD.planes is them
+   (58-vc-tools.js VC.pickInterior and the storeys drawn later, VC.intDrawStorey, read it). What a cut shows is Voth's:
+   the canton's interior drawn and shown up to the storey (VC.cutCanton, through 56b's VC.cutShow). */
+VC.cutPlanes = function () { var P = KHOST.cut.ensure(); VC.INTD.planes = P; return P; };
 /* the box the cut opens: [x0, x1, z0, z1, y] (null: nowhere) */
-VC.cutBox = function (b) {
-  var P = VC.INTD.planes; if (!P) return;
-  if (!b) b = [1e7, 1e7 + 1, 1e7, 1e7 + 1, 1e7];
-  P[0].constant = b[4]; P[1].constant = b[0]; P[2].constant = -b[1]; P[3].constant = b[2]; P[4].constant = -b[3];
-};
-VC.cutTo = function (cn, storey) {
+VC.cutBox = function (b) { if (KHOST.cut && KHOST.cut.box) KHOST.cut.box(b); };
+/* a canton cut open at a storey (the host sets the box after) */
+VC.cutCanton = function (cn, storey) {
   var C = VC.INTD.cut, P = VC.INT.cantons[cn]; if (!P) return;
   if (C.canton && C.canton !== cn) VC.showInterior(C.canton, false);
   var S = P.storeys[Math.max(0, Math.min(P.storeys.length - 1, storey))];
   C.canton = cn; C.storey = S.i; C.on = true;
   var g = VC.drawInterior(cn); VC.cutPlanes();
-  /* furniture made after the planes were set takes them too */
-  g.traverse(function (o) { var ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; ms.forEach(function (m) { if (m.clippingPlanes !== VC.INTD.planes) { m.clippingPlanes = VC.INTD.planes; m.clipIntersection = true; m.clipShadows = true; m.needsUpdate = true; } }); });
-  var M = P.M, r = (M.apron ? M.apron.ro : M.r) + 20;
-  VC.cutBox([M.x - r, M.x + r, M.z - r, M.z + r, S.y + TUNE.interiors.cutAt]);
   VC.showInterior(cn, true, S.i);
-  VC.cutBar();
   var e = $('cut-status'); if (e) e.textContent = cn + ' canton, storey ' + (S.i + 1) + ' of ' + P.storeys.length + (S.dungeon ? ', the dungeon' : '') + ' (floor ' + S.y.toFixed(1) + ' m)' + (g.userData.stats ? ', ' + g.userData.stats.rooms + ' rooms, ' + g.userData.stats.furniture + ' pieces' : '');
 };
-VC.cutOff = function () {
+VC.cutCantonOff = function () {
   var C = VC.INTD.cut; if (C.canton && !VC.INTD.walkIn) VC.showInterior(C.canton, false);
-  C.on = false; C.canton = null; VC.cutBox(null);
+  C.on = false; C.canton = null;
   var e = $('cut-status'); if (e) e.textContent = '';
-  VC.cutBar();
 };
-/* the cutaway's bar (owner, 2026-10-09: "make it more clear how to advance the floor up/down"): at the top of the view while
-   the cutaway is on, the canton, the storey of how many, down and up buttons, and the keys */
-VC.cutBar = function () {
-  var C = VC.INTD.cut, bar = $('cutbar'); if (!bar) return;
-  bar.style.display = C.on ? 'block' : 'none'; if (!C.on) return;
-  var P = VC.INT.cantons[C.canton], S = P.storeys[C.storey];
-  $('cut-storey').innerHTML = ' storey <b>' + (C.storey + 1) + '</b> of ' + P.storeys.length + (S.dungeon ? ' <b>(dungeon)</b>' : '') + ' <span class="k" style="display:inline">(floor ' + S.y.toFixed(1) + ' m)</span> ';
-  $('cut-down').disabled = C.storey <= 0; $('cut-up').disabled = C.storey >= P.storeys.length - 1;
-  $('cut-down').style.opacity = C.storey <= 0 ? 0.35 : 1; $('cut-up').style.opacity = C.storey >= P.storeys.length - 1 ? 0.35 : 1;
-  $('cut-canton').value = C.canton;
+/* the bar's words for a canton's storey (owner, 2026-10-09: "make it more clear how to advance the floor up/down") */
+VC.cutCantonBar = function (cn, si) {
+  var P = VC.INT.cantons[cn], S = P.storeys[si];
+  return ' storey <b>' + (si + 1) + '</b> of ' + P.storeys.length + (S.dungeon ? ' <b>(dungeon)</b>' : '') + ' <span class="k" style="display:inline">(floor ' + S.y.toFixed(1) + ' m)</span> ';
 };
+/* what the rest of the page calls: a canton by its name, a lot building by its index (56b VC.cutUnitOf) */
+VC.cutTo = function (cn, storey) { var u = VC.cutUnitOf(cn); if (u != null && KHOST.cut && KHOST.cut.to) KHOST.cut.to(u, storey); };
+VC.cutOff = function () { if (KHOST.cut && KHOST.cut.off) KHOST.cut.off(); };
+VC.cutBar = function () { if (KHOST.cut && KHOST.cut.paint) KHOST.cut.paint(); };
 /* the canton nearest the middle of the view (the orbit's target) */
 VC.cutPick = function () {
   var t = ctl.target, best = null, bd = Infinity;
@@ -1071,31 +1057,7 @@ VC.cutPick = function () {
   return best;
 };
 VC.cutUI = function () {
-  var b = $('ly-cut'); if (!b) return;
   VC.intLightPool();
-  b.onclick = function () { if (VC.INTD.cut.on) VC.cutOff(); else { var cn = VC.cutPick(); if (cn != null) VC.cutTo(cn, 0); } b.classList.toggle('on', VC.INTD.cut.on); };   /* a building's index can be 0 (56b) */
-  window.addEventListener('keydown', function (e) {
-    if (VC.typing(e) || e.ctrlKey || e.metaKey) return;
-    var C = VC.INTD.cut, k = e.key;
-    if (k === 'x' || k === 'X') { b.onclick(); e.preventDefault(); }
-    else if (C.on && (k === 'PageUp' || k === ']')) { VC.cutTo(C.canton, C.storey + 1); e.preventDefault(); }
-    else if (C.on && (k === 'PageDown' || k === '[')) { VC.cutTo(C.canton, C.storey - 1); e.preventDefault(); }
-  });
-  /* the bar's controls */
-  var sel = $('cut-canton');
-  if (sel) {
-    sel.innerHTML = Object.keys(VC.INT.cantons).map(function (cn) { return '<option>' + cn + '</option>'; }).join('');
-    sel.onchange = function () { VC.cutTo(sel.value, 0); };
-    $('cut-down').onclick = function () { var C = VC.INTD.cut; if (C.on) VC.cutTo(C.canton, C.storey - 1); };
-    $('cut-up').onclick = function () { var C = VC.INTD.cut; if (C.on) VC.cutTo(C.canton, C.storey + 1); };
-    $('cut-close').onclick = function () { VC.cutOff(); b.classList.remove('on'); };
-    /* Shift + the wheel steps the storeys (the wheel alone still zooms) */
-    renderer.domElement.addEventListener('wheel', function (e) {
-      var C = VC.INTD.cut; if (!C.on || !e.shiftKey) return;
-      e.preventDefault(); e.stopImmediatePropagation(); var now = performance.now(); if (now - (C.wheelT || 0) < 220) return; C.wheelT = now;   /* a trackpad's burst is one step */
-      VC.cutTo(C.canton, C.storey + ((e.deltaY || e.deltaX) < 0 ? 1 : -1));
-    }, { capture: true, passive: false });
-  }
   /* walking into a canton shows its interior (and walking out hides it) */
   (window._frameHooks = window._frameHooks || []).push(function () {
     var A = ctl.walk && VC.walkAt, inside = null;

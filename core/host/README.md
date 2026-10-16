@@ -2,10 +2,11 @@
 
 One interface for every page (ROADMAP.md section 10; GODOT-PLAN.md Phase 1, "one host shell"): the camera, the frame loop
 and its world clock, the panel and the probe, written once and taken by every build instead of each build's own copy.
-Voth's city plan (`settlements/voth`, built in Streetlab until 2026-10-14) is the template: its viewer is **copied and
-generalised** here (its own files are not edited; the Voth and simulation branch owns them, and Voth switches to
-`core/host` when that branch pauses). `voth-sources.json` records the blob of every Voth file this was copied from, and `python3 core/host/sources.py`
-says which have changed since (port those changes by hand, then `--write`).
+Voth's city plan (`settlements/voth`, built in Streetlab until 2026-10-14) is the template: its viewer was **copied and
+generalised** here, and since step 6b (2026-10-16) Voth takes every module back and its own copies are retired ("Voth onto
+core/host" below). `voth-sources.json` records the blob of every Voth file this was copied from, and `python3 core/host/sources.py`
+says which have changed since; with Voth on the host there is nothing left to port, so it stays as the record of where each
+module came from.
 
 Every file here is `[web]`: the host owns the DOM, the input, the frame loop and the drawing call, and is not ported to
 Godot (the clock it owns is `core/clock`, which is). A build's other fragments reach the page only through what they hand
@@ -18,13 +19,13 @@ Godot (the clock it owns is `core/clock`, which is). A build's other fragments r
 | `92-host-panel.js` | the bar (`#bar`: title, hint, `#ui` with the view select and the hidden preset buttons, layers, time controls, export, legend), `#stats`, the inspector `#insp`, the error panel `#errs`, the loading note, foldable panels remembered per browser, `?chrome=0` | `settlements/voth/.../00-head.html` and `55-vc-host.js` (`VC.ui`, `VC.panels`, `VC.clockUI`), the biome kits' heads |
 | `94-host-polytool.js` | opt-in (`khost.SHELL+['94-host-polytool.js']`): the authoring tools, Inspect, Polygon and Path, as buttons in the inspector panel; clicks reach it through `KHOST.clickHooks`; the sky (`sky.objects()`) is never a corner; `window.POLYTOOL` | seven biome kits' identical `src/93-host-polytool.js` (from `settlements/screamers/src/93-polytool.js`); the seed of 94 marks |
 | `95-host-probe.js` | `window._api` for `verify.py --assert`: `BUDGET`, `REG`, `regOccupancy`, `nanSweep`, `typeStats`, `setView`, `views`, `go`, plus the build's own fields | the biome kits' `91-host-probe.js` |
-| `93-host-inspect.js` | the inspector, record-driven: the smallest core/tags record holding the point under the pointer (indexed in `core/space`), worded by `KTAGS.label` or the build's `o.inspect`; I for the hover tip, a click for the card, a mark round it; `KHOST.recordAt`, `KHOST.selected` | `55-vc-host.js` 413-501 (the tip on I), but reading core/tags, not a build's lots |
+| `93-host-inspect.js` | the inspector, record-driven: the smallest core/tags record holding the point under the pointer (indexed in `core/space`), worded by `KTAGS.label` or the build's `o.inspect` (plain text, or `{html, rec}`: the card as HTML and the record it is about); `o.inspectRay(ray)` for a build that picks by its own tests (no raycast of the scene); I for the hover tip, a click for the card, a mark round it; `KHOST.recordAt`, `KHOST.selected`, `KHOST.hoverOn` | `55-vc-host.js` 413-501 (the tip on I), but reading core/tags, not a build's lots |
 | `93-host-stocks.js` | **what things hold and the settlement's stocks, Voth's interface as the standard** (the owner, 2026-10-15): the inspector's contents (a place's store, what it makes from what, its household's food, what it sells; a container's place; a citizen's things) and the stocks panel (O): total, at the site, in transit, in storage, owned, change per day, days of cover, low / out / wanting, flows, the twelve holding most, a holder flown to; `KHOST.simHolds(SIM)` makes `o.holds` from core/simulation | `56e-vc-stocks-host.js`, `56d-vc-inspect-host.js` (`VC.thingsHTML`), `00-head.html` (the panel's look) |
-| `94-host-marks.js` | marks: areas, lines and points, named, noted, measured, each point on the surface it was clicked (P); kept in the browser and saved to `<build>/marks.json` through `tools/edits/serve.py` | `57-vc-marks.js` |
+| `94-host-marks.js` | marks: areas, lines and points, named, noted, measured, each point on the surface it was clicked (P); kept in the browser and saved to `<build>/marks.json` through `tools/edits/serve.py`; a point stored as `[x, z]` is put on the ground as it loads | `57-vc-marks.js` |
 | `96-host-pictures.js` | the picture menu: the build's palette as a grid with a filter and families, each picture drawn off screen two a frame | `58-vc-tools.js` 209-264 |
 | `97-host-minimap.js` | the minimap (M) filled from the records and the ground's relief, through core/minimap's `KMAP` (the panel stays in `core/minimap/88a` while Voth reads that folder) | `core/minimap/88a` |
-| `98-host-edit.js` | edit modes: select, place, plant, move, turn, remove (B; Delete, M, Q / E, Ctrl+Z), every edit a `core/edits` op previewed through the build's world adapter; an op the build can only apply when it is made is marked and applies on reload; save to `<build>/edits.json`, export, import, a draft per browser | `58-vc-tools.js` 137-378, `59-vc-flora-edit.js` |
-| `99-host-cutaway.js` | the cutaway (X): five clipping planes on a unit's box above the storey cut, the storey bar (] [ PageUp PageDown, Shift + wheel); the planes are set on the first cut only | `56-vc-interiors-host.js` 222-318 |
+| `98-host-edit.js` | edit modes: select, place, plant, move, turn, remove (B; Delete, M, Q / E, Ctrl+Z), and with `o.edits.ways` a way mode (a street painted point by point, an ADD of an infrastructure way), every edit a `core/edits` op previewed through the build's world adapter; an op the build can only apply when it is made is marked and applies on reload; save to `<build>/edits.json`, export, import, a draft per browser | `58-vc-tools.js` 137-378, `59-vc-flora-edit.js` |
+| `99-host-cutaway.js` | the cutaway (X): five clipping planes on a unit's box above the storey cut, the storey bar (] [ PageUp PageDown, Shift + wheel); the planes are set on the first cut only; a build may pick the unit X opens (`pick`), word the bar (`bar`) and hand a unit that sets no box (`clip: false`, cut its own way in `show`); `KHOST.cut.ensure()`, `.box()`, `.paint()` | `56-vc-interiors-host.js` 222-318 |
 | `host.py` | the file lists (`SHELL`, and `FULL`: the shell, 93 to 99, `core/edits`, `core/space`, `core/minimap`), `resolve(PATH)` for a `build.py`, and `edits_js(dir, build)`: a page's `edits.json` (or a newer browser draft) as `KHOST_EDITS` | |
 | `example/` | the reference for the whole interface: a toy economy on core/simulation (its own test's world) in three.js, every piece above on it; `python3 build.py`, `python3 check.py` (14 checks, each with a negative) | |
 
@@ -73,12 +74,16 @@ settlement):
 ```js
 KHOST.take({ ...,
   records: () => [...],                    // what the inspector, minimap and editor read (default KTAGS.page's records)
-  inspect: (hit, hits, rec) => 'words',    // rec: the smallest record holding the hit (93), or null; null words: the label
+  inspect: (hit, hits, rec) => 'words',    // rec: the smallest record holding the hit (93), or null; null words: the label;
+                                           // or {t | html, rec}: HTML words, and the record they are about
+  inspectRay: ray => ({html, rec, point}), // the build's own pick for a click and the tip (no scene raycast; Voth)
   holds: KHOST.simHolds(SIM, {idOf(rec, hit), containerOf(rec), card(id), placeName(id), paused()}),   // 93-host-stocks.js
   palette: {items: [{key, name, family, cls?, tags?}], build(key) -> Object3D},                       // 96 pictures
   edits: {world: {find, add, move, set, remove}, log: KHOST_EDITS, deferred(op), template(item, at, ry), canEdit(rec),
-          brushes: {modes: ['raise', 'lower', 'flatten', 'smooth'], r: [min, max, start], strength: {mode: start}}},  // 98
-  cutaway: {units: [{id, name, x, z, ry?, w, d | r, levels: [{y, h, name?}]}], cutAt: 1.4, show?(unit, i)},          // 99
+          brushes: {modes: ['raise', 'lower', 'flatten', 'smooth'], r: [min, max, start], strength: {mode: start}},
+          ways: {classes: ['main', 'side'], start, label?}},                                                       // 98
+  cutaway: {units: [{id, name, x, z, ry?, w, d | r, levels: [{y, h, name?}], clip?}], cutAt: 1.4, margin: 1.5,
+            show?(unit, i), pick?(target), bar?(unit, i)},                                                         // 99
   minimap: true | {frame, size, relief, palette, title, draw(M)},                                                    // 97
   marks: false,                                                            // 94 is on unless a build turns it off
 });
@@ -87,8 +92,8 @@ KHOST.take({ ...,
 **What things hold, the standard** (Voth's 56e, the owner 2026-10-15). `o.holds` is read, never a build's globals: `contents(id)`
 in `SIM.contents`'s shape (`core/simulation/SCHEMA.md`, "What things hold, and the stocks"), `stocks()` in `SIM.stocks`'s,
 `holders(item, top)`, `whereIs(id)`, `placeAt(x, z, r)`, and a build's `idOf(rec, hit)` (which simulation ids a picked record
-is: a lot's places, a clicked citizen) and `containerOf(rec)` (the place a chest or a stall belongs to: the simulation keeps
-stock by place, not by piece). `KHOST.simHolds(SIM, extra)` builds it from core/simulation. The panel and the contents are
+is: a lot's places, a clicked citizen), `containerOf(rec)` (the place a chest or a stall belongs to: the simulation keeps
+stock by place, not by piece) and `card(id)` (a holder's own card, a citizen's; null for the place's contents). `KHOST.simHolds(SIM, extra)` builds it from core/simulation. The panel and the contents are
 the ones Voth shows, in its words and colours: the states (at the site, in transit, in storage, owned), the change at one
 midnight against the one before (`today` before a whole day), days of cover, low (amber) and out (red), the flows (made,
 imported, exported, drawn from the stores, of it into households' stores, eaten at home, used up; an item's bought, issued,
@@ -153,7 +158,7 @@ shows an error. `KHOST.chrome(on)` does the same from a script.
   own); `window._registered`; `#errs`; the global `renderer` the build already declares (`STATS_JS` reads it).
 - No new `window._*` counters: `verify.py` prints every `window._*` value, so the host adds none.
 
-## Voth onto core/host (for the Voth branch, when it pauses)
+## Voth onto core/host (steps 6a and 6b: done)
 
 **Step 6a (2026-10-15): the shell.** Voth takes 90 camera, 91 loop, 92 panel and 95 probe (`build.py` `CITY_JS`;
 `targets/voth-city/97-vc-host-take.js`, `VC.hostTake`). The catalog engine stands down when `window.KRATOR_HOST` is set
@@ -164,12 +169,36 @@ shows an error. `KHOST.chrome(on)` does the same from a script.
 HANDOFF.md); the simulation's state hashes the same at load and after its first minute. The verify's simulated-day
 statistics differ by under 0.01%: they depend on how long the page ran live before the check (the old page alone, run
 at once or after 8 s: 11,359 or 8,127 decisions in the day), so a page whose load takes a different time reads
-differently. **6b** (the rows below from the inspector on: 93, 94, 96, 98, 99, the stocks) is next.
+differently.
 
-What Voth's city plan (`settlements/voth/targets/voth-city/`) calls today, and what it calls on the shell. Read-only
-here: nothing in Voth's targets was edited (the files and their blobs are in `voth-sources.json`).
+**Step 6b (2026-10-16): the tools.** Voth takes `FULL` (`build.py` `CITY_JS`; core/clock and core/space were already in) and
+hands the take the rest (`97-vc-host-take.js`): its records, its inspector, its holds, its marks, its palette, its editor's
+world and its cutaway. Its own copies are retired: `57-vc-marks.js` is gone; `58-vc-tools.js` keeps only Paths and the
+editor's Voth side (`VC.edKits`, `VC.edAlign`, `VC.edBuild`); `59-vc-flora-edit.js` only the flora's bookkeeping (the veto,
+the record and bake hooks, `VC.flShow`, `VC.flPlantOne`, `VC.flPick`); `56e-vc-stocks-host.js` only `VC.lotPlaces`,
+`VC.isContainer` and `VC.fmt`; `56`'s cutaway keeps what a cut shows (`VC.cutCanton`), and 56b's height grid stays Voth's
+under the host's unit `VC.CUTB`. The dead 6a leftovers went too (Voth's own pin and its tip). What the host gained for it
+(each generic and a no-op for a build that hands nothing new; every consumer rebuilt; `core/host/example/check.py` 14 of 14):
+- 93: `o.inspectRay(ray)`, the build's own pick for the click and the tip (Voth picks its lots as boxes, its citizens as
+  points, the rooms under a cut; a raycast of its merged batches every 70 ms would stall the hover), and words as
+  `{html, rec}` (Voth's card is HTML: the citizens' meters, the contents' tables) with the record the build names;
+- 93-host-stocks: a build's `card(id)` returning null falls back to the place's contents;
+- 94: a point of two numbers is put on the ground as it loads (the owner's marks were `[x, z]`);
+- 98: the way mode, `o.edits.ways` (Voth's painted streets: an ADD of `{class: 'infrastructure', kind: 'way', key: the
+  class, pts}`);
+- 99: `pick(target)`, `bar(unit, i)`, a unit with `clip: false`, and `KHOST.cut.ensure/box/paint` (Voth's lot buildings
+  cut by its height grid; its pin and room picks read the host's planes);
+- core/edits: `KEDITS.fromStreetlab` reads the city plan's own flora shape (`{del, add}`, with the kind and height).
 
-| Voth today | core/host |
+The owner's data: `site/voth-city-edits.json` (empty) converted by `KEDITS.fromStreetlab` to `settlements/voth/edits.json`;
+the layout reads the log back in the old shape (`35-vc-steps.js` `VC.editsFromLog`; `node settlements/voth/test-edits.js`
+proves an old file converted reads back the same, so the page lays out the same); `site/voth-city-marks.json` (four areas)
+carried to `settlements/voth/marks.json`. Voth's `serve.py` answers the host's `/__save` and `/__file` too. Proof:
+`settlements/voth/HANDOFF.md`, 2026-10-16.
+
+What Voth's city plan (`settlements/voth/targets/voth-city/`) called before, and what it calls on the host now.
+
+| Voth before | core/host |
 |---|---|
 | the engine's `ctl` (`az`, `el`, `dist`, `target`, `walk`), `updateCamera()`, `window._setWalk` | `KHOST.cam.ctl` (`theta` = `az`, `phi` = pi/2 - `el`, `radius` = `dist`), `KHOST.cam.apply()` each frame, `KHOST.cam.walk(on)` |
 | `HOST.setupStage`'s depth-range frame hook (`core/city/50-city-host-streets.js` 13-19) | `KHOST.take({depth: true})` |
@@ -183,14 +212,14 @@ here: nothing in Voth's targets was edited (the files and their blobs are in `vo
 | `#export` (`SL.exportPlan()`) | `KHOST.take({exporters: {plan: () => SL.exportPlan()}})` |
 | `#loading` and `vcGo` (98-start.js) | `KHOST.loading(text)`; `KHOST.take` clears it |
 | `window._vc` (`ready`, `plan`, `log`, `stats`, `setStep`) | `KHOST.take({api: {...}})` adds them to `window._api`; `_ready` is the host's |
-| `#stats` (`VC.stats()`), `#tip` and the inspector (`VC.describe`, `i`) | `KHOST.take({stats})` for lines; the hover tip and the step table wait for 93 inspect |
-| `57-vc-marks.js` (`VC.MK`, p, `/save/voth-city-marks`) | 94 marks (P, `/__save` kind marks) |
-| `58-vc-tools.js`'s editor (`VC.ED`, b, `/save/voth-city-edits`, undo as closures, deletions by position) | 98 edit modes over `o.edits.world`: `core/edits` ops by uid (the converter `KEDITS.fromStreetlab` reads the old file) |
-| `58-vc-tools.js`'s picture grid (`VC.edGrid`, `VC.thumbsStart`) | 96 pictures over `o.palette` |
-| `59-vc-flora-edit.js` | 98's plant mode (palette items with `cls: 'flora'`) and remove; Voth's per-tree hiding stays its world adapter's |
-| `56-vc-interiors-host.js`'s cutaway (`VC.cutTo`, x, the bar) | 99 cutaway over `o.cutaway.units` (56b's cut of every building in view is not ported) |
-| `56e-vc-stocks-host.js` (o, `VC.STK`), `56d`'s `VC.thingsHTML` | 93-host-stocks.js over `o.holds = KHOST.simHolds(SIM, {idOf: lot -> its 'ix.<unit>' places, containerOf: a furniture pick's place, card: VC.actorHTML})` |
-| the paths view | not yet (Girder keeps its own `87-pathviz.js`) |
+| `#stats` (`VC.stats()`), `#tip` and the inspector (`VC.describe`, `i`) | `#stats` stays Voth's; the tip and the inspector are 93's over `o.inspectRay` (`VC.inspectRay`: `VC.describe`'s HTML and the lot's record): done |
+| `57-vc-marks.js` (`VC.MK`, p, `/save/voth-city-marks`) | 94 marks (P, `/__save` kind marks, `o.marksUrl: '../marks.json'`): done, 57 retired |
+| `58-vc-tools.js`'s editor (`VC.ED`, b, `/save/voth-city-edits`, undo as closures, deletions by position) | 98 edit modes over `o.edits.world` (`VC.editWorld`): `core/edits` ops by uid, the painted streets by `o.edits.ways`: done |
+| `58-vc-tools.js`'s picture grid (`VC.edGrid`, `VC.thumbsStart`) | 96 pictures over `o.palette` (`VC.edPalette`): done |
+| `59-vc-flora-edit.js` | 98's plant mode (palette items with `cls: 'flora'`), select, move and remove; Voth's per-tree hiding stays its world adapter's: done |
+| `56-vc-interiors-host.js`'s cutaway (`VC.cutTo`, x, the bar) | 99 cutaway over `o.cutaway.units`: the cantons, and `VC.CUTB` for 56b's cut of every building in view (which stays Voth's): done |
+| `56e-vc-stocks-host.js` (o, `VC.STK`), `56d`'s `VC.thingsHTML` | 93-host-stocks.js over `o.holds = KHOST.simHolds(SIM, {idOf: lot -> its 'ix.<unit>' places, containerOf: a furniture pick's place, card: VC.actorHTML})`: done |
+| the paths view | not yet (Voth and Girder keep their own `87-pathviz.js`) |
 
 ## Adopting it (a biome kit)
 
@@ -233,3 +262,7 @@ ground; undo, a move or a removal of a stroke replays the strokes left from a sn
 commute). Proof on Sedesert: the scene census unchanged at four views; a deer placed, animated, re-seated by a stroke; a drag
 of twelve moves nine strokes and no orbit; every stroke undone, the field equals the baked heights bit for bit. Next: step 5
 (the rest), step 6 (Voth).
+
+**Voth's city plan** (2026-10-15 and 2026-10-16, steps 6a and 6b) takes the whole interface, its tools included: the
+cantons and the lot buildings in view in the cutaway, its own ray picks in the inspector (`o.inspectRay`), its painted
+streets in the editor's way mode ("Voth onto core/host" above).

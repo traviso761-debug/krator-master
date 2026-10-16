@@ -18,6 +18,11 @@
 //     brushes: {modes: ['raise', 'lower', 'flatten', 'smooth'], r: [min, max, start], strength: {mode: start}}
 //                                ground brushes (step 4): each stroke a core/edits ADD of {class: 'feature', kind: 'ground',
 //                                key: mode, at, r, strength}; the world adapter writes the ground (core/terrain's KFIELD.stroke)
+//     ways: {classes: ['main', 'side', ...], start, label?, cls?, kind?}
+//                                way mode (step 6b, Voth's painted streets): clicks on the ground lay a polyline, Backspace
+//                                takes the last point off, Enter or a double-click finishes it, Esc drops it; it is a core/edits
+//                                ADD of {class: cls || 'infrastructure', kind: kind || 'way', key: the class chosen, at: the
+//                                first point, pts: [[x, z]...]}, drawn by the world adapter's add
 //   o.palette (96 pictures): what place, plant (cls 'flora') and fauna (cls 'life': an animal, kits/fauna) offer
 // No o.edits: no editor. Keys while the editor is on: B on and off, Delete remove the selection, M then a click move it,
 // Q / E turn it 15 degrees (they win over the camera's then), Ctrl+Z undo, Esc stop placing. In ground mode a click is a stroke
@@ -75,8 +80,8 @@ K.onTake(function editTake(H){
  const P=K.panel('edit','Editor',null,'left:auto;right:14px;top:auto;bottom:14px;width:320px;display:none');
  const el=(t,a,p)=>{const n=doc.createElement(t);if(a)for(const k in a){if(k==='text')n.textContent=a[k];else n[k]=a[k];}(p||P).appendChild(n);return n;};
  const modes=el('div',{className:'row'}),MB={};
- const PAL=o.palette&&o.palette.items||[],hasFlora=PAL.some(i=>i.cls==='flora'),hasFauna=PAL.some(i=>i.cls==='life'),hasPlace=PAL.some(i=>i.cls!=='flora'&&i.cls!=='life'),BR=E0.brushes||null;
- [['select','select'],hasPlace&&['place','place'],hasFlora&&['plant','plant'],hasFauna&&['fauna','fauna'],BR&&['ground','ground']].filter(Boolean).forEach(([k,t])=>{MB[k]=el('button',{text:t},modes);MB[k].onclick=()=>ED.setMode(k);});
+ const PAL=o.palette&&o.palette.items||[],hasFlora=PAL.some(i=>i.cls==='flora'),hasFauna=PAL.some(i=>i.cls==='life'),hasPlace=PAL.some(i=>i.cls!=='flora'&&i.cls!=='life'),BR=E0.brushes||null,WY=E0.ways&&E0.ways.classes&&E0.ways.classes.length?E0.ways:null;
+ [['select','select'],hasPlace&&['place','place'],hasFlora&&['plant','plant'],hasFauna&&['fauna','fauna'],BR&&['ground','ground'],WY&&['way',WY.label||'way']].filter(Boolean).forEach(([k,t])=>{MB[k]=el('button',{text:t},modes);MB[k].onclick=()=>ED.setMode(k);});
  const acts=el('div',{className:'row'});
  const bRm=el('button',{text:'remove (Del)'},acts),bMv=el('button',{text:'move (M)'},acts),bL=el('button',{text:'⟲ Q'},acts),bR=el('button',{text:'E ⟳'},acts);
  bRm.onclick=()=>ED.remove();bMv.onclick=()=>{ED.moving=!!K.selected;paint();};bL.onclick=()=>ED.turn(Math.PI/12);bR.onclick=()=>ED.turn(-Math.PI/12);
@@ -94,11 +99,12 @@ K.onTake(function editTake(H){
  function paint(){for(const k in MB)MB[k].classList.toggle('on',ED.mode===k);
   const r=K.selected;bMv.classList.toggle('on',ED.moving);
   info.textContent=ED.mode==='ground'?BS.mode+' · radius '+BS.r+' m · strength '+BS.str[BS.mode]+(BS.mode==='raise'||BS.mode==='lower'?' m':'')+' — click or drag on the ground; [ ] the radius':
+   ED.mode==='way'?(ED.way?'a '+ED.way.cls+' '+(WY.kind||'way')+', '+ED.way.pts.length+' point'+(ED.way.pts.length===1?'':'s')+' — Enter or a double-click finishes, Backspace takes the last off, Esc drops it':'click the ground to lay a '+wSel.value+' '+(WY.kind||'way')):
    ED.mode==='select'?(r?(r.name||r.key||r.kind||r['class'])+' · '+r.id+(canEdit(r)?'':' (not editable)')+(ED.moving?'\nclick where it goes':''):'click something to select it'):
    (ED.item?ED.item.name+' — click a surface to put it down; Q / E turn ('+Math.round(ED.ry*180/Math.PI)+'°)':'pick a picture');
   status();}
- ED.setMode=function(m){ED.mode=m;ED.moving=false;brushRow.style.display=m==='ground'?'block':'none';if(m!=='ground')ring.visible=false;
-  if(m==='select'||m==='ground'){if(K.pictures)K.pictures.close();}else if(K.pictures){K.pictures.open('',m==='plant'?'flora':m==='fauna'?'life':'other');}
+ ED.setMode=function(m){if(m!=='way'&&ED.way)ED.wayFinish();ED.mode=m;ED.moving=false;brushRow.style.display=m==='ground'?'block':'none';wayRow.style.display=m==='way'?'block':'none';if(m!=='ground')ring.visible=false;
+  if(m==='select'||m==='ground'||m==='way'){if(K.pictures)K.pictures.close();}else if(K.pictures){K.pictures.open('',m==='plant'?'flora':m==='fauna'?'life':'other');}
   if(ED.item&&(m==='plant'&&ED.item.cls!=='flora'||m==='fauna'&&ED.item.cls!=='life'||m==='place'&&(ED.item.cls==='flora'||ED.item.cls==='life')))ED.item=null;paint();};
  if(K.pictures)K.pictures.pick=it=>{ED.item=it;if(ED.mode==='select'||ED.mode==='ground')ED.setMode(it.cls==='flora'?'plant':it.cls==='life'?'fauna':'place');paint();};
  // ---------------------------------------------------------------- ground brushes (step 4): a stroke is an ADD of a ground record
@@ -113,7 +119,23 @@ K.onTake(function editTake(H){
  const ring=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({length:48},(_,i)=>new THREE.Vector3(Math.cos(i/48*Math.PI*2),0,Math.sin(i/48*Math.PI*2)))),new THREE.LineBasicMaterial({color:0xffe14a,depthTest:false,transparent:true}));
  ring.visible=false;ring.renderOrder=48;ring.frustumCulled=false;ring.userData.khost='edit';ring.userData.probeSkip=true;H.scene.add(ring);
  const gh=(x,z)=>{const g=o.ground;return typeof g==='function'?g(x,z):(g&&g.h?g.h(x,z):0);};
+ // ---------------------------------------------------------------- ways (step 6b): a polyline laid on the ground, an ADD when finished
+ const wayRow=el('div',{className:'row'});wayRow.style.display='none';
+ const wSel=el('select',null,wayRow);(WY?WY.classes:[]).forEach(c=>{const op=doc.createElement('option');op.value=op.textContent=c;wSel.appendChild(op);});if(WY&&WY.start)wSel.value=WY.start;wSel.onchange=()=>paint();
+ ED.way=null;let wayObjs=[];
+ function wayDraw(){wayObjs.forEach(q=>{H.scene.remove(q);q.geometry.dispose();q.material.dispose();});wayObjs=[];if(!ED.way||!ED.way.pts.length)return;
+  const V=ED.way.pts.map(p=>new THREE.Vector3(p[0],p[1]+.6,p[2]));
+  const add=q=>{q.renderOrder=47;q.frustumCulled=false;q.userData.khost='edit';q.userData.probeSkip=true;H.scene.add(q);wayObjs.push(q);};
+  if(V.length>1)add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(V),new THREE.LineBasicMaterial({color:0xffffff,depthTest:false,transparent:true})));
+  add(new THREE.Points(new THREE.BufferGeometry().setFromPoints(V),new THREE.PointsMaterial({color:0xffffff,size:7,sizeAttenuation:false,depthTest:false})));}
+ ED.wayFinish=function(){const w=ED.way;if(!w)return null;ED.way=null;wayDraw();let op=null;
+  if(w.pts.length>1)op=record(KEDITS.add(log,{'class':WY.cls||'infrastructure',kind:WY.kind||'way',key:w.cls,name:w.cls+' '+(WY.kind||'way'),at:w.pts[0].slice(),pts:w.pts.map(p=>[p[0],p[2]])},{cause:'owner'}));
+  paint();return op;};
+ ED.wayDrop=function(){ED.way=null;wayDraw();paint();};
+ ED.wayPoint=function(at){if(!ED.way)ED.way={cls:wSel.value,pts:[]};ED.way.pts.push([+at[0].toFixed(1),+at[1].toFixed(2),+at[2].toFixed(1)]);wayDraw();paint();};
+ const busy1=K.busy;K.busy=()=>(ED.on&&!!ED.way)||(busy1?busy1():false);   // no pin while laying a way: the double-click finishes it
  let painting=null;const cvs=H.renderer.domElement;
+ cvs.addEventListener('dblclick',()=>{if(ED.on&&ED.mode==='way'&&ED.way){if(ED.way.pts.length>2)ED.way.pts.pop();ED.wayFinish();}});   // its second click put the point down twice
  cvs.addEventListener('pointerdown',e=>{if(!ED.on||ED.mode!=='ground'||e.button!==0||e.altKey)return;e.stopImmediatePropagation();e.preventDefault();
   const at=C.pick(e.clientX,e.clientY);if(!at)return;painting={x:at[0],z:at[2],t:performance.now()};ED.stroke(at);try{cvs.setPointerCapture(e.pointerId);}catch(err){}},{capture:true});
  cvs.addEventListener('pointermove',e=>{if(!ED.on||ED.mode!=='ground')return;const at=C.pick(e.clientX,e.clientY);if(!at){ring.visible=false;return;}
@@ -121,7 +143,7 @@ K.onTake(function editTake(H){
   for(let i=0;i<p.count;i++){const a=i/p.count*Math.PI*2;p.setY(i,gh(at[0]+Math.cos(a)*BS.r,at[2]+Math.sin(a)*BS.r)+.4);}p.needsUpdate=true;
   if(painting&&e.buttons&1){const now=performance.now(),d=Math.hypot(at[0]-painting.x,at[2]-painting.z);if(now-painting.t>90&&d>BS.r*.25){painting={x:at[0],z:at[2],t:now};ED.stroke(at);}}},{capture:true});
  cvs.addEventListener('pointerup',()=>{painting=null;},{capture:true});
- ED.tool=function(on){ED.on=on==null?!ED.on:!!on;P.style.display=ED.on?'block':'none';tb.classList.toggle('on',ED.on);
+ ED.tool=function(on){ED.on=on==null?!ED.on:!!on;P.style.display=ED.on?'block':'none';tb.classList.toggle('on',ED.on);if(!ED.on&&ED.way)ED.wayFinish();
   if(!ED.on){ED.setMode('select');}else if(K.marks&&K.marks.on)K.marks.tool(false);paint();};
  const ui=K.ui,tb=doc.createElement('button');tb.textContent='edit (B)';tb.id='khost-edit-btn';tb.onclick=()=>ED.tool();if(ui)ui.appendChild(tb);
  const sel0=K.onSelect;K.onSelect=r=>{if(sel0)sel0(r);if(ED.on)paint();};
@@ -131,12 +153,15 @@ K.onTake(function editTake(H){
  K.clickHooks.unshift(function editClick(x,y){if(!ED.on)return false;
   if((ED.mode==='place'||ED.mode==='plant')&&ED.item){const at=surface(x,y);if(at)ED.place(at);return true;}
   if(ED.mode==='select'&&ED.moving&&K.selected){const at=surface(x,y);if(at)ED.moveTo(K.selected,at);ED.moving=false;paint();return true;}
+  if(ED.mode==='way'){const at=C.pick(x,y);if(at)ED.wayPoint(at);return true;}
   return false;});   // select: the inspector picks (93)
  const typing=e=>{const t=e.target;return t&&(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||t.isContentEditable);};
  root.addEventListener('keydown',e=>{if(typing(e)||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();
   if(e.ctrlKey){if(ED.on&&k==='z'){ED.undo();e.preventDefault();e.stopImmediatePropagation();}return;}
   if(k==='b'&&!(o.keys&&o.keys.b)){ED.tool();return;}
   if(!ED.on)return;
+  if(ED.mode==='way'&&ED.way){if(k==='backspace'){ED.way.pts.pop();wayDraw();paint();e.preventDefault();e.stopImmediatePropagation();return;}
+   if(k==='enter'){ED.wayFinish();return;}if(k==='escape'){ED.wayDrop();return;}}
   const placing=(ED.mode==='place'||ED.mode==='plant')&&ED.item;
   if(k==='q'||k==='e'){if(placing){ED.ry+=(k==='q'?1:-1)*Math.PI/12;paint();}else if(K.selected||ED.last)ED.turn((k==='q'?1:-1)*Math.PI/12);else return;e.stopImmediatePropagation();e.preventDefault();return;}
   if((k==='delete'||k==='backspace')&&K.selected){ED.remove();e.preventDefault();e.stopImmediatePropagation();return;}

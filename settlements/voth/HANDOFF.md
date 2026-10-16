@@ -10,6 +10,44 @@ owner's rules in short form.
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
 conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
 
+## 2026-10-16: stage 3 step 6b, the tools onto core/host (branch `claude/voth-interiors`)
+
+The city plan's tools are core/host's now (`core/host/README.md`, "Voth onto core/host"; `README.md`, "The tools are
+core/host's"): the inspector and hover tip (I; `93-host-inspect.js` over `VC.describe`, picked by `VC.inspectRay`), what
+things hold and the stocks (O; `93-host-stocks.js` over `KHOST.simHolds(SIM)` with `VC.lotPlaces`, `VC.isContainer`,
+`VC.actorHTML`), the marks (P; `94-host-marks.js`, `marks.json`), the picture menu (`96`, the Voth kit buildings), the
+editor (B; `98-host-edit.js` over `VC.editWorld`: place, plant, paint street, select, move, turn, remove, undo, save to
+`edits.json`) and the cutaway (X; `99-host-cutaway.js` over the cantons and `VC.CUTB`, the lot buildings in view). `build.py`
+takes `host.FULL` and inlines `edits.json` (`host.edits_js`); `97-vc-host-take.js` is the take. Retired: `57-vc-marks.js`,
+58's editor, picture grid and dead pin, 59's flora UI, 56e's panel and its contents, 56's keys and bar, 55's tip, the
+head's panels, `serve.py`'s two old routes (it answers the host's `/__save` and `/__file`), `site/voth-city-edits.json`
+and `site/voth-city-marks.json` (converted: `edits.json`, an empty log; `marks.json`, the four areas).
+
+Proof:
+- `python3 verify.py dist/voth-city.html --assert`: the placement hash **a1a7f008** with the owner's edits applied (as
+  before), every check as before but the two known failures (the embassies Hykkousoi, Iziz, Jimjam, Republic; the Arena
+  not walkable); the cutaway check runs through the host (`VC.cutTo(unit, 1)`: storey 2, shown, the host's bar, off).
+- `node test-edits.js` (12 checks): an old Streetlab file converted by `KEDITS.fromStreetlab` reads back the same
+  (`VC.editsFromLog`), so the page lays out the same with it; the editor's ops read back as the layout's entries.
+- Headless on the GPU (Chromium `--use-angle=d3d11`, about 4 minutes to load): X opens the Palace, ] and [ step it, X
+  closes it (the planes are the host's, `VC.INTD.planes` is them); a click in the cut storey names the room (Household
+  Kitchen, Palace canton, storey 2 of 18) in the inspector and the tip, and the pin lands on its floor (8.2 m); the marks
+  load at their sizes (mines 3.50 km2, quarries 86.8 ha, mush farm 40.8 ha); a kit building placed (aligned), a street
+  painted, a lot removed (hidden at once), saved through `/__save` (3 ops), undone back to nothing; 116 pictures drawn; the
+  stocks read; no page error. Screenshots in the session notes folder (`voth-6b/`: cutaway, cutaway-room, marks, editor,
+  stocks).
+- Every core/host consumer rebuilt (35 pages differ only by the host modules); `core/host/example/check.py` 14 of 14;
+  `node core/edits/test-edits.js`; `tools/port_baseline.py --write` re-keyed them.
+
+Differences the owner may notice: the panels are the host's (the inspector bottom left, the tip, the marks and editor
+bottom right, the stocks top right, the cutaway bar top centre); the editor's delete mode is select + Delete (a lot of the
+plan, a placed building, a painted street, a tree or a plant); R (align the last again) is gone (align is a checkbox
+applied as a building is placed); a tree is planted at its species' height (no height box); the trees and plants have no
+pictures (the kit builds into its store); a lot moved is, on the next load, a deletion where it stood and a placed
+building where it went (placed buildings join at step 3, so the plan round it may reflow, as before); the cutaway's bar
+for the buildings in view counts their storeys up to the tallest cut; the status line names the save
+`voth-city/edits.json` (the take's build name), the file is `settlements/voth/edits.json`.
+
 ## 2026-10-16: the Palace's top tiers and summit, and lazy furnishing (branch `claude/voth-interiors`)
 
 The blueprint wiring is finished (`README.md`, "The Palace from its blueprint" and "The summit from sheet F8"):
@@ -673,8 +711,9 @@ brewery, butcher, bakery); overrides for the fallback shells; the Palace and Tem
 97-vc-host-take.js`). What changed and its proof: `core/host/README.md`, "Voth onto core/host". For the page: the title
 bar is the host's (`#bar`, the view select, the time controls drive `VC.clock`); the keys are the host's (F walk, G pin);
 `#clk-pause` and `#wx` are kept. The verify's simulation statistics read slightly differently because they depend on load
-timing (the same on the old page); the placement hash is a1a7f008 as before. 6b (inspector, stocks, marks, editor, flora
-edit, cutaway onto the host) is next.
+timing (the same on the old page); the placement hash is a1a7f008 as before.
+**2026-10-16, step 6b:** the inspector, the stocks, the marks, the pictures, the editor and the cutaway are the host's too
+(above, "stage 3 step 6b").
 
 **Committed to `main` on 2026-10-09** (branch `claude/city-core`). The street toy (Streetlab's own `src/` then, `dist/streetlab.html`) was
 retired: the owner called it redundant. Its street machinery became **`core/city`**, the city builder and its infill
@@ -683,15 +722,16 @@ retired: the owner called it redundant. Its street machinery became **`core/city
 | Page | Built from | Verify | Last result |
 |---|---|---|---|
 | `dist/voth-site.html` | `targets/voth-site/` | `python3 verify.py dist/voth-site.html --assert` | OK |
-| `dist/voth-city.html` | `CITY_JS` in `build.py` (`core/city`, `targets/voth-site/10,50`, `targets/voth-city/`, `core/simulation`) | `python3 verify.py dist/voth-city.html --assert` | OK |
+| `dist/voth-city.html` | `CITY_JS` in `build.py` (`core/city`, `targets/voth-site/10,50`, `targets/voth-city/`, `core/simulation`, `core/host` FULL) | `python3 verify.py dist/voth-city.html --assert` | FAIL on the known two only (the embassies; the Arena not walkable), 2026-10-16 |
 
 Build: `cd settlements/voth && python3 build.py`. Serve: `python3 serve.py` (port 8813). The page is
 `/dist/voth-city.html`. It takes about 15 s to lay out and draw.
 
-### Saved owner data (`site/`, inlined by build.py, read fresh under serve.py)
+### Saved owner data (inlined by build.py)
 - `voth-site.json`: the site, made with the site editor. It has districts, including `mines`, `quarries`, `more farms` and `mush farm`, which came from the owner's marks.
-- `voth-city-marks.json`: the owner's marks on the city plan (POST `/save/voth-city-marks`).
-- `voth-city-edits.json`: the plan editor's placed buildings, painted streets and deletions (POST `/save/voth-city-edits`). It is empty now. Keep the file: the page fetches it, and a 404 fails verify.
+- `marks.json`: the owner's marks on the city plan (core/host's, POST `/__save` kind marks; the page reads it when it opens).
+- `edits.json`: the plan editor's `core/edits` log (POST `/__save` kind edits; a newer browser draft wins until saved). It is
+  empty now (converted from `site/voth-city-edits.json`, which was empty).
 
 ### The city plan's 15 steps (0–14)
 | Steps | What | Fragment |

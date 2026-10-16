@@ -22,11 +22,12 @@ library" below).
 |---|---|
 | `build.py`, `vothlift.py`, `foreign.py`, `ringsea.py` | the build of both pages; what it lifts from `src/` by name; the embassies; the Ring Sea vessels |
 | `targets/voth-site/`, `targets/voth-city/` | the two pages' own fragments |
-| `site/` | the owner's saved site, marks and plan edits (`serve.py` writes them; the build inlines them) |
+| `site/` | the owner's saved site (`serve.py` writes it; the build inlines it) |
+| `edits.json`, `marks.json` | the owner's plan edits (a `core/edits` log) and marks on the city plan, saved by core/host's editor and marks through `serve.py` (or `tools/edits/serve.py`); the build inlines the edits |
 | `src/` | **Voth's source library**: the first Voth's fragments, run whole or lifted by name, never copied |
 | `catalog/` | Voth's building catalog (`catalog/README.md`): `core/city` builds every lot with its registries |
 | `three.min.js` | three.js r128, the copy the pages, the catalog page and the gallery take |
-| `verify.py`, `serve.py` | the headless checks; the save server |
+| `verify.py`, `serve.py`, `test-edits.js` | the headless checks; the save server; the edit log read back as the layout's edits (`node test-edits.js`) |
 | `HANDOFF.md`, `HANDOFF-REFACTOR.md`, `SIM-ROADMAP.md`, `API.md` | the session handoff, the simulation's merge note and its brief, the contract of `src/` |
 
 ## The Voth site editor (`targets/voth-site`, `dist/voth-site.html`)
@@ -102,9 +103,16 @@ terrain   [{m: raise|lower|smooth, r, s, pts}, ...]   (brush strokes, replayed i
 
 The toy's street method run on the owner's site (`site/voth-site.json`), over Voth's own ground with the owner's
 ground edits, then the country round it and the ferry and elephant bug lines. The step slider shows the city after any
-step (0–14). **lots**, **wealth**, **transit** and the **inspector** are toggles.
+step (0–14). **lots**, **wealth** and **transit** are toggles.
 
-**The inspector (i)** names what is under the cursor: a lot's building, a piece of furniture, the ground, and (owner,
+**The tools are core/host's** (since 2026-10-16, ROADMAP.md section 10 step 6b; `core/host/README.md`, "Voth onto core/host";
+`97-vc-host-take.js` hands them Voth's data): the inspector and its hover tip (**I**), what things hold and the stocks
+(**O**), the marks (**P**), the picture menu, the editor (**B**) and the cutaway (**X**), with the camera, the pin, the
+loop, the panel and the probe of step 6a. Voth keeps its own words, picks and drawing; the panels, keys and stores are the
+host's.
+
+**The inspector** (a click; **I** for the hover tip; core/host's `93-host-inspect.js` over Voth's `VC.describe`, picked by
+Voth's own ray tests, `VC.inspectRay`, without a raycast of the city's batches) names what is under the cursor: a lot's building, a piece of furniture, the ground, and (owner,
 2026-10-14) **a citizen, an animal or a cart** among those drawn near the camera. A citizen's card: the id, role, class
 and wealth, the home; the **job** (the kind of work, the workplace, the post held now of how many, the shift and the
 rota day off); **now** (the activity and where, on a trip the leg it is on of how many, its mode and layer, where it
@@ -117,7 +125,8 @@ current while the cursor rests. Picking tests only the bodies drawn this frame (
 points against the cursor's ray (12 pixels), left out when the ground or another lot's box is nearer; the card only reads
 (the meters through core's `SIM.needsPeek`, nothing that decides is called).
 
-**What things hold (owner, 2026-10-14; `56e-vc-stocks-host.js`).** The inspector lists what a building, a container
+**What things hold (owner, 2026-10-14; core/host's `93-host-stocks.js` since 2026-10-16, ported from `56e-vc-stocks-host.js`,
+which keeps which places a lot is and which furniture holds things).** The inspector lists what a building, a container
 and a citizen hold, read from core/simulation (`SIM.contents`, `77-sim-7-stocks.js`), never from the page's records:
 * **a building** (its lot's simulation places): a producer's store (made here, not yet hauled), what it makes and from
   what (bread from wheat, boats from wood, cheese from milk), its fill against its cap and the carts bound for it; a
@@ -141,36 +150,33 @@ verify.py dist/voth-city.html --hash`), and the plan's Export button works (it t
 The sidebar lists the ferry and elephant bug lines: stops (and the map edges a line enters or leaves by), vehicles and
 the time for one round. Click a line to pick it out on the map.
 
-**marks (p)** is the polygon tool. It draws areas, lines and points on the ground, each with a name and a note, and
-gives a line's length and an area's size and perimeter (also saved, as `length_m` and `area_m2`). Click
-the ground to add points; Backspace takes the last one off; Enter or a double-click finishes. Under `serve.py` the marks
-save to `site/voth-city-marks.json`, so Claude can read them. Opened any other way, they keep in the browser.
-**copy JSON** copies them all. Every panel folds to its title with its **–** button. The lighthouses turn Voth's beacon beams (82-daynight.js), always lit here.
+**marks (P)** is core/host's (`94-host-marks.js`). It draws areas, lines and points on whatever surface is clicked, each
+with a name and a note, and gives a line's length and an area's size and perimeter (also saved, as `length_m` and
+`area_m2`). In its panel: new area, line or point; Backspace takes the last point off; Enter, Esc or a double-click
+finishes; go flies there, edit adds points, × deletes. Under `serve.py` (or `tools/edits/serve.py`) the marks save to
+`marks.json` (POST `/__save`), so Claude can read them, and the page reads that file when it opens; opened any other way,
+they keep in the browser. The owner's four marks (mines, quarries, more farms, mush farm) were carried over from
+`site/voth-city-marks.json`; a point saved as `[x, z]` is put on the ground when it loads. **copy JSON** copies them all.
+Every panel folds to its title with its **–** button. The lighthouses turn Voth's beacon beams (82-daynight.js), always lit here.
 
-The dev tools (`58-vc-tools.js`):
+The dev tools:
 
-- **Paths** is Voth's path visualizer (`settlements/voth/src/87-pathviz.js`, lifted by `build.py`). It shows the streets by class, the elephant bug and ferry lines with their stations and each vehicle where it is now, and the painted streets. Pick one or all from its list; it follows the step slider.
-- **The pin** comes from Dhelv's camera. A double-click on the ground drops a pin; **G** flies to it; **F** walks from it (Esc clears it). Walking follows the ground.
-- **edit (b)** is the plan editor, after the Ys city editor:
-  - **place building** puts a Voth kit building, with its variant, where you click. With *align* on, it faces the nearest street and stands back off it. **Q/E** turn the last one 15°; **R** aligns it again.
-  - **paint street** draws a street of any class: click points; Backspace, Enter or a double-click, Esc.
-  - **delete** takes out a building, placed or generated, or a painted street.
-  - **flora** (`59-vc-flora-edit.js`):
-    - *select and delete*: a click picks the tree, or the placed plant, the ray passes nearest. Delete (or the button) removes it at once, and Esc lets go.
-    - *plant*: a click plants the chosen species or plant on whatever floor is under it (a canton's deck, a park), at the chosen height or the species' own.
+- **Paths** (`58-vc-tools.js`) is Voth's path visualizer (`settlements/voth/src/87-pathviz.js`, lifted by `build.py`). It shows the streets by class, the elephant bug and ferry lines with their stations and each vehicle where it is now, and the painted streets. Pick one or all from its list; it follows the step slider.
+- **The pin** is core/host's (from Dhelv's camera). A double-click drops a pin (inside a cut canton, on the floor under the interior); **G** flies to it; **F** walks from it (Esc clears it). Walking follows the ground and the KWALK floors.
+- **edit (B)** is core/host's editor (`98-host-edit.js`) over Voth's world (`97-vc-host-take.js` `VC.editWorld`). Every edit is a `core/edits` op (ADD, MOVE, REMOVE) on a core/tags record (the lots, the placed buildings, the trees and plants placed one by one, the painted streets), shown at once:
+  - **select**: a click picks a lot, a placed building, a painted street, a tree or a plant (the editor's picks come first); **Delete** removes it, **M** then a click moves it, **Q / E** turn it 15°. A lot of the plan removed or moved is hidden at once and drawn on its own where it went; a tree is hidden by its instances and triangles (`59-vc-flora-edit.js` `VC.flShow`).
+  - **place**: the picture menu (`96-host-pictures.js`) offers every Voth kit building as a picture (drawn off screen two a frame); a click puts the chosen one down, with the variant chosen and, with *align to the nearest street* on, facing that street and standing back off it (`VC.edAlign`). **Q / E** turn the next one.
+  - **plant**: the swbay kit's trees and plants (no pictures: the kit builds into its store); a click plants one on whatever floor is under it (a canton's deck, a park), at the species' own height.
+  - **paint street**: a street of any class (avenue, main, side, alley, lane): click points on the ground; Backspace, Enter or a double-click, Esc.
+  - **undo** (Ctrl+Z), **save**, **export**, **import**, **discard draft**.
 
-    Live, the page hides exactly that tree's instances and triangles. The kit brackets every tree's writes (`SWBAY.onFlora`), and the page maps them to the baked meshes (`VC.flBake`).
-    On the next load, the kit's veto (`SWBAY.veto`) leaves a deleted tree unbuilt. It keeps its place, index and seed, so every other tree stays as it was.
-    The ground cover the kit scatters by itself (ferns, moss) cannot be picked.
-  - **undo** (Ctrl+Z), **save**, **copy JSON**.
-
-  Under `serve.py` the edits save to `site/voth-city-edits.json` (POST `/save/voth-city-edits`). The layout applies them when the page next loads (`VC.applyEdits` in `35-vc-steps.js`):
+  Save writes `edits.json` (POST `/__save`); every change is a draft in the browser meanwhile, and a draft newer than the
+  file wins when the page loads, so an edit shows on the next reload without a rebuild; `build.py` inlines the file
+  (`KHOST_EDITS`). The layout applies the log when the page is made (`VC.editsFromLog` in `35-vc-steps.js`, read back as
+  the old file's shape; `node test-edits.js` proves an old file converted by `KEDITS.fromStreetlab` reads back the same):
   - painted streets and placed buildings join at step 3, after the avenues, so later streets and lots work round them. A placed building takes out the lots it overlaps and stands on HARD ground. Its class is the kit class that lists its key, so the census counts it.
-  - deletions run once the whole plan is laid. Each takes out the building under its point from the step it was born.
-
-  The flora edits save in the same file (`flora: {del, add}`).
-
-  The page reads the file fresh under `serve.py`; `build.py` inlines it (`EDITS_INIT`) for the static page. Keep the file, even empty: the page asks for it.
+  - deletions run once the whole plan is laid. Each takes out the building under its point from the step it was born. A lot moved is a deletion where it stood and a placed building where it went.
+  - the flora's go to the kit's veto (`SWBAY.veto`: a deleted tree keeps its place, index and seed in the pass, so every other tree stays as it was) and `VC.flAddSaved`. The ground cover the kit scatters by itself (ferns, moss) cannot be picked.
 
 At the last step the sidebar shows the **census**: an estimate of residents, the working half of them, and the
 workplaces by kind of work (rates in `TUNE.census`; the Voth cantons' own people are not counted).
@@ -210,11 +216,6 @@ workplaces by kind of work (rates in `TUNE.census`; the Voth cantons' own people
   kit's runtime LOD (`BIO.lodTick`, every frame) draws only the chunks near the camera.
 * The biome builds into one group with the country (step 13). The **flora** layer button hides it.
 
-**The placer's menu** (`58-vc-tools.js`): in place mode the editor shows every Voth kit piece as a picture in a
-searchable grid (name or family). Each picture is the piece built once off screen and drawn into a small render target
-on the page's own renderer, read back and kept. They are drawn two a frame from when the editor first opens, and the
-ones the search shows go first.
-
 **Day and night** (`VC.dayNight` in `55-vc-host.js`, `TUNE.clock`; owner, 2026-10-09). One clock drives the page:
 core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/atmos` (`0-core`, `0p-presets`, `2-lights`,
 `3-particles`, `4-weather`, `8-export`, `9-host`, `b-skylight`) as their own scripts.
@@ -246,7 +247,8 @@ core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/a
 * **Motion:** the vehicles run on the clock's motion time (times `TUNE.timeScale`), and SIM reads its hour and day.
 * **Controls:** the panel has the hour, run/hold, 1x/2x/4x/8x (the clock's `scale`: the day and the motion both run
   faster) and an hour slider. The page opens at 10:00 and runs (`TUNE.clock`).
-* **Stocks (o, or "stocks (o)" on the bar; owner, 2026-10-14; `56e-vc-stocks-host.js`):** a panel listing every good
+* **Stocks (O, or "stocks (o)" on the bar; owner, 2026-10-14; core/host's `93-host-stocks.js` since 2026-10-16, ported from
+  `56e-vc-stocks-host.js`):** a panel listing every good
   and item in the settlement (food; materials and goods; the citizens' things), its total and where it is: **at the
   site** (made, not yet hauled: a producer's own store), **in transit** (a cart's load; a caravan's, barge's or ship's
   load while it is on the map, coming in or going out; a lot landed at the caravanserai, a quay or a pier for the
@@ -574,11 +576,13 @@ placements are the same as furnishing the whole canton at once (checked: 120,555
 storey order in 5 ms steps). The Palace's first cut now takes 1.0 s (its shell and the state floor's 6,300 pieces), the
 next storey 0.4 s.
 
-**Cutaway (x):**
-* it shows the canton under the camera (or the one the walker is in) cut at a storey, and every lot building in view
-  round the view's middle (below);
-* PageUp/PageDown or [ and ] step the storey;
-* clipping planes on every material, moved each frame, never recompiled.
+**Cutaway (X; core/host's `99-host-cutaway.js` since 2026-10-16):**
+* it shows the canton whose apron holds the view's middle cut at a storey, and every lot building in view round the
+  view's middle (below); away from a canton, the lot buildings alone (the host's unit "the buildings in view", which sets
+  no clipping box: 56b's height grid cuts them);
+* the bar at the top of the view: the canton (or the buildings), the storey of how many, down, up, close; PageUp/PageDown,
+  [ and ] or Shift + the wheel step the storey;
+* clipping planes on every material (the host's, set at the first cut and moved after, never recompiled).
 
 **The Ring Sea vessels** (`ringsea.py`, `RINGSEA`; owner, 2026-10-09). The Voth watercraft of `kits/ringsea` are built by
 that kit's own code, sealed like the embassies (about 100 KB of its source, procedural materials). They are:
