@@ -18,7 +18,7 @@ defBuilding({key:'lk-greathall',name:"Warlord's great hall",seed:7701,caste:'all
  note:'the capital: the tusk vault of the lodge carved in polished basalt, nine pairs of stone tusks over a slab roof, a polished plinth inlaid with bronze, the front gable with seven spiral eyes and a nested bronze portal seven deep; the serpent throne on a dais at the far end',
  build(o){const L=22,Wd=12.5,h=11.5;lzCutFloor(.4);
   W(0,0,0,-PI/2,()=>{lzNoCut(()=>lkPlinth(L+3,Wd+3,.4,{}));
-   lzTuskVault(L,Wd,h,9,{r:.42,mk:LK_PL,tuskCol:P('basaltD'),skinMk:'basalt',skinCol:P('basalt'),wallMk:LK_ST,wallCol:P('basalt'),eaveY:2.0,y0:.4,doors:[{z:0,c:6}],eyes:[[0,h*.72],[3.6,h*.5],[-3.6,h*.5],[5.2,h*.26],[-5.2,h*.26],[2.2,h*.3],[-2.2,h*.3]]});
+   lzTuskVault(L,Wd,h,9,{r:.42,mk:LK_PL,tuskCol:P('basaltD'),skinMk:'basalt',skinCol:P('basalt'),wallMk:LK_ST,wallCol:P('basalt'),eaveY:2.0,y0:.4,doors:[{z:0,c:6}],eyes:[[0,h*.72],[2.8,h*.52],[-2.8,h*.52],[4.4,h*.3],[-4.4,h*.3],[1.8,h*.32],[-1.8,h*.32]]});
    /* the dais and the throne at the far (-x) end, the hearth before it, divans along the walls */
    box(LK_PL,-L/2+2.2,.4,0,3.4,.5,6,P('basaltD'));W(-L/2+2.2,.9,0,PI/2,()=>lzLeiwen(5.4,.42,{cell:.26,mk:'bronze',back:false}));
    FURNISH('lizardmen_court_throne',-L/2+2.2,.9,0,PI/2);FURNISH('lizardmen_court_hearth',-L/2+6.5,.4,0,0);FURNISH('lizardmen_court_carpet',-2,.4,0,PI/2);
@@ -60,12 +60,14 @@ defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true
  build(o){const a=4.4,N=5;lzCutFloor(.2);lzNoCut(()=>box(LK_PL,0,0,0,29,.2,26,P('basaltD')));
   const arm=(sg)=>{const pts=[];for(let k=N;k>=1;k--){const th=k*.86+.9,r=a*Math.sqrt(th)*sg;pts.push([Math.cos(th)*r,Math.sin(th)*r,1.5+k*.2]);}return pts;};
   const A=arm(1),B=arm(-1);
-  const dome=(x,z,r,o2)=>{const h=r*1.1;W(x,.2,z,o2.ry||0,()=>{lzDome(0,0,[[r*.92,0],[r*1.06,h*.3],[r*1.0,h*.6],[r*.7,h*.86],[r*.3,h*1.04],[0,h*1.1]],{mk:LK_ST,col:P('basalt'),seg:16,door:o2.door});
-   const n=o2.n||5;for(let i=0;i<n;i++){const an=i*TAU/n+(o2.a0||0),bx=Math.cos(an)*r,bz=Math.sin(an)*r;if(o2.door&&Math.abs(((an-PI/2)%TAU+TAU)%TAU)<.6)continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.1,r*.14,{curl:.45,lean:-.35,mk:LK_PL,col:P('basaltD'),nt:7,ns:6});}
+  const dome=(x,z,r,o2)=>{const h=r*1.1;W(x,.2,z,0,()=>{lzDome(0,0,[[r*.92,0],[r*1.06,h*.3],[r*1.0,h*.6],[r*.7,h*.86],[r*.3,h*1.04],[0,h*1.1]],{mk:LK_ST,col:P('basalt'),seg:16,doors:o2.doors});
+   const n=o2.n||5;for(let i=0;i<n;i++){const an=i*TAU/n+(o2.a0||0),bx=Math.cos(an)*r,bz=Math.sin(an)*r;if((o2.doors||[]).some(dd=>Math.abs((((an-(PI/2-dd.ry))%TAU)+TAU+PI)%TAU-PI)<.7))continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.1,r*.14,{curl:.45,lean:-.35,mk:LK_PL,col:P('basaltD'),nt:7,ns:6});}
    lzEye(0,h*.95,r*.35,0,o2.big?r*.22:r*.13,{mk:'bronze',glow:!!o2.big});});};
-  dome(0,0,4.6,{n:9,big:true});
-  for(const [pts,sg] of [[A,1],[B,-1]]){for(let i=0;i<pts.length;i++){const p=pts[i],mouth=i===0;dome(p[0],p[1],p[2],{n:i%2?5:7,a0:i*.9,door:mouth?lzDoorH(6):0,ry:mouth?Math.atan2(p[0],p[1]):0});
-    const q=i<pts.length-1?pts[i+1]:[0,0,4.6];const mx=(p[0]+q[0])/2,mz=(p[1]+q[1])/2,rr0=Math.min(p[2],q[2])*.85;lzNoCut(()=>ellip(LK_ST,mx,.2,mz,rr0,rr0*.55,rr0,P('basalt'),0,10));}
+  const dhP=lzDoorH(6);const face=(p,q)=>Math.atan2(q[0]-p[0],q[1]-p[1]);
+  dome(0,0,4.6,{n:9,big:true,doors:[{dh:dhP,ry:face([0,0],A[A.length-1])},{dh:dhP,ry:face([0,0],B[B.length-1])}]});
+  for(const [pts,sg] of [[A,1],[B,-1]]){for(let i=0;i<pts.length;i++){const p=pts[i],mouth=i===0,next=i<pts.length-1?pts[i+1]:[0,0];
+    const doors=[{dh:dhP,ry:face(p,next)}];if(mouth)doors.push({dh:dhP,ry:Math.atan2(p[0],p[1])});else doors.push({dh:dhP,ry:face(p,pts[i-1])});dome(p[0],p[1],p[2],{n:i%2?5:7,a0:i*.9,doors});
+    const q=i<pts.length-1?pts[i+1]:[0,0,4.6];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);W(0,.2,0,0,()=>lzPassage([p[0],p[1]],[q[0],q[1]],dh,dh*.62,LK_ST,P('basalt')));}
    const m=pts[0],ang=Math.atan2(m[0],m[1]),dh=lzDoorH(6),dw=dh*.62,mx=m[0]+Math.sin(ang)*m[2]*.9,mz=m[1]+Math.cos(ang)*m[2]*.9;
    lzNoCut(()=>{W(mx,.2,mz,ang,()=>{lzPortal(0,0,.1,0,dh,{mk:'bronze',eye:sg>0});box('basalt',0,0,.5,dw+.6,.16,.7,P('basaltD'));});});}
   for(let i=1;i<A.length;i++){const p=A[i];FURNISH('lizardmen_court_bed',p[0]*.98,.2,p[1]*.98,Math.atan2(-p[0],-p[1]));}

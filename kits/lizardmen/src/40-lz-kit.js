@@ -85,20 +85,25 @@ function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o
   for(const d of doors){const dh=lzDoorH(d.c),dw=dh*.62;for(const k of [-1,1]){const p0=[gx,y0,d.z+k*dw/2],p1=[gx,y0+dh,d.z],p2=[gx-s*.3,y0,d.z+k*dw/2];plane4(gmk,p0,p1,p2,.02,gcol);}
    door(gx-s*.15,y0,d.z,s>0?PI/2:-PI/2,dw);lzNoCut(()=>{lzPortal(gx+s*.02,y0,d.z,s>0?PI/2:-PI/2,dh,{mk:d.c>=6?'bronze':'lacq'});W(gx+s*.3,0,d.z,s>0?PI/2:-PI/2,()=>box('basalt',0,y0,.1,dw+.4,.18,.5,P('basaltD')));});}
   if(s>0)for(const [ez,ey] of o.eyes||[])lzNoCut(()=>lzEye(gx+.02,ey,ez,PI/2,.45,{mk:'bronze'}));}}
-/* a domed cell: a lathe of `prof` ([[r, y], ...] from the foot up) with an INNER shell, and a real triangular doorway
-   (o.door: its height) cut through both at the front (+z of a frame turned o.ry): the lathe leaves out the door's wedge,
-   a patch closes the wedge above the door, reveal strips join the two shells along the slanted edges. o.mk, o.col */
+/* a domed cell: a lathe of `prof` ([[r, y], ...] from the foot up) with an INNER shell, and real triangular doorways
+   cut through both: o.door (one, facing +z of a frame turned o.ry) or o.doors [{dh, ry}] (several, ry the way each faces,
+   0 = +z). The lathe is drawn in the arcs between the doors' wedges; a patch closes each wedge above its door; reveal
+   strips join the two shells along the slanted edges. o.mk, o.col */
 function lzDome(x,z,prof,o){o=o||{};const mk=o.mk||'earth',col=o.col||P('earth'),seg=o.seg||16,r0=prof[0][0],top=prof[prof.length-1][1];
  const R=y=>{for(let i=1;i<prof.length;i++)if(y<=prof[i][1]){const a=prof[i-1],b=prof[i],t=(y-a[1])/Math.max(1e-6,b[1]-a[1]);return lerp(a[0],b[0],t);}return 0;};
  const inner=prof.map(p=>[p[0]*.88,p[1]*.97]);
- W(x,0,z,o.ry||0,()=>{if(!o.door){lathe(mk,0,0,prof,seg,col,{});lathe(mk,0,0,inner,seg,col,{inward:true});return;}
-  const dh=o.door,dw=dh*.62,aw=Math.asin(Math.min(.9,dw/2/r0)),a0=PI/2+aw,a1=PI/2+TAU-aw;
-  lathe(mk,0,0,prof,seg,col,{a0,a1});lathe(mk,0,0,inner,seg,col,{a0,a1,inward:true});
-  /* the patch over the door: the wedge of the dome above the triangle, outer and inner */
-  for(const [sc,fl] of [[1,false],[.88,true]]){psurf(mk,(u,v)=>{const a=PI/2-aw+2*aw*u,yb=dh*(1-Math.abs(2*u-1)),y=lerp(yb,top*(sc<1?.97:1),v),rr0=R(y/(sc<1?.97:1))*sc;return [Math.cos(a)*rr0,y,Math.sin(a)*rr0];},8,8,col,{flip:fl});}
-  /* the reveals along the slanted edges */
-  for(const k of [-1,1])psurf(mk,(u,v)=>{const a=PI/2+k*aw*(1-u),y=dh*u,rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y,Math.sin(a)*rr0];},4,2,col,{flip:k>0});
-  door(0,0,r0*.94,0,dw);});}
+ const doors=(o.doors||(o.door?[{dh:o.door,ry:0}]:[])).map(d=>{const dh=Math.min(d.dh,top*.8),dw=dh*.62;return {dh,dw,ry:d.ry||0,aw:Math.asin(Math.min(.9,dw/2/r0)),ac:PI/2-(d.ry||0)};}).sort((a,b)=>a.ac-b.ac);
+ W(x,0,z,o.ry||0,()=>{if(!doors.length){lathe(mk,0,0,prof,seg,col,{});lathe(mk,0,0,inner,seg,col,{inward:true});return;}
+  /* the arcs between the wedges */
+  for(let i=0;i<doors.length;i++){const a=doors[i],b=doors[(i+1)%doors.length];let a0=a.ac+a.aw,a1=b.ac-b.aw+(i===doors.length-1?TAU:0);if(a1<=a0)continue;
+   const n=Math.max(3,Math.round(seg*(a1-a0)/TAU));lathe(mk,0,0,prof,n,col,{a0,a1});lathe(mk,0,0,inner,n,col,{a0,a1,inward:true});}
+  /* each door: the patch over it (outer and inner) and the reveals, in a frame turned to face it */
+  for(const d of doors)W(0,0,0,d.ry,()=>{const aw=d.aw,dh=d.dh;
+   for(const [sc,fl] of [[1,false],[.88,true]]){psurf(mk,(u,v)=>{const a=PI/2-aw+2*aw*u,yb=dh*(1-Math.abs(2*u-1)),y=lerp(yb,top*(sc<1?.97:1),v),rr0=R(y/(sc<1?.97:1))*sc;return [Math.cos(a)*rr0,y,Math.sin(a)*rr0];},8,8,col,{flip:fl});}
+   for(const kk of [-1,1])psurf(mk,(u,v)=>{const a=PI/2+kk*aw*(1-u),y=dh*u,rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y,Math.sin(a)*rr0];},4,2,col,{flip:kk>0});
+   door(0,0,r0*.94,0,d.dw);});});}
+/* a passage between two domed cells: a short tube of mk from p to q ([x, z]), dh high and dw wide, open at both ends */
+function lzPassage(p,q,dh,dw,mk,col){const y0=dh*.5;tube(mk,t=>[lerp(p[0],q[0],t),y0,lerp(p[1],q[1],t)],t=>[dw*.62,dh*.52],2,10,col,{});}
 /* ---------------------------------------------------------------- walls that lean wrong */
 /* one wall face from bottom edge B0->B1 ([x,z]) to top edge T0->T1 at height y0..y0+h (a battered face when T differs from B),
    facing out to the left of B0->B1 seen from above with +y up... (front: B0 west, B1 east). opens: [{s, w, h, door}] with s
@@ -146,7 +151,7 @@ function lzVent(c,s,y){const h=lzDoorH(c)*.3;return {s,w:h*.5,h,y};}
    the real opening (declare it with lzDoor on the wall). o.eye puts a spiral eye at the outer apex */
 function lzPortal(x,y,z,ry,H,o){o=o||{};const mk=o.mk||'lacq',col=o.col||(mk==='bronze'?P('bronze'):mk==='ivory'?P('tusk'):P('lacq')),step=o.step||.14;let h=H,i=0;
  W(x,y,z,ry,()=>{while(h>=1.15&&i<7){const w=h*.62,zz=-i*step,t=.1+.03*(6-i);
-   for(const s of [-1,1])beam(mk,[s*w/2,0,zz],[s*0,h,zz],t,col,false,undefined,t*1.4);
+   for(const s of [-1,1])beam(mk,[s*w/2,0,zz],[s*0,h,zz],t,col,false,undefined,Math.min(t*1.4,step*.85));
    box(mk,0,-.02,zz,w+.3,.12,t*1.5,col);   /* the raised threshold */
    h/=LZ_RATIO;i++;}
   if(o.eye)lzEye(0,H+.45,-.02,0,.32,{mk:'bronze'});});}
@@ -227,6 +232,6 @@ function lzBellRack(x,z,ry,L,h,n){W(x,0,z,ry,()=>{for(const s of [-1,1]){lzHorn(
   lathe('bronzeC',bx,0,[[.02,h-.2],[.14,h-.26],[.19,h-.2-bh*.75],[.21,h-.2-bh],[.0,h-.2-bh]],12,P('bronze'),{});
   W(bx,h-.2-bh*.55,.215,0,()=>lzLeiwen(.3,.22,{cell:.11,mk:'bronze',back:false,t:.012,proud:.012}));}});}
 /* the raised threshold and the stone footing every door has */
-function lzThreshold(x,z,ry,w){W(x,0,z,ry,()=>box('basalt',0,0,.1,w+.4,.18,.5,P('basaltD')));}
+function lzThreshold(x,z,ry,w){W(x,0,z,ry,()=>box('basalt',0,-.05,.1,w+.4,.25,.5,P('basaltD')));}   /* sunk 5 cm, so no floor slab's top shares its face */
 /* a pool of dust: the ground round a monument, trodden */
 function lzDust(x,z,R){cyl('earthR',x,.005,z,R,.02,P('earthP'),16);}

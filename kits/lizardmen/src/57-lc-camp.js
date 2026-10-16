@@ -58,7 +58,8 @@ defBuilding({key:'lc-seer',name:"Interpreters' tent",seed:7423,caste:5,cut:true,
    /* the eye above the door and the leiwen bands either side of it lie flat on the skin, tilted with its slope */
    const tilt=-Math.atan2(R,h)*.9,ye=dh+.9;WX(0,ye,lcSkinR(R,h,ye,B)+.06,0,tilt,0,()=>lzEye(0,0,0,0,.34,{mk:'bronze'}));
    for(const s of [-1,1]){const a=s*.66,yb=.4,rb=lcSkinR(R,h,yb,B)+.05;WX(Math.sin(a)*rb,yb,Math.cos(a)*rb,a,tilt,0,()=>lzLeiwen(.9,.7,{cell:.3,mk:'lacqR',back:false,proud:.05}));}});
-  lzFurnRoom(3.8,3.8,0,'court',{beds:1,noHearth:true,ceil:h*.45,extra:[['lizardmen_court_low_table',0,.6,0],['lizardmen_court_candelabra',1.3,-.9,0],['lizardmen_court_statue',-1.3,-.9,PI/4]]});}});
+  /* a seer keeps little: the dais against the back, the guardian and one lamp, a carpet; nothing else */
+  FURNISH('lizardmen_court_bed',0,0,-1.3,0);FURNISH('lizardmen_court_statue',-1.4,0,.2,PI/2);FURNISH('lizardmen_court_candelabra',1.4,0,.3,0);FURNISH('lizardmen_court_carpet',0,0,.9,0);FURNISH_HANG('lizardmen_court_hanging',0,h*.45,0,0);}});
 /* ---------------------------------------------------------------- the great sail tent: the camp's shared hall */
 defBuilding({key:'lc-sail',name:'Great sail tent',seed:7424,caste:'all',cut:true,w:15,d:19,h:11.6,budget:90000,
  tags:{types:['dwelling-multi','military','civic'],wealth:'middle',role:'hall'},

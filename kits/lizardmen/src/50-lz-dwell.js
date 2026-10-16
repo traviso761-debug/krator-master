@@ -60,7 +60,7 @@ defBuilding({key:'lz-lodge',name:"Warriors' lodge",seed:7004,caste:4,cut:true,w:
  build(o){const L=15,Wd=9.5,h=8.6;lzCutFloor(0);
   /* the vault runs along local x; the frame is turned so the +x gable is the front */
   W(0,0,0,-PI/2,()=>{box('stoneP',0,0,0,L+1.4,.2,Wd+1.4,P('basaltD'));
-   lzTuskVault(L,Wd,h,7,{r:.36,mk:'ivory',skinMk:'hide',skinCol:P('hide'),eaveY:1.3,y0:.2,doors:[{z:2.6,c:4},{z:-2.2,c:6}],eyes:[[.3,h*.6],[3.9,h*.3],[-3.6,h*.33]]});
+   lzTuskVault(L,Wd,h,7,{r:.36,mk:'ivory',skinMk:'hide',skinCol:P('hide'),eaveY:1.3,y0:.2,doors:[{z:2.6,c:4},{z:-2.2,c:6}],eyes:[[.3,h*.62],[2.3,h*.4],[-2.3,h*.4]]});
    lzFurnRoom(Wd-1,L-1.2,.2,'common',{beds:3,ceil:h*.6,extra:[['generic_trade_armour_stand',-1,-L/2+1.2,0],['generic_trade_armour_stand',1.2,-L/2+1.2,0],['generic_trade_weapon_rack',-3.6,0,PI/2],['lizardmen_training_training_dummy',3.2,5.2,0]]});});}});
 /* ---------------------------------------------------------------- the Interpreters' house: the twisted tower */
 defBuilding({key:'lz-tower',name:"Interpreters' house",seed:7005,caste:5,cut:true,w:11,d:11,h:21,budget:100000,
