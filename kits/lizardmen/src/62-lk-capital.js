@@ -54,20 +54,20 @@ defBuilding({key:'lk-warren',name:'Stone cell-warren',seed:7703,caste:1,cut:true
     else FURNISH(i%2?'lizardmen_court_jug':'lizardmen_court_scroll',x+r*.4,.2,z+r*.2,0);}
    if(i){const p=cells[i-1];const mx=(p[0]+c[0])/2-cx,mz=(p[1]+c[1])/2-cz+shz;ellip(LK_ST,mx,.2,mz,Math.min(p[2],c[2])*.9,Math.min(p[2],c[2])*.5,Math.min(p[2],c[2])*.9,P('basalt'),0,10);}}}});
 /* ---------------------------------------------------------------- the stone nest: the capital's nursery */
-defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true,w:30,d:27,h:9,budget:150000,
+defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true,w:40,d:36,h:11,budget:160000,
  tags:{types:['religious','civic'],wealth:'rich',role:'nursery'},
  note:'the nest hall for the capital: the Fermat spiral in fitted basalt, five chambers an arm, stone horns, bronze eyes on every crown and the Coil\'s great eye on the centre, nested bronze portals at both mouths',
- build(o){const a=4.4,N=5;lzCutFloor(.2);lzNoCut(()=>box(LK_PL,0,0,0,29,.2,26,P('basaltD')));
+ build(o){const a=5.4,N=5;lzCutFloor(.2);lzNoCut(()=>box(LK_PL,0,0,0,39,.2,35,P('basaltD')));
   const arm=(sg)=>{const pts=[];for(let k=N;k>=1;k--){const th=k*.86+.9,r=a*Math.sqrt(th)*sg;pts.push([Math.cos(th)*r,Math.sin(th)*r,1.5+k*.2]);}return pts;};
   const A=arm(1),B=arm(-1);
   const dome=(x,z,r,o2)=>{const h=r*1.1;W(x,.2,z,0,()=>{lzDome(0,0,[[r*.92,0],[r*1.06,h*.3],[r*1.0,h*.6],[r*.7,h*.86],[r*.3,h*1.04],[0,h*1.1]],{mk:LK_ST,col:P('basalt'),seg:16,doors:o2.doors});
    const n=o2.n||5;for(let i=0;i<n;i++){const an=i*TAU/n+(o2.a0||0),bx=Math.cos(an)*r,bz=Math.sin(an)*r;if((o2.doors||[]).some(dd=>Math.abs((((an-(PI/2-dd.ry))%TAU)+TAU+PI)%TAU-PI)<.7))continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.1,r*.14,{curl:.45,lean:-.35,mk:LK_PL,col:P('basaltD'),nt:7,ns:6});}
    lzEye(0,h*.95,r*.35,0,o2.big?r*.22:r*.13,{mk:'bronze',glow:!!o2.big});});};
   const dhP=lzDoorH(6);const face=(p,q)=>Math.atan2(q[0]-p[0],q[1]-p[1]);
-  dome(0,0,4.6,{n:9,big:true,doors:[{dh:dhP,ry:face([0,0],A[A.length-1])},{dh:dhP,ry:face([0,0],B[B.length-1])}]});
+  dome(0,0,6.8,{n:9,big:true,doors:[{dh:dhP,ry:face([0,0],A[A.length-1])},{dh:dhP,ry:face([0,0],B[B.length-1])}]});
   for(const [pts,sg] of [[A,1],[B,-1]]){for(let i=0;i<pts.length;i++){const p=pts[i],mouth=i===0,next=i<pts.length-1?pts[i+1]:[0,0];
     const doors=[{dh:dhP,ry:face(p,next)}];if(mouth)doors.push({dh:dhP,ry:Math.atan2(p[0],p[1])});else doors.push({dh:dhP,ry:face(p,pts[i-1])});dome(p[0],p[1],p[2],{n:i%2?5:7,a0:i*.9,doors});
-    const q=i<pts.length-1?pts[i+1]:[0,0,4.6];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);W(0,.2,0,0,()=>lzPassage(p,q,dh,dh*.62,LK_ST,P('basalt')));}
+    const q=i<pts.length-1?pts[i+1]:[0,0,6.8];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);W(0,.2,0,0,()=>lzPassage(p,q,dh,dh*.62,LK_ST,P('basalt')));}
    const m=pts[0],ang=Math.atan2(m[0],m[1]),dh=lzDoorH(6),dw=dh*.62,mx=m[0]+Math.sin(ang)*m[2]*.9,mz=m[1]+Math.cos(ang)*m[2]*.9;
    lzNoCut(()=>{W(mx,.2,mz,ang,()=>{lzPortal(0,0,.1,0,dh,{mk:'bronze',eye:sg>0});box('basalt',0,0,.5,dw+.6,.16,.7,P('basaltD'));});});}
   const side=(p,q,s)=>{const dx=q[0]-p[0],dz=q[1]-p[1],L=Math.hypot(dx,dz)||1;return [p[0]-s*dz/L*p[2]*.55,p[1]+s*dx/L*p[2]*.55];};
@@ -75,8 +75,8 @@ defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true
   for(let i=1;i<B.length;i++){const p=B[i],q=B[i-1],b=side(p,q,-1);FURNISH('lizardmen_court_carpet',b[0],.2,b[1],0);}
   {const dA=face([0,0],A[A.length-1]),dB=face([0,0],B[B.length-1]);
    for(let i=0;i<9;i++){const an=i*TAU/9+.2,ry=Math.atan2(Math.sin(an),Math.cos(an));if([dA,dB].some(d=>Math.abs(((ry-d)%TAU+TAU+PI)%TAU-PI)<.55))continue;
-    const sx=Math.sin(ry),sz=Math.cos(ry);FURNISH('lizardmen_court_bed',sx*3.1,.2,sz*3.1,ry+PI);FURNISH('lizardmen_court_egg_cradle',sx*1.8,.2,sz*1.8,ry+PI);}
-   FURNISH('lizardmen_court_hearth',0,.2,0,0);FURNISH_HANG('lizardmen_court_hanging',0,4.4,0,0);}}});
+    const sx=Math.sin(ry),sz=Math.cos(ry);FURNISH('lizardmen_court_bed',sx*4.8,.2,sz*4.8,ry+PI);FURNISH('lizardmen_court_egg_cradle',sx*3.2,.2,sz*3.2,ry+PI);}
+   FURNISH('lizardmen_court_hearth',0,.2,0,0);FURNISH_HANG('lizardmen_court_hanging',0,6,0,0);}}});
 /* ---------------------------------------------------------------- the Interpreters' college: three twisted towers */
 defBuilding({key:'lk-college',name:"Interpreters' college",seed:7705,caste:5,cut:true,w:24,d:16,h:26,budget:150000,
  tags:{types:['civic','religious'],wealth:'rich',role:'hall'},
