@@ -32,7 +32,7 @@ defBuilding({key:'lz-muster',name:'Mustering ground',seed:7402,caste:'all',cut:f
  note:'a square of packed earth whose ranks are marked by basalt posts on a squared-spiral grid winding in to one tall post with a spiral eye; behind it the camp, a hide tent and a pole-and-shield tent (57-lc-camp.js); no banners, drums, horns, gongs or fires anywhere',
  build(o){box('earthR',0,0,-2,23,.1,34,P('earthP'));
   /* the camp at the back of the ground: two of the tents, pitched a little askew */
-  place('lc-hide',-6,-13,.15,{y:0});place('lc-shield',5.5,-12.5,-.2,{y:0});
+  place('lc-hide',-6,-13,.15,{y:.1});place('lc-shield',5.5,-12.5,-.2,{y:.1});   /* on the ground's slab, not in it */
   W(0,0,4,0,()=>{let px=-10,pz=10,dir=0,len=20;let k=0;
   for(let n=0;n<11&&len>1.2;n++){const dx=[1,0,-1,0][dir],dz=[0,-1,0,1][dir],steps=Math.max(1,Math.floor(len/2.2));
    for(let i=0;i<steps;i++){const t=(i+.5)/steps,x=px+dx*len*t,z=pz+dz*len*t;k++;box('basalt',x,.1,z,.28,.8+.02*(k%5),.28,P(k%4?'basalt':'basaltD'),n*.2);}
