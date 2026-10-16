@@ -49,9 +49,14 @@ VC.SUITES = {
       { id: 'banquet', kind: 'banquet', u: [-82, -2], v: [-18, 18], storeys: 2, gallery: 3, pillars: [[-70, -11], [-56, -11], [-42, -11], [-28, -11], [-14, -11], [-70, 11], [-56, 11], [-42, 11], [-28, 11], [-14, 11]], chandelier: 2.6, tilted: true, carpet: true },
       { id: 'throne', kind: 'throne', u: [-2, 62], v: [-32, 32], storeys: 3, gallery: 3, octagon: 14, dome: 12, dais: 'centre', sunChandelier: true },
       { id: 'apartment', kind: 'apartment', u: [62, 130], v: [-26, 26], storeys: 1, upper: 'chamber', innerStair: true, tapestries: true, chandelier: 2.0, carpet: true },
-      { id: 'judgment', kind: 'judgment', u: [-126, -84], v: [46, 106], storeys: 2, gallery: 'long', court: true, tapestries: true, chandelier: 2.2, carpet: true }
+      { id: 'judgment', kind: 'judgment', u: [-126, -84], v: [46, 106], storeys: 2, gallery: 'long', court: true, tapestries: true, chandelier: 2.2, carpet: true },
+      /* the kitchens (owner, 2026-10-15: "it's also not clear where the kitchens are"): the great kitchen between the banquet hall
+         and the north hall (a door into the hall, a passage to the servants' hall; kept clear of the banquet hall's own passage), the ruler's own kitchen beside the ruler's chambers */
+      { id: 'kitchen', kind: 'greatkitchen', u: [-80, -48], v: [18, 38], storeys: 1, kitchen: true },
+      { id: 'privykitchen', kind: 'greatkitchen', u: [104, 124], v: [26, 38], storeys: 1, kitchen: true }
     ],
-    links: [['foyer', 'banquet', 6], ['banquet', 'throne', 6], ['throne', 'apartment', 4], ['north', 'judgment', 3], ['foyer', 'north', 4], ['foyer', 'south', 4], ['banquet', 'north', 3], ['banquet', 'south', 3], ['apartment', 'north', 3], ['apartment', 'south', 3]],
+    links: [['foyer', 'banquet', 6], ['banquet', 'throne', 6], ['throne', 'apartment', 4], ['north', 'judgment', 3], ['foyer', 'north', 4], ['foyer', 'south', 4], ['banquet', 'north', 3], ['banquet', 'south', 3], ['apartment', 'north', 3], ['apartment', 'south', 3],
+            ['kitchen', 'banquet', 4], ['kitchen', 'north', 3], ['privykitchen', 'apartment', 3], ['privykitchen', 'north', 3]],
     keepAbove: ['throne']                               /* the dome rises through the tier above */
   },
   Temple: {
@@ -71,9 +76,14 @@ VC.SUITES = {
         frescos: [['u0', 'fresco_ascent']] },     /* their ascent over the way in, facing the altar */
       { id: 'audience', kind: 'highpriest', u: [9, 39], v: [-26, 26], storeys: 1, upper: 'study', screens: true, tapestries: true },
       { id: 'private', kind: 'chamber', u: [39, 63], v: [-26, 26], storeys: 1, upper: 'chamber', screens: true },
-      { id: 'vestry', kind: 'vestry', u: [63, 121], v: [-24, 24], storeys: 1, upper: 'store', tapestries: true }
+      { id: 'vestry', kind: 'vestry', u: [63, 121], v: [-24, 24], storeys: 1, upper: 'store', tapestries: true },
+      /* the priests' kitchen and refectory, off the north hall (the priests' quarters); the sanctuary reaches the north hall
+         through the refectory, whose passage replaces its own */
+      { id: 'kitchen', kind: 'greatkitchen', u: [-62, -32], v: [26, 38], storeys: 1, kitchen: true },
+      { id: 'refectory', kind: 'mess', u: [-32, 6], v: [26, 38], storeys: 1, tapestries: true }
     ],
-    links: [['atrium', 'sanctuary', 6], ['sanctuary', 'audience', 3], ['audience', 'private', 2.4], ['private', 'vestry', 2.4], ['atrium', 'north', 4], ['atrium', 'south', 4], ['sanctuary', 'north', 3], ['sanctuary', 'south', 3], ['vestry', 'north', 3], ['vestry', 'south', 3], ['audience', 'north', 2.4]],
+    links: [['atrium', 'sanctuary', 6], ['sanctuary', 'audience', 3], ['audience', 'private', 2.4], ['private', 'vestry', 2.4], ['atrium', 'north', 4], ['atrium', 'south', 4], ['sanctuary', 'refectory', 4], ['sanctuary', 'south', 3], ['vestry', 'north', 3], ['vestry', 'south', 3], ['audience', 'north', 2.4],
+            ['kitchen', 'refectory', 3], ['kitchen', 'north', 3], ['refectory', 'north', 3]],
     keepAbove: []
   }
 };
@@ -183,8 +193,11 @@ VC.suiteStorey = function (P, M, sp, S, s, si, allSt) {
   if (j === 0) sp.links.forEach(function (L) {
     var A = sp.rooms.filter(function (r) { return r.id === L[0]; })[0], B = sp.rooms.filter(function (r) { return r.id === L[1]; })[0]; if (!A || !B) return;
     var w = L[2] || 3, dp;
-    if (Math.abs(A.u[1] - B.u[0]) < 0.05) dp = pt(A.u[1], (Math.max(A.v[0], B.v[0]) + Math.min(A.v[1], B.v[1])) / 2);
-    else if (Math.abs(B.u[1] - A.u[0]) < 0.05) dp = pt(A.u[0], (Math.max(A.v[0], B.v[0]) + Math.min(A.v[1], B.v[1])) / 2);
+    var um = (Math.max(A.u[0], B.u[0]) + Math.min(A.u[1], B.u[1])) / 2, vmid = (Math.max(A.v[0], B.v[0]) + Math.min(A.v[1], B.v[1])) / 2;
+    if (Math.abs(A.u[1] - B.u[0]) < 0.05) dp = pt(A.u[1], vmid);
+    else if (Math.abs(B.u[1] - A.u[0]) < 0.05) dp = pt(A.u[0], vmid);
+    else if (Math.abs(A.v[1] - B.v[0]) < 0.05) dp = pt(um, A.v[1]);
+    else if (Math.abs(B.v[1] - A.v[0]) < 0.05) dp = pt(um, A.v[0]);
     else return;
     SU.doors.push({ x: dp[0], z: dp[1], w: w, storey: si });
     /* the same door on the upper floors that both rooms have (the ruler's chambers' upper floor onto the throne gallery: no) */

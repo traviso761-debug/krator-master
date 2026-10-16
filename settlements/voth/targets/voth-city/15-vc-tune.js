@@ -99,16 +99,20 @@ var TUNE = {
                   and gold; the Temple austere, pale plaster and sandstone with blood-red hangings; the Fortress in dark grey with
                   the Ordinators' green and gold; the Foreign canton in timber ceilings and bright kilims */
                look: {
-                 default:  { wall: 0xa89b84, wallSet: 'int_wall', floor: 0x8e7452, floorSet: 'int_floor', ceil: 0x746a5c, ceilSet: 'int_banco', step: 0xa79b82, trim: 0x6d5a3c, trimSet: 'int_carved', tapestry: ['tap_voth', 'kilim_brown', 'tap_kilim'], rug: 0x7a2028, timber: 0x5a4430 },
+                 /* the common cantons: sandstone ashlar walls, stone paving in the halls, planks where people live and write, stone
+                    where they work, packed earth in the cells (owner, 2026-10-15: better walls and floors) */
+                 default:  { wall: 0xf0ece4, wallSet: 'int_ashlar', floor: 0xe0dcd4, floorSet: 'int_flag', hallFloorSet: 'int_paving', hallFloor: 0x9c8a70,
+                             roomFloors: { int_wood: ['living', 'cottage', 'bedroom', 'chamber', 'office', 'library', 'reception', 'guildhall', 'shop', 'tavern', 'guest', 'scriptorium', 'study'], int_flag: ['workshop', 'smithy', 'store', 'warehouse', 'granary', 'bakery', 'kitchen', 'stable', 'barracks', 'training', 'armoury', 'mess', 'markethall', 'drillhall', 'traininghall', 'guardroom', 'dormitory'], int_earth: ['cell'] }, ceil: 0x746a5c, ceilSet: 'int_banco', step: 0xa79b82, trim: 0x6d5a3c, trimSet: 'int_carved', tapestry: ['tap_voth', 'kilim_brown', 'tap_kilim'], rug: 0x7a2028, timber: 0x5a4430 },
                  /* the Palace in the owner's delivered sheets (2026-10-15): green stucco with gilt scrolls, green crackle tiles, the jade
                     inlay on the throne room's diagonals, carved and inlaid columns, the Tzintzun and procession tapestries with the
                     purple damask, the sun carpet, the painted drums of its chandeliers, the ringed giant over the throne */
                  Palace:   { wall: 0xf2f2f2, wallSet: 'pal_stucco', floor: 0xe6e6e6, floorSet: 'pal_tile', ceil: 0xb4b4b4, ceilSet: 'pal_stucco', step: 0xd8d8d8, trim: 0xd0a53c, trimSet: 'int_gilt', tapestry: ['tap_tzintzun', 'tap_procession', 'damask_purple', 'tap_solar'], rug: 0x5e1e2d, timber: 0x3a2a1e, dado: 'inlay_voth', medallion: 'medallion_sun', gilt: 0xd0a53c, statue: 0xd0a53c, statueSet: 'int_gilt',
                              inlay: 'pal_inlay', column: 'column_inlaid', drum: 'chandelier_drum', carpet: 'carpet_palace', domeMosaic: 'mosaic_giant', screen: 'filigree_purple' },
-                 Temple:   { wall: 0xc2b094, wallSet: 'int_banco', floor: 0xb3a082, floorSet: 'int_stone', ceil: 0x9e9076, ceilSet: 'int_banco', step: 0xb5a78a, trim: 0xa8241c, trimSet: 'int_banco', tapestry: ['tap_temple', 'tap_masks', 'tap_temple', 'tap_voth'], rug: 0x6a1c22, timber: 0x4a3a2a, dado: 'relief_ancestors', dadoH: 1.6, icon: 'icon_sanctuary', screen: 'filigree_crimson', gilt: 0xc9a227, nooks: true, statue: 0xcfc3ad, statueSet: 'int_stone' },
-                 Fortress: { wall: 0x4e4c4a, wallSet: 'int_blocks', floor: 0x3e3b38, floorSet: 'int_stone', ceil: 0x333235, ceilSet: 'int_blocks', step: 0x55524e, trim: 0x1e6b3c, trimSet: 'int_carved', tapestry: ['tap_ordinator', 'tap_ordinator', 'tap_masks'], rug: 0x1e6b3c, timber: 0x2a2622, gilt: 0xc9a227 },
-                 Foreign:  { wall: 0xb8ab90, wallSet: 'int_wall', floor: 0x8e7452, floorSet: 'int_floor', ceil: 0x8a7e6a, ceilSet: 'int_beam', step: 0xa79b82, trim: 0x6d5a3c, trimSet: 'int_carved', tapestry: ['tap_kilim', 'kilim_brown', 'mudcloth'], rug: 0x8a2f2a, timber: 0x5a4430 },
-                 Ancestry: { wall: 0x8c8073, wallSet: 'int_blocks', floor: 0x6e6457, floorSet: 'int_stone', ceil: 0x5e564c, ceilSet: 'int_blocks', step: 0x8a7f72, trim: 0x5e1e2d, trimSet: 'int_stone', tapestry: ['tap_masks', 'tap_voth'], rug: 0x5c4028, timber: 0x4a3a2a }
+                 Temple:   { wall: 0xc9b392, wallSet: 'int_stucco', floor: 0xf0ebe0, floorSet: 'int_tuff', hallFloorSet: 'int_tuff', hallFloor: 0xe2d8c4,
+                             roomFloors: { int_wood: ['chamber', 'office', 'library', 'scriptorium', 'highpriest', 'study'], int_earth: ['cell'] }, ceil: 0x9e9076, ceilSet: 'int_banco', step: 0xb5a78a, trim: 0xa8241c, trimSet: 'int_banco', tapestry: ['tap_temple', 'tap_masks', 'tap_temple', 'tap_voth'], rug: 0x6a1c22, timber: 0x4a3a2a, dado: 'relief_ancestors', dadoH: 1.6, icon: 'icon_sanctuary', screen: 'filigree_crimson', gilt: 0xc9a227, nooks: true, statue: 0xcfc3ad, statueSet: 'int_stone' },
+                 Fortress: { wall: 0x4e4c4a, wallSet: 'int_blocks', floor: 0xb8b8b8, floorSet: 'int_basalt', hallFloorSet: 'int_basalt', hallFloor: 0xa0a0a0, roomFloors: { int_earth: ['cell'] }, ceil: 0x333235, ceilSet: 'int_blocks', step: 0x55524e, trim: 0x1e6b3c, trimSet: 'int_carved', tapestry: ['tap_ordinator', 'tap_ordinator', 'tap_masks'], rug: 0x1e6b3c, timber: 0x2a2622, gilt: 0xc9a227 },
+                 Foreign:  { wall: 0xd8cbb0, wallSet: 'int_stucco', floor: 0xe8e8e8, floorSet: 'int_wood', hallFloorSet: 'int_mosaic', hallFloor: 0xe0e0e0, ceil: 0x8a7e6a, ceilSet: 'int_beam', step: 0xa79b82, trim: 0x6d5a3c, trimSet: 'int_carved', tapestry: ['tap_kilim', 'kilim_brown', 'mudcloth'], rug: 0x8a2f2a, timber: 0x5a4430 },
+                 Ancestry: { wall: 0xc8c0b4, wallSet: 'int_oldwall', floor: 0xb0a898, floorSet: 'int_flag', hallFloorSet: 'int_flag', hallFloor: 0xa89e8e, ceil: 0x5e564c, ceilSet: 'int_blocks', step: 0x8a7f72, trim: 0x5e1e2d, trimSet: 'int_stone', tapestry: ['tap_masks', 'tap_voth'], rug: 0x5c4028, timber: 0x4a3a2a }
                },
                /* the decoration drawn with the shell (56-vc-interiors-host.js VC.intDecor): a tapestry on a hall's walls every `tapEvery`
                   m (w, h, hung `tapDrop` under the ceiling), a dado band `dado` m high where the look has a dado sheet, a candle nook
@@ -131,7 +135,43 @@ var TUNE = {
                },
                cata: { h: 4.6, galleryW: 4, every: 24, tomb: [9, 8], tombShare: 0.7 },
                /* the placer's grid cell (kits/interiors furnishRoom), each canton's wealth (the pieces' tiers), the cut's height over a floor */
-               cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5 }, cutAt: 2.6, lift: 0.05,
+               cell: 0.2, wealth: { Arsenal: 0.45, Guild: 0.6, Market: 0.55, Granary: 0.35, Arena: 0.4, Port: 0.35, Fortress: 0.6, Foreign: 0.85, Ancestry: 0.5, Palace: 0.95, Temple: 0.8 }, cutAt: 2.6, lift: 0.05,
+               /* a room over `bigRoom` m2 is planned on the coarser `cellBig` grid. The dressing (56 VC.intDress; owner, 2026-10-15:
+                  "waaaaaaay more furniture and decorative clutter ... make it ornate"): by the room's class (`by`, else `byDefault`),
+                  the catalog roles hung on the walls every `wallEvery` m, stood along them `alongGap` m apart, put in the corners and
+                  laid out in the middle (`centre`, at most `centreMax` of each pattern); the court tier from `court` wealth; `doorClear` m
+                  kept free inside each door; a room the census sleeps people in gets beds (up to `bedsMax`) with a divider screen each; a
+                  room of the kinds `homes` names a food and an item container */
+               bigRoom: 400, cellBig: 0.4,
+               dress: { court: 0.7, max: 600, wallEvery: 2.4, alongGap: 0.7, doorClear: 2.2, centreMargin: 2.8, groupEvery: 7, rugEvery: 6,
+                        rowEvery: 1.5, rowAisle: 3, rowFocusGap: 7, deskEvery: 3.5, workEvery: 4, stackEvery: 2.6, byDefault: 'home',
+                        centreMax: { groups: 6, rug: 6, desks: 6, work: 6, stacks: 40 }, bedsMax: 4, homes: ['living', 'cottage', 'bedroom', 'chamber', 'apartment', 'guest'],
+                        by: { banquet: 'feast', throne: 'throne', foyer: 'state', atrium: 'state', reception: 'state', guildhall: 'state', hall: 'state', antechamber: 'state',
+                              sanctuary: 'rows', judgment: 'rows', shrine: 'rows', temple: 'rows', chapel: 'rows',
+                              chamber: 'sleep', apartment: 'sleep', guest: 'sleep', bedroom: 'sleep', dormitory: 'sleep',
+                              highpriest: 'state', scriptorium: 'study', study: 'study', office: 'study', library: 'study', school: 'study',
+                              greatkitchen: 'kitchen', kitchen: 'kitchen', bakery: 'kitchen', mess: 'mess', tavern: 'mess',
+                              store: 'store', warehouse: 'store', granary: 'store', vestry: 'store', armoury: 'store',
+                              workshop: 'work', smithy: 'work', barracks: 'work', training: 'work', traininghall: 'work', drillhall: 'work', guardroom: 'work', markethall: 'work', shop: 'work',
+                              cell: 'cell', catacomb: 'skip', tomb: 'skip', stable: 'skip' },
+                        kinds: {
+                          '*':     { wall: ['art', 'banner', 'scroll', 'wall_rug'], along: ['bench', 'chest', 'planter', 'lamp', 'cabinet', 'chair'], corner: ['planter', 'lamp'], centre: 'groups', groupSeat: ['chair', 'divan'], surface: ['jug', 'bowl', 'candle'] },
+                          state:   { wall: ['tapestry', 'painted_hanging', 'wall_rug', 'frieze', 'art', 'banner'], along: ['divan', 'statue', 'throne', 'cabinet', 'planter', 'divan', 'fire', 'lamp'], corner: ['statue', 'planter', 'fire'], groupSeat: ['divan', 'throne'], surface: ['candelabra', 'jug', 'bowl'] },
+                          throne:  { wall: ['tapestry', 'painted_hanging', 'wall_rug', 'frieze', 'banner'], along: ['divan', 'statue', 'throne', 'planter', 'divan', 'fire'], corner: ['statue', 'fire'], centre: 'none' },
+                          feast:   { wall: ['tapestry', 'painted_hanging', 'frieze', 'banner', 'wall_rug'], along: ['cabinet', 'statue', 'planter', 'fire', 'divan'], corner: ['statue', 'fire'], centre: 'none' },
+                          rows:    { wall: ['tapestry', 'painted_hanging', 'banner', 'frieze', 'scroll'], along: ['statue', 'fire', 'planter', 'lamp'], corner: ['statue', 'fire'], centre: 'rows' },
+                          sleep:   { first: ['bed'], wall: ['art', 'wall_rug', 'painted_hanging', 'scroll'], along: ['chest', 'cabinet', 'divan', 'screen', 'lamp', 'planter', 'low_table'], corner: ['lamp', 'planter'], centre: 'rug' },
+                          study:   { wall: ['art', 'scroll', 'painted_hanging', 'board'], along: ['bookcase', 'bookcase', 'cabinet', 'lamp', 'planter'], corner: ['lamp', 'planter'], centre: 'desks', surface: ['books', 'candle', 'candelabra'] },
+                          kitchen: { wall: ['wall_shelves', 'art'], along: ['hearth', 'counter', 'store', 'wall_shelves', 'bread_oven', 'store', 'workbench'], corner: ['store'], centre: 'work', surface: ['bowl', 'jug', 'bowl'] },
+                          mess:    { wall: ['banner', 'art', 'scroll'], along: ['bench', 'store', 'bench', 'counter'], corner: ['store', 'lamp'], centre: 'work', surface: ['bowl', 'jug'] },
+                          store:   { wall: ['wall_shelves'], along: ['store', 'chest', 'store', 'rack', 'wall_shelves'], corner: ['store'], centre: 'stacks', surface: [] },
+                          work:    { wall: ['art', 'banner', 'rack', 'wall_shelves'], along: ['store', 'chest', 'bench', 'wall_shelves', 'rack', 'lamp'], corner: ['store', 'lamp'], centre: 'none' },
+                          cell:    { wall: [], along: ['store'], corner: [], centre: 'none', max: 2, surface: [] },
+                          skip:    { skip: true } } },
+               /* the banquet hall's feast (56 VC.suiteFeast): the table and chair (first found), the rows' offsets across the hall, a chair
+                  every `chairEvery` m, the gaps at the ends (the far one holds the high table, `highSpan` m across), what stands on the tables */
+               feast: { table: ['voth_court_table', 'voth_common_table'], chair: ['voth_court_throne', 'voth_common_chair'], rows: [-6.5, 6.5, -14.5, 14.5], chairEvery: 0.95,
+                        endGap: 4, highGap: 7, highSpan: 14, surface: ['voth_court_candelabra', 'voth_court_jug', 'voth_court_bowl'] },
                /* a canton whose top has its own gateway: its core under it (offsets from the canton's middle, measured off Voth's
                   arena pit entrance, 65l: the building 54 x 17 m at z -54..-71, its barred gate on its -z..+z front), the way the
                   stair arrives (toward the field), the gate's mouth, the top storey's wings by arm (2: west, 3: east) and their colours */
@@ -360,8 +400,9 @@ var TUNE = {
        ladders (their models' walk records): a foot within `stairGround` m of its lot's ground joins the nearest street
        node within `stairSnap` m; two ends of one lot within `stairLevelDy` m of height and `stairLevel` m apart (a
        landing, a roof both reach) join; a ladder costs `cost.ladder` times its length. A foot up on a gallery or roof no other stair of its lot reaches
-       is reached through the house (an `indoor` edge to the lot's ground stair, else the street within `stairFar` m) */
-    nav: { step: 20, snap: 6, reach: 18, ring: 25, deck: 25, walkSnap: 25, walkTouch: 6, landSnap: 60, yWeight: 3, far: 40, cost: { stairs: 1.6, ladder: 3, indoor: 1.5 },
+       is reached through the house (an `indoor` edge to the lot's ground stair, else the street within `stairFar` m). A
+       canton's interior floors are a node every `inside` m, joined at the doors, the flights and the tunnels' mouths */
+    nav: { step: 20, inside: 6, snap: 6, reach: 18, ring: 25, deck: 25, walkSnap: 25, walkTouch: 6, landSnap: 60, yWeight: 3, far: 40, cost: { stairs: 1.6, flight: 1.6, ladder: 3, indoor: 1.5 },
            stairGround: 1.2, stairSnap: 40, stairFar: 400, stairLevel: 25, stairLevelDy: 0.6 },
     /* phase C: the citizens (44-vc-sim-people.js). Every home's census residents become actors; TUNE.census.workingShare
        of them work (all of them where the home is a barracks or a dorm: its workplaces cover its residents). Jobs are
@@ -706,6 +747,7 @@ var TUNE = {
              chamber: [0, 2, ''], dormitory: [0, 8, ''],
              foyer: [4, 0, 'palace household and officials'], judgment: [8, 0, 'clerks and officials'], banquet: [8, 0, 'cooks and bakers'], throne: [6, 0, 'palace household and officials'],
              apartment: [2, 2, 'palace household and officials'], guest: [1, 2, 'palace household and officials'], scriptorium: [4, 0, 'clerks and officials'],
+             greatkitchen: [8, 0, 'cooks and bakers'],
              sanctuary: [6, 0, 'temple priests and servants'], atrium: [2, 0, 'temple priests and servants'], highpriest: [3, 2, 'temple priests and servants'], vestry: [2, 0, 'temple priests and servants'],
              byCanton: { Arena: { barracks: 'gladiators and arena keepers', training: 'gladiators and arena keepers' }, Fortress: { barracks: 'Ordinator garrison', training: 'Ordinator garrison', office: 'Ordinator garrison' },
                          Foreign: { office: 'envoys and embassy staff' }, Guild: { workshop: 'guild masters and journeymen', smithy: 'guild masters and journeymen' }, Arsenal: { workshop: 'armourers and quartermasters' } } },

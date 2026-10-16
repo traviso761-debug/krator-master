@@ -573,12 +573,12 @@
    "sha256": "86a74bf735e3c8d74dadbba0c919aef40315b216876624b17c37efb40eae3272"
   },
   "settlements/voth/dist/voth-city.html": {
-   "bytes": 18148430,
-   "sha256": "0ca2aee0e46e596cd57e8b8506beb2c2a8e2872f599c9e7be6f7da24b0898587"
+   "bytes": 19126891,
+   "sha256": "b26a942d8112493d0947b1ce30513dce2c5a0afe502c70586eaa7012e383e93a"
   },
   "settlements/voth/dist/voth-site.html": {
-   "bytes": 3609813,
-   "sha256": "835bd741f0d823ae1af9e65c8a59fae2651bb5f124c79b50fd07d4b254c35f98"
+   "bytes": 3611532,
+   "sha256": "ed0efbff80eef4821ae553075e8c6c950d412b50bf80dc3d4fb70cb1c4651a6c"
   },
   "settlements/xanadu/dist/erewhon.html": {
    "bytes": 5966534,

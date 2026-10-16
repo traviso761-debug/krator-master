@@ -61,8 +61,38 @@ VC.intPlanAll = function () {
       if (sy != null && q.y1 < sy - 0.3) { CANT.cut(q, 'inside the hollowed canton'); opened++; }
     }); });
   });
+  /* the stone courses through the storeys (owner, 2026-10-15: "weird red floors on 3 of the palace floors"): a tier's
+     cornice courses are solid slabs the whole width of the canton (the Palace's at 49 to 54 m), wider than the tier's
+     walls, so the pass above keeps them; they ran through the storeys under the next level, a false floor in the cutaway
+     and a false ceiling to a walker. Each is cut and drawn again as a frame round the interior's shell (the cornice the
+     outside sees), with, where its top is a level a person walks on (a terrace, the apron, the deck), a thin slab under
+     that level over the interior (CANT.prims: drawn with the bridges) */
+  var Dc = window.VOTH_CITY_CAPTURE, framed = 0;
+  Object.keys(VC.INT.cantons).forEach(function (cn) {
+    var P = VC.INT.cantons[cn]; if (P.catacombs || !P.tiers || !Dc) return;
+    var M = P.M, lo = P.dungeon ? P.dungeon.y0 : P.tiers[0].y0, hi = P.tiers[P.tiers.length - 1].y1;
+    (M.stack || []).forEach(function (s) {
+      if (s.sh !== 'box' || s.y1 <= lo + 0.05 || s.y0 >= hi - 0.05) return;
+      var t = P.tiers.filter(function (tr) { return s.y0 >= tr.y0 - 0.6 && s.y0 < tr.y1; })[0] || P.tiers[0], a = t.R + T.wall;
+      if (s.hb <= a + 0.3) return;                                    /* inside the shell: the pass above has it */
+      var q = M.v.r[s.k]; if (!q) return;
+      var col = Dc.cols[q[9]], fam = Dc.fams[q[1]] || 'stone', cx = q[2] + M.ox, cz = q[4] + M.oz, w = s.hb - a, h = s.y1 - s.y0;
+      if (typeof col === 'string') col = parseInt(col.replace('#', ''), 16);
+      if (cn === 'Fortress') col = 0x2a2b30;                           /* the Fortress in black (55 VC.greyscale draws its capture so) */
+      CANT.cut({ M: M, k: s.k }, 'a course through the storeys');
+      var put = function (px, pz, sx, sz, py, ph) { CANT.prims.push(['box', px, py, pz, sx, ph, sz, 0, col, fam]); };
+      put(cx, cz - (a + w / 2), s.hb * 2, w, s.y0, h); put(cx, cz + (a + w / 2), s.hb * 2, w, s.y0, h);
+      put(cx - (a + w / 2), cz, w, a * 2, s.y0, h); put(cx + (a + w / 2), cz, w, a * 2, s.y0, h);
+      if (M.levels.some(function (l) { return Math.abs(l.y - s.y1) < 0.6; })) {
+        /* less the holes cut in that level (the stair well, the light wells) */
+        var holes = (CANT.holes[cn] || []).filter(function (hh) { return Math.abs(hh[4] - s.y1) < 0.8; });
+        CANT.rectMinus([cx - a, cx + a, cz - a, cz + a], holes).forEach(function (rq) { put((rq[0] + rq[1]) / 2, (rq[2] + rq[3]) / 2, rq[1] - rq[0], rq[3] - rq[2], s.y1 - 0.2, 0.2); });
+      }
+      framed++;
+    });
+  });
   var n = 0, r = 0; for (var k in VC.INT.cantons) { n++; r += VC.INT.cantons[k].rooms.length; }
-  return n + ' canton interiors, ' + r + ' rooms; ' + opened + ' buried pieces taken out';
+  return n + ' canton interiors, ' + r + ' rooms; ' + opened + ' buried pieces taken out; ' + framed + ' stone courses through the storeys framed';
 };
 
 /* ---------------------------------------------------------------- a tiered canton */

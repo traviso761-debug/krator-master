@@ -321,6 +321,14 @@ VC.buildDistricts = function () {
     var hit0 = VC.chin.chinHit; VC.chin.chinHit = function (x, z, pad) { return !inEx(x, z) && hit0(x, z, pad); };
     log.push((n0 - VC.prims.chinampas.list.length) + ' chinampa pieces cleared from ' + ex.map(function (d) { return d.name; }).join(', '));
   }
+  /* the stilt huts' list (their interiors, 41 VC.ixSites; the census's growers, 42) keeps only the huts that stand: a hut
+     the exclusion cleared, or one 31b leaves out (its bed too deep or too shallow), had its interior drawn alone in the
+     water (owner, 2026-10-15: "phantom rooms") */
+  if (VC.chin.hutList) {
+    var drawn = VC.CHIN.huts, nh0 = VC.chin.hutList.length;
+    VC.chin.hutList = VC.chin.hutList.filter(function (q) { return drawn.some(function (o) { return Math.abs(o.x - q[0]) < 0.5 && Math.abs(o.z - q[1]) < 0.5; }); });
+    if (VC.chin.hutList.length < nh0) log.push((nh0 - VC.chin.hutList.length) + ' hut interiors dropped with their huts');
+  }
   log.push(VC.chin.count + ' chinampa beds, ' + VC.chin.huts + ' huts');
   VC.log2 = log.join('; ');
 };

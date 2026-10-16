@@ -29,7 +29,28 @@ VC.intPrograms = function () {
   P.cell = { require: [{ need: 'grate', types: ['screen'], n: 1 }, { need: 'cot', types: ['bed'], n: 1 }], optional: [{ types: ['vessel'], max: 1 }], extra: 30 };
   P.catacomb = { require: [{ need: 'niches', types: ['shelf'], n: 4 }], optional: [{ types: ['shelf'], max: 40 }, { types: ['shrine', 'lamp'], max: 6 }], extra: 6 };
   P.tomb = { require: [{ need: 'sarcophagus', types: ['tomb'], n: 1 }], optional: [{ types: ['tomb'], max: 2 }, { types: ['shelf', 'shrine'], max: 3 }, { types: ['lamp'], max: 1 }], extra: 9 };
+  /* the Palace's and the Temple's state rooms (40b-vc-suites.js; owner, 2026-10-15: "barely any seating or wall art ...
+     make it ornate"): each with its seating required, and art, hangings, plants, statues and lamps to spare */
+  var ART = { types: ['art', 'banner'], max: 6 }, LAMPS = { types: ['lamp', 'brazier'], max: 6 }, FOODR = IX.FOOD_ROLES;
+  P.foyer = { require: [{ need: 'seats', types: SEATS, n: 6 }, { need: 'plants', types: ['planter'], n: 4 }], optional: [{ types: ['statue'], max: 4 }, { types: ['table'], max: 2 }, LAMPS, { types: ['rug'], max: 3 }, ART], extra: 12 };
+  P.banquet = { require: [], optional: [ART, LAMPS, { types: ['statue'], max: 4 }, { types: ['planter'], max: 6 }, { types: ['storage', 'shelf'], max: 2 }], extra: 14 };
+  P.throne = { require: [{ need: 'benches', types: ['bench', 'seating'], n: 6 }], optional: [{ types: ['statue'], max: 4 }, { types: ['planter'], max: 4 }, LAMPS, ART], extra: 14 };
+  P.judgment = { require: [{ need: 'benches', types: ['bench', 'seating'], n: 10 }, { need: 'desks', types: ['desk', 'table'], n: 2 }], optional: [{ types: SEATS, max: 10 }, LAMPS, ART, { types: ['shelf'], max: 2 }], extra: 8 };
+  P.apartment = { require: [{ need: 'divans', types: ['seating'], n: 2 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: ['chair'], n: 2 }],
+                  optional: [{ types: ['storage', 'shelf'], max: 4 }, { types: ['screen'], max: 2 }, { types: ['planter'], max: 3 }, { types: ['statue'], max: 2 }, LAMPS, { types: ['rug'], max: 3 }, ART, { types: ['desk'], max: 1 }, { types: ['stove'], max: 1 }], extra: 6 };
+  P.guest = { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: IX.ITEM_ROLES, n: 1 }], optional: [{ types: SEATS, max: 3 }, { types: ['table'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['rug'], max: 2 }, ART, LAMPS], extra: 5 };
+  P.scriptorium = { require: [{ need: 'desks', types: ['desk'], n: 4 }], optional: [{ types: ['desk'], max: 4 }, { types: ['shelf'], max: 6 }, { types: ['chair'], max: 8 }, LAMPS, ART], extra: 4 };
+  P.highpriest = { require: [{ need: 'desk', types: ['desk'], n: 1 }, { need: 'seats', types: SEATS, n: 3 }, { need: 'screens', types: ['screen'], n: 2 }],
+                   optional: [{ types: ['shelf', 'storage'], max: 3 }, { types: ['shrine'], max: 1 }, { types: ['statue'], max: 1 }, { types: ['rug'], max: 2 }, ART, LAMPS, { types: ['screen'], max: 3 }], extra: 5 };
+  P.vestry = { require: [{ need: 'stores', types: ['storage'], n: 4 }], optional: [{ types: ['rack'], max: 3 }, { types: ['shelf'], max: 3 }, ART], extra: 6 };
+  P.sanctuary = { require: [{ need: 'pews', types: ['bench', 'seating'], n: 12 }, { need: 'shrines', types: ['shrine', 'altar'], n: 2 }], optional: [LAMPS, { types: ['statue'], max: 2 }, ART], extra: 10 };
+  P.atrium = { require: [{ need: 'benches', types: ['bench', 'seating'], n: 6 }, { need: 'plants', types: ['planter'], n: 4 }], optional: [{ types: ['statue'], max: 2 }, ART, LAMPS], extra: 12 };
+  P.greatkitchen = { require: [{ need: 'hearths', types: ['stove'], n: 4 }, { need: 'tables', types: ['table', 'workstation', 'counter'], n: 3 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOODR, n: 4 }],
+                     optional: [{ types: ['storage', 'stack'], max: 8 }, { types: ['shelf'], max: 4 }, { types: ['rack'], max: 3 }, { types: ['vessel'], anchor: 'surface', max: 8 }, { types: ['stove'], max: 2 }], extra: 4 };
   var A = IX.KIND_ALIAS;
+  A.foyer = ['hall', 'court', 'antechamber']; A.banquet = ['hall', 'tavern', 'court']; A.throne = ['court', 'hall', 'antechamber']; A.judgment = ['court', 'hall', 'study', 'school'];
+  A.apartment = ['bedroom', 'hall', 'court', 'study']; A.guest = ['bedroom', 'hall']; A.scriptorium = ['study', 'library', 'school']; A.highpriest = ['study', 'court', 'hall', 'shrine', 'library'];
+  A.vestry = ['store', 'shrine', 'study']; A.sanctuary = ['shrine', 'hall', 'temple']; A.atrium = ['court', 'hall', 'shrine', 'yard']; A.greatkitchen = ['kitchen', 'store', 'bakery'];
   A.armoury = ['barracks', 'smithy', 'shop', 'store']; A.mess = ['hall', 'tavern', 'barracks', 'kitchen']; A.office = ['study']; A.guildhall = ['hall', 'court'];
   A.reception = ['hall', 'antechamber', 'court']; A.bakery = ['kitchen']; A.granary = ['store', 'kitchen']; A.warehouse = ['store', 'shop', 'market'];
   A.training = ['barracks', 'yard', 'court']; A.cell = ['jail', 'barracks', 'dormitory', 'bedroom']; A.catacomb = ['tomb', 'shrine']; A.tomb = ['catacomb', 'shrine'];
@@ -37,26 +58,310 @@ VC.intPrograms = function () {
   return IX;
 };
 
-/* ---------------------------------------------------------------- furnishing a canton's rooms (kits/interiors) */
+/* ---------------------------------------------------------------- furnishing a canton's rooms (kits/interiors)
+   (owner, 2026-10-15: "we need waaaaaaay more furniture and decorative clutter ... barely any seating or wall art of any
+   kind throughout the palace or temple ... make it ornate. the banquet hall needs actual tables and chairs fit for a
+   feast"). Three passes a room:
+   1. a set piece where the room has one (the banquet hall's feast: VC.suiteFeast), placed first and kept clear;
+   2. the room's programme (kits/interiors furnishRoom; the state rooms' own below), the suites' fixtures (pillars,
+      daises, the basin, braziers, statues, grand stairs) kept clear; not in a suite's big rooms, which the dressing lays out;
+   3. the dressing (VC.intDress: hangings and art on the walls, seats, cabinets, plants and statues along them, groups of
+      seats, rows of benches, desks or work tables in the middle, by TUNE.interiors.dress.kinds), clear of everything before.
+   A large room is planned on a coarser grid (TUNE.interiors.cellBig) so the placer stays quick. */
 VC.intFurnish = function (cn) {
   if (VC.INTD.furnished[cn]) return VC.INTD.furnished[cn];
-  var IX = VC.intPrograms(), P = VC.INT.cantons[cn], out = { placements: [], rooms: 0, missing: 0, ms: 0 };
+  var IX = VC.intPrograms(), P = VC.INT.cantons[cn], out = { placements: [], rooms: 0, missing: 0, ms: 0, dressed: 0, feast: 0 };
   if (!IX || !P || typeof ROOM === 'undefined') return out;
-  var t0 = performance.now(), cat = VC.INTD.catalog || (VC.INTD.catalog = IX.catalogAdapter()), T = TUNE.interiors;
+  var t0 = performance.now(), cat = VC.INTD.catalog || (VC.INTD.catalog = IX.catalogAdapter()), T = TUNE.interiors, wealth = T.wealth[cn] == null ? 0.5 : T.wealth[cn];
+  var SU = P.suite, decorBy = {};
+  if (SU) SU.decor.forEach(function (d) { (decorBy[d.room] = decorBy[d.room] || []).push(d); });
+  var fx = function (id, x, z, ry, w, d) { return { id: id, kind: 'fixture', x: x, z: z, ry: ry || 0, w: Math.max(0.3, w), d: Math.max(0.3, d) }; };
+  var pieceFx = function (p, i) { var D = cat.dims(p.key, p.variant || 0) || { w: 1, d: 1 }; return fx('placed.' + i, p.x, p.z, p.ry || 0, D.w + 0.1, D.d + 0.1); };
   P.rooms.forEach(function (r, i) {
     var q = TUNE.interiors.wallT / 2 + 0.02;   /* 2 cm off the wall's face: a piece's back flush with it would fight it */
     var poly = [[r.x0 + q, r.z0 + q], [r.x1 - q, r.z0 + q], [r.x1 - q, r.z1 - q], [r.x0 + q, r.z1 - q]];
     var doors = r.door ? [{ at: [CANT.cl(r.door.x, r.x0 + q, r.x1 - q), CANT.cl(r.door.z, r.z0 + q, r.z1 - q)], w: r.door.w, to: 'hall' }] : [];
+    /* a suite's room: its doors are the suite's doors on its walls; its fixtures the suite's decor in it */
+    var fixtures = [], specId = r.great && SU ? String(r.id).slice(cn.length + 1) : null;
+    if (specId != null) {
+      (SU.doors || []).forEach(function (d) {
+        if (d.storey !== r.storey) return;
+        var onX = (Math.abs(d.x - r.x0) < 0.8 || Math.abs(d.x - r.x1) < 0.8) && d.z > r.z0 - 0.5 && d.z < r.z1 + 0.5, onZ = (Math.abs(d.z - r.z0) < 0.8 || Math.abs(d.z - r.z1) < 0.8) && d.x > r.x0 - 0.5 && d.x < r.x1 + 0.5;
+        if (onX || onZ) doors.push({ at: [CANT.cl(d.x, r.x0 + q, r.x1 - q), CANT.cl(d.z, r.z0 + q, r.z1 - q)], w: d.w, to: 'hall' });
+      });
+      (decorBy[specId] || []).forEach(function (d, k) {
+        var id = 'decor.' + k;
+        if (d.kind === 'pillar') fixtures.push(fx(id, d.x, d.z, 0, d.w + 1.4, d.w + 1.4));
+        else if (d.kind === 'statue' || d.kind === 'brazier') fixtures.push(fx(id, d.x, d.z, 0, 2.2, 2.2));
+        else if (d.kind === 'dais') fixtures.push(fx(id, d.x, d.z, d.ry || 0, (d.r ? d.r * 2 : d.w) + 2, (d.r ? d.r * 2 : d.d) + 2));
+        else if (d.kind === 'basin') fixtures.push(fx(id, d.x, d.z, 0, d.r * 2 + 2, d.r * 2 + 2));
+        else if (d.kind === 'carpet') fixtures.push(fx(id, d.x, d.z, Math.atan2(-d.d[1], d.d[0]), d.len * 0.6, d.w * 0.6));   /* the runner's middle kept as an aisle */
+      });
+      P.flights.forEach(function (f, k) {
+        if ((f.kind !== 'grand' && f.kind !== 'inner') || f.storey !== r.storey) return;
+        var mx = (f.a[0] + f.b[0]) / 2, mz = (f.a[1] + f.b[1]) / 2, L = Math.hypot(f.b[0] - f.a[0], f.b[1] - f.a[1]);
+        if (mx > r.x0 && mx < r.x1 && mz > r.z0 && mz < r.z1) fixtures.push(fx('stair.' + k, mx, mz, Math.atan2(-(f.b[1] - f.a[1]), f.b[0] - f.a[0]), L + 2, f.w + 1));
+      });
+    }
+    var area = (r.x1 - r.x0) * (r.z1 - r.z0), cell = area > (T.bigRoom || 400) ? (T.cellBig || 0.4) : T.cell, seed = KRAND.hash(7401, Math.round(r.x0 * 10), Math.round(r.z0 * 10), r.storey);
     try {
-      var R = ROOM({ building: 'voth_canton_' + cn.toLowerCase(), kind: r.kind, poly: poly, y: r.y, h: r.h, doors: doors, culture: 'voth', wealth: T.wealth[cn] == null ? 0.5 : T.wealth[cn],
-                     id: r.id, seed: KRAND.hash(7401, Math.round(r.x0 * 10), Math.round(r.z0 * 10), r.storey) });
-      var plan = furnishRoom(R, cat, { seed: 0, cell: T.cell, backtrack: 6, passes: 2 });
-      plan.placements.forEach(function (p) { p.room = r.id; out.placements.push(p); });
-      out.missing += (plan.report && plan.report.missing ? plan.report.missing.length : 0); out.rooms++;
+      /* 1. the set piece */
+      var placed = [];
+      if (r.kind === 'banquet') { var Fe = VC.suiteFeast(P, r, cat); Fe.forEach(function (p) { p.room = r.id; placed.push(p); }); out.feast += Fe.length; }
+      /* 2. the programme (not in a suite's state room: the placer's search takes seconds there and the dressing lays it out) */
+      var R = ROOM({ building: 'voth_canton_' + cn.toLowerCase(), kind: r.kind, poly: poly, y: r.y, h: r.h, doors: doors, culture: 'voth', wealth: wealth, id: r.id, seed: seed, fixtures: fixtures.concat(placed.map(pieceFx)) });
+      if (!r.great) {
+        var plan = furnishRoom(R, cat, { seed: 0, cell: cell, backtrack: 6, passes: 2 });
+        plan.placements.forEach(function (p) { p.room = r.id; placed.push(p); });
+        out.missing += (plan.report && plan.report.missing ? plan.report.missing.length : 0);
+      }
+      /* 3. the dressing */
+      VC.intDress(R, r, placed, fixtures, cat, cn, wealth, seed + 17).forEach(function (p) { p.room = r.id; placed.push(p); out.dressed++; });
+      placed.forEach(function (p) { out.placements.push(p); });
+      out.rooms++;
     } catch (e) { out.errors = (out.errors || 0) + 1; if (!out.firstError) out.firstError = r.id + ': ' + e.message; }
   });
   out.ms = Math.round(performance.now() - t0);
   return (VC.INTD.furnished[cn] = out);
+};
+/* the dressing of a room (owner, 2026-10-15: "waaaaaaay more furniture and decorative clutter ... make it ornate"): a fast
+   pass of its own, not the placer (the placer's grid search takes seconds in a state room and finds little room in it).
+   TUNE.interiors.dress.kinds names, for each class of room, the catalog roles (voth_<tier>_<role>, then voth_<role>) it
+   hangs on its walls (`wall`, every `wallEvery` m), stands along them (`along`, `alongGap` m apart), puts in its corners
+   (`corner`) and lays out in its middle (`centre`: groups of seats round a low table, rows of benches facing the dais,
+   desks, work tables, stacks of stores, rugs), and what stands on the tables it laid (`surface`). The court tier in a
+   canton at or over `court` wealth. Nothing within `doorClear` m of a door; every piece tested against what is there
+   (the placer's pieces, the suite's fixtures, the feast) by its footprint, the hung pieces among themselves. */
+VC.intDress = function (R, r, placed, fixtures, cat, cn, wealth, seed) {
+  var D = TUNE.interiors.dress, cls = D.by[r.kind] || D.byDefault, K = Object.assign({}, D.kinds['*'], D.kinds[cls] || {}), out = [];
+  /* the beds (owner, 2026-10-15: "make sure all canton homes have at least 1 bed"): a room the census sleeps people in
+     (TUNE.census.rooms[kind][1]) has at least one, up to `dress.bedsMax` by its sleepers, each against a wall with a screen
+     standing out from the wall beside it (a room divider) */
+  var cen = TUNE.census && TUNE.census.rooms && TUNE.census.rooms[r.kind], sleep = cen ? cen[1] || 0 : 0;
+  var isBed = function (p) { var F = typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[p.key]; return (p.type || (F && F.type)) === 'bed'; };
+  var bedsWant = sleep > 0 ? Math.max(0, Math.min(sleep, D.bedsMax || 4) - placed.filter(isBed).length) : 0;
+  if (!K || (K.skip && !bedsWant)) return out;
+  var s0 = seed >>> 0, rnd = function () { s0 = (s0 + 0x6D2B79F5) >>> 0; var t = s0; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  var tiers = wealth >= D.court ? ['court', 'common'] : ['common', 'court'];
+  var keyOf = VC.INTD.dressKeys || (VC.INTD.dressKeys = {});
+  var key = function (role) {
+    var ck = tiers[0] + '|' + role; if (ck in keyOf) return keyOf[ck];
+    var k = null, ks = tiers.map(function (t) { return 'voth_' + t + '_' + role; }).concat(['voth_' + role, role]);
+    for (var i = 0; i < ks.length && !k; i++) if (typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[ks[i]]) k = ks[i];
+    return (keyOf[ck] = k);
+  };
+  var dimsOf = function (k, v) { var d = cat.dims(k, v || 0); return d || { w: 0.8, d: 0.8, h: 1 }; };
+  var foot = function (x, z, ry, w, d, m) { var c = Math.abs(Math.cos(ry)), s = Math.abs(Math.sin(ry)), hw = c * w / 2 + s * d / 2 + m, hd = s * w / 2 + c * d / 2 + m; return [x - hw, x + hw, z - hd, z + hd]; };
+  var floorB = [], wallB = [], rugB = [], hit = function (L, b) { for (var i = 0; i < L.length; i++) { var o = L[i]; if (b[0] < o[1] && b[1] > o[0] && b[2] < o[3] && b[3] > o[2]) return true; } return false; };
+  var x0 = r.x0, x1 = r.x1, z0 = r.z0, z1 = r.z1, inRoom = function (b) { return b[0] >= x0 && b[1] <= x1 && b[2] >= z0 && b[3] <= z1; };
+  /* what is there already */
+  fixtures.forEach(function (f) { floorB.push(foot(f.x, f.z, f.ry || 0, f.w, f.d, 0)); });
+  placed.forEach(function (p) {
+    if (p.anchor === 'surface' || p.anchor === 'ceiling') return;
+    var dm = p.w ? p : dimsOf(p.key, p.variant), b = foot(p.x, p.z, p.ry || 0, dm.w, dm.d, 0.1);
+    (p.y - r.y > 0.3 ? wallB : floorB).push(b);
+  });
+  R.doors.forEach(function (d) {
+    var n = d.n, t = [-n[1], n[0]], c = d.at, hw = d.w / 2 + 0.4, dp = D.doorClear;
+    var xs = [c[0] + t[0] * hw + n[0] * dp, c[0] - t[0] * hw + n[0] * dp, c[0] + t[0] * hw - n[0] * dp, c[0] - t[0] * hw - n[0] * dp];
+    var zs = [c[1] + t[1] * hw + n[1] * dp, c[1] - t[1] * hw + n[1] * dp, c[1] + t[1] * hw - n[1] * dp, c[1] - t[1] * hw - n[1] * dp];
+    var b = [Math.min.apply(null, xs) - 0.2, Math.max.apply(null, xs) + 0.2, Math.min.apply(null, zs) - 0.2, Math.max.apply(null, zs) + 0.2];
+    floorB.push(b); wallB.push(b);
+  });
+  var put = function (k, v, x, z, ry, layer, y) {
+    var dm = dimsOf(k, v);
+    if (!inRoom(foot(x, z, ry, dm.w, dm.d, -0.01))) return null;
+    if (out.length >= (K.max || D.max)) return null;
+    var yy = y != null ? y : cat.anchorY ? cat.anchorY(k, v, { floorY: r.y, surfaceY: null, ceilingY: r.y + r.h }) : r.y;
+    if (layer === 'wall' && yy - r.y < 0.3) layer = 'floor';   /* a piece the wall list names that stands on the floor (shelves) */
+    var b = foot(x, z, ry, dm.w, dm.d, layer === 'wall' ? 0.15 : layer === 'rug' ? 0.3 : 0.12);
+    var L = layer === 'wall' ? wallB : layer === 'rug' ? rugB : floorB; if (hit(L, b)) return null;
+    if (layer === 'rug' && hit(floorB, foot(x, z, ry, dm.w * 0.5, dm.d * 0.5, 0))) return null;
+    /* a hung piece clears the floor pieces' tops? no: it hangs over them, as in a room (art over a chest); a floor piece is kept
+       off the hung ones only when it is tall (a cabinet under a tapestry's foot) */
+    if (layer !== 'wall' && dm.h > 1.6 && hit(wallB, b)) return null;
+    L.push(b);
+    var p = { key: k, variant: v, seed: 1 + ((seed + out.length * 7919) % 99991), x: x, y: yy, z: z, ry: ry, anchor: layer === 'wall' ? 'wall' : 'floor', w: dm.w, d: dm.d, h: dm.h, dress: true };
+    out.push(p); return p;
+  };
+  var walls = R.walls.filter(function (W) { return !W.open && W.len > 1.2; });
+  var pick = function (list, i) { return list && list.length ? list[(i + Math.floor(rnd() * 2)) % list.length] : null; };
+  var tables = [];
+  if (bedsWant) {
+    var bk = key('bed'), sk2 = key('screen'), wsB = walls.slice().sort(function (a, b) { return b.len - a.len; }), nb = 0;
+    if (bk) for (var wb = 0; wb < wsB.length && nb < bedsWant; wb++) {
+      var W = wsB[wb], bd = dimsOf(bk, 0), sd = sk2 ? dimsOf(sk2, 0) : null;
+      for (var ub = 0.4 + bd.w / 2; ub + bd.w / 2 < W.len - 0.4 && nb < bedsWant; ub += bd.w + 1.4) {
+        var ob = bd.d / 2 + 0.05, bx = W.a[0] + W.t[0] * ub + W.n[0] * ob, bz = W.a[1] + W.t[1] * ub + W.n[1] * ob;
+        if (!put(bk, nb & 1, bx, bz, W.ry, 'floor')) continue;
+        nb++;
+        /* the screen: beside the bed's open side, running out from the wall as far as the bed's foot */
+        if (sd) { var us = ub + bd.w / 2 + sd.d / 2 + 0.2, os = Math.min(bd.d, sd.w) / 2 + 0.05; put(sk2, 0, W.a[0] + W.t[0] * us + W.n[0] * os, W.a[1] + W.t[1] * us + W.n[1] * os, W.ry + Math.PI / 2, 'floor'); }
+      }
+    }
+    /* no wall clear (the programme's desks and shelves took them): the first bed stands free, on a 0.5 m search */
+    if (bk && !nb) for (var gx = x0 + 1.2; gx < x1 - 1.2 && !nb; gx += 0.5) for (var gz = z0 + 1.2; gz < z1 - 1.2 && !nb; gz += 0.5)
+      for (var gr = 0; gr < 2 && !nb; gr++) if (put(bk, 0, gx, gz, gr * Math.PI / 2, 'floor')) nb++;
+    if (!nb) VC.INTD.bedless = (VC.INTD.bedless || 0) + 1;
+  }
+  /* a home's stores (owner, 2026-10-15: "make sure each home has at least one food and item storage furniture"): in the kinds
+     `dress.homes` names, a food container (kits/interiors IX.FOOD_ROLES: jars, a larder) and an item container (IX.ITEM_ROLES:
+     a chest, a cabinet) when the programme laid none, against the walls */
+  if ((D.homes || []).indexOf(r.kind) >= 0 && typeof KratorInteriors !== 'undefined') {
+    var IXr = KratorInteriors, roleOf = VC.INTD.roleOf || (VC.INTD.roleOf = cat.list().reduce(function (m, d) { m[d.key] = d.role; return m; }, {}));
+    var all = placed.concat(out), has = function (roles) { return all.some(function (p) { return roles.indexOf(p.catRole || roleOf[p.key]) >= 0; }); };
+    [[IXr.FOOD_ROLES, 'store'], [IXr.ITEM_ROLES, 'chest']].forEach(function (S2) {
+      if (has(S2[0])) return;
+      var k4 = key(S2[1]); if (!k4) return;
+      var dm4 = dimsOf(k4, 0), ws4 = walls.slice().sort(function (a, b) { return b.len - a.len; }), done = false;
+      for (var w4 = 0; w4 < ws4.length && !done; w4++) for (var u4 = 0.3 + dm4.w / 2; u4 + dm4.w / 2 < ws4[w4].len - 0.3 && !done; u4 += 0.5) {
+        var W4 = ws4[w4], o4 = dm4.d / 2 + 0.05;
+        if (put(k4, 0, W4.a[0] + W4.t[0] * u4 + W4.n[0] * o4, W4.a[1] + W4.t[1] * u4 + W4.n[1] * o4, W4.ry, 'floor')) done = true;
+      }
+      if (!done) VC.INTD.storeless = (VC.INTD.storeless || 0) + 1;
+    });
+  }
+  if (K.skip) return out;
+  /* the first pieces against the longest wall (a bed in a bedchamber) */
+  (K.first || []).forEach(function (role, i) {
+    var k = key(role); if (!k) return;
+    var ws = walls.slice().sort(function (a, b) { return b.len - a.len; }), dm = dimsOf(k, 0);
+    for (var j = 0; j < ws.length; j++) {
+      var W = ws[j], u = W.len * (0.5 + (i ? 0.25 : 0)), off = dm.d / 2 + 0.05;
+      if (put(k, 0, W.a[0] + W.t[0] * u + W.n[0] * off, W.a[1] + W.t[1] * u + W.n[1] * off, W.ry, 'floor')) break;
+    }
+  });
+  /* the corners */
+  walls.forEach(function (W, wi) {
+    var role = pick(K.corner, wi), k = role && key(role); if (!k) return;
+    var dm = dimsOf(k, 0), u = Math.max(dm.w, dm.d) / 2 + 0.15, off = Math.max(dm.w, dm.d) / 2 + 0.15;
+    put(k, 0, W.a[0] + W.t[0] * u + W.n[0] * off, W.a[1] + W.t[1] * u + W.n[1] * off, W.ry + Math.PI / 4, 'floor');
+  });
+  /* the walls: hung pieces, then the pieces along them */
+  var wallN = 0, alongN = 0;
+  walls.forEach(function (W) {
+    if (K.wall && K.wall.length) for (var u = D.wallEvery * 0.6; u < W.len - 0.6; u += D.wallEvery) {
+      var k = key(pick(K.wall, wallN++)); if (!k) continue;
+      var v = rnd() < 0.5 ? 0 : 1, dm = dimsOf(k, v), off = dm.d / 2 + 0.03;
+      if (u - dm.w / 2 < 0.3 || u + dm.w / 2 > W.len - 0.3) continue;
+      put(k, v, W.a[0] + W.t[0] * u + W.n[0] * off, W.a[1] + W.t[1] * u + W.n[1] * off, W.ry, 'wall');
+    }
+    if (K.along && K.along.length) {
+      var ua = 0.5;
+      while (ua < W.len - 0.5) {
+        var role = pick(K.along, alongN++), k2 = role && key(role); if (!k2) { ua += 1; continue; }
+        var dm2 = dimsOf(k2, 0), uc = ua + dm2.w / 2, off2 = dm2.d / 2 + 0.05;
+        if (uc + dm2.w / 2 > W.len - 0.4) break;
+        var p = put(k2, 0, W.a[0] + W.t[0] * uc + W.n[0] * off2, W.a[1] + W.t[1] * uc + W.n[1] * off2, W.ry, 'floor');
+        if (p && (role === 'table' || role === 'low_table' || role === 'counter' || role === 'desk' || role === 'workbench')) tables.push(p);
+        ua += p ? dm2.w + D.alongGap * (0.6 + rnd() * 0.8) : 0.6;
+      }
+    }
+  });
+  /* the middle */
+  var m = D.centreMargin, cx0 = x0 + m, cx1 = x1 - m, cz0 = z0 + m, cz1 = z1 - m, C = K.centre;
+  if (C && C !== 'none' && cx1 > cx0 && cz1 > cz0) {
+    /* the grid's points nearest the room's middle first, at most `dress.centreMax[pattern]` of them taking a piece (a
+       1,500 m2 room is not a classroom of a hundred desks) */
+    var grid = function (step, f) {
+      var nx = Math.max(1, Math.floor((cx1 - cx0) / step)), nz = Math.max(1, Math.floor((cz1 - cz0) / step));
+      var sx = (cx1 - cx0) / nx, sz = (cz1 - cz0) / nz, mx = (cx0 + cx1) / 2, mz = (cz0 + cz1) / 2, pts = [], cap = (D.centreMax || {})[C] || 1e9, n = 0;
+      for (var i = 0; i < nx; i++) for (var j = 0; j < nz; j++) pts.push([cx0 + (i + 0.5) * sx, cz0 + (j + 0.5) * sz, i, j]);
+      pts.sort(function (a, b) { return Math.hypot(a[0] - mx, a[1] - mz) - Math.hypot(b[0] - mx, b[1] - mz) || a[2] - b[2] || a[3] - b[3]; });
+      for (var k = 0; k < pts.length && n < cap; k++) if (f(pts[k][0], pts[k][1], pts[k][2], pts[k][3])) n++;
+    };
+    var alongX = x1 - x0 >= z1 - z0, ryL = alongX ? Math.PI / 2 : 0;
+    if (C === 'groups' || C === 'rug') {
+      grid(C === 'rug' ? D.rugEvery : D.groupEvery, function (x, z, i, j) {
+        var rug = key(K.rug || 'rug'), rp = rug && put(rug, (i + j) & 1, x, z, ryL, 'rug', r.y + 0.01);
+        if (C !== 'groups') return !!rp;
+        var tk = key(K.groupTable || 'low_table'), sk = key(pick(K.groupSeat || ['divan'], i + j)); if (!tk || !sk) return false;
+        var t = put(tk, 0, x, z, ryL, 'floor'); if (!t) return false; tables.push(t);
+        var sd = dimsOf(sk, 0), td = dimsOf(tk, 0), off = td.d / 2 + sd.d / 2 + 0.35;
+        [-1, 1].forEach(function (sg) {
+          var nx2 = alongX ? 0 : sg, nz2 = alongX ? sg : 0;
+          put(sk, 0, x + nx2 * off, z + nz2 * off, Math.atan2(-nx2, -nz2), 'floor');
+        });
+        return true;
+      });
+    } else if (C === 'rows') {
+      /* benches across the room facing its focus: the dais in it, else the far end from its first door */
+      var dais = (fixtures.filter(function (f) { return /^decor/.test(f.id) && f.w > 3; })[0]);
+      var fx = dais ? dais.x : (alongX ? x1 : (x0 + x1) / 2), fz = dais ? dais.z : (alongX ? (z0 + z1) / 2 : z1);
+      var bk = key(K.rowSeat || 'bench'); if (bk) {
+        var bd = dimsOf(bk, 0), along = alongX ? [Math.sign(fx - (x0 + x1) / 2) || 1, 0] : [0, Math.sign(fz - (z0 + z1) / 2) || 1];
+        var face = Math.atan2(along[0], along[1]), Lc = alongX ? (x0 + x1) / 2 : (z0 + z1) / 2, half = (alongX ? x1 - x0 : z1 - z0) / 2;
+        var acr0 = alongX ? cz0 : cx0, acr1 = alongX ? cz1 : cx1, mid = (acr0 + acr1) / 2;
+        for (var l = half - D.rowFocusGap; l > -half + m + 1; l -= D.rowEvery) {   /* from the focus back: the front rows first */
+          for (var a = acr0 + bd.w / 2; a + bd.w / 2 <= acr1; a += bd.w + 0.25) {
+            if (Math.abs(a - mid) < D.rowAisle / 2 + bd.w / 2) continue;
+            var lx = Lc + (alongX ? l * along[0] : 0), lz = Lc + (alongX ? 0 : l * along[1]);
+            put(bk, 0, alongX ? lx : a, alongX ? a : lz, face, 'floor');
+          }
+        }
+      }
+    } else if (C === 'desks' || C === 'work' || C === 'stacks') {
+      var role2 = C === 'desks' ? 'desk' : C === 'work' ? 'table' : 'store', step = C === 'desks' ? D.deskEvery : C === 'work' ? D.workEvery : D.stackEvery;
+      var k3 = key(K.centreRole || role2); if (k3) grid(step, function (x, z, i, j) {
+        var p = put(k3, 0, x, z, ryL, 'floor'); if (!p) return false;
+        if (C !== 'stacks') tables.push(p);
+        var ch = C === 'desks' ? key('chair') || key('throne') : C === 'work' ? key('stool') : null;
+        if (ch) { var dd = dimsOf(k3, 0), cd = dimsOf(ch, 0), o = dd.d / 2 + cd.d / 2 + 0.15, nx3 = alongX ? 0 : -1, nz3 = alongX ? -1 : 0; put(ch, 0, x + nx3 * o, z + nz3 * o, Math.atan2(-nx3, -nz3), 'floor'); }
+        return true;
+      });
+    }
+  }
+  /* what stands on the tables laid here */
+  var surf = (K.surface || []).map(key).filter(Boolean);
+  if (surf.length) tables.forEach(function (t, i) {
+    var top = cat.top ? cat.top(t.key, t.variant || 0) : t.h; if (top == null || top < 0.3) return;
+    var sk = surf[i % surf.length], c = Math.cos(t.ry), s = Math.sin(t.ry), o = (rnd() - 0.5) * t.w * 0.5;
+    out.push({ key: sk, variant: 0, seed: 1 + i, x: t.x + c * o, y: t.y + top, z: t.z - s * o, ry: t.ry, anchor: 'surface', dress: true });
+  });
+  return out;
+};
+/* the banquet hall's feast (owner, 2026-10-15: "actual tables and chairs fit for a feast"): long tables end to end down the
+   hall in rows (between the pillar lines and in the aisles outside them), a chair every TUNE.interiors.feast.chairEvery m on
+   both sides facing in, candelabra, ewers and bowls along the tables; the high table across the far end, its chairs on the
+   far side facing down the hall. Placements in the placer's shape, clear of the suite's pillars */
+VC.suiteFeast = function (P, r, cat) {
+  var F = TUNE.interiors.feast, out = [], have = function (k) { return typeof FURN_BY_KEY !== 'undefined' && FURN_BY_KEY[k] ? k : null; };
+  var tk = have(F.table[0]) || have(F.table[1]), ck = have(F.chair[0]) || have(F.chair[1]); if (!tk || !ck) return out;
+  var TD = cat.dims(tk, 0), CD = cat.dims(ck, 0), top = cat.top ? (cat.top(tk, 0) || TD.h) : TD.h;
+  var alongX = r.x1 - r.x0 >= r.z1 - r.z0, L0 = alongX ? r.x0 : r.z0, L1 = alongX ? r.x1 : r.z1, M0 = alongX ? r.z0 : r.x0, M1 = alongX ? r.z1 : r.x1, mid = (M0 + M1) / 2, half = (M1 - M0) / 2;
+  var pt = function (l, m) { return alongX ? [l, m] : [m, l]; }, ryLong = alongX ? 0 : Math.PI / 2;
+  var cn = P.n, pillars = (P.suite ? P.suite.decor : []).filter(function (d) { return d.kind === 'pillar' && d.x > r.x0 && d.x < r.x1 && d.z > r.z0 && d.z < r.z1; });
+  var clear = function (l, m, hl, hm) { var c = pt(l, m); return pillars.every(function (p) { return Math.abs(p.x - c[0]) > (alongX ? hl : hm) + p.w / 2 + 0.4 || Math.abs(p.z - c[1]) > (alongX ? hm : hl) + p.w / 2 + 0.4; }); };
+  var put = function (key, l, m, ry, y, anchor) { var c = pt(l, m); out.push({ key: key, variant: 0, x: c[0], y: y, z: c[1], ry: ry, anchor: anchor || 'floor', type: anchor === 'surface' ? 'vessel' : 'table', seed: out.length + 1 }); };
+  var rows = F.rows.filter(function (o) { return Math.abs(o) + TD.d / 2 + CD.d + 0.6 < half; });
+  var lStart = L0 + F.endGap, lEnd = L1 - F.endGap - F.highGap;
+  rows.forEach(function (o) {
+    var m = mid + o;
+    for (var l = lStart + TD.w / 2; l + TD.w / 2 <= lEnd; l += TD.w + 0.02) {
+      if (!clear(l, m, TD.w / 2 + CD.d, TD.d / 2 + CD.d + 0.3)) continue;
+      put(tk, l, m, ryLong, r.y);
+      /* the chairs: both long sides, facing the table */
+      var n = Math.max(1, Math.floor(TD.w / F.chairEvery));
+      for (var i = 0; i < n; i++) {
+        var cl = l - TD.w / 2 + (i + 0.5) * TD.w / n, off = TD.d / 2 + CD.d / 2 + 0.12;
+        [-1, 1].forEach(function (sd) { var face = alongX ? (sd > 0 ? Math.PI : 0) : (sd > 0 ? -Math.PI / 2 : Math.PI / 2); put(ck, cl, m + sd * off, face, r.y); });
+      }
+      /* along the table: a candelabrum or a ewer and a bowl, by turns */
+      var sk = [F.surface[(Math.round(l) & 1) ? 0 : 1], F.surface[2]];
+      sk.forEach(function (s, j) { if (have(s)) put(s, l + (j ? 0.6 : -0.6), m, ryLong, r.y + top, 'surface'); });
+    }
+  });
+  /* the high table across the far end, chairs behind it facing the hall */
+  var lh = L1 - F.highGap / 2 - 1, n2 = Math.max(1, Math.floor(F.highSpan / (TD.w + 0.02)));
+  for (var k = 0; k < n2; k++) {
+    var mm = mid + (k - (n2 - 1) / 2) * (TD.w + 0.02);
+    if (!clear(lh, mm, TD.d / 2 + CD.d, TD.w / 2)) continue;
+    put(tk, lh, mm, ryLong + Math.PI / 2, r.y);
+    var faceHall = alongX ? -Math.PI / 2 : Math.PI;   /* front toward -long */
+    for (var i2 = 0; i2 < Math.max(1, Math.floor(TD.w / F.chairEvery)); i2++) put(ck, lh + TD.d / 2 + CD.d / 2 + 0.12, mm - TD.w / 2 + (i2 + 0.5) * TD.w / Math.max(1, Math.floor(TD.w / F.chairEvery)), faceHall, r.y);
+    if (have(F.surface[0])) put(F.surface[0], lh, mm, ryLong, r.y + top, 'surface');
+  }
+  return out;
 };
 
 /* ---------------------------------------------------------------- drawing one canton's interior */
@@ -104,7 +409,8 @@ VC.intSetMat = function (set, o) {
   return (M[key] = m);
 };
 /* the sets drawn in their own colour (the owner's delivery of 2026-10-15), not as a grey detail under the look's colour */
-VC.INT_COLOUR = { pal_stucco: 1, pal_tile: 1, pal_inlay: 1, column_inlaid: 1, filigree_crimson: 1, filigree_purple: 1, damask_purple: 1 };
+VC.INT_COLOUR = { pal_stucco: 1, pal_tile: 1, pal_inlay: 1, column_inlaid: 1, filigree_crimson: 1, filigree_purple: 1, damask_purple: 1,
+  int_ashlar: 1, int_wood: 1, int_tuff: 1, int_basalt: 1, int_oldwall: 1, int_flag: 1, int_mosaic: 1 };
 /* how much of the sky's light (the hemisphere's) reaches a room: the rest is the lamps' (VC.intLightPool) */
 VC.INT_INDOOR = 0.42;
 VC.intSheetMat = function (set, o) {
@@ -497,9 +803,15 @@ VC.drawInterior = function (cn) {
   var aabb = function (si, mat, b, c) { var m = new THREE.Matrix4(); m.makeScale(Math.max(0.01, b[1] - b[0]), Math.max(0.01, b[5] - b[4]), Math.max(0.01, b[3] - b[2])); m.setPosition(b[0], b[4], b[2]); add(si, G.box, mat, m, c); };
   P.boxes.forEach(function (b) { if (b.kind === 'rail' || b.kind === 'diagblock' || b.kind === 'pillar') return; aabb(b.storey, wallM, [b.x0, b.x1, b.z0, b.z1, b.y0, b.y1], b.kind === 'well' ? wall.clone().multiplyScalar(0.85) : wall); });   /* the railings are the decoration's (VC.intDecor); the octagons' stepped blocks are the walker's only */
   var GW = TUNE.interiors.gateway && TUNE.interiors.gateway[cn], wingOf = function (f) { var h = P.halls.filter(function (q) { return q.wing && q.storey === f.storey && q.x0 === f.x0 && q.z0 === f.z0 && q.x1 === f.x1 && q.z1 === f.z1; })[0]; return h && h.wing; };
+  /* a room's floor by its use (look.roomFloors: {set: [kinds]}; the rest the look's floorSet), the halls' by look.hallFloorSet */
+  var kindOf = {}; P.rooms.forEach(function (r) { kindOf[r.id] = r.kind; });
+  var roomSet = {}; Object.keys(look.roomFloors || {}).forEach(function (s) { look.roomFloors[s].forEach(function (k) { roomSet[k] = s; }); });
+  var hallM = look.hallFloorSet ? VC.intSetMat(look.hallFloorSet) : floorM;
   P.floors.forEach(function (f) {
-    var wg = f.kind === 'hall' && GW && wingOf(f), c = wg ? col(GW.colours[wg]) : f.kind === 'gallery' ? galF : f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' || f.kind === 'core' || f.kind === 'greathall' ? hallF : floor;   /* the core floors as the halls': the halls start inside it, and two colours on one plane fight */
-    aabb(f.storey, floorM, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], c);
+    var wg = f.kind === 'hall' && GW && wingOf(f), isHall = f.kind === 'hall' || f.kind === 'tunnel' || f.kind === 'passage' || f.kind === 'core' || f.kind === 'greathall' || f.kind === 'gallery' || f.kind === 'landing';
+    var rs = f.room && roomSet[kindOf[f.room]], fm = rs ? VC.intSetMat(rs) : isHall ? hallM : floorM;
+    var c = wg ? col(GW.colours[wg]) : rs ? col(look.roomFloorTint || 0xe8e8e8) : f.kind === 'gallery' ? galF : isHall ? (look.hallFloorSet ? col(look.hallFloor || look.floor) : hallF) : floor;
+    aabb(f.storey, floorM === fm ? floorM : fm, [f.x0, f.x1, f.z0, f.z1, f.y - 0.3, f.y], c);
   });
   /* each wing's portal at its hall's mouth, in its colour: pillars either side, a lintel and a sign board over it */
   P.halls.forEach(function (h) {

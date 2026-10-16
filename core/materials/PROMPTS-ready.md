@@ -10,7 +10,98 @@ Cut-outs (cards, wings) are always on solid flat bright magenta (#ff00ff), never
 
 ## Open prompts
 
-New gaps go here as they are found; prune them as they arrive. None open (2026-10-15).
+New gaps go here as they are found; prune them as they arrive.
+
+### The Voth canton walls and floors (2026-10-15)
+
+The owner: "the cantons probably need better wall and floor textures as well except the palace which is ok". Until these arrive,
+`settlements/voth/materials.json` stands in with generic library sets: `int_ashlar` (`stone.sandstone.ashlar`), `int_flag`
+(`paving.flagstone`), `int_paving` (`paving.pavement_01`), `int_wood` (`wood.old_wooden_floor_02`), `int_stucco`
+(`plaster.white_stucco_02`), `int_tuff` (`stone.tuff.polished`), `int_basalt` (`stone.basalt.polished`), `int_oldwall`
+(`rock.old_stone_wall`), `int_earth` (`earth.floor.packed`). They are clean scans, not Voth: no ash, no fret, no volcanic dark. Each
+block below replaces one of them (the family named in brackets). The first seven are near-colourless (the canton's look tints them);
+the last is full colour.
+
+`library/plaster.voth.ochre` (near-colourless; replaces `int_ashlar` and `int_stucco` on the common cantons' and the Foreign canton's walls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an
+interior wall of thick hand-trowelled lime plaster over stone, broad soft trowel sweeps, faint hairline cracks, a few shallow chips
+showing coarse plaster beneath, a light bloom of grey volcanic ash settled in the hollows. Keep colours natural but slightly muted and
+even, a pale warm grey with no strong hue, so the texture can be tinted to different palettes without looking stained.
+```
+
+`library/stone.ashlar.tuff` (near-colourless; replaces `int_ashlar` where a canton's walls are bare stone: the Granary, the Arsenal, the Port):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall
+of coursed ashlar in porous volcanic tuff, rectangular blocks about 60 by 30 cm in level courses with staggered joints, thin pale lime
+mortar joints, fine diagonal chisel tooling on each face, small dark pores and pumice inclusions, soot darkening a few blocks. Keep
+colours natural but slightly muted and even, mid grey, so the texture can be tinted to different palettes without looking stained.
+```
+
+`library/stone.flag.basalt` (near-colourless; replaces `int_flag` and `int_paving` on the common cantons' floors and halls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an
+indoor floor of large irregular basalt flagstones, each 50 to 90 cm across, fitted closely with narrow joints packed with grey ash
+dust, the stones worn smooth and slightly polished by feet, a few fine cracks and small vesicle pits. Keep colours natural but slightly
+muted and even, dark to mid grey, so the texture can be tinted to different palettes without looking stained.
+```
+
+`library/wood.plank.smoked` (near-colourless; replaces `int_wood` in the rooms where people live and write):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a
+floor of wide old hardwood planks, each about 25 cm wide, running vertically in the frame with staggered butt joints, darkened by years
+of lamp smoke, the grain worn into soft ridges along a walking path, square iron nail heads, a few dark knots. Keep colours natural but
+slightly muted and even, a mid grey-brown, so the texture can be tinted to different palettes without looking stained.
+```
+
+`library/stucco.voth.fret` (near-colourless; replaces `int_stucco` on the Temple's walls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a
+temple wall of fine smooth stucco carved in a shallow all-over relief of interlocking stepped-fret spirals (Mesoamerican greca), the
+relief about 1 cm deep, the motif repeating four times across and four times down, crisp carved edges a little softened by age, smoke
+grime gathered in the recesses. Keep colours natural but slightly muted and even, a pale bone grey, so the texture can be tinted to
+different palettes without looking stained.
+```
+
+`library/stone.fortress.block` (near-colourless; replaces `int_blocks` and `int_basalt` in the Fortress):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a
+fortress wall of massive rough-dressed black basalt blocks about 1.2 by 0.6 m, laid in heavy courses with deep dark joints, pitted
+faces with coarse punch-tool marks, an occasional iron cramp set into a joint with a rust stain below it. Keep colours natural but
+slightly muted and even, dark grey, so the texture can be tinted to different palettes without looking stained.
+```
+
+`library/stone.ancestor.niches` (near-colourless; replaces `int_oldwall` on the Ancestry canton's walls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an old
+wall of fitted grey stone with a regular grid of small shallow arched niches cut into it, four across and four down, each niche about
+the size of a hand and holding a smooth rounded stone urn shape, worn ash-dust in the niche floors, wax drips below a few of them. Keep
+colours natural but slightly muted and even, mid grey, so the texture can be tinted to different palettes without looking stained.
+```
+
+`patterns/voth/tile-ash-terracotta` (full colour; replaces `int_tuff` on the Temple's floors and `int_mosaic` in the Foreign halls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a
+floor of unglazed terracotta tiles, elongated hexagons about 30 cm long in warm red-ochre, set with small square insets of black
+ash-glazed tile where four hexagons meet, thin dark grout lines, the terracotta worn paler along a walking line and slightly mottled
+from the kiln.
+```
 
 ## Delivered and removed (2026-10-06)
 

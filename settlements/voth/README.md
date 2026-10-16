@@ -432,6 +432,38 @@ seen when using walk mode ... add some multi-storey open space inside them in pl
   over the ground, so inside a canton 60 m up it stood at 2 m and cut every wall an arm away).
 * **Drawing** (`VC.intProto`): a catalog piece's primitives are merged by material class into vertex-coloured geometries, one
   InstancedMesh per class, piece and storey (a canton was 30,000 meshes, now about 2,500).
+* **Furniture and clutter** (`VC.intFurnish`, `VC.intDress`, `TUNE.interiors.dress`; owner, 2026-10-15: "waaaaaaay more
+  furniture and decorative clutter ... make it ornate"): a room gets its programme from the placer (kits/interiors: the beds,
+  benches, desks, hearths its kind needs), then a dressing pass of its own: hangings and art on the walls every 2.4 m, seats,
+  cabinets, chests, plants, statues and lamps along them, a piece in each corner, and in the middle what its class lays out
+  (`dress.by`: groups of divans or chairs round a low table on a rug, rows of benches facing the dais in a sanctuary or a court,
+  desks with chairs in a study, work tables in a kitchen or a mess, stacks of stores), jugs, bowls, candles and books on the
+  tables it laid; the court tier's pieces (tapestries, painted hangings, wall rugs, friezes, statues, divans, candelabra) from
+  `dress.court` wealth (the Palace 0.95, the Temple 0.8, the Foreign canton 0.85). A suite's state rooms skip the placer (its
+  search took seconds there and found little) and are laid out by the dressing alone. About 30 pieces a room; the Palace
+  furnishes in about 5 s (29,500 pieces), the Temple in 3 s. The banquet hall has a feast laid (`VC.suiteFeast`,
+  `TUNE.interiors.feast`): four rows of court tables end to end, a chair every 0.95 m both sides, candelabra, ewers and bowls,
+  the high table across the far end.
+  Every room the census sleeps people in has at least one bed (up to four by its sleepers) against a wall with a screen
+  beside it as a room divider, or standing free when no wall is clear; every home (`dress.homes`) a food container and an
+  item container (owner, 2026-10-15: "make sure all canton homes have at least 1 bed", "at least one food and item
+  storage furniture").
+* **Walls and floors** (`TUNE.interiors.look`; owner, 2026-10-15: "the cantons probably need better wall and floor textures as
+  well except the palace"): sandstone ashlar walls in the common cantons, stone paving in their halls, planks where people live
+  and write (`roomFloors`), flagstones where they work, packed earth in the cells; the Temple in stucco over polished tuff, the
+  Fortress in its blocks over polished basalt, the Foreign canton in stucco over planks with mosaic halls, the Ancestry in old
+  fitted stone over flags. These are generic library scans standing in: `core/materials/PROMPTS-ready.md` ("The Voth canton
+  walls and floors") holds eight prompts for the Voth surfaces that replace them.
+* **The pedestrian layer goes inside** (`43-vc-sim-nav.js`, owner: "citizens travel thru what are supposed to be the solid
+  canton walls"): each floor a chain of nodes every `TUNE.sim.nav.inside` m, the open floors joined where they meet, a room by
+  its door, a suite's room by the suite's doors, the flights at their ends, the tunnels' mouths at the canton doors and the
+  suites' exits; a walk to a canton room goes in by a door and up the stairs.
+* **The terrace stairs have landings** (`targets/voth-site/20-site-cantons.js` `CANT.flightRun`, `CANT.flightSegs`; owner,
+  2026-10-15: "make sure all canton external stairs have landings"): every outside flight (terrace, dock, mole, summit) is
+  equal runs of at most `CANT.T.landEvery` (16) steps with a `landLen` (2 m) landing between; the drawing, the walker's strips
+  and the planners' run lengths all take the same profile (36 terrace flights, 95 landings; the tallest rises 50 m).
+* **The stone courses** (a captured canton's cornice slabs, which ran through its storeys and showed as red floors) are cut
+  where they cross the hollowed storeys and framed by four stone bands, with a thin slab over the interior at a level's top.
 
 **The Palace and the Temple** (`40b-vc-suites.js` `VC.SUITES`; owner, 2026-10-15, from the reference pictures). Their bridge tier
 (tier 1, where every bridge lands) is a state floor of three tall storeys, laid along a main axis from an entrance on the
@@ -457,6 +489,11 @@ bridge's face:
   records and galleries are the same records the generic cantons use, so the walker, the cutaway, the furnishing and the
   census need nothing new; the new room kinds (foyer, banquet, throne, apartment, guest, judgment, scriptorium, sanctuary,
   atrium, highpriest, vestry) are in `TUNE.census.rooms`.
+* **The kitchens** (owner: "it's also not clear where the kitchens are"): the Palace's great kitchen opens off the banquet
+  hall's north wall and onto the north hall, the ruler's own kitchen beside the chambers; the Temple's priests' kitchen and
+  their refectory off its north hall, the sanctuary reached through the refectory (`greatkitchen`, `mess` in the census). The
+  Palace's floor plan is to be redrawn from the owner's floor-by-floor blueprint (2026-10-15, another session): these two
+  kitchens and the feast are placeholders until then.
 
 The rooms follow each canton's purpose (`TUNE.interiors.purposes`), with some residences among them:
 

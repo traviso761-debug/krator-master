@@ -35,6 +35,7 @@ CANT.T = {
   pierEvery: 105,        /* one pier per this much open water */
   rise: 0.32, tread: 0.62, /* a step */
   landing: 3.5,           /* the clear landing at a flight's head and foot (owner, 2026-10-09: "a clear landing that doesn't conflict with decorative geometry") */
+  landEvery: 16, landLen: 2.0, /* a flight is equal runs of at most landEvery steps with a landing landLen m deep between (owner, 2026-10-15: "make sure all canton external stairs have landings") */
   flightW: 7,            /* a terrace flight's width (less where its band is narrower) */
   dockW: 5,              /* a pier's or a mole's flight */
   apronSide: 0.7         /* how far a mole's or a pier's flight may run in under the apron's cornice before it must climb */
@@ -409,7 +410,7 @@ CANT.planCauseways = function (list) {
       var end = { id: l.id + (side ? ':b' : ':a'), causeway: l.id, canton: M.n, x: e[0], z: e[1], y: lev.y, dir: dir, kind: l.kind, lev: lev.k, w: l.width };
       if (l.kind === 'mole') {
         /* the flight: on the mole's end, rising to the apron's edge */
-        var top = VOTH.RLAND + 0.7, n = Math.max(2, Math.ceil((lev.y - top) / T.rise)), run = n * T.tread, fw = Math.min(l.width * 0.5, 14);
+        var top = VOTH.RLAND + 0.7, run = CANT.flightRun(lev.y - top).run, fw = Math.min(l.width * 0.5, 14);
         end.flight = CANT.addFlight({ canton: M.n, kind: 'mole', a: [e[0] + dir[0] * run, e[1] + dir[1] * run], b: [e[0] - dir[0] * 0.6, e[1] - dir[1] * 0.6], y0: top, y1: lev.y, w: fw, base: top });
         CANT.clearLanding(end.flight, dir, 'mole stair');
       }
@@ -423,12 +424,28 @@ CANT.planCauseways = function (list) {
 /* ---------------------------------------------------------------- flights of steps
    {canton, kind: dock|mole|terrace|summit, a: bottom [x, z], b: top [x, z], y0, y1, w, base}: the steps rise from a to
    b, each T.rise high and T.tread deep, on solid masonry from `base` (a terrace's floor, a deck) */
+/* a rise's steps in equal runs of at most T.landEvery, a landing T.landLen deep between: {n: steps, runs, run: its length} */
+CANT.flightRun = function (rise) {
+  var T = CANT.T, n0 = Math.max(2, Math.ceil(rise / T.rise)), runs = Math.max(1, Math.ceil(n0 / T.landEvery)), n = runs * Math.ceil(n0 / runs);
+  return { n: n, runs: runs, run: n * T.tread + (runs - 1) * T.landLen };
+};
 CANT.addFlight = function (o) {
-  var T = CANT.T, L = Math.hypot(o.b[0] - o.a[0], o.b[1] - o.a[1]);
-  o.id = 'flight_' + CANT.flights.length; o.steps = Math.max(2, Math.round((o.y1 - o.y0) / T.rise)); o.len = L; o.ry = Math.atan2(o.b[0] - o.a[0], o.b[1] - o.a[1]);
+  var T = CANT.T, L = Math.hypot(o.b[0] - o.a[0], o.b[1] - o.a[1]), FR = CANT.flightRun(o.y1 - o.y0);
+  o.id = 'flight_' + CANT.flights.length; o.steps = FR.n; o.runs = FR.runs; o.len = L; o.ry = Math.atan2(o.b[0] - o.a[0], o.b[1] - o.a[1]);
+  /* the landings take their depth from what the run leaves (a short run keeps them, the steps a little shallower) */
+  o.landLen = o.runs > 1 ? Math.min(T.landLen, L * 0.3 / (o.runs - 1)) : 0;
   if (o.base == null) o.base = o.y0;
   CANT.flights.push(o);
   return o;
+};
+/* a flight's profile from foot to head: [{d0, d1 (m along it), y0, y1, landing}] */
+CANT.flightSegs = function (f) {
+  var runs = f.runs || 1, per = f.steps / runs, tr = (f.len - (runs - 1) * (f.landLen || 0)) / f.steps, dy = (f.y1 - f.y0) / f.steps, out = [], d = 0, y = f.y0;
+  for (var r = 0; r < runs; r++) {
+    out.push({ d0: d, d1: d + per * tr, y0: y, y1: y + per * dy, landing: false }); d += per * tr; y += per * dy;
+    if (r < runs - 1) { out.push({ d0: d, d1: d + f.landLen, y0: y, y1: y, landing: true }); d += f.landLen; }
+  }
+  return out;
 };
 /* the boxes a flight fills, for the clearance tests (the stair's mass and the headroom over it) */
 CANT.flightBoxes = function (o, head) {
@@ -443,7 +460,7 @@ CANT.planDocks = function (piers) {
     var M = CANT.by[pr.canton]; if (!M || !M.apron) return;
     var dir = pr.dir, k = 0, p = pr.root;
     while (k < 200 && CANT.sq(M, p[0] + dir[0] * k, p[1] + dir[1] * k) < M.apron.ro + 0.2) k += 0.25;
-    var e = [p[0] + dir[0] * k, p[1] + dir[1] * k], y0 = pr.deckY, n = Math.max(2, Math.ceil((M.apron.y - y0) / T.rise)), run = n * T.tread;
+    var e = [p[0] + dir[0] * k, p[1] + dir[1] * k], y0 = pr.deckY, run = CANT.flightRun(M.apron.y - y0).run;
     /* its top step runs half a metre onto the apron, so there is no gap at the edge */
     var fl = CANT.addFlight({ canton: M.n, kind: 'dock', a: [e[0] + dir[0] * run, e[1] + dir[1] * run], b: [e[0] - dir[0] * 0.7, e[1] - dir[1] * 0.7], y0: y0, y1: M.apron.y, w: Math.min(T.dockW, (pr.w || 5.5) - 0.6), base: y0, pier: pr.id || i });
     CANT.docks.push({ canton: M.n, flight: fl, at: e, dir: dir, pier: pr.id || i });
@@ -524,7 +541,7 @@ CANT.ringWalk = function (M, p, q) {
 CANT.flightAt = function (M, k, n, tg, s0, dir) {
   var T = CANT.T, lo = M.levels[k], hi = M.levels[k + 1], rIn = hi.ro + 0.1, rOut = lo.ro - 0.5, w = Math.min(T.flightW, rOut - rIn);
   if (w < 2.6) return null;
-  var rc = rIn + w / 2, len = Math.ceil((hi.y - lo.y) / T.rise) * T.tread, e = s0 + dir * len;
+  var rc = rIn + w / 2, len = CANT.flightRun(hi.y - lo.y).run, e = s0 + dir * len;
   if (Math.max(Math.abs(s0), Math.abs(e)) > rIn - w - 3) return null;                  /* clear of the corners */
   var f = { canton: M.n, kind: 'terrace', a: [M.x + n[0] * rc + tg[0] * s0, M.z + n[1] * rc + tg[1] * s0], b: [M.x + n[0] * rc + tg[0] * e, M.z + n[1] * rc + tg[1] * e],
             y0: lo.y, y1: hi.y, w: w, base: lo.y, lev: k, n: n, hits: [], cost: 0, cut: 0, big: 0 };
@@ -631,7 +648,7 @@ CANT.flipTombs = function (M) {
 CANT.planSummit = function (M) {
   var F = M.faces[M.faces.length - 1], cap = M.stack.reduce(function (b, s) { return !b || s.y1 > b.y1 ? s : b; }, null); if (!F || !cap) return;
   var y0 = CANT.faceY(F, 1), rise = cap.y1 - y0; if (rise < 0.3) return;
-  var n = Math.ceil(rise / CANT.T.rise), run = n * CANT.T.tread, a = [F.p1[0] - F.u[0] * 2, F.p1[1] - F.u[1] * 2];
+  var run = CANT.flightRun(rise).run, a = [F.p1[0] - F.u[0] * 2, F.p1[1] - F.u[1] * 2];
   CANT.addFlight({ canton: M.n, kind: 'summit', a: a, b: [a[0] - F.n[0] * run, a[1] - F.n[1] * run], y0: y0, y1: cap.y1, w: M.walkW * 0.75, base: y0 - 0.2 });
 };
 /* the Ancestry's flora goes to the biome (the city: 38-vc-flora.js, VC.drawFlora): Voth's blob trees and bed cover are
@@ -770,7 +787,8 @@ CANT.walk = function (W) {
     }
   });
   CANT.flights.forEach(function (f) {
-    W.strip({ a: [f.a[0], f.a[1], f.y0], b: [f.b[0], f.b[1], f.y1], w: f.w - 0.4, name: f.canton + ' ' + f.kind + ' stair', tag: 'stair:' + f.id });
+    var uf = [(f.b[0] - f.a[0]) / f.len, (f.b[1] - f.a[1]) / f.len];
+    CANT.flightSegs(f).forEach(function (g) { W.strip({ a: [f.a[0] + uf[0] * g.d0, f.a[1] + uf[1] * g.d0, g.y0], b: [f.a[0] + uf[0] * g.d1, f.a[1] + uf[1] * g.d1, g.y1], w: f.w - 0.4, name: f.canton + ' ' + f.kind + (g.landing ? ' stair landing' : ' stair'), tag: 'stair:' + f.id }); });
     /* a terrace flight's top: a step across onto the level it reaches, inward from the flight's last tread */
     if (f.kind === 'terrace' && f.n) { var u = [(f.b[0] - f.a[0]) / f.len, (f.b[1] - f.a[1]) / f.len], q = [f.b[0] - u[0] * 1.25, f.b[1] - u[1] * 1.25];
       W.strip({ a: [q[0] + f.n[0] * f.w / 2, q[1] + f.n[1] * f.w / 2, f.y1], b: [q[0] - f.n[0] * (f.w / 2 + 2.5), q[1] - f.n[1] * (f.w / 2 + 2.5), f.y1], w: 2.6, name: f.canton + ' stair head', tag: 'stair:' + f.id }); }
@@ -832,13 +850,16 @@ CANT.drawFlights = function (B, kinds) {
     if (kinds && kinds.indexOf(f.kind) < 0) return;
     var M = CANT.by[f.canton], col = M ? B.shade(M.tone, 0.05) : 0xa79b82, rail = B.shade(col, -0.16), L = f.len, u = [(f.b[0] - f.a[0]) / L, (f.b[1] - f.a[1]) / L], pv = [u[1], -u[0]];
     var outer = f.n ? (pv[0] * f.n[0] + pv[1] * f.n[1] > 0 ? 1 : -1) : 0;
-    var n = f.steps, d = L / n;
-    for (var s = 0; s < n; s++) {
-      var t = (s + 0.5) / n, x = f.a[0] + u[0] * L * t, z = f.a[1] + u[1] * L * t, top = f.y0 + (f.y1 - f.y0) * (s + 1) / n;
-      B.BOX(x, f.base, z, f.w, Math.max(0.2, top - f.base), d * 1.02, f.ry, col);
-      /* a low wall on the open side of a terrace flight, and both sides of a dock or mole flight */
-      [-1, 1].forEach(function (sd) { if (outer && sd !== outer) return; B.BOX(x + pv[0] * sd * (f.w / 2 + 0.25), top, z + pv[1] * sd * (f.w / 2 + 0.25), 0.5, 1.0, d * 1.02, f.ry, rail); });
-    }
+    /* the runs' steps and the landings between them, each on solid masonry from the base */
+    CANT.flightSegs(f).forEach(function (g) {
+      var n = g.landing ? 1 : Math.max(1, Math.round((g.y1 - g.y0) / ((f.y1 - f.y0) / f.steps))), d = (g.d1 - g.d0) / n;
+      for (var s = 0; s < n; s++) {
+        var dm = g.d0 + d * (s + 0.5), x = f.a[0] + u[0] * dm, z = f.a[1] + u[1] * dm, top = g.landing ? g.y0 : g.y0 + (g.y1 - g.y0) * (s + 1) / n;
+        B.BOX(x, f.base, z, f.w, Math.max(0.2, top - f.base), d * 1.02, f.ry, col);
+        /* a low wall on the open side of a terrace flight, and both sides of a dock or mole flight */
+        [-1, 1].forEach(function (sd) { if (outer && sd !== outer) return; B.BOX(x + pv[0] * sd * (f.w / 2 + 0.25), top, z + pv[1] * sd * (f.w / 2 + 0.25), 0.5, 1.0, d * 1.02, f.ry, rail); });
+      }
+    });
   });
 };
 /* the Ancestry walkway, re-stepped: each face's slabs replaced by steps of T.rise along the same ramp, as deep as the

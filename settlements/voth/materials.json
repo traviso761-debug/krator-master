@@ -843,6 +843,146 @@
    },
    "roughLift": 0.4,
    "specular": 0.25
+  },
+  "int_ashlar": {
+   "lib": "stone.sandstone.ashlar",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.2
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_paving": {
+   "lib": "paving.pavement_01",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.3
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_wood": {
+   "lib": "wood.old_wooden_floor_02",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_earth": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.3
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_stucco": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.4
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_tuff": {
+   "lib": "stone.tuff.polished",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_basalt": {
+   "lib": "stone.basalt.polished",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.15
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_oldwall": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.15
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_flag": {
+   "lib": "paving.flagstone",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
+  },
+  "int_mosaic": {
+   "lib": "paving.marble_mosaic_tiles",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
   }
  }
 }
