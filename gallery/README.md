@@ -286,3 +286,7 @@ added, Fauna moved in from II, Ash Nomads moved out to II), Krator Worlds II ver
 Objects version 7 (two calls). **Pending: `worlds/voth.html`** (`settlements/voth/dist/voth-city.html`) is now 19.3 MB, over
 the artifact's 16 MB per-file cap, so Krator Worlds keeps its 2026-10-15 copy (11.9 MB) until the Voth page is slimmed or
 its pack moved beside it (`tools/textures/matlib_pack.py`); its card was regenerated with the new blurb and size.
+
+Version 8 of Krator Biomes and Objects (2026-10-16): `worlds/hyperjungle.html` replaced (3.7 MB, from `main` at 952944c9:
+hero limbs and young trunks on their own species' bark, the plant-naming inspector, the brook as water). The live index
+(version 7) was kept unchanged. One publish call.
