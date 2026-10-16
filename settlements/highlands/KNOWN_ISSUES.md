@@ -2,6 +2,15 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [x] (2026-10-15) Highlands and Roketstad on core/host (ROADMAP.md section 10, step 3), as Iziz: `src/92-camera.js` re-vendored from
+      Iziz's (the camera layer), `src/00-head.html` the same, `src/99-start.js` the take, and `src/91h-hl-tags.js` adds every REG site
+      to the core/tags registry the furniture is in (so the inspector and minimap read the buildings too), mapping Highlands'
+      spellings onto the vocabulary (the branch cultures onto republican, rustic and painted; guild, warehouse, fuel to industry,
+      storage and spaceport to infrastructure, garden to farm; a ruin or salvage yard a state): 0 unknowns on both pages. Proof:
+      verify.py --assert unchanged; the rows' census matches exactly at four views (the old page's furniture batch differs run to
+      run, the new one's matched its first run); Roketstad differs run to run on the old page too (3,727 to 3,749 registered
+      volumes, 546 draw calls over three old runs; the new page 3,729 to 3,749, 546 to 548). TICKS is not handed over (its fire
+      flicker reads NIGHT, which no Highlands page defines).
 - [ ] Deliberate vendor drift (Oct 2026): `src/91-probe.js` (vendored from settlements/iziz) counts each placed catalog furniture piece as a sample of the volume it stands in, so Roketstad's open-air markets, whose goods are now one page-wide furniture mesh, are not reported empty. Upstream Iziz places no catalog furniture, so the change stays local until it does. 2026-10-13 (the re-vendor session): kept, and named in `ADAPTED` in build.py, so `--vendor-check` reports it as "adapted on purpose" instead of DRIFT; Xanadu and Reed Lake take this copy (the line is inert without `HLF`).
 - [x] Vendored Ancients fragments `30-kit 36-decor 38-helpers2 54-mat-concrete 69-mat-salvage` were copied from `../iziz/src` and differ from `../ancients/src` (the drift Iziz already carries); re-vendor both kits together. — closed round 10b: after merging main, all five re-vendored verbatim from main's `../ancients/src` (brings `KIT.meshes`, `cellD`, the `bodyGroup` topple fix, `biomeN`/`BIOME` and the firelight kit); both targets build and pass `--assert`. Iziz keeps its own copies.
 - [x] `vnStairs` (vendored from Iziz) centres its run at `run/2` while treads span `steps*.32`, so the top treads can end inside the wall; `hnKryltso` inherits it (R-A works around it with `hnRAKryltso`). — round 10: `vnStairs` is self-consistent (its run IS `steps*.32`, centred on z); the fault was `hnKryltso` sizing its run as `rise*1.3`. It now takes the treads' own run, foot at `run`, top at the wall. Vendored file untouched.
@@ -47,3 +56,16 @@ Open items are `- [ ]` lines; build.py prints them.
       merged, and the probe found no sample inside seven of them, so `registered-volumes-non-empty` failed with them in.
 - [ ] Fallen logs test the mask every ~4 m along their length (the kit's `log()`), so a log could in principle bridge a
       lane narrower than that; none was seen in the screenshots.
+
+## Roketstad's determinism (2026-10-15)
+- [x] **The same page placed different towns from load to load** (6066 furniture records once, 5994 the next; Republic houses
+      switching between a def and its `_reclaimed` twin). Cause: two shuffles in `targets/roketstad/90b-rk-build.js` were
+      `.sort(()=>rng()-.5)` (the row fallback in `frontageAlong` and the back-row candidates in `backRows`). A random comparator
+      is inconsistent, and V8 does not order an array the same way twice under one: traced in the browser, the same array
+      with the same `rng` state came out of the sort in a different order (or after a different number of comparator calls)
+      on another load, shifting the stream and every `kitKey()` reclaimed pick after it. Fixed with `rkShuffle` (a seeded
+      Fisher-Yates on `rng`); five loads in a row now give the same 1797 buildings and 5738 furniture records, and the
+      furniture fingerprint was rewritten. The shuffle draws differently, so the town's layout shifted once (same rules).
+      Never shuffle with a random comparator in any build.
+- [ ] `src/34-kitdefs.js` (vendored) paints `TEX.leafCard` with `Math.random`: the leaf card's pixels differ per load. It is
+      a texture, not placement, so the layout and the fingerprint are unaffected; fix it upstream and re-vendor.

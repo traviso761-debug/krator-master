@@ -13,9 +13,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
-
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
 
 ## src/
 

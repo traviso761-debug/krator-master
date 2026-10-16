@@ -48,7 +48,10 @@ async def run(a):
     async with async_playwright() as p:
         b = await launch_chromium(p)
         W, H = [int(t) for t in a.size.split("x")]; pg = await b.new_page(viewport={"width": W, "height": H}); pg.set_default_timeout(600000)
-        errs = []; pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: errs.append('console: ' + m.text) if m.type == 'error' else None)
+        errs = []; pg.on("pageerror", lambda e: errs.append(str(e)))
+        # a console error is a failure, but for core/host's optional marks file (94-host-marks.js reads marks.json beside the
+        # page when tools/edits/serve.py has saved one; here it is absent, a 404, and the marks stay the browser's)
+        pg.on("console", lambda m: errs.append('console: ' + m.text) if m.type == 'error' and not (m.location or {}).get('url', '').endswith('/marks.json') else None)
         three = local_three(folder)
         await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(route.fulfill(path=three, content_type="application/javascript")))
         q = ['t=4']

@@ -23,11 +23,13 @@ var BRF_SHIFT = { br_h_viewing_stand:[0,-0.1], br_h_reviewing_dais:[0,-0.36], br
   br_h_barrel_cluster:function(v){ return [-0.443, v?0.304:-0.069]; }, br_h_hitching_rail:function(v){ return v?null:[0.43,-0.43]; } };
 /* the placement pass is core/furnish (50-core-furnish.js: the record, the recentring above, the missing count, the
    id); this is Mav's Refuge's adapter onto it: its seed rule (a hash of the spot), the open building, and the lamps */
+regFlush();   /* the sites registered before core/tags' vocabulary loaded (45-kit.js REGISTER) */
 var BRF = KFURN.create(Object.assign(KFURN.flags(true), {
   catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors, shift: BRF_SHIFT,
-  tags: (KTAGS.page = KTAGS.create({ build:'mavs-refuge' })),   /* every piece registered in core/tags (core/tags/README.md) */
+  tags: (KTAGS.page = KTAGS.page || KTAGS.create({ build:'mavs-refuge' })),   /* every piece registered in core/tags (core/tags/README.md); the sites are already there (45-kit.js REGISTER) */
   seed: function(o, ctx, R, x, y, z){ return 1 + Math.floor(phash(x, y, z, 7.7)*999983); },
   draw: function(rec, ctx, o){
+    if(brfVetoed(KTAGS.page.get(rec.id))){ BEDIT.vetoed.push(rec.id); return; }   /* the owner's edits: moved or removed (98-start.js) */
     var w = o.wealth==null ? 0.5 : o.wealth;
     KFURN.drawRec(BRF, rec, w);
     if(o.lamp){
@@ -37,6 +39,21 @@ var BRF = KFURN.create(Object.assign(KFURN.flags(true), {
   }
 }));
 Object.assign(BRF, { cur: null, stack: [], frame: null });
+/* ---------------------------------------------------------------- the owner's edits, as the page is made (as Girder's 53-furnish.js)
+   KHOST_EDITS (39-host-edits.js, written by core/host/host.py from edits.json or this browser's draft) is a core/edits log.
+   A piece merged into the batch cannot be taken out of it afterwards, so a piece the log moves or removes is not drawn
+   at all (its record stays, for the log to find); an interior piece likewise is left out of its unit's drawing
+   (57a-interiors.js piecesNow). 98-start.js applies the log: the moved piece is drawn on its own where it went, an added
+   one likewise. A target is its core/tags uid, else its key within 1.5 m (core/edits/README.md). */
+var BEDIT = { log: (typeof KHOST_EDITS !== 'undefined' && KHOST_EDITS && KHOST_EDITS.ops) ? KHOST_EDITS : null, vetoed: [] };
+BEDIT.hits = BEDIT.log ? BEDIT.log.ops.filter(function(op){ return (op.op==='REMOVE' || op.op==='MOVE') && op.target && (op.target['class']==='furniture' || op.target['class']==='flora'); }) : [];
+function brfVetoed(r){
+  if(!BEDIT.hits.length || !r) return false;
+  for(var i=0;i<BEDIT.hits.length;i++){ var t=BEDIT.hits[i].target;
+    if(t.uid != null){ if(t.uid === r.uid) return true; }
+    else if(t.at && t.key === r.key && Math.hypot(t.at[0]-r.at[0], t.at[2]-r.at[2]) < 1.5 && Math.abs((t.at[1]||0)-r.at[1]) < 1.5) return true; }
+  return false;
+}
 KFURN.useBatch(BRF, KratorFurniture, KratorInteriors, { indexed: true });   /* indexed meshes (kits/catalog/README.md) */
 window._brf = BRF;                                                     /* read-only, for probes and the console */
 /* the pieces the many small benches, tables and spear racks use (one place to trade look for triangles) */

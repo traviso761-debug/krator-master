@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.323,
+    2.643
+   ],
+   "seam_before": [
+    1.846,
+    2.281
+   ],
+   "source_size": [
+    1024,
+    1536
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.4,
+   "pattern": false,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "voth/tapestry-tzintzun",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.88,
+  "scale": [
+   2,
+   3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__voth__tapestry-tzintzun.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/tapestry-tzintzun` (delivered as \"Mythic Sun-King Tapestry.png\")",
+  "reuse": "the Palace's great hangings of Tzintzun; a single panel",
+  "sha1": "08e97352938034307f19a12be3c27acd95615de2"
+ }
+}

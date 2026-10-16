@@ -11,11 +11,17 @@ Built output (never open it; edit `src/` and rebuild): `dist/verge.html`
 Build: `cd settlements/verge && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `41-verge-layout.js` | 25 | the plateau (36); the canyon (upper river) (42); the lip, the escarpment and the spur (61); the gorge and the cataracts (95); the lower river (108); the ground without the trail (127); the switchback (143); the canyon ramps (216); levelled pads (227); terrain (235) |
 | `45-verge-stage.js` | 10 | the climate fields (34); the flora mask (reserve before you build) (89); the host binding (109) |
 | `46-verge-ground.js` | 11 |  |
@@ -31,6 +37,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `82-verge-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `87-verge-views.js` | 4 |  |
 | `88-verge-build.js` | 1 |  |
-| `90-verge-camera.js` | 13 | the panel (10); picking (28); the polygon tool (65); input (75) |
 | `91-verge-probe.js` | 11 | the checks, each a pure function of its inputs (7); the export (for godot/: the verge case) (76) |
+| `99-start.js` | 8 | the inspector's words where no record holds the  (23); the ticks, after the camera (as 90-verge-camera. (38); the sky and the light, on the one clock, after t (43); the page, handed to the host (53) |
 | `99-tail.html` | <1 |  |

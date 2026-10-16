@@ -51,7 +51,7 @@ a software GPU. What that could not show is the **look on a real GPU in Forward+
 - [ ] It opens at 19:30: lamps and halos lit, braziers flickering, searchlights sweeping, smoke rising from chimneys.
 - [ ] `[` `]` across dusk (17:00 to 19:00) and dawn: lights come on and go off by their hours; the sky and sun dim.
 - [ ] Fog banks: Forward+ only (FogVolume). Turn on volumetric fog in the WorldEnvironment if they do not show; note it.
-- [ ] Weather: `Shift+W` cycles it (or `-- --case=iziz --weather=storm`): rain streaks ride the camera and slant
+- [ ] Weather: `F3` cycles it (or `-- --case=iziz --weather=storm`): rain streaks ride the camera and slant
       with the wind, fog thickens, a bolt flashes every 5 to 14 s in a storm. Is the rain dense enough on a real GPU?
 - [ ] Halo brightness under the Filmic tonemapper (the gain is 0.6 x the three.js value here, a guess).
 - [ ] The city ground's texture and the five magenta stand-ins (ShaderMaterials: water, sky, glow) are expected.

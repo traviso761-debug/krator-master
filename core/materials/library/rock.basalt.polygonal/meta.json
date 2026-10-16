@@ -1,0 +1,48 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.368,
+    1.321
+   ],
+   "seam_before": [
+    1.22,
+    1.031
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.3,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.25,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "id": "rock.basalt.polygonal"
+ },
+ "source": {
+  "file": "5.webp",
+  "sha1": "7e240b8db5fe2e682256581dd7c1a9450d6027d4"
+ }
+}

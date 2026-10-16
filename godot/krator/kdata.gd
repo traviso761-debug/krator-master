@@ -69,8 +69,36 @@ static func texture_from_data_url(url: String) -> ImageTexture:
 	if err != OK:
 		push_warning("krator: texture decode failed (%d)" % err)
 		return null
+	_fill_clear(img)
 	img.generate_mipmaps()
 	return ImageTexture.create_from_image(img)
+
+
+# BIO.alphaTex fills a cut-out's clear texels with a grey (fillRGB) so its mipmaps do not pull black into the leaf edges
+# and twig strokes; a PNG from the browser's canvas loses that fill (alpha 0 is stored black). Put back the mean colour
+# of the solid texels where alpha < 48 (alphaTex's own test), else Godot's mipmaps outline every leaf and twig in black
+static func _fill_clear(img: Image) -> void:
+	if img.detect_alpha() == Image.ALPHA_NONE:
+		return
+	img.convert(Image.FORMAT_RGBA8)
+	var d := img.get_data()
+	var s := Vector3.ZERO
+	var n := 0
+	for o in range(0, d.size(), 4):
+		if d[o + 3] >= 48:
+			s += Vector3(d[o], d[o + 1], d[o + 2])
+			n += 1
+	if n == 0:
+		return
+	var r := int(s.x / n)
+	var g := int(s.y / n)
+	var b := int(s.z / n)
+	for o in range(0, d.size(), 4):
+		if d[o + 3] < 48:
+			d[o] = r
+			d[o + 1] = g
+			d[o + 2] = b
+	img.set_data(img.get_width(), img.get_height(), false, Image.FORMAT_RGBA8, d)
 
 
 # A three.js geometry record ({position, normal, uv, color, index}) as an ArrayMesh surface.
@@ -141,8 +169,8 @@ static func oct_encode(v: Vector3) -> Vector2:
 
 
 # krator-heightfield (written by godot/tools/export_spike.py): a grid mesh with the spike's ground shader,
-# a biome tile's ground (BIO.export's `ground`: the same grid, heights and water) as the same mesh, with a flat
-# water sheet where the water stands above the ground
+# a biome tile's ground (BIO.export's `ground`: the same grid, heights and water) as the same mesh, with water
+# over the cells where it stands above the ground
 static func ground(g: Dictionary, look = null) -> Node3D:
 	var hf := {"format": "krator-biome ground", "nx": g["nx"], "nz": g["nz"], "step": g["step"], "x0": g["x0"], "z0": g["z0"],
 		"heights": g["heights"]}
@@ -153,30 +181,52 @@ static func ground(g: Dictionary, look = null) -> Node3D:
 	return n
 
 
-# BIO.export's ground water (waterH on the ground's grid): one flat sheet at the mean level of the wet samples, or null
+# BIO.export's ground water (waterH on the ground's grid): a quad per wet cell at its own level, or null
 static func water_sheet(g: Dictionary) -> MeshInstance3D:
 	if g.get("water") != null:   # core/export's terrain writes water: null where the build has none
 		var w := floats(g["water"])
 		var h := floats(g["heights"])
-		var wet := 0
-		var lvl := 0.0
-		for i in w.size():
-			if w[i] > h[i] + 0.01:
-				wet += 1
-				lvl += w[i]
-		if wet > 0:
-			var q := PlaneMesh.new()
-			q.size = Vector2((float(g["nx"]) - 1.0) * float(g["step"]), (float(g["nz"]) - 1.0) * float(g["step"]))
+		# a quad per grid cell with a wet corner, each corner at its own water level (a dry corner takes the cell's
+		# wet mean), so a brook or a tarn stays where it is instead of one sheet across the tile
+		var nx: int = int(g["nx"])
+		var nz: int = int(g["nz"])
+		var st: float = float(g["step"])
+		var x0: float = float(g["x0"])
+		var z0: float = float(g["z0"])
+		var st_mesh := SurfaceTool.new()
+		st_mesh.begin(Mesh.PRIMITIVE_TRIANGLES)
+		var cells := 0
+		for j in nz - 1:
+			for i in nx - 1:
+				var ids := [j * nx + i, j * nx + i + 1, (j + 1) * nx + i + 1, (j + 1) * nx + i]
+				var sum := 0.0
+				var k := 0
+				for id in ids:
+					if w[id] > h[id] + 0.01:
+						sum += w[id]
+						k += 1
+				if k == 0:
+					continue
+				cells += 1
+				var p := []
+				for c in 4:
+					var id: int = ids[c]
+					var y: float = w[id] if w[id] > h[id] + 0.01 else sum / k
+					p.append(Vector3(x0 + (i + (1 if c == 1 or c == 2 else 0)) * st, y, z0 + (j + (1 if c >= 2 else 0)) * st))
+				for v in [p[0], p[2], p[1], p[0], p[3], p[2]]:
+					st_mesh.set_normal(Vector3.UP)
+					st_mesh.add_vertex(v)
+		if cells > 0:
 			var mat := StandardMaterial3D.new()
 			mat.albedo_color = Color(0.12, 0.22, 0.26, 0.75)
 			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 			mat.roughness = 0.08
-			q.material = mat
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 			var wm := MeshInstance3D.new()
 			wm.name = "Water"
-			wm.mesh = q
-			wm.position = Vector3(float(g["x0"]) + q.size.x * 0.5, lvl / wet, float(g["z0"]) + q.size.y * 0.5)
-			wm.set_meta("krator", {"note": "one sheet at the mean water level of the wet cells (%d of %d)" % [wet, w.size()]})
+			wm.mesh = st_mesh.commit()
+			wm.material_override = mat
+			wm.set_meta("krator", {"note": "a quad per wet cell (%d of %d)" % [cells, (nx - 1) * (nz - 1)]})
 			return wm
 	return null
 

@@ -138,7 +138,6 @@ function ysEdBuild(){const P=document.createElement('div');P.id='editor';P.style
  const ta=document.createElement('textarea');ta.readOnly=true;ta.style.cssText='width:100%;height:90px;background:#111;color:#cfe;border:1px solid #555;font:11px ui-monospace,monospace;margin-top:6px;resize:vertical';P.appendChild(ta);ED.els.json=ta;
  document.body.appendChild(P);ED.els.panel=P;ysEdRefresh();return P;}
 function ysEdToggle(on){on=on==null?!ED.on:!!on;ED.on=on;if(!ED.els.panel)ysEdBuild();ED.els.panel.style.display=on?'block':'none';
- if(on&&typeof POLY!=='undefined'&&POLY.on){POLY.on=false;polyEl.style.display='none';const pb=[...ui.querySelectorAll('button')].find(b=>b.textContent==='Polygon');if(pb)pb.classList.remove('on');}
  if(!on){ED.sel=null;ysEdBox('sel',null,0);}const eb=[...ui.querySelectorAll('button')].find(b=>b.textContent==='Edit');if(eb)eb.classList.toggle('on',on);return on;}
 // ---------------------------------------------------------------- input: a click (no drag) on the canvas, the keys
 function ysEdClick(cx,cy,shift){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v,camera);
@@ -149,9 +148,11 @@ function ysEdClick(cx,cy,shift){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy
  ysEdSelect(ysEdOwnerAt(h));}
 {let down=null;cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,b:e.button};});
  cv.addEventListener('pointerup',e=>{if(ED.on&&down&&down.b===0&&Math.abs(e.clientX-down.x)<4&&Math.abs(e.clientY-down.y)<4)ysEdClick(e.clientX,e.clientY,e.shiftKey);down=null;});
- addEventListener('keydown',e=>{if(!ED.on||['TEXTAREA','INPUT','SELECT'].indexOf(e.target.tagName)>=0)return;const k=e.key.toLowerCase();
-  if((k==='q'||k==='e')&&ED.cur){keys[k]=false;ysEdRotate(k==='q'?-ED_STEP:ED_STEP);}
-  else if((k==='delete'||k==='backspace')&&ED.sel){ysEdDelete();}else if(k==='escape'){ED.sel=null;ysEdBox('sel',null,0);ysEdRefresh();}});}
+ /* the keys once core/host's camera listens (KHOST.onTake: after its own keydown, so Q / E turning a building is not also
+    the camera's down and up: its held key is let go here); the inspector leaves a click to the editor (99-start.js o.click) */
+ KHOST.onTake(()=>addEventListener('keydown',e=>{if(!ED.on||['TEXTAREA','INPUT','SELECT'].indexOf(e.target.tagName)>=0)return;const k=e.key.toLowerCase();
+  if((k==='q'||k==='e')&&ED.cur){KHOST.cam.keys[k]=false;ysEdRotate(k==='q'?-ED_STEP:ED_STEP);}
+  else if((k==='delete'||k==='backspace')&&ED.sel){ysEdDelete();}else if(k==='escape'){ED.sel=null;ysEdBox('sel',null,0);ysEdRefresh();}}));}
 uiButton('Edit',false,()=>ysEdToggle());
 window._api.city.edits=()=>ysEdEdits();
 window._api.city.editor={toggle:on=>ysEdToggle(on),place:(key,x,z,ry,o)=>ysEdPlace(key,x,z,ry,o),rotate:d=>ysEdRotate(d),setYaw:ry=>ysEdSetYaw(ry),move:(x,z)=>ysEdMove(x,z),

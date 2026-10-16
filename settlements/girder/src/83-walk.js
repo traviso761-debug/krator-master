@@ -251,7 +251,7 @@ function wkToggle(on){
     var fx=-Math.sin(W.yaw), fz=-Math.cos(W.yaw);                       /* the orbit picks up behind the walker */
     setView(W.x-fx*14, W.feet+W.eye+5, W.z-fz*14, W.x, W.feet+W.eye, W.z);
   }
-  var b=document.getElementById('walkToggle'); if(b){ b.textContent='Walk: '+(W.on?'On':'Off')+' (G)'; b.classList.toggle('on',W.on); }
+  var b=document.getElementById('walkToggle'); if(b){ b.textContent='Walk: '+(W.on?'On':'Off')+' (F)'; b.classList.toggle('on',W.on); }
   document.getElementById('walkHint').style.display = W.on ? 'block' : 'none';
   document.getElementById('walkCross').style.display = W.on ? 'block' : 'none';
   return W.on;
@@ -260,7 +260,7 @@ function wkToggle(on){
   var el=renderer.domElement, W=WALKER, K=0.0035;
   function look(dx, dy){ W.yaw -= dx*K; W.pitch = clamp(W.pitch - dy*K, -1.45, 1.45); wkCamera(); }
   addEventListener('keydown', function(e){ if(e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-    if(e.key==='g' || e.key==='G'){ wkToggle(); e.preventDefault(); }
+    /* F walks (core/host's key, handed to wkToggle through KHOST.take's keys in 98-start.js); G flies to the host's pin */
     if(W.on && e.key===' ') e.preventDefault(); });
   document.getElementById('walkToggle').onclick=function(){ wkToggle(); this.blur(); };
   el.addEventListener('pointerdown', function(e){ if(W.on) W.drag={ x:e.clientX, y:e.clientY, moved:0 }; });

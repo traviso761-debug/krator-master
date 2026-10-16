@@ -5,6 +5,23 @@ saying what fixed it.
 
 ## Open, 2026-10-05
 
+- [ ] (2026-10-15) **The palace citadel's interior, for the Iziz rebuild:** the agreed programme is `settlements/iziz/palace/`
+      (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`): the whole precinct inside the 84 m curtain wall, an open
+      Roman-style imperial family in the tiered block, the general staff and the diplomatic corps in new flank buildings and
+      the base tier's secretariats, a mech depot and the Ancient core in the mesa, the lararium of the emperors off the Aula,
+      the tower. Nothing is built yet: the palace builder (`src/78-transplant.js`) has no interior. Do it with the rebuild,
+      not before (owner, 2026-10-15).
+- [x] (2026-10-15) Iziz on core/host (ROADMAP.md section 10, step 3; core/host/README.md): the camera, the controls, the walk (F),
+      the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records, the full registry of
+      91t-iziz-tags.js), marks (P, they replace the polygon tool) and the minimap (M) are core/host's; `src/92-camera.js` keeps only
+      what the page calls (ui, uiButton, setView, Labels) and `src/99-start.js` is the take. FRAME_HOOKS run as before, f(dt, ms),
+      before the camera. Proof: verify.py --assert unchanged on the vernacular sheet and the city; a scene census (every mesh's
+      name, visibility and triangles, the camera to 4 decimals) at four views of each matches the old pages exactly (both are
+      deterministic: two old runs match each other exactly too). The city's last-frame triangle count moves run to run on the old
+      page as on the new (4.65 M to 4.74 M over three old runs). Not core/space (the biome's scatter takes its grid when the module
+      is on the page, 2026-10-13 below) and no editor or cutaway yet (no catalog furniture, no interiors).
+- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not
+      handed to core/host, as it was never run by the old camera either.
 - [ ] (2026-10-05) Fauna sheets: `settlements/iziz/materials.json` (families fauna_wing, fauna_fur, fauna_hide, fauna_ray; all optional) and `fauna_pack()` in build.py
       write `HYPERJUNGLE.FAUNATEX` as a generated fragment `86-bio-57-fauna-pack.js` (city target only; nothing is written until a sheet exists). Today the sloth
       (`fur.sloth`) and strider (`hide.strider`) sheets are in; `wing.butterfly` and `skin.sky-ray` are in too (2026-10-06), and the darts are not textured by design

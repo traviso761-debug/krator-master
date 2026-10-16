@@ -28,6 +28,18 @@ GIX.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, GIX.batch);
   var lights0 = GIX.adapter.lights;   /* a piece's lights do not depend on its seed: one build per key and variant, not per placement */
   GIX.adapter.lights = function(key, v){ return lights0(key, v, { seed:1, wealth:0.5 }); };
   if(!GFURN.on) GIX.adapter.build = GFURN.adapter.build;
+  /* every interior piece is a core/tags record too (prefix ixf, its building as parent), so the inspector names it and the
+     owner's edits can move or remove it (53-furnish.js gfVetoed: a vetoed piece is not built) */
+  var gixBuild0 = GIX.adapter.build;
+  GIX.adapter.build = function(p, room){
+    var E = KratorFurniture.FURN_BY_KEY[p.key] || {}, t = { setting:'room' };
+    if(E.culture) t.culture = E.culture; if(E.tier) t.tier = E.tier; if(room && room.id != null) t.room = String(room.id);
+    var r = KTAGS.page.add({ prefix:'ixf', 'class':'furniture', kind:E.type||null, key:p.key, name:E.name||null,
+      parent: room && room.building != null ? String(room.building) : null, at:[p.x, p.y||0, p.z], ry:p.ry||0,
+      size: E.w ? [E.w, E.d, E.h] : undefined, tags:t, frag:'56-interiors.js' });
+    if(gfVetoed(r)){ GEDIT.vetoed.push(r.id); return { key:p.key, variant:p.variant, seed:p.seed, x:p.x, y:p.y, z:p.z, ry:p.ry, building:room?room.building:null, room:room?room.id:null, setting:'indoor', lights:[] }; }
+    return gixBuild0.call(this, p, room);
+  };
 })();
 
 /* FRM-local (55-arch: x = right, z = front) -> the set's frame (the catalog's: x is the mirror) */

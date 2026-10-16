@@ -17,8 +17,11 @@ VIEW.stage = function () {
   var sc = sun.shadow.camera; sc.left = -1900; sc.right = 1900; sc.top = 1900; sc.bottom = -1900; sc.near = 100; sc.far = 7000; sc.updateProjectionMatrix();
   sun.shadow.bias = -0.0004; sun.shadow.normalBias = 1.5;
   (window._frameHooks = window._frameHooks || []).push(function () {
-    var h = Math.max(2, camera.position.y - Math.max(0, VOTH.terrainH(camera.position.x, camera.position.z)));
-    var nr = clamp(h * 0.03, 0.3, 40);
+    /* walking, the eye is 1.7 m over a floor, whatever the ground is under the canton (owner, 2026-10-15: "camera clipping
+       between levels seen when using walk mode"): the near plane stays at its least, so no wall or ceiling an arm away is cut */
+    var walking = typeof ctl !== 'undefined' && ctl.walk;
+    var h = walking ? 2 : Math.max(2, camera.position.y - Math.max(0, VOTH.terrainH(camera.position.x, camera.position.z)));
+    var nr = walking ? 0.12 : clamp(h * 0.03, 0.3, 40);
     if (Math.abs(nr - camera.near) > camera.near * 0.15) { camera.near = nr; camera.updateProjectionMatrix(); }
   });
 };

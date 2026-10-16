@@ -112,17 +112,20 @@ def core_lists(build):
             files = ast.literal_eval(m.group(2))
             if files:
                 out.append(('core/biome' if m.group(1) == 'CORE_BIOME' else 'core/terrain', files))
-        # the host shell (core/host/host.py): CORE_HOST = khost.SHELL, khost.SHELL+[...], or a literal list
-        m = re.match(r'\s*CORE_HOST\s*=\s*(khost\.SHELL)?\s*\+?\s*(\[[^\]]*\])?', line)
-        if m and (m.group(1) or m.group(2)):
+        # the host shell (core/host/host.py): CORE_HOST = khost.SHELL, khost.FULL, khost.SHELL+[...], a comprehension over them,
+        # or a literal list: the expression is evaluated against host.py itself, nothing else in scope
+        m = re.match(r'\s*CORE_HOST\s*=\s*([^#\n]+)', line)
+        if m:
             import importlib.util
             spec = importlib.util.spec_from_file_location('khost', os.path.join(ROOT, 'core', 'host', 'host.py'))
             mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
-            files = (list(mod.SHELL) if m.group(1) else []) + (ast.literal_eval(m.group(2)) if m.group(2) else [])
-            for where in ('host', 'clock'):
+            try:
+                files = list(eval(m.group(1).strip(), {'__builtins__': {}}, {'khost': mod}))
+            except Exception:
+                continue
+            for where in sorted(set(mod.WHERE.get(f, 'host') for f in files)):
                 fs = [f for f in files if mod.WHERE.get(f, 'host') == where]
-                if fs:
-                    out.append(('core/' + where, fs))
+                out.append(('core/' + where, fs))
     return out
 
 

@@ -194,6 +194,7 @@ DELIBERATE = {'src/00-head.html': 'own title',
               'verify.py': 'vessel invariants in _api.extra(), Chromium fallback',
               'jscheck.py': 'pre-installed Chromium fallback'}
 SOCKETS = os.path.join(ROOT, 'core', 'sockets', '80-cultures.js')
+SYMBOLS = os.path.join(ROOT, 'core', 'sockets', '38-symbols.js')
 
 
 def _js_fn_body(src, start):
@@ -239,13 +240,14 @@ def vendor_check():
             print('  !  RS_CULT.%-9s differs from the core/sockets pack in: %s' % (k, ', '.join(diffs))); bad.append('RS_CULT.' + k)
         else:
             print('  =  RS_CULT.%-9s matches the core/sockets pack' % k)
-    for mine, theirs in (('rsSymSun', 'sun'), ('rsSymDiamond', 'diamond')):
+    syms = open(SYMBOLS, encoding='utf-8').read()
+    for mine, theirs in (('rsSymSun', 'sun'), ('rsSymDiamond', 'diamond'), ('rsSymWindWave', 'windwave')):
         a = _js_fn_body(tex, tex.index('function %s(' % mine))
-        b = _js_fn_body(cult, re.search(r'\n %s:\(' % theirs, cult).end())
-        if norm(a) == norm(b):
+        b = _js_fn_body(syms, re.search(r'\n %s:\(' % theirs, syms).end())
+        if norm(a) == norm(b.replace('SYM_TAU', 'TAU')):
             print('  =  %-18s matches SYMBOLS.%s' % (mine, theirs))
         else:
-            print('  !  %-18s differs from SYMBOLS.%s in core/sockets/80-cultures.js' % (mine, theirs)); bad.append(mine)
+            print('  !  %-18s differs from SYMBOLS.%s in core/sockets/38-symbols.js' % (mine, theirs)); bad.append(mine)
     print('vendor-check: ' + ('OK (only the deliberate drift in KNOWN_ISSUES.md)' if not bad else 'DRIFT: ' + ', '.join(bad)))
     return not bad
 

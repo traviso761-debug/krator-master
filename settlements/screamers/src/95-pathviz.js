@@ -1,6 +1,7 @@
 // ================================================================= PATH TRACKER
-// Shows what the life layer is actually doing. Two overlays, toggled from the
-// tools panel:
+// Shows what the life layer is actually doing. Two overlays, toggled as core/host
+// layers (99-start.js hands window._tracker's to the take: the bar's routes and
+// tracks buttons):
 //
 //   routes  the fixed geometry every agent is bound to -- shuttle legs, the
 //           wall circuit, guard posts, and the arriving party's whole itinerary
@@ -12,14 +13,8 @@
 // calls whether there are ten agents or a thousand.
 reseed(9495);
 (function(){
- const box=document.getElementById('tools');
- if(!box||typeof window._life==='undefined'||!window._life)return;
+ if(typeof window._life==='undefined'||!window._life)return;
  const A=window._life.agents,N=A.length;
- const BST=window._toolBtnStyle||'';
- const ON=';background:rgba(255,179,71,.30);border-color:#ffb347';
- const mk=t=>{const b=document.createElement('button');b.textContent=t;b.style.cssText=BST;
-  box.insertBefore(b,box.lastChild);return b;};
- const bR=mk('Routes'),bT=mk('Tracks');
 
  const COL={shuttle:0x7fe0a0,patrol:0xff7f7f,post:0xffb347,party:0xd76f9c};
  const mat=new THREE.LineBasicMaterial({vertexColors:true,fog:false,depthTest:false});
@@ -81,12 +76,8 @@ reseed(9495);
   trackG.setDrawRange(0,n);
   trackG.attributes.position.needsUpdate=true;});
 
- const sync=()=>{bR.style.cssText=BST+(routes.visible?ON:'');
-  bT.style.cssText=BST+(tracks.visible?ON:'');
-  insp.textContent='tracker: routes '+(routes.visible?'on':'off')
-   +' · tracks '+(tracks.visible?'on':'off')+'\n'
-   +N+' agents — green shuttle, red patrol, amber post, pink party';};
- bR.onclick=()=>{routes.visible=!routes.visible;sync();};
- bT.onclick=()=>{tracks.visible=!tracks.visible;if(!tracks.visible){filled=0;head=0;}sync();};
- window._tracker={routes:routes,tracks:tracks};
+ // the toggles (core/host layers, 99-start.js); the legend: green shuttle, red patrol, amber post, pink party
+ window._tracker={routes:routes,tracks:tracks,N:N,COL:COL,
+  setRoutes:on=>{routes.visible=!!on;},
+  setTracks:on=>{tracks.visible=!!on;if(!on){filled=0;head=0;}}};
 })();

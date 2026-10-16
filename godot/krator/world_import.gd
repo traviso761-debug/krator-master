@@ -529,4 +529,4 @@ static func _lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary) ->
 			out.surface_set_material(s, src.surface_get_material(s))
 		(gi as MeshInstance3D).mesh = out
 	gi.position = o
-	KratorBiome._apply_lod(gi, rec, report)
+	KratorBiome._apply_lod(gi, rec, report, KratorBiome.CHUNK * 0.7071)   # a whole chunk at its centre

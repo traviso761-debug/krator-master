@@ -7,7 +7,8 @@ extends RefCounted
 
 const FOLIAGE := preload("res://shaders/foliage.gdshader")
 const BARK := preload("res://shaders/bark.gdshader")
-const CHUNK := 1200.0   # BIO.LOD.chunk
+const CHUNK := 1200.0   # BIO.LOD.chunk (three's LOD box; only named in the report now)
+const CELL := 150.0     # the importer's LOD cell: finer than a 300 m tile, so a tile changes detail progressively
 
 
 static func build(path: String) -> Node3D:
@@ -57,42 +58,55 @@ static func build(path: String) -> Node3D:
 	var instances := 0
 	for it in d["items"]:
 		var m: Dictionary = mats[it["material"]]
-		var origin := _lod_origin(it)
 		var mat := _material(m, tex, texrec, true, report)
 		var mesh := KData.array_mesh(it["geometry"], mat, Vector3.ZERO)
-		var mm := MultiMesh.new()
-		mm.transform_format = MultiMesh.TRANSFORM_3D
-		mm.use_colors = true
-		mm.use_custom_data = true
-		mm.mesh = mesh
 		var n: int = int(it["count"])
-		mm.instance_count = n
-		mm.buffer = _instance_buffer(it, n, origin, m, report)
-		var mmi := MultiMeshInstance3D.new()
-		mmi.name = "%s.%s" % [it["kit"], it["name"]]
-		mmi.multimesh = mm
-		mmi.position = origin
-		_apply_lod(mmi, it, report)
-		mmi.set_meta("krator", {"kit": it["kit"], "name": it["name"], "label": it["label"], "material": m.get("key"),
-			"kind": m["kind"], "dynamic": it["dynamic"], "count": n})
+		var groups := _item_cells(it, n)
 		# core/tags (biomes/GODOT.md, "Records"): the item set's id, and the side table by instance index: each instance's
-		# uid (KTAGS.uid of its class, key and position) and its index in the set (its id is "<record>#<index>")
+		# uid (KTAGS.uid of its class, key and position) and its index in the set (its id is "<record>#<index>"). A cell
+		# keeps the slice for its own instances, in its own instance order
+		var recs: Array = it["records"] if it.get("records") is Array and (it["records"] as Array).size() == n else []
+		var ridx := KData.ints(it["recordIndex"]) if recs.size() > 0 else PackedInt32Array()
 		ids["items"] += 1
 		ids["instances"] += n
-		if it.get("records") is Array and (it["records"] as Array).size() == n:
-			mmi.set_meta("krator_record", it["record"])
-			mmi.set_meta("krator_records", PackedStringArray(it["records"]))
-			mmi.set_meta("krator_index", KData.ints(it["recordIndex"]))
-			if by_id.has(it["record"]):
-				mmi.set_meta("krator_set", by_id[it["record"]])
-				ids["sets_resolved"] += 1
+		if recs.size() > 0:
 			ids["items_with_record"] += 1
-			for u in it["records"]:
+			if by_id.has(it["record"]):
+				ids["sets_resolved"] += 1
+			for u in recs:
 				if str(u) != "":
 					ids["instances_with_uid"] += 1
+		for key in groups:
+			var sel: PackedInt32Array = groups[key]
+			var origin := _cell_origin(key)
+			var mm := MultiMesh.new()
+			mm.transform_format = MultiMesh.TRANSFORM_3D
+			mm.use_colors = true
+			mm.use_custom_data = true
+			mm.mesh = mesh
+			mm.instance_count = sel.size()
+			mm.buffer = _instance_buffer(it, sel, origin, m, report)
+			var mmi := MultiMeshInstance3D.new()
+			mmi.name = "%s.%s" % [it["kit"], it["name"]] + ("" if key == "" else "@" + key)
+			mmi.multimesh = mm
+			mmi.position = origin
+			_apply_lod(mmi, it, report)
+			mmi.set_meta("krator", {"kit": it["kit"], "name": it["name"], "label": it["label"], "material": m.get("key"),
+				"kind": m["kind"], "dynamic": it["dynamic"], "count": sel.size(), "cell": key})
+			if recs.size() > 0:
+				var rs := PackedStringArray()
+				var ri := PackedInt32Array()
+				for i in sel:
+					rs.append(str(recs[i]))
+					ri.append(ridx[i] if i < ridx.size() else i)
+				mmi.set_meta("krator_record", it["record"])
+				mmi.set_meta("krator_records", rs)
+				mmi.set_meta("krator_index", ri)
+				if by_id.has(it["record"]):
+					mmi.set_meta("krator_set", by_id[it["record"]])
+			items.add_child(mmi)
 		if it["dynamic"]:
 			_gap(report, "fauna", "dynamic items (fauna on aP0/aP1 paths) are placed static: the anim kind has no Godot shader yet")
-		items.add_child(mmi)
 		instances += n
 
 	var buckets := Node3D.new()
@@ -101,25 +115,33 @@ static func build(path: String) -> Node3D:
 	var tris := 0
 	for b in d["buckets"]:
 		var m: Dictionary = mats[b["material"]]
-		var origin := _lod_origin(b)
-		var mi := MeshInstance3D.new()
-		mi.name = "%s.%s" % [b["kit"], b["name"]]
-		mi.mesh = KData.array_mesh(b["geometry"], _material(m, tex, texrec, false, report), origin)
-		mi.position = origin
-		_apply_lod(mi, b, report)
-		mi.set_meta("krator", {"kit": b["kit"], "name": b["name"], "label": b["label"], "material": m.get("key"), "kind": m["kind"]})
+		var mat := _material(m, tex, texrec, false, report)
+		var parts := _bucket_cells(b, mat)
+		# one node per bucket holds its records (their pieces index the whole bucket's triangles), its cells as children
+		var bn := Node3D.new()
+		bn.name = "%s.%s" % [b["kit"], b["name"]]
+		bn.set_meta("krator", {"kit": b["kit"], "name": b["name"], "label": b["label"], "material": m.get("key"), "kind": m["kind"], "cells": parts.size()})
 		ids["buckets"] += 1
 		if b.get("records") is Array:   # the volumes (trees, logs) whose pieces this bucket merges, by uid and by id
-			mi.set_meta("krator_records", PackedStringArray(b["records"]))
-			mi.set_meta("krator_record_ids", PackedStringArray(b["recordIds"]))
-			mi.set_meta("krator_pieces", b.get("pieces", {}))
+			bn.set_meta("krator_records", PackedStringArray(b["records"]))
+			bn.set_meta("krator_record_ids", PackedStringArray(b["recordIds"]))
+			bn.set_meta("krator_pieces", b.get("pieces", {}))
 			ids["bucket_records"] += (b["records"] as Array).size()
 			if (b["records"] as Array).size() > 0:
 				ids["buckets_with_records"] += 1
-		buckets.add_child(mi)
+		for key in parts:
+			var mi := MeshInstance3D.new()
+			mi.name = "cell" if key == "" else "@" + key
+			mi.mesh = parts[key]
+			mi.position = _cell_origin(key)
+			_apply_lod(mi, b, report)
+			mi.set_meta("krator", {"kit": b["kit"], "name": b["name"], "label": b["label"], "material": m.get("key"), "kind": m["kind"], "cell": key})
+			bn.add_child(mi)
+		buckets.add_child(bn)
 		tris += int(b["triangles"])
 
-	report["counts"] = {"items": d["items"].size(), "instances": instances, "buckets": d["buckets"].size(), "triangles": tris,
+	report["counts"] = {"items": d["items"].size(), "item_nodes": items.get_child_count(), "instances": instances,
+		"buckets": d["buckets"].size(), "bucket_nodes": buckets.get_child_count(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": d["textures"].size(), "load_ms": Time.get_ticks_msec() - t0}
 	report["ids"] = ids
 	if ids["items_with_record"] == 0:
@@ -160,33 +182,151 @@ static func _gap(report: Dictionary, key: String, text: String) -> void:
 	report["gaps"][key] = text
 
 
-# A LOD-chunked mesh is placed at its chunk's centre, so Godot's visibility range (measured from the node) means
-# roughly what three's did (measured from the chunk's box: BIO.lodTick)
-static func _lod_origin(rec: Dictionary) -> Vector3:
-	var lod = rec.get("lod")
-	if lod == null:
+# A LOD-chunked item or bucket is split into CELL-sized cells (instances by position, buckets by connected piece),
+# one node per cell at the cell's centre. Godot's visibility range is measured from the node, three's from the
+# chunk's box (BIO.lodTick). Placed per chunk, a 300 m tile inside one 1.2 km chunk changed detail all at one moment
+# (GODOT-PLAN.md, finding 16); per cell, detail thins progressively and the range is widened only by the cell's
+# half-diagonal. A record without `lod` stays one node at the origin (cell key "").
+static func _cell_key(x: float, z: float) -> String:
+	return "%d,%d" % [int(floor(x / CELL)), int(floor(z / CELL))]
+
+
+static func _cell_origin(key: String) -> Vector3:
+	if key == "":
 		return Vector3.ZERO
-	var c: PackedStringArray = str(lod["chunk"]).split(",")
-	return Vector3((float(c[0]) + 0.5) * CHUNK, 0.0, (float(c[1]) + 0.5) * CHUNK)
+	var c: PackedStringArray = key.split(",")
+	return Vector3((float(c[0]) + 0.5) * CELL, 0.0, (float(c[1]) + 0.5) * CELL)
 
 
-static func _apply_lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary) -> void:
+# cell key -> the indices of the instances in that cell
+static func _item_cells(it: Dictionary, n: int) -> Dictionary:
+	var out := {}
+	if it.get("lod") == null:
+		var all := PackedInt32Array()
+		all.resize(n)
+		for i in n:
+			all[i] = i
+		out[""] = all
+		return out
+	var M := KData.floats(it["matrices"])
+	for i in n:
+		var key := _cell_key(M[i * 16 + 12], M[i * 16 + 14])
+		if not out.has(key):
+			out[key] = []
+		out[key].append(i)
+	for key in out:   # grouped in Arrays: a PackedInt32Array in a Dictionary is a copy, append would not stick
+		out[key] = PackedInt32Array(out[key])
+	return out
+
+
+# cell key -> ArrayMesh (vertices relative to the cell's centre). Triangles are grouped into connected pieces
+# (union-find over shared vertices), and each piece goes whole to the cell of its centroid.
+static func _bucket_cells(b: Dictionary, mat: Material) -> Dictionary:
+	var whole := KData.array_mesh(b["geometry"], mat, Vector3.ZERO)
+	if b.get("lod") == null:
+		return {"": whole}
+	var arrays := whole.surface_get_arrays(0)
+	var v3: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var idx: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var nv := v3.size()
+	var parent := PackedInt32Array()
+	parent.resize(nv)
+	for i in nv:
+		parent[i] = i
+	for t in range(0, idx.size() - 2, 3):
+		var r0 := _find(parent, idx[t])
+		var r1 := _find(parent, idx[t + 1])
+		if r1 != r0:
+			parent[r1] = r0
+		var r2 := _find(parent, idx[t + 2])
+		if r2 != r0:
+			parent[r2] = r0
+	var sum := {}   # root -> (sum x, sum z, vertex count)
+	for i in nv:
+		var r := _find(parent, i)
+		sum[r] = sum.get(r, Vector3.ZERO) + Vector3(v3[i].x, v3[i].z, 1.0)
+	var cell_of := {}
+	for r in sum:
+		var s: Vector3 = sum[r]
+		cell_of[r] = _cell_key(s.x / s.z, s.y / s.z)
+	var tris := {}   # cell key -> offsets of its triangles in idx
+	for t in range(0, idx.size() - 2, 3):
+		var key: String = cell_of[_find(parent, idx[t])]
+		if not tris.has(key):
+			tris[key] = []
+		tris[key].append(t)
+	var out := {}
+	for key in tris:
+		out[key] = _sub_mesh(arrays, PackedInt32Array(tris[key]), _cell_origin(key), mat)
+	return out
+
+
+static func _find(parent: PackedInt32Array, i: int) -> int:
+	while parent[i] != i:
+		parent[i] = parent[parent[i]]
+		i = parent[i]
+	return i
+
+
+# the triangles at the offsets `tris` of a surface's arrays, their vertices renumbered and moved by -origin
+static func _sub_mesh(arrays: Array, tris: PackedInt32Array, origin: Vector3, mat: Material) -> ArrayMesh:
+	var idx: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+	var remap := {}
+	var order := PackedInt32Array()
+	var out_idx := PackedInt32Array()
+	out_idx.resize(tris.size() * 3)
+	var w := 0
+	for t in tris:
+		for k in 3:
+			var v := idx[t + k]
+			if not remap.has(v):
+				remap[v] = order.size()
+				order.append(v)
+			out_idx[w] = remap[v]
+			w += 1
+	var sub := []
+	sub.resize(Mesh.ARRAY_MAX)
+	var v3: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var pv := PackedVector3Array()
+	pv.resize(order.size())
+	for j in order.size():
+		pv[j] = v3[order[j]] - origin
+	sub[Mesh.ARRAY_VERTEX] = pv
+	for slot in [Mesh.ARRAY_NORMAL, Mesh.ARRAY_TEX_UV, Mesh.ARRAY_COLOR]:
+		var src = arrays[slot]
+		if src == null:
+			continue
+		var dst = src.duplicate()
+		dst.resize(order.size())
+		for j in order.size():
+			dst[j] = src[order[j]]
+		sub[slot] = dst
+	sub[Mesh.ARRAY_INDEX] = out_idx
+	var m := ArrayMesh.new()
+	m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, sub)
+	if mat:
+		m.surface_set_material(0, mat)
+	return m
+
+
+# half: the half-diagonal of the box the node stands at the centre of (a cell here; world_import.gd places whole chunks)
+static func _apply_lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary, half := CELL * 0.7071) -> void:
 	var lod = rec.get("lod")
 	if lod == null:
 		return
-	var half := CHUNK * 0.7071   # three measures to the chunk's box, Godot to the node: widen by the half-diagonal
+	# three measures to the chunk's box, Godot to the node: widen by the half-diagonal of the box the node stands for
 	gi.visibility_range_end = float(lod["range"]) + half
 	gi.visibility_range_end_margin = 60.0
 	if float(lod["minRange"]) > 0.0:
 		gi.visibility_range_begin = max(0.0, float(lod["minRange"]) - half)
 		gi.visibility_range_begin_margin = 60.0
 	gi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
-	_gap(report, "lod", "LOD is per chunk box in three and per node point in Godot: ranges widened by the chunk half-diagonal (%.0f m); stand-ins and impostors are not LOD levels of what they replace" % half)
+	_gap(report, "lod", "LOD is per chunk box in three (%.0f m) and per node point in Godot: LOD-chunked items and buckets are split into %.0f m cells (instances by position, buckets by connected piece), one node per cell at its centre, ranges widened by the cell half-diagonal (%.0f m), so a tile's detail thins cell by cell; stand-ins and impostors are not LOD levels of what they replace" % [CHUNK, CELL, half])
 
 
 # MultiMesh.buffer: per instance 12 floats (the 3x4 transform, row by row), 4 colour, 4 custom.
 # COLOR = (r, g, b, c2.r), INSTANCE_CUSTOM = (oct(aN).x, oct(aN).y, c2.g, c2.b) (biomes/GODOT.md)
-static func _instance_buffer(it: Dictionary, n: int, origin: Vector3, m: Dictionary, report: Dictionary) -> PackedFloat32Array:
+static func _instance_buffer(it: Dictionary, sel: PackedInt32Array, origin: Vector3, m: Dictionary, report: Dictionary) -> PackedFloat32Array:
 	var M := KData.floats(it["matrices"])
 	var C := KData.floats(it["colours"]) if it["colours"] != null else PackedFloat32Array()
 	var ex: Dictionary = it["extras"]
@@ -198,10 +338,11 @@ static func _instance_buffer(it: Dictionary, n: int, origin: Vector3, m: Diction
 		elif k != "aN" and k != "aC2":
 			_gap(report, "extras." + k, "per-instance attribute %s has no slot in the MultiMesh packing" % k)
 	var buf := PackedFloat32Array()
-	buf.resize(n * 20)
-	for i in n:
+	buf.resize(sel.size() * 20)
+	for j in sel.size():
+		var i := sel[j]
 		var o := i * 16
-		var b := i * 20
+		var b := j * 20
 		# row r of the 3x4 is m[r], m[4+r], m[8+r], m[12+r] in three's column-major order
 		buf[b] = M[o]; buf[b + 1] = M[o + 4]; buf[b + 2] = M[o + 8]; buf[b + 3] = M[o + 12] - origin.x
 		buf[b + 4] = M[o + 1]; buf[b + 5] = M[o + 5]; buf[b + 6] = M[o + 9]; buf[b + 7] = M[o + 13] - origin.y

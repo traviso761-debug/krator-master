@@ -6,13 +6,13 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 334 (17%) | 57 (3%) | 105 (5%) | 116 (6%) | 1397 (70%) |
+| KB | 337 (17%) | 57 (3%) | 105 (5%) | 110 (5%) | 1397 (70%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/00-head.html` | 2.9 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/00-head.html` | 1.4 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/10-core.js` | 3.0 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/12-stats.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/30-kit.js` | 3.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 2 | 2 | 5 | 0 | 0 | 0 |  |
@@ -92,7 +92,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/78-hyk-agri.js` | 14.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | draws through the Hykkousoi shell kit (hykPut, hykLathe, hykTube): no `THREE.` for the counts to see |
 | `src/79-government.js` | 7.7 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/79-hyk-markets.js` | 18.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | draws through the Hykkousoi shell kit (hykPut, hykLathe, hykTube): no `THREE.` for the counts to see |
-| `src/79z-ys-matlib.js` | 5.5 | [G shader] | 2 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
+| `src/79z-ys-matlib.js` | 6.1 | [G shader] | 2 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 |  |
 | `src/80-aa-battery.js` | 1.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/82-apartments.js` | 8.9 | [draw] | 6 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
@@ -121,9 +121,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/8al-alt-11-hospital.js` | 5.1 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-ys-scene.js` | 7.7 | [web] | 11 | 0 | 1 | 0 | 0 | 4 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/91-ys-probe.js` | 8.1 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/92-camera.js` | 15.1 | [web] | 18 | 3 | 25 | 15 | 4 | 4 | 0 | 1 | 3 | 0 | 0 |  |
+| `src/91t-ys-tags.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md); Ys's spellings mapped, 0 unknowns |
+| `src/92-camera.js` | 7.5 | [web] | 6 | 3 | 7 | 1 | 0 | 2 | 0 | 1 | 1 | 0 | 0 | what stays of the camera on core/host: ui, uiButton, setView with a preset's hour, compass and Inside, the inspector's words, Inside, the compass (2026-10-15) |
 | `src/93-labels.js` | 6.2 | [G shader] | 7 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/93-ys-ui.js` | 3.6 | [web] | 5 | 0 | 3 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/99-start.js` | 3.1 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take: views, ground and the sea's floor, records, inspector words, cutaway units from ROOMS, minimap; FRAME_HOOKS before the camera: host shell |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/city/77-voth-townhouses.js` | 11.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/84-city-geo.js` | 12.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -144,7 +146,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/city/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/91z-views.js` | 10.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/93z-city-api.js` | 16.8 | [web] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the probe: _api.city.place()/records() and the city invariants on window._api |
-| `targets/city/94-city-editor.js` | 21.5 | [web] | 8 | 0 | 19 | 4 | 0 | 1 | 1 | 4 | 1 | 0 | 0 |  |
+| `targets/city/94-city-editor.js` | 21.5 | [web] | 8 | 0 | 18 | 4 | 0 | 1 | 1 | 4 | 1 | 0 | 0 | the city's live building editor; its keys after core/host's camera (KHOST.onTake) |
 | `targets/kit/84-kit-geo.js` | 0.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/kit/89z-rows.js` | 6.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/kit/91z-views.js` | 0.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

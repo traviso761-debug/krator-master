@@ -112,6 +112,14 @@ BIO.placeH=function(x,z){return BIO.host?(BIO.host.placeH||BIO.host.terrainH)(x,
 BIO.depth=function(x,z){return BIO.waterH(x,z)-BIO.placeH(x,z);};
 // a registered volume also becomes a core/tags record when the host asked for tags (BIO.record, 20-core-kit.js)
 BIO.register=function(o){if(BIO.record)BIO.record(o);if(BIO.host)BIO.host.register(o);};
+// NAMES (additive): the plants too many or too small for the host's register (saplings, understorey trees, palms),
+// for an inspector to name what it hit. A kit hands one list per pass, replaced when the pass reruns:
+// BIO.nameSet('hyperjungle.saplings', [{name,x,z,y,r,h}...]); BIO.nameAt(x,y,z) gives the smallest whose cylinder holds
+// the point, or null. Inspector-only: no draw, no random numbers, nothing exported
+BIO.names={};
+BIO.nameSet=function(tag,list){BIO.names[tag]=list||[];};
+BIO.nameAt=function(x,y,z){let best=null;for(const t in BIO.names){const L=BIO.names[t];for(let i=0;i<L.length;i++){const o=L[i],dx=x-o.x,dz=z-o.z;
+ if(dx*dx+dz*dz<=o.r*o.r&&y>=o.y-1&&y<=o.y+o.h+2&&(!best||o.r<best.r))best=o;}}return best;};
 // the detail radii (sedesert-1, where it was BIO.LOD(); BIO.LOD is the runtime LOD's settings)
 BIO.radii=function(){return BIO.host?BIO.host.lod:{hero:800,mid:1500,far:2200,floor:[500,1250]};};
 BIO.window=function(n){return (BIO.host&&BIO.host.windows[n])||null;};

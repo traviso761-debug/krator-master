@@ -8,6 +8,9 @@ const BUILD_T0=performance.now();
 const VERN_PLACED=[];
 const LANDMARKS=[];
 const rki=(a,b)=>a+Math.floor(rng()*(b-a+1));
+// a seeded shuffle (Fisher-Yates on rng), in place. Never `.sort(()=>rng()-.5)`: a random comparator is inconsistent,
+// and V8 then orders the same array with the same draws differently from load to load (the page was not deterministic)
+function rkShuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
 // adopt a landmark name onto the biggest REG volume the building registered
 function landmark(name,r0,o){LANDMARKS.push({name,x:o.x,z:o.z});let best=null;for(let i=r0;i<REG.length;i++){const r=REG[i];if(!best||r.r>best.r)best=r;}
  if(best){best.name=name;best.tags=Object.assign({},best.tags||{},{landmark:true});}}
@@ -78,7 +81,7 @@ function frontageAlong(pts,roadW,pick,test,st,opt){opt=typeof opt==='number'?{ga
     let o=mk(D),k2=key;
     // does not fit: a smaller house on the same spot before the row gives up here (shallowest first — the usual
     // obstacle is the street or the building behind)
-    if(!fits(o)){o=null;if(opt.fallback!==false)for(const alt of ROW_FALLBACK.slice().sort(()=>rng()-.5)){const kk=kitKey(alt),DD=VERN.defs[kk];if(!DD||s+DD.w>L+.5)continue;const q=mk(DD);if(fits(q)){o=q;k2=kk;break;}}}
+    if(!fits(o)){o=null;if(opt.fallback!==false)for(const alt of rkShuffle(ROW_FALLBACK.slice())){const kk=kitKey(alt),DD=VERN.defs[kk];if(!DD||s+DD.w>L+.5)continue;const q=mk(DD);if(fits(q)){o=q;k2=kk;break;}}}
     if(!o){s+=2;run=null;}
     else{const key=k2,D=VERN.defs[k2];const v=run.pk.v==null?undefined:(run.pk.v+run.left)%6;placeVern(key,o,{v});o.row=opt.back!==false;ROWFRONTS.push(o);st.placed++;run.left--;
      // a row closes up (party walls), a lane or a yard opens now and then; out in the suburbs the rows loosen
@@ -107,7 +110,7 @@ ROW_FALLBACK=['hl_rep_house_poor_a','hl_rep_house_poor_b','hl_rep_house_poor_c',
  for(const F of ROWFRONTS.filter(o=>o.row)){let cur=F;
   for(let depth=0;depth<2;depth++){if(depth===1&&rng()<.4)break;tries++;
    // candidates no wider than the building in front (a wider one pokes into the deeper neighbours), in random order
-   const W=cur.hx*2+.6;const keys=POOL(inForge(cur.x,cur.z)).map(k=>kitKey(k)).filter(k=>VERN.defs[k]&&VERN.defs[k].w<=W).sort(()=>rng()-.5).slice(0,4);
+   const W=cur.hx*2+.6;const keys=rkShuffle(POOL(inForge(cur.x,cur.z)).map(k=>kitKey(k)).filter(k=>VERN.defs[k]&&VERN.defs[k].w<=W)).slice(0,4);
    let placed=null;
    for(const key of keys){const D=VERN.defs[key];for(const slide of[0,-(W-D.w)/2,(W-D.w)/2]){const p=loc(cur.x,cur.z,slide,-(cur.hz+.5+D.d/2),cur.ry);const o={x:p[0],z:p[1],hx:D.w/2,hz:D.d/2,ry:cur.ry,pad:.15};
      if(!test(o)){const w=groundWhy(o);why[w]=(why[w]||0)+1;continue;}if(!occFree(o,.12)){why.occ=(why.occ||0)+1;continue;}placeVern(key,o,{v:Math.floor(rng()*6)});placed=o;break;}

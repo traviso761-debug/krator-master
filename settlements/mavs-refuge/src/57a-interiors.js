@@ -290,9 +290,26 @@ function mixRecord(i){
   if(u.dwelling && rec.residence && !rec.residence.ok && MIX.fails.indexOf(u.id)<0) MIX.fails.push(u.id);
   if(rec.dropped.length && MIX.dropped.indexOf(u.id)<0) MIX.dropped.push(u.id);
   MIX.rec[i] = rec;
+  mixTag(u, rec);
   return rec;
 }
 MIX.record = mixRecord;
+/* every piece of a unit's record is a core/tags record too (prefix ixf, its unit as parent), registered when the record is
+   made (the bake, near the camera, or the idle fill), so the host's inspector names it and the owner's edits can move or
+   remove it: a piece the KHOST_EDITS log moves or removes is left out of piecesNow (53-furnish.js brfVetoed) */
+MIX.tagId = {}; MIX.pieceOf = {};
+function mixTag(u, rec){
+  var T = KTAGS.page; if(!T) return;
+  rec.pieces.forEach(function(p){
+    if(MIX.tagId[p.id]) return;
+    var A = KF.FURN_BY_KEY[p.key] || {}, d = KF.has(p.key) ? KF.entryDims(A, p.v|0) : null, t = { setting:'room' };
+    if(A.culture) t.culture = A.culture; if(A.tier) t.tier = A.tier; if(p.room != null && p.room >= 0) t.room = String(p.room);
+    var r = T.add({ prefix:'ixf', 'class':'furniture', kind:A.type||null, key:p.key, name:A.name||null, parent:u.id, at:[p.x, p.y, p.z], ry:p.ry||0,
+      size:d && d.w ? [d.w, d.d, d.h] : undefined, tags:t, frag:'57a-interiors.js' });
+    MIX.tagId[p.id] = r.id; MIX.pieceOf[r.id] = p.id;
+  });
+}
+function mixVetoed(p){ var id = MIX.tagId[p.id]; return !!id && brfVetoed(KTAGS.page.get(id)); }
 
 /* ------------------------------------------------------------------ the owner's edits, by piece id */
 var EDITS = { removed:{}, moved:{}, added:{} };              /* removed[id] = key; moved[id] = { key, x, y, z, ry }; added[unit i] = [piece] */
@@ -324,6 +341,7 @@ function piecesNow(i){
   var r = mixRecord(i); if(!r) return [];
   var out = [], skip = MIX.editsSkipped || (MIX.editsSkipped = []);
   r.pieces.forEach(function(p){
+    if(BEDIT.hits.length && mixVetoed(p)) return;   /* the owner's edits log (98-start.js draws a moved one on its own) */
     if(EDITS.removed[p.id]){ if(EDITS.removed[p.id]===p.key) return; if(skip.indexOf(p.id)<0) skip.push(p.id); }
     var m = EDITS.moved[p.id];
     if(m){ if(m.key===p.key){ out.push(Object.assign({}, p, { x:m.x, y:m.y, z:m.z, ry:m.ry, moved:true })); return; } if(skip.indexOf(p.id)<0) skip.push(p.id); }

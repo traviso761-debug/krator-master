@@ -435,6 +435,23 @@ canvas with no code change (`KIT_HAS`). West = the rumah houses of the western R
 | `patterns/islander/weave` | `patWeave` | Flat, front-on panel of a woven split-bamboo wall: flat strips about four centimetres wide in a twill, pale natural bamboo (#d8c294) and smoked dark strips (#6a5236) stepping into a pattern of nested diamonds, the strips' edges catching a little light. The pattern repeats in both directions. Full colour. |
 | `patterns/islander/medallion-moon` | `medMoon` | Flat, front-on decorative panel of one round painted emblem, centred, clear margin: the white island moon, a pale full moon (#f6f0e2) with soft grey seas, on a sea-teal (#2a7a7a) disc ringed with white shell discs, inside a black (#1e1a18) ring and an ochre (#c8922e) rim, painted on wood with a little wear. A single motif, not a repeat. Full colour. |
 
+#### Lizardmen (`kits/lizardmen`, 2026-10-16)
+
+Palette (`kits/lizardmen/src/26k-kit.js`, `SVPAL`): verdigris #4a8a7a, black lacquer #1a1612, oxblood #5a1a16, bone #e4dcc6.
+The look is Shang bronze, not reptile portraiture (`DESIGN.md` 2.1, 2.3a): the **leiwen** (a squared spiral) is the built
+ornament, the **round whorl** the carved one, and every leiwen band carries exactly one deliberate break. Today the kit draws
+all three as geometry (`40-lz-kit.js`: `lzLeiwen`, `lzGlyphSpiral`, `lzEye`), heavy and aliased at a distance; the three
+sheets replace that at a distance and are `optional: true` families in `kits/lizardmen/materials.json` (`leiwenS`,
+`glyphS`, `eyeS`), so `pack.py` skips them and the kit keeps its geometry until they arrive. No procedural stand-in is drawn
+for them on purpose. Glyph rule (`DESIGN.md` 2.4): the strokes are small squared spirals and angular bars, Indus-seal and
+oracle-bone in feel, never a human face and never a readable letter. Paste-ready copies are in `PROMPTS-ready.md`.
+
+| id | family | Material line |
+|---|---|---|
+| `patterns/lizardmen/leiwen` | `leiwenS` | Flat, front-on decorative panel of a cast bronze leiwen (thunder-pattern) block as on a Shang ding: a square grid of four-by-four cells, each cell filled by one squared spiral of raised ridges winding in to its centre in seven right-angled turns, the spirals in the left half winding clockwise and in the right half anticlockwise, mirrored. Ridges in verdigris (#4a8a7a) with the worn tops a paler green-grey (#8ab0a4), the grooves between them black lacquer (#1a1612). One cell, and only one, is missing a single stroke of its spiral: a deliberate break in an otherwise perfect pattern. Hard, precise, machine-exact edges; nothing is organic. The pattern repeats in both directions. Full colour. |
+| `patterns/lizardmen/glyph-band` | `glyphS` | Flat, front-on decorative panel of an inscription band four times as wide as tall, carved in low relief into dark grey-green basalt (#5e6a5e) and inlaid with verdigris bronze (#4a8a7a): a single row of about twenty glyphs of an unknown angular script, each glyph built from short straight strokes and small squared spirals and hooks, between a thin oxblood (#5a1a16) line along the top edge and another along the bottom. The glyphs resemble Indus seal signs and oracle-bone script in feel but match no real writing; none depicts a face, an animal outline or a letter. Five of the signs recur: a zigzag, two parallel bars, a cross, a hook ending in a squared spiral, and a bar broken in the middle. The pattern repeats horizontally. Full colour. |
+| `patterns/lizardmen/spiral-eye` | `eyeS` | Flat, front-on decorative panel of one round spiral eye, centred, clear margin: a cast bronze disc in verdigris (#4a8a7a) with a raised rim, its face a single raised spiral ridge winding in two and a half turns from the rim to a round pupil of black lacquer (#1a1612), the ridge's worn crest a paler green-grey (#8ab0a4), fine casting grain in the grooves, a few flecks of bone-white (#e4dcc6) patina near the rim. The square corners outside the disc are flat solid magenta (#ff00ff), so the eye can be keyed out. A single motif, not a repeat. Full colour. |
+
 #### Dalab
 
 Palette (`69d-dalab-mat.js`): cream wash #e6d8b8, red ochre #a8382a, turquoise #2f9a8a, gold #d8a838, black #2a2420,
@@ -1105,8 +1122,9 @@ the area), metal 558, cloth 523, stone 367, rope 236, plaster 179, bronze 171, g
 **Prompted earlier and still owed:** `roof.reed` / `reed.bundle` (Reed Lake reed furniture, 37 pieces; `roof.thatch.reed`, delivered 2026-10-06, may
 serve the reed family until then), `patterns/tribal/formline` (Painted's formline colours; `patterns/republic/folk-formline-*` may already serve).
 
-**No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss, Lizardmen,
-Nomad, Screamer. Each needs a style read of its culture file before a prompt is written.
+**No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss,
+Nomad, Screamer. Each needs a style read of its culture file before a prompt is written. (Lizardmen: prompted 2026-10-16, see
+"Lizardmen" under "Pattern-sheet prompts by culture".)
 
 **Family splits, done 2026-10-06, as texture families** (`kits/catalog/krator-furniture-core.js`, `FAMILY_SPLITS`, `furnFamily()`):
 a part keeps its render family (its look, the batch's grouping, the declared `materials` and every check stay as they were) and gains
@@ -1612,6 +1630,17 @@ What the first delivery taught:
 
 ## How a build adopts the library (built 2026-10-03; Girder is the pilot)
 
+*2026-10-15, Voth's canton interiors (`settlements/voth/materials.json`, families `int_*`, `tap_*`, `inlay_*`, `jali`,
+`frieze_red`, `canopy_kilim`, `medallion_sun`, `lantern_paper`): two ways of using a set on geometry with no UVs. A SET
+family (eroded banco over brick, smooth banco, big sandstone blocks, the patterned clay plaster, the amber tiles, travertine,
+the timber beam, carved wood, gold leaf) is sampled by world position on three planes, blended by the face normal, as a grey
+detail under each canton's own colours (56-vc-interiors-host.js `VC.intSetMat`, the site scene's `VIEW.hook` idea). A SHEET
+family (the Voth banners, the solar and the Ordinator sheets, Voth's kilims, the inlay bands, the red palmette frieze, the
+sun-ray medallion, the diamond jali, lantern paper) is UV-mapped on a turned unit box: the whole sheet once per face, or
+repeated along the box's length every `tile` m, the vertex shader reading the instance's scale (`VC.intSheetMat`). Reuse:
+any build whose interiors are instanced boxes (the lot buildings take the same materials in 56b) can take both; the sheets
+Voth still wants are in `PROMPTS-ready.md` ("The Voth interiors"), each with the common set that stands in for it.*
+
 - **The code** is `core/materials/record/` (not under `core/materials/`'s top level, so the Ancients-lineage builds
   that take every top-level fragment do not pick it up): `23-mat-record.js` (`KMAT`: the record above, a build's
   adapter, the pack registry, `table()` for the exporter), `24-tex-def.js` (`TEX`: a procedural texture as a record,
@@ -1721,6 +1750,29 @@ tail; the horned figures' lower border) and were redone with cross-faded edges i
 | `card.mushroom.alecap` | Purple Mushroom Cluster | key #ff00ff 50/120, spill edge (keeps the purples), choke 1 | the alecap, 3 x 3: beds and wild (a Throne species) |
 | `card.crop.yam` | Heart-Leaf Vines on Stakes | key 60/170, spill all | yam vines on stakes, 3 x 3: terraces; any staked climbing crop |
 | `patterns/zeijani/jali` | Beige Stone Lattice on Magenta | a cut-out tile (cards.py, anchor tight, RGBA) | the temple's glowing pierced dome and screens |
+
+#### Delivered 2026-10-15 and processed: the Voth interiors, eleven extras, five redos (`Downloads/vothtex.zip`, 32 images)
+
+Batches `voth-interiors-2026-10-15.json` (27 sets) and `redos-2026-10-15.json` (5). The sixteen sheets of `PROMPTS-ready.md`'s "The Voth
+interiors", each wired in `settlements/voth/materials.json` (the Palace's stucco, tiles, inlay and columns in their own colour, the
+rest as UV-mapped sheets). The owner's eleven extras, for variety and for the myth of the three brothers (the Chichani, the Zeijani
+and the Andaru): two frescoes (`fresco-three-brothers`: their reunion and welcome; `fresco-brothers-ascent`: their climb up the
+sunlit mountain), a purple damask, the ringed giant in mosaic, two filigrees, a hanging of ancestor masks, two more glyph banners,
+a mudcloth and a banded brown kilim (`patterns/common`: the Sahelian, Yuni, Dalab and nomad builds can take them). Single panels
+(tapestries, frescoes, banners, the icon, the mural, the carpet) are processed with no seam pass (`seam_axes: none`, their shape
+kept); the chandelier drum wraps across only.
+
+The five redos (`PROMPTS-NEEDED.md` section 0: `ground.travertine.white`, `hide.sleek`, `patterns/islander/storyboard`,
+`patterns/islander/gable-east-b`, `patterns/common/grime-streaks`) replace their first takes in the library; **no build is
+re-packed**: biomes/geyser, kits/fauna and kits/islanders read stale until they are (`GODOT-PLAN.md`, "Before an export").
+
+| Set | Reuse |
+|---|---|
+| `patterns/voth/fresco-three-brothers`, `fresco-brothers-ascent` | the Palace and the Temple; the Zeijani's and the Andaru's own halls (the same myth told from their side) |
+| `patterns/voth/damask-purple-gold`, `filigree-crimson`, `filigree-purple` | any court's hangings, screens and panelling |
+| `patterns/voth/mosaic-ringed-giant` | temples and observatories of the sky in any culture |
+| `patterns/common/mudcloth`, `kilim-banded-brown` | the Sahelian and Yuni cultures, Dalab, the nomads, Beast Riders |
+| `library/cloth.hide.canopy` | canopies, tents, awnings, drum skins (tinted) |
 
 #### Delivered 2026-10-14 and processed: thirty-five owed prompts (seven batches, pasted as WebP)
 

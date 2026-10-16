@@ -26,6 +26,12 @@ writes `gallery/site-1/` to `site-3/` (in that order), each an `index.html` and 
 calls under 64 MB, passing `null` for the files a part no longer holds (a version counts the files it keeps). Pages that
 load the same pack (by content) go to the same part and share one copy. The parts are not committed.
 
+## Tongues of Krator link (2026-10-15)
+
+`index.template.html` links the Tongues of Krator artifact (https://claude.ai/artifact/FFEn2MEBPxMgqPJkcV6sNt, the
+page `lore/tongues-of-krator.html`) under the Scale Model. Only Krator Worlds' index was republished with it (version
+75); Krator Worlds II and Krator Biomes and Objects pick it up at their next rebuild.
+
 ## Update it
 
 ```
@@ -266,3 +272,17 @@ Pending (2026-10-14, the owner): the first Voth (`voth.html`, now `archive/voth-
 city plan on `core/city` (`settlements/voth/dist/voth-city.html`) is now simply "Voth", under the old slug
 (`worlds/voth.html`, so links keep working). `ENTRIES` says so; it goes out with the next gallery rebuild: the index
 (the live one's Voth card retitled and re-described, no second Voth card) and the one page, in one call.
+
+Rebuilt 2026-10-15 from `main` at 058a5740 (the Roketstad, Verge, Godot viewer and hung-cloths merges, 26 builds rebuilt):
+all three parts republished with every page that differed from the live copy. Krator Worlds version 78 (three calls; Fauna,
+Highlands and Roketstad moved out to II, Girder, Girder · Hero, Scyvoi and Screamer furniture moved in), Krator Worlds II
+version 9 (three calls), Krator Biomes and Objects version 5 (two calls). This also shipped the pending Voth item above:
+`worlds/voth.html` is the `core/city` plan, its card retitled "Voth". Krator Worlds II is private (owner only) while the
+other two are anyone-with-the-link: share it from its page's Share menu for its link to open for others.
+
+Rebuilt 2026-10-16 from `main` at d010d53b (the Lizardmen kit, the Voth citadel and interiors merges): every page that
+differed from the live copy republished. Krator Worlds version 81 (three calls: `worlds/lizardmen.html` and its two packs
+added, Fauna moved in from II, Ash Nomads moved out to II), Krator Worlds II version 11 (two calls), Krator Biomes and
+Objects version 7 (two calls). **Pending: `worlds/voth.html`** (`settlements/voth/dist/voth-city.html`) is now 19.3 MB, over
+the artifact's 16 MB per-file cap, so Krator Worlds keeps its 2026-10-15 copy (11.9 MB) until the Voth page is slimmed or
+its pack moved beside it (`tools/textures/matlib_pack.py`); its card was regenerated with the new blurb and size.

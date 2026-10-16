@@ -6,15 +6,15 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 42 (2%) | 0 (0%) | 10 (1%) | 59 (3%) | 1813 (94%) |
+| KB | 42 (2%) | 0 (0%) | 10 (1%) | 59 (3%) | 1820 (94%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `inspector.js` | 19.0 | [web] | 11 | 0 | 19 | 6 | 0 | 2 | 0 | 0 | 2 | 0 | 0 |  |
-| `krator-asset-engine.js` | 10.8 | [web] | 22 | 3 | 1 | 9 | 4 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-furniture-core.js` | 73.5 | [draw] | 54 | 3 | 0 | 0 | 0 | 115 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-asset-engine.js` | 11.5 | [web] | 22 | 3 | 1 | 9 | 4 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-furniture-core.js` | 73.9 | [draw] | 54 | 3 | 0 | 0 | 0 | 115 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-furniture-detail.js` | 4.1 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | optional (`bundle(tex=True)`); the detail-map shader is a three.js stand-in for StandardMaterial3D triplanar, one texture per family from `tex/pack.json` |
 | `krator-furniture-kit.js` | 139.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 659 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-furniture-runtime.js` | 14.5 | [draw] | 23 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
@@ -40,13 +40,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-master-furniture-scrap.js` | 97.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 492 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-screamer.js` | 5.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-scyvoi.js` | 103.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 612 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-master-furniture-voth.js` | 16.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 86 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture-voth.js` | 18.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 95 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-xanadu.js` | 6.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-yuni-common.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `krator-master-furniture-zeijani.js` | 49.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 251 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-master-furniture.js` | 275.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 2242 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture.js` | 280.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 2249 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-plants.js` | 91.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 755 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `krator-symbols.js` | 10.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-symbols.js` | 10.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/00-head.html` | 4.1 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/80-sky-hash.js` | 0.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |

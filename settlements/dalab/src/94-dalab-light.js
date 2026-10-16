@@ -43,6 +43,6 @@ window._api.setHour=h=>{DSKY.hour=h;dalabSkyTick();dalabHourUI();};window._api.n
  // every mound and ring bank in one mesh
  if(DMOUND_GEOS.length){const m=meshMerged(DMOUND_GEOS,MAT.dTurfMesh,scene,0,0,0);m.name='mounds';window._mounds=DMOUND_GEOS.length;DMOUND_GEOS.length=0;}}
 FRAME_HOOKS.push(dt=>{for(const w of DWIND)w.grp.rotateZ(w.rate*dt);});
-WALK.speed=9;   // a little faster on foot (Travis, round 9); the wheel still scales it
+// on foot at 9 m/s (Travis, round 9): core/host's walk is that speed; the wheel still scales it
 // LEVEL OF DETAIL (core/lod): the windmill sails turn (DWIND), so 97-lod-auto.js leaves them out
 window.LOD_OPTIONS=Object.assign(window.LOD_OPTIONS||{},{skipUnder:()=>DWIND.map(w=>w.grp)});

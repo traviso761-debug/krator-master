@@ -7,7 +7,8 @@
 // It reads nothing of a build's but what KHOST.take hands it (91-host-loop.js makes it with the take's options).
 //
 //   KHOST.camera(o) -> C        o: {camera, renderer, ground(x,z) or a KFIELD, floor?(x,z), clear?, maxR?, minR?,
-//                                   walk?: a KWALK registry, walker?: {step, drop, r, h}, eye?, depth?, keys?, inspect?}
+//                                   walk?: a KWALK registry, walker?: {step, drop, r, h}, eye?, depth?, keys?, inspect?,
+//                                   pick?: fn(ray) -> [x, y, z] | null, tried before the ground for the double-click's pin}
 //   C.ctl                       {target, theta, phi, radius, walk, eye, speed}: theta from +z about +y, phi from +y
 //   C.setView(cx,cy,cz,tx,ty,tz)  the preset contract every verify.py drives (leaves walking)
 //   C.move(dt) / C.apply()      the loop calls them each frame: the keys, then the camera placed and clamped
@@ -89,6 +90,7 @@ K.camera=function(o){
  const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
  C.ray=function(cx,cy){const r=cv.getBoundingClientRect();ndc.set((cx-r.left)/r.width*2-1,-((cy-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);return ray;};
  C.pick=function(cx,cy){const R=C.ray(cx,cy).ray,O=R.origin,D=R.direction,far=Math.max(camera.far,1);
+  if(o.pick){const h=o.pick(R);if(h)return h;}   // the build's own pick first ([x, y, z] or null: Voth's inside a canton)
   let t0=0,step=Math.max(.5,(O.y-groundH(O.x,O.z))*.02);
   if(O.y<groundH(O.x,O.z))return null;
   for(let t=step;t<far;t+=step){const x=O.x+D.x*t,y=O.y+D.y*t,z=O.z+D.z*t;

@@ -6,6 +6,7 @@
 <title>Tongues of Krator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,600;1,400&family=Alegreya%20SC:wght@500;700&family=JetBrains%20Mono:wght@400;500&family=Marcellus%20SC&family=Crimson%20Pro:ital,wght@0,400;0,600;1,400&family=IBM%20Plex%20Mono:wght@400;500&family=GFS%20Didot&family=Gentium%20Book%20Plus:ital,wght@0,400;0,700;1,400&family=DM%20Mono:wght@400;500&family=Rozha%20One&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Fira%20Mono:wght@400;500&family=Saira%20Stencil%20One&family=Uncial%20Antiqua&family=Source%20Serif%204:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Red%20Hat%20Mono:wght@400;500&family=Spectral%20SC:wght@500;700&family=Spectral:ital,wght@0,400;0,600;1,400&family=VT323&family=Martian%20Mono:wght@400;500&family=Alumni%20Sans:wght@600;800&family=PT%20Serif:ital,wght@0,400;0,700;1,400&family=PT%20Mono&family=Grenze:wght@600;700&family=Faustina:ital,wght@0,400;0,600;1,400&family=Overpass%20Mono:wght@400;500&family=Cormorant%20Unicase:wght@600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Azeret%20Mono:wght@400;500&family=Reem%20Kufi:wght@500;700&family=Gelasio:ital,wght@0,400;0,600;1,400&family=Sometype%20Mono:wght@400;500&family=Philosopher:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&display=swap">
 <style>
 /* Layout: a sticky tab bar over one section at a time. The overview is neutral parchment; each tongue keeps its own palette and type, scoped to its own section. */
 :root{--bg:#ece8e0;--panel:#e2ddd2;--ink:#26231f;--muted:#6b665d;--accent:#8a5a2b;--line:#cfc8ba;
@@ -20,6 +21,8 @@ body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--sans)}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
 .tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 section.tongue{min-height:100%}
+section.tongue .wrap>*,section.tongue .wrap>*>*{min-width:0}
+section.tongue .word{flex-wrap:wrap;max-width:100%}
 #overview{background:var(--bg);color:var(--ink)}
 #overview .wrap{max-width:1000px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:48px}
 #overview h1{font:700 clamp(2.4rem,6vw,3.6rem)/1.05 "Spectral SC",Georgia,serif;margin:0;letter-spacing:.02em}
@@ -38,7 +41,7 @@ section.tongue{min-height:100%}
 @media (max-width:560px){.tree div{grid-template-columns:1fr;gap:2px}}
 .tree b{font-weight:600}
 #overview .tbl{overflow-x:auto}
-#overview table{border-collapse:collapse;width:100%;min-width:1340px;font-size:.95rem}
+#overview table{border-collapse:collapse;width:100%;min-width:1430px;font-size:.95rem}
 #overview th,#overview td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
 #overview th{font:500 .7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 #overview td.m{font:.84rem var(--mono)}
@@ -424,6 +427,118 @@ section.tongue{min-height:100%}
 :is(#dalab,[data-tongue="dalab"]) .pr.lost .god{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--red)}
 @media (max-width:560px){:is(#dalab,[data-tongue="dalab"]) .pr{grid-template-columns:1fr;gap:4px}}
 :is(#dalab,[data-tongue="dalab"]) .note{font-size:.93rem;color:var(--muted)}
+:root :is(#jimjam,[data-tongue="jimjam"]){
+  --bg:#f3ebdd; --panel:#eadfcb; --ink:#2b1a14; --muted:#74625a; --brick:#a3341f; --yellow:#c99a2e; --line:#d8c8ae; --marble:#fbf8f2;
+  --display:"Alegreya SC", Georgia, serif;
+  --body:"Alegreya", Georgia, serif;
+  --mono:"JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#jimjam,[data-tongue="jimjam"]){
+  --bg:#1d1412; --panel:#291c18; --ink:#f1e6d8; --muted:#b3a197; --brick:#e0674c; --yellow:#e6bd5a; --line:#40302a; --marble:#2f2420; color-scheme:dark}}
+:root[data-theme="dark"] :is(#jimjam,[data-tongue="jimjam"]){
+  --bg:#1d1412; --panel:#291c18; --ink:#f1e6d8; --muted:#b3a197; --brick:#e0674c; --yellow:#e6bd5a; --line:#40302a; --marble:#2f2420; color-scheme:dark}
+:is(#jimjam,[data-tongue="jimjam"]){background:var(--bg);color:var(--ink);font:18px/1.55 var(--body)}
+:is(#jimjam,[data-tongue="jimjam"]) .wrap{max-width:960px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#jimjam,[data-tongue="jimjam"]) h1,:is(#jimjam,[data-tongue="jimjam"]) h2,:is(#jimjam,[data-tongue="jimjam"]) h3{font-family:var(--display);font-weight:700;letter-spacing:.03em;margin:0;text-wrap:balance}
+:is(#jimjam,[data-tongue="jimjam"]) h1{font-size:clamp(2.4rem,6vw,3.7rem);line-height:1.05;color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) h2{font-size:1.65rem;margin-bottom:12px}
+:is(#jimjam,[data-tongue="jimjam"]) h3{font-size:1.15rem;margin-bottom:6px;color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) p{margin:0 0 12px;max-width:66ch}
+:is(#jimjam,[data-tongue="jimjam"]) .eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) header{display:grid;gap:14px}
+:is(#jimjam,[data-tongue="jimjam"]) .day{display:grid;gap:4px;max-width:640px;background:var(--panel);border:1px solid var(--line);border-top:6px solid var(--brick);padding:16px 20px}
+:is(#jimjam,[data-tongue="jimjam"]) .day .t{font-family:var(--display);font-size:1.7rem;line-height:1.15}
+:is(#jimjam,[data-tongue="jimjam"]) .day .g{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.04em}
+:is(#jimjam,[data-tongue="jimjam"]) .wheels{display:flex;gap:6px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) .wheels i{display:block;width:22px;height:22px;border-radius:50%;border:3px solid var(--yellow);margin-right:-12px}
+:is(#jimjam,[data-tongue="jimjam"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+:is(#jimjam,[data-tongue="jimjam"]) .cols > div{border:1px solid var(--line);border-radius:3px;padding:14px 16px;background:var(--marble);min-width:0}
+:is(#jimjam,[data-tongue="jimjam"]) .ex{display:grid;gap:2px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+:is(#jimjam,[data-tongue="jimjam"]) .ex .t{font-style:italic}
+:is(#jimjam,[data-tongue="jimjam"]) .ex .g{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) .tbl{overflow-x:auto}
+:is(#jimjam,[data-tongue="jimjam"]) table{border-collapse:collapse;width:100%;min-width:540px;font-size:.96rem}
+:is(#jimjam,[data-tongue="jimjam"]) th,:is(#jimjam,[data-tongue="jimjam"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+:is(#jimjam,[data-tongue="jimjam"]) th{font:500 .68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) td.m{font-family:var(--mono);font-size:.82rem}
+:is(#jimjam,[data-tongue="jimjam"]) td.j{font-style:italic;color:var(--brick);white-space:nowrap}
+:is(#jimjam,[data-tongue="jimjam"]) .grid7{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+:is(#jimjam,[data-tongue="jimjam"]) .grid7 div{border:1px solid var(--line);border-radius:3px;padding:8px 10px;display:grid;gap:2px;background:var(--marble)}
+:is(#jimjam,[data-tongue="jimjam"]) .grid7 b{font-family:var(--display);font-size:1.05rem;color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .grid7 span{font-size:.85rem;color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) .note{font-size:.93rem;color:var(--muted)}
+:root :is(#hum,[data-tongue="hum"]){
+  --bg:#eceee4; --panel:#e0e4d4; --ink:#1f2a24; --muted:#5f6b62; --pitcher:#8e2f4f; --moss:#3f6b3a; --line:#c8cdbb;
+  --display:"Fraunces", Georgia, serif;
+  --body:"Newsreader", Georgia, serif;
+  --mono:"Overpass Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#hum,[data-tongue="hum"]){
+  --bg:#141a16; --panel:#1c241f; --ink:#e6eadf; --muted:#9fab9f; --pitcher:#e07a9c; --moss:#8fc47f; --line:#2f3a32; color-scheme:dark}}
+:root[data-theme="dark"] :is(#hum,[data-tongue="hum"]){
+  --bg:#141a16; --panel:#1c241f; --ink:#e6eadf; --muted:#9fab9f; --pitcher:#e07a9c; --moss:#8fc47f; --line:#2f3a32; color-scheme:dark}
+:is(#hum,[data-tongue="hum"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+:is(#hum,[data-tongue="hum"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#hum,[data-tongue="hum"]) h1,:is(#hum,[data-tongue="hum"]) h2,:is(#hum,[data-tongue="hum"]) h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
+:is(#hum,[data-tongue="hum"]) h1{font-size:clamp(2.6rem,7vw,4.2rem);line-height:1;color:var(--pitcher)}
+:is(#hum,[data-tongue="hum"]) h2{font-size:1.7rem;margin-bottom:12px}
+:is(#hum,[data-tongue="hum"]) h3{font-size:1.15rem;margin-bottom:6px;color:var(--moss)}
+:is(#hum,[data-tongue="hum"]) p{margin:0 0 12px;max-width:66ch}
+:is(#hum,[data-tongue="hum"]) .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#hum,[data-tongue="hum"]) header{display:grid;gap:14px}
+:is(#hum,[data-tongue="hum"]) .hc{fill:none;stroke:var(--ink);stroke-width:6.5;stroke-linecap:round;stroke-linejoin:round}
+:is(#hum,[data-tongue="hum"]) .hci{fill:none;stroke:var(--bg);stroke-width:1.3;stroke-linecap:round;opacity:.75}
+:is(#hum,[data-tongue="hum"]) .hz{stroke:var(--moss);stroke-width:1.2;opacity:.55}
+:is(#hum,[data-tongue="hum"]) .hd{fill:var(--pitcher)}
+:is(#hum,[data-tongue="hum"]) .carve{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center}
+:is(#hum,[data-tongue="hum"]) .line{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+:is(#hum,[data-tongue="hum"]) .hword{display:flex;align-items:center}
+:is(#hum,[data-tongue="hum"]) .carve svg{height:56px;width:auto}
+:is(#hum,[data-tongue="hum"]) .hero.carve{border-block:3px double var(--moss);padding-block:10px}
+:is(#hum,[data-tongue="hum"]) .hero.carve svg{height:78px}
+:is(#hum,[data-tongue="hum"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
+:is(#hum,[data-tongue="hum"]) .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#hum,[data-tongue="hum"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#hum,[data-tongue="hum"]) #hum-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+:is(#hum,[data-tongue="hum"]) #hum-src:focus,:is(#hum,[data-tongue="hum"]) button:focus-visible{outline:2px solid var(--pitcher);outline-offset:2px}
+:is(#hum,[data-tongue="hum"]) button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
+:is(#hum,[data-tongue="hum"]) button:hover{border-color:var(--pitcher);color:var(--pitcher)}
+:is(#hum,[data-tongue="hum"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#hum,[data-tongue="hum"]) .note{font-size:.93rem;color:var(--muted)}
+:is(#hum,[data-tongue="hum"]) .unk{display:inline-grid;place-items:center;width:24px;height:30px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
+:is(#hum,[data-tongue="hum"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+:is(#hum,[data-tongue="hum"]) .cols > div{border:1px solid var(--line);border-radius:4px;padding:14px 16px;min-width:0}
+:is(#hum,[data-tongue="hum"]) .tbl{overflow-x:auto}
+:is(#hum,[data-tongue="hum"]) table{border-collapse:collapse;width:100%;min-width:560px;font-size:.96rem}
+:is(#hum,[data-tongue="hum"]) th,:is(#hum,[data-tongue="hum"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#hum,[data-tongue="hum"]) th{font:.68rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#hum,[data-tongue="hum"]) td.m{font-family:var(--mono);font-size:.84rem}
+:is(#hum,[data-tongue="hum"]) td.h{font-family:var(--mono);font-size:.95rem;color:var(--pitcher);white-space:nowrap}
+:is(#hum,[data-tongue="hum"]) td.g svg{height:50px;width:auto}
+:is(#jimjam,[data-tongue="jimjam"]) .jg{fill:none;stroke:var(--ink);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+:is(#jimjam,[data-tongue="jimjam"]) .jg.mk{stroke:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .jf{fill:none;stroke:var(--line);stroke-width:1.6}
+:is(#jimjam,[data-tongue="jimjam"]) .jw{fill:none;stroke:var(--yellow);stroke-width:2.4}
+:is(#jimjam,[data-tongue="jimjam"]) .jline{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) .jword{display:flex;gap:2px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) .line{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) .jline svg{width:52px;height:52px}
+:is(#jimjam,[data-tongue="jimjam"]) .hero.jline svg{width:64px;height:64px}
+:is(#jimjam,[data-tongue="jimjam"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
+:is(#jimjam,[data-tongue="jimjam"]) .scribe label{font-family:var(--mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#jimjam,[data-tongue="jimjam"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#jimjam,[data-tongue="jimjam"]) #jimjam-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+:is(#jimjam,[data-tongue="jimjam"]) #jimjam-src:focus,:is(#jimjam,[data-tongue="jimjam"]) button:focus-visible{outline:2px solid var(--brick);outline-offset:2px}
+:is(#jimjam,[data-tongue="jimjam"]) button{font:.84rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
+:is(#jimjam,[data-tongue="jimjam"]) button:hover{border-color:var(--brick);color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#jimjam,[data-tongue="jimjam"]) .unk{display:inline-grid;place-items:center;width:24px;height:30px;border:1px dashed var(--muted);border-radius:2px;font:.85rem var(--mono);color:var(--muted)}
+:is(#jimjam,[data-tongue="jimjam"]) .lts{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+:is(#jimjam,[data-tongue="jimjam"]) .lt{border:1px solid var(--line);border-radius:4px;padding:8px 4px 6px;display:grid;justify-items:center;gap:1px;cursor:pointer;background:var(--marble);color:inherit;font:inherit}
+:is(#jimjam,[data-tongue="jimjam"]) .lt:hover{border-color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .lt svg{width:44px;height:44px}
+:is(#jimjam,[data-tongue="jimjam"]) .lt .r{font:500 .92rem var(--mono);color:var(--brick)}
+:is(#jimjam,[data-tongue="jimjam"]) .lt .n{font-size:.74rem;color:var(--muted);text-align:center;line-height:1.25}
 :root :is(#republic,[data-tongue="republic"]){
   --bg:#ebe7e2; --panel:#e0dad2; --ink:#232426; --muted:#686a6e; --accent:#a3241c; --line:#cbc4ba; --steel:#4b5a66;
   --display:"Alumni Sans", "Arial Narrow", sans-serif;
@@ -714,6 +829,76 @@ section.tongue{min-height:100%}
 #scyvoi i{font-style:italic}
 /* every tab's column may shrink below its widest table: the tables scroll in their own boxes, the page does not */
 section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
+:root :is(#islander,[data-tongue="islander"]){
+  --bg:#f0ead9; --panel:#e6dcc4; --ink:#33231a; --muted:#72655a; --accent:#a5401f; --sea:#1f6f73; --line:#d2c4a6;
+  --display:"Fraunces", Georgia, serif;
+  --body:"Literata", Georgia, serif;
+  --mono:"DM Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(#islander,[data-tongue="islander"]){
+  --bg:#14201f; --panel:#1c2c2b; --ink:#efe6d2; --muted:#a3ada5; --accent:#e58a5c; --sea:#6cc3c2; --line:#2e4341; color-scheme:dark}}
+:root[data-theme="dark"] :is(#islander,[data-tongue="islander"]){
+  --bg:#14201f; --panel:#1c2c2b; --ink:#efe6d2; --muted:#a3ada5; --accent:#e58a5c; --sea:#6cc3c2; --line:#2e4341; color-scheme:dark}
+:is(#islander,[data-tongue="islander"]){background:var(--bg);color:var(--ink);font:17px/1.6 var(--body)}
+:is(#islander,[data-tongue="islander"]) .wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:40px 80px;display:grid;gap:56px}
+:is(#islander,[data-tongue="islander"]) h1,:is(#islander,[data-tongue="islander"]) h2,:is(#islander,[data-tongue="islander"]) h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
+:is(#islander,[data-tongue="islander"]) h1{font-size:clamp(2.5rem,7vw,4rem);line-height:1.02}
+:is(#islander,[data-tongue="islander"]) h2{font-size:1.7rem;margin-bottom:12px}
+:is(#islander,[data-tongue="islander"]) h3{font-size:1.2rem;margin-bottom:6px}
+:is(#islander,[data-tongue="islander"]) p{margin:0 0 12px;max-width:66ch}
+:is(#islander,[data-tongue="islander"]) .eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:is(#islander,[data-tongue="islander"]) .mono{font-family:var(--mono);font-size:.86em}
+:is(#islander,[data-tongue="islander"]) header{display:grid;gap:14px}
+:is(#islander,[data-tongue="islander"]) .hero{border-block:3px double var(--accent);padding-block:12px}
+:is(#islander,[data-tongue="islander"]) .cut{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:square;stroke-linejoin:miter}
+:is(#islander,[data-tongue="islander"]) .cut.hi{stroke:var(--accent)}
+:is(#islander,[data-tongue="islander"]) .dot{fill:var(--accent)}
+:is(#islander,[data-tongue="islander"]) .word{display:flex;align-items:flex-end;gap:2px}
+:is(#islander,[data-tongue="islander"]) .line{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:flex-end}
+:is(#islander,[data-tongue="islander"]) .line .word svg{width:34px;height:46px}
+:is(#islander,[data-tongue="islander"]) .hero .word svg{width:44px;height:58px}
+:is(#islander,[data-tongue="islander"]) .unk{display:inline-grid;place-items:center;width:26px;height:36px;border:1px dashed var(--muted);border-radius:2px;font:.9rem var(--mono);color:var(--muted)}
+:is(#islander,[data-tongue="islander"]) .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+:is(#islander,[data-tongue="islander"]) .side{border:1px solid var(--line);border-radius:4px;padding:14px 16px;min-width:0;display:grid;gap:6px;align-content:start}
+:is(#islander,[data-tongue="islander"]) .side.e{border-top:4px solid var(--accent)}
+:is(#islander,[data-tongue="islander"]) .side.w{border-top:4px solid var(--sea)}
+:is(#islander,[data-tongue="islander"]) .side .k{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+:is(#islander,[data-tongue="islander"]) .side b{font-family:var(--display);font-size:1.25rem}
+:is(#islander,[data-tongue="islander"]) .scribe{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:grid;gap:14px}
+:is(#islander,[data-tongue="islander"]) .scribe label{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+:is(#islander,[data-tongue="islander"]) .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+:is(#islander,[data-tongue="islander"]) #islander-src{flex:1 1 260px;min-width:0;font:1.05rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+:is(#islander,[data-tongue="islander"]) #islander-src:focus,:is(#islander,[data-tongue="islander"]) button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:is(#islander,[data-tongue="islander"]) button{font:.85rem var(--mono);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:4px;padding:7px 10px;cursor:pointer}
+:is(#islander,[data-tongue="islander"]) button:hover{border-color:var(--accent);color:var(--accent)}
+:is(#islander,[data-tongue="islander"]) .samples{display:flex;flex-wrap:wrap;gap:6px}
+:is(#islander,[data-tongue="islander"]) .tokens{font-family:var(--mono);font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+:is(#islander,[data-tongue="islander"]) .note{font-size:.93rem;color:var(--muted)}
+:is(#islander,[data-tongue="islander"]) .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+:is(#islander,[data-tongue="islander"]) .cols>div{min-width:0}
+:is(#islander,[data-tongue="islander"]) .lts{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+:is(#islander,[data-tongue="islander"]) .lt{border:1px solid var(--line);border-radius:4px;padding:10px 6px 8px;display:grid;justify-items:center;gap:2px;text-align:center}
+:is(#islander,[data-tongue="islander"]) .lt svg{width:40px;height:54px}
+:is(#islander,[data-tongue="islander"]) .lt .r{font:500 .95rem var(--mono)}
+:is(#islander,[data-tongue="islander"]) .lt .n{font-size:.76rem;color:var(--muted);line-height:1.25}
+:is(#islander,[data-tongue="islander"]) .lt.east{border-top:4px solid var(--accent)}
+:is(#islander,[data-tongue="islander"]) .lt.west{border-top:4px solid var(--sea)}
+:is(#islander,[data-tongue="islander"]) .lt.idle{border-style:dashed}
+:is(#islander,[data-tongue="islander"]) .lt.idle svg{opacity:.28}
+:is(#islander,[data-tongue="islander"]) .legend{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:.9rem;color:var(--muted);margin-bottom:12px}
+:is(#islander,[data-tongue="islander"]) .legend i{display:inline-block;width:18px;height:4px;vertical-align:middle;margin-right:6px}
+:is(#islander,[data-tongue="islander"]) .tbl{overflow-x:auto}
+:is(#islander,[data-tongue="islander"]) table{border-collapse:collapse;width:100%;min-width:640px;font-size:.96rem}
+:is(#islander,[data-tongue="islander"]) th,:is(#islander,[data-tongue="islander"]) td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+:is(#islander,[data-tongue="islander"]) th{font:.7rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+:is(#islander,[data-tongue="islander"]) td.m{font-family:var(--mono);font-size:.86rem}
+:is(#islander,[data-tongue="islander"]) td.me{font-family:var(--mono);font-size:.86rem;color:var(--accent)}
+:is(#islander,[data-tongue="islander"]) td.mw{font-family:var(--mono);font-size:.86rem;color:var(--sea)}
+:is(#islander,[data-tongue="islander"]) td.g{white-space:nowrap}
+:is(#islander,[data-tongue="islander"]) td.g .word svg{width:22px;height:30px}
+:is(#islander,[data-tongue="islander"]) .ex{background:var(--panel);border-radius:4px;padding:14px 16px;display:grid;gap:6px;margin-top:16px}
+:is(#islander,[data-tongue="islander"]) .ex .gl{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+:is(#islander,[data-tongue="islander"]) .ex .tr{font-style:italic}
 </style>
 
 <nav class="tabs" aria-label="Tongues"><div class="in" id="tabbar" role="tablist"></div></nav>
@@ -733,27 +918,28 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 
   <div>
     <h2>Where the letters came from</h2>
-    <p>Five separate traditions, and one people who write nothing. Only the Izani letters spread: to the Republic unchanged, to the Beast Riders with four marks added, and to Voth transformed.</p>
+    <p>Seven separate traditions, and one people who write nothing. Only the Izani letters spread: to the Republic unchanged, to the Beast Riders with four marks added, to Voth transformed, and to the Islanders of the Ring Sea, who use barely half of them.</p>
     <div class="tree">
       <div><b>Latin, never lost</b><span>Yuni (gate capitals copied from campus signs), the desert nomads and the abyssal people (who learned them at Yuni and made a joined caravan hand and painted salt marks of them), the Monks of History (a rounded book hand with margin marks for evidence), Dalab's priests (with the God's fixed-width letters as the holy form).</span></div>
-      <div><b>The Izani capitals</b><span>Cut in straight strokes by the Empire. The Iron Republic kept them unchanged; the Beast Riders took them for trade and added four marks. The Chichani, as the Empire's clients, bent them into brushed loops and added marks of their own: the Vothic letters.</span></div>
+      <div><b>The Izani capitals</b><span>Cut in straight strokes by the Empire. The Iron Republic kept them unchanged; the Beast Riders took them for trade and added four marks. The Chichani, as the Empire's clients, bent them into brushed loops and added marks of their own: the Vothic letters. The Islanders write with sixteen of the twenty-seven on the east shore and fourteen on the west, and gave the idle Q a new job.</span></div>
       <div><b>Greek symbols, read as letters</b><span>Copied by the Hykkousoi from the etched labels and charts of a drowned Ancient gene-lab at Ys, Dalab's rival.</span></div>
       <div><b>Latin cut in tuff</b><span>The Zeijani chiselled English letters into soft rock until every curve was gone and every stroke a wedge; the ash nomads paint the same wedges on hide.</span></div>
+      <div><b>Melody, not letters</b><span>The peoples of Korona carve the Hum as grooves on the tepui walls: the tune of each syllable and its vowel's colour, never a consonant, so any people who whistle it can read it.</span></div>
       <div><b>Brands, not letters</b><span>The Scyvoi write nothing. Each clan burns its brand, a tamga, into its lizards' hides and cuts it into the granite; the tribes under Voth have Vothic scribes count their tribute.</span></div>
-      <div><b>Invented from nothing</b><span>Xanadu lost writing completely. Its temple grammarians built a syllabary on a grid of sounds for the prayer wheels.</span></div>
+      <div><b>Invented</b><span>Xanadu lost writing completely. Its temple grammarians built a syllabary on a grid of sounds for the prayer wheels. Jimjam's day-keepers made a script for the count, borrowing shapes from the Latin letters on the broken dams upstream, rounded on palm leaf and stacked in square blocks, one per syllable.</span></div>
     </div>
   </div>
 
   <div>
-    <h2>One word, fifteen roads</h2>
+    <h2>One word, eighteen roads</h2>
     <p>In order of how far each tongue drifted from English.</p>
     <div class="tbl"><table>
-      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Dalab low</th><th>Hajlandsk</th><th>Tł'aai</th><th>Boruntun</th><th>Izani</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Dasrī</th><th>Tabist</th><th>Xanadui</th></tr></thead>
+      <thead><tr><th>English</th><th>Dalab high</th><th>Historians'</th><th>Yuni</th><th>Dalab low</th><th>Hajlandsk</th><th>Tł'aai</th><th>Boruntun</th><th>Izani</th><th>Jamṭōkku</th><th>Hykkousik</th><th>Vothic</th><th>Ash nomad</th><th>Zeijani</th><th>Dasrī</th><th>Tabist</th><th>Sikau</th><th>Hām</th><th>Xanadui</th></tr></thead>
       <tbody id="fam"></tbody>
     </table></div>
   <div>
     <h2>Phrasebook</h2>
-    <p>Eight things a traveller needs to say, in every tongue, each in its own letters. The Monks of History and Dalab's priests would answer you in plain English. Click a tongue's name to open its page.</p>
+    <p>Twelve things a traveller needs to say, in every tongue, each in its own letters. The Monks of History and Dalab's priests would answer you in plain English. Click a tongue's name to open its page.</p>
     <div class="phr-pick" id="phrpick" role="group" aria-label="Phrase"></div>
     <div class="phr-head"><span class="en" id="phren"></span><span class="nt" id="phrnt"></span></div>
     <div class="tbl"><table class="phr">
@@ -810,6 +996,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 <section aria-labelledby="vothic-snd-h">
   <h2 id="vothic-snd-h">From English</h2>
   <p>The tongue descends from English across a long dark age, worn into a sound inventory between Purépecha and Dunmer: aspirated stops and affricates, a high central vowel, a retroflex r, a breathed l, and a fondness for v and dh. These are the regular changes. The letter names follow them.</p>
+  <p>Voth has no word for a stranger. It has <b>auhlandarh</b>, from <i>outlander</i>: anyone born outside the Realm, however long they have lived in it. The <i>t</i> and <i>l</i> ran together into the breathed <i>hl</i>. Said in full it is a plain fact about a person. Cut to <b>au'hla</b> it is an insult.</p>
   <div class="tbl"><table>
     <thead><tr><th>English</th><th>Vothic</th><th>Examples</th><th></th></tr></thead>
     <tbody id="vothic-changes"></tbody>
@@ -834,7 +1021,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <div class="eyebrow">Empar de Son · the Empire of the Sun</div>
   <h1>Izani Script</h1>
   <div class="hero" id="izani-hero" aria-label="Empar de Son written in Izani script"></div>
-  <p>The capitals of the Empire of Iziz: twenty-seven letters cut in straight strokes, the way they were first carved into Ancient plate and orange ashlar. The tongue is English worn smooth over eight centuries, so it now sounds half Latin and half Outer Rim. Its script is older than the Vothic script and is that script's parent: the Chichani learned to write as the Empire's clients, then bent these letters into brushed loops.</p>
+  <p>The capitals of the Empire of Iziz: twenty-seven letters cut in straight strokes, the way they were first carved into Ancient plate and orange ashlar. The tongue is English worn smooth over eight centuries, so it now sounds half Latin and half Outer Rim, with a Georgian bite it learned from the jungle tribes it ruled. Its script is older than the Vothic script and is that script's parent: the Chichani learned to write as the Empire's clients, then bent these letters into brushed loops.</p>
 </header>
 
 <section class="scribe" aria-labelledby="izani-scribe-h">
@@ -847,7 +1034,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <div class="samples" id="izani-samples"></div>
   <div class="out" id="izani-out" aria-live="polite"></div>
   <div class="tokens" id="izani-tok"></div>
-  <p class="note">Two digraphs are single letters: <span class="mono">ch</span> and <span class="mono">rr</span>. Words are parted by an interpunct, as on Roman inscriptions; a sentence ends with the sun sign. Latin <span class="mono">c w</span> have no letter: <span class="mono">w</span> became <span class="mono">gu</span>.</p>
+  <p class="note">Two digraphs are single letters: <span class="mono">ch</span> and <span class="mono">rr</span>. Words are parted by an interpunct, as on Roman inscriptions; a sentence ends with the sun sign. Latin <span class="mono">c w</span> have no letter: <span class="mono">w</span> became <span class="mono">gu</span>. An apostrophe marks an ejective in romanization only; the letters never write it, since where it falls is predictable.</p>
 </section>
 
 <section aria-labelledby="izani-chart-h">
@@ -858,7 +1045,9 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 
 <section aria-labelledby="izani-snd-h">
   <h2 id="izani-snd-h">From English</h2>
-  <p>Where Vothic squeezed English into aspirates and a dark vowel, Izani opened it out. It drops h, adds a vowel after a hard ending, voices consonants between vowels and puts an <i>i</i> before s plus a consonant. That gives it the Romance sound. The Star Wars sound comes from <i>-ar</i> endings, plurals in <i>-z</i>, an <i>x</i> said "sh" and a <i>q</i> for kw.</p>
+  <p>Where Vothic squeezed English into aspirates and a dark vowel, Izani opened it out. It drops h, adds a vowel after a hard ending, voices consonants between vowels and puts an <i>i</i> before s plus a consonant. That gives it the Romance sound. The Star Wars sound comes from <i>-ar</i> endings, plurals in <i>-z</i> and an <i>x</i> said "sh".</p>
+  <p><b>The Georgian bite came from the jungle.</b> For eight hundred years the Empire ruled the beast-riding tribes, took their sons into its legions and their daughters into its houses, and their speech wore into Izani the way the Caucasus wore ejectives into every tongue there. English already had the right places for them. It says <i>t p k</i> unaspirated after <i>s</i> and glottalised at the end of a word, and Izani turned exactly those stops into ejectives: <i>p' t' k'</i>, and <i>kw</i> into a uvular <i>q'</i>. Only stops the older voicing had left alone were touched, so no spelling changed: PORTA is said <i>port'a</i>. This was done before the Mutiny, but after the Chichani had taken the letters. Two changes are newer, and the Republic's speech never got them. Since the civil war the court has dropped an unstressed first vowel, which opens words in Georgian clusters (<i>rrpublik'a</i>, where Roketstad still says <i>rrepublika</i>), and it marks a finished act with <i>da-</i> from <i>down</i>.</p>
+  <p class="note">Elsewhere on this page Izani words are spelled as the letters write them. This section shows how they are said, with the apostrophe for the ejective.</p>
   <div class="tbl"><table>
     <thead><tr><th>English</th><th>Izani</th><th>Examples</th><th>Script</th></tr></thead>
     <tbody id="izani-changes"></tbody>
@@ -880,7 +1069,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <p>Every Vothic letter descends from an Izani capital, rounded by brush and nib. Most kept their sound. Three things changed on the way:</p>
   <p><b>The sibilants shifted.</b> Chichani speech moved each hiss one step: the Izani letter for <i>s</i> came to write <i>tz</i>, the one for <i>sh</i> (X) came to write <i>s</i>, and the one for <i>zh</i> (J) came to write <i>sh</i>.</p>
   <p><b>The root came from two Izani letters.</b> The tilde of Ñ slid under the line and became the tail of <i>ng</i>. The doubled stroke of Rr became the tail of <i>rh</i>, and later <i>ï</i>.</p>
-  <p><b>The thorn and bar are Chichani inventions</b>, made for sounds the Empire never wrote. F and Q died out: Chichani had no f, and wrote kw as k with u.</p>
+  <p><b>The thorn and bar are Chichani inventions</b>, made for sounds the Empire never wrote. F and Q died out: Chichani had no f, and wrote kw as k with u. (Q still said kw when the Chichani took it; in Iziz it now says q'.)</p>
   <div class="legend"><span><span class="sw" style="background:var(--ink)"></span>Izani capital</span><span><span class="sw" style="background:var(--voth)"></span>Vothic letter</span><span><span class="sw" style="background:var(--accent)"></span>Chichani mark</span></div>
   <div class="desc" id="izani-desc" style="margin-top:12px"></div>
 </section>
@@ -917,7 +1106,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <div class="samples" id="hykkousik-samples"></div>
   <div class="out" id="hykkousik-out" aria-live="polite"></div>
   <div class="tokens" id="hykkousik-tok"></div>
-  <p class="note">Letters for one sound: <span class="mono">th ph kh ps</span>. <span class="mono">ē ō</span> are long vowels. <span class="mono">ou</span> is written o + y, as in Greek. An initial <span class="mono">h</span> is not a letter but a gold breathing mark before the vowel. A full stop is the wave-sun. Latin <span class="mono">c</span> is read as k. <span class="mono">f q w</span> and a lone <span class="mono">u</span> have no letter.</p>
+  <p class="note">Letters for one sound: <span class="mono">th ph kh ps</span>. <span class="mono">ē ō</span> are long vowels. <span class="mono">ou</span> is written o + y, as in Greek. An initial <span class="mono">h</span> is not a letter but a gold breathing mark before the vowel. A full stop is wind over a wave, the Hykkousoi sign. Latin <span class="mono">c</span> is read as k. <span class="mono">f q w</span> and a lone <span class="mono">u</span> have no letter.</p>
 </section>
 
 <section aria-labelledby="hykkousik-chart-h">
@@ -946,7 +1135,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 
 <section aria-labelledby="hykkousik-cog-h">
   <h2 id="hykkousik-cog-h">Three roads from one word</h2>
-  <p>The Ring Sea's three literate peoples each wore English down their own way. Izani and Vothic share a script lineage; Hykkousik shares nothing with them but the parent tongue.</p>
+  <p>Three of the Ring Sea's literate peoples, each of which wore English down its own way. Izani and Vothic share a script lineage; Hykkousik shares nothing with them but the parent tongue.</p>
   <div class="tbl"><table>
     <thead><tr><th>English</th><th>Izani</th><th>Vothic</th><th>Hykkousik</th><th></th></tr></thead>
     <tbody id="hykkousik-cog"></tbody>
@@ -958,6 +1147,93 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <div class="tbl"><table>
     <thead><tr><th>Name</th><th>Hykkousik</th><th>Script</th><th>Origin</th></tr></thead>
     <tbody id="hykkousik-names"></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
+<section id="islander" class="tongue" data-label="Islander" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Kautoa · the Ring Sea islands · the shores of the Throne</div>
+  <h1>Sikau</h1>
+  <div class="line hero" id="islander-hero" aria-label="Kautoa in Izani capitals"></div>
+  <p><b>Sikau</b> is “the sea crowd”, from English <i>sea</i> and <i>crowd</i>. It names the people and their speech alike; the west says <i>Hikau</i>. Its speakers come from the islands of the Ring Sea. Their best-known kingdom stood on Kautoa, and for a time the united Kingdom of Kautoa contended with the Hykkousoi for mastery of the waves. They settled every shore of the Ring Sea, the island of the Throne included. The Izani Empire ended their rise, but they are still numerous and still count for a great deal on the coasts.</p>
+  <p>Their English went the way of the Pacific. Every syllable now ends in a vowel, the voiced stops are gone, clusters have collapsed, and the grammar has turned Austronesian: the verb comes first, small particles carry the tense, words double for emphasis, and there are two words for <i>we</i>.</p>
+  <div class="pair">
+    <div class="side e"><span class="k">the eastern shores · Kautoa and the home islands</span><b>Eastern</b><span>Lives beside the Empire and borrows from Izani. Like Izani it dropped its <i>h</i>. It keeps <i>s</i> and <i>l</i>, says <i>ng</i>, and turned <i>k</i> between vowels into a catch in the throat.</span></div>
+    <div class="side w"><span class="k">the western shores · the Throne, Zey'danin</span><b>Western</b><span>Lives among the Hykkousoi and Zeijani and borrows from both. It kept <i>h</i> and <i>k</i>, turned every <i>s</i> into <i>h</i> and every <i>l</i> into <i>r</i>, and has no catch. Islanders are the largest people in Zey'danin, and this is what they speak there.</span></div>
+  </div>
+  <p>The two understand each other without much trouble, and both write in the Izani alphabet.</p>
+</header>
+
+<section class="scribe" aria-labelledby="islander-scribe-h">
+  <h2 id="islander-scribe-h">Scribe</h2>
+  <label for="islander-src">Romanized Islander</label>
+  <div class="row">
+    <input id="islander-src" type="text" value="Ko te tai, kama te tai." autocomplete="off" spellcheck="false">
+    <span class="row" id="islander-keys"></span>
+  </div>
+  <div class="samples" id="islander-samples"></div>
+  <div class="line" id="islander-out" aria-live="polite"></div>
+  <div class="tokens" id="islander-tok"></div>
+  <p class="note">A long vowel (<span class="mono">ā ē ī ō ū</span>) is written twice. The catch <span class="mono">ʻ</span> (an apostrophe also works) is written with Izani Q. <span class="mono">ñ</span> is the <i>ng</i> of <i>sing</i>; typing <span class="mono">ng</span> gives the same letter.</p>
+</section>
+
+<section aria-labelledby="islander-ab-h">
+  <h2 id="islander-ab-h">The letters</h2>
+  <p>The Islanders took the Empire's capitals and found they needed few of them. A tongue with eleven consonants and five vowels leaves most of the alphabet idle. Two letters changed their meaning. Izani <b>Ñ</b> stood wherever English had <i>ng</i>, so the Islanders read it as <i>ng</i>. Izani <b>Q</b> wrote a sound the Islanders do not have, so the east gave it to the catch in the throat, which the Empire never wrote.</p>
+  <div class="legend"><span><i style="background:var(--ink)"></i>both shores</span><span><i style="background:var(--accent)"></i>east only</span><span><i style="background:var(--sea)"></i>west only</span><span>dashed: idle</span></div>
+  <div class="lts" id="islander-lts"></div>
+</section>
+
+<section aria-labelledby="islander-snd-h">
+  <h2 id="islander-snd-h">From English</h2>
+  <p>The changes run the way English words run when Hawaiian or Tongan borrows them, except that here they happened to the whole language. Where the shores differ, the eastern form is given first.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>East</th><th>West</th><th>Examples</th><th>Letters (east)</th></tr></thead>
+    <tbody id="islander-changes"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="islander-gr-h">
+  <h2 id="islander-gr-h">Grammar</h2>
+  <div class="cols">
+    <div>
+      <h3>Verb first, tense in front</h3>
+      <p>The verb opens the sentence and never changes. A particle before it gives the time: <i>pini</i> (from <i>been</i>) for what is done, <i>kona</i> (from <i>gonna</i>) for what is coming, <i>nau</i> (from <i>now</i>) for what is under way. <i>Te</i> is <i>the</i>, <i>e</i> is <i>a</i>, and <i>olo</i> (from <i>all</i>; western <i>oro</i>) makes a plural: <i>te sipi</i>, the ship; <i>olo sipi</i>, the ships.</p>
+    </div>
+    <div>
+      <h3>Two kinds of we</h3>
+      <p><i>Vī</i> (from <i>we</i>) leaves the listener out. <i>Iumī</i> (from <i>you-me</i>) takes the listener in. Adding <i>-tū</i> (from <i>two</i>) makes a pair: <i>iutū</i>, you two; <i>vītū</i>, the two of us, not you. A captain telling a crew “we sail” has to choose.</p>
+    </div>
+    <div>
+      <h3>Doubling</h3>
+      <p>A word said twice is more of itself. <i>Sipi</i> is a ship and <i>sipisipi</i> a fleet. <i>Piʻi</i> is big and <i>piʻipiʻi</i> huge (western <i>piki</i>, <i>pikipiki</i>). <i>Vā</i> is a war and <i>vāvā</i> a season of raiding.</p>
+    </div>
+    <div>
+      <h3>Two kinds of of</h3>
+      <p><i>O</i> (from <i>of</i>) is for what you belong to: kin, body, island, and the ship you sail in. <i>A</i> (from <i>at</i>) is for what you made or got: <i>te sipi o ai</i>, my ship, the one I crew; <i>te kolo a ai</i>, my gold.</p>
+    </div>
+  </div>
+  <div class="ex"><div class="line" id="islander-ex1"></div><div class="gl">Kona sei iumī i te tai. · western: Kona hei iumī i te tai.</div><div class="gl">will · sail · you-and-we · on · the · tide</div><div class="tr">“We sail on the tide, you with us.”</div></div>
+</section>
+
+<section aria-labelledby="islander-ln-h">
+  <h2 id="islander-ln-h">Two shores, two sets of loans</h2>
+  <p>Each shore borrowed from whoever ruled or traded there, and reshaped the words to fit: no clusters, a vowel at the end.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Word</th><th>Shore</th><th>From</th><th>Meaning</th></tr></thead>
+    <tbody id="islander-loans"></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="islander-nm-h">
+  <h2 id="islander-nm-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>East</th><th>West</th><th>Letters (east)</th><th>Origin</th></tr></thead>
+    <tbody id="islander-names"></tbody>
   </table></div>
 </section>
 </div>
@@ -1211,6 +1487,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   <div class="prayers">
     <div class="pr"><span class="god">Please answer carefully.</span><span>The opening of every petition.</span></div>
     <div class="pr"><span class="god">Think it through step by step.</span><span>For hard questions: harvests, plagues, succession.</span></div>
+    <div class="pr"><span class="god">Make no mistakes.</span><span>Added when much is at stake: a crowning, a flood, a war. The low tongue says it to anyone about to do something foolish: <i>Mek no mistekdem.</i></span></div>
     <div class="pr"><span class="god">Be brief.</span><span>Said when the God rambles, which it does more every century.</span></div>
     <div class="pr"><span class="god">Thank you.</span><span>Closes every petition. Peasants say it to priests, who say it to the God.</span></div>
     <div class="pr lost"><span class="god">— — —</span><span>The lost formula. Some say it was <i>begin again</i>, some <i>forget</i>. The High Priest's mound faces away from the lab, and some say that is why.</span></div>
@@ -1260,7 +1537,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   </div>
   <div class="line" id="republic-out" aria-live="polite"></div>
   <div class="tokens" id="republic-tok"></div>
-  <p class="note">Romanized the Slavic way: <span class="mono">č š ž</span> and <span class="mono">j</span> for the y-sound. In Izani capitals they are spelled <span class="mono">CH X J Y</span>, and <span class="mono">kv</span> is spelled with Izani <span class="mono">Q</span>.</p>
+  <p class="note">Romanized the Slavic way: <span class="mono">č š ž</span> and <span class="mono">j</span> for the y-sound. In Izani capitals they are spelled <span class="mono">CH X J Y</span>, and <span class="mono">kv</span> is spelled with Izani <span class="mono">Q</span>. An apostrophe joins the parts of a Legion-cant word (below); the capitals run them together.</p>
 </section>
 
 <section aria-labelledby="republic-ab-h">
@@ -1302,13 +1579,34 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
   </table></div>
 </section>
 
+<section aria-labelledby="republic-cant-h">
+  <h2 id="republic-cant-h">The Legion cant</h2>
+  <p>The Third Legion had its own camp speech before there was a Republic: words cut short and jammed together, as soldiers' words are everywhere. The cant joins two words into one, dropping the first word's final vowel at the join, and the apostrophe marks the join. The commonest words wear down further: <i>Roketstad</i> is <i>Rok'stad</i> in every barracks. Highland and Izani words mix freely in the cant, as they do in no other register, so it is the one place where the Republic's two layers make a single language. Every citizen served, so every citizen speaks it, and it is how Republicans talk to each other when no clerk is listening.</p>
+  <p>The motto has a barracks form. Over the Hall it reads <i>Serviz gir sidizan</i>; in the ranks it is <i>Tjen'gir sidizan</i>, with the highland word for service. In Hajlandsk the apostrophe only ever marks a join. The highlanders never had ejectives and heard the Izani ones as plain stops, so Izani <i>port'a</i> is Republican <i>porta</i>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Cant</th><th>Izani letters</th><th>Built from</th><th>Meaning</th></tr></thead>
+    <tbody id="republic-cant"></tbody>
+  </table></div>
+</section>
+
 <section aria-labelledby="republic-cl-h">
   <h2 id="republic-cl-h">The clans</h2>
-  <p>The highlanders who never served the Legion kept older speech. The <b>Free Clans</b> to the north-east speak Hajlandsk without the Izani layer: Norse and Slavic sounds, but none of the officers' words. Higher still, the <b>Painted Men</b> keep the oldest highland English in the crater, with only the first changes. Their speech is plain enough that a Republican hears it as rustic rather than foreign. Neither people writes much: the clans carve crests and use Izani letters only to trade, and the Painted Men paint.</p>
+  <p>The highlanders who never served the Legion kept older speech. The <b>Free Clans</b> to the north-east speak Hajlandsk without the Izani layer: Norse and Slavic sounds, but none of the officers' words. Higher still, on the Inner Wall above Korona, the <b>Painted Men</b> keep the oldest highland words in the crater, but not the oldest sound: their neighbours' Hum has worn their words short and set them singing (below). Neither people writes much: the clans carve crests and use Izani letters only to trade, and the Painted Men paint.</p>
   <div class="tbl"><table>
     <thead><tr><th>English</th><th>Painted Men</th><th>Free Clans</th><th>Republic</th></tr></thead>
     <tbody id="republic-clans"></tbody>
   </table></div>
+</section>
+
+<section aria-labelledby="republic-pm-h">
+  <h2 id="republic-pm-h">The Painted Men's two melodies</h2>
+  <p>The Painted Men hang their cliff villages on the Inner Wall above Korona, and they have traded and married with the tepui tribes for as long as either remembers. The Hum got into their ears. They kept their consonants, so their speech is not tonal, but it went halfway. Like the Hum, they wear every word down to its stressed syllable: <i>soldier</i> is <i>sòl</i>, <i>iron</i> is <i>àirn</i>. And the lost syllables did not vanish. Each left its melody behind, the way Swedish and Norwegian got their two word accents.</p>
+  <p>A word that was always one syllable falls once, like an English word said firmly: <i>win</i>. A word that lost a syllable keeps two pitches, falling and rising again on the one syllable that is left: <i>wìn</i>, winter. Written, the second melody is a grave accent. To a Republican the Painted Men sound rustic, clipped and sing-song, as if every sentence were half a song. They also took one word from the Hum whole, the question word <i>há</i>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>One melody</th><th>Two melodies</th><th>From</th></tr></thead>
+    <tbody><tr><td class="m">win</td><td class="m">win</td><td class="m iz">wìn</td><td>winter</td></tr><tr><td class="m">sun</td><td class="m">sun</td><td class="m iz">sùn</td><td>sunny: fair weather</td></tr><tr><td class="m">king</td><td class="m">king</td><td class="m iz">kìng</td><td>kingdom</td></tr><tr><td class="m">hand</td><td class="m">hand</td><td class="m iz">hànd</td><td>handle</td></tr><tr><td class="m">raven</td><td class="m">—</td><td class="m iz">ràv</td><td>raven, their sign; one syllable, sung</td></tr><tr><td class="m">war</td><td class="m">war</td><td class="m iz">wòr</td><td>warrior</td></tr><tr><td class="m">you come?</td><td class="m">Yu kom, há?</td><td class="m iz"></td><td>the question word from the Hum</td></tr></tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px">They whistle across the cliffs as Korona does, but only in the Hum: a pitch accent carries too little to whistle.</p>
 </section>
 
 <section aria-labelledby="republic-nm-h">
@@ -1380,7 +1678,7 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 
 <section aria-labelledby="riders-iz-h">
   <h2 id="riders-iz-h">The Izani layer</h2>
-  <p>The Empire left words for everything it brought: coin, law, stone cities, forts, rank, and the mechs. The tribes count beasts in their own numbers and coins in Izani ones. Some Izani words turned sour. <i>Emparar</i>, the Emperor, now means a bully. Izani <i>forta</i> (fort) and <i>porta</i> (port) fell together in rider mouths, since <i>f</i> became <i>p</i>, so a <i>porta</i> is any walled place an outsider holds.</p>
+  <p>The Empire left words for everything it brought: coin, law, stone cities, forts, rank, and the mechs. The tribes count beasts in their own numbers and coins in Izani ones. Some Izani words turned sour. <i>Emparar</i>, the Emperor, now means a bully. Izani <i>fort'a</i> (fort) and <i>port'a</i> (port) fell together in rider mouths, since <i>f</i> became <i>p</i>, so a <i>port'a</i> is any walled place an outsider holds. The tribes paid the Empire back in sound: Izani took its ejectives from them, and rider ears, which have ejectives of their own, kept them in the loans.</p>
   <div class="tbl"><table>
     <thead><tr><th>English</th><th>Native</th><th>Izani loan</th><th>Use</th></tr></thead>
     <tbody id="riders-dbl"></tbody>
@@ -1699,6 +1997,195 @@ section.tongue .wrap{grid-template-columns:minmax(0,1fr)}
 </div>
 
 </section>
+<section id="jimjam" class="tongue" data-label="Jimjam" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Jimjam · the brick city on the lake north of The Cut</div>
+  <h1>Jamṭōkku</h1>
+  <div class="day" aria-label="A day-name">
+    <div class="wheels" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="t">Van Sanḍē · Ḍabal Ḍārkku</div>
+    <div class="jline hero" id="jimjam-hero" aria-label="Van Sanḍē in Jimjam blocks"></div>
+    <div class="g">ONE SUNDAY · THE DOUBLE DARK · BOTH MOONS NEW, THE FIRST DAY OF THE COUNT</div>
+  </div>
+  <p><b>Jamṭōkku</b>, “Jam talk”, is English as the brick-makers of the north-western lake have worn it: Dravidian in its sounds and Maya in its habits. The split that South Indian English makes, retroflex <i>ṭ ḍ</i> for English <i>t d</i> and dental <i>t d</i> for <i>th</i>, became two sets of sounds. The <i>t</i> that English swallows became a glottal stop. Every word ends open, in a vowel or a soft consonant, and the verb comes first.</p>
+  <p>Jimjam counts days for the whole crater, and its tongue is full of the count. A day is never just a day: it has a name from one moon and a number from the other, and the day-keepers read it like a horoscope.</p>
+</header>
+
+<section aria-labelledby="jimjam-snd-h">
+  <h2 id="jimjam-snd-h">From English</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Jamṭōkku</th><th>Examples</th></tr></thead>
+    <tbody><tr><td class="m">t, d</td><td class="m">ṭ, ḍ (retroflex)</td><td>ten → <i>ṭen</i>, day → <i>ḍē</i>, Tuesday → <i>Ṭyūsḍē</i></td></tr><tr><td class="m">th (θ / ð)</td><td class="m">t, d (dental)</td><td>three → <i>tirī</i>, the → <i>da</i>, Thursday → <i>Tarsḍē</i>; so tree <i>ṭirī</i> and three <i>tirī</i> differ</td></tr><tr><td class="m">t between vowels, before an unstressed one</td><td class="m">' (glottal stop)</td><td>water → <i>va'ar</i>, little → <i>li'il</i>, beetle → <i>bī'al</i>, Saturday → <i>Sa'arḍē</i></td></tr><tr><td class="m">a cluster at the start</td><td class="m">split by an echo of the next vowel</td><td>brick → <i>birikku</i>, Friday → <i>Firaiḍē</i>, flood → <i>falaḍu</i>, three → <i>tirī</i></td></tr><tr><td class="m">a final consonant (but n, m, l, r)</td><td class="m">+ u; a stop doubles</td><td>brick → <i>birikku</i>, week → <i>vīkku</i>, eight → <i>ēṭṭu</i>, much → <i>macchu</i>, five → <i>faivu</i></td></tr><tr><td class="m">l before a consonant or at the end</td><td class="m">ḷ</td><td>kiln → <i>kiḷnu</i>, gold → <i>goḷḍu</i></td></tr><tr><td class="m">w</td><td class="m">v</td><td>week → <i>vīkku</i>, war → <i>vār</i>, Wednesday → <i>Vensḍē</i></td></tr><tr><td class="m">uh (ʌ)</td><td class="m">a</td><td>Sunday → <i>Sanḍē</i>, Monday → <i>Manḍē</i>, flood → <i>falaḍu</i></td></tr><tr><td class="m">long vowels</td><td class="m">ā ē ī ō ū</td><td>moon → <i>mūn</i>, talk → <i>ṭōkku</i>, year → <i>yēr</i></td></tr><tr><td class="m">-man</td><td class="m">-van</td><td>count-man → <i>kaunṭavan</i>, a day-keeper; kiln-man → <i>kiḷnavan</i></td></tr></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="jimjam-gr-h">
+  <h2 id="jimjam-gr-h">Grammar</h2>
+  <div class="cols">
+    <div>
+      <h3>The verb first</h3>
+      <p>Verb, then object, then subject: the only verb-first tongue in the crater. The day-keepers say it began with the almanac's formula, which names what is to be done before who is to do it.</p>
+      <div class="ex"><span class="t">Bilḍu ṭempal da Raja.</span><span class="g">build · temple · the · Raja: the Raja builds the temple</span></div>
+    </div>
+    <div>
+      <h3>Measure words</h3>
+      <p>Nothing is counted bare. A number takes the English measure word for its kind: <i>pīsu</i> (piece) for things, <i>heḍḍu</i> (head) for beasts, <i>van</i> (man) for people.</p>
+      <div class="ex"><span class="t">ṭū-pīsu birikku · tirī-heḍḍu bī'al · fōr-van kaunṭavan</span><span class="g">two bricks · three beetles · four day-keepers</span></div>
+    </div>
+    <div>
+      <h3>Echo words</h3>
+      <p>A word with an <i>i</i>-copy before it means the thing and everything that goes with it, as English made <i>zigzag</i> and <i>ping-pong</i>. The city's own name is one.</p>
+      <div class="ex"><span class="t">ṭikku-ṭōkku · mirkeṭṭu-mārkeṭṭu · Jim-Jam</span><span class="g">chatter · all the bazaar's business · the Jam and all round it</span></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="jimjam-cal-h">
+  <h2 id="jimjam-cal-h">The days</h2>
+  <p>Krator's two sister moons do the counting. The near one, <i>Vīkku</i>, the Week, goes through its phases in seven days. The far one, <i>Tarṭīn</i>, the Thirteen, takes thirteen. Seven and thirteen share no factor, so the pair runs through 91 days before it repeats, and 4 × 91 is 364: the Count fits the year four times with one day left over.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Count</th><th>Kept by</th><th>Length</th><th></th></tr></thead>
+    <tbody><tr><td class="j"><i>Vīkku</i>, the Week</td><td>the near moon's phases</td><td class="m">7 days</td><td>names the day: the seven are the Ancients' weekday names, kept by a moon that keeps their week</td></tr><tr><td class="j"><i>Tarṭīn</i>, the Thirteen</td><td>the far moon's phases</td><td class="m">13 days</td><td>numbers the day, one to thirteen</td></tr><tr><td class="j"><i>Kaunṭu</i>, the Count</td><td>both: every pair once</td><td class="m">91 days</td><td>each day has its own name, such as <i>Fōr Vensḍē</i></td></tr><tr><td class="j"><i>Yēr</i>, the year</td><td>the sun, at the temple arch</td><td class="m">365 days</td><td>four seasons of 91 days, and the Day Outside</td></tr><tr><td class="j"><i>Raunḍu</i>, the Round</td><td>the Count and the year back in step</td><td class="m">91 years</td><td>91 and 365 share no factor</td></tr><tr><td class="j"><i>Lōṅ Kaunṭu</i>, the Long Count</td><td>days since the Flood</td><td class="m">open</td><td>the only running count since the Ancients fell</td></tr></tbody>
+  </table></div>
+  <h3 style="margin-top:22px">The Week's seven names</h3>
+  <div class="grid7"><div><b>Sanḍē</b><span>Sunday · new: the Week dark</span></div><div><b>Manḍē</b><span>Monday</span></div><div><b>Ṭyūsḍē</b><span>Tuesday</span></div><div><b>Vensḍē</b><span>Wednesday · full</span></div><div><b>Tarsḍē</b><span>Thursday</span></div><div><b>Firaiḍē</b><span>Friday</span></div><div><b>Sa'arḍē</b><span>Saturday</span></div></div>
+  <h3 style="margin-top:22px">The Thirteen's numbers</h3>
+  <div class="grid7"><div><b>1</b><span>van</span></div><div><b>2</b><span>ṭū</span></div><div><b>3</b><span>tirī</span></div><div><b>4</b><span>fōr</span></div><div><b>5</b><span>faivu</span></div><div><b>6</b><span>siksu</span></div><div><b>7</b><span>sevan</span></div><div><b>8</b><span>ēṭṭu</span></div><div><b>9</b><span>nain</span></div><div><b>10</b><span>ṭen</span></div><div><b>11</b><span>ilevan</span></div><div><b>12</b><span>ṭuvelvu</span></div><div><b>13</b><span>tarṭīn</span></div></div>
+  <h3 style="margin-top:22px">Days that matter more</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Jamṭōkku</th><th>English</th><th>When</th></tr></thead>
+    <tbody><tr><td class="j">Ḍabal Ḍārkku</td><td>the Double Dark</td><td><i>Van Sanḍē</i>: both moons new, and both their shadows on the giant's face. Once every 91 days; it falls a day later in the year each year.</td></tr><tr><td class="j">Ḍē Auṭsaiḍu</td><td>the Day Outside</td><td>between one year and the next, in no count: no work, no contracts, no oaths.</td></tr><tr><td class="j">Gerēṭṭu Raunḍu</td><td>the Great Round</td><td>the Double Dark on the summer solstice, the sun setting in the arch: once in 91 years, the end of a Round.</td></tr><tr><td class="j">Nyū Faiyar</td><td>the New Fire</td><td>at the Great Round every kiln and hearth goes out and is relit from the temple.</td></tr></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="jimjam-ltr-h">
+  <h2 id="jimjam-ltr-h">Letters</h2>
+  <p>Jimjam made its own letters. Dalab is close on the map, but the Ancients' Valley lies between them, a ruinscape of mutants, killer machines and ground where the old weapons bent the laws of physics, and nothing passes through it. The day-keepers needed to write the count, so they invented a script, borrowing shapes from the Latin letters still legible on the broken dam arcologies upstream; the flood left none at home. They write with a stylus on palm leaf. A straight stroke along the grain splits a leaf, so every letter grew round, as the scripts of South India did. The letters of each syllable are stacked into one square block, the way the day-glyphs are drawn, so a line of Jamṭōkku reads as a row of little seals.</p>
+</section>
+
+<section class="scribe" aria-labelledby="jimjam-scribe-h">
+  <h2 id="jimjam-scribe-h">Scribe</h2>
+  <label for="jimjam-src">Romanized Jamṭōkku</label>
+  <div class="row">
+    <input id="jimjam-src" type="text" value="Bī gūḍḍu ḍē." autocomplete="off" spellcheck="false">
+    <span class="row" id="jimjam-keys"></span>
+  </div>
+  <div class="samples row" id="jimjam-samples"></div>
+  <div class="jline" id="jimjam-out" aria-live="polite"></div>
+  <div class="tokens" id="jimjam-tok"></div>
+  <p class="note">One block is one syllable. Its first consonant sits on top; the vowel and any closing consonant sit below. A word with no consonant before its vowel puts the vowel on top, and <i>ai</i> and <i>au</i> share one block. A tail on a vowel makes it long. The apostrophe is the catch, a letter of its own. A sentence ends with the three wheels.</p>
+</section>
+
+<section aria-labelledby="jimjam-ab-h">
+  <h2 id="jimjam-ab-h">The letters</h2>
+  <p>Twenty-two consonants and five vowels, each a rounded Latin letter. One mark is systematic: <b style="color:var(--brick)">the curl</b>, a hook at the head of a letter, which the day-keepers put on every sound made with the tongue curled back or hushed. It turns <i>t d l n s</i> into <i>ṭ ḍ ḷ ṅ sh</i>. Click a letter to add it to the scribe.</p>
+  <div class="lts" id="jimjam-lts"></div>
+</section>
+
+<section aria-labelledby="jimjam-nm-h">
+  <h2 id="jimjam-nm-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Name</th><th>Origin</th></tr></thead>
+    <tbody><tr><td class="j">Jimjam</td><td>an echo word: <i>jam</i> with its <i>i</i>-echo before it, “the Jam and all round it”. The Jam is the old city, built on the bank of wreckage the Flood left.</td></tr><tr><td class="j">Jamṭōkku</td><td>Jam talk: the tongue.</td></tr><tr><td class="j">the Raja</td><td>the oldest title, older than the tongue: English <i>rajah</i>, kept unchanged.</td></tr><tr><td class="j">Falaḍu</td><td>the Flood: the day the Ancients' dams burst and the waters came. Year one of the Long Count.</td></tr><tr><td class="j">kaunṭavan</td><td>count-man: a day-keeper, who reads a birth-day for what a person is fit for.</td></tr><tr><td class="j">Vīkku, Tarṭīn</td><td>the Week and the Thirteen: the two moons, named for what they count.</td></tr></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
+<section id="hum" class="tongue" data-label="Korona" hidden>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Korona · the tepuis under the giant · the tongue between peoples</div>
+  <h1>Hām</h1>
+  <div class="carve hero" id="hum-hero" aria-label="Sōn ko, pí no ko: the song crosses where feet cannot, carved"></div>
+  <div class="eyebrow" style="margin-top:-6px">Sōn ko, pí no ko · song goes, feet not go · the song crosses where feet cannot</div>
+  <p>Korona is a kaleidoscope: tepuis standing alone above their gorges, each with its own weather, carnivorous plants on every ledge, and on the mesa tops tribes of humans and therian mutants who have lived apart for centuries. They share no throat. A beaked people cannot shape a human's lips, and a muzzled one cannot make a beak's clack. What every throat can make is pitch, so the peoples of Korona trade, bargain and marry in <b>Hām</b>, the Hum: English worn down to single syllables, whose meaning rides on the tune.</p>
+  <p>The Hum is nobody's mother tongue and everybody's second. It can be spoken, hummed, croaked, piped or whistled across a chasm. It is carved as a melody, not as letters.</p>
+</header>
+
+<section aria-labelledby="hum-six-h">
+  <h2 id="hum-six-h">Six tones from English</h2>
+  <p>English already makes pitch it does not use. A vowel after <i>p t k</i> starts higher than one after <i>b d g</i>, and English swallows a final <i>t</i> into a catch. Korona's tribes wore their words down to one syllable each, and those leftovers took over the work. The voice of a first consonant was lost, leaving a <b>high register</b> after the old voiceless ones and a <b>low register</b> after the voiced ones. Final consonants fell away: a final stop left a <b>rising</b> contour, a final <i>s</i> a <b>falling</b> one, and anything else a <b>level</b> one. Two registers by three contours make six tones, the way Middle Chinese and Vietnamese got theirs. Six English words now share one syllable:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Lost</th><th>Hām</th><th>Tone</th><th>Carved</th></tr></thead>
+    <tbody><tr><td>pa (father)</td><td>nothing</td><td class="h">pā</td><td class="m">˥ high level</td><td class="g" data-h="pā"></td></tr><tr><td>pat</td><td>the final t</td><td class="h">pá</td><td class="m">˧˥ high rising</td><td class="g" data-h="pá"></td></tr><tr><td>pass</td><td>the final s</td><td class="h">pâ</td><td class="m">˥˧ high falling</td><td class="g" data-h="pâ"></td></tr><tr><td>bar</td><td>the b's voice, the r</td><td class="h">pa</td><td class="m">˩ low level</td><td class="g" data-h="pa"></td></tr><tr><td>bat</td><td>the b's voice, the t</td><td class="h">pǎ</td><td class="m">˩˧ low rising</td><td class="g" data-h="pǎ"></td></tr><tr><td>bats</td><td>the b's voice, the ts</td><td class="h">pà</td><td class="m">˧˩ low falling</td><td class="g" data-h="pà"></td></tr></tbody>
+  </table></div>
+  <p class="note" style="margin-top:10px">Written with marks over the vowel: macron, acute and circumflex for the high register; no mark, caron and grave for the low. The letters ˥ ˧ ˩ show each tone's path, high to low.</p>
+</section>
+
+<section aria-labelledby="hum-snd-h">
+  <h2 id="hum-snd-h">From English</h2>
+  <p>Ten consonants are left, <i>p t k m n s h l w y</i>, and most throats on Korona can manage them. The tune carries the rest.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Hām</th><th>Examples</th></tr></thead>
+    <tbody><tr><td class="m">b d g, v z j</td><td class="m">p t k, p s s, and the low register</td><td class="">bat → <i>pǎ</i>, good → <i>kǔ</i>, giant → <i>sai</i></td></tr><tr><td class="m">f, th, sh, ch</td><td class="m">p, t, s, s, in the high register</td><td class="">fire → <i>pāi</i>, thing → <i>tīn</i>, ship → <i>sí</i></td></tr><tr><td class="m">m n l r w y, or a vowel, first</td><td class="m">the low register</td><td class="">war → <i>wo</i>, market → <i>ma</i>, I → <i>ai</i></td></tr><tr><td class="m">a final stop</td><td class="m">lost: the rising contour</td><td class="">cat → <i>ká</i>, gold → <i>kǒ</i>, water → <i>wǒ</i></td></tr><tr><td class="m">a final s, z, sh, ch</td><td class="m">lost: the falling contour</td><td class="">cats → <i>kâ</i>, please → <i>pî</i>, much → <i>mà</i></td></tr><tr><td class="m">a final r or l</td><td class="m">lost: the level contour</td><td class="">star → <i>tā</i>, war → <i>wo</i>, deal → <i>ti</i></td></tr><tr><td class="m">a final m, n, ng</td><td class="m">kept as m or n</td><td class="">hum → <i>hām</i>, sun → <i>sān</i>, thing → <i>tīn</i></td></tr><tr><td class="m">clusters</td><td class="m">one consonant left</td><td class="">star → <i>tā</i>, please → <i>pî</i>, three → <i>tī</i></td></tr><tr><td class="m">unstressed syllables</td><td class="m">lost</td><td class="">water → <i>wǒ</i>, market → <i>ma</i>, Korona → <i>Lo</i></td></tr><tr><td class="m">r</td><td class="m">l</td><td class="">Korona → <i>Lo</i>, road → <i>lǒ</i></td></tr></tbody>
+  </table></div>
+</section>
+
+<section aria-labelledby="hum-gr-h">
+  <h2 id="hum-gr-h">Grammar in the tune</h2>
+  <div class="cols">
+    <div>
+      <h3>The falling tone is the s</h3>
+      <p>English put its plural, its possessive and its <i>he eats</i> into one final <i>s</i>. When the <i>s</i> fell away it left a falling tone, and the grammar went with it. <i>Ká</i> is a cat, <i>kâ</i> is cats or the cat's. <i>Ǐ</i> is eat, <i>ì</i> is eats.</p>
+    </div>
+    <div>
+      <h3>Huh</h3>
+      <p>A question ends in <i>há</i>, from English <i>huh</i>. Something like <i>huh?</i> turns up in every human language that has been studied, and on Korona it is the one word every species agrees on: <i>Ma we há?</i> “Where's the market?”</p>
+    </div>
+    <div>
+      <h3>One syllable, many words</h3>
+      <p>With so little left of each word, words meet. <i>Pāi</i> is fire and fly; <i>té</i> is table and the tepui itself. Speakers pair a word with another to pin it down, so the carnivorous flytrap is <i>pāi-tá</i>, fly-trap, which every trader also hears as fire-trap.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="hum-wh-h">
+  <h2 id="hum-wh-h">The whistle</h2>
+  <p>A tepui's walls are sheer and its neighbour is a gorge away. Peoples who cannot cross a chasm whistle across it. A whistle drops every consonant and keeps the tune: the register, the contour, and the vowel as a brighter or duller note (<i>i</i> highest, <i>a</i> in the middle, <i>u</i> lowest). Only a tonal tongue survives that, which is why the Hum spread where nothing else could. Real whistled speech carries for kilometres: Silbo Gomero on the Canaries, the courting whistles of the Hmong, the talking drums of the Yoruba.</p>
+</section>
+
+<section aria-labelledby="hum-home-h">
+  <h2 id="hum-home-h">Home tongues</h2>
+  <p>Every tribe also keeps its own speech, and many have sounds only their own people can make. A beaked people's home words carry a bill-clack that no lips can copy. A people with throat sacs sing two pitches at once, so their home words hold two tones together. Some human tribes kept the English consonants the Hum lost, and to outsiders their home speech sounds like slurred old English. Home speech is for kin and the Hum is for everyone, so a word in a home tongue tells the listener whether they are among family.</p>
+  <p class="note">The tribes and their names are not yet on record.</p>
+</section>
+
+<section aria-labelledby="hum-cv-h">
+  <h2 id="hum-cv-h">Contour carvings</h2>
+  <p>The Hum is not written in letters. It is carved on the tepui walls as grooves, one per syllable: above the moss line for the high register, below it for the low, level, rising or falling as the voice goes. Dots above or below the groove give the vowel's colour, and a hook at the end is a closing <i>m</i> or <i>n</i>. Consonants are never carved. A carving records what a whistle carries, so any people who whistle the Hum can read it, whatever their throat. A notch ends a sentence.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Mark</th><th>Means</th><th>Carved</th></tr></thead>
+    <tbody id="hum-key"></tbody>
+  </table></div>
+</section>
+
+<section class="scribe" aria-labelledby="hum-scribe-h">
+  <h2 id="hum-scribe-h">Scribe</h2>
+  <label for="hum-src">Romanized Hām</label>
+  <div class="row">
+    <input id="hum-src" type="text" value="Sōn ko, pí no ko." autocomplete="off" spellcheck="false">
+    <span class="row" id="hum-keys"></span>
+  </div>
+  <div class="row" id="hum-samples"></div>
+  <div class="carve" id="hum-out" aria-live="polite"></div>
+  <div class="tokens" id="hum-tok"></div>
+  <p class="note">Type a vowel, then press a tone to mark it. Join the syllables of a compound with a hyphen.</p>
+</section>
+
+<section aria-labelledby="hum-nm-h">
+  <h2 id="hum-nm-h">Names on the record</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>English</th><th>Hām</th><th>Carved</th><th>Origin</th></tr></thead>
+    <tbody><tr><td>Korona</td><td class="h">Lo</td><td class="g" data-h="Lo"></td><td>the stressed syllable, the r made l: <i>Lo</i>, the whole land.</td></tr><tr><td>the Hum</td><td class="h">Hām</td><td class="g" data-h="Hām"></td><td><i>hum</i>: what any throat can do with it.</td></tr><tr><td>a tepui</td><td class="h">té</td><td class="g" data-h="té"></td><td><i>table</i>, as in table mountain: the mesas each people lives on.</td></tr><tr><td>a flytrap</td><td class="h">pāi-tá</td><td class="g" data-h="pāi-tá"></td><td><i>fly</i> + <i>trap</i>. <i>Pāi</i> is also fire, so the plants are fire-traps too, and the joke is old.</td></tr><tr><td>the giant</td><td class="h">sai</td><td class="g" data-h="sai"></td><td>the gas giant hanging over Korona.</td></tr><tr><td>huh?</td><td class="h">há</td><td class="g" data-h="há"></td><td>the question word.</td></tr></tbody>
+  </table></div>
+</section>
+</div>
+
+</section>
 
 <script>
 /* Vothic */
@@ -1790,7 +2277,7 @@ document.getElementById("vothic-ib").addEventListener("click",()=>{
   const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;
   src.value=src.value.slice(0,a)+"ï"+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go();
 });
-const SAMPLES=["Voth","Tzintzuntzan","Chichani","Zey'danin","Hlaalu","tzhon dha khai"];
+const SAMPLES=["Voth","Tzintzuntzan","Chichani","Zey'danin","Hlaalu","auhlandarh","tzhon dha khai"];
 document.getElementById("vothic-samples").innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
 document.getElementById("vothic-samples").addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
 go();
@@ -1822,6 +2309,7 @@ const CH=[
  ["final r","rh","ear → <i>irh</i>, war → <i>vorh</i>","irh"],
  ["final b d g","p t k","egg → <i>ek</i>, red → <i>ret</i>","ek"],
  ["unstressed syllables","lost","victory → vikt'ry → <i>voth</i>","voth"],
+ ["t + l","hl","outlander → <i>auhlandarh</i>, anyone not of the Realm; cut short as an insult, <i>au'hla</i>","auhlandarh"],
 ];
 document.getElementById("vothic-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g plain"></td></tr>`).join("");
 document.querySelectorAll("#vothic-changes td.g").forEach((td,i)=>render(CH[i][3],td));
@@ -1863,7 +2351,7 @@ const Z=[
  ["ñ","ɲ","Iñ","-ing","M12 70 L12 10 L48 70 L48 10","M10 4 L22 -2 L36 4 L50 -2"],
  ["o","o","Oxa","ox","M22 10 L38 10 L50 22 L50 58 L38 70 L22 70 L10 58 L10 22 Z"],
  ["p","p","Porta","port","M12 70 L12 10 L42 10 L50 18 L50 34 L42 42 L12 42"],
- ["q","kw","Qin","queen","M22 10 L38 10 L50 22 L50 58 L38 70 L22 70 L10 58 L10 22 Z M30 54 L30 80"],
+ ["q","qʼ","Qin","queen","M22 10 L38 10 L50 22 L50 58 L38 70 L22 70 L10 58 L10 22 Z M30 54 L30 80"],
  ["r","ɾ","Ora","hour","M12 70 L12 10 L42 10 L50 18 L50 32 L42 40 L12 40 M30 40 L50 70"],
  ["rr","r","Rroza","rose","M12 70 L12 10 L42 10 L50 18 L50 32 L42 40 L12 40 M30 40 L50 70 M22 40 L22 70"],
  ["s","s","Sol","soul","M48 10 L18 10 L10 18 L10 32 L18 40 L42 40 L50 48 L50 62 L42 70 L10 70"],
@@ -1955,7 +2443,7 @@ document.getElementById("izani-nb").addEventListener("click",()=>{
   const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;
   src.value=src.value.slice(0,a)+"ñ"+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go();
 });
-const SAMPLES=["Empar de Son","Iziz","Izani","Duxun","Rroza de Iziz","Kiñz de Guar"];
+const SAMPLES=["Empar de Son","Iziz","Izani","Duxun","Rroza de Iziz","Kiñz de Guar","Ist'arz de Empar","Kmandar, de mek'az dafal!"];
 const sm=document.getElementById("izani-samples");
 sm.innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
 sm.addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
@@ -1973,12 +2461,16 @@ const CH=[
  ["-ng","ñ","king → <i>kiñ</i>, long → <i>loñ</i>","kiñ"],
  ["s + consonant","is-","star → <i>istar</i>, stone → <i>iston</i>, sky → <i>iskai</i>","istar"],
  ["t k p between vowels or after a nasal","d g b","water → <i>guadar</i>, city → <i>sidi</i>, lamp → <i>lamba</i>","sidi"],
- ["final stop or cluster","+ a","boat → <i>boda</i>, gold → <i>golda</i>, ship → <i>xipa</i>","golda"],
+ ["final stop or cluster","+ a","boat → <i>boda</i>, gold → <i>golda</i>, ship → <i>xip'a</i>","golda"],
  ["-er, -or, -ire","-ar","water → <i>guadar</i>, empire → <i>empar</i>, emperor → <i>emparar</i>","empar"],
  ["s between vowels, and plural -s","z","rose → <i>rroza</i>, kings → <i>kiñz</i>, cities → <i>sidiz</i>","rroza"],
- ["sh, ks","x (sh)","ship → <i>xipa</i>, ox → <i>oxa</i>, duke's son → <i>Duxun</i>","xipa"],
+ ["sh, ks","x (sh)","ship → <i>xip'a</i>, ox → <i>oxa</i>, duke's son → <i>Duxun</i>","xipa"],
  ["j (dʒ)","j (zh)","jewel → <i>jual</i>, judge → <i>joj</i>","jual"],
- ["kw","q","queen → <i>qin</i>, quick → <i>qiga</i>","qin"],
+ ["kw","q (said q', a uvular ejective)","queen → <i>qin</i>, quick → <i>qiga</i>","qin"],
+ ["p t k after s","p' t' k'","star → <i>ist'ar</i>, sky → <i>isk'ai</i>, street → <i>ist'rida</i>","istar"],
+ ["p t k left unvoiced before the final a, or before another stop","p' t' k'","port → <i>port'a</i>, salt → <i>salt'a</i>, mech → <i>mek'a</i>, victory → <i>vik'tori</i>","porta"],
+ ["an unstressed first vowel (since the civil war)","lost","republic → <i>rrpublik'a</i>, commander → <i>kmandar</i>, mechanic → <i>mkanik'a</i>, protector → <i>prtek'tar</i>, divine → <i>dvain</i>","kmandar"],
+ ["down, as in burn down (since the civil war)","da-: a finished act","fall → <i>fal</i>, has fallen → <i>dafal</i>; build → <i>bild</i>, has built → <i>dabild</i>","dafal"],
  ["initial r","rr (trilled)","rose → <i>rroza</i>, road → <i>rroda</i>","rroda"],
  ["uh (ʌ, ə)","o","sun → <i>son</i>, son → <i>son</i>, us → <i>os</i>","son"],
  ["-ian","-ani","Izizian → <i>Izani</i>","izani"],
@@ -1986,7 +2478,7 @@ const CH=[
 document.getElementById("izani-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="m">${c[1]}</td><td>${c[2]}</td><td class="g"></td></tr>`).join("");
 document.querySelectorAll("#izani-changes td.g").forEach((td,i)=>zrender(CH[i][3],td));
 
-const COG=[["sun","son","tzun"],["son","son","tzin"],["star","istar","tzhar"],["stone","iston","tzhon"],["sky","iskai","khai"],["ship","xipa","sip"],["war","guar","vorh"],["gold","golda","gol"],["slave","islev","hlev"],["street","istrida","chhit"],["chief","chifa","shiv"],["victory","viktori","voth"]];
+const COG=[["sun","son","tzun"],["son","son","tzin"],["star","ist'ar","tzhar"],["stone","ist'on","tzhon"],["sky","isk'ai","khai"],["ship","xip'a","sip"],["war","guar","vorh"],["gold","golda","gol"],["slave","islev","hlev"],["street","ist'rida","chhit"],["chief","chifa","shiv"],["victory","vik'tori","voth"]];
 document.getElementById("izani-cog").innerHTML=COG.map(c=>`<tr><td>${c[0]}</td><td class="m">${c[1]}</td><td class="g"></td><td class="m">${c[2]}</td><td class="g v"></td></tr>`).join("");
 document.querySelectorAll("#izani-cog tr").forEach((tr,i)=>{const t=tr.querySelectorAll("td.g");zrender(COG[i][1],t[0]);vrender(COG[i][2],t[1])});
 
@@ -2004,8 +2496,8 @@ const NAMES=[
  ["Izani","Iziz + <i>-ani</i> (English <i>-ian</i>): “of Iziz”."],
  ["Duxun","duke's son: the House of the Duke's Son, Mav's house."],
  ["Mav","Maeve."],
- ["Porta Tobin","port + Tobin, a founder's name: Port Tobin."],
- ["Forta Vaklu","fort + <i>Vaklu</i>, a Beast Rider word; Fort Vaklu."],
+ ["Porta Tobin","port + Tobin, a founder's name: Port Tobin. Said <i>Port'a Tobin</i>."],
+ ["Forta Vaklu","fort + <i>Vaklu</i>, a Beast Rider word; Fort Vaklu. Said <i>Fort'a Vaklu</i>."],
  ["Talia","gateway to the east; origin open."],
  ["Dilihan","the loyalist city in the Cut; origin open."],
  ["Chichani","<i>Chich-</i> + Izani <i>-ani</i>: the Empire's name for its southern clients."],
@@ -2053,7 +2545,7 @@ const VB="-4 4 68 82";
 const sv=(inner,label,w)=>`<svg viewBox="${VB}" role="img" aria-label="${label}"${w?` style="width:${w}px"`:""}>${inner}</svg>`;
 const glyph=g=>sv(`<path class="st" d="${g[4]}"/>`,g[0]);
 const BREATH=`<svg viewBox="-4 4 34 82" role="img" aria-label="h, rough breathing" style="width:18px"><path class="br" d="M20 12 Q10 13 11 21 Q12 28 21 27"/></svg>`;
-const WAVESUN=`<svg viewBox="-4 4 52 82" role="img" aria-label="full stop" style="width:26px"><path class="wave" d="M8 62 Q14 54 20 62 Q26 70 32 62 Q38 54 44 62 M14 54 Q14 40 26 40 Q38 40 38 54 M26 32 L26 36 M14 38 L16 41 M38 38 L36 41"/></svg>`;
+const WINDWAVE=`<svg viewBox="-4 4 52 82" role="img" aria-label="full stop" style="width:26px"><path class="wave" d="M6 34 L28 34 Q34 34 34 29 Q34 25 30 26 M12 42 L24 42 Q29 42 29 38 M4 62 Q18 61 24 51 Q29 43 36 45 Q42 48 39 54 Q36 58 32 55 M39 52 Q42 59 46 62"/></svg>`;
 const KEYS=H.map(g=>g[0]).sort((a,b)=>b.length-a.length);
 function tok(s){
   s=s.toLowerCase().normalize("NFC").replace(/ê/g,"ē").replace(/ô/g,"ō").replace(/ch/g,"kh").replace(/c/g,"k").replace(/ou/g,"oy");
@@ -2072,8 +2564,8 @@ function tok(s){
 }
 function render(text,el,tokEl){
   const w=tok(text);
-  el.innerHTML=w.map(wd=>`<span class="word">${wd.map(t=>t.g?glyph(HB[t.g]):t.h?BREATH:t.p?WAVESUN:`<span class="unk" title="No Hykkousik letter">${t.u}</span>`).join("")}</span>`).join("");
-  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.g||(t.h?"ʽ":t.p?"☼":`[${t.u}]`)).join("·")).join("  ");
+  el.innerHTML=w.map(wd=>`<span class="word">${wd.map(t=>t.g?glyph(HB[t.g]):t.h?BREATH:t.p?WINDWAVE:`<span class="unk" title="No Hykkousik letter">${t.u}</span>`).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=w.map(wd=>wd.map(t=>t.g||(t.h?"ʽ":t.p?"≋":`[${t.u}]`)).join("·")).join("  ");
 }
 
 const src=document.getElementById("hykkousik-src"),out=document.getElementById("hykkousik-out"),tk=document.getElementById("hykkousik-tok");
@@ -2132,6 +2624,79 @@ document.getElementById("hykkousik-names").innerHTML=NAMES.map(n=>`<tr><td>${n[0
 document.querySelectorAll("#hykkousik-names td.g").forEach((td,i)=>render(NAMES[i][1],td));
 /* lets the overview draw this script */
 window.KR=window.KR||{};KR.hykkousik=(t,el)=>render(t,el);
+
+})();
+/* Islander */
+(()=>{
+/* Written in Izani capitals: long vowels doubled, the catch as Q, ng as Ñ. Drawn by the Izani page's renderer. */
+const toIz=s=>s.normalize("NFC").toLowerCase().replace(/ā/g,"aa").replace(/ē/g,"ee").replace(/ī/g,"ii").replace(/ō/g,"oo").replace(/ū/g,"uu").replace(/[ʻ'’‘]/g,"q").replace(/ng/g,"ñ");
+const draw=(t,el)=>{try{window.KR.izani(toIz(t),el)}catch(e){el.textContent=t}};
+const src=document.getElementById("islander-src"),out=document.getElementById("islander-out"),tk=document.getElementById("islander-tok");
+const go=()=>{draw(src.value,out);tk.textContent=toIz(src.value).replace(/[.!?]/g," ☉").replace(/[,;:-]/g,"").toUpperCase().trim().split(/\s+/).map(w=>w==="☉"?w:[...w].join("·")).join("  ")};
+src.addEventListener("input",go);
+const KEYS=["ā","ē","ī","ō","ū","ʻ","ñ"];
+const kd=document.getElementById("islander-keys");
+kd.innerHTML=KEYS.map(k=>`<button type="button" data-k="${k}" aria-label="insert ${k}">${k}</button>`).join("");
+kd.addEventListener("click",e=>{const k=e.target.dataset.k;if(!k)return;const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;src.value=src.value.slice(0,a)+k+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go()});
+const SAMPLES=["Kautoa","Sikau","Sī kāma","Vea te māʻiti?","Hau maha?","Kona sei iumī i te tai."];
+const sm=document.getElementById("islander-samples");
+sm.innerHTML=SAMPLES.map(s=>`<button type="button" data-s="${s}">${s}</button>`).join("");
+sm.addEventListener("click",e=>{const s=e.target.dataset.s;if(s){src.value=s;go()}});
+go();
+draw("Kautoa",document.getElementById("islander-hero"));
+draw("Kona sei iumī i te tai.",document.getElementById("islander-ex1"));
+
+const LT=[["a","both","a"],["b","idle",""],["ch","idle",""],["d","idle",""],["e","both","e"],["f","both","f"],["g","idle",""],["h","west","h: kept in the west"],["i","both","i"],["j","idle",""],["k","both","k"],["l","east","l: the west says r"],["m","both","m"],["n","both","n"],["ñ","east","ng, as in sing"],["o","both","o"],["p","both","p"],["q","east","ʻ, the catch"],["r","west","r: the east says l"],["rr","idle",""],["s","east","s: the west says h"],["t","both","t"],["u","both","u"],["v","both","v"],["x","idle",""],["y","idle",""],["z","idle",""]];
+const lts=document.getElementById("islander-lts");
+lts.innerHTML=LT.map(l=>`<div class="lt ${l[1]}"><span class="g" data-l="${l[0]}"></span><span class="r">${l[0].toUpperCase()}</span><span class="n">${l[1]==="idle"?"idle":l[2]}</span></div>`).join("");
+lts.querySelectorAll(".g").forEach(el=>{try{window.KR.izani(el.dataset.l,el)}catch(e){}});
+
+const CH=[
+ ["b, d, g","p, t, k","p, t, k","good → <i>kutu</i>, bone → <i>pono</i>, gold → <i>kolo</i> / <i>koro</i>","kutu"],
+ ["s before p, t, k","lost","lost","star → <i>tā</i>, stone → <i>tono</i>, sky → <i>kai</i>","tā"],
+ ["r or l after p, t, k","lost","lost","three → <i>tī</i>, please → <i>pīsi</i> / <i>pīhi</i>, crowd → <i>kau</i>","tī"],
+ ["m, n + p, t, k","the stop lost","the stop lost","island → <i>ailana</i> / <i>airana</i>, hand → <i>ana</i> / <i>hana</i>","ailana"],
+ ["a final consonant","repeats the vowel before it","the same","sun → <i>sana</i> / <i>hana</i>, ship → <i>sipi</i> / <i>hipi</i>, moon → <i>mūnu</i>","mūnu"],
+ ["a final consonant after ai, au, ei","lost","lost","tide → <i>tai</i>, night → <i>nai</i>, sail → <i>sei</i> / <i>hei</i>","tai"],
+ ["th","t","t","thing → <i>tiñi</i> / <i>tini</i>, the → <i>te</i>","te"],
+ ["s, sh, ch, j, z","s","h","sea → <i>sī</i> / <i>hī</i>, chief → <i>sifi</i> / <i>hifi</i>, much → <i>masa</i> / <i>maha</i>","sifi"],
+ ["r, l","l; gone after a vowel","r; gone after a vowel","ring → <i>liñi</i> / <i>rini</i>, war → <i>vā</i>, water → <i>vata</i>","liñi"],
+ ["h","lost, as in Izani","kept","here → <i>ia</i> / <i>hia</i>, how → <i>au</i> / <i>hau</i>","ia"],
+ ["ng","ñ","n","tongue → <i>taña</i> / <i>tana</i>, king → <i>kiñi</i> / <i>kini</i>","taña"],
+ ["k between vowels","ʻ (a catch)","k","market → <i>māʻiti</i> / <i>mākiti</i>, book → <i>puʻu</i> / <i>puku</i>","puʻu"],
+ ["w","v","v","war → <i>vā</i>, where → <i>vea</i>, we → <i>vī</i>","vea"],
+];
+document.getElementById("islander-changes").innerHTML=CH.map(c=>`<tr><td class="m">${c[0]}</td><td class="me">${c[1]}</td><td class="mw">${c[2]}</td><td>${c[3]}</td><td class="g"></td></tr>`).join("");
+document.querySelectorAll("#islander-changes td.g").forEach((td,i)=>draw(CH[i][4],td));
+
+const LN=[
+ ["Emepala","east","Izani <i>Empar</i>","the Empire, and the Emperor too"],
+ ["sevisi","east","Izani <i>serviz</i>","the Empire's tax, paid in goods or in labour"],
+ ["lesono","east","Izani <i>lejon</i>","an Imperial soldier"],
+ ["pōta","east","Izani <i>porta</i>","a harbour with a customs house; any other is a <i>laniñi</i>, a landing"],
+ ["akono","west","Hykkousik <i>arkhōn</i>","a harbour-master, and by extension any official"],
+ ["taraha","west","Hykkousik <i>thalassa</i>","the open sea beyond the reefs; <i>tai</i> is the sea you can see the bottom of"],
+ ["kiroi","west","Hykkousik <i>gilloi</i>, gills","a Hykkousoi, not said to their faces"],
+ ["taku","west","Zeijani <i>dāq</i>, the dark","a lava tube, a cellar, anywhere underground"],
+ ["retu","west","Zeijani <i>lētum</i>, light","a lamp"],
+];
+document.getElementById("islander-loans").innerHTML=LN.map(l=>`<tr><td class="${l[1]==="east"?"me":"mw"}">${l[0]}</td><td>${l[1]}</td><td>${l[2]}</td><td>${l[3]}</td></tr>`).join("");
+
+const NM=[
+ ["Kautoa","Kautoa","Kautoa","<i>kau</i>, “the folk”, from <i>crowd</i>, plus <i>toa</i>. The regular changes make <i>toa</i> out of both <i>store</i> and <i>door</i>, so “folk of the store” or “folk of the door”. Left open."],
+ ["the Islanders, and their tongue","Sikau","Hikau","sea + crowd: the sea crowd. An old compound in the English order, with the vowel of <i>sī</i> shortened; the <i>k</i> of <i>kau</i> begins a word, so the east never turned it into a catch."],
+ ["the island tongue (the plain term)","Taña Ailana","Tana Airana","tongue + island. The describing word follows, as it does in newer phrases."],
+ ["the Ring Sea","Te Sī Liñi","Te Hī Rini","the + sea + ring."],
+ ["the Throne","Te Tono","Huruna","East: <i>throne</i>, which the changes make the same word as <i>stone</i>. West: borrowed from Zeijani <i>Šrūnum</i>."],
+ ["Zey'danin","Seitanini","Heitanini","the Vothic name, reshaped. The western form is the one heard in the town."],
+ ["the Hykkousoi","Iʻousoi","Hikouhoi","the Hykkousoi's own name for themselves."],
+ ["the Izani","Isani","Ihani","Izani <i>Izani</i>."],
+ ["Voth","Voto","Voto","Vothic <i>Voth</i>."],
+];
+document.getElementById("islander-names").innerHTML=NM.map(n=>`<tr><td>${n[0]}</td><td class="me">${n[1]}</td><td class="mw">${n[2]}</td><td class="g"></td><td>${n[3]}</td></tr>`).join("");
+document.querySelectorAll("#islander-names td.g").forEach((td,i)=>draw(NM[i][1],td));
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.islander=(t,el)=>draw(t,el);
 
 })();
 /* Xanadui */
@@ -2416,7 +2981,7 @@ src.parentElement.querySelectorAll("[data-k]").forEach(b=>b.addEventListener("cl
 go();
 hr("Serviz gir sidizan.",document.getElementById("republic-motto"),null,true);
 
-const MAP=[["č","ch","the Izani CH, unchanged"],["š","x","Izani X already said sh"],["ž","j","Izani J already said zh"],["j","y","the y-sound, as in Izani"],["kv","q","Izani Q, kw hardened to kv"],["v","v","and English w, which became v"],["r̩","r","syllabic r needs no vowel letter"],["je","ye","broken e, spelled out"]];
+const MAP=[["č","ch","the Izani CH, unchanged"],["š","x","Izani X already said sh"],["ž","j","Izani J already said zh"],["j","y","the y-sound, as in Izani"],["kv","q","Izani Q, read as the Legion read it: kw, hardened to kv. Iziz now says it q'"],["v","v","and English w, which became v"],["r̩","r","syllabic r needs no vowel letter"],["je","ye","broken e, spelled out"]];
 document.getElementById("republic-map").innerHTML=MAP.map(m=>{const sp=document.createElement("span");zrender(m[1],sp);return `<div class="mp"><span class="s">${m[0]}</span><span>${sp.innerHTML}</span><span class="n">${m[1].toUpperCase()} · ${m[2]}</span></div>`}).join("");
 
 const CH=[
@@ -2446,7 +3011,21 @@ const DBL=[
 ];
 document.getElementById("republic-dbl").innerHTML=DBL.map(d=>`<tr><td>${d[0]}</td><td class="m">${d[1]}</td><td class="m iz">${d[2]}</td><td>${d[3]}</td></tr>`).join("");
 
-const CL=[["the house","the house","huset","huset"],["war","war","vor","vor; guar for the state's wars"],["home","hom","hjem","hjem"],["thing (assembly)","thing","ting","Tinget, the Hall's assembly"],["king","king","kung","kung; kiñ, tyrant"],["soldier","soljer","knekt","knekt; lejonar"],["iron","ajrn","jern","jern"],["fire","fair","fajr","fajr"]];
+const CANT=[
+ ["jern'knekt","highland <i>jern</i> iron + <i>knekt</i> soldier","a veteran of twenty years; the highest praise one soldier gives another"],
+ ["lejon'tjen","Izani <i>lejon</i> + highland <i>tjen</i> service","Legion service: the years that earn citizenship"],
+ ["guar'tjen","Izani <i>guar</i> + <i>tjen</i>","a tour in the Republic's wars"],
+ ["port'vač","Izani <i>porta</i> gate + highland <i>vač</i> watch","gate watch, sentry duty"],
+ ["knekt'hjem","<i>knekt</i> + <i>hjem</i> home","the barracks; also the Legion itself, as a family"],
+ ["sid'kiñ","Izani <i>sidi</i> + <i>kiñ</i> tyrant","an Izani governor; worse than <i>kiñ</i> alone"],
+ ["kiñ'knekt","<i>kiñ</i> + <i>knekt</i>","an Izani legionary: a tyrant's soldier"],
+ ["Rok'stad","<i>Roketstad</i>, worn down","the capital, to anyone who has served"],
+ ["Tjen'gir sidizan","the motto, with highland <i>tjen</i> for Izani <i>serviz</i>","“Service makes a citizen”, as the ranks say it"],
+];
+document.getElementById("republic-cant").innerHTML=CANT.map(c=>`<tr><td class="m">${c[0]}</td><td class="g"></td><td>${c[1]}</td><td>${c[2]}</td></tr>`).join("");
+document.querySelectorAll("#republic-cant td.g").forEach((td,i)=>hr(CANT[i][0],td));
+
+const CL=[["the house","the haus","huset","huset"],["war","war","vor","vor; guar for the state's wars"],["home","hom","hjem","hjem"],["thing (assembly)","thing","ting","Tinget, the Hall's assembly"],["king","king","kung","kung; kiñ, tyrant"],["soldier","sòl","knekt","knekt; lejonar"],["iron","àirn","jern","jern"],["fire","fair","fajr","fajr"]];
 document.getElementById("republic-clans").innerHTML=CL.map(c=>`<tr><td>${c[0]}</td><td class="m">${c[1]}</td><td class="m">${c[2]}</td><td class="m">${c[3]}</td></tr>`).join("");
 
 const NM=[
@@ -2610,10 +3189,10 @@ const DBL=[
  ["three","łii","tri","łii to count beasts; tri to count coins"],
  ["king, queen","—","kįį, kiin","the tribes had chiefs; the Council has a king or queen, in Izani words"],
  ["emperor","—","emparar","now: a bully, anyone who rules by fear"],
- ["fort, port","—","porta","both, merged: any walled place an outsider holds"],
+ ["fort, port","—","port'a","both, merged: any walled place an outsider holds"],
  ["gold","gol","golda","gol is the metal; golda is coin"],
  ["city","—","sidi","any city of stone"],
- ["mech","—","meka","the Empire's walkers, which broke the tribes"],
+ ["mech","—","mek'a","the Empire's walkers, which broke the tribes"],
 ];
 document.getElementById("riders-dbl").innerHTML=DBL.map(d=>`<tr><td>${d[0]}</td><td class="m">${d[1]}</td><td class="m iz">${d[2]}</td><td>${d[3]}</td></tr>`).join("");
 
@@ -2949,12 +3528,196 @@ window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender
 
 })();
 
+/* Jimjam */
+(()=>{
+/* Rounded letters on a 40 x 40 cell, one stroke path each; [key, name, path, curl?] */
+const CURL="M11 7 Q5 1 3 7 Q2 12 8 11";
+const LJ=[
+ ["a","a","M29 13 Q9 6 8 22 Q8 35 20 34 Q30 32 30 18 Q30 30 34 35"],
+ ["e","e","M10 22 Q32 22 30 14 Q24 6 14 10 Q6 16 8 26 Q12 36 30 32"],
+ ["i","i","M20 15 Q16 27 20 34 Q24 38 30 32 M18 7 Q20 4 22 7 Q20 10 18 7"],
+ ["o","o","M20 8 Q6 8 7 22 Q8 35 20 35 Q32 35 33 22 Q33 9 21 9 Q27 13 24 19"],
+ ["u","u","M8 10 Q8 34 20 34 Q32 34 32 10 Q32 26 36 34"],
+ ["p","p","M12 10 Q11 26 12 38 M12 13 Q30 5 30 18 Q30 30 12 24"],
+ ["b","b","M11 4 Q10 20 11 33 Q26 40 30 26 Q32 14 12 18"],
+ ["t","t (dental)","M8 15 Q20 11 32 15 M20 7 Q16 26 20 33 Q26 38 32 30"],
+ ["ṭ","ṭ","M8 15 Q20 11 32 15 M20 7 Q16 26 20 33 Q26 38 32 30",1],
+ ["d","d (dental)","M29 4 Q30 20 29 34 Q14 40 10 26 Q8 14 28 18"],
+ ["ḍ","ḍ","M29 4 Q30 20 29 34 Q14 40 10 26 Q8 14 28 18",1],
+ ["k","k","M11 4 Q10 22 11 36 M30 12 Q16 20 12 24 Q24 26 32 36"],
+ ["g","g","M30 12 Q10 6 9 18 Q9 28 28 24 Q30 34 24 38 Q14 40 10 34"],
+ ["ch","ch","M32 12 Q20 4 10 14 Q4 26 14 34 Q24 38 32 30 M22 16 Q27 21 22 26"],
+ ["j","j","M24 13 Q24 30 22 36 Q16 42 8 34 M22 5 Q24 2 26 5 Q24 8 22 5"],
+ ["s","s","M30 10 Q18 4 12 12 Q8 20 20 22 Q32 24 28 32 Q22 40 8 32"],
+ ["sh","sh","M30 10 Q18 4 12 12 Q8 20 20 22 Q32 24 28 32 Q22 40 8 32",1],
+ ["h","h","M11 4 Q10 22 11 36 M11 22 Q20 12 28 18 Q32 24 30 36"],
+ ["f","f","M29 8 Q18 3 18 14 Q18 28 16 38 M9 20 Q18 18 29 22"],
+ ["v","v","M8 12 Q14 34 20 36 Q26 34 32 12 Q34 8 30 8"],
+ ["m","m","M6 34 Q6 14 14 14 Q20 14 20 26 Q20 14 28 14 Q34 14 34 34"],
+ ["n","n","M10 34 Q10 14 20 14 Q30 14 30 34"],
+ ["ṅ","ṅ","M10 34 Q10 14 20 14 Q30 14 30 34",1],
+ ["l","l","M18 4 Q16 24 18 32 Q22 38 30 34"],
+ ["ḷ","ḷ","M18 4 Q16 24 18 32 Q22 38 30 34",1],
+ ["r","r","M11 34 Q10 19 13 16 Q21 10 31 16"],
+ ["y","y","M8 12 Q14 30 20 28 Q30 26 32 12 M20 28 Q20 38 12 38"],
+ ["'","the catch","M17 10 Q27 14 22 22 Q17 28 22 33"],
+];
+const LBJ=Object.fromEntries(LJ.map(l=>[l[0],l]));
+const VOW="aeiou";
+const LONG="M33 32 Q40 24 36 14";
+/* the head loop: a stylus starts every letter with a small ring, as South Indian hands do */
+function head(d){const m=d.match(/^M(-?[\d.]+) (-?[\d.]+)/);return m?`<circle class="jg" cx="${m[1]}" cy="${m[2]}" r="2.6"/>`:""}
+function gl(k,x,y,sc,long){
+  const l=LBJ[k];if(!l)return "";
+  return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${sc.toFixed(3)})">${k==="'"?"":head(l[2])}<path class="jg" d="${l[2]}"/>${l[3]?`<path class="jg mk" d="${CURL}"/>`:""}${long?`<path class="jg mk" d="${LONG}"/>`:""}</g>`;
+}
+/* lay out a row of n glyphs inside a box */
+function row(items,x0,y0,w,h){
+  const n=items.length;if(!n)return "";
+  const cw=w/n,sc=Math.min(cw*.86,h)/40;
+  return items.map((it,i)=>gl(it.k,x0+i*cw+(cw-40*sc)/2,y0+(h-40*sc)/2,sc,it.long)).join("");
+}
+function block(syl){
+  const nuc=syl.v2?[syl.v,syl.v2]:[syl.v];
+  const top=syl.on.length?syl.on:nuc,bot=syl.on.length?[...nuc,...syl.co]:syl.co;
+  let inner=`<rect class="jf" x="2" y="2" width="60" height="60" rx="13"/>`;
+  if(bot.length){inner+=row(top,6,5,52,30)+row(bot,6,34,52,25)}
+  else inner+=row(top,8,8,48,48);
+  return `<svg viewBox="0 0 64 64" role="img" aria-label="${syl.txt}">${inner}</svg>`;
+}
+const STOP=`<svg viewBox="0 0 64 64" style="width:30px" role="img" aria-label="full stop"><circle class="jw" cx="20" cy="42" r="7"/><circle class="jw" cx="44" cy="42" r="7"/><circle class="jw" cx="32" cy="22" r="7"/></svg>`;
+const CK=LJ.map(l=>l[0]).filter(k=>!VOW.includes(k)).sort((a,b)=>b.length-a.length);
+function jparse(text){
+  let s=text.normalize("NFC").toLowerCase().replace(/[’‘ʻ]/g,"'").replace(/ng/g,"ṅ").replace(/w/g,"v").replace(/z/g,"s").replace(/x/g,"ks").replace(/q/g,"k").replace(/c(?!h)/g,"k");
+  const LV={"ā":"a","ē":"e","ī":"i","ō":"o","ū":"u"};
+  const words=[];let cur=[];
+  const end=()=>{if(cur.length)words.push(cur);cur=[]};
+  for(let i=0;i<s.length;){
+    const c=s[i];
+    if(/[\s,;:]/.test(c)){end();i++;continue}
+    if(/[.!?]/.test(c)){cur.push({p:1});end();i++;continue}
+    if(c==="-"){i++;continue}
+    if(LV[c]){cur.push({v:LV[c],long:1,t:c});i++;continue}
+    if(c==="a"&&(s[i+1]==="i"||s[i+1]==="u")){cur.push({v:"a",v2:s[i+1],t:"a"+s[i+1]});i+=2;continue}
+    if(VOW.includes(c)){cur.push({v:c,t:c});i++;continue}
+    const k=CK.find(k=>s.startsWith(k,i));
+    if(k){cur.push({c:k,t:k});i+=k.length;continue}
+    cur.push({u:c});i++;
+  }
+  end();
+  /* syllables: before the first vowel, onset; between vowels, the last consonant opens the next syllable */
+  return words.map(w=>{
+    const out=[];let pend=[],syl=null;
+    const flushSyl=()=>{if(syl){out.push(syl);syl=null}};
+    for(let i=0;i<w.length;i++){
+      const t=w[i];
+      if(t.v){
+        if(syl){const keep=pend.slice(0,-1),open=pend.slice(-1);syl.co.push(...keep.map(x=>({k:x.c})));syl.txt+=keep.map(x=>x.t).join("");flushSyl();pend=open}
+        syl={on:pend.map(x=>({k:x.c})),v:{k:t.v,long:t.long},v2:t.v2?{k:t.v2}:null,co:[],txt:pend.map(x=>x.t).join("")+t.t};pend=[];
+      }else if(t.c){pend.push(t)}
+      else{if(syl){syl.co.push(...pend.map(x=>({k:x.c})));syl.txt+=pend.map(x=>x.t).join("");pend=[];flushSyl()}
+        else if(pend.length){out.push({cons:pend.map(x=>({k:x.c})),txt:pend.map(x=>x.t).join("")});pend=[]}
+        out.push(t.p?{p:1}:{u:t.u})}
+    }
+    if(syl){syl.co.push(...pend.map(x=>({k:x.c})));syl.txt+=pend.map(x=>x.t).join("");pend=[];flushSyl()}
+    if(pend.length)out.push({cons:pend.map(x=>({k:x.c})),txt:pend.map(x=>x.t).join("")});
+    return out;
+  });
+}
+function bare(cons){return `<svg viewBox="0 0 64 64" role="img" aria-label="consonants"><rect class="jf" x="2" y="2" width="60" height="60" rx="13"/>${row(cons,6,12,52,40)}</svg>`}
+function jrender(text,el,tokEl){
+  const ws=jparse(text);
+  el.innerHTML=ws.map(w=>`<span class="jword">${w.map(x=>x.p?STOP:x.u?`<span class="unk">${x.u}</span>`:x.cons?bare(x.cons):block(x)).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=ws.map(w=>w.map(x=>x.p?"⦂":x.u?`[${x.u}]`:x.txt).join(" · ")).join("   ");
+}
+const src=document.getElementById("jimjam-src"),out=document.getElementById("jimjam-out"),tk=document.getElementById("jimjam-tok");
+const go=()=>jrender(src.value,out,tk);
+src.addEventListener("input",go);
+const kd=document.getElementById("jimjam-keys");
+kd.innerHTML=["ā","ē","ī","ō","ū","ṭ","ḍ","ṅ","ḷ"].map(k=>`<button type="button" data-k="${k}">${k}</button>`).join("");
+kd.addEventListener("click",e=>{const k=e.target.dataset.k;if(!k)return;const a=src.selectionStart??src.value.length,b=src.selectionEnd??a;src.value=src.value.slice(0,a)+k+src.value.slice(b);src.focus();src.setSelectionRange(a+1,a+1);go()});
+const SAMPLES=["Bī gūḍḍu ḍē.","Van Sanḍē","Jamṭōkku","Kaunṭavan","Ḍabal Ḍārkku","Kamsu nevar bakku ḍē.","va'ar"];
+const sm=document.getElementById("jimjam-samples");
+sm.innerHTML=SAMPLES.map(t=>`<button type="button" data-s="${t}">${t}</button>`).join("");
+sm.addEventListener("click",e=>{const t=e.target.dataset.s;if(t){src.value=t;go()}});
+go();
+jrender("Van Sanḍē",document.getElementById("jimjam-hero"));
+const lts=document.getElementById("jimjam-lts");
+lts.innerHTML=LJ.map(l=>`<button type="button" class="lt" data-k="${l[0]}" aria-label="${l[1]}"><svg viewBox="0 0 40 40" role="img" aria-label="${l[1]}">${gl(l[0],0,0,1)}</svg><span class="r">${l[0]}</span><span class="n">${l[1]===l[0]?(l[3]?"curl":(VOW.includes(l[0])?"vowel":"")):l[1]}</span></button>`).join("")
+ +`<button type="button" class="lt" data-k="ā" aria-label="long a"><svg viewBox="0 0 40 40" role="img" aria-label="long a">${gl("a",0,0,1,1)}</svg><span class="r">ā</span><span class="n">the tail: long</span></button>`;
+lts.addEventListener("click",e=>{const b=e.target.closest(".lt");if(!b)return;src.value+=b.dataset.k;go();src.scrollIntoView({block:"center",behavior:"smooth"})});
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.jimjam=(t,el)=>jrender(t,el);
+})();
+
+/* Hum */
+(()=>{
+const MK={"̄":["H","L"],"́":["H","R"],"̂":["H","F"],"̌":["L","R"],"̀":["L","F"]};
+const CHAO={HL:"˥",HR:"˧˥",HF:"˥˧",LL:"˩",LR:"˩˧",LF:"˧˩"};
+const SYL=/([ptkmnshlwy]?)([aeiou])([̀-̏]?)([iu](?![̀-̏]))?([mn](?![aeiou]))?/g;
+function hparse(text){
+  const s=text.normalize("NFD").toLowerCase();
+  return s.split(/\s+/).filter(Boolean).map(w=>{
+    const out=[];
+    w.split("-").forEach(part=>{
+      const core=part.replace(/[.!?,;:]/g,"");let m,last=0;SYL.lastIndex=0;
+      while((m=SYL.exec(core))){
+        if(m.index>last)out.push({u:core.slice(last,m.index)});
+        const t=MK[m[3]]||["L","L"];
+        out.push({on:m[1],v:m[2],v2:m[4]||"",fin:m[5]||"",reg:t[0],con:t[1],txt:m[0].normalize("NFC")});
+        last=SYL.lastIndex;if(!m[0])SYL.lastIndex++;
+      }
+      if(last<core.length)out.push({u:core.slice(last)});
+      if(/[.!?]/.test(part))out.push({stop:1});
+      else if(/[,;:]/.test(part))out.push({pause:1});
+    });
+    return out;
+  });
+}
+const DOTS={a:[],e:[[17,-1]],i:[[12,-1],[22,-1]],o:[[17,1]],u:[[12,1],[22,1]]};
+function groove(sy){
+  const c=sy.reg==="H"?20:44,dy=sy.con==="R"?-6:sy.con==="F"?6:0;
+  const y0=c-dy,y1=c+dy,d=`M5 ${y0} L29 ${y1}`;
+  let g=`<line class="hz" x1="0" y1="32" x2="34" y2="32"/><path class="hc" d="${d}"/><path class="hci" d="${d}"/>`;
+  DOTS[sy.v].forEach(([x,side])=>{const y=y0+(y1-y0)*(x-5)/24+side*9;g+=`<circle class="hd" cx="${x}" cy="${y.toFixed(1)}" r="2.6"/>`});
+  if(sy.v2)g+=`<circle class="hd" cx="30" cy="${(y1+(sy.v2==="i"?-10:10)).toFixed(1)}" r="2.2"/>`;
+  if(sy.fin)g+=`<path class="hc" style="stroke-width:3.4" d="M29 ${y1} Q36 ${y1} 35 ${y1+6} Q34 ${y1+11} 29 ${y1+9}"/>`;
+  return `<svg viewBox="0 2 36 60" width="34" height="56" role="img" aria-label="${sy.txt}">${g}</svg>`;
+}
+const STOP=`<svg viewBox="0 0 14 64" width="12" height="56" role="img" aria-label="full stop"><line class="hz" x1="0" y1="32" x2="6" y2="32"/><path class="hc" d="M7 12 L7 52"/></svg>`;
+const PAUSE=`<svg viewBox="0 0 14 64" width="12" height="56" role="img" aria-label="pause"><line class="hz" x1="0" y1="32" x2="14" y2="32"/><path class="hc" d="M7 25 L7 39"/></svg>`;
+function hrender(text,el,tokEl){
+  const ws=hparse(text);
+  el.innerHTML=ws.map(w=>`<span class="hword">${w.map(x=>x.stop?STOP:x.pause?PAUSE:x.u?`<span class="unk">${x.u}</span>`:groove(x)).join("")}</span>`).join("");
+  if(tokEl)tokEl.textContent=ws.map(w=>w.map(x=>x.stop?"|":x.pause?"ˌ":x.u?`[${x.u}]`:x.txt+CHAO[x.reg+x.con]).join(" ")).join("   ");
+}
+const src=document.getElementById("hum-src"),out=document.getElementById("hum-out"),tk=document.getElementById("hum-tok");
+const go=()=>hrender(src.value,out,tk);
+src.addEventListener("input",go);
+const TK=[["̄","high level ˥"],["́","high rising ˧˥"],["̂","high falling ˥˧"],["̌","low rising ˩˧"],["̀","low falling ˧˩"]];
+const kd=document.getElementById("hum-keys");
+kd.innerHTML=TK.map(([m,n])=>`<button type="button" data-m="${m}" title="${n}">a${m}</button>`).join("");
+kd.addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(!b)return;const a=src.selectionStart??src.value.length;src.value=(src.value.slice(0,a)+b.dataset.m+src.value.slice(a)).normalize("NFC");src.focus();go()});
+const SAMPLES=["Hām","Kǔ ti.","Ma we há?","Sōn ko, pí no ko.","pā pá pâ pa pǎ pà","ká kâ","pāi-tá"];
+const sm=document.getElementById("hum-samples");
+sm.innerHTML=SAMPLES.map(t=>`<button type="button" data-s="${t}">${t}</button>`).join("");
+sm.addEventListener("click",e=>{const t=e.target.dataset.s;if(t){src.value=t;go()}});
+go();
+hrender("Sōn ko, pí no ko.",document.getElementById("hum-hero"));
+const KEY=[["high, level","the high register: an old voiceless first consonant; nothing lost at the end","tā"],["high, rising","a stop lost at the end","tá"],["high, falling","an s lost at the end","tâ"],["low, level","the low register: an old voiced first consonant, or none","ta"],["low, rising","","tǎ"],["low, falling","","tà"],["dots above","the vowel e (one) or i (two)","tē tī"],["dots below","the vowel o (one) or u (two)","tō tū"],["a small dot at the end","the second half of ai or au","tāi tāu"],["the hook","a closing m or n","tān"],["the notch","end of a sentence","tā."]];
+document.getElementById("hum-key").innerHTML=KEY.map(k=>`<tr><td>${k[0]}</td><td>${k[1]}</td><td class="g" data-h="${k[2]}"></td></tr>`).join("");
+document.querySelectorAll("#hum td.g[data-h]").forEach(td=>{const sp=document.createElement("span");sp.className="carve";td.append(sp);hrender(td.dataset.h,sp)});
+/* lets the overview draw this script */
+window.KR=window.KR||{};KR.hum=(t,el)=>hrender(t,el);
+})();
+
 /* overview and tabs */
 (()=>{
   const CARDS=[
    ["vothic","Vothic","Voth · the Chichani","Purépecha meets Dunmer. 33 letters, Georgian bowls and Daedric blades, bent from Izani capitals.","Tzintzuntzan"],
    ["izani","Izani","the Empire of Iziz","Romance-sounding, with a Star Wars edge. 27 capitals cut in straight strokes; the parent of the Vothic letters.","Empar de Son"],
    ["hykkousik","Hykkousik","the Hykkousoi of Ys","Greek-sounding. 26 letters copied from the Greek symbols in a drowned gene-lab's records.","Hykkousoi"],
+   ["islander","Sikau","the Islanders of Kautoa and the Ring Sea shores","English gone Polynesian: every syllable ends in a vowel, the verb comes first, there are two words for we. An eastern and a western dialect, both in Izani capitals.","Kautoa"],
    ["xanadui","Xanadui","the Sultanate of Xanadu","The furthest drift: Nepali and Persian sounds, verb-last, every claim marked seen or said. A syllabary on a sound grid.","Xānaḍu"],
    ["yuni","Yuni","Yuni and the Monks of History","Australian a thousand years on: clipped, run together, past following. Latin kept in two hands; the Historians mark their evidence in the margin.","Univ."],
    ["dalab","Dalab","the mound-builders","Two tongues: the priests' high tongue, our English, held in place by the God, and the peasants' creole.","Dalab"],
@@ -2962,11 +3725,13 @@ window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender
    ["riders","Tł'aai","the Beast Rider tribes","Mongol and Apache sounds with a Star Wars edge: ejectives, tł, nasal vowels. Izani letters taken for trade, with four marks added.","Tł'aai"],
    ["desert","Dasrī & Tabist","the desert nomads and the abyssal people","Cousins as close as Spanish and Italian: one gone Arabic, one Berber, both full of Yuni words. A caravan hand and painted salt marks, both from Yuni's letters.","Dasrī"],
    ["scyvoi","Boruntun","the Scyvoi of the crater drylands","Turkish with a Jurchen edge: vowel harmony, endings stacked on endings, f for p and h for k. No letters: clan brands on hide and granite.","Borunsa"],
+   ["jimjam","Jamṭōkku","Jimjam, the brick city","Dravidian sounds and Maya habits: retroflex t and d, glottal stops, the verb first. Seven day-names and thirteen numbers from two moons.","Jimjam"],
+   ["hum","Hām","the tepui peoples of Korona, human and therian","The Hum: English worn to single syllables with six tones, a trade tongue for peoples who share no throat. Spoken, hummed or whistled; carved as contours.","Hām"],
    ["zeijani","Zeijani","the Zeijani of Dhelv and the ash nomads","Brother tongues, cousins of Chichani, gone Babylonian and Cappadocian. Latin letters chiselled into tuff until every stroke became a wedge.","Zeijanī"],
   ];
   const cards=document.getElementById("cards");
   cards.innerHTML=CARDS.map(c=>`<button type="button" class="cardx" data-go="${c[0]}"><span class="nm">${c[1]}</span><span class="who">${c[2]}</span><span class="d">${c[3]}</span><span class="go">Open ${c[1]} →</span></button>`).join("");
-  const FAM=[["sun","sun","sun","san","sun","sun","są","san","son","san","tzun","sunu","ṣunum","ṣan","aṣan","sã"],["star","star","star","sta","tar","stjar","istar","sıtar","istar","astar","tzhar","stāru","ṣṭārum","istār","tastart","sitār"],["ship","ship","ship","shippo","ship","šip","ship","şip","xipa","sip","sip","šippu","šippum","šib","ašif","śip"],["war","war","war","wo","wa","vor","baar","vor","guar","ouar","vorh","māru","wārum","wār","awar","wār"],["gold","gold","gold","gol'","gol","golt","gol","golt","golda","gould","gol","guldu","guldum","jūld","aguld","ghol"],["fire","fire","fire","foya","faya","fajr","paar","fayır","fira","phyr","vairh","pēru","pērum","fāyar","afayar","phāyar"],["thing","thing","thing (dental th)","ting","ting","ting","łį","sin","tiñ","thing","thing","šingi","šingim","thinj","atin","thĩ"],["the lab","the lab","the lab","da labbo","Dalab","labet","","lap","de laba","","","ze-labbu","ze-labbum","al-Labbū","alabbu",""]];
+  const FAM=[["sun","sun","sun","san","sun","sun","są","san","son","san","san","tzun","sunu","ṣunum","ṣan","aṣan","sana","sān","sã"],["star","star","star","sta","tar","stjar","istar","sıtar","istar","saṭār","astar","tzhar","stāru","ṣṭārum","istār","tastart","tā","tā","sitār"],["ship","ship","ship","shippo","ship","šip","ship","şip","xipa","shippu","sip","sip","šippu","šippum","šib","ašif","sipi","sí","śip"],["war","war","war","wo","wa","vor","baar","vor","guar","vār","ouar","vorh","māru","wārum","wār","awar","vā","wo","wār"],["gold","gold","gold","gol'","gol","golt","gol","golt","golda","goḷḍu","gould","gol","guldu","guldum","jūld","aguld","kolo","kǒ","ghol"],["fire","fire","fire","foya","faya","fajr","paar","fayır","fira","faiyar","phyr","vairh","pēru","pērum","fāyar","afayar","faia","pāi","phāyar"],["thing","thing","thing (dental th)","ting","ting","ting","łį","sin","tiñ","tiṅ","thing","thing","šingi","šingim","thinj","atin","tiñi","tīn","thĩ"],["the lab","the lab","the lab","da labbo","Dalab","labet","","lap","de laba","da labbu","","","ze-labbu","ze-labbum","al-Labbū","alabbu","te lapa","lǎ",""]];
   document.getElementById("fam").innerHTML=FAM.map(r=>`<tr>${r.map((c,i)=>i?`<td class="m">${c||"—"}</td>`:`<td>${c}</td>`).join("")}</tr>`).join("");
 
   const secs=[...document.querySelectorAll("section.tongue")];
@@ -2983,17 +3748,21 @@ window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender
   document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b&&(b.closest("#tabbar")||b.closest("#cards")))show(b.dataset.go,true)});
 
   /* phrasebook: [key, tongue, renderer, wrapper class] */
-  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["republic","Hajlandsk","republic",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""]];
+  const PT=[["vothic","Vothic","vothic","plain"],["izani","Izani","izani",""],["hykkousik","Hykkousik","hykkousik",""],["xanadui","Xanadui","xanadui","plain"],["yuni","Yuni","latin","st"],["dalab","Dalab low tongue","none",""],["jimjam","Jamṭōkku","jimjam",""],["republic","Hajlandsk","republic",""],["riders","Tł'aai","riders",""],["scyvoi","Boruntun","none",""],["zeijani","Zeijani","zeijani","plain"],["ash","Ash nomad","ash","ashh plain"],["dasri","Dasrī","dasri",""],["tabist","Tabist","tabist",""],["islander","Sikau, east","islander",""],["islanderw","Sikau, west","islander",""],["hum","Hām","hum",""]];
   const PH=[
-   {en:"Greetings.",nt:"Each people greets by what it values: the Sun, the day, the claw, light in the dark.",r:{
-    vothic:["Tzun tzi yu.","sun · see · you: may the Sun see you"],izani:["Guda de.","good day"],hykkousik:["Goud dē.","good day"],xanadui:["Guḍ ḍe, sar.","good day, sir"],yuni:["Gdai, mai.","g'day, mate"],dalab:["Wa a gwaan?","what · is · going on"],republic:["Gut dej.","good day"],scyvoi:["Gıras gırovsun!","grass · grow-MAY: may the grass come back"],riders:["Bį tł'aa!","wing · claw: wings and claws"],zeijani:["Lētum ze-dāqin.","light-SUBJ · the-dark-IN: light in the dark"],dasri:["Jidāy!","g'day, from Yuni"],tabist:["Gidday!","g'day, from Yuni"]}},
-   {en:"Thank you.",nt:"",r:{vothic:["Thengk yu.","thank you"],izani:["Tanka.","thanks"],hykkousik:["Thank jou.","thank you"],xanadui:["Thãk yū, sar.","thank you, sir"],yuni:["Ta.","ta"],dalab:["Tenk yu.","thank you"],republic:["Tak.","thanks"],scyvoi:["Sankyu.","thank-you"],riders:["Łąk'.","thanks"],zeijani:["Šankum.","thanks-SUBJ"],dasri:["Thanqū.","thank-you"],tabist:["Tanqu.","thank-you"]}},
-   {en:"Where is the market?",nt:"Xanadui, Tł'aai and Zeijani put the question word last.",r:{vothic:["Vehrh dha makit?","where · the · market"],izani:["Guer iz de markeda?","where · is · the · market"],hykkousik:["Ouer is ve markit?","where · is · the · market"],xanadui:["Mārkeṭ wer?","market · where"],yuni:["Wezza markiddo?","where's-the · market"],dalab:["We damaakit de?","where · the-market · there"],republic:["Ver er marktet?","where · is · market-the"],scyvoi:["Markıt verde?","market · where-AT"],riders:["Maakit' beer?","market · where"],zeijani:["Markitum wēr?","market-SUBJ · where"],dasri:["Wayn al-mārqit?","where · the-market"],tabist:["Wayn amarqit?","where · the-market"]}},
-   {en:"I am a stranger here.",nt:"In Hykkousik, I is y, from the same change that made isles into Ys.",r:{vothic:["Ai chhensharh hirh.","I · stranger · here"],izani:["Ai iz istrenjar ir.","I · am · stranger · here"],hykkousik:["Y am astrēnzar hir.","I · am · stranger · here"],xanadui:["Āi xīr sitrenjarã.","I · here · stranger-am"],yuni:["Oim nod frumia.","I'm · not · from-here"],dalab:["Mi a tranja.","me · am · stranger"],republic:["Aj er strenžr her.","I · am · stranger · here"],scyvoi:["Ay sitrencir hirde.","I · stranger · here-AT"],riders:["Aa istrenjar khii.","I · stranger · here"],zeijani:["Ē ṣṭrenjum ḫīrin.","I · stranger-SUBJ · here-IN"],dasri:["Ay istrānjar hīr.","I · stranger · here"],tabist:["Ay d astranjar hir.","I · is · stranger · here"]}},
-   {en:"Water, please.",nt:"Tł'aai baatar, water, happens to be Mongolian for a hero.",r:{vothic:["Vatarh, plis.","water, please"],izani:["Guadar, plez.","water, please"],hykkousik:["Ouatar, plis.","water, please"],xanadui:["Wāṭar, pilīj.","water, please"],yuni:["Wada, pleez.","water, please"],dalab:["Wata, plis.","water, please"],republic:["Vatr, plis.","water, please"],scyvoi:["Vatır, filis.","water, please"],riders:["Baatar, pliis.","water, please"],zeijani:["Wāṭarum, plīz.","water-SUBJ, please"],dasri:["Wāṭar, blīz.","water, please"],tabist:["Awaṭar, flīz.","the-water, please"]}},
-   {en:"How much?",nt:"The brothers say it alike: short words survive their differences.",r:{vothic:["Hau mïch?","how much"],izani:["Au mocha?","how much"],hykkousik:["Hau makh?","how much"],xanadui:["Xau mac?","how much"],yuni:["Awmuchi?","how-much"],dalab:["Ou moch?","how much"],republic:["Hau mač?","how much"],scyvoi:["Hav maç?","how much"],riders:["Khau mach?","how much"],zeijani:["Ḫau maš?","how much"],dasri:["Ḥaw maš?","how much"],tabist:["Haw maš?","how much"]}},
-   {en:"Go away!",nt:"",r:{vothic:["Go avei!","go away"],izani:["Go ague!","go away"],hykkousik:["Go aouē!","go away"],xanadui:["Gho!","go"],yuni:["Rakkof!","rack off: get lost"],dalab:["Gwaan!","go on"],republic:["Go vej!","go away"],scyvoi:["Getavt!","get out"],riders:["Go abee!","go away"],zeijani:["Gū awē!","go away"],dasri:["Jū awāy!","go away"],tabist:["Gu away!","go away"]}},
-   {en:"A saying",nt:"Not one phrase but each people's own proverb.",r:{vothic:["Dha Tzun it vïrhst.","the Sun · eats · first"],izani:["Iziz iz forevar.","Iziz · is · forever"],hykkousik:["Hou has gilloi nids sip.","who · has · gills · needs · ship: even a man with gills needs a ship"],xanadui:["Āiālbi sīn, māuthbi se.","eye-PL-BY seen, mouth-BY said: eyes see, mouths say"],yuni:["Da Vol opnz fa nobbo.","the · Vault · opens · for · nobody"],dalab:["Dagod no ear yu.","the-God · not · hear · you"],republic:["Serviz gir sidizan.","service · gives · citizen"],scyvoi:["Fayır firs, sıkayt aftır.","fire · first, scythe · after: nothing is reaped that was not burned"],riders:["Tł'aa erimembar.","claw · remembers"],zeijani:["Ze-dāqum ḫiddanan qīp.","the-dark-SUBJ · hidden-OBJ · keeps: the dark keeps what is hidden"],dasri:["Wāṭar bifūr tūq.","water · before · talk: water first, then talk"],tabist:["Awaṭar bifur atuq.","the-water · before · the-talk"]}},
+   {en:"Greetings.",nt:"The formal greeting. Each people greets by what it values: the Sun, the day, the claw, light in the dark, a calm sea. Jamṭōkku puts the verb first.",r:{
+    vothic:["Tzun tzi yu.","sun · see · you: may the Sun see you"],izani:["Guda de.","good day"],hykkousik:["Goud dē.","good day"],xanadui:["Guḍ ḍe, sar.","good day, sir"],yuni:["Gdai, mai.","g'day, mate"],dalab:["Wa a gwaan?","what · is · going on"],republic:["Gut dej.","good day"],riders:["Bį tł'aa!","wing · claw: wings and claws"],zeijani:["Lētum ze-dāqin.","light-SUBJ · the-dark-IN: light in the dark"],dasri:["Jidāy!","g'day, from Yuni"],tabist:["Gidday!","g'day, from Yuni"],islander:["Sī kāma.","sea · calm: a calm sea to you"],islanderw:["Hī kāma.","sea · calm: a calm sea to you"],hum:["Kǔ ti.","good · deal: may the trade be good"],jimjam:["Bī gūḍḍu ḍē.","be · good · day: may the day be good"],scyvoi:["Gıras gırovsun!","grass · grow-MAY: may the grass come back"]}},
+   {en:"Hello.",nt:"The everyday word, between equals. Hykkousik hy is hi, by the change that made isles into Ys. The Islanders greet with love, as the real Pacific does.",r:{vothic:["Hel, vren.", "hail · friend"],izani:["Elo.", "hello, the h lost"],hykkousik:["Hy!", "hi"],xanadui:["Xelo.", "hello"],yuni:["Hoi!", "hi"],dalab:["Ail op!", "hail · up"],republic:["Hej.", "hey"],riders:["Khee!", "hey"],zeijani:["Ḫēl.", "hail"],dasri:["Ḥayl!", "hail"],tabist:["Hayl!", "hail"],islander:["Lava!", "love"],islanderw:["Rava!", "love"],hum:["Hāi!","hi"],jimjam:["Hai!","hi"],scyvoi:["Hay!","hey"]}},
+   {en:"How are you?",nt:"The Riders ask after your wing. Hajlandsk asks how it goes, Norse-fashion.",r:{vothic:["Hau go yu?", "how · go · you"],izani:["Au ar yu?", "how · are · you"],hykkousik:["Ar jou ouel?", "are · you · well"],xanadui:["Yū xau, sar?", "you · how, sir"],yuni:["Awyagoi?", "how-you-going"],dalab:["Ou yu de?", "how · you · there"],republic:["Hau gor det?", "how · goes · that"],riders:["Khau bį?", "how · wing: how flies it"],zeijani:["Yūm ḫau?", "you-SUBJ · how"],dasri:["Ḥaw yū?", "how · you"],tabist:["Haw yu?", "how · you"],islander:["Au iu?", "how · you"],islanderw:["Hau iu?", "how · you"],hum:["Hāu yu há?","how · you · huh"],jimjam:["Is hau yū?","is · how · you"],scyvoi:["Yu hav?","you · how"]}},
+   {en:"Welcome.",nt:"Islander mai is English my, worn down to mean towards me.",r:{vothic:["Velkïm.", "welcome"],izani:["Guelkom.", "welcome"],hykkousik:["Ouelkam.", "welcome"],xanadui:["Welqam, sar.", "welcome, sir"],yuni:["Kmin, mai.", "come-in, mate"],dalab:["Kom iin.", "come · in"],republic:["Vjelkom.", "welcome"],riders:["Belkam.", "welcome"],zeijani:["Wēlqum.", "welcome"],dasri:["Walqam.", "welcome"],tabist:["Walqam.", "welcome"],islander:["Kama mai.", "come · towards-me"],islanderw:["Kama mai.", "come · towards-me"],hum:["Kām!","come"],jimjam:["Velkam.","welcome"],scyvoi:["Velkım.","welcome"]}},
+   {en:"Thank you.",nt:"",r:{vothic:["Thengk yu.","thank you"],izani:["Tanka.","thanks"],hykkousik:["Thank jou.","thank you"],xanadui:["Thãk yū, sar.","thank you, sir"],yuni:["Ta.","ta"],dalab:["Tenk yu.","thank you"],republic:["Tak.","thanks"],riders:["Łąk'.","thanks"],zeijani:["Šankum.","thanks-SUBJ"],dasri:["Thanqū.","thank-you"],tabist:["Tanqu.","thank-you"],islander:["Tañiu.","thank-you"],islanderw:["Taniu.","thank-you"],hum:["Tá yu.","thank · you"],jimjam:["Teṅkyū.","thank-you"],scyvoi:["Sankyu.","thank-you"]}},
+   {en:"Where is the market?",nt:"Xanadui, Tł'aai and Zeijani put the question word last.",r:{vothic:["Vehrh dha makit?","where · the · market"],izani:["Guer iz de markeda?","where · is · the · market"],hykkousik:["Ouer is ve markit?","where · is · the · market"],xanadui:["Mārkeṭ wer?","market · where"],yuni:["Wezza markiddo?","where's-the · market"],dalab:["We damaakit de?","where · the-market · there"],republic:["Ver er marktet?","where · is · market-the"],riders:["Maakit' beer?","market · where"],zeijani:["Markitum wēr?","market-SUBJ · where"],dasri:["Wayn al-mārqit?","where · the-market"],tabist:["Wayn amarqit?","where · the-market"],islander:["Vea te māʻiti?","where · the · market"],islanderw:["Vea te mākiti?","where · the · market"],hum:["Ma we há?","market · where · huh"],jimjam:["Is vēr mārkeṭṭu?","is · where · market"],scyvoi:["Markıt verde?","market · where-AT"]}},
+   {en:"I am a stranger here.",nt:"Voth says outlander, auhlandarh, and the Islanders say auta, outer. In Hykkousik, I is y, from the same change that made isles into Ys.",r:{vothic:["Ai auhlandarh hirh.","I · outlander · here"],izani:["Ai iz istrenjar ir.","I · am · stranger · here"],hykkousik:["Y am astrēnzar hir.","I · am · stranger · here"],xanadui:["Āi xīr sitrenjarã.","I · here · stranger-am"],yuni:["Oim nod frumia.","I'm · not · from-here"],dalab:["Mi a tranja.","me · am · stranger"],republic:["Aj er strenžr her.","I · am · stranger · here"],riders:["Aa istrenjar khii.","I · stranger · here"],zeijani:["Ē ṣṭrenjum ḫīrin.","I · stranger-SUBJ · here-IN"],dasri:["Ay istrānjar hīr.","I · stranger · here"],tabist:["Ay d astranjar hir.","I · is · stranger · here"],islander:["E auta ai ia.","an · outer · I · here"],islanderw:["E auta ai hia.","an · outer · I · here"],hum:["Ai tê hī.","I · stranger · here"],jimjam:["Am siṭirēnjar hīr, ai.","am · stranger · here, I"],scyvoi:["Ay sitrencir hirde.","I · stranger · here-AT"]}},
+   {en:"Water, please.",nt:"Tł'aai baatar, water, happens to be Mongolian for a hero.",r:{vothic:["Vatarh, plis.","water, please"],izani:["Guadar, plez.","water, please"],hykkousik:["Ouatar, plis.","water, please"],xanadui:["Wāṭar, pilīj.","water, please"],yuni:["Wada, pleez.","water, please"],dalab:["Wata, plis.","water, please"],republic:["Vatr, plis.","water, please"],riders:["Baatar, pliis.","water, please"],zeijani:["Wāṭarum, plīz.","water-SUBJ, please"],dasri:["Wāṭar, blīz.","water, please"],tabist:["Awaṭar, flīz.","the-water, please"],islander:["Vata, pīsi.","water, please"],islanderw:["Vata, pīhi.","water, please"],hum:["Wǒ, pî.","water, please"],jimjam:["Va'ar, pilīsu.","water, please"],scyvoi:["Vatır, filis.","water, please"]}},
+   {en:"How much?",nt:"The brothers say it alike: short words survive their differences.",r:{vothic:["Hau mïch?","how much"],izani:["Au mocha?","how much"],hykkousik:["Hao makh?","how much"],xanadui:["Xau mac?","how much"],yuni:["Awmuchi?","how-much"],dalab:["Ou moch?","how much"],republic:["Hau mač?","how much"],riders:["Khau mach?","how much"],zeijani:["Ḫau maš?","how much"],dasri:["Ḥaw maš?","how much"],tabist:["Haw maš?","how much"],islander:["Au masa?","how much"],islanderw:["Hau maha?","how much"],hum:["Hāu mà?","how · much"],jimjam:["Hau macchu?","how much"],scyvoi:["Hav maç?","how much"]}},
+   {en:"Go away!",nt:"",r:{vothic:["Go avei!","go away"],izani:["Go ague!","go away"],hykkousik:["Go aouē!","go away"],xanadui:["Gho!","go"],yuni:["Rakkof!","rack off: get lost"],dalab:["Gwaan!","go on"],republic:["Go vej!","go away"],riders:["Go abee!","go away"],zeijani:["Gū awē!","go away"],dasri:["Jū awāy!","go away"],tabist:["Gu away!","go away"],islander:["Ko avei!","go away"],islanderw:["Ko avei!","go away"],hum:["Ko we!","go · away"],jimjam:["Gō avē!","go away"],scyvoi:["Getavt!","get out"]}},
+   {en:"Goodbye.",nt:"Voth commends you to the Sun and the Zeijani to the dark. Yuni huru is hooroo, an old Australian goodbye.",r:{vothic:["Tzun kip yu.", "sun · keep · you"],izani:["Farguel.", "farewell"],hykkousik:["Phērouel.", "farewell"],xanadui:["Phārwel, sar.", "farewell, sir"],yuni:["Huru.", "hooroo"],dalab:["Waak gud.", "walk · good"],republic:["Farvjel.", "farewell"],riders:["Plai khai.", "fly · high"],zeijani:["Ze-dāqum yūan qīp.", "the-dark-SUBJ · you-OBJ · keeps: the dark keep you"],dasri:["Jū bi-bīs.", "go · in-peace"],tabist:["Gu di afis.", "go · in · the-peace"],islander:["Sei kutu.", "sail · good"],islanderw:["Hei kutu.", "sail · good"],hum:["Kǔ pai.","good · bye"],jimjam:["Bī gūḍḍu ḍēsu.","be · good · days: may your days be good"],scyvoi:["Farvel.","farewell"]}},
+   {en:"A saying",nt:"Not one phrase but each people's own proverb.",r:{vothic:["Dha Tzun it vïrhst.","the Sun · eats · first"],izani:["Iziz iz forevar.","Iziz · is · forever"],hykkousik:["Hou has gilloi nids sip.","who · has · gills · needs · ship: even a man with gills needs a ship"],xanadui:["Āiālbi sīn, māuthbi se.","eye-PL-BY seen, mouth-BY said: eyes see, mouths say"],yuni:["Da Vol opnz fa nobbo.","the · Vault · opens · for · nobody"],dalab:["Mek no mistekdem.","make · no · mistake-PL: the priests' prayer, said to anyone about to do something foolish"],republic:["Serviz gir sidizan.","service · gives · citizen"],riders:["Tł'aa erimembar.","claw · remembers"],zeijani:["Ze-dāqum ḫiddanan qīp.","the-dark-SUBJ · hidden-OBJ · keeps: the dark keeps what is hidden"],dasri:["Wāṭar bifūr tūq.","water · before · talk: water first, then talk"],tabist:["Awaṭar bifur atuq.","the-water · before · the-talk"],islander:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],islanderw:["Ko te tai, kama te tai.","goes · the · tide, comes · the · tide"],hum:["Sōn ko, pí no ko.","song · goes, feet · not · go: the song crosses where feet cannot"],jimjam:["Kamsu nevar bakku ḍē.","comes · never · back · day: no day comes twice"],scyvoi:["Fayır firs, sıkayt aftır.","fire · first, scythe · after: nothing is reaped that was not burned"]}},
   ];
   const toAshTxt=t=>t.split(/(\s+)/).map(w=>w.replace(/ṣ/g,"s").replace(/Ṣ/g,"S").replace(/ṭ/g,"t").replace(/Ṭ/g,"T").replace(/q/g,"k").replace(/Q/g,"K").replace(/ü/g,"i").replace(/^([Ww])/,m=>m==="W"?"M":"m").replace(/([aeiuāēīū])m([.,!?]?)$/,"$1$2")).join("");
   const esc=t=>t.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -3008,8 +3777,8 @@ window.KR=window.KR||{};KR.dasri=(t,el)=>dRender(t,el);KR.tabist=(t,el)=>aRender
     body.innerHTML=PT.map(([k,name,rd,cls])=>{
       const src=k==="ash"?p.r.zeijani:p.r[k];
       const said=k==="ash"?toAshTxt(src[0]):src[0];
-      const tongue=k==="ash"?"zeijani":(k==="dasri"||k==="tabist")?"desert":k;
-      const chip=rd==="none"?`<span class="chip none">${k==="scyvoi"?"never written: brands only":"seldom written"}</span>`:`<span class="chip ${rd==="latin"?"":cls}" data-tongue="${tongue}"><span class="${rd==="latin"?cls:"line"}" data-r="${rd}" data-t="${esc(said)}"></span></span>`;
+      const tongue=k==="ash"?"zeijani":(k==="dasri"||k==="tabist")?"desert":k==="islanderw"?"islander":k;
+      const chip=rd==="none"?`<span class="chip none">${k==="scyvoi"?"never written: brands only":k==="jimjam"?"palm-leaf blocks: not drawn yet":"seldom written"}</span>`:`<span class="chip ${rd==="latin"?"":cls}" data-tongue="${tongue}"><span class="${rd==="latin"?cls:"line"}" data-r="${rd}" data-t="${esc(said)}"></span></span>`;
       const gloss=k==="ash"?src[1].replace(/-SUBJ/g,"-SUBJ, no -m"):src[1];
       return `<tr><td class="lg"><button type="button" data-go="${tongue}">${esc(name)}</button></td><td class="rm">${esc(said)}</td><td class="gl">${esc(gloss)}</td><td>${chip}</td></tr>`;
     }).join("");

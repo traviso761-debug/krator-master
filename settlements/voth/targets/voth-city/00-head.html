@@ -25,41 +25,16 @@
   .k{opacity:.6;font-size:11px}
   i{display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:-1px;border-radius:2px}
   #legend span{display:inline-block;margin:3px 8px 0 0;font-size:11px}
-  #tip{position:fixed;z-index:40;display:none;pointer-events:none;max-width:360px}
-  #tip.card{max-width:430px;width:430px;background:rgba(24,21,15,0.97)}
-  #tip .sec{color:#e0c98a;margin-top:5px;font-size:11px;letter-spacing:.05em;text-transform:uppercase}
-  #tip .mt{display:inline-block;width:64px;height:7px;background:rgba(255,255,255,0.12);border-radius:3px;vertical-align:0;margin:0 5px 0 3px;overflow:hidden}
-  #tip .mt b{display:block;height:100%}
+  #khost-tip .sec,#insp-text .sec{color:#e0c98a;margin-top:5px;font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+  #khost-tip .mt,#insp-text .mt{display:inline-block;width:64px;height:7px;background:rgba(255,255,255,0.12);border-radius:3px;vertical-align:0;margin:0 5px 0 3px;overflow:hidden}
+  #khost-tip .mt b,#insp-text .mt b{display:block;height:100%}
+  #khost-tip{background:rgba(24,21,15,0.97)!important}
   #loading{left:50%;top:45%;transform:translate(-50%,-50%);font-size:15px}
-  #cutbar{top:14px;left:50%;transform:translateX(-50%);display:none;text-align:center;font-size:13px;padding:8px 14px}
-  #cutbar button{font-size:14px;padding:6px 14px;margin:0 4px}
-  #cutbar select{background:rgba(255,255,255,0.08);color:#f3ecd8;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font:inherit}
-  #cutbar select option{background:#2a2416}
-  #cutbar .k{display:block;margin-top:4px}
-  #edit{left:14px;bottom:14px;width:min(390px,calc(100vw - 28px));max-height:52vh;overflow:auto;display:none}
-  #edit select,#edit input{background:rgba(255,255,255,0.08);color:#f3ecd8;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font:inherit;font-size:11.5px}
-  #edit select option{background:#2a2416}
-  #edit.placing{width:min(460px,calc(100vw - 28px));max-height:70vh}
-  #ed-find{width:calc(100% - 14px);margin:4px 0}
-  #ed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;max-height:34vh;overflow:auto;margin:2px 0 6px}
-  #ed-grid .t{background:rgba(255,255,255,0.06);border:2px solid transparent;border-radius:6px;padding:3px;cursor:pointer;text-align:center;font-size:10.5px;line-height:1.2}
-  #ed-grid .t:hover{border-color:rgba(201,162,39,0.5)}
-  #ed-grid .t.on{border-color:#c9a227;background:rgba(201,162,39,0.18)}
-  #ed-grid .t img,#ed-grid .t .ph{display:block;width:88px;height:88px;margin:0 auto 3px;border-radius:4px;background:#9fb0bc}
-  #ed-grid .t .f{color:#bfae80;font-size:9.5px}
   #pathvizSel{margin-top:3px;background:rgba(255,255,255,0.08);color:#f3ecd8;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font:inherit;font-size:11.5px}
-  #marks{left:14px;bottom:14px;width:min(390px,calc(100vw - 28px));max-height:46vh;overflow:auto;display:none}
-  #marks .mk{border-top:1px solid rgba(255,255,255,0.12);padding:5px 0}
-  #marks .mk.sel{background:rgba(201,162,39,0.14)}
-  #marks input,#marks textarea{background:rgba(255,255,255,0.08);color:#f3ecd8;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font:inherit;font-size:11.5px;padding:2px 5px}
-  #marks .mk-name{width:130px}
-  #marks textarea{width:calc(100% - 12px);margin-top:3px;resize:vertical}
-  #mk-out{height:38px;opacity:.7}
   .pnl-min{position:absolute;top:6px;right:6px;margin:0!important;padding:0 7px!important;line-height:18px}
   .pnl.min{width:auto!important;max-height:none!important;padding-right:40px}
   .pnl.min > :not(.pnl-min){display:none!important}
   .pnl.min::before{content:attr(data-title);color:#e0c98a;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
-  #marks .mk-q{font-size:11.5px;color:#e0c98a;margin:2px 0 0 14px}
   #ix{left:50%;top:60px;transform:translateX(-50%);width:min(960px,calc(100vw - 28px));max-height:calc(100vh - 90px);overflow:auto;display:none}
   #ix table{border-collapse:collapse;margin:6px 0 10px;font-size:11.5px}
   #ix th{text-align:left;color:#e0c98a;font-weight:normal;padding:3px 8px 3px 0;border-bottom:1px solid rgba(255,255,255,0.15);vertical-align:bottom}
@@ -69,68 +44,24 @@
   #ix h2{font-size:12.5px;color:#e0c98a;margin:10px 0 2px;font-weight:normal;letter-spacing:.04em;text-transform:uppercase}
   #ixlegend{left:14px;bottom:14px;display:none;width:min(300px,calc(100vw - 28px))}
   #ixlegend .ramp{height:10px;border-radius:3px;margin:4px 0 2px}
-  #stocks{right:14px;top:14px;width:min(700px,calc(100vw - 28px));max-height:calc(100vh - 40px);overflow:auto;display:none;z-index:32;background:rgba(18,20,24,0.97)}
-  #stocks table{width:100%;border-collapse:collapse;margin-top:6px;font-size:11.5px}
-  #stocks th{text-align:right;color:#e0c98a;font-weight:normal;padding:3px 4px;border-bottom:1px solid rgba(255,255,255,0.15);white-space:nowrap;vertical-align:bottom}
-  #stocks th.s{cursor:pointer;text-decoration:underline dotted}
-  #stocks th:first-child,#stocks td:first-child{text-align:left}
-  #stocks td{text-align:right;padding:2px 4px;border-bottom:1px solid rgba(255,255,255,0.06);font-variant-numeric:tabular-nums;white-space:nowrap}
-  #stocks tr.it,#stocks tr.hd{cursor:pointer} #stocks tr.it:hover td,#stocks tr.hd:hover td{background:rgba(255,255,255,0.06)}
-  #stocks tr.sel td{background:rgba(201,162,39,0.16)}
-  #stocks tr.cat td{color:#e0c98a;text-align:left;padding-top:8px;letter-spacing:.05em;text-transform:uppercase;font-size:10.5px}
-  #stocks td.det{text-align:left;white-space:normal;background:rgba(0,0,0,0.22);padding:6px 8px;line-height:1.5}
-  #stocks td.det table{margin-top:2px}
   .low{color:#e8c25a} .out{color:#ff9a7a} .up{color:#9fd49a} .dn{color:#ff9a7a}
-  #tip table.ct{border-collapse:collapse;margin:2px 0;font-size:11.5px} #tip table.ct td{padding:0 8px 0 0;vertical-align:top}
+  #khost-tip table.ct,#insp-text table.ct{border-collapse:collapse;margin:2px 0;font-size:11.5px} #khost-tip table.ct td,#insp-text table.ct td{padding:0 8px 0 0;vertical-align:top}
   @media (max-width:760px){#stats{top:auto;bottom:14px;max-height:30vh}}
 </style>
+<script>window.KRATOR_HOST = true;   /* core/host takes the camera and the loop (targets/voth-city/97-vc-host-take.js) */</script>
 </head>
 <body>
 <div id="app"></div>
 <div id="bar" class="pnl" data-title="Voth &middot; city plan">
-  <h1>Voth &middot; city plan</h1>
-  <div class="k">The street method on the owner's site (site/voth-site.json), over Voth's own ground. Drag to orbit, right-drag to pan, wheel to zoom, WASD to move, F to walk. Double-click the ground to drop a pin: G flies to it, F walks from it. K pauses everything; I inspects (a citizen under the cursor too); X cuts the buildings in view open; O lists the stocks (what the settlement holds and where).</div>
   <input id="step" type="range" min="0" max="14" step="1" value="14">
   <button id="prev">&larr; step</button><button id="next">step &rarr;</button><button id="play">play</button><br>
-  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-inspect">inspector (i)</button><button id="ly-marks">marks (p)</button><button id="ly-edit">edit (b)</button><button id="ly-cut">cutaway (x)</button><button id="ly-density" title="residents per hectare, workplaces per hectare, work posts against the 90% rule, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button><button id="ly-stocks" title="every good and item in the settlement: where it is (at the site, in transit, in storage, owned), the last day's change, what runs short (o)">stocks (o)</button> <span id="cut-status" class="k"></span><br>
-  <span id="clk">10:00</span> <button id="clk-pause" title="freeze everything where it is: people, animals, carts, boats, the clock and the sky (k)">pause (k)</button><button id="clk-run" title="hold or run the hour (motion goes on)">hold</button><span id="clk-speeds"></span><input id="clk-hour" type="range" min="0" max="24" step="0.25" value="10" style="width:120px"> <span id="wx"></span><br><span id="clk-sim" class="k"></span><br>
+  <button id="ly-buildings">buildings</button><button id="ly-lots">lots</button><button id="ly-wealth">wealth</button><button id="ly-labels">labels</button><button id="ly-transit">transit</button><button id="ly-flora">flora</button><button id="ly-density" title="residents per hectare, workplaces per hectare, work posts against the 90% rule, off (n)">density (n)</button><button id="ly-ixrep" title="the interiors report and the job table">interiors report</button> <span id="cut-status" class="k"></span><br>
+  <button id="clk-pause" title="freeze everything where it is: people, animals, carts, boats, the clock and the sky (k)">pause (k)</button><span id="wx"></span><br><span id="clk-sim" class="k"></span><br>
   <button id="pathvizToggle">Paths: Off</button><select id="pathvizSel" style="display:none"></select>
   <button id="v-map">map</button><button id="v-city">city</button><button id="v-street">street level</button><button id="export">export plan JSON</button>
-  <div id="legend" class="lg"></div>
 </div>
 <div id="stats" class="pnl" data-title="Step and counts"><div id="stats-body"></div></div>
-<div id="stocks" class="pnl" data-title="Stocks"><b>Stocks</b> <span id="stk-when" class="k"></span> <button id="stk-close" style="float:right" title="close (o)">&#10005;</button><button id="stk-refresh" style="float:right" title="read the stocks now (the panel reads itself every few seconds while the clock runs; paused, only here)">refresh</button>
-  <br><button data-f="all">all</button><button data-f="goods">goods</button><button data-f="owned">the citizens' things</button>
-  <div class="k" style="margin-top:4px">At the site: made, not yet hauled (a producer's own store). In transit: a cart's or a carrier's load (a caravan, a barge, a ship, on the map), and a lot landed at the caravanserai, a quay or a pier for the carts. In storage: the warehouses and granaries, and the households' food stores. Owned: what the citizens wear, keep at home and work with. Shops and stalls keep no shelf: they sell from the warehouses. The change is the total at one midnight against the one before (the simulation's daily snapshot); used up = drawn from the stores, less what went into households' stores, plus what was eaten from them (an item: worn out and broken). <span class="low">Low</span>: fewer days of cover (the warehoused stock over its use a day) than the economy's import threshold. <span class="out">Out</span>: a draw or a purchase went unmet. Click an item for its flows and holders.</div>
-  <div id="stk-body"></div></div>
-<div id="tip" class="pnl"></div>
 <div id="ix" class="pnl" data-title="Interiors report"><b>Interiors report</b> <span class="k">(every lot building: 41-vc-building-interiors.js)</span> <button id="ix-close" style="float:right">&#10005;</button><div id="ix-body"></div></div>
 <div id="ixlegend" class="pnl"></div>
-<div id="cutbar" class="pnl"><b>Cutaway</b> <select id="cut-canton" title="the canton"></select>
-  <button id="cut-down" title="the storey below (PageDown or [)">&#9660; down</button><span id="cut-storey"></span><button id="cut-up" title="the storey above (PageUp or ])">up &#9650;</button><button id="cut-close" title="leave the cutaway (x)">&#10005;</button>
-  <span class="k">storeys: the buttons, PageUp / PageDown, [ and ], or the mouse wheel with Shift &middot; x leaves</span></div>
-<div id="edit" class="pnl" data-title="Edit">
-  <b>Edit the plan</b> <span id="ed-status" class="k"></span><br>
-  <button id="ed-m-place" class="on">place building</button><button id="ed-m-street">paint street</button><button id="ed-m-del">delete</button><button id="ed-m-flora">flora</button><br>
-  <div id="ed-place"><input id="ed-find" placeholder="find a building (name or family)"><div id="ed-grid"></div><select id="ed-kit" style="display:none"></select> <select id="ed-var"></select><br>
-    <label class="k"><input type="checkbox" id="ed-align" checked> align to the nearest street</label> <span class="k">Q/E turn the last 15&deg; &middot; R aligns it</span></div>
-  <div id="ed-street" style="display:none"><select id="ed-cls"><option>avenue</option><option selected>main</option><option>side</option><option>alley</option><option>lane</option></select>
-    <span class="k">click to add points; Backspace takes one off; Enter or a double-click finishes; Esc drops it</span></div>
-  <div id="ed-del" style="display:none" class="k">click a building or a painted street to delete it (a generated building is taken out of the plan)</div>
-  <div id="ed-flora" style="display:none"><select id="ed-fl-mode"><option value="pick">select and delete</option><option value="plant">plant</option></select>
-    <span id="ed-fl-plant" style="display:none"><select id="ed-fl-key"></select> <span class="k">height</span> <input id="ed-fl-h" type="number" step="0.5" min="1" style="width:56px" placeholder="auto"></span>
-    <button id="ed-fl-del">delete selected</button><div class="k" id="ed-fl-sel"></div>
-    <div class="k">select: click a tree or a placed plant, Delete removes it (Esc lets go) &middot; plant: click a floor or the ground</div></div>
-  <div class="k" id="ed-count"></div>
-  <button id="ed-undo">undo</button><button id="ed-save">save</button><button id="ed-copy">copy JSON</button>
-  <div class="k">Saved edits join the plan when the page next loads (placed buildings and painted streets at step 3, deletions at the end).</div>
-  <textarea id="ed-out" readonly style="height:34px;width:calc(100% - 12px);opacity:.7"></textarea>
-</div>
-<div id="marks" class="pnl" data-title="Marks">
-  <b>Marks</b> <span id="mk-status" class="k"></span><br>
-  <button id="mk-area">+ area</button><button id="mk-line">+ line</button><button id="mk-point">+ point</button><button id="mk-copy">copy JSON</button>
-  <div class="k">Click the ground to add points. Backspace takes the last off; Enter or a double-click finishes; Esc stops.</div>
-  <div id="mk-list"></div>
-  <textarea id="mk-out" readonly></textarea>
-</div>
+<!-- the inspector and its hover tip, the stocks, the marks, the editor, the picture menu and the cutaway's bar are core/host's (97-vc-host-take.js) -->
 <div id="loading" class="pnl">Laying out the city on the site...</div>

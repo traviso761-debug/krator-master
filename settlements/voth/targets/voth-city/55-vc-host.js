@@ -293,10 +293,11 @@ VC.floraPlace = function () {
     if (f.tree) { if (SWBAY.treeAt(f.tree, f.x, f.y, f.z, { H: f.H, wet: 0.85 })) n.trees++; }
     else if (SWBAY.plantAt(f.plant, f.x, f.y, f.z, {})) n.plants++;
   });
-  /* the big parks' avenues, groves and gardens (39-vc-furnish.js VC.parkFlora) */
-  (VC.parkFlora || []).concat(VC.hohFlora || []).forEach(function (f) {
-    var y = f.y == null ? baseH(f.x, f.z) : f.y, gr = function (x, z) { return baseH(x, z); };
-    if (f.tree) { var H = P.H[f.tree] || [6, 10]; if (SWBAY.treeAt(f.tree, f.x, y, f.z, { H: H[0] + (H[1] - H[0]) * f.u, wet: 0.7, ground: gr })) n.trees++; }
+  /* the big parks' avenues, groves and gardens (39-vc-furnish.js VC.parkFlora); the Palace summit's grove and beds (40d
+     VC.summitFlora: `flat`, standing on their own y, the tub or the bed, not the ground under the canton) */
+  (VC.parkFlora || []).concat(VC.hohFlora || [], VC.summitFlora || []).forEach(function (f) {
+    var y = f.y == null ? baseH(f.x, f.z) : f.y, gr = f.flat ? undefined : function (x, z) { return baseH(x, z); };
+    if (f.tree) { var H = f.H || P.H[f.tree] || [6, 10]; if (SWBAY.treeAt(f.tree, f.x, y, f.z, { H: H[0] + (H[1] - H[0]) * f.u, wet: 0.7, ground: gr })) n.trees++; }
     else if (SWBAY.plantAt(f.plant, f.x, y, f.z, { ground: gr })) n.plants++;
   });
   if (!AF || !A) return n;
@@ -409,21 +410,13 @@ VC.ui = function () {
   lg += '<br>'; Object.keys(VC.ROLECOL).forEach(function (k) { lg += '<span><i style="background:' + VC.ROLECOL[k] + '"></i>' + k + '</span>'; });
   $('legend').innerHTML = lg;
   /* the wheel goes further out than the engine's 2 km: Voth's lake wants it */
-  renderer.domElement.addEventListener('wheel', function (e) { if (ctl.walk) return; ctl.dist = Math.max(3, Math.min(12000, ctl.dist * (1 + e.deltaY * 0.001))); updateCamera(); e.preventDefault(); e.stopImmediatePropagation(); }, { capture: true, passive: false });
-  var tip = $('tip'), last = 0, on = false;
-  $('ly-inspect').onclick = function () { on = !on; this.classList.toggle('on', on); tip.style.display = on ? 'block' : 'none'; };
+  if (!window.KRATOR_HOST) renderer.domElement.addEventListener('wheel', function (e) { if (ctl.walk) return; ctl.dist = Math.max(3, Math.min(12000, ctl.dist * (1 + e.deltaY * 0.001))); updateCamera(); e.preventDefault(); e.stopImmediatePropagation(); }, { capture: true, passive: false });
+  /* the hover tip (I) and the inspector are core/host's (93-host-inspect.js, over VC.describe: 97-vc-host-take.js
+     VC.inspectRay); [ and ] step the plan, unless the cutaway is on (its storeys then: 99-host-cutaway.js) */
   window.addEventListener('keydown', function (e) {
     if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-    if (e.key === 'i') $('ly-inspect').onclick();
-    if (VC.INTD && VC.INTD.cut && VC.INTD.cut.on) return;   /* [ and ] step the cutaway's storeys then (56-vc-interiors-host.js) */
+    if ((VC.INTD && VC.INTD.cut && VC.INTD.cut.on) || (window.KHOST && KHOST.cut && KHOST.cut.on)) return;
     if (e.key === '[') $('prev').onclick(); if (e.key === ']') $('next').onclick();
-  });
-  window.addEventListener('mousemove', function (e) {
-    if (!on || e.target !== renderer.domElement) return;
-    var n = Date.now(); if (n - last < 70) return; last = n;
-    var r = new THREE.Raycaster(); r.setFromCamera(new THREE.Vector2(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1), camera);
-    tip.style.left = (e.clientX + 16) + 'px'; tip.style.top = (e.clientY + 12) + 'px';
-    tip.innerHTML = VC.describe(r.ray);
   });
   VC.stats();
 };
@@ -622,6 +615,7 @@ VC.dayNight = function () {
     S.volcano(W.ash > 0.6 ? 'violent' : r < X.eruptLarge ? 'large' : r < X.eruptLarge + X.eruptSmall ? 'small' : 'idle');
     var night = typeof ATMOS !== 'undefined' && ATMOS.night ? ATMOS.night(h) : 1 - up;
     (VC.lampMats || []).forEach(function (m) { m.color.setScalar(0.3 + 0.7 * night); });
+    (VC.glowMats || []).forEach(function (m) { m.emissiveIntensity = 0.25 + 0.95 * night; });   /* the canopies' paper lanterns (56f) */
     if (VC.beaconMat) VC.beaconMat.opacity = TUNE.beaconOpacity * night;
     VC.dayK = up;
   };
@@ -650,15 +644,16 @@ VC.dayNight = function () {
   var last = null, shown = '';
   (window._frameHooks = window._frameHooks || []).unshift(function (now) {
     var t = now / 1000, dt = last == null ? 0 : t - last; last = t;
-    C.step(dt);
+    if (!window.KRATOR_HOST) C.step(dt);   /* on core/host the host's loop steps the clock (97-vc-host-take.js) */
     if (VC.atmosHooks) { ATMOS.clock.scale = C.scale; VC.atmosHooks.forEach(function (fn) { fn(dt); }); }
     VC.applyHour(C.hour);
     var hh = Math.floor(C.hour), mm = Math.floor((C.hour - hh) * 60), txt = ('0' + hh).slice(-2) + ':' + ('0' + mm).slice(-2) + ' day ' + (C.day + 1);
-    if (txt !== shown) { shown = txt; var e = $('clk'); if (e) e.textContent = txt; var s = $('clk-hour'); if (s && document.activeElement !== s) s.value = C.hour; }
+    if (!window.KRATOR_HOST && txt !== shown) { shown = txt; var e = $('clk'); if (e) e.textContent = txt; var s = $('clk-hour'); if (s && document.activeElement !== s) s.value = C.hour; }
   });
   VC.applyHour(C.hour);
 };
 VC.clockUI = function () {
+  if (window.KRATOR_HOST) return;   /* core/host's time row drives VC.clock (97-vc-host-take.js) */
   var C = VC.clock, run = $('clk-run'), sp = $('clk-speeds'), hr = $('clk-hour'); if (!C || !run) return;
   var paint = function () { run.textContent = C.running ? 'hold' : 'run'; [].forEach.call(sp.children, function (b) { b.classList.toggle('on', +b.dataset.k === C.scale); }); };
   run.onclick = function () { C.run(!C.running); paint(); };
@@ -676,11 +671,11 @@ VC.start = function () {
   VC.intWalk();                        /* the cantons' interiors (40-vc-interiors.js): their floors, stairs and walls */
   /* the ferry piers' decks (Voth's lifeBuildFerryPier: 5.5 m wide, SEA + 2.1), so a walker comes off a ferry onto them */
   Object.keys(VC.FP || {}).forEach(function (id) { var P = VC.FP[id]; if (P.none || !P.root) return; KWALK.strip({ a: [P.root[0], P.root[1], VOTH.SEA + 2.1], b: [P.tip[0], P.tip[1], VOTH.SEA + 2.1], w: 5.2, name: 'ferry pier ' + id, tag: 'pier' }); });
-  VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVessels(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
+  VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVessels(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawStreet(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
   VC.ixStart();                       /* every lot building's interior (41-vc-building-interiors.js, 56b): planned, furnished, reported */
   try { VC.simPlaces(); VC.simWorkAudit(); } catch (e) { console.error('sim places: ' + (e.stack || e)); VC.SIMB.error = String(e.stack || e); }   /* 42-vc-sim-places.js */
   try { var tn = Date.now(); VC.pedNav(); VC.pedAudit(); VC.PED.ms = Date.now() - tn; VC.simPeople(); } catch (e) { console.error('sim people: ' + (e.stack || e)); VC.PED.error = String(e.stack || e); }   /* 43-vc-sim-nav.js, 44-vc-sim-people.js */
   VC.ui(); VC.ixUI(); VC.clockUI();
   try { VC.simRun(); VC.simBodies(); } catch (e) { console.error('sim run: ' + (e.stack || e)); VC.SIMRUN.error = String(e.stack || e); }   /* 56c-vc-citizens-host.js */
-  VC.marks(); VC.tools(); VC.cutUI(); VC.inspectUI(); VC.stocksUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();   /* inspectUI: the pause and the citizens' inspector (56d); stocksUI: the stocks panel and the contents (56e) */
+  VC.tools(); VC.cutUI(); VC.inspectUI(); VC.panels(); HOST.applyStep(); $('v-city').onclick();   /* inspectUI: the pause and the citizens' card (56d); the marks, the editor, the stocks and the cutaway's keys are core/host's (97-vc-host-take.js) */
 };

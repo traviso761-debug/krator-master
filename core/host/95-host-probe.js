@@ -14,7 +14,7 @@
 //     setView(cx,cy,cz,tx,ty,tz), views(), go(name)
 //     ...o.api        the build's own: hostChecks / hostNegatives, a `totals` getter, biome(), at(x, z) ... (getters kept)
 //   }
-//   window._registered = the registry's length
+//   window._registered = the registry's length (only when the build hands one: a page's own count is left alone)
 // Objects with userData.probeSkip are left out of the samples and the sweep, as before (the host's pin is one of them).
 (function(root){
 'use strict';
@@ -43,5 +43,5 @@ K.probeTake=function(H){const o=H.o,THREE=o.THREE||root.THREE,scene=H.scene,REG=
   clock:()=>H.clock.state()};
  if(o.api)Object.defineProperties(api,Object.getOwnPropertyDescriptors(o.api));   // getters stay getters
  K.probe={probePoints,regOccupancy,nanSweep,typeStats};
- root._api=api;root._registered=REG.length;};
+ root._api=api;if(REG.length||root._registered==null&&o.registry)root._registered=REG.length;};   // a build's own count is kept when it hands no registry
 })(typeof window!=='undefined'?window:globalThis);

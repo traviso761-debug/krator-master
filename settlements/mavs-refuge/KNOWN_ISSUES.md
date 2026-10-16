@@ -2,6 +2,32 @@
 build.py prints every unticked item on each build. Claude: when Travis asks for changes to this world,
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
+- [x] (2026-10-15) Mav's Refuge on core/host (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`; Girder is the worked
+      example): the camera, loop, panel and probe are the host's (`build.py` takes `khost.FULL`); the inspector (I, click)
+      reads core/tags: every REGISTER()ed site is a record (45-kit.js, 3,342 sites), and every interior piece becomes one when
+      its unit's record is made (57a-interiors.js `mixTag`); marks (P) replace the polygon tool; the picture menu (395 catalog
+      pieces), minimap (M), editor (B) and cutaway (X: each platform's levels, `plat-<i>`) are new. Proof: `verify.py --assert`
+      every invariant PASS as before, the budget rows as before (draw calls 100 -> 101 of 110, world triangles 3,531,173 ->
+      3,524,211, furniture 1,218,198 the same); the scene census at four views (Mav's Crown, Market plaza, Residential hold,
+      Overview, with `LOD.flush()`) matches the old page within the old page's own run-to-run noise (only the LOD-proxied
+      `Mesh`, `furniture:rope` and `furniture:thatch` totals move, and they move between two runs of the old page too); the
+      furniture fingerprint (`core/furnish/fingerprint.py mavs-refuge`) identical before and after (geometry 6f039090, 10,991
+      pieces); `KTAGS.page.audit().unknown` 0; an edits.json with a batched piece removed, an interior piece removed, one moved
+      and a piece added: 4 of 4 applied on load, the batched piece vetoed at draw, the interior pieces left out of their unit.
+      Note: `fingerprint.json` itself already differed from this page before the change (batchTris 1,277,994 recorded); not
+      rewritten here.
+- [ ] (2026-10-15) Keys are the host's one keymap: F walks (the host's walker, feet on the ground; the page had no walk), G flies
+      to the pin (double-click to drop one), I is the hover tip (the old Inspector button), P marks, B edits, X cuts, M the map.
+- [ ] (2026-10-15) The editor moves, removes and places catalog pieces only. A piece the page was made with is merged into the
+      furniture batch or its unit's interior drawing, so moving or removing it is marked and applies on reload
+      (`53-furnish.js brfVetoed`, `57a-interiors.js piecesNow`); a placed piece is drawn on its own at once. An op on an interior
+      piece waits until that unit's record is made (98-start.js `mStartEdits`). The interiors' own edit overlay (`MIX.edit`,
+      kept in this browser) is separate from the host's log and is not offered in the editor.
+- [ ] (2026-10-15) The world hour stays the sky's own clock (21-sky.js, the Time of day slider and Pause); the host's speed
+      buttons set the motion time the sky and the life layer advance by.
+- [ ] (2026-10-15) interiors-bake.json was stale before this change (kit cb8c15876eb8) and still is (57a changed again):
+      rerun `python3 bake_interiors.py` (the page computes every unit itself meanwhile).
+
 - [ ] (2026-10-05) Tree tints (60-trees.js, same change as Girder): roots take the trunk's tint at their height above the ground, limbs/boughs/twigs the trunk's tint where they leave it.
       Built, not run (`verify.py` not called) and not looked at.
 - [ ] (2026-10-05) 84-flyers.js has the optional dragonfly-wing hook (`FLYTEX = { wing }` before the fragment); nothing sets it yet, so the wings

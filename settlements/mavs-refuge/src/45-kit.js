@@ -551,6 +551,33 @@ function emitMerged(){
 /* ------------------------------------------------------------------ site registry
    Every named thing registers a volume here so the inspector (86) can name
    whatever is under the cursor: REGISTER({name, kind, x,y,z, r, h, plat}) —
-   a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins. */
+   a vertical cylinder of radius r from y to y+h. Most specific (smallest) wins.
+   Each is also a core/tags record (core/tags/README.md; rule: everything placed is registered there before it is
+   drawn), its id kept on the site as `rid` (as Girder's 45-kit.js): the host's inspector, minimap and editor read the
+   records. A span (seg) is a turned box along it. The class comes from the kind (REG_CLASS; a platform's levels and
+   the rooms in them, which carry lvl, are parts; the rest features). */
 var SITES = [];
-function REGISTER(o){ SITES.push(o); return o; }
+var REG_CLASS = { central:'building', res:'building', rook:'building', spider:'building', gate:'building', council:'building', sat:'building',
+  home:'building', shop:'building', fancy:'building', tavern:'building', barracks:'building', mess:'building', armoury:'building',
+  silkhouse:'building', store:'building', inn:'building', stall:'building', shrine:'building', hut:'building', shed:'building',
+  vault:'building', storehouse:'building', dorm:'building', gatehouse:'building', guardhut:'building', guardpost:'building',
+  bridge:'infrastructure', landing:'infrastructure', ramp:'infrastructure', lift:'infrastructure', capstan:'infrastructure',
+  ladder:'infrastructure', signal:'infrastructure', waypost:'infrastructure', winch:'infrastructure',
+  well:'fixture', totem:'fixture', rostrum:'fixture', brazier:'fixture', tree:'flora' };
+var REG_Q = [];   /* sites registered before core/tags' vocabulary has loaded (the builders sort before 52-core-tags-vocab.js) */
+function REGISTER(o){
+  SITES.push(o);
+  if(!KTAGS.VOCAB){ REG_Q.push(o); return o; }
+  regFlush(); regRecord(o);
+  return o;
+}
+function regFlush(){ var q = REG_Q; REG_Q = []; q.forEach(regRecord); }   /* 53-furnish.js calls it before the first catalog piece */
+function regRecord(o){
+  var T = KTAGS.page || (KTAGS.page = KTAGS.create({ build:'mavs-refuge' }));
+  var cls = o.lvl != null ? 'part' : (REG_CLASS[o.kind] || 'feature');   /* a platform's level, or a room in it, is a part of the platform */
+  var rec = { 'class':cls, kind:o.kind||null, name:o.name, at:[o.x, o.y||0, o.z], note:o.label||null, frag:'45-kit.js REGISTER' };
+  if(cls==='building' || cls==='landmark' || cls==='infrastructure' || cls==='part') rec.tags = { culture:'beast-rider' };
+  if(o.seg){ var dx=o.seg[2]-o.seg[0], dz=o.seg[3]-o.seg[1]; rec.at=[(o.seg[0]+o.seg[2])/2, o.y||0, (o.seg[1]+o.seg[3])/2]; rec.ry=Math.atan2(dx,dz); rec.size=[o.seg[4]||2, Math.hypot(dx,dz), o.h||2]; }
+  else if(o.r != null){ rec.r = o.r; rec.h = o.h; }
+  o.rid = T.add(rec).id;
+}

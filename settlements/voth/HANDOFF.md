@@ -10,6 +10,172 @@ owner's rules in short form.
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
 conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
 
+## 2026-10-16: stage 3 step 6b, the tools onto core/host (branch `claude/voth-interiors`)
+
+The city plan's tools are core/host's now (`core/host/README.md`, "Voth onto core/host"; `README.md`, "The tools are
+core/host's"): the inspector and hover tip (I; `93-host-inspect.js` over `VC.describe`, picked by `VC.inspectRay`), what
+things hold and the stocks (O; `93-host-stocks.js` over `KHOST.simHolds(SIM)` with `VC.lotPlaces`, `VC.isContainer`,
+`VC.actorHTML`), the marks (P; `94-host-marks.js`, `marks.json`), the picture menu (`96`, the Voth kit buildings), the
+editor (B; `98-host-edit.js` over `VC.editWorld`: place, plant, paint street, select, move, turn, remove, undo, save to
+`edits.json`) and the cutaway (X; `99-host-cutaway.js` over the cantons and `VC.CUTB`, the lot buildings in view). `build.py`
+takes `host.FULL` and inlines `edits.json` (`host.edits_js`); `97-vc-host-take.js` is the take. Retired: `57-vc-marks.js`,
+58's editor, picture grid and dead pin, 59's flora UI, 56e's panel and its contents, 56's keys and bar, 55's tip, the
+head's panels, `serve.py`'s two old routes (it answers the host's `/__save` and `/__file`), `site/voth-city-edits.json`
+and `site/voth-city-marks.json` (converted: `edits.json`, an empty log; `marks.json`, the four areas).
+
+Proof:
+- `python3 verify.py dist/voth-city.html --assert`: the placement hash **a1a7f008** with the owner's edits applied (as
+  before), every check as before but the two known failures (the embassies Hykkousoi, Iziz, Jimjam, Republic; the Arena
+  not walkable); the cutaway check runs through the host (`VC.cutTo(unit, 1)`: storey 2, shown, the host's bar, off).
+- `node test-edits.js` (12 checks): an old Streetlab file converted by `KEDITS.fromStreetlab` reads back the same
+  (`VC.editsFromLog`), so the page lays out the same with it; the editor's ops read back as the layout's entries.
+- Headless on the GPU (Chromium `--use-angle=d3d11`, about 4 minutes to load): X opens the Palace, ] and [ step it, X
+  closes it (the planes are the host's, `VC.INTD.planes` is them); a click in the cut storey names the room (Household
+  Kitchen, Palace canton, storey 2 of 18) in the inspector and the tip, and the pin lands on its floor (8.2 m); the marks
+  load at their sizes (mines 3.50 km2, quarries 86.8 ha, mush farm 40.8 ha); a kit building placed (aligned), a street
+  painted, a lot removed (hidden at once), saved through `/__save` (3 ops), undone back to nothing; 116 pictures drawn; the
+  stocks read; no page error. Screenshots in the session notes folder (`voth-6b/`: cutaway, cutaway-room, marks, editor,
+  stocks).
+- Every core/host consumer rebuilt (35 pages differ only by the host modules); `core/host/example/check.py` 14 of 14;
+  `node core/edits/test-edits.js`; `tools/port_baseline.py --write` re-keyed them.
+
+Differences the owner may notice: the panels are the host's (the inspector bottom left, the tip, the marks and editor
+bottom right, the stocks top right, the cutaway bar top centre); the editor's delete mode is select + Delete (a lot of the
+plan, a placed building, a painted street, a tree or a plant); R (align the last again) is gone (align is a checkbox
+applied as a building is placed); a tree is planted at its species' height (no height box); the trees and plants have no
+pictures (the kit builds into its store); a lot moved is, on the next load, a deletion where it stood and a placed
+building where it went (placed buildings join at step 3, so the plan round it may reflow, as before); the cutaway's bar
+for the buildings in view counts their storeys up to the tallest cut; the status line names the save
+`voth-city/edits.json` (the take's build name), the file is `settlements/voth/edits.json`.
+
+## 2026-10-16: the Palace's top tiers and summit, and lazy furnishing (branch `claude/voth-interiors`)
+
+The blueprint wiring is finished (`README.md`, "The Palace from its blueprint" and "The summit from sheet F8"):
+- **Tiers 3 and 4** (85 and 67 m, two storeys each; the sheets stop at tier 2) take F7 again, clipped
+  (`TUNE.interiors.blueprint.Palace.tiers`). On a repeated sheet a void with nothing standing up into it from below is laid
+  as floor: a gallery's void an open floor, a garden court's or the dome's a two-storey light court (the dome's shaft stays
+  open only on tier 2, where the suite keeps it over the throne room); a stair shaft the tier's wall cuts is an open
+  landing. Storeys 14 to 17 hold 26, 21, 12 and 9 rooms; the Palace 2,046 rooms (2,042 from the sheets).
+- **The summit (F8)** is laid by `VC.bpSummit` as prims round the captured crown on the deck (a drum 100 m wide, a podium
+  turned 45 degrees, the gilt dome, four obelisks), which F8 did not know: it drew a 70 m deck with a lantern. Every row
+  stands where the sheet drew it if clear, else at the nearest clear spot (the crown tested by each piece's own turned
+  footprint). All ten rows are laid; the Pool of the Sky, the altar and the instruments moved out from under the dome.
+  The walker is blocked by their footprints (`P.summit.blocks`); they are not on the pedestrian layer.
+- **Lazy furnishing** (`56-vc-interiors-host.js` `VC.intFurnish(cn, si)`, `VC.intFurnishStep`, `VC.intDrawStorey`,
+  `VC.intWant`, `TUNE.interiors.lazyMs`): the cutaway furnishes the cut storey and what stands up into it at once, the
+  storeys under it a few ms a frame; the walker its storey, then the ones above and below. Placements are identical to the
+  whole-canton pass (120,555 pieces checked in a headless run, the storeys furnished in reverse in 5 ms steps). The
+  Palace's first cut: 1.0 s (was about 7.5 s of furnishing alone), the next storey 0.4 s.
+
+**Open:** the stairs' heads on the summit (the Stair of the Sun ends on tier 3, the Astronomers' Stair under the deck; the
+core's stair house is the way up, and it rises inside the crown's drum); the summit's pieces are not on the pedestrian
+layer (`43-vc-sim-nav.js`); on tier 4 the clipped F7 leaves the outer band empty (the tier's wall stands at 67 m, the
+sheet's rooms reach 93); the two Inner Guard rooms on storeys 15 and 17 are unreached and dropped. The blueprint's `NEW`
+pieces are still unmapped.
+
+## 2026-10-15 (late): the Palace wired from its blueprint (branch `claude/voth-interiors`)
+
+The owner's blueprint (`palace/`, landed on main from another session) is wired: `palace/export_plan.py` makes
+`targets/voth-city/40c-vc-palace-plan.js`; `40d-vc-blueprint.js` lays each storey's sheet (`README.md`, "The Palace from its
+blueprint", says how). The real stack: tiers of half-width 169, 134, 107, 85, 67 m with 7 (+ the dungeon), 3, 3, 2, 2 storeys of
+6.2, 8.8, 6.8, 8.1, 6.2 m; the sheets were drawn for 200, 140, 95, 70. Not scaled (the stairs must line up), clipped.
+**Open:** F8 (the summit's Dawn Pavilion, altar, high garden) is not laid, and tiers 3 and 4 are still the generic planner's;
+the blueprint's 24 `NEW` pieces (another session's, `kits/catalog`) are not used yet: when they land, map them in
+`TUNE.interiors.dress.kinds` and the programmes; the Palace has 2,102 rooms and 115,000 pieces and took 16 s to furnish headless before the bare and plain
+rooms skipped the placer (not timed alone since): a per-storey lazy furnishing would cut the first view's hitch. `verify.py`'s phase C message now names the failing sub-check; its tool check fails only when a tool broke and was not
+replaced (whether one breaks in two days is the hash's). The same session also gave every sleeping room a bed and divider screen, every home a
+food and an item store, the terrace stairs landings, and the canton interiors their place on the pedestrian layer.
+
+## 2026-10-15: the interiors from the owner's references (branch `claude/voth-interiors`, worktree `../krator-voth-interiors`)
+
+The owner's four zips of reference pictures (palace, temple, wealthy, misc) and the brief: textureless canton interiors, the
+walk-mode clipping, multi-storey open space, the Fortress's training hall, the Palace's and the Temple's programmes, the
+wealthy houses' tapestries, chandeliers and columns, the market stall, the banners, the shrine, canopies and lanterns, and
+(mid-session) "sufficient interior light sources". All in `README.md` ("The canton interiors", "The Palace and the Temple",
+"The wealthy houses' decor", "Canopies, lanterns and hanging banners"). The pieces:
+- `materials.json` + `tex/`: 33 families (21 new: `int_*`, `tap_*`, `inlay_*`, `medallion_sun`, `lantern_paper`, `jali`,
+  `frieze_red`, `canopy_kilim`); `build.py` inlines their colour maps. `core/materials/PROMPTS-ready.md` holds 16 prompts for
+  the sheets the references want (carved green stucco, green tiles, the Tzintzun tapestries, the Temple's hangings and
+  ancestor relief, the glyph banners, the carved column, the screen lattice, the stall awning, the shrine mural, a hide
+  canopy): each names the stand-in it replaces.
+- `40-vc-interiors.js`: atria (`VC.intAtria`), great halls, railings, light wells, the core's ceiling well, keep-outs; the
+  storey heights of the Palace and the Temple (`storeyMinBy`).
+- `40b-vc-suites.js` (new, [G data]): `VC.SUITES` (the two state floors as data), `VC.suiteStorey`, `VC.suiteFinish`, the
+  grand stairs, the inner stair, the exits.
+- `56-vc-interiors-host.js`: `VC.intSetMat` / `intSheetMat` (the library on the shell), `VC.intProto` (merged prototypes),
+  `VC.intDecor` (tapestries, dado bands, nooks, railings, the fittings, the training posts, the suites' decor).
+- `41`, `56b`: the clan atria (`VC.ixAtrium`), the wealthy houses' decor and lanterns (`VC.ixDecor`), the light pool over the
+  lot buildings.
+- `37b-vc-canopies.js` (new, [G data]) and `56f-vc-street-host.js` (new, [draw]): the canopies, the lanterns, the banner
+  records (`20-site-cantons.js` `CANT.banners`, `31-vc-voth.js` `VC.dressBanners`).
+- `targets/voth-site/50-site-scene.js`: the near plane while walking.
+- `kits/catalog`: `voth_market_stall` and `voth_wayside_shrine` redrawn, `voth_planter` new (its `verify.py --assert` passes).
+
+**Checked headless** (`scratchpad/probe.py` under SwiftShader, 3 to 5 minutes a load): all eleven cantons plan, the Fortress's
+walk from its dock door into its training hall completes, the Palace draws 854 rooms in 3.7 s as 2,650 meshes (33,000 before
+the merge), no page errors. **Not reviewed by the owner:** the looks (colours, tile sizes) and the suites' proportions; judge
+them in the preview (`.claude/launch.json` `voth-interiors`, `/dist/voth-city.html`; walk in through the Palace's -x porch at
+(-468, 700, 54) or the Temple's +z porch at (210, 297, 70)).
+
+**The owner's delivery, same day (`Downloads/vothtex.zip`, 32 images).** All sixteen prompts came back, with eleven extras for
+variety and for the myth of the three brothers (the Chichani, the Zeijani and the Andaru), and five redos for other builds.
+- **Wired here** (`materials.json`, 60 families; `TUNE.interiors.look`):
+  - The Palace in green stucco, green crackle tiles and gilt, drawn in their own colour (`VC.INT_COLOUR`). The jade inlay is on the
+    throne room's diagonals and the carved inlaid columns on its pillars. The chandeliers wear the painted drum, and the ringed
+    giant's mosaic is over the sun chandelier. Sun carpets run down the state rooms.
+  - Each canton's look now takes a list of hangings, picked by a hash of the spot: the Tzintzun and procession tapestries with the
+    purple damask in the Palace; the Temple's red hangings and the masks in the Temple; Ordinator banners and masks in the Fortress;
+    the brown kilim and the mudcloth in the Foreign canton and the common ones.
+  - The Temple has the ancestor relief as a 1.6 m dado, the icon behind the altar and crimson filigree screens. The Palace's
+    screens are purple filigree.
+  - The three brothers' frescoes hang high on the end walls, over the doors: their reunion over the Palace foyer's banquet door
+    and over the Temple atrium's sanctuary door, their ascent over the foyer's entrance and over the sanctuary's way in.
+  - The streets: the market canopies are the stall-awning kilim and the others stitched hide. The bridges' banners are the three
+    glyph banners (blue, rust, lavender), and the Temple's dressing is the rust one. The wayside shrine's mural and the stall's rug
+    take the delivered sheets through the catalog's decal cache (`56f` `_texCache` swap).
+  - The wealthy houses' hangings by class: the clans kilims and mudcloth, the rich and manor houses the damask and the procession;
+    their columns are the carved inlaid set.
+- **Not wired (other builds)**: the five redos are in the library only. `GODOT-PLAN.md` "Before an export" lists the re-packs.
+
+**Left (the owner's brief, not done):** the Ordinators' citadel model for the other cities (the "citadel" picture: a stepped
+tower with a tall keep; a `voth_bldg_citadel` in `kits/catalog/krator-master-buildings-voth.js`); the Palace's exits onto the
+face gardens are at the service halls' ends only (one per side); the "grafitti" and "shroom" pictures were not acted on.
+
+## 2026-10-15: the Palace blueprint (`palace/`), to be wired on `claude/voth-interiors`
+
+The owner's programme for the Palace canton, agreed 2026-10-15: `palace/BLUEPRINT.md` (the study of five historical palaces,
+the principles, the floors in one table, "Wiring it", "Assumptions"), `palace/FURNITURE.md` (pieces per room from the catalog's
+Voth sets; the pieces the catalog lacked are the `NEW` list at its end), `palace/floors/F-1.png` to `F8.png` and `section.png`
+(one sheet per floor: every room numbered, named, kinded, with its decor level and area), all generated by `palace/blueprint.py`
+(`FLOORS`: the rooms as data in the suite's frame, u along the axis in from the -x face, v across, metres; `program()`: the
+pieces per room kind; `python3 blueprint.py` redraws the sheets and the manifest). Decisions: kin only, no consorts; the
+ministries in the palace (the Chancery on tier 0's top storey); the big state rooms keep their footprints and only the ruler's
+apartment block is subdivided; a Dawn Pavilion on the summit.
+
+**For the next session (the wiring).** The suite data is `targets/voth-city/40b-vc-suites.js` `VC.SUITES.Palace` on the branch
+`claude/voth-interiors` (worktree `../krator-voth-interiors`, uncommitted edits from the interiors session: stage only your own
+files). The sheets' frame is the suite's, so a rectangle transcribes straight into `rooms`, `halls` and `links`. In order:
+1. F3 to F5: subdivide `apartment` into the vestibule (the Privy Door), the council chamber, the cabinet, the privy antechamber
+   with the Inner Stair and the Secret Stair, the privy court (an open `court` room, kept clear through the tiers above with
+   `keepAbove`), the bedchamber, the bath and the oratory; add the waiting rooms, the kitchen's larder, scullery, buttery and
+   servery; the two service halls' rooms per storey become the named lists on the sheets (today a weighted `purposes` dict is
+   filled at random: a per-storey named list, with the sheet's u extents, wants a small extension of `VC.suiteStorey`). The
+   second-rank rooms (the light courts, the guest suites, the Chancery Stair, the Servants' Way) stand behind the first rank and
+   need a door through a passage room: nothing in `VC.intWalls` makes one yet.
+2. The new room kinds go in three places: `56-vc-interiors-host.js` `VC.intPrograms` (from `program()`), `15-vc-tune.js`
+   `TUNE.census.rooms`, and `TUNE.interiors.dress.by` (a class per kind). Tier 0 takes the dock, household and chancery
+   purposes per quadrant (sheets F0 to F2) through `TUNE.interiors.purposes.Palace`.
+3. Read the real tier radii from `VC.INT.cantons.Palace.tiers` (a headless load takes 3 to 5 minutes; the interiors session's
+   `scratchpad/probe.py` does it under Playwright) and scale the extents if tier 1 is not 140 m in half-width: `blueprint.py`
+   assumes 200, 140, 95, 70. Not yet read when this note was written.
+4. Tier 2 and the summit (F6 to F8) want a second suite entry (`tier: 2`) and a deck programme.
+Rebuild (`python3 build.py`), `python3 verify.py dist/voth-city.html --assert`, and walk in through the -x porch at
+(-468, 700, 54) in the preview (`.claude/launch.json` `voth-interiors`).
+
+**The furniture.** Another session (2026-10-15) built the `NEW` pieces for the catalog (`kits/catalog`, uncommitted on the main
+checkout as this is written): when they land, check their ids against `FURNITURE.md`'s `NEW` list and `program()`, drop the
+delivered ones from `NEW`, and rerun `blueprint.py`.
+
 ## 2026-10-15: what things hold, and the stocks panel (o)
 
 The owner: "implement the full interface in Voth so I can do economy tweaks" (ROADMAP.md section 10, "what things hold,
@@ -541,6 +707,14 @@ brewery, butcher, bakery); overrides for the fallback shells; the Palace and Tem
 
 ## State
 
+**2026-10-15, stage 3 step 6a: Voth on core/host's shell** (camera, loop, clock, panel, probe; `targets/voth-city/
+97-vc-host-take.js`). What changed and its proof: `core/host/README.md`, "Voth onto core/host". For the page: the title
+bar is the host's (`#bar`, the view select, the time controls drive `VC.clock`); the keys are the host's (F walk, G pin);
+`#clk-pause` and `#wx` are kept. The verify's simulation statistics read slightly differently because they depend on load
+timing (the same on the old page); the placement hash is a1a7f008 as before.
+**2026-10-16, step 6b:** the inspector, the stocks, the marks, the pictures, the editor and the cutaway are the host's too
+(above, "stage 3 step 6b").
+
 **Committed to `main` on 2026-10-09** (branch `claude/city-core`). The street toy (Streetlab's own `src/` then, `dist/streetlab.html`) was
 retired: the owner called it redundant. Its street machinery became **`core/city`**, the city builder and its infill
 (`core/city/README.md`), and the city plan takes it from there.
@@ -548,15 +722,16 @@ retired: the owner called it redundant. Its street machinery became **`core/city
 | Page | Built from | Verify | Last result |
 |---|---|---|---|
 | `dist/voth-site.html` | `targets/voth-site/` | `python3 verify.py dist/voth-site.html --assert` | OK |
-| `dist/voth-city.html` | `CITY_JS` in `build.py` (`core/city`, `targets/voth-site/10,50`, `targets/voth-city/`, `core/simulation`) | `python3 verify.py dist/voth-city.html --assert` | OK |
+| `dist/voth-city.html` | `CITY_JS` in `build.py` (`core/city`, `targets/voth-site/10,50`, `targets/voth-city/`, `core/simulation`, `core/host` FULL) | `python3 verify.py dist/voth-city.html --assert` | FAIL on the known two only (the embassies; the Arena not walkable), 2026-10-16 |
 
 Build: `cd settlements/voth && python3 build.py`. Serve: `python3 serve.py` (port 8813). The page is
 `/dist/voth-city.html`. It takes about 15 s to lay out and draw.
 
-### Saved owner data (`site/`, inlined by build.py, read fresh under serve.py)
+### Saved owner data (inlined by build.py)
 - `voth-site.json`: the site, made with the site editor. It has districts, including `mines`, `quarries`, `more farms` and `mush farm`, which came from the owner's marks.
-- `voth-city-marks.json`: the owner's marks on the city plan (POST `/save/voth-city-marks`).
-- `voth-city-edits.json`: the plan editor's placed buildings, painted streets and deletions (POST `/save/voth-city-edits`). It is empty now. Keep the file: the page fetches it, and a 404 fails verify.
+- `marks.json`: the owner's marks on the city plan (core/host's, POST `/__save` kind marks; the page reads it when it opens).
+- `edits.json`: the plan editor's `core/edits` log (POST `/__save` kind edits; a newer browser draft wins until saved). It is
+  empty now (converted from `site/voth-city-edits.json`, which was empty).
 
 ### The city plan's 15 steps (0–14)
 | Steps | What | Fragment |

@@ -1,0 +1,653 @@
+{
+ "build": "lizardmen",
+ "note": "The Lizardmen kit's adapter onto the material library (core/materials/PLAN.md, DESIGN.md section 2.3). The families are the kit's material keys (src/26k-kit.js SV_LIB): the geometry engine writes UVs in world metres divided by the family's scale, so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the bone, reed, hide and stone sets keep a little (the palette in 26k-kit.js colours them), the verdigris bronze, the iridescent chitin (the high castes' lacquer sheen) and the jade keep most of their own. No pattern sheets yet: the leiwen, the glyphs and the spiral eyes are geometry (40-lz-kit.js); the three sheets (leiwenS, glyphS, eyeS) are requested in core/materials/PLAN.md (Lizardmen) and marked optional, so pack.py skips them and the kit keeps drawing its geometry until the owner delivers them. Run python3 tools/textures/pack.py kits/lizardmen after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (91f-furnish.js projects each triplanar).",
+ "size": 512,
+ "families": {
+  "reed": {
+   "lib": "reed.bundle",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.74
+   },
+   "roughLift": 0.4,
+   "specular": 0.12
+  },
+  "thatch": {
+   "lib": "reed.layers",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.74
+   },
+   "roughLift": 0.4,
+   "specular": 0.12,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.07,
+    "cell": 5
+   }
+  },
+  "mat": {
+   "lib": "fibre.reedmat",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.74
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "cane": {
+   "lib": "fibre.cane",
+   "scale": [
+    0.9,
+    0.9
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.74
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "lacq": {
+   "lib": "wood.lacquer",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.7
+   },
+   "roughLift": 0.0,
+   "specular": 0.6
+  },
+  "lacqR": {
+   "lib": "wood.lacquer.crimson",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.66
+   },
+   "roughLift": 0.0,
+   "specular": 0.6
+  },
+  "irid": {
+   "lib": "organic.chitin.iridescent",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0.75,
+    "mean": 0.7
+   },
+   "roughLift": 0.0,
+   "specular": 0.7
+  },
+  "bones": {
+   "lib": "organic.bone",
+   "scale": [
+    0.9,
+    0.9
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.8
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "ivory": {
+   "lib": "bone.ivory",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.8
+   },
+   "roughLift": 0.2,
+   "specular": 0.3
+  },
+  "horn": {
+   "lib": "bone.horn",
+   "scale": [
+    0.7,
+    0.7
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.74
+   },
+   "roughLift": 0.2,
+   "specular": 0.3
+  },
+  "skull": {
+   "lib": "bone.skull",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.78
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "ossuary": {
+   "lib": "bone.ossuary",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.74
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "bronze": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.62
+   },
+   "roughLift": 0.1,
+   "specular": 0.5,
+   "metal": 0.5
+  },
+  "bronzeC": {
+   "lib": "metal.bronze.cast",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.62
+   },
+   "roughLift": 0.1,
+   "specular": 0.5,
+   "metal": 0.6
+  },
+  "basalt": {
+   "lib": "rock.basalt.flowbanded",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.7
+   },
+   "roughLift": 0.4,
+   "specular": 0.15
+  },
+  "stoneP": {
+   "lib": "stone.basalt.polished",
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.62
+   },
+   "roughLift": 0.55,
+   "specular": 0.2
+  },
+  "cyclo": {
+   "lib": "rock.basalt.polygonal",
+   "scale": [
+    3.6,
+    3.6
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.7
+   },
+   "roughLift": 0.4,
+   "specular": 0.12
+  },
+  "brick": {
+   "lib": "brick.ochre",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.72
+   },
+   "roughLift": 0.4,
+   "specular": 0.12
+  },
+  "earth": {
+   "lib": "earth.banco.eroded",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.72
+   },
+   "roughLift": 0.4,
+   "specular": 0.1
+  },
+  "earthR": {
+   "lib": "earth.rammed",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.72
+   },
+   "roughLift": 0.4,
+   "specular": 0.1
+  },
+  "hide": {
+   "lib": "hide.leather033c",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "hideP": {
+   "lib": "hide.leather008",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.74
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "scale": {
+   "lib": "organic.scale",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.66
+   },
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "shingle": {
+   "lib": "roof.shingle.cedar",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.7
+   },
+   "roughLift": 0.4,
+   "specular": 0.12
+  },
+  "rope": {
+   "lib": "fibre.rope",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.72
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "wood": {
+   "lib": "wood.gnarled",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "jade": {
+   "lib": "stone.amazonite",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.62
+   },
+   "roughLift": 0.0,
+   "specular": 0.6
+  },
+  "leiwenS": {
+   "lib": "patterns/lizardmen/leiwen",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "glyphS": {
+   "lib": "patterns/lizardmen/glyph-band",
+   "scale": [
+    2.4,
+    0.8
+   ],
+   "size": [
+    1024,
+    341
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.2,
+   "specular": 0.4
+  },
+  "eyeS": {
+   "lib": "patterns/lizardmen/spiral-eye",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "ground": {
+   "lib": "ground.leafy_grass",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.58,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.1,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.1,
+    "cell": 14
+   }
+  },
+  "f_cloth": {
+   "lib": "cloth.weave.twill",
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "f_wood": {
+   "lib": "wood.carved",
+   "scale": [
+    0.7,
+    0.7
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "f_lacquer": {
+   "lib": "wood.lacquer",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.1,
+   "specular": 0.45
+  },
+  "f_hide": {
+   "lib": "hide.leather009",
+   "scale": [
+    0.35,
+    0.35
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "f_stone": {
+   "lib": "rock.basalt.vesicular",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "f_metal": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.5
+   },
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "f_bronze": {
+   "lib": "metal.bronze.cast",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "f_gold": {
+   "lib": "metal.bronze",
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "f_rope": {
+   "lib": "fibre.rope",
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "f_wicker": {
+   "lib": "fibre.wicker",
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "f_bone": {
+   "lib": "organic.bone",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "f_jade": {
+   "lib": "stone.amazonite",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.6
+   },
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "f_food": {
+   "lib": "food.crust",
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "f_plant": {
+   "lib": "leaf.understorey",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "leiwenS2": {
+   "lib": "patterns/lizardmen/leiwen-b",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "glyphS2": {
+   "lib": "patterns/lizardmen/glyph-band-b",
+   "scale": [
+    2.4,
+    0.8
+   ],
+   "size": [
+    1024,
+    341
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.2,
+   "specular": 0.4
+  }
+ }
+}

@@ -22,6 +22,8 @@ else by class (and key) within 1.5 m of its position; every op records what undo
 `set(h, path, value, op)` (with `op.unset` the field is removed), `remove(h)`. The host's edit modes (`core/host`,
 98) record ops and hand them to the same adapter to preview.
 
-**Not yet:** the GDScript twin (`edits.gd`, with golden logs) arrives with the first Godot tool that writes edits; the
-save route in `tools/edits/serve.py` arrives with the first build whose editor saves through it (Girder, ROADMAP.md
-section 10, step 2).
+**Saved and loaded** (2026-10-15, Girder): the host's editor (`core/host/98-host-edit.js`) saves a log to `<build>/edits.json`
+through `tools/edits/serve.py` (POST `/__save`), and `core/host/host.py` inlines it as `KHOST_EDITS` at the next build, which
+the build applies as it makes its world.
+
+**Not yet:** the GDScript twin (`edits.gd`, with golden logs) arrives with the first Godot tool that writes edits.

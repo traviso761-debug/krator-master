@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1082
+   ],
+   "seam_after": [
+    1.162,
+    0.769
+   ],
+   "seam_before": [
+    1.48,
+    3.052
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "voth/column-carved-inlaid",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.88,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__voth__column-carved-inlaid.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/column-carved-inlaid` (delivered as \"Ornate Wood and Jade Lattice Pattern.png\")",
+  "reuse": "carved openwork with jade backing: columns, panels, screens in any rich house",
+  "sha1": "dd02bc8b9d1b44930cf0f1462d5ddf90550ea9af"
+ }
+}

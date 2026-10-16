@@ -188,9 +188,8 @@ VC.actorHTML = function (a, kind) {
   VC.describe = function (r) {
     var X = VC.INSP, hit = null;
     try { hit = VC.pickBody(r); } catch (e) { console.warn('pickBody: ' + e.message); }
-    var tip = $('tip');
-    if (hit) { X.a = hit.a; X.kind = hit.kind; if (tip) tip.classList.add('card'); return VC.actorHTML(hit.a, hit.kind); }
-    X.a = null; if (tip) tip.classList.remove('card');
+    if (hit) { X.a = hit.a; X.kind = hit.kind; return VC.actorHTML(hit.a, hit.kind); }
+    X.a = null;
     return describe(r);
   };
 })();
@@ -200,11 +199,12 @@ VC.inspectUI = function () {
     if (VC.typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key === 'k' || e.key === 'K' || e.key === 'Pause') { VC.pause(); e.preventDefault(); }
   });
-  /* the marker over the one described, and the card kept current while the cursor rests (on real time) */
+  /* the marker over the one described, and the card kept current while the cursor rests (on real time): in core/host's
+     hover tip (93-host-inspect.js, #khost-tip), which shows VC.describe's card (97-vc-host-take.js VC.inspectRay) */
   var mk = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.8, 4).rotateX(Math.PI), new THREE.MeshBasicMaterial({ color: 0xffd34a, depthTest: false, transparent: true, opacity: 0.9 }));
   mk.renderOrder = 60; mk.visible = false; mk.userData.probeSkip = true; mk.frustumCulled = false; scene.add(mk); VC.INSP.mark = mk;
   window._frameHooks.push(function () {
-    var X = VC.INSP, tip = $('tip'), a = X.a, on = a && tip && tip.style.display === 'block' && tip.classList.contains('card');
+    var X = VC.INSP, tip = $('khost-tip'), a = X.a, on = a && tip && tip.style.display === 'block' && window.KHOST && KHOST.hoverOn;
     if (!on) { mk.visible = false; return; }
     var t = SIM.time(), y = 2.3;
     if (X.kind === 'animal') { var g = VC.SIMBODY.animals && VC.SIMBODY.animals.live[a.id]; if (g) { mk.position.set(g.position.x, g.position.y + 1.2 + 1.2 * g.scale.y, g.position.z); mk.visible = g.visible; } else mk.visible = false; }

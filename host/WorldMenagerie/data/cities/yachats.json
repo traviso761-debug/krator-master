@@ -1,0 +1,808 @@
+{
+ "name": "Yachats",
+ "note": "Yachats, Oregon, from OpenStreetMap on its real ground: the village on its terrace where the Yachats River meets the Pacific, the 804 Trail along the basalt, and Cape Perpetua to the south, its stone shelter 230 m over Devil's Churn, Thor's Well and the Spouting Horn.",
+ "origin": [
+  44.3113,
+  -124.1045
+ ],
+ "defaultSeed": 1880,
+ "defaultHour": 15,
+ "bounds": [
+  44.262,
+  -124.142,
+  44.336,
+  -124.068
+ ],
+ "osm": "data/cities/yachats-osm.json",
+ "attribution": "Map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles.",
+ "fetch": {
+  "bbox": [
+   44.26,
+   -124.145,
+   44.338,
+   -124.065
+  ],
+  "detailZones": [
+   [
+    44.3,
+    -124.112,
+    44.337,
+    -124.094
+   ],
+   [
+    44.274,
+    -124.116,
+    44.292,
+    -124.098
+   ]
+  ],
+  "extraRoads": "way[\"highway\"=\"service\"][\"name\"]({b});way[\"highway\"=\"steps\"]({b});",
+  "_": "from the Geofabrik Oregon extract (tools/pbf-to-overpass.py); every building is kept in the village and on the cape"
+ },
+ "terrain": {
+  "zoom": 15,
+  "step": 10,
+  "datum": 0,
+  "_": "the terrace, the river's valley and Cape Perpetua's headland; the open sea is the datum (tools/build-osm-city.py)"
+ },
+ "seaLevelWater": true,
+ "fog": 0.00011,
+ "sky": {
+  "day": {
+   "top": "#6a8eb4",
+   "hor": "#dfe4e6"
+  },
+  "dusk": {
+   "top": "#34406a",
+   "hor": "#e8a878"
+  },
+  "night": {
+   "top": "#05070f",
+   "hor": "#1a2030"
+  }
+ },
+ "_sky": "the Oregon coast's sky: pale at the horizon with the marine haze, the sun going down into the sea",
+ "overcast": 0.25,
+ "terrainColours": {
+  "low": "#5a6a44",
+  "high": "#2e4a30",
+  "steep": "#4a4a40",
+  "far": "#3a5038"
+ },
+ "waterColour": "#2a5466",
+ "lakeColour": "#2a5466",
+ "lakeSheen": "#6a8a98",
+ "defaultHeights": {
+  "_": "the village: one- and two-storey houses with gables, motels and inns of two and three",
+  "yes": 6,
+  "house": 6.5,
+  "detached": 6.5,
+  "semidetached_house": 6.5,
+  "residential": 7,
+  "apartments": 9,
+  "commercial": 6,
+  "retail": 5.5,
+  "hotel": 8,
+  "motel": 7,
+  "church": 9,
+  "school": 7,
+  "garage": 3.2,
+  "garages": 3.2,
+  "shed": 2.8,
+  "roof": 4,
+  "civic": 7,
+  "public": 7,
+  "fire_station": 7,
+  "water_tank": 8,
+  "library": 6
+ },
+ "heightSpread": 0.15,
+ "facade": {
+  "bay": 3.4,
+  "floor": 3.2,
+  "shutters": false
+ },
+ "facadeStyles": [
+  {
+   "tex": "clapboard",
+   "when": {
+    "maxH": 14,
+    "share": 0.9
+   },
+   "bay": 3.4,
+   "floor": 3.1,
+   "low": true,
+   "colours": [
+    "#c8c0ac",
+    "#a8a294",
+    "#8a9290",
+    "#b8b0a0",
+    "#6a7a78",
+    "#d8d0bc",
+    "#9aa4a0",
+    "#7a6a5a",
+    "#c8b898"
+   ],
+   "_": "cedar shingle gone silver in the salt air, and painted siding in the greys, sage and sand the coast wears"
+  }
+ ],
+ "palette": {
+  "_": "cedar, weathered shingle and grey paint",
+  "brick": [
+   "#8a7a6a",
+   "#9a8a78",
+   "#7a6a5a"
+  ],
+  "stone": [
+   "#8a8a84",
+   "#9a968e"
+  ]
+ },
+ "pitchAll": {
+  "types": [
+   "house",
+   "detached",
+   "semidetached_house",
+   "residential",
+   "yes",
+   "hotel",
+   "motel",
+   "commercial",
+   "retail",
+   "apartments",
+   "church"
+  ],
+  "share": 0.95,
+  "maxH": 14,
+  "_": "every roof pitched, for the rain"
+ },
+ "roofMaxArea": 900,
+ "roofMaxHeight": 14,
+ "roofPitch": 0.5,
+ "roofRise": 3.4,
+ "roofColours": [
+  "#4a4c4e",
+  "#3a3e42",
+  "#5a5a56",
+  "#6a5e52",
+  "#2e3236",
+  "#4a5248",
+  "#7a4a3a"
+ ],
+ "flatRoofColours": [
+  "#7a7a76",
+  "#8a8884"
+ ],
+ "rooftops": false,
+ "groundMottle": 0.16,
+ "instanceCulling": true,
+ "laneMarkings": {
+  "classes": [
+   "trunk"
+  ],
+  "colour": "#e8d860"
+ },
+ "roadColours": {
+  "residential": "#5a5b5e",
+  "unclassified": "#5a5b5e",
+  "trunk": "#3e3f42",
+  "tertiary": "#4a4b4e",
+  "trail": "#8a7a5e",
+  "alley": "#6a6a66"
+ },
+ "areaColours": {
+  "park": "#5a7a44",
+  "grass": "#6a8a4a",
+  "garden": "#4e7a3e",
+  "residential": "#5e7048",
+  "commercial": "#6e6e64",
+  "parking": "#5a5b5e",
+  "cemetery": "#5a7a44",
+  "reserve": "#4a6a3e",
+  "wood": "#2e4a30",
+  "sand": "#c8bca0",
+  "pitch": "#5a8a44"
+ },
+ "treeSpecies": [
+  {
+   "name": "Sitka spruce",
+   "shape": "fir",
+   "bark": "#5a4a3e",
+   "height": [
+    18,
+    34
+   ],
+   "colours": [
+    "#2a4a32",
+    "#30502e",
+    "#24442c",
+    "#2e4a36"
+   ],
+   "weight": {
+    "street": 15,
+    "park": 35,
+    "wood": 45
+   }
+  },
+  {
+   "name": "shore pine",
+   "shape": "round",
+   "bark": "#4a3e34",
+   "height": [
+    5,
+    10
+   ],
+   "colours": [
+    "#34502c",
+    "#3a5630",
+    "#2e4628"
+   ],
+   "weight": {
+    "street": 35,
+    "park": 30,
+    "wood": 10
+   }
+  },
+  {
+   "name": "western hemlock",
+   "shape": "cedar",
+   "bark": "#5a4a40",
+   "height": [
+    15,
+    28
+   ],
+   "colours": [
+    "#2a4630",
+    "#26402a"
+   ],
+   "weight": {
+    "street": 5,
+    "park": 15,
+    "wood": 30
+   }
+  },
+  {
+   "name": "red alder",
+   "shape": "slender",
+   "bark": "#a8a49a",
+   "height": [
+    10,
+    18
+   ],
+   "colours": [
+    "#5a7a3a",
+    "#628040",
+    "#567636"
+   ],
+   "weight": {
+    "street": 25,
+    "park": 15,
+    "wood": 15
+   }
+  },
+  {
+   "name": "rhododendron",
+   "shape": "small",
+   "bark": "#5a4a3a",
+   "height": [
+    2.5,
+    4.5
+   ],
+   "colours": [
+    "#c84a7a",
+    "#a83a5a",
+    "#d86a8a",
+    "#3a5a30"
+   ],
+   "weight": {
+    "street": 20,
+    "park": 5,
+    "wood": 0
+   }
+  }
+ ],
+ "_treeSpecies": "the Oregon coast: Sitka spruce in the fog belt, shore pine twisted by the wind over the beaches, hemlock in the forest, red alder along the creeks, and rhododendrons in every yard",
+ "streetTrees": 0.55,
+ "treeFar": 2200,
+ "treeCells": {
+  "park": 20,
+  "garden": 18
+ },
+ "litWindows": 0.4,
+ "parkedCars": 0.5,
+ "traffic": 0,
+ "people": 0.4,
+ "lowRiseFar": 4500,
+ "flight": true,
+ "dress": {
+  "porches": {
+   "share": 0.5,
+   "types": [
+    "house",
+    "detached",
+    "residential",
+    "yes"
+   ],
+   "maxH": 9,
+   "where": [
+    [
+     44.3,
+     -124.112,
+     44.337,
+     -124.094
+    ]
+   ]
+  },
+  "awnings": {
+   "share": 0.3,
+   "types": [
+    "commercial",
+    "retail",
+    "yes"
+   ],
+   "maxH": 9,
+   "colours": [
+    "#2a4a5a",
+    "#5a3a2a",
+    "#3a5a4a",
+    "#3a3a3a"
+   ],
+   "where": [
+    [
+     44.3095,
+     -124.106,
+     44.3135,
+     -124.101
+    ]
+   ]
+  },
+  "far": 600,
+  "_": "src/core/dress.js: porches and decks on the houses; awnings on the shops along the highway"
+ },
+ "streetlife": {
+  "seed": 1880,
+  "centre": [
+   44.3115,
+   -124.1045,
+   1800
+  ],
+  "far": 450,
+  "shops": 0.4,
+  "flowerBoxes": 0.05,
+  "smoke": 0.04
+ },
+ "life": {
+  "tile": 500,
+  "seed": 1880,
+  "near": 500,
+  "density": 0.0005,
+  "perArea": 600,
+  "max": 2500
+ },
+ "vehicles": {
+  "seed": 1880,
+  "side": "right",
+  "cars": 14,
+  "mopeds": 0,
+  "buses": 0.4,
+  "trams": 0,
+  "trains": 0,
+  "far": 1300,
+  "carFar": 1000,
+  "maxCars": 600,
+  "maxBuses": 8,
+  "carColours": [
+   "#f2f2f0",
+   "#1e1e22",
+   "#8a9aa8",
+   "#c8ccd0",
+   "#6a2a2a",
+   "#2a4a5a",
+   "#5a6a5a",
+   "#3a3a3e",
+   "#7a7a6a"
+  ],
+  "busColours": [
+   "#f2f2f0",
+   "#2a6a5a"
+  ],
+  "_": "src/core/traffic.js: the 101 and its log trucks and campers; Lincoln County Transit's coast bus"
+ },
+ "crowds": {
+  "seed": 1880,
+  "centre": [
+   44.3115,
+   -124.1045,
+   1500,
+   6
+  ],
+  "pedestrianMul": 1,
+  "maxPedestrians": 1500,
+  "keepOut": [],
+  "pedestrians": 6,
+  "far": 240,
+  "touristFar": 320,
+  "piece": 300,
+  "sites": [
+   [
+    44.3104,
+    -124.1078,
+    40,
+    40
+   ],
+   [
+    44.2784,
+    -124.1133,
+    35,
+    40
+   ],
+   [
+    44.2842,
+    -124.1112,
+    30,
+    30
+   ],
+   [
+    44.2809,
+    -124.1087,
+    30,
+    30
+   ],
+   [
+    44.2874,
+    -124.1104,
+    20,
+    20
+   ],
+   [
+    44.3219,
+    -124.1051,
+    40,
+    25
+   ],
+   [
+    44.3116,
+    -124.1045,
+    40,
+    40
+   ]
+  ],
+  "_": "[lat, lon, radius, people]: the state recreation area, Thor's Well, Devil's Churn, the visitor center, the West Shelter, Smelt Sands, the village"
+ },
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "village": [
+   "The village",
+   "#8a8a7a",
+   6,
+   12,
+   [
+    44.3045,
+    -124.11,
+    44.3165,
+    -124.098
+   ]
+  ],
+  "north": [
+   "North Yachats and the 804 Trail",
+   "#7a8a7a",
+   6,
+   10,
+   [
+    44.3165,
+    -124.11,
+    44.337,
+    -124.094
+   ]
+  ],
+  "cape": [
+   "Cape Perpetua",
+   "#5a7a5a",
+   5,
+   9,
+   [
+    44.274,
+    -124.116,
+    44.292,
+    -124.098
+   ]
+  ],
+  "outer": [
+   "Yachats",
+   "#7a8270",
+   6,
+   10,
+   null
+  ]
+ },
+ "landmarks": [
+  {
+   "name": "West Shelter",
+   "model": "westshelter",
+   "at": [
+    44.28737,
+    -124.11036
+   ],
+   "face": 270,
+   "replace": [
+    "West Shelter"
+   ],
+   "info": "Built of the cape's own basalt by the Civilian Conservation Corps in 1933, 230 m over the sea at the top of Cape Perpetua. On a clear day you see seventy miles of coast and thirty-seven miles out to sea; in the war it was a lookout for submarines."
+  },
+  {
+   "name": "Cape Perpetua Visitor Center",
+   "model": "visitorcenter",
+   "at": [
+    44.28093,
+    -124.10871
+   ],
+   "face": 250,
+   "replace": [
+    "Cape Perpetua Visitor Center"
+   ],
+   "info": "The Forest Service's center under the cape, its glass looking west down to the rocks: the trails start here, down to the tide pools and the Spouting Horn, and up to the Giant Spruce and the stone shelter."
+  },
+  {
+   "name": "Little Log Church & Museum",
+   "model": "logchurch",
+   "at": [
+    44.31156,
+    -124.10582
+   ],
+   "face": 180,
+   "replace": [
+    "Little Log Church & Museum"
+   ],
+   "info": "Built of logs by the village in 1927, the Little Log Church is now its museum and its wedding chapel: a steep roof, a small belfry, a view of the sea from the pews."
+  },
+  {
+   "name": "Cleft of the Rock Light",
+   "model": "cleftlight",
+   "at": [
+    44.29053,
+    -124.11077
+   ],
+   "face": 270,
+   "info": "A private lighthouse on the north flank of Cape Perpetua, built in 1976 by the lighthouse historian Jim Gibbs to the pattern of Fiddle Reef's in British Columbia; its light is on the charts."
+  },
+  {
+   "name": "Thor's Well",
+   "model": "blowhole",
+   "at": [
+    44.27842,
+    -124.11352
+   ],
+   "kind": "well",
+   "info": "A hole in the basalt shelf, the roof of a sea cave fallen in: at high tide the sea fills it from below, spouts out of it, and then drains back in as if the ocean were going down a plughole. Watched from the shelf, at a distance: sneaker waves are how people die here."
+  },
+  {
+   "name": "Spouting Horn",
+   "model": "blowhole",
+   "at": [
+    44.27748,
+    -124.11282
+   ],
+   "kind": "horn",
+   "info": "At the head of Cook's Chasm, a crack in the roof of a sea cave: when a wave fills the cave, the air and the sea come out of the top of it in a jet."
+  },
+  {
+   "name": "Devil's Churn",
+   "model": "blowhole",
+   "at": [
+    44.28424,
+    -124.1116
+   ],
+   "kind": "churn",
+   "info": "An inlet cut into the basalt along a fault, narrowing to a slot a few metres wide: the waves come up it, slam into the end and throw spray higher than the trail. The Trail of Restless Waters goes down to it."
+  },
+  {
+   "name": "Yachats River Bridge",
+   "model": "bridge",
+   "at": [
+    44.30763,
+    -124.10003
+   ],
+   "face": 30,
+   "info": "The Oregon Coast Highway crosses the Yachats River at the head of its little estuary, where the smelt and the salmon come in. Yachats is said to come from the Siletz word for the dark water at the foot of the mountain."
+  }
+ ],
+ "views": {
+  "The village from the sea": [
+   [
+    44.306,
+    -124.116,
+    110
+   ],
+   [
+    44.3125,
+    -124.104,
+    8
+   ]
+  ],
+  "The river mouth": [
+   [
+    44.3085,
+    -124.1085,
+    22
+   ],
+   [
+    44.3094,
+    -124.1045,
+    4
+   ]
+  ],
+  "Yachats State Recreation Area": [
+   [
+    44.3112,
+    -124.1095,
+    14
+   ],
+   [
+    44.3098,
+    -124.1068,
+    3
+   ]
+  ],
+  "The 804 Trail": [
+   [
+    44.318,
+    -124.107,
+    16
+   ],
+   [
+    44.325,
+    -124.104,
+    6
+   ]
+  ],
+  "The Little Log Church": [
+   [
+    44.311,
+    -124.1065,
+    30
+   ],
+   [
+    44.31156,
+    -124.10582,
+    18
+   ]
+  ],
+  "Cape Perpetua from the north": [
+   [
+    44.299,
+    -124.115,
+    120
+   ],
+   [
+    44.286,
+    -124.108,
+    150
+   ]
+  ],
+  "The view from the West Shelter": [
+   [
+    44.287,
+    -124.1096,
+    262
+   ],
+   [
+    44.305,
+    -124.118,
+    10
+   ]
+  ],
+  "Devil's Churn": [
+   [
+    44.2852,
+    -124.1125,
+    24
+   ],
+   [
+    44.28424,
+    -124.1116,
+    2
+   ]
+  ],
+  "Thor's Well": [
+   [
+    44.2789,
+    -124.1146,
+    14
+   ],
+   [
+    44.27842,
+    -124.11352,
+    1
+   ]
+  ],
+  "The Spouting Horn and Cook's Chasm": [
+   [
+    44.277,
+    -124.114,
+    16
+   ],
+   [
+    44.27748,
+    -124.11282,
+    3
+   ]
+  ],
+  "The whole coast": [
+   [
+    44.262,
+    -124.15,
+    1300
+   ],
+   [
+    44.3,
+    -124.104,
+    20
+   ]
+  ],
+  "Cape Perpetua and the West Shelter": [
+   [
+    44.2905,
+    -124.117,
+    300
+   ],
+   [
+    44.28737,
+    -124.11036,
+    228
+   ]
+  ]
+ },
+ "defaultView": "The village from the sea",
+ "navmap": {
+  "labels": [
+   "West Shelter",
+   "Cape Perpetua Visitor Center",
+   "Little Log Church & Museum",
+   "Cleft of the Rock Light",
+   "Thor's Well",
+   "Spouting Horn",
+   "Devil's Churn",
+   "Yachats River Bridge",
+   "Yachats Commons",
+   "Smelt Sands State Recreation Site",
+   "Yachats State Recreation Area",
+   "Adobe Resort"
+  ]
+ },
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "yachats": {
+  "_": "src/yachats/coast.js: the forest grown over the land; the surf; the basalt",
+  "town": [
+   [
+    44.3,
+    -124.112,
+    44.337,
+    -124.094
+   ]
+  ],
+  "forestTile": 500,
+  "forestNear": 2600,
+  "forestFull": 900,
+  "forestPerTile": 2600
+ },
+ "yachatsEvents": {
+  "_": "src/yachats/events.js",
+  "whales": [
+   44.3,
+   -124.125
+  ],
+  "stormView": [
+   44.2784,
+   -124.1133
+  ]
+ },
+ "treeDense": {
+  "wood": 0,
+  "reserve": 0,
+  "_": "no engine woodland: the forest is coast.js's, grown round the camera, and the reserves here are mostly sea"
+ },
+ "skipAreas": "Marine|Siuslaw National Forest|Cummins Creek Wilderness"
+}

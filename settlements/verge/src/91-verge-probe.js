@@ -49,11 +49,23 @@ const C={
    let d=Math.abs(y0-o.yaw)%(2*Math.PI);if(d>Math.PI)d=2*Math.PI-d;if(d>.5)seen++;}return{ok:seen>=3,detail:seen>=3?'headings differ along the route (the tail turns later)':'leader and tail always face the same way'};},
  // the world has one clock: the sky's hour is the world clock's
  oneClock:()=>{const a=typeof skyHour==='function'?skyHour():NaN,b=CLOCK.hour;return{ok:Math.abs(a-b)<.02,detail:'sky '+a.toFixed(2)+', clock '+b.toFixed(2)};},
+ // the routed avenues keep to the floor: no stretch steeper than 20%, no point more than 8 m above both its ends
+ avenuesLevel:S=>{let g=0,up=0,first=null;for(const A of S){const P2=A.pts,top=Math.max(P2[0][2],P2[P2.length-1][2]),gg=gradeOf(P2);g=Math.max(g,gg);
+   for(const p of P2)if(p[2]>top+8){up++;if(!first)first=A.id;break;}}
+  return{ok:g<=.2&&up===0,detail:S.length+' avenues, steepest '+(g*100).toFixed(1)+'%, '+up+' climbing above both ends'+(first?' (first '+first+')':'')};},
+ // avenues merge: no two run side by side (within 20 m of each other for more than 60 m)
+ avenuesMerged:S=>{const segD=(p,a,b)=>{const ex=b[0]-a[0],ez=b[1]-a[1],l=ex*ex+ez*ez,t=l>0?Math.max(0,Math.min(1,((p[0]-a[0])*ex+(p[1]-a[1])*ez)/l)):0;return Math.hypot(p[0]-a[0]-ex*t,p[1]-a[1]-ez*t);};
+  const dist=(p,B)=>{let d=1e9;for(let i=1;i<B.pts.length;i++)d=Math.min(d,segD(p,B.pts[i-1],B.pts[i]));return d;};
+  let n=0,worst=0,first=null;for(const A of S)for(const B of S){if(A===B)continue;let run=0,best=0,acc=0;
+   for(let i=1;i<A.pts.length;i++){const a=A.pts[i-1],b=A.pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    if(dist([(a[0]+b[0])/2,(a[1]+b[1])/2],B)<20){run+=L;best=Math.max(best,run);}else run=0;}
+   if(best>60){n++;if(best>worst){worst=best;first=A.id+' by '+B.id;}}}
+  return{ok:n===0,detail:S.length+' avenues, '+n+' running beside another'+(first?' (worst '+worst.toFixed(0)+' m: '+first+')':'')};},
  // everything placed is registered in core/tags with known vocabulary
  tags:reg=>{const a=reg.audit(),uk=Object.keys(a.unknownKeys||{}).concat(Object.keys(a.unknownValues||{}));
   return{ok:!a.unknown&&!a.missingCulture,detail:a.records+' records'+(uk.length?', UNKNOWN '+uk.join(' '):', every key and value known')+(a.missingCulture?', '+a.missingCulture+' without a culture':'')};}};
 // the inputs, and their broken twins
-const B=P.buildings,places=SIM.PLACES.filter(p=>p.slots&&p.slots.length);
+const AV=P.streets.filter(S0=>S0.cls==='avenue'&&!S0.bridge),B=P.buildings,places=SIM.PLACES.filter(p=>p.slots&&p.slots.length);
 const through=SIM.GROUPS.find(G=>G.subkind==='through');
 const CASES=[
  ['trail-grade',()=>C.trailGrade(T.pts),()=>C.trailGrade([[0,0,0],[10,0,0],[20,0,4]])],
@@ -69,6 +81,8 @@ const CASES=[
  ['the-timetable-is-full',()=>C.timetable(window._sim.groups),()=>C.timetable({porter:1})],
  ['caravans-follow-not-march',()=>C.follows(through),()=>C.follows(through&&Object.assign({},through,{members:through.members.map(M=>Object.assign({},M,{lag:0}))}))],
  ['one-clock',()=>C.oneClock(),null],
+ ['avenues-keep-to-the-floor',()=>C.avenuesLevel(AV),()=>C.avenuesLevel([{id:'climb',pts:[[0,0,0],[40,0,4],[80,0,14],[120,0,2]]}])],
+ ['avenues-merge',()=>C.avenuesMerged(AV),()=>C.avenuesMerged(AV.slice(0,1).concat(AV.slice(0,1).map(A=>({id:'twin',pts:A.pts.map(p=>[p[0]+8,p[1]+8,p[2]])}))))],
  ['tags-vocabulary',()=>C.tags(KTAGS.page),()=>{const r=KTAGS.create({build:'neg'});r.add({class:'building',key:'x',at:[0,0,0],tags:{culture:'no-such-culture'}});return C.tags(r);}]];
 function checks(){const out=[];for(const [name,f,neg] of CASES){let r;try{r=f();}catch(e){r={ok:false,detail:'threw: '+e.message};}
   if(neg){let n;try{n=neg();}catch(e){n={ok:false,detail:'threw'};}if(n.ok){r={ok:false,detail:'NEGATIVE CONTROL PASSED (the check cannot fail): '+n.detail};}else r.detail+='  [negative fails as it should]';}

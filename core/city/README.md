@@ -17,7 +17,7 @@ next reworked; see "Porting a settlement" below.
 | `12-city-index.js` | [G data] | one index on core/space (`KSPACE`) under footprints (`KCITY.boxIndex`: lots, fields) and road segments (`KCITY.segIndex`): exact for a footprint of any size, insertion order or the old 40 m probe's order |
 | `15-city-ground.js` | [G data] | the ground through the bound instance (`CG`: `h`, `base`, `pad`, `foot`), a lot's ground predicate (`rules.groundOk`, `KCITY.reliefOk`), Erewhon's stance (`KCITY.stance`, `KCITY.stanceAtDoor`, `TUNE.stance`) |
 | `20-city-plan.js` | [G data] | the plan's records and their rules: `SL.addWay` (a street knocks out the lots it runs through and salvages what it can), `SL.tryLot` / `SL.lineLots` (lots along a street, set back, exact overlap test), parks and plazas from what is left, core/tags registration, the exact-streets rule (`TUNE.exact`), the default wealth and choosers |
-| `25-city-site.js` | [G data] | the site layer (steps 0-5), fed by the world's data (`KCITY.site`, `KCITY.ground`): the role table and `roleAt`, the zone raster with `maxSlope`, drawn avenues with snapping, ring avenues, corridors, highways (A*), the wall as records (line, gates, towers, runs), the ground-delta interface (banks, level pads) |
+| `25-city-site.js` | [G data] | the site layer (steps 0-5), fed by the world's data (`KCITY.site`, `KCITY.ground`): the role table and `roleAt`, the zone raster with `maxSlope`, drawn avenues with snapping, routed avenues (`routeAvenues`: kept to the floor, merged, bridged), ring avenues, corridors, highways (A*), the wall as records (line, gates, towers, runs), the ground-delta interface (banks, level pads) |
 | `31-city-steps-b.js` | [G data] | steps 6-9: civic buildings by `near` scorers (`KCITY.NEAR`), avenue lots, main streets across the voids, main-street lots |
 | `32-city-steps-c.js` | [G data] | steps 10-12 (the `alleys` strategy: side streets, side-street lots and alley entrances, alleys and the infill of the blocks), the infill's reach (`SL.interiorOk`), the step names and the count |
 | `33-city-strategies.js` | [G data] | the strategies behind one interface (`KCITY.strategies`: `alleys`, `frontage-courts`) and their shared primitives (`KCITY.prim`: `frontageRun`, `faceNearestStreet`, `huntNear`, `gridCands`, `packPolygon`, `clearSpot`). Stands alone: Ys takes this fragment |
@@ -56,7 +56,7 @@ C.plan; C.raster; C.index.lots; C.index.roads; C.index.fields; C.steps; C.tune; 
 
 `SL`, `PLAN` and `TUNE` are the bound instance's view: `KCITY.bind(C)` saves the instance bound before and points
 them (and `SL.R`, `SL.F`, `SL.index`, `SL.HASH`, the ground `CG` and the rules) at C. Several cities share a page by
-taking turns (Verge's two levels will). Voth's fragments, written against the globals, run unchanged on its instance
+taking turns (Verge's two levels do: `settlements/verge/src/70-verge-place.js` `cityPlan`). Voth's fragments, written against the globals, run unchanged on its instance
 (`settlements/voth/targets/voth-city/35-vc-steps.js`). `SL.HASH` is the footprint index's old 40 m bucket Map, kept
 while Voth's simulation fragments read it. A GDScript twin keeps the same records in the instance itself.
 
@@ -96,7 +96,7 @@ order (Voth's; `SL.STEPS` names the default):
 | 0 | the site and its ground: the raster, the build zone | `zoneRaster` (dry ground, not steeper than `maxSlope`), `minSpacing`; `PLAN.site` (districts with roles: `roles`, `roleAt`) |
 | 1 | landmarks | the world's (Voth: from its markers), `huntNear` for a landmark near a marker |
 | 2 | districts | the world's (parks GREEN, markets HARD) |
-| 3 | avenues | `avenues` (drawn, ends snapped to an avenue or a landing), `ring` (round parks and markets), `blockCorridor`, `clearUnder`; ground deltas: `KCITY.ground.bank` (an avenue drawn into the water) |
+| 3 | avenues | `avenues` (drawn, ends snapped to an avenue or a landing), or `routeAvenues` (routed over the ground: Verge), `ring` (round parks and markets), `blockCorridor`, `clearUnder`; ground deltas: `KCITY.ground.bank` (an avenue drawn into the water) |
 | 4 | highways | `highwayGrid`, `highway` (A*, a pull toward a river or shore, a `via` ring), `layHighway` (a verge no lot takes) |
 | 5 | the wall and its gates | `wall` (records: line, gates at crossings, named gates by their markers, towers), `wallSegs`, `stampWall`; the drawing is the world's; `KCITY.ground.levelPad` for a gate on a slope |
 
@@ -139,8 +139,8 @@ A strategy lays the streets and lots of some blocks or ways, behind one interfac
   now and then a garden); each quarter's two lane sides fronted; a lattice infill of what is left (`packPolygon`),
   each house facing the nearest street within `reach`, else the nearest yard (a court), three in ten points kept as
   yards. Every block draws from its own KRAND cell stream, so one block's edit moves nothing in another.
-* (Verge's grown lanes and Iziz's lattice clusters are not strategies: the owner moves Verge to `alleys` and keeps
-  Iziz's Ancient quarter its own.) The radial strategy (`34-city-radial.js`) is the toy's rings and spokes.
+* (Verge's grown lanes and Iziz's lattice clusters are not strategies: Verge is on `alleys` (2026-10-15), and Iziz keeps
+  its Ancient quarter its own.) The radial strategy (`34-city-radial.js`) is the toy's rings and spokes.
 
 **The shared primitives** (`KCITY.prim`), plain functions: `frontageRun` (the cursor every frontage uses: `SL.lineLots`,
 the courts' edge runs, Ys's frontage walker and edge run), `faceNearestStreet`, `huntNear` (rings out from a marker:
@@ -169,7 +169,7 @@ wall, a park and a market, drawn avenues, a highway), the world's steps on the s
 then no two footprints overlap, nothing on a street (the exact-streets rule; without it 25 buildings reach one),
 the wall or in water; golden hashes for SL and KRAND streams and for frontage-courts; reruns and a second KRAND seed;
 two cities on a page; the export; the index (a wide footprint the old probe missed, both orders, the road index);
-Erewhon's stance; the ground predicate; core/tags; the site layer's records; the ground deltas; frontage-courts
+Erewhon's stance; the ground predicate; core/tags; the site layer's records; the ground deltas; routed avenues (round a hill, two merged, a river bridged); frontage-courts
 (fronted blocks, lanes, a host ring, infill facing a street or yard, no overlap, one block left out moving nothing in
 the others); the primitives. Every check has a negative that must fail.
 
@@ -194,7 +194,8 @@ lot's key, x, z, ry, w, d and every way's points), `--assert` the whole check (a
 |---|---|
 | Voth | on it: an instance (`35-vc-steps.js`), its site on the site layer, steps 6-12 the defaults; its placement unchanged by the move (2026-10-14) |
 | Ys | its placement pass takes the shared primitives (`33-city-strategies.js` through `TARGET_CORE_FILES`): the frontage walker's and edge run's cursor, the block candidates, the lattice and the facing; its placement identical. Its blocks, boxes, clash rule and kit audit stay its own; `frontage-courts` is the general version |
-| Verge, Iziz | next (`PLAN.md` step 4, with the owner): Verge onto `alleys` on its two levels, Iziz's vernacular parts |
+| Verge | on it (2026-10-15): two instances (one a level), each in its own frame (the raster is centred on the origin); its site from its own placement raster and landmarks; avenues routed over the ground (`KCITY.site.routeAvenues`); steps 7-12 the defaults; `KCITY` built into the page as one closure (`settlements/verge/build.py` `kcity_bundle`). A new layout: the owner judges it by screenshots |
+| Iziz | next (`PLAN.md` step 4, with the owner): its vernacular parts |
 | Dalab, Girder, Highlands, Jimjam, Locus, Mav's Refuge, Mungo, Noah's Regret, the Port, Reedlake, Screamers, Shade, Xanadu, Yuni | not yet: each lays out its own streets and lots in its own `src/` (Dalab, Mungo, Locus and Yuni stay as they are) |
 
 ## Debts

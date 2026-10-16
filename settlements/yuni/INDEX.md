@@ -12,23 +12,41 @@ Build: `cd settlements/yuni && python3 build.py`. Fragments are concatenated in 
 Files that share a numeric prefix (`78a-`, `78b-`) are one fragment split into parts: one `reseed(N)` stream, one unit for the build rules.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
+
+## Top-level sources
+
+Read by `build.py` in its own order (`SOURCES`), and loaded by path by other builds, so they stay here.
+
+| File | KB | Sections (line) |
+|---|---|---|
+| `yuni.tex.yuni.js` | 12087 **big** |  |
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 6 |  |
+| `00-head.html` | 5 |  |
 | `05-palette.js` | 9 | 0. PALETTE (1) |
 | `10-core.js` | 17 | 1. CORE (1); 2. WORLD CONSTANTS (92); 2b. THE IRRIGATION CANAL (157); 3. THE BUTTE (206); 4. TERRAIN FIELD (238) |
 | `20-stage.js` | 13 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (220) |
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 33 **big** | 8. LAYOUT (1); THE INNER-CITY PLOT SCHEDULE (67); STREET NETWORK (202); WALK GRAPH (life-layer framework) (430) |
 | `40-ground.js` | 10 | 9. GROUND CANVAS + MASK (1) |
-| `45-kit.js` | 29 | 10. KIT (1); NIGHT LIGHT VOLUME (130) |
+| `45-kit.js` | 31 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (130) |
 | `47-texture.js` | 15 | 11. TEXTURES (1) |
 | `50-structure.js` | 15 | 12. STRUCTURE (massing) (1) |
 | `51-fixtures.js` | 13 | 13a. FIXTURES: BUILDINGS, DOORS, WINDOWS, LIGHTS (1); EXPORT (130) |
 | `52-vault.js` | 15 | 13. THE GRAND VAULT (1) |
-| `53-assets.js` | 21 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
+| `53-assets.js` | 22 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
 | `54-under.js` | 7 | 14. UNDERGROUND (test wing) (1) |
 | `55-mid-example.js` | 3 | 16a. ASSETS: reference example (1) |
 | `56-mid.js` | 63 **big** | 16b. ASSETS: middle-class houses + trade (1) |
@@ -64,15 +82,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `72-lights.js` | 5 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 17 | 20. EMIT + GROUND + RIVER (1) |
 | `76-doors.js` | 26 | 20b. WORKING DOORS, INTERIORS, WALKING (1) |
-| `80-camera.js` | 14 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (167) |
+| `80-camera.js` | 12 | 25. CAMERA: ON core/host (1); THE PAGE'S FRAME (98-start.js runs it after the  (104) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `84-life.js` | 29 | 20. THE LIFE LAYER (1) |
 | `85-probe.js` | 1 | 29. PROBE (1) |
-| `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
+| `86-inspect.js` | 4 | 27. INSPECTOR WORDS (core/host's inspector) (1) |
 | `87-pathviz.js` | 4 | 28. PATH VISUALIZER (1) |
 | `88-underview.js` | 3 | 30. UNDERGROUND VIEW (1) |
 | `88b-yuni-minimap.js` | 5 | 30b. MINIMAP (1) |
 | `89-sheetui.js` | 4 | 31. SHEET UI (1) |
-| `98-start.js` | <1 | 99. START (1) |
+| `98-start.js` | 7 | 99. START: YUNI ON core/host (1) |
 | `99-tail.html` | <1 |  |

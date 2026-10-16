@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 646 (66%) | 101 (10%) | 52 (5%) | 61 (6%) | 126 (13%) |
+| KB | 657 (61%) | 101 (9%) | 52 (5%) | 134 (13%) | 126 (12%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -38,7 +38,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `city/12-city-index.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/15-city-ground.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `city/20-city-plan.js` | 17.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
-| `city/25-city-site.js` | 23.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the site layer (roles, zone, avenues, highways, the wall as records, ground deltas): records only, its drawing stays the world's |
+| `city/25-city-site.js` | 30.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the site layer (roles, zone, avenues, highways, the wall as records, ground deltas): records only, its drawing stays the world's |
 | `city/31-city-steps-b.js` | 16.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
 | `city/32-city-steps-c.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the layout: no three.js, no DOM |
 | `city/33-city-strategies.js` | 17.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -47,17 +47,24 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `city/50-city-host-streets.js` | 15.5 | [draw] | 32 | 5 | 0 | 0 | 0 | 4 | 0 | 3 | 0 | 0 | 0 | streets, overlay, labels, step visibility |
 | `city/52-city-host-buildings.js` | 5.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | lots as instanced LOD prototypes |
 | `clock/20-core-clock.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world clock (GODOT-PLAN.md Phase 1); becomes WorldClock.gd, tested by test-clock.js |
-| `edits/40-core-edits.js` | 9.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the edit log (ADD, MOVE, SET, REMOVE): no three.js, no DOM |
+| `edits/40-core-edits.js` | 10.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the edit log (ADD, MOVE, SET, REMOVE): no three.js, no DOM |
 | `export/07-core-export.js` | 31.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the krator-world container (EXPORT: register, world, check, glb, compact, terrain): no THREE, no DOM; test-export.js; read by godot/krator/world_import.gd (core/export/README.md) |
 | `export/09-core-export-adapters.js` | 13.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/tags', core/atmos', the material records' and core/water's parts until those modules register themselves (water: the surfaces, bed bytes, the twin's probes); EXPORT.ground for a build without its own terrain part; EXPORT.groundLayers for a ground hook's world-uv layers |
 | `furnish/50-core-furnish.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `furnish/52-core-furnish-draw.js` | 2.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `furnish/53-core-furnish-host.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `host/90-host-camera.js` | 11.3 | [web] | 7 | 0 | 0 | 10 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
-| `host/91-host-loop.js` | 7.1 | [web] | 3 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `host/92-host-panel.js` | 14.5 | [web] | 0 | 0 | 10 | 8 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | split: data inside host code |
+| `host/91-host-loop.js` | 7.5 | [web] | 3 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `host/92-host-panel.js` | 14.6 | [web] | 0 | 0 | 10 | 8 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | split: data inside host code |
+| `host/93-host-inspect.js` | 9.0 | [web] | 2 | 0 | 12 | 4 | 1 | 2 | 0 | 0 | 1 | 0 | 0 | the inspector over core/tags records (I, click): host shell |
+| `host/93-host-stocks.js` | 21.8 | [web] | 1 | 0 | 12 | 7 | 6 | 1 | 0 | 0 | 0 | 0 | 0 | what things hold and the stocks panel (O) over o.holds (core/simulation): host shell; Voth's 56e is the standard |
+| `host/94-host-marks.js` | 12.0 | [web] | 7 | 2 | 10 | 8 | 0 | 3 | 0 | 0 | 1 | 3 | 2 | marks (P): host shell; the marks file is plain data |
 | `host/94-host-polytool.js` | 5.7 | [web] | 6 | 0 | 5 | 5 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
-| `host/95-host-probe.js` | 4.0 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
+| `host/95-host-probe.js` | 4.2 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
+| `host/96-host-pictures.js` | 6.1 | [web] | 4 | 2 | 7 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the picture menu, drawn off screen: host shell |
+| `host/97-host-minimap.js` | 3.4 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the minimap panel from the records (KMAP.mount, the M key): host shell |
+| `host/98-host-edit.js` | 19.9 | [web] | 6 | 0 | 5 | 10 | 2 | 5 | 0 | 0 | 1 | 5 | 1 | edit modes: host shell; every edit a core/edits op (the log is [G data]) |
+| `host/99-host-cutaway.js` | 7.1 | [web] | 2 | 0 | 4 | 4 | 1 | 5 | 1 | 0 | 0 | 0 | 0 | the cutaway (X), clipping planes and the storey bar: host shell |
 | `lod/09-lod.js` | 32.7 | [G native] | 0 | 0 | 6 | 3 | 8 | 14 | 0 | 10 | 3 | 0 | 0 | keep for the preview; no port |
 | `lod/97-lod-auto.js` | 0.8 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `mask/25-core-mask.js` | 11.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the placement raster: KMASK.canvas, hard-edged by pixel centre; test-mask.js, GDScript twin kmask.gd (passing in Godot 4.5). Used by the Iziz, Dalab, Erewhon and Roketstad cities |
@@ -96,6 +103,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `tags/52-core-tags-vocab.js` | 8.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the one vocabulary; the catalog's lists copied, test-tags.js fails on drift |
 | `tags/53-core-tags-host.js` | 2.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the inspector's label text; the inspector hook goes to core/host (Phase 1) |
 | `terrain/30-core-field.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `terrain/31-core-field-brush.js` | 4.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the field's ground brushes (raise, lower, flatten, smooth), snapshot and replay: plain data on KFIELD's heights; a GDScript twin to come |
 | `terrain/36-core-carve.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | split: a timing helper reads performance.now (line 103); floors and blockers export (Godot order 1) |
 | `terrain/38-core-relief.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `terrain/39-core-cavern.js` | 34.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
