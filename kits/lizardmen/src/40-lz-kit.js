@@ -146,8 +146,8 @@ function lzGlyphSpiral(w,h,o){o=o||{};const mk=o.mk||'bronze',col=o.col||(mk==='
 function lzStela(x,z,ry,h,w,o){o=o||{};const mk=o.mk||'basalt',col=o.col||P('basalt'),th=w*.38;
  const one=(mir)=>{if(o.turned){WX(0,th/2+.02,0,0,-PI/2,0,()=>body(mir));for(const s of [-1,1])box('basalt',s*w*.3,0,0,.3,th/2,.5,P('basaltD'));return;}body(mir);};
  const body=(mir)=>{const B0=[-w/2,th/2],B1=[w/2,th/2],T0=[-w*.33,th*.3],T1=[w*.33,th*.3];
-  lzWall(B0,B1,T0,T1,0,h,mk,col,[],{inner:true});lzWall([w/2,-th/2],[-w/2,-th/2],[w*.33,-th*.3],[-w*.33,-th*.3],0,h,mk,col,[],{inner:true});
-  lzWall(B1,[w/2,-th/2],T1,[w*.33,-th*.3],0,h,mk,col,[],{inner:true});lzWall([-w/2,-th/2],B0,[-w*.33,-th*.3],T0,0,h,mk,col,[],{inner:true});
+  lzWall(B0,B1,T0,T1,0,h,mk,col,[],{inner:false});lzWall([w/2,-th/2],[-w/2,-th/2],[w*.33,-th*.3],[-w*.33,-th*.3],0,h,mk,col,[],{inner:false});
+  lzWall(B1,[w/2,-th/2],T1,[w*.33,-th*.3],0,h,mk,col,[],{inner:false});lzWall([-w/2,-th/2],B0,[-w*.33,-th*.3],T0,0,h,mk,col,[],{inner:false});
   box(mk,0,h-.02,0,w*.66,.12,th*.6,col);box(mk,0,0,0,w,.1,th,col);   /* a solid cap and foot: the slab is never seen through */
   if(o.wrapped){withCloth(clothHang(.6,.03),()=>{for(const s of [-1,1])psurf('mat',(u,v)=>[(-w/2-.06+(w+.12)*u)*(1-.3*v),h*.12+h*.8*v,s*(th/2+.05)*(1-.35*v)],4,4,P('reedL'),{flip:s<0});});
    for(const y of [h*.3,h*.6,h*.85])ring('rope',0,y,0,w*.5*(1-.3*(y/h)),.025,P('reedD'),0,0,0,12);}
@@ -160,9 +160,9 @@ function lzStela(x,z,ry,h,w,o){o=o||{};const mk=o.mk||'basalt',col=o.col||P('bas
 function lzTwist(x,z,h,n,w0,w1,twist,o){o=o||{};const mk=o.mk||'basalt',col=o.col||P('basalt'),ch=h/n;
  W(x,0,z,o.ry||0,()=>{for(let i=0;i<n;i++){const t=i/(n-1||1),w=lerp(w0,w1,t),ry=i*twist;box(mk,0,i*ch,0,w,ch+.01,w*(o.aspect||1),col,ry);if(o.each)o.each(i,i*ch,w,ry);}});}
 /* a standing stone of the circle: a leaning slab with a whorl cut on its face */
-function lzMenhir(x,z,h,w,o){o=o||{};W(x,0,z,o.ry||0,()=>{WX(0,0,0,0,0,o.lean||rr(-.08,.08),()=>{lzWall([-w/2,w*.2],[w/2,w*.2],[-w*.3,w*.12],[w*.3,w*.12],0,h,'basalt',P('basalt'),[],{inner:true});
-  lzWall([w/2,-w*.2],[-w/2,-w*.2],[w*.3,-w*.12],[-w*.3,-w*.12],0,h,'basalt',P('basalt'),[],{inner:true});lzWall([w/2,w*.2],[w/2,-w*.2],[w*.3,w*.12],[w*.3,-w*.12],0,h,'basalt',P('basalt'),[],{inner:true});
-  lzWall([-w/2,-w*.2],[-w/2,w*.2],[-w*.3,-w*.12],[-w*.3,w*.12],0,h,'basalt',P('basalt'),[],{inner:true});box('basalt',0,h-.02,0,w*.6,.1,w*.24,P('basalt'));
+function lzMenhir(x,z,h,w,o){o=o||{};W(x,0,z,o.ry||0,()=>{WX(0,0,0,0,0,o.lean||rr(-.08,.08),()=>{lzWall([-w/2,w*.2],[w/2,w*.2],[-w*.3,w*.12],[w*.3,w*.12],0,h,'basalt',P('basalt'),[],{inner:false});
+  lzWall([w/2,-w*.2],[-w/2,-w*.2],[w*.3,-w*.12],[-w*.3,-w*.12],0,h,'basalt',P('basalt'),[],{inner:false});lzWall([w/2,w*.2],[w/2,-w*.2],[w*.3,w*.12],[w*.3,-w*.12],0,h,'basalt',P('basalt'),[],{inner:false});
+  lzWall([-w/2,-w*.2],[-w/2,w*.2],[-w*.3,-w*.12],[-w*.3,w*.12],0,h,'basalt',P('basalt'),[],{inner:false});box('basalt',0,h-.02,0,w*.6,.1,w*.24,P('basalt'));
   if(o.eye)lzEye(0,h*.6,w*.2+.01,0,w*.22,{mk:'basalt'});});});}
 /* a bell rack: a lashed bone frame with n bronze bells (after the bianzhong) and no clappers: silence made visible */
 function lzBellRack(x,z,ry,L,h,n){W(x,0,z,ry,()=>{for(const s of [-1,1]){lzHorn(s*L/2,0,0,s>0?PI/2:-PI/2,h*1.1,.13,{curl:.3,mk:'bones'});}
