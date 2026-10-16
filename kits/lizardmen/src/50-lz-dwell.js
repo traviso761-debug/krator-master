@@ -68,7 +68,7 @@ defBuilding({key:'lz-tower',name:"Interpreters' house",seed:7005,caste:5,cut:tru
   box('stoneP',0,0,0,10,.25,10,P('basaltD'));
   const dh=lzDoorH(5),dw=dh*.62;
   /* the lower courses are hollow shells (the hall); the upper ones solid */
-  for(let i=0;i<hollow;i++){const t=i/(n-1),w=lerp(w0,w1,t),ry=i*.07;W(0,.25+i*ch,0,ry,()=>lzBatterRoom(w,w,0,ch+.02,'cyclo',P('basalt'),{lean:{front:.02,back:-.02,left:.03,right:-.01},front:i===0?[{s:w/2,w:dw,h:dh,door:true}]:[]}));}
+  for(let i=0;i<hollow;i++){const t=i/(n-1),w=lerp(w0,w1,t),ry=i*.07;W(0,.25+i*ch,0,ry,()=>{const T=lzBatterRoom(w,w,0,ch+.02,'cyclo',P('basalt'),{lean:{front:.02,back:-.02,left:.03,right:-.01},front:i===0?[{s:w/2,w:dw,h:dh,door:true}]:[]});lzCourseRing(T.T,ch-.28,.3,1.1,'cyclo',P('basaltD'));});}
   const ceilY=.25+hollow*ch,cw=lerp(w0,w1,(hollow-1)/(n-1))-.2;box('cyclo',0,ceilY-.3,0,cw,.3,cw,P('basaltD'),(hollow-1)*.07);
   lzTwist(0,0,h,n,w0,w1,.07,{mk:'cyclo',col:P('basalt'),start:hollow,each:(i,y,w,ry)=>{if(i===3||i===5||i===7){const k=i===5?-1:1;W(0,y+ch*.5,0,ry,()=>lzEye(k*w*.5+.03*k,0,0,k*PI/2,w*.18,{mk:'bronze'}));}
    if(i===1)W(0,y+.3,0,ry,()=>{W(0,0,w/2+.01,0,()=>lzLeiwen(w*.8,ch*.6,{cell:.4,mk:'bronze',back:false}));});}});

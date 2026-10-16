@@ -104,7 +104,8 @@ defBuilding({key:'lk-gate',name:'Capital gate',seed:7706,caste:'all',cut:false,w
    W(0,.6,4-.1*.6+.04,0,()=>lzGlyphSpiral(4.2,9.5,{mk:'bronze',mirror:s<0,turns:3}));W(0,11,4-.1*11+.05,0,()=>lzLeiwen(3.6,1.1,{cell:.3,mk:'bronze',back:'lacq'}));
    lzHorn(0,13.5,0,s>0?-PI/2:PI/2,5.2,.32,{curl:.75,lean:.2,mk:LK_PL,col:P('basaltD')});lzEye(s*(3.1-.08*7),7,0,s>0?PI/2:-PI/2,.5,{mk:'bronze'});});
   /* the gatehouse block: a solid battered mass between the pylons with the passage cut through it, front and back */
-  const T=lzBatterRoom(8.6,8,PB,H+3.4,LK_ST,P('basalt'),{lean:{front:.06,back:.06,left:0,right:0},front:[{s:4.3,w:dw,h:H,door:true}],back:[{s:4.3,w:dw,h:H,door:true}]});
+  /* the block's sides lean OUT at the pylons' own batter, so no wedge opens between them as they lean apart */
+  const T=lzBatterRoom(8.7,8,PB,H+3.4,LK_ST,P('basalt'),{lean:{front:.06,back:.06,left:-.08,right:-.08},front:[{s:4.35,w:dw,h:H,door:true}],back:[{s:4.35,w:dw,h:H,door:true}]});
   lzSlab(T.T,PB+H+3.4,.5,'basalt',P('basaltD'),.15);
   /* the passage's side walls and ceiling: a tunnel the width of the door, so the block reads solid */
   for(const s of [-1,1])lzWall(s>0?[dw/2+.05,4]:[-dw/2-.05,-4],s>0?[dw/2+.05,-4]:[-dw/2-.05,4],s>0?[dw/2+.05,-4]:[-dw/2-.05,4],s>0?[dw/2+.05,4]:[-dw/2-.05,-4],PB,H*.52,LK_PL,P('basaltD'),[],{inner:false});
@@ -113,19 +114,20 @@ defBuilding({key:'lk-gate',name:'Capital gate',seed:7706,caste:'all',cut:false,w
   W(0,PB+H+1.2,4-.06*(H+1.2)+.06,0,()=>lzLeiwen(7.4,1.1,{cell:.3,mk:'bronze',back:'lacq'}));
   lzEye(0,PB+H+2.4,4-.06*(H+2.4)+.1,0,.95,{mk:'bronze'});lzEye(0,PB+H+2.4,-(4-.06*(H+2.4)+.1),PI,.7,{mk:'bronze'});
   door(0,PB,4,0,dw);}});
-defBuilding({key:'lk-wall',name:'Capital wall',seed:7707,caste:'all',cut:false,w:22,d:6,h:11.5,budget:70000,
+defBuilding({key:'lk-wall',name:'Capital wall',seed:7707,caste:'all',cut:false,w:22,d:17,h:11.5,budget:70000,
  tags:{types:['military','infrastructure'],wealth:'rich',role:'wall'},
  note:'a 20 m run of the capital\'s wall: cyclopean basalt 8 m to the walk, leaning in on the outer face and out on the inner, a parapet of thirteen stone horns, a bronze line along the walk; runs join end to end and meet the gate\'s pylons and the watchtowers',
  build(o){lzNoCut(()=>box(LK_PL,0,0,0,21,.3,5,P('basaltD')));W(0,.3,0,0,()=>lkWallRun(20,8,{n:13}));
   /* a stair up to the walk on the inner side */
-  W(6,0,-2.4,PI,()=>{for(let i=0;i<22;i++){const t=(i+1)/22;box(LK_PL,0,0,-(t*6-.14),1.4,.3+t*8,.3,P('basaltD'));}});
+  /* the stair climbs TOWARD the wall from inside: its foot 8 m in, its top tread against the inner face */
+  W(6,0,-7.9,PI,()=>{for(let i=0;i<22;i++){const t=(i+1)/22;box(LK_PL,0,0,-(t*6-.14),1.4,.3+t*8,.3,P('basaltD'));}});
   door(0,.3,2.8,0,2);}});
 defBuilding({key:'lk-watchtower',name:'Stone watchtower',seed:7708,caste:4,cut:true,w:12,d:12,h:24,budget:110000,
  tags:{types:['military'],wealth:'rich',role:'watch'},
  note:'a twisted tower of eleven courses, 18 m, hollow below for the guard room (the warriors\' door), a walk on top behind a parapet of eleven stone horns, a great bronze eye facing each way; wall runs meet its sides',
  build(o){const h=18,n=11,w0=7.2,w1=5.2,ch=h/n,hollow=2;lzCutFloor(0);lzNoCut(()=>lkPlinth(10.5,10.5,.3,{}));
   const dh=lzDoorH(4),dw=dh*.62;
-  for(let i=0;i<hollow;i++){const t=i/(n-1),w=lerp(w0,w1,t),ry=i*.06;W(0,.3+i*ch,0,ry,()=>lzBatterRoom(w,w,0,ch+.02,LK_ST,P('basalt'),{lean:{front:.02,back:-.02,left:.03,right:-.01},front:i===0?[{s:w/2,w:dw,h:dh,door:true}]:[]}));}
+  for(let i=0;i<hollow;i++){const t=i/(n-1),w=lerp(w0,w1,t),ry=i*.06;W(0,.3+i*ch,0,ry,()=>{const T=lzBatterRoom(w,w,0,ch+.02,LK_ST,P('basalt'),{lean:{front:.02,back:-.02,left:.03,right:-.01},front:i===0?[{s:w/2,w:dw,h:dh,door:true}]:[]});lzCourseRing(T.T,ch-.28,.3,1.1,LK_ST,P('basaltD'));});}
   const cy=.3+hollow*ch,cw=lerp(w0,w1,(hollow-1)/(n-1))-.2;box(LK_ST,0,cy-.3,0,cw,.3,cw,P('basaltD'),(hollow-1)*.06);
   lzTwist(0,0,h,n,w0,w1,.06,{mk:LK_ST,col:P('basalt'),start:hollow,each:(i,y,w,ry)=>{if(i===n-2)W(0,y+ch*.5,0,ry,()=>{for(const q of [0,PI/2,PI,-PI/2])W(0,0,0,q,()=>lzEye(0,0,w/2+.03,0,w*.2,{mk:'bronze'}));});}});
   /* the walk: a slab, a parapet with eleven horns */
