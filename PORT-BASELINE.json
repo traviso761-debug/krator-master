@@ -281,8 +281,8 @@
    "sha256": "c6040b25d411ed40d980e9420c09b96d8ce91fb4384f8e2c6acd28e9fdd99fb5"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1657884,
-   "sha256": "890c3e9a645393584af7b90d656fe299834674cd667af9b3e836c4614af8a627"
+   "bytes": 1665307,
+   "sha256": "48122585e3fb7514f243294a3cc2e201dcacb4ff10f4a4b640757e9abf065030"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 14352192,
@@ -573,12 +573,12 @@
    "sha256": "70ccf8f403a029f49d4a90d5196a15195f1bc0b520ce790d2534938b845fbe22"
   },
   "settlements/voth/dist/voth-city.html": {
-   "bytes": 11939685,
-   "sha256": "f4b646f74f599f342a0672147d33d684b35876dfd979248e51a04b098426adc5"
+   "bytes": 18103998,
+   "sha256": "8fae7e410a113599aa2210cc8aba65afd94323842232766903f463cf94187db3"
   },
   "settlements/voth/dist/voth-site.html": {
-   "bytes": 3608113,
-   "sha256": "42afd745a3870097b5170a99b46f826967957c40e7a2915e723e1ae42307ae42"
+   "bytes": 3609068,
+   "sha256": "33ce1ff09e1f74bef434a8cdd20b5e7aec69b9d884746a563eca6d119c89a70d"
   },
   "settlements/xanadu/dist/erewhon.html": {
    "bytes": 5806194,

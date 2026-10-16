@@ -25,6 +25,7 @@ VC.city = KCITY.create({
     function () { VC.simSquares(12); VC.simVillageShrines(13); VC.simShipwrights(13); },   /* 42: benched squares by the cantons, the village shrines (phase C's overflow), the shipwright's docks */
     function () { VC.census(); },                     /* 36-vc-census.js: people and workplaces */
     function () { VC.lighting(); },                   /* 37-vc-light.js: power houses' reach, street lamps */
+    function () { VC.canopies(); },                   /* 37b-vc-canopies.js: canopies and lanterns over the market and wealthy streets */
     function () { VC.parkFurniture(); },              /* 39-vc-furnish.js: benches, statues, shrines in the parks and plazas */
     function () { VC.wells(); VC.parkShrines(); },    /* 42-vc-sim-places.js: the wells (plazas, market squares, streets, yards) */
     function () { VC.flora(); }                       /* 38-vc-flora.js: where the swbay biome may root, and its climate */

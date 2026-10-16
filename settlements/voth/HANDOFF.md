@@ -10,6 +10,61 @@ owner's rules in short form.
 **Merging into `full-refactor`:** read `HANDOFF-REFACTOR.md` (what the branch carries, a trial merge's two source
 conflicts and their resolutions, where it lands in the refactor's roadmap, what is left).
 
+## 2026-10-15: the interiors from the owner's references (branch `claude/voth-interiors`, worktree `../krator-voth-interiors`)
+
+The owner's four zips of reference pictures (palace, temple, wealthy, misc) and the brief: textureless canton interiors, the
+walk-mode clipping, multi-storey open space, the Fortress's training hall, the Palace's and the Temple's programmes, the
+wealthy houses' tapestries, chandeliers and columns, the market stall, the banners, the shrine, canopies and lanterns, and
+(mid-session) "sufficient interior light sources". All in `README.md` ("The canton interiors", "The Palace and the Temple",
+"The wealthy houses' decor", "Canopies, lanterns and hanging banners"). The pieces:
+- `materials.json` + `tex/`: 33 families (21 new: `int_*`, `tap_*`, `inlay_*`, `medallion_sun`, `lantern_paper`, `jali`,
+  `frieze_red`, `canopy_kilim`); `build.py` inlines their colour maps. `core/materials/PROMPTS-ready.md` holds 16 prompts for
+  the sheets the references want (carved green stucco, green tiles, the Tzintzun tapestries, the Temple's hangings and
+  ancestor relief, the glyph banners, the carved column, the screen lattice, the stall awning, the shrine mural, a hide
+  canopy): each names the stand-in it replaces.
+- `40-vc-interiors.js`: atria (`VC.intAtria`), great halls, railings, light wells, the core's ceiling well, keep-outs; the
+  storey heights of the Palace and the Temple (`storeyMinBy`).
+- `40b-vc-suites.js` (new, [G data]): `VC.SUITES` (the two state floors as data), `VC.suiteStorey`, `VC.suiteFinish`, the
+  grand stairs, the inner stair, the exits.
+- `56-vc-interiors-host.js`: `VC.intSetMat` / `intSheetMat` (the library on the shell), `VC.intProto` (merged prototypes),
+  `VC.intDecor` (tapestries, dado bands, nooks, railings, the fittings, the training posts, the suites' decor).
+- `41`, `56b`: the clan atria (`VC.ixAtrium`), the wealthy houses' decor and lanterns (`VC.ixDecor`), the light pool over the
+  lot buildings.
+- `37b-vc-canopies.js` (new, [G data]) and `56f-vc-street-host.js` (new, [draw]): the canopies, the lanterns, the banner
+  records (`20-site-cantons.js` `CANT.banners`, `31-vc-voth.js` `VC.dressBanners`).
+- `targets/voth-site/50-site-scene.js`: the near plane while walking.
+- `kits/catalog`: `voth_market_stall` and `voth_wayside_shrine` redrawn, `voth_planter` new (its `verify.py --assert` passes).
+
+**Checked headless** (`scratchpad/probe.py` under SwiftShader, 3 to 5 minutes a load): all eleven cantons plan, the Fortress's
+walk from its dock door into its training hall completes, the Palace draws 854 rooms in 3.7 s as 2,650 meshes (33,000 before
+the merge), no page errors. **Not reviewed by the owner:** the looks (colours, tile sizes) and the suites' proportions; judge
+them in the preview (`.claude/launch.json` `voth-interiors`, `/dist/voth-city.html`; walk in through the Palace's -x porch at
+(-468, 700, 54) or the Temple's +z porch at (210, 297, 70)).
+
+**The owner's delivery, same day (`Downloads/vothtex.zip`, 32 images).** All sixteen prompts came back, with eleven extras for
+variety and for the myth of the three brothers (the Chichani, the Zeijani and the Andaru), and five redos for other builds.
+- **Wired here** (`materials.json`, 60 families; `TUNE.interiors.look`):
+  - The Palace in green stucco, green crackle tiles and gilt, drawn in their own colour (`VC.INT_COLOUR`). The jade inlay is on the
+    throne room's diagonals and the carved inlaid columns on its pillars. The chandeliers wear the painted drum, and the ringed
+    giant's mosaic is over the sun chandelier. Sun carpets run down the state rooms.
+  - Each canton's look now takes a list of hangings, picked by a hash of the spot: the Tzintzun and procession tapestries with the
+    purple damask in the Palace; the Temple's red hangings and the masks in the Temple; Ordinator banners and masks in the Fortress;
+    the brown kilim and the mudcloth in the Foreign canton and the common ones.
+  - The Temple has the ancestor relief as a 1.6 m dado, the icon behind the altar and crimson filigree screens. The Palace's
+    screens are purple filigree.
+  - The three brothers' frescoes hang high on the end walls, over the doors: their reunion over the Palace foyer's banquet door
+    and over the Temple atrium's sanctuary door, their ascent over the foyer's entrance and over the sanctuary's way in.
+  - The streets: the market canopies are the stall-awning kilim and the others stitched hide. The bridges' banners are the three
+    glyph banners (blue, rust, lavender), and the Temple's dressing is the rust one. The wayside shrine's mural and the stall's rug
+    take the delivered sheets through the catalog's decal cache (`56f` `_texCache` swap).
+  - The wealthy houses' hangings by class: the clans kilims and mudcloth, the rich and manor houses the damask and the procession;
+    their columns are the carved inlaid set.
+- **Not wired (other builds)**: the five redos are in the library only. `GODOT-PLAN.md` "Before an export" lists the re-packs.
+
+**Left (the owner's brief, not done):** the Ordinators' citadel model for the other cities (the "citadel" picture: a stepped
+tower with a tall keep; a `voth_bldg_citadel` in `kits/catalog/krator-master-buildings-voth.js`); the Palace's exits onto the
+face gardens are at the service halls' ends only (one per side); the "grafitti" and "shroom" pictures were not acted on.
+
 ## 2026-10-15: what things hold, and the stocks panel (o)
 
 The owner: "implement the full interface in Voth so I can do economy tweaks" (ROADMAP.md section 10, "what things hold,

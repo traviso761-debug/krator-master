@@ -78,10 +78,47 @@ var TUNE = {
      at most `arm` long above the ground storey), rooms (depth, width range, the gap between), the inner walls and doors,
      the tunnels, the share of residences, each canton's purposes (room kind -> share) and the cantons left solid. The
      Ancestry's catacombs: their height, gallery width and spacing, tomb chambers [length, depth] and their share. */
-  interiors: { wall: 3.2, storeyMin: 4.6, slab: 0.4, core: 10, coreOff: [28, 0.55], well: [3.4, 7], houseH: 5.2, hall: 6, arm: 46,
+  interiors: { wall: 3.2, storeyMin: 4.6, storeyMinBy: { Palace: 6.5, Temple: 6.5 }, slab: 0.4, core: 10, coreOff: [28, 0.55], well: [3.4, 7], houseH: 5.2, hall: 6, arm: 46,   /* the two monumental cantons take taller storeys */
                start: 16, room: { d: 12, w: [10, 15], gap: 0.6 }, wallT: 0.6, doorW: 1.8, tunnelW: 5, tunnelH: 5, residence: 0.12,
-               skip: ['Palace', 'Temple'],
+               skip: [],
+               /* the atria (owner, 2026-10-15: "add some multi-storey open space inside them in places"): on every tier with two
+                  storeys or more, the lowest storey's halls on these arms are open to the storey above, which keeps a gallery
+                  `gallery` m wide along both sides of the void behind a railing `rail` m high; its rooms open onto the gallery.
+                  `wells`: the top tier's atria get a skylight shaft to the deck (rare: an exterior light well, owner 2026-10-15) */
+               atrium: { arms: [0, 1], gallery: 2.6, rail: 1.05, railT: 0.16, wells: true, wellW: 3.2 },
+               /* a great hall (owner, 2026-10-15: "the ordinator fortress could use a room like the one marked training hall"): a
+                  square hall two storeys tall at the far end of an arm on the first tier's ground storey, a gallery round it on the
+                  storey above (railed), the hall's mouth its door; `posts` training posts stand on the floor (56-vc-interiors-host.js) */
+               greatHall: { Fortress: { kind: 'traininghall', size: 26, arm: 1, posts: 5 }, Arena: { kind: 'traininghall', size: 24, arm: 1, posts: 4 },
+                            Guild: { kind: 'guildhall', size: 22, arm: 1 }, Market: { kind: 'markethall', size: 24, arm: 1 }, Arsenal: { kind: 'drillhall', size: 22, arm: 1 },
+                            Port: { kind: 'warehouse', size: 22, arm: 1 }, Granary: { kind: 'granary', size: 20, arm: 1 } },
+               /* each canton's look (56-vc-interiors-host.js VC.intMats): the library sets of materials.json (int_*) as grey detail
+                  under these colours (walls, floors, ceilings, steps, trim), and the full-colour sheets (tap_*, inlay_*, the sun
+                  medallion) on its tapestries, rugs, dado bands and bosses. The common cantons in ash plaster over tiled ochre
+                  floors; the Palace (owner, 2026-10-15) in carved green stucco, green tiles and gilt, its tapestries solar, purple
+                  and gold; the Temple austere, pale plaster and sandstone with blood-red hangings; the Fortress in dark grey with
+                  the Ordinators' green and gold; the Foreign canton in timber ceilings and bright kilims */
+               look: {
+                 default:  { wall: 0xa89b84, wallSet: 'int_wall', floor: 0x8e7452, floorSet: 'int_floor', ceil: 0x746a5c, ceilSet: 'int_banco', step: 0xa79b82, trim: 0x6d5a3c, trimSet: 'int_carved', tapestry: ['tap_voth', 'kilim_brown', 'tap_kilim'], rug: 0x7a2028, timber: 0x5a4430 },
+                 /* the Palace in the owner's delivered sheets (2026-10-15): green stucco with gilt scrolls, green crackle tiles, the jade
+                    inlay on the throne room's diagonals, carved and inlaid columns, the Tzintzun and procession tapestries with the
+                    purple damask, the sun carpet, the painted drums of its chandeliers, the ringed giant over the throne */
+                 Palace:   { wall: 0xf2f2f2, wallSet: 'pal_stucco', floor: 0xe6e6e6, floorSet: 'pal_tile', ceil: 0xb4b4b4, ceilSet: 'pal_stucco', step: 0xd8d8d8, trim: 0xd0a53c, trimSet: 'int_gilt', tapestry: ['tap_tzintzun', 'tap_procession', 'damask_purple', 'tap_solar'], rug: 0x5e1e2d, timber: 0x3a2a1e, dado: 'inlay_voth', medallion: 'medallion_sun', gilt: 0xd0a53c, statue: 0xd0a53c, statueSet: 'int_gilt',
+                             inlay: 'pal_inlay', column: 'column_inlaid', drum: 'chandelier_drum', carpet: 'carpet_palace', domeMosaic: 'mosaic_giant', screen: 'filigree_purple' },
+                 Temple:   { wall: 0xc2b094, wallSet: 'int_banco', floor: 0xb3a082, floorSet: 'int_stone', ceil: 0x9e9076, ceilSet: 'int_banco', step: 0xb5a78a, trim: 0xa8241c, trimSet: 'int_banco', tapestry: ['tap_temple', 'tap_masks', 'tap_temple', 'tap_voth'], rug: 0x6a1c22, timber: 0x4a3a2a, dado: 'relief_ancestors', dadoH: 1.6, icon: 'icon_sanctuary', screen: 'filigree_crimson', gilt: 0xc9a227, nooks: true, statue: 0xcfc3ad, statueSet: 'int_stone' },
+                 Fortress: { wall: 0x4e4c4a, wallSet: 'int_blocks', floor: 0x3e3b38, floorSet: 'int_stone', ceil: 0x333235, ceilSet: 'int_blocks', step: 0x55524e, trim: 0x1e6b3c, trimSet: 'int_carved', tapestry: ['tap_ordinator', 'tap_ordinator', 'tap_masks'], rug: 0x1e6b3c, timber: 0x2a2622, gilt: 0xc9a227 },
+                 Foreign:  { wall: 0xb8ab90, wallSet: 'int_wall', floor: 0x8e7452, floorSet: 'int_floor', ceil: 0x8a7e6a, ceilSet: 'int_beam', step: 0xa79b82, trim: 0x6d5a3c, trimSet: 'int_carved', tapestry: ['tap_kilim', 'kilim_brown', 'mudcloth'], rug: 0x8a2f2a, timber: 0x5a4430 },
+                 Ancestry: { wall: 0x8c8073, wallSet: 'int_blocks', floor: 0x6e6457, floorSet: 'int_stone', ceil: 0x5e564c, ceilSet: 'int_blocks', step: 0x8a7f72, trim: 0x5e1e2d, trimSet: 'int_stone', tapestry: ['tap_masks', 'tap_voth'], rug: 0x5c4028, timber: 0x4a3a2a }
+               },
+               /* the decoration drawn with the shell (56-vc-interiors-host.js VC.intDecor): a tapestry on a hall's walls every `tapEvery`
+                  m (w, h, hung `tapDrop` under the ceiling), a dado band `dado` m high where the look has a dado sheet, a candle nook
+                  every `nookEvery` m (w, h, depth) where the look has nooks, railing posts every `railPosts` m, the great halls'
+                  banners (w, h) every `bannerEvery` m round their galleries, a torch bracket every `torchEvery` m down a hall */
+               decor: { tapEvery: 9, tap: [2.2, 3.4], tapDrop: 0.5, dado: 1.0, nookEvery: 7, nook: [1.1, 1.5, 0.45], railPosts: 2.4, bannerEvery: 6, banner: [1.4, 4.6], torchEvery: 8 },
                purposes: {
+                 /* the Palace's and the Temple's other tiers (their state floors are bespoke: 40b-vc-suites.js) */
+                 Palace: { guardroom: 2, store: 3, office: 2, chamber: 2, living: 1, kitchen: 1 },
+                 Temple: { cell: 2, office: 2, store: 1, library: 1, kitchen: 1, dormitory: 2, chamber: 2 },
                  Arsenal: { barracks: 4, smithy: 3, armoury: 3, workshop: 2, mess: 1, office: 1, store: 2 },
                  Guild: { workshop: 5, shop: 3, store: 2, guildhall: 1, office: 1, smithy: 1 },
                  Market: { shop: 6, store: 3, tavern: 1, workshop: 2, kitchen: 1 },
@@ -104,10 +141,14 @@ var TUNE = {
                /* the beasts in a stable (kits/fauna's Voth group): the room kinds that keep them, which, the odds of two to a room */
                beasts: { rooms: ['stable'], keys: ['arena-tiger', 'pit-lizard', 'giant-beetle', 'staghorn-beetle'], pair: 0.45 },
                /* dungeons under a canton's ground storey: its height and its rooms; how much darker it is drawn */
-               dungeon: { Fortress: { h: 5.2, purposes: { cell: 8, office: 1, store: 1, armoury: 1 } } }, dungeonDark: 0.55,
-               /* the lamps (56-vc-interiors-host.js): how far under the ceiling, their spacing down a hall, their colour, and the pool of
-                  point lights that follows the camera: how many, their reach and strength, how near a lamp must be to take one */
-               lamps: { drop: 0.45, hallEvery: 10, color: 0xffc27a, pool: 8, range: 16, intensity: 1.6, reach: 120 } },
+               dungeon: { Fortress: { h: 5.2, purposes: { cell: 8, office: 1, store: 1, armoury: 1 } },
+                          Palace: { h: 5.2, purposes: { cell: 6, guardroom: 1, store: 2 } } }, dungeonDark: 0.55,   /* the Palace's: the ruler's own oubliette (owner, 2026-10-15) */
+               /* the lamps (56-vc-interiors-host.js; owner, 2026-10-15: "sufficient interior light sources, be they candles, lanterns,
+                  chandeliers, or more rarely exterior light wells"): a fitting hangs under every room's ceiling and every `hallEvery`
+                  m down a hall (a paper lantern; a candle sconce in a cell or a store; a chandelier in a great hall, an atrium and
+                  the Palace's state rooms), drawn lit (emissive), and the pool of point lights that follows the camera: how many,
+                  their reach and strength, how near a lamp must be to take one. A torch bracket every `torchEvery` m down a hall */
+               lamps: { drop: 0.45, hallEvery: 8, color: 0xffc27a, pool: 14, range: 20, intensity: 2.4, reach: 150, torchEvery: 8, candleKinds: ['cell', 'store', 'granary', 'warehouse', 'catacomb', 'tomb', 'dormitory'] } },
   /* every building's interior (41-vc-building-interiors.js VC.IX, phase A of SIM-ROADMAP.md): the residence rule (per `per`
      residents one bed, one item store and one food store; a bunk counts as two beds), the storey height a shell is cut into
      and the most storeys, how a shell is read off a kit model (the main block: spans head height `head`, at least `minArea`
@@ -141,6 +182,11 @@ var TUNE = {
           tavern: ['alehouse', 'kitchen', 'chamber'], voth_shop_smithy: ['smithy', 'cottage']
         },
         chamber: { beds: 4, stores: 2 },
+        /* the clan compounds' atria (VC.ixAtrium): which classes, the gallery's width, the least hall area; the decor the
+           host draws in the wealthy houses' halls (56b VC.ixDecor): which classes, the tapestry spacing, which classes hang
+           them at 45 degrees from the ceiling (the clans), carved columns and chandeliers in halls of at least `grand` m2 */
+        atrium: { classes: ['clan'], gallery: 2.4, minArea: 40 },
+        decor: { classes: ['rich', 'manor', 'clan', 'civic', 'tavern', 'landmark'], tapEvery: 4.5, tilted: ['clan'], grand: 55, columns: ['clan', 'manor'] },
         byKey: {
           voth_bldg_temple_ash: [['nave', 'shrine', 'store']], voth_bldg_temple_tide: [['nave', 'shrine', 'store']], voth_bldg_village_chapel: [['nave']], voth_bldg_village_shrine: [['nave']], voth_bldg_shipwright: [['shop', 'workshop']],
           voth_shop_smithy: [['smithy', 'store'], ['living', 'chamber']],
@@ -554,6 +600,12 @@ var TUNE = {
   },
   /* the walker (58-vc-tools.js): the highest step it takes up, the greatest drop it steps off, its radius and height */
   walk: { step: 0.7, drop: 1.4, r: 0.35, h: 1.7 },
+  /* canopies and lanterns over the streets (37b-vc-canopies.js; owner, 2026-10-15): where (the market quarter within
+     marketReach of a market, streets of at least `wealth`), how often by street class, how far a rope may reach from
+     the kerb to a wall, the widest street spanned, how far under the lower building, the height range, the cloth's
+     width along the street, its colours, the lanterns' spacing, the share of spots taken, the most canopies */
+  canopy: { marketReach: 110, wealth: 0.62, every: { alley: 13, side: 19, main: 26 }, reach: 7, maxSpan: 24, under: 1.6, minY: 3.8, maxY: 7.5,
+            width: { alley: 3.2, side: 4.4, main: 6 }, colours: [0x6f5a42, 0x7a2028, 0x5c4a36, 0x8a6a3a, 0x4b2a6e], lanternEvery: 4.5, shareMarket: 0.8, shareWealthy: 0.45, max: 600 },
   /* the weather (core/atmos ATMOS.weather, with its ash modes; 55-vc-host.js VC.applyHour): the mode it opens in, how
      far each closes the fog in (fogK, rainK, ashK of the way to closeFar metres), how much each dims the sun, the ash
      haze and the lightning's colours and kick, and the volcano's odds of a large or small eruption each quarter hour */
@@ -649,6 +701,12 @@ var TUNE = {
              training: [3, 0, 'drill masters and trainers'], stable: [2, 0, 'grooms and beast keepers'], shrine: [1, 0, 'shrine keepers'], cell: [0.5, 1, 'jailers'],
              reception: [2, 0, 'envoys and embassy staff'], library: [2, 0, 'scribes and librarians'], living: [0, 6, ''], cottage: [0, 8, ''], bedroom: [0, 2, ''],   /* a canton home is a family's apartment, often three generations */
              catacomb: [0.3, 0, 'necropolis keepers'], tomb: [0.2, 0, 'necropolis keepers'],
+             /* the great halls and the Palace's and the Temple's suites (40b-vc-suites.js) */
+             traininghall: [6, 0, 'drill masters and trainers'], markethall: [8, 0, 'shopkeepers and assistants'], drillhall: [4, 0, 'soldiers'], guardroom: [6, 4, 'soldiers'],
+             chamber: [0, 2, ''], dormitory: [0, 8, ''],
+             foyer: [4, 0, 'palace household and officials'], judgment: [8, 0, 'clerks and officials'], banquet: [8, 0, 'cooks and bakers'], throne: [6, 0, 'palace household and officials'],
+             apartment: [2, 2, 'palace household and officials'], guest: [1, 2, 'palace household and officials'], scriptorium: [4, 0, 'clerks and officials'],
+             sanctuary: [6, 0, 'temple priests and servants'], atrium: [2, 0, 'temple priests and servants'], highpriest: [3, 2, 'temple priests and servants'], vestry: [2, 0, 'temple priests and servants'],
              byCanton: { Arena: { barracks: 'gladiators and arena keepers', training: 'gladiators and arena keepers' }, Fortress: { barracks: 'Ordinator garrison', training: 'Ordinator garrison', office: 'Ordinator garrison' },
                          Foreign: { office: 'envoys and embassy staff' }, Guild: { workshop: 'guild masters and journeymen', smithy: 'guild masters and journeymen' }, Arsenal: { workshop: 'armourers and quartermasters' } } },
     /* the citizen simulation's buildings (phase B, 42-vc-sim-places.js), by kit key: residents, workplaces, the kind of work

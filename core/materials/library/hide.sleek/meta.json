@@ -7,12 +7,12 @@
  "processing": {
   "log": {
    "seam_after": [
-    1.136,
-    1.202
+    1.285,
+    1.068
    ],
    "seam_before": [
-    1.368,
-    1.039
+    1.671,
+    0.928
    ],
    "source_size": [
     1254,
@@ -27,7 +27,7 @@
    "invert_height": false,
    "keep_aspect": false,
    "lift": 0.12,
-   "mute": 0.8,
+   "mute": 0.0,
    "normal_strength": 1.0,
    "pattern": false,
    "rough": 0.85,
@@ -51,14 +51,11 @@
   "tint": true
  },
  "source": {
-  "file": "22.webp",
-  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 22.webp)",
+  "file": "library__hide.sleek.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
   "licence": "generated for this project by its owner",
-  "note": "delivered mid-brown, not near-colourless: muted 0.8 (process.py --mute) so a coat's vertex colour carries the hue.",
-  "original_file": "22.webp",
-  "original_sha1": "50c1715423824ec66bf1d3afc243a6de8d25f0c7",
-  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Short sleek animal coat seen close up, as on a horse or a deer: very short dense glossy hairs all lying in one direction, faint swirls where the hair changes direction, a soft sheen along the hair, no spots, stripes or markings. Light neutral warm grey-tan so it can be tinted. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
-  "reuse": "fauna sleek: horse, deer, cattle, buffalo, dromedary, coyote, tiger; hair-on hide on saddle skirts, drums, quivers",
-  "sha1": "50c1715423824ec66bf1d3afc243a6de8d25f0c7"
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `hide.sleek` (the redo) (delivered as \"Seamless Grayscale Fur Texture.png\")",
+  "reuse": "the sleek coats (kits/fauna `sleek`); hair-on hide anywhere",
+  "sha1": "24b0c87ad5580856871a715afef08b0cf5ae34d4"
  }
 }

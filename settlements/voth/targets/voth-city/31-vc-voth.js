@@ -127,10 +127,11 @@ VC.cantonDress = function (cn) {
         if (k === 0 || !K.banners) return;
         var drop = Math.min(K.bannerH, (y - L[k - 1].y) * 0.62);
         for (var t = q[0] + K.bannerEvery / 2; t < q[1] - 2; t += K.bannerEvery) {
-          var bp = pt(s, r + 0.75, t);
-          B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.22, drop, 3.2, ry, K.banner, 'cloth');
-          B.BOX(bp[0], y - 1.7 - drop, bp[1], 0.26, 0.45, 3.3, ry, K.gold, 'cloth');
-          var bq = pt(s, r + 0.78, t); B.BOX(bq[0], y - 1.7 - drop * 0.55, bq[1], 0.26, 1.1, 1.1, ry + Math.PI / 4, K.gold, 'cloth');   /* the gilt lozenge */
+          /* a tall banner on a crossbar off the cornice (owner, 2026-10-15): the cloth is the host's (VC.dressBanners ->
+             56f-vc-street-host.js), its sheet the canton's glyphs; the bar and its bracket are prims */
+          var bp = pt(s, r + 0.75, t), nOut = s === 0 ? [1, 0] : s === 1 ? [0, 1] : s === 2 ? [-1, 0] : [0, -1], dAlong = [-nOut[1], nOut[0]];
+          B.BOX(bp[0], y - 1.6, bp[1], 0.14, 0.14, 1.6, ry + Math.PI / 2, 0x3a3630, 'metal');
+          (VC.dressBanners = VC.dressBanners || []).push({ x: bp[0] + nOut[0] * 0.5, y: y - 1.55, z: bp[1] + nOut[1] * 0.5, d: dAlong, n: nOut, w: 2.2, drop: drop, sheet: cn === 'Fortress' ? 'tap_ordinator' : 'banner_rust', tint: cn === 'Fortress' ? 0xffffff : 0xffffff, border: K.gold, step: 2 });
           n.banners++;
         }
       });

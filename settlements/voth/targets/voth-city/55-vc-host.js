@@ -622,6 +622,7 @@ VC.dayNight = function () {
     S.volcano(W.ash > 0.6 ? 'violent' : r < X.eruptLarge ? 'large' : r < X.eruptLarge + X.eruptSmall ? 'small' : 'idle');
     var night = typeof ATMOS !== 'undefined' && ATMOS.night ? ATMOS.night(h) : 1 - up;
     (VC.lampMats || []).forEach(function (m) { m.color.setScalar(0.3 + 0.7 * night); });
+    (VC.glowMats || []).forEach(function (m) { m.emissiveIntensity = 0.25 + 0.95 * night; });   /* the canopies' paper lanterns (56f) */
     if (VC.beaconMat) VC.beaconMat.opacity = TUNE.beaconOpacity * night;
     VC.dayK = up;
   };
@@ -676,7 +677,7 @@ VC.start = function () {
   VC.intWalk();                        /* the cantons' interiors (40-vc-interiors.js): their floors, stairs and walls */
   /* the ferry piers' decks (Voth's lifeBuildFerryPier: 5.5 m wide, SEA + 2.1), so a walker comes off a ferry onto them */
   Object.keys(VC.FP || {}).forEach(function (id) { var P = VC.FP[id]; if (P.none || !P.root) return; KWALK.strip({ a: [P.root[0], P.root[1], VOTH.SEA + 2.1], b: [P.tip[0], P.tip[1], VOTH.SEA + 2.1], w: 5.2, name: 'ferry pier ' + id, tag: 'pier' }); });
-  VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVessels(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
+  VC.drawPrims(); HOST.buildStreets(); HOST.buildBuildings(); VC.drawTransit(); VC.drawVessels(); VC.drawVehicles(); VC.drawMills(); VC.drawBeacons(); VC.drawLampLight(); VC.drawStreet(); VC.drawFlora(); VC.dayNight(); VC.drawEmbassies(); VC.labels();
   VC.ixStart();                       /* every lot building's interior (41-vc-building-interiors.js, 56b): planned, furnished, reported */
   try { VC.simPlaces(); VC.simWorkAudit(); } catch (e) { console.error('sim places: ' + (e.stack || e)); VC.SIMB.error = String(e.stack || e); }   /* 42-vc-sim-places.js */
   try { var tn = Date.now(); VC.pedNav(); VC.pedAudit(); VC.PED.ms = Date.now() - tn; VC.simPeople(); } catch (e) { console.error('sim people: ' + (e.stack || e)); VC.PED.error = String(e.stack || e); }   /* 43-vc-sim-nav.js, 44-vc-sim-people.js */

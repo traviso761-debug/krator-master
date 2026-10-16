@@ -681,6 +681,20 @@ The project, as it grows (Godot 4.x, Forward+; Compatibility only if a web expor
 Done when: a tile exported from a biome kit and a settlement load, stream and run in one scene, and the
 golden tests pass in CI.
 
+### Before an export: textures delivered but not wired
+
+Library sets the owner has delivered but no build has re-packed yet. An export reads a build's packed `tex/`, so each of
+these must be re-packed (`python3 tools/textures/pack.py <build>`), rebuilt and verified before its build is exported:
+
+| Set (delivered) | Build to re-pack | Note |
+|---|---|---|
+| `library/ground.travertine.white` (2026-10-15, dry pools) | `biomes/geyser` (`ground.tufa`) | the redo without painted water |
+| `library/hide.sleek` (2026-10-15, neutral grey) | `kits/fauna` (`sleek`) | drop the family's mute if it has one |
+| `patterns/islander/storyboard`, `patterns/islander/gable-east-b` (2026-10-15) | `kits/islanders` (`patStory`, `patGableE2`) | |
+| `patterns/common/grime-streaks` (2026-10-15) | not wired anywhere yet (the break-up hook's `grime`) | 20 x 8 cells, dark on white |
+
+`core/materials/PROMPTS-NEEDED.md` section 0 has the same list. Strike a row when its build is re-packed.
+
 ## 5. Disposition by module
 
 | Module | Tag | Disposition |

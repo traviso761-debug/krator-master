@@ -72,10 +72,12 @@ VC.intPlanTiered = function (M) {
   var doors = CANT.doors.filter(function (d) { return d.canton === M.n && d.kind === 'bottom'; });
   var axis = doors.length ? doors[0].n : [1, 0], perp = [-axis[1], axis[0]];
   /* the tiers and their storeys */
+  var sp = VC.suiteOf ? VC.suiteOf(M) : null;   /* the Palace and the Temple: their bridge tier is a bespoke state floor (40b-vc-suites.js) */
+  var sMin = (T.storeyMinBy && T.storeyMinBy[M.n]) || T.storeyMin;
   var tiers = [];
   for (var k = 0; k < topK; k++) {
     var lo = L[k], hi = L[k + 1]; if (!lo.ri) continue;
-    var R = lo.ri * 0.86 - T.wall, H = hi.y - lo.y, ns = Math.max(1, Math.floor(H / T.storeyMin)), hs = H / ns, st = [];
+    var R = lo.ri * 0.86 - T.wall, H = hi.y - lo.y, ns = sp && k === sp.tier ? sp.storeys : Math.max(1, Math.floor(H / sMin)), hs = H / ns, st = [];
     for (var j = 0; j < ns; j++) st.push({ j: j, y: lo.y + j * hs, h: hs - T.slab });
     tiers.push({ k: k, y0: lo.y, y1: hi.y, R: R, storeys: st });
   }
@@ -92,6 +94,7 @@ VC.intPlanTiered = function (M) {
      and out through its gate onto the field; the top storey's side arms are the wings it names, each down its own hall */
   var GW = T.gateway && T.gateway[M.n];
   if (GW) { cc = [M.x + GW.core[0], M.z + GW.core[1]]; axis = GW.axis; perp = [-axis[1], axis[0]]; }
+  if (sp) { axis = sp.axis.slice(); perp = [-axis[1], axis[0]]; cc = [M.x + axis[0] * sp.core[0] + perp[0] * sp.core[1], M.z + axis[1] * sp.core[0] + perp[1] * sp.core[1]]; }
   var P = { n: M.n, M: M, axis: axis, perp: perp, core: { x: cc[0], z: cc[1], half: T.core }, tiers: tiers, rooms: [], halls: [], tunnels: [], flights: [], boxes: [], floors: [], doorsOut: doors, storeys: [] };
   var allSt = [];
   tiers.forEach(function (t) { t.storeys.forEach(function (s) { allSt.push({ t: t, s: s }); }); });
@@ -100,28 +103,66 @@ VC.intPlanTiered = function (M) {
      TUNE.interiors.dungeon's (cells, guard rooms), drawn in darker stone. The doors and tunnels stay on the ground storey */
   var DG = T.dungeon && T.dungeon[M.n];
   if (DG) allSt.unshift({ t: tiers[0], s: { j: -1, y: tiers[0].y0 - DG.h, h: DG.h - T.slab, dungeon: true } });
+  /* the great hall (owner, 2026-10-15: the Fortress's training hall): at the far end of its arm on the first tier's ground
+     storey, a square hall two storeys tall (one, when the tier has one), a railed gallery round it on the storey above */
+  var GH = !GW && T.greatHall && T.greatHall[M.n], GHR = null;
+  if (GH) {
+    var gt = tiers[0], gd = [[axis, 1], [[-axis[0], -axis[1]], 1], [perp, 0], [[-perp[0], -perp[1]], 0]][GH.arm][0], gc0 = (cc[0] - M.x) * gd[0] + (cc[1] - M.z) * gd[1], gEnd = gt.R - 1 - gc0;
+    var gA0 = gEnd - GH.size, gLat = GH.size / 2;
+    /* it must stand inside the tier, beyond the core, and leave room for a hall between */
+    if (gA0 > T.core + T.room.w[0] + 4 && gLat < gt.R - 2) GHR = { arm: GH.arm, d: gd, a0: gA0, a1: gEnd, lat: gLat, kind: GH.kind, tier: gt.k };
+  }
   allSt.forEach(function (o, si) {
     var t = o.t, s = o.s, ground = s.j === 0, first = si === 0, S = { i: si, tier: t.k, y: s.y, h: s.h, R: t.R, dungeon: !!s.dungeon };
     P.storeys.push(S);
+    var suiteStorey = sp && t.k === sp.tier && !s.dungeon;
+    if (suiteStorey) VC.suiteStorey(P, M, sp, S, s, si, allSt);
+    /* what the suite keeps clear on this tier (the throne room's dome): halls stop short of it, rooms keep off it */
+    var keepOut = (P.suite && P.suite.keep || []).filter(function (k) { return k.tier === t.k; });
     /* the arms: both axes; the axis arms reach the wall on the lowest storey of each tier, the others stop short */
-    [[axis, 1], [[-axis[0], -axis[1]], 1], [perp, 0], [[-perp[0], -perp[1]], 0]].forEach(function (a, ai) {
+    if (!suiteStorey) [[axis, 1], [[-axis[0], -axis[1]], 1], [perp, 0], [[-perp[0], -perp[1]], 0]].forEach(function (a, ai) {
       var d = a[0], reach = ground || a[1] ? t.R - 1 : Math.min(t.R - 1, T.arm);
       /* the arm's length from the core's middle: the axis arm runs from the core, the opposite one from the far side */
       var c0 = (cc[0] - M.x) * d[0] + (cc[1] - M.z) * d[1], start = T.core - 1.5, end = reach - c0;   /* it starts inside the core: no wall between */
+      keepOut.forEach(function (k) {
+        var lo = d[0] ? (d[0] > 0 ? k.x0 - cc[0] : cc[0] - k.x1) : (d[1] > 0 ? k.z0 - cc[1] : cc[1] - k.z1);   /* where the keep-out begins along the arm */
+        var across = d[0] ? (cc[1] - T.hall / 2 < k.z1 && cc[1] + T.hall / 2 > k.z0) : (cc[0] - T.hall / 2 < k.x1 && cc[0] + T.hall / 2 > k.x0);
+        if (across && lo < end) end = Math.min(end, lo - 1.5);
+      });
+      /* the great hall's storeys on its arm: the hall runs to the great hall's mouth (0.3 m into it, so no wall stands between) */
+      var ghHere = GHR && !s.dungeon && t.k === GHR.tier && ai === GHR.arm && s.j === 0, ghUp = GHR && t.k === GHR.tier && ai === GHR.arm && s.j === 1, roomEnd = end;
+      if (ghHere || ghUp) { end = GHR.a0 + 0.3; roomEnd = GHR.a0 - 0.6; }
       if (end - start < T.room.w[0] + 2) return;
       var hall = VC.intRect(cc, d, start, end, T.hall / 2, s.y, s.h, 'hall');
-      hall.storey = si; hall.arm = ai; hall.d = d; P.halls.push(hall);
+      hall.storey = si; hall.arm = ai; hall.d = d; hall.a0 = start; hall.a1 = end; P.halls.push(hall);
       var wing = GW && si === allSt.length - 1 && GW.wings[ai]; if (wing) hall.wing = wing;
+      if (ghHere) {
+        var next = allSt[si + 1] && allSt[si + 1].t === t ? allSt[si + 1].s : null, tall = next ? next.y - s.y + next.h : s.h;
+        var ghH = VC.intRect(cc, d, GHR.a0, GHR.a1, GHR.lat, s.y, tall, 'greathall');
+        ghH.storey = si; ghH.arm = ai; ghH.d = d; ghH.a0 = GHR.a0; ghH.a1 = GHR.a1; ghH.tall = !!next; ghH.great = true; P.halls.push(ghH);
+        var mouth = [cc[0] + d[0] * GHR.a0, cc[1] + d[1] * GHR.a0];
+        var ghR = Object.assign({}, ghH, { kind: GHR.kind, id: M.n + '.great', open: true, great: true, tier: t.k, side: 0, door: { x: mouth[0], z: mouth[1], w: T.hall - 0.4, n: [-d[0], -d[1]] } });
+        P.rooms.push(ghR); P.great = ghR;
+      }
+      if (ghUp && P.great) {
+        /* the gallery: four strips round the void behind a railing; the storey's hall opens onto the near strip */
+        var g = T.atrium.gallery, A0 = GHR.a0, A1 = GHR.a1, Lt = GHR.lat, strips = [];
+        [-1, 1].forEach(function (sd) { strips.push(VC.intSideRect(cc, d, sd, A0, A1, Lt - g, Lt)); });
+        strips.push(VC.intSideRect(cc, d, 1, A0, A0 + g, -(Lt - g), Lt - g)); strips.push(VC.intSideRect(cc, d, 1, A1 - g, A1, -(Lt - g), Lt - g));
+        strips.forEach(function (q) { P.floors.push({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, y: s.y, kind: 'gallery', storey: si, noceil: true }); });
+        var gal = VC.intRect(cc, d, A0, A1, Lt, s.y, s.h, 'gallery'); gal.storey = si; gal.arm = ai; gal.d = d; gal.nowalls = true; gal.nofloor = true; gal.great = true; P.halls.push(gal);
+        VC.intRails(P, cc, d, A0 + g, A1 - g, Lt - g, s.y, si);
+      }
       /* rooms along both sides */
       [-1, 1].forEach(function (side) {
         var a0 = T.start, idx = 0;
-        while (a0 + T.room.w[0] <= end) {
+        while (a0 + T.room.w[0] <= roomEnd) {
           var w = T.room.w[0] + (T.room.w[1] - T.room.w[0]) * VC.intU(M.n, si * 8 + ai * 2 + (side > 0), idx, 1);
-          if (a0 + w > end) w = end - a0;
+          if (a0 + w > roomEnd) w = roomEnd - a0;
           if (w < T.room.w[0] - 0.01) break;
           var dep = T.room.d, lat0 = T.hall / 2, room = VC.intSideRect(cc, d, side, a0, a0 + w, lat0, lat0 + dep, s.y, s.h);
-          /* a room must stay inside the tier's wall */
-          if (Math.max(Math.abs(room.x0 - M.x), Math.abs(room.x1 - M.x), Math.abs(room.z0 - M.z), Math.abs(room.z1 - M.z)) > t.R) { a0 += w; idx++; continue; }
+          /* a room must stay inside the tier's wall, and off what the suite keeps clear */
+          if (Math.max(Math.abs(room.x0 - M.x), Math.abs(room.x1 - M.x), Math.abs(room.z0 - M.z), Math.abs(room.z1 - M.z)) > t.R || keepOut.some(function (k) { return VC.intOverlap(room, k, 0.2); })) { a0 += w; idx++; continue; }
           room.storey = si; room.tier = t.k; room.arm = ai; room.side = side;
           /* its door: the middle of its wall on the hall */
           var dm = a0 + w / 2, dp = [cc[0] + d[0] * dm + -d[1] * side * lat0, cc[1] + d[1] * dm + d[0] * side * lat0];
@@ -136,13 +177,17 @@ VC.intPlanTiered = function (M) {
     /* the core's stair hall, this storey */
     P.flights = P.flights.concat(VC.intCoreStair(P, S, allSt[si + 1] ? allSt[si + 1].s.y : M.top.y));
   });
+  /* the rooms the great hall stands through give way (its own storeys) */
+  if (P.great) P.rooms = P.rooms.filter(function (r) { return r === P.great || !VC.intOverlap(r, P.great, 0.2) || (r.storey !== P.great.storey && r.storey !== P.great.storey + 1); });
+  VC.intAtria(P, allSt);
+  if (sp) VC.suiteFinish(P, M, sp);
   /* the way in: each bottom door's tunnel, on the ground storey of tier 0, through the wall to its arm's hall */
   var g0i = allSt.findIndex(function (o) { return !o.s.dungeon; }), g0 = allSt[g0i];
   P.ground = g0i; if (DG) P.dungeon = { y0: allSt[0].s.y, y1: g0.s.y, R: tiers[0].R };
   doors.forEach(function (D, i) {
     var d = D.n, rFace = CANT.sq(M, D.x, D.z), cIn = (cc[0] - M.x) * d[0] + (cc[1] - M.z) * d[1];
     var along = (D.x - M.x) * -d[1] + (D.z - M.z) * d[0], ccA = (cc[0] - M.x) * -d[1] + (cc[1] - M.z) * d[0];
-    var tun = { x0: 0, x1: 0, z0: 0, z1: 0, y: g0.s.y, h: Math.min(g0.s.h, T.tunnelH), kind: 'tunnel', door: D.id };
+    var tun = { x0: 0, x1: 0, z0: 0, z1: 0, y: g0.s.y, h: Math.min(g0.s.h, T.tunnelH), kind: 'tunnel', door: D.id, storey: g0i };   /* the ground storey: above a dungeon it is storey 1 (the Fortress's walk was blocked at its hall's end for want of this) */
     /* the tunnel runs straight in from the door; if the door is off the hall's line it meets the wall's inner face
        and an inner passage runs along that face to the hall */
     /* it runs on into the passage (or the hall's end) it meets, so the two overlap and no wall stands between them */
@@ -152,7 +197,7 @@ VC.intPlanTiered = function (M) {
     if (Math.abs(along - ccA) > T.hall / 2) {
       var e = [M.x + d[0] * (g0.t.R - 0.5 - T.tunnelW / 2) + -d[1] * along, M.z + d[1] * (g0.t.R - 0.5 - T.tunnelW / 2) + d[0] * along];
       var f = [M.x + d[0] * (g0.t.R - 0.5 - T.tunnelW / 2) + -d[1] * ccA, M.z + d[1] * (g0.t.R - 0.5 - T.tunnelW / 2) + d[0] * ccA];
-      var pas = Object.assign({ y: g0.s.y, h: tun.h, kind: 'passage', door: D.id }, VC.intSeg(e, f, T.tunnelW / 2));
+      var pas = Object.assign({ y: g0.s.y, h: tun.h, kind: 'passage', door: D.id, storey: g0i }, VC.intSeg(e, f, T.tunnelW / 2));
       P.tunnels.push(pas);
       /* the rooms the passage would cut through give way */
       P.rooms = P.rooms.filter(function (r) { return r.storey !== g0i || !VC.intOverlap(r, pas, 0.2); });
@@ -167,6 +212,57 @@ VC.intPlanTiered = function (M) {
   else VC.INT.keep[M.n] = [obb([P.house.x, P.house.z], [1, 0], P.house.hw + 3, P.house.hd + 3)];
   VC.intWalls(P);
   return P;
+};
+/* the atria (owner, 2026-10-15: "add some multi-storey open space inside them in places"): on every tier with two storeys
+   or more, the lowest storey's hall on each TUNE.interiors.atrium arm is open to the storey above: that storey's hall
+   keeps a railed gallery along both sides of the void and whole floor at its ends, the lower hall loses its ceiling over
+   the void. The top tier's atria get a light well: a shaft from the atrium's ceiling to the deck (a slot in the deck,
+   parapeted), so daylight falls down the void (rare: TUNE.interiors.atrium.wells) */
+VC.intAtria = function (P, allSt) {
+  var T = TUNE.interiors, A = T.atrium, cc = [P.core.x, P.core.z], g = A.gallery; if (!A) return;
+  P.wells = [];
+  P.tiers.forEach(function (t) {
+    if (t.storeys.length < 2) return;
+    var lo = allSt.findIndex(function (o) { return o.t === t && o.s.j === 0; }), up = allSt.findIndex(function (o) { return o.t === t && o.s.j === 1; });
+    if (lo < 0 || up < 0) return;
+    var top = t === P.tiers[P.tiers.length - 1] && t.storeys.length === 2 && A.wells;
+    A.arms.forEach(function (ai) {
+      var H0 = P.halls.filter(function (h) { return h.storey === lo && h.arm === ai && h.kind === 'hall'; })[0], H1 = P.halls.filter(function (h) { return h.storey === up && h.arm === ai && h.kind === 'hall'; })[0];
+      if (!H0 || !H1) return;
+      var a0 = T.core + 2, a1 = Math.min(H0.a1, H1.a1) - 1.5; if (a1 - a0 < 12) return;
+      var d = H0.d, lat = T.hall / 2;
+      H0.atrium = { a0: a0, a1: a1 }; H1.gallery = { a0: a0, a1: a1 };
+      /* the lower hall keeps its ceiling only beyond the void */
+      H0.noceil = true; var S0 = P.storeys[lo], S1 = P.storeys[up];
+      (P.extraCeilings = P.extraCeilings || []);
+      [[H0.a0, a0], [a1, H0.a1]].forEach(function (seg) { if (seg[1] - seg[0] < 0.2) return; var q = VC.intRect(cc, d, seg[0], seg[1], lat, S0.y, 0, 'x'); P.extraCeilings.push({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, y: S0.y + S0.h, storey: lo }); });
+      /* the upper hall's floor: whole at its ends, two strips along the void; the railing round the void */
+      H1.nofloor = true;
+      [[H1.a0, a0], [a1, H1.a1]].forEach(function (seg) { if (seg[1] - seg[0] < 0.2) return; var q = VC.intRect(cc, d, seg[0], seg[1], lat, S1.y, 0, 'x'); P.floors.push({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, y: S1.y, kind: 'hall', storey: up, noceil: true }); });
+      [-1, 1].forEach(function (sd) { var q = VC.intSideRect(cc, d, sd, a0, a1, lat - g, lat); P.floors.push({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, y: S1.y, kind: 'gallery', storey: up, noceil: true }); });
+      var qc = VC.intRect(cc, d, H1.a0, H1.a1, lat, S1.y, 0, 'x'), slot = null;
+      if (top) { var wa0 = a0 + (a1 - a0) * 0.3, wa1 = a1 - (a1 - a0) * 0.3, qs = VC.intRect(cc, d, wa0, wa1, A.wellW / 2, 0, 0, 'x'); slot = [qs.x0, qs.x1, qs.z0, qs.z1]; }
+      CANT.rectMinus([qc.x0, qc.x1, qc.z0, qc.z1], slot ? [slot] : []).forEach(function (r) { P.extraCeilings.push({ x0: r[0], x1: r[1], z0: r[2], z1: r[3], y: S1.y + S1.h, storey: up }); });
+      VC.intRails(P, cc, d, a0, a1, lat - g, S1.y, up);
+      if (slot) {
+        /* the light well: the slot's shaft walls from the ceiling to the deck, a parapet on the deck, the deck's floor cut */
+        var q = { x0: slot[0], x1: slot[1], z0: slot[2], z1: slot[3] }, yc = S1.y + S1.h, yd = P.M.top.y;
+        P.wells.push({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, y0: yc, y1: yd, storey: up });
+        var tw = T.wallT;
+        [[q.x0 - tw, q.x0, q.z0 - tw, q.z1 + tw], [q.x1, q.x1 + tw, q.z0 - tw, q.z1 + tw], [q.x0, q.x1, q.z0 - tw, q.z0], [q.x0, q.x1, q.z1, q.z1 + tw]].forEach(function (b) {
+          P.boxes.push({ x0: b[0], x1: b[1], z0: b[2], z1: b[3], y0: yc, y1: yd + 0.9, kind: 'well', storey: up });
+        });
+        CANT.holes[P.n] = (CANT.holes[P.n] || []).concat([[q.x0, q.x1, q.z0, q.z1, yd]]);
+      }
+    });
+  });
+};
+/* a railing (a low wall, kind 'rail') round a void's rectangle: along d from a0 to a1 at lateral +-lat, and across its
+   ends; the host draws rails as a rail with posts (56-vc-interiors-host.js) */
+VC.intRails = function (P, cc, d, a0, a1, lat, y, si) {
+  var A = TUNE.interiors.atrium, t = A.railT, h = A.rail;
+  [-1, 1].forEach(function (sd) { var q = VC.intSideRect(cc, d, sd, a0, a1, lat - t / 2, lat + t / 2); P.boxes.push({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, y0: y, y1: y + h, kind: 'rail', storey: si }); });
+  [[a0 - t / 2, a0 + t / 2], [a1 - t / 2, a1 + t / 2]].forEach(function (e) { var q = VC.intRect(cc, d, e[0], e[1], lat, 0, 0, 'x'); P.boxes.push({ x0: q.x0, x1: q.x1, z0: q.z0, z1: q.z1, y0: y, y1: y + h, kind: 'rail', storey: si }); });
 };
 /* a rectangle along direction d (an axis) from a0 to a1 out of the point c, half-width h: an axis-aligned box */
 VC.intRect = function (c, d, a0, a1, h, y, hh, kind) {
@@ -229,7 +325,7 @@ VC.intWalls = function (P) {
   var T = TUNE.interiors, t = T.wallT, B = P.boxes, F = P.floors, c = P.core, h = c.half, wl = T.well;
   /* the open spaces of a storey: what a wall line may not cross (a hall, a tunnel, a passage, the core) */
   var open = function (si) {
-    var o = P.halls.filter(function (q) { return q.storey === si; }).concat(si === 0 ? P.tunnels : []);
+    var o = P.halls.filter(function (q) { return q.storey === si; }).concat(P.tunnels.filter(function (q) { return (q.storey || 0) === si; }));
     o.push({ x0: c.x - h, x1: c.x + h, z0: c.z - h, z1: c.z + h });
     return o;
   };
@@ -240,41 +336,52 @@ VC.intWalls = function (P) {
     var minus = function (lo, hi) { iv = [].concat.apply([], iv.map(function (s) { return lo >= s[1] || hi <= s[0] ? [s] : [[s[0], lo], [hi, s[1]]].filter(function (q) { return q[1] - q[0] > 0.05; }); })); };
     (doors || []).forEach(function (d) { if ((alongX ? Math.abs(d.z - L) : Math.abs(d.x - L)) > t) return; var m = alongX ? d.x : d.z; minus(m - d.w / 2, m + d.w / 2); });
     open(si).forEach(function (o) { if (o === own) return; var cross = alongX ? (o.z0 < L - 0.05 && o.z1 > L + 0.05) : (o.x0 < L - 0.05 && o.x1 > L + 0.05); if (cross) minus(alongX ? o.x0 : o.z0, alongX ? o.x1 : o.z1); });
-    iv.forEach(function (s) { B.push(alongX ? { x0: s[0], x1: s[1], z0: L - t / 2, z1: L + t / 2, y0: y, y1: y + hh, kind: 'wall', storey: si, of: tag } : { x0: L - t / 2, x1: L + t / 2, z0: s[0], z1: s[1], y0: y, y1: y + hh, kind: 'wall', storey: si, of: tag }); });
+    iv.forEach(function (s) {
+      /* two open spaces that share a wall line (the suites' big rooms) build it once */
+      var key = (alongX ? 'x' : 'z') + L.toFixed(2) + '|' + s[0].toFixed(2) + '|' + s[1].toFixed(2) + '|' + y.toFixed(2);
+      if (seenWall[key]) return; seenWall[key] = 1;
+      B.push(alongX ? { x0: s[0], x1: s[1], z0: L - t / 2, z1: L + t / 2, y0: y, y1: y + hh, kind: 'wall', storey: si, of: tag } : { x0: L - t / 2, x1: L + t / 2, z0: s[0], z1: s[1], y0: y, y1: y + hh, kind: 'wall', storey: si, of: tag }); });
   };
-  var roomDoors = P.rooms.map(function (r) { return Object.assign({ storey: r.storey }, r.door); });
-  /* a room: three walls (its hall side is the hall's) */
+  var seenWall = {};
+  var roomDoors = P.rooms.filter(function (r) { return r.door; }).map(function (r) { return Object.assign({ storey: r.storey }, r.door); }).concat(P.suiteDoors || []);
+  /* a room: three walls (its hall side is the hall's); a great hall (open) has its hall record's walls and floor */
   P.rooms.forEach(function (r) {
+    if (r.open) return;
     var e = [[r.x0, r.z0, r.x1, r.z0], [r.x0, r.z1, r.x1, r.z1], [r.x0, r.z0, r.x0, r.z1], [r.x1, r.z0, r.x1, r.z1]];
     e.forEach(function (q) { var alongX = q[1] === q[3], L = alongX ? q[1] : q[0]; if ((alongX ? Math.abs(r.door.z - L) : Math.abs(r.door.x - L)) < 0.05) return; line(q[0], q[1], q[2], q[3], r.storey, r.y, r.h, r, [], 'room'); });
     F.push({ x0: r.x0, x1: r.x1, z0: r.z0, z1: r.z1, y: r.y, kind: 'room', storey: r.storey, room: r.id });
   });
-  /* a hall, a tunnel, a passage: all four sides, opened where the doors are and where another open space meets it */
+  /* a hall, a tunnel, a passage: all four sides, opened where the doors are and where another open space meets it;
+     a great hall's walls stand its two storeys; a gallery record (the storey above a great hall) has neither walls nor
+     a whole floor (its strips are laid by the planner), it only keeps the storey's hall open at its end */
   P.halls.concat(P.tunnels).forEach(function (o) {
     var si = o.storey == null ? 0 : o.storey, ds = roomDoors.filter(function (d) { return d.storey === si; });
-    [[o.x0, o.z0, o.x1, o.z0], [o.x0, o.z1, o.x1, o.z1], [o.x0, o.z0, o.x0, o.z1], [o.x1, o.z0, o.x1, o.z1]].forEach(function (q) {
+    if (!o.nowalls) [[o.x0, o.z0, o.x1, o.z0], [o.x0, o.z1, o.x1, o.z1], [o.x0, o.z0, o.x0, o.z1], [o.x1, o.z0, o.x1, o.z1]].forEach(function (q) {
       /* a tunnel's mouth (its end at its door) stays open */
-      if (o.kind === 'tunnel' && (P.doorsOut || CANT.doors).some(function (D) { return D.id === o.door && (q[1] === q[3] ? Math.abs(q[1] - D.z) < 1.5 : Math.abs(q[0] - D.x) < 1.5); })) return;
+      if (o.kind === 'tunnel' && (P.doorsOut || CANT.doors).concat(P.suite ? P.suite.exits : []).some(function (D) { return D.id === o.door && (q[1] === q[3] ? Math.abs(q[1] - D.z) < 1.5 : Math.abs(q[0] - D.x) < 1.5); })) return;
       line(q[0], q[1], q[2], q[3], si, o.y, o.h, o, ds, o.kind); });
-    F.push({ x0: o.x0, x1: o.x1, z0: o.z0, z1: o.z1, y: o.y, kind: o.kind, storey: si });
+    if (!o.nofloor) F.push({ x0: o.x0, x1: o.x1, z0: o.z0, z1: o.z1, y: o.y, kind: o.kind, storey: si, h: o.great ? o.h : undefined, noceil: !!o.noceil });
   });
-  /* the core: its floor round the well (whole on the ground storey), its four walls opened onto the halls */
+  /* the core: its floor round the well (whole on the ground storey, whose ceiling still has the well cut out: the stair
+     rises through it), its four walls opened onto the halls */
+  P.extraCeilings = P.extraCeilings || [];
   P.storeys.forEach(function (S) {
-    var wx = VC.intWell(P)[0], wz = VC.intWell(P)[1];
-    if (S.i === 0) F.push({ x0: c.x - h, x1: c.x + h, z0: c.z - h, z1: c.z + h, y: S.y, kind: 'core', storey: S.i });
-    else [[c.x - h, c.x + h, c.z - h, c.z - wz], [c.x - h, c.x + h, c.z + wz, c.z + h], [c.x - h, c.x - wx, c.z - wz, c.z + wz], [c.x + wx, c.x + h, c.z - wz, c.z + wz]].forEach(function (q) { F.push({ x0: q[0], x1: q[1], z0: q[2], z1: q[3], y: S.y, kind: 'core', storey: S.i }); });
+    var wx = VC.intWell(P)[0], wz = VC.intWell(P)[1], ring = [[c.x - h, c.x + h, c.z - h, c.z - wz], [c.x - h, c.x + h, c.z + wz, c.z + h], [c.x - h, c.x - wx, c.z - wz, c.z + wz], [c.x + wx, c.x + h, c.z - wz, c.z + wz]];
+    if (S.i === 0) { F.push({ x0: c.x - h, x1: c.x + h, z0: c.z - h, z1: c.z + h, y: S.y, kind: 'core', storey: S.i, noceil: true }); ring.forEach(function (q) { P.extraCeilings.push({ x0: q[0], x1: q[1], z0: q[2], z1: q[3], y: S.y + S.h, storey: S.i }); }); }
+    else ring.forEach(function (q) { F.push({ x0: q[0], x1: q[1], z0: q[2], z1: q[3], y: S.y, kind: 'core', storey: S.i }); });
     var self = open(S.i).filter(function (o) { return o.x0 === c.x - h && o.z0 === c.z - h; })[0];
     [[c.x - h, c.z - h, c.x + h, c.z - h], [c.x - h, c.z + h, c.x + h, c.z + h], [c.x - h, c.z - h, c.x - h, c.z + h], [c.x + h, c.z - h, c.x + h, c.z + h]].forEach(function (q) { line(q[0], q[1], q[2], q[3], S.i, S.y, S.h, self, [], 'core'); });
   });
-  /* the ceilings: every floor but the landings, at its storey's height (the core's with the well cut out, as its floor) */
-  P.ceilings = F.filter(function (f) { return f.kind !== 'landing' && f.kind !== 'keep'; }).map(function (f) { var S = P.storeys[f.storey] || P.storeys[0]; return { x0: f.x0, x1: f.x1, z0: f.z0, z1: f.z1, y: S.y + S.h, storey: f.storey }; });
+  /* the ceilings: every floor but the landings and the gallery strips, at its storey's height (a great hall's at its own,
+     two storeys up), plus the atria's and the core's (above) */
+  P.ceilings = F.filter(function (f) { return f.kind !== 'landing' && f.kind !== 'keep' && !f.noceil; }).map(function (f) { var S = P.storeys[f.storey] || P.storeys[0]; return { x0: f.x0, x1: f.x1, z0: f.z0, z1: f.z1, y: f.h != null ? f.y + f.h : S.y + S.h, storey: f.storey }; }).concat(P.extraCeilings);
   /* the shell: each tier's outer wall, inside its stone, round the storeys (the walker's, VC.intWalk), opened at the tunnels */
   P.shell = [];
   P.tiers.forEach(function (tr) {
     var M = P.M, R = tr.R, o = T.wall;
     [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (n) {
       var alongX = n[0] === 0, L0 = (alongX ? M.z : M.x) + (alongX ? n[1] : n[0]) * (R + o / 2), iv = [[-R - o, R + o]];
-      if (tr.k === P.tiers[0].k) P.tunnels.forEach(function (tu) { var cross = alongX ? (tu.z0 < L0 && tu.z1 > L0) : (tu.x0 < L0 && tu.x1 > L0); if (!cross) return;
+      P.tunnels.forEach(function (tu) { if ((tu.tier == null ? P.tiers[0].k : tu.tier) !== tr.k) return; var cross = alongX ? (tu.z0 < L0 && tu.z1 > L0) : (tu.x0 < L0 && tu.x1 > L0); if (!cross) return;
         var lo = (alongX ? tu.x0 - M.x : tu.z0 - M.z), hi = (alongX ? tu.x1 - M.x : tu.z1 - M.z); iv = [].concat.apply([], iv.map(function (s) { return lo >= s[1] || hi <= s[0] ? [s] : [[s[0], lo], [hi, s[1]]].filter(function (q) { return q[1] - q[0] > 0.05; }); })); });
       iv.forEach(function (s) { P.shell.push(alongX ? [M.x + s[0], M.x + s[1], L0 - o / 2, L0 + o / 2, tr.y0 + 0.3, tr.y1 - 0.3] : [L0 - o / 2, L0 + o / 2, M.z + s[0], M.z + s[1], tr.y0 + 0.3, tr.y1 - 0.3]); });
     });
@@ -352,7 +459,7 @@ VC.intWalk = function (W) {
     var P = VC.INT.cantons[cn], tag = 'interior:' + cn;
     P.floors.forEach(function (f) { W.floor({ rect: [f.x0, f.x1, f.z0, f.z1], y: f.y, name: cn + ' ' + f.kind, tag: tag }); n++; });
     P.flights.forEach(function (f) { W.strip({ a: [f.a[0], f.a[1], f.y0], b: [f.b[0], f.b[1], f.y1], w: f.w, name: cn + ' core stair', tag: tag }); });
-    P.boxes.forEach(function (b) { if (b.kind === 'wall') W.block([b.x0, b.x1, b.z0, b.z1, b.y0 + 0.05, b.y1], tag); });
+    P.boxes.forEach(function (b) { if (b.kind === 'wall' || b.kind === 'rail' || b.kind === 'well') W.block([b.x0, b.x1, b.z0, b.z1, b.y0 + 0.05, b.y1], tag); });
     (P.shell || []).forEach(function (s) { W.block(s, tag + ':shell'); });
     if (P.house && !P.house.gate) {
       /* the stair house's walls on the deck: three sides, the door side open */
@@ -375,12 +482,13 @@ VC.intEntrances = function () {
   return VC.capture('entrances', 2, function () {
     Object.keys(VC.INT.cantons).forEach(function (cn) {
       var P = VC.INT.cantons[cn], M = P.M, tone = M.tone;
-      (P.catacombs ? CANT.doors.filter(function (d) { return d.canton === cn; }) : P.doorsOut).forEach(function (D) {
-        var n = D.n, ry = Math.atan2(n[0], n[1]), w = T.tunnelW, at = function (o, s) { return [D.x + n[0] * o + -n[1] * s, D.z + n[1] * o + n[0] * s]; };
-        var pc = at(0.4, 0); B.BOX(pc[0], D.y - 0.2, pc[1], w + 3.4, T.tunnelH + 2.2, 2.4, ry, B.shade(tone, 0.04));          /* the porch */
-        var oc = at(1.62, 0); B.BOX(oc[0], D.y, oc[1], w - 0.2, T.tunnelH - 0.2, 0.12, ry, B.shade(tone, -0.62));            /* the opening */
-        [-1, 1].forEach(function (s) { var pp = at(1.75, s * (w / 2 + 0.6)); B.BOX(pp[0], D.y - 0.2, pp[1], 0.9, T.tunnelH + 1.4, 0.5, ry, B.shade(tone, 0.12)); });
-        var lc = at(1.8, 0); B.BOX(lc[0], D.y + T.tunnelH + 0.9, lc[1], w + 2.8, 0.9, 0.7, ry, B.shade(tone, 0.16));          /* the lintel */
+      (P.catacombs ? CANT.doors.filter(function (d) { return d.canton === cn; }) : P.doorsOut).concat(P.suite ? P.suite.exits : []).forEach(function (D) {
+        var n = D.n, ry = Math.atan2(n[0], n[1]), w = D.w || T.tunnelW, th = D.h || T.tunnelH, at = function (o, s) { return [D.x + n[0] * o + -n[1] * s, D.z + n[1] * o + n[0] * s]; };
+        var grand = D.entrance ? 1.6 : 1, gilt = D.entrance && cn === 'Palace';                                        /* a suite's main entrance: a taller porch, gilt in the Palace's case */
+        var pc = at(0.4, 0); B.BOX(pc[0], D.y - 0.2, pc[1], w + 3.4 * grand, th + 2.2 * grand, 2.4, ry, B.shade(tone, 0.04));          /* the porch */
+        var oc = at(1.62, 0); B.BOX(oc[0], D.y, oc[1], w - 0.2, th - 0.2, 0.12, ry, B.shade(tone, -0.62));            /* the opening */
+        [-1, 1].forEach(function (s) { var pp = at(1.75, s * (w / 2 + 0.6)); B.BOX(pp[0], D.y - 0.2, pp[1], 0.9, th + 1.4 * grand, 0.5, ry, gilt ? 0xd0a53c : B.shade(tone, 0.12), gilt ? 'metal' : undefined); });
+        var lc = at(1.8, 0); B.BOX(lc[0], D.y + th + 0.9 * grand, lc[1], w + 2.8, 0.9, 0.7, ry, gilt ? 0xd0a53c : B.shade(tone, 0.16), gilt ? 'metal' : undefined);          /* the lintel */
         var sc = at(2.6, 0); B.BOX(sc[0], D.y - 0.15, sc[1], w + 1.6, 0.3, 1.6, ry, B.shade(tone, -0.08));                  /* the sill */
       });
       var H = P.house; if (!H || H.keep) return;

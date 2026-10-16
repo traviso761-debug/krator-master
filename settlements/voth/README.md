@@ -271,6 +271,23 @@ core/clock's `KCLOCK`, a 72-minute day. `build.py` adds `core/clock` and `core/a
   bodies drawn near the camera and the cutaway still follow the camera, and the inspector, the hour slider and the
   panels still work. Headless proof (2026-10-14): two shots 8 s apart while paused are pixel-identical.
 
+**Canopies, lanterns and hanging banners** (`37b-vc-canopies.js` lays, `56f-vc-street-host.js` draws; `TUNE.canopy`; owner,
+2026-10-15, from the "canopy", "banner" and "market stall" pictures):
+* **Canopies**: in the market quarter (within `marketReach` of a market district) and the wealthy streets, cloth sheets strung on
+  ropes between the buildings that face each other across a side street or an alley (main streets in the market quarter), the
+  cloth sagging to the middle, paper lanterns hung along the middle rope, lit with the street lamps after dark. The market
+  quarter's are Voth kilims, the wealthy streets' plain hide. Every spot is a KRAND hash; the anchors are the first lot wall each
+  side within `reach` of the kerb, a storey under the lower building.
+* **Banners**: the spans' banners and the Temple's and the Fortress's dressing are records now (`CANT.banners`,
+  `VC.dressBanners`): a tall narrow cloth on a short crossbar off the parapet or the cornice, a weighted hem bar, the glyph
+  sheet of its canton (the Ordinator sheet under the bridges and on the Fortress, the Voth banner on the Temple with a gilt
+  border), in place of the flat tinted boxes.
+* **The market stall** (`kits/catalog` `voth_market_stall`, redrawn): poles leaning in to a ridge, a red woven awning over it with
+  horn finials, a painted kilim hung on one side for a wall, a brass-banded counter chest with the goods, baskets and sacks
+  behind, a lantern on the ridge. **The wayside shrine** (`voth_wayside_shrine`, redrawn from the "shrine" picture): a recess
+  between two battered pylons, a painted mural of the deity among rays and glyph columns, candle pedestals and planters before
+  it, coloured lanterns on a cord between the pylons' heads.
+
 **Park and plaza furniture** (`39-vc-furnish.js`, `TUNE.parkFurn`; owner, 2026-10-09):
 * The pieces are Voth's outdoor pieces from the furniture catalog. `build.py` lifts the Voth section of
   `kits/catalog/krator-master-furniture.js` by its header, so the page carries no other culture's pieces.
@@ -376,11 +393,70 @@ Ancestry's spiral walkway as faces. The bridges, causeways and stairs are planne
 The willows, reeds and marsh plants are the swbay kit's. Every choice is a KRAND hash of the bed.
 
 **The canton interiors** (`40-vc-interiors.js` plans, `56-vc-interiors-host.js` furnishes and draws; `TUNE.interiors`;
-owner, 2026-10-09). Every canton but the Palace and Temple is hollowed into storeys. Each storey has:
+owner, 2026-10-09). Every canton is hollowed into storeys (the Palace and the Temple since 2026-10-15: their bridge tier is a
+bespoke state floor, below). Each storey has:
 * a core stair (two flights and a landing each storey);
 * halls with rooms on both sides;
 * tunnels in from the doors;
 * a stair house up to the top deck (on the Fortress, its keep).
+
+Since 2026-10-15 (owner: "canton interiors need work, they are textureless and there is some camera clipping between levels
+seen when using walk mode ... add some multi-storey open space inside them in places"):
+* **Surfaces** (`TUNE.interiors.look`; `VC.intSetMat`, `VC.intSheetMat`): the library's sets (`materials.json`: eroded banco over
+  brick, smooth banco, big sandstone blocks, carved stucco, glazed tiles, travertine, timber beams, carved wood, gold leaf) as
+  grey detail under each canton's own colours, projected by world position; the full-colour pattern sheets (the Voth banners,
+  the solar and the Ordinator sheets, the Voth kilims, the inlay bands, the red palmette frieze, the sun-ray medallion, the
+  diamond jali, lantern paper) on tapestries, banners, rugs, dado bands, screens and lanterns, UV-mapped on turned panels.
+  Each canton has a look: the common ones in ash plaster over tiled ochre floors; the Palace in carved green stucco, green
+  tiles and gilt; the Temple austere pale banco and sandstone with blood-red hangings and candle nooks; the Fortress dark
+  blocks with the Ordinators' green and gold; the Foreign canton timber ceilings and bright kilims.
+  **The owner's sheets (2026-10-15, `Downloads/vothtex.zip`).** The Palace's stucco, tiles, jade inlay and columns, the damask and
+  the filigrees are drawn in their own colour (`VC.INT_COLOUR`: the set as authored, the look's colour a light tint). A look's
+  `tapestry` is a list: each hanging takes one by a hash of its spot. A look may also name `column`, `inlay`, `drum` (a painted
+  cloth drum round its chandeliers), `carpet` (runners down the state rooms), `domeMosaic` (over the throne room's sun chandelier),
+  `screen`, `icon` (behind the altar) and `dadoH` (a taller dado: the Temple's ancestor relief at 1.6 m). The suites' `frescos`
+  hang the myth of the three brothers (the Chichani, the Zeijani and the Andaru) high on their rooms' end walls, over the doors.
+* **Atria** (`TUNE.interiors.atrium`, `VC.intAtria`): on every tier with two storeys or more, the lowest storey's halls on the
+  axis arms are open to the storey above, which keeps a railed gallery along both sides of the void; the top tier's atria have a
+  light well, a parapeted slot in the deck (rare: the owner's "exterior light wells").
+* **Great halls** (`TUNE.interiors.greatHall`): a square hall two storeys tall at the far end of an arm on the first tier, a
+  railed gallery round it above. The Fortress's and the Arena's are training halls (the owner's "training hall" picture: posts
+  with crossbars and ropes on a sand square, banners on the gallery walls, torches, chandeliers); the Guild's a guildhall, the
+  Market's a market hall of stalls, the Arsenal's a drill hall, the Port's a warehouse, the Granary's a granary.
+* **Light** (`TUNE.interiors.lamps`, `VC.intDecor`; owner: "sufficient interior light sources, be they candles, lanterns,
+  chandeliers, or more rarely exterior light wells"): a paper lantern under every room's ceiling (a candle sconce in a cell, a
+  store, a dormitory), lanterns down the halls with torch brackets between, chandeliers in the great halls and over the atria,
+  every fitting drawn lit; a pool of twelve point lights follows the camera onto the nearest fittings.
+* **The core's ceiling** on the ground storey has the stair well cut out (it was a solid slab the walker's head passed through),
+  and **the near plane** stays at 12 cm while walking (`targets/voth-site/50-site-scene.js`: it grew with the camera's height
+  over the ground, so inside a canton 60 m up it stood at 2 m and cut every wall an arm away).
+* **Drawing** (`VC.intProto`): a catalog piece's primitives are merged by material class into vertex-coloured geometries, one
+  InstancedMesh per class, piece and storey (a canton was 30,000 meshes, now about 2,500).
+
+**The Palace and the Temple** (`40b-vc-suites.js` `VC.SUITES`; owner, 2026-10-15, from the reference pictures). Their bridge tier
+(tier 1, where every bridge lands) is a state floor of three tall storeys, laid along a main axis from an entrance on the
+bridge's face:
+* **The Palace** (in from the -x face, the Ancestry's bridge): the foyer, a three-storey atrium with balconies, its six pillars
+  with the ancestors' gilt statues at their feet and grand stairs up each side wall to the first gallery and across the far wall
+  to the second; the two-storey banquet hall with pillars, chandeliers and tapestries hung at 45 degrees from the ceiling; the
+  three-storey octagonal throne room, its corners cut by diagonal walls, a corbelled dome rising through the tier above, the
+  octagonal dais and throne under the sun-giant-Krator chandelier (a jewelled gilt hoop with the three lit orbs); Tzintzun's
+  chambers on two floors with their own inner stair; off the north service hall the two-storey Hall of Judgment (the ruler's dais
+  against the far wall, two plaintiffs' daises against the near one, the spectators' galleries along the long walls). Two
+  service halls run the length of the floor either side, lined on every storey with guest chambers, clerks' offices and a
+  scriptorium, kitchens, servants' dormitories, guard rooms and stores, opened onto the state rooms by cross passages and
+  out onto the terrace gardens at their ends. The dungeon under the ground storey is the ruler's oubliette (cells, a guard
+  room, stores); the lower tiers hold the stores by the dock, guard rooms, offices and quarters.
+* **The Temple** (in from the +z face, the front the terrace flights climb): the three-storey atrium with pillars, a basin and
+  candle nooks; the three-storey sanctuary with the altar's dais and the ancestors' relief behind it, braziers and hangings;
+  the high priest's audience room with ornamental screens, his private chamber and the vestry, each with an upper floor. The
+  service halls hold the priests' quarters (chambers, a dormitory, a kitchen, stores, a library; the other high priests'
+  rooms on the first storey), the prisoners' cells with their guard rooms, and the wing of administrative offices.
+* Everything else (the other tiers, the tunnels from the dock, the stair house, the core) is the generic planner's, with the dome's
+  footprint kept clear on the tier above. The suites' doors, exits (a porch at each, the Palace's main entrance gilt), decor
+  records and galleries are the same records the generic cantons use, so the walker, the cutaway, the furnishing and the
+  census need nothing new; the new room kinds (foyer, banquet, throne, apartment, guest, judgment, scriptorium, sanctuary,
+  atrium, highpriest, vestry) are in `TUNE.census.rooms`.
 
 The rooms follow each canton's purpose (`TUNE.interiors.purposes`), with some residences among them:
 
@@ -455,6 +531,15 @@ entertaining room where the plan allows. Residents are the census's (`TUNE.censu
   300 ms), so a first opening spreads over a few seconds instead of stalling a frame; drawn interiors kept for later are
   capped at 150 (the farthest freed). The canton the view's middle is on keeps its clipping planes. The inspector names
   the shown pieces.
+* **The wealthy houses' decor** (`VC.ixDecor` in 56b, `TUNE.ix.decor`; owner, 2026-10-15: "wealthy homes and clan compounds ...
+  tapestries are extensive and in the larger spaces, hung at a 45 degree angle; chandeliers and carved and inlaid columns are
+  common. Ornamental plants are also noted"): in the rich, manor, clan, civic, tavern and landmark classes the halls and living
+  rooms are hung with tapestries (the Voth kilim in the clans' halls, at 45 degrees from the ceiling in a grand one), a grand
+  hall gets a chandelier and, in a clan's or a manor's, four carved columns; every room in every building has a paper lantern
+  (the light pool reaches them). The catalog's new `voth_planter` (an ornamental plant in a glazed pot) is offered to halls,
+  foyers, reception rooms and atria. **The clan compounds' atria** (`VC.ixAtrium` in 41, `TUNE.ix.atrium`; owner: "atria again
+  are seen but only in the clan banquet room"): the ground-floor hall is open to the floor above, which keeps a railed gallery
+  round the void; the rooms that stood over it go, and the report counts the beds a compound gives up for it.
 * **Walking into a building (F)** shows its interior whole, as walking into a canton does (`VC.ixWalkIn`); the cutaway
   leaves it so. Interior meshes are never frustum-culled (2026-10-14): three r128 culls an InstancedMesh by its geometry's
   sphere at the group's origin, not by its instances, so a building's interior vanished whenever its middle left the view,

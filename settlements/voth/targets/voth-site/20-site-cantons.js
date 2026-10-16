@@ -818,7 +818,13 @@ CANT.drawSpan = function (B, S) {
   for (var k = 0; k + 1 < ts.length; k++) {
     var tm = (ts[k] + ts[k + 1]) / 2, xm = S.ax + u[0] * L * tm, zm = S.az + u[1] * L * tm, ym = CANT.deckY(S, tm);
     if (CANT.at(xm, zm, 0)) continue;
-    [-1, 1].forEach(function (sd) { var drop = 8 + 5 * CANT.u(S.i, k * 2 + (sd > 0), 3); B.BOX(xm + pv[0] * sd * (S.w / 2 + 0.2), ym + 0.6 - drop, zm + pv[1] * sd * (S.w / 2 + 0.2), 0.16, drop, 5, ry, BAN[(S.i + k) % BAN.length], 'cloth'); });
+    [-1, 1].forEach(function (sd) {
+      /* a tall narrow banner on a crossbar off the parapet (owner, 2026-10-15: like the hanging banners of the reference);
+         the cloth is the host's (CANT.banners -> 56f-vc-street-host.js), the bar a prim */
+      var drop = 8 + 5 * CANT.u(S.i, k * 2 + (sd > 0), 3), bx = xm + pv[0] * sd * (S.w / 2 + 0.9), bz = zm + pv[1] * sd * (S.w / 2 + 0.9);
+      B.BOX(xm + pv[0] * sd * (S.w / 2 + 0.3), ym + 0.5, zm + pv[1] * sd * (S.w / 2 + 0.3), 0.12, 0.12, 1.5, ry + Math.PI / 2, 0x3a3630, 'metal');
+      (CANT.banners = CANT.banners || []).push({ x: bx, y: ym + 0.55, z: bz, d: [u[0], u[1]], n: [pv[0] * sd, pv[1] * sd], w: 1.9, drop: drop, sheet: ['banner_blue', 'banner_rust', 'banner_lavender'][(S.i + k + (sd > 0 ? 1 : 0)) % 3], tint: 0xffffff, step: 2 });   /* the owner's glyph banners (2026-10-15) */
+    });
   }
 };
 CANT.drawFlights = function (B, kinds) {

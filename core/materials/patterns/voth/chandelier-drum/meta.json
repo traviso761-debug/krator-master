@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.049,
+    0.835
+   ],
+   "seam_before": [
+    3.317,
+    1.427
+   ],
+   "source_size": [
+    2170,
+    725
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.4,
+   "pattern": false,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "glow",
+  "id": "voth/chandelier-drum",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.88,
+  "scale": [
+   4,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__voth__chandelier-drum.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/chandelier-drum` (delivered as \"Golden Masked King\u2019s Ceremonial Procession.png\")",
+  "reuse": "a lit painted-cloth drum or frieze (chandeliers, lantern shades, a lit window band)",
+  "sha1": "ab8e5b6488552d05b9d88293558054c22494f716"
+ }
+}
