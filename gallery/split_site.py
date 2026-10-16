@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Split gallery/site/ (build_gallery.py) into artifacts that each fit one artifact version (256 MiB; owner, 2026-10-14).
 
-    python3 gallery/split_site.py [--parts 2] [--cap 250] [--alone 'biome,objects=Krator Biomes and Objects'] [--link NAME=URL ...]
+    python3 gallery/split_site.py [--alpha | --parts 2] [--cap 250] [--alone 'biome,objects=Krator Biomes and Objects']
+        [--urls URL1,URL2,...] [--link NAME=URL ...]
+
+--alpha (owner, 2026-10-16, the way the gallery is published now): the world parts by the alphabet, titled by their
+range ('Krator Worlds A-H'); --urls names their artifacts in order. See alpha_parts().
 
 Writes gallery/site-1/, gallery/site-2/, ...: each an index.html and the worlds/ its cards open. A page goes with the
 library-pack sidecars it loads (<script src="*.tex.*.js">), and pages that load the same pack (by content: Mungo's and
@@ -25,6 +29,41 @@ def arg(name, d=None):
 def body_key(path):
     b = open(path, 'rb').read()
     return hashlib.sha1(b.split(b'\n', 1)[1]).hexdigest()   # the first line names the build that wrote it
+
+
+def sort_name(e):
+    """a card's name for the alphabet: a leading 'The' or 'A' ignored, as the index orders its sections"""
+    n = re.sub(r'^(the|a)\s+', '', e['name'].strip(), flags=re.I)
+    return n.lower()
+
+
+def alpha_parts(entries, size, cap):
+    """--alpha (owner, 2026-10-16): the world parts by the alphabet, titled by their range ('Krator Worlds A-K').
+    Pages in name order fill the parts one after another, balanced: as few parts as fit under the cap, each about an
+    even share. A part keeps its own copy of every pack its pages load (a pack two parts share is in both), so no range
+    bends to keep a pack together."""
+    order = sorted(entries, key=lambda e: (sort_name(e), e['slug']))
+    def fill(limit):
+        bins, cur = [], []
+        for e in order:
+            if cur and size(cur + [e]) > limit:
+                bins.append(cur); cur = []
+            if size([e]) > cap:
+                sys.exit('split_site: %s (%.0f MB) is over the cap alone' % (e['slug'], size([e]) / 1e6))
+            cur.append(e)
+        return bins + ([cur] if cur else [])
+    k = len(fill(cap))
+    total = sum(size([e]) for e in order)
+    limit = total / k
+    while True:   # the smallest even share that still makes k parts, each under the cap
+        b = fill(min(cap, limit))
+        if len(b) <= k:
+            break
+        limit *= 1.02
+    letter = lambda e: sort_name(e)[:1].upper()
+    titles = ['Krator Worlds %s–%s' % (letter(p[0]), letter(p[-1])) if letter(p[0]) != letter(p[-1]) else 'Krator Worlds %s' % letter(p[0])
+              for p in b]
+    return b, titles
 
 
 def main():
@@ -66,16 +105,23 @@ def main():
         files = {canon[body_key(os.path.join(W, f))] for e in g for f in side[e['slug']]}
         return sum(os.path.getsize(os.path.join(W, e['slug'] + '.html')) for e in g) + \
             sum(os.path.getsize(os.path.join(W, f)) for f in files)
-    bins = [[] for _ in range(parts)]
-    used = [0.0] * parts
-    for g in sorted(groups.values(), key=lambda g: (-size(g), g[0]['slug'])):
-        s = size(g)
-        i = next((i for i in range(parts) if used[i] + s <= cap), None)
-        if i is None:
-            sys.exit('split_site: %s (%.0f MB) fits no part under %.0f MB: raise --parts' % (g[0]['slug'], s / 1e6, cap / 1e6))
-        bins[i] += g; used[i] += s
-    bins.sort(key=lambda b: (not any(e['slug'] == 'voth' for e in b), -len(b)))
-    titles = TITLES[:len(bins)] + ([alone_title] if lone else [])
+    if '--alpha' in sys.argv:
+        bins, titles = alpha_parts(entries, size, cap)
+    else:
+        bins = [[] for _ in range(parts)]
+        used = [0.0] * parts
+        for g in sorted(groups.values(), key=lambda g: (-size(g), g[0]['slug'])):
+            s = size(g)
+            i = next((i for i in range(parts) if used[i] + s <= cap), None)
+            if i is None:
+                sys.exit('split_site: %s (%.0f MB) fits no part under %.0f MB: raise --parts' % (g[0]['slug'], s / 1e6, cap / 1e6))
+            bins[i] += g; used[i] += s
+        bins.sort(key=lambda b: (not any(e['slug'] == 'voth' for e in b), -len(b)))
+        titles = TITLES[:len(bins)]
+    # --urls U1,U2,...: the world parts' artifacts in order; each index links to the others under their titles
+    urls = [u for u in (arg('--urls') or '').split(',') if u]
+    links = [[t, u] for t, u in zip(titles, urls)] + links
+    titles = titles + ([alone_title] if lone else [])
     if lone:
         bins.append(lone)
     for n, b in enumerate(bins, 1):

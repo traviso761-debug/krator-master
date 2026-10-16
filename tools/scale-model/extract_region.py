@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Cut one region of the Krator Scale Model out as the data an open-world build reads.
 
-    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir>
+    python3 tools/scale-model/extract_region.py <page.html> <regions dir> <settlements dir> "<region name>" <out dir> [--add <polygons.json>]
 
 <page.html>        the scale model page as saved (Artifact read); its DATA object holds the rasters
 <regions dir>      the artifact's `regions` collection: a folder of one JSON file per document (ArtifactData list with
@@ -9,6 +9,9 @@
 <settlements dir>  the artifact's `settlements` collection, the same way
 <region name>      the polygon that bounds the cut (a region of any layer: 'little demo')
 <out dir>          openworld/<name>/data: region.json and the rasters as PNG
+--add <file>       (optional) more polygons that are part of the cut: a JSON list of {name, map_px:[[x, y], ...]} (map
+                   pixels, as the open world's polygon tool copies them). The box covers them all and the mask is the
+                   union; region.json records each as 'added'. Without it the cut is the named region's alone.
 
 Map pixels are the scale model's full grid (fullW x fullH, 2 km a pixel); its heights are a half-resolution grid
 (DATA.w x DATA.hh, about 4 km a pixel) that the page samples at u = px*(w-1)/(fullW-1). World coordinates: metres,
@@ -152,9 +155,19 @@ def drainage(E, sink, rain_w):
 
 
 def main():
-    if len(sys.argv) != 6:
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')   # the rivers' names are in their tongues
+    except Exception:
+        pass
+    argv = sys.argv[1:]
+    added = []
+    if '--add' in argv:
+        k = argv.index('--add')
+        added = json.load(open(argv[k + 1], encoding='utf-8'))
+        argv = argv[:k] + argv[k + 2:]
+    if len(argv) != 5:
         sys.exit(__doc__)
-    page, rdir, sdir, name, out = sys.argv[1:]
+    page, rdir, sdir, name, out = argv
     D = load_page(page)
     R = docs(rdir)
     S = docs(sdir)
@@ -164,15 +177,15 @@ def main():
     reg = reg[0]
     OW, OH, VW, VH = D['fullW'], D['fullH'], D['w'], D['hh']
     lo, hi = D['lo'], D['hi']
-    xs = [p[0] for p in reg['points']]
-    ys = [p[1] for p in reg['points']]
+    xs = [p[0] for p in reg['points']] + [p[0] for a in added for p in a['map_px']]
+    ys = [p[1] for p in reg['points']] + [p[1] for a in added for p in a['map_px']]
     x0 = int(math.floor((min(xs) - MARGIN) / 2) * 2)
     y0 = int(math.floor((min(ys) - MARGIN) / 2) * 2)
     x1 = int(math.ceil((max(xs) + MARGIN) / 2) * 2)
     y1 = int(math.ceil((max(ys) + MARGIN) / 2) * 2)
     x0, y0, x1, y1 = max(0, x0), max(0, y0), min(OW - 1, x1), min(OH - 1, y1)
     W, H = x1 - x0 + 1, y1 - y0 + 1
-    cx, cy = (min(xs) + max(xs)) // 2, (min(ys) + max(ys)) // 2
+    cx, cy = int((min(xs) + max(xs)) // 2), int((min(ys) + max(ys)) // 2)
     os.makedirs(out, exist_ok=True)
 
     # ---- heights and water, on their own grid
@@ -218,6 +231,8 @@ def main():
     save8(os.path.join(out, 'rain.png'), rain)
     save8(os.path.join(out, 'temp.png'), temp)
     inside = poly_mask(reg['points'], x0, y0, W, H)
+    for a in added:   # the added polygons (--add): the cut is the union
+        inside = inside | poly_mask(a['map_px'], x0, y0, W, H)
     save8(os.path.join(out, 'mask.png'), inside * 255)
 
     # ---- biome overlays: the smaller polygon wins an overlap; the rest of the box takes the nearest overlay
@@ -413,7 +428,8 @@ def main():
         'format': 'krator-openworld-region', 'version': 1, 'source': 'Krator Scale Model ' + D['_version'],
         'region': {'name': reg['name'], 'doc': reg['id'], 'points_px': reg['points'],
                    'points_m': [[(a - cx) * 2000.0, (b - cy) * 2000.0] for a, b in reg['points']],
-                   'area_km2': round(poly_area(reg['points']) * 4)},
+                   'area_km2': round(poly_area(reg['points']) * 4), 'union_km2': int(inside.sum()) * 4,
+                   'added': [{'name': a.get('name', ''), 'points_px': a['map_px'], 'area_km2': round(poly_area(a['map_px']) * 4)} for a in added]},
         'frame': {'units': 'm', 'x': 'east', 'z': 'south', 'm_per_px': 2000.0, 'origin_px': [cx, cy],
                   'box_px': [x0, y0, x1, y1], 'size_px': [W, H]},
         'heights': {'grid': [nx, ny], 'origin_cell': [i0, j0], 'su': su, 'sv': sv, 'lo': lo, 'hi': hi,

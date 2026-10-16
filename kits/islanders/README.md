@@ -33,18 +33,21 @@ python3 ../../tools/textures/pack.py kits/islanders        # (from the repo root
 | Row | West | Kautoa (East) |
 |---|---|---|
 | Poor houses | scrap hut, fisher's hut, shared longhut | scrap hut, garden hut, shared house |
-| Houses | rumah, Batak house, tongkonan | uma, twin-peaked house, clan house |
-| Rich houses | rumah gadang, chief's house, great tongkonan | wealthy house, great uma, noble compound |
+| Houses | rumah, Batak house, tongkonan, peaked rumah | uma, twin-peaked house, clan house, long house, cross-roofed house |
+| Rich houses | rumah gadang, chief's house, great tongkonan | wealthy house, great uma, noble compound, chief's house |
 | Civic | assembly hall, ceremonial square, school | village hall, ceremonial square, school |
 | Trade | rice farm, smallholding, rice barn, clan granaries, windmill, warehouse, smithy, market hall, kava house, trader's shophouse, weaver, potter, boat-chandler | farmstead, smallholding, granary, village granary, windmill, warehouse, smithy, market hall, palm-wine and kava house, trader's shop, ikat weaver, potter, chandler |
+| Trades II (every Voth census trade) | spirit house (temple), bakehouse, butcher's and smokehouse, tannery and tapa house, healer's house, guest longhouse, harbourmaster's house, beacon tower, coral quarry, sulphur diggings, salt works, stock pens, buffalo byre | ancestor temple, bakehouse, butcher's and smokehouse, tannery and tapa house, healer's house, guest house, harbourmaster's house, beacon tower, coral quarry, sulphur diggings, salt works, stock pens, buffalo byre, envoys' compound |
 | Defence | palisade, palisade gate, watch tower, barracks | coral wall, town gate, watch tower, barracks |
 | Palace | | the palace of Kautoa: a walled compound of seven courts (gate court, ceremonial court, the great audience hall under a 44 m ribbed spire, the inner court with the king's, queen's and heir's houses, the kitchens and granaries, the ancestors' shrine, the treasury and garden) |
-| Harbours (on the shore) | fishing dock, dockyard (two slipway sheds, hulls on the slips, ring piers), harbour warehouse | fishing dock, dockyard (a double canoe half built, ring piers) |
+| Harbours (on the shore) | fishing dock, dockyard (two slipway sheds, hulls on the slips, ring piers), harbour warehouse, quay and cargo shed, war-canoe shed, ferry landing | fishing dock, dockyard (a double canoe half built, ring piers), quay and cargo shed, drua shed, ferry landing |
+| Mines and ore | mine (adit, windlass shaft, sorting shed) | mine |
+| Resource nodes | from kits/resources (read in place): iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter and oil in three grades; a mine works the nearest it can (never oil: a derrick's) within 400 m, the grade setting its yield | |
 | Gardens and stock | placeholder flora: coconut, banana, taro, breadfruit, rice paddy; the fauna kit's pig, hen, duck, water buffalo | |
 
 Every building is tagged with culture, types, wealth, style (`west` | `east`) and role (and a job where one fits); every one
 with an interior opens in the cut-away and is furnished from the catalog (`islander_common_*`, `islander_court_*`, the poor
-and trade sets, scrap and the jobs file) through core/furnish. The windmills' sails turn. The larger Islander vessels (the
+and trade sets, scrap and the jobs file) through core/furnish. The windmills' sails turn. Both sets carry every trade the Voth city's census lists (`IS_TRADES`, checked by `verify.py --assert`), and the two sets overlap more (owner, 2026-10-14): Kautoa's long house, chief's house and public houses take its village hall's broad crossed saddles, the West's peaked rumah, spirit house and beacon take Kautoa's pointed peak. The larger Islander vessels (the
 drua, the kora-kora, the pirates' lanong) are in `kits/ringsea`.
 
 ## How it is made

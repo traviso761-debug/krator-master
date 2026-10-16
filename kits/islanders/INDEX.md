@@ -25,6 +25,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `40-is-kit.js` | 14 |  |
 | `41-is-roof.js` | 8 |  |
 | `42-is-dress.js` | 4 |  |
+| `43-is-yards.js` | 9 |  |
 | `50-iw-west.js` | 15 |  |
 | `52-iw-civic.js` | 16 |  |
 | `53-iw-trade.js` | 29 |  |
@@ -32,14 +33,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `55-iw-defence.js` | 10 |  |
 | `56-sa-beasts.js` | 3 |  |
 | `57-fl-flora.js` | 4 |  |
-| `60-ie-east.js` | 13 |  |
+| `58-iw-trades.js` | 21 |  |
+| `60-ie-east.js` | 19 |  |
 | `62-ie-civic.js` | 20 |  |
 | `63-ie-trade.js` | 29 |  |
 | `64-ie-harbour.js` | 16 |  |
 | `65-ie-defence.js` | 10 |  |
 | `66-ip-palace.js` | 36 **big** |  |
+| `67-ie-trades.js` | 21 |  |
+| `68-is-trades.js` | 6 |  |
 | `81-sky.js` | 10 |  |
-| `89-rows.js` | 2 |  |
+| `89-rows.js` | 3 |  |
 | `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
 | `90h-is-shore.js` | 5 |  |
 | `91-probe.js` | 2 |  |

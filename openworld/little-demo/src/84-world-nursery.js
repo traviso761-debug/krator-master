@@ -117,7 +117,8 @@ function growPatch(S){const K=KIT[S.kit],t0=performance.now(),prof=FLOORS[S.kit]
  ST.patches++;ST.tris+=out.tris||0;ST.ms+=performance.now()-t0;return out;}
 // the floor profiles per kit (WORLD_KITS[].floor.profiles): the fields that make the kit's zones() give that zone; each
 // profile's index i moves its patches elsewhere on the stage
-const FLOORS={};WORLD_KITS.forEach(k=>{const P={};Object.keys(k.floor.profiles).forEach((n,i)=>P[n]={i,f:k.floor.profiles[n]});FLOORS[k.name]={profiles:P};});
+const FLOORS={};WORLD_KITS.forEach(k=>{if(!k.floor)return;   /* a kit with no floor of its own (a lender of trees only) */
+ const P={};Object.keys(k.floor.profiles).forEach((n,i)=>P[n]={i,f:k.floor.profiles[n]});FLOORS[k.name]={profiles:P};});
 // ---------------------------------------------------------------- the queue
 // get(key) is a prototype or null (and asks for it); pri: lower first (the distance it is wanted at)
 function get(key,spec,pri){const p=PROTO.get(key);if(p)return p;const q=QUEUE.get(key);if(q){if(pri<q.pri)q.pri=pri;}else QUEUE.set(key,{key,spec,pri});return null;}
@@ -125,4 +126,5 @@ function update(budgetMs){if(!QUEUE.size)return 0;const t0=performance.now();let
  const L=[...QUEUE.values()].sort((a,b)=>a.pri-b.pri);
  for(const q of L){QUEUE.delete(q.key);PROTO.set(q.key,q.spec.patch?growPatch(q.spec):growTree(q.spec));n++;if(performance.now()-t0>budgetMs)break;}
  return n;}
-return{get,update,FLOORS,KIDX,stats:ST,queued:()=>QUEUE.size,protos:PROTO,worldMat};})();
+/* harvest(kit, ox, oz, anchor): what a kit drew, as parts relative to (ox, oz) (a world's set pieces use it: openworld/isle-demo's geyser sites) */
+return{get,update,FLOORS,KIDX,stats:ST,queued:()=>QUEUE.size,protos:PROTO,worldMat,harvest};})();

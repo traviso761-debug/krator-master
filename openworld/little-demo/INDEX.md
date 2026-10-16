@@ -16,16 +16,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 5 |  |
-| `41-world-fields.js` | 38 **big** | the styles: how each biome's land is shaped (41); the rasters (72); sampling (97); the drainage network (139); the escarpments: cliffs at 1:1 (215); the roads: highways between the settlements (227); the towns: a built settlement's own ground (264); the height (303); the water: the sea and the lakes from the scale  (338); the water bodies (core/water: one surface each) (349) |
+| `41-world-fields.js` | 39 **big** | the styles: how each biome's land is shaped (42); the rasters (73); sampling (98); the drainage network (140); the escarpments: cliffs at 1:1 (216); the roads: highways between the settlements (228); the towns: a built settlement's own ground (265); the height (304); the water: the sea and the lakes from the scale  (341); the water bodies (core/water: one surface each) (352) |
 | `42-world-roads.js` | 10 |  |
 | `45-world-host.js` | 4 | the field sources (32) |
+| `46-world-config.js` | 1 |  |
 | `47-world-kits.js` | 4 |  |
 | `80-world-sky.js` | 9 |  |
 | `81-world-terrain.js` | 11 | the ground material: vertex colour, strata on ro (13); nodes (42); building a chunk (50); the frame: choose what to draw, queue what is mi (104) |
 | `83-world-water.js` | 2 |  |
 | `83w-world-seas.js` | 4 |  |
-| `84-world-nursery.js` | 13 | materials for instancing (15); harvest: what the kit wrote, as one geometry per (54); growing (90); the queue (121) |
-| `85-world-flora.js` | 13 | the kits' pass tables, as data (47-world-kits.js (23); a tile's field grid (34); placing one tile: records (48); residency (98); drawing: pools of instances per prototype (113) |
+| `84-world-nursery.js` | 13 | materials for instancing (15); harvest: what the kit wrote, as one geometry per (54); growing (90); the queue (122) |
+| `85-world-flora.js` | 13 | the kits' pass tables, as data (47-world-kits.js (23); a tile's field grid (34); placing one tile: records (51); residency (101); drawing: pools of instances per prototype (116) |
 | `86-world-floor.js` | 6 |  |
 | `87-world-places.js` | 3 |  |
 | `88-world-towns.js` | 9 |  |

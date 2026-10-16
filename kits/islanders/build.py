@@ -12,6 +12,7 @@ The page is one <script> made of, in filename order:
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
+  kits/resources        42r-res-ore.js, 44r-res-nodes.js, read IN PLACE (the ore nodes and the rule the mines work them by)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-fauna-bundle.js    GENERATED (kits/fauna/fauna_bundle.py): the animals as one closure, KratorFauna
@@ -68,6 +69,8 @@ KIT_ID = 'islanders'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos')]
+# kits/resources' ore (owner, 2026-10-15: the nodes are their own kit): read in place, never copied
+RESOURCES = {f: os.path.join(ROOT, 'kits', 'resources', 'src', f) for f in ('42r-res-ore.js', '44r-res-nodes.js')}
 VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
 # the engine, shared with the Scyvoi kit it was forked from: fix it there, then copy it here
 VENDORED.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('10-core.js', '30-geo.js', '36-def.js', '90-scene.js',
@@ -132,6 +135,7 @@ def sources():
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     core = dict(paths)
+    paths.update(RESOURCES)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
 

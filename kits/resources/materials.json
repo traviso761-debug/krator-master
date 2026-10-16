@@ -1,0 +1,71 @@
+{
+ "build": "resources",
+ "note": "The Resources kit's adapter onto the material library (core/materials/PLAN.md): the ore nodes' rock is the same boulder set the Islanders kit draws its stone with, so a node reads the same in either kit. The veins, crusts and nuggets are vertex colours (no ore sets in the library). The ground is the Scyvoi kit's withered grass, a neutral backdrop. The sulfur crusts are the library's ground.sulphur, in full colour.",
+ "size": 512,
+ "families": {
+  "stone": {
+   "lib": "rock.rock_boulder_dry",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.78,
+    "contrast": 1.15
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.08,
+    "cell": 6
+   }
+  },
+  "earth": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.78
+   },
+   "roughLift": 0.4,
+   "specular": 0.15
+  },
+  "ground": {
+   "lib": "ground.withered_grass",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.66,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.6,
+    "macro": 0.12,
+    "cell": 14
+   }
+  },
+  "sulphur": {
+   "lib": "ground.sulphur",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.95,
+    "mean": 0.8
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  }
+ }
+}

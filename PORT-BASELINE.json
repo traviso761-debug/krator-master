@@ -40,6 +40,10 @@
    "bytes": 5752371,
    "sha256": "f428c489003a254d0a34b2bd2071451d320cdf3e07d861fef035e9d57033df5c"
   },
+  "biomes/ringisles/dist/ringisles.html": {
+   "bytes": 2054919,
+   "sha256": "cadd55d9ee83d26735eec0abaa56b2c76f6f089da723f5e0cf437342b993ffe0"
+  },
   "biomes/sedesert/dist/sedesert.html": {
    "bytes": 4499927,
    "sha256": "cab5ac538e83fa2a18db5ee9aaa25d1df23be0d6847578446e4e6de620f5ec31"
@@ -305,8 +309,8 @@
    "sha256": "17696bb38182de72fc6ce6a2ef0803bfe7c25c2474240f97e3d86e63bb1cc20e"
   },
   "kits/islanders/dist/islanders.html": {
-   "bytes": 1434642,
-   "sha256": "9abfd175d211039e7faec4fcf1bc34edaf28397a95225730ad9126642f6efd71"
+   "bytes": 1516573,
+   "sha256": "d7db71a2ec207a344056a500e72c841aa1b3318061c81a15b6ff78576279cc65"
   },
   "kits/lizardmen/dist/lizardmen.html": {
    "bytes": 1496862,
@@ -324,6 +328,10 @@
    "bytes": 4933756,
    "sha256": "872651cc307b2b74bd1a83568f078f2126fc0104c78876b8df38161a5fe57446"
   },
+  "kits/resources/dist/resources.html": {
+   "bytes": 520792,
+   "sha256": "e55c019e4a98b018f7e4fc15d1b656cf681c32658a65d015d4ce46e6242cdc4e"
+  },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 4638988,
    "sha256": "cdf9d21a072e9acda3fbeeacd293c4982ada4923823439f31928f2987215e660"
@@ -336,13 +344,21 @@
    "bytes": 1291340,
    "sha256": "bf2a209c6f2a10b94cfcd7b72f0297adecd0b57e80fc4107b0cef4275ef91c94"
   },
+  "openworld/isle-demo/dist/isle-demo.artifact.html": {
+   "bytes": 1306140,
+   "sha256": "ace0abd0eaa5bcf81b869c3c2f3d7e1b651d2c5ed3565a536f85c64b74630cc2"
+  },
+  "openworld/isle-demo/dist/isle-demo.html": {
+   "bytes": 1306398,
+   "sha256": "0294bb5762f69027412333ee298aabcf8a105d9307af9a4bb00a61b0f0fff448"
+  },
   "openworld/little-demo/dist/little-demo.artifact.html": {
-   "bytes": 5078590,
-   "sha256": "329f6effbf56ec843d4e173519125d3e1c3de0375ff440d41da80d4cdb16e915"
+   "bytes": 5080710,
+   "sha256": "df525a070a2ba2feeb82d4f6f7043d337ae6b2e16db93dc7051bcdf0baed2c45"
   },
   "openworld/little-demo/dist/little-demo.html": {
-   "bytes": 5078848,
-   "sha256": "f0f618bdbe0d56f712f78087ca59519fbf9bd2999644a484ed7f6f087ee43ae7"
+   "bytes": 5080968,
+   "sha256": "fb21eed82637a16a95fc3dcbd607b46fd0f2dc137a293fe56b1321e0f01c297e"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6123096,
@@ -371,6 +387,10 @@
   "settlements/highlands/dist/roketstad.html": {
    "bytes": 7303091,
    "sha256": "4cbf80fc74e623c4c2b696f511ad635204d795ee34618042855cca8713ce81b7"
+  },
+  "settlements/isle-demo/dist/isle-site.html": {
+   "bytes": 1242859,
+   "sha256": "f88e786b9f4a1225f7f778dba93f1022176983be91ba43baf7e0a0cd7190e1e5"
   },
   "settlements/iziz/dist/iziz-vernacular.html": {
    "bytes": 845077,

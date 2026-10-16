@@ -247,4 +247,6 @@ the biome overlays (smaller wins an overlap; uncovered pixels take the nearest o
 drainage network, the named rivers (`DATA.rivers`: the course every 4th point with the carved height under it, a
 width and a water depth), the settlements inside the polygon and the canyon candidates for each ruin. The escarpment's
 sharpening is kept off a named river's corridor (off within 3 cells, back by 6): the river's descent is the owner's. `openworld/little-demo/`
-is the first user (its README.md says how to refresh it).
+is the first user (its README.md says how to refresh it). `--add <polygons.json>` (2026-10-15) adds more polygons to
+the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask is the union (`region.json` region `added`,
+`union_km2`). The isle demo uses it for the two areas its owner added (`openworld/isle-demo/source/added-areas.json`).

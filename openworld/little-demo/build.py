@@ -54,7 +54,7 @@ ORDER = (
      ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
      ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
      ('biomes/sedesert/src', '35-core-strata.js'),
-     ('src', '41-world-fields.js'), ('src', '42-world-roads.js'), ('src', '45-world-host.js'), ('src', '47-world-kits.js'),
+     ('src', '41-world-fields.js'), ('src', '42-world-roads.js'), ('src', '45-world-host.js'), ('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('biomes/%s/src' % k, f) for k, fs in KITS.items() for f in fs]
     + [('src', f) for f in ('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
