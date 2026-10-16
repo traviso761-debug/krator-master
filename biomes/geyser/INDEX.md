@@ -11,9 +11,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
-
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
 
 ## src/
 
@@ -23,7 +23,7 @@ From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 | `45-host-stage.js` | 15 | the land before the thermal ground (57); the thermal layout (the showcase's; the kit's re (112) |
 | `46-biome-geyser-layout.js` | 24 | lay out (29); relief (92); the heat and the rest (GEYSER.at) (147); the cycles (186); a site from a point (the open world; the isles) (201) |
 | `47-host-land.js` | 5 | the fields (cached below; these are the definiti (21); the host binding (43) |
-| `50-biome-geyser-species.js` | 21 | palettes (27); the tree species (42); harvest (biomes/FRUIT.md) (62); the small plants (the floor), tagged (73); leaf textures (89); bark, wood, glass, sinter, moss textures (grey,  (131); local geometries (144); materials (166); instanced items (197) |
+| `50-biome-geyser-species.js` | 21 | palettes (27); the tree species (42); harvest (biomes/FRUIT.md) (62); the small plants (the floor), tagged (73); leaf textures (89); bark, wood, glass, sinter, moss textures (grey,  (131); local geometries (144); materials (166); instanced items (202) |
 | `55-biome-geyser-trees.js` | 18 | zones (11); colour (29); keep-clear between trees (41); the builders: (T, st, lv) with lv 2 near, 1 mid (54); impostors (the far canopy) (132); the pass (147); the passes (data: species, cell, acceptance from (170); one tree alone (biomes/WORLD.md: trees as varian (180) |
 | `57-biome-geyser-sinter.js` | 3 |  |
 | `60-biome-geyser-floor.js` | 6 | the pass (25) |

@@ -1,7 +1,7 @@
-// ================================================================= HOST — overlays (places, routes, the polygon tool's drawing)
+// ================================================================= HOST — overlays (places, routes)
 // Flat ribbons drawn over everything (depthTest off), never lines: a line's
 // width is ignored by every desktop driver. One group per overlay, hidden
-// until its checkbox is ticked (90).
+// until its layer is turned on (99-shade-take.js).
 const OVERLAY={};
 const KINDCOL={ground:0xffd24a,wall:0xff7a3c,shore:0x3ce0ff,plateau:0xb88cff};
 function ribbonPath(pts,w,color,closed,lift){const P=closed?pts.concat([pts[0]]):pts,pos=[],idx=[];lift=lift==null?.6:lift;

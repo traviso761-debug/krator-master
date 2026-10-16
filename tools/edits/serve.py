@@ -53,6 +53,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         path = self.path.split('?', 1)[0]
         if path == '/__edits.js':
             return self.send(open(os.path.join(HERE, 'edit-queue.js'), 'rb').read(), 'text/javascript; charset=utf-8')
+        if path == '/__file':   # core/host's saved marks (94-host-marks.js): the build's marks.json, or 204 when none was saved
+            q = re.search(r'kind=([a-z]+)&page=([^&]+)', self.path)
+            b = build_of(http.server.urllib.parse.unquote(q.group(2))) if q and q.group(1) in SAVE_KINDS else ''
+            f = os.path.join(ROOT, b, q.group(1) + '.json') if b else ''
+            if not f or not os.path.isfile(f):
+                self.send_response(204); self.end_headers(); return
+            return self.send(open(f, 'rb').read(), 'application/json')
         if path == '/__edits':
             q = re.search(r'page=([^&]+)', self.path)
             b = build_of(http.server.urllib.parse.unquote(q.group(1))) if q else None

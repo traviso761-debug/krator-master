@@ -2,6 +2,30 @@
 
 What is still open, as of 2026-10-05. Each item says what it is, where it lives and what would close it.
 
+## The host (core/host)
+
+- [x] (2026-10-15) **Verge is on core/host** (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`). `build.py` takes
+      the whole interface less `core/space` (core/biome's `40-core-place.js` takes its grid when it is on the page, which would
+      move the scatter) and `core/edits` (no editor world yet). `src/90-verge-camera.js` is gone; `src/99-start.js` is the take:
+      the views, the ground, the draw (the Krator sky's scene, then the city), the sky and the light in a 'view' subscriber,
+      TICKS in a 'view' subscriber too (after the camera, as before: the interiors' queue and the life layer read the camera),
+      the inspector's words for a creature, a place, the trail or the terrain (a building or a piece is its core/tags label),
+      and the probe (`window._api`, handed over as `api`). **One clock:** `CLOCK`'s fields read and write the host's clock and
+      its methods call it, so the host's speeds, hour slider and run / hold reach the sky, the lamps and the life layer, and
+      `CLOCK.set` / `CLOCK.run` (verify.py) reach the host's. Proof: `verify.py --assert` 15 PASS, RESULT PASS, as before
+      (the old page from its own folder); the scene census at four views equals the old page's exactly with the furnishing
+      flushed (`?furnishMs=100000`; old against old 0 differences too); with the default 28 ms a frame the first view's
+      furniture differs by how far the queue got, old against old as well; the inspector names a tavern (`bld_00312`) from its
+      record, the minimap draws 1580 records, a mark measures, 0 unknown tags, no errors; the host's clock and CLOCK agree.
+- [ ] (2026-10-15) What changed with the host: the polygon tool and its panel are gone (the host's marks, P); the Inspector box is
+      the hover button (I, on as before); the HUD's camera line is the stats panel (the day there, the hour in the time row);
+      the hour slider and run / hold are the host's (`#clk-hour`, `#clk-run`). The keys are the host's (W A S D, Q / E, F walk,
+      G and double-click the pin, I, P, M minimap). The 'Sky panel' button is a host control (81's own button found no `#ui`
+      at load).
+- [x] (2026-10-15) The marks file: core/host (94) reads `<build>/marks.json` only on a page served by `tools/edits/serve.py`
+      (GET `/__file`, 204 when none was saved); anywhere else the browser's draft, so no 404 reaches the console. The take passes
+      no `marksUrl`.
+
 ## The world
 
 - **The trail does not use the funicular's track.** The brief allowed the path to use parts of the ruined track. It

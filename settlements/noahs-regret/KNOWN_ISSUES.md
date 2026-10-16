@@ -52,6 +52,30 @@
 - Along the starboard hull the ground is scoured a little outside the skin, so no sand shows inside the holds (the
   terrain grid's step lies outside the hull).
 
+## core/host
+
+- [x] (2026-10-15) Noah's Regret on core/host (ROADMAP.md section 10, step 5; core/host/README.md; host.FULL without
+      core/edits): the camera, the controls, the walk (F), the frame loop, the panel, the probe's frame, the inspector (I
+      or T hover, a click: the core/tags record, the words 92-camera.js gives, the deck cut's hidden hits skipped), marks
+      (P, they replace the polygon tool), the minimap (M) and the cutaway (X: the nine deck buildings' planned storeys and
+      the bridge house's four storeys and the bridge, in world coordinates from the hull frame) are core/host's.
+      `src/92-camera.js` keeps the world, the views, setView (a view's {cut, night}, also through the take's onView), the
+      inspector's words, the deck cut (C), night (N) and shadows; `src/99-start.js` is the take: the clamp (under the dune
+      only inside the hull), the walk floors as a KWALK-shaped adapter over nrFloorsAt (a step of 1.95 m and no ledge
+      guard, as the page's walk had; F stands on the deck under the eye, Q / E a level down or up), FRAME_HOOKS, the
+      sun's shadow box, the sky camera and core/atmos after the camera is placed (the old order), and the two-pass draw.
+      Proof: verify.py --assert unchanged (15 PASS: 9446 records, 0 unknown; 9394 pieces); a scene census (every mesh's
+      name, visibility and triangles, the camera, the draw calls) at four views (the opening, the bridge's plan with its
+      cut, the night port, a D3 cabin) matches the old page within its own run-to-run noise: two old runs differ at the
+      night view (242 calls and 918,540 triangles of unnamed meshes in one, 54 and 863,882 in the other); both new runs
+      read 54 and 863,882, every other view equal to the call. The cutaway, the walk floors and the keys exercised headless.
+- [ ] (2026-10-15) core/host's marks (94-host-marks.js) fetch `marks.json` beside the page; absent, it is a 404 that
+      Chromium logs as a console error, which `verify.py` counted as a failure: it now skips that one URL. The motion
+      clock's dt reaches core/atmos's wave clock, so `?t=` (verify.py's `t=4`) also stops the waves, where the old loop
+      ran them on real time (the smoke and cloth were pinned by `ANIM.pin` before and still are).
+- [ ] (2026-10-15) No editor: the catalog pieces are merged into the hull-frame batch and its instanced templates, so no
+      world adapter can move one piece live yet (core/host's 98 needs one).
+
 ## Performance
 
 - [ ] Under software GL (the headless verifier) the page takes minutes to load and a screenshot ~30-60 s: about 0.5 M

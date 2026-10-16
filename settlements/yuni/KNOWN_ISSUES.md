@@ -1,5 +1,27 @@
 # Yuni — known issues (printed by build.py; tell the user before making changes)
 
+- [x] (2026-10-15) Yuni on core/host (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`; Girder is the worked example),
+      all three pages (`yuni.html`, `yuni-assets.html`, `yuni-plants.html`): the camera, loop, panel and probe are the host's
+      (`build.py` takes `khost.FULL`); `80-camera.js` keeps a ctl shim, setView (CAM_FREE, the underground views and indoors on a
+      walk through the host's `clampCam`), VIEWS, the walker's keys and the page's frame (`camFrame`, `camDraw`); `98-start.js`
+      is the take. 51-fixtures.js's buildings, doors, windows and lights were core/tags records already; every other site is one
+      now (45-kit.js; a piece built by 53-assets.js buildFrom a turned box). The inspector (I, click), marks (P), pictures (Yuni's
+      61 furniture pieces and plants, each built on its own), the editor (B, the world page: pieces placed live, the page's own
+      moved or removed on reload, `53-assets.js yuniVetoed`) and the host's cutaway (X: every building, storeys of about 3.4 m)
+      are new. Proof: `verify.py --assert` every invariant PASS (21 on yuni.html, 6 on yuni-assets.html), counters identical
+      to the old pages', draw calls the same (148, 117); `verify_walk.py yuni-assets.html` the same walk, stair and cutaway
+      as before; the scene census (LOD flushed) of yuni-assets identical at four views; of yuni.html at four views within
+      the old page's run-to-run noise (the LOD `Mesh` total and the biome's LOD buckets, `biome:bark5` and `biome:far`, move
+      between runs of either page); `audit().unknown` 0 on all three; an edits.json of three ops applied on load (one piece
+      vetoed and removed, one moved and built on its own, one added).
+- [ ] (2026-10-15) Keys are the host's one keymap: F is Yuni's own walk (76-doors.js, it was the Walk button only), G flies to the
+      pin, I is the hover tip (the old Inspector button), P marks, B edits, X the host's cutaway. Yuni's own Cutaway button (a
+      plane 2.4 m over the walker's floor) is kept beside it: the two set clipping planes of their own, so use one at a time.
+      On the kit sheet P still steps back (89-sheetui.js) and there is no editor. M is the page's own minimap
+      (88b-yuni-minimap.js on core/minimap): the host's is not mounted.
+- [ ] (2026-10-15) The host's cutaway storeys are a guess (the building's height in steps of about 3.4 m); the interior plans
+      (64-interiors.js) know the real levels but are planned on demand, so the units do not read them yet.
+
 - [x] The INNER CITY is placed: 15 scheduled plots (9 Ancient groups, the Emir's Palace, the Library of Yuni and
       the Order's Archive, Chapter house and School) plus 184 infill buildings packed as rows along each ring
       street, every one oriented to the best street within 55 m. Invariants: `inner-city-placement-sane`,

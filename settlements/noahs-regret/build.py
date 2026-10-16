@@ -13,6 +13,8 @@ The page is one <script> made of, in filename order:
   core/furnish           50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos             89-atmos-*.js (ATMOS: the wave field the sea reads, the sky's light on the library materials)
   core/water             20-core-water.js, 50-core-water-draw.js (WATER: the sea as an open surface, its CPU twin, the CDLOD mesh)
+  core/host              host.FULL but core/edits (KHOST: the camera, loop, panel, probe, inspector, marks, minimap, cutaway;
+                         core/clock, core/space, core/minimap): src/99-start.js is the take
   26-matlib-pack.js      GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-interiors-bundle.js GENERATED (kits/interiors/kit_bundle.py): KratorInteriors, ROOM, furnishRoom and the
@@ -69,6 +71,12 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(DIST, 'noahs-regret.html')
 TEX_DIR = os.path.join(HERE, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'water')]
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap and cutaway, with core/clock, core/space and core/minimap (host.FULL). Not core/edits: no editor world (the catalog
+# pieces are merged into the hull-frame batch). Each file is its own scope (an IIFE): left out of the name rules.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
 # Vendored engine files: identical copies of an upstream (fix upstream, then re-copy)
 VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js'),
             '30-geo.js': os.path.join(ROOT, 'kits', 'scyvoi', 'src', '30-geo.js')}
@@ -128,6 +136,7 @@ def sources():
     paths = {}
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
+    khost.resolve(paths, CORE_HOST)
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
@@ -145,7 +154,7 @@ def main():
     if '--no-checks' not in sys.argv:
         decl = {}
         for f in files:
-            if not f.endswith('.js') or f in VIRTUAL: continue
+            if not f.endswith('.js') or f in VIRTUAL or (f in CORE_HOST and is_core(f)): continue
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
         for n in BUNDLE_GLOBALS:
             if n in decl: errs.append('top-level name `%s` in %s clashes with a generated bundle' % (n, ', '.join(sorted(decl[n]))))

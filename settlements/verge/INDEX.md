@@ -11,16 +11,22 @@ Built output (never open it; edit `src/` and rebuild): `dist/verge.html`
 Build: `cd settlements/verge && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `41-verge-layout.js` | 25 | the plateau (36); the canyon (upper river) (42); the lip, the escarpment and the spur (61); the gorge and the cataracts (95); the lower river (108); the ground without the trail (127); the switchback (143); the canyon ramps (216); levelled pads (227); terrain (235) |
 | `45-verge-stage.js` | 10 | the climate fields (34); the flora mask (reserve before you build) (89); the host binding (109) |
 | `46-verge-ground.js` | 11 |  |
 | `47-verge-water.js` | 12 | the cataracts (65) |
-| `70-verge-place.js` | 33 **big** | the kits' catalogue (25); a city's raster (31); streets (102); districts and what grows in them (107); the streets and lots: core/city, one instance a (120); the trailheads: a plaza, the toll gate and palis (199); UPPER VERGE (217); the funicular's plan (the Ancients kit, kits/anc (218); LOWER VERGE (254); spill: houses beside the trail's first (or last) (281) |
+| `70-verge-place.js` | 34 **big** | the kits' catalogue (24); a city's raster (30); streets (101); districts and what grows in them (130); the back lots (165); the trailheads: a plaza, the toll gate and palis (176); UPPER VERGE (194); the funicular's plan (the Ancients kit, kits/anc (195); LOWER VERGE (244); spill: houses beside the trail's first (or last) (283) |
 | `71-verge-furnish.js` | 5 |  |
 | `72-verge-buildings.js` | 7 |  |
 | `74-verge-sim.js` | 45 **big** | factions and organisations (28); places, from what was placed (60); slots: one body each, reserved in time (79); NAV: one graph (117); A* over the graph (176); cross-country: a coarse grid per level (203); the timetable's groups (222); the citizens (rambling pedestrians) (329); a group member's pose: a FUNCTION OF TIME (358); the checks the probe runs (data only) (394) |
@@ -31,6 +37,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `82-verge-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `87-verge-views.js` | 4 |  |
 | `88-verge-build.js` | 1 |  |
-| `90-verge-camera.js` | 13 | the panel (10); picking (28); the polygon tool (65); input (75) |
-| `91-verge-probe.js` | 12 | the checks, each a pure function of its inputs (7); the export (for godot/: the verge case) (76) |
+| `91-verge-probe.js` | 11 | the checks, each a pure function of its inputs (7); the export (for godot/: the verge case) (76) |
+| `99-start.js` | 8 | the inspector's words where no record holds the  (23); the ticks, after the camera (as 90-verge-camera. (38); the sky and the light, on the one clock, after t (43); the page, handed to the host (53) |
 | `99-tail.html` | <1 |  |

@@ -22,9 +22,9 @@ for(const S of SITES){const K=S.key+'/'+((S.o&&S.o.v)||0);TSTAT.cur=K;const G=JJ
 for(const S of JJ_FURN_SITES){JJFURN.place(scene,S.key,S.x,S.z,S.ry||0,S.o);}
 for(const S of JJ_FLORA_SITES){JJFLORA.place(scene,S.key,S.x,S.z,S.ry||0,S.o);}
 window._registered=REG.length;jjZFix();kbake(scene);
-// Sun shadows: a 260 m box that follows the orbit target, so loggias, arches and cornices read.
+// Sun shadows: a 260 m box that follows the orbit target (core/host's camera: KHOST.cam.ctl), so loggias, arches and cornices read.
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 JJ_SUN.castShadow=true;JJ_SUN.shadow.mapSize.set(2048,2048);JJ_SUN.shadow.bias=-.0004;JJ_SUN.shadow.normalBias=.04;
 {const jjSc=JJ_SUN.shadow.camera;jjSc.left=-130;jjSc.right=130;jjSc.top=130;jjSc.bottom=-130;jjSc.near=10;jjSc.far=1800;jjSc.updateProjectionMatrix();}
 scene.traverse(jjO=>{if(!jjO.isMesh||jjO.material.type==='ShaderMaterial')return;if(jjO.userData.isGround){jjO.receiveShadow=true;return;}jjO.castShadow=true;jjO.receiveShadow=true;});
-FRAME_HOOKS.push(()=>{const jjT=(typeof ctl!=='undefined'&&ctl.target)?ctl.target:camera.position;const jjL=KratorSky.lighting();JJ_SUN.target.position.copy(jjT);JJ_SUN.position.copy(jjT).addScaledVector(jjL.sunDir,800);JJ_SUN.target.updateMatrixWorld();});
+FRAME_HOOKS.push(()=>{const jjT=(window.KHOST&&KHOST.cam)?KHOST.cam.ctl.target:camera.position;const jjL=KratorSky.lighting();JJ_SUN.target.position.copy(jjT);JJ_SUN.position.copy(jjT).addScaledVector(jjL.sunDir,800);JJ_SUN.target.updateMatrixWorld();});

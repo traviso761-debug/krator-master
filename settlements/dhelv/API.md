@@ -22,7 +22,7 @@ x east, z south, y up, metres; the hub's square is y 0.
 | `DH_CELLS` | `90-dhelv-scene.js` | the buildings and plants drawn in cells; what the camera shows (`dhSeen`) |
 | `DH_LIGHT` | `94-dhelv-light.js` | the cave's light: the openings' daylight, the pool of 14 lamps |
 | `DHMAP` | `93-dhelv-map.js` | the minimap |
-| `VIEWS`, `setView(cx, cy, cz, tx, ty, tz)` | the kit's `92-camera.js` | the named views and the camera |
+| `VIEWS`, `setView(cx, cy, cz, tx, ty, tz)`, `applyCam()` | `92-dhelv-camera.js` (core/host's camera; the kit's `92-camera.js` is left out) | the named views and the camera |
 
 ## `DH` (the layout)
 
@@ -131,8 +131,9 @@ meshes, the furniture, the materials (PLAN.md progress log, P7).
 
 ## Keys
 
-**T** inspector, **C** cut-away, **N** night, **P** polygon tool, **F** walk, **R** run, **G** go to the marker
-(double-click drops it), **M** the minimap, **V** the nav graph, **[** and **]** the hour, **Esc** stops following a walker.
+core/host's (`core/host/README.md`, "The keys"): **I** the inspector's hover tip, **P** marks, **M** the host's minimap, **F**
+walk, **G** go to the pin (double-click drops it), **Esc** lifts it; Dhelv's: **C** cut-away, **N** night, **K** Dhelv's own map,
+**V** the nav graph, **[** and **]** the hour, **Esc** stops following a walker.
 `README.md`, "Getting about".
 
 ## Build and verify

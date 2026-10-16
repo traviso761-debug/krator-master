@@ -123,14 +123,14 @@ K.panelTake=function(H){const o=H.o,clock=H.clock,C=K.cam;
   const b=el('button',{text:k},rowLayers);const paint=()=>b.classList.toggle('on',!!s.on);
   b.onclick=()=>{s.on=!s.on;s.cache=null;if(s.set)s.set(s.on);paint();};paint();}
  // the time controls: the speeds always (motion time); the hour slider and run / hold when the sky takes an hour
- const CO=o.clock||{},hasHour=!!(o.sky&&o.sky.hour),speeds=CO.speeds||[0,1,2,4,8];
+ const CO=o.clock||{},hasHour=!!(o.sky&&o.sky.hour)||!!CO.onSet,speeds=CO.speeds||[0,1,2,4,8];
  rowTime.style.display='block';
  const clk=el('span',{id:'clk',cls:'lbl'},rowTime);
  let run=null,hr=null;
  if(hasHour){run=el('button',{id:'clk-run'},rowTime);run.onclick=()=>{clock.run(!clock.running);paintT();};}
  const sp=el('span',{id:'clk-speeds'},rowTime);
  speeds.forEach(k=>{const b=el('button',{text:k===0?'pause':k+'x'},sp);b.dataset.k=k;b.title=k===0?'motion stops (wind, fauna)':'motion at '+k+' times';b.onclick=()=>{clock.scale=k;paintT();};});
- if(hasHour){hr=el('input',{id:'clk-hour',type:'range',min:0,max:24,step:.25},rowTime);hr.value=clock.hour;hr.oninput=()=>{clock.set(+hr.value);};}
+ if(hasHour){hr=el('input',{id:'clk-hour',type:'range',min:0,max:24,step:.25},rowTime);hr.value=clock.hour;hr.oninput=()=>{clock.set(+hr.value);if(CO.onSet)CO.onSet(+hr.value);};}
  const paintT=()=>{if(run)run.textContent=clock.running?'hold':'run';[].forEach.call(sp.children,b=>b.classList.toggle('on',+b.dataset.k===clock.scale));};paintT();
  let shown='';
  K.clockText=function(){if(hasHour){const h=Math.floor(clock.hour),m=Math.floor((clock.hour-h)*60);return('0'+h).slice(-2)+':'+('0'+m).slice(-2)+' day '+(clock.day+1);}

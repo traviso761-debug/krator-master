@@ -32,6 +32,7 @@ python3 verify.py dist/ys.html --marks /tmp/ys-marks.json --eval "()=>window._ap
 * `NOTES.md` — round by round. `KNOWN_ISSUES.md` — what is open (printed by every build).
 * `refs/` — the reference contact sheets (mood; never copy). `refs/index.txt` says what each holds.
 
-In the page: hover to inspect (name · class · tags), Labels, the Polygon tool (copy-pasteable world
-coordinates), Walk (F) at eye height, the hour slider, `n` noon/night, Compass (a rose that turns with the
-camera and a ground gizmo at the orbit target). A preset is `[cx,cy,cz,tx,ty,tz, hour?, compass?]`.
+In the page (core/host since 2026-10-15): I hovers the inspector (name · class · tags), a click inspects, P marks (in
+place of the Polygon tool), M the minimap, X the cutaway (a building with rooms, storey by storey), Walk (F) at eye height;
+the page's own Labels, the hour slider, `n` noon/night, Compass (a rose that turns with the camera and a ground gizmo at
+the orbit target), Inside and Rooms. A preset is `[cx,cy,cz,tx,ty,tz, hour?, compass?, inside?]`.

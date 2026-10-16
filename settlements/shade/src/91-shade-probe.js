@@ -1,5 +1,7 @@
-// ================================================================= HOST — probe (window._api)
-// What verify.py --assert measures. Every Shade check reads the built world
+// ================================================================= HOST — probe (window._api, handed to core/host)
+// Shade's own fields of window._api: 99-shade-take.js hands this object to KHOST.take as `api`, and core/host's probe
+// (95-host-probe.js) adds setView, views, go and clock to it (this was 91-host-probe.js, with its own setView, until
+// 2026-10-15). What verify.py --assert measures. Every Shade check reads the built world
 // (the ground's height function, the water meshes' own vertices, the biome's
 // instance matrices, the walkable grid), never the constants that built it.
 // Each check is a function of its inputs, and NEGATIVES feeds each one a
@@ -237,7 +239,6 @@ function shadeNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,det
 window._api={BUDGET,REG,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,shadeChecks,shadeNegatives,
- setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  biome:()=>window._biome,life:()=>LIFE.OUT};
 window._registered=REG.length;
 window._shade={places:PLACES.length,switchback:{len:Math.round(SWB.len),grade:+SWB.grade.toFixed(3),legs:SWB.legs},pool:POOL,people:LIFE.OUT.people};

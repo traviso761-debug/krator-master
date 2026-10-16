@@ -11,6 +11,16 @@ Built output (never open it; edit `src/` and rebuild): `dist/mungo.html`
 Build: `cd settlements/mungo && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
@@ -30,7 +40,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `72-lights.js` | 5 | 18. FIXED LAMPS — MUNGO (Locus's fittings) (1) |
 | `75-terrain.js` | 14 | 20. EMIT + GROUND + WATER — MUNGO (Locus's, re-p (1) |
 | `78b-mungo-world.js` | 17 | 21. MUNGO'S WORLD AS DATA — the simulation's pla (1) |
-| `80-camera.js` | 13 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (161) |
+| `80-camera.js` | 11 | 25. CAMERA: ON core/host (1); THE PAGE'S FRAME (98-start.js runs it after the  (98) |
 | `84-mungo-life.js` | 18 | 20. THE LIFE LAYER — MUNGO: the embodiment (1) |
 | `85-probe.js` | 1 | 29. PROBE — MUNGO (1) |
 | `88c-mungo-minimap.js` | 1 | MINIMAP — MUNGO's own records (1) |

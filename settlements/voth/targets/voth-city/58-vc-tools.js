@@ -101,6 +101,7 @@ VC.pinWalk = function () {
   if (window._onWalkChange) window._onWalkChange(true);
 };
 VC.pin = function () {
+  if (window.KRATOR_HOST) return;   /* core/host's pin, G and F, and its walker on KWALK with this ledge guard (97-vc-host-take.js) */
   renderer.domElement.addEventListener('dblclick', function (e) {
     if ((VC.MK && VC.MK.on) || VC.ED.on) return;               /* the marks tool and the editor own the double-click */
     var r = new THREE.Raycaster(); r.setFromCamera(new THREE.Vector2(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1), camera);

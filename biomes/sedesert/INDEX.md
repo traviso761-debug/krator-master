@@ -9,13 +9,19 @@ Built output (never open it; edit `src/` and rebuild): `dist/sedesert.html`
 Build: `cd biomes/sedesert && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `36-core-carve.js`
+From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `31-core-field-brush.js`, `36-core-carve.js`
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
-
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
 ## src/
 
@@ -33,5 +39,6 @@ From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 | `82-host-sky.js` | 14 | the Inner Wall painter (8) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
-| `99-host-take.js` | 17 | the inspector's words (66); the probe's budgets and the kit's own checks (ve (79); the page, handed to the host (155) |
+| `89w-host-water.js` | 2 |  |
+| `99-host-take.js` | 21 | the inspector's words (66); the probe's budgets and the kit's own checks (ve (79); the page, handed to the host (155); the editor's world (core/host 98; ROADMAP.md sec (156) |
 | `99-tail.html` | <1 |  |

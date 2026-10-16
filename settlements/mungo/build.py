@@ -71,6 +71,9 @@ for _slot, _rel in (('69a1-bio-core-head.js', 'core/biome/10-core-head.js'), ('6
     BIO_CANON[_slot] = (os.path.join(ROOT, *_rel.split('/')), _rel.rsplit('/', 1)[0])
 # shared core modules, by folder; every digit-named .js in each (core/<m>/README.md says what each is)
 CORE_MODULES = ['lod', 'rand', 'mask', 'clock', 'sched', 'furnish', 'tags', 'atmos', 'minimap', 'simulation', 'water']
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
+CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
 
 SIDE = {}   # the library packs' maps, written to dist/mungo.tex.<key>.js (tools/textures/matlib_pack.py write_sidecar)
 MATLIB_RECORD = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # core/materials/record (virtual_bodies)
@@ -94,7 +97,7 @@ CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.
 
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']
 INTERIOR_SETS_WANT = ['locus', 'abyss', 'reedlake', 'yuni']
-VIRTUAL = {'01-reedkit.html', '65z-furniture-bundle.js', '65y-vehicles-bundle.js', '78a-world-json.js'}
+VIRTUAL = {'01-reedkit.html', '65z-furniture-bundle.js', '65y-vehicles-bundle.js', '78a-world-json.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
 
 
 def find_node():
@@ -205,6 +208,7 @@ def virtual_bodies():
     rk, rk_order = reed_kit()
     vb['01-reedkit.html'] = rk
     vb['78a-world-json.js'] = world_json()
+    vb[khost.EDITS_JS] = khost.edits_js(HERE, 'mungo')
     return vb, sets, rk_order
 
 
@@ -308,6 +312,9 @@ def collect():
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f); origin[f] = 'core/' + mod
+    for f in CORE_HOST:                                      # core/host and the modules it reads (core/host/host.py)
+        if f not in paths:
+            paths[f] = khost.path(f); origin[f] = 'core/' + khost.WHERE[f]
     return paths, origin
 
 

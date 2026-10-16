@@ -409,7 +409,7 @@ VC.ui = function () {
   lg += '<br>'; Object.keys(VC.ROLECOL).forEach(function (k) { lg += '<span><i style="background:' + VC.ROLECOL[k] + '"></i>' + k + '</span>'; });
   $('legend').innerHTML = lg;
   /* the wheel goes further out than the engine's 2 km: Voth's lake wants it */
-  renderer.domElement.addEventListener('wheel', function (e) { if (ctl.walk) return; ctl.dist = Math.max(3, Math.min(12000, ctl.dist * (1 + e.deltaY * 0.001))); updateCamera(); e.preventDefault(); e.stopImmediatePropagation(); }, { capture: true, passive: false });
+  if (!window.KRATOR_HOST) renderer.domElement.addEventListener('wheel', function (e) { if (ctl.walk) return; ctl.dist = Math.max(3, Math.min(12000, ctl.dist * (1 + e.deltaY * 0.001))); updateCamera(); e.preventDefault(); e.stopImmediatePropagation(); }, { capture: true, passive: false });
   var tip = $('tip'), last = 0, on = false;
   $('ly-inspect').onclick = function () { on = !on; this.classList.toggle('on', on); tip.style.display = on ? 'block' : 'none'; };
   window.addEventListener('keydown', function (e) {
@@ -651,15 +651,16 @@ VC.dayNight = function () {
   var last = null, shown = '';
   (window._frameHooks = window._frameHooks || []).unshift(function (now) {
     var t = now / 1000, dt = last == null ? 0 : t - last; last = t;
-    C.step(dt);
+    if (!window.KRATOR_HOST) C.step(dt);   /* on core/host the host's loop steps the clock (97-vc-host-take.js) */
     if (VC.atmosHooks) { ATMOS.clock.scale = C.scale; VC.atmosHooks.forEach(function (fn) { fn(dt); }); }
     VC.applyHour(C.hour);
     var hh = Math.floor(C.hour), mm = Math.floor((C.hour - hh) * 60), txt = ('0' + hh).slice(-2) + ':' + ('0' + mm).slice(-2) + ' day ' + (C.day + 1);
-    if (txt !== shown) { shown = txt; var e = $('clk'); if (e) e.textContent = txt; var s = $('clk-hour'); if (s && document.activeElement !== s) s.value = C.hour; }
+    if (!window.KRATOR_HOST && txt !== shown) { shown = txt; var e = $('clk'); if (e) e.textContent = txt; var s = $('clk-hour'); if (s && document.activeElement !== s) s.value = C.hour; }
   });
   VC.applyHour(C.hour);
 };
 VC.clockUI = function () {
+  if (window.KRATOR_HOST) return;   /* core/host's time row drives VC.clock (97-vc-host-take.js) */
   var C = VC.clock, run = $('clk-run'), sp = $('clk-speeds'), hr = $('clk-hour'); if (!C || !run) return;
   var paint = function () { run.textContent = C.running ? 'hold' : 'run'; [].forEach.call(sp.children, function (b) { b.classList.toggle('on', +b.dataset.k === C.scale); }); };
   run.onclick = function () { C.run(!C.running); paint(); };
