@@ -24,7 +24,7 @@ defBuilding({key:'lz-reliquary',name:'The reliquary',seed:7601,caste:'all',cut:t
  note:'the older order\'s scale, dwarfing the village: a pointed mass of cyclopean basalt on a three-stepped platform with one axial stair, nested bronze portals seven deep at the mouth of the passage, lower wings with seven candle-spires each, verdigris lines converging on the apex, the breach repaired in cleaner stones on the east flank; inside, the dusty antechamber with the relics, the Xanadui footprints and the shut inner door',
  build(o){const PY=3.0;lzCutFloor(PY);
   /* the platform: three steps, the top 34 x 28; the stair up the front */
-  lzNoCut(()=>{for(let i=0;i<3;i++){const w=40-i*3,d=34-i*3;prism('cyclo',[[-w/2,d/2],[w/2,d/2],[w/2,-d/2],[-w/2,-d/2]],i,i+1,P(i%2?'basalt':'basaltD'));}
+  lzNoCut(()=>{for(let i=0;i<3;i++){const w=40-i*3,d=34-i*3;prism('cyclo',[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]],i,i+1,P(i%2?'basalt':'basaltD'));}
    /* the stair: solid treads from the ground up, cutting through the three steps, from z = 22 to the top step's edge at z = 14 */
    for(let i=0;i<15;i++){const y=(i+1)*PY/15;box('stoneP',0,0,22-i*8/15-.27,7,y,.56,P('basaltD'));}
    for(const s of [-1,1])W(s*4.2,PY,13.2,0,()=>lzTwist(0,0,3.6,5,.9,.5,.09,{mk:'cyclo'}));

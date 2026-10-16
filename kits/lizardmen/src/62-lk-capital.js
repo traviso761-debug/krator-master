@@ -77,7 +77,7 @@ defBuilding({key:'lk-college',name:"Interpreters' college",seed:7705,caste:5,cut
  build(o){lzCutFloor(.4);lzNoCut(()=>lkPlinth(23,15,.4,{leiwen:8}));
   const dh=lzDoorH(5),dw=dh*.62;
   /* the hall between the towers: a battered room with the door, a slab roof */
-  const T=lzBatterRoom(14,7,.4,5.2,LK_ST,P('basalt'),{lean:{front:.08,back:-.04,left:.06,right:.06},front:[{s:7,w:dw,h:dh,door:true}]});lzSlab(T.T,5.6,.4,LK_PL,P('basaltD'),.25);
+  const T=lzBatterRoom(14,7,.4,5.2,LK_ST,P('basalt'),{lean:{front:.08,back:-.04,left:.06,right:.06},front:[{s:7,w:dw,h:dh,door:true}]});lzSlab(T.T,5.6,.4,'basalt',P('basaltD'),.25);
   lzNoCut(()=>lzPortal(0,.4,3.6,0,dh,{mk:'bronze',eye:true}));lzThreshold(0,3.8,0,dw);
   for(const [x,z,n,h,w0,w1] of [[-8.6,-2,9,16,5.2,3.4],[8.6,-2,11,20,5.6,3.6],[0,-5.5,13,24,6,3.8]]){W(x,.4,z,0,()=>{
    lzTwist(0,0,h,n,w0,w1,.07,{mk:LK_ST,col:P('basalt'),each:(i,y,w,ry)=>{if(i%2===1){const k=(i>>1)%2?-1:1;W(0,y+h/n*.5,0,ry,()=>lzEye(k*w*.5+.03*k,0,0,k*PI/2,w*.17,{mk:'bronze'}));}}});
@@ -88,7 +88,7 @@ defBuilding({key:'lk-gate',name:"Capital gate",seed:7706,caste:'all',cut:false,w
  tags:{types:['military','infrastructure'],wealth:'rich',role:'gate'},
  note:'two battered pylons of polygonal basalt flank a nested bronze portal seven deep under a lintel of polished basalt; a great spiral eye above the way, two stone horns crossing over it, leiwen bands and the glyph spiral of the Coil on the pylons',
  build(o){const H=lzDoorH(6)*1.3,dw=H*.62;lzNoCut(()=>lkPlinth(17,7,.3,{}));
-  for(const s of [-1,1])W(s*5.6,.3,0,0,()=>{const T=lzBatterRoom(5,5.5,0,10,LK_ST,P('basalt'),{lean:{front:.1,back:.1,left:.1,right:.1},inner:false});lzSlab(T.T,10,.5,LK_PL,P('basaltD'),.2);
+  for(const s of [-1,1])W(s*5.6,.3,0,0,()=>{const T=lzBatterRoom(5,5.5,0,10,LK_ST,P('basalt'),{lean:{front:.1,back:.1,left:.1,right:.1},inner:false});lzSlab(T.T,10,.5,'basalt',P('basaltD'),.2);
    W(0,.6,5.5/2-.1*.6+.04,0,()=>lzGlyphSpiral(3.4,7.5,{mk:'bronze',mirror:s<0,turns:3}));W(0,8.4,5.5/2-.1*8.4+.05,0,()=>lzLeiwen(3.2,1.0,{cell:.3,mk:'bronze',back:'lacq'}));
    lzHorn(0,10.5,0,s>0?-PI/2:PI/2,4.2,.3,{curl:.75,lean:.2,mk:LK_PL,col:P('basaltD')});});
   box(LK_PL,0,.3+H+.4,0,6.6,1.2,4,P('basaltD'));W(0,.3+H+.5,2.02,0,()=>lzLeiwen(6,1.0,{cell:.3,mk:'bronze',back:'lacq'}));

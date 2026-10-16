@@ -63,14 +63,14 @@ defBuilding({key:'lc-seer',name:"Interpreters' tent",seed:7423,caste:5,cut:true,
 defBuilding({key:'lc-sail',name:'Great sail tent',seed:7424,caste:'all',cut:true,w:15,d:19,h:11.6,budget:90000,
  tags:{types:['dwelling-multi','military','civic'],wealth:'middle',role:'hall'},
  note:'the shared tent of the camp (nested portals to a 4.4 m door): three bone masts of unequal height carry a sagging ridge, two hide sails hang from it to seven bone posts a side and are guyed to stakes beyond; the front gable a hide sheet with the seven nested bronze frames, the back gable closed; a hall inside',
- build(o){const L=15,hz=4.4,eY=.5,dh=lzDoorH(6),dw=+(dh*.62).toFixed(2);lzCutFloor(0);
+ build(o){const L=15,hz=4.4,eY=.06,dh=lzDoorH(6),dw=+(dh*.62).toFixed(2);lzCutFloor(0);   /* the sails and gables reach the ground (owner: the wall was not at the floor) */
   const ridge=z=>7.4+1.8*Math.cos(PI*z/L);   /* the ridge sags between the masts: a sail's curve */
   box('earthR',0,0,0,2*hz+.6,.08,L+.6,P('earthP'));
   /* the sails: two hide sheets from the ridge down to the eave line, bellying a little */
   withCloth((p,out)=>{const q=Math.abs(p.x)/hz,t=4*q*(1-q)*.05;out.set(0,t,0);},()=>{for(const s of [-1,1])psurf('hide',(u,v)=>{const z=-L/2+L*u,y=lerp(eY,ridge(z),v)-.3*Math.sin(PI*v);return [s*hz*(1-v)*(1+.04*Math.sin(PI*v)),y,z];},12,7,P('hide'),{flip:s>0});});
   /* the gables: the front a hide sheet with the door (and the portal's seven frames), the back closed */
-  const zf=L/2,zb=-L/2;lzWall([-hz*.97,zf],[hz*.97,zf],[-.12,zf],[.12,zf],eY-.3,ridge(zf)-eY,'hide',P('hideP'),[{s:hz*.97,w:dw,h:dh,door:true}],{inner:false});
-  lzWall([hz*.97,zb],[-hz*.97,zb],[.12,zb],[-.12,zb],eY-.3,ridge(zb)-eY,'hide',P('hideP'),[],{inner:false});
+  const zf=L/2,zb=-L/2;lzWall([-hz*.97,zf],[hz*.97,zf],[-.12,zf],[.12,zf],0,ridge(zf),'hideW',P('hideP'),[{s:hz*.97,w:dw,h:dh,door:true}],{inner:false});
+  lzWall([hz*.97,zb],[-hz*.97,zb],[.12,zb],[-.12,zb],0,ridge(zb),'hideW',P('hideP'),[],{inner:false});
   lzNoCut(()=>{lzPortal(0,0,zf+.1,0,dh,{mk:'bronze',step:.12});lzThreshold(0,zf+.3,0,dw);
    /* the masts (odd, unequal) run on past the ridge; the ridge pole follows the curve */
    for(const z of [-5,0,5])beam('bones',[0,0,z],[0,ridge(z)+1.3,z],.17,P('boneO'),true,9,.07);

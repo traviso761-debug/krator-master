@@ -125,7 +125,8 @@ function lzBatterRoom(w,d,y0,h,mk,col,o){o=o||{};const Ln=Object.assign({front:.
  for(const [side,b0,b1,t0,t1] of S){if(o.skip&&o.skip.includes(side))continue;lzWall(b0,b1,t0,t1,y0,h,o.mkf?o.mkf(side):mk,o.colf?o.colf(side):col,o[side],o);}
  return {T,B,xl,xr,zf,zb};}
 /* a flat roof slab on the top corners of a battered room, th thick, over the edge by ov */
-function lzSlab(T,y,th,mk,col,ov){ov=ov||0;const pts=[[T.fl[0]-ov,T.fl[1]+ov],[T.fr[0]+ov,T.fr[1]+ov],[T.br[0]+ov,T.br[1]-ov],[T.bl[0]-ov,T.bl[1]-ov]];prism(mk,pts,y,y+th,col);}
+function lzSlab(T,y,th,mk,col,ov){ov=ov||0;/* prism wants its outline anticlockwise seen from above: back-left, back-right, front-right, front-left */
+ const pts=[[T.bl[0]-ov,T.bl[1]-ov],[T.br[0]+ov,T.br[1]-ov],[T.fr[0]+ov,T.fr[1]+ov],[T.fl[0]-ov,T.fl[1]+ov]];prism(mk,pts,y,y+th,col);}
 /* ---------------------------------------------------------------- openings: triangles, sized by caste, nested on shared buildings */
 /* the door of caste c, as an lzWall opening at s along the wall: a triangle doorH(c) high, 0.62 of that wide at the floor */
 function lzDoor(c,s){const h=lzDoorH(c);return {s,w:+(h*.62).toFixed(2),h,door:true};}
