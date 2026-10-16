@@ -87,7 +87,6 @@ function buildVernButcher(G,o){reseed(8111+(o.v|0));const SX=-2.4,SZ=1.0,W=7.6,D
  // the shop's sides and back: windows, the yard door into the passage
  vnWin(SX-W/2,Y0+1.2,SZ,-Math.PI/2,1.1,1.1,'open','vWood',tr,true);vnWin(SX+W/2,Y0+1.2,SZ+.4,Math.PI/2,1.0,1.1,'shut','vWood',tr);
  vnDoor(-.9,Y0,zb,Math.PI,.95,2.1,'vWood',tr,vC(0x5a3a24),false);vnWin(-4.2,Y0+1.3,zb,Math.PI,1.0,1.0,'shut','vWood',tr);
- for(const x of[-4.4,-1.6,1.2])vnStrip(x+.3,top+.25,zf,0,.5,1.1,'vWood',wood);
  // the butcher's cottage behind, across a narrow passage: plaster under a shingle hip, entered from the -x side
  vB('vStone',CX,-.1,CZ,CW+.4,.45,CD+.4,0,vC(vPick(VPAL.stoneDark)));
  vnBody('vPlaster',CX,Y0,CZ,CW,CH,CD,0,pl2,{t:.25});vnCornice('vWood',CX,Y0+CH,CZ,CW,CD,0,wood,1,false);
@@ -151,9 +150,10 @@ function buildVernBrewery(G,o){reseed(8121+(o.v|0));const HX=-.8,W=15,D=8,H=4.2,
   for(const x of[xr+.75,xr+2.45])vB('vWood',x,0,z0,.2,.16,1.1,0,wood);}
  for(let k=0;k<4;k++)vnBarrel(xr+1.0+(k%2)*.95,0,-3.4+(k>>1)*.95,.4,1.0,wood);vnBarrel(xr+1.5,1.0,-2.95,.38,.95,wood);
  // the back: the malt-drying rack, two tiers of slatted trays of spread malt; sacks, a water butt
- {const x=-4.0,z=-zf-1.5,L=5.0;for(const sx of[-1,0,1])for(const sz of[-1,1])vPst('vPost',x+sx*L/2,0,z+sz*.75,.06,1.9,wood);
-  for(const y of[.7,1.5]){vB('vWood',x,y,z,L+.2,.06,1.7,0,wood);vB('vPlaster',x,y+.06,z,L-.1,.05,1.5,0,vC(vPick([0xd8b070,0xc89e5a,0xe0c080])));
-   for(let k=0;k<6;k++)vB('vWood',x,y+.04,z-.75+k*.3,L+.2,.03,.04,0,wood);}
+ {const x=-4.0,z=-zf-1.5,L=5.0;for(const sx of[-1,0,1])for(const sz of[-1,1])vPst('vPost',x+sx*L/2,0,z+sz*.85,.06,2.0,wood);
+  for(const y of[.75,1.5]){const q=vQ(0,-.3,0);vBq('vWood',x,y,z,L+.2,.06,1.7,q,wood);vBq('vPlaster',x,y+.06,z+.02,L-.1,.05,1.5,q,vC(vPick([0xd8b070,0xc89e5a,0xe0c080])));
+   for(const s of[-1,1])vBq('vWood',x,y+.1,z+s*.82,L+.2,.12,.05,q,wood);}
+  kput('vClothB',[x,2.05,z],vQ(0,.12,0),[L+.6,.05,2.2],vC(0xf2e6c8));
   vBeam([x+L/2+.4,0,z+.9],[x+L/2+.1,1.8,z+.5],.03,vC(0x9a7a56));}
  vnSacks(2.2,0,-zf-1.0,6);vnWaterButt(-.4,0,-zf-.7,.45,1.2);vnCrate(3.8,0,-zf-.8,.8,.2,wood);
  vnPaving(-2,.02,zf+3.3,12,2.0,0,vC(vPick(VPAL.stoneDark)),12);vnFolk(-3,zf+4.2,4,2.4);}
@@ -167,7 +167,8 @@ function buildVernProvisioner(G,o){reseed(8131+(o.v|0));const W=10,D=8.4,H1=3.4,
  for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',sx*(W/2-.02),Y0,sz*(D/2-.02),.17,H1+H2+.32,wood);
  const top=vnCornice('vWood',0,Y2+H2,0,W,D,0,wood,2);
  vnGableRoof(0,top,0,D,W,3.0,Math.PI/2,'vGableC',null,1.0,'vGablePl',pl2,.16);           // the gable to the street
- vnWin(0,top+1.1,zf,0,.8,.6,'shut','vWood',tr);
+ vnWin(0,top+1.1,zf,0,.8,.6,'shut','vWood',tr);vB('vWood',0,top+.05,zf+.08,W-.4,.2,.16,0,wood);vB('vWood',0,top+1.9,zf+.08,.18,.9,.16,0,wood);
+ for(const s of[-1,1])kput('vWood',[s*2.2,top+.95,zf+.08],qEuler(0,0,s*.55),[.14,2.1,.14],wood);
  // the hoist: a beam out of the gable over the store's cart door, its block and rope, a bale on the hook; the loading door above
  vB('vWood',2.6,top+.45,zf-.3,.24,.26,2.6,0,wood);vB('vWood',2.6,top+.05,zf+.15,.2,.4,.2,0,wood);
  vBq('vHoop',2.6,top+.25,zf+.85,.16,.16,2.2,qEuler(0,Math.PI/2,0),vC(0x2e2a26));vPst('vRope',2.6,2.3,zf+.85,.025,top+.15-2.3,vC(0xd8c090));

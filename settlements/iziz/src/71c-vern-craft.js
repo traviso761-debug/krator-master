@@ -43,6 +43,8 @@ function vcrCullet(x,y,z,r,hex,n){kput('vRock',[x,y,z],null,[r,r*.5,r*.85],vC(he
  for(let i=0;i<n;i++){const a=rng()*TAU,d=Math.sqrt(rng())*r*.85,h=Math.sqrt(Math.max(0,1-d*d/(r*r)))*r*.46;kput('vClayB',[x+Math.cos(a)*d,y+h+.02,z+Math.sin(a)*d*.85],qEuler(rng()*3,rng()*TAU,rng()*3),[rr(.06,.16),rr(.03,.08),rr(.06,.14)],vC(hex,rr(.8,1.15)));}}
 // a stack of salvaged sheets lying flat (panel or rust), a little off square each
 function vcrStack(item,x,y,z,w,d,n,ry){for(let i=0;i<n;i++)kput(item,[x+rr(-.12,.12),y+.04+i*.09,z+rr(-.12,.12)],qEuler(rr(-.02,.02),ry+rr(-.12,.12),rr(-.02,.02)),[w*rr(.85,1),.07,d*rr(.85,1)],null);}
+// a salvaged sheet nailed over a face at (x,z) on it, foot at y, a few degrees off square
+function vcrSheet(x,y,z,ry,w,h){const p=loc(x,z,0,.09,ry);kput(vPick(['vSheet','vPlate','vPlateW']),[p[0],y+h/2,p[1]],vQ(ry,0,rr(-.06,.06)),[w,h,1],null);}
 // three-sided board bin (open at +z of its own frame)
 function vcrBin(x,y,z,ry,w,d,h,c){for(const s of[-1,1]){const p=loc(x,z,s*w/2,0,ry);vB('vWood',p[0],y,p[1],.08,h,d,ry,c);}const b=loc(x,z,0,-d/2,ry);vB('vWood',b[0],y,b[1],w+.08,h,.08,ry,c);}
 
@@ -95,7 +97,7 @@ function buildVernTinker(G,o){reseed(8311+(o.v|0));const W=8.8,D=6.6,H=3.0,Y0=.4
  vB('vStone',0,-.15,0,W+.6,.6,D+.6,0,vC(0x8a7e70));vnPaving(0,.02,D/2+2.2,W+2,2.2,0,vC(0x7a7068),8);
  vnBody('vWood',0,Y0,0,W,H,D,0,boards,{t:.15});vnFrame(0,Y0,0,W,H,D,0,wood,.13);
  vnGableRoof(0,Y0+H,0,W,D,R,0,'vGableC',null,1.3,'vGableW',boards,.14);
- vnPatch(0,Y0,D/2,0,W,H,3);vnPatch(W/2,Y0,0,Math.PI/2,D,H,2);vnPatch(0,Y0,-D/2,Math.PI,W,H,3);
+ for(const [x,w] of[[-.25,1.3],[3.5,1.0],[-3.4,1.3]])vcrSheet(x,Y0+.2,-D/2,Math.PI,w,rr(1.6,2.3));vcrSheet(W/2,Y0+.1,-2.5,Math.PI/2,1.2,1.7);   // sheets nailed over the boards, clear of the openings
  // the front: the counter hatch with its shutter propped up as a hood, the door, the porch under the deep eave
  {const hx=-1.5,hw=2.6;vnWin(hx,Y0+1.0,D/2,0,hw,1.3,'open','vWood',wood);vB('vWood',hx,Y0,D/2+.3,hw+.3,1.0,.5,0,wood);
   kput('vSheet',[hx,Y0+2.12,D/2+.36],vQ(0,-1.15,0),[hw+.2,.75,1],null);
@@ -167,12 +169,12 @@ function buildVernGlassworks(G,o){reseed(8321+(o.v|0));const W=11.4,D=8.2,H=4.0,
   for(let k=0;k<5;k++)kput('vWinGlass',[FX+4.6,.8,cz-1.6+k*.12],vQ(Math.PI/2,0,.15),[1.2,1.5,.03],null);vB('vWood',FX+4.6,0,cz-1.35,1.6,.12,.8,0,wood);
   vB('vWood',FX+4.6,0,cz-1.75,.1,1.7,.1,0,wood);}
  // the hall's -x end: a lean rack of salvaged panes waiting to be cut, sand sacks and soda ash, crates
- for(let k=0;k<6;k++)kput('vWinGlass',[X0-W/2-.55,.85,-2+k*.3],vQ(-Math.PI/2,0,-.2),[1.1,1.6,.03],null);vB('vWood',X0-W/2-.75,0,-1.25,.15,.15,2.1,0,wood);
+ for(let k=0;k<6;k++)kput('vWinGlass',[X0-W/2-.55,.85,-3.5+k*.28],vQ(-Math.PI/2,0,-.2),[1.1,1.6,.03],null);vB('vWood',X0-W/2-.75,0,-2.8,.15,.15,2.0,0,wood);
  // the back: the furnace's firewood, split and stacked between stakes against the hall wall, sacks of charcoal at its end
  {const bz=-D/2-.75;for(let r=0;r<4;r++)for(let k=0;k<16-(r>2?1:0);k++)vPst('vPostB',X0-3.6+k*.36+(r%2)*.18,.12+r*.3,bz+.55,rr(.13,.17),1.1,vC(vPick(VPAL.woodPoor),rr(.85,1.1)),qEuler(-Math.PI/2,0,0));
   for(const x of[-3.8,2.2])for(const dz of[.05,1.05])vPst('vPost',X0+x,0,bz+dz,.05,1.4,wood);
   vnSacks(X0+2.6,0,bz,4);}
- vnSacks(X0-W/2-1.0,0,1.6,5);vnCrate(X0-W/2-.9,0,-3.4,.8,.2,wood);vnCrate(X0+W/2-1.4,0,-D/2-.9,.8,.4,wood);vnWaterButt(X0-4.9,0,-D/2-.7,.45,1.0);
+ vnSacks(X0-W/2-1.0,0,1.6,5);vnCrate(X0-W/2-.9,0,3.0,.8,.2,wood);vnCrate(X0+W/2-1.4,0,-D/2-.9,.8,.4,wood);vnWaterButt(X0-4.9,0,-D/2-.7,.45,1.0);
  vnFolk(X0,D/2+3.4,3,2);}
 
 // ---------------------------------------------------------------- salvage breaker's yard: Ancient scrap broken up under a pipe gantry, sorted in piles; a shop, an office
@@ -200,7 +202,7 @@ function buildVernSalvageYard(G,o){reseed(8331+(o.v|0));const W=29,D=23,WH=2.6;c
  vnGableRoof(KX,KY+KH,KZ,KW,KD,1.8,0,'vGableC',null,1.0,'vGableW',wood,.14);
  vnDoor(KX+1.6,KY,KZ+KD/2,0,1.9,2.6,'vWood',wood,vC(0x5a4a3a),false);vnWin(KX-2.2,KY+1.1,KZ+KD/2,0,1.4,1.0,'open','vWood',wood);
  vnWin(KX+KW/2,KY+1.1,KZ,Math.PI/2,1.2,1.0,'open','vWood',wood);vnWin(KX-KW/2,KY+1.1,KZ+.6,-Math.PI/2,1.2,1.0,'shut','vWood',wood);
- vnPatch(KX,KY,KZ+KD/2,0,KW,KH,3);vnChimney(KX-2.6,KY+KH+.6,KZ-1.2,2.2,.16,true);vcrCoil(KX+3.4,KY+1.8,KZ+KD/2,0,.36);
+ vcrSheet(KX-.45,KY+.1,KZ+KD/2,0,1.0,2.4);vcrSheet(KX-3.6,KY+.3,KZ+KD/2,0,1.0,2.0);vnChimney(KX-2.6,KY+KH+.6,KZ-1.2,2.2,.16,true);vcrCoil(KX+3.4,KY+1.8,KZ+KD/2,0,.36);
  // the office and store shed by the gate on the left: boards, a shed roof, its door toward the gate
  const OX=-9.8,OZ=6.6,OW=4.6,OD=3.8,OH=2.7,OY=.3;
  vB('vStone',OX,-.1,OZ,OW+.4,.4,OD+.4,0,vC(0x7a7068));vnBody('vWood',OX,OY,OZ,OW,OH,OD,0,wood,{t:.15});

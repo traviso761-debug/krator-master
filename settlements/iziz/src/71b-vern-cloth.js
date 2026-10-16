@@ -46,9 +46,9 @@ function buildVernWeaver(G,o){reseed(8201+(o.v|0));const W=10,D=7.6,H1=3.7,H2=2.
  // the weaving room: the street door and tall shuttered openings for the light, on the front and both sides
  vnDoor(-3.6,Y0,zf,0,1.2,2.4,'vWood',trim,vC(0x6a4a30));
  for(const x of[-1.3,1.2,3.7])vnWin(x,Y0+.6,zf,0,1.25,2.5,'open','vWood',trim,true);
- for(const s of[-1,1]){vnWin(s*W/2,Y0+.6,ZH+1.5,s*Math.PI/2,1.2,2.5,'open','vWood',trim,true);vnWin(s*W/2,Y0+.9,ZH-1.7,s*Math.PI/2,1.0,1.6,s<0?'open':'shut','vWood',trim,s<0);}
+ vnWin(-W/2,Y0+.6,ZH+1.5,-Math.PI/2,1.2,2.5,'open','vWood',trim,true);vnWin(-W/2,Y0+.9,ZH-1.7,-Math.PI/2,1.0,1.6,'open','vWood',trim,true);   // (the +x wall carries the stair inside)
  // the dye room's back door onto the yard, a shuttered window by it
- vnDoor(3.4,Y0,zb,Math.PI,1.0,2.2,'vWood',wood,vC(0x5a3a24));vnWin(-2.6,Y0+1.1,zb,Math.PI,1.1,1.3,'open','vWood',wood,true);
+ vnDoor(1.1,Y0,zb,Math.PI,1.0,2.2,'vWood',wood,vC(0x5a3a24));vnWin(3.3,Y0+1.1,zb,Math.PI,1.1,1.3,'open','vWood',wood,true);vnWin(-2.6,Y0+1.1,zb,Math.PI,1.1,1.3,'open','vWood',wood,true);
  // the family above: deco shutter strips and windows
  for(const x of[-3.4,3.4])vnWin(x,Y0+H1+1.0,zf,0,1.0,1.3,'open','vWood',trim,true);
  for(const x of[-1.2,1.2])vnStrip(x,Y0+H1+.7,zf,0,.7,2.0,'vWood',trim);
@@ -63,11 +63,11 @@ function buildVernWeaver(G,o){reseed(8201+(o.v|0));const W=10,D=7.6,H1=3.7,H2=2.
  {const rx=W/2+1.3;for(const z of[ZH-2.6,ZH+2.4])vPst('vPost',rx,0,z,.07,2.6,wood);vBeam([rx,2.55,ZH-2.8],[rx,2.55,ZH+2.6],.05,wood);
   for(let k=0;k<4;k++)vclHang(rx,2.53,ZH-1.9+k*1.25,Math.PI/2,1.0,rr(1.5,2.0),vC(VCL_DYE[[0,2,4,1][k]]));}
  // the dye yard: a lean-to off the back wall over the fired vats (orange, teal, indigo), more vats in the open, the drying poles
- {const lz=zb-1.45;vnShedRoof(.6,2.55,lz,6.4,2.9,.85,Math.PI,'vCorr',null,.5,.12);
-  for(const x of[-2.4,.6,3.6])vPst('vPost',x,0,lz-1.35,.1,2.55,wood);vB('vWood',.6,2.45,lz-1.35,6.6,.16,.18,0,wood);
-  vB('vStone',-.6,0,lz,4.2,.55,1.2,0,vC(0x8a7a6a));                                            // the hearth bench
-  for(let k=0;k<3;k++){vB('vDarkB',-1.9+k*1.3,.08,lz+.62,.4,.32,.06,0);vBall('vEmber',-1.9+k*1.3,.2,lz+.58,.1);vclVat(-1.9+k*1.3,.55,lz,.5,.75,[0xe07a2a,0x2f8f8a,0x2f3a7a][k]);}
-  vnChimney(-2.6,.55,lz-.45,3.0,.16,true);
+ {const lz=zb-1.45;vnShedRoof(.2,2.55,lz,7.2,2.9,.85,Math.PI,'vCorr',null,.5,.12);
+  for(const x of[-3.2,.3,3.6])vPst('vPost',x,0,lz-1.35,.1,2.55,wood);vB('vWood',.2,2.45,lz-1.35,7.4,.16,.18,0,wood);
+  vB('vStone',-1.3,0,lz,4.2,.55,1.2,0,vC(0x8a7a6a));                                            // the hearth bench
+  for(let k=0;k<3;k++){vB('vDarkB',-2.6+k*1.3,.08,lz+.62,.4,.32,.06,0);vBall('vEmber',-2.6+k*1.3,.2,lz+.58,.1);vclVat(-2.6+k*1.3,.55,lz,.5,.75,[0xe07a2a,0x2f8f8a,0x2f3a7a][k]);}
+  vnChimney(-3.3,.55,lz-.45,3.0,.16,true);
   vB('vWood',3.0,0,lz+.2,1.8,.55,.8,0,wood);vB('vPanelB',3.0,.5,lz+.2,1.6,.06,.6,0,vC(0x5a7a8a));   // the rinse trough
   for(let k=0;k<5;k++)vPst('vPostB',3.9+rr(-.1,.1),.05+k*.2,lz-1.0,.09,1.0,vC(0x6a4a30),qEuler(0,0,Math.PI/2));   // firewood under the eave
   vnSacks(-3.9,0,lz+.2,3);}

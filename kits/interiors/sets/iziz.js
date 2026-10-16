@@ -305,7 +305,7 @@
   add({ key: 'vern_weaver', name: "Weaver and dyer's house", wealth: MID, types: ['industry', 'market/shop', 'single-family dwelling'], lot: [15, 19],
     bodies: [{ id: 'house', poly: rect(10, 7.6, 0, 1.6), y: 0.45, levels: [{ h: 3.75 }, { h: 2.9 }], wall: 0.3, roof: 'gable', pitch: pt(2.4 / 3.8),
       stair: { w: 0.9, riser: 0.22, tread: 0.25 },
-      doors: [{ at: [-3.6, 5.4], w: 1.2 }, { at: [3.4, -2.2], w: 1.0 }], program: [['izwork_weaver', 'izwork_dyer'], ['living', 'bedroom']] }],
+      doors: [{ at: [-3.6, 5.4], w: 1.2 }, { at: [1.1, -2.2], w: 1.0 }], program: [['izwork_weaver', 'izwork_dyer'], ['living', 'bedroom']] }],
     note: 'the loom room behind the tall shuttered openings and the dye room with the back door, the family above; the dye ' +
       'lean-to, the vats and the drying poles in the yard behind are open' });
   add({ key: 'vern_tannery', name: 'Tannery', wealth: POOR, types: ['industry'], lot: [21, 16],
