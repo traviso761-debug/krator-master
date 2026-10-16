@@ -36,7 +36,7 @@ TEX = 1024
 # fabrics: each part's cloth takes the grain of a material-library set (core/materials/library/<id>/albedo.jpg, its
 # luminance about its mean multiplied into the painted colours), at a tile size for clothing (metres a tile; the
 # older sets' records are sized for buildings). The set comes from the paint's base colour name (FABRIC_OF) unless the
-# paint names one (P(..., fabric=)); boots and sandals take leather. kits/characters/prompt-clothes.md lists the sets
+# paint names one (P(..., fabric=)); boots and sandals take leather. core/charactermodels/prompt-clothes.md lists the sets
 LIB = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'core', 'materials', 'library')
 FABRIC = {'cloth.weave.plain': 0.12, 'cloth.weave.twill': 0.15, 'cloth.plain': 0.25, 'cloth.silk': 0.3, 'cloth.felt': 0.3,
           'cloth.weave.burlap': 0.2, 'cloth.cotton.coarse': 0.2, 'cloth.wool': 0.2, 'cloth.velvet': 0.2, 'cloth.quilted': 0.3,
@@ -769,7 +769,7 @@ def build(gid, label, parts, slot='torso'):
     im.pixels.foreach_set(rgba.ravel())
     im.filepath_raw = os.path.join(d, gid + '.png'); im.file_format = 'PNG'; im.save()
     with open(os.path.join(d, gid + '.mhmat'), 'w') as f:
-        f.write('# Voth clothing (kits/characters/tools/make_garments.py)\nname %s\nambientColor 1.0 1.0 1.0\n'
+        f.write('# Voth clothing (core/charactermodels/tools/make_garments.py)\nname %s\nambientColor 1.0 1.0 1.0\n'
                 'diffuseColor 1.0 1.0 1.0\nspecularColor 0.1 0.1 0.1\nshininess 0.1\nopacity 1.0\ntransparent False\n'
                 'backfaceCull False\ncastShadows True\nreceiveShadows True\ndiffuseTexture %s.png\n'
                 'shader shaders/glsl/litsphere\nshaderConfig diffuse True\n' % (gid, gid))

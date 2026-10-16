@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build kits/characters: two pages over the same pieces.
+"""Build core/charactermodels: two pages over the same pieces.
 
   dist/cosmetic-lab.html    the Cosmetic Lab: one figure, every face, hair, skin, body and clothing choice (the future
                             player character editor), and strangers in bulk for NPCs (src/00-head.html, 90-editor.js)

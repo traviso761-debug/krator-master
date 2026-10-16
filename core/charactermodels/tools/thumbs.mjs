@@ -1,5 +1,5 @@
 // Chip pictures for the editor: every head, armour slot, hair and beard of each body's kit, drawn in the bind pose.
-//   node tools/thumbs.mjs <kits/characters>        -> dist/thumbs/<body>/<name>__<mesh>.png (160 px)
+//   node tools/thumbs.mjs <core/charactermodels>        -> dist/thumbs/<body>/<name>__<mesh>.png (160 px)
 // build.py runs it when dist/thumbs is missing, or with --thumbs. three.js r128 and its loader are the local copies
 // verify.py uses (settlements/ys/three.min.js, tools/vendor/GLTFLoader.r128.js).
 import fs from 'fs';

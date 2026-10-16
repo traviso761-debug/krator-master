@@ -156,7 +156,7 @@ def image(r, tex_index):
 
 class GlbWriter:
     def __init__(self):
-        self.blobs, self.j = [], {'asset': {'version': '2.0', 'generator': 'kits/characters/make_pieces.py'},
+        self.blobs, self.j = [], {'asset': {'version': '2.0', 'generator': 'core/charactermodels/make_pieces.py'},
                                   'bufferViews': [], 'accessors': [], 'buffers': []}
         self.size = 0
 

@@ -1,6 +1,6 @@
-# kits/characters in Godot: kchar.gd against the JS golden, and a MakeHuman figure built from the pieces.
+# core/charactermodels in Godot: kchar.gd against the JS golden, and a MakeHuman figure built from the pieces.
 #   python3 godot/tools/sync_core.py && godot --headless --path godot --script res://tests/character/kchar_test.gd
-# exits 0 when everything matches. The golden is kits/characters/tests/golden-mpfb.json (make-golden.js).
+# exits 0 when everything matches. The golden is core/charactermodels/tests/golden-mpfb.json (make-golden.js).
 extends SceneTree
 
 const DIR := "res://data/characters"
@@ -236,7 +236,7 @@ func _init() -> void:
 		fig._process(0.4)
 		ok(not q0.is_equal_approx(fig.skeleton.get_bone_pose_rotation(fig.skeleton.find_bone("LeftUpLeg"))), "walk moves the thigh")
 
-	# a Giant of Dalab (kits/characters/tools/giant.py): the man's body made big, a second pair of arms that no clip
+	# a Giant of Dalab (core/charactermodels/tools/giant.py): the man's body made big, a second pair of arms that no clip
 	# moves but the figure drives from the upper pair; two arms leaves them out
 	if FileAccess.file_exists(DIR + "/mpfb_giant/kit.json"):
 		var g := KCharFigure.new()

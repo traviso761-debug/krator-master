@@ -1,4 +1,4 @@
-// node kits/characters/tests/make-golden.js : writes tests/golden-mpfb.json, what KCHAR (src/10-rig.js) gives for the
+// node core/charactermodels/tests/make-golden.js : writes tests/golden-mpfb.json, what KCHAR (src/10-rig.js) gives for the
 // MakeHuman bodies on a fixed set of records: morph weights, morphed joints, strangers per people, parts and hidden
 // skin. godot/tests/character/kchar_test.gd checks kchar.gd against it. Rerun after changing 10-rig.js or data/, then
 // python3 godot/tools/sync_core.py.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy the core files (and kits/characters' pieces) the Godot project vendors (res:// cannot reach outside godot/).
+"""Copy the core files (and core/charactermodels' pieces) the Godot project vendors (res:// cannot reach outside godot/).
 
     python3 godot/tools/sync_core.py           # copy core -> godot
     python3 godot/tools/sync_core.py --check   # exit 1 and name the files that drifted
@@ -15,10 +15,10 @@ PAIRS += [(f"core/mask/{f}", f"godot/tests/mask/{f}") for f in ("kmask.gd", "kma
 PAIRS += [("core/simulation/ksim.gd", "godot/tests/sim/ksim.gd")]   # SIM.pose's twin (its test reads a world's export: tests/dhelv)
 # KField (class_name: the importer godot/krator/field_import.gd uses it from here)
 PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd", "kfield_test.gd", "golden-field.json")]
-# kits/characters: the MakeHuman bodies' data, the peoples and the golden (tracked), and their pieces (GLBs and GSH1
+# core/charactermodels: the MakeHuman bodies' data, the peoples and the golden (tracked), and their pieces (GLBs and GSH1
 # blend-shape files, gitignored: ~200 MB; make_mpfb.py writes them), read at runtime by krator/character/ (res:// cannot reach
 # the kit). tests/make-golden.js writes the golden.
-_CH = "kits/characters"
+_CH = "core/charactermodels"
 _BODIES = sorted(b for b in os.listdir(os.path.join(REPO, _CH, "data")) if b.startswith("mpfb_"))
 PAIRS += [(f"{_CH}/data/{b}/{f}.json", f"godot/data/characters/{b}/{f}.json") for b in _BODIES for f in ("skeleton", "kit")]
 PAIRS += [(f"{_CH}/data/{f}.json", f"godot/data/characters/{f}.json") for f in ("peoples", "clips", "props", "posture")]

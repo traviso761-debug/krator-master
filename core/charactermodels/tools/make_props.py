@@ -292,7 +292,7 @@ PROPS = [('sword', 'Sword', 'R', sword), ('dagger', 'Dagger', 'R', dagger), ('ax
 
 def write(path, m):
     g = glbio.GlbWriter()
-    g.j['asset']['generator'] = 'kits/characters/make_props.py'
+    g.j['asset']['generator'] = 'core/charactermodels/make_props.py'
     mats, prims = [], []
     for name, tris in m.parts.items():
         if not tris:

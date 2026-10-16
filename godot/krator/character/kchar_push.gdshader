@@ -1,4 +1,4 @@
-// Every top and every pair of trousers or skirt (the twin of pushOut in kits/characters/src/50-figure.js): the
+// Every top and every pair of trousers or skirt (the twin of pushOut in core/charactermodels/src/50-figure.js): the
 // garment's own look (albedo texture and colour, alpha cutoff, normal map, roughness, metallic, from the imported
 // material: kchar_figure.gd _garment) plus two moves after skinning.
 // - kcL 1 (kit item 'loose'): every vertex pushed out of the thighs, shins and feet, so no knee comes through between

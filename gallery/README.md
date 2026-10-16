@@ -32,6 +32,14 @@ load the same pack (by content) go to the same part and share one copy. The part
 page `lore/tongues-of-krator.html`) under the Scale Model. Only Krator Worlds' index was republished with it (version
 75); Krator Worlds II and Krator Biomes and Objects pick it up at their next rebuild.
 
+## Character lab links (2026-10-16)
+
+`index.template.html` links the two labs of `core/charactermodels` after the Throne: the Cosmetic Lab
+(https://claude.ai/artifact/VaNLVcaDZaYHAHpEgxKsSw) and the Animation Lab (https://claude.ai/artifact/WStXx16aNHT63stCoz331x).
+They stay their own artifacts (each loads about 240 MB of pieces beside its page) and are not built by
+`build_gallery.py` (core/ is not discovered). They were published private: a gallery viewer opens them only once the
+owner shares them (each page's Share menu).
+
 ## Update it
 
 ```

@@ -10,6 +10,8 @@ Usage:  python3 tools/make_index.py      (from anywhere; rewrites every INDEX.md
 import ast, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# core modules that are builds of their own (a build.py and src/): indexed and audited like a kit
+CORE_BUILDS = ['core/charactermodels']
 BIG = 30 * 1024          # CLAUDE.md: never read a fragment this size whole
 
 ABOUT = {
@@ -47,7 +49,7 @@ ABOUT = {
     'kits/interiors': 'Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; the building SETS (Highlands, Post-Apoc, Beast Rider, Locus, Abyss, Reed Lake, Yuni: every building\'s rooms as data, the residence rule checked); a verified demo, a sets sheet, and a walkable mockup of furnished rooms inside the real buildings.',
     'kits/ancients-interiors': 'Ancients interiors: the Ancients\' ship interiors backported from Noah\'s Regret, on kits/interiors: the ship\'s room kinds as programmes (sick bay, chart room, strongroom, armoury, brig, sail loft, laundry), ship\'s rooms and cabins as room shapes, and fourteen hall recipes (crew mess, dining hall, greenhouse, engine room, bridge, officers\' hall, chart deck, chain locker, store hall, drill hall, gallery, stern lounge, plaza, quay) in two dresses (as built, as the pirates hold them), each audited; a verified demo sheet.',
     'kits/catalog': 'The master catalog: asset engine, the parametric furniture kit and 1674 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court, plus trade and household pieces: forge, anvil, stall, vat, still, bunk, larder ..., and the furniture harvested from the Highlands, Post-Apoc, Beast Rider and Abyss kits) over 25 cultures, one file per culture, with generic goods (containers, food, drink, supplies), biome fruit and a jobs file (work items by trade); a verified contact sheet in five pages (indoor, outdoor, both, rugs, jobs).',
-    'kits/characters': 'Characters: MakeHuman (MPFB2) bodies with morphing face, build and ancestry; library clothes, hair and beards that follow the morphs; skin and hair tint; peoples (data/peoples.json) that keep a culture\'s strangers in range; two pages: the Cosmetic Lab (one figure, every look; strangers in bulk for NPCs) and the Animation Lab (six bodies, every clip, a review mark per clip); a Godot twin (godot/krator/character/, behind).',
+    'core/charactermodels': 'Characters: MakeHuman (MPFB2) bodies with morphing face, build and ancestry; library clothes, hair and beards that follow the morphs; skin and hair tint; peoples (data/peoples.json) that keep a culture\'s strangers in range; two pages: the Cosmetic Lab (one figure, every look; strangers in bulk for NPCs) and the Animation Lab (six bodies, every clip, a review mark per clip); a Godot twin (godot/krator/character/, behind).',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.
 GENERATED = {
@@ -210,6 +212,7 @@ def main():
             b = '%s/%s' % (top, name)
             if os.path.isfile(os.path.join(ROOT, b, 'build.py')) and os.path.isdir(os.path.join(ROOT, b, 'src')):
                 builds.append(b)
+    builds += CORE_BUILDS
     rows = []
     for b in builds:
         n, total, biggest, outs = build_index(b)

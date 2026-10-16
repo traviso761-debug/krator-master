@@ -1,4 +1,4 @@
-// node kits/characters/tests/test-rig.js : KCHAR (src/10-rig.js) against data/*.json. Exit 1 on a failure.
+// node core/charactermodels/tests/test-rig.js : KCHAR (src/10-rig.js) against data/*.json. Exit 1 on a failure.
 var path = require('path'), fs = require('fs');
 var HERE = path.join(__dirname, '..');
 require(path.join(HERE, '..', '..', 'core', 'rand', '08-core-rand.js')); global.KRAND = globalThis.KRAND;

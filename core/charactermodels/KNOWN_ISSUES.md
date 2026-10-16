@@ -1,4 +1,4 @@
-# kits/characters: known issues
+# core/charactermodels: known issues
 
 - **The Godot twin blends normals linearly.** Its blend shapes carry each target's normals (NORMALIZED mode), so a
   reshaped body's normals turn, but as a weighted sum of the targets' turns, where the page re-sums them from the

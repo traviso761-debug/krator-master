@@ -1,11 +1,11 @@
 ---
 name: character-modeling
-description: Lessons and workflow for building customizable, animated 3D game characters with Claude — MakeHuman/MPFB2 bodies in headless Blender, Meshy text-to-3D and rigging, generated clothing that fits every body shape, morph sliders (face, build, ancestry), hair/beards/skin tint, retargeted animation clips, hand-held props, cloth chains, body mods (extra arms, cybernetics), and a three.js page plus a Godot twin that must agree. Use this whenever the user wants a character editor or creator, NPC crowds with varied looks, armour or clothes that fit different bodies, a new outfit set or culture's clothing, animation fixes (clipping, jitter, posture, wrong hand, aim), or anything touching kits/characters in Krator — even if they only say "the guy's arm clips through his chest" or "make clothes for the Republic".
+description: Lessons and workflow for building customizable, animated 3D game characters with Claude — MakeHuman/MPFB2 bodies in headless Blender, Meshy text-to-3D and rigging, generated clothing that fits every body shape, morph sliders (face, build, ancestry), hair/beards/skin tint, retargeted animation clips, hand-held props, cloth chains, body mods (extra arms, cybernetics), and a three.js page plus a Godot twin that must agree. Use this whenever the user wants a character editor or creator, NPC crowds with varied looks, armour or clothes that fit different bodies, a new outfit set or culture's clothing, animation fixes (clipping, jitter, posture, wrong hand, aim), or anything touching core/charactermodels in Krator — even if they only say "the guy's arm clips through his chest" or "make clothes for the Republic".
 ---
 
 # Character modeling
 
-This skill comes from a long build of Krator's character kit (`kits/characters`): two MakeHuman bodies and a giant,
+This skill comes from a long build of Krator's character kit (`core/charactermodels`): two MakeHuman bodies and a giant,
 about 140 animation clips, hundreds of garments across eight cultures, body mods, a Cosmetic Lab and an Animation Lab
 in the browser, and a Godot twin held to the same numbers. Most of what is here was learned by getting it wrong first.
 

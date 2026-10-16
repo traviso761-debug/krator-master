@@ -1300,9 +1300,9 @@ Provisional, to be judged in the demo kit. In the owner's AmbientCG folder, each
 | `MetalPlates001` | grey plates with rivet groups | `metal.plated` |
 
 
-#### Characters: cybernetic arms and the giants' metal (`kits/characters`, added 2026-10-13)
+#### Characters: cybernetic arms and the giants' metal (`core/charactermodels`, added 2026-10-13)
 
-The body mods' cybernetic pairs (`kits/characters/tools/mods.py` `CYBER`) and the giants' gold and bronze are flat
+The body mods' cybernetic pairs (`core/charactermodels/tools/mods.py` `CYBER`) and the giants' gold and bronze are flat
 colours today. These are the gaps, one row per surface. Use the base template, with "Keep colours natural but slightly
 muted" for the tintable rows and without it for the gold. Each wants a roughness map (and a metalness map where the
 row says metal); the plates repeat about every 0.25 m on an arm, so ask for fine detail.
@@ -1320,9 +1320,9 @@ row says metal); the plates repeat about every 0.25 m on an arm, so ask for fine
 | `metal.bronze.lt` | La Tene cast bronze (#a8803a) for the Free Giants' helmet, brooch and armbands: a cast surface with fine casting pits, incised spiral and triskele ornament, green verdigris in the incisions, polished high points. Metal. |
 | `metal.gold.torc` | Twisted gold torc rod seen side-on and unrolled flat: tight helical twist ridges running across the frame, warm gold (#d8b04a) with darker gold in the twist grooves. Metal. Repeats horizontally. |
 
-#### Characters: clothing fabrics (every culture, `kits/characters`, added 2026-10-13, moved 2026-10-14)
+#### Characters: clothing fabrics (every culture, `core/charactermodels`, added 2026-10-13, moved 2026-10-14)
 
-**Moved to `kits/characters/prompt-clothes.md`**, which lists the library sets the clothes can use as they are
+**Moved to `core/charactermodels/prompt-clothes.md`**, which lists the library sets the clothes can use as they are
 (`cloth.plain` for linen, `cloth.silk`, the procedural `cloth.felt`, `cloth.weave.twill` and `cloth.knit`,
 `cloth.weave.burlap` for maguey, the `hide.leather` sets, `hide.fur.brown`, `fibre.rope`, `shell.nacre`) and gives
 ready-to-paste prompts for the 17 gaps: `cloth.wool`, `cloth.velvet`, `cloth.quilted`, `cloth.cotton.coarse`,
@@ -1333,7 +1333,7 @@ ready-to-paste prompts for the 17 gaps: `cloth.wool`, `cloth.velvet`, `cloth.qui
 `clo1.zip`, `clo3.zip` and a pasted velvet image): scales 0.12 to 0.4 m a tile (about 20 cm of cloth a frame);
 the embroideries, the bogolan, the braid and the bazin damask cropped to their pattern period; the braid metal; the
 quetzal feathers, the embroideries, the bogolan and the braid not tinted, the rest muted for tinting. The garment
-painter reads them since 2026-10-14 (the colour image only; `kits/characters/prompt-clothes.md`).
+painter reads them since 2026-10-14 (the colour image only; `core/charactermodels/prompt-clothes.md`).
 
 #### Second survey (2026-10-03): biomes, city streets and parks, furniture
 

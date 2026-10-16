@@ -58,7 +58,7 @@
   "file": "Crimson Folk Cross-Stitch Tapestry.png",
   "generator": "ChatGPT image generation, Oct 2026",
   "licence": "generated for this project by its owner",
-  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Slavic red cross-stitch embroidery on linen, seen flat: stepped diamonds and crosses built from tiny X stitches, red (#84121a) on cream (#ebe0c7). Repeats horizontally. [Prompt from kits/characters/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Slavic red cross-stitch embroidery on linen, seen flat: stepped diamonds and crosses built from tiny X stitches, red (#84121a) on cream (#ebe0c7). Repeats horizontally. [Prompt from core/charactermodels/prompt-clothes.md for this row. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
   "sha1": "33f023621a692925a5958555c0b7e5b6b256a778"
  }
 }

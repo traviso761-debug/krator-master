@@ -1,4 +1,4 @@
-# kits/characters
+# core/charactermodels
 
 The character editor and the data a city needs to populate itself: two MakeHuman bodies (a man and a woman), and the
 Giant made from the man's (Giants, below), whose face, build and ancestry morph, with library clothes, hair and beards that follow the morphs, a skin tone and a hair
@@ -21,7 +21,7 @@ built over the same pieces:
   document per clip, which Claude reads); run locally it keeps them in the browser.
 
 ```
-cd kits/characters
+cd core/charactermodels
 blender -b --python tools/make_garments.py -- male [--render <dir>] # the Voth clothing, into MPFB's user data
 blender -b --python tools/mpfb_build.py -- male <export dir>      # Blender 4.5 + MPFB2 + the asset packs (below)
 python3 tools/make_mpfb.py male <export dir>                       # -> pieces/mpfb_male/, data/mpfb_male/
@@ -40,6 +40,36 @@ without sending its piece's `.txt` again in the same publish: the piece would lo
 the neutral one would show it at the neutral size (hair off the head, shirts off the torso, holes at the joints).
 A version holds at most 511 files, so send the changed pieces (compare `build-manifest.json` with the last published
 commit's) rather than all of them.
+
+## A core module: where it goes next
+
+This was `kits/characters` until 2026-10-16. It moved to `core/` because it is meant to be shared: the bodies, the
+records, the peoples and the clips are what every settlement's citizens will be drawn from. It is still a build of its
+own (`build.py`, `src/`, `dist/`: the two labs), which `tools/make_index.py` and `tools/audit_port.py` list through
+`CORE_BUILDS`; no settlement includes its fragments yet.
+
+**Lessons learned** are kept in the `character-modeling` skill (`.claude/skills/character-modeling/`, zipped as
+`character-modeling.skill` at the repo root): read it before working here, and add to it when a fix teaches something
+(the root `README.md`, "Skills", says how to keep the two copies in step).
+
+**The plan** (GODOT-PLAN.md Phase 5, "Bodies for the citizens"):
+
+1. **Replace the citizen stand-ins.** A settlement's life layer draws each citizen's record from its people
+   (`KCHAR.stranger` / `KCHAR.crowd` with the citizen's id as seed, so the same citizen always looks the same), dressed
+   by class (peasant, trade, court) from `data/peoples.json`. The figure (`50-figure.js`) and its pieces replace the
+   stand-in mesh; the simulation keeps deciding where a citizen is and what it does (`core/simulation`), the figure
+   only shows it. Crowds need a cost plan first: instancing or impostors past a few dozen figures, LOD (a lighter
+   body and fewer cloth chains far off), and the pieces' download budget.
+2. **Line up the work tasks with clips.** Map each activity (`core/simulation/ROADMAP.md` §26, the portable
+   primitives, plus a build's own: FETCH_WATER, HERD, SMITH, TRADE, SLEEP...) to a clip, a prop and a loop or one-shot
+   in a table beside `data/clips.json`, and list the activities with no clip. Fill the gaps from the libraries
+   already used (Meshy's animation library, Quaternius UAL), Mixamo clips the owner supplies, or made clips
+   (`derive`, as the hammer, dig and thrusts are).
+3. **A quality pass, before citizens use it at scale:** clothing (skin and under-layers through garments at the
+   slider ends, sleeves, hems in motion, the generated garments' tailoring), posture (the retarget's straightened
+   spine is offset after the clip, not fixed in the retarget: `KNOWN_ISSUES.md`; the Animation Lab's Posture panel
+   writes `data/posture.json`), and animation (hands through hips on heavy builds, made clips that read as made,
+   the review marks in the Animation Lab).
 
 ## How it works
 

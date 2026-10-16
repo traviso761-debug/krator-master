@@ -1,4 +1,4 @@
-# kits/characters: credits
+# core/charactermodels: credits
 
 The MakeHuman bodies (`pieces/mpfb_*`) are built with MPFB2 (MakeHuman for Blender) from the MakeHuman system assets,
 the community asset packs (static.makehumancommunity.org/assets/assetpacks) and a few items from the community asset

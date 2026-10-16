@@ -1,5 +1,5 @@
-# KChar: the character record. The GDScript twin of kits/characters/src/10-rig.js (KCHAR) for the MakeHuman bodies
-# (kit.style "mpfb"); held to it by tests/character/kchar_test.gd against kits/characters/tests/golden-mpfb.json.
+# KChar: the character record. The GDScript twin of core/charactermodels/src/10-rig.js (KCHAR) for the MakeHuman bodies
+# (kit.style "mpfb"); held to it by tests/character/kchar_test.gd against core/charactermodels/tests/golden-mpfb.json.
 #   morph_weights(rec, kit) -> PackedFloat64Array, one weight per kit.morph.targets entry
 #   morph_joints(skel, kit, w) -> { d: Array[Vector3] (each joint's rest move, model space), t: Array[Vector3] (new rest offsets) }
 #   parts(rec, kit) -> Array of { key, mesh, role, slot }      hidden(rec, kit) -> PackedByteArray, 1 per hidden skin triangle
@@ -59,7 +59,7 @@ static func item(rec: Dictionary, kit: Dictionary, slot: String) -> Variant:
 	return null
 
 
-# body mods (kits/characters/tools/mods.py, kit items in slot "mods"): record.mods lists the ids worn, one of a group at
+# body mods (core/charactermodels/tools/mods.py, kit items in slot "mods"): record.mods lists the ids worn, one of a group at
 # a time; a mod granting arms 4 gives the body four (as KCHAR.mods / arms / fits)
 static func mods(rec: Dictionary, kit: Dictionary) -> Array:
 	var out := []

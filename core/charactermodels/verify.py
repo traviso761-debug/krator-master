@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Headless verification for kits/characters (dist/cosmetic-lab.html, dist/animation-lab.html).
+"""Headless verification for core/charactermodels (dist/cosmetic-lab.html, dist/animation-lab.html).
 
   python3 verify.py dist/cosmetic-lab.html [--assert] [--out shots/]
   python3 verify.py dist/animation-lab.html [--assert] [--out shots/]

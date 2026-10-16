@@ -1,8 +1,8 @@
-# Five strangers from kits/characters' MakeHuman bodies, drawn by Godot and saved as a PNG: one per people, both
+# Five strangers from core/charactermodels' MakeHuman bodies, drawn by Godot and saved as a PNG: one per people, both
 # bodies, holding props in clips (a drawn bow, a two-handed hoe and rifle). On a machine with no display:
 #   xvfb-run -a -s "-screen 0 1400x800x24" godot --path godot --rendering-method gl_compatibility \
 #     --rendering-driver opengl3 --script res://tests/character/kchar_shot.gd -- --out=/abs/path.png [--face] [--giant]
-# --giant: four giants instead (kits/characters/tools/giant.py, mods.py): a temple guard of Dalab in the god's harness,
+# --giant: four giants instead (core/charactermodels/tools/giant.py, mods.py): a temple guard of Dalab in the god's harness,
 # a spear above and a shield below, walking; one with cybernetic arms, idle; a four-armed Free Giant warrior with a
 # sword and a shield, walking; a Free Giant chief in his sagum and torc
 extends SceneTree

@@ -7,7 +7,8 @@ dressing), `water/` (every wet surface: open water on a CDLOD mesh, the CPU twin
 blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
 (the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock), `tags/` (what a placed
 thing is: ids, class, tags), `space/` (the one spatial index placement passes share) and `export/` (the one
-`krator-world` container every module gives its part to, for Godot).
+`krator-world` container every module gives its part to, for Godot). `charactermodels/` (the people: MakeHuman bodies,
+clothes, peoples and clips, with two labs) is a build of its own as well as a module.
 
 ## `materials/`
 
@@ -528,3 +529,17 @@ embodiment after `77-`: Mungo's `78b-mungo-world.js` registers the layers and pl
 `world/*.json` (`83-host-world-json.js`), and adds its own audits (only way up, convoy, commutes) to `SIM.audit()`; its
 `_life.OUT` numbers are the ones it had before SIM. Not yet: tools/sim_scaffold.py and tools/sim_check.py, the
 GDScript twin, LOD tiers, stockpiles.
+
+## `charactermodels/`
+
+The characters: two MakeHuman bodies and the giants, morphing face, build and ancestry, clothes for every people that
+follow the morphs, hair, beards and tint, peoples that keep a culture's strangers in range, body mods, about 140
+animation clips with props and cloth, and the Godot twin (`godot/krator/character/`). Moved here from `kits/characters`
+on 2026-10-16. Unlike the other modules it is also a build (`build.py`, `src/`, two pages in `dist/`: the Cosmetic Lab
+and the Animation Lab), listed by `tools/make_index.py` and `tools/audit_port.py` through `CORE_BUILDS`; its pieces
+(about 1.5 GB of GLBs and morph files) are made from Blender + MPFB2 and gitignored, so CI runs its node test
+(`tests/test-rig.js`) but not its build.
+
+**Used by** nothing yet. It is meant to replace the settlements' citizen stand-ins (GODOT-PLAN.md Phase 5, "Bodies
+for the citizens"; `charactermodels/README.md`, "A core module: where it goes next"). Read the `character-modeling`
+skill (`.claude/skills/character-modeling/`) before working here.

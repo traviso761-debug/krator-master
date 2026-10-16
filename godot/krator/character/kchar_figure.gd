@@ -1,4 +1,4 @@
-# KCharFigure: a MakeHuman character from kits/characters' pieces on one Skeleton3D. The Godot side of
+# KCharFigure: a MakeHuman character from core/charactermodels' pieces on one Skeleton3D. The Godot side of
 # src/50-figure.js for the kit.style "mpfb" bodies.
 #   var fig := KCharFigure.new()
 #   fig.load_body("res://data/characters", "mpfb_male")    # <dir>/<body>/{skeleton,kit}.json, <dir>/pieces/<body>/*.glb + *.gshapes.bin
@@ -66,7 +66,7 @@ func load_body(data_dir: String, body_id: String) -> void:
 	player.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 	add_child(player)
 	var lib := AnimationLibrary.new()
-	# a giant (kit.scale, kits/characters/tools/giant.py) plays the man's clips (kit.anims), slower by the square root
+	# a giant (kit.scale, core/charactermodels/tools/giant.py) plays the man's clips (kit.anims), slower by the square root
 	# of its scale; the whole skeleton is scaled, and everything below works in its (unscaled) space
 	size = float(kit.get("scale", 1.0))
 	cadence = 1.0 / sqrt(size)
@@ -390,7 +390,7 @@ func apply(rec: Dictionary) -> void:
 			worn[mi] = true
 	var roles: Dictionary = kit.get("tint", {}).get("roles", {})
 	var gain: Dictionary = kit.get("tint", {}).get("gain", {})
-	four_arms = KChar.arms(rec, kit) >= 4          # a mod's second pair (kits/characters/tools/mods.py)
+	four_arms = KChar.arms(rec, kit) >= 4          # a mod's second pair (core/charactermodels/tools/mods.py)
 	skeleton.position.y = 0.0
 	for mi in want:
 		var b: Dictionary = mi.get_meta("built")

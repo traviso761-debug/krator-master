@@ -183,3 +183,5 @@ area you are about to change.
 - A JSON file reformatted by a load-and-dump → insert the entry textually instead.
 - A screenshot helper clicking a button that doesn't exist fails silently → check selectors first.
 - Tests that race a page re-dressing → wait for the loading overlay to hide.
+- **The port lint warns on numeric defaults written with `||`** in `[G data]` fragments (`it.arms || 2`: a 0 passed
+  becomes the default) → write `x == null ? N : x`; regenerate the golden and confirm it is unchanged.

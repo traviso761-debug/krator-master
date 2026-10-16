@@ -675,6 +675,11 @@ Locus is already closest to the target. Make it the mobility reference:
   draw-call budgets stay in each build's existing fragments. The module never
   touches THREE except through the optional `THREE` binding for debug
   drawing.
+  The bodies themselves are to come from `core/charactermodels` (2026-10-16): a
+  citizen's look is a record drawn from its people with its id as the seed, and
+  each activity maps to a clip as data beside that module's `data/clips.json`
+  (GODOT-PLAN.md Phase 5, "Bodies for the citizens"). The simulation hands the
+  embodiment an activity; it never reads a clip.
 - **Two sources of faction truth.** `LORE.md` is prose and will keep changing.
   `world/factions.js` is generated from it by a script that fails on a polity
   the lore names and the data lacks, so the two cannot drift silently.

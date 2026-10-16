@@ -119,7 +119,7 @@ var KCHAR = (function(){
   /* a torso item is made for two arms or four (kit item arms, 2 by default): a four-armed body wears only four-armed
      tops, and the other way round */
   function fits(it, rec, kit){
-    return it.slot !== 'torso' || (it.arms || 2) === arms(rec, kit);
+    return it.slot !== 'torso' || (it.arms == null ? 2 : it.arms) === arms(rec, kit);
   }
   function takesHair(head){ return !!head && (head.style === 'bald' || head.style === 'base'); }
   function hairFor(kit, id, head, kind){
@@ -236,7 +236,7 @@ var KCHAR = (function(){
   function morphWeights(rec, kit){
     var M = kit.morph, w = new Float32Array(M.targets.length), mv = rec.morph || {};
     M.morphs.forEach(function(s){
-      var v = (+mv[s.id] || 0) * (s.reach || 1);
+      var v = (+mv[s.id] || 0) * (s.reach == null ? 1 : s.reach);
       if(v < 0 && s.minus !== undefined) w[s.minus] = -v;
       else if(v > 0 && s.plus !== undefined) w[s.plus] = v;
     });
