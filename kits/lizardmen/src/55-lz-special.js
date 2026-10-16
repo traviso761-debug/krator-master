@@ -26,7 +26,7 @@ defBuilding({key:'lz-seer',name:"Seer's hall",seed:7301,caste:5,cut:true,w:15,d:
   lzNoCut(()=>{lzPortal(0,.22,Wd/2-.12*wh*0+.06,0,dh,{mk:'bronze'});
    for(let i=0;i<7;i++){const t=(i+.5)/7,ex=-L/2+L*t,ey=.22+wh*.78-.3*Math.abs(t-.5)*2;if(Math.abs(ex)<dw*.75)continue;lzEye(ex,ey,Wd/2-.12*(ey-.22)+.03,0,.34,{mk:'bronze',glow:true});}});
   lzThreshold(0,Wd/2+.2,0,dw);
-  lzRibRoof(L,Wd,wh+.25,wh+rh,7,{mk:'hide',col:P('hideD'),over:.7,ribR:.16,past:.3,bend:.95,ext:.6,endMk:'lacq',endCol:P('lacq')});
+  lzRibRoof(L,Wd,wh+.25,wh+rh,7,{mk:'hide',col:P('hideD'),over:.7,ribR:.16,past:.3,bend:.95,ext:.6,endMk:'lacq',endCol:P('lacq'),leanEnds:{left:.06,right:-.07},y0:.22});
   lsModel(0,.22+.9,-.4,1.3);box('lacq',0,.22,-.4,2.2,.9,2.2,P('lacq'));W(0,.22,.74,0,()=>lzLeiwen(2.0,.8,{cell:.26,mk:'bronze',back:false,t:.03,proud:.02}));
   lzFurnRoom(L-1,Wd-1,.22,'court',{beds:0,noHearth:true,ceil:wh+rh*.5,extra:[['lizardmen_court_divan',-3.6,-.4,PI/2],['lizardmen_court_divan',3.6,-.4,-PI/2],['lizardmen_court_divan',0,-3.2,0],['lizardmen_court_scroll',4.4,-3.2,-PI/2],['lizardmen_court_candelabra',-2.2,2.4,0],['lizardmen_court_candelabra',2.2,2.4,0]]});}});
 /* ---------------------------------------------------------------- the medicine hut */
@@ -35,7 +35,7 @@ defBuilding({key:'lz-medicine',name:'Medicine hut',seed:7302,caste:1,cut:true,w:
  note:'a small carapace hut of cane under hide and five bone ribs, hung with herb bundles and spore gourds; the Tenders\' slit door; a basking slab for the sick',
  build(o){const L=5.6,Wd=4.4,wh=1.4,rh=3.2;lzCutFloor(0);box('earthR',0,0,0,L+1,.12,Wd+1,P('earthP'));
   lzBatterRoom(L,Wd,.12,wh,'cane',P('cane'),{lean:{front:.05,back:-.09,left:.12,right:-.03},front:[lzDoor(1,L/2-.6),lzVent(1,L-1,.9)],back:[lzVent(1,L/2,.9)]});
-  lzRibRoof(L,Wd,wh-.05,wh+rh,5,{mk:'hide',col:P('hideP'),over:.6,ribR:.12,past:.45,bend:1,ext:.4,endMk:'mat'});
+  lzRibRoof(L,Wd,wh-.05,wh+rh,5,{mk:'hide',col:P('hideP'),over:.6,ribR:.12,past:.45,bend:1,ext:.4,endMk:'mat',leanEnds:{left:.12,right:-.03},y0:.12});
   lzNoCut(()=>{for(let i=0;i<6;i++){const x=-L/2+.6+i*.85;beam('rope',[x,wh+.9,Wd/2+.45],[x,wh+.3,Wd/2+.5],.012,P('reedD'),true,4);ellip('plain',x,wh+.1,Wd/2+.5,.09,.22,.09,P(i%2?'moss':'spore'),0,6);}});
   lzThreshold(-.6,Wd/2+.15,0,.9);
   lzFurnRoom(L-.5,Wd-.5,.12,'common',{beds:1,ceil:rh*.7,extra:[['generic_medicine',1.4,-1.2,0],['generic_herb_bundles',.4,-1.4,0],['lizardmen_common_bowl',1.6,.4,0],['generic_storage_jar',-1.8,1.2,0]]});}});
@@ -47,7 +47,7 @@ defBuilding({key:'lz-warehouse',name:'Warehouse',seed:7303,caste:'all',cut:true,
   const dh=lzDoorH(6),dw=dh*.62;
   lzBatterRoom(L,Wd,.3,wh,'brick',P('brick'),{lean:{front:.05,back:-.08,left:.1,right:-.02},front:[{s:L/2,w:dw,h:dh,door:true},lzVent(4,1.4,wh*.6),lzVent(4,L-1.4,wh*.6)],back:[lzVent(4,L*.3,wh*.6),lzVent(4,L*.7,wh*.6)]});
   lzNoCut(()=>lzPortal(0,.3,Wd/2+.06,0,dh,{mk:'lacq'}));lzThreshold(0,Wd/2+.2,0,dw);
-  lzRibRoof(L,Wd,wh+.3,wh+rh,9,{mk:'thatch',col:P('reed'),over:.7,ribR:.14,past:.22,bend:.95,ext:.6,endMk:'reed',endCol:P('reedD')});
+  lzRibRoof(L,Wd,wh+.3,wh+rh,9,{mk:'thatch',col:P('reed'),over:.7,ribR:.14,past:.22,bend:.95,ext:.6,endMk:'reed',endCol:P('reedD'),leanEnds:{left:.1,right:-.02},y0:.3});
   /* the spiral of goods */
   const keys=['generic_crate','generic_chest','generic_strongbox','generic_barrel','generic_crate','generic_sack','generic_canister_set','generic_bottle_crate','generic_keg','generic_pantry_boxes','generic_chest'];
   let px=-4.6,pz=2.6,dir=0,len=9;let k=0;

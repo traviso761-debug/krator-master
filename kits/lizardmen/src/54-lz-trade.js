@@ -10,7 +10,7 @@ function ltHall(L,Wd,wh,rh,mk,col,rmk,rcol,o){o=o||{};lzCutFloor(0);box(o.floorM
  lzBatterRoom(L,Wd,.14,wh,mk,col,{lean:o.lean||{front:.07,back:-.06,left:.1,right:-.05},front:[{s:L/2+(o.doorX||0),w:dw,h:dh,door:true},lzVent(4,1.4,wh*.6),lzVent(4,L-1.4,wh*.6)],
   back:o.back||[lzVent(4,L*.25,wh*.6),lzVent(4,L*.75,wh*.6)],skip:o.skip,mkf:o.mkf,colf:o.colf});
  lzNoCut(()=>lzPortal(o.doorX||0,.14,Wd/2+.05,0,dh,{mk:o.portalMk||'lacq'}));lzThreshold(o.doorX||0,Wd/2+.2,0,dw);
- lzRibRoof(L,Wd,wh+.1,wh+rh,o.n||9,{mk:rmk,col:rcol,over:.7,ribR:.15,past:o.past===undefined?.24:o.past,bend:.95,ext:.6,endMk:o.endMk||'reed',endCol:o.endCol||P('reedD')});}
+ const LN=o.lean||{front:.07,back:-.06,left:.1,right:-.05};lzRibRoof(L,Wd,wh+.1,wh+rh,o.n||9,{mk:rmk,col:rcol,over:.7,ribR:.15,past:o.past===undefined?.24:o.past,bend:.95,ext:.6,endMk:o.endMk||'reed',endCol:o.endCol||P('reedD'),leanEnds:{left:LN.left,right:LN.right},y0:.14});}
 defBuilding({key:'lz-hall-bronze',name:'Bronze and stone hall',seed:7201,caste:'all',cut:true,w:19,d:13,h:9.2,budget:120000,
  tags:{types:['industry'],wealth:'middle',role:'workshop',job:'smithing'},
  note:'casting (crucibles, moulds, the furnace in the yard) and stonecutting, with an armourer\'s corner: lamellae on lacquer racks, cord and rivets; basalt and baked brick walls, reed ribs; bronze only, no iron',
@@ -63,7 +63,7 @@ defBuilding({key:'lz-granary',name:'Granary',seed:7204,caste:3,cut:true,w:14,d:1
    lzHorn(L/2+.4,py+.2,Wd/2-.6,PI,2.2,.1,{curl:.4,mk:'horn'});lzHorn(-L/2-.4,py+.2,Wd/2-.6,PI,2.2,.1,{curl:.4,mk:'horn'});});
   const dh=lzDoorH(3),dw=dh*.62;
   lzBatterRoom(L-.6,Wd-.6,py+.18,2.2,'reed',P('reed'),{lean:{front:.06,back:-.05,left:.1,right:-.03},front:[{s:(L-.6)/2+2.2,w:dw,h:dh,door:true},lzVent(3,1.2,1.3)],back:[lzVent(3,2,1.3),lzVent(3,L-2.6,1.3)]});
-  lzRibRoof(L-.6,Wd-.6,py+2.25,py+6.6,9,{mk:'thatch',col:P('reedL'),over:.6,ribR:.13,past:.26,bend:.95,ext:.5,endMk:'reed',endCol:P('reedD')});
+  lzRibRoof(L-.6,Wd-.6,py+2.25,py+6.6,9,{mk:'thatch',col:P('reedL'),over:.6,ribR:.13,past:.26,bend:.95,ext:.5,endMk:'reed',endCol:P('reedD'),leanEnds:{left:.1,right:-.03},y0:py+.18});
   /* the stair: logs notched, up the front at the stair bay */
   /* the stair: nine log treads from the ground up to the podium's front edge, on two notched stringers */
   lzNoCut(()=>{W(L/2-.2,0,Wd/2+.3,0,()=>{const run=2.2;for(let i=0;i<9;i++){const t=(i+1)/9;box('wood',0,t*py-.12,run*(1-t)+.12,1.2,.12,.34,P('reedD'));}for(const s of [-1,1])beam('wood',[s*.62,0,run+.3],[s*.62,py+.05,-.1],.1,P('reedD'),true,6);});});
