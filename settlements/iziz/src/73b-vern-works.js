@@ -38,16 +38,23 @@ function vwkBerm(x,z,L,ry,h,run,c){const a=Math.atan2(h,run),S=Math.hypot(h,run)
  const n=Math.max(2,Math.round(L/1.3));for(let i=0;i<n;i++){const u=-L/2+(i+.5)*L/n;
   for(const [o,yy,s] of[[.25,h-.05,.42],[run*.55,h*.45,.5],[run,.02,.42]]){const q=loc(x,z,u+rr(-.3,.3),o,ry);kput('vRock',[q[0],yy,q[1]],qEuler(0,rr(0,3),0),[s*rr(1,1.8),s*rr(.4,.7),s*rr(.8,1.2)],c.clone().multiplyScalar(rr(.82,1.12)));}}}
 
+// a crag of rough rock: a jumbled core of rubble blocks, w x h x d about (x, z), stepping down to the front (+z) and the ends,
+// with boulders at its foot; `keep` = [[x, half-width]] gaps left clear along the front face (an adit, a shaft)
+function vwkCrag(x,z,w,h,d,c,keep){const K=1/1.45;kput('rubble',[x,h*.42,z-d*.08],qEuler(0,0,0),[w*.92*K,h*.84*K,d*.84*K],c.clone().multiplyScalar(.9));
+ const nx=Math.round(w/2.6);for(let i=0;i<nx;i++){const u=-w/2+(i+.5)*w/nx,e=1-Math.pow(Math.abs(u)/(w/2),2)*.45;
+  for(const [fz,fh,fs] of[[-.3,1,1],[.05,.8,.85],[.36,.5,.7]]){const px=x+u+rr(-.5,.5),pz=z+fz*d;
+   if(fz>.3&&keep.some(k=>Math.abs(px-k[0])<k[1]))continue;const s=rr(2.2,3.2)*fs,hh=h*fh*e*rr(.8,1.08);
+   kput('rubble',[px,hh-s*.55,pz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[s*K*rr(.9,1.3),s*K*rr(.8,1.1),s*K*rr(.8,1.1)],c.clone().multiplyScalar(rr(.78,1.12)));}}
+ for(let k=0;k<Math.round(w/1.6);k++){const px=x+rr(-w/2,w/2);if(keep.some(q=>Math.abs(px-q[0])<q[1]+.6))continue;const s=rr(.4,1.0);
+  kput('rubble',[px,s*.25,z+d/2+rr(-.1,.5)],qEuler(rr(0,3),rr(0,3),rr(0,3)),[s*K,s*K*.7,s*K],c.clone().multiplyScalar(rr(.7,1.05)));}}
+
 // ---------------------------------------------------------------- mine head: adit into the rock, pipe headframe over a shaft, ore cart, heaps, winch, miners' hut
 function buildVernMine(G,o){reseed(8401+(o.v|0));const wood=vC(vPick(VPAL.woodPoor)),dark=vC(vPick(VPAL.woodMid)).multiplyScalar(.75),th=vC(vPick(VPAL.thatch));
  const rock=vC(vPick([0x9a8270,0x8e7a68,0xa08a72])),ore=vC(VWK_ORE[o.metal]||VWK_ORE.iron),spoil=vC(0x7c7468),rust=vC(vPick([0x8a5a3e,0x7a4a32])),iron=vC(0x3a3632),rope=vC(0xb8a47c);
  const AX=-6,SX=1,SZ=-1.5,HX=8.5,HZ=1.5,HW=7,HD=5.5,FL=.5,HH=2.6;
  vnReg('Mine head (poor)',0,0,13,10.5);
  // the rock mass: a battered hummock of grey-orange stone, crags on its brow and boulders at its foot
- kput('vBatterS',[0,0,-7.5],null,[24,6.5,7],rock);
- for(let k=0;k<9;k++){const x=-10+k*2.5+rr(-.6,.6);kput('vRock',[x,rr(5.4,6),-7.6+rr(-.8,.8)],qEuler(0,rr(0,3),0),[rr(2,2.8),rr(1.5,2.6),rr(1.6,2.1)],rock.clone().multiplyScalar(rr(.8,1.1)));}
- for(const [x,y,r] of[[-11.2,2.8,1.8],[-1.8,3.6,1.4],[-3.1,1.2,1.1],[3.6,4.4,1.3],[11.2,2.6,1.7],[7,3.2,1.2]])kput('vRock',[x,y,-4.7],qEuler(rr(0,1),rr(0,3),0),[r*1.3,r,r*.8],rock.clone().multiplyScalar(rr(.78,1.05)));
- for(let k=0;k<8;k++){const x=rr(-11.5,11.5);if(Math.abs(x-AX)<2.4||Math.abs(x-SX)<2.2)continue;kput('vRock',[x,.1,rr(-4.2,-3.6)],qEuler(rr(0,3),rr(0,3),0),[rr(.3,.7),rr(.25,.5),rr(.3,.6)],rock.clone().multiplyScalar(rr(.75,1.1)));}
+ vwkCrag(0,-7.5,24,6.2,7,rock,[[AX,2.6],[SX,0]]);
  // the adit: a dark mouth in the face, three timber sets lagged with boards, dry-stone wing walls
  vB('vDarkB',AX,0,-4.2,2.6,2.75,.7,0);
  for(const z of[-3.95,-2.95,-1.95]){for(const s of[-1,1])vPst('vPostB',AX+s*1.38,0,z,.15,2.8,dark);vB('vWood',AX,2.8,z,3.3,.3,.34,0,dark);}
