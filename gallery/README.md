@@ -48,7 +48,8 @@ page `lore/tongues-of-krator.html`) under the Scale Model. Only Krator Worlds' i
 (https://claude.ai/artifact/VaNLVcaDZaYHAHpEgxKsSw) and the Animation Lab (https://claude.ai/artifact/WStXx16aNHT63stCoz331x).
 They stay their own artifacts (each loads about 240 MB of pieces beside its page) and are not built by
 `build_gallery.py` (core/ is not discovered). They were published private: a gallery viewer opens them only once the
-owner shares them (each page's Share menu).
+owner shares them (each page's Share menu). Only Krator Worlds A–H's index was republished with the two links (version 86, the
+published index edited in place); the other parts pick them up at their next rebuild.
 
 ## Update it
 
