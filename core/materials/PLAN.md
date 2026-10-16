@@ -1630,6 +1630,17 @@ What the first delivery taught:
 
 ## How a build adopts the library (built 2026-10-03; Girder is the pilot)
 
+*2026-10-15, Voth's canton interiors (`settlements/voth/materials.json`, families `int_*`, `tap_*`, `inlay_*`, `jali`,
+`frieze_red`, `canopy_kilim`, `medallion_sun`, `lantern_paper`): two ways of using a set on geometry with no UVs. A SET
+family (eroded banco over brick, smooth banco, big sandstone blocks, the patterned clay plaster, the amber tiles, travertine,
+the timber beam, carved wood, gold leaf) is sampled by world position on three planes, blended by the face normal, as a grey
+detail under each canton's own colours (56-vc-interiors-host.js `VC.intSetMat`, the site scene's `VIEW.hook` idea). A SHEET
+family (the Voth banners, the solar and the Ordinator sheets, Voth's kilims, the inlay bands, the red palmette frieze, the
+sun-ray medallion, the diamond jali, lantern paper) is UV-mapped on a turned unit box: the whole sheet once per face, or
+repeated along the box's length every `tile` m, the vertex shader reading the instance's scale (`VC.intSheetMat`). Reuse:
+any build whose interiors are instanced boxes (the lot buildings take the same materials in 56b) can take both; the sheets
+Voth still wants are in `PROMPTS-ready.md` ("The Voth interiors"), each with the common set that stands in for it.*
+
 - **The code** is `core/materials/record/` (not under `core/materials/`'s top level, so the Ancients-lineage builds
   that take every top-level fragment do not pick it up): `23-mat-record.js` (`KMAT`: the record above, a build's
   adapter, the pack registry, `table()` for the exporter), `24-tex-def.js` (`TEX`: a procedural texture as a record,
@@ -1739,6 +1750,29 @@ tail; the horned figures' lower border) and were redone with cross-faded edges i
 | `card.mushroom.alecap` | Purple Mushroom Cluster | key #ff00ff 50/120, spill edge (keeps the purples), choke 1 | the alecap, 3 x 3: beds and wild (a Throne species) |
 | `card.crop.yam` | Heart-Leaf Vines on Stakes | key 60/170, spill all | yam vines on stakes, 3 x 3: terraces; any staked climbing crop |
 | `patterns/zeijani/jali` | Beige Stone Lattice on Magenta | a cut-out tile (cards.py, anchor tight, RGBA) | the temple's glowing pierced dome and screens |
+
+#### Delivered 2026-10-15 and processed: the Voth interiors, eleven extras, five redos (`Downloads/vothtex.zip`, 32 images)
+
+Batches `voth-interiors-2026-10-15.json` (27 sets) and `redos-2026-10-15.json` (5). The sixteen sheets of `PROMPTS-ready.md`'s "The Voth
+interiors", each wired in `settlements/voth/materials.json` (the Palace's stucco, tiles, inlay and columns in their own colour, the
+rest as UV-mapped sheets). The owner's eleven extras, for variety and for the myth of the three brothers (the Chichani, the Zeijani
+and the Andaru): two frescoes (`fresco-three-brothers`: their reunion and welcome; `fresco-brothers-ascent`: their climb up the
+sunlit mountain), a purple damask, the ringed giant in mosaic, two filigrees, a hanging of ancestor masks, two more glyph banners,
+a mudcloth and a banded brown kilim (`patterns/common`: the Sahelian, Yuni, Dalab and nomad builds can take them). Single panels
+(tapestries, frescoes, banners, the icon, the mural, the carpet) are processed with no seam pass (`seam_axes: none`, their shape
+kept); the chandelier drum wraps across only.
+
+The five redos (`PROMPTS-NEEDED.md` section 0: `ground.travertine.white`, `hide.sleek`, `patterns/islander/storyboard`,
+`patterns/islander/gable-east-b`, `patterns/common/grime-streaks`) replace their first takes in the library; **no build is
+re-packed**: biomes/geyser, kits/fauna and kits/islanders read stale until they are (`GODOT-PLAN.md`, "Before an export").
+
+| Set | Reuse |
+|---|---|
+| `patterns/voth/fresco-three-brothers`, `fresco-brothers-ascent` | the Palace and the Temple; the Zeijani's and the Andaru's own halls (the same myth told from their side) |
+| `patterns/voth/damask-purple-gold`, `filigree-crimson`, `filigree-purple` | any court's hangings, screens and panelling |
+| `patterns/voth/mosaic-ringed-giant` | temples and observatories of the sky in any culture |
+| `patterns/common/mudcloth`, `kilim-banded-brown` | the Sahelian and Yuni cultures, Dalab, the nomads, Beast Riders |
+| `library/cloth.hide.canopy` | canopies, tents, awnings, drum skins (tinted) |
 
 #### Delivered 2026-10-14 and processed: thirty-five owed prompts (seven batches, pasted as WebP)
 

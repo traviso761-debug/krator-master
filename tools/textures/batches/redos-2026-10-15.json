@@ -1,0 +1,168 @@
+[
+ {
+  "src": "library__ground.travertine.white.png",
+  "out": "core/materials/library/ground.travertine.white",
+  "record": {
+   "id": "ground.travertine.white",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    6,
+    6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `ground.travertine.white` (the redo) (delivered as \"Dry Travertine Terrace Texture.png\")",
+    "reuse": "any travertine spring (the geyser basin's Stair)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.05,
+   "normal_strength": 0.9,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "library__hide.sleek.png",
+  "out": "core/materials/library/hide.sleek",
+  "record": {
+   "id": "hide.sleek",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `hide.sleek` (the redo) (delivered as \"Seamless Grayscale Fur Texture.png\")",
+    "reuse": "the sleek coats (kits/fauna `sleek`); hair-on hide anywhere"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.6,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__islander__storyboard.png",
+  "out": "core/materials/patterns/islander/storyboard",
+  "record": {
+   "id": "islander/storyboard",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `patterns/islander/storyboard` (the redo) (delivered as \"Polynesian Canoe and Sea Life Mural.png\")",
+    "reuse": "kits/islanders `patStory`"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "xy",
+   "keep_aspect": false,
+   "delight": 0.15,
+   "lift": 0.0,
+   "normal_strength": 0.5,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__islander__gable-east-b.png",
+  "out": "core/materials/patterns/islander/gable-east-b",
+  "record": {
+   "id": "islander/gable-east-b",
+   "family": "reed",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `patterns/islander/gable-east-b` (the redo) (delivered as \"Seamless Geometric Bamboo Weave.png\")",
+    "reuse": "kits/islanders `patGableE2` (the great uma)"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "xy",
+   "keep_aspect": false,
+   "delight": 0.2,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.85,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "patterns__common__grime-streaks.png",
+  "out": "core/materials/patterns/common/grime-streaks",
+  "record": {
+   "id": "common/grime-streaks",
+   "family": "mask",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `patterns/common/grime-streaks` (the redo) (delivered as \"Grayscale Drip Texture Grid.png\"); the magenta ground keyed to white, as the installed mask",
+    "reuse": "the break-up hook's `grime` (core/materials/record 25-matlib-host.js)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "none",
+   "keep_aspect": false,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.3,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ }
+]

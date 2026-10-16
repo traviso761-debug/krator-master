@@ -2742,10 +2742,12 @@ var KEDITS = (function () {
     });
     return out;
   }
-  /* Streetlab's city edits (settlements/voth/site/voth-city-edits.json, 35-vc-steps.js applyEdits/applyDeletes):
+  /* Streetlab's city edits (the Voth city plan's file before core/host, settlements/voth/site/voth-city-edits.json; the plan's
+     log is settlements/voth/edits.json since 2026-10-16, read back by 35-vc-steps.js VC.editsFromLog):
      buildings [{key, v, x, z, ry}] -> ADD building; streets [{cls, pts}] -> ADD infrastructure (kind way);
-     del [{x, z}] -> REMOVE building at that point (Streetlab matches the lot within 1.5 m); flora [{key|kind, x, z, del?}]
-     -> ADD or REMOVE flora. Read-only: Streetlab's own file and code are not changed. */
+     del [{x, z}] -> REMOVE building at that point (Streetlab matches the lot within 1.5 m); flora [{key|kind, x, z, del?}],
+     or the city plan's own {del: [{kind, key, x, z}], add: [{kind, key, x, z, y, H?}]} (kind: tree or plant, kept with H on
+     the record) -> ADD or REMOVE flora. Read-only: Streetlab's own file and code are not changed. */
   function fromStreetlab(E, build) {
     var L = log(build || (E && E.site) || null), opt = { cause: 'import:streetlab' };
     if (!E) return L;
@@ -2758,10 +2760,11 @@ var KEDITS = (function () {
       add(L, { 'class': 'building', key: b.key, variant: b.v || 0, at: [b.x, 0, b.z], ry: b.ry || 0 }, opt);
     });
     (E.del || []).forEach(function (q) { remove(L, { 'class': 'building', at: [q.x, 0, q.z] }, null, opt); });
-    (E.flora || []).forEach(function (f) {
-      var key = f.key != null ? f.key : f.kind;
+    var F = E.flora || [], fl = Array.isArray(F) ? F : (F.del || []).map(function (f) { return Object.assign({ del: true }, f); }).concat(F.add || []);
+    fl.forEach(function (f) {
+      var key = f.key != null ? f.key : f.kind, kind = f.key != null && f.kind != null ? f.kind : null;
       if (f.del) remove(L, { 'class': 'flora', key: key, at: [f.x, 0, f.z] }, null, opt);
-      else add(L, { 'class': 'flora', key: key, at: [f.x, f.y || 0, f.z], ry: f.ry || 0 }, opt);
+      else { var r = { 'class': 'flora', key: key, at: [f.x, f.y || 0, f.z], ry: f.ry || 0 }; if (kind) r.kind = kind; if (f.H != null) r.H = f.H; add(L, r, opt); }
     });
     return L;
   }
@@ -2968,7 +2971,8 @@ if (typeof module !== 'undefined') module.exports = KEDITS;
 // It reads nothing of a build's but what KHOST.take hands it (91-host-loop.js makes it with the take's options).
 //
 //   KHOST.camera(o) -> C        o: {camera, renderer, ground(x,z) or a KFIELD, floor?(x,z), clear?, maxR?, minR?,
-//                                   walk?: a KWALK registry, walker?: {step, drop, r, h}, eye?, depth?, keys?, inspect?}
+//                                   walk?: a KWALK registry, walker?: {step, drop, r, h}, eye?, depth?, keys?, inspect?,
+//                                   pick?: fn(ray) -> [x, y, z] | null, tried before the ground for the double-click's pin}
 //   C.ctl                       {target, theta, phi, radius, walk, eye, speed}: theta from +z about +y, phi from +y
 //   C.setView(cx,cy,cz,tx,ty,tz)  the preset contract every verify.py drives (leaves walking)
 //   C.move(dt) / C.apply()      the loop calls them each frame: the keys, then the camera placed and clamped
@@ -3050,6 +3054,7 @@ K.camera=function(o){
  const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();
  C.ray=function(cx,cy){const r=cv.getBoundingClientRect();ndc.set((cx-r.left)/r.width*2-1,-((cy-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);return ray;};
  C.pick=function(cx,cy){const R=C.ray(cx,cy).ray,O=R.origin,D=R.direction,far=Math.max(camera.far,1);
+  if(o.pick){const h=o.pick(R);if(h)return h;}   // the build's own pick first ([x, y, z] or null: Voth's inside a canton)
   let t0=0,step=Math.max(.5,(O.y-groundH(O.x,O.z))*.02);
   if(O.y<groundH(O.x,O.z))return null;
   for(let t=step;t<far;t+=step){const x=O.x+D.x*t,y=O.y+D.y*t,z=O.z+D.z*t;
@@ -3104,6 +3109,8 @@ K.camera=function(o){
 //   KHOST.take(o) -> {clock, camera, ctl, setView, go, err, ...}   the one call a build makes, after its world is built.
 //     o.scene, o.camera, o.renderer   the build's (a build without them gets a scene, a 50-degree camera and a renderer)
 //     o.ground                        terrainH(x,z), or a KFIELD (its .h): the camera's floor, the pin, the walker
+//     o.pick(ray) -> [x, y, z] | null the build's own pick for the pin, tried before the ground (Voth: inside a canton)
+//     o.click(cx, cy) -> true         the build takes the click itself (the inspector is not asked)
 //     o.floor, o.clear, o.clampCam    what the eye may not go under (default ground), the clearance (1.8 m), or a clamp
 //     o.registry                      the build's registered volumes [{name, x, y?, z, r, h}] (inspector, probe)
 //     o.views {name: [cx,cy,cz,tx,ty,tz] or () => that}, o.onView(name), o.start   the presets (verify.py clicks
@@ -3111,7 +3118,9 @@ K.camera=function(o){
 //     o.sky {follow(camera), hour?(h)} the sky kept on the eye each frame; hour(h) puts the sky at a world hour
 //     o.ticks  [fn(dt, seconds)]      the biome kits' TICKS: the array is read live, every frame, bodies unchanged
 //     o.hourTicks [fn(dt, hour)]      the life builds' convention; o.frameHooks [fn(nowMs)]: Streetlab's _frameHooks
-//     o.clock {hour, running, scale, speeds}   the clock's start (hour 12, held, as the preview pages open)
+//     o.clock {hour, running, scale, speeds, obj?, onSet?(h)}   the clock's start (hour 12, held, as the preview pages open);
+//                                   obj: a KCLOCK the page already made, adopted; onSet: called when the hour slider moves;
+//                                   maxStep: the longest step the clock takes in a frame (default 0.1 s; the camera keeps 0.1)
 //     o.draw(scene, camera, dt)       the build's own draw in place of renderer.render (a post pass: a heat shimmer)
 //     o.layers, o.stats, o.inspect, o.exporters, o.controls, o.keys, o.title, o.hint, o.build   the panel (92)
 //     o.budget, o.types, o.regHas, o.checks, o.api   the probe (95-host-probe.js)
@@ -3150,12 +3159,13 @@ K.take=function(o){
  const renderer=o.renderer||(()=>{const r=new THREE.WebGLRenderer({antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,1.5));r.setSize(innerWidth,innerHeight);document.body.appendChild(r.domElement);return r;})();
  const camera=o.camera||new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,12000);
  const CO=o.clock||{},hq=param('hour');
- const clock=KCLOCK.make({hour:hq!=null&&isFinite(+hq)?+hq:(CO.hour==null?12:CO.hour),running:param('time')==='run'||!!CO.running,scale:CO.scale==null?1:CO.scale});
+ // o.clock.obj: a page's own KCLOCK (Voth's VC.clock, which its simulation reads) is adopted as the host's: the loop steps it
+ const clock=CO.obj||KCLOCK.make({hour:hq!=null&&isFinite(+hq)?+hq:(CO.hour==null?12:CO.hour),running:param('time')==='run'||!!CO.running,scale:CO.scale==null?1:CO.scale});
  const tq=param('t');if(tq!=null&&isFinite(+tq))clock.fixed=+tq;
  const H=K.host={o,scene,renderer,camera,clock,views:o.views||{},registry:o.registry||[]};
  // ---------------------------------------------------------------- the camera (90) and the panel (92)
  const C=K.cam=K.camera({THREE,scene,camera,renderer,ground:o.ground,floor:o.floor,clear:o.clear,clampCam:o.clampCam,maxR:o.maxR,minR:o.minR,
-  walk:o.walk,walker:o.walker,eye:o.eye,depth:o.depth,keys:o.keys,inspect:(x,y)=>K.inspectAt&&K.inspectAt(x,y)});
+  walk:o.walk,walker:o.walker,eye:o.eye,depth:o.depth,keys:o.keys,pick:o.pick,inspect:(x,y)=>K.inspectAt&&K.inspectAt(x,y)});
  K.setView=C.setView;
  K.go=function(v){if(!(v in H.views))return false;if(o.onView)o.onView(v);let at=H.views[v];if(typeof at==='function')at=at();if(!at)return false;C.setView(at[0],at[1],at[2],at[3],at[4],at[5]);if(K.viewShown)K.viewShown(v);return true;};
  if(K.panelTake)K.panelTake(H);
@@ -3167,8 +3177,8 @@ K.take=function(o){
  const ticks=o.ticks||null,hourTicks=o.hourTicks||null,hooks=o.frameHooks||null,sky=o.sky||null,draw=o.draw||null;
  let last=performance.now(),drawErr=false;
  function frame(){
-  const now=performance.now(),real=Math.min(.1,Math.max(0,(now-last)/1000));last=now;
-  clock.step(real);const dt=clock.dt;
+  const now=performance.now(),raw=Math.max(0,(now-last)/1000),real=Math.min(.1,raw);last=now;
+  clock.step(CO.maxStep==null?real:Math.min(CO.maxStep,raw));const dt=clock.dt;   // maxStep: a page whose clock ran on real time between frames (Voth) keeps it
   C.move(real);
   if(ticks)for(let i=0;i<ticks.length;i++)call(ticks[i],'tick',dt,clock.t);
   if(hourTicks)for(let i=0;i<hourTicks.length;i++)call(hourTicks[i],'tick',dt,clock.hour);
@@ -3314,14 +3324,14 @@ K.panelTake=function(H){const o=H.o,clock=H.clock,C=K.cam;
   const b=el('button',{text:k},rowLayers);const paint=()=>b.classList.toggle('on',!!s.on);
   b.onclick=()=>{s.on=!s.on;s.cache=null;if(s.set)s.set(s.on);paint();};paint();}
  // the time controls: the speeds always (motion time); the hour slider and run / hold when the sky takes an hour
- const CO=o.clock||{},hasHour=!!(o.sky&&o.sky.hour),speeds=CO.speeds||[0,1,2,4,8];
+ const CO=o.clock||{},hasHour=!!(o.sky&&o.sky.hour)||!!CO.onSet,speeds=CO.speeds||[0,1,2,4,8];
  rowTime.style.display='block';
  const clk=el('span',{id:'clk',cls:'lbl'},rowTime);
  let run=null,hr=null;
  if(hasHour){run=el('button',{id:'clk-run'},rowTime);run.onclick=()=>{clock.run(!clock.running);paintT();};}
  const sp=el('span',{id:'clk-speeds'},rowTime);
  speeds.forEach(k=>{const b=el('button',{text:k===0?'pause':k+'x'},sp);b.dataset.k=k;b.title=k===0?'motion stops (wind, fauna)':'motion at '+k+' times';b.onclick=()=>{clock.scale=k;paintT();};});
- if(hasHour){hr=el('input',{id:'clk-hour',type:'range',min:0,max:24,step:.25},rowTime);hr.value=clock.hour;hr.oninput=()=>{clock.set(+hr.value);};}
+ if(hasHour){hr=el('input',{id:'clk-hour',type:'range',min:0,max:24,step:.25},rowTime);hr.value=clock.hour;hr.oninput=()=>{clock.set(+hr.value);if(CO.onSet)CO.onSet(+hr.value);};}
  const paintT=()=>{if(run)run.textContent=clock.running?'hold':'run';[].forEach.call(sp.children,b=>b.classList.toggle('on',+b.dataset.k===clock.scale));};paintT();
  let shown='';
  K.clockText=function(){if(hasHour){const h=Math.floor(clock.hour),m=Math.floor((clock.hour-h)*60);return('0'+h).slice(-2)+':'+('0'+m).slice(-2)+' day '+(clock.day+1);}
@@ -3376,12 +3386,17 @@ K.layersShow=function(hid){for(let i=0;i<hid.length;i++)hid[i][0].visible=hid[i]
 // win). What a record holds, and the settlement's stocks, are 93-host-stocks.js's (o.holds, Voth's 56e as the standard): it
 // fills the card's second half (KHOST.holdsFor). A build without records keeps the panel's words (the registry, the mesh's
 // label).
+//   The words may be an object instead of a string: {t} plain text, or {html} (the card and the tip show it as HTML), with
+//   {rec} the record they are about (it wins over the smallest record at the hit: a lot picked by its box, a tree by its
+//   crown; null for none). o.inspectRay(ray) -> such an object (with {point} for the contents of the ground there) or null:
+//   a build that picks by its own tests (Voth: its lots as boxes, its citizens as points, the rooms under a cut) hands it
+//   and the inspector and the tip skip the scene's raycast (on a city's merged batches, too slow for a hover).
 //
 //   KHOST.recordAt(x, y, z)       the smallest record whose volume holds the point (its box in its own turn, or its cylinder)
 //   KHOST.records()               every live record the inspector reads (removed ones skipped)
 //   KHOST.inspectRecord(rec)      put a record's card in the inspector and mark it
 //   KHOST.selected                the record last inspected (98 edit acts on it), or null
-//   KHOST.hover(on)               the hover tip (key I, and the inspector's "hover" button)
+//   KHOST.hover(on), .hoverOn     the hover tip (key I, and the inspector's "hover" button; #khost-tip)
 //   KHOST.reindex()               rebuild the record index (after records were added or moved)
 // Keys: I hover tip. The click is the panel's (92): the build's click, the tools' (KHOST.clickHooks), then this.
 (function(root){
@@ -3410,10 +3425,18 @@ K.onTake(function inspectTake(H){
   return best;};
  // ---------------------------------------------------------------- the words for a hit
  const label=r=>root.KTAGS&&root.KTAGS.label?root.KTAGS.label(r):(r.name||r.kind||r['class'])+'\n'+r.id;
+ // a build's words as {t, html, rec}: a string is plain text about the record at the hit; an object names its own
+ const own=(t,rec)=>typeof t==='object'?{t:t.html!=null?t.html:t.t,html:t.html!=null,rec:'rec' in t?t.rec:rec,point:t.point||null}:{t,html:false,rec};
  function words(hit,hits){const p=hit.point,rec=K.recordAt(p.x,p.y,p.z);
-  if(o.inspect){const t=o.inspect(hit,hits,rec);if(t!=null)return {t,rec};}
+  if(o.inspect){const t=o.inspect(hit,hits,rec);if(t!=null)return own(t,rec);}
   if(rec)return {t:label(rec)+'\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1),rec};
   return {t:K.describe(hit),rec:null};}
+ // the inspector's text, or HTML (a build's card)
+ const insp0=K.inspector,pre=doc.getElementById('insp-text');
+ K.inspector=function(t,html){if(pre)pre.style.whiteSpace=html?'normal':'';if(html&&pre){pre.innerHTML=t;return;}insp0(t);};
+ // the words for a screen point: the build's own ray pick, else the scene's hits; {w, hit} or null
+ function at(x,y){if(o.inspectRay){const w=o.inspectRay(ray(x,y).ray);if(w==null)return null;const v=own(w,null);return {w:v,hit:v.point?{point:v.point}:null};}
+  const hits=hitsAt(x,y);if(!hits.length)return null;return {w:words(hits[0],hits),hit:hits[0]};}
  // ---------------------------------------------------------------- the mark round the record inspected
  let box=null;
  function mark(r){if(box){H.scene.remove(box);box.geometry.dispose();box=null;}if(!r)return;
@@ -3427,9 +3450,9 @@ K.onTake(function inspectTake(H){
  const ray=C.ray,hidden=()=>K.hiddenSet?K.hiddenSet():new Set();
  function hitsAt(x,y){return ray(x,y).intersectObjects(H.scene.children,true).filter(h=>(!h.object.userData.probeSkip||h.object.userData.inspectLabel)&&!h.object.userData.khost&&!hidden().has(h.object)&&h.object.visible);}
  K.inspectAt=function(x,y){if(o.click&&o.click(x,y))return;for(const f of K.clickHooks)if(f(x,y))return;
-  const hits=hitsAt(x,y);if(!hits.length){K.inspector('(nothing)');K.selected=null;mark(null);if(K.holdsFor)K.holdsFor(null,null);if(K.onSelect)K.onSelect(null);return;}
-  let w;try{w=words(hits[0],hits);}catch(e){w={t:'inspector: '+e.message,rec:null};K.err('inspect: '+((e&&e.stack)||e));}
-  K.selected=w.rec;mark(w.rec);K.inspector(w.t);if(K.holdsFor)try{K.holdsFor(w.rec,hits[0]);}catch(e){K.err('holds: '+((e&&e.stack)||e));}if(K.onSelect)K.onSelect(w.rec);};
+  let A;try{A=at(x,y);}catch(e){A={w:{t:'inspector: '+e.message,rec:null},hit:null};K.err('inspect: '+((e&&e.stack)||e));}
+  if(!A){K.inspector('(nothing)');K.selected=null;mark(null);if(K.holdsFor)K.holdsFor(null,null);if(K.onSelect)K.onSelect(null);return;}
+  const w=A.w;K.selected=w.rec;mark(w.rec);K.inspector(w.t,w.html);if(K.holdsFor)try{K.holdsFor(w.rec,A.hit);}catch(e){K.err('holds: '+((e&&e.stack)||e));}if(K.onSelect)K.onSelect(w.rec);};
  // ---------------------------------------------------------------- the hover tip (I)
  const tip=doc.createElement('div');tip.id='khost-tip';tip.className='khost-chrome';
  tip.style.cssText='position:fixed;z-index:25;display:none;pointer-events:none;padding:4px 8px;background:rgba(16,14,18,.9);border:1px solid rgba(216,200,154,.5);'+
@@ -3437,12 +3460,14 @@ K.onTake(function inspectTake(H){
  let hoverOn=false,lastMove=0;
  const insp=doc.getElementById('insp'),hb=doc.createElement('button');hb.id='khost-hover';hb.textContent='hover (I)';hb.className='khost-mini';
  if(insp)insp.insertBefore(hb,insp.querySelector('pre'));
- K.hover=function(on){hoverOn=on==null?!hoverOn:!!on;hb.classList.toggle('on',hoverOn);if(!hoverOn)tip.style.display='none';};
+ K.hover=function(on){hoverOn=K.hoverOn=on==null?!hoverOn:!!on;hb.classList.toggle('on',hoverOn);if(!hoverOn)tip.style.display='none';};
  hb.onclick=()=>K.hover();
  H.renderer.domElement.addEventListener('pointermove',e=>{if(!hoverOn||e.buttons)return;const now=performance.now();if(now-lastMove<70)return;lastMove=now;
-  const hits=hitsAt(e.clientX,e.clientY);if(!hits.length){tip.style.display='none';return;}
-  let t;try{t=words(hits[0],hits).t.split('\n').slice(0,3).join('\n');}catch(err){t='?';}
-  tip.textContent=t;tip.style.display='block';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+12)+'px';});
+  let A;try{A=at(e.clientX,e.clientY);}catch(err){A={w:{t:'?'}};}if(!A||!A.w.t){tip.style.display='none';return;}
+  if(A.w.html){tip.innerHTML=A.w.t;tip.style.whiteSpace='normal';tip.style.maxWidth='min(440px,60vw)';}
+  else{tip.textContent=A.w.t.split('\n').slice(0,3).join('\n');tip.style.whiteSpace='pre';tip.style.maxWidth='60vw';}
+  tip.style.display='block';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+12)+'px';
+  const b=tip.getBoundingClientRect();if(b.bottom>innerHeight-8)tip.style.top=Math.max(8,innerHeight-8-b.height)+'px';if(b.right>innerWidth-8)tip.style.left=Math.max(8,innerWidth-8-b.width)+'px';});
  H.renderer.domElement.addEventListener('pointerleave',()=>{tip.style.display='none';});
  const typing=e=>{const t=e.target;return t&&(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||t.isContentEditable);};
  root.addEventListener('keydown',e=>{if(typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='i'||e.key==='I'){if(o.keys&&o.keys.i)return;K.hover();}});
@@ -3467,7 +3492,7 @@ K.onTake(function inspectTake(H){
 //     placeAt?(x, z, r)     the nearest place holding something there (the ground of an outdoor site)
 //     idOf?(rec, hit)       the holder ids a picked record is (a lot's places): default its key, else its id, if it holds
 //     containerOf?(rec)     the place a container piece is part of (the simulation keeps stock by place, not by piece)
-//     card?(id)             a holder's own card (a citizen's: the build's), else its contents
+//     card?(id)             a holder's own card (a citizen's: the build's), else (null) its contents
 //     itemName?(k), placeName?(id), minute?(), paused?(), summary?()   words and the clock
 //   }
 //   KHOST.simHolds(SIM, extra) -> an o.holds over core/simulation (extra: idOf, containerOf, card, placeName, paused ...)
@@ -3552,7 +3577,7 @@ K.onTake(function stocksTake(H){
    if(!Cn.items.length&&!Cn.store&&!Cn.household&&!Cn.mess&&!Cn.sells)h+='<span class="k">holds nothing the simulation counts</span>';}
   else if(Cn.type==='group')h+=Cn.members+' people &middot; '+Cn.kind+(Cn.items.length?itemsTable(Cn.items):' <span class="k">&middot; carries nothing</span>');
   return h;}
- const cardHTML=id=>HO.card?HO.card(id)||'':'<b>'+placeName(id)+'</b> <span class="k">'+id+'</span>'+contentsHTML(id);
+ const cardHTML=id=>{const c=HO.card?HO.card(id):null;return c?c:'<b>'+placeName(id)+'</b> <span class="k">'+id+'</span>'+contentsHTML(id);};   // a build's card (a citizen's), else the contents
  // ---------------------------------------------------------------- the inspector's second half
  const insp=$('insp'),box=doc.createElement('div');box.id='insp-holds';if(insp)insp.appendChild(box);
  let shown=null,shownAt=0;
@@ -3654,7 +3679,8 @@ K.onTake(function stocksTake(H){
 //
 // The store: every change is kept in this browser (localStorage 'khost-marks:<build>') and, when the page is served by
 // tools/edits/serve.py, written to <build>/marks.json (POST /__save, kind 'marks'), where Claude can read it. On load the
-// file wins over the browser (fetched from o.marksUrl, default 'marks.json' beside the page). "copy JSON" for the rest.
+// file wins over the browser (served pages only: GET /__file; or o.marksUrl). "copy JSON" for the rest. A point of two
+// numbers, [x, z], is put on the ground as it loads.
 //
 //   KHOST.marks.list, .tool(on), .add(kind), .finish(), .measure(m)       o.marks: false turns the tool off for a build
 (function(root){
@@ -3681,9 +3707,14 @@ K.onTake(function marksTake(H){
   if(location.protocol.indexOf('http')!==0){M.saved='browser';status();return;}
   fetch('/__save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'marks',page:location.pathname,data:JSON.parse(body)})})
    .then(r=>{M.saved=r.ok?'file':'browser';status();}).catch(()=>{M.saved='browser';status();});}
- function load(done){const browser=()=>{try{const t=localStorage.getItem(KEY);if(t)M.list=JSON.parse(t).marks||[];}catch(e){}done();};
-  if(location.protocol.indexOf('http')!==0)return browser();
-  fetch(o.marksUrl||'marks.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(j=>{M.list=j.marks||[];M.saved='file';done();}).catch(browser);}
+ // the file only through tools/edits/serve.py (it injects /__edits.js), whose /__file route answers 204 when nothing was saved:
+ // any other server would answer 404, which a verify.py reads as a failed load
+ const served=!!doc.querySelector('script[src="/__edits.js"]');
+ // a point written as [x, z] (Voth's marks before core/host, a hand-written file) stands on the ground
+ const norm=L=>(L||[]).map(m=>Object.assign(m,{pts:(m.pts||[]).map(p=>p.length===2?[p[0],+gh(p[0],p[1]).toFixed(2),p[1]]:p)}));
+ function load(done){const browser=()=>{try{const t=localStorage.getItem(KEY);if(t)M.list=norm(JSON.parse(t).marks);}catch(e){}done();};
+  if(location.protocol.indexOf('http')!==0||!(served||o.marksUrl))return browser();
+  fetch(o.marksUrl||('/__file?kind=marks&page='+encodeURIComponent(location.pathname)),{cache:'no-store'}).then(r=>{if(r.status!==200)throw new Error(r.status);return r.json();}).then(j=>{M.list=norm(j.marks);M.saved='file';done();}).catch(browser);}
  // ---------------------------------------------------------------- drawing: on the surface each point was put on
  const lift=.4;
  function yAt(a,b,t){const x=a[0]+(b[0]-a[0])*t,z=a[2]+(b[2]-a[2])*t,ya=a[1],yb=b[1];
@@ -3918,6 +3949,11 @@ K.onTake(function minimapTake(H){
 //     brushes: {modes: ['raise', 'lower', 'flatten', 'smooth'], r: [min, max, start], strength: {mode: start}}
 //                                ground brushes (step 4): each stroke a core/edits ADD of {class: 'feature', kind: 'ground',
 //                                key: mode, at, r, strength}; the world adapter writes the ground (core/terrain's KFIELD.stroke)
+//     ways: {classes: ['main', 'side', ...], start, label?, cls?, kind?}
+//                                way mode (step 6b, Voth's painted streets): clicks on the ground lay a polyline, Backspace
+//                                takes the last point off, Enter or a double-click finishes it, Esc drops it; it is a core/edits
+//                                ADD of {class: cls || 'infrastructure', kind: kind || 'way', key: the class chosen, at: the
+//                                first point, pts: [[x, z]...]}, drawn by the world adapter's add
 //   o.palette (96 pictures): what place, plant (cls 'flora') and fauna (cls 'life': an animal, kits/fauna) offer
 // No o.edits: no editor. Keys while the editor is on: B on and off, Delete remove the selection, M then a click move it,
 // Q / E turn it 15 degrees (they win over the camera's then), Ctrl+Z undo, Esc stop placing. In ground mode a click is a stroke
@@ -3975,8 +4011,8 @@ K.onTake(function editTake(H){
  const P=K.panel('edit','Editor',null,'left:auto;right:14px;top:auto;bottom:14px;width:320px;display:none');
  const el=(t,a,p)=>{const n=doc.createElement(t);if(a)for(const k in a){if(k==='text')n.textContent=a[k];else n[k]=a[k];}(p||P).appendChild(n);return n;};
  const modes=el('div',{className:'row'}),MB={};
- const PAL=o.palette&&o.palette.items||[],hasFlora=PAL.some(i=>i.cls==='flora'),hasFauna=PAL.some(i=>i.cls==='life'),hasPlace=PAL.some(i=>i.cls!=='flora'&&i.cls!=='life'),BR=E0.brushes||null;
- [['select','select'],hasPlace&&['place','place'],hasFlora&&['plant','plant'],hasFauna&&['fauna','fauna'],BR&&['ground','ground']].filter(Boolean).forEach(([k,t])=>{MB[k]=el('button',{text:t},modes);MB[k].onclick=()=>ED.setMode(k);});
+ const PAL=o.palette&&o.palette.items||[],hasFlora=PAL.some(i=>i.cls==='flora'),hasFauna=PAL.some(i=>i.cls==='life'),hasPlace=PAL.some(i=>i.cls!=='flora'&&i.cls!=='life'),BR=E0.brushes||null,WY=E0.ways&&E0.ways.classes&&E0.ways.classes.length?E0.ways:null;
+ [['select','select'],hasPlace&&['place','place'],hasFlora&&['plant','plant'],hasFauna&&['fauna','fauna'],BR&&['ground','ground'],WY&&['way',WY.label||'way']].filter(Boolean).forEach(([k,t])=>{MB[k]=el('button',{text:t},modes);MB[k].onclick=()=>ED.setMode(k);});
  const acts=el('div',{className:'row'});
  const bRm=el('button',{text:'remove (Del)'},acts),bMv=el('button',{text:'move (M)'},acts),bL=el('button',{text:'⟲ Q'},acts),bR=el('button',{text:'E ⟳'},acts);
  bRm.onclick=()=>ED.remove();bMv.onclick=()=>{ED.moving=!!K.selected;paint();};bL.onclick=()=>ED.turn(Math.PI/12);bR.onclick=()=>ED.turn(-Math.PI/12);
@@ -3994,11 +4030,12 @@ K.onTake(function editTake(H){
  function paint(){for(const k in MB)MB[k].classList.toggle('on',ED.mode===k);
   const r=K.selected;bMv.classList.toggle('on',ED.moving);
   info.textContent=ED.mode==='ground'?BS.mode+' · radius '+BS.r+' m · strength '+BS.str[BS.mode]+(BS.mode==='raise'||BS.mode==='lower'?' m':'')+' — click or drag on the ground; [ ] the radius':
+   ED.mode==='way'?(ED.way?'a '+ED.way.cls+' '+(WY.kind||'way')+', '+ED.way.pts.length+' point'+(ED.way.pts.length===1?'':'s')+' — Enter or a double-click finishes, Backspace takes the last off, Esc drops it':'click the ground to lay a '+wSel.value+' '+(WY.kind||'way')):
    ED.mode==='select'?(r?(r.name||r.key||r.kind||r['class'])+' · '+r.id+(canEdit(r)?'':' (not editable)')+(ED.moving?'\nclick where it goes':''):'click something to select it'):
    (ED.item?ED.item.name+' — click a surface to put it down; Q / E turn ('+Math.round(ED.ry*180/Math.PI)+'°)':'pick a picture');
   status();}
- ED.setMode=function(m){ED.mode=m;ED.moving=false;brushRow.style.display=m==='ground'?'block':'none';if(m!=='ground')ring.visible=false;
-  if(m==='select'||m==='ground'){if(K.pictures)K.pictures.close();}else if(K.pictures){K.pictures.open('',m==='plant'?'flora':m==='fauna'?'life':'other');}
+ ED.setMode=function(m){if(m!=='way'&&ED.way)ED.wayFinish();ED.mode=m;ED.moving=false;brushRow.style.display=m==='ground'?'block':'none';wayRow.style.display=m==='way'?'block':'none';if(m!=='ground')ring.visible=false;
+  if(m==='select'||m==='ground'||m==='way'){if(K.pictures)K.pictures.close();}else if(K.pictures){K.pictures.open('',m==='plant'?'flora':m==='fauna'?'life':'other');}
   if(ED.item&&(m==='plant'&&ED.item.cls!=='flora'||m==='fauna'&&ED.item.cls!=='life'||m==='place'&&(ED.item.cls==='flora'||ED.item.cls==='life')))ED.item=null;paint();};
  if(K.pictures)K.pictures.pick=it=>{ED.item=it;if(ED.mode==='select'||ED.mode==='ground')ED.setMode(it.cls==='flora'?'plant':it.cls==='life'?'fauna':'place');paint();};
  // ---------------------------------------------------------------- ground brushes (step 4): a stroke is an ADD of a ground record
@@ -4013,7 +4050,23 @@ K.onTake(function editTake(H){
  const ring=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({length:48},(_,i)=>new THREE.Vector3(Math.cos(i/48*Math.PI*2),0,Math.sin(i/48*Math.PI*2)))),new THREE.LineBasicMaterial({color:0xffe14a,depthTest:false,transparent:true}));
  ring.visible=false;ring.renderOrder=48;ring.frustumCulled=false;ring.userData.khost='edit';ring.userData.probeSkip=true;H.scene.add(ring);
  const gh=(x,z)=>{const g=o.ground;return typeof g==='function'?g(x,z):(g&&g.h?g.h(x,z):0);};
+ // ---------------------------------------------------------------- ways (step 6b): a polyline laid on the ground, an ADD when finished
+ const wayRow=el('div',{className:'row'});wayRow.style.display='none';
+ const wSel=el('select',null,wayRow);(WY?WY.classes:[]).forEach(c=>{const op=doc.createElement('option');op.value=op.textContent=c;wSel.appendChild(op);});if(WY&&WY.start)wSel.value=WY.start;wSel.onchange=()=>paint();
+ ED.way=null;let wayObjs=[];
+ function wayDraw(){wayObjs.forEach(q=>{H.scene.remove(q);q.geometry.dispose();q.material.dispose();});wayObjs=[];if(!ED.way||!ED.way.pts.length)return;
+  const V=ED.way.pts.map(p=>new THREE.Vector3(p[0],p[1]+.6,p[2]));
+  const add=q=>{q.renderOrder=47;q.frustumCulled=false;q.userData.khost='edit';q.userData.probeSkip=true;H.scene.add(q);wayObjs.push(q);};
+  if(V.length>1)add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(V),new THREE.LineBasicMaterial({color:0xffffff,depthTest:false,transparent:true})));
+  add(new THREE.Points(new THREE.BufferGeometry().setFromPoints(V),new THREE.PointsMaterial({color:0xffffff,size:7,sizeAttenuation:false,depthTest:false})));}
+ ED.wayFinish=function(){const w=ED.way;if(!w)return null;ED.way=null;wayDraw();let op=null;
+  if(w.pts.length>1)op=record(KEDITS.add(log,{'class':WY.cls||'infrastructure',kind:WY.kind||'way',key:w.cls,name:w.cls+' '+(WY.kind||'way'),at:w.pts[0].slice(),pts:w.pts.map(p=>[p[0],p[2]])},{cause:'owner'}));
+  paint();return op;};
+ ED.wayDrop=function(){ED.way=null;wayDraw();paint();};
+ ED.wayPoint=function(at){if(!ED.way)ED.way={cls:wSel.value,pts:[]};ED.way.pts.push([+at[0].toFixed(1),+at[1].toFixed(2),+at[2].toFixed(1)]);wayDraw();paint();};
+ const busy1=K.busy;K.busy=()=>(ED.on&&!!ED.way)||(busy1?busy1():false);   // no pin while laying a way: the double-click finishes it
  let painting=null;const cvs=H.renderer.domElement;
+ cvs.addEventListener('dblclick',()=>{if(ED.on&&ED.mode==='way'&&ED.way){if(ED.way.pts.length>2)ED.way.pts.pop();ED.wayFinish();}});   // its second click put the point down twice
  cvs.addEventListener('pointerdown',e=>{if(!ED.on||ED.mode!=='ground'||e.button!==0||e.altKey)return;e.stopImmediatePropagation();e.preventDefault();
   const at=C.pick(e.clientX,e.clientY);if(!at)return;painting={x:at[0],z:at[2],t:performance.now()};ED.stroke(at);try{cvs.setPointerCapture(e.pointerId);}catch(err){}},{capture:true});
  cvs.addEventListener('pointermove',e=>{if(!ED.on||ED.mode!=='ground')return;const at=C.pick(e.clientX,e.clientY);if(!at){ring.visible=false;return;}
@@ -4021,7 +4074,7 @@ K.onTake(function editTake(H){
   for(let i=0;i<p.count;i++){const a=i/p.count*Math.PI*2;p.setY(i,gh(at[0]+Math.cos(a)*BS.r,at[2]+Math.sin(a)*BS.r)+.4);}p.needsUpdate=true;
   if(painting&&e.buttons&1){const now=performance.now(),d=Math.hypot(at[0]-painting.x,at[2]-painting.z);if(now-painting.t>90&&d>BS.r*.25){painting={x:at[0],z:at[2],t:now};ED.stroke(at);}}},{capture:true});
  cvs.addEventListener('pointerup',()=>{painting=null;},{capture:true});
- ED.tool=function(on){ED.on=on==null?!ED.on:!!on;P.style.display=ED.on?'block':'none';tb.classList.toggle('on',ED.on);
+ ED.tool=function(on){ED.on=on==null?!ED.on:!!on;P.style.display=ED.on?'block':'none';tb.classList.toggle('on',ED.on);if(!ED.on&&ED.way)ED.wayFinish();
   if(!ED.on){ED.setMode('select');}else if(K.marks&&K.marks.on)K.marks.tool(false);paint();};
  const ui=K.ui,tb=doc.createElement('button');tb.textContent='edit (B)';tb.id='khost-edit-btn';tb.onclick=()=>ED.tool();if(ui)ui.appendChild(tb);
  const sel0=K.onSelect;K.onSelect=r=>{if(sel0)sel0(r);if(ED.on)paint();};
@@ -4031,12 +4084,15 @@ K.onTake(function editTake(H){
  K.clickHooks.unshift(function editClick(x,y){if(!ED.on)return false;
   if((ED.mode==='place'||ED.mode==='plant')&&ED.item){const at=surface(x,y);if(at)ED.place(at);return true;}
   if(ED.mode==='select'&&ED.moving&&K.selected){const at=surface(x,y);if(at)ED.moveTo(K.selected,at);ED.moving=false;paint();return true;}
+  if(ED.mode==='way'){const at=C.pick(x,y);if(at)ED.wayPoint(at);return true;}
   return false;});   // select: the inspector picks (93)
  const typing=e=>{const t=e.target;return t&&(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||t.isContentEditable);};
  root.addEventListener('keydown',e=>{if(typing(e)||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();
   if(e.ctrlKey){if(ED.on&&k==='z'){ED.undo();e.preventDefault();e.stopImmediatePropagation();}return;}
   if(k==='b'&&!(o.keys&&o.keys.b)){ED.tool();return;}
   if(!ED.on)return;
+  if(ED.mode==='way'&&ED.way){if(k==='backspace'){ED.way.pts.pop();wayDraw();paint();e.preventDefault();e.stopImmediatePropagation();return;}
+   if(k==='enter'){ED.wayFinish();return;}if(k==='escape'){ED.wayDrop();return;}}
   const placing=(ED.mode==='place'||ED.mode==='plant')&&ED.item;
   if(k==='q'||k==='e'){if(placing){ED.ry+=(k==='q'?1:-1)*Math.PI/12;paint();}else if(K.selected||ED.last)ED.turn((k==='q'?1:-1)*Math.PI/12);else return;e.stopImmediatePropagation();e.preventDefault();return;}
   if((k==='delete'||k==='backspace')&&K.selected){ED.remove();e.preventDefault();e.stopImmediatePropagation();return;}
@@ -4056,11 +4112,16 @@ K.onTake(function editTake(H){
 // so only what is above the cut AND inside the building's box goes; the bar at the top of the view), generalised over a
 // list of units the build hands in.
 //
-//   o.cutaway = {units: [{id, name, x, z, ry?, w, d | r, levels: [{y, h, name?}]}], cutAt?: 1.4, margin?: 1.5,
-//                show?(unit, level)}       show(unit, i) when a unit is cut at storey i, show(unit, null) when it closes
+//   o.cutaway = {units: [{id, name, x, z, ry?, w, d | r, levels: [{y, h, name?}], clip?}], cutAt?: 1.4, margin?: 1.5,
+//                show?(unit, level), pick?(target), bar?(unit, level)}
+//     show(unit, i) when a unit is cut at storey i, show(unit, null) when it closes (it may set KHOST.cut.storey to the
+//     storey it really showed); pick(target) the unit X opens (default the nearest to the view's middle); bar(unit, i) the
+//     bar's words for the storey (HTML; default 'storey i of n, the level's name, its floor'); a unit with clip: false
+//     sets no box: the build cuts it its own way in show (Voth's lot buildings, by a height grid), the planes open nowhere.
 //   X opens the unit nearest the middle of the view at its lowest storey (and closes it); ] or PageUp a storey up, [ or
 //   PageDown down, Shift + wheel too; the bar has the unit, the storey of how many, down, up and close.
-//   KHOST.cut.to(unit or id, storey), .off(), .on, .unit, .storey
+//   KHOST.cut.to(unit or id, storey), .off(), .on, .unit, .storey, .paint() (the bar again), .ensure() (the planes, made and
+//   set: [y, x0, x1, z0, z1]), .box([x0, x1, z0, z1, y] | null)
 // The planes are set on the scene's materials the first time a cut is made (and on materials made since, at each cut), so a
 // page that never cuts compiles nothing new and draws exactly as before.
 (function(root){
@@ -4091,20 +4152,23 @@ K.onTake(function cutawayTake(H){
   const i=Math.max(0,Math.min(u.levels.length-1,storey|0)),L=u.levels[i];
   CUT.unit=u;CUT.storey=i;CUT.on=true;planes();
   if(CO.show)try{CO.show(u,i);}catch(e){K.err('cutaway show: '+((e&&e.stack)||e));}
-  patch();const a=aabb(u);box([a[0],a[1],a[2],a[3],L.y+cutAt]);paint();};
+  patch();if(u.clip===false)box(null);else{const a=aabb(u);box([a[0],a[1],a[2],a[3],L.y+cutAt]);}paint();};
  CUT.off=function(){if(CUT.unit&&CO.show)CO.show(CUT.unit,null);CUT.on=false;CUT.unit=null;box(null);paint();};
- CUT.pick=function(){const t=C.ctl.target;let best=null,bd=Infinity;U.forEach(u=>{const d=Math.hypot(u.x-t.x,u.z-t.z);if(d<bd){bd=d;best=u;}});return best;};
+ CUT.pick=function(){const t=C.ctl.target;if(CO.pick)return byId(CO.pick(t));let best=null,bd=Infinity;U.forEach(u=>{if(u.clip===false)return;const d=Math.hypot(u.x-t.x,u.z-t.z);if(d<bd){bd=d;best=u;}});return best;};
+ CUT.ensure=planes;CUT.box=box;
  // ---------------------------------------------------------------- the bar
  const bar=doc.createElement('div');bar.id='khost-cutbar';bar.className='khost-chrome';
  bar.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:14;display:none;padding:6px 10px;background:rgba(16,14,18,.9);border:1px solid rgba(216,200,154,.5);border-radius:3px;font:12px/1.4 system-ui,sans-serif;color:#f0e6cc';
  doc.body.appendChild(bar);
  const sel=doc.createElement('select');U.forEach(u=>{const op=doc.createElement('option');op.value=u.id;op.textContent=u.name||u.id;sel.appendChild(op);});
- const dn=doc.createElement('button'),txt=doc.createElement('span'),up=doc.createElement('button'),cl=doc.createElement('button');
+ const dn=doc.createElement('button'),txt=doc.createElement('span'),up=doc.createElement('button'),cl=doc.createElement('button');sel.id='khost-cut-unit';txt.id='khost-cut-storey';
  dn.textContent='▼ [';up.textContent='] ▲';cl.textContent='close (X)';[sel,dn,txt,up,cl].forEach(e=>bar.appendChild(e));
  sel.onchange=()=>CUT.to(sel.value,0);dn.onclick=()=>{if(CUT.on)CUT.to(CUT.unit,CUT.storey-1);};up.onclick=()=>{if(CUT.on)CUT.to(CUT.unit,CUT.storey+1);};cl.onclick=()=>CUT.off();
  function paint(){bar.style.display=CUT.on?'block':'none';tb.classList.toggle('on',CUT.on);if(!CUT.on)return;const u=CUT.unit,L=u.levels[CUT.storey],n=u.levels.length;
-  sel.value=u.id;txt.innerHTML=' storey <b>'+(CUT.storey+1)+'</b> of '+n+(L.name?' — '+L.name:'')+' <span style="opacity:.6">(floor '+L.y.toFixed(1)+' m)</span> ';
+  const own=CO.bar?CO.bar(u,CUT.storey):null;
+  sel.value=u.id;txt.innerHTML=own!=null?own:' storey <b>'+(CUT.storey+1)+'</b> of '+n+(L.name?' — '+L.name:'')+' <span style="opacity:.6">(floor '+L.y.toFixed(1)+' m)</span> ';
   dn.disabled=CUT.storey<=0;up.disabled=CUT.storey>=n-1;dn.style.opacity=dn.disabled?.35:1;up.style.opacity=up.disabled?.35:1;}
+ CUT.paint=paint;
  const ui=K.ui,tb=doc.createElement('button');tb.textContent='cutaway (X)';tb.id='khost-cut-btn';tb.onclick=()=>{if(CUT.on)CUT.off();else{const u=CUT.pick();if(u)CUT.to(u,0);}};if(ui)ui.appendChild(tb);
  const typing=e=>{const t=e.target;return t&&(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||t.isContentEditable);};
  root.addEventListener('keydown',e=>{if(typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key;

@@ -120,36 +120,57 @@ FURN({
 });
 
 FURN({
-  key: 'voth_wayside_shrine', name: 'Wayside Shrine (Triptych)', culture: 'voth', type: 'shrine', setting: 'outdoor',
+  key: 'voth_wayside_shrine', name: 'Wayside Shrine (Mural)', culture: 'voth', type: 'shrine', setting: 'outdoor',
   rooms: ['street', 'plaza'], anchor: 'floor', clearance: { front: 1.5 },
-  materials: ['stone', 'plaster', 'emissive'],
-  w: 8, d: 3.2, h: 4.2, variants: 1,
+  materials: ['stone', 'plaster', 'emissive', 'foliage', 'cloth', 'metal'],
+  w: 8, d: 3.2, h: 5.6, variants: 1,
+  /* the owner's reference (2026-10-15, "shrine-lantern"): a recess between two tall stone pylons, its back wall a
+     painted mural of the deity among rays and glyph columns, two candle pedestals and planters before it, a cord of
+     coloured lanterns strung between the pylons' heads */
   build: function (F) {
-    const stone = F.col('stoneKhakiLight'), dark = F.shade(stone, -0.1), deep = F.col('stoneGraphite');
-    F.box(0, 0, 0, 8, 0.34, 3.2, 0, dark, 'stone');
-    F.box(0, 0.34, 0, 7.4, 0.17, 2.8, 0, F.shade(stone, -0.02), 'stone');
-    const bays = [[-2.4, 0.7, 2.0], [0, 0.82, 3.1], [2.4, 0.7, 2.0]];
-    for (let i = 0; i < bays.length; i++) {
-      const bx = bays[i][0], hw = bays[i][1], hh = bays[i][2];
-      /* jambs plus a back slab, so the niche is a real void seen from the front */
-      F.box(bx - hw + 0.16, 0.51, 0, 0.32, hh, 0.66, 0, stone, 'stone');
-      F.box(bx + hw - 0.16, 0.51, 0, 0.32, hh, 0.66, 0, stone, 'stone');
-      F.box(bx, 0.51, -0.26, 2 * hw - 0.3, hh, 0.14, 0, F.shade(stone, -0.14), 'stone');
-      F.box(bx, 0.51 + hh, 0, 2 * hw + 0.24, 0.2, 0.92, 0, dark, 'stone');
-      F.cone(bx, 0.51 + hh + 0.2, 0, hw + 0.06, i === 1 ? 0.36 : 0.3, 0, F.shade(stone, 0.06), 'stone');
-      /* idol standing clear of the back slab */
-      F.frustum(bx, 0.62, 0.02, 0.2, 0.12, hh * 0.58, 0, F.shade(stone, 0.08), 'stone', 8);
-      F.ball(bx, 0.62 + hh * 0.58 + 0.12, 0.02, 0.13, F.shade(stone, 0.12), 'stone');
-      /* offering ledge out in front, with a stub candle on it */
-      F.box(bx, 0.51, 0.36, 2 * hw - 0.2, 0.11, 0.26, 0, F.shade(stone, -0.06), 'stone');
-      if (i === 1) {
-        F.cyl(bx + hw * 0.55, 0.62, 0.36, 0.05, 0.12, 0, F.col('plasterBone'), 'plaster');
-        F.ball(bx + hw * 0.55, 0.76, 0.36, 0.035, F.col('flame'), 'glow');
-      }
-      /* carved band on the rear face, so the back is not a blank wall */
-      F.box(bx, 0.51 + hh * 0.55, -0.36, 2 * hw - 0.5, 0.16, 0.05, 0, deep, 'stone');
+    const stone = F.col('stoneKhakiLight'), dark = F.shade(stone, -0.12), deep = F.col('stoneGraphite');
+    F.box(0, 0, 0, 8, 0.3, 3.2, 0, dark, 'stone');                                                /* the plinth */
+    F.box(0, 0.3, -0.2, 7.4, 0.16, 2.6, 0, F.shade(stone, -0.03), 'stone');
+    for (let s = -1; s <= 1; s += 2) {
+      F.frustum(s * 3.3, 0.3, -0.3, 0.8, 0.62, 5.1, 0, stone, 'stone', 4);                        /* a battered pylon */
+      F.box(s * 3.3, 5.4, -0.3, 1.5, 0.2, 1.5, 0, F.shade(stone, 0.08), 'stone');                  /* its cap */
+      F.box(s * 1.9, 0.46, -1.2, 0.9, 0.5, 0.5, 0, F.shade(stone, -0.08), 'stone');                /* a planter either side of the mural */
+      for (let k = 0; k < 4; k++) F.blob(s * 1.9 + F.rr(-0.2, 0.2), 1.0, -1.2 + F.rr(-0.14, 0.14), 0.12, 0.42, F.rr(0, 6), F.pick(['leafMadder', 'leaf', 'clothPlum']), 'leafy');
     }
-    F.lamp(0, 1.1, 0.5, 0.7, 9);
+    /* the back wall and its mural (the deity, a sun of rays, the trees of the two shores, glyph columns) */
+    F.box(0, 0.46, -1.35, 4.6, 4.2, 0.5, 0, F.shade(stone, -0.06), 'stone');
+    F.box(0, 4.66, -1.35, 4.9, 0.3, 0.7, 0, dark, 'stone');
+    F.decal(0, 0.5, -1.08, 4.2, 3.9, 0, 'voth:shrinemural', function (g, cw, ch) {
+      const sand = '#cbb48a', ink = '#3a2e22', red = '#8a2f2a';
+      g.fillStyle = sand; g.fillRect(0, 0, cw, ch);
+      g.fillStyle = '#b9a278'; for (let i = 0; i < 40; i++) g.fillRect(Math.random() * cw, Math.random() * ch, 3, 3);
+      const cx = cw / 2, cy = ch * 0.42;
+      /* the rays */
+      g.strokeStyle = ink; g.lineWidth = Math.max(1, cw / 140);
+      for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2, r0 = cw * 0.11, r1 = cw * (0.2 + (i % 2) * 0.05); g.beginPath(); g.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); g.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); g.stroke(); }
+      /* the figure: a robed deity with arms raised */
+      g.fillStyle = ink; g.beginPath(); g.arc(cx, cy - cw * 0.17, cw * 0.045, 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.moveTo(cx - cw * 0.05, cy - cw * 0.12); g.lineTo(cx + cw * 0.05, cy - cw * 0.12); g.lineTo(cx + cw * 0.11, ch * 0.78); g.lineTo(cx - cw * 0.11, ch * 0.78); g.closePath(); g.fill();
+      g.lineWidth = Math.max(2, cw / 60); g.beginPath(); g.moveTo(cx - cw * 0.05, cy - cw * 0.1); g.lineTo(cx - cw * 0.19, cy - cw * 0.2); g.moveTo(cx + cw * 0.05, cy - cw * 0.1); g.lineTo(cx + cw * 0.19, cy - cw * 0.2); g.stroke();
+      g.fillStyle = red; g.fillRect(cx - cw * 0.06, cy + cw * 0.02, cw * 0.12, ch * 0.03);
+      /* the trees of the two shores, as fans of fronds */
+      for (let s = -1; s <= 1; s += 2) { const tx = cx + s * cw * 0.33, ty = ch * 0.8; g.strokeStyle = ink; g.lineWidth = Math.max(1, cw / 110); for (let k = -3; k <= 3; k++) { g.beginPath(); g.moveTo(tx, ty); g.quadraticCurveTo(tx + k * cw * 0.03, ty - ch * 0.12, tx + k * cw * 0.06, ty - ch * 0.2); g.stroke(); } }
+      /* the glyph columns */
+      g.fillStyle = ink;
+      for (let s = -1; s <= 1; s += 2) for (let k = 0; k < 9; k++) { const gx = cx + s * cw * 0.43, gy = ch * 0.1 + k * ch * 0.07; g.fillRect(gx - cw * 0.012, gy, cw * 0.024, ch * 0.035); if (k % 2) g.fillRect(gx - cw * 0.03, gy + ch * 0.015, cw * 0.06, ch * 0.012); }
+      g.fillStyle = red; g.fillRect(0, 0, cw, ch * 0.03); g.fillRect(0, ch * 0.97, cw, ch * 0.03);
+    }, 'plaster');
+    /* the offering sill, the candle pedestals and their flames, the bowl between them */
+    F.box(0, 0.46, -0.65, 4.0, 0.18, 0.6, 0, F.shade(stone, -0.02), 'stone');
+    for (let s = -1; s <= 1; s += 2) {
+      F.cyl(s * 1.1, 0.46, 0.2, 0.22, 1.0, 0, deep, 'stone'); F.cyl(s * 1.1, 1.46, 0.2, 0.3, 0.1, 0, F.shade(deep, 0.2), 'stone');
+      F.cyl(s * 1.1, 1.56, 0.2, 0.05, 0.16, 0, F.col('plasterBone'), 'plaster'); F.ball(s * 1.1, 1.76, 0.2, 0.045, F.col('flame'), 'glow');
+    }
+    F.cyl(0, 0.64, -0.6, 0.18, 0.08, 0, F.col('brass'), 'metal');
+    /* a cord between the pylons with three coloured lanterns on it */
+    F.rod(-3.3, 5.2, 0.3, 3.3, 5.2, 0.3, 0.025, F.col('clothKhaki'), 'cloth');
+    [[-1.8, 'clothCrimson'], [0, 'clothTeal'], [1.8, 'clothGold']].forEach(function (l) { F.rod(l[0], 5.2, 0.3, l[0], 4.85, 0.3, 0.012, F.col('iron'), 'metal'); F.box(l[0], 4.45, 0.3, 0.36, 0.4, 0.36, 0, F.col(l[1]), 'glow'); F.box(l[0], 4.43, 0.3, 0.4, 0.04, 0.4, 0, F.col('iron'), 'metal'); F.box(l[0], 4.85, 0.3, 0.4, 0.04, 0.4, 0, F.col('iron'), 'metal'); });
+    F.lamp(0, 1.6, 0.4, 0.7, 9);
   }
 });
 
@@ -378,57 +399,70 @@ FURN({
 FURN({
   key: 'voth_market_stall', name: 'Market Stall (Produce)', culture: 'voth', type: 'stall', setting: 'outdoor',
   rooms: ['market', 'street'], anchor: 'floor', clearance: { front: 1.5 },
-  materials: ['timber', 'stone', 'metal', 'cloth', 'foliage'],
+  materials: ['timber', 'stone', 'metal', 'cloth', 'foliage', 'ceramic', 'bone', 'emissive', 'wicker'],
   w: 4.5, d: 4.5, h: 3.45, variants: 2,
+  /* the owner's reference (2026-10-15, "market stall"): poles leaning in to a ridge, a red woven awning draped over
+     it and down to the front with horn finials at its corners, a patterned rug hung on one side for a wall, a low
+     counter chest with the goods on it, baskets stacked behind */
   build: function (F) {
     const exotic = F.variant === 1;
-    const counterC = F.col('timberMud'), postC = F.col('timberUmber');
-    /* counter: top, front boards, four legs, rails and a shelf beneath */
-    F.box(0, 0.8, 0.6, 3.6, 0.12, 1.0, 0, counterC, 'wood');
-    F.box(0, 0.16, 1.06, 3.5, 0.66, 0.07, 0, F.shade(counterC, -0.15), 'wood');
-    F.box(0, 0.4, 0.6, 3.3, 0.06, 0.8, 0, F.shade(counterC, -0.1), 'wood');
+    const postC = F.col('timberUmber'), counterC = F.col('timberMud'), rope = F.col('clothKhaki');
+    /* four poles leaning in from the corners to the ridge, lashed at the top */
+    [[-2.05, -1.7], [2.05, -1.7], [-2.05, 1.7], [2.05, 1.7]].forEach(function (p) { F.rod(p[0], 0, p[1], p[0] * 0.22, 3.22, p[1] * 0.18, 0.055, postC, 'wood'); });
+    F.rod(-0.75, 3.28, 0, 0.75, 3.28, 0, 0.05, postC, 'wood');                                              /* the ridge */
+    [-0.45, 0.45].forEach(function (x) { F.cyl(x, 3.1, 0, 0.09, 0.3, 0, rope, 'cloth'); });               /* the lashings */
+    /* the awning: a woven sheet over the ridge, the front slope longer and lower, a dark valance at its edges */
+    const clothC = exotic ? F.col('clothPlum') : F.col('clothCrimson'), dark = F.shade(clothC, -0.3);
+    F.beam(0, 3.33, -0.05, 0, 2.3, 2.05, 4.3, 0.06, clothC, 'cloth');                                        /* the front slope */
+    F.beam(0, 3.33, 0.05, 0, 2.55, -1.95, 4.3, 0.06, F.shade(clothC, -0.08), 'cloth');                      /* the back slope */
+    F.box(0, 2.1, 2.08, 4.34, 0.2, 0.05, 0, dark, 'cloth');                                                  /* the front hem */
+    F.box(0, 2.38, -1.95, 4.34, 0.17, 0.05, 0, dark, 'cloth');
     for (let s = -1; s <= 1; s += 2) {
-      for (let t = -1; t <= 1; t += 2) {
-        F.box(s * 1.65, 0, 0.6 + t * 0.4, 0.13, 0.8, 0.13, 0, F.shade(counterC, -0.22), 'wood');
+      /* a stripe of the weave's pattern along each slope, and the horn finials at the front corners */
+      F.beam(s * 1.2, 3.3, 0, s * 1.2, 2.33, 2.0, 0.5, 0.012, F.shade(clothC, 0.22), 'cloth');
+      F.rod(s * 2.1, 2.25, 2.02, s * 2.2, 2.75, 2.15, 0.05, F.col('plasterBone'), 'bone');
+      F.cone(s * 2.2, 2.72, 2.15, 0.06, 0.3, 0, F.col('plasterBone'), 'bone');
+    }
+    /* the rug hung on the stall's left side for a wall: a rod between the poles and a painted kilim */
+    F.rod(-2.0, 2.3, -1.6, -2.0, 2.3, 1.6, 0.035, postC, 'wood');
+    F.decal(-1.96, 0.35, 0, 2.9, 1.9, Math.PI / 2, 'voth:stallrug:' + (exotic ? 1 : 0), function (g, cw, ch) {
+      const base = exotic ? '#4b2a6e' : '#7a2028', ink = '#1c1814', cream = '#e8d9a0', teal = '#2f6b66';
+      g.fillStyle = base; g.fillRect(0, 0, cw, ch);
+      g.fillStyle = ink; g.fillRect(0, 0, cw, ch * 0.08); g.fillRect(0, ch * 0.92, cw, ch * 0.08);
+      g.fillStyle = cream; g.fillRect(0, ch * 0.09, cw, ch * 0.025); g.fillRect(0, ch * 0.885, cw, ch * 0.025);
+      const n = 4, cell = cw / n;
+      for (let i = 0; i < n; i++) {
+        const cx = cell * (i + 0.5), cy = ch * 0.5, r = cell * 0.36;
+        for (let k = 0; k < 3; k++) {
+          const rr = r * (1 - k * 0.3); g.fillStyle = k === 0 ? cream : k === 1 ? teal : ink;
+          g.beginPath(); g.moveTo(cx, cy - rr * 1.4); g.lineTo(cx + rr, cy); g.lineTo(cx, cy + rr * 1.4); g.lineTo(cx - rr, cy); g.closePath(); g.fill();
+        }
+        g.fillStyle = cream; g.fillRect(cx - 2, ch * 0.16, 4, ch * 0.1); g.fillRect(cx - 2, ch * 0.74, 4, ch * 0.1);
       }
+    }, 'cloth');
+    /* the counter: a brass-banded chest, its lid the counter, with trays, jars and a cash dish on it */
+    F.box(0, 0, 1.3, 2.5, 0.72, 0.8, 0, counterC, 'wood');
+    F.box(0, 0.72, 1.3, 2.6, 0.08, 0.9, 0, F.shade(counterC, 0.1), 'wood');
+    for (let s = -1; s <= 1; s += 2) F.box(s * 0.9, 0.1, 1.71, 0.08, 0.55, 0.03, 0, F.col('brass'), 'metal');
+    F.box(0, 0.36, 1.71, 2.4, 0.06, 0.03, 0, F.col('brass'), 'metal');
+    for (let i = 0; i < 3; i++) {
+      const x = -0.85 + i * 0.85;
+      F.cyl(x, 0.8, 1.3, 0.26, 0.08, 0, F.shade(counterC, 0.14), 'wood');                                    /* a tray */
+      for (let j = 0; j < 3; j++) F.ball(x + F.rr(-0.14, 0.14), 0.94, 1.3 + F.rr(-0.12, 0.12), 0.07, exotic ? F.pick(['clothGold', 'clothTeal', 'clothPlum']) : F.pick(['leafMadder', 'leaf', 'leafOchre']), exotic ? 'cloth' : 'leafy');
     }
-    const posts = [[-2, -1.8], [2, -1.8], [-2, 1.8], [2, 1.8]];
-    for (const p of posts) {
-      F.cyl(p[0], 0, p[1], 0.1, 2.5, 0, postC, 'wood');
-      F.beam(p[0], 2.42, p[1], p[0] * 0.72, 2.0, p[1] * 0.72, 0.07, 0.07, postC, 'wood');
-    }
-    const clothC = exotic ? F.col('clothJade') : F.pick(['clothOrange', 'clothCrimson', 'clothTeal']);
-    F.box(0, 2.5, 0, 4.4, 0.16, 4.4, 0, clothC, 'cloth');
-    F.cone(0, 2.66, 0, 2.2, 0.68, 0, F.shade(clothC, -0.1), 'cloth');
-    /* valance on all four sides so the canopy reads from behind too */
-    for (let i = 0; i < 4; i++) {
-      const a = i * F.TAU / 4;
-      F.box(Math.sin(a) * 2.14, 2.24, Math.cos(a) * 2.14, 4.3, 0.26, 0.05, a, F.shade(clothC, -0.18), 'cloth');
-    }
-    /* back shelf with stock, visible from the rear */
-    F.box(0, 1.2, -1.75, 3.4, 0.08, 0.4, 0, counterC, 'wood');
-    for (let i = 0; i < 2; i++) {
-      F.cyl(-0.9 + i * 1.8, 1.28, -1.75, 0.13, 0.32, 0, F.pick(['timberTeakLight', 'steel', 'timberTeak']), 'wood');
-    }
-    /* produce trays on the counter */
-    for (let i = 0; i < 2; i++) {
-      const x = -0.9 + i * 1.6;
-      F.cyl(x, 0.92, 0.6, 0.28, 0.1, 0, F.shade(counterC, 0.08), 'wood');
-      for (let j = 0; j < 2; j++) {
-        F.blob(x + F.rr(-0.16, 0.16), 1.06, 0.6 + F.rr(-0.16, 0.16), 0.1, 0.12, 0,
-          F.pick(['leafMadder', 'leaf', 'leafOchre']), 'leafy');
-      }
-    }
-    F.cyl(1.4, 0.92, 0.3, 0.09, 0.2, 0, F.col('steel'), 'metal');
+    F.cyl(1.05, 0.8, 1.55, 0.09, 0.26, 0, F.col('ceramicAsh'), 'ceramic'); F.cyl(-1.1, 0.8, 1.55, 0.11, 0.3, 0, F.shade('ceramicAsh', -0.2), 'ceramic');   /* jars */
+    F.cyl(0.35, 0.8, 1.62, 0.1, 0.04, 0, F.col('brass'), 'metal');                                            /* the cash dish */
+    /* baskets and sacks stacked behind, under the back slope */
+    F.cyl(-1.2, 0, -1.3, 0.34, 0.5, 0, F.col('timberSand'), 'wicker'); F.cyl(-1.2, 0.5, -1.3, 0.3, 0.42, 0, F.shade('timberSand', -0.1), 'wicker');
+    F.cyl(-0.4, 0, -1.4, 0.3, 0.46, 0, F.shade('timberSand', 0.05), 'wicker');
+    F.blob(0.7, 0.22, -1.3, 0.38, 0.44, 0, F.col('clothKhaki'), 'cloth'); F.blob(1.35, 0.2, -1.15, 0.34, 0.4, 0.4, F.shade('clothKhaki', -0.12), 'cloth');
     if (exotic) {
-      F.box(-1.5, 0.92, 1.1, 0.5, 0.5, 0.45, 0.2, F.col('clothPlum'), 'cloth');
-      F.box(1.5, 0.92, 1.1, 0.4, 0.42, 0.38, -0.15, F.col('clothIndigo'), 'cloth');
-      F.box(0, 0.92, 1.1, 0.3, 0.2, 0.28, 0, F.col('stoneMist'), 'stone');
-      F.cyl(-1.95, 0, 1.2, 0.3, 1.2, 0, F.col('stoneKhaki'), 'stone');
-      F.cone(-1.95, 1.2, 1.2, 0.26, 0.22, 0, F.col('stoneMud'), 'stone');
-      F.box(-2.02, 1.7, -1.75, 0.04, 0.5, 0.9, 0, F.col('clothGold'), 'cloth');
-      F.box(2.02, 1.7, -1.75, 0.04, 0.5, 0.9, 0, F.col('clothCrimson'), 'cloth');
+      F.cyl(1.95, 0, 0.9, 0.3, 1.1, 0, F.col('stoneKhaki'), 'stone'); F.cone(1.95, 1.1, 0.9, 0.26, 0.2, 0, F.col('stoneMud'), 'stone');   /* a tall jar */
+      F.box(1.6, 0.8, 0.9, 0.4, 0.42, 0.38, -0.15, F.col('clothIndigo'), 'cloth');
     }
+    /* a lantern hung from the ridge */
+    F.rod(0.6, 3.25, 0, 0.6, 2.95, 0, 0.012, F.col('iron'), 'metal'); F.box(0.6, 2.62, 0, 0.26, 0.34, 0.26, 0, F.col('clothOrange'), 'glow');
+    F.lamp(0.6, 2.75, 0, 0.5, 5);
   }
 });
 

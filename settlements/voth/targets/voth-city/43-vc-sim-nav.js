@@ -155,7 +155,11 @@ VC.pedNav = function () {
   };
   var flightFoot = {};
   (CANT.flights || []).forEach(function (f) {
-    var foot = node(f.a[0], f.a[1], f.y0, 'stairs'), head = node(f.b[0], f.b[1], f.y1, 'stairs'); edge(foot, head, 'stairs', f.w); cant.flights++;
+    /* the steps to the head's landing, then across it (20-site-cantons.js CANT.flightSegs: a flight ends on a landing) */
+    var foot = node(f.a[0], f.a[1], f.y0, 'stairs'), head = node(f.b[0], f.b[1], f.y1, 'stairs'), hl = f.landLen && f.len ? f.landLen / f.len : 0;
+    if (hl > 0) { var hs = node(f.b[0] - (f.b[0] - f.a[0]) * hl, f.b[1] - (f.b[1] - f.a[1]) * hl, f.y1, 'stairs'); edge(foot, hs, 'stairs', f.w); edge(hs, head, 'landing', f.w); }
+    else edge(foot, head, 'stairs', f.w);
+    cant.flights++;
     var top = cantonAt(f.canton, f.b[0], f.b[1], f.y1); if (top >= 0) edge(head, top, 'landing', f.w); else cant.unjoined.push(f.id + ' head');
     if (f.kind === 'terrace') { var bot = cantonAt(f.canton, f.a[0], f.a[1], f.y0); if (bot >= 0) edge(foot, bot, 'landing', f.w); else cant.unjoined.push(f.id + ' foot'); }
     flightFoot[f.id] = foot; levelNodes[f.canton].push(foot, head);
@@ -189,7 +193,80 @@ VC.pedNav = function () {
     });
     cant.causeways++;
   });
-  (CANT.doors || []).forEach(function (d) { var n = node(d.x, d.z, d.y, 'door'), j = cantonAt(d.canton, d.x, d.z, d.y, 2.5); if (j >= 0) { edge(n, j, 'landing', d.w); levelNodes[d.canton].push(n); cant.doors++; } else cant.unjoined.push(d.id); });
+  var doorNode = {};
+  (CANT.doors || []).forEach(function (d) { var n = doorNode[d.id] = node(d.x, d.z, d.y, 'door'), j = cantonAt(d.canton, d.x, d.z, d.y, 2.5); if (j >= 0) { edge(n, j, 'landing', d.w); levelNodes[d.canton].push(n); cant.doors++; } else cant.unjoined.push(d.id); });
+  /* ---- the canton interiors (owner, 2026-10-15: "citizens travel thru what are supposed to be the solid canton walls"):
+     their own graph, joined to the city at the canton doors and the suites' terrace exits, so a walk to a canton room goes
+     in by the tunnel, along the halls and up the core's flights, not straight through the tier from the nearest terrace.
+     Each floor rect (40-vc-interiors.js P.floors) a chain of nodes along its length (a grid in a wide one, every
+     `TUNE.sim.nav.inside` m); two open floors (halls, tunnels, passages, the core, landings, galleries) joined where they
+     meet on one level; a room's floor only by its door, a suite's great room only by the suite's doors; each flight's foot
+     and head joined to the floor they stand on (the top flight to the deck); the tunnels' mouths to the canton doors. The
+     links are found first: a floor no chain of them reaches from outside (a gallery strip cut off by a void) gets no nodes */
+  var IN = { cantons: 0, nodes: 0, joins: 0, flights: 0, doors: 0, exits: 0, loose: 0, unreached: 0 }, n0in = nodes.length, stepIn = T.inside || 6;
+  Object.keys((VC.INT && VC.INT.cantons) || {}).forEach(function (cn) {
+    var P = VC.INT.cantons[cn]; if (!P || !P.floors || P.catacombs) return; IN.cantons++;
+    var Fs = P.floors.filter(function (f) { return f.x1 - f.x0 > 0.3 && f.z1 - f.z0 > 0.3; }), suiteRect = {};
+    (P.halls || []).forEach(function (o) { if (o.kind === 'suite') suiteRect[[o.x0, o.x1, o.z0, o.z1, o.storey].join(',')] = 1; });
+    var walled = function (f) { return f.kind === 'room' || suiteRect[[f.x0, f.x1, f.z0, f.z1, f.storey].join(',')]; };
+    var floorsAt = function (x, z, y, tol, pad) { var out = []; Fs.forEach(function (f, fi) { if (Math.abs(f.y - y) <= tol && x >= f.x0 - pad && x <= f.x1 + pad && z >= f.z0 - pad && z <= f.z1 + pad) out.push(fi); }); return out; };
+    /* 1. the links: [floors joined at a point] and the ways out */
+    var links = [], OUT = Fs.length, par = []; for (var u = 0; u <= OUT; u++) par[u] = u;
+    var root = function (i) { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; }, unite = function (a, b) { par[root(a)] = root(b); };
+    for (var a = 0; a < Fs.length; a++) for (var b = a + 1; b < Fs.length; b++) {
+      var A = Fs[a], B = Fs[b]; if (walled(A) || walled(B) || Math.abs(A.y - B.y) > 0.4) continue;
+      var ox0 = Math.max(A.x0, B.x0), ox1 = Math.min(A.x1, B.x1), oz0 = Math.max(A.z0, B.z0), oz1 = Math.min(A.z1, B.z1);
+      if (ox1 < ox0 - 0.3 || oz1 < oz0 - 0.3 || (ox1 - ox0 < 1.0 && oz1 - oz0 < 1.0)) continue;
+      links.push({ fs: [a, b], x: (ox0 + ox1) / 2, z: (oz0 + oz1) / 2, y: (A.y + B.y) / 2, w: Math.max(ox1 - ox0, oz1 - oz0) }); unite(a, b);
+    }
+    /* the doors of the rooms and of the suites' great rooms */
+    P.rooms.filter(function (r) { return r.door; }).map(function (r) { return { x: r.door.x, z: r.door.z, w: r.door.w, y: r.y }; })
+      .concat((P.suiteDoors || []).concat(P.bpDoors || []).map(function (d) { var S = P.storeys[d.storey]; return { x: d.x, z: d.z, w: d.w, y: S ? S.y : 0 }; }))
+      .forEach(function (D) { var fs = floorsAt(D.x, D.z, D.y, 0.4, 0.6); if (!fs.length) { IN.loose++; return; } D.fs = fs; links.push(D); fs.forEach(function (fi) { unite(fs[0], fi); }); });
+    /* the flights: a foot and a head, each on its floors or (the top flight's head) the deck */
+    var flights = (P.flights || []).map(function (f) {
+      var ends = [[f.a, f.y0], [f.b, f.y1]].map(function (E) {
+        var fs = floorsAt(E[0][0], E[0][1], E[1], 0.5, 1.2); if (fs.length) return { fs: fs };
+        var j = cantonAt(cn, E[0][0], E[0][1], E[1], 2.5); if (j >= 0) return { node: j };
+        IN.loose++; return null;
+      });
+      var on = []; ends.forEach(function (E) { if (E && E.fs) E.fs.forEach(function (fi) { on.push(fi); }); else if (E) on.push(OUT); });
+      on.forEach(function (fi) { unite(on[0], fi); });
+      return { f: f, ends: ends };
+    });
+    /* the canton doors (CANT.doors, joined to the terraces above) and the suites' terrace exits */
+    var outs = (P.doorsOut || []).map(function (d) { return { x: d.x, z: d.z, y: d.y, w: d.w, n: doorNode[d.id] }; })
+      .concat(((P.suite && P.suite.exits) || []).map(function (d) { return { x: d.x, z: d.z, y: d.y, w: d.w, n: cantonAt(cn, d.x, d.z, d.y, 2.5), exit: true }; }))
+      .filter(function (D) {
+        if (D.n == null || D.n < 0) { IN.loose++; return false; }
+        D.fs = floorsAt(D.x, D.z, D.y, 0.6, 2.0); if (!D.fs.length) { IN.loose++; return false; }
+        D.fs.forEach(function (fi) { unite(fi, OUT); }); return true;
+      });
+    /* 2. the nodes, on the floors reached from outside */
+    var keep = Fs.map(function (f, fi) { return root(fi) === root(OUT); });
+    var fn = Fs.map(function (f, fi) {
+      if (!keep[fi]) { IN.unreached++; return []; }
+      var w = f.x1 - f.x0, d = f.z1 - f.z0, nx = Math.max(1, Math.round(w / stepIn)), nz = Math.max(1, Math.round(d / stepIn)), ids = [];
+      for (var i = 0; i < nx; i++) for (var j = 0; j < nz; j++) {
+        var k = node(f.x0 + w * (i + 0.5) / nx, f.z0 + d * (j + 0.5) / nz, f.y, 'inside'); ids.push(k);
+        if (j) edge(k - 1, k, 'indoor', Math.min(w / nx, d / nz)); if (i) edge(k - nz, k, 'indoor', Math.min(w / nx, d / nz));
+      }
+      return ids;
+    });
+    var nearIn = function (fi, x, z) { var best = -1, bd = Infinity; fn[fi].forEach(function (k) { var dd = Math.hypot(nodes[k].x - x, nodes[k].z - z); if (dd < bd) { bd = dd; best = k; } }); return best; };
+    /* 3. the links between kept floors */
+    links.forEach(function (L) { var fs = L.fs.filter(function (fi) { return keep[fi]; }); if (fs.length < 2) return; var p = node(L.x, L.z, L.y, 'inside'); fs.forEach(function (fi) { edge(p, nearIn(fi, L.x, L.z), 'indoor', L.w); }); IN.joins++; });
+    flights.forEach(function (F) {
+      if (F.ends.some(function (E) { return !E || (E.fs && !E.fs.some(function (fi) { return keep[fi]; })); })) return;
+      var f = F.f, foot = node(f.a[0], f.a[1], f.y0, 'stairs'), head = node(f.b[0], f.b[1], f.y1, 'stairs'); edge(foot, head, 'flight', f.w); IN.flights++;   /* 'flight': an indoor stair (cost.flight), apart from the outside stairs' checks */
+      [[foot, f.a, F.ends[0]], [head, f.b, F.ends[1]]].forEach(function (E) {
+        if (E[2].fs) E[2].fs.forEach(function (fi) { if (keep[fi]) edge(E[0], nearIn(fi, E[1][0], E[1][1]), 'indoor', f.w); });
+        else edge(E[0], E[2].node, 'landing', f.w);
+      });
+    });
+    outs.forEach(function (D) { D.fs.forEach(function (fi) { edge(D.n, nearIn(fi, D.x, D.z), 'landing', D.w); }); if (D.exit) IN.exits++; else IN.doors++; });
+  });
+  IN.nodes = nodes.length - n0in; cant.inside = IN;
   /* ---- the buildings' outside stairs and ladders (the walk records each model's registry makes as it builds: VC.IX.walks,
      56b's probe; owner, 2026-10-12: "make sure stairs on house exteriors are also navigable"): at every standing lot,
      each a stair (or ladder) edge from its foot to its head; a foot at the lot's ground joins the street nearest it, two
@@ -266,7 +343,7 @@ VC.pedAudit = function () {
   P.comp = function (i) { return find(i); }; P.main = main;
   /* a place's node (SIM.nav.nearest from its door, its height counted) and the step from its door to it (navOff). Far
      from the network: a door more than `far` m past an open place's reach from its node. Not the network's fault yet:
-     the canton rooms (inside the tiers: the canton interiors' own graph is not joined), the chinampa huts (on the
+     the canton rooms (their interiors' graph joined above: a room still far from it is counted apart), the chinampa huts (on the
      beds, reached by kayak: the water layer's) */
   var T = TUNE.sim.nav, far = {}, cut = {}, farList = [], placed = 0, inside = 0, beds = 0;
   SIM.all('place').forEach(function (Q) {

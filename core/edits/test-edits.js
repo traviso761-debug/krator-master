@@ -69,6 +69,11 @@ const base = [
      'applied: the deletion near a house removes it, the one at (300, 300) is skipped');
   ok(L.ops.every(o => o.cause === 'import:streetlab'), 'every imported op says where it came from');
   ok(K.fromStreetlab(null, 'x').ops.length === 0, '  negative: no file gives an empty log, not an error');
+  /* the city plan's own flora shape (59-vc-flora-edit.js): {del, add}, the kind and a tree's height kept */
+  const V = K.fromStreetlab({ site: 'voth', flora: { del: [{ kind: 'tree', key: 'cherry', x: 1, z: 2 }], add: [{ kind: 'plant', key: 'fern', x: 3, y: 1.5, z: 4 }, { kind: 'tree', key: 'dragon', x: 5, y: 0, z: 6, H: 8 }] } });
+  ok(V.ops.map(o => o.op + ':' + o.target.key).join() === 'REMOVE:cherry,ADD:fern,ADD:dragon' && V.ops[1].rec.kind === 'plant' && V.ops[1].rec.at[1] === 1.5 && V.ops[2].rec.H === 8,
+     'the city plan\'s {del, add} flora: deletions first, the kind, the height on the floor and H kept', V.ops.map(o => o.op + ':' + o.target.key).join());
+  ok(K.fromStreetlab({ flora: { del: [], add: [] } }).ops.length === 0, '  negative: an empty {del, add} gives no ops');
 }
 // 5. a stable form for diffs and hashes
 { const a = K.log('t'); K.add(a, { 'class': 'building', key: 'k', at: [1, 0, 2], tags: { b: 1, a: 2 } });

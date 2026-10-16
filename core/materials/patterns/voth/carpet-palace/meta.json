@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.67,
+    0.752
+   ],
+   "seam_before": [
+    1.982,
+    0.868
+   ],
+   "source_size": [
+    1536,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.4,
+   "pattern": false,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "voth/carpet-palace",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.88,
+  "scale": [
+   3,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__voth__carpet-palace.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Voth interiors\", `patterns/voth/carpet-palace` (delivered as \"Ornate Crimson Sunburst Woven Rug.png\")",
+  "reuse": "a court carpet for any sun-worshipping culture (Voth, Iziz)",
+  "sha1": "dd5fe7143b839ef96805a5a858c9d46286838266"
+ }
+}

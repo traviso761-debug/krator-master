@@ -7,6 +7,8 @@
 //   KHOST.take(o) -> {clock, camera, ctl, setView, go, err, ...}   the one call a build makes, after its world is built.
 //     o.scene, o.camera, o.renderer   the build's (a build without them gets a scene, a 50-degree camera and a renderer)
 //     o.ground                        terrainH(x,z), or a KFIELD (its .h): the camera's floor, the pin, the walker
+//     o.pick(ray) -> [x, y, z] | null the build's own pick for the pin, tried before the ground (Voth: inside a canton)
+//     o.click(cx, cy) -> true         the build takes the click itself (the inspector is not asked)
 //     o.floor, o.clear, o.clampCam    what the eye may not go under (default ground), the clearance (1.8 m), or a clamp
 //     o.registry                      the build's registered volumes [{name, x, y?, z, r, h}] (inspector, probe)
 //     o.views {name: [cx,cy,cz,tx,ty,tz] or () => that}, o.onView(name), o.start   the presets (verify.py clicks
@@ -61,7 +63,7 @@ K.take=function(o){
  const H=K.host={o,scene,renderer,camera,clock,views:o.views||{},registry:o.registry||[]};
  // ---------------------------------------------------------------- the camera (90) and the panel (92)
  const C=K.cam=K.camera({THREE,scene,camera,renderer,ground:o.ground,floor:o.floor,clear:o.clear,clampCam:o.clampCam,maxR:o.maxR,minR:o.minR,
-  walk:o.walk,walker:o.walker,eye:o.eye,depth:o.depth,keys:o.keys,inspect:(x,y)=>K.inspectAt&&K.inspectAt(x,y)});
+  walk:o.walk,walker:o.walker,eye:o.eye,depth:o.depth,keys:o.keys,pick:o.pick,inspect:(x,y)=>K.inspectAt&&K.inspectAt(x,y)});
  K.setView=C.setView;
  K.go=function(v){if(!(v in H.views))return false;if(o.onView)o.onView(v);let at=H.views[v];if(typeof at==='function')at=at();if(!at)return false;C.setView(at[0],at[1],at[2],at[3],at[4],at[5]);if(K.viewShown)K.viewShown(v);return true;};
  if(K.panelTake)K.panelTake(H);

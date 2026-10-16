@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.012,
+    10.683
+   ],
+   "seam_before": [
+    1.002,
+    12.967
+   ],
+   "source_size": [
+    789,
+    1993
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.4,
+   "pattern": false,
+   "rough": 0.88,
+   "rough_var": 0.1,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "voth/banner-glyph-rust",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.88,
+  "scale": [
+   1,
+   4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__voth__banner-glyph-rust.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), generated from core/materials/PROMPTS-ready.md \"The Voth interiors\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "an extra the owner added for variety (no prompt): a rust-red glyph banner (delivered as \"Weathered Rust Tapestry of Ancient Glyphs.png\")",
+  "reuse": "as banner-glyph-blue",
+  "sha1": "54a01adc13bcb0e742ecb4265b577c438bd1fa1d"
+ }
+}

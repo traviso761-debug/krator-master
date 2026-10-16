@@ -8,12 +8,17 @@
 // win). What a record holds, and the settlement's stocks, are 93-host-stocks.js's (o.holds, Voth's 56e as the standard): it
 // fills the card's second half (KHOST.holdsFor). A build without records keeps the panel's words (the registry, the mesh's
 // label).
+//   The words may be an object instead of a string: {t} plain text, or {html} (the card and the tip show it as HTML), with
+//   {rec} the record they are about (it wins over the smallest record at the hit: a lot picked by its box, a tree by its
+//   crown; null for none). o.inspectRay(ray) -> such an object (with {point} for the contents of the ground there) or null:
+//   a build that picks by its own tests (Voth: its lots as boxes, its citizens as points, the rooms under a cut) hands it
+//   and the inspector and the tip skip the scene's raycast (on a city's merged batches, too slow for a hover).
 //
 //   KHOST.recordAt(x, y, z)       the smallest record whose volume holds the point (its box in its own turn, or its cylinder)
 //   KHOST.records()               every live record the inspector reads (removed ones skipped)
 //   KHOST.inspectRecord(rec)      put a record's card in the inspector and mark it
 //   KHOST.selected                the record last inspected (98 edit acts on it), or null
-//   KHOST.hover(on)               the hover tip (key I, and the inspector's "hover" button)
+//   KHOST.hover(on), .hoverOn     the hover tip (key I, and the inspector's "hover" button; #khost-tip)
 //   KHOST.reindex()               rebuild the record index (after records were added or moved)
 // Keys: I hover tip. The click is the panel's (92): the build's click, the tools' (KHOST.clickHooks), then this.
 (function(root){
@@ -42,10 +47,18 @@ K.onTake(function inspectTake(H){
   return best;};
  // ---------------------------------------------------------------- the words for a hit
  const label=r=>root.KTAGS&&root.KTAGS.label?root.KTAGS.label(r):(r.name||r.kind||r['class'])+'\n'+r.id;
+ // a build's words as {t, html, rec}: a string is plain text about the record at the hit; an object names its own
+ const own=(t,rec)=>typeof t==='object'?{t:t.html!=null?t.html:t.t,html:t.html!=null,rec:'rec' in t?t.rec:rec,point:t.point||null}:{t,html:false,rec};
  function words(hit,hits){const p=hit.point,rec=K.recordAt(p.x,p.y,p.z);
-  if(o.inspect){const t=o.inspect(hit,hits,rec);if(t!=null)return {t,rec};}
+  if(o.inspect){const t=o.inspect(hit,hits,rec);if(t!=null)return own(t,rec);}
   if(rec)return {t:label(rec)+'\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1),rec};
   return {t:K.describe(hit),rec:null};}
+ // the inspector's text, or HTML (a build's card)
+ const insp0=K.inspector,pre=doc.getElementById('insp-text');
+ K.inspector=function(t,html){if(pre)pre.style.whiteSpace=html?'normal':'';if(html&&pre){pre.innerHTML=t;return;}insp0(t);};
+ // the words for a screen point: the build's own ray pick, else the scene's hits; {w, hit} or null
+ function at(x,y){if(o.inspectRay){const w=o.inspectRay(ray(x,y).ray);if(w==null)return null;const v=own(w,null);return {w:v,hit:v.point?{point:v.point}:null};}
+  const hits=hitsAt(x,y);if(!hits.length)return null;return {w:words(hits[0],hits),hit:hits[0]};}
  // ---------------------------------------------------------------- the mark round the record inspected
  let box=null;
  function mark(r){if(box){H.scene.remove(box);box.geometry.dispose();box=null;}if(!r)return;
@@ -59,9 +72,9 @@ K.onTake(function inspectTake(H){
  const ray=C.ray,hidden=()=>K.hiddenSet?K.hiddenSet():new Set();
  function hitsAt(x,y){return ray(x,y).intersectObjects(H.scene.children,true).filter(h=>(!h.object.userData.probeSkip||h.object.userData.inspectLabel)&&!h.object.userData.khost&&!hidden().has(h.object)&&h.object.visible);}
  K.inspectAt=function(x,y){if(o.click&&o.click(x,y))return;for(const f of K.clickHooks)if(f(x,y))return;
-  const hits=hitsAt(x,y);if(!hits.length){K.inspector('(nothing)');K.selected=null;mark(null);if(K.holdsFor)K.holdsFor(null,null);if(K.onSelect)K.onSelect(null);return;}
-  let w;try{w=words(hits[0],hits);}catch(e){w={t:'inspector: '+e.message,rec:null};K.err('inspect: '+((e&&e.stack)||e));}
-  K.selected=w.rec;mark(w.rec);K.inspector(w.t);if(K.holdsFor)try{K.holdsFor(w.rec,hits[0]);}catch(e){K.err('holds: '+((e&&e.stack)||e));}if(K.onSelect)K.onSelect(w.rec);};
+  let A;try{A=at(x,y);}catch(e){A={w:{t:'inspector: '+e.message,rec:null},hit:null};K.err('inspect: '+((e&&e.stack)||e));}
+  if(!A){K.inspector('(nothing)');K.selected=null;mark(null);if(K.holdsFor)K.holdsFor(null,null);if(K.onSelect)K.onSelect(null);return;}
+  const w=A.w;K.selected=w.rec;mark(w.rec);K.inspector(w.t,w.html);if(K.holdsFor)try{K.holdsFor(w.rec,A.hit);}catch(e){K.err('holds: '+((e&&e.stack)||e));}if(K.onSelect)K.onSelect(w.rec);};
  // ---------------------------------------------------------------- the hover tip (I)
  const tip=doc.createElement('div');tip.id='khost-tip';tip.className='khost-chrome';
  tip.style.cssText='position:fixed;z-index:25;display:none;pointer-events:none;padding:4px 8px;background:rgba(16,14,18,.9);border:1px solid rgba(216,200,154,.5);'+
@@ -69,12 +82,14 @@ K.onTake(function inspectTake(H){
  let hoverOn=false,lastMove=0;
  const insp=doc.getElementById('insp'),hb=doc.createElement('button');hb.id='khost-hover';hb.textContent='hover (I)';hb.className='khost-mini';
  if(insp)insp.insertBefore(hb,insp.querySelector('pre'));
- K.hover=function(on){hoverOn=on==null?!hoverOn:!!on;hb.classList.toggle('on',hoverOn);if(!hoverOn)tip.style.display='none';};
+ K.hover=function(on){hoverOn=K.hoverOn=on==null?!hoverOn:!!on;hb.classList.toggle('on',hoverOn);if(!hoverOn)tip.style.display='none';};
  hb.onclick=()=>K.hover();
  H.renderer.domElement.addEventListener('pointermove',e=>{if(!hoverOn||e.buttons)return;const now=performance.now();if(now-lastMove<70)return;lastMove=now;
-  const hits=hitsAt(e.clientX,e.clientY);if(!hits.length){tip.style.display='none';return;}
-  let t;try{t=words(hits[0],hits).t.split('\n').slice(0,3).join('\n');}catch(err){t='?';}
-  tip.textContent=t;tip.style.display='block';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+12)+'px';});
+  let A;try{A=at(e.clientX,e.clientY);}catch(err){A={w:{t:'?'}};}if(!A||!A.w.t){tip.style.display='none';return;}
+  if(A.w.html){tip.innerHTML=A.w.t;tip.style.whiteSpace='normal';tip.style.maxWidth='min(440px,60vw)';}
+  else{tip.textContent=A.w.t.split('\n').slice(0,3).join('\n');tip.style.whiteSpace='pre';tip.style.maxWidth='60vw';}
+  tip.style.display='block';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+12)+'px';
+  const b=tip.getBoundingClientRect();if(b.bottom>innerHeight-8)tip.style.top=Math.max(8,innerHeight-8-b.height)+'px';if(b.right>innerWidth-8)tip.style.left=Math.max(8,innerWidth-8-b.width)+'px';});
  H.renderer.domElement.addEventListener('pointerleave',()=>{tip.style.display='none';});
  const typing=e=>{const t=e.target;return t&&(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||t.isContentEditable);};
  root.addEventListener('keydown',e=>{if(typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='i'||e.key==='I'){if(o.keys&&o.keys.i)return;K.hover();}});

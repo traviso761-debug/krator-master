@@ -15,7 +15,7 @@
 //     placeAt?(x, z, r)     the nearest place holding something there (the ground of an outdoor site)
 //     idOf?(rec, hit)       the holder ids a picked record is (a lot's places): default its key, else its id, if it holds
 //     containerOf?(rec)     the place a container piece is part of (the simulation keeps stock by place, not by piece)
-//     card?(id)             a holder's own card (a citizen's: the build's), else its contents
+//     card?(id)             a holder's own card (a citizen's: the build's), else (null) its contents
 //     itemName?(k), placeName?(id), minute?(), paused?(), summary?()   words and the clock
 //   }
 //   KHOST.simHolds(SIM, extra) -> an o.holds over core/simulation (extra: idOf, containerOf, card, placeName, paused ...)
@@ -100,7 +100,7 @@ K.onTake(function stocksTake(H){
    if(!Cn.items.length&&!Cn.store&&!Cn.household&&!Cn.mess&&!Cn.sells)h+='<span class="k">holds nothing the simulation counts</span>';}
   else if(Cn.type==='group')h+=Cn.members+' people &middot; '+Cn.kind+(Cn.items.length?itemsTable(Cn.items):' <span class="k">&middot; carries nothing</span>');
   return h;}
- const cardHTML=id=>HO.card?HO.card(id)||'':'<b>'+placeName(id)+'</b> <span class="k">'+id+'</span>'+contentsHTML(id);
+ const cardHTML=id=>{const c=HO.card?HO.card(id):null;return c?c:'<b>'+placeName(id)+'</b> <span class="k">'+id+'</span>'+contentsHTML(id);};   // a build's card (a citizen's), else the contents
  // ---------------------------------------------------------------- the inspector's second half
  const insp=$('insp'),box=doc.createElement('div');box.id='insp-holds';if(insp)insp.appendChild(box);
  let shown=null,shownAt=0;

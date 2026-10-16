@@ -1,20 +1,21 @@
 /* ============================== 6d. HOST: THE FLORA EDITOR ============================== */
-/* [web] The editor's flora mode (owner, 2026-10-09: "add function so i can select flora as well and delete it when
-   clipping into things", "and place new flora"):
-   - select: a click picks the tree (the biome's own, or one the city or the owner planted) or the placed plant the
-     ray passes nearest to; Delete (or the button) takes it out of the world at once;
-   - plant: a click plants the chosen species or plant on whatever floor is under it (a canton's deck, a park), with
-     the biome's own builders (SWBAY.treeAt, SWBAY.plantAt), and bakes it in at once.
-   Both go into the edits file (site/voth-city-edits.json, `flora: {del, add}`) with the buildings and streets; on the
-   next load the kit's veto (SWBAY.veto: a deleted tree keeps its place, index and seed in the pass, so every other
-   tree is as it was) leaves the deleted ones unbuilt and VC.flAddSaved plants the added ones.
-   Taking one out live: the kit brackets every tree and placed plant's writes (SWBAY.onFlora), this fragment notes
-   which instances and triangles of the store they were, maps them to the baked meshes when the store is baked
-   (VC.flBake, in place of BIO.bake), and hides exactly those: an instance scaled to nothing, a triangle collapsed.
+/* [web] The editor's flora (owner, 2026-10-09: "add function so i can select flora as well and delete it when clipping
+   into things", "and place new flora"). The editor is core/host's since 2026-10-16 (98-host-edit.js: select, remove,
+   move; plant from the picture menu's trees and plants), over Voth's world (97-vc-host-take.js VC.editWorld): every
+   tree and plant placed one by one is a core/tags flora record (VC.recFlora), picked by its crown (VC.flPick, in the
+   inspector while the editor is on). What stays here is how Voth's flora is taken out and put in:
+   - the saved edits (settlements/voth/edits.json, as VC.edits().flora {del, add}): on the next load the kit's veto
+     (SWBAY.veto: a deleted tree keeps its place, index and seed in the pass, so every other tree is as it was) leaves
+     the deleted ones unbuilt and VC.flAddSaved plants the added ones;
+   - taking one out live: the kit brackets every tree and placed plant's writes (SWBAY.onFlora), this fragment notes
+     which instances and triangles of the store they were, maps them to the baked meshes when the store is baked
+     (VC.flBake, in place of BIO.bake), and hides exactly those (VC.flShow): an instance scaled to nothing, a triangle
+     collapsed;
+   - putting one in live: VC.flPlantOne with the biome's own builders (SWBAY.treeAt, SWBAY.plantAt), then VC.flBake.
    The ground cover the kit scatters by itself (ferns, moss under the trees) is not tracked: only trees and plants
    placed one by one can be picked. */
 
-VC.FL = { list: [], pending: [], del: [], add: [], sel: null, mark: null, on: false };
+VC.FL = { list: [], pending: [], del: [], add: [] };
 /* the saved edits and the kit's hooks: before SWBAY.build */
 VC.flInit = function () {
   var src = VC.edits(), F = (src && src.flora) || {}, L = VC.FL;
@@ -120,62 +121,4 @@ VC.flPick = function (ray) {
     if (t < bt) { bt = t; best = e; }
   });
   return best;
-};
-VC.flMark = function () {
-  var L = VC.FL; if (L.mark) { scene.remove(L.mark); L.mark.geometry.dispose(); L.mark = null; }
-  var e = L.sel; if (!e) return VC.flPanel();
-  var T = e.rec, h = e.kind === 'tree' ? T.H : 1.2, r = e.kind === 'tree' ? Math.max(1.2, T.crownR * 0.6) : 1;
-  L.mark = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.CylinderGeometry(r, r, h, 12, 1).translate(T.x, T.y0 + h / 2, T.z)),
-    new THREE.LineBasicMaterial({ color: 0xffd04a, depthTest: false, transparent: true }));
-  L.mark.renderOrder = 42; scene.add(L.mark);
-  VC.flPanel();
-};
-VC.flPanel = function () {
-  var e = VC.FL.sel, el = $('ed-fl-sel'); if (!el) return;
-  el.textContent = e ? 'selected: ' + e.key + ' at ' + e.rec.x.toFixed(1) + ', ' + e.rec.z.toFixed(1) + (e.kind === 'tree' ? ' (' + e.rec.H.toFixed(1) + ' m)' : '') + ' · Delete removes it'
-    : 'click a tree or a placed plant to select it';
-};
-VC.flKeys = function () {
-  var t = (SWBAY.SPECIES || []).map(function (S) { return '<option value="tree:' + S.key + '">tree: ' + (S.name || S.key) + '</option>'; });
-  var p = (SWBAY.plantKinds || []).map(function (k) { return '<option value="plant:' + k + '">plant: ' + k + '</option>'; });
-  return t.concat(p).join('');
-};
-
-/* the actions, each with its undo on the editor's stack */
-VC.flDelete = function () {
-  var E = VC.ED, L = VC.FL, e = L.sel; if (!e || e.gone) return;
-  VC.flShow(e, false);
-  var a = e.rec.edit, ai = a ? L.add.indexOf(a) : -1, d = null;
-  if (ai >= 0) L.add.splice(ai, 1);
-  else { d = { kind: e.kind, key: e.key, x: +e.rec.x.toFixed(2), z: +e.rec.z.toFixed(2) }; L.del.push(d); }
-  L.sel = null; VC.flMark();
-  E.undo.push(function () { VC.flShow(e, true); if (ai >= 0) L.add.splice(ai, 0, a); if (d) L.del.splice(L.del.indexOf(d), 1); });
-  VC.edDirty();
-};
-VC.flPlant = function (ray) {
-  var E = VC.ED, L = VC.FL, at = VC.standPick(ray); if (!at) return;
-  var v = $('ed-fl-key').value.split(':'), H = +$('ed-fl-h').value || null;
-  var a = { kind: v[0], key: v[1], x: +at[0].toFixed(2), z: +at[1].toFixed(2), y: +at[2].toFixed(2) }; if (H && a.kind === 'tree') a.H = H;
-  var r = VC.flPlantOne(a); if (!r) return;
-  VC.flBake();
-  L.add.push(a);
-  var e = L.list[L.list.length - 1];
-  E.undo.push(function () { if (e && e.rec === r) VC.flShow(e, false); L.add.splice(L.add.indexOf(a), 1); });
-  VC.edDirty();
-};
-VC.flClick = function (ray) {
-  if ($('ed-fl-mode').value === 'plant') return VC.flPlant(ray);
-  VC.FL.sel = VC.flPick(ray); VC.flMark();
-};
-VC.flUI = function () {
-  if (typeof SWBAY === 'undefined' || !$('ed-fl-key')) return;
-  $('ed-fl-key').innerHTML = VC.flKeys(); $('ed-fl-key').value = 'tree:cherry';
-  $('ed-fl-del').onclick = VC.flDelete;
-  $('ed-fl-mode').onchange = function () { VC.FL.sel = null; VC.flMark(); $('ed-fl-plant').style.display = $('ed-fl-mode').value === 'plant' ? 'inline' : 'none'; };
-  window.addEventListener('keydown', function (e) {
-    if (VC.typing(e) || !VC.ED.on || VC.ED.mode !== 'flora') return;
-    if ((e.key === 'Delete' || e.key === 'Backspace') && VC.FL.sel) { VC.flDelete(); e.preventDefault(); }
-    if (e.key === 'Escape') { VC.FL.sel = null; VC.flMark(); }
-  });
-  VC.flPanel();
 };

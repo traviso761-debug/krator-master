@@ -196,6 +196,7 @@ VC.ixTypeBuild = function (spec) {
     if (!dr) break;
   }
   if (!B) return ty;
+  VC.ixAtrium(B, spec.cls, n);
   ty.B = B; ty.storeys = n; ty.dropped = dropped;
   var home = T.home, kinds = B.rooms.map(function (R) { return R.kind; });
   ty.dwelling = !!spec.live && kinds.some(function (q) { return home.indexOf(q) >= 0; });
@@ -216,6 +217,24 @@ VC.ixTypeBuild = function (spec) {
   ty.pieces = best.pieces; ty.missing = best.missing; ty.count = best.c; ty.seed = best.seed;
   ty.rooms = kinds; ty.floorArea = B.levels.reduce(function (s, Lv) { return s + Math.abs(polyArea(Lv.inner || Lv.outer || sh.poly)); }, 0);
   return ty;
+};
+/* the clan compounds' banquet hall (owner, 2026-10-15: "atria again are seen but only in the clan banquet room"): the
+   hall on the ground floor of a clan compound (its `hall`, else its `clanshrine`) is open to the floor above, which keeps
+   a railed gallery TUNE.ix.atrium.gallery m wide round the void; the rooms that stood over it go (their furniture with
+   them: a compound loses a few beds for its atrium, as the report says). B.rails holds the railing for the host. */
+VC.ixAtrium = function (B, cls, n) {
+  var A = TUNE.ix.atrium; if (!A || !A.classes || A.classes.indexOf(cls) < 0 || n < 2) return;
+  var hall = B.rooms.filter(function (R) { return (R.level | 0) === 0 && R.kind === 'hall'; })[0] || B.rooms.filter(function (R) { return (R.level | 0) === 0 && R.kind === 'clanshrine'; })[0];
+  if (!hall || hall.area < A.minArea) return;
+  var bb = hall.bbox, g = A.gallery, x0 = Math.min(bb[0][0], bb[1][0]) + g, x1 = Math.max(bb[0][0], bb[1][0]) - g, z0 = Math.min(bb[0][1], bb[1][1]) + g, z1 = Math.max(bb[0][1], bb[1][1]) - g;
+  if (x1 - x0 < 3 || z1 - z0 < 3) return;
+  var hole = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]];
+  var F1 = (B.floors || []).filter(function (F) { return F.level === 1; })[0]; if (!F1) return;
+  F1.holes = (F1.holes || []).concat([hole]);
+  var inside = function (p) { return p[0] > x0 && p[0] < x1 && p[1] > z0 && p[1] < z1; };
+  B.rooms = B.rooms.filter(function (R) { return (R.level | 0) !== 1 || !inside(R.centroid); });
+  B.rails = (B.rails || []).concat([{ level: 1, y: F1.y, poly: hole }]);
+  B.atrium = { hall: hall.id, hole: hole };
 };
 /* a lot's type: its kit model's shell, its class's (or its key's) programme */
 VC.ixType = function (L) {

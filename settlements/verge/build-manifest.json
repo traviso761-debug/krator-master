@@ -177,7 +177,7 @@
  ],
  "62-catalog-bundle.js": [
   "GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni, yuni-town)",
-  "0162c2c99ee7"
+  "4d2278bfb40d"
  ],
  "64-izv-bundle.js": [
   "GENERATED: settlements/iziz/src/10-core.js, settlements/iziz/src/12-stats.js, core/materials/20-textures.js, core/materials/22-materials.js, settlements/iziz/src/30-kit.js, settlements/iziz/src/32-surfaces.js, settlements/iziz/src/34-kitdefs.js, settlements/iziz/src/38-helpers2.js, settlements/iziz/src/50-registry.js, settlements/iziz/src/54-mat-concrete.js, core/materials/68-mat-v5.js, settlements/iziz/src/69-mat-salvage.js, core/materials/opt/69a-world-uv.js, settlements/iziz/src/69b-vern-mat.js, settlements/iziz/src/69c-vern-helpers.js, settlements/iziz/src/70-vern-dwellings.js, settlements/iziz/src/71-vern-trade.js, settlements/iziz/src/72-vern-civic.js, settlements/iziz/src/73-vern-infra.js, settlements/iziz/src/74-vern-guilds.js, settlements/iziz/src/74b-vern-frontier.js, kits/ancients/src/8ap-funicular.js",
@@ -245,11 +245,11 @@
  ],
  "90-host-camera.js": [
   "core/host/90-host-camera.js",
-  "26986a9079a2"
+  "5ee8af014319"
  ],
  "91-host-loop.js": [
   "core/host/91-host-loop.js",
-  "aace8fb4d8c7"
+  "3c7fb5c1f35a"
  ],
  "91-verge-probe.js": [
   "settlements/verge/src/91-verge-probe.js",
@@ -261,15 +261,15 @@
  ],
  "93-host-inspect.js": [
   "core/host/93-host-inspect.js",
-  "ad376f74792b"
+  "11e39ccb6260"
  ],
  "93-host-stocks.js": [
   "core/host/93-host-stocks.js",
-  "fc92c7abf275"
+  "27dd6b526848"
  ],
  "94-host-marks.js": [
   "core/host/94-host-marks.js",
-  "5347334d0741"
+  "66fcb2bedaf5"
  ],
  "95-host-probe.js": [
   "core/host/95-host-probe.js",
@@ -285,11 +285,11 @@
  ],
  "98-host-edit.js": [
   "core/host/98-host-edit.js",
-  "b0ec7f749a05"
+  "66535c6a9cdd"
  ],
  "99-host-cutaway.js": [
   "core/host/99-host-cutaway.js",
-  "79b67cff9e25"
+  "5fc10889d24e"
  ],
  "99-start.js": [
   "settlements/verge/src/99-start.js",

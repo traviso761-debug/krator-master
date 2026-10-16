@@ -5,48 +5,116 @@ folders). "Near-colourless" rows are tinted by a build's palette, so the image m
 Cut-outs (cards, wings) are always on solid flat bright magenta (#ff00ff), never grey or white; a transparent PNG is fine too.
 
 **Keep this file current:** when a delivery is processed, delete its blocks here and add a line to "Delivered and removed" below
-(core/materials/PLAN.md, "Rules, from now"). Last pruned 2026-10-06 against core/materials/library, patterns/ and every local worktree.
+(core/materials/PLAN.md, "Rules, from now"). Last pruned 2026-10-15 against core/materials/library, patterns/ and every local worktree
+(the geyser basin's six rows landed in `../krator-isle`).
 
 ## Open prompts
 
 New gaps go here as they are found; prune them as they arrive.
 
-### The geyser basin (`biomes/geyser`, 2026-10-07)
+### The Voth canton walls and floors (2026-10-15)
 
-For the shared geyser kit (`biomes/geyser`; `core/materials/PLAN.md`, "The geyser basin", has what each is for). Until
-they arrive the kit draws these procedurally or with a stand-in.
+The owner: "the cantons probably need better wall and floor textures as well except the palace which is ok". Until these arrive,
+`settlements/voth/materials.json` stands in with generic library sets: `int_ashlar` (`stone.sandstone.ashlar`), `int_flag`
+(`paving.flagstone`), `int_paving` (`paving.pavement_01`), `int_wood` (`wood.old_wooden_floor_02`), `int_stucco`
+(`plaster.white_stucco_02`), `int_tuff` (`stone.tuff.polished`), `int_basalt` (`stone.basalt.polished`), `int_oldwall`
+(`rock.old_stone_wall`), `int_earth` (`earth.floor.packed`). They are clean scans, not Voth: no ash, no fret, no volcanic dark. Each
+block below replaces one of them (the family named in brackets). The first seven are near-colourless (the canton's look tints them);
+the last is full colour.
 
-**`ground.travertine.white`** (full colour: the Stair's terraces; `stone.travertine.tufa` stands in)
+`library/plaster.voth.ochre` (near-colourless; replaces `int_ashlar` and `int_stucco` on the common cantons' and the Foreign canton's walls):
 ```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Travertine terraces seen from directly above, like Pamukkale: bright white calcite (#f2f0ea) laid down by flowing spring water in scalloped rimstone dams, each dam a smooth rounded lip a hand wide curving in lobes, its outer face draped with fine vertical drip ridges and small stalactite fringes; between the dams shallow pools of pale milky turquoise water (#9ad8d8) over a smooth white floor; faint cream (#e8dcc0) and pale orange-brown (#c8905a) stains where the water slows. Full colour.
-```
-
-**`stone.geyserite`** (tintable: the geysers' cones; `ground.clay.popcorn` stands in)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Geyserite (siliceous sinter) on a geyser's cone seen close up: grey-white silica (#dedad0) built up in knobbly beaded crusts like cauliflower and popcorn, rounded beads from a few millimetres to a few centimetres clustered in ridges, a faint pearly sheen on the beads, small dark pits between them, faint buff (#cbbd9e) and salmon (#d8a890) stains in streaks. Near-colourless: keep the stains faint so the image reads as grey-white.
-```
-
-**`card.streamer`** (full colour: the flame streamers in the run-off)
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a clump of long silky streamers of thermophile filaments, the kind that grow in warm runoff from hot springs, combed out straight and parallel by flowing water, rooted together at the bottom of the cell and streaming up to the top, wet and glossy, bright orange (#e0782a) shading to golden (#f0a040) at the tips, a few strands olive-green (#7a8a34); vary the width and the length of the nine clumps. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours.
-```
-
-**`card.clubmoss`** (full colour: the nodding clubmoss on the warm crust)
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a small clump of nodding clubmoss (Lycopodiella cernua): three to six upright stems like miniature pine trees, each densely clothed in tiny needle-like leaves, yellow-green (#7aa038) with paler new growth, a small pale yellow cone nodding at each branch tip, rooted at the bottom of the cell; vary the heights and the counts between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours.
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an
+interior wall of thick hand-trowelled lime plaster over stone, broad soft trowel sweeps, faint hairline cracks, a few shallow chips
+showing coarse plaster beneath, a light bloom of grey volcanic ash settled in the hollows. Keep colours natural but slightly muted and
+even, a pale warm grey with no strong hue, so the texture can be tinted to different palettes without looking stained.
 ```
 
-**`card.steamcomb`** (full colour: the steam combs' fans, which comb water out of a fumarole's steam)
+`library/stone.ashlar.tuff` (near-colourless; replaces `int_ashlar` where a canton's walls are bare stone: the Granary, the Arsenal, the Port):
 ```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a fan of very fine, almost hair-thin pale grey-white filaments (#e4e8e0) radiating in a half circle from a small hub at the bottom middle of the cell, like a sea fan or a fine comb, the filaments a little translucent and beaded all over with tiny clear water droplets that catch the light; vary the width and the fullness of the nine fans. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours.
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall
+of coursed ashlar in porous volcanic tuff, rectangular blocks about 60 by 30 cm in level courses with staggered joints, thin pale lime
+mortar joints, fine diagonal chisel tooling on each face, small dark pores and pumice inclusions, soot darkening a few blocks. Keep
+colours natural but slightly muted and even, mid grey, so the texture can be tinted to different palettes without looking stained.
 ```
 
-**`card.strap.pandan`** (full colour: the stilt pandans' strap leaves; one leaf per cell)
+`library/stone.flag.basalt` (near-colourless; replaces `int_flag` and `int_paving` on the common cantons' floors and halls):
 ```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a single long strap leaf of a screwpine (Pandanus), standing upright from its base at the bottom of the cell to its tip near the top, the last third drooping a little to one side, narrow and keeled down the middle, its edges finely toothed, glossy green (#4e7432) shading to yellow-green (#8aa040) toward the base; vary the curve and the width between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours.
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an
+indoor floor of large irregular basalt flagstones, each 50 to 90 cm across, fitted closely with narrow joints packed with grey ash
+dust, the stones worn smooth and slightly polished by feet, a few fine cracks and small vesicle pits. Keep colours natural but slightly
+muted and even, dark to mid grey, so the texture can be tinted to different palettes without looking stained.
+```
+
+`library/wood.plank.smoked` (near-colourless; replaces `int_wood` in the rooms where people live and write):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a
+floor of wide old hardwood planks, each about 25 cm wide, running vertically in the frame with staggered butt joints, darkened by years
+of lamp smoke, the grain worn into soft ridges along a walking path, square iron nail heads, a few dark knots. Keep colours natural but
+slightly muted and even, a mid grey-brown, so the texture can be tinted to different palettes without looking stained.
+```
+
+`library/stucco.voth.fret` (near-colourless; replaces `int_stucco` on the Temple's walls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a
+temple wall of fine smooth stucco carved in a shallow all-over relief of interlocking stepped-fret spirals (Mesoamerican greca), the
+relief about 1 cm deep, the motif repeating four times across and four times down, crisp carved edges a little softened by age, smoke
+grime gathered in the recesses. Keep colours natural but slightly muted and even, a pale bone grey, so the texture can be tinted to
+different palettes without looking stained.
+```
+
+`library/stone.fortress.block` (near-colourless; replaces `int_blocks` and `int_basalt` in the Fortress):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a
+fortress wall of massive rough-dressed black basalt blocks about 1.2 by 0.6 m, laid in heavy courses with deep dark joints, pitted
+faces with coarse punch-tool marks, an occasional iron cramp set into a joint with a rust stain below it. Keep colours natural but
+slightly muted and even, dark grey, so the texture can be tinted to different palettes without looking stained.
+```
+
+`library/stone.ancestor.niches` (near-colourless; replaces `int_oldwall` on the Ancestry canton's walls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an old
+wall of fitted grey stone with a regular grid of small shallow arched niches cut into it, four across and four down, each niche about
+the size of a hand and holding a smooth rounded stone urn shape, worn ash-dust in the niche floors, wax drips below a few of them. Keep
+colours natural but slightly muted and even, mid grey, so the texture can be tinted to different palettes without looking stained.
+```
+
+`patterns/voth/tile-ash-terracotta` (full colour; replaces `int_tuff` on the Temple's floors and `int_mosaic` in the Foreign halls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge.
+Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no
+objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a
+floor of unglazed terracotta tiles, elongated hexagons about 30 cm long in warm red-ochre, set with small square insets of black
+ash-glazed tile where four hexagons meet, thin dark grout lines, the terracotta worn paler along a walking line and slightly mottled
+from the kiln.
 ```
 
 ## Delivered and removed (2026-10-06)
+
+Delivered 2026-10-15 (`Downloads/vothtex.zip`; batch `voth-interiors-2026-10-15.json`): all sixteen of "The Voth interiors":
+`patterns/voth/stucco-green-relief`, `tile-green-glazed`, `tapestry-tzintzun`, `tapestry-procession`, `carpet-palace`, `inlay-jade-gold`,
+`chandelier-drum`, `tapestry-temple`, `relief-ancestors`, `icon-sanctuary`, `banner-glyph-blue`, `column-carved-inlaid`, `screen-lattice`,
+`awning-stall`, `mural-shrine` and `library/cloth.hide.canopy`; and eleven extras the owner added for variety and the myth of the three
+brothers (the Chichani, the Zeijani and the Andaru): `patterns/voth/fresco-three-brothers`, `fresco-brothers-ascent`, `damask-purple-gold`,
+`mosaic-ringed-giant`, `filigree-crimson`, `filigree-purple`, `tapestry-masks`, `banner-glyph-rust`, `banner-glyph-lavender`,
+`patterns/common/mudcloth`, `patterns/common/kilim-banded-brown`. All wired in `settlements/voth/materials.json`. The same zip carried
+five of `PROMPTS-NEEDED.md` section 0's redos (batch `redos-2026-10-15.json`): in the library, not wired (that file says what to re-pack).
+
+Delivered 2026-10-15 (in `../krator-isle`, `biomes/geyser`): `ground.travertine.white`, `stone.geyserite`, `card.streamer`, `card.clubmoss`, `card.steamcomb`, `card.strap.pandan`: the geyser basin is complete.
 
 Delivered 2026-10-16 (pasted): the Lizardmen ornament, `patterns/lizardmen/leiwen` (and `leiwen-b`, a busier taotie take), `patterns/lizardmen/glyph-band` (and `glyph-band-b`), `patterns/lizardmen/spiral-eye` (on magenta), and `library/rock.basalt.polygonal` (the capital's cyclopean masonry). All wired in `kits/lizardmen` (`materials.json`: `leiwenS`, `leiwenS2`, `glyphS`, `glyphS2`, `eyeS`, `cyclo`). Nothing of the Lizardmen is owed.
 

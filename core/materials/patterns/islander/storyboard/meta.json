@@ -7,20 +7,20 @@
  "processing": {
   "log": {
    "pattern_crop": [
-    692,
-    593
+    1247,
+    1195
    ],
    "seam_after": [
-    0.838,
-    0.604
+    0.863,
+    1.542
    ],
    "seam_before": [
-    3.39,
-    8.804
+    1.139,
+    2.047
    ],
    "source_size": [
-    704,
-    605
+    1254,
+    1254
    ]
   },
   "options": {
@@ -56,14 +56,11 @@
   "tint": false
  },
  "source": {
-  "file": "islander-storyboard.png",
-  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 20.webp)",
+  "file": "patterns__islander__storyboard.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
   "licence": "generated for this project by its owner",
-  "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one canoe prow to prow (x 288..980, 692 px, the start column with the best seam) by one pair of registers (593 px) before processing, so the sheet repeats on its own period. the bird-and-fish register has no exact period at 692 px: one bird is cut at the seam.",
-  "original_file": "20.webp",
-  "original_sha1": "9666f21cf4f1053e501d92b1b71baba3ed178f59",
-  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Palauan bai storyboard, a carved and painted gable relief in two registers between black and white toothed bands: in the upper register a red canoe with five black paddlers under a white full moon, in the lower one red and white fish and black frigate birds in flight, outlined black (#1e1a18) on an ochre (#c8922e) ground, the relief shallow and hand-cut. The pattern repeats horizontally. Full colour.",
-  "reuse": "the Palauan-style gable relief and bands (patStory)",
-  "sha1": "b6f1a1ece15689bf7882442f9c55f383dd1f33ae"
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `patterns/islander/storyboard` (the redo) (delivered as \"Polynesian Canoe and Sea Life Mural.png\")",
+  "reuse": "kits/islanders `patStory`",
+  "sha1": "c6c4d16ab2037b1a77412222d1dd5adb6891fcf4"
  }
 }
