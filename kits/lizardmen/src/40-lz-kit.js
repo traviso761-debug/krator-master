@@ -44,7 +44,9 @@ function lzRibRoof(L,Wd,eaveY,ridgeY,n,o){o=o||{};const ov=o.over===undefined?.5
   /* continuous UVs (x along, the arc up): the per-column arc-length UVs alias into stripes at a distance */
   const La=Math.hypot(hz,ridgeY-eaveY)*1.15,uvf=(u,v)=>[(L+2*ex)*u,v*La];
   psurf(mk,f,o.nu||8,o.nv||7,col,{flip:s<0,uvf});psurf(mk,inner,o.nu||8,o.nv||7,o.underCol||col,{flip:s>0,uvf});}
- if(o.ends!==false)for(const s of [-1,1]){const pts=[];for(let k=0;k<=12;k++){const p=sec(1,k/12);pts.push([s*(L/2+ex),p[1],p[2]]);}for(let k=12;k>=0;k--){const p=sec(-1,k/12);pts.push([s*(L/2+ex),p[1],p[2]]);}
+ /* the end gables stand on the walls' ends (just clear of a wall leaning out), not out at the overhang */
+ const gx=L/2+ex*.6;
+ if(o.ends!==false)for(const s of [-1,1]){const pts=[];for(let k=0;k<=12;k++){const p=sec(1,k/12);pts.push([s*gx,p[1],p[2]]);}for(let k=12;k>=0;k--){const p=sec(-1,k/12);pts.push([s*gx,p[1],p[2]]);}
   poly(o.endMk||'mat',pts,o.endCol||P('reedL'),true);}
  const xs=lzSpan(-L/2,L/2,n);for(const x of xs)W(0,eaveY,0,0,()=>lzArchRib(x,-hz*1.06,hz*1.06,ridgeY-eaveY+.08,{r:o.ribR||.16,mk:o.ribMk||'bones',past:o.past===undefined?.2:o.past,col:o.ribCol}));
  /* a ridge pole along the crossing, lashed */
