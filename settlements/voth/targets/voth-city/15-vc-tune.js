@@ -170,10 +170,11 @@ var TUNE = {
                   lattice it slides on (`grid` m) and the sizes it may shrink to (`shrink`), the railing's line in from the deck's
                   edge (`edge`) and its gap on each axis (`railGap`); a garden over `deckGarden` of the sheet's square is the High
                   Garden; the pavilions' plinth, columns and entablature, the gnomon, quadrant wall, beacon and kiosk heights, the
-                  grove's lattice and its tubs and cypresses, the beds and the railing; the colours */
+                  grove's lattice, its tubs and the swbay tree in them (`groveTree`, `groveH` m), the beds (a plant every `bedEvery` m in two rows)
+                  and the railing; the colours */
                summit: { clear: 1.5, grid: 3, shrink: [1, 0.75, 0.55], edge: 3, railGap: 8, deckGarden: 0.5, plinth: 0.6, colR: 0.45, colH: 5.6, colEvery: 4.5, entab: 0.9,
-                         gnomon: 12, quadrant: 5, beacon: 9, kiosk: 3.6, grove: 8, tub: 1.6, cypress: 6.5, bed: 2.6, bedLen: 6, railH: 1.1, postEvery: 3,
-                         colours: { gilt: 0xd0a53c, porphyry: 0x5e2430, water: 0x2f5568, iron: 0x2a2622, fire: 0xff9a3c, leaf: 0x3d5a2a, cypress: 0x2c4424,
+                         gnomon: 12, quadrant: 5, beacon: 9, kiosk: 3.6, grove: 8, tub: 1.6, groveTree: 'dragon', groveH: [4.5, 6.5], bed: 2.6, bedLen: 6, bedEvery: 1.4, railH: 1.1, postEvery: 3,
+                         colours: { gilt: 0xd0a53c, porphyry: 0x5e2430, water: 0x2f5568, iron: 0x2a2622, fire: 0xff9a3c,
                                     soil: 0x5a4632, cloth: 0x5a2a5e, timber: 0x3a2a1e, roof: 0x7a3a2a, door: 0x1c1814 } },
                blueprintDoor: [1.4, 2.4], blueprintWealth: [0.2, 0.4, 0.6, 0.85, 1.0], blueprintPlacer: 2,
                dress: { court: 0.7, max: 600, wallEvery: 2.4, alongGap: 0.7, doorClear: 2.2, centreMargin: 2.8, groupEvery: 7, rugEvery: 6,

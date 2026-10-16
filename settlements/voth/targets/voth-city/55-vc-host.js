@@ -293,10 +293,11 @@ VC.floraPlace = function () {
     if (f.tree) { if (SWBAY.treeAt(f.tree, f.x, f.y, f.z, { H: f.H, wet: 0.85 })) n.trees++; }
     else if (SWBAY.plantAt(f.plant, f.x, f.y, f.z, {})) n.plants++;
   });
-  /* the big parks' avenues, groves and gardens (39-vc-furnish.js VC.parkFlora) */
-  (VC.parkFlora || []).concat(VC.hohFlora || []).forEach(function (f) {
-    var y = f.y == null ? baseH(f.x, f.z) : f.y, gr = function (x, z) { return baseH(x, z); };
-    if (f.tree) { var H = P.H[f.tree] || [6, 10]; if (SWBAY.treeAt(f.tree, f.x, y, f.z, { H: H[0] + (H[1] - H[0]) * f.u, wet: 0.7, ground: gr })) n.trees++; }
+  /* the big parks' avenues, groves and gardens (39-vc-furnish.js VC.parkFlora); the Palace summit's grove and beds (40d
+     VC.summitFlora: `flat`, standing on their own y, the tub or the bed, not the ground under the canton) */
+  (VC.parkFlora || []).concat(VC.hohFlora || [], VC.summitFlora || []).forEach(function (f) {
+    var y = f.y == null ? baseH(f.x, f.z) : f.y, gr = f.flat ? undefined : function (x, z) { return baseH(x, z); };
+    if (f.tree) { var H = f.H || P.H[f.tree] || [6, 10]; if (SWBAY.treeAt(f.tree, f.x, y, f.z, { H: H[0] + (H[1] - H[0]) * f.u, wet: 0.7, ground: gr })) n.trees++; }
     else if (SWBAY.plantAt(f.plant, f.x, y, f.z, { ground: gr })) n.plants++;
   });
   if (!AF || !A) return n;

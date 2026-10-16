@@ -232,11 +232,17 @@ VC.bpFinish = function (P, M, allSt) {
    - the beacon: a square tower with an iron fire basin on it;
    - a store, a guard kiosk: small closed houses, a door toward the deck's middle;
    - a garden: one the size of the deck (the High Garden) is planting beds inside a gilt railing round the deck's edge,
-     open on the four axes; a smaller one (the Grove of the Ancestors) cypresses in porphyry tubs on a grid.
+     open on the four axes; a smaller one (the Grove of the Ancestors) trees in porphyry tubs on a grid. The planting is
+     the swbay kit's own (owner, 2026-10-16: "use actual swbay plants or if making new ones, wire them into the swbay
+     kit"): the grove's trees (`groveTree`, the kit has no cypress) and the beds' plants (TUNE.flora.placed.garden, the
+     parks' mix) are records, VC.summitFlora, that 55 VC.floraPlace plants with SWBAY.treeAt and plantAt, flat on the tub
+     or the bed.
    Not laid: the lantern (the captured dome is the throne room's) and the stairs' heads (the core's stair house is the
    summit's stair; the Stair of the Sun and the Astronomers' Stair end under the deck). No stream is drawn. */
 VC.bpSummit = function () {
-  var Z = TUNE.interiors.summit, B = VOTH;
+  var Z = TUNE.interiors.summit, B = VOTH, GM = TUNE.flora.placed.garden, gmT = 0;
+  for (var gk in GM) gmT += GM[gk];
+  VC.summitFlora = [];
   return VC.capture('summit', 2, function () {
     var n = 0;
     Object.keys(VC.INT.cantons).forEach(function (cn) {
@@ -335,7 +341,8 @@ VC.bpSummit = function () {
           var g = inset(o, 3), nx = Math.max(1, Math.floor((g.x1 - g.x0) / Z.grove)), nz = Math.max(1, Math.floor((g.z1 - g.z0) / Z.grove));
           for (var ix = 0; ix <= nx; ix++) for (var iz = 0; iz <= nz; iz++) {
             var tx = g.x0 + (g.x1 - g.x0) * ix / nx, tz = g.z0 + (g.z1 - g.z0) * iz / nz, tb = at(tx, tz, Z.tub / 2);
-            box(tb, y, 1, K.porphyry); B.FR3(tx, y + 1, tz, 1.5, Z.cypress, 1.5, 0, K.cypress, 'leaf'); block(tb, y + 1 + Z.cypress);
+            box(tb, y, 1, K.porphyry); block(tb, y + 1 + Z.groveH[1]);
+            VC.summitFlora.push({ tree: Z.groveTree, x: tx, y: y + 1, z: tz, u: KRAND.unit(KRAND.hash(7611, Math.round(tx * 10), Math.round(tz * 10))), H: Z.groveH, flat: true });
           }
         }
       });
@@ -363,7 +370,12 @@ VC.bpSummit = function () {
             var p0 = along(t2, 1), p1 = along(t2 + Z.bedLen, 1 + Z.bed), bo = { x0: Math.min(p0[0], p1[0]), x1: Math.max(p0[0], p1[0]), z0: Math.min(p0[1], p1[1]), z1: Math.max(p0[1], p1[1]) };
             if (hit(bo, 1.5)) continue;
             box(bo, y, 0.45, K.soil, 'soil'); S.blocks.push([bo.x0, bo.x1, bo.z0, bo.z1, y + 0.05, y + 0.45]);
-            [0.25, 0.75].forEach(function (f) { var q2 = along(t2 + Z.bedLen * f, 1 + Z.bed / 2); B.BLOB(q2[0], y + 0.45, q2[1], 0.9, 1.4, 0, K.leaf, 'leaf'); });
+            /* its plants: the parks' garden mix, a KRAND hash of the spot choosing each */
+            for (var pa = Z.bedEvery / 2; pa < Z.bedLen; pa += Z.bedEvery) [0.3, 0.7].forEach(function (f) {
+              var q2 = along(t2 + pa, 1 + Z.bed * f), v = KRAND.unit(KRAND.hash(7612, Math.round(q2[0] * 10), Math.round(q2[1] * 10))), acc = 0, kind = null;
+              for (var pk in GM) { acc += GM[pk] / gmT; if (kind == null && v < acc) kind = pk; }
+              VC.summitFlora.push({ plant: kind || Object.keys(GM)[0], x: q2[0], y: y + 0.45, z: q2[1], flat: true });
+            });
           }
         });
       }

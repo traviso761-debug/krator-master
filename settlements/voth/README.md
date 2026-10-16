@@ -532,8 +532,10 @@ bridge's face:
   (gilt columns, a gilt dome, a gilt seat on a porphyry dais facing the sunrise), the Kiosk of the Evening (a hipped roof,
   divans), the Solar Altar (three steps, a porphyry altar, a gilt sun, four braziers), the astronomers' instruments (a
   gnomon, a gilt meridian line, a quadrant wall, sighting stones), the Pool of the Sky, the beacon (a tower and its fire
-  basin), the gardeners' store, the guard kiosk, the Grove of the Ancestors (cypresses in porphyry tubs) and the High
-  Garden (beds inside a gilt railing round the deck, open on the four axes). Not laid: the lantern (the crown's dome is
+  basin), the gardeners' store, the guard kiosk, the Grove of the Ancestors (swbay dragon trees in porphyry tubs) and the
+  High Garden (beds of the parks' swbay garden plants inside a gilt railing round the deck, open on the four axes). The
+  planting is the swbay kit's own (owner, 2026-10-16): records (`VC.summitFlora`) the host plants with `SWBAY.treeAt` and
+  `plantAt` (55 `VC.floraPlace`); a new plant goes into `biomes/swbay`, not onto the page. Not laid: the lantern (the crown's dome is
   there) and the stairs' heads (the core's stair house is the summit's stair). The deck's walker is kept out of each
   footprint (`P.summit.blocks`).
 * **The kitchens** (owner: "it's also not clear where the kitchens are"): the Palace's great kitchen opens off the banquet
