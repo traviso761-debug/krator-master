@@ -22,7 +22,7 @@ Only Godot connects through an MCP server. Blender runs headless from the shell,
 - Text-to-3D preview (about 20 credits), refine (10), auto-rig (5), animation library (3 per clip on a rigged model).
 - Save task ids beside the output so a rerun resumes instead of paying again.
 - The key: in a file outside the repo, named by `MESHY_API_KEY_FILE` (or `MESHY_API_KEY`); never printed, never
-  committed. Check `git diff --cached | grep -c "msy_"` is 0 before each commit.
+  committed. Check `git diff --cached | grep -cE "ms[y]_[A-Za-z0-9]{8,}"` is 0 before each commit.
 - Cloud sessions: the network policy must allow `api.meshy.ai`.
 
 ## Godot 4.5

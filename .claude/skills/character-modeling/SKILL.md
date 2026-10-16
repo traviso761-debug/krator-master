@@ -85,6 +85,6 @@ The user judges by looking; you judge by numbers. Bridge it:
 
 ## Secrets
 
-API keys (Meshy's start `msy_`) go in a file outside the repo, read through an environment variable naming the file;
-scripts never print or write them. Before every commit run `git diff --cached | grep -c "msy_"` and expect 0. If the
+API keys (Meshy's start with "msy" and an underscore) go in a file outside the repo, read through an environment variable naming the file;
+scripts never print or write them. Before every commit run `git diff --cached | grep -cE "ms[y]_[A-Za-z0-9]{8,}"` and expect 0. If the
 user pastes a key into chat, move it into that file and never repeat it in commits, docs or summaries.

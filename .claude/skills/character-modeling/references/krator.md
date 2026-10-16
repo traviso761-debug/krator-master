@@ -50,7 +50,7 @@ before any figure is built, add it to `sync_core.py`'s list, and load it in `kch
 1. Both verify runs, the golden, the Godot test.
 2. `python3 tools/audit_port.py kits/characters` and `python3 tools/make_index.py` (repo root); then
    `git checkout settlements/` (those tools touch unrelated files).
-3. `git diff --cached | grep -c "msy_"` must print 0.
+3. `git diff --cached | grep -cE "ms[y]_[A-Za-z0-9]{8,}"` must print 0.
 4. No uncommitted changes left at the end of a turn: restore stale generated outputs with `git checkout` rather
    than committing them.
 
