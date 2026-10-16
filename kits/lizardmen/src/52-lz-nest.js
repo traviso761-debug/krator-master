@@ -29,7 +29,7 @@ defBuilding({key:'lz-nest',name:'Nest hall and hospice',seed:7101,caste:'all',cu
     lnDome(p[0],p[1],p[2],{n:i%2?5:7,a0:i*.9,doors});
    /* the swelling that joins each chamber to the next (and the last to the centre) */
    /* the passage to the next chamber (and from the last to the centre): a tunnel the door's size */
-   const q=i<pts.length-1?pts[i+1]:[0,0,4.8];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);lzPassage([p[0],p[1]],[q[0],q[1]],dh,dh*.62,'earth',P('spore'));}
+   const q=i<pts.length-1?pts[i+1]:[0,0,4.8];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);lzPassage(p,q,dh,dh*.62,'earth',P('spore'));}
    /* the mouth: the outermost chamber's portal, facing away from the centre */
    const m=pts[0],ang=Math.atan2(m[0],m[1]),dh=lzDoorH(6),dw=dh*.62,mx=m[0]+Math.sin(ang)*m[2]*.9,mz=m[1]+Math.cos(ang)*m[2]*.9;
    lzNoCut(()=>{W(mx,0,mz,ang,()=>{lzPortal(0,0,.1,0,dh,{mk:'bronze',eye:sg>0});box('basalt',0,0,.5,dw+.6,.16,.7,P('basaltD'));});});}

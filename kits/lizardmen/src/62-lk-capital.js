@@ -67,7 +67,7 @@ defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true
   dome(0,0,4.6,{n:9,big:true,doors:[{dh:dhP,ry:face([0,0],A[A.length-1])},{dh:dhP,ry:face([0,0],B[B.length-1])}]});
   for(const [pts,sg] of [[A,1],[B,-1]]){for(let i=0;i<pts.length;i++){const p=pts[i],mouth=i===0,next=i<pts.length-1?pts[i+1]:[0,0];
     const doors=[{dh:dhP,ry:face(p,next)}];if(mouth)doors.push({dh:dhP,ry:Math.atan2(p[0],p[1])});else doors.push({dh:dhP,ry:face(p,pts[i-1])});dome(p[0],p[1],p[2],{n:i%2?5:7,a0:i*.9,doors});
-    const q=i<pts.length-1?pts[i+1]:[0,0,4.6];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);W(0,.2,0,0,()=>lzPassage([p[0],p[1]],[q[0],q[1]],dh,dh*.62,LK_ST,P('basalt')));}
+    const q=i<pts.length-1?pts[i+1]:[0,0,4.6];const dh=Math.min(dhP,Math.min(p[2],q[2])*1.1*.8);W(0,.2,0,0,()=>lzPassage(p,q,dh,dh*.62,LK_ST,P('basalt')));}
    const m=pts[0],ang=Math.atan2(m[0],m[1]),dh=lzDoorH(6),dw=dh*.62,mx=m[0]+Math.sin(ang)*m[2]*.9,mz=m[1]+Math.cos(ang)*m[2]*.9;
    lzNoCut(()=>{W(mx,.2,mz,ang,()=>{lzPortal(0,0,.1,0,dh,{mk:'bronze',eye:sg>0});box('basalt',0,0,.5,dw+.6,.16,.7,P('basaltD'));});});}
   for(let i=1;i<A.length;i++){const p=A[i];FURNISH('lizardmen_court_bed',p[0]*.98,.2,p[1]*.98,Math.atan2(-p[0],-p[1]));}

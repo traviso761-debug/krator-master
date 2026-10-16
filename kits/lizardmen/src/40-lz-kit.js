@@ -106,7 +106,9 @@ function lzDome(x,z,prof,o){o=o||{};const mk=o.mk||'earth',col=o.col||P('earth')
    for(const kk of [-1,1])psurf(mk,(u,v)=>{const a=PI/2+kk*aw*(1-u),y=dh*u,rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y,Math.sin(a)*rr0];},4,2,col,{flip:kk>0});
    door(0,0,r0*.94,0,d.dw);});});}
 /* a passage between two domed cells: a short tube of mk from p to q ([x, z]), dh high and dw wide, open at both ends */
-function lzPassage(p,q,dh,dw,mk,col){const y0=dh*.5;tube(mk,t=>[lerp(p[0],q[0],t),y0,lerp(p[1],q[1],t)],t=>[dw*.62,dh*.52],2,10,col,{});}
+function lzPassage(p,q,dh,dw,mk,col){/* p, q: [x, z, r] with r each dome's foot radius: the tube runs wall to wall, a little into each, never through a dome */
+ const dx=q[0]-p[0],dz=q[1]-p[1],L=Math.hypot(dx,dz)||1,ux=dx/L,uz=dz/L,a=[p[0]+ux*p[2]*.8,p[1]+uz*p[2]*.8],b=[q[0]-ux*q[2]*.8,q[1]-uz*q[2]*.8];
+ if(Math.hypot(b[0]-a[0],b[1]-a[1])<.2)return;const y0=dh*.5;tube(mk,t=>[lerp(a[0],b[0],t),y0,lerp(a[1],b[1],t)],t=>[dw*.62,dh*.52],2,10,col,{});}
 /* ---------------------------------------------------------------- walls that lean wrong */
 /* one wall face from bottom edge B0->B1 ([x,z]) to top edge T0->T1 at height y0..y0+h (a battered face when T differs from B),
    facing out to the left of B0->B1 seen from above with +y up... (front: B0 west, B1 east). opens: [{s, w, h, door}] with s
