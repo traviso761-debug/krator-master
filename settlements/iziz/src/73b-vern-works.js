@@ -35,8 +35,10 @@ function vwkFungi(x,y,z,n,sp){for(let i=0;i<n;i++)kput('vGourd',[x+rr(-sp,sp),y+
 // an earth bank against a wall: a sloping slab from the wall foot out `run`, `h` high at the wall, lumps along its crest and toe
 function vwkBerm(x,z,L,ry,h,run,c){const a=Math.atan2(h,run),S=Math.hypot(h,run)+.3,p=loc(x,z,0,run/2,ry);
  kput('vClayB',[p[0],h/2-.14,p[1]],vQ(ry,a,0),[L,.34,S],c);
- const n=Math.max(2,Math.round(L/1.3));for(let i=0;i<n;i++){const u=-L/2+(i+.5)*L/n;
-  for(const [o,yy,s] of[[.25,h-.05,.42],[run*.55,h*.45,.5],[run,.02,.42]]){const q=loc(x,z,u+rr(-.3,.3),o,ry);kput('vRock',[q[0],yy,q[1]],qEuler(0,rr(0,3),0),[s*rr(1,1.8),s*rr(.4,.7),s*rr(.8,1.2)],c.clone().multiplyScalar(rr(.82,1.12)));}}}
+ const n=Math.max(1,Math.round(L/2.4));for(let i=0;i<n;i++){const u=-L/2+(i+.5)*L/n+rr(-.5,.5);
+  {const q=loc(x,z,u,.35,ry);kput('vRock',[q[0],h-.12,q[1]],qEuler(0,ry+rr(-.3,.3),0),[rr(1.0,1.5),.16,.5],c.clone().multiplyScalar(rr(.85,1.1)));}   // the crest, rounded over
+  if(rng()<.5){const q=loc(x,z,u+rr(-.4,.4),run*rr(.3,.8),ry);kput('rubble',[q[0],h*.3,q[1]],qEuler(rr(0,3),rr(0,3),rr(0,3)),[rr(.2,.35),rr(.15,.25),rr(.2,.35)],vC(0x8a7a68));}}   // a stone in the bank
+ {const q=loc(x,z,0,run+.05,ry);kput('vRock',[q[0],0,q[1]],qEuler(0,ry,0),[L/2+.2,.12,.45],c.clone().multiplyScalar(.9));}}   // the toe
 
 // a crag of rough rock: a jumbled core of rubble blocks, w x h x d about (x, z), stepping down to the front (+z) and the ends,
 // with boulders at its foot; `keep` = [[x, half-width]] gaps left clear along the front face (an adit, a shaft)
@@ -119,7 +121,7 @@ function buildVernQuarry(G,o){reseed(8411+(o.v|0));const wood=vC(vPick(VPAL.wood
  const LX=8.5,LZ=6,LW=8,LD=5.5,LY=.35,LH=3.0;
  vnReg('Quarry and mason\'s lodge (middle)',0,0,14,10);
  // the uncut flanks either side of the cut, with overburden on their brows
- for(const s of[-1,1]){kput('vBatterS',[s*10.5,0,-7.5],null,[7,8.2,9],st);
+ for(const s of[-1,1]){vwkCrag(s*10.5,-7.5,7.4,8.2,9,st,[]);
   for(let k=0;k<4;k++)kput('vRock',[s*rr(8.6,12),rr(7.3,7.8),-7.5+rr(-2.6,2.6)],qEuler(0,rr(0,3),0),[rr(1.2,1.8),rr(.6,1.1),rr(1.2,1.7)],(k%2?soil:st2).clone().multiplyScalar(rr(.85,1.1)));
   for(let k=0;k<3;k++)kput('vRock',[s*rr(7.6,13),.1,rr(-3.3,-2.6)],qEuler(rr(0,3),rr(0,3),0),[rr(.4,.8),rr(.3,.5),rr(.4,.7)],st2);}
  // the cut: three benches stepping back, each face with bedding lines and drill grooves, part-cut blocks on the benches
@@ -175,7 +177,7 @@ function buildVernQuarry(G,o){reseed(8411+(o.v|0));const wood=vC(vPick(VPAL.wood
 
 // ---------------------------------------------------------------- watermill: mill house on a stone plinth, overshot wheel on its +x side fed by a flume off the hill, sack hoist, grain bins
 function buildVernMill(G,o){reseed(8421+(o.v|0));const wood=vC(vPick(VPAL.woodMid)),dark=wood.clone().multiplyScalar(.72),pl=vC(vPick(VPAL.sand)),trim=vC(vPick(VPAL.trim)),th=vC(vPick(VPAL.thatch));
- const stn=vC(vPick(VPAL.stoneDark)),stl=vC(vPick(VPAL.stone)),water=vC(0x3a5a48),rope=vC(0xb8a47c),iron=vC(0x2e2a26);
+ const stn=vC(vPick(VPAL.stoneDark)),stl=vC(vPick(VPAL.stone)),water=vC(0xa8c8b8),rope=vC(0xb8a47c),iron=vC(0x2e2a26);
  const BX=-2.5,W=9,D=8,Y0=1.2,H1=3.2,H2=2.7,Y2=Y0+H1+.3;
  const WX=3.35,WY=3.1,WR=2.8;                                                                      // the wheel: x of its centre plane, axle height, radius
  vnReg('Watermill (middle)',0,0,11,12);
@@ -236,7 +238,7 @@ function buildVernMill(G,o){reseed(8421+(o.v|0));const wood=vC(vPick(VPAL.woodMi
 
 // ---------------------------------------------------------------- fungus house: a long windowless shed banked with earth under heavy thatch, vents on the ridge, inoculated logs and racks
 function buildVernFungusShed(G,o){reseed(8431+(o.v|0));const wood=vC(vPick(VPAL.woodPoor)).multiplyScalar(.82),th=vC(vPick(VPAL.thatch)).multiplyScalar(.85),earth=vC(vPick([0x5e4632,0x6a5038,0x544030]));
- const bark=vC(vPick([0x6a5a48,0x5a4c3e,0x7a6650])),rust=vC(0x7a4a32),water=vC(0x3a4a40);
+ const bark=vC(vPick([0x6a5a48,0x5a4c3e,0x7a6650])),rust=vC(0x7a4a32),water=vC(0xa0b8a8);
  const W=13,D=6,FY=.1,H=2.3,Z=-1.5,BH=1.25,BR=1.7;
  vnReg('Fungus house (poor)',0,0,11,5.6);
  // the long dark shed, its walls banked with earth to the eaves on every side but the entrance cutting on -x

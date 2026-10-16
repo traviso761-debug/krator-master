@@ -44,20 +44,21 @@ function buildVernWeaver(G,o){reseed(8201+(o.v|0));const W=10,D=7.6,H1=3.7,H2=2.
  const top=vnCornice('vWood',0,Y0+H1+.3+H2,ZH,W,D,0,wood,2);
  vnGableRoof(0,top,ZH,W,D,2.4,0,'vGableC',null,1.1,'vGablePl',pl,.16);
  // the weaving room: the street door and tall shuttered openings for the light, on the front and both sides
- vnDoor(-3.6,Y0,zf,0,1.2,2.4,'vWood',trim,vC(0x6a4a30));
- for(const x of[-1.3,1.2,3.7])vnWin(x,Y0+.6,zf,0,1.25,2.5,'open','vWood',trim,true);
- vnWin(-W/2,Y0+.6,ZH+1.5,-Math.PI/2,1.2,2.5,'open','vWood',trim,true);vnWin(-W/2,Y0+.9,ZH-1.7,-Math.PI/2,1.0,1.6,'open','vWood',trim,true);   // (the +x wall carries the stair inside)
+ vnDoor(-.4,Y0,zf,0,1.2,2.4,'vWood',trim,vC(0x6a4a30));
+ for(const x of[-3.3,-1.95,1.7,3.65])vnWin(x,Y0+.6,zf,0,1.05,2.5,'open','vWood',trim,true);
+ vnWin(W/2,Y0+.6,ZH+1.5,Math.PI/2,1.2,2.5,'open','vWood',trim,true);vnWin(W/2,Y0+.9,ZH-1.7,Math.PI/2,1.0,1.6,'open','vWood',trim,true);   // (the -x wall carries the stair inside)
+ vnPatch(-W/2,Y0,ZH,-Math.PI/2,D,H1,2);
  // the dye room's back door onto the yard, a shuttered window by it
- vnDoor(1.1,Y0,zb,Math.PI,1.0,2.2,'vWood',wood,vC(0x5a3a24));vnWin(3.3,Y0+1.1,zb,Math.PI,1.1,1.3,'open','vWood',wood,true);vnWin(-2.6,Y0+1.1,zb,Math.PI,1.1,1.3,'open','vWood',wood,true);
+ vnDoor(3.0,Y0,zb,Math.PI,1.0,2.2,'vWood',wood,vC(0x5a3a24));vnWin(1.0,Y0+1.1,zb,Math.PI,1.1,1.3,'open','vWood',wood,true);vnWin(-2.6,Y0+1.1,zb,Math.PI,1.1,1.3,'open','vWood',wood,true);
  // the family above: deco shutter strips and windows
  for(const x of[-3.4,3.4])vnWin(x,Y0+H1+1.0,zf,0,1.0,1.3,'open','vWood',trim,true);
  for(const x of[-1.2,1.2])vnStrip(x,Y0+H1+.7,zf,0,.7,2.0,'vWood',trim);
  for(const s of[-1,1])vnWin(s*W/2,Y0+H1+1.0,ZH,s*Math.PI/2,1.0,1.2,'open','vWood',wood,true);
  for(const x of[-2.6,2.6])vnWin(x,Y0+H1+1.0,zb,Math.PI,1.0,1.2,x<0?'shut':'open','vWood',wood,x>0);
  // the street front: an awning over the openings, a sign, a cloth-length banner, a bench with folded bolts for sale
- vnAwning(1.2,Y0+2.95,zf,0,7.2,1.4,vC(vPick(VPAL.awning)));vnSign(-4.6,Y0+3.2,zf,0,vC(0x2f8f8a));
+ vnAwning(.2,Y0+2.95,zf,0,8.8,1.4,vC(vPick(VPAL.awning)));vnSign(-4.6,Y0+3.2,zf,0,vC(0x2f8f8a));
  vnBannerPole(-W/2-.7,0,zf+.6,0,6.2,vC(0x2f3a7a));
- vB('vWood',-1.3,0,zf+.75,1.6,.5,.45,0,wood);for(let k=0;k<4;k++)vB('vTarpB',-1.85+k*.38,.5,zf+.75,.34,.08+.04*(k%2),.36,rr(-.1,.1),vC(VCL_DYE[k*2%VCL_DYE.length]));
+ vB('vWood',-2.7,0,zf+.75,1.6,.5,.45,0,wood);for(let k=0;k<4;k++)vB('vTarpB',-3.25+k*.38,.5,zf+.75,.34,.08+.04*(k%2),.36,rr(-.1,.1),vC(VCL_DYE[k*2%VCL_DYE.length]));
  vnPaving(0,.02,zf+1.7,W,2.2,0,vC(vPick(VPAL.stoneDark)),10);vnPlanter(4.2,0,zf+1.6,1.2,.55,0,wood);
  // a rack of finished lengths on the +x side, where the street sees them
  {const rx=W/2+1.3;for(const z of[ZH-2.6,ZH+2.4])vPst('vPost',rx,0,z,.07,2.6,wood);vBeam([rx,2.55,ZH-2.8],[rx,2.55,ZH+2.6],.05,wood);
@@ -68,9 +69,9 @@ function buildVernWeaver(G,o){reseed(8201+(o.v|0));const W=10,D=7.6,H1=3.7,H2=2.
   vB('vStone',-1.3,0,lz,4.2,.55,1.2,0,vC(0x8a7a6a));                                            // the hearth bench
   for(let k=0;k<3;k++){vB('vDarkB',-2.6+k*1.3,.08,lz+.62,.4,.32,.06,0);vBall('vEmber',-2.6+k*1.3,.2,lz+.58,.1);vclVat(-2.6+k*1.3,.55,lz,.5,.75,[0xe07a2a,0x2f8f8a,0x2f3a7a][k]);}
   vnChimney(-3.3,.55,lz-.45,3.0,.16,true);
-  vB('vWood',3.0,0,lz+.2,1.8,.55,.8,0,wood);vB('vPanelB',3.0,.5,lz+.2,1.6,.06,.6,0,vC(0x5a7a8a));   // the rinse trough
-  for(let k=0;k<5;k++)vPst('vPostB',3.9+rr(-.1,.1),.05+k*.2,lz-1.0,.09,1.0,vC(0x6a4a30),qEuler(0,0,Math.PI/2));   // firewood under the eave
-  vnSacks(-3.9,0,lz+.2,3);}
+  vB('vWood',5.2,0,lz-1.0,.8,.55,1.8,0,wood);vB('vPanelB',5.2,.5,lz-1.0,.6,.06,1.6,0,vC(0x5a7a8a));   // the rinse trough
+  for(let k=0;k<5;k++)vPst('vPostB',-3.6+rr(-.1,.1),.05+k*.2,lz-1.9,.09,1.0,vC(0x6a4a30),qEuler(0,0,Math.PI/2));   // firewood under the eave
+  vnSacks(4.6,0,zb-.7,3);}
  for(let k=0;k<4;k++)vclVat(-3.6+k*2.1,0,zb-4.2,.62,.7,VCL_DYE[[0,2,4,6][k]]);
  // the drying poles: two long rails on forked posts across the back of the plot, lengths of every colour
  for(const pz of[zb-5.7,zb-7.0]){for(const x of[-6.4,0,6.4])vPst('vPost',x,0,pz,.08,2.75,wood);

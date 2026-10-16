@@ -194,6 +194,10 @@ function buildVernSalvageYard(G,o){reseed(8331+(o.v|0));const W=29,D=23,WH=2.6;c
    for(const y of[.2,2.0])vBeam([hx,y,D/2],[hx-sx*Math.cos(Math.abs(a))*L,y,D/2-Math.sin(Math.abs(a))*L],.05,null,'vPipeR');}
   // scrap leaning on the street face of the wall
   for(let k=0;k<5;k++){const x=rr(4,W/2-2)*(k%2?1:-1);kput(rng()<.5?'vPanelB':'vRustB',[x,.7,D/2+.35],qEuler(-.3,rr(-.2,.2),0),[rr(1,1.8),rr(1,1.5),.06],null);}
+  // and on the back and the sides: sheets waiting for the cutter, raking props where the wall leans
+  for(let k=0;k<7;k++){const x=rr(-W/2+1.5,W/2-1.5);kput(vPick(['vPanelB','vRustB','vCorr']),[x,.75,-D/2-.4],qEuler(.32,rr(-.2,.2),0),[rr(1,2.2),rr(1.1,1.6),.06],null);}
+  for(const s of[-1,1])for(let k=0;k<3;k++){const z=rr(-D/2+2,D/2-2);kput(vPick(['vPanelB','vRustB']),[s*(W/2+.4),.7,z],qEuler(0,Math.PI/2,s*.3),[rr(1,2),rr(1,1.5),.06],null);}
+  for(const x of[-8,0,8])vBeam([x,0,-D/2-1.1],[x,WH-.3,-D/2-.05],.09,null,'vPipeR');
   for(const sx of[-1,1]){vPst('vPipeR',sx*G2/2,0,D/2,.16,4.6,null);}vB('vIron',0,4.4,D/2,G2+.5,.18,.18,0,iron);
   vcrPanel(0,3.15,D/2,0,3.2,1.0);vB('vRustB',0,3.0,D/2+.04,3.4,.1,.04,0);}
  // the closed workshop at the back left: corrugate walls on a pad, a wide door, a gable roof of rusted sheet
@@ -246,4 +250,4 @@ function buildVernSalvageYard(G,o){reseed(8331+(o.v|0));const W=29,D=23,WH=2.6;c
 VERN.def({key:'vern_apothecary',name:'Apothecary',family:'trade',tags:{type:['market/shop','single-family dwelling'],wealth:'middle',lit:false,role:'apothecary',job:'alchemy'},w:17,d:14,h:13,build:buildVernApothecary});
 VERN.def({key:'vern_tinker',name:'Tinker and relic-wright',family:'trade',tags:{type:['market/shop','industry','single-family dwelling'],wealth:'poor',lit:false,role:'tinker',job:'carpentry'},w:18,d:14,h:10,build:buildVernTinker});
 VERN.def({key:'vern_glassworks',name:'Glassworks',family:'industry',tags:{type:['industry','market/shop'],wealth:'middle',lit:false,role:'glassblower',job:'lampmaking'},w:20,d:14,h:15,build:buildVernGlassworks});
-VERN.def({key:'vern_salvage_yard',name:'Salvage breaker\'s yard',family:'industry',tags:{type:['industry'],wealth:'poor',lit:false,role:'salvage breaker',job:'smithing'},w:30,d:24,h:11,build:buildVernSalvageYard});
+VERN.def({key:'vern_salvage_yard',name:'Salvage breaker\'s yard',family:'industry',tags:{type:['industry'],wealth:'poor',lit:false,role:'salvage breaker',job:'smithing'},w:30,d:26,h:11,build:buildVernSalvageYard});

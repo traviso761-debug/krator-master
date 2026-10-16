@@ -287,13 +287,13 @@
         doors: [{ at: [4.0, 0.4], w: 0.95 }], program: ['store'] }],
     note: 'the meat shop sells over the counter in its wide hatch under the deep eave (the hooks and the block are outside); the ' +
       'butcher\'s cottage behind across the passage; the smokehouse is a store, its meat racks hung above 3 m, seen through the slats' });
-  add({ key: 'vern_brewery', name: 'Brewery', wealth: MID, types: ['industry', 'tavern/inn'], lot: [21, 16],
+  add({ key: 'vern_brewery', name: 'Brewery', wealth: MID, types: ['industry', 'tavern/inn'], lot: [21, 17],
     bodies: [{ id: 'brewhouse', poly: rect(15, 8, -0.8, 0), y: 0.4, levels: [{ h: 4.2 }], wall: 0.3, roof: 'gable', pitch: pt(3.0 / 4),
       doors: [{ at: [-4.55, 4], w: 1.1 }, { at: [0.45, 4], w: 1.7 }, { at: [5.45, -4], w: 1.0 }, { at: [6.7, -2.7], w: 1.2 }],
       program: ['izshop_brewery', 'izwork_brewery', 'store'] }],
     note: 'the taproom (-x, behind its veranda), the brewing floor and the store along the long hall; the tun loft and the copper ' +
       'kettle stack over the roof are solid; the barrel yard and the malt racks are outside' });
-  add({ key: 'vern_provisioner', name: 'Provisioner', wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [16, 16],
+  add({ key: 'vern_provisioner', name: 'Provisioner', wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [16, 18],
     bodies: [{ id: 'store', poly: rect(10, 8.4), y: 0.5, levels: [{ h: 3.45 }, { h: 3.0 }], wall: 0.3, roof: 'gable', pitch: pt(3.0 / 5),
       doors: [{ at: [-3.6, 4.2], w: 1.0 }, { at: [2.6, 4.2], w: 1.8 }, { at: [2.6, -4.2], w: 1.0 }],
       program: [['izshop_provisioner', 'store'], ['living', 'bedroom']] }],
@@ -305,7 +305,7 @@
   add({ key: 'vern_weaver', name: "Weaver and dyer's house", wealth: MID, types: ['industry', 'market/shop', 'single-family dwelling'], lot: [15, 19],
     bodies: [{ id: 'house', poly: rect(10, 7.6, 0, 1.6), y: 0.45, levels: [{ h: 3.75 }, { h: 2.9 }], wall: 0.3, roof: 'gable', pitch: pt(2.4 / 3.8),
       stair: { w: 0.9, riser: 0.22, tread: 0.25 },
-      doors: [{ at: [-3.6, 5.4], w: 1.2 }, { at: [1.1, -2.2], w: 1.0 }], program: [['izwork_weaver', 'izwork_dyer'], ['living', 'bedroom']] }],
+      doors: [{ at: [-0.4, 5.4], w: 1.2 }, { at: [3.0, -2.2], w: 1.0 }], program: [['izwork_weaver', 'izwork_dyer'], ['living', 'bedroom']] }],
     note: 'the loom room behind the tall shuttered openings and the dye room with the back door, the family above; the dye ' +
       'lean-to, the vats and the drying poles in the yard behind are open' });
   add({ key: 'vern_tannery', name: 'Tannery', wealth: POOR, types: ['industry'], lot: [21, 16],
@@ -343,7 +343,7 @@
       doors: [{ at: [-6.9, 4.1], w: 1.2 }, { at: [2.4, -1.4], w: 1.3 }], program: ['izshop_glass', 'store', 'izwork_glass'] }],
     note: 'the sales room on the street door, the store, the workroom with its door to the furnace house; the furnace house ' +
       '(+x, the beehive furnace, its stack and the annealing oven) and the cullet bins are open' });
-  add({ key: 'vern_salvage_yard', name: 'Salvage breaker\'s yard', wealth: POOR, types: ['industry'], lot: [30, 24],
+  add({ key: 'vern_salvage_yard', name: 'Salvage breaker\'s yard', wealth: POOR, types: ['industry'], lot: [30, 26],
     bodies: [{ id: 'works', poly: rect(8.4, 6.6, -8.6, -6.4), y: 0.2, levels: [{ h: 3.4 }], wall: 0.15, roof: 'gable', pitch: pt(1.8 / 3.3),
       doors: [{ at: [-7.0, -3.1], w: 1.9 }], program: ['izwork_salvage'] },
       { id: 'office', poly: rect(4.6, 3.8, -9.8, 6.6), y: 0.3, levels: [{ h: 2.7 }], wall: 0.15, roof: 'flat',

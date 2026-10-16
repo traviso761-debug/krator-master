@@ -265,19 +265,20 @@ function buildVernBoatyard(G,o){reseed(8531+(o.v|0));const wood=vC(vPick(VPAL.wo
 // ---------------------------------------------------------------- FISH LANDING AND SMOKEHOUSE (poor)
 // a timber landing stage on piles at the front with a dugout moored along it, net drying frames, the daub smokehouse with
 // its fish racks
-function buildVernFishLanding(G,o){reseed(8541+(o.v|0));const wood=vC(vPick(VPAL.woodPoor)),woodD=vC(0x5a4632),th=vC(vPick(VPAL.thatch)),daub=vC(vPick(VPAL.adobe)),net=vC(vPick([0x5a5444,0x4a4a3c,0x6a5e48]));
+function buildVernFishLanding(G,o){reseed(8541+(o.v|0));const wood=vC(vPick(VPAL.woodPoor)),woodD=vC(0x5a4632),th=vC(vPick(VPAL.thatch)),daub=vC(vPick([0xa88a68,0x9a7e60,0xb09474])),net=vC(vPick([0x8a8470,0x7a7a66,0x948a72]));
  vnReg('Fish landing and smokehouse (poor)',0,0,9.5,5.5);
  // the smokehouse: daub on a timber frame, a low door, a slatted vent, a thatch gable with a raised smoke louvre on the ridge
  {const SX=-4.6,SZ=-4.2,W=4.2,D=3.6,H=2.5,Y0=.25;vB('vStone',SX,-.1,SZ,W+.3,.35,D+.3,0,vC(0x8a7a6a));
-  vnBody('vClayB',SX,Y0,SZ,W,H,D,0,daub,{t:.2,floorC:vC(0x6a5a4a)});
+  vnBody('vPlaster',SX,Y0,SZ,W,H,D,0,daub,{t:.2,floorC:vC(0x6a5a4a)});
   for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',SX+sx*(W/2-.02),Y0,SZ+sz*(D/2-.02),.12,H,woodD);
   vB('vWood',SX,Y0+H-.05,SZ,W+.25,.18,D+.25,0,woodD);
-  vnGableRoof(SX,Y0+H+.13,SZ,W,D,1.9,0,'vThatchB',th,.9,'vGableW',wood,.4);
-  for(const sx of[-1,1])vPst('vPost',SX+sx*1.2,Y0+H+1.75,SZ,.05,.5,woodD);vnGableRoof(SX,Y0+H+2.35,SZ,2.8,1.2,.5,0,'vThatchB',th.clone().multiplyScalar(.8),.25,null,null,.18);   // smoke louvre
+  vnGableRoof(SX,Y0+H+.13,SZ,W,D,1.6,0,'vThatchB',th,.7,'vGableW',wood,.36);
+  for(const sx of[-1,1])vPst('vPost',SX+sx*1.2,Y0+H+1.45,SZ,.05,.5,woodD);vnGableRoof(SX,Y0+H+2.05,SZ,2.8,1.2,.5,0,'vThatchB',th.clone().multiplyScalar(.8),.25,null,null,.18);   // smoke louvre
   vnDoor(SX+.6,Y0,SZ+D/2,0,.9,1.8,'vWood',wood,vC(0x6a5a48));
   vnWin(SX-W/2,Y0+1.3,SZ,-Math.PI/2,.7,.45,'shut','vWood',wood);vnWin(SX+W/2,Y0+1.3,SZ-.4,Math.PI/2,.7,.45,'shut','vWood',wood);
   for(const x of[SX-.9,SX+.6])vB('vClayB',x,Y0+1.95,SZ+D/2+.01,.9,.5,.04,0,vC(0x3a3430));                      // soot over the door and the eave
   vldLogs(SX-W/2-.9,0,SZ+.2,Math.PI/2,2.4,3,wood);                                                               // smoking wood
+  vB('vPlaster',SX-.8,Y0+1.6,SZ-D/2-.01,1.6,.9,.04,0,vC(0x4a4038));vnDryingRack(SX,0,SZ-D/2-1.1,0,3.2);for(let k=0;k<3;k++)vldBasket(SX+1.2+k*.5,0,SZ-D/2-.45,.24);   // soot on the back, a rack, baskets
   // the fish racks: two A-frames with poles, fish hung by the tail
   for(const rz of[SZ+3.0,SZ+4.2]){const L=3.6;for(const s of[-1,1]){vBeam([SX+s*L/2,0,rz-.4],[SX+s*L/2,1.9,rz],.06,woodD);vBeam([SX+s*L/2,0,rz+.4],[SX+s*L/2,1.9,rz],.06,woodD);}
    for(const yy of[1.85,1.35])vBeam([SX-L/2-.1,yy,rz+(yy<1.5?.12:0)],[SX+L/2+.1,yy,rz+(yy<1.5?.12:0)],.04,woodD);
@@ -307,7 +308,7 @@ function buildVernFishLanding(G,o){reseed(8541+(o.v|0));const wood=vC(vPick(VPAL
   kput('vHoop',[2.2,DY+.06,6.6],qEuler(Math.PI/2,0,0),[.3,.3,2.5],vC(0xb8a888));kput('vHoop',[2.2,DY+.12,6.6],qEuler(Math.PI/2,0,0),[.24,.24,2.5],vC(0xb8a888));
   for(let k=0;k<2;k++)kput('vWood',[-5.8+k*.3,DY+1.1,3.0],vQ(0,0,.15),[.06,2.2,.12],vC(0x8a6a48));
   // the dugout moored along the stage's +x side, its line to the bollard
-  vldDugout(X1+.7,-.38,5.6,Math.PI/2,5.4,vC(vPick([0x6a4a30,0x5a3e28])));vBeam([X1-.3,DY+.4,ZB+.4],[X1+.7,-.05,3.4],.03,vC(0xb8a888),'vRope');}
+  vldDugout(X1+.7,-.15,5.6,Math.PI/2,5.4,vC(vPick([0x6a4a30,0x5a3e28])));vBeam([X1-.3,DY+.4,ZB+.4],[X1+.7,-.05,3.4],.03,vC(0xb8a888),'vRope');}
  vnWaterButt(-1.6,0,-4.6,.38,1.0);vnBarrel(-2.0,0,-2.6,.35,.85,wood);vnCrate(-.9,0,-2.0,.7,.3,wood);vnFolk(0,1.6,2,1.4);}
 
 VERN.def({key:'vern_farmhouse',name:'Farmhouse',family:'farm',tags:{type:['farm','single-family dwelling'],wealth:'middle',lit:false,role:'farmer',job:'farming'},w:24,d:20,h:9,build:buildVernFarmhouse});

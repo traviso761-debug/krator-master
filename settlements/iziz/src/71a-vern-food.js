@@ -202,5 +202,5 @@ function buildVernProvisioner(G,o){reseed(8131+(o.v|0));const W=10,D=8.4,H1=3.4,
 
 VERN.def({key:'vern_bakery',name:'Bakery',family:'trade',tags:{type:['market/shop','single-family dwelling'],wealth:'middle',lit:false,role:'baker'},w:19,d:16,h:11,build:buildVernBakery});
 VERN.def({key:'vern_butcher',name:'Butcher\'s shop and smokehouse',family:'trade',tags:{type:['market/shop','single-family dwelling'],wealth:'middle',lit:false,role:'butcher'},w:16,d:18,h:8,build:buildVernButcher});
-VERN.def({key:'vern_brewery',name:'Brewery',family:'industry',tags:{type:['industry','tavern/inn'],wealth:'middle',lit:false,role:'brewer',job:'brewing'},w:21,d:16,h:13,build:buildVernBrewery});
-VERN.def({key:'vern_provisioner',name:'Provisioner',family:'trade',tags:{type:['market/shop','single-family dwelling'],wealth:'middle',lit:false,role:'provisioner',job:'trading'},w:16,d:16,h:12,build:buildVernProvisioner});
+VERN.def({key:'vern_brewery',name:'Brewery',family:'industry',tags:{type:['industry','tavern/inn'],wealth:'middle',lit:false,role:'brewer',job:'brewing'},w:21,d:17,h:13,build:buildVernBrewery});
+VERN.def({key:'vern_provisioner',name:'Provisioner',family:'trade',tags:{type:['market/shop','single-family dwelling'],wealth:'middle',lit:false,role:'provisioner',job:'trading'},w:16,d:18,h:12,build:buildVernProvisioner});
