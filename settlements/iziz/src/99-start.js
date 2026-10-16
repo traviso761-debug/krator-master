@@ -6,11 +6,12 @@
 // (CITY_CLOCK, the hour slider in 93-city-ui.js); the host's speed buttons set the motion time the hooks are handed.
 const IZIZ_HOST=KHOST.take({
  build:'iziz-'+(window.CITY?'city':String(TITLE).toLowerCase().replace(/[^a-z]+/g,'-')),title:TITLE,
- hint:'I hovers the inspector, a click inspects, P marks, M the map, F walks at eye height',
+ hint:'I hovers the inspector, a click inspects, P marks, M the map, F walks at eye height'+(IZIX.units.length?', X cuts a building away (] [ its storeys)':''),
  scene,camera,renderer,ground:terrainH,clear:1.2,minR:2,maxR:3000,views:VIEWS,
  inspect:(hit,hits,rec)=>{if(rec)return null;const o=hit.object,p=hit.point;
   return(o===groundM||(o.userData&&o.userData.isGround)?'ground':'unregistered '+(o.isInstancedMesh?'instance':'mesh'))+'\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1);},
  minimap:{title:TITLE},
+ cutaway:IZIX.units.length?{units:IZIX.units}:undefined,   // every furnished building (95i-iziz-interiors.js)
  exporters:{tags:()=>KTAGS.page.export()},
  budget:BUDGET,api:window._api,
 });

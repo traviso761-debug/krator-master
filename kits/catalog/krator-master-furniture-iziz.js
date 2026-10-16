@@ -212,3 +212,45 @@ FURN({
 /* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed iziz_training_<role> */
 FK.set({ culture: 'iziz', tier: 'common', roles: 'training', prefix: 'iziz_training_', S: IZIZ_COMMON, names: {
   training_dummy: 'Mahogany drill post', archery_butt: 'Sandbag archery butt' } });
+
+/* trades and households (2026-10-16, for the Iziz Vernacular's trade interiors: kits/interiors/sets/iziz.js, settlements/iziz):
+   the FK.ROLES.trade pieces in Iziz's common style sheet, keyed iziz_trade_<role> (the training pair is the set above) */
+FK.set({ culture: 'iziz', tier: 'common', roles: 'trade', prefix: 'iziz_trade_', S: IZIZ_COMMON, skip: ['training_dummy', 'archery_butt'], names: {
+  forge: 'Brick forge with a salvage hood', anvil: 'Anvil on a mahogany block', trough: 'Quench trough', stall: 'Beast stall', hayrack: 'Fodder rack',
+  display: 'Wares table', armour_stand: 'Armour stand', weapon_rack: 'Weapon rack', vat: 'Dye vat', still: 'Copper still',
+  bin: 'Grain bin', larder: 'Larder', bunk: 'Hand\'s bunk', locker: 'Mahogany locker', lathe: 'Pole lathe', press: 'Screw press',
+  kiln: 'Glaze kiln', grindstone: 'Grindstone', altar: 'Household sun altar', barrel: 'Barrel rack' } });
+
+/* the trade rooms' own pieces (2026-10-16): a bakery's oven and a butcher's block */
+FURN({
+  key: 'iziz_bread_oven', name: 'Brick bread oven', culture: 'iziz', tier: 'common', type: 'stove', role: 'oven', setting: 'indoor',
+  rooms: ['kitchen', 'bakery'], anchor: 'wall', clearance: { front: 1.4 },
+  materials: ['stone', 'ceramic', 'metal', 'emissive', 'timber'],
+  w: 2.4, d: 1.8, h: 2.2, variants: 1,
+  build: function (F) {
+    const br = F.col('stoneGranite'), cl = F.col('ceramicCream'), soot = F.shade(br, -0.6), I = F.col('ironSoot');
+    F.box(0, 0, -0.1, 2.4, 0.85, 1.6, 0, F.shade(br, 0.05), 'stone');                      /* the hearth plinth */
+    F.frustum(0, 0.85, -0.05, 0.85, 0.58, 0.95, 0, cl, 'ceramic', 12);                     /* the dome, in Iziz cream clay */
+    F.ball(0, 1.68, -0.05, 0.46, F.shade(cl, -0.08), 'ceramic');
+    F.box(0, 0.9, 0.72, 0.84, 0.58, 0.16, 0, soot, 'stone');                               /* the mouth */
+    F.box(0, 0.95, 0.74, 0.64, 0.36, 0.1, 0, F.col('amber'), 'glow');
+    F.cyl(0.62, 1.4, -0.4, 0.09, 0.8, 0, I, 'metal');                                      /* a salvage-pipe flue */
+    F.box(-0.95, 0.85, 0.35, 0.46, 0.05, 0.85, 0, F.col('mahoganyLight'), 'wood');         /* the peel rest and a peel */
+    F.box(-0.95, 0.9, 0.2, 0.3, 0.03, 0.3, 0, F.col('mahoganyLight'), 'wood');
+    F.lamp(0, 0.95, 0.75, 0.6, 4);
+  }
+});
+FURN({
+  key: 'iziz_butcher_block', name: 'Butcher\'s block and hook rail', culture: 'iziz', tier: 'common', type: 'workstation', role: 'block', setting: 'indoor',
+  rooms: ['kitchen', 'workshop', 'butcher', 'store'], anchor: 'floor', clearance: { front: 0.9 }, job: 'trading',
+  materials: ['timber', 'metal'],
+  w: 1.4, d: 0.9, h: 2.0, variants: 1,
+  build: function (F) {
+    const wd = F.col('mahoganyDark'), I = F.col('ironSoot');
+    F.cyl(0, 0, 0.02, 0.42, 0.82, 0, F.shade(wd, 0.15), 'wood');                          /* the end-grain block */
+    F.box(0, 0.82, 0.02, 0.5, 0.04, 0.3, 0, F.shade(wd, 0.3), 'wood');                    /* a cleaver board */
+    for (const s of [-1, 1]) F.cyl(s * 0.66, 0, -0.38, 0.04, 2.0, 0, I, 'metal');           /* the rail's posts */
+    F.beam(-0.66, 1.95, -0.38, 0.66, 1.95, -0.38, 0.04, 0.04, I, 'metal');                 /* the hook rail */
+    for (let i = 0; i < 4; i++) F.box(-0.45 + i * 0.3, 1.7, -0.38, 0.03, 0.24, 0.03, 0, I, 'metal');
+  }
+});

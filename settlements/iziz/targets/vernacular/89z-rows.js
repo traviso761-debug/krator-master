@@ -1,5 +1,7 @@
 // TARGET: vernacular — the Iziz Vernacular set laid out in rows by family, front (+z) toward the camera.
 const TITLE='Iziz Vernacular Set';
+// the residences and trade buildings are hollow and furnished (69e-vern-hollow.js, 95i-iziz-interiors.js); ?interiors=0 draws them solid
+VERN.interiors=typeof KratorInteriors!=='undefined'&&!/[?&]interiors=0\b/.test(location.search);
 const GROUND_C=250;          // z centre of the ground plane
 const ROWDEF=[
  ['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c'],
