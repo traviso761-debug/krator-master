@@ -46,32 +46,9 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a single long strap leaf of a screwpine (Pandanus), standing upright from its base at the bottom of the cell to its tip near the top, the last third drooping a little to one side, narrow and keeled down the middle, its edges finely toothed, glossy green (#4e7432) shading to yellow-green (#8aa040) toward the base; vary the curve and the width between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours.
 ```
 
-### The Lizardmen ornament (`kits/lizardmen`, 2026-10-16)
-
-The three pattern sheets of `core/materials/PLAN.md`, "Lizardmen": the leiwen block, the glyph band and the spiral eye the kit
-draws as geometry today (optional families `leiwenS`, `glyphS`, `eyeS` in `kits/lizardmen/materials.json`; nothing stands in).
-
-**`patterns/lizardmen/leiwen`** (full colour: leiwen panels on walls, bells and the reliquary's wings)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cast bronze leiwen (thunder-pattern) block as on a Shang ding: a square grid of four-by-four cells, each cell filled by one squared spiral of raised ridges winding in to its centre in seven right-angled turns, the spirals in the left half winding clockwise and in the right half anticlockwise, mirrored. Ridges in verdigris (#4a8a7a) with the worn tops a paler green-grey (#8ab0a4), the grooves between them black lacquer (#1a1612). One cell, and only one, is missing a single stroke of its spiral: a deliberate break in an otherwise perfect pattern. Hard, precise, machine-exact edges; nothing is organic. The pattern repeats in both directions. Full colour.
-```
-
-**`patterns/lizardmen/glyph-band`** (full colour: the inscription bands on stelae, obelisks and doorposts; 4:1)
-```
-Seamless horizontally tileable texture, 4096x1024. Orthographic view of a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no border, no watermark. The left edge must continue into the right edge. Material: An inscription band carved in low relief into dark grey-green basalt (#5e6a5e) and inlaid with verdigris bronze (#4a8a7a): a single row of about twenty glyphs of an unknown angular script, each glyph built from short straight strokes and small squared spirals and hooks, between a thin oxblood (#5a1a16) line along the top edge and another along the bottom. The glyphs resemble Indus seal signs and oracle-bone script in feel but match no real writing; none depicts a face, an animal outline or a letter of any alphabet. Five of the signs recur: a zigzag, two parallel bars, a cross, a hook ending in a squared spiral, and a bar broken in the middle. The pattern repeats horizontally. Full colour.
-```
-
-**`patterns/lizardmen/spiral-eye`** (full colour, cut-out on magenta: the spiral-eye oculi of rank)
-```
-Square image, 2048x2048. Orthographic view of a flat, front-on decorative panel. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. Material: One round spiral eye, centred, with clear margin: a cast bronze disc in verdigris (#4a8a7a) with a raised rim, its face a single raised spiral ridge winding in two and a half turns from the rim to a round pupil of black lacquer (#1a1612), the ridge's worn crest a paler green-grey (#8ab0a4), fine casting grain in the grooves, a few flecks of bone-white (#e4dcc6) patina near the rim. The square corners outside the disc are flat solid magenta (#ff00ff), so the eye can be keyed out. A single motif, not a repeat. Full colour.
-```
-
-**`library/rock.basalt.polygonal`** (near-colourless, tinted by the build: the capital's cyclopean masonry; today `rock.large_sandstone_blocks` tinted grey-green stands in)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on stone wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cyclopean polygonal masonry of dark basalt in the Sacsayhuaman manner: large irregular blocks with five, six, seven and more sides, every block fitted exactly to its neighbours with hairline joints and no mortar, the faces slightly pillowed and hammer-dressed, the joints deep and dark, a few blocks huge (a third of the frame) and the rest smaller between them, no two alike, no courses, no right angles. Near-colourless: grey to grey-green only (#5e6a5e, #566256, #667266), so it can be tinted. The pattern repeats in both directions.
-```
-
 ## Delivered and removed (2026-10-06)
+
+Delivered 2026-10-16 (pasted): the Lizardmen ornament, `patterns/lizardmen/leiwen` (and `leiwen-b`, a busier taotie take), `patterns/lizardmen/glyph-band` (and `glyph-band-b`), `patterns/lizardmen/spiral-eye` (on magenta), and `library/rock.basalt.polygonal` (the capital's cyclopean masonry). All wired in `kits/lizardmen` (`materials.json`: `leiwenS`, `leiwenS2`, `glyphS`, `glyphS2`, `eyeS`, `cyclo`). Nothing of the Lizardmen is owed.
 
 Delivered 2026-10-07 (`Downloads/zeijani.zip`; batches `zeijani-2026-10.json`, `zeijani-cards-2026-10.json`): `rock.tuff`, `stone.tuff.polished`,
 `stone.basalt.polished`, `rock.basalt.flowbanded`, `rock.basalt.oxidised`, `bone.ossuary`, `patterns/zeijani/labyrinth-relief`,

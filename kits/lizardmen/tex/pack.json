@@ -189,26 +189,26 @@
     "normalMap": "cyclo.normal.webp",
     "roughnessMap": "cyclo.rough.webp"
    },
-   "lib": "rock.large_sandstone_blocks",
+   "lib": "rock.basalt.polygonal",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.4,
    "scale": [
-    3.2,
-    3.2
+    3.6,
+    3.6
    ],
    "size": 512,
    "source": {
-    "albedo": "ee58e29f416ba01332d63f9534e3c2a69e9ce3a0",
-    "normal": "f51ff71f883ed1b2a8c55f852909598416ef5530",
-    "roughness": "dd1f4e510369150257455ed14bb7832df963a047"
+    "albedo": "4803a4a7131ef1d34149c22cbaadb74345740bb6",
+    "normal": "a067a13398b577f1e98a45080cd299db2c260c14",
+    "roughness": "fbe347bfb7826264ab621427ac244dc0ad96a032"
    },
    "specular": 0.12,
    "tint": {
-    "contrast": 1.1,
-    "keep": 0.15,
+    "contrast": 1.0,
+    "keep": 0.35,
     "mean": 0.7,
-    "sourceMean": 0.3249
+    "sourceMean": 0.4143
    }
   },
   "earth": {
@@ -269,6 +269,36 @@
     "keep": 0.3,
     "mean": 0.72,
     "sourceMean": 0.5917
+   }
+  },
+  "eyeS": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "eyeS.albedo.webp",
+    "normalMap": "eyeS.normal.webp",
+    "roughnessMap": "eyeS.rough.webp"
+   },
+   "lib": "patterns/lizardmen/spiral-eye",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "b1e77cbbb20295071d449f156deb17d4d4c574ac",
+    "normal": "2cef20e432cde2af0785eab6621d306172902e3a",
+    "roughness": "e101db6809542c4d3ccc715b312752a2190c8fa1"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5,
+    "sourceMean": 0.3704
    }
   },
   "f_bone": {
@@ -691,6 +721,72 @@
     "sourceMean": 0.4588
    }
   },
+  "glyphS": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "glyphS.albedo.webp",
+    "normalMap": "glyphS.normal.webp",
+    "roughnessMap": "glyphS.rough.webp"
+   },
+   "lib": "patterns/lizardmen/glyph-band",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2.4,
+    0.8
+   ],
+   "size": [
+    1024,
+    341
+   ],
+   "source": {
+    "albedo": "1d7a986c5d3851592bd7dc3be6565f59d6df9bfc",
+    "normal": "ae2985d90d7f449b2617926371bab754b775502b",
+    "roughness": "41c4815352deb2a4f75ababa1f1f0be22ce849d2"
+   },
+   "specular": 0.4,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5,
+    "sourceMean": 0.3145
+   }
+  },
+  "glyphS2": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "glyphS2.albedo.webp",
+    "normalMap": "glyphS2.normal.webp",
+    "roughnessMap": "glyphS2.rough.webp"
+   },
+   "lib": "patterns/lizardmen/glyph-band-b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2.4,
+    0.8
+   ],
+   "size": [
+    1024,
+    341
+   ],
+   "source": {
+    "albedo": "3b677e68dbb2fa1094c69ef550176037a122daa2",
+    "normal": "d293fb44e4600dc9aad31c1adcf0cb78b2b68559",
+    "roughness": "2bb1bab0f61c85a6c8ff70366bd409b63585407f"
+   },
+   "specular": 0.4,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5,
+    "sourceMean": 0.2984
+   }
+  },
   "ground": {
    "breakup": {
     "cell": 14,
@@ -963,6 +1059,66 @@
     "keep": 0.3,
     "mean": 0.66,
     "sourceMean": 0.1903
+   }
+  },
+  "leiwenS": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "leiwenS.albedo.webp",
+    "normalMap": "leiwenS.normal.webp",
+    "roughnessMap": "leiwenS.rough.webp"
+   },
+   "lib": "patterns/lizardmen/leiwen",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0ec9163e7ab3d5f3c1472dbe020f8b757571ce5e",
+    "normal": "56f2cb45dafc572d17da323bf2f61cb6a18c54e0",
+    "roughness": "3118ce4c86b8bdb85763592e0e8fd0de51edebff"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5,
+    "sourceMean": 0.3335
+   }
+  },
+  "leiwenS2": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "leiwenS2.albedo.webp",
+    "normalMap": "leiwenS2.normal.webp",
+    "roughnessMap": "leiwenS2.rough.webp"
+   },
+   "lib": "patterns/lizardmen/leiwen-b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3a1deaee91a9740cabb56e7557abbbb567376a4e",
+    "normal": "3ce7e2752214277a74c62f332d718a8925e2c844",
+    "roughness": "9064a38353e833622231498d0582138a8e30f897"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5,
+    "sourceMean": 0.3264
    }
   },
   "mat": {

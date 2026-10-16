@@ -36,21 +36,23 @@ defBuilding({key:'lk-longhouse',name:'Stone rib house',seed:7702,caste:3,cut:tru
   lzNoCut(()=>lzPortal(0,.4,Wd/2+.08,0,lzDoorH(3),{mk:'bronze'}));lzThreshold(0,Wd/2+.25,0,1.4);
   lzFurnRoom(L-.8,Wd-.6,.4,'court',{beds:3,ceil:rh*.65,extra:[['generic_trade_hayrack',-L/2+1.5,1.2,PI/2],['lizardmen_court_cabinet',L/2-1.2,1.2,-PI/2]]});}});
 /* ---------------------------------------------------------------- stone cells: the warren in polygonal masonry */
-defBuilding({key:'lk-warren',name:'Stone cell-warren',seed:7703,caste:1,cut:true,w:19,d:17,h:8.6,budget:110000,
+defBuilding({key:'lk-warren',name:'Stone cell-warren',seed:7703,caste:1,cut:true,w:24,d:21,h:10.4,budget:130000,
  tags:{types:['dwelling-multi'],wealth:'rich',role:'dwelling'},
  note:'the Tenders\' cells for the capital: seven domes of fitted polygonal basalt in a whorl, buttressed by horns carved in polished basalt, bronze eyes on the crowns, the slit door framed in bronze; the largest cell opens',
- build(o){const rs=[1.0,1.2,1.5,1.85,2.3,2.85,3.5];let px=0,pz=0;const cells=[];
+ build(o){const rs=[1.25,1.5,1.9,2.3,2.9,3.55,4.4];let px=0,pz=0;const cells=[];
   for(let i=0;i<rs.length;i++){const a=i*1.83+.6;if(i){px+=Math.cos(a)*(rs[i-1]+rs[i])*.9;pz+=Math.sin(a)*(rs[i-1]+rs[i])*.9;}cells.push([px,pz,rs[i]]);}
   const cx=cells.reduce((s,c)=>s+c[0],0)/cells.length,cz=cells.reduce((s,c)=>s+c[1],0)/cells.length;const big=cells[cells.length-1];const shz=-(big[1]-cz)+2.4;
-  lzCutFloor(0);lzNoCut(()=>box(LK_PL,0,0,shz-2,18,.2,16,P('basaltD')));
+  lzCutFloor(0);lzNoCut(()=>box(LK_PL,0,0,shz-2,23,.2,20,P('basaltD')));
   const cell=(x,z,r,o2)=>{const h=r*1.35;W(x,.2,z,0,()=>{lzDome(0,0,[[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],{mk:LK_ST,col:P('basalt'),seg:14,door:o2.door});
    const n=o2.n||5;for(let i=0;i<n;i++){const a=i*TAU/n+(o2.a0||0),bx=Math.cos(a)*r*1.05,bz=Math.sin(a)*r*1.05;if(o2.door&&Math.abs(((a-PI/2)%TAU+TAU)%TAU)<.5)continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.6,r*.24,{curl:.5,lean:-.25,mk:LK_PL,col:P('basaltD'),nt:8,ns:6});}
    lzEye(0,h*1.0,r*.62,0,r*.16,{mk:'bronze'});
    if(o2.door){const dh=o2.door,dw=dh*.62;lzPortal(0,0,r*1.02,0,dh,{mk:'bronze'});lzThreshold(0,r+.1,0,dw);}});};
   for(let i=0;i<cells.length;i++){const c=cells[i],x=c[0]-cx,z=c[1]-cz+shz,last=i===cells.length-1;
-   if(last){cell(x,z,c[2],{n:7,a0:.3,door:lzDoorH(1)});lzFurnRoom(c[2]*1.1,c[2]*1.1,.2,'court',{x,z,beds:3,ceil:c[2]*1.1,extra:[['lizardmen_court_desk',x>0?-1:1,.5,PI/2]]});}
-   else lzNoCut(()=>cell(x,z,c[2],{n:i%2?5:7,a0:i*.7}));
-   if(i){const p=cells[i-1];const mx=(p[0]+c[0])/2-cx,mz=(p[1]+c[1])/2-cz+shz;lzNoCut(()=>ellip(LK_ST,mx,.2,mz,Math.min(p[2],c[2])*.9,Math.min(p[2],c[2])*.5,Math.min(p[2],c[2])*.9,P('basalt'),0,10));}}}});
+   cell(x,z,c[2],last?{n:7,a0:.3,door:lzDoorH(1)}:{n:i%2?5:7,a0:i*.7});
+   if(i>=cells.length-3){const r=c[2];FURNISH('lizardmen_court_bed',x-r*.42,.2,z-r*.3,0);
+    if(last){FURNISH('lizardmen_court_bed',x+r*.42,.2,z-r*.3,0);FURNISH('lizardmen_court_desk',x+r*.4,.2,z+r*.35,-PI/2);FURNISH('lizardmen_court_hearth',x,.2,z-r*.62,0);FURNISH_HANG('lizardmen_court_hanging',x,.2+r*1.2,z,0);}
+    else FURNISH(i%2?'lizardmen_court_jug':'lizardmen_court_scroll',x+r*.4,.2,z+r*.2,0);}
+   if(i){const p=cells[i-1];const mx=(p[0]+c[0])/2-cx,mz=(p[1]+c[1])/2-cz+shz;ellip(LK_ST,mx,.2,mz,Math.min(p[2],c[2])*.9,Math.min(p[2],c[2])*.5,Math.min(p[2],c[2])*.9,P('basalt'),0,10);}}}});
 /* ---------------------------------------------------------------- the stone nest: the capital's nursery */
 defBuilding({key:'lk-nest',name:'Stone nest hall',seed:7704,caste:'all',cut:true,w:30,d:27,h:9,budget:150000,
  tags:{types:['religious','civic'],wealth:'rich',role:'nursery'},
@@ -93,7 +95,7 @@ function lkWallRun(L, H, o){o=o||{};const t=o.t||3.2;
  const zf=T.zf+.05;lzWall([-L/2,zf],[L/2,zf],[-L/2,zf-.12],[L/2,zf-.12],H+.4,1.3,LK_ST,P('basalt'),[],{});
  for(const x of lzSpan(-L/2+.8,L/2-.8,o.n||13))lzHorn(x,H+1.7,zf-.3,0,1.6,.14,{curl:.55,lean:.25,mk:LK_PL,col:P('basaltD'),nt:7,ns:6});
  box('bronzeC',0,H+.42,T.zb+.3,L-.4,.05,.06,P('verd'));
- if(o.leiwen)W(0,H*.55,zf+.1*(H*.55)*0+ (T.zf-(T.zf-(-t/2))*0)+.0,0,()=>{});
+
  return T;}
 defBuilding({key:'lk-gate',name:'Capital gate',seed:7706,caste:'all',cut:false,w:22,d:12,h:17,budget:110000,
  tags:{types:['military','infrastructure'],wealth:'rich',role:'gate'},
@@ -101,7 +103,7 @@ defBuilding({key:'lk-gate',name:'Capital gate',seed:7706,caste:'all',cut:false,w
  build(o){const H=6.0,dw=3.7,PB=.3;lzNoCut(()=>lkPlinth(21,11,PB,{}));
   /* the pylons */
   for(const s of [-1,1])W(s*7.4,PB,0,0,()=>{const T=lzBatterRoom(6.2,8,0,13,LK_ST,P('basalt'),{lean:{front:.1,back:.1,left:.08,right:.08},inner:false});lzSlab(T.T,13,.5,'basalt',P('basaltD'),.2);
-   W(0,.6,4-.1*.6+.04,0,()=>lzGlyphSpiral(4.2,9.5,{mk:'bronze',mirror:s<0,turns:3}));W(0,11,4-.1*11+.05,0,()=>lzLeiwen(3.6,1.1,{cell:.3,mk:'bronze',back:'lacq'}));
+   WX(0,.6,4-.1*.6+.04,0,-Math.atan(.1),0,()=>lzGlyphSpiral(4.2,9.5,{mk:'bronze',mirror:s<0,turns:3}));WX(0,11,4-.1*11+.05,0,-Math.atan(.1),0,()=>lzLeiwen(3.6,1.1,{cell:.3,mk:'bronze',back:'lacq'}));
    lzHorn(0,13.5,0,s>0?-PI/2:PI/2,5.2,.32,{curl:.75,lean:.2,mk:LK_PL,col:P('basaltD')});lzEye(s*(3.1-.08*7),7,0,s>0?PI/2:-PI/2,.5,{mk:'bronze'});});
   /* the gatehouse block: a solid battered mass between the pylons with the passage cut through it, front and back */
   /* the block's sides lean OUT at the pylons' own batter, so no wedge opens between them as they lean apart */
@@ -111,8 +113,8 @@ defBuilding({key:'lk-gate',name:'Capital gate',seed:7706,caste:'all',cut:false,w
   for(const s of [-1,1])lzWall(s>0?[dw/2+.05,4]:[-dw/2-.05,-4],s>0?[dw/2+.05,-4]:[-dw/2-.05,4],s>0?[dw/2+.05,-4]:[-dw/2-.05,4],s>0?[dw/2+.05,4]:[-dw/2-.05,-4],PB,H*.52,LK_PL,P('basaltD'),[],{inner:false});
   /* the two mouths: nested bronze frames, the eye above the front one, the leiwen lintel band */
   for(const s of [-1,1]){const zf=s*(4-.06*0)+s*.1;lzPortal(0,PB,s*4.12,s>0?0:PI,H,{mk:'bronze',step:.5});lzThreshold(0,s*4.6,s>0?0:PI,dw);}
-  W(0,PB+H+1.2,4-.06*(H+1.2)+.06,0,()=>lzLeiwen(7.4,1.1,{cell:.3,mk:'bronze',back:'lacq'}));
-  lzEye(0,PB+H+2.4,4-.06*(H+2.4)+.1,0,.95,{mk:'bronze'});lzEye(0,PB+H+2.4,-(4-.06*(H+2.4)+.1),PI,.7,{mk:'bronze'});
+  W(0,PB+H+.5,4-.06*(H+.5)+.06,0,()=>lzLeiwen(7.4,.9,{cell:.3,mk:'bronze',back:'lacq'}));
+  lzEye(0,PB+H+2.45,4-.06*(H+2.45)+.1,0,.85,{mk:'bronze'});lzEye(0,PB+H+2.4,-(4-.06*(H+2.4)+.1),PI,.7,{mk:'bronze'});
   door(0,PB,4,0,dw);}});
 defBuilding({key:'lk-wall',name:'Capital wall',seed:7707,caste:'all',cut:false,w:22,d:17,h:11.5,budget:70000,
  tags:{types:['military','infrastructure'],wealth:'rich',role:'wall'},

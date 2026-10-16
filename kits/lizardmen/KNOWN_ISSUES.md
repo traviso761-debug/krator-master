@@ -4,12 +4,10 @@
 
 ## Look
 
-- [ ] **The ornament is geometry.** The leiwen panels, the glyph spirals and the spiral eyes are boxes and tubes
-      (`40-lz-kit.js`): fine up close, heavy and aliased at a distance. The three pattern sheets that replace them at a
-      distance are prompted (`core/materials/PLAN.md`, "Lizardmen"; `PROMPTS-ready.md`) and wait on the owner: `materials.json`
-      carries them as `optional` families (`leiwenS`, `glyphS`, `eyeS`), nothing stands in. When they arrive: pack, then map
-      `lzLeiwen`, `lzGlyphSpiral` and `lzEye` onto quads of those keys beyond a distance (or always, and keep the geometry
-      for the cut-away).
+- [x] **The ornament is geometry** (first pass). Fixed 2026-10-16: the owner's sheets (`leiwenS`/`leiwenS2`, `glyphS`/`glyphS2`,
+      `eyeS`) draw the panels, the bands (as columns on stelae and pylons) and the eyes; a building takes the A or B take by the
+      engine's seed hash (`GABLE_ALT`). The geometry stays as the fallback without the pack (`?mat=proc`). The cyclopean masonry
+      is `rock.basalt.polygonal`, delivered the same day.
 - [x] **The tent family** (2026-10-16, second pass): `57-lc-camp.js`, four tents in a row of their own, two pitched behind the
       mustering ground's spiral grid. Open: the tents are not yet told apart by wear or by caste colour beyond the skin.
 - [x] **The antechamber's dust falls upward** (a particle layer over the floor) **and a faint recursive shimmer** (seven

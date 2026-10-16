@@ -8,6 +8,11 @@
 // some turned or wrapped (lzStela); the clapperless bells (lzBellRack). Odd counts everywhere. No iron: bronze.
 // Everything draws in the builder's current frame (origin on the ground at the plot centre, +z the front, y up).
 const LZ_T=.14;   /* wall thickness */
+/* the ornament sheets' two takes: a building draws the A or the B take of each by a hash of its seed and place (36-def.js sets
+   GABLE_ALT; 30-geo.js emit swaps the key): the vendored table takes the Lizardmen's pairs here */
+GABLE_ALT_K.leiwenS='leiwenS2';GABLE_ALT_K.leiwenS2='leiwenS';GABLE_ALT_K.glyphS='glyphS2';GABLE_ALT_K.glyphS2='glyphS';
+/* a sheet is in the pack: the panel, band or eye is drawn from it; otherwise as geometry */
+const LZ_SHEET=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);
 /* evenly spaced values from a to b, n of them */
 function lzSpan(a,b,n){const o=[];for(let i=0;i<n;i++)o.push(n<2?(a+b)/2:a+(b-a)*i/(n-1));return o;}
 /* draw fn's geometry outside the cut-away (a porch, a stela, a rib that stays when the house opens) */
@@ -149,7 +154,11 @@ function lzPortal(x,y,z,ry,H,o){o=o||{};const mk=o.mk||'lacq',col=o.col||(mk==='
 /* a leiwen panel: w by h, its face +z at z = 0 from y = 0 up, cells of o.cell (m): each cell a squared spiral in raised strokes
    of o.mk (bronze | lacq | lacqR | ivory | basalt) on a backing of o.back (false: none). Chirality: the left half winds one way, the
    right the other (mirrored pairs). The FLAW: one seeded cell lacks one stroke. o.eye: a spiral eye at the panel's centre */
-function lzLeiwen(w,h,o){o=o||{};const c=o.cell||.5,nx=Math.max(1,Math.floor(w/c)),ny=Math.max(1,Math.floor(h/c)),mk=o.mk||'bronze',col=o.col||(mk==='bronze'?P('verd'):mk==='ivory'?P('bone'):mk==='basalt'?P('basaltC'):P('oxblood'));
+function lzLeiwen(w,h,o){o=o||{};
+ if(LZ_SHEET('leiwenS')&&o.sheet!==false){/* the owner's sheet: one block per 1.2 m, the panel's own size in cells, on a lacquer backing; the eye stays geometry */
+  const z0=o.back!==false?.06:0;if(o.back!==false)box(o.back||'lacq',0,0,.03,w,h,.06,o.backCol||P('lacq'));
+  quad('leiwenS',0,h/2,z0+.005,w,h,WHITE,0,0,0);if(o.eye)lzEye(0,h/2,z0+.02,0,Math.min(w,h)*.3,{mk:o.mk||'bronze'});return;}
+ const c=o.cell||.5,nx=Math.max(1,Math.floor(w/c)),ny=Math.max(1,Math.floor(h/c)),mk=o.mk||'bronze',col=o.col||(mk==='bronze'?P('verd'):mk==='ivory'?P('bone'):mk==='basalt'?P('basaltC'):P('oxblood'));
  const t=o.t||.045,pr=o.proud||.03,W0=-nx*c/2,H0=(h-ny*c)/2;const z0=o.back!==false?.06:0;if(o.back!==false)box(o.back||'lacq',0,0,.03,w,h,.06,o.backCol||P('lacq'));
  const flaw=Math.floor(rr(0,nx*ny));let k=0;
  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++,k++){const cx=W0+(i+.5)*c,cy=H0+(j+.5)*c,chir=(o.chir!==undefined?o.chir:(i<nx/2?1:-1))*((j%2)?-1:1);
@@ -162,6 +171,8 @@ function lzLeiwen(w,h,o){o=o||{};const c=o.cell||.5,nx=Math.max(1,Math.floor(w/c
 /* a spiral eye: a disc facing +z (turned ry at x,y,z), radius R, a raised whorl winding in to a dark pupil. The high castes'
    mark: the more important the building, the more eyes. o.mk bronze | ivory | basalt; o.glow a lit pupil (the seer's hall) */
 function lzEye(x,y,z,ry,R,o){o=o||{};const mk=o.mk||'bronze',col=o.col||(mk==='bronze'?P('verd'):mk==='ivory'?P('bone'):P('basaltC')),th=R*.14;
+ if(LZ_SHEET('eyeS')&&mk==='bronze'&&!o.glow){/* the owner's eye on a cast disc, both faces */
+  W(x,y,z,ry,()=>{WX(0,0,0,0,PI/2,0,()=>cyl('bronzeC',0,-th,0,R,th,P('bronze'),24));for(const f of [1,-1])WX(0,0,f>0?.005:-th-.005,0,f>0?PI/2:-PI/2,0,()=>medallion('eyeS',0,0,0,R*2,{round:true}));});return;}
  W(x,y,z,ry,()=>{WX(0,0,0,0,PI/2,0,()=>cyl(mk==='bronze'?'bronzeC':mk,0,-th,0,R,th,mk==='bronze'?P('bronze'):col,18));   /* the disc, from z = -th to 0 */
   /* the whorl and the pupil on BOTH faces, so the eye reads from behind too (the back winds the other way) */
   for(const f of [1,-1]){const zf=f>0?0:-th;tube(mk,t=>{const a=t*TAU*2.3*f,r=R*.14+R*.78*(1-t);return [Math.cos(a)*r,Math.sin(a)*r,zf+f*(.02+.01*t)];},t=>[R*.07,R*.07],22,5,col,{caps:true});
@@ -170,7 +181,10 @@ function lzEye(x,y,z,ry,R,o){o=o||{};const mk=o.mk||'bronze',col=o.col||(mk==='b
 /* a glyph band whose strokes follow a squared spiral path winding in from the outer corner (it reads inward and outward):
    small strokes in o.mk on the face +z, w by h from y = 0. The strokes are seeded from the five base glyphs' stroke shapes.
    o.turns the spiral's turns (3); o.mirror winds the other way (the mirrored stela of a pair) */
-function lzGlyphSpiral(w,h,o){o=o||{};const mk=o.mk||'bronze',col=o.col||(mk==='bronze'?P('verd'):mk==='ivory'?P('bone'):P('basaltC')),chir=o.mirror?-1:1,turns=o.turns||3,t=o.t||.03,pr=.02;
+function lzGlyphSpiral(w,h,o){o=o||{};
+ if(LZ_SHEET('glyphS')&&o.sheet!==false){/* the owner's band, run up the face as columns (the text reads both ways): as many as fit, 0.8 m wide */
+  const n=Math.max(1,Math.floor(w/.85)),bw=w/n;for(let i=0;i<n;i++){const x=-w/2+bw*(i+.5);WX(x,h/2,.012,0,0,o.mirror?-PI/2:PI/2,()=>quad('glyphS',0,0,0,h,bw*.92,WHITE,0,0,0));}return;}
+ const mk=o.mk||'bronze',col=o.col||(mk==='bronze'?P('verd'):mk==='ivory'?P('bone'):P('basaltC')),chir=o.mirror?-1:1,turns=o.turns||3,t=o.t||.03,pr=.02;
  let x=-w/2*.9*chir,y=h*.05,dir=0;let lx=w*.9,ly=h*.9;const g=Math.min(lx,ly)/(turns*2+1);if(!(g>.01)){reportErr('lzGlyphSpiral: a band too small to write on ('+w+' x '+h+')');return;}
  for(let n=0;n<turns*4;n++){const horiz=dir%2===0,len=horiz?lx:ly;const dx=horiz?[1,0,-1,0][dir]*chir:0,dz=horiz?0:[0,1,0,-1][dir];
   const steps=Math.max(1,Math.floor(len/(g*.9)));

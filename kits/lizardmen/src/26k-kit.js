@@ -31,12 +31,14 @@ const SV_LIB={reed:'reed',thatch:'thatch',mat:'mat',cane:'cane',lacq:'lacq',lacq
  basalt:'basalt',stoneP:'stoneP',cyclo:'cyclo',brick:'brick',earth:'earth',earthR:'earthR',
  hide:'hide',hideP:'hideP',scale:'scale',shingle:'shingle',rope:'rope',wood:'wood',jade:'jade',
  /* the same sets as SOLID (single-sided) keys for roofs and gables: a double-sided cloth key self-shadows (acne) at a grazing sun */
- matW:'mat',hideW:'hide',hidePW:'hideP'};
+ matW:'mat',hideW:'hide',hidePW:'hideP',
+ /* the owner's ornament sheets (2026-10-16): the leiwen block and its busier take, the glyph band and its take, the spiral eye */
+ leiwenS:'leiwenS',leiwenS2:'leiwenS2',glyphS:'glyphS',glyphS2:'glyphS2',eyeS:'eyeS'};
 const SV_TILE0={reed:1.2,thatch:1.6,mat:1,cane:.9,lacq:1.4,lacqR:1.4,irid:.8,bones:.9,ivory:.8,horn:.7,skull:.6,ossuary:1.2,bronze:1,bronzeC:1.2,
- basalt:2.4,stoneP:1.8,cyclo:3.2,brick:1.4,earth:2.2,earthR:2.4,hide:1.4,hideP:1.4,scale:.5,shingle:1.2,rope:.3,wood:1.4,jade:.6,matW:1,hideW:1.4,hidePW:1.4};
+ basalt:2.4,stoneP:1.8,cyclo:3.2,brick:1.4,earth:2.2,earthR:2.4,hide:1.4,hideP:1.4,scale:.5,shingle:1.2,rope:.3,wood:1.4,jade:.6,matW:1,hideW:1.4,hidePW:1.4,leiwenS:1.2,leiwenS2:1.6,glyphS:2.4,glyphS2:2.4,eyeS:1};
 const SV_CLOTH={hide:1,hideP:1,mat:1,flag:1};
 const SV_CUT={reed:1,thatch:1,mat:1,cane:1,lacq:1,lacqR:1,irid:1,bones:1,ivory:1,horn:1,skull:1,ossuary:1,bronze:1,bronzeC:1,basalt:1,stoneP:1,cyclo:1,brick:1,
- earth:1,earthR:1,hide:1,hideP:1,scale:1,shingle:1,rope:1,wood:1,jade:1,matW:1,hideW:1,hidePW:1,flag:1,plain:1,brass:1,bone:1,glass:1};
+ earth:1,earthR:1,hide:1,hideP:1,scale:1,shingle:1,rope:1,wood:1,jade:1,matW:1,hideW:1,hidePW:1,leiwenS:1,leiwenS2:1,glyphS:1,glyphS2:1,eyeS:1,flag:1,plain:1,brass:1,bone:1,glass:1};
 const KIT_FALLBACK=[];
 const KIT_HAS=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);
 /* ---------------------------------------------------------------- the palette (sRGB hex). Arrays are picked with P(k). */

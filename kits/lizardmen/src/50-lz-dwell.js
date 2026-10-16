@@ -10,21 +10,23 @@ function ldCell(x,z,r,o){o=o||{};const h=r*1.35,n=o.n||5,col=o.col||P('earth');
  W(x,0,z,o.ry||0,()=>{lzDome(0,0,[[r,0],[r*1.03,h*.28],[r*.92,h*.58],[r*.6,h*.86],[r*.18,h*1.12],[r*.03,h*1.32],[0,h*1.34]],{mk:'earth',col,seg:14,door:o.door});
   for(let i=0;i<n;i++){const a=i*TAU/n+(o.a0||0),bx=Math.cos(a)*r*1.05,bz=Math.sin(a)*r*1.05;if(o.door&&Math.abs(((a-PI/2)%TAU+TAU)%TAU)<.5)continue;lzHorn(bx,0,bz,Math.atan2(-bx,-bz),r*1.6,r*.24,{curl:.5,lean:-.25,mk:'horn',nt:8,ns:6});}
   if(o.door){const dh=o.door,dw=dh*.62;lzPortal(0,0,r*1.02,0,dh,{mk:'lacq'});lzThreshold(0,r+.1,0,dw);}});}
-defBuilding({key:'lz-warren',name:"Tenders' cell-warren",seed:7001,caste:1,cut:true,w:17,d:15,h:7.6,budget:90000,
+defBuilding({key:'lz-warren',name:"Tenders' cell-warren",seed:7001,caste:1,cut:true,w:22,d:19,h:9.4,budget:110000,
  tags:{types:['dwelling-multi'],wealth:'middle',role:'dwelling'},
  note:'the Tenders (caste 1, 1.22 m): seven earth cells in a whorl, each 1.25 x the last and turned 105 degrees from it, buttressed by horns leaning onto the domes; a 1.4 m slit door a human must stoop through; the largest cell opens',
- build(o){const rs=[.9,1.1,1.4,1.75,2.2,2.75,3.4];let px=0,pz=0;const cells=[];
+ build(o){const rs=[1.1,1.35,1.7,2.1,2.6,3.2,4.0];let px=0,pz=0;const cells=[];
   for(let i=0;i<rs.length;i++){const a=i*1.83+.6;if(i){px+=Math.cos(a)*(rs[i-1]+rs[i])*.9;pz+=Math.sin(a)*(rs[i-1]+rs[i])*.9;}cells.push([px,pz,rs[i]]);}
   /* centre the whorl on the plot, the big cell to the front */
   const cx=cells.reduce((s,c)=>s+c[0],0)/cells.length,cz=cells.reduce((s,c)=>s+c[1],0)/cells.length;
   const big=cells[cells.length-1];const shz=-(big[1]-cz)+2.2;
   lzCutFloor(0);
   for(let i=0;i<cells.length;i++){const c=cells[i],x=c[0]-cx,z=c[1]-cz+shz;const last=i===cells.length-1;
-   if(last){ldCell(x,z,c[2],{n:7,a0:.3,door:lzDoorH(1)});box('earthR',x,0,z,c[2]*1.3,.06,c[2]*1.3,P('earthP'));
-    lzFurnRoom(c[2]*1.1,c[2]*1.1,.06,'common',{x,z,beds:3,ceil:c[2]*1.1,extra:[['lizardmen_common_desk',x>0?-1:1,.5,PI/2],['lizardmen_common_board',0,-c[2]*.6+.3,0]]});}
-   else lzNoCut(()=>ldCell(x,z,c[2],{n:i%2?5:7,a0:i*.7}));
+   /* every cell opens in the cut-away; the three largest are lived in, lightly: a slab or two, a desk, a basket */
+   ldCell(x,z,c[2],last?{n:7,a0:.3,door:lzDoorH(1)}:{n:i%2?5:7,a0:i*.7});
+   if(i>=cells.length-3){const r=c[2];box('earthR',x,0,z,r*1.4,.06,r*1.4,P('earthP'));FURNISH('lizardmen_common_bed',x-r*.42,.06,z-r*.3,0);
+    if(last){FURNISH('lizardmen_common_bed',x+r*.42,.06,z-r*.3,0,{v:1});FURNISH('lizardmen_common_desk',x+r*.4,.06,z+r*.35,-PI/2);FURNISH('lizardmen_common_hearth',x,.06,z-r*.62,0);FURNISH_HANG('lizardmen_common_hanging',x,r*1.2,z,0);}
+    else FURNISH(i%2?'generic_basket':'lizardmen_common_board',x+r*.4,.06,z+r*.2,0);}
    /* the cells join: a low earth saddle between each and the next */
-   if(i){const p=cells[i-1];const mx=(p[0]+c[0])/2-cx,mz=(p[1]+c[1])/2-cz+shz;lzNoCut(()=>ellip('earth',mx,0,mz,Math.min(p[2],c[2])*.9,Math.min(p[2],c[2])*.5,Math.min(p[2],c[2])*.9,P('earth'),0,10));}}
+   if(i){const p=cells[i-1];const mx=(p[0]+c[0])/2-cx,mz=(p[1]+c[1])/2-cz+shz;ellip('earth',mx,0,mz,Math.min(p[2],c[2])*.9,Math.min(p[2],c[2])*.5,Math.min(p[2],c[2])*.9,P('earth'),0,10);}}
   /* the Tenders' slit vents: a row of small triangles high on the big cell */
   lzDust(0,shz+big[2]+1.2,2.2);}});
 /* ---------------------------------------------------------------- the Makers' quarters: the spiked carapace hut */
