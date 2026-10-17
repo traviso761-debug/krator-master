@@ -203,7 +203,7 @@ function buildVernRichB(G,o){reseed(7311+(o.v|0));const W=12.4,D=11.6,H1=4.0,H2=
   for(let k=-2;k<=2;k++)vB('vIron',k*.6,0,CD/2,.06,h-.2,.06,0,vC(0x2e2a26));vB('vIron',0,h-.4,CD/2,3.2,.08,.08,0,vC(0x2e2a26));
   vnPaving(0,.02,(D/2+.8+CD/2)/2,2.4,CD/2-D/2-.8,0,st,5);for(const s of[-1,1]){vnPlanter(s*6,0,D/2+3,2.8,1.0,0,wood);vnPlanter(s*8.5,0,-2,1.0,3.0,0,wood);}}
  vnBody('vStone',0,Y0,0,W,H1,D,0,st,{t:.45});const c1=vnCorniceBand('vStone',0,Y0+H1,0,W,D,0,st,2,undefined,.45);
- vnBody('vStone',0,c1,0,W-.6,H2,D-.6,0,st.clone().multiplyScalar(1.03),{t:.45});const c2=vnCornice('vStone',0,c1+H2,0,W-.6,D-.6,0,st,3);
+ vnBody('vStone',0,c1,0,W-.6,H2,D-.6,0,st.clone().multiplyScalar(1.03),{t:.15});   // (thin: its inner face on the ground storey's)const c2=vnCornice('vStone',0,c1+H2,0,W-.6,D-.6,0,st,3);
  vB('vStone',0,c2,0,W-.4,.6,D-.4,0,stD);                                                 // parapet
  for(const sx of[-1,1])for(const sz of[-1,1]){vB('vStone',sx*(W/2-1.2),c2,sz*(D/2-1.2),1.6,1.2,1.6,0,st);kput('vPyrCu',[sx*(W/2-1.2),c2+1.2,sz*(D/2-1.2)],null,[1.9,1.2,1.9],cu);}
  // drum + dome

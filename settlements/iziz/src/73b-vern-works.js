@@ -122,7 +122,7 @@ function buildVernQuarry(G,o){reseed(8411+(o.v|0));const wood=vC(vPick(VPAL.wood
  vnReg('Quarry and mason\'s lodge (middle)',0,0,14,10);
  // the uncut flanks either side of the cut, with overburden on their brows
  for(const s of[-1,1]){vwkCrag(s*10.5,-7.5,7.4,8.2,9,st,[]);
-  for(let k=0;k<4;k++)kput('vRock',[s*rr(8.6,12),rr(7.3,7.8),-7.5+rr(-2.6,2.6)],qEuler(0,rr(0,3),0),[rr(1.2,1.8),rr(.6,1.1),rr(1.2,1.7)],(k%2?soil:st2).clone().multiplyScalar(rr(.85,1.1)));
+  for(let k=0;k<4;k++)kput('vRock',[s*rr(8.6,12),rr(7.3,7.8),-7.5+rr(-2.6,2.6)],qEuler(0,rr(0,3),0),[rr(1.4,2.0),rr(.25,.45),rr(1.2,1.7)],(k%2?soil:st2).clone().multiplyScalar(rr(.85,1.1)));
   for(let k=0;k<3;k++)kput('vRock',[s*rr(7.6,13),.1,rr(-3.3,-2.6)],qEuler(rr(0,3),rr(0,3),0),[rr(.4,.8),rr(.3,.5),rr(.4,.7)],st2);}
  // the cut: three benches stepping back, each face with bedding lines and drill grooves, part-cut blocks on the benches
  const T=[[2.6,-3.5],[5.2,-6.2],[7.6,-8.9]];

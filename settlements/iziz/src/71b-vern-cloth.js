@@ -14,7 +14,7 @@ function vclVat(x,y,z,r,h,dye){vPst('vClayPot',x,y,z,r,h,vC(vPick([0x9a5a38,0xa8
 function vclHang(x,y,z,ry,w,L,c){c=c.clone().multiplyScalar(1.55);const a=loc(x,z,0,.03,ry),b=loc(x,z,0,-.03,ry);kput('vTarp',[a[0],y-L/2,a[1]],vQ(ry,rr(-.05,.05),rr(-.03,.03)),[w,L,1],c);
  kput('vTarp',[b[0],y-L*.36,b[1]],vQ(ry,0,0),[w,L*.72,1],c.clone().multiplyScalar(.82));}
 // a hide laced into a pole frame (two posts, two bars), the lacing a few cords from its edge to the frame
-function vclHideFrame(x,z,ry,w,h,c){const wood=vC(vPick(VPAL.woodPoor));for(const s of[-1,1]){const p=loc(x,z,s*w/2,0,ry);vPst('vPost',p[0],0,p[1],.07,h+.5,wood);}
+function vclHideFrame(x,z,ry,w,h,c){c=c.clone().multiplyScalar(1.45);const wood=vC(vPick(VPAL.woodPoor));for(const s of[-1,1]){const p=loc(x,z,s*w/2,0,ry);vPst('vPost',p[0],0,p[1],.07,h+.5,wood);}
  for(const yy of[.45,h+.35]){const a=loc(x,z,-w/2-.1,0,ry),b=loc(x,z,w/2+.1,0,ry);vBeam([a[0],yy,a[1]],[b[0],yy,b[1]],.08,wood);}
  const hw=w-.55,hh=h-.6,yc=.45+(h-.1)/2;const p=loc(x,z,0,.02,ry);kput('vTarp',[p[0],yc,p[1]],vQ(ry,0,rr(-.06,.06)),[hw,hh,1],c);
  kput('vTarp',[p[0],yc+rr(-.1,.1),p[1]],vQ(ry,0,rr(.5,.8)),[hw*.62,hh*.62,1],c.clone().multiplyScalar(.92));   // the hide's ragged outline: a second, turned sheet

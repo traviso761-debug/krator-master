@@ -105,10 +105,11 @@
       'height (6.62); the tower, the balcony (no door onto it) and the walled court are not planned. Without interiors the ground ' +
       'storey is the battered block (14 x 12 at its foot) it always was' });
   add({ key: 'vern_house_rich_b', name: 'Domed house', wealth: RICH, types: SF, lot: [26, 23],
-    bodies: [{ id: 'house', poly: rect(12.4, 11.6), y: 0.5, levels: [{ h: 4.65 }, { h: 3.5, poly: rect(11.8, 11) }], wall: 0.45, roof: 'flat',
-      doors: [{ at: [0, 5.8], w: 1.6 }], program: [['hall', 'living', 'kitchen', 'store'], ['bedroom', 'bedroom', 'study', 'bedroom']] }],
-    note: 'two ashlar storeys under a parapet and the dome (the drum is not planned), the upper one planned on its own drawn ' +
-      '11.8 x 11; the loggia in front and the garden are open' });
+    bodies: [{ id: 'house', poly: rect(11.8, 11), y: 0.5, levels: [{ h: 4.65 }, { h: 3.5 }], wall: 0.15, roof: 'flat',
+      doors: [{ at: [0, 5.5], w: 1.6 }], program: [['hall', 'living', 'kitchen', 'store'], ['bedroom', 'bedroom', 'study', 'bedroom']] }],
+    note: 'two ashlar storeys under a parapet and the dome (the drum is not planned), both planned on the upper storey\'s ' +
+      '11.8 x 11 with a 0.15 wall, which puts the planned inner face on both drawn ones (the ground storey 12.4 x 11.6 with walls ' +
+      '0.45, the upper 11.8 x 11 with 0.15; a per-storey outline leaves no wall for the stair); the loggia in front and the garden are open' });
 
   /* ================================================================ trade and industry (71-vern-trade.js) */
   add({ key: 'vern_shops', name: 'Shop row', wealth: MID, types: ['market/shop'], lot: [18, 12],
