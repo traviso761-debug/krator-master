@@ -221,10 +221,11 @@ FK.set({ culture: 'iziz', tier: 'common', roles: 'trade', prefix: 'iziz_trade_',
   bin: 'Grain bin', larder: 'Larder', bunk: 'Hand\'s bunk', locker: 'Mahogany locker', lathe: 'Pole lathe', press: 'Screw press',
   kiln: 'Glaze kiln', grindstone: 'Grindstone', altar: 'Household sun altar', barrel: 'Barrel rack' } });
 
-/* the trade rooms' own pieces (2026-10-16): a bakery's oven and a butcher's block */
+/* the trade rooms' own pieces (2026-10-16): a bakery's oven and a butcher's block, each in its own trade's room only (a
+   kitchen or workshop listed here put an oven in every living room and a block in every workroom) */
 FURN({
   key: 'iziz_bread_oven', name: 'Brick bread oven', culture: 'iziz', tier: 'common', type: 'stove', role: 'oven', setting: 'indoor',
-  rooms: ['kitchen', 'bakery'], anchor: 'wall', clearance: { front: 1.4 },
+  rooms: ['bakery'], anchor: 'wall', clearance: { front: 1.4 },
   materials: ['stone', 'ceramic', 'metal', 'emissive', 'timber'],
   w: 2.4, d: 1.8, h: 2.2, variants: 1,
   build: function (F) {
@@ -242,7 +243,7 @@ FURN({
 });
 FURN({
   key: 'iziz_butcher_block', name: 'Butcher\'s block and hook rail', culture: 'iziz', tier: 'common', type: 'workstation', role: 'block', setting: 'indoor',
-  rooms: ['kitchen', 'workshop', 'butcher', 'store'], anchor: 'floor', clearance: { front: 0.9 }, job: 'trading',
+  rooms: ['butcher'], anchor: 'floor', clearance: { front: 0.9 }, job: 'trading',
   materials: ['timber', 'metal'],
   w: 1.4, d: 0.9, h: 2.0, variants: 1,
   build: function (F) {
