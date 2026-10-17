@@ -123,12 +123,15 @@
     note: 'the long hall and the inn rooms in the board storey above; the cross-gabled porch is open' });
   add({ key: 'vern_workshop_a', name: "Carpenter's workshop", wealth: MID, types: ['industry'], lot: [14, 12],
     bodies: [{ id: 'store', poly: rect(8.8, 3.85, 0, -1.575), y: 0.2, levels: [{ h: 3.4 }], wall: 0.12, roof: 'flat',
-      doors: [{ at: [-1.2, 0.35], w: 1.0 }], program: ['store'] }],
+      doors: [{ at: [-3.2, 0.35], w: 1.0 }], program: ['store'] }],
     rooms: [{ id: 'shed', kind: 'workshop', poly: rect(8.7, 2.9, 0, 1.85), y: 0.2, h: 3.3, doors: [{ at: [0, 3.3], w: 8.0, swing: 'none' }],
       fixtures: [{ id: 'bench-a', kind: 'bench', x: -2.2, z: 2.1, ry: 0, w: 3.2, d: 0.9, h: 0.9, reach: false },
-        { id: 'bench-b', kind: 'bench', x: 2.4, z: 2.2, ry: 0, w: 2.4, d: 0.8, h: 0.9, reach: false }] }],
-    note: 'the open-fronted shed (its two benches are fixtures) and the board-walled back half as the timber store, its door ' +
-      'from the shed drawn only when hollow (the solid block has none)' });
+        { id: 'bench-b', kind: 'bench', x: 2.4, z: 2.2, ry: 0, w: 2.4, d: 0.8, h: 0.9, reach: false },
+        { id: 'planks', kind: 'bench', x: 2.9, z: 1.0, ry: 0, w: 2.7, d: 0.4, h: 1.3, reach: false },
+        { id: 'sawhorses', kind: 'bench', x: 0, z: 0.95, ry: 0, w: 2.7, d: 0.6, h: 1.1, reach: false }] }],
+    note: 'the open-fronted shed (its benches, plank stack and sawhorses are fixtures) and the board-walled back half as the ' +
+      'timber store, its door from the shed drawn only when hollow (the solid block has none; hollow, the planks and sawhorses ' +
+      'stand in the shed, not through the store\'s wall)' });
   add({ key: 'vern_workshop_b', name: "Potter's workshop", wealth: MID, types: ['industry', 'market/shop'], lot: [16, 12],
     bodies: [{ id: 'shop', poly: rect(7.86, 6.86), y: 0.3, levels: [{ h: 3.2 }], wall: 0.25, roof: 'hip', pitch: pt(2.1 / 3.5),
       doors: [{ at: [2.4, 3.43], w: 1.0 }], program: ['shop', 'workshop'] }],

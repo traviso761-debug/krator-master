@@ -56,14 +56,14 @@ function buildVernMine(G,o){reseed(8401+(o.v|0));const wood=vC(vPick(VPAL.woodPo
  const AX=-6,SX=1,SZ=-1.5,HX=8.5,HZ=1.5,HW=7,HD=5.5,FL=.5,HH=2.6;
  vnReg('Mine head (poor)',0,0,13,10.5);
  // the rock mass: a battered hummock of grey-orange stone, crags on its brow and boulders at its foot
- vwkCrag(0,-7.5,24,6.2,7,rock,[[AX,2.6],[SX,0]]);
+ vwkCrag(0,-7.5,24,7.8,7,rock,[[AX,2.6],[SX,0]]);
  // the adit: a dark mouth in the face, three timber sets lagged with boards, dry-stone wing walls
  vB('vDarkB',AX,0,-4.2,2.6,2.75,.7,0);
  for(const z of[-3.95,-2.95,-1.95]){for(const s of[-1,1])vPst('vPostB',AX+s*1.38,0,z,.15,2.8,dark);vB('vWood',AX,2.8,z,3.3,.3,.34,0,dark);}
  for(let k=0;k<8;k++)vB('vWood',AX-1.55+k*.44,3.1,-2.95,.4,.08,2.5,0,wood.clone().multiplyScalar(rr(.8,1.1)));
  for(const s of[-1,1]){vPl('vBoard',AX+s*1.55,.75,-2.95,2.2,1.4,s*Math.PI/2,wood);
   vB('vStone',AX+s*2.5,0,-3.3,1.4,2.4,1.4,0,rock);vB('vStone',AX+s*2.6,0,-2.1,1.2,1.3,1.0,0,rock.clone().multiplyScalar(.9));
-  kput('vRock',[AX+s*2.6,3.3,-3.6],qEuler(0,rr(0,3),0),[1.3,.8,1],rock);}
+  kput('rubble',[AX+s*2.6,3.0,-3.5],qEuler(rr(-.3,.3),rr(0,3),rr(-.3,.3)),[1.3,.8,1.0],rock.clone().multiplyScalar(.92));}
  vB('vWood',AX,3.18,-3.4,3.6,.5,1.3,0,dark.clone().multiplyScalar(.85));                         // head board under the brow
  // the rail line out of the adit to the tip, a cart on it, a stop block
  for(const s of[-1,1])vB('vIron',AX+s*.45,.12,1.4,.07,.09,10.8,0,iron);

@@ -75,14 +75,15 @@ function buildVernWorkshopA(G,o){reseed(7421+(o.v|0));const W=9,D=7,H=3.4;const 
  vnReg('Carpenter\'s workshop',0,0,7.5,H+2.6);
  vB('vStone',0,-.1,0,W+.4,.3,D+.4,0,vC(0x9a8a78));vnFrame(0,.2,0,W,H,D,0,wood,.16);
  // back half enclosed (the timber store), front open; hollow, its door from the shed is drawn (it has none without)
- if(vnBody('vWood',0,.2,-D*.225,W-.2,H,D*.55,0,wood.clone().multiplyScalar(.95),{t:.12}))vnDoor(-1.2,.2,-D*.225+D*.275,0,1.0,2.1,'vWood',wood,vC(0x6a4a30),false);
+ const HX=!!(VERN.cur&&VERN.cur.hollow);   // hollow: the planks and sawhorses kept in the shed, clear of the store's wall and door
+ if(vnBody('vWood',0,.2,-D*.225,W-.2,H,D*.55,0,wood.clone().multiplyScalar(.95),{t:.12}))vnDoor(-3.2,.2,-D*.225+D*.275,0,1.0,2.1,'vWood',wood,vC(0x6a4a30),false);
  vnPatch(-W/2+.1,.2,-D*.22,-Math.PI/2,D*.55,H,2);
  vnShedRoof(0,.2+H,0,W,D,1.3,0,'vCorr',null,.9,.12);
  // the open front: benches, tool rack, stacked planks, sawhorses
  vB('vWood',-2.2,.2,D/2-1.4,3.2,.9,.9,0,wood);vB('vWood',2.4,.2,D/2-1.3,2.4,.9,.8,0,wood);
  for(let k=0;k<6;k++)vB('vWood',-3.2+k*.5,1.1,D/2-1.4,.08,.6,.08,0,vC(0x2e2a26));                 // tools standing on the bench
- for(let k=0;k<7;k++)kput('vWood',[W/2-1.2,.35+k*.16,-D*.1],qEuler(0,rr(-.06,.06),0),[.28,.14,4.2],wood.clone().multiplyScalar(rr(.85,1.1)));   // plank stack
- for(const x of[-1,1])for(const s of[-1,1])kput('vWood',[x*.9+s*.35,.55,D/2-3.2],vQ(0,0,s*.35),[.08,1.1,.08],wood);kput('vWood',[0,1.05,D/2-3.2],null,[2.6,.14,.14],wood);   // sawhorses + beam
+ for(let k=0;k<7;k++)kput('vWood',HX?[W/2-1.6,.35+k*.16,1.0]:[W/2-1.2,.35+k*.16,-D*.1],qEuler(0,(HX?Math.PI/2:0)+rr(-.06,.06),0),[.28,.14,HX?2.6:4.2],wood.clone().multiplyScalar(rr(.85,1.1)));   // plank stack
+ const SZ=HX?.95:D/2-3.2;for(const x of[-1,1])for(const s of[-1,1])kput('vWood',[x*.9+s*.35,.55,SZ],vQ(0,0,s*.35),[.08,1.1,.08],wood);kput('vWood',[0,1.05,SZ],null,[2.6,.14,.14],wood);   // sawhorses + beam
  for(let k=0;k<5;k++)vPst('vPostB',-W/2-1.2+rr(-.3,.3),0,-2+k*.9,rr(.18,.3),rr(1.5,3.2),vC(vPick(VPAL.woodPoor)),qEuler(Math.PI/2*.98,rng()*.3,0));   // logs lying outside
  vB('vDarkB',0,-.02,D/2+2.4,3.0,.06,1.2,0);for(const s of[-1,1])vB('vWood',s*1.6,0,D/2+2.4,.12,.3,1.3,0,wood);                                   // sawpit
  vnCrate(W/2+.8,0,1.2,.9,.4,wood);vnBarrel(W/2+1,0,-.6,.4,1,wood);vnFolk(-1,D/2+4.2,2,1.2);}

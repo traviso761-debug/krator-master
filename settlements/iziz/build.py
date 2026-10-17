@@ -98,7 +98,8 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
-TARGET_CORE = {'city': ['atmos', 'mask', 'export'], 'vernacular': ['furnish']}   # furnish: core/furnish's colour step for the interiors' furniture (95i)   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
+TARGET_CORE = {'city': ['atmos', 'mask', 'export'], 'vernacular': ['furnish'],
+               **{t: ['furnish'] for t in ('ag-food', 'ag-cloth', 'ag-craft', 'ag-works', 'ag-land', 'ag-hollow')}}   # furnish: core/furnish's colour step for the interiors' furniture (95i)   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
 # core/host (core/host/README.md; ROADMAP.md section 10, step 3): the camera, loop, panel, probe, inspector, marks, pictures,
 # minimap, editor and cutaway, with core/clock and core/minimap. Not core/space: the hyperjungle's scatter takes another path
 # when it is on the page (KNOWN_ISSUES.md, 2026-10-13), so the inspector scans the records instead. Not core/edits: Iziz has
