@@ -1,0 +1,6 @@
+dist/*.artifact.html
+dist/pieces/
+dist/thumbs/
+dist/.check.js
+# made by tools/make_kit.py from donors/ (deterministic); rebuild rather than commit
+pieces/

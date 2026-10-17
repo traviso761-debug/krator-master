@@ -4,3 +4,6 @@
 data/**/*.import
 data/**/region_*.png
 editor_import/
+
+# core/charactermodels pieces (tools/sync_core.py copies them in; ~80 MB, rebuilt by make_mpfb.py)
+data/characters/pieces/

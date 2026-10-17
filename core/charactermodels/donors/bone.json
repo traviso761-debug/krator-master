@@ -1,0 +1,9 @@
+{
+ "id": "bone",
+ "outfit": "bone armor: a breastplate, shoulder guards, bracers and shin guards made of pale polished bone plates strapped over dark padded cloth, bone-plated gloves, sturdy dark leather boots",
+ "prompt": "Full body game character, an adult man of average athletic build, standing in A-pose, stylized realistic, bare head with short dark hair, clean shaven, face visible, wearing bone armor: a breastplate, shoulder guards, bracers and shin guards made of pale polished bone plates strapped over dark padded cloth, bone-plated gloves, sturdy dark leather boots. Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.",
+ "preview": "01a125d4-5643-7169-b981-4fe411bb6566",
+ "refine": "01a125d5-15f6-77b6-99d5-3d051ca49d8c",
+ "rig": "01a125d7-3da8-7696-b68c-ba326efee143",
+ "glb": "bone.glb"
+}

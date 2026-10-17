@@ -32,6 +32,8 @@ tools/check_port.py is the lint that reads the tags this tool writes.
 import hashlib, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# core modules that are builds of their own (a build.py and src/): indexed and audited like a kit
+CORE_BUILDS = ['core/charactermodels']
 TAGS = ['[G data]', '[G shader]', '[G native]', '[web]', '[draw]']
 
 # The API families counted. Each is (column, regex). Counts are matching lines.
@@ -134,7 +136,7 @@ def fragments(build):
     if build == 'core':
         for mod in sorted(os.listdir(os.path.join(ROOT, 'core'))):
             d = os.path.join(ROOT, 'core', mod)
-            if not os.path.isdir(d):
+            if not os.path.isdir(d) or 'core/' + mod in CORE_BUILDS:   # a core build has its own PORT.md
                 continue
             for dp, dn, fn in os.walk(d):
                 dn[:] = sorted(x for x in dn if x not in ('example', 'demo', 'node_modules'))
@@ -169,7 +171,7 @@ def builds():
         for name in sorted(os.listdir(d)):
             if os.path.isfile(os.path.join(d, name, 'build.py')):
                 out.append('%s/%s' % (top, name))
-    return out
+    return out + CORE_BUILDS
 
 
 ROW = re.compile(r'^\|\s*`([^`]+)`\s*\|\s*([0-9.]+)\s*\|\s*(\[[^\]]+\])\s*\|(.*)\|\s*(.*?)\s*\|$')

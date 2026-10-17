@@ -1,0 +1,59 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.374,
+    1.163
+   ],
+   "seam_before": [
+    1.327,
+    1.328
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.9,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.velvet",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   0.2,
+   0.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Crushed Velvet.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cotton velvet pile seen close: a soft directional sheen, crushed patches where the pile lies the other way. Fine scale: the whole frame is about 20 cm of cloth. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from core/charactermodels/prompt-clothes.md for this row; delivered as an image pasted in chat (2026-10-14), untitled.]",
+  "sha1": "c96eaec0c9f89d17f037c6971b754f632f2950d3"
+ }
+}

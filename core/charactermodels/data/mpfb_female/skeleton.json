@@ -1,0 +1,4629 @@
+{
+ "joints": [
+  {
+   "name": "Hips",
+   "parent": -1,
+   "t": [
+    0.00411,
+    0.86118,
+    0.024491
+   ],
+   "r": [
+    -0.0136744,
+    0.0164747,
+    0.0167128,
+    0.9996311
+   ]
+  },
+  {
+   "name": "LeftUpLeg",
+   "parent": 0,
+   "t": [
+    0.089077,
+    -0.049327,
+    -0.005454
+   ],
+   "r": [
+    -0.0635741,
+    0.0261126,
+    0.9969433,
+    -0.0371546
+   ]
+  },
+  {
+   "name": "LeftLeg",
+   "parent": 1,
+   "t": [
+    -0.0,
+    0.372283,
+    0.0
+   ],
+   "r": [
+    -0.0626367,
+    0.0107449,
+    -0.0196757,
+    0.9977846
+   ]
+  },
+  {
+   "name": "LeftFoot",
+   "parent": 2,
+   "t": [
+    -0.0,
+    0.379145,
+    -0.0
+   ],
+   "r": [
+    0.5799924,
+    0.1232575,
+    0.1361056,
+    0.7936571
+   ]
+  },
+  {
+   "name": "LeftToeBase",
+   "parent": 3,
+   "t": [
+    0.0,
+    0.131342,
+    0.0
+   ],
+   "r": [
+    -0.0482574,
+    0.9868764,
+    0.028226,
+    0.1514907
+   ]
+  },
+  {
+   "name": "RightUpLeg",
+   "parent": 0,
+   "t": [
+    -0.099879,
+    -0.042921,
+    -0.011598
+   ],
+   "r": [
+    0.0319968,
+    0.0227248,
+    0.9966522,
+    0.0717223
+   ]
+  },
+  {
+   "name": "RightLeg",
+   "parent": 5,
+   "t": [
+    -0.0,
+    0.372283,
+    -0.0
+   ],
+   "r": [
+    -0.0626372,
+    -0.0107549,
+    0.0196746,
+    0.9977845
+   ]
+  },
+  {
+   "name": "RightFoot",
+   "parent": 6,
+   "t": [
+    -0.0,
+    0.379145,
+    0.0
+   ],
+   "r": [
+    0.5427222,
+    -0.2744254,
+    -0.245705,
+    0.7548327
+   ]
+  },
+  {
+   "name": "RightToeBase",
+   "parent": 7,
+   "t": [
+    0.0,
+    0.131342,
+    -0.0
+   ],
+   "r": [
+    0.0133862,
+    0.2510018,
+    -0.0542798,
+    0.9663708
+   ]
+  },
+  {
+   "name": "Spine",
+   "parent": 0,
+   "t": [
+    0.0,
+    0.121358,
+    0.0
+   ],
+   "r": [
+    -0.0179017,
+    -0.0177984,
+    -0.017191,
+    0.9995335
+   ]
+  },
+  {
+   "name": "Spine1",
+   "parent": 9,
+   "t": [
+    0.0,
+    0.102098,
+    -0.0
+   ],
+   "r": [
+    0.0212718,
+    0.0018596,
+    -3.96e-05,
+    0.999772
+   ]
+  },
+  {
+   "name": "Spine2",
+   "parent": 10,
+   "t": [
+    0.0,
+    0.118811,
+    0.0
+   ],
+   "r": [
+    -0.0368802,
+    -0.0,
+    0.0,
+    0.9993197
+   ]
+  },
+  {
+   "name": "LeftShoulder",
+   "parent": 11,
+   "t": [
+    0.060754,
+    0.119176,
+    0.016301
+   ],
+   "r": [
+    -0.5248245,
+    -0.2957902,
+    0.7038373,
+    -0.3764046
+   ]
+  },
+  {
+   "name": "LeftArm",
+   "parent": 12,
+   "t": [
+    0.0,
+    0.110804,
+    0.0
+   ],
+   "r": [
+    0.1018586,
+    -0.2470439,
+    -0.0788937,
+    0.9604009
+   ]
+  },
+  {
+   "name": "LeftForeArm",
+   "parent": 13,
+   "t": [
+    -0.0,
+    0.232265,
+    0.0
+   ],
+   "r": [
+    0.2512429,
+    -0.0026179,
+    0.2180993,
+    0.9430286
+   ]
+  },
+  {
+   "name": "LeftHand",
+   "parent": 14,
+   "t": [
+    -0.0,
+    0.21086,
+    -0.0
+   ],
+   "r": [
+    0.0222383,
+    -0.0141888,
+    -0.0494403,
+    0.9984287
+   ]
+  },
+  {
+   "name": "LeftHandIndex1",
+   "parent": 15,
+   "t": [
+    -0.023618,
+    0.08892,
+    0.028216
+   ],
+   "r": [
+    0.1642348,
+    -0.4001091,
+    -0.0735333,
+    0.8986281
+   ]
+  },
+  {
+   "name": "LeftHandIndex2",
+   "parent": 16,
+   "t": [
+    -0.0,
+    0.023369,
+    0.0
+   ],
+   "r": [
+    -0.0657245,
+    -0.2091382,
+    -0.0900994,
+    0.9715058
+   ]
+  },
+  {
+   "name": "LeftHandIndex3",
+   "parent": 17,
+   "t": [
+    0.0,
+    0.020821,
+    -0.0
+   ],
+   "r": [
+    -0.0434821,
+    -0.1190235,
+    -0.0510687,
+    0.9906234
+   ]
+  },
+  {
+   "name": "LeftHandMiddle1",
+   "parent": 15,
+   "t": [
+    -0.012517,
+    0.090988,
+    0.007012
+   ],
+   "r": [
+    0.0460157,
+    -0.3429283,
+    -0.1330477,
+    0.9287524
+   ]
+  },
+  {
+   "name": "LeftHandMiddle2",
+   "parent": 19,
+   "t": [
+    0.0,
+    0.030751,
+    -0.0
+   ],
+   "r": [
+    0.018847,
+    -0.1150432,
+    -0.0570831,
+    0.9915399
+   ]
+  },
+  {
+   "name": "LeftHandMiddle3",
+   "parent": 20,
+   "t": [
+    0.0,
+    0.025189,
+    0.0
+   ],
+   "r": [
+    -0.0391589,
+    -0.0953205,
+    -0.0537583,
+    0.9932223
+   ]
+  },
+  {
+   "name": "LeftHandPinky1",
+   "parent": 15,
+   "t": [
+    0.01293,
+    0.082909,
+    -0.018281
+   ],
+   "r": [
+    -0.078669,
+    -0.2993432,
+    -0.2074946,
+    0.9279821
+   ]
+  },
+  {
+   "name": "LeftHandPinky2",
+   "parent": 22,
+   "t": [
+    0.0,
+    0.019335,
+    -0.0
+   ],
+   "r": [
+    0.0273623,
+    -0.1140795,
+    -0.0787507,
+    0.9899674
+   ]
+  },
+  {
+   "name": "LeftHandPinky3",
+   "parent": 23,
+   "t": [
+    -0.0,
+    0.014155,
+    0.0
+   ],
+   "r": [
+    -0.0121856,
+    0.0194634,
+    0.0125533,
+    0.9996575
+   ]
+  },
+  {
+   "name": "LeftHandRing1",
+   "parent": 15,
+   "t": [
+    -0.001464,
+    0.088587,
+    -0.007191
+   ],
+   "r": [
+    -0.0296629,
+    -0.2666218,
+    -0.1449254,
+    0.952381
+   ]
+  },
+  {
+   "name": "LeftHandRing2",
+   "parent": 25,
+   "t": [
+    0.0,
+    0.026923,
+    0.0
+   ],
+   "r": [
+    0.031428,
+    -0.1204097,
+    -0.0685201,
+    0.989858
+   ]
+  },
+  {
+   "name": "LeftHandRing3",
+   "parent": 26,
+   "t": [
+    -0.0,
+    0.022469,
+    -0.0
+   ],
+   "r": [
+    -0.0353223,
+    -0.0570761,
+    -0.0419872,
+    0.9968609
+   ]
+  },
+  {
+   "name": "LeftHandThumb1",
+   "parent": 15,
+   "t": [
+    -0.015097,
+    0.029815,
+    0.021842
+   ],
+   "r": [
+    0.3168053,
+    -0.6284201,
+    -0.4950772,
+    0.5095303
+   ]
+  },
+  {
+   "name": "LeftHandThumb2",
+   "parent": 28,
+   "t": [
+    -0.0,
+    0.027966,
+    0.0
+   ],
+   "r": [
+    0.0981186,
+    0.0530222,
+    0.1680946,
+    0.9794415
+   ]
+  },
+  {
+   "name": "LeftHandThumb3",
+   "parent": 29,
+   "t": [
+    0.0,
+    0.032633,
+    -0.0
+   ],
+   "r": [
+    -0.1014782,
+    0.2934088,
+    0.0983336,
+    0.9454861
+   ]
+  },
+  {
+   "name": "Neck",
+   "parent": 11,
+   "t": [
+    0.0,
+    0.143509,
+    -0.0
+   ],
+   "r": [
+    0.0919415,
+    0.0,
+    -0.0,
+    0.9957644
+   ]
+  },
+  {
+   "name": "Head",
+   "parent": 31,
+   "t": [
+    0.000439,
+    0.061244,
+    0.0199
+   ],
+   "r": [
+    -0.0657645,
+    0.0012014,
+    0.001098,
+    0.9978338
+   ]
+  },
+  {
+   "name": "RightShoulder",
+   "parent": 11,
+   "t": [
+    -0.051261,
+    0.119007,
+    0.013256
+   ],
+   "r": [
+    0.5419997,
+    -0.3087158,
+    0.6768708,
+    0.3908668
+   ]
+  },
+  {
+   "name": "RightArm",
+   "parent": 33,
+   "t": [
+    0.0,
+    0.118786,
+    -0.0
+   ],
+   "r": [
+    0.117001,
+    0.2709754,
+    0.0982289,
+    0.9503863
+   ]
+  },
+  {
+   "name": "RightForeArm",
+   "parent": 34,
+   "t": [
+    -0.0,
+    0.232265,
+    -0.0
+   ],
+   "r": [
+    0.250537,
+    0.0037873,
+    -0.2189097,
+    0.9430246
+   ]
+  },
+  {
+   "name": "RightHand",
+   "parent": 35,
+   "t": [
+    -0.0,
+    0.21086,
+    0.0
+   ],
+   "r": [
+    0.040156,
+    0.1243026,
+    0.0583747,
+    0.9897114
+   ]
+  },
+  {
+   "name": "RightHandIndex1",
+   "parent": 36,
+   "t": [
+    0.018714,
+    0.089945,
+    0.028641
+   ],
+   "r": [
+    0.1371835,
+    0.300997,
+    0.0751167,
+    0.940712
+   ]
+  },
+  {
+   "name": "RightHandIndex2",
+   "parent": 37,
+   "t": [
+    0.0,
+    0.023369,
+    -0.0
+   ],
+   "r": [
+    -0.0657679,
+    0.2091019,
+    0.0900678,
+    0.9715137
+   ]
+  },
+  {
+   "name": "RightHandIndex3",
+   "parent": 38,
+   "t": [
+    0.0,
+    0.020821,
+    -0.0
+   ],
+   "r": [
+    -0.0435096,
+    0.1191177,
+    0.0510452,
+    0.9906121
+   ]
+  },
+  {
+   "name": "RightHandMiddle1",
+   "parent": 36,
+   "t": [
+    0.012477,
+    0.091099,
+    0.005471
+   ],
+   "r": [
+    0.0120599,
+    0.2436134,
+    0.122536,
+    0.9620249
+   ]
+  },
+  {
+   "name": "RightHandMiddle2",
+   "parent": 40,
+   "t": [
+    0.0,
+    0.030751,
+    0.0
+   ],
+   "r": [
+    0.0187617,
+    0.1150533,
+    0.0571113,
+    0.9915387
+   ]
+  },
+  {
+   "name": "RightHandMiddle3",
+   "parent": 41,
+   "t": [
+    -0.0,
+    0.025189,
+    -0.0
+   ],
+   "r": [
+    -0.0392392,
+    0.0953106,
+    0.0536997,
+    0.9932233
+   ]
+  },
+  {
+   "name": "RightHandPinky1",
+   "parent": 36,
+   "t": [
+    -0.007085,
+    0.082056,
+    -0.02433
+   ],
+   "r": [
+    -0.1201363,
+    0.2023433,
+    0.1840129,
+    0.9543394
+   ]
+  },
+  {
+   "name": "RightHandPinky2",
+   "parent": 43,
+   "t": [
+    0.0,
+    0.019335,
+    -0.0
+   ],
+   "r": [
+    0.0273552,
+    0.1140794,
+    0.0787531,
+    0.9899674
+   ]
+  },
+  {
+   "name": "RightHandPinky3",
+   "parent": 44,
+   "t": [
+    0.0,
+    0.014155,
+    0.0
+   ],
+   "r": [
+    -0.0121846,
+    -0.0194734,
+    -0.0125542,
+    0.9996573
+   ]
+  },
+  {
+   "name": "RightHandRing1",
+   "parent": 36,
+   "t": [
+    0.004693,
+    0.088124,
+    -0.010661
+   ],
+   "r": [
+    -0.0652814,
+    0.1640596,
+    0.1278195,
+    0.9759534
+   ]
+  },
+  {
+   "name": "RightHandRing2",
+   "parent": 46,
+   "t": [
+    0.0,
+    0.026923,
+    0.0
+   ],
+   "r": [
+    0.0316108,
+    0.1203356,
+    0.068436,
+    0.989867
+   ]
+  },
+  {
+   "name": "RightHandRing3",
+   "parent": 47,
+   "t": [
+    0.0,
+    0.022469,
+    -0.0
+   ],
+   "r": [
+    -0.0352076,
+    0.057091,
+    0.0420835,
+    0.9968601
+   ]
+  },
+  {
+   "name": "RightHandThumb1",
+   "parent": 36,
+   "t": [
+    0.01062,
+    0.030685,
+    0.023229
+   ],
+   "r": [
+    0.2220585,
+    0.6135175,
+    0.5227172,
+    0.548683
+   ]
+  },
+  {
+   "name": "RightHandThumb2",
+   "parent": 49,
+   "t": [
+    -0.0,
+    0.027966,
+    -0.0
+   ],
+   "r": [
+    0.0944668,
+    -0.1938914,
+    -0.1701736,
+    0.9615212
+   ]
+  },
+  {
+   "name": "RightHandThumb3",
+   "parent": 50,
+   "t": [
+    -0.0,
+    0.032633,
+    0.0
+   ],
+   "r": [
+    -0.1179213,
+    -0.3119018,
+    -0.0778583,
+    0.9395477
+   ]
+  },
+  {
+   "name": "Left2Shoulder",
+   "parent": 11,
+   "t": [
+    0.015754,
+    -0.07971,
+    0.01255
+   ],
+   "r": [
+    -0.5248245,
+    -0.2957902,
+    0.7038373,
+    -0.3764046
+   ]
+  },
+  {
+   "name": "Left2Arm",
+   "parent": 52,
+   "t": [
+    0.0,
+    0.110804,
+    0.0
+   ],
+   "r": [
+    0.309449,
+    -0.2361291,
+    -0.2221387,
+    0.8939456
+   ]
+  },
+  {
+   "name": "Left2ForeArm",
+   "parent": 53,
+   "t": [
+    -0.0,
+    0.232265,
+    -0.0
+   ],
+   "r": [
+    0.2512429,
+    -0.002618,
+    0.2180993,
+    0.9430286
+   ]
+  },
+  {
+   "name": "Left2Hand",
+   "parent": 54,
+   "t": [
+    -0.0,
+    0.21086,
+    -0.0
+   ],
+   "r": [
+    0.0222383,
+    -0.0141887,
+    -0.0494403,
+    0.9984287
+   ]
+  },
+  {
+   "name": "Left2HandIndex1",
+   "parent": 55,
+   "t": [
+    -0.023618,
+    0.08892,
+    0.028216
+   ],
+   "r": [
+    0.1642348,
+    -0.4001091,
+    -0.0735333,
+    0.8986281
+   ]
+  },
+  {
+   "name": "Left2HandIndex2",
+   "parent": 56,
+   "t": [
+    -0.0,
+    0.023369,
+    0.0
+   ],
+   "r": [
+    -0.0657245,
+    -0.2091382,
+    -0.0900994,
+    0.9715058
+   ]
+  },
+  {
+   "name": "Left2HandIndex3",
+   "parent": 57,
+   "t": [
+    0.0,
+    0.020821,
+    -0.0
+   ],
+   "r": [
+    -0.0434821,
+    -0.1190234,
+    -0.0510687,
+    0.9906234
+   ]
+  },
+  {
+   "name": "Left2HandMiddle1",
+   "parent": 55,
+   "t": [
+    -0.012517,
+    0.090988,
+    0.007012
+   ],
+   "r": [
+    0.0460157,
+    -0.3429283,
+    -0.1330477,
+    0.9287524
+   ]
+  },
+  {
+   "name": "Left2HandMiddle2",
+   "parent": 59,
+   "t": [
+    0.0,
+    0.030751,
+    -0.0
+   ],
+   "r": [
+    0.018847,
+    -0.1150432,
+    -0.0570831,
+    0.9915399
+   ]
+  },
+  {
+   "name": "Left2HandMiddle3",
+   "parent": 60,
+   "t": [
+    0.0,
+    0.025189,
+    0.0
+   ],
+   "r": [
+    -0.0391589,
+    -0.0953205,
+    -0.0537583,
+    0.9932223
+   ]
+  },
+  {
+   "name": "Left2HandPinky1",
+   "parent": 55,
+   "t": [
+    0.01293,
+    0.082909,
+    -0.018281
+   ],
+   "r": [
+    -0.078669,
+    -0.2993432,
+    -0.2074946,
+    0.9279821
+   ]
+  },
+  {
+   "name": "Left2HandPinky2",
+   "parent": 62,
+   "t": [
+    0.0,
+    0.019335,
+    -0.0
+   ],
+   "r": [
+    0.0273623,
+    -0.1140795,
+    -0.0787507,
+    0.9899674
+   ]
+  },
+  {
+   "name": "Left2HandPinky3",
+   "parent": 63,
+   "t": [
+    -0.0,
+    0.014155,
+    0.0
+   ],
+   "r": [
+    -0.0121856,
+    0.0194634,
+    0.0125533,
+    0.9996575
+   ]
+  },
+  {
+   "name": "Left2HandRing1",
+   "parent": 55,
+   "t": [
+    -0.001464,
+    0.088587,
+    -0.007191
+   ],
+   "r": [
+    -0.0296629,
+    -0.2666218,
+    -0.1449254,
+    0.952381
+   ]
+  },
+  {
+   "name": "Left2HandRing2",
+   "parent": 65,
+   "t": [
+    0.0,
+    0.026923,
+    0.0
+   ],
+   "r": [
+    0.031428,
+    -0.1204097,
+    -0.0685201,
+    0.989858
+   ]
+  },
+  {
+   "name": "Left2HandRing3",
+   "parent": 66,
+   "t": [
+    -0.0,
+    0.022469,
+    -0.0
+   ],
+   "r": [
+    -0.0353223,
+    -0.0570761,
+    -0.0419872,
+    0.9968609
+   ]
+  },
+  {
+   "name": "Left2HandThumb1",
+   "parent": 55,
+   "t": [
+    -0.015097,
+    0.029815,
+    0.021842
+   ],
+   "r": [
+    0.3168053,
+    -0.6284201,
+    -0.4950772,
+    0.5095303
+   ]
+  },
+  {
+   "name": "Left2HandThumb2",
+   "parent": 68,
+   "t": [
+    -0.0,
+    0.027966,
+    0.0
+   ],
+   "r": [
+    0.0981186,
+    0.0530222,
+    0.1680946,
+    0.9794415
+   ]
+  },
+  {
+   "name": "Left2HandThumb3",
+   "parent": 69,
+   "t": [
+    0.0,
+    0.032633,
+    -0.0
+   ],
+   "r": [
+    -0.1014782,
+    0.2934088,
+    0.0983336,
+    0.9454861
+   ]
+  },
+  {
+   "name": "Right2Shoulder",
+   "parent": 11,
+   "t": [
+    -0.006261,
+    -0.079879,
+    0.009505
+   ],
+   "r": [
+    0.5419997,
+    -0.3087158,
+    0.6768708,
+    0.3908668
+   ]
+  },
+  {
+   "name": "Right2Arm",
+   "parent": 71,
+   "t": [
+    0.0,
+    0.118786,
+    -0.0
+   ],
+   "r": [
+    0.3275869,
+    0.2597072,
+    0.2338975,
+    0.8777989
+   ]
+  },
+  {
+   "name": "Right2ForeArm",
+   "parent": 72,
+   "t": [
+    0.0,
+    0.232265,
+    -0.0
+   ],
+   "r": [
+    0.250537,
+    0.0037873,
+    -0.2189097,
+    0.9430246
+   ]
+  },
+  {
+   "name": "Right2Hand",
+   "parent": 73,
+   "t": [
+    -0.0,
+    0.21086,
+    0.0
+   ],
+   "r": [
+    0.040156,
+    0.1243026,
+    0.0583747,
+    0.9897114
+   ]
+  },
+  {
+   "name": "Right2HandIndex1",
+   "parent": 74,
+   "t": [
+    0.018714,
+    0.089945,
+    0.028641
+   ],
+   "r": [
+    0.1371835,
+    0.300997,
+    0.0751167,
+    0.940712
+   ]
+  },
+  {
+   "name": "Right2HandIndex2",
+   "parent": 75,
+   "t": [
+    0.0,
+    0.023369,
+    -0.0
+   ],
+   "r": [
+    -0.0657679,
+    0.2091019,
+    0.0900678,
+    0.9715137
+   ]
+  },
+  {
+   "name": "Right2HandIndex3",
+   "parent": 76,
+   "t": [
+    -0.0,
+    0.020821,
+    -0.0
+   ],
+   "r": [
+    -0.0435096,
+    0.1191177,
+    0.0510452,
+    0.9906121
+   ]
+  },
+  {
+   "name": "Right2HandMiddle1",
+   "parent": 74,
+   "t": [
+    0.012477,
+    0.091099,
+    0.005471
+   ],
+   "r": [
+    0.0120599,
+    0.2436134,
+    0.122536,
+    0.962025
+   ]
+  },
+  {
+   "name": "Right2HandMiddle2",
+   "parent": 78,
+   "t": [
+    0.0,
+    0.030751,
+    0.0
+   ],
+   "r": [
+    0.0187617,
+    0.1150533,
+    0.0571113,
+    0.9915387
+   ]
+  },
+  {
+   "name": "Right2HandMiddle3",
+   "parent": 79,
+   "t": [
+    -0.0,
+    0.025189,
+    -0.0
+   ],
+   "r": [
+    -0.0392392,
+    0.0953106,
+    0.0536997,
+    0.9932233
+   ]
+  },
+  {
+   "name": "Right2HandPinky1",
+   "parent": 74,
+   "t": [
+    -0.007085,
+    0.082056,
+    -0.02433
+   ],
+   "r": [
+    -0.1201363,
+    0.2023433,
+    0.1840129,
+    0.9543394
+   ]
+  },
+  {
+   "name": "Right2HandPinky2",
+   "parent": 81,
+   "t": [
+    0.0,
+    0.019335,
+    -0.0
+   ],
+   "r": [
+    0.0273552,
+    0.1140794,
+    0.0787531,
+    0.9899674
+   ]
+  },
+  {
+   "name": "Right2HandPinky3",
+   "parent": 82,
+   "t": [
+    0.0,
+    0.014155,
+    0.0
+   ],
+   "r": [
+    -0.0121846,
+    -0.0194734,
+    -0.0125542,
+    0.9996573
+   ]
+  },
+  {
+   "name": "Right2HandRing1",
+   "parent": 74,
+   "t": [
+    0.004693,
+    0.088124,
+    -0.010661
+   ],
+   "r": [
+    -0.0652815,
+    0.1640596,
+    0.1278195,
+    0.9759534
+   ]
+  },
+  {
+   "name": "Right2HandRing2",
+   "parent": 84,
+   "t": [
+    0.0,
+    0.026923,
+    0.0
+   ],
+   "r": [
+    0.0316108,
+    0.1203356,
+    0.068436,
+    0.989867
+   ]
+  },
+  {
+   "name": "Right2HandRing3",
+   "parent": 85,
+   "t": [
+    0.0,
+    0.022469,
+    -0.0
+   ],
+   "r": [
+    -0.0352076,
+    0.057091,
+    0.0420835,
+    0.9968601
+   ]
+  },
+  {
+   "name": "Right2HandThumb1",
+   "parent": 74,
+   "t": [
+    0.01062,
+    0.030685,
+    0.023229
+   ],
+   "r": [
+    0.2220585,
+    0.6135175,
+    0.5227172,
+    0.548683
+   ]
+  },
+  {
+   "name": "Right2HandThumb2",
+   "parent": 87,
+   "t": [
+    -0.0,
+    0.027966,
+    -0.0
+   ],
+   "r": [
+    0.0944668,
+    -0.1938914,
+    -0.1701736,
+    0.9615212
+   ]
+  },
+  {
+   "name": "Right2HandThumb3",
+   "parent": 88,
+   "t": [
+    -0.0,
+    0.032633,
+    0.0
+   ],
+   "r": [
+    -0.1179213,
+    -0.3119018,
+    -0.0778583,
+    0.9395477
+   ]
+  },
+  {
+   "name": "face_nose",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "name": "face_mouth",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "name": "face_chin",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "name": "face_jaw",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "name": "face_eye_L",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "name": "face_eye_R",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "name": "face_brow_L",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "name": "face_brow_R",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "name": "face_cheek_L",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  },
+  {
+   "name": "face_cheek_R",
+   "parent": 32,
+   "t": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "r": [
+    -0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  }
+ ],
+ "clips": [
+  {
+   "name": "walk",
+   "label": "Walk",
+   "group": "move",
+   "seconds": 1.03,
+   "loop": true
+  },
+  {
+   "name": "run",
+   "label": "Run",
+   "group": "move",
+   "seconds": 0.67,
+   "loop": true
+  },
+  {
+   "name": "stretch",
+   "label": "Stretch",
+   "group": "idle",
+   "seconds": 4.27,
+   "loop": true
+  },
+  {
+   "name": "idle",
+   "label": "Idle",
+   "group": "idle",
+   "seconds": 4.0,
+   "loop": true
+  },
+  {
+   "name": "idle_1",
+   "label": "Idle 1",
+   "group": "idle",
+   "seconds": 1.87,
+   "loop": true
+  },
+  {
+   "name": "idle_2",
+   "label": "Idle 2",
+   "group": "idle",
+   "seconds": 4.27,
+   "loop": true
+  },
+  {
+   "name": "idle_3",
+   "label": "Idle 3",
+   "group": "idle",
+   "seconds": 9.97,
+   "loop": true
+  },
+  {
+   "name": "idle_4",
+   "label": "Idle 4",
+   "group": "idle",
+   "seconds": 13.97,
+   "loop": true
+  },
+  {
+   "name": "idle_5",
+   "label": "Idle 5",
+   "group": "idle",
+   "seconds": 1.8,
+   "loop": true
+  },
+  {
+   "name": "idle_6",
+   "label": "Idle 6",
+   "group": "idle",
+   "seconds": 7.37,
+   "loop": true
+  },
+  {
+   "name": "idle_7",
+   "label": "Idle 7",
+   "group": "idle",
+   "seconds": 8.73,
+   "loop": true
+  },
+  {
+   "name": "idle_8",
+   "label": "Idle 8",
+   "group": "idle",
+   "seconds": 8.0,
+   "loop": true
+  },
+  {
+   "name": "idle_9",
+   "label": "Idle 9",
+   "group": "idle",
+   "seconds": 1.97,
+   "loop": true
+  },
+  {
+   "name": "idle_10",
+   "label": "Idle 10",
+   "group": "idle",
+   "seconds": 3.67,
+   "loop": true
+  },
+  {
+   "name": "idle_11",
+   "label": "Idle 11",
+   "group": "idle",
+   "seconds": 1.83,
+   "loop": true
+  },
+  {
+   "name": "idle_12",
+   "label": "Idle 12",
+   "group": "idle",
+   "seconds": 6.0,
+   "loop": true
+  },
+  {
+   "name": "idle_13",
+   "label": "Idle 13",
+   "group": "idle",
+   "seconds": 11.37,
+   "loop": true
+  },
+  {
+   "name": "idle_14",
+   "label": "Idle 14",
+   "group": "idle",
+   "seconds": 7.5,
+   "loop": true
+  },
+  {
+   "name": "idle_15",
+   "label": "Idle 15",
+   "group": "idle",
+   "seconds": 7.0,
+   "loop": true
+  },
+  {
+   "name": "confused",
+   "label": "Confused Scratch",
+   "group": "idle",
+   "seconds": 11.5,
+   "loop": true,
+   "root_speed": [
+    -0.002,
+    -0.0,
+    0.009
+   ]
+  },
+  {
+   "name": "dozing",
+   "label": "Dozing Elderly",
+   "group": "idle",
+   "seconds": 10.83,
+   "loop": true
+  },
+  {
+   "name": "mirror",
+   "label": "Mirror Viewing",
+   "group": "idle",
+   "seconds": 7.33,
+   "loop": true
+  },
+  {
+   "name": "ual_harvest",
+   "label": "Harvest (kneeling)",
+   "group": "work",
+   "seconds": 2.5,
+   "loop": false
+  },
+  {
+   "name": "ual_plant",
+   "label": "Plant seed",
+   "group": "work",
+   "seconds": 2.77,
+   "loop": false
+  },
+  {
+   "name": "ual_water",
+   "label": "Water plants",
+   "group": "work",
+   "seconds": 3.8,
+   "loop": false
+  },
+  {
+   "name": "ual_chop",
+   "label": "Chop (axe, pickaxe, hoe)",
+   "group": "work",
+   "seconds": 0.97,
+   "loop": true
+  },
+  {
+   "name": "ual_repair",
+   "label": "Repair (kneeling)",
+   "group": "work",
+   "seconds": 5.2,
+   "loop": true
+  },
+  {
+   "name": "ual_interact",
+   "label": "Work at bench / use",
+   "group": "work",
+   "seconds": 2.0,
+   "loop": false
+  },
+  {
+   "name": "ual_pickup_table",
+   "label": "Take from table",
+   "group": "work",
+   "seconds": 0.83,
+   "loop": false
+  },
+  {
+   "name": "ual_push",
+   "label": "Push (heavy)",
+   "group": "work",
+   "seconds": 2.67,
+   "loop": true
+  },
+  {
+   "name": "ual_carry",
+   "label": "Carry in arms",
+   "group": "work",
+   "seconds": 2.0,
+   "loop": true
+  },
+  {
+   "name": "ual_consume",
+   "label": "Eat",
+   "group": "life",
+   "seconds": 1.33,
+   "loop": false
+  },
+  {
+   "name": "ual_pistol_idle",
+   "label": "Pistol stance",
+   "group": "ranged",
+   "seconds": 1.67,
+   "loop": true
+  },
+  {
+   "name": "ual_pistol_aim",
+   "label": "Pistol aim",
+   "group": "ranged",
+   "seconds": 0.17,
+   "loop": true
+  },
+  {
+   "name": "ual_pistol_shoot",
+   "label": "Pistol shot",
+   "group": "ranged",
+   "seconds": 0.63,
+   "loop": false
+  },
+  {
+   "name": "ual_pistol_reload",
+   "label": "Pistol reload",
+   "group": "ranged",
+   "seconds": 1.67,
+   "loop": false
+  },
+  {
+   "name": "ual_throw",
+   "label": "Overhand throw",
+   "group": "ranged",
+   "seconds": 1.33,
+   "loop": false
+  },
+  {
+   "name": "ual_sword_idle",
+   "label": "Sword stance",
+   "group": "melee",
+   "seconds": 1.67,
+   "loop": true
+  },
+  {
+   "name": "ual_sword_a",
+   "label": "Sword cut A",
+   "group": "melee",
+   "seconds": 0.43,
+   "loop": false
+  },
+  {
+   "name": "ual_sword_b",
+   "label": "Sword cut B",
+   "group": "melee",
+   "seconds": 0.53,
+   "loop": false
+  },
+  {
+   "name": "ual_sword_c",
+   "label": "Sword cut C",
+   "group": "melee",
+   "seconds": 2.0,
+   "loop": false
+  },
+  {
+   "name": "ual_sword_combo",
+   "label": "Sword combo",
+   "group": "melee",
+   "seconds": 3.0,
+   "loop": false
+  },
+  {
+   "name": "ual_sword_heavy",
+   "label": "Heavy sword combo",
+   "group": "melee",
+   "seconds": 4.33,
+   "loop": false
+  },
+  {
+   "name": "ual_sword_dash",
+   "label": "Lunge",
+   "group": "melee",
+   "seconds": 1.57,
+   "loop": false
+  },
+  {
+   "name": "ual_punch",
+   "label": "Punch (hook)",
+   "group": "melee",
+   "seconds": 0.47,
+   "loop": false
+  },
+  {
+   "name": "ual_shield_bash",
+   "label": "Shield strike",
+   "group": "melee",
+   "seconds": 0.83,
+   "loop": false
+  },
+  {
+   "name": "ual_sword_block",
+   "label": "Sword block",
+   "group": "defend",
+   "seconds": 1.23,
+   "loop": false
+  },
+  {
+   "name": "ual_shield_up",
+   "label": "Shield raised",
+   "group": "defend",
+   "seconds": 2.5,
+   "loop": true
+  },
+  {
+   "name": "ual_roll",
+   "label": "Roll 2",
+   "group": "defend",
+   "seconds": 1.47,
+   "loop": false
+  },
+  {
+   "name": "ual_hit_chest",
+   "label": "Hit (chest)",
+   "group": "hurt",
+   "seconds": 0.33,
+   "loop": false
+  },
+  {
+   "name": "ual_hit_head",
+   "label": "Hit (head)",
+   "group": "hurt",
+   "seconds": 0.43,
+   "loop": false
+  },
+  {
+   "name": "ual_knockback",
+   "label": "Knocked back",
+   "group": "hurt",
+   "seconds": 0.83,
+   "loop": false
+  },
+  {
+   "name": "ual_death",
+   "label": "Die (forwards)",
+   "group": "hurt",
+   "seconds": 2.4,
+   "loop": false
+  },
+  {
+   "name": "ual_get_up",
+   "label": "Get up from lying",
+   "group": "hurt",
+   "seconds": 1.53,
+   "loop": false
+  },
+  {
+   "name": "ual_swim",
+   "label": "Swim 2",
+   "group": "swim",
+   "seconds": 1.33,
+   "loop": true
+  },
+  {
+   "name": "ual_swim_idle",
+   "label": "Tread water 2",
+   "group": "swim",
+   "seconds": 3.33,
+   "loop": true
+  },
+  {
+   "name": "ual_climb_up",
+   "label": "Climb up a ledge",
+   "group": "climb",
+   "seconds": 0.67,
+   "loop": false
+  },
+  {
+   "name": "ual_crouch",
+   "label": "Crouch",
+   "group": "move",
+   "seconds": 2.93,
+   "loop": true
+  },
+  {
+   "name": "ual_crouch_walk",
+   "label": "Crouch walk 2",
+   "group": "move",
+   "seconds": 2.0,
+   "loop": true
+  },
+  {
+   "name": "ual_jump",
+   "label": "Jump",
+   "group": "move",
+   "seconds": 1.33,
+   "loop": false
+  },
+  {
+   "name": "ual_jog",
+   "label": "Jog",
+   "group": "move",
+   "seconds": 0.93,
+   "loop": true
+  },
+  {
+   "name": "ual_sit_down",
+   "label": "Sit down (stool)",
+   "group": "life",
+   "seconds": 1.3,
+   "loop": false
+  },
+  {
+   "name": "ual_sit",
+   "label": "Sit (stool)",
+   "group": "life",
+   "seconds": 1.67,
+   "loop": true
+  },
+  {
+   "name": "ual_sit_talk",
+   "label": "Sit and talk",
+   "group": "life",
+   "seconds": 2.93,
+   "loop": true
+  },
+  {
+   "name": "ual_sit_up",
+   "label": "Stand up (stool)",
+   "group": "life",
+   "seconds": 1.03,
+   "loop": false
+  },
+  {
+   "name": "ual_talk",
+   "label": "Talk",
+   "group": "life",
+   "seconds": 2.93,
+   "loop": true
+  },
+  {
+   "name": "ual_arms_folded",
+   "label": "Arms folded",
+   "group": "life",
+   "seconds": 2.5,
+   "loop": true
+  },
+  {
+   "name": "ual_lantern",
+   "label": "Hold lantern",
+   "group": "life",
+   "seconds": 2.5,
+   "loop": true
+  },
+  {
+   "name": "ual_drive",
+   "label": "Drive a cart",
+   "group": "life",
+   "seconds": 1.67,
+   "loop": true
+  },
+  {
+   "name": "walk_back",
+   "label": "Walk backward",
+   "group": "move",
+   "seconds": 0.87,
+   "loop": true,
+   "root_speed": [
+    0.0,
+    -0.002,
+    -0.979
+   ]
+  },
+  {
+   "name": "walk_injured",
+   "label": "Injured walk",
+   "group": "move",
+   "seconds": 8.67,
+   "loop": true
+  },
+  {
+   "name": "walk_limp",
+   "label": "Limp",
+   "group": "move",
+   "seconds": 1.5,
+   "loop": true,
+   "root_speed": [
+    0.116,
+    -0.004,
+    0.579
+   ]
+  },
+  {
+   "name": "walk_carry",
+   "label": "Carry heavy load",
+   "group": "move",
+   "seconds": 6.5,
+   "loop": true,
+   "root_speed": [
+    -0.001,
+    -0.001,
+    0.242
+   ]
+  },
+  {
+   "name": "walk_bucket",
+   "label": "Carry bucket",
+   "group": "move",
+   "seconds": 9.27,
+   "loop": true,
+   "root_speed": [
+    -0.0,
+    -0.0,
+    0.125
+   ]
+  },
+  {
+   "name": "crouch_walk",
+   "label": "Crouch walk",
+   "group": "move",
+   "seconds": 1.13,
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    1.203
+   ]
+  },
+  {
+   "name": "sprint",
+   "label": "Sprint",
+   "group": "move",
+   "seconds": 0.47,
+   "loop": true
+  },
+  {
+   "name": "combat_idle",
+   "label": "Combat stance",
+   "group": "melee",
+   "seconds": 1.67,
+   "loop": true
+  },
+  {
+   "name": "attack",
+   "label": "Attack",
+   "group": "melee",
+   "seconds": 2.8,
+   "loop": false
+  },
+  {
+   "name": "slash_left",
+   "label": "Slash left",
+   "group": "melee",
+   "seconds": 3.17,
+   "loop": false
+  },
+  {
+   "name": "slash_right",
+   "label": "Slash right",
+   "group": "melee",
+   "seconds": 1.5,
+   "loop": false
+  },
+  {
+   "name": "slash_charged",
+   "label": "Charged slash",
+   "group": "melee",
+   "seconds": 2.2,
+   "loop": false
+  },
+  {
+   "name": "combo",
+   "label": "Double combo",
+   "group": "melee",
+   "seconds": 2.83,
+   "loop": false
+  },
+  {
+   "name": "axe_chop",
+   "label": "Overhead chop (axe)",
+   "group": "melee",
+   "seconds": 7.67,
+   "loop": false
+  },
+  {
+   "name": "axe_spin",
+   "label": "Spinning axe attack",
+   "group": "melee",
+   "seconds": 2.5,
+   "loop": false
+  },
+  {
+   "name": "blunt_swing",
+   "label": "Heavy blunt swing",
+   "group": "melee",
+   "seconds": 1.8,
+   "loop": false
+  },
+  {
+   "name": "shield_push",
+   "label": "Shield bash",
+   "group": "melee",
+   "seconds": 2.37,
+   "loop": false
+  },
+  {
+   "name": "bow_shot",
+   "label": "Bow shot",
+   "group": "ranged",
+   "seconds": 5.0,
+   "loop": false
+  },
+  {
+   "name": "bow_draw",
+   "label": "Draw from quiver and shoot",
+   "group": "ranged",
+   "seconds": 7.83,
+   "loop": false
+  },
+  {
+   "name": "bow_walk",
+   "label": "Walk with bow drawn",
+   "group": "ranged",
+   "seconds": 1.17,
+   "loop": true
+  },
+  {
+   "name": "bow_scan",
+   "label": "Bow aim and scan",
+   "group": "ranged",
+   "seconds": 5.0,
+   "loop": true
+  },
+  {
+   "name": "gun_shot",
+   "label": "Long gun shot",
+   "group": "ranged",
+   "seconds": 4.0,
+   "loop": false
+  },
+  {
+   "name": "pistol_draw",
+   "label": "Pistol quick draw",
+   "group": "ranged",
+   "seconds": 7.3,
+   "loop": false
+  },
+  {
+   "name": "pistol_shot",
+   "label": "Draw and shoot (side)",
+   "group": "ranged",
+   "seconds": 5.33,
+   "loop": false
+  },
+  {
+   "name": "reload",
+   "label": "Reload (standing)",
+   "group": "ranged",
+   "seconds": 3.3,
+   "loop": false
+  },
+  {
+   "name": "reload_kneel",
+   "label": "Reload (kneeling)",
+   "group": "ranged",
+   "seconds": 6.87,
+   "loop": false
+  },
+  {
+   "name": "walk_shoot",
+   "label": "Walk while shooting",
+   "group": "ranged",
+   "seconds": 3.27,
+   "loop": true
+  },
+  {
+   "name": "throw",
+   "label": "Crouch and throw",
+   "group": "ranged",
+   "seconds": 5.8,
+   "loop": false
+  },
+  {
+   "name": "block",
+   "label": "Block",
+   "group": "defend",
+   "seconds": 3.47,
+   "loop": false
+  },
+  {
+   "name": "block_2",
+   "label": "Block 2",
+   "group": "defend",
+   "seconds": 1.57,
+   "loop": false
+  },
+  {
+   "name": "parry",
+   "label": "Parry",
+   "group": "defend",
+   "seconds": 1.8,
+   "loop": false
+  },
+  {
+   "name": "parry_2h",
+   "label": "Two-handed parry",
+   "group": "defend",
+   "seconds": 1.3,
+   "loop": false
+  },
+  {
+   "name": "dodge_step",
+   "label": "Sidestep",
+   "group": "defend",
+   "seconds": 1.4,
+   "loop": false
+  },
+  {
+   "name": "dodge_roll",
+   "label": "Roll",
+   "group": "defend",
+   "seconds": 1.8,
+   "loop": false
+  },
+  {
+   "name": "dodge_back",
+   "label": "Dodge back",
+   "group": "defend",
+   "seconds": 2.27,
+   "loop": false
+  },
+  {
+   "name": "dodge_spin",
+   "label": "Spin dodge",
+   "group": "defend",
+   "seconds": 1.17,
+   "loop": false
+  },
+  {
+   "name": "hit",
+   "label": "Hit",
+   "group": "hurt",
+   "seconds": 1.63,
+   "loop": false
+  },
+  {
+   "name": "hit_2",
+   "label": "Hit 2",
+   "group": "hurt",
+   "seconds": 1.17,
+   "loop": false
+  },
+  {
+   "name": "hit_body",
+   "label": "Hit to the body",
+   "group": "hurt",
+   "seconds": 1.63,
+   "loop": false
+  },
+  {
+   "name": "fall_down",
+   "label": "Fall down",
+   "group": "hurt",
+   "seconds": 2.27,
+   "loop": false
+  },
+  {
+   "name": "fall",
+   "label": "Fall from height",
+   "group": "hurt",
+   "seconds": 4.5,
+   "loop": true
+  },
+  {
+   "name": "knock_down",
+   "label": "Knocked down",
+   "group": "hurt",
+   "seconds": 2.5,
+   "loop": false
+  },
+  {
+   "name": "die",
+   "label": "Die (backwards)",
+   "group": "hurt",
+   "seconds": 2.2,
+   "loop": false
+  },
+  {
+   "name": "dead",
+   "label": "Dead",
+   "group": "hurt",
+   "seconds": 2.97,
+   "loop": false
+  },
+  {
+   "name": "get_up",
+   "label": "Get up",
+   "group": "hurt",
+   "seconds": 8.23,
+   "loop": false
+  },
+  {
+   "name": "swim_idle",
+   "label": "Tread water",
+   "group": "swim",
+   "seconds": 3.0,
+   "loop": true
+  },
+  {
+   "name": "swim",
+   "label": "Swim",
+   "group": "swim",
+   "seconds": 4.5,
+   "loop": true,
+   "root_speed": [
+    0.0,
+    -0.0,
+    0.33
+   ]
+  },
+  {
+   "name": "swim_out",
+   "label": "Climb out of water",
+   "group": "swim",
+   "seconds": 5.0,
+   "loop": false
+  },
+  {
+   "name": "ladder_on",
+   "label": "Mount ladder",
+   "group": "climb",
+   "seconds": 1.97,
+   "loop": false
+  },
+  {
+   "name": "ladder",
+   "label": "Climb ladder",
+   "group": "climb",
+   "seconds": 1.57,
+   "loop": true,
+   "root_speed": [
+    -0.003,
+    0.252,
+    0.091
+   ]
+  },
+  {
+   "name": "ladder_slow",
+   "label": "Climb ladder slowly",
+   "group": "climb",
+   "seconds": 3.0,
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.266,
+    0.098
+   ]
+  },
+  {
+   "name": "ladder_off",
+   "label": "Leave ladder (top)",
+   "group": "climb",
+   "seconds": 4.0,
+   "loop": false
+  },
+  {
+   "name": "pick_up",
+   "label": "Pick up",
+   "group": "life",
+   "seconds": 7.17,
+   "loop": false
+  },
+  {
+   "name": "pick_up_side",
+   "label": "Pick up and set aside",
+   "group": "life",
+   "seconds": 9.53,
+   "loop": false
+  },
+  {
+   "name": "collect",
+   "label": "Collect",
+   "group": "life",
+   "seconds": 6.0,
+   "loop": false
+  },
+  {
+   "name": "sit_down",
+   "label": "Sit down",
+   "group": "life",
+   "seconds": 4.73,
+   "loop": false
+  },
+  {
+   "name": "sit",
+   "label": "Sit (chair)",
+   "group": "life",
+   "seconds": 10.67,
+   "loop": true
+  },
+  {
+   "name": "sit_f",
+   "label": "Sit (chair, relaxed)",
+   "group": "life",
+   "seconds": 11.33,
+   "loop": true
+  },
+  {
+   "name": "stand_up",
+   "label": "Stand up from chair",
+   "group": "life",
+   "seconds": 6.17,
+   "loop": false
+  },
+  {
+   "name": "sit_floor",
+   "label": "Sit cross-legged",
+   "group": "life",
+   "seconds": 9.53,
+   "loop": true
+  },
+  {
+   "name": "sit_drink",
+   "label": "Sit and drink",
+   "group": "life",
+   "seconds": 11.17,
+   "loop": true
+  },
+  {
+   "name": "drink",
+   "label": "Drink",
+   "group": "life",
+   "seconds": 8.87,
+   "loop": false
+  },
+  {
+   "name": "lie_bed",
+   "label": "Get into bed",
+   "group": "life",
+   "seconds": 7.63,
+   "loop": false
+  },
+  {
+   "name": "sleep",
+   "label": "Sleep",
+   "group": "life",
+   "seconds": 1.67,
+   "loop": true
+  },
+  {
+   "name": "sleep_toss",
+   "label": "Toss and turn",
+   "group": "life",
+   "seconds": 17.63,
+   "loop": true
+  },
+  {
+   "name": "wake",
+   "label": "Wake up",
+   "group": "life",
+   "seconds": 3.5,
+   "loop": false
+  },
+  {
+   "name": "open_door",
+   "label": "Open door",
+   "group": "life",
+   "seconds": 5.2,
+   "loop": false
+  },
+  {
+   "name": "harvest",
+   "label": "Pull crop",
+   "group": "work",
+   "seconds": 4.7,
+   "loop": false
+  },
+  {
+   "name": "pick_fruit",
+   "label": "Pick into basket",
+   "group": "work",
+   "seconds": 7.1,
+   "loop": false
+  },
+  {
+   "name": "push",
+   "label": "Push cart",
+   "group": "work",
+   "seconds": 8.0,
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    0.276
+   ]
+  },
+  {
+   "name": "thrust",
+   "label": "Thrust / stab",
+   "group": "melee",
+   "seconds": 1.3,
+   "loop": false
+  },
+  {
+   "name": "spear_thrust",
+   "label": "Spear thrust",
+   "group": "melee",
+   "seconds": 1.4,
+   "loop": false
+  },
+  {
+   "name": "spear_walk",
+   "label": "Spear advance",
+   "group": "melee",
+   "seconds": 1.07,
+   "loop": true
+  },
+  {
+   "name": "dig",
+   "label": "Dig (hoe, pickaxe)",
+   "group": "work",
+   "seconds": 1.4,
+   "loop": true
+  },
+  {
+   "name": "hammer_anvil",
+   "label": "Hammer at anvil",
+   "group": "work",
+   "seconds": 1.1,
+   "loop": true
+  }
+ ],
+ "hands": {
+  "R": {
+   "bone": 36,
+   "grip": [
+    -0.021264,
+    0.050392,
+    0.011852,
+    0.172123,
+    0.739197,
+    0.635625,
+    -0.141219
+   ],
+   "curls": {
+    "fist": [
+     [
+      37,
+      -0.054642,
+      0.191083,
+      0.475148,
+      0.857167
+     ],
+     [
+      38,
+      -0.268168,
+      0.188873,
+      0.537082,
+      0.777146
+     ],
+     [
+      39,
+      -0.225695,
+      0.107819,
+      0.289627,
+      0.92388
+     ],
+     [
+      40,
+      -0.007368,
+      0.055985,
+      0.541704,
+      0.838671
+     ],
+     [
+      41,
+      -0.145138,
+      0.098732,
+      0.618355,
+      0.766044
+     ],
+     [
+      42,
+      -0.14976,
+      0.043197,
+      0.349503,
+      0.92388
+     ],
+     [
+      46,
+      0.072552,
+      -0.038146,
+      0.567689,
+      0.819152
+     ],
+     [
+      47,
+      -0.076735,
+      -0.002368,
+      0.638186,
+      0.766044
+     ],
+     [
+      48,
+      -0.08971,
+      -0.022229,
+      0.371355,
+      0.92388
+     ],
+     [
+      43,
+      0.015452,
+      -0.115312,
+      0.590462,
+      0.798636
+     ],
+     [
+      44,
+      -0.143833,
+      -0.078431,
+      0.62156,
+      0.766044
+     ],
+     [
+      45,
+      -0.069869,
+      -0.057689,
+      0.371802,
+      0.92388
+     ],
+     [
+      49,
+      -0.170279,
+      -0.0,
+      -0.034041,
+      0.984808
+     ],
+     [
+      50,
+      -0.23482,
+      -1e-06,
+      0.108843,
+      0.965926
+     ],
+     [
+      51,
+      -0.100765,
+      -0.058923,
+      0.182265,
+      0.976296
+     ]
+    ],
+    "draw": [
+     [
+      37,
+      -0.027459,
+      0.096024,
+      0.238773,
+      0.965926
+     ],
+     [
+      38,
+      -0.145743,
+      0.102648,
+      0.291891,
+      0.939693
+     ],
+     [
+      39,
+      -0.127649,
+      0.06098,
+      0.163808,
+      0.976296
+     ],
+     [
+      40,
+      -0.003729,
+      0.028334,
+      0.274152,
+      0.961262
+     ],
+     [
+      41,
+      -0.080918,
+      0.055045,
+      0.344746,
+      0.93358
+     ],
+     [
+      42,
+      -0.084702,
+      0.024432,
+      0.197673,
+      0.976296
+     ],
+     [
+      46,
+      0.043262,
+      -0.022746,
+      0.33851,
+      0.939693
+     ],
+     [
+      47,
+      -0.050452,
+      -0.001557,
+      0.419593,
+      0.906308
+     ],
+     [
+      48,
+      -0.060673,
+      -0.015034,
+      0.251157,
+      0.965926
+     ],
+     [
+      43,
+      0.015631,
+      -0.116642,
+      0.597278,
+      0.793353
+     ],
+     [
+      44,
+      -0.151173,
+      -0.082433,
+      0.653279,
+      0.737277
+     ],
+     [
+      45,
+      -0.07716,
+      -0.063709,
+      0.410602,
+      0.906308
+     ],
+     [
+      49,
+      -0.21224,
+      -0.0,
+      -0.04243,
+      0.976296
+     ],
+     [
+      50,
+      -0.272823,
+      -1e-06,
+      0.126458,
+      0.953717
+     ],
+     [
+      51,
+      -0.120495,
+      -0.070461,
+      0.217953,
+      0.965926
+     ]
+    ],
+    "trigger": [
+     [
+      37,
+      -0.012929,
+      0.045215,
+      0.11243,
+      0.992546
+     ],
+     [
+      38,
+      -0.081308,
+      0.057266,
+      0.162843,
+      0.981627
+     ],
+     [
+      39,
+      -0.051402,
+      0.024556,
+      0.065962,
+      0.996195
+     ],
+     [
+      40,
+      -0.007368,
+      0.055985,
+      0.541704,
+      0.838671
+     ],
+     [
+      41,
+      -0.145138,
+      0.098732,
+      0.618355,
+      0.766044
+     ],
+     [
+      42,
+      -0.14976,
+      0.043197,
+      0.349503,
+      0.92388
+     ],
+     [
+      46,
+      0.072552,
+      -0.038146,
+      0.567689,
+      0.819152
+     ],
+     [
+      47,
+      -0.076735,
+      -0.002368,
+      0.638186,
+      0.766044
+     ],
+     [
+      48,
+      -0.08971,
+      -0.022229,
+      0.371355,
+      0.92388
+     ],
+     [
+      43,
+      0.015452,
+      -0.115312,
+      0.590462,
+      0.798636
+     ],
+     [
+      44,
+      -0.143833,
+      -0.078431,
+      0.62156,
+      0.766044
+     ],
+     [
+      45,
+      -0.069869,
+      -0.057689,
+      0.371802,
+      0.92388
+     ],
+     [
+      49,
+      -0.170279,
+      -0.0,
+      -0.034041,
+      0.984808
+     ],
+     [
+      50,
+      -0.23482,
+      -1e-06,
+      0.108843,
+      0.965926
+     ],
+     [
+      51,
+      -0.100765,
+      -0.058923,
+      0.182265,
+      0.976296
+     ]
+    ],
+    "wide": [
+     [
+      37,
+      -0.031018,
+      0.108472,
+      0.269727,
+      0.956305
+     ],
+     [
+      38,
+      -0.156175,
+      0.109995,
+      0.312784,
+      0.930418
+     ],
+     [
+      39,
+      -0.127649,
+      0.06098,
+      0.163808,
+      0.976296
+     ],
+     [
+      40,
+      -0.004181,
+      0.031765,
+      0.307352,
+      0.951057
+     ],
+     [
+      41,
+      -0.084584,
+      0.057539,
+      0.360368,
+      0.927184
+     ],
+     [
+      42,
+      -0.084702,
+      0.024432,
+      0.197673,
+      0.976296
+     ],
+     [
+      46,
+      0.041181,
+      -0.021652,
+      0.322227,
+      0.945519
+     ],
+     [
+      47,
+      -0.04472,
+      -0.00138,
+      0.371925,
+      0.927184
+     ],
+     [
+      48,
+      -0.050738,
+      -0.012572,
+      0.210033,
+      0.976296
+     ],
+     [
+      43,
+      0.008992,
+      -0.067102,
+      0.343601,
+      0.936672
+     ],
+     [
+      44,
+      -0.083824,
+      -0.045708,
+      0.362235,
+      0.927184
+     ],
+     [
+      45,
+      -0.039517,
+      -0.032628,
+      0.210285,
+      0.976296
+     ],
+     [
+      49,
+      -0.093986,
+      -0.0,
+      -0.018789,
+      0.995396
+     ],
+     [
+      50,
+      -0.126268,
+      -0.0,
+      0.058527,
+      0.990268
+     ],
+     [
+      51,
+      -0.056737,
+      -0.033178,
+      0.102627,
+      0.992546
+     ]
+    ]
+   },
+   "arm": [
+    34,
+    35,
+    36
+   ]
+  },
+  "L": {
+   "bone": 15,
+   "grip": [
+    0.018673,
+    0.049389,
+    0.018546,
+    -0.70575,
+    -0.231336,
+    -0.229065,
+    0.62923
+   ],
+   "curls": {
+    "fist": [
+     [
+      16,
+      -0.054394,
+      -0.191084,
+      -0.475176,
+      0.857167
+     ],
+     [
+      17,
+      -0.267928,
+      -0.188874,
+      -0.537202,
+      0.777146
+     ],
+     [
+      18,
+      -0.22551,
+      -0.107819,
+      -0.28977,
+      0.92388
+     ],
+     [
+      19,
+      -0.006563,
+      -0.055986,
+      -0.541714,
+      0.838671
+     ],
+     [
+      20,
+      -0.144206,
+      -0.098733,
+      -0.618573,
+      0.766044
+     ],
+     [
+      21,
+      -0.14924,
+      -0.043198,
+      -0.349726,
+      0.92388
+     ],
+     [
+      25,
+      0.071079,
+      0.038144,
+      -0.567876,
+      0.819152
+     ],
+     [
+      26,
+      -0.078486,
+      0.002367,
+      -0.637974,
+      0.766044
+     ],
+     [
+      27,
+      -0.090717,
+      0.022228,
+      -0.37111,
+      0.92388
+     ],
+     [
+      22,
+      0.015506,
+      0.11531,
+      -0.590461,
+      0.798636
+     ],
+     [
+      23,
+      -0.143776,
+      0.07843,
+      -0.621573,
+      0.766044
+     ],
+     [
+      24,
+      -0.069842,
+      0.057688,
+      -0.371807,
+      0.92388
+     ],
+     [
+      28,
+      -0.173173,
+      -0.0,
+      0.012838,
+      0.984808
+     ],
+     [
+      29,
+      -0.249611,
+      1e-06,
+      -0.068424,
+      0.965926
+     ],
+     [
+      30,
+      -0.135873,
+      0.058923,
+      -0.157838,
+      0.976296
+     ]
+    ],
+    "draw": [
+     [
+      16,
+      -0.027334,
+      -0.096025,
+      -0.238787,
+      0.965926
+     ],
+     [
+      17,
+      -0.145612,
+      -0.102648,
+      -0.291956,
+      0.939693
+     ],
+     [
+      18,
+      -0.127545,
+      -0.060981,
+      -0.16389,
+      0.976296
+     ],
+     [
+      19,
+      -0.003322,
+      -0.028334,
+      -0.274157,
+      0.961262
+     ],
+     [
+      20,
+      -0.080398,
+      -0.055046,
+      -0.344868,
+      0.93358
+     ],
+     [
+      21,
+      -0.084408,
+      -0.024432,
+      -0.197799,
+      0.976296
+     ],
+     [
+      25,
+      0.042384,
+      0.022745,
+      -0.338621,
+      0.939693
+     ],
+     [
+      26,
+      -0.051603,
+      0.001556,
+      -0.419453,
+      0.906308
+     ],
+     [
+      27,
+      -0.061355,
+      0.015033,
+      -0.250992,
+      0.965926
+     ],
+     [
+      22,
+      0.015685,
+      0.116641,
+      -0.597277,
+      0.793353
+     ],
+     [
+      23,
+      -0.151113,
+      0.082432,
+      -0.653293,
+      0.737277
+     ],
+     [
+      24,
+      -0.077131,
+      0.063708,
+      -0.410607,
+      0.906308
+     ],
+     [
+      28,
+      -0.215847,
+      -0.0,
+      0.016001,
+      0.976296
+     ],
+     [
+      29,
+      -0.290007,
+      1e-06,
+      -0.079497,
+      0.953717
+     ],
+     [
+      30,
+      -0.162477,
+      0.07046,
+      -0.188743,
+      0.965926
+     ]
+    ],
+    "trigger": [
+     [
+      16,
+      -0.012871,
+      -0.045215,
+      -0.112437,
+      0.992546
+     ],
+     [
+      17,
+      -0.081235,
+      -0.057266,
+      -0.162879,
+      0.981627
+     ],
+     [
+      18,
+      -0.05136,
+      -0.024556,
+      -0.065995,
+      0.996195
+     ],
+     [
+      19,
+      -0.006563,
+      -0.055986,
+      -0.541714,
+      0.838671
+     ],
+     [
+      20,
+      -0.144206,
+      -0.098733,
+      -0.618573,
+      0.766044
+     ],
+     [
+      21,
+      -0.14924,
+      -0.043198,
+      -0.349726,
+      0.92388
+     ],
+     [
+      25,
+      0.071079,
+      0.038144,
+      -0.567876,
+      0.819152
+     ],
+     [
+      26,
+      -0.078486,
+      0.002367,
+      -0.637974,
+      0.766044
+     ],
+     [
+      27,
+      -0.090717,
+      0.022228,
+      -0.37111,
+      0.92388
+     ],
+     [
+      22,
+      0.015506,
+      0.11531,
+      -0.590461,
+      0.798636
+     ],
+     [
+      23,
+      -0.143776,
+      0.07843,
+      -0.621573,
+      0.766044
+     ],
+     [
+      24,
+      -0.069842,
+      0.057688,
+      -0.371807,
+      0.92388
+     ],
+     [
+      28,
+      -0.173173,
+      -0.0,
+      0.012838,
+      0.984808
+     ],
+     [
+      29,
+      -0.249611,
+      1e-06,
+      -0.068424,
+      0.965926
+     ],
+     [
+      30,
+      -0.135873,
+      0.058923,
+      -0.157838,
+      0.976296
+     ]
+    ],
+    "wide": [
+     [
+      16,
+      -0.030878,
+      -0.108473,
+      -0.269743,
+      0.956305
+     ],
+     [
+      17,
+      -0.156035,
+      -0.109996,
+      -0.312853,
+      0.930418
+     ],
+     [
+      18,
+      -0.127545,
+      -0.060981,
+      -0.16389,
+      0.976296
+     ],
+     [
+      19,
+      -0.003724,
+      -0.031765,
+      -0.307357,
+      0.951057
+     ],
+     [
+      20,
+      -0.084041,
+      -0.05754,
+      -0.360495,
+      0.927184
+     ],
+     [
+      21,
+      -0.084408,
+      -0.024432,
+      -0.197799,
+      0.976296
+     ],
+     [
+      25,
+      0.040345,
+      0.021651,
+      -0.322332,
+      0.945519
+     ],
+     [
+      26,
+      -0.04574,
+      0.001379,
+      -0.371801,
+      0.927184
+     ],
+     [
+      27,
+      -0.051308,
+      0.012572,
+      -0.209894,
+      0.976296
+     ],
+     [
+      22,
+      0.009023,
+      0.067101,
+      -0.3436,
+      0.936672
+     ],
+     [
+      23,
+      -0.08379,
+      0.045708,
+      -0.362243,
+      0.927184
+     ],
+     [
+      24,
+      -0.039502,
+      0.032628,
+      -0.210288,
+      0.976296
+     ],
+     [
+      28,
+      -0.095583,
+      -0.0,
+      0.007086,
+      0.995396
+     ],
+     [
+      29,
+      -0.134222,
+      0.0,
+      -0.036793,
+      0.990268
+     ],
+     [
+      30,
+      -0.076505,
+      0.033177,
+      -0.088873,
+      0.992546
+     ]
+    ]
+   },
+   "arm": [
+    13,
+    14,
+    15
+   ]
+  },
+  "R2": {
+   "bone": 74,
+   "grip": [
+    -0.021264,
+    0.050392,
+    0.011852,
+    0.172123,
+    0.739197,
+    0.635625,
+    -0.141219
+   ],
+   "curls": {
+    "fist": [
+     [
+      75,
+      -0.054642,
+      0.191084,
+      0.475148,
+      0.857167
+     ],
+     [
+      76,
+      -0.268168,
+      0.188873,
+      0.537082,
+      0.777146
+     ],
+     [
+      77,
+      -0.225695,
+      0.107819,
+      0.289627,
+      0.92388
+     ],
+     [
+      78,
+      -0.007368,
+      0.055985,
+      0.541704,
+      0.838671
+     ],
+     [
+      79,
+      -0.145138,
+      0.098732,
+      0.618355,
+      0.766044
+     ],
+     [
+      80,
+      -0.14976,
+      0.043197,
+      0.349503,
+      0.92388
+     ],
+     [
+      84,
+      0.072552,
+      -0.038145,
+      0.567689,
+      0.819152
+     ],
+     [
+      85,
+      -0.076735,
+      -0.002368,
+      0.638186,
+      0.766044
+     ],
+     [
+      86,
+      -0.08971,
+      -0.022228,
+      0.371355,
+      0.92388
+     ],
+     [
+      81,
+      0.015452,
+      -0.115311,
+      0.590462,
+      0.798636
+     ],
+     [
+      82,
+      -0.143833,
+      -0.078431,
+      0.62156,
+      0.766044
+     ],
+     [
+      83,
+      -0.069869,
+      -0.057689,
+      0.371802,
+      0.92388
+     ],
+     [
+      87,
+      -0.170279,
+      -1e-06,
+      -0.034042,
+      0.984808
+     ],
+     [
+      88,
+      -0.23482,
+      -0.0,
+      0.108843,
+      0.965926
+     ],
+     [
+      89,
+      -0.100765,
+      -0.058923,
+      0.182265,
+      0.976296
+     ]
+    ],
+    "draw": [
+     [
+      75,
+      -0.027459,
+      0.096024,
+      0.238773,
+      0.965926
+     ],
+     [
+      76,
+      -0.145743,
+      0.102648,
+      0.291891,
+      0.939693
+     ],
+     [
+      77,
+      -0.127649,
+      0.060981,
+      0.163808,
+      0.976296
+     ],
+     [
+      78,
+      -0.003729,
+      0.028334,
+      0.274152,
+      0.961262
+     ],
+     [
+      79,
+      -0.080918,
+      0.055045,
+      0.344746,
+      0.93358
+     ],
+     [
+      80,
+      -0.084702,
+      0.024432,
+      0.197673,
+      0.976296
+     ],
+     [
+      84,
+      0.043262,
+      -0.022746,
+      0.33851,
+      0.939693
+     ],
+     [
+      85,
+      -0.050452,
+      -0.001557,
+      0.419593,
+      0.906308
+     ],
+     [
+      86,
+      -0.060673,
+      -0.015034,
+      0.251157,
+      0.965926
+     ],
+     [
+      81,
+      0.015631,
+      -0.116642,
+      0.597278,
+      0.793353
+     ],
+     [
+      82,
+      -0.151173,
+      -0.082433,
+      0.653279,
+      0.737277
+     ],
+     [
+      83,
+      -0.07716,
+      -0.063709,
+      0.410602,
+      0.906308
+     ],
+     [
+      87,
+      -0.21224,
+      -1e-06,
+      -0.04243,
+      0.976296
+     ],
+     [
+      88,
+      -0.272823,
+      -0.0,
+      0.126458,
+      0.953717
+     ],
+     [
+      89,
+      -0.120495,
+      -0.07046,
+      0.217953,
+      0.965926
+     ]
+    ],
+    "trigger": [
+     [
+      75,
+      -0.012929,
+      0.045215,
+      0.11243,
+      0.992546
+     ],
+     [
+      76,
+      -0.081308,
+      0.057266,
+      0.162842,
+      0.981627
+     ],
+     [
+      77,
+      -0.051402,
+      0.024556,
+      0.065962,
+      0.996195
+     ],
+     [
+      78,
+      -0.007368,
+      0.055985,
+      0.541704,
+      0.838671
+     ],
+     [
+      79,
+      -0.145138,
+      0.098732,
+      0.618355,
+      0.766044
+     ],
+     [
+      80,
+      -0.14976,
+      0.043197,
+      0.349503,
+      0.92388
+     ],
+     [
+      84,
+      0.072552,
+      -0.038145,
+      0.567689,
+      0.819152
+     ],
+     [
+      85,
+      -0.076735,
+      -0.002368,
+      0.638186,
+      0.766044
+     ],
+     [
+      86,
+      -0.08971,
+      -0.022228,
+      0.371355,
+      0.92388
+     ],
+     [
+      81,
+      0.015452,
+      -0.115311,
+      0.590462,
+      0.798636
+     ],
+     [
+      82,
+      -0.143833,
+      -0.078431,
+      0.62156,
+      0.766044
+     ],
+     [
+      83,
+      -0.069869,
+      -0.057689,
+      0.371802,
+      0.92388
+     ],
+     [
+      87,
+      -0.170279,
+      -1e-06,
+      -0.034042,
+      0.984808
+     ],
+     [
+      88,
+      -0.23482,
+      -0.0,
+      0.108843,
+      0.965926
+     ],
+     [
+      89,
+      -0.100765,
+      -0.058923,
+      0.182265,
+      0.976296
+     ]
+    ],
+    "wide": [
+     [
+      75,
+      -0.031018,
+      0.108472,
+      0.269727,
+      0.956305
+     ],
+     [
+      76,
+      -0.156174,
+      0.109995,
+      0.312784,
+      0.930418
+     ],
+     [
+      77,
+      -0.127649,
+      0.060981,
+      0.163808,
+      0.976296
+     ],
+     [
+      78,
+      -0.004181,
+      0.031765,
+      0.307352,
+      0.951057
+     ],
+     [
+      79,
+      -0.084584,
+      0.05754,
+      0.360368,
+      0.927184
+     ],
+     [
+      80,
+      -0.084702,
+      0.024432,
+      0.197673,
+      0.976296
+     ],
+     [
+      84,
+      0.041181,
+      -0.021652,
+      0.322227,
+      0.945519
+     ],
+     [
+      85,
+      -0.04472,
+      -0.00138,
+      0.371925,
+      0.927184
+     ],
+     [
+      86,
+      -0.050738,
+      -0.012572,
+      0.210033,
+      0.976296
+     ],
+     [
+      81,
+      0.008992,
+      -0.067102,
+      0.343601,
+      0.936672
+     ],
+     [
+      82,
+      -0.083824,
+      -0.045708,
+      0.362235,
+      0.927184
+     ],
+     [
+      83,
+      -0.039517,
+      -0.032628,
+      0.210285,
+      0.976296
+     ],
+     [
+      87,
+      -0.093986,
+      -0.0,
+      -0.018789,
+      0.995396
+     ],
+     [
+      88,
+      -0.126268,
+      -0.0,
+      0.058527,
+      0.990268
+     ],
+     [
+      89,
+      -0.056737,
+      -0.033177,
+      0.102627,
+      0.992546
+     ]
+    ]
+   },
+   "arm": [
+    72,
+    73,
+    74
+   ]
+  },
+  "L2": {
+   "bone": 55,
+   "grip": [
+    0.018673,
+    0.049389,
+    0.018546,
+    -0.70575,
+    -0.231336,
+    -0.229065,
+    0.62923
+   ],
+   "curls": {
+    "fist": [
+     [
+      56,
+      -0.054394,
+      -0.191084,
+      -0.475176,
+      0.857167
+     ],
+     [
+      57,
+      -0.267928,
+      -0.188873,
+      -0.537202,
+      0.777146
+     ],
+     [
+      58,
+      -0.22551,
+      -0.107819,
+      -0.28977,
+      0.92388
+     ],
+     [
+      59,
+      -0.006563,
+      -0.055986,
+      -0.541714,
+      0.838671
+     ],
+     [
+      60,
+      -0.144206,
+      -0.098733,
+      -0.618573,
+      0.766044
+     ],
+     [
+      61,
+      -0.14924,
+      -0.043197,
+      -0.349726,
+      0.92388
+     ],
+     [
+      65,
+      0.071079,
+      0.038145,
+      -0.567876,
+      0.819152
+     ],
+     [
+      66,
+      -0.078486,
+      0.002367,
+      -0.637974,
+      0.766044
+     ],
+     [
+      67,
+      -0.090717,
+      0.022228,
+      -0.37111,
+      0.92388
+     ],
+     [
+      62,
+      0.015506,
+      0.115311,
+      -0.590461,
+      0.798636
+     ],
+     [
+      63,
+      -0.143776,
+      0.07843,
+      -0.621573,
+      0.766044
+     ],
+     [
+      64,
+      -0.069842,
+      0.057688,
+      -0.371807,
+      0.92388
+     ],
+     [
+      68,
+      -0.173173,
+      -0.0,
+      0.012838,
+      0.984808
+     ],
+     [
+      69,
+      -0.249611,
+      1e-06,
+      -0.068423,
+      0.965926
+     ],
+     [
+      70,
+      -0.135873,
+      0.058923,
+      -0.157837,
+      0.976296
+     ]
+    ],
+    "draw": [
+     [
+      56,
+      -0.027334,
+      -0.096024,
+      -0.238787,
+      0.965926
+     ],
+     [
+      57,
+      -0.145612,
+      -0.102648,
+      -0.291956,
+      0.939693
+     ],
+     [
+      58,
+      -0.127545,
+      -0.060981,
+      -0.16389,
+      0.976296
+     ],
+     [
+      59,
+      -0.003322,
+      -0.028334,
+      -0.274157,
+      0.961262
+     ],
+     [
+      60,
+      -0.080398,
+      -0.055046,
+      -0.344868,
+      0.93358
+     ],
+     [
+      61,
+      -0.084408,
+      -0.024432,
+      -0.197799,
+      0.976296
+     ],
+     [
+      65,
+      0.042384,
+      0.022745,
+      -0.338621,
+      0.939693
+     ],
+     [
+      66,
+      -0.051603,
+      0.001556,
+      -0.419453,
+      0.906308
+     ],
+     [
+      67,
+      -0.061355,
+      0.015034,
+      -0.250992,
+      0.965926
+     ],
+     [
+      62,
+      0.015685,
+      0.116642,
+      -0.597276,
+      0.793353
+     ],
+     [
+      63,
+      -0.151113,
+      0.082433,
+      -0.653293,
+      0.737277
+     ],
+     [
+      64,
+      -0.077131,
+      0.063709,
+      -0.410607,
+      0.906308
+     ],
+     [
+      68,
+      -0.215847,
+      -0.0,
+      0.016001,
+      0.976296
+     ],
+     [
+      69,
+      -0.290007,
+      1e-06,
+      -0.079497,
+      0.953717
+     ],
+     [
+      70,
+      -0.162477,
+      0.070461,
+      -0.188742,
+      0.965926
+     ]
+    ],
+    "trigger": [
+     [
+      56,
+      -0.012871,
+      -0.045215,
+      -0.112437,
+      0.992546
+     ],
+     [
+      57,
+      -0.081235,
+      -0.057266,
+      -0.162879,
+      0.981627
+     ],
+     [
+      58,
+      -0.05136,
+      -0.024556,
+      -0.065995,
+      0.996195
+     ],
+     [
+      59,
+      -0.006563,
+      -0.055986,
+      -0.541714,
+      0.838671
+     ],
+     [
+      60,
+      -0.144206,
+      -0.098733,
+      -0.618573,
+      0.766044
+     ],
+     [
+      61,
+      -0.14924,
+      -0.043197,
+      -0.349726,
+      0.92388
+     ],
+     [
+      65,
+      0.071079,
+      0.038145,
+      -0.567876,
+      0.819152
+     ],
+     [
+      66,
+      -0.078486,
+      0.002367,
+      -0.637974,
+      0.766044
+     ],
+     [
+      67,
+      -0.090717,
+      0.022228,
+      -0.37111,
+      0.92388
+     ],
+     [
+      62,
+      0.015506,
+      0.115311,
+      -0.590461,
+      0.798636
+     ],
+     [
+      63,
+      -0.143776,
+      0.07843,
+      -0.621573,
+      0.766044
+     ],
+     [
+      64,
+      -0.069842,
+      0.057688,
+      -0.371807,
+      0.92388
+     ],
+     [
+      68,
+      -0.173173,
+      -0.0,
+      0.012838,
+      0.984808
+     ],
+     [
+      69,
+      -0.249611,
+      1e-06,
+      -0.068423,
+      0.965926
+     ],
+     [
+      70,
+      -0.135873,
+      0.058923,
+      -0.157837,
+      0.976296
+     ]
+    ],
+    "wide": [
+     [
+      56,
+      -0.030878,
+      -0.108473,
+      -0.269743,
+      0.956305
+     ],
+     [
+      57,
+      -0.156035,
+      -0.109995,
+      -0.312854,
+      0.930418
+     ],
+     [
+      58,
+      -0.127545,
+      -0.060981,
+      -0.16389,
+      0.976296
+     ],
+     [
+      59,
+      -0.003724,
+      -0.031765,
+      -0.307357,
+      0.951057
+     ],
+     [
+      60,
+      -0.084041,
+      -0.05754,
+      -0.360495,
+      0.927184
+     ],
+     [
+      61,
+      -0.084408,
+      -0.024432,
+      -0.197799,
+      0.976296
+     ],
+     [
+      65,
+      0.040345,
+      0.021651,
+      -0.322332,
+      0.945519
+     ],
+     [
+      66,
+      -0.04574,
+      0.00138,
+      -0.371801,
+      0.927184
+     ],
+     [
+      67,
+      -0.051308,
+      0.012572,
+      -0.209894,
+      0.976296
+     ],
+     [
+      62,
+      0.009023,
+      0.067101,
+      -0.3436,
+      0.936672
+     ],
+     [
+      63,
+      -0.08379,
+      0.045708,
+      -0.362243,
+      0.927184
+     ],
+     [
+      64,
+      -0.039502,
+      0.032628,
+      -0.210288,
+      0.976296
+     ],
+     [
+      68,
+      -0.095583,
+      -0.0,
+      0.007086,
+      0.995396
+     ],
+     [
+      69,
+      -0.134222,
+      0.0,
+      -0.036793,
+      0.990268
+     ],
+     [
+      70,
+      -0.076505,
+      0.033178,
+      -0.088873,
+      0.992546
+     ]
+    ]
+   },
+   "arm": [
+    53,
+    54,
+    55
+   ]
+  }
+ },
+ "colliders": [
+  {
+   "a": 1,
+   "b": 2,
+   "r": 0.0901,
+   "dr": {
+    "0": -0.0101,
+    "1": -0.0035,
+    "2": 0.0077,
+    "3": -0.0011,
+    "4": -0.0172,
+    "5": 0.0046,
+    "6": -0.0079,
+    "7": 0.0228,
+    "8": 0.0012,
+    "9": -0.0038,
+    "14": 0.0043,
+    "15": -0.005,
+    "16": 0.0008
+   }
+  },
+  {
+   "a": 5,
+   "b": 6,
+   "r": 0.0862,
+   "dr": {
+    "0": -0.0073,
+    "1": -0.0005,
+    "2": 0.0075,
+    "3": 0.0028,
+    "4": -0.0147,
+    "5": 0.0073,
+    "6": -0.0076,
+    "7": 0.0237,
+    "8": 0.0016,
+    "9": -0.0016,
+    "14": 0.0041,
+    "15": -0.0048,
+    "16": 0.0007
+   }
+  },
+  {
+   "a": 2,
+   "b": 3,
+   "r": 0.0487,
+   "dr": {
+    "0": -0.0039,
+    "1": 0.0002,
+    "2": 0.0003,
+    "3": -0.0009,
+    "4": -0.0021,
+    "5": 0.0028,
+    "6": -0.0052,
+    "7": 0.0161,
+    "8": 0.0017,
+    "9": -0.0027,
+    "14": 0.0023,
+    "15": -0.003,
+    "16": 0.0007
+   }
+  },
+  {
+   "a": 6,
+   "b": 7,
+   "r": 0.0487,
+   "dr": {
+    "0": -0.0039,
+    "1": 0.0002,
+    "2": 0.0003,
+    "3": -0.0009,
+    "4": -0.0021,
+    "5": 0.0028,
+    "6": -0.0052,
+    "7": 0.0161,
+    "8": 0.0017,
+    "9": -0.0027,
+    "14": 0.0023,
+    "15": -0.003,
+    "16": 0.0007
+   }
+  },
+  {
+   "a": 0,
+   "b": 10,
+   "r": 0.1208,
+   "dr": {
+    "0": -0.011,
+    "1": -0.0022,
+    "2": 0.0079,
+    "3": -0.005,
+    "4": -0.0089,
+    "5": 0.0145,
+    "6": -0.015,
+    "7": 0.0355,
+    "8": 0.0048,
+    "9": -0.0093,
+    "14": 0.0059,
+    "15": -0.0074,
+    "16": 0.0011
+   }
+  },
+  {
+   "a": 10,
+   "b": 31,
+   "r": 0.1137,
+   "dr": {
+    "0": -0.0106,
+    "1": -0.0095,
+    "2": 0.0028,
+    "3": 0.0026,
+    "4": -0.0047,
+    "5": 0.0092,
+    "6": -0.0139,
+    "7": 0.0346,
+    "8": -0.0008,
+    "9": 0.0051,
+    "11": 0.0008,
+    "14": 0.0054,
+    "15": -0.0065,
+    "16": 0.001
+   }
+  },
+  {
+   "a": 13,
+   "b": 14,
+   "r": 0.0465,
+   "dr": {
+    "0": -0.0038,
+    "1": 0.0009,
+    "2": 0.0055,
+    "3": 0.0033,
+    "4": -0.0066,
+    "5": 0.0091,
+    "6": -0.0056,
+    "7": 0.0184,
+    "8": 0.0005,
+    "9": 0.0004,
+    "14": 0.0022,
+    "15": -0.0029,
+    "16": 0.0005
+   }
+  },
+  {
+   "a": 34,
+   "b": 35,
+   "r": 0.0465,
+   "dr": {
+    "0": -0.0038,
+    "1": 0.0009,
+    "2": 0.0055,
+    "3": 0.0033,
+    "4": -0.0066,
+    "5": 0.0091,
+    "6": -0.0056,
+    "7": 0.0184,
+    "8": 0.0005,
+    "9": 0.0004,
+    "14": 0.0022,
+    "15": -0.0029,
+    "16": 0.0005
+   }
+  },
+  {
+   "a": 14,
+   "b": 15,
+   "r": 0.0308,
+   "dr": {
+    "0": -0.002,
+    "1": 0.0007,
+    "2": 0.0003,
+    "3": 0.0008,
+    "4": -0.0025,
+    "5": 0.003,
+    "6": -0.0026,
+    "7": 0.0101,
+    "14": 0.0017,
+    "15": -0.002,
+    "16": 0.0003
+   }
+  },
+  {
+   "a": 35,
+   "b": 36,
+   "r": 0.0308,
+   "dr": {
+    "0": -0.002,
+    "1": 0.0007,
+    "2": 0.0003,
+    "3": 0.0008,
+    "4": -0.0025,
+    "5": 0.003,
+    "6": -0.0026,
+    "7": 0.0101,
+    "14": 0.0017,
+    "15": -0.002,
+    "16": 0.0003
+   }
+  },
+  {
+   "a": 53,
+   "b": 54,
+   "r": 0.0465,
+   "dr": {
+    "0": -0.0038,
+    "1": 0.0009,
+    "2": 0.0055,
+    "3": 0.0033,
+    "4": -0.0066,
+    "5": 0.0091,
+    "6": -0.0056,
+    "7": 0.0184,
+    "8": 0.0005,
+    "9": 0.0004,
+    "14": 0.0022,
+    "15": -0.0029,
+    "16": 0.0005
+   }
+  },
+  {
+   "a": 72,
+   "b": 73,
+   "r": 0.0465,
+   "dr": {
+    "0": -0.0038,
+    "1": 0.0009,
+    "2": 0.0055,
+    "3": 0.0033,
+    "4": -0.0066,
+    "5": 0.0091,
+    "6": -0.0056,
+    "7": 0.0184,
+    "8": 0.0005,
+    "9": 0.0004,
+    "14": 0.0022,
+    "15": -0.0029,
+    "16": 0.0005
+   }
+  },
+  {
+   "a": 54,
+   "b": 55,
+   "r": 0.0308,
+   "dr": {
+    "0": -0.002,
+    "1": 0.0007,
+    "2": 0.0003,
+    "3": 0.0008,
+    "4": -0.0025,
+    "5": 0.003,
+    "6": -0.0026,
+    "7": 0.0101,
+    "14": 0.0017,
+    "15": -0.002,
+    "16": 0.0003
+   }
+  },
+  {
+   "a": 73,
+   "b": 74,
+   "r": 0.0308,
+   "dr": {
+    "0": -0.002,
+    "1": 0.0007,
+    "2": 0.0003,
+    "3": 0.0008,
+    "4": -0.0025,
+    "5": 0.003,
+    "6": -0.0026,
+    "7": 0.0101,
+    "14": 0.0017,
+    "15": -0.002,
+    "16": 0.0003
+   }
+  }
+ ]
+}

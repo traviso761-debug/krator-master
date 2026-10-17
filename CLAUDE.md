@@ -86,12 +86,14 @@ The catalog furniture batch keeps indices when a build asks (`KF.batch({indexed:
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
 | `core/furnish/` | the furniture placement pass (`KFURN`) Girder, Mav's Refuge, Locus, Highlands and Post-Apoc share; `fingerprint.py` proves a change moved no piece (`core/furnish/README.md`) |
+| `core/charactermodels/` | a core module that is also a build of its own (`CORE_BUILDS` in the index tools): the characters every settlement's citizens are to be drawn from. The Cosmetic Lab (character editor, NPC crowds) and the Animation Lab (every clip on six bodies, with review marks): MakeHuman (MPFB2) bodies with morphing face, build and ancestry, library clothes, hair and beards that follow, skin and hair tint, and peoples (`data/peoples.json`) for drawing a culture's strangers; body mods any body can wear (a second pair of arms, flesh or cybernetic, on lower-arm joints every skeleton has; rib gills: `tools/mods.py`) and the Giants, the Dalab's and the Free Giants (`tools/giant.py`); Godot twin (`godot/krator/character/`, behind). Read `README.md`. Roadmap: its README, "A core module: where it goes next", and GODOT-PLAN.md Phase 5 |
 | `core/city/` | the city builder and its infill (steps 6-12: civic, avenue lots, main streets, side streets, alleys, the infill of the blocks) as plain records, and their drawing. Voth's city plan (`settlements/voth`) and Verge's two levels (`settlements/verge`) are on it. **Every settlement should eventually be ported to it** (`core/city/README.md`, "Porting a settlement") |
 | `godot/` | the Godot project (the port spike): importers for each export, shaders, `data/` exports made by `godot/tools/export_spike.py` (`godot/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
 | `archive/` | old scratch and exported snippets. Do not build from it |
 | `painting-to-3d-world.skill` | a zip. Read `painting-to-3d-world/SKILL.md` inside it before starting a new build or a large expansion |
+| `.claude/skills/character-modeling/` | lessons from building the character kit: pipeline choice, the bug catalogue by area (`references/pitfalls.md`), tool setup. Read it before work on `core/charactermodels`. `character-modeling.skill` is the same, zipped for upload: update the folder with what a session learns and rebuild the zip (`README.md`, "Skills") |
 
 ## Keep token use down
 

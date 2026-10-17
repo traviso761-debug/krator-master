@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""Make an outfit donor on Meshy: text-to-3d (preview, then refine), then auto-rigging. Downloads the rigged GLB.
+
+The key comes from MESHY_API_KEY (or a file named by MESHY_API_KEY_FILE); it is never written anywhere.
+
+  python3 tools/meshy.py donor <id> "<outfit words>" [body=female] [kind=base|piece]
+                                                      # runs the steps, writes donors/<id>.glb + donors/<id>.json
+  python3 tools/meshy.py balance
+
+The prompt is the fixed template DONOR_PROMPT with the outfit words put in, so every donor comes out the same build,
+in the same A-pose as Styv (hero/styv.glb), with no cape, weapon or shield (those cross the slot cuts). Cost per donor:
+20 (preview) + 10 (refine) + 5 (rig) credits. The json keeps the task ids, so a rerun resumes rather than repaying.
+"""
+import json, os, sys, time, urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import compact_glb
+
+API = 'https://api.meshy.ai/openapi'
+HERE = os.path.dirname(os.path.abspath(__file__))
+DONORS = os.path.join(HERE, '..', 'donors')
+
+DONOR_PROMPT = ('Full body game character, an adult man of average athletic build, standing in A-pose, '
+                'stylized realistic, bare head with short dark hair, clean shaven, face visible, wearing {outfit}. '
+                'Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.')
+# per body: the outfit template, and the clean base model (bald, clean shaven, plain underclothes) that hair and
+# beards are fitted to
+PROMPTS = {
+    'male': {'outfit': DONOR_PROMPT,
+             'base': ('Full body game character base model, an adult man of average athletic build, standing in A-pose, '
+                      'stylized realistic, completely bald smooth head, no hair, no beard, no eyebrows piercings or '
+                      'tattoos, neutral calm face, wearing plain grey fitted shorts and a plain grey tank top, '
+                      'barefoot, even neutral skin tone, nothing held.')},
+    'female': {'outfit': ('Full body game character, an adult woman of average athletic build, standing in A-pose, '
+                          'stylized realistic, bare head with short dark hair tied back, face visible, wearing {outfit}. '
+                          'Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.'),
+               # the first try came out with pigtails and a youthful look: say bald and adult more than once
+               'base': ('Full body game character base model of a grown adult woman in her thirties, mature adult '
+                        'face and proportions, average athletic build, standing in A-pose, stylized realistic. Her '
+                        'head is completely shaved bald: smooth bare scalp, no hair at all, no ponytail, no pigtails, '
+                        'no eyebrows piercings or tattoos. Neutral calm expression. Wearing a plain grey fitted sports '
+                        'top and plain grey fitted shorts, barefoot, even neutral skin tone, nothing held.')},
+}
+# a hair or beard piece: no rig; make_pieces.py fits it onto a base head
+PIECE_PROMPT = ('{what}, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow '
+                'inside where the head would be, front facing +Z, stylized realistic, natural colour.')
+
+
+def key():
+    k = os.environ.get('MESHY_API_KEY')
+    if not k and os.environ.get('MESHY_API_KEY_FILE'):
+        k = open(os.environ['MESHY_API_KEY_FILE']).read().strip()
+    if not k:
+        sys.exit('meshy.py: set MESHY_API_KEY')
+    return k
+
+
+def call(method, path, body=None):
+    req = urllib.request.Request(API + path, method=method, data=json.dumps(body).encode() if body else None,
+                                 headers={'Authorization': 'Bearer ' + key(), 'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        return json.loads(r.read())
+
+
+def wait(path, tid):
+    while True:
+        t = call('GET', '%s/%s' % (path, tid))
+        print('  %s %s %s%%' % (path.split('/')[-1], t['status'], t.get('progress')), flush=True)
+        if t['status'] == 'SUCCEEDED':
+            return t
+        if t['status'] in ('FAILED', 'CANCELED'):
+            sys.exit('meshy.py: %s %s: %s' % (path, tid, t.get('task_error')))
+        time.sleep(15)
+
+
+def donor(did, outfit, body='male', kind='outfit'):
+    """kind: 'outfit' (rigged, the outfit words go in the body's template), 'base' (rigged, the body's base model),
+    'piece' (a hair or beard: not rigged; the words describe it)"""
+    os.makedirs(DONORS, exist_ok=True)
+    jp = os.path.join(DONORS, did + '.json')
+    prompt = (PIECE_PROMPT.format(what=outfit) if kind == 'piece' else
+              PROMPTS[body]['base'] if kind == 'base' else PROMPTS[body]['outfit'].format(outfit=outfit))
+    rec = json.load(open(jp)) if os.path.exists(jp) else {'id': did, 'outfit': outfit, 'body': body, 'kind': kind,
+                                                         'prompt': prompt}
+    save = lambda: json.dump(rec, open(jp, 'w'), indent=1)
+    if 'preview' not in rec:
+        rec['preview'] = call('POST', '/v2/text-to-3d', {
+            'mode': 'preview', 'prompt': rec['prompt'], 'ai_model': 'latest',
+            'pose_mode': '' if rec.get('kind') == 'piece' else 'a-pose',
+            'should_remesh': True, 'topology': 'triangle', 'target_polycount': 24000, 'target_formats': ['glb']})['result']
+        save()
+    wait('/v2/text-to-3d', rec['preview'])
+    if 'refine' not in rec:
+        rec['refine'] = call('POST', '/v2/text-to-3d', {
+            'mode': 'refine', 'preview_task_id': rec['preview'], 'enable_pbr': True, 'texture_resolution': '2k',
+            'target_formats': ['glb']})['result']
+        save()
+    wait('/v2/text-to-3d', rec['refine'])
+    if rec.get('kind') == 'piece':
+        t = call('GET', '/v2/text-to-3d/%s' % rec['refine'])
+        out = os.path.join(DONORS, did + '.glb')
+        urllib.request.urlretrieve(t['model_urls']['glb'], out)
+        compact_glb.compact(out)
+        rec['glb'] = did + '.glb'
+        save()
+        print('%s: %s (%d KB)' % (did, out, os.path.getsize(out) // 1024))
+        return
+    if 'rig' not in rec:
+        rec['rig'] = call('POST', '/v1/rigging', {'input_task_id': rec['refine'], 'height_meters': 1.75})['result']
+        save()
+    t = wait('/v1/rigging', rec['rig'])
+    out = os.path.join(DONORS, did + '.glb')
+    urllib.request.urlretrieve(t['result']['rigged_character_glb_url'], out)
+    compact_glb.compact(out)            # 4K maps down to 2K/1K for the repo
+    rec['glb'] = did + '.glb'
+    save()
+    print('%s: %s (%d KB)' % (did, out, os.path.getsize(out) // 1024))
+
+
+def animations(rig_task, action_ids, out):
+    """Meshy's library actions on one of our rigged donors (its rig task id), in batches of 10 (3 credits each).
+    Writes out_<n>.glb per batch and out.json with the actions; make_pieces.py retargets them onto the skeleton."""
+    jp = out + '.json'
+    rec = json.load(open(jp)) if os.path.exists(jp) else {'rig': rig_task, 'batches': []}
+    lib = {a['action_id']: a for a in call('GET', '/v1/animations/library?action_ids=' + ','.join(map(str, action_ids)))}
+    for n in range(0, len(action_ids), 10):
+        ids = action_ids[n:n + 10]
+        b = next((x for x in rec['batches'] if x['ids'] == ids), None)
+        if b is None:
+            b = {'ids': ids, 'names': [lib[i]['name'] for i in ids],
+                 'task': call('POST', '/v1/animations', {'rig_task_id': rig_task, 'action_ids': ids})['result']}
+            rec['batches'].append(b)
+            json.dump(rec, open(jp, 'w'), indent=1)
+    for k, b in enumerate(rec['batches']):
+        t = wait('/v1/animations', b['task'])
+        b['glb'] = os.path.basename(out) + '_%d.glb' % k
+        urllib.request.urlretrieve(t['result']['animation_glb_url'], os.path.join(os.path.dirname(out), b['glb']))
+        compact_glb.compact(os.path.join(os.path.dirname(out), b['glb']))
+        json.dump(rec, open(jp, 'w'), indent=1)
+        print(b['glb'], b['names'])
+
+
+def retexture(src_id, out_id, prompt):
+    """repaint a donor's mesh from a prompt, keeping its UVs (enable_original_uv), so the new colour map fits the
+    donor's own mesh: clothing painted onto the base body. ~10 credits. Writes donors/<out_id>.glb and .json"""
+    src = json.load(open(os.path.join(DONORS, src_id + '.json')))
+    jp = os.path.join(DONORS, out_id + '.json')
+    rec = json.load(open(jp)) if os.path.exists(jp) else {'id': out_id, 'from': src_id, 'prompt': prompt}
+    save = lambda: json.dump(rec, open(jp, 'w'), indent=1)
+    if 'retexture' not in rec:
+        rec['retexture'] = call('POST', '/v1/retexture', {
+            'input_task_id': src['refine'], 'text_style_prompt': prompt, 'enable_original_uv': True,
+            'enable_pbr': True, 'ai_model': 'latest', 'texture_resolution': '2k', 'target_formats': ['glb']})['result']
+        save()
+    t = wait('/v1/retexture', rec['retexture'])
+    out = os.path.join(DONORS, out_id + '.glb')
+    urllib.request.urlretrieve(t['model_urls']['glb'], out)
+    compact_glb.compact(out)
+    rec['glb'] = out_id + '.glb'
+    save()
+    print('%s: %s (%d KB)' % (out_id, out, os.path.getsize(out) // 1024))
+
+
+if __name__ == '__main__':
+    if sys.argv[1:2] == ['balance']:
+        print(call('GET', '/v1/balance'))
+    elif sys.argv[1:2] == ['retexture'] and len(sys.argv) == 5:
+        # python3 tools/meshy.py retexture <donor id> <new id> "<what he wears>"
+        retexture(sys.argv[2], sys.argv[3], sys.argv[4])
+    elif sys.argv[1:2] == ['anims'] and len(sys.argv) == 5:
+        # python3 tools/meshy.py anims <donor id> <id,id,...> donors/anims/<name>
+        animations(json.load(open(os.path.join(DONORS, sys.argv[2] + '.json')))['rig'],
+                   [int(x) for x in sys.argv[3].split(',')], sys.argv[4])
+    elif sys.argv[1:2] == ['donor'] and len(sys.argv) >= 4:
+        opt = dict(a.split('=', 1) for a in sys.argv[4:])      # body=female kind=base|piece
+        donor(sys.argv[2], sys.argv[3], opt.get('body', 'male'), opt.get('kind', 'outfit'))
+    else:
+        sys.exit(__doc__)
+

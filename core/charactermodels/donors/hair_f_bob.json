@@ -1,0 +1,10 @@
+{
+ "id": "hair_f_bob",
+ "outfit": "short chin-length dark bob with a fringe, a woman's hairstyle",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "short chin-length dark bob with a fringe, a woman's hairstyle, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-badf-702c-a917-ffc5f4eefb9a",
+ "refine": "01a125ff-ab8d-777f-87e0-ea7da017222d",
+ "glb": "hair_f_bob.glb"
+}

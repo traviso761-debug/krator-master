@@ -1,0 +1,11 @@
+{
+ "id": "f_bronze",
+ "outfit": "heavy bronze scale armor: an overlapping bronze scale shirt to the hips, bronze vambraces and gauntlets, bronze greaves, red cloth underlayer, heavy boots",
+ "body": "female",
+ "kind": "outfit",
+ "prompt": "Full body game character, an adult woman of average athletic build, standing in A-pose, stylized realistic, bare head with short dark hair tied back, face visible, wearing heavy bronze scale armor: an overlapping bronze scale shirt to the hips, bronze vambraces and gauntlets, bronze greaves, red cloth underlayer, heavy boots. Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.",
+ "preview": "01a125ee-cc29-7353-99a2-a6d81b4a2d95",
+ "refine": "01a125ef-cb14-73b9-9c6a-d8239a5f8cb4",
+ "rig": "01a125f0-bef2-74f1-aa20-abe72d41aaa4",
+ "glb": "f_bronze.glb"
+}

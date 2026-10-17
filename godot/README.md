@@ -34,6 +34,7 @@ godot --headless --path godot --script res://tests/verge/verge_sim_test.gd   # V
 godot --headless --path godot --script res://tests/dhelv/dhelv_sim_test.gd   # Dhelv's ramblers: KSim.pose (core/simulation's twin) against the page's trace
 godot --headless --path godot --script res://tests/dhelv/dhelv_nav_test.gd   # Dhelv's walk floors baked to a navmesh: gate to temple, through the braid
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
+godot --headless --path godot --script res://tests/character/kchar_test.gd   # core/charactermodels: records and morphs against the JS golden, a MakeHuman figure from the pieces
 ```
 
 Or open `godot/project.godot` in the editor (Import, then F5). The editor skips `data/` (`data/.gdignore`): the
@@ -85,6 +86,7 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `krator/water_import.gd` | `KratorWater`: the `water` section's open surfaces drawn (a grid in world space on `shaders/water.gdshader`), and `check_probes` (the page's own heights against KWater) |
 | `krator/lamps_import.gd` | a page's lamps (`lamps.json`, krator-lamps; Girder's `_api.lamps`): halos on `halo.gdshader` and the nearest 32 as OmniLight3D, run by `atmos_lights.gd` |
 | `krator/records_import.gd` | Yuni's records to stand-in nodes, each node's `krator` metadata its core/tags record (`tags.json`; a MultiMesh keeps its instances' records in a `records` side table) |
+| `krator/character/` | `kchar.gd` (the twin of core/charactermodels' `KCHAR` for the MakeHuman bodies: morph weights and joints, strangers by people, parts, hidden skin) and `kchar_figure.gd` (a character on one Skeleton3D: morphs as shared blend shapes from `<piece>.gshapes.bin`, skin as one surface of cover regions dropped by `kchar_skin.gdshader`, garments through `kchar_push.gdshader` (their look, the push out of the limbs, the waistband tuck), cloth chains, moved joints and binds, tint, `kchar_eye.gdshader`); data in `data/characters/` (`tools/sync_core.py`: the JSON and golden are tracked, the pieces are copied in and gitignored); body mods (`KChar.mods`, `arms`, `fits`: a second pair of arms or rib gills, drawn as pieces on the lower-arm joints every skeleton has; the lower arms driven from the upper by `_arms2` when the body has four) and a giant (`kit.scale`, the man's clips at its own pace); `tests/character/kchar_test.gd` checks it against the JS golden, `kchar_shot.gd` draws five strangers (`--giant`: three giants) |
 | `krator/fly_camera.gd` | the camera |
 | `krator/dhelv_import.gd`, `dhelv_sim_node.gd`, `dhelv_nav.gd` | the dhelv case: stand-ins, the frame (ramblers and the agent), and the walk floors as Recast source (`KratorDhelvNav`: both windings for floors, the blocks' sides; cell 0.25 m, walker 0.25 m by 1.7 m, step 0.6) with DHN's own route for comparison |
 | `shaders/lib/` | **the shader library** (below): one `.gdshaderinc` per hook id, `world-uv`, `breakup`, `foliage`, `bark`, `cloth-sway`, `flag`, `glass`, `coursing`, `water` |

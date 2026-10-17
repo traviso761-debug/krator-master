@@ -1300,6 +1300,41 @@ Provisional, to be judged in the demo kit. In the owner's AmbientCG folder, each
 | `MetalPlates001` | grey plates with rivet groups | `metal.plated` |
 
 
+#### Characters: cybernetic arms and the giants' metal (`core/charactermodels`, added 2026-10-13)
+
+The body mods' cybernetic pairs (`core/charactermodels/tools/mods.py` `CYBER`) and the giants' gold and bronze are flat
+colours today. These are the gaps, one row per surface. Use the base template, with "Keep colours natural but slightly
+muted" for the tintable rows and without it for the gold. Each wants a roughness map (and a metalness map where the
+row says metal); the plates repeat about every 0.25 m on an arm, so ask for fine detail.
+
+| id | Material line |
+|---|---|
+| `cyber.plate.bronze` | Machined bronze armour plate (#b08d57), satin finish with fine circular machining marks, thin engraved panel lines in a loose grid, a few countersunk screw heads, dark oxidation in the panel lines and edge wear showing brighter bronze. Metal. |
+| `cyber.plate.loader` | Heavy industrial steel plate painted mid grey (#6b6e72), chipped and scuffed paint showing bare steel at the edges, faint stencil-like panel seams, rows of round bolt heads, grease smudges and dust. Painted metal, tintable. |
+| `cyber.stripe.hazard` | Hazard band: diagonal stripes of worn safety yellow (#d9a521) and near-black (#25272a) at 45 degrees, the paint chipped and scratched, bare steel in the chips. Repeats horizontally. |
+| `cyber.ceramic.surgical` | Smooth white medical ceramic composite (#e6e4de), very fine matte texture, hairline seams forming long rounded panels, a few tiny inset sensor dots in pale teal (#3fc6c0), barely visible fingerprint smudges. Not metal; low roughness. |
+| `cyber.joint.rubber` | Dark graphite flexible joint sleeve (#2a2c30): fine ribbed rubber bellows in parallel rings, a slight sheen on the ridges, dust caught in the grooves. Tintable. |
+| `cyber.cable.bundle` | Close-packed braided cable sheathing: woven black and dark grey nylon braid around cables, a fine diagonal herringbone weave, a few strands of teal tracer thread. Repeats along the cable. |
+| `cyber.hydraulic` | Hydraulic ram: polished chrome piston rod with a thin oil film and a few fine scratches, beside a dark steel cylinder with machining rings. Metal; the chrome far less rough than the cylinder. |
+| `metal.gold.temple` | Hammered temple gold (#d4a63a): soft hammer facets, a warm mirror sheen in the facets, darker gold in the hollows, fine punched dot borders. Metal; for the Dalab temple guard's pectoral, belt and armbands. Not tinted. |
+| `metal.bronze.lt` | La Tene cast bronze (#a8803a) for the Free Giants' helmet, brooch and armbands: a cast surface with fine casting pits, incised spiral and triskele ornament, green verdigris in the incisions, polished high points. Metal. |
+| `metal.gold.torc` | Twisted gold torc rod seen side-on and unrolled flat: tight helical twist ridges running across the frame, warm gold (#d8b04a) with darker gold in the twist grooves. Metal. Repeats horizontally. |
+
+#### Characters: clothing fabrics (every culture, `core/charactermodels`, added 2026-10-13, moved 2026-10-14)
+
+**Moved to `core/charactermodels/prompt-clothes.md`**, which lists the library sets the clothes can use as they are
+(`cloth.plain` for linen, `cloth.silk`, the procedural `cloth.felt`, `cloth.weave.twill` and `cloth.knit`,
+`cloth.weave.burlap` for maguey, the `hide.leather` sets, `hide.fur.brown`, `fibre.rope`, `shell.nacre`) and gives
+ready-to-paste prompts for the 17 gaps: `cloth.wool`, `cloth.velvet`, `cloth.quilted`, `cloth.cotton.coarse`,
+`cloth.bazin`, `cloth.oiled`, `leather.polished`, `leather.buckskin`, `fur.short`, `fur.astrakhan`, `straw.plaited`,
+`feather.quetzal`, `beads.glass`, `metal.brass.braid`, `embroidery.cross`, `embroidery.saxon`, `pattern.bogolan`.
+(The first version of this list asked again for `cloth.linen`, `cloth.felt` and `cloth.silk`, which the library has.)
+**Delivered 2026-10-14 and processed**, all 17 (`tools/textures/batches/chatgpt-2026-10f-clothes.json`, sources
+`clo1.zip`, `clo3.zip` and a pasted velvet image): scales 0.12 to 0.4 m a tile (about 20 cm of cloth a frame);
+the embroideries, the bogolan, the braid and the bazin damask cropped to their pattern period; the braid metal; the
+quetzal feathers, the embroideries, the bogolan and the braid not tinted, the rest muted for tinting. The garment
+painter reads them since 2026-10-14 (the colour image only; `core/charactermodels/prompt-clothes.md`).
+
 #### Second survey (2026-10-03): biomes, city streets and parks, furniture
 
 The owner's newer downloads (44 sets: AmbientCG Ground, Rock, Gravel, Snow, Fabric, Tiles, Marble, Moss, and Poly Haven sand,

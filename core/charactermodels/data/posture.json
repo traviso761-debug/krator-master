@@ -1,0 +1,23 @@
+{
+ "about": "The posture pass after every clip (50-figure.js posture, kchar_figure.gd _posture), per body: Spine, Spine1, Spine2, Neck and Head pitched by these degrees in the figure's frame (negative forward, positive back), then the shoulders dropped (drop) and drawn back (back, negative rolls them forward). The upper arms keep the way the clip points them. A body without an entry takes mpfb_male's (the giant). The Animation Lab's Posture panel edits these live and copies them as this 'bodies' object.",
+ "bodies": {
+  "mpfb_male": {
+   "Spine": -6,
+   "Spine1": -12,
+   "Spine2": -12,
+   "Neck": 15,
+   "Head": 0,
+   "drop": 9,
+   "back": 10
+  },
+  "mpfb_female": {
+   "Spine": -6,
+   "Spine1": -8,
+   "Spine2": -8,
+   "Neck": 11,
+   "Head": 0,
+   "drop": 9,
+   "back": 10
+  }
+ }
+}

@@ -1,0 +1,1332 @@
+{
+ "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering, pickaxe or straight thrusting clip, so some are made (derive, make_pieces.derived_clips): loop_of a one-shot that eases back to its first frame after its last; dig, both hands on a pickaxe or hoe swung over the shoulder and down in front (dig_loop: the heavy swing looped had the left arm across the chest); hammer, a procedural loop on the standing idle (hammer_loop); thrust, a straight thrust from the combat stance, one-handed or a spear underhand (thrust_clip: Meshy's 'Thrust Slash' stabbed overhand, the point up); carry, an entry's own Meshy action ('<key>@src') with the arms holding a spear at the thrust's guard (spear_carry: 'Spear Walk' held it behind the back). hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support).",
+ "groups": [
+  {
+   "id": "move",
+   "label": "Move"
+  },
+  {
+   "id": "melee",
+   "label": "Melee"
+  },
+  {
+   "id": "ranged",
+   "label": "Ranged"
+  },
+  {
+   "id": "defend",
+   "label": "Block and dodge"
+  },
+  {
+   "id": "hurt",
+   "label": "Hit and fall"
+  },
+  {
+   "id": "swim",
+   "label": "Swim"
+  },
+  {
+   "id": "climb",
+   "label": "Ladder"
+  },
+  {
+   "id": "life",
+   "label": "Daily life"
+  },
+  {
+   "id": "work",
+   "label": "Work"
+  }
+ ],
+ "clips": [
+  {
+   "key": "walk_back",
+   "meshy": 544,
+   "label": "Walk backward",
+   "group": "move",
+   "loop": true
+  },
+  {
+   "key": "walk_injured",
+   "meshy": 111,
+   "label": "Injured walk",
+   "group": "move",
+   "loop": true
+  },
+  {
+   "key": "walk_limp",
+   "meshy": 555,
+   "label": "Limp",
+   "group": "move",
+   "loop": true
+  },
+  {
+   "key": "walk_carry",
+   "meshy": 551,
+   "label": "Carry heavy load",
+   "group": "move",
+   "loop": true
+  },
+  {
+   "key": "walk_bucket",
+   "meshy": 552,
+   "label": "Carry bucket",
+   "group": "move",
+   "loop": true,
+   "hold": {
+    "R": [
+     "bucket"
+    ]
+   }
+  },
+  {
+   "key": "crouch_walk",
+   "meshy": 524,
+   "label": "Crouch walk",
+   "group": "move",
+   "loop": true
+  },
+  {
+   "key": "sprint",
+   "meshy": 16,
+   "label": "Sprint",
+   "group": "move",
+   "loop": true
+  },
+  {
+   "key": "combat_idle",
+   "meshy": 89,
+   "label": "Combat stance",
+   "group": "melee",
+   "loop": true,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "attack",
+   "meshy": 4,
+   "label": "Attack",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "slash_left",
+   "meshy": 97,
+   "label": "Slash left",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "slash_right",
+   "meshy": 219,
+   "label": "Slash right",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "thrust",
+   "derive": {
+    "thrust": "one",
+    "from": "combat_idle"
+   },
+   "label": "Thrust / stab",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "dagger",
+     "sword"
+    ]
+   }
+  },
+  {
+   "key": "spear_thrust",
+   "derive": {
+    "thrust": "spear",
+    "from": "combat_idle",
+    "cycle": 1.4
+   },
+   "label": "Spear thrust",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "spear"
+    ]
+   },
+   "two_hands": [
+    "spear"
+   ]
+  },
+  {
+   "key": "slash_charged",
+   "meshy": 242,
+   "label": "Charged slash",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   },
+   "two_hands": [
+    "axe",
+    "warhammer"
+   ]
+  },
+  {
+   "key": "combo",
+   "meshy": 92,
+   "label": "Double combo",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "axe_chop",
+   "meshy": 237,
+   "label": "Overhead chop (axe)",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "axe",
+     "warhammer",
+     "mace",
+     "pickaxe",
+     "sword"
+    ]
+   },
+   "two_hands": [
+    "axe",
+    "warhammer",
+    "mace",
+    "pickaxe"
+   ]
+  },
+  {
+   "key": "axe_spin",
+   "meshy": 238,
+   "label": "Spinning axe attack",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "axe",
+     "warhammer",
+     "mace",
+     "pickaxe",
+     "sword"
+    ]
+   }
+  },
+  {
+   "key": "blunt_swing",
+   "meshy": 128,
+   "label": "Heavy blunt swing",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "mace",
+     "warhammer",
+     "axe",
+     "hammer"
+    ]
+   },
+   "two_hands": [
+    "mace",
+    "warhammer",
+    "axe"
+   ]
+  },
+  {
+   "key": "spear_walk",
+   "meshy": 560,
+   "derive": {
+    "carry": "spear",
+    "from": "spear_walk@src"
+   },
+   "label": "Spear advance",
+   "group": "melee",
+   "loop": true,
+   "hold": {
+    "R": [
+     "spear"
+    ]
+   },
+   "two_hands": [
+    "spear"
+   ]
+  },
+  {
+   "key": "shield_push",
+   "meshy": 220,
+   "label": "Shield bash",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ],
+    "L": [
+     "shield"
+    ]
+   }
+  },
+  {
+   "key": "bow_shot",
+   "meshy": 224,
+   "label": "Bow shot",
+   "group": "ranged",
+   "loop": false,
+   "hold": {
+    "L": [
+     "bow"
+    ]
+   }
+  },
+  {
+   "key": "bow_draw",
+   "meshy": 222,
+   "label": "Draw from quiver and shoot",
+   "group": "ranged",
+   "loop": false,
+   "hold": {
+    "L": [
+     "bow"
+    ]
+   }
+  },
+  {
+   "key": "bow_walk",
+   "meshy": 228,
+   "label": "Walk with bow drawn",
+   "group": "ranged",
+   "loop": true,
+   "hold": {
+    "L": [
+     "bow"
+    ]
+   }
+  },
+  {
+   "key": "bow_scan",
+   "meshy": 231,
+   "label": "Bow aim and scan",
+   "group": "ranged",
+   "loop": true,
+   "hold": {
+    "L": [
+     "bow"
+    ]
+   }
+  },
+  {
+   "key": "gun_shot",
+   "meshy": 104,
+   "label": "Long gun shot",
+   "group": "ranged",
+   "loop": false,
+   "hold": {
+    "R": [
+     "rifle",
+     "crossbow"
+    ]
+   },
+   "two_hands": [
+    "rifle",
+    "crossbow"
+   ]
+  },
+  {
+   "key": "pistol_draw",
+   "meshy": 232,
+   "label": "Pistol quick draw",
+   "group": "ranged",
+   "loop": false,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
+  },
+  {
+   "key": "pistol_shot",
+   "meshy": 236,
+   "label": "Draw and shoot (side)",
+   "group": "ranged",
+   "loop": false,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
+  },
+  {
+   "key": "reload",
+   "meshy": 170,
+   "label": "Reload (standing)",
+   "group": "ranged",
+   "loop": false,
+   "hold": {
+    "R": [
+     "rifle",
+     "crossbow"
+    ]
+   }
+  },
+  {
+   "key": "reload_kneel",
+   "meshy": 165,
+   "label": "Reload (kneeling)",
+   "group": "ranged",
+   "loop": false,
+   "hold": {
+    "R": [
+     "rifle",
+     "crossbow"
+    ]
+   }
+  },
+  {
+   "key": "walk_shoot",
+   "meshy": 234,
+   "label": "Walk while shooting",
+   "group": "ranged",
+   "loop": true,
+   "hold": {
+    "R": [
+     "rifle",
+     "crossbow"
+    ]
+   },
+   "two_hands": [
+    "rifle",
+    "crossbow"
+   ]
+  },
+  {
+   "key": "throw",
+   "meshy": 239,
+   "label": "Crouch and throw",
+   "group": "ranged",
+   "loop": false
+  },
+  {
+   "key": "block",
+   "meshy": 138,
+   "label": "Block",
+   "group": "defend",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "block_2",
+   "meshy": 139,
+   "label": "Block 2",
+   "group": "defend",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "parry",
+   "meshy": 147,
+   "label": "Parry",
+   "group": "defend",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "parry_2h",
+   "meshy": 149,
+   "label": "Two-handed parry",
+   "group": "defend",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   },
+   "two_hands": [
+    "sword",
+    "axe",
+    "mace",
+    "warhammer"
+   ]
+  },
+  {
+   "key": "dodge_step",
+   "meshy": 156,
+   "label": "Sidestep",
+   "group": "defend",
+   "loop": false
+  },
+  {
+   "key": "dodge_roll",
+   "meshy": 158,
+   "label": "Roll",
+   "group": "defend",
+   "loop": false
+  },
+  {
+   "key": "dodge_back",
+   "meshy": 162,
+   "label": "Dodge back",
+   "group": "defend",
+   "loop": false
+  },
+  {
+   "key": "dodge_spin",
+   "meshy": 384,
+   "label": "Spin dodge",
+   "group": "defend",
+   "loop": false
+  },
+  {
+   "key": "hit",
+   "meshy": 178,
+   "label": "Hit",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "hit_2",
+   "meshy": 179,
+   "label": "Hit 2",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "hit_body",
+   "meshy": 171,
+   "label": "Hit to the body",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "fall_down",
+   "meshy": 366,
+   "label": "Fall down",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "fall",
+   "meshy": 502,
+   "label": "Fall from height",
+   "group": "hurt",
+   "loop": true
+  },
+  {
+   "key": "knock_down",
+   "meshy": 187,
+   "label": "Knocked down",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "die",
+   "meshy": 189,
+   "label": "Die (backwards)",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "dead",
+   "meshy": 8,
+   "label": "Dead",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "get_up",
+   "meshy": 344,
+   "label": "Get up",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "swim_idle",
+   "meshy": 568,
+   "label": "Tread water",
+   "group": "swim",
+   "loop": true
+  },
+  {
+   "key": "swim",
+   "meshy": 569,
+   "label": "Swim",
+   "group": "swim",
+   "loop": true
+  },
+  {
+   "key": "swim_out",
+   "meshy": 570,
+   "label": "Climb out of water",
+   "group": "swim",
+   "loop": false
+  },
+  {
+   "key": "ladder_on",
+   "meshy": 436,
+   "label": "Mount ladder",
+   "group": "climb",
+   "loop": false
+  },
+  {
+   "key": "ladder",
+   "meshy": 438,
+   "label": "Climb ladder",
+   "group": "climb",
+   "loop": true
+  },
+  {
+   "key": "ladder_slow",
+   "meshy": 437,
+   "label": "Climb ladder slowly",
+   "group": "climb",
+   "loop": true
+  },
+  {
+   "key": "ladder_off",
+   "meshy": 435,
+   "label": "Leave ladder (top)",
+   "group": "climb",
+   "loop": false
+  },
+  {
+   "key": "pick_up",
+   "meshy": 276,
+   "label": "Pick up",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "pick_up_side",
+   "meshy": 274,
+   "label": "Pick up and set aside",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "collect",
+   "meshy": 284,
+   "label": "Collect",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "sit_down",
+   "meshy": 57,
+   "label": "Sit down",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "sit",
+   "meshy": 33,
+   "label": "Sit (chair)",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "sit_f",
+   "meshy": 32,
+   "label": "Sit (chair, relaxed)",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "stand_up",
+   "meshy": 53,
+   "label": "Stand up from chair",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "sit_floor",
+   "meshy": 362,
+   "label": "Sit cross-legged",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "sit_drink",
+   "meshy": 343,
+   "label": "Sit and drink",
+   "group": "life",
+   "loop": true,
+   "hold": {
+    "R": [
+     "cup"
+    ]
+   }
+  },
+  {
+   "key": "drink",
+   "meshy": 342,
+   "label": "Drink",
+   "group": "life",
+   "loop": false,
+   "hold": {
+    "R": [
+     "cup"
+    ]
+   }
+  },
+  {
+   "key": "lie_bed",
+   "meshy": 371,
+   "label": "Get into bed",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "sleep",
+   "meshy": 267,
+   "label": "Sleep",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "sleep_toss",
+   "meshy": 270,
+   "label": "Toss and turn",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "wake",
+   "meshy": 271,
+   "label": "Wake up",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "open_door",
+   "meshy": 285,
+   "label": "Open door",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "harvest",
+   "meshy": 283,
+   "label": "Pull crop",
+   "group": "work",
+   "loop": false
+  },
+  {
+   "key": "pick_fruit",
+   "meshy": 277,
+   "label": "Pick into basket",
+   "group": "work",
+   "loop": false
+  },
+  {
+   "key": "push",
+   "meshy": 261,
+   "label": "Push cart",
+   "group": "work",
+   "loop": true
+  },
+  {
+   "key": "ual_harvest",
+   "ual": "UAL2_Standard.glb:Farm_Harvest",
+   "label": "Harvest (kneeling)",
+   "group": "work",
+   "loop": false
+  },
+  {
+   "key": "ual_plant",
+   "ual": "UAL2_Standard.glb:Farm_PlantSeed",
+   "label": "Plant seed",
+   "group": "work",
+   "loop": false
+  },
+  {
+   "key": "ual_water",
+   "ual": "UAL2_Standard.glb:Farm_Watering",
+   "label": "Water plants",
+   "group": "work",
+   "loop": false,
+   "hold": {
+    "R": [
+     "bucket"
+    ]
+   }
+  },
+  {
+   "key": "ual_chop",
+   "ual": "UAL2_Standard.glb:TreeChopping_Loop",
+   "label": "Chop (axe, pickaxe, hoe)",
+   "group": "work",
+   "loop": true,
+   "hold": {
+    "R": [
+     "axe",
+     "pickaxe",
+     "hoe",
+     "hammer"
+    ]
+   },
+   "two_hands": [
+    "axe",
+    "pickaxe",
+    "hoe"
+   ]
+  },
+  {
+   "key": "ual_repair",
+   "ual": "UAL1_Standard.glb:Fixing_Kneeling",
+   "label": "Repair (kneeling)",
+   "group": "work",
+   "loop": true,
+   "hold": {
+    "R": [
+     "hammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_interact",
+   "ual": "UAL1_Standard.glb:Interact",
+   "label": "Work at bench / use",
+   "group": "work",
+   "loop": false,
+   "hold": {
+    "R": [
+     "hammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_pickup_table",
+   "ual": "UAL1_Standard.glb:PickUp_Table",
+   "label": "Take from table",
+   "group": "work",
+   "loop": false
+  },
+  {
+   "key": "ual_push",
+   "ual": "UAL1_Standard.glb:Push_Loop",
+   "label": "Push (heavy)",
+   "group": "work",
+   "loop": true
+  },
+  {
+   "key": "ual_carry",
+   "ual": "UAL2_Standard.glb:Walk_Carry_Loop",
+   "label": "Carry in arms",
+   "group": "work",
+   "loop": true
+  },
+  {
+   "key": "ual_consume",
+   "ual": "UAL2_Standard.glb:Consume",
+   "label": "Eat",
+   "group": "life",
+   "loop": false,
+   "hold": {
+    "R": [
+     "cup"
+    ]
+   }
+  },
+  {
+   "key": "ual_pistol_idle",
+   "ual": "UAL1_Standard.glb:Pistol_Idle_Loop",
+   "label": "Pistol stance",
+   "group": "ranged",
+   "loop": true,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
+  },
+  {
+   "key": "ual_pistol_aim",
+   "ual": "UAL1_Standard.glb:Pistol_Aim_Neutral",
+   "label": "Pistol aim",
+   "group": "ranged",
+   "loop": true,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
+  },
+  {
+   "key": "ual_pistol_shoot",
+   "ual": "UAL1_Standard.glb:Pistol_Shoot",
+   "label": "Pistol shot",
+   "group": "ranged",
+   "loop": false,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
+  },
+  {
+   "key": "ual_pistol_reload",
+   "ual": "UAL1_Standard.glb:Pistol_Reload",
+   "label": "Pistol reload",
+   "group": "ranged",
+   "loop": false,
+   "hold": {
+    "R": [
+     "pistol"
+    ]
+   }
+  },
+  {
+   "key": "ual_throw",
+   "ual": "UAL2_Standard.glb:OverhandThrow",
+   "label": "Overhand throw",
+   "group": "ranged",
+   "loop": false
+  },
+  {
+   "key": "ual_sword_idle",
+   "ual": "UAL1_Standard.glb:Sword_Idle",
+   "label": "Sword stance",
+   "group": "melee",
+   "loop": true,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_sword_a",
+   "ual": "UAL2_Standard.glb:Sword_Regular_A",
+   "label": "Sword cut A",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_sword_b",
+   "ual": "UAL2_Standard.glb:Sword_Regular_B",
+   "label": "Sword cut B",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_sword_c",
+   "ual": "UAL2_Standard.glb:Sword_Regular_C",
+   "label": "Sword cut C",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_sword_combo",
+   "ual": "UAL2_Standard.glb:Sword_Regular_Combo",
+   "label": "Sword combo",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_sword_heavy",
+   "ual": "UAL2_Standard.glb:Sword_Heavy_Combo",
+   "label": "Heavy sword combo",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_sword_dash",
+   "ual": "UAL2_Standard.glb:Sword_Dash",
+   "label": "Lunge",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_punch",
+   "ual": "UAL2_Standard.glb:Melee_Hook",
+   "label": "Punch (hook)",
+   "group": "melee",
+   "loop": false
+  },
+  {
+   "key": "ual_shield_bash",
+   "ual": "UAL2_Standard.glb:Shield_OneShot",
+   "label": "Shield strike",
+   "group": "melee",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ],
+    "L": [
+     "shield"
+    ]
+   }
+  },
+  {
+   "key": "ual_sword_block",
+   "ual": "UAL2_Standard.glb:Sword_Block",
+   "label": "Sword block",
+   "group": "defend",
+   "loop": false,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ]
+   }
+  },
+  {
+   "key": "ual_shield_up",
+   "ual": "UAL2_Standard.glb:Idle_Shield_Loop",
+   "label": "Shield raised",
+   "group": "defend",
+   "loop": true,
+   "hold": {
+    "R": [
+     "sword",
+     "axe",
+     "mace",
+     "dagger",
+     "warhammer"
+    ],
+    "L": [
+     "shield"
+    ]
+   }
+  },
+  {
+   "key": "ual_roll",
+   "ual": "UAL1_Standard.glb:Roll",
+   "label": "Roll 2",
+   "group": "defend",
+   "loop": false
+  },
+  {
+   "key": "ual_hit_chest",
+   "ual": "UAL1_Standard.glb:Hit_Chest",
+   "label": "Hit (chest)",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "ual_hit_head",
+   "ual": "UAL1_Standard.glb:Hit_Head",
+   "label": "Hit (head)",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "ual_knockback",
+   "ual": "UAL2_Standard.glb:Hit_Knockback",
+   "label": "Knocked back",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "ual_death",
+   "ual": "UAL1_Standard.glb:Death01",
+   "label": "Die (forwards)",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "ual_get_up",
+   "ual": "UAL2_Standard.glb:LayToIdle",
+   "label": "Get up from lying",
+   "group": "hurt",
+   "loop": false
+  },
+  {
+   "key": "ual_swim",
+   "ual": "UAL1_Standard.glb:Swim_Fwd_Loop",
+   "label": "Swim 2",
+   "group": "swim",
+   "loop": true
+  },
+  {
+   "key": "ual_swim_idle",
+   "ual": "UAL1_Standard.glb:Swim_Idle_Loop",
+   "label": "Tread water 2",
+   "group": "swim",
+   "loop": true
+  },
+  {
+   "key": "ual_climb_up",
+   "ual": "UAL2_Standard.glb:ClimbUp_1m",
+   "label": "Climb up a ledge",
+   "group": "climb",
+   "loop": false
+  },
+  {
+   "key": "ual_crouch",
+   "ual": "UAL1_Standard.glb:Crouch_Idle_Loop",
+   "label": "Crouch",
+   "group": "move",
+   "loop": true
+  },
+  {
+   "key": "ual_crouch_walk",
+   "ual": "UAL1_Standard.glb:Crouch_Fwd_Loop",
+   "label": "Crouch walk 2",
+   "group": "move",
+   "loop": true
+  },
+  {
+   "key": "ual_jump",
+   "ual": "UAL1_Standard.glb:Jump_Start",
+   "label": "Jump",
+   "group": "move",
+   "loop": false
+  },
+  {
+   "key": "ual_jog",
+   "ual": "UAL1_Standard.glb:Jog_Fwd_Loop",
+   "label": "Jog",
+   "group": "move",
+   "loop": true
+  },
+  {
+   "key": "ual_sit_down",
+   "ual": "UAL1_Standard.glb:Sitting_Enter",
+   "label": "Sit down (stool)",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "ual_sit",
+   "ual": "UAL1_Standard.glb:Sitting_Idle_Loop",
+   "label": "Sit (stool)",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "ual_sit_talk",
+   "ual": "UAL1_Standard.glb:Sitting_Talking_Loop",
+   "label": "Sit and talk",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "ual_sit_up",
+   "ual": "UAL1_Standard.glb:Sitting_Exit",
+   "label": "Stand up (stool)",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "ual_talk",
+   "ual": "UAL1_Standard.glb:Idle_Talking_Loop",
+   "label": "Talk",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "ual_arms_folded",
+   "ual": "UAL2_Standard.glb:Idle_FoldArms_Loop",
+   "label": "Arms folded",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "ual_lantern",
+   "ual": "UAL2_Standard.glb:Idle_Lantern_Loop",
+   "label": "Hold lantern",
+   "group": "life",
+   "loop": true,
+   "hold": {
+    "R": [
+     "lantern",
+     "torch"
+    ]
+   }
+  },
+  {
+   "key": "ual_drive",
+   "ual": "UAL1_Standard.glb:Driving_Loop",
+   "label": "Drive a cart",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "dig",
+   "derive": {
+    "dig": true,
+    "cycle": 1.4
+   },
+   "label": "Dig (hoe, pickaxe)",
+   "group": "work",
+   "loop": true,
+   "hold": {
+    "R": [
+     "pickaxe",
+     "hoe"
+    ]
+   },
+   "two_hands": [
+    "pickaxe",
+    "hoe"
+   ]
+  },
+  {
+   "key": "hammer_anvil",
+   "derive": {
+    "hammer": true,
+    "cycle": 1.1
+   },
+   "label": "Hammer at anvil",
+   "group": "work",
+   "loop": true,
+   "hold": {
+    "R": [
+     "hammer"
+    ]
+   }
+  }
+ ]
+}

@@ -92,6 +92,27 @@ file once by content, so the same packed set in twenty builds costs one copy.
 
 There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds. If you run into a particularly aggravating or repeat problem and solve it, note it in the file readme so future sessions without context can pick up the trick and note it in the skill file.
 
+**Skills.** Two skills are kept with the repo, each in two copies: a folder Claude Code loads by itself and a zip
+for uploading to claude.ai (or giving to someone else's Claude):
+
+| Skill | Folder | Zip | Read it before |
+|---|---|---|---|
+| painting-to-3d-world | inside the zip | `painting-to-3d-world.skill` | a new settlement or kit, or a large expansion |
+| character-modeling | `.claude/skills/character-modeling/` | `character-modeling.skill` | any work on `core/charactermodels` (bodies, clothes, clips, posture, the Godot twin) |
+
+**Keep both copies of a skill up to date with lessons learned.** When a session solves a problem worth not solving
+twice (a bug with a non-obvious cause, a pitfall in Blender, MPFB, Meshy or Godot, a better way to work with the owner's
+feedback), add it to the skill before pushing to main: for character-modeling, the symptom, the cause and the fix go
+in `references/pitfalls.md` under their area, and a change of method in `SKILL.md`. Then rebuild the zip from the
+folder so the two match:
+
+```
+cd .claude/skills && rm -f ../../character-modeling.skill && zip -qr ../../character-modeling.skill character-modeling -x '*/__pycache__/*'
+```
+
+and commit the folder and the zip together. A zip that is older than its folder is out of date: `unzip -l
+character-modeling.skill` lists what it holds.
+
 `GODOT-PLAN.md` is the repo-wide plan for auditing every module, quarantining the
 browser-native code and porting the rest to Godot; read it before adding a core module or
 starting a build. `ROADMAP.md` (2026-10-08) is the synthesis of three evaluations of the repo (ChatGPT's and Gemini's are

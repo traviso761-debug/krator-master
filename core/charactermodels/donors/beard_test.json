@@ -1,0 +1,10 @@
+{
+ "id": "beard_test",
+ "outfit": "a full thick dark brown beard and moustache, facial hair only on its own, no head, no face, no skin",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "a full thick dark brown beard and moustache, facial hair only on its own, no head, no face, no skin, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-baf4-74a3-ac9e-2e2223c89462",
+ "refine": "01a12600-9fcc-7371-b76a-6227795279f0",
+ "glb": "beard_test.glb"
+}

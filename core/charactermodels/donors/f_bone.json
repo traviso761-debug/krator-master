@@ -1,0 +1,11 @@
+{
+ "id": "f_bone",
+ "outfit": "bone armor: a breastplate, shoulder guards, bracers and shin guards made of pale polished bone plates strapped over dark padded cloth, bone-plated gloves, sturdy dark leather boots",
+ "body": "female",
+ "kind": "outfit",
+ "prompt": "Full body game character, an adult woman of average athletic build, standing in A-pose, stylized realistic, bare head with short dark hair tied back, face visible, wearing bone armor: a breastplate, shoulder guards, bracers and shin guards made of pale polished bone plates strapped over dark padded cloth, bone-plated gloves, sturdy dark leather boots. Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.",
+ "preview": "01a125ee-cb2d-744b-84f9-cad638b3cfd6",
+ "refine": "01a125ef-8c13-766b-b517-4c7ad053f504",
+ "rig": "01a125f0-44ff-777d-8fd2-ce8e708ee553",
+ "glb": "f_bone.glb"
+}

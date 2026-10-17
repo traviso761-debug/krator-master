@@ -1,0 +1,10 @@
+{
+ "id": "hair_m_wild",
+ "outfit": "wild shoulder-length curly black hair",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "wild shoulder-length curly black hair, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-bb3a-74e8-a524-d091b5fe8d52",
+ "refine": "01a12600-dd97-7533-a7cc-7d56b72c1d87",
+ "glb": "hair_m_wild.glb"
+}

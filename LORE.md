@@ -137,6 +137,16 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - The Republic: electric light for the rich, and industrial purposes.
   - Voth: for the nobility and defensive purposes only. In conquered arcologies a bit more widespread, but unreliable.
   - Little to no electric light at all: Hykkousoi, the Rustic Clansmen, Reed Lake, nomads and the abyssal people.
+1. **Moebius and Jodorowsky's Dune are the look.** Every culture is drawn in Moebius's line and the costume and
+  design of Jodorowsky's Dune (Moebius, Foss, Giger), over its own real-world sources (Aztec and Dunmer for Voth, Rome
+  in the jungle for Iziz, Mongol and Apache for the Beast Riders, Greek and Roman for the Hykkousoi):
+  - **Silhouette first.** A figure reads from far off by one big shape: an outsized collar, a crest, horns, wings, a
+    halo, a broad brim, a mantle or a train. Ceremony is costume as architecture.
+  - **Flat, clean colour.** Large calm fields (Moebius's pastels: peach, mint, lilac, sky, sand, pearl) against one
+    strong accent; crisp borders and ornament bands rather than grime and texture.
+  - **Organic and baroque.** Ribs, shells, bone, scales and segments: things grown or carved, not machined. Even
+    salvaged Ancient material is worn as a relic, not as kit.
+  - **Nothing mass-produced.** Every garment looks made by hand for its wearer, the poor's as much as the court's.
 1. **Wealth is legible in material.** Each culture has a tiered palette, with poor, common and court tiers in the furniture catalog. Stone and gold go to the top, timber or thatch to the bottom, salvage to the middle and bottom.
 1. **Wealth climbs with height.** Erewhon, Iziz's hills and Yuni's oligarch towers all put the powerful high and the poor and industry low, by the water.
 1. **Caravans.** Caravanserais at Yuni, Iziz, Locus, Shade, Jimjam and the abyss suggest one long-distance trade network across the crater. Major goods include spice, gold, petrol, relics, scrap, and medicines.

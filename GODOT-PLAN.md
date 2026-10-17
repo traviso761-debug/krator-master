@@ -538,6 +538,36 @@ id, room id and job on every placement.
 Done when: Voth's `78a-78j` and `79a-79c` fragments read their world from exported data and so can the
 Godot runtime; one agent class (citizens) walks the same routes in both.
 
+#### Bodies for the citizens (core/charactermodels, 2026-10-16)
+
+The life layers draw their people as stand-ins today. `core/charactermodels` (moved from `kits/characters`) is what
+replaces them, in both runtimes: MakeHuman bodies whose face, build and ancestry morph, clothes for each people by
+class that follow the morphs, hair, beards and tint, body mods and the giants, about 140 clips with props and cloth,
+and a Godot twin (`godot/krator/character/`: `KChar`, `KCharFigure`) held to the page by a golden file
+(`tests/golden-mpfb.json`, `godot/tests/character/kchar_test.gd`). The work, in order:
+
+1. **One citizen, one record.** A citizen's look is a `KCHAR` record drawn from its people with the citizen's id as
+   the seed (`KCHAR.stranger`, `KCHAR.crowd`; `tools/npcs.js` draws the same outside the browser), its clothes by the
+   class its job puts it in. The record goes into the `sim` export beside the citizen, so Godot draws the same person
+   without redrawing. Data only: no rule of the world lives in the figure.
+2. **Activities to clips.** Each activity (`core/simulation/ROADMAP.md` §26's primitives plus a build's own) maps to a
+   clip, a prop and loop or one-shot, as data beside `data/clips.json`. The map is checked like the rest of the
+   simulation's data: an activity with no clip is listed, not silently stood still. The gaps are filled from the
+   libraries already in use (Meshy's animation library, Quaternius UAL), Mixamo clips the owner supplies, or made
+   clips (`derive` in `data/clips.json`: the hammer, dig and thrusts are made that way).
+3. **The figure as the embodiment.** `SIM.pose` (and `KSim.pose`) says where a citizen is and what it does; the
+   figure plays the mapped clip there. The stand-in code in each build's life layer is replaced by the figure, one
+   build at a time, Voth first (M6).
+4. **A cost plan before crowds.** A figure is one skinned mesh per piece with morph data and cloth chains. Past a few
+   dozen on screen it needs a cheaper form: shared morph states or a few baked body variants per people, impostors
+   or a lighter body far off, cloth chains only near the camera, and a download budget for the pieces (about 240 MB
+   served today).
+5. **A quality pass first.** Clothing (skin and under-layers through garments at the slider ends, sleeves, hems in
+   motion), posture (the retarget straightens MakeHuman's spine; a posture pass offsets it after each clip, from
+   `data/posture.json`, which the Animation Lab's Posture panel writes) and animation (hands through hips on heavy
+   builds, the made clips) are each due a pass before citizens use the bodies at scale.
+   `core/charactermodels/KNOWN_ISSUES.md` lists what is open.
+
 ### Phase 6: retire what Godot does natively
 
 Stop investing in, and where it simplifies the host shell, remove:
@@ -824,6 +854,9 @@ and Voth's export case (none yet; Phase 7) must carry it, or Godot's walker and 
 | City placement painters (`85-city-paint` in Iziz and Dalab, `85-er-paint`, `85-rk-paint`) | [G data] + [web] | placement onto `core/mask/` (Phase 2); the canvas stays only for the preview's ground texture |
 | City build passes (`90b-city-build` in Iziz and Dalab) | [G data] + [draw] | split; provisionally mis-tagged [web] |
 | Voth lineage life layers | [G data] + [web] | Phase 5 |
+| `core/charactermodels/` `10-rig.js`, `data/` | [G data] | records, morphs, strangers, peoples, clips, posture: twinned by `godot/krator/character/kchar.gd` (golden-tested) |
+| `core/charactermodels/` `50-figure.js` | [draw] | the three.js figure; `kchar_figure.gd` is its Godot twin. Becomes the citizens' embodiment (Phase 5) |
+| `core/charactermodels/` labs (`90-editor.js`, `92-animlab.js`) | [web] | the preview's tools; the Cosmetic Lab is the start of the player character editor |
 | `21-sky.js` (11 copies) | [G native] + one [G shader] | sky preset in `core/atmos` |
 | `gallery/`, `host/`, `host/WorldMenagerie/` | [web] | out of scope; the gallery stays the preview's front door |
 | `settlements/ys` layout, shore lattice, NAV, ground stamps (`targets/city/84b, 87, 87b, 87c`) | [G data] | records and Float32 grids already; the `kind:'paint'` stamps are polygon fills read by signed distance, so they place nothing from a canvas and move onto `core/mask` unchanged |
@@ -891,7 +924,7 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 | M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
 | M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start). **Done 2026-10-13:** sedesert's 300 m tile (`godot/data/world-sedesert`): 7,280 instances each with its uid (recomputed in GDScript from the glb, 0 mismatches), every material and map resolved (18 library maps by reference), the terrain the page's field (probes agree to 3e-12 m); `godot/tests/export/world_test.gd` |
 | M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export; Iziz's export uses the `KRATOR_EXPORT` record shape and the library's city sets. **Iziz done 2026-10-13** (`core/export/README.md`, "Iziz"): a district inside the south gate (`godot/data/world-iziz`) opens from `core/export` with its buildings, doors, windows and lamps on the record shape, the kit's item sets (2,158 uids recomputed in GDScript, 0 differ), its materials on the library sets with their hooks, the sampled ground and the atmosphere (`tests/export/iziz_test.gd`). Open: interiors (Iziz has none), Girder's furnished rooms from `furniture` (waits on `wip/furniture-indexed`) |
-| M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5) |
+| M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5), its citizens drawn as `core/charactermodels` figures from their records and playing the clip mapped to each activity |
 | M7 one world | two kits and one settlement stream together in Godot from the scale model's terrain (Phase 7, `biomes/WORLD.md`) |
 
 M1 to M3 are repo hygiene and can be done without Godot installed. The spike is the first point where the Godot

@@ -1,0 +1,11 @@
+{
+ "id": "base_m",
+ "outfit": "",
+ "body": "male",
+ "kind": "base",
+ "prompt": "Full body game character base model, an adult man of average athletic build, standing in A-pose, stylized realistic, completely bald smooth head, no hair, no beard, no eyebrows piercings or tattoos, neutral calm face, wearing plain grey fitted shorts and a plain grey tank top, barefoot, even neutral skin tone, nothing held.",
+ "preview": "01a125ee-cbe7-7328-add0-ac84bee29a1c",
+ "refine": "01a125ef-8c31-734a-a8f9-488a6ae94ef2",
+ "rig": "01a125f0-453d-7622-83db-d7320feacf57",
+ "glb": "base_m.glb"
+}
