@@ -36,3 +36,14 @@ SITES.push({key:'vern_mustering_ground',x:22,z:ROWZ[16],ry:0,o:{v:0}});
 // the rest stop: v0 cut into the rock; v1 on the cliff edge, raised 5.4 m here so its retaining wall shows above the sheet's ground
 SITES.push({key:'vern_rest_stop',x:-14,z:ROWZ[17],ry:0,o:{v:0},label:'Rest stop (v0: rock-cut)'});
 SITES.push({key:'vern_rest_stop',x:14,z:ROWZ[17],ry:0,o:{v:1,y:5.4},label:'Rest stop (v1: cliff platform, raised 5.4 m)'});
+// the trades round (2026-10-16; src/71a-71c, 73b, 73c): every trade the Voth census has that the set lacked, rows 18-22
+const TRADE_ROWS=[
+ ['vern_bakery','vern_butcher','vern_brewery','vern_provisioner'],
+ ['vern_weaver','vern_tannery','vern_tailor','vern_scribe'],
+ ['vern_apothecary','vern_tinker','vern_glassworks','vern_salvage_yard'],
+ ['vern_mine','vern_quarry','vern_mill','vern_fungus_shed'],
+ ['vern_farmhouse','vern_byre','vern_pens','vern_boatyard','vern_fish_landing'],
+];
+ROWZ.push(1330,1400,1470,1545,1620);
+TRADE_ROWS.forEach((row,i)=>{const ws=row.map(k=>VERN.defs[k].w+10);let x=-ws.reduce((a,b)=>a+b,0)/2;
+ row.forEach((k,j)=>{SITES.push({key:k,x:x+ws[j]/2,z:ROWZ[18+i],ry:0,o:{v:0}});x+=ws[j];});});

@@ -119,7 +119,7 @@ MATLIB_PACK = '69d-matlib-pack.js'
 # apply to them. The cultures: iziz, the generic and scrap sets its poor tier falls back to, and the jobs' work pieces.
 FURN_BUNDLE = '88z-iziz-furniture-bundle.js'
 INTERIOR_TARGETS = {'vernacular', 'ag-food', 'ag-cloth', 'ag-craft', 'ag-works', 'ag-land', 'ag-hollow'}   # ag-*: the trades round's agent sheets (temporary)
-FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'generic-fruit', 'scrap', 'jobs']
+FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'scrap', 'jobs']   # not generic-fruit: it laid figs on a scribe's counter
 INTERIOR_SETS = ['iziz']
 
 

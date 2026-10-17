@@ -26,38 +26,44 @@
      role (the iziz_trade_* set, the iziz common set's loom, workbench, desk and bookcase, iziz_bread_oven, iziz_butcher_block;
      a poor room takes the generic and scrap sets' pieces of the same role through the culture chain). Each kind also takes
      the pieces of the older kinds in IX.KIND_ALIAS: `workshop` only for the trades whose stations are workshop pieces, so
-     a bakery's or a brewery's room is not filled with an anvil or a lathe (`alias`). A building item names these kinds in its programme like any other. */
+     a bakery's or a brewery's room is not filled with an anvil or a lathe (`alias`); `shelves` for the trades that shelve
+     their stock (the Iziz bookcase holds scrolls, which a bakehouse does not). A building item names these kinds in its programme like any other. */
   const SEATS = IX.SEAT_TYPES, FOOD = IX.FOOD_ROLES, SURFACE = IX.SURFACE_GROUP;
   const IZ_TRADES = [
-    { t: 'bakery', goods: { types: ['counter', 'stack', 'storage', 'shelf'], n: 1 }, work: { types: ['stove'], roles: ['oven', 'hearth'], n: 1 }, alias: ['kitchen', 'store'] },
-    { t: 'butcher', goods: { types: ['counter', 'storage'], n: 1 }, work: { types: ['workstation'], roles: ['block'], n: 1 }, alias: ['kitchen', 'store'] },
+    { t: 'bakery', goods: { types: ['counter', 'stack', 'storage', 'shelf'], n: 1 }, work: { types: ['stove'], roles: ['oven', 'hearth'], n: 1 }, alias: ['bakery', 'kitchen', 'store'] },
+    { t: 'butcher', goods: { types: ['counter', 'storage'], n: 1 }, work: { types: ['workstation'], roles: ['block'], n: 1 }, alias: ['butcher', 'kitchen', 'store'] },
     { t: 'brewery', goods: { types: ['storage'], roles: ['barrel'], n: 1 }, work: { types: ['workstation', 'storage'], roles: ['still', 'vat'], n: 1 }, alias: ['store', 'kitchen', 'tavern', 'shop'] },
-    { t: 'weaver', goods: { types: ['rack', 'stack', 'shelf'], n: 1 }, work: { types: ['loom'], roles: ['loom'], n: 1 }, alias: ['hall', 'store'] },
+    { t: 'weaver', shelves: true, goods: { types: ['rack', 'stack', 'shelf'], n: 1 }, work: { types: ['loom'], roles: ['loom'], n: 1 }, alias: ['hall', 'store'] },
     { t: 'dyer', work: { types: ['storage'], roles: ['vat'], n: 1 }, alias: ['store'] },
     { t: 'tannery', work: { types: ['storage'], roles: ['vat'], n: 1 }, alias: ['store'] },
-    { t: 'tailor', goods: { types: ['rack', 'stack', 'shelf'], n: 1 }, work: { types: ['table', 'workstation'], roles: ['table', 'workbench'], n: 1 } },
-    { t: 'scribe', goods: { types: ['shelf'], roles: ['bookcase', 'wall_shelves'], n: 1 }, work: { types: ['desk'], roles: ['desk'], n: 1 }, alias: ['study', 'library', 'store'] },
-    { t: 'apothecary', goods: { types: ['shelf', 'vessel'], n: 2 }, work: { types: ['workstation'], roles: ['still', 'workbench'], n: 1 }, alias: ['study', 'shop', 'store'] },
-    { t: 'tinker', goods: { types: ['shelf', 'stack', 'rack'], n: 1 }, work: { types: ['workstation'], roles: ['workbench', 'lathe', 'grindstone'], n: 1 } },
-    { t: 'glass', goods: { types: ['shelf', 'stack'], n: 1 }, work: { types: ['stove'], roles: ['kiln'], n: 1 } },
+    { t: 'tailor', shelves: true, goods: { types: ['rack', 'stack', 'shelf'], n: 1 }, work: { types: ['table', 'workstation'], roles: ['table', 'workbench'], n: 1 } },
+    { t: 'scribe', shelves: true, goods: { types: ['shelf'], roles: ['bookcase', 'wall_shelves'], n: 1 }, work: { types: ['desk'], roles: ['desk'], n: 1 }, alias: ['study', 'library', 'store'] },
+    { t: 'apothecary', shelves: true, goods: { types: ['shelf', 'vessel'], n: 2 }, work: { types: ['workstation'], roles: ['still', 'workbench'], n: 1 }, alias: ['study', 'shop', 'store'] },
+    { t: 'tinker', shelves: true, goods: { types: ['shelf', 'stack', 'rack'], n: 1 }, work: { types: ['workstation'], roles: ['workbench', 'lathe', 'grindstone'], n: 1 } },
+    { t: 'glass', shelves: true, goods: { types: ['shelf', 'stack'], n: 1 }, work: { types: ['stove'], roles: ['kiln'], n: 1 } },
     { t: 'provisioner', goods: { types: ['storage', 'stack', 'vessel'], roles: FOOD, n: 2 } },
     { t: 'mill', work: { types: ['workstation', 'storage'], roles: ['press', 'bin'], n: 1 }, alias: ['shop', 'store'] },
     { t: 'salvage', work: { types: ['workstation', 'stove'], roles: ['workbench', 'forge', 'anvil', 'grindstone'], n: 1 } },
     { t: 'boat', work: { types: ['workstation'], roles: ['workbench', 'lathe'], n: 1 } },
+    { t: 'mason', work: { types: ['workstation'], roles: ['grindstone', 'workbench'], n: 1 }, alias: ['yard', 'store'] },
     { t: 'smith', work: { types: ['stove', 'workstation'], roles: ['forge', 'anvil'], n: 1 }, also: ['smithy'] }
   ];
   if (!IX.PROGRAMS.izwork_bakery) {
     IZ_TRADES.forEach(function (T) {
       if (T.goods) {
+        /* the selling room's optional pieces stay within its own goods' types (a scribe's shop takes no vat or hayrack) */
+        const goods = ['shelf'].concat(T.goods.types.filter(function (t) { return t !== 'counter' && t !== 'shelf'; }));
         IX.PROGRAMS['izshop_' + T.t] = { require: [Object.assign({ need: 'goods' }, T.goods)],
-          optional: [{ types: ['counter'], max: 1 }, { types: ['shelf', 'rack', 'storage', 'stack', 'vessel'], max: 3 }, { types: SEATS, max: 1 }, { types: ['lamp'], max: 2 }, SURFACE],
+          optional: [{ types: ['counter'], max: 1 }, { types: goods, max: 3 }, { types: SEATS, max: 1 }, { types: ['lamp'], max: 2 }, SURFACE],
           extra: 5 };
-        IX.KIND_ALIAS['izshop_' + T.t] = ['shop', 'store'];
+        IX.KIND_ALIAS['izshop_' + T.t] = ['shop'];
         IX.KIND_WEIGHT['izshop_' + T.t] = 1.4;
       }
       if (T.work) {
         IX.PROGRAMS['izwork_' + T.t] = { require: [Object.assign({ need: 'work' }, T.work)],
-          optional: [{ types: ['workstation'], max: 1 }, { types: ['rack', 'shelf', 'storage', 'stack', 'vessel'], max: 3 }, { types: SEATS, max: 1 }, { types: ['table'], max: 1 }, { types: ['lamp'], max: 1 }, SURFACE],
+          /* no optional workstation or rack: an optional slot cannot be held to the trade's roles, and it brought a still to the
+             scribe and a hayrack and a press to the tailor. The required station is the trade's own */
+          optional: [{ types: (T.shelves ? ['shelf', 'stack'] : ['stack']).concat(T.work.types.indexOf('storage') >= 0 ? ['storage'] : []), max: 3 }, { types: SEATS, max: 1 }, { types: ['table'], max: 1 }, { types: ['lamp'], max: 1 }, SURFACE],
           extra: 5 };
         IX.KIND_ALIAS['izwork_' + T.t] = T.alias || ['workshop', 'store'].concat(T.also || []);
         IX.KIND_WEIGHT['izwork_' + T.t] = 1.6;
@@ -366,7 +372,7 @@
       'shed and the heaps are outside' });
   add({ key: 'vern_quarry', name: 'Quarry and mason\'s lodge', wealth: MID, types: ['industry'], lot: [28, 24],
     bodies: [{ id: 'lodge', poly: rect(8, 5.5, 8.5, 6), y: 0.35, levels: [{ h: 3.0 }], wall: 0.25, roof: 'gable', pitch: pt(1.9 / 2.75),
-      doors: [{ at: [6.3, 8.75], w: 1.1 }], program: ['workshop', 'store'] }],
+      doors: [{ at: [6.3, 8.75], w: 1.1 }], program: ['izwork_mason', 'store'] }],
     note: 'the masons\' lodge only; the banker benches stand under its open front lean-to, the cut, the shear legs and the ramp are open' });
   add({ key: 'vern_mill', name: 'Watermill', wealth: MID, types: ['industry', 'single-family dwelling'], lot: [22, 20],
     bodies: [{ id: 'mill', poly: rect(9, 8, -2.5, 0), y: 1.2, levels: [{ h: 3.25 }, { h: 2.7 }], wall: 0.3, roof: 'gable', pitch: pt(2.6 / 4),
@@ -375,7 +381,7 @@
       'door under the hoist is drawn as an unglazed opening. The grain lean-to on -x, the wheel pit and the flume are open' });
   add({ key: 'vern_fungus_shed', name: 'Fungus house', wealth: POOR, types: ['farm'], lot: [22, 14],
     bodies: [{ id: 'shed', poly: rect(13, 6, 0, -1.5), y: 0.1, levels: [{ h: 2.3 }], wall: 0.2, roof: 'gable', pitch: pt(2.4 / 3),
-      doors: [{ at: [-6.5, -1.5], w: 1.0 }], program: ['workshop', 'store', 'store'], windows: false }],
+      doors: [{ at: [-6.5, -1.5], w: 1.0 }], program: ['store', 'store', 'store'], windows: false }],
     note: 'the dark growing house, windowless, banked with earth to the eaves; entered down the cutting on its -x end. Drawn at grade ' +
       '(the bank makes it read half-sunk) so the floor stays above the ground plane' });
 
