@@ -25,22 +25,23 @@
      A trade's selling room `izshop_<t>` requires its goods; its workroom `izwork_<t>` requires its workstation, by catalog
      role (the iziz_trade_* set, the iziz common set's loom, workbench, desk and bookcase, iziz_bread_oven, iziz_butcher_block;
      a poor room takes the generic and scrap sets' pieces of the same role through the culture chain). Each kind also takes
-     the pieces of the older kinds in IX.KIND_ALIAS. A building item names these kinds in its programme like any other. */
+     the pieces of the older kinds in IX.KIND_ALIAS: `workshop` only for the trades whose stations are workshop pieces, so
+     a bakery's or a brewery's room is not filled with an anvil or a lathe (`alias`). A building item names these kinds in its programme like any other. */
   const SEATS = IX.SEAT_TYPES, FOOD = IX.FOOD_ROLES, SURFACE = IX.SURFACE_GROUP;
   const IZ_TRADES = [
-    { t: 'bakery', goods: { types: ['counter', 'stack', 'storage', 'shelf'], n: 1 }, work: { types: ['stove'], roles: ['oven', 'hearth'], n: 1 }, also: ['kitchen'] },
-    { t: 'butcher', goods: { types: ['counter', 'storage'], n: 1 }, work: { types: ['workstation'], roles: ['block'], n: 1 }, also: ['kitchen'] },
-    { t: 'brewery', goods: { types: ['storage'], roles: ['barrel'], n: 1 }, work: { types: ['workstation', 'storage'], roles: ['still', 'vat'], n: 1 } },
-    { t: 'weaver', goods: { types: ['rack', 'stack', 'shelf'], n: 1 }, work: { types: ['loom'], roles: ['loom'], n: 1 } },
-    { t: 'dyer', work: { types: ['storage'], roles: ['vat'], n: 1 } },
-    { t: 'tannery', work: { types: ['storage'], roles: ['vat'], n: 1 } },
+    { t: 'bakery', goods: { types: ['counter', 'stack', 'storage', 'shelf'], n: 1 }, work: { types: ['stove'], roles: ['oven', 'hearth'], n: 1 }, alias: ['kitchen', 'store'] },
+    { t: 'butcher', goods: { types: ['counter', 'storage'], n: 1 }, work: { types: ['workstation'], roles: ['block'], n: 1 }, alias: ['kitchen', 'store'] },
+    { t: 'brewery', goods: { types: ['storage'], roles: ['barrel'], n: 1 }, work: { types: ['workstation', 'storage'], roles: ['still', 'vat'], n: 1 }, alias: ['store', 'kitchen', 'tavern', 'shop'] },
+    { t: 'weaver', goods: { types: ['rack', 'stack', 'shelf'], n: 1 }, work: { types: ['loom'], roles: ['loom'], n: 1 }, alias: ['hall', 'store'] },
+    { t: 'dyer', work: { types: ['storage'], roles: ['vat'], n: 1 }, alias: ['store'] },
+    { t: 'tannery', work: { types: ['storage'], roles: ['vat'], n: 1 }, alias: ['store'] },
     { t: 'tailor', goods: { types: ['rack', 'stack', 'shelf'], n: 1 }, work: { types: ['table', 'workstation'], roles: ['table', 'workbench'], n: 1 } },
-    { t: 'scribe', goods: { types: ['shelf'], roles: ['bookcase', 'wall_shelves'], n: 1 }, work: { types: ['desk'], roles: ['desk'], n: 1 }, also: ['study', 'library'] },
-    { t: 'apothecary', goods: { types: ['shelf', 'vessel'], n: 2 }, work: { types: ['workstation'], roles: ['still', 'workbench'], n: 1 } },
+    { t: 'scribe', goods: { types: ['shelf'], roles: ['bookcase', 'wall_shelves'], n: 1 }, work: { types: ['desk'], roles: ['desk'], n: 1 }, alias: ['study', 'library', 'store'] },
+    { t: 'apothecary', goods: { types: ['shelf', 'vessel'], n: 2 }, work: { types: ['workstation'], roles: ['still', 'workbench'], n: 1 }, alias: ['study', 'shop', 'store'] },
     { t: 'tinker', goods: { types: ['shelf', 'stack', 'rack'], n: 1 }, work: { types: ['workstation'], roles: ['workbench', 'lathe', 'grindstone'], n: 1 } },
     { t: 'glass', goods: { types: ['shelf', 'stack'], n: 1 }, work: { types: ['stove'], roles: ['kiln'], n: 1 } },
     { t: 'provisioner', goods: { types: ['storage', 'stack', 'vessel'], roles: FOOD, n: 2 } },
-    { t: 'mill', work: { types: ['workstation', 'storage'], roles: ['press', 'bin', 'grindstone'], n: 1 } },
+    { t: 'mill', work: { types: ['workstation', 'storage'], roles: ['press', 'bin'], n: 1 }, alias: ['shop', 'store'] },
     { t: 'salvage', work: { types: ['workstation', 'stove'], roles: ['workbench', 'forge', 'anvil', 'grindstone'], n: 1 } },
     { t: 'boat', work: { types: ['workstation'], roles: ['workbench', 'lathe'], n: 1 } },
     { t: 'smith', work: { types: ['stove', 'workstation'], roles: ['forge', 'anvil'], n: 1 }, also: ['smithy'] }
@@ -58,7 +59,7 @@
         IX.PROGRAMS['izwork_' + T.t] = { require: [Object.assign({ need: 'work' }, T.work)],
           optional: [{ types: ['workstation'], max: 1 }, { types: ['rack', 'shelf', 'storage', 'stack', 'vessel'], max: 3 }, { types: SEATS, max: 1 }, { types: ['table'], max: 1 }, { types: ['lamp'], max: 1 }, SURFACE],
           extra: 5 };
-        IX.KIND_ALIAS['izwork_' + T.t] = ['workshop', 'store'].concat(T.also || []);
+        IX.KIND_ALIAS['izwork_' + T.t] = T.alias || ['workshop', 'store'].concat(T.also || []);
         IX.KIND_WEIGHT['izwork_' + T.t] = 1.6;
       }
     });
