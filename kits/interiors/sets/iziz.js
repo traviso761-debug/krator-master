@@ -311,7 +311,8 @@
     bodies: [{ id: 'house', poly: rect(10, 7.6, 0, 1.6), y: 0.45, levels: [{ h: 3.75 }, { h: 2.9 }], wall: 0.3, roof: 'gable', pitch: pt(2.4 / 3.8),
       stair: { w: 0.9, riser: 0.22, tread: 0.25 },
       doors: [{ at: [-0.4, 5.4], w: 1.2 }, { at: [3.0, -2.2], w: 1.0 }], program: [['izwork_weaver', 'izwork_dyer'], ['living', 'bedroom']] }],
-    note: 'the loom room behind the tall shuttered openings and the dye room with the back door, the family above; the dye ' +
+    note: 'the loom room behind the tall shuttered openings (its back door to the dye yard) and the dye room, which carries the ' +
+      'stair along the windowless -x wall (stair: a 0.22 riser so the 4 m storey fits a flight), the family above; the dye ' +
       'lean-to, the vats and the drying poles in the yard behind are open' });
   add({ key: 'vern_tannery', name: 'Tannery', wealth: POOR, types: ['industry'], lot: [21, 16],
     bodies: [{ id: 'store', poly: rect(5.6, 4.0, 6.6, -3.6), y: 0.35, levels: [{ h: 2.6 }], wall: 0.12, roof: 'flat',
