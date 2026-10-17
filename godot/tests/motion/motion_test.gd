@@ -6,8 +6,10 @@
 #    custom_aabb holds the animal at every clock.
 # 2. The player at each clock puts every instance where the page put it: sedesert's buck (body, head, antlers, legs:
 #    a declared period, so at every clock, 1000 s too) and four swifts, swbay's four soaring birds (loops: inside the
-#    exact window, 0 to 118 s). On the 10 Hz grid to float32's error; off it within the lerp's (5 cm).
-# 3. swbay's birds draw with shaders/anim_phase.gdshader (mode bird) and carry their beat (aPh) in INSTANCE_CUSTOM.x.
+#    exact window, 0 to 118 s), swbay's herd and stalker and hyperjungle's striders (walkers: declared periods, 5 Hz).
+#    On the track's grid to float32's error; off it within the lerp's (5 cm).
+# 3. swbay's birds and grazers draw with shaders/anim_phase.gdshader (mode bird, grazer) and carry their beat (aPh) in
+#    INSTANCE_CUSTOM.x; a strider's gait (the aP1 channel) is the page's in INSTANCE_CUSTOM.x on the grid.
 # 4. Negatives: half a second off misses; past its window a loop is not the page; inside the fade it blends. The loop's
 #    seam is continuous.
 extends SceneTree
@@ -37,8 +39,8 @@ static func tf_of(buf: PackedFloat32Array, i: int) -> Transform3D:
 		Vector3(buf[b + 3], buf[b + 7], buf[b + 11]))
 
 
-static func on_grid(t: float) -> bool:
-	return absf(t * 10.0 - roundf(t * 10.0)) < 1e-6
+static func on_grid(t: float, hz: float) -> bool:   # the grid t0 + k / hz, t0 a whole number of frames (-2 s)
+	return absf(t * hz - roundf(t * hz)) < 1e-6
 
 
 func _initialize() -> void:
@@ -58,6 +60,9 @@ func _initialize() -> void:
 		var worst_grid := 0.0
 		var worst_lerp := 0.0
 		var worst_far := 0.0   # a period's instance past the loop's window (the buck at 250.7 s and 1000.05 s)
+		var any_period := false
+		var gait := 0.0        # an aP1 channel's gait against the page's, on the grid
+		var gaits := 0
 		var loop_far := 1e9    # a loop's instance past its window: must NOT match
 		var loop_fade := 1e9   # a loop's instance inside its fade (-1 s): blended, not the page
 		var shifted := 0.0     # half a second off: some animal must be elsewhere (a deer at a stop is not)
@@ -71,6 +76,9 @@ func _initialize() -> void:
 				continue
 			var mm: MultiMesh = mmi.multimesh
 			var periodic: bool = player.track["period"][0] > 0.0
+			any_period = any_period or periodic
+			var hz := float(player.track["hz"])
+			var chans: Array = player.track["channels"]
 			for ts in c["truth"]:
 				var t := float(ts)
 				player.apply(t)
@@ -85,8 +93,11 @@ func _initialize() -> void:
 					if periodic or inside:
 						if periodic and not inside:
 							worst_far = maxf(worst_far, d)
-						elif on_grid(t):
+						elif on_grid(t, hz):
 							worst_grid = maxf(worst_grid, d)
+							if chans.has("aP1"):
+								gait = maxf(gait, absf(mm.buffer[i * 20 + 16] - float(rows[i][12])))
+								gaits += 1
 						else:
 							worst_lerp = maxf(worst_lerp, d)
 					elif t < 0.0:
@@ -106,21 +117,27 @@ func _initialize() -> void:
 				seam = maxf(seam, a.distance_to(b) / maxf(a0.distance_to(a), 1e-3))
 			if (mmi.get_meta("krator") as Dictionary)["kind"] == "anim-phase":
 				var sm := mm.mesh.surface_get_material(0) as ShaderMaterial
-				var ph: Array = []
 				var it: Dictionary = {}
 				for x in c["export"]["items"]:
 					if x["name"] == name:
 						it = x
+				var mode := "bird"
+				for m in c["export"]["materials"]:
+					if m["id"] == it["material"] and m.get("options") is Dictionary:
+						mode = str(m["options"].get("mode", "bird"))
+				var want_mode: int = {"bird": 0, "swim": 1}.get(mode, 2)
 				var PH := KData.floats(it["extras"]["aPh"]["data"])
 				var cx := true
 				for i in mm.instance_count:
 					cx = cx and absf(mm.buffer[i * 20 + 16] - PH[i]) < 1e-6
-				ok(sm != null and sm.shader.resource_path.ends_with("anim_phase.gdshader") and int(sm.get_shader_parameter("mode")) == 0 and cx,
-					"%s %s: the beat's shader (anim_phase, mode bird) and each bird's aPh in INSTANCE_CUSTOM.x" % [c["name"], name])
-		ok(worst_grid < 2e-3, "%s: on the 10 Hz grid the replay is the page (worst %.6f)" % [c["name"], worst_grid])
+				ok(sm != null and sm.shader.resource_path.ends_with("anim_phase.gdshader") and int(sm.get_shader_parameter("mode")) == want_mode and cx,
+					"%s %s: the beat's shader (anim_phase, mode %s) and each animal's aPh in INSTANCE_CUSTOM.x" % [c["name"], name, mode])
+		ok(worst_grid < 2e-3, "%s: on the track's grid the replay is the page (worst %.6f)" % [c["name"], worst_grid])
+		if gaits > 0:
+			ok(gait < 1e-3, "%s: the gait (aP1.x) in INSTANCE_CUSTOM.x is the page's on the grid (%d checks, worst %.6f)" % [c["name"], gaits, gait])
 		ok(worst_lerp < 0.05, "%s: between frames within the lerp (worst %.4f m)" % [c["name"], worst_lerp])
-		if c["name"] == "sedesert":
-			ok(worst_far < 0.05, "sedesert: the buck's declared period holds past the loop, at 250.7 s and 1000.05 s (worst %.4f m)" % worst_far)
+		if any_period:
+			ok(worst_far < 0.05, "%s: a declared period holds past the loop, at 250.7 s and 1000.05 s (worst %.4f m)" % [c["name"], worst_far])
 		ok(loop_far > 1.0, "%s: negative: past its window a loop is not the page (nearest %.1f m off)" % [c["name"], loop_far])
 		ok(loop_fade > 0.01, "%s: negative: inside the fade (-1 s) the loop blends (nearest %.3f off)" % [c["name"], loop_fade])
 		ok(shifted > 0.1, "%s: negative: half a second off misses (farthest %.3f m)" % [c["name"], shifted])

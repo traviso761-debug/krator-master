@@ -321,7 +321,7 @@ def voth_pathviz_fragment():
 # THREE before the kit's fragment 50 loads (it builds textures and materials at load, BIOME-API.md); the city binds its
 # facts later (37-vc-light's neighbour 38-vc-flora.js, the host's VC.drawFlora). SWBAY_TEMPLE_H, the canopy ceiling,
 # is kept low: small hypertrees in the parks (owner, 2026-10-09).
-BIO_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js']
+BIO_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '36-core-walker.js', '40-core-place.js']
 BIO_KIT = ['50-biome-swbay-species.js', '55-biome-swbay-trees.js', '60-biome-swbay-floor.js', '65-biome-swbay-dress.js',
            '70-biome-swbay.js', '75-biome-swbay-fauna.js']
 SWBAY_TEMPLE_H = 40

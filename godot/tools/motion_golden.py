@@ -12,8 +12,10 @@ origin) and moving channels: the truth, from the page's own code. godot/tests/mo
 export with krator/biome_import.gd, replays it with krator/kmotion.gd and compares.
 
 Cases: sedesert's pond tile (the spike's box): one buck (body, head on its neck, antlers, four legs; its loop's period)
-and four swifts (a loop); swbay: four birds of a soaring flock (anim-phase, a loop).
-Needs: pip install playwright; the pages built (python3 build.py in biomes/sedesert and biomes/swbay).
+and four swifts (a loop); swbay: four birds of a soaring flock (anim-phase, a loop); swbay-herd: three grazers and the
+stalker (walkers on one loop, its period; anim-phase mode grazer); hyperjungle: three striders (walkers with grazing
+stops, their periods; kind anim, the gait in aP1).
+Needs: pip install playwright; the pages built (python3 build.py in biomes/sedesert, biomes/swbay, biomes/hyperjungle).
 """
 import asyncio, json, os, sys
 
@@ -36,13 +38,19 @@ CASES = [
           return {deer:[d],deerhead:[d],deerantler:[a],deerleg:[4*d,4*d+1,4*d+2,4*d+3],swift:[0,19,38,57]};}"""),
     dict(name="swbay", page="biomes/swbay/dist/swbay.html", box=None,
          pick="""(items)=>{const f=items.filter(r=>/^fauna:/.test(r.name)&&r.motion&&!r.motion.error)[0];const o={};o[f.name]=[0,1,2,3];return o;}"""),
+    # swbay's herd (a walker's loop, period declared) and its stalker on the same loop: grazers, anim-phase mode grazer
+    dict(name="swbay-herd", page="biomes/swbay/dist/swbay.html", box={"near": "fauna:herd", "half": 200},
+         pick="""(items)=>({'fauna:herd':[0,1,2],'fauna:stalker':[0]})"""),
+    # hyperjungle's striders: walkers with grazing stops, kind anim (mode walk), the gait in the aP1 channel
+    dict(name="hyperjungle", page="biomes/hyperjungle/dist/hyperjungle.html", box={"near": "strider", "half": 150},
+         pick="""(items)=>({strider:[0,1,2]})"""),
 ]
 
 JS = r"""async ([box, pickSrc, clocks]) => {
 const unpack=r=>{const s=atob(r.b64),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return new ({Float32Array,Uint32Array,Uint16Array})[r.type](u.buffer);};
 const pack=a=>{const u=new Uint8Array(a.buffer,a.byteOffset,a.byteLength);let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return {type:a.constructor.name,n:a.length,b64:btoa(s)};};
-let opt={textures:false,stage:false,ground:false};if(box)opt.box=box;else{   // a box round the first moving flock's first bird
- const m=BIO.baked.find(m=>m.isInstancedMesh&&/^biome:fauna:/.test(m.name)),A=m.instanceMatrix.array;opt.box=[A[12]-150,A[14]-150,A[12]+150,A[14]+150];}
+let opt={textures:false,stage:false,ground:false};if(Array.isArray(box))opt.box=box;else{   // a box round the first instance of `near` (else the first moving flock's first bird)
+ const nm=box&&box.near,h=box&&box.half||150,m=BIO.baked.find(m=>m.isInstancedMesh&&(nm?m.name==='biome:'+nm:/^biome:fauna:/.test(m.name))),A=m.instanceMatrix.array;opt.box=[A[12]-h,A[14]-h,A[12]+h,A[14]+h];}
 const ex=BIO.export(opt),pick=eval(pickSrc)(ex.items);
 // the export's moving items kept index by index; the record's per-instance arrays sliced to them
 const slice=(arr,size,keep)=>{const a=unpack(arr),o=new a.constructor(keep.length*size);keep.forEach((i,j)=>{for(let q=0;q<size;q++)o[j*size+q]=a[i*size+q];});return pack(o);};

@@ -88,15 +88,21 @@ and only the triangles inside it, so an importer drops unused vertices). With co
 ## Motion: fauna a kit moves on the CPU (2026-10-16)
 
 Some fauna hold their motion in no shader: the kit rewrites the instance matrices every tick (`BIO.dynamic`: sedesert's
-kites, swifts, striders, deer and coyotes, eastabyss, Shade; swbay's and nwbay's flocks since they moved onto
-`BIO.dynamic`). The export bakes that motion to data, one mechanism for every kit, and Godot replays it on the module
-clock (`atm_time`). No kit's tick is ported.
+kites, swifts, striders, deer and coyotes, eastabyss, Shade; swbay's and nwbay's flocks and swimmers, swbay's herd and
+stalker, hyperjungle's striders). The export bakes that motion to data, one mechanism for every kit, and Godot replays
+it on the module clock (`atm_time`). No kit's tick is ported.
 
 **The rule a mover keeps**: its pose is a pure function of the BIO clock (`BIO.WIND.t`, which the core pins for the
-bake): nothing integrated frame to frame, no draw from a stream. sedesert's `walkAt` is the pattern. A tick that
-integrates (`dt`) or draws (swbay's wandering herd, hyperjungle's `anim` walkers) is caught by the bake, which samples
-the first clock again after the sweep: a mesh whose pose differs exports `motion: {error: 'state'}` and stands at its
-snapshot. The fix is in the kit (a pose from the clock), not in the port.
+bake): nothing integrated frame to frame, no draw from a stream. A walker is the pattern: `core/biome/36-core-walker.js`
+(opt-in; lifted from sedesert's deer, which keep their own copy) lays a closed loop out at build (`BIO.walkLoop`,
+seeded from KRAND by the animal's place), and `BIO.walkAt(W, t)` gives the pose, the ground under it and the gait phase
+(the distance walked: no jump inside the period, whole turns over it) at any clock; the kit declares `W.P` as the
+instance's period. swbay's herd and stalker (one loop, period declared) and hyperjungle's striders (a loop each, grazing
+stops, the gait in `aP1`) moved onto it on 2026-10-16; before, they integrated `dt` and drew targets as they went. A
+tick that integrates or draws is caught by the bake, which samples the first clock again after the sweep: a mesh whose
+pose differs exports `motion: {error: 'state'}` and stands at its snapshot. The fix is in the kit (a pose from the
+clock), not in the port. A kit that skips far animals (a cull by `BIO.eye()`) poses every animal once at build, or one
+skipped then stands at the origin until the eye comes near.
 
 **The bake** (`BIO.motionBake`, `core/biome/42-core-export.js`, run by the export; `opt.motion: false` skips it). The core
 knows every tick a kit registers (`BIO.tick`, or `BIO.host.ticks` after `BIO.init`). For each clock on a grid
@@ -207,8 +213,9 @@ registered tree, log, stand, herd or feature):
 
 Every instance the core bakes is in a set (the sets' counts equal `BIO.bake`'s, plus `BIO.dynamic` fauna). Not
 registered: what a page draws outside `BIO.put` and `BIO.dynamic`: ebadlands' variant-library trees
-(`86-host-variants.js`, 13,953 instances: host-drawn InstancedMeshes), and the swbay and nwbay herd, swimmers and glints,
-which build their own InstancedMeshes (`75-biome-*-fauna.js`); their flocks moved onto `BIO.dynamic` on 2026-10-16.
+(`86-host-variants.js`, 13,953 instances: host-drawn InstancedMeshes), and the swbay and nwbay glints, which build
+their own Points (`75-biome-*-fauna.js`); their flocks, swimmers and swbay's herd and stalker moved onto `BIO.dynamic`
+on 2026-10-16.
 
 **The cost** (2026-10-12, measured on the cloud container under a load average of 20 to 50, so wall times are noisy):
 nothing per instance until bake; then 4 bytes per instance only where LOD splits an item over several meshes (the index

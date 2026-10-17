@@ -732,10 +732,16 @@ pre-flight passes on Windows (`krand_test`, `atmos_test`, `--check`: five cases,
     `core/biome/test-motion.js` (the bake, the purity check, the page restored), and sedesert's buck and herd on the
     same pixels in the page (`?t=`) and the spike (`--clock=`) at 100 s and 103 s. The core now takes core/host's
     motion time as its clock (`KHOST.host.clock.t`), so a page pinned with `?t=` pins the deer and the foliage too
-    (before, `BIO.WIND.t` kept counting from load while the ticks read the pinned clock). Open: a tick that integrates
-    or draws (swbay's wandering herd, hyperjungle's `anim` walkers) is refused (`motion.error: 'state'`) and stands:
-    its kit must pose it from the clock (sedesert's `walkAt` is the pattern). eastabyss, Shade (vendored copies) and
-    nwbay are not re-exported yet. A loop's fade glides fast fliers across the gap between the loop's end and its
+    (before, `BIO.WIND.t` kept counting from load while the ticks read the pinned clock). *The stateful movers posed
+    from the clock, the same day*: sedesert's walker is a core module (`core/biome/36-core-walker.js`: `BIO.walker`,
+    `BIO.walkAt`, `BIO.walkLoop`; `core/biome/test-walker.js`), opt-in for a build. swbay's herd and stalker walk a
+    loop laid out at build (their period declared), hyperjungle's striders are walkers with grazing stops on one
+    `BIO.dynamic` mesh (no longer a baked item) whose gait is the `aP1` channel, and swbay's and nwbay's swimmers moved
+    onto `BIO.dynamic` (each pod's circle its period). No mover in swbay, nwbay or hyperjungle is refused now; the
+    golden gains swbay's herd and stalker and three striders (on the grid to float32, the gait in `INSTANCE_CUSTOM.x`
+    exact, the periods holding at 1000 s within 4 cm). Open: eastabyss, Shade (vendored copies) and
+    nwbay are not re-exported yet; Iziz's and Ys's vendored copies of the hyperjungle and nwbay fauna still run the old
+    code (both already drift from upstream: a re-vendor). A loop's fade glides fast fliers across the gap between the loop's end and its
     start; a per-instance loop length chosen where the path nearly closes would shrink it. The player runs on the CPU
     (fine for a tile's hundreds; a world's thousands want it in the vertex shader).
 

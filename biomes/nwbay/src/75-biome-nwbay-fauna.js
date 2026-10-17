@@ -68,6 +68,8 @@ function animMat(kind){const m=new T3.MeshLambertMaterial({vertexColors:true,sid
 NWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
  const scene=BIO.host.scene,st={flocks:0,birds:0,pods:0,swimmers:0,swarms:0,glints:0};
  const spineOK=(x,z,d)=>BIO.lodD(x,z)<d;
+ // the first pose (the build's own call) is drawn whatever the eye: an animal skipped then stood at the origin
+ let first=true;const near=(x,z)=>first||nearEye(x,z);
  // ---- flocks: one InstancedMesh per species; each flock a loop over its ground with the birds trailing the leader
  function flockMesh(si,flocks,perFlock){const S=NWBAY.FAUNA.species[si],geo=birdGeo(S),n=flocks.length*perFlock;
   const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=S.flap*rr(.85,1.15);
@@ -76,7 +78,7 @@ NWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
   const M=new T3.Matrix4(),P=new T3.Vector3(),Q=new T3.Quaternion(),Sc=new T3.Vector3(),F=new T3.Vector3(),UP=new T3.Vector3(0,1,0),Mlook=new T3.Matrix4();
   const birds=[];flocks.forEach((fl,fi)=>{for(let k=0;k<perFlock;k++)birds.push({fl:fl,lag:k*rr(.9,1.6),side:rr(-1,1)*fl.r*.35,dy:rr(-1,1)*fl.r*.12,sc:S.span*rr(.85,1.15)});});
   const at=(fl,t)=>{const a=fl.a0+fl.w*t;return[fl.x+Math.cos(a)*fl.r+Math.sin(a*2.3)*fl.r*.15,fl.y+Math.sin(a*1.7+fl.a0)*fl.dy,fl.z+Math.sin(a)*fl.r*fl.e];};
-  const upd=t=>{birds.forEach((b,i)=>{if(!nearEye(b.fl.x,b.fl.z))return;const p=at(b.fl,t-b.lag),p2=at(b.fl,t-b.lag+.15);
+  const upd=t=>{birds.forEach((b,i)=>{if(!near(b.fl.x,b.fl.z))return;const p=at(b.fl,t-b.lag),p2=at(b.fl,t-b.lag+.15);
     const a=b.fl.a0+b.fl.w*(t-b.lag),nx=-Math.sin(a)*b.side,nz=Math.cos(a)*b.side*b.fl.e;   // spread across the loop
     P.set(p[0]+nx,p[1]+b.dy,p[2]+nz);F.set(p2[0]-p[0],p2[1]-p[1],p2[2]-p[2]).normalize();
     Mlook.lookAt(F,new T3.Vector3(0,0,0),UP);Q.setFromRotationMatrix(Mlook);Q.multiply(new T3.Quaternion().setFromAxisAngle(UP,Math.PI));   // the model's nose is -z
@@ -102,15 +104,17 @@ NWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
    for(let k=0;k<12&&r>25;k++){let ok=true;for(let a=0;a<TAU;a+=TAU/10)if(Y(x+Math.cos(a)*r,z+Math.sin(a)*r*.7)>-2.5){ok=false;break;}if(ok)break;r*=.8;}
    if(r>25)pods.push({x:x,z:z,y:0,r:r,e:.7,a0:rr(0,TAU),w:(rng()<.5?1:-1)*S.speed/r,dy:0,n:ri(3,6)});},{patch:0,noMask:true});
   if(!pods.length)return;const P4=pods.slice(0,4),n=P4.reduce((a,p)=>a+p.n,0),geo=swimmerGeo(S);NWBAY.FAUNA.pods=P4;
-  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=rr(.8,1.3);geo.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
-  const im=new T3.InstancedMesh(geo,animMat('swim'),n);im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=S.name+' pod';im.name='biome:fauna:swimmers';
+  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=rr(.8,1.3);
   const an=[];P4.forEach(p=>{for(let k=0;k<p.n;k++)an.push({p:p,lag:k*rr(3,5),side:rr(-1,1)*p.r*.2,sc:S.L*rr(.8,1.15)});});
+  // on BIO.dynamic (2026-10-16): each pod's circle closes every 2 pi / |w| seconds, its exact period (one over the bake's
+  // 400 s cap is baked as the 120 s loop instead; biomes/GODOT.md, "Motion")
+  const im=BIO.dynamic('fauna:swimmers',geo,animMat('swim'),n,{label:S.name+' pod',motion:{period:i=>TAU/Math.abs(an[i].p.w),hz:5}});im.geometry.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
   const M=new T3.Matrix4(),P=new T3.Vector3(),Q=new T3.Quaternion(),Sc=new T3.Vector3(),UP=new T3.Vector3(0,1,0),F=new T3.Vector3(),Ml=new T3.Matrix4();
   const at=(p,t)=>{const a=p.a0+p.w*t;return[p.x+Math.cos(a)*p.r,0,p.z+Math.sin(a)*p.r*p.e,a];};
-  const upd=(dt,t)=>{an.forEach((b,i)=>{if(!nearEye(b.p.x,b.p.z))return;const s=at(b.p,t-b.lag),s2=at(b.p,t-b.lag+.5),a=s[3];
+  const upd=(dt,t)=>{an.forEach((b,i)=>{if(!near(b.p.x,b.p.z))return;const s=at(b.p,t-b.lag),s2=at(b.p,t-b.lag+.5),a=s[3];
     P.set(s[0]-Math.sin(a)*b.side,0,s[2]+Math.cos(a)*b.side*b.p.e);F.set(s2[0]-s[0],0,s2[2]-s[2]).normalize();Ml.lookAt(F,new T3.Vector3(0,0,0),UP);Q.setFromRotationMatrix(Ml);Q.multiply(new T3.Quaternion().setFromAxisAngle(UP,Math.PI));
     Sc.set(b.sc,b.sc,b.sc);M.compose(P,Q,Sc);im.setMatrixAt(i,M);});im.instanceMatrix.needsUpdate=true;};
-  upd(0,0);scene.add(im);BIO.host.ticks(upd);BIO.tally(geo.attributes.position.count/3*n,n,1);st.pods=P4.length;st.swimmers=n;})();
+  upd(0,BIO.WIND.t.value);BIO.host.ticks(dt=>upd(dt,BIO.WIND.t.value));st.pods=P4.length;st.swimmers=n;})();
  // ---- the swarms: Points glinting round the epiphyte-laden crowns, drifting on little orbits
  (function(){const S=NWBAY.FAUNA.species[3],cand=NWBAY.TREES.filter(T=>(T.sp===2||T.sp===0||T.sp===8||T.sp===9)&&T.lv===2&&BIO.lodD(T.x,T.z)<700);
   const sw=[];for(let i=0;i<cand.length&&sw.length<40;i+=Math.max(1,Math.floor(cand.length/40))){const T=cand[i];sw.push({x:T.x+rr(-6,6),y:T.y0+T.H*rr(.25,.7),z:T.z+rr(-6,6),r:rr(2,5)});}
@@ -119,8 +123,8 @@ NWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
   const g=new T3.BufferGeometry();g.setAttribute('position',new T3.BufferAttribute(pos,3));g.setAttribute('color',new T3.BufferAttribute(col,3));
   const pm=new T3.PointsMaterial({size:.28,sizeAttenuation:true,vertexColors:true,transparent:true,opacity:.9,depthWrite:false});
   const pts=new T3.Points(g,pm);pts.frustumCulled=false;pts.userData.biome=true;pts.userData.probeSkip=true;pts.userData.inspectLabel=S.name;pts.name='biome:fauna:glints';
-  const upd=(dt,t)=>{for(let i=0;i<n;i++){const w=sw[Math.floor(i/S.n)];if(i%S.n===0&&!nearEye(w.x,w.z)){i+=S.n-1;continue;}const s=seeds[i],a=s[0]+t*s[2],b=s[1]+t*s[3]*.7;
+  const upd=(dt,t)=>{for(let i=0;i<n;i++){const w=sw[Math.floor(i/S.n)];if(i%S.n===0&&!near(w.x,w.z)){i+=S.n-1;continue;}const s=seeds[i],a=s[0]+t*s[2],b=s[1]+t*s[3]*.7;
     pos[i*3]=w.x+Math.cos(a)*w.r*s[3];pos[i*3+1]=w.y+Math.sin(b)*w.r*.5;pos[i*3+2]=w.z+Math.sin(a)*w.r*s[3];}g.attributes.position.needsUpdate=true;};
   upd(0,0);scene.add(pts);BIO.host.ticks(upd);BIO.tally(0,n,1);st.swarms=sw.length;st.glints=n;})();
- return{fauna:st};};
+ first=false;return{fauna:st};};
 })();
