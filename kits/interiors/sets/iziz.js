@@ -283,7 +283,6 @@
       'platform, the trough and the shade by the parapet are open' });
 
   /* ================================================================ the trades round: food trades (71a-vern-food.js) */
-  /* @@ag-food@@ */
   add({ key: 'vern_bakery', name: 'Bakery', wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [19, 16],
     bodies: [{ id: 'bakehouse', poly: rect(10, 8), y: 0.4, levels: [{ h: 3.35 }, { h: 2.9 }], wall: 0.3, roof: 'gable', pitch: pt(2.5 / 4),
       doors: [{ at: [-4.0, 4], w: 1.0 }, { at: [2.8, -4], w: 1.0 }], program: [['izshop_bakery', 'izwork_bakery'], ['living', 'bedroom']] }],
@@ -312,7 +311,6 @@
       'the upper front is not a planned door; the veranda of goods and the loading platform are open' });
 
   /* ================================================================ the trades round: cloth, leather and letters (71b-vern-cloth.js) */
-  /* @@ag-cloth@@ */
   add({ key: 'vern_weaver', name: "Weaver and dyer's house", wealth: MID, types: ['industry', 'market/shop', 'single-family dwelling'], lot: [15, 19],
     bodies: [{ id: 'house', poly: rect(10, 7.6, 0, 1.6), y: 0.45, levels: [{ h: 3.75 }, { h: 2.9 }], wall: 0.3, roof: 'gable', pitch: pt(2.4 / 3.8),
       stair: { w: 0.9, riser: 0.22, tread: 0.25 },
@@ -337,7 +335,6 @@
       'scribe\'s rooms above; the book stall, the lectern and the press shed are open' });
 
   /* ================================================================ the trades round: crafts and salvage (71c-vern-craft.js) */
-  /* @@ag-craft@@ */
   add({ key: 'vern_apothecary', name: 'Apothecary', wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [17, 14],
     bodies: [{ id: 'house', poly: rect(9.6, 8.4), y: 0.4, levels: [{ h: 3.35 }, { h: 2.9 }], wall: 0.3, roof: 'gable', pitch: pt(2.6 / 4.2),
       doors: [{ at: [-2.7, 4.2], w: 1.1 }, { at: [2.6, -4.2], w: 1.0 }],
@@ -364,7 +361,6 @@
       'forge\'s lean-to are open' });
 
   /* ================================================================ the trades round: mines, quarry, mill, fungus (73b-vern-works.js) */
-  /* @@ag-works@@ */
   add({ key: 'vern_mine', name: 'Mine head', wealth: POOR, types: ['industry'], lot: [26, 22],
     bodies: [{ id: 'hut', poly: rect(7, 5.5, 8.5, 1.5), y: 0.5, levels: [{ h: 2.6 }], wall: 0.15, roof: 'gable', pitch: pt(2.3 / 2.87),
       doors: [{ at: [6.9, 4.25], w: 0.95 }], program: ['store', 'dormitory'] }],
@@ -386,7 +382,6 @@
       '(the bank makes it read half-sunk) so the floor stays above the ground plane' });
 
   /* ================================================================ the trades round: farm, stock and water (73c-vern-land.js) */
-  /* @@ag-land@@ */
   add({ key: 'vern_farmhouse', name: 'Farmhouse', wealth: MID, types: ['farm', 'single-family dwelling'], lot: [24, 20],
     bodies: [{ id: 'house', poly: rect(12, 8, -2.2, -2.5), y: 1.6, levels: [{ h: 3.2 }], wall: 0.25, roof: 'gable', pitch: pt(2.6 / 4),
       doors: [{ at: [-4.6, 1.5], w: 1.1 }], program: ['living', 'kitchen', 'bedroom', 'bedroom', 'store'] }],

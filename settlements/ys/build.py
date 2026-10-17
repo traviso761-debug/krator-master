@@ -154,7 +154,7 @@ for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js'
 # (--vendor-check); the city target alone takes them (TARGET_ONLY). Not taken: 72-vern-civic (nothing in it fits a
 # foreign plot), 73b-hl-frame (74 does not need it, and its overrides of vnWin/vnGableRoof/vnHipRoof would redraw the
 # Iziz houses), 75-rep-trade and 89y-hl-furnish (FURNISH places furniture from the master catalog; 88c stubs it).
-VENDORED_IZIZ_FQ = ['70-vern-dwellings.js', '71-vern-trade.js', '75-port-embassy.js', '76-port-chapterhouse.js']
+VENDORED_IZIZ_FQ = ['69e-vern-hollow.js', '70-vern-dwellings.js', '71-vern-trade.js', '75-port-embassy.js', '76-port-chapterhouse.js']   # 69e: vnBody/vnBand, which 70 and 71 call (solid here: Ys never turns VERN.interiors on)
 VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']
 for _f in VENDORED_IZIZ_FQ:
     VENDORED[_f] = 'settlements/iziz/src'
@@ -203,6 +203,7 @@ ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', 
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '69e-vern-hollow.js',   # the vernacular's hollow bodies (no rnd())
     '00-head.html', '08-core-rand.js', '10-core.js', '69a-world-uv.js', '42-offices.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',

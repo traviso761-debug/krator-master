@@ -98,8 +98,7 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
-TARGET_CORE = {'city': ['atmos', 'mask', 'export'], 'vernacular': ['furnish'],
-               **{t: ['furnish'] for t in ('ag-food', 'ag-cloth', 'ag-craft', 'ag-works', 'ag-land', 'ag-hollow')}}   # furnish: core/furnish's colour step for the interiors' furniture (95i)   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
+TARGET_CORE = {'city': ['atmos', 'mask', 'export'], 'vernacular': ['furnish']}   # furnish: core/furnish's colour step for the interiors' furniture (95i)   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
 # core/host (core/host/README.md; ROADMAP.md section 10, step 3): the camera, loop, panel, probe, inspector, marks, pictures,
 # minimap, editor and cutaway, with core/clock and core/minimap. Not core/space: the hyperjungle's scatter takes another path
 # when it is on the page (KNOWN_ISSUES.md, 2026-10-13), so the inspector scans the records instead. Not core/edits: Iziz has
@@ -118,7 +117,7 @@ MATLIB_PACK = '69d-matlib-pack.js'
 # set (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). Both are closures, so the build rules do not
 # apply to them. The cultures: iziz, the generic and scrap sets its poor tier falls back to, and the jobs' work pieces.
 FURN_BUNDLE = '88z-iziz-furniture-bundle.js'
-INTERIOR_TARGETS = {'vernacular', 'ag-food', 'ag-cloth', 'ag-craft', 'ag-works', 'ag-land', 'ag-hollow'}   # ag-*: the trades round's agent sheets (temporary)
+INTERIOR_TARGETS = {'vernacular'}
 FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'scrap', 'jobs']   # not generic-fruit: it laid figs on a scribe's counter
 INTERIOR_SETS = ['iziz']
 
@@ -140,12 +139,6 @@ TARGET_OUT = {
     'vernacular': 'iziz-vernacular.html',      # the Iziz Vernacular set showcase
     'city': 'iziz.html',                        # the city
     'wA': 'w-a.html', 'wB': 'w-b.html', 'wC': 'w-c.html',   # per-agent work sheets (round 2)
-    'ag-food': 'ag-food.html',
-    'ag-cloth': 'ag-cloth.html',
-    'ag-craft': 'ag-craft.html',
-    'ag-works': 'ag-works.html',
-    'ag-land': 'ag-land.html',
-    'ag-hollow': 'ag-hollow.html',
 }
 _OLD_TARGETS = {
     'kit': 'ancients-kit.html',            # the 32-type showcase

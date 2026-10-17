@@ -55,6 +55,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
+| `69e-vern-hollow.js` | 13 |  |
 | `69h-host-0-lib.js` | 7 |  |
 | `69h-host-a-facet.js` | 7 |  |
 | `69h-host-b-bastion.js` | 12 |  |
@@ -67,12 +68,12 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
 | `70-hyk-housing.js` | 68 **big** | shared helpers (prefix hykHouse…) (7); POOR 1: the clam house. A low ribbed body, a rib (116); POOR 2: the stilt pod. A small pod carried 2.6 m (134); POOR 3: the limpet house. One ringed limpet cone (154); MIDDLE 1: the barnacle tower. One tall twisted b (171); MIDDLE 2: the pod cluster. Three pods of graded  (194); MIDDLE 3: the stair drum. A lobed drum with a st (220); RICH 1: the conch stair house. A nacre conch who (234); RICH 2: the urchin house. A lobed nacre dome rin (299); RICH 3: the scallop court. A ribbed scallop valv (334) |
 | `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
-| `70-vern-dwellings.js` | 20 | POOR (9); MIDDLE (61); RICH (126) |
+| `70-vern-dwellings.js` | 23 | POOR (24); MIDDLE (83); RICH (148) |
 | `71-hl-mat.js` | 8 | world UV with separate u/v tile sizes (26); materials (32); geometry (51); kit items (71) |
 | `71-hyk-shops.js` | 51 **big** | helpers (12); the free-standing base (58); the grown-on base (the G frame: origin on the ho (105); the trade dressings (F from a base: at(th,y,out) (132); the free-standing stores (row 'Shops') (293); the grown-on stores (row 'Grown-on shops', the G (364) |
 | `71-port-terrain.js` | 21 | the natural coast (7); stamps (24); materials (103); the terrain grid (198) |
 | `71-sky-h.js` | 5 |  |
-| `71-vern-trade.js` | 18 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (42); workshops (70); scrap smithy: forge under a salvaged roof on pip (103); market canopy: a great two-tier rain roof over r (131); warehouse: long timber shed clad in board and sh (154) |
+| `71-vern-trade.js` | 19 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (44); workshops (72); scrap smithy: forge under a salvaged roof on pip (107); market canopy: a great two-tier rain roof over r (135); warehouse: long timber shed clad in board and sh (158) |
 | `71b-hl-motif.js` | 33 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
 | `71w-port-sea.js` | 4 |  |
 | `72-datacenter.js` | 8 |  |

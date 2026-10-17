@@ -285,8 +285,8 @@
    "sha256": "c6040b25d411ed40d980e9420c09b96d8ce91fb4384f8e2c6acd28e9fdd99fb5"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1666071,
-   "sha256": "6126439b215eadb98f708f2a15d614d1863933221b1a24ed3a75a1af53670cc1"
+   "bytes": 1669465,
+   "sha256": "99b591f65b317da3a5ae1e18ad466d69d4be18077523dec203fffb4e21c761eb"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 14352192,
@@ -297,12 +297,12 @@
    "sha256": "76b76913cb2e8fb6d4bb9c394257d578903dbb7c8177c37cc2a4c7bca7e8a0bd"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 608879,
-   "sha256": "38cfb89343e7790d18562fa61daaf933cd0c7074ff0666d5ee107469f963b781"
+   "bytes": 628868,
+   "sha256": "25f598e1bcba076b733ed280c28f4069965960a566ca882e7d35f8f0c36b6135"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 9623926,
-   "sha256": "71c9c588391e75aeae9689cbf7400c398d741babb994ce8dbda524efc2b4222c"
+   "bytes": 9654751,
+   "sha256": "4c297c5cb8a21635ee2ad58d6ec16100dfceea996506b6d6db6444886e9b5728"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 246684,
@@ -381,36 +381,36 @@
    "sha256": "884741d9d35faeea67f3b1e4d774e4b1bfc77f286ee4134ccd6aba20c4a1a6f9"
   },
   "settlements/highlands/dist/highlands.html": {
-   "bytes": 1785872,
-   "sha256": "dd5928c0c128f24118a8ce3a5608188a1cc5ae3287679ca19a02e42be1e880a8"
+   "bytes": 1789266,
+   "sha256": "79f66a104d39273172200051873b2b2043e908f26c06a57c774511ff5546fd09"
   },
   "settlements/highlands/dist/roketstad.html": {
-   "bytes": 7303091,
-   "sha256": "4cbf80fc74e623c4c2b696f511ad635204d795ee34618042855cca8713ce81b7"
+   "bytes": 7306485,
+   "sha256": "e21d92e79b817280418ead6f8487e185754036a8fc13d2dfcaad1309bd1c5efd"
   },
   "settlements/isle-demo/dist/isle-site.html": {
    "bytes": 1242859,
    "sha256": "f88e786b9f4a1225f7f778dba93f1022176983be91ba43baf7e0a0cd7190e1e5"
   },
   "settlements/iziz/dist/iziz-vernacular.html": {
-   "bytes": 845077,
-   "sha256": "83c2b3fb518088c9cc3cd74ecca87d81b0f67a48871c54079f73f3c9c8c5f993"
+   "bytes": 1710591,
+   "sha256": "c536e208491cd9e8c34dab0e3f17596bada7cdb0c8ba32cbcf6bcfdb2922f239"
   },
   "settlements/iziz/dist/iziz.html": {
-   "bytes": 5177666,
-   "sha256": "618c06a766836002c16a105fbdc86ff9523c6b4bcab76c80fb8e96d70582342d"
+   "bytes": 5350149,
+   "sha256": "393cf0c3ba476fe35302c6acf56295c076be7ffc9a51a69adc6ebb17effecf2f"
   },
   "settlements/iziz/dist/w-a.html": {
-   "bytes": 841642,
-   "sha256": "4d4602a9ad6ae7996f2ee8123ff87d667811e97c72dd5e6bcdf4b03056fb4414"
+   "bytes": 1014125,
+   "sha256": "a2883da6d6b07c6583b4c2e29cde18071459fb4fa62f6d14dd286e944f98c520"
   },
   "settlements/iziz/dist/w-b.html": {
-   "bytes": 841368,
-   "sha256": "c7784ac1235ea33a227130267238dce7994291440a36caed15a26c15de9e93a2"
+   "bytes": 1013851,
+   "sha256": "5a55899119dcda4d53d05e1089238b169498df4f022e4aec08611363a97526f4"
   },
   "settlements/iziz/dist/w-c.html": {
-   "bytes": 842408,
-   "sha256": "07a03a63dd36540e36a6de8df5649ec65d631f896c9f458cc9dbaeddfc9f716e"
+   "bytes": 1014891,
+   "sha256": "4252cd5f53d400aad163218d5484844d788bb4a1d55a31db6001f25b31c1e86f"
   },
   "settlements/jimjam/dist/jimjam-kit.html": {
    "bytes": 8989262,
@@ -593,12 +593,12 @@
    "sha256": "a66b62fe17b82373fff5b5ebffd724c0c8cfd92d3e2f6be3eb58a4a061ec8aae"
   },
   "settlements/verge/dist/verge.html": {
-   "bytes": 3221425,
-   "sha256": "1166efb9e28b9d170b377c91248152df1b7843e9cfd150022d05c9d530ed5a2f"
+   "bytes": 3269585,
+   "sha256": "9122c45558fc98a0468d528ed85b3003721a249bbbf368a351d4dca04fbad802"
   },
   "settlements/voth/dist/voth-city.html": {
-   "bytes": 19297735,
-   "sha256": "9360578e1f2bb7cc36ea198719fd7b47fe3e8a8a6dfc7cb97467a4c5ca63655c"
+   "bytes": 19301129,
+   "sha256": "45f697671e5e91136a145d9032ec00179bdaa9df96309bac4496018d12179adf"
   },
   "settlements/voth/dist/voth-site.html": {
    "bytes": 3611657,
@@ -621,8 +621,8 @@
    "sha256": "7601127bead63bbc1e12663f59462d66fdcaa90cf6291b19eec9eac2818be2a6"
   },
   "settlements/ys/dist/ys.html": {
-   "bytes": 2364761,
-   "sha256": "4b789c0ab32e1c9a734a745767d152805b2996aacc619a396ae6c39077dc7cd9"
+   "bytes": 2382866,
+   "sha256": "69da5d3ead1956643fb0cd57a9aa286ce3d8217dcc5c0ce3fd2f4fb9f42f125e"
   },
   "settlements/yuni/yuni-assets.html": {
    "bytes": 1531614,
