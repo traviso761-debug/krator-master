@@ -136,12 +136,14 @@ normal is `StandardMaterial3D`'s `detail_*` fields fed from a record's `detail`,
 | `glass` | `lib/glass` | `core/materials/22-materials.js` `MAT.glass` (GLASS FRESNEL): the rim as `EMISSION` | none | none yet |
 | `coursing` | `lib/coursing` | none yet: the TEX kind `coursing` (`core/materials/PLAN.md`, "From spiderbench") waits for its pilot, Voth's canton walls (the Voth branch's) | `coursing` {courseH, blockW, slide, joint, tone, seed} | none yet |
 | `water` | `lib/water` | `core/water/50-core-water-draw.js` `WATER.glsl` and `WATER.draw` | core/export's `water` section | `water` |
+| `anim` | `lib/anim` | `core/biome/35-core-anim.js` `BIO.animHook`: fauna on a path (orbit, flit), walkers' legs, flapping wings, billboard motes | `options`; per instance `aP0.w` (COLOR.a) and `aP1` (INSTANCE_CUSTOM) | `anim`, `anim_add` |
 
 What it proves: `tests/shaders/library_test.gd` (the table, the resolution, the sedesert case's ground and pond),
 `tests/water/water_test.gd` (KWater equals WATER to 1e-14 m), `tests/shaders/library_gpu_check.gd` (every include
-compiles, and computes what its GDScript twin does: water within 0.5 mm, the rest within 2e-4). Not yet: a record field
+compiles, and computes what its GDScript twin does: water within 0.5 mm, the rest within 2e-4), `tests/motion/motion_test.gd` (the baked motion of CPU-moved fauna against the page's ticks: `tools/motion_golden.py`; `krator/kmotion.gd`), `tests/anim/anim_test.gd`
+(`krator/kanim.gd`, the anim twin, against `BIO.animHook`'s own GLSL run on a GPU: `tools/anim_golden.py`; the importer's packing). Not yet: a record field
 that selects `cloth-sway`, `flag`, `glass` or `coursing` on an exported mesh (no export carries those materials yet: Girder
-and Iziz still go through the glTF route), the fauna's `anim` kind (reported unknown), a texture array for bark variants,
+and Iziz still go through the glTF route), fauna a kit moves on the CPU (`BIO.dynamic`; swbay's and nwbay's flocks), a texture array for bark variants,
 and pre-compiling the library at load.
 
 ## Driving the editor (Godot MCP)

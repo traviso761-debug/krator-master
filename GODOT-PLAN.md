@@ -637,7 +637,8 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
    no `key` either, so the report cannot even name them). Fauna (`anim`, `aP0`/`aP1`) stand still at their path centre.
    *Compensated 2026-10-05:* every kit hook is named as data (`irid`, `gloss`, `far`, `hang`, `anim-phase`:
    `biomes/GODOT.md`); `irid`, `gloss`, `far` (both packings) and `hang` (the sway and the night glow) have Godot
-   shaders (`bark.gdshader` modes 1 to 5). Open: both fauna kinds.
+   shaders (`bark.gdshader` modes 1 to 5). Open: both fauna kinds. *The `anim` kind done 2026-10-16* (finding 20); *`anim-phase` and the CPU-moved fauna
+   the same day* (finding 20: baked motion).
 7. **`swayW` is GLSL text** in the export. The three values the kits use map to `c + dot(w, position)`; make it data.
    *Done 2026-10-05:* the export adds `sway` as data.
 8. **LOD is measured to the chunk's box in three and to a point in Godot:** the spike widens ranges by the chunk
@@ -739,6 +740,40 @@ pre-flight passes on Windows (`krand_test`, `atmos_test`, `--check`: five cases,
     for the metadata (5a to 5c unchecked). Wanted: an in-game click readout in the spike (the record under the
     cursor), and a scripted nav check (`bld_00005`: a path from one room to another through a door link) that prints
     pass or fail, so this case needs no editor work. Meshes for Yuni wait on its second route (gap 13).
+20. **Fauna motion (2026-10-16).** The core's `anim` kind moves in Godot: `shaders/lib/anim.gdshaderinc` (orbit, flit,
+    walk; wings, legs, billboards; `anim.gdshader`, and `anim_add.gdshader` for the additive motes), each instance's
+    path radius and `aP1` packed by both importers. Its twin `krator/kanim.gd` matches `BIO.animHook`'s own GLSL run on a
+    GPU (`tools/anim_golden.py`, 72 cases; `tests/anim/anim_test.gd`), and on the hyperjungle tile a butterfly pinned at
+    the same clock (`--clock=T`, new) stands on the same pixel in the page and in Godot at 100 s and at 103 s. Not
+    ported, because no shader holds their motion: fauna a kit moves on the CPU each tick (`BIO.dynamic`: eastabyss,
+    sedesert's deer, swifts and striders, Shade), which export a snapshot; walkers of the `anim` kind (their host moves
+    them); swbay's and nwbay's flocks (`anim-phase`), which no export carries. Those want their motion baked to data
+    (keyframed paths, as Stage 5 plans for the sim's tasks) or their ticks ported to GDScript.
+    *Baked, the same day* (`biomes/GODOT.md`, "Motion"): one mechanism, no kit's tick ported. The export pins the BIO
+    clock on a grid (10 Hz by default), calls every tick the kits registered, and keeps each moving instance's matrix
+    (and any per-instance attribute that moves) as a track on its item (`motion`; world.glb: the node's
+    `extras.krator_motion`, arrays as accessors). An instance whose kit declares its period (sedesert's walkers: deer
+    and coyotes) keeps one period and replays exactly at every clock; the rest keep a 120 s loop cross-faded (a
+    smoothstep) over 2 s, exact between clock 0 and 118 s. `krator/kmotion.gd` replays it into each MultiMesh's
+    buffer from `Atmos.t`, attached by both importers; `shaders/anim_phase.gdshader` draws swbay's and nwbay's beat
+    (their flocks moved onto `BIO.dynamic`). Proof: `tests/motion/motion_test.gd` against the page's own ticks at nine
+    pinned clocks (`tools/motion_golden.py`: sedesert's buck with antlers and legs and four swifts, four of swbay's
+    soarers; on the grid to float32, between frames within 1.6 cm, the buck at 1000 s within 2 mm; five negatives),
+    `core/biome/test-motion.js` (the bake, the purity check, the page restored), and sedesert's buck and herd on the
+    same pixels in the page (`?t=`) and the spike (`--clock=`) at 100 s and 103 s. The core now takes core/host's
+    motion time as its clock (`KHOST.host.clock.t`), so a page pinned with `?t=` pins the deer and the foliage too
+    (before, `BIO.WIND.t` kept counting from load while the ticks read the pinned clock). *The stateful movers posed
+    from the clock, the same day*: sedesert's walker is a core module (`core/biome/36-core-walker.js`: `BIO.walker`,
+    `BIO.walkAt`, `BIO.walkLoop`; `core/biome/test-walker.js`), opt-in for a build. swbay's herd and stalker walk a
+    loop laid out at build (their period declared), hyperjungle's striders are walkers with grazing stops on one
+    `BIO.dynamic` mesh (no longer a baked item) whose gait is the `aP1` channel, and swbay's and nwbay's swimmers moved
+    onto `BIO.dynamic` (each pod's circle its period). No mover in swbay, nwbay or hyperjungle is refused now; the
+    golden gains swbay's herd and stalker and three striders (on the grid to float32, the gait in `INSTANCE_CUSTOM.x`
+    exact, the periods holding at 1000 s within 4 cm). Open: eastabyss, Shade (vendored copies) and
+    nwbay are not re-exported yet; Iziz's and Ys's vendored copies of the hyperjungle and nwbay fauna still run the old
+    code (both already drift from upstream: a re-vendor). A loop's fade glides fast fliers across the gap between the loop's end and its
+    start; a per-instance loop length chosen where the path nearly closes would shrink it. The player runs on the CPU
+    (fine for a tile's hundreds; a world's thousands want it in the vertex shader).
 
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
 material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the

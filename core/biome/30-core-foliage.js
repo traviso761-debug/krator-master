@@ -12,6 +12,8 @@
 // THE WIND: one clock and, if the host has one, one wind (biomes/WORLD.md, 'The air'). With no host
 // clock the core keeps its own (seconds since load, from the host's ticks); with BIO.init({clock}) it
 // reads the world's (core/atmos: ATMOS.clock.t), so a paused or pinned clock stills the leaves too.
+// Without one, on a page whose frame loop is core/host's, it takes that loop's motion time (KHOST.host.clock.t, the t
+// the kits' ticks are called with; ?t= pins it), so the foliage and every kit's tick read one clock; the export pins it (BIO._pinT) to bake the fauna's motion.
 // With BIO.init({wind}) -> [x,z] (1 = the calm breeze) the sway grows with the wind's strength and
 // the foliage leans downwind, pulsing; with none, on=0 and the sway is exactly what it always was.
 BIO.WIND={t:{value:0},v:{value:null},on:{value:0}};
@@ -20,7 +22,8 @@ BIO.setSun=function(v){const T=BIO.host.THREE;if(!BIO.SUN.value)BIO.SUN.value=ne
 BIO._windTicked=false;
 BIO._tickWind=function(){if(BIO._windTicked)return;BIO._windTicked=true;const W=BIO.WIND;
  if(!W.v.value)W.v.value=new BIO.host.THREE.Vector2(0,0);
- BIO.host.ticks(dt=>{const h=BIO.host;W.t.value=h.clock?h.clock():W.t.value+dt;
+ BIO.host.ticks(dt=>{const h=BIO.host;const K=typeof KHOST!=='undefined'&&KHOST&&KHOST.host&&KHOST.host.clock?KHOST.host.clock:null;
+  W.t.value=BIO._pinT!=null?BIO._pinT:h.clock?h.clock():K?K.t:W.t.value+dt;
   if(h.wind){const w=h.wind();W.v.value.set(w[0],w[1]);W.on.value=1;}});};
 
 // ---------------------------------------------------------------- alpha textures

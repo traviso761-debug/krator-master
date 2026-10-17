@@ -276,6 +276,12 @@ SEDESERT.buildFauna=function(R,q,keep){
    head:BIO.dynamic('coyotehead',G.coyHead(),M.body,coys.length,{label:'Coyotes'}),ant:null,
    legs:BIO.dynamic('coyoteleg',G.coyLeg(),M.body,coys.length*4,{label:'Coyotes'})},COY):null;
  [DR,CY].forEach(Rg=>Rg&&[Rg.body,Rg.head,Rg.legs,Rg.ant].forEach(m=>{if(m)m.userData.kit=BIO.kitName||'';}));   // BIO.dynamic leaves the kit unset: BIO.export({kit}) would drop them
+ // the export bakes their motion (biomes/GODOT.md, "Motion"): each walker's pose repeats every W.P seconds, so a port
+ // replays one loop exactly; a coyote's trot (2.5 strides a second) wants 30 frames a second, a deer's walk 10
+ const antOf=[],MO=BIO.motion||(()=>{});deer.forEach(d=>{if(d.ai>=0)antOf[d.ai]=d;});   // MO: a vendored core older than BIO.motion
+ if(DR){MO(DR.body,{period:i=>deer[i].W.P});MO(DR.head,{period:i=>deer[i].W.P});MO(DR.legs,{period:i=>deer[i>>2].W.P});
+  if(DR.ant)MO(DR.ant,{period:i=>antOf[i].W.P});}
+ if(CY){const P=i=>coys[i].W.P;MO(CY.body,{period:P,hz:30});MO(CY.head,{period:P,hz:30});MO(CY.legs,{period:i=>P(i>>2),hz:30});}
  const FAR2=1600*1600;let first2=true;
  const flag=Rg=>{for(const m of [Rg.body,Rg.head,Rg.legs,Rg.ant])if(m){m.instanceMatrix.needsUpdate=true;if(first2&&m.instanceColor)m.instanceColor.needsUpdate=true;}};
  // t is the BIO clock (BIO.WIND.t: the host's clock() when it binds one, else the core's own), the one the

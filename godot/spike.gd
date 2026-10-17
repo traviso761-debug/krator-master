@@ -4,7 +4,7 @@
 #   godot --path godot -- --case=rift           start on a case
 #   godot --headless --path godot -- --check    load every case, print the reports, write spike-report.json, quit
 #   godot --path godot -- --case=girder --shot=shots/girder.png   render, save a screenshot, quit
-#     (--eye=x,y,z --at=x,y,z place the camera relative to the case's focus; --hour=h sets the clock)
+#     (--eye=x,y,z --at=x,y,z place the camera relative to the case's focus; --hour=h sets the clock; --clock=T pins the module clock, atm_time)
 #
 # Each case's report (counts and the gaps the importer met) is printed and shown on screen: that list is what
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
@@ -222,6 +222,9 @@ func _load_case(name: String) -> Dictionary:
 		hud.visible = false
 	if args.has("hour"):
 		Atmos.hour = float(args["hour"])
+	if args.has("clock"):   # --clock=T: the module clock (atm_time: sway, fauna paths, waves) pinned at T seconds, to match a page's
+		Atmos.t = float(args["clock"])
+		Atmos.paused = true
 	if args.has("weather"):   # --weather=rain|storm|fog|clear|auto
 		Atmos.set_weather(str(args["weather"]))
 		Atmos.W["rain"] = 1.0 if args["weather"] in ["rain", "storm"] else 0.0   # start at full strength, for a screenshot

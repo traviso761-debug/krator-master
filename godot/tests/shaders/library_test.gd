@@ -24,16 +24,16 @@ func _initialize() -> void:
 		var p := KHooks.include(id)
 		if not FileAccess.file_exists(p) or FileAccess.get_file_as_string(p).find("#ifndef K_") < 0:
 			missing.append(id)
-	ok(missing.is_empty() and KHooks.TABLE.size() == 9, "%d hooks, each with a guarded include in %s: %s" % [KHooks.TABLE.size(), KHooks.LIB, ", ".join(PackedStringArray(KHooks.TABLE.keys()))])
+	ok(missing.is_empty() and KHooks.TABLE.size() == 11, "%d hooks, each with a guarded include in %s: %s" % [KHooks.TABLE.size(), KHooks.LIB, ", ".join(PackedStringArray(KHooks.TABLE.keys()))])
 	var r1 := KHooks.resolve("world-uv+cloth-sway")
 	var r2 := KHooks.resolve("leaf")
 	var r3 := KHooks.resolve("irid+gloss")
 	ok(r1["ids"] == ["world-uv", "cloth-sway"] and r2["ids"] == ["foliage"] and r3["ids"] == ["bark"] and r1["unknown"].is_empty(),
 		"hooks resolve: 'world-uv+cloth-sway' to both, the biome kind 'leaf' to foliage, 'irid+gloss' to bark once")
-	var r4 := KHooks.resolve("anim+world-uv")
+	var r4 := KHooks.resolve("flock-beat+world-uv")
 	var sv := KHooks.survey([{"hook": "unnamed"}, {"hook": "leaf"}, {"hook": null}])
-	ok(r4["unknown"] == ["anim"] and r4["ids"] == ["world-uv"] and sv["unknown"] == ["unnamed"] and sv["hooks"]["leaf"] == ["foliage"],
-		"negative: a name no library shader answers ('anim', 'unnamed') is reported as unknown, not guessed")
+	ok(r4["unknown"] == ["flock-beat"] and r4["ids"] == ["world-uv"] and sv["unknown"] == ["unnamed"] and sv["hooks"]["leaf"] == ["foliage"],
+		"negative: a name no library shader answers ('flock-beat', 'unnamed') is reported as unknown, not guessed")
 
 	# 2. the world-sedesert case
 	if not FileAccess.file_exists(CASE + "world.json"):

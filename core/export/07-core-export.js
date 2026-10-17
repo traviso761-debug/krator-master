@@ -40,7 +40,7 @@ const LIST = { items: 1, buckets: 1, materials: 1, textures: 1 };
 // sections no module fills yet: their contract is written (README.md, "Stubs") so the first contributor has a shape to meet
 const STUB = { fixtures: 1, interiors: 1, furniture: 1, sim: 1, city: 1 };
 const CONTRACTS = {
- items: 'instanced meshes: {id, name, kit, label, material, lod, count, dynamic, geometry, matrices, colours, extras, record, recordClass, recordKey, records, recordIndex}',
+ items: 'instanced meshes: {id, name, kit, label, material, lod, count, dynamic, geometry, matrices, colours, extras, record, recordClass, recordKey, records, recordIndex, motion (the baked track of a moving item: biomes/GODOT.md, "Motion"; world.glb carries it in the node extras.krator_motion)}',
  buckets: 'merged meshes: {id, name, kit, label, material, lod, triangles, geometry (compacted to the tile), records, recordIds, pieces}',
  materials: 'one vocabulary (core/materials/record KMAT fields: family, colour, map, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib) plus the source module\'s own (a biome material\'s kind, key, options, sway); hook names the Godot library shader(s), joined by + (godot/README.md, "The shader library"); a ground\'s layers (EXPORT.groundLayers: hook world-uv, role ground, layers {terms [{maps [{map, scale, offset}], gain, amount, weight}]}, weights {x0, z0, step, nx, nz, names, values})',
  textures: '{id, from: "png" | "library" | "none", png?, lib?, pack?, family?, slot?, wrap, repeat, offset, flipY, size?}: a library map by reference (the build\'s pack, tex/pack.json), never as pixels',
@@ -362,7 +362,8 @@ function glb(w){
   if(g.index){ let I = unpack(g.index); if(I.constructor === Uint16Array && nv >= 65535) I = Uint32Array.from(I); p.indices = acc(I, 1); }
   if(matIx.has(matId)) p.material = matIx.get(matId);
   J.meshes.push({ name, primitives: [p] }); return J.meshes.length - 1; };
- const strip = (r, k, kind, node) => { const o = {}; for(const key in r) if(['geometry', 'matrices', 'colours', 'extras'].indexOf(key) < 0) o[key] = r[key];
+ const strip = (r, k, kind, node) => { const o = {}; for(const key in r) if(['geometry', 'matrices', 'colours', 'extras', 'motion'].indexOf(key) < 0) o[key] = r[key];
+  if(r.motion) o.motion = r.motion.error ? r.motion : { channels: r.motion.channels, stride: r.motion.stride };
   o.glb = node; return o; };
  const items = (w.items || []).map((it, k) => {
   const n = it.count, M = unpack(it.matrices), T = new Float32Array(n * 3), R = new Float32Array(n * 4), S = new Float32Array(n * 3);
@@ -373,6 +374,10 @@ function glb(w){
   const name = 'item_' + k;
   J.nodes.push({ name, mesh: mesh(it.geometry, it.material, name), extensions: { EXT_mesh_gpu_instancing: { attributes: ext } },
    extras: { krator_item: it.id, krator: it.record == null ? null : it.record } });
+  // a moving item's baked track (biomes/GODOT.md, "Motion"): its fields in the node's extras, its arrays as scalar accessors
+  const mo = it.motion; if(mo && !mo.error){ const x = {}; for(const key in mo) x[key] = ['period', 'start', 'frames', 'data'].indexOf(key) < 0 ? mo[key] : acc(unpack(mo[key]), 1);
+   J.nodes[J.nodes.length - 1].extras.krator_motion = x; }
+  else if(mo) J.nodes[J.nodes.length - 1].extras.krator_motion = mo;
   J.scenes[0].nodes.push(J.nodes.length - 1); instanced += n;
   return strip(it, k, 'item', { node: name, instances: n, attributes: names });
  });

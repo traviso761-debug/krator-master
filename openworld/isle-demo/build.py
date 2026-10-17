@@ -75,7 +75,7 @@ ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/rand', '08-core-rand.js'), ('core/terrain', '38-core-relief.js'),
      ('core/biome', '10-core-head.js'), ('core/biome', '20-core-kit.js'), ('core/biome', '30-core-foliage.js'),
-     ('core/biome', '35-core-anim.js'), ('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'),
+     ('core/biome', '35-core-anim.js'), ('core/biome', '36-core-walker.js'), ('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'),
      ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
      ('core/atmos', '89-atmos-b-skylight.js'),
      ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
