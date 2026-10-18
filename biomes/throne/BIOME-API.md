@@ -40,7 +40,7 @@ edge crosses (Koppen BSk, Csa, BSh, Csb: `THRONE.KOPPEN`, read off the scale mod
 | `sulph` | vent country (station 8): sulphurous ground (the marsh and its banks, the vents' crusts, the steam valley's floor) | the **sulphur life**: brimstone candelabras (sp 23, `vents:true`, in up to ~0.6 m of water: a pass's `opt.depth` plants off the mask), and, only where the field exists and on its own seed (`THRONE.buildSulphur`), brimstone reeds, acid pads on the open water, gas bladders |
 | `ashdeep` | the ash desert (station 7): where the ash lies deep | the rope-trees and drizzle trumpets thin out on it (0 elsewhere: no other station changes) |
 | `cforest` | the cloud forest (station 5): its elfin woods | elfin trees (two stands: a sparse one everywhere, a dense one within 90 m of the cameras), tree ferns, veil trees, gnarled lehua; its understory's green ferns |
-| `riftlife` | station 1 only (1 everywhere there) | gates the new flora of station 1 (`HANDOFF-FLORA.md`): `THRONE.PASSES_NEW` and `THRONE.buildNewFlora` run only on a page with it or `ashlife` |
+| `riftlife` | station 1 and vent country (station 8; 1 everywhere there) | gates the rift's new flora (`HANDOFF-FLORA.md`): `THRONE.PASSES_NEW` and `THRONE.buildNewFlora` run only on a page with it or `ashlife` |
 | `ashlife` | the ash desert only (1 everywhere there) | gates the ash desert's new flora the same way |
 | `hill`, `yard`, `hollow` | the ash desert's rhyolite hills, yardangs and CO2 hollow | zones `hill`, `yard` and `hollowRim` (the ring just outside the hollow's deadly floor): geode pods on the hills and yardangs, coil horns on the rim and in the yardangs' lee |
 
@@ -105,7 +105,7 @@ the fall line turned by `veer` and a noise `wander`, widening from `w0` to `w1` 
 | 32 | coilhorn | Coil horns | 1.5-6 | native | vent (station 1's acid shores; the ash desert's CO2 hollow rim and yardangs) |
 
 `isle:true` and `cloud:true` mark the species only one station plants (the other stations' probes skip them).
-`rift:true` and `ashp:true` mark the new flora (26-32, `HANDOFF-FLORA.md`): planted only on station 1 (`rift`) and the
+`rift:true` and `ashp:true` mark the new flora (26-32, `HANDOFF-FLORA.md`): planted only on station 1 and vent country (`rift`) and the
 ash desert (`ashp`), by `THRONE.PASSES_NEW`, a pass list that runs after every other pass and only on a page with the
 `riftlife` or `ashlife` field, so no other page draws from the generator for it. Their floor (geode pods, ember burrs,
 red velvet, wire sporestalks, gold pins, blood chalices, moss domes, red coral-fern, snare rafts on the acid lake) is

@@ -92,3 +92,14 @@ the library's grey rocks.
   items?
 - Should the gullies' plants (medusa, braid cap) stay mostly on the plume's old ground, or should the plume reach a
   gully on this station?
+
+## Vent country takes the rift's flora (2026-10-18, the owner)
+
+`stations/vents/47-host-land.js` hands in `riftlife` (1 everywhere), so vent country plants the rift's six trees and its
+floor exactly as station 1 does (the pyre thistle needs cinder cones, which vent country has none of). Its `placed`
+check requires the six; two preset views added. Counts: chalice 39, cage lantern 92, medusa 71, lace fan 49, braid cap
+40, coil horns 68; floor: velvet 1601, wire stalks 2385, gold pins 1344, blood chalices 322, moss domes 552, red coral
+261, snare rafts 256 (on the sulphur marsh and the hot pools), geode pods 91, ember burrs 476. 20.02M scene triangles of
+its 24M; every host check passes, the CO2 hollows and the fissure stay bare. No other page changes (only vent country's
+own station files were edited).
+

@@ -96,7 +96,7 @@
   show the same face). The crevasses are painted slots, not cut (the ground is one 6.5 m mesh); the caves are
   shells standing on the shelf, not hollows in the glacier (a carve patch, `core/terrain`, could cut a portal into the
   snout). The snow does not settle as it falls, and nothing moves on the ice (no calving, no meltwater on the surface).
-- [ ] **The new flora of station 1 and the ash desert is procedural** (2026-10-18, `HANDOFF-FLORA.md`, refs 21-31): the
+- [ ] **The new flora of station 1, vent country and the ash desert is procedural** (2026-10-18; vent country took the rift's set the same day, `HANDOFF-FLORA.md`, refs 21-31): the
   pyre thistle, chalice parasol, cage lantern, medusa cap, lace-fan tree, braid cap and coil horns, and the floor's geode
   pods, ember burrs, red velvet, wire sporestalks, gold pins, blood chalices, moss domes, red coral-fern and snare rafts
   are vertex and instance colour. The cage lantern's lattice and the lace fans are canvas cut-outs painted in code (hashed,
