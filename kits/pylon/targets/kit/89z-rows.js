@@ -10,6 +10,12 @@ const PYL_ROWS=[
  ['Middle — folk',['pyl_folk_house','pyl_folk_villa']],
  ['Middle — neo-Ancient',['pyl_vault_house','pyl_terrace','pyl_block']],
  ['Rich — neo-Ancient',['pyl_neo_villa','pyl_hex_villa']],
+ ['Salvage — yards',['pyl_scrap_yard','pyl_breakers_floor']],
+ ['Industry',['pyl_smelter','pyl_sorting_shed','pyl_workshop','pyl_crawler_depot']],
+ ['Industry — tanks, crane, conveyor',['pyl_tank_farm','pyl_cable_crane','pyl_conveyor']],
+ ['Trade',['pyl_scrap_exchange','pyl_bazaar_lane']],
+ ['Civic — guild, assay, watch',['pyl_salvagers_guild','pyl_assay_office','pyl_watch']],
+ ['Civic — shrine, school, clinic',['pyl_cult_shrine','pyl_school','pyl_clinic']],
 ];
 // the mixed street: Pylon's buildings between Vernacular ones of their tier, at the gaps a city lot would leave (4 m)
 const PYL_MIXED=[
@@ -17,6 +23,9 @@ const PYL_MIXED=[
  ['Mixed street — middle',['vern_house_mid_a','pyl_folk_house','vern_house_mid_b','pyl_vault_house','vern_house_mid_c','pyl_folk_villa']],
  ['Mixed street — middle, multi',['vern_shops','pyl_block','vern_tavern','pyl_terrace']],
  ['Mixed street — rich',['vern_house_rich_a','pyl_neo_villa','vern_house_rich_b','pyl_hex_villa']],
+ ['Mixed street — industry',['vern_smithy','pyl_workshop','vern_salvage_yard','pyl_smelter','vern_warehouse']],
+ ['Mixed street — trade',['vern_market','pyl_bazaar_lane','vern_shops','pyl_scrap_exchange']],
+ ['Mixed street — civic',['vern_watch_house','pyl_assay_office','vern_school','pyl_clinic','vern_hospital']],
 ];
 const ROWZ=[];const ROWNAME=[];const SITES=[];
 {let z=0;

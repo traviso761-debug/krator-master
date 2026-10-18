@@ -20,6 +20,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `70p-pyl-dwellings.js` | 12 | MIDDLE (5) |
 | `70q-pyl-poor.js` | 8 |  |
 | `70r-pyl-rich.js` | 5 |  |
+| `71p-pyl-industry.js` | 16 |  |
+| `72p-pyl-civic.js` | 10 |  |
 
 ## targets/
 
@@ -27,4 +29,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `kit` | `89z-rows.js`, `91z-views.js` | 3 |
+| `kit` | `89z-rows.js`, `91z-views.js` | 4 |

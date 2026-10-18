@@ -32,7 +32,10 @@ the orange is the Vernacular's own. Pylon's helpers are `pyn*` (`src/69q-pyl-hel
 | Middle, folk | `pyl_folk_house` (pylon), `pyl_folk_villa` (pylon 2) |
 | Middle, neo-Ancient | `pyl_vault_house` (pylon (4), (7)), `pyl_terrace` (pylon (3), (2)), `pyl_block` (pylon 5, pylon3) |
 | Rich, neo-Ancient | `pyl_neo_villa`, `pyl_hex_villa` (pylon (5), ancient massing) |
-| The mixed street, four rows | each tier's Pylon buildings between Vernacular ones of the same tier (`vern_house_poor_*`, `vern_house_mid_*`, `vern_shops` and `vern_tavern`, `vern_house_rich_*`) |
+| Salvage and industry | `pyl_scrap_yard`, `pyl_breakers_floor`, `pyl_smelter`, `pyl_sorting_shed`, `pyl_workshop` (pylon3), `pyl_crawler_depot`, `pyl_tank_farm`, `pyl_cable_crane` (its cable runs `o.len` back and `o.rise` up from the mast: the placer sets the far end), `pyl_conveyor` (one segment, `o.len`) |
+| Trade | `pyl_scrap_exchange` (pylon - market), `pyl_bazaar_lane` (pylon8; `o.len`) |
+| Civic (lit) | `pyl_salvagers_guild` (ancient office), `pyl_assay_office` (the Emperor's tithe: a verdigris dome and the orb), `pyl_watch` (fortress), `pyl_cult_shrine` (pylon - temple), `pyl_school`, `pyl_clinic` |
+| The mixed street, seven rows | each tier's Pylon buildings between Vernacular ones of the same tier (`vern_house_poor_*`, `vern_house_mid_*`, `vern_shops` and `vern_tavern`, `vern_house_rich_*`; then industry beside `vern_smithy`, `vern_salvage_yard` and `vern_warehouse`, trade beside `vern_market` and `vern_shops`, civic beside `vern_watch_house`, `vern_school` and `vern_hospital`) |
 
 **The profiles** (`src/69q-pyl-helpers.js`): `pynTomb`, `pynStadium`, `pynPointed` (and the pointed hexagon), each a slab on
 a face in render, concrete, glass, a dark opening or rust; `pynFrame(shape, ...)` for nested rims round a fill (`cs`
