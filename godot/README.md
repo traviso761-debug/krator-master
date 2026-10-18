@@ -35,6 +35,7 @@ godot --headless --path godot --script res://tests/dhelv/dhelv_sim_test.gd   # D
 godot --headless --path godot --script res://tests/dhelv/dhelv_nav_test.gd   # Dhelv's walk floors baked to a navmesh: gate to temple, through the braid
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
 godot --headless --path godot --script res://tests/character/kchar_test.gd   # core/charactermodels: records and morphs against the JS golden, a MakeHuman figure from the pieces
+godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz   # the perf table (PERF.md, perf-<case>.json): run it on the real GPU, below
 ```
 
 Or open `godot/project.godot` in the editor (Import, then F5). The editor skips `data/` (`data/.gdignore`): the
@@ -139,6 +140,8 @@ SwiftShader; both 1600 x 900):
 | `tests/shaders/` | `library_test.gd` (headless): every hook has its include, hooks resolve (an unknown one is reported), and on `world-sedesert` the ground's layers sit on the terrain's `ground.gdshader` (maps, scales, gains, the crack weight to a byte of the page's) and the pond on `water.gdshader` (its uniforms; KWater's heights equal the page's probes), each with a negative. `library_gpu_check.gd` (needs a renderer: Xvfb + Compatibility): `lib/water`'s `wtr_height` and `wtr_damp` on three surfaces read back against KWater (and a 5% taller wave that must miss), and the other eight includes compiled together, twenty values against GDScript twins |
 | `tests/water/` | `water_test.gd` and its `golden.json` (written by `tools/water_golden.js` from core/water through core/export's water adapter): KWater against WATER at fixed (x, z, t), with negatives |
 | `tools/water_golden.js` | writes `tests/water/golden.json` (rerun it after changing core/water, core/atmos's waves or the water adapter) |
+| `tests/perf/` | `perf_capture.gd`: the perf capture (below), which writes `PERF.md` and `perf-<case>.json` beside `spike-report.json` |
+| `PERF.md`, `perf-<case>.json` | the perf table and the captures it is built from (kept, like `spike-report.json`; the header says which machine and renderer wrote them) |
 | `tools/atmos_waves.js` | writes `shaders/atmos_waves.gdshaderinc` from `ATMOS.waveGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.waves`) |
 | `tools/atmos_clouddeck.js` | writes `shaders/atmos_clouddeck.gdshaderinc` from `ATMOS.deckGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.clouddeck`). With no node on the machine: `python3 tools/node_in_chromium.py godot/tools/atmos_clouddeck.js --write` |
 | `data/<case>/` | the exports (below); `meta.json` says where each came from |
@@ -197,6 +200,34 @@ With the editor open, Claude can read and edit scenes, scripts and project setti
   `take_screenshot` timed out there: the main scene loads a whole biome tile under software rendering. Use
   `tools/shot.sh` for screenshots in the cloud.
 - The plugin talks only to `127.0.0.1:6505`. The server's optional visualizer (`map_project`) serves on port 6510.
+
+## The perf capture
+
+The tests above prove parity, not speed. `tests/perf/perf_capture.gd` measures each must-pass case on the machine it runs on
+(ROADMAP.md section 11, item 4) and writes the table:
+
+```
+godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz
+godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-iziz --compare    # the deltas against the last perf-world-iziz.json
+godot --headless --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert --frames=10 --out=res://shots/perf   # the nightly's smoke
+```
+
+For each case it imports the world through the spike's own loader (`spike.gd` `_load_case`, so nothing is forked), records the
+import wall time and the time to the first drawn frame, then puts the camera at four fixed poses (`POSES` in the script: the
+whole tile from two high oblique corners, an eye-level view from the tile's edge, a walker's eye at the centre) and samples
+`--frames` frames (120) at each after `--warmup` (10): the frame delta (mean, 95th percentile, fps), `Performance.TIME_PROCESS`
+(the worst process step of the last second, as the max seen), the RenderingServer's draw calls, primitives and objects in frame,
+video, texture and buffer memory, static memory; plus the scene's node count and its MultiMesh instance total. It writes
+`perf-<case>.json` and rebuilds `PERF.md` from every `perf-*.json` in `--out` (default `res://`, next to `spike-report.json`),
+with the Godot version, renderer, GPU (`RenderingServer.get_video_adapter_name()`), window, date and git commit at the top of
+each case's table. The window is set to 1600x900 (`--size=WxH`) and vsync is turned off (`--vsync` keeps it), so frame time
+is the GPU's and the table says what it measured at.
+
+**Only a run in Forward+ on a real GPU counts** (`CHECKLIST.md`, item 7): `--headless` never draws (draw calls and memory read
+0, frame time is the script's own), and CI's llvmpipe is not the owner's machine. The headless run is what
+`tools/test_all.py --nightly` smokes, into `shots/perf/` so it never overwrites a real table; it fails only if the script
+crashes or cannot write, never on a number. `--compare` prints, before overwriting, each figure that moved against the
+previous capture of the case (`--compare=<dir>` reads them from elsewhere).
 
 ## Re-exporting the data
 

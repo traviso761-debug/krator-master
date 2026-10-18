@@ -108,6 +108,10 @@ def steps(nightly, build):
         g = os.environ.get('GODOT') or shutil.which('godot')
         for t in GODOT_TESTS:
             s.append(('godot ' + t, [g, '--headless', '--path', 'godot', '--script', t] if g else None))
+        # the perf capture (ROADMAP.md section 11, item 4; godot/README.md "The perf capture") smoked headless: it must run and
+        # write its files into shots/perf (gitignored); its numbers mean nothing here and are never checked
+        s.append(('godot perf capture (headless smoke)', [g, '--headless', '--path', 'godot', '--script', 'res://tests/perf/perf_capture.gd', '--',
+                                                           '--cases=world-sedesert,world-iziz', '--frames=10', '--out=res://shots/perf'] if g else None))
         # the perceptual compare (ROADMAP.md stage 4, section 11 item 4): the page and the spike shot from one camera on the
         # must-pass cases, scored by SSIM (godot/README.md "Scoring the pairs"). A report until COMPARE_ASSERT is True.
         img = pw and g and importlib.util.find_spec('numpy') is not None and importlib.util.find_spec('PIL') is not None
