@@ -202,7 +202,7 @@ DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js'}   # core/host (no rnd()); the take
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'furnish')) if f[0].isdigit() and f.endswith('.js')}   # core/furnish (the vernacular's interiors)
 if KIT:
-    DETERMINISTIC |= set(KIT.get('deterministic', []))
+    DETERMINISTIC |= set(KIT.get('deterministic', [])) | {'69dz-kit-matlib-pack.js'}
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -339,10 +339,12 @@ def fauna_pack():
 SIDE = None if '--inline-packs' in sys.argv else {}
 
 
-def matlib_pack(side=None):
+def matlib_pack(side=None, tex_dir=None, pack_name='iziz'):
     """GENERATED fragment: materials.json's architecture families (every one but the fauna_* sheets) as data URLs
-    (KMAT.pack('iziz')), as Girder's build.py. It reads the committed tex/ files only, so the build stays deterministic."""
+    (KMAT.pack('iziz')), as Girder's build.py. It reads the committed tex/ files only, so the build stays deterministic.
+    A kit (--kit) packs its own tex/ under its own name the same way (tex_dir, pack_name)."""
     import base64
+    TEX_DIR = tex_dir or globals()['TEX_DIR']
     pj = os.path.join(TEX_DIR, 'pack.json')
     fams = json.load(open(pj, encoding='utf-8')).get('families', {}) if os.path.isfile(pj) else {}
     out = []
@@ -360,11 +362,11 @@ def matlib_pack(side=None):
     if side is not None:   # the pack beside the pages (tools/textures/matlib_pack.py write_sidecar)
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
-        side['iziz'] = body
-        return _mp.loader('iziz')
+        side[pack_name] = body
+        return _mp.loader(pack_name)
     return ('/* ============================== 69d. LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
-            "KMAT.pack('iziz', " + body + ');\n')
+            "KMAT.pack('" + pack_name + "', " + body + ');\n')
 
 
 def build_one(target, do_checks, assert_origin):
@@ -407,6 +409,11 @@ def build_one(target, do_checks, assert_origin):
             bodies[f] = fh.read()
     bodies[MATLIB_PACK] = matlib_pack(SIDE)
     order = sorted(order + [MATLIB_PACK])
+    # a kit with its own library families (kit.json "pack": its name; its materials.json packed into its tex/ by
+    # tools/textures/pack.py): KMAT.pack('<name>') from the kit's tex/, bound by the kit's own fragment (KMAT.bindMat)
+    if KIT and KIT.get('pack') and os.path.isfile(os.path.join(KIT['dir'], 'tex', 'pack.json')):
+        bodies['69dz-kit-matlib-pack.js'] = matlib_pack(SIDE, os.path.join(KIT['dir'], 'tex'), KIT['pack'])
+        order = sorted(order + ['69dz-kit-matlib-pack.js'])
     if target in INTERIOR_TARGETS:
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
@@ -574,7 +581,8 @@ def main():
     if '--vendor-bio' in sys.argv:
         vendor_bio()
         return
-    vendor_manifest()
+    if not KIT:   # a kit build (--kit) points TARGETS at the kit, where the city's vendored biome rows are not: leave VENDOR.json
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     assert_origin = '--assert-origin' in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]

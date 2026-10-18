@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2165,
+    724
+   ],
+   "seam_after": [
+    0.577,
+    1.466
+   ],
+   "seam_before": [
+    1.919,
+    3.385
+   ],
+   "source_size": [
+    2172,
+    724
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "talia/meander",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   3.0,
+   1.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "meander-band.png",
+  "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+  "licence": "generated for this project by its owner",
+  "original_title": "Greek Key on Burnt Orange Marble.png (cropped to the band)",
+  "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+  "reuse": "meander border strip: Talia's paving and cloister floors, friezes",
+  "sha1": "b93a005c9f0a8181f092f6ef3947cbbb2faafb3e"
+ }
+}

@@ -171,6 +171,11 @@ rosettes); **meander border** (a strip); **jali screen** (cut-out on magenta); *
 a flat disc); **worn orange render** (grey patches under the orange, `talia (6)`). The prompts are written when the
 owner agrees the list.
 
+**Delivered 2026-10-18 and wired** (`materials.json`, KNOWN_ISSUES.md): the orange honeycomb mosaic (`taMosaic`: paving
+medallions; the trumpet vault item `taVaultMo` for the interiors), the meander band (`taMeander`: paving and terrace
+borders), two jali cut-outs (`taJaliA`, `taJaliG`: the jharokha bays), the star rose window (`taRose`, `tanRoseWindow`:
+waits for the temple) and the worn orange render (`taRenderW`: the tenement).
+
 ## 8. Phases
 
 | Phase | What | Done when |

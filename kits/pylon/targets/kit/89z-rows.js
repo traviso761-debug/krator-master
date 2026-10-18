@@ -16,6 +16,7 @@ const PYL_ROWS=[
  ['Trade',['pyl_scrap_exchange','pyl_bazaar_lane']],
  ['Civic — guild, assay, watch',['pyl_salvagers_guild','pyl_assay_office','pyl_watch']],
  ['Civic — shrine, school, clinic',['pyl_cult_shrine','pyl_school','pyl_clinic']],
+ ["Governor's palace — Pylon's, and the Vernacular's beside it",['pyl_governor_palace','vern_governor_palace']],
  ['Ancients — intact',[['anc_pyl_fort',{mode:'intact'}],['anc_pyl_slab',{mode:'intact'}],['anc_pyl_pods',{mode:'intact'}],['anc_pyl_vaults',{mode:'intact'}],['anc_pyl_gems',{mode:'intact'}],['anc_pyl_hoop',{mode:'intact'}]]],
  ['Ancients — ruined',[['anc_pyl_fort',{mode:'ruin'}],['anc_pyl_slab',{mode:'ruin'}],['anc_pyl_pods',{mode:'ruin'}],['anc_pyl_vaults',{mode:'ruin'}],['anc_pyl_gems',{mode:'ruin'}],['anc_pyl_hoop',{mode:'ruin'}]]],
  ['Ancients — repaired',[['anc_pyl_fort',{mode:'repaired'}],['anc_pyl_slab',{mode:'repaired'}],['anc_pyl_pods',{mode:'repaired'}],['anc_pyl_vaults',{mode:'repaired'}],['anc_pyl_gems',{mode:'repaired'}],['anc_pyl_hoop',{mode:'repaired'}]]],

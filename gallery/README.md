@@ -319,3 +319,8 @@ Krator Worlds), Krator Worlds I–S version 15 (was Krator Worlds II), Krator Wo
 and Objects version 11 (every page rebuilt with core/biome's name index, the new index). Every file checked against the
 split by name and size. New in the gallery: the Islanders kit's trade buildings and mines, the Resources kit and the Isle
 Demo open world (I–S), Ring Sea isles (Biomes and Objects).
+
+Krator Worlds I–S version 16 (2026-10-18): the Pylon kit added (`worlds/pylon.html`, 1.9 MB, from `claude/vassal-kits` at
+1e3177b4, the kit through P5, the governor's palace), its card in the live index (version 15's index with one entry added,
+its `ENTRIES` line now in `build_gallery.py`). The page loads `worlds/iziz.tex.iziz.js`, which the part already carried
+(the same size as the local pack). Every other file is as in version 15.

@@ -2,9 +2,16 @@
 
 `build.py` prints the open ones (`- [ ]`) on every build.
 
-- [ ] No `materials.json` yet: the kit draws in the Vernacular's library sets (Iziz's pack). Pylon's own (Ancient white
-      shell panel, board-formed concrete, hex tile, hex grille, worn orange render) wait for the owner's agreement on
-      the list (PLAN.md section 8).
+- [x] No `materials.json` yet. **2026-10-18:** `materials.json` binds `pyConc` to `concrete.board` (src/88yp-pyl-matlib.js,
+      packed into tex/); the hex tile, hex grille and worn orange render were owed in core/materials/PROMPTS-NEEDED.md.
+- [x] **Delivered and wired 2026-10-18** (owner-tex2b batch): `pyHexTile` (tile.hex.ceramic, grey, tinted by the instance
+      colour: the hex villa's court and the palace forecourt, `pynHexPave`) and `pyGrille` (patterns/pylon/hex-grille, a
+      full-colour alpha card: the hex villa's porthole grilles, `pynPortCluster(..., true)`; the flat panel `pynGrille` is
+      ready; `pyGrilleD`, the porthole's disc, takes the same family by alias). The worn orange render went to Talia
+      (`taRenderW`). With `?mat=proc` the old slab and six radial bars draw.
+- [ ] The Ancients' hex-lattice dome (the palace's great dome and pavilion caps: `acLatticeDome`, the Ancients core's) is
+      geometry, not a card, so the hex grille is not on it; the hex pods' glazing, and the other courts (`vnPaving`
+      flags) stay on the Vernacular's flags.
 - [ ] The folk house's balcony front is a scalloped wall in 15 straight segments, not a curve; it reads as a curve from
       the street, but steps show close up.
 - [ ] `verify.py --assert` passes every invariant but ends FAILED on `WebGL: CONTEXT_LOST_WEBGL` in the console: the
