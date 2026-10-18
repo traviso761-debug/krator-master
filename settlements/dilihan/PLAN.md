@@ -131,8 +131,8 @@ furniture manifest keyed to the Iziz catalog file.
 
 1. **Settled (2026-10-18).** A Cut kit is to come later; until then the highlands and lowlands kits are read in
    place and the build draws the bowl's own ground (section 0).
-2. **Who governs.** The plan and `LORE.md` propose the governorship chosen by the veterans' council and confirmed by
-   Iziz by letter; the governor's title stays the Izani one. Confirm, or name a ruler and a title.
+2. **Settled (2026-10-18).** The governor is chosen by the veterans' council and confirmed by Iziz by letter, with
+   the Izani title. The city speaks Izani with a light dusting of Jamṭōkku loans (the citizens' speech in P4).
 3. **Settled (2026-10-18).** The Cut is effectively a pass through the northern highlands, formed in the Cataclysm
    by an Ancient eigenweapon whose detonation deleted a perfectly spherical volume of matter (section 1). The stream
    down the bowl to the League's coast stays the plan's assumption; the model would take it as a river edit later
@@ -148,4 +148,4 @@ furniture manifest keyed to the Iziz catalog file.
    colony's Izani wrote **Dilihan**, keeping the *h* their own speech no longer sounds because the Jimjam say it.
    `lore/tongues-of-krator.html` is to take the pair (the Jimjam and the Izani tabs).
 
-None open but the governor's title and name.
+None open.

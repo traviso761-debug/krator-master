@@ -144,7 +144,8 @@ the Voth catalog file over the Iziz one.
 1. **Settled (2026-10-18).** The Islander king went into **exile in Ys**: no king or claimant lives in the city. The
    council pavilion receives the Islander elders; the king's claim lives across the sea under the League's roof, which
    is why the Hykkousoi quarter is watched (2) and why the Vothic governor's police read every letter that comes off a
-   Hykkousoi ship. The kingdom's name is still to be given.
+   Hykkousoi ship. The kingdom is the **Kingdom of Hetānini**, the city's own name in western Sikau (`LORE.md` §6.12; derived by
+   the tongues page's rules, the owner's to correct).
 2. **Settled (2026-10-18).** The Hykkousoi quarter is **tolerated under watch**: the pilots and the trade house work,
    an Ordinator post stands at the mole's root, the sea shrine is open.
 3. **Settled (2026-10-18).** The renovation rule as written: Vothic marks on every civic building and on a third of
@@ -158,4 +159,4 @@ the Voth catalog file over the Iziz one.
 6. **Settled (2026-10-18).** The model point is typed **city** (`s5x27pj6hn`, version 4, with a note); the stream off
    the mountain is named when the Cut's and the Throne's rivers are drawn (`tools/scale-model/README.md`).
 
-None open but the kingdom's name.
+None open but the exiled king's name.
