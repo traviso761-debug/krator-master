@@ -2,9 +2,8 @@
 
 `build.py` prints the open ones (`- [ ]`) on every build.
 
-- [ ] No `materials.json` yet: the kit draws in the Vernacular's library sets (Iziz's pack). Pylon's own (Ancient white
-      shell panel, board-formed concrete, hex tile, hex grille, worn orange render) wait for the owner's agreement on
-      the list (PLAN.md section 8).
+- [x] No `materials.json` yet. **2026-10-18:** `materials.json` binds `pyConc` to `concrete.board` (src/88yp-pyl-matlib.js,
+      packed into tex/); the hex tile, hex grille and worn orange render are owed in core/materials/PROMPTS-NEEDED.md.
 - [ ] The folk house's balcony front is a scalloped wall in 15 straight segments, not a curve; it reads as a curve from
       the street, but steps show close up.
 - [ ] `verify.py --assert` passes every invariant but ends FAILED on `WebGL: CONTEXT_LOST_WEBGL` in the console: the

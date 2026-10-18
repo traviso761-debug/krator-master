@@ -1,0 +1,59 @@
+{
+ "build": "talia",
+ "note": "Talia's own library families, bound onto its MAT keys by src/88yt-tal-matlib.js (KMAT.bindMat('talia')): taMarble (white marble ashlar, tinted by the kit's whites), taGilt (hammered gold, its own colour kept), taTile (clay roof tiles, tinted terracotta). The rest are the Iziz Vernacular's sets (settlements/iziz/materials.json). The gaps (orange honeycomb mosaic, meander border, jali, the rose window) are owed in core/materials/PROMPTS-NEEDED.md.",
+ "size": 512,
+ "families": {
+  "taMarble": {
+   "lib": "stone.marble.ashlar",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.85
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "taGilt": {
+   "lib": "metal.gold",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0.85,
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "taTile": {
+   "lib": "roof.clay_roof_tiles",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  }
+ }
+}

@@ -203,7 +203,9 @@ then `kbake(scene)`.
 `VASSAL-KITS.md`) is built here with no copy of anything: `python build.py --kit <folder>` (the kit's own `build.py`
 calls it) merges the folder's `src/` into this build's one fragment order (a name that clashes stops the build), takes
 its `targets/` and `kit.json` (`targets` name -> page, `interiors`, `core`, `deterministic`, and `external`: repo-relative
-fragments read in place by their own names, such as the Ancients kit's Monolith), applies the build rules to
+fragments read in place by their own names, such as the Ancients kit's Monolith; and `pack`: the kit's own library
+families, packed into its `tex/` from its `materials.json` and inlined as `KMAT.pack('<pack>')`, which the kit's own
+fragment binds with `KMAT.bindMat`), applies the build rules to
 its fragments, and writes the pages to the kit's `dist/`, the manifests and the syntax file to the kit's folder, and
 prints the kit's KNOWN_ISSUES. Without `--kit` the build is byte-identical to before.
 

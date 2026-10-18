@@ -2,10 +2,9 @@
 
 `build.py` prints the open ones (`- [ ]`) on every build.
 
-- [ ] No `materials.json` yet: the kit draws in the Vernacular's library sets (Iziz's pack); its marble is the plaster
-      map at a lower roughness and its tile the shingle map tinted terracotta. Talia's own (lime-wash render, white
-      marble, orange mosaic, meander border, jali, the star rose, worn orange render) wait for the owner's agreement on
-      the list (PLAN.md section 7).
+- [x] No `materials.json` yet. **2026-10-18:** `materials.json` binds `taMarble` (stone.marble.ashlar), `taGilt` (metal.gold)
+      and `taTile` (roof.clay_roof_tiles) (src/88yt-tal-matlib.js, packed into tex/); the honeycomb mosaic, meander, jali and
+      rose window are owed in core/materials/PROMPTS-NEEDED.md.
 - [ ] A loggia (`tanLoggia`) is a real recess only up to the arch's springing; the round head above it is a dark disc on
       the front plane, so from a high angle the head reads as a plate. A hollow body (the interiors set) would cut it.
 - [ ] Arched windows elsewhere (`tanArch`) are fills on the wall plane, as the Vernacular's windows are, not recesses.

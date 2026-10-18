@@ -12,7 +12,9 @@
  },
  "deterministic": [
   "69t-tal-mat.js",
-  "69u-tal-helpers.js"
+  "69u-tal-helpers.js",
+  "88yt-tal-matlib.js"
  ],
- "external": []
+ "external": [],
+ "pack": "talia"
 }

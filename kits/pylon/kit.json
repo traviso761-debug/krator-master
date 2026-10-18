@@ -15,7 +15,8 @@
   "69q-pyl-helpers.js",
   "89d1-arcube-faces.js",
   "89d2-arcube-elevation.js",
-  "89d3-arcube-ruin.js"
+  "89d3-arcube-ruin.js",
+  "88yp-pyl-matlib.js"
  ],
  "external": [
   "kits/ancients/src/88-plymouth.js",
@@ -24,5 +25,6 @@
   "kits/ancients/src/89d2-arcube-elevation.js",
   "kits/ancients/src/89d3-arcube-ruin.js",
   "kits/ancients/src/89g-monolith.js"
- ]
+ ],
+ "pack": "pylon"
 }
