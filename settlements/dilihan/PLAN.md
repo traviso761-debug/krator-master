@@ -139,12 +139,13 @@ furniture manifest keyed to the Iziz catalog file.
    (`tools/scale-model/README.md`), and the bowl's curve as a heights edit when the Cut kit comes.
 4. **Settled (2026-10-18).** The old quarter takes the Iziz furniture set until a Jimjam set exists; the Jimjam set
    is its own job, after this build's P3.
-5. **The name** (the owner, 2026-10-18: a Jimjam name read through an Izani accent). The reading proposed, for the
-   owner to take or change: Jamṭōkku **Ḍeḷḷu-Hanḍu**, "**Dell-Hand**", the plots in the dell. Jamṭōkku counts things
+5. **Settled (2026-10-18).** A Jimjam name read through an Izani accent: Jamṭōkku **Ḍeḷḷu-Hanḍu**, "**Dell-Hand**", the plots in the dell. Jamṭōkku counts things
    with measure words (`LORE.md` §6.14), and *hanḍu*, "hand", is its measure word for a plot of land, the breadth a
    man's hand spans on the day-keepers' field tally; *ḍeḷḷu* is English *dell*, the bowl the Jimjam saw from their
    lake. So the name is what Jimjam's masons and almanac-sellers called the colony: the hands of land in the dell,
    the veterans' allotments. An Izani ear flattens the retroflex *ḍ* and dark *ḷ* to plain *d* and *l*, hears the
    doubled *ḷḷ* as a higher vowel (*e* > *i*), drops the Jimjam *-u* endings and the second *d* of *-nḍu*, and the
    colony's Izani wrote **Dilihan**, keeping the *h* their own speech no longer sounds because the Jimjam say it.
-   `lore/tongues-of-krator.html` takes the pair once the owner settles it.
+   `lore/tongues-of-krator.html` is to take the pair (the Jimjam and the Izani tabs).
+
+None open but the governor's title and name.
