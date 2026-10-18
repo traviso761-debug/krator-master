@@ -1,5 +1,6 @@
 # Nightly, from Sunday 2026-10-11 (owner, 2026-10-08): everything checks.yml runs, plus the furniture fingerprint,
-# verify.py --assert on the critical-path builds (headless Chromium, software GL) and the Godot headless tests.
+# verify.py --assert on the critical-path builds (headless Chromium, software GL), the Godot headless tests and the
+# shot compare on the must-pass cases (compare_shots.py, a report until tools/test_all.py COMPARE_ASSERT is on).
 # About 20 minutes. A schedule runs on the default branch only; run it by hand from the Actions tab at any time.
 name: nightly
 on:
@@ -49,7 +50,7 @@ jobs:
           node-version: '22'
       - name: Playwright and Chromium
         if: steps.gate.outputs.run
-        run: pip install playwright && python -m playwright install --with-deps chromium
+        run: pip install playwright numpy pillow && python -m playwright install --with-deps chromium
       - uses: actions/cache@v4
         if: steps.gate.outputs.run
         with:

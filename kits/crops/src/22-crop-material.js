@@ -50,3 +50,11 @@ R('tar-black', 'Tar black', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'oil',
 /* ---- utility: reagent and fuel (the Zeijani's dark farms) */
 R('glow-mushroom', 'Glow mushroom', 'reagent', [0, 5], [0, 4], {also: ['fuel'], form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', card: 'card.mushroom.glow', home: ['throne'], src: 'throne', note: 'the alchemist\'s culture and a light and heat source'});
 R('lamp-cap', 'Lamp cap', 'fuel', [0, 5], [0, 4], {form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', home: ['throne'], src: 'throne', note: 'carried as a lamp; lasts a few days cut'});
+
+/* ---- utility: fuel plants added to close the survey (MEDICINE-FUEL.md): the hyperjungle had none, the southern highlands one, the geyser basin one */
+R('pitch-vine', 'Pitch vine', 'fuel', [4, 4], [3, 4], {also: ['dye'], form: 'vine', card: 'card.vine', colour: 'black', home: ['hyperjungle'], src: 'hyperjungle', note: 'a resin liana: dried, a torch and kindling that burns in the wet; its soot is a black'});
+R('kapok-floss', 'Kapok floss', 'fuel', [4, 4], [2, 4], {form: 'tree', home: ['hyperjungle'], src: 'hyperjungle', note: 'tinder and lamp wick'});
+R('mahogany-capsule', 'Mahogany capsules', 'fuel', [4, 4], [3, 4], {form: 'tree', card: 'card.mahogany', home: ['hyperjungle'], src: 'hyperjungle', note: 'spent, hard and dry: the jungle charcoal'});
+R('prism-resin', 'Prism-gum torch resin', 'fuel', [4, 4], [3, 4], {form: 'tree', card: 'card.prismgum', home: ['hyperjungle'], src: 'hyperjungle'});
+R('coilbark-split', 'Coilbark splits', 'fuel', [1, 2], [3, 4], {form: 'tree', home: ['shighlands'], src: 'shighlands', note: 'the offcuts of turned work'});
+R('dried-reed', 'Dried warm reed', 'fuel', [4, 5], [3, 4], {water: 'aquatic', card: 'card.reed', home: ['geyser'], src: 'geyser'});

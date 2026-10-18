@@ -68,7 +68,10 @@ const CONVENTION = {
   textures: 'sRGB images', stage: 'linear (as hex)', atmos: 'sRGB' },
  typed: '{type, n, b64}: the array\'s bytes, little-endian, base64; Float32Array, Uint16Array, Uint32Array',
  ids: 'core/tags: a record id is <prefix>_<5 digits> (or the build\'s own); an instance of an item set is <set id>#<index>; a uid is KTAGS.uid(class, key, at): KRAND.hash(0, fnv1a(class), fnv1a(key), floor(x*10+.5), floor(y*10+.5), floor(z*10+.5)) as 8 hex digits',
- box: '[x0, z0, x1, z1]: an instance belongs to a tile when x0 <= x < x1 and z0 <= z < z1 (its origin); a bucket piece by its foot (the xz of its lowest vertex)'
+ box: '[x0, z0, x1, z1]: an instance belongs to a tile when x0 <= x < x1 and z0 <= z < z1 (its origin); a bucket piece by its foot (the xz of its lowest vertex)',
+ lod: { cell: 150,   /* metres: the cell a LOD-chunked item or bucket is split into on import */
+  widen: 'half-diagonal',   /* a visibility range is widened by the cell's half-diagonal (cell * 0.7071) */
+  copies: 'none' }   /* pages export no LOD render copies (core/lod's extras.lodCopy are skipped) */
 };
 const reg = {}; SECTIONS.forEach(s => { reg[s] = []; });
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);

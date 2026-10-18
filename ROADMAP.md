@@ -337,7 +337,10 @@ start. Not all 31 at once. The sky preset moves to `core/atmos`. The inspector b
 - Split `godot/` into `runtime/`, `import/`, `rendering/`, `world/`, `tests/`; `spike.gd` becomes disposable.
 - The mesh round trip as an assertion test: for each exported build, object, instance, triangle, material and
   tag counts, bounds, and terrain samples, against the page's own census. Today only Verge's sim has one.
-- `compare_shots.py` gets a perceptual metric and runs nightly.
+- ~~`compare_shots.py` gets a perceptual metric and runs nightly.~~ Done 2026-10-18: SSIM, mean absolute difference and the
+  differing fraction per pair, a difference image, `--threshold` and `--assert`; `tools/test_all.py --nightly` runs it on the
+  must-pass cases as a report (`COMPARE_ASSERT` switches it to a gate once the owner has read the first numbers:
+  `godot/README.md`, "Scoring the pairs").
 - The streamer: little-demo's scheme (quadtree terrain chunks, 512 m flora tiles cell-seeded, 128 m floor
   chunks, baked town tiles) ported as the world loader, reading `core/export` tiles.
 - Forward+ on a real GPU: only the owner's machine can do this (`godot/CHECKLIST.md`); it gates the look, not the
@@ -664,7 +667,7 @@ carve; only sedesert's build takes `30-core-field.js`, so one export in about th
 (stage 2a-b's reseeding event, "Port: next" item 5, is still open). The simulation is not yet one contract: Voth is on
 `core/simulation`, Verge keeps its own `SIM` with its own Godot twin, and stage 5's three levels are not in `SCHEMA.md`.
 LOD needs a Godot-native policy written down: finding 16 (`GODOT-PLAN.md`) invented one in the importer on 2026-10-16
-(150 m cells, ranges widened by the half-diagonal), but it lives in `biome_import.gd`, not in the export contract.
+(150 m cells, ranges widened by the half-diagonal), ~~but it lives in `biome_import.gd`, not in the export contract~~ (2026-10-18: it is in the contract now, `convention.lod` in `core/export`; see item 4).
 
 **Stale or misread.** Forward+ on a real GPU has run: findings 15 to 20 record the 2026-10-16 run on the owner's
 machine (Godot 4.7.2), with frame rates and five same-day fixes; what remains is the editor import route, a perf table
@@ -694,6 +697,9 @@ report is extended to the export cases rather than a new tracking effort started
    fixed perf table per must-pass case (load time, frame time, VRAM, draw calls) on the owner's machine; the perceptual
    `compare_shots.py` metric already listed; and the 150 m LOD cell policy written into `core/export`'s contract, so
    pages never export LOD copies and the importer's cells are the one policy.
+   **Done 2026-10-18:** `convention.lod = {cell: 150, widen: 'half-diagonal', copies: 'none'}` in `07-core-export.js`;
+   `biome_import.gd` reads the cell from it (default 150 for older exports and the krator-biome JSON route);
+   `world_test.gd` asserts it and rift's 175/47/12 node counts (`core/export/README.md`, "LOD").
 5. **Stage 5 starts with the schema** (above): the three levels against the isle demo, then the `sim` section's required
    fields for its profile, before more sim features cross to Godot. Verge's own `SIM` retires when it moves to the core.
 6. **Stage 3 stays where the owner put it** (section 9) but does not gate items 1 and 2: the host shell is `[web]` work

@@ -15,8 +15,8 @@ the latest Voth viewer as the base.
 
 ## Owner's answers (2026-10-14)
 
-- **Sites.** Kautoa and Walapo stay where the model has them, 122 km apart on two islands. They trade by sea.
-- **Style.** Both towns are East (Kautoa). Walapo is a Kautoan village. The West set still gets the trade buildings
+- **Sites.** Kautoa and Valapo stay where the model has them, 122 km apart on two islands. They trade by sea.
+- **Style.** Both towns are East (Kautoa). Valapo is a Kautoan village. The West set still gets the trade buildings
   and the roof overlap, since it is a kit for other worlds.
 - **Roofs.**
   - The East stays tall and pointy, and the West stays the lower, broad-roofed set. The two sets overlap more.
@@ -70,9 +70,15 @@ the latest Voth viewer as the base.
   - `verify.py --assert` passes for both towns.
   - The open world's climate classes now blend between pixel centres with meandering edges, not 2 km steps; its
     checks pass again.
-  - Walapo's frame moved toward its coast (the owner): its settlement point is 5.2 km inland, so the origin sits 3.7 km
+  - Valapo's frame moved toward its coast (the owner): its settlement point is 5.2 km inland, so the origin sits 3.7 km
     north-north-west of it, 1.6 km from a bay; the point stays inside the square.
-- **Next: P5,** the owner lays out the two towns in the planner.
+- **P5 is done** (2026-10-18): the owner's two site files are in `site/isle-site.json` (Kautoa: 13 districts,
+  11 markers, 13 avenues; Valapo: 5 districts, 2 markers, 3 avenues), with the brief for each town. Section 8 is the
+  programme P6 builds from.
+- **The village is Valapo, not Walapo** (owner, 2026-10-18: the language has no W sound). Renamed everywhere outside
+  the scale model; the scale model's own settlement record still reads Walapo until the owner renames it there, so a
+  re-extract must keep the new name (`openworld/isle-demo/source/settlements.json`).
+- **Next: P6,** the city plan from section 8.
 
 ## 1. The assay (scale model 4.21, read 2026-10-14)
 
@@ -85,7 +91,7 @@ model). Map: `assay-4.21.png` (climate class colours, 250 m contours, numbered l
 | Body | Land | Size | Top over the sea | Climate |
 |---|---|---|---|---|
 | North (Kautoa's) | 4,100 km2 in the polygon | joined by a neck to the land north of the polygon (10,840 km2 in all) | +1,118 m | XA 32%, XV 21%, Aw 21%, Af 11%, BSh 6% |
-| South cluster (Walapo's) | 4,496 km2 | 92 x 120 km, four isles joined on the 4 km grid by shallows | +1,268 m | XA 29%, Af 22%, XV 12%, BSh 9%, Am 9%, Aw 9% |
+| South cluster (Valapo's) | 4,496 km2 | 92 x 120 km, four isles joined on the 4 km grid by shallows | +1,268 m | XA 29%, Af 22%, XV 12%, BSh 9%, Am 9%, Aw 9% |
 | West isle | 1,200 km2 | 44 x 40 km | +1,191 m | Af 53%, XA 25%, Am 11%, Aw 7% |
 
 - **Height.** The Ring Sea stands at -1,500 m (about 1.9 atm), so the islands are low and very hot: annual means
@@ -97,7 +103,7 @@ model). Map: `assay-4.21.png` (climate class colours, 250 m contours, numbered l
 - **Geysers:** twelve vents (`DATA.vents`, kind geyser) on these isles. **Kautoa sits on one** (px 689,395), and three
   more are within about 30 km of it. The geyser kit (`GEYSER.cluster`) can place a thermal field from a model point.
 - **Settlements already on the map:** **Kautoa** (city, px 692,395: Af, +380 m over the sea, 2,745 mm, 31 C) on the
-  north body; **Walapo** (village, px 670,452: XA, +126 m, 1,380 mm, 32 C) on the south cluster. **They are 122 km
+  north body; **Valapo** (village, px 670,452: XA, +126 m, 1,380 mm, 32 C) on the south cluster. **They are 122 km
   apart, on different islands**, so trade between them goes by sea.
 - **The biome overlays do not cover the land.** The isles lie under the 'Ring Sea' overlay (a water overlay with no
   kit), with fringes of 'Hyperjungle' and 'Throne/Volcano'. Little-demo picks a kit by overlay, so here the kit must
@@ -315,7 +321,7 @@ under their buildings), `interiors` (the kit's rooms), `furniture` (the catalog 
 actors, stocks per settlement, the canoe route and its books), `materials`, `textures`, `atmos`, `stage`. The profile
 check lands **before P7**, so the sim's export is written to it rather than fitted afterwards.
 
-**The abstract-level test.** With the player's window at Kautoa, Walapo runs at the abstract level (`core/simulation/
+**The abstract-level test.** With the player's window at Kautoa, Valapo runs at the abstract level (`core/simulation/
 SCHEMA.md`, "The three levels", written for this build): its places produce and consume by the hour, its books and the
 trade route tick, nobody is posed and nothing is drawn. The canoe in transit is a record only. The test fast-forwards a
 week with one window loaded, then the other, and checks: both towns' stocks balance (made + imported - exported -
@@ -335,7 +341,7 @@ GDScript twin of the sim, can be checked against by hand. Voth stays the scale t
 | P2 | `biomes/ringisles`: zones by class, lifted species, the new ones (2) | kit `verify.py --assert`, a shot per zone; texture prompts to the owner |
 | P3 | `openworld/isle-demo`: the region at 1:1, streamed, with the kit and the geyser fields | world `verify.py --assert`, the probe on rivers and shores |
 | P4 | `settlements/isle-demo` site planner on the extracted ground, both towns | the planner loads clean, saves `site/isle-site.json` |
-| P5 | **The owner lays out the two settlements in the site planner** | the owner's site file |
+| P5 | **The owner lays out the two settlements in the site planner** (done 2026-10-18; section 8) | the owner's site file |
 | P6 | City plan: two `KCITY` instances on the Islanders kit | verify, exact footprint overlap, census |
 | P6b | The export profile (section 7): `EXPORT.check(world, {profile})`, this page's required sections, in `verify.py --assert` and the nightly | the check fails on a stubbed required section and passes once each is filled |
 | P7 | Simulation: two towns, the partition, the canoe trade route, stocks per town; the economy tuned here from now on; the three levels in `SCHEMA.md` | stocks balance per town; a load traced from one town's warehouse to the other's; the abstract-level week test (section 7) |
@@ -343,3 +349,154 @@ GDScript twin of the sim, can be checked against by hand. Voth stays the scale t
 
 P1 and P2 can run in parallel (different folders). P3 waits for P2's kit. P4 waits for P3's ground (or the extract
 alone).
+
+## 8. The towns' programmes (P5: the owner's site files and brief, 2026-10-18)
+
+The drawings are in `site/isle-site.json`. Coordinates are each town's frame (metres, x east, z south, so north is
+-z). Every drawn avenue is 12 m wide. What the owner asked for that is not drawn yet is marked **to draw**: P6 adds it
+as records, or the owner draws it in the planner.
+
+### 8a. Kautoa, the walled city
+
+**The wall and the build region.** `build region` (d5, about 7.9 x 6.1 km, x -3,630..4,290, z -2,210..3,840) is the
+dense city, inside a wall. Outside it are farms and orchards (8c), and small farming villages round the peninsula if
+that ring is not enough. The ring and the villages lie past the planner's 7.8 km square, so P6 places them as world
+records on the frame, or the square grows.
+
+**The ceremonial centre.** The `ceremonial park` (d1) is a quadrilateral about 900 x 750 m, centred near (0, 130).
+- **An avenue rings the park (to draw).** The palace, the ceremonial square, the five envoy houses and the Iziz
+  Governor's House all **align to that ring**: each faces the park, its front parallel to the nearest side of the ring.
+- **PALACE** (-201, -182) stands 94 m outside the park's north-west side. That side runs from (-513, 128) to
+  (251, -357), bearing 32 deg north of east. The palace faces south-east into the park. It is Kautoa's palace
+  (`kits/islanders`, the East set).
+- **SQUARE** (175, 435), the ceremonial square, is 75 m outside the park's south-east side. **An avenue rings it (to
+  draw)**, and the square's buildings may lie over that avenue where it meets Avenue 1.
+- **Avenue 1** runs from just south-east of the palace (-152, -94) across the park to the square (137, 362). It is
+  the processional way. Avenue 3 carries on from the square (257, 560) to the harbour road (690, 1245).
+- **Envoy houses A to E** stand round the park, each aligned to the ring:
+  - A (404, -352) off the north-east corner;
+  - C (582, -115) off the east corner;
+  - D (-616, 240) off the west corner;
+  - E (-452, 564) and B (-126, 618) along the south-west side.
+
+  Each is the Islanders' guest compound for foreign envoys (section 3b).
+- **IZIZ GOVERNOR'S HOUSE** (561, 200) stands 100 m south of the park's east corner, aligned to the ring. It is
+  `vern_governor_palace` from the Iziz Vernacular kit, renamed in the kit to **Governor's House** on 2026-10-18. The
+  key stays the same, so Verge and the interiors sets are unchanged. The owner calls it the *old* governor's house:
+  Izanitown grew up round it.
+
+**Markets, parks and the cross-town avenues.**
+- **Market 1** (d3) is the harbour market, a long strip along Avenue 2 from (-350, 1771) to (1721, 840).
+- **Market 2** (d11, about 900 x 350 m, centred near (710, -1225)) is the north market by Ridertown.
+- **Market 3** (d12, a small 200 m square at (-2830, 2510)) is at the south-west end of Avenue 6.
+- **Park 2** is taken to be the park drawn as `Park 3` (d10, centred near (-2190, 140), on the west side). It lies
+  between the two markets it is to join; the white sand beach is the other park. The owner to confirm.
+- **To draw:**
+  - an avenue round Market 2, one round Market 3 and one round Park 2;
+  - an avenue from Market 3 to Park 2 (about 2.4 km north);
+  - an avenue from Park 2 to Market 2 (about 3.3 km east-north-east).
+
+  Avenue 6 already joins Market 3 to the ceremonial park and runs east to (3197, -474). The new pair makes the
+  western loop that Avenue 6 does not.
+- **The white sand beach** (d6, x 2594..4028, z 689..1110) lies east of the harbour. It is a park on white sand, with
+  the sandy coastline **widened** there. That is a terrain edit in P6, with the strand kit's sand recoloured white; if
+  the library's sand will not take the tint, ask the owner for a texture.
+
+**The harbour has two halves.**
+- **The military harbour** (d7, the strip from (-487, 2442) to (-1029, 3781), with Avenue 13 down it) holds Islander
+  warships, in their war-canoe sheds (section 3b) and afloat. They are `kits/ringsea`'s Islander craft: the drua, the
+  kora-kora, the karakoa and the lanong.
+- **The civilian harbour** (d2, along Avenue 2 from (-475, 2422) to (2574, 674)) has fishing docks with oruwa and
+  lakatoi, and trading vessels of six origins, all from `kits/ringsea`:
+  - Vothic: the dhow, junk, hulk and barge;
+  - Hykkousoi: the corbita, galley and pearl;
+  - Izani (Iziz Vernacular): the dhoni, lighter and turtle;
+  - beast rider: the waa and the rookery ship;
+  - salvage (Ancients salvage): the salvage tug;
+  - Islander extraction: read here as the Islanders' own bulk carriers bringing ore, salt and stone (lakatoi). The
+    owner to confirm.
+- **The quay, the harbourmaster's house and the cargo sheds** go here, with the trade route's landing (section 5).
+
+**Industry: extensive, by the harbour (to draw).** Kautoa works metal it does not mine. Its main source is **Valapo's
+iron, landed as ingots**. The proposed works quarter lies between Avenues 2 and 5, east of Izanitown (x 1,750..2,600,
+z 200..680):
+- it is where the ingots land;
+- it is beside the **CARAVANSERAI** (1788, 509);
+- it is on the way to the **QUARRIES** (4068, 698) at the east end of the beach.
+
+It holds forges, smithies, a tool and weapon works, cooperage and rope walks for the harbour, and kilns. The **SALT
+WORKS** (-1265, 3930) lie south of the military harbour, on the pans.
+
+**Two minority districts.**
+- **Izanitown** (d9, x 674..1669, z 96..761) surrounds the old Governor's House. It is mostly **Iziz Vernacular**
+  houses, shops, wealthy houses and military buildings (barracks). The page takes the Vernacular as a bundle, as it
+  takes the Islanders; P6 checks that one exists, or writes it.
+- **The native military** stands just north of Izanitown at **Warrior's Square** (d13, about 380 x 370 m, centred
+  near (954, -377)): Islander barracks, the war-canoe captains' halls and the watchtowers.
+- **Ridertown** (d8, the north edge of the city, x -912..1508, z -2217..-1221) is built in Islander architecture,
+  with many nature shrines and some stables and rookeries for the riders' mounts. Avenue 7 ends at its north edge
+  (226, -2200): the north gate.
+
+**The highways (to draw, beyond the wall).**
+- **West along the coast** from Avenue 8's end (-3492, 1206), and **east along the coast** from Avenue 10's end
+  (4113, -390). Both lead to small fishing villages, placed in a later step.
+- **North** from Avenue 7's north gate (226, -2200), past Ridertown, to beast rider territory.
+
+**Funerary 1** (d4, x 2287..3392, z -1724..-1052) holds the ancestor temple's stone tombs (Sumba megaliths).
+
+### 8b. Valapo, the open village
+
+Valapo is smaller, with no wall. `build area` (d5, x -2733..2057, z -4218..-53) is the densest part. It fades out to
+suburbs, then farms.
+- **The harbour** (d1) is the long strip along the north shore. **Avenue 1** is the coast road, from the white sand
+  beach (-2601, -1112) east and north to (1092, -3635).
+- **The white sand beach** (d2, x -2674..-871, z -1394..-1103) lies west of the harbour. As at Kautoa, the coast is
+  widened in white sand.
+- **Market 1** (d3, centred near (420, -1580)) is by the harbour on Avenue 1.
+  - **VILLAGE HALL** (88, -1398) stands at its west end: the East set's village hall.
+  - **MILITARY** (631, -1479) is a small garrison and war-canoe shed by the market.
+- **Funerary 1** (d4, centred near (740, -540)) is inland.
+- **Avenues 2 and 3** run inland from the harbour and cross near (300, -1000).
+- **The iron chain.** Valapo's mountains lie **south-west of the town, 12 to 18 km off**. In the scale model the
+  ground there is 700 to 1,130 m over the sea, from about (-5000, 9000) to (-13000, 17000) in the frame.
+  1. **An iron mining settlement** stands in the mountains, on an iron node of `kits/resources`. Its grade is the
+     owner's call (x1 is the default). It is outside the planner's square, so it is placed on the frame as a world
+     record.
+  2. **A cart road** runs down to Valapo, about 15 to 20 km.
+  3. **A smelter** at Valapo's harbour makes **ingots**, in bloomeries fired with charcoal from the upland forest.
+  4. The ingots are **shipped to Kautoa** on the trade route (section 5) and worked there (8a, industry).
+
+### 8c. What each grows, and what they trade
+
+Read from the scale model round each town (the open world's climate, rain and height rasters, land only), then asked
+of `kits/crops` (`CROPS.at`, dense air, 1.9 atm):
+
+| | Kautoa's peninsula (24 km round) | Valapo's island |
+|---|---|---|
+| Climate classes | Af 28%, Aw 39%, XA 26%, BSh 6% | XA 35%, XV 29%, Aw 15%, Am 7%, Af 6% (12 km round) |
+| Rain | mean about 2,640 mm (860-3,940) | mean about 1,390 mm near the town (930-2,000) |
+| Height over the sea | a plateau of 400-800 m, no higher than about 810 m | lowland by the town; mountains to 1,240 m, a quarter of the land over 700 m |
+
+So Kautoa is the wet one, and Valapo the drier one with real uplands. In `CROPS.at`:
+- the wet tropics (Kautoa's Af) grow rice in paddies, and cloves and cacao rain-fed. They do not take sweet potato,
+  sugar cane or cotton.
+- the subhumid to semiarid tropics (Valapo's lowland) take sugar cane, cotton, sweet potato, sisal and tepary bean
+  rain-fed. They grow rice, cacao and cloves only with irrigation.
+- coffee's band reaches down to subtropic, and only Valapo's uplands are that cool.
+
+**The comparative advantage (proposed, three crops each):**
+- **Kautoa exports cloves, rice and cacao.**
+  - Cloves want rain all year (1,500 mm and up, no long dry season): Kautoa's Af.
+  - Rice paddies on the wet lowland need no irrigation works there.
+  - Cacao is an Af crop.
+- **Valapo exports coffee, sugar and cotton**, and iron ingots.
+  - Upland coffee grows on the mountain slopes, the only cool ground either town has.
+  - Sugar cane sweetens best with a dry season to ripen in: Valapo's XV savanna.
+  - Cotton needs a dry harvest: the same savanna.
+- **Both grow** coconut, banana, breadfruit, taro, kava, greens and herbs for themselves (the owner's crop list).
+- **What goes back:**
+  - Kautoa sends tools and worked iron, cloth dyed with its indigo, and the goods the foreign ships bring;
+  - Valapo sends ingots, coffee, sugar, cotton and salt fish.
+
+P7 (the simulation) puts these crops on the two towns' farms and the trade route, so that the books show each town
+short of what the other makes.

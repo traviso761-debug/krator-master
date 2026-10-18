@@ -1,5 +1,5 @@
 // ================================================================= IZIZ VERNACULAR — the frontier (Verge's upper city)
-// The buildings an Iziz governor puts up in a desert caravan town at the head of a cliff trail: his palace, the
+// The buildings an Iziz governor puts up in a desert caravan town at the head of a cliff trail: the Governor's House, the
 // guard tower and barracks the city watch patrols from, a watch post, the toll house at the trailhead, the
 // palisade (one modular segment) and its road gate, the mustering ground, and a rest stop on the switchback
 // trail down the cliff (variant 0 cut into the rock, variant 1 built out on the cliff edge).
@@ -38,9 +38,9 @@ function vfFlagpole(x,z,h,c){const iron=vC(0x2e2a26);vB('vStone',x,0,z,1.2,.5,1.
  const fy=.5+h-1.1;vPl('vCloth',x+1.5,fy,z,2.8,1.7,0,c||vC(0xe07a2a));vPl('vCloth',x+1.5,fy,z+.02,2.8,.3,0,vC(0x2f8f8a));vPl('vCloth',x+1.5,fy,z-.02,2.8,.3,0,vC(0x2f8f8a));
  for(const yy of[fy+.8,fy-.85])vB('vIron',x+.06,yy,z,.14,.05,.05,0,iron);}
 
-// ---------------------------------------------------------------- the Governor's Palace: walled forecourt, iron gate, a stone block on a battered podium, domed front pavilion, a flag tower
+// ---------------------------------------------------------------- the Governor's House (Kautoa's isle demo calls for it by name; the key stays vern_governor_palace): walled forecourt, iron gate, a stone block on a battered podium, domed front pavilion, a flag tower
 function buildVernGovernorPalace(G,o){reseed(8001+(o.v|0));const st=vC(vPick(VPAL.stone)),stD=vC(vPick(VPAL.stoneDark)),wood=vC(vPick(VPAL.woodRich)),trim=vC(vPick(VPAL.trim)),cu=vC(0xffffff),iron=vC(0x2e2a26),org=vC(0xe07a2a),leaf=vC(0x4a2e1c);
- vnReg("Governor's Palace",0,-4,17,23,{type:['civic','single-family dwelling'],role:'palace'});vnReg("Governor's Palace — forecourt wall",0,0,21,3.6,{part:'wall'});
+ vnReg("Governor's House",0,-4,17,23,{type:['civic','single-family dwelling'],role:'palace'});vnReg("Governor's House — forecourt wall",0,0,21,3.6,{part:'wall'});
  const CW=40,ZB=-17,ZF=16.5,WH=3.4,T=.8,GO=4.4;
  // ---- the compound wall: stone with a cap and stepped merlons; the gate in the front wall between copper-capped piers
  vfWall(0,ZB+T/2,CW+T,0,WH,T,stD,st,1.7);
@@ -325,7 +325,7 @@ function vfRestStopCliff(o,wood,trim,org,rock,rockD,rockL,fl){const st=vC(vPick(
   kput('vClothB',[3.1,2.95,3.2],vQ(0,-.08,0),[6.0,.05,3.4],org);vB('vStone',3.1,0,4.75,5.4,.45,.5,0,rockL);vB('vWood',3.1,0,3.2,1.6,.75,.9,0,wood);}
  vnBarrel(-1.6,0,1.2,.4,.95,wood);vnSacks(-1.0,0,-.4,3);vnFolk(2.6,.6,3,1.6);}
 
-VERN.def({key:'vern_governor_palace',name:"Governor's Palace",family:'civic',tags:{type:['civic','single-family dwelling'],wealth:'civic',lit:true},w:42,d:36,h:24,build:buildVernGovernorPalace});
+VERN.def({key:'vern_governor_palace',name:"Governor's House",family:'civic',tags:{type:['civic','single-family dwelling'],wealth:'civic',lit:true},w:42,d:36,h:24,build:buildVernGovernorPalace});
 VERN.def({key:'vern_guard_tower',name:'Guard tower and barracks',family:'civic',tags:{type:['military','civic'],wealth:'civic',lit:true},w:26,d:20,h:19,build:buildVernGuardTower});
 VERN.def({key:'vern_watch_house',name:'Watch house',family:'civic',tags:{type:['civic','military'],wealth:'civic',lit:true},w:10,d:9,h:11,build:buildVernWatchHouse});
 VERN.def({key:'vern_toll_house',name:'Toll house',family:'civic',tags:{type:['civic','infrastructure'],wealth:'civic',lit:true},w:14,d:10,h:11,build:buildVernTollHouse});

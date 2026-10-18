@@ -50,7 +50,7 @@ SWAP = [('<title>Voth Site Editor</title>', '<title>Isle Demo Site Planner</titl
         ('<button id="m-ferry">B ferry stop</button>', '<button id="m-ferry">B canoe landing</button>'),
         ('<button id="m-strider">N elephant bug station</button>', '<button id="m-strider">N land stop</button>'),
         ('<button id="b-voth">add Voth\'s current districts</button>',
-         '<button id="b-voth" style="display:none"></button><button id="t-Kautoa">Kautoa</button><button id="t-Walapo">Walapo</button>'),
+         '<button id="b-voth" style="display:none"></button><button id="t-Kautoa">Kautoa</button><button id="t-Valapo">Valapo</button>'),
         ("Raising Voth's ground...", 'Raising the isle...')]
 # the Voth files this page reads, hashed (the shim is made to fit these)
 VOTH_READ = [os.path.join(VOTH, 'tex', 'pack.json'), HEAD, TAIL, os.path.join(VSITE, '10-site-model.js'), os.path.join(VSITE, '50-site-scene.js'), os.path.join(VSITE, '55-site-tools.js')]

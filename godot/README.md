@@ -35,6 +35,7 @@ godot --headless --path godot --script res://tests/dhelv/dhelv_sim_test.gd   # D
 godot --headless --path godot --script res://tests/dhelv/dhelv_nav_test.gd   # Dhelv's walk floors baked to a navmesh: gate to temple, through the braid
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
 godot --headless --path godot --script res://tests/character/kchar_test.gd   # core/charactermodels: records and morphs against the JS golden, a MakeHuman figure from the pieces
+godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz   # the perf table (PERF.md, perf-<case>.json): run it on the real GPU, below
 ```
 
 Or open `godot/project.godot` in the editor (Import, then F5). The editor skips `data/` (`data/.gdignore`): the
@@ -63,6 +64,43 @@ hour, `T` runs a time-lapse, `P` pauses the clock, `F3` cycles the weather (or s
 
 Each case also loads `terrain.json`: the page's ground height sampled on a grid. No exporter carries the ground yet;
 this stands in for the `core/terrain` bake (Phase 2) so the plants have something to stand on.
+
+## Scoring the pairs
+
+`tools/compare_shots.py` shoots the page and the spike from one camera (`shots/compare/<case>-web.png`, `<case>-godot.png`,
+the composite `<case>.png`) and scores each pair (ROADMAP.md stage 4, "a perceptual metric"; section 11 item 4). Both shots
+are the same case, view and size: 1600 x 900 on both sides (the page at device pixel ratio 1, the spike's window), and where
+they still differ (a window clipped to a small screen) both are downscaled to the smaller before scoring and the table says
+so. Each pair gets, on grey copies:
+
+- **SSIM**, structural similarity (Wang 2004) on a 400-px-wide copy with 8 x 8 mean windows, numpy only. At that scale a
+  tree, a wall or a water sheet is one feature and a leaf's exact placement is not. 1 is identical, 0 unrelated.
+- **MAD**, the mean absolute difference at the common size, as a fraction of full range.
+- **diff**, the fraction of pixels differing by more than `--diff` (default 0.10 of full range).
+- `<case>-diff.png`, the grey difference amplified x3 (brighter is further apart), next to the shots and gitignored like them.
+
+`--threshold=<ssim>` (default **0.40**) and `--assert` make a pair under it, or a pair with a shot missing, exit 1; `--report`
+prints the same table and exits 0; `--score` scores the shots already present without taking new ones; `scores.json` keeps
+the last table. The worst SSIM prints first. `tools/test_all.py --nightly` runs it on the must-pass cases (`COMPARE_CASES`:
+`world-sedesert`, `world-iziz`) as a report; set `COMPARE_ASSERT = True` there to make it a gate once the first numbers below
+have been read. CI takes the shots under Xvfb on the Compatibility renderer (`tools/shot.sh`); a desktop runs the binary
+directly on the same renderer, so the two tables differ in the GPU, not the renderer. Needs numpy and Pillow (the nightly
+workflow installs both).
+
+**Why 0.40.** The first pairs (below) scored 0.54 and 0.71. The failures the gate exists to catch, measured on the same
+shots, all scored under 0.32: a black render 0.00, the wrong case 0.24 to 0.26 (sedesert's page against Iziz's spike and the
+reverse), a mirrored camera 0.29 to 0.31. 0.40 sits 0.09 over the worst failure and 0.14 under the worst good pair. It is a
+gate against an empty render, a wrong camera or a missing world, not against a shade: a pair whose sky matches and whose
+ground is flat grey still scores about 0.65, so a dropped layer shows in the `diff` column and the difference image, not in
+SSIM. Raise the threshold only after the pairs above it have been looked at, and record the new numbers here.
+
+**First baseline** (2026-10-18, the owner's machine: Godot 4.7.2 Compatibility on the GPU, the page in headless Chromium on
+SwiftShader; both 1600 x 900):
+
+| case | SSIM | MAD | diff > 0.10 | what the eye sees |
+|---|---|---|---|---|
+| `world-sedesert` | 0.542 | 0.128 | 54.8% | the pond, its shore plants and the mesa agree; the page's sky has the ringed planet and clouds, the spike's a plain haze; the spike draws far terrain the page fogs out and misses the page's far cliff: the diff is mostly sky and horizon |
+| `world-iziz` | 0.707 | 0.134 | 25.4% | the gate, towers, wall, tavern, stalls and street shadows agree; the page draws its in-canvas building labels, the spike a billboard the page does not; the far trees differ in colour (Compatibility's colour space, below) |
 
 ## Layout
 
@@ -102,13 +140,15 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `tests/shaders/` | `library_test.gd` (headless): every hook has its include, hooks resolve (an unknown one is reported), and on `world-sedesert` the ground's layers sit on the terrain's `ground.gdshader` (maps, scales, gains, the crack weight to a byte of the page's) and the pond on `water.gdshader` (its uniforms; KWater's heights equal the page's probes), each with a negative. `library_gpu_check.gd` (needs a renderer: Xvfb + Compatibility): `lib/water`'s `wtr_height` and `wtr_damp` on three surfaces read back against KWater (and a 5% taller wave that must miss), and the other eight includes compiled together, twenty values against GDScript twins |
 | `tests/water/` | `water_test.gd` and its `golden.json` (written by `tools/water_golden.js` from core/water through core/export's water adapter): KWater against WATER at fixed (x, z, t), with negatives |
 | `tools/water_golden.js` | writes `tests/water/golden.json` (rerun it after changing core/water, core/atmos's waves or the water adapter) |
+| `tests/perf/` | `perf_capture.gd`: the perf capture (below), which writes `PERF.md` and `perf-<case>.json` beside `spike-report.json` |
+| `PERF.md`, `perf-<case>.json` | the perf table and the captures it is built from (kept, like `spike-report.json`; the header says which machine and renderer wrote them) |
 | `tools/atmos_waves.js` | writes `shaders/atmos_waves.gdshaderinc` from `ATMOS.waveGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.waves`) |
 | `tools/atmos_clouddeck.js` | writes `shaders/atmos_clouddeck.gdshaderinc` from `ATMOS.deckGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.clouddeck`). With no node on the machine: `python3 tools/node_in_chromium.py godot/tools/atmos_clouddeck.js --write` |
 | `data/<case>/` | the exports (below); `meta.json` says where each came from |
 | `tools/export_spike.py` | writes `data/` from the built pages (headless Chromium; `pip install playwright`) |
 | `tools/spike_export.js`, `tools/vendor/GLTFExporter.r128.js` | the glTF region exporter injected into a page, and three r128's own exporter (MIT, from the three@0.128.0 npm package) |
 | `tools/stage_hook.js` | an init script for a page: finds its cameras and what it renders each frame, so `KSTAGE` can read the scenes |
-| `tools/compare_shots.py` | the web page and the spike side by side from the same camera (`shots/compare/`) |
+| `tools/compare_shots.py` | the web page and the spike side by side from the same camera (`shots/compare/`), each pair scored by SSIM, mean absolute difference and the differing fraction, with a difference image ("Scoring the pairs", below); `--assert` gates on `--threshold`; the nightly runs it on the must-pass cases |
 | `tools/shot.sh` | a screenshot on a machine with no display (Xvfb + Compatibility) |
 | `shots/` | screenshots from `tools/shot.sh` (gitignored, like every `shots/` in the repo) |
 
@@ -160,6 +200,34 @@ With the editor open, Claude can read and edit scenes, scripts and project setti
   `take_screenshot` timed out there: the main scene loads a whole biome tile under software rendering. Use
   `tools/shot.sh` for screenshots in the cloud.
 - The plugin talks only to `127.0.0.1:6505`. The server's optional visualizer (`map_project`) serves on port 6510.
+
+## The perf capture
+
+The tests above prove parity, not speed. `tests/perf/perf_capture.gd` measures each must-pass case on the machine it runs on
+(ROADMAP.md section 11, item 4) and writes the table:
+
+```
+godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz
+godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-iziz --compare    # the deltas against the last perf-world-iziz.json
+godot --headless --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert --frames=10 --out=res://shots/perf   # the nightly's smoke
+```
+
+For each case it imports the world through the spike's own loader (`spike.gd` `_load_case`, so nothing is forked), records the
+import wall time and the time to the first drawn frame, then puts the camera at four fixed poses (`POSES` in the script: the
+whole tile from two high oblique corners, an eye-level view from the tile's edge, a walker's eye at the centre) and samples
+`--frames` frames (120) at each after `--warmup` (10): the frame delta (mean, 95th percentile, fps), `Performance.TIME_PROCESS`
+(the worst process step of the last second, as the max seen), the RenderingServer's draw calls, primitives and objects in frame,
+video, texture and buffer memory, static memory; plus the scene's node count and its MultiMesh instance total. It writes
+`perf-<case>.json` and rebuilds `PERF.md` from every `perf-*.json` in `--out` (default `res://`, next to `spike-report.json`),
+with the Godot version, renderer, GPU (`RenderingServer.get_video_adapter_name()`), window, date and git commit at the top of
+each case's table. The window is set to 1600x900 (`--size=WxH`) and vsync is turned off (`--vsync` keeps it), so frame time
+is the GPU's and the table says what it measured at.
+
+**Only a run in Forward+ on a real GPU counts** (`CHECKLIST.md`, item 7): `--headless` never draws (draw calls and memory read
+0, frame time is the script's own), and CI's llvmpipe is not the owner's machine. The headless run is what
+`tools/test_all.py --nightly` smokes, into `shots/perf/` so it never overwrites a real table; it fails only if the script
+crashes or cannot write, never on a number. `--compare` prints, before overwriting, each figure that moved against the
+previous capture of the case (`--compare=<dir>` reads them from elsewhere).
 
 ## Re-exporting the data
 

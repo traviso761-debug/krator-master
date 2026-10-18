@@ -9,7 +9,7 @@ world's machinery.
   **4.21**.
 - **The isles:** they lie in the Ring Sea at -1,500 m, about 1.9 atm. The land is hypertropic jungle, rainforest,
   monsoon forest, savanna, hot steppe and salt steppe.
-- **On the map:** two towns, **Kautoa** (the city, Af) and **Walapo** (the village, XA), sixteen geyser vents and one
+- **On the map:** two towns, **Kautoa** (the city, Af) and **Valapo** (the village, XA), sixteen geyser vents and one
   short named river (Są Baatar).
 - **Built output:** `dist/isle-demo.html`.
 - **Build:** `python3 build.py`.
