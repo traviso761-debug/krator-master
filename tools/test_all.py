@@ -3,8 +3,9 @@
 
     python3 tools/test_all.py              # the push checks: lints, node tests, rebuild everything, hash baseline
     python3 tools/test_all.py --nightly    # also: the furniture fingerprint, verify.py --assert on the critical
-                                           # builds, the Godot headless tests (each skipped, and said so, when its
-                                           # tool is missing: playwright, godot)
+                                           # builds, the Godot headless tests, the shot compare on the must-pass
+                                           # cases (each skipped, and said so, when its tool is missing: playwright,
+                                           # godot, numpy and Pillow)
     python3 tools/test_all.py --no-build   # skip the rebuild and the baseline (lints and tests only)
     python3 tools/test_all.py --list       # print the steps and exit
 
@@ -37,6 +38,10 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd
                'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/water/water_test.gd',
                'res://tests/water/falls_case_test.gd',
                'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd']
+# The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
+# passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
+COMPARE_CASES = ['world-sedesert', 'world-iziz']
+COMPARE_ASSERT = False
 
 
 # A build that reads another build's output builds after it: kits/ancients-interiors loads kits/interiors'
@@ -102,6 +107,11 @@ def steps(nightly, build):
         g = os.environ.get('GODOT') or shutil.which('godot')
         for t in GODOT_TESTS:
             s.append(('godot ' + t, [g, '--headless', '--path', 'godot', '--script', t] if g else None))
+        # the perceptual compare (ROADMAP.md stage 4, section 11 item 4): the page and the spike shot from one camera on the
+        # must-pass cases, scored by SSIM (godot/README.md "Scoring the pairs"). A report until COMPARE_ASSERT is True.
+        img = pw and g and importlib.util.find_spec('numpy') is not None and importlib.util.find_spec('PIL') is not None
+        s.append(('compare shots ' + ('(assert)' if COMPARE_ASSERT else '(report)'),
+                  [PY, 'godot/tools/compare_shots.py'] + COMPARE_CASES + ['--assert' if COMPARE_ASSERT else '--report'] if img else None))
     return s
 
 

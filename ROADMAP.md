@@ -337,7 +337,10 @@ start. Not all 31 at once. The sky preset moves to `core/atmos`. The inspector b
 - Split `godot/` into `runtime/`, `import/`, `rendering/`, `world/`, `tests/`; `spike.gd` becomes disposable.
 - The mesh round trip as an assertion test: for each exported build, object, instance, triangle, material and
   tag counts, bounds, and terrain samples, against the page's own census. Today only Verge's sim has one.
-- `compare_shots.py` gets a perceptual metric and runs nightly.
+- ~~`compare_shots.py` gets a perceptual metric and runs nightly.~~ Done 2026-10-18: SSIM, mean absolute difference and the
+  differing fraction per pair, a difference image, `--threshold` and `--assert`; `tools/test_all.py --nightly` runs it on the
+  must-pass cases as a report (`COMPARE_ASSERT` switches it to a gate once the owner has read the first numbers:
+  `godot/README.md`, "Scoring the pairs").
 - The streamer: little-demo's scheme (quadtree terrain chunks, 512 m flora tiles cell-seeded, 128 m floor
   chunks, baked town tiles) ported as the world loader, reading `core/export` tiles.
 - Forward+ on a real GPU: only the owner's machine can do this (`godot/CHECKLIST.md`); it gates the look, not the
