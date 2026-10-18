@@ -25,8 +25,9 @@ EXPORT.register(section, fn, {by})   -> unregister(). fn(ctx) returns the part, 
                                         Registering the same (section, by) again replaces it.
 EXPORT.world({box?, sections?, build?, ...opt}) -> the container. box [x0, z0, x1, z1] is a tile; sections the names to
                                         fill (an unknown name throws); everything else reaches each contributor as ctx.opt
-EXPORT.check(world, {uid?})          -> {ok, problems, joins}: every reference resolves (below); uid(cls, key, [x,y,z])
-                                        recomputes each instance's uid from its matrix
+EXPORT.check(world, {uid?, profile?}) -> {ok, problems, joins}: every reference resolves (below); uid(cls, key, [x,y,z])
+                                        recomputes each instance's uid from its matrix; profile: the sections the case
+                                        must fill ("Profiles" below); without one the statuses are not judged
 EXPORT.glb(world)                    -> {json, glb: Uint8Array, stats}: the meshes as binary glTF, the rest as JSON
 EXPORT.terrain(box, {h, water?, field?, step?, probes?}) -> a terrain section from a build's ground
 EXPORT.groundLayers(spec)            -> a ground's world-space layers as one material record and its maps ("Ground
@@ -220,7 +221,33 @@ loads the page headless (the shared harness's Chromium; `godot/tools/stage_hook.
 `window._ready` and for the library maps to decode, calls `EXPORT.world` and `EXPORT.check` (with `KTAGS.uid`), and writes
 `world.json`, `world.glb`, the library packs the textures name (`tex/`: `pack.json` and the files used) and
 `meta.json`. `--json` writes one `world.json` with the meshes inline; `--sections a,b` exports some; `--sky 0` leaves the
-panorama out. It exits 1 when the page is not ready or dirty, a section reported an error, or a join failed.
+panorama out; `--profile a,b,c` judges the statuses against a profile (below). It exits 1 when the page is not ready or
+dirty, a section reported an error, a join failed, or the profile is not met.
+
+## Profiles (ROADMAP.md section 11, item 1)
+
+A world file could pass `EXPORT.check` with no interiors, furniture or citizens: nothing said which sections a case
+must have. A **profile** is that list. `EXPORT.check(world, {profile: [...]})` takes section names, each optionally
+qualified: `terrain=field` requires the part's `source` to be `field` (a `krator-field`, not sampled heights);
+`interiors?` lets the section read `empty` (its contributors ran and had nothing). A required section that reads
+`stub`, `none`, `error` or `skipped` (or `empty` without the `?`) is a problem and `ok` is false; `joins.profile`
+counts `{required, met}`. An unknown name throws, as `register` does. Without a profile the statuses are not judged,
+as before 2026-10-18. `test-export.js` has the positive case and the negatives (a stub, empty, none, skipped, sampled
+terrain, an unknown name).
+
+Each must-pass case names its profile in its `verify.py` (`EXPORT_BOX`, `EXPORT_PROFILE`) and checks it under
+`--assert` through the shared `check_profile` (`tools/harness.py`: it waits for the library maps, injects
+`44-core-stage.js` where the page lacks it, exports the box with a small sky and prints the statuses); the nightly
+(`tools/test_all.py --nightly`) runs those verifies. `--profile a,b,c` on a verify replaces the list for one run: add
+`sim` to any of them and the run fails on the stub, which is the proof the check bites.
+
+| Case | Box | Profile |
+|---|---|---|
+| sedesert's tile (M4) | `80,490,380,790` | `registry, items, buckets, materials, textures, terrain=field, stage, atmos, water` (its build takes `89-atmos-8-export.js` since 2026-10-18, so `atmos` fills: the clock, wind, presets and skylight) |
+| Iziz's district (M5) | `40,-225,280,15` (the triumphal plaza and its statues: the Godot case's box, `-120,292,120,532`, holds no registered furniture, the gap the profile catches; move the case to this box when it is re-exported) | `registry, items, buckets, materials, textures, terrain, stage, atmos, fixtures, furniture, interiors?` (its buildings are shells; its ground is sampled, ROADMAP.md section 11, item 3) |
+| the isle demo (M6; `settlements/isle-demo/PLAN.md` section 7) | not yet registered: the page is not built | `registry, items, buckets, materials, textures, terrain=field` (the extracted heights, not `EXPORT.ground`'s samples), `city` (two `KCITY` plans, registered by core/city), `fixtures`, `interiors` (the kit's rooms), `furniture` (the catalog placements, by look), `sim` (places, actors, stocks per settlement, the canoe route and its books), `stage`, `atmos`; its verify names it when P6b lands, before P7, so the sim's export is written to it |
+
+Every other build is preview-only until it names a profile and meets it.
 
 ## Godot
 
@@ -338,10 +365,8 @@ shade there is its own darker interior, not matched by Godot's ambient); the lig
   route (its merged furniture batches name no record); M6 is the isle demo (`ROADMAP.md` section 11), Voth after it.
 - The registry, atmos and KMAT adapters live here until their modules are rebuilt to carry them (no branch owns those
   modules since 2026-10-18).
-- **Profiles** (ROADMAP section 11, item 1; to build): `EXPORT.check(world, {profile: [sections]})` fails a required
-  section that reads `stub`, `none` or `error`; each must-pass case (sedesert, Iziz, the isle demo) names its profile in
-  its verify, and the nightly runs them. The `STUB` strings in `07-core-export.js` still say "owned by the Voth
-  branch": amend them with the next change that rebuilds the pages that embed core/export.
+- Profiles are built (above, "Profiles"; 2026-10-18) and named by sedesert and Iziz; the isle demo's is listed there
+  and lands with its verify.
 - The Throne and its ten stations, Verge, little-demo and the settlements that read core/biome in place do not list
   core/export; the harness injects it for an export.
 - No PNG or EXR height export, no carver floors (core/terrain's own "not yet"). The `water` section carries a page's

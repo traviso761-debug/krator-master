@@ -107,6 +107,26 @@ ok(!c1.ok && c1.joins.uidsDiffer === 1 && c1.problems.some(p => /flora_99999/.te
 const bad2 = JSON.parse(JSON.stringify(w)); bad2.registry.records = bad2.registry.records.filter(r => r.id !== w.items[0].record);
 ok(!E.check(bad2).ok, 'negative: an item whose set is cropped out of the registry is reported');
 
+// ---- profiles: the sections a case must fill (ROADMAP.md section 11, item 1) ----
+const PROF = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain=field', 'atmos?'];
+const cp = E.check(w, { uid: K.uid, profile: PROF });
+ok(cp.ok && cp.joins.profile.required === PROF.length && cp.joins.profile.met === PROF.length,
+  'positive: a profile every named section meets passes (atmos? allows the empty atmos; terrain=field holds a krator-field): ' + JSON.stringify(cp.joins.profile));
+const cs = E.check(w, { profile: PROF.concat(['sim']) });
+ok(!cs.ok && cs.problems.length === 1 && /profile: sim is required and reads stub/.test(cs.problems[0]) && cs.joins.profile.met === PROF.length,
+  'negative: a required section that is a stub fails the check: ' + cs.problems[0]);
+const ce = E.check(w, { profile: ['atmos', 'stage'] });
+ok(!ce.ok && ce.problems.some(p => /atmos is required and reads empty/.test(p)) && ce.problems.some(p => /stage is required and reads none/.test(p)),
+  'negative: empty without ? and none each fail');
+const sampled = JSON.parse(JSON.stringify(w)); sampled.terrain.source = 'sampled';
+const cts = E.check(sampled, { profile: ['terrain=field'] });
+ok(!cts.ok && /terrain must come from field, not sampled/.test(cts.problems[0]), 'negative: terrain=field refuses sampled heights: ' + cts.problems[0]);
+const skipped = E.world({ box: BOX, sections: ['items', 'materials', 'textures', 'registry'] });
+ok(!E.check(skipped, { profile: ['items', 'terrain'] }).ok && E.check(skipped, { profile: ['items'] }).ok, 'negative: a required section the export skipped fails; the one it filled passes');
+ok(E.check(w).ok && E.check(w, {}).joins.profile == null, 'without a profile the statuses are not judged (as before)');
+let r0 = false; try { E.check(w, { profile: ['items', 'citizens'] }); } catch (e) { r0 = /unknown section citizens/.test(e.message); }
+ok(r0, 'refused: a profile naming an unknown section throws');
+
 // ---- the registry, cropped to the tile ----
 const R = w.registry, rid = new Set(R.records.map(r => r.id));
 const far = T.query({}).find(r => r.name === 'Far oak'), near = T.query({}).find(r => r.name === 'Oak');
