@@ -69,6 +69,25 @@ linear for instances, vertices and materials (three's working values as hex: do 
 and the atmosphere; typed arrays `{type, n, b64}` (little-endian bytes); ids as core/tags makes them; the box rule
 (an instance by its origin, `x0 <= x < x1`; a bucket piece by its foot).
 
+#### LOD
+
+`convention.lod = {cell: 150, widen: 'half-diagonal', copies: 'none'}` is the one declared LOD policy (ROADMAP.md
+section 11 item 4; GODOT-PLAN.md finding 16).
+
+- **What a page exports.** No LOD render copies: `core/lod`'s `extras.lodCopy` meshes are skipped, so the glTF holds each
+  original once. A record that three draws in LOD chunks carries `lod: {chunk, range, minRange}` in the JSON form.
+- **What Godot does.** Visibility is measured from a node's point, three's from the chunk's box, so the importer splits
+  each LOD-chunked item (instances by position) and bucket (connected pieces by centroid) into `cell`-metre cells, one
+  node per cell at its centre, and widens `range` (and narrows `minRange`) by the cell's half-diagonal, `cell * 0.7071`
+  (106 m at 150). A 300 m tile then thins cell by cell instead of all at once. `krator/biome_import.gd` reads
+  `convention.lod.cell` (`KratorBiome.policy_cell`) and falls back to its `CELL` constant, 150, for an older export or
+  the krator-biome JSON route, whose convention has no `lod` entry. `world_import.gd` places whole chunks and keeps the
+  chunk's own widening.
+- **Changing it.** A case sets `lod.cell` in the convention (a smaller cell gives smoother thinning and more nodes: the
+  rift tile is 175 item nodes and 47 bucket nodes over 12 cells at 150, 607 and 119 over 28 at 75). A change to the
+  default is a change to `07-core-export.js`, so every page that lists it rebuilds. `godot/tests/export/world_test.gd`
+  asserts the entry on the sedesert case and the rift counts at both cells.
+
 ### The sections
 
 | Section | Filled by | Shape |
