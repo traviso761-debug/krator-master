@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.211,
+    1.213
+   ],
+   "seam_before": [
+    1.701,
+    1.855
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.coral.brain",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   0.8,
+   0.8
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Seamless Brain Coral Maze Texture.png",
+  "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Seamless Brain Coral Maze Texture.png",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.coral.brain`",
+  "reuse": "coral heads (brain and table), tinted by instance colour",
+  "sha1": "cb49a879794e6f6f8505d934b03e83e856e8a407"
+ }
+}
