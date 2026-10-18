@@ -103,3 +103,12 @@ check requires the six; two preset views added. Counts: chalice 39, cage lantern
 its 24M; every host check passes, the CO2 hollows and the fissure stay bare. No other page changes (only vent country's
 own station files were edited).
 
+## The owner's textures (2026-10-18)
+
+Six sets, processed into the library and wired (`materials.json`, re-packed): `ground.moss.crimson` (the red velvet, with a
+ragged alpha outline so a patch is no octagon), `organic.cap.medusa` (the medusa cap's own dome item), `organic.coil.ribbed`
+(the coil horns' own bark bucket, tiled 3.5 m along the tube), `card.blade.pyre` and `card.fan.lace` (3 x 3 sheets; four
+of each nine cut into cards on the leaf quad, since every card is a draw call of its own; their bright veins glow at night) and `organic.lattice.cage` (the cage lantern's alpha, tiled
+three times round the bulb). Without the pack (`?mat=proc`, an open world) every one falls back to its procedural form.
+`tools/textures/cards.py` gained anchor `none` (no crop), so a sheet's cells stay equal thirds and a keyed surface still tiles.
+

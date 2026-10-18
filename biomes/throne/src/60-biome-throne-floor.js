@@ -346,7 +346,7 @@ THRONE.buildNewFlora=function(R,q){reseed(660047);q=q==null?1:q;R=R==null?2500:R
    st.wires++;};
   BIO.grid(6,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[1])return 0;const Z=zones(x,z);return Z.marsh*Z.alien*Z.riftlife*.85*q;},
    (x,y,z)=>{if(blocked(x,z,.6)||BIO.depth(x,z)>0)return;const lv=BIO.lodD(x,z)<L.floor[0]?2:1,Rv=rr(1.2,2.8);
-    flat('velvet',x,y,z,Rv,leafCol(PAL.velvet,1.05,.02,.06,.05));st.velvet++;
+    flat('velvet',x,y,z,Rv,THRONE.LIB.velvet?C(0xffffff).multiplyScalar(rr(.85,1)):leafCol(PAL.velvet,1.05,.02,.06,.05));st.velvet++;
     if(lv===2){for(let k=0,m=ri(1,2);k<m;k++){const a=rr(0,TAU),d=k?Rv*rr(.15,.55):0,wx=x+Math.cos(a)*d,wz=z+Math.sin(a)*d;wires(wx,Y(wx,wz),wz);}
      if(rng()<.7){const a=rr(0,TAU),d=Rv*rr(.1,.5),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;pins(px,Y(px,pz),pz);}}},
    {patch:.6,patchScale:.024,pad:.5,box:BIO.originBox(L.floor[1])});

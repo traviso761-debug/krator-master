@@ -1786,6 +1786,15 @@ tail; the horned figures' lower border) and were redone with cross-faded edges i
 | `card.crop.yam` | Heart-Leaf Vines on Stakes | key 60/170, spill all | yam vines on stakes, 3 x 3: terraces; any staked climbing crop |
 | `patterns/zeijani/jali` | Beige Stone Lattice on Magenta | a cut-out tile (cards.py, anchor tight, RGBA) | the temple's glowing pierced dome and screens |
 
+#### Delivered 2026-10-18 and processed: the Throne's new flora (pasted, 6 images)
+
+Batches `throne-flora-2026-10-18.json` (surfaces: `ground.moss.crimson`, `organic.cap.medusa`, `organic.coil.ribbed`) and
+`throne-flora-2026-10-18-cards.json` (`card.blade.pyre` and `card.fan.lace`, 3 x 3 sheets, and `organic.lattice.cage`, a tiling
+surface with its holes keyed to alpha; all kept whole with `cards.py`'s new anchor `none`). Wired in `biomes/throne`
+(`materials.json`, re-packed): the red velvet (given a ragged alpha outline), the medusa cap's dome, the coil horns' tubes, the
+pyre thistle's blades and the lace-fan tree's fans (their bright veins glow at night), the cage lantern's lattice. Reuse: any red
+moss carpet, spotted maroon cap, ribbed yellow tube, black spiked rosette, perforated fungal fan, open chitin cage.
+
 #### Delivered 2026-10-15 and processed: the Voth interiors, eleven extras, five redos (`Downloads/vothtex.zip`, 32 images)
 
 Batches `voth-interiors-2026-10-15.json` (27 sets) and `redos-2026-10-15.json` (5). The sixteen sheets of `PROMPTS-ready.md`'s "The Voth

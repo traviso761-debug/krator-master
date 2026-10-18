@@ -1,0 +1,98 @@
+[
+ {
+  "src": "ground.moss.crimson.webp",
+  "out": "core/materials/library/ground.moss.crimson",
+  "record": {
+   "id": "ground.moss.crimson",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.moss.crimson` (section 6, the Throne's new flora)",
+    "reuse": "the red velvet on the Throne's acid shores; any red moss carpet"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.06,
+   "normal_strength": 1.0,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "organic.cap.medusa.webp",
+  "out": "core/materials/library/organic.cap.medusa",
+  "record": {
+   "id": "organic.cap.medusa",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.cap.medusa` (section 6, the Throne's new flora)",
+    "reuse": "the medusa cap's dome; any spotted maroon cap or fruiting body"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.4,
+   "lift": 0.05,
+   "normal_strength": 0.8,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "organic.coil.ribbed.webp",
+  "out": "core/materials/library/organic.coil.ribbed",
+  "record": {
+   "id": "organic.coil.ribbed",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.coil.ribbed` (section 6, the Throne's new flora)",
+    "reuse": "the coil horns' tubes (ribs run across the image: rings round a tube); any ribbed yellow-green tube or stalk"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.4,
+   "lift": 0.06,
+   "normal_strength": 1.1,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ }
+]

@@ -601,6 +601,11 @@ THRONE.LIB.cards={};
  sheet('card.seaweed','seaweed',C3,3,{swayW:'(position.y)',swayA:.08});
  // THE BRIMSTONE REEDS (the owner's nine stands, 3 x 3): vent country's reeds in the shallows and round the vents
  sheet('card.reedbrim','reedbrim',C3,3,{swayW:'(position.y)',swayA:.05});
+ // THE NEW FLORA'S SHEETS (the owner's, 2026-10-18): the pyre thistle's nine blades and the lace-fan tree's nine fans, each
+ // standing on its cell's bottom edge (the sheets are kept whole, so the cells are equal thirds); their bright veins glow.
+ // Four of each nine: every card is a draw call of its own
+ sheet('card.pyreblade','pyreblade',[[1,0],[2,0],[0,1],[1,2]],3,{glow:[.04,.6]});
+ sheet('card.lacefan','lacecard',[[0,0],[1,1],[2,1],[0,2]],3,{glow:[.12,1.0]});
  // THE KELP (the library's single kelp cards, as Ys has them): standing 3-15 m down; the wrack is the seaweed's where the pack has it
  {const L=[],W=[],SW=THRONE.LIB.cards.seaweed||[];['card.kelp0','card.kelp1','card.kelp2'].forEach((n,i)=>{const t=libCard(n);if(!t)return;M['kelp'+i]=cardMat(t,'kelp'+i,{swayW:'(position.y)',swayA:.09});L.push('kelp'+i);
    if(!SW.length){M['wrack'+i]=BIO.leafMat(t,'wrack'+i,{swayW:'0.0',swayA:0,alphaTest:.42});W.push('wrack'+i);}});
@@ -672,6 +677,17 @@ if(LIBP('bark.honeycomb'))THRONE.byKey.spice.bark=[0xf4f0ea,0xe8e2da,0xfaf6f0];
 if(LIBP('flesh.porous')){PAL.bell=[0xf4f0e6,0xfaf8f2,0xece6da];PAL.bellStreak=[0xe8d8b0,0xdccca0];}
 // pumice and vesicular basalt for the boulders, stones and spatter
 {const L=libMap('stone.pumice','rock');if(L)M.rock.map=L.t;}
+// THE NEW FLORA'S SURFACES (the owner's, 2026-10-18): the coil horns' ribbed skin (ribs round the tube), the red velvet's
+// crimson moss, the medusa cap's spotted skin (mapped from above), the cage lantern's lattice (its holes cut out, tiled)
+{const L=libMap('bark.coil','coil');if(L){BIO.bucket('coil',BIO.barkMat(L.t),{label:'Coil-horn skin',uvScale:L.scale});THRONE.LIB.coil=true;}}
+{const L=libMap('ground.velvet','velvet');if(L){M.velvet=BIO.leafMat(L.t,'velvet',{swayW:'0.0',swayA:0,alphaTest:.5});
+ /* a soft, ragged outline (an alpha mask: white blobs on black, hashed, so it moves no generator): the patch is no octagon */
+ M.velvet.alphaMap=BIO.canvasTex(256,256,(g,W,H)=>{g.fillStyle='#000';g.fillRect(0,0,W,H);g.fillStyle='#fff';
+  const blob=(cx,cy,r0,sd)=>{g.beginPath();for(let i=0;i<=48;i++){const a=i/48*TAU,r=r0*(.78+.22*h3(i%48,sd,7)+.08*Math.sin(a*3+sd));g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}g.fill();};
+  blob(W/2,H/2,W*.4,1);for(let k=0;k<7;k++){const a=k/7*TAU+h3(k,2,9),d=W*(.3+.1*h3(k,3,9));blob(W/2+Math.cos(a)*d,H/2+Math.sin(a)*d,W*(.06+.05*h3(k,4,9)),k+3);}});
+ M.velvet.alphaMap.encoding=T3.LinearEncoding;THRONE.LIB.velvet=true;}}
+M.medusaT=capMat('cap.medusa','medusa');
+{const t=libCard('card.lattice');if(t){t.wrapS=t.wrapT=T3.RepeatWrapping;THRONE.LATTICE=t;THRONE.LIB.lattice=true;}}
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
@@ -752,7 +768,7 @@ BIO.def('bladder',(function(){const g=new T3.IcosahedronGeometry(1,1),p=g.attrib
  const LAB={reedbrim:'Brimstone reeds',angel:'Angel trumpets',spiderlily:'Spider lilies',trumpets:'Trumpet fungi',aloeflower:'Star-aloe blossoms',grassdry:'Tall grass',flowerspike:'Fire flowers',kelp:'Kelp',seaweed:'Seaweed',mosshang:'Moss curtains',ferngreen:'Cloud ferns',weeper:'Veil-tree veils',carnplant:'Snare plants',coralcard:'Vent growths',mushalien:'Plume mushrooms',moltensucc:'Ember succulents',moss:'Snare moss (hanging)',tendril:'Ash creepers (tendrils)',shelf:'Lantern brackets (glowing shelf fungi)',glowshroom:'Glow mushrooms',aflora:'Glow tufts',carnivore:'Snare flowers',specimen:'Plume fungi',drip:'Dripping fungi',succulent:'Spotted succulents'};
  // the wrack lies flat on the sand: a quad in the ground's plane, face up
  (THRONE.LIB.wrack||[]).forEach(k=>BIO.def(k,quad().rotateX(-Math.PI/2),M[k],{label:'Wrack (cast kelp)'}));
- for(const key in THRONE.LIB.cards){if(key==='lavaleaf'||key==='distressed')continue;if(key==='frillfrond'||key==='fin'||key==='petal'||key==='palmfrond')continue;THRONE.LIB.cards[key].forEach(k=>BIO.def(k,key==='shelf'?quad():(key==='drip'||key==='moss'||key==='mosshang'||key==='weeper')?hang():key==='angel'?hangUp():key==='spiderlily'?flipV(BIO.geo.bloom()):key==='tendril'?tuftUp():G.tuft(),M[k],{label:LAB[key]}));}
+ for(const key in THRONE.LIB.cards){if(key==='lavaleaf'||key==='distressed')continue;if(key==='frillfrond'||key==='fin'||key==='petal'||key==='palmfrond'||key==='pyreblade'||key==='lacecard')continue;THRONE.LIB.cards[key].forEach(k=>BIO.def(k,key==='shelf'?quad():(key==='drip'||key==='moss'||key==='mosshang'||key==='weeper')?hang():key==='angel'?hangUp():key==='spiderlily'?flipV(BIO.geo.bloom()):key==='tendril'?tuftUp():G.tuft(),M[k],{label:LAB[key]}));}
  if(M.lavaleaf)BIO.def('lavaleaf',BIO.geo.clump(),M.lavaleaf,{attrs:['aN'],label:'Lava-leaf shrubs'});
  if(M.distressed)BIO.def('distressed',BIO.geo.clump(),M.distressed,{attrs:['aN'],label:'Withered ash shrubs'});
  if(M.broom)BIO.def('broom',BIO.geo.clump(),M.broom,{attrs:['aN'],label:'Ash broom'});
@@ -792,11 +808,15 @@ G.glowgill=()=>L([[0,.05,1],[.02,.6,1],[.035,1,1]],28,{gillN:28,gillA:.45,planar
 G.cagebulb=function(){const g=L([[0,.08,.9],[.15,.6,1],[.45,1,1],[.75,.85,1],[.95,.35,1],[1,.04,1]],24),u=g.attributes.uv;for(let i=0;i<u.count;i++)u.setX(i,u.getX(i)*3);return g;};
 // a LACE FAN: a half disc (arc .5, the +z half), lobed at its rim, unit radius, its root at the origin
 G.lacefan=()=>L([[0,.06,1],[.02,.5,1],[.06,1,1]],16,{arc:.5,wavN:10,wavA:.06,wavE:2});
-M.cagebulb=BIO.leafMat(TX.lattice,'cagebulb',{swayW:'0.0',swayA:0,alphaTest:.5,vertexColors:true});
+M.cagebulb=BIO.leafMat(THRONE.LATTICE||TX.lattice,'cagebulb',{swayW:'0.0',swayA:0,alphaTest:.5,vertexColors:true});
 M.glowgill=glowMat('glowgill',.1,.9);
 M.lacefan=glowMat('lacefan',.12,1.05,TX.lace);M.lacefan.alphaTest=.45;
 BIO.def('chalskirt',G.chalskirt(),M.vcol,{label:'Chalice-parasol skirts'});
 BIO.def('glowgill',G.glowgill(),M.glowgill,{label:'Glowing gills'});
 BIO.def('cagebulb',G.cagebulb(),M.cagebulb,{label:'Cage-lantern bulbs'});
 BIO.def('lacefan',G.lacefan(),M.lacefan,{label:'Lace fans'});
+// with the owner's textures: the medusa cap's own dome (the parasol disc in its skin), the blades' and the fans' cards
+if(M.medusaT)BIO.def('medusadome',G.disc(),M.medusaT,{label:'Medusa-cap domes'});
+THRONE.LIB.cardsOf('pyreblade').forEach(k=>BIO.def(k,G.leafquad(),M[k],{label:'Pyre-thistle blades'}));
+THRONE.LIB.cardsOf('lacecard').forEach(k=>BIO.def(k,G.leafquad(),M[k],{label:'Lace fans'}));
 })();
