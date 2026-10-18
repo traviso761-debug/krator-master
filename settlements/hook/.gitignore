@@ -1,0 +1,4 @@
+build-manifest-*.json
+log_*.txt
+shots/
+.syntax-*.js
