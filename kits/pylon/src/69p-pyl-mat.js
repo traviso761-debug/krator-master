@@ -38,5 +38,7 @@ kdef('pyHex',PYHEX,MAT.plaster);kdef('pyHexR',PYHEX,MAT.rust);kdef('pyHexD',PYHE
 MAT.pyVoid=MAT.void.clone();MAT.pyVoid.side=THREE.DoubleSide;MAT.pyGlass=MAT.darkGlass.clone();MAT.pyGlass.side=THREE.DoubleSide;
 kdef('pyGableG',VGABLE,MAT.pyGlass);kdef('pyGableD',VGABLE,MAT.pyVoid);kdef('pyGableC',VGABLE,MAT.pyConc);
 kdef('pyDomeR',VDOME,MAT.rust);
+// a smooth render cylinder standing on y = 0 (scale [r, h, r]): the palace's round pavilions and the dome's drum
+kdef('pyCyl',new THREE.CylinderGeometry(1,1,1,36).translate(0,.5,0),MAT.plaster);
 // lit glass (MAT.warmPane, the electric window: rich, civic and the Ancients' amber glow), double-sided for the wedges
 MAT.pyLit=MAT.warmPane.clone();MAT.pyLit.side=THREE.DoubleSide;kdef('pyDiscL',PYDISC,MAT.pyLit);kdef('pyGableL',VGABLE,MAT.pyLit);
