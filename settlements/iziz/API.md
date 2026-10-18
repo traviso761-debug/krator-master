@@ -199,6 +199,14 @@ A target contributes `89z-rows.js` (`TITLE`, `GROUND_C`, `SITES`) and
 loops `SITES` through `VERN.place`, tags every `REG` entry with its site key,
 then `kbake(scene)`.
 
+**A kit on this page (`--kit`, 2026-10-18).** A kit written on the Vernacular's contract (`kits/pylon`, later `kits/talia`;
+`VASSAL-KITS.md`) is built here with no copy of anything: `python build.py --kit <folder>` (the kit's own `build.py`
+calls it) merges the folder's `src/` into this build's one fragment order (a name that clashes stops the build), takes
+its `targets/` and `kit.json` (`targets` name -> page, `interiors`, `core`, `deterministic`, and `external`: repo-relative
+fragments read in place by their own names, such as the Ancients kit's Monolith), applies the build rules to
+its fragments, and writes the pages to the kit's `dist/`, the manifests and the syntax file to the kit's folder, and
+prints the kit's KNOWN_ISSUES. Without `--kit` the build is byte-identical to before.
+
 ## Dev tools (project rule) — `92-camera.js`
 
 * **Inspector** (on by default; button toggles): hover shows *name ·
