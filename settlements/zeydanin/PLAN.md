@@ -48,9 +48,9 @@ flows inland.
 | **The Stack** (the old quarter) | Zeijani, then Hykkousoi pods on it | the Zeijani rock stack: rounded rooms and galleries carved in cream tuff, hewn on the poor levels and polished on the rich, their doors and the walk map through the stone; Hykkousoi barnacle pods grown on its seaward face and over its top, doubling its rooms; a Vothic sun painted on its gate (section 3) |
 | **The Islander town** | Islander, Vothic renovation on a share | long houses on piles under horned roofs, the kingdom's hall of stacked horned roofs (the Islanders' seat, now the Vothic governor's "assembly"), the carved posts, the dockyards; scrap on the poor |
 | **The Izani rise** | Izani, then Vothic | the governor's palace renovated Vothic; the Vernacular houses round it, a few renovated purple, most as they were; the Izani quarter's old gate with the sun chiselled off |
-| **The Hykkousoi quarter** | Hykkousoi | grown nacre and bronze on the Stack's seaward side and the mole below it: the sea shrine, the pilots' houses, the League's trade house, kept apart by Voth and watched |
+| **The Hykkousoi quarter** | Hykkousoi | grown nacre and bronze on the Stack's seaward side and the mole below it: the sea shrine, the pilots' houses, the League's trade house; tolerated under watch, an Ordinator post at the mole's root (the exiled Islander king lives at Ys) |
 | **The Vothic works** | Vothic | the Ordinator citadel on the rise's flank, the harbour fort, barracks blocks, the garrison's drill ground, the Temple of the Sun on the shore (new-built, not a renovation), the Chichani settlers' canton of townhouses on the town's landward edge |
-| **The harbour** | Islander, greatly expanded by Voth | the Islander dockyard and beach landing, then Voth's stone quays, the pens for the chitin biremes, the spice warehouses, the customs; the Hykkousoi mole |
+| **The harbour** | Islander, greatly expanded by Voth | the Islander dockyard and beach landing, then Voth's stone quays, the pens for the chitin biremes, the spice warehouses among the fish, stone, pearl and herd trades' (section 6, question 5), the customs; the Hykkousoi mole |
 | **The plantations** | Vothic | Ranj plantations on the flows (the Shim registry's planter's manor, slave lines and overseer's post, `settlements/shim/PLAN.md` §1, once they exist), most struggling: thin rows of Ranj trees with dead stands, two converted to coffee under shade bananas and one to sugar; the old Zeijani shrines in the kīpuka between them, still visited |
 
 ## 2. Layers and renovations
@@ -100,7 +100,7 @@ gold over the copper, with a Vothic lantern; **flying buttresses between the tie
 upper gallery and the two large pavilions, carrying a new gallery; purple render over the arcades' reveals, the
 orange showing where it flakes; a black-and-porphyry trim line at the cornice; the forecourt's gate rebuilt with the
 diamond; an Ordinator guardhouse in the guard pavilion; the household shrine of the orb and sun stripped and refitted
-as a Sun shrine; the council pavilion, once the Islander king's door, kept for the Islander elders Voth still receives.
+as a Sun shrine; the council pavilion, once the Islander king's door, kept for the Islander elders Voth still receives (the king himself is in exile at Ys).
 The floor programme is the vassal one, so the sheets are the shared generator's with a renovation column (what Voth
 changed in each room: the decor level up by one, a Sun image where the orb was), and the furniture manifest keys to
 the Voth catalog file over the Iziz one.
@@ -141,14 +141,21 @@ the Voth catalog file over the Iziz one.
 
 ## 6. Open questions for the owner
 
-1. **The Islander kingdom.** Its name, its hall, and whether a king or claimant still lives in the city under Voth
-   (recommended: a king in name, received at the council pavilion, which gives the page a politics).
-2. **The Hykkousoi quarter now.** Tolerated under watch (recommended: the League is Iziz's ally and Voth's rival, but
-   the pilots are needed) or shut.
-3. **The renovation rule's reach.** Vothic marks on the civic always and on a third of the Islander town's houses
-   (recommended), or heavier.
-4. **The plantations.** The Shim registry's plantation entries are reused (recommended; they do not exist yet, so Shim's
-   P3 or this build's P4 writes them, whichever comes first) or Zey'danin's are Voth catalog entries of their own.
-5. **The spice.** Temora stays the spice port and Zey'danin the mountain gate (recommended), or Zey'danin's new
-   harbour has taken the trade.
-6. **The model.** Change the point's type from village to city, and name the river or stream off the mountain.
+1. **Settled (2026-10-18).** The Islander king went into **exile in Ys**: no king or claimant lives in the city. The
+   council pavilion receives the Islander elders; the king's claim lives across the sea under the League's roof, which
+   is why the Hykkousoi quarter is watched (2) and why the Vothic governor's police read every letter that comes off a
+   Hykkousoi ship. The kingdom's name is still to be given.
+2. **Settled (2026-10-18).** The Hykkousoi quarter is **tolerated under watch**: the pilots and the trade house work,
+   an Ordinator post stands at the mole's root, the sea shrine is open.
+3. **Settled (2026-10-18).** The renovation rule as written: Vothic marks on every civic building and on a third of
+   the Islander town's houses.
+4. **Settled (2026-10-18).** The plantations reuse **Shim's planter, slave lines and overseer entries** in the Voth
+   registry (`settlements/shim/PLAN.md` §1), written by whichever build reaches them first.
+5. **Settled (2026-10-18).** **Both are spice ports.** Temora is a purely Vothic settlement; Zey'danin has a much
+   larger and more diverse economy (the Throne trade in every direction: the Zeijani's stone and tuff work, the
+   Islanders' boats and fish, the Hykkousoi pilots and pearl, the ash nomads' herds, the garrison's custom, and the
+   spice through its new harbour), so the harbour's spice warehouses stand beside everything else's, not alone.
+6. **Settled (2026-10-18).** The model point is typed **city** (`s5x27pj6hn`, version 4, with a note); the stream off
+   the mountain is named when the Cut's and the Throne's rivers are drawn (`tools/scale-model/README.md`).
+
+None open but the kingdom's name.
