@@ -140,15 +140,24 @@ function tanJharokha(x,y,z,ry,w,h,out,c,bandC,o){o=o||{};const f=loc(x,z,0,out/2
  for(const s of[-1,1]){const p=loc(x,z,s*(w/2-.08),out/2,ry);vB('vPlaster',p[0],y,p[1],.16,h,out,ry,c);
   const q=loc(x,z,s*(w/2),out/2,ry);tanArch(q[0],y+.95,q[1],ry+s*Math.PI/2,Math.min(.8,out*.6),Math.min(1.6,h-1.3),{kind:'cusp',fill:o.fill||'D',band:bandC,bw:.08,out:.04,lobes:3});}
  const fr=loc(x,z,0,out,ry);tanBalustrade(fr[0],y,fr[1],ry,w-.3,c,.95,{plain:true});
+ if(o.jali!==false&&TAL_MATLIB.taJaliA)tanJali(fr[0],y+1.0,fr[1],ry,w-1.1,Math.max(.6,h-2.0),c,null,true);
  vB('vPlaster',fr[0],y+h-.3,fr[1],w,.3,.16,ry,c);
  tanArch(fr[0],y+.95,fr[1],ry,w-.7,h-1.25,{kind:'cusp',fill:o.fill||'D',band:bandC,bw:.1,out:.05,jambs:false,lobes:5});
  for(const s of[-1,1]){const p=loc(x,z,s*(w/2-.25),out-.1,ry);vPst('taColP',p[0],y+.95,p[1],.08,h-1.25,bandC);}
  vB('vPlaster',f[0],y+h,f[1],w+.2,.14,out+.2,ry,c);
  if(o.dome!==false)tanDome(f[0],y+h+.14,f[1],Math.min(w,out)*.5,{kind:'melon',c:o.domeC||bandC,ribs:8,ribC:c,finial:o.finial,fr:.06});
  return y+h+.14;}
+// the temple's rose window: the star disc card (TAL_MATLIB.taRose) on a face, radius r, its centre at y (the card's disc
+// fills .93 of its square); without the library, a cobalt disc
+function tanRoseWindow(x,y,z,ry,r){const f=loc(x,z,0,.06,ry);if(TAL_MATLIB.taRose){kput('taRose',[f[0],y,f[1]],vQ(ry,0,0),[r*2.15,r*2.15,1],null);return;}
+ kput('taDiscC',[f[0],y,f[1]],vQ(ry,0,0),[r,r,.08],null);}
 // a jali: a lattice screen filling a rectangle on a face: vertical and horizontal bars of the wall colour over a dark
 // ground (rich only)
-function tanJali(x,y,z,ry,w,h,c,pitch){pitch=(pitch==null?.22:pitch);const f=loc(x,z,0,.02,ry);const nx=Math.round(w/pitch),ny=Math.round(h/pitch);
+// with the library bound (TAL_MATLIB.taJaliA, taJaliG: the owner's cut-out cards, one tile a metre, chosen by place) the
+// lattice is one card plane; `bare` leaves out the dark ground (a lit opening behind shows through the cut-out)
+function tanJali(x,y,z,ry,w,h,c,pitch,bare){pitch=(pitch==null?.22:pitch);const f=loc(x,z,0,.02,ry);const nx=Math.round(w/pitch),ny=Math.round(h/pitch);
+ if(TAL_MATLIB.taJaliA){if(!bare)vB('vDarkB',f[0],y,f[1],w,h,.04,ry);const g=loc(x,z,0,.08,ry);
+  kput(((Math.round(x*7+z*13)&1)?'taJaliG':'taJaliA'),[g[0],y+h/2,g[1]],vQ(ry,0,0),[w,h,1],c||null);return;}
  vB('vDarkB',f[0],y,f[1],w,h,.04,ry);for(let k=0;k<=nx;k++){const p=loc(x,z,-w/2+k*w/nx,.05,ry);vB('vPlaster',p[0],y,p[1],.04,h,.05,ry,c);}
  for(let k=0;k<=ny;k++)vB('vPlaster',f[0],y+k*h/ny-.02,f[1],w,.04,.1,ry,c);}
 // an outside straight stair along a wall face: its foot at (x, z) on the face, climbing along the face toward local
@@ -177,10 +186,11 @@ function tanImperialStair(x,y,z,ry,w,rise,c,treadC,o){o=o||{};const h1=rise/2,n1
   const g=loc(x,z,s*(w/2+uw+.25+.12),run2+LD-.12,ry);tanBalustrade(g[0],y+h1,g[1],ry,uw+.26,c,.95,{});}
  return run2+LD+run1;}
 // a ring medallion in the paving: an orange ring round a white disc with an orange boss, laid flat at y
-function tanMosaicRing(x,y,z,r,c1,c2){kput('taRing',[x,y+.02,z],null,[r,.3,r],c1);kput('taDisc',[x,y+.012,z],qEuler(Math.PI/2,0,0),[r*.88,r*.88,.02],c2);kput('taDisc',[x,y+.03,z],qEuler(Math.PI/2,0,0),[r*.3,r*.3,.02],c1);}
+function tanMosaicRing(x,y,z,r,c1,c2){const M=!!TAL_MATLIB.taMosaic;kput('taRing',[x,y+.02,z],null,[r,.3,r],c1);if(M)kput('taDiscMo',[x,y+.008,z],qEuler(Math.PI/2,0,0),[r*.95,r*.95,.02],null);kput('taDisc',[x,y+.012,z],qEuler(Math.PI/2,0,0),[r*(M?.6:.88),r*(M?.6:.88),.02],c2);kput('taDisc',[x,y+.03,z],qEuler(Math.PI/2,0,0),[r*.3,r*.3,.02],c1);}
 // a meander border: a strip round a rectangle w x d at y with small white squares along it (the key pattern's reading)
-function tanMeander(x,y,z,w,d,ry,c,t){t=(t==null?.3:t);const wh=vC(0xf4f1ea);for(const [lx,lz,a,L] of[[0,d/2-t/2,0,w],[0,-d/2+t/2,Math.PI,w],[w/2-t/2,0,Math.PI/2,d-2*t],[-w/2+t/2,0,-Math.PI/2,d-2*t]]){const p=loc(x,z,lx,lz,ry);vB('vPlaster',p[0],y,p[1],L,.03,t,ry+a,c);
-  const n=Math.max(1,Math.round(L/(t*2)));for(let k=0;k<n;k++){const q=loc(p[0],p[1],-L/2+(k+.5)*L/n,0,ry+a);vB('vPlaster',q[0],y+.03,q[1],t*.5,.012,t*.5,ry+a,wh);}}}
+function tanMeander(x,y,z,w,d,ry,c,t){t=(t==null?.3:t);const wh=vC(0xf4f1ea),M=!!TAL_MATLIB.taMeander&&Math.abs(t-.3)<.01;/* M: the library's band (taMeanderB, .3 m wide) */
+ for(const [lx,lz,a,L] of[[0,d/2-t/2,0,w],[0,-d/2+t/2,Math.PI,w],[w/2-t/2,0,Math.PI/2,d-2*t],[-w/2+t/2,0,-Math.PI/2,d-2*t]]){const p=loc(x,z,lx,lz,ry);vB(M?'taMeanderB':'vPlaster',p[0],y,p[1],L,.03,t,ry+a,M?null:c);
+  if(M)continue;const n=Math.max(1,Math.round(L/(t*2)));for(let k=0;k<n;k++){const q=loc(p[0],p[1],-L/2+(k+.5)*L/n,0,ry+a);vB('vPlaster',q[0],y+.03,q[1],t*.5,.012,t*.5,ry+a,wh);}}}
 // a rounded block: a box whose vertical edges are rounded by r (a cross of two boxes and four corner posts); the deeper
 // box through vnBody so a hollow set can take it later. c the wash
 function tanRoundBox(x,y,z,w,h,d,ry,c,r){r=(r==null?.3:r);vnBody('vPlaster',x,y,z,w,h,d-2*r,ry,c,{t:.3});vB('vPlaster',x,y,z,w-2*r,h,d,ry,c);

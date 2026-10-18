@@ -38,7 +38,7 @@ function buildPylHexVilla(G,o){reseed(9096+(o.v|0));const CW=23,CD=21,FZ=9.6,WH=
  vnReg('Hex villa (rich)',1,-5.2,9,8.6,{style:'neo'});vnReg('Hex villa — porthole wall and court',0,4,10,WH+2.4,{style:'neo'});
  // the front wall and the portal block
  for(const s of[-1,1]){vB('vPlaster',s*(CW/4+1.6),0,FZ,CW/2-3.2,WH,.6,0,wh);vB('vPlaster',s*(CW/4+1.6),WH,FZ,CW/2-3.0,.14,.8,0,or);
-  pynPortCluster(s*(CW/4+1.6),.5,FZ+.3,0,CW/2-4.4,WH-.9,5,.62,or,'G');}
+  pynPortCluster(s*(CW/4+1.6),.5,FZ+.3,0,CW/2-4.4,WH-.9,5,.62,or,'G',true);}
  vB('vPlaster',0,0,FZ-.4,6.4,WH+2.4,1.4,0,cr);vB('vPlaster',0,WH+2.4,FZ-.4,6.6,.18,1.6,0,or);
  pynFrame('hex',0,.0,FZ+.3,0,2.2,4.8,{rim:.22,n:4,cs:[wh,or],fill:'D',out:.06});
  for(const s of[-1,1])vnLamp(s*2.6,3.2,FZ+.3,0);
@@ -54,7 +54,7 @@ function buildPylHexVilla(G,o){reseed(9096+(o.v|0));const CW=23,CD=21,FZ=9.6,WH=
  vnDoor(A[0],0,A[1]+A[3]/2,0,1.3,2.6,'vPlaster',or,vC(vPick(PYPAL.walnut)),false);
  for(const x of[A[0]-3.6,A[0]+3.6])vnWin(x,1,A[1]+A[3]/2,0,1.4,1.6,'lit','vPlaster',or);
  // the court: paving, a narrow pool on the axis, lamp posts
- vnPaving(0,0,3.4,10,8,0,st,1);vB('vStone',0,0,3.4,1.6,.12,6.4,0,st);vB('vWinGlass',0,.12,3.4,1.0,.03,5.8,0,null);
+ pynHexPave(0,0,3.4,10,8,0,st);vB('vStone',0,0,3.4,1.6,.12,6.4,0,st);vB('vWinGlass',0,.12,3.4,1.0,.03,5.8,0,null);
  for(const s of[-1,1])vnLampPost(s*1.7,0,6.3,2.6);}   // flanking the pool, clear of the door
 
 VERN.def({key:'pyl_neo_villa',name:'Neo villa',family:'dwelling',

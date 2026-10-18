@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.237,
+    2.347
+   ],
+   "seam_before": [
+    4.377,
+    2.387
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.55,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "tile.hex.ceramic",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Weathered Hexagonal Ceramic Tile Texture.png",
+  "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Hexagonal Ceramic Tile Texture.png",
+  "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+  "reuse": "hex paving and floors (Pylon)",
+  "sha1": "aa4754411a2ed5751fe8bc5acb06b37aca667032"
+ }
+}

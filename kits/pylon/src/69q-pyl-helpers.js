@@ -57,12 +57,18 @@ function pynFrame(shape,x,y,z,ry,w,h,o){o=o||{};const F=PY_SHAPE[shape],n=o.n==n
 // a porthole: a bezel ring of radius r (its tube 12% of r), a fill disc, and a grille of `bars` radial bars (0: none)
 function pynPorthole(x,yc,z,ry,r,ringC,fill,bars,barC){const f=loc(x,z,0,.06,ry);kput('pyRing',[f[0],yc,f[1]],vQ(ry,0,0),[r,r,r*.9],ringC||null);
  pynEnd(PY_KIND[fill||'G'][1],x,yc,z,ry,r*.94,.05,.06,null);
+ if(bars==='hex'){if(PYL_MATLIB.pyGrille){const g=loc(x,z,0,.1,ry);kput('pyGrilleD',[g[0],yc,g[1]],vQ(ry,0,0),[r*.94,r*.94,1],null);return;}bars=6;}
  for(let k=0;k<(bars||0);k++){const a=k*Math.PI/bars,g=loc(x,z,0,.09,ry);vBq('vIron',g[0],yc,g[1],r*1.86,.05,.04,vQ(ry,0,a),barC||null);}}
 // a cluster of portholes on a face rectangle (cx at the middle, y0..y0+h, width w): graded, big low and small high,
 // placed by rejection so none overlap; n tries for `count` holes. Uses the builder's own rng stream.
-function pynPortCluster(x,y0,z,ry,w,h,count,rMax,ringC,fill){const P=[];for(let t=0;t<count*30&&P.length<count;t++){const v=rng();const r=rMax*(1-.65*v)*(.8+.2*rng());
+function pynPortCluster(x,y0,z,ry,w,h,count,rMax,ringC,fill,grille){const P=[];for(let t=0;t<count*30&&P.length<count;t++){const v=rng();const r=rMax*(1-.65*v)*(.8+.2*rng());
  const u=rr(-w/2+r,w/2-r),yy=y0+r+v*(h-2*r);if(P.some(q=>Math.hypot(q[0]-u,q[1]-yy)<q[2]+r+.15))continue;P.push([u,yy,r]);}
- for(const q of P){const p=loc(x,z,q[0],0,ry);pynPorthole(p[0],q[1],p[1],ry,q[2],ringC,fill,q[2]>.7?6:0);}return P.length;}
+ for(const q of P){const p=loc(x,z,q[0],0,ry);pynPorthole(p[0],q[1],p[1],ry,q[2],ringC,fill,grille?'hex':q[2]>.7?6:0);}return P.length;}
+// a flat hex-grille panel on a face (the library's card, a .8 m tile), w x h, its foot at y; nothing without the library
+function pynGrille(x,y,z,ry,w,h){if(!PYL_MATLIB.pyGrille)return;const g=loc(x,z,0,.08,ry);kput('pyGrille',[g[0],y+h/2,g[1]],vQ(ry,0,0),[w,h,1],null);}
+// hex paving: a slab w x d of the library's hex tile, laid flat, its top at y+.04, tinted c; it draws the five numbers vnPaving's
+// one flag drew, so the builder's stream goes on as before
+function pynHexPave(x,y,z,w,d,ry,c){if(!PYL_MATLIB.pyHexTile){vnPaving(x,y,z,w,d,ry,c,1);return;}for(let i=0;i<5;i++)rng();vB('pyHexTile',x,y-.04,z,w,.08,d,ry,c);}
 // a cantilevered slab off a face: w along the face, reaching d out, t thick, its top at y
 function pynCanopy(x,y,z,ry,w,d,t,c,item){const f=loc(x,z,0,d/2,ry);vB(item||'vPlaster',f[0],y-t,f[1],w,t,d,ry,c);}
 // a barrel vault: a half-vault of span w and rise over a run of `len` along the local axis turned by ry (ry = 0: the

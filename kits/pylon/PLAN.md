@@ -226,6 +226,10 @@ gaps: **Ancient white shell panel** with fine joints and small round pocks (if t
 plain); **board-formed concrete** with formwork lines; **hex tile** (amber and black, `1b13731c`); **hex grille**
 (cut-out on magenta); **orange painted render** with wear. The prompts are written when the owner agrees the list.
 
+**Delivered 2026-10-18 and wired** (`materials.json`, KNOWN_ISSUES.md): the grey hex ceramic tile (`pyHexTile`: court
+paving), the hex grille card (`pyGrille`, `pyGrilleD`: portholes), and the worn orange render, which went to Talia
+(`taRenderW`).
+
 ## 9. Phases
 
 | Phase | What | Done when |

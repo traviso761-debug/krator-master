@@ -37,7 +37,7 @@ function buildPylGovernorPalace(G,o){reseed(9271+(o.v|0));const T=1.2,G1=5.5,U1=
   const b=P(-33,s*8);vnBannerPole(b[0],0,b[1],0,7,or);}
  box('pyConc',37.6,38.4,-30,-20.5,0,3,conc);box('pyConc',37.6,38.4,-13.5,30,0,3,conc);
  for(const s of[-1,1]){const l=P(-22,s*7);vnLampPost(l[0],0,l[1],3.4);}
- vnPaving(0,0,P(-24,0)[1],14,22,0,vC(vPick(PYPAL.stoneGrey)),1);
+ pynHexPave(0,0,P(-24,0)[1],14,22,0,vC(vPick(PYPAL.stoneGrey)));
  // ---- the podium: Ancient white panel, its front recessed between the large pavilions, pocked; the front flight
  box('vPanelB',-8.5,34.6,-25.6,25.6,0,T,anc);for(const s of[-1,1])box('vPanelB',-14.3,-8.5,s*11.7,s*25.6,0,T,anc);
  for(let k=0;k<26;k++){const v=rr(-25,25),u=Math.abs(v)>12?-14.35:-8.55,[x,z]=P(u,v);kput('pyDiscD',[x,rr(.2,1),z+.02],null,[rr(.05,.12),rr(.05,.12),.04],null);}

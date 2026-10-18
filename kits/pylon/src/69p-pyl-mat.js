@@ -42,3 +42,12 @@ kdef('pyDomeR',VDOME,MAT.rust);
 kdef('pyCyl',new THREE.CylinderGeometry(1,1,1,36).translate(0,.5,0),MAT.plaster);
 // lit glass (MAT.warmPane, the electric window: rich, civic and the Ancients' amber glow), double-sided for the wedges
 MAT.pyLit=MAT.warmPane.clone();MAT.pyLit.side=THREE.DoubleSide;kdef('pyDiscL',PYDISC,MAT.pyLit);kdef('pyGableL',VGABLE,MAT.pyLit);
+
+// ---------------------------------------------------------------- the owner's delivery of 2026-10-18 (materials.json, 88yp)
+// The hex tile (grey ceramic, a 1.2 m tile, a grey detail map the instance colour tints) on a box: the courts and forecourts
+// (pyHexTile, pynHexPave); the hex grille, a cut-out card (alphaTest .5, double-sided, a .8 m tile): a flat panel (pyGrille,
+// pynGrille) and a disc for the portholes (pyGrilleD: a disc's uv 0..1 spans its 2r, so K is doubled; same family).
+MAT.pyHexTile=MAT.plaster.clone();vWorldUV(MAT.pyHexTile,1/1.2);
+const pyCard=()=>new THREE.MeshStandardMaterial({color:0xffffff,roughness:.7,metalness:.3,alphaTest:.5,side:THREE.DoubleSide});
+MAT.pyGrille=pyCard();vWorldUV(MAT.pyGrille,1/.8);MAT.pyGrilleD=pyCard();vWorldUV(MAT.pyGrilleD,2/.8);
+kdef('pyHexTile',VBOX,MAT.pyHexTile);kdef('pyGrille',VPLANE,MAT.pyGrille);kdef('pyGrilleD',new THREE.CircleGeometry(1,24),MAT.pyGrilleD);

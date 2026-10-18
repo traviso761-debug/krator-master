@@ -67,3 +67,19 @@ kdef('taGiltBall',VBALL,MAT.taGilt);kdef('taGiltPost',VPOSTB,MAT.taGilt);kdef('t
 // the pointed heads: wedges in the fill materials, double-sided (the wedge's faces are wound for roofs)
 kdef('taGableD',VGABLE,MAT.taVoid);kdef('taGableG',VGABLE,MAT.taGlass);kdef('taGableL',VGABLE,MAT.taLit);kdef('taGableM',VGABLE,MAT.taMarble);kdef('taGableTile',VGABLE,MAT.taTile);
 kdef('taHipTile',VHIP,MAT.taTile);kdef('taPyrTile',VPYR,MAT.taTile);
+
+// ---------------------------------------------------------------- the owner's delivery of 2026-10-18 (materials.json, 88yt)
+// Full-colour sets (keep 1, the set's own brightness): the orange honeycomb mosaic (1.2 m tile) on the paving medallions
+// (taDiscMo, a disc: uv 0..1 spans its 2r, so K is doubled) and on boxes and vaults (taMosaicB, taVaultMo: the trumpet
+// vaults of the interiors); the meander band (a 3:1 strip, .9 x .3 m: a .3 m border strip, u along its length) on the
+// paving borders; the worn orange render of the tenements (2 m). The cut-outs (the jali lattices, the rose window) are
+// alpha cards (alphaTest .5, double-sided); the rose window takes no world UV (one card is one disc).
+MAT.taMosaic=MAT.plaster.clone();vWorldUV(MAT.taMosaic,1/1.2);
+MAT.taMosaicD=MAT.plaster.clone();vWorldUV(MAT.taMosaicD,2/1.2);
+MAT.taMeander=MAT.plaster.clone();vWorldUV(MAT.taMeander,1/.9,1/.3);
+MAT.taRenderW=MAT.plaster.clone();vWorldUV(MAT.taRenderW,.5);
+const taCard=()=>new THREE.MeshStandardMaterial({color:0xffffff,roughness:.8,metalness:0,alphaTest:.5,side:THREE.DoubleSide});
+MAT.taJaliA=taCard();vWorldUV(MAT.taJaliA,1);MAT.taJaliG=taCard();vWorldUV(MAT.taJaliG,1);MAT.taRose=taCard();
+kdef('taMosaicB',VBOX,MAT.taMosaic);kdef('taDiscMo',TADISC,MAT.taMosaicD);kdef('taVaultMo',TAVAULT,MAT.taMosaic);
+kdef('taMeanderB',VBOX,MAT.taMeander);kdef('taRenderW',VBOX,MAT.taRenderW);
+kdef('taJaliA',VPLANE,MAT.taJaliA);kdef('taJaliG',VPLANE,MAT.taJaliG);kdef('taRose',VPLANE,MAT.taRose);

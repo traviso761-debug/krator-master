@@ -131,7 +131,7 @@ function buildTalTenement(G,o){reseed(9441+(o.v|0));const W=11,D=10.5,H=3.0,N=5,
  const bo=vC(vPick(TAPAL.burnt)),wh=TA_WH(),st=TA_ST(),wood=vC(vPick(VPAL.woodMid)),tile=vC(vPick(TAPAL.tile)),wal=TA_WAL();
  vnReg('Tenement (middle, shared)',0,Z0,8,TOP+3.4,{style:'orange',type:['multi-family dwelling']});
  vB('vStone',0,-.1,Z0,W+.4,Y0+.1,D+.4,0,st);
- for(let k=0;k<N;k++){const y=Y0+k*H;vnBody('vPlaster',0,y,Z0,W,H,D,0,bo,{t:.3});if(k>0)tanString(0,y-.06,Z0,W,D,0,wh,.08,.1);
+ for(let k=0;k<N;k++){const y=Y0+k*H;vnBody(TAL_MATLIB.taRenderW?'taRenderW':'vPlaster',0,y,Z0,W,H,D,0,TAL_MATLIB.taRenderW?null:bo,{t:.3});if(k>0)tanString(0,y-.06,Z0,W,D,0,wh,.08,.1);
   if(k===0){tanArch(1.8,y,zf,0,2.6,3.0-.4,{fill:'D',band:wh,bw:.16,key:wh});vnDoor(-2.4,y,zf,0,1.0,2.3,'vPlaster',wh,wal,false);vnStairs(-2.4,0,zf+.4,0,1.5,Y0,1,'vStone',st);
    vnAwning(1.8,y+2.3,zf,0,3.0,1.3,vC(vPick(VPAL.awning)));for(const s of[-1,1])tanArch(s*W/2,y+.9,Z0-1.2,s*Math.PI/2,.9,1.5,{fill:'D',band:wh,bw:.12});}
   else{for(let j=0;j<4;j++){const x=-3.9+j*2.6;if((j+k)%3===0)vnWin(x,y+.9,zf,0,.9,1.5,'glass','vWood',wood,true);else tanArch(x,y+.8,zf,0,.9,1.7,{fill:'G',band:wh,bw:.12,sill:wh});}

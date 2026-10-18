@@ -1,6 +1,6 @@
 {
  "build": "pylon",
- "note": "Pylon's own library families, bound onto its MAT keys by src/88yp-pyl-matlib.js (KMAT.bindMat('pylon')); the kit also draws in the Iziz Vernacular's and the Ancients' sets, which Iziz's own pack binds (settlements/iziz/materials.json). pyConc: the board-formed concrete of the neo-Ancient blocks, the palace's and the guild's concrete, tinted by PYPAL.formwork. The gaps (hex tile, hex grille, worn orange render) are owed in core/materials/PROMPTS-NEEDED.md.",
+ "note": "Pylon's own library families, bound onto its MAT keys by src/88yp-pyl-matlib.js (KMAT.bindMat('pylon')); the kit also draws in the Iziz Vernacular's and the Ancients' sets, which Iziz's own pack binds (settlements/iziz/materials.json). pyConc: the board-formed concrete of the neo-Ancient blocks, the palace's and the guild's concrete, tinted by PYPAL.formwork. Delivered 2026-10-18 (owner-tex2b batch): pyHexTile (hex ceramic tile, a grey detail map the instance colour tints, the courts) and pyGrille (the hex grille, an alpha card, full colour: porthole grilles; pyGrilleD, the porthole disc, takes the same family by alias). The worn orange render is Talia's (kits/talia).",
  "size": 512,
  "families": {
   "pyConc": {
@@ -21,6 +21,37 @@
     "macro": 0.1,
     "cell": 6
    }
+  },
+  "pyHexTile": {
+   "lib": "tile.hex.ceramic",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.78
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "pyGrille": {
+   "lib": "patterns/pylon/hex-grille",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0.3
   }
  }
 }
