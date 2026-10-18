@@ -332,6 +332,10 @@
    "bytes": 7037360,
    "sha256": "4afcaad53c1742554caf146f341db16ad4bd362481876026a5025d30177b2028"
   },
+  "kits/pylon/dist/pylon.html": {
+   "bytes": 2008652,
+   "sha256": "f91752b0d8e70edad3bf09797be2ebbc1f92a9018b0bfd50ae263b03fdb612ea"
+  },
   "kits/resources/dist/resources.html": {
    "bytes": 522293,
    "sha256": "b6ce73b841e698aead6991f42f8d957a5e2eb82dd31a52ce298e1a407912d8fd"
@@ -343,6 +347,10 @@
   "kits/scyvoi/dist/scyvoi.html": {
    "bytes": 1394436,
    "sha256": "688502e79bde1a4d0c65ad88da4dd2d7c83c1d439f5dfd83f82c53df7ff7fce0"
+  },
+  "kits/talia/dist/talia.html": {
+   "bytes": 1807908,
+   "sha256": "49f214a95a4fe711e9194197a8046f8f96f86ca7e23b04bc7f081258f8164ad0"
   },
   "kits/zeijani/dist/zeijani.html": {
    "bytes": 1291340,
@@ -393,8 +401,8 @@
    "sha256": "985f20bc5d8a9501fc391dbeb8d6ea385e334439391a53140d961d65b55f995e"
   },
   "settlements/hook/dist/hook.html": {
-   "bytes": 894619,
-   "sha256": "43a6bc70c7f7e97deb1626aa53f53c99bb1e80dfe4e36dc27e174c0dc6c895e0"
+   "bytes": 884089,
+   "sha256": "4bff490b3ba3005f149a0525a74acdb2201855e2bcf918fb7627098043afaf5a"
   },
   "settlements/isle-demo/dist/isle-site.html": {
    "bytes": 1242859,
