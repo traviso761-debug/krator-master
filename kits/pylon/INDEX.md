@@ -22,7 +22,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `70r-pyl-rich.js` | 5 |  |
 | `71p-pyl-industry.js` | 16 |  |
 | `72p-pyl-civic.js` | 10 |  |
-| `77zp-pyl-ancients.js` | 15 | the VERN defs: one per family, the state in o.mo (104) |
+| `77zp-pyl-ancients.js` | 19 | the VERN defs: one per family, the state in o.mo (137) |
 
 ## targets/
 
@@ -30,4 +30,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `kit` | `89z-rows.js`, `91z-views.js` | 6 |
+| `kit` | `89z-rows.js`, `91z-views.js` | 5 |

@@ -35,16 +35,17 @@ the orange is the Vernacular's own. Pylon's helpers are `pyn*` (`src/69q-pyl-hel
 | Salvage and industry | `pyl_scrap_yard`, `pyl_breakers_floor`, `pyl_smelter`, `pyl_sorting_shed`, `pyl_workshop` (pylon3), `pyl_crawler_depot`, `pyl_tank_farm`, `pyl_cable_crane` (its cable runs `o.len` back and `o.rise` up from the mast: the placer sets the far end), `pyl_conveyor` (one segment, `o.len`) |
 | Trade | `pyl_scrap_exchange` (pylon - market), `pyl_bazaar_lane` (pylon8; `o.len`) |
 | Civic (lit) | `pyl_salvagers_guild` (ancient office), `pyl_assay_office` (the Emperor's tithe: a verdigris dome and the orb), `pyl_watch` (fortress), `pyl_cult_shrine` (pylon - temple), `pyl_school`, `pyl_clinic` |
-| The Ancients (`src/77zp-pyl-ancients.js`) | six families, each in four states (`o.mode`: `intact`, `ruin`, `repaired` and `rehab`): `anc_pyl_blades` (ancient 2), `anc_pyl_spindles` (honeycomb arch), `anc_pyl_pods` (pylon6), `anc_pyl_vaults` (ancient apt), `anc_pyl_gems` (ancient massing), `anc_pyl_hoop` (honeycomb complex) |
+| The Ancients (`src/77zp-pyl-ancients.js`) | six families, each in three states (`o.mode`: `intact`, `ruin`, `repaired`): `anc_pyl_fort` (fortress, at the Ancients' scale), `anc_pyl_slab` (the arch slab: the Monolith at a city block's scale), `anc_pyl_pods` (pylon6), `anc_pyl_vaults` (ancient apt), `anc_pyl_gems` (ancient massing), `anc_pyl_hoop` (honeycomb complex) |
 | The temple | `pyl_temple` (ancient temple, ancient): the Ancients' temple, `repaired` by default |
 | The Monolith | `anc_monolith`: kits/ancients' `buildMonolith`, read in place at decay `o.d` (default 1, the ruin); on the sheet at full scale, west of the rows (views "The Monolith", "The Monolith — the arch") |
 | The mixed street, seven rows | each tier's Pylon buildings between Vernacular ones of the same tier (`vern_house_poor_*`, `vern_house_mid_*`, `vern_shops` and `vern_tavern`, `vern_house_rich_*`; then industry beside `vern_smithy`, `vern_salvage_yard` and `vern_warehouse`, trade beside `vern_market` and `vern_shops`, civic beside `vern_watch_house`, `vern_school` and `vern_hospital`) |
 
 **The Ancients' states.** The families are Ancient Iziz Style families (`77z-iziz-style.js`: `izsFamily`, `izsPlace`), so
-Iziz's wreck pass gives `ruin` (cut open, stripped) and `rehab` (rusted, scrap-roofed: the Iziz way of reclaiming).
-Pylon's own `repaired` keeps the white shell whole and lives round its foot (`pyaRepair`: shelters, stalls, a scaffold,
+Iziz's wreck pass gives `ruin` (cut open, stripped). Its `rehab` (rusted, a flat scrap roof capping the broken top,
+tarps) suits Iziz's drums and boxes but floats a disc over these forms (the owner, 2026-10-18), so Pylon takes `rehab`
+as its own `repaired`, which keeps the white shell whole and lives round its foot (`pyaRepair`: shelters, stalls, a scaffold,
 orange banners, lamp posts), which is the city's repaired side. Their culture tag is `ancients`, or
-`ancients-reclaimed` when repaired or patched. `kit.json` "external" reads `kits/ancients/src/89g-monolith.js` in place,
+`ancients-reclaimed` when repaired. `kit.json` "external" reads `kits/ancients/src/89g-monolith.js` in place,
 with the fragments it needs at load (`88-plymouth.js` for `plymQuadGeo`, and the four Arcube parts for `krShard`).
 
 **The profiles** (`src/69q-pyl-helpers.js`): `pynTomb`, `pynStadium`, `pynPointed` (and the pointed hexagon), each a slab on

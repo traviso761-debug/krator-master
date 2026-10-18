@@ -148,8 +148,8 @@ does for its families)
 |---|---|
 | (the Monolith) | not a def of this kit: `buildMonolith` from `kits/ancients`, read in place at decay 1 (section 5) |
 | `anc_temple` | Pylon's temple, an Ancient building reclaimed, on the grid's repaired side (owner, 2026-10-17): four or five rounded towers with domes, parabolic arches glazed in amber, a beehive dome pocked with windows, a ribbed podium (`ancient temple`, `ancient`) |
-| `anc_slab_cluster` | three to five tapering slabs with a dark lit slot and saffron fins (`ancient 2`) |
-| `anc_spindle_row` | pointed blades splaying into buttress legs, portholes graded up them (`honeycomb arch`) |
+| `anc_pyl_fort` | the fortress block: rounded slab towers with battlements, saffron legs and an arch band over a tunnel gate (`fortress`, at the Ancients' scale; replaced the blade cluster, owner 2026-10-18) |
+| `anc_pyl_slab` | the arch slab: the Monolith at a city block's scale, through-arch, three oculi, cladding, a carved flank (replaced the spindle row, owner 2026-10-18) |
 | `anc_frustum_pods` | truncated cones with oculus skylights joined by bridges (`pylon6`, re-skinned white with orange rims) |
 | `anc_vault_chapel` | graded nested half-vaults, white rims (`ancient apt`) |
 | `anc_hex_shrine` | the triple pointed-hex gable with gem windows (`ancient massing`) |

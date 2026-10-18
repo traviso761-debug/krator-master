@@ -16,11 +16,10 @@ const PYL_ROWS=[
  ['Trade',['pyl_scrap_exchange','pyl_bazaar_lane']],
  ['Civic — guild, assay, watch',['pyl_salvagers_guild','pyl_assay_office','pyl_watch']],
  ['Civic — shrine, school, clinic',['pyl_cult_shrine','pyl_school','pyl_clinic']],
- ['Ancients — intact',[['anc_pyl_blades',{mode:'intact'}],['anc_pyl_spindles',{mode:'intact'}],['anc_pyl_pods',{mode:'intact'}],['anc_pyl_vaults',{mode:'intact'}],['anc_pyl_gems',{mode:'intact'}],['anc_pyl_hoop',{mode:'intact'}]]],
- ['Ancients — ruined',[['anc_pyl_blades',{mode:'ruin'}],['anc_pyl_spindles',{mode:'ruin'}],['anc_pyl_pods',{mode:'ruin'}],['anc_pyl_vaults',{mode:'ruin'}],['anc_pyl_gems',{mode:'ruin'}],['anc_pyl_hoop',{mode:'ruin'}]]],
- ['Ancients — repaired',[['anc_pyl_blades',{mode:'repaired'}],['anc_pyl_spindles',{mode:'repaired'}],['anc_pyl_pods',{mode:'repaired'}],['anc_pyl_vaults',{mode:'repaired'}],['anc_pyl_gems',{mode:'repaired'}],['anc_pyl_hoop',{mode:'repaired'}]]],
+ ['Ancients — intact',[['anc_pyl_fort',{mode:'intact'}],['anc_pyl_slab',{mode:'intact'}],['anc_pyl_pods',{mode:'intact'}],['anc_pyl_vaults',{mode:'intact'}],['anc_pyl_gems',{mode:'intact'}],['anc_pyl_hoop',{mode:'intact'}]]],
+ ['Ancients — ruined',[['anc_pyl_fort',{mode:'ruin'}],['anc_pyl_slab',{mode:'ruin'}],['anc_pyl_pods',{mode:'ruin'}],['anc_pyl_vaults',{mode:'ruin'}],['anc_pyl_gems',{mode:'ruin'}],['anc_pyl_hoop',{mode:'ruin'}]]],
+ ['Ancients — repaired',[['anc_pyl_fort',{mode:'repaired'}],['anc_pyl_slab',{mode:'repaired'}],['anc_pyl_pods',{mode:'repaired'}],['anc_pyl_vaults',{mode:'repaired'}],['anc_pyl_gems',{mode:'repaired'}],['anc_pyl_hoop',{mode:'repaired'}]]],
  ['Temple of the Ancients — intact, repaired',[['pyl_temple',{mode:'intact'}],['pyl_temple',{mode:'repaired'}]]],
- ['Ancients — patched (the Iziz way)',[['anc_pyl_blades',{mode:'rehab'}],['anc_pyl_spindles',{mode:'rehab'}],['anc_pyl_vaults',{mode:'rehab'}]]],
 ];
 // the mixed street: Pylon's buildings between Vernacular ones of their tier, at the gaps a city lot would leave (4 m)
 const PYL_MIXED=[
