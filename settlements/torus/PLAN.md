@@ -63,4 +63,5 @@ granaries.
 1. Is the lowest torus farmed (the plan), or do the Chichani forbid it as the Ancients' forest?
 2. How far does the country reach: the plan draws 3 km of fields; a breadbasket for the Kingdom might want more, as
    satellite villages at the scale model's resolution rather than in the page.
-3. The name of the Forest Ring's chiefdom, as for Drum.
+3. **Settled (2026-10-18).** The Forest Ring's people are the **Rinkvolk**, the ring-folk (ring + folk by the Vothic
+   rules); Izani *Torani*, Vothic *Tors*.

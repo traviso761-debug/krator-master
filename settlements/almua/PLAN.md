@@ -91,8 +91,10 @@ the Hykkousoi.
 
 ## 5. Open questions for the owner
 
-1. The river's name on the model, and the city's own name's meaning (*Almua* has no English source on the tongues
-   page yet).
+1. **Settled (2026-10-18).** The river is **Dip Rivrh**, the Deep river, for the navigable channel that makes the
+   harbour (a note in `tools/scale-model/river_names.py`); no course reaches Almua on the model yet, so the river is
+   still to be drawn there and given this name.
+   The city's own name's meaning stays open (*Almua* has no English source on the tongues page yet).
 2. Are the cantons walled from each other, as Voth's are by water, or one walled waterfront with four quarters? The
    plan assumes walled rectangles joined by gates along the shore road.
 3. How many of the clan town's blocks stand empty at game start: the plan assumes a third, the migration ongoing.

@@ -95,7 +95,10 @@ Shared with Torus: each phase is done for both cities before the next starts.
 
 ## 5. Open questions for the owner
 
-1. What does the Drum's chiefdom call itself, and what became of its chief: a Vothic client governor, or replaced?
+1. **Settled (2026-10-18).** The Drum's people are the **Vinvolk**, the fin-folk (fin + folk by the Vothic rules, f
+   and w to v, final g and k devoiced: `lore/tongues-of-krator.html`), in their Chichani-cousin dialect; the Izani
+   Empire called them the *Drumani* (Drum + *-ani*, as *Chichani*), Voth calls them the *Drïm*. Still open: what
+   became of their chief (a Vothic client governor, or replaced).
 2. How much of the Drum's lower tiers is inhabited (the plan: the lowest three of nine)?
 3. Is the wall Vothic work (stone, purple-trimmed gates) or the chiefdom's older scrap rampart that Voth faced in
    stone? The plan assumes a Vothic stone wall on the chiefdom's line.
