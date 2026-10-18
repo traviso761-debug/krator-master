@@ -581,7 +581,8 @@ def main():
     if '--vendor-bio' in sys.argv:
         vendor_bio()
         return
-    vendor_manifest()
+    if not KIT:   # a kit build (--kit) points TARGETS at the kit, where the city's vendored biome rows are not: leave VENDOR.json
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     assert_origin = '--assert-origin' in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]
