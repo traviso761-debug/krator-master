@@ -223,5 +223,4 @@ its images only).
 Talia sits on a hill (owner, 2026-10-18), at the foot of the passes: the temple on its crown, the city stepping down
 its slopes (`talia2`, `talia fancy`), the University quarter on a shoulder of it.
 
-1. **"2x the footprint"** is read as twice the Ancient campus's AREA (about 930 m square, section 9b). If it meant twice
-   each side (1,320 m, four times the area), say so: it would be a fifth of the city.
+None open ("2x the footprint" is twice the Ancient campus's area, about 930 m square: confirmed 2026-10-17).
