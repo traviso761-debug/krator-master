@@ -158,6 +158,23 @@ _OLD_TARGETS = {
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
 }
 
+# --kit <folder>: build a kit that is written on the Vernacular's contract (kits/pylon, kits/talia; settlements/iziz/
+# VASSAL-KITS.md) on this build's page, with no copy of it. The kit folder holds src/ (its own fragments, merged into the
+# one sorted order with this build's src/; a name that clashes stops the build), targets/<t>/ (rows and views, as here),
+# and kit.json: {"targets": {"kit": "pylon.html"}, "interiors": ["kit"], "deterministic": ["69p-pyl-mat.js"]}. Its pages
+# and manifests go to the kit's dist/ and folder; its KNOWN_ISSUES.md is the one printed. The kit's build.py calls this.
+KIT = None
+if '--kit' in sys.argv:
+    _kd = os.path.abspath(sys.argv[sys.argv.index('--kit') + 1])
+    with open(os.path.join(_kd, 'kit.json'), encoding='utf-8') as _fh:
+        KIT = json.load(_fh)
+    KIT['dir'] = _kd
+    TARGETS = os.path.join(_kd, 'targets')
+    DIST = os.path.join(_kd, 'dist')
+    TARGET_OUT = dict(KIT['targets'])
+    INTERIOR_TARGETS = set(KIT.get('interiors', []))
+    TARGET_CORE = dict(KIT.get('core', {}))
+
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
@@ -183,6 +200,8 @@ DETERMINISTIC = {
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js'}   # core/host (no rnd()); the take
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'furnish')) if f[0].isdigit() and f.endswith('.js')}   # core/furnish (the vernacular's interiors)
+if KIT:
+    DETERMINISTIC |= set(KIT.get('deterministic', []))
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -359,6 +378,13 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
+    if KIT:   # the kit's own fragments join the one order; they may not shadow this build's
+        ksrc = os.path.join(KIT['dir'], 'src')
+        kf = {f: os.path.join(ksrc, f) for f in os.listdir(ksrc) if f[0].isdigit()} if os.path.isdir(ksrc) else {}
+        clash = set(src) & set(kf)
+        if clash:
+            sys.exit('kit %s shadows a fragment of settlements/iziz: %s' % (KIT['dir'], ', '.join(sorted(clash))))
+        src.update(kf)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
@@ -415,7 +441,7 @@ def build_one(target, do_checks, assert_origin):
         html = _mp.write_sidecar(SIDE, html, DIST, 'iziz.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
-    with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(KIT['dir'] if KIT else HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].replace('\r\n', '\n').encode()).hexdigest()[:12] for f in order},   # LF-normalised: one hash on every platform
                   fh, indent=1, sort_keys=True)
     return order, html, out
@@ -566,7 +592,7 @@ def main():
 
         # --- syntax check (honest about node being absent) -------------------
         body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
-        chk = os.path.join(HERE, '.syntax-%s.js' % target)
+        chk = os.path.join(KIT['dir'] if KIT else HERE, '.syntax-%s.js' % target)
         with open(chk, 'w', encoding='utf-8') as fh:
             fh.write(body)
         try:
@@ -579,7 +605,7 @@ def main():
             syntax = '  syntax NOT CHECKED (no node - verify.py is this project\'s only syntax check)'
 
         print('built %-26s (%2d fragments, %3.0f KB)%s%s%s'
-              % (os.path.relpath(out, HERE), len(order), os.path.getsize(out) / 1024,
+              % (os.path.relpath(out, KIT['dir'] if KIT else HERE), len(order), os.path.getsize(out) / 1024,
                  syntax, origin_note, '' if do_checks else '  [checks skipped]'))
 
 
@@ -587,7 +613,7 @@ if __name__ == '__main__':
     main()
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
-_ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
+_ki = os.path.join(KIT['dir'] if KIT else HERE, 'KNOWN_ISSUES.md')
 if os.path.exists(_ki):
     _open = [l.rstrip() for l in open(_ki, encoding='utf-8') if l.startswith('- [ ]')]
     if _open:

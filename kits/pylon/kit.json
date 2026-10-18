@@ -1,0 +1,6 @@
+{
+ "targets": {"kit": "pylon.html"},
+ "interiors": ["kit"],
+ "core": {"kit": ["furnish"]},
+ "deterministic": ["69p-pyl-mat.js", "69q-pyl-helpers.js"]
+}

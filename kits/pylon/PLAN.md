@@ -230,7 +230,7 @@ plain); **board-formed concrete** with formwork lines; **hex tile** (amber and b
 
 | Phase | What | Done when |
 |---|---|---|
-| P0 | the shared IZV file list (`VASSAL-KITS.md` §1), `kits/pylon` scaffold: `build.py` (reads the Vernacular in place, runs `check_port`), `verify.py` on `tools/harness.py`, the kit sheet target, `materials.json`, `INDEX.md`, `PORT.md` | an empty sheet builds and `verify.py --assert` passes; Verge rebuilds byte-identical |
+| P0 | `kits/pylon` scaffold: `build.py` (the port lint, then `settlements/iziz/build.py --kit`: the kit on the Vernacular's page, nothing copied), `verify.py` (Iziz's, on `tools/harness.py`), the kit sheet target with the mixed street, `INDEX.md`, `PORT.md`; `materials.json` waits for P1's texture list, and the shared IZV list (`VASSAL-KITS.md` §1) for the city page, where it is needed (the sheet does not use the closure) | **done 2026-10-18**: the sheet builds with the first building (`pyl_folk_house`); Iziz's own pages rebuild byte-identical |
 | P1 | materials and kit items (`py*`), the profile helpers (tombstone, stadium, pointed hex, nested frames, portholes, hex lattice) | a helper row on the sheet |
 | P2 | dwellings, all tiers, and the mixed-street row | eye-level views judged by the owner |
 | P3 | salvage and industry, civic | |
