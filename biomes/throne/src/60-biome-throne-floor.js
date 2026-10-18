@@ -305,4 +305,86 @@ THRONE.buildCave=function(R,q){reseed(660047);q=q==null?1:q;R=R||2500;const st={
  BIO.grid(2.2,0,R,(x,z)=>{if(BIO.lodD(x,z)>L.mid)return 0;const c=F('cave',x,z);return c*q*(.45+.55*smooth(.2,.75,F('slope',x,z)+.4*fbm(x*.05,z*.05,6601,2)));},
   (x,y,z)=>{if(THRONE.blocked(x,z,.5))return;plant(x,y,z,BIO.lodD(x,z)<L.floor[0]?2:1);},{patch:.6,patchScale:.03,pad:.3});
  return st;};
+
+// ---------------------------------------------------------------- the new flora (stations 1 and 7: HANDOFF-FLORA.md)
+// Only where the host hands in 'riftlife' or 'ashlife', on its own seed (so no other page's floor moves)
+THRONE.buildNewFlora=function(R,q){reseed(660047);q=q==null?1:q;R=R==null?2500:R;const st={geodes:0,burrs:0,velvet:0,wires:0,pins:0},L=BIO.LOD();
+ const rift=BIO.hasField('riftlife'),ash=BIO.hasField('ashlife');
+ // GEODE PODS (ref 25, both stations): 4-6 cracked stone shell lobes round a glowing teal crystal core, on rocky ground
+ const geode=(x,y,z)=>{around(x,z,ri(1,3),.5,1.8,(px,pz,i)=>{if(BIO.depth(px,pz)>0)return;
+   const py=Y(px,pz),s=i?rr(.22,.48):rr(.42,.75),nl=ri(4,6),a0=rr(0,TAU);
+   BIO.put('geocore',[px,py+s*.38,pz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*.62,s*.55,s*.62],vary(C(pick(PAL.geoCore)),.02,.06,.05));
+   for(let k=0;k<nl;k++){const a=a0+k/nl*TAU+rr(-.1,.1),sh=s*rr(.88,1.08);
+    BIO.put('geolobe',[px+Math.cos(a)*s*.08,py-.03,pz+Math.sin(a)*s*.08],qEuler(rr(-.06,.06),-a,-rr(.06,.2)),[s,sh,s],vary(C(pick(PAL.geoShell)),.02,.04,.06));}
+   st.geodes++;});};
+ BIO.grid(18,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[0])return 0;
+   const rk=BIO.field('rock',x,z),sl=BIO.field('slope',x,z);if(rk<=.4||sl>=.8)return 0;
+   const Z=zones(x,z);if(Z.cliff>.05||Z.vent>.5)return 0;
+   return (Z.riftlife*Z.alien*(.18+.35*Z.cinder)+Z.ashlife*(.22+.38*(Z.hill+Z.yard)))*q;},
+  (x,y,z)=>{if(blocked(x,z,.8))return;geode(x,y,z);},{patch:.55,patchScale:.022,pad:.8,box:BIO.originBox(L.floor[0])});
+ // EMBER BURR (ref 22, both stations): spiky red glowing ball on a short stalk, on cinder, vent halos and young lava
+ const burr=(x,y,z)=>{around(x,z,ri(1,3),.4,1.6,(px,pz,i)=>{if(BIO.depth(px,pz)>0)return;
+   const py=Y(px,pz),s=i?rr(.22,.45):rr(.35,.68),h=s*rr(.8,1.8),tx=px+rr(-.06,.06),tz=pz+rr(-.06,.06);
+   BIO.beam('rod',[px,py-.05,pz],[tx,py+h,tz],s*.1,s*.07,vary(C(pick(PAL.burrStalk)),.02,.05,.05));
+   BIO.put('burr',[tx,py+h+s*.55,tz],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),s,vary(C(pick(PAL.burr)),.02,.08,.06));
+   st.burrs++;});};
+ BIO.grid(16,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[0])return 0;
+   const Z=zones(x,z);if(Z.cliff>.05||Z.vent>.5)return 0;
+   return (Z.riftlife*Z.alien*(Z.cinder*.28+Z.halo*.32+Z.young*.15)+Z.ashlife*(Z.young*.22+Z.old*.06))*q;},
+  (x,y,z)=>{if(blocked(x,z,.7))return;burr(x,y,z);},{patch:.55,patchScale:.022,pad:.7,box:BIO.originBox(L.floor[0])});
+ // RED VELVET, WIRE SPORESTALKS and GOLD PINS (ref 26, station 1): velvet on the acid lake and pool shores (marsh),
+ // wirestalks in the velvet, and gold pins in the velvet and the gullies
+ if(rift){
+  const pins=(x,y,z)=>{const n=ri(3,8);for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.06,.35):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
+    if(BIO.depth(px,pz)>0||BIO.mask(px,pz)<=0)continue;const py=Y(px,pz),h=rr(.06,.24),r=h*rr(.38,.58);
+    BIO.put('pin',[px,py-.01,pz],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[r,h,r],vary(C(pick(PAL.pinGold)),.02,.06,.05));}st.pins++;};
+  const wires=(x,y,z)=>{if(BIO.depth(x,z)>0||BIO.mask(x,z)<=0)return;const n=ri(4,10);
+   for(let k=0;k<n;k++){const a=k/n*TAU+rr(-.25,.25),d=rr(.03,.18),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(BIO.depth(px,pz)>0)continue;
+    const py=Y(px,pz),h=rr(1.5,3.8),ln=rr(.12,.32)*h,tx=px+Math.cos(a)*ln,tz=pz+Math.sin(a)*ln,mx=mix(px,tx,.42),mz=mix(pz,tz,.42),my=py+h*.48,r=rr(.01,.02),c=vary(C(pick(PAL.wireStalk)),.02,.06,.05);
+    BIO.beam('rod',[px,py-.04,pz],[mx,my,mz],r*1.15,r,c);BIO.beam('rod',[mx,my,mz],[tx,py+h,tz],r,r*.7,c);
+    const bs=rr(.045,.09);BIO.put('sporeball',[tx,py+h+bs*.6,tz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[bs,bs*rr(.8,1.15),bs],vary(C(pick(PAL.sporeBall)),.02,.08,.05));}
+   st.wires++;};
+  BIO.grid(6,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[1])return 0;const Z=zones(x,z);return Z.marsh*Z.alien*Z.riftlife*.85*q;},
+   (x,y,z)=>{if(blocked(x,z,.6)||BIO.depth(x,z)>0)return;const lv=BIO.lodD(x,z)<L.floor[0]?2:1,Rv=rr(1.2,2.8);
+    flat('velvet',x,y,z,Rv,leafCol(PAL.velvet,1.05,.02,.06,.05));st.velvet++;
+    if(lv===2){for(let k=0,m=ri(1,2);k<m;k++){const a=rr(0,TAU),d=k?Rv*rr(.15,.55):0,wx=x+Math.cos(a)*d,wz=z+Math.sin(a)*d;wires(wx,Y(wx,wz),wz);}
+     if(rng()<.7){const a=rr(0,TAU),d=Rv*rr(.1,.5),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;pins(px,Y(px,pz),pz);}}},
+   {patch:.6,patchScale:.024,pad:.5,box:BIO.originBox(L.floor[1])});
+  // (station 1's gullies are on the clear shoulder: the pins take them a little, more where the plume reaches)
+  BIO.grid(14,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[0])return 0;const Z=zones(x,z);return Z.gully*(.3+.7*Z.alien)*Z.riftlife*.3*q;},
+   (x,y,z)=>{if(blocked(x,z,.5)||BIO.depth(x,z)>0)return;pins(x,y,z);},{patch:.55,patchScale:.025,pad:.5,box:BIO.originBox(L.floor[0])});}
+ if(rift){st.chalices=0;st.domes=0;st.corals=0;st.rafts=0;
+  // BLOOD CHALICES (ref 23): clusters of five to twelve tall red flared trumpets on thin stems, on the acid shores and in
+  // the gullies; the trumpet funnel reused, narrow and tall. Their own seed
+  reseed(660048);
+  BIO.grid(12,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[0])return 0;const Z=zones(x,z);return (Z.marsh*.5+Z.gully*.08+Z.sky*.3)*Z.riftlife*q;},
+   (x,y,z)=>{if(blocked(x,z,.6)||BIO.depth(x,z)>0)return;
+    for(let k=0,n=ri(3,7);k<n;k++){const a=rr(0,TAU),d=k?rr(.05,.4):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(BIO.depth(px,pz)>0)continue;
+     const py=Y(px,pz),h=rr(.6,2.2),s=rr(.3,.6),la=rr(0,TAU),ln=rr(.04,.18)*h,tx=px+Math.cos(la)*ln,tz=pz+Math.sin(la)*ln;
+     BIO.beam('rod',[px,py-.05,pz],[tx,py+h,tz],.03,.02,vary(C(pick(PAL.bchaliceStem)),.02,.05,.05));
+     BIO.put('tfunnel',[tx,py+h-s*.25,tz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[s*.32,s,s*.32],vary(C(pick(PAL.bchalice)),.02,.06,.05));}
+    st.chalices++;},{patch:.55,patchScale:.024,pad:.6,box:BIO.originBox(L.floor[0])});
+  // MOSS DOMES and RED CORAL-FERN (ref 24): squat lumpy green domes (the brain cap reused, green: ~480 triangles each, so
+  // few), a pale fringe of roots on the downhill side of some near the cameras, red sprays among them; in the gullies, the skylights, the shores' margins
+  reseed(660049);
+  BIO.grid(15,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[1])return 0;const Z=zones(x,z);return (Z.gully*.3+Z.sky*.4+Z.marsh*.1)*Z.riftlife*q;},
+   (x,y,z)=>{if(blocked(x,z,.8)||BIO.depth(x,z)>0)return;const near=BIO.lodD(x,z)<L.floor[0];
+    around(x,z,near?ri(1,3):1,.8,2.2,(px,pz)=>{if(BIO.depth(px,pz)>0)return;const py=Y(px,pz),s=rr(.4,1.25);
+     BIO.put('brain',[px,py-s*.18,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[s,s*rr(1.1,1.6),s],vary(C(pick(PAL.mossdome)),.02,.06,.06));st.domes++;
+     if(near&&rng()<.35){const gx=BIO.terrainH(px+1,pz)-BIO.terrainH(px-1,pz),gz=BIO.terrainH(px,pz+1)-BIO.terrainH(px,pz-1),da=Math.atan2(-gz,-gx);
+      for(let k=0,n=ri(4,6);k<n;k++){const a=da+rr(-.9,.9),rx=px+Math.cos(a)*s*.9,rz=pz+Math.sin(a)*s*.9,l=rr(.25,.7);
+       BIO.beam('rod',[rx,py+s*.35,rz],[rx+Math.cos(a)*.08,py+s*.35-l,rz+Math.sin(a)*.08],.012,.006,vary(C(0xd8d0c0),.02,.04,.05));}}});
+    if(near&&rng()<.6)around(x,z,ri(1,3),.4,1.6,(px,pz)=>{const h=rr(.3,1);tuft('feather',px,Y(px,pz),pz,h,h*rr(.7,1),leafCol(PAL.redcoral,1.15,.02,.06,.05));st.corals++;});},
+   {patch:.55,patchScale:.02,pad:.8,box:BIO.originBox(L.floor[1])});
+  // SNARE RAFTS (ref 28): floating on the acid lake and the hot pools, 0.4-4 m deep: a ruffled green pad (the acid pad
+  // reused, green), a dome of pale hairs on it, runners lying out on the water each ending in a small sundew disc
+  reseed(660050);
+  BIO.grid(7,0,R,(x,z)=>BIO.lodD(x,z)<L.floor[1]?.5*q:0,(x,y,z)=>{const w=BIO.waterH(x,z),s=rr(1,2.5);
+    BIO.put('acidpad',[x,w+.02,z],qEuler(rr(-.02,.02),rr(0,TAU),rr(-.02,.02)),[s,1.5,s],vary(C(pick(PAL.raft)),.02,.06,.05));st.rafts++;
+    for(let k=0,n=ri(2,3);k<n;k++){const h=rr(.3,.6);tuft('feather',x+rr(-.2,.2)*s,w+.05,z+rr(-.2,.2)*s,h,h*.9,leafCol(PAL.raftHair,1.1,.02,.04,.04));}
+    if(BIO.lodD(x,z)<L.floor[0])for(let k=0,n=ri(6,12);k<n;k++){const a=k/n*TAU+rr(-.2,.2),L2=s*rr(1.4,2.4),ex=x+Math.cos(a)*L2,ez=z+Math.sin(a)*L2;
+     if(BIO.depth(ex,ez)<.2)continue;BIO.beam('rod',[x+Math.cos(a)*s*.8,w+.03,z+Math.sin(a)*s*.8],[ex,w+.03,ez],.035,.02,vary(C(pick(PAL.raftHair)),.02,.04,.05));
+     const ds=rr(.18,.32);BIO.put('acidpad',[ex,w+.025,ez],qEuler(0,rr(0,TAU),0),[ds,1.2,ds],vary(C(pick(PAL.raftDisc)),.02,.06,.05));}},
+   {patch:.5,patchScale:.03,pad:1.5,depth:[.4,4],noMask:true,box:BIO.originBox(L.floor[1])});}
+ return st;};
 })();

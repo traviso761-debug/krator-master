@@ -71,8 +71,8 @@ function fieldsAt(x,z,h,slope){const G=gullyAt(x,z),pl=plumeAt(x,z),th=FLOWS.thi
  const bare=smooth(.4,2,th)*smooth(380,25,age),walls=smooth(.62,.92,slope)*Math.max(smooth(PIT.r*1.15,PIT.r*.85,dp),coneH(x,z).cin*.7,sky,smooth(.5,2,th));
  const rock=clamp(Math.max(bare,walls*.9),0,1),cin=coneH(x,z).cin*(1-smooth(.5,2,th)*smooth(3000,1500,age));
  return{wet:clamp(.22+.45*G.fl+.3*acid+.12*pl+.25*sky+.05*(fbm(x*.0015,z*.0015,131,2)-.5),0,1),flow:G.fl,upland:clamp((h-1500)/800,0,1),canyon:0,rim:0,rock,dune:0,oasis:0,slope,
-  abyss:0,salt:0,cold:clamp((h-1400)/5000,0,1),geo:0,humid:0,barren:coneH(x,z).bare*(1-smooth(.3,.6,ventAt(x,z))),plume:pl,vent:ventAt(x,z),acid,cinder:clamp(cin,0,1),skylight:sky,ash:pl*(1-smooth(.55,.9,slope))};}
-const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','plume','vent','acid','cinder','skylight','ash','humid'];
+  abyss:0,salt:0,cold:clamp((h-1400)/5000,0,1),geo:0,humid:0,barren:coneH(x,z).bare*(1-smooth(.3,.6,ventAt(x,z))),plume:pl,vent:ventAt(x,z),acid,cinder:clamp(cin,0,1),skylight:sky,ash:pl*(1-smooth(.55,.9,slope)),riftlife:1};}
+const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','plume','vent','acid','cinder','skylight','ash','humid','riftlife'];
 const FC=(function(){const N=560,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}

@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 5 prompts (section 2: the Northern Highlands' three; section 4: `card.crop.indigo`; section 5: `rock.sandstone.bedded.red`).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 11 prompts (section 2: the Northern Highlands' three; section 4: `card.crop.indigo`; section 5: `rock.sandstone.bedded.red`; section 6: six for the Throne's new flora).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -638,6 +638,63 @@ rock-stack generator's bed material.
 
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic front-on view of a vertical rock face, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A cliff face of coarse, pebbly red sandstone in horizontal beds, like Garden of the Gods: six or seven beds across the image, each a decimetre to half a metre thick, separated by thin recessed partings that run level across the whole width; the beds alternate between brick red (#a8503a), salmon pink (#c98468) and a paler pinkish buff (#d9b091), with scattered pea-sized pebbles and grit standing proud of the surface, a few small honeycomb weathering pits, and faint darker water streaks (#6a3a2c) running down from one or two partings. Rough, matte, granular surface; no cross-bedding, no vegetation, no sky.
+```
+
+## 6. The Throne's new flora (`biomes/throne`, 2026-10-18)
+
+`biomes/throne/KNOWN_ISSUES.md`: "The new flora of station 1 and the ash desert is procedural" (`HANDOFF-FLORA.md`, refs
+21-31). Each set lands in `core/materials/library/<id>/`; add its slot to `biomes/throne/materials.json` (the kit's
+`libMap` and `cardsOf` read it), re-pack, rebuild station 1 and the ash desert. Reuse first, not owed: the chalice
+parasol's stalk can take `bark.ghostwood` or `bark.smooth`, the moss domes `ground.moss001`, the geode shells any grey
+rock in the library. The braid cap is purple, so it stays on the parasol cap skin (`cap.disc`) tinted: a purple
+cut-out cannot be keyed off magenta.
+
+#### `card.fan.lace`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one fan per cell.
+- Used by: the lace-fan tree's brackets (`lacefan`, now a canvas cut-out). Reuse: any perforated fungal fan or bracket.
+
+```
+A sheet of nine separate cut-out sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one fan-shaped fungal bracket seen face-on, a half disc widening from a narrow root at the bottom middle of the cell to a lobed, ruffled upper rim, made of a lace of branching veins with open holes between them like a leaf skeleton, the veins pale glowing cream-white (#f4e8d0) at the root warming to orange (#e88040) and deep orange (#d06020) at the rim, the holes fully open to the magenta behind; vary the width, the lobing and the density of the lace between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `card.blade.pyre`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one blade per cell.
+- Used by: the pyre thistle's blades (`pyreblade`, now vertex colour). Reuse: any black spiked rosette.
+
+```
+A sheet of nine separate cut-out sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one long leathery blade standing upright from the bottom of the cell to a sharp point at the top, like a flame or an agave leaf, its edges cut in hooked saw teeth, near-black (#1a1414) with a faint sheen, and up its middle a vein pattern glowing ember orange (#e0501a) and hot orange (#f06a2a) that branches into fine veins and fades out before the tip; vary the width, the curve and the teeth between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `organic.lattice.cage`
+- Kind: tileable surface with its holes in magenta (keyed to alpha), full colour.
+- Used by: the cage lantern's bulb (`cagebulb`, now a canvas lattice). Reuse: any open chitin or coral cage.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an organic lattice like a Voronoi cage of chitin: smooth rounded struts a few centimetres thick, glossy red-orange (#c84020) with darker red (#a02818) in the joints and paler orange (#d85a2a) along the strut tops, enclosing packed round and oval holes of varied size, each hole filled with solid flat magenta (#ff00ff); about twelve holes across the tile. Full colour. No magenta anywhere but inside the holes.
+```
+
+#### `organic.coil.ribbed`
+- Kind: tileable surface, full colour (it wraps the coil horns' tubes, u round them).
+- Used by: coil horns (`coilhorn`, now the banded bark `bark5` under vertex colour).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the skin of a huge ribbed tubular plant, close parallel ribs running straight across the image from left to right, about sixteen ribs to the tile, waxy yellow (#c8b830) with paler yellow (#d4c440) on the rib crests, mottled in patches and streaks with olive-green (#4a5a22) and near-black (#1e2410) mould that gathers in the grooves between the ribs. Full colour.
+```
+
+#### `organic.cap.medusa`
+- Kind: tileable surface, full colour, mapped from above on the cap (planar).
+- Used by: the medusa cap's dome (now the parasol cap skin `cap.disc`, tinted maroon).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the glossy skin of a giant mushroom cap, smooth and wet-looking, deep maroon (#4a1218) with patches of darker wine (#3a0e14) and dull red (#5a1a20), scattered with small round pale cream (#e8dcc8) spots and flecks of varied size. Full colour. Matte apart from a soft even sheen, no specular highlights.
+```
+
+#### `ground.moss.crimson`
+- Kind: tileable surface, full colour.
+- Used by: the red velvet on station 1's acid shores (`velvet`, now the lichen card tinted crimson). Reuse: any red moss carpet.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a dense velvety carpet of tiny crimson moss, short soft cushions packed together with fine hair-like tips, deep crimson (#9a1a22) and red (#b02430) with darker wine (#6e1218) in the hollows between the cushions and a few paler red (#c84040) tips. Full colour.
 ```
 
 ## Delivered 2026-10-18, crops
