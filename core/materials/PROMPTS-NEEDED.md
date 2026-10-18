@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 1 prompt (section 4: `card.crop.indigo`).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 2 prompts (section 4: `card.crop.indigo`; section 5: `rock.sandstone.bedded.red`).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -596,6 +596,24 @@ One cut-out sheet left. One image per block; every sprite stands on the bottom o
 
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a leafy sprig of an indigo shrub: a slim green stem carrying fine feathery pinnate leaves of many small oval blue-green (#4f8a6a) leaflets, small clusters of pale cream pea flowers at the leaf joints and, hanging, a few slim curved brown seed pods; vary the number of pods and flowers between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+## 5. Pinnacle Rock (`settlements/pinnacle-rock`, 2026-10-18)
+
+The Beast Rider roost town's red sandstone mesa and its Garden-of-the-Gods pinnacles (`settlements/pinnacle-rock/PLAN.md`
+section 2; the owner asked for the set, 2026-10-18). The library's `rock.sandstone.navajo` (sweeping cross-beds) is
+reused for the fins' faces; what is missing is the **horizontally bedded** red stone of the balanced rocks and the mesa's
+walls. One image. Lands in `core/materials/library/`, the family in `settlements/pinnacle-rock/materials.json` and the
+rock-stack generator's bed material.
+
+#### `rock.sandstone.bedded.red`
+- Kind: tileable material, full colour; 4 m tile (the beds are decimetres to a metre thick, so a tile shows four to
+  eight of them). Garden of the Gods, Fountain formation: coarse, pebbly, horizontally bedded red sandstone.
+- Reuse: any red-bed cliff or butte (the desert's mesas beside `rock.sandstone.navajo`, Shade's lower cliffs, the Rift's
+  mesa ridges), tinted a step warmer or cooler by the build.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic front-on view of a vertical rock face, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A cliff face of coarse, pebbly red sandstone in horizontal beds, like Garden of the Gods: six or seven beds across the image, each a decimetre to half a metre thick, separated by thin recessed partings that run level across the whole width; the beds alternate between brick red (#a8503a), salmon pink (#c98468) and a paler pinkish buff (#d9b091), with scattered pea-sized pebbles and grit standing proud of the surface, a few small honeycomb weathering pits, and faint darker water streaks (#6a3a2c) running down from one or two partings. Rough, matte, granular surface; no cross-bedding, no vegetation, no sky.
 ```
 
 ## Delivered 2026-10-18, crops

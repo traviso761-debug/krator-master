@@ -23,7 +23,7 @@ allowing the Izani to cross their territory.
 | The districts | the Iziz Vernacular and its Ancients core as the shared **IZV bundle** (`VASSAL-KITS.md` §1: the one file list Verge, Pylon and Talia call) |
 | The palace | the vassal cities' programme (`VASSAL-KITS.md` §3) drawn on the shared generator (`settlements/voth/palace/blueprint.py`) as `settlements/dilihan/palace/`, built in Jimjam's materials (section 2) |
 | Town | `core/city` steps 0-12 on the site layer: the old quarter on the `frontage-courts` strategy inside its wall, the districts on `alleys` and main streets, as Verge's two levels are |
-| Biome | the Cut's biome polygon has **no kit**: P0 names the nearest (`biomes/nhighlands` for the trench walls, `biomes/nwlowlands` for the floor, both humid, the lowlands' dense air) and the choice goes to the owner (section 5, question 1) |
+| Biome | the Cut's biome polygon has **no kit yet: a Cut kit is to come later** (the owner, 2026-10-18). Until it does, the page reads `biomes/nhighlands` for the bowl's cut sides and `biomes/nwlowlands` for its floor in place, and the bowl's own ground (the sphere's curve, the bare cut faces) is drawn by this build's terrain fragment on `core/terrain`, to be lifted into the Cut kit when it is written |
 | Core | `core/rand`, `core/mask`, `core/tags`, `core/space`, `core/lod`, `core/host`, the shared sky; `core/furnish` with the Iziz furniture set, and a Jimjam set once the catalog has one (section 5, question 4) |
 
 Dilihan is a settlement and goes in the gallery when it first reaches `main` (`gallery/README.md`).
@@ -37,8 +37,15 @@ Ys 175 km; Roketstad 273 km west. No river is named through the Cut yet (`tools/
 plan assumes a stream down the trench to the League's coast and a road beside it, the **pass road** the colony was
 planted to hold.
 
-The Cut is a trench with walls: the city sits where it opens toward the crater, on a bench above the road, so the
-old quarter looks down the Cut's mouth to the south and the districts climb the bench behind it.
+**The Cut is a sphere's lower half** (settled 2026-10-18): an Ancient eigenweapon deleted a perfectly spherical
+volume of matter in the Cataclysm, and the region's near-circular polygon (about 150 km across) is the bite. In the
+build's ground: the floor is a smooth concave curve, lowest at the centre and rising to the rim on every side; the
+cut faces on east and west are bare, smooth and curved, the Wall's strata sliced clean and barely weathered, with the
+mountains' own slopes standing above the cut's lip; north and south the sphere broke the range's flanks, and those are
+the two mouths, the lowlands' and the crater's. Water that falls in the bowl drains to the centre and out the lower
+mouth (the plan's stream, section 1). The city sits on the southern rim's inner slope where the bowl opens toward the
+crater, on a bench above the road, so the old quarter looks down the Cut's mouth to the south, the districts climb
+the bench behind it, and the curved cut face stands over the whole city to the east.
 
 | Zone | Where | What |
 |---|---|---|
@@ -122,14 +129,22 @@ furniture manifest keyed to the Iziz catalog file.
 
 ## 5. Open questions for the owner
 
-1. **The biome.** The Cut has no kit. Recommended: the northern highlands kit for the trench walls and the
-   north-western lowlands kit for the floor, read in place, with the dense lowland air; or a Cut kit of its own later.
+1. **Settled (2026-10-18).** A Cut kit is to come later; until then the highlands and lowlands kits are read in
+   place and the build draws the bowl's own ground (section 0).
 2. **Who governs.** The plan and `LORE.md` propose the governorship chosen by the veterans' council and confirmed by
    Iziz by letter; the governor's title stays the Izani one. Confirm, or name a ruler and a title.
-3. **What the Cut is.** A pass through the northern highlands with a stream to the League's coast (recommended, so the
-   envoys' road is a real road), or a third flood channel, or a rift. The model would take the stream as a river
-   edit later (`tools/scale-model/README.md`).
-4. **A Jimjam furniture set.** The catalog has no `jimjam` culture file; the old quarter's interiors take the Iziz
-   set until one exists. Recommended: a Jimjam set is its own job, after this build's P3.
-5. **The name.** *Dilihan* by the Izani rules has no reading on record; leave it unexplained (as Almua's is) or give
-   one.
+3. **Settled (2026-10-18).** The Cut is effectively a pass through the northern highlands, formed in the Cataclysm
+   by an Ancient eigenweapon whose detonation deleted a perfectly spherical volume of matter (section 1). The stream
+   down the bowl to the League's coast stays the plan's assumption; the model would take it as a river edit later
+   (`tools/scale-model/README.md`), and the bowl's curve as a heights edit when the Cut kit comes.
+4. **Settled (2026-10-18).** The old quarter takes the Iziz furniture set until a Jimjam set exists; the Jimjam set
+   is its own job, after this build's P3.
+5. **The name** (the owner, 2026-10-18: a Jimjam name read through an Izani accent). The reading proposed, for the
+   owner to take or change: Jamṭōkku **Ḍeḷḷu-Hanḍu**, "**Dell-Hand**", the plots in the dell. Jamṭōkku counts things
+   with measure words (`LORE.md` §6.14), and *hanḍu*, "hand", is its measure word for a plot of land, the breadth a
+   man's hand spans on the day-keepers' field tally; *ḍeḷḷu* is English *dell*, the bowl the Jimjam saw from their
+   lake. So the name is what Jimjam's masons and almanac-sellers called the colony: the hands of land in the dell,
+   the veterans' allotments. An Izani ear flattens the retroflex *ḍ* and dark *ḷ* to plain *d* and *l*, hears the
+   doubled *ḷḷ* as a higher vowel (*e* > *i*), drops the Jimjam *-u* endings and the second *d* of *-nḍu*, and the
+   colony's Izani wrote **Dilihan**, keeping the *h* their own speech no longer sounds because the Jimjam say it.
+   `lore/tongues-of-krator.html` takes the pair once the owner settles it.

@@ -59,8 +59,9 @@ the sheds take the kit's industry materials (log and stone, corrugated salvage r
 Lighting canon holds: `lit:false` on every Rustic def; forge fire and hearths only.
 
 **The Clanthing** is drawn as a place, not a crowd: the stones carry `core/tags` records with the clan's crest and
-seat, so the NPC placement `core/city` grows into can seat a thing later. The clan list is open (section 5, question
-1); the generator takes any count.
+seat, so the NPC placement `core/city` grows into can seat a thing later. Nine clans sit, under an elected
+law-speaker (settled 2026-10-18); the names and crests come from the owner when the ring is drawn, and the
+generator takes any count.
 
 ## 3. The order of work
 
@@ -91,13 +92,14 @@ seat, so the NPC placement `core/city` grows into can seat a thing later. The cl
 
 ## 5. Open questions for the owner
 
-1. **The clans.** How many clans sit at the Clanthing, and their names and crests: the stone ring and the lodge ring
-   are generated from the list. Recommended: start with nine, named by the owner.
-2. **The law-speaker.** Is the Clanthing's head an elected law-speaker (recommended, as the Icelandic thing) or a
-   high chief?
-3. **The Republic's pressure.** Law and levy demands backed by the threat of arms (recommended: so the town is
-   watchful, not fortified) or an open war, which would want a wall.
-4. **The ore.** Name the copper and tin deposits on the model, or let P1 place the nodes on the hills nearest the
-   point.
-5. **The Highlands page.** Adding the five defs rebuilds `settlements/highlands` and changes its hash on purpose;
-   confirm that is acceptable, or the defs go in a new `settlements/ardent/src` fragment on the `HL` registry instead.
+1. **Settled (2026-10-18).** Nine clans; their names and crests are the owner's to give when the ring is drawn (the
+   generator takes the list; nine placeholder crests until then).
+2. **Settled (2026-10-18).** An elected law-speaker heads the Clanthing.
+3. **Settled (2026-10-18).** The Republic's pressure is law and levy under the threat of arms: the town is watchful,
+   not walled.
+4. **Settled (2026-10-18).** The build places the copper and tin nodes on the hills nearest the point.
+5. **Settled (2026-10-18).** The five Rustic defs go in the Highlands kit (`settlements/highlands`), **added to its
+   page but not built until the Ardent build**: the fragments land with Ardent's P3, the Highlands page rebuilds
+   then, and its hash changes once, on purpose.
+
+None open.
