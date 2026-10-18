@@ -220,8 +220,8 @@ footprint (section 9b); rich and civic buildings may be richly gilded; the palac
 the recommendations; the reference pictures are in `refs/`. The Talei's old faith was close to the Izani one but paired
 the Sun and the Giant as father and mother; they follow the Izani state religion now (the temple keeps the pairing in
 its images only).
+Talia sits on a hill (owner, 2026-10-18), at the foot of the passes: the temple on its crown, the city stepping down
+its slopes (`talia2`, `talia fancy`), the University quarter on a shoulder of it.
 
-1. **Talia's ground:** on a hill (the pictures lean that way: `talia fancy`, `talia2`) at the foot of the passes? The
-   scale model's heights at (801, 609) will answer most of it; a temple hill and a University quarter are proposed.
-2. **"2x the footprint"** is read as twice the Ancient campus's AREA (about 930 m square, section 9b). If it meant twice
+1. **"2x the footprint"** is read as twice the Ancient campus's AREA (about 930 m square, section 9b). If it meant twice
    each side (1,320 m, four times the area), say so: it would be a fifth of the city.
