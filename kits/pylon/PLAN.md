@@ -53,7 +53,7 @@ orange S-band in relief, timber slat ceiling, walnut platform bed, grey stone fl
 
 Palette (from the pictures): Ancient white `#EEEBE5`, cream `#E3D9C8`, saffron `#E3A02E`, Iziz orange `VPAL.orange`,
 glow amber `#FF8A24` (emissive, Ancient only), rust `#B8652A`, formwork grey `#8E8B86`, dark slot `#2A2B30`, gunmetal
-`#4A5058`; inside, walnut `#6E3A22`. The red adobe of `pylon8` is left out (the owner's colouring is white and orange);
+`#4A5058`; inside, walnut `#6E3A22`. No red adobe walls (owner, 2026-10-17; the colouring is white and orange): from `pylon8` only the forms;
 its salvage town is white render and rust.
 
 ## 3. Living beside the Vernacular
@@ -187,8 +187,8 @@ repaired and ruined, the arch's avenue as one axis:
   places them: `placeKit`, `measureKit`, `trimPlinths`), then from the new families in section 4. Its streets and lots
   go on `core/city` (CLAUDE.md: a city's placement goes there): the grid is the saved site's steps 0-5, the Ancient
   blocks are precincts the infill stops at.
-- **Proposed sides:** repaired on the east (towards Iziz and its road, so a traveller from the capital arrives through
-  the living city), ruined on the west (with the scrap district on the plateau's west edge, downwind). Open question 1.
+- **The sides** (owner, 2026-10-17): repaired on the east (towards Iziz and its road, so a traveller from the capital
+  arrives through the living city), ruined on the west, with the scrap district on the plateau's west edge, downwind.
 
 Open: whether the new Ancient families (section 4) belong upstream in `kits/ancients` (other ruin sites may want them;
 recommended once they are judged) or stay in this kit.
@@ -244,8 +244,7 @@ plain); **board-formed concrete** with formwork lines; **hex tile** (amber and b
 Settled 2026-10-17: Pylon is on a savannah mini-plateau west of Iziz (on the scale model); the Monolith is the
 Ancients kit's, already at the Hexahedron's height; it stands in a grid of Ancient buildings, repaired on one side with
 the temple, ruined on the other with the scrap district near; the palace forks take the recommendations; the
-reference pictures are in `refs/` (plain Git, like Zeijani's).
+reference pictures are in `refs/` (plain Git, like Zeijani's). Then: the repaired side is the east (towards Iziz), the
+ruined side and the scrap district the west; no red adobe walls anywhere.
 
-1. **Which side is repaired?** Proposed east (towards Iziz), ruined west with the scrap district on the plateau's west
-   edge.
-2. **The red adobe** of `pylon8`: left out as proposed, or a minority wall colour in the salvage quarters?
+None open.

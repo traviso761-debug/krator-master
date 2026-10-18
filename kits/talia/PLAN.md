@@ -127,7 +127,7 @@ Styles in the `style` tag: `whitewash` (poor and middle), `orange` (the old quar
 | `tal_uni_senate`, `tal_uni_faculty`, `tal_uni_anatomy`, `tal_uni_hospital`, `tal_theatre`, `tal_uni_gallery`, `tal_glasshouse` | the rest of the University quarter (section 9b) |
 | `tal_odeon` | the theatre and music hall: a half-round cavea under a roof, a pedimented front (the arts) |
 | `tal_academy` | the academy of painting and sculpture: top-lit studios behind a classical front |
-| `tal_temple` | the main temple: a Byzantine cluster on the temple hill, central dome on a tall drum, four corner drum towers with orange ribbed domes, pointed portals, cobalt glass, a monumental stair (`talia fancy`, `talia-temple` for its rose front) |
+| `tal_temple` | the main temple: a Byzantine cluster on the temple hill, central dome on a tall drum, four corner drum towers with orange ribbed domes, pointed portals, cobalt glass, a monumental stair (`talia fancy`, `talia-temple` for its rose front). The rite is the Izani state religion; the old Talei pairing of the **Sun and the Giant** as father and mother survives in the iconography: the rose front as the Sun, a banded green disc for the Giant facing it in the apse, the two paired on the doors and the altar |
 | `tal_chapel` | a small white egg-dome temple with a rib spire (`talia3 (2)`) |
 | `tal_council_house` | the city's own council: a pedimented hall on a podium (the local magistrates) |
 | `tal_memorial_spire` | stacked lathe spire on gadrooned domes over a reflecting pool (`talia-memorial`, `talia-memorial2`) |
@@ -217,11 +217,11 @@ houses and taverns).
 
 Settled 2026-10-17: the founders were the Talei; the University is a walled quarter twice the Ancient campus's
 footprint (section 9b); rich and civic buildings may be richly gilded; the palace forks take
-the recommendations; the reference pictures are in `refs/`.
+the recommendations; the reference pictures are in `refs/`. The Talei's old faith was close to the Izani one but paired
+the Sun and the Giant as father and mother; they follow the Izani state religion now (the temple keeps the pairing in
+its images only).
 
 1. **Talia's ground:** on a hill (the pictures lean that way: `talia fancy`, `talia2`) at the foot of the passes? The
    scale model's heights at (801, 609) will answer most of it; a temple hill and a University quarter are proposed.
-2. **The Talei's old religion:** anything the temple should keep from before Iziz? (`LORE.md` §6.2 now has Talia's
-   entry, 2026-10-17.)
-3. **"2x the footprint"** is read as twice the Ancient campus's AREA (about 930 m square, section 9b). If it meant twice
+2. **"2x the footprint"** is read as twice the Ancient campus's AREA (about 930 m square, section 9b). If it meant twice
    each side (1,320 m, four times the area), say so: it would be a fifth of the city.
