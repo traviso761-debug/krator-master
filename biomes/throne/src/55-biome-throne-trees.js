@@ -607,7 +607,8 @@ B[spI('pyre')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark'+S.
    rpts.push({x:rx,y:BIO.terrainH(rx,rz)+(1-u)*T.rb*.35-(u>.75?(u-.75)*.35:0),z:rz,r:T.rb*.22*(1-u*.8),col:rc});}
   st.limb+=BIO.tube(fam,rpts,rc,{seg:lv===2?4:3,cap:true});}
  for(let k=0,nb=lv===2?ri(14,24):ri(6,8),a0=rr(0,TAU);k<nb;k++){const ring=k%3,a=a0+k/nb*TAU+rr(-.12,.12),el=mix(1.1,1.45,ring/2)+rr(-.04,.04),bh=H*mix(.72,1.04,ring/2)*rr(.9,1.1),bw=bh*rr(.28,.38),d=T.rb*(.82-ring*.22);
-  BIO.put('pyreblade',[T.x+Math.cos(a)*d,T.y0+T.rb*(.7+ring*.18),T.z+Math.sin(a)*d],qEuler(rr(-.08,.08),-a,el),[bh,bw,bw],vary(C(0xffffff),.02,.05,.04));}
+  const PBC=THRONE.LIB.cardsOf('pyreblade'),bp=[T.x+Math.cos(a)*d,T.y0+T.rb*(.7+ring*.18),T.z+Math.sin(a)*d],bq=qEuler(rr(-.08,.08),-a,el);
+  if(PBC.length)BIO.put(pick(PBC),bp,bq,[bh,bw,bh*.55],null);else BIO.put('pyreblade',bp,bq,[bh,bw,bw],vary(C(0xffffff),.02,.05,.04));}
  const la=rr(0,TAU),sc=vary(C(pick(PAL.pyreStalk)),.02,.05,.04),spts=treeGrow({x:T.x,y:T.y0+T.rb*.9,z:T.z},dirOf(la,rr(1.22,1.38)),H*1.35,T.rb*.15,T.rb*.05,lv===2?7:4,-.15,.03);
  spts.forEach(p=>p.col=sc);st.trunk+=BIO.tube(fam,spts,sc,{seg:lv===2?5:3,cap:true});
  const tp=tip(spts),ls=T.rb*rr(.45,.7);BIO.put('pyrelure',[tp.x,tp.y-ls*.8,tp.z],qEuler(rr(-.2,.2),la,rr(-.2,.2)),[ls*.55,ls*1.3,ls*.55],vary(C(pick(PAL.pyreLure)),.02,.08,.05));st.caps++;
@@ -628,7 +629,7 @@ B[spI('cagebulb')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark
    pts.push({x:T.x+Math.cos(ang)*off,y:mix(T.y0-.3,top,t),z:T.z+Math.sin(ang)*off,r:T.rb*.45*(1-.4*t),col:c});}
   st.limb+=BIO.tube(fam,pts,c,{seg:lv===2?5:3,cap:true});}
  const by=top-R*.15;
- BIO.put('cagebulb',[T.x,by,T.z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[R,R*1.4,R],vary(C(pick(PAL.cageBulb)),.02,.06,.05));st.caps++;
+ BIO.put('cagebulb',[T.x,by,T.z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[R,R*1.4,R],THRONE.LATTICE?C(0xffffff).multiplyScalar(rr(.85,1)):vary(C(pick(PAL.cageBulb)),.02,.06,.05));st.caps++;
  BIO.put('geocore',[T.x,by+R*.65,T.z],qEuler(0,rr(0,TAU),0),R*.35,vary(C(pick(PAL.cageCore)),.02,.05,.05));
  if(lv===2)for(let k=0,n=ri(6,12);k<n;k++){const a=rr(0,TAU),r0=R*rr(.45,.62),x=T.x+Math.cos(a)*r0,z=T.z+Math.sin(a)*r0,y=by+R*rr(.2,.35),l=rr(1,3);
   BIO.beam('rod',[x,y,z],[x+rr(-.1,.1),Math.max(y-l,T.y0+.3),z+rr(-.1,.1)],.04,.015,vary(C(pick(PAL.cageRoot)),.02,.05,.05));}
@@ -638,7 +639,7 @@ B[spI('cagebulb')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark
 B[spI('medusa')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark'+S.barkK;
  const pts=treeGrow({x:T.x,y:T.y0,z:T.z},dirOf(rr(0,TAU),rr(1.45,1.57)),H*.92,T.rb,T.rb*.6,lv===2?4:2,0,.03);capTube(fam,S,pts,lv,st,lv===2?5:3);
  const p=tip(pts),q=qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1));
- BIO.put('disc',[p.x,p.y,p.z],q,[R,R*3.8,R],vary(C(pick(PAL.medusaDome)),.02,.05,.05));st.caps++;
+ if(THRONE.LIB.medusa)BIO.put('medusadome',[p.x,p.y,p.z],q,[R,R*3.8,R],C(0xffffff).multiplyScalar(rr(.85,1)));else BIO.put('disc',[p.x,p.y,p.z],q,[R,R*3.8,R],vary(C(pick(PAL.medusaDome)),.02,.05,.05));st.caps++;
  BIO.put('glowgill',[p.x,p.y-R*.12,p.z],q,[R*.92,R*.3,R*.92],vary(C(pick(PAL.medusaGlow)),.02,.05,.05));
  for(let k=0,n=lv===2?ri(14,24):ri(4,6);k<n;k++){const a=k/n*TAU+rr(-.15,.15),r0=R*rr(.72,.95),o={x:p.x+Math.cos(a)*r0,y:p.y-R*.1,z:p.z+Math.sin(a)*r0},len=Math.min(H*rr(.5,.85),o.y-T.y0-.4),c=vary(C(pick(PAL.medusaTendril)),.02,.06,.05);
   if(lv===2){const L=treeGrow(o,dirOf(a,-1.5),len,.04,.01,5,0,.06);L.forEach(q=>q.col=c);st.limb+=BIO.tube(fam,L,c,{seg:3});}
@@ -652,7 +653,9 @@ B[spI('lacefan')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark'
   limb(fam,S,bp,k,lv,st);const e=tip(bp);
   BIO.put('tfunnel',[e.x,e.y-.2,e.z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[T.rb*.6,T.rb*.9,T.rb*.6],barkCol(S,k));
   for(let f=0,nf=lv===2?2:1;f<nf;f++){const af=a+rr(-.5,.5),s=R*rr(.45,.7);
-   BIO.put('lacefan',[e.x,e.y+.1,e.z],qEuler(-rr(.5,1.0),Math.PI/2-af,0),[s,s,s],vary(C(pick(PAL.laceFan)),.02,.05,.05));st.caps++;
+   const LFC=THRONE.LIB.cardsOf('lacecard');
+   if(LFC.length)BIO.put(pick(LFC),[e.x,e.y+.05,e.z],qEuler(rr(-.25,.25),-af,rr(.95,1.35)),[s*1.05,s*.5,s*1.25],null);
+   else BIO.put('lacefan',[e.x,e.y+.1,e.z],qEuler(-rr(.5,1.0),Math.PI/2-af,0),[s,s,s],vary(C(pick(PAL.laceFan)),.02,.05,.05));st.caps++;
    top=Math.max(top,e.y+s);reach=Math.max(reach,Math.hypot(e.x-T.x,e.z-T.z)+s);}}
  regTree(T,S,reach+1,top-T.y0+1);};
 // 31 the BRAID CAP (ref 29): a pale violet stem in a helix of dark vines, a flared foot, a spotted purple cap at the top
@@ -673,9 +676,9 @@ B[spI('braidcap')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark
 B[spI('coilhorn')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR;
  for(let h=0,n=lv===2?ri(3,9):ri(2,4);h<n;h++){const f=h?rr(.45,1):1,a=rr(0,TAU),d=h?R*rr(.4,1.1):0,cx=T.x+Math.cos(a)*d,cz=T.z+Math.sin(a)*d,y0=BIO.terrainH(cx,cz)-.3;
   const Rr=R*f,rb=T.rb*f,a0=rr(0,TAU),dx=Math.cos(a0),dz=Math.sin(a0),turn=rr(1.2,1.7)*TAU,drift=rr(-.3,.3)*Rr,m=lv===2?18:7,pts=[];
-  for(let k=0;k<=m;k++){const t=k/m,th=t*turn,rho=Rr*(1-.7*t),side=Rr*Math.sin(th)*(1-.7*t),c=C(pick(PAL.coilYellow));if(k%3===1)c.lerp(C(pick(PAL.coilMould)),.6);
+  for(let k=0;k<=m;k++){const t=k/m,th=t*turn,rho=Rr*(1-.7*t),side=Rr*Math.sin(th)*(1-.7*t),c=THRONE.LIB.coil?C(0xffffff).multiplyScalar(.82+.18*h3(h,k,31)):C(pick(PAL.coilYellow));if(!THRONE.LIB.coil&&k%3===1)c.lerp(C(pick(PAL.coilMould)),.6);
    pts.push({x:cx+dx*side-dz*drift*t,y:y0+Rr-rho*Math.cos(th),z:cz+dz*side+dx*drift*t,r:rb*(1-t*.85),col:c});}
-  st.limb+=BIO.tube('bark5',pts,pts[0].col,{seg:lv===2?10:5,cap:true});}
+  st.limb+=BIO.tube(THRONE.LIB.coil?'coil':'bark5',pts,pts[0].col,{seg:lv===2?10:5,cap:true});}
  // a crust of mould on the ground round the cluster (an instanced item: the tubes alone are merged bark, which the probe's
  // registered volumes cannot see)
  BIO.put('lichen',[T.x,BIO.terrainH(T.x,T.z)+.03,T.z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[R*.9,1,R*.9],vary(C(pick(PAL.coilMould)),.02,.06,.05));

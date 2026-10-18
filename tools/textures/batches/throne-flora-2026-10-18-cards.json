@@ -1,0 +1,98 @@
+[
+ {
+  "src": "card.blade.pyre.webp",
+  "out": "core/materials/library/card.blade.pyre",
+  "record": {
+   "id": "card.blade.pyre",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.blade.pyre` (section 6, the Throne's new flora)",
+    "reuse": "the pyre thistle's blades; any black spiked rosette",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds, each blade standing on its cell's bottom edge"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1,
+   "size": 1024,
+   "anchor": "none"
+  }
+ },
+ {
+  "src": "card.fan.lace.webp",
+  "out": "core/materials/library/card.fan.lace",
+  "record": {
+   "id": "card.fan.lace",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.fan.lace` (section 6, the Throne's new flora)",
+    "reuse": "the lace-fan tree's brackets; any perforated fungal fan",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1,
+   "size": 1024,
+   "anchor": "none"
+  }
+ },
+ {
+  "src": "organic.lattice.cage.webp",
+  "out": "core/materials/library/organic.lattice.cage",
+  "record": {
+   "id": "organic.lattice.cage",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.lattice.cage` (section 6, the Throne's new flora)",
+    "reuse": "the cage lantern's bulb; any open chitin or coral cage",
+    "note": "a tiling surface with its holes keyed to alpha (a card set, anchor none: no crop, so it still tiles); no normal map"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1,
+   "size": 1024,
+   "anchor": "none"
+  }
+ }
+]
