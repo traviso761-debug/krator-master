@@ -60,8 +60,13 @@ granaries.
 
 ## 5. Open questions for the owner
 
-1. Is the lowest torus farmed (the plan), or do the Chichani forbid it as the Ancients' forest?
-2. How far does the country reach: the plan draws 3 km of fields; a breadbasket for the Kingdom might want more, as
-   satellite villages at the scale model's resolution rather than in the page.
+1. **Settled (2026-10-18).** The lowest forest torus (torus 0, r 292-336 m) is crop terraces, the middle (torus 1) is
+   orchards, and the highest (torus 2, round the lantern) is left the Ancients' wild forest with the Rinkvolk's shrine
+   in it. The living bands between them are lived in, post-apoc dwellings on the Ancient terraces.
+2. **Settled (2026-10-18).** The page draws the country a day's walk round the ring, 3 km, as fields, orchards,
+   chinampas, mushroom farms, windmills and two villages (Voth's step 13 scaled up); the breadbasket beyond is the
+   scale model's farmland, placed by the open world at its own resolution, not by the page. The **Tors chief** is
+   Voth's client as the Drïm chief is, and richer: the grain tithe is the Kingdom's, counted at the granaries under the
+   citadel.
 3. **Settled (2026-10-18).** The Forest Ring's people are the **Rinkvolk**, the ring-folk (ring + folk by the Vothic
    rules); Izani *Torani*, Vothic *Tors*.

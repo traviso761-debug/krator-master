@@ -97,8 +97,17 @@ Shared with Torus: each phase is done for both cities before the next starts.
 
 1. **Settled (2026-10-18).** The Drum's people are the **Vinvolk**, the fin-folk (fin + folk by the Vothic rules, f
    and w to v, final g and k devoiced: `lore/tongues-of-krator.html`), in their Chichani-cousin dialect; the Izani
-   Empire called them the *Drumani* (Drum + *-ani*, as *Chichani*), Voth calls them the *Drïm*. Still open: what
-   became of their chief (a Vothic client governor, or replaced).
-2. How much of the Drum's lower tiers is inhabited (the plan: the lowest three of nine)?
-3. Is the wall Vothic work (stone, purple-trimmed gates) or the chiefdom's older scrap rampart that Voth faced in
-   stone? The plan assumes a Vothic stone wall on the chiefdom's line.
+   Empire called them the *Drumani* (Drum + *-ani*, as *Chichani*), Voth calls them the *Drïm*. The chief's line
+   survives as Voth's client (settled 2026-10-18): the **Drïm chief** sits in the chiefdom's hall in the Court, the
+   levy and the tribute pass through him, and the governor's palace and the Ordinator citadel watch him from the
+   district. In the build: the hall in the Court is the chief's, with his own guard in the chiefdom's scrap armour; the
+   governor's palace faces it down the allée.
+2. **Settled (2026-10-18).** The ruin (`8af-drum.js`) is broken at about 548 m, so six of the nine tiers stand. The
+   lowest three are lived in (post-apoc dwellings lashed between the fins and in the blocks, the lowest sky gate the
+   city's great gate and market); tiers four to six are stripped and carry the watch posts and the signal fires (the
+   middle sky gate a watch post, the upper a beacon); the fallen top in the court is the quarry. The lift slots are
+   ladders and hoists now.
+3. **Settled (2026-10-18).** Both: the chiefdom's old scrap rampart (post-apoc tyre walls, Ancient panels, earth) still
+   stands on the north and east; Voth faced the west, toward the Scyvoi, and every gate in stone with purple-trimmed
+   gate towers (the Voth catalog's garrison pieces). The wall record carries a `face` per stretch (`scrap` or `voth`)
+   so the drawing changes material along one site-layer wall.
