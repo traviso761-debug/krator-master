@@ -48,7 +48,7 @@ function buildPylPodStack(G,o){reseed(9061+(o.v|0));const ZW=-3.2;
  pod(2.9,5.4,-1.4,2.8,2.2,2.8,'vPanelB',wh.clone().multiplyScalar(.95),false);
  for(const s of[-1,1])vBeam([2.9+s*1.1,4.2,ZW+.5],[2.9+s*1.1,5.38,-.3],.16,gun,'vIron');
  vnLadder(-2.1,0,1.1,0,2.8,wood);vnLadder(1.6,2.8,.8,0,2.6,wood);
- vPl('vTarp',-.4,4.4,.75,3.0,.9,0,vC(0xb0703a),-.6);vnAwning(1.9,2.4,.7,0,2.4,1.1,vC(vPick(VPAL.awning)));
+ vnAwning(1.9,2.4,.7,0,2.4,1.1,vC(vPick(VPAL.awning)));vnAwning(-3.1,2.05,.7,0,1.2,.9,vC(0xb0703a));
  vnWaterButt(-4.1,0,.4,.4,1.0);vnBarrel(3.9,0,.5,.32,.9,rust);vnCrate(.2,0,1.3,.6,.4,wood);}
 
 // Ring house (refs/pylon8.jpg): a small house of white render whose door is framed by a reused Ancient ring, portholes
@@ -63,8 +63,8 @@ function buildPylRingHouse(G,o){reseed(9071+(o.v|0));const W=6.4,D=6,H=3.2,Z=-1.
  pynTomb(-.8,0,zf,0,1.1,2.2,.04,.1,'D');
  pynPorthole(1.7,1.7,zf,0,.42,or,'G',0);pynPorthole(W/2,1.7,Z-.6,Math.PI/2,.42,anc,'G',3);
  vnWin(-W/2,1.2,Z,-Math.PI/2,.8,1,'shut','vWood',wood);
- // awning on two poles over the door's side, a bench of crates
- vnAwning(-.8,2.6,zf,0,3.2,1.6,vC(vPick(VPAL.awning)));
+ // awning on two poles over the porthole window, clear of the ring and the standpipe
+ vnAwning(1.6,2.45,zf,0,2.0,1.3,vC(vPick(VPAL.awning)));
  // the standpipe with its flanges and the junction box
  vPst('vPipe',2.9,0,zf+.35,.15,4.1,gun);for(const y of[1.3,2.8])vPst('vPipe',2.9,y,zf+.35,.24,.12,gun);
  vB('vIron',2.4,1.6,zf+.05,.5,.6,.2,0,gun);vBeam([2.9,3.6,zf+.35],[2.9,3.6,zf-.2],.1,gun,'vPipe');
