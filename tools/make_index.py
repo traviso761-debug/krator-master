@@ -31,6 +31,7 @@ ABOUT = {
     'settlements/noahs-regret': "Noah's Regret: an Ancient floating harbour city of the Ring Sea, aground on the south shore, Bloody Ruephus's pirate base: a catamaran of two hulls joined at the bow, the harbour open astern (holds half full of the sea, four decks, rounded terraced sterns, scalloped balconies), the grand atrium, the bridge, the grand dining room, twin silent engine rooms, two crew messes, the greenhouse, fifteen ship's rooms, the bridge house with the bridge on top, a forecourt plaza over the forward third of the harbour with terraces and a grand stair, nine Ancient buildings (barracks, a mess hall, the HQ under his flag on the plaza), the liner mole and finger piers, every room furnished from the catalog through the interiors kit, a deck cut to see inside; no life layer yet.",
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
     'settlements/port': 'The Ancient Port kit (a kit, not a settlement, despite the folder): modular Ancient port segments and vessels tiling along a coast, a sibling of kits/ancients built the same way. It will build Hook (the ancient port city recently retaken from Voth, LORE.md) and may serve other coasts after. Read CONTRACT.md, then API.md.',
+    'settlements/hook': "Hook: the Ancient port city of the Ring Sea's south-western shore, the Izani Empire's premier port, retaken from Voth a few months before game start (LORE.md 6.2; PLAN.md). Built on the Ancient Port kit (settlements/port), read in place: P0 is the waterfront, every Port segment and vessel placed at least once in one coastal run with the Customs' and the Sun Canton's land blocks behind and the hooked L of sea platforms off the great pier.",
     'settlements/ys': 'Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 2: the Hykkousoi kit, 89 pieces on the kit sheet; phase 3 prep: the layout, shore and nav).',
     'settlements/xanadu': 'Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.',
     'settlements/mungo': "Mungo: a trade village at a river mouth on a salt lake in the Eastern Abyss: a floating reed village (the Reed Lake kit, run inside the page; Reed's Local), one pontoon to an Eastern Abyssal town, the Geomancers' chapterhouse among Yuni houses with their dune buggies. Shares the Locus engine and kits by name (build.py); the first world on core/simulation (SIM) and core/clock: a scheduled life layer whose data is world/*.json.",
@@ -206,7 +207,7 @@ def build_index(build):
         fh.write('\n'.join(lines) + '\n')
     sizes = [fsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
     sizes += [fsize(os.path.join(d, f)) for f in top]
-    return len(sizes), sum(sizes), max(sizes), outs
+    return len(sizes), sum(sizes), max(sizes) if sizes else 0, outs   # a build whose fragments all live elsewhere (Hook on the Port kit)
 
 
 def main():
