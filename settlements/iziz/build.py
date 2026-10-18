@@ -161,7 +161,8 @@ _OLD_TARGETS = {
 # --kit <folder>: build a kit that is written on the Vernacular's contract (kits/pylon, kits/talia; settlements/iziz/
 # VASSAL-KITS.md) on this build's page, with no copy of it. The kit folder holds src/ (its own fragments, merged into the
 # one sorted order with this build's src/; a name that clashes stops the build), targets/<t>/ (rows and views, as here),
-# and kit.json: {"targets": {"kit": "pylon.html"}, "interiors": ["kit"], "deterministic": ["69p-pyl-mat.js"]}. Its pages
+# and kit.json: {"targets": {"kit": "pylon.html"}, "interiors": ["kit"], "deterministic": ["69p-pyl-mat.js"],
+# "external": ["kits/ancients/src/89g-monolith.js"]} (repo-relative fragments read in place, by their own names). Its pages
 # and manifests go to the kit's dist/ and folder; its KNOWN_ISSUES.md is the one printed. The kit's build.py calls this.
 KIT = None
 if '--kit' in sys.argv:
@@ -384,6 +385,11 @@ def build_one(target, do_checks, assert_origin):
         clash = set(src) & set(kf)
         if clash:
             sys.exit('kit %s shadows a fragment of settlements/iziz: %s' % (KIT['dir'], ', '.join(sorted(clash))))
+        for rel in KIT.get('external', []):   # fragments read in place from elsewhere in the repo (no copy)
+            f = os.path.basename(rel)
+            if f in src or f in kf:
+                sys.exit('kit %s: external fragment %s clashes with a fragment already in the order' % (KIT['dir'], f))
+            kf[f] = os.path.join(ROOT, rel)
         src.update(kf)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):

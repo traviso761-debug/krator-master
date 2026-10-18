@@ -15,13 +15,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `69p-pyl-mat.js` | 3 | materials and kit items (prefix py) (19) |
+| `69p-pyl-mat.js` | 4 | materials and kit items (prefix py) (19) |
 | `69q-pyl-helpers.js` | 9 | the neo-Ancient profiles (PLAN.md section 2) (29) |
 | `70p-pyl-dwellings.js` | 12 | MIDDLE (5) |
 | `70q-pyl-poor.js` | 8 |  |
 | `70r-pyl-rich.js` | 5 |  |
 | `71p-pyl-industry.js` | 16 |  |
 | `72p-pyl-civic.js` | 10 |  |
+| `77zp-pyl-ancients.js` | 15 | the VERN defs: one per family, the state in o.mo (104) |
 
 ## targets/
 
@@ -29,4 +30,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `kit` | `89z-rows.js`, `91z-views.js` | 4 |
+| `kit` | `89z-rows.js`, `91z-views.js` | 6 |

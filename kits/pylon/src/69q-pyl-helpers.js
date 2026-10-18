@@ -31,9 +31,9 @@ function pynColumn(x,y,z,h,r,white,orange,bands){bands=bands||4;vB('vPlaster',x,
 // round ends) and the POINTED HEXAGON (a rectangle under a gable point, or pointed at both ends). Each is a slab on a
 // face: (x, z) on the face, ry its outward yaw, y the bottom of the outline, w x h the outline, `out` how far its
 // front stands proud of the face, d its depth (it runs back from its front by d). `kind` picks the material:
-// P render, C concrete, G dark glass, D a dark opening, R rust. A round end is a disc 2 cm thinner than the slab, so
+// P render, C concrete, G dark glass, D a dark opening, R rust, L lit glass (rich, civic, the Ancients' amber). A round end is a disc 2 cm thinner than the slab, so
 // where the two overlap the slab's face wins cleanly and no faces share a plane.
-const PY_KIND={P:['vPlaster','pyDisc','vGablePl'],C:['pyConc','pyDiscC','pyGableC'],G:['vWinGlass','pyDiscG','pyGableG'],D:['vDarkB','pyDiscD','pyGableD'],R:['vRustB','pyDiscR','vGableP']};
+const PY_KIND={P:['vPlaster','pyDisc','vGablePl'],C:['pyConc','pyDiscC','pyGableC'],G:['vWinGlass','pyDiscG','pyGableG'],D:['vDarkB','pyDiscD','pyGableD'],R:['vRustB','pyDiscR','vGableP'],L:['vWinLit','pyDiscL','pyGableL']};
 function pynSlab(item,x,yc,z,ry,w,h,out,d,c){const f=loc(x,z,0,out-d/2,ry);vBq(item,f[0],yc,f[1],w,h,d,vQ(ry,0,0),c);}
 function pynEnd(item,x,yc,z,ry,r,out,d,c){const f=loc(x,z,0,out-d/2,ry);kput(item,[f[0],yc,f[1]],vQ(ry,0,0),[r,r,Math.max(.02,d-.02)],c||null);}
 function pynTomb(x,y,z,ry,w,h,out,d,kind,c){const K=PY_KIND[kind||'P'],r=w/2,hb=Math.max(.05,h-r);

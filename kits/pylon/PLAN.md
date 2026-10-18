@@ -234,7 +234,7 @@ plain); **board-formed concrete** with formwork lines; **hex tile** (amber and b
 | P1 | materials and kit items (`py*`), the profile helpers (tombstone, stadium, pointed hex, nested frames, portholes, hex lattice) | **kit items and profiles done 2026-10-18** (README, "The profiles"); the hex lattice (domes) comes with the civic set; `materials.json` waits for the texture list |
 | P2 | dwellings, all tiers, and the mixed-street row | **built 2026-10-18**: 11 dwellings (4 poor, 5 middle, 2 rich) and four mixed-street rows; awaiting the owner's eye-level review |
 | P3 | salvage and industry, civic | **built 2026-10-18**: 11 salvage, industry and trade buildings and 6 civic, in three more mixed-street rows; the post-apoc pack (section 4) still to wire |
-| P4 | the Ancient families in three states, the temple, the Monolith read in place, the grid as a saved `core/city` site (section 5) | |
+| P4 | the Ancient families in three states, the temple, the Monolith read in place, the grid as a saved `core/city` site (section 5) | **built 2026-10-18** except the grid: six families in four states (Pylon's `repaired` added beside Iziz's `rehab`), the temple, the Monolith in place; the grid is the city page's job |
 | P5 | the governor's palace: blueprint sheets after the forks (`VASSAL-KITS.md` §3.4), then the building | |
 | P6 | the catalog culture file, interiors | |
 | P7 | the Godot export check, the gallery | `tools/test_all.py` passes |

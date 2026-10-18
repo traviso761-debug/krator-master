@@ -14,3 +14,9 @@
       read heavy at eye level. A lighter formwork (or white render on the walls) is the owner's call.
 - [ ] The hex cells' honeycomb has its plank walks and stair at the back (a front walk would cut the offset pods), so
       from the street the pods show no access.
+- [ ] The Monolith is read in place (`kit.json` "external"), but two helpers it needs at load live inside other
+      arcologies' builders: `krShard` in the Arcube (all four parts, 93 KB) and `plymQuadGeo` in Plymouth (61 KB). So
+      the page carries about 150 KB of builders it never calls. The fix is upstream: move the two helpers into a shared
+      fragment in kits/ancients (every Ancients page then rebuilds; check its hashes), and read only that.
+- [ ] On the sheet the Monolith's view looks past the edge of the ground plane (Iziz's showcase ground, 3 km); the
+      city page will have terrain to the horizon.

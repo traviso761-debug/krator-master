@@ -38,3 +38,5 @@ kdef('pyHex',PYHEX,MAT.plaster);kdef('pyHexR',PYHEX,MAT.rust);kdef('pyHexD',PYHE
 MAT.pyVoid=MAT.void.clone();MAT.pyVoid.side=THREE.DoubleSide;MAT.pyGlass=MAT.darkGlass.clone();MAT.pyGlass.side=THREE.DoubleSide;
 kdef('pyGableG',VGABLE,MAT.pyGlass);kdef('pyGableD',VGABLE,MAT.pyVoid);kdef('pyGableC',VGABLE,MAT.pyConc);
 kdef('pyDomeR',VDOME,MAT.rust);
+// lit glass (MAT.warmPane, the electric window: rich, civic and the Ancients' amber glow), double-sided for the wedges
+MAT.pyLit=MAT.warmPane.clone();MAT.pyLit.side=THREE.DoubleSide;kdef('pyDiscL',PYDISC,MAT.pyLit);kdef('pyGableL',VGABLE,MAT.pyLit);
