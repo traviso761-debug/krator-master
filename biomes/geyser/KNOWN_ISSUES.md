@@ -44,3 +44,7 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
       (`src/99-host-take.js` hands the page to `KHOST.take`; no core/host file is overridden). The kit's G (and N for
       night) are handed over as `keys`, which win over the host's keys, so on this page a dropped pin is reached by
       F (walk from it) only. The timetable (`#tt`) is a host panel of its own ("The geysers", right side).
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.

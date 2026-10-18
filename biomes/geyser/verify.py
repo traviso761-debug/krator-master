@@ -33,6 +33,9 @@ Requires: pip install playwright && python -m playwright install chromium
 """
 import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, threading
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
+from harness import check_profile
+
 # --------------------------------------------------------------------------
 # Harness helpers. Every verify.py in the repo carries this same block: a fix
 # here belongs in all of them (grep for "Harness helpers").
@@ -99,6 +102,14 @@ def parse_views(spec, names=()):
         i = j
     return out
 
+
+# The export profile (core/export/README.md, "Profiles"; ROADMAP.md section 11, item 1): the sections a tile of this
+# kit must fill, checked under --assert over EXPORT_BOX. Sampled terrain (no krator-field); the box is the densest 300 m cell of the tile that holds a bucket (2026-10-18 probe).
+# A section that reads stub, none, error or empty fails the run. --profile a,b,c replaces the list for one run
+# (add sim to see a stub fail).
+# Left out of the profile: atmos and water (see KNOWN_ISSUES.md).
+EXPORT_BOX = [300, 0, 600, 300]
+EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
@@ -235,6 +246,15 @@ async def run(a):
                           % (k, v["tris"], v["limit"], v["cls"], v["inst"], v["meshes"],
                              "   OVER" if v["over"] else ""))
 
+                print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
+                prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
+                pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                for ln in lines:
+                    print("  " + ln)
+                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                if not pok:
+                    fails.append("assert export-profile")
+
             if a.baseline and os.path.exists(a.baseline):
                 base = json.load(open(a.baseline))
                 print("\n--- delta vs %s ---" % os.path.basename(a.baseline))
@@ -337,4 +357,5 @@ if __name__ == "__main__":
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate (repeatable)")
     ap.add_argument("--size", default="1280x800")
+    ap.add_argument("--profile", default="", help="under --assert: the export profile for this run, a,b,c (default EXPORT_PROFILE)")
     sys.exit(asyncio.run(run(ap.parse_args())))
