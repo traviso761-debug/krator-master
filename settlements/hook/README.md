@@ -45,6 +45,10 @@ The vessels: the stack town (`vsGiant`, salvage) grounded in the pier's slip, th
 deep-water berth, the pens' submarine (`slSub`) inside the pen and a second one sunk off the platforms, the grain
 ship (`vsPanamax`) along the platforms' west face, the wreck (`vsFeeder`) off the L's east end.
 
+**Compass.** The kit's frame is local: `N` is its land side (-z) and `S` its sea side (+z). On the scale model the sea
+lies to Hook's NORTH (the owner, 2026-10-17), so the kit's `S` is the world's north and the run's "west to east" is
+the kit's -x to +x. P1 places the frame on the model; nothing in P0's layout changes.
+
 Decays are per segment, from the plan's table: 0 repaired in the working harbour, 1 worn at the edges, 3 salvage
 where the salvagers live. `KNOWN_ISSUES.md` lists what the layout API could not give the plan.
 
