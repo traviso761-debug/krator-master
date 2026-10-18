@@ -238,7 +238,7 @@
     note: 'one hollow hall behind the 9 m opening; the mech in its gantry, the forge, the benches and the drums are fixtures' });
 
   /* ================================================================ the frontier (74b-vern-frontier.js, Verge's upper city) */
-  add({ key: 'vern_governor_palace', name: "Governor's Palace", wealth: CIVIC, types: ['civic', 'single-family dwelling'], lot: [42, 36],
+  add({ key: 'vern_governor_palace', name: "Governor's House", wealth: CIVIC, types: ['civic', 'single-family dwelling'], lot: [42, 36],
     bodies: [{ id: 'palace', poly: [[-15, -14], [15, -14], [15, 0], [5.5, 0], [5.5, 4.4], [-5.5, 4.4], [-5.5, 0], [-15, 0]], y: 1.63,
       levels: [{ h: 5.22 }, { h: 4.2 }], wall: 0.5, roof: 'hip', pitch: pt(3.4 / 6.8),
       doors: [{ at: [0, 4.4], w: 2.2 }, { at: [15, -10], w: 1.4 }],

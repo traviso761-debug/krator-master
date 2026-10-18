@@ -1,6 +1,6 @@
 # settlements/isle-demo: known issues (the site planner)
 
-- [x] **Walapo's frame was inland** (2026-10-15). Its settlement point (one 2 km scale-model pixel) is 5.2 km from the
+- [x] **Valapo's frame was inland** (2026-10-15). Its settlement point (one 2 km scale-model pixel) is 5.2 km from the
       sea, so its square held none. On the owner's word the origin moved 3.7 km toward the coast, north-north-west
       (`ISLE.SHIFT`, and the frame in `site/isle-site.json`). Now:
       - the shore is 1.6 km from the origin (Kautoa's is 1.8 km), and about a fifth of the square is sea: a bay to the
@@ -16,7 +16,7 @@
 - [ ] **The ground's detail textures are Voth's** (settlements/voth/tex: stone, ground, rock, sand), read in place as
       Voth's editor takes them. The isles' own library sets would suit better (a materials.json for this build).
 - [ ] **No geyser relief here.** The planner's ground leaves out the geyser fields' relief (openworld/isle-demo's
-      89-world-geysers.js needs the geyser kit). The nearest vent is 6 km from Kautoa and 28 km from Walapo, beyond the
+      89-world-geysers.js needs the geyser kit). The nearest vent is 6 km from Kautoa and 28 km from Valapo, beyond the
       square, so neither town's ground differs.
 - [ ] **The in-app browser pane can stall** loading this page while several world pages are open in other tabs (GPU).
       Close them first. Headless and alone it loads in under a second.

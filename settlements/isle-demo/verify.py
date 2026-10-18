@@ -3,7 +3,7 @@
 
     python3 verify.py dist/isle-site.html --assert [--shots DIR]
 
-For each town (Kautoa, Walapo) the page is loaded headless and checked:
+For each town (Kautoa, Valapo) the page is loaded headless and checked:
   - it loads clean: no page error, the probe (window._site) ready without an error
   - the frame: the town's origin is its settlement point in the open world (moved by ISLE.SHIFT where the owner had it
     moved), its centre stands on land, the settlement point and a shore lie in the planning square
@@ -38,15 +38,16 @@ CHECKS = r"""(neg)=>{const R=[],F=ISLE.F,S=WORLD_DATA.meta.settlements.find(s=>s
   let sea=null;for(let r=0;r<=12000&&sea==null;r+=250)for(let k=0;k<64;k++){const w=WORLD.lakeWater(F.x+Math.cos(k/64*6.2832)*r,F.z+Math.sin(k/64*6.2832)*r);if(w>-1e8){sea=w;break;}}
   const ok=worst<0.01&&sea!=null&&Math.abs(sea-F.sea)<0.01;
   R.push({name:"the ground is the open world's",ok,detail:'24 samples, worst '+worst.toFixed(3)+' m at '+at+'; the frame sea '+F.sea+', the world water '+(sea==null?'none':sea.toFixed(2))});}
- {const u0=SITE.undo.length,d=SITE.addDistrict('plaza',[[-60,-60],[60,-60],[60,60],[-60,60]]),m=SITE.addMarker(100,100),a=SITE.addLine('avenue',[[-200,0],[200,0]]);
+ {const c0=[SITE.data.districts.length,SITE.data.markers.length,SITE.data.avenues.length];
+  const u0=SITE.undo.length,d=SITE.addDistrict('plaza',[[-60,-60],[60,-60],[60,60],[-60,60]]),m=SITE.addMarker(100,100),a=SITE.addLine('avenue',[[-200,0],[200,0]]);
   const n1=[SITE.data.districts.length,SITE.data.markers.length,SITE.data.avenues.length];
   SITE.doUndo();SITE.doUndo();SITE.doUndo();const n0=[SITE.data.districts.length,SITE.data.markers.length,SITE.data.avenues.length];
   SITE.doRedo();const area=SITE.area(SITE.district(d.id).poly);
   const P=JSON.parse(ISLE.townJSON());if(neg==='payload')delete P.frame;
   const pay=P.frame&&P.frame.town===F.town&&isFinite(P.frame.sea)&&Array.isArray(P.districts)&&P.districts.some(q=>q.id===d.id);
   SITE.doUndo();while(SITE.undo.length>u0)SITE.doUndo();SITE.dirty=false;TOOL.status();
-  const ok=n1.join()==='1,1,1'&&n0.join()==='0,0,0'&&Math.abs(area-14400)<1&&!!pay;
-  R.push({name:'the editor draws on it and saves the town with its frame',ok,detail:'added '+n1+', undone '+n0+', redone plaza '+area.toFixed(0)+' m2; payload '+(pay?'carries the frame and the drawing':'MISSING its frame or drawing')});}
+  const ok=n1.join()===c0.map(c=>c+1).join()&&n0.join()===c0.join()&&Math.abs(area-14400)<1&&!!pay;
+  R.push({name:'the editor draws on it and saves the town with its frame',ok,detail:'drawn '+c0+', added '+n1+', undone '+n0+', redone plaza '+area.toFixed(0)+' m2; payload '+(pay?'carries the frame and the drawing':'MISSING its frame or drawing')});}
  return R;}"""
 
 
@@ -66,10 +67,10 @@ def merge_ok():
         fr = {'x': 1, 'z': 2, 'sea': -3}
         site = lambda n: {'frame': dict(fr), 'districts': [{'id': 'd1', 'n': n}], 'markers': []}
         serve.merge('Kautoa', site('k'))
-        serve.merge('Walapo', site('w'))
+        serve.merge('Valapo', site('w'))
         serve.merge('Kautoa', site('k2'))
         d = json.load(open(serve.FILE, encoding='utf-8'))
-        both = d['towns']['Walapo']['districts'][0]['n'] == 'w' and d['towns']['Kautoa']['districts'][0]['n'] == 'k2'
+        both = d['towns']['Valapo']['districts'][0]['n'] == 'w' and d['towns']['Kautoa']['districts'][0]['n'] == 'k2'
         refused = 0
         for town, s in (('Kautoa', {'districts': [], 'markers': []}), ('Atlantis', site('x'))):
             try:
@@ -91,7 +92,7 @@ async def run(a):
     with harness.serve(folder) as port:
         async with async_playwright() as p:
             b = await harness.launch_chromium(p)
-            for town in ('Kautoa', 'Walapo'):
+            for town in ('Kautoa', 'Valapo'):
                 pg = await b.new_page(viewport={'width': 1280, 'height': 800})
                 errs = []
                 pg.on('pageerror', lambda e: errs.append(str(e)))
