@@ -26,8 +26,9 @@ more weathered than Voth; surrounded by vast slave plantations.
 
 ## 1. The site
 
-The scale model has Shim at px 382,788 (its `seed14` point; the second "Shim" at px 371,700, inside Jimjam's polygon,
-is a stray: `LORE.md` §12), in the SW lowlands biome, inside the Vothic Kingdom 46 km from its southern border;
+The scale model's 2026-10-05 export has Shim at px 382,788 (its `seed14` point; a second "Shim" at px 371,700,
+inside Jimjam's polygon, was a stray). The live model (read 2026-10-18) has neither, nor Voth's point: both are to be
+restored in the artifact's `settlements` collection (`LORE.md` §12), Shim at 382,788. The point is in the SW lowlands biome, inside the Vothic Kingdom 46 km from its southern border;
 Nazar's ruins 164 km west, Wing 177 km north-east, Voth 155 km north-east. The Shim river (*Shim Rivrh*, 5,678 m3/s,
 the greatest river of the south-west) is named for the city; **the lake is not on the model yet** (no lake is audited
 near the point): the plan assumes a lake the river widens into, the city on its eastern shore, the river entering from
@@ -94,8 +95,11 @@ and gold, the Chichani's own paint over the Ancients' surfaces.
 
 ## 5. Open questions for the owner
 
-1. The lake: its size and which shore the city stands on (the plan: the river widened into a lake 10 km long, the city
-   on its eastern shore). It needs adding to the scale model.
+1. The lake: its size and which shore the city stands on. At the model's 2 km a pixel a 10 km lake is five pixels,
+   so a capital's lake with chinampas wants to be the size of Texcoco: the plan proposes about 30 by 12 km (15 by 6 px),
+   the Shim river entering from the south and leaving north, the city on its eastern shore at px 382,788. It is added
+   as a region polygon in the artifact (as the Bay of Voth was) and carved by `tools/scale-model/features.py`'s bay
+   pass, then the little-demo export is refreshed.
 2. The crop of the plantations: cane and spice (the plan), or grain for the Kingdom?
 3. Did Tzintzun keep Shim's Temple as a second seat of the Sun cult, or is it a provincial temple now? The plan keeps
    it holy: the high priests' tombs in the lake are a pilgrimage, and the sacrifice stone is used at the solstice.
