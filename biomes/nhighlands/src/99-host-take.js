@@ -48,6 +48,15 @@ const VIEWS={};
  // MORNING FOG: low among the temperate giants, looking toward the low sun through the trunks (the amber-fog reference)
  {const C=heroesOf('greatspruce').concat(heroesOf('shadowhemlock'));const T=C.filter(T=>Math.hypot(T.x-TOWER.x,T.z-TOWER.z)>200&&BIO.clearOf(T.x,T.z,60)).sort((a,b)=>BIO.lodD(a.x,a.z)-BIO.lodD(b.x,b.z))[2]||C[0];
   if(T){const sd=new THREE.Vector3(-SUN_POS[0],0,-SUN_POS[2]).normalize(),cx=T.x+sd.x*45,cz=T.z+sd.z*45;add('Morning fog',[cx,G(cx,cz)+2.2,cz,T.x-sd.x*60,G(T.x,T.z)+12,T.z-sd.z*60],'dawn');}}
+ // THE NEW FLORA (HANDOFF-FLORA.md): a view of each new tree, the hummocks, and the spore lamps by night
+ add('A veil banyan',specimen('banyan',70,8,.4));
+ add('Serpentwood in the mist',specimen('serpentwood',20,3,.5));
+ add('Shag maple',specimen('shagmaple',28,4,.4));
+ add('Table cedar',specimen('tablecedar',60,8,.55));
+ add('Fan-leaf',specimen('fanleaf',36,4,.55));
+ add('Ghost alders',specimen('ghostalder',26,2.5,.5));
+ if(NHL.HUMMOCKS&&NHL.HUMMOCKS.length){const near=L=>L.slice().sort((a,b)=>BIO.lodD(a.x,a.z)-BIO.lodD(b.x,b.z))[0],view=(h,d,up)=>{const a=rr(0,TAU),cx=h.x+Math.cos(a)*(h.r+d),cz=h.z+Math.sin(a)*(h.r+d);return[cx,G(cx,cz)+up,cz,h.x,h.y,h.z];};
+  add('Moss hummocks',view(near(NHL.HUMMOCKS.filter(h=>h.r>1.2)),9,2.4));const L=NHL.HUMMOCKS.filter(h=>h.lamp);if(L.length)add('Night: spore lamps',view(near(L),2.2,.9),'night');}
 })();
 // ---------------------------------------------------------------- the inspector's words
 // THE INSPECTOR: the plant's name, its class and its tags (climate, aridity, abyssal, riparian, harvest);
@@ -91,7 +100,7 @@ function biomeChecks(){const R={};
  R.stream={monotone:mono,bedUnder:under,drop:+(STREAM.level[0]-STREAM.level[STREAM.level.length-1]).toFixed(1),falls:STREAM.falls.length,lenKm:+(STREAM.LEN/1000).toFixed(2)};
  // nothing rooted in the water: trees, and the floor's plants (the stepping stones are the one thing meant to stand in it)
  R.treesInWater=NHL.TREES.filter(T=>BIO.depth(T.x,T.z)>.05).length;
- const FLOOR=['frond','lady','lace','pleat','blade','bell','heath','sorrel','ucard','mondo','spike','paddle','spurge','smoke','disc','cane','bracken','zebra'];
+ const FLOOR=['frond','lady','lace','pleat','blade','bell','heath','sorrel','ucard','mondo','spike','paddle','spurge','smoke','disc','cane','bracken','zebra','wheel','sporepin'];
  let wet=0,n=0;FLOOR.forEach(it=>itemPositions(it,7).forEach(p=>{n++;if(BIO.depth(p[0],p[2])>.35)wet++;}));R.floorInWater={wet,of:n};
  // nothing rooted on a cliff
  R.treesOnCliffs=NHL.TREES.filter(T=>FC.at(FC.a.slope,T.x,T.z)>1.5&&T.lv>0).length;
@@ -110,7 +119,7 @@ function biomeChecks(){const R={};
 // THE HOST'S OWN CHECKS (verify.py runs them when present), each with a broken input that must fail
 // species and plants that yield something edible the kit does not draw as a catalog fruit (tips, sap, shoots...): named, not hidden
 const FRUIT_NOT_DRAWN=['greatspruce','shadowhemlock','mossmaple','greattrumpet','trumpet','normanspruce','mountainmaple','larch','birch','cragpine','frosttrumpet','forestlime',
- 'Sword ferns','Lady ferns','Disc stalks','Trumpet saplings','Wood sorrel','Spikes','Mountain cane','Reindeer lichen','Mushrooms'];
+ 'Sword ferns','Lady ferns','Disc stalks','Trumpet saplings','Wood sorrel','Spikes','Mountain cane','Reindeer lichen','Mushrooms','fanleaf','banyan'];
 const HCHK={
  // fruit: every fruiting species and plant names a catalog piece, and each kind of fruit is drawn on the stage
  // (N: instances of 'berry' = arils, rowan, bilberries; 'lantern' = lantern pods; 'mast' = beechmast and acorns)

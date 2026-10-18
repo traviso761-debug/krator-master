@@ -25,8 +25,8 @@
    "sha256": "eccf79e6eb624dcdd7ede4ff1adf548f8f1b15026817f76173d56fae8fcfa1d6"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 5594581,
-   "sha256": "40bacdc0207cfe782f5c2f87ecb931398093d76e58e89359bc4d398a814c7728"
+   "bytes": 5621095,
+   "sha256": "8597fda1a8fc0199a32afb9b979677b56ffbe7feb4c8a828b0a5ec185d800be6"
   },
   "biomes/nwbay/dist/nwbay.html": {
    "bytes": 6548412,
@@ -389,8 +389,8 @@
    "sha256": "79f66a104d39273172200051873b2b2043e908f26c06a57c774511ff5546fd09"
   },
   "settlements/highlands/dist/roketstad.html": {
-   "bytes": 7307908,
-   "sha256": "985f20bc5d8a9501fc391dbeb8d6ea385e334439391a53140d961d65b55f995e"
+   "bytes": 7333533,
+   "sha256": "930593e9ecb34a1ede22900f9600ba5877a531892f8cc41871f44774bdfc0dcb"
   },
   "settlements/hook/dist/hook.html": {
    "bytes": 894619,

@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 1 prompt (section 4: `card.crop.indigo`).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 4 prompts (section 2: the Northern Highlands' three; section 4: `card.crop.indigo`).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -141,6 +141,30 @@ colour: the colour is the point. Sulfur needs no image: `ground.sulphur` is in t
 The two other harlequin colourways in the source (`73b-hl-frame.js:239-240`, `hlHarl(ground, diamond, seam)`); only the
 green one (`patterns/highlands/harlequin`, `hHarlG`) was delivered. Glazed roof tile on the tents (`hTentHR`, `hTentHG`)
 and the bulb domes (`hBulbHG`), drawn by the canvas painter today. Full colour, repeats both ways.
+
+### The Northern Highlands (`biomes/nhighlands`): the new flora (2026-10-18)
+
+Painted in code today (`biomes/nhighlands/KNOWN_ISSUES.md`, the new flora). The fan-leaf, the moss sleeves, the table
+cedar, the serpentwood and the banyan have library candidates already (`card.ginkgo`, `ground.moss001`-`003`,
+`card.spruce`, `bark.mossy`, `bark.smooth`): wiring them is the owner's call, no prompt needed.
+
+#### `card.staghorn`
+
+```
+A staghorn fern (Platycerium) frond cut-out: one long antler-like frond forking three times into rounded tips, mid green #7aa040 with lighter edges #a8c870, fine felted surface, isolated on flat pure magenta (#FF00FF), front view, the frond's base at the left edge pointing right, whole frond in frame, no shadow. Matte.
+```
+
+#### `card.sunwheel`
+
+```
+An alien ground rosette seen from directly above: thirty-five slender stalks radiating flat from a tight central bud, each stalk ending in a perfect wheel of twelve narrow pointed leaflets, the wheels smaller toward the centre, bright yellow-green #a8d048 to #b4d850, too regular to be an Earth plant, isolated on flat pure magenta (#FF00FF), top-down orthographic, whole rosette in frame, no shadow. Matte.
+```
+
+#### `bark.alder.lichen`
+
+```
+Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: smooth pale grey alder bark #9c9e96 heavily mottled with white and pale green-grey crustose lichen patches #d8dcd0 and #b8c4a8, a few dark horizontal lenticels #4a4a44, green moss creeping up from the bottom edge #5a7a26. Matte. One tile covers 1 metre.
+```
 
 ### Ys (`settlements/ys`)
 
