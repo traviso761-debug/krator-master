@@ -357,6 +357,34 @@ both. What differs: beyond the box, the page draws the jungle and the city where
 sprites, additive) and its floating labels are not exported; the gate's passage reads lighter in Godot (the page's deep
 shade there is its own darker interior, not matched by Godot's ambient); the light is a little flatter in Godot.
 
+## Report
+
+`python3 tools/export_report.py [case ...] [--json] [--compare old.json]` prints one row per case under `godot/data`
+that holds a `world.json` and a `world.glb` (ROADMAP.md section 11, the cross-case size report; it extends the idea of
+`tools/geometry_report.py`, which counts a page's draw calls in Chromium, to the exported files). Pure Python: `json`
+over `world.json` and `struct` over the glb's header and JSON chunk (accessor counts give vertices and triangles,
+`EXT_mesh_gpu_instancing`'s TRANSLATION count gives instances); no Chromium, no Godot, no 3D library. Columns: bytes of
+`world.json`, `world.glb` and `tex/` (an LFS pointer counts as the file it names); sections by status (`ok empty stub
+none`); item sets and instances; buckets and bucket triangles (`itris`: the items' triangles, unit triangles times
+instances); `mats` and `texs` (records in the lists) beside `usedm` and `usedt` (those a node or a material names);
+`draws`, the draw-call proxy (item sets + buckets, one MultiMesh or mesh node each in Godot); the terrain source.
+`--json` writes `godot/data/export-report.json` (committed: it is the baseline); `--compare` prints each column's delta
+against such a file. `tools/test_all.py --nightly` runs it with `--compare` as a report that never fails the run.
+
+Reconciled with the tables above (the files in `godot/data` of 2026-10-13):
+
+| | M4 sedesert | M5 Iziz |
+|---|---|---|
+| instances | 7,280, as the table | 9,638, as the table |
+| items, buckets, bucket triangles | 34, 3, 47,471, as the table | 130, 33, 60,735, as the table |
+| bucket records | **60** (the table is right; 60 is sedesert's figure) | **49** (the Iziz table says 49 of 49; the 60 in the Iziz row of a summary is the 60,735 triangles, not records) |
+| materials | **36** records (the M4 row says 35: it was written before stage 2e added the ground's `world-uv` record, `stats.materials` and the file count 36); 28 are named by a node | 220, as the table |
+| textures | **27** listed: 20 library maps and 7 PNGs (the M4 row's 25 = 18 + 7 was the first export; the ground layers' two library maps of stage 2e, `world-sedesert` re-exported in cd29d616, make 27, as the references line says); 25 are named by a material | 68, as the table (57 library + 11 PNGs); all named |
+| files | json 7.9 MB (the table says 7.7 MB, before the ground records), glb 2.8 MB, tex 2.0 MB | 8.2 MB, 3.1 MB, 11.0 MB, as the table |
+| draw-call proxy | 37 | 163 (the glb's node count) |
+
+Where a figure here differs from the report, the report is right: it reads the files the Godot tests import.
+
 ## Not done
 
 - `sim` and `city` are contracts only; `fixtures`, `interiors` and `furniture` are filled by Iziz alone (no interiors:
