@@ -92,8 +92,8 @@ generator takes any count.
 
 ## 5. Open questions for the owner
 
-1. **Settled (2026-10-18).** Nine clans; their names and crests are the owner's to give when the ring is drawn (the
-   generator takes the list; nine placeholder crests until then).
+1. **Settled (2026-10-18).** Nine clans; their names and crests are decided later (the owner), when the ring is drawn:
+   the generator takes the list and draws nine placeholder crests until then.
 2. **Settled (2026-10-18).** An elected law-speaker heads the Clanthing.
 3. **Settled (2026-10-18).** The Republic's pressure is law and levy under the threat of arms: the town is watchful,
    not walled.
