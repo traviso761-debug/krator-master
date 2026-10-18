@@ -78,7 +78,20 @@ the latest Voth viewer as the base.
 - **The village is Valapo, not Walapo** (owner, 2026-10-18: the language has no W sound). Renamed everywhere outside
   the scale model; the scale model's own settlement record still reads Walapo until the owner renames it there, so a
   re-extract must keep the new name (`openworld/isle-demo/source/settlements.json`).
-- **Next: P6,** the city plan from section 8.
+- **P6 is done** (2026-10-18): `dist/isle-city.html`, both towns on core/city from section 8 (this folder's `README.md`,
+  "The city page").
+  - **The scale changed** (owner): the ceremonial park was to be two or three times the palace, not eight. Each town's
+    drawing is scaled toward its harbour, Kautoa 0.35 and Valapo 0.363 (its build area a third of Kautoa's), the coast
+    pieces put back on the shore (`tools/scale-site.js`; the full-size drawing kept as `site/isle-site.full.json`).
+  - **About half the town is farmland** (owner): houses hug the coast, the landmarks and the avenues; the rest is paddy,
+    orchard and field by 8c's crops.
+  - Kautoa about 1,100 buildings and 4,900 people, Valapo about 340 and 1,540 (owner: about 5,000, Valapo a third).
+  - `verify.py dist/isle-city.html --assert` and `node tests/test-isle-city.js`: every check of section 8 per town, with
+    negatives. Stand-ins and gaps: `KNOWN_ISSUES.md`.
+  - Ridertown's buildings go in a new set, **kits/beast-riders** (owner): the catalog's Girder and Mav's Refuge buildings
+    plus stables and a rookery tower, built once its three textures are delivered (`core/materials/PROMPTS-NEEDED.md`
+    section 6).
+- **Next: P6b,** the export profile (section 7); kits/beast-riders when its textures arrive.
 
 ## 1. The assay (scale model 4.21, read 2026-10-14)
 
@@ -353,7 +366,9 @@ alone).
 ## 8. The towns' programmes (P5: the owner's site files and brief, 2026-10-18)
 
 The drawings are in `site/isle-site.json`. Coordinates are each town's frame (metres, x east, z south, so north is
--z). Every drawn avenue is 12 m wide. What the owner asked for that is not drawn yet is marked **to draw**: P6 adds it
+-z). **The coordinates below are the owner's full-size drawing** (`site/isle-site.full.json`); since P6 the site file
+holds it scaled toward each harbour (Kautoa 0.35, Valapo 0.363: the status above), so a district's size here is about
+three times what the page draws. Every drawn avenue is 12 m wide. What the owner asked for that is not drawn yet is marked **to draw**: P6 adds it
 as records, or the owner draws it in the planner.
 
 ### 8a. Kautoa, the walled city

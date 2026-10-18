@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 5 prompts (section 2: the Northern Highlands' three; section 4: `card.crop.indigo`; section 5: `rock.sandstone.bedded.red`).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 8 prompts (section 2: the Northern Highlands' three; section 4: `card.crop.indigo`; section 5: `rock.sandstone.bedded.red`; section 6: the Beast Riders kit's three).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -638,6 +638,43 @@ rock-stack generator's bed material.
 
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic front-on view of a vertical rock face, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A cliff face of coarse, pebbly red sandstone in horizontal beds, like Garden of the Gods: six or seven beds across the image, each a decimetre to half a metre thick, separated by thin recessed partings that run level across the whole width; the beds alternate between brick red (#a8503a), salmon pink (#c98468) and a paler pinkish buff (#d9b091), with scattered pea-sized pebbles and grit standing proud of the surface, a few small honeycomb weathering pits, and faint darker water streaks (#6a3a2c) running down from one or two partings. Rough, matte, granular surface; no cross-bedding, no vegetation, no sky.
+```
+
+## 6. The Beast Riders kit (`kits/beast-riders`, 2026-10-18, before it is built)
+
+The new building set (owner, 2026-10-18): the Riders' buildings of Girder and Mav's Refuge (the catalog's `br_bldg_*`) and
+the new ones Kautoa's Ridertown needs (isle demo P6): ground-mount stables, a free-standing rookery tower, the nature
+shrines. Everything else they draw with is already in the library (Girder's `materials.json`: the timber, thatch, cane,
+rope, hides and the `patterns/beast-riders/*` sheets). Asked for before the build, so the kit is verified once. Three
+images, each lands in `core/materials/library/` and the family in `kits/beast-riders/materials.json`.
+
+#### `straw.bedding`
+- Kind: tileable material, near-colourless (tinted); 1.5 m tile. Loose straw, not the plaited `straw.plaited`.
+- Used by: the stables' stall floors, hay lofts and hay ricks, the rookeries' nest beds.
+- Reuse: the Islanders' byres and pens, every farm yard and barn floor, the nomads' fodder piles, Voth's stables.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A thick layer of loose stable straw bedding seen from above: long dry hollow stalks lying criss-crossed at every angle in a deep tangled mat, a few broken short pieces and husks between them, darker gaps where the layers overlap, the stalks pale and dry with faint ribbing along each one. No grain heads, no dirt patches, no objects. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+#### `wood.guano`
+- Kind: tileable material, near-colourless (tinted); 2 m tile, the streaks running down the image.
+- Used by: the rookery tower's perches, roost rails and deck edges, where the flyers (quetzal, wingclaw, nightwing) roost.
+- Reuse: Girder's and Mav's Refuge's roost decks, Pinnacle Rock's roost platforms, seabird cliffs and harbour pilings.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Old weathered timber boards running vertically, the grain deep and open, splashed and streaked with the droppings of large roosting birds: chalky white splashes and drips running straight down the boards, thick crusted where they gather on the upper part of each board and thinning to faint pale runs below, a few darker stains and scratch marks from claws across the grain. The streaks run strictly vertical (down the image). Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+#### `ground.stable.yard`
+- Kind: tileable material, near-colourless (tinted); 4 m tile. The library's `ground.brown_mud_02` stands in until it arrives
+  (too clean: no trampling, no straw).
+- Used by: the stables' paddocks and the trampled ground before their doors, where big mounts (threehorn, hardshell,
+  raptor) are walked and fed.
+- Reuse: every corral, cattle and buffalo pen, the nomads' camps, a caravanserai's yard.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Trampled earth of a livestock yard: churned packed mud pocked all over with large deep hoof and three-toed claw prints overlapping in every direction, the ridges between them dried and cracked, darker damp hollows where water stands in the deepest prints, scattered trodden-in wisps of straw and a few dark patches of dung pressed flat. No grass, no stones, no puddles of open water. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
 ```
 
 ## Delivered 2026-10-18, crops

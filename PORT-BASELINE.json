@@ -404,9 +404,13 @@
    "bytes": 884089,
    "sha256": "4bff490b3ba3005f149a0525a74acdb2201855e2bcf918fb7627098043afaf5a"
   },
+  "settlements/isle-demo/dist/isle-city.html": {
+   "bytes": 2660461,
+   "sha256": "1a7224b02db972cedc17fa2d748854c1f39141f5a0920f332f68a7f2fe10e261"
+  },
   "settlements/isle-demo/dist/isle-site.html": {
-   "bytes": 1252634,
-   "sha256": "dea89999751d0046479ceb57abee864ba26033d6a8d4b3c7000b643d520d3eb0"
+   "bytes": 1252970,
+   "sha256": "249f74abfc2e946078a735a8221b6014c1c284b16a91b8420647e97242ecf6b6"
   },
   "settlements/iziz/dist/iziz-vernacular.html": {
    "bytes": 1710683,

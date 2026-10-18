@@ -69,4 +69,50 @@ it, then run `build.py --accept`, or vendor the file and track its drift.
 
 There are two negative controls, a moved frame and a payload with no frame; both are caught.
 
+## The city page (P6): `dist/isle-city.html`
+
+```
+python3 build.py                                          # writes both pages; the city's [G data] half as dist/isle-city.plan.js
+python3 -m http.server 8829 --directory .                 # http://127.0.0.1:8829/dist/isle-city.html (?town=Valapo)
+python3 verify.py dist/isle-city.html --assert [--shots DIR]
+node tests/test-isle-city.js                              # the plan without a browser (about a minute)
+node tools/scale-site.js [--kautoa 0.35] [--valapo auto] [--write]   # re-scale the drawing from site/isle-site.full.json
+```
+
+**Both towns on core/city,** one `KCITY` instance each (`src/32-isle-city.js`): `rand: 'krand'`, `index: 'insertion'`, the
+exact-streets rule and the "high" stance (a house's floor at its highest corner, its footing down the slope). Steps 0-5
+come from the owner's site file and the programme (`src/30-isle-programme.js`, PLAN.md section 8); steps 6-12 are
+core/city's builder (Valapo, a village, stops at 11: no alleys). A new layout, not a hash-identical port.
+- **The drawing is scaled** (owner, 2026-10-18): the ceremonial park was to be two or three times the palace, so each
+  town's drawing is scaled toward its harbour (Kautoa 0.35, Valapo 0.363, which makes its build area a third of
+  Kautoa's) by `tools/scale-site.js`. It puts the coastal pieces (harbours, beach, salt works, quarries, the coast road)
+  back on the real shore. The owner's full-size drawing is kept as `site/isle-site.full.json`; the site file's town
+  carries `scaled: {factor, anchor}`, and the programme's own coordinates follow it (`ISLE.scaledProg`).
+- **The "to draw" items** of PLAN 8a are records: the ring round the ceremonial park, with the palace, the square, the
+  five envoy houses and the Governor's House facing it (each on a terrace cut into the slope:
+  `KCITY.ground.levelPad` on the town's ground grid); rings round the square, Markets 2 and 3 and Park 2; the western loop
+  (routed over the ground); the works quarter; Warrior's Square's barracks, captains' halls and towers; the market
+  halls; the harbours' shore pieces and vessels; the wall round the build region with its North, West and East gates
+  (the sea is the harbour's wall).
+- **Houses hug the coast, the landmarks and the avenues** (owner, 2026-10-18): the residential frontage thins away from
+  them (`hug`), and the open ground left is farmland: parcels of paddy, orchard and field whose crops follow PLAN 8c.
+- **Sizes:** Kautoa about 1,100 buildings, 4,900 people; Valapo about 340, 1,540 (five a household, a multi-family
+  house three households).
+- **Beyond the square** (the farm ring, the fishing villages, the highways past the gates, Valapo's iron mine camp and
+  its cart road) are world records in the probe (`_city.world`), placed later by the open world.
+
+**Placement needs no drawing code.** build.py reads every kit piece's declared box from the kits' sources (`ISLE_DIMS`,
+`ISLE_VDIMS`); the plan places by those, so node, the browser and Godot plan alike. The region's rasters arrive as
+integers decoded by build.py (`WORLD_RAW`): the page reads no canvas.
+
+**Drawing** (`src/60-isle-draw.js`): the kits read in place and sealed in closures (`bundles.py`): `ISK` (the Islanders,
+with kits/resources and the farm animals), `IZV` (the Iziz Vernacular), `CAT` (the catalog's Beast Rider buildings),
+`RINGSEA` (through `settlements/voth/ringsea.py`). Each piece is built once and drawn instanced: in full within 520 m of
+the camera's target (2,600 at most), as massing beyond. No furniture on this page (the export profile, P6b, brings it).
+
+**Checks** (`src/34-isle-census.js`, run by verify and the node test): exact footprint overlap, nothing on a street, in
+the sea or on the wall, the vessels afloat, the programme's landmarks and districts, both harbours' vessels and the six
+origins, the wall's named gates, the landing, the size in citizens, the hug, the farmland; that the declared boxes are
+the bundles' own. Negatives: a building pushed onto another, one pushed into the sea, the palace taken away.
+
 See `KNOWN_ISSUES.md`.

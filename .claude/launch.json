@@ -46,6 +46,21 @@
         "settlements/hook/dist"
       ],
       "port": 8811
+    },
+    {
+      "name": "isle-demo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8829",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "settlements/isle-demo"
+      ],
+      "port": 8829,
+      "autoPort": false
     }
   ]
 }

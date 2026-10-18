@@ -18,5 +18,20 @@
 - [ ] **No geyser relief here.** The planner's ground leaves out the geyser fields' relief (openworld/isle-demo's
       89-world-geysers.js needs the geyser kit). The nearest vent is 6 km from Kautoa and 28 km from Valapo, beyond the
       square, so neither town's ground differs.
+- [ ] **City page (P6) stand-ins.** The Beast Riders kit (`kits/beast-riders`, waiting on three textures:
+      `core/materials/PROMPTS-NEEDED.md` section 6) brings Ridertown's stables (the Islanders' byre stands in, named in the
+      census) and a free-standing rookery tower (the catalog's roost gallery stands in). The Islanders have no
+      caravanserai (the guest house stands in), no bloomery for Valapo's smelter (the smithy), and no cooperage or rope walk
+      for the works quarter.
+- [ ] **City page: no furniture, no crop stands.** FURNISH places nothing on this page (P6b's export profile brings the
+      furniture); the farmland is drawn as tinted ground and simple orchard trees, not kits/crops' stands.
+- [ ] **City page: the white sand beaches** are tinted, not widened: the terrain edit (the strand's sand recoloured white)
+      is still to do.
+- [ ] **City page: the Vernacular's file list** is Verge's (`settlements/verge/build.py izv_files`) plus the fragments Iziz
+      has added since; one shared list in settlements/iziz is a follow-up (Verge's misses 71a-c and 73b-c).
+- [ ] **City page: headless verify draws fewer pieces** in full for its screenshots (the nearest 600): software GL times
+      out on the full near set.
+- [ ] **City page: the scaled drawing's coast pieces are snapped by a rule** (`tools/scale-site.js`); the owner checks
+      them in the planner.
 - [ ] **The in-app browser pane can stall** loading this page while several world pages are open in other tabs (GPU).
       Close them first. Headless and alone it loads in under a second.
