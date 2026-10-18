@@ -29,13 +29,14 @@ NIGHTLY_VERIFY = [
     # the first Voth (voth.html) is retired (owner, 2026-10-14; archive/voth-first); Voth is settlements/voth's voth-city, whose
     # verify --assert runs simulated days (about 40 min alone) and so waits for a short mode before it joins the nightly list
     ('settlements/verge', 'dist/verge.html', ['--assert']),
+    ('settlements/yuni', 'yuni.html', ['--assert']),   # its export profile (registry, fixtures, interiors?) since 2026-10-18
 ]
 GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd',
                'res://tests/mask/kmask_test.gd', 'res://tests/atmos/atmos_test.gd',
                'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd',
                'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
-               'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/water/water_test.gd',
+               'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/water/water_test.gd',
                'res://tests/water/falls_case_test.gd',
                'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd']
 # The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and

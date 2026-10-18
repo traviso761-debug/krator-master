@@ -173,11 +173,14 @@ grid points as the page interpolates its per-vertex weights.
 ### Stubs: the written contracts
 
 A contributor meets this shape (`EXPORT.CONTRACTS`). Since M5, Iziz fills `fixtures` and `furniture` and answers
-`interiors` (below, "Iziz"); for every other build they are still stubs:
+`interiors` (below, "Iziz"); since 2026-10-18 Yuni fills `fixtures` and answers `interiors` (below, "Yuni"); for every
+other build they are still stubs:
 
 - **`fixtures`**: doors, windows, lights and signs as core/tags records, each with its placement on its host wall
   (Yuni's `KRATOR_EXPORT.fixtures` shape): `{format: 'krator-fixtures', records: [{id, uid, class: 'fixture', kind,
-  parent, at, ry, size, tags, host: {wall, side, sill}}]}`. First taker: Yuni, then Iziz for M5.
+  parent, at, ry, size, tags, host: {wall, side, sill}}]}`. Filled by Iziz (M5) and by Yuni
+  (`settlements/yuni/src/77-export.js`: the records `51-fixtures.js` makes, with `host.wall` the shell wall of the
+  interior plan that holds the opening, where the building has a plan).
 - **`interiors`**: the room graph (`kits/interiors` `ROOM()`): `{format: 'krator-interiors', buildings: [{id (the
   building's record), storeys: [{y, rooms: [{id, kind, poly, h, doors}]}], links: [{a, b, kind: 'door' | 'stair' |
   'ladder', at}], walls: [{a, b, h, col: true}]}]}`.
@@ -245,6 +248,7 @@ Each must-pass case names its profile in its `verify.py` (`EXPORT_BOX`, `EXPORT_
 |---|---|---|
 | sedesert's tile (M4) | `80,490,380,790` | `registry, items, buckets, materials, textures, terrain=field, stage, atmos, water` (its build takes `89-atmos-8-export.js` since 2026-10-18, so `atmos` fills: the clock, wind, presets and skylight) |
 | Iziz's district (M5) | `40,-225,280,15` (the triumphal plaza and its statues: the Godot case's box, `-120,292,120,532`, holds no registered furniture, the gap the profile catches; move the case to this box when it is re-exported) | `registry, items, buckets, materials, textures, terrain, stage, atmos, fixtures, furniture, interiors?` (its buildings are shells; its ground is sampled, ROADMAP.md section 11, item 3) |
+| Yuni (`settlements/yuni/verify.py`, the world page) | `140,-80,340,90` (the Foundry, `bld_00005`: the Godot spike's yuni case, and the street before it) | `registry, fixtures, interiors?` (its buildings and fixtures are the core/tags records `51-fixtures.js` makes; its rooms go out building-local through `KRATOR_EXPORT.building` until they take the kits/interiors shape, so `interiors` reads empty; it contributes no meshes: the page's geometry is not baked into item sets, ROADMAP.md section 11, item 3) |
 | the isle demo (M6; `settlements/isle-demo/PLAN.md` section 7) | not yet registered: the page is not built | `registry, items, buckets, materials, textures, terrain=field` (the extracted heights, not `EXPORT.ground`'s samples), `city` (two `KCITY` plans, registered by core/city), `fixtures`, `interiors` (the kit's rooms), `furniture` (the catalog placements, by look), `sim` (places, actors, stocks per settlement, the canoe route and its books), `stage`, `atmos`; its verify names it when P6b lands, before P7, so the sim's export is written to it |
 
 Every other build is preview-only until it names a profile and meets it.
@@ -357,10 +361,32 @@ both. What differs: beyond the box, the page draws the jungle and the city where
 sprites, additive) and its floating labels are not exported; the gate's passage reads lighter in Godot (the page's deep
 shade there is its own darker interior, not matched by Godot's ambient); the light is a little flatter in Godot.
 
+## Yuni (2026-10-18)
+
+Yuni was the template (`KRATOR_EXPORT`, `settlements/yuni/GAME_EXPORT.md`) and kept its own route: the Godot spike's
+`yuni` case reads `KRATOR_EXPORT.fixtures()`, `.tags()` and `.building('bld_00005')` directly
+(`godot/tools/export_spike.py`). Since 2026-10-18 it is a contributor as well: `settlements/yuni/src/77-export.js`
+registers `fixtures` (by `yuni`) and answers `interiors` empty, and its `build.py` lists core/export with its other
+core modules. Both routes read the same registries (`FIX`, `KTAGS.page`), so a door has the same id and uid in
+`fixtures.json`, `tags.json` and a `world.json`. A fixture record is the registry's, plus `host`: `wall` the id of the
+shell wall of the building's interior plan whose opening holds it (null for a light or a building without a plan),
+`side` `outside` (`court` for a door to the building's own yard, `street` for a street light), `sill` above the
+building's base. Its buildings are registry records already, so the registry adapter keeps every parent.
+
+```
+python3 tools/harness.py export settlements/yuni/yuni.html --out godot/data/world-yuni --box 140,-80,340,90 --profile registry,fixtures,interiors?
+godot --headless --path godot -- --check --case=world-yuni
+```
+
+No meshes come through this route (Yuni's geometry is drawn by its kit, not baked into item sets), so the case is
+records only: `Records/Building_<id>` nodes with their fixtures as children, no `Items`, no terrain. `verify.py
+--assert` checks the profile (`registry, fixtures, interiors?`) over that box; `--profile registry,fixtures,sim` fails
+on the stub.
+
 ## Not done
 
-- `sim` and `city` are contracts only; `fixtures`, `interiors` and `furniture` are filled by Iziz alone (no interiors:
-  its buildings are shells, so the section reads `empty`); Yuni's `KRATOR_EXPORT.fixtures` does not register yet.
+- `sim` and `city` are contracts only; `furniture` is filled by Iziz alone; `fixtures` by Iziz and Yuni; `interiors`
+  is answered empty by both (Iziz's buildings are shells; Yuni's rooms are in its own shape, below, "Yuni").
 - The biome kits and Iziz contribute meshes; Girder's region still goes through `godot/tools/export_spike.py`'s glTF
   route (its merged furniture batches name no record); M6 is the isle demo (`ROADMAP.md` section 11), Voth after it.
 - The registry, atmos and KMAT adapters live here until their modules are rebuilt to carry them (no branch owns those
