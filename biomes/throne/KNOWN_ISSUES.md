@@ -96,6 +96,17 @@
   show the same face). The crevasses are painted slots, not cut (the ground is one 6.5 m mesh); the caves are
   shells standing on the shelf, not hollows in the glacier (a carve patch, `core/terrain`, could cut a portal into the
   snout). The snow does not settle as it falls, and nothing moves on the ice (no calving, no meltwater on the surface).
+- [ ] **The new flora of station 1, vent country and the ash desert is procedural** (2026-10-18; vent country took the rift's set the same day, `HANDOFF-FLORA.md`, refs 21-31): the
+  pyre thistle, chalice parasol, cage lantern, medusa cap, lace-fan tree, braid cap and coil horns, and the floor's geode
+  pods, ember burrs, red velvet, wire sporestalks, gold pins, blood chalices, moss domes, red coral-fern and snare rafts
+  are vertex and instance colour. The cage lantern's lattice and the lace fans are canvas cut-outs painted in code (hashed,
+  so they move no generator), and the parasol caps (the chalice's, the medusa's, the braid cap's) take the library's cap
+  skin tinted. They want the owner's textures (`core/materials/PROMPTS-NEEDED.md`, the Throne's new flora).
+- [ ] **Station 1 is near its triangle ceiling** after the new flora: 19.79M scene triangles of 20M (19.06M before). The
+  moss domes reuse the brain cap (~480 triangles each), so there are only ~800; a lighter dome would let them thicken.
+  Its draw calls at the default camera were over the 140 ceiling before the flora (186) and are ~200 now (the verify
+  flags it as a budget, not a failure). Station 1's gullies lie on the clear shoulder and its skylights barely reach the
+  plume, so the plume's new trees stand on its old ground and the acid shores, a few in the gullies.
 
 ## The host (core/host, 2026-10-12)
 

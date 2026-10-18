@@ -23,6 +23,8 @@ const VIEWS={
  'The sulphur marsh':(function(){const a=upAt(MARSH.u+MARSH.ru*.35,MARSH.p+MARSH.rp*1.12),b=upAt(MARSH.u-MARSH.ru*.2,MARSH.p);return[a[0],Math.max(gh(a[0],a[1],3),MARSH.level+4),a[1],b[0],MARSH.level,b[1]];})(),
  'Sulphur rosettes':(function(){const a=upAt(MARSH.u+MARSH.ru*.55,MARSH.p+MARSH.rp*.35),b=upAt(MARSH.u+MARSH.ru*.45,MARSH.p+MARSH.rp*.3);return[a[0],Math.max(gh(a[0],a[1],1.7),MARSH.level+1.7),a[1],b[0],MARSH.level+.3,b[1]];})(),
  'Brimstone candelabras':(function(){const T=nearTree('brimstone',MARSH.x,MARSH.z,7);return atTree(T,T.crownR*3+9,Math.atan2(PERP[1],PERP[0])+.4,1.8,.5);})(),
+ 'Lace fans and cage lanterns':(function(){const T=nearTree('lacefan',MARSH.x,MARSH.z,6);return atTree(T,T.crownR*2.6+8,Math.atan2(PERP[1],PERP[0])+.6,2.2,.5);})(),
+ 'Chalice parasols over the marsh':(function(){const T=nearTree('chalice',MARSH.x,MARSH.z,20);return atTree(T,T.crownR*5+28,Math.atan2(PERP[1],PERP[0])-.4,2.4,.5);})(),
  'The hot pools':(function(){let cx=0,cz=0;POOLS.forEach(P=>{cx+=P.x/POOLS.length;cz+=P.z/POOLS.length;});return toward(cx+DN[0]*60+PERP[0]*170,cz+DN[1]*60+PERP[1]*170,cx,cz,200,6,0);})(),
  'A hot pool':(function(){const P=POOLS[0];return toward(P.x+P.r*2.6,P.z+P.r*.8,P.x,P.z,P.r*2.7,2.4,-1);})(),
  'The mud pots':(function(){const M=MUD[0];return toward(M.x+10,M.z+5,M.x,M.z,M.r+8,3.2,-.5);})(),
@@ -86,7 +88,7 @@ const HCHK={
  // the weather: the module's fog (the acid fog) and its opt-in ash both offered
  weather(W,U){const ok=!!W&&W.MODES.indexOf('fog')>=0&&W.MODES.indexOf('ash')>=0&&W.MODES.indexOf('ashfall')>=0&&typeof W.ash==='number'&&!!U&&!!U.ash;
   return{ok,detail:ok?'modes '+W.MODES.join(', ')+' ('+W.mode+')':'no acid fog or no ash'};},
- placed(C){const here=THRONE.SPECIES.filter(S=>S.vents||['bonebell','lampcap','drizzle','ropepuff','pagoda'].indexOf(S.key)>=0),zero=here.filter(S=>!(C[S.i]>0)).map(S=>S.key);
+ placed(C){const here=THRONE.SPECIES.filter(S=>S.vents||['bonebell','lampcap','drizzle','ropepuff','pagoda','chalice','cagebulb','medusa','lacefan','braidcap','coilhorn'].indexOf(S.key)>=0),zero=here.filter(S=>!(C[S.i]>0)).map(S=>S.key);
   return{ok:!zero.length,detail:zero.length?'never placed: '+zero.join(', '):here.length+' species, the scarcest '+Math.min(...here.map(S=>C[S.i]))};},
  tagged(L){const reg=Object.keys(THRONE.KOPPEN),bad=[];
   for(const S of L){const t=S.tags||{},k=t.koppen||[];
