@@ -1,6 +1,6 @@
 # Torus: the plan (draft, 2026-10-17)
 
-Torus is a Vothic city built round the ruined **Forest Ring** arcology, 145 km east of Voth on the Torus river, 47 km
+Torus is a Vothic city built round the ruined **Forest Ring** arcology, 70 km east-north-east of Voth on the Torus river, 47 km
 from the Ring Sea, and the Kingdom's major agricultural centre. Its lore is `LORE.md` §6.12 ("The cities of the
 Kingdom"). Drum (`settlements/drum/PLAN.md`) is its twin and holds the shared design: the same three layers (the
 reclaimed Ancient town, post-apoc beyond it, the Chichani district), the same phases, and whatever is built for one is

@@ -27,7 +27,7 @@ parallel to the coast, primarily port and industrial in nature.
 
 The scale model has Almua at px 446,553: 14 km from the Ring Sea polygon's edge, the West Ring isles 18 km offshore,
 the Vothic Kingdom's border 51 km north and the League of Amphitriton's (the Hykkousoi) 48 km north: Almua watches the
-Hykkousoi. Temora, the spice port, is 88 km east; Pontus 94 km north-west; Drum 133 km south-west; Voth 200 km south.
+Hykkousoi. Temora, the spice port, is 88 km east; Pontus 94 km north-west; Drum 133 km south-west; Voth 275 km south.
 No river is named at Almua on the model (`tools/scale-model/river-names-4.21.md`); the city's river wants a name
 (`LORE.md` §12).
 

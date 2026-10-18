@@ -29,7 +29,7 @@ more weathered than Voth; surrounded by vast slave plantations.
 The scale model's 2026-10-05 export has Shim at px 382,788 (its `seed14` point; a second "Shim" at px 371,700,
 inside Jimjam's polygon, was a stray). The live model (read 2026-10-18) has neither, nor Voth's point: both are to be
 restored in the artifact's `settlements` collection (`LORE.md` §12), Shim at 382,788. The point is in the SW lowlands biome, inside the Vothic Kingdom 46 km from its southern border;
-Nazar's ruins 164 km west, Wing 177 km north-east, Voth 155 km north-east. The Shim river (*Shim Rivrh*, 5,678 m3/s,
+Nazar's ruins 164 km west, Wing 177 km north-east, Voth 265 km north-east. The Shim river (*Shim Rivrh*, 5,678 m3/s,
 the greatest river of the south-west) is named for the city; **the lake is not on the model yet** (no lake is audited
 near the point): the plan assumes a lake the river widens into, the city on its eastern shore, the river entering from
 the south and leaving north.

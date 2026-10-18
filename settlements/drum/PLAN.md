@@ -1,6 +1,6 @@
 # Drum: the plan (draft, 2026-10-17)
 
-Drum is a Vothic city built round the ruined **Drum** arcology, 122 km north-west of Voth on the Drum river, 47 km
+Drum is a Vothic city built round the ruined **Drum** arcology, 220 km north-west of Voth on the Drum river, 47 km
 from the Scyvoi's country. Its lore is `LORE.md` §6.12 ("The cities of the Kingdom"). Torus (`settlements/torus/
 PLAN.md`) is its twin: the same build with another arcology, another river and a farming country; the two plans share
 their phases, and whatever is built for one is built for both.
@@ -28,7 +28,7 @@ with some wealthy buildings in a nearby district; heavily fortified, as it is of
 ## 1. The site
 
 The scale model has Drum at px 401,602 (`openworld/little-demo/source/settlements.json`), inside the Vothic Kingdom,
-36 km from its border and 47 km from the Scyvoi polygon's edge to the west-north-west; Voth 122 km south-east, Almua
+36 km from its border and 47 km from the Scyvoi polygon's edge to the west-north-west; Voth 220 km south-east, Almua
 133 km north-east, the Agropolis ruin 93 km north-west. The Drum river (*Drïm Rivrh*, 73 m3/s) runs past.
 
 The Drum's court is 560 m across with an allée 900 m long on the south side (the target's numbers): the city takes the
