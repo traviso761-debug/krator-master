@@ -143,6 +143,22 @@ NHL.SPECIES=[
  /*24*/{key:'forestlime',name:'Forest lime',habit:'broad',H:[34,50],rb:[1.1,1.8],crownR:[10,14],bk:4,bark:[0x6a665a,0x5e5a50,0x76726a],leaf:[0x5a8e34,0x689c3a,0x4e8030,0x74a640],item:'broad',
   form:{hB:.5,boughs:[6,8],el:[.6,1.0],L:[.75,1.0],wig:.14,curve:-.07,moss:.5,drape:.15,bulbs:.08,clump:[5,7.2],roots:true,suckers:true},
   tags:TG('temperate','humid','no',HV('timber',['young leaves','flowers (tea)'],true,'Lime-blossom tea for fevers; bast for rope and shoes; soft wood for carving; the bees\' best tree.'))},
+ // THE NEW FLORA (HANDOFF-FLORA.md): more canopy, more moss, a few alien touches. farShape names the far impostor's blob
+ // (55, HABIT) for a habit the old expression does not know; only these species carry it
+ /*25*/{key:'ghostalder',name:'Ghost alder',habit:'broad',H:[16,26],rb:[.2,.36],crownR:[4,6],bk:3,bark:[0x9c9e96,0x929489,0xa8aaa2],leaf:PAL.broad.map(c=>C(c).lerp(C(0x9aba5a),.25).getHex()),item:'broad',
+  form:{hB:.55,boughs:[3,5],el:[.85,1.25],L:[.55,.8],wig:.1,curve:-.03,moss:.9,drape:.25,bulbs:.05,clump:[2.4,3.4],stems:[1,3]},
+  tags:TG('temperate','humid','yes',HV('fuel',[],true,'Grows where nothing else will stand the wet; the lichen on it is a wound dressing.'))},
+ /*26*/{key:'shagmaple',name:'Shag maple',habit:'shag',H:[14,24],rb:[1.0,1.6],crownR:[10,15],bk:4,bark:[0x4a4438,0x403a30,0x56503e],leaf:PAL.broad,item:'maple',farShape:'dome',
+  tags:TG('temperate','humid','both',HV('fuel',[],false,'The moss is gathered for bedding and caulking; it grows back in a season.'))},
+ /*27*/{key:'serpentwood',name:'Serpentwood',habit:'serpent',H:[10,22],rb:[.25,.45],crownR:[5,8],bk:4,bark:[0x4a5034,0x3e4430,0x566040],leaf:PAL.laurel,item:'small',farShape:'low',
+  tags:TG('temperate','humid','both',HV('fuel',[],true,'The twisted wood is prized for bows and handles.'))},
+ /*28*/{key:'fanleaf',name:'Fan-leaf',habit:'broad',H:[22,34],rb:[.5,.9],crownR:[6,9],bk:0,bark:[0x6a6058,0x5e564e,0x76706a],leaf:[0x9ac83a,0xa8d040,0x8ab830,0xb4d84a],item:'fan',
+  form:{hB:.3,boughs:[6,9],el:[.75,1.15],L:[.6,.9],wig:.08,curve:-.03,moss:.5,drape:.1,bulbs:0,clump:[2.6,3.8]},
+  tags:TG('temperate','humid','no',HV('timber',['nuts (roasted)'],true,'The fruit stinks; the roasted nut inside is eaten in small numbers. The leaves for the memory.'))},
+ /*29*/{key:'tablecedar',name:'Table cedar',habit:'table',H:[24,38],rb:[1.2,2.0],crownR:[12,18],bk:1,bark:[0x5a4a3a,0x4e4034,0x665446],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x3a5a3a),.3).getHex()),item:'needle',farShape:'umbrella',
+  tags:TG('temperate','subhumid','no',HV('timber',[],true,'Fragrant rot-proof timber for halls; the resin burnt as incense.'))},
+ /*30*/{key:'banyan',name:'Veil banyan',habit:'banyan',H:[22,34],rb:[2.2,3.4],crownR:[22,35],bk:2,bark:[0x66665a,0x5c5c50,0x707064],leaf:PAL.broad,item:'broad',farShape:'dome',
+  tags:TG('temperate','humid','both',HV('none',['figs (small, in autumn)'],false,'One tree shelters a village. Where a prop root touches the ground it becomes a trunk.'))},
 ];
 NHL.SPECIES.forEach((S,i)=>{S.index=i;});
 // THE UNDERSTOREY PLANTS, for the inspector and the tags (the items carry the label)
@@ -174,6 +190,10 @@ NHL.PLANTS=[
  {label:'Mushrooms',name:'Mushrooms',tags:TG('temperate','humid','no',HV('none',['some'],false,'Fly agaric among them: do not.'))},
  {label:'Grass',name:'Grass and sedge',tags:TG('temperate','subhumid','both',HV('none',[],false,''))},
  {label:'Wood shrubs',name:'Understorey shrubs',tags:TG('temperate','humid','no',HV('none',[],false,''))},
+ // the new flora (HANDOFF-FLORA.md)
+ {label:'Staghorns',name:'Staghorn fern',tags:TG('temperate','humid','no',HV('none',[],false,'An epiphyte: a round shield clasping the bole, antler fronds hanging out of it.'))},
+ {label:'Sun-wheels',name:'Sun-wheel',tags:TG('temperate','humid','no',HV('none',[],false,'Alien: a rosette of perfect leaf wheels; it turns to follow the light through the day.'))},
+ {label:'Spore lamps',name:'Spore lamp moss',tags:TG('temperate','humid','both',HV('none',[],false,'Alien: the moss\'s sporophytes glow at night; a lamp-moss hollow lights a path.'))},
 ];
 
 // what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
@@ -445,6 +465,7 @@ NHL._glowMaterials=[M.bulb,M.pod];
 NHL._night=0;
 NHL.setNight=function(k){k=clamp(+k||0,0,1);NHL._night=k;
  M.bulb.emissiveIntensity=lerp(.05,1.35,k);M.pod.emissiveIntensity=lerp(.04,1.5,k);
+ if(M.spore)M.spore.emissiveIntensity=lerp(.04,1.2,k);   /* the spore lamps (the new flora, at the end of this fragment) */
  M.halo.opacity=.20*k;M.haloV.opacity=.18*k;M.halo.visible=M.haloV.visible=k>0;
  return{bulb:M.bulb.emissiveIntensity,pod:M.pod.emissiveIntensity,halo:M.halo.opacity};};
 const BK=['Plated bark','Fibrous bark','Smooth bark','Birch bark','Furrowed bark','Trumpet stalks','Pine bark','Charred snags'];
@@ -508,4 +529,57 @@ BIO.def('mast',new T3.TetrahedronGeometry(1,0),M.solid,{label:'Beechmast and aco
 BIO.def('rod',G.rod(),M.solid,{label:'Twigs and stems'});
 BIO.def('trunk',BIO.geo.trunk(7),BIO.solidMat(NHL.BARKTEX[0]),{label:'Saplings'});
 BIO.def('cane',G.rod(),M.solid,{label:'Mountain cane'});
+
+// ---------------------------------------------------------------- the new flora (HANDOFF-FLORA.md)
+// The fan-leaf's leaves, the staghorn's fronds, the sun-wheel, the spore lamps and the shag maple's moss sleeves: four
+// items and one bucket. Painted from a core/rand stream of their own (lr), not the kit's: Roketstad reads these fragments
+// in place, and nothing drawn after this point there may move because the Highlands grew new textures.
+const LR=KRAND.stream(500091),lrr=(a,b)=>LR.range(a,b);
+/* FAN: ginkgo-like leaves in loose sprays -- each a 70-100 degree wedge on a thin stalk, notched in the middle of its rim,
+   veined from the stalk */
+TX.fan=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';const CL=[];for(let i=0;i<7;i++){const a=i/7*TAU+lrr(-.3,.3),r=S*.3*(i===0?0:lrr(.45,1));CL.push([S/2+Math.cos(a)*r,S/2+Math.sin(a)*r]);}
+ for(let i=0;i<44;i++){const c=CL[i%CL.length],a=lrr(0,TAU),sl=lrr(14,30),bx=c[0]+Math.cos(a)*sl*.2,by=c[1]+Math.sin(a)*sl*.2,lx=c[0]+Math.cos(a)*sl,ly=c[1]+Math.sin(a)*sl;
+  const lum=lerp(110,236,i/44)+lrr(-12,10),R=lrr(26,40),half=lrr(.61,.87);
+  g.strokeStyle=G2(lum*.7);g.lineWidth=2;g.beginPath();g.moveTo(bx,by);g.lineTo(lx,ly);g.stroke();
+  g.fillStyle=G2(lum);g.beginPath();g.moveTo(lx,ly);
+  for(let k=0;k<=24;k++){const t=k/24*2-1,an=a+t*half,notch=1-.32*Math.max(0,1-Math.abs(t)/.14),r=R*notch*(1+.03*Math.sin(k*2.1));g.lineTo(lx+Math.cos(an)*r,ly+Math.sin(an)*r);}
+  g.closePath();g.fill();
+  g.strokeStyle=G2(lum*.78);g.lineWidth=1;for(let k=0;k<7;k++){const an=a+(k/6*2-1)*half*.85;g.beginPath();g.moveTo(lx,ly);g.lineTo(lx+Math.cos(an)*R*.86,ly+Math.sin(an)*R*.86);g.stroke();}}},[160,160,160]);
+/* STAGHORN: one antler frond (a frond card pinned at x=0): a strap forking three times into rounded tips, the edges lighter */
+TX.staghorn=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ function br(x,y,a,L,w,d){const ex=x+Math.cos(a)*L,ey=y+Math.sin(a)*L;
+  g.strokeStyle=G2(225);g.lineWidth=w;g.beginPath();g.moveTo(x,y);g.lineTo(ex,ey);g.stroke();
+  g.strokeStyle=G2(lrr(150,175));g.lineWidth=w*.55;g.beginPath();g.moveTo(x,y);g.lineTo(ex,ey);g.stroke();
+  if(d>=3){g.fillStyle=G2(220);g.beginPath();g.arc(ex,ey,w*.55,0,TAU);g.fill();return;}
+  const sp=lrr(.32,.5);br(ex,ey,a-sp,L*lrr(.6,.72),w*.78,d+1);br(ex,ey,a+sp,L*lrr(.6,.72),w*.78,d+1);}
+ br(0,S/2,0,S*.36,S*.1,0);},[180,180,180]);
+/* SUN-WHEEL: one whole rosette seen from above -- radial stalks, each ending in a perfect wheel of twelve narrow pointed
+   leaflets, the wheels smaller toward the centre round a tight bud */
+TX.wheel=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';const c=S/2;
+ [[16,.40,.062],[11,.27,.046],[8,.15,.032]].forEach((ring,ri0)=>{const n=ring[0],a0=lrr(0,TAU);
+  for(let k=0;k<n;k++){const a=a0+k/n*TAU,L=S*ring[1]*lrr(.94,1.04),ex=c+Math.cos(a)*L,ey=c+Math.sin(a)*L,wr=S*ring[2];
+   g.strokeStyle=G2(140+ri0*10);g.lineWidth=3-ri0*.6;g.beginPath();g.moveTo(c,c);g.lineTo(ex,ey);g.stroke();
+   for(let j=0;j<12;j++)BIO.tex.leaf(g,ex,ey,wr,wr*.17,a+j/12*TAU,lrr(200,242),false);
+   g.fillStyle=G2(170);g.beginPath();g.arc(ex,ey,wr*.12,0,TAU);g.fill();}});
+ g.fillStyle=G2(150);g.beginPath();g.arc(c,c,S*.034,0,TAU);g.fill();g.fillStyle=G2(215);g.beginPath();g.arc(c,c,S*.022,0,TAU);g.fill();},[170,170,170]);
+Object.assign(M,{
+ fan:BIO.leafMat(TX.fan,'nh-fan',{aN:true,swayW:'1.0',swayA:.12}),
+ staghorn:BIO.leafMat(TX.staghorn,'nh-staghorn',{swayW:'(position.x)',swayA:.04}),
+ wheel:BIO.leafMat(TX.wheel,'nh-wheel',{swayW:'1.0',swayA:.01,alphaTest:.4}),
+ // the spore lamps glow as the bulbs do: a little by day, raised at night by NHL.setNight
+ spore:new T3.MeshLambertMaterial({color:0xffffff,vertexColors:true,emissive:0xc8ff60,emissiveIntensity:.04}),
+});
+M.spore.userData.bio={kind:'glow',key:BIO.kitKey('spore'),opts:{night:[.04,1.2]}};
+NHL._glowMaterials.push(M.spore);
+// a SPORE PIN: a hair-thin stalk and a round head, origin at the base, one high (14 triangles), the head pale
+G.spore=function(){const pos=[],nor=[],uv=[],col=[];
+ const add=(g,c)=>{g=g.toNonIndexed();const a=g.attributes.position.array,n=g.attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);col.push(c,c,c);}};
+ add(new T3.CylinderGeometry(.05,.07,.8,3,1,true).translate(0,.4,0),.55);add(new T3.OctahedronGeometry(.15,0).translate(0,.86,0),1.2);
+ return BIO.geo._make(pos,nor,uv,col);};
+// the shag maple's moss sleeves: a bark-style bucket on the moss skin, tinted by the vertex colours like the barks
+BIO.bucket('nmoss',BIO.barkMat(NHL.MOSSTEX),{label:'Moss sleeves',uvScale:[2,2]});
+BIO.def('fan',BIO.geo.clump(),M.fan,{attrs:['aN'],label:'Fan-leaf leaves'});
+BIO.def('staghorn',BIO.geo.frond(3),M.staghorn,{label:'Staghorns'});
+BIO.def('wheel',G.flat(),M.wheel,{label:'Sun-wheels'});
+BIO.def('sporepin',G.spore(),M.spore,{label:'Spore lamps'});
 })();
