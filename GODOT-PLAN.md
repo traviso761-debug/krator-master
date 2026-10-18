@@ -403,7 +403,7 @@ equal to `WATER.heightAt` within 1e-14 m (`tests/water/water_test.gd`), and the 
 detail layers travel as a `world-uv` material record (`EXPORT.groundLayers`) and its pond as a core/water surface.
 Not yet: Iziz as the second material pilot (the other half of stage 2e); records that select `cloth-sway`, `flag`,
 `glass` or `coursing` on an exported mesh (Girder and Iziz still export through glTF); `coursing`'s three.js TEX kind
-(its pilot is Voth's, the Voth branch's); the `detail` record field (no shader by design: `StandardMaterial3D`'s
+(its pilot is Voth's); the `detail` record field (no shader by design: `StandardMaterial3D`'s
 `detail_*`); bark variants as a texture array; pre-compiling the library at load.
 
 *Status 2026-10-13 (ROADMAP.md stage 2e, the pilot half): **Iziz is the second pilot.*** Its vernacular, the Ancients MAT
@@ -480,7 +480,7 @@ unknown section name is refused. What is filled and by whom:
 | `atmos` | done | an adapter over `ATMOS.export()` (unchanged) |
 | `fixtures`, `interiors`, `furniture` | Iziz (M5); a stub elsewhere | Iziz's doors, windows and lamps as children of their buildings, its furniture slots; no interiors (its buildings are shells) |
 | `sim` | stub | a written contract (`EXPORT.CONTRACTS`) |
-| `city` | stub | the Voth branch's (`core/city`); only its registration point is here |
+| `city` | stub | `core/city` registers it for the isle demo's two plans (M6); only its registration point is here |
 | `sockets` | not a section yet | — |
 
 The harness writes it: `python3 tools/harness.py export <page> --out godot/data/<case>/ --box x0,z0,x1,z1` (the shared
@@ -501,8 +501,8 @@ atmosphere. `godot/krator/world_import.gd` reads it without an Iziz-only path (a
 `shaders/library.gdshader`; a `Records` node of `Building_<id>` with its fixtures). The proof is a 240 m district inside
 the south gate (`godot/data/world-iziz`, `godot/tests/export/iziz_test.gd`): 9,638 instances, the kit's 2,158 uids
 recomputed in GDScript with 0 mismatches, 139 fixtures each under its building, every material and map resolving with
-its hook, the ground through its samples to 0 m. Not yet: Voth (M6, the Voth branch's), the Ancients kit's openings as
-fixtures, interiors, records on the biome sets in the city.
+its hook, the ground through its samples to 0 m. Not yet: the isle demo (M6, ROADMAP section 11), the Ancients kit's
+openings as fixtures, interiors, records on the biome sets in the city.
 
 ### Phase 5: the simulation layer as data
 
@@ -605,7 +605,8 @@ on Travis's (or his friend's) machine; `godot/README.md` should say how.
 
 **The spike: first findings (2026-10-05).** `godot/` exists (`godot/README.md`; tomorrow's steps in
 `godot/CHECKLIST.md`). Run in a cloud container with Godot 4.5-stable: headless for the imports, the Compatibility
-renderer on a software GPU for screenshots. **Not yet run: Forward+ on a real GPU, the editor's import route, speed.**
+renderer on a software GPU for screenshots. **Forward+ on a real GPU ran 2026-10-16 (findings 15 to 20); still to
+run: the editor's import route and the perf table (ROADMAP section 11, item 4).**
 Five cases, chosen to differ: hyperjungle and rift tiles (`krator-biome`), Girder and Iziz regions as glTF (three's
 own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krator-atmos`, Yuni's `KRATOR_EXPORT` records.
 `godot --headless --path godot -- --check` prints each importer's gap list.
@@ -924,8 +925,12 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 | M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
 | M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start). **Done 2026-10-13:** sedesert's 300 m tile (`godot/data/world-sedesert`): 7,280 instances each with its uid (recomputed in GDScript from the glb, 0 mismatches), every material and map resolved (18 library maps by reference), the terrain the page's field (probes agree to 3e-12 m); `godot/tests/export/world_test.gd` |
 | M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export; Iziz's export uses the `KRATOR_EXPORT` record shape and the library's city sets. **Iziz done 2026-10-13** (`core/export/README.md`, "Iziz"): a district inside the south gate (`godot/data/world-iziz`) opens from `core/export` with its buildings, doors, windows and lamps on the record shape, the kit's item sets (2,158 uids recomputed in GDScript, 0 differ), its materials on the library sets with their hooks, the sampled ground and the atmosphere (`tests/export/iziz_test.gd`). Open: interiors (Iziz has none), Girder's furnished rooms from `furniture` (waits on `wip/furniture-indexed`) |
-| M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5), its citizens drawn as `core/charactermodels` figures from their records and playing the clip mapped to each activity |
-| M7 one world | two kits and one settlement stream together in Godot from the scale model's terrain (Phase 7, `biomes/WORLD.md`) |
+| M6 first settlement | **The isle demo (`settlements/isle-demo`), since 2026-10-18 (ROADMAP section 11):** its two towns open in Godot from the canonical export under the build's profile (terrain as a field, city, buildings, fixtures, interiors, furniture, sim), their citizens drawn as `core/charactermodels` figures from their records and playing the clip mapped to each activity, the trade route's books balancing after a replayed week with one town abstract. Voth's 53k citizens are the scale test after it |
+| M7 one world | the isle demo's region streams in Godot from the scale model's terrain: the ring isles biome and the Islanders kit with M6's two towns, at 1:1 across the sea between them (Phase 7, `biomes/WORLD.md`) |
+
+**The must-pass set** (ROADMAP section 11, item 2): sedesert's tile (M4), Iziz's district (M5) and the isle demo's two
+towns (M6). Each has an export profile, the sections it must fill, and the nightly fails it on a stubbed or missing
+one. Every other build is preview-only until it meets a profile of its own.
 
 M1 to M3 are repo hygiene and can be done without Godot installed. The spike is the first point where the Godot
 project exists. **M4 no longer waits on M2 and M3** (2026-10-02): a biome tile needs the biome export, which exists,

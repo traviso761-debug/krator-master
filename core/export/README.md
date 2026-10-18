@@ -188,10 +188,10 @@ A contributor meets this shape (`EXPORT.CONTRACTS`). Since M5, Iziz fills `fixtu
   the indexed furniture batch (`wip/furniture-indexed`).
 - **`sim`**: core/simulation's export (`krator-sim`: places, actors, schedules, routes, the clock). Verge and Dhelv
   write theirs through their verify (`godot/data/verge`, `godot/data/dhelv`) until they register here.
-- **`city`**: **owned by the Voth branch** (`core/city`, `settlements/voth`); this branch leaves only the
-  registration point. Expected: `{format: 'krator-city', plan (streets, blocks, lots as plain records keyed by stable
-  ids), edits (krator-edits/1 deltas by id)}`; its buildings and doors join the registry by id. `core/city` registers
-  with `EXPORT.register('city', fn, {by: 'city'})` when that branch pauses.
+- **`city`**: `core/city`'s; only the registration point is here. Expected: `{format: 'krator-city', plan (streets,
+  blocks, lots as plain records keyed by stable ids), edits (krator-edits/1 deltas by id)}`; its buildings and doors
+  join the registry by id. `core/city` registers with `EXPORT.register('city', fn, {by: 'city'})` for the isle demo's
+  two plans (M6, `ROADMAP.md` section 11).
 
 ## Files: JSON and glTF
 
@@ -335,8 +335,13 @@ shade there is its own darker interior, not matched by Godot's ambient); the lig
 - `sim` and `city` are contracts only; `fixtures`, `interiors` and `furniture` are filled by Iziz alone (no interiors:
   its buildings are shells, so the section reads `empty`); Yuni's `KRATOR_EXPORT.fixtures` does not register yet.
 - The biome kits and Iziz contribute meshes; Girder's region still goes through `godot/tools/export_spike.py`'s glTF
-  route (its merged furniture batches name no record), and Voth (M6) is the Voth branch's.
-- The registry, atmos and KMAT adapters live here until their modules can be rebuilt with the Voth branch's agreement.
+  route (its merged furniture batches name no record); M6 is the isle demo (`ROADMAP.md` section 11), Voth after it.
+- The registry, atmos and KMAT adapters live here until their modules are rebuilt to carry them (no branch owns those
+  modules since 2026-10-18).
+- **Profiles** (ROADMAP section 11, item 1; to build): `EXPORT.check(world, {profile: [sections]})` fails a required
+  section that reads `stub`, `none` or `error`; each must-pass case (sedesert, Iziz, the isle demo) names its profile in
+  its verify, and the nightly runs them. The `STUB` strings in `07-core-export.js` still say "owned by the Voth
+  branch": amend them with the next change that rebuilds the pages that embed core/export.
 - The Throne and its ten stations, Verge, little-demo and the settlements that read core/biome in place do not list
   core/export; the harness injects it for an export.
 - No PNG or EXR height export, no carver floors (core/terrain's own "not yet"). The `water` section carries a page's
