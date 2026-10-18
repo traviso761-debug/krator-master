@@ -72,3 +72,7 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   Throne kit as a second kit on the page (as the Throne's kipuka loads the hyperjungle: `station.json` `kits`) or port
   the reeds' items (`rod` stems in two bands, the `tassel`, `PAL.reedLow/reedHigh/tassel`) into this kit.
 
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.
