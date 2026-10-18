@@ -100,9 +100,9 @@ and gold, the Chichani's own paint over the Ancients' surfaces.
 
 1. **Settled (2026-10-18).** The lake is drawn: the region polygon **Lake of Shim** (`rshimlake0001`, kind
    geographic) in the model's `regions` collection, about 32 by 12 km (px 376-382 by 780-796), the Shim river entering
-   from the south and leaving north, the city on its eastern shore at px 382,788. Still to do in the model: carve it
-   (`tools/scale-model/features.py`'s bay pass, at the land's level there rather than the sea's), re-run the river
-   audit so the Shim river flows through it, and refresh the little-demo export.
+   from the south and leaving north, the city on its eastern shore at px 382,788. Carving it into the terrain is set
+   aside as a scale-model todo for when the Shim build is done (the owner, 2026-10-18: `tools/scale-model/README.md`,
+   "To do on the model"); until then the build draws the lake from this plan's numbers.
 2. **Settled (2026-10-18).** The plantations grow the **Blïtrit**, the blood-reed (blood + reed by the Vothic table:
    *Blït*, *Rit*), the dye plant of the Kingdom's deep purple, and sugar cane second. The purple ties Shim to every
    Vothic page: its robes and banners are Shim's crop.
