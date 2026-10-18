@@ -191,3 +191,34 @@ function tanParapetWall(x,y,z,w,d,ry,c,h,capC){h=(h==null?.7:h);for(const [lx,lz
 function tanPot(x,y,z,r,c){kput('vClayPot',[x,y,z],null,[r,r*1.5,r],c||vC(vPick(TAPAL.tile)));for(let k=0;k<3;k++)kput('vLeaf',[x+rr(-r*.4,r*.4),y+r*1.7,z+rr(-r*.4,r*.4)],null,[r*.9,r*.7,r*.9],vC(vPick([0x4e7a3a,0x5a8a44,0x3f6b32])));}
 // hanging plants over a rail: n clumps of leaves trailing down a face from y
 function tanTrail(x,y,z,ry,w,n){for(let k=0;k<n;k++){const p=loc(x,z,rr(-w/2,w/2),.18,ry);for(let j=0;j<3;j++)kput('vLeaf',[p[0],y-j*.28,p[1]],null,[.26,.2,.2],vC(vPick([0x4e7a3a,0x5a8a44,0x6a9a4a])));}}
+
+// ---------------------------------------------------------------- vaults, courts, shop fronts (the trade buildings, 71t)
+// a barrel vault: its springing at y, centred at (x, z), radius r, len long along local z (ry turns it), the shell in
+// item ('taVault' plaster, 'taVaultT' tile) tinted c, a tympanum disc in endC closing each end (standing .04 proud of
+// the end wall, whose top is buried in it). Returns the crown y
+function tanVault(x,y,z,ry,r,len,c,item,endC){kput(item||'taVault',[x,y,z],vQ(ry,0,0),[r,r,len-.1],c);
+ for(const s of[-1,1]){const p=loc(x,z,0,s*len/2,ry);kput('taDisc',[p[0],y,p[1]],vQ(ry,0,0),[r,r,.08],endC||c);}return y+r;}
+// one storey of a gallery round a court: the court's inner faces (the ranges' walls) IW x ID about (x, z); on each face
+// an arch per bay (dark: the rooms off the walk; o.fill), columns (o.order, radius o.r) standing `walk` in front at
+// every bay, arch bands between their tops in bandC, the walk's slab at y + h in c with its court edge in bandC.
+// o.rail: a balustrade along the slab's court edge at y (an upper storey; o.plain for plaster balusters, o.ball and
+// o.gilt as tanBalustrade). o.gate: a half-width about the front face's axis kept clear of columns (a gate's bay).
+// o.bay the bay (3.2), o.cc the columns' colour, o.capC their capitals. Each corner column is drawn once
+function tanCourtGallery(x,y,z,IW,ID,h,walk,c,bandC,o){o=o||{};const bay=o.bay==null?3.2:o.bay,cr=o.r==null?.18:o.r,cc=o.cc||c,G=o.gate||0;
+ [[0,-ID/2,0,IW],[0,ID/2,Math.PI,IW],[IW/2,0,-Math.PI/2,ID],[-IW/2,0,Math.PI/2,ID]].forEach(([lx,lz,a,L],i)=>{
+  const f=loc(x,z,lx,lz,0),run=L-2*walk,n=Math.max(2,Math.round(run/bay)),b=run/n,r=b/2-cr-.12,hc=h-r-.3,gate=G&&a===Math.PI;
+  for(let k=0;k<n;k++){const u=-run/2+k*b,ub=u+b/2;const w=loc(f[0],f[1],ub,0,a);tanArch(w[0],y,w[1],a,b-.9,h-.6,{fill:o.fill||'D',band:bandC,bw:.12});
+   if(!(gate&&Math.abs(u)<G)){const p=loc(f[0],f[1],u,walk,a);tanColumn(p[0],y,p[1],hc,cr,o.order||'doric',cc,o.capC);}
+   if(!(gate&&Math.abs(ub)<G+b/2)){const q=loc(f[0],f[1],ub,walk,a);tanArcBand(q[0],y+hc+.1,q[1],a,r+.07,.16,.4,0,bandC,0,Math.PI,10);}}
+  const s=loc(f[0],f[1],0,walk/2,a);if(i<2)vB('vPlaster',s[0],y+h,s[1],L,.3,walk+.2,a,c);else vB('vPlaster',s[0],y+h+.01,s[1],run-.4,.28,walk+.2,a,c);
+  const e=loc(f[0],f[1],0,walk+.05,a);vB('vPlaster',e[0],y+h+.3,e[1],run+(i<2?.3:-.3),.1,.26,a,bandC);
+  if(o.rail){const g=loc(f[0],f[1],0,walk-.15,a);tanBalustrade(g[0],y,g[1],a,run-2*cr-.6,cc,.95,{plain:o.plain,ball:o.ball,gilt:o.gilt});}});}
+// a shop front on a face: an opening w wide and h high in a band of bandC (flat-headed; o.kind 'round'), the leaf of a
+// timber door folded back at its left jamb, a counter board across the rest with goods on it (crates, pots, a sack), an
+// awning over it (o.awning false to omit; o.awnC its cloth) and a sign board on a bracket at its right (o.sign: colour)
+function tanShopFront(x,y,z,ry,w,h,bandC,o){o=o||{};const wood=o.woodC||vC(vPick(VPAL.woodMid));tanArch(x,y,z,ry,w,h,{kind:o.kind||'flat',fill:'D',band:bandC,bw:.14,key:o.key});
+ const l=loc(x,z,-w/2+.3,.42,ry);kput('vWood',[l[0],y+h/2-.1,l[1]],vQ(ry,0,0).multiply(qEuler(0,-1.15,0)),[.9,h-.2,.06],o.leafC||wood);
+ const cw=w-1.4,b=loc(x,z,.4,.35,ry);vB('vWood',b[0],y,b[1],cw,.9,.6,ry,wood);
+ for(let k=0;k<3;k++){const g=loc(x,z,.4-cw/2+(k+.5)*cw/3,.35,ry);const t=rng();if(t<.4)vnCrate(g[0],y+.9,g[1],.38,ry+rr(-.3,.3));else if(t<.7)vPst('vClayPot',g[0],y+.9,g[1],.16,.38,vC(vPick(TAPAL.tile)));else kput('vSack',[g[0],y+1.06,g[1]],null,[.2,.17,.2],vC(vPick(VPAL.awning)));}
+ if(o.awning!==false)vnAwning(x,y+2.7,z,ry,w+.6,1.4,o.awnC);
+ if(o.sign){const s=loc(x,z,w/2+.5,0,ry);vnSign(s[0],y+2.9,s[1],ry,o.sign);}}

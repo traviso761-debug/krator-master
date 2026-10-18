@@ -21,7 +21,7 @@ fragment name that clashes stops the build), takes `targets/` and `kit.json`, an
 
 **Writing a building.** A named `function buildTal*(G,o){reseed(94xx+(o.v|0)); ...}` in a `src/7?t-tal-*.js`
 fragment, then `VERN.def({key:'tal_*', ..., tags:TA_TAG(style, wealth, type, lit), w, d, h, build})`. Seeds 9401-9799
-(dwellings 9401-9499). Walls through `vnBody` (a hollow body once the kit has an interior set), doors through `vnDoor`,
+(dwellings 9401-9499, trade 9501-9599). Walls through `vnBody` (a hollow body once the kit has an interior set), doors through `vnDoor`,
 so they match the Vernacular's sizes; windows are arches (`tanArch`). Colours from `TAPAL` (`src/69t-tal-mat.js`); the
 orange is the Vernacular's own; gilt (`TAPAL.gilt`, the `taGilt*` items) only on rich and civic work. Talia's helpers
 are `tan*` (`src/69u-tal-helpers.js`). Add the key to a row in `targets/kit/89z-rows.js` and, at its tier, to the
@@ -34,7 +34,10 @@ mixed street.
 | Poor, whitewash | `tal_cube_house` (talia2), `tal_lane_row` (talia2, talia5: `o.len` houses), `tal_hill_stack` (talia2, talia fancy: three tiers on a white retaining mass; on a slope the site's terrain carries it) |
 | Middle | `tal_loggia_house` (talia), `tal_dome_house`, `tal_tenement` (talia14: the orange quarter, the bridge to the Vernacular), `tal_arcade_block` (talia13) |
 | Rich (lit, gilt) | `tal_palazzo` (talia (2): the imperial stair), `tal_jharokha_house` (talia3), `tal_peristyle_villa` |
-| The mixed street, four rows | each tier's Talia buildings between Vernacular ones of the same tier (`vern_house_poor_*`, `vern_house_mid_*`, `vern_shops` and `vern_tavern`, `vern_house_rich_*`) |
+| Trade — civic (lit, gilt) | `tal_customs_house` (the Emperor's customs on the east road: a baroque front up an imperial stair, the weighing court with its beam balance between two vaulted bonded stores, the road gate), `tal_bourse` (the caravan exchange: a square hall in a Corinthian arcade under the great drum-dome; taliaint3 inside, P6), `tal_bath` (talia hall: the domed hall, two wings of small domes, the pool court in its colonnade) |
+| Trade — the caravan road | `tal_caravanserai` (a two-storey gallery round a court, the gate under a jharokha, corner towers, camel bays off the back walk, crawler bays through the back wall), `tal_agora_stoa` (a Doric-and-Ionic stoa before a row of shops; `o.len`), `tal_warehouse` (four barrel vaults over the stores, a walled loading court) |
+| Trade — the street | `tal_shop_arcade` (shops under an arcade on piers, two storeys of flats over), `tal_inn` (a merchants' inn round a galleried court, a carriage gate, the tap room), `tal_press` (printers and bookbinders: the screw press in an open bay, a drying loft of printed sheets on the roof) |
+| The mixed street, five rows | each tier's Talia buildings between Vernacular ones of the same tier (`vern_house_poor_*`, `vern_house_mid_*`, `vern_shops` and `vern_tavern`, `vern_market`, `vern_shops`, `vern_tavern` and `vern_warehouse` for the trade row, `vern_house_rich_*`) |
 
 **The helpers** (`src/69u-tal-helpers.js`): `tanArch` (round, pointed, cusped or flat; a fill of dark, glass, lit, blind,
 marble or cobalt; a band of boxes in segments, `tanArcBand`, so the band keeps its width on any span; jambs, keystone,
@@ -43,9 +46,11 @@ lathe with entasis; Doric, Ionic, Corinthian or plain capitals, gilt on the rich
 `tanParapet` (instanced balusters), `tanEntablature` (architrave, frieze, dentils, cornice), `tanString`, `tanPilaster`,
 `tanPediment`, `tanScrollGable`, `tanDome` (hemisphere, egg, melon with ribs, onion), `tanDrum`, `tanLantern`,
 `tanDrumDome`, `tanKiosk` (the chhatri), `tanJharokha`, `tanJali`, `tanWallStair`, `tanImperialStair`, `tanMosaicRing`,
-`tanMeander`, `tanRoundBox` (rounded vertical edges), `tanParapetWall`, `tanPot`, `tanTrail`. Kit items (`src/69t-tal-mat.js`,
+`tanMeander`, `tanRoundBox` (rounded vertical edges), `tanParapetWall`, `tanPot`, `tanTrail`, `tanVault` (a barrel vault with closed ends), `tanCourtGallery` (one storey of an
+arcaded gallery round a court, each corner column once, a gate's bay kept clear), `tanShopFront` (an opening, a folded
+door leaf, a counter of goods, an awning and a sign). Kit items (`src/69t-tal-mat.js`,
 prefix `ta`): marble, gilt, tile, cobalt boxes; discs; ribs and rings; the column and baluster lathes; echinus and bell;
 domes in tile, marble, plaster and gilt; egg and onion lathes; the tile cone and hip; pointed heads in the fill materials.
 
-**Next** (PLAN.md section 8): P3 trade and the caravan buildings, P4 the University, the civic set, the temple, the
+**Next** (PLAN.md section 8): P4 the University, the civic set, the temple, the
 memorials and the east gate, P5 the governor's palace, P6 the catalog culture file and interiors.

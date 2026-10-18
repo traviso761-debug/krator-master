@@ -51,6 +51,8 @@ const TAEGG=new THREE.LatheGeometry([[0,1],[.3,.97],[.56,.88],[.78,.74],[.92,.56
 const TAONION=new THREE.LatheGeometry([[0,1],[.08,.94],[.3,.84],[.62,.72],[.9,.56],[1,.4],[.94,.22],[.78,.08],[.7,0]].map(p=>new THREE.Vector2(p[0],p[1])),16);
 // a tile cone: the turret's roof (base at y = 0)
 const TACONE=new THREE.ConeGeometry(1,1,16).translate(0,.5,0);
+// a barrel vault: the upper half of a cylinder lying along z, open below (its springing at y = 0), radius 1, length 1
+const TAVAULT=new THREE.CylinderGeometry(1,1,1,20,1,true,0,Math.PI).rotateZ(Math.PI/2).rotateY(Math.PI/2);
 kdef('taMarble',VBOX,MAT.taMarble);kdef('taGilt',VBOX,MAT.taGilt);kdef('taTileB',VBOX,MAT.taTile);kdef('taCobalt',VBOX,MAT.taCobalt);
 kdef('taDisc',TADISC,MAT.plaster);kdef('taDiscM',TADISC,MAT.taMarble);kdef('taDiscD',TADISC,MAT.void);kdef('taDiscG',TADISC,MAT.darkGlass);kdef('taDiscL',TADISC,MAT.warmPane);kdef('taDiscC',TADISC,MAT.taCobalt);kdef('taDiscGi',TADISC,MAT.taGilt);
 kdef('taRib',TARIB,MAT.plaster);kdef('taRibGi',TARIB,MAT.taGilt);kdef('taRibCu',TARIB,MAT.verdigris);
@@ -60,6 +62,7 @@ kdef('taEchinus',TAECH,MAT.taMarble);kdef('taEchinusP',TAECH,MAT.plaster);kdef('
 kdef('taDome',VDOME,MAT.taTile);kdef('taDomeM',VDOME,MAT.taMarble);kdef('taDomeP',VDOME,MAT.plaster);kdef('taDomeGi',VDOME,MAT.taGilt);
 kdef('taEgg',TAEGG,MAT.plaster);kdef('taEggT',TAEGG,MAT.taTile);kdef('taOnion',TAONION,MAT.taGilt);kdef('taOnionT',TAONION,MAT.taTile);kdef('taOnionCu',TAONION,MAT.verdigris);
 kdef('taCone',TACONE,MAT.taTile);kdef('taConeCu',TACONE,MAT.verdigris);
+kdef('taVault',TAVAULT,MAT.plaster);kdef('taVaultT',TAVAULT,MAT.taTile);
 kdef('taGiltBall',VBALL,MAT.taGilt);kdef('taGiltPost',VPOSTB,MAT.taGilt);kdef('taBallM',VBALL,MAT.taMarble);
 // the pointed heads: wedges in the fill materials, double-sided (the wedge's faces are wound for roofs)
 kdef('taGableD',VGABLE,MAT.taVoid);kdef('taGableG',VGABLE,MAT.taGlass);kdef('taGableL',VGABLE,MAT.taLit);kdef('taGableM',VGABLE,MAT.taMarble);kdef('taGableTile',VGABLE,MAT.taTile);
