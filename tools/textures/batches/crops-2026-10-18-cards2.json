@@ -1,0 +1,226 @@
+[
+ {
+  "src": "card.crop.flax.png",
+  "out": "core/materials/library/card.crop.flax",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.flax",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit, fungi, fibre and dye plants), `card.crop.flax`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "flax, linseed and any slender fibre or oil crop (Sea-linen flax)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.nettle.png",
+  "out": "core/materials/library/card.crop.nettle",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.nettle",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit, fungi, fibre and dye plants), `card.crop.nettle`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "nettle, ramie, hemp and any tall bast-fibre plant (Cairn nettle, Silk-nettle ramie)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.cotton.png",
+  "out": "core/materials/library/card.crop.cotton",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.cotton",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit, fungi, fibre and dye plants), `card.crop.cotton`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "cotton and any bolled shrub crop (Sunboll cotton)"
+   }
+  }
+ },
+ {
+  "src": "card.mushroom.pale.png",
+  "out": "core/materials/library/card.mushroom.pale",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.mushroom.pale",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit, fungi, fibre and dye plants), `card.mushroom.pale`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "pale cultivated cave mushrooms (Pale fungi); any button or field mushroom"
+   }
+  }
+ },
+ {
+  "src": "card.crop.annatto.png",
+  "out": "core/materials/library/card.crop.annatto",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 50,
+   "key_hi": 120,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.annatto",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit, fungi, fibre and dye plants), `card.crop.annatto`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "annatto, lipstick tree and any pod-bearing dye shrub (Sunseed annatto)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.woad.png",
+  "out": "core/materials/library/card.crop.woad",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.woad",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit, fungi, fibre and dye plants), `card.crop.woad`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "woad and any biennial dye herb (Valley woad, Clan woad)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.saffron.png",
+  "out": "core/materials/library/card.crop.saffron",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 50,
+   "key_hi": 120,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.saffron",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit, fungi, fibre and dye plants), `card.crop.saffron`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "saffron crocus and any bulb dye or spice plant (Vale saffron)"
+   }
+  }
+ }
+]
