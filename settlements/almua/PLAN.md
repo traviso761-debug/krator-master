@@ -94,7 +94,15 @@ the Hykkousoi.
 1. **Settled (2026-10-18).** The river is **Dip Rivrh**, the Deep river, for the navigable channel that makes the
    harbour (a note in `tools/scale-model/river_names.py`); no course reaches Almua on the model yet, so the river is
    still to be drawn there and given this name.
-   The city's own name's meaning stays open (*Almua* has no English source on the tongues page yet).
-2. Are the cantons walled from each other, as Voth's are by water, or one walled waterfront with four quarters? The
-   plan assumes walled rectangles joined by gates along the shore road.
-3. How many of the clan town's blocks stand empty at game start: the plan assumes a third, the migration ongoing.
+   **The city's name is older than the Chichani** (settled 2026-10-18): *Almua* was the Islander fishing village at the
+   river's mouth, kept by the planners; the tongues page's own rule is not to force an etymology where no English
+   source fits, and none does. An Islander shrine of the white moon survives at the spit's root, by the lighthouse.
+2. **Settled (2026-10-18).** The cantons are islanded by canals cut from the river, as Voth's are by the bay: each a
+   walled rectangle on its canal edges, joined to the next by a bridge carrying a gate on the shore road, so the
+   waterfront can be held canton by canton. In `core/city`: four districts with the canals as water in the site layer
+   and the wall as each district's own ring; the shore road crosses the canals on gated bridges (the Voth catalog's
+   garrison pieces for the gate towers).
+3. **Settled (2026-10-18).** A third of the clan town's blocks stand empty at game start: laid out, paved and walled
+   (the compound walls begun) but unbuilt, the newest clans camped in them with the catalog's army-camp tents and
+   their beetle livestock. In the lot filler: the clan town's zone carries `empty: 0.33`, and an empty lot draws a
+   `voth_compound_walls` stub (a new catalog entry: walls and a gate, no house) and a camp instead of a building.
