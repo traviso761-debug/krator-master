@@ -6,7 +6,7 @@
 #    with half the shared wave field and a bed, the pond, the bay with the field's chop), one clock: read back against
 #    KWater.height_at, the CPU twin that equals WATER.heightAt to 1e-14 m (water_test.gd). The height travels in two
 #    8-bit channels over +-4 m (6e-5 m a step).
-# 2. every other include (world-uv, breakup, foliage, bark, cloth-sway, flag, glass, coursing) compiled into one shader,
+# 2. every other include (world-uv, breakup, foliage, bark, cloth-sway, flag, glass, coursing, anim) compiled into one shader,
 #    each function at fixed arguments against its GDScript twin below: a stale or broken include draws wrong pixels.
 # The negative: the sea's uniforms with its first wave 5% taller must miss.
 extends SceneTree
@@ -94,7 +94,10 @@ func _lib_shader() -> Shader:
 #include "res://shaders/lib/flag.gdshaderinc"
 #include "res://shaders/lib/glass.gdshaderinc"
 #include "res://shaders/lib/coursing.gdshaderinc"
+#include "res://shaders/lib/anim.gdshaderinc"
 #include "res://shaders/lib/world-uv.gdshaderinc"
+vec3 anm_p(int mode, float t) { mat3 M; vec3 P; anm_pose(mode, 3.0, vec4(0.7, 1.3, 1.6, 0.6), t, M, P); return P; }
+vec3 anm_m0(int mode, float t) { mat3 M; vec3 P; anm_pose(mode, 3.0, vec4(-0.7, 1.3, 1.6, 0.6), t, M, P); return M[0]; }
 float value(int i) {
 	if (i == 0) return wuv_box(vec2(0.25, 0.5), vec3(0.0, 1.0, 0.0), vec3(3.0, 1.0, 5.0), vec2(0.5)).y;
 	if (i == 1) return wuv_box(vec2(0.25, 0.5), vec3(1.0, 0.0, 0.0), vec3(3.0, 2.0, 5.0), vec2(0.5, 0.25)).x;
@@ -115,7 +118,14 @@ float value(int i) {
 	if (i == 16) return coursing(vec2(-3.1, 2.5), vec2(0.0), 0.32, 0.9, -0.5, 0.02, 0.2, 3u).y;
 	if (i == 17) return coursing(vec2(1.37, 0.64), vec2(0.05, 0.05), 0.32, 0.9, 0.6, 0.02, 0.12, 7u).x;
 	if (i == 18) return bark_far_k(normalize(vec3(0.2, 0.9, 0.1)), normalize(vec3(-0.5, 0.3, 0.8)), vec3(0.45, 0.72, -0.52), vec3(1.0, 2.0, 3.0), 3.7, 1.0);
-	return bark_sun_spec(normalize(vec3(0.3, 0.9, 0.2)), normalize(vec3(-0.2, 0.5, 0.84)), vec3(0.45, 0.72, -0.52));
+	if (i == 20) return anm_p(0, 3.7).x;
+	if (i == 21) return anm_m0(0, 3.7).y;
+	if (i == 22) return anm_p(1, 3.7).y;
+	if (i == 23) return anm_m0(1, 3.7).z;
+	if (i == 24) return anm_flap(vec3(0.2, 0.0, 0.9), vec3(0.2, 0.0, 0.9), 3.7, vec4(0.7, 1.3, 1.6, 0.6), true, 7.0, 0.6, 0.02).y;
+	if (i == 25) return anm_legs(vec3(-0.3, 0.1, 0.2), vec3(-0.3, 0.1, 0.2), vec4(0.7, 1.3, 1.6, 0.6), 0.62, 0.16, 0.056).x;
+	if (i == 19) return bark_sun_spec(normalize(vec3(0.3, 0.9, 0.2)), normalize(vec3(-0.2, 0.5, 0.84)), vec3(0.45, 0.72, -0.52));
+	return 0.0;
 }
 void fragment() {
 	float v = value(int(FRAGCOORD.x)) / 16.0 + 0.5;
@@ -206,7 +216,7 @@ func _initialize() -> void:
 		_rows.append(["kind", {"w": w, "A": A, "S": S}])
 	var lm := ShaderMaterial.new()
 	lm.shader = _lib_shader()
-	_viewport(20, lm)
+	_viewport(26, lm)
 	_rows.append(["lib", {}])
 
 
@@ -312,7 +322,7 @@ func _process(_delta: float) -> bool:
 				if absf(got - want[i]) > worst:
 					worst = absf(got - want[i])
 					which = i
-			print(("ok   " if worst < 0.02 else "FAIL ") + "the other eight includes compile together and %d values match their GDScript twins (worst %.5f, value %d)" % [want.size(), worst, which])
+			print(("ok   " if worst < 0.02 else "FAIL ") + "the other nine includes compile together and %d values match their GDScript twins (worst %.5f, value %d)" % [want.size(), worst, which])
 	_atm.free()
 	print(("PASS" if bad == 0 else "FAIL") + "  the shader library on the GPU")
 	quit(0 if bad == 0 else 1)
@@ -418,6 +428,8 @@ func _lib_values() -> Array:
 	var fr18 := 1.0 - absf(n6.dot(v6))
 	var sh18 := 0.12 * sin(3.7 * 0.5 + Vector3(1, 2, 3).dot(Vector3(0.011, 0.017, 0.013)))
 	var sf18 := n6.dot(sun.normalized()) * 0.5 + 0.5
+	var a1 := Vector4(0.7, 1.3, 1.6, 0.6)
+	var a2 := Vector4(-0.7, 1.3, 1.6, 0.6)
 	var n19 := Vector3(0.3, 0.9, 0.2).normalized()
 	var v19 := Vector3(-0.2, 0.5, 0.84).normalized()
 	var l19 := sun.normalized()
@@ -446,4 +458,10 @@ func _lib_values() -> Array:
 		_coursing(Vector2(1.37, 0.64), Vector2(0.05, 0.05), 0.32, 0.9, 0.6, 0.02, 0.12, 7).x,   # 17: box-filtered over 5 cm
 		1.0 - _ss(0.22, 0.78, sf18 * 1.15 - fr18 * 0.80 + 0.30 + sh18),       # 18
 		pow(maxf(n19.dot((l19 + v19).normalized()), 0.0), 26.0) * (1.0 if n19.dot(l19) >= 0.0 else 0.0),   # 19
+		(KAnim.pose(0, 3.0, a1, 3.7)["P"] as Vector3).x,                     # 20: anim, orbit
+		(KAnim.pose(0, 3.0, a2, 3.7)["M"] as Basis).x.y,                     # 21
+		(KAnim.pose(1, 3.0, a1, 3.7)["P"] as Vector3).y,                     # 22: flit
+		(KAnim.pose(1, 3.0, a2, 3.7)["M"] as Basis).x.z,                     # 23
+		KAnim.flap(Vector3(0.2, 0, 0.9), Vector3(0.2, 0, 0.9), 3.7, a1, true, 7.0, 0.6, 0.02).y,   # 24: flap while walking
+		KAnim.legs(Vector3(-0.3, 0.1, 0.2), Vector3(-0.3, 0.1, 0.2), a1, 0.62, 0.16, 0.056).x,     # 25: legs
 	]

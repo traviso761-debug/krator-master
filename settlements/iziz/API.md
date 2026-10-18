@@ -138,6 +138,46 @@ scales instance sizes when `o.scale` ≠ 1). Restore `KOFF=[0,0,0]` afterwards. 
 *repaired* state (`HOLES` may be set to .55 around the call, as `90-scene.js` in the Ancients kit does).
 Vendor the builder fragment byte-identical from `../ancients/src/` and add it to `VENDORED` in build.py.
 
+### Interiors: hollow bodies and furnished rooms — `69e-vern-hollow.js`, `95i-iziz-interiors.js` (2026-10-16)
+
+The residences and trade buildings have rooms you can see into (cutaway, X; `]` `[` the storeys). Civic buildings do not
+yet (the owner: "skip civic buildings for now"). Two parts:
+
+* **The builder** draws every enclosed wall block with `vnBody(item,x,y,z,w,h,d,ry,c,{t, floor, floorC})` in place of
+  `vB(...)`, and a full-footprint slab between storeys with `vnBand(item,x,y,z,w,h,d,ry,c,t)`. With `VERN.interiors` on
+  and an item for the def in `kits/interiors/sets/iziz.js`, a body is four walls of thickness `t` cut where the
+  builder's own `vnDoor`/`vnWin` calls on its faces open them, over a board floor; a band is a ring. Call `vnBody`
+  before the doors and windows on it. A door on a hollow face is drawn open (the leaf swung in); a window has no dark
+  backing plate. Once the builder returns, the item's planned storeys are drawn in the kit's items: the upper floors
+  with the stair's well, the partitions and their doorways, the stairs and ladders. **With interiors off, no item, a
+  `skip` item, or `o.scale` ≠ 1, `vnBody` and `vnBand` draw exactly the `vB` they replaced**: the city, Verge (which
+  takes 69e for this) and Ys build what they always did. `69c` is untouched (five builds vendor it): 69e wraps
+  `VERN.def`, `vnDoor` and `vnWin` by assignment, as `69f` does.
+* **The item** (`kits/interiors/sets/README.md`) says the rooms in the builder's frame: `bodies` for planned storeys
+  (`poly` = the body's outer face, `y` its base, `levels` the clear heights so that each upper floor `y + h + 0.25`
+  lands on the drawn upper body, `wall` = `t`, `doors` where the builder draws them) or explicit `rooms`. The trades'
+  room kinds `izwork_<t>` (the workroom: requires the trade's station by catalog role) and `izshop_<t>` (the selling
+  room: requires its goods) are defined at the top of the set file for t in `bakery butcher brewery weaver dyer
+  tannery tailor scribe apothecary tinker glass provisioner mill salvage boat smith`.
+
+`95i` plans every hollow placement again in the world frame, replaces the planner's windows on each room with the
+windows the builder drew on that room's walls, furnishes the rooms from the master catalog (`iziz`, with `generic`,
+`scrap` and the `jobs` work pieces; the catalog's `iziz_trade_*` set, `iziz_bread_oven`, `iziz_butcher_block`), retries
+a residence that fails the rule (a bed, a food and an item container per household) with another seed, registers every
+piece in core/tags (prefix `ixf`, class furniture, its building as parent) and hands the cutaway one unit per building.
+`window._interiors` reports it; `verify.py --assert` checks `interiors` (every building done, no residence failing) and
+`voth-trades` (below). The furniture and the interiors kit come in a generated fragment (`88z-iziz-furniture-bundle.js`,
+build.py `INTERIOR_TARGETS`: the vernacular sheet only; the city has none, and its buildings stay solid).
+
+`python3 ixshot.py dist/iziz-vernacular.html --keys <k,..> | --all [--back] --out shots/ix` shoots each building at eye
+level and cut away at each storey, and prints its rooms, pieces and residence counts. `?interiors=0` turns it all off.
+
+### The trades — `74z-vern-trades.js`
+
+`VERN_TRADES`: every trade in the Voth city's census, and the Voth catalog's shop trades, with the Voth building and the
+Vernacular defs that carry it (`civic: true` where that building is civic; `na` and why, where the trade cannot exist in
+Iziz). `_api.trades()` checks every named def exists.
+
 ### Adding a building
 
 1. New `function buildVernX(G,o){reseed(7xx1+(o.v|0)); … vnReg(...); …}` in the

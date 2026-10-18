@@ -11,8 +11,9 @@
 //   SPORE MOTES   glowing drift in the damp and along the brook banks
 //                 (billboarded additive discs, shader 'flit')
 //   STRIDERS      long-legged grazers in herds on the open floor, walked on
-//                 the CPU between waypoints (terrain-following, keep-clear,
-//                 grazing pauses), legs swung in the shader ('walk')
+//                 the CPU round loops laid out at build (terrain-following,
+//                 keep-clear, grazing pauses; a pose from the clock, one
+//                 BIO.dynamic mesh), legs swung in the shader ('walk')
 //   BOUGH SLOTHS  hanging under the hero boughs, static
 // Every animal is charged to BIO.cur ('jungle/fauna'); the counts scale with q.
 (function(){
@@ -100,30 +101,26 @@ function clearGround(x,z,rad){for(const T of HYPERJUNGLE.TREES||[]){if(Math.hypo
  for(const S of HYPERJUNGLE.SAPLINGS||[]){if(Math.hypot(x-S.x,z-S.z)<rad+2)return false;}return true;}
 const REGI=(o)=>{if(typeof REGISTER==='function')REGISTER(o);};
 
-// ---------------------------------------------------------------- the herds (CPU)
-// Each strider walks between waypoints inside its herd's disc, turning
-// smoothly, grazing between legs; y follows the terrain. The item is baked
-// by the host like any other; the tick finds its InstancedMesh on the first
-// frame and rewrites the matrices and the gait phases from then on.
+// ---------------------------------------------------------------- the herds (a pose from the clock)
+// Each strider is a WALKER (core/biome/36-core-walker.js, 2026-10-16): a closed loop through its herd's disc laid out
+// at build (BIO.walkLoop, seeded from KRAND by the herd's place and the animal's index, so the build's own draws are
+// the ones they were), grazing at some of its corners; y follows the ground sampled under the loop, the gait phase
+// (aP1.x) is the distance walked. The herds are one BIO.dynamic mesh (no longer a baked item) whose matrices and aP1
+// the tick writes from the clock, so the export bakes one period of each (biomes/GODOT.md, "Motion"). They walked
+// to waypoints drawn as they went before, which no port could replay.
 const HERDS=[];
-function herdTick(dt){const T=T3();if(!HERDS.length)return;
- const mesh=HERDS._mesh||(HERDS._mesh=BIO.baked.find(m=>m.name==='biome:strider'));if(!mesh)return;
- const aP1=mesh.geometry.getAttribute('aP1');if(!aP1)return;
- const M=new T.Matrix4(),P=new T.Vector3(),Q=new T.Quaternion(),S=new T.Vector3(),UP=new T.Vector3(0,1,0);
- dt=Math.min(dt,.1);
- HERDS.forEach(H=>H.animals.forEach(A=>{
-  if(A.state==='graze'){A.timer-=dt;if(A.timer<=0){A.state='walk';pickTarget(H,A);}}
-  else{const dx=A.tx-A.x,dz=A.tz-A.z,d=Math.hypot(dx,dz);
-   if(d<1.5){A.state='graze';A.timer=rr(3,10);}
-   else{const want=Math.atan2(dz,dx);let dh=want-A.hdg;dh=Math.atan2(Math.sin(dh),Math.cos(dh));A.hdg+=clamp(dh,-1.6*dt,1.6*dt);
-    const v=A.speed*Math.max(.25,1-Math.abs(dh)/2);A.x+=Math.cos(A.hdg)*v*dt;A.z+=Math.sin(A.hdg)*v*dt;A.gait+=v*dt*2.6/A.s;
-    if(BIO.mask(A.x,A.z)<=0||!BIO.clearOf(A.x,A.z,3)){A.state='graze';A.timer=1;}}}
-  A.y=BIO.terrainH(A.x,A.z);
-  P.set(A.x,A.y,A.z);Q.setFromAxisAngle(UP,-A.hdg);S.set(A.s,A.s,A.s);M.compose(P,Q,S);mesh.setMatrixAt(A.i,M);
-  aP1.setX(A.i,A.gait);}));
+function herdTick(t){const T=T3(),mesh=HERDS._mesh;if(!mesh)return;
+ const aP1=mesh.geometry.getAttribute('aP1'),M=new T.Matrix4(),P=new T.Vector3(),Q=new T.Quaternion(),S=new T.Vector3(),UP=new T.Vector3(0,1,0);
+ HERDS.forEach(H=>H.animals.forEach(A=>{const o=BIO.walkAt(A.W,t,0,2.5);
+  P.set(o.x,o.y,o.z);Q.setFromAxisAngle(UP,o.hd-Math.PI/2);S.set(A.s,A.s,A.s);M.compose(P,Q,S);mesh.setMatrixAt(A.i,M);   // the body's +x along the walk
+  aP1.setX(A.i,A.gait+o.ph);}));
  mesh.instanceMatrix.needsUpdate=true;aP1.needsUpdate=true;}
-function pickTarget(H,A){for(let t=0;t<12;t++){const a=rr(0,TAU),d=H.r*Math.sqrt(rng()),x=H.x+Math.cos(a)*d,z=H.z+Math.sin(a)*d;
-  if(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,6)||!clearGround(x,z,4))continue;A.tx=x;A.tz=z;return;}A.tx=H.x;A.tz=H.z;}
+// one strider's loop: round its herd's centre, on open floor clear of the boles (the herd's near trees, found once)
+function striderLoop(H,k){const near=(HYPERJUNGLE.TREES||[]).filter(T=>Math.hypot(H.x-T.x,H.z-T.z)<H.r+T.crownR+20),sap=(HYPERJUNGLE.SAPLINGS||[]).filter(S=>Math.hypot(H.x-S.x,H.z-S.z)<H.r+12);
+ const ok=(x,z)=>{if(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,4))return false;for(const T of near)if(Math.hypot(x-T.x,z-T.z)<3+trunkR(T,T.y0+3)*1.8+3)return false;for(const S of sap)if(Math.hypot(x-S.x,z-S.z)<5)return false;return true;};
+ const rand=KRAND.stream(KRAND.hash(580101,H.x,H.z,k)).next;
+ for(const f of [.7,.45,.25]){const pts=BIO.walkLoop(H.x,H.z,H.r*f,ok,rand,{n:6});if(pts){const stops=[];pts.forEach((p,i)=>{if(rand()<.5)stops.push({i,d:3+rand()*7});});if(!stops.length)stops.push({i:0,d:3+rand()*7});return{pts,stops,off:rand()*600};}}
+ return{pts:[[H.x+3,H.z],[H.x,H.z+3],[H.x-3,H.z],[H.x,H.z-3]],stops:[{i:0,d:8}],off:0};}
 
 // ---------------------------------------------------------------- the pass
 HYPERJUNGLE.buildFauna=function(R,heroR,q){
@@ -159,12 +156,21 @@ HYPERJUNGLE.buildFauna=function(R,heroR,q){
  BIO.scatter(nHerd,80,heroR-100,260,(x,y,z)=>{const r=rr(30,60);if(!BIO.clearOf(x,z,r+10)||!clearGround(x,z,20))return;
   const H={x:x,z:z,r:r,animals:[]},n=ri(4,9),tint=vary(pick([0x9a9e86,0xa8987a,0x8e9682,0xb0a48c]),.02,.08,.06);   // a stop light: untextured Lambert in bole shade
   for(let k=0;k<n;k++){let ax=x,az=z;for(let t=0;t<10;t++){const a=rr(0,TAU),d=r*.7*Math.sqrt(rng()),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(BIO.mask(px,pz)>0&&BIO.clearOf(px,pz,4)&&clearGround(px,pz,3)){ax=px;az=pz;break;}}
-   const s=rr(4.6,6.4),A={i:0,x:ax,z:az,y:BIO.terrainH(ax,az),hdg:rr(0,TAU),speed:rr(1.3,2.1)*s/5.5,s:s,gait:rr(0,TAU),state:'graze',timer:rr(0,6)};
-   A.i=BIO.items.strider.count;
-   BIO.put('strider',[ax,A.y,az],qEuler(0,-A.hdg,0),s,tint.clone().offsetHSL(rr(-.01,.01),0,rr(-.06,.06)),{aP0:[ax,A.y,az,0],aP1:[A.gait,rr(0,TAU),0,0]});
+   const s=rr(4.6,6.4),A={i:0,x:ax,z:az,y:BIO.terrainH(ax,az),hdg:rr(0,TAU),speed:rr(1.3,2.1)*s/5.5,s:s,gait:rr(0,TAU)};rr(0,6);   // rr(0,6): the old first graze, drawn still so the draws after it hold
+   A.i=st.striders;A.c=tint.clone().offsetHSL(rr(-.01,.01),0,rr(-.06,.06));A.ph1=rr(0,TAU);
    H.animals.push(A);st.striders++;}
   HERDS.push(H);st.herds++;REGI({name:'A herd of striders',kind:'fauna',label:'Striders',x:x,z:z,y:y-2,r:r+12,h:14});},{pad:40});
- if(HERDS.length&&!HERDS._ticked){HERDS._ticked=true;BIO.host.ticks(dt=>herdTick(dt));}
+ // the herds' mesh, once their animals are known: each animal's walker, its gait rate as it was (2.6 / s radians a
+ // metre, so a half-stride of pi s / 2.6), its period declared for the export (at the default 10 Hz: a strider turning
+ // on the spot as a stop ends wants it, 5 Hz lerps its turn 8 cm off)
+ HERDS._mesh=null;
+ if(st.striders){const T=T3(),all=[];HERDS.forEach(H=>H.animals.forEach((A,k)=>{const L=striderLoop(H,k);A.W=BIO.walker(L.pts,L.stops,A.speed,1.2,L.off,Math.PI*A.s/2.6);all.push(A);}));
+  const im=BIO.dynamic('strider',striderGeo(),HYPERJUNGLE.FAUNAMAT.strider,all.length,{label:'Striders (a herd)',motion:{period:i=>all[i].W.P}});
+  const a0=new Float32Array(all.length*4),a1=new Float32Array(all.length*4);
+  all.forEach((A,i)=>{const o=BIO.walkAt(A.W,0,0,2.5);a0.set([o.x,o.y,o.z,0],i*4);a1.set([A.gait,A.ph1,0,0],i*4);im.setColorAt(i,A.c.clone().convertSRGBToLinear());});
+  im.geometry.setAttribute('aP0',new T.InstancedBufferAttribute(a0,4));im.geometry.setAttribute('aP1',new T.InstancedBufferAttribute(a1,4));
+  HERDS._mesh=im;herdTick(BIO.WIND.t.value);}
+ if(HERDS.length&&!HERDS._ticked){HERDS._ticked=true;BIO.host.ticks((dt,t)=>herdTick(BIO.WIND.t.value));}
  // 6. BOUGH SLOTHS hanging under the big limbs of the near heroes
  (HYPERJUNGLE.TREES||[]).forEach(T=>{if(!T.hero||!T.perch||BIO.lodD(T.x,T.z)>1300)return;
   T.perch.forEach(P=>{if(P.r<1.5||P.y<T.y0+40||rng()>.14*q)return;const s=rr(2,3.4);

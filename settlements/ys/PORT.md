@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 337 (17%) | 57 (3%) | 105 (5%) | 110 (5%) | 1397 (70%) |
+| KB | 355 (18%) | 57 (3%) | 105 (5%) | 110 (5%) | 1397 (69%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -44,6 +44,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/69-mat-salvage.js` | 15.6 | [draw] | 32 | 5 | 0 | 0 | 0 | 14 | 5 | 1 | 0 | 0 | 0 |  |
 | `src/69b-vern-mat.js` | 14.0 | [G shader] | 27 | 8 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69c-vern-helpers.js` | 22.0 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/69e-vern-hollow.js` | 12.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/69h-host-0-lib.js` | 7.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69h-host-a-facet.js` | 7.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69h-host-b-bastion.js` | 11.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -56,12 +57,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/70-hl-tex.js` | 26.8 | [draw] | 0 | 19 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/70-hyk-housing.js` | 68.3 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-port-core.js` | 38.0 | [draw] | 10 | 0 | 0 | 0 | 0 | 7 | 0 | 2 | 0 | 0 | 0 |  |
-| `src/70-vern-dwellings.js` | 19.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/70-vern-dwellings.js` | 23.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/71-hl-mat.js` | 8.3 | [draw] | 15 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/71-hyk-shops.js` | 50.5 | [draw] | 2 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/71-port-terrain.js` | 21.0 | [draw] | 12 | 2 | 0 | 0 | 0 | 1 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/71-sky-h.js` | 5.4 | [G native] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/71-vern-trade.js` | 18.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/71-vern-trade.js` | 19.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/71b-hl-motif.js` | 32.9 | [draw] | 0 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/71w-port-sea.js` | 3.9 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | vendored from the port kit: the sea's binding of core/water |
 | `src/72-datacenter.js` | 7.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |

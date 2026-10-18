@@ -21,6 +21,10 @@ const TABLE := {
 	"glass": {"three": "core/materials/22-materials.js MAT.glass onBeforeCompile (GLASS FRESNEL)", "fields": [], "drawn_by": []},
 	"coursing": {"three": "none yet: the TEX kind 'coursing' (core/materials/PLAN.md, From spiderbench) waits for its pilot", "fields": ["coursing"], "drawn_by": []},
 	"water": {"three": "core/water/50-core-water-draw.js WATER.glsl, WATER.draw", "fields": ["(core/export's water section)"], "drawn_by": ["water.gdshader"]},
+	"anim": {"three": "core/biome/35-core-anim.js BIO.animHook (the biome kits' fauna: orbit, flit, walk; flap, legs, billboard)",
+		"fields": ["options", "(per instance: aP0.w, aP1)"], "drawn_by": ["anim.gdshader", "anim_add.gdshader"]},
+	"anim-phase": {"three": "swbay's and nwbay's animMat (75-biome-*-fauna.js: a wing-beat, a swim bob, a grazer's legs on a per-instance phase)",
+		"fields": ["options.mode", "(per instance: aPh)"], "drawn_by": ["anim_phase.gdshader"]},
 }
 
 # names the exports use for a library hook: the biome export's material kinds (core/biome/42-core-export.js HOOK_KINDS)

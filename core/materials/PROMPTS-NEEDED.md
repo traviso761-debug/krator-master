@@ -677,6 +677,10 @@ Owed, but a prompt needs work first; listed so they are not lost.
   the kit's canvas painters work; each culture needs a style read of its culture file before a prompt is written.
 - **The shared `detail.*` sets** (plaster grain, stone grain, metal brush) for the `detail` record field (`PLAN.md`, "From
   spiderbench"; `TODO.md`): the field is not built.
+- **The Iziz Vernacular's trade surfaces** (`settlements/iziz`, the trades round, 2026-10-16): a plain dyed cloth in
+  undyed weave (the weaver's and tailor's lengths are the tarp tinted; `vCloth` is the striped awning map), still water for
+  the mill race and the moat landings (tinted glass today), and a world-UV rough rock for the mine's and quarry's crags (the
+  shared `rubble` item stretches). Each needs a read of the drawing first: which items carry it, and at what tile.
 - **The Throne's drawn details** (`PLAN.md`, The Throne): the mat's veins, the star aloe's star, the trumpet tree's
   funnels, the lamp caps' dishes, the frill pods stay procedural; none has been framed as a texture.
 

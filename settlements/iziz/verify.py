@@ -99,6 +99,18 @@ const R=[];
 // 5. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
+
+// 6. every Voth census trade is carried by a defined Vernacular building, or says why not (src/74z-vern-trades.js).
+//    The vernacular sheet only: an agent's sheet or the city defines the same set, but this is the set's own check.
+if(A.trades&&!window.CITY){ const t=A.trades();
+  R.push({name:'voth-trades', ok:!t.bad.length,
+          detail: t.bad.length ? t.bad.slice(0,6).join(' | ') : t.carried+' of '+t.trades+' trades carried, '+t.na+' cannot exist here'}); }
+
+// 7. the interiors (69e-vern-hollow.js, 95i-iziz-interiors.js): every hollow building furnished, every residence holding a
+//    bed, a food and an item container per household.
+{ const I=window._interiors;
+  if(I&&I.on) R.push({name:'interiors', ok:I.done===I.total&&I.residenceFails===0,
+          detail:I.done+'/'+I.total+' buildings, '+I.rooms+' rooms, '+I.pieces+' pieces'+(I.residenceFails?'; residence fails: '+I.residenceFailList.join(' | '):'')+(I.dropped?'; dropped: '+I.droppedList.slice(0,4).join(' | '):'')}); }
 return R;}"""
 
 

@@ -24,4 +24,8 @@ const VIEWS={
  'Frontier — palisade, gate, mustering ground':RV(16,74,36,4),'Palisade gate — eye level':EYE('vern_palisade_gate',18,2),
  'Frontier — rest stops':RV(17,36,14,4),'Rest stop (rock) — eye level':EYE('vern_rest_stop',13,2),
  'Rest stop (cliff) — from the drop':[20,6,ROWZ[17]+18,14,4,ROWZ[17]],
+ 'Trades — food':RV(18,60,28,4),'Trades — cloth, leather, letters':RV(19,60,28,4),'Trades — crafts and salvage':RV(20,64,30,4),
+ 'Trades — mine, quarry, mill, fungus':RV(21,66,32,4),'Trades — farm, stock, water':RV(22,72,34,4),
 };
+// each trade building at eye level from its front (the trades round)
+for(const row of TRADE_ROWS)for(const k of row){const D=VERN.defs[k];VIEWS[D.name+' — eye level']=EYE(k,Math.max(D.w,D.d)*.9+5,D.w*.25);}

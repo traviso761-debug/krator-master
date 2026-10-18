@@ -109,6 +109,11 @@
   "from": "settlements/iziz/src",
   "sha1": "160cad10b9a2"
  },
+ "69e-vern-hollow.js": {
+  "adapted": false,
+  "from": "settlements/iziz/src",
+  "sha1": "0565517a8d1f"
+ },
  "69h-host-0-lib.js": {
   "adapted": false,
   "from": "kits/ancients/src",
@@ -157,7 +162,7 @@
  "70-vern-dwellings.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "83a46d297ae4"
+  "sha1": "238cbba4d7e8"
  },
  "71-hl-mat.js": {
   "adapted": false,
@@ -177,7 +182,7 @@
  "71-vern-trade.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "5e176829a2b5"
+  "sha1": "93ecce940cc6"
  },
  "71b-hl-motif.js": {
   "adapted": false,

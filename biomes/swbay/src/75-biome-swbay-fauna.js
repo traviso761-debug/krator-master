@@ -94,19 +94,22 @@ function animMat(kind){const m=new T3.MeshLambertMaterial({vertexColors:true,sid
 SWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
  const scene=BIO.host.scene,st={flocks:0,birds:0,herds:0,grazers:0,stalkers:0,pods:0,swimmers:0,swarms:0,glints:0};const out=[];
  const spineOK=(x,z,d)=>BIO.lodD(x,z)<d;
+ // the first pose (the build's own call) is drawn whatever the eye: an animal skipped then stood at the origin
+ let first=true;const near=(x,z)=>first||nearEye(x,z);
  // ---- flocks: one InstancedMesh per species; each flock a loop over its ground with the birds trailing the leader
  function flockMesh(si,flocks,perFlock){const S=SWBAY.FAUNA.species[si],geo=birdGeo(S),n=flocks.length*perFlock;
-  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=S.flap*rr(.85,1.15);geo.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
-  const im=new T3.InstancedMesh(geo,animMat('bird'),n);im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=S.name+'s';im.name='biome:fauna:'+S.key;
+  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=S.flap*rr(.85,1.15);
+  // on BIO.dynamic (2026-10-16): registered as a set of records, exported, and its motion baked for a port (biomes/GODOT.md, "Motion")
+  const im=BIO.dynamic('fauna:'+S.key,geo,animMat('bird'),n,{label:S.name+'s'});im.geometry.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
   const M=new T3.Matrix4(),P=new T3.Vector3(),Q=new T3.Quaternion(),Sc=new T3.Vector3(),F=new T3.Vector3(),UP=new T3.Vector3(0,1,0),Mlook=new T3.Matrix4();
   const birds=[];flocks.forEach((fl,fi)=>{for(let k=0;k<perFlock;k++)birds.push({fl:fl,lag:k*rr(.9,1.6),side:rr(-1,1)*fl.r*.35,dy:rr(-1,1)*fl.r*.12,sc:S.span*rr(.85,1.15)});});
   const at=(fl,t)=>{const a=fl.a0+fl.w*t;return[fl.x+Math.cos(a)*fl.r+Math.sin(a*2.3)*fl.r*.15,fl.y+Math.sin(a*1.7+fl.a0)*fl.dy,fl.z+Math.sin(a)*fl.r*fl.e];};
-  const upd=t=>{birds.forEach((b,i)=>{if(!nearEye(b.fl.x,b.fl.z))return;const p=at(b.fl,t-b.lag),p2=at(b.fl,t-b.lag+.15);
+  const upd=t=>{birds.forEach((b,i)=>{if(!near(b.fl.x,b.fl.z))return;const p=at(b.fl,t-b.lag),p2=at(b.fl,t-b.lag+.15);
     const a=b.fl.a0+b.fl.w*(t-b.lag),nx=-Math.sin(a)*b.side,nz=Math.cos(a)*b.side*b.fl.e;   // spread across the loop
     P.set(p[0]+nx,p[1]+b.dy,p[2]+nz);F.set(p2[0]-p[0],p2[1]-p[1],p2[2]-p[2]).normalize();
     Mlook.lookAt(F,new T3.Vector3(0,0,0),UP);Q.setFromRotationMatrix(Mlook);Q.multiply(new T3.Quaternion().setFromAxisAngle(UP,Math.PI));   // the model's nose is -z
     Sc.set(b.sc,b.sc,b.sc);M.compose(P,Q,Sc);im.setMatrixAt(i,M);});im.instanceMatrix.needsUpdate=true;};
-  upd(0);scene.add(im);BIO.host.ticks((dt,t)=>upd(t));BIO.tally(geo.attributes.position.count/3*n,n,1);st.flocks+=flocks.length;st.birds+=n;return im;}
+  upd(0);BIO.host.ticks((dt,t)=>upd(t));st.flocks+=flocks.length;st.birds+=n;return im;}
  // the soarers: loops over the bay and the shore, high, slow
  const soar=[];BIO.grid(320,0,R,(x,z)=>{const Z=zones(x,z);const water=smooth(.5,-1.5,Z.h);return (water*.9+Z.shore*.5)*(spineOK(x,z,1400)?1:0)*q;},(x,y,z)=>{
   const r=rr(90,220),fl={x:x,z:z,y:rr(SWBAY.FAUNA.species[0].alt[0],SWBAY.FAUNA.species[0].alt[1]),r:r,e:rr(.5,1),a0:rr(0,TAU),w:(rng()<.5?1:-1)*SWBAY.FAUNA.species[0].speed/r*.9,dy:rr(4,14)};
@@ -130,25 +133,36 @@ SWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
  for(let i=0;i<caps.length&&moth.length<16;i+=Math.max(1,Math.floor(caps.length/16))){const T=caps[i];
   moth.push({x:T.x,z:T.z,y:T.y0+T.H*.78-4,r:T.crownR*rr(.35,.6),e:rr(.8,1),a0:rr(0,TAU),w:(rng()<.5?1:-1)*SWBAY.FAUNA.species[7].speed/(T.crownR*.5),dy:rr(1,2.5)});}
  if(moth.length)flockMesh(7,moth,ri(10,18));
- // ---- the herd: one InstancedMesh, a centre wandering the savannah, the animals in a loose ring, heads down
+ // ---- the herd: one InstancedMesh, a centre walking a loop round the savannah, the animals in a loose ring, heads down.
+ // A pose from the clock (2026-10-16, core/biome/36-core-walker.js): the centre is a walker on a closed loop laid out
+ // at build (BIO.walkLoop, seeded from KRAND by the herd's place, so the draws after it are the ones they were), each
+ // animal's wobble turns a whole number of times a lap, so the herd repeats every W.P seconds and the export bakes one
+ // lap (biomes/GODOT.md, "Motion"). The herd and its stalker face the way they walk (they walked tail first before)
  (function(){const S=SWBAY.FAUNA.species[2],geo=grazerGeo(S);let cx=0,cz=0,best=-1;
   BIO.grid(160,0,R,(x,z)=>zones(x,z).sav*(spineOK(x,z,900)?1:0)*q,(x,y,z)=>{const s=zones(x,z).sav-BIO.lodD(x,z)/4000;if(s>best){best=s;cx=x;cz=z;}},{patch:0});
   if(best<0)return;const n=Math.round(rr(14,24)*Math.max(.5,q));SWBAY.FAUNA.herd={x:cx,z:cz};
-  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=rr(4,6);geo.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
-  const im=new T3.InstancedMesh(geo,animMat('grazer'),n);im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=S.name+' herd';im.name='biome:fauna:herd';
+  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=rr(4,6);
   const an=[];for(let i=0;i<n;i++)an.push({ox:rr(-1,1)*26,oz:rr(-1,1)*26,sc:S.H*rr(.8,1.1),ph:rr(0,TAU)});
-  const M=new T3.Matrix4(),P=new T3.Vector3(),Q=new T3.Quaternion(),Sc=new T3.Vector3(),UP=new T3.Vector3(0,1,0);let hx=cx,hz=cz,ha=rr(0,TAU);
-  // the stalker: one or two, trailing the herd ninety metres back, longer and lower than a grazer
-  const stalk=(function(){const SS=SWBAY.FAUNA.species[4],ns=ri(1,2),sg=grazerGeo(SS),sph=new Float32Array(ns);for(let i=0;i<ns;i++)sph[i]=rr(3,4);sg.setAttribute('aPh',new T3.InstancedBufferAttribute(sph,1));
-   const sim=new T3.InstancedMesh(sg,animMat('grazer'),ns);sim.frustumCulled=false;sim.userData.biome=true;sim.userData.inspectLabel=SS.name;sim.name='biome:fauna:stalker';
-   const an2=[];for(let i=0;i<ns;i++)an2.push({ox:rr(-1,1)*12,oz:rr(-1,1)*12,sc:SS.H});scene.add(sim);BIO.tally(sg.attributes.position.count/3*ns,ns,1);st.stalkers=ns;return{im:sim,an:an2};})();
-  const upd=(dt,t)=>{if(!nearEye(hx,hz))return;ha+=(fbm(t*.05,3,808,2)-.5)*dt*.8;const sp=S.speed;let nx=hx+Math.cos(ha)*sp*dt,nz=hz+Math.sin(ha)*sp*dt;
-   if(zones(nx,nz).sav<.4||BIO.lodD(nx,nz)>1100||!BIO.clearOf(nx,nz,30)||(SWBAY.blocked&&SWBAY.blocked(nx+Math.cos(ha)*24,nz+Math.sin(ha)*24,6))){ha+=Math.PI*.6;nx=hx;nz=hz;}hx=nx;hz=nz;
-   if(stalk){const sx=hx-Math.cos(ha)*95+Math.cos(t*.11)*20,sz=hz-Math.sin(ha)*95+Math.sin(t*.13)*20;
-    stalk.an.forEach((a,i)=>{const x=sx+a.ox,z=sz+a.oz;P.set(x,Math.max(Y(x,z),.2),z);Q.setFromAxisAngle(UP,-ha+Math.PI/2);Sc.set(a.sc,a.sc*.85,a.sc*1.25);M.compose(P,Q,Sc);stalk.im.setMatrixAt(i,M);});stalk.im.instanceMatrix.needsUpdate=true;}
-   an.forEach((a,i)=>{const wob=Math.sin(t*.3+a.ph)*3,x=hx+a.ox+wob,z=hz+a.oz+Math.cos(t*.27+a.ph)*3,y=Y(x,z);
-    P.set(x,Math.max(y,.2),z);Q.setFromAxisAngle(UP,-ha+Math.PI/2+Math.sin(t*.5+a.ph)*.3);Sc.set(a.sc,a.sc,a.sc);M.compose(P,Q,Sc);im.setMatrixAt(i,M);});im.instanceMatrix.needsUpdate=true;};
-  upd(0,0);scene.add(im);BIO.host.ticks(upd);BIO.tally(geo.attributes.position.count/3*n,n,1);st.herds++;st.grazers+=n;
+  rr(0,TAU);   // the old wander's first heading: drawn still, so every draw after it is the one it was
+  const SS=SWBAY.FAUNA.species[4],ns=ri(1,2),sg=grazerGeo(SS),sph=new Float32Array(ns),an2=[];for(let i=0;i<ns;i++)sph[i]=rr(3,4);for(let i=0;i<ns;i++)an2.push({ox:rr(-1,1)*12,oz:rr(-1,1)*12,sc:SWBAY.FAUNA.species[4].H});
+  // the loop: where the old wander was allowed to go (open savannah, near, clear of what the host registered)
+  const ok=(x,z)=>zones(x,z).sav>=.4&&BIO.lodD(x,z)<=1100&&BIO.clearOf(x,z,30)&&!(SWBAY.blocked&&SWBAY.blocked(x,z,3));
+  const rand=KRAND.stream(KRAND.hash(750021,cx,cz,0x48)).next;let pts=null;
+  for(const f of [1,.6,.35,.18]){pts=BIO.walkLoop(cx,cz,(30+rand()*15)*f,ok,rand);if(pts)break;}
+  if(!pts)pts=[[cx+5,cz],[cx,cz+5],[cx-5,cz],[cx,cz-5]];   // nowhere to go: the herd mills round its spot
+  const W=BIO.walker(pts,[],S.speed,0,rand()*600,1.2),P0=W.P,qw=w=>TAU*Math.max(1,Math.round(w*P0/TAU))/P0;
+  const w1=qw(.3),w2=qw(.27),w3=qw(.5),w4=qw(.11),w5=qw(.13);
+  const im=BIO.dynamic('fauna:herd',geo,animMat('grazer'),n,{label:S.name+' herd',motion:{period:()=>P0,hz:5}});im.geometry.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
+  // the stalker: one or two, trailing the herd ninety metres back along its loop, longer and lower than a grazer
+  const sim=BIO.dynamic('fauna:stalker',sg,animMat('grazer'),ns,{label:SS.name,motion:{period:()=>P0,hz:5}});
+  sim.geometry.setAttribute('aPh',new T3.InstancedBufferAttribute(sph,1));st.stalkers=ns;
+  const M=new T3.Matrix4(),P=new T3.Vector3(),Q=new T3.Quaternion(),Sc=new T3.Vector3(),UP=new T3.Vector3(0,1,0);
+  const upd=(dt,t)=>{if(!near(cx,cz))return;const o=BIO.walkAt(W,t,0,6),so=BIO.walkAt(W,t,Math.min(95,W.L*.45),6);
+   const sx=so.x+Math.cos(t*w4)*20,sz=so.z+Math.sin(t*w5)*20;
+   an2.forEach((a,i)=>{const x=sx+a.ox,z=sz+a.oz;P.set(x,Math.max(Y(x,z),.2),z);Q.setFromAxisAngle(UP,so.hd+Math.PI);Sc.set(a.sc,a.sc*.85,a.sc*1.25);M.compose(P,Q,Sc);sim.setMatrixAt(i,M);});sim.instanceMatrix.needsUpdate=true;
+   an.forEach((a,i)=>{const x=o.x+a.ox+Math.sin(t*w1+a.ph)*3,z=o.z+a.oz+Math.cos(t*w2+a.ph)*3,y=Y(x,z);
+    P.set(x,Math.max(y,.2),z);Q.setFromAxisAngle(UP,o.hd+Math.PI+Math.sin(t*w3+a.ph)*.3);Sc.set(a.sc,a.sc,a.sc);M.compose(P,Q,Sc);im.setMatrixAt(i,M);});im.instanceMatrix.needsUpdate=true;};
+  upd(0,BIO.WIND.t.value);BIO.host.ticks(dt=>upd(dt,BIO.WIND.t.value));st.herds++;st.grazers+=n;SWBAY.FAUNA.herd.walker=W;   /* t: the BIO clock, the one the export pins and a port replays */
   if(typeof REGISTER==='function')REGISTER({name:S.name+' herd (wanders)',kind:'fauna',label:S.name,x:cx,z:cz,y:Y(cx,cz),r:60,h:6});})();
  // ---- the swimmers: pods of something big cruising the deep water in slow arcs, backs and fins breaking the surface
  (function(){const S=SWBAY.FAUNA.species[5],pods=[];
@@ -156,15 +170,17 @@ SWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
    for(let k=0;k<12&&r>25;k++){let ok=true;for(let a=0;a<TAU;a+=TAU/10)if(Y(x+Math.cos(a)*r,z+Math.sin(a)*r*.7)>-2.5){ok=false;break;}if(ok)break;r*=.8;}
    if(r>25)pods.push({x:x,z:z,y:0,r:r,e:.7,a0:rr(0,TAU),w:(rng()<.5?1:-1)*S.speed/r,dy:0,n:ri(3,6)});},{patch:0,noMask:true});
   if(!pods.length)return;const P4=pods.slice(0,4),n=P4.reduce((a,p)=>a+p.n,0),geo=swimmerGeo(S);SWBAY.FAUNA.pods=P4;
-  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=rr(.8,1.3);geo.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
-  const im=new T3.InstancedMesh(geo,animMat('swim'),n);im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=S.name+' pod';im.name='biome:fauna:swimmers';
+  const ph=new Float32Array(n);for(let i=0;i<n;i++)ph[i]=rr(.8,1.3);
   const an=[];P4.forEach(p=>{for(let k=0;k<p.n;k++)an.push({p:p,lag:k*rr(3,5),side:rr(-1,1)*p.r*.2,sc:S.L*rr(.8,1.15)});});
+  // on BIO.dynamic (2026-10-16): each pod's circle closes every 2 pi / |w| seconds, its exact period (one over the bake's
+  // 400 s cap is baked as the 120 s loop instead; biomes/GODOT.md, "Motion")
+  const im=BIO.dynamic('fauna:swimmers',geo,animMat('swim'),n,{label:S.name+' pod',motion:{period:i=>TAU/Math.abs(an[i].p.w),hz:5}});im.geometry.setAttribute('aPh',new T3.InstancedBufferAttribute(ph,1));
   const M=new T3.Matrix4(),P=new T3.Vector3(),Q=new T3.Quaternion(),Sc=new T3.Vector3(),UP=new T3.Vector3(0,1,0),F=new T3.Vector3(),Ml=new T3.Matrix4();
   const at=(p,t)=>{const a=p.a0+p.w*t;return[p.x+Math.cos(a)*p.r,0,p.z+Math.sin(a)*p.r*p.e,a];};
-  const upd=(dt,t)=>{an.forEach((b,i)=>{if(!nearEye(b.p.x,b.p.z))return;const s=at(b.p,t-b.lag),s2=at(b.p,t-b.lag+.5),a=s[3];
+  const upd=(dt,t)=>{an.forEach((b,i)=>{if(!near(b.p.x,b.p.z))return;const s=at(b.p,t-b.lag),s2=at(b.p,t-b.lag+.5),a=s[3];
     P.set(s[0]-Math.sin(a)*b.side,0,s[2]+Math.cos(a)*b.side*b.p.e);F.set(s2[0]-s[0],0,s2[2]-s[2]).normalize();Ml.lookAt(F,new T3.Vector3(0,0,0),UP);Q.setFromRotationMatrix(Ml);Q.multiply(new T3.Quaternion().setFromAxisAngle(UP,Math.PI));
     Sc.set(b.sc,b.sc,b.sc);M.compose(P,Q,Sc);im.setMatrixAt(i,M);});im.instanceMatrix.needsUpdate=true;};
-  upd(0,0);scene.add(im);BIO.host.ticks(upd);BIO.tally(geo.attributes.position.count/3*n,n,1);st.pods=P4.length;st.swimmers=n;})();
+  upd(0,BIO.WIND.t.value);BIO.host.ticks(dt=>upd(dt,BIO.WIND.t.value));st.pods=P4.length;st.swimmers=n;})();
  // ---- the swarms: Points glinting round the epiphyte-laden crowns, drifting on little orbits
  (function(){const S=SWBAY.FAUNA.species[3],cand=SWBAY.TREES.filter(T=>(T.sp===3||T.sp===0||T.sp===2)&&T.lv===2&&BIO.lodD(T.x,T.z)<700);
   const sw=[];for(let i=0;i<cand.length&&sw.length<40;i+=Math.max(1,Math.floor(cand.length/40))){const T=cand[i];sw.push({x:T.x+rr(-6,6),y:T.y0+T.H*rr(.25,.7),z:T.z+rr(-6,6),r:rr(2,5)});}
@@ -173,9 +189,9 @@ SWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
   const g=new T3.BufferGeometry();g.setAttribute('position',new T3.BufferAttribute(pos,3));g.setAttribute('color',new T3.BufferAttribute(col,3));
   const pm=new T3.PointsMaterial({size:.28,sizeAttenuation:true,vertexColors:true,transparent:true,opacity:.9,depthWrite:false});
   const pts=new T3.Points(g,pm);pts.frustumCulled=false;pts.userData.biome=true;pts.userData.probeSkip=true;pts.userData.inspectLabel=S.name;pts.name='biome:fauna:glints';
-  const upd=(dt,t)=>{for(let i=0;i<n;i++){const w=sw[Math.floor(i/S.n)];if(i%S.n===0&&!nearEye(w.x,w.z)){i+=S.n-1;continue;}const s=seeds[i],a=s[0]+t*s[2],b=s[1]+t*s[3]*.7;
+  const upd=(dt,t)=>{for(let i=0;i<n;i++){const w=sw[Math.floor(i/S.n)];if(i%S.n===0&&!near(w.x,w.z)){i+=S.n-1;continue;}const s=seeds[i],a=s[0]+t*s[2],b=s[1]+t*s[3]*.7;
     pos[i*3]=w.x+Math.cos(a)*w.r*s[3];pos[i*3+1]=w.y+Math.sin(b)*w.r*.5;pos[i*3+2]=w.z+Math.sin(a)*w.r*s[3];}g.attributes.position.needsUpdate=true;};
   upd(0,0);scene.add(pts);BIO.host.ticks(upd);BIO.tally(0,n,1);st.swarms=sw.length;st.glints=n;})();
- return{fauna:st};};
+ first=false;return{fauna:st};};
 })();
 BIO.kitEnd(SWBAY);   // its exports run in its registry; the default kit is current again

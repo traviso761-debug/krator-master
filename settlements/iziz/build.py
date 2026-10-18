@@ -98,7 +98,7 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
-TARGET_CORE = {'city': ['atmos', 'mask', 'export']}   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
+TARGET_CORE = {'city': ['atmos', 'mask', 'export'], 'vernacular': ['furnish']}   # furnish: core/furnish's colour step for the interiors' furniture (95i)   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
 # core/host (core/host/README.md; ROADMAP.md section 10, step 3): the camera, loop, panel, probe, inspector, marks, pictures,
 # minimap, editor and cutaway, with core/clock and core/minimap. Not core/space: the hyperjungle's scatter takes another path
 # when it is on the page (KNOWN_ISSUES.md, 2026-10-13), so the inspector scans the records instead. Not core/edits: Iziz has
@@ -112,6 +112,14 @@ CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edi
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 MATLIB_PACK = '69d-matlib-pack.js'
+# GENERATED fragment for the targets with interiors (the vernacular sheet; 2026-10-16): the catalog's furniture
+# (kits/catalog/furniture_bundle.py: one closure exposing KratorFurniture) and the interiors core with the Iziz interior
+# set (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). Both are closures, so the build rules do not
+# apply to them. The cultures: iziz, the generic and scrap sets its poor tier falls back to, and the jobs' work pieces.
+FURN_BUNDLE = '88z-iziz-furniture-bundle.js'
+INTERIOR_TARGETS = {'vernacular'}
+FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'scrap', 'jobs']   # not generic-fruit: it laid figs on a scribe's counter
+INTERIOR_SETS = ['iziz']
 
 
 def srcpath(f, base=None):
@@ -168,11 +176,13 @@ DETERMINISTIC = {
     '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
     '91t-iziz-tags.js',                   # REG into core/tags (reads only)
     '69f-iziz-fixtures.js',               # the vernacular's doors, windows and lamps noted for core/tags (reads only)
+    '69e-vern-hollow.js', '95i-iziz-interiors.js', '74z-vern-trades.js',   # the hollow bodies, the interiors, the trades table (no rnd())
     '07-core-export.js', '09-core-export-adapters.js', '94-city-export.js',   # core/export and the city's part of it (M5; runs at export time only)
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js'}   # core/host (no rnd()); the take
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'furnish')) if f[0].isdigit() and f.endswith('.js')}   # core/furnish (the vernacular's interiors)
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -186,7 +196,7 @@ SEED_COLLISION_EXCEPTIONS = {
 # fragments): their column-0 declarations live inside a closure, so the
 # shared-scope name checks do not apply. They keep their own PRNG too, so the
 # reseed rule does not apply either. Matched by filename prefix.
-SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '94-city-export')   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
+SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '94-city-export', FURN_BUNDLE)   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
 def scoped(f):
     return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
@@ -365,6 +375,12 @@ def build_one(target, do_checks, assert_origin):
             bodies[f] = fh.read()
     bodies[MATLIB_PACK] = matlib_pack(SIDE)
     order = sorted(order + [MATLIB_PACK])
+    if target in INTERIOR_TARGETS:
+        sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
+        sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
+        import furniture_bundle, kit_bundle
+        bodies[FURN_BUNDLE] = furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS)
+        order = sorted(order + [FURN_BUNDLE])
     if target == 'city':   # the vendored hyperjungle biome: its library pack, before the biome code (86-bio-*)
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
         import matlib_pack as _mp

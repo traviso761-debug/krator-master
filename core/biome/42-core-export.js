@@ -26,6 +26,8 @@
 //               alpha test, side, the hook's options, and its texture by id.
 //  - textures:  every map as a PNG data URL (canvases and DataTextures alike) with its flipY; opt.textures:false
 //               leaves the images out.
+//  - motion:    a moving item's (BIO.dynamic) baked track, which Godot replays on its clock (BIO.motionBake below;
+//               biomes/GODOT.md, "Motion"). opt.motion:false leaves it out; {hz, loop, fade, t0} override the defaults.
 //  - lod:       a chunked mesh's chunk and the camera range it is drawn in (runtime LOD),
 //               which a Godot importer turns into visibility_range_begin / _end.
 //  - ids:       on a page with core/tags (BIO.init({tags}), 2026-10-12): an item names its item set (record, recordClass,
@@ -93,6 +95,7 @@ function libIndex(){const L=new Map();if(typeof KMAT==='undefined'||!KMAT||!KMAT
  return L;}
 function parts(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=box[0]&&z>=box[1]&&x<box[2]&&z<box[3]);
  const out={items:[],buckets:[],materials:[],textures:[],ground:null,stats:null,tags:null};
+ const movers=[];   // the moving items (BIO.dynamic): their motion is baked after the loop (BIO.motionBake, below)
  const mats=new Map(),texs=new Map(),LIB=opt.libRef?libIndex():null,seenId=new Map();
  const idOf=(kind,kit,name,lod)=>{const id=(kit?kit+'/':'')+name+(lod&&lod.chunk!=null?'@'+lod.chunk:'');const n=(seenId.get(kind+id)||0)+1;seenId.set(kind+id,n);return n>1?id+'~'+n:id;};
  // core/tags (BIO.init({tags})): ids on what the export carries (biomes/GODOT.md, "Records")
@@ -140,6 +143,7 @@ function parts(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=b
     keep.forEach((i,j)=>{ix[j]=RS.index(i);u[j]=KTAGS.hex(RS.uid32(i));});
     rec.record=RS.set;rec.recordClass=RS.record['class'];rec.recordKey=RS.record.key;   // a uid recomputes from these two and the matrix
     rec.records=u;rec.recordIndex=pack(ix);recs.instances+=keep.length;recs.items++;}
+   if(rec.dynamic&&opt.motion!==false)movers.push({m,keep,rec});
    out.items.push(rec);}
   else if(m.isMesh&&m.geometry.index){const g=m.geometry,P=g.attributes.position.array,I=g.index.array;let idx=I;
    const own=(box&&opt.cut!=='triangle')||vols?pieceOwner(P,I):null;
@@ -173,10 +177,63 @@ function parts(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=b
   // the host's baked field (core/terrain/30-core-field.js) when it has one: the real heightmap, cropped to the box on
   // its own lattice (krator-field; godot/krator/field_import.gd). opt.field:false leaves it out
   const F=BIO.host&&BIO.host.field;if(F&&typeof F.export==='function'&&opt.field!==false)out.ground.field=F.export({box});}
+ if(movers.length){const R=BIO.motionBake(movers,typeof opt.motion==='object'?opt.motion:{});movers.forEach((v,k)=>{const r=R[k];if(r)v.rec.motion=r.error?r:motionRec(r);});}
  out.materials=[...mats.values()];out.textures=[...texs.values()];
  out.stats={items:out.items.length,instances:out.items.reduce((s,r)=>s+r.count,0),buckets:out.buckets.length,triangles:out.buckets.reduce((s,r)=>s+r.triangles,0)};
  if(TR){out.tags={build:TR.build,format:'krator-tags'};out.stats.records=recs;}
  return out;}
+// THE MOTION (2026-10-16, biomes/GODOT.md "Motion"). Fauna a kit moves on the CPU (BIO.dynamic) export a snapshot and
+// a TRACK: the export pins the clock on a grid t0 + k/hz, calls every tick the kits registered (BIO._ticks, 10-core-head),
+// and copies each kept instance's matrix (and any per-instance attribute that moves) a frame at a time. An instance whose
+// pose repeats (the kit's motion.period(i): a walker's loop) keeps one period of frames and replays exactly for ever;
+// any other keeps loop + fade seconds and replays as a loop cross-faded (a smoothstep) over its first `fade` seconds. Then the clock is
+// handed back and the ticks pose everything at the page's own clock again. A mesh whose first frame is not where the
+// sweep left it (a tick that integrates or draws) gets {error:'state'}: its kit must pose it from the clock.
+// The grid runs at the largest rate a mover asks (motion.hz, 10 by default); a mesh at a rate dividing it keeps every
+// n-th frame. movers: [{m (an InstancedMesh), keep (its instance indices)}]; opt {hz (one rate for all), loop, fade, t0,
+// maxPeriod}. Returns, by
+// mover, {t0, hz, loop, fade, channels, stride, period, start, frames, data} (typed arrays) or {error, count}, or null
+const MCOL=[0,1,2,4,5,6,8,9,10,12,13,14];
+BIO.motionBake=function(movers,opt){opt=opt||{};const W=BIO.WIND,T=BIO._ticks||[];if(!T.length||!movers.length)return movers.map(()=>null);
+ const mo=v=>v.m.userData.motion||{},num=(a,b,d)=>a!=null?+a:b!=null?+b:d;
+ let hz=opt.hz;if(hz==null){hz=0;movers.forEach(v=>hz=Math.max(hz,num(mo(v).hz,null,10)));}
+ const maxP=num(opt.maxPeriod,null,400),M=movers.map(v=>{const u=mo(v),loop=num(opt.loop,u.loop,120),fade=Math.min(num(opt.fade,u.fade,2),loop/2);
+  const attrs=[];const g=v.m.geometry;for(const k in g.attributes){const a=g.attributes[k];if(a.isInstancedBufferAttribute)attrs.push({k,a,size:a.itemSize});}
+  const per=new Float32Array(v.keep.length),nf=new Uint32Array(v.keep.length);
+  const mh=opt.hz!=null?hz:num(u.hz,null,10),step=hz%mh===0?hz/mh:1,h=hz/step;   // a mesh's own rate, a divisor of the grid's
+  v.keep.forEach((i,j)=>{let P=typeof u.period==='function'?+u.period(i)||0:+u.period||0;if(!(P>0&&P<=maxP))P=0;per[j]=P;nf[j]=Math.floor((P||loop+fade)*h)+2;});
+  return {v,loop,fade,step,hz:h,attrs,per,nf,raw:v.keep.map((i,j)=>new Float32Array(nf[j]*12)),ch:attrs.map(A=>v.keep.map((i,j)=>new Float32Array(nf[j]*A.size)))};});
+ let fade=0;M.forEach(x=>fade=Math.max(fade,x.fade));const t0=num(opt.t0,null,0)-fade;
+ let K=0;M.forEach(x=>{for(let j=0;j<x.nf.length;j++)K=Math.max(K,(x.nf[j]-1)*x.step+1);});
+ const t00=W.t.value,pose=t=>{BIO._pinT=t;W.t.value=t;for(let i=0;i<T.length;i++){try{T[i](0,t);}catch(e){BIO.err('motion: a tick at '+t+' s: '+e.message);}}};
+ try{
+  for(let k=0;k<K;k++){pose(t0+k/hz);
+   M.forEach(x=>{if(k%x.step)return;const f=k/x.step,A=x.v.m.instanceMatrix.array;x.v.keep.forEach((i,j)=>{if(f>=x.nf[j])return;const o=i*16,d=x.raw[j],b=f*12;for(let q=0;q<12;q++)d[b+q]=A[o+MCOL[q]];
+    x.attrs.forEach((at,c)=>{const s=at.size,src=at.a.array,dd=x.ch[c][j];for(let q=0;q<s;q++)dd[f*s+q]=src[i*s+q];});});});}
+  pose(t0);   // the first clock again: a pure function of the clock lands where frame 0 did
+  M.forEach(x=>{const A=x.v.m.instanceMatrix.array;x.bad=0;x.v.keep.forEach((i,j)=>{for(let q=0;q<12;q++){const a=A[i*16+MCOL[q]],b=x.raw[j][q];if(Math.abs(a-b)>1e-4*(1+Math.abs(b))){x.bad++;break;}}});});}
+ finally{pose(t00);BIO._pinT=null;W.t.value=t00;}
+ return M.map(x=>{const n=x.v.keep.length;if(x.bad)return {format:'krator-motion',version:1,error:'state',count:x.bad,of:n};
+  let still=true;for(let j=0;j<n&&still;j++){const d=x.raw[j];for(let q=12;q<d.length&&still;q++)if(d[q]!==d[q%12])still=false;}
+  if(still)return null;   // it never moved (a herd left far away, or a kit that only sets colours): the snapshot says it all
+  const moving=x.attrs.map((at,c)=>{const C=x.ch[c];for(let j=0;j<n;j++){const s=at.size;for(let q=s;q<C[j].length;q++)if(C[j][q]!==C[j][q%s])return true;}return false;});
+  const chans=x.attrs.filter((a,c)=>moving[c]),stride=12+chans.reduce((s,a)=>s+a.size,0);
+  const start=new Uint32Array(n);let tot=0;for(let j=0;j<n;j++){start[j]=tot;tot+=x.nf[j];}
+  const data=new Float32Array(tot*stride);
+  for(let j=0;j<n;j++)for(let k=0;k<x.nf[j];k++){const b=(start[j]+k)*stride;for(let q=0;q<12;q++)data[b+q]=x.raw[j][k*12+q];
+   let o=12;x.attrs.forEach((at,c)=>{if(!moving[c])return;for(let q=0;q<at.size;q++)data[b+o+q]=x.ch[c][j][k*at.size+q];o+=at.size;});}
+  return {t0,hz:x.hz,loop:x.loop,fade:x.fade,channels:['matrix'].concat(chans.map(a=>a.k)),stride,period:x.per,start,frames:x.nf,data};});};
+// the replay (its twins: krator/kmotion.gd, and the GDScript importers' player): track r (typed arrays, as motionBake
+// returns or BIO.motionUnpack reads), instance j, clock t -> out (stride floats: the 12 matrix floats, then the channels)
+BIO.motionAt=function(r,j,t,out){const s=r.stride;out=out||new Float32Array(s);const P=r.period[j],u=t-r.t0;
+ const fr=(f,o,w)=>{const n=r.frames[j];let k=Math.floor(f);if(k<0)k=0;if(k>n-2)k=n-2;const a=f-k,b0=(r.start[j]+k)*s,b1=b0+s;
+  for(let q=0;q<s;q++){const v=r.data[b0+q]+(r.data[b1+q]-r.data[b0+q])*a;o[q]=w===1?v:o[q]+(v-o[q])*w;}};
+ if(P>0){const w=((u%P)+P)%P;fr(w*r.hz,out,1);return out;}
+ const w=((u%r.loop)+r.loop)%r.loop;
+ if(w<r.fade){const x=w/r.fade;fr((w+r.loop)*r.hz,out,1);fr(w*r.hz,out,x*x*(3-2*x));}else fr(w*r.hz,out,1);
+ return out;};
+const motionRec=r=>({format:'krator-motion',version:1,t0:r.t0,hz:r.hz,loop:r.loop,fade:r.fade,channels:r.channels,stride:r.stride,
+ period:pack(r.period),start:pack(r.start),frames:pack(r.frames),data:pack(r.data)});
 BIO.exportParts=parts;
 // the krator-biome object (biomes/GODOT.md): the parts in their envelope, as before core/export
 BIO.export=function(opt){opt=opt||{};const box=opt.box||null,p=parts(opt);
@@ -193,7 +250,7 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,p=parts(opt);
 // Queued when core/export loads after this file; a page without core/export never reads the queue.
 (function(){const R=typeof window!=='undefined'?window:globalThis;
  const reg=(s,f)=>{const a=[s,f,{by:'biome'}];if(typeof EXPORT!=='undefined'&&EXPORT&&EXPORT.register)EXPORT.register.apply(null,a);else (R.EXPORT_QUEUE=R.EXPORT_QUEUE||[]).push(a);};
- const P=c=>c.memo('biome',()=>parts({box:c.box,kit:c.opt.kit,textures:c.opt.textures,records:c.opt.records,cut:c.opt.cut,ground:false,
+ const P=c=>c.memo('biome',()=>parts({box:c.box,kit:c.opt.kit,textures:c.opt.textures,records:c.opt.records,cut:c.opt.cut,motion:c.opt.motion,ground:false,
   ids:true,compact:c.opt.compact!==false,libRef:c.opt.libRef!==false,vocab:true}));
  reg('items',c=>P(c).items);reg('buckets',c=>P(c).buckets);reg('materials',c=>P(c).materials);reg('textures',c=>P(c).textures);
  reg('terrain',c=>{if(!BIO.host||!BIO.terrainH)return null;const F=BIO.host.field&&c.opt.field!==false?BIO.host.field:null;

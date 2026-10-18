@@ -5,6 +5,25 @@ saying what fixed it.
 
 ## Open, 2026-10-05
 
+- [ ] (2026-10-16) **The trades round** (the owner: "give me an Iziz Vernacular version of every trades and industry-related
+      building the Iziz Vernacular kit doesn't have yet. Build interiors for the Iziz residences and trade buildings, but skip
+      civic buildings for now"). 21 new buildings (src/71a-71c, 73b, 73c), the 8 dwellings and 7 trade buildings made hollow,
+      and every one furnished (API.md, "Interiors"). Left open:
+      - Civic buildings (school, hospital, barracks, the guilds, the frontier set, the generator) stay solid, as asked. Their items in
+        kits/interiors/sets/iziz.js are ready for when they are hollowed.
+      - The city target has no interiors: no furniture bundle, `VERN.interiors` off, every building solid as before. Turn it on
+        with the rebuild on core/city (about 3000 vernacular placements: furnish near the camera, as Girder and Verge do).
+      - The stone manor's 5 m ground storey only takes a ladder (the planner's straight stair does not fit the rise); the townhouse's
+        and the tavern's upper rooms see out only through the deco shutter strips (dark slots, not openings).
+      - The planner puts a stair along the street wall when it can (its score likes the street door): the weaver's was steered by
+        its doors; elsewhere a stair foot can show through a front window. The tailor's shop and workroom come side by side.
+      - Loading doors drawn above a hoist (the provisioner, the mill) are openings the planner does not know; furniture may stand
+        in front of them. The fungus house is built at ground level (only its earth bank reads as sunk) and entered at its -x end.
+      - No animals in the byre or the pens; the boatyard's and the fish landing's water is at the plot's front edge for a city to
+        lay (the dugout sits 0.4 m inside it). The tinker's dish is a flat disc (no concave item).
+      - FURN_JOBS has no salvage or electrics job: the tinker is tagged carpentry, the salvage yard smithing.
+      - Surfaces with no good texture (core/materials/PROMPTS-NEEDED.md, "Gaps with no prompt yet"): dyed cloth, still water,
+        world-UV crag rock.
 - [ ] (2026-10-15) **The palace citadel's interior, for the Iziz rebuild:** the agreed programme is `settlements/iziz/palace/`
       (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`): the whole precinct inside the 84 m curtain wall, an open
       Roman-style imperial family in the tiered block, the general staff and the diplomatic corps in new flank buildings and

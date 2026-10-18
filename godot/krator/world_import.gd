@@ -128,8 +128,9 @@ static func build(path: String) -> Node3D:
 			for u in it["records"]:
 				if str(u).length() == 8:
 					ids["instances_with_uid"] += 1
-		if it["dynamic"]:
-			report["gaps"]["fauna"] = "dynamic items (fauna on aP0/aP1 paths) are placed static: the anim kind has no Godot shader yet"
+		var mrec: Dictionary = mats.get(it["material"], {})
+		if it["dynamic"] and str((mrec.get("options") if mrec.get("options") is Dictionary else {}).get("mode", "orbit")) == "walk":
+			report["gaps"]["fauna walk"] = "walking fauna (anim mode 'walk') are moved by the page's own host tick (a herd's CPU path), which no export carries: they stand at their export pose, wings flapping"
 	var buckets := Node3D.new()
 	buckets.name = "Buckets"
 	root.add_child(buckets)

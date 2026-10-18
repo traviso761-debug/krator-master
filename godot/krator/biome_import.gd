@@ -7,6 +7,9 @@ extends RefCounted
 
 const FOLIAGE := preload("res://shaders/foliage.gdshader")
 const BARK := preload("res://shaders/bark.gdshader")
+const ANIM := preload("res://shaders/anim.gdshader")
+const ANIM_ADD := preload("res://shaders/anim_add.gdshader")
+const ANIM_PHASE := preload("res://shaders/anim_phase.gdshader")
 const CHUNK := 1200.0   # BIO.LOD.chunk (three's LOD box; only named in the report now)
 const CELL := 150.0     # the importer's LOD cell: finer than a 300 m tile, so a tile changes detail progressively
 
@@ -56,12 +59,19 @@ static func build(path: String) -> Node3D:
 	items.name = "Items"
 	root.add_child(items)
 	var instances := 0
+	var moving := 0   # instances a KMotion player moves
 	for it in d["items"]:
 		var m: Dictionary = mats[it["material"]]
 		var mat := _material(m, tex, texrec, true, report)
 		var mesh := KData.array_mesh(it["geometry"], mat, Vector3.ZERO)
 		var n: int = int(it["count"])
 		var groups := _item_cells(it, n)
+		# a moving item's baked motion (biomes/GODOT.md, "Motion"): each cell's MultiMesh gets a KMotion player
+		var track := KMotion.from_record(it.get("motion"))
+		if it.get("motion") is Dictionary and (it["motion"] as Dictionary).has("error"):
+			_gap(report, "motion " + str(it["name"]), "%s: the page's tick is not a function of the clock (%s), so no track was baked: it stands at its export pose" % [it["name"], it["motion"]["error"]])
+		elif it["dynamic"] and track.is_empty():
+			_gap(report, "motion", "moving items without a baked track (an export from before 2026-10-16, or motion:false): they stand at their export pose")
 		# core/tags (biomes/GODOT.md, "Records"): the item set's id, and the side table by instance index: each instance's
 		# uid (KTAGS.uid of its class, key and position) and its index in the set (its id is "<record>#<index>"). A cell
 		# keeps the slice for its own instances, in its own instance order
@@ -91,6 +101,9 @@ static func build(path: String) -> Node3D:
 			mmi.multimesh = mm
 			mmi.position = origin
 			_apply_lod(mmi, it, report)
+			if not track.is_empty():
+				KMotion.attach(mmi, track, sel, origin)
+				moving += sel.size()
 			mmi.set_meta("krator", {"kit": it["kit"], "name": it["name"], "label": it["label"], "material": m.get("key"),
 				"kind": m["kind"], "dynamic": it["dynamic"], "count": sel.size(), "cell": key})
 			if recs.size() > 0:
@@ -105,8 +118,8 @@ static func build(path: String) -> Node3D:
 				if by_id.has(it["record"]):
 					mmi.set_meta("krator_set", by_id[it["record"]])
 			items.add_child(mmi)
-		if it["dynamic"]:
-			_gap(report, "fauna", "dynamic items (fauna on aP0/aP1 paths) are placed static: the anim kind has no Godot shader yet")
+		if it["dynamic"] and track.is_empty() and str((m["options"] if m["options"] != null else {}).get("mode", "orbit")) == "walk":
+			_gap(report, "fauna walk", "walking fauna (anim mode 'walk') are moved by the page's own host tick (a herd's CPU path), which no export carries: they stand at their export pose, wings flapping")
 		instances += n
 
 	var buckets := Node3D.new()
@@ -140,7 +153,7 @@ static func build(path: String) -> Node3D:
 		buckets.add_child(bn)
 		tris += int(b["triangles"])
 
-	report["counts"] = {"items": d["items"].size(), "item_nodes": items.get_child_count(), "instances": instances,
+	report["counts"] = {"items": d["items"].size(), "item_nodes": items.get_child_count(), "instances": instances, "moving": moving,
 		"buckets": d["buckets"].size(), "bucket_nodes": buckets.get_child_count(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": d["textures"].size(), "load_ms": Time.get_ticks_msec() - t0}
 	report["ids"] = ids
@@ -325,17 +338,20 @@ static func _apply_lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictiona
 
 
 # MultiMesh.buffer: per instance 12 floats (the 3x4 transform, row by row), 4 colour, 4 custom.
-# COLOR = (r, g, b, c2.r), INSTANCE_CUSTOM = (oct(aN).x, oct(aN).y, c2.g, c2.b) (biomes/GODOT.md)
+# COLOR = (r, g, b, c2.r), INSTANCE_CUSTOM = (oct(aN).x, oct(aN).y, c2.g, c2.b) (biomes/GODOT.md); an animated body
+# (aP0, aP1: kind 'anim') packs COLOR = (r, g, b, aP0.w), INSTANCE_CUSTOM = aP1 (shaders/anim_body.gdshaderinc); an
+# anim-phase body (aPh) INSTANCE_CUSTOM.x = aPh (shaders/anim_phase.gdshader)
 static func _instance_buffer(it: Dictionary, sel: PackedInt32Array, origin: Vector3, m: Dictionary, report: Dictionary) -> PackedFloat32Array:
 	var M := KData.floats(it["matrices"])
 	var C := KData.floats(it["colours"]) if it["colours"] != null else PackedFloat32Array()
 	var ex: Dictionary = it["extras"]
 	var AN := KData.floats(ex["aN"]["data"]) if ex.has("aN") else PackedFloat32Array()
 	var C2 := KData.floats(ex["aC2"]["data"]) if ex.has("aC2") else PackedFloat32Array()
+	var P0 := KData.floats(ex["aP0"]["data"]) if ex.has("aP0") else PackedFloat32Array()
+	var P1 := KData.floats(ex["aP1"]["data"]) if ex.has("aP1") else PackedFloat32Array()
+	var PH := KData.floats(ex["aPh"]["data"]) if ex.has("aPh") else PackedFloat32Array()
 	for k in ex:
-		if k == "aP0" or k == "aP1":
-			_gap(report, "fauna paths", "fauna that fly a path in the shader (aP0, aP1) stand still at their path centre: the anim shader and its second channel are not ported")
-		elif k != "aN" and k != "aC2":
+		if not (k in ["aN", "aC2", "aP0", "aP1", "aPh"]):
 			_gap(report, "extras." + k, "per-instance attribute %s has no slot in the MultiMesh packing" % k)
 	var buf := PackedFloat32Array()
 	buf.resize(sel.size() * 20)
@@ -357,6 +373,11 @@ static func _instance_buffer(it: Dictionary, sel: PackedInt32Array, origin: Vect
 			buf[b + 16] = e.x; buf[b + 17] = e.y
 		buf[b + 18] = C2[i * 3 + 1] if C2.size() > 0 else 1.0
 		buf[b + 19] = C2[i * 3 + 2] if C2.size() > 0 else 1.0
+		if P1.size() > 0:   # an animated body: its path's radius and aP1
+			buf[b + 15] = P0[i * 4 + 3] if P0.size() > 0 else 0.0
+			buf[b + 16] = P1[i * 4]; buf[b + 17] = P1[i * 4 + 1]; buf[b + 18] = P1[i * 4 + 2]; buf[b + 19] = P1[i * 4 + 3]
+		if PH.size() > 0:   # an anim-phase body's beat (shaders/anim_phase.gdshader): INSTANCE_CUSTOM.x
+			buf[b + 16] = PH[i]
 	return buf
 
 
@@ -406,11 +427,14 @@ static func _material(m: Dictionary, tex: Dictionary, texrec: Dictionary, instan
 				_gap(report, "sway data", "an export from before 2026-10-05: sway read from the GLSL text")
 		if o.get("dist"):
 			_gap(report, "leaf.dist", "foliage option dist=true (%s) is not ported" % m.get("key"))
+	elif kind == "anim":   # BIO.animMat: the path, wings and legs in the vertex stage (shaders/lib/anim.gdshaderinc)
+		anim_material(sm, o)
 	else:
 		sm.shader = BARK
 		match kind:
-			"anim", "anim-phase":
-				_gap(report, kind, "material kind '%s' (animated fauna: %s) drawn with the bark shader, unanimated" % [kind, "a path in aP0/aP1" if kind == "anim" else "a per-instance phase, aPh"])
+			"anim-phase":   # swbay's and nwbay's animMat: the beat on the instance's phase (aPh); the path is the baked motion
+				sm.shader = ANIM_PHASE
+				sm.set_shader_parameter("mode", {"bird": 0, "swim": 1}.get(str(o.get("mode", "bird")), 2))
 			"irid":   # BIO.iridBarkMat: the bark's colour swings between two tints with the view angle
 				var a: Array = o.get("a", [0.78, 1.18, 0.92])
 				var b: Array = o.get("b", [1.45, 0.82, 0.74])
@@ -439,8 +463,8 @@ static func _material(m: Dictionary, tex: Dictionary, texrec: Dictionary, instan
 				sm.set_shader_parameter("night_k", Vector2(float(nk[0]), float(nk[1])))
 				if m.get("emissive") != null:
 					sm.set_shader_parameter("emissive", KData.colour(m["emissive"], false))
-		if m["alphaTest"] > 0.0:
-			sm.set_shader_parameter("alpha_test", float(m["alphaTest"]))
+	if kind != "leaf" and m["alphaTest"] > 0.0:
+		sm.set_shader_parameter("alpha_test", float(m["alphaTest"]))
 	if m.get("hooked") and not (kind in ["leaf", "anim", "anim-phase", "irid", "gloss", "far", "hang"]):
 		_gap(report, "hooked:" + str(m.get("key")), "kind '%s' material %s carries a kit shader hook the export does not name: drawn plain" % [kind, m.get("key")])
 	# material colours are three's linear working values written as hex (convention.colours.materials): no conversion
@@ -465,3 +489,24 @@ static func _material(m: Dictionary, tex: Dictionary, texrec: Dictionary, instan
 	if not m.get("doubleSided", true):
 		_gap(report, "single-sided", "some materials are single-sided in three; every Godot shader here is cull_disabled")
 	return sm
+
+
+# an 'anim' material's options (BIO.animHook's o: mode, flap {rate, amp, root}, legs {top, amp}, billboard, basic,
+# additive) as the anim shader's uniforms, rounded as three writes them into its GLSL (toFixed)
+static func anim_material(sm: ShaderMaterial, o: Dictionary) -> void:
+	sm.shader = ANIM_ADD if o.get("basic") and o.get("additive") else ANIM
+	sm.set_shader_parameter("mode", {"orbit": 0, "flit": 1, "walk": 2}.get(str(o.get("mode", "orbit")), 0))
+	sm.set_shader_parameter("billboard", bool(o.get("billboard", false)))
+	var fl = o.get("flap")
+	sm.set_shader_parameter("flap_on", fl is Dictionary)
+	if fl is Dictionary:
+		sm.set_shader_parameter("flap_rate", snappedf(float(fl.get("rate", 6.0) if fl.get("rate") else 6.0), 0.01))
+		sm.set_shader_parameter("flap_amp", snappedf(float(fl.get("amp", 0.35) if fl.get("amp") else 0.35), 0.001))
+		sm.set_shader_parameter("flap_root", snappedf(float(fl["root"]) if fl.get("root") != null else 0.12, 0.001))
+	var lg = o.get("legs")
+	sm.set_shader_parameter("legs_on", lg is Dictionary)
+	if lg is Dictionary:
+		var amp := float(lg.get("amp", 0.18) if lg.get("amp") else 0.18)
+		sm.set_shader_parameter("legs_top", snappedf(float(lg.get("top", 0.5) if lg.get("top") else 0.5), 0.001))
+		sm.set_shader_parameter("legs_amp", snappedf(amp, 0.001))
+		sm.set_shader_parameter("legs_lift", snappedf(amp * 0.35, 0.001))

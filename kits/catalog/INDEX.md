@@ -33,7 +33,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-generic.js` | 5 |  |
 | `krator-master-furniture-hykkousoi.js` | 30 **big** | the helpers (all through F) (38); the pieces (91) |
 | `krator-master-furniture-islander.js` | 5 |  |
-| `krator-master-furniture-iziz.js` | 14 | Harvested from settlements/iziz/src/69c-vern-hel (89) |
+| `krator-master-furniture-iziz.js` | 18 | Harvested from settlements/iziz/src/69c-vern-hel (89) |
 | `krator-master-furniture-jobs.js` | 20 | Harvested from settlements/locus (10 pieces): th (47); The builders' yard (2026-10): timber for the Eas (187) |
 | `krator-master-furniture-lizardmen.js` | 6 |  |
 | `krator-master-furniture-nomad.js` | 112 **big** | Seating (268); Tables and vessels (401); Storage (590); Light (800); Textiles (873); Fire (982); Riders' gear (1073); Work (1268); Tanning: the hidemaker's tent (job tanning) (1361); The smithy (1452) |
