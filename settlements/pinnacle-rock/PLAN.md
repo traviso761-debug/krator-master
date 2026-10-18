@@ -28,21 +28,23 @@ Pinnacle Rock is a settlement and goes in the gallery when it first reaches `mai
 
 ## 1. The site
 
-The scale model has Pinnacle Rock at px 737,354 (`staiytii0y`, a village point), inside the Beast Riders' political
-polygon at its northern edge and inside the hyperjungle biome polygon near its northern margin; the Painted Men's
-polygon begins about 15 km north, the Inner Wall's northern highlands behind it, and Korona beyond. Mav's Refuge is
-248 km south, Girder 375 km south, the Hexahedron 365 km west, Kautoa 122 km. **The point is approximate** (the owner):
-the build's first job is to find, within about 50 km of it, a mesa the model can carry. `tools/scale-model/
-extract_region.py` reports the mesa and canyon candidates of a region (its `CANYON_MIN` rule: a trough 120-150 m deep
-one and two cells out); run it on a polygon round the point and pick the candidate whose top clears the forest.
-If none does, the mesa is added to the model as a relief edit (`edit_heights.py`, the way the Yuni valley's ranges
-were) and the settlement point moved onto it; either way the chosen point is written back to the model's
-`settlements` collection and this section updated with it.
+**Settled 2026-10-18.** The owner's point (px 737,354, `staiytii0y`) was approximate, so the model's heights within
+50 km of it were scanned for mesa candidates (a cell standing above its eight neighbours, ranked by its height over
+the ring 8 km out) and canyon candidates (the extractor's `CANYON_MIN` rule). No cell met the canyon rule; six stood
+proud, and one clears the forest: **px 755,351**, 37 km east-north-east, a knoll whose top is -305 m over a jungle
+floor at -900 to -1,000 m (the scan: 541 m over the ring's median; the 4 km cells round it read -323, -335, -398,
+-424 on the top, -746 to -1,010 north, -1,315 east), 11 km from the **K'etsaal Baatar** (the page's name; the repo's
+namer is behind it), rain about 3,000 mm. The others were 170 m or less over their rings, under the canopy. The
+point was moved to 755,351 and typed `town` (notes on the record). It is inside the Beast Riders' and hyperjungle
+polygons; the Painted Men's polygon begins 10 km north, the Inner Wall behind it, Korona beyond; Mav's Refuge is
+250 km south, Girder 375 km, the Hexahedron 400 km west. The knoll is a 10 km upland at the model's resolution: the
+mesa itself stands on its top, and the 1:1 ground round it falls away as the cells say, steepest to the north and
+east.
 
-**The mesa must clear the canopy.** Hypertrees are 290-480 m at Mav's and 150-270 m at Girder (`LORE.md` §12 holds
-the contradiction). The plan takes the northern margin's forest at Girder's size and gives the mesa **about 250 m of
-wall** above the jungle floor, with the **pinnacles 40 to 90 m** more, so the lowest roost deck stands above the
-tallest crown and a flyer can leave a perch and fall into clear air (section 5, question 2). The mesa top is about
+**The mesa clears the canopy** (settled 2026-10-18). The northern margin's forest is Girder's size (150-270 m; the
+contradiction with Mav's 290-480 m stays in `LORE.md` §12 for the deep jungle). The mesa rises **about 250 m** from
+the knoll's foot, the **pinnacles 40 to 90 m** more, so the lowest roost deck stands above the tallest crown and a
+flyer can leave a perch and fall into clear air. The mesa top is about
 1.2 by 0.8 km, long axis north-south, red sandstone in horizontal beds, the stacks standing in two groups: the
 **North Fins**, a row of leaning fins along the northern rim over the gorge, and the **Garden**, a cluster of spires
 and balanced rocks at the top's middle, with the town between and round them.
@@ -53,8 +55,8 @@ and balanced rocks at the top's middle, with the town between and round them.
 | **The Crown** | the open top between the two stack groups | the assembly hall (Girder's round tajug-roofed hall, larger), the speakers' stones, the market round it, the shrine of the Winged Ones in the lee of a balanced rock |
 | **The town** | the slopes and benches among the Garden's stacks | houses poor to rich (round huts, joglo, longhouses from the catalog; the rich houses built against the stacks), the Wings' barracks (named by Wing), workshops, the tack and feed stores, cisterns cut in the rock |
 | **The Stair** | the mesa's southern nose | the one walking way up: a stair cut in the beds with switchbacks and gates, a capstan lift beside it for loads |
-| **The farms** | the jungle floor round the foot, inside a palisade | crop plots, paddies, orchards, gardens, pens, the farm houses, a gate on the forest road |
-| **The gorge** | under the northern rim | the canyon of the old note: a river or a dry gorge (section 5, question 3), the rookery platforms looking out over it, the beast lift's foot |
+| **The farms and ranches** | the jungle floor round the foot, inside a palisade | crop plots, paddies, orchards, gardens, the farm houses, a gate on the forest road; the **ranches** of the ground tribes: Threehorn and Hardshell paddocks, Staghorn beetle pens, Longcrawler sheds, the Raptor and Tiger tribes' kennels and runs, each with its tribe's lodge |
+| **The gorge** | under the northern rim | a **dry gorge** (settled 2026-10-18), the rookery platforms looking out over it, the beast lift's foot |
 
 ## 2. The rock and the roosts
 
@@ -63,8 +65,9 @@ of beds, each bed an irregular disc with its own radius, lean and a chamfered ed
 in rows that share a strike) or spires (near-round, tapering, some capped by a wider block: the balanced rock). It
 writes records keyed by stable ids (`{id, kind:'fin'|'spire', x, z, beds:[{y, rx, rz, ry, chamfer}]}`) that the roost
 placer reads to find a platform's ring and the carve patches read for undercuts; the drawing is red sandstone beds
-from the material library (section 5, question 4: the desert's red rock sets, if the library has them; else a
-`PROMPTS-NEEDED.md` entry, not a procedural stand-in). The test (`core/terrain/test-stacks.js`) proves the records are
+from the material library: `rock.sandstone.navajo` (delivered, cross-bedded) for the fins' sweeping faces, and the
+owed `rock.sandstone.bedded.red` (`core/materials/PROMPTS-NEEDED.md` section 4) for the horizontal beds and the
+balanced rocks, never a procedural stand-in. The test (`core/terrain/test-stacks.js`) proves the records are
 deterministic from `KRAND` and that every platform ring fits its stack's bed at that height.
 
 **The roosts** keep Girder's record shapes so the flyers' code reads them unchanged: a `roostdeck` record per platform
@@ -111,13 +114,14 @@ The town is "un-assailable" the way Mav's gateway trees are: one stair, gated th
 
 ## 5. Open questions for the owner
 
-1. **The site.** Settle on a candidate from the model (section 1) or let the build add the mesa as a relief edit.
-   Recommended: run the candidates first; add the relief only if nothing within 50 km clears the forest.
-2. **The canopy.** The plan takes Girder's tree heights at the margin and a 250 m mesa with 40 to 90 m stacks.
-   Recommended as written; the alternative is a lower mesa in a cleared country, which loses "rises out of the jungle".
-3. **The gorge.** The old note's canyon: keep it under the northern rim (recommended: it gives the rookery platforms
-   their view and the beast lift its drop; a dry gorge, no river to route on the model) or drop it.
-4. **Which tribe.** The Wingclaw (giant archaeopteryx) as the roost town's own tribe, with Quetzal and Nightwing Wings
-   posted there, is the recommendation (the northern march, `LORE.md` §6.6 proposed); or the Quetzal alone.
-5. **Red sandstone.** Name the library set (`core/materials/PLAN.md`) or ask for one: a red sandstone in horizontal
-   beds with cross-bedding, and a weathered bed-face variant for the undercuts.
+1. **Settled (2026-10-18).** The site is the knoll at px 755,351 (section 1); the point was moved there.
+2. **Settled (2026-10-18).** Girder's tree heights at the margin, a 250 m mesa with 40 to 90 m stacks.
+3. **Settled (2026-10-18).** The old note's canyon is kept as a dry gorge under the northern rim.
+4. **Settled (2026-10-18).** The Wingclaw are the roost town's own tribe, with Quetzal and Nightwing Wings posted;
+   the Staghorn, Threehorn, Raptor, Hardshell, Tiger and Longcrawler tribes are all represented in the town and in
+   the farms and ranches round it (section 1, the ranches; the mounts and stock through `kits/fauna` and the flyers'
+   animals). The town's culture mix carries every tribe as a `core/city` zone property for the citizens to come.
+5. **Settled (2026-10-18).** The owner asks for a sandstone set: the prompt is in `core/materials/PROMPTS-NEEDED.md`
+   section 4 (`rock.sandstone.bedded.red`; `rock.sandstone.navajo`, delivered, is reused for the cross-bedded faces).
+
+None open. The name in Tł'aai is the lore's question (`LORE.md` §12), not the build's.

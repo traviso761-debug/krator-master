@@ -13,9 +13,12 @@
 //   EXPORT.world({box?, sections?, build?, ...})  -> the container (below). box: [x0, z0, x1, z1], a tile; sections: the
 //        names to fill (an unknown name throws); the rest of opt reaches every contributor as ctx.opt.
 //        A contributor that throws is reported in `errors` and its part skipped; the other sections still fill.
-//   EXPORT.check(world, {uid})  -> {ok, problems, joins}: every reference resolves (an item's or bucket's material, a
+//   EXPORT.check(world, {uid, profile})  -> {ok, problems, joins}: every reference resolves (an item's or bucket's material, a
 //        material's maps, an item's set and a bucket's volumes in the registry, the side tables' lengths); uid(cls, key,
-//        [x,y,z]) recomputes every instance's uid from its matrix (KTAGS.uid in a page)
+//        [x,y,z]) recomputes every instance's uid from its matrix (KTAGS.uid in a page). profile: the sections this case
+//        must fill (ROADMAP.md section 11, item 1), as names: 'items', 'terrain=field' (its source must be field, not
+//        sampled), 'interiors?' (may read empty); a required section that reads stub, none, error or skipped (or empty
+//        without the ?) is a problem. Without a profile the statuses are not judged (the behaviour before 2026-10-18)
 //   EXPORT.glb(world)  -> {json, glb (Uint8Array), stats}: the meshes as binary glTF 2.0 (an item a node with
 //        EXT_mesh_gpu_instancing, a bucket a node with its mesh), the rest as JSON naming each node (`glb`)
 //   EXPORT.terrain(box, {h, water?, field?, step?, probes?})  -> the terrain section: the build's KFIELD (core/terrain)
@@ -52,8 +55,8 @@ const CONTRACTS = {
  fixtures: 'STUB. Doors, windows, lights, signs as core/tags records with a placement each (Yuni\'s KRATOR_EXPORT.fixtures shape): {format: "krator-fixtures", records: [{id, uid, class: "fixture", kind, parent, at, ry, size, tags, host: {wall, side, sill}}]}',
  interiors: 'STUB. The room graph (kits/interiors ROOM()): {format: "krator-interiors", buildings: [{id (the building record), storeys: [{y, rooms: [{id, kind, poly, h, doors: [ids]}]}], links: [{a, b, kind: "door" | "stair" | "ladder", at}], walls: [{a, b, h, col: true}]}]}',
  furniture: 'STUB. GODOT-PLAN.md Phase 4\'s per-look scheme: {format: "krator-furniture", pieces: [{id: "<piece>/<variant>/<look>", entry {tags, anchor, size, role, job, family per material}, lights, mesh (a glb node)}], placements: [{record (a core/tags furniture id), piece, at, ry}]}. A placement\'s seed is reduced to one of K looks (about 4) per variant, so placements share a mesh: one MultiMesh per piece and look',
- sim: 'STUB. core/simulation\'s export (krator-sim: places, actors, schedules, routes, the clock); Verge and Dhelv write theirs through their verify (godot/data/verge, dhelv) until they register here',
- city: 'STUB, owned by the Voth branch (core/city, settlements/voth): core/city registers here when that branch pauses. Expected: {format: "krator-city", plan (streets, blocks, lots as plain records keyed by stable ids), edits (krator-edits/1 deltas by id)}; buildings and their doors join the registry by id'
+ sim: 'STUB. core/simulation\'s export (krator-sim: places, actors, schedules, routes, the clock), first for the isle demo (M6, settlements/isle-demo/PLAN.md section 7); Verge and Dhelv write theirs through their verify (godot/data/verge, dhelv) until they register here',
+ city: 'STUB. core/city registers it (EXPORT.register("city", fn, {by: "city"})) for the isle demo\'s two plans (M6, ROADMAP.md section 11). Expected: {format: "krator-city", plan (streets, blocks, lots as plain records keyed by stable ids), edits (krator-edits/1 deltas by id)}; buildings and their doors join the registry by id'
 };
 const CONVENTION = {
  units: 'm', up: '+Y', x: 'east', z: 'south', handed: 'right (as glTF and Godot)',
@@ -304,7 +307,26 @@ function check(w, opt){
   }
   for(const p of w.water.probes || []) if(!sids.has(p[4])) bad('a water probe names surface ' + p[4] + ', which the section does not hold');
  }
+ if(opt.profile) profile(w, opt.profile, bad, J);
  return { ok: !P.length, problems: P, joins: J };
+}
+
+// a profile: the sections a case must fill (ROADMAP.md section 11, item 1; README.md, "Profiles"). Each entry is a
+// section name, with '?' after it when the section may read empty (Iziz's interiors: its buildings are shells) and
+// '=<source>' when the part's `source` must be that (terrain=field: a krator-field, not sampled heights). An unknown
+// name throws, as register does: a profile is written by hand, so a typo is a programming error, not data
+function profile(w, prof, bad, J){
+ if(!Array.isArray(prof)) throw new Error('profile: a list of section names');
+ J.profile = { required: 0, met: 0 };
+ for(const e of prof){
+  const m = /^([a-z]+)(\?)?(?:=([a-z]+))?$/.exec(String(e));
+  if(!m || SECTIONS.indexOf(m[1]) < 0) throw new Error('profile: unknown section ' + e);
+  const s = m[1], mayEmpty = !!m[2], src = m[3] || null, st = w.sections && w.sections[s] ? w.sections[s].status : 'none';
+  J.profile.required++;
+  if(st !== 'ok' && !(st === 'empty' && mayEmpty)){ bad('profile: ' + s + ' is required and reads ' + st + (w.sections && w.sections[s] ? '' : ' (no status)')); continue; }
+  if(src && st === 'ok' && !(w[s] && w[s].source === src)){ bad('profile: ' + s + ' must come from ' + src + ', not ' + (w[s] && w[s].source || 'nothing')); continue; }
+  J.profile.met++;
+ }
 }
 
 // ---------------------------------------------------------------- glb: the meshes as binary glTF

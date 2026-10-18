@@ -133,7 +133,7 @@ strata on rock, the cave's occlusion.
 The river, the cataract and its plunge pool are core/water's (`core/water/README.md`, "Flow and falls"): records in
 `45-host-stage.js`, drawn in `89w-host-water.js`, which binds core/atmos (its clock, its wave chunk and the sky's light:
 `ATMOS.skylight` captures this page's dome and giant for the water only, so the page's own materials keep their light).
-`build.py` lists core/atmos's 0-core, 0p-presets, a-waves and b-skylight and core/water's 21, 22, 50, 51.
+`build.py` lists core/atmos's 0-core, 0p-presets, 8-export (since 2026-10-18: `ATMOS.export`, so core/export's `atmos` section fills and the tile's profile can require it; `core/export/README.md`, "Profiles"), a-waves and b-skylight and core/water's 21, 22, 50, 51.
 
 - **The river** (`RIVER`): a `WATER.flow` line at WL(x) every 12 m from the mountain gorge to the notch (576 points),
   never climbing downstream, 22 m wide plus 1.5 m a side under the banks, its current 1.1 m/s on the plateau, faster in

@@ -231,9 +231,9 @@ Barracks, watchtowers and schools need `job` tags.
 At settlement scale, as the survey recommends: the scale model gives the outline and climate, the page gives the
 towns. It is baked into the open world as town tiles later, as Mungo was.
 
-**The Voth viewer and site planner as the base, without editing Voth's files.** `settlements/voth`, `core/city` and
-`core/simulation` belong to the Voth economy and city-layout sessions (CLAUDE.md "who works where", ROADMAP section 9).
-So:
+**The Voth viewer and site planner as the base, without editing Voth's files.** `settlements/voth` and `core/city`
+belong to the city-layout work (CLAUDE.md "who works where", ROADMAP section 9); `core/simulation` is edited here (no
+economy session runs any more, owner 2026-10-18: this build is the economy's test case). So:
 
 - **Site planner:**
   - `build.py` reads Voth's general site fragments **in place, by path**:
@@ -272,7 +272,7 @@ camera (ROADMAP stage 5's record and abstract levels), presented near it. The si
 - Nothing groups stores, citizens, carts or stocks by settlement.
 - Imports and exports happen only at map-edge ports.
 
-**What is needed** (all in `core/simulation`, which the Voth economy session owns):
+**What is needed** (all in `core/simulation`):
 1. A **settlement key** on places, actors, roles, orgs and groups (`SIM.settlement({id, faction})` as a kind; an actor
    takes its home's).
 2. **The economy partitioned by key.** Each settlement gets its own warehouses, sites, carts, in-flight loads and
@@ -295,9 +295,36 @@ camera (ROADMAP stage 5's record and abstract levels), presented near it. The si
   `SIM.settlement()`, Phase G's caravans.
 - **An unkeyed page is one implicit settlement.** Every existing taker keeps its results: Voth's stocks proof, the
   baseline and `node` tests must be unchanged.
-- A note goes into `settlements/voth/HANDOFF-REFACTOR.md`'s area as a message for the Voth economy session (not an
-  edit of its files), so its fork merges knowing the change.
-- Phase P7 starts with a fresh merge of `origin/main`, because that session keeps changing `core/simulation`.
+- **The isle demo is where the economy is tuned from now on** (owner, 2026-10-18; no economy session runs). A tuning
+  change made here is a `core/simulation` change: it is tested on this page's two towns first, then Voth's page is
+  rebuilt and its stocks proof read before the change is committed. Voth's open sim defects (ROADMAP stage 5) are
+  worked here when the isle demo reaches the same feature, not on a Voth branch.
+
+## 7. The Godot milestone (M6) and the export profile
+
+The refactor audit of 2026-10-18 (ROADMAP section 11) makes this build **M6, the first lived-in settlement through the
+canonical export**, in place of a Voth district: it is smaller, it stands on the scale model's own ground from the
+start, and two towns 122 km apart force the two things Voth cannot test, a settlement nobody is watching and trade
+between settlements.
+
+**The export profile.** `EXPORT.check(world, {profile})` (ROADMAP section 11, item 1) names the sections this page
+must fill; a required section that reads `stub`, `none` or `error` fails `verify.py --assert` and the nightly. Isle
+demo's profile: `terrain` as a `krator-field` from the extracted heights (not `EXPORT.ground`'s samples), `city` (two
+`KCITY` plans, registered by `core/city`), `records` with the Islanders' buildings, `fixtures` (doors, windows, lamps
+under their buildings), `interiors` (the kit's rooms), `furniture` (the catalog placements, by look), `sim` (places,
+actors, stocks per settlement, the canoe route and its books), `materials`, `textures`, `atmos`, `stage`. The profile
+check lands **before P7**, so the sim's export is written to it rather than fitted afterwards.
+
+**The abstract-level test.** With the player's window at Kautoa, Walapo runs at the abstract level (`core/simulation/
+SCHEMA.md`, "The three levels", written for this build): its places produce and consume by the hour, its books and the
+trade route tick, nobody is posed and nothing is drawn. The canoe in transit is a record only. The test fast-forwards a
+week with one window loaded, then the other, and checks: both towns' stocks balance (made + imported - exported -
+consumed = change); every load left one warehouse and landed in the other or is in transit; the arrival after days away
+reconciles against what the destination consumed meanwhile (the wake and the lag). Godot replays the same baked tasks
+and reads the same books.
+
+**Citizens.** A few hundred to a few thousand per town, well under Voth's 53k: a count a Godot replay, and later a
+GDScript twin of the sim, can be checked against by hand. Voth stays the scale test after M6.
 
 ## 6. Order of work
 
@@ -310,8 +337,9 @@ camera (ROADMAP stage 5's record and abstract levels), presented near it. The si
 | P4 | `settlements/isle-demo` site planner on the extracted ground, both towns | the planner loads clean, saves `site/isle-site.json` |
 | P5 | **The owner lays out the two settlements in the site planner** | the owner's site file |
 | P6 | City plan: two `KCITY` instances on the Islanders kit | verify, exact footprint overlap, census |
-| P7 | Simulation: two towns, the partition (with the sim session), the canoe trade route, stocks per town | stocks balance per town; a load traced from one town's warehouse to the other's |
-| P8 | Bake the towns into the open world; Godot stage 6 streams the region with its two towns | the export round trip; Godot's tests |
+| P6b | The export profile (section 7): `EXPORT.check(world, {profile})`, this page's required sections, in `verify.py --assert` and the nightly | the check fails on a stubbed required section and passes once each is filled |
+| P7 | Simulation: two towns, the partition, the canoe trade route, stocks per town; the economy tuned here from now on; the three levels in `SCHEMA.md` | stocks balance per town; a load traced from one town's warehouse to the other's; the abstract-level week test (section 7) |
+| P8 | **M6:** both towns open in Godot from the canonical export with citizens and trade running; then bake the towns into the open world and stream the region (M7) | the export round trip under the profile; Godot's tests: uids, records, the books after a replayed week |
 
 P1 and P2 can run in parallel (different folders). P3 waits for P2's kit. P4 waits for P3's ground (or the extract
 alone).
