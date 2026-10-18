@@ -15,3 +15,26 @@ const PYPAL={
  stoneGrey:[0x9a948a,0xa39d92],                  // plinths
  walnut:[0x6e3a22,0x6a3a22],                     // doors and inside
 };
+
+// ---------------------------------------------------------------- materials and kit items (prefix py)
+// Board-formed concrete: the Ancients core's concrete map in world units (the shared MAT.concrete has none, so a
+// scaled box would stretch it), white so PYPAL.formwork tints it.
+MAT.pyConc=MAT.concrete.clone();MAT.pyConc.color.set(0xffffff);vWorldUV(MAT.pyConc,.25);
+// a disc: a smooth cylinder whose axis is local z, centred (scale [r, r, depth]); the round ends of the profiles
+const PYDISC=new THREE.CylinderGeometry(1,1,1,28).rotateX(Math.PI/2);
+// a ring: a torus in the xy plane facing z (scale [r, r, r]); the tube is 12% of the radius: porthole bezels, reused hoops
+const PYRING=new THREE.TorusGeometry(1,.12,6,28);
+// a half-vault: a solid half-disc prism, the flat on y = 0, axis local z, centred (scale [half-span, rise, length])
+const PYHALF=(()=>{const s=new THREE.Shape();s.moveTo(-1,0);s.absarc(0,0,1,Math.PI,0,true);s.lineTo(-1,0);
+ const g=new THREE.ExtrudeGeometry(s,{depth:1,bevelEnabled:false,curveSegments:18});g.translate(0,0,-.5);return g;})();
+// a hexagonal prism, axis local z, centred, a flat side down (scale [r, r, length]): the honeycomb pods
+const PYHEX=new THREE.CylinderGeometry(1,1,1,6).rotateX(Math.PI/2).rotateZ(Math.PI/6);
+kdef('pyConc',VBOX,MAT.pyConc);
+kdef('pyDisc',PYDISC,MAT.plaster);kdef('pyDiscC',PYDISC,MAT.pyConc);kdef('pyDiscG',PYDISC,MAT.darkGlass);kdef('pyDiscD',PYDISC,MAT.void);kdef('pyDiscR',PYDISC,MAT.rust);
+kdef('pyRing',PYRING,MAT.plaster);kdef('pyRingI',PYRING,MAT.iron);
+kdef('pyHalf',PYHALF,MAT.plaster);kdef('pyHalfC',PYHALF,MAT.pyConc);
+kdef('pyHex',PYHEX,MAT.plaster);kdef('pyHexR',PYHEX,MAT.rust);kdef('pyHexD',PYHEX,MAT.void);kdef('pyHexG',PYHEX,MAT.darkGlass);
+// the gable wedge's faces are wound for double-sided roof materials: the void and glass wedges take double-sided copies
+MAT.pyVoid=MAT.void.clone();MAT.pyVoid.side=THREE.DoubleSide;MAT.pyGlass=MAT.darkGlass.clone();MAT.pyGlass.side=THREE.DoubleSide;
+kdef('pyGableG',VGABLE,MAT.pyGlass);kdef('pyGableD',VGABLE,MAT.pyVoid);kdef('pyGableC',VGABLE,MAT.pyConc);
+kdef('pyDomeR',VDOME,MAT.rust);

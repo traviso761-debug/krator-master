@@ -26,7 +26,17 @@ the orange is the Vernacular's own. Pylon's helpers are `pyn*` (`src/69q-pyl-hel
 
 ## What is in it
 
-| Row | Keys |
+| Row | Keys (the reference pictures in `refs/`) |
 |---|---|
-| Middle, folk | `pyl_folk_house` (`refs/pylon.jpg`) |
-| The mixed street | `vern_house_mid_a`, `pyl_folk_house`, `vern_house_mid_b`, `vern_house_mid_c` |
+| Poor, salvage | `pyl_tank_house` (ancient 3), `pyl_ring_house` (pylon8), `pyl_pod_stack` (pylon7), `pyl_hex_cells` (honeycomb 2) |
+| Middle, folk | `pyl_folk_house` (pylon), `pyl_folk_villa` (pylon 2) |
+| Middle, neo-Ancient | `pyl_vault_house` (pylon (4), (7)), `pyl_terrace` (pylon (3), (2)), `pyl_block` (pylon 5, pylon3) |
+| Rich, neo-Ancient | `pyl_neo_villa`, `pyl_hex_villa` (pylon (5), ancient massing) |
+| The mixed street, four rows | each tier's Pylon buildings between Vernacular ones of the same tier (`vern_house_poor_*`, `vern_house_mid_*`, `vern_shops` and `vern_tavern`, `vern_house_rich_*`) |
+
+**The profiles** (`src/69q-pyl-helpers.js`): `pynTomb`, `pynStadium`, `pynPointed` (and the pointed hexagon), each a slab on
+a face in render, concrete, glass, a dark opening or rust; `pynFrame(shape, ...)` for nested rims round a fill (`cs`
+alternates their colours); `pynPorthole` and `pynPortCluster` (graded, packed by rejection); `pynCanopy`, `pynVault`,
+`pynHexPod`, `pynTank`, `pynStepArch`; the folk tier's `pynBand`, `pynPanel`, `pynDiamond`, `pynDisc`, `pynStripes`,
+`pynPier`, `pynScallop`, `pynColumn`. New kit items (`src/69p-pyl-mat.js`): `pyConc` (board-formed concrete in world
+units), discs, rings, half-vaults, hex prisms, and glass and dark gable wedges.

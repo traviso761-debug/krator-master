@@ -1,12 +1,12 @@
-// TARGET: kit — the Pylon sheet's preset views. Each row from the front and above; each building at eye level from its
-// front, found from the site the rows put it on (never from an index).
-const PYL_EYE=(key,dist,dx,zrow)=>{const S=SITES.find(s=>s.key===key&&(zrow==null||s.z===zrow));return[S.x+(dx||0),1.7,S.z+dist,S.x,3.2,S.z];};
-const PYL_ROWV=(z,dist,h)=>[0,h,z+dist,0,4,z];
-const VIEWS={
- 'Opening':[-28,14,ROWZ[0]+34,0,5,ROWZ[0]],
- 'Overview':[-160,90,ROWZ[ROWZ.length-1]+90,0,4,(ROWZ[0]+ROWZ[ROWZ.length-1])/2],
- 'Folk house — eye level':PYL_EYE('pyl_folk_house',16,4,ROWZ[0]),
- 'Folk house — three quarters':[12,7,ROWZ[0]+17,0,4.5,ROWZ[0]],
- 'Mixed street':PYL_ROWV(PYL_MIXED_Z[0],46,20),
- 'Mixed street — eye level':[-4,1.7,PYL_MIXED_Z[0]+22,0,4,PYL_MIXED_Z[0]],
-};
+// TARGET: kit — the Pylon sheet's preset views: each row from the front and above, each row at eye level from the street,
+// and each Pylon building at eye level from its front. All found from the sites the rows laid (never from an index).
+const PYL_SITE=(key,row)=>SITES.find(s=>s.key===key&&(row==null||s.row===row));
+const PYL_EYE=(S,dist,dx)=>[S.x+(dx||0),1.7,S.z+dist,S.x,3.2,S.z];
+const VIEWS={};
+{const zs=ROWZ.slice();VIEWS['Opening']=[-40,22,zs[0]+44,0,5,zs[0]];
+ VIEWS['Overview']=[-230,150,zs[zs.length-1]+120,0,4,(zs[0]+zs[zs.length-1])/2];
+ ROWNAME.forEach((n,i)=>{const row=SITES.filter(s=>s.row===n),half=Math.max(...row.map(s=>Math.abs(s.x)+VERN.defs[s.key].w/2));
+  VIEWS[n]=[0,Math.max(26,half*.85),zs[i]+half*.95+16,0,3,zs[i]-4];
+  if(n.startsWith('Mixed'))VIEWS[n+' — eye level']=[-half*.35,1.7,zs[i]+24,0,4,zs[i]];});
+ for(const [,row] of PYL_ROWS)for(const k of row){const S=PYL_SITE(k,PYL_ROWS.find(r=>r[1].includes(k))[0]),D=VERN.defs[k];
+  VIEWS[D.name+' — eye level']=PYL_EYE(S,Math.max(D.w,D.d)*.85+6,D.w*.22);}}

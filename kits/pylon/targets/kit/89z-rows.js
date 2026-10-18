@@ -3,19 +3,25 @@
 // "The mixed-street check"). Built on the Vernacular's page (kits/pylon/build.py), so every vern_* def is here too.
 const TITLE='Pylon Kit';
 VERN.interiors=typeof KratorInteriors!=='undefined'&&!/[?&]interiors=0\b/.test(location.search);
-const GROUND_C=120;
-// the rows: a row is a list of keys laid left to right, 10 m apart
+const GROUND_C=200;
+// the rows: [label, keys]; a row is laid left to right, 10 m apart
 const PYL_ROWS=[
- ['pyl_folk_house'],                                        // 0: middle, folk
+ ['Poor — salvage',['pyl_tank_house','pyl_ring_house','pyl_pod_stack','pyl_hex_cells']],
+ ['Middle — folk',['pyl_folk_house','pyl_folk_villa']],
+ ['Middle — neo-Ancient',['pyl_vault_house','pyl_terrace','pyl_block']],
+ ['Rich — neo-Ancient',['pyl_neo_villa','pyl_hex_villa']],
 ];
-// the mixed street: a Pylon house between Vernacular houses of its tier, at the gaps a city lot would leave
+// the mixed street: Pylon's buildings between Vernacular ones of their tier, at the gaps a city lot would leave (4 m)
 const PYL_MIXED=[
- ['vern_house_mid_a','pyl_folk_house','vern_house_mid_b','vern_house_mid_c'],
+ ['Mixed street — poor',['vern_house_poor_a','pyl_tank_house','vern_house_poor_b','pyl_ring_house','vern_house_poor_c','pyl_pod_stack']],
+ ['Mixed street — middle',['vern_house_mid_a','pyl_folk_house','vern_house_mid_b','pyl_vault_house','vern_house_mid_c','pyl_folk_villa']],
+ ['Mixed street — middle, multi',['vern_shops','pyl_block','vern_tavern','pyl_terrace']],
+ ['Mixed street — rich',['vern_house_rich_a','pyl_neo_villa','vern_house_rich_b','pyl_hex_villa']],
 ];
-const ROWZ=[];const SITES=[];const PYL_MIXED_Z=[];
+const ROWZ=[];const ROWNAME=[];const SITES=[];
 {let z=0;
- const lay=(row,gap)=>{const ws=row.map(k=>VERN.defs[k].w+gap);let x=-ws.reduce((a,b)=>a+b,0)/2;
-  row.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z,ry:0,o:{v:0}});x+=ws[i];});
-  z+=Math.max(...row.map(k=>VERN.defs[k].d))+24;};
- for(const row of PYL_ROWS){ROWZ.push(z);lay(row,10);}
- for(const row of PYL_MIXED){ROWZ.push(z);PYL_MIXED_Z.push(z);lay(row,4);}}
+ const lay=(name,row,gap)=>{ROWZ.push(z);ROWNAME.push(name);const ws=row.map(k=>VERN.defs[k].w+gap);let x=-ws.reduce((a,b)=>a+b,0)/2;
+  row.forEach((k,i)=>{SITES.push({key:k,x:x+ws[i]/2,z,ry:0,o:{v:0},row:name});x+=ws[i];});
+  z+=Math.max(...row.map(k=>VERN.defs[k].d))+26;};
+ for(const [n,row] of PYL_ROWS)lay(n,row,10);
+ for(const [n,row] of PYL_MIXED)lay(n,row,4);}

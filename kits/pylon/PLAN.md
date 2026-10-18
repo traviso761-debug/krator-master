@@ -231,8 +231,8 @@ plain); **board-formed concrete** with formwork lines; **hex tile** (amber and b
 | Phase | What | Done when |
 |---|---|---|
 | P0 | `kits/pylon` scaffold: `build.py` (the port lint, then `settlements/iziz/build.py --kit`: the kit on the Vernacular's page, nothing copied), `verify.py` (Iziz's, on `tools/harness.py`), the kit sheet target with the mixed street, `INDEX.md`, `PORT.md`; `materials.json` waits for P1's texture list, and the shared IZV list (`VASSAL-KITS.md` §1) for the city page, where it is needed (the sheet does not use the closure) | **done 2026-10-18**: the sheet builds with the first building (`pyl_folk_house`); Iziz's own pages rebuild byte-identical |
-| P1 | materials and kit items (`py*`), the profile helpers (tombstone, stadium, pointed hex, nested frames, portholes, hex lattice) | a helper row on the sheet |
-| P2 | dwellings, all tiers, and the mixed-street row | eye-level views judged by the owner |
+| P1 | materials and kit items (`py*`), the profile helpers (tombstone, stadium, pointed hex, nested frames, portholes, hex lattice) | **kit items and profiles done 2026-10-18** (README, "The profiles"); the hex lattice (domes) comes with the civic set; `materials.json` waits for the texture list |
+| P2 | dwellings, all tiers, and the mixed-street row | **built 2026-10-18**: 11 dwellings (4 poor, 5 middle, 2 rich) and four mixed-street rows; awaiting the owner's eye-level review |
 | P3 | salvage and industry, civic | |
 | P4 | the Ancient families in three states, the temple, the Monolith read in place, the grid as a saved `core/city` site (section 5) | |
 | P5 | the governor's palace: blueprint sheets after the forks (`VASSAL-KITS.md` §3.4), then the building | |

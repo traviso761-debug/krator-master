@@ -25,3 +25,59 @@ function pynScallop(x,y,z,ry,w,h,dip,n,white,orange){n=n||7;for(let k=0;k<n;k++)
 // a striped column: a round shaft in bands of white and orange on a square base, a square cap
 function pynColumn(x,y,z,h,r,white,orange,bands){bands=bands||4;vB('vPlaster',x,y,z,r*2.4,.3,r*2.4,0,white);const hb=(h-.6)/bands;
  for(let k=0;k<bands;k++)vPst('vPostS',x,y+.3+k*hb,z,r,hb,k%2?white:orange);vB('vPlaster',x,y+h-.3,z,r*2.4,.3,r*2.4,0,orange);}
+
+// ---------------------------------------------------------------- the neo-Ancient profiles (PLAN.md section 2)
+// Three outlines carry the style: the TOMBSTONE (a rectangle under a semicircle), the STADIUM (a rounded rectangle with
+// round ends) and the POINTED HEXAGON (a rectangle under a gable point, or pointed at both ends). Each is a slab on a
+// face: (x, z) on the face, ry its outward yaw, y the bottom of the outline, w x h the outline, `out` how far its
+// front stands proud of the face, d its depth (it runs back from its front by d). `kind` picks the material:
+// P render, C concrete, G dark glass, D a dark opening, R rust. A round end is a disc 2 cm thinner than the slab, so
+// where the two overlap the slab's face wins cleanly and no faces share a plane.
+const PY_KIND={P:['vPlaster','pyDisc','vGablePl'],C:['pyConc','pyDiscC','pyGableC'],G:['vWinGlass','pyDiscG','pyGableG'],D:['vDarkB','pyDiscD','pyGableD'],R:['vRustB','pyDiscR','vGableP']};
+function pynSlab(item,x,yc,z,ry,w,h,out,d,c){const f=loc(x,z,0,out-d/2,ry);vBq(item,f[0],yc,f[1],w,h,d,vQ(ry,0,0),c);}
+function pynEnd(item,x,yc,z,ry,r,out,d,c){const f=loc(x,z,0,out-d/2,ry);kput(item,[f[0],yc,f[1]],vQ(ry,0,0),[r,r,Math.max(.02,d-.02)],c||null);}
+function pynTomb(x,y,z,ry,w,h,out,d,kind,c){const K=PY_KIND[kind||'P'],r=w/2,hb=Math.max(.05,h-r);
+ pynSlab(K[0],x,y+hb/2,z,ry,w,hb,out,d,c);pynEnd(K[1],x,y+hb,z,ry,r,out,d,c);}
+function pynStadium(x,y,z,ry,w,h,out,d,kind,c){const K=PY_KIND[kind||'P'],r=Math.min(w,h)/2;
+ if(h>=w){const hb=h-w;if(hb>.02)pynSlab(K[0],x,y+r+hb/2,z,ry,w,hb,out,d,c);pynEnd(K[1],x,y+r,z,ry,r,out,d,c);pynEnd(K[1],x,y+h-r,z,ry,r,out,d,c);}
+ else{const wb=w-h;pynSlab(K[0],x,y+r,z,ry,wb,h,out,d,c);for(const s of[-1,1]){const p=loc(x,z,s*wb/2,0,ry);pynEnd(K[1],p[0],y+r,p[1],ry,r,out,d,c);}}}
+// rise: the point's height; both: pointed at the foot too (the elongated hexagon)
+function pynPointed(x,y,z,ry,w,h,out,d,kind,c,rise,both){const K=PY_KIND[kind||'P'];rise=rise==null?w*.45:rise;const y0=both?y+rise:y,hb=Math.max(.05,h-rise*(both?2:1));
+ pynSlab(K[0],x,y0+hb/2,z,ry,w,hb,out,d,c);const f=loc(x,z,0,out-d/2,ry);
+ kput(K[2],[f[0],y0+hb,f[1]],vQ(ry+Math.PI/2,0,0),[d-.02,rise,w],c||null);
+ if(both)kput(K[2],[f[0],y0,f[1]],vQ(ry+Math.PI/2,0,0).multiply(qEuler(0,0,Math.PI)),[d-.02,rise,w],c||null);}
+const PY_SHAPE={tomb:pynTomb,stadium:pynStadium,point:pynPointed,hex:(x,y,z,ry,w,h,out,d,k,c)=>pynPointed(x,y,z,ry,w,h,out,d,k,c,w*.42,true)};
+// a framed opening: n rims round a fill, each rim `rim` wide, the outermost nearest the wall and each inner one standing
+// further out, so the frame steps toward the viewer (the nested portals); the fill stands proudest
+// o = {rim: .16, n: 1, c: rim colour (or cs: colours, outermost first, repeating), fill: 'G', fc: fill colour,
+//      out: .06 (the step per rim), d: .12}
+function pynFrame(shape,x,y,z,ry,w,h,o){o=o||{};const F=PY_SHAPE[shape],n=o.n==null?1:o.n,rim=o.rim==null?.16:o.rim,st=o.out==null?.06:o.out,d=o.d==null?.12:o.d;
+ for(let k=0;k<n;k++){const g=rim*(n-k);F(x,y-g,z,ry,w+2*g,h+2*g,st*(k+1),d+st*k,o.kind||'P',o.cs?o.cs[k%o.cs.length]:o.c);}
+ F(x,y,z,ry,w,h,st*(n+.4),d,o.fill||'G',o.fc||null);}
+// a porthole: a bezel ring of radius r (its tube 12% of r), a fill disc, and a grille of `bars` radial bars (0: none)
+function pynPorthole(x,yc,z,ry,r,ringC,fill,bars,barC){const f=loc(x,z,0,.06,ry);kput('pyRing',[f[0],yc,f[1]],vQ(ry,0,0),[r,r,r*.9],ringC||null);
+ pynEnd(PY_KIND[fill||'G'][1],x,yc,z,ry,r*.94,.05,.06,null);
+ for(let k=0;k<(bars||0);k++){const a=k*Math.PI/bars,g=loc(x,z,0,.09,ry);vBq('vIron',g[0],yc,g[1],r*1.86,.05,.04,vQ(ry,0,a),barC||null);}}
+// a cluster of portholes on a face rectangle (cx at the middle, y0..y0+h, width w): graded, big low and small high,
+// placed by rejection so none overlap; n tries for `count` holes. Uses the builder's own rng stream.
+function pynPortCluster(x,y0,z,ry,w,h,count,rMax,ringC,fill){const P=[];for(let t=0;t<count*30&&P.length<count;t++){const v=rng();const r=rMax*(1-.65*v)*(.8+.2*rng());
+ const u=rr(-w/2+r,w/2-r),yy=y0+r+v*(h-2*r);if(P.some(q=>Math.hypot(q[0]-u,q[1]-yy)<q[2]+r+.15))continue;P.push([u,yy,r]);}
+ for(const q of P){const p=loc(x,z,q[0],0,ry);pynPorthole(p[0],q[1],p[1],ry,q[2],ringC,fill,q[2]>.7?6:0);}return P.length;}
+// a cantilevered slab off a face: w along the face, reaching d out, t thick, its top at y
+function pynCanopy(x,y,z,ry,w,d,t,c,item){const f=loc(x,z,0,d/2,ry);vB(item||'vPlaster',f[0],y-t,f[1],w,t,d,ry,c);}
+// a barrel vault: a half-vault of span w and rise over a run of `len` along the local axis turned by ry (ry = 0: the
+// vault's axis is z, its ends face +-z), its springing at y
+function pynVault(x,y,z,w,len,rise,ry,item,c){kput(item||'pyHalf',[x,y,z],vQ(ry,0,0),[w/2,rise,len],c||null);}
+// a hex pod: a hexagonal prism of radius r running `len` out of a face along its outward axis, its front at the face
+// plus `out`, a dark (or glazed) hexagon set into its front
+function pynHexPod(x,yc,z,ry,r,len,out,c,fill,item){const f=loc(x,z,0,out-len/2,ry);kput(item||'pyHex',[f[0],yc,f[1]],vQ(ry,0,0),[r,r,len],c||null);
+ const g=loc(x,z,0,out+.02,ry);kput(fill==='G'?'pyHexG':'pyHexD',[g[0],yc,g[1]],vQ(ry,0,0),[r*.8,r*.8,.06],null);}
+// a capsule tank standing on the ground: a cylinder of radius r and height h with a dome cap (rust unless item given)
+function pynTank(x,y,z,r,h,c,cap){vPst('vTankR',x,y,z,r,h,c);kput(cap||'pyDomeR',[x,y+h,z],null,[r,r*.75,r],c||null);}
+// a stepped (multifoil-stepped) arch outline over an opening w wide whose springing is at y: `steps` boxes each side
+// climbing toward the middle, a band `t` thick, standing `out` proud (refs/pylon 2.jpg's orange porch arches)
+function pynStepArch(x,y,z,ry,w,steps,rise,t,out,c){const st=steps||3,sw=w/(2*st+2),sh=rise/(st+1);
+ const bar=(u,yy,bw,bh)=>{const p=loc(x,z,u,out,ry);vB('vPlaster',p[0],yy,p[1],bw,bh,.14,ry,c);};
+ for(let k=0;k<=st;k++){const a=w/2-k*sw;
+  for(const s of[-1,1]){bar(s*(a-sw/2),y+k*sh,sw+t,t);bar(s*(a-sw),y+k*sh,t,sh+t);}}
+ bar(0,y+(st+1)*sh,sw*.6+t,t);}
