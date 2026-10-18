@@ -47,8 +47,11 @@ the south and leaving north.
 **The plantations** are the one piece nothing holds yet. They are three new entries in the Voth registry
 (`settlements/voth/catalog/registry/voth-plantation.js`): `voth_planter_manor` (a manor with a watch floor), `voth_slave_lines`
 (long barracks in a stockade) and `voth_overseer_post` (a tower with a bell), plus the catalog's cages, stocks and
-racks as furniture; the fields are `core/city` fields in rows. The crop is sugar cane and the Kingdom's spice gardens
-(the isle demo's crop stands, `biomes/ringisles` `crop-*`), with the chinampas growing the city's food.
+racks as furniture; the fields are `core/city` fields in rows. The crop is the **Blïtrit**, the blood-reed (section 5,
+question 2): a tall dye-reed grown in wet fields and drying racks of purple-stained stems, with sugar cane as the second
+crop (the isle demo's `crop-*` stands have the cane; the blood-reed is a new `crop-blitrit` stand for `biomes/swbay`,
+reed-like, red-purple at the stem), and the chinampas growing the city's food. The dye works (vats, the purple on the
+ground round them) stand at the shore where the reed is landed.
 
 ## 2. The age tune
 
@@ -95,11 +98,16 @@ and gold, the Chichani's own paint over the Ancients' surfaces.
 
 ## 5. Open questions for the owner
 
-1. The lake: its size and which shore the city stands on. At the model's 2 km a pixel a 10 km lake is five pixels,
-   so a capital's lake with chinampas wants to be the size of Texcoco: the plan proposes about 30 by 12 km (15 by 6 px),
-   the Shim river entering from the south and leaving north, the city on its eastern shore at px 382,788. It is added
-   as a region polygon in the artifact (as the Bay of Voth was) and carved by `tools/scale-model/features.py`'s bay
-   pass, then the little-demo export is refreshed.
-2. The crop of the plantations: cane and spice (the plan), or grain for the Kingdom?
-3. Did Tzintzun keep Shim's Temple as a second seat of the Sun cult, or is it a provincial temple now? The plan keeps
-   it holy: the high priests' tombs in the lake are a pilgrimage, and the sacrifice stone is used at the solstice.
+1. **Settled (2026-10-18).** The lake is drawn: the region polygon **Lake of Shim** (`rshimlake0001`, kind
+   geographic) in the model's `regions` collection, about 32 by 12 km (px 376-382 by 780-796), the Shim river entering
+   from the south and leaving north, the city on its eastern shore at px 382,788. Still to do in the model: carve it
+   (`tools/scale-model/features.py`'s bay pass, at the land's level there rather than the sea's), re-run the river
+   audit so the Shim river flows through it, and refresh the little-demo export.
+2. **Settled (2026-10-18).** The plantations grow the **Blïtrit**, the blood-reed (blood + reed by the Vothic table:
+   *Blït*, *Rit*), the dye plant of the Kingdom's deep purple, and sugar cane second. The purple ties Shim to every
+   Vothic page: its robes and banners are Shim's crop.
+3. **Settled (2026-10-18).** The Old Temple is the Sun cult's first seat: the winter-solstice sacrifice began here; the
+   great sacrifice is Voth's now, but the high priest lights the old fire at Shim first each winter, the high priests'
+   tombs in the lake are a pilgrimage, and the kingsmoot meets on the square when a chief is judged. The Temple answers
+   to Voth's high priest, not to Shim's governor. In the build: the sacrifice stone and the old fire's brazier on the
+   square, a pilgrims' landing on the shore, the kingsmoot's stone seats round the square's edge.
