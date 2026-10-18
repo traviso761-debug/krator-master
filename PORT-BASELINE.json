@@ -17,12 +17,12 @@
    "sha256": "a6842ca805fe2f49790cb622722fe66e7969ee17cc5c3b9dafb2bb301ebda42e"
   },
   "biomes/geyser/dist/geyser.html": {
-   "bytes": 633438,
-   "sha256": "0d2184bf1baac4821cf265693e31e279ed1edb800919db3d25e9845f5a9652a1"
+   "bytes": 634175,
+   "sha256": "db0baee5e2645e6580893a06b11915f97d7d6c661a0f22102ca23a4a3fd18b60"
   },
   "biomes/hyperjungle/dist/hyperjungle.html": {
-   "bytes": 3849432,
-   "sha256": "7c67ad4193162006be82a1bcaa91dc9de2533738f5d1e5c47b5248ccd4758a2a"
+   "bytes": 3850103,
+   "sha256": "1d8a358b14b5c85a3a899509ba1732e62e2b3d8a05af3132e118a8b405ea9a88"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
    "bytes": 5622933,
@@ -49,8 +49,8 @@
    "sha256": "4099c7fecacdf3baff18b254ee34d9e970b00b566859a0f88032777a63affab6"
   },
   "biomes/shighlands/dist/shighlands.html": {
-   "bytes": 1681427,
-   "sha256": "ece2b5de17dbede1bdce389dce96b2cfa51414d1ec612da28fc04b3d7138952d"
+   "bytes": 1681501,
+   "sha256": "da14dc6a0cfd230c07b05f25936a654e1b6c8b125dc848732539f3b9d2dc9e47"
   },
   "biomes/swbay/dist/swbay.html": {
    "bytes": 5428643,
@@ -289,8 +289,8 @@
    "sha256": "99b591f65b317da3a5ae1e18ad466d69d4be18077523dec203fffb4e21c761eb"
   },
   "kits/crops/dist/crops.html": {
-   "bytes": 2447762,
-   "sha256": "eea1673aa6a082938b041e3c2b9a984ad6391b5acc34cfeda916d3b19a0f1100"
+   "bytes": 2475593,
+   "sha256": "18ccaed43209444a7ddf33599b11ec64dcf1618cefc2ffffb0e713bfd8bd3317"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 14355968,

@@ -523,6 +523,19 @@
    "roughLift": 0.3,
    "specular": 0.2
   },
+  "card_prismgum": {
+   "lib": "card.prismgum",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
   "card_reed": {
    "lib": "card.reed",
    "scale": [

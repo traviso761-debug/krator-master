@@ -1041,6 +1041,32 @@
     "sourceMean": 0.4465
    }
   },
+  "card_prismgum": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "card_prismgum.albedo.webp"
+   },
+   "lib": "card.prismgum",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "734deb77e515d8bb365c8909277e1c42cb23fd48"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3191161050769833,
+    "sourceMean": 0.3191
+   }
+  },
   "card_reed": {
    "breakup": null,
    "card": true,

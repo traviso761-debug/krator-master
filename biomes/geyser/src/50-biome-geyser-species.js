@@ -81,7 +81,7 @@ GEYSER.PLANTS={
  streamer:PK('Flame streamers','hypertropic','humid','yes',['XA','XV'],'native','water',['streamer'],HV('none',[],false,'Krator\'s own: orange filaments a metre long streaming in the warm run-off, the mats grown into weed.')),
  jelly:PK('Mat jelly','hypertropic','humid','yes',['XA','XV'],'native','water',['jelly'],HV('none',['(boiled: a salty jelly)'],false,'Gelatinous mounds of the mats on the run-off\'s banks, orange and green.')),
  kettlelily:PK('Kettle lily','hypertropic','humid','yes',['XA','XV','Af'],'native','water',['lily','lilyflower'],HV('none',['rhizome (roasted)'],false,'Pads on the warm water of the Stair\'s lower pools and the creek, yellow and pink flowers; the rhizome roasts like a potato.')),
- reed:PK('Warm reed','hypertropic','humid','yes',['XA','Af'],'earth','margin',['reed'],HV('thatch',[],false,'Along the warm creek.')),
+ reed:PK('Warm reed','hypertropic','humid','yes',['XA','Af'],'earth','margin',['reed'],HV('thatch, fuel (dried)',[],false,'Along the warm creek; cut and dried in the steam it is a quick, hot fuel.')),
 };
 GEYSER.plantOfItem=item=>{for(const k in GEYSER.PLANTS)if(GEYSER.PLANTS[k].items.indexOf(item)>=0)return GEYSER.PLANTS[k];return null;};
 GEYSER.FRUIT_KEYS=[...new Set(GEYSER.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
