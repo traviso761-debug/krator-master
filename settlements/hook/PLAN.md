@@ -232,7 +232,9 @@ The waterfront comes first, because the Port kit is finished and the city's shap
   **Built 2026-10-19** on `claude/hook-p1` (`README.md`, "P2"): 671 lots of the six cultures from five kits sealed in
   closures; the salvage rule and the host-lot rule are tags on the records until the kits can draw them
   (`KNOWN_ISSUES.md`, "The town"); no civic pieces yet (P3's landmarks).
-- **P3. The layers' landmarks**, placed as records with `near` scorers: the Customs House, the governor's palace, the
+- **P3. The layers' landmarks** (first pass built 2026-10-19, `README.md` "P3": the kits' civic pieces on avenue lots
+  by step 6 with marker scorers, the damage field as rubble and scorch tags, Hykkousoi pods on the Tethyan ruins;
+  the set pieces the kits lack are `KNOWN_ISSUES.md` "The landmarks"), placed as records with `near` scorers: the Customs House, the governor's palace, the
   Temple of the Sun, the Iron Court's fortress wall, the Tethyan hall and sea temple, the Kautoan house, the necropolis,
   the slave market. The reconquest's damage as a decay field over the eastern harbour. Done when each landmark is in
   its zone and the eye-level views of section 5 read right.

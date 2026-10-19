@@ -11,8 +11,10 @@
    - a footing under every lot that stands on the slope (its drop: a stone plinth), as one InstancedMesh.
    window._city holds what verify.py reads: the plan, the records and the drawing's counts. */
 const HOOK_DRAW={nearR:400,nearMax:1600,moveFor:60,protos:{},inst:[],built:0,failed:{},stats:{}};
-HOOK_DRAW.kits={isk:(k,v)=>ISK.proto(k,v),izv:(k,v,L)=>IZV.proto(k,v,L&&/rich|manor/.test(L.cls)?2:L&&/poor/.test(L.cls)?0:1),
- hyk:(k,v)=>HYK.proto(k,v),vcat:(k,v)=>VCAT.proto(k,v),apoc:(k,v)=>KPA.proto(k,v)};
+HOOK_DRAW.kits={isk:(k,v)=>ISK.proto(k,v),izv:(k,v,L)=>IZV.proto(k,v,L&&/rich|manor|civic/.test(L.cls)?2:L&&/poor/.test(L.cls)?0:1),
+ hyk:(k,v)=>HYK.proto(k,v),vcat:(k,v)=>VCAT.proto(k,v),apoc:(k,v)=>KPA.proto(k,v),
+ /* a pod grown on a host: built in the host's frame (one build per pod, its bearing and floor are its own) */
+ hykpod:(k,v,L)=>HYK.protoOn(k,L.spec.rAt,L.a,L.py,L.hostName)};
 HOOK_DRAW.denorm=function(a){if(!a.normalized)return 1;const r=a.array;
  return r instanceof Uint8Array||r instanceof Uint8ClampedArray?1/255:r instanceof Uint16Array?1/65535:r instanceof Int8Array?1/127:r instanceof Int16Array?1/32767:1;};
 /* a material by its properties: the kits make a fresh material per build even when nothing differs, so every material
@@ -45,7 +47,7 @@ HOOK_DRAW.flatten=function(G){G.updateMatrixWorld(true);const groups={},IM=new T
   const geo=new THREE.BufferGeometry();names.forEach(nm=>{geo.setAttribute(nm,new THREE.BufferAttribute(A[nm],Q.parts[0].g.attributes[nm].itemSize));});
   geo.setIndex(new THREE.BufferAttribute(I,1));geo.computeBoundingSphere();out.push({geo,mat:Q.mat,tris:itotal/3});}
  return out;};
-HOOK_DRAW.proto=function(L){const id=L.kit+':'+L.key+'#'+(L.v|0);if(HOOK_DRAW.protos[id]!==undefined)return HOOK_DRAW.protos[id];
+HOOK_DRAW.proto=function(L){const id=L.kit==='hykpod'?'hykpod:'+L.id:L.kit+':'+L.key+'#'+(L.v|0);if(HOOK_DRAW.protos[id]!==undefined)return HOOK_DRAW.protos[id];
  let G=null;const t0=performance.now(),mk=HOOK_DRAW.kits[L.kit];
  try{G=mk?mk(L.key,L.v|0,L):null;}catch(e){HOOK_DRAW.failed[id]=String(e&&e.message||e);}
  if(!G){HOOK_DRAW.failed[id]=HOOK_DRAW.failed[id]||'no build';return (HOOK_DRAW.protos[id]=null);}
@@ -61,6 +63,10 @@ HOOK_DRAW.records=function(recs,group){const all=HOOK_DRAW.recs=recs;
  const KC={isk:[0xb39a74,0xc9ac6e],izv:[0xe4dccb,0xc0703c],hyk:[0xcfd8d6,0x6f9aa8],vcat:[0xd9cbb0,0x6a4a8a],apoc:[0x8a8378,0x7a4a2e]},c=new THREE.Color();
  all.forEach((L,i)=>{const k=KC[L.kit]||KC.isk;mB.setColorAt(i,c.setHex(k[0]));mR.setColorAt(i,c.setHex(k[1]));});
  HOOK_DRAW.massB=mB;HOOK_DRAW.massR=mR;group.add(mB);group.add(mR);
+ /* the reconquest's rubble: a burned-out lot is a dark heap over its footprint, not its building */
+ const rb=all.filter(L=>L.rubble),rg=new THREE.DodecahedronGeometry(.5,0);rg.scale(1,.45,1);rg.translate(0,.2,0);
+ const rub=new THREE.InstancedMesh(rg,new THREE.MeshLambertMaterial({color:0x3b3733}),Math.max(1,rb.length));
+ rb.forEach((L,i)=>rub.setMatrixAt(i,HOOK_DRAW.matOf(L,[L.w*.9,Math.max(2.5,L.h*.3),L.d*.9])));rub.count=rb.length;rub.name='rubble';rub.userData.probeSkip=true;group.add(rub);HOOK_DRAW.stats.rubble=rb.length;
  const fl=all.filter(L=>L.drop>.35),fg=new THREE.BoxGeometry(1,1,1);fg.translate(0,-.5,0);
  const foot=new THREE.InstancedMesh(fg,new THREE.MeshLambertMaterial({color:0x7b7366}),Math.max(1,fl.length));
  fl.forEach((L,i)=>{const m=HOOK_DRAW.matOf(L,[L.w*.92,L.drop+.6,L.d*.92]);m.elements[13]+=.05;foot.setMatrixAt(i,m);});
@@ -70,7 +76,7 @@ HOOK_DRAW.near=function(at,force){at=at||[-290,-135];
  if(!force&&HOOK_DRAW.at&&Math.hypot(at[0]-HOOK_DRAW.at[0],at[1]-HOOK_DRAW.at[1])<HOOK_DRAW.moveFor)return;
  HOOK_DRAW.at=at.slice();const group=HOOK_DRAW.group;
  HOOK_DRAW.inst.forEach(m=>{group.remove(m);m.geometry.dispose();});HOOK_DRAW.inst=[];
- const all=HOOK_DRAW.recs,near=[];all.forEach((L,i)=>{const d=Math.hypot(L.x-at[0],L.z-at[1]);if(d<HOOK_DRAW.nearR)near.push([d,i]);});
+ const all=HOOK_DRAW.recs,near=[];all.forEach((L,i)=>{if(L.rubble)return;const d=Math.hypot(L.x-at[0],L.z-at[1]);if(d<HOOK_DRAW.nearR)near.push([d,i]);});
  near.sort((a,b)=>a[0]-b[0]);const sel=near.slice(0,HOOK_DRAW.nearMax),full={},acc={},t0=performance.now();
  /* the near set as ONE mesh per material (the Port's draw-call budget is 900 for the whole page): every near piece's
     flattened parts, transformed by its lot, appended to its material's buffers; rebuilt when the target moves */
@@ -91,7 +97,7 @@ HOOK_DRAW.near=function(at,force){at=at||[-290,-135];
   geo.setIndex(new THREE.BufferAttribute(I,1));geo.computeBoundingSphere();
   const m=new THREE.Mesh(geo,A.mat);m.name='town near: '+(A.mat.name||sig.slice(0,8));m.userData.own='town';group.add(m);HOOK_DRAW.inst.push(m);}
  const z0=new THREE.Matrix4().makeScale(0,0,0);let nb=0;
- all.forEach((L,i)=>{if(full[i]){HOOK_DRAW.massB.setMatrixAt(i,z0);HOOK_DRAW.massR.setMatrixAt(i,z0);return;}
+ all.forEach((L,i)=>{if(full[i]||L.rubble){HOOK_DRAW.massB.setMatrixAt(i,z0);HOOK_DRAW.massR.setMatrixAt(i,z0);return;}
   const wh=Math.max(2.5,L.h*.45),rh=Math.max(1.5,L.h-wh);HOOK_DRAW.massB.setMatrixAt(i,HOOK_DRAW.matOf(L,[L.w*.9,wh,L.d*.9]));
   const r=HOOK_DRAW.matOf(L,[L.w*1.02,rh,L.d*1.02]);r.elements[13]+=wh;HOOK_DRAW.massR.setMatrixAt(i,r);nb++;});
  HOOK_DRAW.massB.instanceMatrix.needsUpdate=HOOK_DRAW.massR.instanceMatrix.needsUpdate=true;
@@ -99,7 +105,7 @@ HOOK_DRAW.near=function(at,force){at=at||[-290,-135];
  Object.assign(HOOK_DRAW.stats,{near:Object.keys(full).length,massing:nb,nearTris:Math.round(tris),protos:HOOK_DRAW.built,failed:Object.keys(HOOK_DRAW.failed).length,nearMs:Math.round(performance.now()-t0)});};
 (()=>{const C=HOOK_CITY,P=C.P,HOST=KCITY.lib.HOST;
  window._city={ready:!!P,log:C.log,ways:P?P.ways.length:0,districts:P?P.districts.length:0,landmarks:P?P.landmarks.length:0,
-  hosts:P?P.landmarks.filter(L=>L.ancient).length:0,lots:C.recs.length,recs:C.recs,plan:P?C.K.export():null,draw:HOOK_DRAW.stats,failed:HOOK_DRAW.failed,
+  hosts:P?P.landmarks.filter(L=>L.ancient).length:0,lots:C.recs.length,recs:C.recs,civics:C.landmarks,pods:C.pods,plan:P?C.K.export():null,draw:HOOK_DRAW.stats,failed:HOOK_DRAW.failed,
   /* every standing footprint for the overlap check: a lot's building box, a landmark's footprint (the export keeps the yard only) */
   boxes:P?P.lots.filter(l=>l.died==null).map(l=>({id:l.id,key:l.key,cls:l.cls,box:l.cls==='landmark'?l.lot:l.bo})).filter(b=>b.box):[],
   raster:(x,z)=>C.K.raster?C.K.raster.at(x,z):null,OCC:KCITY.lib.OCC};
@@ -122,5 +128,8 @@ HOOK_DRAW.near=function(at,force){at=at||[-290,-135];
  addEventListener('keydown',e=>{if(e.key==='z'&&!e.ctrlKey&&!e.metaKey)overlay.visible=!overlay.visible;});
  /* the town: the kits' pieces at their lots, near in full and far as massing, following the camera's target */
  const town=new THREE.Group();town.name='hook-town';scene.add(town);
- try{HOOK_DRAW.records(C.recs,town);}catch(e){reportErr('town '+e.stack);}
+ /* the pods are records of the town too (near set and massing as the rest); their frame is their host's */
+ try{HOOK_DRAW.records(C.recs.concat(C.pods.map(p=>Object.assign({w:6,d:6,h:5,drop:0,kit:'hykpod'},p))),town);}catch(e){reportErr('town '+e.stack);}
+ /* the landmarks' names over them */
+ for(const L of C.landmarks){const s=HOST.label(L.name,L.x,L.y+L.h+10,L.z,70,6);scene.remove(s);overlay.add(s);}
  PORT_FRAME.push(()=>{if(typeof ctl!=='undefined'&&ctl.target)HOOK_DRAW.near([ctl.target.x,ctl.target.z]);});})();

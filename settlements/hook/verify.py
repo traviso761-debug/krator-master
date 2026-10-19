@@ -104,6 +104,13 @@ const R=[];
     if(corners.some(p=>terrainH(p[0],p[1])<0.2))wet.push(L.key+'#'+L.id);}
   R.push({name:'hook-lots-off-street',ok:!onStreet.length,detail:onStreet.length?onStreet.length+' on a street: '+onStreet.slice(0,5).join(', '):recs.length+' lots, none on a carriageway'});
   R.push({name:'hook-lots-dry',ok:!wet.length,detail:wet.length?wet.length+' in the water: '+wet.slice(0,5).join(', '):recs.length+' lots, every corner on dry ground'}); }
+// P3: every landmark of the programme placed by step 6 (a civic piece on an avenue near its marker), the damage field
+// read into the records, the Tethyan pods grown
+{ const C=window._city||{},L=C.log||{},civ=C.civics||[],want=(HOOK_PROG.landmarks||[]).map(l=>l.key),have=civ.map(c=>c.key);
+  const miss=want.filter(k=>have.indexOf(k)<0);
+  R.push({name:'hook-landmarks',ok:!miss.length&&civ.length>=want.length,detail:miss.length?'not placed: '+miss.join(', '):civ.length+' landmarks placed: '+civ.map(c=>c.role).join(', ')});
+  const P=C.pods||[],fp=Object.keys(C.failed||{}).filter(k=>/^hykpod/.test(k));
+  R.push({name:'hook-damage-and-pods',ok:L.rubble!=null&&P.length>0&&!fp.length,detail:'damage: '+L.rubble+' rubble lots, '+L.scorch+' scorched; '+P.length+' pods on '+[...new Set(P.map(p=>p.hostName))].join(', ')+(fp.length?'; pods FAILED: '+fp.join(', '):'')}); }
 // P2: every piece near the opening camera built (its kit's closure ran it) and the massing stands for the rest
 { const C=window._city||{},S=C.draw||{},F=C.failed||{},n=Object.keys(F).length;
   R.push({name:'hook-lots-drawn',ok:S.protos>0&&n===0,detail:S.protos+' prototypes built, '+S.near+' near in full, '+S.massing+' as massing, '+S.footings+' footings'+(n?'; FAILED '+n+': '+JSON.stringify(Object.keys(F).slice(0,6).map(k=>k+' '+String(F[k]).slice(0,80))):'')}); }

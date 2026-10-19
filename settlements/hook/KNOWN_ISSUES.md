@@ -76,6 +76,30 @@ from a Hook task.
       drawn hosts beside the 8 named ones. The owner tunes `p`, `pEdge` and `weights` in the site file; P2 fills the
       other blocks with the cultures' lots.
 
+## The landmarks (P3)
+
+- [ ] **The landmarks are the kits' civic pieces on avenue lots, not the plan's set pieces.** Step 6 places a civic
+      piece on an avenue near its marker, so each landmark is what its kit has: the Vernacular's governor's palace
+      (the shared vassal programme's, not yet in Hook's dress of Ancient decks, radar domes and anchor gates), the
+      Kautoan governor's *hall* (the palace court `ip-palace` is 102 x 122 m and fits no avenue lot), a Voth temple
+      from the catalog for the Temple of the Sun (the pyramid's tiers on the heliport pad are `vothlift.py` work),
+      the catalog's monastery chapel for the necropolis (the tombs in the tank farm are lifted from Voth's source
+      library too), the post-apoc cages for the slave market (the compounds themselves are the Port's `chCourt`).
+      Not placed at all: the Ordinator fortress's wall across the berth's apron and its breach (the wall records of
+      `KCITY.site.wall` with Voth's lifted wall drawing), the toppled Vothic statues on the pier's head, the Izani
+      legion camp on the heliport apron and the two war-walkers (`kits/mechs`), the gibbet stations as lamp posts,
+      the painted-over diamonds. Each is a record with its own drawing to write.
+- [ ] **The damage field marks lots; it dresses nothing yet.** A rubble lot is a dark heap over its footprint; a
+      scorched lot keeps its building with a tag. The breach, the holed pen roof, the cut summit and the scorch and
+      scaffold dressing are records still to draw. At this seed the field (0.8 over the whole eastern harbour) makes
+      every lot in it rubble and none scorched; a painted gradient (the editor's fields) would grade it.
+- [ ] **Pods on two hosts only, in the Tethyan quarter.** The Bell Hall and the Capsule Stalks take Hykkousoi pods
+      through the Ys kit's `HYK.placeOn` on the kit's host spec; the pods record nothing on their host (Ys's
+      `ysHostInhabit` is stubbed) and cut no way-in through its skin (no `ysWallHole`), so a pod stands against the
+      face. The Stalks' tubes are all present (no `ysSocketTaken`), so a pod there may meet a tube. The other
+      layers' additions (Islander stilt decks in a shell, Vernacular markets hung from the towers, Vothic townhouses
+      into a shell) have no host mode in their kits.
+
 ## The town (P2)
 
 - [ ] **The host-lot rule is a tag, not a building yet.** `PLAN.md` section 3 wants a lot on a ruin to draw the ruin,

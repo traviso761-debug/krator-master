@@ -30,5 +30,9 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
   V['The Heights']=portCam(rx,g(rx,r.z1+40)+4,r.z1+40,.1,.28,900);
   V['The Ancient town']=[rx+300,g(rx+300,r.z0+60)+60,r.z0+60,rx-100,D,120];
   V['The hill behind']=[0,g(0,r.z0-40)+30,r.z0-40,0,g(0,c.z0)+10,c.z0];}
+ // P3: the governor's palace at the head of the Hook's axis, and the Stacks' slave market from its cages
+ if(typeof HOOK_SITE!=='undefined'){const mk=id=>(HOOK_SITE.markers||[]).find(m=>m.id===id);const B=mk('B'),E=mk('E');
+  if(B)V['The palace']=[B.x+60,terrainH(B.x,B.z)+45,B.z+170,B.x,terrainH(B.x,B.z)+14,B.z];
+  if(E)V['The slave market']=[E.x-80,terrainH(E.x,E.z)+22,E.z+70,E.x,terrainH(E.x,E.z)+4,E.z];}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();

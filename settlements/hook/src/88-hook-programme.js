@@ -63,8 +63,35 @@ const HOOK_PROG={
  wealthBias:{'q-heights':.3,'q-customs':.15,'q-arsenal':.05,'q-tethys':.05,'q-canton':.1,'q-ironcourt':0,'q-sun':-.05,'q-strand':-.15,'q-point':-.2,'q-stacks':-.45},
  /* the chance a poor or middle lot takes the nautical salvage dressing (a tag the builders read where they can) */
  salvage:{poor:.6,middle:.25},
- /* a lot is a host lot when its footprint stands within this of an Ancient host's pad (P3 draws the additions) */
- hostReach:6};
+ /* a lot is a host lot when its footprint stands within this of an Ancient host's pad */
+ hostReach:6,
+ /* P3: the layers' landmarks (PLAN.md section 4), each a civic piece of its layer's kit placed by core/city's step 6
+    on an avenue where its `near` scorer wants it: the site's markers A to I (90a-hook-city.js rules.near). What the
+    kits cannot give yet is in KNOWN_ISSUES.md ("The landmarks") */
+ landmarks:[
+  {key:'vern_governor_palace',near:'B',name:"the governor's palace",role:'palace'},
+  {key:'vern_market',near:'A',name:'the Customs market',role:'market'},
+  {key:'vern_watch_house',near:'A',name:"the harbour watch's house",role:'watch'},
+  {key:'vern_barracks',near:'H',name:"the garrison's barracks (the Iron Court)",role:'garrison'},
+  {key:'vern_guard_tower',near:'H',name:"the garrison's tower",role:'tower'},
+  {key:'ip-hall',near:'G',name:"the Kautoan governor's house",role:'kautoa-house'},   /* the palace court itself (ip-palace, 102 x 122 m) fits no avenue lot: P3's own placement */
+  {key:'hyk_shrine_seagods',near:'F',name:'the Hykkousoi sea temple',role:'sea-temple'},
+  {key:'voth_bldg_temple',near:'C',name:'the Temple of the Sun (closed)',role:'temple'},
+  {key:'voth_bldg_monastery_chapel',near:'D',name:"the necropolis's chapel",role:'necropolis'},
+  {key:'cages',near:'E',name:"the slave market's cages (empty)",role:'slave-market'},
+  {key:'watchtower',near:'E',name:"the Izani watch at the Stacks' edge",role:'watch'},
+  {key:'iw-hall',near:'I',name:"the Hukoa elders' hall",role:'hall'},
+  {key:'iw-temple',near:'I',name:'the moon shrine at the Point',role:'shrine'}],
+ /* P3: pods grown on the Tethyan quarter's ruins (the host-lot rule for the Hykkousoi): on the host's face at a bearing
+    and a floor height, by the kit's HYK.placeOn; a host's pods are drawn by KRAND from (HOOK_SEED, the host's id) */
+ pods:{hosts:{'h-bell':{n:7,y:[7,20]},'h-stalks':{n:4,y:[9,24]}},
+  keys:['hyk_pod_poor_1','hyk_pod_poor_2','hyk_pod_mid_1','hyk_pod_mid_2','hyk_pod_shop_armour','hyk_pod_shop_weapon']},
+ /* the reconquest's damage field (PLAN.md section 6, question 5): a lot at 0.7 and above is a rubble lot, between 0.3
+    and 0.7 it keeps its building with scorch and scaffold dressing (a tag for now) */
+ damage:{rubble:.7,scorch:.3}};
+/* the culture a kit key belongs to (a civic piece has no culture:class) */
+HOOK_PROG.cultureOfKey=function(key){const D=typeof HOOK_DIMS!=='undefined'&&HOOK_DIMS[key],kit=D&&D.kit;
+ if(kit==='isk')return /^(ie|ip)-/.test(key)?'kautoa':'hukoa';return {hyk:'tethys',izv:'iziz',vcat:'voth',apoc:'salvage'}[kit]||null;};
 /* core/city's TUNE.classes: {culture:class: [[key, v], ...]} and TUNE.fallback over the same names */
 HOOK_PROG.classes=function(){const out={};for(const c in this.cultures){const C=this.cultures[c].classes;
  for(const cls in C)out[c+':'+cls]=C[cls].map(k=>Array.isArray(k)?[k[0],k[1]]:[k,0]);}return out;};

@@ -129,9 +129,10 @@ DIMS_FRAG = '77f-hook-dims.js'
 BUNDLE_FRAGS = {'77a-isk-bundle.js': 'isk', '77b-izv-bundle.js': 'izv', '77c-vcat-bundle.js': 'vcat', '77d-hyk-bundle.js': 'hyk', '77e-apoc-bundle.js': 'apoc'}
 VOTH_CAT = os.path.join(ROOT, 'settlements', 'voth', 'catalog', 'registry')
 VCAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'), os.path.join(ROOT, 'kits', 'catalog', 'krator-master-buildings-voth.js')] + \
-             [os.path.join(VOTH_CAT, f) for f in ('voth-housing.js', 'voth-manors.js', 'voth-shops.js', 'voth-taverns.js', 'voth-warehouses.js')]
-HYK_EXTRA = ['70-hyk-housing.js', '71-hyk-shops.js', '72-hyk-hospitality.js', '76-hyk-industry.js', '76b-hyk-warehouse-round.js']
-APOC_DEFS = ['40-dw-small.js', '42-lg-dwell.js', '44-civic.js', '46-shops.js', '48-industry.js']
+             [os.path.join(VOTH_CAT, f) for f in ('voth-housing.js', 'voth-manors.js', 'voth-shops.js', 'voth-taverns.js', 'voth-warehouses.js', 'voth-civic.js', 'voth-military.js')]
+HYK_EXTRA = ['70-hyk-housing.js', '71-hyk-shops.js', '72-hyk-hospitality.js', '73-hyk-sacred.js', '74f-hyk-civic-minor.js', '76-hyk-industry.js',
+             '76b-hyk-warehouse-round.js', '79-hyk-markets.js']
+APOC_DEFS = ['40-dw-small.js', '42-lg-dwell.js', '44-civic.js', '46-shops.js', '48-industry.js', '52-defence.js']
 P2_DETERMINISTIC = {PACKS_FRAG, DIMS_FRAG, '88-hook-programme.js'} | set(BUNDLE_FRAGS)
 
 
@@ -169,11 +170,20 @@ def hyk_bundle():
     return ('/* HYK: the Hykkousoi kit of Ys, one closure (settlements/hook/build.py, on settlements/voth/foreign.py\'s file list). GENERATED: edit settlements/ys/src. */\n'
             'var HYK = (function(){\n' + shim_head() + body +
             'var HYK_ERRS = []; reportErr = function (m) { HYK_ERRS.push(String(m).slice(0, 600)); if (typeof console !== "undefined") console.error("HYK: " + m); };\n'
+            '/* the host bookkeeping of Ys\'s city (64-hyk-accrete.js) is not here: a pod records nothing on its host */\n'
+            'if (typeof ysHostInhabit !== "function") { var ysHostInhabit = function () { return null; }; }\n'
             'function hykProto(key, v) { var D = HYK.defs[key]; if (!D) return null; var G = new THREE.Group(); G.name = key + "#" + (v | 0);\n'
             '  for (var n in KIT.items) KIT.items[n].length = 0; REG.length = 0;\n'
             '  HYK.place(G, key, 0, 0, 0, { y: 0, v: v | 0 }); hykFlush(G); kbake(G);\n'
             '  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h }; return G; }\n'
-            'return { proto: hykProto, HYK: HYK, errors: HYK_ERRS };\n})();\n')
+            '/* a grown-on pod (HYK.placeOn) on a host described by its radius function rAt(y, a) (the Ancients kit\'s HOSTSPEC_*),\n'
+            '   built in the host\'s frame (its centre at the origin, its base at y 0): the pod stands on the face at bearing a, floor y */\n'
+            'function hykProtoOn(key, rAt, a, y, name) { var D = HYK.defs[key]; if (!D || !D.grown) return null; var S = new THREE.Group(); S.name = key + "@" + name;\n'
+            '  for (var n in KIT.items) KIT.items[n].length = 0; REG.length = 0; HYK_PLACED.length = 0;\n'
+            '  var host = { x: 0, z: 0, y: 0, n: name, rAt: rAt, ways: [], landings: [], floors: [], ring: 1 };\n'
+            '  HYK.placeOn(S, key, host, { a: a, y: y, level: "L1", v: 0 }); hykFlush(S); kbake(S);\n'
+            '  S.userData = { key: key, v: 0, w: D.w, d: D.d, h: D.h, a: a, y: y }; return S; }\n'
+            'return { proto: hykProto, protoOn: hykProtoOn, HYK: HYK, errors: HYK_ERRS };\n})();\n')
 
 
 def apoc_bundle():

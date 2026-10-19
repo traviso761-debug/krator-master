@@ -19,7 +19,8 @@ const HOOK_CITY=(()=>{
   width:{avenue:14,main:8,side:5.5,alley:3.2,highway:12,lane:4.5},lot:{side:1.6,setback:1.6,rear:3,inset:1,step:3},
   /* the streets' reach, as Voth's and the isle demo's (voidMax 46-60, sideSpacing 48-70): a void deeper than voidMax
      from any street gets a main street, a side street every sideSpacing along each main, the infill interiorRounds deep */
-  classes:PROG.classes(),fallback:PROG.fallbackTable(),civic:[],civicSpacing:200,voidMax:60,voidIters:40,voidBatch:14,sideSpacing:55,sideMax:240,
+  classes:PROG.classes(),fallback:PROG.fallbackTable(),civic:PROG.landmarks.map(L=>({key:L.key,v:0,near:L.near})),civicSpacing:40,
+  voidMax:60,voidIters:40,voidBatch:14,sideSpacing:55,sideMax:240,
   alleyFrac:.25,blindMax:100,interiorDepth:9,interiorRounds:6,plazaArt:{rich:['none'],middle:['none'],poor:['none'],commerce:['none']},mapHalf:half,avenueSnap:60,ringGap:6,verge:0,
   /* the slope under the whole site (KNOWN_ISSUES.md): a house's floor at its highest corner, its footing down to the lowest */
   stance:'high',stanceOpt:{maxDrop:7}};
@@ -63,24 +64,43 @@ const HOOK_CITY=(()=>{
   {name:'highways',run(){}},
   {name:'the wall and its gates',run(){}}];
  const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags||null;
+ /* the landmarks' scorers (step 6): the distance to the site's marker the piece is placed near */
+ const near={};for(const m of (SITE.markers||[]))near[m.id]=c=>Math.hypot(c.p[0]-m.x,c.p[1]-m.z);
  const K=KCITY.create({tune,site:SITE,seed:KRAND.child(HOOK_SEED,'city')>>>0,rand:'krand',index:{order:'insertion'},
   ground:{h:(x,z)=>terrainH(x,z)},kit:{dims},tags:T,
-  rules:{wealth,choosers:{avenue:chooser('avenue'),main:chooser('main'),side:chooser('side'),alley:chooser('alley')},
+  rules:{wealth,near,choosers:{avenue:chooser('avenue'),main:chooser('main'),side:chooser('side'),alley:chooser('alley')},
    groundOk:KCITY.reliefOk({dry:.6,maxRelief:7})},
   steps:steps.concat(KCITY.defaultSteps().slice(6))});
  let P=null;try{P=K.run();}catch(e){reportErr('city '+e.stack);}
- /* the records the page draws: every standing lot, its kit and culture from its class, the salvage draw and the host it
-    stands against, each seeded from (HOOK_SEED, the lot's id), never from how many came before */
- const recs=[],by={culture:{},cls:{}};
+ /* the records the page draws: every standing lot, its kit and culture from its class (a civic piece's from its key),
+    the salvage draw, the host it stands against and the damage field it stands in, each seeded from (HOOK_SEED, the
+    lot's id), never from how many came before */
+ const recs=[],by={culture:{},cls:{}},landmarks=[],pods=[];
  if(P){const hosts=P.landmarks.filter(L=>L.ancient),salv=KRAND.child(HOOK_SEED,'salvage');
+  const damageAt=p=>{let v=0;for(const F of (P.fields||[]))if(F.kind==='damage'&&KL.inPoly(p,F.poly))v=Math.max(v,F.v);return v;};
   for(const L of P.lots){if(L.died!=null||L.cls==='landmark'||!L.bo)continue;const D=HOOK_DIMS[L.key];if(!D)continue;
-   const culture=PROG.cultureOf(L.cls),cls=PROG.classOf(L.cls),q=quarterAt([L.x,L.z]);
-   const u=KRAND.unit(KRAND.hash(salv,L.id)),ps=PROG.salvage[cls]||0,salvage=u<ps;
+   const civic=L.cls==='civic',culture=civic?PROG.cultureOfKey(L.key):PROG.cultureOf(L.cls),cls=civic?'civic':PROG.classOf(L.cls),q=quarterAt([L.x,L.z]);
+   const u=KRAND.unit(KRAND.hash(salv,L.id)),ps=civic?0:(PROG.salvage[cls]||0),salvage=u<ps;
    let host=null;for(const H of hosts){const r=Math.hypot(L.x-H.x,L.z-H.z);if(r<H.w/2+Math.hypot(L.w,L.d)/2+PROG.hostReach){host=H.name||H.key;break;}}
+   const dmg=damageAt([L.x,L.z]),rubble=!civic&&dmg>=PROG.damage.rubble,scorch=!rubble&&dmg>=PROG.damage.scorch;
+   const LM=civic?PROG.landmarks.find(l=>l.key===L.role):null;
    const rec={id:L.id,kit:D.kit,key:L.key,v:L.v==null?0:L.v,cls,culture,quarter:q?q.id:null,x:L.x,z:L.z,y:L.y,ry:L.ry,w:L.w,d:L.d,h:L.h,
-    drop:L.drop==null?0:L.drop,wealth:L.wealth,salvage,host,way:L.way,born:L.born,tag:L.tag||null};
-   L.culture=culture;L.salvage=salvage;L.host=host;recs.push(rec);
+    drop:L.drop==null?0:L.drop,wealth:L.wealth,salvage,host,damage:dmg,rubble,scorch,way:L.way,born:L.born,tag:L.tag||null,
+    name:LM?LM.name:null,role:LM?LM.role:null};
+   L.culture=culture;L.salvage=salvage;L.host=host;L.damage=dmg;recs.push(rec);if(civic)landmarks.push(rec);
    by.culture[culture]=(by.culture[culture]||0)+1;by.cls[cls]=(by.cls[cls]||0)+1;}
+  /* the Hykkousoi pods on the Tethyan quarter's ruins: a host's pods from its own stream, each a bearing and a floor */
+  for(const hid in PROG.pods.hosts){const H=hosts.find(h=>h.name&&PORT_LAYOUT.items.some(it=>it.ancient&&it.opt.hostId===hid&&it.opt.hostName===h.name));
+   const it=PORT_LAYOUT.items.find(i=>i.ancient&&i.opt.hostId===hid);if(!H||!it)continue;
+   const spec=HOOK_HOSTS[it.key].spec,cfg=PROG.pods.hosts[hid],s=KRAND.stream(KRAND.child(HOOK_SEED,'pods:'+hid));
+   for(let i=0;i<cfg.n;i++){const a=(i+s.next()*.6)/cfg.n*Math.PI*2,y=cfg.y[0]+(cfg.y[1]-cfg.y[0])*s.next(),key=s.pick(PROG.pods.keys);
+    pods.push({id:hid+'#'+i,kit:'hykpod',key,hostId:hid,hostKey:it.key,hostName:H.name,x:H.x,z:H.z,y:terrainH(H.x,H.z),ry:it.opt.ry||0,a,py:y,spec});}}
   log.lots=recs.length;log.byCulture=by.culture;log.byClass=by.cls;log.salvage=recs.filter(r=>r.salvage).length;log.hostLots=recs.filter(r=>r.host).length;
-  log.ways=P.ways.reduce((a,w)=>(a[w.cls]=(a[w.cls]||0)+1,a),{});}
- return {K,P,log,site:SITE,recs};})();
+  log.landmarks=landmarks.length;log.landmarksWanted=PROG.landmarks.length;log.rubble=recs.filter(r=>r.rubble).length;log.scorch=recs.filter(r=>r.scorch).length;log.pods=pods.length;
+  log.ways=P.ways.reduce((a,w)=>(a[w.cls]=(a[w.cls]||0)+1,a),{});
+  /* the pods in core/tags before anything draws, under their host's record */
+  if(T)for(const p of pods){const hit=PORT_LAYOUT.items.find(i=>i.ancient&&i.opt.hostId===p.hostId);const rs=p.spec.rAt(p.py,p.a);
+   p.tag=T.add({class:'building',kind:'pod',key:p.key,name:HYK.HYK.defs[p.key]?HYK.HYK.defs[p.key].name:p.key,parent:hit&&hit.tag||undefined,
+    at:[p.x+rs*Math.cos(p.a),p.y+p.py,p.z+rs*Math.sin(p.a)],ry:Math.atan2(Math.cos(p.a),Math.sin(p.a)),size:[HOOK_DIMS[p.key]?HOOK_DIMS[p.key].w:6,HOOK_DIMS[p.key]?HOOK_DIMS[p.key].d:6,HOOK_DIMS[p.key]?HOOK_DIMS[p.key].h:5],
+    tags:{culture:'hykkousoi',types:['dwelling-single'],wealth:'middle',layer:'tethys',host:p.hostName}}).id;}}
+ return {K,P,log,site:SITE,recs,landmarks,pods};})();

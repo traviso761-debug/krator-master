@@ -198,9 +198,29 @@ The page is the kit's page: click to inspect, `n` night, `b` the segment-bounds 
 site overlay. The presets are the views of `PLAN.md` section 5 that exist so far, plus the Heights, the Ancient
 town and the hill behind (`targets/hook/91z-views.js`).
 
+## P3: the landmarks, the damage, the pods
+
+The layers' landmarks are civic pieces of their own kits placed by `core/city`'s step 6: each takes an avenue lot
+where its `near` scorer wants it, the distance to one of the site's markers A to I (`88-hook-programme.js`
+`landmarks`; `90a-hook-city.js` `rules.near`). At this seed: the governor's palace at the head of the Hook's axis
+(B), the Customs market and the harbour watch's house by the Customs House (A), the garrison's barracks and tower in
+the Iron Court (H), the Kautoan governor's hall on the Heights' east end (G), the Hykkousoi sea temple by the
+terminal (F), the Temple of the Sun's stand-in and the necropolis's chapel in the Sun Canton (C, D), the slave
+market's cages and the Izani watchtower in the Stacks (E), the Hukoa elders' hall and the moon shrine at the Point
+(I). Each is a lot record with a `name` and a `role`, labelled on the page.
+
+The reconquest's **damage field** (the site's `damage` district, 0.8 over the eastern harbour) is read into every
+lot's record: at 0.7 and over a lot is **rubble** (drawn as a dark heap over its footprint, its building not built),
+between 0.3 and 0.7 **scorched** (a tag for P4's dressing).
+
+The **host-lot rule** draws its first additions: Hykkousoi pods grown on the Tethyan quarter's ruins (the Bell Hall
+and the Capsule Stalks) by the Ys kit's own `HYK.placeOn` on the host's radius function (the Ancients kit's
+`HOSTSPEC_*`), a bearing and a floor each from the host's own stream (`HOOK_PROG.pods`), each a `core/tags` record
+under its host. The other layers' additions and the Ancient Iziz markets hung from the towers are still to come
+(`KNOWN_ISSUES.md`, "The landmarks").
+
 ## Next
 
-P3 (`PLAN.md` section 4): the layers' landmarks as records with `near` scorers (the Customs House, the governor's
-palace, the Temple of the Sun, the Iron Court's wall, the Tethyan hall and sea temple, the Kautoan house, the
-necropolis, the slave market), the reconquest's damage as a decay field, and the host-lot additions on the ruins
-(`KNOWN_ISSUES.md`, "The town").
+P3's remainder (`KNOWN_ISSUES.md`, "The landmarks"): the pieces the kits lack (the Temple pyramid on the pad, the
+Ordinator fortress's wall and its breach, the necropolis's tombs, the Kautoan palace court, the toppled statues, the
+war-walkers), then P4: the harbour's life.
