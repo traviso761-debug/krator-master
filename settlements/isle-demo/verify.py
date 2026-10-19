@@ -82,6 +82,19 @@ CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.
  return [];}"""
 
 
+# The export profile (P6b; PLAN.md section 7; core/export/README.md, "Profiles"). The case is Kautoa's ceremonial centre (the
+# palace, the square, the envoys' houses, the park and the streets round it), in the town's frame. EXPORT_TARGET is M6's
+# whole list; EXPORT_PROFILE is what the page must fill now (verify --assert fails without it), the rest of the target
+# is reported section by section until each lands. --profile a,b,c checks a list for one run; --profile target checks
+# the whole target and fails on every section not yet filled (the proof the check bites).
+EXPORT_BOX = [-700, -700, 700, 700]
+EXPORT_TARGET = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain=field', 'city', 'fixtures', 'interiors',
+                 'furniture', 'sim', 'stage', 'atmos']
+# met on 2026-10-19 (P6b): the registry (core/tags, the drawn town's), the KMAT materials, the terrain (sampled:
+# EXPORT.ground on the plan's ground; terrain=field waits for a KFIELD from the extracted heights, PLAN.md section 10)
+EXPORT_PROFILE = ['registry', 'materials', 'terrain']
+
+
 async def run_city(a):
     import harness
     from playwright.async_api import async_playwright
@@ -115,6 +128,16 @@ async def run_city(a):
                         caught = bool(rs) and not any(r['ok'] for r in rs)
                         print(('  PASS  ' if caught else '  MISSED') + ' negative (' + neg + ') : ' + '; '.join(r['detail'] for r in rs))
                         if not caught: fails.append(town + ': negative ' + neg)
+                    if town == 'Kautoa':
+                        prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
+                        pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)
+                        print(('  PASS  ' if pok else '  FAIL  ') + 'export-profile : box %s, %s' % (EXPORT_BOX, ', '.join(prof)))
+                        for ln in lines: print('        ' + ln)
+                        if not pok: fails.append('export-profile')
+                        if not a.profile:   # the rest of M6's target, reported (not failed) until each section lands
+                            tok, tl = await harness.check_profile(pg, EXPORT_BOX, EXPORT_TARGET)
+                            print('  INFO  export target (M6) : ' + next((ln for ln in tl if ln.startswith('profile ')), '').split(': ', 1)[-1].split(';')[0] + ' met')
+                            print('        ' + next((ln for ln in tl if ln.startswith('sections: ')), ''))
                 if a.shots:
                     os.makedirs(a.shots, exist_ok=True)
                     # software GL: the nearest 600 pieces in full (the rest as massing), and time for each frame
@@ -217,5 +240,6 @@ if __name__ == '__main__':
     ap.add_argument('html')
     ap.add_argument('--assert', dest='assert_', action='store_true')
     ap.add_argument('--shots', default='')
+    ap.add_argument('--profile', default='', help='the city page under --assert: an export profile a,b,c for this run, or target (M6)')
     args = ap.parse_args()
     sys.exit(asyncio.run(run_city(args) if os.path.basename(args.html).startswith('isle-city') else run(args)))

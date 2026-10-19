@@ -269,6 +269,8 @@ CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
     'core/terrain/38-core-relief.js')] + [os.path.join(LD, '41-world-fields.js'), os.path.join(LD, '42-world-roads.js'),
                                           os.path.join(WORLD, 'src', '43-world-isles.js')]
 CITY_MAT = [os.path.join(ROOT, 'core', 'materials', 'record', f) for f in ('23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js')]
+# core/export (P6b, PLAN.md section 7): the container and its adapters, so the page exports and verify.py checks its profile
+CITY_EXPORT = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js')]
 CITY_DATA_JS = ['20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '34-isle-census.js']
 CITY_WEB_JS = ['58-isle-protos.js', '60-isle-draw.js', '98-isle-city-start.js']
 CITY_HEAD = '''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -318,7 +320,7 @@ def city_page():
              matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith(('fauna', 'city'))], side=side))
     data = raw_fragment() + dims_fragment() + site_fragment()
     core = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(p), NL, read(p), NL, NL) for p in CITY_CORE)
-    mats = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(p), NL, read(p), NL, NL) for p in CITY_MAT) + packs
+    mats = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(p), NL, read(p), NL, NL) for p in CITY_MAT + CITY_EXPORT) + packs
     own = lambda L: ''.join('/* ---- settlements/isle-demo/src/%s ---- */%s%s%s' % (f, NL, read(os.path.join(HERE, 'src', f)), NL) for f in L)
     kc = bundles.kcity_bundle()
     cat, _ = bundles.cat_bundle(side)      # the towns' maps beside the page (isle-city.tex.brtowns.js)

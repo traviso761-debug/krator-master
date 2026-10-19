@@ -66,6 +66,10 @@ setTimeout(function () {
     if (ISLE.TOWNS.indexOf(town) < 0) town = ISLE.TOWNS[0];
     ISLE.initWorld(); lap('world');
     var cur = ISLE.cur = ISLE.plan(town, SITE_INIT); lap('plan ' + town);
+    /* the export (P6b): the drawn town's registry is the page's, and its ground is bound as sampled terrain (a
+       krator-field from the extracted heights is still to do: PLAN.md section 10) */
+    KTAGS.page = cur.tags;
+    if (typeof EXPORT !== 'undefined') EXPORT.ground({ terrainH: function (x, z) { return cur.G.h(x, z); }, step: 4 });
     DRAW.stage(); DRAW.ground(cur.G, cur.R); DRAW.streets(cur.R, cur.G); DRAW.orchards(cur.R, cur.G); lap('ground');
     DRAW.records(cur.R); DRAW.vessels(cur.R); lap('pieces');
     CAM.bind(); ISLE.view('overview');

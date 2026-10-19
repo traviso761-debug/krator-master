@@ -630,9 +630,16 @@ every module under `core/` and CLAUDE.md's rules.
 - both open worlds run on `core/clock` (H4).
 
 **Still open, in order:**
-1. **P6b, the export profile** (`core/export` 07 and 09 on the city page, `EXPORT_BOX` and `EXPORT_PROFILE` in `verify.py`
-   with section 7's list). It must land before P7. Every section not yet filled will fail it, which is the point; the
-   `city` section is registered from `core/city/40` (the city-layout work's file: ask it).
+1. **P6b, the export profile: in place (2026-10-19).** The city page embeds `core/export` (07, 09); `KTAGS.page` is the drawn
+   town's registry and its ground is bound with `EXPORT.ground`. `verify.py --assert` checks `EXPORT_PROFILE` (`registry,
+   materials, terrain`) over `EXPORT_BOX` (Kautoa's ceremonial centre) and reports `EXPORT_TARGET`, section 7's whole
+   list (2 of 13 met: `terrain=field` is sampled; `items`, `buckets`, `textures`, `stage` read none; `atmos` empty;
+   `city`, `fixtures`, `interiors`, `furniture`, `sim` are stubs). `--profile target` fails on all of them, and
+   `--profile registry,materials,terrain,sim` fails on the stub. Each section joins `EXPORT_PROFILE` as it lands.
+   **A question for the city-layout work** (no session of it was running on 2026-10-19; the owner to pass it on):
+   `core/export`'s `city` section is to be registered by `core/city` (`40-city-kcity.js`, an `EXPORT.register('city',
+   ...)` for every `KCITY` instance on a page). May the isle demo's page register its two plans itself until then, or
+   will core/city add the contributor?
 2. **The city page onto `core/host`** (camera, loop, `KCLOCK`, panel, probe, minimap) instead of its own `CAM`, loop and
    `window._city`: P7's simulation needs the clock.
 3. **The city page's sky and sea:** the standard sky and `core/atmos`, the sea on `core/water` (it is a flat colour and a
