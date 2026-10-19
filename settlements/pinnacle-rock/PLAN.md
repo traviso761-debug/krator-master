@@ -21,7 +21,7 @@ the mesa; farms surround the mesa.
 | The flyers | Girder's `84-flyers*.js` (routes, animals, update, hooks), read in place; the roost perch records are the contract |
 | Town | `core/city` steps 0-12 on the site layer; the `frontage-courts` strategy for the hall's court, `alleys` among the stacks; the lots take the catalog's `br_bldg_*` keys |
 | Farms | `core/city` fields on the jungle floor round the mesa's foot, as Girder's `PLOTS` (crop, paddy, orchard, garden, pen), with Girder's palisade and gates round them |
-| Biome | the hyperjungle kit (`biomes/hyperjungle`) for the forest and its floor; the trees cleared from the farm ring and kept off the mesa top (`feedback`: no trees on cliffs) |
+| Biome | the hyperjungle kit (`biomes/hyperjungle`) for the forest and its floor; the trees cleared from the farm ring and kept off the mesa top (`feedback`: no trees on cliffs); the mesa's walls, top and stacks take the **necanyons** kit (`biomes/necanyons/PLAN.md`: hanging gardens, stack figs, the first carnivores), once it is built |
 | Core | `core/rand`, `core/mask`, `core/tags`, `core/space`, `core/lod`, `core/host`, the shared sky; `core/furnish` with the beast-rider interiors set (`kits/interiors/sets/beast-rider.js`) later |
 
 Pinnacle Rock is a settlement and goes in the gallery when it first reaches `main` (`gallery/README.md`).

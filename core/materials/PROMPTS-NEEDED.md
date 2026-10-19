@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 5 prompts (section 2: the Northern Highlands' three; section 4: `card.crop.indigo`; section 5: `rock.sandstone.bedded.red`).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 10 prompts, and 3 optional (section 2: the Northern Highlands' three; section 4: `card.crop.indigo`; section 5: `rock.sandstone.bedded.red`; section 6: necanyons' five, and its three optional).** Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -638,6 +638,78 @@ rock-stack generator's bed material.
 
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic front-on view of a vertical rock face, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A cliff face of coarse, pebbly red sandstone in horizontal beds, like Garden of the Gods: six or seven beds across the image, each a decimetre to half a metre thick, separated by thin recessed partings that run level across the whole width; the beds alternate between brick red (#a8503a), salmon pink (#c98468) and a paler pinkish buff (#d9b091), with scattered pea-sized pebbles and grit standing proud of the surface, a few small honeycomb weathering pits, and faint darker water streaks (#6a3a2c) running down from one or two partings. Rough, matte, granular surface; no cross-bedding, no vegetation, no sky.
+```
+
+## 6. necanyons (`biomes/necanyons`, 2026-10-19)
+
+The north-eastern canyons, the hyperjungle's transition to Korona: red sandstone benches, caps and stacks with hanging
+gardens and the first large carnivorous plants (`biomes/necanyons/PLAN.md` section 6, which lists the library sets it
+reuses). `rock.sandstone.bedded.red` (section 5) is needed here too. Five images, then three optional ones; each optional
+entry names the library fallback the kit uses without it. Cut-out sheets: every sprite stands on the bottom of its cell,
+except the hanging pitchers, which hang from the top.
+
+#### `ground.slickrock`
+- Kind: tileable material, full colour, seen from above; 4 m tile.
+- Used by: the cap plateaus' bare rock (`cap` zone). Reuse: any bare sandstone pavement (the desert's mesa tops, Korona's tepui tops, tinted).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Bare sandstone pavement on top of a high mesa seen from directly above, like Utah slickrock or the tops of the Kimberley sandstone ranges: smooth, wind-scoured pinkish-buff to salmon sandstone (#c9906e, #d8a882, #b8745a) crossed by three or four straight joint cracks, each crack holding a thread of coarse orange-red quartz sand (#b05a34); irregular knobbly patches of black biological soil crust (#2a2622, #3a332c) covering about a fifth of the surface, gathered along the cracks; scattered coin-sized spots of grey-green and orange crustose lichen (#8a9a7a, #d08a2a); faint curved lines of old cross-bedding showing through the scoured surface. Rough, matte, granular. No plants, no water, no pebbles larger than a thumbnail.
+```
+
+#### `rock.sandstone.varnish`
+- Kind: tileable material, full colour, a vertical face; 6 m tile.
+- Used by: the canyon walls and the stacks' shaded faces (`wall` zone), the seep lines under the cap rocks. Reuse: any streaked cliff (Shade, the desert's canyon, the Rift's walls).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic front-on view of a vertical rock face, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A smooth canyon wall of fine-grained red-orange sandstone (#b4603e, #c87a52) streaked from top to bottom with desert varnish: long vertical curtains of blue-black and dark brown stain (#1e1c22, #3a2a24) in narrow drips and broad sheets that run off the top edge and continue through the bottom edge, some fading to rust brown (#7a3a24); between the streaks the bare stone shows faint, nearly level bedding lines and a few pale buff (#e0c0a0) scars where the surface has flaked away; along two of the streaks a thin film of green algae (#4a6a3a) and a white mineral crust (#e8e4dc) where water seeps. Matte stone, the varnish a little glossier. No vegetation, no ledges, no sky, no cross-bedding.
+```
+
+#### `card.carnivore.monkeycup`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one pitcher per cell, hanging from the top.
+- Used by: the monkeycup vine's pitchers on the walls and the jungle's edge trees. Reuse: any pitcher plant (Korona, the Throne's snare plants).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one pitcher of a tropical pitcher-plant vine (Nepenthes) hanging from a thin curling green tendril that reaches up to the top of its cell: a hollow jug with a glossy, ribbed, flared rim round its mouth and an open lid held up over the mouth. Vary them: four squat round lower pitchers with two fringed wings down the front, lime green (#8ab83a) mottled with wine red (#7a1e2a), with ruby-red rims; three tall slender funnel-shaped upper pitchers, pale yellow-green (#c8d070) with a red-striped rim; two large deep wine-red (#5a1420) pitchers with a striped crimson rim. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `organic.trap.lobe`
+- Kind: cut-out sheet, 3 x 3 on magenta, full colour; one trap lobe per cell, its hinge along the bottom of the cell.
+- Used by: the clapjaw's trap lobes, mapped on hinged geometry so the traps can shut. Reuse: any snap trap (Korona's larger ones).
+
+```
+A sheet of nine separate cut-out leaf shapes in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no text. Each sprite: one lobe of a giant Venus flytrap's trap, laid flat and seen face-on from its inner side, its straight hinge edge along the bottom of the cell: a broad half-moon blade whose inner face is blood red to crimson (#a8202a, #c83a30), fading to yellow-green (#b8c050) towards the curved rim, with fine branching veins across the red and three short stiff trigger hairs standing on it; along the whole curved edge a fringe of fifteen to twenty long, stiff, slightly curved yellow-green teeth (#c8d060). Vary the size of the red area, the number and length of the teeth and the shade of green between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.carnivore.sundew`
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one plant per cell.
+- Used by: rimdew, the medicinal sundew of the seeps and bogs. Reuse: any sundew (the southern highlands' bogs, Korona).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, a little from above, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one sundew plant standing on the bottom of its cell. Vary them: four flat rosettes of round spoon-shaped leaves; three upright forked sundews whose long strap leaves fork twice at their tips; two with a leaf still curled like a fern's crozier and a slender stalk of small white five-petalled flowers. Every leaf is covered in fine red glandular hairs (#c8282a, #e0402a), each tipped with a clear glistening drop of dew; the leaf blades are green-gold to red (#a8a040, #c84a2a); on two of the plants one leaf has curled round a small caught insect. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject; no grey or white background.
+```
+
+#### `card.palm.fan` (optional; fallback `card.palm`'s palmetto cells)
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one leaf per cell.
+- Used by: the gorge fan palm's crown. Reuse: any fan palm (Livistona, Washingtonia, the bays' palms).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one fan-palm leaf (Livistona) on a long, thin, spiny stalk rising from the bottom of its cell: a round fan wider than it is tall, split two thirds of the way to its centre into about sixty narrow ribbon segments whose tips droop and hang down; glossy mid green (#4a7a3a, #5a8a40) with paler yellow-green (#a0b060) along the folds, one or two old leaves going brown (#8a6a3a) at the tips. Vary how far the segments droop between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.flametip` (optional; fallback `card.croptree.glossy`, tinted)
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one twig end per cell.
+- Used by: the flametip scrub forest of the benches. Reuse: any tree with a red new flush (the tepuis, mango and cinnamon flushes).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a short leafy twig end of a tepui shrub-tree standing up from the bottom of its cell: thick, leathery, glossy oval leaves crowded in a spiral at the twig tip, the older leaves below dark olive green (#3e5230), the new flush at the tip bright scarlet to orange-red (#c8321e, #e0602a); on four of the nine a few pale cream five-petalled flowers (#efe2c8) among the leaves. Vary how much of each twig is in red flush. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.treelily` (optional; fallback `card.ichu` and `card.flower.claw`)
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one branch tip per cell. The flowers are lilac: key with `spill: edge` (as `card.crop.saffron`).
+- Used by: the stilt lily of the cap plateaus. Reuse: any tree-lily or dracaena-like tuft.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
 ```
 
 ## Delivered 2026-10-18, the Throne's new flora
