@@ -4,9 +4,9 @@
 // and on the Garden's stacks; its trees become obstacles; then the hyperjungle plants the floor (necanyons' jungleMask:
 // off the rock and the walls' feet, out of the farms and the bands' grounds, thin on the cleared ground); then one bake.
 window._biome=null;window._jungle=null;
-// the kit's mask on this page: the water's, and nothing on the mesa's top more than 12 m in from its edge
-const topMask=(x,z)=>{const A=KSTACKS.at([MESA_B],x,z);if(!A)return 1;const on=KSTACKS.at(ROCK,x,z);
- if(on&&on.S!==MESA_B)return 1;return A.d>-12?1:0;};
+// the kit's mask on this page: the water's, and nothing on the town's ground (the mesa's top and the Garden's mesa) more
+// than 12 m in from its edge; the stacks on it keep theirs
+const topMask=(x,z)=>{const on=KSTACKS.at(ROCK,x,z);if(!on||TOWN_GROUND.indexOf(on.S)<0)return 1;return on.d>-12?1:0;};
 (function(){
  const t0=performance.now();
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
