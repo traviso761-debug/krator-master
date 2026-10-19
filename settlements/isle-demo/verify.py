@@ -59,7 +59,8 @@ opened (?town=) and, once both towns are planned (window._city.both):
     Ridertown, both harbours' vessels and origins, the wall's named gates, the landing), the size, the hug, the farmland
   - the declared boxes the plan placed by (ISLE_DIMS, ISLE_VDIMS, read from the kits' sources) are the bundles' own
   - negative controls: a building pushed onto its neighbour, one pushed into the sea, the palace (or Valapo's hall) taken
-    away: each must fail its check"""
+    away: each must fail its check
+  - on the Valapo page, Valapo on core/simulation (SIM_JS below)"""
 CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.G;
  if(!neg){
   for(const t in C.checks)C.checks[t].forEach(c=>out.push(c));
@@ -79,6 +80,28 @@ CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.
   return ISLE.checks(R,G,{lots:L}).filter(c=>/in the sea/.test(c.name));}
  if(neg==='landmark'){const R2=Object.assign({},R,{lots:R.lots.filter(l=>l.role!=='palace'&&l.role!=='village hall')});
   return ISLE.checks(R2,G).filter(c=>/landmarks the brief/.test(c.name));}
+ return [];}"""
+
+
+"""P7b: Valapo on core/simulation (src/40-45), checked on the Valapo page under --assert. The page declares it once both
+towns are planned; SIM_JS runs a world day minute by minute (ISLE.simRun, once) and returns src/45-isle-sim-checks.js's
+checks: every lot of a census trade (kits/islanders IS_TRADES) a place, every resident a home and every worker a job in
+the town (its census's people, every post filled), the food made, hauled and eaten with nothing short for the day and
+the food made covering what was eaten. Each check has a negative (neg): a trade's lot taken from the places, a resident
+housed in another town, a worker without a job, a food never hauled, a purchase out of stock, half the food made."""
+SIM_JS = r"""(neg)=>{const C=window._city,R=C.simPlans.Valapo,s=ISLE.TUNE.sim.towns.Valapo.id,X=ISLE.SIM.towns[s];
+ if(ISLE.SIM.clock.m<1440){const t0=performance.now();ISLE.simRun(1440-ISLE.SIM.clock.m);X.dayMs=Math.round(performance.now()-t0);}
+ const books=ISLE.simBooks(s),res=()=>SIM.all('actor').filter(a=>!a.driven&&SIM.R.role[a.role].settlement===s).map(a=>Object.assign({},a)),cp=()=>JSON.parse(JSON.stringify(books));
+ if(!neg)return {info:{places:X.places.places.length,homes:X.places.homes,beds:X.places.beds,posts:X.places.posts,people:X.pop.actors,workers:X.pop.workers,carts:X.econ.carts,
+   warehouses:X.econ.warehouses,producers:X.econ.producers,nav:ISLE.SIM.nav,problems:ISLE.SIM.problems.slice(0,3),routeFail:SIM.routeFail.length,declareMs:ISLE.SIM.ms.declare,dayMs:X.dayMs},
+  checks:ISLE.simChecks(R).concat(ISLE.simFoodChecks(R,books))};
+ const pick=(rs,re)=>rs.filter(c=>re.test(c.name));
+ if(neg==='lot'){const L=R.lots.find(l=>ISLE.tradeOf(l.key));return pick(ISLE.simChecks(R,{places:SIM.all('place').filter(P=>P.settlement===s&&P.tags.lot!==L.id)}),/census trade/);}
+ if(neg==='home'){const A=res();A[0].home='kautoa.0';return pick(ISLE.simChecks(R,{actors:A}),/resident/);}
+ if(neg==='job'){const A=res(),w=A.find(a=>a.work);w.work=undefined;return pick(ISLE.simChecks(R,{actors:A}),/worker/);}
+ if(neg==='haul'){const B=cp();B.foods.fish.hauled=0;return pick(ISLE.simFoodChecks(R,B),/made and hauled/);}
+ if(neg==='short'){const B=cp();B.foods['sweet-potato'].outOf=12;return pick(ISLE.simFoodChecks(R,B),/nothing short/);}
+ if(neg==='made'){const B=cp();Object.keys(B.foods).forEach(f=>{B.foods[f].made=Math.floor(B.foods[f].made/2);});return pick(ISLE.simFoodChecks(R,B),/covers/);}
  return [];}"""
 
 
@@ -128,6 +151,21 @@ async def run_city(a):
                         caught = bool(rs) and not any(r['ok'] for r in rs)
                         print(('  PASS  ' if caught else '  MISSED') + ' negative (' + neg + ') : ' + '; '.join(r['detail'] for r in rs))
                         if not caught: fails.append(town + ': negative ' + neg)
+                    if town == 'Valapo':
+                        se = await pg.evaluate('window._city.simError || (window._city.sim ? null : "not declared")')
+                        if se:
+                            print('  FAIL  Valapo on core/simulation : ' + se[:400]); fails.append('Valapo sim')
+                        else:
+                            r0 = await pg.evaluate(SIM_JS, None)
+                            print('  INFO  Valapo on core/simulation : ' + json.dumps(r0['info']))
+                            for r in r0['checks']:
+                                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
+                                if not r['ok']: fails.append(r['name'])
+                            for neg in ('lot', 'home', 'job', 'haul', 'short', 'made'):
+                                rs = await pg.evaluate(SIM_JS, neg)
+                                caught = bool(rs) and not any(r['ok'] for r in rs)
+                                print(('  PASS  ' if caught else '  MISSED') + ' negative (sim ' + neg + ') : ' + '; '.join(r['detail'] for r in rs))
+                                if not caught: fails.append('Valapo: negative sim ' + neg)
                     if town == 'Kautoa':
                         prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
                         pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)

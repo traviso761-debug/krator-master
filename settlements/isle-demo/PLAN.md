@@ -625,6 +625,23 @@ two-settlement checks in `test-sim.js`, each with a negative; every older check 
 - 23 new checks in `test-sim.js` (211 in all), each with a negative, among them the books balancing in both towns
   with a load at sea, every load shipped = landed + at sea, and rice conserved minute by minute on a line.
 
+**P7b, Valapo (2026-10-19).** Declared on the city page from its plan's records alone, keyed as the settlement
+`valapo`, in Dhelv's order (`src/15-isle-tune.js`, `40`-`45`; README.md, "The towns on core/simulation"):
+- places from the lots by `ISLE.TUNE.sim.kinds` (Dhelv's table shape, slots per 100 m2 of footprint; a dwelling's beds its
+  households at five a household, so the sim's people are the census's 2,155), the farm parcels by crop, each with the
+  census trade its key works (`IS_TRADES` read in place by build.py as `ISLE_TRADES`); in world metres;
+- the walking graph from the plan's ways (`41-isle-nav.js`, generic to any core/city plan: a candidate for core/city's
+  data side), every door a split of its street;
+- a role per kind of work, counted from the posts, and the kin to fill the beds, dealt by `SIM.populate({settlement:
+  'valapo', prefix: 'v'})`: 805 workers, every post filled;
+- the foods as items and goods, the shops and households, and Valapo's own economy (`SIM.economy(cfg, {settlement})`):
+  the 8c crops on the parcels, fish, pork, bread from sweet potato, sugar from cane, cloth from cotton, pots; 39
+  warehouses and granaries, 14 carts.
+- Proof: `verify.py dist/isle-city.html --assert` on the Valapo page and `node tests/test-isle-sim.js` (the same numbers in
+  node and Chromium): every census trade's lot a place, every resident housed and every worker employed in the town, and
+  after a world day the food made, hauled and eaten with nothing short and the food made covering what was eaten, each
+  with a negative. No core/simulation change. Left for P7b: Kautoa, the run loop, the stocks map, the citizens drawn.
+
 **Order of work.**
 
 | Step | What | Proof |

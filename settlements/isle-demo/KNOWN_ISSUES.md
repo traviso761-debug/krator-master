@@ -52,3 +52,28 @@
       village; it is what the strokes make of the sea floor there.
 - [ ] **The in-app browser pane can stall** loading this page while several world pages are open in other tabs (GPU).
       Close them first. Headless and alone it loads in under a second.
+
+## The towns on core/simulation (P7b, 2026-10-19)
+
+- [ ] **The page does not step the sim yet,** nor draw anyone: verify.py runs Valapo's day (`ISLE.simRun`). The run
+      loop (a generic sim clock for core/host, or `57-isle-run.js`), the stocks id map (`58-isle-stocks.js` for core/host's
+      stocks panel) and a few citizens drawn near the camera are the rest of P7b.
+- [ ] **Only Valapo is declared.** Kautoa takes the same table (`ISLE.TUNE.sim.kinds` has only the East set's keys and
+      Valapo's; Kautoa's West, Iziz Vernacular and Beast Rider keys need rows) and joins the one walking layer
+      (`ISLE.simDeclare` merges the towns' graphs; it must be called once with both).
+- [ ] **The meals' counts are page-wide.** `SIM.ITEMS.stats.meals` (at home, bought out, at a mess, kitchens short) is not
+      booked by town in core/simulation (the eaten, bought and out-of counts are: `statsBy`). With one town declared the
+      two agree; before Kautoa joins, the meals want booking by town too (a core/simulation change: Voth's verify diff).
+- [ ] **The walking graph is built here** (`41-isle-nav.js`) from `{cls, w, pts}` of the plan's ways: it fits any
+      core/city plan, so it belongs on core/city's data side (asked of the city-layout work) or core/simulation; kept here
+      until then so no other page moves.
+- [ ] **The work is dealt by load, not by distance** (`SIM.populate`'s rule): a worker may live across town from their
+      job. Valapo is about 1.5 km across, at most an hour's walk at 18 motion seconds a world minute. A `near` deal
+      (opt-in in core/simulation) would suit Kautoa.
+- [ ] **Only the food is an item.** No clothes, tools or wear; the weavers' cloth and the potters' pots pile up in the
+      warehouses (nobody buys them yet), the windmill's sugar waits for the canoe line (P7c), and the smithies make
+      nothing until the iron mine (a hinterland village, core/hamlet H5) brings ore.
+- [ ] **No needs** (`SIM.needs`): schedules only, no meters, moods or efficiency.
+- [ ] **The second morning's buying wave.** Every house opens with 1.5 to 3 days of food, so on day 2 most of them buy at
+      once and the warehouses' days of fish and sweet potato dip (above a day with the present rates, five days run).
+      The farms beyond the village (`_city.world`) are not in the sim.

@@ -59,7 +59,7 @@ EXPORT_ASSERT = False
 BUILD_FIRST = ['kits/interiors']
 # A node test that reads a build's output runs after the builds (in CI its input is an LFS pointer until the build
 # writes it); with --no-build it runs with the other node tests, on the committed output.
-NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js']   # dist/isle-city.plan.js
+NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js', 'settlements/isle-demo/tests/test-isle-sim.js']   # dist/isle-city.plan.js
 
 
 def builds():

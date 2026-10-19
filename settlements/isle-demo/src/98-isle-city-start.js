@@ -1,7 +1,9 @@
 /* ============================== 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK ============================== */
 /* [web] ?town=Kautoa (the default) or Valapo: that town is planned and drawn; then the other is planned too (not drawn),
-   so the probe carries both towns' census and checks. window._city is the probe verify.py reads:
-     {ready, both, town, ms, census: {town: ...}, checks: {town: [...]}, draw: DRAW.stats, failed, missing, errors, view(name)}
+   so the probe carries both towns' census and checks; then Valapo is declared on core/simulation (P7b). window._city is
+   the probe verify.py reads:
+     {ready, both, town, ms, census: {town: ...}, checks: {town: [...]}, draw: DRAW.stats, failed, missing, errors, view(name),
+      sim (ISLE.SIM), simPlans: {Valapo: R}, simError}
    The camera orbits a target on the ground: drag to turn, right-drag (or shift-drag) to pan, the wheel to zoom; the near
    set of full pieces follows the target. The view buttons are each town's places. */
 var CAM = { t: [0, 0, 0], yaw: 0.6, pitch: 0.55, dist: 2600 };
@@ -91,6 +93,13 @@ setTimeout(function () {
         var other = ISLE.TOWNS.filter(function (t) { return t !== town; })[0], O = ISLE.plan(other, SITE_INIT);
         census[other] = O.census; checks[other] = O.checks; window._city.other = { town: other, ms: O.ms, failed: O.R.failed, missing: O.R.missing, log: O.R.log, world: O.R.world };
         lap('plan ' + other);
+        /* P7b: Valapo declared on core/simulation (src/40-45), whichever town is drawn; verify.py runs its day
+           (ISLE.simRun) and its checks. The page does not step it yet (the run loop and the citizens drawn near the
+           camera come next: HANDOFF.md) */
+        try {
+          var V = town === 'Valapo' ? cur : O;
+          window._city.sim = ISLE.simDeclare([{ R: V.R, G: V.G }]); window._city.simPlans = { Valapo: V.R }; lap('sim Valapo');
+        } catch (e2) { window._city.simError = String(e2 && e2.stack || e2); }
       } catch (e) { window._city.otherError = String(e && e.stack || e); }
       window._city.both = true;
     }, 30);
