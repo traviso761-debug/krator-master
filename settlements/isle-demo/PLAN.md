@@ -587,9 +587,13 @@ settlement, so Voth's stocks proof, `test-sim.js` and the baseline do not move.
 | P7e | The `sim` export section (section 7's profile): places, actors, stocks per settlement, the route and its books | `EXPORT.check` under the isle profile fails on a stubbed `sim` and passes filled; Godot reads the books after a replayed week (P8) |
 
 **Things the owner decides before P7b:**
-- the population to aim for in each town (P6 has about 4,900 in Kautoa and 1,540 in Valapo);
+- ~~the population to aim for in each town~~ **settled (owner, 2026-10-18): Kautoa about 6,300, Valapo about 2,150.**
+  P6's census (4,900 and 1,540) is re-tuned to these. The hinterland villages come on top, at most 500 each
+  (`core/hinterland/PLAN.md`);
 - whether Valapo's iron mine, the resource nodes (sulfur, salt) and the farm ring outside the planner square are sim
-  places in P7 (the economy needs them to make ore, sulfur and salt) or wait for P8's world records;
+  places in P7 (the economy needs them to make ore, sulfur and salt) or wait for P8's world records. **Proposed
+  answer:** they are the hinterland villages of `core/hinterland/PLAN.md` (salt, mine, lumber, ranch; then fishing and
+  farming), each a settlement with its town as parent, placed with their resources;
 - the canoe line's timetable: how many canoes, and how often (122 km by sea, about a day each way under sail).
 
 **Risk.** The economy keyed by settlement touches every function Voth's economy runs through. P7a must land as its
