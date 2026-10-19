@@ -32,7 +32,7 @@ function describe(hit){const p=hit.point,o=hit.object;
 const BUDGET={
  showcase:{tris:16000000,calls:240},
  cls:{pass:7000000,host:1600000},
- type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','host':'host'},
+ type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','pinnacle/talus':'pass','host':'host'},
 };
 // the plan's numbers (PLAN.md section 1, the settled layout)
 const HCHK={
@@ -49,14 +49,24 @@ const HCHK={
   let crowd=0;F.forEach(A=>{crowd=Math.max(crowd,F.filter(B=>Math.hypot(A.x-B.x,A.z-B.z)<250).length);});
   return{ok:F.length===10&&!bad.length&&sec.size>=5&&crowd<=3,detail:F.length+' fins; '+sec.size+' of 8 sectors; at most '+crowd+' within 250 m'+(bad.length?'; '+bad.join(', '):'')};},
  // the Garden: a smaller, lower mesa in the middle of the top (40-70 m over it, 350-480 m across), its pinnacles on it,
- // fourteen or more, tallest at the centre (the owner, 2026-10-19: even larger): those within 100 m of its middle 180 m or
- // more on average over its top, the outer ones lower; four carry roost rings
+ // fourteen or more (with those on the Heart), tallest at the centre (the owner, 2026-10-19: even larger): those within
+ // 100 m of its middle 180 m or more on average over its top, the outer ones lower; four carry roost rings
  garden(G,GB){const gtop=GB?GB.top:0,b=GB?GB.beds[GB.beds.length-1]:null,across=b?KSTACKS.footR(b,0)+KSTACKS.footR(b,Math.PI):0,rise=GB?GB.top-_top:0;
-  const on=G.filter(B=>GB&&B.y0>gtop-10),h=B=>B.top-B.y0,avg=L=>L.length?L.reduce((s,B)=>s+h(B),0)/L.length:0;
+  const on=G.filter(B=>GB&&B.y0>gtop-10),h=B=>B.top-gtop,avg=L=>L.length?L.reduce((s,B)=>s+h(B),0)/L.length:0;
   const pin=on.filter(B=>B.kind==='spire'),inner=pin.filter(B=>Math.hypot(B.x-GB.x,B.z-GB.z)<100),outer=pin.filter(B=>Math.hypot(B.x-GB.x,B.z-GB.z)>=100),hi=avg(inner),lo=avg(outer);
   return{ok:!!GB&&rise>40&&rise<70&&across>350&&across<480&&on.length>=14&&G.filter(B=>B.ring).length===4&&hi>=180&&hi>lo+20,
    detail:'the Garden\'s mesa '+rise.toFixed(0)+' m over the top, '+across.toFixed(0)+' m across; '+on.length+' stacks on it ('+pin.length+' pinnacles); the centre\'s '+hi.toFixed(0)+
     ' m on average, the outer '+lo.toFixed(0)+' m; '+G.filter(B=>B.ring).length+' with rings'};},
+ // the Heart: one more mesa in the Garden's middle (the owner, 2026-10-19), about half the height of the pinnacles there
+ // (its rise over the Garden's mesa .4-.6 of theirs), three or more of them rising out of it, and weathered harder than
+ // the Garden's mesa: how far its beds' rims stand from the same body cut clean (weather 0), as a share of the radius,
+ // half as much again as the Garden's mesa's
+ heart(H,GB,G,HS,GS){if(!H||!GB)return{ok:false,detail:'no Heart'};const K=KSTACKS,wx=(B,S)=>{const C=K.make({id:'clean',kind:'butte',x:B.x,z:B.z,y0:B.y0,seed:S.seed,lobes:S.lobes,
+   weather:0,shoulder:S.shoulder,bed:S.bed,tiers:[{h:B.top-B.y0,r:S.r,e:S.e,ry:S.ry}]});let d=0,m=0;
+   for(let k=0;k<Math.min(B.beds.length,C.beds.length);k++)for(let i=0;i<72;i++){const a=i/72*TAU,r0=K.footR(C.beds[k],a);d+=Math.abs(K.footR(B.beds[k],a)-r0);m+=r0;}return d/m;};
+  const rise=H.top-GB.top,on=G.filter(B=>B.kind==='spire'&&K.at([H],B.x,B.z)),ph=on.length?on.reduce((s,B)=>s+B.top-GB.top,0)/on.length:0,wh=wx(H,HS),wg=wx(GB,GS);
+  return{ok:on.length>=3&&rise>.4*ph&&rise<.6*ph&&wh>wg*1.5,detail:'the Heart '+rise.toFixed(0)+' m over the Garden\'s mesa; '+on.length+' pinnacles on it, '+ph.toFixed(0)+
+   ' m on average; weathered '+(wh*100).toFixed(1)+'% of its radius (the Garden\'s mesa '+(wg*100).toFixed(1)+'%)'};},
  // no tree on the top (the town's ground) past its 12 m rim band, except on the Garden's stacks
  noTrees(T){const on=T.filter(t=>{const S=KSTACKS.at(ROCK,t.x,t.z);return !!S&&TOWN_GROUND.indexOf(S.S)>=0&&S.d<=-12;});
   return{ok:on.length===0,detail:on.length+' trees on the town\'s ground ('+T.length+' trees on the page)'};},
@@ -80,6 +90,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the mesa: 250 m, 1.2 by 0.8 km',HCHK.mesa(MESA_B));
  add('ten fins on the rim, spread round it',HCHK.fins(_fins()));
  add('the Garden\'s mesa and its pinnacles',HCHK.garden(_garden(),GARDEN_B));
+ add('the Heart: a third mesa, half the pinnacles\' height, the most weathered',HCHK.heart(HEART_B,GARDEN_B,_garden(),PR.HEART_MESA,PR.GARDEN_MESA));
  add('no tree on the town\'s ground',HCHK.noTrees(NECANYONS.TREES||[]));
  add('the forest out of the farms and the grounds',HCHK.cleared(_forestPts()));
  add('the land is the scale model\'s',HCHK.model());
@@ -90,6 +101,10 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a mesa 180 m high',HCHK.mesa(Object.assign({},MESA_B,{top:MESA_B.top-70})));
  add('the Garden all one height (no taller centre)',HCHK.garden(_garden().map(B=>Object.assign({},B,{top:B.y0+60})),GARDEN_B));
  add('no Garden\'s mesa (the pinnacles on the main top)',HCHK.garden(_garden(),null));
+ add('no Heart',HCHK.heart(null,GARDEN_B,_garden(),PR.HEART_MESA,PR.GARDEN_MESA));
+ add('a Heart as weathered as the Garden\'s mesa',HCHK.heart(Object.assign({},HEART_B,{beds:KSTACKS.make({id:'x',kind:'butte',x:HEART_B.x,z:HEART_B.z,y0:HEART_B.y0,seed:PR.HEART_MESA.seed,
+  lobes:PR.HEART_MESA.lobes,weather:PR.GARDEN_MESA.weather,shoulder:PR.HEART_MESA.shoulder,bed:PR.HEART_MESA.bed,tiers:[{h:HEART_B.top-HEART_B.y0,r:PR.HEART_MESA.r,e:PR.HEART_MESA.e}]}).beds}),GARDEN_B,_garden(),PR.HEART_MESA,PR.GARDEN_MESA));
+ add('a Heart as tall as its pinnacles',HCHK.heart(Object.assign({},HEART_B,{top:HEART_B.top+110}),GARDEN_B,_garden(),PR.HEART_MESA,PR.GARDEN_MESA));
  add('a tree in the Crown',HCHK.noTrees((NECANYONS.TREES||[]).concat([{x:0,z:-300,y0:_top}])));
  add('a tree in the farms',HCHK.cleared(_forestPts().concat([[-400,800]])));   // in the fields west of the road
  return R;}

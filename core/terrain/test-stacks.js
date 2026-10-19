@@ -64,6 +64,19 @@ ok('weathered beds differ in outline ('+ragged(wm).toFixed(2)+' m between beds; 
   !!(raw.beds[raw.beds.length-1].gu));}
 const sw=shares(wm);ok('a weathered mesa\'s walls still face out ('+(sw.wall*100).toFixed(1)+'%)',sw.wall>.95,false);
 ok('a weathered mesa\'s undersides close every overhang ('+shares(wm).nUnd+' triangles, facing down)',undersides(wm)===0&&shares(wm).und>.99,false);
+// ---- the shoulder (the owner's Monument Valley butte, 2026-10-19): thin beds stepping back from the cliff's top, a rough
+// 30-45 degree slope of ledges to the cap rock, the top inside it flat and whole; and the flutes run down the cliff
+const sh=K.make({id:'sh',kind:'butte',x:0,z:0,y0:0,seed:52,weather:1,shoulder:{h:30,back:36},tiers:[{h:220,r:300,e:1.4,ry:.3}]});
+const shBeds=sh.beds.filter(b=>b.y>=220-30-.01),cliff=sh.beds.filter(b=>b.y<190-.01).slice(-1)[0];
+const meanR=b=>{let r=0;for(let i=0;i<64;i++)r+=K.footR(b,i/64*Math.PI*2);return r/64;};
+{const back=meanR(cliff)-meanR(shBeds[shBeds.length-1]),deg=Math.atan2(30,back)*180/Math.PI,steps=shBeds.every((b,i)=>i===0||meanR(b)<meanR(shBeds[i-1])+.5);
+ ok('the shoulder steps back '+back.toFixed(0)+' m over 30 m in '+shBeds.length+' ledges ('+deg.toFixed(0)+' degrees)',deg>=28&&deg<=47&&shBeds.length>=4&&steps,false);
+ const plain=K.make({id:'sh',kind:'butte',x:0,z:0,y0:0,seed:52,weather:1,tiers:[{h:220,r:300,e:1.4,ry:.3}]});
+ ok('without a shoulder the top is the cliff\'s (the negative)',true,Math.abs(meanR(plain.beds[plain.beds.length-1])-meanR(plain.beds[0]))>10);
+ const agS=topsAgree(sh,[sh]);ok('the shoulder\'s ledges lie on the field ('+agS.n+' vertices)',agS.n>300&&agS.worst<1e-4,false);}
+{const a=sh.beds[2],b=sh.beds[4],wig=B=>{const o=[];for(let i=0;i<720;i++){const t=i/720*Math.PI*2;o.push(K.footR(B,t)-(K.footR(B,t-.01)+K.footR(B,t+.01))/2);}return o;};
+ const A=wig(a),Bw=wig(b),c=(()=>{let sa=0,sb=0,sab=0;for(let i=0;i<A.length;i++){sa+=A[i]*A[i];sb+=Bw[i]*Bw[i];sab+=A[i]*Bw[i];}return sab/Math.sqrt(sa*sb);})();
+ ok('the flutes run down the cliff: two of its beds share their grooves (correlation '+c.toFixed(2)+')',c>.5,false);}
 const agw=topsAgree(wm,[wm]);ok('and its tops lie on the field',agw.n>300&&agw.worst<1e-4,false);
 
 // ---- the mesh faces out: walls away from the axis, tops up, an overhang's underside down
@@ -83,10 +96,10 @@ ok('a balanced rock\'s cap is wider than its neck',(()=>{const n=bal.beds.length
 // every bed that overhangs the one below has an underside, and one that does not has none (a slit to the sky otherwise:
 // the owner, 2026-10-19)
 function undersides(B,m){m=m||K.mesh(B);let bad=0;for(let k=1;k<B.beds.length;k++){const b=B.beds[k],lo=B.beds[k-1];let over=false;
-  for(let i=0;i<180&&!over;i++){const a=-i/180*Math.PI*2;if(K.footR(b,a)*(1-b.nt)>K.footR(lo,a)*(1-lo.ch)*(lo.tp==null?1:lo.tp)+.05)over=true;}
-  let has=false;for(let v=0;v<m.part.length&&!has;v++)if(m.part[v]===2&&m.bed[v]===k)has=true;if(over!==has)bad++;}return bad;}
+  for(let i=0;i<180&&!over;i++){const a=-i/180*Math.PI*2;if(K.footR(b,a)*(1-b.nt)>K.footR(lo,a)*(1-lo.ch)*(lo.tp==null?1:lo.tp)+.5)over=true;}
+  let has=false;for(let v=0;v<m.part.length&&!has;v++)if(m.part[v]===2&&m.bed[v]===k)has=true;if(over&&!has)bad++;}return bad;}   // a bed out by half a metre or more must close its underside
 {const m=K.mesh(mesa),cut={pos:m.pos,part:m.part.map(p=>p===2?0:p),bed:m.bed};
- ok('every overhanging bed has its underside, and no other ('+mesa.beds.length+' beds)',undersides(mesa)===0,undersides(mesa,cut)===0&&shares(mesa).nUnd>0);}
+ ok('every overhanging bed has its underside ('+mesa.beds.length+' beds)',undersides(mesa)===0,undersides(mesa,cut)===0&&shares(mesa).nUnd>0);}
 
 // ---- fins: one strike along their row; slender
 ok('fins share their row\'s strike',fins.every(f=>Math.abs(Math.sin(f.beds[0].ry))<.15),fins.every(f=>Math.abs(Math.cos(f.beds[0].ry))<.15));

@@ -335,6 +335,30 @@ catalog culture, nine furnished buildings, doors and panes for the black voids) 
 in `build_gallery.py`). Versions 17 and 18 were published elsewhere and not logged here; 18 carried the P5 page with the
 materials bind and its sidecar. Every other file is as in version 18.
 
+Krator Worlds S–Z version 8 (2026-10-19): Talia through P7 (`worlds/talia.html`, 2.0 MB, from `claude/vassal-kits` at
+3c3d5395: the trade, the University, the arts, the temple, the Gate of the Passes, the governor's palace, the catalog
+culture and 64 furnished buildings, real doors and windows for the dark voids), and its card in the live index
+(version 7's index, the Talia entry's blurb and size edited, as in `build_gallery.py`). `worlds/iziz.tex.talia.js` and
+`worlds/iziz.tex.iziz.js` were already in the part at the local sizes and stay. Every other file is as in version 7.
+Talia sorts under S–Z, not I–S: its first page went there with the split.
+
 Krator Worlds I–S version 20 (2026-10-19): `worlds/iziz-mechs.html` replaced (1.6 MB, from `main` at af5ac54d: the Mechs
 kit with six more Iziz mechs, seventeen in all: the Clipeus, Lictor, Baiulus, Turris, Speculator and Catulus) and its card's
 blurb in the live index (version 19's index, one entry edited, as in `build_gallery.py`). Every other file is as in version 19.
+
+Krator Biomes and Objects versions 17 and 18 (2026-10-19): `worlds/necanyons.html` (the north-eastern canyons) and its two packs
+replaced from `claude/bold-cori-iluy70` after main was merged into it (8fe053f3; merged to `main` the same day: KSTACKS'
+flutes, shoulders and undersides; necanyons' `footMax` and the land fragment's hooks). The live index (version 16) kept: the card's size is
+unchanged (10.3 MB). Pinnacle Rock is in `UNLISTED` until its town is built (the owner, 2026-10-19); `ENTRIES` now
+carries the necanyons card's line. Version 17 carried the page and both packs from 50a07a9f; version 18 the page alone,
+rebuilt after the merge (the packs unchanged).
+
+Krator Worlds S–Z versions 9 and 10 and Krator Worlds I–S version 22 (2026-10-19, from `main` at bd5ed646: the Iziz court
+furniture textures). S–Z: `worlds/talia.html` and `worlds/verge.html` replaced, the Iziz pack in two parts
+(`iziz.tex.iziz.js`, `iziz.tex.iziz-2.js`; the court sets made it outgrow one file), Verge's sidecars (`verge.tex.iziz.js`,
+`-2`, and `verge.tex.eastabyss.js`, `verge.tex.locus.js`, which the part lacked), and **Pylon moved in from I–S** with
+`iziz.tex.pylon.js`: with the larger Iziz pack I–S would have held about 257 MiB, over a version's 256. I–S version 22:
+`worlds/iziz.html`, `worlds/iziz-vernacular.html` and the Iziz pack in two parts replaced, Pylon's page and sidecar
+removed (about 254 MiB). The cards' sizes and blurbs were edited in each live index (Pylon's card moved). Roketstad,
+whose page changed only by catalog data it does not draw, was not republished; Voth stays the live 11.9 MB copy.
+

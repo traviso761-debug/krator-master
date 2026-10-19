@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.66,
+    0.547
+   ],
+   "seam_before": [
+    1.86,
+    5.106
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.03,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.25,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "court/marquetry",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.45,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "court-marquetry.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/court/marquetry: mahogany veneer with satinwood chevrons and brass stringing",
+  "reuse": "court cabinets, desks, tables, bed panels",
+  "sha1": "5e4ee9840091743c1e3428f8d9e0699ad69205b9"
+ }
+}

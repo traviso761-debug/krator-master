@@ -4,7 +4,7 @@
 
 Pinnacle Rock: the Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge (PLAN.md). So far the rock and the site (P0-P1): the mesa, its ten fins, the Garden and spurs as KSTACKS records from the settled plan (src/40-pr-layout.js), the necanyons and hyperjungle kits read in place, the floor and the far land to 60 km from the scale model (region/: its cut; the open world's fields read in place). Verified: build.py, verify.py --assert. Read README.md
 
-Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
+Docs: `HANDOFF.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/pinnacle-rock.html`
 
@@ -24,10 +24,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-pr-layout.js` | 14 |  |
+| `40-pr-layout.js` | 15 |  |
 | `42-pr-world.js` | <1 |  |
-| `45-host-stage.js` | 8 | the floor: the knoll's top, as the scale model h (33); the rock (KSTACKS records from the layout) (43); what necanyons' land fragment (47) reads from th (83) |
+| `45-host-stage.js` | 10 | the floor: the knoll's top, as the scale model h (33); the rock (KSTACKS records from the layout) (43); what necanyons' land fragment (47) reads from th (90) |
 | `86-pr-far.js` | 3 |  |
+| `87-pr-talus.js` | 2 |  |
 | `88-host-build.js` | 2 |  |
-| `99-host-take.js` | 10 | the inspector's words: the rock, the zone of the (19); the probe's budgets and the page's checks (verif (31); the page, handed to the host (97) |
+| `99-host-take.js` | 12 | the inspector's words: the rock, the zone of the (19); the probe's budgets and the page's checks (verif (31); the page, handed to the host (112) |
 | `99-tail.html` | <1 |  |

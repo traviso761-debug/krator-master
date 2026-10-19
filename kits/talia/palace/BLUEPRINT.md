@@ -18,6 +18,12 @@ is in `../PLAN.md`, "The governor's palace in Talia's style".
 `FURNITURE.md` is the manifest from the same room data, on the Iziz court sets (the household is Izani) with
 Talia's own pieces for the council pavilion and the tribute office; its NEW list is what the catalog lacks.
 
+## The building
+
+`tal_governor_palace` (`../src/74t-tal-palace.js`) is built on these sheets' frame: the building's x = -v and z = 1 - u, so
+the gate faces +z and every pavilion, court and stair stands where the sheets put it. The rooms are drawn when the kit's
+interior set comes (PLAN.md P6).
+
 ## Assumptions
 
 - Storeys: ground 5.5 m, upper 4.5 m, terrace 1.2 m, undercroft 3.5 m; the drum to y 17, the dome to 24, the lantern

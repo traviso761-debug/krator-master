@@ -84,7 +84,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `91t-iziz-tags.js` | 5 | CORE TAGS: IZIZ'S REG (1) |
 | `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
-| `95i-iziz-interiors.js` | 6 |  |
+| `95i-iziz-interiors.js` | 15 | the court's pictures and finishes (the owner, 20 (14) |
 | `99-start.js` | 2 | 99. the take: Iziz on core/host (1) |
 | `99-tail.html` | <1 |  |
 
@@ -94,7 +94,7 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-35-core-anim.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-58-biome-hyperjungle-fauna.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js`, `94-city-export.js` | 333 |
+| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-35-core-anim.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-58-biome-hyperjungle-fauna.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js`, `94-city-export.js` | 334 |
 | `vernacular` | `89z-rows.js`, `91z-views.js` | 6 |
 | `wA` | `89z-rows.js`, `91z-views.js` | 2 |
 | `wB` | `89z-rows.js`, `91z-views.js` | 1 |

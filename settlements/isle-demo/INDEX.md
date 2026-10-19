@@ -4,7 +4,7 @@
 
 The isle demo (roadmap stage 6's example): PLAN.md, the assay and the plan for two Islander towns on the Ring Sea isles; the site planner (dist/isle-site.html, P4): Voth's site editor read in place on the open world's ground, one town at a time in its own frame, saving both towns to site/isle-site.json through serve.py; the city page (dist/isle-city.html, P6): Kautoa and Valapo on core/city from the owner's site file scaled to the town (tools/scale-site.js), on the Islanders kit, the Iziz Vernacular (Izanitown) and the catalog's Beast Rider buildings (Ridertown), with harbours, vessels, the wall and farmland; verify.py --assert and tests/test-isle-city.js
 
-Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
+Docs: `HANDOFF.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/isle-city.html`, `dist/isle-site.html`
 

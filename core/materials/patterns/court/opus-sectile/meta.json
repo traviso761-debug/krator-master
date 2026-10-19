@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.599,
+    0.591
+   ],
+   "seam_before": [
+    4.223,
+    1.865
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.03,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.2,
+   "pattern": false,
+   "rough": 0.3,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "court/opus-sectile",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.3,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "court-opus-sectile.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/court/opus-sectile: cut-marble inlay, stars in circles on white marble",
+  "reuse": "court hearths, table tops, fountain basins, floor insets",
+  "sha1": "0c93d223aaea81afbab6627cc87cbd758c243125"
+ }
+}
