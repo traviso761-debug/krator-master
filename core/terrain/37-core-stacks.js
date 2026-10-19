@@ -12,9 +12,11 @@
 //   KSTACKS.make({id, kind:'mesa'|'butte'|'spire'|'fin'|'balanced', x, z, y0 (the ground at the foot), seed, ...})
 //        mesa/butte: tiers:[{h (the tier's rise), r (radius), e (elongation, 1 round), ry (strike, radians), dx, dz (the
 //                    tier's centre from the body's)}], bed:[lo,hi] (bed thickness, m), lobes (.16: how ragged the outline)
+//                    weather (.6; 0 clean-cut walls): each bed weathers back by its own metres and gullies notch the rim
 //        spire/balanced/fin: H (height), r (radius at the foot), e (fin: 3..6), ry (strike), lean (radians), taper (.45)
 //        -> a record {id, kind, x, z, y0, seed, beds:[{k, y, h, cx, cz, rx, rz, ry, ch (chamfer), nt (notch), lob, ns, tier,
-//           tp, tx, tz (a stack's taper and lean up the bed, run on into the next: one column, not a pile of drums)}],
+//           tp, tx, tz (a stack's taper and lean up the bed, run on into the next: one column, not a pile of drums),
+//           wr, wn, gu (a mesa's weathering: the bed's own retreat in metres and its noise seed, its tier's gullies)}],
 //           top, R (bounding radius about x,z)}
 //   KSTACKS.footR(b, ang)      the bed's footprint radius at an angle about its own centre (the one footprint function)
 //   KSTACKS.topH(b, x, z)      the bed's top surface at x,z (flat, a little rough: the one top function)
@@ -47,7 +49,14 @@
   function footR(b,ang){var a=ang-b.ry,c=Math.cos(a)/b.rx,s=Math.sin(a)/b.rz,R=1/Math.sqrt(c*c+s*s);
     var ca=Math.cos(ang),sa=Math.sin(ang);
     var n=KR.fbm(ca*1.6+40,sa*1.6+40,b.tier*3.1,2,b.ns)-.5,f=KR.fbm(ca*5.5+80,sa*5.5+80,b.tier*.73,1,b.ns+7)-.5;   // the fret shared by a tier's beds too: one face, not a pile of bulges
-    return R*(1+b.lob*2*n+b.lob*.35*f);}
+    R=R*(1+b.lob*2*n+b.lob*.35*f);
+    // WEATHERING (a mesa's or a butte's beds): each bed weathers back by its own metres (wr: its own noise, so the edge is
+    // ragged and stepped, not one clean cut: a soft bed retreats under a harder one), and the tier's gullies (gu: [angle,
+    // half-width (rad), depth (m)]) notch it, deepest at the rim, dying out down the cliff
+    if(b.wr||b.gu){var rec=b.wr?b.wr*(.5+2.2*(KR.fbm(ca*5+11,sa*5+11,b.k*.9,3,b.wn)-.5)):0;   // -.6..1.6 x wr: in or proud
+      if(b.gu)for(var i=0;i<b.gu.length;i++){var g=b.gu[i],d=Math.atan2(Math.sin(ang-g[0]),Math.cos(ang-g[0]))/g[1];rec+=g[2]*Math.exp(-d*d);}
+      R=Math.max(R*.3,R-rec);}
+    return R;}
   // the bed's top: flat, with a little roughness (rock pans and knobs); the mesh's top vertices are on it exactly
   function topH(b,x,z){return b.y+b.h+.7*(KR.fbm(x*.045+b.ns%97,z*.045,b.k,2,b.ns+11)-.5);}
   // the wall's radius factor up a bed (u 0 at its foot, 1 at its top): the notch weathered back at the parting, the chamfer
@@ -58,7 +67,7 @@
   // tp: the bed's radius at its top over its foot's, tx/tz: its centre's shift up the bed (a stack's taper and lean, run
   // on into the bed above, so a spire is one tapering, leaning column with its partings drawn as lines, not a pile of
   // drums); 1, 0, 0 for a mesa's or a butte's beds (their walls stand straight)
-  function bed(k,y,h,cx,cz,rx,rz,ry,ch,nt,lob,ns,tier){return {k:k,y:y,h:h,cx:cx,cz:cz,rx:rx,rz:rz,ry:ry,ch:ch,nt:nt,lob:lob,ns:ns>>>0,tier:tier,tp:1,tx:0,tz:0};}
+  function bed(k,y,h,cx,cz,rx,rz,ry,ch,nt,lob,ns,tier){return {k:k,y:y,h:h,cx:cx,cz:cz,rx:rx,rz:rz,ry:ry,ch:ch,nt:nt,lob:lob,ns:ns>>>0,tier:tier,tp:1,tx:0,tz:0,wr:0,wn:0,gu:null};}
   // a bed's outline at height share u (0 its foot, 1 its top): its centre and its radius factor (the footprint function
   // footR times this) there
   function cAt(b,u){return [b.cx+(b.tx||0)*u,b.cz+(b.tz||0)*u];}
@@ -69,14 +78,20 @@
     var seed=(o.seed==null?KR.child(1,String(o.id)):o.seed)>>>0,x=o.x||0,z=o.z||0,y0=o.y0==null?0:o.y0,beds=[];
     if(o.kind==='mesa'||o.kind==='butte'){
       var tiers=o.tiers||[{h:o.H==null?120:o.H,r:o.r==null?150:o.r,e:o.e==null?1.3:o.e,ry:o.ry||0}];
-      var bl=o.bed||[14,34],lob=o.lobes==null?.16:o.lobes,y=y0,k=0;
+      var bl=o.bed||[14,34],lob=o.lobes==null?.16:o.lobes,y=y0,k=0,W=o.weather==null?.6:o.weather;   // weather 0: clean-cut walls
       for(var t=0;t<tiers.length;t++){var T=tiers[t],rs=S(KR.hash(seed,t,101)),ns=KR.hash(seed,t,7),top=y+T.h,e=T.e==null?1.3:T.e;
         var cx=x+(T.dx||0),cz=z+(T.dz||0),rx=T.r*Math.sqrt(e),rz=T.r/Math.sqrt(e),ry=T.ry==null?(o.ry||0):T.ry;
         while(y<top-1){var h=Math.min(rs.range(bl[0],bl[1]),top-y);if(top-y-h<bl[0]*.6)h=top-y;
           var last=y+h>=top-.01,j=1+rs.range(-.012,.012)+(last?.012:0),M=Math.max(rx,rz);   // the cap rock stands a little proud: harder
           // the chamfer and the notch are metres (a parting weathers back a metre or two whatever the mesa's size), kept as
           // fractions of the bed's radius
-          beds.push(bed(k++,y,h,cx,cz,rx*j,rz*j,ry,(last?rs.range(1.5,3):rs.range(.4,1.2))/M,(last?rs.range(2,4):rs.range(.5,1.8))/M,lob,ns,t));y+=h;}}
+          beds.push(bed(k++,y,h,cx,cz,rx*j,rz*j,ry,(last?rs.range(1.5,3):rs.range(.4,1.2))/M,(last?rs.range(2,4):rs.range(.5,1.8))/M,lob,ns,t));y+=h;}
+        // the tier weathered: its beds' own retreat (the cap rock, harder, least) and its gullies, a few per 200 m of rim
+        if(W>0){var t0=y-T.h,M2=Math.max(rx,rz),per=TAU*Math.sqrt((rx*rx+rz*rz)/2),ng=Math.round(per/130*W),gs=S(KR.hash(seed,t,131)),G=[];
+          for(var q=0;q<ng;q++)G.push([gs.range(0,TAU),gs.range(7,22)/M2,Math.min(gs.range(18,55)*W,M2*.3)]);
+          for(var bi=0;bi<beds.length;bi++){var bb=beds[bi];if(bb.tier!==t)continue;var top2=bb.y+bb.h>=y-.01;
+            bb.wr=Math.min(W*gs.range(4,14)*(top2?.55:1),M2*.12);bb.wn=KR.hash(seed,t,bb.k,137)>>>0;
+            var f=sm(.1,.95,(bb.y+bb.h-t0)/T.h);if(f>.02&&G.length)bb.gu=G.map(function(g){return [g[0],g[1],g[2]*f];});}}}
     }else{
       var r=S(KR.hash(seed,0,202)),H=o.H==null?60:o.H,r0=o.r==null?12:o.r,e2=o.kind==='fin'?(o.e==null?4:o.e):(o.e==null?1.15:o.e);
       var ry2=o.ry==null?r.range(0,TAU):o.ry,lean=o.lean==null?r.range(0,.06):o.lean,la=o.kind==='fin'?ry2+(r.chance(.5)?0:Math.PI):r.range(0,TAU);
@@ -140,7 +155,8 @@
       grid(tops,seg,1,k,false);
       // an overhang's underside (a balanced cap, a bed wider than the top below it): a disc facing down at its foot
       var below=k>0?B.beds[k-1]:null,over=false;
-      if(below)for(s=0;s<seg&&!over;s+=4){var aa=ang(s);if(footR(b,aa)*(1-b.nt)>footR(below,aa)*(1-below.ch)*tAt(below,1)*1.08)over=true;}
+      // (any overhang at all: a weathered bed standing proud of the one under it leaves a slit to the sky otherwise)
+      if(below)for(s=0;s<seg&&!over;s++){var aa=ang(s);if(footR(b,aa)*(1-b.nt)>footR(below,aa)*(1-below.ch)*tAt(below,1)+.05)over=true;}
       if(over){var und=[1,.6,.25].map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.nt)*rho,x=b.cx+Math.cos(a)*R,z=b.cz+Math.sin(a)*R;return [x,b.y,z,x,z,.35];};});
         grid(und,seg,2,k,true);}
     }

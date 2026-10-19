@@ -8,7 +8,8 @@ const VIEWS=(function(){const V={},n0=_fin('fin-n0'),e1=_fin('fin-e1');
  V['From afar (the knoll and the Inner Wall behind it)']=[2600,700,9000,0,600,-30000];
  if(n0)V['The north fins at roost height, over the gorge']=[n0.x+60,n0.top+20,-860,n0.x,n0.top-25,n0.z];
  if(e1)V['The east fins from the east']=[e1.x+330,e1.top+10,e1.z+90,e1.x,e1.top-30,e1.z];
- V['The Garden from the Crown']=[0,_top+14,-250,0,_top+30,0];
+ V['The Garden\'s mesa from the Crown']=[0,_top+14,-300,0,_top+90,0];
+ if(GARDEN_B)V['Among the pinnacles (on the Garden\'s mesa)']=[70,GARDEN_B.top+8,95,-10,GARDEN_B.top+110,-30];
  V['The south nose (where the Stair comes down)']=[220,90,1000,0,140,560];
  V['The farm ring from the forest gate']=[0,12,PR.GATE.z+30,0,140,0];
  V['The gorge under the north rim']=[420,-20,PR.GORGE.z(420),-200,40,-700];
@@ -36,7 +37,7 @@ const BUDGET={
 // the plan's numbers (PLAN.md section 1, the settled layout)
 const HCHK={
  // the mesa: 250 m over its south foot, about 1.2 km north-south by 0.8 km
- mesa(B){const b=B.beds[B.beds.length-1],S=a=>KSTACKS.footR(b,a)*(1-b.ch);
+ mesa(B){const b=B.beds[B.beds.length-1],S=a=>{let m=0;for(let k=-6;k<=6;k++)m=Math.max(m,KSTACKS.footR(b,a+k*.03)*(1-b.ch));return m;};   // the widest near each axis: a gully is not the mesa's size
   const ns=S(Math.PI/2)+S(-Math.PI/2),ew=S(0)+S(Math.PI),over=B.top-floorH(0,650);
   return{ok:over>240&&over<260&&ns>1050&&ns<1350&&ew>680&&ew<920,detail:'top '+over.toFixed(0)+' m over the south foot; '+ns.toFixed(0)+' m north-south by '+ew.toFixed(0)+' m'};},
  // the fins: ten, each wholly on the top at least 12 m in from the edge, 40-90 m over it, and SPREAD round the rim (the
@@ -47,14 +48,17 @@ const HCHK={
   const sec=new Set(F.map(B=>Math.floor(((Math.atan2(B.z,B.x)+TAU)%TAU)/(TAU/8))));
   let crowd=0;F.forEach(A=>{crowd=Math.max(crowd,F.filter(B=>Math.hypot(A.x-B.x,A.z-B.z)<250).length);});
   return{ok:F.length===10&&!bad.length&&sec.size>=5&&crowd<=3,detail:F.length+' fins; '+sec.size+' of 8 sectors; at most '+crowd+' within 250 m'+(bad.length?'; '+bad.join(', '):'')};},
- // the Garden: ten or more spires and balanced rocks on the top's middle, four carrying roost rings; its pinnacles tallest
- // at the centre (the owner, 2026-10-19): those within 100 m of the middle 120 m or more on average, over the outer ones
- garden(G){const mid=G.filter(B=>Math.hypot(B.x,B.z)<200&&B.y0>_top-8),h=B=>B.top-B.y0,avg=L=>L.length?L.reduce((s,B)=>s+h(B),0)/L.length:0;
-  const inner=mid.filter(B=>Math.hypot(B.x,B.z)<100),outer=mid.filter(B=>Math.hypot(B.x,B.z)>=100),hi=avg(inner),lo=avg(outer);
-  return{ok:mid.length>=10&&G.filter(B=>B.ring).length===4&&hi>=120&&hi>lo+30,detail:mid.length+' stacks on the middle of the top; '+G.filter(B=>B.ring).length+
-   ' tall enough for rings; the centre\'s pinnacles '+hi.toFixed(0)+' m on average, the outer '+lo.toFixed(0)+' m'};},
+ // the Garden: a smaller, lower mesa in the middle of the top (40-70 m over it, 350-480 m across), its pinnacles on it,
+ // fourteen or more, tallest at the centre (the owner, 2026-10-19: even larger): those within 100 m of its middle 180 m or
+ // more on average over its top, the outer ones lower; four carry roost rings
+ garden(G,GB){const gtop=GB?GB.top:0,b=GB?GB.beds[GB.beds.length-1]:null,across=b?KSTACKS.footR(b,0)+KSTACKS.footR(b,Math.PI):0,rise=GB?GB.top-_top:0;
+  const on=G.filter(B=>GB&&B.y0>gtop-10),h=B=>B.top-B.y0,avg=L=>L.length?L.reduce((s,B)=>s+h(B),0)/L.length:0;
+  const pin=on.filter(B=>B.kind==='spire'),inner=pin.filter(B=>Math.hypot(B.x-GB.x,B.z-GB.z)<100),outer=pin.filter(B=>Math.hypot(B.x-GB.x,B.z-GB.z)>=100),hi=avg(inner),lo=avg(outer);
+  return{ok:!!GB&&rise>40&&rise<70&&across>350&&across<480&&on.length>=14&&G.filter(B=>B.ring).length===4&&hi>=180&&hi>lo+20,
+   detail:'the Garden\'s mesa '+rise.toFixed(0)+' m over the top, '+across.toFixed(0)+' m across; '+on.length+' stacks on it ('+pin.length+' pinnacles); the centre\'s '+hi.toFixed(0)+
+    ' m on average, the outer '+lo.toFixed(0)+' m; '+G.filter(B=>B.ring).length+' with rings'};},
  // no tree on the top (the town's ground) past its 12 m rim band, except on the Garden's stacks
- noTrees(T){const on=T.filter(t=>{const A=KSTACKS.at([MESA_B],t.x,t.z);if(!A||A.d>-12)return false;const S=KSTACKS.at(ROCK,t.x,t.z);return !S||S.S===MESA_B;});
+ noTrees(T){const on=T.filter(t=>{const S=KSTACKS.at(ROCK,t.x,t.z);return !!S&&TOWN_GROUND.indexOf(S.S)>=0&&S.d<=-12;});
   return{ok:on.length===0,detail:on.length+' trees on the town\'s ground ('+T.length+' trees on the page)'};},
  // the forest keeps out of the farms and the bands' grounds: no hyperjungle geometry inside the palisade or a hedge
  cleared(pts){let n=0,ex=null;for(const p of pts){const Z=PR.zoneAt(p[0],p[1]).zone;if(Z==='farms'||Z==='pasture'||Z==='camp'||Z==='hedged'||Z==='fair'){n++;ex=ex||Z;}}
@@ -75,7 +79,7 @@ const _fins=()=>ROCK.filter(B=>/^fin-/.test(B.id)),_garden=()=>ROCK.filter(B=>/^
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the mesa: 250 m, 1.2 by 0.8 km',HCHK.mesa(MESA_B));
  add('ten fins on the rim, spread round it',HCHK.fins(_fins()));
- add('the Garden on the middle of the top',HCHK.garden(_garden()));
+ add('the Garden\'s mesa and its pinnacles',HCHK.garden(_garden(),GARDEN_B));
  add('no tree on the town\'s ground',HCHK.noTrees(NECANYONS.TREES||[]));
  add('the forest out of the farms and the grounds',HCHK.cleared(_forestPts()));
  add('the land is the scale model\'s',HCHK.model());
@@ -84,7 +88,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the fins in one row on the north rim (as first drawn)',HCHK.fins(F.map((B,i)=>Object.assign({},B,{x:-270+i*60,z:-520}))));
  add('a fin over the edge',HCHK.fins(F.map((B,i)=>i?B:Object.assign({},B,{beds:[Object.assign({},B.beds[0],{cx:B.beds[0].cx*1.25,cz:B.beds[0].cz*1.25})]}))));
  add('a mesa 180 m high',HCHK.mesa(Object.assign({},MESA_B,{top:MESA_B.top-70})));
- add('the Garden all one height (no taller centre)',HCHK.garden(_garden().map(B=>Object.assign({},B,{top:B.y0+60}))));
+ add('the Garden all one height (no taller centre)',HCHK.garden(_garden().map(B=>Object.assign({},B,{top:B.y0+60})),GARDEN_B));
+ add('no Garden\'s mesa (the pinnacles on the main top)',HCHK.garden(_garden(),null));
  add('a tree in the Crown',HCHK.noTrees((NECANYONS.TREES||[]).concat([{x:0,z:-300,y0:_top}])));
  add('a tree in the farms',HCHK.cleared(_forestPts().concat([[-400,800]])));   // in the fields west of the road
  return R;}
