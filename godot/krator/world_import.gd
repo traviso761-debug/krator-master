@@ -410,6 +410,14 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 		sm.set_shader_parameter("bu_mix", float(b.get("mix", 0.0)))
 		sm.set_shader_parameter("bu_macro", float(b.get("macro", 0.0)))
 		sm.set_shader_parameter("bu_cell", float(b.get("cell", 8.0)))
+	# hook 'triplanar' (the Iziz court finishes): the map from three sides in the mesh's frame; no UVs, so no normal map
+	var tri = rec.get("triplanar")
+	if "triplanar" in hk["ids"] and tri is Dictionary and img:
+		sm.set_shader_parameter("triplanar", true)
+		sm.set_shader_parameter("tri_per_m", 1.0 / max(float(tri.get("tile", 0.5)), 0.01))
+		sm.set_shader_parameter("tri_gain", float(tri.get("gain", 1.0)) if bool(tri.get("detail", false)) else 1.0)
+		sm.set_shader_parameter("has_normal", false)
+		sm.set_shader_parameter("has_rough", false)
 	if "glass" in hk["ids"]:
 		_gap_once(report, "hook glass", "records with hook 'glass' draw as the library surface: lib/glass.gdshaderinc's Fresnel is not wired into library.gdshader yet")
 	sm.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "library.gdshader", "world_uv": "world-uv" in hk["ids"] and instanced})

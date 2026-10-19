@@ -36,38 +36,51 @@ const COURT_DECALS={
  iziz_common_art:{panel:true,variant:1,y:.45,z:-.152,w:.86,h:.86,tex:['courtMosaic']}};
 const COURT_TRI={courtMarquetry:{tile:.6},courtBrocade:{tile:.5},courtOpus:{tile:.5},courtGilt:{tile:.4,detail:true},courtVelvet:{tile:.3,detail:true}};
 function courtHash(p){return Math.abs(Math.round(p.x*7.3)*31+Math.round(p.z*5.1)*17+Math.round((p.y||0)*3.1)*7);}
+// a geometry per shape, its UVs its own: 'plane' (a unit quad facing +z), 'strip:<len>' (a frame bar, the moulding
+// repeated along it), 'floor' (a unit quad, turned to face up by its placement), 'lathe:<key>' (a jar's glaze band, once
+// round, base to lip: the profile's knots kept, v by height)
+const COURT_GEO={};
+function courtGeo(id,mk){return COURT_GEO[id]||(COURT_GEO[id]=mk());}
+function courtStrip(len,w){const g=new THREE.PlaneGeometry(len,w),uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setX(i,uv.getX(i)*len/(2*w));return g;}
+function courtLathe(D){const P=D.lathe,pts=[];for(let a=0;a<2;a++)for(let i=a?1:0;i<=4;i++){const t=i/4;
+  pts.push(new THREE.Vector2((P[a][0]+(P[a+1][0]-P[a][0])*t)*D.out,P[a][1]+(P[a+1][1]-P[a][1])*t));}
+ const g=new THREE.LatheGeometry(pts,D.seg),ps=g.attributes.position,uv=g.attributes.uv,y0=P[0][1],y2=P[2][1];
+ for(let i=0;i<uv.count;i++)uv.setY(i,(ps.getY(i)-y0)/(y2-y0));return g;}
+// one placement's overlays in its piece's frame (+z front, y up from its foot): [{k: the court set, g: the shape, at, sx,
+// sy, rz, rx}]. The page draws them turned by the placement (courtDecals); the export hands them to the piece (courtParts)
+function courtLocal(p,paints){const D=COURT_DECALS[p.key],out=[];if(!D||(D.variant!=null&&(p.variant||0)!==D.variant))return out;
+ const h=courtHash(p),put=(k,g,x,y,z,sx,sy,rz,rx)=>out.push({k,g,at:[x,y,z],sx,sy,rz:rz||0,rx:rx||0});
+ courtGeo('plane',()=>new THREE.PlaneGeometry(1,1));courtGeo('floor',()=>new THREE.PlaneGeometry(1,1));
+ if(D.canvas){if(paints.length)put(paints[h%paints.length],'plane',0,D.y,D.z,D.w,D.h);
+  for(const f of D.frame){courtGeo('strip:'+f[3],()=>courtStrip(f[3],f[4]));put('courtFrame','strip:'+f[3],f[0],f[1],f[2],1,1,f[5]);}}
+ else if(D.rows)for(let k=0;k<D.rows;k++)put(k%2?'courtBooksB':'courtBooksA','plane',0,D.y0+k*D.dy+D.h/2,D.z,D.w,D.h);
+ else if(D.jars){const id='lathe:'+p.key;courtGeo(id,()=>courtLathe(D));D.jars.forEach(J=>put(J[2],id,J[0],0,J[1],1,1));}
+ else if(D.floor)put(D.tex[h%D.tex.length],'floor',0,D.y,0,D.w,D.h,0,-Math.PI/2);
+ else if(D.panel)put(D.tex[(p.variant||0)%D.tex.length],'plane',0,D.y,D.z,D.w,D.h);
+ return out;}
+const _cq=new THREE.Quaternion(),_ce=new THREE.Euler(),_cp=new THREE.Vector3(),_cs=new THREE.Vector3();
+function courtMatrix(o,m4){_cp.set(o.at[0],o.at[1],o.at[2]);_ce.set(o.rx,0,o.rz,'YXZ');_cq.setFromEuler(_ce);_cs.set(o.sx,o.sy,1);return m4.compose(_cp,_cq,_cs);}
 function courtDecals(S){if(!S.decals||!S.decals.length||typeof KMAT==='undefined'||!KMAT.bindMat)return;
  const keys=['courtBooksA','courtBooksB','courtFrame','courtVaseA','courtVaseB','courtCarpetA','courtCarpetB','courtMosaic'],M={};
  for(let k=1;k<=24;k++)keys.push('courtPaint'+k);
  for(const k of keys)M[k]=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.8,metalness:0});
  const bound=KMAT.bindMat('iziz',M,{})||{};if(!Object.keys(bound).length)return;
- const paints=keys.filter(k=>/^courtPaint/.test(k)&&bound[k]);
- // a geometry per shape, its UVs its own: 'plane' (a unit quad facing +z), 'strip:<len>' (a frame bar, the moulding
- // repeated along it), 'floor' (a unit quad facing up), 'lathe:<key>' (a jar's glaze band, once round, base to lip)
- const GEO={},geo=(id,mk)=>GEO[id]||(GEO[id]=mk());
- const strip=(len,w)=>{const g=new THREE.PlaneGeometry(len,w),uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setX(i,uv.getX(i)*len/(2*w));return g;};
- const lathe=D=>{const P=D.lathe,pts=[];for(let a=0;a<2;a++)for(let i=a?1:0;i<=4;i++){const t=i/4;
-   pts.push(new THREE.Vector2((P[a][0]+(P[a+1][0]-P[a][0])*t)*D.out,P[a][1]+(P[a+1][1]-P[a][1])*t));}
-  const g=new THREE.LatheGeometry(pts,D.seg),ps=g.attributes.position,uv=g.attributes.uv,y0=P[0][1],y2=P[2][1];
-  for(let i=0;i<uv.count;i++)uv.setY(i,(ps.getY(i)-y0)/(y2-y0));return g;};   /* the profile's knots kept, v by height */
- const lists={},put=(k,g,x,y,z,ry,sx,sy,rz,rx)=>{if(!bound[k])return;const id=k+'|'+g;(lists[id]=lists[id]||{k,g,L:[]}).L.push([x,y,z,ry,sx,sy,rz||0,rx||0]);};
- for(const p of S.decals){const D=COURT_DECALS[p.key],ry=p.ry||0,c=Math.cos(ry),s=Math.sin(ry),y=p.y||0,h=courtHash(p);
-  if(D.variant!=null&&(p.variant||0)!==D.variant)continue;
-  const at=(lx,lz)=>[p.x+lx*c+lz*s,p.z-lx*s+lz*c];
-  if(D.canvas){const q=at(0,D.z);if(paints.length)put(paints[h%paints.length],'plane',q[0],y+D.y,q[1],ry,D.w,D.h);
-   for(const f of D.frame){const r=at(f[0],f[2]);geo('strip:'+f[3],()=>strip(f[3],f[4]));put('courtFrame','strip:'+f[3],r[0],y+f[1],r[1],ry,1,1,f[5]);}}
-  else if(D.rows)for(let k=0;k<D.rows;k++){const q=at(0,D.z);put(k%2?'courtBooksB':'courtBooksA','plane',q[0],y+D.y0+k*D.dy+D.h/2,q[1],ry,D.w,D.h);}
-  else if(D.jars){const id='lathe:'+p.key;geo(id,()=>lathe(D));D.jars.forEach(J=>{const q=at(J[0],J[1]);put(J[2],id,q[0],y,q[1],ry,1,1);});}
-  else if(D.floor){const q=at(0,0);put(D.tex[h%D.tex.length],'floor',q[0],y+D.y,q[1],ry,D.w,D.h,0,-Math.PI/2);}
-  else if(D.panel){const q=at(0,D.z);put(D.tex[(p.variant||0)%D.tex.length],'plane',q[0],y+D.y,q[1],ry,D.w,D.h);}}
- geo('plane',()=>new THREE.PlaneGeometry(1,1));geo('floor',()=>new THREE.PlaneGeometry(1,1));
  if(M.courtFrame)M.courtFrame.metalness=.3;   /* the gilt reads as gold without an environment map */
- const m4=new THREE.Matrix4(),qq=new THREE.Quaternion(),eu=new THREE.Euler(),pos=new THREE.Vector3(),sc=new THREE.Vector3();
- let n=0;for(const id in lists){const E=lists[id],im=new THREE.InstancedMesh(GEO[E.g],M[E.k],E.L.length);
-  E.L.forEach((r,i)=>{pos.set(r[0],r[1],r[2]);eu.set(r[7],r[3],r[6],'YXZ');qq.setFromEuler(eu);sc.set(r[4],r[5],1);if(E.g==='floor')sc.set(r[4],r[5],1);
-   m4.compose(pos,qq,sc);im.setMatrixAt(i,m4);});
-  im.instanceMatrix.needsUpdate=true;im.userData.inspectLabel='court pictures';im.userData.interiors=true;S.group.add(im);n+=E.L.length;}
+ const paints=keys.filter(k=>/^courtPaint/.test(k)&&bound[k]);
+ S.courtM={};for(const k in bound)S.courtM[k]=M[k];S.courtPaints=paints;
+ const lists={},L=new THREE.Matrix4(),W=new THREE.Matrix4(),R=new THREE.Matrix4();
+ for(const p of S.decals){R.makeRotationY(p.ry||0).setPosition(p.x,p.y||0,p.z);
+  for(const o of courtLocal(p,paints)){if(!bound[o.k])continue;const id=o.k+'|'+o.g;
+   (lists[id]=lists[id]||{k:o.k,g:o.g,L:[]}).L.push(W.multiplyMatrices(R,courtMatrix(o,L)).clone());}}
+ let n=0;for(const id in lists){const E=lists[id],im=new THREE.InstancedMesh(COURT_GEO[E.g],M[E.k],E.L.length);
+  E.L.forEach((m,i)=>im.setMatrixAt(i,m));im.instanceMatrix.needsUpdate=true;
+  im.userData.inspectLabel='court pictures';im.userData.interiors=true;im.userData.courtOverlay=true;S.group.add(im);n+=E.L.length;}
  S.courtDecals=n;}
+// the export's view of one placement's overlays (settlements/iziz/targets/city/94-city-export.js ixFurniture): parts in the
+// piece's frame, named as the batch names its meshes, each its own geometry and the court set's bound material, so a
+// piece carries its painting, frame, glaze or carpet into the furniture section with it
+function courtParts(p){const S=typeof IZIX!=='undefined'?IZIX:null;if(!S||!S.courtM)return [];const L=new THREE.Matrix4();
+ return courtLocal(p,S.courtPaints||[]).filter(o=>S.courtM[o.k]).map(o=>({name:'furniture:court/'+o.k,g:COURT_GEO[o.g].clone().applyMatrix4(courtMatrix(o,L)),mat:S.courtM[o.k]}));}
 // the finishes: the batch meshes whose texture family COURT_TRI names take the set, triplanar in world space
 function courtFinish(g){if(typeof KMAT==='undefined'||!KMAT.packed||KMAT.mode!=='lib')return 0;let n=0;
  g.traverse(m=>{if(!m.isMesh||!m.material||m.material.isMeshBasicMaterial)return;const tf=m.material.userData.texFamily,C=tf&&COURT_TRI[tf];if(!C)return;
@@ -75,6 +88,7 @@ function courtFinish(g){if(typeof KMAT==='undefined'||!KMAT.packed||KMAT.mode!==
   const t=T.map;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1,1);
   const mt=m.material,mean=L.tint&&L.tint.mean!=null?L.tint.mean:.5,gain=C.detail?1/Math.max(.05,Math.pow(mean,2.2)):1;
   mt.map=t;if(L.metal!=null&&C.detail)mt.metalness=Math.max(mt.metalness,L.metal*.8);
+  mt.userData.lib=L.lib;mt.userData.courtTri={tile:C.tile,detail:!!C.detail,gain:+gain.toFixed(4),fam:tf};
   mt.onBeforeCompile=function(sh){sh.uniforms.uCtTile={value:1/C.tile};sh.uniforms.uCtGain={value:gain};
    sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vCtP;varying vec3 vCtN;')
     .replace('#include <uv_vertex>','#include <uv_vertex>\nvCtP=position;vCtN=normal;');

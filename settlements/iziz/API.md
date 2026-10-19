@@ -182,7 +182,7 @@ An entry is in the piece's own frame (+z its front, y up from its foot). `COURT_
 keys (`courtMahogany`, `courtBrocade`, `courtCloth*`, `courtGilt`, `courtMarble` in `krator-master-furniture-iziz.js`, split
 into texture families by `FAMILY_SPLITS`) onto the merged batch meshes by triplanar projection (the batch has no UVs):
 marquetry, brocade and the opus-sectile hearth in full colour, gold leaf and velvet as detail maps on the piece's own
-colour. A set the page's pack lacks is skipped, so a page without the court sets draws the plain catalog colours.
+colour. A set the page's pack lacks is skipped, so a page without the court sets draws the plain catalog colours. In the export (`targets/city/94-city-export.js`) an overlay is a part of its piece (`courtParts`), and a finish a material with hook `triplanar` {tile, detail, gain}, which Godot's library shader draws (`godot/shaders/lib/triplanar.gdshaderinc`).
 
 ### The trades — `74z-vern-trades.js`
 

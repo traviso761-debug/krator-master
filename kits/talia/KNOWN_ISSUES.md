@@ -67,7 +67,6 @@
       merged): whichever lands second keeps both; that export may want to carry the decals with the furniture pieces.
 - [x] The court furniture textures (2026-10-19, second batch): sixteen Izani paintings, the gilt frame moulding, vase
       glazes, sun carpets, marquetry, brocade, opus sectile; bound in Iziz's pack and laid by 95i (COURT_DECALS, COURT_TRI).
-- [ ] The triplanar court finishes are a browser shader hook on the batch materials: the Godot export carries a furniture
-      bucket's render family only, not its texture family (`userData.texFamily`), so Godot draws the plain colours until
-      the export writes it and the importer maps it (a StandardMaterial3D triplanar per family).
-
+- [x] The court textures in Godot (2026-10-19): the overlays export as parts of their pieces (95i courtParts, 94 ixFurniture),
+      and the finishes as materials with hook 'triplanar' (tile, detail, gain), drawn by godot/shaders/library.gdshader through
+      lib/triplanar.gdshaderinc in the piece's own frame; iziz_test.gd checks them; tests/export/court_shot.gd renders them.

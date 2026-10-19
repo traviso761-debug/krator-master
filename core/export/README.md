@@ -482,13 +482,19 @@ placement moved to another building's room, an unknown piece, an unknown record 
 The same route: `kits/talia/kit.json` lists the contributor and the stage under `external` and `export` in its core.
 
 ```
-python3 tools/harness.py export kits/talia/dist/talia.html --out godot/data/world-talia --box=-35,868,13,886
+python3 tools/harness.py export kits/talia/dist/talia.html --out godot/data/world-talia --box=-40,1064,16,1086
 godot --headless --path godot --script res://tests/export/iziz_test.gd -- --case=world-talia --sheet
+godot --path godot --script res://tests/export/court_shot.gd -- --case=world-talia --view=living --out=/abs/shot.png
 ```
 
-The box is the middle mixed street's west half (the Vernacular's plaster townhouse between Talia's loggia house and dome
-house, all three furnished; the street moved from z 861 to 877 when the temple's plot grew). Since the interiors export
-it carries 160 items, 1,646 instances, no buckets, 47 textures, 13 fixtures, the interiors of 3 buildings (15 rooms) and
-121 furniture placements as 52 pieces; `world.glb` 1.6 MB. All checks pass in Godot 4.7.2 (the test also logs
-`get_meta` lookups for 'krator' on nodes that carry none, which do not fail it), and the nightly runs it. The court
-textures laid by 95i (overlays and triplanar finishes) are not in the export yet.
+The box is the rich mixed street's west half: Talia's palazzo and the Vernacular rich house between them, both furnished,
+chosen so the case holds the Iziz court furniture with its textures (95i): 280 items, 2,216 instances, no buckets, 62
+textures, 33 fixtures, the interiors of 2 buildings (14 rooms) and 127 furniture placements as 80 pieces; `world.glb`
+3.5 MB. The court overlays (paintings, gilt frames, vase glazes, book spines, carpets) are parts of their pieces
+(`furniture:court/<set>`, 95i `courtParts`), so a piece carries its picture; the court finishes (marquetry, brocade,
+opus sectile; gold leaf and velvet as detail) are materials with hook `triplanar` and a `triplanar` field {tile, detail,
+gain}, which `world_import.gd` hands to `library.gdshader` (`lib/triplanar.gdshaderinc`): projected in the piece's own
+frame where the page projects in the world. All checks pass in Godot 4.7.2, the court finishes' check among them (the
+test also logs `get_meta` lookups for 'krator' on nodes that carry none, which do not fail it); `court_shot.gd` renders a
+piece of the case with the walls hidden, for a picture beside the page. The nightly runs the test. Until 2026-10-19 the box
+was the middle mixed street (-35,868,13,886), which has no Iziz court pieces.

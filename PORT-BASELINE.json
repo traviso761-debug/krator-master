@@ -345,8 +345,8 @@
    "sha256": "2ac1203c0d7a81175429da1135ddc1da1271815dcb4a81bd392a17c4be55ac77"
   },
   "kits/pylon/dist/pylon.html": {
-   "bytes": 2145375,
-   "sha256": "fa33a4a824aa3c5cc0e5c2541f90b5eaf09f619a6bca8222954f99518312c7ab"
+   "bytes": 2147424,
+   "sha256": "3d7d9fc73b6b17b55921dca21964de7afbdf6b3b1e049086b267869038fb5c77"
   },
   "kits/resources/dist/resources.html": {
    "bytes": 566749,
@@ -361,8 +361,8 @@
    "sha256": "8a7a78670d2a7927a6b7dc3bb6c753417562a9930e4970b1ea38f2918daff4de"
   },
   "kits/talia/dist/talia.html": {
-   "bytes": 2084751,
-   "sha256": "4510dd903c1f33418bf12211c6125ebc65ae18ff4888e94944bbf79c76eaa4fa"
+   "bytes": 2086800,
+   "sha256": "2cfd3ee44a7d3dcc7e725cc2809c98d451d4acc61641be0b9a818f8234d54696"
   },
   "kits/zeijani/dist/zeijani.html": {
    "bytes": 1328039,
@@ -425,24 +425,24 @@
    "sha256": "fa1989546256c0903e9609baecd64180ce1b1399f7ca6acc22aeb272708c3277"
   },
   "settlements/iziz/dist/iziz-vernacular.html": {
-   "bytes": 1723154,
-   "sha256": "2e860be3d58253dbc73386a7289b4f5a333b00fcb5c42b42e67eca36aefa02dd"
+   "bytes": 1724360,
+   "sha256": "26b8df2a922956956246f9ef044dbb1ab8d58a22f91f01b97ab52cc2c2cfb36a"
   },
   "settlements/iziz/dist/iziz.html": {
-   "bytes": 5377866,
-   "sha256": "518efda650adeeff5566d88693bd63276a66bf068d2b7f1e90c0f95862d16b81"
+   "bytes": 5379915,
+   "sha256": "4421ffb1839fe7254ea3abd29d5c72eb247659523614ca52efdb7d1733a19b6a"
   },
   "settlements/iziz/dist/w-a.html": {
-   "bytes": 1022877,
-   "sha256": "d18b14d31d6824520a596c474c7ec690f9e34c799d1aa4a3fdc62e693bd081ee"
+   "bytes": 1024083,
+   "sha256": "a61bac1b4c5ac7ccadac97ae1f3ce55d2f994a2fc684290fc5db4de9fbdf10d0"
   },
   "settlements/iziz/dist/w-b.html": {
-   "bytes": 1022603,
-   "sha256": "6c09226f39a96450e895d282fc4a17b38d2fb46aaef34d5b47f7d2face8da718"
+   "bytes": 1023809,
+   "sha256": "e92bd280b745d208fa439e766cb65e690394f72c3c217526d8606d3701e6ca88"
   },
   "settlements/iziz/dist/w-c.html": {
-   "bytes": 1023643,
-   "sha256": "74905f7cd6d4eed4820a82aa9465d6bf14e775e97630b6a556b8c627206f8bb4"
+   "bytes": 1024849,
+   "sha256": "00ab9f430d9e989d48b928c59bb8837dea82726fa78b5119cb95ee89ea1226a1"
   },
   "settlements/jimjam/dist/jimjam-kit.html": {
    "bytes": 8989521,
