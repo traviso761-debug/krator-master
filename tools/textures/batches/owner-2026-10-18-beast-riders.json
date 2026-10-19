@@ -1,0 +1,134 @@
+[
+ {
+  "src": "straw.bedding.png",
+  "out": "core/materials/library/straw.bedding",
+  "record": {
+   "id": "straw.bedding",
+   "family": "straw",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP, 1254 px; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `straw.bedding`",
+    "reuse": "the Islanders' byres and pens, every farm yard and barn floor, the nomads' fodder piles, Voth's stables"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "size": 1024,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "wood.guano.png",
+  "out": "core/materials/library/wood.guano",
+  "record": {
+   "id": "wood.guano",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP, 1254 px; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `wood.guano`",
+    "reuse": "Girder's and Mav's Refuge's roost decks, Pinnacle Rock's roost platforms, seabird cliffs and harbour pilings"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "ground.stable.yard.png",
+  "out": "core/materials/library/ground.stable.yard",
+  "record": {
+   "id": "ground.stable.yard",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP, 1254 px; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.stable.yard`",
+    "reuse": "every corral, cattle and buffalo pen, the nomads' camps, a caravanserai's yard"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "size": 1024,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "rock.sandstone.bedded.red.png",
+  "out": "core/materials/library/rock.sandstone.bedded.red",
+  "record": {
+   "id": "rock.sandstone.bedded.red",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP, 1254 px; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.sandstone.bedded.red`",
+    "reuse": "any red-bed cliff or butte (the desert's mesas beside rock.sandstone.navajo, Shade's lower cliffs, the Rift's mesa ridges)",
+    "note": "for settlements/pinnacle-rock (not built yet): in the library only until that build wires it"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ }
+]

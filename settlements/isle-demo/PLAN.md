@@ -78,7 +78,18 @@ the latest Voth viewer as the base.
 - **The village is Valapo, not Walapo** (owner, 2026-10-18: the language has no W sound). Renamed everywhere outside
   the scale model; the scale model's own settlement record still reads Walapo until the owner renames it there, so a
   re-extract must keep the new name (`openworld/isle-demo/source/settlements.json`).
-- **Next: P6,** the city plan from section 8.
+- **P6 is done** (2026-10-18): `dist/isle-city.html`, both towns on core/city from section 8 (this folder's `README.md`,
+  "The city page").
+  - **The owner redrew both towns at their size** (the first drawing's ceremonial park was eight times the palace;
+    the full-size drawing is kept as `site/isle-site.full.json`). Kautoa about 6,000 people with at least two thirds of
+    its build area built (houses in walled compounds); Valapo about a third of it, grown from the village hall along the
+    shore and the avenues, its parks white sand beaches, the owner's ground edits replayed.
+  - `verify.py dist/isle-city.html --assert` and `node tests/test-isle-city.js`: every check of section 8 per town, with
+    negatives. Stand-ins and gaps: `KNOWN_ISSUES.md`.
+  - Ridertown's buildings go in a new set, **kits/beast-riders** (owner): the catalog's Girder and Mav's Refuge buildings
+    plus stables and a rookery tower, built once its three textures are delivered (`core/materials/PROMPTS-NEEDED.md`
+    section 6).
+- **Next: P6b,** the export profile (section 7); kits/beast-riders when its textures arrive.
 
 ## 1. The assay (scale model 4.21, read 2026-10-14)
 
@@ -344,7 +355,7 @@ GDScript twin of the sim, can be checked against by hand. Voth stays the scale t
 | P5 | **The owner lays out the two settlements in the site planner** (done 2026-10-18; section 8) | the owner's site file |
 | P6 | City plan: two `KCITY` instances on the Islanders kit | verify, exact footprint overlap, census |
 | P6b | The export profile (section 7): `EXPORT.check(world, {profile})`, this page's required sections, in `verify.py --assert` and the nightly | the check fails on a stubbed required section and passes once each is filled |
-| P7 | Simulation: two towns, the partition, the canoe trade route, stocks per town; the economy tuned here from now on; the three levels in `SCHEMA.md` | stocks balance per town; a load traced from one town's warehouse to the other's; the abstract-level week test (section 7) |
+| P7 | Simulation (section 9, P7a-P7e): two towns, the partition, the canoe trade route, stocks per town; the economy tuned here from now on; the three levels in `SCHEMA.md` | stocks balance per town; a load traced from one town's warehouse to the other's; the abstract-level week test (section 7) |
 | P8 | **M6:** both towns open in Godot from the canonical export with citizens and trade running; then bake the towns into the open world and stream the region (M7) | the export round trip under the profile; Godot's tests: uids, records, the books after a replayed week |
 
 P1 and P2 can run in parallel (different folders). P3 waits for P2's kit. P4 waits for P3's ground (or the extract
@@ -353,7 +364,9 @@ alone).
 ## 8. The towns' programmes (P5: the owner's site files and brief, 2026-10-18)
 
 The drawings are in `site/isle-site.json`. Coordinates are each town's frame (metres, x east, z south, so north is
--z). Every drawn avenue is 12 m wide. What the owner asked for that is not drawn yet is marked **to draw**: P6 adds it
+-z). **The coordinates below are the owner's full-size drawing** (`site/isle-site.full.json`); since P6 the site file
+holds the owner's redrawings at the towns' size (the status above): the districts and markers named here are the
+first drawing's, and some are gone from the redrawing (Warrior's Square, Market 3, Park 2's loop). Every drawn avenue is 12 m wide. What the owner asked for that is not drawn yet is marked **to draw**: P6 adds it
 as records, or the owner draws it in the planner.
 
 ### 8a. Kautoa, the walled city
@@ -489,14 +502,150 @@ So Kautoa is the wet one, and Valapo the drier one with real uplands. In `CROPS.
   - Cloves want rain all year (1,500 mm and up, no long dry season): Kautoa's Af.
   - Rice paddies on the wet lowland need no irrigation works there.
   - Cacao is an Af crop.
-- **Valapo exports coffee, sugar and cotton**, and iron ingots.
+- **Valapo exports coffee, sugar and iron ingots.** (Salt and soda ash went to Kautoa: the owner chose the north-west
+  pan, 2026-10-18.)
   - Upland coffee grows on the mountain slopes, the only cool ground either town has.
-  - Sugar cane sweetens best with a dry season to ripen in: Valapo's XV savanna.
-  - Cotton needs a dry harvest: the same savanna.
+  - Sugar cane wants about 1,300 mm or more and a dry season to ripen in: Valapo's XV savanna by the town gets about
+    1,340 mm; Kautoa's dry belt only about 900.
+  - **Cotton is not an advantage** (corrected 2026-10-18): Kautoa has dry savanna of its own (below), where cotton
+    does well on 900 mm. Cotton is grown in both, or becomes the north-west savanna's crop for Kautoa.
 - **Both grow** coconut, banana, breadfruit, taro, kava, greens and herbs for themselves (the owner's crop list).
 - **What goes back:**
-  - Kautoa sends tools and worked iron, cloth dyed with its indigo, and the goods the foreign ships bring;
-  - Valapo sends ingots, coffee, sugar, cotton and salt fish.
+  - Kautoa sends tools and worked iron, cloth dyed with its indigo, sulfur, salt, soda ash or glass, and the goods the
+    foreign ships bring;
+  - Valapo sends ingots, coffee, sugar and salt fish.
+
+**The rest of the region (a survey of every climate patch and vent, 2026-10-18).** The climate grid is 2 km a cell, so
+sizes and centres are rough. Distances are from the town's settlement point.
+
+| Area | Where | What it could give |
+|---|---|---|
+| Kautoa's dry belt: savanna Aw 784 km2 (~900 mm), abyssal savanna XV 604 km2, hot steppe BSh 212 km2 (~640 mm) | 22, 49 and 81 km north-west of Kautoa | cotton, grazing and buffalo; the reason cotton is not Valapo's |
+| Salt pans (XS) | 268 km2 about 71 km north-west of Kautoa (~700 mm); 136 and 64 km2 at 44-50 km south of Valapo | salt in bulk; glasswort and samphire burnt to **soda ash** for **glass and soap**, which neither town makes yet. Valapo's pans are the closer ones to a town |
+| Hot steppe in Valapo's mountains (BSh) | 272 km2 about 27 km south-west of Valapo, ~980 mm, 27 C mean (the coolest patch in the region) | the dry side of the mountains by the iron mine: goats, sisal rope, tepary beans |
+| Geyser fields | one 6 km west of Kautoa, three more within 35-70 km; Valapo's nearest 27-40 km south and north-west | **sulfur** (a `kits/resources` node) for Kautoa's works, hot baths, heated beds (`CROPS` `heated`) |
+| The wettest jungle (XA) | 596 km2 about 41 km east of Kautoa at ~2,750 mm; 716 km2 about 50 km north-east of Valapo at ~2,280 mm | hardwood for Kautoa's shipyards; charcoal for Valapo's smelter |
+| The west isle (Af) | 632 km2 about 43 km north-west of Valapo, ~2,100 mm | a third wet producer (spice, cacao, timber): a place for a third settlement |
+| North of Kautoa (Aw) | 428 km2 about 61 km north, joined by the neck to beast rider country | grazing, and the riders' mounts and hides along the north highway |
+
+**The salt village is on the big north-west pan, under Kautoa** (owner, 2026-10-18; `core/hamlet/PLAN.md` section 4):
+its salt and soda ash make glass and soap Kautoa's trades. The north grazing land suits a ranching village on the
+north highway. None of these has a resource placed yet: sulfur at the geyser fields and the pans' `gather.salt` tag
+come first (`core/hamlet` H1), before P7 can count them.
 
 P7 (the simulation) puts these crops on the two towns' farms and the trade route, so that the books show each town
 short of what the other makes.
+
+## 9. P7: porting Voth's sim layer (plan, 2026-10-18)
+
+**What exists.**
+- `core/simulation` (14 fragments, about 160 KB) is the engine: places, actors and the resolver, nav, motion,
+  transport routes, the economy (stores, recipes, carts, carriers, imports), items and shops, needs, population,
+  stocks, export. It is built through its Phase 5. **Not built yet:** `SIM.settlement()`, stockpiles per settlement,
+  the level-of-detail tiers (`77-sim-7-lod.js`), and the three levels in `SCHEMA.md`.
+- **Voth's sim layer is a host on that engine**, in `settlements/voth/targets/voth-city/`: `34` transit (and the
+  `SIM.init` binding), `42` places, `43` nav, `44` people, `45` items, `46` economy, `47` animals, `56c` the run loop and
+  the citizens near the camera, `56d` the inspector, `56e` the stocks id map, and `TUNE.sim` in `15-vc-tune.js`. Every
+  one reads Voth's globals (`VC`, `TUNE`, `PLAN`, `SL`); `42` hangs on Voth's interiors (`VC.IX`).
+- **The template is Dhelv**, not Voth: `settlements/dhelv/src/74-dhelv-sim.js` (23 KB) declares a whole town on the core
+  in one fragment, in the order `SIM.init`, nav layers, places from built kit defs (a key to `[kind, {activity: slots}]`
+  table), `SIM.load`, `SIM.populate`, `SIM.check`. Verge's sim (`74-verge-sim.js`) is its own engine and will retire, but
+  its way of reading places off core/city records (types and key, capacity from footprint) is the one to copy.
+- **The bridge to Voth's keys is `kits/islanders/src/68-is-trades.js` (`IS_TRADES`):** a row per Voth census trade with
+  its Voth building key and the Islander West and East keys. `isDims()` gives each def's `types`, `role` and `job`.
+- **The city page** (P6, `dist/isle-city.html`, on branch `claude/great-turing-3e145c`, not on main yet): `ISLE.city
+  (town)` gives lots with key, kit, class, district and role, the wall, vessels and a trade landing per town;
+  `34-isle-census.js` counts residents and jobs. Nothing registers with `SIM` yet. **P7 starts once P6 is on main.**
+
+**The rule for the port: lift the pattern, not the file.** No Voth fragment is copied (they belong to the city-layout
+work and are Voth-bound). What is lifted is re-keyed and written as isle fragments; anything general goes into
+`core/simulation` or `core/host`, so the next settlement takes it from there.
+
+| From Voth | To the isle demo |
+|---|---|
+| `34` the `SIM.init` binding, `SIM.transport` shape | `40-isle-sim.js`: the binding; the canoe line in P7c |
+| `42` `reg()`: a job's posts become WORK slots | `40-isle-sim.js`: places from `ISLE.city` lots by `ISLE_DIMS` types and job (Dhelv's table shape); no interiors yet, so slots come from the lot's footprint, as Verge does |
+| `43` the street half of the pedestrian nav | `41-isle-nav.js`: the nav from core/city's plan ways. If it is generic to any core/city plan, it goes to `core/simulation` (or `core/city`'s drawing side, asked of the city-layout work) instead |
+| `44` dealing homes and jobs, rotas, `SIM.needs` | `42-isle-people.js`, trimmed (no slaves, no cantons), dealt per town |
+| `45` shops and households | `43-isle-items.js`, the shop map from Islander keys |
+| `46` producers, warehouses, carts, carriers | `44-isle-economy.js`, re-keyed through `IS_TRADES`; the isles' crops (8c) as recipes |
+| `56c` the run loop (step, catch-up, `SIM.jump`) | to `core/host` as a generic sim clock if it lifts clean, else `57-isle-run.js` |
+| `56e` the stocks id map | `58-isle-stocks.js`: lot to place ids; the panel is core/host's `93-host-stocks.js` |
+| `TUNE.sim` (hours, needs, items, goods, producers) | `15-isle-tune.js`, re-keyed, the economy tuned here from now on |
+| `36` census, `35` steps, `47` animals and the arena, `56d` inspector | **left:** the isle demo has its own census; animals come later; the inspector is core/host's |
+
+**What `core/simulation` needs (P7a, before any town is declared).** Each is opt-in: an unkeyed page is one implicit
+settlement, so Voth's stocks proof, `test-sim.js` and the baseline do not move.
+1. **A settlement kind:** `SIM.settlement({id, faction})`; a place takes a `settlement`, an actor its home's.
+2. **The economy keyed:** `SIM.ECON` holds books, warehouses and carts per settlement; `stockOf`, `emptiest`, `supply`,
+   `economyMeal`, `useRate`, `daysOf`, `scanImports` and the cart step take the key. A cart works only its own town.
+3. **Population per settlement:** `SIM.populate` and the dealing helpers deal homes and jobs within a town.
+4. **Search scoped:** the resolver's nearest-place search looks in the actor's own town first.
+5. **Stocks keyed:** `SIM.stocks(s)`, `contents` and `holders` per settlement.
+6. **Trade between settlements:** a carrier whose stops are places in two settlements (not map-edge ports; today
+   `carry()` needs a port in `from`). Departure buys from the origin's warehouses, arrival lands in the destination's,
+   and the books gain **in transit** beside imported and exported. Gated by the factions' `trade` relation.
+7. **The three levels in `SCHEMA.md`** (ROADMAP stage 5 asks for these first): record, abstract (places produce and
+   consume by the hour, books and routes tick, nobody is posed), presented (near the camera). Then the abstract level
+   in code: a town nobody watches steps its books only (`77-sim-7-lod.js`, the planned tiers).
+8. **Tests in `test-sim.js`**, each with a negative: two settlements keep separate books; a cart never crosses towns;
+   a load leaves one warehouse and lands in the other or is in transit; an unkeyed toy world gives the same results as
+   before.
+
+**Order of work.**
+
+| Step | What | Proof |
+|---|---|---|
+| P7a | `core/simulation`: items 1-6 and 8 above; `SCHEMA.md` levels (7, the text) | `node core/simulation/test-sim.js` with the new cases; Voth rebuilt, its stocks proof and baseline row unchanged; Dhelv and Mungo verify unchanged |
+| P7b | The isle host, one town at a time (Valapo first, it is smaller): `40`-`44`, `15-isle-tune.js`, the run loop, the stocks map, a few citizens drawn near the camera | `verify.py --assert`: every lot of a census trade is a place, every resident has a home and every worker a job in their own town; the food made, hauled and eaten in each town, with nothing short for a sim day (the Voth `econ_bad` checks, per town) |
+| P7c | The canoe line: a drua or oruwa on `SIM.transport` between the two trade landings (`ISLE.city` records them), the trade carrier riding it, the 8c goods in each direction | a load traced from Valapo's warehouse to Kautoa's (and back); each town's books show the other's goods imported; in transit counted while at sea |
+| P7d | The abstract level (`77-sim-7-lod.js`, item 7): the town away from the camera ticks books only; the week test (section 7) | a week fast-forwarded with one town watched, then the other: made + imported - exported - consumed = change in each town; every load accounted for; the arrival reconciles |
+| P7e | The `sim` export section (section 7's profile): places, actors, stocks per settlement, the route and its books | `EXPORT.check` under the isle profile fails on a stubbed `sim` and passes filled; Godot reads the books after a replayed week (P8) |
+
+**Things the owner decides before P7b:**
+- ~~the population to aim for in each town~~ **settled (owner, 2026-10-18): Kautoa about 6,300, Valapo about 2,150.**
+  P6's census (4,900 and 1,540) is re-tuned to these. The hinterland villages come on top, at most 500 each
+  (`core/hamlet/PLAN.md`);
+- whether Valapo's iron mine, the resource nodes (sulfur, salt) and the farm ring outside the planner square are sim
+  places in P7 (the economy needs them to make ore, sulfur and salt) or wait for P8's world records. **Proposed
+  answer:** they are the hinterland villages of `core/hamlet/PLAN.md` (salt, mine, lumber, ranch; then fishing and
+  farming), each a settlement with its town as parent, placed with their resources;
+- the canoe line's timetable: how many canoes, and how often (122 km by sea, about a day each way under sail).
+
+**Risk.** The economy keyed by settlement touches every function Voth's economy runs through. P7a must land as its
+own commit with Voth's proof re-read, so a regression is caught before any isle code depends on it.
+
+## 10. Core-module compliance (audit, 2026-10-19)
+
+The three pages (`dist/isle-site.html`, `dist/isle-city.html`, `openworld/isle-demo/dist/isle-demo.html`) checked against
+every module under `core/` and CLAUDE.md's rules.
+
+**Fixed on 2026-10-19:**
+- the open world's page and artifact are written with `newline='\n'` (a Windows build hashed apart from a Linux one);
+- `x || d` defaults: `core/hamlet/30` (a box's height), `32-isle-city.js` (a way's width), `88h` (a stand's radius);
+- the site shim's seed 0 is no longer turned into 1;
+- the city page's orchard trees are records made in the plan (`32-isle-city.js`, from their field's grid cell) and
+  registered in `core/tags` under their field; `60-isle-draw.js` only draws them;
+- the open world loads `core/atmos/89-atmos-8-export.js` (the export's atmos section can fill);
+- both open worlds run on `core/clock` (H4).
+
+**Still open, in order:**
+1. **P6b, the export profile: in place (2026-10-19).** The city page embeds `core/export` (07, 09); `KTAGS.page` is the drawn
+   town's registry and its ground is bound with `EXPORT.ground`. `verify.py --assert` checks `EXPORT_PROFILE` (`registry,
+   materials, terrain`) over `EXPORT_BOX` (Kautoa's ceremonial centre) and reports `EXPORT_TARGET`, section 7's whole
+   list (2 of 13 met: `terrain=field` is sampled; `items`, `buckets`, `textures`, `stage` read none; `atmos` empty;
+   `city`, `fixtures`, `interiors`, `furniture`, `sim` are stubs). `--profile target` fails on all of them, and
+   `--profile registry,materials,terrain,sim` fails on the stub. Each section joins `EXPORT_PROFILE` as it lands.
+   **A question for the city-layout work** (no session of it was running on 2026-10-19; the owner to pass it on):
+   `core/export`'s `city` section is to be registered by `core/city` (`40-city-kcity.js`, an `EXPORT.register('city',
+   ...)` for every `KCITY` instance on a page). May the isle demo's page register its two plans itself until then, or
+   will core/city add the contributor?
+2. **The city page onto `core/host`** (camera, loop, `KCLOCK`, panel, probe, minimap) instead of its own `CAM`, loop and
+   `window._city`: P7's simulation needs the clock.
+3. **The city page's sky and sea:** the standard sky and `core/atmos`, the sea on `core/water` (it is a flat colour and a
+   plane today).
+4. **`terrain = field`:** a `KFIELD` from the extracted heights, which the profile asks for.
+5. **Little-demo's shared fragments** (both worlds' hashes move): the sun and atmosphere driven by `HOST.clock.hour`,
+   `tags:` passed to `BIO.init` (the flora in `core/tags`), `window.renderer` for the edit queue, the flora's buckets onto
+   `core/space`, and the whole engine onto `core/host`.
+6. **The site planner** runs on Voth's editor engine read in place (its LCG shim, Voth's textures): ROADMAP section 10.

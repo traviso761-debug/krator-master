@@ -1,0 +1,98 @@
+[
+ {
+  "src": "card.carnivore.monkeycup.webp",
+  "out": "core/materials/library/card.carnivore.monkeycup",
+  "record": {
+   "id": "card.carnivore.monkeycup",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.carnivore.monkeycup` (section 6, necanyons)",
+    "reuse": "the monkeycup vine's hanging pitchers (necanyons); any pitcher plant (Korona, the Throne's snare plants)",
+    "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds, each pitcher hanging from its cell's top edge"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "organic.trap.lobe.webp",
+  "out": "core/materials/library/organic.trap.lobe",
+  "record": {
+   "id": "organic.trap.lobe",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.trap.lobe` (section 6, necanyons)",
+    "reuse": "the clapjaw's trap lobes on hinged geometry (necanyons); any snap trap (Korona)",
+    "note": "a nine-cell sheet, kept whole (anchor none): each lobe's hinge on its cell's bottom edge"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 1
+  }
+ },
+ {
+  "src": "card.carnivore.sundew.webp",
+  "out": "core/materials/library/card.carnivore.sundew",
+  "record": {
+   "id": "card.carnivore.sundew",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.carnivore.sundew` (section 6, necanyons)",
+    "reuse": "rimdew, the medicinal sundew (necanyons); any sundew (the southern highlands' bogs, Korona)",
+    "note": "a nine-cell sheet, kept whole (anchor none). The generator drew the glandular hairs hot pink, close to the key: keyed with spill 'all', which turns the pink left in the hairs to red"
+   }
+  },
+  "options": {
+   "key": "#ff00ff",
+   "size": 1024,
+   "anchor": "none",
+   "spill": "all",
+   "key_lo": 40,
+   "key_hi": 110,
+   "choke": 0
+  }
+ }
+]

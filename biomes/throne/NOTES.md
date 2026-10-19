@@ -365,6 +365,14 @@ doubles in an eruption.
 - A 6 km showcase cannot hold the belts, so the demo is a set of **stations**, 6 km tiles at their true height and
   side: kīpuka rainforest; the spice frontier at Zey'danin; geyser field; cloud forest; the shoulders; under the plume;
   vent country; glacier and ice caves; the caldera rim.
+- **Exporting a station for Godot** (core/export, 2026-10-18). The pages do not embed core/export (station 1 is at its
+  size ceiling), so the export goes through the harness, which injects it: from the repo root,
+  `python3 tools/harness.py export biomes/throne/dist/throne-tube.html --out godot/data/world-throne-tube --box -320,-320,-20,-20 --profile registry,items,buckets,materials,textures,terrain,stage`
+  writes the tube's tile; each page's box and profile are the `EXPORT_STATIONS` row of `verify.py` (also the table in
+  `core/export/README.md`, "Profiles"), and `verify.py dist/<page>.html --assert` checks that row through the same
+  injection. On the five stations with the atmos weather (ash desert, caldera, cloud forest, glacier, vents) add
+  `--sections registry,items,buckets,materials,textures,terrain,stage`: their `atmos` section throws until the export
+  fragment is listed (`KNOWN_ISSUES.md`, "Export profile").
 
 ## Peoples of the island (the owner, 2026-10-07)
 

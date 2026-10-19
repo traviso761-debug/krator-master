@@ -69,4 +69,56 @@ it, then run `build.py --accept`, or vendor the file and track its drift.
 
 There are two negative controls, a moved frame and a payload with no frame; both are caught.
 
+## The city page (P6): `dist/isle-city.html`
+
+```
+python3 build.py                                          # writes both pages; the city's [G data] half as dist/isle-city.plan.js
+python3 -m http.server 8829 --directory .                 # http://127.0.0.1:8829/dist/isle-city.html (?town=Valapo)
+python3 verify.py dist/isle-city.html --assert [--shots DIR]
+node tests/test-isle-city.js                              # the plan without a browser (about a minute)
+node tools/scale-site.js                                  # (superseded: the owner's drawings are at size; --write needs --force)
+```
+
+**Both towns on core/city,** one `KCITY` instance each (`src/32-isle-city.js`): `rand: 'krand'`, `index: 'insertion'`, the
+exact-streets rule and the "high" stance (a house's floor at its highest corner, its footing down the slope). Steps 0-5
+come from the owner's site file and the programme (`src/30-isle-programme.js`, PLAN.md section 8); steps 6-12 are
+core/city's builder. A new layout, not a hash-identical port.
+- **The owner's drawings at the towns' size** (2026-10-18; `site/isle-site.full.json` keeps the first, full-size
+  drawing). The owner's ground edits from the planner (raise, lower, smooth) are replayed onto each town's ground exactly
+  as the planner keeps them (`ISLE.terrainDelta`), so Valapo's raised beaches stand where they were drawn.
+- **Kautoa** (about 6,000 people, at least two thirds of the build area built): every frontage built, each house in a
+  walled compound (a yard behind and beside it, drawn as a low wall), single-family houses; the palace, the ceremonial
+  square and the Governor's House at their markers facing the ceremonial park, five envoy houses, a council hall, a
+  school, a healer and two chiefs' houses round its ring; the harbour in thirds (fishing west, trade middle, the naval
+  base east); a works quarter inland of it; a caravanserai in Ridertown by the west gate; the wall round the build area
+  with a gate wherever an avenue reaches it. Each landmark on the slope stands on a terrace cut into the town's ground
+  (`KCITY.ground.levelPad`).
+- **Valapo** (about a third of Kautoa): no build area drawn, so it grows from the village hall: built ground within a
+  radius of it or near the shore, the avenues and the markers (`grow`, the dial for its size); its parks are white sand
+  beaches; two harbours (the fishing fleet, the garrison and the trade landing west; the smelter by Market 2 south); a
+  caravanserai at the owner's marker A. What open ground is left is farmland by PLAN 8c's crops.
+- **The built share** (`_city.cur.R.cover`, a check for Kautoa): every cell of the build area on land counted as built
+  (a house's compound, a street or its 2.5 m verge, a landmark, market or plaza) or open (free ground, parks, too steep).
+  The census also gives the share the roofs alone cover.
+- **Sizes** at five a household: Kautoa about 1,700 buildings and 6,200 people; Valapo about 570 and 2,150.
+- **Beyond the square** (the farm ring, the fishing villages, the highways past the gates, Valapo's iron mine camp and
+  its cart road) are world records in the probe (`_city.world`), placed later by the open world.
+
+**Placement needs no drawing code.** build.py reads every kit piece's declared box from the kits' sources (`ISLE_DIMS`,
+`ISLE_VDIMS`); the plan places by those, so node, the browser and Godot plan alike. The region's rasters arrive as
+integers decoded by build.py (`WORLD_RAW`): the page reads no canvas.
+
+**Drawing** (`src/60-isle-draw.js`): the kits read in place and sealed in closures (`bundles.py`): `ISK` (the Islanders,
+with kits/resources and the farm animals), `IZV` (the Iziz Vernacular), `CAT` (the Beast Riders kit's buildings: its own,
+and its ports of Mav's Refuge's shrine and roost drawn by the town's sealed engine, `kits/beast-riders/towns.py`, whose
+maps are the sidecar `isle-city.tex.brtowns.js`), `RINGSEA` (through `settlements/voth/ringsea.py`). Each piece is built
+once and drawn instanced: in full within 520 m of the camera's target (2,600 at most), as massing beyond. A port keeps its
+town's materials, the towns' shader hooks put on their plain-mesh branch (`DRAW.portMats`). No furniture on this page (the
+export profile, P6b, brings it), but what a port's town drew into it.
+
+**Checks** (`src/34-isle-census.js`, run by verify and the node test): exact footprint overlap, nothing on a street, in
+the sea or on the wall, the vessels afloat, the programme's landmarks and districts, both harbours' vessels and the six
+origins, the wall's named gates, the landing, the size in citizens, the hug, the farmland; that the declared boxes are
+the bundles' own. Negatives: a building pushed onto another, one pushed into the sea, the palace taken away.
+
 See `KNOWN_ISSUES.md`.

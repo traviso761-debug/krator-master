@@ -8,6 +8,17 @@ Godot, no 3D library, so it runs anywhere (the nightly included).
     python3 tools/export_report.py world-iziz world-sedesert   # these cases (a name under godot/data, or a folder path)
     python3 tools/export_report.py --json                   # also write godot/data/export-report.json
     python3 tools/export_report.py --compare old.json       # per-column delta against a previous --json run
+    python3 tools/export_report.py --compare old.json --tolerance 10 --assert   # ... and exit 1 when something grew
+    python3 tools/export_report.py --from new.json --compare old.json          # compare two saved reports (no files read)
+
+Under --compare, growth is flagged (ROADMAP.md section 11: tracked over time, and said when it moves): a column in
+GROWTH_COLS that grows by more than --tolerance percent (default 10; 0 to anything counts) gets a `*` on its delta and
+the case's `flag` cell names it, and the run ends with the list "grew past tolerance: case column old -> new (+x%)".
+A case new since the baseline, a case that vanished, and a section whose status fell from ok to empty, stub or none
+are on that list too (the per-section statuses are the row's `sections`; a baseline written before they were recorded
+has none, so that check waits for the next --json). --assert exits 1 when the list is not empty; without it the exit
+code is 0 whatever grew. `tools/test_all.py --nightly` runs the compare as a report (EXPORT_ASSERT there turns it into
+a gate); `tools/tests/test_export_report.py` proves the thresholds on two fake reports.
 
 The glb is read by its header and JSON chunk only: accessor counts give vertices and triangles, and
 EXT_mesh_gpu_instancing's TRANSLATION accessor gives each item's instances. Columns:
@@ -28,6 +39,11 @@ OUT = os.path.join(DATA, 'export-report.json')
 STATUSES = ('ok', 'empty', 'stub', 'none')
 COLS = ['json', 'glb', 'tex', 'ok', 'empty', 'stub', 'none', 'sets', 'inst', 'bkts', 'tris', 'itris', 'verts',
         'mats', 'usedm', 'texs', 'usedt', 'draws']
+# The columns whose growth past --tolerance is flagged: bytes, instances, triangles (buckets' and items'), the lists of
+# materials and textures, the draw-call proxy. Section counts, sets, buckets and the `used` columns move with them.
+GROWTH_COLS = ['json', 'glb', 'tex', 'inst', 'tris', 'itris', 'mats', 'texs', 'draws']
+BYTE_COLS = ('json', 'glb', 'tex')
+TOLERANCE = 10.0
 
 
 def read_glb(path):
@@ -77,10 +93,12 @@ def case_row(folder):
            'tex': dir_bytes(os.path.join(folder, 'tex')) if os.path.isdir(os.path.join(folder, 'tex')) else 0}
     for s in STATUSES:
         row[s] = 0
-    for rec in (w.get('sections') or {}).values():
+    row['sections'] = {}
+    for name, rec in sorted((w.get('sections') or {}).items()):
         s = rec.get('status') if isinstance(rec, dict) else None
         if s in STATUSES:
             row[s] += 1
+            row['sections'][name] = s
     nodes = {n.get('name'): n for n in g.get('nodes', [])}
     sets = bkts = inst = tris = itris = verts = 0
     for kind, lst in (('item', w.get('items') or []), ('bucket', w.get('buckets') or [])):
@@ -136,53 +154,115 @@ def human(n):
     return '%.1f MB' % (n / 1e6) if n >= 1e6 else ('%.0f kB' % (n / 1e3) if n >= 1e3 else str(n))
 
 
-def table(rows, old=None):
-    head = ['case'] + COLS + ['terrain']
+def grew(old_v, new_v, tolerance):
+    """True when new_v is more than tolerance percent above old_v (anything above 0 counts as growth)."""
+    if new_v <= old_v:
+        return False
+    return True if old_v <= 0 else (new_v - old_v) * 100.0 > tolerance * old_v
+
+
+def pct(old_v, new_v):
+    return '+new' if old_v <= 0 else '%+.0f%%' % ((new_v - old_v) * 100.0 / old_v)
+
+
+def compare(rows, old, tolerance=TOLERANCE):
+    """The flag list of a compare: (case, what, text) per growth past the tolerance, per new or vanished case, and per
+    section whose status fell from ok. `what` is the column name, 'case' or 'section <name>'. Pure: no printing."""
+    flags = []
+    seen = set()
+    for r in rows:
+        seen.add(r['case'])
+        o = old.get(r['case'])
+        if o is None:
+            flags.append((r['case'], 'case', '%s case: new since the baseline' % r['case']))
+            continue
+        for c in GROWTH_COLS:
+            ov, nv = o.get(c, 0), r.get(c, 0)
+            if grew(ov, nv, tolerance):
+                fmt = human if c in BYTE_COLS else '{:,}'.format
+                flags.append((r['case'], c, '%s %s %s -> %s (%s)' % (r['case'], c, fmt(ov), fmt(nv), pct(ov, nv))))
+        for name, os_ in sorted((o.get('sections') or {}).items()):
+            ns = (r.get('sections') or {}).get(name)
+            if os_ == 'ok' and ns in ('empty', 'stub', 'none'):
+                flags.append((r['case'], 'section ' + name, '%s section %s: ok -> %s' % (r['case'], name, ns)))
+    for case in sorted(set(old) - seen):
+        flags.append((case, 'case', '%s case: in the baseline, not in this run' % case))
+    return flags
+
+
+def table(rows, old=None, tolerance=TOLERANCE):
+    cmp = old is not None
+    head = ['case'] + COLS + ['terrain'] + (['flag'] if cmp else [])
+    flagged = {}
+    if cmp:
+        for case, what, _ in compare(rows, old, tolerance):
+            flagged.setdefault(case, []).append(what)
     lines = [head]
     for r in rows:
         cells = [r['case']]
+        fl = flagged.get(r['case'], [])
         for c in COLS:
-            v = r[c]
-            cells.append(human(v) if c in ('json', 'glb', 'tex') else '{:,}'.format(v))
-            if old is not None:
+            v = r.get(c, 0)   # a column a saved report predates reads 0
+            cells.append(human(v) if c in BYTE_COLS else '{:,}'.format(v))
+            if cmp:
                 o = old.get(r['case'])
                 d = None if o is None else v - o.get(c, 0)
-                cells[-1] += '' if d is None else (' (=)' if d == 0 else ' (%+d)' % d if c not in ('json', 'glb', 'tex')
+                cells[-1] += '' if d is None else (' (=)' if d == 0 else ' (%+d)' % d if c not in BYTE_COLS
                                                    else ' (%s%s)' % ('+' if d > 0 else '-', human(abs(d))))
+                if c in fl:
+                    cells[-1] += '*'
         cells.append(r['terrain'])
+        if cmp:
+            cells.append(' '.join(w.split()[-1] if w.startswith('section ') else w for w in fl) or '')
         lines.append(cells)
     wid = [max(len(l[i]) for l in lines) for i in range(len(head))]
-    return '\n'.join('  '.join(c.ljust(wid[i]) if i in (0, len(head) - 1) else c.rjust(wid[i]) for i, c in enumerate(l))
+    text_cols = (0, len(COLS) + 1, len(COLS) + 2)
+    return '\n'.join('  '.join(c.ljust(wid[i]) if i in text_cols else c.rjust(wid[i]) for i, c in enumerate(l)).rstrip()
                      for l in lines)
 
 
+def load_report(path):
+    return json.load(open(path, encoding='utf-8'))['cases']
+
+
 def main(argv):
-    write, old, args, i = False, None, [], 0
+    write, old, args, i, tolerance, do_assert, rows = False, None, [], 0, TOLERANCE, False, None
     while i < len(argv):
         a = argv[i]
         if a == '--json':
             write = True
         elif a == '--compare':
             i += 1
-            old = {r['case']: r for r in json.load(open(argv[i], encoding='utf-8'))['cases']}
+            old = {r['case']: r for r in load_report(argv[i])}
+        elif a == '--from':
+            i += 1
+            rows = load_report(argv[i])
+        elif a == '--tolerance':
+            i += 1
+            tolerance = float(argv[i])
+        elif a == '--assert':
+            do_assert = True
         else:
             args.append(a)
         i += 1
-    rows = [case_row(f) for f in find_cases(args)]
+    if rows is None:
+        rows = [case_row(f) for f in find_cases(args)]
     if not rows:
         print('no case with world.json and world.glb under %s' % DATA)
         return 0
-    print(table(rows, old))
-    if old is not None:
-        gone = sorted(set(old) - {r['case'] for r in rows})
-        if gone:
-            print('not in this run: ' + ', '.join(gone))
+    print(table(rows, old, tolerance))
     if write:
         with open(OUT, 'w', encoding='utf-8', newline='\n') as f:
             json.dump({'cases': rows}, f, indent=1, sort_keys=True)
             f.write('\n')
         print('wrote %s' % os.path.relpath(OUT, ROOT).replace(os.sep, '/'))
-    return 0
+    if old is None:
+        return 0
+    flags = compare(rows, old, tolerance)
+    print('grew past tolerance (%g%%): %s' % (tolerance, 'none' if not flags else '%d' % len(flags)))
+    for _, _, text in flags:
+        print('  ' + text)
+    return 1 if (do_assert and flags) else 0
 
 
 if __name__ == '__main__':

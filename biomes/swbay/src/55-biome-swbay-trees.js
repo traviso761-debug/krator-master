@@ -485,7 +485,8 @@ SWBAY.buildTrees=function(R,q){
 // SWBAY.treeAt(key, x, y, z, opt): a species by key, standing at (x, y, z) on whatever the world has there (a garden
 // bed on a canton, a park): built as a hero within SWBAY.LOD.tree of its chunk and its lite impostor past that, as the
 // pass builds one. opt: {seed (default a hash of x, z), scale, H, wet, ground(x, z) (the height its petals, roots and
-// side pieces stand on; default y)}. Call between SWBAY.build() and BIO.bake(). Returns the tree, or null for an unknown
+// side pieces stand on; default y), lv (one level alone, for a world that keeps its own levels, as an open world's
+// nursery does: 2 the hero, 1 the far tree, 0 the lite stand-in; left out, the hero and its stand-in as above)}. Call between SWBAY.build() and BIO.bake(). Returns the tree, or null for an unknown
 // species. Draws from its own seed, never the pass's stream. A world's veto (SWBAY.veto) refuses it (null).
 SWBAY.treeAt=function(key,x,y,z,opt){opt=opt||{};const sp=SP.findIndex(S=>S.key===key);if(sp<0)return null;
  if(SWBAY.veto&&SWBAY.veto('tree',key,x,z))return null;
@@ -495,8 +496,10 @@ SWBAY.treeAt=function(key,x,y,z,opt){opt=opt||{};const sp=SP.findIndex(S=>S.key=
  const st={trunk:0,limb:0,cap:0,far:0,lite:0,sapTris:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fans:0,epi:0,shrooms:0,parasols:0,tiers:0,roots:0,shelves:0,corals:0,heroes:0,fars:0,byS:SP.map(()=>0)};
  host.terrainH=opt.ground||(()=>y);
  try{means();SWBAY.TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});if(SWBAY.onFlora)SWBAY.onFlora(T,0);BIO.owner=[x,z];
-  BIO.range=SWBAY.LOD.tree;BIO.minRange=0;B[sp](T,st,2);
-  BIO.range=1e9;BIO.minRange=SWBAY.LOD.tree;buildFar(T,SWBAY.TREES.length-1,st,true);}
+  const lv=opt.lv,fi=SWBAY.TREES.length-1;
+  if(lv==null||lv===2){BIO.range=SWBAY.LOD.tree;BIO.minRange=0;B[sp](T,st,2);}
+  if(lv==null){BIO.range=1e9;BIO.minRange=SWBAY.LOD.tree;buildFar(T,fi,st,true);}
+  else if(lv<2){BIO.range=null;BIO.minRange=0;buildFar(T,fi,st,lv===0);}}
  finally{host.terrainH=keepH;BIO.owner=null;BIO.range=null;BIO.minRange=0;if(SWBAY.onFlora)SWBAY.onFlora(T,1);}
  return T;};
 SWBAY._canopyH=function(x,z){let h=0;for(const T of SWBAY.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};

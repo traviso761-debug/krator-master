@@ -10,7 +10,7 @@ on the ground at its centre, **+z its front**.
 | Fragment | Prefix | What |
 |---|---|---|
 | `26k-kit.js` | | `KIT`, `LZ_CASTE` (the six castes: height, name, role), `LZ_RATIO` (1.25), `lzDoorH(c)`, `SV_LIB`, `SV_TILE0`, `SV_CLOTH`, `SV_CUT`, `SVPAL`, `P(k)` |
-| `10-core` `27-mat` `30-geo` `36-def` `81-sky` `90-scene` `91-probe` `91f-furnish` `91n-night` `92-camera` `93-anim` `99-tail` | | VENDORED from `kits/islanders/src` |
+| `10-core` `27-mat` `30-geo` `36-def` `81-sky` `90-scene` `91f-furnish` `91n-night` `92-world` `93-anim` `99-host-take` `99-tail` | | VENDORED from `kits/islanders/src` |
 | `40-lz-kit.js` | lz | the toolkit: `lzSpan lzNoCut lzCutFloor lzBez`; `lzArch(hz, H)` (the pointed arch: a cusp at any rise), `lzHorn`, `lzArchRib`, `lzRibRoof` (odd ribs outside a hide or reed skin, crossing at the ridge and running on past it; `drop` hangs the skin below the wall top), `lzTuskVault`; `lzWall` (a leaning face with TRIANGULAR openings, `door()` declared), `lzBatterRoom` (four walls leaning in and out), `lzSlab`; `lzDoor(c, s)`, `lzVent`, `lzPortal` (nested frames); `lzLeiwen` (the squared spiral, mirrored halves, one flaw), `lzEye` (the spiral eye, `glow`), `lzGlyphSpiral`, `lzStela` (`pair`, `turned`, `wrapped`, `eye`), `lzTwist`, `lzMenhir`, `lzBellRack`, `lzThreshold`, `lzDust` |
 | `42-lz-dress.js` | lz | `LZ_FURN` (common and court), `lzDim`, `lzFurnRoom(w, d, y, tier, o)` |
 | `50-lz-dwell.js` | ld | `ldCell`; the five dwellings |

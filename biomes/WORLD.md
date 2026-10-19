@@ -28,11 +28,13 @@ scale Krator map for rough placement, not in this repo.
 | crater drylands (two regions) | `crater-drylands` | swbay, the hyperjungle's southern savannah (gentle: the burn mosaic thins into them) |
 | the Steampits (and every geyser field: the West Ring's isles, the Throne's) | `geyser` | hyperjungle (it walls the basins in; the showcase loads it), the abyssal savanna (XV) between the basins, the Ring Sea coast. A shared kit: a world lays out each field from its own data or from a scale-model point (`GEYSER.cluster`) |
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
+| north-eastern canyons (overlies the hyperjungle's polygon for now) | `necanyons` | hyperjungle (gentle: the forest thins onto the rock), korona (gentle: the benches rise into tepuis), nhighlands (steep: the Inner Wall). Plan: `biomes/necanyons/PLAN.md` |
 | southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
 | *possible* | `sbadlands`, micro-biomes | |
 | *planned* the scablands (in "n semiarid": scale model 4.20) | `scablands` | its basin's long lake to the south |
 | *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
+| the Oidong Valley (east of the Vale of Xanadu, LORE.md 6.15) | `oidong` | xanadu (over the pass at the valley's west end; the five shared species are the ecotone), the ranges round it (steep: nothing grows on the walls' tops) |
 
 **Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
 structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and

@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.397,
+    1.236
+   ],
+   "seam_before": [
+    1.655,
+    1.22
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.quartzite.black",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   4,
+   4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ground.quartzite.black.png",
+  "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "note": "came pinker than the prompt's black crust: pale quartzite with black patches and white veins; the kit darkens it by vertex colour where the crust is thick",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.quartzite.black` (section 7, Korona)",
+  "reuse": "the tepui summit pavement (Korona); any crusted rock plateau top",
+  "sha1": "c790198d31f681645df498d13a223517b4254299"
+ }
+}

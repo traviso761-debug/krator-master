@@ -1,0 +1,133 @@
+[
+ {
+  "src": "organic.mossball.png",
+  "out": "core/materials/library/organic.mossball",
+  "options": {
+   "rough": 0.85,
+   "delight": 0.2
+  },
+  "record": {
+   "id": "organic.mossball",
+   "family": "moss",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `organic.mossball`",
+    "reuse": "the Oidong moss-ball tree; dense moss cushions and banks"
+   }
+  }
+ },
+ {
+  "src": "bark.cedar.red.png",
+  "out": "core/materials/library/bark.cedar.red",
+  "options": {
+   "rough": 0.85,
+   "delight": 0.2
+  },
+  "record": {
+   "id": "bark.cedar.red",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `bark.cedar.red`",
+    "reuse": "the Oidong temple cedar and pagoda fir; any Cryptomeria or redwood"
+   }
+  }
+ },
+ {
+  "src": "organic.chalicecap.png",
+  "out": "core/materials/library/organic.chalicecap",
+  "options": {
+   "rough": 0.75,
+   "delight": 0.2
+  },
+  "record": {
+   "id": "organic.chalicecap",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `organic.chalicecap`",
+    "reuse": "the Oidong chalice tree cap; any vast veined leaf or membrane"
+   }
+  }
+ },
+ {
+  "src": "bark.bamboo.jade.png",
+  "out": "core/materials/library/bark.bamboo.jade",
+  "options": {
+   "rough": 0.7,
+   "delight": 0.2,
+   "keep_aspect": true
+  },
+  "record": {
+   "id": "bark.bamboo.jade",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.2,
+    2.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `bark.bamboo.jade`",
+    "reuse": "the Oidong jade bamboo canes; bamboo walling, scaffolds, fences"
+   }
+  }
+ },
+ {
+  "src": "bark.marble.png",
+  "out": "core/materials/library/bark.marble",
+  "options": {
+   "rough": 0.75,
+   "delight": 0.1
+  },
+  "record": {
+   "id": "bark.marble",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `bark.marble`",
+    "reuse": "the Oidong marble birch bole: cream with swirled pastel bands (full colour)"
+   }
+  }
+ }
+]

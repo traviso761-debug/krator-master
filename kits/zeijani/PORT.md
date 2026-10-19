@@ -6,13 +6,13 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 5 (2%) | 33 (12%) | 10 (4%) | 75 (28%) | 148 (55%) |
+| KB | 5 (2%) | 33 (13%) | 10 (4%) | 63 (25%) | 148 (57%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/00-head.html` | 3.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/10-core.js` | 3.6 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/27-mat.js` | 12.2 | [G shader] | 18 | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 |  |
 | `src/30-geo.js` | 22.9 | [draw] | 46 | 1 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
@@ -39,8 +39,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/91-probe.js` | 26.7 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/91f-furnish.js` | 12.5 | [web] | 4 | 1 | 0 | 0 | 2 | 1 | 6 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/91n-night.js` | 2.6 | [draw] | 6 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/92-camera.js` | 16.8 | [web] | 16 | 0 | 22 | 15 | 4 | 4 | 0 | 0 | 4 | 0 | 0 |  |
+| `src/92-world.js` | 0.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | builds the world and names the views; before 93-anim.js, which reads the smoke sources the build records |
 | `src/93-anim.js` | 2.5 | [draw] | 5 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/99-host-take.js` | 6.6 | [web] | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): views, inspector words, controls, the probe's fields; after core/host's 95-host-probe.js |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

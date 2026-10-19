@@ -1,0 +1,322 @@
+[
+ {
+  "src": "card.lily.iridescent.png",
+  "out": "core/materials/library/card.lily.iridescent",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 8,
+   "key_hi": 34,
+   "spill": "edge",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.lily.iridescent",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.lily.iridescent`",
+    "reuse": "the iridescent water lilies of the Oidong pools (top-down, full colour); any alien lily"
+   }
+  }
+ },
+ {
+  "src": "card.peyote.png",
+  "out": "core/materials/library/card.peyote",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "all",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.peyote",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.peyote`",
+    "reuse": "peyote buttons flush with the gravel (top-down); any button cactus"
+   }
+  }
+ },
+ {
+  "src": "card.mooncap.png",
+  "out": "core/materials/library/card.mooncap",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "all",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "tight",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.mooncap",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.mooncap`",
+    "reuse": "the Oidong moon caps: pink pleated parasol mushrooms (a standing mushroom, stem at the bottom)"
+   }
+  }
+ },
+ {
+  "src": "card.beads.bell.png",
+  "out": "core/materials/library/card.beads.bell",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 110,
+   "spill": "all",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "tight",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.beads.bell",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.beads.bell`",
+    "reuse": "the bell-pod willow: a hanging string of beads ending in a coral bell (top end at the top)"
+   }
+  }
+ },
+ {
+  "src": "card.heartleaf.png",
+  "out": "core/materials/library/card.heartleaf",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "all",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.heartleaf",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.heartleaf`",
+    "reuse": "the sacred fig (bodhi) and any heart-leaved fig or vine"
+   }
+  }
+ },
+ {
+  "src": "card.lace.birch.png",
+  "out": "core/materials/library/card.lace.birch",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "all",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.lace.birch",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.lace.birch`",
+    "reuse": "the Oidong marble birch: a spray of pale lace foliage"
+   }
+  }
+ },
+ {
+  "src": "card.blossom.cherry.png",
+  "out": "core/materials/library/card.blossom.cherry",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "all",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.blossom.cherry",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.blossom.cherry`",
+    "reuse": "the Oidong cherry blossom; any cherry or plum in flower"
+   }
+  }
+ },
+ {
+  "src": "card.giantpad.png",
+  "out": "core/materials/library/card.giantpad",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "all",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.giantpad",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.giantpad`",
+    "reuse": "the giant lotus pad (Victoria lily) of the Oidong pools, from above"
+   }
+  }
+ },
+ {
+  "src": "card.sunwheel.png",
+  "out": "core/materials/library/card.sunwheel",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "all",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.sunwheel",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.sunwheel`",
+    "reuse": "the Northern Highlands sun-wheel rosette, seen from above"
+   }
+  }
+ },
+ {
+  "src": "card.staghorn.png",
+  "out": "core/materials/library/card.staghorn",
+  "options": {
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "all",
+   "choke": 1,
+   "size": 1024,
+   "anchor": "tight",
+   "pad": 0.02
+  },
+  "record": {
+   "id": "card.staghorn",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.staghorn`",
+    "reuse": "the Northern Highlands staghorn fern frond (rotated so the base is at the top: a frond card pinned at x=0)"
+   }
+  }
+ }
+]

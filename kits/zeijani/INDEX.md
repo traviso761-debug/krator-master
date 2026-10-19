@@ -13,11 +13,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `10-core.js` | 4 | error panel (5); rng + noise (14) |
 | `27-mat.js` | 12 |  |
 | `30-geo.js` | 23 |  |
@@ -44,6 +48,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `91-probe.js` | 27 | the cavern and the walk map (P2) (22) |
 | `91f-furnish.js` | 13 |  |
 | `91n-night.js` | 3 |  |
-| `92-camera.js` | 17 |  |
+| `92-world.js` | <1 |  |
 | `93-anim.js` | 3 |  |
+| `99-host-take.js` | 7 | the inspector's words: a click names what is und (12); the cut-away (C), night (N, in 91n-night.js), sh (33); the frame, around the host's: the sun and the sk (40); the page, handed to the host (50) |
 | `99-tail.html` | <1 |  |

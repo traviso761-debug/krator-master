@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1 (1%) | 0 (0%) | 14 (7%) | 59 (28%) | 134 (65%) |
+| KB | 1 (1%) | 0 (0%) | 14 (7%) | 59 (28%) | 135 (65%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -20,7 +20,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/60-biome-sedesert-floor.js` | 14.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-sedesert-dress.js` | 5.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
 | `src/70-biome-sedesert.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/75-biome-sedesert-fauna.js` | 28.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build); the deer and coyotes' layout (walkers) is data and their pose a function of the BIO clock (walkAt) |
+| `src/75-biome-sedesert-fauna.js` | 29.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build); the deer and coyotes' layout (walkers) is data and their pose a function of the BIO clock (walkAt) |
 | `src/82-host-sky.js` | 13.6 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset |
 | `src/85-host-tower.js` | 5.4 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
 | `src/88-host-build.js` | 0.9 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |

@@ -705,6 +705,97 @@
    },
    "roughLift": 0.3,
    "specular": 0.15
+  },
+  "endgrain": {
+   "lib": "wood.endgrain",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.78
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
+  },
+  "logbark": {
+   "lib": "bark.mahogany",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.78
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
+  },
+  "banco": {
+   "lib": "earth.banco",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.78
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
+  },
+  "turf": {
+   "lib": "roof.turf",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.78
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
+  },
+  "charcoal": {
+   "lib": "bark.char",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.78
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
+  },
+  "ash": {
+   "lib": "ground.ash",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.78
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
+  },
+  "clay": {
+   "lib": "ceramic.terracotta.sooty",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.78
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
   }
  }
 }

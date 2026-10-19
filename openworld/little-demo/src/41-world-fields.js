@@ -299,7 +299,9 @@ function townAt(x,z){TW.w=0;TW.t=null;
   TW.h=g;TW.t=t;return TW;}
  return TW;}
 // 0..1: how far into a town's ground (x,z) is; the flora and the floor keep off where it is over 0
-W.townW=(x,z)=>{for(let i=0;i<TOWNS.length;i++){const t=TOWNS[i],d=Math.hypot(x-t.x,z-t.z);if(d<t.R+60)return 1;}return 0;};
+W.townW=(x,z)=>{for(let i=0;i<TOWNS.length;i++){const t=TOWNS[i],d=Math.hypot(x-t.x,z-t.z);if(d<t.R+60)return 1;}return W.clearHook&&W.clearHook(x,z)?1:0;};
+// a world's own keep-clear without reshaping the land (a hamlet's buildings and lanes, core/hamlet): (x, z) -> truthy
+W.clearHook=null;
 
 // ---------------------------------------------------------------- the height
 // P (optional) receives the parts the fields need: base, relief, the style blend, the channel's distance and cut.

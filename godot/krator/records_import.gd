@@ -3,6 +3,8 @@
 # core/tags record (tags.json beside fixtures.json, format krator-tags: core/tags/README.md) on its node as the
 # "krator" metadata; an export without tags.json falls back to the fixture record. One building's interior is built in full: rooms, walls with -col collision,
 # furniture markers, and the walk graph as NavigationRegion3D per level plus NavigationLink3D per stair, ladder and door.
+# _interior is shared with krator/world_import.gd, which feeds it a krator-interiors building (core/export's section,
+# since 2026-10-18) in the same shape, plus the yard (its own NavigationRegion3D, "Nav_yard").
 class_name KratorRecords
 extends RefCounted
 
@@ -179,11 +181,22 @@ static func _interior(bj: Dictionary, report: Dictionary) -> Node3D:
 		mi.mesh = st.commit()
 		mi.material_override = floor_mat
 		mi.set_meta("krator", r)
+		mi.set_meta("records", [r])
 		n.add_child(mi)
 		var lv: int = int(r.get("lvl", 0))
 		if not levels.has(lv):
 			levels[lv] = []
 		levels[lv].append([poly, tri, y])
+	# the yard (krator-interiors): the footprint at the base, where the exterior doors open; its own region, so a
+	# path from one room to another runs out through one door link and in through the other
+	if it.get("yard") is Dictionary:
+		var yd: Dictionary = it["yard"]
+		var ypoly := PackedVector2Array()
+		for p in yd.get("poly", []):
+			ypoly.append(Vector2(float(p[0]), float(p[1])))
+		var ytri := Geometry2D.triangulate_polygon(ypoly)
+		if not ytri.is_empty():
+			levels[-1] = [[ypoly, ytri, float(yd.get("y", 0))]]
 
 	# walls: boxes from a to b; the -col hint gets trimesh collision in the editor importer, here a StaticBody3D
 	var walls := Node3D.new()
@@ -238,7 +251,8 @@ static func _interior(bj: Dictionary, report: Dictionary) -> Node3D:
 		mi.rotation.y = float(f.get("yaw", 0))
 		mi.set_meta("krator", f)
 		fn.add_child(mi)
-	report["gaps"]["furniture meshes"] = "furniture arrives as catalog keys (furn, variant, seed): no catalog exporter yet, so markers"
+	if it.get("furniture", []).size() > 0:
+		report["gaps"]["furniture meshes"] = "furniture arrives as catalog keys (furn, variant, seed): no catalog exporter yet, so markers"
 
 	# navigation: one region per level from the room triangles, a link per stair, ladder and door edge
 	for lv in levels:
@@ -257,7 +271,7 @@ static func _interior(bj: Dictionary, report: Dictionary) -> Node3D:
 				nm.add_polygon(PackedInt32Array([base, base + 1, base + 2]))
 		nm.vertices = verts
 		var reg := NavigationRegion3D.new()
-		reg.name = "Nav_level_%d" % lv
+		reg.name = "Nav_yard" if lv == -1 else "Nav_level_%d" % lv
 		reg.navigation_mesh = nm
 		n.add_child(reg)
 	var nav: Dictionary = it.get("nav", {})
@@ -273,14 +287,14 @@ static func _interior(bj: Dictionary, report: Dictionary) -> Node3D:
 		var na: Dictionary = nodes[e["a"]]
 		var nb: Dictionary = nodes[e["b"]]
 		var link := NavigationLink3D.new()
-		link.name = "Link_%s_%d" % [e["kind"], links]
+		link.name = ("Link_%s" % str(e["id"])).validate_node_name() if e.has("id") else "Link_%s_%d" % [e["kind"], links]
 		link.start_position = Vector3(float(na["x"]), float(na["y"]), float(na["z"]))
 		link.end_position = Vector3(float(nb["x"]), float(nb["y"]), float(nb["z"]))
 		link.set_meta("krator", e)
 		n.add_child(link)
 		links += 1
 	report["counts_interior"] = {"rooms": it.get("rooms", []).size(), "walls": it.get("walls", []).size(),
-		"furniture": it.get("furniture", []).size(), "nav_nodes": nodes.size(), "nav_links": links, "levels": levels.size()}
+		"furniture": it.get("furniture", []).size(), "nav_nodes": nodes.size(), "nav_links": links, "levels": levels.size() - (1 if levels.has(-1) else 0), "yard": levels.has(-1)}
 	if str(it.get("frame", "")).begins_with("building-local") == false:
 		report["gaps"]["nav space"] = "the interior does not state its frame: links are parented under the building, assuming building-local"
 	return n

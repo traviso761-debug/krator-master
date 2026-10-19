@@ -126,14 +126,19 @@ function ensure(p,n){if(n<=p.cap)return;let cap=Math.max(16,p.cap);while(cap<n)c
 const spec=(r,lv)=>({kit:KITS[r.k].name,sp:r.sp,v:r.v,lv:r.sap?2:lv,sapling:r.sap});
 const pkey=(r,lv)=>r.k+'|'+r.sp+'|'+r.v+'|'+(r.sap?'s':lv);
 let on=true;
+// the world's say over a tree, set by setState(fn): fn(record) -> 'gone' | 'young' | null; a young tree draws as its kit's
+// sapling (the record's own sapling level) at a third of its height
+let STATE=null;const YOUNG=r=>Object.assign({},r,{sap:true,Ht:r.Ht/3});
 function levelOf(r,d){const L=KITS[r.k].lod;if(r.sap){const s=L.sapling;return d<s[1]?2:-1;}
  const lim=a=>Math.min(a[2],Math.max(a[1],a[0]*r.Ht));
  if(d<lim(L.hero))return 2;if(d<lim(L.mid))return 1;if(r.far&&d<lim(L.far))return 0;return -1;}
 function draw(){const P=camera.position;ORIGIN.set(Math.round(P.x/1024)*1024,0,Math.round(P.z/1024)*1024);
  for(const p of POOLS.values())p.n=0;
  const lv3=[0,0,0];let n=0;
- if(on)for(const t of TILES.values())for(const r of t.recs){const dx=r.x-P.x,dz=r.z-P.z,dy=r.y-P.y,d=Math.sqrt(dx*dx+dz*dz+dy*dy*.25);
+ if(on)for(const t of TILES.values())for(let r of t.recs){const dx=r.x-P.x,dz=r.z-P.z,dy=r.y-P.y,d=Math.sqrt(dx*dx+dz*dz+dy*dy*.25);
   let lv=levelOf(r,d);if(lv<0)continue;
+  /* a world's say over one tree (a hamlet's felling, core/hamlet): 'gone' (a stump draws instead), 'young' (its sapling) */
+  if(STATE){const s=STATE(r);if(s==='gone')continue;if(s==='young'&&!r.sap){r=YOUNG(r);lv=2;}}
   // the level wanted, else the nearest coarser one that is ready (a prototype grows while its trees wait)
   let proto=null,key;for(let l=lv;l>=0&&!proto;l--){key=pkey(r,l);proto=NURSERY.get(key,spec(r,l),d);if(r.sap)break;}
   if(!proto){if(lv<2&&!r.sap){for(let l=lv+1;l<=2&&!proto;l++){key=pkey(r,l);const pp=NURSERY.protos.get(key);if(pp)proto=pp;}}if(!proto)continue;}
@@ -148,4 +153,4 @@ function draw(){const P=camera.position;ORIGIN.set(Math.round(P.x/1024)*1024,0,M
 function nearest(x,z,r){let best=null,bd=r;for(const t of TILES.values()){if(Math.abs((t.tx+.5)*TS-x)>TS/2+r||Math.abs((t.tz+.5)*TS-z)>TS/2+r)continue;
  for(const q of t.recs){const d=Math.hypot(q.x-x,q.z-z);if(d<bd){bd=d;best=q;}}}
  if(!best)return null;const K=KITS[best.k],S=K.SP[best.sp];return{rec:best,kit:K.name,name:best.sap?'immature '+S.name:S.name,key:S.key,tags:S.tags||null,dist:bd};}
-return{residency,draw,nearest,buildTile,stats:ST,KITS,TS,setOn:v=>{on=v;},tiles:TILES,pools:POOLS};})();});
+return{residency,draw,nearest,buildTile,stats:ST,KITS,TS,setOn:v=>{on=v;},setState:fn=>{STATE=fn||null;},tiles:TILES,pools:POOLS};})();});

@@ -39,13 +39,19 @@ func _initialize() -> void:
 	ok(d["format"] == "krator-world" and not rep["gaps"].has("load") and not rep["gaps"].has("format"),
 		"world.json and world.glb load (%d ms)" % rep["counts"]["load_ms"])
 	ok((d["errors"] as Array).is_empty(), "the page reported no section errors")
+	var has_ix: bool = d.get("interiors") is Dictionary
 	var bad_sec := []
 	for s in ["items", "buckets", "materials", "textures", "registry", "terrain", "stage", "fixtures", "atmos"]:
-		if rep["sections"].get(s) != "ok" and not (SHEET and s == "atmos" and rep["sections"].get(s) == "empty"):
+		# a sheet has no weather; its box may hold no plain mesh once the furniture is pieces
+		if rep["sections"].get(s) != "ok" and not (SHEET and rep["sections"].get(s) == "empty" and (s == "atmos" or (s == "buckets" and has_ix))):
 			bad_sec.append(s)
 	ok(bad_sec.is_empty(), "sections filled: %s" % JSON.stringify(rep["sections"]))
-	ok(rep["sections"].get("interiors") == "empty" and rep["sections"].get("city") == "stub",
-		"interiors answered empty (Iziz's buildings are shells) and city is the Voth branch's stub")
+	if SHEET:   # a kit's sheet furnishes its rooms (settlements/iziz/src/95i-iziz-interiors.js): the interiors section is filled
+		ok(rep["sections"].get("interiors") == "ok" and has_ix and rep["sections"].get("city") == "stub",
+			"interiors filled (the sheet's furnished rooms) and city is the Voth branch's stub")
+	else:
+		ok(rep["sections"].get("interiors") == "empty" and rep["sections"].get("city") == "stub",
+			"interiors answered empty (Iziz's buildings are shells) and city is the Voth branch's stub")
 	var tags: Dictionary = w.get_meta("tags", {})
 
 	# 1. every kit instance names its item set and carries a uid recomputed here from world.glb's TRANSLATION
@@ -134,11 +140,14 @@ func _initialize() -> void:
 		var mesh: Mesh = (b as MeshInstance3D).mesh
 		for s in mesh.get_surface_count():
 			tris += (mesh.surface_get_arrays(s)[Mesh.ARRAY_INDEX] as PackedInt32Array).size() / 3
-	ok(vols > 0 and vbad == 0, "buckets name %d records, %d bad" % [vols, vbad])
 	ok(tris == int(d["stats"]["triangles"]), "bucket triangles: %d in Godot, %d on the page" % [tris, int(d["stats"]["triangles"])])
-	var r0: Dictionary = tags.get(bnodes[0].get_meta("krator_record_ids", PackedStringArray(["?"]))[0], {}) if bnodes.size() > 0 else {}
-	ok(not r0.is_empty() and KTags.uid(r0["class"], r0["key"], [float(r0["at"][0]) + 0.2, r0["at"][1], r0["at"][2]]) != r0["uid"],
-		"negative: a bucket's record moved 20 cm has another uid")
+	if bnodes.is_empty() and SHEET and has_ix:   # the sheet's box held only furniture as plain meshes: it is pieces now (6.)
+		ok(int(d["stats"]["buckets"]) == 0, "no buckets: the box's plain meshes were the interiors' furniture, exported as pieces")
+	else:
+		ok(vols > 0 and vbad == 0, "buckets name %d records, %d bad" % [vols, vbad])
+		var r0: Dictionary = tags.get(bnodes[0].get_meta("krator_record_ids", PackedStringArray(["?"]))[0], {}) if bnodes.size() > 0 else {}
+		ok(not r0.is_empty() and KTags.uid(r0["class"], r0["key"], [float(r0["at"][0]) + 0.2, r0["at"][1], r0["at"][2]]) != r0["uid"],
+			"negative: a bucket's record moved 20 cm has another uid")
 
 	# 3. the city's records as nodes: buildings at their record, fixtures children of their building, furniture placed
 	var recs: Dictionary = rep.get("records", {})
@@ -158,6 +167,8 @@ func _initialize() -> void:
 					b_far += 1
 				for f in bn.get_children():
 					var fr: Dictionary = f.get_meta("krator", {})
+					if fr.get("class") != "fixture":
+						continue   # the building's Interior_<id> (the interiors section; 6.)
 					fx += 1
 					kinds[fr.get("kind")] = kinds.get(fr.get("kind"), 0) + 1
 					if fr.get("parent") == r["id"] and tags.has(fr["parent"]) and tags[fr["parent"]]["class"] == "building" and tags.has(fr["id"]):
@@ -252,9 +263,160 @@ func _initialize() -> void:
 		ok(gneg > 0, "negative: half a step off, %d samples differ" % gneg)
 	ok(w.has_meta("stage") and (w.get_meta("stage") as Dictionary).get("format") == "krator-stage", "the stage (light, fog, sky, the painted ground's look) is there")
 
+	if has_ix:
+		_interiors(d, w, tags, rep.get("records", {}))
+
 	w.queue_free()
 	print("iziz: %d instances, %d buckets, %d records, %d fixtures; %s" % [inst, bnodes.size(), tags.size(), nfix, "all passed" if fails == 0 else str(fails) + " failed"])
 	quit(1 if fails else 0)
+
+
+# 6. the interiors (krator-interiors, from 95i's plans) and the furnished rooms' pieces (the furniture section): each
+# building's room graph under its Building node, every placement resolving to its record, its room and its piece, and
+# each piece's items drawing an instance per placement at the placement's pose. Each check has a negative.
+func _interiors(d: Dictionary, w: Node3D, tags: Dictionary, recs: Dictionary) -> void:
+	var I: Dictionary = d["interiors"]
+	var fx_ids := {}
+	for r in d["fixtures"]["records"]:
+		fx_ids[r["id"]] = true
+	var room_of := {}   # room id -> its building's id
+	var b_bad := 0
+	var nlinks := 0
+	var links_bad := 0
+	var refs := 0
+	var refs_bad := 0
+	var ext_fx := 0
+	var stairs := 0
+	for B in I["buildings"]:
+		if tags.get(B["id"], {}).get("class") != "building":
+			b_bad += 1
+		var lids := {}
+		for l in B["links"]:
+			lids[l["id"]] = l
+		var rooms := {}
+		for S in B["storeys"]:
+			for r in S["rooms"]:
+				rooms[r["id"]] = true
+				room_of[r["id"]] = B["id"]
+				for dr in r["doors"]:
+					refs += 1
+					if not (lids.has(dr) or fx_ids.has(dr)):
+						refs_bad += 1
+		for l in B["links"]:
+			nlinks += 1
+			if l["kind"] != "door":
+				stairs += 1
+			for e in [l.get("a"), l.get("b")]:
+				if e != null and not rooms.has(e) and e != "outside" and e != "court":
+					links_bad += 1
+			if l.get("fixture") != null:   # an exterior door: the building's door fixture it is
+				ext_fx += 1
+				if not fx_ids.has(l["fixture"]) or tags.get(l["fixture"], {}).get("parent") != B["id"]:
+					links_bad += 1
+	var nb: int = (I["buildings"] as Array).size()
+	ok(nb > 0 and b_bad == 0, "interiors: %d buildings, every one a building record of the registry (%d not)" % [nb, b_bad])
+	ok(refs > 0 and refs_bad == 0 and nlinks > 0 and links_bad == 0,
+		"interiors: %d rooms, %d door refs resolve to a link or a fixture (%d do not), %d links (%d stairs or ladders, %d exterior doors naming their door fixture) end in their rooms (%d bad)" % [room_of.size(), refs, refs_bad, nlinks, stairs, ext_fx, links_bad])
+	var R := w.get_node("Records")
+	var found := 0
+	var rooms_drawn := 0
+	for B in I["buildings"]:
+		var bn := R.get_node_or_null(NodePath(("Building.%s" % B["id"]).validate_node_name()))
+		var inode: Node = null
+		if bn:
+			for c in bn.get_children():
+				if str(c.name).begins_with("Interior_"):
+					inode = c
+		if inode:
+			found += 1
+			for c in inode.get_children():
+				var m = c.get_meta("krator", null)
+				if m is Dictionary and room_of.get(m.get("id")) == B["id"]:
+					rooms_drawn += 1
+	ok(found == nb and int(recs.get("interiors", -1)) == nb and int(recs.get("interiors_unparented", -1)) == 0 and rooms_drawn == room_of.size(),
+		"in Godot: %d of %d interiors under their Building node, %d of %d rooms drawn there" % [found, nb, rooms_drawn, room_of.size()])
+	ok(not room_of.has("iziz.no-such-room") and not tags.has("bld_99999"), "negative: a room or building the page never made does not resolve")
+
+	# the pieces: per item the instance of each placement it draws (its `placements`, aligned with the instances)
+	var pieces := {}
+	for p in d["furniture"]["pieces"]:
+		pieces[p["id"]] = p
+	var nodes := w.get_node("Items").get_children()
+	var k_of := {}
+	var at_of := {}   # item id -> {record: instance index}
+	for k in d["items"].size():
+		var it: Dictionary = d["items"][k]
+		k_of[it["id"]] = k
+		if it.get("placements") is Array:
+			var m := {}
+			for j in (it["placements"] as Array).size():
+				m[it["placements"][j]] = j
+			at_of[it["id"]] = m
+	var n_pl := 0
+	var pl_ok := 0
+	var inst_n := 0
+	var far := 0
+	var worst := 0.0
+	var first := {}
+	for pl in d["furniture"]["placements"]:
+		if pl.get("room") == null:
+			continue   # a kit slot of the city (REG furniture): drawn in items and buckets, checked in 3.
+		n_pl += 1
+		var good := _resolves(pl, tags, room_of, pieces)
+		var want := Transform3D(Basis(Vector3.UP, float(pl["ry"])), Vector3(pl["at"][0], pl["at"][1], pl["at"][2]))
+		if good:
+			for iid in pieces[pl["piece"]]["items"]:
+				if not k_of.has(iid) or not at_of[iid].has(pl["record"]):
+					good = false
+					continue
+				var n: MultiMeshInstance3D = nodes[k_of[iid]]
+				var got: Transform3D = n.transform * _inst_xf(n.multimesh, at_of[iid][pl["record"]])
+				var e: float = (got.origin - want.origin).length() + (got.basis.x - want.basis.x).length() + (got.basis.z - want.basis.z).length()
+				worst = max(worst, e)
+				inst_n += 1
+				if e > POS_TOL:
+					far += 1
+				if first.is_empty():
+					first = {"got": got, "pl": pl}
+		if good:
+			pl_ok += 1
+	ok(n_pl > 0 and pl_ok == n_pl, "furniture: %d placements in the furnished rooms, %d resolve to their record (class furniture, its building the parent), their room in the interiors section and their piece and its items" % [n_pl, pl_ok])
+	ok(inst_n > 0 and far == 0, "furniture: %d piece instances drawn at their placement's pose (worst %s, tolerance %s)" % [inst_n, str(worst), str(POS_TOL)])
+	var pl0: Dictionary = first.get("pl", {})
+	var other := ""   # a room of another building
+	for rid in room_of:
+		if not pl0.is_empty() and room_of[rid] != pl0["building"]:
+			other = rid
+	var f_room := pl0.duplicate(true)
+	f_room["room"] = other if other != "" else "iziz.no-such-room"
+	var f_piece := pl0.duplicate(true)
+	f_piece["piece"] = str(pl0.get("piece", "")) + "/9"
+	var f_rec := pl0.duplicate(true)
+	f_rec["record"] = "furn_99999"
+	var moved := Transform3D(Basis(Vector3.UP, float(pl0.get("ry", 0.0))), Vector3(pl0["at"][0], pl0["at"][1], float(pl0["at"][2]) + 0.2)) if not pl0.is_empty() else Transform3D()
+	ok(not pl0.is_empty() and not _resolves(f_room, tags, room_of, pieces) and not _resolves(f_piece, tags, room_of, pieces) and not _resolves(f_rec, tags, room_of, pieces)
+		and ((first["got"] as Transform3D).origin - moved.origin).length() > POS_TOL,
+		"negative: the placement in another building's room (%s), an unknown piece, an unknown record and a pose 20 cm off do not resolve" % ("another building's" if other != "" else "no such room"))
+	var looks := pieces.size()
+	ok(looks <= n_pl, "pieces once per look: %d pieces for %d placements" % [looks, n_pl])
+
+
+# a furnished room's placement resolves: its record is a furniture record of the registry whose parent is the placement's
+# building and whose room tag is its room, the room is one of that building's in the interiors section, the piece is in
+# the furniture section and names items
+static func _resolves(pl: Dictionary, tags: Dictionary, room_of: Dictionary, pieces: Dictionary) -> bool:
+	var r: Dictionary = tags.get(pl.get("record"), {})
+	return r.get("class") == "furniture" and r.get("parent") == pl.get("building") and (r.get("tags", {}) as Dictionary).get("room") == pl.get("room") \
+		and room_of.get(pl.get("room")) == pl.get("building") and pieces.has(pl.get("piece")) and (pieces[pl["piece"]]["items"] as Array).size() > 0
+
+
+# an instance's transform read from the MultiMesh's buffer (headless, the dummy renderer answers get_instance_transform
+# with the identity): rows of the basis with the origin's component last
+static func _inst_xf(mm: MultiMesh, j: int) -> Transform3D:
+	var b := mm.buffer
+	var o := j * (12 + (4 if mm.use_colors else 0) + (4 if mm.use_custom_data else 0))
+	return Transform3D(Basis(Vector3(b[o], b[o + 4], b[o + 8]), Vector3(b[o + 1], b[o + 5], b[o + 9]), Vector3(b[o + 2], b[o + 6], b[o + 10])),
+		Vector3(b[o + 3], b[o + 7], b[o + 11]))
 
 
 static func _node_index(J: Dictionary, name: String) -> int:

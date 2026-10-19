@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "tight",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 110,
+   "key_lo": 40,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1024,
+   1536
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.beads.bell",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.beads.bell.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.beads.bell`",
+  "reuse": "the bell-pod willow: a hanging string of beads ending in a coral bell (top end at the top)",
+  "sha1": "1dea57db964057129f923ff6b3b3420932828932"
+ }
+}

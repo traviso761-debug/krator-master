@@ -68,6 +68,19 @@
    "roughLift": 0.3,
    "specular": 0.2
   },
+  "card_carnivore_sundew": {
+   "lib": "card.carnivore.sundew",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
   "card_crop": {
    "lib": "card.crop",
    "scale": [

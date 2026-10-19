@@ -1,0 +1,262 @@
+[
+ {
+  "src": "rock.quartzite.tepui.png",
+  "out": "core/materials/library/rock.quartzite.tepui",
+  "record": {
+   "id": "rock.quartzite.tepui",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    6,
+    6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.quartzite.tepui` (section 7, Korona)",
+    "reuse": "every tepui wall and gorge cliff (Korona); any black-streaked quartzite or sandstone cliff"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "ground.quartzite.black.png",
+  "out": "core/materials/library/ground.quartzite.black",
+  "record": {
+   "id": "ground.quartzite.black",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.quartzite.black` (section 7, Korona)",
+    "reuse": "the tepui summit pavement (Korona); any crusted rock plateau top",
+    "note": "came pinker than the prompt's black crust: pale quartzite with black patches and white veins; the kit darkens it by vertex colour where the crust is thick"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "ground.peat.black.png",
+  "out": "core/materials/library/ground.peat.black",
+  "record": {
+   "id": "ground.peat.black",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.peat.black` (section 7, Korona)",
+    "reuse": "the pitcher hollow's floor (Korona); any acid bog or mire floor",
+    "note": "came as a rusty moss-and-stick bog floor rather than black peat: usable as the bog floor; a darker wet peat may still be wanted for the pools' margins"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "ground.bladder.bed.png",
+  "out": "core/materials/library/ground.bladder.bed",
+  "record": {
+   "id": "ground.bladder.bed",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.bladder.bed` (section 7, Korona)",
+    "reuse": "the sucking pools' bed under the shader's water (Korona); any pool floor of bladders or suction discs"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "organic.pitcher.giant.png",
+  "out": "core/materials/library/organic.pitcher.giant",
+  "record": {
+   "id": "organic.pitcher.giant",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.pitcher.giant` (section 7, Korona)",
+    "reuse": "the man-eater pitcher's outside, the star pitcher and the barrel (Korona); any giant pitcher or carnivorous barrel"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "organic.pitcher.throat.png",
+  "out": "core/materials/library/organic.pitcher.throat",
+  "record": {
+   "id": "organic.pitcher.throat",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.pitcher.throat` (section 7, Korona)",
+    "reuse": "the man-eater's throat and every maw's inside (Korona); the giant clapjaw's inner lobe",
+    "note": "wraps across only (seam_axes x): the throat grades yellow-green at the top to red at the bottom, mapped once down the lathe"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "x",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 0.8,
+   "rough": 0.45,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "organic.tendril.banded.png",
+  "out": "core/materials/library/organic.tendril.banded",
+  "record": {
+   "id": "organic.tendril.banded",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.tendril.banded` (section 7, Korona)",
+    "reuse": "the coil tendril's skin, the bands across the tube (Korona); any banded fleshy tendril or vine"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "hum-carving.png",
+  "out": "core/materials/patterns/korona/hum-carving",
+  "record": {
+   "id": "korona/hum-carving",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `korona/hum-carving` (section 7, Korona)",
+    "reuse": "the Hum's contour carvings on the tepui walls (Korona, LORE.md 6.18); any carved-groove band on rock"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "xy",
+   "delight": 0.3,
+   "lift": 0.0,
+   "normal_strength": 1.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ }
+]

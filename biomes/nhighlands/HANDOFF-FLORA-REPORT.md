@@ -44,7 +44,7 @@ ghost alder 2533, shag maple 523, serpentwood 1076, fan-leaf 314, table cedar 73
 - **Banyan prop roots** are bark tubes at the hero level (rods read as white poles), mossed and darker; the banyan's and
   the ghost alder's barks are darker than the plan's (both read as white).
 - **Moss collars** hug the bole (×1.04-1.15, 1-3 rings, taller): at the plan's ×1.12-1.3 they read as floating plates.
-- **The staghorn shield** is the `paddle` card as planned: a pointed leaf, not round. A `card.staghorn` would fix it.
+- **The staghorn shield** is the `paddle` card as planned: a pointed leaf, not round. (2026-10-19: the owner's `card.staghorn` now dresses the antler fronds, on a plain strip, `G.antler`; the shield is still the paddle.)
 - `60-…` and `70-…` are tagged `[draw]` / `[web]` in `PORT.md` now, not `[G data]`; the lint passes either way.
 - `NHL.PLANTS` gains Staghorns, Sun-wheels, Spore lamps; not Fan-leaf leaves or Moss sleeves (the inspector names the
   tree for those, as it does for every other canopy card).
@@ -60,4 +60,4 @@ ghost alder 2533, shag maple 523, serpentwood 1076, fan-leaf 314, table cedar 73
 Library cards that might fit (not wired; your call): `card.ginkgo` (fan-leaf), `card.moss.hanging`, `card.fern.green`,
 `card.frond.fractal`, `card.clubmoss`, `bark.mossy` (serpentwood, shag maple), `ground.moss001`-`003` (sleeves),
 `bark.smooth` (banyan). Wanted, with prompts in `core/materials/PROMPTS-NEEDED.md` (section 2, Northern Highlands):
-`card.staghorn`, `card.sunwheel`, `bark.alder.lichen`.
+`bark.alder.lichen` (`card.staghorn` and `card.sunwheel` were delivered and wired 2026-10-19).

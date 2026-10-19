@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.569,
+    0.884
+   ],
+   "seam_before": [
+    6.972,
+    1.848
+   ],
+   "source_size": [
+    887,
+    1774
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.25,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.bamboo.jade",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   1.2,
+   2.4
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark.bamboo.jade.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `bark.bamboo.jade`",
+  "reuse": "the Oidong jade bamboo canes; bamboo walling, scaffolds, fences",
+  "sha1": "f6bf447af1200cc0724d52dfbb5824299dc54624"
+ }
+}

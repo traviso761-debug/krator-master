@@ -3,7 +3,7 @@
 ## Open
 
 - [ ] **The new flora (HANDOFF-FLORA.md, 2026-10-18): procedural, and what to look at again.** Everything new is painted
-      in code: the fan-leaf, staghorn and sun-wheel cards, the moss sleeves (the moss cushion's skin as a bark), the
+      in code: the fan-leaf cards (the staghorn and the sun-wheel took the owner's `card.staghorn` and `card.sunwheel` on 2026-10-19), the moss sleeves (the moss cushion's skin as a bark), the
       ghost alder (the birch bark tinted grey), the serpentwood's and the banyan's bark (the kit's furrowed and smooth
       kinds). Textures wanted: `core/materials/PROMPTS-NEEDED.md` and `HANDOFF-FLORA-REPORT.md`. Cut from the plan to
       hold the 32 M budget: the fern sea's cell is 5 m (the plan's 3 m held 9.8 M triangles of fronds), the ghost

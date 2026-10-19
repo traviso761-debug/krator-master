@@ -43,7 +43,7 @@ the fire season).
 
 ## The engine is shared
 
-`kits/desert-nomads` and `kits/ash-nomads` vendor this kit's engine fragments (`10-core`, `27-mat`, `30-geo`, `36-def`, `40-tk-tentkit`, `90-scene`, `91-probe`, `91f-furnish`, `91n-night`, `92-camera`, `93-anim`, `99-tail`) unchanged: whatever names the kit or its culture lives in `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBACK`, the palette). Fix the engine here, copy it to both, and their `build.py --vendor-check` must read OK.
+`kits/desert-nomads` and `kits/ash-nomads` vendor this kit's engine fragments (`10-core`, `27-mat`, `30-geo`, `36-def`, `40-tk-tentkit`, `90-scene`, `92-world`, `99-host-take`, `91f-furnish`, `91n-night`, `92-camera`, `93-anim`, `99-tail`) unchanged: whatever names the kit or its culture lives in `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBACK`, the palette). Fix the engine here, copy it to both, and their `build.py --vendor-check` must read OK.
 
 ## Design rules this kit follows
 

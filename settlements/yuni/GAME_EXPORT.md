@@ -36,10 +36,17 @@ The data above leaves the page two ways, from the same registries (`FIX`, `KTAGS
 `godot/data/yuni/`). Since 2026-10-18 `src/77-export.js` also makes Yuni a contributor to core/export's
 `krator-world` container (`core/export/README.md`, "Yuni"): the `registry` section carries every building and fixture
 record, the `fixtures` section the doors, windows and lights in the box with their `host` (the shell wall of the
-interior plan that holds the opening, the side, the sill above the building's base), and `interiors` reads empty
-until the plan below takes the kits/interiors shape. `verify.py --assert` checks that profile over the Foundry's box
-(`EXPORT_BOX`), and `python3 tools/harness.py export yuni.html --out godot/data/world-yuni --box 140,-80,340,90`
-writes it for `godot/krator/world_import.gd`, which puts each fixture under its building node.
+interior plan that holds the opening, the side, the sill above the building's base), and the `interiors` section
+the room graph of every planned building in the box in core/export's `krator-interiors` shape (`core/export/README.md`,
+"Interiors"): the same plan below, building-local, as storeys of rooms (polygon, floor, height, door ids), links
+(each door as a room-to-room link with the walk graph's two ends; stairs and ladders between storeys), walls with
+`col` and the yard (the footprint at the base, where the exterior doors open). An exterior door's id is its fixture
+record, so `EXPORT.check` joins the two sections. `verify.py --assert` checks that profile (`registry, fixtures,
+interiors`, every one required) over the Foundry's box (`EXPORT_BOX`), and `python3 tools/harness.py export yuni.html
+--out godot/data/world-yuni --box 140,-80,340,90 --profile registry,fixtures,interiors` writes it for
+`godot/krator/world_import.gd`, which puts each fixture under its building node and builds each interior under it
+(rooms, walls with `-col` collision, a marker per link, a navmesh per storey and yard with a navigation link per door:
+`godot/tests/export/yuni_interiors_test.gd` walks from one room of the Foundry to another through its doors).
 
 ## Coordinates
 

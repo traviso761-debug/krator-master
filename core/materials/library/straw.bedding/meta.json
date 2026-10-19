@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.137,
+    1.104
+   ],
+   "seam_before": [
+    1.725,
+    1.605
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.5,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "straw",
+  "id": "straw.bedding",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "straw.bedding.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP, 1254 px; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `straw.bedding`",
+  "reuse": "the Islanders' byres and pens, every farm yard and barn floor, the nomads' fodder piles, Voth's stables",
+  "sha1": "4cbcc3f4400b48df83c40714cd1b53067b0f8de2"
+ }
+}

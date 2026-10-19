@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 120,
+   "key_lo": 40,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1536,
+   1024
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.blossom.cherry",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.blossom.cherry.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `card.blossom.cherry`",
+  "reuse": "the Oidong cherry blossom; any cherry or plum in flower",
+  "sha1": "ddc108df45776ed722488e7443c3a94b032d239c"
+ }
+}
