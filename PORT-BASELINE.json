@@ -297,8 +297,8 @@
    "sha256": "cd0bd6263cc72f51536fc129a05ce6600b6272b60ba15c33be5ad1d4d12b2714"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1709147,
-   "sha256": "f9f5cb1ef93a2136766448c797966a0026395303c79fd3f2d8802140f60eb83c"
+   "bytes": 1825392,
+   "sha256": "ad32339da94b321aa7d0d9d6001d4bcdd0c4b567e590f7808c65c0b9b60d5bb0"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2554423,
@@ -423,6 +423,10 @@
   "settlements/isle-demo/dist/isle-site.html": {
    "bytes": 1258200,
    "sha256": "fa1989546256c0903e9609baecd64180ce1b1399f7ca6acc22aeb272708c3277"
+  },
+  "settlements/iziz/dist/iziz-palace.html": {
+   "bytes": 3021389,
+   "sha256": "76e44ba95c20fd010e9de4adde4d492c1b1677b3f9c863637522003043e80bc2"
   },
   "settlements/iziz/dist/iziz-vernacular.html": {
    "bytes": 1724360,

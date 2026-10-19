@@ -54,9 +54,10 @@ const IZPALX=(function(){
 // mesh per render family, with the library's detail maps: build.py TARGET_FURN). A key the bundle lacks is skipped and
 // counted (window._palace.furniture.missing).
 const IZPALF=(function(){
- const S={on:false,rooms:0,pieces:0,heroes:0,byKey:{},missing:{},byClass:{},ms:0,group:null};
+ const S={on:false,rooms:0,pieces:0,heroes:0,byKey:{},missing:{},byClass:{},ms:0,group:null,decals:[],courtFinishes:0,courtDecals:0};
  const site=IZPAL_SITE,report=()=>{if(window._palace)window._palace.furniture={on:S.on,rooms:S.rooms,pieces:S.pieces,heroes:S.heroes,ms:S.ms,
-  keys:Object.keys(S.byKey).length,missing:S.missing,byClass:S.byClass};};
+  keys:Object.keys(S.byKey).length,missing:S.missing,byClass:S.byClass,courtFinishes:S.courtFinishes,courtDecals:S.courtDecals,
+  talia:Object.keys(S.byKey).filter(k=>/^talia_/.test(k)).reduce((n,k)=>n+S.byKey[k],0)};};
  if(!site.L||typeof KratorFurniture==='undefined'||/[?&]interiors=0\b/.test(location.search)){report();return S;}
  S.on=true;const t0=performance.now(),KF=KratorFurniture,FR=site.FR,F0=FR.F,L=site.L;
  KF.setDetail(.5);
@@ -88,6 +89,7 @@ const IZPALF=(function(){
   if(typeof KTAGS!=='undefined'&&KTAGS.page){const rec={'class':'furniture',kind:A.type||null,key:k,name:A.name||null,at:[p[0],y,p[1]],ry,size:[d.w,d.d,d.h],tags:t,frag:'95p-palace-furnish.js'};
    if(R.parent)KTAGS.page.child(R.parent,rec);else KTAGS.page.add(Object.assign({prefix:'ixf'},rec));}
   batch.place(k,p[0],y,p[1],ry,{variant:v|0,seed,wealth:R.wealth,setting:'indoor'});
+  if(typeof COURT_DECALS!=='undefined'&&COURT_DECALS[k])S.decals.push({key:k,x:p[0],y,z:p[1],ry,variant:v|0});
   R.n++;S.pieces++;S.byKey[k]=(S.byKey[k]||0)+1;return{k,v,u,v2:vv,y,d,top:y+d.h};}
  // something on a top: a host's surface height is measured once per key (the interiors kit's IX.measureTop)
  const tops={};function topOf(k,v){const c=k+'|'+v;if(c in tops)return tops[c];const d=dims(k,v),B2=KF.batch(),g=new THREE.Group();B2.place(k,0,0,0,0,{variant:v|0});B2.flush(g);
@@ -97,19 +99,24 @@ const IZPALF=(function(){
  /* ---------------------------------------------------------------- the room classes */
  const STATE={throne:1,reception:1,antechamber:1,vestibule:1,atrium:1,gallery:1,council:1,feast_private:1,hall_hangar:1,ancestors_hall:1,oratory:1,chapel:1,cabinet:1,library:1,music:1,trophy:1,bath:1,map_room:1,bedchamber:1,kin_chamber:1,guest_bed:1,lift_hall:1};
  const cls=s=>{const k=s.kind;if(R.B.ancient)return'ancient';if(k==='corridor'||k==='passage'||k==='hall')return'corridor';if(STATE[k]&&s.decor>=3)return'state';
+  if(R.emb&&s.decor>=2&&k!=='corridor')return'embassy';
   if(['office','archive','ministry','chamber','school','signal','astronomers','infirmary','map_room','cabinet','library','council'].includes(k))return'office';
   if(['guard','armoury','barracks','drill','beacon'].includes(k))return'guard';return'service';};
- const HUNG={state:['iziz_court_tapestry','iziz_court_painted_hanging','iziz_court_sun_relief','iziz_court_wall_rug','iziz_court_tapestry','iziz_court_art','iziz_court_painted_hanging','iziz_court_frieze'],
-  corridor:['iziz_court_tapestry','iziz_court_sun_relief','iziz_court_banner','iziz_court_painted_hanging','iziz_court_art'],
-  office:['iziz_court_scroll','iziz_common_board','iziz_common_art','iziz_common_scroll','iziz_court_frieze'],
+ // the court's paintings (one of sixteen Izani canvases each, in a carved gilt frame: 95i COURT_DECALS) hang in every state
+ // room and corridor; the envoys' rooms hang Talia's niches beside them
+ const HUNG={state:['iziz_court_painting','iziz_court_tapestry','iziz_court_painting','iziz_court_sun_relief','iziz_court_painted_hanging','iziz_court_painting','iziz_court_wall_rug','iziz_court_art'],
+  corridor:['iziz_court_painting','iziz_court_tapestry','iziz_court_sun_relief','iziz_court_painting','iziz_court_banner','iziz_court_painted_hanging'],
+  office:['iziz_court_scroll','iziz_court_painting','iziz_common_board','iziz_common_art','iziz_common_scroll','iziz_court_frieze'],
+  embassy:['iziz_court_painting','talia_common_wall_niche','iziz_court_wall_rug','iziz_court_painting','iziz_court_tapestry'],
   guard:['iziz_court_banner','iziz_trade_weapon_rack','iziz_common_pennants'],service:['iziz_common_wall_shelves','iziz_common_rack','iziz_common_pennants'],ancient:[]};
  const STAND={state:['iziz_court_torchere','iziz_court_statue','iziz_court_urn','iziz_court_palm_pot','iziz_court_cabinet','iziz_court_torchere','iziz_court_divan','iziz_court_orb_pedestal'],
   corridor:['iziz_court_torchere','iziz_court_statue','iziz_court_urn','iziz_court_palm_pot','iziz_court_bench_niche_x','iziz_court_statue'],
-  office:['iziz_court_bookcase','iziz_common_bookcase','iziz_court_cabinet','iziz_common_chest','iziz_court_palm_pot','iziz_common_lamp'],
+  office:['iziz_court_library_shelves','iziz_common_bookcase','iziz_court_cabinet','iziz_common_chest','iziz_court_palm_pot','iziz_common_lamp'],
+  embassy:['talia_common_palm_planter','talia_court_brass_lantern','talia_common_jar_stand','talia_common_painted_chest','talia_court_white_sofa','talia_common_plaster_bench'],
   guard:['iziz_trade_armour_stand','iziz_trade_weapon_rack','iziz_common_drum_stand','iziz_common_chest','iziz_trade_locker'],
   service:['iziz_common_store','iziz_vern_barrel','iziz_common_chest','iziz_vern_crate','iziz_trade_larder','iziz_common_wall_shelves'],
   ancient:['iziz_ancient_light_column','iziz_ancient_terminal','iziz_depot_tool_cart','iziz_ancient_light_column','iziz_depot_munitions_stack']};
- const CORNER={state:['iziz_court_palm_pot','iziz_court_urn','iziz_court_statue','iziz_court_torchere'],corridor:['iziz_court_palm_pot','iziz_court_urn'],office:['iziz_court_palm_pot','iziz_common_lamp'],
+ const CORNER={state:['iziz_court_palm_pot','iziz_court_urn','iziz_court_statue','iziz_court_torchere'],corridor:['iziz_court_palm_pot','iziz_court_urn'],office:['iziz_court_palm_pot','iziz_common_lamp'],embassy:['talia_common_palm_planter','talia_court_brass_lantern'],
   guard:['iziz_common_drum_stand','iziz_trade_armour_stand'],service:['iziz_vern_barrel','iziz_vern_crate'],ancient:['iziz_ancient_light_column']};
  const SPACING=d=>d>=4?3:d===3?3.8:d===2?5:7;
  // the room's walls: [dir, line, t0, t1, inward du, dv] for the four sides of its rect, less the sides open to its own floor
@@ -144,7 +151,13 @@ const IZPALF=(function(){
  // the direction from (u, v) to the room's main door (a desk or a pew faces it), as one of the four axes
  function towardDoor(u,v){const d=R.s.doors[0];if(!d)return[1,0];const at=d.portal?d.at:d.dir==='u'?[d.line,(d.t0+d.t1)/2]:[(d.t0+d.t1)/2,d.line];
   const du=at[0]-u,dv=at[1]-v;return Math.abs(du)>Math.abs(dv)?[Math.sign(du)||1,0]:[0,Math.sign(dv)||1];}
- const seatGroup=(u,v,i)=>{const car=R.s.decor>=4?'iziz_court_carpet':R.s.decor===3?'iziz_court_carpet':'iziz_common_rug';
+ // the envoys' sitting groups: Talia's orange tub armchairs round a low brass table on a meander rug or a kilim, ottomans
+ const taliaGroup=(u,v,i)=>{if(!free(u-2.4,u+2.4,v-2.4,v+2.4))return false;put(i%2?'talia_common_kilim':'talia_court_meander_rug',0,u,v,1,0,{check:false,keep:true});
+  const tb=put('talia_court_brass_table',0,u,v,1,0,{check:false,clr:0});
+  for(const[a,b]of[[-1.25,0],[1.25,0],[0,-1.25]])put('talia_common_tub_armchair',0,u+a,v+b,-Math.sign(a)||0,a?0:-Math.sign(b),{check:false,clr:0});
+  put('talia_common_ottoman',0,u,v+1.25,0,-1,{check:false,clr:0});mark(u-2.4,u+2.4,v-2.4,v+2.4);
+  if(tb)onTop(Object.assign(tb,{faceU:false,du:1,dv:0}),['iziz_court_jug','iziz_court_bowl','iziz_court_candelabra'],2);return true;};
+ const seatGroup=(u,v,i)=>{if(R.emb)return taliaGroup(u,v,i);const car=R.s.decor>=4?'iziz_court_carpet':R.s.decor===3?'iziz_court_carpet':'iziz_common_rug';
   if(!free(u-2.6,u+2.6,v-2.2,v+2.2))return false;put(car,i%2,u,v,1,0,{check:false,keep:true});
   const tb=put(R.s.decor>=3?'iziz_court_low_table':'iziz_common_low_table',0,u,v,1,0,{check:false,clr:0});
   put(R.s.decor>=3?'iziz_court_divan':'iziz_common_bench',0,u-1.5,v,1,0,{check:false,clr:0});put(R.s.decor>=3?'iziz_court_divan':'iziz_common_bench',0,u+1.5,v,-1,0,{check:false,clr:0});
@@ -171,7 +184,7 @@ const IZPALF=(function(){
   case'bath':{hero('iziz_court_bath_pool',cu,cv,lu?1:0,lu?0:1);grid(3.2,3.2,1.4,(u,v,i)=>!!put(i%3?'iziz_court_bath_slab':'iziz_court_palm_pot',0,u,v,lu?0:1,lu?1:0),6);
    put('iziz_common_bath_basin',0,q.u0+.5,cv+2,1,0);put('iziz_court_mirror',0,q.u0+.25,cv-2,1,0);break;}
   case'map_room':{if(R.B.id==='palace'&&s.decor>=3)hero('iziz_court_map_table',cu,cv,1,0);if(du*dv>220){hero('iziz_court_map_table',cu-du/4,cv,1,0);}
-   grid(3,3,1.6,(u,v)=>!!put('iziz_court_standard',0,u,v,1,0),4);break;}
+   grid(3,3,1.6,(u,v,i)=>!!put(i%2?'talia_court_map_case':'iziz_court_standard',0,u,v,1,0),6);put('talia_court_globe',0,cu+2.2,cv+2.2,1,0);break;}
   case'council':{// the council table: court tables end to end down the room, chairs both sides
    const n=Math.max(1,Math.min(6,Math.floor(((lu?du:dv)-6)/2.4)));for(let i=0;i<n;i++){const a=(i-(n-1)/2)*2.42,u=lu?cu+a:cu,v=lu?cv:cv+a;
     const t=put('iziz_court_table',i%2,u,v,lu?0:1,lu?1:0,{check:false,clr:0});if(t)onTop(Object.assign(t,{faceU:!lu,du:lu?0:1,dv:lu?1:0}),['iziz_court_candelabra','iziz_court_jug','iziz_common_books'],1);
@@ -204,21 +217,25 @@ const IZPALF=(function(){
    if(k==='music'){put('iziz_court_harp',0,cu,cv,1,0);put('iziz_common_drum_stand',0,cu+1.6,cv+1.4,-1,0);}
    if(k==='trophy'){grid(2.6,2.6,1.6,(u,v,i)=>!!put(i%3?'iziz_court_standard':'iziz_court_mech_trophy',i&1,u,v,1,0),14);break;}
    if(k==='vestibule'){put('iziz_court_orb_pedestal',0,cu,cv,-1,0);}
+   if(R.emb&&(k==='reception'||k==='antechamber')){const b=back();put('talia_court_aedicule',0,b[0]+b[2]*.4,b[1]+b[3]*.4,b[2],b[3]);}
+   if(k==='music'){put('talia_common_easel',0,cu-2,cv-1.6,1,0);put('talia_common_modelling_stand',0,cu-2,cv+1.6,1,0);}
    grid(5.4,5.4,1.6,seatGroup,Math.ceil(R.s.area/60));break;}
   case'library':{grid(3,2.6,1.4,(u,v,i,lu2)=>{if(i%4===3){const t=put('iziz_court_table',0,u,v,lu2?0:1,lu2?1:0);if(t){onTop(Object.assign(t,{faceU:!lu2,du:0,dv:1}),['iziz_common_books','iziz_court_candelabra'],2);
      for(const sd of[-1,1])put('iziz_common_chair',0,lu2?u:u+sd*.95,lu2?v+sd*.95:v,lu2?0:-sd,lu2?-sd:0,{check:false,clr:0});}return!!t;}
-    return!!put('iziz_court_bookcase',0,u,v,lu2?0:1,lu2?1:0,{clr:.6});},18);put('iziz_court_lectern',0,cu,cv,1,0);
-   if(/Emperor|Palace/.test(s.name))put('iziz_court_armillary',0,cu+2,cv,1,0);break;}
+    return!!put(i%4===1?'talia_common_bookcase':'iziz_court_library_shelves',0,u,v,lu2?0:1,lu2?1:0,{clr:.6});},18);put('iziz_court_lectern',0,cu,cv,1,0);
+   put('talia_court_globe',0,cu-2,cv,1,0);put('talia_court_specimen_case',0,q.u0+.5,cv+2,1,0);put('talia_court_map_case',0,q.u1-.7,cv-2,-1,0);
+   if(/Emperor|Palace/.test(s.name))put('iziz_court_armillary',0,cu+2,cv,1,0);if(/Music/.test(s.name))put('iziz_court_harp',0,cu,cv+2.4,1,0);break;}
   case'office':case'archive':case'ministry':case'chamber':case'school':case'infirmary':case'signal':case'astronomers':case'larder':case'wardrobe':{
    if(k==='signal'){const b=back();hero('iziz_court_heliograph',cu,cv,b[2],b[3]);hero('iziz_ancient_set',b[0]+b[2]*.6,b[1]+b[3]*.6+(b[2]?2:0),b[2],b[3]);}
-   if(k==='astronomers')hero('iziz_court_armillary',cu,cv,1,0);
-   if(k==='archive'){grid(2.4,2,1.2,(u,v,i,lu2)=>!!put(i%2?'iziz_court_bookcase':'iziz_common_bookcase',0,u,v,lu2?0:1,lu2?1:0,{clr:.5}),16);break;}
+   if(k==='astronomers'){hero('iziz_court_armillary',cu,cv,1,0);put('talia_court_globe',0,cu+2.4,cv,1,0);put('talia_court_specimen_case',0,q.u0+.5,cv,1,0);}
+   if(k==='archive'){grid(2.4,2,1.2,(u,v,i,lu2)=>!!put(i%2?'iziz_court_library_shelves':(i%3?'talia_court_map_case':'iziz_common_bookcase'),0,u,v,lu2?0:1,lu2?1:0,{clr:.5}),16);break;}
    if(k==='wardrobe'){grid(2.2,2,1.2,(u,v,i,lu2)=>!!put(i%3?'iziz_court_cabinet':'iziz_court_mirror',0,u,v,lu2?0:1,lu2?1:0,{clr:.6}),12);break;}
    if(k==='chamber'||k==='infirmary'){const b=back();grid(2.8,2.6,1.2,(u,v,i)=>!!put(k==='infirmary'?'iziz_common_bed':(i%2?'iziz_common_bed':'iziz_common_chest'),0,u,v,b[2]||1,b[3]),k==='infirmary'?8:4);}
    // desks in rows facing the door, a chair at each
-   grid(2.6,2.4,1.3,(u,v,i)=>{const f=towardDoor(u,v),dk=put(s.decor>=3?'iziz_court_desk':'iziz_common_desk',0,u,v,f[0],f[1],{clr:.9});if(!dk)return false;
+   if(k==='school'){put('talia_common_slate',0,q.u0+.2,cv,1,0);put('talia_common_easel',0,q.u1-1,cv-2,-1,0);put('talia_court_globe',0,q.u1-1,cv+2,-1,0);}
+   grid(2.6,2.4,1.3,(u,v,i)=>{const f=towardDoor(u,v),dk=put(k==='school'?'talia_common_scholar_desk':s.decor>=3?'iziz_court_desk':'iziz_common_desk',0,u,v,f[0],f[1],{clr:.9});if(!dk)return false;
     put('iziz_common_chair',0,u-f[0]*.75,v-f[1]*.75,f[0],f[1],{check:false,clr:0});onTop(Object.assign(dk,{faceU:!f[0],du:f[0],dv:f[1]}),['iziz_common_books','iziz_common_candle','iziz_court_jug'],1);return true;},k==='school'?10:8);
-   if(k==='school')put('iziz_common_board',0,q.u0+.25,cv,1,0);break;}
+   break;}
   case'treasury':case'treasury_vault':case'reliquary':{const key=k==='reliquary'?'iziz_relic_case':'iziz_court_strongbox';
    grid(2,2,1.3,(u,v,i,lu2)=>!!put(key,i%2,u,v,lu2?0:1,lu2?1:0,{clr:.6}),k==='reliquary'?14:24);
    if(k==='reliquary')grid(5,5,2,(u,v)=>!!put('iziz_court_orb_pedestal',0,u,v,1,0),2);break;}
@@ -259,10 +276,15 @@ const IZPALF=(function(){
   const rects=s.kind==='corridor'?s.rects.filter(r=>(r.u1-r.u0)*(r.v1-r.v0)>=12):[s.rect];
   rects.forEach((q0,ri)=>{const q={u0:q0.u0+.15,u1:q0.u1-.15,v0:q0.v0+.15,v1:q0.v1-.15};const h=(s.ceilY?s.ceilY-St.y:St.h-.36);
    const nu=Math.max(1,Math.ceil((q.u1-q.u0)/CELL)),nv=Math.max(1,Math.ceil((q.v1-q.v0)/CELL));
-   R={s,St,B,q,y:St.y,h,grid:{nu,nv,a:new Uint8Array(nu*nv)},n:0,cap:Math.min(240,Math.round(20+(q.u1-q.u0)*(q.v1-q.v0)*.5)),wealth:Math.min(1,s.decor/4),parent:s.recId||null};
+   R={s,St,B,q,y:St.y,h,grid:{nu,nv,a:new Uint8Array(nu*nv)},n:0,cap:Math.min(240,Math.round(20+(q.u1-q.u0)*(q.v1-q.v0)*.5)),wealth:Math.min(1,s.decor/4),parent:s.recId||null,
+    emb:B.id==='embassies'||/Envoy|Embass|Treaty|Interpreter/.test(s.name)};
    const c=cls(s);S.rooms++;S.byClass[c]=(S.byClass[c]||0)+1;
    try{keepClear();if(s.kind!=='corridor'&&ri===0)middle(c);dressWalls(c);corners(c);ceiling(c);}catch(e){reportErr('palace furnish '+s.id+': '+((e&&e.stack)||e));}});})));
  R=null;
  S.group=new THREE.Group();S.group.name='palace-furniture';S.group.userData.inspectLabel='Furniture (the palace)';scene.add(S.group);
  const g=batch.flush(S.group);g.traverse(m=>{if(!m.isMesh)return;if(typeof KFURN!=='undefined'&&KFURN.linearColours)KFURN.linearColours(m.geometry);m.userData.inspectLabel='furniture (catalog)';m.userData.interiors=true;});
+ // the court's finishes (marquetry, brocade, velvet, gold leaf, opus sectile) and pictures (paintings, book spines, vase glazes,
+ // sun carpets) from Iziz's pack, as the vernacular's interiors lay them (95i-iziz-interiors.js, 2026-10-19)
+ if(typeof courtFinish==='function'){try{S.courtFinishes=courtFinish(g);const D={decals:S.decals,group:S.group};courtDecals(D);S.courtDecals=D.courtDecals||0;}
+  catch(e){reportErr('palace court finishes: '+((e&&e.stack)||e));}}
  S.ms=Math.round(performance.now()-t0);report();return S;})();

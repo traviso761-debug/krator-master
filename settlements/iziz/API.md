@@ -275,9 +275,16 @@ bunks, hearths, desks, bookcases, stores), then the walls (a hung and a standing
 sumptuous room, clear of doors and windows), the corners, the middle by class (seat groups round low tables on carpets,
 banquet tables and couches, the council table, rows of desks, cases and bunks; the Aula's runner between standards and
 torcheres), the ceiling (great chandeliers, deco chandeliers, pendants) and the tops (ewers, bowls, candelabra, books).
-The pieces are the catalog's Iziz sets and the palace's own (`kits/catalog/krator-master-furniture-izpalace.js`, the
-court's 25; `-izpalace-depot.js`, the Depot's, the Core's and the service rooms' 22; both list only `pal_*` room kinds,
-so no other build's furniture moves), bundled with the catalog's detail maps (build.py `TARGET_FURN`). Each piece is a
+The pieces are the catalog's Iziz sets, Talia's (the vassal university city: its envoys' rooms in the Hall of Embassies
+and the palace take Talia's tub armchairs, brass tables, sofas, rugs, palms, lanterns and the aedicule in the Audience of
+Envoys; the libraries, the observatory, the map rooms and the schoolroom its globes, map and specimen cases, scholars'
+desks, slate and easels) and the palace's own (`kits/catalog/krator-master-furniture-izpalace.js`, the court's 25;
+`-izpalace-depot.js`, the Depot's, the Core's and the service rooms' 22; both list only `pal_*` room kinds, so no other
+build's furniture moves), bundled with the catalog's detail maps (build.py `TARGET_FURN`). The court's paintings hang in
+every state room and corridor and its library shelves stand in the libraries and archives; after the batch is built the
+court sets go on as the vernacular's interiors lay them (`95i`'s `courtFinish` and `courtDecals`, "The court's pictures
+and finishes" above): the sixteen paintings and their gilt frames, the book spines, the vase glazes, the sun carpets, and
+marquetry, brocade, velvet and gold leaf on the court pieces (the palace's own court pieces draw in the court keys too). Each piece is a
 core/tags record under its room; each room a record (class part, kind room) under its building, named from the sheet.
 
 `window._palace`: rooms, records, the units, unreached and dropped rooms, the draw's counts, and `furniture` (pieces,

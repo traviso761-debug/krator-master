@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 7 prompts, and 3 optional: section 1 (the Iziz palace citadel's six, 2026-10-19), section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 6 prompts, and 3 optional: section 1 (the Iziz palace citadel's five, 2026-10-19), section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -124,7 +124,7 @@ Both near-colourless, tinted.
 
 The palace page (`settlements/iziz/targets/palace`, `dist/iziz-palace.html`) draws its finishes from the library
 (`settlements/iziz/palace/materials.json`: marble ashlar, the Iziz mosaics and tile, the gilt band, gold leaf, stucco,
-mahogany, the sun banner, the Ancients' panel and concrete, two floor medallions). These six it has no set for
+mahogany, the sun banner, the Ancients' panel and concrete, two floor medallions). These five it has no set for (the court cloth it lacked came with the court sets: brocade and velvet, 2026-10-19)
 (`settlements/iziz/KNOWN_ISSUES.md`, "The palace citadel's interior: first pass"). Each lands in the library or
 `patterns/iziz/`; add its family to `settlements/iziz/palace/materials.json`, run
 `python3 tools/textures/pack.py settlements/iziz/palace`, and wire it in `targets/palace/78r-palace-draw.js` (the note
@@ -180,19 +180,6 @@ Seamless tileable texture, landscape, 2048x1024. Orthographic, a flat, front-on 
 
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy steel hangar deck plates, each about 2 m square, set in a grid with recessed welded seams: a fine raised diamond tread on every plate, flush round tie-down rings set into the plate corners, scuffed tyre and footpad marks, oil stains and a little dust in the seams, faint worn remains of painted guide lines along one seam. Neutral mid grey steel only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
-#### `cloth.damask.court`
-- Kind: tileable material, near-colourless (the piece's colour tints it); 0.6 m tile. The court tier's cloth (hangings,
-  upholstery, the baldachins, the runner, the carpets): the catalog's `cloth` family is plain silk today, so the court's
-  crimson and gold read as flat paint at arm's length.
-- Wire: a `damask` family in `kits/catalog/materials.json` and a `FAMILY_SPLITS` row in `kits/catalog/krator-furniture-core.js`
-  routing the court cloth keys (`clothGold`, `clothCrimson`) to it. That is a catalog-wide change: every build that bundles
-  the detail maps (`tex=True`) gains it, so rebuild those (`CLAUDE.md`, "Rebuild what a shared change reaches").
-- Reuse: every culture's court cloth (Voth, Xanadu, Talia, Islanders' palace).
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Woven silk damask, the pattern in the weave alone: a repeating figure of a sixteen-rayed sun inside a stepped Art Deco lozenge, with chevron borders between the lozenges, the figure in a glossy satin weave and the ground in a matte twill so the design shows only by its sheen; fine visible threads, a slight softness and a few faint creases. Pale grey only, one colour. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
 ```
 
 ### The Resources kit (`kits/resources`)

@@ -16,6 +16,8 @@ const VIEWS={
  'Inside: the Hangar Hall':palCut(null,0,[-1,PALV_TOP+28+2.2,-9,-1,PALV_TOP+28+3,-22]),
  'Inside: the atrium':palCut(null,0,[-12,PALV_TOP+1.8,7,4,PALV_TOP+3,-5]),
  'Inside: the Domus loggia':palCut(null,0,[-9,PALV_TOP+14+1.8,1.5,8,PALV_TOP+14+2,-6]),
+ 'Inside: the Audience of Envoys':palCut(null,0,[-60,PALV_TOP+1.7,-14.5,-60,PALV_TOP+2.2,-3]),
+ 'Inside: the Library of the Palace':palCut(null,0,[-16,PALV_TOP+28/3+1.7,-13,-28,PALV_TOP+28/3+2,-30]),
  'Cut: ground storey':palCut('palace',0,[58,PALV_TOP+78,58,0,PALV_TOP,-20]),
  'Cut: the Domus':palCut('palace',3,[58,PALV_TOP+86,40,4,PALV_TOP+14,-24]),
  'Cut: the hall level':palCut('palace',6,[50,PALV_TOP+86,10,4,PALV_TOP+28,-30]),

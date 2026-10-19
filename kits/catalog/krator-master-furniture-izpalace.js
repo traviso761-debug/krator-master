@@ -20,6 +20,10 @@ FURN_CULTURE('iziz', { palette: Object.assign({
   /* repeated from krator-master-furniture-iziz.js, so the file stands alone */
   marbleWhite: 0xe8e4dc, marbleVein: 0xc8c0b0, mahoganyRed: 0x6a2a1e, mahoganyDark: 0x44190f, mahoganyLight: 0x8a4030,
   clothCream: 0xf3e2c0, ceramicTeal: 0x2f8f8a,
+  /* the court finishes (krator-master-furniture-iziz.js, 2026-10-19): the court's veneer, upholstery and gilding draw in these
+     keys, so a page that packs the court sets lays marquetry, brocade, velvet and gold leaf on them (FAMILY_SPLITS) */
+  courtMahogany: 0x6b2b1f, courtBrocade: 0x9b2c2c, courtClothGold: 0xd3ae36, courtClothTeal: 0x2e8e89, courtClothCream: 0xf2e1bf,
+  courtGilt: 0xd8b13b,
   /* new: warm electric bulbs, the Orb, crystal */
   bulbWarm: 0xffe2a8, orbCore: 0xfff2c8, orbGlass: 0xffd890, glassCrystal: 0xe6f2f6,
   /* new: enamel (the Iziz colours as glazed enamel) */
@@ -100,8 +104,8 @@ FURN({
   materials: ['stone', 'gold', 'hyperMahogany', 'cloth', 'bronze', 'glass', 'emissive', 'ceramic'],
   w: 4.0, d: 3.2, h: 5.0, variants: 1,
   build: function (F) {
-    const M = F.col('marbleWhite'), MV = F.col('marbleVein'), G = F.col('gilt'), GL = F.col('giltLight'), B = F.col('bronze'), BD = F.col('bronzeDark');
-    const W = F.col('mahoganyRed'), CR = F.col('clothCrimson'), OR = F.col('enamelOrange'), BU = F.col('bulbWarm');
+    const M = F.col('marbleWhite'), MV = F.col('marbleVein'), G = F.col('courtGilt'), GL = F.col('giltLight'), B = F.col('bronze'), BD = F.col('bronzeDark');
+    const W = F.col('courtMahogany'), CR = F.col('courtBrocade'), OR = F.col('enamelOrange'), BU = F.col('bulbWarm');
     /* the dais: three white-marble steps, backs flush, a gilt nosing on each, a crimson runner up the middle */
     for (let i = 0; i < 3; i++) {
       const w = 4 - 0.6 * i, d = 3.2 - 0.5 * i, zc = -1.6 + d / 2, y = 0.2 * i;
@@ -168,7 +172,7 @@ FURN({
   materials: ['stone', 'gold', 'ceramic', 'bronze', 'emissive'],
   w: 1.2, d: 0.5, h: 2.6, variants: 2, variantNames: ['Bearded emperor', 'Laurelled emperor'],
   build: function (F) {
-    const M = F.col('marbleWhite'), MV = F.col('marbleVein'), G = F.col('gilt'), B = F.col('bronze');
+    const M = F.col('marbleWhite'), MV = F.col('marbleVein'), G = F.col('courtGilt'), B = F.col('bronze');
     /* the plinth */
     F.box(0, 0, 0, 1.2, 0.12, 0.5, 0, MV, 'stone');
     F.box(0, 0.12, -0.03, 1.1, 0.7, 0.44, 0, M, 'stone');
@@ -219,7 +223,7 @@ FURN({
   materials: ['stone', 'gold', 'ceramic', 'bronze', 'emissive', 'glass'],
   w: 1.4, d: 0.9, h: 1.48, variants: 1,
   build: function (F) {
-    const M = F.col('marbleWhite'), MV = F.col('marbleVein'), G = F.col('gilt'), B = F.col('bronze');
+    const M = F.col('marbleWhite'), MV = F.col('marbleVein'), G = F.col('courtGilt'), B = F.col('bronze');
     F.box(0, 0, 0, 1.4, 0.1, 0.9, 0, MV, 'stone');
     F.box(0, 0.1, 0, 1.3, 0.05, 0.8, 0, G, 'gold');
     F.box(0, 0.15, 0, 1.2, 0.07, 0.72, 0, M, 'stone');
@@ -255,7 +259,7 @@ FURN({
   materials: ['stone', 'ceramic', 'glass', 'gold', 'bronze'],
   w: 4.2, d: 3.2, h: 0.56, variants: 1,
   build: function (F) {
-    const M = F.col('marbleWhite'), TE = F.col('ceramicTeal'), G = F.col('gilt'), B = F.col('bronze');
+    const M = F.col('marbleWhite'), TE = F.col('ceramicTeal'), G = F.col('courtGilt'), B = F.col('bronze');
     const W = 4.2, D = 3.2, r = 0.3, H = 0.5, iw = W - 2 * r, id = D - 2 * r;
     F.box(0, 0, 0, iw, 0.06, id, 0, F.col('poolDeep'), 'ceramic');
     for (const s of [-1, 1]) {
@@ -294,12 +298,12 @@ FURN({
     F.box(0, 0.1, 0, 1.6, 0.04, 0.5, 0, F.col('bronzeDark'), 'bronze');                        /* the hot-plate */
     F.box(0, 0.14, 0, 1.5, 0.02, 0.44, 0, F.col('amber'), 'glow');
     F.box(0, 0.38, 0, 2.0, 0.14, 0.75, 0, M, 'stone');
-    F.box(0, 0.43, 0.38, 2.0, 0.03, 0.01, 0, F.col('gilt'), 'gold');
+    F.box(0, 0.43, 0.38, 2.0, 0.03, 0.01, 0, F.col('courtGilt'), 'gold');
     F.box(-0.84, 0.52, 0, 0.32, 0.1, 0.75, 0, MV, 'stone');
     F.rod(-0.84, 0.62, -0.35, -0.84, 0.62, 0.35, 0.06, MV, 'stone');
     /* a folded towel, its tail over the front */
     F.box(0.62, 0.52, 0.05, 0.42, 0.04, 0.34, 0, F.col('towelWhite'), 'cloth');
-    F.box(0.62, 0.56, 0.05, 0.4, 0.04, 0.32, 0, F.col('clothCream'), 'cloth');
+    F.box(0.62, 0.56, 0.05, 0.4, 0.04, 0.32, 0, F.col('courtClothCream'), 'cloth');
     F.box(0.62, 0.34, 0.386, 0.36, 0.2, 0.012, 0, F.col('towelWhite'), 'cloth');
     F.lamp(0, 0.14, 0.3, 0.3, 3);
   }
@@ -314,7 +318,7 @@ FURN({
   variantDims: [{ w: 0.62, d: 0.44, h: 0.46 }, { w: 1.1, d: 0.66, h: 0.72 }],
   build: function (F) {
     const big = F.variant === 1, w = big ? 1.1 : 0.62, d = big ? 0.66 : 0.44, h = big ? 0.72 : 0.46;
-    const W = F.col('mahoganyRed'), WD = F.col('mahoganyDark'), B = F.col('bronze'), BD = F.col('bronzeDark'), G = F.col('gilt');
+    const W = F.col('courtMahogany'), WD = F.col('mahoganyDark'), B = F.col('bronze'), BD = F.col('bronzeDark'), G = F.col('courtGilt');
     const hb = h * 0.62, hl = h * 0.22, top = 0.045 + hb + hl;
     for (const x of [-1, 1]) for (const z of [-1, 1]) F.cyl(x * (w / 2 - 0.06), 0, z * (d / 2 - 0.06), 0.035, 0.04, 0, BD, 'bronze');
     F.box(0, 0.04, 0, w - 0.02, hb, d - 0.02, 0, W, 'mahogany');
@@ -337,7 +341,7 @@ FURN({
   materials: ['hyperMahogany', 'gold', 'bronze', 'stone', 'cloth'],
   w: 2.4, d: 1.6, h: 1.0, variants: 1,
   build: function (F) {
-    const W = F.col('mahoganyRed'), WD = F.col('mahoganyDark'), G = F.col('gilt'), B = F.col('bronze');
+    const W = F.col('courtMahogany'), WD = F.col('mahoganyDark'), G = F.col('courtGilt'), B = F.col('bronze');
     for (const x of [-1.05, 0, 1.05]) for (const z of [-0.65, 0.65]) {                         /* six turned legs */
       F.frustum(x, 0, z, 0.07, 0.055, 0.06, 0, B, 'bronze', 8);
       F.cyl(x, 0.06, z, 0.05, 0.62, 0, W, 'mahogany');
@@ -384,7 +388,7 @@ FURN({
   materials: ['bronze', 'gold', 'hide', 'cloth'],
   w: 0.66, d: 0.6, h: 1.3, variants: 1,
   build: function (F) {
-    const B = F.col('bronze'), BD = F.col('bronzeDark'), G = F.col('gilt');
+    const B = F.col('bronze'), BD = F.col('bronzeDark'), G = F.col('courtGilt');
     izpSteps(F, 0, 0, 0, 0.6, 0.5, 3, 0.07, 0.07, 0.06, BD, 'bronze');
     F.cyl(0, 0.21, 0, 0.045, 0.75, 0, B, 'bronze');
     F.ball(0, 0.55, 0, 0.07, G, 'gold');
@@ -400,7 +404,7 @@ FURN({
     F.beam(0, a[0], a[1], 0, b[0], b[1], 0.52, 0.012, F.col('bookCalf'), 'hide');
     a = at(0.042, p0); b = at(0.042, p1);
     for (const s of [-1, 1]) F.beam(s * 0.125, a[0], a[1], s * 0.125, b[0], b[1], 0.235, 0.025, F.col('paperPage'), 'cloth');
-    F.beam(0, a[0], a[1], 0, b[0], b[1], 0.008, 0.03, F.col('clothCrimson'), 'cloth');         /* the ribbon */
+    F.beam(0, a[0], a[1], 0, b[0], b[1], 0.008, 0.03, F.col('courtBrocade'), 'cloth');         /* the ribbon */
   }
 });
 
@@ -411,7 +415,7 @@ FURN({
   materials: ['stone', 'gold', 'bronze', 'ceramic'],
   w: 0.9, d: 0.9, h: 2.05, variants: 1,
   build: function (F) {
-    const M = F.col('marbleWhite'), G = F.col('gilt'), B = F.col('bronze');
+    const M = F.col('marbleWhite'), G = F.col('courtGilt'), B = F.col('bronze');
     izpSteps(F, 0, 0, 0, 0.8, 0.8, 2, 0.1, 0.1, 0.1, M, 'stone');
     F.lathe(0, 0.2, 0, [[0.17, 0], [0.17, 0.75], [0.2, 0.8]], 0, M, 'stone', { nu: 20, nv: 4, flute: { n: 10, amp: 0.06, sharp: 3 } });
     F.box(0, 1.0, 0, 0.48, 0.06, 0.48, 0, G, 'gold');
@@ -432,7 +436,7 @@ FURN({
 
 /* the vexillum's cloth: orange (crimson for the Praetorians), a gilt sun, a teal fringe (painted once per variant) */
 function izpVexillum(F, v) {
-  const or = F.css(F.col(v ? 'clothCrimson' : 'clothOrange')), te = F.css(F.col('clothTeal')), cr = F.css(F.col('clothCream')), go = F.css(F.col('clothGold'));
+  const or = F.css(F.col(v ? 'clothCrimson' : 'clothOrange')), te = F.css(F.col('courtClothTeal')), cr = F.css(F.col('courtClothCream')), go = F.css(F.col('courtClothGold'));
   return function (g, W, H) {
     g.fillStyle = or; g.fillRect(0, 0, W, H);
     g.fillStyle = te; g.fillRect(0, H * 0.9, W, H * 0.1);
@@ -458,7 +462,7 @@ FURN({
   materials: ['bronze', 'gold', 'hyperMahogany', 'cloth'],
   w: 0.9, d: 0.5, h: 3.25, variants: 2, variantNames: ['Eagle standard', 'Praetorian standard (imago and orb)'],
   build: function (F) {
-    const G = F.col('gilt'), GL = F.col('giltLight'), B = F.col('bronze'), BD = F.col('bronzeDark'), v = F.variant === 1;
+    const G = F.col('courtGilt'), GL = F.col('giltLight'), B = F.col('bronze'), BD = F.col('bronzeDark'), v = F.variant === 1;
     F.box(0, 0, 0, 0.6, 0.08, 0.5, 0, BD, 'bronze');
     F.box(0, 0.08, 0, 0.44, 0.08, 0.36, 0, B, 'bronze');
     F.box(0, 0.16, 0, 0.28, 0.08, 0.22, 0, G, 'gold');
@@ -470,8 +474,8 @@ FURN({
     F.rod(-0.38, 2.38, 0.03, 0.38, 2.38, 0.03, 0.015, G, 'gold');
     for (const s of [-1, 1]) F.ball(s * 0.39, 2.38, 0.03, 0.028, G, 'gold');
     F.decal(0, 1.56, 0.045, 0.7, 0.8, 0, 'izpalace-vexillum-' + (v ? 1 : 0), izpVexillum(F, v), 'cloth');
-    F.box(0, 1.5, 0.045, 0.7, 0.06, 0.012, 0, F.col('clothTeal'), 'cloth');
-    for (const s of [-1, 1]) F.ball(s * 0.35, 1.48, 0.045, 0.025, F.col('clothTeal'), 'cloth');
+    F.box(0, 1.5, 0.045, 0.7, 0.06, 0.012, 0, F.col('courtClothTeal'), 'cloth');
+    for (const s of [-1, 1]) F.ball(s * 0.35, 1.48, 0.045, 0.025, F.col('courtClothTeal'), 'cloth');
     /* the sun disc */
     izpDisc(F, 0, 2.62, 0.035, 0.15, 0.04, G, 'gold');
     for (let k = 0; k < 12; k++) izpRay(F, 0, 2.62, 0.035, k * Math.PI / 6, 0.15, k % 2 ? 0.22 : 0.27, 0.035, 0.02, GL, 'gold');
@@ -502,7 +506,7 @@ FURN({
   materials: ['bronze', 'gold', 'glass', 'metal'],
   w: 1.0, d: 1.0, h: 1.9, variants: 1,
   build: function (F) {
-    const B = F.col('bronze'), BD = F.col('bronzeDark'), G = F.col('gilt');
+    const B = F.col('bronze'), BD = F.col('bronzeDark'), G = F.col('courtGilt');
     for (let k = 0; k < 3; k++) {                                                              /* the tripod */
       const a = -Math.PI / 2 + k * F.TAU / 3, x = Math.cos(a) * 0.44, z = Math.sin(a) * 0.44;
       F.rod(x, 0.02, z, 0, 1.14, 0, 0.022, B, 'bronze');
@@ -543,7 +547,7 @@ FURN({
   materials: ['gold', 'glass', 'emissive'],
   w: 2.4, d: 2.4, h: 2.8, variants: 1,
   build: function (F) {
-    const G = F.col('gilt'), GL = F.col('giltLight'), X = F.col('glassCrystal'), BU = F.col('bulbWarm');
+    const G = F.col('courtGilt'), GL = F.col('giltLight'), X = F.col('glassCrystal'), BU = F.col('bulbWarm');
     F.cyl(0, 2.74, 0, 0.3, 0.06, 0, G, 'gold');                                               /* the ceiling rose */
     F.cyl(0, 2.68, 0, 0.2, 0.06, 0, GL, 'gold');
     F.rod(0, 2.68, 0, 0, 1.95, 0, 0.03, G, 'gold');
@@ -581,7 +585,7 @@ FURN({
   materials: ['bronze', 'gold', 'glass', 'emissive'],
   w: 0.6, d: 0.6, h: 2.6, variants: 1,
   build: function (F) {
-    const B = F.col('bronze'), BD = F.col('bronzeDark'), G = F.col('gilt');
+    const B = F.col('bronze'), BD = F.col('bronzeDark'), G = F.col('courtGilt');
     F.box(0, 0, 0, 0.56, 0.08, 0.56, 0, BD, 'bronze');
     F.box(0, 0.08, 0, 0.42, 0.08, 0.42, 0, G, 'gold');
     F.frustum(0, 0.16, 0, 0.12, 0.05, 0.12, 0, B, 'bronze', 8);
@@ -606,7 +610,7 @@ FURN({
   materials: ['stone', 'gold', 'bronze', 'glass', 'emissive'],
   w: 0.8, d: 0.8, h: 2.1, variants: 1,
   build: function (F) {
-    const M = F.col('marbleWhite'), G = F.col('gilt'), B = F.col('bronze');
+    const M = F.col('marbleWhite'), G = F.col('courtGilt'), B = F.col('bronze');
     izpSteps(F, 0, 0, 0, 0.78, 0.78, 3, 0.08, 0.07, 0.07, M, 'stone');
     F.cyl(0, 0.24, 0, 0.235, 0.04, 0, G, 'gold');
     F.lathe(0, 0.28, 0, [[0.2, 0], [0.18, 0.96]], 0, M, 'stone', { nu: 24, nv: 2, flute: { n: 12, amp: 0.08, sharp: 2 } });
@@ -630,7 +634,7 @@ FURN({
   materials: ['gold', 'ceramic'],
   w: 2.2, d: 0.12, h: 2.2, variants: 1,
   build: function (F) {
-    const G = F.col('gilt'), GL = F.col('giltLight'), cy = 1.1;
+    const G = F.col('courtGilt'), GL = F.col('giltLight'), cy = 1.1;
     izpDisc(F, 0, cy, -0.035, 0.56, 0.05, G, 'gold');
     for (let k = 0; k < 16; k++) {
       const a = k / 16 * F.TAU, long = k % 2 === 0;
@@ -655,7 +659,7 @@ FURN({
   materials: ['stone', 'gold', 'foliage'],
   w: 1.3, d: 1.3, h: 2.3, variants: 1,
   build: function (F) {
-    const M = F.col('marbleWhite'), MV = F.col('marbleVein'), G = F.col('gilt');
+    const M = F.col('marbleWhite'), MV = F.col('marbleVein'), G = F.col('courtGilt');
     F.box(0, 0, 0, 0.62, 0.08, 0.62, 0, MV, 'stone');
     F.box(0, 0.08, 0, 0.54, 0.42, 0.54, 0, M, 'stone');
     F.box(0, 0.4, 0, 0.56, 0.04, 0.56, 0, G, 'gold');
@@ -676,7 +680,7 @@ FURN({
   materials: ['bronze', 'gold', 'stone', 'foliage', 'bark'],
   w: 1.8, d: 1.8, h: 2.6, variants: 1,
   build: function (F) {
-    const B = F.col('bronze'), G = F.col('gilt');
+    const B = F.col('bronze'), G = F.col('courtGilt');
     for (const x of [-1, 1]) for (const z of [-1, 1]) F.box(x * 0.27, 0, z * 0.27, 0.12, 0.06, 0.12, 0, G, 'gold');
     F.frustum(0, 0.06, 0, 0.34, 0.42, 0.6, 0, B, 'bronze', 8);
     F.frustum(0, 0.3, 0, 0.385, 0.395, 0.05, 0, G, 'gold', 8);
@@ -694,7 +698,7 @@ FURN({
   materials: ['hyperMahogany', 'gold', 'cloth'],
   w: 2.2, d: 0.9, h: 1.0, variants: 2, variantNames: ['Couch, one headrest (cream)', 'Couch, two headrests (teal)'],
   build: function (F) {
-    const W = F.col('mahoganyRed'), G = F.col('gilt'), v = F.variant === 1;
+    const W = F.col('courtMahogany'), G = F.col('courtGilt'), v = F.variant === 1;
     const mat = F.col(v ? 'clothTeal' : 'clothCream'), bol = F.col(v ? 'clothOrange' : 'clothTeal');
     for (const x of [-0.95, 0.95]) for (const z of [-0.36, 0.36]) {
       F.frustum(x, 0, z, 0.05, 0.04, 0.06, 0, G, 'gold', 8);
@@ -713,7 +717,7 @@ FURN({
       for (let i = 0; i < pts.length - 1; i++) F.beam(s * pts[i][0], pts[i][1], 0, s * pts[i + 1][0], pts[i + 1][1], 0, 0.07, 0.8, W, 'mahogany');
       for (const t of [-1, 1]) izpDisc(F, s * 0.93, 0.8, t * 0.405, 0.06, 0.012, G, 'gold');
       F.rod(s * 0.8, 0.76, -0.34, s * 0.8, 0.76, 0.34, 0.08, bol, 'cloth');                   /* the bolster, gold-tied */
-      for (const t of [-1, 1]) F.rod(s * 0.8, 0.76, t * 0.34, s * 0.8, 0.76, t * 0.37, 0.05, F.col('clothGold'), 'cloth');
+      for (const t of [-1, 1]) F.rod(s * 0.8, 0.76, t * 0.34, s * 0.8, 0.76, t * 0.37, 0.05, F.col('courtClothGold'), 'cloth');
     }
     F.pillow(v ? 0.2 : -0.42, 0.73, -0.12, 0.38, 0.1, 0.36, 0.3, F.col(v ? 'clothCream' : 'clothOrange'), 'cloth', { side: 0.3 });
   }
@@ -726,7 +730,7 @@ FURN({
   materials: ['hyperMahogany', 'gold', 'cloth', 'food'],
   w: 4.8, d: 1.2, h: 0.95, variants: 1,
   build: function (F) {
-    const W = F.col('mahoganyRed'), WD = F.col('mahoganyDark'), G = F.col('gilt');
+    const W = F.col('courtMahogany'), WD = F.col('mahoganyDark'), G = F.col('courtGilt');
     for (const x of [-1.9, 0, 1.9]) {
       F.box(x, 0, 0, 0.34, 0.06, 1.0, 0, G, 'gold');
       F.box(x, 0.06, 0, 0.26, 0.06, 0.86, 0, G, 'gold');
@@ -739,11 +743,11 @@ FURN({
     F.box(0, 0.7, 0, 4.8, 0.06, 1.2, 0, W, 'mahogany');
     for (const s of [-1, 1]) F.box(0, 0.72, s * 0.6, 4.8, 0.02, 0.01, 0, G, 'gold');
     /* the runner, hanging over both ends, with gold stripes */
-    const CC = F.col('clothCream');
+    const CC = F.col('courtClothCream');
     F.box(0, 0.76, 0, 4.8, 0.008, 0.42, 0, CC, 'cloth');
     for (const s of [-1, 1]) {
       F.box(s * 2.404, 0.54, 0, 0.008, 0.228, 0.42, 0, CC, 'cloth');
-      F.box(0, 0.768, s * 0.17, 4.8, 0.004, 0.03, 0, F.col('clothGold'), 'cloth');
+      F.box(0, 0.768, s * 0.17, 4.8, 0.004, 0.03, 0, F.col('courtClothGold'), 'cloth');
     }
     for (const x of [-1.5, 0, 1.5]) {
       F.frustum(x, 0.768, 0, 0.08, 0.16, 0.1, 0, G, 'gold', 12);
@@ -759,7 +763,7 @@ FURN({
   materials: ['gold', 'glass', 'metal', 'ceramic'],
   w: 1.0, d: 0.1, h: 2.2, variants: 1,
   build: function (F) {
-    const G = F.col('gilt'), GL = F.col('giltLight');
+    const G = F.col('courtGilt'), GL = F.col('giltLight');
     F.box(0, 0, -0.02, 0.5, 0.06, 0.06, 0, G, 'gold');
     F.box(0, 0.06, -0.015, 1.0, 0.1, 0.07, 0, G, 'gold');
     F.box(0, 0.16, -0.04, 0.84, 1.78, 0.02, 0, F.col('mirrorSilver'), 'metal');
@@ -782,7 +786,7 @@ FURN({
   materials: ['gold', 'hyperMahogany'],
   w: 0.8, d: 0.45, h: 1.9, variants: 1,
   build: function (F) {
-    const G = F.col('gilt'), GL = F.col('giltLight'), W = F.col('mahoganyRed');
+    const G = F.col('courtGilt'), GL = F.col('giltLight'), W = F.col('courtMahogany');
     F.box(0, 0, 0, 0.62, 0.08, 0.42, 0, G, 'gold');
     F.box(0, 0.08, 0, 0.5, 0.06, 0.34, 0, G, 'gold');
     /* the column and its stepped capital */
@@ -823,7 +827,7 @@ FURN({
   materials: ['stone', 'gold', 'bronze', 'metal', 'glass'],
   w: 1.8, d: 1.4, h: 2.1, variants: 1,
   build: function (F) {
-    const M = F.col('marbleWhite'), G = F.col('gilt'), P = F.col('mechPaint'), S = F.col('mechSteel'), K = F.col('mechScorch');
+    const M = F.col('marbleWhite'), G = F.col('courtGilt'), P = F.col('mechPaint'), S = F.col('mechSteel'), K = F.col('mechScorch');
     izpSteps(F, 0, 0, 0, 1.8, 1.4, 3, 0.2, 0.12, 0.1, M, 'stone');
     F.box(0, 0.6, 0, 1.2, 0.4, 0.9, 0, M, 'stone');
     F.box(0, 1.0, 0, 1.3, 0.06, 1.0, 0, M, 'stone');
@@ -851,7 +855,7 @@ FURN({
 
 /* a fan screen's leaf: a cream enamel field, a sunburst of orange and teal from its foot, a gilt border */
 function izpFanLeaf(F) {
-  const cr = F.css(F.col('enamelCream')), or = F.css(F.col('enamelOrange')), te = F.css(F.col('enamelTeal')), go = F.css(F.col('gilt'));
+  const cr = F.css(F.col('enamelCream')), or = F.css(F.col('enamelOrange')), te = F.css(F.col('enamelTeal')), go = F.css(F.col('courtGilt'));
   return function (g, W, H) {
     g.fillStyle = cr; g.fillRect(0, 0, W, H);
     const cx = W / 2, cy = H * 0.98;
@@ -873,7 +877,7 @@ FURN({
   materials: ['gold', 'ceramic'],
   w: 1.9, d: 0.3, h: 1.9, variants: 1,
   build: function (F) {
-    const G = F.col('gilt'), GL = F.col('giltLight'), L = 0.5, a = 0.38, paint = izpFanLeaf(F);
+    const G = F.col('courtGilt'), GL = F.col('giltLight'), L = 0.5, a = 0.38, paint = izpFanLeaf(F);
     const P = [[0, 0]];
     for (let i = 0; i < 4; i++) P.push([P[i][0] + L * Math.cos(a), (i % 2 ? 0 : L * Math.sin(a))]);
     const cx = 2 * L * Math.cos(a), cz = L * Math.sin(a) / 2;
@@ -897,7 +901,7 @@ FURN({
   materials: ['cloth'],
   w: 2.2, d: 9.0, h: 0.03, variants: 1,
   build: function (F) {
-    const CR = F.col('clothCrimson'), GO = F.col('clothGold'), OR = F.col('clothOrange'), CC = F.col('clothCream'), TE = F.col('clothTeal');
+    const CR = F.col('courtBrocade'), GO = F.col('courtClothGold'), OR = F.col('clothOrange'), CC = F.col('courtClothCream'), TE = F.col('courtClothTeal');
     F.box(0, 0, 0, 2.2, 0.014, 8.8, 0, CR, 'cloth');
     for (const s of [-1, 1]) {
       F.box(0, 0, s * 4.45, 2.0, 0.006, 0.1, 0, CC, 'cloth');                                   /* the fringes */
@@ -924,7 +928,7 @@ FURN({
   materials: ['gold', 'cloth'],
   w: 3.4, d: 3.4, h: 4.6, variants: 1,
   build: function (F) {
-    const G = F.col('gilt'), GL = F.col('giltLight'), CR = F.col('clothCrimson'), GO = F.col('clothGold');
+    const G = F.col('courtGilt'), GL = F.col('giltLight'), CR = F.col('courtBrocade'), GO = F.col('courtClothGold');
     for (const x of [-1, 1]) for (const z of [-1, 1]) {
       const X = x * 1.58, Z = z * 1.58;
       F.box(X, 0, Z, 0.24, 0.12, 0.24, 0, G, 'gold');

@@ -120,10 +120,11 @@ FURN_BUNDLE = '88z-iziz-furniture-bundle.js'
 INTERIOR_TARGETS = {'vernacular', 'palace'}
 FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'scrap', 'jobs']   # not generic-fruit: it laid figs on a scribe's counter
 INTERIOR_SETS = ['iziz']
-# the palace page (targets/palace, 2026-10-19): the palace's own pieces besides (kits/catalog -izpalace.js, the court's;
+# the palace page (targets/palace, 2026-10-19): Talia's (the vassal university city's: its envoys' rooms, the libraries and
+# the schoolroom), and the palace's own pieces besides (kits/catalog -izpalace.js, the court's;
 # -izpalace-depot.js, the Depot's, the Core's and the service rooms'; both list only the palace's room kinds, so no other
 # build's furniture moves) and the catalog's detail maps (furniture_bundle tex=True: KF_TEX, about 1 MB)
-TARGET_FURN = {'palace': (FURN_CULTURES + ['izpalace', 'izpalace-depot'], True)}
+TARGET_FURN = {'palace': (FURN_CULTURES + ['talia', 'izpalace', 'izpalace-depot'], True)}
 # a target's own library pack (materials.json and tex/ in its folder, tools/textures/pack.py), registered as KMAT pack <name>
 # and written beside the page as its own sidecar, so the shared iziz.tex.js and every other page stay as they were
 TARGET_PACKS = {'palace': ('palace', 'izpalace', '69dp-palace-matlib-pack.js', 'iziz-palace.tex.js')}

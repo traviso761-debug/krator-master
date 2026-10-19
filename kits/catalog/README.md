@@ -465,7 +465,8 @@ sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<cu
 Two category files, like `-jobs.js`: every piece is culture `iziz`, and every `rooms` list names only the palace's room
 kinds (`pal_*`), so no other build's placer ever picks one; a bundle carries them only when it names `izpalace` or
 `izpalace-depot` (`settlements/iziz/build.py` `TARGET_FURN`, the palace page). Each adds the palette keys it needs as
-defaults (the Iziz file's own values win). The palace's furnishing places them by key
+defaults (the Iziz file's own values win); the court pieces draw their veneer, upholstery and gilding in the court keys
+(`courtMahogany`, `courtBrocade`, `courtCloth*`, `courtGilt`), so a page that packs the court sets finishes them. The palace's furnishing places them by key
 (`settlements/iziz/targets/palace/95p-palace-furnish.js`); the blueprint's NEW list (`settlements/iziz/palace/FURNITURE.md`)
 is covered.
 

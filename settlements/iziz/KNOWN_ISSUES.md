@@ -28,7 +28,7 @@ saying what fixed it.
       (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`). The owner asked to start it (2026-10-19: "start building the
       Iziz palace according to the blueprints ... decorate extravagantly"), so it is built on its own page, `targets/palace`
       (`dist/iziz-palace.html`; README.md, API.md "The palace citadel"): every sheet laid (227 rooms on 27 storeys of seven
-      buildings, every room reached), finished by decor level, furnished (6,391 pieces, 47 of them new catalog pieces), the
+      buildings, every room reached), finished by decor level, furnished (about 6,400 pieces: the Iziz sets, Talia's in the envoys' rooms and the libraries, 47 new palace pieces; the court's paintings, book spines, glazes, carpets and finishes laid on), the
       Depot and the Core in the mesa, the Mech Gate. `verify.py --assert` passes (`palace`); `node palace/test-palace.js`
       passes. Left open:
       - **Not in the city yet.** The fragments are the target's, so no other page changed; when the city is rebuilt they move
@@ -47,10 +47,11 @@ saying what fixed it.
         2.9 m wide inside the flank's liner, as the flank is.
       - **Windows** are seen from inside as daylight panes on the liners at the builder's window positions, not as openings;
         the precinct buildings' too.
-      - **The furniture's marble** draws in the catalog's `stone` detail family (rough rock), and the court cloth in plain silk:
-        a `marble` and a `damask` family are a catalog-wide change (every build bundling the detail maps), not made here.
-        Texture prompts for the six surfaces the palace has no set for (coffers, bronze doors, the crater map, the fresco,
-        the hangar deck, the damask) are in `core/materials/PROMPTS-NEEDED.md`.
+      - **The furniture's marble** draws in the catalog's `stone` detail family (rough rock): a `marble` family is a
+        catalog-wide change (every build bundling the detail maps), not made here. The court's cloth, veneer and gilding take
+        the court sets (brocade, velvet, marquetry, gold leaf: 95i's `courtFinish`, 2026-10-19). Texture prompts for the five
+        surfaces the palace has no set for (coffers, bronze doors, the crater map, the fresco, the hangar deck) are in
+        `core/materials/PROMPTS-NEEDED.md`.
       - **Heavy page**: about 4 M triangles with every room furnished (the furniture at half detail); furnishing takes ~5.5 s
         in SwiftShader. Nothing is furnished lazily yet (Girder and Verge furnish near the camera first).
       - No mechs stand in the bays or on the hall's lift (the Mechs kit, `KratorMechs`, could be bundled).
