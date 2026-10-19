@@ -25,8 +25,8 @@
    "sha256": "997e30acaf261d71b171845f0134c9ce8f7f9bcd05a015ac85db26c00c648464"
   },
   "biomes/korona/dist/korona-basin.html": {
-   "bytes": 612423,
-   "sha256": "0e0bd3dd57a8669214fd3e8171beb4932a6132cdc418712895836042d4e45a17"
+   "bytes": 739150,
+   "sha256": "d326ab0c3175694126f7545525d0baf5b346f7a741c9e57a54014237ac9db387"
   },
   "biomes/korona/dist/korona-gorge.html": {
    "bytes": 737256,
@@ -41,8 +41,8 @@
    "sha256": "f198be0c6a655aee4f754c0107443fca5e24c4d8e50a4d2f8c09a0bf218a2429"
   },
   "biomes/korona/dist/korona-trench.html": {
-   "bytes": 737807,
-   "sha256": "fe75147298ea69995b93257281f24e1d7b38b6cb7cfe301bcf52059e9d40c199"
+   "bytes": 889266,
+   "sha256": "e5b811429224713797d9d2afdb78ba1d2b8c9fe50cd1b708edc76fdd72ae12d8"
   },
   "biomes/korona/dist/korona.html": {
    "bytes": 617697,

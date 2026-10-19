@@ -88,6 +88,16 @@ const STAGE={
  floorLabel:'The basin\'s shore (silt and sand: rich ground)',waterLabel:'The Tiers\' lake (and the stream down to it)',
  // the rainforest behind the shore meadows, not on the bog corner
  jungle:(x,z)=>smooth(60,220,lakeD(x,z))*(1-.9*bogK(x,z)),jungleQ:.75,necQ:.8,
+ // THE SHORE'S OWN (NOTES.md, "The life"; KNOWN_ISSUES, closed 2026-10-19): the north-western lowlands' kit (biomes/nwlowlands,
+ // read in place as the trenches read the sedesert) on the band along the water, within ~200 m of the lake, off the bog
+ // corner and off the rock: its shore and bamboo zones (reeds, iris, sea pens, the groves), its glow-willows and paperbarks
+ // at the water, its ferns under the rainforest's edge. Its fields: tropic (Af on every shore) and dry (none here)
+ shore:(x,z)=>smooth(200,30,lakeD(x,z))*(1-bogK(x,z)),shoreQ:.5,
+ // the glow-willows line the water (the kit's avenue option, a row along a host path: here the shore's edge, 14 m out from
+ // the water, one tree every ~70 m; the waterside of the row falls in the lake and is skipped). The kit's shore zone alone
+ // (its reading of the terrain's height) gave one willow on the whole shore
+ shoreRows:[{path:(function(){const P=[],r=LAKE.r+14;for(let z=-1450;z<=1450;z+=100)P.push([LAKE.x-Math.sqrt(Math.max(0,r*r-(z-LAKE.z)*(z-LAKE.z))),z]);return P;})(),spacing:70,offset:6,species:'glowwillow'}],
+ fields:{tropic:(x,z)=>1,dry:(x,z)=>0},
  bias:{rainbowfanFloor:(x,z)=>.9*smooth(260,30,lakeD(x,z))*smooth(60,220,lakeD(x,z)*-1+280),rainbowfan:1.2,lacefan:(x,z)=>1.8*smooth(220,20,lakeD(x,z)),
   cointree:.5,lacepitcher:.8,stormpod:.5,greatsundew:.5,cobralily:1.2,bloodbulb:.5,bloodtrumpet:.6,maneater:.9,coiltendril:.6,groundstar:.6,punjipit:.8,beartrap:.8,numbthorn:.8,snareflower:.6},
  carvings:{body:'bench',tier:0,a0:-.3,a1:1.2,y0:1.6,h:2.8,name:'Contour carvings: the Hum (the shore tribe\'s tally of the lake\'s years, on the bench\'s face)'},

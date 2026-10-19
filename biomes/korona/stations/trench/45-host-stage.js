@@ -24,6 +24,9 @@ const TICKS=[];
 function tick(fn){TICKS.push(fn);}
 const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}
 var SEDESERT_WATER={hue:.46};   // the desert kit's reeds and blooms (none here: the lee has no water) follow it
+// the runtime LOD's chunk (core/biome, BIO.LOD): the nhighlands kit bakes a mesh per item per chunk; its crest strip is 3 km
+// long and ~300 m wide, so at the core's 1,200 m it cost the page ~20 draw calls over its showcase budget at the first view
+BIO.LOD.chunk=2000;
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;document.body.appendChild(renderer.domElement);
@@ -99,7 +102,15 @@ const STAGE={
  // THE LEE'S OWN (KNOWN_ISSUES, closed 2026-10-19): the eastern desert's Socotran kit (biomes/sedesert, read in place as the
  // gorge reads it) on the rain shadow's scree below the crest, thin: dragon trees and the stands on its shoulder
  desert:(x,z)=>(1-windwardOf(x,z))*smooth(.97,.6,heightK(x,z))*smooth(-410,-330,floorH(x,z)),desertQ:.85,
- fields:{canyon:(x,z)=>Math.max(.4*(1-windwardOf(x,z)),smooth(220,40,NECANYONS.footD(x,z))),oasis:(x,z)=>0,dune:(x,z)=>smooth(.52,.68,fbm(x*.0022-7,z*.0022+3,62,2))*(1-windwardOf(x,z))*smooth(.6,.25,heightK(x,z)),rim:(x,z)=>smooth(.7,.95,heightK(x,z))*(1-windwardOf(x,z)),abyss:(x,z)=>0},
+ // THE CREST'S OWN (NOTES.md, "The life": the ecotone; KNOWN_ISSUES, closed 2026-10-19): the northern highlands' kit
+ // (biomes/nhighlands, read in place as the lee reads the sedesert) on the crest and the dry upper lee, heightK above ~.7,
+ // off the windward rainforest: its crag pines (they read rock and cold: the crest is bare rock, so rockExtra; cold by
+ // height) with their beard lichen, the boreal band's conifers and birches with it. Its fields: cold and mist
+ // (thin: a dry crest studded with pines and the odd spruce, not the highlands' closed forest; at .6 it was 800 trees)
+ crest:(x,z)=>smooth(.72,.84,heightK(x,z))*(1-smooth(.5,.72,windwardOf(x,z))),crestQ:.25,
+ rockExtra:(x,z)=>.8*smooth(.72,.86,heightK(x,z)),   /* the kit's crag zone wants rock above ~.75 */
+ fields:{canyon:(x,z)=>Math.max(.4*(1-windwardOf(x,z)),smooth(220,40,NECANYONS.footD(x,z))),oasis:(x,z)=>0,dune:(x,z)=>smooth(.52,.68,fbm(x*.0022-7,z*.0022+3,62,2))*(1-windwardOf(x,z))*smooth(.6,.25,heightK(x,z)),rim:(x,z)=>smooth(.7,.95,heightK(x,z))*(1-windwardOf(x,z)),abyss:(x,z)=>0,
+  cold:(x,z)=>.35+.45*smooth(.55,1,heightK(x,z)),mist:(x,z)=>.25*windwardOf(x,z)*smooth(.6,.9,heightK(x,z))},   /* .8 on the crest: the boreal band (the drier, sparser look: spruce, larch, birch, snags), not the montane oakwood */
  jungle:(x,z)=>windwardOf(x,z)*smooth(1,.72,heightK(x,z))*smooth(-410,-330,floorH(x,z)),jungleQ:.9,necQ:.9,
  bias:{lacefan:(x,z)=>2*windwardOf(x,z),cointree:.6,rainbowfan:1,lacepitcher:1,stormpod:1.2,greatsundew:(x,z)=>1.5*windwardOf(x,z),
   cobralily:.6,bloodbulb:.4,bloodtrumpet:.6,maneater:.8,coiltendril:.6,groundstar:.6,punjipit:.7,beartrap:.7,numbthorn:.8,snareflower:.6},

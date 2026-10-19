@@ -13,9 +13,6 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   necanyons page does.
 - [ ] **The hazard key.** `core/tags` has no `hazard` key; the danger rides on `trap.danger` (`BIOME-API.md`). Propose the
   key (`core/tags/PROPOSAL.md`) and the Throne's CO2 hollows and the natives' punji pits take it too.
-- [ ] **The ecotone species are not read.** The notes name the nwlowlands' bamboo, ferns and glow-willows for the lake
-  shores (the fertile basin) and the nhighlands' crag pine and beard lichen for the dry crests (the trenches); the pages
-  draw the hyperjungle and the necanyons kit only. Read those two kits in place the way the kipuka station does.
 - [ ] **The salt lake and the Tiers' lake are flat discs at the stage's edge**, far above their true depth (the trenches'
   walls are 4 km). A station cannot hold that; the open world will.
 - [ ] **The tepui is one record.** The open world wants many tables placed from the scale model's ring crests
@@ -33,6 +30,14 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 
 ## Closed
 
+- **The ecotone species are read** (2026-10-19): the fertile basin reads the **nwlowlands** kit in place on the lake's shore
+  band (`stations/basin/station.json` `kits` and `packs`; `STAGE.shore`, within ~200 m of the water, off the bog corner and the
+  rock; its fields `tropic` 1 and `dry` 0): the groves, reeds and iris at the water, glow-willows and paperbarks, its ferns under
+  the rainforest's edge; the trenches read the **nhighlands** kit on the crest and the dry upper lee (`STAGE.crest`, heightK
+  above ~.7, off the windward rainforest; `cold` and `mist` by height, `rockExtra` on the crest so the crag pines find their
+  rock): crag pines with their beard lichen, the boreal band's conifers and birches. Each runs under its own mask (`47`,
+  `shoreMask`, `crestMask`; `88`), its trees obstacles to the kits after it; the inspector names both kits' plants; a host
+  check each keeps them to their band, a preset view each shows them.
 - The open items of 2026-10-19 (the second pass): **the gorge's floor wears the desert's red soil** (`ground.redsoil`, a
   family in `materials.json`); **the trenches' lee has the eastern desert's kit** (read in place as the gorge reads it:
   dragon trees and the stands on the rain shadow's scree, thin; a `desert` mask and the kit's fields in the stage);

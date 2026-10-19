@@ -53,6 +53,10 @@ const jungleMask=(x,z)=>{if(NECANYONS.rockAt(x,z))return 0;const fd=NECANYONS.fo
  return smooth(26,58,fd)*(STREAM_?smooth(STREAM_.w+10,STREAM_.w+40,STAGE.streamD(x,z)):1)*waterMask(x,z)*(STAGE.jungle?STAGE.jungle(x,z):1)*(1-.8*smooth(.55,.9,poorAt(x,z)));};
 const desertMask=(x,z)=>{if(NECANYONS.rockAt(x,z))return 0;const fd=NECANYONS.footD(x,z);return smooth(4,14,fd)*waterMask(x,z)*(STAGE.desert?STAGE.desert(x,z):0);};
 const highMask=(x,z)=>NECANYONS.rockAt(x,z)?waterMask(x,z)*(STAGE.high?STAGE.high(x,z):0):0;
+/* the ecotones (NOTES.md, "The life"): the nwlowlands kit on a lake shore (the basin: STAGE.shore), the nhighlands kit on a
+   dry crest (the trenches: STAGE.crest); both off the rock and the walls' feet, out of the water, where the station says */
+const shoreMask=(x,z)=>{if(NECANYONS.rockAt(x,z))return 0;const fd=NECANYONS.footD(x,z);return smooth(4,14,fd)*waterMask(x,z)*(STAGE.shore?STAGE.shore(x,z):0);};
+const crestMask=(x,z)=>{if(NECANYONS.rockAt(x,z))return 0;const fd=NECANYONS.footD(x,z);return smooth(4,14,fd)*waterMask(x,z)*(STAGE.crest?STAGE.crest(x,z):0);};
 let MASK=waterMask;
 const SPINE=STAGE.spine;
 BIO.init({tags:'korona',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),

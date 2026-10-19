@@ -5,7 +5,9 @@ Korona (`NOTES.md`: the corona country under the giant) is three kits on one pag
 flora and its harmless carnivores, and **KORONA**, this kit, with the summit's life and the man-eaters. One `src/`, one
 pack, one host; each station its own page (`build.py --station <name>`; `stations/<name>/` holds that station's host
 fragments, `station.json` its page name and, as the Throne's, any other kit it reads in place (`kits`: slot to path) and
-that kit's pack (`packs`): the lee gorge and the trenches (on the rain shadow's scree) read the **sedesert** kit so.
+that kit's pack (`packs`): the lee gorge and the trenches (on the rain shadow's scree) read the **sedesert** kit so, the hoar
+table the **ehighlands** kit, and the ecotones (`NOTES.md`, "The life") the fertile basin's lake shore the **nwlowlands** kit
+(bamboo, ferns, glow-willows) and the trenches' crest the **nhighlands** kit (crag pines, beard lichen).
 
 ## What the host gives the kits
 
@@ -35,6 +37,13 @@ The host's `45-host-stage.js` (one per station) ends in one object, **`STAGE`**,
 | `desert(x,z)`, `desertQ` | where the sedesert kit may root (a station that reads it in place: `station.json` `kits` and `packs`), and its quality |
 | `bare(x,z)` | ground the station bars from every kit (the trenches' salt crust, the gorge's pool) |
 | `high(x,z)`, `highQ` | where the ehighlands kit may root on the tops (the hoar table), and its quality |
+| `shore(x,z)`, `shoreQ` | where the nwlowlands kit may root (the fertile basin's shore band), and its quality; the kit reads `wet`, `flow`, `upland` and the station's `tropic` and `dry` (`fields`) |
+| `shoreRows` | optional: the nwlowlands kit's `avenues` (rows of one species along a host path): the basin lines the water's edge with glow-willows |
+| `crest(x,z)`, `crestQ` | where the nhighlands kit may root (the trenches' crest and dry upper lee), and its quality; the kit reads `wet`, `flow`, `rock`, `upland` and the station's `cold` and `mist` (`fields`); its crag pines want `rock`, so the crest gives `rockExtra` |
+
+A kit that builds on the core's chunk ranges (`BIO.range`: the nwlowlands and nhighlands hero trees and their far stand-ins) needs
+the host to tick the runtime LOD every frame, or its stand-ins are drawn over its trees: the station's `99-host-take.js`
+subscribes `BIO.lodTick(camera)` on the loop's `view` phase (the basin's and the trenches' do; the kits' own pages do the same).
 | `topExtra(x,z)` | extra relief on every top (the hoar table's knolls): wrapped into `KSTACKS.topH`, so the beds' tops, the drawn mesh and every plant's foot move together |
 | `snowAt(x,z)` | snow on a top (the top mesh's third layer, `ground.snow`) |
 | `windows` | `BIO.init` windows (the Mother Cushion's) |
