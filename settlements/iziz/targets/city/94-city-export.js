@@ -103,10 +103,12 @@ function collect(ctx){
   if (Array.isArray(m)) { drop('multi-material'); m = m[0]; }
   const key = MK.get(m) || (src && MK.get(src)) || null;
   const s = [m.type, key, m.color ? m.color.getHex() : '', m.map ? m.map.uuid : '', m.roughness, m.metalness, m.emissive ? m.emissive.getHex() : '',
-   m.emissiveIntensity, m.transparent, m.opacity, m.alphaTest, m.side, m.userData && m.userData.uvK, m.userData && m.userData.lib, !!m.vertexColors].join('|');
+   m.emissiveIntensity, m.transparent, m.opacity, m.alphaTest, m.side, m.userData && m.userData.uvK, m.userData && m.userData.lib, !!m.vertexColors,
+   m.userData && m.userData.courtTri ? JSON.stringify(m.userData.courtTri) : ''].join('|');
   if (sig.has(s)) return sig.get(s);
   const lib = library(m, key), K = m.userData && m.userData.uvK || 0, shader = m.isShaderMaterial || m.isRawShaderMaterial;
-  const hook = []; if (K) hook.push('world-uv'); if (lib && lib.L.breakup) hook.push('breakup');
+  const tri = m.userData && m.userData.courtTri || null;   // a court finish (95i COURT_TRI): the set projected triplanar, no UVs
+  const hook = []; if (K) hook.push('world-uv'); if (lib && lib.L.breakup && !tri) hook.push('breakup'); if (tri) hook.push('triplanar');
   if (typeof MAT !== 'undefined' && MAT.glass && (m === MAT.glass || (src || m).onBeforeCompile === MAT.glass.onBeforeCompile)) hook.push('glass');
   let name = key || (m.name || m.type) + '~' + mats.length;
   if (matBy.has(name)) name += '~' + mats.length;
@@ -116,7 +118,8 @@ function collect(ctx){
    specular: lib && lib.L.specular != null ? lib.L.specular : .5,
    emissive: m.emissive && m.emissiveIntensity > 0 && m.emissive.getHex() ? hex(m.emissive) : null, emissiveIntensity: m.emissiveIntensity == null ? 0 : m.emissiveIntensity,
    doubleSided: m.side === THREE.DoubleSide, transparent: !!m.transparent, opacity: m.opacity == null ? 1 : m.opacity, alphaTest: m.alphaTest || 0,
-   vertexColours: !!m.vertexColors, tint: true, unlit: !!m.isMeshBasicMaterial, hook: hook.length ? hook.join('+') : null,
+   vertexColours: !!m.vertexColors, tint: !(tri && !tri.detail), unlit: !!m.isMeshBasicMaterial, hook: hook.length ? hook.join('+') : null,
+   triplanar: tri ? { tile: tri.tile, detail: tri.detail, gain: tri.gain, note: 'the map projected from three sides in the mesh\'s own frame, one tile per `tile` metres; detail: multiplied into the vertex colour times gain, else the map is the surface (95i COURT_TRI)' } : null,
    worldUV: K ? { K, note: 'an instance: uv * (the two instance-scale axes its face spans) * K; a plain mesh: uv as it is (vWorldUV, core/materials/opt/69a-world-uv.js)' } : null,
    scale: lib ? lib.L.scale.slice() : K ? [1 / K, 1 / K] : [1, 1], lib: lib ? lib.L.lib : null, breakup: lib && lib.L.breakup ? lib.L.breakup : null,
    normalScale: m.normalScale ? m.normalScale.x : 1,
@@ -223,6 +226,7 @@ function ixFurniture(ctx, C, own){
    if (!m.matrix.equals(M.identity())) m.geometry.applyMatrix4(m.matrix);
    if (p.ry) m.geometry.applyMatrix4(back);
    parts.push({ name: m.name, g: m.geometry, mat: m.name === 'furniture:decal' ? m.material : smat.get(m.name) || m.material }); });
+  if (typeof courtParts === 'function') courtParts(p).forEach(q => parts.push(q));   // its court overlays (95i): the painting, frame, glaze or carpet ride with the piece
   const kv = p.key + '/' + p.variant, h = shape(parts), L = looks.get(kv) || looks.set(kv, []).get(kv);
   let look = L.find(o => o.h === h && same(o.parts, parts));
   if (!look) { look = { h, id: kv + '/' + L.length, parts, n: [] }; L.push(look);
@@ -258,6 +262,7 @@ function assemble(ctx){
   const m0 = Array.isArray(o.material) ? o.material[0] : o.material;
   if (!m0 || m0.isShaderMaterial || m0.isRawShaderMaterial || m0.blending === THREE.AdditiveBlending) { C.drop(m0 && m0.blending === THREE.AdditiveBlending ? 'additive' : 'shader material'); continue; }
   if (!o.isInstancedMesh) continue;
+  if (o.userData && o.userData.courtOverlay && ixOn()) { C.drop('court overlays (exported with their pieces)'); continue; }
   const kit = C.KITOF.get(o), ident = o.matrixWorld.equals(new THREE.Matrix4()), A = o.instanceMatrix.array, keep = [];
   for (let i = 0; i < o.count; i++) {
    const x = ident ? A[i * 16 + 12] : (o.getMatrixAt(i, M), v.setFromMatrixPosition(W.multiplyMatrices(o.matrixWorld, M)).x);

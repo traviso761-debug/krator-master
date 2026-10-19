@@ -172,6 +172,18 @@ build.py `INTERIOR_TARGETS`: the vernacular sheet only; the city has none, and i
 `python3 ixshot.py dist/iziz-vernacular.html --keys <k,..> | --all [--back] --out shots/ix` shoots each building at eye
 level and cut away at each storey, and prints its rooms, pieces and residence counts. `?interiors=0` turns it all off.
 
+**The court's pictures and finishes** (2026-10-19, `95i-iziz-interiors.js`): after the furniture is built, the court sets
+of Iziz's pack (`core/materials/patterns/court/`) go onto the placed pieces in two ways. `COURT_DECALS` lays UV'd overlays
+where a picture must sit exactly: book spines on `iziz_court_library_shelves` and Talia's `talia_common_bookcase`, a
+canvas (one of `courtPaint1..24`, picked by position) and the carved gilt moulding (`courtFrame`) on every
+`iziz_court_painting`, the glaze bands (`courtVaseA/B`) round Talia's jars and the court ewer, the sun carpets
+(`courtCarpetA/B`) on the court carpet, the common rug and the court wall rugs, and the Iziz mosaic on the mosaic panels.
+An entry is in the piece's own frame (+z its front, y up from its foot). `COURT_TRI` maps the court tier's own palette
+keys (`courtMahogany`, `courtBrocade`, `courtCloth*`, `courtGilt`, `courtMarble` in `krator-master-furniture-iziz.js`, split
+into texture families by `FAMILY_SPLITS`) onto the merged batch meshes by triplanar projection (the batch has no UVs):
+marquetry, brocade and the opus-sectile hearth in full colour, gold leaf and velvet as detail maps on the piece's own
+colour. A set the page's pack lacks is skipped, so a page without the court sets draws the plain catalog colours. In the export (`targets/city/94-city-export.js`) an overlay is a part of its piece (`courtParts`), and a finish a material with hook `triplanar` {tile, detail, gain}, which Godot's library shader draws (`godot/shaders/lib/triplanar.gdshaderinc`).
+
 ### The trades — `74z-vern-trades.js`
 
 `VERN_TRADES`: every trade in the Voth city's census, and the Voth catalog's shop trades, with the Voth building and the

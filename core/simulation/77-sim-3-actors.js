@@ -84,7 +84,9 @@
     if(pref.pin==='work' && a.work){ P=SIM.R.place[a.work]; if(P && SIM.offers(P,act)) return P; }
     if(a.plan && a.plan[a.planI] && a.plan[a.planI].place){ P=SIM.R.place[a.plan[a.planI].place]; if(P) return P; }
     var m=a.mem[act]; if(m){ P=SIM.R.place[m]; if(P && SIM.isOpen(P,act,hour) && (SIM.free(P,act)>0 || P.who[a.id]===act)) return P; }
-    var c = SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, ids:pref.ids, exclude:a.bad, limit:pref.spread||3, maxR:pref.reach!=null ? pref.reach : SIM.REACH });
+    var q={ near:near, kinds:pref.kinds, ids:pref.ids, exclude:a.bad, limit:pref.spread||3, maxR:pref.reach!=null ? pref.reach : SIM.REACH }, town=SIM.R.settlement ? SIM.settlementOf(a) : null, c=null;
+    if(town!=null){ q.settlement=town; c=SIM.placesFor(act, a, hour, q); delete q.settlement; }   /* its own town first (P7a: a page with settlements), then anywhere */
+    if(!c || !c.length) c=SIM.placesFor(act, a, hour, q);
     if(c.length){ /* the nearest few, one picked from SIM.rng so a crowd spreads over a district's taverns and shops */
       var k=Math.min(c.length, pref.spread||3); return c[Math.floor(SIM.rng.next()*k)]; }
     return null;
@@ -307,6 +309,7 @@
       if(SIM.WAKE) a.wake = SIM.wakeOf(a, minute, want);
     }
     if(SIM.ECON) SIM.economyStep(minute, t);                                        /* production, the carts, the imports */
+    if(SIM.tradeStep) SIM.tradeStep(minute, t);                                     /* trade between settlements (77-sim-6-trade.js) */
     if(SIM.stocksStep) SIM.stocksStep(minute);                                      /* the stocks' daily snapshot (77-sim-7-stocks.js) */
     for(var hk=0; hk<SIM.stepHooks.length; hk++) SIM.stepHooks[hk](minute, t);       /* a world's own minute (an arena's bouts) */
     return made;

@@ -609,9 +609,21 @@ settlement, so Voth's stocks proof, `test-sim.js` and the baseline do not move.
 **P7a progress (2026-10-19).** Done in `core/simulation`, opt-in: items 1 (the settlement record and key), 2 (an economy
 per settlement: warehouses, sites, recipes, carts, books; the purchases and meals routed by place), 5 (the stocks per
 settlement, `SIM.stocks(s)`, `SIM.stocksBy()`), 7 (the three levels written into `SCHEMA.md`) and 8 (seven
-two-settlement checks in `test-sim.js`, each with a negative; every older check unchanged). Still to do: 3 (the
-population deal per settlement), 4 (the place search scoped), 6 (trade between settlements: the carrier and its
-books), and the items module's holdings split by settlement.
+two-settlement checks in `test-sim.js`, each with a negative; every older check unchanged).
+
+**P7a done (2026-10-19, second pass).** Items 3, 4 and 6 and the items' holdings, opt-in like the rest:
+- 3: a role's `settlement` keeps its actors in that town's homes; work is dealt in the home's town;
+  `SIM.populate({settlement})` deals one town at a time.
+- 4: the resolver and an errand's seller look in the actor's own town first, then anywhere.
+- 6: `core/simulation/77-sim-6-trade.js`, `SIM.trade`: carriers on a timer or as a `SIM.transport` line's vehicles
+  (P7c's canoe line plugs in as `line`). Leaving, a load of what the next town wants (its use plus its unmet draws)
+  and this one can spare, booked exported; at sea in neither town's stock, shown as `outbound` / `inbound` in the
+  stocks rows, and counted against an import; landing in the other's landing, booked imported. Gated by the factions'
+  relation (`SIM.trades`). A timer carrier keeps its timetable through a jump (the abstract level, P7d, runs on it).
+- The items' holdings: each town's stocks count its own households and people; the item flows come from the items
+  module's books by town.
+- 23 new checks in `test-sim.js` (211 in all), each with a negative, among them the books balancing in both towns
+  with a load at sea, every load shipped = landed + at sea, and rice conserved minute by minute on a line.
 
 **Order of work.**
 

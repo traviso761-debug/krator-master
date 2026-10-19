@@ -99,7 +99,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `simulation/77-sim-6-economy.js` | 20.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the economy: goods, stores, production by worked hour and efficiency, carts, consumption, days left, imports |
 | `simulation/77-sim-6-items.js` | 18.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | items, inventory, the six slots, wear, errands to the nearest seller, meals from a household store (opt-in: SIM.items) |
 | `simulation/77-sim-6-needs.js` | 13.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | needs, happiness, efficiency, loyalty; the free-time clause and the interrupt of SIM.desire (opt-in: SIM.needs) |
-| `simulation/77-sim-6-population.js` | 4.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `simulation/77-sim-6-population.js` | 5.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `simulation/77-sim-6-trade.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | trade between settlements: carriers by timer or on a transport line, loads by want and spare, exported / at sea / imported (opt-in: SIM.trade) |
 | `simulation/77-sim-7-stocks.js` | 17.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | what things hold and the settlement's stocks: SIM.contents, SIM.stocks (by state, the daily snapshot's change and flows, the low and out marks), SIM.holders; read only |
 | `simulation/77-sim-8-export.js` | 2.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `simulation/77-sim-9-debug.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
