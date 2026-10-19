@@ -614,3 +614,31 @@ settlement, so Voth's stocks proof, `test-sim.js` and the baseline do not move.
 
 **Risk.** The economy keyed by settlement touches every function Voth's economy runs through. P7a must land as its
 own commit with Voth's proof re-read, so a regression is caught before any isle code depends on it.
+
+## 10. Core-module compliance (audit, 2026-10-19)
+
+The three pages (`dist/isle-site.html`, `dist/isle-city.html`, `openworld/isle-demo/dist/isle-demo.html`) checked against
+every module under `core/` and CLAUDE.md's rules.
+
+**Fixed on 2026-10-19:**
+- the open world's page and artifact are written with `newline='\n'` (a Windows build hashed apart from a Linux one);
+- `x || d` defaults: `core/hamlet/30` (a box's height), `32-isle-city.js` (a way's width), `88h` (a stand's radius);
+- the site shim's seed 0 is no longer turned into 1;
+- the city page's orchard trees are records made in the plan (`32-isle-city.js`, from their field's grid cell) and
+  registered in `core/tags` under their field; `60-isle-draw.js` only draws them;
+- the open world loads `core/atmos/89-atmos-8-export.js` (the export's atmos section can fill);
+- both open worlds run on `core/clock` (H4).
+
+**Still open, in order:**
+1. **P6b, the export profile** (`core/export` 07 and 09 on the city page, `EXPORT_BOX` and `EXPORT_PROFILE` in `verify.py`
+   with section 7's list). It must land before P7. Every section not yet filled will fail it, which is the point; the
+   `city` section is registered from `core/city/40` (the city-layout work's file: ask it).
+2. **The city page onto `core/host`** (camera, loop, `KCLOCK`, panel, probe, minimap) instead of its own `CAM`, loop and
+   `window._city`: P7's simulation needs the clock.
+3. **The city page's sky and sea:** the standard sky and `core/atmos`, the sea on `core/water` (it is a flat colour and a
+   plane today).
+4. **`terrain = field`:** a `KFIELD` from the extracted heights, which the profile asks for.
+5. **Little-demo's shared fragments** (both worlds' hashes move): the sun and atmosphere driven by `HOST.clock.hour`,
+   `tags:` passed to `BIO.init` (the flora in `core/tags`), `window.renderer` for the edit queue, the flora's buckets onto
+   `core/space`, and the whole engine onto `core/host`.
+6. **The site planner** runs on Voth's editor engine read in place (its LCG shim, Voth's textures): ROADMAP section 10.

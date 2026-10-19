@@ -24,13 +24,16 @@ const SV_LIB={thatch:'thatch',thatchR:'thatchR',palm:'palm',bamboo:'bamboo',latt
  carved:'carved',carvedR:'carvedR',lash:'lash',planks:'planks',reclaimed:'reclaimed',wood:'wood',tarred:'tarred',hull:'hull',floor:'floor',
  stone:'stone',coral:'coral',earth:'earth',sand:'sand',rope:'rope',tarp:'tarp',tyre:'tyre',tapa:'tapa',iron:'iron',
  patGableW:'patGableW',patGableE:'patGableE',patBand:'patBand',patStory:'patStory',patWeave:'patWeave',medMoon:'medMoon',
- patGableW2:'patGableW2',patGableE2:'patGableE2',patHinggi:'patHinggi',patMat:'patMat'};
+ patGableW2:'patGableW2',patGableE2:'patGableE2',patHinggi:'patHinggi',patMat:'patMat',
+ endgrain:'endgrain',logbark:'logbark',banco:'banco',turf:'turf',charcoal:'charcoal',ash:'ash',clay:'clay'};
 const SV_TILE0={thatch:2,thatchR:2.2,palm:1.6,bamboo:1.4,lattice:.8,mat:1,corr:1.6,corrW:1.6,tin:1.4,carved:1.2,carvedR:1.2,lash:1.6,planks:2,
  reclaimed:2,wood:1.6,tarred:1.6,hull:1.8,floor:2,stone:2.6,coral:2.4,earth:3,sand:4,rope:.3,tarp:2,tyre:.8,tapa:1.6,iron:.8,
- patGableW:2.4,patGableE:2.2,patBand:1.2,patStory:3.2,patWeave:2.4,medMoon:1,patGableW2:2.4,patGableE2:2.2,patHinggi:2,patMat:1.6};
+ patGableW:2.4,patGableE:2.2,patBand:1.2,patStory:3.2,patWeave:2.4,medMoon:1,patGableW2:2.4,patGableE2:2.2,patHinggi:2,patMat:1.6,
+ endgrain:.6,logbark:1.2,banco:2.4,turf:2,charcoal:1,ash:2.4,clay:1.2};
 const SV_CLOTH={tarp:1,tapa:1,mat:1,flag:1,patHinggi:1,patMat:1};
 const SV_CUT={thatch:1,thatchR:1,palm:1,bamboo:1,lattice:1,mat:1,corr:1,corrW:1,tin:1,carved:1,carvedR:1,lash:1,planks:1,reclaimed:1,wood:1,tarred:1,
- tarp:1,tapa:1,rope:1,iron:1,coral:1,patGableW:1,patGableE:1,patBand:1,patStory:1,patWeave:1,patGableW2:1,patGableE2:1,patHinggi:1,patMat:1,flag:1,plain:1,brass:1,bone:1,glass:1};
+ tarp:1,tapa:1,rope:1,iron:1,coral:1,patGableW:1,patGableE:1,patBand:1,patStory:1,patWeave:1,patGableW2:1,patGableE2:1,patHinggi:1,patMat:1,flag:1,plain:1,brass:1,bone:1,glass:1,
+ endgrain:1,logbark:1,banco:1,clay:1};
 const KIT_FALLBACK=[];
 /* is a sheet in the pack (28-is-paint.js draws the canvas stand-in when it is not) */
 const KIT_HAS=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);
@@ -51,6 +54,9 @@ const SVPAL={
  drumR:[0x8a2a1e,0x7a2418],drumB:[0x2a4a6a,0x24405e],drumY:[0xc8a030,0xb89028],tyre:[0x2a2826,0x302d2a],
  carvR:[0x8a4a38,0x7e4232,0x94523e],carvN:[0xa88460,0x9c7a56],
  iron:[0x3a3632,0x2e2a26],brass:[0xc89a3a,0xb88a2e],bone:[0xe8e0cc,0xddd2bc],shell:[0xeee8dc,0xe4dccc],rope:[0xa08050,0x94764a],
- flame:[0xffb04a],ember:[0xff6a1a],leaf:[0x4a6a2a,0x56762e,0x3e5e24],water:[0x2a6a6a]
+ flame:[0xffb04a],ember:[0xff6a1a],leaf:[0x4a6a2a,0x56762e,0x3e5e24],water:[0x2a6a6a],
+ // the hamlet works (core/hamlet PLAN.md section 3): logs and their cut ends, the kiln's earth and turf, charcoal and ash, the bloomery's clay
+ logbark:[0x8a6a52,0x7e604a,0x94725a],endgrain:[0xc8a478,0xbc9a6e,0xd0ac80],banco:[0xa07a56,0x94704e],turf:[0x6a7a3e,0x5e6e36],
+ charcoal:[0x2e2a28,0x26221f],ash:[0x8e8a84,0x9a958e],clay:[0x7e624c,0x745a44,0x866852],slag:[0x3a3430,0x4a3e36]
 };
 function P(k){return jc(pick(SVPAL[k]),.05);}

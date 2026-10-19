@@ -228,7 +228,7 @@ NHL.buildNewFlora=function(R,q,box){q=q==null?1:q;R=R||3300;means();
    BIO.put('cushion',[T.x,T.y0+u*T.H,T.z],qEuler(0,rr(0,TAU),0),[Rc,rr(.8,1.4),Rc],bright(vary(pick(PAL.moss),.03,.08,.05),1));st.sleeves++;}
   if(STAGHORNED.indexOf(S.key)>=0&&rng()<.18)for(let c=0,m=ri(1,3);c<m;c++){const h=Math.min(rr(2,9),T.H*top*.95),u=h/T.H,r=boleR(T,S,u)+.05,a=rr(0,TAU),ca=Math.cos(a),sa=Math.sin(a),x=T.x+ca*r,y=T.y0+h,z=T.z+sa*r,s=rr(.45,.8);
    BIO.put('paddle',[x,y-s*.5,z],qEuler(rr(-.1,.1),Math.PI/2-a,0),[s,s,s],bright(vary(C(0xa8c070),.02,.05,.04),1.1),{n:[ca*.8,.4,sa*.8]});
-   for(let k=0,n=ri(5,9);k<n;k++){const L=rr(.5,1.1);BIO.put('staghorn',[x+ca*.06,y+rr(-.1,.1),z+sa*.06],qEuler(rr(-.3,.3),-(a+rr(-.75,.75)),rr(-.95,-.2)),[L,L*rr(.85,1.05),L*rr(.8,1.1)],leafCol([0x7aa040,0x88ac48,0x6e9638],1.2,.02));}
+   for(let k=0,n=ri(5,9);k<n;k++){const L=rr(.5,1.1);BIO.put('staghorn',[x+ca*.06,y+rr(-.1,.1),z+sa*.06],qEuler(rr(-.3,.3),-(a+rr(-.75,.75)),rr(-.95,-.2)),NHL.LIB.staghorn?[L,L*rr(.85,1.05),L*.65*rr(.85,1.1)]:[L,L*rr(.85,1.05),L*rr(.8,1.1)],leafCol([0x7aa040,0x88ac48,0x6e9638],1.2,.02));}
    st.staghorns++;}});
  BIO.owner=null;BIO.range=NHL.LOD.floor;
  // CROWN FERNS: upright vases in the gullies and on the banks

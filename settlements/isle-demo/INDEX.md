@@ -16,11 +16,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `10-isle-frame.js` | 8 | 0. A TOWN'S FRAME, AND THE GROUND VOTH'S EDITOR  (1) |
-| `20-isle-ground.js` | 4 | 1. THE CITY PAGE'S GROUND: THE REGION'S RASTERS, (1) |
-| `30-isle-programme.js` | 15 | 2. THE TOWNS' PROGRAMMES (PLAN.md SECTION 8) AS  (1) |
-| `32-isle-city.js` | 36 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
-| `34-isle-census.js` | 10 | 4. THE CENSUS AND THE CHECKS, PER TOWN (1) |
+| `20-isle-ground.js` | 7 | 1. THE CITY PAGE'S GROUND: THE REGION'S RASTERS, (1) |
+| `30-isle-programme.js` | 16 | 2. THE TOWNS' PROGRAMMES (PLAN.md SECTION 8) AS  (1) |
+| `32-isle-city.js` | 45 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
+| `34-isle-census.js` | 11 | 4. THE CENSUS AND THE CHECKS, PER TOWN (1) |
 | `56-isle-tools.js` | 5 | 3b. THE ISLE'S TOOLS: TOWNS, SAVING, VIEWS (1) |
-| `60-isle-draw.js` | 16 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
-| `98-isle-city-start.js` | 7 | 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK (1) |
+| `58-isle-protos.js` | 6 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
+| `60-isle-draw.js` | 15 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
+| `98-isle-city-start.js` | 8 | 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK (1) |
 | `98-isle-start.js` | 5 | 4. START (1) |

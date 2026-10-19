@@ -270,7 +270,7 @@ CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
                                           os.path.join(WORLD, 'src', '43-world-isles.js')]
 CITY_MAT = [os.path.join(ROOT, 'core', 'materials', 'record', f) for f in ('23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js')]
 CITY_DATA_JS = ['20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '34-isle-census.js']
-CITY_WEB_JS = ['60-isle-draw.js', '98-isle-city-start.js']
+CITY_WEB_JS = ['58-isle-protos.js', '60-isle-draw.js', '98-isle-city-start.js']
 CITY_HEAD = '''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Isle Demo Towns</title>
 <style>

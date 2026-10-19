@@ -46,6 +46,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `66-ip-palace.js` | 36 **big** |  |
 | `67-ie-trades.js` | 21 |  |
 | `68-is-trades.js` | 6 |  |
+| `69-ie-hamlet.js` | 9 |  |
 | `81-sky.js` | 10 |  |
 | `89-rows.js` | 3 |  |
 | `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |

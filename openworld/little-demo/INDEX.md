@@ -16,9 +16,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 5 |  |
-| `41-world-fields.js` | 39 **big** | the styles: how each biome's land is shaped (42); the rasters (73); sampling (98); the drainage network (140); the escarpments: cliffs at 1:1 (216); the roads: highways between the settlements (228); the towns: a built settlement's own ground (265); the height (304); the water: the sea and the lakes from the scale  (341); the water bodies (core/water: one surface each) (352) |
+| `41-world-fields.js` | 39 **big** | the styles: how each biome's land is shaped (42); the rasters (73); sampling (98); the drainage network (140); the escarpments: cliffs at 1:1 (216); the roads: highways between the settlements (228); the towns: a built settlement's own ground (265); the height (306); the water: the sea and the lakes from the scale  (343); the water bodies (core/water: one surface each) (354) |
 | `42-world-roads.js` | 10 |  |
-| `45-world-host.js` | 4 | the field sources (32) |
+| `45-world-host.js` | 5 | the field sources (38) |
 | `46-world-config.js` | 1 |  |
 | `47-world-kits.js` | 4 |  |
 | `80-world-sky.js` | 9 |  |
@@ -26,7 +26,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `83-world-water.js` | 2 |  |
 | `83w-world-seas.js` | 4 |  |
 | `84-world-nursery.js` | 13 | materials for instancing (15); harvest: what the kit wrote, as one geometry per (54); growing (90); the queue (122) |
-| `85-world-flora.js` | 13 | the kits' pass tables, as data (47-world-kits.js (23); a tile's field grid (34); placing one tile: records (51); residency (101); drawing: pools of instances per prototype (116) |
+| `85-world-flora.js` | 14 | the kits' pass tables, as data (47-world-kits.js (23); a tile's field grid (34); placing one tile: records (51); residency (101); drawing: pools of instances per prototype (116) |
 | `86-world-floor.js` | 6 |  |
 | `87-world-places.js` | 3 |  |
 | `88-world-towns.js` | 9 |  |

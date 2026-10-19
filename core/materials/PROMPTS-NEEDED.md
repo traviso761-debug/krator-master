@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 3 prompts (section 2: the Northern Highlands' three).** Sections 4 to 6 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 1 prompt (section 2: the Northern Highlands' `bark.alder.lichen`).** The Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel were delivered 2026-10-19 (see "Delivered 2026-10-19"). Sections 4 to 6 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -147,18 +147,6 @@ and the bulb domes (`hBulbHG`), drawn by the canvas painter today. Full colour, 
 Painted in code today (`biomes/nhighlands/KNOWN_ISSUES.md`, the new flora). The fan-leaf, the moss sleeves, the table
 cedar, the serpentwood and the banyan have library candidates already (`card.ginkgo`, `ground.moss001`-`003`,
 `card.spruce`, `bark.mossy`, `bark.smooth`): wiring them is the owner's call, no prompt needed.
-
-#### `card.staghorn`
-
-```
-A staghorn fern (Platycerium) frond cut-out: one long antler-like frond forking three times into rounded tips, mid green #7aa040 with lighter edges #a8c870, fine felted surface, isolated on flat pure magenta (#FF00FF), front view, the frond's base at the left edge pointing right, whole frond in frame, no shadow. Matte.
-```
-
-#### `card.sunwheel`
-
-```
-An alien ground rosette seen from directly above: thirty-five slender stalks radiating flat from a tight central bud, each stalk ending in a perfect wheel of twelve narrow pointed leaflets, the wheels smaller toward the centre, bright yellow-green #a8d048 to #b4d850, too regular to be an Earth plant, isolated on flat pure magenta (#FF00FF), top-down orthographic, whole rosette in frame, no shadow. Matte.
-```
 
 #### `bark.alder.lichen`
 
@@ -605,6 +593,19 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat
 ```
 
 ---
+
+## Delivered 2026-10-19, the Oidong Valley and two Northern Highlands cards (pasted into the chat as WebP, 1254 px and 1536 x 1024)
+
+Fifteen images from the owner, processed by `tools/textures/cards.py` and `process.py` (batches `oidong-cards-2026-10.json` and
+`oidong-surfaces-2026-10.json`, every prompt recorded in each set's `meta.json`).
+- **Cards (magenta keyed, 1024 px):** `card.lily.iridescent`, `card.peyote`, `card.mooncap`, `card.beads.bell`, `card.heartleaf`,
+  `card.lace.birch`, `card.blossom.cherry`, `card.giantpad`, `card.sunwheel`, `card.staghorn` (rotated a quarter turn so its base is
+  at the top: a frond card's v runs along it).
+- **Surfaces:** `bark.marble` (full colour), `bark.bamboo.jade` (`keep_aspect`, 1:2), `bark.cedar.red`, `organic.chalicecap`,
+  `organic.mossball`.
+- **Wired:** `biomes/oidong/materials.json` (the cards by material slot through `BIO.libSwap`; the surfaces by family) and
+  `biomes/nhighlands/materials.json` (`staghorn`, `wheel`); `biomes/oidong/KNOWN_ISSUES.md` and `biomes/nhighlands/KNOWN_ISSUES.md` updated.
+- **Kept the kit's own:** the ribbed lotus stalks and the daisies, the iridescent bark canvases, the haze blossom's and the wisteria's cards.
 
 ## Gaps with no prompt yet
 
