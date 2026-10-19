@@ -40,7 +40,7 @@ function buildPylGovernorPalace(G,o){reseed(9271+(o.v|0));const T=1.2,G1=5.5,U1=
  pynHexPave(0,0,P(-24,0)[1],14,22,0,vC(vPick(PYPAL.stoneGrey)));
  // ---- the podium: Ancient white panel, its front recessed between the large pavilions, pocked; the front flight
  box('vPanelB',-8.5,34.6,-25.6,25.6,0,T,anc);for(const s of[-1,1])box('vPanelB',-14.3,-8.5,s*11.7,s*25.6,0,T,anc);
- for(let k=0;k<26;k++){const v=rr(-25,25),u=Math.abs(v)>12?-14.35:-8.55,[x,z]=P(u,v);kput('pyDiscD',[x,rr(.2,1),z+.02],null,[rr(.05,.12),rr(.05,.12),.04],null);}
+ for(let k=0;k<26;k++){const v=rr(-25,25),u=Math.abs(v)>12?-14.35:-8.55,[x,z]=P(u,v);kput('pyDiscM',[x,rr(.2,1),z+.02],null,[rr(.05,.12),rr(.05,.12),.04],null);}
  {const [x,z]=P(-10.3,0);vnStairs(x,0,z,0,11,T,6,'vPanelB',anc);}
  // ---- the hall block: two storeys behind the front arcade, the light courts cut as voids in the roof
  box('vPlaster',-4,24,-18,18,T,G1+U1,wh);
@@ -49,8 +49,8 @@ function buildPylGovernorPalace(G,o){reseed(9271+(o.v|0));const T=1.2,G1=5.5,U1=
  // orange reveals over the deep gallery's shade; the middle bay of the ground storey is the nested portal
  box('vPlaster',-8.9,-8.3,-11.7,11.7,T,G1+U1,wh);box('vPlaster',-8.3,-4,-11.7,11.7,R1-.3,.3,cr);
  const NB=6,BW=23.4/NB;for(let s=0;s<2;s++)for(let k=0;k<NB;k++){const v=-11.7+(k+.5)*BW,[x,z]=P(-8.9,v),y=s?R1+.3:T;
-  if(s===0&&(k===2||k===3))continue;pynFrame('tomb',x,y,z,0,BW-1.1,(s?U1:G1)-1.1,{rim:.18,c:or,fill:'D',out:.05});}
- {const [x,z]=P(-8.9,0);pynFrame('tomb',x,T,z,0,3.2,G1-.9,{rim:.24,n:3,cs:[wh,or],fill:'D',out:.06});vnLamp(x-2.6,4.6,z+.02,0);vnLamp(x+2.6,4.6,z+.02,0);}
+  if(s===0&&(k===2||k===3))continue;pynFrame('tomb',x,y,z,0,BW-1.1,(s?U1:G1)-1.1,{rim:.18,c:or,fill:s?'G':'L',out:.05});}
+ {const [x,z]=P(-8.9,0);pynDoorway('tomb',x,T,z,0,3.2,G1-.9,{rim:.24,n:3,cs:[wh,or],out:.06});vnLamp(x-2.6,4.6,z+.02,0);vnLamp(x+2.6,4.6,z+.02,0);}
  box('vPlaster',-9.1,-8.1,-12,12,R2,.35,or);
  // saffron buttress legs at the block's four corners
  for(const [u,v,du,dv] of[[-8.6,11.7,-1,1],[-8.6,-11.7,-1,-1],[24,18,1,1],[24,-18,1,-1]]){const [x,z]=P(u,v),dx=-dv,dz=-du;
@@ -63,7 +63,7 @@ function buildPylGovernorPalace(G,o){reseed(9271+(o.v|0));const T=1.2,G1=5.5,U1=
   kput('pyCyl',[x,R2+12.2,z],null,[1.5,2.4,1.5],wh);for(let k=0;k<6;k++){const a=k/6*TAU;kput('vWinLit',[x+Math.sin(a)*1.52,R2+13.4,z+Math.cos(a)*1.52],vQ(a,0,0),[.8,1.4,.08],null);}
   kput('vDomeP',[x,R2+14.6,z],null,[1.6,.8,1.6],or);vBq('vIron',x,R2+15.8,z,.9,.06,.9,vQ(.6,.5,0),gun);vPst('vPipe',x,R2+15.2,z,.05,.7,gun);}
  // the light courts either side of the drum: dark wells through the roof
- for(const s of[-1,1]){const [x,z]=P(5.5,s*9.5);vB('vDarkB',x,R2+.36,z,5,.62,5,0,null);}
+ for(const s of[-1,1]){const [x,z]=P(5.5,s*9.5);vB('vWinLit',x,R2+.36,z,5,.62,5,0,null);}
  // ---- the seven pavilions (blueprint: large front corners, medium rear corners, small flanks, the round kitchen)
  for(const s of[-1,1]){pypPavilion(G,-8,s*18,6.3,2,'lattice',true,wh,or,sf);pypPavilion(G,24,s*18,5,2,'cone',true,wh,or,sf);}
  pypPavilion(G,8,-22,3.6,2,'dome',true,wh,or,sf);                          // the guard pavilion; the commander above

@@ -175,6 +175,8 @@ if '--kit' in sys.argv:
     TARGET_OUT = dict(KIT['targets'])
     INTERIOR_TARGETS = set(KIT.get('interiors', []))
     TARGET_CORE = dict(KIT.get('core', {}))
+    FURN_CULTURES = KIT.get('furniture', FURN_CULTURES)       # the catalog cultures the kit's page bundles
+    INTERIOR_SETS = KIT.get('interiorSets', INTERIOR_SETS)    # the kits/interiors sets it bundles
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {

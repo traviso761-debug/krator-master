@@ -15,11 +15,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `69p-pyl-mat.js` | 4 | materials and kit items (prefix py) (19) |
-| `69q-pyl-helpers.js` | 9 | the neo-Ancient profiles (PLAN.md section 2) (29) |
+| `69p-pyl-mat.js` | 6 | materials and kit items (prefix py) (19); the owner's delivery of 2026-10-18 (materials.js (48); doors in the profiles (the owner, 2026-10-18: no (57) |
+| `69q-pyl-helpers.js` | 11 | the neo-Ancient profiles (PLAN.md section 2) (29) |
 | `70p-pyl-dwellings.js` | 12 | MIDDLE (5) |
 | `70q-pyl-poor.js` | 8 |  |
-| `70r-pyl-rich.js` | 5 |  |
+| `70r-pyl-rich.js` | 6 |  |
 | `71p-pyl-industry.js` | 16 |  |
 | `72p-pyl-civic.js` | 10 |  |
 | `74p-pyl-palace.js` | 8 |  |

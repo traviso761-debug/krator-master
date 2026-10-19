@@ -104,7 +104,7 @@ function buildPylTerrace(G,o){reseed(9031+(o.v|0));const Y0=.4,H=3.2;
  L.forEach(([x,w,zf,d,y,c],i)=>{const zc=zf-d/2;vnBody('vPlaster',x,y,zc,w,H,d,0,c,{t:.3});
   vB('vPlaster',x,y+H,zc,w+.1,.3,d+.1,0,c);
   const n=i===2?2:3;for(let k=0;k<n;k++){const u=x+(k-(n-1)/2)*(w/n);
-   if(i===0&&k===1)pynFrame('tomb',u,y,zf,0,1.6,2.6,{rim:.2,c:or,fill:'D',out:.05});
+   if(i===0&&k===1)pynDoorway('tomb',u,y,zf,0,1.6,2.6,{rim:.2,c:or,out:.05});
    else{pynFrame('tomb',u,y+.5,zf,0,2.0,2.3,{rim:.2,c:or,fill:'G',out:.05});const p=loc(u,zf,0,.2,0);vB('vIron',p[0],y+.5+1.15,p[1],2.0,.05,.05,0,gun);vB('vIron',p[0],y+.5,p[1],.05,2.3,.05,0,gun);}}
   // the terrace in front of the next storey up: a parapet and planters on this storey's roof
   if(i<2){vB('vPlaster',x,y+H+.3,zf-.1,w,.8,.2,0,c);vB('vPlaster',x,y+H+1.1,zf-.1,w+.1,.08,.3,0,or);
@@ -136,7 +136,7 @@ function buildPylBlock(G,o){reseed(9041+(o.v|0));const W=11.6,D=9.4,Z0=-.8,GH=3.
  vnWin(W/2,GH+H+1,Z0-2.6,Math.PI/2,1.4,1.4,'glass','vIron',gun);
  // the perforated west end: rows of small dark triangles
  for(let r=0;r<5;r++)for(let c=0;c<6;c++){const zz=Z0-D/2+1.2+c*(D-2.4)/5+(r%2?.4:0),yy=GH+.5+r*1.15;const f=loc(-W/2,zz,0,.03,-Math.PI/2);
-  kput('pyGableD',[f[0],yy,f[1]],vQ(0,0,0),[.06,.5,.55],null);}
+  kput('pyGableG',[f[0],yy,f[1]],vQ(0,0,0),[.06,.5,.55],null);}
  for(let k=0;k<2;k++)vnWin(k?2.5:-2.5,GH+H*.5+.4,Z0-D/2,Math.PI,1.4,1.4,'glass','vIron',gun);
  vnDoor(-W/2+.9,0,zf-SB,0,1.0,2.4,'vIron',gun,gun,false);
  pynTank(3.6,TOP+.7,Z0-2.2,.9,1.6,vC(vPick(PYPAL.rust)));}
