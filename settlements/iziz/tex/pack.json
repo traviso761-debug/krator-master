@@ -402,6 +402,306 @@
     "sourceMean": 0.3428
    }
   },
+  "courtBooksA": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtBooksA.albedo.webp",
+    "normalMap": "courtBooksA.normal.webp",
+    "roughnessMap": "courtBooksA.rough.webp"
+   },
+   "lib": "patterns/court/books-a",
+   "metal": 0,
+   "normalScale": 0.4,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "295d996f65e877a90a5a9a4437f2a35426c5a7f4",
+    "normal": "ae78440a3a42fb4061226c29a74a827deda4ff67",
+    "roughness": "29722126e807d626c0375c1535b6a0a01307e411"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.28824552535412357,
+    "sourceMean": 0.2882
+   }
+  },
+  "courtBooksB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtBooksB.albedo.webp",
+    "normalMap": "courtBooksB.normal.webp",
+    "roughnessMap": "courtBooksB.rough.webp"
+   },
+   "lib": "patterns/court/books-b",
+   "metal": 0,
+   "normalScale": 0.4,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "7453b5fb1c09ffb8450f8d6fbdbb1a87cc3edfc0",
+    "normal": "68e9d46a9bbe9cc99a933eaa58b0d7ea0b6bc461",
+    "roughness": "f223378b73d0f7fdf0f7c288fdbdf1b385961a3c"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.271798621673584,
+    "sourceMean": 0.2718
+   }
+  },
+  "courtPaint1": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtPaint1.albedo.webp",
+    "normalMap": "courtPaint1.normal.webp",
+    "roughnessMap": "courtPaint1.rough.webp"
+   },
+   "lib": "patterns/court/painting-1",
+   "metal": 0,
+   "normalScale": 0.25,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0957c1a55581d84072d40d435547b8f8f63bc4fe",
+    "normal": "00c0485a89826ef9ccbd46b6b461803e9391729f",
+    "roughness": "c05fcb06e8cad13ea102485d7f55584dbb7fd39d"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.42755059914682425,
+    "sourceMean": 0.4276
+   }
+  },
+  "courtPaint2": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtPaint2.albedo.webp",
+    "normalMap": "courtPaint2.normal.webp",
+    "roughnessMap": "courtPaint2.rough.webp"
+   },
+   "lib": "patterns/court/painting-2",
+   "metal": 0,
+   "normalScale": 0.25,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "f132827ffe7a33e292a9661fa85517f8f0a28991",
+    "normal": "43de2477d7dd1cde482553e68fa5f99572461a4c",
+    "roughness": "c5c05ad677b06eacacb454156ee1555c36fe8793"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.451769869815602,
+    "sourceMean": 0.4518
+   }
+  },
+  "courtPaint3": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtPaint3.albedo.webp",
+    "normalMap": "courtPaint3.normal.webp",
+    "roughnessMap": "courtPaint3.rough.webp"
+   },
+   "lib": "patterns/court/painting-3",
+   "metal": 0,
+   "normalScale": 0.25,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "75c5b2625522d780ac70b72c4c3e8308e6ecc196",
+    "normal": "38cf6cf4ac2b5ab30688370c29eb0f0428bfb050",
+    "roughness": "d18e9135cdc627ade13960653aad191acbbc7326"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4841221504001991,
+    "sourceMean": 0.4841
+   }
+  },
+  "courtPaint4": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtPaint4.albedo.webp",
+    "normalMap": "courtPaint4.normal.webp",
+    "roughnessMap": "courtPaint4.rough.webp"
+   },
+   "lib": "patterns/court/painting-4",
+   "metal": 0,
+   "normalScale": 0.25,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "a97b089bfe89d797259eaaec04bc199e49dd5710",
+    "normal": "f65f0897e2af2b893ee5222760b2931b5707ed8f",
+    "roughness": "f424b243547771e0eb8a110fd70bf08eb7e3f019"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.2910202201454312,
+    "sourceMean": 0.291
+   }
+  },
+  "courtPaint5": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtPaint5.albedo.webp",
+    "normalMap": "courtPaint5.normal.webp",
+    "roughnessMap": "courtPaint5.rough.webp"
+   },
+   "lib": "patterns/court/painting-5",
+   "metal": 0,
+   "normalScale": 0.25,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9d27460a019bc2ec3fc2490495c51bc35673db43",
+    "normal": "e174124b00242c5430ff08dc7351c4548c788559",
+    "roughness": "c4774d5e06ee3b0242ddec3b9c5b3efc52fcb551"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.301689413021312,
+    "sourceMean": 0.3017
+   }
+  },
+  "courtPaint6": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtPaint6.albedo.webp",
+    "normalMap": "courtPaint6.normal.webp",
+    "roughnessMap": "courtPaint6.rough.webp"
+   },
+   "lib": "patterns/court/painting-6",
+   "metal": 0,
+   "normalScale": 0.25,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "69bc872dc49679ce5b787d9861575b59ec039242",
+    "normal": "6be48dfaa8ad1ac613d169f497e682ef4c7bc6ea",
+    "roughness": "2d36c761c27457e6f7d6d3b98ae3a5456a6997ed"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.32600900262870036,
+    "sourceMean": 0.326
+   }
+  },
+  "courtPaint7": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtPaint7.albedo.webp",
+    "normalMap": "courtPaint7.normal.webp",
+    "roughnessMap": "courtPaint7.rough.webp"
+   },
+   "lib": "patterns/court/painting-7",
+   "metal": 0,
+   "normalScale": 0.25,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d88d3f7cc18518c6992a0b2c8cff906a6dddd3fa",
+    "normal": "30c62df11d364509db86ff35f2de20575fd75319",
+    "roughness": "bdeec8b20399e35953700935e3af8e0ffa078160"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.46983998608757466,
+    "sourceMean": 0.4698
+   }
+  },
+  "courtPaint8": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtPaint8.albedo.webp",
+    "normalMap": "courtPaint8.normal.webp",
+    "roughnessMap": "courtPaint8.rough.webp"
+   },
+   "lib": "patterns/court/painting-8",
+   "metal": 0,
+   "normalScale": 0.25,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "088fe0dd4f26a3eeb14bf7bb6a76853ef1fee4c2",
+    "normal": "0a53874760b75a00e272da128ca23426eefd4eef",
+    "roughness": "ad94275eac0446666575d4a7fa48ae77a9a63886"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.15844637805415135,
+    "sourceMean": 0.1584
+   }
+  },
   "fauna_fur": {
    "breakup": null,
    "card": false,

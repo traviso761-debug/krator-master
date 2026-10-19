@@ -61,4 +61,8 @@
 - [x] Walking (F) follows the floors: core/walk is read in place, the floors, stairs and terraces are registered (69u).
       Walls are not blocks yet: a walker passes through them.
 - [x] The governor's palace's hall block is hollow and furnished (a cut-away unit); its pavilions are solid drums.
+- [x] The book spines and paintings (2026-10-19): the owner's delivery is in the library (`patterns/court/`), bound in Iziz's
+      pack and laid on the Iziz court furniture and Talia's bookcase by Iziz's furnishing (95i, COURT_DECALS).
+- [ ] 95i is also edited on the branch claude/pylon-interiors-export (the interiors as core/export's interiors section, not
+      merged): whichever lands second keeps both; that export may want to carry the decals with the furniture pieces.
 

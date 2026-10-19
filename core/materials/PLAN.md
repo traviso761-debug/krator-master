@@ -553,6 +553,12 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-10-19 and processed** (`tools/textures/batches/court-art-2026-10.json`, pasted by the owner): the court's
+pictures, `patterns/court/books-a`, `books-b` (the book spines, a shelf row each, seamless across) and
+`patterns/court/painting-1` to `-8` (eight canvases cut from one sheet: the Talian subjects of the prompt), full colour.
+Bound in Iziz's pack (`courtBooksA/B`, `courtPaint1..8`) and laid on the Iziz court furniture by
+`settlements/iziz/src/95i-iziz-interiors.js` (COURT_DECALS).
+
 **Delivered 2026-10-05 and processed** (`tools/textures/batches/chatgpt-2026-10f-yuni.json`): `patterns/yuni/paintbw`,
 `paintcol` (cropped to 4 x 4 whole cells first), `relief`, and the three rows below. `patterns/yuni/mosaic` (full colour)
 is not needed: the game tints its mosaic per dome, so the neutral `mosaic.trencadis` serves. The rows, all reusable by

@@ -9,6 +9,29 @@
 // furniture, its building as parent), so the inspector names it. Each building is a cutaway unit (X; ] [ the storeys).
 // The furniture is drawn by the catalog's batch into one mesh per render family (a constant handful of draw calls).
 // ?interiors=0 leaves the walls solid (89z-rows.js reads it) and furnishes nothing.
+// ---------------------------------------------------------------- the court's pictures (the owner, 2026-10-19)
+// Book spines on the shelves of the court bookcases and a canvas in every painting frame: planes laid on the placed
+// catalog pieces (whose blocks and plain canvases they cover), in the court sets of Iziz's pack (courtBooksA/B,
+// courtPaint1..8: core/materials/patterns/court). A piece's frame is the catalog's: +z its front, y up from its foot.
+// A painting is picked from the eight by its position. Nothing is drawn when the pack has no court sets.
+const COURT_DECALS={
+ iziz_court_library_shelves:{rows:4,y0:.14,dy:.52,w:1.46,h:.4,z:.135},
+ talia_common_bookcase:{rows:4,y0:.12,dy:.5,w:1.28,h:.4,z:.155},
+ iziz_court_painting:{canvas:true,y:1.8,w:1.14,h:.88,z:0}};
+function courtDecals(S){if(!S.decals||!S.decals.length||typeof KMAT==='undefined'||!KMAT.bindMat)return;
+ const keys=['courtBooksA','courtBooksB'].concat([1,2,3,4,5,6,7,8].map(k=>'courtPaint'+k)),M={};
+ for(const k of keys)M[k]=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.8,metalness:0});
+ const bound=KMAT.bindMat('iziz',M,{})||{};if(!Object.keys(bound).length)return;
+ const lists={},put=(k,x,y,z,ry,w,h)=>{if(!bound[k])return;(lists[k]=lists[k]||[]).push([x,y,z,ry,w,h]);};
+ for(const p of S.decals){const D=COURT_DECALS[p.key],ry=p.ry||0,c=Math.cos(ry),s=Math.sin(ry),y=p.y||0;
+  const at=(lz)=>[p.x+lz*s,p.z+lz*c];
+  if(D.canvas){const h=Math.abs(Math.round(p.x*7.3)*31+Math.round(p.z*5.1)*17)%8,q=at(D.z);put('courtPaint'+(h+1),q[0],y+D.y,q[1],ry,D.w,D.h);}
+  else for(let k=0;k<D.rows;k++){const q=at(D.z);put(k%2?'courtBooksB':'courtBooksA',q[0],y+D.y0+k*D.dy+D.h/2,q[1],ry,D.w,D.h);}}
+ const geo=new THREE.PlaneGeometry(1,1),m4=new THREE.Matrix4(),qq=new THREE.Quaternion(),up=new THREE.Vector3(0,1,0),pos=new THREE.Vector3(),sc=new THREE.Vector3();
+ for(const k in lists){const L=lists[k],im=new THREE.InstancedMesh(geo,M[k],L.length);
+  L.forEach((r,i)=>{pos.set(r[0],r[1],r[2]);qq.setFromAxisAngle(up,r[3]);sc.set(r[4],r[5],1);m4.compose(pos,qq,sc);im.setMatrixAt(i,m4);});
+  im.instanceMatrix.needsUpdate=true;im.userData.inspectLabel='court pictures';im.userData.interiors=true;S.group.add(im);}
+ S.courtDecals=Object.keys(lists).reduce((a,k)=>a+lists[k].length,0);}
 const IZIX=(function(){
  const S={on:false,total:0,done:0,rooms:0,pieces:0,retries:0,residenceFails:[],dropped:[],units:[],ms:0,group:null,byKey:{},missing:{}};
  const report=()=>{window._interiors={on:S.on,total:S.total,done:S.done,rooms:S.rooms,pieces:S.pieces,retries:S.retries,
@@ -16,7 +39,7 @@ const IZIX=(function(){
   units:S.units.length,ms:Math.round(S.ms),walls:VHOLLOW.walls,bodies:VHOLLOW.bodies,structure:VHOLLOW.structure,
   meshes:S.group?S.group.children.length:0,keys:Object.keys(S.byKey).length};};
  if(!VERN.interiors||typeof KratorFurniture==='undefined'||typeof KratorInteriors==='undefined'||!VHOLLOW.jobs.length){report();return S;}
- S.on=true;const IX=KratorInteriors,t0=performance.now();
+ S.on=true;S.decals=[];const IX=KratorInteriors,t0=performance.now();
  const batch=KratorFurniture.batch({indexed:true}),adapter=IX.runtimeAdapter(KratorFurniture,batch);
  const build0=adapter.build;let curParent=null;
  adapter.build=function(p,room){const E=KratorFurniture.FURN_BY_KEY[p.key]||{},t={setting:'room'};
@@ -44,7 +67,7 @@ const IZIX=(function(){
   let plans,res,seed=0;
   for(let att=0;att<3;att++){plans={};inst.rooms.forEach(R=>{plans[R.id]=IX.furnishRoom(R,adapter,{seed});});
    res=IX.sets.auditResidence(inst,plans);if(!res.fails.length)break;seed+=101;S.retries++;}
-  let n=0;inst.rooms.forEach(R=>{const P=plans[R.id];IX.buildRoom(P,adapter,R);n+=P.placements.length;
+  let n=0;inst.rooms.forEach(R=>{const P=plans[R.id];IX.buildRoom(P,adapter,R);n+=P.placements.length;P.placements.forEach(p=>{if(COURT_DECALS[p.key])S.decals.push(p);});
    P.placements.forEach(p=>{const k=p.key;S.byKey[k]=(S.byKey[k]||0)+1;});
    (P.missing||[]).forEach(m=>{S.missing[m.need||m]=(S.missing[m.need||m]||0)+1;});});
   if(res.fails.length)S.residenceFails=S.residenceFails.concat(res.fails);
@@ -55,4 +78,5 @@ const IZIX=(function(){
  curParent=null;
  S.group=new THREE.Group();S.group.name='interiors-furniture';S.group.userData.inspectLabel='Furniture (interiors)';scene.add(S.group);
  const g=batch.flush(S.group);g.traverse(m=>{if(!m.isMesh)return;KFURN.linearColours(m.geometry);m.userData.inspectLabel='furniture (catalog)';m.userData.interiors=true;});
+ courtDecals(S);
  S.ms=performance.now()-t0;report();return S;})();

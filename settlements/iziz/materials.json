@@ -1,6 +1,6 @@
 {
  "build": "iziz",
- "note": "Iziz's adapter for the biome fauna sheets (the city target's hyperjungle). Each family is a near-colourless sheet that the per-instance tint colours, or the wing's alpha cut-out. All are optional until the sheets are generated (core/materials/PROMPTS-ready.md). build.py's fauna_pack() turns the packed maps into HYPERJUNGLE.FAUNATEX. Since 2026-10-06 also the vernacular: the MAT keys of 69b-vern-mat.js (wood, woodV, stone, plaster, thatch, shingle, cloth ) bound in place by src/69e-iziz-matlib.js (KMAT.bindMat); grey detail maps (keep 0) the instance colour tints, means estimated from the procedural painters (judge in a render). dirt stays procedural (its grass patches are the point; ground.redsoil read flat). cloth's contrast is raised so the awning stripes stay bold under the tint. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The Voth embassy (75-port-embassy.js, 2026-10-06): the pantile (vpTile, roof.tile), the mud plaster (vpBanco, earth.banco), both warm-tinted, and the blue-and-white mosaic (vpMosaic, patterns/dalab/mosaic, full colour). vpBanner stays procedural: banner-hung is plain cloth and the banner's device would go. The city's own materials (2026-10-13, the second material pilot; ROADMAP.md stage 2e): families named 'city*', bound by src/88y-iziz-matlib.js through IZIZ_MATALIAS (Verge leaves them out): cityWall (stone.cut.b, weathered ashlar) on the painting's walls, towers, gates and palace (79-iziz-original.js izWall, izWallDark, izCap, izSand: their 4 m world-UV tile, so the scale is 1/K); cityRock (rock.rock_face) on izRock (8 m); cityStrata (rock.sandstone, its strata along the contours) on the hills' escarpments (90a's izEsc, 6.3 m a UV unit); cityRust (metal.rust.fine, a fine isotropic rust tinted to the procedural rust's mean colour) on MAT.rust, 77z's scrap and the rustified panels, in place of the procedural rust the plate rusts could not replace. Means are measured from the procedural maps they replace (TEX.stone, TEX.concrete, TEX.rust), but the strata's, set by eye (0.62: at the concrete's 0.703 and contrast 1.3 the escarpment read near white). The plank and the Ancient Iziz style's tsand skins take the existing wood, concrete and white families. (2026-10-14, the owner's two sets for the pilot's gaps, KNOWN_ISSUES.md) cityBronze (metal.bronze.cast: cast bronze, isotropic, a warm patina with verdigris in its hollows) on the heroic statues (MAT.bronze, bronzeDark: 79-iziz-original.js) at a third of its own colour over theirs; cityBrass, the same set nearly grey (keep 0.15), on the embassy's gilt and brass (vpGilt, vpBrass); cityConcRust (concrete.rust.streaked: board-formed concrete, tie holes, rust run down from the bolts) on MAT.concRust, the rust-streaked skyscraper skin, two tiles (3.9 m) to the concrete's 7.8 m UV unit, half its own colour so the streaks stay rust. All three are city families (Verge leaves them out), bound through IZIZ_MATALIAS.",
+ "note": "Iziz's adapter for the biome fauna sheets (the city target's hyperjungle). Each family is a near-colourless sheet that the per-instance tint colours, or the wing's alpha cut-out. All are optional until the sheets are generated (core/materials/PROMPTS-ready.md). build.py's fauna_pack() turns the packed maps into HYPERJUNGLE.FAUNATEX. Since 2026-10-06 also the vernacular: the MAT keys of 69b-vern-mat.js (wood, woodV, stone, plaster, thatch, shingle, cloth ) bound in place by src/69e-iziz-matlib.js (KMAT.bindMat); grey detail maps (keep 0) the instance colour tints, means estimated from the procedural painters (judge in a render). dirt stays procedural (its grass patches are the point; ground.redsoil read flat). cloth's contrast is raised so the awning stripes stay bold under the tint. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The Voth embassy (75-port-embassy.js, 2026-10-06): the pantile (vpTile, roof.tile), the mud plaster (vpBanco, earth.banco), both warm-tinted, and the blue-and-white mosaic (vpMosaic, patterns/dalab/mosaic, full colour). vpBanner stays procedural: banner-hung is plain cloth and the banner's device would go. The city's own materials (2026-10-13, the second material pilot; ROADMAP.md stage 2e): families named 'city*', bound by src/88y-iziz-matlib.js through IZIZ_MATALIAS (Verge leaves them out): cityWall (stone.cut.b, weathered ashlar) on the painting's walls, towers, gates and palace (79-iziz-original.js izWall, izWallDark, izCap, izSand: their 4 m world-UV tile, so the scale is 1/K); cityRock (rock.rock_face) on izRock (8 m); cityStrata (rock.sandstone, its strata along the contours) on the hills' escarpments (90a's izEsc, 6.3 m a UV unit); cityRust (metal.rust.fine, a fine isotropic rust tinted to the procedural rust's mean colour) on MAT.rust, 77z's scrap and the rustified panels, in place of the procedural rust the plate rusts could not replace. Means are measured from the procedural maps they replace (TEX.stone, TEX.concrete, TEX.rust), but the strata's, set by eye (0.62: at the concrete's 0.703 and contrast 1.3 the escarpment read near white). The plank and the Ancient Iziz style's tsand skins take the existing wood, concrete and white families. (2026-10-14, the owner's two sets for the pilot's gaps, KNOWN_ISSUES.md) cityBronze (metal.bronze.cast: cast bronze, isotropic, a warm patina with verdigris in its hollows) on the heroic statues (MAT.bronze, bronzeDark: 79-iziz-original.js) at a third of its own colour over theirs; cityBrass, the same set nearly grey (keep 0.15), on the embassy's gilt and brass (vpGilt, vpBrass); cityConcRust (concrete.rust.streaked: board-formed concrete, tie holes, rust run down from the bolts) on MAT.concRust, the rust-streaked skyscraper skin, two tiles (3.9 m) to the concrete's 7.8 m UV unit, half its own colour so the streaks stay rust. All three are city families (Verge leaves them out), bound through IZIZ_MATALIAS. The court's pictures (2026-10-19): courtBooksA/B (the book spines, a shelf row each) and courtPaint1..8 (eight canvases), full colour, laid on the court furniture by 95i-iziz-interiors.js (COURT_DECALS).",
  "size": 512,
  "families": {
   "fauna_wing": {
@@ -569,6 +569,136 @@
     "macro": 0.1,
     "cell": 6
    }
+  },
+  "courtBooksA": {
+   "lib": "patterns/court/books-a",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.4
+  },
+  "courtBooksB": {
+   "lib": "patterns/court/books-b",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.4
+  },
+  "courtPaint1": {
+   "lib": "patterns/court/painting-1",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.25
+  },
+  "courtPaint2": {
+   "lib": "patterns/court/painting-2",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.25
+  },
+  "courtPaint3": {
+   "lib": "patterns/court/painting-3",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.25
+  },
+  "courtPaint4": {
+   "lib": "patterns/court/painting-4",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.25
+  },
+  "courtPaint5": {
+   "lib": "patterns/court/painting-5",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.25
+  },
+  "courtPaint6": {
+   "lib": "patterns/court/painting-6",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.25
+  },
+  "courtPaint7": {
+   "lib": "patterns/court/painting-7",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.25
+  },
+  "courtPaint8": {
+   "lib": "patterns/court/painting-8",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.25
   }
  }
 }

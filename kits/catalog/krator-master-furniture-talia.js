@@ -156,7 +156,7 @@ FURN({
     for (let k = 0; k < 5; k++) {
       const y = 0.08 + k * 0.5; F.box(0, y, 0, 1.3, 0.04, 0.38, 0, wal, 'wood');
       if (k < 4) for (let j = 0; j < 9; j++) { const bc = [F.col('kilimRed'), F.col('orange'), F.col('paper'), F.col('kilimIndigo'), F.col('walnutDark')][(j + k) % 5];
-        F.box(-0.56 + j * 0.14, y + 0.04, 0.02, 0.1, 0.32 + ((j * 7 + k) % 3) * 0.04, 0.26, 0, bc, 'cloth'); }
+        F.box(-0.56 + j * 0.14, y + 0.04, 0.02, 0.1, 0.28 + ((j * 7 + k) % 3) * 0.03, 0.26, 0, bc, 'cloth'); }   /* under the spines a page lays on (95i) */
     }
     F.box(0, 2.16, 0.02, 1.46, 0.08, 0.44, 0, F.col('gilt'), 'wood');                  /* the gilt cornice */
   }

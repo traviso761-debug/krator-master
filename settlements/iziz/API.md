@@ -172,6 +172,14 @@ build.py `INTERIOR_TARGETS`: the vernacular sheet only; the city has none, and i
 `python3 ixshot.py dist/iziz-vernacular.html --keys <k,..> | --all [--back] --out shots/ix` shoots each building at eye
 level and cut away at each storey, and prints its rooms, pieces and residence counts. `?interiors=0` turns it all off.
 
+**The court's pictures** (2026-10-19, `95i-iziz-interiors.js`, `COURT_DECALS`): after the furniture is built, book spines are
+laid on the shelves of `iziz_court_library_shelves` (and Talia's `talia_common_bookcase`) and a painting in every
+`iziz_court_painting` frame, as planes on the placed pieces (one InstancedMesh per texture in the furniture group). The
+textures are the court sets of Iziz's pack (`courtBooksA/B`, `courtPaint1..8`: `core/materials/patterns/court/`); a
+painting is picked from the eight by the piece's position. A key added to `COURT_DECALS` (rows of spines or a canvas, in
+the piece's own frame: +z its front) dresses another culture's bookcase or frame the same way. Nothing is drawn when the
+page's pack has no court sets.
+
 ### The trades — `74z-vern-trades.js`
 
 `VERN_TRADES`: every trade in the Voth city's census, and the Voth catalog's shop trades, with the Voth building and the

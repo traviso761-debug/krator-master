@@ -255,3 +255,36 @@ FURN({
     for (let i = 0; i < 4; i++) F.box(-0.45 + i * 0.3, 1.7, -0.38, 0.03, 0.24, 0.03, 0, I, 'metal');
   }
 });
+
+/* ---------------- the court's books and pictures (the owner, 2026-10-19). Drawn here as plain blocks and a plain canvas;
+   a page that binds the court sets (core/materials/patterns/court: books-a, books-b, painting-1..8) lays the spines on
+   the shelves and a painting in the frame (settlements/iziz/src/95i-iziz-interiors.js, COURT_DECALS). */
+FURN({
+  key: 'iziz_court_library_shelves', name: 'Mahogany library shelves', culture: 'iziz', tier: 'court', type: 'shelf', setting: 'indoor',
+  rooms: ['library', 'study', 'hall', 'antechamber', 'bedroom'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'gold', 'cloth'],
+  w: 1.6, d: 0.42, h: 2.4, variants: 1,
+  build: function (F) {
+    const m = F.col('mahoganyRed'), d = F.col('mahoganyDark'), g = F.col('gilt');
+    F.box(0, 0, -0.18, 1.6, 2.3, 0.06, 0, d, 'wood');                                    /* the back */
+    for (const s of [-1, 1]) F.box(s * 0.77, 0, 0, 0.06, 2.3, 0.42, 0, m, 'wood');      /* the sides */
+    F.box(0, 0, 0, 1.6, 0.1, 0.42, 0, d, 'wood');                                        /* the plinth */
+    for (let k = 0; k < 5; k++) F.box(0, 0.1 + k * 0.52, 0, 1.48, 0.04, 0.4, 0, m, 'wood');   /* the shelves */
+    for (let k = 0; k < 4; k++) F.box(0, 0.14 + k * 0.52, -0.02, 1.46, 0.4, 0.3, 0, F.col('mahoganyLight'), 'cloth');   /* the books (spines laid on by the page) */
+    F.box(0, 2.24, 0, 1.6, 0.1, 0.42, 0, g, 'gold');                                     /* the gilt cornice */
+  }
+});
+
+FURN({
+  key: 'iziz_court_painting', name: 'Painting in a gilt frame', culture: 'iziz', tier: 'court', type: 'art', setting: 'indoor',
+  rooms: ['hall', 'living', 'study', 'antechamber', 'library', 'bedroom', 'shrine'], anchor: 'wall', clearance: { front: 0.4 },
+  materials: ['gold', 'cloth'],
+  w: 1.3, d: 0.1, h: 2.4, variants: 1,
+  build: function (F) {
+    const g = F.col('gilt');
+    F.box(0, 1.36, -0.03, 1.14, 0.88, 0.03, 0, F.col('clothCream'), 'cloth');             /* the canvas (painted by the page) */
+    F.box(0, 1.28, -0.02, 1.3, 0.08, 0.06, 0, g, 'gold'); F.box(0, 2.24, -0.02, 1.3, 0.08, 0.06, 0, g, 'gold');
+    for (const s of [-1, 1]) F.box(s * 0.61, 1.28, -0.02, 0.08, 1.04, 0.06, 0, g, 'gold');   /* the frame */
+  }
+});
+

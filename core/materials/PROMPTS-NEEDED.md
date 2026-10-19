@@ -215,30 +215,29 @@ A flat, front-on decorative panel, square, 2048x2048, on a solid flat magenta ba
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: An old rendered wall painted bright orange (#e07a2a), the paint faded and chalky and flaking away in irregular patches to show smooth grey cement render (#8e8b86) beneath, about a third of the surface bare; the paint edges lifted and cracked, a few hairline cracks in the render, faint vertical streaks of grime below the patches. Full colour (do not mute).
 ```
 
-### The Talia kit (`kits/talia`)
+### The court's paintings: Iziz (`patterns/court/`)
 
-The kit's marble, gold, tile, mosaic, meander, jali and rose window are delivered and bound (`kits/talia/materials.json`).
-Two more (the owner, 2026-10-19): the paintings that hang in Talia's gallery and the book spines of its libraries. Each
-lands in `patterns/talia/`; add its family to `kits/catalog/materials.json` (the catalog's `talia` pieces draw them: the
-bookcase, the paintings as `art` pieces for the gallery, `tal_uni_gallery`, and the library) and repack.
+The owner, 2026-10-19: more paintings for the Iziz court furniture (`iziz_court_painting`, laid on by
+`settlements/iziz/src/95i-iziz-interiors.js`, COURT_DECALS). The first eight (`patterns/court/painting-1` to `-8`, Talian
+subjects) and the book spines (`patterns/court/books-a`, `-b`) are delivered (`core/materials/PLAN.md`); these two sheets add sixteen Izani ones. Each sheet is cut into its eight 512x512 canvases on
+delivery (`patterns/court/painting-9` to `-24`, the batch `tools/textures/batches/court-art-2026-10.json` shows how), their
+families added to `settlements/iziz/materials.json` (`courtPaint9`...) and to COURT_DECALS's pick.
 
-#### `patterns/talia/paintings`
-- Kind: one sheet of eight paintings, full colour, 2048x1024, not tiled: four across and two down, each painting a
-  512x512 cell edge to edge (the frames are geometry, so no frame in the image). The loader cuts the sheet into eight
-  canvases hung in the gallery's rooms and the state rooms.
-- Reuse: any gallery, palace or rich house that hangs paintings (Iziz's governor's palace, Xanadu's citadel).
-
-```
-A flat, front-on decorative panel, 2048x1024, divided into a grid of eight square paintings, four across and two down, each square exactly 512x512 and filling its cell edge to edge with no gap, no frame, no border and no gutter between them. Orthographic, flat even shadowless lighting, no perspective, no glare, no text, no signature, no watermark. Each square is an oil painting on canvas in the manner of late Byzantine icons warmed by Venetian Renaissance colour, visible brushwork and a faint craquelure, a warm ochre-and-umber underpaint showing at the edges of forms. The eight paintings, left to right on the top row then the bottom row: (1) a white hill city of domes and arcades stepping up to a temple crowned with orange ribbed domes, under a deep blue sky; (2) a caravan of camels and a six-wheeled steam crawler passing under a gate of two white drum towers with lotus-petal roofs, at dawn, mountains behind; (3) an icon of a gilt radiant sun facing a great banded green planet, on a gold-leaf ground (#d9a040), the two as father and mother; (4) a seated scholar in an orange robe (#e07a2a) with a white collar, one hand on an open book, a brass celestial globe beside him, a dark green curtain behind; (5) a still life of brass bowls, pomegranates, figs, a cobalt glass jug (#2f5fb8) and two closed books on a white marble ledge; (6) the high desert passes at evening, ochre and violet ridges, a thin road and tiny travellers; (7) two women in white and orange robes reading in a cloister of white columns under an orange coffered ceiling; (8) a night view of an observatory tower with its dome open and stars over it, a lamp in one window. Full colour (do not mute).
-```
-
-#### `patterns/talia/book-spines`
-- Kind: pattern sheet, full colour, 2048x1024, repeating along its length (left edge into right): two shelf rows of book
-  spines, each row 512 px tall standing for about 0.3 m; the loader maps a row onto each shelf of a bookcase.
-- Reuse: any library or study shelf: Yuni's scholars, the Aggonmekki, Voth's palace archive, a rich house's study.
+#### `patterns/court/paintings-iziz-a`
+- Kind: one sheet of eight paintings, full colour, 2048x1024, not tiled: four across and two down, each a 512x512 cell (the
+  frames are geometry). The Empire's history and state.
+- Reuse: any Izani court, palace, governor's house or guild hall; Hook's Customs House.
 
 ```
-A flat, front-on decorative panel, 2048x1024, two horizontal rows of old book spines standing upright side by side, packed tight, each row exactly 512 pixels tall with the books' feet on the row's bottom edge and a thin dark gap above the shorter books. Orthographic, flat even shadowless lighting, no perspective, no shelf, no objects, no border, no watermark. The pattern must repeat horizontally: the left edge continues into the right edge. The spines: leather and cloth bindings of varied widths (thin pamphlets to fat folios) and heights, in burnt orange (#d2601e), oxblood (#7a2a22), indigo (#34406a), walnut brown (#6e3a22), dark green (#3f5a3a) and cream vellum (#e8dfc8), with raised bands across the spines, gilt tooling (#d9a040) in fillets and small fleurons, gilt title panels with abstract gilt marks only (no legible letters, no real words), some spines worn at the head and tail, a few vellum spines with faded ink panels. Full colour (do not mute).
+A flat, front-on decorative panel, 2048x1024, divided into a grid of eight square paintings, four across and two down, each square exactly 512x512 and filling its cell edge to edge with no gap, no frame, no border and no gutter between them. Orthographic, flat even shadowless lighting, no perspective, no glare, no text, no signature, no watermark. Each square is a painting in the manner of Roman imperial fresco crossed with Art Deco mural painting: bold simplified forms, strong outlines, warm Iziz orange (#e07a2a), verdigris copper green (#5a8a78), ochre, deep jungle greens and touches of gold leaf (#d9a040), a faint fresco texture and fine craquelure. The eight paintings, left to right on the top row then the bottom row: (1) the walled city of Iziz from the air, a moat and four gates, three flat-topped mesa hills inside the walls crowned with a palace citadel, a temple and an arena, orange stone and copper roofs, the hyperjungle all round and a ruined Ancient spaceport on a causeway; (2) the Emperor in an orange and gold robe holding a gilt orb, enthroned in a vast converted Ancient hangar hall hung with orange banners; (3) the retaking of Hook: tall two-legged Izani war-walker machines breaching a sea fortress wall, legionaries in orange cloaks and bronze helmets, smoke over the harbour; (4) an icon of the imperial gilt orb before a radiant sun on a gold-leaf ground; (5) the legend of the Izani coming out of the jungle to the vine-covered ruins of an Ancient city, carrying their banners and children; (6) the Mutiny of the Third Legion at the munitions works of Roketstad, soldiers turning on their officers among shell racks and smoke; (7) a games day at the arena under its mesa hill, crowds on orange stone tiers, the imperial box hung with orange cloth; (8) the Beast Hunters' trophy hall, a colossal horned skull on the wall over hunters with long spears and a hearth. Full colour (do not mute).
+```
+
+#### `patterns/court/paintings-iziz-b`
+- Kind: as `paintings-iziz-a`. Izani life: the guilds, portraits, the fleet, the city, a still life, the jungle.
+- Reuse: as `paintings-iziz-a`.
+
+```
+A flat, front-on decorative panel, 2048x1024, divided into a grid of eight square paintings, four across and two down, each square exactly 512x512 and filling its cell edge to edge with no gap, no frame, no border and no gutter between them. Orthographic, flat even shadowless lighting, no perspective, no glare, no text, no signature, no watermark. Each square is a painting in the manner of Roman imperial fresco crossed with Art Deco mural painting: bold simplified forms, strong outlines, warm Iziz orange (#e07a2a), verdigris copper green (#5a8a78), ochre, deep jungle greens and touches of gold leaf (#d9a040), a faint fresco texture and fine craquelure. The eight paintings, left to right on the top row then the bottom row: (1) a Forgemaster in a leather apron beside a half-built war-walker in a forge hall, sparks and molten light; (2) a portrait of an Izani noblewoman in orange silk with verdigris copper jewellery and a jade fan, a palm-leaf background; (3) a legion on parade before the palace gate, orange standards with a golden orb and sun, bronze helmets in ranks; (4) an Izani turtle ship plated with hexagonal Ancient metal plates and a wheel galley in a harbour at sunset; (5) Salvagers in the Reliquary, an Ancient laboratory, examining glowing relics by lamplight; (6) a market slung on platforms from a reclaimed Ancient skyscraper above the jungle canopy, orange awnings and rope bridges; (7) a still life of tropical fruit (mangoes, a split papaya, bananas), a verdigris copper ewer, an orange glazed bowl and a small hexagonal glass Ancient relic on a mahogany ledge; (8) the hyperjungle at dawn, colossal trees in mist, broken Ancient towers rising out of the canopy, a huge banded gas giant low in the sky. Full colour (do not mute).
 ```
 
 ## 3. Probably needed: check first
