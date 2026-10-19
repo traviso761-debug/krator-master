@@ -15,10 +15,31 @@ from a Hook task.
       model does not know). Until then the owner edits `site/hook-site.json` by hand and rebuilds: every quarter's
       polygon, mix, holder, mood, layer and ruin level, the markers, the avenues, the named hosts and the grid's
       numbers are plain JSON, and `verify.py --assert` checks the result (`hook-site-plan`, `hook-hosts-placed`).
-- [ ] **The ridge and the cliff are ramp stamps**, flat-topped: the Heights read as a plateau with a straight back
-      edge, and the cliff's foot as a dark band 1.2 km behind the quays. The terrain grid is also coarse there (the
-      kit refines it only 260 m behind the last land block: `71-port-terrain.js portAxis`), so the ridge's edges are
-      soft. A carve patch (`core/terrain`) or a kit option to refine the grid under a layout stamp would fix both.
+- [x] **The ridge and the cliff were ramp stamps** on the kit's flat coast (a plateau with a straight back edge, a dark
+      band 1.2 km behind the quays). Since 2026-10-19 the ground is the scale model's (README.md "The ground") and
+      both stamps are dropped: the model's slope stands higher than either.
+- [ ] **The model has no cliff behind Hook.** The lore's Crag Men escarpment 4 km behind the city is not in the
+      4.21 heights: the land climbs a steady 10 % from the shore to the plateau at +740 m, 6 km back, and the
+      extractor's `scarpw` is 0 over the cut (it marks the eastern abyss's rim only). The plan's cliff face is
+      therefore missing; it is the owner's model edit (`tools/scale-model/edit_heights.py`: a steep cell behind the
+      pixel, which the extractor would then mark if the escarpment rule were widened past the abyss) or, later, a
+      Hook carve patch on `core/terrain`. The cliff's foot line stands 115 m over the quays all the same.
+- [ ] **Hook's pixel is 6.7 km from its waterfront.** The model has Hook's cell 592 m above the Ring Sea (−1,500 m);
+      the 1:1 shoreline the open world's rule gives is 6.7 km north of px 537,596, and that is where the kit's origin
+      stands. On the model page the cells north and west of the pixel are FLAGGED sea while their ground (−1,128 and
+      −1,224 m) lies above the sea's level, so the owner's map shows the pixel on the coast and the 1:1 rule does
+      not (53 of the cut's 328 water cells have ground over their level). The owner's call: lower those cells'
+      ground under −1,500 (and Hook's cell toward a coastal shelf) in the model, or move the pixel to the shore, or
+      accept the offset. Until then the open world's streamed Hook and this page agree with each other, not with the
+      marker.
+- [ ] **A 10 % slope under the whole site.** Every land block's flat stamp and every host pad cuts a bank into the
+      slope (a 110 m block: an 11 m bank at its back); the kit's soft rings blend them. The waterfront reads well
+      (the P0 run's verify passes); the town behind will want its streets terraced by `core/city` (P2) rather than
+      pads cut one by one.
+- [ ] **The Point is at the world's east end.** The kit's frame turned to put the sea north is a half turn (a
+      rotation, never a mirror), so the kit's −x end (the Point, the Strand) lies at the world's east and the Stacks at
+      the west, the reverse of PLAN.md section 1's "from west to east". Either the plan's order is read as the kit's
+      own, or the run is reversed in `targets/hook/89z-rows.js` (the owner's call).
 - [ ] **A host's pad flattens the slope it stands on.** A host on the Heights' front slope (row 2 of the grid) is
       skipped for that reason; the named hosts on the ridge's foot stand on a flat pad cut into the slope. The Ancient
       stair and the funicular (P3) will dress the step.
@@ -55,6 +76,12 @@ from a Hook task.
       P0 shots; read the joints again when the layers come.
 
 ## Shared helpers (the kit, not fixed from here)
+
+- [ ] **`PORT.natH` is a kit change awaiting the owner's approval** (`settlements/port/src/71-port-terrain.js`, two
+      hunks: `portNatH` reads `PORT.natH` when a build sets it, else the kit's own coast as `portNatH0`; the nature
+      scatter skips a tree under sea level). Applied on this branch and the Port's pages rebuilt with it; a build that
+      sets nothing is unchanged. `portShore` (the kit's wandering waterline) is still read by the scatter's land test
+      and by nothing else that matters to Hook.
 
 - [x] **Black decks, sheds and roofs: the kit's texture pack was Git LFS pointers.** In a fresh worktree
       `settlements/port/tex/*.webp` are 130-byte LFS stubs until `git lfs pull --include="settlements/port/tex/*"`;

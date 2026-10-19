@@ -1,8 +1,9 @@
 // ================================================================= OPEN WORLD — fields: the land, the water, the climate, the biomes
-// [G data] Plain maths of (x,z) over the region's rasters (WORLD_DATA, written by tools/scale-model/extract_region.py):
-// no THREE, no DOM, no Math.random. Axes: metres, x east, z south, the origin at the region's centre pixel of the
+// [G data] Plain maths of (x,z) over the region's rasters (WORLD_DATA, written by tools/scale-model/extract_region.py), on
+// core/terrain's KLAND (40-core-land.js: the land itself, the ground rule every build on the scale model shares): no THREE,
+// no DOM, no Math.random. Axes: metres, x east, z south, the origin at the region's centre pixel of the
 // scale model, so x = (px - cx)*2000 and z = (py - cy)*2000. The noise is core/terrain's KRELIEF.noise (integer
-// hashes, no Math.sin), so a Godot port grows the same land from the same rasters.
+// hashes, no Math.sin), so a Godot port grows the same land from the same rasters. WORLD.LAND is the KLAND instance.
 //
 //   WORLD.init(R)              R: the decoded rasters (98-world-start.js): elev, wlev, whas, wflag on the height grid;
 //                              clim, rain, temp, biome, mask on the map grid
@@ -25,37 +26,20 @@
 //   WORLD.ground(x,z,A,out)    the ground's colour (linear RGB) and its rock weight from a sample A (WORLD.at)
 //   WORLD.px(x) / WORLD.py(z)  scale-model pixels; WORLD.fromPx(px,py) -> [x,z]
 //
-// The land: the scale model's heights (4 km cells) by Catmull-Rom, then detail in a style per biome (hills, ridges,
-// terraces where the relief allows mesas, badland gullies, dune seas where it is dry and flat, roughness), then the
-// drainage network carved in: each channel's bed follows the scale model's own flow line, never above the local ground
-// less its depth, so where the detail raises a hill across a channel the channel cuts a gorge through it. The
-// channels give the kits their canyons, rims, banks and wet ground.
+// The land is KLAND's (core/terrain/40-core-land.js: Catmull-Rom on the 4 km cells, detail in a style per biome, the
+// drainage network carved in, the escarpments made into cliffs); this fragment adds what is this world's: the kits' overlays,
+// the ground palettes, the towns' own ground, the highways, the water bodies and the fields the kits read.
 var WORLD=(function(){'use strict';
 const W={ready:false};
 const clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
 const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 const KN=KRELIEF.noise;
-const N1=KN(101),N2=KN(202),N3=KN(303),N4=KN(404),N5=KN(505),NW=KN(606),N6=KN(707),N7=KN(808),NM=KN(909),NC=KN(1111),NS=KN(1212);
+const N5=KN(505),N6=KN(707),N7=KN(808);   // the fields' and the ground colour's own noise (the land's is KLAND's)
 W.landHook=null;   // (x, z, h, minWave) -> h: a world's own shaping of the land after the detail, before the towns and roads (H below)
 W.FIELDS=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','mist'];
 
-// ---------------------------------------------------------------- the styles: how each biome's land is shaped
-// hills/ridge scale the detail on the relief, terr the terraces (step m), dune the dune seas, gully the badland rills,
-// rough the small relief, rock the bare-rock share, wallK how far a channel's wall leans (m out per m down)
-const STYLES={
- desert:  {hills:1.0, ridge:.7, terr:.75,step:55,dune:1,  gully:.7, rough:1.0,rock:.25,wallK:.45},
- badland: {hills:1.1, ridge:1.1,terr:.55,step:30,dune:0,  gully:1.6,rough:1.2,rock:.55,wallK:.6},
- abyss:   {hills:.6,  ridge:.45,terr:.25,step:40,dune:.15,gully:.4, rough:.7, rock:.15,wallK:1.2},
- jungle:  {hills:.85, ridge:.4, terr:0,  step:40,dune:0,  gully:.5, rough:.8, rock:.05,wallK:1.8},
- highland:{hills:1.2, ridge:1.0,terr:.3, step:45,dune:0,  gully:.9, rough:1.1,rock:.35,wallK:.8},
- korona:  {hills:1.1, ridge:.9, terr:.65,step:80,dune:0,  gully:.5, rough:1.0,rock:.45,wallK:.5},
- volcanic:{hills:.9,  ridge:.8, terr:.1, step:40,dune:0,  gully:.8, rough:1.1,rock:.6, wallK:.8},
- dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0},
- sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2}};
-const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK'];
-// the overlay's name (lower case) -> its style; an overlay not listed takes 'desert'
-const BIOME_STYLE={'sedesert':'desert','e badlands':'badland','e abysss':'abyss','hyperjungle':'jungle','e highlands':'highland',
- 'n highlands':'highland','korona / ne':'korona','throne/volcano':'volcanic','crater drylands':'dryland','ring sea':'sea'};
+// ---------------------------------------------------------------- the styles: KLAND's (core/terrain/40-core-land.js STYLES, BIOME_STYLE)
+const SKEYS=KLAND.SKEYS;
 // the ground palettes (sRGB), from the kits' own ground painters where a kit exists (sedesert, eastabyss: 45-host-stage)
 const PAL={
  desert:  {a:0xa85a42,b:0x884834,pale:0xc99a72,scrub:0x9e6a4c,sand:0xdca070,sand2:0xeab888,gravel:0xc7b08e,silt:0x9a8a68,damp:0x5a5040,mtn:0x7a6a5e,rock:0x8f4f3a},
@@ -70,55 +54,31 @@ const PAL={
 const SNOW=0xeef1f4,ICE=0xd8e4ee,SALT=0xf1ede6;
 const lin=h=>{const r=(h>>16&255)/255,g=(h>>8&255)/255,b=(h&255)/255,f=c=>c<.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);return[f(r),f(g),f(b)];};
 
-// ---------------------------------------------------------------- the rasters
-let M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK,SL,SU,SW;
-let SID,KIT,STY,PALL,NB,CLCODE,CLGROUP;
+// ---------------------------------------------------------------- the rasters: KLAND holds them; this world reads them through it
+let LAND=null,M,nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK;
+let KIT,PALL,NB,CLCODE,CLGROUP;
 // the kits (47-world-kits.js) are read at init: which overlay each grows on
 let KITNAMES=[];W.KITS=KITNAMES;
-W.init=function(R){M=WORLD_DATA.meta;const Hd=M.heights,F=M.frame;
- nx=Hd.grid[0];ny=Hd.grid[1];i0=Hd.origin_cell[0];j0=Hd.origin_cell[1];su=Hd.su;sv=Hd.sv;
- cx=F.origin_px[0];cy=F.origin_px[1];X0=F.box_px[0];Y0=F.box_px[1];MW=F.size_px[0];MH=F.size_px[1];
- EL=R.elev;WLV=R.wlev;WHAS=R.whas;CL=R.clim;RN=R.rain;TP=R.temp;BI=R.biome;MK=R.mask;SL=R.scarpL;SU=R.scarpU;SW=R.scarpW;
- // the relief: the range of heights over each cell's 3x3 neighbourhood (m): the detail scales with it
- REL=new Float32Array(nx*ny);
- for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){let lo=1e9,hi=-1e9;
-  for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++){const v=EL[clamp(j+b,0,ny-1)*nx+clamp(i+a,0,nx-1)];if(v<lo)lo=v;if(v>hi)hi=v;}REL[j*nx+i]=hi-lo;}
- // the biome table: style and kit per overlay
+W.init=function(R){M=WORLD_DATA.meta;
+ LAND=KLAND.create(M,R);W.LAND=LAND;
+ ({nx,ny,i0,j0,su,sv,cx,cy,X0,Y0,MW,MH,EL,WLV,WHAS,REL,CL,RN,TP,BI,MK}=LAND);
+ LAND.hostH=(x,z)=>H(x,z,0,null,true);   // a river's water stands on the land with the towns in, without a road's fill
+ // the biome table: kit and palette per overlay (the style is KLAND's)
  KITNAMES=WORLD_KITS.map(k=>k.name);W.KITS=KITNAMES;
- NB=M.biomes.length;SID=[];KIT=new Int8Array(NB).fill(-1);STY={};PALL=[];
- SKEYS.forEach(k=>STY[k]=new Float32Array(NB));
- M.biomes.forEach((b,i)=>{const st=BIOME_STYLE[b.name.toLowerCase()]||'desert';SID[i]=st;
-  SKEYS.forEach(k=>STY[k][i]=STYLES[st][k]);KIT[i]=WORLD_KITS.findIndex(k=>k.overlay===b.name.toLowerCase());
-  const P=PAL[st],o={};for(const k in P)o[k]=lin(P[k]);PALL[i]=o;});
+ NB=M.biomes.length;KIT=new Int8Array(NB).fill(-1);PALL=[];
+ M.biomes.forEach((b,i)=>{KIT[i]=WORLD_KITS.findIndex(k=>k.overlay===b.name.toLowerCase());
+  const P=PAL[LAND.SID[i]],o={};for(const k in P)o[k]=lin(P[k]);PALL[i]=o;});
  CLCODE=M.classes.map(c=>c.code);CLGROUP=M.classes.map(c=>c.group);
- buildChannels();buildRoads();buildTowns();W.ready=true;};
+ W.channelCount=LAND.channelCount;W.segmentCount=LAND.segmentCount;
+ buildRoads();buildTowns();W.ready=true;};
 W.px=x=>cx+x/2000;W.py=z=>cy+z/2000;W.fromPx=(px,py)=>[(px-cx)*2000,(py-cy)*2000];
-W.box=()=>{const F=M.frame.box_px;return[(F[0]-cx)*2000,(F[1]-cy)*2000,(F[2]-cx)*2000,(F[3]-cy)*2000];};
+W.box=()=>LAND.box();
 
-// ---------------------------------------------------------------- sampling
-function cr(p0,p1,p2,p3,t){return p1+.5*t*(p2-p0+t*(2*p0-5*p1+4*p2-p3+t*(3*(p1-p2)+p3-p0)));}
-function baseH(x,z){let u=(cx+x/2000)*su-i0,v=(cy+z/2000)*sv-j0;u=clamp(u,1,nx-2.0001);v=clamp(v,1,ny-2.0001);
- const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,A=EL;
- const r=k=>{const o=(j+k)*nx+i;return cr(A[o-1],A[o],A[o+1],A[o+2],fu);};
- return cr(r(-1),r(0),r(1),r(2),fv);}
-function gridBil(A,x,z){let u=(cx+x/2000)*su-i0,v=(cy+z/2000)*sv-j0;u=clamp(u,0,nx-1.0001);v=clamp(v,0,ny-1.0001);
- const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,o=j*nx+i;
- return (A[o]*(1-fu)+A[o+1]*fu)*(1-fv)+(A[o+nx]*(1-fu)+A[o+nx+1]*fu)*fv;}
-function mapBil(A,x,z){let u=cx+x/2000-X0,v=cy+z/2000-Y0;u=clamp(u,0,MW-1.0001);v=clamp(v,0,MH-1.0001);
- const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,o=j*MW+i;
- return (A[o]*(1-fu)+A[o+1]*fu)*(1-fv)+(A[o+MW]*(1-fu)+A[o+MW+1]*fu)*fv;}
-function mapNear(A,x,z){const u=clamp(Math.round(cx+x/2000-X0),0,MW-1),v=clamp(Math.round(cy+z/2000-Y0),0,MH-1);return A[v*MW+u];}
-// the overlay blend at a point: the four map pixels round the WARPED point, bilinear. Fills B {n, id[], w[]}
+// ---------------------------------------------------------------- sampling: KLAND's samplers and blend
+const gridBil=(A,x,z)=>LAND.gridBil(A,x,z),mapBil=(A,x,z)=>LAND.mapBil(A,x,z),mapNear=(A,x,z)=>LAND.mapNear(A,x,z);
 const BLEND={n:0,id:new Int32Array(4),w:new Float32Array(4)};
-function blendAt(x,z,B){const wx=x+(NW.fbm(x/7000,z/7000,2)-.5)*2600,wz=z+(NW.fbm(x/7000+40,z/7000-17,2)-.5)*2600;
- let u=cx+wx/2000-X0,v=cy+wz/2000-Y0;u=clamp(u,0,MW-1.0001);v=clamp(v,0,MH-1.0001);
- const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,o=j*MW+i;
- const ids=[BI[o],BI[o+1],BI[o+MW],BI[o+MW+1]],ws=[(1-fu)*(1-fv),fu*(1-fv),(1-fu)*fv,fu*fv];
- B.n=0;for(let k=0;k<4;k++){let m=0;for(;m<B.n;m++)if(B.id[m]===ids[k])break;if(m===B.n){B.id[m]=ids[k];B.w[m]=0;B.n++;}B.w[m]+=ws[k];}
- return B;}
-const SBL={};SKEYS.forEach(k=>SBL[k]=0);
-function styleAt(x,z){const B=blendAt(x,z,BLEND);SKEYS.forEach(k=>{let s=0;for(let m=0;m<B.n;m++)s+=B.w[m]*STY[k][B.id[m]];SBL[k]=s;});return SBL;}
-W.style=(x,z)=>Object.assign({},styleAt(x,z));
+const blendAt=(x,z,B)=>LAND.blendAt(x,z,B);
+W.style=(x,z)=>Object.assign({},LAND.styleAt(x,z));
 W.kitW=function(k,x,z){const B=blendAt(x,z,BLEND);let s=0;for(let m=0;m<B.n;m++)if(KIT[B.id[m]]===k)s+=B.w[m];return s;};
 W.biomeAt=function(x,z){const B=blendAt(x,z,BLEND);let b=0,bw=-1;for(let m=0;m<B.n;m++)if(B.w[m]>bw){bw=B.w[m];b=B.id[m];}return M.biomes[b];};
 W.inside=(x,z)=>mapNear(MK,x,z)>127;
@@ -137,93 +97,10 @@ let SALTA=null;
 W.saltAt=(x,z)=>{if(!SALTA){SALTA=new Float32Array(CL.length);for(let i=0;i<CL.length;i++){const c=M.classes[CL[i]];SALTA[i]=c&&(c.code==='WX'||c.code==='XW'||c.code==='XS')?1:0;}}
  return mapBil(SALTA,x,z);};
 
-// ---------------------------------------------------------------- the drainage network
-// The extractor's polylines (4 km steps), smoothed twice (Chaikin), the bed made to fall monotonically to the mouth.
-// A spatial hash of the segments (4 km cells, each segment in every cell its reach can touch) answers "the nearest
-// channel" in a handful of segments.
-const CHC=4096,CHREACH=900;let SEG=null,CHASH=null;const RIVSEG=[];
-// A named river (region.json 'rivers': the scale model's DATA.rivers) joins as a channel of its own width, its flow
-// the accumulation that gives that width, flagged (slot 8: its water depth) so W.water gives it a surface.
-function buildChannels(){const L=M.drainage.lines.slice(),S=[];
- for(const r of M.rivers||[]){const a=M.drainage.min_accum*Math.pow(10,(r.width_m-10)/55),line=r.line.map(p=>[p[0],p[1],a,p[2]]);line.riv=r.depth_m;line.name=r.name;line.width=r.width_m;L.push(line);}
- for(const line of L){let P=line.map(p=>({x:p[0],z:p[1],a:p[2],e:p[3]}));
-  for(let it=0;it<2;it++){if(P.length<3)break;const Q=[P[0]];
-   for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],m=(t)=>({x:lerp(a.x,b.x,t),z:lerp(a.z,b.z,t),a:lerp(a.a,b.a,t),e:lerp(a.e,b.e,t)});Q.push(m(.25),m(.75));}
-   Q.push(P[P.length-1]);P=Q;}
-  let lo=1e9;for(const p of P){lo=Math.min(lo,p.e);p.bed=lo;}
-  if(line.riv)RIVSEG.push({name:line.name,width:line.width,s0:S.length/9,n:P.length-1});
-  for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1];S.push(a.x,a.z,b.x,b.z,a.a,b.a,a.bed,b.bed,line.riv||0);}}
- SEG=new Float64Array(S);CHASH=new Map();const n=SEG.length/9;
- for(let s=0;s<n;s++){const o=s*9,x0=Math.min(SEG[o],SEG[o+2])-CHREACH,x1=Math.max(SEG[o],SEG[o+2])+CHREACH,z0=Math.min(SEG[o+1],SEG[o+3])-CHREACH,z1=Math.max(SEG[o+1],SEG[o+3])+CHREACH;
-  for(let iz=Math.floor(z0/CHC);iz<=Math.floor(z1/CHC);iz++)for(let ix=Math.floor(x0/CHC);ix<=Math.floor(x1/CHC);ix++){const k=(ix+32768)*65536+(iz+32768);
-   let a=CHASH.get(k);if(!a){a=[];CHASH.set(k,a);}a.push(s);}}
- W.channelCount=L.length;W.segmentCount=n;}
-// The cut at (x,z) on ground h: every channel segment near the (warped) point cuts down to its bed with walls leaning
-// wallK, and the ground takes the DEEPEST cut. A maximum of continuous cuts is continuous, so the land has no step where
-// two channels' reaches meet or the nearest segment changes. Fills C: k the cut (m), and the distance, half-width, wall
-// reach and depth of the segment that cut deepest (of the nearest one where none cuts), for the fields.
-const CH={k:0,d:1e9,hw:0,co:0,cut:0};
-function carveAt(x,z,h,wallK,C,SC){C.k=0;C.d=1e9;C.hw=0;C.co=0;C.cut=0;
- const qx=x+(NM.fbm(x/2600,z/2600,2)-.5)*440+(NM.vn(x/380,z/380)-.5)*60,qz=z+(NM.fbm(x/2600+31,z/2600-77,2)-.5)*440+(NM.vn(x/380+9,z/380+5)-.5)*60;
- const L=CHASH.get((Math.floor(qx/CHC)+32768)*65536+(Math.floor(qz/CHC)+32768));if(!L)return C;
- let nd=1e18;
- for(let i=0;i<L.length;i++){const o=L[i]*9,ax=SEG[o],az=SEG[o+1],dx=SEG[o+2]-ax,dz=SEG[o+3]-az,l2=dx*dx+dz*dz;
-  let t=l2>0?((qx-ax)*dx+(qz-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-qx,ez=az+dz*t-qz,d=Math.sqrt(ex*ex+ez*ez);
-  if(d>CHREACH)continue;
-  const s=chanS(lerp(SEG[o+4],SEG[o+5],t)),hw=(10+s*55)*.5,depth=2+s*5,bed=SC&&SC.w>0?scarpOf(lerp(SEG[o+6],SEG[o+7],t),SC):lerp(SEG[o+6],SEG[o+7],t);   // a bed falls over the cliff as the land does: a cataract
-  const Dc=h-Math.min(h-depth,bed-depth*.5),outer=Math.min(CHREACH-40,hw+6+Dc*wallK);
-  const k=d<outer?Dc*(1-smooth(hw,outer,d)):0;
-  if(k>C.k||(C.k===0&&d<nd)){if(k>C.k)C.k=k;nd=d;C.d=d;C.hw=hw;C.co=outer;C.cut=Dc;}}
- return C;}
-// A river's water at (x,z): inside the bed of a river segment (slot 8 > 0), the carved ground at the channel's centre
-// line abreast of the point plus the water depth (at most 70 % of the cut, so it stays below the banks); -1e9 elsewhere.
-// The centre is found in the warped space the carve uses and brought back by the same offset, so the water lies in
-// the carved bed and falls with it (down the valley's mouth, over a cliff: a cataract).
-function riverWater(x,z){if(!CHASH)return -1e9;
- const qx=x+(NM.fbm(x/2600,z/2600,2)-.5)*440+(NM.vn(x/380,z/380)-.5)*60,qz=z+(NM.fbm(x/2600+31,z/2600-77,2)-.5)*440+(NM.vn(x/380+9,z/380+5)-.5)*60;
- const L=CHASH.get((Math.floor(qx/CHC)+32768)*65536+(Math.floor(qz/CHC)+32768));if(!L)return -1e9;
- let best=-1e9,bd=1e9,cxp=0,czp=0,wd=0;
- for(let i=0;i<L.length;i++){const o=L[i]*9;if(!(SEG[o+8]>0))continue;
-  const ax=SEG[o],az=SEG[o+1],dx=SEG[o+2]-ax,dz=SEG[o+3]-az,l2=dx*dx+dz*dz;
-  let t=l2>0?((qx-ax)*dx+(qz-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const px=ax+dx*t,pz=az+dz*t,d=Math.hypot(px-qx,pz-qz);
-  const s=chanS(lerp(SEG[o+4],SEG[o+5],t)),hw=(10+s*55)*.5;
-  if(d<hw&&d<bd){bd=d;cxp=px-qx;czp=pz-qz;wd=Math.min(SEG[o+8],.7*(2+s*5));}}
- if(bd<1e9)best=H(x+cxp,z+czp,0,null,true)+wd;   // the land without a road's fill: a road crosses on a causeway
- return best;}
-// The named rivers as lines in metres (core/water's flow lines). The channels are carved in WARPED space (q = p + warp(p),
-// carveAt's noise), so a point down a segment is brought back to the world by the warp's inverse (a fixed point: the
-// warp moves a point by at most 250 m and stretches it by under 0.7, so 24 steps settle it to well under a millimetre);
-// its height is the river's water there (riverWater: 4.6 m over the carved floor). The floor is not monotone: where the
-// land lies under the line's bed the carve follows the land, so it dips and climbs again (by up to 150 m across a
-// depression). A sill up to RIVPOOL m holds a pool behind it (taken from the mouth upward: a point is lifted toward the
-// next one's level by at most that); past it the water follows the floor up and down as the old sheet did, never under
-// the floor and never a slab across a depression (a full fill floated it up to 228 m over the ground)
-const RIVPOOL=2;
-const warpQ=(x,z)=>[x+(NM.fbm(x/2600,z/2600,2)-.5)*440+(NM.vn(x/380,z/380)-.5)*60,z+(NM.fbm(x/2600+31,z/2600-77,2)-.5)*440+(NM.vn(x/380+9,z/380+5)-.5)*60];
-W.unwarp=(qx,qz)=>{let x=qx,z=qz;for(let k=0;k<24;k++){const q=warpQ(x,z);x+=qx-q[0];z+=qz-q[1];}return[x,z];};
-W.riverLines=function(step){step=step==null?40:step;const out=[];
- for(const R of RIVSEG){const pts=[];let carry=0;
-  for(let s=R.s0;s<R.s0+R.n;s++){const o=s*9,ax=SEG[o],az=SEG[o+1],bx=SEG[o+2],bz=SEG[o+3],L=Math.hypot(bx-ax,bz-az);
-   for(let d=carry;d<L;d+=step){const t=d/L,w=W.unwarp(ax+(bx-ax)*t,az+(bz-az)*t),y=riverWater(w[0],w[1]);if(y>-1e8)pts.push([w[0],w[1],y]);}
-   carry=L>carry?carry+Math.ceil((L-carry)/step)*step-L:carry-L;}
-  for(let i=pts.length-2;i>=0;i--)if(pts[i][2]<pts[i+1][2])pts[i][2]=Math.min(pts[i+1][2],pts[i][2]+RIVPOOL);
-  out.push({name:R.name,width:R.width,pts});}
- return out;};
-// a channel's size from its flow: strength s (0 at the threshold), width and depth (m)
-const chanS=acc=>Math.max(0,Math.log10(acc/M.drainage.min_accum));
-W.carveAt=(x,z)=>{const c=carveAt(x,z,baseH(x,z),.5,{});return c.d<1e9?Object.assign({},c):null;};
-
-// ---------------------------------------------------------------- the escarpments: cliffs at 1:1
-// Where the extractor marks an escarpment (the eastern abyss's rim: scarpw.png), the scale model's smooth rise from the
-// floor's level L to the plateau's U is gathered into a cliff: a point's share t of the way up is sharpened round a
-// centre c that noise moves (promontories and embayments), so the plateau runs level to the edge and the drop happens
-// within a few hundred metres; a little of the old slope is kept as the talus at its foot. A channel's bed is
-// sharpened by the same rule where it crosses, so a river leaves the plateau as a cataract (Verge's).
-const SCR={w:0,L:0,U:0,c:.5};
-function scarpAt(x,z,o){o.w=SW?gridBil(SW,x,z)/255:0;if(o.w<.01){o.w=0;return o;}
- o.L=gridBil(SL,x,z);o.U=gridBil(SU,x,z);if(o.U-o.L<300){o.w=0;return o;}
- o.c=.5+(NS.fbm(x/4500,z/4500,3)-.5)*.55+(NS.vn(x/900,z/900)-.5)*.12;return o;}
-function scarpOf(v,o){const rise=o.U-o.L,t=clamp((v-o.L)/rise,0,1),ts=smooth(o.c-.045,o.c+.045,t),tk=ts*.88+t*.12;return v+o.w*(o.L+rise*tk-v);}
+// ---------------------------------------------------------------- the drainage network and the escarpments: KLAND's
+W.unwarp=(qx,qz)=>LAND.unwarp(qx,qz);
+W.riverLines=step=>LAND.riverLines(step);
+W.carveAt=(x,z)=>{const c=LAND.carveAt(x,z,LAND.baseH(x,z),.5,{});return c.d<1e9?Object.assign({},c):null;};
 
 // ---------------------------------------------------------------- the roads: highways between the settlements
 // WORLD_DATA.roads (data/roads.json, routed by 42-world-roads.js and baked by bake.py): each road a centre line every
@@ -302,51 +179,29 @@ function townAt(x,z){TW.w=0;TW.t=null;
 W.townW=(x,z)=>{for(let i=0;i<TOWNS.length;i++){const t=TOWNS[i],d=Math.hypot(x-t.x,z-t.z);if(d<t.R+60)return 1;}return 0;};
 
 // ---------------------------------------------------------------- the height
-// P (optional) receives the parts the fields need: base, relief, the style blend, the channel's distance and cut.
+// The land is KLAND's (L.H: the scale model's heights, the style's detail, the channels' carve and the cliffs), then this
+// world's own: the land hook, the towns' ground and the roads. P (optional) receives the parts the fields need (base,
+// relief, the style blend, the channel's distance and cut: KLAND's) and the road's cover.
 // nr: leave the roads out (the routing reads the land as it was); nt: leave the towns out
 function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
- const SC=scarpAt(x,z,SCR),b=SC.w>0?scarpOf(baseH(x,z),SC):baseH(x,z),S=styleAt(x,z),rel=gridBil(REL,x,z);
- let h=b+(N1.fbm(x/6000,z/6000,4)-.5)*2*clamp(rel*.12,12,420)*S.hills*(1-.75*SC.w);   // the cliff's band keeps its plateau and floor level
- if(minWave<1700){const r=1-Math.abs(2*N2.fbm(x/1700,z/1700,3)-1);h+=(r*r-.35)*clamp(rel*.06,6,200)*S.ridge;}
- // terraces where the relief allows mesas: flat treads, risers a fraction of each step
- if(S.terr>.01&&minWave<600){const tm=S.terr*smooth(40,250,rel)*smooth(4200,1800,rel);
-  if(tm>.01){const step=S.step*(.75+.5*N6.vn(x/9000,z/9000)),t=h/step,fl=Math.floor(t),f=t-fl,k=.14;
-   const g=f<1-k?0:smooth(1-k,1,f);h=lerp(h,(fl+g)*step,tm);}}
- // dune seas: dry, flat and in patches; transverse ridges across the WNW wind, a gentle stoss and a steep lee
- if(S.dune>.01&&minWave<200){const dm=S.dune*smooth(170,70,mapBil(RN,x,z)*M.rain.scale_mm)*smooth(260,40,rel)*smooth(.42,.6,N7.fbm(x/14000,z/14000,2));
-  if(dm>.01){const s=(x*.83+z*.55)/260+2.2*N7.fbm(x/1800,z/1800,2)+.5*N7.vn(x/400,z/400),f=s-Math.floor(s),p=f<.72?f/.72:(1-f)/.28;
-   h+=dm*p*p*(3-2*p)*(10+14*N7.vn(x/3000,z/3000));}}
- if(minWave<420)h+=(N3.fbm(x/420,z/420,3)-.5)*2*(5+rel*.006)*S.rough;
- if(S.gully>.01&&minWave<240){const g=1-Math.abs(2*N4.fbm(x/240,z/240,2)-1);h-=S.gully*(3+rel*.004)*Math.pow(g,6)*2.2;}
- if(minWave<90)h+=(N3.vn(x/90+11,z/90-7)-.5)*2*(1.2+rel*.0015)*S.rough;
- // the channels: carve to the bed line (or the local ground less the depth, whichever is lower); the wall leans wallK
- let cd=1e9,cut=0,cw=0,co=0;
- if(minWave<400){carveAt(x,z,h,S.wallK,CH,SC);h-=CH.k;cd=CH.d;cut=CH.cut;cw=CH.hw;co=CH.co;}
- if(minWave<13)h+=(N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3;
+ let h=LAND.H(x,z,minWave,P);
  // a world's own shaping of its land (W.landHook: openworld/isle-demo's coast, reef and mangrove flats); none here
  if(W.landHook)h=W.landHook(x,z,h,minWave);
- // the roads, last: the carriageway is level at the road's height whatever the detail did
  // a town's own ground: inside its footprint the land is the town's, easing back over its band
  if(!nt&&TOWNS.length){townAt(x,z);if(TW.w>0)h=lerp(h,TW.h,TW.w);}
  // the roads, last: the carriageway is level at the road's height whatever the detail did (a road stops outside a
  // town's footprint, and was routed over the land with the towns in it, so it meets the town's ground at its edge)
  let rw=0;if(!nr&&RHASH){roadAt(x,z,h,RD);if(RD.w>0){h=bound(h,RD);rw=RD.d<=RD.hw+1.5?1:0;}}
- if(P){P.base=b;P.rel=rel;P.cd=cd;P.cut=cut;P.cw=cw;P.co=co;P.road=rw;SKEYS.forEach(k=>P[k]=S[k]);}
+ if(P)P.road=rw;
  return h;}
 W.H=(x,z,minWave)=>H(x,z,minWave||0,null);
 W.Hbare=(x,z,minWave)=>H(x,z,minWave||0,null,true,true);   // the land alone: no roads, no towns
 W.Hland=(x,z,minWave)=>H(x,z,minWave||0,null,true,false);  // the land with the towns' ground, no roads: what the routing reads
-W.baseH=baseH;
+W.baseH=(x,z)=>LAND.baseH(x,z);
 
-// ---------------------------------------------------------------- the water: the sea and the lakes from the scale model, and its named rivers
-// The level of the nearest wet cell of the four round the point; -1e9 where none is wet. A lake's shore is where its
-// plane meets the ground.
-W.lakeWater=function(x,z){let u=(cx+x/2000)*su-i0,v=(cy+z/2000)*sv-j0;u=clamp(u,0,nx-1.0001);v=clamp(v,0,ny-1.0001);
- const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j;let best=-1e9,bw=-1;
- for(let b=0;b<2;b++)for(let a=0;a<2;a++){const o=(j+b)*nx+i+a;if(!WHAS[o])continue;const w=(a?fu:1-fu)*(b?fv:1-fv);if(w>bw){bw=w;best=WLV[o];}}
- if(bw<0){// the edge of a water body: look one ring further, so the plane runs under the shore
-  for(let b=-1;b<=2;b++)for(let a=-1;a<=2;a++){const o=clamp(j+b,0,ny-1)*nx+clamp(i+a,0,nx-1);if(WHAS[o]&&WLV[o]>best)best=WLV[o];}}
- return best;};
+// ---------------------------------------------------------------- the water: the sea and the lakes from the scale model, and its named rivers (KLAND's)
+W.lakeWater=(x,z)=>LAND.lakeWater(x,z);
+const riverWater=(x,z)=>LAND.riverWater(x,z);
 W.riverWater=riverWater;
 
 // ---------------------------------------------------------------- the water bodies (core/water: one surface each)

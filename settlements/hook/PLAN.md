@@ -34,6 +34,16 @@ north into the sea. The East Ring Isles are 45 km offshore to the east, the Thro
 over the harbour's eastern sky), the Vothic border about 45 km west along the coast: Hook is a frontier city on a
 sliver of Izani shore, which is why it changed hands so often.
 
+**On the model's ground (2026-10-19).** The page stands on the scale model at 1:1 through the open world's ground rule
+(`core/terrain/40-core-land.js`; `README.md` "The ground", `world/`). The 4.21 cut says: the Ring Sea at −1,500 m;
+Hook's pixel on land 592 m above it, the 1:1 shoreline 6.7 km north of the pixel (the kit's origin stands there); the
+coast's bearing −8.8° from east (ENE, the bay west of the Point, the headland east); the land behind the quays a steady
+slope, +30 m at 300 m, +62 m at the Heights' back edge (760 m), +115 m at the cliff's foot line (1,180 m), +195 m at
+2 km, the plateau at +740 m 6 km back; the sea bed −22 m at 500 m out, −50 m at 1 km; climate Af (tropical rainforest,
+4,000 mm, 28 °C), overlay SW Bay; no escarpment in the data and no channel across the site. So the Heights and the
+cliff's foot come from the slope itself (both stamps dropped), the cliff face of this section is not in the model
+(`KNOWN_ISSUES.md`), and the kit's −x end (the Point) lies at the world's east.
+
 About 2.6 km of waterfront, 1.2 km deep to the cliff's foot. From west to east:
 
 | Zone | Ground | Layer it belongs to |

@@ -175,8 +175,10 @@ Godot (`biomes/GODOT.md`).
 | `test-carve.js` | `node core/terrain/test-carve.js`: the module's contract on a synthetic cliff, each check with a negative |
 | `38-core-relief.js` | relief functions, all plain maths of (x,z) and a seed (global `KRELIEF`): `range` (a wall of mountains along a line: steep sides, broad serrated top, eased toe, tapered ends), `join` (where ranges meet: the tallest plus a quarter of the rest), `volcano` (a concave cone with gullies and a crater), `fields` (an enclosure lattice: field kinds, crop-row directions and hedge polylines, with missing hedges merging fields), `river` (a water surface that never climbs downstream, with the slope per vertex for foam) |
 | `test-relief.js` | `node core/terrain/test-relief.js`, each check with a negative |
+| `40-core-land.js` | the open world's ground rule on the Krator Scale Model's rasters (global `KLAND`, [G data]: no THREE, no DOM): `KLAND.create(meta, R)` on a region cut by `tools/scale-model/extract_region.py` gives `L.H(x,z,minWave)` (Catmull-Rom on the 4 km cells, detail in a style per biome overlay, the drainage network carved in, the escarpments made into cliffs), `L.lakeWater`, `L.riverWater`, `L.riverLines`, the samplers and the style tables. Lifted from `openworld/little-demo` (2026-10-19), which composes its towns, roads and fields on it; Hook (`settlements/hook`) stands on it through the Port kit's `PORT.natH` |
+| `test-land.js`, `golden-land.json`, `node-png.js` | `node core/terrain/test-land.js` (each check with a negative; `--write` rewrites the golden): the contract on a synthetic region, and the golden sampled on `openworld/little-demo/data`, which a change to the rule must not move unless it is meant to (then rebuild little-demo and its baseline row). `node-png.js` reads the extractor's PNGs in node |
 
-`38-core-relief.js`'s provenance is in `TODO.md`; no build uses it yet. It needs nothing at all, so a build lists it in `CORE_TERRAIN` (biomes)
+`38-core-relief.js`'s provenance is in `TODO.md`; `40-core-land.js` and the open world take its noise. It needs nothing at all, so a build lists it in `CORE_TERRAIN` (biomes)
 or as an ordinary fragment, and a Godot port evaluates the same functions at export or ports them line for line.
 
 **Used by** `biomes/sedesert` and `settlements/shade`. Opt-in by name: every

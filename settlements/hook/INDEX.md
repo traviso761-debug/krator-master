@@ -17,7 +17,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `76-hook-ground.js` | 2 | HOOK: THE GROUND BEHIND THE PORT ([G data]) (1) |
+| `75d-hook-world.js` | 6 | HOOK: THE GROUND FROM THE SCALE MODEL ([G data]) (1) |
+| `76-hook-ground.js` | 4 | HOOK: THE GROUND BEHIND THE PORT ([G data]) (1) |
 | `79-hook-ancient.js` | 5 | HOOK: THE ANCIENT TOWN'S RUIN HOSTS (1) |
 | `90a-hook-city.js` | 4 | HOOK: THE SITE ON core/city, STEPS 0-5 ([G data] (1) |
 | `90b-hook-city-draw.js` | 2 | HOOK: DRAWING THE SITE ([web]) (1) |

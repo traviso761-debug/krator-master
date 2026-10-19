@@ -62,11 +62,18 @@ const R=[];
 { const want=(HOOK_SITE.hosts||[]).map(h=>h.id),have=PORT_LAYOUT.items.filter(it=>it.ancient).map(it=>it.opt.hostId);
   const miss=want.filter(id=>have.indexOf(id)<0);
   R.push({name:'hook-hosts-placed',ok:!miss.length,detail:miss.length?'named hosts not placed: '+miss.join(', '):want.length+' named hosts and '+(have.length-want.length)+' drawn on the grid'}); }
-// P1: the Heights stand 25-40 m above the quays at the palace's marker, and the cliff's foot rises behind the site
-{ const B=(HOOK_SITE.markers||[]).find(m=>m.id==='B'),r=HOOK_GROUND.ridge,c=HOOK_GROUND.cliff;
+// P1: the Heights stand 24 m or more above the quays at the palace's marker (the plan's 25-40; the scale model's own
+// slope gives more: README.md "The ground"), and the cliff's foot rises 60 m or more behind the site
+{ const B=(HOOK_SITE.markers||[]).find(m=>m.id==='B'),r=HOOK_GROUND.ridge,c=HOOK_GROUND.cliff,F=HOOK_GROUND.fromModel;
   const hB=B?terrainH(B.x,B.z)-PORT.DECK:null,hC=terrainH(0,c.z0-20)-PORT.DECK;
-  const ok=hB!=null&&hB>=24&&hB<=42&&hC>=60;
-  R.push({name:'hook-heights',ok,detail:'the palace marker stands '+(hB==null?'?':hB.toFixed(1))+' m above the quays, the cliff\'s foot '+hC.toFixed(1)+' m'}); }
+  const ok=hB!=null&&hB>=24&&hC>=60;
+  R.push({name:'hook-heights',ok,detail:'the palace marker stands '+(hB==null?'?':hB.toFixed(1))+' m above the quays, the cliff\'s foot '+hC.toFixed(1)+' m; the model gives the ridge: '+F.ridge+', the cliff: '+F.cliff+' (a stamp is kept only where it does not)'}); }
+// the scale model's ground (75d-hook-world.js): the kit's frame stands at the 1:1 shoreline (the natural ground at the
+// origin within 12 m of sea level: the shoreline is found on the land without its fine terms, which add up to ~10 m;
+// the sea 300 m out, land 300 m in), and the report's numbers for the README
+{ const W=HOOK_WORLD,h0=W.natH(0,0),hs=W.natH(0,300),hl=W.natH(0,-300);
+  const ok=Math.abs(h0)<=12&&hs<0&&hl>0;
+  R.push({name:'hook-world',ok,detail:'natural ground at the origin '+h0.toFixed(2)+' m, 300 m seaward '+hs.toFixed(1)+', 300 m inland '+hl.toFixed(1)+'; '+JSON.stringify(W.report)}); }
 // P1: every Ancient host and quarter has a core/tags record before it was drawn
 { const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,a=T?T.audit():null,n=PORT_LAYOUT.items.filter(it=>it.ancient&&it.tag).length;
   R.push({name:'hook-tags',ok:!!a&&n===PORT_LAYOUT.items.filter(it=>it.ancient).length,detail:a?(a.records+' records, '+n+' hosts tagged; unknown vocabulary '+a.unknown):'no registry'}); }

@@ -54,7 +54,7 @@ an east-west canyon about 860 m deep (1,130 m at 8 km) cut into the plateau's ed
 | `90-world-camera.js` | fly and walk, Go to, the minimap, the inspector and the polygon tool |
 | `91-world-probe.js` | `window._api` for `verify.py` |
 
-**The land.** The scale model's heights are a 4 km grid. `WORLD.H` interpolates them (Catmull-Rom) and adds detail by
+**The land.** The land itself is `core/terrain/40-core-land.js` (`KLAND`, lifted from here on 2026-10-19 so a settlement built in place on the model, Hook, stands on the same ground; `41-world-fields.js` composes the towns, the roads and the fields on it; `node core/terrain/test-land.js` holds its golden on this region's data). The scale model's heights are a 4 km grid. `WORLD.H` interpolates them (Catmull-Rom) and adds detail by
 the overlay's *style* (`STYLES` in `41-world-fields.js`): hills and ridges scaled by the local relief, terraces where
 the relief allows mesas (desert, badlands, Korona), dune seas where it is dry and flat, badland rills, roughness. Then
 the drainage network is carved in: each channel's bed follows the scale model's own flow line, never above the local
