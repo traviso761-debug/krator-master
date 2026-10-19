@@ -38,7 +38,7 @@ izsFamily('pyl_fort','Fortress block',66,true,(P,x,z)=>{const sf=vC(PYA.saffron)
   pynPointed(cx,22,zf,0,2.4,H-30,.12,.12,'P',or,1.6,true);pyaStrips(x+tx-s*3.4,zf,2.6,22,H-4,2);
   for(let k=0;k<2;k++)pynFrame('tomb',x+tx+s*(k?4.6:-1.2),6+k*.0,zf,0,1.6,7.5,{rim:.25,c:red,fill:'G',out:.05});
   const px=x+tx+s*(W/2-1.2);kput('vPlaster',[px,7,zf+1.4],null,[2.6,14,2.6],sf);
-  for(let r=0;r<6;r++)for(const u of[-.6,.6])pynEnd('pyDiscD',px+u,2+r*2.1,zf+2.7,0,.42,.05,.08,null);}
+  for(let r=0;r<6;r++)for(const u of[-.6,.6])pynEnd('pyDiscL',px+u,2+r*2.1,zf+2.7,0,.42,.05,.08,null);}
  // the gate: saffron legs on the towers' inner faces, an arch band front and back, the tunnel's dark soffit, a bridge
  for(const s of[-1,1])kput('vPlaster',[x+s*(GW/2+.9),GH/2-3,z+4],null,[1.8,GH-6,13],sf);
  for(const zz of[z+4+6.6,z+4-6.6])pynArc(x,GH-GW/2-3,zz,zz>z+4?0:Math.PI,GW/2+.9,1.8,1.2,sf,18);
@@ -70,11 +70,11 @@ izsFamily('pyl_slab','Arch slab',46,true,(P,x,z)=>{const H=40,W0=28,W1=23,D=10,A
   if(Math.abs(px-AX)<AW/2+.6&&py<AH+.6)return false;for(const [ox,oy,r] of OC){const dx=Math.max(Math.abs(px-ox)-pw/2,0),dy=Math.max(Math.abs(py+ph/2-oy)-ph/2,0);if(Math.hypot(dx,dy)<r+.8)return false;}return true;};
  for(const s of[-1,1])for(let py=.6;py<H-1.4;py+=CH+.12)for(let px=-W0/2+CW/2;px<W0/2;px+=CW+.12){if(!clear(px,py,CW,CH)||rng()<.12)continue;
   const zz=z+s*(D/2+.12+rng()*.18),c=rng()<.55?or:och;kput('vPlaster',[x+px,py+CH/2,zz],null,[CW,CH,.25],c);
-  const t=rng();if(t<.18)kput('vDarkB',[x+px,py+CH/2,zz+s*.14],null,[CW*.7,.16,.04],null);else if(t<.3)pynPorthole(x+px,py+CH/2,zz+s*.12,s>0?0:Math.PI,.42,gun,'G',0);}
+  const t=rng();if(t<.18)kput('pyPaneB',[x+px,py+CH/2,zz+s*.14],null,[CW*.7,.16,.04],null);else if(t<.3)pynPorthole(x+px,py+CH/2,zz+s*.12,s>0?0:Math.PI,.42,gun,'G',0);}
  // the carved west end: white blocks stepped out in three layers, windows and balconies
  for(let k=0;k<9;k++){const by=k*4.2+.2,bw=hw(by)-hw(by)+0,ex=-hw(by)+3.4;for(let j=0;j<3;j++){const bx=ex-1.2+j*1.6,bd=D+1.2-j*.8,bh=3.6-j*.5;
   kput('vPanelB',[x+bx,by+bh/2,z],null,[2,bh,bd],wh);}
-  for(const s of[-1,1]){kput('vDarkB',[x+ex-.6,by+1.6,z+s*(D/2+.62)],null,[1.2,1.4,.04],null);if(k%2)kput('vPanelB',[x+ex-.6,by+.2,z+s*(D/2+1.2)],null,[1.6,.15,1.1],wh);}}});
+  for(const s of[-1,1]){kput('pyPaneB',[x+ex-.6,by+1.6,z+s*(D/2+.62)],null,[1.2,1.4,.04],null);if(k%2)kput('vPanelB',[x+ex-.6,by+.2,z+s*(D/2+1.2)],null,[1.6,.15,1.1],wh);}}});
 
 // Pod cluster (refs/pylon6.jpg, re-skinned): truncated cones of white shell with orange-rimmed glass skylights, a ring of
 // slit windows, joined by covered bridges.
@@ -92,7 +92,7 @@ izsFamily('pyl_vaults','Vault chapel',44,true,(P,x,z)=>{const tile=vC(PYA.tile),
  for(let i=0;i<5;i++){const span=10+3.2*i,rise=span/2,zc=z+8-i*4.6;
   pynVault(x,0,zc,span,4.6,rise,0,'pyHalf',tile);pynArc(x,0,zc+2.3,0,rise-.35,.8,.7,wh,16);
   if(i===0)pynTomb(x,0,zc+2.32,0,span-1.6,rise-.8+(span-1.6)/2,.06,.1,'L');}
- kput('vPanelB',[x+2,18,z-15],null,[3.6,36,3.6],wh);for(let y=6;y<34;y+=3)kput('vDarkB',[x+2,y,z-13.15],null,[1.6,1.6,.1],null);});
+ kput('vPanelB',[x+2,18,z-15],null,[3.6,36,3.6],wh);for(let y=6;y<34;y+=3)kput('vWinLit',[x+2,y,z-13.15],null,[1.6,1.6,.1],null);});
 
 // Gem shrine (refs/ancient massing.jpg): a tall pointed bay of glass between two lower pointed wings, each wing set with
 // an elongated hexagonal gem window; amber lines tracing the gables; a reflecting pool.
@@ -119,7 +119,7 @@ izsFamily('pyl_hoop','Hoop gate',36,true,(P,x,z)=>{const wh=vC(PYA.white),sf=vC(
 izsFamily('pyl_temple','Temple of the Ancients',96,true,(P,x,z)=>{const wh=vC(PYA.white),sf=vC(PYA.saffron),gold=vC(PYA.gold),terra=vC(PYA.terra);
  const PZ=z,PW=64,PD=40,PH=6,BZ=z-6;
  kput('vPanelB',[x,PH/2,PZ],null,[PW,PH,PD],wh);
- for(let k=0;k<11;k++){const ax=x-PW/2+3+k*(PW-6)/10;if(Math.abs(ax-x)<5)continue;pynFrame('tomb',ax,.4,PZ+PD/2,0,2.6,4.6,{rim:.2,c:sf,fill:'D',out:.05});}
+ for(let k=0;k<11;k++){const ax=x-PW/2+3+k*(PW-6)/10;if(Math.abs(ax-x)<5)continue;pynFrame('tomb',ax,.4,PZ+PD/2,0,2.6,4.6,{rim:.2,c:sf,fill:'L',out:.05});}
  for(let k=0;k<8;k++){const rx=x-PW/2+4+k*(PW-8)/7;if(Math.abs(rx-x)<6)continue;pyaFin([[rx,0],[rx+.6,3],[rx,PH]],PZ+PD/2+1.4,.5,1.2,sf);}
  vnStairs(x,0,PZ+PD/2+4.5,0,10,PH,18,'vStone',vC(0x9a948a));
  // the towers
@@ -130,7 +130,7 @@ izsFamily('pyl_temple','Temple of the Ancients',96,true,(P,x,z)=>{const wh=vC(PY
  // the body between the towers, its beehive dome, the three great arches and the rose
  kput('vPanelB',[x,PH+9,BZ-1],null,[26,18,22],wh);
  const rB=y=>11*Math.sqrt(Math.max(0,1-Math.pow(y/19,2)));mesh(lathe({rFn:rB,H:19,nu:40,nv:14}),tsand(PYA.white),P,x,PH+18,BZ-1);
- for(const [y,n] of[[3,12],[7,10],[11,8],[14.5,6]])pyaSlits(x,BZ-1,rB,[PH+18+y],Math.PI/2-1.3,Math.PI/2+1.3,n,'vDarkB',.7,.7);
+ for(const [y,n] of[[3,12],[7,10],[11,8],[14.5,6]])pyaSlits(x,BZ-1,rB,[PH+18+y],Math.PI/2-1.3,Math.PI/2+1.3,n,'vWinLit',.7,.7);
  [[-8.5,5,13],[0,7,16],[8.5,5,13]].forEach(([ax,w,h])=>pynFrame('tomb',x+ax,PH,BZ+10,0,w,h,{rim:.4,n:2,cs:[gold,sf],fill:'L',out:.08}));
  pynPorthole(x,PH+38,BZ-10+5.4,0,3.2,gold,'L',12);});
 
@@ -153,7 +153,7 @@ function pyaRepair(C,seed){reseed(seed);const D=C.D,s=C.o.scale||1,hw=D.w/2*s-2,
  const spots=[];for(let k=0;k<7;k++){const t=rng();if(t<.4)spots.push([-hw+1.6,rr(-hd,hd*.6),Math.PI/2]);else if(t<.8)spots.push([hw-1.6,rr(-hd,hd*.6),-Math.PI/2]);else spots.push([rr(-hw*.8,hw*.8),-hd+1.6,0]);}
  for(const [lx,lz,a] of spots){const p=P(lx,lz),ry=C.ry+a;
   if(rng()<.5){vB(rng()<.5?'vCorr':'vPanelB',p[0],0,p[1],2.8,2.3,2.4,ry,rng()<.5?null:wh);vnShedRoof(p[0],2.3,p[1],3.2,2.8,.4,ry,'vCorr',null,.2,.08);
-   const d=loc(p[0],p[1],0,1.21,ry);vB('vDarkB',d[0],0,d[1],.8,1.8,.05,ry);}
+   const d=loc(p[0],p[1],0,1.21,ry);vB('vWood',d[0],0,d[1],.8,1.8,.05,ry,vC(PYPAL.walnut[0]));}
   else vnStall(p[0],p[1],ry,vC(vPick(VPAL.awning)));
   const q=loc(p[0],p[1],1.6,.6,ry);if(rng()<.5)vnCrate(q[0],0,q[1],.6,ry,wood);else vnBarrel(q[0],0,q[1],.32,.9,null);}
  // the scaffold at the front left corner: four poles, three plank decks, a ladder

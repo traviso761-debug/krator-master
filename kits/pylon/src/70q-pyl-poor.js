@@ -16,12 +16,12 @@ function buildPylTankHouse(G,o){reseed(9051+(o.v|0));const Z=-.4,R=2.2,LEG=1.4,H
  // the deck rail: posts round the deck's rim and an iron hoop on them
  for(let k=0;k<10;k++){const a=k*TAU/10;if(Math.abs(Math.sin(a/2))<.12)continue;vPst('vPipe',Math.sin(a)*3.2,LEG,Z+Math.cos(a)*3.2,.04,1,gun);}
  kput('vHoop',[0,LEG+1,Z],qEuler(Math.PI/2,0,0),[3.2,3.2,3.2],gun);
- pynPorthole(0,LEG+1.05,Z+R+.02,0,.78,gun,'D',0);
+ pynPorthole(0,LEG+1.05,Z+R+.02,0,.78,gun,'M',0);
  for(const a of[-.75,.75])pynPorthole(Math.sin(a)*(R+.02),LEG+3.1,Z+Math.cos(a)*(R+.02),a,.36,or,'G',2);
  vnLadder(0,0,Z+3.55,0,LEG+.1,wood);
  // the small tank and its pipe, an aerial on the cap
  pynTank(3.4,0,Z-1.5,1.05,2.3,rust.clone().multiplyScalar(.9));vBeam([1.9,LEG+2.4,Z-.9],[3.1,2.2,Z-1.4],.16,gun,'vPipe');
- vPst('vPipe',.7,LEG+H+.9,Z-.6,.05,2.4,gun);kput('pyDiscD',[.7,LEG+H+2.2,Z-.35],vQ(0,-.5,0),[.4,.4,.05],null);vBall('vBall',.7,LEG+H+3.3,Z-.6,.08,gun);
+ vPst('vPipe',.7,LEG+H+.9,Z-.6,.05,2.4,gun);kput('pyDiscM',[.7,LEG+H+2.2,Z-.35],vQ(0,-.5,0),[.4,.4,.05],null);vBall('vBall',.7,LEG+H+3.3,Z-.6,.08,gun);
  // the lean-to on the west: corrugate walls on timber posts, a tarp for a door, a shed roof
  const lx=-3.7,lz=Z+.4;vnFrame(lx,0,lz,2.4,2.2,3.2,0,wood,.1);
  vB('vCorr',lx-1.15,0,lz,.08,2.2,3.2,0,null);vB('vCorr',lx,0,lz-1.55,2.4,2.2,.08,0,null);
@@ -60,7 +60,7 @@ function buildPylRingHouse(G,o){reseed(9071+(o.v|0));const W=6.4,D=6,H=3.2,Z=-1.
  vB('vPlaster',0,H,Z,W+.1,.55,D+.1,0,wh);vB('vPlaster',0,H+.55,Z,W+.2,.08,D+.2,0,or);
  // the ring: an Ancient hoop stood in the ground round the door, half of it buried
  kput('pyRing',[-.8,1.1,zf+.22],null,[1.75,1.75,1.6],anc);
- pynTomb(-.8,0,zf,0,1.1,2.2,.04,.1,'D');
+ pynDoorway('tomb',-.8,0,zf,0,1.1,2.2,{n:0,out:.04,d:.1,fc:wood});
  pynPorthole(1.7,1.7,zf,0,.42,or,'G',0);pynPorthole(W/2,1.7,Z-.6,Math.PI/2,.42,anc,'G',3);
  vnWin(-W/2,1.2,Z,-Math.PI/2,.8,1,'shut','vWood',wood);
  // awning on two poles over the porthole window, clear of the ring and the standpipe
@@ -82,7 +82,7 @@ function buildPylHexCells(G,o){reseed(9081+(o.v|0));const R=1.6,LEN=4.2,ZF=1.4,Y
  vB('pyConc',0,0,ZF-LEN/2,W+.6,Y0,LEN+.6,0,conc);
  for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++){const x=-W/2+R+c*1.5*R,yc=Y0+HF/2+r*HF+(c%2?HF/2:0);
   if(r===ROWS-1&&c%2)continue;                                         // the odd columns stop a half-cell lower: a stepped top
-  const t=rng(),c0=t<.62?wh:t<.85?or:null;pynHexPod(x,yc,ZF,0,R,LEN,0,c0,rng()<.5?'G':'D',c0?'pyHex':'pyHexR');}
+  const t=rng(),c0=t<.62?wh:t<.85?or:null;pynHexPod(x,yc,ZF,0,R,LEN,0,c0,rng()<.5?'G':'L',c0?'pyHex':'pyHexR');}
  // the access is at the back, where the pods' ends meet a steel gallery (a walk in front would cut the offset pods):
  // two railed decks on posts behind the honeycomb, a steel stair up the east end to the first
  const ZB=ZF-LEN-.7;for(const r of[1,2]){const y=Y0+r*HF-.05;vB('vWood',0,y-.12,ZB,W,.12,1.3,0,wood);
