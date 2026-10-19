@@ -47,3 +47,11 @@ Open items are `- [ ]` lines; `build.py` prints them.
       the eastabyss biome's and Reed Lake's vernacular rows (REEDKIT runs Reed Lake's 88y bind; without KMAT and its pack the reed
       kit would throw). The maps are in dist/mungo.tex.<key>.js beside the page (tools/textures/matlib_pack.py): the page is 2.9 MB.
       ?mat=proc shows the old look.
+
+## Voth census trades (2026-10-19)
+
+The table is `MUNGO_TRADES` in `src/88d-mungo-trades.js` (checked by `tools/check_trades.py`, `verify.py` assert `voth-trades`; Locus's own `LO_TRADES` is skipped here, `LOCUS_SKIP`): 19 carried, 2 partly, 13 gaps, 10 na (salt lake and small river: no coast trades; embassy tabled). Gaps, each a building Mungo lacks:
+
+- [ ] food and craft: bakery, butcher's, brewhouse, tannery, dairy and byre, boatyard for the reed canoes and the fishing fleet.
+- [ ] civic: school, toll house or customs shed at the bridgehead, house of healing, funerary court, a headman's hall (palace and canton staffs: only a rich house).
+- [ ] works and land: an industrial works (refinery or mill; the windmill lifts water only: partly in granary keepers and millers), orchard, quarry or brick yard.

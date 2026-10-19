@@ -35,6 +35,11 @@ import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, th
 # the UTF-8 console). A fix there reaches every verify.py that imports it.
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
 import harness as _harness
+from check_trades import trades_check   # the Voth census table (tools/check_trades.py)
+
+def _voth_trades():
+    ok, detail, _ = trades_check(os.path.dirname(os.path.abspath(__file__)))
+    return {'name': 'voth-trades', 'ok': ok, 'detail': detail}
 from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
 # Structure names contain em dashes; the Windows console default codepage
@@ -149,7 +154,7 @@ async def run(a):
 
             if a.assert_:
                 print("\n--- invariants ---")
-                for r in await pg.evaluate(ASSERT_JS):
+                for r in (await pg.evaluate(ASSERT_JS)) + [_voth_trades()]:
                     # Budget ceilings are a target to optimise toward on this
                     # showcase, not a gate: over-budget is reported loudly but
                     # only fails the run under --strict-budget. Correctness

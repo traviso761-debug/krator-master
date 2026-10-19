@@ -45,3 +45,23 @@ Open items are `- [ ]` lines; build.py prints them.
       diamond weave where the painter drew multi-colour stripes). The chakana cut-outs stay procedural; the fringe (`rlFringe`) and the mudhif lattice (`rlLattice`) take the owner's magenta cut-outs since 2026-10-14. ?mat=proc shows the old look.
 - [ ] **Two hanging styles** (2026-10-06): hRLStyle.hanging (74-rl-mat.js) is 'chakana' (the library's red chakana weave, the default here)
       or 'stripe' (the procedural striped awayo, MAT.rlClothS, never bound). Mungo's reed village sets 'stripe'.
+
+## Voth census trades (2026-10-19)
+
+The table `RL_TRADES` (`src/82-rl-trades.js`) says which building carries each of the Voth city's 44 trades (`tools/trades_census.json`); `verify.py --assert` checks it (`voth-trades`). 13 carried, 3 partly, 10 gaps, 18 na of 44.
+
+Missing buildings (gaps) and partly carried trades:
+
+- [ ] bakers: a bake hut: reed-flour flatbread ovens on an island
+- [ ] butchers: a fish and fowl smoking and butchering shed
+- [ ] brewers: a brewing hut (reed beer, chicha)
+- [ ] tanners: a hide-working island away from the houses
+- [ ] shipwrights and boatbuilders: a reed-boat builder's island (the boats exist as furniture: rl_boat_canoe, rl_boat_great, rl_boat_raft)
+- [ ] shopkeepers and assistants: a shop island or stall: the reed weaver's workshop and the warehouse are tagged market/shop but keep no counter
+- [ ] teachers and scholars: a teaching hut (the lore keeper's school; the shaman's house keeps the sacred lore)
+- [ ] market traders: a floating market raft where the villages trade
+- [ ] dairymen: a dairy: the animal pen holds the stock but no milking shed
+- [ ] ferrymen: a ferry landing: reed boats exist as furniture (rl_boat_canoe, rl_boat_great) but no ferry station
+- [ ] weavers and dyers: no dye works: the weaver's workshop only works reed
+- [ ] healers and nurses: a house of healing
+- [ ] granary keepers and millers: no mill

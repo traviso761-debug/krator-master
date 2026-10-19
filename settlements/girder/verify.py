@@ -189,6 +189,11 @@ async def run(a):
                     print(("  PASS  " if r["ok"] else "  FAIL  ") + r["name"] + " : " + r["detail"])
                     if not r["ok"]:
                         fails.append("assert " + r["name"])
+                from check_trades import trades_check
+                tok, tdetail, _trep = trades_check(os.path.dirname(os.path.abspath(__file__)))
+                print(("  PASS  " if tok else "  FAIL  ") + "voth-trades : " + tdetail)
+                if not tok:
+                    fails.append("assert voth-trades")
                 bg = await pg.evaluate(BUDGET_JS)
                 if bg:
                     print("\n--- budget ---")

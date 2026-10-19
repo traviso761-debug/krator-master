@@ -112,6 +112,7 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',
     '71w-port-sea.js',                    # the sea on core/water
 }
+DETERMINISTIC |= {'89x-port-trades.js'}   # the Voth census table (data only, read by tools/check_trades.py)
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 
 SEED_COLLISION_EXCEPTIONS = set()

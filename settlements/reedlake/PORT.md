@@ -38,6 +38,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/79-rl-farm.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/80-rl-islands.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/81-rl-tavern.js` | 12.6 | [draw] | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
+| `src/82-rl-trades.js` | 4.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/88y-reedlake-matlib.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90-rl-scene.js` | 6.7 | [web] | 15 | 1 | 1 | 0 | 0 | 4 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/90w-rl-lake.js` | 2.9 | [draw] | 5 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the host binding of core/water (the lake) and core/atmos (clock, skylight) |

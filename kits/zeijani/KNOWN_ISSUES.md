@@ -52,3 +52,19 @@
       out; `91f-furnish.js` and `91n-night.js` still say tents. PLAN.md section 4 names a `kit_bundle.py` (`KratorZeijani`)
       that was never made, and 6.5 an export from the kit sheet (only Dhelv's page exports). `zjLife` and `ZJ_LIFE` are
       defined but no def calls them, so the `life-records` check has nothing to check.
+
+## Voth census trades (2026-10-19)
+
+`src/55-zj-trades.js` (`ZT_TRADES`) sets the Voth city's 44 census trades (`tools/trades_census.json`) against the kit's defs;
+`verify.py --assert` prints it as `voth-trades` (`tools/check_trades.py`). Dhelv builds from the kit and shares the table.
+20 trades carried, 6 partly, 7 gaps, 11 na (hidden cave people, no sea, river or electricity; embassies tabled).
+
+- [ ] **Gaps (no building):** butchers, teachers and scholars (a school), customs officers and clerks (a customs house),
+      orchardmen (an orchard), miners (a mine), beetle herders (a pen for the staghorn beetle PLAN.md gives the herders and
+      scouts), dairymen (a dairy).
+- [ ] **Partly carried:** bakers (the provisioner has a kitchen; no bakehouse), tanners (the leatherworker; no tannery),
+      healers and nurses (the fungal alchemist; no house of healing with beds), quarrymen and masons (the stonecutter;
+      no quarry), granary keepers and millers (the granary; no mill), swineherds and duck keepers (dovecote and bat roost;
+      no pigsty or duck yard).
+- [x] **Not here (na):** shipwrights, coast guard, dockers, river bargemen, fishers, ferrymen (no water to work), chinampa
+      growers, power-house stokers, elephant bug handlers (the Voth city's beast), monks (no order), embassy staff (tabled).

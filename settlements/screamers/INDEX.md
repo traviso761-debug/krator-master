@@ -96,6 +96,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `94-life.js` | 11 |  |
 | `95-pathviz.js` | 4 |  |
 | `96t-screamers-tags.js` | 3 | CORE TAGS: THE SCREAMERS' REG (1) |
+| `96s-screamers-trades.js` | 5 | THE VOTH CENSUS OF TRADES (1) |
 | `99-start.js` | 2 | 99. the take: the Screamers on core/host (1) |
 | `99-tail.html` | <1 |  |
 

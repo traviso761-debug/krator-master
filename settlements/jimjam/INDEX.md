@@ -44,6 +44,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `75-jj-palace.js` | 22 | - (149) |
 | `76-jj-military.js` | 31 **big** |  |
 | `77-jj-agri.js` | 26 |  |
+| `78-jj-trades.js` | 5.0 | Voth census trades table (JIMJAM_TRADES) |
 | `80-cultures.js` | 15 | CULTURE PACKS (shared: core/sockets/) (1); generic: faded tarp, rag, plain iron (17); symbols: each draws in the box (cx,cy,R) with tw (45); the factory: a culture is a palette, a symbol an (60); the packs (add a culture = one mkCulture call) (80) |
 | `81-sky.js` | 10 |  |
 | `84-jj-furniture.js` | 5 |  |
