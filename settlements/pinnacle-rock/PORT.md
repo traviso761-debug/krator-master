@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 105 (43%) | 0 (0%) | 0 (0%) | 25 (10%) | 117 (47%) |
+| KB | 130 (47%) | 0 (0%) | 0 (0%) | 33 (12%) | 114 (41%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -24,6 +24,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/55b-host-farms-plan.js` | 1.0 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | runs PRF's plan (55) on this page's ground (the mesa's foot, the debris slope, the lift road's end) |
 | `src/56-pr-camps.js` | 15.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the bands' grounds as records (PRC.plan): BR_CAMP's grounds pitched on the top and the floor, the hedges and fences (BR_RUN), the tracks |
 | `src/56b-host-camps-plan.js` | 1.4 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | runs PRC's plan (56) with the page's ground rules; its tracks join PR's ways before the forest grows |
+| `src/57-pr-cavern.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Deep Root as records and a KCAVERN plan (PRD.plan): the court, its stair, the passage of the tribes, the hall, the light well, the openings, the rock-cut dressing, the ring of stones, the fig |
+| `src/57b-host-cavern-plan.js` | 1.1 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | runs PRD's plan (57) on this page's cap with KCAVERN and the kit's sizes; the processional joins PR's ways |
 | `src/86-pr-far.js` | 3.2 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the far land: one ring mesh from WORLD.H (the scale model) |
 | `src/87-pr-talus.js` | 1.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the debris slope's fallen blocks: one biome item placed per 6 m cell (KRAND); the slope's height is LAND.talus (45) |
 | `src/88-host-build.js` | 2.1 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
@@ -31,7 +33,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89c-host-town.js` | 6.6 | [draw] | 12 | 0 | 0 | 0 | 2 | 2 | 0 | 2 | 0 | 0 | 0 | draws TOWN's records: the streets as ribbons, the squares paved, each building built once (CAT.proto, isleProto) and instanced |
 | `src/89d-host-farms.js` | 11.1 | [draw] | 23 | 0 | 0 | 0 | 2 | 7 | 0 | 4 | 0 | 0 | 0 | draws FARMS' records: levelled field slabs, instanced crop rows, rice, beds, pens and orchard trees, the paddies' water, the palisade's stakes, the farmhouses and gates (CAT), the tracks and the road |
 | `src/89e-host-camps.js` | 5.6 | [draw] | 13 | 0 | 0 | 0 | 2 | 4 | 0 | 4 | 0 | 0 | 0 | draws CAMPS' records: tents and pens (CAT, instanced), the hedges' runs as a light band and their gates, the fences, banners, tracks |
-| `src/99-host-take.js` | 54.0 | [draw] | 7 | 0 | 0 | 0 | 0 | 14 | 0 | 2 | 4 | 0 | 0 |  |
+| `src/89f-host-cavern.js` | 12.7 | [draw] | 22 | 0 | 0 | 0 | 2 | 7 | 0 | 2 | 0 | 0 | 0 | draws CAVERN's records: the chunks (ground in the cap's material, walls hewn), the cap re-cut over the openings, the dressing, the stones, the fig, the pool, the processional |
+| `src/99-host-take.js` | 60.7 | [draw] | 8 | 0 | 0 | 0 | 0 | 14 | 0 | 2 | 6 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

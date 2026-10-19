@@ -2,8 +2,8 @@
 
 The Beast Riders' roost town on a red sandstone mesa at the north-eastern edge of the hyperjungle (`PLAN.md`; the lore is
 `LORE.md` §6.6). Built in stages (`PLAN.md` section 3). **Done: P0 and P1, the rock and the site; P2, the roosts, the
-Stair, the lifts and the flyers; P3a, the town on the top; P3b, the farms; P3c, the bands' grounds.** The Deep Root cavern and
-the Garden's great-houses (P3d-e) are the stages to come.
+Stair, the lifts and the flyers; P3a, the town on the top; P3b, the farms; P3c, the bands' grounds; P3d, the Deep Root cavern.**
+The Garden's great-houses and the ways up to it (P3e) are the stage to come.
 
 ```
 python3 build.py                                   # dist/pinnacle-rock.html (+ its texture sidecars)
@@ -128,6 +128,19 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
   (the kit's run piece is 9.7 k triangles and the hedges 14 km), its gate pieces whole. A track runs from each floor
   camp's inner gate to the nearest palisade gate whose way crosses neither the farms nor another band's hedge, coming
   in along the gate's front (the Staghorn's takes one bend); the tracks are PR's ways, cleared before the forest grows.
+- **The Deep Root cavern** (P3d) is records (`src/57-pr-cavern.js`, `PRD.plan`, `[G data]`; run in `57b`, drawn by
+  `89f-host-cavern.js`) and a KCAVERN plan (`core/terrain/39-core-cavern.js`, now on this page): in the precinct, on the
+  line from the court (`PR.TOP.court`) to the light well (`PR.TOP.well`), a court 24 by 20 m sunk 8 m into the cap with an
+  open stair cut down into it, the passage of the tribes going down 10 m from its west wall to the hall (44 by 26 m, its
+  vault's crown 15 m over its floor, 3 m of rock over that), the light well from the hall's vault to the sky, two well
+  openings through the cap. The dressing is the kit's rock-cut pieces against their walls: the carved face round the door
+  (scaled to the court's 8 m: the kit's is 14.8 m high), the twelve tribes' niches down the passage in the lore's order,
+  the five shrines' lamp niches and two ledges of offerings along the hall, the altar stone at its west end. Over the
+  well, a stack fig with its roots hanging 12 m down it, in a ring of twelve standing stones; a rain pool on the hall's
+  floor under it; the processional paved from the town's avenue to the court's stair. The cap (necanyons' land fragment
+  draws a top as five coarse rings) is re-cut where it reaches an opening: each such triangle is refined toward the hole's
+  edge to a metre and the parts inside dropped, and the cavern's own ground inside the rim (drawn with the cap's material)
+  closes the seam. The camera may go into the voids (`clampCam`).
 - **The plants**: the necanyons kit (`biomes/necanyons`, read in place with its land fragment `47-host-land.js`, which
   takes this page's `LAND` hooks: the cap height, the LOD spine, the cleared ground, no creek) on the walls, ledges,
   spurs and stacks, kept off the town's ground past the 12 m rim band; the hyperjungle on the floor, kept out of the farms,
@@ -171,8 +184,12 @@ terrace way. The bands' grounds (P3c): a ground for each tribe as `BR_CAMP` has 
 Dragonfly's, the Spider's and the Mammoth's only on the floor), every tent and pen it names pitched, a chief's pavilion
 and a banner on each, no two overlapping, each inside its ground (on the top on the cap 12 m in and off the rock, on
 no town lot or street; on the floor in its hedge), every hedge closed with its two gates and every pasture's fence with
-its gate, a track from every floor camp to a palisade gate through no farm and no other band's hedge. Each has a
-negative control (the fins
+its gate, a track from every floor camp to a palisade gate through no farm and no other band's hedge. The Deep Root
+(P3d): the court 8 m deep and open, its stair open, the passage open from the court to the hall, the hall 44 by 26 m
+and 15 m high with 2 m of rock or more over it, the light well open, no void open to the sky outside the openings
+(KCAVERN's sky check), the cap open over the court (a ray down meets the court's floor), one niche for each of the
+twelve tribes, the five lamp niches, the altar and the carved door, each piece's back in the rock and its front in the
+void, twelve standing stones with nothing built inside their ring. Each has a negative control (the fins
 in one row, a fin over the edge, a 180 m mesa, the Garden all one height, no Garden's mesa, no Heart, a Heart weathered
 like the Garden's mesa, a Heart as tall as its pinnacles, a tree in the Crown, a tree in the farms; a deck cut into its
 fin, a perch facing its fin, a bridge from the north fins to the east, a cable rubbing the wall, the Stair with one gate,
@@ -180,4 +197,5 @@ the Stair ending in the gorge, a deck with no climb, a quetzal sent to a lookout
 the face, a climb 3 m out from its fin, an archaeopteryx in a Quetzal stall, the lift road through the seep pond, a gate sunk into the cap rock; a house on an avenue, in the Wingclaw band's ground, on the rim, two
 houses on one footprint, no assembly hall, no tannery; a field on the forest road, an orchard on the first terrace, a farmhouse half off its
 cell, a gap in the palisade, no forest gate, paddies by the east gate; a tent in the Crown, a gap in a thorn hedge, a hedge
-with no gates, a ground without its chief, a camp's track through the farms, a flyer band camped on the floor).
+with no gates, a ground without its chief, a camp's track through the farms, a flyer band camped on the floor; a court 4 m deep, a tribe's niche missing, a lamp
+niche turned into its wall, a house inside the ring of stones).

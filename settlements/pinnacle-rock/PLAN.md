@@ -151,6 +151,12 @@ the kit's `BR_CAMP` (nine on the top, moved in onto the usable cap; nine on the 
 pastures), 222 tents and pens, banners, and a track from each floor camp to a palisade gate; the camps check and six
 negatives pass. Not as planned: the hedges' runs drawn as a light band (KNOWN_ISSUES.md). Next: P3d, the Deep Root cavern.
 
+**Status (2026-10-19, P3d): the Deep Root is cut** (README.md, "The Deep Root cavern"): the court, its stair, the
+passage of the tribes and the hall as a KCAVERN plan (`src/57-pr-cavern.js`), the light well, the kit's carved face,
+twelve tribes' niches, five lamp niches, ledges and the altar, the fig over the well in its ring of twelve stones, the
+processional; the cavern check and four negatives pass. Not as planned: the door's face scaled to the court (KNOWN_ISSUES.md).
+Next: P3e, the Garden's great-houses and the ways up.
+
 - **P0. The site and the harness.** Find the mesa (section 1), write the point back, `build.py` reading the catalog,
   Girder's flyers and `core/terrain` in place, the port lint, `verify.py` on `tools/harness.py`. Done when a bare red
   mesa stands in the hyperjungle on the page and `--assert` passes.

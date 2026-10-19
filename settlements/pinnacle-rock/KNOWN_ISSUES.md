@@ -1,8 +1,13 @@
 # Pinnacle Rock — known issues
 
-- [ ] **The Deep Root cavern and the Garden's great-houses are not built yet** (P3d-e): the precinct and the Garden's
-      mesa are bare until they are laid (`PLAN.md` section 3). The town (P3a), the farms (P3b) and the bands' grounds
-      (P3c) are.
+- [ ] **The Garden's great-houses and the ways up are not built yet** (P3e): the Garden's mesa and the Heart are bare
+      until they are laid (`PLAN.md` section 3). The town (P3a), the farms (P3b), the bands' grounds (P3c) and the Deep
+      Root (P3d) are.
+- [ ] **The Deep Root is lit like the open air**: no darkness under the rock, no lamp light from the niches (the night
+      and the lamps are P4); its walls take the stacks' cross-bedded sandstone map, projected by facing. The carved door
+      is the kit's piece scaled to 0.53 to fit the 8 m court (its door reads small: about 1.8 m); its passage is drawn,
+      not walked (no core/walk floors yet). The cap's hole is cut on this page (`89f`), not by KSTACKS (its mesh takes no
+      holes): a change to necanyons' top rings or the cap's material moves it; a KSTACKS `holes` option is the clean fix.
 - [ ] **The hedges' runs are drawn light** (a ragged band of brush, `89e`): the kit's own run piece is 9.7 k triangles of
       cut thorn and the nine hedges are 14 km of it; its gate pieces are drawn whole. The cut thorn has no library set
       (`foliage.thorn.cut`, owed: `core/materials/PROMPTS-NEEDED.md`). The pastures are the floor's ground (no grass

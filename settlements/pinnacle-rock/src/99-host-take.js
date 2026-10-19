@@ -32,6 +32,10 @@ const VIEWS=(function(){const V={},n0=_fin('fin-n0'),e1=_fin('fin-e1');
  // THE BANDS' GROUNDS (P3c): the Quetzal's on the top by the east fins, a floor camp in its hedge
  if(typeof CAMPS!=='undefined'&&CAMPS){const Q=CAMPS.grounds.find(g=>g.tribe==='quetzal'&&g.ground==='upper');if(Q)V['The Quetzal band\'s ground (by the east fins)']=[Q.ell.x-110,_top+45,Q.ell.z+90,Q.ell.x,_top+3,Q.ell.z];
   const T=CAMPS.grounds.find(g=>g.tribe==='threehorn'&&g.ground==='lower');if(T)V['The Threehorn band\'s camp and pasture (in its thorn hedge)']=[T.ell.x+190,90,T.ell.z+260,T.ell.x-120,0,T.ell.z-60];}
+ // THE DEEP ROOT (P3d): the court and its carved face from over its stair; inside the hall, toward the altar
+ if(typeof CAVERN!=='undefined'&&CAVERN){const D=CAVERN,c=D.axis.c,u=D.axis.u,v=D.axis.v,P=(a,b,y)=>[c[0]+u[0]*a+v[0]*b,y,c[1]+u[1]*a+v[1]*b];
+  {const e=P(-30,8,D.y.top+16),t=P(6,0,D.y.court+3);V['The Deep Root\'s court and its carved door']=[e[0],e[1],e[2],t[0],t[1],t[2]];}
+  {const e=P(D.wellA-21,0,D.y.hall+6),t=P(D.wellA+18,0,D.y.hall+4);V['Inside the hall of the Deep Root (the light well and the altar)']=[e[0],e[1],e[2],t[0],t[1],t[2]];}}
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the rock, the zone of the top or
@@ -318,6 +322,43 @@ const HCHK={
     PR.HEDGES.forEach((H,k)=>{if(PR.CAMPS[k].tribe===g.tribe)return;if(P.some(q=>PR.inPoly(q[0],q[1],H.pts))&&bad.length<14)bad.push(g.track.name+' through the '+PR.CAMPS[k].tribe+' hedge');});}});
   const up=G.filter(g=>g.ground==='upper').length,lo=G.length-up;
   return{ok:!bad.length,detail:G.length+' grounds ('+up+' on the top, '+lo+' on the floor), '+all.length+' tents and pens'+(bad.length?': '+bad.slice(0,8).join('; '):'; every one pitched, apart, in its ground; the hedges closed, the gates and tracks there')};},
+ // THE DEEP ROOT (P3d): the court sunk 8 m and open to the sky, its stair cut down into it; the passage of the tribes
+ // joining it to the hall (open all the way along); the hall 44 by 26 m and 15 m to its crown, 2 m of rock or more over
+ // it (but at the light well); the light well open from the hall to the sky; no void open to the sky outside the two
+ // openings (KCAVERN's sky check); the cap drawn open over the court (a ray down meets the court's floor, not the cap);
+ // the carved face, the twelve tribes' niches (one of each), the five shrines' lamp niches, the altar; each piece's
+ // back in the rock and its front in the void; twelve standing stones round the well with nothing built inside
+ cavern(D){if(!D)return{ok:false,detail:'no cavern'};const C=D.C,bad=[],top=D.y.top,u=D.axis.u,v=D.axis.v,c=D.axis.c,P=(a,b)=>[c[0]+u[0]*a+v[0]*b,c[1]+u[1]*a+v[1]*b];
+  if(Math.abs(top-D.court.y0-8)>.01)bad.push('the court '+(top-D.court.y0)+' m deep');
+  const cc=P(0,0);if(C.ceilingAt(cc[0],cc[1],D.court.y0+1)!==null)bad.push('the court roofed');
+  const s0=D.stair.a,s1=D.stair.b;for(let k=1;k<10;k++){const t=k/10,x=s0[0]+(s1[0]-s0[0])*t,z=s0[2]+(s1[2]-s0[2])*t,y=s0[1]+(s1[1]-s0[1])*t+1;if(C.ceilingAt(x,z,y)!==null){bad.push('the court\'s stair roofed');break;}}
+  const pa=D.passage.a,pb=D.passage.b;for(let k=0;k<=20;k++){const t=k/20,x=pa[0]+(pb[0]-pa[0])*t,z=pa[2]+(pb[2]-pa[2])*t,y=pa[1]+(pb[1]-pa[1])*t+1.6;if(C.voidSD(x,y,z)>-.3){bad.push('the passage shut at '+Math.round(t*100)+'%');break;}}
+  const hl=D.hall,H=hl.h+hl.rise;if(Math.abs(H-15)>.5)bad.push('the hall '+H+' m high');
+  {const xs=hl.poly.map(q=>q[0]),zs=hl.poly.map(q=>q[1]);const L=Math.hypot(hl.poly[1][0]-hl.poly[0][0],hl.poly[1][1]-hl.poly[0][1]),Wd=Math.hypot(hl.poly[3][0]-hl.poly[0][0],hl.poly[3][1]-hl.poly[0][1]);
+   if(Math.abs(L-44)>1||Math.abs(Wd-26)>1)bad.push('the hall '+L.toFixed(0)+' by '+Wd.toFixed(0)+' m');}
+  // the rock over the hall: the cap's top over the hall's vault, 2 m or more, every 3 m (the well's ring left out)
+  let thin=0;
+  {const h0=(hl.poly[0][0]-c[0])*u[0]+(hl.poly[0][1]-c[1])*u[1];for(let a=h0+2;a<h0+42;a+=3)for(let b=-11;b<=11;b+=3){const q=P(a,b);if(Math.hypot(q[0]-D.well.c[0],q[1]-D.well.c[1])<D.well.r1+2)continue;
+    const ce=C.ceilingAt(q[0],q[1],hl.y+1);if(ce===null){thin++;continue;}if(top-ce<2)thin++;}}
+  if(thin)bad.push(thin+' places with under 2 m of rock over the hall');
+  if(C.ceilingAt(D.well.c[0],D.well.c[1],hl.y+1)!==null)bad.push('the light well shut');
+  const leaks=C.skyLeaks(1.5);if(leaks.length)bad.push(leaks.length+' void points open to the sky outside the openings (first '+leaks[0][3]+')');
+  // the cap open over the court: a ray down from over the court's middle meets a surface 4 m or more below the cap
+  {const RC=new THREE.Raycaster(new THREE.Vector3(cc[0],top+40,cc[1]),new THREE.Vector3(0,-1,0),0,80),ms=[];scene.traverse(o=>{if(o.isMesh&&o.userData.rock)ms.push(o);});
+   const h=RC.intersectObjects(ms,false)[0];if(!h||h.point.y>top-4)bad.push('the cap drawn over the court'+(h?' (hit at '+h.point.y.toFixed(1)+')':''));}
+  // the dressing
+  const nOf=k=>D.dress.filter(d=>d.key===k);const tn=nOf('br_bldg_rock_tribe_niche'),ln=nOf('br_bldg_rock_lamp_niche');
+  if(new Set(tn.map(d=>d.v)).size!==12)bad.push(new Set(tn.map(d=>d.v)).size+' of 12 tribes\' niches');if(new Set(ln.map(d=>d.v)).size!==5)bad.push(new Set(ln.map(d=>d.v)).size+' of 5 lamp niches');
+  if(!nOf('br_bldg_rock_altar').length)bad.push('no altar');if(!nOf('br_bldg_rock_cavern_door').length)bad.push('no carved door');
+  D.dress.forEach(d=>{const n=[Math.sin(d.ry),Math.cos(d.ry)],t=[n[1],-n[0]],front=[d.x+n[0]*(d.d/2+.4),d.z+n[1]*(d.d/2+.4)],y=d.y+Math.min(1.5,d.h/2);
+   const backs=[-1,1].map(sg=>[d.x-n[0]*(d.d/2+.2)+t[0]*sg*(d.w/2-.5),d.z-n[1]*(d.d/2+.2)+t[1]*sg*(d.w/2-.5)]);   /* at its two sides: a piece may stand over an opening (the door over the passage) */
+   if(backs.some(b=>!C.inRock(b[0],y,b[1]))&&bad.length<14)bad.push(d.name+': its back not in the rock');if(C.inRock(front[0],y,front[1])&&bad.length<14)bad.push(d.name+': its front in the rock');});
+  // the ring of stones, nothing built inside it
+  if(D.stones.length!==12)bad.push(D.stones.length+' standing stones');
+  const R=Math.max(...D.stones.map(st=>Math.hypot(st.x-D.well.c[0],st.z-D.well.c[1])));
+  const inside=[].concat(TOWN?TOWN.lots:[],CAMPS?[].concat(...CAMPS.grounds.map(g=>g.items)):[]).filter(L=>Math.hypot(L.x-D.well.c[0],L.z-D.well.c[1])<R+Math.hypot(L.w,L.d)/2);
+  if(inside.length)bad.push(inside.length+' built inside the ring ('+(inside[0].name||inside[0].key)+')');
+  return{ok:!bad.length,detail:'the court '+(top-D.court.y0)+' m deep, the hall '+(hl.h+hl.rise)+' m high, '+D.dress.length+' carved pieces, '+D.stones.length+' stones'+(bad.length?': '+bad.slice(0,8).join('; '):'; open where it should be, shut where it should be, every piece on its wall')};},
  // EACH WING'S BEASTS IN ITS OWN STALLS (owner, 2026-10-19): every beast on a perch, or coming in to one, is one its bay
  // takes (the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx, the Nightwing's bats; the Garden the three)
  wings(list){if(!PRFLY)return{ok:false,detail:'no flyers'};const L=PRFLY.LABEL,bad=list.filter(a=>a.bay&&a.bay.allow&&a.bay.allow.indexOf(a.sp)<0),by={};
@@ -360,6 +401,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the town on the top: every building on the cap, apart, off the streets; every trade',HCHK.town(TOWN));
  add('the farms: six terraces of fields, twelve farmhouses, the palisade and its gates',HCHK.farms(FARMS));
  add('the bands\' grounds: every tribe\'s, pitched, hedged, with its track',HCHK.camps(CAMPS));
+ add('the Deep Root: the court, the passage of the tribes, the hall, the light well, the ring',HCHK.cavern(CAVERN));
  add('the lift road: the beast lift to the north-west gate, cleared',HCHK.road((ROOST.roads||[])[0],ROOST.lifts.find(l=>l.id==='lift-north')));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
@@ -411,21 +453,28 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   if(up)add('a band\'s ground without its chief',HCHK.camps(mv(g=>g!==up?g:Object.assign({},g,{items:g.items.filter(it=>!/chief/.test(it.key))}))));
   if(lo&&lo.track)add('a camp\'s track through the farms',HCHK.camps(mv(g=>g!==lo?g:Object.assign({},g,{track:Object.assign({},g.track,{pts:[[0,900]].concat(g.track.pts)})}))));
   add('a flyer band camped on the floor',HCHK.camps(Object.assign({},C,{grounds:C.grounds.concat([Object.assign({},lo,{tribe:'quetzal'})])})));}
+ if(CAVERN){const D=CAVERN;
+  add('a court 4 m deep',HCHK.cavern(Object.assign({},D,{court:Object.assign({},D.court,{y0:D.y.top-4})})));
+  add('a tribe\'s niche missing',HCHK.cavern(Object.assign({},D,{dress:D.dress.filter(d=>!(d.key==='br_bldg_rock_tribe_niche'&&d.v===3))})));
+  add('a lamp niche turned into its wall',HCHK.cavern(Object.assign({},D,{dress:D.dress.map(d=>d.key==='br_bldg_rock_lamp_niche'&&d.v===0?Object.assign({},d,{ry:d.ry+Math.PI}):d)})));
+  {const T0=TOWN;if(T0){const fake=Object.assign({},T0.lots[60],{x:D.well.c[0]+5,z:D.well.c[1]+5,name:'a house in the ring'});const save=T0.lots;T0.lots=save.concat([fake]);try{add('a house inside the ring of stones',HCHK.cavern(D));}finally{T0.lots=save;}}}}
  {const Rd=(ROOST.roads||[])[0];if(Rd)add('the lift road through the seep pond',HCHK.road(Object.assign({},Rd,{pts:Rd.pts.concat([[PR.POND.x,0,PR.POND.z]])}),ROOST.lifts.find(l=>l.id==='lift-north')));}
  return R;}
 
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
- hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts, the town on the top, the farms and the bands\' grounds)',
- scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
+ hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts, the town on the top, the Deep Root, the farms and the bands\' grounds)',
+ scene,camera,renderer,ground:terrainH,clear:1.8,
+ clampCam:(p,t)=>{if(typeof CAVERN!=='undefined'&&CAVERN&&p.y<MESA_B.top&&CAVERN.C.voidSD(p.x,p.y,p.z)<-.8)return;const g=terrainH(p.x,p.z)+1.8;if(p.y<g)p.y=g;},   // into the Deep Root's voids (P3d)
+registry:REG,views:VIEWS,ticks:TICKS,
  hourTicks:[(dt,hour)=>{if(PRFLY)PRFLY.update(dt,hour);}],   // Girder's flyers on the roosts (89b, build.py flyers_fragment)
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
-  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the farms':{match:o=>!!(o.userData&&o.userData.farms)},'the camps':{match:o=>!!(o.userData&&o.userData.camps)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
+  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the farms':{match:o=>!!(o.userData&&o.userData.farms)},'the camps':{match:o=>!!(o.userData&&o.userData.camps)},'the Deep Root':{match:o=>!!(o.userData&&o.userData.cavern)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
   'the far land':{match:o=>!!(o.userData&&o.userData.far)},'sky':{objects:()=>[sky,giant,giantRing]}},
- exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST,town:TOWN?TOWN.K.export():null,farms:FARMS?{terraces:FARMS.terraces,cells:FARMS.cells,houses:FARMS.houses,palisade:FARMS.palisade,tracks:FARMS.tracks}:null,camps:CAMPS?{grounds:CAMPS.grounds,tracks:CAMPS.tracks}:null})},
+ exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST,town:TOWN?TOWN.K.export():null,farms:FARMS?{terraces:FARMS.terraces,cells:FARMS.cells,houses:FARMS.houses,palisade:FARMS.palisade,tracks:FARMS.tracks}:null,camps:CAMPS?{grounds:CAMPS.grounds,tracks:CAMPS.tracks}:null,cavern:CAVERN?Object.assign(CAVERN.C.export(),{dress:CAVERN.dress,stones:CAVERN.stones,fig:CAVERN.fig}):null})},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
@@ -433,4 +482,5 @@ KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
   town:()=>TOWN?{ms:TOWN.ms,lots:TOWN.lots.length,ways:TOWN.ways.length,log:TOWN.log,failed:TOWN.failed,missing:TOWN.missing,trades:TOWN.trades,draw:TOWN_DRAW}:null,
   farms:()=>FARMS?{ms:FARMS.ms,cells:FARMS.cells.length,houses:FARMS.houses.length,log:FARMS.log,draw:FARMS_DRAW}:null,
   camps:()=>CAMPS?{ms:CAMPS.ms,log:CAMPS.log,draw:CAMPS_DRAW}:null,
+  cavern:()=>CAVERN?{ms:CAVERN.ms,prims:CAVERN.C.prims.length,dress:CAVERN.dress.length,draw:CAVERN_DRAW}:null,
   roosts:()=>({ms:ROOST.ms,decks:ROOST.decks.length,stalls:ROOST.roosts.length,bridges:ROOST.bridges.length,lifts:ROOST.lifts.length,climbs:ROOST.climbs.length,why:ROOST.why})}});

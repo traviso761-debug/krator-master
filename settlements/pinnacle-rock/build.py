@@ -60,7 +60,7 @@ def find_node():
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
 OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "pinnacle-rock.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
-CORE_TERRAIN=['37-core-stacks.js','38-core-relief.js']   # KSTACKS (the rock); KRELIEF (the noise the open world's fields take)
+CORE_TERRAIN=['37-core-stacks.js','38-core-relief.js','39-core-cavern.js']   # KSTACKS (the rock); KRELIEF (the noise the open world's fields take); KCAVERN (the Deep Root cavern, P3d)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit. 35-core-anim: the hyperjungle's fauna
 CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
@@ -169,7 +169,8 @@ function catProto(key, v, o) {
 }
 function catDims(key, v) { var A = ASSET_BY_KEY[key]; if (!A) return null; var D = (A.variantDims && A.variantDims[v | 0]) || A; return { w: D.w, d: D.d, h: D.h, variants: A.variants || 1 }; }
 return { proto: catProto, dims: catDims, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS, TRADES: (typeof BR_TRADES !== 'undefined' ? BR_TRADES : null),
-  CAMP: (typeof BR_CAMP !== 'undefined' ? BR_CAMP : null), RUN: (typeof BR_RUN !== 'undefined' ? BR_RUN : null) };
+  CAMP: (typeof BR_CAMP !== 'undefined' ? BR_CAMP : null), RUN: (typeof BR_RUN !== 'undefined' ? BR_RUN : null),
+  TRIBES: (typeof BR_CAMP_TRIBES !== 'undefined' ? BR_CAMP_TRIBES : null) };
 '''
 def cat_fragment(side):
     if BRK not in sys.path: sys.path.insert(0,BRK)
