@@ -40,3 +40,7 @@
       runs of at most 16 steps with landings (`SKILL.md` 5j) do not fit its 10 m footprint as a straight flight. The
       front pavilions' inner columns stand inside the hall block's corners, where the round pavilions overlap it (as
       the sheets draw the pavilions as squares). Its rooms (the blueprint's B, G, U and L sheets) come with P6.
+- [ ] No dark voids (2026-10-19): the Talia kit's openings are doors, panes and open portals. The Iziz Vernacular houses on
+      the sheet (the mixed streets) still draw the Vernacular's dark door recesses and dark glass where their walls are not
+      hollow: that is the shared Vernacular helper (settlements/iziz 69c, vendored byte-identical by five builds), the owner's call.
+- [ ] Lit windows (rich and civic) keep the warm lit pane; their white glazing bars barely show on it by day.

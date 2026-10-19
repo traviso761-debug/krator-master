@@ -11,18 +11,27 @@ function tanDiscAt(item,x,yc,z,ry,r,out,d,c){const f=loc(x,z,0,out-d/2,ry);kput(
 // `out` proud, from angle a0 to a1 (from +x, counterclockwise seen from outside), in n straight segments
 function tanArcBand(x,yc,z,ry,K,bw,dp,out,c,a0,a1,n,item){n=n||Math.max(4,Math.round((a1-a0)*K*3));const seg=(a1-a0)/n,L=2*K*Math.sin(seg/2)+bw*.6;
  for(let k=0;k<n;k++){const a=a0+(k+.5)*seg;const p=loc(x,z,Math.cos(a)*K,out-dp/2,ry);vBq(item||'vPlaster',p[0],yc+Math.sin(a)*K,p[1],bw,L,dp,vQ(ry,0,a),c);}}
-const TA_FILL={D:['vDarkB','taDiscD','taGableD'],G:['vWinGlass','taDiscG','taGableG'],L:['vWinLit','taDiscL','taGableL'],W:['vPlaster','taDisc','vGablePl'],M:['taMarble','taDiscM','taGableM'],C:['taCobalt','taDiscC','taGableC']};
+const TA_FILL={D:['vDarkB','taDiscD','taGableD'],G:['taWinB','taWinDisc','taWinGable'],L:['vWinLit','taDiscL','taGableL'],W:['vPlaster','taDisc','vGablePl'],M:['taMarble','taDiscM','taGableM'],C:['taCobalt','taDiscC','taGableC']};
 // an arched opening of width w and height h (foot to apex) on a face. o = {kind: 'round' (default) | 'point' | 'cusp' |
 // 'flat' (a square head), fill: 'D' dark | 'G' glass | 'L' lit | 'W' blind (wall colour) | 'M' marble | 'C' cobalt,
 // fc: fill colour, band: the archivolt's colour (none: no band), bw: the band's width (.14), out: its stand-off (.06),
 // jambs: true (default) draws the band down the sides too, key: a keystone colour, sill: a sill colour, rail: an iron
 // rail's colour across the foot (a loggia), rev: the reveal (the fill set back into the wall), lobes: cusps (3),
 // gilt: the band in gilt}. Returns the top y.
-function tanArch(x,y,z,ry,w,h,o){o=o||{};const kind=o.kind||'round',F=TA_FILL[o.fill||'D'],bw=o.bw==null?.14:o.bw,out=o.out==null?.06:o.out,rev=(o.rev==null?0:o.rev),fc=o.fc||null;
+// No dark voids (the owner, 2026-10-19): an opening asked for as 'D' (or with no fill) is a DOOR when it is door-shaped
+// (2 m or more, taller than wide, no sill or rail; o.door overrides) and a WINDOW (fill 'G', the sky-grey pane) otherwise.
+// A door is timber leaves under a glazed fanlight (glazed double doors at 2.4 m wide or more); a glazed fill gets glazing
+// bars (o.bars false: none; o.barC their colour). On a hollow body the opening cuts the wall (vnHole; o.cut false keeps
+// it whole), the window's pane standing in the cut, the door's leaves swung in.
+function tanArch(x,y,z,ry,w,h,o){o=o||{};const kind=o.kind||'round',bw=o.bw==null?.14:o.bw,out=o.out==null?.06:o.out,rev=(o.rev==null?0:o.rev),fc=o.fc||null;
  const r=w/2,rise=kind==='flat'?0:kind==='point'?w*.72:r,hb=Math.max(.05,h-rise),yc=y+hb/2,bi=o.gilt?'taGilt':'vPlaster';
- tanSlab(F[0],x,yc,z,ry,w,hb,.03-rev,.1,fc);
- if(kind==='round'||kind==='cusp')tanDiscAt(F[1],x,y+hb,z,ry,r,.03-rev,.1,fc);
- else if(kind==='point'){const f=loc(x,z,0,-rev-.02,ry);kput(F[2],[f[0],y+hb,f[1]],vQ(ry+Math.PI/2,0,0),[.08,rise,w],fc);}
+ let fill=o.fill||'D';if(fill==='D')fill=(o.door!=null?o.door:(h>=2&&h>=w*1.15&&!o.sill&&!o.rail))?'DOOR':'G';
+ if(fill==='DOOR')tanArchDoor(x,y,z,ry,w,h,kind,r,rise,hb,o);
+ else{const F=TA_FILL[fill];if(o.cut!==false&&fill!=='W'&&fill!=='M'&&typeof vnHole==='function')vnHole(x,y,z,ry,w,hb,false);
+  tanSlab(F[0],x,yc,z,ry,w,hb,.03-rev,.1,fc);
+  if(kind==='round'||kind==='cusp')tanDiscAt(F[1],x,y+hb,z,ry,r,.03-rev,.1,fc);
+  else if(kind==='point'){const f=loc(x,z,0,-rev-.02,ry);kput(F[2],[f[0],y+hb,f[1]],vQ(ry+Math.PI/2,0,0),[.08,rise,w],fc);}
+  if(o.bars!==false&&fill!=='W'&&fill!=='M')tanGlaze(x,y,z,ry,w,hb,kind,r,rise,.1-rev,o.barC);}
  if(o.band){const bc=o.band,K=r+bw/2;
   if(kind==='round'||kind==='cusp')tanArcBand(x,y+hb,z,ry,K,bw,.12,out,bc,0,Math.PI,null,bi);
   else if(kind==='point'){const R=(w*w/4+rise*rise)/w,cc=R-w/2,aT=Math.atan2(rise,cc);for(const s of[-1,1]){const p=loc(x,z,s*cc,0,ry);
@@ -35,6 +44,46 @@ function tanArch(x,y,z,ry,w,h,o){o=o||{};const kind=o.kind||'round',F=TA_FILL[o.
  if(o.sill)tanSlab('vPlaster',x,y-.06,z,ry,w+2*bw+.1,.12,out+.06,.22,o.sill);
  if(o.rail){const f=loc(x,z,0,.08,ry);vB('vIron',f[0],y+.95,f[1],w,.04,.04,ry,o.rail);const n=Math.max(2,Math.round(w/.3));for(let k=0;k<=n;k++){const p=loc(x,z,-w/2+k*w/n,.08,ry);vB('vIron',p[0],y,p[1],.03,.95,.03,ry,o.rail);}}
  return y+h;}
+// glazing bars over a pane w wide whose rectangle is hb high from y: a mullion (from .7 m wide), a transom (from 1.2 m
+// high), three radial bars in a round head (from 1 m wide), a bar up a pointed one; out: their stand-off from the face
+function tanGlaze(x,y,z,ry,w,hb,kind,r,rise,out,c){c=c||vC(TAPAL.white[0]);const t=Math.min(.06,w*.05),f=loc(x,z,0,out,ry);
+ if(w>=.7)vB('vPlaster',f[0],y,f[1],t,hb,.04,ry,c);if(hb>=1.2)vB('vPlaster',f[0],y+hb*.58,f[1],w,t,.04,ry,c);
+ if((kind==='round'||kind==='cusp')&&w>=1){for(const a of[Math.PI/4,Math.PI/2,Math.PI*.75]){const p=loc(x,z,Math.cos(a)*r/2,out,ry);vBq('vPlaster',p[0],y+hb+Math.sin(a)*r/2,p[1],t,r,.04,vQ(ry,0,a-Math.PI/2),c);}
+  vB('vPlaster',f[0],y+hb-t/2,f[1],w,t,.04,ry,c);}
+ else if(kind==='point'){vB('vPlaster',f[0],y+hb,f[1],t,rise*.9,.04,ry,c);vB('vPlaster',f[0],y+hb-t/2,f[1],w,t,.04,ry,c);}}
+// leaves in an opening w wide and hb high from y on a face: closed (panelled timber, or glazed in a timber frame over a
+// kick panel), or swung in through a cut (open); a pull at the meeting edge
+function tanLeaves(x,y,z,ry,w,hb,wood,glazed,open){const n=w>1.4?2:1,lw=w/n,brass=vC(TAPAL.gilt[0]),lite=wood.clone().multiplyScalar(1.12),th=1.25;
+ for(let i=0;i<n;i++){const left=n===1||i===0;
+  if(open){const hx=left?-w/2:w/2,dx=(left?1:-1)*Math.cos(th)*lw/2,p=loc(x,z,hx+dx,-Math.sin(th)*lw/2-.08,ry);vB('vWood',p[0],y,p[1],lw-.03,hb-.02,.07,ry+(left?th:-th),wood);continue;}
+  const u=-w/2+lw*(i+.5),c0=loc(x,z,u,.04,ry);
+  if(glazed){vB('taWinB',c0[0],y+.8,c0[1],lw-.1,hb-.9,.04,ry,null);
+   for(const s of[-1,1]){const q=loc(x,z,u+s*(lw/2-.06),.06,ry);vB('vWood',q[0],y,q[1],.1,hb,.08,ry,wood);}
+   vB('vWood',c0[0],y,c0[1],lw-.04,.8,.08,ry,wood);vB('vWood',c0[0],y+hb-.1,c0[1],lw-.04,.1,.08,ry,wood);vB('vWood',c0[0],y+.8+(hb-.9)*.55,c0[1],lw-.04,.06,.06,ry,wood);}
+  else{vB('vWood',c0[0],y,c0[1],lw-.03,hb,.07,ry,wood);
+   for(const [y0,h0] of[[.2,hb*.38],[hb*.5,hb*.42]]){const q=loc(x,z,u,.085,ry);vB('vWood',q[0],y+y0,q[1],lw*.62,h0,.03,ry,lite);}}
+  const pu=loc(x,z,u+(n===2?(left?lw/2-.12:-lw/2+.12):lw*.3),.11,ry);vB('vIron',pu[0],y+.95,pu[1],.05,.3,.05,ry,brass);}}
+// a door in an arch (tanArch's DOOR fill): the leaves under a glazed fanlight in the head, a timber transom between
+function tanArchDoor(x,y,z,ry,w,h,kind,r,rise,hb,o){const cut=o.cut!==false&&typeof vnHole==='function'&&vnHole(x,y,z,ry,w,hb,true);
+ const wood=o.leafC||vC(vPick(TAPAL.walnut));
+ if(kind==='round'||kind==='cusp'){tanDiscAt('taWinDisc',x,y+hb,z,ry,r,.03,.1,null);tanGlaze(x,y+hb-.01,z,ry,w,.01,kind,r,rise,.1,o.barC);}
+ else if(kind==='point'){const f=loc(x,z,0,-.02,ry);kput('taWinGable',[f[0],y+hb,f[1]],vQ(ry+Math.PI/2,0,0),[.08,rise,w],null);tanGlaze(x,y+hb-.01,z,ry,w,.01,kind,r,rise,.1,o.barC);}
+ const t=loc(x,z,0,.06,ry);vB('vWood',t[0],y+hb-.1,t[1],w,.1,.12,ry,wood);
+ tanLeaves(x,y,z,ry,w,hb-.1,wood,w>=2.4,cut);
+ if(window.DOORS&&VERN.cur){const C=VERN.cur,sc=C.o.scale||1;const wp=loc(C.x,C.z,x*sc,z*sc,C.ry);DOORS.push({x:wp[0],z:wp[1],ry:ry+C.ry,y:(C.o.y||0)+y*sc,key:C.D.key});}}
+// a door in a frame (the Vernacular's vnDoor without its dark recess): on a hollow face vnDoor itself (69f draws it open
+// and cuts the wall); elsewhere closed panelled leaves in the jambs and lintel, the step, the lamp under vLit()
+function tanDoor(x,y,z,ry,w,h,frameItem,c,leafC,step){
+ if(VERN.cur&&VERN.cur.hollow&&typeof vnFaceOf==='function'&&vnFaceOf(x,y,z,ry))return vnDoor(x,y,z,ry,w,h,frameItem,c,leafC,step);
+ frameItem=frameItem||'vWood';tanLeaves(x,y,z,ry,w,h,leafC||c||vC(vPick(TAPAL.walnut)),false,false);
+ for(const s of[-1,1]){const q=loc(x,z,s*(w/2+.09),.12,ry);vB(frameItem,q[0],y,q[1],.18,h+.18,.2,ry,c);}
+ const p=loc(x,z,0,.12,ry);vB(frameItem,p[0],y+h+.06,p[1],w+.5,.2,.26,ry,c);
+ if(step!==false){const s=loc(x,z,0,.5,ry);vB(frameItem==='vStone'?'vStone':'vWood',s[0],y-.18,s[1],w+.6,.18,.8,ry,c);}
+ if(vLit())vnLamp(x,y+h+.5,z,ry);
+ if(window.DOORS&&VERN.cur){const C=VERN.cur,sc=C.o.scale||1;const wp=loc(C.x,C.z,x*sc,z*sc,C.ry);DOORS.push({x:wp[0],z:wp[1],ry:ry+C.ry,y:(C.o.y||0)+y*sc,key:C.D.key});}}
+// a window: the Vernacular's vnWin with Talia's pane over its dark glass (an 'open' window is glazed)
+function tanWin(x,y,z,ry,w,h,kind,frameItem,c,shutters){if(kind==='open')kind='glass';vnWin(x,y,z,ry,w,h,kind,frameItem,c,shutters);
+ if(kind==='glass'){const f=loc(x,z,0,.11,ry);vB('taWinB',f[0],y,f[1],w,h,.02,ry,null);}}
 // an arcade along a face centred at (x, z): n arches of span w with piers `pier` wide between and at the ends (or
 // columns of order o.col at the piers' places, radius pier*.4, standing o.colOut in front); o passes to tanArch.
 // Returns the run's length
@@ -109,12 +158,12 @@ function tanDome(x,y,z,r,o){o=o||{};const kind=o.kind||'hemi';let item=o.item,h=
 function tanDrum(x,y,z,r,h,n,c,o){o=o||{};vPst(o.round?'taDrum':'vPostS',x,y,z,r,h,c);
  const ww=o.ww==null?Math.min(1.2,r*.5):o.ww,wh=o.wh==null?Math.min(h-.5,ww*2.2):o.wh;
  for(let k=0;k<n;k++){const a=k*TAU/n+(o.a0||0);const p=[x+Math.sin(a)*r,z+Math.cos(a)*r];
-  tanArch(p[0],y+(h-wh)/2,p[1],a,ww,wh,{fill:o.fill||'D',band:o.band,bw:.1,out:.04,gilt:o.gilt});
+  tanArch(p[0],y+(h-wh)/2,p[1],a,ww,wh,{fill:o.fill||'G',band:o.band,bw:.1,out:.04,gilt:o.gilt});
   if(o.pil){const b=(k+.5)*TAU/n+(o.a0||0);const q=[x+Math.sin(b)*r,z+Math.cos(b)*r];tanPilaster(q[0],y,q[1],b,.4,h-.1,o.pilC||c,o.capC);}}
  kput('taRing',[x,y+h,z],null,[r+.06,r+.06,1.2],o.corniceC||c);
  return y+h;}
 // a lantern: a small drum of open arches under a small dome and a finial. Returns the top y (under the finial)
-function tanLantern(x,y,z,r,h,c,domeC,finialC,o){o=o||{};tanDrum(x,y,z,r,h,(o.n==null?6:o.n),c,{fill:'D',band:o.band});
+function tanLantern(x,y,z,r,h,c,domeC,finialC,o){o=o||{};tanDrum(x,y,z,r,h,(o.n==null?6:o.n),c,{fill:'G',band:o.band});
  return tanDome(x,y+h+.08,z,r+.1,{kind:o.kind||'hemi',c:domeC,item:o.item,finial:finialC,fr:Math.max(.08,r*.18)});}
 // a drum and dome: the drum, its cornice, the dome, the lantern: the named ending of every important mass
 // o = {drumH, n: windows (8), kind, drumC, domeC, item, ribs, ribItem, ribC, lantern: false to omit, lanternC, finial:
@@ -157,9 +206,9 @@ function tanRoseWindow(x,y,z,ry,r){const f=loc(x,z,0,.06,ry);if(TAL_MATLIB.taRos
 // with the library bound (TAL_MATLIB.taJaliA, taJaliG: the owner's cut-out cards, one tile a metre, chosen by place) the
 // lattice is one card plane; `bare` leaves out the dark ground (a lit opening behind shows through the cut-out)
 function tanJali(x,y,z,ry,w,h,c,pitch,bare){pitch=(pitch==null?.22:pitch);const f=loc(x,z,0,.02,ry);const nx=Math.round(w/pitch),ny=Math.round(h/pitch);
- if(TAL_MATLIB.taJaliA){if(!bare)vB('vDarkB',f[0],y,f[1],w,h,.04,ry);const g=loc(x,z,0,.08,ry);
+ if(TAL_MATLIB.taJaliA){if(!bare)vB('taWinB',f[0],y,f[1],w,h,.04,ry);const g=loc(x,z,0,.08,ry);
   kput(((Math.round(x*7+z*13)&1)?'taJaliG':'taJaliA'),[g[0],y+h/2,g[1]],vQ(ry,0,0),[w,h,1],c||null);return;}
- vB('vDarkB',f[0],y,f[1],w,h,.04,ry);for(let k=0;k<=nx;k++){const p=loc(x,z,-w/2+k*w/nx,.05,ry);vB('vPlaster',p[0],y,p[1],.04,h,.05,ry,c);}
+ vB('taWinB',f[0],y,f[1],w,h,.04,ry);for(let k=0;k<=nx;k++){const p=loc(x,z,-w/2+k*w/nx,.05,ry);vB('vPlaster',p[0],y,p[1],.04,h,.05,ry,c);}
  for(let k=0;k<=ny;k++)vB('vPlaster',f[0],y+k*h/ny-.02,f[1],w,.04,.1,ry,c);}
 // an outside straight stair along a wall face: its foot at (x, z) on the face, climbing along the face toward local
 // x * dir, w wide, `rise` over `steps`; treads in treadC (orange on Talia) with a sloping stringer wall in c on the open side
@@ -176,7 +225,7 @@ function tanImperialStair(x,y,z,ry,w,rise,c,treadC,o){o=o||{};const h1=rise/2,n1
  // the upper flights, from the landing's ends up to the face; the wall between them under the terrace; the fill under each
  for(const s of[-1,1]){const p=loc(x,z,s*(w/2+uw/2+.25),run2/2,ry);vnStairs(p[0],y+h1,p[1],ry,uw,h1,n2,'taMarble',c);vB('taMarble',p[0],y,p[1],uw,h1,run2,ry,c);
   const q=loc(x,z,s*(W/2-.12),run2/2,ry),ang=Math.atan2(h1,run2);kput('taMarble',[q[0],y+h1*1.5+.45,q[1]],vQ(ry,ang,0),[.24,.9,Math.hypot(run2,h1)],c);}
- const M=loc(x,z,0,run2/2,ry);vB('taMarble',M[0],y,M[1],w,h1+.3,run2,ry,c);tanArch(loc(x,z,0,run2,ry)[0],y,loc(x,z,0,run2,ry)[1],ry,Math.min(1.6,w*.5),h1-.1,{fill:'D',band:c,bw:.12});
+ const M=loc(x,z,0,run2/2,ry);vB('taMarble',M[0],y,M[1],w,h1+.3,run2,ry,c);tanArch(loc(x,z,0,run2,ry)[0],y,loc(x,z,0,run2,ry)[1],ry,Math.min(1.6,w*.5),h1-.1,{fill:'M',band:c,bw:.12});
  // the landing and the lower flight beyond it
  const L=loc(x,z,0,run2+LD/2,ry);vB('taMarble',L[0],y,L[1],W,h1,LD,ry,c);
  const F=loc(x,z,0,run2+LD+run1/2,ry);vnStairs(F[0],y,F[1],ry,w,h1,n1,'taMarble',c);
@@ -223,7 +272,7 @@ function tanVault(x,y,z,ry,r,len,c,item,endC){kput(item||'taVault',[x,y,z],vQ(ry
 function tanCourtGallery(x,y,z,IW,ID,h,walk,c,bandC,o){o=o||{};const bay=o.bay==null?3.2:o.bay,cr=o.r==null?.18:o.r,cc=o.cc||c,G=o.gate||0;
  [[0,-ID/2,0,IW],[0,ID/2,Math.PI,IW],[IW/2,0,-Math.PI/2,ID],[-IW/2,0,Math.PI/2,ID]].forEach(([lx,lz,a,L],i)=>{
   const f=loc(x,z,lx,lz,0),run=L-2*walk,n=Math.max(2,Math.round(run/bay)),b=run/n,r=b/2-cr-.12,hc=h-r-.3,gate=G&&a===Math.PI;
-  for(let k=0;k<n;k++){const u=-run/2+k*b,ub=u+b/2;const w=loc(f[0],f[1],ub,0,a);tanArch(w[0],y,w[1],a,b-.9,h-.6,{fill:o.fill||'D',band:bandC,bw:.12});
+  for(let k=0;k<n;k++){const u=-run/2+k*b,ub=u+b/2;const w=loc(f[0],f[1],ub,0,a);tanArch(w[0],y,w[1],a,b-.9,h-.6,{fill:o.fill||'D',band:bandC,bw:.12,door:o.fill?undefined:k%2===0});
    if(!(gate&&Math.abs(u)<G)){const p=loc(f[0],f[1],u,walk,a);tanColumn(p[0],y,p[1],hc,cr,o.order||'doric',cc,o.capC);}
    if(!(gate&&Math.abs(ub)<G+b/2)){const q=loc(f[0],f[1],ub,walk,a);tanArcBand(q[0],y+hc+.1,q[1],a,r+.07,.16,.4,0,bandC,0,Math.PI,10);}}
   const s=loc(f[0],f[1],0,walk/2,a);if(i<2)vB('vPlaster',s[0],y+h,s[1],L,.3,walk+.2,a,c);else vB('vPlaster',s[0],y+h+.01,s[1],run-.4,.28,walk+.2,a,c);
@@ -232,7 +281,7 @@ function tanCourtGallery(x,y,z,IW,ID,h,walk,c,bandC,o){o=o||{};const bay=o.bay==
 // a shop front on a face: an opening w wide and h high in a band of bandC (flat-headed; o.kind 'round'), the leaf of a
 // timber door folded back at its left jamb, a counter board across the rest with goods on it (crates, pots, a sack), an
 // awning over it (o.awning false to omit; o.awnC its cloth) and a sign board on a bracket at its right (o.sign: colour)
-function tanShopFront(x,y,z,ry,w,h,bandC,o){o=o||{};const wood=o.woodC||vC(vPick(VPAL.woodMid));tanArch(x,y,z,ry,w,h,{kind:o.kind||'flat',fill:'D',band:bandC,bw:.14,key:o.key});
+function tanShopFront(x,y,z,ry,w,h,bandC,o){o=o||{};const wood=o.woodC||vC(vPick(VPAL.woodMid));tanArch(x,y,z,ry,w,h,{kind:o.kind||'flat',fill:'G',band:bandC,bw:.14,key:o.key});
  const l=loc(x,z,-w/2+.3,.42,ry);kput('vWood',[l[0],y+h/2-.1,l[1]],vQ(ry,0,0).multiply(qEuler(0,-1.15,0)),[.9,h-.2,.06],o.leafC||wood);
  const cw=w-1.4,b=loc(x,z,.4,.35,ry);vB('vWood',b[0],y,b[1],cw,.9,.6,ry,wood);
  for(let k=0;k<3;k++){const g=loc(x,z,.4-cw/2+(k+.5)*cw/3,.35,ry);const t=rng();if(t<.4)vnCrate(g[0],y+.9,g[1],.38,ry+rr(-.3,.3));else if(t<.7)vPst('vClayPot',g[0],y+.9,g[1],.16,.38,vC(vPick(TAPAL.tile)));else kput('vSack',[g[0],y+1.06,g[1]],null,[.2,.17,.2],vC(vPick(VPAL.awning)));}

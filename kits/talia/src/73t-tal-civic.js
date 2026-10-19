@@ -28,7 +28,7 @@ function buildTalTemple(G,o){reseed(9751+(o.v|0));const P=3,BW=28,BD=30,H=14,Z0=
  const ff=zf+1.5;vB('vPlaster',0,P+.12,zf+.75,FW,FH-P-.12,1.5,0,wh);kput('vGablePl',[0,FH,zf+.75],vQ(Math.PI/2,0,0),[1.5,4,FW+.4],wh);
  vB('vPlaster',0,FH-.2,zf+.75,FW+.5,.25,1.7,0,or);tanFinial(0,FH+3.9,zf+.75,.26,gi);
  for(const s of[-1,1])tanPilaster(s*(FW/2-.2),P+.12,ff,0,.8,FH-P-.3,wh,gi);
- tanArch(0,P+.12,ff,0,4.6,8.6,{kind:'point',fill:'D',band:gi,gilt:true,bw:.26});
+ tanArch(0,P+.12,ff,0,4.6,8.6,{kind:'point',fill:'G',band:gi,gilt:true,bw:.26,cut:false});
  for(const s of[-1,1]){const p=loc(0,ff,s*1.08,.06,0);vB('vWood',p[0],P+.12,p[1],2.1,5.9,.1,0,wal);}
  tanSunburst(-1.08,P+3.9,ff+.12,0,.42,.92,16,gi,false);
  tanDiscAt('taDisc',1.08,P+3.9,ff,0,.88,.18,.06,green);for(const dy of[-.36,0,.36]){const L=2*Math.sqrt(Math.max(0,.77-dy*dy))*.92,p=loc(1.08,ff,0,.2,0);vB('vPlaster',p[0],P+3.9+dy-.06,p[1],L,.12,.04,0,gdark);}
@@ -50,7 +50,7 @@ function buildTalChapel(G,o){reseed(9756+(o.v|0));const W=9,Y0=.8,H=6,Z0=-1.5,zf
  vnReg('Chapel (civic)',0,Z0,W/2+1,19,{style:'byzantine',type:['religious','civic']});
  vB('taMarble',0,0,Z0,W+2,Y0,W+2,0,mb);vnStairs(0,0,zf+1+.64,0,3,Y0,4,'taMarble',mb);
  vnBody('vPlaster',0,Y0,Z0,W,H,W,0,wh,{t:.3});
- vnDoor(0,Y0,zf,0,1.6,3.0,'taMarble',wh,wal,false);tanArch(0,Y0+3.25,zf,0,1.8,2.0,{kind:'point',fill:'C',band:or,bw:.16});
+ tanDoor(0,Y0,zf,0,1.6,3.0,'taMarble',wh,wal,false);tanArch(0,Y0+3.25,zf,0,1.8,2.0,{kind:'point',fill:'C',band:or,bw:.16});
  for(const s of[-1,1])tanPilaster(s*1.5,Y0,zf,0,.4,5.5,wh,gi);
  for(const s of[-1,1])tanArch(s*W/2,Y0+1.4,Z0,s*Math.PI/2,1.2,3.4,{kind:'point',fill:'C',band:or,bw:.14,sill:wh});
  tanArch(0,Y0+1.4,Z0-W/2,Math.PI,1.2,3.4,{kind:'point',fill:'C',band:or,bw:.14,sill:wh});
@@ -74,7 +74,7 @@ function buildTalCouncilHouse(G,o){reseed(9761+(o.v|0));const P=2.4,CW=18,CD=22,
  for(const s of[-1,1]){for(let k=0;k<6;k++)tanPilaster(s*CW/2,P,Z0-CD/2+1.2+k*(CD-2.4)/5,s*Math.PI/2,.6,HC,wh,gi);
   for(let k=0;k<5;k++){const z=Z0-CD/2+1.2+(k+.5)*(CD-2.4)/5;tanArch(s*CW/2,P+2.4,z,s*Math.PI/2,1.4,3.6,{kind:'flat',fill:'L',band:or,bw:.14,sill:wh});tanPediment(s*CW/2,P+6.3,z,s*Math.PI/2,2.0,.45,wh,.12,.3,null);}}
  tanColonnade(0,P+.12,zf+PD-.5,0,CW-1.4,5,HC-.12,.5,'corinthian',mb,gi,0);for(const s of[-1,1])tanColumn(s*(CW/2-.7),P+.12,zf+2.2,HC-.12,.5,'corinthian',mb,gi);
- vnDoor(0,P,zf,0,2.6,5.4,'taMarble',wh,wal,false);tanArcBand(0,P+5.4,zf,0,1.4,.2,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,P+5.4,zf,0,1.3,.03,.1,null);
+ tanDoor(0,P,zf,0,2.6,5.4,'taMarble',wh,wal,false);tanArcBand(0,P+5.4,zf,0,1.4,.2,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,P+5.4,zf,0,1.3,.03,.1,null);
  for(const s of[-1,1])tanNiche(s*4.6,P+.6,zf,0,1.6,3.8,wh,or,mb);
  const YT=tanEntablature(0,P+HC,Z0+PD/2,CW,CD+PD,0,wh,gi,{});
  tanCoffers(0,P+HC-.14,zf+PD/2,CW-.8,PD-.4,0,or,wh,1.2);
@@ -140,7 +140,7 @@ function buildTalWall(G,o){reseed(9776+(o.v|0));const L=o.len==null?12:o.len,H=7
  vnReg('Wall (civic)',0,0,L/2,H+1.4,{style:'byzantine',type:['military','infrastructure']});
  vB('vStone',0,0,0,L,.8,T+.4,0,st);vB('vPlaster',0,.8,0,L,H-.8,T,0,wh);vB('vPlaster',0,5,T/2+.07,L,.2,.14,0,or);
  for(let k=0;k<n;k++){const u=-L/2+(k+.5)*L/n;vB('vPlaster',u,H,T/2-.25,.9,.75,.5,0,wh);kput('taDisc',[u,H+.75,T/2-.25],null,[.45,.45,.5],or);
-  if(k%2===0)vB('vDarkB',u,2.3,T/2+.02,.18,1.0,.05,0);}
+  if(k%2===0){vB('taWinB',u,2.3,T/2+.02,.18,1.0,.05,0,null);vB('vStone',u,2.2,T/2+.04,.42,.1,.12,0,st);vB('vStone',u,3.3,T/2+.04,.42,.1,.12,0,st);}}
  vB('vPlaster',0,H,-T/2+.15,L,.8,.3,0,wh);vB('vPlaster',0,H+.8,-T/2+.15,L,.08,.4,0,or);}
 
 // Wall tower (PLAN.md: orange-capped round towers): a white drum on a marble footing, orange bands, slit windows, a
@@ -153,9 +153,9 @@ function buildTalWallTower(G,o){reseed(9781+(o.v|0));const R=3.8,H=11;
  for(const y of[4.5,8])tanArcRun(0,y,0,R+.06,0,TAU,.2,.25,'vPlaster',or);
  tanArcRun(0,H-.4,0,R+.05,0,TAU,.3,.4,'vPlaster',wh);
  for(let k=0;k<12;k++){const a=k*TAU/12;vB('vPlaster',Math.sin(a)*(R-.25),H,Math.cos(a)*(R-.25),.9,.75,.4,a,wh);kput('taDisc',[Math.sin(a)*(R-.25),H+.75,Math.cos(a)*(R-.25)],vQ(a,0,0),[.45,.45,.4],or);}
- for(const [a,y] of[[0,3],[Math.PI/2,6.5],[-Math.PI/2,6.5],[0,9.5],[Math.PI*.75,9.5],[-Math.PI*.75,3]])vB('vDarkB',Math.sin(a)*(R+.02),y,Math.cos(a)*(R+.02),.18,1.0,.05,a);
+ for(const [a,y] of[[0,3],[Math.PI/2,6.5],[-Math.PI/2,6.5],[0,9.5],[Math.PI*.75,9.5],[-Math.PI*.75,3]]){vB('taWinB',Math.sin(a)*(R+.02),y,Math.cos(a)*(R+.02),.18,1.0,.05,a,null);for(const dy of[-.1,1.0])vB('vStone',Math.sin(a)*(R+.05),y+dy,Math.cos(a)*(R+.05),.42,.1,.1,a,mb);}
  kput('taCone',[0,H,0],null,[R-.6,4.2,R-.6],tile);kput('taBallM',[0,H+4.3,0],null,[.2,.25,.2],wh);
- vnDoor(0,0,-(R+.21),Math.PI,1.1,2.3,'vPlaster',or,wal,false);}
+ tanDoor(0,0,-(R+.21),Math.PI,1.1,2.3,'vPlaster',or,wal,false);}
 
 // ---------------------------------------------------------------- THE FOUNTAIN AND THE BRIDGE
 // Nymphaeum (PLAN.md: a fountain in a niche of columns): a white screen wall with three statue niches, the centre one
@@ -188,7 +188,7 @@ function buildTalSkyBridge(G,o){reseed(9791+(o.v|0));const L=o.len==null?14:o.le
  if(piers)for(const s of[-1,1]){const x=s*(L/2+PW/2);vnBody('vPlaster',x,0,0,PW,Y+2.6,BW+.6,0,wh,{t:.3});
   tanArch(s*L/2,Y,0,-s*Math.PI/2,1.2,2.4,{fill:'D',band:or,bw:.12});tanString(x,Y-.5,0,PW,BW+.6,0,or,.08,.2);
   for(const y of[Y-3.6])tanArch(x,y,BW/2+.3,0,1.0,2.2,{fill:vLit()?'L':'D',band:or,bw:.1,sill:wh});
-  vnDoor(x,0,BW/2+.3,0,1.1,2.4,'vPlaster',or,wal,false);
+  tanDoor(x,0,BW/2+.3,0,1.1,2.4,'vPlaster',or,wal,false);
   vB('vPlaster',x,Y+2.6,0,PW+.2,.25,BW+.8,0,or);tanDome(x,Y+2.85,0,1.4,{kind:'melon',c:tile,ribs:10,ribC:wh,finial:gi,fr:.08});}}
 
 VERN.def({key:'tal_temple',name:'Temple',family:'civic',tags:TA_TAG('byzantine','civic',['religious','civic'],true),w:36,d:42,h:40,build:buildTalTemple});

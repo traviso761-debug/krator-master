@@ -102,3 +102,10 @@ const TARINGS=new THREE.TorusGeometry(1,.1,4,12).rotateX(Math.PI/2),TANUB=new TH
 kdef('taRingMs',TARINGS,MAT.taMarble);kdef('taRingGiS',new THREE.TorusGeometry(1,.1,4,12),MAT.taGilt);kdef('taGiltNub',TANUB,MAT.taGilt);
 // P5: a verdigris melon dome for the palace's pavilions (the copper alternative to the orange tile, PLAN.md section 5)
 kdef('taDomeCu',VDOME,MAT.verdigris);
+
+// ---------------------------------------------------------------- real openings (the owner, 2026-10-19: no dark voids)
+// Talia's pane: the dark glass lifted to a sky grey (Pylon's pyPane, the same values), so a window reads as glass, not a
+// hole; double-sided for the pointed heads. Timber leaves for the doors' arched and pointed heads (white, tinted walnut).
+MAT.taWinPane=MAT.darkGlass.clone();MAT.taWinPane.color.set(0x7d97a3);MAT.taWinPane.roughness=.15;MAT.taWinPane.metalness=.55;
+MAT.taWinPaneDS=MAT.taWinPane.clone();MAT.taWinPaneDS.side=THREE.DoubleSide;
+kdef('taWinB',VBOX,MAT.taWinPane);kdef('taWinDisc',TADISC,MAT.taWinPane);kdef('taWinGable',VGABLE,MAT.taWinPaneDS);

@@ -61,6 +61,16 @@ window in a ring band), and `tanDrum` takes `round` (the 24-sided drum) and the 
 prefix `ta`): marble, gilt, tile, cobalt boxes; discs; ribs and rings; the column and baluster lathes; echinus and bell;
 domes in tile, marble, plaster and gilt; egg and onion lathes; the tile cone and hip; pointed heads in the fill materials.
 
+**No dark voids** (the owner, 2026-10-19). Every opening is a door, a window or an open portal, never a black plate:
+`tanArch` takes a dark fill (or none) as a DOOR when it is door-shaped (2 m or more, taller than wide, no sill or rail;
+`o.door` overrides) and as a WINDOW otherwise. Doors are walnut leaves with raised panels and a brass pull under a glazed
+fanlight (`tanLeaves`, `tanArchDoor`; glazed double doors at 2.4 m wide or more); windows are Talia's sky-grey pane
+(`taWinB`, the same values as Pylon's) with glazing bars (`tanGlaze`). On a hollow body both cut the wall (`vnHole`), so
+they open into the furnished rooms, the leaves swung in. `tanDoor` and `tanWin` stand in for the Vernacular's `vnDoor` and
+`vnWin` (closed leaves instead of the dark recess; the pane over the dark glass). The loggias open their heads into the
+recess under orange vaults; the court galleries alternate doors and windows; the slits are glazed between stone lips; the
+observatory's slot shows its shutters drawn back and the telescope; the palace's light courts are glazed over.
+
 **Interiors and furniture (P6).** `kits/catalog/krator-master-furniture-talia.js` is Talia's culture: 27 pieces (tub
 armchairs and ottomans in orange, the white sofa, brass and walnut tables, the plaster bench and wall niche, the painted
 chest and the jar stand, bookcase, map and specimen cases, the plaster and canopy beds, the hearth, the lectern, the

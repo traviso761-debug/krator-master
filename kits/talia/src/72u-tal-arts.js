@@ -24,7 +24,7 @@ function buildTalOdeon(G,o){reseed(9701+(o.v|0));const R=12,BW=24,H=10,Y0=1.0,ZC
  tanColonnade(0,Y0,FZ+PD-.5,0,11,3,H,.5,'ionic',mb,gi,0);
  const YP=tanEntablature(0,Y0+H,FZ+PD/2,12,PD,0,wh,gi,{});tanPediment(0,YP,FZ+PD+.5,0,12.8,2.8,wh,0,PD+.6,or,gi);
  tanCoffers(0,Y0+H-.14,FZ+PD/2,11.4,PD-.4,0,or,wh,1.2);
- vnDoor(0,Y0,FZ,0,2.2,4.4,'taMarble',wh,wal,false);for(const s of[-1,1]){vnDoor(s*3.6,Y0,FZ,0,1.5,3.4,'taMarble',wh,wal,false);tanNiche(s*(BW/2-2.6),Y0+.5,FZ,0,1.6,3.8,wh,or,mb);}
+ tanDoor(0,Y0,FZ,0,2.2,4.4,'taMarble',wh,wal,false);for(const s of[-1,1]){tanDoor(s*3.6,Y0,FZ,0,1.5,3.4,'taMarble',wh,wal,false);tanNiche(s*(BW/2-2.6),Y0+.5,FZ,0,1.6,3.8,wh,or,mb);}
  for(const s of[-1,1])vnLampPost(s*6.4,0,FZ+PD+.6+2.4,3.2);}
 
 // Academy (PLAN.md: the academy of painting and sculpture): a classical front of seven bays (lit arches and statue
@@ -37,7 +37,7 @@ function buildTalAcademy(G,o){reseed(9711+(o.v|0));const BAY=3.6,N=7,W=N*BAY,FD=
  // the front range
  vnBody('vPlaster',0,Y0,ZF-FD/2,W,H1,FD,0,wh,{t:.35});vnBody('vPlaster',0,Y1,ZF-FD/2,W,H2,FD,0,wh,{t:.35});tanString(0,Y0+H1,ZF-FD/2,W,FD,0,or,.16,.3);
  for(let k=0;k<N;k++){const x=(k-3)*BAY;
-  if(k===3){vnDoor(x,Y0,ZF,0,1.7,3.4,'taMarble',wh,wal,false);tanPediment(x,Y0+3.8,ZF,0,2.6,.6,wh,.16,.4,or,gi);}
+  if(k===3){tanDoor(x,Y0,ZF,0,1.7,3.4,'taMarble',wh,wal,false);tanPediment(x,Y0+3.8,ZF,0,2.6,.6,wh,.16,.4,or,gi);}
   else if(k===1||k===5)tanNiche(x,Y0+.5,ZF,0,1.5,3.6,wh,or,mb);else tanArch(x,Y0+.6,ZF,0,1.5,3.2,{fill:'L',band:or,bw:.14,key:gi,sill:wh});
   tanArch(x,Y1+.5,ZF,0,1.3,2.3,{kind:'flat',fill:'L',band:or,bw:.12,sill:wh});tanPediment(x,Y1+2.95,ZF,0,1.9,.42,wh,.14,.3,null);}
  for(let k=0;k<=N;k++){const x=(k-3.5)*BAY;tanPilaster(x,Y0,ZF,0,.5,H1,wh,gi);tanPilaster(x,Y1,ZF,0,.45,H2,wh,gi);}
@@ -73,7 +73,7 @@ function buildTalTheatre(G,o){reseed(9721+(o.v|0));const ZC=6,RO=5,NR=12,RD=1.0,
  // the stage and the scaenae frons
  vB('taMarble',0,0,ZC+2.5,SW,1.2,3,0,mb);vB('vPlaster',0,.9,ZC+.99,SW,.2,.08,0,or);
  vnBody('vPlaster',0,0,ZC+4.75,SW+2,9,1.5,0,wh,{t:.3});
- vnDoor(0,1.2,ZC+4,Math.PI,2.2,3.6,'taMarble',wh,wal,false);for(const s of[-1,1])vnDoor(s*7,1.2,ZC+4,Math.PI,1.6,3.0,'taMarble',wh,wal,false);
+ tanDoor(0,1.2,ZC+4,Math.PI,2.2,3.6,'taMarble',wh,wal,false);for(const s of[-1,1])tanDoor(s*7,1.2,ZC+4,Math.PI,1.6,3.0,'taMarble',wh,wal,false);
  for(const s of[-1,1])for(const x of[3.6,10.4])tanNiche(s*x,5.8,ZC+4,Math.PI,1.3,2.8,wh,or,mb);
  tanColonnade(0,1.2,ZC+4,Math.PI,SW-2,8,3.8,.24,'corinthian',mb,gi,.6);vB('taMarble',0,5.0,ZC+3.55,SW-1,.5,1.1,0,wh);vB('vPlaster',0,5.2,ZC+2.98,SW-1,.2,.06,0,gi);
  tanColonnade(0,5.5,ZC+4,Math.PI,SW-2,8,3.0,.2,'ionic',mb,gi,.6);vB('taMarble',0,8.5,ZC+3.55,SW-1,.5,1.1,0,wh);
@@ -104,7 +104,7 @@ function buildTalUniGallery(G,o){reseed(9731+(o.v|0));const W=40,D=16,H=8,Y0=1.2
  const YP=tanEntablature(0,Y0+H,zf+PD/2,PW,PD,0,wh,gi,{});tanPediment(0,YP,zf+PD+.5,0,PW+.8,2.6,wh,0,PD+.6,or,gi);
  for(const s of[-1,1])tanFinial(s*(PW/2+.1),YP+.14,zf+PD+.2,.16,gi);
  tanCoffers(0,Y0+H-.14,zf+PD/2,PW-.6,PD-.4,0,or,wh,1.2);
- vnDoor(0,Y0,zf,0,2.2,4.6,'taMarble',wh,wal,false);for(const s of[-1,1])tanNiche(s*3.8,Y0+.6,zf,0,1.5,3.8,wh,or,mb);
+ tanDoor(0,Y0,zf,0,2.2,4.6,'taMarble',wh,wal,false);for(const s of[-1,1])tanNiche(s*3.8,Y0+.6,zf,0,1.5,3.8,wh,or,mb);
  for(const s of[-1,1])vnLampPost(s*(PW/2-1),0,zf+PD+.6+2.8,3.2);}
 
 // Glasshouse (refs/talia hall.jpg; the botanic garden): a drum of glazed arches in gilt bands on a marble podium under

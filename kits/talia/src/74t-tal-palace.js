@@ -104,7 +104,7 @@ function buildTalGovernorPalace(G,o){reseed(9691+(o.v|0));const T=1.2,G1=5.5,U1=
   for(const sx of[-1,1])for(const sz of[-1,1])tanKiosk(x+sx*7.6,yR+1.32,z+sz*7.6,.55,1.4,4,wh,{domeC:C.tile,ribC:gi,ribItem:'taRibGi',finial:gi,fr:.07});
   tanDrumDome(x,yR+1.32,z,7,{drumH:4.4,n:16,kind:'hemi',domeC:C.tile,ribs:16,gilt:gi,fill:'L',band:or,round:true,pil:true,pilC:wh,lanternC:or,drumC:wh});}
  // the light courts either side of the drum: dark wells through the roof behind a coped parapet
- for(const s of[-1,1]){const [x,z]=P(5.5,s*11.5);vB('vDarkB',x,yR-.4,z,4.6,.42,4.6,0,null);tanParapetWall(x,yR,z,5,5,0,wh,.6,mb);}
+ for(const s of[-1,1]){const [x,z]=P(5.5,s*11.5);vB('taWinB',x,yR-.4,z,4.6,.42,4.6,0,null);for(const k of[-1,0,1]){vB('vIron',x+k*1.5,yR+.02,z,.08,.06,4.6,0,null);vB('vIron',x,yR+.02,z+k*1.5,4.6,.06,.08,0,null);}tanParapetWall(x,yR,z,5,5,0,wh,.6,mb);}
  // ---- the seven pavilions (blueprint: the council and the chancery the large front corners, the dining hall and the
  // family garden room the medium rear corners, the guard and the shrine on the flanks, the round kitchen behind)
  for(const s of[-1,1]){talpPavilion(-8,s*18,6.3,{n:12,lantern:true},C);talpPavilion(24,s*18,5,{n:10,jali:true,dome:s>0?'cu':'tile'},C);}
