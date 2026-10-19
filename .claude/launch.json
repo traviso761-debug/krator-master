@@ -61,6 +61,21 @@
       ],
       "port": 8829,
       "autoPort": false
+    },
+    {
+      "name": "beast-riders",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8831",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "kits/beast-riders"
+      ],
+      "port": 8831,
+      "autoPort": false
     }
   ]
 }

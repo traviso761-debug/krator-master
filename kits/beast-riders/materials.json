@@ -1,0 +1,172 @@
+{
+ "build": "kits/beast-riders",
+ "note": "The Beast Riders kit's detail maps for the catalog's Beast Rider buildings (kits/catalog/krator-master-buildings-beast-rider.js, read in place) and the kit's own (src/50-br-mounts.js): keys are the catalog's texture family (mat(): 'tex/render', userData.texFamily) or its render family, as kits/catalog/materials.json, but tiled at building scale with Girder's picks (settlements/girder/materials.json). straw, guano and yard are the kit's own (delivered 2026-10-18). Grey-ish detail maps, the pack's tint.mean divided back out (krator-furniture-detail.js). Pack: python3 tools/textures/pack.py kits/beast-riders.",
+ "size": 256,
+ "families": {
+  "thatch": {
+   "lib": "roof.thatch.neutral",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "wood": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "bark": {
+   "lib": "bark.ironbark",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "stone": {
+   "lib": "rock.rock_face",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "cloth": {
+   "lib": "cloth.weave.plain",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "rope": {
+   "lib": "fibre.rope",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "hide": {
+   "lib": "hide.leather009",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "reed": {
+   "lib": "fibre.cane",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "straw": {
+   "lib": "straw.bedding",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "guano": {
+   "lib": "wood.guano",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "yard": {
+   "lib": "ground.stable.yard",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.5
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  }
+ }
+}

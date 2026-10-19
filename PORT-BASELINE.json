@@ -284,6 +284,10 @@
    "bytes": 15707726,
    "sha256": "464a6ddd9091149759bfd0ccdbdde96b5cc3c34eedb1c18af4be9c2856b64dac"
   },
+  "kits/beast-riders/dist/beast-riders.html": {
+   "bytes": 1897452,
+   "sha256": "8cc173ae99bf593a65d0d6752e0761b765dc7571f1350bb58dca3173137ed106"
+  },
   "kits/catalog/dist/catalog.html": {
    "bytes": 1669465,
    "sha256": "99b591f65b317da3a5ae1e18ad466d69d4be18077523dec203fffb4e21c761eb"
