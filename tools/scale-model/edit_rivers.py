@@ -1384,7 +1384,7 @@ def main():
     # the named courses (NAMED_COURSES): the coast's best-drained cell near the point, its main stem upstream
     named_at = {}
     report['named_courses'] = []
-    taken_cells = set(c for _, (p_, _m, _j) in allc for c in p_)
+    taken_cells = {c: n_ for n_, (_, (p_, _m, _j)) in enumerate(allc) for c in p_}
     for nm, nc in NAMED_COURSES.items():
         j0, i0 = int(round(nc['near'][1] * sv)), int(round(nc['near'][0] * su))
         rr = int(math.ceil(nc['reach'] * su))
@@ -1406,6 +1406,20 @@ def main():
         while ups.get(path[-1]):
             path.append(max(ups[path[-1]], key=lambda c: area2[c]))
         path = path[::-1]
+        # a course already drawn down this valley: the one that reaches the mouth takes the name (a wadi made a river);
+        # else the named course starts below the last cell it shares, the other joining it there
+        if path[-1] in taken_cells:
+            m_ = taken_cells[path[-1]]
+            allc[m_] = ('river', allc[m_][1])
+            named_at[m_] = nm
+            report['named_courses'].append({'name': nm, 'mouth_px': px(*path[-1]), 'named_existing': True,
+                                            'cells': len(allc[m_][1][0]),
+                                            'catchment_km2': round(float(area2[path[-1]]))})
+            print('named course %s: the course already drawn to px %s takes the name' % (nm, px(*path[-1])))
+            continue
+        shared = [n_ for n_, c in enumerate(path) if c in taken_cells]
+        if shared:
+            path = path[shared[-1] + 1:]
         # its bed cut to fall all the way (cut only, as the Yuni river's): a hollow the routing crosses on its way
         cut_n = 0.0
         for n_ in range(1, len(path)):
@@ -1419,8 +1433,6 @@ def main():
         rises_ = rises(path, rt2['S'], G['whas'])
         if rises_:
             sys.exit('%s climbs at %s' % (nm, rises_[:3]))
-        if any(c in taken_cells for c in path):
-            sys.exit('%s runs into a course already designated' % nm)
         named_at[len(recs) + len(allc)] = nm
         allc.append(('river', (path, tuple(rt2['rec'][best]), False)))
         report['named_courses'].append({'name': nm, 'mouth_px': px(*best), 'cells': len(path),
