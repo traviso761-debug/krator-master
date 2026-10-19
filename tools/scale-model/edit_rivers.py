@@ -148,7 +148,9 @@ ABYSS_WEST_KM = 300.0
 # repainted on the maps from the land round them. Then the water is routed again onto the new floor.
 ABYSS_LAKES = dict(region='e abysss', zone_m=-1400.0, deep_m=-1900.0, keep=(987, 715), keep_km=24.0, seed=4021,
                    min_km2=40.0, spare=1.15, r=(1.2, 2.4), bend=(12, 20), gap=2, depth=120.0, rim=10.0, slope=3.0, span=400.0, blend=1.5,
-                   merge=[((1041, 493), (1039, 465))], merge_reach=20)
+                   merge=[((1041, 493), (1039, 465))], merge_reach=20,
+                   # the owner: these regions lowered to shallow beds the lakes beside them spread over
+                   beds={'lower': dict(shore=2.0, depth=15.0), 'lower2': dict(shore=2.0, depth=15.0)})
 ABYSS_CUT_M = 600.0     # m: a hollow whose way to the floor would cut more than this is left (reported; as deep as the western outlets)
 
 # the readout row and its lookup (a coarse grid of the courses' vertices, the nearest within 3 map px)
@@ -414,8 +416,10 @@ def biggest(m):
     return lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1) if n > 1 else m
 
 
-def snake_lakes(En, zone, w0, lv0, A_, KM2, merges=()):
+def snake_lakes(En, zone, w0, lv0, A_, KM2, merges=(), beds=()):
     """ABYSS_LAKES' layout: each lake of w0 (levels lv0) laid out again as a long, winding one in the basin it lies in.
+    beds: (mask, shore m, depth m) regions lowered to shallow beds under the level of the lake beside them, which it
+    may spread over (the bed `shore` m under the level at the outline, `depth` in the middle).
     merges: pairs of cells, one in each of two lakes to be made one, at the higher one's level: the lower one's basin
     (and any island in it) is filled over that level round the lake as it lies, and a channel joins them.
     Returns (En, rows (cells, not px), the troughs, the old beds filled, deepest cut, highest fill)."""
@@ -591,6 +595,24 @@ def snake_lakes(En, zone, w0, lv0, A_, KM2, merges=()):
         rows.append({'at_cell': tuple(int(v) for v in np.argwhere(both).mean(0).round()), 'was_cells': int(both.sum()),
                      'level_m': round(L), 'cut_most_m': round(cut_ch), 'filled_most_m': round(float((up - E)[rise].max())) if rise.any() else 0,
                      'cells': int((both | ch).sum()), 'length_cells': 0.0, 'merged': True})
+    # the shallow beds (beds): each region under the level of the largest lake beside it
+    for bm, sh_, dp_ in beds:
+        sl_, _ = nd.label(snakes, structure=np.ones((3, 3)))
+        near = nd.binary_dilation(bm, iterations=3) & snakes
+        if not near.any():
+            continue
+        ks, cn = np.unique(sl_[near], return_counts=True)
+        sizes_ = [(int((sl_ == k).sum()), k) for k in ks]
+        lake_ = sl_ == max(sizes_)[1]
+        L = float(np.nanmedian(lvmap[lake_]))
+        dB = nd.distance_transform_edt(bm)
+        bed = L - sh_ - (dp_ - sh_) * np.clip(dB / 2.0, 0, 1) ** 2 * (3 - 2 * np.clip(dB / 2.0, 0, 1))
+        En = np.where(bm, np.minimum(En, bed), En)
+        taken |= bm & w0
+        snakes |= bm
+        lvmap[bm] = L
+        rows.append({'at_cell': tuple(int(v) for v in np.argwhere(bm).mean(0).round()), 'was_cells': 0, 'level_m': round(L),
+                     'cut_most_m': 0, 'filled_most_m': 0, 'cells': int(bm.sum()), 'length_cells': 0.0, 'bed': True})
     # old beds no trough took (lakes too small, or the rest of one a trough crossed): filled over their level,
     # falling towards the nearest trough
     left = w0 & ~taken & ~snakes
@@ -1149,8 +1171,17 @@ def main():
         # long axis, swinging across its width, the lake as wide as it takes to hold the area; its bed cut `depth` m
         # under its level and walled over it, the rest of its old bed filled to just over the level, falling to it
         cell = lambda x, y: (int(round(y * sv)), int(round(x * su)))
+
+        def region_mask(nm_):
+            r_ = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == nm_), None)
+            if r_ is None:
+                sys.exit('no region named %r' % nm_)
+            im_ = Image.new('L', (E.shape[1], E.shape[0]), 0)
+            ImageDraw.Draw(im_).polygon([(a * su, b * sv) for a, b in r_['points']], fill=1)
+            return np.array(im_).astype(bool)
         En, rows, snakes, filled, cut_most, fill_most = snake_lakes(
-            En, zone, w0, lv0, A_, KM2, [(cell(*a), cell(*b)) for a, b in A_.get('merge', ())])
+            En, zone, w0, lv0, A_, KM2, [(cell(*a), cell(*b)) for a, b in A_.get('merge', ())],
+            [(region_mask(nm_), b_['shore'], b_['depth']) for nm_, b_ in A_.get('beds', {}).items()])
         abyss_beds = filled | (flag & ~snakes)
         abyss_zone = zone
         for r_ in rows:
