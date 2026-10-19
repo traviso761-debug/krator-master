@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 3 prompts (section 2: the Northern Highlands' three).** Sections 4 to 6 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 16 prompts (section 2: the Northern Highlands' three and the Oidong Valley's thirteen, 2026-10-19).** Sections 4 to 6 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -164,6 +164,91 @@ An alien ground rosette seen from directly above: thirty-five slender stalks rad
 
 ```
 Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: smooth pale grey alder bark #9c9e96 heavily mottled with white and pale green-grey crustose lichen patches #d8dcd0 and #b8c4a8, a few dark horizontal lenticels #4a4a44, green moss creeping up from the bottom edge #5a7a26. Matte. One tile covers 1 metre.
+```
+
+### The Oidong Valley (`biomes/oidong`, 2026-10-19)
+
+Painted in code today (`biomes/oidong/KNOWN_ISSUES.md`, "Some surfaces are still procedural"); every library set the kit
+takes is reused (cherry, smooth and whorled bark, the moss and sage cards, granite tor, moss and park-sand grounds). These
+are the surfaces no set fits. The first six are the most visible. Tintable rows end with the muting sentence and carry no
+hexes; full-colour rows keep theirs (the marble bole and the cards are the point of the colour).
+
+#### `bark.marble` (full colour: the marble birch's bole, `OIDONG.barkTex(3)`)
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: smooth pale tree bark like polished marble, a cream ground #f4ece4 with swirled, flowing bands of pastel colour that drift diagonally across it like marbled paper: rose #f4c6d2, powder blue #b9d3ea, lavender #cbb8e6, mint #bfe6d0, peach #f6cdb2 and pale gold #eadca2, the bands soft-edged and irregular, most of the surface staying cream, a few fine darker veins, faint horizontal lenticel marks. Matte. One tile covers 4 metres.
+```
+
+#### `card.giantpad` (full colour, cut-out: the giant lotus pad from above, `G.giantpad`)
+
+```
+A giant Victoria water-lily pad seen from directly above: a round pad four metres across with its rim turned straight up in a low wall, the top surface a soft yellow-green #a8cc90 with a fine quilted pattern of raised ribs radiating from the centre, a narrow notch cut into the rim at one side, a few pale drops of water lying on it, isolated on flat pure magenta (#FF00FF), top-down orthographic, whole pad in frame, no shadow. Matte.
+```
+
+#### `bark.bamboo.jade` (tintable: the jade bamboo cane, `OIDONG.barkTex(5)`)
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the smooth surface of bamboo canes, running vertically, a raised ridged node crossing the cane every half metre with a pale papery sheath scar just below it, fine vertical fibres, a little powdery bloom. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Matte. One tile covers 1.2 by 4 metres.
+```
+
+#### `organic.chalicecap` (tintable: the chalice tree's cap, `OIDONG.CAPTEX`)
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the skin of a vast shallow plant cap, smooth and leathery, with strong veins running in one direction (top to bottom of the frame) and finer veins branching from them, a soft sheen of held water, small pale pores between the veins. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 3 metres.
+```
+
+#### `bark.cedar.red` (tintable: the temple cedar and the pagoda fir, `OIDONG.barkTex(6)`)
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Japanese cedar bark (Cryptomeria), long soft fibrous strips running vertically, peeling in shreds, reddish-brown, with shallow furrows between the strips and a little green lichen in the furrows. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Matte. One tile covers 1 metre.
+```
+
+#### `organic.mossball` (tintable: the moss-ball tree's balls, `OIDONG.MOSSBALLTEX`)
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a dense cushion of fine moss, thousands of tiny close-packed shoots like a clipped velvet, a few slightly taller shoots standing up, no soil showing. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Matte. One tile covers 0.5 metres.
+```
+
+#### `card.blossom.cherry` (full colour, cut-out: the cherry and the haze blossom clumps, `TX.blossom`)
+
+```
+A cherry-blossom spray cut-out: one branched twig thick with five-petalled blossoms in blush pink #f4c6d2 and white #fcf8f0, dark red centres, a few bronze-pink new leaves, dark banded twig, isolated on flat pure magenta (#FF00FF), front view, the twig's base at the left edge pointing right, whole spray in frame, no shadow. Matte.
+```
+
+#### `card.heartleaf` (full colour, cut-out: the sacred fig's leaves, `TX.heart`)
+
+```
+A sacred fig (Ficus religiosa) leaf spray cut-out: a short twig with seven heart-shaped leaves each ending in a long narrow drip tip, glossy mid green #a8c49c with pale veins, two young leaves at the tip bronze-pink #f6cdb2, isolated on flat pure magenta (#FF00FF), front view, the twig's base at the left edge pointing right, whole spray in frame, no shadow. Matte.
+```
+
+#### `card.lace.birch` (full colour, cut-out: the marble birch's foliage, `TX.lace`)
+
+```
+A spray of fine, lacy, near-white foliage cut-out: many delicate forking sprigs like frost on a window, pale cream #f6f0ec with the tips tinged faintly rose #f4c6d2, mint #bfe6d0 and powder blue #b9d3ea, airy and translucent-looking, isolated on flat pure magenta (#FF00FF), front view, the spray's base at the left edge pointing right, whole spray in frame, no shadow. Matte.
+```
+
+#### `card.beads.bell` (full colour, cut-out: the bell-pod willow's strings, `TX.beads`)
+
+```
+A hanging string of plant beads cut-out: a thin pink stem #d0a0a8 hanging straight down with round pale green beads #bfe6d0 strung along it like a rosary, faintly frosted, ending at the bottom in one coral five-lobed bell flower #f0b0a0 with a cream throat, isolated on flat pure magenta (#FF00FF), front view, the string's top at the top edge, whole string in frame, no shadow. Matte.
+```
+
+#### `card.lily.iridescent` (full colour, cut-out: the iridescent water lily from above, `TX.lily`)
+
+```
+A water-lily flower seen from directly above: three rings of narrow pointed petals, their colour shifting across the flower from violet-blue #6a7ae8 through magenta #ff70c0 to turquoise #40d0e0, a bright gold heart #ffb040, dewdrops on the petals, isolated on flat pure magenta (#FF00FF), top-down orthographic, whole flower in frame, no shadow. Slightly glossy.
+```
+
+#### `card.peyote` (full colour, cut-out: the peyote buttons from above, `G.peyote`)
+
+```
+A cluster of peyote cactus buttons seen from directly above: five flattened round buttons of different sizes pressed together, pale blue-green #a8c8b4 with eight soft ribs each and tufts of white wool at the rib centres, a small pink flower #f4c6d2 open on the largest, isolated on flat pure magenta (#FF00FF), top-down orthographic, whole cluster in frame, no shadow. Matte.
+```
+
+#### `card.mooncap` (full colour, cut-out: the moon caps, `G.mooncap`)
+
+```
+A pink pleated parasol mushroom (Marasmius) cut-out: a thin dark red-brown stem #6a4a58 and a small bell-shaped cap with deep radial pleats, pale pink #f4c0c8 with a rosier crown, the pleat edges cream, isolated on flat pure magenta (#FF00FF), front view, the stem's base at the bottom edge, whole mushroom in frame, no shadow. Matte.
 ```
 
 ### Ys (`settlements/ys`)

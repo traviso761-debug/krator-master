@@ -28,8 +28,8 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-ashnomad.js` | 120 **big** | Seating (390); Tables and vessels (514); Storage (658); Light (840); Textiles and screens (934); Fire (1009); Riders and herders (1090); Work: the chitin-cutters (1226); Tanning: the hide and chitin worker (job tanning (1325); Smithy (1419) |
 | `krator-master-furniture-beast-rider.js` | 72 **big** | Harvested from kits/catalog/krator-master-buildi (101) |
 | `krator-master-furniture-eastabyss.js` | 57 **big** | Harvested from settlements/locus/src/65-abyss-*. (112); Harvested from settlements/locus/src/64-locus-dw (767); The builders' yard (2026-10): building stock for (811) |
-| `krator-master-furniture-generic-fruit.js` | 57 **big** | Eastern Abyss (4 pieces) (56); Hyperjungle (3 pieces, and the pandan keys it sh (136); Northern Highlands (5 pieces) (219); North-western Lowlands (1 piece; pandan keys abo (314); Rift (4 pieces; lantern fruit is shared with Xan (341); South-eastern Desert (3 pieces) (422); South-west Bay (1 piece; gatepod above) (490); South-western Lowlands (4 pieces) (520); Xanadu (7 pieces; tunas and lantern fruit are sh (598); Eastern Badlands (6 pieces; tunas, acorns and pi (747) |
-| `krator-master-furniture-generic-goods.js` | 91 **big** | Storage containers (17 pieces) (186); Food (21 pieces) (584); Drink (6 pieces) (1126); Supplies (11 pieces) (1292) |
+| `krator-master-furniture-generic-fruit.js` | 61 **big** | Eastern Abyss (4 pieces) (56); Hyperjungle (3 pieces, and the pandan keys it sh (136); Northern Highlands (5 pieces) (219); North-western Lowlands (1 piece; pandan keys abo (314); Rift (4 pieces; lantern fruit is shared with Xan (341); South-eastern Desert (3 pieces) (422); South-west Bay (1 piece; gatepod above) (490); South-western Lowlands (4 pieces) (520); Xanadu (7 pieces; tunas and lantern fruit are sh (598); Eastern Badlands (6 pieces; tunas, acorns and pi (747) |
+| `krator-master-furniture-generic-goods.js` | 91 **big** | Storage containers (17 pieces) (188); Food (21 pieces) (586); Drink (6 pieces) (1128); Supplies (11 pieces) (1294) |
 | `krator-master-furniture-generic.js` | 5 |  |
 | `krator-master-furniture-hykkousoi.js` | 30 **big** | the helpers (all through F) (38); the pieces (91) |
 | `krator-master-furniture-islander.js` | 5 |  |
@@ -39,6 +39,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-nomad.js` | 112 **big** | Seating (268); Tables and vessels (401); Storage (590); Light (800); Textiles (873); Fire (982); Riders' gear (1073); Work (1268); Tanning: the hidemaker's tent (job tanning) (1361); The smithy (1452) |
 | `krator-master-furniture-painted.js` | 50 **big** | Harvested from settlements/highlands (tribal bra (79) |
 | `krator-master-furniture-post-apoc.js` | 9 | Harvested from kits/post-apoc (3 pieces) (75) |
+| `krator-master-furniture-pylon.js` | 5 |  |
 | `krator-master-furniture-reedlake.js` | 13 | Hospitality and households (2026-10: the Reed La (66) |
 | `krator-master-furniture-republican.js` | 75 **big** | Harvested from settlements/highlands (Republican (88) |
 | `krator-master-furniture-rustic.js` | 37 **big** | Harvested from settlements/highlands (rustic bra (83) |

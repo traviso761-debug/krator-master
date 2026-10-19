@@ -58,3 +58,24 @@ R('mahogany-capsule', 'Mahogany capsules', 'fuel', [4, 4], [3, 4], {form: 'tree'
 R('prism-resin', 'Prism-gum torch resin', 'fuel', [4, 4], [3, 4], {form: 'tree', card: 'card.prismgum', home: ['hyperjungle'], src: 'hyperjungle'});
 R('coilbark-split', 'Coilbark splits', 'fuel', [1, 2], [3, 4], {form: 'tree', home: ['shighlands'], src: 'shighlands', note: 'the offcuts of turned work'});
 R('dried-reed', 'Dried warm reed', 'fuel', [4, 5], [3, 4], {water: 'aquatic', card: 'card.reed', home: ['geyser'], src: 'geyser'});
+
+/* ---- the Oidong Valley (biomes/oidong, 2026-10-19): the holy plants, the monks' physic and the valley's fibres and dyes. Medicinal
+   plants and reagents are common there (the owner); `herb` is their bucket when they are eaten or steeped, `reagent` when they are the
+   monks' rites' stuff. The dye is the Order's own blue. */
+R('lotus-root', 'Giant lotus root', 'tuber', [1, 3], [3, 4], {also: ['nut'], water: 'aquatic', card: 'card.lotus', src: 'oidong', home: ['oidong', 'xanadu'], stores: ['fresh', 'dried'], note: 'the giant lotus: its root the staple starch, its seeds dried'});
+R('lotus-silk', 'Lotus silk', 'spinning', [1, 3], [3, 4], {water: 'aquatic', card: 'card.lotus', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'the fibre drawn from the giant lotus stems, spun fine: the monks\' cloth'});
+R('cherry', 'Valley cherry', 'fruit', [1, 3], [2, 3], {form: 'tree', card: 'card.blossom', src: 'oidong', home: ['oidong'], stores: ['fresh', 'dried']});
+R('bodhi-fig', 'Sacred fig', 'fruit', [1, 3], [2, 4], {form: 'tree', card: 'card.broadleaf', src: 'oidong', home: ['oidong'], note: 'small purple figs; the tree is never felled'});
+R('bell-pod', 'Bell-pod beads', 'berry', [1, 2], [3, 4], {also: ['reagent'], form: 'tree', src: 'oidong', home: ['oidong'], stores: ['fresh', 'dried'], hazard: 'the bells: one is sleep, two is a day lost', note: 'the beads sweet; the coral bells dried, the monks\' sleeping draught'});
+R('bamboo', 'Jade bamboo', 'weaving', [1, 3], [3, 4], {also: ['cordage', 'sheet', 'vegetable'], card: 'fibre.bamboo.lattice', src: 'oidong', home: ['oidong'], note: 'canes, baskets, pipes and pens; pulped for paper; the shoots boiled'});
+R('chalice-grass', 'Chalice-rim grass', 'sheet', [1, 2], [3, 4], {homeOnly: true, form: 'tree', src: 'oidong', home: ['oidong'], note: 'the pale grass of the chalice trees\' rims, cut for the finest paper'});
+R('maple-syrup', 'Paper-maple syrup', 'sweetener', [1, 2], [3, 4], {form: 'tree', src: 'oidong', home: ['oidong'], stores: ['pressed']});
+R('peyote', 'Peyote buttons', 'reagent', [1, 2], [1, 2], {atm: [0, 2], src: 'oidong', home: ['oidong'], stores: ['dried'], hazard: 'the seeing: a day of visions', note: 'dried buttons from the gravel flats; the monks\' seeing reagent'});
+R('sky-poppy', 'Sky poppy', 'reagent', [0, 2], [2, 3], {also: ['dye', 'herb'], atm: [0, 2], colour: 'blue', src: 'oidong', home: ['oidong'], stores: ['dried'], hazard: 'the seed: sleep', note: 'the seed a sleeping draught and a reagent of the stillness rites; the leaves the vat of the Order\'s blue'});
+R('snow-lotus', 'Snow lotus', 'herb', [0, 1], [2, 3], {atm: [0, 1], reach: 0, src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'the valley\'s strongest medicine, for the heart and the breath; the whole plant dried'});
+R('valley-ginseng', 'Valley ginseng', 'herb', [1, 2], [3, 4], {also: ['reagent'], src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'a tonic root dug after seven years'});
+R('monks-sage', 'Monk\'s sage', 'herb', [1, 2], [1, 2], {atm: [0, 2], also: ['fuel'], card: 'card.sage', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'a silver wormwood: incense and a bitter for the stomach'});
+R('moon-cap', 'Moon caps', 'mushroom', [1, 2], [3, 4], {also: ['reagent'], form: 'fungus', src: 'oidong', home: ['oidong'], stores: ['fresh', 'dried'], hazard: 'dreams', note: 'pink pleated parasols; a mild dream mushroom'});
+R('rainbow-bracket', 'Rainbow bracket', 'herb', [1, 2], [3, 4], {form: 'fungus', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'banded shelf fungi on the old trunks: the long-life tea'});
+R('camphor', 'Camphor crystals', 'reagent', [1, 3], [2, 4], {also: ['herb'], form: 'tree', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'steamed out of the camphor laurel\'s wood: the monks\' liniment, a reagent that clears the head'});
+R('cedar-incense', 'Temple-cedar incense', 'fuel', [1, 2], [2, 4], {form: 'tree', src: 'oidong', home: ['oidong'], note: 'cedar shavings burned as incense; the heartwood is the temple timber'});

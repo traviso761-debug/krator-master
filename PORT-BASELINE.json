@@ -36,6 +36,10 @@
    "bytes": 5749021,
    "sha256": "5b4cce9074e542d25c43908cd9397390ed213bf48f8c8119683fe6b14b08aba3"
   },
+  "biomes/oidong/dist/oidong.html": {
+   "bytes": 1450250,
+   "sha256": "8259e3e61967e52c18ae2bb03cc0e3986228bf16cb4bf1ad3a3dacc597c5f42e"
+  },
   "biomes/rift/dist/rift.html": {
    "bytes": 5762923,
    "sha256": "b322b26546a4e7b52efa9f4879be3509b62204647bb46ee45d08f1222befa607"
@@ -289,12 +293,12 @@
    "sha256": "e8e552d806e22054f5b8f90a960b74837cd5f6d330c27e73616d55d35ea112b6"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1669465,
-   "sha256": "99b591f65b317da3a5ae1e18ad466d69d4be18077523dec203fffb4e21c761eb"
+   "bytes": 1678561,
+   "sha256": "d40e6fc5a24c8091dd5faf575b86f433bda82bf6f7bb8cbd824f208f96b6820f"
   },
   "kits/crops/dist/crops.html": {
-   "bytes": 2475593,
-   "sha256": "18ccaed43209444a7ddf33599b11ec64dcf1618cefc2ffffb0e713bfd8bd3317"
+   "bytes": 2480055,
+   "sha256": "843f5cd5ef4ec6cbc2162968bace9d01fd46eed0379a1010cb695cf360b114cf"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 14078688,
