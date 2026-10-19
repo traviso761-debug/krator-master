@@ -707,6 +707,73 @@ holds the ships to buying at least four fifths of the cloves and cacao made (REA
 **Risk.** The economy keyed by settlement touches every function Voth's economy runs through. P7a must land as its
 own commit with Voth's proof re-read, so a regression is caught before any isle code depends on it.
 
+## 9b. Wear: clothes, tools, arms, injuries (plan, 2026-10-19; not built yet beyond the first clothes)
+
+The Voth brief's wear model (`settlements/voth/SIM-ROADMAP.md` 1.5 and part 2's phase D, built in Voth's
+`45-vc-sim-items.js` and `TUNE.sim.items`) mapped onto the isles. core/simulation already runs all of it
+(`77-sim-6-items.js`: worn slots and sets, tools by worked hour, errands in work time, injuries, poultices); the isle
+work is the tuning, the makers and the sellers. Each piece also gives a surplus a user (section 9's two weeks' books).
+
+**What is built (2026-10-19).** Everyone wears a shirt, a wrap and a pair of sandals, two sets of each, worn out in 90
+to 120 days and bought again; the soldiers keep a leather cuirass. Valapo's weavers make cloth and garments, Kautoa's
+Vernacular workshops sandals and its smithies the armour; the lakatoi carries garments to Kautoa and sandals and armour
+to Valapo (`15` `items.worn`, `43`).
+
+**The rules taken from Voth (and where the isles differ).**
+- **Clothes:** a set count by class (Voth: poor 2, middle 3, rich 4, the great houses 6), the worn set at a hashed wear,
+  the rest at home; a short set is bought on time off. Voth's owner rule (2026-10-13) is a year or more of wear for
+  clothes; the isles now wear out in 90-120 days, so the weavers have custom. **Owner's call:** keep the tropics' short
+  life, or Voth's year.
+- **Tools:** one per kind of work, owned, or drawn from a rack at the workplace (the soldiers' arms, the dock hooks);
+  worn by the worked hour (Voth: 3,000-5,000 hours, about a working year or more, owner 2026-10-13); worn out at work it
+  is replaced at once, in work time, at the nearest seller; a worker without a tool works at half efficiency
+  (`SIM.itemsEff`). The report lists any tool no shop sells.
+- **Injuries:** a small chance a worked day (Voth 0.6%); the hurt worker buys a poultice from a healer on time off, or
+  heals in 3 days; hurt, it works at 70%.
+- **Arms and armour:** the armed kinds of work own them (one of each kept); some of the rich carry a weapon (Voth 25%).
+- **Gear and household goods:** a water vessel for those who labour; a boat for those who work the water; household goods
+  and luxuries bought when the material meter is high (Voth's `treat`), which needs `SIM.needs` (not on in the isles yet).
+
+**The isle mapping.**
+
+| Kind of work (role) | Tool | Made by (input) | Sold at |
+|---|---|---|---|
+| farmhand (fields) | digging stick, later an iron hoe | workshop (wood); smithy (iron) | market, shops, workshops |
+| farmhand (orchards, the farm ring's trees) | harvest knife | workshop (stone, shell), later smithy | market, shops |
+| farmhand (pens, byre), groom | goad | workshop (wood) | market, shops |
+| fisher | net (kept on the boat: owned) | weaver (cotton cord) | weavers, fish docks |
+| docker (quays, warehouses, granaries, canoe stop) | hook (the rack at the quay) | smithy, later | (the rack) |
+| baker, keeper | peel, ladle | workshop (wood) | market, shops |
+| craftsman: weaver | shuttle | workshop (wood) | weavers |
+| craftsman: potter | paddle and anvil stone | workshop (wood, stone) | potters |
+| craftsman: smith, workshop, dockyard | hammer, adze | workshop (stone, until iron), smithy | smithies, workshops |
+| craftsman: tanner | scraper | workshop (stone, shell) | workshops |
+| labourer (quarry, saltworks) | maul, rake | workshop (stone, wood) | workshops |
+| official (hall, school, temple, residences, healer) | stylus (palm leaf), the healer a lancet | workshop | shops |
+| soldier | spear and shield (the rack); cuirass (owned, built) | workshop, dockyard (wood); smithy (leather, later iron) | (the rack); smithies |
+| pupil, housework, kin | none | | |
+
+- **Stone and wood before iron:** until Valapo's smelter has ore (the iron mine is a hinterland village, core/hamlet
+  H5), the tools are stone, shell and wood, made in the workshops (Kautoa's Vernacular workshops; Valapo has none: a
+  carver's workshop is owed, or its tools come by canoe). This gives **Kautoa's quarry stone** (piling at +59 a day) its
+  user. Iron tools follow the ingots: Valapo smelts, Kautoa works the iron (PLAN.md 8b).
+- **Poultices:** the healers make them from herbs (the owner's crop list has herbs in both towns: a herb garden at each
+  healer, or herb parcels); `ie-healer` sells them.
+- **Household goods:** the potters' pots (piling at +475 and +129 a day) bought by households as they break (a household
+  good with a life, a short set an errand), and pandanus mats and coconut-oil lamps later. Without `SIM.needs` this is a
+  set kept per household, not a treat.
+- **Water vessels and boats:** a coconut-shell water bottle for those who labour (a user for coconut shells: the
+  orchards' coconuts give food and shells); the fishers' outrigger canoes from the dockyard (Kautoa) and the canoe
+  shed (Valapo).
+- **Salt** (Kautoa +436 a day) is not a wear good: it wants a food use (salted fish and meat keep longer: section 9's
+  spoilage) and the ships' buying.
+
+**Order.** (1) Tools by trade, stone and wood, with the workshops as makers and a carver's workshop for Valapo; (2)
+injuries and poultices; (3) household pots; (4) arms on the soldiers' rack and the rich's clubs; (5) sets by class,
+sun hats and sarongs (Voth's hats and dress shares); (6) `SIM.needs`, the material meter and the treats. Each with a
+verify check and its negative: every worker of a tooled trade holds its tool or is on an errand for it, no tool no shop
+sells, the worn-out replaced within the work day, the two weeks' books balancing with the new goods.
+
 ## 10. Core-module compliance (audit, 2026-10-19)
 
 The three pages (`dist/isle-site.html`, `dist/isle-city.html`, `openworld/isle-demo/dist/isle-demo.html`) checked against

@@ -104,10 +104,11 @@
 - [ ] **The walking graph is built here** (`41-isle-nav.js`) from `{cls, w, pts}` of the plan's ways: it fits any
       core/city plan, so it belongs on core/city's data side (asked of the city-layout work) or core/simulation; kept here
       until then so no other page moves.
-- [ ] **Only the food is an item.** No clothes, tools or wear; the weavers' cloth and the potters' pots pile up in the
-      warehouses (nobody buys them yet), the windmill's sugar waits for the canoe line (P7c), and the smithies make
-      nothing until the iron mine (a hinterland village, core/hamlet H5) brings ore; Kautoa's cloves, cacao, salt, stone
-      and leather pile up for the canoe line too, and its weavers lack cotton (Valapo's).
+- [ ] **Food, clothes and soldiers' armour are items; tools, injuries and household goods are not yet** (PLAN.md 9b, the
+      wear plan). The clothes are one set count for everyone (Voth's rises with class) and wear out in 90-120 days
+      (Voth's owner rule is a year or more: the owner's call). The smithies make only leather armour until the iron mine
+      (a hinterland village, core/hamlet H5) brings ore; Kautoa's weavers make nothing (the cotton is Valapo's, and the
+      garments come by canoe).
 - [ ] **No needs** (`SIM.needs`): schedules only, no meters, moods or efficiency.
 - [ ] **The second morning's buying wave.** Every house opens with 1.5 to 3 days of food, so on day 2 most of them buy at
       once and the warehouses' days of fish and sweet potato dip (above a day with the present rates, five days run).
