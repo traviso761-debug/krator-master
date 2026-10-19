@@ -71,6 +71,17 @@ GRADE = {'Beast Riders': dict(sea=-1500.0, lift=5.0, grade=3.0)}
 # the `floor_q` percentile of the region's floor (its ground under -1,400 m); every cell over it goes down to it, keeping
 # `relief` of its height above it, and the land outside eases down to it over `feather` cells (a smoothstep), the band
 # blurred so no step is left. Nothing is raised.
+# 4.21, the owner: the lakes of these regions all look alike, with their rim: today's water there (the Bowl's lakes grew
+# and joined, and laid new arms) is painted as the region's own lakes were in 4.20, an ochre salt rim inside the shore,
+# a teal core and a pale salt flat round it (lake_style), on the satellite and relief maps
+LAKE_STYLE = ('The Bowl',)
+# 4.21, the owner (the region's note and the README's to-do, 2026-10-18): lakes carved as features.py carved the Bay of
+# Voth, in a region's outline, at the land's level there (the water it opens into, the nearest water body: the lowest
+# shore, so it holds): the bed `shore` m under that level at the outline and `depth` m under it in the middle, the banks
+# outside easing down to 25 m over it within `bank` px. The Lake
+# of Shim: the Shim river widened where Shim stands (its east shore, px 382,788), ~32 by 12 km, the river entering from
+# the SW lowlands' lake to the south and leaving north down the lake's outlet gorge
+CARVE = {'Lake of Shim': dict(shore=3.0, depth=25.0, bank=2.0)}
 LOWER = {'Region 65': dict(floor_q=50.0, relief=0.04, feather=4.0, blur=1.2)}
 ARM_R, ARM_MIN = 2, 4
 # the lakes the model draws at 0 m in the north basin and the trough below it (the owner: the dams there held lakes at
@@ -357,6 +368,44 @@ def lake_rain(rain0, wet0, wet, zr, sig=6.0, bg_sig=15.0):
     med = np.maximum.accumulate(np.array(med))
     med = med / med[0]
     return bg * np.interp(fr, cent, med), [[round(c, 3), round(float(m), 2)] for c, m in zip(cent, med)]
+
+
+def lake_style(arr, arr0, poly, wet0, wet, reach_in=8, reach_out=14):
+    """the region's lakes painted as its own lakes were (the Bowl's: an ochre salt rim inside the shore, a teal core,
+    a pale salt flat outside fading into the ground): the colour at each distance from the shore, inside and out, is
+    sampled from the old picture `arr0` round the old water `wet0`, and laid over today's water `wet` and its shores
+    (the rim narrowed on water too narrow for it), the picture's fine texture kept. Full-res masks; returns the picture"""
+    w0 = wet0 & poly
+    if w0.sum() < 50:
+        return arr
+    din0, dout0 = nd.distance_transform_edt(w0), nd.distance_transform_edt(~w0)
+    a0 = arr0.astype(float)
+    prof_in = []
+    for d in range(1, reach_in + 1):
+        m = w0 & (np.abs(din0 - d) < 0.5) if d < reach_in else w0 & (din0 >= reach_in - 0.5)
+        prof_in.append(np.median(a0[m], 0) if m.sum() > 10 else (prof_in[-1] if prof_in else a0[w0].mean(0)))
+    prof_out = []
+    for d in range(1, reach_out + 1):
+        m = poly & ~wet0 & (np.abs(dout0 - d) < 0.5)
+        prof_out.append(np.median(a0[m], 0) if m.sum() > 10 else prof_out[-1])
+    prof_in, prof_out = np.array(prof_in), np.array(prof_out)
+    w = wet & poly
+    din, dout = nd.distance_transform_edt(w), nd.distance_transform_edt(~w)
+    # water narrower than the old lakes' rim and core: its distances stretched, so it keeps a core
+    half = nd.maximum_filter(np.where(w, din, 0), size=9)
+    din_eff = np.where(w, din / np.clip(half / reach_in, 0.35, 1.0), 0)
+    a = arr.astype(float)
+    col = np.zeros_like(a)
+    ii = np.clip(np.round(din_eff).astype(int), 1, reach_in) - 1
+    oo = np.clip(np.round(dout).astype(int), 1, reach_out) - 1
+    col[w] = prof_in[ii[w]]
+    shore = poly & ~w & (dout <= reach_out)
+    col[shore] = prof_out[oo[shore]]
+    wgt = np.where(w, 1.0, np.where(shore, np.clip(1 - (dout - 1) / reach_out, 0, 1), 0.0))
+    wgt = nd.gaussian_filter(wgt, 0.8) * (nd.gaussian_filter(poly.astype(float), 2.0) > 0.5)
+    detail = a - nd.gaussian_filter(a, (1.5, 1.5, 0))
+    new = col + 0.6 * detail
+    return np.clip(a * (1 - wgt[..., None]) + new * wgt[..., None], 0, 255).astype(np.uint8)
 
 
 def biggest(m):
@@ -899,6 +948,36 @@ def main():
                                   'cut_km': round(over * KM), 'deepest_cut_m': round(cut_most)})
         print('breach %s: from the hollow floor at %d m, %d km, cut through %d km, at most %d m deep' % (
             nm, lv, len(path) * KM, over * KM, cut_most))
+    # the lakes carved in a region's outline (CARVE), before the lakes settle (the carved bed fills with them)
+    report['carved'] = []
+    sst = lambda a_, b_, x_: np.clip((x_ - a_) / (b_ - a_), 0, 1) ** 2 * (3 - 2 * np.clip((x_ - a_) / (b_ - a_), 0, 1))
+    for nm, c_ in CARVE.items():
+        r_ = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == nm), None)
+        if r_ is None:
+            sys.exit('no region named %r' % nm)
+        im = Image.new('L', (E.shape[1], E.shape[0]), 0)
+        ImageDraw.Draw(im).polygon([(a * su, b * sv) for a, b in r_['points']], fill=1)
+        B = np.array(im).astype(bool)
+        bl_, _ = nd.label(G['whas'] & ~H['sea'], structure=np.ones((3, 3)))
+        near = nd.binary_dilation(B, iterations=4) & (bl_ > 0)
+        ids, cnt = np.unique(bl_[near], return_counts=True)
+        if not len(ids):
+            sys.exit('%s: no water within 4 cells' % nm)
+        into = bl_ == ids[np.argmax(cnt)]
+        L = float(np.nanmedian(G['wlev'][into]))
+        dB = nd.distance_transform_edt(B) / su                # px into the outline
+        bed = L - c_['shore'] - (c_['depth'] - c_['shore']) * sst(0, 3, dB)
+        dOut = nd.distance_transform_edt(~B) / su
+        bank = L + 25 + (np.maximum(En, L + 25) - (L + 25)) * sst(0, c_['bank'], dOut)
+        E2 = np.where(B, np.minimum(En, bed), np.where(dOut <= c_['bank'], np.minimum(En, bank), En))
+        cut = float((En - E2).max())
+        report['carved'].append({'lake': nm, 'opens_into_level_m': round(L), 'cells': int(B.sum()), 'km2': round(float(B.sum() * KM2)),
+                                 'bed_min_m': round(float(E2[B].min())), 'lowered_most_m': round(cut)})
+        print('carved %s in its outline: %d km2 opening into the water at %d m, bed to %d m, lowered by up to %d m' % (
+            nm, B.sum() * KM2, L, E2[B].min(), cut))
+        En = E2
+    if CARVE:
+        H = setup(dict(G, E=En))
     # the lakes resettled where their water stands (SETTLE)
     dried = np.zeros(E.shape, bool)
     settled = np.zeros(E.shape, bool)
@@ -1468,7 +1547,7 @@ def main():
     report['repainted_px'] = int(oF.sum())
     for key in ('st', 't'):
         src = Image.open(io.BytesIO(__import__('base64').b64decode(DP[key])))
-        if graded.any() or oF.any() or nF.any():
+        if graded.any() or oF.any() or nF.any() or LAKE_STYLE:
             arr = np.array(src.convert('RGB'))
             if graded.any():
                 land = arr[iy, ix]
@@ -1478,6 +1557,16 @@ def main():
                 arr = inpaint(arr, oF, land_src)
             if nF.any():
                 arr = inpaint(arr, nF, water_src)
+            # the regions whose lakes keep their own look (LAKE_STYLE): today's water painted as their old lakes were
+            for nm_ in LAKE_STYLE:
+                r_ = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == nm_), None)
+                if r_ is None:
+                    sys.exit('no region named %r' % nm_)
+                pim = Image.new('L', (OW, OH), 0)
+                ImageDraw.Draw(pim).polygon([tuple(p_) for p_ in r_['points']], fill=1)
+                arr0_ = np.array(Image.open(io.BytesIO(__import__('base64').b64decode(D[key]))).convert('RGB'))
+                arr = lake_style(arr, arr0_, np.array(pim).astype(bool),
+                                 nd.zoom(whas0.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5, wetF_)
             src2 = Image.fromarray(arr)
             src2.quantization = getattr(src, 'quantization', None)
             im = src2.convert('RGBA')
