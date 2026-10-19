@@ -43,4 +43,11 @@
 - [ ] No dark voids (2026-10-19): the Talia kit's openings are doors, panes and open portals. The Iziz Vernacular houses on
       the sheet (the mixed streets) still draw the Vernacular's dark door recesses and dark glass where their walls are not
       hollow: that is the shared Vernacular helper (settlements/iziz 69c, vendored byte-identical by five builds), the owner's call.
+      TODO (the owner, 2026-10-19): when the Iziz Vernacular's own sheet fixes its dark voids, rebuild this kit (it reads
+      Iziz's src/ in place, so the fixed doors and windows come in with the rebuild), add any NEW Vernacular buildings to
+      the mixed streets in targets/kit/89z-rows.js at their tier, re-verify, and close this entry.
 - [ ] Lit windows (rich and civic) keep the warm lit pane; their white glazing bars barely show on it by day.
+- [ ] P7's gallery update is not published (2026-10-19): Krator Worlds S-Z (https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM)
+      still carries the P4-era `worlds/talia.html` (1.8 MB) and the kit's first card. The republish (the current page,
+      2.0 MB, and the card from `gallery/build_gallery.py`; `worlds/iziz.tex.talia.js` is unchanged) was blocked by the
+      session's permission check and waits on the owner's go-ahead. Then add the version line to gallery/README.md.

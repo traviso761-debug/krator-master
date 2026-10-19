@@ -285,8 +285,8 @@
    "sha256": "464a6ddd9091149759bfd0ccdbdde96b5cc3c34eedb1c18af4be9c2856b64dac"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1669465,
-   "sha256": "99b591f65b317da3a5ae1e18ad466d69d4be18077523dec203fffb4e21c761eb"
+   "bytes": 1698544,
+   "sha256": "6cc18b4e3a574d372cfcd4ebcdaea18964817727f2918a8ce96988869e4ac0c2"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2475593,
@@ -301,12 +301,12 @@
    "sha256": "85f329fe2726f3ccfeae76f0419a6c5129cb69bff4a1ac93504529c8976f1135"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 628867,
-   "sha256": "094c18a175de8ba64fa709ed4a81a1df05ef94c587738ef0e88ecc7b6693944d"
+   "bytes": 659273,
+   "sha256": "4687b936ecb9d0436b9c360e635515cfbb9a35885d2754688bb695ec94e15d60"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 9654750,
-   "sha256": "6873658daf5355acd79d395e691ad169e40600ac07f688030352351ede3b45ad"
+   "bytes": 9714255,
+   "sha256": "1133022af574ce3ae0c2326c2fa113710888c3f607d8de4e5c4d54edf0921b44"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 246684,
@@ -349,8 +349,8 @@
    "sha256": "688502e79bde1a4d0c65ad88da4dd2d7c83c1d439f5dfd83f82c53df7ff7fce0"
   },
   "kits/talia/dist/talia.html": {
-   "bytes": 1807991,
-   "sha256": "253748bdb55ad5a5be6765cbfd9b72dcf10d2a16131424229df6bd1df2d14ad0"
+   "bytes": 2032234,
+   "sha256": "9d9882dbbec4fe927a0f9aea09fda0ddfa391be168ab5f939874f1ba59eaf5ad"
   },
   "kits/zeijani/dist/zeijani.html": {
    "bytes": 1291340,

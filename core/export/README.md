@@ -419,6 +419,20 @@ ground is flat where the half-step negative would need relief. All checks pass i
 buckets of the catalog's furniture, not as the interiors section Yuni fills: a wide box of the sheet is mostly furniture
 (the mixed streets with every interior: 182,000 triangles, a 12 MB `world.glb`).
 
+### Talia (2026-10-19)
+
+The same route: `kits/talia/kit.json` lists the contributor and the stage under `external` and `export` in its core.
+
+```
+python3 tools/harness.py export kits/talia/dist/talia.html --out godot/data/world-talia --box=-35,852,13,870
+godot --headless --path godot --script res://tests/export/iziz_test.gd -- --case=world-talia --sheet
+```
+
+The box is the middle mixed street's west half (the Vernacular's plaster townhouse between Talia's loggia house and dome
+house, both furnished): 32 items, 1,347 instances, 9 buckets (the furniture), 31,616 triangles, 31 textures (6 of
+Talia's pack: the marble, the tile, the gilt), 13 fixtures (doors and windows); `world.glb` 2.2 MB. All checks pass in
+Godot 4.7.2, and the nightly runs it.
+
 ## Yuni (2026-10-18)
 
 Yuni was the template (`KRATOR_EXPORT`, `settlements/yuni/GAME_EXPORT.md`) and kept its own route: the Godot spike's
