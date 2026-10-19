@@ -24,14 +24,14 @@ ASSET({
     for (const s of [-1, 1]) { brmPost(F, s * g, 0, 0, 2.7, 0.3, BRM.red, BRM.gilt); brmFinial(F, s * g, 2.7, 0, s, 0, 0.45, BRM.deep); }
     /* the leaf: a frame of poles hinged on the west post, swung 70 degrees in, thorn lashed over it */
     const ga = 1.2, w = 2 * g - 0.2, ux = Math.cos(ga), uz = -Math.sin(ga), x0 = -g + 0.1, P = function (s, y, n) { return [x0 + ux * s - uz * ((n == null ? 0 : n)), y, uz * s + ux * ((n == null ? 0 : n))]; };
-    const fr = function (a, b, r) { B.stick(BRT.poleDark, BRT_LASH, [a[0], a[1], a[2], b[0], b[1], b[2], (r == null ? 0.05 : r)]); };
+    const fr = function (a, b, r) { B.stick(BRTN.poleDark, BRT_LASH, [a[0], a[1], a[2], b[0], b[1], b[2], (r == null ? 0.05 : r)]); };
     fr(P(0, 0.05), P(0, 1.85)); fr(P(w, 0.05), P(w, 1.85)); fr(P(0, 0.2), P(w, 0.2)); fr(P(0, 1.0), P(w, 1.0)); fr(P(0, 1.8), P(w, 1.8)); fr(P(0, 0.2), P(w, 1.8), 0.04);
     for (let i = 0; i < Math.round(w * 9); i++) {
       const U = function (k) { return brtU(F, 131, i, k); }, s = w * (i + U(0)) / Math.round(w * 9), y = 0.1 + U(1) * 1.6, l = 0.6 + U(2) * 0.8, a = (U(3) - 0.5) * 2.6, n = (U(4) - 0.5) * 0.4;
       const p = P(s, y, n), q = P(Math.max(-0.1, Math.min(w + 0.1, s + Math.sin(a) * l)), Math.max(0.05, Math.min(2.05, y + Math.cos(a) * l * 0.6)), n + (U(5) - 0.5) * 0.3);
-      B.stick(U(6) < 0.4 ? BRT.thornDry : BRT.thorn, BRT_THORN, [p[0], p[1], p[2], q[0], q[1], q[2], 0.028, 0.006]);
+      B.stick(U(6) < 0.4 ? BRTN.thornDry : BRTN.thorn, BRT_THORN, [p[0], p[1], p[2], q[0], q[1], q[2], 0.028, 0.006]);
     }
-    B.stick(BRT.poleDark, BRT_LASH, [-g, 2.45, 0, g, 2.45, 0, 0.09]);
+    B.stick(BRTN.poleDark, BRT_LASH, [-g, 2.45, 0, g, 2.45, 0, 0.09]);
     B.flush();
   }
 });
@@ -49,9 +49,9 @@ ASSET({
     for (const s of [-1, 1]) brmPost(F, s * g, 0, 0, 2.4, 0.26, BRM.red, BRM.gilt);
     const ga = 0.6, w = 2 * g - 0.3, ux = Math.cos(ga), uz = Math.sin(ga), x0 = -g + 0.15;
     const P = function (s, y) { return [x0 + ux * s, y, uz * s]; };
-    for (const y of [0.35, 0.8, 1.25, 1.65]) { const a = P(0, y), b = P(w, y); B.stick(BRT.rail, BRT_LASH, [a[0], a[1], a[2], b[0], b[1], b[2], 0.055]); }
-    for (const s of [0.05, w - 0.05]) { const a = P(s, 0.2), b = P(s, 1.75); B.stick(BRT.poleDark, BRT_LASH, [a[0], a[1], a[2], b[0], b[1], b[2], 0.06]); }
-    { const a = P(0.1, 0.35), b = P(w - 0.1, 1.65); B.stick(BRT.rail, BRT_LASH, [a[0], a[1], a[2], b[0], b[1], b[2], 0.05]); }
+    for (const y of [0.35, 0.8, 1.25, 1.65]) { const a = P(0, y), b = P(w, y); B.stick(BRTN.rail, BRT_LASH, [a[0], a[1], a[2], b[0], b[1], b[2], 0.055]); }
+    for (const s of [0.05, w - 0.05]) { const a = P(s, 0.2), b = P(s, 1.75); B.stick(BRTN.poleDark, BRT_LASH, [a[0], a[1], a[2], b[0], b[1], b[2], 0.06]); }
+    { const a = P(0.1, 0.35), b = P(w - 0.1, 1.65); B.stick(BRTN.rail, BRT_LASH, [a[0], a[1], a[2], b[0], b[1], b[2], 0.05]); }
     B.flush();
   }
 });

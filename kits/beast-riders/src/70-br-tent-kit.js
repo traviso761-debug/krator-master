@@ -40,7 +40,7 @@
 
 /* the tents' colours (sRGB, turned to linear as Girder draws: brmLin, 50-br-mounts.js): the references' pale cream
    hides and spotted brown fur, the pavilion's orange, rust red, cream and dark brown, Girder's red, gilt and verdigris */
-const BRT_SRGB = {
+const BRTN_SRGB = {
   hide: [0xe2d4b4, 0xd8c8a2, 0xcdb88e, 0xeadcc0, 0xc6ae86, 0xd4c09a], hideOld: [0xb39a74, 0xa48a62, 0xc0a880],
   fur: 0x6a4a30, furPale: 0x86623e, spot: 0x3e2818, leather: 0x34261a, ochre: 0xc08436, ochreDark: 0x94602a,
   orange: [0xd27a2c, 0xc46a24, 0xdb8a3a], rust: 0x9a3a22, red: 0x9a2e22, cream: 0xe8d8b4, brown: 0x4a3020,
@@ -49,7 +49,7 @@ const BRT_SRGB = {
   net: 0x8a7a58, silk: 0xeceee8, earth: 0x6a5238, straw: 0xc9b07a, green: 0x3f7a3a, gilt: 0xb08432, verd: 0x2f6a5a,
   bone: 0xe8e0cc, moss: 0x4e6a34, litter: 0x5e5636
 };
-const BRT = {}; for (const k in BRT_SRGB) BRT[k] = brmLin(BRT_SRGB[k]);
+const BRTN = {}; for (const k in BRTN_SRGB) BRTN[k] = brmLin(BRTN_SRGB[k]);
 const BRT_HIDE = 'tenthide/hide', BRT_PELT = 'pelt/hide', BRT_CANVAS = 'canvas/cloth', BRT_LASH = 'lash/wood',
   BRT_THORN = 'bark', BRT_FRONT = Math.PI / 2;
 
@@ -117,7 +117,7 @@ function brtBatch(F) {
 /* a rope from a to b sagging `sag` at its middle, as a few straight lengths */
 function brtRope(B, a, b, sag, r, col) {
   const pts = []; for (let i = 0; i <= 4; i++) { const t = i / 4; pts.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t - sag * 4 * t * (1 - t), a[2] + (b[2] - a[2]) * t]); }
-  B.line(col == null ? BRT.rope : col, 'rope', pts, r == null ? 0.016 : r);
+  B.line(col == null ? BRTN.rope : col, 'rope', pts, r == null ? 0.016 : r);
 }
 
 /* ==== THE HIDE DOME ==== */
@@ -149,7 +149,7 @@ function brtDomeSurf(cx, cz, R, H, cR, n) {
 
 /* brtDome(F, B, o): draws a hide dome and returns its surface (brtDomeSurf) with door: the opening's angles.
    o: { cx, cz, R, H, cR (crown ring radius, default 0.16 R), n (profile), front (angle of the door, default +z),
-        gores (10), courses (4), hides (colours, default BRT.hide), old (0..1: share of darker, older hides),
+        gores (10), courses (4), hides (colours, default BRTN.hide), old (0..1: share of darker, older hides),
         door: { w, h } a doorway, or open: { w, h } a wide cut-away front (a trader's: no flap, a lintel pole),
         skirt: { h (0.6), col, fam (default the pelt), rag (the torn hem's depth, 0.22), spots (true) } or false (no skirt, no guys: an open frame),
         base (the height the hides start at, 0: an open frame below them),
@@ -160,7 +160,7 @@ function brtDome(F, B, o) {
   const R = o.R, H = o.H, cR = o.cR == null ? 0.16 * R : o.cR, cx = (o.cx == null ? 0 : o.cx), cz = (o.cz == null ? 0 : o.cz);
   const S = brtDomeSurf(cx, cz, R, H, cR, o.n), front = o.front == null ? BRT_FRONT : o.front;
   const G = o.gores == null ? 10 : o.gores, C = o.courses == null ? 4 : o.courses, D = Math.PI * 2 / G;
-  const hides = o.hides || BRT.hide, old = o.old == null ? 0.15 : o.old;
+  const hides = o.hides || BRTN.hide, old = o.old == null ? 0.15 : o.old;
   /* the opening, as a rectangle in (angle from the front, t): half-width in radians, top as t */
   const op = o.open || o.door, half = op ? (op.w / 2) / R : 0, tTop = op ? S.tOf(op.h) : 0;
   /* the course boundaries: even in t, each jittered per gore (a boundary shared by the two hides on it) */
@@ -171,7 +171,7 @@ function brtDome(F, B, o) {
     const g1 = g0 + D;
     for (let j = 0; j < C; j++) {
       const t0 = tb(i, j), t1 = tb(i, j + 1);
-      const col = brtU(F, 13, i, j) < old ? brtPick(F, BRT.hideOld, 14, i, j) : brtPick(F, hides, 15, i, j);
+      const col = brtU(F, 13, i, j) < old ? brtPick(F, BRTN.hideOld, 14, i, j) : brtPick(F, hides, 15, i, j);
       const off = ((i + j) % 2) * 0.014 + 0.004 * j;
       const part = function (a0, a1, s0, s1) {
         if (a1 - a0 < 1e-4 || s1 - s0 < 1e-4) return;
@@ -185,7 +185,7 @@ function brtDome(F, B, o) {
     }
   }
   /* the skirt of fur round the foot, its hem torn: each column of the sheet ends at its own height */
-  if (o.skirt === false) { brtCrown(F, B, cx, cz, S.top, cR, o.crown || {}); (o.sigils || []).forEach(function (g) { brtSigil(F, B, S, front + g.a, g.y, (g.s == null ? 1 : g.s), g.kind || 'claw', g.col == null ? BRT.sigil : g.col); }); S.front = front; S.half = half; return S; }
+  if (o.skirt === false) { brtCrown(F, B, cx, cz, S.top, cR, o.crown || {}); (o.sigils || []).forEach(function (g) { brtSigil(F, B, S, front + g.a, g.y, (g.s == null ? 1 : g.s), g.kind || 'claw', g.col == null ? BRTN.sigil : g.col); }); S.front = front; S.half = half; return S; }
   const sk = o.skirt || {}, skH = sk.h == null ? Math.min(0.75, 0.2 * H) : sk.h, rag = sk.rag == null ? 0.22 : sk.rag;
   const a0 = op ? half + 0.02 : 0, a1 = op ? Math.PI * 2 - half - 0.02 : Math.PI * 2;
   const nuS = Math.max(16, Math.round((a1 - a0) * R / 0.16));
@@ -193,30 +193,30 @@ function brtDome(F, B, o) {
     const k = Math.round(u * nuS), hem = (k % 2 ? 0.25 : 0) * rag + brtU(F, 21, k) * rag * 0.75;
     const y = hem + (skH - hem) * v;
     return S.ptY(front + a0 + (a1 - a0) * u, Math.max(0.01, y), 0.04 + 0.03 * (1 - v));
-  }, sk.col == null ? BRT.fur : sk.col, sk.fam || BRT_PELT);
+  }, sk.col == null ? BRTN.fur : sk.col, sk.fam || BRT_PELT);
   if (sk.spots !== false) {
     const nS = Math.round((a1 - a0) * R / 0.5);
     for (let k = 0; k < nS; k++) {
       const a = front + a0 + (a1 - a0) * (k + 0.2 + brtU(F, 22, k) * 0.6) / nS, y = skH * (0.35 + brtU(F, 23, k) * 0.5), p = S.ptY(a, y, 0.075);
-      F.ell(p[0], p[1], p[2], 0.045 + brtU(F, 24, k) * 0.06, 0.035 + brtU(F, 25, k) * 0.045, 0.016, Math.PI / 2 - a, BRT.spot, BRT_PELT);
+      F.ell(p[0], p[1], p[2], 0.045 + brtU(F, 24, k) * 0.06, 0.035 + brtU(F, 25, k) * 0.045, 0.016, Math.PI / 2 - a, BRTN.spot, BRT_PELT);
     }
   }
   /* the opening's frame: lashed jambs and a lintel; a dwelling's door has its flap rolled up over it */
   if (op) {
     const pl = S.ptY(front - half, 0.02, 0.06), pr = S.ptY(front + half, 0.02, 0.06), tl = S.ptY(front - half, op.h, 0.06), tr = S.ptY(front + half, op.h, 0.06);
-    B.stick(BRT.pole, BRT_LASH, [pl[0], 0, pl[2], tl[0], tl[1] + 0.1, tl[2], 0.06, 0.05]);
-    B.stick(BRT.pole, BRT_LASH, [pr[0], 0, pr[2], tr[0], tr[1] + 0.1, tr[2], 0.06, 0.05]);
+    B.stick(BRTN.pole, BRT_LASH, [pl[0], 0, pl[2], tl[0], tl[1] + 0.1, tl[2], 0.06, 0.05]);
+    B.stick(BRTN.pole, BRT_LASH, [pr[0], 0, pr[2], tr[0], tr[1] + 0.1, tr[2], 0.06, 0.05]);
     const lx = 0.25 * Math.cos(front), lz = 0.25 * Math.sin(front);
-    B.stick(BRT.poleDark, BRT_LASH, [tl[0] + lx + 0.2 * Math.sin(front), tl[1] + 0.04, tl[2] + lz - 0.2 * Math.cos(front), tr[0] + lx - 0.2 * Math.sin(front), tr[1] + 0.04, tr[2] + lz + 0.2 * Math.cos(front), 0.055]);
+    B.stick(BRTN.poleDark, BRT_LASH, [tl[0] + lx + 0.2 * Math.sin(front), tl[1] + 0.04, tl[2] + lz - 0.2 * Math.cos(front), tr[0] + lx - 0.2 * Math.sin(front), tr[1] + 0.04, tr[2] + lz + 0.2 * Math.cos(front), 0.055]);
     if (o.door) {   /* the rolled flap */
-      B.stick(BRT.hideOld[0], BRT_HIDE, [tl[0] + lx * 0.6, tl[1] + 0.22, tl[2] + lz * 0.6, tr[0] + lx * 0.6, tr[1] + 0.22, tr[2] + lz * 0.6, 0.12]);
+      B.stick(BRTN.hideOld[0], BRT_HIDE, [tl[0] + lx * 0.6, tl[1] + 0.22, tl[2] + lz * 0.6, tr[0] + lx * 0.6, tr[1] + 0.22, tr[2] + lz * 0.6, 0.12]);
       for (const p of [tl, tr]) brtRope(B, [p[0] + lx * 0.5, p[1] + 0.5, p[2] + lz * 0.5], [p[0] + lx * 0.7, p[1] + 0.1, p[2] + lz * 0.7], 0, 0.012);
     }
   }
   /* the crown, its mast and sign */
   brtCrown(F, B, cx, cz, S.top, cR, o.crown || {});
   /* painted sigils on the flank */
-  (o.sigils || []).forEach(function (g) { brtSigil(F, B, S, front + g.a, g.y, (g.s == null ? 1 : g.s), g.kind || 'claw', g.col == null ? BRT.sigil : g.col); });
+  (o.sigils || []).forEach(function (g) { brtSigil(F, B, S, front + g.a, g.y, (g.s == null ? 1 : g.s), g.kind || 'claw', g.col == null ? BRTN.sigil : g.col); });
   /* guy ropes from the shoulder to iron stakes all round (none across the opening) */
   const nG = o.guys == null ? 8 : o.guys;
   if (nG > 0) {
@@ -238,8 +238,8 @@ function brtDome(F, B, o) {
 function brtGuy(B, p, sx, sz) {
   const dx = sx - p[0], dz = sz - p[2], l = Math.hypot(dx, dz) || 1, ux = dx / l, uz = dz / l;
   const top = [sx + ux * 0.1, 0.42, sz + uz * 0.1];
-  B.stick(BRT.iron, 'metal', [sx - ux * 0.04, -0.12, sz - uz * 0.04, top[0], top[1], top[2], 0.028, 0.022]);
-  B.stick(BRT.iron, 'metal', [top[0], top[1], top[2], top[0] - ux * 0.13, top[1] - 0.1, top[2] - uz * 0.13, 0.02, 0.012]);
+  B.stick(BRTN.iron, 'metal', [sx - ux * 0.04, -0.12, sz - uz * 0.04, top[0], top[1], top[2], 0.028, 0.022]);
+  B.stick(BRTN.iron, 'metal', [top[0], top[1], top[2], top[0] - ux * 0.13, top[1] - 0.1, top[2] - uz * 0.13, 0.02, 0.012]);
   brtRope(B, p, [top[0] - ux * 0.06, top[1] - 0.04, top[2] - uz * 0.06], 0.06 + l * 0.01, 0.014);
 }
 
@@ -247,40 +247,40 @@ function brtGuy(B, p, sx, sz) {
    ochre leather sunburst); a short mast (o.mast metres) with a cross-bar and a plank sign board or a hanging banner
    (ochre, a gilt claw on it); a beast-head finial at the mast's head (o.finial false: none) */
 function brtCrown(F, B, cx, cz, y, cR, o) {
-  F.lathe(cx, y - 0.14, cz, [[cR + 0.1, 0], [cR + 0.16, 0.1], [cR + 0.14, 0.24], [cR - 0.02, 0.28]], 0, BRT.leather, 'hide', { nu: 20 });
-  for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2, p = brtAt(cR + 0.17, a, cx, cz); F.box(p[0], y - 0.08, p[1], 0.07, 0.22, 0.07, -a, BRT.iron, 'metal'); }
+  F.lathe(cx, y - 0.14, cz, [[cR + 0.1, 0], [cR + 0.16, 0.1], [cR + 0.14, 0.24], [cR - 0.02, 0.28]], 0, BRTN.leather, 'hide', { nu: 20 });
+  for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2, p = brtAt(cR + 0.17, a, cx, cz); F.box(p[0], y - 0.08, p[1], 0.07, 0.22, 0.07, -a, BRTN.iron, 'metal'); }
   if (o.kind === 'star') {
-    F.lathe(cx, y + 0.06, cz, [[cR * 1.9 + 0.15, 0], [cR * 1.3 + 0.1, 0.1], [cR * 0.7, 0.22], [0.1, 0.32]], 0, BRT.ochre, 'hide', { nu: 48, flute: { n: 9, amp: 0.6, sharp: 2.2 } });
+    F.lathe(cx, y + 0.06, cz, [[cR * 1.9 + 0.15, 0], [cR * 1.3 + 0.1, 0.1], [cR * 0.7, 0.22], [0.1, 0.32]], 0, BRTN.ochre, 'hide', { nu: 48, flute: { n: 9, amp: 0.6, sharp: 2.2 } });
   } else {
-    F.dome(cx, y + 0.1, cz, cR + 0.05, (cR + 0.05) * 0.45, 0, BRT.leather, 'hide');
+    F.dome(cx, y + 0.1, cz, cR + 0.05, (cR + 0.05) * 0.45, 0, BRTN.leather, 'hide');
   }
   const mh = o.mast == null ? 0 : o.mast;
   if (!mh) return;
   const y0 = y + 0.2, yt = y0 + mh;
-  B.stick(BRT.poleDark, BRT_LASH, [cx, y0, cz, cx, yt, cz, 0.06, 0.045]);
+  B.stick(BRTN.poleDark, BRT_LASH, [cx, y0, cz, cx, yt, cz, 0.06, 0.045]);
   if (!o.sign) {   /* a bare mast: a pennant off its head */
-    B.quad(o.banner == null ? BRT.red : o.banner, 'cloth', [cx, yt - 0.08, cz], [cx + 0.9, yt - 0.2, cz], [cx, yt - 0.42, cz], [cx + 0.9, yt - 0.3, cz]);
-    F.cone(cx, yt, cz, 0.06, 0.26, 0, BRT.gilt, 'metal'); return;
+    B.quad(o.banner == null ? BRTN.red : o.banner, 'cloth', [cx, yt - 0.08, cz], [cx + 0.9, yt - 0.2, cz], [cx, yt - 0.42, cz], [cx + 0.9, yt - 0.3, cz]);
+    F.cone(cx, yt, cz, 0.06, 0.26, 0, BRTN.gilt, 'metal'); return;
   }
   const bar = o.bar == null ? 1.3 : o.bar, yb = yt - 0.3;
-  B.stick(BRT.poleDark, BRT_LASH, [cx - bar / 2, yb, cz, cx + bar / 2, yb, cz, 0.04]);
+  B.stick(BRTN.poleDark, BRT_LASH, [cx - bar / 2, yb, cz, cx + bar / 2, yb, cz, 0.04]);
   if (o.sign === 'board') {
     for (const s of [-1, 1]) brtRope(B, [cx + s * bar * 0.36, yb, cz], [cx + s * bar * 0.36, yb - 0.28, cz], 0, 0.012);
-    F.box(cx, yb - 0.75, cz, bar * 0.86, 0.48, 0.06, 0, BRT.plank, 'wood');
-    F.box(cx, yb - 0.79, cz + 0.035, bar * 0.92, 0.06, 0.03, 0, BRT.poleDark, 'wood');
-    F.box(cx, yb - 0.33, cz + 0.035, bar * 0.92, 0.06, 0.03, 0, BRT.poleDark, 'wood');
-    if (o.mark) brtFlatClaw(B, cx, yb - 0.51, cz + 0.04, 0.32, BRT.sigil);
+    F.box(cx, yb - 0.75, cz, bar * 0.86, 0.48, 0.06, 0, BRTN.plank, 'wood');
+    F.box(cx, yb - 0.79, cz + 0.035, bar * 0.92, 0.06, 0.03, 0, BRTN.poleDark, 'wood');
+    F.box(cx, yb - 0.33, cz + 0.035, bar * 0.92, 0.06, 0.03, 0, BRTN.poleDark, 'wood');
+    if (o.mark) brtFlatClaw(B, cx, yb - 0.51, cz + 0.04, 0.32, BRTN.sigil);
   } else if (o.sign === 'banner') {
-    const bw = bar * 0.8, bh = o.bannerH == null ? 1.15 : o.bannerH, col = o.banner == null ? BRT.ochre : o.banner;
+    const bw = bar * 0.8, bh = o.bannerH == null ? 1.15 : o.bannerH, col = o.banner == null ? BRTN.ochre : o.banner;
     F.box(cx, yb - bh - 0.02, cz, bw, bh, 0.04, 0, col, 'cloth');
     /* the swallow-tail foot, and the gilt claw on it */
     B.quad(col, 'cloth', [cx - bw / 2, yb - bh - 0.02, cz], [cx, yb - bh - 0.02, cz], [cx - bw / 2, yb - bh - 0.32, cz], [cx, yb - bh - 0.12, cz]);
     B.quad(col, 'cloth', [cx, yb - bh - 0.02, cz], [cx + bw / 2, yb - bh - 0.02, cz], [cx, yb - bh - 0.12, cz], [cx + bw / 2, yb - bh - 0.32, cz]);
-    brtFlatClaw(B, cx, yb - bh * 0.5, cz + 0.03, bh * 0.36, BRT.gilt);
-    brtFlatClaw(B, cx, yb - bh * 0.5, cz - 0.03, bh * 0.36, BRT.gilt);
+    brtFlatClaw(B, cx, yb - bh * 0.5, cz + 0.03, bh * 0.36, BRTN.gilt);
+    brtFlatClaw(B, cx, yb - bh * 0.5, cz - 0.03, bh * 0.36, BRTN.gilt);
   }
   if (o.finial !== false) brmFinial(F, cx, yt - 0.05, cz, 0, 1, 0.42, BRM.deep);
-  else F.cone(cx, yt, cz, 0.08, 0.3, 0, BRT.gilt, 'metal');
+  else F.cone(cx, yt, cz, 0.08, 0.3, 0, BRTN.gilt, 'metal');
 }
 /* the claw as three slashes on a flat face (facing z) centred at (x, y, z), s high */
 function brtFlatClaw(B, x, y, z, s, col) {
@@ -323,8 +323,8 @@ function brtDrumSurf(cx, cz, r) {
         centre (true: a centre pole inside) }  */
 function brtBarrel(F, B, o) {
   const cx = (o.cx == null ? 0 : o.cx), cz = (o.cz == null ? 0 : o.cz), n = (o.n == null ? 12 : o.n), r1 = o.r1, h1 = o.h1, hs = o.hs == null ? 0.9 : o.hs, r2 = o.r2, h2 = o.h2 == null ? 1.4 : o.h2;
-  const front = o.front == null ? BRT_FRONT : o.front, D = Math.PI * 2 / n, P = o.panels || [BRT.orange[0], BRT.orange[1]];
-  const U = o.upper || [BRT.orange[2], BRT.orange[0]], band = o.band || {}, y2 = h1 + hs, yT = y2 + h2;
+  const front = o.front == null ? BRT_FRONT : o.front, D = Math.PI * 2 / n, P = o.panels || [BRTN.orange[0], BRTN.orange[1]];
+  const U = o.upper || [BRTN.orange[2], BRTN.orange[0]], band = o.band || {}, y2 = h1 + hs, yT = y2 + h2;
   const ang = function (i) { return front - D / 2 + i * D; };
   const at = function (r, a, y) { return [cx + r * Math.cos(a), y, cz + r * Math.sin(a)]; };
   const lerp3 = function (p, q, t) { return [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t]; };
@@ -352,22 +352,22 @@ function brtBarrel(F, B, o) {
     const A = at(r1 + 0.06, ang(0), 0), Bq = at(r1 + 0.06, ang(1), 0), N = 14, pts = [];
     for (let k = 0; k <= N; k++) { const u = 0.5 - du + 2 * du * k / N, p = lerp3(A, Bq, u); pts.push([p[0], arch(u), p[2]]); }
     for (let k = 0; k < N; k++) {
-      const p = pts[k], q = pts[k + 1], c = k % 2 ? BRT.red : BRT.cream;
+      const p = pts[k], q = pts[k + 1], c = k % 2 ? BRTN.red : BRTN.cream;
       B.quad(c, BRT_CANVAS, [p[0], p[1], p[2]], [q[0], q[1], q[2]], [p[0], p[1] + 0.26, p[2]], [q[0], q[1] + 0.26, q[2]]);
       for (let f = 0; f < 3; f++) { const t = (f + 0.5) / 3, x = p[0] + (q[0] - p[0]) * t, y = p[1] + (q[1] - p[1]) * t, z = p[2] + (q[2] - p[2]) * t;
-        B.stick(f % 2 ? BRT.ochre : BRT.red, 'cloth', [x, y, z, x, y - 0.2, z, 0.012, 0.008]); }
+        B.stick(f % 2 ? BRTN.ochre : BRTN.red, 'cloth', [x, y, z, x, y - 0.2, z, 0.012, 0.008]); }
     }
   }
   /* the poles at the panels' joins, standing over the rim with pointed finials; rafters up the band; the upper poles */
-  const fin = function (x, y, z, r) { F.cone(x, y, z, r, 0.32, 0, BRT.gilt, 'metal'); };
+  const fin = function (x, y, z, r) { F.cone(x, y, z, r, 0.32, 0, BRTN.gilt, 'metal'); };
   for (let i = 0; i < n; i++) {
     const a = ang(i), p = at(r1 + 0.07, a, 0), q = at(r2 + 0.06, a, 0);
-    B.stick(BRT.poleDark, BRT_LASH, [p[0], 0, p[2], p[0], h1 + 0.42, p[2], 0.07, 0.06]); fin(p[0], h1 + 0.4, p[2], 0.08);
-    B.stick(BRT.poleDark, BRT_LASH, [p[0], h1 + 0.02, p[2], q[0], y2 + 0.02, q[2], 0.05]);
-    B.stick(BRT.poleDark, BRT_LASH, [q[0], y2 - 0.05, q[2], q[0], yT + 0.36, q[2], 0.055, 0.045]); fin(q[0], yT + 0.34, q[2], 0.065);
+    B.stick(BRTN.poleDark, BRT_LASH, [p[0], 0, p[2], p[0], h1 + 0.42, p[2], 0.07, 0.06]); fin(p[0], h1 + 0.4, p[2], 0.08);
+    B.stick(BRTN.poleDark, BRT_LASH, [p[0], h1 + 0.02, p[2], q[0], y2 + 0.02, q[2], 0.05]);
+    B.stick(BRTN.poleDark, BRT_LASH, [q[0], y2 - 0.05, q[2], q[0], yT + 0.36, q[2], 0.055, 0.045]); fin(q[0], yT + 0.34, q[2], 0.065);
   }
   /* the shoulder band: red rims, a cream field, chevrons and diamonds in alternation, side by side */
-  const bb = band.base == null ? BRT.cream : band.base, rim = band.rim == null ? BRT.red : band.rim, m1 = band.motif == null ? BRT.red : band.motif, m2 = band.motif2 == null ? BRT.brown : band.motif2;
+  const bb = band.base == null ? BRTN.cream : band.base, rim = band.rim == null ? BRTN.red : band.rim, m1 = band.motif == null ? BRTN.red : band.motif, m2 = band.motif2 == null ? BRTN.brown : band.motif2;
   for (let i = 0; i < n; i++) {
     const a0 = ang(i), a1 = ang(i + 1), A0 = at(r1 + 0.03, a0, h1), A1 = at(r1 + 0.03, a1, h1), C0 = at(r2 + 0.03, a0, y2), C1 = at(r2 + 0.03, a1, y2);
     const S2 = function (s, t, off) { const p = lerp3(lerp3(A0, A1, s), lerp3(C0, C1, s), t), am = (a0 + a1) / 2, k = (off == null ? 0 : off); return [p[0] + Math.cos(am) * k, p[1] + k * 0.6, p[2] + Math.sin(am) * k]; };
@@ -382,13 +382,13 @@ function brtBarrel(F, B, o) {
   }
   /* the clerestory drum and the roof: a pale disc, nearly flat, a red edge, a short mast with a pennant */
   for (let i = 0; i < n; i++) panel(r2, ang(i), ang(i + 1), y2, yT, U[i % U.length]);
-  F.lathe(cx, yT - 0.02, cz, [[r2 + 0.32, 0], [r2 + 0.3, 0.1], [r2 * 0.55, 0.34], [0.12, 0.5]], 0, o.roof == null ? BRT.roof : o.roof, BRT_CANVAS, { nu: 32 });
-  F.lathe(cx, yT - 0.16, cz, [[r2 + 0.34, 0], [r2 + 0.36, 0.1], [r2 + 0.33, 0.2]], 0, BRT.red, BRT_CANVAS, { nu: 32 });
+  F.lathe(cx, yT - 0.02, cz, [[r2 + 0.32, 0], [r2 + 0.3, 0.1], [r2 * 0.55, 0.34], [0.12, 0.5]], 0, o.roof == null ? BRTN.roof : o.roof, BRT_CANVAS, { nu: 32 });
+  F.lathe(cx, yT - 0.16, cz, [[r2 + 0.34, 0], [r2 + 0.36, 0.1], [r2 + 0.33, 0.2]], 0, BRTN.red, BRT_CANVAS, { nu: 32 });
   const mast = o.mast == null ? 1.6 : o.mast;
   if (mast > 0) {
-    B.stick(BRT.poleDark, BRT_LASH, [cx, yT + 0.4, cz, cx, yT + 0.4 + mast, cz, 0.06, 0.045]);
+    B.stick(BRTN.poleDark, BRT_LASH, [cx, yT + 0.4, cz, cx, yT + 0.4 + mast, cz, 0.06, 0.045]);
     brmFinial(F, cx, yT + 0.35 + mast, cz, 0, 1, 0.42, BRM.deep);
-    B.quad(BRT.red, 'cloth', [cx, yT + mast, cz], [cx + 1.1, yT + mast - 0.15, cz], [cx, yT + mast - 0.5, cz], [cx + 1.1, yT + mast - 0.3, cz]);
+    B.quad(BRTN.red, 'cloth', [cx, yT + mast, cz], [cx + 1.1, yT + mast - 0.15, cz], [cx, yT + mast - 0.5, cz], [cx + 1.1, yT + mast - 0.3, cz]);
   }
   /* the awnings, the pennant strips between them, the ladders, the guys */
   const aw = o.awnings || [];
@@ -411,7 +411,7 @@ function brtBarrel(F, B, o) {
     const p = at(r1 + 0.07, a, h1 + 0.3), q = brtAt(r1 + h1 * 0.75 + 1, a, cx, cz);
     brtGuy(B, p, q[0], q[1]);
   }
-  if (o.centre !== false) B.stick(BRT.pole, BRT_LASH, [cx, 0, cz, cx, yT + 0.45, cz, 0.12, 0.1]);
+  if (o.centre !== false) B.stick(BRTN.pole, BRT_LASH, [cx, 0, cz, cx, yT + 0.45, cz, 0.12, 0.1]);
   if (o.floor != null) F.cyl(cx, 0, cz, r1 - 0.1, 0.04, 0, o.floor, 'straw/cloth');
   return { r1: r1, h1: h1, r2: r2, y2: y2, top: yT, ang: ang, n: n, front: front };
 }
@@ -422,24 +422,24 @@ function brtAwning(F, B, cx, cz, r, a, y, w, d, k) {
   const P = function (s, out, yy) { return [cx + ca * (r + 0.1 + out) + tx * s, yy, cz + sa * (r + 0.1 + out) + tz * s]; };
   const nS = Math.max(3, Math.round(w / 0.42));
   for (let i = 0; i < nS; i++) {
-    const s0 = -w / 2 + w * i / nS, s1 = -w / 2 + w * (i + 1) / nS, c = (i + k) % 2 ? BRT.cream : BRT.red;
+    const s0 = -w / 2 + w * i / nS, s1 = -w / 2 + w * (i + 1) / nS, c = (i + k) % 2 ? BRTN.cream : BRTN.red;
     B.quad(c, BRT_CANVAS, P(s0, 0, y), P(s1, 0, y), P(s0, d, yo), P(s1, d, yo));
   }
   const nD = Math.max(4, Math.round(w / 0.3));
   for (let i = 0; i < nD; i++) {
-    const s = -w / 2 + w * (i + 0.5) / nD, c = i % 2 ? BRT.red : BRT.cream, hw = w / nD / 2;
+    const s = -w / 2 + w * (i + 0.5) / nD, c = i % 2 ? BRTN.red : BRTN.cream, hw = w / nD / 2;
     B.quad(c, BRT_CANVAS, P(s, d, yo), P(s + hw, d, yo - 0.15), P(s - hw, d, yo - 0.15), P(s, d, yo - 0.3));
   }
   for (const s of [-w / 2, w / 2]) {
-    const p = P(s, d, 0); B.stick(BRT.poleDark, BRT_LASH, [p[0], 0, p[2], p[0], yo + 0.3, p[2], 0.045, 0.04]);
-    F.cone(p[0], yo + 0.28, p[2], 0.06, 0.26, 0, BRT.gilt, 'metal');
+    const p = P(s, d, 0); B.stick(BRTN.poleDark, BRT_LASH, [p[0], 0, p[2], p[0], yo + 0.3, p[2], 0.045, 0.04]);
+    F.cone(p[0], yo + 0.28, p[2], 0.06, 0.26, 0, BRTN.gilt, 'metal');
     const q = P(s * 1.25, d + 1.5, 0); brtGuy(B, [p[0], yo + 0.2, p[2]], q[0], q[2]);
   }
 }
 /* a pennant strip hanging on a drum S (S.on) at angle a from height y, `len` long: three bands of colour and a
    pointed foot, a chevron in each band */
 function brtPennant(B, S, a, y, len, k) {
-  const w = 0.17, cols = [[BRT.red, BRT.cream, BRT.ochre], [BRT.cream, BRT.rust, BRT.brown], [BRT.ochre, BRT.red, BRT.cream]][k % 3];
+  const w = 0.17, cols = [[BRTN.red, BRTN.cream, BRTN.ochre], [BRTN.cream, BRTN.rust, BRTN.brown], [BRTN.ochre, BRTN.red, BRTN.cream]][k % 3];
   const seg = len * 0.28;
   for (let i = 0; i < 3; i++) {
     const y0 = -seg * i, y1 = -seg * (i + 1);
@@ -454,10 +454,10 @@ function brtPennant(B, S, a, y, len, k) {
 /* a lashed ladder leaning on a drum of radius r at angle a, its head at height h */
 function brtLadder(B, cx, cz, r, a, h) {
   const ca = Math.cos(a), sa = Math.sin(a), tx = -sa, tz = ca, foot = r + 0.3 + h * 0.3, head = r + 0.14;
-  for (const s of [-0.24, 0.24]) B.stick(BRT.pole, BRT_LASH, [cx + ca * foot + tx * s, 0, cz + sa * foot + tz * s, cx + ca * head + tx * s, h, cz + sa * head + tz * s, 0.04]);
+  for (const s of [-0.24, 0.24]) B.stick(BRTN.pole, BRT_LASH, [cx + ca * foot + tx * s, 0, cz + sa * foot + tz * s, cx + ca * head + tx * s, h, cz + sa * head + tz * s, 0.04]);
   const nR = Math.floor(h / 0.32);
   for (let i = 1; i <= nR; i++) { const t = i / (nR + 0.6), rr = foot + (head - foot) * t, y = h * t;
-    B.stick(BRT.pole, BRT_LASH, [cx + ca * rr - tx * 0.26, y, cz + sa * rr - tz * 0.26, cx + ca * rr + tx * 0.26, y, cz + sa * rr + tz * 0.26, 0.022]); }
+    B.stick(BRTN.pole, BRT_LASH, [cx + ca * rr - tx * 0.26, y, cz + sa * rr - tz * 0.26, cx + ca * rr + tx * 0.26, y, cz + sa * rr + tz * 0.26, 0.022]); }
 }
 
 /* ==== FRAMES, FENCES, HEDGES ==== */
@@ -467,9 +467,9 @@ function brtLattice(B, cx, cz, r, h, a0, a1, col) {
   for (let i = 0; i <= N; i++) {
     const a = a0 + (a1 - a0) * i / N;
     for (const s of [1, -1]) { const b = a + s * dA; if (b < a0 - 1e-6 || b > a1 + 1e-6) continue;
-      const p = brtAt(r, a, cx, cz), q = brtAt(r, b, cx, cz); B.stick(col == null ? BRT.plank : col, BRT_LASH, [p[0], 0.04, p[1], q[0], h, q[1], 0.022]); }
+      const p = brtAt(r, a, cx, cz), q = brtAt(r, b, cx, cz); B.stick(col == null ? BRTN.plank : col, BRT_LASH, [p[0], 0.04, p[1], q[0], h, q[1], 0.022]); }
   }
-  for (const y of [0.06, h]) for (let i = 0; i < N; i++) { const p = brtAt(r, a0 + (a1 - a0) * i / N, cx, cz), q = brtAt(r, a0 + (a1 - a0) * (i + 1) / N, cx, cz); B.stick(BRT.poleDark, BRT_LASH, [p[0], y, p[1], q[0], y, q[1], 0.03]); }
+  for (const y of [0.06, h]) for (let i = 0; i < N; i++) { const p = brtAt(r, a0 + (a1 - a0) * i / N, cx, cz), q = brtAt(r, a0 + (a1 - a0) * (i + 1) / N, cx, cz); B.stick(BRTN.poleDark, BRT_LASH, [p[0], y, p[1], q[0], y, q[1], 0.03]); }
 }
 /* a corral round the closed polygon pts ([[x, z], ...] local): posts every `step` (2.6), `rails` rails to height h;
    o.rope: rope rails that sag (a portable rope-and-pole corral), else lashed pole rails; o.gate: { e (the edge index),
@@ -477,16 +477,16 @@ function brtLattice(B, cx, cz, r, h, a0, a1, col) {
    o.post (radius), o.col */
 function brtCorral(F, B, pts, h, o) {
   o = o || {};
-  const step = (o.step == null ? 2.6 : o.step), nR = (o.rails == null ? 3 : o.rails), pr = (o.post == null ? 0.07 : o.post), col = o.col == null ? BRT.pole : o.col;
+  const step = (o.step == null ? 2.6 : o.step), nR = (o.rails == null ? 3 : o.rails), pr = (o.post == null ? 0.07 : o.post), col = o.col == null ? BRTN.pole : o.col;
   const posts = [];
   for (let e = 0; e < pts.length; e++) {
     const a = pts[e], b = pts[(e + 1) % pts.length], L = Math.hypot(b[0] - a[0], b[1] - a[1]);
     let runs = [[0, L]];
     if (o.gate && o.gate.e === e) { const g = o.gate.w / 2; runs = [[0, L / 2 - g], [L / 2 + g, L]];
       const ux = (b[0] - a[0]) / L, uz = (b[1] - a[1]) / L;
-      for (const s of [-1, 1]) { const x = a[0] + ux * (L / 2 + s * g), z = a[1] + uz * (L / 2 + s * g); B.stick(BRT.poleDark, BRT_LASH, [x, -0.2, z, x, h + 0.9, z, pr * 1.8, pr * 1.5]);
+      for (const s of [-1, 1]) { const x = a[0] + ux * (L / 2 + s * g), z = a[1] + uz * (L / 2 + s * g); B.stick(BRTN.poleDark, BRT_LASH, [x, -0.2, z, x, h + 0.9, z, pr * 1.8, pr * 1.5]);
         brmFinial(F, x, h + 0.88, z, ux * s, uz * s, 0.32, BRM.deep); }
-      B.stick(BRT.poleDark, BRT_LASH, [a[0] + ux * (L / 2 - g), h + 0.7, a[1] + uz * (L / 2 - g), a[0] + ux * (L / 2 + g), h + 0.7, a[1] + uz * (L / 2 + g), pr * 1.2]);
+      B.stick(BRTN.poleDark, BRT_LASH, [a[0] + ux * (L / 2 - g), h + 0.7, a[1] + uz * (L / 2 - g), a[0] + ux * (L / 2 + g), h + 0.7, a[1] + uz * (L / 2 + g), pr * 1.2]);
     }
     runs.forEach(function (r) {
       if (r[1] - r[0] < 0.3) return;
@@ -497,7 +497,7 @@ function brtCorral(F, B, pts, h, o) {
       for (let i = 0; i < n; i++) for (let k = 0; k < nR; k++) {
         const y = h * (k + 1) / (nR + 0.15), p = P[i], q = P[i + 1];
         if (o.rope) brtRope(B, [p[0], y, p[1]], [q[0], y, q[1]], 0.07, 0.018);
-        else B.stick(o.railCol == null ? BRT.rail : o.railCol, BRT_LASH, [p[0], y + (brtU(F, 42, i, k) - 0.5) * 0.06, p[1], q[0], y + (brtU(F, 43, i, k) - 0.5) * 0.06, q[1], pr * 0.62]);
+        else B.stick(o.railCol == null ? BRTN.rail : o.railCol, BRT_LASH, [p[0], y + (brtU(F, 42, i, k) - 0.5) * 0.06, p[1], q[0], y + (brtU(F, 43, i, k) - 0.5) * 0.06, q[1], pr * 0.62]);
       }
     });
   }
@@ -505,10 +505,10 @@ function brtCorral(F, B, pts, h, o) {
 /* a split-rail fence run from (ax, az) to (bx, bz): posts every 2.4 m, `rails` split rails (flat beams) between */
 function brtRail(F, B, ax, az, bx, bz, h, rails) {
   const L = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.round(L / 2.4)), ux = (bx - ax) / L, uz = (bz - az) / L;
-  for (let i = 0; i <= n; i++) { const x = ax + ux * L * i / n, z = az + uz * L * i / n; B.stick(BRT.poleDark, BRT_LASH, [x, -0.25, z, x, h + 0.15, z, 0.09, 0.08]); }
+  for (let i = 0; i <= n; i++) { const x = ax + ux * L * i / n, z = az + uz * L * i / n; B.stick(BRTN.poleDark, BRT_LASH, [x, -0.25, z, x, h + 0.15, z, 0.09, 0.08]); }
   for (let i = 0; i < n; i++) for (let k = 0; k < rails; k++) {
     const y = h * (k + 1) / (rails + 0.2), x0 = ax + ux * L * i / n, z0 = az + uz * L * i / n, x1 = ax + ux * L * (i + 1) / n, z1 = az + uz * L * (i + 1) / n;
-    F.beam(x0 - ux * 0.15, y + (brtU(F, 44, i, k) - 0.5) * 0.05, z0 - uz * 0.15, x1 + ux * 0.15, y + (brtU(F, 45, i, k) - 0.5) * 0.05, z1 + uz * 0.15, 0.06, 0.15, brtPick(F, [BRT.rail, BRT.pole, BRT.plank], 46, i, k), BRT_LASH);
+    F.beam(x0 - ux * 0.15, y + (brtU(F, 44, i, k) - 0.5) * 0.05, z0 - uz * 0.15, x1 + ux * 0.15, y + (brtU(F, 45, i, k) - 0.5) * 0.05, z1 + uz * 0.15, 0.06, 0.15, brtPick(F, [BRTN.rail, BRTN.pole, BRTN.plank], 46, i, k), BRT_LASH);
   }
 }
 /* a cut-thorn barrier (a boma) along x from x0 to x1 at z 0: thorn branches piled across stakes, `h` high and `t` thick;
@@ -517,7 +517,7 @@ function brtRail(F, B, ax, az, bx, bz, h, rails) {
 function brtThorn(F, B, x0, x1, h, t, salt) {
   salt = (salt == null ? 0 : salt);
   const L = x1 - x0, nS = Math.max(1, Math.round(L / 1.7));
-  for (let i = 0; i <= nS; i++) { const x = x0 + L * i / nS; for (const s of [-1, 1]) B.stick(BRT.poleDark, BRT_LASH, [x, -0.2, s * t * 0.2, x + (brtU(F, 50 + salt, i, s) - 0.5) * 0.12, h * 0.85, s * t * 0.18, 0.045, 0.032]); }
+  for (let i = 0; i <= nS; i++) { const x = x0 + L * i / nS; for (const s of [-1, 1]) B.stick(BRTN.poleDark, BRT_LASH, [x, -0.2, s * t * 0.2, x + (brtU(F, 50 + salt, i, s) - 0.5) * 0.12, h * 0.85, s * t * 0.18, 0.045, 0.032]); }
   /* the cut branches piled across the stakes, lying along the run and up out of it, each bristling with twigs */
   const per = 30, nB = Math.max(8, Math.round(L * per));
   for (let i = 0; i < nB; i++) {
@@ -527,7 +527,7 @@ function brtThorn(F, B, x0, x1, h, t, salt) {
     let dx = Math.cos(lean), dz = Math.sin(lean) * 0.6, dy = up; const l = Math.hypot(dx, dy, dz); dx /= l; dy /= l; dz /= l;
     if (U(6) < 0.5) dx = -dx;
     const ex = Math.max(x0 - 0.15, Math.min(x1 + 0.15, x + dx * len)), ey = Math.min(h, y + dy * len), ez = Math.max(-t / 2, Math.min(t / 2, z + dz * len));
-    const col = U(7) < 0.4 ? BRT.thornDry : BRT.thorn;
+    const col = U(7) < 0.4 ? BRTN.thornDry : BRTN.thorn;
     B.stick(col, BRT_THORN, [x, y, z, ex, ey, ez, 0.04, 0.01]);
     for (let k = 0; k < 4; k++) {
       const tt = 0.25 + 0.18 * k, px = x + (ex - x) * tt, py = y + (ey - y) * tt, pz = z + (ez - z) * tt;
@@ -542,7 +542,7 @@ function brtVault(F, B, p, q, w, h, nH, o) {
   o = o || {};
   const L = Math.hypot(q[0] - p[0], q[1] - p[1]), ux = (q[0] - p[0]) / L, uz = (q[1] - p[1]) / L, nx = -uz, nz = ux;
   const P = function (s, th, off) { const r = 1 + ((off == null ? 0 : off)) / Math.max(w / 2, h), x = p[0] + ux * s + nx * Math.cos(th) * w / 2 * r, z = p[1] + uz * s + nz * Math.cos(th) * w / 2 * r; return [x, Math.sin(th) * h * r, z]; };
-  const cols = o.cols || BRT.hide, nSeg = Math.max(1, nH - 1), dr = o.door, thD = dr ? Math.asin(Math.min(0.95, dr.h / h)) : 0;
+  const cols = o.cols || BRTN.hide, nSeg = Math.max(1, nH - 1), dr = o.door, thD = dr ? Math.asin(Math.min(0.95, dr.h / h)) : 0;
   for (let i = 0; i < nSeg; i++) {
     const s0 = L * i / nSeg, s1 = L * (i + 1) / nSeg, col = o.col == null ? brtPick(F, cols, 61, i) : o.col;
     const part = function (a, b, th0) { if (b - a < 1e-3) return; brtSurf(F, 2, 10, function (u, v) { return P(a + (b - a) * u, th0 + (Math.PI - th0) * v, (i % 2) * 0.014); }, col, BRT_HIDE); };
@@ -550,11 +550,11 @@ function brtVault(F, B, p, q, w, h, nH, o) {
     part(s0, Math.max(s0, dr.s0), 0); part(Math.min(s1, dr.s1), s1, 0); part(Math.max(s0, dr.s0), Math.min(s1, dr.s1), thD);
   }
   if (dr) {   /* the door's lashed jambs and lintel on the front */
-    for (const s of [dr.s0, dr.s1]) { const a = P(s, 0, 0.06), b = P(s, thD, 0.06); B.stick(BRT.pole, BRT_LASH, [a[0], 0, a[2], b[0], b[1] + 0.08, b[2], 0.055, 0.05]); }
-    const a = P(dr.s0 - 0.2, thD, 0.08), b = P(dr.s1 + 0.2, thD, 0.08); B.stick(BRT.poleDark, BRT_LASH, [a[0], a[1] + 0.05, a[2], b[0], b[1] + 0.05, b[2], 0.05]);
+    for (const s of [dr.s0, dr.s1]) { const a = P(s, 0, 0.06), b = P(s, thD, 0.06); B.stick(BRTN.pole, BRT_LASH, [a[0], 0, a[2], b[0], b[1] + 0.08, b[2], 0.055, 0.05]); }
+    const a = P(dr.s0 - 0.2, thD, 0.08), b = P(dr.s1 + 0.2, thD, 0.08); B.stick(BRTN.poleDark, BRT_LASH, [a[0], a[1] + 0.05, a[2], b[0], b[1] + 0.05, b[2], 0.05]);
   }
-  for (let i = 0; i < nH; i++) { const s = L * i / Math.max(1, nH - 1), pts = []; for (let k = 0; k <= 10; k++) pts.push(P(s, Math.PI * k / 10, 0.05)); B.line(BRT.poleDark, BRT_LASH, pts, 0.05); }
-  B.stick(BRT.poleDark, BRT_LASH, [p[0], h + 0.05, p[1], q[0], h + 0.05, q[1], 0.05]);
+  for (let i = 0; i < nH; i++) { const s = L * i / Math.max(1, nH - 1), pts = []; for (let k = 0; k <= 10; k++) pts.push(P(s, Math.PI * k / 10, 0.05)); B.line(BRTN.poleDark, BRT_LASH, pts, 0.05); }
+  B.stick(BRTN.poleDark, BRT_LASH, [p[0], h + 0.05, p[1], q[0], h + 0.05, q[1], 0.05]);
 }
 /* a lean-to of hides on poles: front posts at z0 (height hf), back posts at z1 (height hb), from x0 to x1; the roof of
    hides overhangs both a little and sags between the rafters; col: one colour, else the hides in turn */
@@ -562,11 +562,11 @@ function brtLeanTo(F, B, x0, x1, z0, z1, hf, hb, col) {
   const nP = Math.max(2, Math.round((x1 - x0) / 2.8) + 1), za = z0 - 0.35 * Math.sign(z1 - z0), zb = z1 + 0.25 * Math.sign(z1 - z0);
   const yz = function (z) { return hf + (hb - hf) * (z - z0) / (z1 - z0); };
   for (let i = 0; i < nP; i++) { const x = x0 + (x1 - x0) * i / (nP - 1);
-    B.stick(BRT.poleDark, BRT_LASH, [x, -0.1, z0, x, hf + 0.06, z0, 0.08, 0.07]); B.stick(BRT.poleDark, BRT_LASH, [x, -0.1, z1, x, hb + 0.06, z1, 0.08, 0.07]);
-    B.stick(BRT.pole, BRT_LASH, [x, yz(za) + 0.06, za, x, yz(zb) + 0.06, zb, 0.05]); }
+    B.stick(BRTN.poleDark, BRT_LASH, [x, -0.1, z0, x, hf + 0.06, z0, 0.08, 0.07]); B.stick(BRTN.poleDark, BRT_LASH, [x, -0.1, z1, x, hb + 0.06, z1, 0.08, 0.07]);
+    B.stick(BRTN.pole, BRT_LASH, [x, yz(za) + 0.06, za, x, yz(zb) + 0.06, zb, 0.05]); }
   const nH = Math.max(2, Math.round((x1 - x0) / 1.6));
   for (let i = 0; i < nH; i++) {
-    const xa = x0 - 0.2 + (x1 - x0 + 0.4) * i / nH, xb = x0 - 0.2 + (x1 - x0 + 0.4) * (i + 1) / nH, c = col == null ? brtPick(F, BRT.hide.concat(BRT.hideOld), 62, i) : col;
+    const xa = x0 - 0.2 + (x1 - x0 + 0.4) * i / nH, xb = x0 - 0.2 + (x1 - x0 + 0.4) * (i + 1) / nH, c = col == null ? brtPick(F, BRTN.hide.concat(BRTN.hideOld), 62, i) : col;
     brtSurf(F, 3, 4, function (u, v) { const z = za + (zb - za) * v; return [xa + (xb - xa) * u, yz(z) + 0.14 + (i % 2) * 0.012 - Math.sin(Math.PI * u) * 0.06, z]; }, c, BRT_HIDE);
   }
 }

@@ -25,6 +25,45 @@ python3 ../../tools/textures/pack.py kits/beast-riders   # (from the repo root) 
     for a windbreak, long troughs, hay ricks, a trampled yard round it;
   - `br_bldg_rookery_tower`: a free-standing roost tower for the flyers (quetzal, wingclaw, nightwing): raked log legs,
     a deck at 13.5 m with perch rails out on four sides, nests, a thatch canopy, a ladder, a feed hoist and shed.
+- **The sedentary trades and the larger houses** (2026-10-19; owner: "sedentary beast rider versions of the current
+  islander trades; although the beast riders do not have electricity. we may want some larger housing options"):
+  34 keys, 70 variants, in the same vocabulary (`src/51-54`, helpers `brt*` in `51-br-trades.js`). No electricity:
+  fire is wood and charcoal, light is the catalog's oil lanterns and glow fungus, and what turns, turns by beast (the
+  whim, `brtWhim`: the mill, the bark mill, the bellows, the mine's winding, the landing's crane) or by water (the
+  mill's wheel). Each building places the catalog's beast-rider and generic furniture (4+ pieces a variant) and
+  carries `job` (FURN_JOBS) or `role`.
+  - **Crafts and food** (`51-br-trades.js`): `br_bldg_bakehouse` (bakers: the bake house and oven shed; the bakers'
+    hall), `_butcher` (the shop and smokehouse; the slaughter yard and its hoist), `_mead_hall` (brewers, innkeepers
+    and servers: the mead hall; the brewhouse), `_tannery` (the pit shed; with a beast-turned bark mill), `_weaver`
+    (weavers and dyers: the weaving house; the dye works), `_smithy` (the forge; the great forge, its bellows worked by
+    a beast), `_potter`, `_ropewalk` (craftsmen), `_healer` (the house of healing; the beast-healer's sling stall),
+    `_shophouse` (the shop under the home; the double), `_market_hall` (the hall; the pavilion).
+  - **Works, stock and the water** (`52-br-trades-b.js`): `_storehouse` (the raised store; the tack and feed store),
+    `_granary` (the rice barn on its rat-stones; the row of cribs), `_mill` (the beast mill under its round roof; the
+    water mill), `_hauling_yard` (industrial workers: the timber and the stone haulers' yards), `_beast_stage` (Voth's
+    elephant bug station, ridden: the carrier-beast mounting stage), `_beetle_pen` (the Staghorn's beetle house and
+    run; the breeding shed), `_fungus_house` (mushroom growers: the dark house; the cellar), `_mine_head` (the adit;
+    the shaft and its whim), `_quarry` (the face; the masons' yard), `_canoe_shed` (shipwrights, coast guard: the
+    voyaging canoe's shed; the war-canoe shed), `_river_landing` (dockers, bargemen, fishers, ferrymen: three; the
+    Islanders' harbour frame, land at local z > 0, the jetty over z < 0).
+  - **Civic, guard and signal** (`53-br-trades-c.js`): `_riders_inn` (innkeepers and grooms: the inn round its stable
+    yard; the roadside inn), `_barracks` (a Wing's barracks with the claw over its door; the roost barracks),
+    `_school` (the lore house; the riding school's ring), `_temple` (the hall of the five shrines; the funerary court
+    with its skull poles), `_toll_house` (customs: the toll house and its boom; the tally hall), `_watch_tower`,
+    `_beacon_tower` (the fire beacon; the signal mast).
+  - **The larger houses and the farmhouse** (`54-br-houses.js`): `br_bldg_great_house` (a clan's great-house: two
+    storeys, the mounts stalled under, a gallery), `_chief_compound` (the hall-house round its court, the wings, the
+    gate; envoys lodge in its guest wing), `_rock_longhouse` (a block built against a stack where land is tight: two or
+    three storeys, its back wall flat, `against: 'back'`: nothing behind local z = -d/2), `_terrace_row`, and
+    `_farmhouse` (the farmhouse with its yard, crib, beast shed, sty and coop; the courtyard farm; the paddy farm on
+    piles): Pinnacle Rock's twelve farmhouses in the farm ring.
+  - **`BR_TRADES`** (`51-br-trades.js`, plain data like the Islanders' `IS_TRADES`): every trade of the Voth city's
+    census, the Beast Rider keys that carry it (the kit's own and the ports), or `na` and why: only the power house
+    (no electricity). The elephant bug handlers are carried by the carrier-beast stage, the beetle herders by the
+    Staghorn's beetle pen, the mushroom growers by the fungus house.
+  - **Centred frames.** Each variant's measured footprint centre is put on the origin by `BRT_CENTRE` (the build's
+    first call, `brtCentre(F)`: `F.shift`); after a change that moves a builder's extent, remeasure it on the sheet
+    (`window._kit.built`, `min` and `max`) along with its declared box.
 - **The ports: Girder's and Mav's Refuge's own buildings** (`br_port_*`, 13 keys, 44 variants), drawn by the towns' own
   builders on their own engines, not re-authored:
   - Girder: `br_port_girder_hall` (the assembly hall), `_dwelling` (the five tower-slot kinds and a roofed one under the
@@ -137,7 +176,10 @@ hover inspector (T) and the polygon tool (P). The probe is `window._kit`.
 
 The kit's own: load the catalog's core (and the beast-rider and generic furniture files, for the pieces the buildings
 place), then this kit's `src/50-br-mounts.js`, read in place, and build a key with `buildAsset(key, x, z, ry, {variant})`.
-The isle demo does it in a sealed closure (`settlements/isle-demo/bundles.py`, `CAT`).
+The isle demo does it in a sealed closure (`settlements/isle-demo/bundles.py`, `CAT`). The trades and the houses
+read `src/51-br-trades.js` to `src/54-br-houses.js` in place after it, in that order (they draw with its helpers,
+`brm*`, and 51's, `brt*`); a city layout takes their footprints from each ASSET's `variantDims` and their trades from
+`BR_TRADES`.
 
 The ports: `towns.bundle()` gives the two sealed towns and their maps (about 9.5 MB, nearly all maps); after the catalog's
 core, `src/60-br-ports.js` registers them, and `buildAsset('br_port_...', x, z, ry, {variant, y})` places a copy (its
@@ -155,7 +197,11 @@ taken away); every tribe's `BR_CAMP` grounds name keys and variants that exist a
 key that does not exist); `BR_RUN` lays a closed boundary whole. For the rock-cut
 pieces: each one's back stays within its declared depth and nothing lies deeper under the wall's face than its embed,
 flat and wrapped round a stack (the sheet's last rock row: six pieces on a 9 m stack); every kind is there (seven
-facades, twelve tribes, five shrines); their two surfaces attach; a negative (each embed 0.3 m less) is caught. For the ports: each
+facades, twelve tribes, five shrines); their two surfaces attach; a negative (each embed 0.3 m less) is caught. For the trades and
+the houses: each carries a catalog job or a role; each variant places 4+ catalog pieces; the rock-backed longhouse draws
+nothing behind its back plane and reaches it; every census trade (`IS_TRADES`, read from
+`kits/islanders/src/68-is-trades.js`) has a row in `BR_TRADES` carried by Beast Rider buildings of the page or `na`
+with a reason, and two negatives (a row stripped of its buildings, a row dropped) are caught. For the ports: each
 one's fabric, measured on the sheet, is what its marks drew; and each is its town's building: verify.py loads
 `settlements/girder/girder.html` and `settlements/mavs-refuge/mavs-refuge.html` and measures the same mark there
 (`window._ports`), the box within 0.05 m on every face and the furniture the same, piece for piece (`--no-towns` skips

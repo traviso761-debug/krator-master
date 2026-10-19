@@ -14,6 +14,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 4.3 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/50-br-mounts.js` | 18.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 90 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/51-br-trades.js` | 55.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 228 | 0 | 0 | 0 | 0 | 0 | split: BR_TRADES (the census table) and BRT_CENTRE are data; the trades' helpers and the crafts are builders |
+| `src/52-br-trades-b.js` | 44.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 262 | 0 | 0 | 0 | 0 | 0 | the works, the stock and the water's edge |
+| `src/53-br-trades-c.js` | 33.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 168 | 0 | 0 | 0 | 0 | 0 | the civic, guard and signal trades |
+| `src/54-br-houses.js` | 25.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 113 | 0 | 0 | 0 | 0 | 0 | the larger houses and the farmhouse |
 | `src/55-br-rockcut.js` | 76.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 179 | 0 | 0 | 0 | 0 | 0 | the rock-cut pieces as ASSETs and their carving vocabulary (wall frame, rim, portal, beasts in relief); the tribes' and offerings' tables are data |
 | `src/56-br-rockcut-b.js` | 42.4 | [draw] | 3 | 0 | 0 | 0 | 0 | 104 | 0 | 0 | 0 | 0 | 0 | split: the Deep Root cavern's pieces; BR_ROCK's dims/face/onWall/onStack maths is data, backOf and the sheet's backdrop are host |
 | `src/60-br-ports.js` | 3.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the ports as ASSETs: copies of the sealed towns' groups (towns.py) |
@@ -24,7 +28,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/74-br-tents-bands.js` | 17.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 46 | 0 | 0 | 0 | 0 | 0 | the Dragonfly, Spider and Mammoth bands' grounds as ASSETs |
 | `src/75-br-tents-bounds.js` | 4.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | the thorn hedge and rail fence, parametric pieces (F.span) |
 | `src/79-br-camp.js` | 14.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | BR_CAMP (a band's camp by tribe), BR_RUN (a boundary along a polyline): plain data and pure functions; BR_SHEET_TENTS the sheet's rows |
-| `src/90-br-sheet.js` | 5.8 | [web] | 1 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/90-br-sheet.js` | 6.1 | [web] | 1 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes
