@@ -55,9 +55,13 @@
 
 ## The towns on core/simulation (P7b, 2026-10-19)
 
-- [ ] **Nobody is drawn yet.** The page steps the sim (`57`, held at first) but draws no citizens; a few near the camera
-      are the rest of P7b. The run loop is the page's own; a generic sim clock for core/host (Voth's 56c lifted) is a
-      follow-up. The stocks id map (`46`) waits for the page to take core/host (PLAN.md section 10).
+- [ ] **The citizens are stand-ins** (`59`): an instanced body and head per figure, coloured by their kind of work (the
+      kin by their house's class), up to 120 within 260 m of the camera's target, posed from `SIM.pose`; no walk cycle, no
+      clothes. core/charactermodels has no light path into a settlement yet (its README asks for a crowd cost plan first:
+      instancing or impostors, LOD, a download budget), so its bodies replace these later. A place's workers stand round
+      its door's spot (the posts have no spots of their own: no interiors), so a market's traders cluster.
+- [ ] **The run loop is the page's own** (`57`); a generic sim clock for core/host (Voth's 56c lifted) is a follow-up. The
+      stocks id map (`46`) waits for the page to take core/host (PLAN.md section 10).
 - [x] **The meals by town, the nearest-job deal, the ring search and the lag at minute 0** (2026-10-19): fixed in
       core/simulation on `claude/isle-p7a-rest` and merged here. The checks read each town's own meals
       (`SIM.ITEMS.statsBy[town].meals`), every role takes `work.near`, the 01:00 start is gone; `SIM.REACH` (6 km) stays

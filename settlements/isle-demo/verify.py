@@ -60,7 +60,7 @@ opened (?town=) and, once both towns are planned (window._city.both):
   - the declared boxes the plan placed by (ISLE_DIMS, ISLE_VDIMS, read from the kits' sources) are the bundles' own
   - negative controls: a building pushed onto its neighbour, one pushed into the sea, the palace (or Valapo's hall) taken
     away: each must fail its check
-  - on the Valapo page, both towns on core/simulation (SIM_JS below)"""
+  - on the Valapo page, both towns on core/simulation (SIM_JS below) and the citizens drawn near the camera (CIT_JS)"""
 CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.G;
  if(!neg){
   for(const t in C.checks)C.checks[t].forEach(c=>out.push(c));
@@ -91,6 +91,10 @@ finding every place from its lot, the food made, hauled and eaten with nothing s
 covering what was eaten. Each check has a negative (neg): a trade's lot taken from the places, a resident housed in the
 other town, a worker without a job, a place the stocks map cannot find, a food never hauled, a purchase out of stock,
 half the food made."""
+# the citizens drawn near the camera (src/59-isle-citizens.js), after the day: the world run on to mid-morning, the camera
+# at a busy place of the drawn town; the negative moves one drawn figure 50 m from its actor's pose
+CIT_JS = r"""(neg)=>{const S=ISLE.SIM,end=ISLE.TUNE.sim.clock.start+1440+600;if(S.clock.m<end)ISLE.simRun(end-S.clock.m);
+ ISLE.view(ISLE.cur.town==='Valapo'?'village hall':'palace');ISLE.citizens.update();return ISLE.citizens.check({shift:!!neg});}"""
 SIM_TOWNS = ('Kautoa', 'Valapo')
 SIM_NEGS = ('lot', 'home', 'job', 'map', 'haul', 'short', 'made')
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];
@@ -173,6 +177,12 @@ async def run_city(a):
                                     caught = bool(rs) and not any(r['ok'] for r in rs)
                                     print(('  PASS  ' if caught else '  MISSED') + ' negative (%s sim %s) : ' % (st, neg) + '; '.join(r['detail'] for r in rs))
                                     if not caught: fails.append('%s: negative sim %s' % (st, neg))
+                            r = await pg.evaluate(CIT_JS, None)
+                            print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                            if not r['ok']: fails.append(r['name'])
+                            r = await pg.evaluate(CIT_JS, 'shift')
+                            print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a figure 50 m off its pose) : ' + r['detail'])
+                            if r['ok']: fails.append('negative citizens')
                     if town == 'Kautoa':
                         prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
                         pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)

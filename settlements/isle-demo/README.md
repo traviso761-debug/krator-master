@@ -144,7 +144,8 @@ declares both once they are planned, in one order whichever town it draws, and h
   every house keeps a food store, the barracks eat at their mess. Valapo's own economy: the parcels grow their crops,
   the docks land fish, the pens raise pork, the bakehouses bake bread from sweet potato, the windmill crushes cane to
   sugar, the weavers and potters make cloth and pots; 39 warehouses and granaries, 14 carts.
-- **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`, for each town): every lot of a census trade is a place; every
+- **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`, for each town; and on the page, the citizens
+  drawn near the camera where their poses are, with a figure moved 50 m as the negative): every lot of a census trade is a place; every
   resident has a home and every worker a job in the town; after a world day run minute by minute, every food made and
   hauled, the food eaten, nothing short (draws, purchases, kitchens; a day's stock left) and the food made covering
   what was eaten; the stocks map finding every place from its lot. Each has a negative, for each town. Five days run
@@ -161,6 +162,9 @@ declares both once they are planned, in one order whichever town it draws, and h
   `KHOST.simHolds`, its stocks the town's own), ready for when the page takes core/host.
 - Jobs are dealt nearest first (`work.near`), each town's meals booked by town, and nobody walks farther than 6 km
   (`SIM.REACH`: a town and its farm ring).
-- **Not yet:** the citizens drawn near the camera; the canoe line (P7c). See `HANDOFF.md`.
+- **The citizens near the camera** (`59`): up to 120 of the drawn town's people within 260 m of the camera's target,
+  where `SIM.pose` puts them (nobody indoors, no carts), chosen every half second and posed each frame the clock moves;
+  stand-ins (an instanced body and head, coloured by their work), core/charactermodels' bodies later.
+- **Not yet:** the canoe line (P7c). See `HANDOFF.md`.
 
 See `KNOWN_ISSUES.md`.

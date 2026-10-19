@@ -649,8 +649,9 @@ as 40 holdings until core/hamlet's farming villages; its bread from taro; each t
 6,235 people, 2,472 workers, 40 carts; a day's books pass the same checks as Valapo's, and five days run clean. The page's
 run loop (`57`, held at first) and the stocks id map (`46`, for core/host's panel). The core branch
 `claude/isle-p7a-rest` is merged: each town's meals booked by town, the nearest-job deal (every role takes it), the
-nearest-place search fixed for towns 120 km apart and the lag at minute 0; five days run clean in both towns. Left for
-P7b: the citizens drawn near the camera.
+nearest-place search fixed for towns 120 km apart and the lag at minute 0; five days run clean in both towns. The
+citizens near the camera (`59`): up to 120 instanced stand-ins posed from `SIM.pose`, with a verify check and its
+negative. **P7b is done**; origin/main merged (2026-10-19).
 
 **Order of work.**
 

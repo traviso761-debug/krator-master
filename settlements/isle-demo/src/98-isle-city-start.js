@@ -80,7 +80,7 @@ setTimeout(function () {
     Object.keys(ISLE.VIEWS[town]).forEach(function (v) { var b = document.createElement('button'); b.textContent = v; b.onclick = function () { ISLE.view(v); }; ui.appendChild(b); });
     var hud = document.getElementById('hud');
     var hudAt = 0, simLine = '';
-    var loop = function () { requestAnimationFrame(loop); var now = performance.now(); if (typeof RINGSEA !== 'undefined') RINGSEA.tick(now / 1000); ISLE.runTick(now); renderer.render(scene, camera);
+    var loop = function () { requestAnimationFrame(loop); var now = performance.now(); if (typeof RINGSEA !== 'undefined') RINGSEA.tick(now / 1000); ISLE.runTick(now); ISLE.citizens.tick(now); renderer.render(scene, camera);
       if (now - hudAt > 500) { hudAt = now; simLine = ISLE.runText(town); }
       if (hud) hud.textContent = town + ': ' + cur.census.buildings + ' buildings, ' + cur.census.households + ' households · near ' + DRAW.stats.near + ' full · ' + renderer.info.render.calls + ' calls' + (simLine ? ' · ' + simLine : ''); };
     loop();
@@ -96,7 +96,8 @@ setTimeout(function () {
         census[other] = O.census; checks[other] = O.checks; window._city.other = { town: other, ms: O.ms, failed: O.R.failed, missing: O.R.missing, log: O.R.log, world: O.R.world };
         lap('plan ' + other);
         /* P7b: both towns declared on core/simulation (src/40-46), in the same order whichever town is drawn; held until
-           "run the sim" (57); verify.py runs their day (ISLE.simDay) and their checks */
+           "run the sim" (57), the drawn town's people near the camera (59); verify.py runs their day (ISLE.simDay) and
+           their checks */
         try {
           window._city.sim = ISLE.simDeclare([{ R: cur.R, G: cur.G }, { R: O.R, G: O.G }]);
           var sp = {}; sp[town] = cur.R; sp[other] = O.R; window._city.simPlans = sp; window._city.holds = ISLE.simHolds(town);

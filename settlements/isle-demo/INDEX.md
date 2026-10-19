@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `10-isle-frame.js` | 8 | 0. A TOWN'S FRAME, AND THE GROUND VOTH'S EDITOR  (1) |
-| `15-isle-tune.js` | 12 | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
+| `15-isle-tune.js` | 11 | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
 | `20-isle-ground.js` | 7 | 1. THE CITY PAGE'S GROUND: THE REGION'S RASTERS, (1) |
 | `30-isle-programme.js` | 16 | 2. THE TOWNS' PROGRAMMES (PLAN.md SECTION 8) AS  (1) |
 | `32-isle-city.js` | 46 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
@@ -26,11 +26,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `42-isle-people.js` | 3 | 7c. THE PEOPLE: ROLES BY KIND OF WORK, DEALT PER (1) |
 | `43-isle-items.js` | 3 | 7d. THE FOODS, THE SHOPS AND THE HOUSEHOLDS (P7b (1) |
 | `44-isle-economy.js` | 4 | 7e. EACH TOWN'S OWN ECONOMY (P7b) (1) |
-| `45-isle-sim-checks.js` | 9 | 7f. THE SIM'S CHECKS, PER TOWN (P7b) (1) |
+| `45-isle-sim-checks.js` | 8 | 7f. THE SIM'S CHECKS, PER TOWN (P7b) (1) |
 | `46-isle-stocks.js` | 2 | 7g. THE STOCKS ID MAP (P7b) (1) |
 | `56-isle-tools.js` | 5 | 3b. THE ISLE'S TOOLS: TOWNS, SAVING, VIEWS (1) |
 | `57-isle-run.js` | 2 | 6b. THE SIM'S RUN LOOP ON THE CITY PAGE (P7b) (1) |
 | `58-isle-protos.js` | 6 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
+| `59-isle-citizens.js` | 6 | 5c. A FEW CITIZENS DRAWN NEAR THE CAMERA (P7b) (1) |
 | `60-isle-draw.js` | 15 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
 | `98-isle-city-start.js` | 9 | 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK (1) |
 | `98-isle-start.js` | 5 | 4. START (1) |

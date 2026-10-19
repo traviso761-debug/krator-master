@@ -11,7 +11,7 @@ status at the top, then sections 7 to 10. `core/hamlet/PLAN.md` holds the hinter
 | P6 | done: both towns on `core/city` (`dist/isle-city.html`), Ridertown on the Beast Rider ports | `src/20-34`, `58`, `60`, `98` |
 | P6b | in place: the city page's `verify.py --assert` checks `registry, materials, terrain, city` and reports the M6 target (3 of 13 met) | `verify.py` `EXPORT_PROFILE`, `EXPORT_TARGET` |
 | P7a | done: settlements, an economy, stocks and the items' books per settlement; the population dealt per town; the search scoped to one's own town; trade between settlements (`SIM.trade`, a timer or a transport line); the three levels in `SCHEMA.md`; 30 two-settlement checks | `core/simulation/77-sim-6-trade.js`, `77-sim-6-economy.js` (end), `77-sim-6-population.js`, `77-sim-7-stocks.js` (end), `test-sim.js`, `SCHEMA.md` |
-| P7b | Both towns declared (Kautoa 6,235 people on its farm ring, Valapo 2,155), the run loop (`57`, held at first), the stocks id map (`46`); verify's Valapo page checks both towns. Before that, Valapo done: declared on core/simulation from its plan (619 places, one walking graph, 2,155 people, 805 workers, its own economy: crops, fish, pork, bread, 14 carts, 39 warehouses); verify's Valapo page and `tests/test-isle-sim.js` check every census trade's lot a place, every resident housed and every worker employed in the town, the food made, hauled and eaten with nothing short for a day (each with a negative). No core/simulation change | `src/15-isle-tune.js`, `40`-`45`, `verify.py` `SIM_JS` |
+| P7b | Done: the citizens near the camera (`59`, stand-ins, with a verify check). Both towns declared (Kautoa 6,235 people on its farm ring, Valapo 2,155), the run loop (`57`, held at first), the stocks id map (`46`); verify's Valapo page checks both towns. Before that, Valapo done: declared on core/simulation from its plan (619 places, one walking graph, 2,155 people, 805 workers, its own economy: crops, fish, pork, bread, 14 carts, 39 warehouses); verify's Valapo page and `tests/test-isle-sim.js` check every census trade's lot a place, every resident housed and every worker employed in the town, the food made, hauled and eaten with nothing short for a day (each with a negative). No core/simulation change | `src/15-isle-tune.js`, `40`-`45`, `verify.py` `SIM_JS` |
 | Hamlets H1-H4 | done: four resource villages in the open world (salt 112, mine 307, lumber 263, ranch 245), felling on the 72-minute clock | `core/hamlet`, `openworld/isle-demo/src/48-world-hamlets.js`, `88h-world-hamlets.js` |
 
 **Decided by the owner (2026-10-19):** the M6 export case is the region's open world, not a page per city (PLAN.md
@@ -20,8 +20,8 @@ registers the export's `city` section for every instance on a page.
 
 ## Next, in order
 
-1. **P7b, the rest:** a few citizens drawn near the camera (the core branch `claude/isle-p7a-rest` is merged: meals by
-   town, the nearest-job deal, the ring search and the lag fixed). Then P7c: the canoe line as a
+1. **P7b is done** (the citizens near the camera are stand-ins until core/charactermodels has a crowd path). Next, P7c:
+   the canoe line as a
    `SIM.transport` between the two trade landings and `SIM.trade({line})` on it (the timetable is the owner's: PLAN.md
    section 9). Any core/simulation change: diff Voth's whole `verify.py --assert` output against `main`'s page with the
    timings stripped (the method P7a used).
