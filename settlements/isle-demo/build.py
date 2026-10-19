@@ -18,7 +18,7 @@ ground, cantons and start are left out. In their place:
 The Voth files read are hashed into voth-sources.json; a build that finds one changed says so (re-check the page,
 then --accept, or vendor the file and track its drift).
 """
-import base64, hashlib, json, os, re, shutil, subprocess, sys
+import base64, glob, hashlib, json, os, re, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
@@ -90,6 +90,99 @@ def data_fragment():
             'var WORLD_KITS = [];' + NL)
 
 
+def png_samples(p):
+    """an 8-bit, non-interlaced grey (0) or RGB (2) PNG's samples, decoded here (zlib and the five row filters), not by a
+    canvas: (width, height, channels, bytes)"""
+    import struct, zlib
+    b = open(p, 'rb').read()
+    if b[:8] != b'\x89PNG\r\n\x1a\n':
+        sys.exit('%s is not a PNG (a Git LFS pointer? git lfs pull it)' % rel(p))
+    i, idat, w = 8, b'', None
+    while i < len(b):
+        n, t = struct.unpack('>I', b[i:i + 4])[0], b[i + 4:i + 8]
+        if t == b'IHDR':
+            w, h, bd, ct, _, _, il = struct.unpack('>IIBBBBB', b[i + 8:i + 21])
+            if bd != 8 or ct not in (0, 2) or il:
+                sys.exit('%s: only 8-bit grey or RGB, not interlaced (depth %d, type %d)' % (rel(p), bd, ct))
+        elif t == b'IDAT':
+            idat += b[i + 8:i + 8 + n]
+        i += 12 + n
+    ch = 1 if ct == 0 else 3
+    raw, stride, out, prev = zlib.decompress(idat), w * ch, bytearray(), bytearray(w * ch)
+    for r in range(h):
+        f, row = raw[r * (stride + 1)], bytearray(raw[r * (stride + 1) + 1:(r + 1) * (stride + 1)])
+        for x in range(stride):
+            a = row[x - ch] if x >= ch else 0
+            c = prev[x - ch] if x >= ch else 0
+            up = prev[x]
+            if f == 1: row[x] = (row[x] + a) & 255
+            elif f == 2: row[x] = (row[x] + up) & 255
+            elif f == 3: row[x] = (row[x] + (a + up) // 2) & 255
+            elif f == 4:
+                pp = a + up - c; pa, pb, pc = abs(pp - a), abs(pp - up), abs(pp - c)
+                row[x] = (row[x] + (a if pa <= pb and pa <= pc else up if pb <= pc else c)) & 255
+        out += row; prev = row
+    return w, h, ch, bytes(out)
+
+
+def raw_fragment():
+    """the region's rasters as integers (WORLD_RAW, read by src/20-isle-ground.js ISLE.rasters): the city page decodes no
+    image, so the plan reads the same numbers in node, the browser and Godot"""
+    meta = json.load(open(os.path.join(WORLD, 'data', 'region.json'), encoding='utf-8'))
+    px = {k: png_samples(os.path.join(WORLD, 'data', k + '.png')) for k in RASTERS}
+    first = lambda k: list(px[k][3][::px[k][2]])
+    hi16 = lambda k: [px[k][3][i * 3] << 8 | px[k][3][i * 3 + 1] for i in range(px[k][0] * px[k][1])]
+    blue = lambda k: [1 if px[k][3][i * 3 + 2] > 127 else 0 for i in range(px[k][0] * px[k][1])]
+    out = {'meta': meta, 'hw': px['elev'][0], 'hh': px['elev'][1], 'mw': px['biome'][0], 'mh': px['biome'][1],
+           'elev': hi16('elev'), 'wflag': blue('elev'), 'wlev': hi16('wlev'), 'whas': blue('wlev'),
+           'scarpl': hi16('scarpl'), 'scarpu': hi16('scarpu'), 'scarpw': first('scarpw')}
+    for k in ('clim', 'rain', 'temp', 'biome', 'mask'):
+        out[k] = first(k)
+    return ('/* the isle demo region\'s rasters (openworld/isle-demo/data), decoded by build.py: integers, no image */' + NL +
+            'var WORLD_RAW = ' + json.dumps(out, separators=(',', ':')) + ';' + NL +
+            '/* the world fragments read the region settings from WORLD_DATA.meta (no PNGs on this page) */' + NL +
+            'var WORLD_DATA = { meta: WORLD_RAW.meta, png: {} };' + NL +
+            '/* the world\'s kit registry (openworld/isle-demo/src/47-world-kits.js): empty, the city page grows no flora */' + NL +
+            'var WORLD_KITS = [];' + NL)
+
+
+def dims_fragment():
+    """every kit piece's declared box (the box each kit's verify holds its builds to), read from the kits' sources: the
+    city plan places by these, so it needs none of the drawing bundles (node, the browser and Godot plan alike).
+    verify.py checks them against the bundles' own registries on the page"""
+    out, ves = {}, {}
+    num = lambda s, n: (re.search(r'\b%s\s*:\s*([\d.]+)' % n, s) or [None, None])[1]
+    strv = lambda s, n: (re.search(r"\b%s\s*:\s*['\"]([^'\"]*)['\"]" % n, s) or [None, None])[1]
+    strs = lambda s, n: re.findall(r"['\"]([^'\"]+)['\"]", (re.search(r'\b%s\s*:\s*\[([^\]]*)\]' % n, s) or [None, ''])[1])
+    rec = lambda b, kit, types, h=None: {'w': float(num(b, 'w')), 'd': float(num(b, 'd')), 'h': float(num(b, 'h') or h), 'kit': kit,
+                                         'types': strs(b, types), 'role': strv(b, 'role'), 'job': strv(b, 'job'), 'wealth': strv(b, 'wealth'), 'family': strv(b, 'family')}
+    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'islanders', 'src', '*.js'))):
+        s = read(f)
+        for m in re.finditer(r"defBuilding\(\{\s*key\s*:\s*'([^']+)'(.*?)\bbuild\s*[:(]", s, re.S):
+            b = m.group(2)
+            if re.search(r"cls\s*:\s*'(life|flora)'", b) or not num(b, 'w'):
+                continue
+            out[m.group(1)] = rec(b, 'isk', 'types')
+    for f in sorted(glob.glob(os.path.join(ROOT, 'settlements', 'iziz', 'src', '7*-vern-*.js'))):
+        for m in re.finditer(r"VERN\.def\(\{key:'([^']+)'(.*?)build:", read(f)):
+            out[m.group(1)] = rec(m.group(2), 'izv', 'type', 8)
+            for tag, t in (('VTAG_SF', 'dwelling-single'), ('VTAG_MF', 'dwelling-multi')):   # settlements/iziz/src/70-vern-dwellings.js
+                if tag in m.group(2):
+                    out[m.group(1)]['types'] = [t]
+    s = read(os.path.join(ROOT, 'kits', 'catalog', 'krator-master-buildings-beast-rider.js')) + read(os.path.join(ROOT, 'kits', 'beast-riders', 'src', '50-br-mounts.js'))
+    for m in re.finditer(r"ASSET\(\{\s*key:\s*'([^']+)'(.*?)\bbuild\s*:", s, re.S):
+        out[m.group(1)] = rec(m.group(2), 'cat', 'types')
+        out[m.group(1)]['wealth'] = None
+    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'ringsea', 'src', '*.js'))):
+        for m in re.finditer(r"RS_VESSEL\(\{key:'([^']+)'(.*?)\bbuild\s*[:(]", read(f), re.S):
+            b = m.group(2)
+            if num(b, 'L'):
+                ves[m.group(1)] = {'L': float(num(b, 'L')), 'B': float(num(b, 'B')), 'H': float(num(b, 'H')), 'culture': strv(b, 'culture'), 'name': strv(b, 'name')}
+    return ('/* GENERATED by build.py: the kits\' declared boxes (kits/islanders, settlements/iziz, kits/catalog beast-rider, kits/ringsea) */' + NL +
+            'var ISLE_DIMS = ' + json.dumps(out, sort_keys=True, separators=(',', ':')) + ';' + NL +
+            'var ISLE_VDIMS = ' + json.dumps(ves, sort_keys=True, separators=(',', ':')) + ';' + NL)
+
+
 def tex_fragment(fams=('stone', 'ground', 'rock', 'sand')):
     """Voth's packed library textures (settlements/voth/tex, read in place), the detail albedos only, as data URLs:
     SL_TEX[family] = {map, scale}, as Voth's site editor takes them: grey detail under the ground's colours"""
@@ -150,6 +243,93 @@ def main():
     print('built dist/isle-site.html  (%d KB)  %s' % (os.path.getsize(out) // 1024, note))
     for k in changed:
         print('VOTH CHANGED  %s: re-check the planner against it, then build.py --accept (or vendor it)' % k)
+    city_page()
+
+
+# ---------------------------------------------------------------- the city page (P6): dist/isle-city.html
+# The two towns on core/city (src/32-isle-city.js), drawn with the kits read in place (bundles.py). Its scripts, in order:
+#   the library packs beside the page (isle-city.tex.<key>.js: the Islanders' and Iziz's maps, KMAT_SIDE)
+#   three.js (Voth's copy, as the planner takes it)
+#   the data: the region's rasters as integers, the kits' declared boxes, the site file
+#   the shared modules and the world's ground: core/rand, core/space, core/tags, core/terrain's relief, the open world's
+#     fields and the isle's coast, core/materials/record (KMAT) and the two packs' loaders
+#   the bundles: KCITY, CAT (the catalog's Beast Rider buildings), ISK (the Islanders), IZV (the Vernacular), RINGSEA
+#   this page's own: 20 (ground), 30 (programme), 32 (the city plan), 34 (census, checks) [G data]; 60 (draw), 98 (start) [web]
+# The [G data] half (data, ground, KCITY and 20-34) is also written as dist/isle-city.plan.js, which the node test runs.
+CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
+    'core/rand/08-core-rand.js', 'core/space/20-core-space.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js',
+    'core/terrain/38-core-relief.js')] + [os.path.join(LD, '41-world-fields.js'), os.path.join(LD, '42-world-roads.js'),
+                                          os.path.join(WORLD, 'src', '43-world-isles.js')]
+CITY_MAT = [os.path.join(ROOT, 'core', 'materials', 'record', f) for f in ('23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js')]
+CITY_DATA_JS = ['20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '34-isle-census.js']
+CITY_WEB_JS = ['60-isle-draw.js', '98-isle-city-start.js']
+CITY_HEAD = '''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Isle Demo Towns</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#a9c8d8;font:13px/1.4 system-ui,sans-serif;color:#eee}
+canvas{display:block}
+#ui{position:fixed;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;max-width:80vw;z-index:5}
+#ui button{background:rgba(20,30,34,.82);color:#e8f2f0;border:1px solid #4f8a86;border-radius:4px;padding:5px 9px;cursor:pointer;font-size:12px}
+#ui button:hover{background:#2f6a66}#ui button.on{background:#c8a24a;color:#1a1408;border-color:#f0d080}
+#hud{position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,.5);padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;z-index:5}
+#loading{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.6);padding:10px 16px;border-radius:6px;z-index:6}
+#errs{position:fixed;left:10px;bottom:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.85);color:#fff;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;display:none;z-index:9}
+@media (max-width:700px){#ui{max-width:92vw}}
+</style></head><body>
+<div id="ui"></div><div id="hud"></div><div id="loading">Laying out the towns...</div><pre id="errs"></pre>
+<script>
+var ERRS0 = document.getElementById('errs');
+window.onerror = function (m, s, l, c, e) { ERRS0.style.display = 'block'; ERRS0.textContent += ((e && e.stack) || (m + ' @' + l + ':' + c)) + '\\n'; };
+</script>
+'''
+
+
+def syntax_check(html, what):
+    node = os.environ.get('NODE') or shutil.which('node')
+    if not node:
+        return 'syntax NOT CHECKED (no node)'
+    tmp = os.path.join(DIST, '.syntax-check.js')
+    for i, js in enumerate(re.findall(r'<script>(.*?)</script>', html, re.S)):
+        open(tmp, 'w', encoding='utf-8').write(js)
+        r = subprocess.run([node, '--check', tmp], capture_output=True, text=True)
+        if r.returncode:
+            os.remove(tmp)
+            sys.exit('SYNTAX ERROR in %s, script %d:%s%s' % (what, i, NL, r.stderr[-3000:]))
+    os.remove(tmp)
+    return 'syntax checked'
+
+
+def city_page():
+    sys.path.insert(0, HERE)
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import bundles, matlib_pack
+    side = {}
+    izp = os.path.join(ROOT, 'settlements', 'iziz')
+    izfams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
+    packs = (matlib_pack.fragment(os.path.join(ROOT, 'kits', 'islanders'), 'islanders', side=side) +
+             matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith(('fauna', 'city'))], side=side))
+    data = raw_fragment() + dims_fragment() + site_fragment()
+    core = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(p), NL, read(p), NL, NL) for p in CITY_CORE)
+    mats = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(p), NL, read(p), NL, NL) for p in CITY_MAT) + packs
+    own = lambda L: ''.join('/* ---- settlements/isle-demo/src/%s ---- */%s%s%s' % (f, NL, read(os.path.join(HERE, 'src', f)), NL) for f in L)
+    kc = bundles.kcity_bundle()
+    cat, _ = bundles.cat_bundle()
+    isk, _ = bundles.isk_bundle()
+    izv, _ = bundles.izv_bundle()
+    rs, _ = bundles.ringsea_fragment()
+    sc = lambda s: '<script>' + NL + s + '</script>' + NL
+    html = (CITY_HEAD + '<script>/* %s */%s%s%s</script>%s' % (rel(VENDOR[0]), NL, read(VENDOR[0]), NL, NL) +
+            sc(data) + sc(core) + sc(mats) + sc(kc) + sc(cat) + sc(isk) + sc(izv) + sc(rs) + sc(own(CITY_DATA_JS)) + sc(own(CITY_WEB_JS)) +
+            '</body></html>' + NL)
+    os.makedirs(DIST, exist_ok=True)
+    html = matlib_pack.write_sidecar(side, html, DIST, 'isle-city.tex.js')
+    out = os.path.join(DIST, 'isle-city.html')
+    with open(out, 'w', encoding='utf-8', newline=NL) as f:
+        f.write(html)
+    with open(os.path.join(DIST, 'isle-city.plan.js'), 'w', encoding='utf-8', newline=NL) as f:
+        f.write('/* GENERATED by build.py: the city page\'s [G data] half, for the node test (tests/test-isle-city.js) */' + NL +
+                data + core + kc + own(CITY_DATA_JS))
+    print('built dist/isle-city.html  (%d KB, packs beside it)  %s' % (os.path.getsize(out) // 1024, syntax_check(html, 'isle-city.html')))
 
 
 if __name__ == '__main__':

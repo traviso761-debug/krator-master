@@ -41,7 +41,7 @@ defBuilding({key:'ie-farm',name:'Farmstead (Kautoa)',seed:6201,cut:true,w:33,d:3
  note:'a Kautoan farmstead: the family uma at the back with its tomb, a raised granary, a buffalo pen with its wallow and trough, two rice paddies before the house with ducks on the bunds, taro, bananas and coconut palms, pigs and hens in the yard, the sheaf rack and the winnowing tub',
  build(o){
   ieCutWith(-8,-7,1.5,()=>W(-8,0,-7,0,()=>ieHouse({w:5.4,d:4.6,floorY:1.5,wallH:2.0,ver:.8,verFront:1.4,roof:{over:.7,skirtH:1.3,skirtS:.5,towerH:5.4,towerS:.42,topSx:.2,topSz:.05},
-   wallMk:'mat',facade:'patWeave',towerFacade:false,stair:'stair',finial:'figure',tier:'middle',underPig:true,tombs:[[2.6,4.8,0,.7,false]],furn:[['job_winnowing_tub',1.6,.8,0]]})));
+   wallMk:'patMat',facade:'patWeave',towerFacade:false,stair:'stair',finial:'figure',tier:'middle',underPig:true,tombs:[[2.6,4.8,0,.7,false]],furn:[['job_winnowing_tub',1.6,.8,0]]})));
   place('ie-granary',1.5,-9,0,{});
   isNoCut(()=>{
    /* the buffalo pen: a bamboo fence with a gate gap, the wallow, the trough and the hay */
@@ -201,7 +201,7 @@ defBuilding({key:'ie-weaver',name:'Ikat weaver (Kautoa)',seed:6270,cut:true,w:15
  note:'the weavers of hinggi, the East\'s ikat cloth: a woven house on piles with looms on its deep front veranda and inside, the yarn store and the chest of finished cloths; beside it the dye yard, indigo and morinda vats, and cloths drying over a bamboo rail',
  build(o){const fy=1.3,w=6.4,d=5,wh=2.1;
   const r=ieHouse({w,d,floorY:fy,wallH:wh,ver:1.2,verFront:2.6,roof:{over:.8,skirtH:1.4,skirtS:.5,towerH:6.4,towerS:.42,topSx:.2,topSz:.05},
-   wallMk:'mat',facade:'patGableE',towerFacade:true,stair:'stair',stairW:1.2,finial:'figure'});
+   wallMk:'patMat',facade:'patGableE',towerFacade:true,stair:'stair',stairW:1.2,finial:'figure'});
   ieFurn([['islander_common_loom',-1.7,fy,-1.5,0],['islander_common_rack',1.6,fy,-d/2+.3,0],['islander_common_chest',w/2-.42,fy,.7,-PI/2],['islander_common_store',-w/2+.4,fy,.9,PI/2],
    ['generic_sewing',.2,fy,-.4,0],['islander_common_stool',-1.7,fy,-.7,PI],
    ['islander_common_loom',-2.0,fy,d/2+1.4,0],['islander_common_loom',2.0,fy,d/2+1.4,0]]);

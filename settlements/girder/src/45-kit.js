@@ -543,3 +543,13 @@ function regRecord(o){
   else if(!o.ring && o.r != null){ rec.r = o.r; rec.h = o.h; }
   o.rid = T.add(rec).id;
 }
+
+/* ------------------------------------------------------------------ ports (core/ports/README.md)
+   PORT(kind, id, frame, fn): one building's draw (55-arch.js, 50-structure.js), marked so the Beast Riders kit can take
+   it by itself (kits/beast-riders) and check it against the town. frame { x, y, z, ry }: the building's local frame
+   (origin its footprint centre on its floor, ry its front as the catalog's rotation.y). Draws nothing, no rnd(). */
+var GPORT = null;
+function PORT(kind, id, frame, fn){
+  return (GPORT || (GPORT = KPORT.create({ bucket:function(){ return BUCKET; }, mbk:function(){ return MBK; }, merged:function(){ return MB_MESHES; },
+    shape:function(s){ return SHAPES[s](); }, placed:function(){ return typeof GFURN !== 'undefined' && GFURN ? GFURN.placed : null; } }))).mark(kind, id, frame, fn);
+}

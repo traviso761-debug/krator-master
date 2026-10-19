@@ -255,9 +255,9 @@ function buildRoads(){
 }
 
 TOWERS.forEach(buildTower);
-PLATS.forEach(buildDeck);
+PLATS.forEach(function(P){ PORT('roostdeck', P.id, { x:P.x, y:P.y, z:P.z, ry:0 }, function(){ buildDeck(P); }); });   /* a building's draw, marked (45-kit.js PORT) */
 BRIDGES.forEach(buildBridge);
 LIFTS.forEach(buildLift);
-buildPalisade();
+PORT('palisade', 0, { x:0, y:SETTLE_Y, z:0, ry:0 }, buildPalisade);
 buildRoads();
 window._struct = STRUCT;
