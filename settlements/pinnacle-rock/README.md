@@ -37,26 +37,42 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
     ring** near the top of every fin and pinnacle that carries one (fourteen). A ring's inner edge follows the stack's
     outline at its height (rays from the rock's own middle there: a stack leans), 0.8 m off the rock; its outer edge is
     that outline's hull pushed out 14 m (4.2 m for a lookout), cut back short of a neighbouring stack (the Heart's
-    three pinnacles stand 25 m apart). Timber joists and brackets let into the beds carry it;
+    three pinnacles stand 25 m apart). Timber joists carry it, and struts whose feet are let into the rock where it
+    stands under the deck at each angle (`feet`: the rock's reach there, found per angle, never a fixed offset);
   - **stalls** in Girder's frame and record shape (`ROOSTS`: the perch point 1.4 m inside the edge, open stalls 9.2 m
-    deep, the lean-to with its red eave band, the perch beam 3.4 m out) wherever the edge runs straight and the way out
-    is clear for 150 m (no rock within 10 m under the deck, no other deck, bridge or lift): 101, by Wing (the Wingclaw's
-    on the north fins, the Quetzal's on the east, the Nightwing's on the west) and the Garden's; a **keeper's shelter**
-    (feed and tack) on each stall deck in the longest stretch without stalls;
-  - a **climb** to every ring: a timber stair hugging the stack from its foot (or from the deck below), 32 degrees,
-    bracketed into the beds, coming up through a hatch in the deck;
+    deep, the lean-to with its red eave band, the perch beam 3.4 m out) along the whole edge, round its bends too: each
+    stall's sides run in along the edge's normals at its front corners (`quad`), so round a bend it is a wedge and its
+    partitions run parallel to its neighbours'; a stall goes wherever its footprint stands on the deck, meets no other,
+    and its way out is clear for 150 m (no rock within 10 m under the deck; no deck, bridge or lift across the flight's
+    height band): 113 (owner, 2026-10-19: the platforms take more), by Wing (the Wingclaw's 29 on the north fins, the
+    Quetzal's 30 on the east, the Nightwing's 21 on the west) and the Garden's 33; a **keeper's shelter** (feed and tack)
+    on each stall deck, its place kept first (a fin's tightest bend, a Garden ring's side facing the Garden);
+  - a **climb** to every ring: a timber stair hugging the stack from its foot (or from the deck below), 32 degrees, its
+    inner edge .1 m off the rock at each tread's height, every fourth tread a bracket and a ledger let into the rock
+    1.6 m under it, coming up through a hatch in the deck;
   - **rope bridges** between the stall decks of each group's fins (north 54 m, east 75 m and 45 m, west 69 m);
   - **the lifts**: the beast lift down the gorge face between the Wingclaw's fins, and the capstan lift beside the Stair
     on the south nose: a trussed boom over the edge, its tip 4 m clear of the wall at every height, a cage on its cable
     (moving), a landing on the debris slope, the capstan and its rope;
-  - **the Stair** down the south nose: straight down the shoulder's ledges, three flights along the face (the cut ones
-    in red sandstone with a parapet, the return flight built out 3.2 m beyond them on timber brackets, so no flight
-    turns under another), a path of steps down the debris slope to the fair ground, gated at its head, its middle
-    landing and its foot.
+  - **the Stair** down the south nose, on the stretch of the face that stands least in and out (no gully; chosen per
+    build): straight down the shoulder's ledges, cut down into them (never over a ledge, never over 45 degrees); three
+    flights along the face, **following it bed by bed** (owner, 2026-10-19: attached at every slice): the cut flights
+    half into the face with a stone wedge from their outer edge down to the rock, the return flight a timber gallery
+    1.7 m off the face beyond them on brackets and ledgers let into the rock 3.6 m under it, so no flight turns under
+    another; a path of steps down the debris slope to the fair ground, seated on the drawn ground and kept clear of
+    fallen blocks and plants; gated at its head, its middle landing and its foot.
+  - **the lift road** (owner, 2026-10-19: the beast lift wants a cleared road): from the lift's landing, laid out at
+    1 in 9 and put where the slope stands at its height, round the mesa's north-west as a bench cut level across the
+    debris slope (the slope's height, `LAND.talus`, is cut to it and the floor mesh re-seated: `47b`), a dry-stone wall
+    and kerb on its downhill side, then over the floor north and west of the seep pond (`PR.LIFT_ROAD`) to the palisade,
+    where the north-west gate will stand (P3). Its way, like the Stair's path, is cleared (`PR.addWay`: `PR.forest`, the
+    necanyons kit's mask, the fallen blocks).
 - **The flyers** are Girder's (`settlements/girder/src/84*.js`, read in place and sealed with this page's world, obstacles,
   bays and circuits: `flyers/README.md`): quetzalcoatlus, giant bats, archaeopteryx and dragonflies with their riders,
-  perched by Wing, coming and going on every proved bay, on the rim and Garden circuits, the patrols and the bats' night
-  hunt.
+  coming and going on every proved bay, on the rim and Garden circuits, the patrols and the bats' night hunt. **Each
+  Wing's beasts in its own stalls** (owner, 2026-10-19): the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx, the
+  Nightwing's bats, the Garden's roosts the three; the Dragonfly tribe's beasts (kept by water on the floor) fly the
+  circuits but do not roost.
 - **The plants**: the necanyons kit (`biomes/necanyons`, read in place with its land fragment `47-host-land.js`, which
   takes this page's `LAND` hooks: the cap height, the LOD spine, the cleared ground, no creek) on the walls, ledges,
   spurs and stacks, kept off the town's ground past the 12 m rim band; the hyperjungle on the floor, kept out of the farms,
@@ -76,9 +92,14 @@ standing in the farms or a band's ground; the floor equal to the model's land an
 knoll. The roosts (P2): a stall deck on each Wing's fin and the four Garden pinnacles and a ring on every fin, no rock
 standing on any deck; every Wing's eight or more stalls, each with its way out open; four bridges, each within a group,
 each end on its deck; the lifts' cables 3 m or more clear of the wall; the Stair from the top to the fair ground, no
-flight steeper than 35 degrees, no tread in the rock, gated three times; a climb to every deck; a quetzal sent in to the
-east fins lands on a perch, and in 90 s of traffic no beast aloft is in the rock. Each has a negative control (the fins
+flight steeper than 35 degrees, gated three times, attached on every bed of the mesa it passes (every cut tread with
+rock under its inner .2 m, every gallery's brackets finding rock within 3.5 m), the head never over a ledge; a climb to
+every deck, against the rock at nineteen treads in twenty, every bracket and every deck strut in the rock; a quetzal sent
+in to the east fins lands on a perch, and in 90 s of traffic no beast aloft is in the rock; each Wing's beasts in its own
+stalls; the lift road from the landing to the palisade, no steeper than 1 in 7, through no band's ground nor the pond,
+nothing standing on it. Each has a negative control (the fins
 in one row, a fin over the edge, a 180 m mesa, the Garden all one height, no Garden's mesa, no Heart, a Heart weathered
 like the Garden's mesa, a Heart as tall as its pinnacles, a tree in the Crown, a tree in the farms; a deck cut into its
 fin, a perch facing its fin, a bridge from the north fins to the east, a cable rubbing the wall, the Stair with two gates,
-the Stair ending in the gorge, a deck with no climb, a quetzal sent to a lookout ring).
+the Stair ending in the gorge, a deck with no climb, a quetzal sent to a lookout ring, the Stair's flights 4 m out from
+the face, a climb 3 m out from its fin, an archaeopteryx in a Quetzal stall, the lift road through the seep pond).

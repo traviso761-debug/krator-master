@@ -6,19 +6,28 @@
 // flyers' code reads them: a perch point 1.4 m inside the outer edge, open stalls 9.2 m deep, a perch beam 3.4 m out.
 // Plain data and pure functions on KSTACKS bodies (core/terrain/37-core-stacks.js): no THREE, no DOM.
 //
-//   PRR.plan({rock, K, PR, ground})   ground(x, z): the floor's height off the rock (the talus counted). Returns
+//   PRR.plan({rock, K, PR, ground, footD})   ground(x, z): the floor's height off the rock (the talus counted); footD(x, z):
+//                the distance past the nearest rock's foot (the debris slope's measure). Returns
 //     decks[]    {id, kind:'roostdeck', level:'stall'|'look', stack, wing, group, x, z (the ring's centre), y (the deck's
 //                top), W, inner:[[x,z]], outer:[[x,z]] (the same N angles about x,z), R (outer bounding radius), hatch
-//                (the climb's last metres: [i0, i1] angle samples left open in the inner band)}
+//                (the climb's last metres: [i0, i1] angle samples left open in the inner band), feet:[[x,y,z,r]] (where
+//                each angle's bracket meets the rock under the deck: r the rock's reach there, 0 none)}
 //     roosts[]   Girder's ROOSTS {id, plat (deck id), x, y, z (the perch point), ox, oz (outward), ang, H, w, side
-//                ('out' away from the mesa's middle, 'in' over the town), fx, fz (the stall's front centre on the edge)}
+//                ('out' away from the mesa's middle, 'in' over the town), fx, fz (the stall's front centre on the edge), quad
+//                (its footprint: the front corners on the edge, the back corners 9.2 m in along the edge's normals there)}
 //     shelters[] {id, deck, x, y, z, ry, w, d}  the keeper's shelter on each stall deck (Girder's feed and tack store)
-//     climbs[]   {id, deck, from ('foot' | a deck id), pts:[[x,y,z]] (the stair's centre line, 0.5 m a step), w}
+//     climbs[]   {id, deck, from ('foot' | a deck id), pts:[[x,y,z, fx,fy,fz]] (the stair's centre line, 0.5 m a step, its
+//                inner edge .1 m off the rock; every fourth step a bracket's foot on the rock under it, else null), w}
 //     bridges[]  Girder's BRIDGES {id, a:{x,y,z,deck}, b:{...}, L, w, sag}; PRR.bridgeY(br, t)
 //     lifts[]    {id, name, a (the line's angle from the mesa's middle), root, tip:{x,y,z} (the boom over the edge),
 //                foot:{x,y,z} (the landing under the tip), capstan:{x,y,z,r}, clear (the cable's least distance from the rock)}
-//     stair      {id, pts:[[x,y,z,r]] (the cut flights: centre line, r its distance from the mesa's middle), ground:[[x,y,z]]
-//                (the path down the debris slope to the fair ground), gates:[{id, x, y, z, ry, w, name}], w}
+//     stair      {id, pts:[[x,y,z,r,k,rf]] (the head down the shoulder (k -1), then the flights: centre line, r its distance
+//                from the mesa's middle, k the flight, rf the rock's reach under it: the cut flights' support, the built-out
+//                ones' brackets), a0, a1 (the span of the face it takes), ground:[[x,y,z]] (the path down the debris slope
+//                to the fair ground), gates:[{id, x, y, z, ry, w, name}], w}
+//     roads[]    {id, name, pts:[[x,y,z]] (3 m apart: from the beast lift's landing cut along the debris slope round the
+//                mesa's north-west, then over the floor to the palisade), w, bench (the points on the slope: [0, i]), gate}
+//     ways[]     {id, name, pts:[[x,z]], w}: the ground the Stair's path and the roads take, for PR.addWay (cleared)
 //   PRR.reach(L, K, cx, cz, a, y, tMax)   how far out from cx,cz along angle a the rock stands at height y (0: none)
 //   PRR.STALL, PRR.DECK              the frame's numbers
 const PRR = (function () {
@@ -76,7 +85,10 @@ const PRR = (function () {
     for (let i = 0; i < N; i++) { const a = i / N * TAU, ca = Math.cos(a), sa = Math.sin(a), t0 = r[i] + GAP; let t = rayOut(H1, cx, cz, a);
       if (near.length) for (let u = t0; u <= t + 1.5; u += 1) if (K.topAt(near, cx + ca * u, cz + sa * u) > y - 2) { const tc = Math.max(t0 + 2.4, u - 1.5); if (tc < t) { t = tc; cut++; } break; }
       outer.push([cx + ca * t, cz + sa * t]); R = Math.max(R, t); }
-    return Object.assign({ id: 'deck-' + S.id + (level === 'look' ? '-look' : ''), kind: 'roostdeck', level, stack: S.id, x: cx, z: cz, y, W, inner, outer, R, hatch: null, rin: r, cut }, extra || {}); }
+    // the brackets' feet: where each angle's strut meets the rock, .38 W under the deck (let .3 m into the bed)
+    const fy = y - 1 - .38 * W, feet = [];
+    for (let i = 0; i < N; i++) { const a = i / N * TAU, rf = reach([S], K, cx, cz, a, fy, S.R), t = Math.max(0, rf - .3); feet.push([cx + Math.cos(a) * t, fy, cz + Math.sin(a) * t, rf]); }
+    return Object.assign({ id: 'deck-' + S.id + (level === 'look' ? '-look' : ''), kind: 'roostdeck', level, stack: S.id, x: cx, z: cz, y, W, inner, outer, R, hatch: null, rin: r, cut, feet }, extra || {}); }
   // the outer edge resampled by arc length (a closed polyline): {pts, cum, per}
   function arcOf(D) { const P = D.outer.concat([D.outer[0]]), cum = [0]; for (let i = 1; i < P.length; i++) cum.push(cum[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
     return { P, cum, per: cum[cum.length - 1] }; }
@@ -90,13 +102,17 @@ const PRR = (function () {
   const segD = (x, z, a, b) => { const dx = b[0] - a[0], dz = b[1] - a[1], t = clamp(((x - a[0]) * dx + (z - a[1]) * dz) / (dx * dx + dz * dz || 1), 0, 1); return Math.hypot(x - a[0] - dx * t, z - a[1] - dz * t); };
 
   // ---------------------------------------------------------------- a climb round a stack: a stair hugging the rock
-  // from the ground at its foot (or a lower deck) up to the deck, rising TREAD per metre, its centre line 1.1 m off the rock
+  // from the ground at its foot (or a lower deck) up to the deck, rising TREAD per metre, its inner edge .1 m off the rock at
+  // the tread's height (or off a bed standing proud over it, for headroom); every fourth step a bracket's foot, let into the
+  // rock 1.6 m under the tread
   function climb(rock, K, S, D, from, y0, a0, dir) {
     const pts = []; let a = a0, y = y0, n = 0, cy = null, c = null;
     // round the stack's middle at each height (a leaning stack's middle walks), the rock's reach there and 2.6 m over the tread
     const rAt = (a, y) => { if (cy === null || Math.abs(y - cy) > 2) { c = centreAt(K, S, y); cy = y; }
-      return Math.max(reach([S], K, c[0], c[1], a, y + 2.6, S.R), reach([S], K, c[0], c[1], a, y, S.R)) + GAP + 1.1; };
-    while (y < D.y && n++ < 4000) { const r = rAt(a, y), p = [c[0] + Math.cos(a) * r, y, c[1] + Math.sin(a) * r]; pts.push(p);
+      return Math.max(reach([S], K, c[0], c[1], a, y + 2.6, S.R), reach([S], K, c[0], c[1], a, y, S.R)) + 1.0; };
+    while (y < D.y && n++ < 4000) { const r = rAt(a, y), p = [c[0] + Math.cos(a) * r, y, c[1] + Math.sin(a) * r];
+      if (pts.length % 4 === 0) { const rf = reach([S], K, c[0], c[1], a, y - 1.6, S.R); if (rf > 0) p.push(c[0] + Math.cos(a) * (rf - .3), y - 1.6, c[1] + Math.sin(a) * (rf - .3)); }
+      pts.push(p);
       // the next tread .5 m on (a taper or a walking middle shortens an angle's step: lengthen it until the run is whole)
       const y2 = Math.min(D.y, y + .5 * TREAD); let da = .5 / Math.max(4, r), k = 0;
       for (; k < 8; k++) { const r2 = rAt(a + dir * da, y2), q = [c[0] + Math.cos(a + dir * da) * r2, c[1] + Math.sin(a + dir * da) * r2]; if (Math.hypot(q[0] - p[0], q[1] - p[2]) >= .49) break; da *= 1.2; }
@@ -150,41 +166,63 @@ const PRR = (function () {
     lift('lift-north', 'The beast lift (down the gorge face, between the Wingclaw\'s fins)', P.TOP.liftTop.x, P.TOP.liftTop.z);
     lift('lift-south', 'The capstan lift (loads up the south nose, beside the Stair)', P.TOP.capstan.x, P.TOP.capstan.z);
 
-    // THE STALLS: along each stall deck's outer edge, w apart, where the edge runs straight (turning less than .5 rad over
-    // a stall), clear of the bridges' heads and the lifts, and where the way out is open: 150 m straight out, 6 m either
-    // side, no rock within 10 m below, no other deck within 25 m of its height, no bridge
+    // THE STALLS: along each stall deck's outer edge, w apart, following it round its bends (a stall's footprint, roof and
+    // partitions, must not overlap the next one's and must stand on the deck, clear of the rock), clear of the bridges'
+    // heads, the lifts and the keeper's shelter, and where the way out is open: 150 m straight out, 6 m either side, no rock
+    // within 10 m below, no deck, bridge or lift across the flight's height band (the deck to 12 m over it)
     const L2 = lifts.map(l => [[l.root.x, l.root.z], [l.tip.x, l.tip.z], l.tip.y]);
     function wayOut(D, x, z, nx, nz, tx, tz) {
       const near = D.near || (D.near = rock.filter(B => B.top > D.y - CLEAR.under && Math.hypot(B.x - D.x, B.z - D.z) < B.R + D.R + CLEAR.far + 10));   // the bodies that could stand in the way
       for (let e = 4; e <= CLEAR.far; e += 6) for (const q of [-CLEAR.lat, 0, CLEAR.lat]) { const px = x + nx * e + tx * q, pz = z + nz * e + tz * q;
         if (near.length && K.topAt(near, px, pz) > D.y - CLEAR.under) return 'rock';
-        for (const E of decks) if (E !== D && Math.abs(E.y - D.y) < 25 && Math.hypot(px - E.x, pz - E.z) < E.R + 4) return 'deck';
+        for (const E of decks) if (E !== D && E.y - 2.5 < D.y + 12 && E.y + (E.level === 'stall' ? 9 : 4) > D.y - 1 && Math.hypot(px - E.x, pz - E.z) < E.R + 4) return 'deck';
         for (const B of bridges) if (Math.abs((B.a.y + B.b.y) / 2 - D.y) < 15 && segD(px, pz, [B.a.x, B.a.z], [B.b.x, B.b.z]) < 6) return 'bridge';
         for (const l of L2) if (Math.abs(l[2] - D.y) < 20 && segD(px, pz, l[0], l[1]) < 8) return 'lift'; }
       return null; }
-    const why = { rock: 0, deck: 0, bridge: 0, lift: 0, bend: 0, head: 0 };
-    decks.filter(D => D.level === 'stall').forEach(D => { const A = arcOf(D), w = STALL.w, taken = [];
+    // a stall's footprint: its front corners on the edge (w apart along it), each side running in along the edge's normal
+    // there, so round a bend a stall is a wedge and its neighbours' partitions stay parallel; two footprints meet when the
+    // convex quads overlap (separating axes)
+    function quadsMeet(Pq, Qq) { for (const poly of [Pq, Qq]) for (let i = 0; i < 4; i++) { const a = poly[i], b = poly[(i + 1) % 4], nx = b[1] - a[1], nz = a[0] - b[0];
+        let p0 = 1e9, p1 = -1e9, q0 = 1e9, q1 = -1e9; for (const v of Pq) { const d = v[0] * nx + v[1] * nz; p0 = Math.min(p0, d); p1 = Math.max(p1, d); }
+        for (const v of Qq) { const d = v[0] * nx + v[1] * nz; q0 = Math.min(q0, d); q1 = Math.max(q1, d); }
+        const L = Math.hypot(nx, nz) || 1; if (p1 < q0 + .05 * L || q1 < p0 + .05 * L) return false; } return true; }
+    const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    function convex(q) { let sg = 0; for (let i = 0; i < 4; i++) { const c = cross(q[i], q[(i + 1) % 4], q[(i + 2) % 4]); if (Math.abs(c) < 1e-6) continue; const t = Math.sign(c); if (sg && t !== sg) return false; sg = t; } return true; }
+    // the deck's inner edge's distance from its middle at an angle (between the samples)
+    const rinAt = (D, a) => { const f = ((a / TAU * N) % N + N) % N, i = Math.floor(f), j = (i + 1) % N, u = f - i, p = D.inner[i], q = D.inner[j];
+      return Math.hypot(p[0] - D.x, p[1] - D.z) * (1 - u) + Math.hypot(q[0] - D.x, q[1] - D.z) * u; };
+    function onDeck(D, q) { for (const v of q) if (Math.hypot(v[0] - D.x, v[1] - D.z) < rinAt(D, Math.atan2(v[1] - D.z, v[0] - D.x)) + .3) return false; return true; }
+    const why = { rock: 0, deck: 0, bridge: 0, lift: 0, bend: 0, head: 0, crowd: 0, shelter: 0 };
+    decks.filter(D => D.level === 'stall').forEach(D => { const A = arcOf(D), w = STALL.w, rects = [];
       const hd = (heads[D.id] || []).map(p => arcNear(A, p[0], p[1]));
       const overlaps = (s0, s1, t0, t1) => { for (const k of [-A.per, 0, A.per]) if (s0 < t1 + k && t0 + k < s1) return true; return false; };
+      // the keeper's shelter first: on a fin, where the edge bends hardest (a fin's end, where stalls crowd); in the Garden,
+      // facing the Garden's middle; 4.6 m in from the edge, its stretch of edge kept for it
+      let sb = 0, best = -1e9;
+      for (let s = 0; s < A.per; s += 1) { if (hd.some(h => overlaps(s - 4, s + 4, h - 3.5, h + 3.5))) continue; const p = arcAt(A, s - 4), q = arcAt(A, s + 4), m = normAt(A, s, D);
+        const sc = D.group === 'garden' ? -(m.nx * (m.x - P.GARDEN_MESA.x) + m.nz * (m.z - P.GARDEN_MESA.z)) / Math.hypot(m.x - P.GARDEN_MESA.x, m.z - P.GARDEN_MESA.z)
+          : Math.abs(Math.atan2(p.tx * q.tz - p.tz * q.tx, p.tx * q.tx + p.tz * q.tz));
+        if (sc > best) { best = sc; sb = s; } }
+      { const m = normAt(A, sb, D); shelters.push({ id: 'shelter-' + D.stack, deck: D.id, x: m.x - m.nx * 4.6, y: D.y, z: m.z - m.nz * 4.6, ry: Math.atan2(m.nx, m.nz), w: 5.2, d: 4 }); }
+      const shR = [sb - 3.8, sb + 3.8];
       let k = 0;
       for (let s = 0; s + w <= A.per + .01; ) {
         const s0 = s - .25, s1 = s + w + .25, a = arcAt(A, s), b = arcAt(A, s + w), turn = Math.abs(Math.atan2(a.tx * b.tz - a.tz * b.tx, a.tx * b.tx + a.tz * b.tz));
-        let bad = turn > .5 ? 'bend' : null;
+        let bad = turn > 1.2 ? 'bend' : null;
         if (!bad) for (const h of hd) if (overlaps(s0, s1, h - 3.5, h + 3.5)) { bad = 'head'; break; }
-        if (!bad) for (const t of taken) if (overlaps(s0, s1, t[0], t[1])) { bad = 'head'; break; }
-        const m = normAt(A, s + w / 2, D);
+        if (!bad && overlaps(s0, s1, shR[0], shR[1])) bad = 'shelter';
+        const m = normAt(A, s + w / 2, D), pa = normAt(A, s, D), pb = normAt(A, s + w, D);
+        const R = [[pa.x, pa.z], [pb.x, pb.z], [pb.x - pb.nx * STALL.d, pb.z - pb.nz * STALL.d], [pa.x - pa.nx * STALL.d, pa.z - pa.nz * STALL.d]];
+        if (!bad && (!convex(R) || Math.hypot(R[2][0] - R[3][0], R[2][1] - R[3][1]) < 5)) bad = 'bend';   // a bend so tight the back would pinch
+        if (!bad) for (const Q of rects) if (quadsMeet(R, Q)) { bad = 'crowd'; break; }
+        if (!bad && !onDeck(D, R)) bad = 'deck';
         if (!bad) bad = wayOut(D, m.x, m.z, m.nx, m.nz, m.tx, m.tz);
-        if (bad) { why[bad]++; s += 1; continue; }
+        if (bad) { why[bad]++; s += .5; continue; }
         const px = m.x - m.nx * STALL.perchIn, pz = m.z - m.nz * STALL.perchIn, out = m.nx * m.x + m.nz * m.z > 0;   // facing away from the mesa's middle
         const side = D.group === 'garden' ? 'garden' : out ? 'out' : 'in';
         roosts.push({ id: D.id.replace(/^deck-/, 'roost-') + '-' + (k++), plat: D.id, x: px, y: D.y, z: pz, ox: m.nx, oz: m.nz, ang: Math.atan2(m.nx, m.nz), H: STALL.H, w,
-          side, fx: m.x, fz: m.z, wing: D.wing });
-        taken.push([s0, s1]); s += w + STALL.gap; }
-      // the keeper's shelter: in the middle of the longest stretch of edge without a stall or a bridge's head, 4.5 m in from it
-      const occ = taken.map(t => [t[0], t[1]]).concat(hd.map(h => [h - 3.5, h + 3.5])).sort((a, b) => a[0] - b[0]);
-      let gs = 0, gl = A.per; if (occ.length) { gl = 0; for (let i = 0; i < occ.length; i++) { const e0 = occ[i][1], e1 = i + 1 < occ.length ? occ[i + 1][0] : occ[0][0] + A.per; if (e1 - e0 > gl) { gl = e1 - e0; gs = e0; } } }
-      const m = normAt(A, gs + gl / 2, D);
-      shelters.push({ id: 'shelter-' + D.stack, deck: D.id, x: m.x - m.nx * 4.6, y: D.y, z: m.z - m.nz * 4.6, ry: Math.atan2(m.nx, m.nz), w: 5.2, d: 4 }); });
+          side, fx: m.x, fz: m.z, wing: D.wing, quad: R });
+        rects.push(R); s += w + STALL.gap; } });
 
     // THE CLIMBS: from the stack's foot on the town's side up to its first deck; from the stall deck on round to the lookout
     decks.forEach(D => { const S = byId(D.stack), t = town(S, P.GARDEN_MESA.x, P.GARDEN_MESA.z);
@@ -195,39 +233,92 @@ const PRR = (function () {
       const n = C.pts.length, i1 = Math.round(((Math.atan2(C.pts[n - 1][2] - D.z, C.pts[n - 1][0] - D.x) / TAU * N) % N + N) % N), span = Math.ceil(5 / (TAU * (D.R - D.W) / N)) + 1;
       D.hatch = [i1 - span, i1 + 1]; });
 
-    // THE STAIR down the south nose: the head 6 m in from the top's edge; straight down the shoulder's ledges to the cliff's
-    // lip; then flights along the face between the nose and .13 rad west of it (the capstan lift is east), falling TREAD:
-    // the flights cut 3 m wide into the face (the inner edge .3 m into the rock), each return flight built out 3.2 m beyond
-    // them, so no flight turns under the one before it (two flights apart, 100 m of rock between), a landing at each turn; where it meets the debris
-    // slope, a path of steps down the slope to the fair ground. Gated three times: the head, the middle landing, the foot
-    const stair = (function () { const aE = Math.PI / 2 - .015, aW = Math.PI / 2 + .13, Rm = mesa.R, cx = mesa.x, cz = mesa.z, OUT = 3.2;
-      const face = (a, y) => Math.max(reach([mesa], K, cx, cz, a, y, Rm), reach([mesa], K, cx, cz, a, y + 3, Rm));
-      const at = (a, r, y, k) => [cx + Math.cos(a) * r, y, cz + Math.sin(a) * r, r, k];
-      const edge = reach([mesa], K, cx, cz, aE, mesa.top - .6, Rm), pts = [at(aE, edge - 6, mesa.top, -1)];
-      // the shoulder (the plan's: P.MESA.shoulder.h of ledges over the cliff), down to the cliff's lip
-      const lipY = mesa.top - P.MESA.shoulder.h - .5, lipT = face(aE, lipY);
-      const n0 = Math.max(2, Math.round((lipT - edge + 6) / 1.2)); for (let i = 1; i <= n0; i++) { const u = i / n0; pts.push(at(aE, edge - 6 + (lipT + 1.2 - edge + 6) * u, mesa.top + (lipY - mesa.top) * u, -1)); }
-      // the flights: the face's reach along them, then each flight's line smoothed (a moving maximum over 9 m: the flutes)
+    // THE STAIR down the south nose, on the smoothest stretch of the face there (the span between the nose and .3 rad west
+    // of it whose face stands least in and out, bed to bed and flute to flute: no gully), the capstan lift east of it.
+    // The head 6 m in from the top's edge; straight down the shoulder's ledges to the cliff's lip, cut down into them (never
+    // over a ledge's surface, never steeper than 45 degrees); then flights along the face, falling TREAD, each following the
+    // face bed by bed (the reach of the bed it is on and of the one over it, for headroom): the flights cut half their 3 m
+    // into the face, a stone wedge under their outer half down to the rock; each return flight a timber gallery 1.7 m off the
+    // face beyond them on brackets let into the rock 3.6 m under it, so no flight turns under the one before it; a landing
+    // at each turn. Where it meets the debris slope, a path of steps down the slope to the fair ground. Gated three times:
+    // the head, the middle landing, the foot
+    const stair = (function () { const Rm = mesa.R, cx = mesa.x, cz = mesa.z, OUT = 3.2, SPAN = .145;
+      const rch = (a, y) => reach([mesa], K, cx, cz, a, y, Rm), face = (a, y) => Math.max(rch(a, y), rch(a, y + 2.4));
+      const at = (a, r, y, k, rf) => [cx + Math.cos(a) * r, y, cz + Math.sin(a) * r, r, k, rf];
+      const lipY = mesa.top - P.MESA.shoulder.h - .5, capA = Math.atan2(P.TOP.capstan.z - cz, P.TOP.capstan.x - cx);
+      // the span: the least rough, a little cost for straying from the nose
+      let a0 = Math.PI / 2, best = 1e9;
+      for (let s = Math.max(capA + .035, Math.PI / 2 - .04); s <= Math.PI / 2 + .3; s += .01) { let rough = 0;
+        for (let y = 30; y <= lipY; y += 15) { let lo = 1e9, hi = -1e9; for (let a = s; a <= s + SPAN; a += .006) { const r = rch(a, y); lo = Math.min(lo, r); hi = Math.max(hi, r); } rough = Math.max(rough, hi - lo); }
+        const cost = rough + 30 * Math.abs(s - Math.PI / 2); if (cost < best) { best = cost; a0 = s; } }
+      const aE = a0, aW = a0 + SPAN, edge = rch(aE, mesa.top - .6);
+      // the shoulder: the ledges' surface along the ray, the stair cut under it, 45 degrees at most (from its foot up)
+      const lipT = face(aE, lipY), sh = []; for (let t = edge - 6; t < lipT; t += .5) sh.push([t, Math.min(mesa.top, K.topAt([mesa], cx + Math.cos(aE) * t, cz + Math.sin(aE) * t))]);
+      sh.push([lipT, lipY]); const shY = sh.map(p => p[1]); shY[shY.length - 1] = lipY;
+      for (let i = sh.length - 2; i >= 0; i--) shY[i] = Math.min(sh[i][1], shY[i + 1] + (sh[i + 1][0] - sh[i][0]));
+      const pts = sh.map((p, i) => at(aE, p[0], shY[i], -1, 0)), nSh = pts.length;
+      // the flights
       const raw = []; let a = aE, y = lipY, dir = 1, k = 0, guard = 0;
-      const gw = (a, y, k) => { const r = face(a, y) + 2.7 + (k % 2) * OUT; return ground(cx + Math.cos(a) * r, cz + Math.sin(a) * r); };
+      const cOf = (f, k) => k % 2 ? f + 1.5 + .2 + 1.5 : f;   // a flight's centre from the face: cut (k even), built out (odd)
+      const gw = (a, y, k) => { const r = cOf(face(a, y), k) + 1.5; return ground(cx + Math.cos(a) * r, cz + Math.sin(a) * r); };
       while (guard++ < 8000) { raw.push([a, y, k, face(a, y)]); if (y <= gw(a, y, k) + .6) break;
         let na = a + dir * .5 / Math.max(50, raw[raw.length - 1][3]);
         if (na > aW || na < aE) { k++; dir = -dir; raw.push([a, y, k, face(a, y)]); na = a + dir * .5 / Math.max(50, raw[raw.length - 1][3]); }
         a = na; y -= .5 * TREAD; }
       const landings = [];
-      raw.forEach((p, i) => { let m = 0; for (let j = Math.max(0, i - 18); j <= Math.min(raw.length - 1, i + 18); j++) if (raw[j][2] === p[2]) m = Math.max(m, raw[j][3]);
+      raw.forEach((p, i) => { let m = 0; for (let j = Math.max(0, i - 3); j <= Math.min(raw.length - 1, i + 3); j++) if (raw[j][2] === p[2]) m = Math.max(m, raw[j][3]);   // 1.5 m either way: a flute's lip, not a gully's mouth
         if (i && raw[i - 1][2] !== p[2]) landings.push(pts.length);
-        pts.push(at(p[0], m + 1.2 + (p[2] % 2) * OUT, p[1], p[2])); });
+        pts.push(at(p[0], cOf(m, p[2]), p[1], p[2], rch(p[0], p[1] - (p[2] % 2 ? 3.6 : 1.2)))); });
       const foot = pts[pts.length - 1], g = [], fair = [P.FAIR.x - 30, P.FAIR.z - P.FAIR.rz + 8], dx = fair[0] - foot[0], dz = fair[1] - foot[2], Lg = Math.hypot(dx, dz);
       for (let s = 0; s <= Lg; s += 1) { const x = foot[0] + dx * s / Lg, z = foot[2] + dz * s / Lg; g.push([x, ground(x, z), z]); }
       const mid = landings.length ? pts[landings[Math.floor((landings.length - 1) / 2)]] : pts[Math.floor(pts.length / 2)], ryOf = (p, q) => Math.atan2(q[0] - p[0], q[2] - p[2]);
       const gates = [{ id: 'gate-head', name: 'The Stair\'s head gate', x: pts[0][0], y: pts[0][1], z: pts[0][2], ry: ryOf(pts[0], pts[1]), w: 3.6 },
         { id: 'gate-mid', name: 'The Stair\'s middle gate', x: mid[0], y: mid[1], z: mid[2], ry: ryOf(mid, [cx, mid[1], cz]), w: 3.6 },
         { id: 'gate-foot', name: 'The Stair\'s foot gate', x: g[2][0], y: g[2][1], z: g[2][2], ry: ryOf(g[2], g[Math.min(8, g.length - 1)]), w: 3.6 }];
-      return { id: 'stair', name: 'The Stair (the one walking way up, cut in the south nose)', pts, shoulder: n0 + 1, flights: k + 1, landings, ground: g, gates, w: 3, out: OUT }; })();
+      return { id: 'stair', name: 'The Stair (the one walking way up, cut in the south nose)', pts, shoulder: nSh, flights: k + 1, landings, ground: g, gates, w: 3, out: OUT, a0: aE, a1: aW, rough: best }; })();
+
+    // THE LIFT ROAD: the beast lift's landing on the debris slope reached by a road (owner, 2026-10-19). Laid out as a road
+    // on a slope is: its grade set first, 1 in 9 down from the landing's height (it reaches the slope's toe north of the seep pond), then the road put where the slope stands
+    // at that height, going round the mesa's north-west (the first point out from the rock's feet, along each ray from the
+    // mesa's middle, where the ground falls to the road's height: round the spurs, on the slope's side of the gorge), so
+    // its bench is level across with little cut or fill; at the slope's toe it goes over the floor west of the seep pond
+    // (PR.LIFT_ROAD) to the palisade, where the north-west gate will stand
+    const roads = [];
+    (function () { const L = lifts.find(l => l.id === 'lift-north'), fD = o.footD; if (!L || !fD) return;
+      const cx = mesa.x, cz = mesa.z, aL = Math.atan2(L.foot.z - cz, L.foot.x - cx), TW = o.talusW || 125, GRADE = 1 / 9;
+      // the first point out along the ray, past the rock's feet, where the ground is at h or below
+      const at = (a, h) => { const ca = Math.cos(a), sa = Math.sin(a); let t = 10; while (t < mesa.R + 400 && fD(cx + ca * t, cz + sa * t) < 1) t += 4;
+        const t0 = t; while (t < t0 + 400 && ground(cx + ca * t, cz + sa * t) > h) t += 1;
+        return [cx + ca * t, cz + sa * t]; };
+      const P2 = [[L.foot.x, L.foot.z, L.foot.y]];
+      let a = aL, h = L.foot.y, prev = P2[0], toe = false, guard = 0;
+      while (!toe && guard++ < 2000 && a > aL - 2.2) {
+        // the next point 3 m on round the slope: an angle step sized to the radius, the height down by the grade over it
+        const r = Math.hypot(prev[0] - cx, prev[1] - cz), na = a - 3 / Math.max(50, r), p = at(na, h - 3 * GRADE), run = Math.hypot(p[0] - prev[0], p[1] - prev[1]);
+        h -= run * GRADE; a = na; const q = [p[0], p[1], h]; P2.push(q); prev = q;
+        if (fD(p[0], p[1]) > TW || h <= ground(cx + Math.cos(a) * (Math.hypot(p[0] - cx, p[1] - cz) + 30), cz + Math.sin(a) * (Math.hypot(p[0] - cx, p[1] - cz) + 30)) + .5) toe = true; }
+      const benchEnd = P2.length;
+      (P.LIFT_ROAD || []).forEach(p => P2.push([p[0], p[1], null]));
+      // the gate: the palisade's point nearest the last waypoint
+      const last = P2[P2.length - 1]; let gi = 0, gd = 1e9; P.PALISADE.forEach((p, i) => { const d = Math.hypot(p[0] - last[0], p[1] - last[1]); if (d < gd) { gd = d; gi = i; } });
+      const G = P.PALISADE[gi]; P2.push([G[0], G[1], null]);
+      // resampled 3 m apart; on the slope its laid-out height, over the floor the ground's smoothed over 12 m either way
+      const R3 = [P2[0]]; for (let i = 1; i < P2.length; i++) { const p = R3[R3.length - 1], q = P2[i], d = Math.hypot(q[0] - p[0], q[1] - p[1]); if (d < 1.5 && i < P2.length - 1) continue;
+        const n = Math.max(1, Math.round(d / 3)); for (let s = 1; s <= n; s++) R3.push([p[0] + (q[0] - p[0]) * s / n, p[1] + (q[1] - p[1]) * s / n, q[2] == null || p[2] == null ? null : p[2] + (q[2] - p[2]) * s / n]); }
+      const gy = R3.map(p => ground(p[0], p[1])), sm = gy.map((v, i) => { let s = 0, n = 0; for (let j = Math.max(0, i - 4); j <= Math.min(gy.length - 1, i + 4); j++) { s += gy[j]; n++; } return s / n; });
+      let firstFloor = R3.findIndex(p => p[2] == null); if (firstFloor < 0) firstFloor = R3.length;
+      const y = R3.map((p, i) => p[2] != null ? p[2] : sm[i]);
+      // the join from the slope's last laid-out point to the floor: eased over 30 m
+      for (let i = firstFloor; i < Math.min(R3.length, firstFloor + 10); i++) { const u = (i - firstFloor + 1) / 11; y[i] = y[firstFloor - 1] * (1 - u) + sm[i] * u; }
+      let bench = 0; R3.forEach((p, i) => { if (fD(p[0], p[1]) < TW) bench = i; });
+      const pts = R3.map((p, i) => [p[0], y[i], p[1]]), gate = { id: 'gate-nw', name: 'The north-west gate (the palisade, P3)', x: G[0], y: ground(G[0], G[1]), z: G[1] };
+      roads.push({ id: 'road-lift', name: 'The lift road (from the beast lift\'s landing, cut along the debris slope to the north-west gate)', pts, w: 5, bench: [0, bench], benchEnd, gate, grade: GRADE });
+    })();
+    const ways = [{ id: 'way-stair', name: 'The Stair\'s path down the debris slope', pts: stair.ground.map(p => [p[0], p[2]]), w: 3.4 }]
+      .concat(roads.map(R => ({ id: 'way-' + R.id, name: R.name, pts: R.pts.map(p => [p[0], p[2]]), w: R.w + 1 })));
 
     decks.forEach(D => { delete D.near; });
-    return { decks, roosts, shelters, climbs, bridges, lifts, stair, why };
+    return { decks, roosts, shelters, climbs, bridges, lifts, stair, roads, ways, why };
   }
   const bridgeY = (br, t) => br.a.y + (br.b.y - br.a.y) * t - br.sag * 4 * t * (1 - t);
   return { plan, reach, bridgeY, STALL, DECK, N };

@@ -18,8 +18,9 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
   nine bands' pastures, camps and thorn hedges, the farms as contour cells, the fair ground, the road, the gate, the pond,
   the spring, the gorge. Nothing past the rock and the roosts is drawn yet: the cleared ground round the mesa is bare.
 - **P2 is done** (2026-10-19, branch `claude/pinnacle-p2`; not yet signed off by the owner): the roosts as records
-  (`src/43-pr-roosts.js`, `PRR.plan`) drawn by `89-host-roosts.js`: 25 rings, 101 stalls (Girder's frame), shelters,
-  climbs, four bridges, the beast lift and the capstan lift, the Stair with three gates; Girder's flyers read in place
+  (`src/43-pr-roosts.js`, `PRR.plan`, made before the kits build in `47b`) drawn by `89-host-roosts.js`: 25 rings, 113 stalls (Girder's frame, wedges round bends), shelters,
+  climbs, four bridges, the beast lift and the capstan lift, the Stair with three gates attached bed by bed, the lift road
+  cut along the debris slope to the north-west gate; Girder's flyers (each Wing's beasts in its own stalls) read in place
   on them (`flyers/`, sealed by `build.py` `flyers_fragment`): a quetzal sent in lands on an east fin's perch. Six new
   checks and eight negatives; `verify.py --assert` passes.
 - **Not in the gallery** (the owner, 2026-10-19): `gallery/build_gallery.py` lists it in `UNLISTED` until the town is

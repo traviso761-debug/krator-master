@@ -15,7 +15,7 @@ Rock's roosts. Girder's code is **read in place**, not copied: `build.py` (`flye
 | `84a`, three sections | Girder | lifted by their markers: paths; `flyCurveHit` and `flyCurveTight`; the arrival and departure builders, `flyRoute`, the meshes |
 | `84b-flyers-animals.js` | Girder | the animals, transients, arrivals, departures, circuits joined and left, the state machine |
 | `84c`, before "initial population" | Girder | the pose, the riders, the circuits' makers |
-| `40-start.js` | here | in place of `84c`'s initial population: every bay proved (a clean approach and way out), beasts perched by Wing, the circuits this rock wants (the rim, over the Garden, the gorge run, the canopy and high patrols, the bats' night hunt), the sorties (the Inner Wall, the gas giant) |
+| `40-start.js` | here | each Wing's beasts in its own stalls (`B.allow`; Girder's `flyFreeBays` and `flySpawnArrival` wrapped so arrivals and peel-offs keep to it); in place of `84c`'s initial population: every bay proved (a clean approach and way out), beasts perched in their own Wing's bays, the circuits this rock wants (the rim, over the Garden, the gorge run, the canopy and high patrols, the bats' night hunt), the sorties (the Inner Wall, the gas giant) |
 | `84c`, from "scheduler" | Girder | the scheduler and the frame update |
 | `90-out.js` | here | `PRFLY`: `update(dt, hour)` (the host's hour ticks), `sim(seconds, hour)`, `land(deckId, species)`, `stats()`; the inspector's labels |
 

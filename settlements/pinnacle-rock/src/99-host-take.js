@@ -19,6 +19,7 @@ const VIEWS=(function(){const V={},n0=_fin('fin-n0'),e1=_fin('fin-e1');
   if(R)V['A Quetzal stall on the east fins']=[R.fx+R.ox*34+R.oz*10,R.y+8,R.fz+R.oz*34-R.ox*10,R.fx,R.y+2.5,R.fz];}
  {const G=ROOST.decks.find(d=>d.id==='deck-garden-2');if(G)V['The Garden\'s roost rings']=[G.x+150,G.y+30,G.z+120,G.x,G.y-10,G.z];}
  {const L=ROOST.lifts.find(l=>l.id==='lift-north');if(L)V['The beast lift over the gorge']=[L.tip.x+90,L.tip.y-60,L.tip.z-90,L.tip.x,L.tip.y-90,L.tip.z];}
+ {const Rd=(ROOST.roads||[])[0];if(Rd){const m=Rd.pts[Math.floor(Rd.benchEnd*.45)];V['The lift road (cut along the debris slope)']=[m[0]-150,m[1]+70,m[2]-120,m[0],m[1],m[2]];}}
  {const S=ROOST.stair;if(S&&S.landings.length){const m=S.pts[S.landings[0]];V['The Stair (its middle gate)']=[m[0]-30,m[1]+6,m[2]+45,m[0],m[1]-4,m[2]];}}
  return V;})();
 
@@ -108,15 +109,48 @@ const HCHK={
   return{ok:L.length===2&&!bad.length,detail:L.map(l=>l.id+': '+l.len.toFixed(0)+' m boom, '+l.clear.toFixed(1)+' m clear, '+(_top-l.foot.y).toFixed(0)+' m drop').join('; ')+(bad.length?'; '+bad.join(', '):'')};},
  // the Stair: from the top to the fair ground, gated three times, no step steeper than the plan's (35 degrees on the
  // flights), every cut flight's tread out of the rock
- stair(S){if(!S)return{ok:false,detail:'no Stair'};const K=KSTACKS,P=S.pts,g=S.ground,end=g[g.length-1],Z=PR.zoneAt(end[0],end[2]).zone;
-  let steep=0,buried=0;for(let i=S.shoulder;i+1<P.length;i++){const p=P[i],q=P[i+1],run=Math.hypot(q[0]-p[0],q[2]-p[2]);if(run>.05)steep=Math.max(steep,Math.abs(q[1]-p[1])/run);
-   if(K.topAt([MESA_B],p[0],p[2])>p[1]+.05)buried++;}
-  return{ok:Math.abs(P[0][1]-_top)<1.5&&(Z==='fair'||PR.inEll(end[0],end[2],PR.FAIR,15))&&S.gates.length===3&&steep<.7&&!buried,
-   detail:'from '+P[0][1].toFixed(0)+' m to the '+Z+'; '+S.flights+' flights, '+S.landings.length+' landings, '+S.gates.length+' gates; steepest '+(Math.atan(steep)*180/Math.PI).toFixed(0)+' degrees'+(buried?'; '+buried+' treads in the rock':'')};},
+ // ATTACHED BED BY BED (owner, 2026-10-19: "check it is actually wrapping at each slice of the plateau"): for every bed of
+ // the mesa a flight passes, every cut tread there has rock under its inner .2 m at least (the face's reach at the tread's
+ // height reaches past its inner edge), and every built-out tread's brackets find rock within 3.5 m of its inner edge 3.6 m
+ // under it; the head down the shoulder never stands over a ledge's surface
+ stair(S){if(!S)return{ok:false,detail:'no Stair'};const K=KSTACKS,P=S.pts,g=S.ground,end=g[g.length-1],Z=PR.zoneAt(end[0],end[2]).zone,cx=MESA_B.x,cz=MESA_B.z;
+  let steep=0,over=0;for(let i=S.shoulder;i+1<P.length;i++){const p=P[i],q=P[i+1],run=Math.hypot(q[0]-p[0],q[2]-p[2]);if(run>.05)steep=Math.max(steep,Math.abs(q[1]-p[1])/run);}
+  for(let i=0;i<S.shoulder;i++){const p=P[i],tp=K.topAt([MESA_B],p[0],p[2]);if(tp>-1e8&&p[1]>tp+.05)over++;}   // over the rock (the last step is at the lip)
+  const bedOf=y=>MESA_B.beds.findIndex(b=>y>=b.y&&y<b.y+b.h),passed=new Set(),loose=new Set();let nLoose=0;
+  for(let i=S.shoulder;i<P.length;i++){const p=P[i],a=Math.atan2(p[2]-cz,p[0]-cx),k=p[4],bi=bedOf(p[1]);if(bi<0)continue;passed.add(bi);
+   const ok=k%2?(p[5]>0&&(p[3]-S.w/2)-(p[5]-.3)<=3.5):PRR.reach([MESA_B],K,cx,cz,a,p[1]-.3,MESA_B.R)>=p[3]-S.w/2+.2;
+   if(!ok){loose.add(bi);nLoose++;}}
+  return{ok:Math.abs(P[0][1]-_top)<1.5&&(Z==='fair'||PR.inEll(end[0],end[2],PR.FAIR,15))&&S.gates.length===3&&steep<.7&&!over&&!loose.size,
+   detail:'from '+P[0][1].toFixed(0)+' m to the '+Z+'; '+S.flights+' flights, '+S.landings.length+' landings, '+S.gates.length+' gates; steepest '+(Math.atan(steep)*180/Math.PI).toFixed(0)+
+    ' degrees; attached on '+(passed.size-loose.size)+' of the '+passed.size+' beds it passes'+(nLoose?' ('+nLoose+' treads loose, beds '+[...loose].slice(0,6).join(', ')+')':'')+(over?'; '+over+' head steps over a ledge':'')};},
+ // THE LIFT ROAD: from the beast lift's landing to the palisade (the north-west gate), no steeper than 1 in 7 where it is
+ // a road, through no band's ground nor the pond, and cleared: no plant of the rock's, nor anything of the forest within 6 m of the ground, on it (a crown beside it may overhang)
+ road(Rd,L){if(!Rd||!L)return{ok:false,detail:'no lift road'};const P=Rd.pts,s=P[0],e=P[P.length-1];let g=0,through=null;
+  for(let i=4;i<P.length;i++){const a=P[i-1],b=P[i],run=Math.hypot(b[0]-a[0],b[2]-a[2]);if(run>.5)g=Math.max(g,Math.abs(b[1]-a[1])/run);}
+  P.forEach(p=>{const z=PR.zoneAt(p[0],p[2]).zone;if(!through&&(z==='pasture'||z==='camp'||z==='hedged'||z==='pond'))through=z;});
+  const atGate=PR.PALISADE.some(q=>Math.hypot(q[0]-e[0],q[1]-e[2])<2),onIt=(x,z)=>{const wa=PR.wayAt(x,z,2);return wa&&wa.d<1;};
+  const trees=(NECANYONS.TREES||[]).filter(t=>onIt(t.x,t.z)).length,forest=_forestPts(true).filter(p=>onIt(p[0],p[1])).length;
+  return{ok:Math.hypot(s[0]-L.foot.x,s[2]-L.foot.z)<8&&atGate&&g<=1/7&&!through&&!trees&&!forest,
+   detail:Math.round(P.length*3)+' m from the landing ('+s[1].toFixed(0)+' m) to the north-west gate ('+e[1].toFixed(0)+' m)'+(atGate?'':' (NOT at the palisade)')+', '+(Rd.benchEnd*3)+' m of it a bench on the slope; steepest 1 in '+(1/Math.max(g,1e-6)).toFixed(1)+
+    (through?'; through the '+through:'')+'; '+trees+' plants and '+forest+' forest points on it'};},
  // the climbs: every deck has one, from the ground at its stack's foot (or the deck under it) to its own height
- climbs(C,D){const bad=[];D.forEach(d=>{const c=C.find(c=>c.deck===d.id);if(!c){bad.push(d.id+' no climb');return;}const P=c.pts,last=P[P.length-1];
-   if(Math.abs(last[1]-d.y)>.05)bad.push(d.id+' short');let st=0;for(let i=0;i+1<P.length;i++){const run=Math.hypot(P[i+1][0]-P[i][0],P[i+1][2]-P[i][2]);if(run>.05)st=Math.max(st,(P[i+1][1]-P[i][1])/run);}if(st>.66)bad.push(d.id+' steep');});
-  return{ok:!bad.length,detail:C.length+' climbs for '+D.length+' decks, '+C.reduce((s,c)=>s+c.pts.length,0)+' steps'+(bad.length?'; '+bad.slice(0,4).join(', '):'')};},
+ // ... and hugs its stack: rock within 1.4 m of the tread's centre toward the stack's middle (its inner edge .1 m off it)
+ // at nineteen treads in twenty (a leaning stack's middle and a bed standing proud for headroom account for the rest),
+ // every bracket's foot in the rock; and every deck's struts find rock under it
+ climbs(C,D){const bad=[];let loose=0,all=0,feet=0,feetBad=0;D.forEach(d=>{const c=C.find(c=>c.deck===d.id);if(!c){bad.push(d.id+' no climb');return;}const P=c.pts,last=P[P.length-1],S=ROCK.find(B=>B.id===d.stack);
+   if(Math.abs(last[1]-d.y)>.05)bad.push(d.id+' short');let st=0;for(let i=0;i+1<P.length;i++){const run=Math.hypot(P[i+1][0]-P[i][0],P[i+1][2]-P[i][2]);if(run>.05)st=Math.max(st,(P[i+1][1]-P[i][1])/run);}if(st>.66)bad.push(d.id+' steep');
+   let l=0;P.forEach(p=>{const cc=KSTACKS.ring(S,Math.min(p[1],S.top-.5),24);let mx=S.x,mz=S.z;if(cc){mx=0;mz=0;cc.forEach(q=>{mx+=q[0];mz+=q[1];});mx/=cc.length;mz/=cc.length;}
+    const dx=mx-p[0],dz=mz-p[2],L=Math.hypot(dx,dz)||1,x=p[0]+dx/L*1.4,z=p[2]+dz/L*1.4;all++;if(KSTACKS.topAt([S],x,z)<p[1]-.5){l++;loose++;}
+    if(p.length>=6){feet++;if(KSTACKS.topAt([S],p[3],p[5])<p[4]-.05)feetBad++;}});
+   if(l>P.length*.05)bad.push(d.id+' off the rock ('+l+' of '+P.length+')');
+   const fe=(d.feet||[]).filter((f,i)=>i%3===0&&!(f[3]>0)).length;if(fe)bad.push(d.id+' '+fe+' struts on no rock');});
+  if(feetBad)bad.push(feetBad+' climb brackets on no rock');
+  return{ok:!bad.length,detail:C.length+' climbs for '+D.length+' decks, '+C.reduce((s,c)=>s+c.pts.length,0)+' steps, '+(all-loose)+' of '+all+' against the rock, '+(feet-feetBad)+' of '+feet+' brackets in it'+(bad.length?'; '+bad.slice(0,4).join(', '):'')};},
+ // EACH WING'S BEASTS IN ITS OWN STALLS (owner, 2026-10-19): every beast on a perch, or coming in to one, is one its bay
+ // takes (the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx, the Nightwing's bats; the Garden the three)
+ wings(list){if(!PRFLY)return{ok:false,detail:'no flyers'};const L=PRFLY.LABEL,bad=list.filter(a=>a.bay&&a.bay.allow&&a.bay.allow.indexOf(a.sp)<0),by={};
+  list.forEach(a=>{if(!a.bay||!a.bay.plat)return;const w=a.bay.plat.wing||'?',k=w+': '+L[a.sp];by[k]=(by[k]||0)+1;});
+  return{ok:!bad.length&&list.filter(a=>a.bay).length>20,detail:Object.keys(by).sort().map(k=>k+' '+by[k]).join(', ')+(bad.length?'; WRONG: '+bad.slice(0,4).map(a=>L[a.sp]+' in '+a.bay.id).join(', '):'')};},
  // the flyers (Girder's, on these roosts): a quetzal sent in from 300 m out lands on an east fin's perch (P2's test), and
  // in a minute and a half of traffic no beast aloft passes through the rock
  flyers(decks){if(!PRFLY)return{ok:false,detail:'no flyers'};const F=PRFLY,sent=[];
@@ -127,9 +161,9 @@ const HCHK={
    S.animals+' beasts, '+S.totals.arrivals+' arrivals and '+S.totals.departures+' departures so far; '+inRock+' of '+samples+' samples aloft in the rock'};}};
 // where the forest STANDS, sampled: the hyperjungle's instances (every 7th) and its merged meshes' vertices within 4 m of the
 // ground (a trunk's foot, a fern: a crown leaning over a hedge is not the forest inside it)
-function _forestPts(){const out=[],v=new THREE.Vector3(),M=new THREE.Matrix4();
+function _forestPts(low){const out=[],v=new THREE.Vector3(),M=new THREE.Matrix4();   /* low: only what stands within 6 m of the ground (not a crown overhanging) */
  scene.traverse(o=>{if(!o.userData||o.userData.kit!=='hyperjungle')return;
-  if(o.isInstancedMesh){for(let i=0;i<o.count;i+=7){o.getMatrixAt(i,M);v.setFromMatrixPosition(M);out.push([v.x,v.z]);}}
+  if(o.isInstancedMesh){for(let i=0;i<o.count;i+=low?1:7){o.getMatrixAt(i,M);v.setFromMatrixPosition(M);if(!low||v.y-terrainH(v.x,v.z)<6)out.push([v.x,v.z]);}}
   else if(o.isMesh&&o.geometry&&o.geometry.attributes.position){const P=o.geometry.attributes.position;
    for(let i=0;i<P.count;i+=13){v.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);if(v.y-terrainH(v.x,v.z)<4)out.push([v.x,v.z]);}}});
  return out;}
@@ -149,6 +183,8 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the Stair: the top to the fair ground, gated three times',HCHK.stair(ROOST.stair));
  add('a climb to every deck',HCHK.climbs(ROOST.climbs,ROOST.decks));
  add('the flyers: a quetzal lands on an east fin',HCHK.flyers(['deck-fin-e0','deck-fin-e1','deck-fin-e2']));
+ add('each Wing\'s beasts in its own stalls',HCHK.wings(PRFLY?PRFLY.list():[]));
+ add('the lift road: the beast lift to the north-west gate, cleared',HCHK.road((ROOST.roads||[])[0],ROOST.lifts.find(l=>l.id==='lift-north')));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
  add('the fins in one row on the north rim (as first drawn)',HCHK.fins(F.map((B,i)=>Object.assign({},B,{x:-270+i*60,z:-520}))));
@@ -172,6 +208,10 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the Stair ending in the gorge',HCHK.stair(Object.assign({},ROOST.stair,{ground:ROOST.stair.ground.concat([[0,0,PR.GORGE.z(0)]])})));
  add('a deck with no climb',HCHK.climbs(ROOST.climbs.slice(1),ROOST.decks));
  add('a quetzal sent to a lookout ring (no stalls)',HCHK.flyers(['deck-fin-ne-look']));
+ {const S=ROOST.stair;add('the Stair\'s flights 4 m out from the face',HCHK.stair(Object.assign({},S,{pts:S.pts.map((p,i)=>i<S.shoulder?p:[p[0]+(p[0]-MESA_B.x)/p[3]*4,p[1],p[2]+(p[2]-MESA_B.z)/p[3]*4,p[3]+4,p[4],p[5]-1e3])})));}
+ {const c0=ROOST.climbs[0];add('a climb 3 m out from its fin',HCHK.climbs(ROOST.climbs.map(c=>c!==c0?c:Object.assign({},c,{pts:c.pts.map(p=>{const S=ROCK.find(B=>'deck-'+B.id===c.deck),dx=p[0]-S.x,dz=p[2]-S.z,L=Math.hypot(dx,dz)||1;return [p[0]+dx/L*3,p[1],p[2]+dz/L*3];})})),ROOST.decks));}
+ if(PRFLY){const B=PRFLY.bays.find(b=>b.plat.wing==='quetzal');add('an archaeopteryx in a Quetzal stall',HCHK.wings(PRFLY.list().concat([{sp:PRFLY.SP.A,bay:B}])));}
+ {const Rd=(ROOST.roads||[])[0];if(Rd)add('the lift road through the seep pond',HCHK.road(Object.assign({},Rd,{pts:Rd.pts.concat([[PR.POND.x,0,PR.POND.z]])}),ROOST.lifts.find(l=>l.id==='lift-north')));}
  return R;}
 
 // ---------------------------------------------------------------- the page, handed to the host

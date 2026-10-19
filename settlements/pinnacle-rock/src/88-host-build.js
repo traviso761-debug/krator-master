@@ -10,7 +10,7 @@ const topMask=(x,z)=>{const on=KSTACKS.at(ROCK,x,z);if(!on||TOWN_GROUND.indexOf(
 (function(){
  const t0=performance.now();
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
- MASK=(x,z)=>waterMask(x,z)*topMask(x,z);
+ MASK=(x,z)=>wayClear(x,z)?waterMask(x,z)*topMask(x,z):0;   // and nothing on the Stair's path or the lift road (47b)
  try{window._biome=NECANYONS.build({R:TERR.R-60,quality:q});}catch(e){reportErr('necanyons: '+e.stack);}finally{MASK=waterMask;}
  _mark('necanyons');
  (NECANYONS.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.6+1,y0:T.y0-3,y1:T.y0+T.H}));

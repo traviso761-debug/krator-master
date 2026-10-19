@@ -17,17 +17,22 @@
       so the plan's `br_bldg_roost_ring` catalog entry (PLAN.md section 2) would be one fixed shape; the ring, the stalls,
       the shelters, the climbs, the bridges, the lifts and the gates are drawn from their records by `89-host-roosts.js`
       in Girder's vocabulary. The records (`43-pr-roosts.js`) are what Godot draws from; a Godot builder is owed.
-- [ ] **The Stair's flights are built out, not cut.** KSTACKS draws no notch into a wall, so the "cut" flights stand on
-      the face (their inner edge .3 m into the rock) with a stone face under them; the return flight is a timber gallery
-      3.2 m further out on brackets. The plan's flights cut into the beds want a notch in the rock mesh.
+- [ ] **The Stair's cut flights have no notch over them.** KSTACKS draws no notch into a wall, so a cut flight runs half
+      into the face (the wall's surface crosses its tread) with a stone wedge under its outer half; there is no cut
+      ceiling or back wall. The return flight is a timber gallery on brackets let into the rock. A notch in the rock mesh
+      would make the flights read as cut into the beds.
 - [ ] **No walker yet on the roosts**: the climbs, the decks, the bridges and the Stair are drawn and recorded, not on a
       nav graph (Girder's `NAV`); a walker and the town's people come with P3 and P4. A climb comes up through a hatch
       in its deck's inner band; the lookout climbs pass the stall deck's walkway.
 - [ ] **Plants on the stacks are not kept off the rings**: a necanyons plant on a fin's wall can show through a deck or
       a stall (the kit places before the roosts are planned). Keeping them off wants the plan before the kit's build.
+- [ ] **The lift road ends at the palisade's line, where the north-west gate is to stand**: the palisade and its gates are
+      P3's; the road does not yet go on into the farms. Its bench is cut into the debris slope's height and the floor
+      mesh re-seated round it (`47b`), but the mesh's 11 m cells spread the cut over a cell or two either side, so the
+      bench reads as a broad shelf with the road on it rather than a crisp cut.
 - [ ] **The flyers keep over the forest's roof** where the forest stands (`flyers/20-world.js`, `FLY_CANOPY` 235 m by
       `PR.forest`), not by each tree; a remnant tree on the cleared ground can stand taller than that. The gorge run
-      (a circuit along the dry gorge) finds no clear loop and is left out; nine of the 101 stalls have no clean approach
-      and way out both and hold no traffic.
+      (a circuit along the dry gorge) finds no clear loop and is left out; some stalls have no clean approach
+      and way out both and hold no traffic (ten of 113 at the last count).
 - [ ] **Load time**: the roost plan takes about a second and the flyers' setup (every bay proved both ways) about five on
       a GPU pane; the page opens in about 30 s.

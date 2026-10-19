@@ -7,11 +7,35 @@
 var flyLegs = [], flyUsable = 0;
 /* the high sorties: north toward the Inner Wall, and toward the gas giant (the sky's) */
 FLY_SORTIES = [ { name:'the Inner Wall', x:0, z:-1 }, (function(){ var x = typeof giantDir !== 'undefined' ? giantDir.x : .7, z = typeof giantDir !== 'undefined' ? giantDir.z : -.7, l = Math.hypot(x, z) || 1; return { name:'the gas giant', x:x/l, z:z/l }; })() ];
+/* EACH WING'S BEASTS IN ITS OWN STALLS (owner, 2026-10-19): the Quetzal's fins hold quetzalcoatlus, the Wingclaw's
+   archaeopteryx, the Nightwing's bats; the Garden's roosts the three. No dragonflies on the roosts: the Dragonfly tribe's
+   beasts live by water and camp on the floor (PLAN.md section 1); they fly the circuits and pass over. Girder's
+   flyFreeBays and flySpawnArrival (84b) are wrapped here so arrivals and peel-offs keep to it: a bay takes only its own */
+var FLY_ALLOW = { quetzal:[FLY_Q], wingclaw:[FLY_A], nightwing:[FLY_B], garden:[FLY_Q, FLY_A, FLY_B] };
+flyBays.forEach(function(B){ B.allow = FLY_ALLOW[B.plat.wing] || FLY_ALLOW.garden; });
+var _flyFreeBaysGirder = flyFreeBays;
+flyFreeBays = function(plat, sp){ return _flyFreeBaysGirder(plat, sp).filter(function(B){ return sp == null || B.allow.indexOf(sp) >= 0; }); };
+/* an arrival: a free bay first, then one of the beasts it takes, weighted by the hour as Girder's flyPickSp weights them */
+flySpawnArrival = function(plat, spForce, startBack, hour, sortie){
+  var forced = !(spForce === undefined || spForce === null), free = flyFreeBays(plat, forced ? spForce : null); if(!free.length) return null;
+  for(var tr=0; tr<(startBack !== null ? 12 : 4); tr++){
+    var B = free[Math.floor(Math.random()*free.length)], sp = spForce;
+    if(!forced){ var L = B.allow.filter(function(s){ return !(sortie && s === FLY_B); }); if(!L.length) continue;
+      var w = L.map(function(s){ return flyHourW(s, hour, true)*(s === FLY_Q ? 2.2 : 1); }), t = Math.random()*w.reduce(function(a, b){ return a+b; }, 0);
+      sp = L[L.length-1]; for(var i=0;i<L.length;i++){ t -= w[i]; if(t <= 0){ sp = L[i]; break; } } }
+    var path = flyRoute(B, sp, true, 4, startBack !== null && startBack < 200, sortie); if(!path) continue;
+    var a = flyNew(sp, sortie ? true : sp === FLY_B ? Math.random() < 0.3 : Math.random() < 0.75); if(!a) return null;
+    a.pop = 'arr'; a.bay = B; B.reserved = true; a.path = path; a.dest = B.plat.name; a.note = sortie ? 'back from a sortie toward ' + sortie.name : '';
+    a.s = startBack !== null ? Math.max(0, path.straight-startBack) : 0; flyPlaceOnPath(a); flySnapHeading(a);
+    return a;
+  }
+  return null;
+};
 (function(){
   var okBays = [];
   flyBays.forEach(function(B){
     if(!B.ok) return;
-    var p = flyRoute(B, FLY_Q, true, 10, false, null), d = p && flyRoute(B, FLY_Q, false, 10, false, null);
+    var sp0 = B.allow[0], p = flyRoute(B, sp0, true, 10, false, null), d = p && flyRoute(B, sp0, false, 10, false, null);
     if(!p || !d){ B.ok = false; flyPathStats.blockedBays++; return; }
     okBays.push(B); B.testCurve = p.curve; B.testDep = d.curve;
   });
@@ -21,12 +45,11 @@ FLY_SORTIES = [ { name:'the Inner Wall', x:0, z:-1 }, (function(){ var x = typeo
     if(i%stride === 0 && flyLegs.length < 60){ flyLegs.push({ name:'arr '+B.plat.name+' #'+B.id, curve:B.testCurve }); flyLegs.push({ name:'dep '+B.plat.name+' #'+B.id, curve:B.testDep }); }
     B.testCurve = B.testDep = null;
   });
-  /* the Wings' beasts first on their own fins: the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx and quetzals,
-     the Nightwing's bats; the Garden's roosts a mix */
-  var WING = { quetzal:[.7,.06,.2,.04], wingclaw:[.3,.06,.56,.08], nightwing:[.12,.66,.16,.06], garden:[.34,.2,.3,.16] }, rslots = 0;
+  /* about half the bays with one of their own beasts perched */
+  var rslots = 0;
   flyBays.forEach(function(B){
     if(!B.ok || flyRand() > 0.55) return;
-    var W = WING[B.plat.wing] || WING.garden, r = flyRand(), sp = r < W[0] ? FLY_Q : r < W[0]+W[1] ? FLY_B : r < W[0]+W[1]+W[2] ? FLY_A : FLY_D;
+    var sp = B.allow[Math.floor(flyRand()*B.allow.length)];
     var a = flyNew(sp, false); if(!a) return;
     flyPerchNow(a, B);
     a.saddled = flyRand() < 0.45 && rslots < FLY_RCAP-50; if(a.saddled) rslots++;

@@ -5,16 +5,20 @@
 // The maps are the Beast Riders kit's (kits/beast-riders/materials.json, its pack read in place by build.py): grey detail
 // maps, so the colour is the vertex colour and the map the grain (the pack's mean divided back out).
 //
-//   ROOST          the plan: {decks, roosts, shelters, climbs, bridges, lifts, stair, why}
+//   ROOST          the plan (47b-host-roosts-plan.js, made before the kits build so its ways are cleared)
 //   ROOST_MESH     {by material: THREE.Mesh}; ROOST_CAGES the lifts' cages (moved by a tick)
-const ROOST=(function(){try{const t0=performance.now(),P=PRR.plan({rock:ROCK,K:KSTACKS,PR,ground:groundH});P.ms=Math.round(performance.now()-t0);return P;}
- catch(e){reportErr('roosts: '+e.stack);return {decks:[],roosts:[],shelters:[],climbs:[],bridges:[],lifts:[],stair:null,why:{}};}})();
-_mark('roostplan');
+//   floorMeshH(x, z)  the floor mesh's drawn height (47's plane, its cells' triangles), which the paths and the road sit on:
+//                  the slope's 9 m ledge bands fall inside its 11 m cells, so the true ground can run under the drawn one
+const FLOOR_N=(typeof LAND!=='undefined'&&LAND.groundN)||220,FLOOR_S=TERR.R*2.2,FLOOR_C=FLOOR_S/FLOOR_N;
+function floorMeshH(x,z){const fx=(x+FLOOR_S/2)/FLOOR_C,fz=(z+FLOOR_S/2)/FLOOR_C,ix=Math.floor(fx),iz=Math.floor(fz),u=fx-ix,v=fz-iz,X=i=>-FLOOR_S/2+i*FLOOR_C;
+ const ha=groundH(X(ix),X(iz)),hb=groundH(X(ix),X(iz+1)),hc=groundH(X(ix+1),X(iz+1)),hd=groundH(X(ix+1),X(iz));
+ return u+v<=1?ha+u*(hd-ha)+v*(hb-ha):hc+(1-u)*(hb-hc)+(1-v)*(hd-hc);}
+const seatH=(x,z)=>Math.max(groundH(x,z),floorMeshH(x,z));
 const ROOST_MESH={},ROOST_CAGES=[];
 (function(){
  const lin=h=>{const c=new THREE.Color(h).convertSRGBToLinear();return [c.r,c.g,c.b];};
  const COL={tar:lin(0x3e2f24),post:lin(0x56402e),plank:lin(0x8c6c4c),board:lin(0x7a5c40),shingle:lin(0x6a4232),red:lin(0x9a2a1e),gilt:lin(0xc09a46),
-  rope:lin(0xa48a5e),straw:lin(0xc4a462),stone:lin(0x9c5c44),stoneDk:lin(0x7a4634),iron:lin(0x3a3634)};
+  rope:lin(0xa48a5e),straw:lin(0xc4a462),stone:lin(0x9c5c44),stoneDk:lin(0x7a4634),iron:lin(0x3a3634),road:lin(0x9a7a5a),soil:lin(0x6e4a34)};
  // ---------------------------------------------------------------- the accumulators: flat-shaded triangles by material
  const MATS=['plank','timber','shingle','rope','straw','stone'],PACKF={plank:'wood',timber:'timber',shingle:'shingle',rope:'rope',straw:'straw',stone:'sandstone'};
  const A={};MATS.forEach(m=>A[m]={p:[],u:[],c:[]});
@@ -59,9 +63,10 @@ const ROOST_MESH={},ROOST_CAGES=[];
    quad('timber',V(p.b),V(q.b),Vb(q.b),Vb(p.b),COL.tar);
    quad('timber',V(p.a),V(q.a),Vb(q.a),Vb(p.a),COL.tar);
    // the joists and the brackets let into the bed under the deck, every third angle
-   if(i%3===0){const j0=[p.a[0],y-th-.2,p.a[1]],j1=[p.b[0],y-th-.2,p.b[1]];beam('timber',j0,j1,.3,.4,COL.tar);
-    const ux=(p.a[0]-D.x),uz=(p.a[1]-D.z),ul=Math.hypot(ux,uz)||1,foot=[p.a[0]-ux/ul*.6,y-th-.4-.38*D.W,p.a[1]-uz/ul*.6];
-    beam('timber',foot,lerp3(j0,j1,.62),.3,.3,COL.post);}
+   if(i%3===0){const j0=[p.a[0],y-th-.2,p.a[1]],j1=[p.b[0],y-th-.2,p.b[1]],F=D.feet&&D.feet[i%N];beam('timber',j0,j1,.3,.4,COL.tar);
+    // the strut's foot let into the bed under the deck (PRR: the rock's reach there), and a short post from the joist's
+    // inner end down to the rock where the inner edge stands off it
+    if(F&&F[3]>0){beam('timber',[F[0],F[1],F[2]],lerp3(j0,j1,.62),.3,.3,COL.post);beam('timber',[F[0],F[1],F[2]],j0,.26,.26,COL.post);}}
    // the outer rail, where no stall stands and no bridge lands
    if(i%2===0){const b=p.b,b2=P(i+2).b;if(!inStall(D,b[0],b[1])&&!inStall(D,b2[0],b2[1])&&!nearHead(b[0],b[1])&&!nearHead(b2[0],b2[1])){
      post('timber',b[0],y,b[1],1.2,.18,COL.post);beam('rope',[b[0],y+1.1,b[1]],[b2[0],y+1.1,b2[1]],.07,.07,COL.rope);}}}
@@ -73,20 +78,26 @@ const ROOST_MESH={},ROOST_CAGES=[];
 
  // ---------------------------------------------------------------- the stalls (Girder's frame, PRR.STALL)
  const ST=PRR.STALL,k=(ST.back-ST.eave)/ST.d;
- ROOST.roosts.forEach(R=>{const y=R.y,nx=R.ox,nz=R.oz,tx=-nz,tz=nx,F=(e,q,h)=>[R.fx+nx*e+tx*q,y+h,R.fz+nz*e+tz*q],hw=R.w/2;
-  // posts: the front .2 m in, the back at the stall's depth
-  [-1,1].forEach(s=>{const f=F(-.2,s*(hw-.15),0),b=F(-ST.d,s*(hw-.15),0);post('timber',f[0],y,f[2],ST.eave,.32,COL.tar);post('timber',b[0],y,b[2],ST.back,.32,COL.tar);
-   // the low partition, a plank wall along the stall's side
-   const p0=F(-.4,s*(hw-.15),ST.part/2),p1=F(-ST.d+.2,s*(hw-.15),ST.part/2);beam('plank',p0,p1,.14,ST.part,COL.board);});
-  // the lean-to: shingle from .6 m out over the edge up to the back, a red eave band
-  const rf=F(.6,0,ST.eave-.6*k+.15),rb=F(-ST.d-.4,0,ST.back+.4*k+.15);beam('shingle',rf,rb,R.w+.8,.22,COL.shingle);
-  beam('timber',F(.6,-hw-.4,ST.eave-.6*k-.15),F(.6,hw+.4,ST.eave-.6*k-.15),.12,.34,COL.red);
-  beam('timber',F(-.2,-hw,ST.eave-.2),F(-.2,hw,ST.eave-.2),.24,.3,COL.tar);beam('timber',F(-ST.d,-hw,ST.back-.2),F(-ST.d,hw,ST.back-.2),.24,.3,COL.tar);
+ // each from its footprint (R.quad: the front corners on the edge, the back corners 9.2 m in along the edge's normals),
+ // so round a bend a stall is a wedge and its partitions run parallel to its neighbours'
+ ROOST.roosts.forEach(R=>{const y=R.y,nx=R.ox,nz=R.oz,F=(e,h)=>[R.fx+nx*e,y+h,R.fz+nz*e];
+  const Q=R.quad,fl=Q[0],fr=Q[1],br=Q[2],bl=Q[3],sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],nrm=v=>{const l=Math.hypot(v[0],v[1])||1;return [v[0]/l,v[1]/l];};
+  const nl=nrm(sub(fl,bl)),nr=nrm(sub(fr,br)),uf=nrm(sub(fr,fl)),ub=nrm(sub(br,bl)),P3=(v,h)=>[v[0],y+h,v[1]],mv=(v,d,s)=>[v[0]+d[0]*s,v[1]+d[1]*s];
+  const pin=(v,n)=>mv(v,n,-.2),lfp=mv(pin(fl,nl),uf,.15),rfp=mv(pin(fr,nr),uf,-.15),lbp=mv(bl,ub,.15),rbp=mv(br,ub,-.15);
+  // posts: the front .2 m in, the back at the stall's depth; the low partitions along the sides
+  [[lfp,lbp],[rfp,rbp]].forEach(([f,b])=>{post('timber',f[0],y,f[1],ST.eave,.32,COL.tar);post('timber',b[0],y,b[1],ST.back,.32,COL.tar);
+   const d=nrm(sub(b,f));beam('plank',P3(mv(f,d,.2),ST.part/2),P3(mv(b,d,-.2),ST.part/2),.14,ST.part,COL.board);});
+  // the lean-to: shingle from .6 m out over the edge up to the back, .4 m past the posts, a red eave band
+  const he=ST.eave-.6*k+.15,hb=ST.back+.4*k+.15,RF=[mv(mv(fl,nl,.6),uf,-.4),mv(mv(fr,nr,.6),uf,.4)],RB=[mv(mv(bl,nl,-.4),ub,-.4),mv(mv(br,nr,-.4),ub,.4)];
+  [.11,-.11].forEach(t=>quad('shingle',P3(RF[0],he+t),P3(RF[1],he+t),P3(RB[1],hb+t),P3(RB[0],hb+t),COL.shingle));
+  quad('shingle',P3(RF[0],he-.11),P3(RF[1],he-.11),P3(RF[1],he+.11),P3(RF[0],he+.11),COL.shingle);quad('shingle',P3(RB[0],hb-.11),P3(RB[1],hb-.11),P3(RB[1],hb+.11),P3(RB[0],hb+.11),COL.shingle);
+  beam('timber',P3(RF[0],he-.3),P3(RF[1],he-.3),.12,.34,COL.red);
+  beam('timber',P3(lfp,ST.eave-.2),P3(rfp,ST.eave-.2),.24,.3,COL.tar);beam('timber',P3(lbp,ST.back-.2),P3(rbp,ST.back-.2),.24,.3,COL.tar);
   // the perch beam, from 1.5 m in to 3.4 m out, its top .48 m over the deck, braced under its outer end
-  beam('timber',F(-ST.beamIn,0,ST.beamTop-.21),F(ST.beamOut,0,ST.beamTop-.21),.44,.42,COL.post);beam('timber',F(0,0,-1.6),F(2.6,0,ST.beamTop-.4),.24,.24,COL.tar);
+  beam('timber',F(-ST.beamIn,ST.beamTop-.21),F(ST.beamOut,ST.beamTop-.21),.44,.42,COL.post);beam('timber',F(0,-1.6),F(2.6,ST.beamTop-.4),.24,.24,COL.tar);
   // the straw, and the back rail on the walkway's side
-  quad('straw',F(-.3,-hw+.2,.03),F(-.3,hw-.2,.03),F(-ST.d+.2,hw-.2,.03),F(-ST.d+.2,-hw+.2,.03),COL.straw);
-  beam('timber',F(-ST.d,-hw,1.05),F(-ST.d,hw,1.05),.12,.12,COL.post);});
+  quad('straw',P3(mv(lfp,nl,-.1),.03),P3(mv(rfp,nr,-.1),.03),P3(rbp,.03),P3(lbp,.03),COL.straw);
+  beam('timber',P3(lbp,1.05),P3(rbp,1.05),.12,.12,COL.post);});
 
  // ---------------------------------------------------------------- the keepers' shelters (feed and tack)
  ROOST.shelters.forEach(S=>{const c=Math.cos(S.ry),s=Math.sin(S.ry),L=(a,b,h)=>[S.x+s*b+c*a,S.y+h,S.z+c*b-s*a],hw=S.w/2,hd=S.d/2,H=2.6,ov=.5,rise=1.7;
@@ -104,9 +115,12 @@ const ROOST_MESH={},ROOST_CAGES=[];
   const side=(p,q,s)=>{const dx=q[0]-p[0],dz=q[2]-p[2],L=Math.hypot(dx,dz)||1;return [p[0]+dz/L*s,p[1],p[2]-dx/L*s];};
   // which side is the rock's: the edge nearer the stack's middle
   const B=ROCK.find(S=>'deck-'+S.id===C.deck.replace(/-look$/,''))||ROCK[0],o=P.length>1?side(P[0],P[1],w/2):P[0],inS=Math.hypot(o[0]-B.x,o[2]-B.z)<Math.hypot(P[0][0]-B.x,P[0][2]-B.z)?1:-1;
-  const outer=[],inner=[];for(let i=0;i+1<P.length;i++){outer.push(side(P[i],P[i+1],-inS*w/2));inner.push(side(P[i],P[i+1],inS*(w/2+.3)));}
+  const outer=[],inner=[];for(let i=0;i+1<P.length;i++){outer.push(side(P[i],P[i+1],-inS*w/2));inner.push(side(P[i],P[i+1],inS*w/2));}
   rail(outer,6,1,null);
-  for(let i=0;i<outer.length;i+=8){const a=inner[i],b=outer[i];beam('timber',[a[0],a[1]-1.8,a[2]],[b[0],b[1]-.12,b[2]],.2,.2,COL.tar);}
+  // the brackets: from their feet let into the rock 1.6 m under the tread (PRR) to the tread's outer edge, and a short
+  // ledger from the foot to the inner edge
+  for(let i=0;i<outer.length;i++){const p=P[i];if(p.length<6)continue;const f=[p[3],p[4],p[5]],a=inner[i],b=outer[i];
+   beam('timber',f,[b[0],b[1]-.12,b[2]],.2,.2,COL.tar);beam('timber',f,[a[0],a[1]-.12,a[2]],.18,.18,COL.tar);}
   for(let i=0;i+6<outer.length;i+=6)beam('timber',[outer[i][0],outer[i][1]-.25,outer[i][2]],[outer[i+6][0],outer[i+6][1]-.25,outer[i+6][2]],.12,.3,COL.tar);});
 
  // ---------------------------------------------------------------- the bridges: plank and rope between a group's fins
@@ -142,18 +156,25 @@ const ROOST_MESH={},ROOST_CAGES=[];
 
  // ---------------------------------------------------------------- the Stair: the cut flights, the built-out returns, the path down the slope
  const S=ROOST.stair;
- if(S){const P=S.pts,w=S.w,head=P.slice(0,S.shoulder+1),run=P.slice(S.shoulder);
-  steps('stone',head,w,COL.stone,{face:1.4,faceCol:COL.stoneDk});
-  // the flights by k: the cut ones (k even) in stone with a parapet; the returns (k odd) a timber gallery on brackets
+ if(S){const P=S.pts,w=S.w,head=P.slice(0,S.shoulder+1),run=P.slice(S.shoulder),cx=MESA_B.x,cz=MESA_B.z;
+  const ray=(p,dr,dy)=>{const a=Math.atan2(p[2]-cz,p[0]-cx);return [p[0]+Math.cos(a)*dr,p[1]+(dy||0),p[2]+Math.sin(a)*dr];};
+  // the head: steps cut down through the shoulder's ledges (never over a ledge's surface: PRR)
+  steps('stone',head,w,COL.stone,{face:.6,faceCol:COL.stoneDk});
+  // the flights by k: the cut ones (k even), half into the face, a stone wedge under their outer half down to the rock
+  // (PRR rf: the rock's reach 1.2 m under the tread) and a parapet; the returns (k odd) a timber gallery 1.7 m off the
+  // face, carried on brackets and ledgers let into the rock 3.6 m under it
   let seg=[];const flush=()=>{if(seg.length<2){seg=[];return;}const k=seg[0][4],odd=k%2===1;
-   steps(odd?'plank':'stone',seg,w,odd?COL.plank:COL.stone,odd?null:{face:1.6,faceCol:COL.stoneDk});
-   const cx=MESA_B.x,cz=MESA_B.z,out=p=>{const a=Math.atan2(p[2]-cz,p[0]-cx);return [p[0]+Math.cos(a)*w/2,p[1],p[2]+Math.sin(a)*w/2];},inn=p=>{const a=Math.atan2(p[2]-cz,p[0]-cx);return [p[0]-Math.cos(a)*w/2,p[1],p[2]-Math.sin(a)*w/2];};
-   if(odd){rail(seg.map(out),6,1,null);for(let i=0;i<seg.length;i+=6){const a=inn(seg[i]),b=out(seg[i]),ar=Math.atan2(seg[i][2]-cz,seg[i][0]-cx);
-     beam('timber',[a[0]-Math.cos(ar)*1.6,a[1]-3.4,a[2]-Math.sin(ar)*1.6],[b[0],b[1]-.2,b[2]],.3,.3,COL.tar);beam('timber',[a[0]-Math.cos(ar)*.8,a[1]-.2,a[2]-Math.sin(ar)*.8],[b[0],b[1]-.2,b[2]],.26,.32,COL.tar);}}
-   else for(let i=0;i+2<seg.length;i+=2){const a=out(seg[i]),b=out(seg[i+2]);beam('stone',[a[0],a[1]+.45,a[2]],[b[0],b[1]+.45,b[2]],.5,.9,COL.stone);}
+   steps(odd?'plank':'stone',seg,w,odd?COL.plank:COL.stone,null);
+   const out=p=>ray(p,w/2),inn=p=>ray(p,-w/2);
+   if(odd){rail(seg.map(out),6,1,null);for(let i=0;i<seg.length;i+=5){const p=seg[i],rf=p[5];if(!(rf>0))continue;const a=inn(p),b=out(p),ft=ray(p,rf-.3-p[3],-3.6);
+     beam('timber',ft,[b[0],b[1]-.2,b[2]],.3,.3,COL.tar);beam('timber',ft,[a[0],a[1]-.2,a[2]],.28,.28,COL.tar);beam('timber',ray(p,rf-.3-p[3],-.25),[b[0],b[1]-.25,b[2]],.26,.32,COL.tar);}}
+   else{for(let i=0;i+1<seg.length;i++){const p=seg[i],q=seg[i+1],ob=out(p),oq=out(q),rp=p[5]>0?p[5]:p[3],rq=q[5]>0?q[5]:q[3];
+     quad('stone',[ob[0],ob[1],ob[2]],[oq[0],oq[1],oq[2]],ray(q,rq-.2-q[3],-2.7),ray(p,rp-.2-p[3],-2.7),COL.stoneDk);}
+    for(let i=0;i+2<seg.length;i+=2){const a=out(seg[i]),b=out(seg[i+2]);beam('stone',[a[0],a[1]+.45,a[2]],[b[0],b[1]+.45,b[2]],.5,.9,COL.stone);}}
    seg=[];};
-  run.forEach(p=>{if(seg.length&&seg[seg.length-1][4]!==p[4]){const last=seg[seg.length-1];flush();seg=[last.slice(0,4).concat([p[4]])];}seg.push(p);});flush();
-  steps('stone',S.ground.map(p=>[p[0],p[1]+.2,p[2]]),2.4,COL.stone,{face:.8,faceCol:COL.stoneDk});
+  run.forEach(p=>{if(seg.length&&seg[seg.length-1][4]!==p[4]){const last=seg[seg.length-1];flush();seg=[last.slice(0,4).concat([p[4],last[5]])];}seg.push(p);});flush();
+  // the path of steps down the debris slope, seated on the drawn ground (the plan keeps it clear of blocks and plants)
+  steps('stone',S.ground.map(p=>[p[0],seatH(p[0],p[2])+.15,p[2]]),2.4,COL.stone,{face:.8,faceCol:COL.stoneDk});
   // the three gates: posts, a lintel with the red band, a small shingle roof, the leaves open
   S.gates.forEach(G=>{const c=Math.cos(G.ry),s=Math.sin(G.ry),L=(a,h,b)=>[G.x+c*a+s*b,G.y+h,G.z-s*a+c*b],hw=G.w/2;
    [-1,1].forEach(q=>{const p=L(q*(hw+.3),0,0);post('timber',p[0],G.y-.5,p[2],5.1,.5,COL.tar);beam('plank',L(q*(hw+.2),1.8,0),L(q*(hw+.2)+q*-.1,1.8,1.6),.12,3.4,COL.board);});
@@ -162,6 +183,20 @@ const ROOST_MESH={},ROOST_CAGES=[];
    reg({name:G.name,key:'roost.gate',x:G.x,z:G.z,y:G.y-1,r:4,h:7});});
   let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,y0=1e9,y1=-1e9;P.concat(S.ground).forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[2]);z1=Math.max(z1,p[2]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);});
   reg({name:S.name,key:'roost.stair',x:(x0+x1)/2,z:(z0+z1)/2,y:y0-2,r:Math.hypot(x1-x0,z1-z0)/2+3,h:y1-y0+6});}
+
+ // ---------------------------------------------------------------- the roads: the lift road, a bench cut along the debris slope
+ // the surface level across, on the plan's smoothed line; uphill a cut face up to the drawn ground, downhill a dry-stone
+ // retaining wall down to it and a kerb where the drop is over 1.5 m
+ (ROOST.roads||[]).forEach(Rd=>{const P=Rd.pts,hw=Rd.w/2,E=[];
+  for(let i=0;i<P.length;i++){const p=P[Math.max(0,i-1)],q=P[Math.min(P.length-1,i+1)],dx=q[0]-p[0],dz=q[2]-p[2],L=Math.hypot(dx,dz)||1,ax=dz/L,az=-dx/L,y=P[i][1]+.12;
+   const l=[P[i][0]+ax*hw,y,P[i][2]+az*hw],r=[P[i][0]-ax*hw,y,P[i][2]-az*hw];E.push({l,r,gl:seatH(l[0],l[2]),gr:seatH(r[0],r[2])});}
+  for(let i=0;i+1<E.length;i++){const a=E[i],b=E[i+1];quad('stone',a.l,a.r,b.r,b.l,COL.road,Rd.w,null);
+   [['l','gl'],['r','gr']].forEach(([s,g])=>{const A0=a[s],B0=b[s],ga=a[g],gb=b[g];
+    if(ga>A0[1]-.05||gb>B0[1]-.05)quad('stone',A0,B0,[B0[0],Math.max(gb,B0[1])+.3,B0[2]],[A0[0],Math.max(ga,A0[1])+.3,A0[2]],COL.soil);   // the cut
+    if(ga<A0[1]+.05||gb<B0[1]+.05){quad('stone',A0,B0,[B0[0],Math.min(gb,B0[1])-.5,B0[2]],[A0[0],Math.min(ga,A0[1])-.5,A0[2]],COL.stoneDk);   // the wall
+     if(A0[1]-ga>1.5&&i%2===0)beam('stone',[A0[0],A0[1]+.3,A0[2]],[B0[0],B0[1]+.3,B0[2]],.45,.6,COL.stone);}});}
+  for(let i=0;i<P.length;i+=40){const ch=P.slice(i,i+41);let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,y0=1e9,y1=-1e9;ch.forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[2]);z1=Math.max(z1,p[2]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);});
+   reg({name:Rd.name,key:'roost.road',x:(x0+x1)/2,z:(z0+z1)/2,y:y0-3,r:Math.hypot(x1-x0,z1-z0)/2+4,h:y1-y0+6});}});
 
  // ---------------------------------------------------------------- the meshes, one per material, and the registered volumes' anchors
  const c=new THREE.Color();
@@ -172,7 +207,7 @@ const ROOST_MESH={},ROOST_CAGES=[];
   const mat=new THREE.MeshStandardMaterial({map:tx.map||null,normalMap:tx.normalMap||null,roughness:.92,metalness:0,vertexColors:true,side:THREE.DoubleSide});mat.color.setScalar(gain);
   const me=new THREE.Mesh(g,mat);me.userData.roost=true;me.userData.host=true;
   me.userData.inspectLabel={plank:'Planking (the decks, the stairs, the bridges)',timber:'Tarred timber (posts, brackets, booms)',shingle:'Shingle roofs (the stalls, the shelters, the gates)',
-   rope:'Rope (rails, the bridges\' hand lines, the lifts\' cables)',straw:'Straw (the stalls\' bedding)',stone:'The Stair\'s cut steps (red sandstone)'}[m];
+   rope:'Rope (rails, the bridges\' hand lines, the lifts\' cables)',straw:'Straw (the stalls\' bedding)',stone:'Red sandstone (the Stair\'s cut steps, the lift road\'s bench and walls)'}[m];
   scene.add(me);ROOST_MESH[m]=me;});
  {const An=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),Math.max(1,REGS.length)),M4=new THREE.Matrix4();
   REGS.forEach((r,i)=>{M4.makeTranslation(r.x,r.y+Math.min(r.h/2,4),r.z);An.setMatrixAt(i,M4);});An.count=REGS.length;An.userData.host=true;An.userData.roost=true;An.userData.inspectLabel='roost anchors';An.frustumCulled=false;scene.add(An);}
