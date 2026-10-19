@@ -429,7 +429,29 @@ none`); item sets and instances; buckets and bucket triangles (`itris`: the item
 instances); `mats` and `texs` (records in the lists) beside `usedm` and `usedt` (those a node or a material names);
 `draws`, the draw-call proxy (item sets + buckets, one MultiMesh or mesh node each in Godot); the terrain source.
 `--json` writes `godot/data/export-report.json` (committed: it is the baseline); `--compare` prints each column's delta
-against such a file. `tools/test_all.py --nightly` runs it with `--compare` as a report that never fails the run.
+against such a file.
+
+**Growth is flagged** (2026-10-18; ROADMAP.md section 11 asked for the sizes to be tracked over time, and the first real
+growth, `world-sedesert`'s glb from 2.8 MB to 10.2 MB, was only noticed by reading the table). Under `--compare`:
+
+- `--tolerance <percent>` (default 10). A column that grows by more than that gets a `*` on its delta in the table, and
+  the row's last cell, `flag`, names the columns. The columns watched are the bytes (`json`, `glb`, `tex`), `inst`,
+  `tris` and `itris`, `mats`, `texs` and `draws`; a column at 0 in the baseline flags on any value. Shrinkage never flags.
+- The output ends with the list `grew past tolerance (10%): N`, one line each: `case column old -> new (+x%)`. A case
+  new since the baseline (`flag` cell `case`), a case in the baseline but not in the run, and a section whose status fell
+  from `ok` to `empty`, `stub` or `none` (`case section <name>: ok -> stub`) are on the list too. The per-section
+  statuses are each row's `sections`; a baseline written before they were recorded has none, so that check starts
+  with the next `--json`.
+- `--assert` exits 1 when the list is not empty; without it the exit code is 0 whatever grew.
+- `--from new.json` takes the rows from a saved report instead of reading `godot/data` (how the self-test compares two
+  fake reports; it also lets two baselines be compared).
+
+A refreshed baseline (`--json`, committed) is simply the new reference: the compare has no memory of its own.
+`tools/test_all.py --nightly` runs the compare as a report (printed in full, the flagged list the last thing in the
+log, never a failure) until `EXPORT_ASSERT` in `tools/test_all.py` is set True, which adds `--assert` and makes the
+list a nightly failure; `EXPORT_TOLERANCE` beside it is the percent passed. `tools/tests/test_export_report.py` proves
+the thresholds on two fake reports (a 12 percent growth flagged, a 5 percent one not, a vanished case, a new case, an
+ok-to-stub section, the exit codes); `tools/test_all.py` runs every `tools/tests/test_*.py` among its ordinary steps.
 
 Reconciled with the tables above (the files in `godot/data` of 2026-10-13):
 

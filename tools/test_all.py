@@ -43,6 +43,12 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd
 # passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
 COMPARE_CASES = ['world-sedesert', 'world-iziz']
 COMPARE_ASSERT = False
+# The export size compare (tools/export_report.py --compare godot/data/export-report.json): its output ends with the list
+# of what grew past EXPORT_TOLERANCE percent (bytes, instances, triangles, materials, textures, draws), new or vanished
+# cases and sections fallen from ok. EXPORT_ASSERT False: a report, printed in full and never a failure (the owner reads
+# the list, the last thing in the log); True: that list being non-empty fails the nightly (export_report.py --assert).
+EXPORT_TOLERANCE = 10
+EXPORT_ASSERT = False
 
 
 # A build that reads another build's output builds after it: kits/ancients-interiors loads kits/interiors'
@@ -87,6 +93,8 @@ def steps(nightly, build):
          ('build.py open() names its encoding', [PY, 'tools/check_encoding.py']),
          ('godot vendored core in step', [PY, 'godot/tools/sync_core.py', '--check']),
          ('core/rand GDScript transliteration', [PY, 'core/rand/test_rand.py'])]
+    for t in sorted(glob.glob(os.path.join(ROOT, 'tools', 'tests', 'test_*.py'))):
+        s.append(('tools ' + os.path.relpath(t, ROOT).replace(os.sep, '/'), [PY, t]))
     n = node()
     for t in node_tests():
         s.append(('node ' + t, [n, t] if n else None))
@@ -105,9 +113,14 @@ def steps(nightly, build):
         # cover 2 m forward, stay up, and leave the console clean
         s.append(('walk settlements/girder', [PY, 'tools/harness.py', 'walk', 'settlements/girder/girder.html', '--route', 'KeyW:20f',
                                                '--start', 'auto', '--min', '2', '--dir', '0,-1'] if pw else None))
-        # a report, never a failure (it prints the size of each exported case; --compare against godot/data/export-report.json)
-        s.append(('report: export sizes (tools/export_report.py)', [PY, 'tools/export_report.py', '--compare', 'godot/data/export-report.json']
-                  if os.path.isfile(os.path.join(ROOT, 'godot', 'data', 'export-report.json')) else [PY, 'tools/export_report.py']))
+        # the size of each exported case against godot/data/export-report.json, ending with the flagged-growth list; a
+        # report until EXPORT_ASSERT is True (a refreshed baseline is simply the new reference)
+        if os.path.isfile(os.path.join(ROOT, 'godot', 'data', 'export-report.json')):
+            cmd = [PY, 'tools/export_report.py', '--compare', 'godot/data/export-report.json', '--tolerance', str(EXPORT_TOLERANCE)]
+            s.append(('export sizes (assert, tools/export_report.py)', cmd + ['--assert']) if EXPORT_ASSERT
+                     else ('report: export sizes (tools/export_report.py)', cmd))
+        else:
+            s.append(('report: export sizes (tools/export_report.py)', [PY, 'tools/export_report.py']))
         g = os.environ.get('GODOT') or shutil.which('godot')
         for t in GODOT_TESTS:
             s.append(('godot ' + t, [g, '--headless', '--path', 'godot', '--script', t] if g else None))
