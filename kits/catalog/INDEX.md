@@ -21,7 +21,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-asset-engine.js` | 11 |  |
 | `krator-furniture-core.js` | 74 **big** |  |
 | `krator-furniture-detail.js` | 4 |  |
-| `krator-furniture-kit.js` | 139 **big** | Palette resolve and frame helpers (58); Legs (86); Motifs, bands, finials, cushions (149); Role builders: beds and seating (bed, bedFine, b (272); Role builders: tables, desks and storage (table, (431); Role builders: fire and light (hearth, fire, lam (619); Role builders: soft, screens, trade and work (ru (814); Role builders: surface pieces (bowl, jug, books) (986); Role builders: tapestry, wall art, statues (1040); Role builders: trades and households (forge, anv (1383) |
+| `krator-furniture-kit.js` | 156 **big** | Palette resolve and frame helpers (58); Legs (86); Motifs, bands, finials, cushions (149); Role builders: beds and seating (bed, bedFine, b (272); Role builders: tables, desks and storage (table, (431); Role builders: fire and light (hearth, fire, lam (619); Role builders: soft, screens, trade and work (ru (814); Role builders: surface pieces (bowl, jug, books) (986); Role builders: tapestry, wall art, statues (1040); Role builders: trades and households (forge, anv (1383) |
 | `krator-furniture-runtime.js` | 14 |  |
 | `krator-master-buildings-beast-rider.js` | 69 **big** | Mav's Refuge (24); Girder (677) |
 | `krator-master-buildings-voth.js` | 128 **big** |  |
@@ -32,13 +32,13 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-generic-goods.js` | 91 **big** | Storage containers (17 pieces) (190); Food (21 pieces) (588); Drink (6 pieces) (1130); Supplies (11 pieces) (1296) |
 | `krator-master-furniture-generic.js` | 5 |  |
 | `krator-master-furniture-hykkousoi.js` | 30 **big** | the helpers (all through F) (38); the pieces (91) |
-| `krator-master-furniture-islander.js` | 5 |  |
+| `krator-master-furniture-islander.js` | 6 |  |
 | `krator-master-furniture-iziz.js` | 21 | Harvested from settlements/iziz/src/69c-vern-hel (103) |
 | `krator-master-furniture-izpalace-depot.js` | 54 **big** | the Ancient core and its levels (BLUEPRINT: the  (78); the mech depot (BLUEPRINT: Mech Bays I-IV, the F (347); the court's relics (563); the kitchens, the laundry and the baths (611); the brig, the guard and the music (754) |
 | `krator-master-furniture-izpalace.js` | 60 **big** | the blueprint's NEW pieces (settlements/iziz/pal (98); extras, for extravagance (the owner: "decorate e (541) |
 | `krator-master-furniture-jobs.js` | 20 | Harvested from settlements/locus (10 pieces): th (47); The builders' yard (2026-10): timber for the Eas (187) |
-| `krator-master-furniture-lizardmen.js` | 6 |  |
-| `krator-master-furniture-nomad.js` | 112 **big** | Seating (268); Tables and vessels (401); Storage (590); Light (800); Textiles (873); Fire (982); Riders' gear (1073); Work (1268); Tanning: the hidemaker's tent (job tanning) (1361); The smithy (1452) |
+| `krator-master-furniture-lizardmen.js` | 8 |  |
+| `krator-master-furniture-nomad.js` | 113 **big** | Seating (268); Tables and vessels (401); Storage (590); Light (800); Textiles (873); Fire (982); Riders' gear (1073); Work (1268); Tanning: the hidemaker's tent (job tanning) (1361); The smithy (1452) |
 | `krator-master-furniture-painted.js` | 50 **big** | Harvested from settlements/highlands (tribal bra (79) |
 | `krator-master-furniture-post-apoc.js` | 9 | Harvested from kits/post-apoc (3 pieces) (75) |
 | `krator-master-furniture-pylon.js` | 5 |  |
@@ -46,11 +46,11 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-republican.js` | 75 **big** | Harvested from settlements/highlands (Republican (88) |
 | `krator-master-furniture-rustic.js` | 37 **big** | Harvested from settlements/highlands (rustic bra (83) |
 | `krator-master-furniture-scrap.js` | 98 **big** | Harvested from kits/post-apoc (61 pieces) (111) |
-| `krator-master-furniture-screamer.js` | 6 |  |
+| `krator-master-furniture-screamer.js` | 7 |  |
 | `krator-master-furniture-scyvoi.js` | 104 **big** | Seating (240); Tables and storage (350); Light (479); Vessels (556); Fire (618); Riders' gear (767); Felts and rugs (962); Work (1002); The shaman's things (1089); Tanning: the hidemaker's tent (2026-10-06) (1227) |
 | `krator-master-furniture-talia.js` | 24 |  |
 | `krator-master-furniture-voth.js` | 18 |  |
-| `krator-master-furniture-xanadu.js` | 29 |  |
+| `krator-master-furniture-xanadu.js` | 31 **big** |  |
 | `krator-master-furniture-yuni-common.js` | 1 |  |
 | `krator-master-furniture-zeijani.js` | 49 **big** | home (112); brewing and fungi (183); the alchemist (258); light (330); crafts (369); the sacred (549); the dead (675); the scouts and the cistern (735) |
 | `krator-master-furniture.js` | 281 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1406); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1901); Yuni (64 pieces) (2646); Ancients kit extras (32 pieces) (4469) |
