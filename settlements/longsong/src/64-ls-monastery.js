@@ -84,7 +84,7 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
   else{const dp=Math.min(10,B.d*.3),R=[[B.x,B.z-B.d/2+dp/2,B.w,dp],[B.x,B.z+B.d/2-dp/2,B.w,dp],[B.x-B.w/2+dp/2,B.z,dp,B.d-2*dp],[B.x+B.w/2-dp/2,B.z,dp,B.d-2*dp]];
    R.forEach(([x,z,w,d],k)=>lsBlock(x,z,w,d,yg,y,B.floors,B.storey,{rich,roundels:rich,win:{spacing:4.6}}));
    // the court: paved, a gallery of lacquered posts round it, a chorten or a well in the middle
-   ARCH.box('paving',B.x,y-.4,B.z,B.w-2*dp,.45,B.d-2*dp,{col:LSP.granite,sides:''});
+   ARCH.box('paving',B.x,y-.4,B.z,B.w-2*dp,.52,B.d-2*dp,{col:LSP.granite,sides:''});
    const ix=B.w/2-dp-1.6,iz=B.d/2-dp-1.6;for(let a=-ix;a<=ix+.01;a+=3.2)for(const s of [-1,1])ARCH.cyl('wood',B.x+a,y,B.z+s*iz,.18,.16,B.storey,{seg:6,col:LSP.wood});
    ARCH.box('wood',B.x,y+B.storey,B.z,2*ix+1,.3,2*iz+1,{col:LSP.woodDark,top:false});
    lsChorten(B.x,y,B.z,.35);
@@ -99,7 +99,7 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
   [[-8,-6,2.6],[5,3,1.8],[9,-7,1.2]].forEach(([dx,dz,h])=>ARCH.cyl('ashlar',cx+dx,y,cz+dz,1.1*h/2,.6*h/2,h,{seg:7,col:LSP.granite2}));
   REGISTER({name:R.name,cls:'feature',kind:'garden',key:'longsong_raked',x:cx,z:cz,y:y-1,r:24,h:6,tags:{culture:'order',types:['park']}});}
  // the reservoir on the rock's rear terrace
- {const R=LS.RESERVOIR;ARCH.box('ashlar',R.x,R.y-.5,R.z,R.w+2,6.6,R.d+2,{col:LSP.granite,top:false});ARCH.box('paving',R.x,R.y+5.2,R.z,R.w,.1,R.d,{col:0x5a7a82,sides:''});
+ {const R=LS.RESERVOIR,rb=Math.min(minG(R.x,R.z,R.w+2,R.d+2),R.y)-1;ARCH.box('ashlar',R.x,rb,R.z,R.w+2,R.y+6.1-rb,R.d+2,{col:LSP.granite,top:false,batter:.5});ARCH.box('paving',R.x,R.y+5.2,R.z,R.w,.1,R.d,{col:0x5a7a82,sides:''});
   REGISTER({name:R.name,cls:'infrastructure',kind:'reservoir',key:'longsong_reservoir',x:R.x,z:R.z,y:R.y-1,r:26,h:9,tags:{culture:'order',types:['infrastructure']}});}})();
 
 // ---------------------------------------------------------------- the Great Stair and the White Palace's base (L1)
@@ -110,18 +110,25 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
  ARCH.box('wall',0,B0.y0+1,(B0.z0+B0.z1)/2,B0.x1-B0.x0,B0.y1-B0.y0-1,B0.z1-B0.z0,{col:LSP.white,batter:3.2,top:false,sides:'new'});
  lsWindows(B0.x1-3.2,B0.z0,B0.x0+3.2,B0.z0,0,-1,B0.y0+1,8,(B0.y1-B0.y0-1)/8,{batter:3.2,from:5,spacing:6,w:1.1});
  ARCH.box('twig',0,B0.y1-1.6,(B0.z0+B0.z1)/2-.2,B0.x1-B0.x0-6,1.4,B0.z1-B0.z0-5.8,{col:LSP.maroon,top:false,sides:'n'});
- // the three ramps, each a solid wedge with a parapet on its open side
- LS.STAIR.forEach((S,i)=>{const yb=-2;ARCH.wedge('wall',S.x0,S.x1,zA,zB,S.y0,S.y1,yb,LSP.white);
+ // the three ramps, each a solid wedge in its own band with a parapet on its open (north) side; a landing at each turn
+ // spanning the two bands, its parapet round the outer end; the top landing reaching back to the base's top
+ const LW=LS.LANDING;
+ LS.STAIR.forEach((S,i)=>{const yb=-2,za=S.z0,zb=S.z1,dir=Math.sign(S.x1-S.x0);ARCH.wedge('wall',S.x0,S.x1,za,zb,S.y0,S.y1,yb,LSP.white);
   const n=Math.ceil(Math.abs(S.x1-S.x0)/4);for(let k=0;k<n;k++){const t0=k/n,t1=(k+1)/n,x0=lerp(S.x0,S.x1,t0),x1=lerp(S.x0,S.x1,t1),y0=lerp(S.y0,S.y1,t0),y1=lerp(S.y0,S.y1,t1);
-   ARCH.quad('paving',[x0,y0+.02,zB],[x0,y0+.02,zA],[x1,y1+.02,zA],[x1,y1+.02,zB],LSP.granite);
-   ARCH.box('wall',(x0+x1)/2,(y0+y1)/2,zA-.3,Math.abs(x1-x0)+.05,1.1,.6,{col:LSP.white,topCol:LSP.red2});}
-  // its landing
-  ARCH.box('ashlar',S.x1,S.y1-1,(zA+zB)/2,7,1,zB-zA+.6,{col:LSP.granite2});});
+   if(dir<0)ARCH.quad('paving',[x0,y0+.02,zb],[x0,y0+.02,za],[x1,y1+.02,za],[x1,y1+.02,zb],LSP.granite);else ARCH.quad('paving',[x0,y0+.02,za],[x0,y0+.02,zb],[x1,y1+.02,zb],[x1,y1+.02,za],LSP.granite);
+   ARCH.box('wall',(x0+x1)/2,(y0+y1)/2,za-.3,Math.abs(x1-x0)+.05,1.1,.6,{col:LSP.white,topCol:LSP.red2});}
+  // the landing at its top: level, from this ramp's band to the next one's (or to the base's top), past the turn
+  const nx=LS.STAIR[i+1],zTop=nx?nx.z1:B0.z0+3.6,lx=S.x1+dir*(LW/2-.5),lz0=za,lz1=zTop;
+  ARCH.box('wall',lx,yb,(lz0+lz1)/2,LW,S.y1-yb,lz1-lz0,{col:LSP.white,topCol:LSP.granite});
+  ARCH.box('paving',lx,S.y1-.02,(lz0+lz1)/2,LW,.06,lz1-lz0,{col:LSP.granite2,sides:''});
+  ARCH.box('wall',lx,S.y1,lz0-.3,LW+.6,1.1,.6,{col:LSP.white,topCol:LSP.red2});                         // the parapet along the front
+  ARCH.box('wall',S.x1+dir*(LW-.5+.3),S.y1,(lz0+lz1)/2,.6,1.1,lz1-lz0+.6,{col:LSP.white,topCol:LSP.red2});});   // and round its outer end
  REGISTER({name:'The Great Stair (three ramps up the White Palace\'s base)',cls:'infrastructure',kind:'stair',key:'longsong_great_stair',x:0,z:(zA+zB)/2,y:-2,r:68,h:44,tags:{culture:'order',types:['infrastructure','religious']}});
  // the forecourt at the avenue's head: paved, the two chortens (plan), the Great Chorten on the avenue
  ARCH.box('paving',0,-1.95,-6,150,.5,12,{col:LSP.granite,sides:'n'});
  // the great thangka, hung on the base's face for the festival of the register: the wheel and its eight seals
- lsDecal(SIGNS.THANGKA,22,T-14,B0.z0-1.4,16,24,0,-1,{label:'The great thangka of the register (the wheel and its eight seals), hung for the festival'});})();
+ // (2026-10-19: east of the ramps, between the second turn's landing and the base's corner; it had hung behind the ramps)
+ lsDecal(SIGNS.THANGKA,81,T-17,B0.z0+2.3,13,19.5,0,-1,{label:'The great thangka of the register (the wheel and its eight seals), hung for the festival'});})();
 
 // ---------------------------------------------------------------- the White Palace round the Debate Court (L2-L4)
 (function(){const B=LS.building('white-palace'),T=LS.ROCK.top,C=B.court,st=B.storey,z0=21,z1=95;
@@ -137,7 +144,7 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
  ARCH.box('wood',0,yL+3.2,z0+2,64,.35,3,{col:LSP.woodDark});
  // the Debate Court: paved, open to the sky; its curved arcaded galleries round the court on two levels (the
  // chapterhouses' curved gallery wings), the Assembly Hall's porch at its head
- ARCH.box('paving',0,T-.3,(C.z0+C.z1)/2,C.x1-C.x0,.32,C.z1-C.z0,{col:LSP.granite,sides:''});
+ ARCH.box('paving',0,T-.3,(C.z0+C.z1)/2,C.x1-C.x0,.4,C.z1-C.z0,{col:LSP.granite,sides:''});
  // the gallery's line: a rectangle 3.6 m in from the court's walls with corners of radius 9 (a stadium), from the court's
  // south-west round by the north to its south-east: the court's head (south) stays open to the Assembly Hall's porch
  const gin=3.6,rc=9,X0=C.x0+gin,X1=C.x1-gin,Z0=C.z0+gin,Z1=C.z1-gin,line=[];
@@ -224,7 +231,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
  LS.BUILDINGS.filter(B=>B.base==='rock'&&(B.kind==='house'||B.kind==='court')).forEach(B=>{const y=LS.baseY(B);
   if(B.kind==='court'){const dp=9,R=[[B.x,B.z-B.d/2+dp/2,B.w,dp],[B.x,B.z+B.d/2-dp/2,B.w,dp],[B.x-B.w/2+dp/2,B.z,dp,B.d-2*dp],[B.x+B.w/2-dp/2,B.z,dp,B.d-2*dp]];
    R.forEach(([x,z,w,d])=>lsBlock(x,z,w,d,T-.5,y,B.floors,B.storey,{win:{spacing:5}}));
-   ARCH.box('paving',B.x,y-.3,B.z,B.w-2*dp,.3,B.d-2*dp,{col:0x8aa070,sides:''});   // the garden open to the sky
+   ARCH.box('paving',B.x,y-.3,B.z,B.w-2*dp,.45,B.d-2*dp,{col:0x8aa070,sides:''});   // the garden open to the sky (15 cm over the rock)
    lsChorten(B.x,y,B.z,.3);}
   else lsBlock(B.x,B.z,B.w,B.d,T-.5,y,B.floors,B.storey,{rich:B.id==='rear-shrine',roundels:B.id==='rear-shrine'});
   if(B.contain){// the containment's marks: a seal strip on each side of the one door, the register's plaque, the blue sigil
@@ -233,13 +240,19 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
    lsDecal(B.contain==='LS-P'?SIGNS.sign('The Closed Ward · '+B.contain,'One door, one warden. Those held here are guests of the Order and are treated so.'):SIGNS.sign('The specimen hall · '+B.contain,'What is kept here is catalogued in the register. Touch nothing unlisted.'),
     B.x+4.4,y+2.6,zf-.12,3.4,1.7,0,-1,{label:B.name+' (its plaque)'});
    lsDecal(SIGNS.SIGIL,B.x,y+B.floors*B.storey-1.6,zf-.12,2.2,2.2,0,-1,{label:'The Order\'s sigil: under containment'});}});
- // the hermits' cells on the east cliff, their ladders down to the kora
- LS.HERMITS.forEach((H,i)=>{const g=gY(H.x-4,H.z),y=Math.max(H.y,g);ARCH.box('wall',H.x,y,H.z,3.4,2.6,3,{col:LSP.white,topCol:LSP.roof,batter:.15});
-  ARCH.box('twig',H.x,y+2.4,H.z,3.3,.4,2.9,{col:LSP.maroon,top:false});
-  lsWindows(H.x+1.71,H.z+1.5,H.x+1.71,H.z-1.5,1,0,y,1,2.6,{spacing:3,w:.8});
-  const gl=gY(H.x+14,H.z);for(let k=0;k<2;k++)ARCH.box('wood',H.x+2.4+k*.01,gl,H.z-.5+k,.12,y-gl+.2,.12,{col:LSP.woodDark});
-  for(let r=gl+.4;r<y;r+=.4)ARCH.box('wood',H.x+2.4,r,H.z,.1,.06,1.1,{col:LSP.wood});
-  REGISTER({name:'A hermit\'s cell on the east cliff (reached by its ladder)',cls:'building',kind:'cell',key:'longsong_hermit_'+i,x:H.x,z:H.z,y:y-1,r:3,h:5,tags:{culture:'order',types:['religious','dwelling-single']}});});})();
+ // the hermits' cells on the east cliff, their ladders down to the kora. Each stands where the cliff's face is at its
+ // floor's height (found along its row, not assumed), its back built 1.2 m into the rock on a stone ledge corbelled out
+ // of the face, its ladder from its door straight down to the ground under the ladder (2026-10-19: they floated)
+ LS.HERMITS.forEach((H,i)=>{let xf=H.x;for(let x=H.x-40;x<=H.x+40;x+=.25){if(gY(x,H.z)<H.y){xf=x;break;}}
+  const y=H.y,xc=xf+.5,lb=Math.min(gY(xf+1.8,H.z),y-2.5);
+  ARCH.box('ashlar',xf+.6,lb,H.z,3.4,y-lb,3.6,{col:LSP.granite2,batter:.6,top:false});            // the ledge
+  ARCH.box('wall',xc,y,H.z,3.4,2.6,3,{col:LSP.white,topCol:LSP.roof,batter:.15});
+  ARCH.box('twig',xc,y+2.4,H.z,3.3,.4,2.9,{col:LSP.maroon,top:false});
+  lsWindows(xc+1.71,H.z+1.5,xc+1.71,H.z-1.5,1,0,y,1,2.6,{spacing:3,w:.8});
+  const xl=xc+2.4,gl=gY(xl,H.z);for(let k=0;k<2;k++)ARCH.box('wood',xl,gl-.2,H.z-.5+k,.12,y-gl+.4,.12,{col:LSP.woodDark});
+  for(let r=gl+.4;r<y;r+=.4)ARCH.box('wood',xl,r,H.z,.1,.06,1.1,{col:LSP.wood});
+  H.drawn={x:xc,y};
+  REGISTER({name:'A hermit\'s cell on the east cliff (reached by its ladder)',cls:'building',kind:'cell',key:'longsong_hermit_'+i,x:xc,z:H.z,y:y-1,r:3.5,h:5,tags:{culture:'order',types:['religious','dwelling-single']}});});})();
 
 // ---------------------------------------------------------------- the Order's own in the ward: the Printing House (a small Archive), the Hall of Forms
 // THE ARCHIVE (ROOMS.md section 1): an elliptical drum of brick fin-piers with dark glazing between, a broad wavy pale
@@ -302,7 +315,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
 // the chapter house's circular forecourt: the curved wall of carved glyph panels on its two arcs (the avenue's axis
 // open), the mosaic course on its coping; the two blue reflecting pools lined in the mosaic; the tea rotunda; the stele
 (function(){const C=LS.COURT,y=LS.wardY(C.z),R=C.r;
- ARCH.cyl('paving',C.x,y-.4,C.z,R+1.2,R+1.2,.42,{seg:48,col:LSP.granite});
+ ARCH.cyl('paving',C.x,y-.4,C.z,R+1.2,R+1.2,.5,{seg:48,col:LSP.granite});
  for(const [a0,a1] of C.arcs){const N=Math.ceil((a1-a0)*R/1.4);for(let i=0;i<N;i++){const t0=a0+(a1-a0)*i/N,t1=a0+(a1-a0)*(i+1)/N;
    const P=(t,r,yy)=>[C.x+Math.cos(t)*r,yy,C.z+Math.sin(t)*r],L=(t1-t0)*R/4.4,u0=(t0-a0)*R/4.4;
    // the inner face (to the court) and the outer, both carved; the coping; the mosaic over the inner face
@@ -314,7 +327,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
   for(const t of [a0,a1])ARCH.box('ashlar',C.x+Math.cos(t)*(R+.4),y,C.z+Math.sin(t)*(R+.4),1.3,C.wallH+.6,1.3,{col:LSP.granite,ry:-t});}
  // the reflecting pools: a mosaic kerb, the water (dark blue, glossy)
  C.pools.forEach(Pq=>{ARCH.bandRing('mosaic',Pq.x,y-.05,Pq.z,Pq.r+.3,.5,{seg:32});ARCH.cyl('paving',Pq.x,y+.45,Pq.z,Pq.r+.3,Pq.r+.3,.06,{seg:32,col:LSP.granite});
-  ARCH.cyl('slate',Pq.x,y+.18,Pq.z,Pq.r,Pq.r,.01,{seg:32,col:0x1f3f78});});
+  ARCH.cyl('slate',Pq.x,y+.24,Pq.z,Pq.r,Pq.r,.01,{seg:32,col:0x1f3f78});});
  // the tea rotunda: eight brick posts, a terracotta cone, a brass ball
  {const Rr=C.rotunda,yr=y;ARCH.cyl('ashlar',Rr.x,yr-.3,Rr.z,Rr.r+.6,Rr.r+.6,.6,{seg:24,col:LSP.granite});
   for(let i=0;i<8;i++){const a=i/8*Math.PI*2;ARCH.cyl('brick',Rr.x+Math.cos(a)*Rr.r,yr+.3,Rr.z+Math.sin(a)*Rr.r,.28,.24,3.2,{seg:8,col:0xf2ece6});}
@@ -348,7 +361,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
 // ---------------------------------------------------------------- the Garden of Held Water (behind the masters' cells)
 // the fountain's jets stand in the air, every drop where it was; the held cherry's petals stop as they fall
 const HELD=(function(){const G=LS.HELD,T=LS.ROCK.top,F=G.fountain,cx=(G.x0+G.x1)/2,cz=(G.z0+G.z1)/2;
- ARCH.box('ashlar',cx,T-.4,cz,G.x1-G.x0,.45,G.z1-G.z0,{col:LSP.granite2,topCol:0x6e8a52});
+ const gb=Math.min(minG(cx,cz,G.x1-G.x0,G.z1-G.z0),T)-1;ARCH.box('ashlar',cx,gb,cz,G.x1-G.x0,T+.15-gb,G.z1-G.z0,{col:LSP.granite2,topCol:0x6e8a52,batter:.3});
  ARCH.cyl('ashlar',F.x,T,F.z,F.r+.4,F.r+.4,.7,{seg:24,col:LSP.granite});ARCH.cyl('slate',F.x,T+.55,F.z,F.r,F.r,.01,{seg:24,col:0x2e4a6a});
  ARCH.cyl('ashlar',F.x,T,F.z,.5,.4,1.6,{seg:10,col:LSP.granite2});
  // the held jets: drops along eight arcs, each one still (instanced spheres: they do not move, ever)
@@ -380,11 +393,15 @@ REGISTER({name:'The Order\'s electric lamps along the avenue (the salvaged gener
 // passed). The galleries are a lacquered rail and a little roof over the row.
 const WHEELS=(function(){const pos=[],rot=[];
  LS.WHEELS.forEach(W=>{const L=Math.hypot(W.x1-W.x0,W.z1-W.z0),n=Math.floor(L/.75),tx=(W.x1-W.x0)/L,tz=(W.z1-W.z0)/L;
-  for(let i=0;i<n;i++){const x=W.x0+tx*(i+.5)*L/n,z=W.z0+tz*(i+.5)*L/n;pos.push([x,gY(x,z),z]);}
+  // each wheel on its axle between a bottom and a top rail (2026-10-19: they hung in the air)
+  for(let i=0;i<n;i++){const x=W.x0+tx*(i+.5)*L/n,z=W.z0+tz*(i+.5)*L/n,y=gY(x,z);pos.push([x,y,z]);ARCH.cyl('bronze',x,y+.5,z,.03,.03,1.1,{seg:4,col:0x6a5232,top:false});}
   // the gallery: a rail and a roof
   for(let s=0;s<L;s+=6){const s1=Math.min(L,s+6),x=W.x0+tx*(s+s1)/2,z=W.z0+tz*(s+s1)/2,y=gY(x,z),ry=Math.atan2(-tz,tx);
    ARCH.box('wood',x,y+2.6,z,s1-s+.05,.3,1.4,{ry,col:LSP.woodDark});ARCH.box('slate',x,y+2.9,z,s1-s+.05,.25,1.8,{ry,col:0x5a2a22});
-   ARCH.cyl('wood',x+tx*(s1-s)/2,y,z+tz*(s1-s)/2,.1,.1,2.6,{seg:5,col:LSP.wood});}});
+   ARCH.cyl('wood',x+tx*(s1-s)/2,y,z+tz*(s1-s)/2,.1,.1,2.6,{seg:5,col:LSP.wood});
+   ARCH.box('ashlar',x,y-.2,z,s1-s+.05,.62,.7,{ry,col:LSP.granite});            // the stone sill
+   ARCH.box('wood',x,y+.42,z,s1-s+.05,.1,.55,{ry,col:LSP.woodDark});            // the bottom rail
+   ARCH.box('wood',x,y+1.5,z,s1-s+.05,.1,.55,{ry,col:LSP.woodDark});}});        // the top rail
  const g=new THREE.CylinderGeometry(.24,.24,.8,14,1);g.translate(0,1.05,0);
  // the painted band: a gold ring top and bottom, the mantra in the Order's blue on red
  const c=document.createElement('canvas');c.width=256;c.height=64;const x=c.getContext('2d');x.fillStyle='#8e2f24';x.fillRect(0,0,256,64);

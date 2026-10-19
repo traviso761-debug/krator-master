@@ -41,12 +41,17 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
    pos.push(x,hAt(x,z),z);tc.set(tone).convertSRGBToLinear().multiplyScalar(.9+n*.5);col.push(tc.r,tc.g,tc.b);uv.push(x/4,z/4);row.push(wet?-1:rowOf(x,z));}
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=o+j*(nx+1)+i,b=a+nx+1;idx.push(a,b,a+1,b,b+1,a+1);}};
  const lift=.14;
+ // a bed is level: it stands on a terrace's tread (the physic terraces' five) or nowhere. Its ground over five points; a
+ // bed whose ground falls more than 0.4 m across it is on a riser and is not made (2026-10-19: they draped over the risers)
+ const bedLevel=s=>{const H=[[s.x0,s.z0],[s.x1,s.z0],[s.x0,s.z1],[s.x1,s.z1],[(s.x0+s.x1)/2,(s.z0+s.z1)/2]].map(p=>terrainH(p[0],p[1]));
+  const lo=Math.min(...H),hi=Math.max(...H);return hi-lo>.4?null:{lo,hi,y:hi+.3};};
  F.GROUPS.forEach(o=>{if(!(o.kind==='strips'||o.kind==='terraces'||o.kind==='pools'||o.kind==='beds'))return;
   F.strips(o).forEach(s=>{const tone=TONE[s.crop]==null?0x7a6a4a:TONE[s.crop],st=Math.min(3,(s.x1-s.x0)/2,(s.z1-s.z0)/2);
    if(o.kind==='pools'){const w=Math.min(terrainH(s.x0,s.z0),terrainH(s.x1,s.z0),terrainH(s.x0,s.z1),terrainH(s.x1,s.z1))+.12;
     sheet(s.x0,s.x1,s.z0,s.z1,st,()=>w,0x4a6a62,()=>0,true);return;}
-   const raise=o.kind==='beds'?.3:lift,ns=o.run!=='ew'&&o.kind!=='terraces';
-   sheet(s.x0,s.x1,s.z0,s.z1,st,(x,z)=>terrainH(x,z)+raise,tone,ns?(x=>x):((x,z)=>z),false);});});
+   const ns=o.run!=='ew'&&o.kind!=='terraces';
+   if(o.kind==='beds'){const L=bedLevel(s);if(L)sheet(s.x0,s.x1,s.z0,s.z1,st,()=>L.y,tone,x=>x,false);return;}
+   sheet(s.x0,s.x1,s.z0,s.z1,st,(x,z)=>terrainH(x,z)+lift,tone,ns?(x=>x):((x,z)=>z),false);});});
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('aRow',new THREE.Float32BufferAttribute(row,1));g.setIndex(idx);g.computeVertexNormals();
  const TL=(typeof KMAT!=='undefined'&&KMAT.mode==='lib')?KMAT.packed('longsong','tilled'):null,TT=TL?KMAT.textures(TL,{aniso:8}):null;
@@ -73,10 +78,11 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  const cross=(x,y,z,w,h,a,cell,k,n)=>{n=n==null?2:n;nCards++;for(let q=0;q<n;q++){const b=a+q*Math.PI/n,ux=Math.cos(b)*w/2,uz=Math.sin(b)*w/2;
   quadC([[x-ux,y,z-uz],[x+ux,y,z+uz],[x+ux,y+h,z+uz],[x-ux,y+h,z-uz]],[-Math.sin(b),0,Math.cos(b)],cell,k);}};
  F.GROUPS.forEach((o,gi)=>{if(!(o.kind==='strips'||o.kind==='terraces'||o.kind==='pools'||o.kind==='beds'))return;const step=STEP(o);
-  F.strips(o).forEach(s=>{if(s.crop==='fallow')return;const cell=cellOf(s.crop);if(cell<0)return;const h=HT[s.crop]==null?.8:HT[s.crop],base=o.kind==='beds'?.3:o.kind==='pools'?.12:lift;
+  F.strips(o).forEach(s=>{if(s.crop==='fallow')return;const cell=cellOf(s.crop);if(cell<0)return;const h=HT[s.crop]==null?.8:HT[s.crop],base=o.kind==='pools'?.12:lift;
+   const BL=o.kind==='beds'?bedLevel(s):null;if(o.kind==='beds'&&!BL)return;
    const nx=Math.max(1,Math.floor((s.x1-s.x0)/step)),nz=Math.max(1,Math.floor((s.z1-s.z0)/(o.id==='tea-garden'?o.rows:step)));
    for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=s.x0+(i+.5+(u(gi,s.i,k,1)-.5)*.6)*(s.x1-s.x0)/nx,z=s.z0+(j+.5+(u(gi,s.i,k,2)-.5)*.6)*(s.z1-s.z0)/nz;
-    const y=o.kind==='pools'?Math.min(terrainH(s.x0,s.z0),terrainH(s.x1,s.z1))+base:terrainH(x,z)+base;
+    const y=BL?BL.y:o.kind==='pools'?Math.min(terrainH(s.x0,s.z0),terrainH(s.x1,s.z1))+base:terrainH(x,z)+base;
     cross(x,y-.05,z,h*1.2*(.85+.3*u(gi,s.i,k,3)),h*(.85+.3*u(gi,s.i,k,4)),u(gi,s.i,k,5)*Math.PI,cell,.82+.18*u(gi,s.i,k,6));}});});
  // the trees: orchards and groves (bamboo is drawn as canes below)
  const TREES=[];
@@ -113,8 +119,8 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
    ARCH.box('drystone',x,g0-.3,z,L/n+.08,h+.3+(terrainH(x,z)-g0),w,{ry,col:0xffffff,batter:.12,topCol:0xb8b4a8});}};
  F.GROUPS.forEach(o=>F.walls(o).forEach(sg=>dry(sg[0],sg[1],sg[2],sg[3],o.kind==='terraces'?1.1:o.kind==='pools'?.45:.95,o.kind==='terraces'?.9:.7)));
  // the kitchen gardens', the dye garden's and the physic terraces' beds: stone kerbs
- F.GROUPS.filter(o=>o.kind==='beds'&&o.inside).forEach(o=>F.strips(o).forEach(s=>{const cx=(s.x0+s.x1)/2,cz=(s.z0+s.z1)/2,y=terrainH(cx,cz);
-  ARCH.box('drystone',cx,y-.15,cz,s.x1-s.x0+.2,.48,s.z1-s.z0+.2,{col:0xd0ccc0,top:false});}));
+ F.GROUPS.filter(o=>o.kind==='beds'&&o.inside).forEach(o=>F.strips(o).forEach(s=>{const L=bedLevel(s);if(!L)return;const cx=(s.x0+s.x1)/2,cz=(s.z0+s.z1)/2;
+  ARCH.box('drystone',cx,L.lo-.2,cz,s.x1-s.x0+.2,L.y+.03-(L.lo-.2),s.z1-s.z0+.2,{col:0xd0ccc0,top:false});}));
 
  // ---------------------------------------------------------------- the water: the leat and the tail race; the mills' wheels
  const channel=(L,w)=>{for(let i=1;i<L.length;i++){const a=L[i-1],b=L[i],len=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(len/4),ry=Math.atan2(-(b[1]-a[1]),b[0]-a[0]),nx=-(b[1]-a[1])/len,nz=(b[0]-a[0])/len;

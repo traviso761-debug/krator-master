@@ -45,7 +45,7 @@ g({id:'kitchen-e',kind:'beds',inside:true,name:'The kitchen gardens',x0:114,x1:1
  crops:['greens','helix-bean','frostroot','murnong','umbel-seed','greens','monks-sage','fiddlehead']});
 g({id:'dye-garden',kind:'beds',inside:true,name:'The dye garden (the robes\' saffron, the Order\'s blue)',x0:-66,x1:-24,z0:-104,z1:-66,cell:[8,3],
  crops:['saffron','woad','broom','woad','saffron']});
-g({id:'physic',kind:'beds',inside:true,name:'The physic terraces (the monks\' medicinal plants)',x0:-200,x1:-150,z0:24,z1:186,cell:[7,3.4],
+g({id:'physic',kind:'beds',inside:true,name:'The physic terraces (the monks\' medicinal plants)',x0:-194,x1:-150,z0:24,z1:186,cell:[2.6,6],
  crops:['snow-lotus','valley-ginseng','monks-sage','sky-poppy','monks-sage','camphor']});
 g({id:'orchard-upper',kind:'orchard',inside:true,name:'The upper orchards',x0:-38,x1:148,z0:183,z1:199,sp:6.5,crops:['persimmon','apricot','mulberry']});
 F.GROUPS=G;

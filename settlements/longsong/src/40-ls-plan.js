@@ -81,8 +81,12 @@ P.CHORTEN_GARDEN={x0:240,x1:330,z0:-140,z1:-62,rows:4,per:6,s:.32,burner:{x:250,
 P.HELD={x0:-94,x1:-46,z0:176,z1:198,fountain:{x:-70,z:187,r:3.2},cherry:{x:-56,z:192},name:'The Garden of Held Water'};
 // the Great Stair (the Potala's): three ramps zigzag across the White Palace's base, each a solid masonry wedge with
 // white parapets, from the forecourt at the avenue's head to the base's top, where the Lower Gate stands
-P.STAIR=[{x0:-6,x1:-66,y0:-1.5,y1:12},{x0:-66,x1:64,y0:12,y1:26},{x0:64,x1:-34,y0:26,y1:40}];
-P.STAIR_Z=[1.5,7.5];   // the ramps' band in front of the base's face (z)
+// Each ramp has its own band, stepping back toward the wall as it climbs (the Potala's: the lower runs stand in front of
+// the upper, whose masonry rises behind them; 2026-10-19: they had shared one band and cut through one another); a
+// landing joins each turn across the two bands, and the top landing reaches back to the base's top (z 8)
+P.STAIR=[{x0:-6,x1:-66,y0:-1.5,y1:12,z0:-9.5,z1:-3.5},{x0:-66,x1:64,y0:12,y1:26,z0:-3.5,z1:2.5},{x0:64,x1:-34,y0:26,y1:40,z0:2.5,z1:8.5}];
+P.STAIR_Z=[-9.5,8.5];   // the stair's whole band in front of the base's face (z)
+P.LANDING=8;           // a landing's length along the face (m)
 P.KORA={cx:0,cz:95,a:235,b:150,w:5,name:'The outer kora (the pilgrims\' circuit of the rock)'};
 // outside the wall: the track from the west (the valley road to the pass and Xanadu) along the stream's south bank to
 // the bridge before the gate; the lotus pond between the wall and the stream
@@ -157,7 +161,7 @@ P.topY=o=>P.baseY(o)+o.floors*o.storey;
 
 // ---------------------------------------------------------------- the sacred furniture of the grounds
 // chortens (white stupas, gilt finials): at the gate, at the stair's foot, at the kora's corners
-P.CHORTENS=[{x:-26,z:-185,s:1},{x:26,z:-185,s:1},{x:-20,z:-12,s:1.4},{x:20,z:-12,s:1.4},{x:-215,z:-160,s:.9},{x:215,z:-160,s:.9},{x:-232,z:240,s:1.1},{x:150,z:255,s:1.1},{x:0,z:-150,s:2.2,name:'The Great Chorten (the Order\'s founders\' first relics)'}];
+P.CHORTENS=[{x:-26,z:-185,s:1},{x:26,z:-185,s:1},{x:-20,z:-17,s:1.4},{x:20,z:-17,s:1.4},{x:-215,z:-160,s:.9},{x:215,z:-160,s:.9},{x:-232,z:240,s:1.1},{x:150,z:255,s:1.1},{x:0,z:-150,s:2.2,name:'The Great Chorten (the Order\'s founders\' first relics)'}];
 // prayer-wheel galleries: the drum rows along the avenue and round the rock's foot (the kora's inner edge)
 P.WHEELS=[{x0:-13,z0:-150,x1:-13,z1:-20},{x0:13,z0:-150,x1:13,z1:-20},{x0:-195,z0:212,x1:195,z1:212},{x0:-222,z0:-25,x1:-222,z1:180},{x0:222,z0:-25,x1:222,z1:180}];
 // prayer flags: lines from the roofs and the Watch to the ground, and across the stream
@@ -322,7 +326,7 @@ P.plantable=function(x,z){
  if(P.inGrounds(x,z,8)){const Z=P.zoneAt(x,z);if(Z.zone==='garden')return 1;
   if((Z.zone==='rock'||Z.zone==='top')&&!(P.nearPad&&P.nearPad(x,z,10))){
    // keep the Great Stair's face, the hermits' ladders and the kora's inner edge clear
-   if(z<26&&Math.abs(x)<80)return 0;for(const H of P.HERMITS)if(Math.abs(x-H.x)<12&&Math.abs(z-H.z)<6)return 0;return Z.zone==='top'?.35:1;}
+   if(z<26&&Math.abs(x)<80)return 0;for(const H of P.HERMITS){const hx=H.drawn?H.drawn.x:H.x;if(Math.abs(x-hx)<12&&Math.abs(z-H.z)<6)return 0;}return Z.zone==='top'?.35:1;}
   return 0;}
  if(P.trackD(x,z)<9)return 0;
  if(Math.hypot(x-P.POND.x,z-P.POND.z)<P.POND.r+4)return 0;

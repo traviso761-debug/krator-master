@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 10 prompts (Longsong's nine in section 2, and the one owed before), and 3 optional: section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). Longsong's exterior five were delivered 2026-10-19 ("Delivered 2026-10-19, Longsong's exterior"). A short list at the end names gaps that have no prompt yet.
+**Count: 1 prompt (the one owed before Longsong), and 3 optional: section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). Longsong's fourteen were delivered 2026-10-19 ("Delivered 2026-10-19, Longsong's exterior", "... Longsong's depths and interiors"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -169,163 +169,9 @@ Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no
 
 ### Longsong (`settlements/longsong`, 2026-10-19)
 
-The monastery's own sets, from `settlements/longsong/ROOMS.md` (the owner: the exterior consistent with the Order's chapterhouses,
-neo-African, no Sahelian earth). Reused from the library, no prompt needed: `brick.red` and `brick.oxblood` (the drums' fired brick),
-`roof.scale.terracotta` and `roof.clay_roof_tiles` (the cones), `wood.siding` (the wavy roofs' soffit slats), `plaster.white_stucco_02`,
-`stone.cut`, `rock.granite.tor`, `roof.scale.gilt`, `band.xanadu.twig`, `wood.lacquer.crimson`, `paving.flagstone`, `stone.chiselled`,
-`metal.bronze.cast`, `cloth.rug.wool`. The register's plaques, boards and the dial stay painted in code: a generated image does
-not keep the Order's English legible. Wire each into `settlements/longsong/materials.json` when it lands.
-
-#### Exterior (`settlements/longsong/ROOMS.md` section 1: before the exterior revision)
-
-`patterns/order/valance`: the pleated valances over the rich windows (today a flat saffron strip).
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The pattern repeats horizontally. Material: a pleated cloth valance hung over a Tibetan window (a shambu): three tiers of narrow vertical pleats in saffron (#e0a030), white (#f0ead8) and the Order's blue (#2e5a9c), each tier with a scalloped hem, the cotton slightly sun-faded. Seen flat, front-on. Full colour.
-```
-
-#### The forbidden depths (`src/66-ls-vault.js`)
-
-`patterns/order/glyph-band`: the Procrastinator's burning glyph bands (today a canvas of invented glyphs); used as a mask: white glows, black does not.
-
-```
-Seamless tileable band, 4096x512 (8:1). Front-on, flat, no lighting, no perspective, no text in any real alphabet, no border, no watermark. The pattern repeats horizontally. Image: two rows of an invented seal script on pure black: each glyph a ring enclosing a few strokes, arcs, dots and short bars, about 40 glyphs in all, none repeated; pure white strokes of even weight, sharp edges, a thin white rule between the rows. Only black and white, nothing else.
-```
-
-`patterns/order/thangka-register`: the great thangka hung on the White Palace's face, and its copy in the Assembly Hall (today a canvas).
-
-```
-A single painting, not tiling, 2048x3072 (2:3 portrait). Front-on, flat, even lighting, no frame shadow, no text, no watermark. Image: a Tibetan thangka in mineral pigments on cotton, framed in a brocade border of the Order's blue (#1f3f78) and maroon (#6a2018). At its centre a towering prayer wheel of bronze and gold banded with burning glyphs, turned by three robed keepers; round it, in a ring of eight circular niches, eight sealed things, each held still behind a lattice: a many-armed shadow in mid-lunge, a cracked bell in mid-swing with its sound drawn as a ripple, a brazier of black flame, a moth with an eye on every scale, a drop of black water over a basin, a small sun stopped in a flare, a door ajar with something pressing, and one empty niche left blank. Above, the Order's sigil (a wheel of eight spokes round an hourglass) between clouds; below, monks in maroon and saffron seated in rows. Rich, calm, devotional; the colours of a Tibetan thangka.
-```
-
-`patterns/order/mandala-floor`: the Procrastinator hall's floor (today rings of bronze and blue).
-
-```
-A single image, not tiling, 2048x2048, seen straight down. Flat, even lighting, no perspective, no text, no watermark. Image: a circular floor inlay of polished stone, brass and blue lapis: concentric rings of interlocking glyph roundels, eight spokes running out to eight small sealed circles at the rim, a plain circle at the centre where an axle stands, worn smooth along a ring where feet have walked round it. Dark stone ground (#3a3632), brass (#b08a48), lapis (#2e4a7a).
-```
-
-`metal.lead.sheet`: the closed vault's and the quiet cells' doors (today a flat grey).
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: old sheet lead nailed to a door: soft dull blue-grey (#6a6c74) with a white oxide bloom in patches, dents, scratches, rows of round nail heads along the seams, darker where hands have touched it. Matte. Keep colours natural but slightly muted and even, so the texture can be tinted. One tile covers 1 metre.
-```
-
-#### The interiors (`ROOMS.md` section 3: before the interiors)
-
-`patterns/order/column-paint`: the painted columns and brackets of the Hall of Pillars, the Assembly Hall, the Red Palace.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The pattern repeats vertically. Material: the painted shaft and capital of a Tibetan timber column, laid flat: the shaft red lacquer (#8e2f24) wrapped by a painted band of lotus petals and jewels, the capital's bracket (the bow-shaped zhu) painted in blue (#2e5a9c), green (#3a7a5a), gold (#d8b048) and white with cloud scrolls and the Order's eight-spoked wheel, fine black outlines. Full colour.
-```
-
-`patterns/order/mural-cataclysm`: the inner kora's murals round the Hall of the Founders.
-
-```
-Seamless tileable frieze, 4096x1024 (4:1). Front-on, flat, even lighting, no text, no border, no watermark. The pattern repeats horizontally. Image: a Tibetan mural in mineral pigments on a lime wall, telling the Order's chronicle as a continuous scene: towers of an ancient city falling, a volcano erupting into a second cone, scholars carrying books and devices up a mountain road, a monastery burning in the highlands, a long caravan of monks crossing passes, and a valley of pale gardens where a white palace rises on a rock; small figures in maroon and saffron throughout, cloud bands dividing the scenes, deep blue sky (#1f3f78), green hills, gold highlights. Calm, dense, devotional.
-```
-
-`patterns/order/rug`: the meditation cushions' rugs and the cells' floors.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hand-knotted Tibetan wool rug (a khaden): a field of deep maroon (#6a2018) with a lattice of small saffron (#e0a030) and blue (#2e5a9c) medallions, a border of interlocking T-shapes, a slight pile and fibre texture, softly worn. Full colour.
-```
-
-`patterns/order/book-spines`: the Archive's stacks, the library and the Sealed Library.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a shelf of old bound books and Tibetan pecha (loose-leaf books wrapped in cloth between wooden boards) seen spine-on, filling the frame in rows: cloth wrappers in saffron, maroon, the Order's blue and faded green, worn leather spines, small brass tags, a few tied with cord; plain lines in place of titles. Full colour.
-```
-
-### Ys (`settlements/ys`)
-
-*All delivered 2026-10-14 (see "Delivered 2026-10-14" below).*
-
-From `settlements/ys/MATERIAL-PROMPTS.md`, "The ocean's rust" (Travis, 2026-10-05: "the ancient buildings here are quite
-rusty"); every other set in that file was delivered. Not tinted. Since 2026-10-06 Ys' ruined concrete takes
-`concrete.ancient` (`KMAT.bindMat`), so the drowned Ancients are textured, just not rusty; `MAT.rust` stays procedural.
-
-### The Fauna kit (`kits/fauna`)
-
-*All delivered 2026-10-14 (see "Delivered 2026-10-14" below).*
-
-From `PLAN.md`, "The Fauna kit": "Still needed for fauna". Triplanar detail maps under each animal's vertex colours, so
-both are near-colourless.
-
-### The Pylon kit (`kits/pylon`)
-
-The kit draws in the Iziz Vernacular's sets and the library's (`kits/pylon/materials.json`); these three it has no set for
-(`kits/pylon/PLAN.md` section 8). Each lands in the library or `patterns/pylon/`; add its family to
-`kits/pylon/materials.json` and repack.
-
-#### `tile.hex.glazed`
-- Kind: tileable material, near-colourless (tinted amber by the kit); 1 m tile. The honeycomb-tiled walls and street of
-  the owner's `refs/1b13731cac223929fb36a94b49c88603.jpg`: rich interiors, the scrap exchange's floors, hex paving.
-- Reuse: any glazed hexagonal tile floor or wall (a bath house, a Yuni kitchen, a Hykkousoi hall), tinted to taste.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Glazed ceramic hexagonal tiles about 10 cm across, set flat-side to flat-side in a honeycomb, about twenty tiles across the image: each tile slightly domed with a soft glaze sheen, faint variation of glaze thickness from tile to tile, a few hairline crazing cracks, one or two chipped corners, narrow dark grout lines between them. Pale grey glaze, dark grey grout. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
-#### `patterns/pylon/hex-grille`
-- Kind: cut-out sheet on magenta, near-colourless; 1 m across. The Ancients' grille in the portholes and lattice
-  screens (`refs/ancient office.jpg`, `ancient 2.jpg`, `honeycomb arch.jpg`), drawn now as two crossed iron bars.
-- Reuse: any metal hex lattice: vents, gates, window grilles, a dome's skin, catwalk floors.
-
-```
-A flat, front-on decorative panel, square, 2048x2048, on a solid flat magenta background (#ff00ff). Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text, no border. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. The panel: a metal honeycomb grille, a lattice of flat bars about a finger wide forming regular hexagonal openings about a hand across, eight openings across the image, the bars bevelled at their edges with a little wear on the corners and faint machining lines along them; every opening shows only the solid magenta background through it. Dark neutral grey metal. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the metal.
-```
-
-#### `plaster.painted.worn`
-- Kind: tileable material, full colour; 2 m tile. The salvage tier's and the folk houses' orange paint, flaking to the grey
-  render and concrete beneath (the kit tints white stucco orange today, so wear does not show).
-- Reuse: any painted render worn back to its base: Talia's poor orange quarter (`talia (6).jpg`), weathered Iziz shops.
-- **Check:** `plaster.white_stucco_02` tinted orange may be enough at a distance; judge both on the folk houses first.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: An old rendered wall painted bright orange (#e07a2a), the paint faded and chalky and flaking away in irregular patches to show smooth grey cement render (#8e8b86) beneath, about a third of the surface bare; the paint edges lifted and cracked, a few hairline cracks in the render, faint vertical streaks of grime below the patches. Full colour (do not mute).
-```
-
-### The Talia kit (`kits/talia`)
-
-The kit draws in the library's marble, gold and clay tile (`kits/talia/materials.json`); these four it has no set for
-(`kits/talia/PLAN.md` section 7). Each lands in the library or `patterns/talia/`; add its family to
-`kits/talia/materials.json` and repack.
-
-#### `mosaic.honeycomb`
-- Kind: tileable material, full colour; 1 m tile. The orange-gold mosaic over the trumpet vaults, coffers and column
-  flares of Talia's halls (`refs/taliaint3.jpg`) and the cloister ceilings (`talia-cloisters.jpg`).
-- Reuse: any gilded or orange mosaic vault or apse, Iziz's rich interiors.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A mosaic of small irregular polygonal glass tesserae about 2 cm across, packed like a honeycomb or a cracked glaze, each one a slightly different shade of warm orange and gold (#e89a30, #d8822a, #f0b048, #c87420), a few gold-leaf tesserae with a faint metallic sheen, thin pale cream grout lines (#efe6d2) between them, a slight unevenness of the surface. Full colour (do not mute).
-```
-
-#### `patterns/talia/meander`
-- Kind: pattern sheet, full colour, 2048x512, repeating along its length; a band 0.5 m tall. The Greek-key border of
-  Talia's floors and friezes (`refs/talia-cloisters.jpg`).
-- Reuse: any classical floor border or frieze band (Hykkousoi halls, Republic civic floors), tinted or as is.
-
-```
-A flat, front-on decorative panel, 2048x512, a long horizontal band. Orthographic, flat even shadowless lighting, no perspective, no objects, no text, no border, no watermark. The band must repeat along its length: the left edge continues into the right edge. The panel: a Greek key (meander) border in white marble inlay (#f4f1ea) on a ground of orange marble (#ee7a1c), the key a continuous squared spiral line about a tenth of the band's height wide, running the whole length, with a thin white fillet along the top and bottom edges of the band; the marble shows faint veining, the inlay joints are fine and tight. Full colour (do not mute).
-```
-
-#### `patterns/talia/jali`
-- Kind: cut-out sheet on magenta, near-colourless; 1 m across. The pierced stone screens of the jharokha bays and the
-  palace's upper pavilions (`refs/talia3.jpg`).
-- Reuse: any pierced stone or plaster screen: Mughal-style windows, a harem lattice, Erewhon's citadel.
-
-```
-A flat, front-on decorative panel, square, 2048x2048, on a solid flat magenta background (#ff00ff). Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text, no border. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. The panel: a pierced stone screen (jali) of interlocking eight-pointed stars and small hexagons, the stone bars about two fingers wide with softly rounded carved edges and fine chisel texture, the openings about a third of the area, five star motifs across the image; every opening shows only the solid magenta background through it. Pale warm grey stone. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the stone.
-```
-
-#### `patterns/talia/rose-window`
-- Kind: one cut-out panel on magenta, full colour, 2048x2048, not tiled; the window is about 9 m across. The star rose of
-  Talia's temple front (`refs/talia-temple.jpg`), drawn now as a plain glazed disc.
-- Reuse: any rose or oculus window (a chapel, a guild hall's gable).
-
-```
-A flat, front-on decorative panel, square, 2048x2048, on a solid flat magenta background (#ff00ff). Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text. The panel: one circular stained-glass rose window filling the square, edge touching the edge, seen straight on and lit from behind: a sixteen-pointed star pattern of lozenge panes radiating from a white glass centre, the panes slate blue (#4a6a8a), pale gold (#d8c07a), cream (#efe6d2) and a few deep cobalt (#2f5fb8), set in dark lead cames (#2a2624) with a thin stone ring round the outside; everything outside the circle is solid magenta. Full colour (do not mute). Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the window.
-```
+All fourteen delivered on 2026-10-19 ("Delivered 2026-10-19, Longsong's exterior" and "Delivered 2026-10-19, Longsong's depths
+and interiors"). The register's plaques, boards and the dial stay painted in code: a generated image does not keep the Order's
+English legible.
 
 ## 3. Probably needed: check first
 
@@ -720,6 +566,17 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat
 ```
 
 ---
+
+## Delivered 2026-10-19, Longsong's depths and interiors (the owner's `longsong.zip` and one pasted WebP, 1254 px, 2172 x 724, 1024 x 1536)
+
+Nine images, processed by `tools/textures/process.py` (batch `longsong-2026-10-19b.json`): `patterns/order/glyph-band` (the 3:1
+banner cropped by hand to its two rows and to nineteen glyph pitches, so it wraps; kept whole), `patterns/order/thangka-register`,
+`patterns/order/mandala-floor`, `patterns/order/mural-cataclysm` (3:1, not the 4:1 asked: a single frieze, kept whole) and
+`patterns/order/rug` (a whole rug with its border: a picture, not a tile) as pictures; `patterns/order/valance` and
+`patterns/order/column-paint` wrapped across; `patterns/order/book-spines` and `metal.lead.sheet` tiled. **Wired** in
+`settlements/longsong/materials.json`: `thangka` (the great thangka on the White Palace's face), `glyphband` (the Procrastinator's
+burning bands), `mandala` (its hall's floor), `lead` (the sealed doors), `valance` (the rich windows). **Not wired yet**: the column
+paint, the mural, the rug and the book spines wait for the interiors (`settlements/longsong/PLAN.md` P4).
 
 ## Delivered 2026-10-19, Longsong's exterior (pasted into the chat as WebP, 1254 px and 1774 x 887)
 

@@ -21,10 +21,9 @@
       the model.
 - [ ] **No core/atmos**: the stream and the pond are this page's own water shader (as the Oidong kit's pools), not the
       shared wave field; the stream is a ribbon on the model's river line.
-- [ ] **Textures**: the exterior's five are delivered and wired (2026-10-19: the glyph relief, the mosaic band, the red
-      limewash, the prayer wheel's repousse, the mani stones); still painted on canvases here: the Procrastinator's
-      glyph bands, the thangka, the plaques and the valances (their prompts are owed: `core/materials/PROMPTS-NEEDED.md`,
-      "Longsong"). The Order's blue tile is gone: the cones are terracotta now (ROOMS.md section 1).
+- [ ] **Textures**: all fourteen of the build's are delivered (2026-10-19). The exterior's, the thangka, the glyph band, the
+      mandala floor, the lead and the valances are wired; the column paint, the Cataclysm mural, the rug and the book spines
+      are in the library and wait for the interiors. The plaques, boards and the dial stay painted on canvases (legible text).
 - [ ] **The herds are placeholder yaks** (boxes, instanced, standing still): the fauna kit has no yak or dzo yet. They
       are records (`LS.FARMS.HERDS`, core/tags `life`), ready for a kit's animal.
 - [ ] **The fields drape the model's land**: the south terraces and the tea garden are contour bands with stone risers,

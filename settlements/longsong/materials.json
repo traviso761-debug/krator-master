@@ -1,6 +1,6 @@
 {
  "build": "longsong",
- "note": "Longsong's adapter onto the material library (core/materials/PLAN.md). The monastery is stone and lime, never earth (the owner, 2026-10-19: no Sahelian mud or rammed earth): wall is the whitewashed lime render over dressed stone (the White Palace, the ward), coloured per mesh (white, the Red Palace's ochre-red, the Order's blue band); ashlar the dressed granite of the plinths, stairs, the gate's pylons and the parabolic arch; rock the hill (Longsong's rock, granite); slate the glazed scale tiles of the prayer-wheel galleries' roofs and the water (the cones are terracotta since 2026-10-19); gilt the gilded roofs, finials and the Procrastinator's rims; twig the maroon penbey band under the parapets (twig, as Xanadu's: not earth); wood the lacquered columns, brackets and window frames; paving the courts and the avenue; vault the chiselled stone of the forbidden depths. keep 0 sets are grey detail under the mesh colour. Run python3 tools/textures/pack.py settlements/longsong after any change, then python3 build.py. The Order's own (2026-10-19, ROOMS.md section 1): brick the chapterhouses' fired brick of the drums, the arcades, the archive and the school; terra the terracotta tile of the cones; glyph the carved glyph-panel walls and the gate's pylons; mosaic the blue-and-white string course (a band: mapped by its height); redwash the Red Palace's red-ochre limewash; wheel the prayer wheels' repousse band; mani the mani wall's carved stones; drystone the field walls; slat the archive roof's soffit; tilled the fields' ground; the c_ families are the crop and orchard cards of the farms (85-ls-farms.js).",
+ "note": "Longsong's adapter onto the material library (core/materials/PLAN.md). The monastery is stone and lime, never earth (the owner, 2026-10-19: no Sahelian mud or rammed earth): wall is the whitewashed lime render over dressed stone (the White Palace, the ward), coloured per mesh (white, the Red Palace's ochre-red, the Order's blue band); ashlar the dressed granite of the plinths, stairs, the gate's pylons and the parabolic arch; rock the hill (Longsong's rock, granite); slate the glazed scale tiles of the prayer-wheel galleries' roofs and the water (the cones are terracotta since 2026-10-19); gilt the gilded roofs, finials and the Procrastinator's rims; twig the maroon penbey band under the parapets (twig, as Xanadu's: not earth); wood the lacquered columns, brackets and window frames; paving the courts and the avenue; vault the chiselled stone of the forbidden depths. keep 0 sets are grey detail under the mesh colour. Run python3 tools/textures/pack.py settlements/longsong after any change, then python3 build.py. The Order's own (2026-10-19, ROOMS.md section 1): brick the chapterhouses' fired brick of the drums, the arcades, the archive and the school; terra the terracotta tile of the cones; glyph the carved glyph-panel walls and the gate's pylons; mosaic the blue-and-white string course (a band: mapped by its height); redwash the Red Palace's red-ochre limewash; wheel the prayer wheels' repousse band; mani the mani wall's carved stones; drystone the field walls; slat the archive roof's soffit; tilled the fields' ground; the c_ families are the crop and orchard cards of the farms (85-ls-farms.js). 2026-10-19 (the second delivery): thangka the great thangka of the register and glyphband the Procrastinator's burning bands (pictures: colour maps only), mandala the Procrastinator hall's inlaid floor and lead the sealed doors (the Vault's own shader reads the colour map only), valance the rich windows' pleated tiers. Delivered but not wired until the interiors: patterns/order/column-paint, mural-cataclysm, rug, book-spines.",
  "size": 512,
  "families": {
   "wall": {
@@ -516,6 +516,86 @@
    "roughLift": 0,
    "specular": 0.2,
    "size": 256
+  },
+  "thangka": {
+   "lib": "patterns/order/thangka-register",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.1,
+   "size": [
+    512,
+    768
+   ],
+   "mapOnly": true
+  },
+  "glyphband": {
+   "lib": "patterns/order/glyph-band",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0,
+   "size": [
+    2048,
+    278
+   ],
+   "mapOnly": true
+  },
+  "mandala": {
+   "lib": "patterns/order/mandala-floor",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.5,
+   "size": 1024,
+   "mapOnly": true
+  },
+  "lead": {
+   "lib": "metal.lead.sheet",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.2,
+   "specular": 0.4,
+   "size": 512,
+   "mapOnly": true
+  },
+  "valance": {
+   "lib": "patterns/order/valance",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.2,
+   "size": 512
   }
  }
 }

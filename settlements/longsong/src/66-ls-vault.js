@@ -23,7 +23,7 @@ function vaultMat(fam,o){o=o||{};const L=(typeof KMAT!=='undefined'&&KMAT.mode==
    'vec3 col=base*L+S+base*uEmis*uPulse;gl_FragColor=vec4(pow(col,vec3(1.0/2.2)),uAlpha);}'});}
 // the vault's materials go into the kit's accumulators under keys of their own (62: 'v-*' meshes carry userData.vault)
 Object.assign(ARCH.MATS,{'v-stone':()=>vaultMat('vault'),'v-paving':()=>vaultMat('paving'),'v-wood':()=>vaultMat('wood',{spec:.2}),'v-bronze':()=>vaultMat(null,{spec:.9}),
- 'v-gilt':()=>vaultMat('gilt',{spec:1.2}),'v-dark':()=>vaultMat(null),'v-cloth':()=>vaultMat(null,{side:THREE.DoubleSide}),'v-lead':()=>vaultMat(null,{spec:.4}),
+ 'v-gilt':()=>vaultMat('gilt',{spec:1.2}),'v-dark':()=>vaultMat(null),'v-cloth':()=>vaultMat(null,{side:THREE.DoubleSide}),'v-lead':()=>vaultMat('lead',{spec:.4}),'v-mandala':()=>vaultMat('mandala',{spec:.5}),
  'v-shade':()=>vaultMat(null,{spec:.1})});
 const vlight=(x,y,z,hex,k,r)=>{const c=new THREE.Color(hex).convertSRGBToLinear();VLIGHTS.push({p:[x,y,z],c:[c.r*k,c.g*k,c.b*k],r});};
 // a room: its floor, walls and ceiling facing in; beams under the ceiling; o.cls the finish
@@ -120,7 +120,11 @@ const PROC=(function(){const P=LS.PROCRASTINATOR,y0=P.y0,R=P.hallR,H=P.hallH,cx=
   vSeal(cx-2.6,y0+2.2,zd+.2,0,1,'The seal on the hall\'s door (renewed at every bell)');vSeal(cx+2.6,y0+2.2,zd+.2,0,1,'The seal on the hall\'s door (renewed at every bell)');}
  ARCH.ring('v-stone',cx,y0+H*.55,cz,R-3.6,3.4,.5,{seg:64,col:0x6a665e,inside:false});
  // the floor's mandala: concentric rings of inlaid bronze and the Order's blue, eight spokes to the seals
- for(let r=6;r<=R-2;r+=3)ARCH.ring('v-bronze',cx,y0+.01,cz,r,.18,.03,{seg:64,col:r%2?0x8a6a3a:0x2e4a7a});
+ // (the library's inlaid mandala when packed, delivered 2026-10-19: one picture over the floor, its rim at the seals)
+ if(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed('longsong','mandala')){const Rm=R-1.5,NM=64;
+  for(let i=0;i<NM;i++){const a=i/NM*Math.PI*2,b=(i+1)/NM*Math.PI*2,P=t=>[cx+Math.cos(t)*Rm,y0+.02,cz+Math.sin(t)*Rm],U=t=>[.5+Math.cos(t)*.5,.5-Math.sin(t)*.5];
+   ARCH.quadUV('v-mandala',[cx,y0+.02,cz],P(b),P(a),[cx,y0+.02,cz],[.5,.5],U(b),U(a),[.5,.5],0xd8d0c4);}}
+ else for(let r=6;r<=R-2;r+=3)ARCH.ring('v-bronze',cx,y0+.01,cz,r,.18,.03,{seg:64,col:r%2?0x8a6a3a:0x2e4a7a});
  for(let k=0;k<N;k++){const a=nicheA(k);ARCH.box('v-bronze',cx+Math.cos(a)*(R/2+4),y0+.01,cz+Math.sin(a)*(R/2+4),R-12,.03,.3,{col:0x8a6a3a,ry:-a});}
  // ---------------------------------------------------------------- the wheel: a bronze drum on its axle, gilt rims, four glyph bands
  const wheel=new THREE.Group();wheel.position.set(cx,0,cz);scene.add(wheel);

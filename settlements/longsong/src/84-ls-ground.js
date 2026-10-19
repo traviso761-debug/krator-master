@@ -42,10 +42,13 @@ const GROUND=(function(){
  DET.wrapS=DET.wrapT=THREE.RepeatWrapping;
  mat.onBeforeCompile=sh=>{sh.uniforms.uDet={value:DET};sh.uniforms.uRock={value:RT};sh.uniforms.uPave={value:PT};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec2 aRP;varying vec2 vRP;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRP=aRP;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDet;'+(RT?'uniform sampler2D uRock;':'')+(PT?'uniform sampler2D uPave;':'')+'varying vec3 vGWP;varying vec2 vRP;')
-   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDet,vGWP.xz*0.165).rgb*texture2D(uDet,vGWP.xz*0.021+0.37).rgb*1.12;'+
-    (RT?'vec3 rt=pow(texture2D(uRock,vGWP.xz*0.14+vGWP.y*0.05).rgb,vec3(2.2))*1.6;dt=mix(dt,rt,vRP.x*0.85);':'')+
+   .replace('#include <common>\nvarying vec3 vGWP;','#include <common>\nvarying vec3 vGN;varying vec3 vGWP;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRP=aRP;vGN=objectNormal;');
+  // triplanar on the steeps (2026-10-19: projected from above only, the granite and the detail streaked down every face)
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDet;'+(RT?'uniform sampler2D uRock;':'')+(PT?'uniform sampler2D uPave;':'')+'varying vec3 vGWP;varying vec2 vRP;varying vec3 vGN;'+
+   'vec3 tp(sampler2D t,float s){vec3 w=pow(abs(normalize(vGN)),vec3(4.0));w/=(w.x+w.y+w.z);return texture2D(t,vGWP.zy*s).rgb*w.x+texture2D(t,vGWP.xz*s).rgb*w.y+texture2D(t,vGWP.xy*s).rgb*w.z;}')
+   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=tp(uDet,0.165)*tp(uDet,0.021)*1.12;'+
+    (RT?'vec3 rt=pow(tp(uRock,0.14),vec3(2.2))*1.6;dt=mix(dt,rt,vRP.x*0.85);':'')+
     (PT?'vec3 pt=pow(texture2D(uPave,vGWP.xz/3.0).rgb,vec3(2.2))*1.45;dt=mix(dt,pt,vRP.y*0.8);':'')+
     'diffuseColor.rgb*=dt;}');};
  mat.customProgramCacheKey=()=>'ls-ground'+(RT?'r':'')+(PT?'p':'');

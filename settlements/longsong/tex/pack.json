@@ -575,6 +575,93 @@
     "sourceMean": 0.3354
    }
   },
+  "glyphband": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "glyphband.albedo.webp"
+   },
+   "lib": "patterns/order/glyph-band",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": [
+    2048,
+    278
+   ],
+   "source": {
+    "albedo": "528b2ad6e39d2624fccb62f49337549de5481774",
+    "normal": "d482fa00d01060b4a7f1964583d2d567f36823bf",
+    "roughness": "20905eabfae491920cc3285dcc92d0a1b0d4ad91"
+   },
+   "specular": 0,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.1961721398056187,
+    "sourceMean": 0.1962
+   }
+  },
+  "lead": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "lead.albedo.webp"
+   },
+   "lib": "metal.lead.sheet",
+   "metal": 0.5,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0d0e574f9539b97d0b981a731670d38204912f3e",
+    "normal": "f73e8c9c342e46c5b961b9099ede6e55bab8854c",
+    "roughness": "ad28913f6dc1f175b8306367466c267722643c1e"
+   },
+   "specular": 0.4,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.4343
+   }
+  },
+  "mandala": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "mandala.albedo.webp"
+   },
+   "lib": "patterns/order/mandala-floor",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 1024,
+   "source": {
+    "albedo": "9ee303ed6f53b986ab5036a9a27353b1753962f2",
+    "normal": "195c054941bf69fd5a222cc1af3bb6740294cb3b",
+    "roughness": "3a957a1509dace454624fd38f83fb3fc567b6b23"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.31554414666643327,
+    "sourceMean": 0.3155
+   }
+  },
   "mani": {
    "breakup": null,
    "card": false,
@@ -830,6 +917,37 @@
     "sourceMean": 0.3865
    }
   },
+  "thangka": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "thangka.albedo.webp"
+   },
+   "lib": "patterns/order/thangka-register",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": [
+    512,
+    768
+   ],
+   "source": {
+    "albedo": "4d5a3c11d6b86842dda02b51b04b57dda52b6427",
+    "normal": "7f46ce22994012d8a9add585cd5173ad7d951b2d",
+    "roughness": "608e07910696ce6a797d45999e426f47e8b0ec54"
+   },
+   "specular": 0.1,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.38988647059820836,
+    "sourceMean": 0.3899
+   }
+  },
   "tilled": {
    "breakup": null,
    "card": false,
@@ -888,6 +1006,36 @@
     "keep": 0.6,
     "mean": 0.5,
     "sourceMean": 0.5769
+   }
+  },
+  "valance": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "valance.albedo.webp",
+    "normalMap": "valance.normal.webp",
+    "roughnessMap": "valance.rough.webp"
+   },
+   "lib": "patterns/order/valance",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "708bde1cd16950170699145c0bca16b06dc73734",
+    "normal": "0c9cdd1dc311a15741d5db690d7aeb9c77051705",
+    "roughness": "c0bc249f38c28f5bfce771a4d4bb15d7480c05d6"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5368703254370596,
+    "sourceMean": 0.5369
    }
   },
   "vault": {

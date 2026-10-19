@@ -22,7 +22,7 @@
 //   ARCH.col(hex)                    a linear colour, cached
 const ARCH=(function(){
  const SCALE={wall:3,ashlar:2,slate:1.6,gilt:1.2,twig:1,wood:1.5,paving:3,dark:2,cloth:1,glow:1,bronze:1.5,
-  brick:2,terra:1.6,glyph:4.4,redwash:3,mani:2,drystone:2.5,slat:1.2};
+  brick:2,terra:1.6,glyph:4.4,redwash:3,mani:2,drystone:2.5,slat:1.2,'v-lead':1.1};
  const A={};const acc=k=>A[k]||(A[k]={p:[],n:[],u:[],c:[]});
  const CC={};const col=h=>{if(typeof h!=='number')return h;return CC[h]||(CC[h]=new THREE.Color(h).convertSRGBToLinear());};
  const WHITE=col(0xf2efe6);
@@ -65,7 +65,9 @@ const ARCH=(function(){
  function cyl(k,x,y,z,r0,r1,h,o){o=o||{};const C=col(o.col==null?WHITE:o.col),n=(o.seg==null?16:o.seg),a0=(o.a0==null?0:o.a0),a1=o.a1==null?Math.PI*2:o.a1,full=o.a1==null;
   const P=(a,r,yy)=>[x+Math.cos(a)*r,yy,z+Math.sin(a)*r];
   for(let i=0;i<n;i++){const a=a0+(a1-a0)*i/n,b=a0+(a1-a0)*(i+1)/n;
-   if(o.inside)quad(k,P(b,r0,y),P(a,r0,y),P(a,r1,y+h),P(b,r1,y+h),C);else quad(k,P(a,r0,y),P(b,r0,y),P(b,r1,y+h),P(a,r1,y+h),C);
+   // wound counter-clockwise seen from outside (inside: from within). Until 2026-10-19 they were the other way round,
+   // which read right from the side (the far wall's inner face) and let the eye through a cone seen from above
+   if(o.inside)quad(k,P(a,r0,y),P(b,r0,y),P(b,r1,y+h),P(a,r1,y+h),C);else quad(k,P(b,r0,y),P(a,r0,y),P(a,r1,y+h),P(b,r1,y+h),C);
    if(o.top!==false&&r1>0&&full)tri(k,[x,y+h,z],P(b,r1,y+h),P(a,r1,y+h),C);
    if(o.bottom&&full)tri(k,[x,y,z],P(a,r0,y),P(b,r0,y),C);}}
  function ring(k,x,y,z,R,t,h,o){o=o||{};cyl(k,x,y,z,R+t,R+t,h,Object.assign({top:false},o));
@@ -73,7 +75,7 @@ const ARCH=(function(){
  function dome(k,x,y,z,r,o){o=o||{};const C=col(o.col==null?WHITE:o.col),n=(o.seg==null?18:o.seg),m=(o.rows==null?7:o.rows),kh=(o.k==null?1:o.k);
   for(let j=0;j<m;j++){const p0=j/m*Math.PI/2,p1=(j+1)/m*Math.PI/2;
    for(let i=0;i<n;i++){const a=i/n*Math.PI*2,b=(i+1)/n*Math.PI*2;const P=(aa,pp)=>[x+Math.cos(aa)*Math.cos(pp)*r,y+Math.sin(pp)*r*kh,z+Math.sin(aa)*Math.cos(pp)*r];
-    quad(k,P(a,p0),P(b,p0),P(b,p1),P(a,p1),C);}}}
+    quad(k,P(b,p0),P(a,p0),P(a,p1),P(b,p1),C);}}}
  function wedge(k,x0,x1,z0,z1,ya0,ya1,yb,C){C=col(C==null?WHITE:C);
   const a=[x0,ya0,z0],b=[x1,ya1,z0],c=[x1,ya1,z1],d=[x0,ya0,z1],a2=[x0,yb,z0],b2=[x1,yb,z0],c2=[x1,yb,z1],d2=[x0,yb,z1];
   const fl=x1<x0;   // keep the faces outward when the ramp runs west
@@ -87,7 +89,7 @@ const ARCH=(function(){
   if(L){m.onBeforeCompile=sh=>KMAT.libHooks(sh,L);m.customProgramCacheKey=()=>'ls-'+fam+KMAT.libKey(L);}
   return m;}
  const MATS={brick:()=>stdMat('brick',{rough:.85}),terra:()=>stdMat('terra',{rough:.6}),glyph:()=>stdMat('glyph',{rough:.85,ns:1}),
-  mosaic:()=>stdMat('mosaic',{rough:.35}),redwash:()=>stdMat('redwash'),mani:()=>stdMat('mani',{ns:1}),drystone:()=>stdMat('drystone',{ns:1}),slat:()=>stdMat('slat',{rough:.7}),
+  mosaic:()=>stdMat('mosaic',{rough:.35}),valance:()=>stdMat('valance',{side:THREE.DoubleSide}),redwash:()=>stdMat('redwash'),mani:()=>stdMat('mani',{ns:1}),drystone:()=>stdMat('drystone',{ns:1}),slat:()=>stdMat('slat',{rough:.7}),
   wall:()=>stdMat('wall'),ashlar:()=>stdMat('ashlar'),slate:()=>stdMat('slate',{rough:.55}),gilt:()=>stdMat('gilt',{rough:.32,metal:.55}),
   twig:()=>stdMat('twig'),wood:()=>stdMat('wood',{rough:.6}),paving:()=>stdMat('paving'),bronze:()=>new THREE.MeshStandardMaterial({vertexColors:true,roughness:.42,metalness:.6}),
   dark:()=>new THREE.MeshLambertMaterial({vertexColors:true}),cloth:()=>new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide}),
@@ -100,10 +102,11 @@ const ARCH=(function(){
    const m=new THREE.Mesh(g,(MATS[k]||MATS.wall)());m.name='longsong:'+k;m.userData.host=true;m.userData.cls='building';
    if(k.slice(0,2)==='v-')m.userData.vault=true;else m.userData.arch=true;
    m.userData.inspectLabel='Longsong ('+({wall:'lime render over stone',ashlar:'dressed granite',slate:'glazed tile',gilt:'gilding',twig:'the twig band',wood:'lacquered timber',paving:'flagstones',brick:'fired brick (the chapterhouses\' brick)',terra:'terracotta tile',
-    glyph:'the carved glyph panels of the Order',mosaic:'the Order\'s blue-and-white mosaic',redwash:'red-ochre limewash',mani:'carved mani stones',drystone:'dry stone',slat:'timber slats',dark:'paint',cloth:'cloth',glow:'lamplight',bronze:'bronze','v-stone':'the Vault\'s chiselled stone','v-bronze':'bronze','v-gilt':'gilding','v-wood':'lacquered timber','v-dark':'paint','v-cloth':'cloth','v-lead':'lead'}[k]||k)+')';
+    glyph:'the carved glyph panels of the Order',valance:'a pleated valance',mosaic:'the Order\'s blue-and-white mosaic',redwash:'red-ochre limewash',mani:'carved mani stones',drystone:'dry stone',slat:'timber slats',dark:'paint',cloth:'cloth',glow:'lamplight',bronze:'bronze','v-stone':'the Vault\'s chiselled stone','v-bronze':'bronze','v-gilt':'gilding','v-wood':'lacquered timber','v-dark':'paint','v-cloth':'cloth','v-lead':'lead'}[k]||k)+')';
    scene.add(m);done.push(m);S.p=S.n=S.u=S.c=null;}
   return done;}
- return {box,cyl,ring,dome,quad,quadUV,bandRing,bandBox,bandLine,wedge,tri,finish,col,rot,A,MATS,stdMat};})();
+ const has=f=>!!pk(f);
+ return {has,box,cyl,ring,dome,quad,quadUV,bandRing,bandBox,bandLine,wedge,tri,finish,col,rot,A,MATS,stdMat};})();
 
 // ---------------------------------------------------------------- the pieces (the vocabulary), in the kit's local terms
 // THE PALETTE (sRGB): the White Palace's lime white, the Red Palace's ochre red, the twig band's maroon, the Order's blue
@@ -135,7 +138,10 @@ function lsWindows(ax,az,bx,bz,nx,nz,y0,floors,storey,o){o=o||{};const L=Math.hy
     ARCH.quad('wood',P(-ex,yy,dd),P(ex,yy,dd),P(ex,yy+.14,dd),P(-ex,yy+.14,dd),q?LSP.woodDark:LSP.wood);
     ARCH.quad('wood',P(-ex,yy+.14,0),P(ex,yy+.14,0),P(ex,yy+.14,dd),P(-ex,yy+.14,dd),LSP.wood);}
    // the valance (the Order's saffron over white)
-   if(o.valance){ARCH.quad('cloth',P(-ww*.66,yb+wh+.12,.24),P(ww*.66,yb+wh+.12,.24),P(ww*.66,yb+wh-.24,.3),P(-ww*.66,yb+wh-.24,.3),(i+f)%2?LSP.saffron:0xf0ead8);}}}}
+   // (the library's pleated tiers, delivered 2026-10-19: saffron, white and the Order's blue; one sheet down its height)
+   if(o.valance){if(ARCH.has('valance')){const r=Math.max(1,Math.round(ww*1.32/.9));
+     ARCH.quadUV('valance',P(-ww*.66,yb+wh+.12,.24),P(ww*.66,yb+wh+.12,.24),P(ww*.66,yb+wh-.5,.3),P(-ww*.66,yb+wh-.5,.3),[0,1],[r,1],[r,0],[0,0],0xffffff);}
+    else ARCH.quad('cloth',P(-ww*.66,yb+wh+.12,.24),P(ww*.66,yb+wh+.12,.24),P(ww*.66,yb+wh-.24,.3),P(-ww*.66,yb+wh-.24,.3),(i+f)%2?LSP.saffron:0xf0ead8);}}}}
 // a battered Tibetan block: the granite plinth from the ground up, the whitewashed (or red) body, the twig band under
 // the parapet, the parapet and its coping, the flat roof, the windows on every face
 function lsBlock(x,z,w,d,yG,y0,floors,storey,o){o=o||{};const H=floors*storey,bt=o.batter==null?H*.06:o.batter;

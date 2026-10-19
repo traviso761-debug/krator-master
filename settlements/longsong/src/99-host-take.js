@@ -80,7 +80,9 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 window._registered=REG.length;
 _hostH=KHOST.take({build:'longsong',title:'Longsong',
  hint:'Longsong: the History Monks\' monastery in the Oidong Valley, on its rock over the Longsong stream (the scale model\'s land at 1:1)',
- scene,camera,renderer,ground:terrainH,clampCam,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
+ // depth: the near plane follows the camera's height (core/host 90-host-camera C.depth): with a fixed 0.5 m against 90 km
+ // the courts' slabs and the ground fought a kilometre off (2026-10-19)
+ scene,camera,renderer,ground:terrainH,clampCam,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,depth:true,
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
  clock:{hour:12,running:false,scale:1,speeds:[0,1,2,4,8],onSet:h=>{if(typeof placePeople==='function')placePeople(h);}},
  inspect:describe,stats:()=>'inst '+window._instances+(typeof PEOPLE_DRAWN!=='undefined'?' · people '+PEOPLE_DRAWN.shown:''),

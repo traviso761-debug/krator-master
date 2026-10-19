@@ -44,7 +44,8 @@ write to the model's store.
   the drum hall under a tile cone with a lantern, round relief-ringed windows, the curved arcaded galleries, the
   blue-and-white string course, the Order's spire and bell (a granite spire, not a Sankore mud spire), the electric
   lamps, an earth palette's restraint with the Order's blue as the only strong colour (and its saffron in the cloth).
-- **The massing is the Potala's**: the ward at the rock's north foot, the Great Stair zigzagging up a 40 m white base,
+- **The massing is the Potala's**: the ward at the rock's north foot, the Great Stair zigzagging up a 40 m white base
+  (three runs, each in its own band stepping back toward the wall as it climbs, landings at the turns),
   the White Palace (four and five storeys) round the open Debate Court, the Great Assembly drum rising through it, the
   Red Palace (nine storeys) behind and over it with the gilded roofs, the Eastern Watch at its east end.
 - **The SCP register in the Order's terms**: designation `LS-nnn`; the classes are the keepers' own words (STILL,

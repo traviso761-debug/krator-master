@@ -50,8 +50,8 @@ const SIGNS=(function(){
   g.fillStyle=GOLD;g.fillRect(cx-R*.26,cy-R*.4,R*.52,R*.8);g.fillStyle=RED;for(let k=0;k<4;k++){g.fillRect(cx-R*.26,cy-R*.36+k*R*.2,R*.52,R*.08);}
   for(let k=0;k<4;k++)for(let j=0;j<4;j++)glyph(g,cx-R*.18+j*R*.12,cy-R*.25+k*R*.2,R*.09,KRAND.hash(29,k,j),'#fff4c8',2);
   g.fillStyle='#3a2a1a';g.fillRect(cx-6,cy-R*.62,12,R*1.24);
-  font(g,40);g.fillStyle=RED;g.textAlign='center';g.fillText('Turn the wheel. Never stop the wheel.',cx,h-150);
-  font(g,26);g.fillStyle='#3a332a';g.fillText('the register of Longsong · eight seals',cx,h-108);g.textAlign='left';
+  font(g,40);g.fillStyle=RED;g.textAlign='center';g.fillText('Turn the wheel. Never stop the wheel.',cx,h-150,w-150);
+  font(g,26);g.fillStyle='#3a332a';g.fillText('the register of Longsong · eight seals',cx,h-108,w-150);g.textAlign='left';
   sigil(g,130,140,56,'#efe2c0',BLUE);sigil(g,w-130,140,56,'#efe2c0',BLUE);});
  // the glyph band of the Procrastinator: rows of the seal script, white on black (the shader burns them)
  const BAND=tex(2048,256,(g,w,h)=>{g.fillStyle='#000';g.fillRect(0,0,w,h);
@@ -65,7 +65,10 @@ const SIGNS=(function(){
   g.fillStyle=INK;for(let i=0;i<12;i++){const a=i/12*Math.PI*2-Math.PI/2;glyph(g,256+Math.cos(a)*180,256+Math.sin(a)*180,46,KRAND.hash(71,i),INK,3);}
   sigil(g,256,256,70,'#efe6cf',BLUE);});
  BAND.wrapS=THREE.RepeatWrapping;
- return {SIGIL,THANGKA,BAND,SEAL,DIAL,plaque,sign,glyph,sigil};})();
+ // the library's own when packed (delivered 2026-10-19): the great thangka of the register, the burning glyph band (a
+ // mask: white glows); the canvases above stay for ?mat=proc
+ const lib=f=>{const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib')?KMAT.packed('longsong',f):null;return L?KMAT.textures(L,{aniso:4}).map:null;};
+ return {SIGIL,THANGKA:lib('thangka')||THANGKA,BAND:lib('glyphband')||BAND,SEAL,DIAL,plaque,sign,glyph,sigil};})();
 // a picture hung or fixed on a face: a quad w x h centred at (x,y,z), facing (nx,nz); its own mesh (a few on the page)
 const DECALS=[];
 function lsDecal(map,x,y,z,w,h,nx,nz,o){o=o||{};const g=new THREE.PlaneGeometry(w,h);
