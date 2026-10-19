@@ -1406,6 +1406,14 @@ def main():
         while ups.get(path[-1]):
             path.append(max(ups[path[-1]], key=lambda c: area2[c]))
         path = path[::-1]
+        # its bed cut to fall all the way (cut only, as the Yuni river's): a hollow the routing crosses on its way
+        cut_n = 0.0
+        for n_ in range(1, len(path)):
+            c_, p_ = path[n_], path[n_ - 1]
+            if not G['whas'][c_] and En[c_] > En[p_] - 0.5:
+                cut_n = max(cut_n, float(En[c_] - (En[p_] - 0.5)))
+                En[c_] = En[p_] - 0.5
+                rt2['S'][c_] = En[c_]
         rises_ = rises(path, rt2['S'], G['whas'])
         if rises_:
             sys.exit('%s climbs at %s' % (nm, rises_[:3]))
@@ -1414,9 +1422,10 @@ def main():
         named_at[len(recs) + len(allc)] = nm
         allc.append(('river', (path, tuple(rt2['rec'][best]), False)))
         report['named_courses'].append({'name': nm, 'mouth_px': px(*best), 'cells': len(path),
-                                        'catchment_km2': round(float(area2[best])), 'q_m3s': round(float(Q2[best]), 2)})
-        print('named course %s: %d cells to the coast at px %s, %d km2 of catchment, %.2f m3/s' % (
-            nm, len(path), px(*best), area2[best], Q2[best]))
+                                        'catchment_km2': round(float(area2[best])), 'q_m3s': round(float(Q2[best]), 2),
+                                        'bed_cut_most_m': round(cut_n)})
+        print('named course %s: %d cells to the coast at px %s, %d km2 of catchment, %.2f m3/s, bed cut by up to %d m' % (
+            nm, len(path), px(*best), area2[best], Q2[best], cut_n))
     for kind, (path, mouth, joins) in allc:
         idx[path[-1]] = len(recs)
         recs.append(dict(kind=kind, path=path, mouth=mouth, joins=joins))
