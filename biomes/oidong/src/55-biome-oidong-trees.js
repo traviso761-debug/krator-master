@@ -49,6 +49,7 @@ OIDONG.zones=zones;
 const {shade,bright,vary,texMean,tint}=BIO.col;
 let MEAN=null;
 function means(){if(MEAN)return MEAN;MEAN={bark:OIDONG.BARKTEX.map(t=>texMean(t)),wood:texMean(OIDONG.WOODTEX),rock:texMean(OIDONG.ROCKTEX),cap:texMean(OIDONG.CAPTEX)};
+ if((OIDONG.LIBMEAN||{}).cap!=null){const v=Math.pow(OIDONG.LIBMEAN.cap,2.2);MEAN.cap=[v,v,v];}
  const lm=OIDONG.LIBMEAN||{},lin=v=>{const c=Math.pow(v,2.2);return[c,c,c];};MEAN.bark=MEAN.bark.map((m,k)=>lm['bark'+k]!=null?lin(lm['bark'+k]):m);
  if(lm.rock!=null)MEAN.rock=lin(lm.rock);
  return MEAN;}
@@ -123,7 +124,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,wl=T.y0,hc=vary
  const nP=lv===2?ri(3,6):ri(2,3);let reach=R;
  for(let k=0;k<nP;k++){const a=a0+k*GOLD,d=k?R*rr(.6,1.3):0,px=T.x+Math.cos(a)*d,pz=T.z+Math.sin(a)*d,Rp=R*(k?rr(.45,.85):rr(.8,1));
   if(k&&BIO.depth(px,pz)<.3)continue;
-  BIO.put(OIDONG.it('giantpad',lv),[px,wl+.03,pz],qEuler(0,rr(0,TAU),0),[Rp,Rp,Rp],bright(vary(hc,.015,.04,.04),rr(1.05,1.2)));st.pads++;
+  BIO.put(OIDONG.it('giantpad',lv),[px,wl+.03,pz],qEuler(0,rr(0,TAU),0),[Rp,Rp,Rp],OIDONG.CARD.padcard?nearW(rr(.95,1.08)):bright(vary(hc,.015,.04,.04),rr(1.05,1.2)));st.pads++;
   if(lv===2){const g=Y(px,pz);BIO.beam('rod',[px,g-.5,pz],[px,wl-.05,pz],rb*.6,rb*.5,rodCol(S.bark[0],-.1));}
   reach=Math.max(reach,d+Rp);}
  const nS=lv===2?ri(1,3):1;
@@ -151,7 +152,7 @@ B[1]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
   const e=pts[5];reach=Math.max(reach,Math.hypot(e.x-T.x,e.z-T.z)+R*.3);}
  spots.push({x:top.x,y:top.y+rr(.3,1.2),z:top.z});
  const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){const sz=rr(2.2,3.4)*Math.min(1.3,H/18),nw=rng()<.25;
-  clumpAt('heart',p.x+rr(-.8,.8),p.y+rr(-.2,.8),p.z+rr(-.8,.8),sz,.5,nw?C(pick(PAL.peach)):hc,T.x,cy,T.z,R,H*.3,irid(PAL.irid.heart));st.clumps++;}});
+  clumpAt('heart',p.x+rr(-.8,.8),p.y+rr(-.2,.8),p.z+rr(-.8,.8),sz,.5,OIDONG.CARD.heart?nearW(rr(.9,1.05)):(nw?C(pick(PAL.peach)):hc),T.x,cy,T.z,R,H*.3,OIDONG.CARD.heart?null:irid(PAL.irid.heart));st.clumps++;}});
  if(lv===2){brackets(T.x,T.y0+rr(1,3),T.z,rAt(.08),ri(2,5),st);for(let k=0,m=ri(2,4);k<m;k++)mossAt(T.x+rr(-rb,rb),T.y0+rr(.2,1.2),T.z+rr(-rb,rb),rr(.5,1));
   const fc=bright(C(0x8a5a7a),1.0);for(const p of spots)if(rng()<.5)for(let f=0,m=ri(2,5);f<m;f++)BIO.put('ball',[p.x+rr(-1,1),p.y+rr(-.6,.3),p.z+rr(-1,1)],null,rr(.04,.06),bright(vary(fc,.02,.06,.05),1.05));st.pods++;}
  regTree(T,S,reach,H+2);};
@@ -166,7 +167,8 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,white=T.seed%4=
   if(!limbOk(pts,1))continue;if(lv===2)limb(S,pts,st,{seg:5});else BIO.beam('rod',P3(pts[0]),P3(pts[4]),rAt(.38),.08,rodCol(S.bark[0]));
   for(let i=1;i<=4;i++)spots.push(pts[i]);}
  spots.push({x:top.x,y:top.y+rr(.4,1.0),z:top.z});
- const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('blossom',p.x+rr(-.7,.7),p.y+rr(-.2,.6),p.z+rr(-.7,.7),rr(2.0,3.0)*Math.min(1.3,H/9),.55,vary(base,.01,.04,.03),T.x,cy,T.z,R,H*.25,irid(PAL.irid.blossom));st.clumps++;}});
+ const cnt=lv===2?2:1;spots.forEach(p=>{for(let c=0;c<cnt;c++){if(OIDONG.CARD.cherrybloom)clumpAt('cherrybloom',p.x+rr(-.7,.7),p.y+rr(-.2,.6),p.z+rr(-.7,.7),rr(2.0,3.0)*Math.min(1.3,H/9),.55,nearW(rr(.92,1.05)),T.x,cy,T.z,R,H*.25,null);
+   else clumpAt('blossom',p.x+rr(-.7,.7),p.y+rr(-.2,.6),p.z+rr(-.7,.7),rr(2.0,3.0)*Math.min(1.3,H/9),.55,vary(base,.01,.04,.03),T.x,cy,T.z,R,H*.25,irid(PAL.irid.blossom));st.clumps++;}});
  if(lv===2){petals(T,ri(14,30),base);if(T.seed%3){const cc=bright(C(0xd0485a),1.0);for(const p of spots){for(let f=0,m=ri(1,4);f<m;f++)BIO.put('ball',[p.x+rr(-1,1),p.y+rr(-.5,.4),p.z+rr(-1,1)],null,rr(.05,.07),bright(vary(cc,.02,.06,.05),1.05));st.pods++;}}}
  regTree(T,S,R,H+1);};
 
@@ -180,7 +182,7 @@ B[3]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,la=rr(0,TAU),lk
   if(!limbOk(pts,1))continue;if(lv===2)limb(S,pts,st,{fam:'barkM',seg:5});else BIO.beam('rod',P3(pts[0]),P3(pts[4]),rAt(u)*.9,.08,C(S.bark[0]));
   for(let i=1;i<=4;i++)spots.push(pts[i]);}
  spots.push({x:top.x,y:top.y+rr(.5,2),z:top.z});
- const cnt=2;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('lace',p.x+rr(-.9,.9),p.y+rr(-.3,.9),p.z+rr(-.9,.9),rr(2.6,4.0)*Math.min(1.3,H/22),.5,hc,T.x,cy,T.z,R,H*.2,irid(PAL.irid.marble));st.clumps++;}});
+ const cnt=2;spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt('lace',p.x+rr(-.9,.9),p.y+rr(-.3,.9),p.z+rr(-.9,.9),rr(2.6,4.0)*Math.min(1.3,H/22),.5,OIDONG.CARD.lace?nearW(rr(.92,1.05)):hc,T.x,cy,T.z,R,H*.2,irid(PAL.irid.marble));st.clumps++;}});
  // the marbled ground: pastel crusts of moss and lichen round the foot
  if(lv===2)for(let k=0,m=ri(3,7);k<m;k++){const a=rr(0,TAU),d=rr(.5,R*.9),px=T.x+Math.cos(a)*d,pz=T.z+Math.sin(a)*d;if(BIO.mask(px,pz)<=0)continue;
   BIO.put('mossmat',[px,Y(px,pz)+.06,pz],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),rr(.6,1.6),bright(vary(C(pick([].concat(PAL.blush,PAL.powder,PAL.lavender,PAL.mint))),.02,.05,.04),1.0));}
@@ -305,8 +307,8 @@ B[10]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
   if(!limbOk(pts,.6))continue;if(lv===2)limb(S,pts,st,{seg:5,col:stemC});else BIO.beam('rod',P3(pts[0]),P3(pts[5]),rAt(.5),.06,stemC);
   for(let i=1;i<=5;i++){const p=pts[i];if(i%2===1){clumpAt('small',p.x+rr(-.5,.5),p.y+rr(0,.5),p.z+rr(-.5,.5),rr(1.0,1.6),.5,hc,T.x,cy,T.z,R,H*.3,null);st.clumps++;}
    const m=lv===2?ri(2,4):lv===1?1:0;for(let r=0;r<m;r++){const x=p.x+rr(-.6,.6),z=p.z+rr(-.6,.6),y=p.y-p.r,L=Math.max(.6,Math.min(rr(1.2,3.2)*Math.min(1.3,H/6),y-Math.max(Y(x,z),BIO.waterH(x,z))-.4));
-    BIO.put('beads',[x,y,z],qEuler(0,rr(0,TAU),0),[L*.28,L,L*.28],leafCol(PAL.mint,1.2,.02,.05,.04));st.beads++;
-    if(lv===2){const bs=rr(.22,.34);BIO.put('bell',[x,y-L*.97,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[bs,bs*1.3,bs],bright(vary(C(pick(PAL.coral)),.02,.06,.05),1.15));st.bells++;}}}}
+    BIO.put('beads',[x,y,z],qEuler(0,rr(0,TAU),0),OIDONG.CARD.beadscard?[L*.17,L,L*.17]:[L*.28,L,L*.28],OIDONG.CARD.beadscard?nearW(rr(.95,1.08)):leafCol(PAL.mint,1.2,.02,.05,.04));st.beads++;
+    if(lv===2&&!OIDONG.CARD.beadscard){const bs=rr(.22,.34);BIO.put('bell',[x,y-L*.97,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[bs,bs*1.3,bs],bright(vary(C(pick(PAL.coral)),.02,.06,.05),1.15));st.bells++;}}}}
  regTree(T,S,R,H+.5);};
 
 // 11 the JADE BAMBOO: a clump of pale jade canes ringed at the nodes, leaning a little outward and bending at the top

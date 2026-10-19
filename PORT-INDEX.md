@@ -54,10 +54,10 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/ehighlands`](biomes/ehighlands/PORT.md) | 12 | 142 | 13 | 17 | 16 | 32 | 63 | 2 | biome | yes | yes |
 | [`biomes/geyser`](biomes/geyser/PORT.md) | 17 | 166 | 38 | 35 | 14 | 35 | 44 | 2 | biome, atmos | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 14 | 149 | 2 | 0 | 12 | 15 | 120 | 6 | biome | yes | yes |
-| [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 14 | 242 | 0 | 0 | 34 | 36 | 172 | 6 | biome | yes | yes |
+| [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 14 | 243 | 0 | 0 | 34 | 36 | 173 | 6 | biome | yes | yes |
 | [`biomes/nwbay`](biomes/nwbay/PORT.md) | 15 | 274 | 1 | 0 | 10 | 65 | 198 | 7 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 12 | 176 | 1 | 0 | 13 | 31 | 131 | 5 | biome | yes | yes |
-| [`biomes/oidong`](biomes/oidong/PORT.md) | 11 | 176 | 1 | 0 | 11 | 13 | 151 | 2 | biome, atmos | yes | yes |
+| [`biomes/oidong`](biomes/oidong/PORT.md) | 11 | 179 | 1 | 0 | 11 | 13 | 154 | 2 | biome, atmos | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 12 | 208 | 1 | 0 | 16 | 27 | 164 | 5 | biome | yes | yes |
 | [`biomes/ringisles`](biomes/ringisles/PORT.md) | 18 | 186 | 62 | 14 | 14 | 39 | 57 | 2 | biome, atmos | yes | yes |
 | [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 208 | 1 | 0 | 14 | 59 | 135 | 6 | biome, atmos | yes | yes |
@@ -69,7 +69,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 4 | 18 | 12 | 0 | 0 | 6 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 165 | 55 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 178 | 21 | 0 | 0 | 96 | 61 | 0 |  |  | yes |
-| **all** | 2137 | 28118 | 5560 (20%) | 619 (2%) | 1103 (4%) | 3618 (13%) | 17218 (61%) | 264 | | | |
+| **all** | 2137 | 28123 | 5560 (20%) | 619 (2%) | 1103 (4%) | 3618 (13%) | 17223 (61%) | 264 | | | |
 
 ## Host-shell copies
 

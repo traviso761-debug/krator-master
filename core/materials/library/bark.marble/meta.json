@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.839,
+    1.133
+   ],
+   "seam_before": [
+    1.944,
+    1.958
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.1,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.25,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.marble",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   3.0,
+   3.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark.marble.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (The Oidong Valley), `bark.marble`",
+  "reuse": "the Oidong marble birch bole: cream with swirled pastel bands (full colour)",
+  "sha1": "b6599cf5f9d03c689865d368c069e5e2b1aaa68a"
+ }
+}

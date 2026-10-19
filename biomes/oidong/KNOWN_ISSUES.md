@@ -11,11 +11,11 @@
       when the valley joins a world, with `vOpen` 0 on the pools.
 - [ ] **The stream is painted, not water**: the channel between the pools is a dark wet band on the ground; the cataract is a
       ribbon plane and spray sprites, not a water surface.
-- [ ] **Some surfaces are still procedural**: the library dresses the cherry's bark, the pale bark, the whorled bark, the moss
-      and small-leaf cards, the granite and two ground layers (moss, park sand): `materials.json`, every set reused, none
-      generated for this kit. Still the kit's own canvases: the marble birch's painted bole (by design: no set has it), the
-      ribbed lotus stalks, the bamboo canes, the chalice cap's veins, every flower and leaf card. The owner may want sets for the
-      marble bole, the giant lotus pad, the bamboo and the blossom: the thirteen prompts are in `core/materials/PROMPTS-NEEDED.md`, section 2.
+- [ ] **A few surfaces are still procedural**: the owner's own cards and surfaces (2026-10-19) dress the sacred fig, the birch lace,
+      the cherry blossom, the lilies, the giant pad, the moon caps, the peyote, the bead strings, and the marble, bamboo, cedar,
+      chalice-cap and moss-ball surfaces; the library dresses the rest (`materials.json`). Still the kit's own canvases: the lotus
+      trumpets' ribbed stalks, the haze blossom's and wisteria's cards, the cushion domes, the bead-willow's leaves, the grass and
+      iris tufts, the ginseng and tea. Ask the owner before generating any (core/materials/PLAN.md has the template).
 - [ ] **Longsong is not built**: its rock is kept bare (`KNOLL`, an obstacle of 150 m, the mask zero on the top) and
       registered as the monastery's site; `settlements/longsong` holds the blueprint. A build places its 400 x 400 m grounds on
       and round the rock (the lower ward at its foot on the south side, the terraces up the west flank, the hermits' cells on the
@@ -24,11 +24,12 @@
       flats) and a `mist` field at any cataract, or it gets no raked flats and no chalice trees (BIOME-API.md).
 - [ ] **The raked ripples ring only the first 32 stone groups** (`NSTONE` in 84-host-ground.js, a uniform array); the floor
       places about 125 groups, so the rest sit in the parallel ripples. Raise the count or pack the groups into a texture.
-- [ ] **The budget is the measured total, 18.1M triangles at q=1** (19.5M ceiling in `99-host-take.js`; the trees pass 14.9M of a 15.5M ceiling); draw calls 65-100 by
+- [ ] **The budget is the measured total, 13.3M triangles at q=1** (19.5M ceiling in `99-host-take.js`; the trees pass 11.9M of a 15.5M ceiling); draw calls 65-100 by
       view. The bamboo groves (6,600 clumps) and the marble groves' lace are the heaviest passes: thin them first if it creeps up.
 - [ ] **The far marble birches read as pale poles** past the hero range: their lace impostor blobs are near-white against a
       pale sky. A second, tinted blob or a denser lace card would fix it.
-- [ ] **The water lilies' iridescence and the lotus trumpet's fringe are the only loud colours** (by design); the probe's
+- [ ] **The lilies' card, the lotus trumpet's fringe and the cherry card are the loud colours** (the lilies by design; the cherry
+      card is a stronger pink than the old blush, the owner's call); the probe's
       "calm palette" check measures species' leaf and bark sets only, not the floor plants' colours.
 
 ## Export profile: sections left out (2026-10-19)

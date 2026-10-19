@@ -28,7 +28,7 @@ function grass(x,y,z,lv,set,k){const h=rr(.3,.7)*(k||1)*(lv===0?1.6:1),n=lv===2?
 function fern(x,y,z,lv,k){const n=lv===2?ri(5,8):3,L=rr(.6,1.3)*(k||1),hc=leafCol(PAL.celadon,1.2,.03,.08,.05),a0=rr(0,TAU);
  for(let i=0;i<n;i++){const a=a0+i*GOLD;BIO.put('fern',[x,y+.03,z],qEuler(rr(-.08,.08),-a,rr(.2,.65)),[L,L,L*rr(.32,.42)],bright(vary(hc,.02,.05,.05),rr(.95,1.1)));}}
 function mooncaps(x,y,z,lv,n,r){const col=bright(C(pick(PAL.mooncap)),1.05);for(let k=0;k<n;k++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,h=rr(.14,.34);
- BIO.put('mooncap',[px,Y(px,pz)-.02,pz],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),[h*.9,h,h*.9],vary(col,.02,.05,.04));}}
+ {const cd=OIDONG.CARD.mooncapcard;BIO.put('mooncap',[px,Y(px,pz)-.02,pz],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),cd?[h*.55,h*1.1,h*.55]:[h*.9,h,h*.9],cd?nearW(rr(.95,1.08)):vary(col,.02,.05,.04));}}}
 function box(x,y,z,lv){const R=rr(.5,1.3),hc=vary(pick(PAL.jade),.02,.05,.04);
  BIO.put('boxdome',[x,y+R*.35,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.65,.85),R],bright(hc,rr(1.05,1.2)));
  if(lv===2&&rng()<.4){const R2=R*rr(.5,.8),a=rr(0,TAU);BIO.put('boxdome',[x+Math.cos(a)*R,y+R2*.3,z+Math.sin(a)*R],qEuler(0,rr(0,TAU),0),[R2,R2*.8,R2],bright(hc,1.1));}}
@@ -43,7 +43,7 @@ function snowLotus(x,y,z,lv){const s=rr(.25,.45);BIO.put('snowlotus',[x,y+.02,z]
 function ginseng(x,y,z,lv){const s=rr(.35,.6);BIO.put('ginseng',[x,y+s*.4,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*1.4,s*.8,s*1.4],leafCol(PAL.jade,1.2,.02),{n:[0,1,0]});
  if(lv===2)for(let k=0,m=ri(4,8);k<m;k++)BIO.put('ball',[x+rr(-.08,.08),y+s*.75+rr(-.03,.03),z+rr(-.08,.08)],null,.025,bright(C(pick(PAL.coral)),1.1));}
 function sage(x,y,z,lv){const h=rr(.3,.6),n=lv===2?ri(2,4):1;for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.3,.8):0;tuft('sagebush',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.8,1.1),h*2,leafCol(PAL.sage,1.2,.02));}}
-function peyote(x,y,z,lv){const n=lv===2?ri(1,3):1;around(x,z,n,.4,1.2,(px,pz)=>{const s=rr(.25,.5);BIO.put('peyote',[px,Y(px,pz)-.03,pz],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[s,s,s],leafCol(PAL.peyote,1.05,.02,.05,.03));});}
+function peyote(x,y,z,lv){const n=lv===2?ri(1,3):1;around(x,z,n,.4,1.2,(px,pz)=>{const s=rr(.25,.5);{const cd=OIDONG.CARD.peyotecard;BIO.put('peyote',[px,Y(px,pz)+(cd?.04:-.03),pz],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),cd?[s*2.8,s*2.8,s*2.8]:[s,s,s],cd?nearW(rr(.95,1.08)):leafCol(PAL.peyote,1.05,.02,.05,.03));}});}
 function stoneBloom(x,y,z,lv){const n=lv===2?ri(1,3):1;around(x,z,n,.3,.9,(px,pz)=>{const s=rr(.14,.28),c=rockTint(PAL.sand,rr(.7,.95)).lerp(C(pick(PAL.lavender)),.25);
  BIO.put('stonebloom',[px,Y(px,pz)-.02,pz],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[s,s,s],c);
  if(lv===2)BIO.put('daisy',[px,Y(px,pz)+s*.45,pz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),s*.9,bright(C(pick(PAL.blush)),1.15));});}
@@ -154,8 +154,8 @@ OIDONG.buildFloor=function(R,q){
     const u=h3(x*.37,z*.37,4.1);
     if(u<.2){const col=bright(C(pick(PAL.blush.concat(PAL.ivory))),1.1),h=rr(.2,.7);BIO.put('cup',[x+rr(-.3,.3),wl+h,z+rr(-.3,.3)],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),rr(.35,.6),col);}
     else if(u<.4&&lv===2){const v=h3(x+1.7,z-2.3,9.7),a=v*TAU,s=.55+.35*h3(z,x,2.2);BIO.put('lotuspod',[x+Math.cos(a)*.35*R2,wl-.25,z+Math.sin(a)*.35*R2],qEuler(.25*(v-.5),a,.2*(u*3-.5)),s,C(0xffffff).multiplyScalar(.95+.15*v));st.pods++;}}
-   else{const pr=pick(PAL.lilyPair),s=rr(.35,.6);BIO.put('lilypad',[x,wl+.02,z],qEuler(0,rr(0,TAU),0),[s*1.6,1,s*1.6],bright(vary(C(pick(PAL.mossDark)),.02,.05,.04),1.0));
-    BIO.put('lily',[x+rr(-.2,.2),wl+.08,z+rr(-.2,.2)],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),s,bright(C(pr[0]),1.1),{c2:bright(C(pr[1]),1.15)});st.lilies++;}},
+   else{const pr=pick(PAL.lilyPair),s=rr(.35,.6)*(OIDONG.CARD.lily?1.5:1);BIO.put('lilypad',[x,wl+.02,z],qEuler(0,rr(0,TAU),0),[s*1.2,1,s*1.2],bright(vary(C(pick(PAL.mossDark)),.02,.05,.04),1.0));
+    BIO.put('lily',[x+rr(-.2,.2),wl+.08,z+rr(-.2,.2)],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),s,OIDONG.CARD.lily?nearW(rr(.95,1.08)):bright(C(pr[0]),1.1),{c2:OIDONG.CARD.lily?nearW(1):bright(C(pr[1]),1.15)});st.lilies++;}},
   {patch:.5,patchScale:.02,noMask:true,depth:[.15,3.5],pad:.4,box:BIO.window('water')});
  // the standing stones: in odd groups on the flats, in the moss lawns and the meadows
  BIO.grid(90,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>L.far)return 0;const Z=zones(x,z);return (Z.flats*.5+Z.moss*.22+Z.meadow*.18+Z.shore*.1)*q;},

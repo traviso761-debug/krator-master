@@ -25,8 +25,8 @@
    "sha256": "848e554efdce10d73d1aa7e23b430bfd0263ca63259e641163b591a6c66b280d"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 5623240,
-   "sha256": "64a50bdaf3ffbb6f74700070c3b98fb7e33f45e97b46d1e6a42f8cea99d5cb55"
+   "bytes": 5839529,
+   "sha256": "50c4fdbfd37fe5e9ea0fa621b29258de25a4520fde5cb40b252574a1ce793183"
   },
   "biomes/nwbay/dist/nwbay.html": {
    "bytes": 6550557,
@@ -37,8 +37,8 @@
    "sha256": "5b4cce9074e542d25c43908cd9397390ed213bf48f8c8119683fe6b14b08aba3"
   },
   "biomes/oidong/dist/oidong.html": {
-   "bytes": 1450250,
-   "sha256": "1bf759c9877475cc232dccbc4749b8f6a216d7b67905de08bd150018006b0bf2"
+   "bytes": 2512318,
+   "sha256": "24fc7d3e05c87f115146e6ea974c25f4d53e52cd48711c06731b2ec47579d4a9"
   },
   "biomes/rift/dist/rift.html": {
    "bytes": 5762923,

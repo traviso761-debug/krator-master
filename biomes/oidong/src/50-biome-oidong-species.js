@@ -275,6 +275,8 @@ TX.moss=BIO.alphaTex(256,(g,S)=>{BIO.tex.clusters(S,7,.6);g.lineCap='round';
 TX.under=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,7,.62);
  for(let i=0;i<64;i++){const c=BIO.tex.clPt(S,.11,.70),base=c[2]+rr(-1,1),lum=lerp(100,235,i/64),n=ri(4,7);
   for(let k=0;k<n;k++)BIO.tex.leaf(g,c[0],c[1],rr(40,70),rr(10,16),base+(k-(n-1)/2)*.55,lum+rr(-20,15),true);}},[150,150,150]);
+/* a plain opaque card: the stand-in map of a material the library card replaces (and the whole map of a pad without its card) */
+TX.blank=BIO.alphaTex(64,(g,S)=>{g.fillStyle=G2(235);g.fillRect(0,0,S,S);},[230,230,230]);
 OIDONG.TEX=TX;
 /* the CUSHION skin: tiny leaves packed solid, opaque (the cushion tree's domes, the box domes; Xanadu's) */
 OIDONG.CUSHIONTEX=BIO.canvasTex(512,512,(g,w,h)=>{g.fillStyle='#4a4a4a';g.fillRect(0,0,w,h);
@@ -342,8 +344,8 @@ function smoothN(pos){const map=new Map(),n=new Float32Array(pos.length),key=i=>
   for(let j=0;j<3;j++){const k=key(i+j*3);const s=map.get(k)||[0,0,0];s[0]+=nx;s[1]+=ny;s[2]+=nz;map.set(k,s);}}
  for(let i=0;i<pos.length;i+=3){const s=map.get(key(i)),l=Math.hypot(s[0],s[1],s[2])||1;n[i]=s[0]/l;n[i+1]=s[1]/l;n[i+2]=s[2]/l;}
  return Array.from(n);}
-function Mesh(){const pos=[],col=[],uv=[];return{tri(a,b,c,ca,cb,cc){pos.push(...a,...b,...c);col.push(...ca,...(cb||ca),...(cc||ca));uv.push(0,0,0,0,0,0);},
- quad(a,b,c,d,ca,cb,cc,cd){this.tri(a,b,c,ca,cb,cc);this.tri(a,c,d,ca,cc,cd);},
+function Mesh(){const pos=[],col=[],uv=[];return{tri(a,b,c,ca,cb,cc,ua,ub,uc){pos.push(...a,...b,...c);col.push(...ca,...(cb||ca),...(cc||ca));uv.push(...(ua||[0,0]),...(ub||[0,0]),...(uc||[0,0]));},
+ quad(a,b,c,d,ca,cb,cc,cd,q){this.tri(a,b,c,ca,cb,cc,q&&q[0],q&&q[1],q&&q[2]);this.tri(a,c,d,ca,cc,cd,q&&q[0],q&&q[2],q&&q[3]);},
  out(flat){let nor;if(flat){nor=[];for(let i=0;i<pos.length;i+=9){const ux=pos[i+3]-pos[i],uy=pos[i+4]-pos[i+1],uz=pos[i+5]-pos[i+2],vx=pos[i+6]-pos[i],vy=pos[i+7]-pos[i+1],vz=pos[i+8]-pos[i+2];
   let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;for(let j=0;j<3;j++)nor.push(nx/l,ny/l,nz/l);}}else nor=smoothN(pos);
   return mk(pos,nor,uv,col);}};}
@@ -387,7 +389,9 @@ G.giantpad=function(){const M=Mesh(),n=28,rings=[0,.35,.65,.86,.95,1.0,1.0],lip=
  // the underside: ribs radiating under the pad (seen from the shore, between the pads)
  for(let s=0;s<n;s+=2){const a=s/n*TAU*.96+.08,ca=Math.cos(a),sa=Math.sin(a),w=.025;
   M.quad([ca*.1-sa*w,-.02,sa*.1+ca*w],[ca*.95-sa*w,-.03,sa*.95+ca*w],[ca*.95+sa*w,-.03,sa*.95-ca*w],[ca*.1+sa*w,-.02,sa*.1-ca*w],[.55,.5,.45],[.55,.5,.45],[.55,.5,.45],[.55,.5,.45]);}
- return M.out(true);};
+ const g=M.out(true),p=g.attributes.position,uv=new Float32Array(p.count*2);   // mapped from above, one card over the disc
+ for(let i=0;i<p.count;i++){uv[i*2]=(p.getX(i)+1)/2;uv[i*2+1]=(p.getZ(i)+1)/2;}
+ g.setAttribute('uv',new T3.BufferAttribute(uv,2));return g;};
 // a LOTUS in the round: two rings of cupped petals, white at the base to full at the tip, unit radius, origin at the base (Xanadu's)
 G.cup=function(){const pos=[],nor=[],uv=[],col=[];
  [[8,1.0,.55,.9,0],[6,.62,.95,.75,.35]].forEach(r=>{const n=r[0],R=r[1],el=r[2],L=r[3];
@@ -432,7 +436,8 @@ G.cap=function(){const M=Mesh(),n=36,prof=[[0,.0],[.2,.02],[.45,.05],[.7,.06],[.
  const P=prof.map(q=>{const row=[];for(let s=0;s<=n;s++){const a=s/n*TAU,R=q[0]*(1+.03*Math.sin(s*5+q[1]*20));row.push([Math.cos(a)*R,q[1],Math.sin(a)*R]);}return row;});
  for(let r=0;r<prof.length-1;r++)for(let s=0;s<n;s++){const a=P[r][s],b=P[r+1][s],c=P[r+1][s+1],d=P[r][s+1];
   const top=r<5,lip=r>=4&&r<=8,c0=top?[1,1,1]:lip?[1.05,1.0,.95]:[.55,.6,.6],c1=r+1<5?[1,1,1]:(r+1>=4&&r+1<=8)?[1.05,1.0,.95]:[.55,.6,.6];
-  if(r<6)M.quad(a,d,c,b,c0,c0,c1,c1);else M.quad(a,b,c,d,c0,c1,c1,c0);}
+  const ua=[s/n*4,prof[r][0]],ub=[s/n*4,prof[r+1][0]],uc=[(s+1)/n*4,prof[r+1][0]],ud=[(s+1)/n*4,prof[r][0]];   // u round the rim (four times), v out from the stem
+  if(r<6)M.quad(a,d,c,b,c0,c0,c1,c1,[ua,ud,uc,ub]);else M.quad(a,b,c,d,c0,c1,c1,c0,[ua,ub,uc,ud]);}
  return M.out(false);};
 // a MOON CAP: a pleated parasol on a thin dark stem, the cap's pleats vertex-shaded; origin at the base, 1 high
 G.mooncap=function(){const M=Mesh(),o={pos:[],nor:[],uv:[],col:[]};vadd(o,new T3.CylinderGeometry(.018,.03,.78,4,1,true).translate(0,.39,0),[.42,.3,.36]);
@@ -521,6 +526,12 @@ OIDONG.MAT={
  capskin:new T3.MeshLambertMaterial({map:OIDONG.CAPTEX,vertexColors:true,side:T3.DoubleSide}),
  solid:BIO.solidMat(null,0xffffff),
  rock:BIO.solidMat(OIDONG.ROCKTEX),
+ // the owner's cards (2026-10-19): each stands in for a procedural card or a vertex-coloured model while the library pack has it
+ cherrybloom:BIO.leafMat(TX.blossom,'cherrybloom',{aN:true,swayW:'1.0',swayA:.06}),
+ mooncapcard:BIO.leafMat(TX.blank,'mooncapcard',{swayW:'(position.y)',swayA:.02,alphaTest:.4}),
+ peyotecard:BIO.leafMat(TX.blank,'peyotecard',{swayW:'0.0',swayA:0,alphaTest:.4}),
+ padcard:BIO.leafMat(TX.blank,'padcard',{swayW:'1.0',swayA:.012,alphaTest:.4,vertexColors:true}),
+ beadscard:BIO.leafMat(TX.beads,'beadscard',{swayW:'(-position.y)',swayA:.07,axis:1,alphaTest:.4}),
 };
 const M=OIDONG.MAT;
 
@@ -535,15 +546,21 @@ function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{a
  t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return t;}
 {const use=(k,t,at)=>{if(t){M[k].map=t;M[k].alphaTest=at==null?.4:at;}};
  use('moss',libCard('leaf.moss'),.38);use('small',libCard('leaf.small'));}
+// the cards named by their material's slot (BIO.libSwap: heart, lace, lily and the new cards); OIDONG.CARD says which the pack had
+OIDONG.SWAP=BIO.libSwap('oidong',M);
+OIDONG.CARD={};['heart','lace','lily','cherrybloom','mooncapcard','peyotecard','padcard','beadscard'].forEach(k=>OIDONG.CARD[k]=!!OIDONG.SWAP[k]);
 // the barks: grey detail under the species' vertex colours (keep 0); the marble (3) is always its own painting.
 // The bucket's uvScale becomes the set's tile size, and means() (55) divides out the pack's brightness instead of the canvas's
-const LIBBARK=['bark.cherry','bark.smooth',null,null,'bark.whorled',null,null];
+const LIBBARK=['bark.cherry','bark.smooth',null,'bark.marble','bark.whorled','bark.bamboo','bark.cedar'];
 OIDONG.LIBMEAN={};
 const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;OIDONG.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
 ['Cherry bark (banded)','Smooth pale bark','Ribbed stalks','Marble bark (painted)','Whorled bark','Bamboo canes','Fibrous bark'].forEach((lab,i)=>{
- const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);if(L)M.bark[i].map=L.t;
+ const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);if(L){M.bark[i].map=L.t;if(i===3)OIDONG.MARBLE=L;}
  BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:L?L.scale:[i===5?1.2:i===3?4:3,i===5?4:i===3?6:4]});});
 {const L=libMap('stone.granite','rock');if(L)M.rock.map=L.t;}
+// the chalice cap's veins and the moss balls' skin (the library's own): the cap tiles round its rim, the moss repeats over the ball
+{const Lc=libMap('organic.cap','cap');if(Lc){Lc.t.wrapS=Lc.t.wrapT=T3.RepeatWrapping;M.capskin.map=Lc.t;}}
+{const Lm=libMap('organic.mossball','mossball');if(Lm){Lm.t.wrapS=Lm.t.wrapT=T3.RepeatWrapping;Lm.t.repeat.set(3,3);M.mossdome.map=Lm.t;}}
 BIO.bucket('wood',M.wood,{label:'Fallen wood'});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 // the chalice cap: a lathe skinned in its veined canvas, vertex-coloured teal, the underside darker
@@ -551,11 +568,13 @@ BIO.bucket('capskin',M.capskin,{label:'Chalice caps',uvScale:[2,3]});
 // the lotus trumpet's trumpets: iridescent, a pale green that goes gold at grazing angles (Xanadu's, paler)
 BIO.bucket('barkT',BIO.iridBarkMat(OIDONG.BARKTEX[2],'oidong-trumpet',[1.0,1.06,0.96],[1.12,1.06,0.9]),{label:'Lotus trumpet (stems and trumpets)',uvScale:[3,5]});
 // the marble birch's bole: a soft shimmer over the painted bands, pinker facing the eye, bluer at grazing angles
-BIO.bucket('barkM',BIO.iridBarkMat(OIDONG.BARKTEX[3],'oidong-marble',[1.0,0.98,0.97],[0.94,0.97,1.06]),{label:'Marble birch bole (iridescent)',uvScale:[4,6]});
+{const bm=BIO.iridBarkMat(OIDONG.BARKTEX[3],'oidong-marble',[1.0,0.98,0.97],[0.94,0.97,1.06]);if(OIDONG.MARBLE)bm.map=OIDONG.MARBLE.t;
+ BIO.bucket('barkM',bm,{label:'Marble birch bole (iridescent)',uvScale:OIDONG.MARBLE?OIDONG.MARBLE.scale:[4,6]});}
 
 // ---------------------------------------------------------------- instanced items
 BIO.def('heart',BIO.geo.clump(),M.heart,{attrs:['aN','aC2'],label:'Sacred fig leaves'});
 BIO.def('blossom',BIO.geo.clump(),M.blossom,{attrs:['aN','aC2'],label:'Blossom'});
+BIO.def('cherrybloom',BIO.geo.clump(),M.cherrybloom,{attrs:['aN'],label:'Cherry blossom'});
 BIO.def('lace',BIO.geo.clump(),M.lace,{attrs:['aN','aC2'],label:'Marble birch lace'});
 BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Needle pads'});
 BIO.def('darkneedle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Cedar and pagoda-fir needles'});
@@ -568,7 +587,8 @@ BIO.def('cushion',G.cushion(),M.cushion,{label:'Cushion domes'});
 BIO.def('boxdome',G.cushion(),M.cushion,{label:'Box domes'});
 BIO.def('mossdome',G.cushion(),M.mossdome,{label:'Moss balls'});
 BIO.def('raceme',BIO.geo.ribbon(3,.45,.08),M.raceme,{attrs:['aC2'],label:'Wisteria racemes'});
-BIO.def('beads',BIO.geo.ribbon(3,.7,.1),M.beads,{label:'Bead strings'});
+if(OIDONG.CARD.beadscard)BIO.def('beads',BIO.geo.hang(),M.beadscard,{label:'Bead strings (the willow\'s, a bell at the end)'});   // the card is the whole string: beads and bell
+else BIO.def('beads',BIO.geo.ribbon(3,.7,.1),M.beads,{label:'Bead strings'});
 BIO.def('coin',BIO.geo.ribbon(3,.8,.1),M.coin,{label:'Coin vines'});
 BIO.def('thread',BIO.geo.ribbon(4,.5,.04),M.thread,{label:'Falling water'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Aerial roots'});
@@ -592,14 +612,16 @@ BIO.def('cup',G.cup(),M.vcol,{label:'Lotus flowers'});
 BIO.def('giantcup',G.giantcup(),M.vsway,{label:'Giant lotus flowers'});
 BIO.def('giantcuplo',G.cup(),M.vcol,{label:'Giant lotus flowers (mid distance)'});
 BIO.def('lilypad',G.pad(),M.pad,{label:'Lotus pads'});
-BIO.def('giantpad',G.giantpad(),M.pad,{label:'Giant lotus pads'});
+BIO.def('giantpad',G.giantpad(),OIDONG.CARD.padcard?M.padcard:M.pad,{label:'Giant lotus pads'});
 BIO.def('giantpadlo',G.pad(),M.pad,{label:'Giant lotus pads (mid distance)'});
 BIO.def('lotuspod',G.lotuspod(),M.vsway,{label:'Lotus seed heads'});
 BIO.def('giantpod',G.giantpod(),M.vcol,{label:'Giant lotus seed heads'});
 BIO.def('cap',G.cap(),M.capskin,{label:'Chalice caps'});
-BIO.def('mooncap',G.mooncap(),M.vcol,{label:'Moon caps'});
+if(OIDONG.CARD.mooncapcard)BIO.def('mooncap',G.tuft(),M.mooncapcard,{label:'Moon caps'});
+else BIO.def('mooncap',G.mooncap(),M.vcol,{label:'Moon caps'});
 BIO.def('bracket',G.bracket(),M.vcol,{label:'Rainbow brackets'});
-BIO.def('peyote',G.peyote(),M.vcol,{label:'Peyote buttons'});
+if(OIDONG.CARD.peyotecard)BIO.def('peyote',G.flat(),M.peyotecard,{label:'Peyote buttons'});
+else BIO.def('peyote',G.peyote(),M.vcol,{label:'Peyote buttons'});
 BIO.def('stonebloom',G.stonebloom(),M.vcol,{label:'Stone-blooms'});
 BIO.def('snowlotus',G.snowlotus(),M.vcol,{label:'Snow lotus'});
 BIO.def('bell',G.bell(),M.vhang,{label:'Coral bells'});

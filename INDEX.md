@@ -53,10 +53,10 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/ehighlands`](biomes/ehighlands/INDEX.md) | 12 | 142 | 36 | Biome kit: see `biomes/README.md`. |
 | [`biomes/geyser`](biomes/geyser/INDEX.md) | 17 | 166 | 24 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 14 | 149 | 34 | Biome kit: see `biomes/README.md`. |
-| [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 14 | 242 | 59 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 14 | 243 | 60 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 15 | 274 | 73 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 12 | 176 | 60 | Biome kit: see `biomes/README.md`. |
-| [`biomes/oidong`](biomes/oidong/INDEX.md) | 11 | 176 | 63 | Biome kit: see `biomes/README.md`. |
+| [`biomes/oidong`](biomes/oidong/INDEX.md) | 11 | 179 | 66 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 12 | 208 | 68 | Biome kit: see `biomes/README.md`. |
 | [`biomes/ringisles`](biomes/ringisles/INDEX.md) | 18 | 186 | 29 | The Ring Sea isles biome kit (the isle demo, settlements/isle-demo/PLAN.md): one kit whose zones follow the scale model's climate classes (XA, Af, Am rainforest; Aw, XV tall-grass savanna in a burn mosaic; BSh hot steppe; XS salt steppe and pans), with the strand, a mangrove lagoon, a reef flat, tide pools, a geyser field and town gardens of the owner's crops (coconut, mango, banana, coffee, cloves, breadfruit; rice, taro, sweet potato, kava, herbs, greens, sugar cane). Borrows the Throne, swbay, eastabyss, sedesert and geyser kits' species in place; the showcase is one synthetic island. Verified: build.py, verify.py --assert. |
 | [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 208 | 36 | Biome kit: see `biomes/README.md`. |

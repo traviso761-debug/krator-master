@@ -863,6 +863,32 @@
     "sourceMean": 0.3384
    }
   },
+  "staghorn": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "staghorn.albedo.webp"
+   },
+   "lib": "card.staghorn",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e7e9e296c987ff4ddf360cf64244c0a15626785b"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.5,
+    "mean": 0.7,
+    "sourceMean": 0.5637
+   }
+  },
   "towerConcrete": {
    "breakup": null,
    "card": false,
@@ -949,6 +975,32 @@
     "keep": 0.0,
     "mean": 0.702,
     "sourceMean": 0.3015
+   }
+  },
+  "wheel": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "wheel.albedo.webp"
+   },
+   "lib": "card.sunwheel",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0cf68c269f6631cd63dbfea8a774138eaa175af8"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.5,
+    "mean": 0.7,
+    "sourceMean": 0.6899
    }
   }
  },
