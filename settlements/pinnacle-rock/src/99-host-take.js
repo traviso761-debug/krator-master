@@ -26,6 +26,9 @@ const VIEWS=(function(){const V={},n0=_fin('fin-n0'),e1=_fin('fin-e1');
   if(H)V['The Crown (the assembly hall and the market)']=[H.x+150,_top+70,H.z+150,H.x,_top+8,H.z+20];
   V['The house quarter (west of the Garden)']=[-120,_top+45,170,-260,_top+4,40];
   const T=TOWN.lots.find(l=>l.role==='customs');if(T)V['The Stair\'s head (the toll house and the caravan market)']=[T.x-10,_top+42,T.z+95,T.x+10,_top+2,T.z-110];}
+ // THE FARMS (P3b): the terraces from over the south-west, a farmhouse among the paddies
+ if(typeof FARMS!=='undefined'&&FARMS){V['The terraces and the palisade (from the south-west)']=[-760,150,1250,-250,0,700];
+  const Hp=FARMS.houses.find(h=>h.v===2);if(Hp)V['A paddy farm by the spring']=[Hp.x+60,Hp.y+28,Hp.z+55,Hp.x,Hp.y+2,Hp.z];}
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the rock, the zone of the top or
@@ -241,6 +244,42 @@ const HCHK={
   const lots=L.filter(l=>!l.landmark).length,ok=!bad.length&&lots>=400;
   return{ok,detail:L.length+' buildings ('+(L.length-lots)+' landmarks), '+T.ways.length+' streets; '+tr.length+' trades carried'+
    (bad.length?': '+bad.slice(0,8).join('; '):'; no overlap, none on a street, off the rim band and the rock, the grounds and the heads clear')+(lots<400?'; only '+lots+' lots':'')};},
+ // THE FARMS (P3b): six terraces of field cells inside the palisade, no two cells overlapping, every cell on farmland
+ // (corners, edges' middles, centre: PR.zoneAt 'farms', so off the road, the fair ground, the ways, the pond and the
+ // hedges), off the debris slope and the farm tracks; the orchards on the two outer terraces and only there; the paddies
+ // by the spring; twelve farmhouses, each wholly in its cell; the palisade unbroken from where the debris slope rises at
+ // one end to the other but at its gates and posts; the forest gate on the road and the north-west gate where the lift
+ // road comes in; a track from each other gate in to the terrace way
+ farms(F){if(!F)return{ok:false,detail:'no farms'};const bad=[],C=F.cells,SP=PR.SPRING;
+  const sat=(A,B)=>{const ax=P=>P.map((a,j)=>{const b=P[(j+1)%P.length];return[-(b[1]-a[1]),b[0]-a[0]];});for(const n of ax(A).concat(ax(B))){const pr=P=>P.map(q=>q[0]*n[0]+q[1]*n[1]),a=pr(A),b=pr(B);
+    if(Math.max(...a)<=Math.min(...b)+.05||Math.max(...b)<=Math.min(...a)+.05)return false;}return true;};
+  const G=new Map();C.forEach((c,i)=>{const k=Math.floor(c.x/60)+','+Math.floor(c.z/60);(G.get(k)||G.set(k,[]).get(k)).push(i);});
+  let over=0;C.forEach((c,i)=>{const gx=Math.floor(c.x/60),gz=Math.floor(c.z/60);for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)(G.get((gx+a)+','+(gz+b))||[]).forEach(j=>{if(j>i&&sat(c.corners,C[j].corners)){over++;if(bad.length<8)bad.push('cells overlap: '+c.id+' / '+C[j].id);}});});
+  const trackD=q=>{let d=1e9;F.tracks.forEach(T=>{for(let i=1;i<T.pts.length;i++){const a=T.pts[i-1],b=T.pts[i],dx=b[0]-a[0],dz=b[1]-a[1],L2=Math.max(1e-9,dx*dx+dz*dz),t=Math.max(0,Math.min(1,((q[0]-a[0])*dx+(q[1]-a[1])*dz)/L2));d=Math.min(d,Math.hypot(q[0]-a[0]-dx*t,q[1]-a[1]-dz*t)-T.w/2);}});return d;};
+  let off=0;C.forEach(c=>{const Q=c.corners,pts=Q.concat(Q.map((q,j)=>[(q[0]+Q[(j+1)%4][0])/2,(q[1]+Q[(j+1)%4][1])/2]),[[c.x,c.z]]);
+   const why=pts.map(q=>{const z=PR.zoneAt(q[0],q[1]).zone;return z!=='farms'?'on the '+z:groundH(q[0],q[1])-floorH(q[0],q[1])>.6?'on the debris slope':trackD(q)<.5?'on a track':null;}).find(Boolean);
+   if(why){off++;if(bad.length<8)bad.push(c.id+' '+why);}});
+  const per=[0,0,0,0,0,0];C.forEach(c=>per[c.k]++);per.forEach((n,k)=>{if(n<20)bad.push('terrace '+(k+1)+' has '+n+' cells');});
+  C.forEach(c=>{if((c.kind==='orchard')!==(c.k>=4)&&c.kind!=='farmstead'&&bad.length<12)bad.push(c.id+(c.kind==='orchard'?' an orchard on terrace '+(c.k+1):' not an orchard on terrace '+(c.k+1)));});
+  const pad=C.filter(c=>c.kind==='paddy');if(pad.length<10)bad.push('only '+pad.length+' paddies');pad.forEach(c=>{if(Math.hypot(c.x-SP.x,c.z-SP.z)>300&&bad.length<12)bad.push(c.id+' a paddy '+Math.round(Math.hypot(c.x-SP.x,c.z-SP.z))+' m from the spring');});
+  // the farmhouses: twelve, each wholly in its cell (its footprint's corners inside the cell's quad), none overlapping
+  const inQ=(q,Q)=>{let sg=0;for(let j=0;j<4;j++){const a=Q[j],b=Q[(j+1)%4],cr=(b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]);if(Math.abs(cr)<1e-6)continue;if(!sg)sg=Math.sign(cr);else if(Math.sign(cr)!==sg)return false;}return true;};
+  const fp=h=>{const u=[Math.cos(h.ry),-Math.sin(h.ry)],v=[Math.sin(h.ry),Math.cos(h.ry)];return[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[h.x+u[0]*h.w/2*q[0]+v[0]*h.d/2*q[1],h.z+u[1]*h.w/2*q[0]+v[1]*h.d/2*q[1]]);};
+  if(F.houses.length!==12)bad.push(F.houses.length+' farmhouses');
+  F.houses.forEach((h,i)=>{const c=C.find(c=>c.id===h.cell);if(!c||!fp(h).every(q=>inQ(q,c.corners)))bad.push(h.id+' not wholly in its cell');
+   F.houses.forEach((h2,j)=>{if(j>i&&sat(fp(h),fp(h2)))bad.push(h.id+' overlaps '+h2.id);});});
+  // the palisade: its runs and pieces cover the line from end to end, no gap over 2 m
+  const P=F.palisade,iv=P.runs.map(r=>[r.s0,r.s1]).concat(P.gates.concat(P.posts).map(g=>[g.s-g.w/2,g.s+g.w/2])).sort((a,b)=>a[0]-b[0]);
+  let reach=P.s0,gap=0;iv.forEach(q=>{if(q[0]>reach+2){gap++;if(bad.length<12)bad.push('a gap in the palisade at '+Math.round(reach)+'-'+Math.round(q[0])+' m');}reach=Math.max(reach,q[1]);});
+  if(reach<P.s1-2)bad.push('the palisade stops '+Math.round(P.s1-reach)+' m short');
+  const fg=P.gates.find(g=>g.road),nw=P.gates.find(g=>/north-west/.test(g.name));
+  if(!fg||Math.hypot(fg.x-PR.GATE.x,fg.z-PR.GATE.z)>8)bad.push('no forest gate on the road');
+  const Rd=(ROOST.roads||[])[0],re=Rd?Rd.pts[Rd.pts.length-1]:null;if(!nw||!re||Math.hypot(nw.x-re[0],nw.z-re[2])>10)bad.push('no north-west gate where the lift road comes in');
+  P.gates.filter(g=>!g.road).forEach(g=>{if(!F.tracks.some(T=>T.pts.some(q=>Math.hypot(q[0]-g.x,q[1]-g.z)<14)))bad.push('no track to '+g.name);});
+  if(!F.tracks.some(T=>/terrace way/.test(T.name)))bad.push('no terrace way');
+  const by={};C.forEach(c=>by[c.kind]=(by[c.kind]||0)+1);
+  return{ok:!bad.length,detail:C.length+' cells on '+per.filter(Boolean).length+' terraces ('+Object.keys(by).map(k=>by[k]+' '+k).join(', ')+'), '+F.houses.length+' farmhouses, '+P.gates.length+' gates, '+P.posts.length+' posts'+
+   (bad.length?': '+bad.slice(0,8).join('; '):'; no overlap, all on farmland, the palisade unbroken')};},
  // EACH WING'S BEASTS IN ITS OWN STALLS (owner, 2026-10-19): every beast on a perch, or coming in to one, is one its bay
  // takes (the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx, the Nightwing's bats; the Garden the three)
  wings(list){if(!PRFLY)return{ok:false,detail:'no flyers'};const L=PRFLY.LABEL,bad=list.filter(a=>a.bay&&a.bay.allow&&a.bay.allow.indexOf(a.sp)<0),by={};
@@ -281,6 +320,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('each Wing\'s beasts in its own stalls',HCHK.wings(PRFLY?PRFLY.list():[]));
  add('the gates: clear of the rock',HCHK.gates(ROOST.stair));
  add('the town on the top: every building on the cap, apart, off the streets; every trade',HCHK.town(TOWN));
+ add('the farms: six terraces of fields, twelve farmhouses, the palisade and its gates',HCHK.farms(FARMS));
  add('the lift road: the beast lift to the north-west gate, cleared',HCHK.road((ROOST.roads||[])[0],ROOST.lifts.find(l=>l.id==='lift-north')));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
@@ -317,24 +357,33 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add('two houses on one footprint',HCHK.town(Object.assign({},T,{lots:T.lots.concat([Object.assign({},L0,{x:L0.x+1,id:L0.id+'b'})])})));
   add('no assembly hall',HCHK.town(Object.assign({},T,{lots:T.lots.filter(l=>l.role!=='hall')})));
   add('no tannery (the tanners without a building)',HCHK.town(Object.assign({},T,{lots:T.lots.filter(l=>l.key!=='br_bldg_tannery')})));}
+ if(FARMS){const F=FARMS,c0=F.cells.find(c=>c.k===1&&c.kind==='crop'),or=F.cells.find(c=>c.k===0&&c.kind!=='farmstead'),h0=F.houses[0];
+  const mvCell=(c,dx,dz)=>Object.assign({},F,{cells:F.cells.map(x=>x!==c?x:Object.assign({},x,{x:x.x+dx,z:x.z+dz,corners:x.corners.map(q=>[q[0]+dx,q[1]+dz])}))});
+  if(c0){const q=PR.ROAD.pts[1];add('a field on the forest road',HCHK.farms(mvCell(c0,q[0]-c0.x,q[1]-c0.z)));}
+  if(or)add('an orchard on the first terrace',HCHK.farms(Object.assign({},F,{cells:F.cells.map(x=>x!==or?x:Object.assign({},x,{kind:'orchard'}))})));
+  if(h0)add('a farmhouse half off its cell',HCHK.farms(Object.assign({},F,{houses:F.houses.map(h=>h!==h0?h:Object.assign({},h,{x:h.x+16}))})));
+  add('a gap in the palisade',HCHK.farms(Object.assign({},F,{palisade:Object.assign({},F.palisade,{runs:F.palisade.runs.filter((r,i)=>i!==1)})})));
+  add('no forest gate',HCHK.farms(Object.assign({},F,{palisade:Object.assign({},F.palisade,{gates:F.palisade.gates.filter(g=>!g.road)})})));
+  {const pd=F.cells.find(c=>c.kind==='paddy');if(pd)add('a paddy by the east gate',HCHK.farms(Object.assign({},F,{cells:F.cells.map(x=>x.k===1&&x.kind==='crop'&&x.g<40?Object.assign({},x,{kind:'paddy'}):x)})));}}
  {const Rd=(ROOST.roads||[])[0];if(Rd)add('the lift road through the seep pond',HCHK.road(Object.assign({},Rd,{pts:Rd.pts.concat([[PR.POND.x,0,PR.POND.z]])}),ROOST.lifts.find(l=>l.id==='lift-north')));}
  return R;}
 
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
- hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts and the town on the top; the farms and the camps are to come)',
+ hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts, the town on the top and the farms; the camps are to come)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  hourTicks:[(dt,hour)=>{if(PRFLY)PRFLY.update(dt,hour);}],   // Girder's flyers on the roosts (89b, build.py flyers_fragment)
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
-  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
+  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the farms':{match:o=>!!(o.userData&&o.userData.farms)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
   'the far land':{match:o=>!!(o.userData&&o.userData.far)},'sky':{objects:()=>[sky,giant,giantRing]}},
- exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST,town:TOWN?TOWN.K.export():null})},
+ exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST,town:TOWN?TOWN.K.export():null,farms:FARMS?{terraces:FARMS.terraces,cells:FARMS.cells,houses:FARMS.houses,palisade:FARMS.palisade,tracks:FARMS.tracks}:null})},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
   biome:()=>window._biome,jungle:()=>window._jungle,far:()=>({rings:FAR.rings,around:FAR.around,water:FAR.water}),
   town:()=>TOWN?{ms:TOWN.ms,lots:TOWN.lots.length,ways:TOWN.ways.length,log:TOWN.log,failed:TOWN.failed,missing:TOWN.missing,trades:TOWN.trades,draw:TOWN_DRAW}:null,
+  farms:()=>FARMS?{ms:FARMS.ms,cells:FARMS.cells.length,houses:FARMS.houses.length,log:FARMS.log,draw:FARMS_DRAW}:null,
   roosts:()=>({ms:ROOST.ms,decks:ROOST.decks.length,stalls:ROOST.roosts.length,bridges:ROOST.bridges.length,lifts:ROOST.lifts.length,climbs:ROOST.climbs.length,why:ROOST.why})}});

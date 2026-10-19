@@ -29,6 +29,9 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
   the beast stage, and the module's builder for the rest (the quarters' draws, a civic list that carries every trade).
   The buildings are the Beast Riders kit's and its ports, bundled by `build.py` (`CAT`, `KCITY`) and instanced through
   the isle demo's `58-isle-protos.js`, read in place.
+- **P3b is done** (same branch): the farms (`src/55-pr-farms.js` `PRF.plan`, run in `55b`, drawn by `89d`): six terraces
+  of field cells measured out from the mesa's smoothed foot, orchards on the outer two, paddies by the spring, twelve
+  farmhouses, the palisade (stakes, Girder's gatehouses and watch posts), the terrace way and the gates' tracks.
 - **Not in the gallery** (the owner, 2026-10-19): `gallery/build_gallery.py` lists it in `UNLISTED` until the town is
   built. The north-eastern canyons biome it stands on is in Krator Biomes and Objects.
 
@@ -37,7 +40,7 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
 1. **P2 follow-ups, if the owner asks** (KNOWN_ISSUES.md): a notch in the rock mesh so the Stair's flights are cut into
    the face; plants kept off the rings (plan the roosts before the necanyons kit builds); the roosts on a nav graph with
    a walker (with P3's people); a Godot builder for the roost records.
-2. **P3b-e** (P3a, the town, is done): the Deep Root cavern (KCAVERN with a KSTACKS hole, BR_ROCK dressing; the ring of twelve
+2. **P3c-e** (P3a, the town, and P3b, the farms, are done): the Deep Root cavern (KCAVERN with a KSTACKS hole, BR_ROCK dressing; the ring of twelve
    stones with nothing built inside), the farms as contour cells with twelve farmhouses, the camps (`BR_CAMP`, hedges
    and fences from `BR_RUN`), the mounts (the Longcrawler is rideable; the jungle staghorn is the staghorn's
    jungle-coloured variant), ways up to the Garden's mesa and the Heart.

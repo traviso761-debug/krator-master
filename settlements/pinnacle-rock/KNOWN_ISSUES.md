@@ -1,8 +1,13 @@
 # Pinnacle Rock — known issues
 
-- [ ] **The farms, the camps, the Deep Root cavern and the Garden's great-houses are not built yet** (P3b-e): the
-      cleared ground round the mesa, the bands' grounds on the top, the precinct and the Garden's mesa are bare until they
-      are laid (`PLAN.md` section 3). The town on the top (P3a) is.
+- [ ] **The camps, the Deep Root cavern and the Garden's great-houses are not built yet** (P3c-e): the bands' grounds on
+      the top and the floor, the precinct and the Garden's mesa are bare until they are laid (`PLAN.md` section 3). The
+      town on the top (P3a) and the farms (P3b) are.
+- [ ] **The farms are drawn simply**: each field a levelled slab over the floor mesh (the floor is not cut to the
+      terraces), its crop as instanced rows, the orchards' trees a trunk and a crown, the paddies' water a sheet with no
+      channels from the spring; the crops are the plan's named few, not drawn from `kits/crops` (`CROPS.forBiome`). The
+      palisade's run has no walkway; the west and east gates open on the floor, the bands' tracks out to their grounds
+      come with P3c.
 - [ ] **The town's buildings carry no furniture and no interiors**: the catalog's furniture files are not on the page
       (`build.py` `cat_fragment`; a building's `F.furn` notes the key and places nothing), as on the isle demo's city page.
       They come with the life (P4) or an export profile.

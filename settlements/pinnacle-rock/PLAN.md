@@ -141,6 +141,11 @@ the two markets, the shrine, the barracks, every trade the town carries; the tow
 planned: no furniture or interiors yet, the hall at Girder's size, the speakers' stones and the fires to come (P4)
 (KNOWN_ISSUES.md). Next: P3b, the farms.
 
+**Status (2026-10-19, P3b): the farms are laid and drawn** (README.md, "The farms"): the ring inside the palisade in
+six terraces of about 640 field cells (`src/55-pr-farms.js`), orchards on the outer two, paddies by the spring, twelve
+farmhouses on the terrace way, the palisade with its four gates and fifteen watch posts, the tracks and the forest
+road; the farms check and six negatives pass. Next: P3c, the bands' grounds.
+
 - **P0. The site and the harness.** Find the mesa (section 1), write the point back, `build.py` reading the catalog,
   Girder's flyers and `core/terrain` in place, the port lint, `verify.py` on `tools/harness.py`. Done when a bare red
   mesa stands in the hyperjungle on the page and `--assert` passes.

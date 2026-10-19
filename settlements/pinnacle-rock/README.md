@@ -2,8 +2,8 @@
 
 The Beast Riders' roost town on a red sandstone mesa at the north-eastern edge of the hyperjungle (`PLAN.md`; the lore is
 `LORE.md` §6.6). Built in stages (`PLAN.md` section 3). **Done: P0 and P1, the rock and the site; P2, the roosts, the
-Stair, the lifts and the flyers; P3a, the town on the top.** The farms, the bands' camps, the Deep Root cavern and the
-Garden's great-houses (P3b-e) are the stages to come.
+Stair, the lifts and the flyers; P3a, the town on the top; P3b, the farms.** The bands' camps, the Deep Root cavern and the
+Garden's great-houses (P3c-e) are the stages to come.
 
 ```
 python3 build.py                                   # dist/pinnacle-rock.html (+ its texture sidecars)
@@ -103,6 +103,19 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
   Girder's round-hut compound, joglo and stave longhouse, its hall and stalls, Mav's shrine), bundled by `build.py`
   (`CAT`, sealed with the catalog's core and the two towns; `KCITY` as the isle demo bundles it), each built once and
   drawn instanced (the isle demo's `58-isle-protos.js`, read in place). About 600 buildings, 120 streets.
+- **The farms** (P3b) are records (`src/55-pr-farms.js`, `PRF.plan`, `[G data]`; run in `55b`, drawn by `89d-host-farms.js`):
+  the ring inside the palisade measured out from the mesa's foot (its radius smoothed over 12 degrees), from the debris
+  slope's toe to the palisade, in six terraces of two rows each, cut into field cells of about 34 m (a cell is the quad
+  between its angles and radii, inset 1.5 m for the bunds; none overlapping another, none off the farmland, the debris
+  slope, the tracks or the spring). The two outer terraces are orchards (stack figs, ember plums), the cells within
+  280 m of the spring paddies, the rest fonio, millet, pigeon pea, gourds, kitchen gardens and beetle pens. Each cell is
+  drawn levelled at its highest corner with banks down to the ground, its crop in instanced rows. Twelve farmhouses (the
+  kit's `br_bldg_farmhouse`: the farmhouse and its yard, the courtyard farm, the paddy farm on its piles by the spring),
+  each wholly in a cell along the terrace way. The palisade is the plan's line: a sharpened stake every half metre,
+  Girder's gatehouse at the forest gate (on the road), the north-west gate (where the lift road comes in), a west and an
+  east gate, Girder's stretch with its watch post about every 220 m, ending where the debris slope rises at each end.
+  The terrace way runs round the ring between the third and fourth terraces, with a track in from each gate; the forest
+  road runs from the fair ground out through the forest gate.
 - **The plants**: the necanyons kit (`biomes/necanyons`, read in place with its land fragment `47-host-land.js`, which
   takes this page's `LAND` hooks: the cap height, the LOD spine, the cleared ground, no creek) on the walls, ledges,
   spurs and stacks, kept off the town's ground past the 12 m rim band; the hyperjungle on the floor, kept out of the farms,
@@ -110,7 +123,7 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
 - **Textures**: the rock and the floor are necanyons' and the hyperjungle's packs; the roosts take six of the Beast
   Riders kit's detail maps (`wood`, `timber`, `shingle`, `rope`, `straw`, `sandstone`: `kits/beast-riders/materials.json`)
   and the flyers Girder's `fly_*` and `flywing` (both packed by `build.py` from those builds' committed `tex/`). The town's
-  streets take the kit's `yard` (trodden earth) and its squares `sandstone`; its buildings the catalog's and the kit's
+  streets and the farm tracks take the kit's `yard` (trodden earth; the fields' soil too, tinted by their crop) and its squares `sandstone`; its buildings the catalog's and the kit's
   detail maps (`KF_TEX`, beside the page in `.tex.kftex.js`) and the ports their towns' own maps (`.tex.brtowns.js`,
   `kits/beast-riders/towns.py`).
 
@@ -137,10 +150,16 @@ nothing standing on it. The town (P3a): every building's corners and edges' midd
 its rim and off the rock standing on it, no two footprints overlapping (oriented boxes), none reaching a street's
 carriageway, none in the Deep Root precinct or a band's ground nor within 6 m of a lift's head, the Stair's head gate or a
 climb's start, each standing within 2.5 m of the cap; the hall, the shrine, each Wing's barracks, the toll house and the
-beast stage; every trade the town carries with a building; 400 lots or more. Each has a negative control (the fins
+beast stage; every trade the town carries with a building; 400 lots or more. The farms (P3b): six terraces of cells,
+no two overlapping, every cell's corners, edges' middles and centre on farmland, off the debris slope and the tracks;
+the orchards on the two outer terraces and only there; ten paddies or more, each within 300 m of the spring; twelve
+farmhouses, each wholly in its cell, none overlapping; the palisade unbroken from end to end but at its gates and posts;
+the forest gate on the road and the north-west gate where the lift road comes in; a track from each other gate to the
+terrace way. Each has a negative control (the fins
 in one row, a fin over the edge, a 180 m mesa, the Garden all one height, no Garden's mesa, no Heart, a Heart weathered
 like the Garden's mesa, a Heart as tall as its pinnacles, a tree in the Crown, a tree in the farms; a deck cut into its
 fin, a perch facing its fin, a bridge from the north fins to the east, a cable rubbing the wall, the Stair with one gate,
 the Stair ending in the gorge, a deck with no climb, a quetzal sent to a lookout ring, the Stair's flights 4 m out from
 the face, a climb 3 m out from its fin, an archaeopteryx in a Quetzal stall, the lift road through the seep pond, a gate sunk into the cap rock; a house on an avenue, in the Wingclaw band's ground, on the rim, two
-houses on one footprint, no assembly hall, no tannery).
+houses on one footprint, no assembly hall, no tannery; a field on the forest road, an orchard on the first terrace, a farmhouse half off its
+cell, a gap in the palisade, no forest gate, paddies by the east gate).

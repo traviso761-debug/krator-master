@@ -95,7 +95,7 @@ const PRT = (function () {
     const ON = o.rock.filter(B => B !== M && Math.abs(B.y0 - (top - 1)) < 4);
     const footPoly = (B, m) => { const out = []; B.beds.filter(b => b.y < B.y0 + 25).forEach(b => { const P = []; for (let k = 0; k < 48; k++) { const a = k / 48 * Math.PI * 2, R = KS.footR(b, a) + m; P.push([b.cx + Math.cos(a) * R, b.cz + Math.sin(a) * R]); } out.push(P); }); return out; };
     const MARGIN = B => B.garden ? 6 : B.kind === 'fin' ? 7 : 4;
-    const ell = (E, pad, n) => { const P = [], p = pad || 0; for (let k = 0; k < (n || 32); k++) { const a = k / (n || 32) * Math.PI * 2; P.push([E.x + Math.cos(a) * (E.rx + p), E.z + Math.sin(a) * (E.rz + p)]); } return P; };
+    const ell = (E, pad, n) => { const P = [], p = pad == null ? 0 : pad, N = n == null ? 32 : n; for (let k = 0; k < N; k++) { const a = k / N * Math.PI * 2; P.push([E.x + Math.cos(a) * (E.rx + p), E.z + Math.sin(a) * (E.rz + p)]); } return P; };
     const GARDEN_B = ON.find(B => B.garden);
     // the ring round the Garden's mesa: its foot (every bed within 25 m) out 14 m and half the avenue, smoothed
     const ringAround = (B, gap) => {

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 86 (48%) | 0 (0%) | 0 (0%) | 23 (13%) | 71 (40%) |
+| KB | 104 (48%) | 0 (0%) | 0 (0%) | 29 (13%) | 84 (39%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -20,12 +20,15 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/47b-host-roosts-plan.js` | 2.9 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | runs PRR's plan (43) before the kits build, adds its ways to PR, cuts the lift road's bench into LAND.talus and re-seats the floor mesh there |
 | `src/54-pr-town.js` | 26.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the town on the top as records (PRT.plan: one core/city instance, steps 0-5 from the layout, the module's builder 6-12; the trades it carries) |
 | `src/54b-host-town-plan.js` | 0.8 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | runs PRT's plan (54) on this page's rock and roost plan with the Beast Riders' sizes (CAT.dims); core/city registers every lot in core/tags |
+| `src/55-pr-farms.js` | 18.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the farms as records (PRF.plan): the ring in six terraces of field cells, the crops, twelve farmhouses, the palisade's runs, gates and posts, the tracks |
+| `src/55b-host-farms-plan.js` | 1.0 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | runs PRF's plan (55) on this page's ground (the mesa's foot, the debris slope, the lift road's end) |
 | `src/86-pr-far.js` | 3.2 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the far land: one ring mesh from WORLD.H (the scale model) |
 | `src/87-pr-talus.js` | 1.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the debris slope's fallen blocks: one biome item placed per 6 m cell (KRAND); the slope's height is LAND.talus (45) |
 | `src/88-host-build.js` | 2.1 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89-host-roosts.js` | 25.4 | [draw] | 10 | 0 | 0 | 0 | 0 | 4 | 0 | 1 | 0 | 0 | 0 | draws PRR's records (merged meshes by material, the Beast Riders kit's maps) and registers them; the lifts' cages move on a tick |
-| `src/89c-host-town.js` | 5.9 | [draw] | 13 | 0 | 0 | 0 | 2 | 2 | 0 | 2 | 0 | 0 | 0 | draws TOWN's records: the streets as ribbons, the squares paved, each building built once (CAT.proto, isleProto) and instanced |
-| `src/99-host-take.js` | 40.4 | [draw] | 7 | 0 | 0 | 0 | 0 | 13 | 0 | 2 | 4 | 0 | 0 |  |
+| `src/89c-host-town.js` | 6.6 | [draw] | 12 | 0 | 0 | 0 | 2 | 2 | 0 | 2 | 0 | 0 | 0 | draws TOWN's records: the streets as ribbons, the squares paved, each building built once (CAT.proto, isleProto) and instanced |
+| `src/89d-host-farms.js` | 11.1 | [draw] | 23 | 0 | 0 | 0 | 2 | 7 | 0 | 4 | 0 | 0 | 0 | draws FARMS' records: levelled field slabs, instanced crop rows, rice, beds, pens and orchard trees, the paddies' water, the palisade's stakes, the farmhouses and gates (CAT), the tracks and the road |
+| `src/99-host-take.js` | 47.3 | [draw] | 7 | 0 | 0 | 0 | 0 | 13 | 0 | 2 | 4 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes
