@@ -11,7 +11,7 @@
 //              are one person's room. Without it each activity's slots stand alone)})
 //   SIM.offers(P, act) -> slots (0 if not offered)            SIM.isOpen(P, act, hour)
 //   SIM.free(P, act) -> slots left (within cap)               SIM.reserve(actor, P, act) / SIM.release(actor)
-//   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...], limit}) -> candidates, nearest first, open, free
+//   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...], limit, settlement?}) -> candidates, nearest first, open, free
 //                                 and letting the actor in (SIM.welcome). With `limit` and `near` (and no ids) only the
 //                                 nearest `limit` are returned, found on a grid of the places (rings out from `near`):
 //                                 exactly the first `limit` of the full list, without looking at every place (a grid per
@@ -50,6 +50,7 @@
     if(!SIM.offers(P, act)) return false;
     if(opt.kinds && opt.kinds.indexOf(P.kind)<0) return false;
     if(opt.exclude && opt.exclude[P.id]) return false;
+    if(opt.settlement!=null && P.settlement!==opt.settlement) return false;      /* a town's own places (P7a: the search scoped) */
     if(hour!=null && !SIM.isOpen(P, act, hour)) return false;
     if(!opt.ignoreSlots && SIM.free(P, act) <= 0) return false;
     if(actor && SIM.welcome && !SIM.welcome(actor, P, act)) return false;
@@ -75,7 +76,7 @@
   SIM.placesFor = function(act, actor, hour, opt){
     opt = opt || {}; var out=[], near=opt.near, ids=opt.ids;
     if(opt.limit && near && !ids){ var G=grid(act); if(!G.n) return out; if(!G.bias){
-      var ek=null; if(!opt.exclude || !Object.keys(opt.exclude).length){ ek=act+'|'+hour+'|'+Math.floor(near[0]/GCELL)+','+Math.floor(near[1]/GCELL)+'|'+(opt.kinds||'')+'|'+(actor&&actor.org||'')+'|'+opt.maxR;
+      var ek=null; if(!opt.exclude || !Object.keys(opt.exclude).length){ ek=act+'|'+hour+'|'+Math.floor(near[0]/GCELL)+','+Math.floor(near[1]/GCELL)+'|'+(opt.kinds||'')+'|'+(actor&&actor.org||'')+'|'+opt.maxR+(opt.settlement!=null ? '|'+opt.settlement : '');
         var mm=SIM.host ? SIM.minute() : 0; if(EMPTY.m!==mm){ EMPTY={ m:mm, k:{} }; } if(EMPTY.k[ek]) return out; }
       /* rings of cells out from `near`: once `limit` are found, a ring whose inner edge lies past the limit-th distance
          cannot change the first `limit`, so stop there */

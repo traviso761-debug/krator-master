@@ -78,3 +78,10 @@ FURN({
 /* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed lizardmen_training_<role> */
 FK.set({ culture: 'lizardmen', tier: 'common', roles: 'training', prefix: 'lizardmen_training_', S: LIZ_COMMON, names: {
   training_dummy: 'Basalt practice post', archery_butt: 'Scale-hide target' } });
+
+/* trades and households (FK.ROLES.trade, the 2026-10-19 trades audit) in this culture's style sheet, keyed lizardmen_trade_<role> */
+FK.set({ culture: 'lizardmen', tier: 'common', roles: 'trade', prefix: 'lizardmen_trade_', S: LIZ_COMMON, names: {
+  forge: 'Basalt forge', anvil: 'Anvil on a swamp-wood stump', trough: 'Clay trough', stall: 'Beast pen', hayrack: 'Reed fodder rack', display: 'Reed display steps', armour_stand: 'Scale armour on a post', weapon_rack: 'Spear rack', vat: 'Dye pit-vat', still: 'Swamp-fruit still', bin: 'Reed grain bins', larder: 'Hanging larder', bunk: 'Basking bunk', locker: 'Reed locker', lathe: 'Bow-drill lathe', press: 'Fruit press', kiln: 'Clay kiln', grindstone: 'Basalt grindstone', altar: 'Serpent altar', barrel: 'Clay jar cradle' } });
+/* the works (FK.ROLES.works): baking, butchery, healing, scribing, shipwrighting, quarrying, customs and dairy pieces, keyed lizardmen_works_<role> */
+FK.set({ culture: 'lizardmen', tier: 'common', roles: 'works', prefix: 'lizardmen_works_', S: LIZ_COMMON, names: {
+  bread_oven: 'Clay oven', butcher_block: 'Butcher\'s block', meat_rack: 'Smoking rack', herb_bench: 'Healer\'s herb bench', sickbed: 'Basking-slab bed', scribe_desk: 'Glyph-carver\'s desk', hull_stocks: 'Dugout on its stocks', quarry_block: 'Basalt-cutter\'s bench', weigh_scale: 'Market weigh-beam', tally_board: 'Knot-and-notch tally board', churn: 'Egg-cream churn', cheese_press: 'Cheese press' } });

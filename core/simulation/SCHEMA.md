@@ -172,10 +172,25 @@ A page may hold several settlements, each with its own economy (`settlements/isl
 - `SIM.economyStep` and `economyJump` step every economy in turn. Inside a turn `SIM.ECON` is that economy, so the
   module's own code is unchanged.
 - `SIM.stocks(s)` is one settlement's stocks, `SIM.stocksBy()` all of them; each keeps its own daily snapshots.
-- **Not yet split by settlement:** the items module's holdings (people's own things and their households' food are
-  counted in every settlement's stocks), the population deal (`SIM.populate`), the resolver's place search, and trade
-  between settlements (a carrier whose stops are two settlements' places, with exported, imported and in transit in
-  the books). They are P7a's remaining items.
+- **People.** A role may name its `settlement`: its actors live in that town's homes only, and every actor's work is
+  dealt among the places of its home's town. `SIM.populate({settlement, prefix})` deals one town's roles over its own
+  beds (call it once a town); its result counts `bySettlement`.
+- **The search.** The resolver looks for a place in the actor's own town first and anywhere only when its town has
+  none (`SIM.placesFor(..., {settlement})` filters by town); an errand's seller likewise.
+- **The items' books.** Each town's stocks count only its own households' food and its own people's things (by their
+  home), and its item flows (bought, eaten, worn, issued, broken, unmet) from the items module's books by town
+  (`SIM.ITEMS.statsBy[s]`).
+- **Trade between settlements** (`77-sim-6-trade.js`): `SIM.trade({id, stops:[{settlement, place}, ...], cap,
+  carriers?, minutes? | line?, mins?, goods?, keep?, want?, most?})`. A carrier goes round the stops on a timer
+  (`minutes` a passage, `mins` a stay) or as a `SIM.transport` line's vehicle. Leaving a landing it buys from that
+  town's warehouses what the next town wants (its use plus its unmet draws a day) and this one can spare (above `keep`
+  days of its own want), up to `want` days of the receiver's and `cap` in all; the sender books it **exported**. At sea
+  it is in neither town's stock: `SIM.tradeOutbound(g, s)` and `SIM.tradeInbound(g, s)` count it, a town's stocks rows
+  show it as `outbound` and `inbound`, and a town does not send for an import of what is already at sea toward it.
+  Landing, it goes into the landing's store (or the emptiest warehouse) and the receiver books it **imported**.
+  `SIM.trades(a, b)` gates it: one faction, or each faction's relation to the other not shut (`trade` false, `'none'`
+  or `'closed'`; without `trade`, a stance of wary or better). `SIM.tradeReport(id?)`: voyages, refused, what went
+  each way, landed, each carrier's load.
 
 ## The three levels (the contract for a settlement nobody is watching; P7d builds it)
 

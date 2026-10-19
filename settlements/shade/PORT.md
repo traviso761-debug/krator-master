@@ -39,6 +39,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87-host-views.js` | 3.1 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89t-shade-tags.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the page's core/tags records (KTAGS.page) from REG and PLACES |
+| `src/89s-shade-trades.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table SHADE_TRADES: no three.js, no geometry, no DOM |
 | `src/91-shade-probe.js` | 28.0 | [web] | 7 | 0 | 0 | 0 | 0 | 4 | 0 | 5 | 0 | 0 | 0 | Shade's window._api fields and checks, handed to core/host's probe (was 91-host-probe.js) |
 | `src/99-shade-take.js` | 3.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the take: KHOST.take (core/host; replaced 90-host-camera.js) |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |

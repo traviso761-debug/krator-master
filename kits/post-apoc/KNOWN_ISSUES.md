@@ -40,3 +40,11 @@ Open items are lines starting `- [ ]`; `build.py` prints them on every build.
 - [ ] **Takes the material library** (materials.json, src/29y-pa-matlib.js): planks, earth, concrete, timber and cloth. The rusty metals
       (corr, cont) take metal.corrugated.rusty (2026-10-06, late: 85 % of its own rust colour; reads browner than the procedural orange).
       corrH (horizontal ribs), sheet, iron, steel, bottle and chain stay procedural. ?mat=proc shows the old look.
+
+## Walking (core/walk)
+
+- [x] The walk mode (F) stands on `KWALK` (`src/92-camera.js` `paMove`): the interiors' floors, stairs, entry flights and walls that `KFURN` writes as each building is
+      furnished (`cfg.walk`), over the terrain; up 0.7 m, no stepping off a deck's edge, a 0.3 m circle that slides round blocks. Checked headless: the 17 entry
+      flights of the furnished buildings are all climbed.
+- [ ] Only buildings with an interiors set are in the registry. A building without one (a solid shell, the yards, the walls) is still walked through.
+

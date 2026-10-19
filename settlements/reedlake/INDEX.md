@@ -49,6 +49,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `79-rl-farm.js` | 11 |  |
 | `80-rl-islands.js` | 9 | the floating village (45) |
 | `81-rl-tavern.js` | 13 | the sign (colour-carrying map: never tint it) (11) |
+| `82-rl-trades.js` | 5 |  |
 | `88y-reedlake-matlib.js` | 2 |  |
 | `90-rl-scene.js` | 7 | scene (Reed Lake showcase) (1); build every site the target lists (63) |
 | `90w-rl-lake.js` | 3 | the lake (core/water) (1) |

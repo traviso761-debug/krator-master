@@ -44,10 +44,20 @@ document.getElementById('polyfmt').onclick=e=>{POLY.fmt^=1;e.target.textContent=
 document.getElementById('polycopy').onclick=()=>{polyOut.select();try{navigator.clipboard.writeText(polyOut.value);}catch(e){document.execCommand('copy');}};
 
 // ---- walk mode (F): eye height 1.7 m, WASD, drag to look. The set is meant to be judged from here.
-const WALK={on:false,x:0,y:1.7,z:40,yaw:0,pitch:0};
+const WALK={on:false,x:0,y:1.7,z:40,yaw:0,pitch:0,feet:0};
+/* the walker stands on core/walk (KWALK: the interiors' floors, stairs, entry flights and walls, written as each building is furnished) over the terrain:
+   up 0.7 m a step, no walking off a deck's edge (1.4 m), a circle of 0.3 m that slides round blocks. The same rules as core/host's walker. */
+const PA_WK={r:.3,h:1.7,step:.7,drop:1.4};
+function paStand(x,z,feet){const g=terrainH(x,z),f=KWALK.floorBelow(x,z,feet,PA_WK.step);return f&&f[0]>=g-.3?f[0]:g;}
+function paMove(mx,mz){const n=Math.max(1,Math.ceil(Math.hypot(mx,mz)/.15));let feet=WALK.feet;
+ for(let i=0;i<n;i++){let x=WALK.x+mx/n,z=WALK.z+mz/n,y=paStand(x,z,feet);
+  if(feet-y>PA_WK.drop&&KWALK.floorBelow(WALK.x,WALK.z,feet,PA_WK.step))break;                           /* the edge of a deck: stay on it */
+  if(KWALK.blocked(x,y,z,PA_WK.r,PA_WK.h)){const q=KWALK.push(x,y,z,PA_WK.r,PA_WK.h);x=q[0];z=q[1];y=paStand(x,z,feet);}
+  WALK.x=x;WALK.z=z;feet=y;}
+ WALK.feet=feet;}
 uiButton('Walk (F)',false,()=>{toggleWalk();return WALK.on;});
 function toggleWalk(){WALK.on=!WALK.on;if(WALK.on){const d=new THREE.Vector3();camera.getWorldDirection(d);WALK.yaw=Math.atan2(-d.x,-d.z);WALK.pitch=0;
- WALK.x=camera.position.x;WALK.z=camera.position.z;WALK.y=terrainH(WALK.x,WALK.z)+1.7;}else{setView(WALK.x-Math.sin(WALK.yaw)*-30,20,WALK.z-Math.cos(WALK.yaw)*-30,WALK.x-Math.sin(WALK.yaw)*10,4,WALK.z-Math.cos(WALK.yaw)*10);}
+ WALK.x=camera.position.x;WALK.z=camera.position.z;WALK.feet=terrainH(WALK.x,WALK.z);WALK.y=WALK.feet+1.7;}else{setView(WALK.x-Math.sin(WALK.yaw)*-30,20,WALK.z-Math.cos(WALK.yaw)*-30,WALK.x-Math.sin(WALK.yaw)*10,4,WALK.z-Math.cos(WALK.yaw)*10);}
  for(const b of ui.querySelectorAll('button'))if(b.textContent.startsWith('Walk'))b.classList.toggle('on',WALK.on);}
 
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
@@ -69,8 +79,9 @@ addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updat
 const hud=document.getElementById('hud');let last=performance.now(),renderErr=false;
 function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;
  if(WALK.on){const sp=(WALK.speed||6)*(keys.shift?2.5:1)*dt;const fw=new THREE.Vector3(-Math.sin(WALK.yaw),0,-Math.cos(WALK.yaw)),rt=new THREE.Vector3(Math.cos(WALK.yaw),0,-Math.sin(WALK.yaw));
-  if(keys.w){WALK.x+=fw.x*sp;WALK.z+=fw.z*sp;}if(keys.s){WALK.x-=fw.x*sp;WALK.z-=fw.z*sp;}if(keys.d){WALK.x+=rt.x*sp;WALK.z+=rt.z*sp;}if(keys.a){WALK.x-=rt.x*sp;WALK.z-=rt.z*sp;}
-  if(keys.e)WALK.y+=sp;if(keys.q)WALK.y-=sp;const ge=terrainH(WALK.x,WALK.z)+1.7;if(!keys.e&&!keys.q)WALK.y=ge;else WALK.y=Math.max(ge,WALK.y);}
+  let mx=0,mz=0;if(keys.w){mx+=fw.x*sp;mz+=fw.z*sp;}if(keys.s){mx-=fw.x*sp;mz-=fw.z*sp;}if(keys.d){mx+=rt.x*sp;mz+=rt.z*sp;}if(keys.a){mx-=rt.x*sp;mz-=rt.z*sp;}
+  if(mx||mz)paMove(mx,mz);
+  if(keys.e)WALK.y+=sp;if(keys.q)WALK.y-=sp;const ge=WALK.feet+1.7;if(!keys.e&&!keys.q)WALK.y=ge;else WALK.y=Math.max(ge,WALK.y);}
  else{const sp=ctl.radius*.6*dt;const fw=new THREE.Vector3(-Math.sin(ctl.theta),0,-Math.cos(ctl.theta)),rt=new THREE.Vector3(Math.cos(ctl.theta),0,-Math.sin(ctl.theta));
   if(keys.w)ctl.target.addScaledVector(fw,sp);if(keys.s)ctl.target.addScaledVector(fw,-sp);if(keys.d)ctl.target.addScaledVector(rt,sp);if(keys.a)ctl.target.addScaledVector(rt,-sp);
   if(keys.q)ctl.target.y-=sp;if(keys.e)ctl.target.y+=sp;}

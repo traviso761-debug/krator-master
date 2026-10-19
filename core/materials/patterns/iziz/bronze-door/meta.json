@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.686,
+    2.506
+   ],
+   "seam_before": [
+    3.349,
+    5.03
+   ],
+   "source_size": [
+    701,
+    1916
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.7,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.15,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "iziz/bronze-door",
+  "metal": 0.6,
+  "pattern": true,
+  "roughness": 0.45,
+  "scale": [
+   1.6,
+   4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "iziz-bronze-door.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-19 (pasted in the session; 8.webp), from the prompt in core/materials/PROMPTS-NEEDED.md (the Iziz palace citadel); its dark margin cropped to the leaf by the session",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/iziz/bronze-door: one leaf of a monumental cast bronze Art Deco door, five panels (a rising sun, chevrons, fluted columns, palm fronds, a kneeling figure holding up an orb), polished edges, verdigris in the hollows",
+  "reuse": "any cast bronze door: Talia's cathedral, the Ancients kit's reclaimed vaults, Voth's palace gate",
+  "sha1": "ec2ccc73ea6f560821e8bc206975de66cb58a065"
+ }
+}

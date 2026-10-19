@@ -33,6 +33,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/58-nr-anc-office.js` | 4.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-nr-anc-lab.js` | 8.9 | [draw] | 2 | 2 | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/62-nr-pirates.js` | 7.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/63-nr-trades.js` | 5.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/64-nr-flora.js` | 2.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | placeholder flora builders; replace with a biome kit's |
 | `src/70-nr-interiors.js` | 37.0 | [web] | 4 | 0 | 0 | 0 | 3 | 2 | 0 | 4 | 0 | 0 | 0 | split: the room data (cabins, templates, records: data) and the instanced drawing and stream tick (web) |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |

@@ -128,7 +128,7 @@ const IZIX=(function(){
   ['setItem','setBody','explicit','level'].forEach(k=>{if(R[k]!==undefined)R2[k]=R[k];});return R2;};
  VHOLLOW.jobs.forEach((J,i)=>{
   const id='iziz.'+J.key+'.'+i,reg=REG[J.r0],parent=reg&&typeof REG_ID!=='undefined'?REG_ID.get(reg)||null:null;
-  let inst;try{inst=IX.sets.instantiate(J.item,J.x,J.z,J.ry,{baseY:J.y,register:false,seed:0,prefix:id+'.'});}
+  let inst;try{inst=IX.sets.instantiate(J.item,J.x,J.z,J.ry,{baseY:J.y,register:false,seed:0,prefix:id+'.',walk:KWALK,walkTag:'interior:'+id});}
   catch(e){reportErr('interior '+J.key+': '+(e&&e.message||e));return;}
   inst.buildings.forEach(B=>(B.report.dropped||[]).forEach(d=>S.dropped.push(id+': '+d.kinds.join('+')+' ('+d.why+')')));
   inst.rooms=inst.rooms.map(R=>{try{return patch(R,J);}catch(e){return R;}});

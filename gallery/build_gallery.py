@@ -53,6 +53,12 @@ ENTRIES = [
      'The Pearl of Xanadu: a gilded valley city stepping up the hillsides, on the terrain of Travis\'s map.'),
     ('world', 'girder', 'settlements/girder/girder.html', 'Girder',
      'An outlying Beast Rider village in the central-crater hyperjungle: every tower home, shop, workshop, hut and the Assembly Hall planned into rooms and furnished from the catalog, doors open; press G to walk in.', 'new'),
+    ('world', 'pinnacle-rock', 'settlements/pinnacle-rock/dist/pinnacle-rock.html', 'Pinnacle Rock',
+     "The Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge: the stalls ringed round "
+     "its fins and pinnacles with their flyers, the Stair and the lifts, the town on the top (the Crown, the house and trade "
+     "quarters on core/city), the Garden's great-houses, the Deep Root cavern opening from the Garden's wall, the farm ring and "
+     "the bands' camps; the hour slider and N for the night (the Crown's fires, the stall lamps, the beacons). Walk mode, the "
+     "minimap (M) and the inspector.", 'new'),
     ('world', 'girder-hero', 'settlements/girder/hero/dist/girder-hero.html', 'Girder · Hero',
      'Girder with Styv, a third-person character you order about with the mouse, and people to talk to (Phil in the '
      'Assembly Hall). Same village, same rooms; the models slimmed to fit the gallery (MADE).', 'new'),
@@ -279,9 +285,9 @@ THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 # page above. One page joins its kind's section; several make a section of their own after it. Names come from the
 # pages' <title>s, the description from the build's README.md or INDEX.md. An ENTRIES line replaces all of that.
 KINDS = {'settlements': 'world', 'openworld': 'world', 'biomes': 'biome', 'kits': 'kit'}
-UNLISTED = {'settlements/isle-demo', 'settlements/pinnacle-rock'}   # build folders ('kits/furniture') never to list,
-# though they have pages; the isle demo's site planner is a tool that saves through its own serve.py; Pinnacle Rock
-# not until its town is built (the owner, 2026-10-19)
+UNLISTED = {'settlements/isle-demo'}   # build folders ('kits/furniture') never to list,
+# though they have pages; the isle demo's site planner is a tool that saves through its own serve.py. Pinnacle Rock
+# was listed once its town and its night were built (the owner, 2026-10-19)
 # Builds published as their own artifact, each with the script that makes its site: left out of the Krator Worlds
 # artifact (gallery/site/), whose index links to them instead (index.template.html), but kept in any other --out site
 # (the LAN host's), where size does not matter. The Throne's eleven stations are about 25 MB with their shared maps.

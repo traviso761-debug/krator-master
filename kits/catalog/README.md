@@ -25,7 +25,7 @@ The Beast Rider buildings place their furniture as catalog pieces with `F.furn` 
 | `krator-symbols.js` | VENDORED from `core/sockets/38-symbols.js`: the culture symbols (`SYMBOLS`, `SYMBOL_OF`) the hangings paint |
 | `krator-furniture-core.js` | the half of the engine with no page in it (split out 2026-10): `TAU`/`shade`, `mat()`, the geometry kit `mk*` (and `mkDecal`), the registries and vocabularies, `CATALOG_MATERIALS`, `FPAL`, the frame `makeFrame()` (`F.*`, `F.furn`), `buildFurn/buildPlant/buildAsset`, `rebuildInstance`, `measureInstance`. Loaded BEFORE the engine |
 | `krator-furniture-detail.js`, `materials.json`, `tex/` | the material library on catalog furniture, opt-in: `furniture_bundle.bundle(cultures, tex=True)` inlines `KF_TEX` (47 families, about 1 MB) and the detail pass; a batch's `flush` then gives each family's mesh its set as a triplanar detail map keyed by texture family, then render family. `KF.setTextures(false)` turns it off, `KF.textureInfo()` reports. Default off: the bundle is byte-identical without it. Re-pack with `python3 tools/textures/pack.py kits/catalog` after editing `materials.json`; a host's own rows win by using its own adapter |
-| `krator-furniture-runtime.js`, `furniture_bundle.py` | the catalog's furniture inside another build: `furniture_bundle.bundle(cultures)` wraps the core, the symbols, the kit, the culture files and the runtime in one closure exposing only `KratorFurniture` (batches merged per render family). See "Furniture in a kit build" |
+| `krator-furniture-runtime.js`, `furniture_bundle.py` | the catalog's furniture inside another build: `furniture_bundle.bundle(cultures)` wraps the core, the symbols, the kit, the culture files and the runtime in one closure exposing only `KratorFurniture` (batches merged per render family). See "Furniture in a kit build"; `plants=True` adds `krator-master-plants.js` with every plant joining `FURN_BY_KEY` as a piece (type `plant`), so a batch places a palm as it places a chair (the Iziz palace's orangery and roof gardens, 2026-10-19; default off, byte-identical) |
 | `krator-asset-engine.js` | the page: scene, camera, controls, ground, labels, frame loop; with the core: geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, the soft furnishings `F.pillow` (a stuffed cushion: domed faces, rounded corners, an optional boxed wall; returns its top height and its seams for piping) and `F.bolster` (gathered ends; banded by sections), `F.shift`, and `F.decal`: a painted canvas panel, cached per key), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
 | `krator-furniture-kit.js` | **the furniture kit `FK`**: one parametric builder per role (bed, throne, hearth, tapestry, wall art ...) driven by a culture's style sheet, motif and finial helpers, `FK.ROLES` per tier and `FK.set()`, which registers a whole tier for a culture. Read its header before writing a set |
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
@@ -169,7 +169,7 @@ FURN({
   bowls are `vessel`, candles `lamp`.
 - **Job** (optional, 2026-10). `job: '<trade>'` from `FURN_JOBS` (`farming fishing salt oil smithing milling
   warehousing brewing weaving tanning pottery carpentry mining herding trading`, and the Zeijani trades of 2026-10-07:
-  `fungiculture alchemy dyeing masonry lampmaking knapping ropemaking`) marks a work item: the piece goes on the
+  `fungiculture alchemy dyeing masonry lampmaking knapping ropemaking`, and the trades audit of 2026-10-19: `baking butchery healing scribing shipwrighting quarrying customs worship dairy`) marks a work item: the piece goes on the
   sheet's Jobs page, a row per job. Every entry of `krator-master-furniture-jobs.js` carries one; `verify.py`
   rejects a job not in the list. `KratorFurniture.FURN_JOBS` exposes the list to a host. `alchemy` was added 2026-10
   (`voth_still_cluster`); the kit's `still` role stays under `brewing`.
@@ -411,7 +411,7 @@ its file says what is still to add.
 **Tiers and wealth.** Every piece carries `tier` (`poor | common | court`) and `wealth: [lo, hi]`
 (`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The sheet is 1051 pieces: 86 generic goods and biome fruit, 731 kit and bespoke
 pieces of the first pass, 112 hangings of the second, and the 122 harvested ones (the interiors pass; with the
-kit harvests, the trade roles, the tent rug and the jobs file it is 1503; with the Mungo pass's reed tavern pieces, the builders' yard's carpentry pieces and its bricks, lime and reed bundles, 1514; with the six re-harvested Yuni interiors pieces, 1520; with the Scyvoi set, 76 kit and trade pieces and 33 bespoke ones, 1635; with the Scyvoi tanning pieces, 1641; with the nine Ancient arcology fittings Noah's Regret carries (bollard, capstan, quay lamp standard, deck ventilator, planting bed, plaza fountain, engine-room control stand, chain heap, stowed anchor), 1650; with the fruit pass's crater drylands and north-west bay fruit, 1655; with the 19 Ancient interior pieces the Ancients kit's intact buildings are furnished with (pod chair, desk, shelving, archive wall, galley, cold pantry, lockers, wardrobe, couch, low table, sleeping platform, crew bunk, ward bed, lab bench, server rack, weapon rack, wall screen, reception counter, cargo pods), 1674; with the north-eastern canyons' stack figs and ember plums, 1676). The poor tier is the two generic sets:
+kit harvests, the trade roles, the tent rug and the jobs file it is 1503; with the Mungo pass's reed tavern pieces, the builders' yard's carpentry pieces and its bricks, lime and reed bundles, 1514; with the six re-harvested Yuni interiors pieces, 1520; with the Scyvoi set, 76 kit and trade pieces and 33 bespoke ones, 1635; with the Scyvoi tanning pieces, 1641; with the nine Ancient arcology fittings Noah's Regret carries (bollard, capstan, quay lamp standard, deck ventilator, planting bed, plaza fountain, engine-room control stand, chain heap, stowed anchor), 1650; with the fruit pass's crater drylands and north-west bay fruit, 1655; with the 19 Ancient interior pieces the Ancients kit's intact buildings are furnished with (pod chair, desk, shelving, archive wall, galley, cold pantry, lockers, wardrobe, couch, low table, sleeping platform, crew bunk, ward bed, lab bench, server rack, weapon rack, wall screen, reception counter, cargo pods), 1674; with the north-eastern canyons' stack figs and ember plums, 1676; with the Order's 20 pieces for Longsong's interiors (skylight column, meditation cushions, relic case, scroll rack, card cabinet, chorten, altar, water clock, armillary, map table, debating dais, tea copper, specimen jar, planter, Ancient clock, anomaly instruments, wall of names, strongbox, butter-lamp rack, the Council's round table; Xanadu file, 2026-10-19), 1696). The poor tier is the two generic sets:
 a culture's poor buildings pull from them through `kits/interiors`' culture chain
 (`IX.CULTURE_FAMILY`), and the placer tries a culture's in-band pieces before its other tiers.
 The sheet, the hover inspector (T) and the interiors adapter all carry the tier.
@@ -460,6 +460,23 @@ The kit's header lists every style-sheet field and value. `FK.set()` declares `m
 sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<culture>_<tier>_<role>`
 (or `prefix`), and names them from `names`. Build, then `verify.py --assert`.
 
+### The Iziz palace's pieces (2026-10-19)
+
+Two category files, like `-jobs.js`: every piece is culture `iziz`, and every `rooms` list names only the palace's room
+kinds (`pal_*`), so no other build's placer ever picks one; a bundle carries them only when it names `izpalace` or
+`izpalace-depot` (`settlements/iziz/build.py` `TARGET_FURN`, the palace page). Each adds the palette keys it needs as
+defaults (the Iziz file's own values win); the court pieces draw their veneer, upholstery and gilding in the court keys
+(`courtMahogany`, `courtBrocade`, `courtCloth*`, `courtGilt`), so a page that packs the court sets finishes them. The palace's furnishing places them by key
+(`settlements/iziz/targets/palace/95p-palace-furnish.js`); the blueprint's NEW list (`settlements/iziz/palace/FURNITURE.md`)
+is covered.
+
+| File | Pieces |
+|---|---|
+| `krator-master-furniture-izpalace.js` (court, 25) | the imperial throne on its dais with the Orb (unique), bust niche, altar of the House, bath pool, bath slab, strongbox (role strongbox), map table with the crater inlaid, lectern, armillary, legion standard, heliograph; and for the dressing: great chandelier (ceiling), torchere, orb on a pedestal, gilt sun relief (wall), marble urn, palm in a bronze pot, kline, banquet table, pier mirror (wall), harp, mech trophy of Hook, fan screen, runner (rug), baldachin |
+| `krator-master-furniture-izpalace-depot.js` (Ancient and service, 22) | the power core (unique), the Ancient radio set (unique), power-cell rack, the lift platform (unique), mech cradle, chain hoist (ceiling), the shield emitter (unique), relic case, cauldron, roasting spit, brig grate, manacles, drum stand, laundry copper, ice chest, bath basin, Ancient light column, Ancient terminal, tool cart, munitions stack, shell rack, armour-plate stack |
+
+Verified: `tests/test-segments.js`; `verify.py dist/catalog.html --sheet furniture --query cultures=iziz --assert`.
+
 ### Pieces added in the 2026-10 interiors pass
 
 | Culture | Pieces (anchor) |
@@ -486,6 +503,19 @@ sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<cu
 | ashnomad | the Ash Nomads kit's tent and camp furnishings (2026-10-07): floor_cushion, bolster, sleeping_mat (wall), carapace_stool, chitin_bench, carapace_table, mess_table and serving_counter (the mess hall), brew_set (surface), cookpot, chitin_chest, bedding_stack (wall), saddle_bags, grub_jars, egg_basket, water_gourds, supply_bales; paper_lantern, hanging_lantern (ceiling), chitin_lamp, lantern_pole (outdoor); hanging_banner (ceiling), ash_screen, rug, wall_hanging (wall); fire_pit, brazier, smoke_rack (outdoor) |
 | ashnomad | riders, herders, crafts, the shaman and the court: beetle_saddle_rack, tack_pegs (wall), spear_rack, tying_post and grub_trough (outdoor, type pen); chitin_bench_work, plate_stack, carapace_stack (carpentry), ground_loom, hide_frame, fleshing_beam, tanning_vat, hide_stack, drying_line (tanning), bellows; spirit_pole, shaman_drum, bone_rack, herb_bundles (ceiling), smoke_bowl, skull_shrine; chief_seat, chief_divan, war_standard. Patterns painted by ASHNOMAD_FX: step-frets and Nazca figures in red and yellow on black |
 
+### The works (the 2026-10-19 trades audit)
+
+`FK.ROLES.works` adds 12 parametric roles for the trades the trade set lacks, registered like it with
+`FK.set({ culture, tier: 'common', roles: 'works', prefix: '<culture>_works_', S, skip })` and keyed
+`<culture>_works_<role>`; each role carries its job (`R.job`): `bread_oven` `baking`, `butcher_block` and
+`meat_rack` `butchery`, `herb_bench` and `sickbed` `healing`, `scribe_desk` `scribing`, `hull_stocks`
+`shipwrighting`, `quarry_block` `quarrying`, `weigh_scale` and `tally_board` `customs`, `churn` and
+`cheese_press` `dairy`. `worship` is the trade set's altar (`FK.TRADE_JOB`). Registered for the Islanders (all 12),
+Lizardmen (all 12), Xanadu and the Screamers (11: no hull stocks, landlocked) and, by the owner's scope for the
+nomad kits, for `nomad` and `scyvoi` (butcher's block, meat rack, herb bench, sickbed, churn, cheese press) and
+`ashnomad` (the first four; no dairy). Their tanning, brewing and smithing pieces were already here. Islander,
+Lizardmen, Xanadu and Screamer also take the trade set (20 roles each, `<culture>_trade_*`).
+
 ### Trades and households (the 2026-10 interiors-sets pass)
 
 The building sets' interiors (`kits/interiors/sets`) furnish shops, smithies, stables, workshops,
@@ -495,8 +525,8 @@ roles, each drawn in the culture's own style sheet, registered with
 for the Beast Riders). Each trade piece carries the job of its role (`FK.TRADE_JOB`: forge, anvil,
 grindstone, armour stand and weapon rack `smithing`; trough and hay rack `herding`; stall and display
 `trading`; vat `weaving`; still and barrel rack `brewing`; bin and larder `warehousing`; lathe `carpentry`;
-press `milling`; kiln `pottery`), so the sheet's Jobs page shows them in the job rows beside the jobs file's
-pieces. The bunk, locker and altar have no job and keep a row per culture (`Jobs · trade · <culture>`;
+press `milling`; kiln `pottery`; altar `worship`, 2026-10-19), so the sheet's Jobs page shows them in the job rows beside the jobs file's
+pieces. The bunk and locker have no job and keep a row per culture (`Jobs · trade · <culture>`;
 `?keys=_trade_` shows every trade piece).
 
 | Role | Type | Rooms | What |

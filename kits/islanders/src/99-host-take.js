@@ -62,7 +62,7 @@ const ENGINE_API={REG,DEFS,SITES,ROWS,SV_LIFE,
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.take({build:KIT.id,title:TITLE,
  hint:'Cut-away (C) opens the tents, Night (N) lights the lamps; the tools in the inspector panel lay out a polygon or a path',
- scene,camera,renderer,ground:terrainH,clear:.4,minR:1,maxR:2500,
+ scene,camera,renderer,ground:terrainH,walk:KWALK,clear:.4,minR:1,maxR:2500,
  views:VIEWS,
  controls:[CT.cut,CT.night,CT.shadows],
  keys:{c:()=>{cutSet(!ANIMU.uCut.value);},n:()=>{nightSet(!NIGHT.on);}},

@@ -75,12 +75,20 @@
   /* the days left, asked many times a minute (each cart, each unit made): computed once a minute */
   function daysOf(g){ var E=SIM.ECON, m=SIM.minute(); if(E.dlAt!==m){ E.dl={}; E.dlAt=m; } var v=E.dl[g]; return v!=null ? v : (E.dl[g]=SIM.economyDays(g)); }
   function byMost(g){ return function(p, q){ return (q.stock[g]||0)-(p.stock[g]||0) || (p.id<q.id?-1:1); }; }
+  /* a draw unmet: the running count, and the day's (77-sim-6-trade.js reads a town's want of a good it has none of) */
+  function shortStat(g, n){ var E=SIM.ECON, d=today(), D=E.day[d]||(E.day[d]={ made:{}, used:{}, imported:{}, exported:{} }); stat(D.short||(D.short={}), g, n); stat(E.short, g, n); }
   SIM.supply = function(g, n, whole){ var E=SIM.ECON; if(!E || !E.goods[g]) return n;
-    if(whole && SIM.stockOf(g)<n){ stat(E.short, g, n); return 0; }
+    if(whole && SIM.stockOf(g)<n){ shortStat(g, n); return 0; }
     var want=n, got=0, W=E.warehouses.filter(function(P){ return (P.stock[g]||0)>0; }).sort(byMost(g));
     for(var i=0;i<W.length && want>0;i++){ var t=Math.min(want, W[i].stock[g]); W[i].stock[g]-=t; want-=t; got+=t; }
-    if(got){ dayStat('used', g, got); if(E.dlAt!=null) E.dl[g]=null; } if(got<n) stat(E.short, g, n-got);
+    if(got){ dayStat('used', g, got); if(E.dlAt!=null) E.dl[g]=null; } if(got<n) shortStat(g, n-got);
     return got; };
+  /* for 77-sim-6-trade.js, on SIM.ECON: a flow booked by the day; n taken from the warehouses (the fullest first), booked
+     by the caller; n landed into a place's store (when it keeps one) else the emptiest warehouse -> the store's id */
+  SIM.economyBook = function(kind, g, n){ dayStat(kind, g, n); var E=SIM.ECON; if(E.dlAt!=null) E.dl[g]=null; };
+  SIM.economyTake = function(g, n){ var E=SIM.ECON, left=n, W=E.warehouses.filter(function(P){ return (P.stock[g]||0)>0; }).sort(byMost(g));
+    for(var i=0;i<W.length && left>0;i++){ var k=Math.min(left, W[i].stock[g]); W[i].stock[g]-=k; left-=k; } return n-left; };
+  SIM.economyLand = function(g, n, id){ var E=SIM.ECON, W=id!=null && E.stores[id] ? E.stores[id] : emptiest(g); if(!W) return null; W.stock[g]=(W.stock[g]||0)+n; return W.id; };
   SIM.economyMeal = function(){ var E=SIM.ECON, M=E && E.meal; if(!M) return true; var per=M.per||2, left=per;
     var have=M.foods.filter(function(f){ return SIM.stockOf(f)>0; }).sort(function(x, y){ return SIM.stockOf(y)-SIM.stockOf(x) || (x<y?-1:1); });
     for(var i=0;i<have.length && left>0;i++) left-=SIM.supply(have[i], 1);
@@ -131,7 +139,7 @@
     var E=SIM.ECON;
     Object.keys(E.goods).forEach(function(g){ var im=E.goods[g].import; if(!im) return;
       if(E.inflight.some(function(s){ return s.good===g; })) return;
-      var r=useRate(g), near=SIM.stockOf(g)+E.sites.reduce(function(n, P){ return n+(P.stock[g]||0); }, 0);   /* a lot landed or made, not yet hauled, counts */
+      var r=useRate(g), near=SIM.stockOf(g)+E.sites.reduce(function(n, P){ return n+(P.stock[g]||0); }, 0)+(SIM.tradeInbound ? SIM.tradeInbound(g) : 0);   /* a lot landed or made, not yet hauled, counts; and one at sea from another town (77-sim-6-trade.js) */
       if(!(r>0) || near/r >= E.imports.days) return;
       var R=E.routes[im.route]||{ minutes:240 }, s={ good:g, n:im.lot, route:im.route, port:R.port||null, sent:minute, eta:minute+R.minutes }; E.sent++;
       s.group=carry(s, minute, t); if(s.group) s.eta=null; E.inflight.push(s);
@@ -153,7 +161,7 @@
     var n=Math.min(S.cap||0, surplus, Math.floor(SIM.stockOf(best)-E.exports.minDays*useRate(best))); if(n<=0) return;
     var left=n, W=E.warehouses.filter(function(P){ return (P.stock[best]||0)>0; }).sort(byMost(best));
     for(var i=0;i<W.length && left>0;i++){ var k=Math.min(left, W[i].stock[best]); W[i].stock[best]-=k; left-=k; }
-    G.cargo={ good:best, n:n-left }; dayStat('exported', best, n-left); if(E.dlAt!=null) E.dl[best]=null; SIM.logEvent('export', { group:G.id, good:best, n:n-left });
+    G.cargo={ good:best, n:n-left }; if(E.settlement!=null) G.cargo.settlement=E.settlement; dayStat('exported', best, n-left); if(E.dlAt!=null) E.dl[best]=null; SIM.logEvent('export', { group:G.id, good:best, n:n-left });
   };
 
   /* ---------------------------------------------------------------- the carts */
@@ -262,6 +270,7 @@
     var cart0=SIM.cart; SIM.cart = function(a){ return SIM.withEcon(SIM.settlementOf(a), function(){ return cart0(a); }); };
     SIM.supply=byLast(SIM.supply, 3); SIM.stockOf=byLast(SIM.stockOf, 1); SIM.economyMeal=byLast(SIM.economyMeal, 0);
     SIM.economyDays=byLast(SIM.economyDays, 1); SIM.economyReport=byLast(SIM.economyReport, 0);
+    var stop0=SIM.economyStop; SIM.economyStop = function(G, L, phase, minute){ return SIM.withEcon(SIM.settlementOf(L.place), function(){ return stop0(G, L, phase, minute); }); };   /* a carrier's stop: the economy of the place it stops at */
     var step0=SIM.economyStep, jump0=SIM.economyJump;
     SIM.economyStep = function(minute, t){ if(!SIM.ECONS) return step0(minute, t);
       SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ step0(minute, t); }); }); };

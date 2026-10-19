@@ -81,3 +81,16 @@ and walk-map checks and hands the host `ZJ_API` (it used to assign `window._api`
 `99-tail.html`. Nothing in core/host was changed.
 
 - [ ] The hover tip (T) and the polygon tool's `[x,z]` output are not carried over; if the kits want the tip, take `host.FULL`'s inspector (`93-host-inspect.js`) and give it the engine's `regAt` / `furnAt` words.
+
+## Voth census trades (2026-10-19)
+
+The table is `src/60-sy-trades.js` (checked by `python3 tools/check_trades.py kits/scyvoi -v` and the `voth-trades` assert in verify.py). Most census trades are `na` for a nomad camp; these have no building yet (owner scope: butcher, brewing, tannery, dairy and healer rows covered):
+
+- [ ] butchers: a butcher's tent (slaughter post, hanging rack, drying line).
+- [ ] weavers and dyers: a felt-maker's and dyer's tent.
+- [ ] brewers: a brewing tent (fermented drink in skins and jars).
+- [ ] innkeepers and grooms: a guest tent with a salamander tether line.
+- [ ] healers and nurses: a healer's tent (bonesetter, herbalist, cots).
+- [ ] quarrymen and masons: a quarry and mason's yard for the Baelu's fitted stone.
+- [ ] innkeepers and servers (partial): a mess tent or tavern (tent-tibet-great, the festival tent, is only a dwelling-multi).
+- [ ] dairymen (partial): a milking pen and cheese tent beside the goat fold and bison pen.

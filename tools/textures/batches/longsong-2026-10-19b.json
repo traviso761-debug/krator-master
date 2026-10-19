@@ -1,0 +1,303 @@
+[
+ {
+  "src": "order-glyph-band.png",
+  "out": "core/materials/patterns/order/glyph-band",
+  "record": {
+   "id": "order/glyph-band",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19: the banner cropped to its two rows and to 19 glyph pitches, so it wraps)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/glyph-band`",
+    "reuse": "a mask of burning glyphs (white glows, black does not): the Procrastinator's bands; any seal-script band of the Order"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "seam_axes": "none",
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.1,
+   "rough": 0.8,
+   "rough_var": 0.0,
+   "size": 2048
+  }
+ },
+ {
+  "src": "order-thangka-register.png",
+  "out": "core/materials/patterns/order/thangka-register",
+  "record": {
+   "id": "order/thangka-register",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/thangka-register`",
+    "reuse": "the great thangka of the register (Longsong's White Palace face, the Assembly Hall); any painting of the Procrastinator"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "seam_axes": "none",
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.3,
+   "rough": 0.8,
+   "rough_var": 0.08,
+   "size": 2048
+  }
+ },
+ {
+  "src": "order-mandala-floor.png",
+  "out": "core/materials/patterns/order/mandala-floor",
+  "record": {
+   "id": "order/mandala-floor",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/mandala-floor`",
+    "reuse": "the Procrastinator hall's floor; any round inlaid floor of the Order"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "seam_axes": "none",
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "size": 2048
+  }
+ },
+ {
+  "src": "metal.lead.sheet.png",
+  "out": "core/materials/library/metal.lead.sheet",
+  "record": {
+   "id": "metal.lead.sheet",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0.5,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `metal.lead.sheet`",
+    "reuse": "the closed vault's and the quiet cells' doors at Longsong; any lead-sheeted door or roof"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "delight": 0.3,
+   "lift": 0.05,
+   "normal_strength": 0.8,
+   "size": 1024
+  }
+ },
+ {
+  "src": "order-valance.png",
+  "out": "core/materials/patterns/order/valance",
+  "record": {
+   "id": "order/valance",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/valance`",
+    "reuse": "the pleated valances over Longsong's rich windows (the Order's saffron, white and blue); any shambu"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "seam_axes": "x",
+   "delight": 0.1,
+   "lift": 0.0,
+   "normal_strength": 0.8,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "order-column-paint.png",
+  "out": "core/materials/patterns/order/column-paint",
+  "record": {
+   "id": "order/column-paint",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/column-paint`",
+    "reuse": "Longsong's painted columns and brackets (the Hall of Pillars, the Assembly, the Red Palace): the interiors"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "seam_axes": "x",
+   "delight": 0.1,
+   "lift": 0.0,
+   "normal_strength": 0.5,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "size": 2048
+  }
+ },
+ {
+  "src": "order-mural-cataclysm.png",
+  "out": "core/materials/patterns/order/mural-cataclysm",
+  "record": {
+   "id": "order/mural-cataclysm",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19: 3:1, kept whole)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/mural-cataclysm`",
+    "reuse": "the inner kora's murals round Longsong's Hall of the Founders (one frieze, not repeating); the Order's chronicle anywhere"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "seam_axes": "none",
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.3,
+   "rough": 0.8,
+   "rough_var": 0.08,
+   "size": 2048
+  }
+ },
+ {
+  "src": "order-rug.png",
+  "out": "core/materials/patterns/order/rug",
+  "record": {
+   "id": "order/rug",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/rug`",
+    "reuse": "a whole Tibetan khaden (border all round: one rug, not a tile): the cells' and the meditation halls' floors"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "seam_axes": "none",
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.95,
+   "rough_var": 0.08,
+   "size": 1024
+  }
+ },
+ {
+  "src": "order-book-spines.png",
+  "out": "core/materials/patterns/order/book-spines",
+  "record": {
+   "id": "order/book-spines",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/book-spines`",
+    "reuse": "the Archive's stacks, Longsong's library and the Sealed Library; any shelf of old books and pecha"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.1,
+   "lift": 0.0,
+   "normal_strength": 0.7,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ }
+]

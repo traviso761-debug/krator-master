@@ -1,36 +1,52 @@
-/* ============================== 25b. WALK MODE ==============================
-   A first-person walker beside the fly camera (80-camera.js stays the default; G or the "Walk" button
-   toggles). W/S forward and back along the view heading, A/D strafe left and right, drag (or click for
-   pointer lock) to look: drag right turns right, drag up looks up. Shift runs, Space jumps. Eye 1.6 m.
-   The walker stands on the highest solid under it that is no more than a step (0.55 m) above its feet,
-   else falls (gravity) onto whatever is below, at worst the terrain. Solids (53-furnish.js GWALK):
-     - from the builders as they draw: dwelling shells, partitions (the interiors' walls, a doorway in each),
-       posts, rails, fences, hut and hall wall rings, floors and plinths, every piece of furniture;
-     - from the layout, here: the towers' floor plates (missing bays left out), core walls, columns, the
-       switchback flights as ramps with their half landings, the plinth steps, the roost decks with their
-       stall partitions and corner rails, the lifts, the rope bridges (a sagging walkway with rope sides),
-       the palisade ring (gates open) and the hypertree trunks.
-   A solid blocks the walker when its top is above a step and its bottom below the head; doors are gaps.
-   The body is a circle (r 0.28): it touches a solid where the solid's nearest point is closer than r, so it
-   slides round corners and along walls at any angle (a blocked move is pushed out to the nearest point of each
-   solid, three passes, and kept if it still makes headway). A lift's cage floor is a solid that moves with the
-   cage (78-life.js, read through window._life.liftsRaw), so the walker can ride it up to the roost deck and down again.
-   window._walk: { on, toggle(), pose(), setPose(x, z, yaw, pitch, feetY) } for scripts.                 */
-var WALKER = { on:false, x:0, z:0, feet:0, vy:0, yaw:0, pitch:0, eye:1.6, r:0.28, step:0.55, walk:2.8, run:7.0, grounded:false,
-               cell:4, index:null, built:false, drag:null, saved:null, lastSupport:'' };
-
+/* ============================== 25b. WALK MODE, on core/walk ==============================
+   Girder's walker is the host's (core/host: F walks, W A S D, Shift runs, the mouse looks) on the shared walk registry, KWALK
+   (core/walk). Nothing here moves a body any more: this fragment writes what is built into KWALK, as it is built or on the first tick.
+     - from the builders as they draw (53-furnish.js GWALK, gwBox / gwSeg / gwDisc): dwelling floors and plinths are FLOORS; walls,
+       partitions, posts, rails, fences, doors and every piece of furniture are BLOCKS (by tag, GW_FLOOR);
+     - from the layout, here: the towers' floor plates (missing bays left out), the switchback flights as strips with their half
+       landings, the plinth steps, the roost decks, the lift cages (a floor whose height follows the cage), the rope bridges (strips
+       along the sag, rope sides as blocks), the core walls, columns, stalls, the palisade ring (gates open) and the hypertree trunks.
+   The old walker (gravity, jump, its own index, pointer lock) is gone: the host walks up to 0.55 m, drops 1.4 m and keeps to a
+   deck's edge. window._walk is kept as a thin layer for the harness and scripts.                                           */
+var GW_WALK = { built:false, lifts:[], buildMs:0, count:0 };
+var GW_FLOOR = { floor:1, plate:1, deck:1, step:1, landing:1 };
+/* a solid {x,z,ux,uz,hw,hd,top,bot,tag} (53-furnish.js), a disc {x,z,r}, a ramp, a bridge or a ring, as core/walk records */
+function gwToWalk(s){
+  var W=KWALK, tag='gw:'+(s.tag||''), i, u, v;
+  GW_WALK.count++;
+  if(s.bridge){
+    var b=s.bridge, N=Math.max(2,Math.ceil(b.L/2)), bux=(b.b.x-b.a.x)/b.L, buz=(b.b.z-b.a.z)/b.L, px=-buz, pz=bux;
+    var bp=function(t){ return [b.a.x+(b.b.x-b.a.x)*t, b.a.z+(b.b.z-b.a.z)*t, bridgeY(b,t)]; };
+    for(i=0;i<N;i++){ W.strip({ a:bp(i/N), b:bp((i+1)/N), w:b.w, name:'bridge', tag:tag }); }
+    var M=Math.ceil(b.L/0.6);                                               /* the rope sides hold the walker in */
+    for(i=0;i<M;i++){ var t=(i+0.5)/M; if(t<0.03 || t>0.97) continue; var c=bp(t);
+      [-1,1].forEach(function(sd){ var x=c[0]+px*sd*(b.w/2+0.05), z=c[1]+pz*sd*(b.w/2+0.05); W.block([x-0.15,x+0.15,z-0.15,z+0.15,c[2]-0.1,c[2]+1.1], tag); }); }
+    return;
+  }
+  if(s.ring){ var R=s.R, K=Math.ceil(2*Math.PI*R/1.0);
+    for(i=0;i<K;i++){ var a=i/K*Math.PI*2, rx=R*Math.cos(a), rz=R*Math.sin(a);
+      if(GATES.some(function(q){ return Math.hypot(rx-q.x,rz-q.z) < 5.0; })) continue;
+      W.block([rx-s.hw-0.1,rx+s.hw+0.1,rz-s.hw-0.1,rz+s.hw+0.1,s.bot,s.top], tag); }
+    return; }
+  if(s.r){ var q=s.r;                                                       /* a trunk, a capstan: a square, or a fat plus for a big one */
+    if(q<=0.9) W.block([s.x-q*0.9,s.x+q*0.9,s.z-q*0.9,s.z+q*0.9,s.bot,s.top], tag);
+    else { var A=q*0.95, B=q*0.55; W.block([s.x-A,s.x+A,s.z-B,s.z+B,s.bot,s.top], tag); W.block([s.x-B,s.x+B,s.z-A,s.z+A,s.bot,s.top], tag); }
+    return; }
+  u=[s.ux,s.uz]; v=[-s.uz,s.ux];
+  if(s.ramp){ W.strip({ a:[s.x-u[0]*s.hw, s.z-u[1]*s.hw, s.ramp.ya], b:[s.x+u[0]*s.hw, s.z+u[1]*s.hw, s.ramp.yb], w:s.hd*2, name:'stair', tag:tag }); return; }
+  if(s.tag==='lift'){ var rec=W.floor({ rect:[s.x-s.hw,s.x+s.hw,s.z-s.hd,s.z+s.hd], y:s.top, name:'lift', tag:tag });
+    GW_WALK.lifts.push({ rec:rec, s:s }); return; }
+  if(GW_FLOOR[s.tag]){
+    var P=[[-1,-1],[1,-1],[1,1],[-1,1]].map(function(c){ return [s.x+u[0]*s.hw*c[0]+v[0]*s.hd*c[1], s.z+u[1]*s.hw*c[0]+v[1]*s.hd*c[1], s.top]; });
+    W.poly({ pts:P, name:s.tag, tag:tag }); return; }
+  if(Math.abs(s.uz)<0.02 || Math.abs(s.ux)<0.02){                           /* a block, axis-aligned */
+    var ex=Math.abs(s.ux)*s.hw+Math.abs(s.uz)*s.hd, ez=Math.abs(s.uz)*s.hw+Math.abs(s.ux)*s.hd;
+    W.block([s.x-ex,s.x+ex,s.z-ez,s.z+ez,s.bot,s.top], tag); return; }
+  var Ln=s.hw*2, cuts=Math.max(1,Math.ceil(Ln/0.3)), h=Math.max(s.hd,0.15);   /* a turned wall: blocks along its length */
+  for(i=0;i<cuts;i++){ var f=((i+0.5)/cuts-0.5)*Ln, x=s.x+u[0]*f, z=s.z+u[1]*f; W.block([x-h,x+h,z-h,z+h,s.bot,s.top], tag); }
+}
 /* the life layer's lift cages (78-life.js keeps LIFTSIM private; window._life.liftsRaw is the same array) */
 function wkLifts(){ return (window._life && window._life.liftsRaw) || []; }
-function wkKey(ix, iz){ return ix*100003 + iz; }
-function wkInsert(s){
-  var I=WALKER.index, c=WALKER.cell, ex, ez;
-  if(s.r){ ex=s.r; ez=s.r; } else if(s.bridge){ ex=ez=0; } else { ex=Math.abs(s.ux)*s.hw+Math.abs(s.uz)*s.hd; ez=Math.abs(s.uz)*s.hw+Math.abs(s.ux)*s.hd; }
-  if(s.bridge){ var b=s.bridge, x0=Math.min(b.a.x,b.b.x)-3, x1=Math.max(b.a.x,b.b.x)+3, z0=Math.min(b.a.z,b.b.z)-3, z1=Math.max(b.a.z,b.b.z)+3;
-    for(var i=Math.floor(x0/c); i<=Math.floor(x1/c); i++) for(var j=Math.floor(z0/c); j<=Math.floor(z1/c); j++){ var k=wkKey(i,j); (I[k]||(I[k]=[])).push(s); } return; }
-  if(s.ring){ WALKER.rings.push(s); return; }
-  for(var i2=Math.floor((s.x-ex)/c); i2<=Math.floor((s.x+ex)/c); i2++) for(var j2=Math.floor((s.z-ez)/c); j2<=Math.floor((s.z+ez)/c); j2++){
-    var k2=wkKey(i2,j2); (I[k2]||(I[k2]=[])).push(s); }
-}
 /* a rectangular solid from its centre, half sizes along x and z (axis-aligned) */
 function wkRect(x, z, hx, hz, top, bot, tag){ return { x:x, z:z, ux:1, uz:0, hw:hx, hd:hz, top:top, bot:bot, tag:tag }; }
 /* a ramp: from (ax,az) at height ya to (bx,bz) at yb, half width hw, slab thickness th */
@@ -39,9 +55,8 @@ function wkRamp(ax, az, ya, bx, bz, yb, hw, th, tag){
   return { x:(ax+bx)/2, z:(az+bz)/2, ux:dx/L, uz:dz/L, hw:L/2, hd:hw, top:Math.max(ya,yb), bot:Math.min(ya,yb)-th, ramp:{ ya:ya, yb:yb, th:th }, tag:tag };
 }
 function wkBuild(){
-  if(WALKER.built) return;
+  if(GW_WALK.built) return;
   var t0 = performance.now(), L = [];
-  WALKER.index = {}; WALKER.rings = [];
   TOWERS.forEach(function(T){
     T.floors.forEach(function(F){
       var y=F.y;
@@ -97,195 +112,55 @@ function wkBuild(){
   L.push({ ring:true, R:PALISADE.R, hw:0.75, top:SETTLE_Y+9, bot:SETTLE_Y-6, tag:'palisade' });
   TREES.forEach(function(T){ L.push({ x:T.x, z:T.z, r:trunkR(T, T.y0+3)*0.9, top:T.y0+T.H*0.6, bot:T.y0-5, tag:'trunk' }); });
   L.forEach(function(s){ GWALK.solids.push(s); });
-  GWALK.solids.forEach(wkInsert);
-  GWALK.onAdd = wkInsert;                  /* furniture the interiors place later joins the index as it comes */
-  WALKER.built = true; WALKER.buildMs = Math.round(performance.now()-t0);
+  GWALK.solids.forEach(gwToWalk);
+  GWALK.onAdd = gwToWalk;                  /* furniture the interiors place later joins the registry as it comes */
+  GW_WALK.built = true; GW_WALK.buildMs = Math.round(performance.now()-t0);
 }
 function wkSegS(ax,az,bx,bz,th,y0,y1,tag){ var dx=bx-ax, dz=bz-az, L=Math.hypot(dx,dz)||1; return { x:(ax+bx)/2, z:(az+bz)/2, ux:dx/L, uz:dz/L, hw:L/2, hd:th/2, top:y1, bot:y0, tag:tag }; }
 
-function wkNear(x, z, rad, fn){
-  var I=WALKER.index, c=WALKER.cell, seen=WALKER._seen||(WALKER._seen=new Set()); seen.clear();
-  for(var i=Math.floor((x-rad)/c); i<=Math.floor((x+rad)/c); i++) for(var j=Math.floor((z-rad)/c); j<=Math.floor((z+rad)/c); j++){
-    var A=I[wkKey(i,j)]; if(!A) continue;
-    for(var n=0;n<A.length;n++){ var s=A[n]; if(seen.has(s)) continue; seen.add(s); if(fn(s)) return true; }
-  }
-  return false;
-}
-/* the solid's walkable top at (x,z) (inside its outline, grown by `grow`), or null */
-function wkTopAt(s, x, z, grow){
-  if(s.bridge){ var b=s.bridge, dx=b.b.x-b.a.x, dz=b.b.z-b.a.z, L2=dx*dx+dz*dz, t=((x-b.a.x)*dx+(z-b.a.z)*dz)/L2;
-    if(t<-0.02 || t>1.02) return null; var px=b.a.x+dx*t, pz=b.a.z+dz*t; if(Math.hypot(x-px,z-pz) > b.w/2+grow) return null;
-    return bridgeY(b, clamp(t,0,1)); }
-  if(s.ring) return null;
-  if(s.r){ return Math.hypot(x-s.x,z-s.z) <= s.r+grow ? s.top : null; }
-  var ddx=x-s.x, ddz=z-s.z, u=ddx*s.ux+ddz*s.uz, v=-ddx*s.uz+ddz*s.ux;
-  if(Math.abs(u) > s.hw+grow || Math.abs(v) > s.hd+grow) return null;
-  if(s.ramp){ var k=clamp((u+s.hw)/(2*s.hw),0,1); return mix(s.ramp.ya, s.ramp.yb, k); }
-  return s.top;
-}
-/* the support under (x,z) for feet at `feet`: the highest top no more than a step up; at worst the terrain */
-function wkSupport(x, z, feet){
-  var best = terrainH(x,z), lim = feet + WALKER.step, tag = 'terrain', on = null;
-  wkNear(x, z, 0.1, function(s){ if(s.top < best - 1 && !s.ramp && !s.bridge) return false;
-    var t = wkTopAt(s, x, z, 0); if(t!==null && t<=lim && t>best){ best=t; tag=s.tag; on=s; } return false; });
-  WALKER.lastSupport = tag; WALKER.lastSolid = on;
-  return best;
-}
-/* the nearest point of a solid's plan to (x,z): [px, pz, inside]; for a box, in its own frame and back */
-function wkNearest(s, x, z){
-  if(s.r){ var dx=x-s.x, dz=z-s.z, d=Math.hypot(dx,dz)||1e-9; return d<=s.r ? [x, z, true] : [s.x+dx/d*s.r, s.z+dz/d*s.r, false]; }
-  var ddx=x-s.x, ddz=z-s.z, u=ddx*s.ux+ddz*s.uz, v=-ddx*s.uz+ddz*s.ux,
-      cu=clamp(u,-s.hw,s.hw), cv=clamp(v,-s.hd,s.hd);
-  return [s.x+cu*s.ux-cv*s.uz, s.z+cu*s.uz+cv*s.ux, cu===u && cv===v];
-}
-/* does a body of radius R at (x,z) touch the solid's plan? */
-function wkOverlap(s, x, z, R){
-  var q=wkNearest(s, x, z); return q[2] || (x-q[0])*(x-q[0])+(z-q[1])*(z-q[1]) < R*R;
-}
-/* does solid s stop a body at (x,z) with its feet at `feet`? */
-function wkStops(s, x, z, feet){
-  var R=WALKER.r, lo=feet+WALKER.step, hi=feet+1.75;
-  if(s.bridge || s.ring) return false;
-  if(!wkOverlap(s, x, z, R)) return false;
-  if(s.ramp){ var t=wkTopAt(s, x, z, R); if(t===null) return false; return t>lo && t-s.ramp.th<hi; }
-  return s.top>lo && s.bot<hi;
-}
-function wkRingStops(g, x, z, feet){
-  var R=WALKER.r, lo=feet+WALKER.step, hi=feet+1.75, d=Math.hypot(x,z);
-  return Math.abs(d-g.R) < g.hw+R && hi>g.bot && lo<g.top && !GATES.some(function(q){ return Math.hypot(x-q.x,z-q.z) < 5.0; });
-}
-/* is a body at (x,z), feet at `feet`, inside a solid? */
-function wkBlocked(x, z, feet){
-  for(var i=0;i<WALKER.rings.length;i++) if(wkRingStops(WALKER.rings[i], x, z, feet)) return true;
-  return wkNear(x, z, WALKER.r+0.1, function(s){ return wkStops(s, x, z, feet); });
-}
-/* (x,z) moved out of every solid it touches: to the solid's nearest point plus the radius (a hair more), or
-   out through the nearest face when the centre is inside; three passes settle a corner between two solids */
-function wkPush(x, z, feet){
-  var R=WALKER.r*1.0005;
-  for(var pass=0; pass<3; pass++){
-    var hit=false;
-    for(var i=0;i<WALKER.rings.length;i++){ var g=WALKER.rings[i];
-      if(wkRingStops(g, x, z, feet)){ var d=Math.hypot(x,z)||1e-9, to=d<g.R ? g.R-g.hw-R : g.R+g.hw+R; x*=to/d; z*=to/d; hit=true; } }
-    var list=[]; wkNear(x, z, WALKER.r+0.1, function(s){ if(wkStops(s, x, z, feet)) list.push(s); return false; });
-    for(var n=0;n<list.length;n++){ var s=list[n], q=wkNearest(s, x, z);
-      if(!q[2]){ var dx=x-q[0], dz=z-q[1], dd=Math.hypot(dx,dz)||1e-9; if(dd<R){ x=q[0]+dx/dd*R; z=q[1]+dz/dd*R; hit=true; } continue; }
-      if(s.r){ var ex=x-s.x, ez=z-s.z, ed=Math.hypot(ex,ez)||1e-9; x=s.x+ex/ed*(s.r+R); z=s.z+ez/ed*(s.r+R); hit=true; continue; }
-      var ddx=x-s.x, ddz=z-s.z, u=ddx*s.ux+ddz*s.uz, v=-ddx*s.uz+ddz*s.ux;          /* inside a box: out by the nearest face */
-      if(s.hw-Math.abs(u) < s.hd-Math.abs(v)) u=(u<0?-1:1)*(s.hw+R); else v=(v<0?-1:1)*(s.hd+R);
-      x=s.x+u*s.ux-v*s.uz; z=s.z+u*s.uz+v*s.ux; hit=true; }
-    if(!hit) break;
-  }
-  return [x, z];
-}
-/* on a rope bridge the rope sides hold the walker in */
-function wkBridgeHold(x0, z0, x1, z1){
-  var hold = false;
-  BRIDGES.forEach(function(b){
-    var dx=b.b.x-b.a.x, dz=b.b.z-b.a.z, L=Math.hypot(dx,dz), ux=dx/L, uz=dz/L;
-    function lat(x,z){ return { t:((x-b.a.x)*ux+(z-b.a.z)*uz)/L, s:-(x-b.a.x)*uz+(z-b.a.z)*ux }; }
-    var a=lat(x0,z0), c=lat(x1,z1);
-    if(a.t>0.03 && a.t<0.97 && Math.abs(a.s)<b.w/2 && Math.abs(WALKER.feet-bridgeY(b,a.t))<1.5 && Math.abs(c.s)>b.w/2-WALKER.r) hold = true;
-  });
-  return hold;
-}
 
-function wkStep(dt){
-  var W=WALKER, k=keys;
-  var f=(k['w']?1:0)-(k['s']?1:0), s=(k['d']?1:0)-(k['a']?1:0);
-  if(f||s){
-    var sp=(k['shift']?W.run:W.walk), n=Math.hypot(f,s), fx=-Math.sin(W.yaw), fz=-Math.cos(W.yaw), rx=Math.cos(W.yaw), rz=-Math.sin(W.yaw);
-    var mx=(fx*f+rx*s)/n*sp*dt, mz=(fz*f+rz*s)/n*sp*dt, dist=Math.hypot(mx,mz), sub=Math.max(1,Math.ceil(dist/0.15));
-    var stuck = wkBlocked(W.x, W.z, W.feet);        /* a piece furnished round the walker after it stood there: let it walk out */
-    for(var i=0;i<sub;i++){
-      var dx=mx/sub, dz=mz/sub, moved=false;
-      [[dx,dz,0],[dx,dz,1],[dx,0,0],[0,dz,0]].some(function(m){
-        if(!m[0] && !m[1]) return false;
-        var nx=W.x+m[0], nz=W.z+m[1];
-        if(m[2]){ if(stuck) return false;                    /* blocked: slide, pushed out of what it touches */
-          var p=wkPush(nx, nz, W.feet); nx=p[0]; nz=p[1];
-          if((nx-W.x)*dx+(nz-W.z)*dz < 0.2*(dx*dx+dz*dz)) return false; }   /* no headway: try the axes */
-        if((!stuck && wkBlocked(nx, nz, W.feet)) || wkBridgeHold(W.x, W.z, nx, nz)) return false;
-        W.x=nx; W.z=nz; moved=true; return true;
-      });
-      if(!moved){ W.bumped=(W.bumped||0)+1; break; }
-    }
-  }
-  if(k[' '] && W.grounded){ W.vy=4.6; W.grounded=false; }
-  var sup = wkSupport(W.x, W.z, W.feet);
-  if(W.grounded && sup >= W.feet-0.45 && W.vy<=0){ W.feet=sup; W.vy=0; }         /* walk down steps and ramps */
-  else { W.vy -= 18*dt; W.feet += W.vy*dt;
-    if(W.feet <= sup){ W.feet=sup; W.vy=0; W.grounded=true; } else W.grounded=false; }
-  if(W.feet < sup) W.feet = sup;
-  /* a walker standing in a cage is a rider: the lift sets off for it (78-life.js lifeLiftTick) */
-  var LS=wkLifts(); for(var li=0; li<LS.length; li++) LS[li].walker = W.grounded && W.lastSolid && W.lastSolid.sim===LS[li] ? 1 : 0;
-  wkCamera();
-}
-function wkCamera(){
-  var W=WALKER;
-  camera.position.set(W.x, W.feet+W.eye, W.z);
-  camera.rotation.set(W.pitch, W.yaw, 0, 'YXZ');
-  ctl.tx=W.x; ctl.ty=W.feet+W.eye; ctl.tz=W.z;          /* the sun's shadow box follows the orbit target */
-}
-/* where to put the walker: the fly camera's target if it is inside the village and not inside a solid, else
-   the court in front of the hall's south door */
-function wkSpawn(){
-  var W=WALKER, x=ctl.tx, z=ctl.tz, feet;
-  var dir=new THREE.Vector3(); camera.getWorldDirection(dir);
-  W.yaw=Math.atan2(-dir.x,-dir.z); W.pitch=0;
-  if(Math.hypot(x,z) > PALISADE.R-8){ x=0; z=HALL.R+9; W.yaw=0; }
-  feet = wkSupport(x, z, Math.max(ctl.ty, terrainH(x,z)) + 0.5);
-  for(var r=0; r<12 && wkBlocked(x, z, feet); r+=0.5){ var a=r*2.4; x+=Math.cos(a)*0.5; z+=Math.sin(a)*0.5; feet=wkSupport(x, z, feet+0.5); }
-  W.x=x; W.z=z; W.feet=feet; W.vy=0; W.grounded=true;
-}
+/* the host's walker, and a thin layer for the harness and scripts (tools/harness.py walk reads window._walk) */
+function gwCam(){ return KHOST.cam; }
 function wkToggle(on){
-  var W=WALKER; on = on==null ? !W.on : !!on;
-  if(on===W.on) return W.on;
-  if(on){
-    wkBuild(); W.saved={ near:camera.near };
-    wkSpawn(); W.on=true; CAM_HOOK=wkStep; camera.near=0.12; camera.updateProjectionMatrix();
-  } else {
-    W.on=false; CAM_HOOK=null; if(document.pointerLockElement) document.exitPointerLock();
-    wkLifts().forEach(function(L){ L.walker=0; });
-    camera.near=W.saved?W.saved.near:0.8; camera.updateProjectionMatrix();
-    var fx=-Math.sin(W.yaw), fz=-Math.cos(W.yaw);                       /* the orbit picks up behind the walker */
-    setView(W.x-fx*14, W.feet+W.eye+5, W.z-fz*14, W.x, W.feet+W.eye, W.z);
-  }
-  var b=document.getElementById('walkToggle'); if(b){ b.textContent='Walk: '+(W.on?'On':'Off')+' (F)'; b.classList.toggle('on',W.on); }
-  document.getElementById('walkHint').style.display = W.on ? 'block' : 'none';
-  document.getElementById('walkCross').style.display = W.on ? 'block' : 'none';
-  return W.on;
+  wkBuild(); var C=gwCam(); on = on==null ? !C.ctl.walk : !!on;
+  if(on!==!!C.ctl.walk) C.walk(on); return !!C.ctl.walk;
 }
-(function(){
-  var el=renderer.domElement, W=WALKER, K=0.0035;
-  function look(dx, dy){ W.yaw -= dx*K; W.pitch = clamp(W.pitch - dy*K, -1.45, 1.45); wkCamera(); }
-  addEventListener('keydown', function(e){ if(e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
-    /* F walks (core/host's key, handed to wkToggle through KHOST.take's keys in 98-start.js); G flies to the host's pin */
-    if(W.on && e.key===' ') e.preventDefault(); });
-  document.getElementById('walkToggle').onclick=function(){ wkToggle(); this.blur(); };
-  el.addEventListener('pointerdown', function(e){ if(W.on) W.drag={ x:e.clientX, y:e.clientY, moved:0 }; });
-  el.addEventListener('pointermove', function(e){
-    if(!W.on) return;
-    if(document.pointerLockElement===el){ look(e.movementX||0, e.movementY||0); return; }
-    if(!W.drag) return;
-    var dx=e.clientX-W.drag.x, dy=e.clientY-W.drag.y; W.drag.x=e.clientX; W.drag.y=e.clientY; W.drag.moved+=Math.abs(dx)+Math.abs(dy); look(dx, dy);
-  });
-  function up(){ if(W.drag && W.drag.moved<3 && W.on && el.requestPointerLock){ try{ var pl=el.requestPointerLock(); if(pl && pl.catch) pl.catch(function(){}); }catch(err){} } W.drag=null; }
-  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', function(){ W.drag=null; });
-})();
+function gwPose(){
+  var C=gwCam(), w=C.walkAt||[C.ctl.target.x, C.ctl.target.z, C.ctl.target.y-C.ctl.eye], x=w[0], z=w[1], feet=w[2], f=KWALK.floorBelow(x,z,feet,0.55);
+  return { x:+x.toFixed(3), z:+z.toFixed(3), feet:+feet.toFixed(3), yaw:+C.ctl.theta.toFixed(4), pitch:+(Math.PI/2-C.ctl.phi).toFixed(4), grounded:true,
+    support:(f && f[0] >= terrainH(x,z)+0.05) ? (f[1].tag||'floor') : 'terrain', eye:+(feet+C.ctl.eye).toFixed(3) };
+}
 window._walk = {
-  get on(){ return WALKER.on; },
+  get on(){ return !!gwCam().ctl.walk; },
   toggle:function(on){ return wkToggle(on); },
-  pose:function(){ return { x:+WALKER.x.toFixed(3), z:+WALKER.z.toFixed(3), feet:+WALKER.feet.toFixed(3), yaw:+WALKER.yaw.toFixed(4), pitch:+WALKER.pitch.toFixed(4),
-    grounded:WALKER.grounded, support:WALKER.lastSupport, bumped:WALKER.bumped||0, eye:+(WALKER.feet+WALKER.eye).toFixed(3) }; },
-  setPose:function(x, z, yaw, pitch, feet){ wkBuild(); WALKER.x=x; WALKER.z=z; if(yaw!=null) WALKER.yaw=yaw; if(pitch!=null) WALKER.pitch=pitch;
-    WALKER.feet = wkSupport(x, z, feet==null ? terrainH(x,z)+0.3 : feet); WALKER.vy=0; WALKER.grounded=true; WALKER.bumped=0; wkCamera(); return this.pose(); },
-  look:function(dx, dy){ WALKER.yaw -= dx*0.0035; WALKER.pitch = clamp(WALKER.pitch - dy*0.0035, -1.45, 1.45); wkCamera(); return this.pose(); },
-  blocked:function(x, z, feet){ wkBuild(); return wkBlocked(x, z, feet); },
-  /* scripted walking for tests: hold forward f (-1..1) and strafe s for `secs`, stepped at dt (1/30 s) */
-  walk:function(f, s, secs, dt){ wkBuild(); dt=dt||1/30; var k=keys, sv={ w:k.w, s:k.s, a:k.a, d:k.d };
-    k.w=f>0; k.s=f<0; k.d=s>0; k.a=s<0; for(var t=0; t<secs-1e-9; t+=dt) wkStep(dt);
-    k.w=sv.w; k.s=sv.s; k.a=sv.a; k.d=sv.d; return this.pose(); },
-  support:function(x, z, feet){ wkBuild(); return wkSupport(x, z, feet); },
-  solids:function(){ return GWALK.solids.length; }
+  pose:gwPose,
+  setPose:function(x, z, yaw, pitch, feet){ wkBuild(); var C=gwCam(); if(!C.ctl.walk) C.walk(true,true);
+    if(yaw!=null) C.ctl.theta=yaw; if(pitch!=null) C.ctl.phi=Math.PI/2-pitch;
+    var f=KWALK.floorBelow(x,z, feet==null ? terrainH(x,z)+0.3 : feet, 0.55), y=f ? Math.max(f[0],terrainH(x,z)) : terrainH(x,z);
+    C.walkAt=[x,z,y]; C.ctl.target.set(x,y+C.ctl.eye,z); C.stand(); return gwPose(); },
+  look:function(dx, dy){ var C=gwCam(); C.ctl.theta -= dx*0.0035; return gwPose(); },
+  blocked:function(x, z, feet){ wkBuild(); return !!KWALK.blocked(x,feet,z,0.28,1.75); },
+  /* scripted walking for tests: hold forward f (-1..1) and strafe s for `secs`, stepped at dt (1/30 s), 2.8 m/s */
+  walk:function(f, s, secs, dt){ wkBuild(); dt=dt||1/30; var C=gwCam(), th=C.ctl.theta;
+    for(var t=0; t<secs-1e-9; t+=dt){ var n=Math.hypot(f,s)||1, mx=(-Math.sin(th)*f+Math.cos(th)*s)/n*2.8*dt, mz=(-Math.cos(th)*f-Math.sin(th)*s)/n*2.8*dt,
+        w=C.walkAt||[C.ctl.target.x,C.ctl.target.z,C.ctl.target.y-C.ctl.eye];
+      C.ctl.target.set(w[0]+mx, w[2]+C.ctl.eye, w[1]+mz); C.stand(); }
+    return gwPose(); },
+  support:function(x, z, feet){ wkBuild(); var f=KWALK.floorBelow(x,z,feet,0.55); return f ? Math.max(f[0],terrainH(x,z)) : terrainH(x,z); },
+  solids:function(){ return GWALK.solids.length; },
+  layout:function(){ return { TOWERS:TOWERS, LIFTS:LIFTS, PALISADE:PALISADE, GATES:GATES, BRIDGES:BRIDGES }; }   /* for tests */
 };
+/* every tick: build the registry once, move the lift cages' floors with the cages, tell a lift it has a rider, show the walk hint */
+var gwWasWalking = false;
+TICKS.push(function gwWalkTick(){
+  if(!GW_WALK.built) wkBuild();
+  var C=KHOST.cam, walking=!!C.ctl.walk, w=C.walkAt;
+  GW_WALK.lifts.forEach(function(L){ if(!L.s.sim) return; L.rec.y = L.s.sim.y;
+    L.s.sim.walker = (walking && w && Math.abs(w[2]-L.s.sim.y)<0.25 && Math.abs(w[0]-L.s.x)<L.s.hw && Math.abs(w[1]-L.s.z)<L.s.hd) ? 1 : 0; });
+  if(walking!==gwWasWalking){ gwWasWalking=walking;
+    camera.near = walking ? 0.12 : 0.8; camera.updateProjectionMatrix();
+    var b=document.getElementById('walkToggle'); if(b){ b.textContent='Walk: '+(walking?'On':'Off')+' (F)'; b.classList.toggle('on',walking); }
+    document.getElementById('walkHint').style.display = walking ? 'block' : 'none';
+    document.getElementById('walkCross').style.display = walking ? 'block' : 'none'; }
+});
+document.getElementById('walkToggle').onclick=function(){ wkToggle(); this.blur(); };

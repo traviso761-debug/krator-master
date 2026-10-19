@@ -63,6 +63,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `85b-tri-salvage.js` | 11 | 1. the tank roundhouse (7); 2. the container longhouse (29); 3. the hull meeting house (50); 4. the silo drum-house (68); 5. the scrap forge and trading shelter (87) |
 | `88-hl-dress.js` | 10 | RECLAIMED variants (round 3) (25); clocks (round 5) (87); glazed roof tile, per building (round 10e) (96) |
 | `88y-highlands-matlib.js` | 3 |  |
+| `89-hl-trades.js` | 5.5 | Voth census trades table (HIGHLANDS_TRADES) |
 | `89y-hl-furnish.js` | 4 | furniture: PLACED from the catalog, not drawn (1) |
 | `90-scene.js` | 6 | scene (Highlands showcase) (1); build every site the target lists (60) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |

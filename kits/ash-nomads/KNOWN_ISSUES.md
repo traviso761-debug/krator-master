@@ -29,3 +29,15 @@
 - [ ] The chieftain's lobes and the star tent's petals are separate spires standing through the ring roof: the seams between them
       are not sewn (no valley gutters).
 - [ ] Shadows ignore the cut-away (the engine's, shared with the Scyvoi kit).
+
+## Voth census trades (2026-10-19)
+
+The table is `src/60-an-trades.js` (checked by `python3 tools/check_trades.py kits/ash-nomads -v` and the `voth-trades` assert in verify.py). Most census trades are `na` for a nomad camp; these have no building yet (owner scope: butcher, brewing, tannery, dairy and healer rows covered):
+
+- [ ] butchers: a butcher's tent (slaughter post, hanging rack, drying line).
+- [ ] weavers and dyers: a weaver's tent for the Nazca-pattern cloth.
+- [ ] brewers: a brewing tent (fermented drink in skins and jars).
+- [ ] innkeepers and grooms: a guest tent with a beetle line for visiting riders.
+- [ ] soldiers: a war band's tent (arms racked, war-beetle riders' quarters).
+- [ ] healers and nurses: a healer's tent (bonesetter, herbalist, cots).
+- [ ] dairymen (partial): a milking pen and cheese tent beside the millipede corral and runner pen.

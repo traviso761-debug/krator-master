@@ -428,3 +428,9 @@ monkeyflower and columbine, grape curtains, moss and lichen, ledge plants).
       2026-10-01, so it lacks `poor_lidded_basket`, `poor_food_pot`, `poor_sleeping_mat`, `common_grain_bin`,
       `poor_reed_mat` and `common_kilim` (64-interiors), and its Yuni pieces still carry the retired `storage` type
       instead of `container-item` / `container-food` with `capacity`. Re-harvest Yuni into the catalog.
+
+## Voth census trades (2026-10-19)
+
+The table is `src/67-yu-trades.js` (`YU_TRADES`, on the world page; checked by `tools/check_trades.py` and `verify.py --assert` as `voth-trades`). 15 trades carried, 2 partly, 15 gaps, 12 na (landlocked valley, no embassies, no beetles, elephant bugs or mushroom cellars).
+- [ ] Gaps (a later session builds them): bakery, butcher, brewhouse, tannery, temple or mosque hall, wayside shrine, warehouse, power house (the Vault feeds the cable; no engine hall), barracks, customs house, funerary court, olive and date grove with farmhouse, mine head, quarry, dairy.
+- [ ] Partly carried: granary keepers and millers (granary; no mill), swineherds and duck keepers (stock pen; no duck coops).
