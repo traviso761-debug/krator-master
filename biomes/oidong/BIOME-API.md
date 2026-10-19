@@ -9,7 +9,7 @@ file says what is different and what the kit exports.
 The Oidong Valley east of the Vale of Xanadu (LORE.md 6.15): the History Monks' country, Longsong's site, reached by a hard
 trek over the passes and, once reached, the safest ground on Krator. A chilly enclosed high valley at ~1600 m, ~1 atm, a
 chain of still pools on its floor, a cataract at its head. Koppen Cwb, Cfb, Dwb and ET (`OIDONG.KOPPEN`; an ESTIMATE, the
-scale model's rasters were not read: `KNOWN_ISSUES.md`). SERENE before anything else (the owner, 2026-10-19): nothing here
+scale model's rasters, now read, give Cfb, BSk and Csa on the floor, D classes on the slopes, ET and EF above: `KNOWN_ISSUES.md`). SERENE before anything else (the owner, 2026-10-19): nothing here
 stings, hunts or burns; the palette is pastel (the probe measures it) with one iridescent streak.
 
 ## The fields it reads

@@ -3,8 +3,12 @@
 - [ ] **No fauna**: it goes to the one fauna kit (biomes/README.md). The valley is the safest ground on the map in any case,
       but the monks' dairy and the pools' birds are not drawn.
 - [ ] **The Koppen classes are an estimate** (Cwb, Cfb, Dwb, ET) and the crops kit's pressure for the biome is inferred
-      (`CROPS.BIOMES.oidong`, `atmNote '?'`): the scale model's rasters were not read for this region. The valley's place on
-      the scale model is "east of the Vale of Xanadu" (LORE.md 6.15); its polygon is not drawn.
+      (`CROPS.BIOMES.oidong`, `atmNote '?'`). The valley is now on the scale model's **biome layer** as 'Oidong Valley' (the
+      owner moved it from the geographic layer, 2026-10-19; px 725-1035 by 1234-1350, 69,000 km2, walls included), and its
+      rasters (4.21) read: the floor under 2,600 m (19,500 km2) Cfb 44 %, BSk 24 %, Csa 11 %, Cfa 9 %, highland lakes 8 %,
+      median rain 290 mm (wetter in the east: ~1,035 mm at Longsong), mean 11 C; the slopes to 4,000 m Dfc, Dsb, Dfb, Dsc,
+      mean 4 C; the heights ET and EF, mean -9 C. No Cwb or Dwb: the kit's tags and `CROPS.BIOMES.oidong` are the owner's
+      to bring into line (Cfb and Dfb for Cwb and Dwb, and BSk and Csa for the drier west).
 - [ ] **No core/atmos**: the kit binds no atmosphere (no wind or clock from ATMOS, no cloud deck), so the foliage sways on the
       core's own clock and the mist is this host's sprites. The pools' water is the host's own near-still shader, not the shared
       wave field (biomes/README.md asks for it on open water; these are small still pools, mirror-still by design): bind it
@@ -22,6 +26,9 @@
       east cliff), and its gardens draw this kit's species (the owner's rule for Voth: feedback-swbay-plants).
 - [ ] **Not in the open world**: `openworld/` has no Oidong region yet; a world must bind the kit's `flat` field (the gravel
       flats) and a `mist` field at any cataract, or it gets no raked flats and no chalice trees (BIOME-API.md).
+      `settlements/longsong` is the first world on the model's land that grows it (its `45-host-stage.js` binds both), and
+      the open world's fields know the overlay ('oidong valley': the 'vale' style and palette, the kit 'oidong' in
+      `tools/scale-model/extract_region.py`'s KITS).
 - [ ] **The raked ripples ring only the first 32 stone groups** (`NSTONE` in 84-host-ground.js, a uniform array); the floor
       places about 125 groups, so the rest sit in the parallel ripples. Raise the count or pack the groups into a texture.
 - [ ] **The budget is the measured total, 13.3M triangles at q=1** (19.5M ceiling in `99-host-take.js`; the trees pass 11.9M of a 15.5M ceiling); draw calls 65-100 by
