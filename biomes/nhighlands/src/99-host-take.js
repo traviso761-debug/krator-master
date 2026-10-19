@@ -147,6 +147,7 @@ KHOST.take({build:'nhighlands',title:'Krator Northern Highlands',
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
+ minimap:{title:'The Northern Highlands'},
  budget:BUDGET,types:()=>BIO.stats,
  // the kit's own occupancy count, as its 91-host-probe.js had it: a tree's volume counts as filled, and an instanced mesh
  // gives at most ~4000 samples (the host's generic count samples every instance and every volume)

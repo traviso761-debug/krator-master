@@ -4,7 +4,7 @@
 
 Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit.
 
-Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
+Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`, `VASSAL-KITS.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/iziz-vernacular.html`, `dist/iziz.html`, `dist/w-a.html`, `dist/w-b.html`, `dist/w-c.html`
 
@@ -59,7 +59,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `73b-vern-works.js` | 31 **big** | mine head: adit into the rock, pipe headframe ov (53); quarry: a stepped cut in a block of orange stone (118); watermill: mill house on a stone plinth, oversho (178); fungus house: a long windowless shed banked with (239) |
 | `73c-vern-land.js` | 35 **big** | yard pieces (9); FARMHOUSE (middle): the farm belt's homestead (54); BYRE AND DAIRY (poor): the cattle house (111); STOCK PENS (poor): the swineherd's and duck keep (153); BOATWRIGHT'S YARD (middle): river boats and moat (191); FISH LANDING AND SMOKEHOUSE (poor) (265) |
 | `74-vern-guilds.js` | 35 **big** | local helpers (LOCAL frame, y = base of the piec (8); Farmers' Guild: half-timber hall on a stone plin (86); Beast Hunters' Guild: trophy hall with a towerin (140); caravanserai: walled court, gatehouse with a two (190); Forgemaster's Hall: tall stone hall with a 9 m o (238) |
-| `74b-vern-frontier.js` | 38 **big** | local helpers (LOCAL frame, y = base of the piec (9); the Governor's House: walled forecourt, iron ga (41); the guard tower and barracks: a square stone tow (99); the watch house: a two-storey city-watch post, s (141); the toll house: at the trailhead, a toll window  (161); the palisade: ONE modular segment, o.len metres  (194); the palisade gate: two log towers either side of (205); the mustering ground: an open drill yard inside  (230); the rest stop on the cliff trail. v0: cut into t (259) |
+| `74b-vern-frontier.js` | 38 **big** | local helpers (LOCAL frame, y = base of the piec (9); the Governor's House (Kautoa's isle demo calls f (41); the guard tower and barracks: a square stone tow (99); the watch house: a two-storey city-watch post, s (141); the toll house: at the trailhead, a toll window  (161); the palisade: ONE modular segment, o.len metres  (194); the palisade gate: two log towers either side of (205); the mustering ground: an open drill yard inside  (230); the rest stop on the cliff trail. v0: cut into t (259) |
 | `74z-vern-trades.js` | 6 |  |
 | `75-port-embassy.js` | 24 | textures (near-grey, tinted per instance; 128 px (10); materials (35); geometry (43); kit items (58); local helpers (vp prefix) (68); the embassy (84) |
 | `76-campus.js` | 11 |  |
@@ -94,7 +94,7 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-35-core-anim.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-58-biome-hyperjungle-fauna.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js`, `94-city-export.js` | 319 |
+| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-35-core-anim.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-58-biome-hyperjungle-fauna.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js`, `94-city-export.js` | 320 |
 | `vernacular` | `89z-rows.js`, `91z-views.js` | 6 |
 | `wA` | `89z-rows.js`, `91z-views.js` | 2 |
 | `wB` | `89z-rows.js`, `91z-views.js` | 1 |

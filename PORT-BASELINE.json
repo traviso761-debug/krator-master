@@ -25,8 +25,8 @@
    "sha256": "848e554efdce10d73d1aa7e23b430bfd0263ca63259e641163b591a6c66b280d"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 5839529,
-   "sha256": "50c4fdbfd37fe5e9ea0fa621b29258de25a4520fde5cb40b252574a1ce793183"
+   "bytes": 5993342,
+   "sha256": "eaf867c65ecbbe6c775addac227a20059b9545b1d7d846f92407e514b595dfa0"
   },
   "biomes/nwbay/dist/nwbay.html": {
    "bytes": 6550557,
@@ -37,8 +37,8 @@
    "sha256": "5b4cce9074e542d25c43908cd9397390ed213bf48f8c8119683fe6b14b08aba3"
   },
   "biomes/oidong/dist/oidong.html": {
-   "bytes": 2512318,
-   "sha256": "24fc7d3e05c87f115146e6ea974c25f4d53e52cd48711c06731b2ec47579d4a9"
+   "bytes": 2526722,
+   "sha256": "b1d1fe16b5603bace3cf06d16943a9500448e242583d64d402be2abe0e05160e"
   },
   "biomes/rift/dist/rift.html": {
    "bytes": 5762923,
@@ -341,8 +341,8 @@
    "sha256": "4afcaad53c1742554caf146f341db16ad4bd362481876026a5025d30177b2028"
   },
   "kits/pylon/dist/pylon.html": {
-   "bytes": 2033888,
-   "sha256": "3cd56418ba06958443542c05f7dbbd0d26fd4483faf9f79e47a28c36a2adaac7"
+   "bytes": 2133385,
+   "sha256": "9db9408df581cfd1f456628d8b95aa06cf06afad37e8e156ca0ca9af5d8bd05d"
   },
   "kits/resources/dist/resources.html": {
    "bytes": 566490,
@@ -421,24 +421,24 @@
    "sha256": "fa1989546256c0903e9609baecd64180ce1b1399f7ca6acc22aeb272708c3277"
   },
   "settlements/iziz/dist/iziz-vernacular.html": {
-   "bytes": 1710683,
-   "sha256": "9a42d0f00aa132a56689ed4925f9449e1406be153500621bee016d47f83720c3"
+   "bytes": 1711164,
+   "sha256": "8bd40a859d96c062127a3987d9cfe690e2ce082f812e06948c372c119ded71eb"
   },
   "settlements/iziz/dist/iziz.html": {
-   "bytes": 5353060,
-   "sha256": "93e539f120584c7f0dcdd8a7fcb90f5383cd56a80c077888e14147f8fc2c4bc2"
+   "bytes": 5369679,
+   "sha256": "0340b4b78d1c847dd2325caff91e6f3482a28f2885ace368ae766c39ab9864b4"
   },
   "settlements/iziz/dist/w-a.html": {
-   "bytes": 1014209,
-   "sha256": "505425307ab9f7dc3b287adafb7dd0639e4374e4eae65cdcba66b16a937a698b"
+   "bytes": 1014690,
+   "sha256": "e0740f56ad00a6aacf663c4d56549c7a13f8283e05a7ae89d9cd0adbfd83d1ed"
   },
   "settlements/iziz/dist/w-b.html": {
-   "bytes": 1013935,
-   "sha256": "b2a1bf5bd8d409f15e79d883e8557ac2df5b67521dab47db5f28420cf61276e4"
+   "bytes": 1014416,
+   "sha256": "094684e4cf9e092493e9e1397a8beda94cb877fc3e54bff052a4dc4852cf0fe5"
   },
   "settlements/iziz/dist/w-c.html": {
-   "bytes": 1014975,
-   "sha256": "3ad844937e8052b40a2e852ae1999ca19d92a726a906407df73f5d2a2301a466"
+   "bytes": 1015456,
+   "sha256": "15e6aece853f6529c215ef5414404f24cf9d9d89b5f67740a137e79173df4175"
   },
   "settlements/jimjam/dist/jimjam-kit.html": {
    "bytes": 8989262,

@@ -354,13 +354,13 @@
    "roughLift": 0.3
   },
   "nbark3": {
-   "lib": "bark.birch",
+   "lib": "bark.birch.lichen",
    "scale": [
     3,
     3
    ],
    "tint": {
-    "keep": 0.0,
+    "keep": 1.0,
     "mean": 0.832
    },
    "mapOnly": true,

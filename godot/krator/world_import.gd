@@ -538,9 +538,12 @@ static func _rec_xf(r: Dictionary) -> Transform3D:
 	return Transform3D(Basis(Vector3.UP, float(r.get("ry", 0.0))), Vector3(float(at[0]), float(at[1]), float(at[2])))
 
 
-# a library map by reference: <dir>/tex/pack.json's family names its file for the slot (tools/textures/pack.py's output)
+# a library map by reference: <dir>/tex/pack.json's family names its file for the slot (tools/textures/pack.py's output);
+# an export from several packs (a kit on Iziz's page) holds <pack>.pack.json for each, its files side by side in tex/
 static func _library(dir: String, t: Dictionary, packs: Dictionary) -> Texture2D:
-	var pj := dir + "/tex/pack.json"
+	var pj := dir + "/tex/%s.pack.json" % str(t.get("pack", ""))
+	if not FileAccess.file_exists(pj):
+		pj = dir + "/tex/pack.json"
 	if not packs.has(pj):
 		packs[pj] = KData.read_json(pj) if FileAccess.file_exists(pj) else {}
 	var fams: Dictionary = (packs[pj] as Dictionary).get("families", {})

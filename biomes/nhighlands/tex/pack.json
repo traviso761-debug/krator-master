@@ -505,7 +505,7 @@
    "files": {
     "map": "nbark3.albedo.webp"
    },
-   "lib": "bark.birch",
+   "lib": "bark.birch.lichen",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -515,16 +515,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "56444eace17ddf4b35eca415698dda53a46ce4c2",
-    "normal": "dd2274d5656e582322ea82730ea0ad37fe9c57cf",
-    "roughness": "e20b94734112b98e9860ed54f2fefb9a133a7816"
+    "albedo": "5f2dea1a0e19d17f4c68111a032823d62c1dc7d3",
+    "normal": "ebcfc80a8853cc06f567a08e5c851aababaabaac",
+    "roughness": "24325a1702ed9de1b4ac7a92b7b659c480e35fae"
    },
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
-    "keep": 0.0,
+    "keep": 1.0,
     "mean": 0.832,
-    "sourceMean": 0.7353
+    "sourceMean": 0.6192
    }
   },
   "nbark4": {

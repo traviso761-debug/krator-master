@@ -38,7 +38,9 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
                'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/export/yuni_interiors_test.gd', 'res://tests/water/water_test.gd',
                'res://tests/water/falls_case_test.gd',
-               'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd']
+               'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd',
+               # a test and its arguments (after Godot's --): Pylon's sheet on Iziz's page, through the city test (core/export/README.md)
+               ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet')]
 # The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
 # passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
 COMPARE_CASES = ['world-sedesert', 'world-iziz']
@@ -123,7 +125,8 @@ def steps(nightly, build):
             s.append(('report: export sizes (tools/export_report.py)', [PY, 'tools/export_report.py']))
         g = os.environ.get('GODOT') or shutil.which('godot')
         for t in GODOT_TESTS:
-            s.append(('godot ' + t, [g, '--headless', '--path', 'godot', '--script', t] if g else None))
+            t, targs = (t[0], list(t[1:])) if isinstance(t, tuple) else (t, [])
+            s.append(('godot ' + ' '.join([t] + targs), [g, '--headless', '--path', 'godot', '--script', t] + (['--'] + targs if targs else []) if g else None))
         # the perf capture (ROADMAP.md section 11, item 4; godot/README.md "The perf capture") smoked headless: it must run and
         # write its files into shots/perf (gitignored); its numbers mean nothing here and are never checked
         s.append(('godot perf capture (headless smoke)', [g, '--headless', '--path', 'godot', '--script', 'res://tests/perf/perf_capture.gd', '--',
