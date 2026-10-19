@@ -15,7 +15,9 @@ saying what fixed it.
       the city's old page differs from itself at three of four views (the biome's LOD meshes, 3 to 5 names), the new page by 2 to
       14 names, all core/lod's time-budgeted proxy queue; with `LOD.flush()` before each count, two old runs and the new page
       match exactly at all four views. Hostcheck: the inspector names "The God — the Ancient lab" and "Round earth hut (peasant)"
-      from their records, minimap and marks work, the error panel is clean.
+      from their records, minimap and marks work, the error panel is clean. **2026-10-18:** re-proven on main (a rebuild
+      reproduces both committed pages bit for bit, the baseline rows unchanged; `verify.py --assert` passes on both) and the
+      docs reconciled (ROADMAP.md section 10, step 5; `core/host/README.md`, "Used by"), which the port's commit had left behind.
 - [ ] (2026-10-15) 'dalab' is not a core/tags culture: `91t-dalab-tags.js` gives Dalab's records culture null and style 'dalab', the castes
       (peasant, noble, priest) as wealth (poor, rich, rich) with the caste as the role, an embassy's guest as its role ('embassy:voth'),
       the lab's `ancient` as state reclaimed. When core/tags takes the culture (with its test and golden), map it there and drop this.

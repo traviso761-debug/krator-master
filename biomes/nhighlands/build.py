@@ -80,7 +80,7 @@ for f in CORE_SPACE:
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
 import host as khost
-CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
+CORE_HOST=khost.FULL   # the whole interface (core/host/README.md): the record-driven inspector, marks (which supersede the polygon tool), pictures, the minimap, the editor
 khost.resolve(PATH,CORE_HOST)
 # the material library (core/materials/record: KMAT and the loader) and the GENERATED pack of the textures materials.json
 # names (tools/textures/matlib_pack.py from tex/, written by tools/textures/pack.py). Without tex/pack.json the pack is
@@ -89,7 +89,7 @@ for f in ('23-mat-record.js','25-matlib-host.js'):
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record',f))
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
 import matlib_pack
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'nhighlands')}
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'nhighlands'),khost.EDITS_JS:khost.edits_js(HERE,'nhighlands')}
 for f in VIRTUAL: PATH[f]=None
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]

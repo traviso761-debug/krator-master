@@ -2,7 +2,7 @@
 # krator-world opens in Godot with its buildings as Records/Building_<id> nodes and every fixture a child of its
 # building. Yuni keeps its own route too (KRATOR_EXPORT, data/yuni/: the spike's case), so the test also proves the
 # two agree: a door has the same id, uid and position in both. The case is written by
-#   python3 tools/harness.py export settlements/yuni/yuni.html --out godot/data/world-yuni --box 140,-80,340,90 --profile registry,fixtures,interiors?
+#   python3 tools/harness.py export settlements/yuni/yuni.html --out godot/data/world-yuni --box 140,-80,340,90 --profile registry,fixtures,interiors
 # and imported by krator/world_import.gd. Each check has a negative.
 #   godot --headless --path godot --script res://tests/export/yuni_test.gd     exits 0 when every check passes
 # (a fresh checkout runs godot --headless --path godot --import once first, so the class names register)
@@ -38,8 +38,8 @@ func _initialize() -> void:
 	ok(d["format"] == "krator-world" and int(d["version"]) == 1 and not rep["gaps"].has("load") and not rep["gaps"].has("format"),
 		"world.json and world.glb load (%d ms)" % rep["counts"]["load_ms"])
 	ok((d["errors"] as Array).is_empty(), "the page reported no section errors")
-	ok(rep["sections"].get("registry") == "ok" and rep["sections"].get("fixtures") == "ok" and rep["sections"].get("interiors") == "empty",
-		"sections: %s" % JSON.stringify(rep["sections"]))
+	ok(rep["sections"].get("registry") == "ok" and rep["sections"].get("fixtures") == "ok" and rep["sections"].get("interiors") == "ok",
+		"sections: %s (interiors filled since 2026-10-18: yuni_interiors_test.gd)" % JSON.stringify(rep["sections"]))
 	ok(rep["sections"].get("sim") == "stub" and rep["gaps"].has("section sim"), "the stubs arrive as stubs, and the report names them")
 	var tags: Dictionary = w.get_meta("tags", {})
 	var recs: Dictionary = rep.get("records", {})
@@ -63,6 +63,8 @@ func _initialize() -> void:
 					b_far += 1
 				for f in bn.get_children():
 					var fr: Dictionary = f.get_meta("krator", {})
+					if fr.get("class") != "fixture":
+						continue   # the building's interior (Interior_<id>, since 2026-10-18): yuni_interiors_test.gd
 					fx += 1
 					kinds[fr.get("kind")] = kinds.get(fr.get("kind"), 0) + 1
 					if fr.get("parent") == r["id"] and tags.has(fr["parent"]) and tags[fr["parent"]]["class"] == "building" and tags.has(fr["id"]):

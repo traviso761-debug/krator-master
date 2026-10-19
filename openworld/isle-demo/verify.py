@@ -10,7 +10,9 @@ highway, no town tile). The isle's own checks:
     (the towns are on land), 0 at sea (a point well out in the Ring Sea);
   - the towns stand on land, the climate the assay found (Kautoa Af, Valapo XA);
   - every geyser vent has its thermal ground (the 'floor' field 1 at the vent).
-  - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest.
+  - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest;
+  - the hamlets (core/hamlet H4): the four resource villages made with no error, on dry ground, at most 500 people each,
+    every record's tags known (the negative drops the salt village).
 Each check has a negative: the weights summed with a class removed, a town moved out to sea, a vent moved 5 km, the
 coast hook switched off.
 Uses tools/harness.py (the Chromium launcher, the pinned three.js). On a machine whose headless SwiftShader cannot compile
@@ -49,6 +51,15 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
      if(!sea){if(d>0)sea=true;else continue;}if(d>1.5&&d<3.2)lag=true;else if(lag&&d>0&&d<.8)crest=true;else if(d>40)break;}
     rays++;if(crest)reefs++;}}finally{WORLD.landHook=keep;}
   R.push({name:'the coast: a lagoon behind a reef crest',ok:reefs>=4,detail:reefs+' of '+rays+' rays from the towns cross a lagoon (1.5-3.2 m) then a crest (under 0.8 m)'});}
+ {const HM=window._hamlets,bad=[];if(!HM)bad.push('no hamlets on the page');else{
+   const V=HM.villages.filter(v=>!(neg==='hamlet'&&v.focus==='salt')),want=['salt','mine','lumber','ranch'];
+   for(const f of want){const v=V.find(q=>q.focus===f);if(!v){bad.push('no '+f+' village');continue;}
+    if(v.error)bad.push(v.id+': '+v.error);if(!v.site)bad.push(v.id+': no site');
+    if(!(v.census&&v.census.pop>0&&v.census.pop<=500))bad.push(v.id+': population '+(v.census&&v.census.pop));
+    if(v.site&&WORLD.water(v.site.x,v.site.z)>WORLD.H(v.site.x,v.site.z)-.5)bad.push(v.id+': its green is in the water');}
+   HM.stats.errors.forEach(e=>bad.push(e));const A=HM.tags();if(A.unknown)bad.push(A.unknown+' unknown tag values');}
+  R.push({name:'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged',ok:!bad.length,
+   detail:bad.length?bad.join('; '):HM.villages.map(v=>v.focus+' '+v.census.pop+' people, '+v.buildings+' buildings').join('; ')});}
  return R;}"""
 
 
@@ -89,7 +100,8 @@ async def run(a):
                     print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                     if not r['ok']: fails.append(r['name'])
                 print('--- negative controls (each must fail) ---')
-                for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest')):
+                for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
+                                ('hamlet', 'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged')):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

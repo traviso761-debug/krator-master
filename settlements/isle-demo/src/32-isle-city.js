@@ -436,7 +436,7 @@ ISLE.city = function (town, o) {
       var chain = ZONE.poly.concat([ZONE.poly[0]]);
       var named = (PR.gates || []).map(function (Gt) { var A = avenue(Gt.avenue), e = Gt.end || A.pts[A.pts.length - 1]; return { x: e[0], z: e[1], marker: Gt.avenue, name: Gt.name }; });
       var Wr = P.wallRec = KCITY.site.wall(chain, ways, { towerGap: T.towerGap, clear: T.clear, gateFind: T.gateFind, named: named });
-      Wr.nodes.forEach(function (n) { n.gx = n.x; n.gz = n.z; if (n.kind === 'gate' && n.way) n.towerOff = ((tune.width[n.way.cls] || 10) + T.gatePass) / 2 + T.gateTower / 2; });
+      Wr.nodes.forEach(function (n) { n.gx = n.x; n.gz = n.z; if (n.kind === 'gate' && n.way) n.towerOff = ((tune.width[n.way.cls] == null ? 10 : tune.width[n.way.cls]) + T.gatePass) / 2 + T.gateTower / 2; });
       /* the sea is the harbour's wall: no run, tower or gate stands where the ground is under it */
       Wr.nodes.forEach(function (n) { if (h(n.gx, n.gz) < 1.5) { n.health = 0; n.skip = true; } });
       Wr.segs = KCITY.site.wallSegs(Wr.nodes.filter(function (n) { return !n.skip; }));
@@ -467,6 +467,19 @@ ISLE.city = function (town, o) {
       for (var q = 0; q < opts.length; q++) { r -= opts[q].w; if (r <= 0) { pick = opts[q]; break; } }
       var Fr = { id: town + '.f' + OUT.fields.length, town: town, kind: pick.kind, crop: pick.crop, x: +x.toFixed(1), z: +z.toFixed(1), y: +y.toFixed(2), size: c, tag: null };
       if (tags) { var T = tags.add({ 'class': 'feature', kind: 'field', key: 'field:' + pick.crop, at: [x, y, z], ry: 0, size: [c, c, 0], note: pick.kind + ' of ' + pick.crop, src: 'isle-demo' }); if (T) Fr.tag = T.id; }
+      /* an orchard's trees are records too, each drawn from its own cell's stream (the field's grid cell and the tree's
+         index: never the order the fields were listed in), registered under the field before the page draws them */
+      if (pick.kind === 'orchard') {
+        Fr.trees = [];
+        var ci = Math.round((x + hf) / c), cj = Math.round((z + hf) / c);
+        for (var t2 = 0; t2 < 5; t2++) {
+          var u = KRAND.unit(KRAND.hash(seed, 37, ci, cj, t2 * 4)) - 0.5, v = KRAND.unit(KRAND.hash(seed, 37, ci, cj, t2 * 4 + 1)) - 0.5;
+          var s = 3 + 3 * KRAND.unit(KRAND.hash(seed, 37, ci, cj, t2 * 4 + 2)), tx = x + u * c * 0.85, tz = z + v * c * 0.85, ty = h(tx, tz);
+          var Tr = { x: +tx.toFixed(2), y: +ty.toFixed(2), z: +tz.toFixed(2), s: +s.toFixed(3), hgt: +(s * (pick.crop === 'coconut' ? 3.2 : 1.6)).toFixed(3) };
+          if (tags && Fr.tag) tags.child(Fr.tag, { 'class': 'flora', kind: 'orchard tree', key: 'tree:' + pick.crop, at: [Tr.x, Tr.y, Tr.z], ry: 0, r: s, h: Tr.hgt, src: 'isle-demo' });
+          Fr.trees.push(Tr);
+        }
+      }
       OUT.fields.push(Fr);
     }
     LOG.fields = OUT.fields.length + ' parcels, ' + Math.round(OUT.fields.length * c * c / 1e4) + ' ha';

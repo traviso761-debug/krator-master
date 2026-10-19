@@ -24,6 +24,7 @@ another shape may be missed (nhighlands' list is long and was read by count only
 | swlowlands | 16 | 11 |
 | throne | 15 | 5 |
 | xanadu | 13 | 5 |
+| oidong (2026-10-19) | 22 (the giant lotus, sacred fig, cherry, marble birch, cloud pine, chalice tree, bell-pod willow, moss-ball tree, temple cedar, camphor laurel; peyote, sky poppy, snow lotus, valley ginseng, monk's sage, moon caps, rainbow brackets, the iridescent lily, moss, tea, lotus) | 4 (cloud pine, temple-cedar incense, monk's sage incense, bamboo offcuts) |
 
 **Every biome has at least one medicinal plant.** Only one biome has no fuel plant, and one more is weak.
 

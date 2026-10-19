@@ -41,11 +41,11 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # fill through core/export (src/77-export.js beside its own KRATOR_EXPORT route, GAME_EXPORT.md), checked under
 # --assert on the world page over EXPORT_BOX: the Foundry (bld_00005, the Godot spike's yuni case) and the street
 # before it. registry (its buildings and fixtures, core/tags) and fixtures (the doors, windows and lights with their
-# host) are required; interiors may read empty (Yuni's rooms go out through KRATOR_EXPORT.building for now).
+# host) and interiors (the room graph of every planned building in the box, since 2026-10-18) are required.
 # A required section that reads stub, none, error or empty fails the run. --profile a,b,c replaces the list for one
-# run (add sim to see a stub fail).
+# run (add sim to see a stub fail; interiors? would let an empty room graph pass).
 EXPORT_BOX = [140, -80, 340, 90]
-EXPORT_PROFILE = ['registry', 'fixtures', 'interiors?']
+EXPORT_PROFILE = ['registry', 'fixtures', 'interiors']
 # --------------------------------------------------------------------------
 SWEEP_JS = """()=>{const bb=new THREE.Box3();const p=new THREE.Vector3();const out=[];const boxes=[];const m=new THREE.Matrix4();
 const pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();

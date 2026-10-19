@@ -1,7 +1,7 @@
 {
  "00-head.html": "6d5ab6cf17f4",
  "05-palette.js": "d621cd4394dd",
- "07-core-export.js": "33b20dce136b",
+ "07-core-export.js": "4cb98056d639",
  "08-core-rand.js": "4a3aa47f25da",
  "09-core-export-adapters.js": "ada2edeec24e",
  "09-lod.js": "e1f7db612b83",
@@ -73,7 +73,7 @@
  "72-lights.js": "0089fb7fe8d8",
  "75-terrain.js": "cb8d0decb148",
  "76-doors.js": "705c5990db87",
- "77-export.js": "d30563bb0426",
+ "77-export.js": "611d59408979",
  "80-camera.js": "3fc5dc137367",
  "81-glow.js": "2855bbbae09d",
  "82-daynight.js": "c579bd1ac5c6",

@@ -7,7 +7,7 @@ The page is one <script> made of, in filename order:
   src/*                 the kit: 00-head.html, 26k-kit.js (identity), 42r-res-ore.js (the rule, [G data]), 44r-res-nodes.js
                         (the nodes), 89-rows.js (the sheet), 99-tail.html
   kits/scyvoi/src       the engine, READ IN PLACE (not vendored: nothing here to drift): 10-core, 27-mat, 30-geo, 36-def,
-                        90-scene, 91-probe, 91f-furnish, 91n-night, 92-camera, 93-anim
+                        90-scene, 91f-furnish, 91n-night, 92-world, 93-anim, 99-host-take
   settlements/iziz/src  81-sky.js (KratorSky, the standard Krator sky), read in place
   core/rand, core/materials/record, core/tags, core/furnish, core/atmos   as every kit on the engine
   26-matlib-pack.js     GENERATED: the library pack (none yet: the nodes draw on vertex colours)
@@ -61,9 +61,15 @@ OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos')]
 # the engine and the sky, READ IN PLACE: nothing vendored here, so nothing drifts (a fix to the engine reaches this kit at once)
+# the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
+# and the authoring tools (inspect, polygon, path). the engine's src/99-host-take.js (read in place from kits/scyvoi, with 92-world.js) hands it the
+# page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = khost.SHELL + ['94-host-polytool.js']
 ENGINE = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
 ENGINE.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('10-core.js', '30-geo.js', '36-def.js', '90-scene.js',
-    '27-mat.js', '91-probe.js', '91f-furnish.js', '91n-night.js', '92-camera.js', '93-anim.js')})
+    '27-mat.js', '91f-furnish.js', '91n-night.js', '92-world.js', '99-host-take.js', '93-anim.js')})
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['generic']   # the engine's furniture pass needs a bundle; the nodes place none
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
@@ -120,6 +126,7 @@ def sources():
     paths = {}
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
+    paths.update({f: khost.path(f) for f in CORE_HOST})
     core = dict(paths)
     paths.update(ENGINE)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
@@ -137,7 +144,7 @@ def main():
     if '--no-checks' not in sys.argv:
         decl = {}
         for f in files:
-            if not f.endswith('.js') or f in VIRTUAL: continue
+            if not f.endswith('.js') or f in VIRTUAL or f in CORE_HOST: continue   # the host's files are IIFEs: each its own scope
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
         for n in BUNDLE_GLOBALS:
             if n in decl: errs.append('top-level name `%s` in %s clashes with the generated furniture bundle' % (n, ', '.join(sorted(decl[n]))))

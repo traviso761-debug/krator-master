@@ -44,7 +44,7 @@ RINGISLES.world=function(){if(RINGISLES._world)return RINGISLES._world;
   if(!SPL.length)continue;
   out[kit]={name:kit,SPECIES:SPL,PASSES:P2,zones:Z,
    make:(sp,x,y,z)=>({sp,x:x||0,z:z||0,y0:(y||0)-.3,H:SPL[sp].H[1],rb:SPL[sp].rb[1],crownR:3,_bo:BOS[sp]}),
-   grow:(T,lv)=>{const G=RINGISLES.borrowGrow(T._bo,T.x,T.y0+.3,T.z,lv,1,null);if(!G)return null;
+   grow:(T,lv)=>{const G=RINGISLES.borrowGrow(T._bo,T.x,T.y0+.3,T.z,lv,1,{oneLevel:true});if(!G)return null;
     if(G.H)T.H=G.H;if(G.rb)T.rb=G.rb;if(G.crownR||G.cr)T.crownR=G.crownR||G.cr;return {};}};}
  return(RINGISLES._world=out);};
 // the floor in an open world: each profile the fields one zone stands on (every isle field given: the rest are 0), and

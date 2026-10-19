@@ -71,7 +71,7 @@ var VOTH = (function () {
   function FR3(x, y, z, w, h, d, ry, c, f) { PRIMS.push(['fr3', x, y, z, w, h, d, ry == null ? 0 : ry, c, f]); }
   function CYL(x, y, z, r, h, ry, c, f) { PRIMS.push(['cyl', x, y, z, r, h, r, ry == null ? 0 : ry, c, f]); }
   function shade(hex, f) { var g = function (s) { return Math.max(0, Math.min(255, Math.round((hex >> s & 255) * (1 + f)))); }; return g(16) << 16 | g(8) << 8 | g(0); }
-  function reseed(s) { seed = (s >>> 0) || 1; }
+  function reseed(s) { seed = s >>> 0; }   /* 0 is a real seed: the LCG steps from it like any other */
   function rr(a, b) { seed = (seed * 1664525 + 1013904223) >>> 0; return a + (b - a) * seed / 4294967296; }
   /* a drawn causeway's segment, in place of Voth's span() and reclaimedCauseway(): a plain deck from end to end (a
      bridge, on a low skirt) or a fill from the sea bed to RLAND (a mole). Stand-ins: the islanders' own jetties and

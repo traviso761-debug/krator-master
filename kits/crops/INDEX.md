@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | 2 |  |
 | `10-crop-core.js` | 6 | the Crops kit: the axes, the buckets, the biomes (1) |
 | `20-crop-records.js` | 14 | the Crops kit: the records (plain data, [G data] (1) |
-| `22-crop-material.js` | 9 | the Crops kit: materials (fibre) and utility (dy (1) |
+| `22-crop-material.js` | 13 | the Crops kit: materials (fibre) and utility (dy (1) |
 | `40-crop-query.js` | 7 | the Crops kit: the queries (pure functions on th (1) |
 | `89-sheet.js` | 4 | the Crops kit: the sheet (a browser page: every  (1) |
 | `99-tail.html` | <1 |  |

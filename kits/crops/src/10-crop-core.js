@@ -58,5 +58,7 @@ CROPS.BIOMES = {
   swlowlands:  {atm: 1, atmNote: '?', zones: {bayou: {warmth: [4, 4], arid: [3, 4], wet: true}, plain: {warmth: [3, 3], arid: [2, 3]}, hills: {warmth: [2, 3], arid: [1, 2]}}},
   throne:      {atm: 2, atmNote: '?', zones: {windward: {warmth: [4, 4], arid: [3, 4]}, lee: {warmth: [3, 5], arid: [0, 1]}, shoulder: {warmth: [2, 3], arid: [2, 3]}}},
   xanadu:      {atm: 1, atmNote: '?', zones: {vale: {warmth: [2, 3], arid: [2, 3]}, shore: {warmth: [2, 3], arid: [1, 2]}, lake: {warmth: [2, 3], arid: [3, 3], wet: true}}},
-  ringisles:   {atm: 2, atmNote: '?', zones: {wet: {warmth: [4, 4], arid: [3, 4]}, savanna: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 5], arid: [0, 1]}, lagoon: {warmth: [4, 4], arid: [3, 4], wet: true, salt: true}}}
+  ringisles:   {atm: 2, atmNote: '?', zones: {wet: {warmth: [4, 4], arid: [3, 4]}, savanna: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 5], arid: [0, 1]}, lagoon: {warmth: [4, 4], arid: [3, 4], wet: true, salt: true}}},
+  /* the Oidong Valley (biomes/oidong): a chilly enclosed high valley at ~1600 m, ~1 atm; the floor humid, the flats drier, the terraces cool, the pools fresh */
+  oidong:      {atm: 1, atmNote: '?', zones: {floor: {warmth: [1, 2], arid: [3, 3]}, pools: {warmth: [1, 2], arid: [3, 4], wet: true}, flats: {warmth: [1, 2], arid: [1, 2]}, terraces: {warmth: [0, 1], arid: [2, 3]}}}
 };

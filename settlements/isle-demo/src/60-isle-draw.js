@@ -62,13 +62,12 @@ DRAW.orchards = function (R, G) {
   crown.translate(0, 1, 0); trunk.translate(0, 0.5, 0);
   var mc = new THREE.InstancedMesh(crown, new THREE.MeshLambertMaterial({ color: 0xffffff }), Math.max(1, n)), mt = new THREE.InstancedMesh(trunk, new THREE.MeshLambertMaterial({ color: 0x5a4632 }), Math.max(1, n));
   var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), col = new THREE.Color(), k = 0;
-  list.forEach(function (Fr, fi) {
-    for (var t = 0; t < per; t++) {
-      var u = KRAND.unit(KRAND.hash(7, fi, t, 1)) - 0.5, v = KRAND.unit(KRAND.hash(7, fi, t, 2)) - 0.5, s = 3 + 3 * KRAND.unit(KRAND.hash(7, fi, t, 3));
-      var x = Fr.x + u * Fr.size * 0.85, z = Fr.z + v * Fr.size * 0.85, y = G.h(x, z), hgt = s * (Fr.crop === 'coconut' ? 3.2 : 1.6);
+  list.forEach(function (Fr) {
+    (Fr.trees || []).forEach(function (Tr) {     /* the trees are the plan's records (32-isle-city.js fields): drawn, not placed, here */
+      var x = Tr.x, z = Tr.z, y = Tr.y, s = Tr.s, hgt = Tr.hgt;
       m4.compose(new THREE.Vector3(x, y + hgt * 0.55, z), q, new THREE.Vector3(s, s * 0.8, s)); mc.setMatrixAt(k, m4); mc.setColorAt(k, col.setHex(DRAW.TREE[Fr.crop] || 0x3a5a26));
       m4.compose(new THREE.Vector3(x, y, z), q, new THREE.Vector3(s * 0.6, hgt * 0.6, s * 0.6)); mt.setMatrixAt(k, m4); k++;
-    }
+    });
   });
   mc.count = mt.count = k; mc.name = 'orchard crowns'; mt.name = 'orchard trunks'; scene.add(mc); scene.add(mt);
   DRAW.stats.orchardTrees = k; DRAW.stats.fields = R.fields.length;
@@ -89,50 +88,11 @@ DRAW.streets = function (R, G) {
   DRAW.stats.streetTris = pos.length / 9;
 };
 /* ---------------------------------------------------------------- a prototype: one build, one geometry per material */
-DRAW.flatten = function (G) {
-  G.updateMatrixWorld(true);
-  var groups = {}, M = new THREE.Matrix4(), IM = new THREE.Matrix4();
-  G.traverse(function (o) {
-    if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return;
-    var mats = Array.isArray(o.material) ? null : o.material; if (!mats) return;
-    var g = o.geometry, sig = mats.uuid + '|' + Object.keys(g.attributes).sort().join(','), list = groups[sig] || (groups[sig] = { mat: mats, parts: [] });
-    if (o.isInstancedMesh) for (var i = 0; i < o.count; i++) { o.getMatrixAt(i, IM); list.parts.push({ g: g, m: new THREE.Matrix4().multiplyMatrices(o.matrixWorld, IM) }); }
-    else list.parts.push({ g: g, m: M.copy(o.matrixWorld).clone() });
-  });
-  var out = [];
-  for (var s in groups) {
-    var Q = groups[s], names = Object.keys(Q.parts[0].g.attributes), total = 0, itotal = 0;
-    Q.parts.forEach(function (p) { total += p.g.attributes.position.count; itotal += p.g.index ? p.g.index.count : p.g.attributes.position.count; });
-    var A = {}; names.forEach(function (nm) { A[nm] = new Float32Array(total * Q.parts[0].g.attributes[nm].itemSize); });
-    var I = total > 65535 ? new Uint32Array(itotal) : new Uint16Array(itotal), vo = 0, io = 0, v3 = new THREE.Vector3(), nm3 = new THREE.Matrix3();
-    Q.parts.forEach(function (p) {
-      var g = p.g, cnt = g.attributes.position.count; nm3.getNormalMatrix(p.m);
-      names.forEach(function (nm) {
-        var src = g.attributes[nm], sz = src.itemSize, dst = A[nm];
-        for (var i = 0; i < cnt; i++) {
-          if (nm === 'position') { v3.fromBufferAttribute(src, i).applyMatrix4(p.m); dst[(vo + i) * 3] = v3.x; dst[(vo + i) * 3 + 1] = v3.y; dst[(vo + i) * 3 + 2] = v3.z; }
-          else if (nm === 'normal') { v3.fromBufferAttribute(src, i).applyMatrix3(nm3).normalize(); dst[(vo + i) * 3] = v3.x; dst[(vo + i) * 3 + 1] = v3.y; dst[(vo + i) * 3 + 2] = v3.z; }
-          else for (var c = 0; c < sz; c++) dst[(vo + i) * sz + c] = src.array[i * sz + c];
-        }
-      });
-      if (g.index) for (var k = 0; k < g.index.count; k++) I[io + k] = g.index.array[k] + vo; else for (var k2 = 0; k2 < cnt; k2++) I[io + k2] = vo + k2;
-      io += g.index ? g.index.count : cnt; vo += cnt;
-    });
-    var geo = new THREE.BufferGeometry(); names.forEach(function (nm) { geo.setAttribute(nm, new THREE.BufferAttribute(A[nm], Q.parts[0].g.attributes[nm].itemSize)); });
-    geo.setIndex(new THREE.BufferAttribute(I, 1)); geo.computeBoundingSphere();
-    out.push({ geo: geo, mat: Q.mat, tris: itotal / 3 });
-  }
-  return out;
-};
-DRAW.proto = function (kit, key, v) {
-  var id = kit + ':' + key + '#' + (v | 0); if (DRAW.protos[id] !== undefined) return DRAW.protos[id];
-  var G = null, t0 = performance.now();
-  try { G = kit === 'isk' ? ISK.proto(key, v) : kit === 'izv' ? IZV.proto(key, v, 1) : kit === 'cat' ? CAT.proto(key, v) : null; } catch (e) { DRAW.failed[id] = String(e && e.message || e); }
-  if (!G) { DRAW.failed[id] = DRAW.failed[id] || 'no build'; return (DRAW.protos[id] = null); }
-  var parts = DRAW.flatten(G), tris = parts.reduce(function (a, p) { return a + p.tris; }, 0);
-  DRAW.built++;
-  return (DRAW.protos[id] = { id: id, parts: parts, tris: tris, ms: Math.round(performance.now() - t0), w: G.userData.w, d: G.userData.d, h: G.userData.h });
-};
+/* a normalized integer attribute's scale to its float value (the ports' furniture colours are Uint8 0..255, normalized):
+   the flattened geometry's attributes are plain floats */
+/* the kit pieces built once and flattened (58-isle-protos.js, shared with the open world's hamlets) */
+DRAW.denorm = isleDenorm; DRAW.flatten = isleFlatten; DRAW.portMats = islePortMats;
+DRAW.proto = function (kit, key, v) { return isleProto(kit, key, v, DRAW); };
 /* ---------------------------------------------------------------- the pieces: near in full, far as massing */
 DRAW.records = function (R) {
   var all = R.lots.concat(R.wall);

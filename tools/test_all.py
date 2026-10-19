@@ -29,20 +29,28 @@ NIGHTLY_VERIFY = [
     # the first Voth (voth.html) is retired (owner, 2026-10-14; archive/voth-first); Voth is settlements/voth's voth-city, whose
     # verify --assert runs simulated days (about 40 min alone) and so waits for a short mode before it joins the nightly list
     ('settlements/verge', 'dist/verge.html', ['--assert']),
-    ('settlements/yuni', 'yuni.html', ['--assert']),   # its export profile (registry, fixtures, interiors?) since 2026-10-18
+    ('settlements/yuni', 'yuni.html', ['--assert']),   # its export profile (registry, fixtures, interiors) since 2026-10-18
 ]
 GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd',
                'res://tests/mask/kmask_test.gd', 'res://tests/atmos/atmos_test.gd',
                'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd',
                'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
-               'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/water/water_test.gd',
+               'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/export/yuni_interiors_test.gd', 'res://tests/water/water_test.gd',
                'res://tests/water/falls_case_test.gd',
-               'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd']
+               'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd',
+               # a test and its arguments (after Godot's --): Pylon's sheet on Iziz's page, through the city test (core/export/README.md)
+               ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet')]
 # The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
 # passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
 COMPARE_CASES = ['world-sedesert', 'world-iziz']
 COMPARE_ASSERT = False
+# The export size compare (tools/export_report.py --compare godot/data/export-report.json): its output ends with the list
+# of what grew past EXPORT_TOLERANCE percent (bytes, instances, triangles, materials, textures, draws), new or vanished
+# cases and sections fallen from ok. EXPORT_ASSERT False: a report, printed in full and never a failure (the owner reads
+# the list, the last thing in the log); True: that list being non-empty fails the nightly (export_report.py --assert).
+EXPORT_TOLERANCE = 10
+EXPORT_ASSERT = False
 
 
 # A build that reads another build's output builds after it: kits/ancients-interiors loads kits/interiors'
@@ -87,6 +95,8 @@ def steps(nightly, build):
          ('build.py open() names its encoding', [PY, 'tools/check_encoding.py']),
          ('godot vendored core in step', [PY, 'godot/tools/sync_core.py', '--check']),
          ('core/rand GDScript transliteration', [PY, 'core/rand/test_rand.py'])]
+    for t in sorted(glob.glob(os.path.join(ROOT, 'tools', 'tests', 'test_*.py'))):
+        s.append(('tools ' + os.path.relpath(t, ROOT).replace(os.sep, '/'), [PY, t]))
     n = node()
     for t in node_tests():
         s.append(('node ' + t, [n, t] if n else None))
@@ -105,12 +115,18 @@ def steps(nightly, build):
         # cover 2 m forward, stay up, and leave the console clean
         s.append(('walk settlements/girder', [PY, 'tools/harness.py', 'walk', 'settlements/girder/girder.html', '--route', 'KeyW:20f',
                                                '--start', 'auto', '--min', '2', '--dir', '0,-1'] if pw else None))
-        # a report, never a failure (it prints the size of each exported case; --compare against godot/data/export-report.json)
-        s.append(('report: export sizes (tools/export_report.py)', [PY, 'tools/export_report.py', '--compare', 'godot/data/export-report.json']
-                  if os.path.isfile(os.path.join(ROOT, 'godot', 'data', 'export-report.json')) else [PY, 'tools/export_report.py']))
+        # the size of each exported case against godot/data/export-report.json, ending with the flagged-growth list; a
+        # report until EXPORT_ASSERT is True (a refreshed baseline is simply the new reference)
+        if os.path.isfile(os.path.join(ROOT, 'godot', 'data', 'export-report.json')):
+            cmd = [PY, 'tools/export_report.py', '--compare', 'godot/data/export-report.json', '--tolerance', str(EXPORT_TOLERANCE)]
+            s.append(('export sizes (assert, tools/export_report.py)', cmd + ['--assert']) if EXPORT_ASSERT
+                     else ('report: export sizes (tools/export_report.py)', cmd))
+        else:
+            s.append(('report: export sizes (tools/export_report.py)', [PY, 'tools/export_report.py']))
         g = os.environ.get('GODOT') or shutil.which('godot')
         for t in GODOT_TESTS:
-            s.append(('godot ' + t, [g, '--headless', '--path', 'godot', '--script', t] if g else None))
+            t, targs = (t[0], list(t[1:])) if isinstance(t, tuple) else (t, [])
+            s.append(('godot ' + ' '.join([t] + targs), [g, '--headless', '--path', 'godot', '--script', t] + (['--'] + targs if targs else []) if g else None))
         # the perf capture (ROADMAP.md section 11, item 4; godot/README.md "The perf capture") smoked headless: it must run and
         # write its files into shots/perf (gitignored); its numbers mean nothing here and are never checked
         s.append(('godot perf capture (headless smoke)', [g, '--headless', '--path', 'godot', '--script', 'res://tests/perf/perf_capture.gd', '--',

@@ -113,6 +113,14 @@ def _closure(T, img):
             name, body = 'the furniture and interiors bundle (GENERATED: kits/catalog furniture_bundle.py, kits/interiors kit_bundle.py)', _furniture(T)
         else:
             name, body = f, rd(os.path.join(ROOT, f))
+            if f.endswith('25-matlib-host.js'):
+                # a sealed town's KMAT host shares the page's window: it must not reset the page's count of textures
+                # still decoding (window._texPending, which tools/harness.py check_profile waits on), or a page that
+                # bundles the towns reads it negative and never ready
+                old = "if(typeof window !== 'undefined') window._texPending = 0;"
+                if body.count(old) != 1:
+                    sys.exit('kits/beast-riders/towns.py: 25-matlib-host.js no longer resets window._texPending as expected; update the seal')
+                body = body.replace(old, "if(typeof window !== 'undefined' && window._texPending == null) window._texPending = 0;")
         if f not in ('PACK', 'BUNDLE'):
             files.append(name)
         parts.append('/* ---- %s ---- */\n%s\n;\n' % (name, body))
@@ -127,10 +135,20 @@ def _closure(T, img):
     return head + ''.join(parts) + 'return BRT_API();\n})();\n', files
 
 
-def bundle():
+def bundle(side=None):
+    """side: a dict (tools/textures/matlib_pack.py write_sidecar's): the maps go into side['brtowns'], a file beside the
+    page, and BR_TOWN_IMG reads them from KMAT_SIDE (settlements/isle-demo: the page stays under 16 MB)"""
     img = {}
     g, gf = _closure(GIRDER, img)
     m, mf = _closure(MAVS, img)
-    head = ('/* BR_TOWN_IMG: the library maps the two towns\' packs point into, keyed by content (kits/beast-riders/towns.py). '
-            'GENERATED. */\nvar BR_TOWN_IMG = {\n' + ',\n'.join(' "%s": "%s"' % (h, img[h]) for h in sorted(img)) + '\n};\n')
+    maps = '{\n' + ',\n'.join(' "%s": "%s"' % (h, img[h]) for h in sorted(img)) + '\n}'
+    if side is None:
+        head = ('/* BR_TOWN_IMG: the library maps the two towns\' packs point into, keyed by content (kits/beast-riders/towns.py). '
+                'GENERATED. */\nvar BR_TOWN_IMG = ' + maps + ';\n')
+    else:
+        side['brtowns'] = maps
+        head = ('/* BR_TOWN_IMG: the library maps the two towns\' packs point into, keyed by content (kits/beast-riders/towns.py), '
+                'in the page\'s .tex.brtowns.js beside it. GENERATED. */\nvar BR_TOWN_IMG = (typeof KMAT_SIDE !== \'undefined\' && '
+                'KMAT_SIDE.brtowns) || (console.warn(\'BR_TOWN_IMG: the towns\\\' maps are missing (the page\\\'s .tex.brtowns.js '
+                'did not load)\'), {});\n')
     return head + g + m, gf + mf

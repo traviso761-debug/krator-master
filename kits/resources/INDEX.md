@@ -11,13 +11,18 @@ Built output (never open it; edit `src/` and rebuild): `dist/resources.html`
 Build: `cd kits/resources && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `26k-kit.js` | 2 |  |
 | `42r-res-ore.js` | 5 |  |
+| `43r-res-fields.js` | 5 |  |
 | `44r-res-nodes.js` | 14 |  |
 | `89-rows.js` | 1 |  |
 | `99-tail.html` | <1 |  |

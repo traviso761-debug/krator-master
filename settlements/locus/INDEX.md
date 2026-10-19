@@ -27,7 +27,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `locus.tex.locus.js` | <1 |  |
+| `locus.tex.locus.js` | 10971 **big** |  |
 
 ## src/
 

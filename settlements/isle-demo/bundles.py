@@ -59,9 +59,11 @@ def kcity_bundle():
 ISL = os.path.join(ROOT, 'kits', 'islanders', 'src')
 # the engine and the kit, in the kit's own filename order (kits/islanders/build.py sorts them); left out: the page shell,
 # the sky, the sheet's scene, the shore's drawing, the probe, the night pool, the camera, the clock and the furniture
-# adapter (FURNISH is the stub below). 90h-is-shore.js's IS_SEA (the harbour defs' water and sea floor) is restated here
+# adapter (FURNISH is the stub below). 90h-is-shore.js's IS_SEA (the harbour defs' water and sea floor) is restated here.
+# Since the engine moved onto core/host (2383c0ae) the sheet's world and its host hand-over are 92-world.js and
+# 99-host-take.js (the old 91-probe.js and 92-camera.js are gone): both are the kit's own page, never the bundle's
 ISK_SKIP = ('00-head.html', '81-sky.js', '90-scene.js', '90h-is-shore.js', '91-probe.js', '91f-furnish.js', '91n-night.js',
-            '92-camera.js', '93-anim.js', '99-tail.html')
+            '92-camera.js', '92-world.js', '93-anim.js', '99-host-take.js', '99-tail.html')
 
 
 def isk_files():
@@ -176,22 +178,32 @@ def izv_bundle():
                 '})();' + NL), [rel(f) for f in fs]
 
 
-# ---------------------------------------------------------------- the catalog's Beast Rider buildings
-# Ridertown's shrine and roost gallery here are the catalog's hand-made copies of Mav's Refuge's (lossy). Their faithful
-# ports are kits/beast-riders' br_port_* (KNOWN_ISSUES.md: the keys to switch in src/30-isle-programme.js and what the
-# switch needs: kits/beast-riders/towns.py bundle(), its ASSETs in src/60-br-ports.js, the towns' maps as a sidecar).
-CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', f) for f in ('krator-furniture-core.js', 'krator-master-buildings-beast-rider.js')] +     [os.path.join(ROOT, 'kits', 'beast-riders', 'src', '50-br-mounts.js')]   # the Beast Riders kit's own (the mounts' buildings)
+# ---------------------------------------------------------------- the Beast Riders' buildings
+# Ridertown's: the Beast Riders kit's own (kits/beast-riders src/50-br-mounts.js: the stables, the byre, the rookery tower)
+# and its ports of Girder's and Mav's Refuge's own buildings (br_port_*: the towns' engines sealed by
+# kits/beast-riders/towns.py, registered by src/60-br-ports.js), on the catalog's core. The catalog's hand-made copies
+# (krator-master-buildings-beast-rider.js) are no longer taken.
+BR = os.path.join(ROOT, 'kits', 'beast-riders')
+CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
+CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
 
 
-def cat_bundle():
-    """CAT: the catalog's geometry kit, its Beast Rider buildings (Girder's and Mav's Refuge's) and the Beast Riders kit's
-    own (kits/beast-riders: the stables, the byre, the rookery tower), sealed; CAT.proto(key, v)
-    builds one at the origin into a new group (no furniture: the catalog's pieces are not on this page)"""
-    return safe('/* CAT: the catalog\'s Beast Rider buildings in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/catalog. */' + NL +
+def cat_bundle(side=None):
+    """CAT: the catalog's geometry kit, the Beast Riders kit's own buildings and its ports (the two towns sealed, their
+    maps BR_TOWN_IMG: in side['brtowns'] when side is given, a sidecar file), sealed; CAT.proto(key, v) builds one at the
+    origin into a new group (no furniture: the catalog's pieces are not on this page; a port keeps the furniture its
+    town drew into it), its userData.port set for a port (src/60-isle-draw.js draws its materials as the town does)"""
+    if BR not in sys.path:
+        sys.path.insert(0, BR)
+    import towns
+    tjs, tfiles = towns.bundle(side)
+    return safe('/* CAT: the Beast Riders\' buildings in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/catalog, '
+                'kits/beast-riders and the towns (kits/beast-riders/towns.py). */' + NL +
                 'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + body(CAT_FILES) +
+                '/* ---- the towns sealed (GENERATED: kits/beast-riders/towns.py) ---- */' + NL + tjs + NL + body([CAT_PORTS]) +
                 'function catProto(key, v) { if (!ASSET_BY_KEY[key]) return null; var g = buildAsset(key, 0, 0, 0, { variant: v | 0, seed: 1, y: 0 }); if (!g) return null;' + NL +
-                '  scene.remove(g); INSTANCES.length = 0; var A = ASSET_BY_KEY[key]; g.userData = { key: key, v: v | 0, w: A.w, d: A.d, h: A.h, error: g.userData.error }; return g; }' + NL +
-                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY };' + NL + '})();' + NL), [rel(f) for f in CAT_FILES]
+                '  scene.remove(g); INSTANCES.length = 0; var A = ASSET_BY_KEY[key]; g.userData = { key: key, v: v | 0, w: A.w, d: A.d, h: A.h, error: g.userData.error, port: A.port || null }; return g; }' + NL +
+                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS };' + NL + '})();' + NL), [rel(f) for f in CAT_FILES] + tfiles + [rel(CAT_PORTS)]
 
 
 # ---------------------------------------------------------------- the Ring Sea vessels

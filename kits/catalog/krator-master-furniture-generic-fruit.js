@@ -1014,6 +1014,76 @@ FURN({
   }
 });
 
+/* ================= The Oidong Valley (3 pieces; the lotus seeds are shared with Xanadu) ================= */
+
+FURN({
+  key: 'generic_fruit_cherry', name: 'Valley Cherries', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'oidong', source: ['cherry'],
+  w: 0.24, d: 0.22, h: 0.12, variants: 2, variantNames: ['a sprig of cherries', 'a bowl of cherries'],
+  variantDims: [{ w: 0.22, d: 0.14, h: 0.09 }, { w: 0.24, d: 0.24, h: 0.12 }],
+  build: function (F) {
+    const red = F.col('fruitCherry'), stalk = F.col('fruitCherryStalk');
+    if (F.variant === 0) {
+      /* a twig with three stalks, a cherry on each, two leaves */
+      F.rod(-0.1, 0.012, 0, 0.1, 0.012, 0.02, 0.006, F.col('timberWalnut'), 'wood');
+      for (const [x, z] of [[-0.05, -0.03], [0.02, 0.04], [0.07, -0.02]]) {
+        F.rod(x, 0.012, z * 0.3, x + 0.01, 0.04, z, 0.004, stalk, 'food');
+        F.blob(x + 0.01, 0.045, z, 0.022, 0.044, 0, F.shade(red, F.rr(-0.1, 0.1)), 'food');
+      }
+      KFRUIT.leaf(F, -0.03, 0.05, 0.05, F.col('vegLeaf'));
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.11, 0.06, F.col('stoneCream'), 'stone', red);
+      KGEN.heap(F, 0, 0.045, 0, 0.09, 0.03, [red, F.shade(red, -0.12), F.shade(red, 0.08)], 'food', (x, y, z, c) => F.blob(x, y, z, 0.02, 0.04, 0, c, 'food'));
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_bodhi_fig', name: 'Sacred Figs', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'oidong', source: ['bodhi'],
+  w: 0.24, d: 0.24, h: 0.08, variants: 2, variantNames: ['figs on a leaf', 'halved'],
+  variantDims: [{ w: 0.24, d: 0.24, h: 0.08 }, { w: 0.24, d: 0.24, h: 0.05 }],
+  build: function (F) {
+    const fig = F.col('fruitBodhiFig'), flesh = F.col('fruitBodhiFigFlesh');
+    /* served on one of the tree's own heart leaves, the drip tip out */
+    KFRUIT.leaf(F, 0, 0, 0.12, F.col('vegLeaf'));
+    F.cone(0.13, 0.01, 0, 0.03, 0.06, Math.PI / 2, F.col('vegLeaf'), 'food');
+    for (let i = 0; i < 7; i++) {
+      const a = i * 0.9 + 0.2, r = i === 6 ? 0 : 0.065, x = Math.cos(a) * r, z = Math.sin(a) * r;
+      if (F.variant === 0) { F.blob(x, 0.04, z, 0.026, 0.05, 0, F.shade(fig, F.rr(-0.12, 0.1)), 'food'); F.cone(x, 0.062, z, 0.01, 0.016, 0, F.shade(fig, -0.25), 'food'); }
+      else KFRUIT.half(F, x, 0.02, z, 0.026, fig, flesh);
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_bell_pod', name: 'Bell-pod Beads', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'oidong', source: ['bellpod'],
+  w: 0.3, d: 0.2, h: 0.09, variants: 2, variantNames: ['strings of beads', 'dried bells on a tray'],
+  variantDims: [{ w: 0.3, d: 0.2, h: 0.06 }, { w: 0.26, d: 0.2, h: 0.09 }],
+  build: function (F) {
+    const bead = F.col('fruitBellPod'), bell = F.col('fruitBellPodBell'), stem = F.col('fruitBellPodStem');
+    if (F.variant === 0) {
+      /* three strings laid side by side, each a pink thread of pale beads ending in a coral bell */
+      for (let s = 0; s < 3; s++) {
+        const z = (s - 1) * 0.06, n = 7 + s;
+        F.rod(-0.13, 0.008, z, 0.1, 0.008, z, 0.004, stem, 'food');
+        for (let i = 0; i < n; i++) F.blob(-0.12 + i * 0.03, 0.014, z, 0.013, 0.026, 0, F.shade(bead, (i % 2) * 0.08 - 0.04), 'food');
+        F.cone(0.12, 0.004, z, 0.02, 0.04, Math.PI / 2, bell, 'food');
+      }
+    } else {
+      KGEN.plate(F, 0, 0, 0, 0.12, F.col('timberWalnut'));
+      for (let i = 0; i < 9; i++) {
+        const a = i * 2.4, r = i ? 0.03 + (i % 3) * 0.025 : 0, x = Math.cos(a) * r, z = Math.sin(a) * r;
+        F.cone(x, 0.02, z, 0.018, 0.036, 0, F.shade(bell, F.rr(-0.1, 0.08)), 'food');
+      }
+    }
+  }
+});
+
 /* ================= The north-eastern canyons (2 pieces) ================= */
 
 FURN({
