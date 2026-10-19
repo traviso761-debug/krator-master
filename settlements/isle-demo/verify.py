@@ -100,7 +100,7 @@ async def run_city(a):
                 await pg.goto('http://127.0.0.1:%d/%s?town=%s' % (port, page, town), timeout=0)
                 await pg.wait_for_function('window._city && (_city.error || _city.both)', timeout=900000, polling=1000)
                 st = json.loads(await pg.evaluate('JSON.stringify({err:_city.error||_city.otherError||null,town:_city.town,ms:_city.ms,draw:_city.draw})'))
-                print('--- %s (%s) ---' % (town, st['ms']))
+                print('--- %s (%s) ---' % (town, st.get('ms')))
                 if st['err'] or st['town'] != town:
                     print('  FAIL  loads clean : ' + str(st['err'] or 'opened ' + st['town'])); fails.append(town + ' load'); await pg.close(); continue
                 if a.assert_:

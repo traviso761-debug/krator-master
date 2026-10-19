@@ -89,6 +89,13 @@ DRAW.streets = function (R, G) {
   DRAW.stats.streetTris = pos.length / 9;
 };
 /* ---------------------------------------------------------------- a prototype: one build, one geometry per material */
+/* a normalized integer attribute's scale to its float value (the ports' furniture colours are Uint8 0..255, normalized):
+   the flattened geometry's attributes are plain floats */
+DRAW.denorm = function (a) {
+  if (!a.normalized) return 1;
+  var r = a.array;
+  return r instanceof Uint8Array || r instanceof Uint8ClampedArray ? 1 / 255 : r instanceof Uint16Array ? 1 / 65535 : r instanceof Int8Array ? 1 / 127 : r instanceof Int16Array ? 1 / 32767 : 1;
+};
 DRAW.flatten = function (G) {
   G.updateMatrixWorld(true);
   var groups = {}, M = new THREE.Matrix4(), IM = new THREE.Matrix4();
@@ -108,11 +115,11 @@ DRAW.flatten = function (G) {
     Q.parts.forEach(function (p) {
       var g = p.g, cnt = g.attributes.position.count; nm3.getNormalMatrix(p.m);
       names.forEach(function (nm) {
-        var src = g.attributes[nm], sz = src.itemSize, dst = A[nm];
+        var src = g.attributes[nm], sz = src.itemSize, dst = A[nm], sc = DRAW.denorm(src);
         for (var i = 0; i < cnt; i++) {
           if (nm === 'position') { v3.fromBufferAttribute(src, i).applyMatrix4(p.m); dst[(vo + i) * 3] = v3.x; dst[(vo + i) * 3 + 1] = v3.y; dst[(vo + i) * 3 + 2] = v3.z; }
           else if (nm === 'normal') { v3.fromBufferAttribute(src, i).applyMatrix3(nm3).normalize(); dst[(vo + i) * 3] = v3.x; dst[(vo + i) * 3 + 1] = v3.y; dst[(vo + i) * 3 + 2] = v3.z; }
-          else for (var c = 0; c < sz; c++) dst[(vo + i) * sz + c] = src.array[i * sz + c];
+          else for (var c = 0; c < sz; c++) dst[(vo + i) * sz + c] = src.array[i * sz + c] * sc;
         }
       });
       if (g.index) for (var k = 0; k < g.index.count; k++) I[io + k] = g.index.array[k] + vo; else for (var k2 = 0; k2 < cnt; k2++) I[io + k2] = vo + k2;
@@ -124,11 +131,35 @@ DRAW.flatten = function (G) {
   }
   return out;
 };
+/* a port's materials (kits/beast-riders br_port_*: the towns' own MeshStandardMaterial, library maps bound by the town's
+   KMAT) drawn instanced as the town draws them plain. The hook (kits/beast-riders/towns/hook.js) made every shape a plain
+   mesh with its world UVs, colours and normals baked, but kept the town's shader hooks (45-kit.js applyWorldUV,
+   applyClothSway, applyContactAO, applyNightGlow; the furniture's detail hooks), which take an instanced draw's branch
+   under USE_INSTANCING: drawn here as InstancedMeshes they would tile the baked UVs again, sway and shade by the
+   instance. Before the includes are expanded, every USE_INSTANCING in the shader text is a hook's, so each is renamed to
+   a macro never defined: the hooks take their plain branch, three.js's own instancing stays. Each material once (shared
+   by a port's variants and copies); its program keyed on the town's hook and key */
+DRAW.portMats = function (G) {
+  G.traverse(function (o) {
+    var m = o.isMesh && o.material; if (!m || Array.isArray(m) || m.userData.islePlain) return;
+    m.userData.islePlain = true;
+    var hook = m.onBeforeCompile, key = m.customProgramCacheKey, src = String(hook);
+    if (!hook) return;
+    m.onBeforeCompile = function (sh, r) {
+      hook.call(this, sh, r);
+      sh.vertexShader = sh.vertexShader.replace(/\bUSE_INSTANCING\b/g, 'ISLE_PORT_PLAIN');
+      sh.fragmentShader = sh.fragmentShader.replace(/\bUSE_INSTANCING\b/g, 'ISLE_PORT_PLAIN');
+    };
+    m.customProgramCacheKey = function () { return 'isle-port|' + src + '|' + (key ? key.call(m) : ''); };
+    m.needsUpdate = true;
+  });
+};
 DRAW.proto = function (kit, key, v) {
   var id = kit + ':' + key + '#' + (v | 0); if (DRAW.protos[id] !== undefined) return DRAW.protos[id];
   var G = null, t0 = performance.now();
   try { G = kit === 'isk' ? ISK.proto(key, v) : kit === 'izv' ? IZV.proto(key, v, 1) : kit === 'cat' ? CAT.proto(key, v) : null; } catch (e) { DRAW.failed[id] = String(e && e.message || e); }
   if (!G) { DRAW.failed[id] = DRAW.failed[id] || 'no build'; return (DRAW.protos[id] = null); }
+  if (G.userData.port) DRAW.portMats(G);
   var parts = DRAW.flatten(G), tris = parts.reduce(function (a, p) { return a + p.tris; }, 0);
   DRAW.built++;
   return (DRAW.protos[id] = { id: id, parts: parts, tris: tris, ms: Math.round(performance.now() - t0), w: G.userData.w, d: G.userData.d, h: G.userData.h });
