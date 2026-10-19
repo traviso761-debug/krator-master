@@ -34,6 +34,16 @@ P.STREAM_FLOW=[-1,0];
 // about 118 degrees, 190 km up-valley, and its west end toward the pass at about 280. The cascade at the valley's head
 // is the owner's (the model's painting, 2026-10-19): a thin thread on the head wall at that distance, if seen at all
 P.SKY={head:118,pass:280,throne:334,cataract:true};
+// THE SUN BY THE HOUR (P5, 2026-10-19): Longsong lies near 40 S, so the sun crosses the north. A plain arc: it rises at 6 in
+// the east-north-east, stands at noon where the page's light always stood (azimuth 305, altitude 36.4: 45's SUN_POS and
+// the sky's), sets at 18; under the horizon between. sunAt(h) -> {dir: unit [x, y, z] toward the sun, alt (degrees)}.
+// The lamps' hours (the generator's bulbs, the butter lamps in the windows) are plan data too.
+P.SUN_NOON=[-1000,900,-700];
+P.sunAt=function(h){const N=P.SUN_NOON,L=Math.hypot(N[0],N[1],N[2]),hl=Math.hypot(N[0],N[2]),Hx=N[0]/hl,Hz=N[2]/hl,ph=Math.asin(N[1]/L);
+ const Ex=-Hz,Ez=Hx,a=((((h-6)%24)+24)%24)/12*Math.PI,c=Math.cos(a),s=Math.sin(a);   // E: the rising side, a quarter turn from noon
+ const d=[Ex*c+Hx*Math.cos(ph)*s,Math.sin(ph)*s,Ez*c+Hz*Math.cos(ph)*s],m=Math.hypot(d[0],d[1],d[2]);
+ return {dir:[d[0]/m,d[1]/m,d[2]/m],alt:Math.asin(d[1]/m)*180/Math.PI};};
+P.LIGHT_HOURS={bulbs:[18.4,29.6],windows:[17.8,30.4]};   // on in the evening, off next morning (past 24)
 P.toWorld=(x,z)=>[x+P.SITE.wx,z+P.SITE.wz];
 
 // ---------------------------------------------------------------- the rock: Longsong's hill

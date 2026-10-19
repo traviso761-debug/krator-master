@@ -116,6 +116,8 @@ const LSP={white:0xf2efe6,white2:0xe8e2d4,red:0x8e2f24,red2:0x7a271f,maroon:0x4a
 // a wall face's windows: along the edge (ax,az)->(bx,bz) whose outward normal is (nx,nz), storey by storey; Tibetan:
 // a black trapezoid (wider at the sill) round a dark opening with a lacquered frame, a corbelled lintel over it and, on
 // a rich house, a pleated valance; the Order's round relief-ringed windows on the archive's storeys (o.round)
+// LS_WINLIT: every lit pane drawn ([x, y, z, nx, nz, half-width, height]): 89x lights them at night
+var LS_WINLIT=[];
 function lsWindows(ax,az,bx,bz,nx,nz,y0,floors,storey,o){o=o||{};const L=Math.hypot(bx-ax,bz-az),tx=(bx-ax)/L,tz=(bz-az)/L,sp=o.spacing||4.2;
  const n=Math.max(1,Math.floor((L-2)/sp)),bt=o.batter||0,H=floors*storey;
  for(let f=(o.from||0);f<floors;f++){const yb=y0+f*storey+storey*.32,ww=(o.w||1.3)*(f===floors-1&&o.topWide?1.4:1),wh=storey*.42;
@@ -131,6 +133,7 @@ function lsWindows(ax,az,bx,bz,nx,nz,y0,floors,storey,o){o=o||{};const L=Math.hy
    ARCH.quad('dark',P(-ww*.85,yb-.25,0),P(ww*.85,yb-.25,0),P(ww*.62,yb+wh+.3,0),P(-ww*.62,yb+wh+.3,0),LSP.black);
    // the opening and its frame
    ARCH.quad('dark',P(-ww*.42,yb,.02),P(ww*.42,yb,.02),P(ww*.42,yb+wh,.02),P(-ww*.42,yb+wh,.02),o.lit&&((i+f)%3===0)?0xd8a050:0x3a3028);
+   if(o.lit&&((i+f)%3===0)){const c=P(0,yb,.05);LS_WINLIT.push([c[0],yb,c[2],nx,nz,ww*.42,wh]);}
    ARCH.box('wood',cx+nx*.05,yb+wh*.5-.04,cz+nz*.05,.08,.08,.08,{});
    ARCH.quad('wood',P(-ww*.5,yb+wh,.03),P(ww*.5,yb+wh,.03),P(ww*.5,yb+wh+.12,.03),P(-ww*.5,yb+wh+.12,.03),LSP.wood);
    // the corbelled lintel: two courses of short joists, standing out

@@ -99,7 +99,7 @@ for f in ('10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '40-cr
 # chunk and sky light (8-export: ATMOS.export, so the export's atmos section fills)
 for f in ('20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'water', f))
-for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-8-export.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js'):
+for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-2-lights.js', '89-atmos-8-export.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'atmos', f))
 # the open world's fields, read in place: the land round the site at 1:1
 PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'little-demo', 'src', '41-world-fields.js')

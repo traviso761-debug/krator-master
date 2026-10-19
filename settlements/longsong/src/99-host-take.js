@@ -7,7 +7,7 @@ const VIEWS=(function(){const V={},PR=LS.PROCRASTINATOR,T=LS.ROCK.top;
  V['The White Palace from the avenue']=[0,gh(0,-120,1.7),-120,0,46,40];
  V['The Great Gate and the bridge']=[70,gh(70,-330,12),-330,0,gh(0,-200,8),-200];
  V['Over the ward from the Eastern Watch']=[96,T+9*4.5+3,118,-40,-4,-120];
- V['The Debate Court']=[24,T+14,26,-6,T+3,58];
+ V['The Debate Court']=[24,T+22,24,-6,T+3,58];   // over the front range's roof (T+18), not in it
  V['The roof: the gilded roofs and the Hall of Hours']=[-90,T+7*4.5+14,62,10,T+7*4.5+6,120];
  V['The drill ground (lightning hands)']=[LS.DRILL.x+26,gh(LS.DRILL.x,LS.DRILL.z,6),LS.DRILL.z-28,LS.DRILL.x,gh(LS.DRILL.x,LS.DRILL.z,1),LS.DRILL.z];
  V['The hermits\' cliff (east face)']=[290,30,60,150,20,90];
@@ -107,8 +107,10 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
  // depth: the near plane follows the camera's height (core/host 90-host-camera C.depth): with a fixed 0.5 m against 90 km
  // the courts' slabs and the ground fought a kilometre off (2026-10-19)
  scene,camera,renderer,ground:terrainH,clampCam,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,depth:true,
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
- clock:{hour:12,running:false,scale:1,speeds:[0,1,2,4,8],onSet:h=>{if(typeof placePeople==='function')placePeople(h);}},
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},
+  // the world hour moves the sun, the light and the lamps (89x)
+  hour:h=>LSNIGHT.apply(h),objects:()=>[sky,giant,giantRing]},
+ clock:{hour:12,running:false,scale:1,speeds:[0,1,2,4,8],onSet:h=>{LSNIGHT.apply(h);if(typeof placePeople==='function')placePeople(h);}},
  inspect:describe,stats:()=>'inst '+window._instances+(typeof PEOPLE_DRAWN!=='undefined'?' · people '+PEOPLE_DRAWN.shown:''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the monastery':{match:o=>!!(o.userData&&o.userData.arch)},
   'the ground (see the Vault)':{match:o=>!!(o.userData&&(o.userData.ground||o.userData.rockface))},'the far land':{match:o=>!!(o.userData&&o.userData.far)},

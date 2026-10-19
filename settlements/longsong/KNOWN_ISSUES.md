@@ -1,12 +1,13 @@
 # Longsong — known issues
 
-- [ ] **The people are placeholder figures** (a robe, a head, two arms, a sash; instanced). They should be drawn from
-      `core/charactermodels` in the Order's robes (`peoples.json` has no Historians yet) and run on `core/simulation`
-      (SIM) rather than on `LS.whereAt` alone; the schedules and places are already plain data for it.
+- [ ] **The people are placeholder figures** (a robe, a head, two arms, a sash; instanced). Their records are made
+      (`people-kchar.json`, `tools/kchar_people.js`: each of LS.PEOPLE a `core/charactermodels` stranger, the Order in its
+      standing's dress, made 2026-10-19: novice, monk, elder, field agent; the lay people in Xanadu's), but the page does
+      not draw them yet, and they run on `LS.whereAt`, not on `core/simulation` (SIM): PLAN.md P5b.
 - [ ] **The interiors are a first pass** (PLAN.md P4, 2026-10-19). Every room ROOMS.md sections 3-4 names is a record and
       furnished (`40c`, `57a`, the bake), but: the rooms' walls are solid inside (the palaces' windows are painted on the
-      outside; no light comes through them), and the rooms are lit by the day's sky and sun, not by their lamps (the lamps
-      are data in each record: the night is P5); a stair room draws a flight but the storeys are not joined for a walker;
+      outside; no light comes through them); by night a room is lit by the nearest six of its furniture's lamps
+      (`89x`: a pool of point lights round the eye), by day still by the sky and sun through solid walls; a stair room draws a flight but the storeys are not joined for a walker;
       some storeys have no programme yet and stay empty (the White Palace's front range above L4, the inner ranges' fourth
       and fifth storeys, the back range over the service stairs; the Red Palace's second, fourth, fifth (wings) and
       seventh storeys; the wings' lower floors); the Cistern of the rock (section 4) is not built; the Hall of Forms and

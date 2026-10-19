@@ -65,8 +65,8 @@
    "sha256": "d6e7435098fc972d784b39622fa8901edd078d4c4cfb47720642772f29e7756b"
   },
   "biomes/oidong/dist/oidong.html": {
-   "bytes": 2527779,
-   "sha256": "f79ba110df4655f4b0c90e4841b4d759ba3e513a256dd9931c54ce72b038d9c6"
+   "bytes": 2527911,
+   "sha256": "74e29f4e5daf41053d13e189a2987171ba4efc87a79e8aa03ebe5b6ccb717203"
   },
   "biomes/rift/dist/rift.html": {
    "bytes": 5765462,
@@ -493,8 +493,8 @@
    "sha256": "4e01c6dc6589c9b6b4c817c43c53c0767908c888bb11c88e30fdd9024a068a5e"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 2514901,
-   "sha256": "1c03db96ad91a96744a1137aa926b147364aa2436dfcbb7fecc4b4178959d5f2"
+   "bytes": 2533085,
+   "sha256": "73f0a318f73364573c81dea47c0a0f5842d1b096ff123b223d3d7bd44ac85f18"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9047879,

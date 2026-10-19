@@ -85,12 +85,12 @@ const PEOPLE_DRAWN=(function(){
  const PETALS=(function(){const n=900,pos=new Float32Array(n*3),ph=new Float32Array(n),St=KRAND.stream(223),D=LS.DRILL,y0=LS.wardY(D.z);
   for(let i=0;i<n;i++){pos[i*3]=D.x+St.range(-D.w*.6,D.w*.6);pos[i*3+1]=y0+St.range(0,9);pos[i*3+2]=D.z+St.range(-D.d*.6,D.d*.6);ph[i]=St.range(0,100);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('aPh',new THREE.BufferAttribute(ph,1));
-  const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uT:{value:0},uM:{value:new THREE.Vector3()},uY0:{value:y0}},
+  const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uT:{value:0},uM:{value:new THREE.Vector3()},uY0:{value:y0},uL:LS_LIGHT},
    vertexShader:'uniform float uT,uY0;uniform vec3 uM;attribute float aPh;varying float vS;void main(){vec3 p=position;'+
     // the petal's own clock runs slow inside the master's reach (3.2 m): it is time that stops, not the petal
     'float d=distance(p.xz,uM.xz);float k=smoothstep(1.6,3.4,d);vS=k;float t=aPh+uT*mix(0.0004,1.0,k);'+
     'float fall=mod(t*0.55,9.0);p.y=uY0+9.0-fall;p.x+=sin(t*1.3+aPh)*0.6;p.z+=cos(t*1.1+aPh*1.7)*0.6;vec4 mv=modelViewMatrix*vec4(p,1.0);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(60.0/-mv.z,1.5,7.0);}',
-   fragmentShader:'varying float vS;void main(){vec2 d=gl_PointCoord-0.5;float a=smoothstep(0.5,0.2,length(d*vec2(1.0,1.8)));gl_FragColor=vec4(mix(vec3(0.75,0.85,1.0),vec3(1.0,0.78,0.82),vS),a);}'});
+   fragmentShader:'uniform float uL;varying float vS;void main(){vec2 d=gl_PointCoord-0.5;float a=smoothstep(0.5,0.2,length(d*vec2(1.0,1.8)));gl_FragColor=vec4(mix(vec3(0.75,0.85,1.0),vec3(1.0,0.78,0.82),vS)*uL,a);}'});
   const pts=new THREE.Points(g,mat);pts.userData.people=true;pts.userData.inspectLabel='Cherry petals over the drill ground (round the master they stop in the air)';pts.frustumCulled=false;scene.add(pts);return {pts,mat};})();
  place(12);
  TICKS.push(tick);

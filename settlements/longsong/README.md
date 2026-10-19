@@ -12,7 +12,8 @@ python3 verify.py dist/longsong.html --assert [--views "Longsong from across the
 ```
 
 Query switches: `?noflora=1` (no Oidong kit: a quick look at the architecture, ~50 s headless), `?q=0.5` (the kit at
-half quality), `?mat=proc` (the procedural maps instead of the library's), `?hour=6` (the people at another hour).
+half quality), `?mat=proc` (the procedural maps instead of the library's), `?hour=6` (another hour: the people, the sun on its arc, and by night the stars, the generator's bulbs and the butter
+lamps in the windows; `89x`).
 
 ## What the page is
 
