@@ -1,0 +1,342 @@
+[
+ {
+  "src": "court-books-a.png",
+  "out": "core/materials/patterns/court/books-a",
+  "record": {
+   "id": "court/books-a",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/book-spines: two rows of old leather and vellum book spines with gilt tooling; this is row A (one shelf row, about 0.3 m)",
+    "reuse": "the books on any court or scholar's bookcase (the Iziz court set, Talia, Yuni's scholars)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.25,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "size": 1024,
+   "seam_axes": "x"
+  }
+ },
+ {
+  "src": "court-books-b.png",
+  "out": "core/materials/patterns/court/books-b",
+  "record": {
+   "id": "court/books-b",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/book-spines: two rows of old leather and vellum book spines with gilt tooling; this is row B (one shelf row, about 0.3 m)",
+    "reuse": "the books on any court or scholar's bookcase (the Iziz court set, Talia, Yuni's scholars)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.25,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "size": 1024,
+   "seam_axes": "x"
+  }
+ },
+ {
+  "src": "court-painting-1.png",
+  "out": "core/materials/patterns/court/painting-1",
+  "record": {
+   "id": "court/painting-1",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/paintings, cell 1: a white hill city of domes and arcades up to a temple of orange ribbed domes; oil on canvas, late Byzantine warmed by Venetian colour",
+    "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-2.png",
+  "out": "core/materials/patterns/court/painting-2",
+  "record": {
+   "id": "court/painting-2",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/paintings, cell 2: a caravan and a steam crawler at a gate of lotus-roofed drum towers, dawn; oil on canvas, late Byzantine warmed by Venetian colour",
+    "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-3.png",
+  "out": "core/materials/patterns/court/painting-3",
+  "record": {
+   "id": "court/painting-3",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/paintings, cell 3: an icon: the gilt sun and the banded green Giant on a gold ground; oil on canvas, late Byzantine warmed by Venetian colour",
+    "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-4.png",
+  "out": "core/materials/patterns/court/painting-4",
+  "record": {
+   "id": "court/painting-4",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/paintings, cell 4: a scholar in an orange robe with an open book and a brass globe; oil on canvas, late Byzantine warmed by Venetian colour",
+    "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-5.png",
+  "out": "core/materials/patterns/court/painting-5",
+  "record": {
+   "id": "court/painting-5",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/paintings, cell 5: a still life: brass bowls, pomegranates, figs, a cobalt jug, books on marble; oil on canvas, late Byzantine warmed by Venetian colour",
+    "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-6.png",
+  "out": "core/materials/patterns/court/painting-6",
+  "record": {
+   "id": "court/painting-6",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/paintings, cell 6: the high desert passes at evening, a road and travellers; oil on canvas, late Byzantine warmed by Venetian colour",
+    "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-7.png",
+  "out": "core/materials/patterns/court/painting-7",
+  "record": {
+   "id": "court/painting-7",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/paintings, cell 7: two women in white and orange reading in a cloister under an orange coffered ceiling; oil on canvas, late Byzantine warmed by Venetian colour",
+    "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-8.png",
+  "out": "core/materials/patterns/court/painting-8",
+  "record": {
+   "id": "court/painting-8",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/talia/paintings, cell 8: an observatory tower at night, its dome open, stars over a city; oil on canvas, late Byzantine warmed by Venetian colour",
+    "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ }
+]

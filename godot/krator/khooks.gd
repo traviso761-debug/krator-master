@@ -18,6 +18,8 @@ const TABLE := {
 		"fields": ["kind", "options"], "drawn_by": ["bark.gdshader"]},
 	"cloth-sway": {"three": "settlements/girder/src/45-kit.js applyClothSway (Voth's 45-kit.js the same; no core/ copy)", "fields": [], "drawn_by": []},
 	"flag": {"three": "kits/ringsea/src/40-rs-core.js RS_AUX_GLSL, rsAuxVS (no core/ copy)", "fields": [], "drawn_by": []},
+	"triplanar": {"three": "settlements/iziz/src/95i-iziz-interiors.js courtFinish (COURT_TRI: the court finishes on the catalog batch, which has no UVs)",
+		"fields": ["triplanar"], "drawn_by": ["library.gdshader"]},
 	"glass": {"three": "core/materials/22-materials.js MAT.glass onBeforeCompile (GLASS FRESNEL)", "fields": [], "drawn_by": []},
 	"coursing": {"three": "none yet: the TEX kind 'coursing' (core/materials/PLAN.md, From spiderbench) waits for its pilot", "fields": ["coursing"], "drawn_by": []},
 	"water": {"three": "core/water/50-core-water-draw.js WATER.glsl, WATER.draw", "fields": ["(core/export's water section)"], "drawn_by": ["water.gdshader"]},

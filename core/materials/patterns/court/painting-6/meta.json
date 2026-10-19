@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    4.546,
+    7.126
+   ],
+   "seam_before": [
+    4.251,
+    6.711
+   ],
+   "source_size": [
+    439,
+    439
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.15,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "seam_axes": "none",
+   "size": 512
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "court/painting-6",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "court-painting-6.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/talia/paintings, cell 6: the high desert passes at evening, a road and travellers; oil on canvas, late Byzantine warmed by Venetian colour",
+  "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)",
+  "sha1": "6da40c93b76bd82eedb8e0984525d8dd7c7aa587"
+ }
+}
