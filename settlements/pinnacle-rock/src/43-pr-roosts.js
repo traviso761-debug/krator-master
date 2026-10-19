@@ -127,7 +127,7 @@ const PRR = (function () {
   function normAt(A, s, D) { const p = arcAt(A, s); let nx = p.tz, nz = -p.tx; if (nx * (p.x - D.x) + nz * (p.z - D.z) < 0) { nx = -nx; nz = -nz; } return { x: p.x, z: p.z, nx, nz, tx: p.tx, tz: p.tz }; }
   // the arc position of the outer edge nearest a point
   function arcNear(A, x, z) { let best = 0, bd = 1e9; for (let s = 0; s < A.per; s += .5) { const p = arcAt(A, s), d = Math.hypot(p.x - x, p.z - z); if (d < bd) { bd = d; best = s; } } return best; }
-  const segD = (x, z, a, b) => { const dx = b[0] - a[0], dz = b[1] - a[1], t = clamp(((x - a[0]) * dx + (z - a[1]) * dz) / (dx * dx + dz * dz || 1), 0, 1); return Math.hypot(x - a[0] - dx * t, z - a[1] - dz * t); };
+  const segD = (x, z, a, b) => { const dx = b[0] - a[0], dz = b[1] - a[1], t = clamp(((x - a[0]) * dx + (z - a[1]) * dz) / Math.max(1e-9, dx * dx + dz * dz), 0, 1); return Math.hypot(x - a[0] - dx * t, z - a[1] - dz * t); };
 
   // ---------------------------------------------------------------- a climb round a stack: a stair hugging the rock
   // from the ground at its foot (or a lower deck) up to the deck, rising TREAD per metre, its inner edge .2 m into the DRAWN rock at
@@ -352,7 +352,7 @@ const PRR = (function () {
     // (PR.LIFT_ROAD) to the palisade, where the north-west gate will stand
     const roads = [];
     (function () { const L = lifts.find(l => l.id === 'lift-north'), fD = o.footD; if (!L || !fD) return;
-      const cx = mesa.x, cz = mesa.z, aL = Math.atan2(L.foot.z - cz, L.foot.x - cx), TW = o.talusW || 125, GRADE = 1 / 9;
+      const cx = mesa.x, cz = mesa.z, aL = Math.atan2(L.foot.z - cz, L.foot.x - cx), TW = o.talusW == null ? 125 : o.talusW, GRADE = 1 / 9;
       // the first point out along the ray, past the rock's feet, where the ground is at h or below
       const at = (a, h) => { const ca = Math.cos(a), sa = Math.sin(a); let t = 10; while (t < mesa.R + 400 && fD(cx + ca * t, cz + sa * t) < 1) t += 4;
         const t0 = t; while (t < t0 + 400 && ground(cx + ca * t, cz + sa * t) > h) t += 1;

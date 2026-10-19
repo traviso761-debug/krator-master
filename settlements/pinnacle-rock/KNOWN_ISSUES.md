@@ -1,7 +1,19 @@
 # Pinnacle Rock — known issues
 
-- [ ] **The town is not built yet** (P0-P2 are). The town, the Deep Root cavern, the farms and the camps (P3) are to come:
-      the cleared ground round the mesa and the top between the stacks are bare until they are laid (`PLAN.md` section 3).
+- [ ] **The farms, the camps, the Deep Root cavern and the Garden's great-houses are not built yet** (P3b-e): the
+      cleared ground round the mesa, the bands' grounds on the top, the precinct and the Garden's mesa are bare until they
+      are laid (`PLAN.md` section 3). The town on the top (P3a) is.
+- [ ] **The town's buildings carry no furniture and no interiors**: the catalog's furniture files are not on the page
+      (`build.py` `cat_fragment`; a building's `F.furn` notes the key and places nothing), as on the isle demo's city page.
+      They come with the life (P4) or an export profile.
+- [ ] **No level of detail for the town**: each of its ~60 prototypes is drawn in full for every copy (about 0.6 M
+      triangles, ~800 instanced meshes). Massing far off (the isle demo's `DRAW.nearR`) is a follow-up if the frame rate asks.
+- [ ] **The assembly hall is Girder's at Girder's size** (39 m across), where the plan says "larger"; the speakers'
+      stones and the Crown's fires are not drawn yet (P4). The town's footings: a building stands at its footprint's
+      highest corner on the cap (flat to a metre), with no plinth drawn under the low side.
+- [ ] **The town's layout is new**: it was not drawn by the owner, but laid by `core/city` from the settled zones (the
+      quarters, the Crown, the squares, the avenues in `54-pr-town.js`); a change to core/city's builder moves it, and the
+      town check says what moved.
 - [ ] **The far land is the model's 4 km cells**, smoothed and given the open world's jungle detail: no tree out there,
       a canopy surface 125-175 m over the ground; the hyperjungle's sky (read in place) still paints its own distant
       ridges on the horizon behind the real Inner Wall.
@@ -38,5 +50,6 @@
       `PR.forest`), not by each tree; a remnant tree on the cleared ground can stand taller than that. The gorge run
       (a circuit along the dry gorge) finds no clear loop and is left out; some stalls have no clean approach
       and way out both and hold no traffic (ten of 113 at the last count).
-- [ ] **Load time**: the roost plan takes about a second and the flyers' setup (every bay proved both ways) about five on
-      a GPU pane; the page opens in about 30 s.
+- [ ] **Load time**: the roost plan takes about a second, the town's plan under one (and the two towns sealed in `CAT`
+      run their engines at load, a few seconds), the flyers' setup (every bay proved both ways) about five on a GPU pane;
+      the page opens in about 30 s. The page is 3.7 MB with its sidecars about 26 MB (the towns' maps 8 MB).

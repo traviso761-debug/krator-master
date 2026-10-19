@@ -2,7 +2,8 @@
 
 The Beast Riders' roost town on a red sandstone mesa at the north-eastern edge of the hyperjungle (`PLAN.md`; the lore is
 `LORE.md` §6.6). Built in stages (`PLAN.md` section 3). **Done: P0 and P1, the rock and the site; P2, the roosts, the
-Stair, the lifts and the flyers.** The town, the Deep Root cavern, the farms and the camps are the stages to come.
+Stair, the lifts and the flyers; P3a, the town on the top.** The farms, the bands' camps, the Deep Root cavern and the
+Garden's great-houses (P3b-e) are the stages to come.
 
 ```
 python3 build.py                                   # dist/pinnacle-rock.html (+ its texture sidecars)
@@ -85,13 +86,33 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
   Wing's beasts in its own stalls** (owner, 2026-10-19): the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx, the
   Nightwing's bats, the Garden's roosts the three; the Dragonfly tribe's beasts (kept by water on the floor) fly the
   circuits but do not roost.
+- **The town** (P3a) is one `core/city` instance on the top (`src/54-pr-town.js`, `PRT.plan`, `[G data]`; run before the
+  kits build in `54b`, drawn by `89c-host-town.js`), a new layout on the module (`rand: 'krand'`, the insertion index, the
+  exact-streets rule). Its steps 0-5 are this page's: the build zone is the cap's outline less the 12 m rim band, the
+  rock standing on the top (the fins, the shrine's rock, the Garden's mesa: their beds within 25 m of the foot, grown
+  4-7 m), the climbs' starts, the lifts' and the Stair's heads, the Deep Root precinct (P3d) and the nine bands' grounds
+  (P3c); the landmarks are the assembly hall (Girder's) on the Crown's square with its market stalls and pavilion, the
+  caravan market by the Stair, the shrine of the Winged Ones in the lee of its balanced rock, each Wing's roost barracks
+  and its tack and feed store by its fins, the toll house and a beacon at the Stair's head, the carrier-beasts' stage and
+  the watch at the beast lift, a signal mast on the north-east rim; the avenues are the Stair Way, the ring round the
+  Garden's mesa, the Crown Way, the ring round the Crown, the Lift Way and the processional to the Deep Root precinct.
+  Steps 6-12 are the module's builder, drawing from the quarters' tables (`PRT.DRAWS`: the house quarter west, the
+  trades east, the strangers' quarter south, the Crown the wealthiest) and a civic list that gives every trade the town
+  carries a building (31 of the kit's census trades; the farms', the river's and the mines' are not the top's). The
+  buildings are the Beast Riders kit's (`kits/beast-riders`: its houses, trades and mounts' buildings, and the ports of
+  Girder's round-hut compound, joglo and stave longhouse, its hall and stalls, Mav's shrine), bundled by `build.py`
+  (`CAT`, sealed with the catalog's core and the two towns; `KCITY` as the isle demo bundles it), each built once and
+  drawn instanced (the isle demo's `58-isle-protos.js`, read in place). About 600 buildings, 120 streets.
 - **The plants**: the necanyons kit (`biomes/necanyons`, read in place with its land fragment `47-host-land.js`, which
   takes this page's `LAND` hooks: the cap height, the LOD spine, the cleared ground, no creek) on the walls, ledges,
   spurs and stacks, kept off the town's ground past the 12 m rim band; the hyperjungle on the floor, kept out of the farms,
   the bands' grounds, the fair ground and the road, thin on the cleared ground (`PR.forest`).
 - **Textures**: the rock and the floor are necanyons' and the hyperjungle's packs; the roosts take six of the Beast
   Riders kit's detail maps (`wood`, `timber`, `shingle`, `rope`, `straw`, `sandstone`: `kits/beast-riders/materials.json`)
-  and the flyers Girder's `fly_*` and `flywing` (both packed by `build.py` from those builds' committed `tex/`).
+  and the flyers Girder's `fly_*` and `flywing` (both packed by `build.py` from those builds' committed `tex/`). The town's
+  streets take the kit's `yard` (trodden earth) and its squares `sandstone`; its buildings the catalog's and the kit's
+  detail maps (`KF_TEX`, beside the page in `.tex.kftex.js`) and the ports their towns' own maps (`.tex.brtowns.js`,
+  `kits/beast-riders/towns.py`).
 
 ## Checks (`verify.py --assert`)
 
@@ -112,9 +133,14 @@ tread against its stack's drawn wall and clear of rock 1 m and 1.8 m over it, ev
 rock; every gate's posts, leaves and lintel out of the drawn rock; a quetzal sent
 in to the east fins lands on a perch, and in 90 s of traffic no beast aloft is in the rock; each Wing's beasts in its own
 stalls; the lift road from the landing to the palisade, no steeper than 1 in 7, through no band's ground nor the pond,
-nothing standing on it. Each has a negative control (the fins
+nothing standing on it. The town (P3a): every building's corners and edges' middles on the mesa's own cap 12 m in from
+its rim and off the rock standing on it, no two footprints overlapping (oriented boxes), none reaching a street's
+carriageway, none in the Deep Root precinct or a band's ground nor within 6 m of a lift's head, the Stair's head gate or a
+climb's start, each standing within 2.5 m of the cap; the hall, the shrine, each Wing's barracks, the toll house and the
+beast stage; every trade the town carries with a building; 400 lots or more. Each has a negative control (the fins
 in one row, a fin over the edge, a 180 m mesa, the Garden all one height, no Garden's mesa, no Heart, a Heart weathered
 like the Garden's mesa, a Heart as tall as its pinnacles, a tree in the Crown, a tree in the farms; a deck cut into its
 fin, a perch facing its fin, a bridge from the north fins to the east, a cable rubbing the wall, the Stair with one gate,
 the Stair ending in the gorge, a deck with no climb, a quetzal sent to a lookout ring, the Stair's flights 4 m out from
-the face, a climb 3 m out from its fin, an archaeopteryx in a Quetzal stall, the lift road through the seep pond, a gate sunk into the cap rock).
+the face, a climb 3 m out from its fin, an archaeopteryx in a Quetzal stall, the lift road through the seep pond, a gate sunk into the cap rock; a house on an avenue, in the Wingclaw band's ground, on the rim, two
+houses on one footprint, no assembly hall, no tannery).

@@ -21,6 +21,11 @@ const VIEWS=(function(){const V={},n0=_fin('fin-n0'),e1=_fin('fin-e1');
  {const L=ROOST.lifts.find(l=>l.id==='lift-north');if(L)V['The beast lift over the gorge']=[L.tip.x+90,L.tip.y-60,L.tip.z-90,L.tip.x,L.tip.y-90,L.tip.z];}
  {const Rd=(ROOST.roads||[])[0];if(Rd){const m=Rd.pts[Math.floor(Rd.benchEnd*.45)];V['The lift road (cut along the debris slope)']=[m[0]-150,m[1]+70,m[2]-120,m[0],m[1],m[2]];}}
  {const S=ROOST.stair;if(S&&S.landings.length){const m=S.pts[S.landings[0]];V['The Stair (its upper landing)']=[m[0]-30,m[1]+6,m[2]+45,m[0],m[1]-4,m[2]];}}
+ // THE TOWN (P3a): the Crown from the south-east, the house quarter from the Garden's mesa's foot, the Stair's head
+ if(typeof TOWN!=='undefined'&&TOWN){const H=TOWN.lots.find(l=>l.role==='hall');
+  if(H)V['The Crown (the assembly hall and the market)']=[H.x+150,_top+70,H.z+150,H.x,_top+8,H.z+20];
+  V['The house quarter (west of the Garden)']=[-120,_top+45,170,-260,_top+4,40];
+  const T=TOWN.lots.find(l=>l.role==='customs');if(T)V['The Stair\'s head (the toll house and the caravan market)']=[T.x-10,_top+42,T.z+95,T.x+10,_top+2,T.z-110];}
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the rock, the zone of the top or
@@ -38,7 +43,7 @@ function describe(hit){const p=hit.point,o=hit.object;
 // ---------------------------------------------------------------- the probe's budgets and the page's checks (verify.py --assert)
 const BUDGET={
  showcase:{tris:16000000,calls:240},
- cls:{pass:7000000,host:1600000},
+ cls:{pass:7000000,host:2600000},   // host: the rock, the roosts and the town (P3a: ~0.6 M, its buildings instanced)
  type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','pinnacle/talus':'pass','host':'host'},
 };
 // ---------------------------------------------------------------- THE DRAWN ROCK, measured by rays
@@ -203,6 +208,39 @@ const HCHK={
    const fe=(d.feet||[]).filter((f,i)=>i%3===0&&!(f[3]>0)).length;if(fe)bad.push(d.id+' '+fe+' struts on no rock');});
   if(feetBad)bad.push(feetBad+' climb brackets off the rock');if(clip)bad.push(clip+' climb treads under rock');
   return{ok:!bad.length,detail:C.length+' climbs for '+D.length+' decks, '+C.reduce((s,c)=>s+c.pts.length,0)+' steps, '+(all-loose)+' of '+all+' against the drawn rock'+(loose?' (worst '+worst.toFixed(2)+' m off)':'')+', '+(feet-feetBad)+' of '+feet+' brackets in it'+(bad.length?'; '+bad.slice(0,4).join(', '):'')};},
+ // THE TOWN (P3a: core/city on the top). Every building on the cap rock, 12 m in from its rim and off the rock standing
+ // on it (each footprint's corners and edges' middles under the mesa's own top: KSTACKS.at, the highest bed there); no two
+ // footprints overlapping (oriented boxes, a separating axis); none reaching a street's carriageway (the exact-streets
+ // rule); none in the Deep Root precinct or a band's ground (P3c, P3d), nor within 6 m of a lift's head, the Stair's head
+ // gate or a climb's start; standing on the ground (within 2.5 m of the cap); the landmarks the plan names (the hall, the
+ // shrine, each Wing's barracks, the toll house, the beast stage); and every trade the town carries with a building
+ town(T){if(!T)return{ok:false,detail:'no town'};const L=T.lots,K=KSTACKS,KL=KCITY.lib,bad=[],TP=PR.TOP;
+  const box=l=>{const c=Math.cos(l.ry),s=Math.sin(l.ry),u=[c,-s],v=[s,c],hw=l.w/2,hd=l.d/2;return {c:[l.x,l.z],u,v,hw,hd,C:[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[l.x+u[0]*hw*q[0]+v[0]*hd*q[1],l.z+u[1]*hw*q[0]+v[1]*hd*q[1]])};};
+  const B=L.map(box),ell=(E,x,z,p)=>((x-E.x)/(E.rx+p))**2+((z-E.z)/(E.rz+p))**2<1;
+  const sat=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const pr=P=>P.map(q=>q[0]*ax[0]+q[1]*ax[1]),A=pr(a.C),Bq=pr(b.C);if(Math.max(...A)<=Math.min(...Bq)+.05||Math.max(...Bq)<=Math.min(...A)+.05)return false;}return true;};
+  // the grid the overlap test buckets by (20 m)
+  const G=new Map();B.forEach((b,i)=>{const r=Math.hypot(b.hw,b.hd);for(let gx=Math.floor((b.c[0]-r)/20);gx<=Math.floor((b.c[0]+r)/20);gx++)for(let gz=Math.floor((b.c[1]-r)/20);gz<=Math.floor((b.c[1]+r)/20);gz++){const k=gx+','+gz;(G.get(k)||G.set(k,[]).get(k)).push(i);}});
+  let over=0,street=0,cap=0,res=0,nh=0,ground=0;const seen=new Set();
+  G.forEach(list=>{for(let a=0;a<list.length;a++)for(let b=a+1;b<list.length;b++){const i=list[a],j=list[b],k=i<j?i+'|'+j:j+'|'+i;if(seen.has(k))continue;seen.add(k);
+   if(sat(B[i],B[j])){over++;if(bad.length<8)bad.push('overlap '+(L[i].name||L[i].key)+' / '+(L[j].name||L[j].key));}}});
+  const W=T.ways.map(w=>{const P=w.closed?w.pts.concat([w.pts[0]]):w.pts;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;P.forEach(q=>{x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);z0=Math.min(z0,q[1]);z1=Math.max(z1,q[1]);});return {P,hw:w.w/2,x0,x1,z0,z1,tag:w.tag};});
+  const heads=[];ROOST.lifts.forEach(l=>[l.root,l.capstan].forEach(q=>{if(q)heads.push([q.x,q.z]);}));ROOST.stair.gates.forEach(g=>{if(Math.abs(g.y-_top)<3)heads.push([g.x,g.z]);});
+  ROOST.climbs.forEach(c=>{const q=c.pts[0];if(Math.abs(q[1]-_top)<3)heads.push([q[0],q[2]]);});
+  B.forEach((b,i)=>{const l=L[i],r=Math.hypot(b.hw,b.hd),nm=l.name||l.key;
+   // the carriageway: a square's own stalls and hall stand on their square, not a street
+   for(const w of W){if(b.c[0]<w.x0-r-w.hw||b.c[0]>w.x1+r+w.hw||b.c[1]<w.z0-r-w.hw||b.c[1]>w.z1+r+w.hw)continue;let d=1e9;for(let k=1;k<w.P.length;k++)d=Math.min(d,KL.polySegDist(b.C,w.P[k-1],w.P[k]));
+    if(d<w.hw-.05){street++;if(bad.length<8)bad.push(nm+' on '+(w.tag||'a street')+' ('+(w.hw-d).toFixed(1)+' m)');break;}}
+   const pts=b.C.concat(b.C.map((q,k)=>{const n=b.C[(k+1)%4];return[(q[0]+n[0])/2,(q[1]+n[1])/2];}));
+   if(pts.some(q=>{const a=K.at(ROCK,q[0],q[1]);return !a||a.S!==MESA_B||a.d>-PRT.RIM+.5||a.top<_top-5;})){cap++;if(bad.length<8)bad.push(nm+' off the cap (the rim band or the rock)');}
+   if(pts.some(q=>ell(TP.precinct,q[0],q[1],0)||TP.camps.some(c=>ell(c,q[0],q[1],0)))){res++;if(bad.length<8)bad.push(nm+' in a reserved ground');}
+   if(heads.some(hq=>KL.polySegDist(b.C,hq,hq)<6)){nh++;if(bad.length<8)bad.push(nm+' on a head');}
+   if(Math.abs(l.y-T.h(l.x,l.z))>2.5){ground++;if(bad.length<8)bad.push(nm+' '+(l.y-T.h(l.x,l.z)).toFixed(1)+' m off the ground');}});
+  const need=['hall','shrine','customs','stage'],roles=new Set(L.map(l=>l.role));need.forEach(r=>{if(!roles.has(r))bad.push('no '+r);});
+  ['wingclaw','quetzal','nightwing'].forEach(w=>{if(!L.some(l=>l.role==='barracks'&&l.name&&l.name.indexOf(w)>=0))bad.push('no '+w+' barracks');});
+  const tr=PRT.trades(CAT.TRADES,L),miss=tr.filter(t=>!t.n).map(t=>t.trade);if(miss.length)bad.push('no building for '+miss.slice(0,4).join(', '));
+  const lots=L.filter(l=>!l.landmark).length,ok=!bad.length&&lots>=400;
+  return{ok,detail:L.length+' buildings ('+(L.length-lots)+' landmarks), '+T.ways.length+' streets; '+tr.length+' trades carried'+
+   (bad.length?': '+bad.slice(0,8).join('; '):'; no overlap, none on a street, off the rim band and the rock, the grounds and the heads clear')+(lots<400?'; only '+lots+' lots':'')};},
  // EACH WING'S BEASTS IN ITS OWN STALLS (owner, 2026-10-19): every beast on a perch, or coming in to one, is one its bay
  // takes (the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx, the Nightwing's bats; the Garden the three)
  wings(list){if(!PRFLY)return{ok:false,detail:'no flyers'};const L=PRFLY.LABEL,bad=list.filter(a=>a.bay&&a.bay.allow&&a.bay.allow.indexOf(a.sp)<0),by={};
@@ -242,6 +280,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the flyers: a quetzal lands on an east fin',HCHK.flyers(['deck-fin-e0','deck-fin-e1','deck-fin-e2']));
  add('each Wing\'s beasts in its own stalls',HCHK.wings(PRFLY?PRFLY.list():[]));
  add('the gates: clear of the rock',HCHK.gates(ROOST.stair));
+ add('the town on the top: every building on the cap, apart, off the streets; every trade',HCHK.town(TOWN));
  add('the lift road: the beast lift to the north-west gate, cleared',HCHK.road((ROOST.roads||[])[0],ROOST.lifts.find(l=>l.id==='lift-north')));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
@@ -270,23 +309,32 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const c0=ROOST.climbs[0];add('a climb 3 m out from its fin',HCHK.climbs(ROOST.climbs.map(c=>c!==c0?c:Object.assign({},c,{pts:c.pts.map(p=>{const S=ROCK.find(B=>'deck-'+B.id===c.deck),dx=p[0]-S.x,dz=p[2]-S.z,L=Math.hypot(dx,dz)||1;return [p[0]+dx/L*3,p[1],p[2]+dz/L*3];})})),ROOST.decks));}
  if(PRFLY){const B=PRFLY.bays.find(b=>b.plat.wing==='quetzal');add('an archaeopteryx in a Quetzal stall',HCHK.wings(PRFLY.list().concat([{sp:PRFLY.SP.A,bay:B}])));}
  add('a gate in the rock (the head gate sunk 3 m into the cap rock)',HCHK.gates(Object.assign({},ROOST.stair,{gates:ROOST.stair.gates.map((g,i)=>i?g:Object.assign({},g,{y:g.y-3}))})));
+ if(TOWN){const T=TOWN,i=T.lots.findIndex(l=>!l.landmark),L0=T.lots[i],mv=(f)=>Object.assign({},T,{lots:T.lots.map((l,k)=>k===i?Object.assign({},l,f(l)):l)});
+  const Wy=T.ways.find(w=>w.cls==='avenue'),q=Wy.pts[Math.floor(Wy.pts.length/2)],cg=PR.TOP.camps[0],cp=TOWN.cap[0];
+  add('a house on an avenue',HCHK.town(mv(()=>({x:q[0],z:q[1]}))));
+  add('a house in the Wingclaw band\'s ground',HCHK.town(mv(()=>({x:cg.x,z:cg.z}))));
+  add('a house on the rim',HCHK.town(mv(()=>({x:cp[0]*.985,z:cp[1]*.985}))));
+  add('two houses on one footprint',HCHK.town(Object.assign({},T,{lots:T.lots.concat([Object.assign({},L0,{x:L0.x+1,id:L0.id+'b'})])})));
+  add('no assembly hall',HCHK.town(Object.assign({},T,{lots:T.lots.filter(l=>l.role!=='hall')})));
+  add('no tannery (the tanners without a building)',HCHK.town(Object.assign({},T,{lots:T.lots.filter(l=>l.key!=='br_bldg_tannery')})));}
  {const Rd=(ROOST.roads||[])[0];if(Rd)add('the lift road through the seep pond',HCHK.road(Object.assign({},Rd,{pts:Rd.pts.concat([[PR.POND.x,0,PR.POND.z]])}),ROOST.lifts.find(l=>l.id==='lift-north')));}
  return R;}
 
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
- hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the site and the roosts; the town is to come)',
+ hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts and the town on the top; the farms and the camps are to come)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  hourTicks:[(dt,hour)=>{if(PRFLY)PRFLY.update(dt,hour);}],   // Girder's flyers on the roosts (89b, build.py flyers_fragment)
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
-  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
+  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
   'the far land':{match:o=>!!(o.userData&&o.userData.far)},'sky':{objects:()=>[sky,giant,giantRing]}},
- exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST})},
+ exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST,town:TOWN?TOWN.K.export():null})},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
   biome:()=>window._biome,jungle:()=>window._jungle,far:()=>({rings:FAR.rings,around:FAR.around,water:FAR.water}),
+  town:()=>TOWN?{ms:TOWN.ms,lots:TOWN.lots.length,ways:TOWN.ways.length,log:TOWN.log,failed:TOWN.failed,missing:TOWN.missing,trades:TOWN.trades,draw:TOWN_DRAW}:null,
   roosts:()=>({ms:ROOST.ms,decks:ROOST.decks.length,stalls:ROOST.roosts.length,bridges:ROOST.bridges.length,lifts:ROOST.lifts.length,climbs:ROOST.climbs.length,why:ROOST.why})}});

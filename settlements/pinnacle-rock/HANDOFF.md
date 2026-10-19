@@ -23,6 +23,12 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
   cut along the debris slope to the north-west gate; Girder's flyers (each Wing's beasts in its own stalls) read in place
   on them (`flyers/`, sealed by `build.py` `flyers_fragment`): a quetzal sent in lands on an east fin's perch. Six new
   checks and eight negatives; `verify.py --assert` passes.
+- **P3a is done** (2026-10-19, same branch; not yet seen by the owner): the town on the top on `core/city`
+  (`src/54-pr-town.js` `PRT.plan`, run in `54b`, drawn by `89c`): the zone is the cap less the rim band, the rock on it,
+  the heads, the precinct and the bands' grounds; the hall and markets, the shrine, the Wings' barracks, the toll house,
+  the beast stage, and the module's builder for the rest (the quarters' draws, a civic list that carries every trade).
+  The buildings are the Beast Riders kit's and its ports, bundled by `build.py` (`CAT`, `KCITY`) and instanced through
+  the isle demo's `58-isle-protos.js`, read in place.
 - **Not in the gallery** (the owner, 2026-10-19): `gallery/build_gallery.py` lists it in `UNLISTED` until the town is
   built. The north-eastern canyons biome it stands on is in Krator Biomes and Objects.
 
@@ -31,8 +37,7 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
 1. **P2 follow-ups, if the owner asks** (KNOWN_ISSUES.md): a notch in the rock mesh so the Stair's flights are cut into
    the face; plants kept off the rings (plan the roosts before the necanyons kit builds); the roosts on a nav graph with
    a walker (with P3's people); a Godot builder for the roost records.
-2. **P3, the town and the farms**: the town on `core/city` (read `core/city/README.md`, "Porting a settlement"; no new
-   occupancy grid: `core/space`), the Deep Root cavern (KCAVERN with a KSTACKS hole, BR_ROCK dressing; the ring of twelve
+2. **P3b-e** (P3a, the town, is done): the Deep Root cavern (KCAVERN with a KSTACKS hole, BR_ROCK dressing; the ring of twelve
    stones with nothing built inside), the farms as contour cells with twelve farmhouses, the camps (`BR_CAMP`, hedges
    and fences from `BR_RUN`), the mounts (the Longcrawler is rideable; the jungle staghorn is the staghorn's
    jungle-coloured variant), ways up to the Garden's mesa and the Heart.
@@ -70,6 +75,10 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
 - **Git LFS**: built pages are LFS. After merging main, `git add --renormalize` the dist folders you rebuilt if Git warns
   of "files that should have been pointers". In a checkout without every build's textures, the hash baseline reports
   other builds' pages as changed: they are not; do not rewrite their entries.
+- **The town reads three other builds in place**: `settlements/isle-demo/bundles.py` (`kcity_bundle`, `safe`, `body`),
+  its `src/58-isle-protos.js`, and `kits/beast-riders` (its `src/`, `towns.py`, `tex/`; the catalog's core, runtime and
+  detail module). A change to any of them reaches this page: rebuild and verify it. `towns.py` needs Girder's and Mav's
+  Refuge's `tex/` pulled from LFS (`git lfs pull --include="settlements/mavs-refuge/tex/**,settlements/girder/tex/**"`).
 - **`verify.py --shots` on the 12 MB beast-riders page** times out in this container's software GL; its checks pass.
 
 ## Owner's decisions to keep (2026-10-19)

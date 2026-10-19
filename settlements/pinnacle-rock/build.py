@@ -126,9 +126,68 @@ sys.path.insert(0,os.path.join(HERE,'tools'))
 import world_data as _wd
 # the Beast Riders kit's detail maps (kits/beast-riders/materials.json), only the families the roosts draw with (89-host-roosts.js)
 BRK=os.path.normpath(os.path.join(HERE,'..','..','kits','beast-riders'))
-BR_FAMS=('wood','timber','shingle','rope','straw','sandstone')
+BR_FAMS=('wood','timber','shingle','rope','straw','sandstone','yard')   # yard: the town's streets (89c)
 import json as _json
 BR_SKIP=tuple(f for f in _json.load(open(os.path.join(BRK,'materials.json'),encoding='utf-8'))['families'] if f not in BR_FAMS)
+# THE TOWN (PLAN.md P3a): core/city (KCITY) and the Beast Riders' buildings (CAT), each READ IN PLACE and sealed in a closure
+# of its own: KCITY as the isle demo and Verge bundle it (settlements/isle-demo/bundles.py kcity_bundle); CAT the catalog's
+# core, the kit's own buildings (its mounts' houses, trades, larger houses, rock-cut pieces and tents) and its ports of
+# Girder's and Mav's Refuge's buildings (kits/beast-riders/towns.py: the towns' maps beside the page, .tex.brtowns.js),
+# the catalog's runtime and its detail maps (KF_TEX, the catalog's and the kit's packs: .tex.kftex.js). No furniture: the
+# catalog's pieces are not on this page (a building's F.furn notes the key and places nothing). CAT.proto(key, v) builds
+# one at the origin into a group; the isle demo's src/58-isle-protos.js (read in place) flattens it for instancing.
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','isle-demo')))
+import bundles as _isle
+CATD=os.path.normpath(os.path.join(HERE,'..','..','kits','catalog'))
+CAT_OWN=['50-br-mounts.js','51-br-trades.js','52-br-trades-b.js','53-br-trades-c.js','54-br-houses.js','55-br-rockcut.js',
+         '56-br-rockcut-b.js','70-br-tent-kit.js','71-br-tents-dwell.js','72-br-tents-trade.js','73-br-tents-pens.js',
+         '74-br-tents-bands.js','75-br-tents-bounds.js','79-br-camp.js']
+def kf_tex_json():
+    """KF_TEX (kits/beast-riders/build.py kf_tex): the catalog's packed detail maps with the kit's over them by family"""
+    import base64
+    out={}
+    for d in (os.path.join(CATD,'tex'),os.path.join(BRK,'tex')):
+        pack=_json.load(open(os.path.join(d,'pack.json'),encoding='utf-8'))
+        for fam,e in sorted(pack['families'].items()):
+            name=e['files'].get('map')
+            if name:
+                out[fam]={'lib':e['lib'],'scale':e['scale'][0],'mean':e['tint']['mean'],
+                          'map':'data:image/webp;base64,'+base64.b64encode(open(os.path.join(d,name),'rb').read()).decode()}
+    return _json.dumps(out,sort_keys=True)
+CAT_PROTO=r'''
+/* CAT.proto(key, v): the building at the origin (y 0, front +z) in a new group, out of the closure's scene; the kit's own
+   meshes take the library's detail maps (KF_API.detailize, as the kit's sheet does), a port keeps its town's materials */
+function catProto(key, v) {
+  var A = ASSET_BY_KEY[key]; if (!A) return null;
+  var g = buildAsset(key, 0, 0, 0, { variant: v | 0, seed: 1, y: 0 }); if (!g) return null;
+  scene.remove(g); INSTANCES.length = 0;
+  if (!A.port) { g.traverse(function (m) { if (m.isMesh) m.userData.furniture = true; }); KF_API.detailize(g); }
+  var D = (A.variantDims && A.variantDims[v | 0]) || A;
+  g.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h, error: g.userData.error, port: A.port || null };
+  return g;
+}
+function catDims(key, v) { var A = ASSET_BY_KEY[key]; if (!A) return null; var D = (A.variantDims && A.variantDims[v | 0]) || A; return { w: D.w, d: D.d, h: D.h, variants: A.variants || 1 }; }
+return { proto: catProto, dims: catDims, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS, TRADES: (typeof BR_TRADES !== 'undefined' ? BR_TRADES : null),
+  CAMP: (typeof BR_CAMP !== 'undefined' ? BR_CAMP : null), RUN: (typeof BR_RUN !== 'undefined' ? BR_RUN : null) };
+'''
+def cat_fragment(side):
+    if BRK not in sys.path: sys.path.insert(0,BRK)
+    import towns
+    tjs,_tf=towns.bundle(side)
+    if side is not None:
+        side['kftex']=kf_tex_json()
+        kft='var KF_TEX = (typeof KMAT_SIDE !== \'undefined\' && KMAT_SIDE.kftex) || null;\n'
+    else:
+        kft='var KF_TEX = %s;\n'%kf_tex_json()
+    return _isle.safe('/* CAT: the Beast Riders\' buildings in one closure (settlements/pinnacle-rock/build.py cat_fragment). GENERATED: edit '
+                      'kits/catalog, kits/beast-riders and the towns (kits/beast-riders/towns.py). */\n'
+                      'var CAT = (function(){\nvar scene = new THREE.Group();\n'+_isle.body([os.path.join(CATD,'krator-furniture-core.js')])+
+                      _isle.body([os.path.join(BRK,'src',f) for f in CAT_OWN])+
+                      '/* ---- the towns sealed (GENERATED: kits/beast-riders/towns.py) ---- */\n'+tjs+'\n'+
+                      _isle.body([os.path.join(BRK,'src','60-br-ports.js'),os.path.join(CATD,'krator-furniture-runtime.js')])+kft+
+                      _isle.body([os.path.join(CATD,'krator-furniture-detail.js')])+CAT_PROTO+'})();\n')
+# the isle demo's prototype flattener, read in place (its header: CAT.proto's group into one geometry per material)
+PATH['89a-host-isle-protos.js']=os.path.normpath(os.path.join(HERE,'..','isle-demo','src','58-isle-protos.js'))
 # THE FLYERS (PLAN.md P2; flyers/README.md): Girder's flyers READ IN PLACE (settlements/girder/src 84-flyers.js, 84b, the
 # generic sections of 84a and 84c lifted by their section markers; its palette and detail maps), sealed in one closure
 # with this page's world, obstacles, bays and starting circuits (flyers/). Girder's 84 opens a closure its 84d closes;
@@ -163,6 +222,8 @@ def flyers_fragment():
             'return _PRFLY_OUT;\n})(terrainH);}catch(e){reportErr(\'flyers: \'+(e&&e.stack||e));}\n_mark(\'flyers\');\n')
 GFLY=tuple(f for f in _json.load(open(os.path.join(GIRDER,'tex','pack.json'),encoding='utf-8'))['families'] if not f.startswith('fly'))
 VIRTUAL={'39-pr-world-data.js':_wd.fragment(os.path.join(HERE,'region')),
+         '49a-pr-kcity.js':_isle.kcity_bundle(),
+         '49b-host-cat.js':cat_fragment(SIDE),
          '44d-host-matlib-pack-girder-flyers.js':_mp.fragment(GIRDER,'girder',exclude=GFLY,side=SIDE),
          '89b-host-flyers.js':flyers_fragment(),
          '44-host-matlib-pack.js':_mp.fragment(NC,'necanyons',side=SIDE),
