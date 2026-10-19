@@ -6,6 +6,7 @@ the owner's call, 2026-10). Started 2026-10-06 with the Scyvoi's animals: the **
 was gathered here and tagged: **48 species, 136 builds** (every variant and breed), each ported from the build that first drew
 it, at its real size in metres, with `source` naming every build that draws it. 2026-10-07: the Ash Nomads' and the Scyvoi's
 herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's ash herd (**51 species, 150 builds**).
+2026-10-19: the mounts of the five Beast Rider tribes that had none (the `riders` group; "The Beast Riders' mounts" below).
 
 | File (group) | Species |
 |---|---|
@@ -20,6 +21,7 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `wild` | the biome pass (BIOME-FAUNA-PLAN.md), three waves covering every biome of the plan, and ten more domestic animals (donkey, mule, goose, turkey, rabbit, alpaca, reindeer, bactrian camel, homing pigeon, giant honeybee), and sea and lake fauna (ring dolphin, giant sea turtle, manta ray, giant ring squid, glass jellyfish, reef octopus, ring marlin, banner reef fish, ring cormorant, giant pike, lake sturgeon, giant catfish, lake plesiosaur, lake diver), and eight large hexapods of different countries (dune runner, frost trunker, marsh strider, cavern leaper, cinder crawler, plains hopper, tide crawler, badland digger), and five large hexapods after the owner's reference plates (scytheback, hookstalker, reedneck, gapemaw, clubback), and eight more six-limbed beasts after a second set of plates (burden beast, a saddle and draught animal as massive as a hippo; ember bull; horncrest; barbed ravager; capstilt; slabhorn; gapebill; dunewalker, a desert mount): and six arboreal hyperjungle critters on the `centaur` gait (canopy runner, moss sloth, bough panther, bark skulker, fruit gibber, veil glider): and the fang glider (a six-limbed reptilian glider): and four gliders of the lowlands (all climbers on the centaur gait) (meadow skimmer, hedge glider, cypress glider, sail skimmer), the eastern abyss's rim glider, and four gliders of the Rift's spore-forests, from raccoon to quetzalcoatlus size (lamp glider, spore drifter, gloam hanger, Rift sailwing), and the plumelands' ash racer (a raccoon-sized six-limbed runner): 125 animals, with a new `centaur` gait (grazers, predators, flyers, water creatures) from the shared builders `faWdQuad`, `faWdFish`, `faWdSerpent`, `faWdCrab`, `faWdRay`, `faWdSquid`, `faWdJelly`, `faWdOcto`, `faWdHex` (a flipper option on `faWdQuad` draws paddles); needs the `hyperjungle` file's helpers |
 | `flyers` | quetzalcoatlus, giant bat, giant archaeopteryx, giant dragonfly (each with a `'fly'` pose) |
 | `crawlers` | draught millipede (with the Ash Nomads' ash herd), giant riding spider |
+| `riders` | the Beast Rider tribes' mounts that were missing (2026-10-19): riding tiger, riding raptor, threehorn, hardshell, jungle mammoth (needs the `hyperjungle` file's helpers; the section "The Beast Riders' mounts" below) |
 | `voth` | seagull, cliff racer, silt strider, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
 | `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
 | `pets` | dog, cat (baked Meshy models only) |
@@ -83,6 +85,49 @@ chitin `organic.chitin`); `feather` waits on a set, and `glow` is unlit (a glint
 half-sizes along its length; saddle, bridle, chest): the Scyvoi kit draws its saddles, barding and collars against it, so the
 animal and the culture that rides it stay in separate kits. The riding lizard, pack lizard, Dalab lizard, spider, giant flyers
 staghorn beetle (with a profile too) and silt strider carry anchors the same way (saddle, bridle, pack, howdah ...); their tack stays with their cultures.
+
+## The Beast Riders' mounts
+
+LORE.md 6.6 names twelve tribes of the Beast Riders ("more? TBD"). The audit of 2026-10-19 found a mount in the kit for seven;
+the five missing were built in `krator-fauna-riders.js` (group `riders`). `verify.py --assert` reads this table (`rider-mounts`):
+every tribe in the lore's list must have a row here, and every row a key that is registered and rideable or draught.
+
+| Tribe | Beast | Fauna key | Group | Notes |
+|---|---|---|---|---|
+| Quetzal | quetzalcoatlus (span 12 m) | `quetzalcoatlus` | flyers | the reigning tribe; from Mav's Refuge |
+| Wingclaw | giant archaeopteryx (span 7 m) | `giant-archaeopteryx` | flyers | Pinnacle Rock's own tribe |
+| Dragonfly | giant dragonfly (6 m body, four wings) | `giant-dragonfly` | flyers | |
+| Nightwing | giant bat (span 9 m) | `giant-bat` | flyers | |
+| Spider | giant riding spider | `giant-spider` | crawlers | climbs trunks and leaps on draglines (Mav's Refuge) |
+| Raptor | riding raptor | `riding-raptor` | riders | **new**. The Dalab ridge raptor (`ridge-raptor`, wild, 160 kg) is a wild cousin, not a mount |
+| Staghorn | staghorn beetle | `staghorn-beetle` | voth | the Ash Nomads' mount, rideable; still tagged for the ash plains and herded by `ashnomad` only (KNOWN_ISSUES.md) |
+| Threehorn | threehorn | `threehorn` | riders | **new**. The Dalab tricorn (`tricorn`, wild) is a smaller wild cousin |
+| Hardshell | hardshell | `hardshell` | riders | **new** |
+| Tiger | riding tiger | `riding-tiger` | riders | **new**. Voth's arena tiger (`arena-tiger`) is a wild beast of the bay, not tameable |
+| Mammoth | jungle mammoth | `jungle-mammoth` | riders | **new** |
+| Longcrawler | draught millipede | `draught-millipede` | crawlers | a draught beast (the beast lifts' capstans), not flagged rideable (KNOWN_ISSUES.md) |
+
+The new mounts (each with two breeds and three variants, herded by `beast-riders`, `data.tribe` naming the tribe, tagged for the
+hyperjungle; sizes at breed scale 1):
+
+| Key | Size | Breeds | Variants | Modelled on |
+|---|---|---|---|---|
+| `riding-tiger` | 5.3 m with the tail, 1.6 m at the shoulder, 780 kg | hunter, war (x1.12) | jungle orange, smoke, pale gold | a tiger 1.5 times real size in every length |
+| `riding-raptor` | 5.8 m, hip 1.95 m, 600 kg | courser, war (x1.15) | jungle green barred, rust, slate blue | a feathered dromaeosaur past Utahraptor's size: quilled arms, a raised sickle claw, a crest |
+| `threehorn` | 9.1 m, hips 3.05 m, 9 t | draught (short brow horns), war (x1.08, long brow horns) | olive and red frill, slate and gold, rust-brown and blue | Triceratops at its real size |
+| `hardshell` | 5.3 m with the tail, the dome 2.1 m high, 3.5 t | draught (ringed tail), war (x1.06, Doedicurus's spiked tail club) | ochre, dark with pale rosettes, moss-streaked | Glyptodon grown about 1.6 times in length |
+| `jungle-mammoth` | 4 m at the shoulder, 7.7 m tusk tip to tail, 9 t | riding, war (x1.08, longer tusks) | russet-haired, grey near bare, dark brown | the Columbian mammoth, thinly haired for the heat |
+
+Each publishes a body profile (`KratorFauna.profile`: t from the tail tip to the snout) and anchors for tack: `saddle` (where
+the rider's hips sit: behind the tiger's withers, over the raptor's hips, on the threehorn's shoulders behind the frill, on the
+hardshell's dome, on the mammoth's neck for the mahout), `bridle`, `chest`, `pack`, and on the three heavy beasts `howdah`,
+`harness` (the collar) and `trace` (where the traces meet the load). The tack stays with the Beast Riders.
+
+Where the lore is silent the kit chose, and the owner may want to change: the **tiger** (only the tribe's name: a striped great
+cat the size of a horse); the **raptor**'s size (the lore says velociraptor, a turkey-sized animal: a rider needs a giant of the
+kind); the **mammoth** (only the name: a woolly mammoth would cook in the hyperjungle, so a thin-haired lowland one); the
+threehorn and the hardshell at Pinnacle Rock's ranches as draught beasts (settlements/pinnacle-rock/PLAN.md, section 1), the
+threehorn and the mammoth as war beasts; every yield, life figure and temperament.
 
 ## Taking animals into a world
 
