@@ -70,6 +70,12 @@ OUT = os.path.join(DIST, 'zeijani.html')
 TEX_DIR = os.path.join(HERE, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets')]
 CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
+# the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
+# and the authoring tools (inspect, polygon, path). src/99-host-take.js hands it the page (its own, kits/scyvoi's with the kit's
+# names, the walk registry and the interiors' furniture records); it replaced the kit's 92-camera.js (2026-10-18, KNOWN_ISSUES.md).
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = khost.SHELL + ['94-host-polytool.js']
 VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods
@@ -132,6 +138,7 @@ def sources():
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     paths.update({os.path.basename(p): p for p in CORE_FILES})
+    paths.update({f: khost.path(f) for f in CORE_HOST})
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
@@ -148,7 +155,7 @@ def main():
     if '--no-checks' not in sys.argv:
         decl = {}
         for f in files:
-            if not f.endswith('.js') or f in VIRTUAL: continue
+            if not f.endswith('.js') or f in VIRTUAL or f in CORE_HOST: continue   # the host's files are IIFEs: each its own scope
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
         for n in BUNDLE_GLOBALS:
             if n in decl: errs.append('top-level name `%s` in %s clashes with the generated furniture bundle' % (n, ', '.join(sorted(decl[n]))))

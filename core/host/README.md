@@ -272,6 +272,16 @@ commute). Proof on Sedesert: the scene census unchanged at four views; a deer pl
 of twelve moves nine strokes and no orbit; every stroke undone, the field equals the baked heights bit for bit. Next: step 5
 (the rest), step 6 (Voth).
 
+**The Scyvoi engine and its seven kits** (2026-10-18, step 5's kit sheets, the first family) take `SHELL` plus
+`94-host-polytool.js`: `kits/scyvoi`, `islanders`, `lizardmen`, `resources`, `zeijani`, `desert-nomads` and `ash-nomads`. The
+engine's own camera and probe (`92-camera.js`, `91-probe.js`) are retired; `92-world.js` and `99-host-take.js` replace them
+(vendored by four kits, read in place by Resources, Zeijani's own with the walk registry). The engine's frame work (its
+`FRAME_HOOKS`, the sun and sky camera, core/atmos) runs in a `'view'` subscriber and its two-pass sky draw through `draw`. A
+take that lists the probe must sort after `95-host-probe.js`, which is why the take is `99-host-take.js`. Proof: every
+`verify.py --assert` unchanged, chrome-hidden shots identical to the old pages' (bar the night's flicker and Islanders'
+animated sea), the hash baseline moved for those seven pages only. What the engine had and the host lacks:
+`kits/scyvoi/KNOWN_ISSUES.md`, "Host port".
+
 **Voth's city plan** (2026-10-15 and 2026-10-16, steps 6a and 6b) takes the whole interface, its tools included: the
 cantons and the lot buildings in view in the cutaway, its own ray picks in the inspector (`o.inspectRay`), its painted
 streets in the editor's way mode ("Voth onto core/host" above).

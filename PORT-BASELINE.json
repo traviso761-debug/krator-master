@@ -281,8 +281,8 @@
    "sha256": "8b5c88a613ccd56fe868dd9c148c02db924e557d043ee9aa7e795afe776b0ade"
   },
   "kits/ash-nomads/dist/ash-nomads.html": {
-   "bytes": 15707726,
-   "sha256": "464a6ddd9091149759bfd0ccdbdde96b5cc3c34eedb1c18af4be9c2856b64dac"
+   "bytes": 15430449,
+   "sha256": "92f2909cafff2ff2ab5b78850e19c78b116a6322321508757d62aec998d8e819"
   },
   "kits/catalog/dist/catalog.html": {
    "bytes": 1669465,
@@ -293,8 +293,8 @@
    "sha256": "18ccaed43209444a7ddf33599b11ec64dcf1618cefc2ffffb0e713bfd8bd3317"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
-   "bytes": 14355968,
-   "sha256": "7a1528898d5d02948274bb60fa5637323cfc146f12eda934e9482d240b8835f8"
+   "bytes": 14078688,
+   "sha256": "860db628eb39d99093ae24ea35c9ef87316690fc65642003d90ec4ce65a35201"
   },
   "kits/fauna/dist/fauna.html": {
    "bytes": 1147659,
@@ -313,12 +313,12 @@
    "sha256": "17696bb38182de72fc6ce6a2ef0803bfe7c25c2474240f97e3d86e63bb1cc20e"
   },
   "kits/islanders/dist/islanders.html": {
-   "bytes": 1521595,
-   "sha256": "019b9a48d6761bf862379279e54422913df134aa16e4d1b7f24b5aff50571f3b"
+   "bytes": 1244319,
+   "sha256": "ecb94a6728093589c7e26fd09fd743e4185f12e32f63e6630bd7e5cc7bebe424"
   },
   "kits/lizardmen/dist/lizardmen.html": {
-   "bytes": 1500638,
-   "sha256": "5feee9753e5b3dd5d6b26852730753b1106ba868d255ef9b9ed0aac63d83f1fb"
+   "bytes": 1223362,
+   "sha256": "a72b6b13b28f8ce69fcbf6a66f803e28ff96778d918af581f14cfc5372ff9e7d"
   },
   "kits/mechs/dist/mechs.html": {
    "bytes": 1637190,
@@ -337,24 +337,24 @@
    "sha256": "7f6a53ee5adf2aedd47e4c3b80bafe26320be3bd49f11d08ec3a18418c49a109"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 522293,
-   "sha256": "b6ce73b841e698aead6991f42f8d957a5e2eb82dd31a52ce298e1a407912d8fd"
+   "bytes": 561669,
+   "sha256": "ee802174209044a3eb35cb841094dfbcbd9088126fac06cda540c5cc78bba979"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 4638988,
    "sha256": "cdf9d21a072e9acda3fbeeacd293c4982ada4923823439f31928f2987215e660"
   },
   "kits/scyvoi/dist/scyvoi.html": {
-   "bytes": 1394436,
-   "sha256": "688502e79bde1a4d0c65ad88da4dd2d7c83c1d439f5dfd83f82c53df7ff7fce0"
+   "bytes": 1117163,
+   "sha256": "059495c0abfcfd10b09498bee25543b2ea10f523d4864432d79d788c6c5db276"
   },
   "kits/talia/dist/talia.html": {
    "bytes": 1807991,
    "sha256": "253748bdb55ad5a5be6765cbfd9b72dcf10d2a16131424229df6bd1df2d14ad0"
   },
   "kits/zeijani/dist/zeijani.html": {
-   "bytes": 1291340,
-   "sha256": "bf2a209c6f2a10b94cfcd7b72f0297adecd0b57e80fc4107b0cef4275ef91c94"
+   "bytes": 1327377,
+   "sha256": "fdbc612b2e84a588f0e9e448863e086074faced6c4b557fbf43c2c88e1f5d19b"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
    "bytes": 1315178,

@@ -36,10 +36,10 @@ lists (`build.py`: core/rand, core/materials/record, core/tags, core/furnish, co
 | `81-sky.js` | | KratorSky, the standard sky: VENDORED from `settlements/iziz/src/81-sky.js` (`build.py --vendor-check`) |
 | `89-rows.js` | | `FAMILIES`: the sheet's rows |
 | `90-scene.js` | | renderer, `skyScene` + KratorSky, lights, the ground, the layout (`SITES`, `ROWS`), `buildWorld`, `autoViews`, ATMOS skylight |
-| `91-probe.js` | | `window._api` |
 | `91f-furnish.js` | | the core/furnish adapter: `SVF`, `FURNISH`, `FURNISH_HANG`, `svfH`; `svfDetail`: a library detail map per furniture render family (`f_*` in materials.json), triplanar |
 | `91n-night.js` | | halos and the night light pool: `nightSet` |
-| `92-camera.js` | | views, orbit and WASD, the inspector, cut-away, polygon tool, walk mode, the frame loop |
+| `92-world.js` | | `buildWorld()`, `VIEWS` |
+| `99-host-take.js` | | `KHOST.take` (core/host): views, inspector words, cut-away and night controls, the frame work, the `window._api` fields |
 | `93-anim.js` | | the clock (`?t=`), smoke, the material records (`window._materials`) |
 
 ## The def
