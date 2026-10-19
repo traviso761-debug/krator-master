@@ -363,6 +363,30 @@ function tanHollowTidy(C,snap){const H=C.hollow;if(!H||!H.length)return;
 // every Talia def's builder runs the tidy inside 69e's wrapper (wrapped before 69e wraps it, so the hollow list is open)
 (function(){const prev=VERN.def;
  VERN.def=function(D){if(D&&typeof D.key==='string'&&D.key.indexOf('tal_')===0&&typeof D.build==='function'){const b=D.build;
-   D.build=function(G,o){const C=VERN.cur,snap=C&&C.hollow?KIT.order.filter(n=>KIT.defs[n].geo===VBOX).map(n=>[n,KIT.items[n].length]):null;
-    const out=b.apply(this,arguments);if(snap)tanHollowTidy(C,snap);return out;};}
+   D.build=function(G,o){const C=VERN.cur,snap=KIT.order.filter(n=>KIT.defs[n].geo===VBOX).map(n=>[n,KIT.items[n].length]);
+    const out=b.apply(this,arguments);if(C&&C.hollow)tanHollowTidy(C,snap);if(typeof tanWalkSolids==='function')tanWalkSolids(snap);return out;};}
   return prev.apply(this,arguments);};})();
+
+// ---------------------------------------------------------------- walking (F) on the floors (the owner, 2026-10-19)
+// The page handed the camera no walk registry, so the walker stood on the flat ground everywhere: through the terraces,
+// under the raised floors, never up a storey. With window.TALIA_WALK (the kit target sets it, and its views fragment hands
+// KWALK to KHOST.take) every placed building registers what a walker stands on, in the world frame: the floors the
+// interiors planner lays on every level and its stairs (as strips that rise), every flight drawn with vnStairs (the
+// terraces' and podiums' stairs, the imperial stairs, the outside stairs), and the tops of the large level solids a
+// Talia builder draws (the podiums and terraces, area 3 m2 or more, tops from .15 to 6.5 m). Walls are not blocks yet; a
+// floor is its outline's bounding rectangle (exact for a building square to the world, as every sheet placement is).
+function tanWalkOn(){return typeof KWALK!=='undefined'&&typeof window!=='undefined'&&!!window.TALIA_WALK;}
+function tanWalkInterior(C,item){if(!tanWalkOn()||typeof KratorInteriors==='undefined')return;
+ const inst=KratorInteriors.sets.instantiate(item,C.x,C.z,C.ry,{baseY:C.o.y||0,register:false,seed:0,prefix:'walk.'});
+ for(const Bd of inst.buildings){for(const F of Bd.floors){const xs=F.poly.map(q=>q[0]),zs=F.poly.map(q=>q[1]);if(xs.length<3)continue;KWALK.floor({rect:[Math.min(...xs),Math.max(...xs),Math.min(...zs),Math.max(...zs)],y:F.y,name:C.D.key+' floor '+(F.level|0),tag:'floor'});}
+  for(const S of Bd.stairs){if(!S.foot||!S.top)continue;KWALK.strip({a:[S.foot[0],S.foot[1],S.y0],b:[S.top[0],S.top[1],S.y1],w:S.w||.9,name:C.D.key+' stair',tag:'stair'});}}}
+function tanWalkSolids(snap){if(!tanWalkOn())return;
+ for(const [name,n0] of snap){const it=KIT.items[name];if(['taMarble','vStone','vPlaster','taMosaicB'].indexOf(name)<0)continue;
+  for(let i=n0;i<it.length;i++){const r=it[i],s=r.s;if(typeof s==='number'||s[1]<.12||s[0]*s[2]<3)continue;const top=r.p[1]+s[1]/2;if(top<.15||top>6.5)continue;
+   const q=r.q||null;if(q&&(Math.abs(q.x)>1e-3||Math.abs(q.z)>1e-3))continue;const yaw=q?2*Math.atan2(q.y,q.w):0,c=Math.abs(Math.cos(yaw)),sn=Math.abs(Math.sin(yaw));
+   if(c>1e-3&&sn>1e-3)continue;const ex=(c>sn?s[0]:s[2])/2,ez=(c>sn?s[2]:s[0])/2;
+   KWALK.floor({rect:[r.p[0]-ex,r.p[0]+ex,r.p[2]-ez,r.p[2]+ez],y:top,name:'solid top',tag:'terrace'});}}}
+(function(){const _ixs=vnIxStructure;vnIxStructure=function(C,item){_ixs(C,item);tanWalkInterior(C,item);};
+ const _vs=vnStairs;vnStairs=function(x,y,z,ry,w,rise,steps,item,c){_vs.apply(this,arguments);if(!tanWalkOn()||!VERN.cur||!(rise>.1))return;
+  const K=VERN.cur,sc=K.o.scale||1,run=steps*.32,a=loc(x,z,0,run/2,ry),b=loc(x,z,0,-run/2,ry),wa=loc(K.x,K.z,a[0]*sc,a[1]*sc,K.ry),wb=loc(K.x,K.z,b[0]*sc,b[1]*sc,K.ry),by=K.o.y||0;
+  KWALK.strip({a:[wa[0],wa[1],by+y*sc],b:[wb[0],wb[1],by+(y+rise)*sc],w:w*sc,name:K.D.key+' steps',tag:'stair'});};})();

@@ -210,6 +210,13 @@
         doors: [{ at: [13, 0], w: 1.2 }], program: [['lecture', 'study'], ['study', 'study']] }],
     note: 'lecture rooms below and studies and libraries above round the court; the walks are open (no furniture); the rooms open on them through arches (fills, not cuts); the front range over the gate is left out' });
 
+  /* ---------------- THE GOVERNOR'S PALACE (74t): the hall block on the blueprint's programme (kits/talia/palace) */
+  add({ key: 'tal_governor_palace', name: 'Governor\'s palace', wealth: RICH, types: CIV, lot: [62, 76],
+    bodies: [{ id: 'hall', poly: rect(36, 28, 0, -9), y: 1.2, levels: [{ h: 5.25 }, { h: 4.5 }], wall: 0.4, roof: 'flat',
+      doors: [{ at: [0, 5], w: 2.4 }],
+      program: [['antechamber', 'hall', 'study', 'study', 'hall', 'store'], ['hall', 'library', 'study', 'bedroom', 'bedroom', 'bedroom']] }],
+    note: 'the hall block: the vestibule from the loggia, the audience hall, the cabinet and the secretary, the dining hall, the stores; above, the galleries, the records, the chief secretary and the residence. The seven pavilions are solid drums (a later pass: round hollow bodies); the undercroft is not drawn' });
+
   /* ---------------- NOT FURNISHED (the reasons are the list for the kit's author) */
   const SKIP = [
     ['tal_caravanserai', 'Caravanserai', 'its rooms open on the galleries through arches with no cut; a later pass'],
@@ -221,7 +228,7 @@
     ['tal_east_gate', 'Gate of the Passes', 'a gate: solid towers and a passage'], ['tal_wall', 'Wall', 'a wall segment'],
     ['tal_wall_tower', 'Wall tower', 'a solid round tower'], ['tal_fountain', 'Nymphaeum', 'a fountain'],
     ['tal_sky_bridge', 'Sky bridge', 'a bridge between two buildings'],
-    ['tal_governor_palace', 'Governor\'s palace', 'the palace interior follows its blueprint (kits/talia/palace/): a later pass']];
+  ];
   for (const [key, name, why] of SKIP) add({ key: key, name: name, skip: why });
 
   IX.sets.add({ set: 'talia', title: 'Talia', culture: 'talia', items: L });

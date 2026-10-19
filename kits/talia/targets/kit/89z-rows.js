@@ -2,6 +2,7 @@
 // mixed street, where Talia's buildings stand between Iziz Vernacular ones at every tier (settlements/iziz/VASSAL-KITS.md,
 // "The mixed-street check"). Built on the Vernacular's page (kits/talia/build.py), so every vern_* def is here too.
 const TITLE='Talia Kit';
+window.TALIA_WALK=true;   // the buildings register their floors, stairs and terraces in core/walk (69u: walking, F)
 VERN.interiors=typeof KratorInteriors!=='undefined'&&!/[?&]interiors=0\b/.test(location.search);
 const GROUND_C=700;
 // the rows: [label, keys]; a row is laid left to right, 10 m apart. An entry may be [key, options]

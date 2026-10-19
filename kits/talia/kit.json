@@ -16,11 +16,13 @@
   "69u-tal-helpers.js",
   "88yt-tal-matlib.js",
   "94-city-export.js",
-  "44-core-stage.js"
+  "44-core-stage.js",
+  "20-core-walk.js"
  ],
  "external": [
   "settlements/iziz/targets/city/94-city-export.js",
-  "core/biome/44-core-stage.js"
+  "core/biome/44-core-stage.js",
+  "core/walk/20-core-walk.js"
  ],
  "pack": "talia",
  "furniture": [

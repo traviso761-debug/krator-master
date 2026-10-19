@@ -13,7 +13,8 @@
 // front (the gate), so x = -v and z = 1 - u. Every position below is written in (u, v) and passed through TPP.
 // Heights: the terrace 1.2 m, the ground storey 5.5 m (to 6.7), the upper 4.5 m (to 11.2); the drum to about 17, the
 // dome to 24, the lantern to 27. The guard's barracks stand outside the grounds (the owner's fork): not in this def.
-// Interiors (the blueprint's rooms) come with the kit's interior set (PLAN.md P6). Seeds 9691-9699.
+// Interiors: the hall block is a hollow body; its rooms are the kit's interior set's (kits/interiors/sets/talia.js); the
+// pavilions are solid drums. Seeds 9691-9699.
 const TPP=(u,v)=>[-v,1-u];
 // ---------------------------------------------------------------- THE LION AND THE PAVILIONS
 // a couchant lion on a newel, facing out along ry: a marble body, haunch, mane and head (refs talia (2): the stair's lions)
@@ -77,7 +78,7 @@ function buildTalGovernorPalace(G,o){reseed(9691+(o.v|0));const T=1.2,G1=5.5,U1=
  {const [x,z]=P(-8.5,0),w=6.4,reach=tanImperialStair(x,0,z,0,w,T,mb,or,{gilt:gi});
   for(const s of[-1,1]){const p=loc(x,z,s*(w/2+1.1),reach-.4,0);vB('taMarble',p[0],0,p[1],.8,.6,1.3,0,mb);talpLion(p[0],.6,p[1],0,1.1,mb);}}
  // ---- the hall block: two storeys behind the front loggia, a flat roof behind a balustrade (front) and a coped parapet
- blk('vPlaster',-4,24,-18,18,T,G1+U1,wh);{const [x,z]=P(10,0);tanString(x,T+G1-.1,z,36,28,0,wh,.12,.2);}
+ vnBody('vPlaster',0,T,-9,36,G1+U1,28,0,wh,{t:.4});tanDoor(0,T,5,0,2.4,4.2,'taMarble',mb,wal,false);{const [x,z]=P(10,0);tanString(x,T+G1-.1,z,36,28,0,wh,.12,.2);}
  // the front loggia: a screen at u -8.9 across v -11.7..11.7, Corinthian columns on an arcade of six below with an
  // entablature and a gilt frieze; a balustraded gallery and a slimmer Ionic arcade of ten (lit) above
  blk('vPlaster',-8.9,-8.3,-11.7,11.7,T,G1+U1,wh);blk('vPlaster',-8.3,-4,-11.7,11.7,R1-.3,.3,mb);
@@ -121,8 +122,7 @@ function buildTalGovernorPalace(G,o){reseed(9691+(o.v|0));const T=1.2,G1=5.5,U1=
   for(const s of[-1,1])vBq('taMarble',xc,R1/2+.5,zc+s*1.32,Math.hypot(run,R1)+.3,.95,.22,vQ(0,0,-ang),wh);
   vB('taMarble',xt-.75,0,zc,1.5,R1,2.6,0,mb);vB('vPlaster',xt-.75,R1-.3,zc,1.66,.18,2.76,0,or);
   tanBalustrade(xt-.75,R1,zc+1.25,0,1.5,mb,.95,{ball:gi,gilt:gi});tanBalustrade(xt-.75,R1,zc-1.25,Math.PI,1.5,mb,.95,{ball:gi,gilt:gi});
-  tanArch(18,R1,zc,Math.PI/2,1.6,3,{fill:'D',band:gi,gilt:true,bw:.14});tanPediment(18,R1+3.3,zc,Math.PI/2,2.8,.9,wh,.12,.5,or,gi);
-  const p=loc(18,zc,0,.06,Math.PI/2);vB('vWood',p[0],R1,p[1],1.5,1.8,.08,Math.PI/2,wal);}
+  tanArch(18,R1,zc,Math.PI/2,1.6,3,{fill:'D',band:gi,gilt:true,bw:.14});tanPediment(18,R1+3.3,zc,Math.PI/2,2.8,.9,wh,.12,.5,or,gi);}
  // ---- the service court and the garden behind the residence
  for(let k=0;k<3;k++){const [x,z]=P(33+k*1.4,-24);vnCrate(x,0,z,.8,.2,vC(vPick(VPAL.woodMid)));}
  {const [x,z]=P(34,-17);vnBarrel(x,0,z,.35,.9,null);}
