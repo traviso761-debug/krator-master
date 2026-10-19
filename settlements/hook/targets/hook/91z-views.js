@@ -24,11 +24,11 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
  const stack=L.items.find(it=>it.key==='chStack');
  if(stack){const S=portRegOf('chStack');V['The Stacks']=[stack.gx-30,D+1.7,stack.gz-S.LAND/2,stack.gx+40,D+8,stack.gz-S.LAND/2-10];}
  // P1: the Heights from the sea side (the ridge behind the Customs, the hosts on the grid), the Ancient town from the
- // ridge looking down over the roofs to the Hook, and the cliff's foot
+ // ridge looking down over the roofs to the Hook, and the hill behind the site
  // (the heights are read from the ground itself: the scale model's slope stands where the plan's ridge was)
- if(typeof HOOK_GROUND!=='undefined'){const r=HOOK_GROUND.ridge,c=HOOK_GROUND.cliff,rx=(r.x0+r.x1)/2,g=(x,z)=>terrainH(x,z);
+ if(typeof HOOK_GROUND!=='undefined'){const r=HOOK_GROUND.ridge,c=HOOK_GROUND.hill,rx=(r.x0+r.x1)/2,g=(x,z)=>terrainH(x,z);
   V['The Heights']=portCam(rx,g(rx,r.z1+40)+4,r.z1+40,.1,.28,900);
   V['The Ancient town']=[rx+300,g(rx+300,r.z0+60)+60,r.z0+60,rx-100,D,120];
-  V['The cliff\'s foot']=[0,g(0,r.z0-40)+30,r.z0-40,0,g(0,c.z0)+10,c.z0];}
+  V['The hill behind']=[0,g(0,r.z0-40)+30,r.z0-40,0,g(0,c.z0)+10,c.z0];}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();

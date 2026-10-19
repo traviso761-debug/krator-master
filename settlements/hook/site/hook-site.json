@@ -4,7 +4,7 @@
  "saved": null,
  "note": "Seeded from LAYOUT.svg (the owner approved the layout 2026-10-19). Kit frame: x west to east along the coast, +z the sea (the world's NORTH), -z inland. Every quarter carries its lot mix (cultures, PLAN.md section 3), who holds it at game start (holder), its mood, its layer and its ruin level (0 whole, 1 toppled). The site editor saves here.",
  "districts": [
-  {"id": "zone", "type": "zone", "name": "the build zone", "note": "the coast's land side to the cliff's foot",
+  {"id": "zone", "type": "zone", "name": "the build zone", "note": "the coast's land side to the hill behind",
    "poly": [[-1300, 260], [1300, 260], [1300, -1180], [-1300, -1180]]},
   {"id": "q-point", "type": "quarter", "name": "The Point", "layer": "hukoa", "ruin": 0.6, "cultures": {"hukoa": 90, "salvage": 10},
    "holder": "Hukoa lightkeepers; an Izani signal post", "mood": "hopeful",

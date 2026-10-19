@@ -26,25 +26,25 @@ Hook is a settlement and goes in the gallery when it first reaches `main` (`gall
 
 ## 1. The site
 
-The scale model (`openworld/little-demo/source/settlements.json`) has Hook at px 537,596, on the Ring Sea's southern
-shore: the sea is to the **north**, the coast runs west-south-west to east-north-east, and the cliff that is the Crag
-Men's northern border stands 4 km behind the city. The Heights are the first step of that cliff. The Port kit's local
-convention (`N` land, `S` sea) is therefore turned about: the kit's "south" is the world's north, and the Hook points
-north into the sea. The East Ring Isles are 45 km offshore to the east, the Throne 50 km north-east (its smoke stands
+The scale model (`openworld/little-demo/source/settlements.json`) has Hook at px 537,593 (moved from 596 to the shore
+by the owner, 2026-10-19), on the Ring Sea's southern shore: the sea is to the **north**, the coast runs
+west-south-west to east-north-east, and behind the city the land climbs a gentle slope to a plateau 740 m up, 6 km
+back (the owner, 2026-10-19: no cliff; the Crag Men's border is up that slope, not a wall over the town). The Heights
+are the first step of that slope. The Port kit's local convention (`N` land, `S` sea) is therefore turned about: the
+kit's "south" is the world's north, and the Hook points north into the sea. The East Ring Isles are 45 km offshore to the east, the Throne 50 km north-east (its smoke stands
 over the harbour's eastern sky), the Vothic border about 45 km west along the coast: Hook is a frontier city on a
 sliver of Izani shore, which is why it changed hands so often.
 
 **On the model's ground (2026-10-19).** The page stands on the scale model at 1:1 through the open world's ground rule
-(`core/terrain/40-core-land.js`; `README.md` "The ground", `world/`). The 4.21 cut says: the Ring Sea at −1,500 m;
-Hook's pixel on land 592 m above it, the 1:1 shoreline 6.7 km north of the pixel (the kit's origin stands there); the
-coast's bearing −8.8° from east (ENE, the bay west of the Point, the headland east); the land behind the quays a steady
-slope, +30 m at 300 m, +62 m at the Heights' back edge (760 m), +115 m at the cliff's foot line (1,180 m), +195 m at
-2 km, the plateau at +740 m 6 km back; the sea bed −22 m at 500 m out, −50 m at 1 km; climate Af (tropical rainforest,
-4,000 mm, 28 °C), overlay SW Bay; no escarpment in the data and no channel across the site. So the Heights and the
-cliff's foot come from the slope itself (both stamps dropped), the cliff face of this section is not in the model
-(`KNOWN_ISSUES.md`), and the kit's −x end (the Point) lies at the world's east.
+(`core/terrain/40-core-land.js`; `README.md` "The ground", `world/`). The 4.21 cut says: the Ring Sea at −1,500 m; the
+pixel 10 m above it, the 1:1 shoreline 124 m seaward (the kit's origin stands there); the coast's bearing −9.2° from
+east (ENE, the bay west of the Point, the headland east); the land behind the quays a steady slope, +29 m at 300 m,
++85 m at the Heights' back edge (760 m), +139 m at the hill behind (1,180 m), +258 m at 2 km; the sea bed −30 m at
+500 m out, −59 m at 1 km; climate Af (tropical rainforest, 4,000 mm, 28 °C), overlays SW Bay and the Ring Sea; no
+escarpment in the data and no channel across the site. The Heights and the hill come from the slope itself (both
+stamps dropped). The kit's −x end (the Point) lies at the world's east: Iziz's segments east, Voth's west.
 
-About 2.6 km of waterfront, 1.2 km deep to the cliff's foot. From west to east:
+About 2.6 km of waterfront, 1.2 km deep to the hill behind. From the world's east to its west (the kit's −x to +x):
 
 | Zone | Ground | Layer it belongs to |
 |---|---|---|
@@ -241,10 +241,10 @@ The waterfront comes first, because the Port kit is finished and the city's shap
 
 | View | Camera | What it must show |
 |---|---|---|
-| Overview | high, from the north-west over the Point (out at sea) | the whole waterfront, the Hook's L, the Heights and the cliff behind |
+| Overview | high, from the north-east over the Point (out at sea) | the whole waterfront, the Hook's L, the Heights and the slope behind |
 | The Hook from the sea | low, from beyond the platforms to the north | the pier's axis up to the palace, the stack town, the cranes, the Throne's smoke to the east |
 | The Strand at eye level | on the fishing harbour's jetty | boat houses, stilt houses, rope bridges, the light |
-| The Customs | on the pier's head, looking south | the Customs House with the garrison's flags, the Vernacular quarter above, the cliff |
+| The Customs | on the pier's head, looking south | the Customs House with the garrison's flags, the Vernacular quarter above, the slope |
 | The Iron Court | on the carrier's deck | the fortress wall's breach, the pens, the fresh damage |
 | The Sun Canton at dusk | from the tank farm's bund | the pyramid's cut summit, the necropolis's gardens, the diamond painted over |
 | The Stacks | between two container towers | the salvage style, the compounds' empty cages |
@@ -252,8 +252,9 @@ The waterfront comes first, because the Port kit is finished and the city's shap
 
 ## 6. Open questions for the owner
 
-1. **Settled (2026-10-17).** Hook is on the scale model at px 537,596 (section 1): the sea to the north, the Crag
-   Men's cliff behind, the Vothic border 45 km west. The Crag Men themselves have no lore yet (LORE §12).
+1. **Settled (2026-10-17; the pixel moved and the cliff dropped 2026-10-19).** Hook is on the scale model at px
+   537,593 (section 1): the sea to the north, a gentle slope behind, the Vothic border 45 km west. The Crag Men
+   themselves have no lore yet (LORE §12).
 2. **Settled (2026-10-17).** The people are the **Hukoa**; the city is *Huka* in their tongue and *Uga* in Izani
    (`tools/scale-model/river_names.py`, `PLACE`). Their records keep the catalog culture `islander` (the West set
    builds them) and carry `layer: 'hukoa'`; no new catalog culture. Their speech is the western Islander tongue,

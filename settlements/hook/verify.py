@@ -2,7 +2,7 @@
 """Headless verification for Hook (settlements/hook) on the shared harness (tools/harness.py).
 
 Usage:
-  python3 verify.py dist/hook.html [--views "Overview,The Strand at eye level"] [--all-views]
+  python3 verify.py dist/hook.html [--views "Overview;The hill behind"] [--all-views]
                                   [--assert] [--strict-budget] [--out ./shots]
                                   [--cam=cx,cy,cz,tx,ty,tz] [--eval "()=>..."] [--size 1280x800]
 
@@ -63,11 +63,11 @@ const R=[];
   const miss=want.filter(id=>have.indexOf(id)<0);
   R.push({name:'hook-hosts-placed',ok:!miss.length,detail:miss.length?'named hosts not placed: '+miss.join(', '):want.length+' named hosts and '+(have.length-want.length)+' drawn on the grid'}); }
 // P1: the Heights stand 24 m or more above the quays at the palace's marker (the plan's 25-40; the scale model's own
-// slope gives more: README.md "The ground"), and the cliff's foot rises 60 m or more behind the site
-{ const B=(HOOK_SITE.markers||[]).find(m=>m.id==='B'),r=HOOK_GROUND.ridge,c=HOOK_GROUND.cliff,F=HOOK_GROUND.fromModel;
+// slope gives more: README.md "The ground"), and the hill behind the site rises 60 m or more over the quays
+{ const B=(HOOK_SITE.markers||[]).find(m=>m.id==='B'),r=HOOK_GROUND.ridge,c=HOOK_GROUND.hill,F=HOOK_GROUND.fromModel;
   const hB=B?terrainH(B.x,B.z)-PORT.DECK:null,hC=terrainH(0,c.z0-20)-PORT.DECK;
   const ok=hB!=null&&hB>=24&&hC>=60;
-  R.push({name:'hook-heights',ok,detail:'the palace marker stands '+(hB==null?'?':hB.toFixed(1))+' m above the quays, the cliff\'s foot '+hC.toFixed(1)+' m; the model gives the ridge: '+F.ridge+', the cliff: '+F.cliff+' (a stamp is kept only where it does not)'}); }
+  R.push({name:'hook-heights',ok,detail:'the palace marker stands '+(hB==null?'?':hB.toFixed(1))+' m above the quays, the hill behind '+hC.toFixed(1)+' m; the model gives the ridge: '+F.ridge+', the hill: '+F.hill+' (a stamp is kept only where it does not)'}); }
 // the scale model's ground (75d-hook-world.js): the kit's frame stands at the 1:1 shoreline (the natural ground at the
 // origin within 12 m of sea level: the shoreline is found on the land without its fine terms, which add up to ~10 m;
 // the sea 300 m out, land 300 m in), and the report's numbers for the README

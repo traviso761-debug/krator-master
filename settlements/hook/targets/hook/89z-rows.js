@@ -1,11 +1,13 @@
 // TARGET: hook - the waterfront of Hook (settlements/hook/PLAN.md, section 2), laid out with the grid placement
-// (settlements/port/src/70-port-core.js "layout") as settlements/port/targets/harbour does it: one coastal run west
-// to east, the Point to the Stacks; land blocks two deep behind the Customs (the pier) and behind the Sun Canton
+// (settlements/port/src/70-port-core.js "layout") as settlements/port/targets/harbour does it: one coastal run along
+// the kit's x, the Point (-x) to the Stacks (+x): on the scale model the sea is north, the frame a half turn, so the
+// Point stands at the world's EAST end and the Stacks at the west (the owner, 2026-10-19: Iziz's segments east, Voth's
+// west); land blocks two deep behind the Customs (the pier) and behind the Sun Canton
 // (the heliport and the plain quays east of it); the L of four sea platforms off the great pier's end (the hook of
 // the Hook); the five vessels. Every key the kit registers is placed at least once (verify.py: port-every-key).
 // Decays are per segment, from the plan's table: 0 repaired (the working harbour in the middle), 1 worn (the edges),
 // 3 salvage (where the salvagers live).
-// P1 (2026-10-19): the ground behind the port (76-hook-ground.js: the Heights' ridge and the cliff's foot, as layout
+// P1 (2026-10-19): the ground behind the port (76-hook-ground.js: the Heights' ridge and the hill behind, as layout
 // stamps) and the Ancient town's ruin hosts (79-hook-ancient.js) on its grid: the site's named hosts
 // (site/hook-site.json `hosts`), then a host per free block by KRAND, seeded from (HOOK_SEED, stretch, row, column),
 // never from how many came before. Each host is registered in core/tags before anything draws it.

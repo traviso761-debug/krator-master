@@ -5,7 +5,7 @@
 
 The page is the artifact https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q as the Artifact tool saves it (version 4.21
 when this was written). The cut is tools/scale-model/extract_region.py on a box of BOX_PX map pixels round Hook's
-pixel (settlements.json: px 537,596), so the shelf, the Crag Men's cliff 4 km behind and the coast's bearing either
+pixel (settlements.json: px 537,593 since 2026-10-19, when the owner moved it from 596 to the shore), so the shelf, the slope behind and the coast's bearing either
 way are all in it (the extractor adds its own 20 km margin). The regions and settlements collections are the open
 world's copies (openworld/little-demo/source); the Hook box is added to the regions list as a document of its own
 ('Hook cut'), so the cut is bounded by it. Output: region.json and the rasters, here beside this script.
@@ -15,7 +15,7 @@ import json, os, subprocess, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..', '..'))
 SRC = os.path.join(ROOT, 'openworld', 'little-demo', 'source')
-HOOK_PX = (537, 596)
+HOOK_PX = (537, 593)
 BOX_PX = 10          # half-width of the cut round Hook's pixel, in map pixels (2 km each): a 40 km box
 
 
