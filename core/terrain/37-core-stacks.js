@@ -41,10 +41,11 @@
 
   // ---------------------------------------------------------------- the one footprint function
   // an ellipse (rx along the strike ry, rz across), its radius moved by two octaves of noise round the angle: coarse lobes
-  // (the mesa's alcoves and points) and a fine fret. A bed's own noise seed ns; beds of one tier share it (the wall is one wall)
+  // (the mesa's alcoves and points) and a fine fret. A bed's own noise seed ns; beds of one tier share it and both octaves (the
+// wall is one wall; the beds show by their partings)
   function footR(b,ang){var a=ang-b.ry,c=Math.cos(a)/b.rx,s=Math.sin(a)/b.rz,R=1/Math.sqrt(c*c+s*s);
     var ca=Math.cos(ang),sa=Math.sin(ang);
-    var n=KR.fbm(ca*1.6+40,sa*1.6+40,b.tier*3.1,2,b.ns)-.5,f=KR.fbm(ca*5.5+80,sa*5.5+80,b.k*.73,1,b.ns+7)-.5;
+    var n=KR.fbm(ca*1.6+40,sa*1.6+40,b.tier*3.1,2,b.ns)-.5,f=KR.fbm(ca*5.5+80,sa*5.5+80,b.tier*.73,1,b.ns+7)-.5;   // the fret shared by a tier's beds too: one face, not a pile of bulges
     return R*(1+b.lob*2*n+b.lob*.35*f);}
   // the bed's top: flat, with a little roughness (rock pans and knobs); the mesh's top vertices are on it exactly
   function topH(b,x,z){return b.y+b.h+.7*(KR.fbm(x*.045+b.ns%97,z*.045,b.k,2,b.ns+11)-.5);}
@@ -64,19 +65,22 @@
       for(var t=0;t<tiers.length;t++){var T=tiers[t],rs=S(KR.hash(seed,t,101)),ns=KR.hash(seed,t,7),top=y+T.h,e=T.e==null?1.3:T.e;
         var cx=x+(T.dx||0),cz=z+(T.dz||0),rx=T.r*Math.sqrt(e),rz=T.r/Math.sqrt(e),ry=T.ry==null?(o.ry||0):T.ry;
         while(y<top-1){var h=Math.min(rs.range(bl[0],bl[1]),top-y);if(top-y-h<bl[0]*.6)h=top-y;
-          var last=y+h>=top-.01,j=1+rs.range(-.035,.035)+(last?.03:0);             // the cap rock stands a little proud: harder
-          beds.push(bed(k++,y,h,cx,cz,rx*j,rz*j,ry,last?.05:rs.range(.01,.03),last?.05:rs.range(.03,.09),lob,ns,t));y+=h;}}
+          var last=y+h>=top-.01,j=1+rs.range(-.012,.012)+(last?.012:0),M=Math.max(rx,rz);   // the cap rock stands a little proud: harder
+          // the chamfer and the notch are metres (a parting weathers back a metre or two whatever the mesa's size), kept as
+          // fractions of the bed's radius
+          beds.push(bed(k++,y,h,cx,cz,rx*j,rz*j,ry,(last?rs.range(1.5,3):rs.range(.4,1.2))/M,(last?rs.range(2,4):rs.range(.5,1.8))/M,lob,ns,t));y+=h;}}
     }else{
       var r=S(KR.hash(seed,0,202)),H=o.H==null?60:o.H,r0=o.r==null?12:o.r,e2=o.kind==='fin'?(o.e==null?4:o.e):(o.e==null?1.15:o.e);
       var ry2=o.ry==null?r.range(0,TAU):o.ry,lean=o.lean==null?r.range(0,.06):o.lean,la=o.kind==='fin'?ry2+(r.chance(.5)?0:Math.PI):r.range(0,TAU);
-      var taper=o.taper==null?(o.kind==='fin'?.35:.45):o.taper,n=Math.max(3,Math.round(H/r.range(6,11))),yy=y0,hs=[],sum=0,i;
+      var taper=o.taper==null?(o.kind==='fin'?.35:.45):o.taper,n=Math.max(3,Math.round(H/r.range(12,20))),yy=y0,hs=[],sum=0,i;
       for(i=0;i<n;i++){var w=r.range(.7,1.3);hs.push(w);sum+=w;}
       var neck=o.kind==='balanced'?n-2:-1,lobS=o.kind==='fin'?.07:.1;
-      for(i=0;i<n;i++){var hh=H*hs[i]/sum,u=(yy-y0)/H,rr=r0*(1-taper*u)*r.range(.9,1.1),off=Math.tan(lean)*(yy-y0);
+      for(i=0;i<n;i++){var hh=H*hs[i]/sum,u=(yy-y0)/H,rr=r0*(1-taper*u)*r.range(.97,1.03),off=Math.tan(lean)*(yy-y0);
         var ccx=x+Math.cos(la)*off,ccz=z+Math.sin(la)*off,cap=i===n-1;
         if(i===neck)rr*=r.range(.45,.6);
         if(cap&&o.kind==='balanced'){rr=r0*r.range(.95,1.25);hh=Math.max(hh,rr*r.range(.7,1.1));}
-        beds.push(bed(i,yy,hh,ccx,ccz,rr*Math.sqrt(e2),rr/Math.sqrt(e2),ry2+r.range(-.05,.05),r.range(.04,.12),r.range(.03,.1),lobS,KR.hash(seed,i,9),i));yy+=hh;}
+        var rm=Math.max(rr*Math.sqrt(e2),rr/Math.sqrt(e2)),fine=i===neck||(cap&&o.kind==='balanced');   // metres again: a stack's partings are fine, a neck's deep
+        beds.push(bed(i,yy,hh,ccx,ccz,rr*Math.sqrt(e2),rr/Math.sqrt(e2),ry2+r.range(-.02,.02),(fine?r.range(.6,1.2):r.range(.15,.4))/rm,(fine?r.range(.5,1):r.range(.1,.35))/rm,lobS,KR.hash(seed,0,9),0));yy+=hh;}   // one outline up the stack (one noise seed, one tier): its beds differ in the fret only
     }
     var R=0;beds.forEach(function(b){var m=Math.max(b.rx,b.rz)*(1+2.5*b.lob)+Math.hypot(b.cx-x,b.cz-z);if(m>R)R=m;});
     var tp=beds[beds.length-1];

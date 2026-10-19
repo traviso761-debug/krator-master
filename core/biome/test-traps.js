@@ -12,7 +12,7 @@ threw=false;try{T.make({kind:'snap',preyMax:'whale'});}catch(e){threw=true;}ok('
 ok('a kind\'s defaults fill the cycle',snap.cycle.shut===.3&&snap.cycle.digest===604800,snap.cycle.shut!==.3);
 ok('a pitcher does not move',T.state(pit,123,'p1').k===0&&!pit.moves,pit.moves);
 // the cycle: deterministic by id, every phase reached, k within 0..1
-const seen={};let kOK=true;for(let t=0;t<2e6;t+=37){const s=T.state(snap,t,'clap-7');seen[s.state]=1;if(s.k<0||s.k>1)kOK=false;}
+const seen={};let kOK=true;for(let t=0;t<5e6;t+=37){const s=T.state(snap,t,'clap-7');seen[s.state]=1;if(s.k<0||s.k>1)kOK=false;}
 ok('a snap trap waits, shuts, digests and reopens',seen.open&&seen.shut&&seen.opening&&kOK,false);
 let shutting=0;for(let t=0;t<3e6;t+=.05)if(T.state(snap,t,'clap-7',1e5).state==='shutting'){shutting++;}
 ok('shutting is caught at a page\'s speed and stays a third of a second',shutting>0,false);

@@ -33,7 +33,7 @@
     grab:{moves:true,what:'(Korona) a limb that reaches and holds'}};
   var SIZES=['insect','small','medium','large','person'];
   var DEF={pitfall:{wait:0,shut:0,digest:0,reopen:0},tank:{wait:0,shut:0,digest:0,reopen:0},
-    flypaper:{wait:3600,shut:900,digest:172800,reopen:3600},snap:{wait:21600,shut:.3,digest:604800,reopen:43200},
+    flypaper:{wait:3600,shut:900,digest:172800,reopen:3600},snap:{wait:1209600,shut:.3,digest:604800,reopen:43200},
     suction:{wait:600,shut:.002,digest:3600,reopen:1800},snare:{wait:3600,shut:1,digest:259200,reopen:7200},grab:{wait:600,shut:1.5,digest:86400,reopen:600}};
   function make(o){if(!o||!KINDS[o.kind])throw new Error('KTRAPS.make: unknown kind '+(o&&o.kind));
     var pm=o.preyMax==null?'insect':o.preyMax;if(SIZES.indexOf(pm)<0)throw new Error('KTRAPS.make: unknown prey class '+pm);

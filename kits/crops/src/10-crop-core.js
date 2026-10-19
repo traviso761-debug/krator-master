@@ -33,7 +33,8 @@ CROPS.BUCKETS = {
   thatch:       {group: 'material',    what: 'roofing'},
   dye:          {group: 'utility',     what: 'pigment and colour'},
   reagent:      {group: 'utility',     what: 'alchemical ingredient'},
-  fuel:         {group: 'utility',     what: 'burned or carried for light and heat'}
+  fuel:         {group: 'utility',     what: 'burned or carried for light and heat'},
+  medicine:     {group: 'utility',     what: 'taken for illness and wounds'}   /* reserved in PLAN.md; opened for necanyons' rimdew (2026-10-19) */
 };
 
 /* The biome kits as zones on the axes. atm is set from the notes where they record a pressure (ehighlands 0.6, crater drylands
@@ -45,6 +46,7 @@ CROPS.BIOMES = {
   ebadlands:   {atm: 1, atmNote: '?', zones: {basin: {warmth: [3, 5], arid: [0, 1]}, valley: {warmth: [2, 3], arid: [1, 2]}, rim: {warmth: [0, 1], arid: [1, 2], atm: 0}}},
   ehighlands:  {atm: 0, zones: {puna: {warmth: [0, 1], arid: [1, 2]}, bog: {warmth: [0, 1], arid: [3, 3], wet: true}}},
   geyser:      {atm: 2, zones: {warmground: {warmth: [4, 5], arid: [3, 4], heated: true}, basin: {warmth: [4, 4], arid: [3, 4], wet: true}}},
+  necanyons:   {atm: 2, atmNote: '?', zones: {floor: {warmth: [4, 4], arid: [3, 4]}, seep: {warmth: [4, 4], arid: [3, 4], wet: true}, bench: {warmth: [4, 4], arid: [2, 3]}, cap: {warmth: [4, 5], arid: [0, 1]}}},
   hyperjungle: {atm: 2, zones: {forest: {warmth: [4, 4], arid: [3, 4]}, savanna: {warmth: [4, 4], arid: [1, 2]}}},
   nhighlands:  {atm: 1, atmNote: '?', zones: {low: {warmth: [2, 2], arid: [3, 3]}, high: {warmth: [0, 1], arid: [2, 3]}}},
   nwbay:       {atm: 2, atmNote: '?', zones: {shore: {warmth: [3, 4], arid: [2, 3]}, wetland: {warmth: [3, 4], arid: [3, 4], wet: true}}},

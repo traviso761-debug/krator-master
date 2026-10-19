@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 80 (25%) | 15 (5%) | 14 (4%) | 66 (21%) | 144 (45%) |
+| KB | 80 (25%) | 15 (5%) | 14 (4%) | 65 (21%) | 144 (45%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -40,7 +40,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88-host-build.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89t-shade-tags.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the page's core/tags records (KTAGS.page) from REG and PLACES |
 | `src/91-shade-probe.js` | 28.0 | [web] | 7 | 0 | 0 | 0 | 0 | 4 | 0 | 5 | 0 | 0 | 0 | Shade's window._api fields and checks, handed to core/host's probe (was 91-host-probe.js) |
-| `src/99-shade-take.js` | 4.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the take: KHOST.take (core/host; replaced 90-host-camera.js) |
+| `src/99-shade-take.js` | 3.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the take: KHOST.take (core/host; replaced 90-host-camera.js) |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

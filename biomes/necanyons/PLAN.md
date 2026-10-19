@@ -1,4 +1,4 @@
-# necanyons: the plan (draft, 2026-10-19)
+# necanyons: the plan (2026-10-19; built the same day)
 
 The **north-eastern canyons**: the transition from the central hyperjungle to Korona's coronae and tepuis (`LORE.md`
 §6.18). Red sandstone mini-plateaus, benches and rock stacks rise out of the jungle; the forest fills the canyons
@@ -12,8 +12,9 @@ more arid plateaus that need their own plants; at least one fruit, one native ve
 wired into `kits/crops`; texture prompts before work starts; a decision on where carnivorous plants live (the fauna layer
 or a layer of their own).
 
-**Status: plan only. The owner approves the plant list (section 3), the carnivore layer (section 4) and the textures
-(section 6) before any build starts.**
+**Status: built (2026-10-19).** The owner approved the plan as it stands (the plant list, the carnivore layer as flora
+with a trap record, the medicine bucket) and delivered the five required textures. N0 to N6 are done; `NOTES.md` says
+what was learnt, `KNOWN_ISSUES.md` what is left. On the scale model the kit overlies the hyperjungle's polygon for now.
 
 ## 0. What the kit is
 
@@ -219,13 +220,9 @@ library fallback that it names.
 - **N6. The record:** `BIOME-API.md`, `NOTES.md`, `KNOWN_ISSUES.md`, `PORT.md`, `WORLD.md`, the gallery entry. Pinnacle
   Rock then takes the kit for its mesa top and walls (its `PLAN.md` "Biome" row).
 
-## 8. Open questions for the owner
+## 8. Questions (settled 2026-10-19)
 
-1. **The carnivore layer** (section 4): flora with a trap record and the rules in `core/biome`, or a separate
-   `kits/carnivores`?
-2. **The plant list** (section 3): anything to add, cut or rename? The names are working names. The Painted Men and
-   Korona's tribes may have their own words for them.
-3. **The map:** is necanyons its own polygon on the scale model, between the hyperjungle's northern margin and the
-   Painted Men's country, with Pinnacle Rock at its southern edge? Today Pinnacle Rock's point is inside the hyperjungle
-   polygon.
-4. **The `medicine` bucket** (section 5): add it now, with rimdew and the ember plum as its first members?
+1. **The carnivore layer:** flora with a trap record, the rules in `core/biome` (`37-core-traps.js`). Settled.
+2. **The plant list:** as above. Settled; the names stay working names until the Painted Men's and Korona's words exist.
+3. **The map:** necanyons overlies the hyperjungle's polygon for now (the scale model's move-vertex tool is not working).
+4. **The `medicine` bucket:** opened, with rimdew and the ember plum. Settled.

@@ -78,7 +78,9 @@ FURN_CULTURE('generic', { palette: {
     fruitParasolCone: 0x8a5230, fruitParasolShell: 0x5e3c28, fruitParasolKernel: 0xeee2bc,
     fruitCliffFig: 0xb4482c, fruitCliffFigRipe: 0x5a2a48, fruitCliffFigFlesh: 0xe07a6a,
     fruitAvenuePod: 0xa86a30, fruitAvenuePulp: 0xf0e6c4, fruitAvenueSeed: 0x4a3022,
-    fruitTravellerCapsule: 0x6a5034, fruitTravellerAril: 0x2a6ad0
+    fruitTravellerCapsule: 0x6a5034, fruitTravellerAril: 0x2a6ad0,
+    fruitStackFig: 0x8a3450, fruitStackFigRipe: 0x5a1e3a, fruitStackFigFlesh: 0xd8586a, fruitStackFigString: 0x9a7a52,
+    fruitEmberPlum: 0xc8c040, fruitEmberPlumRipe: 0xb8a030, fruitEmberPlumMeal: 0xd8c878
 } });
 /* END PALETTE */
 

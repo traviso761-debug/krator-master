@@ -18,6 +18,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | 3 |  |
 | `26k-kit.js` | 2 |  |
 | `42r-res-ore.js` | 5 |  |
-| `44r-res-nodes.js` | 13 |  |
+| `44r-res-nodes.js` | 14 |  |
 | `89-rows.js` | 1 |  |
 | `99-tail.html` | <1 |  |
