@@ -48,6 +48,10 @@ in the east steps up 70 m at the cataract, whose spray is the `mist` field (the 
 toward Xanadu. The light is the shighlands' rig (sun at azimuth 305, altitude 36), the sky a deep cool blue with snow ranges
 all round, the cataract's thread on the east wall and the Throne far off over the western pass.
 
+**A host elsewhere in the valley** (2026-10-19, `settlements/longsong`): `82-host-sky.js` takes an optional
+`OIDONG_SKY = {head, pass, throne, cataract}` (azimuths in degrees; `cataract: false` for none), set before it runs; the side
+walls stand at head +-90. Without it the showcase is drawn as before (head 90, pass 270, Throne 285, the cataract).
+
 ## Lessons
 
 - **Pastel barks saturate the core's tint.** `BIO.col.tint` divides a bark colour by the canvas's mean grey (the other kits

@@ -53,9 +53,10 @@ SCARP_R = 6        # height cells: the disc that finds an escarpment's floor and
 SPILL_SLACK = 600  # m: a lake this far over its shore is a data error (a lake that spills over falls, as the 1,150 m one does, stands a few hundred m over it)
 CANYON_MIN = (120, 150)  # m: a trough this deep one and two height cells out (about 4 and 8 km) is a canyon
 # biome overlays read from the 'geographic' layer as well (named by the owner as biomes still to make)
-EXTRA_BIOMES = ('e highlands',)
+EXTRA_BIOMES = ('e highlands',)   # ('oidong valley' was read from here until the owner moved it to the biome layer, 2026-10-19)
 # which biome kit grows each overlay; None leaves it bare ground for now
-KITS = {'sedesert': 'sedesert', 'e abysss': 'eastabyss', 'hyperjungle': 'hyperjungle', 'e badlands': 'ebadlands'}
+KITS = {'sedesert': 'sedesert', 'e abysss': 'eastabyss', 'hyperjungle': 'hyperjungle', 'e badlands': 'ebadlands',
+        'oidong valley': 'oidong'}
 WATER_OVERLAYS = ('ring sea',)
 
 
@@ -390,7 +391,7 @@ def main():
         seen_names.add(key)
         b = int(bmap[int(round(py)) - y0, int(round(px)) - x0])
         sett.append({'name': s['name'], 'type': s.get('type'), 'doc': s['id'], 'px': px, 'py': py,
-                     'x': (px - cx) * 2000.0, 'z': (py - cy) * 2000.0, 'biome': biomes[b]['name'],
+                     'x': (px - cx) * 2000.0, 'z': (py - cy) * 2000.0, 'biome': biomes[b]['name'] if b < len(biomes) else None,
                      'notes': s.get('notes', '')})
 
     # ---- canyon candidates for the ruins: troughs in the heights near the marker. A cell is in a trough across an axis

@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2150,
+    292
+   ],
+   "seam_after": [
+    1.439,
+    0.011
+   ],
+   "seam_before": [
+    1.343,
+    0.012
+   ],
+   "source_size": [
+    2150,
+    292
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.1,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.0,
+   "seam_axes": "none",
+   "size": 2048
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "order/glyph-band",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "order-glyph-band.png",
+  "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19: the banner cropped to its two rows and to 19 glyph pitches, so it wraps)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/glyph-band`",
+  "reuse": "a mask of burning glyphs (white glows, black does not): the Procrastinator's bands; any seal-script band of the Order",
+  "sha1": "f10e4e8316c4d6e746fc45beac0dd23322217b6e"
+ }
+}
