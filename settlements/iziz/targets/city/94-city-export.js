@@ -55,11 +55,13 @@ function owners(){
 // ---- materials and textures
 function library(m, key){   // the KMAT pack entry a bound material took, and its family (by its MAT key or alias, else by its set)
  if (!m.userData || !m.userData.lib || typeof KMAT === 'undefined') return null;
- const P = KMAT.packs.iziz || {};
+ // Iziz's pack first, then any other the page binds (a kit built on Iziz's page, --kit: its own pack, KMAT.pack('<kit>'))
  const fam = key == null ? null : typeof IZIZ_MATX !== 'undefined' && IZIZ_MATX[key] ? IZIZ_MATX[key].fam
   : typeof IZIZ_MATALIAS !== 'undefined' && IZIZ_MATALIAS[key] ? IZIZ_MATALIAS[key] : key;
- if (fam != null && P[fam] && P[fam].lib === m.userData.lib) return { fam, L: P[fam] };
- for (const f in P) if (P[f].lib === m.userData.lib) return { fam: f, L: P[f] };
+ const names = ['iziz'].concat(Object.keys(KMAT.packs).filter(n => n !== 'iziz').sort());
+ for (const pack of names) { const P = KMAT.packs[pack] || {};
+  if (fam != null && P[fam] && P[fam].lib === m.userData.lib) return { fam, L: P[fam], pack };
+  for (const f in P) if (P[f].lib === m.userData.lib) return { fam: f, L: P[f], pack }; }
  return null;
 }
 function collect(ctx){
@@ -81,10 +83,10 @@ function collect(ctx){
   if (!t) return null;
   const rep = wuv ? [1, 1] : [t.repeat.x, t.repeat.y], off = wuv ? [0, 0] : [t.offset.x, t.offset.y];
   const tag = (rep[0] !== 1 || rep[1] !== 1 || off[0] || off[1]) ? '@' + rep.map(v => +v.toFixed(4)).join('x') + (off[0] || off[1] ? '+' + off.map(v => +v.toFixed(4)).join(',') : '') : '';
-  const key = (lib ? 'lib:' + lib.fam + ':' + slot : 'tex:' + t.uuid) + tag;
+  const key = (lib ? 'lib:' + lib.pack + ':' + lib.fam + ':' + slot : 'tex:' + t.uuid) + tag;
   if (texBy.has(key)) return texBy.get(key).id;
-  const r = { id: 'tex:iziz:' + (lib ? lib.fam + ':' + slot : 'png' + texs.length) + tag, wrap: ['repeat', 'repeat'], repeat: rep, offset: off, flipY: t.flipY !== false };
-  if (lib) { r.from = 'library'; r.lib = lib.L.lib; r.pack = 'iziz'; r.family = lib.fam; r.slot = slot; }
+  const r = { id: 'tex:iziz:' + (lib ? (lib.pack === 'iziz' ? '' : lib.pack + ':') + lib.fam + ':' + slot : 'png' + texs.length) + tag, wrap: ['repeat', 'repeat'], repeat: rep, offset: off, flipY: t.flipY !== false };
+  if (lib) { r.from = 'library'; r.lib = lib.L.lib; r.pack = lib.pack; r.family = lib.fam; r.slot = slot; }
   else { const p = png(t); if (p) { r.from = 'png'; r.png = p.png; r.size = p.size; r.name = t.name || null; } else { r.from = 'none'; r.error = 'no drawable image'; } }
   texs.push(r); texBy.set(key, r); return r.id;
  };

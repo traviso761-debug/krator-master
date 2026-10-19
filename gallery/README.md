@@ -324,3 +324,9 @@ Krator Worlds I–S version 16 (2026-10-18): the Pylon kit added (`worlds/pylon.
 1e3177b4, the kit through P5, the governor's palace), its card in the live index (version 15's index with one entry added,
 its `ENTRIES` line now in `build_gallery.py`). The page loads `worlds/iziz.tex.iziz.js`, which the part already carried
 (the same size as the local pack). Every other file is as in version 15.
+
+Krator Worlds I–S version 19 (2026-10-19): Pylon through P7 (`worlds/pylon.html`, 2.0 MB, from `claude/vassal-kits`: the
+catalog culture, nine furnished buildings, doors and panes for the black voids) and its pack sidecar
+`worlds/iziz.tex.pylon.js` (1.1 MB); the card's blurb and size in the live index (version 18's index, one entry edited, as
+in `build_gallery.py`). Versions 17 and 18 were published elsewhere and not logged here; 18 carried the P5 page with the
+materials bind and its sidecar. Every other file is as in version 18.

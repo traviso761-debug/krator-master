@@ -418,6 +418,7 @@ async def export_main(argv):
         dst = os.path.join(out, 'tex')
         shutil.rmtree(dst, ignore_errors=True)
         os.makedirs(dst)
+        copied = {}
         for name in packs:
             src = _pack_dir(name, a.html)
             if not src:
@@ -428,6 +429,9 @@ async def export_main(argv):
             used = {t['family'] for t in w['textures'] if t.get('pack') == name}
             for fam in sorted(used):
                 for fn in sorted(set(pj['families'].get(fam, {}).get('files', {}).values())):
+                    if fn in copied and copied[fn] != name:   # several packs share tex/: a name two packs use would collide
+                        fails.append('library packs %s and %s both name %s' % (copied[fn], name, fn))
+                    copied[fn] = name
                     shutil.copyfile(os.path.join(src, fn), os.path.join(dst, fn))
             shutil.copyfile(os.path.join(src, 'pack.json'), os.path.join(dst, 'pack.json' if len(packs) == 1 else name + '.pack.json'))
         files['tex/'] = sum(os.path.getsize(os.path.join(dst, f)) for f in os.listdir(dst))
