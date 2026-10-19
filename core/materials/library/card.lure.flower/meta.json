@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.03,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.lure.flower",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.lure.flower.png",
+  "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet, kept whole (anchor none): the kit cuts it into equal thirds",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `card.lure.flower` (section 7, Korona)",
+  "reuse": "the lures, the false flowers over the traps (Korona); any carnivorous bloom",
+  "sha1": "ba36aa2e3afaff49d0766e5ef7c25e2b024273e3"
+ }
+}

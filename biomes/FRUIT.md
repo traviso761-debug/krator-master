@@ -92,6 +92,19 @@ chalk, mahogany nuts, silkpods and pandan keys from the catalog (`STALL_FRUIT`, 
 | Mahogany nut | `mahogany` (woody capsules in twos and threes) | A five-valved capsule that splits to release winged seeds. The seeds are oily and roasted, and eaten wing and all. | `generic_fruit_mahogany_nut` |
 | Silkpod | `kapok` (the burst silk pods) | Young green pods are cooked like beans. A ripe pod bursts into cream floss with black seeds, and the seeds are pressed for oil. | `generic_fruit_silkpod` |
 
+## North-eastern Canyons (necanyons)
+
+**Drawn in the kit (2026-10-19).** Every species and plant carries a harvest tag (`NECANYONS.HARVEST`, `NECANYONS.PLANTS`;
+the inspector shows it, the probe checks it, `biomes/necanyons/PLAN.md` section 3). The figs and plums are placed by a
+hash of the tree. Named in the tags, not catalogued: the fan palm's heart (a vegetable), sandpan fonio (a grain), the sun
+pitcher's nectar. The crops are records in `kits/crops` too: `stack-fig`, `ember-plum` (also `medicine`), `sandpan-fonio`,
+`fan-palm-heart`, `rimdew` (the first of the `medicine` bucket).
+
+| Fruit | Borne by | What it is | Catalog key |
+|---|---|---|---|
+| Stack figs | `stackfig` (clusters on the limbs and on the roots laced down the wall) | A rock fig's purple-red figs, eaten fresh or dried on strings: the canyons' fruit. | `generic_fruit_stack_fig` |
+| Ember plums | `emberplum` (green-gold plums under the big pale leaves) | The Kakadu plum's kin: very sour, dried and pounded to a powder against scurvy. | `generic_fruit_ember_plum` |
+
 ## North-west Bay
 
 **Drawn in the kit (2026-10-06).** Every species carries a harvest tag (`NWBAY.HARVEST`; the inspector shows it under a

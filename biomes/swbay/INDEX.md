@@ -26,7 +26,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `60-biome-swbay-floor.js` | 16 | fields local to the floor (28); small plants (33); the zone planters (98); the pass (127); one plant where a world puts it (149) |
 | `65-biome-swbay-dress.js` | 9 |  |
 | `70-biome-swbay.js` | <1 |  |
-| `75-biome-swbay-fauna.js` | 19 | geometries (vertex-coloured, unit-sized) (39); the animated materials (77); the pass (93) |
+| `75-biome-swbay-fauna.js` | 20 | geometries (vertex-coloured, unit-sized) (39); the animated materials (77); the pass (93) |
 | `82-host-sky.js` | 10 |  |
 | `85-host-tower.js` | 5 |  |
 | `86-host-jetty.js` | 5 |  |

@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.221,
+    1.057
+   ],
+   "seam_before": [
+    2.298,
+    2.173
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.tendril.banded",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "organic.tendril.banded.png",
+  "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.tendril.banded` (section 7, Korona)",
+  "reuse": "the coil tendril's skin, the bands across the tube (Korona); any banded fleshy tendril or vine",
+  "sha1": "e0fd99239e1d7a2dd70487282a4f13e16e1407a4"
+ }
+}

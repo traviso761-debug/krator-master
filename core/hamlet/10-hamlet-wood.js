@@ -17,7 +17,7 @@ KHAMLET.WOOD_RULES = [
   ['thatch', ['thatch', 'straw', 'frond', 'roofing', 'bark sheet', 'mats', 'matting', 'reed']],
   ['fibre',  ['fibre', 'coir', 'cordage', 'cord', 'rope', 'basketry', 'weaving', 'wrapping']],
   ['craft',  ['carving', 'turnery', 'tool handle', 'furniture', 'chest', 'cogs', 'pipes', 'whetstone', 'cork', 'incense',
-              'dye', 'gum', 'pitch', 'resin', 'silicified', 'wood', 'paper']],
+              'dye', 'gum', 'pitch', 'resin', 'silicified', 'wood', 'paper', 'tanbark', 'tannin']],
   ['other',  ['shade', 'fodder']]
 ];
 

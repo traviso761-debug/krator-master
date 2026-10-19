@@ -105,7 +105,10 @@
      // a kit's own trait on every species, free: crater-drylands' fire response (pyrophyte, seeder, resprouter...),
      // ehighlands' growth form, geyser's and the Throne's origin (earth, krator, native, dead), geyser's heat and the
      // Throne's plume (where it lives: against the springs; shoulder, seam, plume, vent), shighlands' spiral habit
-     fire: 'free', form: 'free', origin: 'free', heat: 'free', plume: 'free', spiral: 'free' },
+     fire: 'free', form: 'free', origin: 'free', heat: 'free', plume: 'free', spiral: 'free',
+     // necanyons (2026-10-19): where on the rock a plant lives (floor, foot, ledge, bench, cap, stack), and a carnivorous
+     // plant's trap record (core/biome/37-core-traps.js: kind, mouth, preyMax, cycle, lure, danger)
+     zone: 'free', trap: 'object' },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
      landmark: 'site', infrastructure: 'infra', feature: 'feat' },

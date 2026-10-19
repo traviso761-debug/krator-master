@@ -18,7 +18,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `10-isle-frame.js` | 8 | 0. A TOWN'S FRAME, AND THE GROUND VOTH'S EDITOR  (1) |
 | `20-isle-ground.js` | 7 | 1. THE CITY PAGE'S GROUND: THE REGION'S RASTERS, (1) |
 | `30-isle-programme.js` | 16 | 2. THE TOWNS' PROGRAMMES (PLAN.md SECTION 8) AS  (1) |
-| `32-isle-city.js` | 45 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
+| `32-isle-city.js` | 46 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
 | `34-isle-census.js` | 11 | 4. THE CENSUS AND THE CHECKS, PER TOWN (1) |
 | `56-isle-tools.js` | 5 | 3b. THE ISLE'S TOOLS: TOWNS, SAVING, VIEWS (1) |
 | `58-isle-protos.js` | 6 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
