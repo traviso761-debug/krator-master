@@ -100,3 +100,5 @@ MAT.taCobaltDS=MAT.taCobalt.clone();MAT.taCobaltDS.side=THREE.DoubleSide;kdef('t
 // the column's small parts at low poly (its base torus and its capital's volutes: a column carries several of each)
 const TARINGS=new THREE.TorusGeometry(1,.1,4,12).rotateX(Math.PI/2),TANUB=new THREE.SphereGeometry(1,6,4);
 kdef('taRingMs',TARINGS,MAT.taMarble);kdef('taRingGiS',new THREE.TorusGeometry(1,.1,4,12),MAT.taGilt);kdef('taGiltNub',TANUB,MAT.taGilt);
+// P5: a verdigris melon dome for the palace's pavilions (the copper alternative to the orange tile, PLAN.md section 5)
+kdef('taDomeCu',VDOME,MAT.verdigris);

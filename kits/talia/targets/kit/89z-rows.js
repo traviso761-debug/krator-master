@@ -19,6 +19,7 @@ const TAL_ROWS=[
  ['The arts',['tal_odeon','tal_academy','tal_theatre','tal_uni_gallery','tal_glasshouse']],
  ['Civic — the temple, the chapel, the council',['tal_temple','tal_chapel','tal_council_house','tal_fountain']],
  ['Civic — the memorial, the sky bridge',['tal_memorial_spire','tal_sky_bridge']],
+ ["Governor's palace",['tal_governor_palace']],
 ];
 // the city wall laid with no gaps, as a wall is built: segments butt the towers (at x = +-4) and the gate (at x = +-10)
 const TAL_WALLS=[

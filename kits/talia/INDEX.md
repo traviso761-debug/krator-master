@@ -23,6 +23,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `72t-tal-uni.js` | 31 **big** | THE CORE (8); THE FACULTIES (143); THE COLLEGES (244) |
 | `72u-tal-arts.js` | 13 |  |
 | `73t-tal-civic.js` | 20 | THE WALL AND THE GATE OF THE PASSES (110); THE FOUNTAIN AND THE BRIDGE (160) |
+| `74t-tal-palace.js` | 13 | THE LION AND THE PAVILIONS (18); THE PALACE (46) |
 | `88yt-tal-matlib.js` | <1 |  |
 
 ## targets/

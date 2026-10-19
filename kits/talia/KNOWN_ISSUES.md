@@ -29,3 +29,11 @@
 - [ ] To keep the sheet inside its budgets (the cloister came to 288k of 250k triangles, the sheet to 2.85M of 3M), P4
       made every column's base ring and capital volutes low-poly (`taRingMs`, `taRingGiS`, `taGiltNub`) and the baluster
       lathe eight-sided: P2 and P3 buildings changed with it (the sheet is now 2.36M). Judge the capitals at eye level.
+- [ ] P5 (2026-10-18): the governor's palace (`tal_governor_palace`) is the heaviest type on the sheet, 228k of its 250k
+      triangles (the sheet 2.59M of 3M): the 130 columns of the pavilions and the loggia, and the front balustrades, carry
+      most of it. The sides, the back and the light courts take coped parapets, not balustrades, to stay inside. A sixth
+      or seventh heavy type will want the pavilions' upper columns on a lower-poly lathe.
+- [ ] The palace's outside stair is one straight flight of 22 steps (0.30 m risers, as Pylon's): the blueprint's three
+      runs of at most 16 steps with landings (`SKILL.md` 5j) do not fit its 10 m footprint as a straight flight. The
+      front pavilions' inner columns stand inside the hall block's corners, where the round pavilions overlap it (as
+      the sheets draw the pavilions as squares). Its rooms (the blueprint's B, G, U and L sheets) come with P6.

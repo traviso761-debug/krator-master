@@ -185,7 +185,7 @@ waits for the temple) and the worn orange render (`taRenderW`: the tenement).
 | P2 | dwellings, all tiers, and the mixed-street row | eye-level views judged by the owner |
 | P3 | trade and the caravan buildings | |
 | P4 | the University and the civic set, the temple, memorials, the east gate | |
-| P5 | the governor's palace: blueprint sheets after the forks, then the building | |
+| P5 | the governor's palace: blueprint sheets after the forks, then the building | **built 2026-10-18**: `tal_governor_palace` (`src/74t-tal-palace.js`), the exterior on the blueprint's frame (x = -v, z = 1 - u); its rooms come with the interior set (P6) |
 | P6 | the catalog culture file, interiors | |
 | P7 | the Godot export check, the gallery | `tools/test_all.py` passes |
 
