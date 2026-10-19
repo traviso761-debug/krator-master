@@ -58,7 +58,7 @@ OUT = os.path.join(DIST, 'dhelv.html')
 KIT = os.path.join(ROOT, 'kits', 'zeijani')
 KIT_SRC = os.path.join(KIT, 'src')
 KIT_SKIP = {'00-head.html', '41-zj-block.js', '89-rows.js', '90-scene.js', '91-probe.js',   # the kit sheet's host
-            '92-camera.js'}   # the kit's camera and loop: Dhelv's are core/host's (src/92-dhelv-camera.js, src/99-start.js)
+            '92-camera.js', '92-world.js', '99-host-take.js'}   # the kit sheet's views and take: Dhelv's are core/host's (src/92-dhelv-camera.js, src/99-start.js)
 TEX_DIR = os.path.join(KIT, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets', 'clock', 'sched', 'simulation')]   # clock, sched, simulation: the ramblers (P6)
 CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
