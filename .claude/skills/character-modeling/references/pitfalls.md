@@ -72,6 +72,12 @@ area you are about to change.
 - **Garment holes leave loose vertices** → delete loose vertices after cutting and record what was removed.
 - **More than 64 items overflowed a 64-bit hide mask** → name skin regions by the list of items that cover them.
 - **A random NPC wearing another culture's clothes** → tag every item with its culture and filter the wardrobe.
+- **A hat across the eyes** → the head bone runs from the neck to the crown, so fraction 0.5 is eye level: a brow band or a
+  turban's first row sits at about 0.62.
+- **A paint band painting a whole narrow part** → `B(where, a, b, ...)` takes metres, not fractions: a 0.15 band on a
+  ribbon a few centimetres wide covers all of it.
+- **Colours reading pale in the renders** → the fabric's grain multiplies in about its mean, and coarse cotton and wool
+  are light: take a deeper base colour for a dyed robe (the Order's `osaffron`, `omaroon`).
 
 ## 4. Materials, alpha and textures
 
@@ -172,6 +178,16 @@ area you are about to change.
 - Publish in batches under about 55 MB; diff the build manifest against the last published commit to send only
   changed pieces.
 - A page-only change republishes just the page.
+- **A version holds at most 256 MiB** (the Cosmetic Lab hit it at about 245 MB, 2026-10-19). New clothes then go in a lab
+  of their own: the built page with `KCHAR_DATA`'s kit cut to the new peoples' items and the hair and beards they draw,
+  the bodies, clips and props copied on the server from the main lab (`files: {path: {artifact, path}}`), the new
+  pieces sent. Plan the split by people or body before that.
+- **A fresh machine has none of the pieces** (gitignored), so a few new garments go through the partial path:
+  `make_garments.py --only`, `mpfb_build.py --only`, `make_mpfb.py --merge` (the kit's other entries stay; the Godot
+  base cover regions are not remade). The published thumbnail atlases can be cut back into cells, the new ones drawn
+  (`thumbs.mjs` draws only what is here) and the atlas repacked. A local test of the page needs `base`, `anims` and
+  the hair it draws fetched from the published lab; the default figure's other pieces 404 and the page carries on, but
+  `window._kchar.ready` then never settles, so wait on `window._kchar` and a fixed time instead.
 
 ## 12. Tooling and the shell
 

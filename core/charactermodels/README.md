@@ -26,6 +26,11 @@ blender -b --python tools/make_garments.py -- male [--render <dir>] # the Voth c
 blender -b --python tools/mpfb_build.py -- male <export dir>      # Blender 4.5 + MPFB2 + the asset packs (below)
 python3 tools/make_mpfb.py male <export dir>                       # -> pieces/mpfb_male/, data/mpfb_male/
 python3 tools/make_mpfb.py giant <the man's export dir>            # -> pieces/mpfb_giant/, data/mpfb_giant/ (tools/giant.py)
+# a few new garments without the whole library (a fresh machine, or the clothes alone): make them, export the base and
+# them alone, and add them to the kit as it stands (base, skeleton, mods and the other items untouched)
+blender -b --python tools/make_garments.py -- male --only <ids> [--render <dir>]
+blender -b --python tools/mpfb_build.py -- male <export dir> --only <ids>
+python3 tools/make_mpfb.py male <export dir> --merge                # -> pieces/mpfb_male/<id>.*, new entries in kit.json
 python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
@@ -39,7 +44,12 @@ piece's morph deltas. A piece published before the two lines were one file still
 without sending its piece's `.txt` again in the same publish: the piece would lose its morphs, and every body but
 the neutral one would show it at the neutral size (hair off the head, shirts off the torso, holes at the joints).
 A version holds at most 511 files, so send the changed pieces (compare `build-manifest.json` with the last published
-commit's) rather than all of them.
+commit's) rather than all of them. A version also holds at most 256 MiB, and the Cosmetic Lab is at about 245: the Order of Historians' and Xanadu's
+clothes (2026-10-19, 14 MB) are published in a lab of their own, "Cosmetic Lab: the Order and Xanadu"
+(https://claude.ai/artifact/8nSqU3MxD2GCCyzJTHT2t7: the page with the kit cut to those two peoples, the bodies, clips,
+hair and beards copied from the main lab on the server), until the main lab is split (KNOWN_ISSUES.md). `build.py`
+builds the page with whatever pieces this checkout has (`pieces/` is gitignored) and keeps the other pieces' hashes in
+`build-manifest.json`.
 
 ## A core module: where it goes next
 
