@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 20 prompts, and 3 optional: 1 in section 2 (the Northern Highlands' `bark.alder.lichen`), 19 in section 7 (Korona: 9 for the tepui station, 10 for the pitcher hollow; generate each station's before that station is built), and section 6's three optional (necanyons).** The Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel were delivered 2026-10-19 (see "Delivered 2026-10-19"); necanyons' five required ones the same day ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 1 prompt, and 3 optional: section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -293,206 +293,19 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
 ```
 
-## 7. Korona (`biomes/korona`, planned 2026-10-19): one list per station, to generate before that station is built
+## Delivered 2026-10-19, Korona (the owner's twenty images in `Downloads`, batches `korona-2026-10-19.json` and `korona-2026-10-19-cards.json`)
 
-Korona (LORE.md 6.18; `biomes/WORLD.md`): the corona country under the giant, tepuis over their gorges, carnivorous plants
-on every poor wet ledge, rare herbs in the sheltered hollows. It is built as stations like the Throne, and each station's
-sheets are generated before that station's build so nothing is rebuilt and verified twice. The owner's reference images
-are in `OneDrive/Pictures/krator/korona/` (37, 2026-10-19); the numbers below are their order in that folder, sorted by
-name.
-
-**Reused from the library, nothing to make.** From the Throne: `card.carnivore.plants` (mixed carnivore clumps),
-`card.flower.carnivorous` (snare flowers), `card.moss.carnivorous` (hanging carnivorous moss), `card.tendril`,
-`card.fungus.specimens`, `organic.cap.orange` / `.glossy` / `.porous` (the lamp towers of image 15). From the Northern
-Highlands and Oidong: `card.staghorn`, `card.giantpad`, `card.moss.hanging`, `ground.sphagnum` (every tepui bog; it carries
-sundew rosettes already). General: `rock.quartz.vein`, `ground.lichen.crust`, `card.lichen`, `card.fern.green`,
-`ground.gravelly_sand` (the summit pans), `ground.brown_mud_02` (creek margins), `skin.cactus` (the barrel body of image 9),
-`card.vine.hanging.*`. **From the necanyons kit, on `origin/claude/bold-cori-iluy70` and not yet on `main`** (the sheets in
-`Downloads`: "Nine Carnivorous Pitchers", "Nine Sundews", "Nine Neon Venus Flytrap Lobes"): `card.carnivore.monkeycup`,
-`card.carnivore.sundew`, `organic.trap.lobe` (the giant clapjaw at Korona's scale maps the same lobe sheet),
-`rock.sandstone.varnish`, `ground.slickrock`. Merge that branch before Korona's first build.
-
-**Conventions for every sheet below:** cut-outs are 3 x 3 on solid flat magenta (#ff00ff), 2048 px, full colour (the
-carnivores keep their colours; nothing here is tinted), and **no pink or purple anywhere in a subject**: where the
-reference is pink (images 25, 32) the prompt says crimson or gold instead, so the chroma key holds. Tiles use the base
-template. Processing as "How to deliver" above: cut-outs through `tools/textures/cards.py`, tiles through `process.py`.
-
-### Station 1: the tepui (nine images, two of them optional)
-
-The showcase: a table standing alone over its gorge, its summit the idyllic microclimate (pavement, bogs, pans, dwarf
-trees, the reagent fans), its walls the hanging gardens and the Hum's contour carvings, its talus the first big traps.
-
-#### `rock.quartzite.tepui`
-- Kind: tile, a wall (vertical). Used by: every tepui wall and the gorge's cliffs (KSTACKS walls). Reuse: any quartzite or
-  black-stained sandstone cliff. Model: Roraima's walls.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The vertical wall of a tepui: pale pink-grey quartzite (#b9a9a2, #cbbdb4) in thick horizontal beds a metre or two tall, their partings fine dark lines, the whole face stained with long vertical streaks of black algae and lichen crust (#1e1c1a, #35312c) running down from the ledges so that two thirds of the rock reads near-black, a few rust-orange iron seep stains (#9a5a2c) under the partings, small patches of pale green lichen (#8a9a6a) and a few tufts of dark moss in the cracks. Seen square-on, the beds horizontal. Full colour.
-```
-
-#### `ground.quartzite.black`
-- Kind: tile, top-down. Used by: the summit pavement (the dry zone of the `poor` field). Reuse: any tepui or black-crusted
-  rock plateau. Model: the summit of Roraima.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The summit pavement of a tepui seen from directly above: bare quartzite sculpted by rain into knobs, runnels and shallow basins, its surface crusted black and charcoal (#211f1d, #3a3733) by algae and lichen, the fresh pink-grey rock (#b8a8a0) showing where the crust is scoured off along the runnels and on the knob tops, white quartz veins (#e8e4de) a finger wide crossing the whole, a few patches of pale green and orange lichen (#8fa070, #c07a38), coarse pink quartz sand (#c9b0a4) lying in the hollows. Dry: no water, no puddles, no reflections. Full colour.
-```
-
-#### `card.pitcher.lace`
-- Kind: cut-out sheet, 3 x 3, one clump per cell. Used by: the lace pitcher, the summit's small sun pitcher (bogs and seep
-  lines; the idyllic one, insect-sized prey). Reuse: any Sarracenia-like pitcher. Image 20.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a clump of three to six upright trumpet pitchers (Sarracenia leucophylla) rising from the bottom of its cell, each a slim green tube (#5a7a3a) widening to a flared mouth with a ruffled hood, the upper third white (#f0ece4) laced with a net of crimson veins (#9a1e2a), a few pitchers taller than the others, one or two old ones browning (#8a6a3a). Vary the count and the lean between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.sundew.great`
-- Kind: cut-out sheet, 3 x 3, one frond per cell (the builder makes the fountain from fronds). Used by: the great sundew,
-  a sundew the size of a tree fern on the talus and the wet ledges: flypaper, and the first trap that holds more than an
-  insect. Reuse: any giant dewy frond. Image 36.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one long arching frond of a giant sundew rising from the bottom of its cell and curving over at the tip, a stiff yellow-green midrib (#9ab040) with two rows of narrow leaflets (#6a8a34) each fringed with hundreds of fine red stalked hairs (#b8302a), every hair tipped with a clear glistening drop of sticky dew (#e8f0e0 highlights), the frond's base reddish (#8a3a2e). Vary the arch and the length between the nine, two of them straight and young, one hanging limp and brown at the tip. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.coin.tree`
-- Kind: cut-out sheet, 3 x 3, one twig end per cell. Used by: the coin tree, the summit's wind-pruned dwarf tree (a bonsai
-  habit on the pavement's joints; the idyllic note). Reuse: any small round-leaved dwarf tree. Image 16, with the pink
-  replaced by coral and silver so the key holds.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a short gnarled grey twig end (#6a6660) of a dwarf tree standing up from the bottom of its cell, carrying a loose cloud of round coin-shaped leaves on thin stalks, each leaf frosted silver-blue (#a8bcc8, #c4d2da) with a coral-red (#d05a48) or amber (#d8a040) flush at its edge and fine pale veins, a few leaves wholly coral. Vary the twig's bend and how many leaves have turned between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.fan.rainbow`
-- Kind: cut-out sheet, 3 x 3, one rosette per cell, each cell a different colour family. Used by: the fan rosette, the
-  reagent herb of the sheltered hollows and summit seeps (the reason people come: `kits/crops` reagent bucket). Reuse: any
-  bright fan-leaved rosette. Image 22, without its pinks and violets.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one rosette of stiff pleated fan-shaped leaves radiating from a short base on the bottom of its cell, like a bromeliad crossed with a fan palm, forty to sixty narrow pleated blades, the blades grading from a dark base to a bright tip; each of the nine rosettes in its own colour family and no two alike: crimson to scarlet (#8a1a1a to #e04020), lime to yellow (#4a7a20 to #d8e040), teal to turquoise (#1a6060 to #40c8c0), deep blue to sky (#203880 to #60a0e0), gold to orange (#a06010 to #f0b030), bottle green to mint (#1e4a2a to #90e0a0), rust to cream (#7a3a10 to #f0e0c0), navy to white (#182848 to #f0f4f8), black to red (#141414 to #c02020). Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.lacefan.tree`
-- Kind: cut-out sheet, 3 x 3, one crown per cell. Used by: the lace fan, the gorge's glowing fungus-tree (tiers of
-  translucent fans on a twisted bole; emissive at night like the Throne's caps). Reuse: any backlit fan fungus. Image 29.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one wide fan-shaped fungal crown seen from the side on a short dark stub, the fan a thin translucent membrane of warm peach-orange (#f0a060, #f8c890) netted with darker orange-brown veins (#a85a28) in a lace of open cells, glowing as if lit from behind, the rim ragged and lobed, the stub a dark fibrous brown (#4a3528). Vary the fan's width and how deeply the rim is lobed between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.stormpod` (optional; fallback `card.strap.pandan` tinted, no pods)
-- Kind: cut-out sheet, 3 x 3, one pod spike per cell. Used by: the storm pods of the exposed summit rim (tall sealed pods
-  that split after a storm; a seed source the tribes gather). Image 12.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one tall upright seed pod standing from the bottom of its cell, a smooth glossy spindle three times taller than wide, bright green (#5a9a30, #8ac040) with darker green segment lines running its length and a pale waxy bloom, tapering to a blunt point; three of the nine split open along one side showing a cream-white interior (#f0e8d0) with dark seeds; a small rosette of stiff cream-green fern-like leaves (#c8c890) at the foot. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `patterns/korona/hum-carving` (optional; the carvings can be cut procedurally from the lore's rules)
-- Kind: pattern sheet (repeats horizontally), near-colourless: it is carved rock, so the normal map carries it and the
-  wall's own material shows through. Used by: the Hum's contour carvings on the tepui walls (LORE.md 6.18: one groove per
-  syllable above or below a guide line, dots for the vowel, a hook for a closing nasal, a notch to end a sentence).
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A band of carvings cut into dark weathered quartzite: five horizontal guide lines across the panel, evenly spaced, each a thin straight groove; along each guide line a row of short carved grooves a hand long, each one either level, rising or falling, sitting either just above or just below its line, spaced like syllables with small gaps; one or two round dots carved beside some grooves, a short hook at the end of a few, and now and then a deep vertical notch cutting through the line. No letters of any alphabet, no figures. The grooves are clean and deep with crisp edges, their floors lighter than the rock. The pattern repeats horizontally. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
-### Station 2: the pitcher hollow (ten images)
-
-The hell: a closed depression with a wet acid floor and nothing in its soil, every plant a trap and the big ones sized
-for a person; one safe path through, marked. The necanyons' trap records (`core/biome/37-core-traps.js`) carry these with
-`danger` above 0.
-
-#### `ground.peat.black`
-- Kind: tile, top-down. Used by: the hollow's floor (the wet zone of `poor`). Reuse: any acid bog or black-water swamp
-  floor.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The floor of an acid bog seen from directly above: wet black peat (#1a1612, #2a241c) with a fibrous surface of dead rush and sedge stems lying flat in it (#6a5a3a), threads of bleached white sand (#d8d0c0) washed into the low runs, patches of rust-red and lime sphagnum (#9a3a28, #a8c040) creeping over it, a scatter of tiny red sundew rosettes (#c03020) and a thin sheen of iron scum (#b06a30) on the wettest patches. Dry on the surface: no standing water, no reflections. Full colour.
-```
-
-#### `ground.bladder.bed`
-- Kind: tile, top-down. Used by: the bed of the sucking pools (the bladderwort pools' floor; the shader lays the water over
-  it). Reuse: any pool floor of suction discs or anemone-like growths. Image 4.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The floor of a shallow bog pool seen from directly above, drained: dark grey-brown silt (#3a3630) carpeted with hundreds of small round suction bladders the size of a coin, each a pale green translucent disc (#9ad090, #c0e8b0) with a darker green rim and a slit mouth, packed in loose clusters; between them fine hair-like green grass (#5a8a40) lying flat, and a few larger bladders (#70b070) with a dark open mouth. No water, no reflections. Full colour.
-```
-
-#### `card.pitcher.cobra`
-- Kind: cut-out sheet, 3 x 3, one head on its tube per cell. Used by: the cobra meadow, the hollow's edge where the seeps
-  run (pitfall; frogs to small lizards; the safe path crosses it). Reuse: any Darlingtonia. Images 2 and 3.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one cobra lily (Darlingtonia) standing from the bottom of its cell, a tall green tube (#7aa040) twisting as it rises into a swollen hooded head that bends over like a cobra, the hood yellow-green (#b8c850) mottled with translucent pale windows (#e8f0c0), a forked crimson tongue (#a02828) hanging from under the hood, the tube's base reddish; two of the nine old and browning (#9a7a40). Vary the twist and the height between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.pitcher.trumpet`
-- Kind: cut-out sheet, 3 x 3, one clump per cell. Used by: the blood trumpet, the hollow's mid-sized pitcher (waist-high
-  crimson trumpets; the dark hero shot of image 17; image 32's pinks as crimson). Reuse: any red Sarracenia.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a clump of two to five tall trumpet pitchers rising from the bottom of its cell, each a slim tube widening to a wide flared mouth with a wavy rolled lip, the whole pitcher deep crimson to blood red (#7a1018, #b8202a) with darker veins and a glossy wet look, the inner throat cream (#e8dcc0) just visible at the mouth, the base green (#4a6a2a); drops of clear nectar on a few lips. Vary the count and height between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `organic.pitcher.giant`
-- Kind: tile, wrapped on geometry (the outside of a lathe). Used by: the man-eater pitcher, the hollow's largest trap, a
-  pit two metres deep with a lid; the star pitcher of image 11 and the barrel of image 9 are variants of the same skin.
-  Reuse: any giant pitcher or carnivorous barrel.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The outer skin of a giant pitcher plant: waxy green (#4a7a30, #6a9a40) mottled with blotches of dark red (#7a1a1a) and speckles of near-black, raised pale veins (#b8c880) branching across it, a fine fuzz of short red hairs along the veins, a slightly translucent waxy sheen as on a Nepenthes pitcher, a few beads of clear nectar. Full colour.
-```
-
-#### `organic.pitcher.throat`
-- Kind: tile, wrapped on geometry (the inside of the same lathe, and every maw: image 27's mouth, image 34's bulb). Used by:
-  the man-eater's throat and the clapjaw's inner lobe at Korona's scale.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The inside wall of a giant pitcher plant's throat: glossy wet flesh grading from pale yellow-green (#c8c860) at the top of the image to deep red (#8a1a20) at the bottom, covered in fine downward-pointing hairs (#d8c890) that lie flat like a nap, a few dark glands (#3a1010) sunk in it, and a film of clear digestive fluid with small bubbles. Full colour.
-```
-
-#### `organic.tendril.banded`
-- Kind: tile, wrapped along a tube (its length runs down the image). Used by: the coil tendril, the yellow-green banded
-  coils that lie across the floor and lift to snare (a `grab` trap kind). Reuse: any banded fleshy tendril. Image 6.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The skin of a fleshy plant tendril, seen straight on: bands running across the image, alternating yellow-green (#b8c030) and dark green (#2a4a1e), each band a hand wide and slightly raised at its edge like a segment, the surface finely warty (#d0d848 warts) with a waxy bloom, a few dark pores in a row along the middle. Full colour.
-```
-
-#### `card.trap.star`
-- Kind: cut-out sheet, 3 x 3, one star seen from above per cell (it lies flat on the floor; a top-down card). Used by:
-  the ground star, a red tentacled mouth flat on the peat that closes on a foot (snap; `danger` 1). Image 24.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Top-down, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one star-shaped trap plant seen from directly above, a central round mouth of dark red (#5a1010) ringed by twelve to twenty thick tapering tentacles radiating outward and curling at their tips, the tentacles scarlet to orange-red (#c83020, #e05030) with a bumpy skin and paler tips; vary how far the tentacles curl between the nine, one of them half closed over its mouth. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.lure.flower`
-- Kind: cut-out sheet, 3 x 3, one false flower per cell. Used by: the lures, the flowers that are not flowers (image 18's
-  honeyneedle, image 21's toothed white flower, image 25's lanterns as gold): hung over the traps to draw prey and people.
-  Reuse: any carnivorous bloom.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one large false flower on a short stalk from the bottom of its cell; three of the nine a white flower (#f4f0e8) of five broad petals whose edges are cut into fine teeth, a dark red (#7a1a1a) centre with thin red filaments rising from it; three a hanging bell lantern of gold to orange (#e8b030, #f08040) with a glowing cream (#f8f0d0) throat; three a crimson (#b02030) trumpet with a long fleshy tongue hanging out. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-#### `card.bulb.blood`
-- Kind: cut-out sheet, 3 x 3, one stalk per cell. Used by: the blood bulb moor, the hollow's open flats where red sticky
-  heads stand in thousands (flypaper, a crowd; a mound of them makes the hairy hill of image 10). Image 10.
-
-```
-A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a thin dark red stalk (#5a1818) rising from the bottom of its cell to a round pom-pom head made of hundreds of short sticky red hairs (#c02828, #e04040) each tipped with a glistening clear drop, the head the size of a fist; two of the nine with two heads on forked stalks, one with a grey withered head (#6a6060). Vary the stalk's lean between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
-```
-
-### Later stations (no prompts yet)
-
-- **The fertile basin** (the herb terraces): ash soil, near-idyllic, the nhighlands' and nwlowlands' species at its rim;
-  the pale fan mushrooms of image 8 and the moss mushrooms of image 5. Prompts when it is planned.
-- **The trenches**: where the scablands' flood channel spills into Korona (`biomes/WORLD.md`): scoured rock and the
-  flood's debris. Prompts when it is planned.
-- **Fauna and the motile plants** (images 1, 19, 37): the fauna kit's, not this list's.
+All nineteen prompts of the Korona list (section 7, now removed: the tepui station's nine, the pitcher hollow's ten) came back the
+same day and are in the library: `rock.quartzite.tepui`, `ground.quartzite.black`, `ground.peat.black`, `ground.bladder.bed`,
+`organic.pitcher.giant`, `organic.pitcher.throat` (wraps across only: its gradient is mapped once down the throat),
+`organic.tendril.banded`, `patterns/korona/hum-carving` (tintable), and the cards `card.pitcher.lace`, `card.sundew.great`,
+`card.coin.tree`, `card.fan.rainbow`, `card.lacefan.tree`, `card.stormpod`, `card.pitcher.cobra` and `card.pitcher.cobra.b`
+(two takes of the cobra lily, both kept for the meadow's variety), `card.pitcher.trumpet`, `card.trap.star`, `card.lure.flower`,
+`card.bulb.blood`. Two came off their prompts and are noted in their `meta.json`: `ground.quartzite.black` is pale quartzite with
+black patches rather than a black crust (the kit darkens it by vertex colour), and `ground.peat.black` is a rusty moss-and-stick
+bog floor rather than black peat (a darker wet peat may still be wanted for the pools' margins). **Not wired:** `biomes/korona` has
+no build yet; its `materials.json` takes them when station 1 is built. The reference images are in
+`OneDrive/Pictures/krator/korona/`.
 
 ## Delivered 2026-10-18 (`Downloads/tex2.zip`, batches `owner-tex2-2026-10-18*.json`)
 
