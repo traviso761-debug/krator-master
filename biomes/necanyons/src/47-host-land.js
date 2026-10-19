@@ -3,13 +3,17 @@
 // elsewhere: the same KSTACKS functions the rock's mesh is made from, so a plant's foot is on the drawn rock.
 // Another world reads this fragment in place (settlements/pinnacle-rock) and says what differs in a LAND object its host
 // stage defines: {capY, spine (the LOD origins), tags, creek:false (no creek ribbon), clear:(x,z)=>0..1 (cleared ground:
-// the hyperjungle thinned by it)}. Without one, this page's own values.
+// the hyperjungle thinned by it), talus:{h:(x,z,fd)=>m, w} (the debris slope round a wall's foot and its width), groundN (the
+// floor mesh's cells a side), wallStep (m: the rock walls' segments)}. Without one, this page's own values.
 const LANDO=typeof LAND==='undefined'?{}:LAND;
-NECANYONS.lay({bodies:ROCK,floor:floorH,R:TERR.R,capY:LANDO.capY==null?330:LANDO.capY,cell:5,seed:7});
+NECANYONS.lay({bodies:ROCK,floor:floorH,R:TERR.R,capY:LANDO.capY==null?330:LANDO.capY,cell:5,seed:7,
+ footMax:LANDO.talus?LANDO.talus.w+10:null});   // a wide debris slope needs its foot distance measured that far out
 _mark('layout');
 const _tm={x:NaN,z:NaN,h:0};
 // the TALUS: the floor rises against a wall's foot, the rock's fall and sand banked up (the wall goes down into it)
-const talus=(x,z)=>{const fd=NECANYONS.footD(x,z);return fd<60?18*Math.pow(smooth(55,0,fd),1.6)*(.75+.5*fbm(x*.012,z*.012,44,2)):0;};
+const TALW=LANDO.talus?LANDO.talus.w:55;
+const talus=LANDO.talus?(x,z)=>{const fd=NECANYONS.footD(x,z);return fd<TALW?LANDO.talus.h(x,z,fd):0;}:
+ (x,z)=>{const fd=NECANYONS.footD(x,z);return fd<60?18*Math.pow(smooth(55,0,fd),1.6)*(.75+.5*fbm(x*.012,z*.012,44,2)):0;};
 const groundH=(x,z)=>floorH(x,z)+talus(x,z);
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const t=NECANYONS.top(x,z),h=t>-1e8?t:groundH(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 // the water: the creek (its bed + depth) and the rain pools on the caps
@@ -73,10 +77,10 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
     'vec3 sd=pow(texture2D(uS,p/'+Ls.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Ls.lib,0xa87a5a)+';',
     'vec3 c=mix(lt*0.42,rd*0.8,vW.x);c=mix(c,sd*0.75,vW.y);diffuseColor.rgb*=c*vW.z;}'].join('\n'));};
  MAT_GROUND.customProgramCacheKey=()=>'necanyons-ground';}
-(function(){const N=220,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
+(function(){const N=LANDO.groundN||220,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const fd=NECANYONS.footD(x,z),cd=creekD(x,z);
-  w[3*i]=smooth(48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2));w[3*i+1]=smooth(CREEK.w+16,CREEK.w+2,cd);w[3*i+2]=.85+.3*fbm(x*.006,z*.006,42,2);}
+  w[3*i]=smooth(LANDO.talus?TALW*.88:48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2));w[3*i+1]=smooth(CREEK.w+16,CREEK.w+2,cd);w[3*i+2]=.85+.3*fbm(x*.006,z*.006,42,2);}
  g.setAttribute('aW',new THREE.BufferAttribute(w,3));g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The canyon floor';m.userData.host=true;scene.add(m);})();
 
@@ -87,7 +91,7 @@ const ROCK_GEOS=[];
 (function(){const SMALL={spire:1,fin:1,balanced:1},Lw=layer('rock.wall'),Lk=layer('rock.stack'),Lt=layer('rock.top');
  const BAND=[0xa8503a,0xc98468,0xd9b091,0xb4603e].map(h=>new THREE.Color(h)),WHITE=new THREE.Color(0xffffff),TOPC=new THREE.Color(0xc9906e),SOIL=new THREE.Color(0x9c5a40),c=new THREE.Color();
  const acc={wall:{pos:[],uv:[],col:[],idx:[]},stack:{pos:[],uv:[],col:[],idx:[]},top:{pos:[],uv:[],col:[],idx:[]}};
- ROCK.forEach(B=>{const small=!!SMALL[B.kind],m=KSTACKS.mesh(B,{step:small?2.5:6}),nv=m.part.length;
+ ROCK.forEach(B=>{const small=!!SMALL[B.kind],m=KSTACKS.mesh(B,{step:small?2.5:(LANDO.wallStep||6)}),nv=m.part.length;
   const remap={wall:new Int32Array(nv).fill(-1),stack:null,top:new Int32Array(nv).fill(-1)};
   const wk=small?'stack':'wall',Lw2=small?Lk:Lw;remap[wk]=remap.wall;
   for(let i=0;i<m.idx.length;i+=3){const a=m.idx[i],part=m.part[a],key=part===1?'top':wk,A=acc[key],R=remap[key==='top'?'top':wk];

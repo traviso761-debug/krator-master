@@ -140,7 +140,9 @@
       SIM.all('group').forEach(function(G){ if(G.cargo && G.cargo.n>0) c.exported[G.cargo.good]=(c.exported[G.cargo.good] || 0)-G.cargo.n; }); }
     return c; }
   function snap(minute, S){ var t=tally(null), tot={}; Object.keys(t.T).forEach(function(k){ tot[k]=totalOf(t.T[k]); }); return { minute:minute, tot:tot, cum:counters(), skipped:S.skipped }; }
-  function state(){ var S=SIM.STOCKS; if(!S || S.econ!==SIM.ECON || S.items!==SIM.ITEMS) S=SIM.STOCKS={ econ:SIM.ECON, items:SIM.ITEMS, snaps:[], day:null, last:null, skipped:0 }; return S; }
+  function state(){ if(SIM.ECONS) return keyedState(); var S=SIM.STOCKS; if(!S || S.econ!==SIM.ECON || S.items!==SIM.ITEMS) S=SIM.STOCKS={ econ:SIM.ECON, items:SIM.ITEMS, snaps:[], day:null, last:null, skipped:0 }; return S; }
+  /* a settlement's own snapshots (P7a: keyed economies), kept on its economy */
+  function keyedState(){ var E=SIM.ECON, S=E._stocks; if(!S || S.items!==SIM.ITEMS) S=E._stocks={ econ:E, items:SIM.ITEMS, snaps:[], day:null, last:null, skipped:0 }; return S; }
 
   /* ---------------------------------------------------------------- the daily snapshot (SIM.step, SIM.jump) */
   SIM.stocksStep = function(minute){
@@ -149,7 +151,7 @@
     S.last=minute;
   };
   /* a jump forward by more than a minute or back at all: the day it falls in is not a day of flows */
-  SIM.stocksJump = function(minute){ var S=SIM.STOCKS; if(!S || S.last==null) return; if(minute-S.last>1 || minute<S.last) S.skipped++; S.last=minute; };
+  SIM.stocksJump = function(minute){ var S=SIM.ECONS ? SIM.ECON && SIM.ECON._stocks : SIM.STOCKS; if(!S || S.last==null) return; if(minute-S.last>1 || minute<S.last) S.skipped++; S.last=minute; };
 
   /* ---------------------------------------------------------------- the stocks */
   function flows(a, b, k, isGood, isFood){   /* the change and the flows of item k between two snapshots */
@@ -198,4 +200,13 @@
     if(a.present){ var p=SIM.pose(a, t==null ? SIM.time() : t, { cheap:true }); if(p) return { x:p.x, y:p.y || 0, z:p.z }; }
     var H=a.home && SIM.R.place[a.home]; return H ? { x:H.x, y:H.y || 0, z:H.z } : null;
   };
+  /* ---------------------------------------------------------------- by settlement (P7a) */
+  /* On a page that keys its economies (77-sim-6-economy.js SIM.settlement): SIM.stocks(s) is settlement s's own stocks,
+     SIM.stocksBy() every settlement's, and the daily snapshot is taken for each in turn. An unkeyed page is as before.
+     (The items module's holdings, people's own things and their households' food, are not split by settlement yet.) */
+  var stocks0=SIM.stocks, step0=SIM.stocksStep, jump0=SIM.stocksJump;
+  SIM.stocks = function(s){ if(!SIM.ECONS || s==null) return stocks0(); return SIM.withEcon(s, function(){ return stocks0(); }); };
+  SIM.stocksBy = function(){ if(!SIM.ECONS) return null; var out={}; SIM.ECON_ORDER.forEach(function(k){ out[k]=SIM.stocks(k); }); return out; };
+  SIM.stocksStep = function(minute){ if(!SIM.ECONS) return step0(minute); SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ step0(minute); }); }); };
+  SIM.stocksJump = function(minute){ if(!SIM.ECONS) return jump0(minute); SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ jump0(minute); }); }); };
 })(typeof window!=='undefined'?window:globalThis);

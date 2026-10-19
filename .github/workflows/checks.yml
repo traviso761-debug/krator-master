@@ -33,6 +33,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Python packages the builds take (Pinnacle Rock's tools/world_data.py decodes the scale model's cut)
+        run: pip install numpy pillow
       - name: tools/test_all.py
         run: python3 tools/test_all.py
       - name: The tree is clean after the rebuild

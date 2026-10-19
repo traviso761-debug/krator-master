@@ -24,10 +24,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-pr-layout.js` | 13 |  |
+| `40-pr-layout.js` | 15 |  |
 | `42-pr-world.js` | <1 |  |
-| `45-host-stage.js` | 7 | the floor: the knoll's top, as the scale model h (33); the rock (KSTACKS records from the layout) (43); what necanyons' land fragment (47) reads from th (76) |
+| `45-host-stage.js` | 10 | the floor: the knoll's top, as the scale model h (33); the rock (KSTACKS records from the layout) (43); what necanyons' land fragment (47) reads from th (90) |
 | `86-pr-far.js` | 3 |  |
+| `87-pr-talus.js` | 2 |  |
 | `88-host-build.js` | 2 |  |
-| `99-host-take.js` | 9 | the inspector's words: the rock, the zone of the (18); the probe's budgets and the page's checks (verif (30); the page, handed to the host (88) |
+| `99-host-take.js` | 12 | the inspector's words: the rock, the zone of the (19); the probe's budgets and the page's checks (verif (31); the page, handed to the host (112) |
 | `99-tail.html` | <1 |  |

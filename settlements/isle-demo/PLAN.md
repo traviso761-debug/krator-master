@@ -324,6 +324,20 @@ canonical export**, in place of a Voth district: it is smaller, it stands on the
 start, and two towns 122 km apart force the two things Voth cannot test, a settlement nobody is watching and trade
 between settlements.
 
+**Where the export case lives (owner, 2026-10-19): the region's open world, not a page per city.**
+- **A city is data:** its site file and its programme, laid out by `core/city`. It needs no page of its own; the city page
+  (`dist/isle-city.html`) stays a working view while a town is laid out.
+- **A region is one page:** its open world (`openworld/isle-demo`) runs every city and hamlet in it on the scale model's
+  own ground, one clock, one registry. That page is the M6 export case: it is the only one with `terrain=field` to hand
+  (the extracted heights), the hamlets and their resources, and both towns together. The next city costs a site file and
+  a programme; the next region costs one open-world page.
+- **The order:** the city page's profile check (section 10, item 1) is the stepping stone. When Kautoa and Valapo run in
+  the open world (their `KCITY` plans live, as the hamlets are, rather than baked tiles), the profile moves to
+  `openworld/isle-demo/verify.py` and grows there.
+- **The `city` section is `core/city`'s** (2026-10-19, owner's approval): `40-city-kcity.js` registers it for every
+  `KCITY` instance on a page that has run (`KCITY.registerExport`), so any page on `core/city` exports its plans with no
+  per-city code.
+
 **The export profile.** `EXPORT.check(world, {profile})` (ROADMAP section 11, item 1) names the sections this page
 must fill; a required section that reads `stub`, `none` or `error` fails `verify.py --assert` and the nightly. Isle
 demo's profile: `terrain` as a `krator-field` from the extracted heights (not `EXPORT.ground`'s samples), `city` (two
@@ -592,6 +606,13 @@ settlement, so Voth's stocks proof, `test-sim.js` and the baseline do not move.
    a load leaves one warehouse and lands in the other or is in transit; an unkeyed toy world gives the same results as
    before.
 
+**P7a progress (2026-10-19).** Done in `core/simulation`, opt-in: items 1 (the settlement record and key), 2 (an economy
+per settlement: warehouses, sites, recipes, carts, books; the purchases and meals routed by place), 5 (the stocks per
+settlement, `SIM.stocks(s)`, `SIM.stocksBy()`), 7 (the three levels written into `SCHEMA.md`) and 8 (seven
+two-settlement checks in `test-sim.js`, each with a negative; every older check unchanged). Still to do: 3 (the
+population deal per settlement), 4 (the place search scoped), 6 (trade between settlements: the carrier and its
+books), and the items module's holdings split by settlement.
+
 **Order of work.**
 
 | Step | What | Proof |
@@ -636,10 +657,8 @@ every module under `core/` and CLAUDE.md's rules.
    list (2 of 13 met: `terrain=field` is sampled; `items`, `buckets`, `textures`, `stage` read none; `atmos` empty;
    `city`, `fixtures`, `interiors`, `furniture`, `sim` are stubs). `--profile target` fails on all of them, and
    `--profile registry,materials,terrain,sim` fails on the stub. Each section joins `EXPORT_PROFILE` as it lands.
-   **A question for the city-layout work** (no session of it was running on 2026-10-19; the owner to pass it on):
-   `core/export`'s `city` section is to be registered by `core/city` (`40-city-kcity.js`, an `EXPORT.register('city',
-   ...)` for every `KCITY` instance on a page). May the isle demo's page register its two plans itself until then, or
-   will core/city add the contributor?
+   **The `city` section** is registered by `core/city` itself since 2026-10-19 (the owner approved the change to the
+   city-layout work's file): see section 7, "Where the export case lives".
 2. **The city page onto `core/host`** (camera, loop, `KCLOCK`, panel, probe, minimap) instead of its own `CAM`, loop and
    `window._city`: P7's simulation needs the clock.
 3. **The city page's sky and sea:** the standard sky and `core/atmos`, the sea on `core/water` (it is a flat colour and a
