@@ -157,6 +157,11 @@ twelve tribes' niches, five lamp niches, ledges and the altar, the fig over the 
 processional; the cavern check and four negatives pass. Not as planned: the door's face scaled to the court (KNOWN_ISSUES.md).
 Next: P3e, the Garden's great-houses and the ways up.
 
+**Status (2026-10-19, P3e): P3 is laid** (README.md, "The Garden"): the Garden's stair and ramp and the stair up the
+Heart (the roost plan's ascents), two compounds, ten great-houses and rock longhouses round the Heart (`src/58-pr-garden.js`),
+its paths; the Garden check and four negatives pass. Not as planned: the ways up are timber galleries, not cut ways
+(KNOWN_ISSUES.md). P3 awaits the owner's look. Next: P4, the life.
+
 - **P0. The site and the harness.** Find the mesa (section 1), write the point back, `build.py` reading the catalog,
   Girder's flyers and `core/terrain` in place, the port lint, `verify.py` on `tools/harness.py`. Done when a bare red
   mesa stands in the hyperjungle on the page and `--assert` passes.

@@ -2,7 +2,12 @@
 // PRR (43-pr-roosts.js) on this page's rock, here rather than with its drawing (89) so its ways (the Stair's path down the
 // debris slope, the lift road) are cleared before anything grows or falls on them: PR.addWay takes each, and PR.forest,
 // the necanyons kit's mask (88), the talus blocks (87) and PR.zoneAt keep off it.
-const ROOST=(function(){try{const t0=performance.now(),P=PRR.plan({rock:ROCK,K:KSTACKS,PR,ground:groundH,footD:(x,z)=>NECANYONS.footD(x,z),talusW:TALUS.w,wallStep:{big:LAND.wallStep||6,small:2.5}});   /* the walls as 47 draws them */
+const ROOST=(function(){try{const t0=performance.now(),P=PRR.plan({rock:ROCK,K:KSTACKS,PR,ground:groundH,footD:(x,z)=>NECANYONS.footD(x,z),talusW:TALUS.w,wallStep:{big:LAND.wallStep||6,small:2.5},
+  // THE WAYS UP (P3e): the Garden's stair from the south (the Stair Way's side), its ramp for the beasts from the north (the
+  // Crown's), round its west wall; the stair up the Heart from the Garden's top on its east
+  ascents:GARDEN_B&&HEART_B?[{id:'garden-stair',body:GARDEN_B.id,y0:MESA_B.top,y1:GARDEN_B.top,a0:Math.PI/2+.22,dir:1,w:2.6,tread:.62,name:'The Garden\'s stair (up its south wall)'},
+   {id:'garden-ramp',body:GARDEN_B.id,y0:MESA_B.top,y1:GARDEN_B.top,a0:-Math.PI/2-.35,dir:-1,w:3.8,tread:.14,name:'The Garden\'s ramp (up its west wall, for the beasts)'},
+   {id:'heart-stair',body:HEART_B.id,y0:GARDEN_B.top,y1:HEART_B.top,a0:.35,dir:1,w:1.8,tread:.62,name:'The stair up the Heart'}]:[]});   /* the walls as 47 draws them */
  P.ms=Math.round(performance.now()-t0);P.ways.forEach(W=>PR.addWay(W));return P;}
  catch(e){reportErr('roosts: '+e.stack);return {decks:[],roosts:[],shelters:[],climbs:[],bridges:[],lifts:[],stair:null,roads:[],ways:[],why:{}};}})();
 // a way's mask for the plants and the blocks: nothing within 3 m of its edge

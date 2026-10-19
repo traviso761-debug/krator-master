@@ -2,8 +2,8 @@
 
 The Beast Riders' roost town on a red sandstone mesa at the north-eastern edge of the hyperjungle (`PLAN.md`; the lore is
 `LORE.md` §6.6). Built in stages (`PLAN.md` section 3). **Done: P0 and P1, the rock and the site; P2, the roosts, the
-Stair, the lifts and the flyers; P3a, the town on the top; P3b, the farms; P3c, the bands' grounds; P3d, the Deep Root cavern.**
-The Garden's great-houses and the ways up to it (P3e) are the stage to come.
+Stair, the lifts and the flyers; P3a, the town on the top; P3b, the farms; P3c, the bands' grounds; P3d, the Deep Root cavern;
+P3e, the Garden's great-houses and the ways up.** The life and the night (P4) and the record (P5) are the stages to come.
 
 ```
 python3 build.py                                   # dist/pinnacle-rock.html (+ its texture sidecars)
@@ -141,6 +141,13 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
   draws a top as five coarse rings) is re-cut where it reaches an opening: each such triangle is refined toward the hole's
   edge to a metre and the parts inside dropped, and the cavern's own ground inside the rim (drawn with the cap's material)
   closes the seam. The camera may go into the voids (`clampCam`).
+- **The Garden** (P3e): its ways up are the roost plan's ascents (`43-pr-roosts.js`, `o.ascents`, made by the climbs'
+  builder round the drawn wall, drawn with the climbs: timber treads bracketed into the beds): the Garden's stair up its
+  south wall from the main top, its ramp for the beasts (1 in 7) up its west wall from the north, and the stair up the
+  Heart from the Garden's top on its east. Its great-houses are records (`src/58-pr-garden.js`, `PRG.plan`, `[G data]`;
+  run in `58b`, drawn by `89g-host-garden.js`): two chiefs' compounds and ten clans' great-houses round the Heart facing
+  it, and rock longhouses backed against four of the edge pinnacles, on the Garden's own top 8 m in from its rim and off
+  the pinnacles' and the Heart's feet; a path round the Heart's foot and one in from each way up.
 - **The plants**: the necanyons kit (`biomes/necanyons`, read in place with its land fragment `47-host-land.js`, which
   takes this page's `LAND` hooks: the cap height, the LOD spine, the cleared ground, no creek) on the walls, ledges,
   spurs and stacks, kept off the town's ground past the 12 m rim band; the hyperjungle on the floor, kept out of the farms,
@@ -189,7 +196,11 @@ its gate, a track from every floor camp to a palisade gate through no farm and n
 and 15 m high with 2 m of rock or more over it, the light well open, no void open to the sky outside the openings
 (KCAVERN's sky check), the cap open over the court (a ray down meets the court's floor), one niche for each of the
 twelve tribes, the five lamp niches, the altar and the carved door, each piece's back in the rock and its front in the
-void, twelve standing stones with nothing built inside their ring. Each has a negative control (the fins
+void, twelve standing stones with nothing built inside their ring. The Garden (P3e): its stair and ramp from the main top to
+its own and the stair up the Heart, each from the ground at its foot to the top, every tread against the drawn wall and
+clear of rock over it, every bracket in it, the ramp no steeper than 1 in 5; its houses on its top, apart, off the
+pinnacles' and the Heart's feet and the paths; six great-houses or more and a chief's compound; the path round the
+Heart. Each has a negative control (the fins
 in one row, a fin over the edge, a 180 m mesa, the Garden all one height, no Garden's mesa, no Heart, a Heart weathered
 like the Garden's mesa, a Heart as tall as its pinnacles, a tree in the Crown, a tree in the farms; a deck cut into its
 fin, a perch facing its fin, a bridge from the north fins to the east, a cable rubbing the wall, the Stair with one gate,
@@ -198,4 +209,5 @@ the face, a climb 3 m out from its fin, an archaeopteryx in a Quetzal stall, the
 houses on one footprint, no assembly hall, no tannery; a field on the forest road, an orchard on the first terrace, a farmhouse half off its
 cell, a gap in the palisade, no forest gate, paddies by the east gate; a tent in the Crown, a gap in a thorn hedge, a hedge
 with no gates, a ground without its chief, a camp's track through the farms, a flyer band camped on the floor; a court 4 m deep, a tribe's niche missing, a lamp
-niche turned into its wall, a house inside the ring of stones).
+niche turned into its wall, a house inside the ring of stones; a great-house on a pinnacle's foot, the Garden's stair
+stopping 10 m short, the ramp 3 m out from the wall, no way up the Heart).

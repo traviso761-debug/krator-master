@@ -133,7 +133,8 @@ const PRR = (function () {
   // from the ground at its foot (or a lower deck) up to the deck, rising TREAD per metre, its inner edge .2 m into the DRAWN rock at
   // the tread's height (or off a bed standing proud over it, for headroom); every fourth step a bracket's foot, let into the
   // rock 1.6 m under the tread
-  function climb(rock, K, S, D, from, y0, a0, dir) {
+  function climb(rock, K, S, D, from, y0, a0, dir, tread) {
+    const TR = tread == null ? TREAD : tread;   // a ramp's rise per metre (an ascent's: P3e)
     const pts = []; let a = a0, y = y0, n = 0, cy = null, c = null;
     // round the stack's middle at each height (a leaning stack's middle walks), the rock's reach there and 2.6 m over the tread
     const rAt = (a, y) => { if (cy === null || Math.abs(y - cy) > 2) { c = centreAt(K, S, y); cy = y; }
@@ -144,7 +145,7 @@ const PRR = (function () {
       if (pts.length % 4 === 0) { const rf = wallR(K, S, c[0], c[1], a, y - 1.6); if (rf > 0) p.push(c[0] + Math.cos(a) * (rf - .3), y - 1.6, c[1] + Math.sin(a) * (rf - .3)); }
       pts.push(p);
       // the next tread .5 m on (a taper or a walking middle shortens an angle's step: lengthen it until the run is whole)
-      const y2 = Math.min(D.y, y + .5 * TREAD); let da = .5 / Math.max(4, r), k = 0;
+      const y2 = Math.min(D.y, y + .5 * TR); let da = .5 / Math.max(4, r), k = 0;
       for (; k < 8; k++) { const r2 = rAt(a + dir * da, y2), q = [c[0] + Math.cos(a + dir * da) * r2, c[1] + Math.sin(a + dir * da) * r2]; if (Math.hypot(q[0] - p[0], q[1] - p[2]) >= .49) break; da *= 1.2; }
       a += dir * da; y = y2; }
     const r = rAt(a, D.y); pts.push([c[0] + Math.cos(a) * r, D.y, c[1] + Math.sin(a) * r]);   // the last tread on the wall at the deck's own height
@@ -389,7 +390,12 @@ const PRR = (function () {
       .concat(roads.map(R => ({ id: 'way-' + R.id, name: R.name, pts: R.pts.map(p => [p[0], p[2]]), w: R.w + 1 })));
 
     decks.forEach(D => { delete D.near; });
-    return { decks, roosts, shelters, climbs, bridges, lifts, stair, roads, ways, why };
+    // THE ASCENTS (P3e): the ways up a tier, each a climb round its body's drawn wall from the ground at its foot to its top
+    // (o.ascents [{id, body, y0, y1, a0, dir, w, tread, name}]): the Garden's stair and its ramp, the stair up the Heart
+    const ascents = (o.ascents || []).map(A => { const S = byId(A.body); if (!S) { why[A.id] = 'no body ' + A.body; return null; }
+      const C = climb(rock, K, S, { id: A.id, y: A.y1 }, 'foot', A.y0, A.a0, A.dir, A.tread);
+      return Object.assign(C, { id: 'ascent-' + A.id, deck: A.id, body: A.body, w: A.w == null ? C.w : A.w, name: A.name, kind: A.tread != null && A.tread < .3 ? 'ramp' : 'stair' }); }).filter(Boolean);
+    return { decks, roosts, shelters, climbs, bridges, lifts, stair, roads, ways, why, ascents };
   }
   const bridgeY = (br, t) => br.a.y + (br.b.y - br.a.y) * t - br.sag * 4 * t * (1 - t);
   return { plan, reach, wallR, bridgeY, STALL, DECK, N, WALL };

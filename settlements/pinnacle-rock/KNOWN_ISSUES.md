@@ -1,8 +1,12 @@
 # Pinnacle Rock — known issues
 
-- [ ] **The Garden's great-houses and the ways up are not built yet** (P3e): the Garden's mesa and the Heart are bare
-      until they are laid (`PLAN.md` section 3). The town (P3a), the farms (P3b), the bands' grounds (P3c) and the Deep
-      Root (P3d) are.
+- [ ] **P3 is laid but not seen by the owner** (the town, the farms, the bands' grounds, the Deep Root, the Garden): the
+      life (riders, keepers, beasts in the pastures), the banners' claw and the night are P4.
+- [ ] **The Garden's ways up are timber galleries**, as the roosts' climbs (bracketed into the beds), not stairs and a ramp
+      cut into the walls (`PLAN.md`: "stairs and a ramp cut in its walls"): a cut way needs a notch in the rock mesh
+      (as the Stair's flights do: below). The Heart has no town (by the plan) and only its stair.
+      Where a way crosses a gully or a notch of these weathered walls it spans it (up to 8 m: the check allows such runs
+      off the drawn rock, the roosts' climbs none); no beam is drawn under a span yet.
 - [ ] **The Deep Root is lit like the open air**: no darkness under the rock, no lamp light from the niches (the night
       and the lamps are P4); its walls take the stacks' cross-bedded sandstone map, projected by facing. The carved door
       is the kit's piece scaled to 0.53 to fit the 8 m court (its door reads small: about 1.8 m); its passage is drawn,

@@ -111,10 +111,10 @@ const ROOST_MESH={},ROOST_CAGES=[];
   reg({name:'A keeper\'s shelter (the roost\'s feed and tack store)',key:'roost.shelter',x:S.x,z:S.z,y:S.y,r:4.5,h:5});});
 
  // ---------------------------------------------------------------- the climbs: stairs hugging the stacks, bracketed into the beds
- ROOST.climbs.forEach(C=>{const P=C.pts,w=C.w;steps('plank',P,w,COL.plank);
+ ROOST.climbs.concat(ROOST.ascents||[]).forEach(C=>{const P=C.pts,w=C.w;steps('plank',P,w,COL.plank);   // and the ways up the tiers (P3e)
   const side=(p,q,s)=>{const dx=q[0]-p[0],dz=q[2]-p[2],L=Math.hypot(dx,dz)||1;return [p[0]+dz/L*s,p[1],p[2]-dx/L*s];};
   // which side is the rock's: the edge nearer the stack's middle
-  const B=ROCK.find(S=>'deck-'+S.id===C.deck.replace(/-look$/,''))||ROCK[0],o=P.length>1?side(P[0],P[1],w/2):P[0],inS=Math.hypot(o[0]-B.x,o[2]-B.z)<Math.hypot(P[0][0]-B.x,P[0][2]-B.z)?1:-1;
+  const B=(C.body&&ROCK.find(S=>S.id===C.body))||ROCK.find(S=>'deck-'+S.id===C.deck.replace(/-look$/,''))||ROCK[0],o=P.length>1?side(P[0],P[1],w/2):P[0],inS=Math.hypot(o[0]-B.x,o[2]-B.z)<Math.hypot(P[0][0]-B.x,P[0][2]-B.z)?1:-1;
   const outer=[],inner=[];for(let i=0;i+1<P.length;i++){outer.push(side(P[i],P[i+1],-inS*w/2));inner.push(side(P[i],P[i+1],inS*w/2));}
   rail(outer,6,1,null);
   // the brackets: from their feet let into the rock 1.6 m under the tread (PRR) to the tread's outer edge, and a short
