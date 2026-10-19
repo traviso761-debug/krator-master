@@ -330,3 +330,10 @@ catalog culture, nine furnished buildings, doors and panes for the black voids) 
 `worlds/iziz.tex.pylon.js` (1.1 MB); the card's blurb and size in the live index (version 18's index, one entry edited, as
 in `build_gallery.py`). Versions 17 and 18 were published elsewhere and not logged here; 18 carried the P5 page with the
 materials bind and its sidecar. Every other file is as in version 18.
+
+Krator Worlds S–Z version 8 (2026-10-19): Talia through P7 (`worlds/talia.html`, 2.0 MB, from `claude/vassal-kits` at
+3c3d5395: the trade, the University, the arts, the temple, the Gate of the Passes, the governor's palace, the catalog
+culture and 64 furnished buildings, real doors and windows for the dark voids), and its card in the live index
+(version 7's index, the Talia entry's blurb and size edited, as in `build_gallery.py`). `worlds/iziz.tex.talia.js` and
+`worlds/iziz.tex.iziz.js` were already in the part at the local sizes and stay. Every other file is as in version 7.
+Talia sorts under S–Z, not I–S: its first page went there with the split.
