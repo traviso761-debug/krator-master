@@ -14,6 +14,12 @@ const VIEWS=(function(){const V={},n0=_fin('fin-n0'),e1=_fin('fin-e1');
  V['The farm ring from the forest gate']=[0,12,PR.GATE.z+30,0,140,0];
  V['The gorge under the north rim']=[420,-20,PR.GORGE.z(420),-200,40,-700];
  V['The Inner Wall, north']=[0,_top+30,-560,0,1500,-40000];
+ // the roosts (P2)
+ {const R=ROOST.roosts.find(r=>r.plat==='deck-fin-e1')||ROOST.roosts.find(r=>/deck-fin-e/.test(r.plat));
+  if(R)V['A Quetzal stall on the east fins']=[R.fx+R.ox*34+R.oz*10,R.y+8,R.fz+R.oz*34-R.ox*10,R.fx,R.y+2.5,R.fz];}
+ {const G=ROOST.decks.find(d=>d.id==='deck-garden-2');if(G)V['The Garden\'s roost rings']=[G.x+150,G.y+30,G.z+120,G.x,G.y-10,G.z];}
+ {const L=ROOST.lifts.find(l=>l.id==='lift-north');if(L)V['The beast lift over the gorge']=[L.tip.x+90,L.tip.y-60,L.tip.z-90,L.tip.x,L.tip.y-90,L.tip.z];}
+ {const S=ROOST.stair;if(S&&S.landings.length){const m=S.pts[S.landings[0]];V['The Stair (its middle gate)']=[m[0]-30,m[1]+6,m[2]+45,m[0],m[1]-4,m[2]];}}
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the rock, the zone of the top or
@@ -76,7 +82,41 @@ const HCHK={
  // the land is the scale model's: the page's floor at the knoll's middle and edge against WORLD.H (42)
  model(){const d=[[0,0],[1800,0],[-1800,0],[0,1800],[0,-1500]].map(q=>Math.abs(floorH(q[0],q[1])-(WORLD.H(q[0],q[1])-WORLD_H0)));
   const wall=WORLD.H(0,-48000)-WORLD_H0;
-  return{ok:Math.max(...d)<.01&&wall>2500,detail:'floor = the model ('+Math.max(...d).toFixed(3)+' m off); the Inner Wall '+wall.toFixed(0)+' m over the knoll 48 km north'};}};
+  return{ok:Math.max(...d)<.01&&wall>2500,detail:'floor = the model ('+Math.max(...d).toFixed(3)+' m off); the Inner Wall '+wall.toFixed(0)+' m over the knoll 48 km north'};},
+ // THE ROOSTS (P2). The decks: a stall deck on each Wing's fin (seven) and on the four ringed Garden pinnacles, a ring on
+ // every fin; no rock standing on a deck (its inner edge, its middle, its outer edge) from its own stack or any other
+ decks(D){const bad=[],K=KSTACKS;D.forEach(d=>{const own=ROCK.find(B=>B.id===d.stack),others=ROCK.filter(B=>B!==own&&B.top>d.y-2);
+   for(let i=0;i<d.inner.length;i+=2){const a=d.inner[i],b=d.outer[i],pts=[a,[(a[0]+b[0])/2,(a[1]+b[1])/2],b];
+    for(const p of pts){if(own&&K.topAt([own],p[0],p[1])>d.y-1||others.length&&K.topAt(others,p[0],p[1])>d.y-2){bad.push(d.id);return;}}}});
+  const st=D.filter(d=>d.level==='stall'),wingFins=st.filter(d=>d.group!=='garden').length,garden=st.filter(d=>d.group==='garden').length,fins=new Set(D.filter(d=>/^fin-/.test(d.stack)).map(d=>d.stack)).size;
+  return{ok:!bad.length&&wingFins===7&&garden===4&&fins===10,detail:st.length+' stall decks ('+wingFins+' on the Wings\' fins, '+garden+' in the Garden), '+(D.length-st.length)+' lookout rings; rings on '+fins+' fins'+(bad.length?'; rock on '+bad.slice(0,4).join(', '):'')};},
+ // the stalls: every Wing has eight or more, the east fins (the Quetzal's) some; every perch's way out (150 m straight
+ // out from its stall, the stall's width either side) has no rock within 10 m under the deck
+ stalls(R){const K=KSTACKS,bad=[],by={};R.forEach(r=>{by[r.wing]=(by[r.wing]||0)+1;const tx=-r.oz,tz=r.ox;
+   for(let e=4;e<=150&&bad.indexOf(r.id)<0;e+=6)for(const q of [-5.5,0,5.5]){const x=r.fx+r.ox*e+tx*q,z=r.fz+r.oz*e+tz*q;if(K.topAt(ROCK,x,z)>r.y-10){bad.push(r.id);break;}}});
+  const east=R.filter(r=>/deck-fin-e/.test(r.plat)).length;
+  return{ok:!bad.length&&(by.wingclaw||0)>=8&&(by.quetzal||0)>=8&&(by.nightwing||0)>=8&&east>=8,detail:R.length+' stalls: '+Object.keys(by).map(k=>k+' '+by[k]).join(', ')+'; '+east+' on the east fins'+(bad.length?'; blocked: '+bad.slice(0,4).join(', '):'')};},
+ // the bridges: four, each between the stall decks of one group's fins, under 90 m, each end on its deck
+ bridges(B,D){const bad=[];B.forEach(b=>{const da=D.find(d=>d.id===b.a.deck),db=D.find(d=>d.id===b.b.deck);
+   if(!da||!db||da.group!==db.group||da.level!=='stall'||db.level!=='stall'){bad.push(b.id+' joins two groups');return;}
+   if(b.L>90)bad.push(b.id+' '+b.L.toFixed(0)+' m');
+   [[b.a,da],[b.b,db]].forEach(q=>{const p=q[0],d=q[1],a=Math.atan2(p.z-d.z,p.x-d.x),i=Math.round(((a/TAU*PRR.N)%PRR.N+PRR.N)%PRR.N)%PRR.N,r=Math.hypot(p.x-d.x,p.z-d.z);
+    if(r>Math.hypot(d.outer[i][0]-d.x,d.outer[i][1]-d.z)+.5||r<Math.hypot(d.inner[i][0]-d.x,d.inner[i][1]-d.z))bad.push(b.id+' off its deck');});});
+  return{ok:B.length===4&&!bad.length,detail:B.length+' bridges ('+B.map(b=>b.id.replace(/^bridge-/,'')+' '+b.L.toFixed(0)+' m').join(', ')+')'+(bad.length?'; '+bad.join(', '):'')};},
+ // the lifts: the cable hangs 3 m or more clear of the wall all the way down, the landing on the ground under the tip
+ lifts(L){const bad=[];L.forEach(l=>{if(l.clear<3)bad.push(l.id+' '+l.clear.toFixed(1)+' m off the wall');if(Math.abs(l.foot.y-terrainH(l.foot.x,l.foot.z))>1.5)bad.push(l.id+' landing off the ground');});
+  return{ok:L.length===2&&!bad.length,detail:L.map(l=>l.id+': '+l.len.toFixed(0)+' m boom, '+l.clear.toFixed(1)+' m clear, '+(_top-l.foot.y).toFixed(0)+' m drop').join('; ')+(bad.length?'; '+bad.join(', '):'')};},
+ // the Stair: from the top to the fair ground, gated three times, no step steeper than the plan's (35 degrees on the
+ // flights), every cut flight's tread out of the rock
+ stair(S){if(!S)return{ok:false,detail:'no Stair'};const K=KSTACKS,P=S.pts,g=S.ground,end=g[g.length-1],Z=PR.zoneAt(end[0],end[2]).zone;
+  let steep=0,buried=0;for(let i=S.shoulder;i+1<P.length;i++){const p=P[i],q=P[i+1],run=Math.hypot(q[0]-p[0],q[2]-p[2]);if(run>.05)steep=Math.max(steep,Math.abs(q[1]-p[1])/run);
+   if(K.topAt([MESA_B],p[0],p[2])>p[1]+.05)buried++;}
+  return{ok:Math.abs(P[0][1]-_top)<1.5&&(Z==='fair'||PR.inEll(end[0],end[2],PR.FAIR,15))&&S.gates.length===3&&steep<.7&&!buried,
+   detail:'from '+P[0][1].toFixed(0)+' m to the '+Z+'; '+S.flights+' flights, '+S.landings.length+' landings, '+S.gates.length+' gates; steepest '+(Math.atan(steep)*180/Math.PI).toFixed(0)+' degrees'+(buried?'; '+buried+' treads in the rock':'')};},
+ // the climbs: every deck has one, from the ground at its stack's foot (or the deck under it) to its own height
+ climbs(C,D){const bad=[];D.forEach(d=>{const c=C.find(c=>c.deck===d.id);if(!c){bad.push(d.id+' no climb');return;}const P=c.pts,last=P[P.length-1];
+   if(Math.abs(last[1]-d.y)>.05)bad.push(d.id+' short');let st=0;for(let i=0;i+1<P.length;i++){const run=Math.hypot(P[i+1][0]-P[i][0],P[i+1][2]-P[i][2]);if(run>.05)st=Math.max(st,(P[i+1][1]-P[i][1])/run);}if(st>.66)bad.push(d.id+' steep');});
+  return{ok:!bad.length,detail:C.length+' climbs for '+D.length+' decks, '+C.reduce((s,c)=>s+c.pts.length,0)+' steps'+(bad.length?'; '+bad.slice(0,4).join(', '):'')};}};
 // where the forest STANDS, sampled: the hyperjungle's instances (every 7th) and its merged meshes' vertices within 4 m of the
 // ground (a trunk's foot, a fern: a crown leaning over a hedge is not the forest inside it)
 function _forestPts(){const out=[],v=new THREE.Vector3(),M=new THREE.Matrix4();
@@ -94,6 +134,12 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('no tree on the town\'s ground',HCHK.noTrees(NECANYONS.TREES||[]));
  add('the forest out of the farms and the grounds',HCHK.cleared(_forestPts()));
  add('the land is the scale model\'s',HCHK.model());
+ add('the roost decks: on the Wings\' fins and the Garden, clear of the rock',HCHK.decks(ROOST.decks));
+ add('the stalls: every Wing\'s, each with its way out open',HCHK.stalls(ROOST.roosts));
+ add('the bridges between a group\'s fins',HCHK.bridges(ROOST.bridges,ROOST.decks));
+ add('the lifts: the cables clear of the wall',HCHK.lifts(ROOST.lifts));
+ add('the Stair: the top to the fair ground, gated three times',HCHK.stair(ROOST.stair));
+ add('a climb to every deck',HCHK.climbs(ROOST.climbs,ROOST.decks));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
  add('the fins in one row on the north rim (as first drawn)',HCHK.fins(F.map((B,i)=>Object.assign({},B,{x:-270+i*60,z:-520}))));
@@ -107,19 +153,30 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a Heart as tall as its pinnacles',HCHK.heart(Object.assign({},HEART_B,{top:HEART_B.top+110}),GARDEN_B,_garden(),PR.HEART_MESA,PR.GARDEN_MESA));
  add('a tree in the Crown',HCHK.noTrees((NECANYONS.TREES||[]).concat([{x:0,z:-300,y0:_top}])));
  add('a tree in the farms',HCHK.cleared(_forestPts().concat([[-400,800]])));   // in the fields west of the road
+ // the roosts' negatives
+ {const d=ROOST.decks.find(d=>d.id==='deck-fin-e1');if(d)add('a deck cut into its fin (its inner edge 3 m into the rock)',HCHK.decks(ROOST.decks.map(D=>D!==d?D:Object.assign({},D,{inner:D.inner.map(p=>{const dx=p[0]-D.x,dz=p[1]-D.z,l=Math.hypot(dx,dz);return [p[0]-dx/l*3.8,p[1]-dz/l*3.8];})}))));}
+ add('a perch facing its own fin',HCHK.stalls(ROOST.roosts.map((r,i)=>i?r:Object.assign({},r,{ox:-r.ox,oz:-r.oz}))));
+ {const n0=ROOST.decks.find(d=>d.id==='deck-fin-n0'),e0=ROOST.decks.find(d=>d.id==='deck-fin-e0');
+  if(n0&&e0)add('a bridge from the north fins to the east',HCHK.bridges(ROOST.bridges.map((b,i)=>i?b:Object.assign({},b,{b:{x:e0.outer[0][0],y:e0.y,z:e0.outer[0][1],deck:e0.id}})),ROOST.decks));}
+ add('a lift whose cable rubs the wall',HCHK.lifts(ROOST.lifts.map((l,i)=>i?l:Object.assign({},l,{clear:l.clear-6}))));
+ add('the Stair with two gates',HCHK.stair(Object.assign({},ROOST.stair,{gates:ROOST.stair.gates.slice(1)})));
+ add('the Stair ending in the gorge',HCHK.stair(Object.assign({},ROOST.stair,{ground:ROOST.stair.ground.concat([[0,0,PR.GORGE.z(0)]])})));
+ add('a deck with no climb',HCHK.climbs(ROOST.climbs.slice(1),ROOST.decks));
  return R;}
 
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
- hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock and the site; the town is to come)',
+ hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the site and the roosts; the town is to come)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
+  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},
   'the far land':{match:o=>!!(o.userData&&o.userData.far)},'sky':{objects:()=>[sky,giant,giantRing]}},
- exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR})},
+ exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST})},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
-  biome:()=>window._biome,jungle:()=>window._jungle,far:()=>({rings:FAR.rings,around:FAR.around,water:FAR.water})}});
+  biome:()=>window._biome,jungle:()=>window._jungle,far:()=>({rings:FAR.rings,around:FAR.around,water:FAR.water}),
+  roosts:()=>({ms:ROOST.ms,decks:ROOST.decks.length,stalls:ROOST.roosts.length,bridges:ROOST.bridges.length,lifts:ROOST.lifts.length,climbs:ROOST.climbs.length,why:ROOST.why})}});

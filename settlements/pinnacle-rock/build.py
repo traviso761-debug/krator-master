@@ -124,9 +124,15 @@ SIDE=None if '--inline-packs' in sys.argv else {}
 # named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
 sys.path.insert(0,os.path.join(HERE,'tools'))
 import world_data as _wd
+# the Beast Riders kit's detail maps (kits/beast-riders/materials.json), only the families the roosts draw with (89-host-roosts.js)
+BRK=os.path.normpath(os.path.join(HERE,'..','..','kits','beast-riders'))
+BR_FAMS=('wood','timber','shingle','rope','straw','sandstone')
+import json as _json
+BR_SKIP=tuple(f for f in _json.load(open(os.path.join(BRK,'materials.json'),encoding='utf-8'))['families'] if f not in BR_FAMS)
 VIRTUAL={'39-pr-world-data.js':_wd.fragment(os.path.join(HERE,'region')),
          '44-host-matlib-pack.js':_mp.fragment(NC,'necanyons',side=SIDE),
-         '44b-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE)}
+         '44b-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE),
+         '44c-host-matlib-pack-beast-riders.js':_mp.fragment(BRK,'beast-riders',exclude=BR_SKIP,side=SIDE)}
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]
