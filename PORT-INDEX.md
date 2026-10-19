@@ -12,7 +12,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/girder`](settlements/girder/PORT.md) | 36 | 612 | 127 | 7 | 89 | 46 | 343 | 14 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 68 | 935 | 196 | 6 | 13 | 70 | 649 | 5 |  | yes | yes |
 | [`settlements/hook`](settlements/hook/PORT.md) | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
-| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 3 | 17 | 8 | 0 | 0 | 9 | 0 | 0 |  |  | yes |
+| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 10 | 125 | 87 | 0 | 0 | 38 | 0 | 1 |  |  | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 95 | 1087 | 345 | 24 | 52 | 64 | 601 | 7 | fixtures, atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 36 | 423 | 9 | 23 | 10 | 26 | 355 | 5 |  | yes | yes |
 | [`settlements/locus`](settlements/locus/PORT.md) | 65 | 965 | 94 | 5 | 16 | 165 | 685 | 9 | atmos | yes | yes |
@@ -62,8 +62,8 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 12 | 201 | 1 | 0 | 13 | 32 | 155 | 5 | biome | yes | yes |
 | [`biomes/throne`](biomes/throne/PORT.md) | 14 | 266 | 45 | 22 | 15 | 35 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 14 | 213 | 1 | 0 | 12 | 31 | 169 | 5 | biome | yes | yes |
-| [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 4 | 18 | 12 | 0 | 0 | 6 | 0 | 0 |  |  | yes |
-| [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 165 | 55 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
+| [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 6 | 36 | 18 | 0 | 0 | 17 | 0 | 0 |  |  | yes |
+| [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 55 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 178 | 21 | 0 | 0 | 96 | 61 | 0 |  |  | yes |
 | **all** | 2084 | 27515 | 5268 (19%) | 619 (2%) | 1092 (4%) | 3615 (13%) | 16921 (61%) | 260 | | | |
 

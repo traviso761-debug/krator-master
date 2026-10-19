@@ -140,5 +140,23 @@ ok('no dry flat ground in reach: refused; dry ground 320 m off: the village move
 ok('a key the host has no box for is placed as its declared box and marked pending (the ranch\'s Beast Rider rookery); the Islanders\' own sawpit is not',
   V.ranch.records.some(r => r.key === 'br_bldg_rookery_tower' && r.pending) && V.lumber.records.some(r => r.key === 'ie-sawpit' && !r.pending) && V.salt.records.every(r => !r.pending), V.ranch.records.some(r => r.key === 'ie-byre' && !r.pending));
 
+// ---- felling on the world clock (40-hamlet-felling.js): a pure function of the world day
+{
+  const S = H.fellSchedule(1000, 100);        /* 100 workers at 0.1 trees a day: 10 a day, the order round in 100 days, under a year */
+  ok('the cutters wait for the stand to grow back: the cycle is never under the regrowth (' + S.cycle + ' days)', S.cycle === 385 && S.rate === 10,
+    H.fellSchedule(10000, 10).cycle === 10000);
+  const at = d => { const c = { gone: 0, young: 0, standing: 0 }; for (let k = 0; k < S.n; k++) { const s = H.fellState(S, k, d); c[s || 'standing']++; } return c; };
+  const a = at(0);
+  ok('a world opens on a stand in its steady state (stumps, saplings and grown trees at day 0)', a.gone > 0 && a.young > 0 && a.standing > 0,
+    H.fellState(S, -1, 0) === null && H.fellState(S, S.n, 0) === null, JSON.stringify(a));
+  const t0 = S.start + 5 / S.rate + S.cycle;
+  ok('a felled tree is a stump, then a sapling, then whole again a year after it fell',
+    H.fellState(S, 5, t0 + 1) === 'gone' && H.fellState(S, 5, t0 + 100) === 'young' && H.fellState(S, 5, t0 + S.regrowDays + 1) === null,
+    H.fellState(S, 5, t0 - 1) !== 'gone');
+  ok('the same day gives the same stand', JSON.stringify(at(200.5)) === JSON.stringify(at(200.5)), JSON.stringify(at(200.5)) !== JSON.stringify(at(20.5)));
+  const order = H.standOrder([{ id: 'b', x: 10, z: 0 }, { id: 'a', x: 10, z: 0 }, { id: 'c', x: 2, z: 0 }], [0, 0]).map(t => t.id).join('');
+  ok('the felling order is nearest the works first, ties by the tree\'s own id (never by what loaded first)', order === 'cab', order !== 'cba');
+}
+
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

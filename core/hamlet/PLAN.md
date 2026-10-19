@@ -14,7 +14,20 @@ negative):
   and the ranch's stable and rookery are the Beast Riders kit's (`br_bldg_raptor_stable`, `br_bldg_rookery_tower`).
   The kiln carries no job tag: the catalog's job vocabulary (`core/tags`) has no charcoal burning, lumber or smelting.
   Adding them is a `core/tags` change for later.
-- **Next:** H4 (the four isle villages in the open world), and the `gather` tag on the other biome kits.
+- **H4 is done** (2026-10-19): the four villages stand in the isle demo's open world (`openworld/isle-demo/src/48-world-hamlets.js`
+  sites them on the world's own ground, `88h-world-hamlets.js` draws them):
+  - salt: 112 people on the north-west pan (0.92 km2 of crust, high grade), Kautoa's;
+  - iron mine: 307 people under the medium iron node on the highest ground of Valapo's mountains;
+  - lumber: 263 people at the jungle's edge east of Kautoa, felling a stand of 2,379 timber trees;
+  - ranch: 245 people on 23 km2 of high-grade pasture north of Kautoa.
+
+  Every record is in `core/tags`. The flora and floor keep off the buildings and lanes (`WORLD.clearHook`) without
+  reshaping the land. The felling runs on the world clock (`core/clock`, 72-minute days, now in both open worlds):
+  `40-hamlet-felling.js` gives each tree's state as a pure function of the day. At the default rate (0.1 trees a
+  worker-day) the lumber village fells its stand in 340 days, less than the year a tree takes to regrow, so the stand is
+  nearly all saplings: `KHAMLET.FELL.treesPerWorkerDay` is the dial.
+- **Next:** the `gather` tag on the other biome kits; fishing and farming villages (H6); the villages in the sim (H5,
+  after P7a).
 
 A core module that makes the small settlements round a town: **resource villages** (salt, mining, lumber, ranching)
 and, by the same machinery, **fishing and farming villages**. Placing a village also places what it works, on the map.

@@ -17,8 +17,8 @@ RINGISLES.GATHER={
  pasture:{sav:.9,step:.55,am:.3,af:.05,xa:0,strand:.1,dune:.15,panEdge:.05},
  /* catch per zone weight */
  fish:{reef:1,lagoon:.85,mangal:.7,bench:.25},
- /* the crust's share over which a pan is worked for salt */
- saltPan:.45
+ /* the crust's share over which a pan is worked for salt (the open world's pans peak near 0.3) */
+ saltPan:.25
 };
 RINGISLES.gatherOf=function(Z){const G=RINGISLES.GATHER;let p=0,f=0;
  for(const k in G.pasture)p+=(Z[k]||0)*G.pasture[k];

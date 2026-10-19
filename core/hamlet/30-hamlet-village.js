@@ -182,14 +182,22 @@ KHAMLET.village = function (spec) {
     return false;
   };
   var fail = [];
+  /* the fallback: a building that cannot take its usual place hunts outward from the green (core/city's huntNear) for
+     the nearest clear spot, facing the green: cramped ground (a pan's edge, a slope) still gets its store and warehouse */
+  var anywhere = function (p, i) {
+    return !!KCITY.prim.huntNear([site.x, site.z], {r0: Math.max(gu, gv) + 12, step: 8, reach: 260, arc: 10}, function (q) {
+      var fx = site.x - q[0], fz = site.z - q[1], fl = Math.hypot(fx, fz) || 1;
+      return put(p, i, q[0], q[1], fx / fl, fz / fl) ? true : null;
+    });
+  };
   /* civic on the +v side facing -v, religious on the -v side facing +v */
   var civ = byRole('civic')[0], rel = byRole('religious')[0];
-  if (!edge(civ[0], civ[1], 0, gv, 0, -1, [-1, 0])) fail.push(civ[0].key);
-  if (!edge(rel[0], rel[1], 0, -gv, 0, 1, [-1, 0])) fail.push(rel[0].key);
+  if (!edge(civ[0], civ[1], 0, gv, 0, -1, [-1, 0]) && !anywhere(civ[0], civ[1])) fail.push(civ[0].key);
+  if (!edge(rel[0], rel[1], 0, -gv, 0, 1, [-1, 0]) && !anywhere(rel[0], rel[1])) fail.push(rel[0].key);
   /* the stores at the -u end, facing +u, either side of the back lane */
   var gen = byRole('general')[0], food = byRole('food')[0];
-  if (!edge(gen[0], gen[1], -gu, gv * .55, 1, 0, [0, 1])) fail.push(gen[0].key);
-  if (!edge(food[0], food[1], -gu, -gv * .55, 1, 0, [0, -1])) fail.push(food[0].key);
+  if (!edge(gen[0], gen[1], -gu, gv * .55, 1, 0, [0, 1]) && !anywhere(gen[0], gen[1])) fail.push(gen[0].key);
+  if (!edge(food[0], food[1], -gu, -gv * .55, 1, 0, [0, -1]) && !anywhere(food[0], food[1])) fail.push(food[0].key);
 
   /* frontage along a lane: both sides, each house facing the lane, set back, a drawn gap between */
   var front = function (l, side, list, st, t0, t1, cur) {
@@ -211,7 +219,7 @@ KHAMLET.village = function (spec) {
   var main = LN[0], ware = byRole('warehouse'), stM = stream(2, 0);
   var wN = front(main, 1, ware.filter(function (_, j) { return j % 2 === 0; }), stM, 2, 120);
   wN += front(main, -1, ware.filter(function (_, j) { return j % 2 === 1; }), stM, 2, 120);
-  if (wN < ware.length) fail.push('warehouse');
+  ware.forEach(function (w) { if (!records[w[1]] && !anywhere(w[0], w[1])) fail.push('warehouse'); });
   main.used = 60;
 
   /* the works: at the works lane's far end toward the resource, packed outward until they fit within reach */

@@ -46,7 +46,7 @@ KIT_FRAGS = (
     + [('biomes/geyser/src', f) for f in ('50-biome-geyser-species.js', '55-biome-geyser-trees.js', '57-biome-geyser-sinter.js',
                                           '60-biome-geyser-floor.js', '65-biome-geyser-show.js', '70-biome-geyser.js')]
     + [('biomes/ringisles/src', f) for f in ('50-biome-ringisles-species.js', '52-biome-ringisles-look.js', '55-biome-ringisles-trees.js',
-                                             '56-biome-ringisles-crops.js', '60-biome-ringisles-floor.js', '62-biome-ringisles-gardens.js',
+                                             '56-biome-ringisles-crops.js', '57-biome-ringisles-gather.js', '60-biome-ringisles-floor.js', '62-biome-ringisles-gardens.js',
                                              '66-biome-ringisles-world.js', '70-biome-ringisles.js')])
 # each kit's last listed fragment must close its registry (BIO.kitEnd), or every later kit's items land in its registry
 KIT_LAST = {'throne': '70-biome-throne.js', 'swbay': '75-biome-swbay-fauna.js', 'eastabyss': '75-biome-eastabyss-fauna.js',
@@ -73,23 +73,32 @@ def pack_fragment(kit):
 LDF = lambda *fs: [('ld', f) for f in fs]
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
-     ('core/rand', '08-core-rand.js'), ('core/terrain', '38-core-relief.js'),
+     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
      ('core/biome', '10-core-head.js'), ('core/biome', '20-core-kit.js'), ('core/biome', '30-core-foliage.js'),
      ('core/biome', '35-core-anim.js'), ('core/biome', '36-core-walker.js'), ('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'),
+     ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
      ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
      ('core/atmos', '89-atmos-b-skylight.js'),
      ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
      ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
-     ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '25-matlib-host.js'),
+     ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
+     ('core/materials/record', '26-matlib-bind.js'),
      ('biomes/sedesert/src', '35-core-strata.js')]
     + LDF('41-world-fields.js', '42-world-roads.js') + [('src', '43-world-isles.js')]
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('pack', k) for k in PACK_KITS]
     + KIT_FRAGS
+    # the hamlets (core/hamlet, H4): the Islanders' and the Beast Riders' buildings as bundles (settlements/isle-demo/
+    # bundles.py, as the city page takes them), their packs, core/city's primitives, the village generator, the resource
+    # fields, the kit-piece instancer the city page shares (58-isle-protos.js), and this world's hamlet specs
+    + [('islpack', 'islanders'), ('bundle', 'isk'), ('bundle', 'cat'),
+       ('core/city', '33-city-strategies.js'), ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
+       ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'), ('core/hamlet', '40-hamlet-felling.js'), ('kits/resources/src', '43r-res-fields.js'),
+       ('settlements/isle-demo/src', '58-isle-protos.js'), ('src', '48-world-hamlets.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
-    + [('src', '89-world-geysers.js')]
+    + [('src', '88h-world-hamlets.js'), ('src', '89-world-geysers.js')]
     + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
 # the page's own words in little-demo's head (its title and caption), replaced: each must be found exactly once
@@ -132,7 +141,19 @@ def main():
             out.append('\n// ==================== the library pack: %s\n' % f)
             out.append(pack_fragment(f))
             continue
-        path = os.path.join(LD, 'src', f) if where == 'ld' else os.path.join(ROOT if where != 'src' else HERE, where, f)
+        if where == 'islpack':   # a building kit's pack (the hamlets' Islanders), as the city page takes it
+            out.append('\n// ==================== the library pack: kits/%s\n' % f)
+            out.append(_mp.fragment(os.path.join(ROOT, 'kits', f), f, side=SIDE))
+            continue
+        if where == 'bundle':    # settlements/isle-demo/bundles.py: ISK (the Islanders), CAT (the Beast Riders' buildings)
+            if os.path.join(ROOT, 'settlements', 'isle-demo') not in sys.path:
+                sys.path.insert(0, os.path.join(ROOT, 'settlements', 'isle-demo'))
+            import bundles as _bd
+            js, _ = _bd.isk_bundle() if f == 'isk' else _bd.cat_bundle(SIDE)
+            out.append('\n// ==================== the %s bundle (settlements/isle-demo/bundles.py)\n' % f.upper())
+            out.append(js)
+            continue
+        path =os.path.join(LD, 'src', f) if where == 'ld' else os.path.join(ROOT if where != 'src' else HERE, where, f)
         s = open(path, encoding='utf8').read()
         if where == 'ld' and f == '00-head.html':
             for old, new in HEAD:
