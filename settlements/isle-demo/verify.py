@@ -61,7 +61,7 @@ opened (?town=) and, once both towns are planned (window._city.both):
   - negative controls: a building pushed onto its neighbour, one pushed into the sea, the palace (or Valapo's hall) taken
     away: each must fail its check
   - on the Valapo page, both towns on core/simulation (SIM_JS below), the citizens drawn near the camera (CIT_JS), the
-    canoe line (CANOE_JS, TRADE_JS)"""
+    canoe line (CANOE_JS, TRADE_JS), the week test at the two levels (WEEK_JS)"""
 CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.G;
  if(!neg){
   for(const t in C.checks)C.checks[t].forEach(c=>out.push(c));
@@ -111,6 +111,19 @@ TRADE_JS = r"""(neg)=>{const P={};Object.keys(_city.simPlans).forEach(t=>{P[t]={
  if(neg==='balance'){const b=C(),g=B.goods.find(g=>b.towns.kautoa.rows[g]&&b.towns.kautoa.rows[g].today);b.towns.kautoa.rows[g].today.change+=10;return pick(ISLE.tradeChecks(b,P),/balance/);}
  return [];}"""
 TRADE_NEGS = ('berth', 'ways', 'trace', 'imported', 'sea', 'balance')
+# P7d, the week test (src/48-isle-week.js; PLAN.md section 7): after the canoe line's checks, a week with Valapo watched
+# (Kautoa abstract), then a week with Kautoa watched (Valapo abstract), and ISLE.weekChecks on the two; each with its
+# negative on a changed copy. The page keeps the two weeks (window._week) and the wall time of each
+WEEK_JS = r"""(neg)=>{if(!window._week){const w1=ISLE.simWeek('Valapo',7*1440),w2=ISLE.simWeek('Kautoa',7*1440);ISLE.simWatch(_city.town);window._week=[w1,w2];}
+ const [w1,w2]=window._week,cp=w=>JSON.parse(JSON.stringify(w)),pick=(rs,re)=>rs.filter(c=>re.test(c.name));
+ if(!neg)return {ms:[w1.ms,w2.ms],checks:ISLE.weekChecks(w1,w2)};
+ if(neg==='balance'){const a=cp(w1);a.b.towns.valapo.goods.fish.total+=50;return pick(ISLE.weekChecks(a,w2),/balance/);}
+ if(neg==='sea'){const a=cp(w1),R=a.b.routes.lakatoi,k=Object.keys(R.landed)[0],g=Object.keys(R.landed[k])[0];R.landed[k][g]-=10;return pick(ISLE.weekChecks(a,w2),/landed or is at sea/);}
+ if(neg==='booked'){const a=cp(w1),s=a.abstract,g=Object.keys(a.b.towns[s].goods).find(g=>a.b.towns[s].goods[g].imported>a.a.towns[s].goods[g].imported);a.b.towns[s].goods[g].imported-=5;return pick(ISLE.weekChecks(a,w2),/booked there/);}
+ if(neg==='rate'){const a=cp(w1);a.b.towns.kautoa.food=a.a.towns.kautoa.food;return pick(ISLE.weekChecks(a,w2),/a worker a day/);}
+ if(neg==='decided'){const a=cp(w1);a.decided=3;return pick(ISLE.weekChecks(a,w2),/decided/);}
+ return [];}"""
+WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided')
 SIM_TOWNS = ('Kautoa', 'Valapo')
 SIM_NEGS = ('lot', 'home', 'job', 'map', 'haul', 'short', 'made')
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];
@@ -213,6 +226,16 @@ async def run_city(a):
                                 caught = bool(rs) and not any(r['ok'] for r in rs)
                                 print(('  PASS  ' if caught else '  MISSED') + ' negative (canoe line %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
                                 if not caught: fails.append('negative canoe line ' + neg)
+                            rw = await pg.evaluate(WEEK_JS, None)
+                            print('  INFO  the week test : a week with Valapo watched (Kautoa abstract) %d ms, with Kautoa watched (Valapo abstract) %d ms' % tuple(rw['ms']))
+                            for r in rw['checks']:
+                                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
+                                if not r['ok']: fails.append(r['name'])
+                            for neg in WEEK_NEGS:
+                                rs = await pg.evaluate(WEEK_JS, neg)
+                                caught = bool(rs) and not any(r['ok'] for r in rs)
+                                print(('  PASS  ' if caught else '  MISSED') + ' negative (week %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
+                                if not caught: fails.append('negative week ' + neg)
                     if town == 'Kautoa':
                         prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
                         pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)

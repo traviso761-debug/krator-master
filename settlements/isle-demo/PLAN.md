@@ -662,6 +662,15 @@ both ways, each town's books showing the other's goods imported, what is at sea 
 in both towns, each check with a negative. Left: the imported foods on the shelves, coffee from Valapo's uplands, a sea
 route to draw the voyage (KNOWN_ISSUES.md).
 
+**P7d, the abstract level (2026-10-19).** The engine is core/simulation's `77-sim-7-lod.js` (the core branch
+`claude/isle-p7d`, merged). The page runs the town in view presented and the other abstract (`48`: `ISLE.simWatch`). The
+week test (verify's Valapo page, `tests/test-isle-week.js`): a week with Valapo watched, then a week with Kautoa
+watched: each town's books balance over each week at either level (change = made + imported - exported - consumed),
+every load shipped landed or is at sea, the loads that sailed to the abstract town landed and are booked there, each
+town's food a worker a day abstract within 0.6-1.6 of the same town watched (about 1.1 both ways), and no decision made
+in the abstract town; each with a negative. A week with Valapo watched took 12-16 s in node, with Kautoa watched
+28-33 s, both presented about 38 s.
+
 **Order of work.**
 
 | Step | What | Proof |

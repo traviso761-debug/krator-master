@@ -101,6 +101,7 @@ setTimeout(function () {
         try {
           window._city.sim = ISLE.simDeclare([{ R: cur.R, G: cur.G }, { R: O.R, G: O.G }]);
           var sp = {}; sp[town] = cur.R; sp[other] = O.R; window._city.simPlans = sp; window._city.otherG = O.G; window._city.holds = ISLE.simHolds(town);
+          ISLE.simWatch(town);   /* P7d: the drawn town presented, the other abstract */
           ISLE.runUI(ui); lap('sim');
         } catch (e2) { window._city.simError = String(e2 && e2.stack || e2); }
       } catch (e) { window._city.otherError = String(e && e.stack || e); }

@@ -65,6 +65,10 @@
       abstract use; the imported foods are not yet sold in its shops or eaten in its meals, and the weavers of Kautoa still
       lack cotton (a recipe whose input never was made is not declared). Valapo makes no coffee yet (its upland farms are
       a world record), so the oruwa comes back from Valapo empty.
+- [ ] **Kautoa's kin mostly stay home in their free hours:** the town's places with SOCIALIZE room (the markets, the
+      hall, the taverns, the square, the palace) hold a few hundred of its 3,700 kin, so about 2,900 fall back to their
+      homes (a stay-put decision keeps its task). A capacity pass (`ISLE.TUNE.sim.kinds` SOCIALIZE slots, or parks and
+      beaches as open places) is owed; the books are unaffected.
 - [ ] **No sea route is drawn.** The lines run on SIM.trade's timer: a vessel shows at its berth while docked and is gone
       at sea. A `SIM.transport` line on a water layer between the two landings (122 km) would let the open world draw
       the voyage (P8). The berths stand up to 160 m from the landing, in the nearest water deep and clear enough.

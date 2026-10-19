@@ -274,7 +274,7 @@ def main():
 #   the bundles: KCITY, CAT (the Beast Riders' buildings: the kit's own and its ports), ISK (the Islanders), IZV (the Vernacular), RINGSEA
 #   this page's own: 15 (the sim's tuning), 20 (ground), 30 (programme), 32 (the city plan), 34 (census, checks), 40-47 (the
 #   towns on core/simulation, the canoe line) [G data]; 57 (the sim's run loop), 59 (citizens near the camera), 60 (draw), 61 (the canoe line's vessels), 98 (start) [web]
-# The [G data] half (data, ground, core/simulation, KCITY, 15-47) is also written as dist/isle-city.plan.js, which the node
+# The [G data] half (data, ground, core/simulation, KCITY, 15-48) is also written as dist/isle-city.plan.js, which the node
 # tests run.
 CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
     'core/rand/08-core-rand.js', 'core/space/20-core-space.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js',
@@ -283,10 +283,10 @@ CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
 CITY_MAT = [os.path.join(ROOT, 'core', 'materials', 'record', f) for f in ('23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js')]
 # core/export (P6b, PLAN.md section 7): the container and its adapters, so the page exports and verify.py checks its profile
 CITY_EXPORT = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js')]
-# core/simulation (P7b, PLAN.md section 9): every fragment, as Dhelv and Shade take it; the isle host is src/15 and 40-47
+# core/simulation (P7b, PLAN.md section 9): every fragment, as Dhelv and Shade take it; the isle host is src/15 and 40-48
 CITY_SIM = [os.path.join(ROOT, 'core', 'simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
 CITY_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '34-isle-census.js',
-                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js', '46-isle-stocks.js', '47-isle-trade.js']
+                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js', '46-isle-stocks.js', '47-isle-trade.js', '48-isle-week.js']
 CITY_WEB_JS = ['57-isle-run.js', '58-isle-protos.js', '59-isle-citizens.js', '60-isle-draw.js', '61-isle-canoes.js', '98-isle-city-start.js']
 CITY_HEAD = '''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Isle Demo Towns</title>

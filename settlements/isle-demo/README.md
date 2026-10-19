@@ -175,6 +175,15 @@ declares both once they are planned, in one order whichever town it draws, and h
   berth (`61`). Checks: the berths afloat and clear; the lakatoi both ways with loads; a load traced from Valapo's
   warehouses to Kautoa's and one back; each town's books showing the other's goods imported; what is at sea counted
   inbound and outbound; the books balancing in both towns; the vessels drawn exactly while docked. Each has a negative.
-- **Not yet:** the abstract level (P7d). See `HANDOFF.md`.
+- **The levels and the week test** (P7d; `48`; core/simulation 77-sim-7-lod.js). The town the page draws runs
+  presented, the other abstract (`ISLE.simWatch`): its people neither decide nor move, its economy makes by the workers
+  its schedule has at work, its carts make timed trips, its households eat and restock by the hour, and the canoe line
+  ticks as ever. The week test (verify's Valapo page and `node tests/test-isle-week.js`): a week with Valapo watched,
+  then a week with Kautoa watched; each town's books balance over each week at either level, every load shipped landed
+  or is at sea, the loads to the abstract town landed and are booked there, each town's food a worker a day abstract is
+  within 0.6-1.6 of the same town watched (about 1.1), and nobody in the abstract town decided (0 decisions against
+  about 110,000 and 320,000 in the watched town). Each has a negative. A week with Valapo watched takes about 12-16 s
+  in node (12.2 s in Chromium), with Kautoa watched 28-33 s (23.5 s); both presented about 38 s (the same run, a loaded machine).
+- **Not yet:** the `sim` export section (P7e). See `HANDOFF.md`.
 
 See `KNOWN_ISSUES.md`.
