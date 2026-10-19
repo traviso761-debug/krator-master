@@ -57,7 +57,7 @@ function buildPylSmelter(G,o){reseed(9121+(o.v|0));const W=14,D=10,H=6,Z=-2.5,zf
  vB('vPlaster',0,H-.3,zf+.05,W+.2,.3,.3,0,or);
  for(const [x,h] of[[-4,16],[-1.6,13]]){vPst('vPipeR',x,0,Z-D/2+1.4,.7,h,rust);for(const y of[10,13])if(y<h)vPst('vPipe',x,y,Z-D/2+1.4,.78,.25,gun);}
  // the door: a wide tombstone opening with the pour's glow inside
- pynTomb(0,0,zf,0,4.4,4.6,.05,.1,'D');for(let k=0;k<8;k++)vBall('vEmber',rr(-1.4,1.4),rr(.2,1.2),zf+rr(-.6,-.1),rr(.08,.16));
+ pynTomb(0,0,zf,0,4.4,4.6,.05,.1,'L',vC(0xe0602a));for(let k=0;k<8;k++)vBall('vEmber',rr(-1.4,1.4),rr(.2,1.2),zf+rr(-.6,-.1),rr(.08,.16));
  // the crucible gantry: a frame out of the door, a bucket hung on it
  for(const s of[-1,1])vPst('vPipe',s*2.6,0,zf+3.2,.15,5.2,gun);vB('vIron',0,5.2,zf+3.2,5.6,.35,.35,0,gun);vBeam([0,5.2,zf+3.2],[0,5.2,zf-.5],.25,gun,'vIron');
  kput('vTankR',[0,2.6,zf+3.2],null,[.7,1.1,.7],rust);vBall('vEmber',0,3.75,zf+3.2,.45);vPst('vPipe',0,3.7,zf+3.2,.02,1.5,gun);
@@ -85,7 +85,7 @@ function buildPylScrapExchange(G,o){reseed(9141+(o.v|0));const N=8,BW=4.2,W=N*BW
  vnReg('Scrap exchange',0,Z,W/2+.5,FL*H+2.4,{style:'neo',type:['market/shop']});
  vnBody('vPlaster',0,0,Z,W,FL*H,D,0,wh,{t:.4});
  for(let f=0;f<FL;f++){const y=f*H;
-  for(let k=0;k<N;k++){const x=-W/2+(k+.5)*BW;pynFrame('tomb',x,y+.1,zf,0,BW-1.1,H-.6,{rim:.16,c:or,fill:'D',out:.04});
+  for(let k=0;k<N;k++){const x=-W/2+(k+.5)*BW;pynFrame('tomb',x,y+.1,zf,0,BW-1.1,H-.6,{rim:.16,c:or,fill:'M',out:.04});
    if(f===0){vnStall(x,zf+1.3,0,vC(vPick(VPAL.awning)));}}
   if(f>0){vB('vPlaster',0,y-.15,zf+.6,W,.15,1.2,0,cr);vB('vIron',0,y+.95,zf+1.15,W,.05,.05,0,gun);for(let k=0;k<=N;k++)vPst('vPipe',-W/2+k*BW,y,zf+1.15,.03,.95,gun);}}
  vB('vPlaster',0,FL*H,Z,W+.2,.25,D+.2,0,or);
@@ -134,7 +134,7 @@ function buildPylWorkshop(G,o){reseed(9181+(o.v|0));const W=11,D=9,H=5.4,Z=-1.6,
  const wh=vC(vPick(PYPAL.white)),conc=vC(vPick(PYPAL.formwork)),or=vC(vPick(PYPAL.orange)),wood=vC(vPick(VPAL.woodMid)),gun=vC(vPick(PYPAL.gunmetal));
  vnReg('Workshop',0,Z,6.6,H+1,{style:'neo',type:['industry'],wealth:'middle'});
  vnBody('pyConc',0,0,Z,W,H,D,0,conc,{t:.3});vB('pyConc',0,H,Z,W+.1,.4,D+.1,0,conc);
- vB('vDarkB',-1,0,zf+.02,6.4,3.2,.1,0,null);pynCanopy(-1,3.6,zf,0,8,2.6,.3,or);
+ vB('vCorr',-1,0,zf+.02,6.4,3.2,.1,0,null);for(let k=1;k<8;k++)vB('vIron',-1,k*.4,zf+.08,6.4,.04,.03,0,gun);vB('vPlaster',-1,3.2,zf+.1,6.6,.22,.2,0,or);pynCanopy(-1,3.6,zf,0,8,2.6,.3,or);
  for(const x of[-2.6,.6])vB('vWood',x,0,zf-1,2.2,.9,.9,0,wood);
  pynStadium(3.4,3.9,zf,0,2.2,1.1,.12,.12,'P',or);pynStadium(3.4,4.05,zf,0,1.8,.8,.16,.05,'G');
  vnDoor(3.6,0,zf,0,1,2.3,'vIron',gun,gun,false);pynHeap(-6.8,1.6,1.4,'scrap',8);}

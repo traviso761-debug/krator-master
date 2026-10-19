@@ -29,13 +29,15 @@ const PYHALF=(()=>{const s=new THREE.Shape();s.moveTo(-1,0);s.absarc(0,0,1,Math.
  const g=new THREE.ExtrudeGeometry(s,{depth:1,bevelEnabled:false,curveSegments:18});g.translate(0,0,-.5);return g;})();
 // a hexagonal prism, axis local z, centred, a flat side down (scale [r, r, length]): the honeycomb pods
 const PYHEX=new THREE.CylinderGeometry(1,1,1,6).rotateX(Math.PI/2).rotateZ(Math.PI/6);
+// Pylon's pane: the Vernacular's dark glass lifted to a sky grey, so a glazed profile reads as glass, not a hole
+MAT.pyPane=MAT.darkGlass.clone();MAT.pyPane.color.set(0x7d97a3);MAT.pyPane.roughness=.15;MAT.pyPane.metalness=.55;kdef('pyPaneB',VBOX,MAT.pyPane);
 kdef('pyConc',VBOX,MAT.pyConc);
-kdef('pyDisc',PYDISC,MAT.plaster);kdef('pyDiscC',PYDISC,MAT.pyConc);kdef('pyDiscG',PYDISC,MAT.darkGlass);kdef('pyDiscD',PYDISC,MAT.void);kdef('pyDiscR',PYDISC,MAT.rust);
+kdef('pyDisc',PYDISC,MAT.plaster);kdef('pyDiscC',PYDISC,MAT.pyConc);kdef('pyDiscG',PYDISC,MAT.pyPane);kdef('pyDiscD',PYDISC,MAT.void);kdef('pyDiscR',PYDISC,MAT.rust);
 kdef('pyRing',PYRING,MAT.plaster);kdef('pyRingI',PYRING,MAT.iron);
 kdef('pyHalf',PYHALF,MAT.plaster);kdef('pyHalfC',PYHALF,MAT.pyConc);
-kdef('pyHex',PYHEX,MAT.plaster);kdef('pyHexR',PYHEX,MAT.rust);kdef('pyHexD',PYHEX,MAT.void);kdef('pyHexG',PYHEX,MAT.darkGlass);
+kdef('pyHex',PYHEX,MAT.plaster);kdef('pyHexR',PYHEX,MAT.rust);kdef('pyHexD',PYHEX,MAT.void);kdef('pyHexG',PYHEX,MAT.pyPane);
 // the gable wedge's faces are wound for double-sided roof materials: the void and glass wedges take double-sided copies
-MAT.pyVoid=MAT.void.clone();MAT.pyVoid.side=THREE.DoubleSide;MAT.pyGlass=MAT.darkGlass.clone();MAT.pyGlass.side=THREE.DoubleSide;
+MAT.pyVoid=MAT.void.clone();MAT.pyVoid.side=THREE.DoubleSide;MAT.pyGlass=MAT.pyPane.clone();MAT.pyGlass.side=THREE.DoubleSide;
 kdef('pyGableG',VGABLE,MAT.pyGlass);kdef('pyGableD',VGABLE,MAT.pyVoid);kdef('pyGableC',VGABLE,MAT.pyConc);
 kdef('pyDomeR',VDOME,MAT.rust);
 // a smooth render cylinder standing on y = 0 (scale [r, h, r]): the palace's round pavilions and the dome's drum
@@ -51,3 +53,9 @@ MAT.pyHexTile=MAT.plaster.clone();vWorldUV(MAT.pyHexTile,1/1.2);
 const pyCard=()=>new THREE.MeshStandardMaterial({color:0xffffff,roughness:.7,metalness:.3,alphaTest:.5,side:THREE.DoubleSide});
 MAT.pyGrille=pyCard();vWorldUV(MAT.pyGrille,1/.8);MAT.pyGrilleD=pyCard();vWorldUV(MAT.pyGrilleD,2/.8);
 kdef('pyHexTile',VBOX,MAT.pyHexTile);kdef('pyGrille',VPLANE,MAT.pyGrille);kdef('pyGrilleD',new THREE.CircleGeometry(1,24),MAT.pyGrilleD);
+
+// ---------------------------------------------------------------- doors in the profiles (the owner, 2026-10-18: no black voids)
+// A profiled opening is a door leaf, a pane or a glow, never MAT.void: timber (walnut, tinted per instance) and steel kinds for
+// the discs, wedges and hex ends, double-sided for the wedges like pyVoid. pynDoorway (69q) draws the leaf and cuts the wall.
+MAT.pyWood=MAT.wood.clone();MAT.pyWood.color.set(0xffffff);MAT.pyWood.side=THREE.DoubleSide;MAT.pyIron=MAT.iron.clone();MAT.pyIron.side=THREE.DoubleSide;
+kdef('pyDiscW',PYDISC,MAT.pyWood);kdef('pyGableW',VGABLE,MAT.pyWood);kdef('pyDiscM',PYDISC,MAT.pyIron);kdef('pyGableM',VGABLE,MAT.pyIron);kdef('pyHexL',PYHEX,MAT.pyLit);

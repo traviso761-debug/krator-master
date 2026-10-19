@@ -17,7 +17,7 @@ function buildPylNeoVilla(G,o){reseed(9091+(o.v|0));const CW=25,CD=23,WH=2.4,ZH=
  for(const s of[-1,1]){vnLampPost(s*4.2,0,5.6,2.8);}
  // the ground storey: white, glazed either side of the portal
  vnBody('vPlaster',0,0,ZH,GW,GH,GD,0,wh,{t:.3});
- pynFrame('tomb',0,0,zf,0,2.2,3.4,{rim:.24,n:3,c:wh,fill:'D',out:.07});
+ pynDoorway('tomb',0,0,zf,0,2.2,3.4,{rim:.24,n:3,c:wh,out:.07});
  const pf=loc(0,zf,0,.5,0);vB('vPlaster',pf[0],0,pf[1],3.9,.12,.3,0,or);
  for(const s of[-1,1]){vnWin(s*4.9,.35,zf,0,4.2,2.8,'glass','vIron',gun);vnLamp(s*2.3,3.1,zf+.02,0);}
  // the upper storey: concrete, cantilevered past the ground storey, ranked with orange pill fins
@@ -40,7 +40,7 @@ function buildPylHexVilla(G,o){reseed(9096+(o.v|0));const CW=23,CD=21,FZ=9.6,WH=
  for(const s of[-1,1]){vB('vPlaster',s*(CW/4+1.6),0,FZ,CW/2-3.2,WH,.6,0,wh);vB('vPlaster',s*(CW/4+1.6),WH,FZ,CW/2-3.0,.14,.8,0,or);
   pynPortCluster(s*(CW/4+1.6),.5,FZ+.3,0,CW/2-4.4,WH-.9,5,.62,or,'G',true);}
  vB('vPlaster',0,0,FZ-.4,6.4,WH+2.4,1.4,0,cr);vB('vPlaster',0,WH+2.4,FZ-.4,6.6,.18,1.6,0,or);
- pynFrame('hex',0,.0,FZ+.3,0,2.2,4.8,{rim:.22,n:4,cs:[wh,or],fill:'D',out:.06});
+ pynDoorway('hex',0,.0,FZ+.3,0,2.2,4.8,{rim:.22,n:4,cs:[wh,or],out:.06});
  for(const s of[-1,1])vnLamp(s*2.6,3.2,FZ+.3,0);
  // the side and back walls, lower
  for(const s of[-1,1])vB('vPlaster',s*(CW/2-.2),0,0,.4,2.4,CD,0,cr);vB('vPlaster',0,0,-CD/2+.2,CW,2.4,.4,0,cr);
@@ -53,6 +53,8 @@ function buildPylHexVilla(G,o){reseed(9096+(o.v|0));const CW=23,CD=21,FZ=9.6,WH=
  const tb=loc(A[0],A[1]+A[3]/2,0,.06,0);kput('vGablePl',[tb[0],3.3,tb[1]],vQ(Math.PI/2,0,0),[.1,1.0,1.8],or);
  vnDoor(A[0],0,A[1]+A[3]/2,0,1.3,2.6,'vPlaster',or,vC(vPick(PYPAL.walnut)),false);
  for(const x of[A[0]-3.6,A[0]+3.6])vnWin(x,1,A[1]+A[3]/2,0,1.4,1.6,'lit','vPlaster',or);
+ // the tall block's own door, on its east side between it and the court wall (its hall is double height, the hex window's)
+ vnDoor(B[0]+B[2]/2,0,B[1]+1.6,Math.PI/2,1.1,2.5,'vPlaster',or,vC(vPick(PYPAL.walnut)),false);
  // the court: paving, a narrow pool on the axis, lamp posts
  pynHexPave(0,0,3.4,10,8,0,st);vB('vStone',0,0,3.4,1.6,.12,6.4,0,st);vB('vWinGlass',0,.12,3.4,1.0,.03,5.8,0,null);
  for(const s of[-1,1])vnLampPost(s*1.7,0,6.3,2.6);}   // flanking the pool, clear of the door
