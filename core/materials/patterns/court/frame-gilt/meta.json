@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.302,
+    4.904
+   ],
+   "seam_before": [
+    1.903,
+    7.391
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.03,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "gold",
+  "id": "court/frame-gilt",
+  "metal": 0.6,
+  "pattern": true,
+  "roughness": 0.35,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "court-frame-gilt.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/court/frame-gilt: a carved and gilded Art Deco frame moulding, face-on",
+  "reuse": "every gilt picture frame and mirror; gilt cornices",
+  "sha1": "3750c953eed1d4acdfa7613f91f2df9fd1d0b7e0"
+ }
+}

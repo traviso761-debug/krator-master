@@ -1309,6 +1309,60 @@ canvas{display:block;width:100vw;height:100vh}
       .sort(function(p, q){ return q.held-p.held || (p.id<q.id?-1:1); });
     return out;
   };
+
+  /* ---------------------------------------------------------------- settlements: one economy each (P7a) */
+  /* settlements/isle-demo/PLAN.md section 9, P7a items 1, 2 and 5. OPT-IN: a page that never names a settlement runs one
+     economy as before (SIM.ECONS stays null, every call below passes straight through). A page that does:
+       SIM.settlement({id, faction, name?})           the settlement as a record (kind 'settlement')
+       SIM.place({..., settlement: id})                a place belongs to one; an actor to its home's (SIM.settlementOf)
+       SIM.economy(config, {settlement: id})           that settlement's own economy: its warehouses, sites, carts,
+                                                       recipes, in-flight loads and books, apart from every other's
+     Then SIM.store / recipe / produce / cart route to the economy of the place or actor they are given; SIM.supply,
+     stockOf, economyMeal, economyDays and economyReport take a settlement as their last argument (or run inside
+     SIM.withEcon); SIM.economyStep and economyJump step every economy in turn, in the order they were made. Inside an
+     economy's turn SIM.ECON is that economy, so everything above runs unchanged on its own warehouses and books.
+       SIM.econ(key)        the settlement's economy (SIM.ECON on an unkeyed page)
+       SIM.withEcon(key, fn) fn() with SIM.ECON that settlement's (fn() as it is on an unkeyed page or an unknown key) */
+  SIM.ECONS = null;
+  SIM.ECON_ORDER = [];
+  SIM.settlement = function(o){ if(!SIM.R.settlement){ SIM.R.settlement={}; SIM.order.settlement=[]; }   /* made on first use: an unkeyed page's registry is as it was */
+    return SIM.add('settlement', o); };
+  SIM.settlementOf = function(x){
+    if(x==null) return null;
+    if(typeof x!=='object'){ var P=SIM.R.place && SIM.R.place[x]; return P && P.settlement!=null ? P.settlement : null; }
+    if(x.settlement!=null) return x.settlement;
+    if(x.home!=null){ var Hm=SIM.R.place && SIM.R.place[x.home]; return Hm && Hm.settlement!=null ? Hm.settlement : null; }
+    return null; };
+  SIM.econ = function(key){ return SIM.ECONS ? (key==null ? null : SIM.ECONS[key] || null) : SIM.ECON; };
+  SIM.withEcon = function(key, fn){
+    if(!SIM.ECONS || key==null || !SIM.ECONS[key]) return fn();
+    var prev=SIM.ECON; SIM.ECON=SIM.ECONS[key];
+    try { return fn(); } finally { SIM.ECON=prev; } };
+  var economy0=SIM.economy;
+  SIM.economy = function(o, opt){
+    var key=opt && opt.settlement!=null ? opt.settlement : null;
+    if(key==null){ if(SIM.ECONS) throw new Error('SIM.economy: this page keys its economies by settlement; name one'); return economy0(o); }
+    var prev=SIM.ECON, E=economy0(o); E.settlement=key;
+    if(!SIM.ECONS){ SIM.ECONS={}; SIM.ECON_ORDER=[]; prev=null; route(); }
+    if(SIM.ECONS[key]) throw new Error('SIM.economy: settlement '+key+' has an economy already');
+    SIM.ECONS[key]=E; SIM.ECON_ORDER.push(key); SIM.ECON=prev || E;   /* SIM.ECON outside a turn: the first made (an "on" flag for the other modules) */
+    return E; };
+  /* the routed calls, installed when the first keyed economy is made (an unkeyed page keeps the plain ones): by the
+     place or actor given, or by a settlement passed last */
+  function route(){
+    function byPlace(f){ return function(id){ var args=arguments; return SIM.withEcon(SIM.settlementOf(id), function(){ return f.apply(null, args); }); }; }
+    function byLast(f, n){ return function(){ var args=Array.prototype.slice.call(arguments, 0, n), key=arguments.length>n ? arguments[n] : null;
+      return SIM.withEcon(key, function(){ return f.apply(null, args); }); }; }
+    SIM.store=byPlace(SIM.store); SIM.recipe=byPlace(SIM.recipe); SIM.produce=byPlace(SIM.produce);
+    var cart0=SIM.cart; SIM.cart = function(a){ return SIM.withEcon(SIM.settlementOf(a), function(){ return cart0(a); }); };
+    SIM.supply=byLast(SIM.supply, 3); SIM.stockOf=byLast(SIM.stockOf, 1); SIM.economyMeal=byLast(SIM.economyMeal, 0);
+    SIM.economyDays=byLast(SIM.economyDays, 1); SIM.economyReport=byLast(SIM.economyReport, 0);
+    var step0=SIM.economyStep, jump0=SIM.economyJump;
+    SIM.economyStep = function(minute, t){ if(!SIM.ECONS) return step0(minute, t);
+      SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ step0(minute, t); }); }); };
+    SIM.economyJump = function(minute){ if(!SIM.ECONS) return jump0(minute);
+      SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ jump0(minute); }); }); };
+  }
 })(typeof window!=='undefined'?window:globalThis);
 
 // ==================== simulation/77-sim-6-items.js
@@ -1412,7 +1466,9 @@ canvas{display:block;width:100vw;height:100vh}
     a.errand={ act:'BUY', item:item, when:when, since:minute }; stat(I.stats.errands, item); return true;
   }
   SIM.errand = function(a, item, when){ return errand(a, item, when||'free', SIM.minute()); };
-  function complete(a, E, minute){
+  /* a purchase draws on the shop's settlement's store (P7a: keyed economies); an unkeyed page calls complete0 as before */
+  function complete(a, E, minute){ return SIM.ECONS ? SIM.withEcon(SIM.settlementOf(E.place), function(){ return complete0(a, E, minute); }) : complete0(a, E, minute); }
+  function complete0(a, E, minute){
     var I=SIM.ITEMS, P=SIM.R.place[E.place], sold=(I.sells[E.place]||[]), K=I.kinds[E.item];
     stat(I.stats.done, E.item); var tr=I.stats.trip[E.item]||(I.stats.trip[E.item]={ n:0, mins:0, max:0 }); tr.n++; tr.mins+=E.trip; tr.max=Math.max(tr.max, E.trip);
     var bs=I.stats.byShop[E.place]||(I.stats.byShop[E.place]={});
@@ -1505,7 +1561,9 @@ canvas{display:block;width:100vw;height:100vh}
     else if(E && act===E.act && P){ E.place=P.id; E.trip=task ? a.arrM-minute : 0; }   /* staying put: no trip */
     if(act==='EAT' && P){ a.boost=a.boost||{}; a.boost.EAT = meal(a, P); }
   };
-  function meal(a, P){
+  /* a meal out draws on the settlement of the place it is eaten at (P7a) */
+  function meal(a, P){ return SIM.ECONS ? SIM.withEcon(SIM.settlementOf(P.id), function(){ return meal0(a, P); }) : meal0(a, P); }
+  function meal0(a, P){
     var I=SIM.ITEMS, M=I.meal, S=I.stats.meals;
     var fine = 1 + (M.rich||0)*(a.wealth||0);                                     /* a richer table: more filling, more relaxing */
     if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ S.out++; return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
@@ -1881,7 +1939,9 @@ canvas{display:block;width:100vw;height:100vh}
       SIM.all('group').forEach(function(G){ if(G.cargo && G.cargo.n>0) c.exported[G.cargo.good]=(c.exported[G.cargo.good] || 0)-G.cargo.n; }); }
     return c; }
   function snap(minute, S){ var t=tally(null), tot={}; Object.keys(t.T).forEach(function(k){ tot[k]=totalOf(t.T[k]); }); return { minute:minute, tot:tot, cum:counters(), skipped:S.skipped }; }
-  function state(){ var S=SIM.STOCKS; if(!S || S.econ!==SIM.ECON || S.items!==SIM.ITEMS) S=SIM.STOCKS={ econ:SIM.ECON, items:SIM.ITEMS, snaps:[], day:null, last:null, skipped:0 }; return S; }
+  function state(){ if(SIM.ECONS) return keyedState(); var S=SIM.STOCKS; if(!S || S.econ!==SIM.ECON || S.items!==SIM.ITEMS) S=SIM.STOCKS={ econ:SIM.ECON, items:SIM.ITEMS, snaps:[], day:null, last:null, skipped:0 }; return S; }
+  /* a settlement's own snapshots (P7a: keyed economies), kept on its economy */
+  function keyedState(){ var E=SIM.ECON, S=E._stocks; if(!S || S.items!==SIM.ITEMS) S=E._stocks={ econ:E, items:SIM.ITEMS, snaps:[], day:null, last:null, skipped:0 }; return S; }
 
   /* ---------------------------------------------------------------- the daily snapshot (SIM.step, SIM.jump) */
   SIM.stocksStep = function(minute){
@@ -1890,7 +1950,7 @@ canvas{display:block;width:100vw;height:100vh}
     S.last=minute;
   };
   /* a jump forward by more than a minute or back at all: the day it falls in is not a day of flows */
-  SIM.stocksJump = function(minute){ var S=SIM.STOCKS; if(!S || S.last==null) return; if(minute-S.last>1 || minute<S.last) S.skipped++; S.last=minute; };
+  SIM.stocksJump = function(minute){ var S=SIM.ECONS ? SIM.ECON && SIM.ECON._stocks : SIM.STOCKS; if(!S || S.last==null) return; if(minute-S.last>1 || minute<S.last) S.skipped++; S.last=minute; };
 
   /* ---------------------------------------------------------------- the stocks */
   function flows(a, b, k, isGood, isFood){   /* the change and the flows of item k between two snapshots */
@@ -1939,6 +1999,15 @@ canvas{display:block;width:100vw;height:100vh}
     if(a.present){ var p=SIM.pose(a, t==null ? SIM.time() : t, { cheap:true }); if(p) return { x:p.x, y:p.y || 0, z:p.z }; }
     var H=a.home && SIM.R.place[a.home]; return H ? { x:H.x, y:H.y || 0, z:H.z } : null;
   };
+  /* ---------------------------------------------------------------- by settlement (P7a) */
+  /* On a page that keys its economies (77-sim-6-economy.js SIM.settlement): SIM.stocks(s) is settlement s's own stocks,
+     SIM.stocksBy() every settlement's, and the daily snapshot is taken for each in turn. An unkeyed page is as before.
+     (The items module's holdings, people's own things and their households' food, are not split by settlement yet.) */
+  var stocks0=SIM.stocks, step0=SIM.stocksStep, jump0=SIM.stocksJump;
+  SIM.stocks = function(s){ if(!SIM.ECONS || s==null) return stocks0(); return SIM.withEcon(s, function(){ return stocks0(); }); };
+  SIM.stocksBy = function(){ if(!SIM.ECONS) return null; var out={}; SIM.ECON_ORDER.forEach(function(k){ out[k]=SIM.stocks(k); }); return out; };
+  SIM.stocksStep = function(minute){ if(!SIM.ECONS) return step0(minute); SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ step0(minute); }); }); };
+  SIM.stocksJump = function(minute){ if(!SIM.ECONS) return jump0(minute); SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ jump0(minute); }); }); };
 })(typeof window!=='undefined'?window:globalThis);
 
 // ==================== simulation/77-sim-8-export.js

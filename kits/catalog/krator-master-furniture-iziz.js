@@ -16,7 +16,10 @@ FURN_CULTURE('iziz', { name: 'Iziz', pack: 'iziz', influences: 'science fantasy;
     timberSawn: 0x9a6a42, timberSawnDark: 0x7a4e30, timberSawnLight: 0xa87a4e, timberGreyPost: 0x8a7a66, ironSoot: 0x2e2a26,
     steelCorrugate: 0x9a9488, sackingTan: 0xb8a080, sackingDark: 0xa89070, sackingPale: 0xc8b898, ropeFlax: 0xb8a888,
     leafVine: 0x3f7a34, leafBright: 0x4f9a3a, leafMoss: 0x2f6a2a, leafSpring: 0x6aa04a,
-    clothApricot: 0xf2a24a, clothAmber: 0xd8893c, clothVermilion: 0xc9442a, clothSaffron: 0xe0a030, clothRust: 0xb8552a
+    clothApricot: 0xf2a24a, clothAmber: 0xd8893c, clothVermilion: 0xc9442a, clothSaffron: 0xe0a030, clothRust: 0xb8552a,
+    /* the court finishes (2026-10-19): a hair off their plain twins, so they split into the court texture families below */
+    courtMahogany: 0x6b2b1f, courtBrocade: 0x9b2c2c, courtClothGold: 0xd3ae36, courtClothTeal: 0x2e8e89, courtClothCream: 0xf2e1bf,
+    courtGilt: 0xd8b13b, courtMarble: 0xe9e5dd
   } });
 /* END PALETTE */
 const IZIZ_COMMON = {
@@ -31,9 +34,20 @@ const IZIZ_COMMON = {
   shelfFill: 'scrolls', rack: 'cloaks', art: 'sunplate', art2: 'mosaic', statue: 'figure', tapestry: 'sun',
   canopy: true, board: 'panel'
 };
+/* the court's finishes (the owner, 2026-10-19): the court tier draws its veneer, upholstery, gilding and hearth in palette keys
+   of their own, which split into texture families (FAMILY_SPLITS, krator-furniture-core.js). A page that packs the court sets
+   maps them (settlements/iziz/src/95i-iziz-interiors.js, COURT_TRI): marquetry, brocade, opus sectile in full colour, gold
+   leaf and velvet as detail. Elsewhere the split only separates the batch's buckets; the colours are unchanged. */
+FAMILY_SPLITS.push(
+  [/^courtMahogany$/, ['mahogany', 'wood'], 'courtMarquetry'],
+  [/^courtBrocade$/, ['cloth'], 'courtBrocade'],
+  [/^courtCloth/, ['cloth'], 'courtVelvet'],
+  [/^courtGilt$/, ['gold', 'metal'], 'courtGilt'],
+  [/^courtMarble$/, ['ceramic', 'stone'], 'courtOpus']);
 const IZIZ_COURT = Object.assign({}, IZIZ_COMMON, {
-  cloth: ['clothGold', 'clothCrimson', 'clothTeal', 'clothCream'],
-  accent: 'gilt', accentFam: 'gold', stone: 'marbleWhite', stoneFam: 'stone',
+  wood: 'courtMahogany', tile: 'courtMarble',
+  cloth: ['courtClothGold', 'courtBrocade', 'courtClothTeal', 'courtClothCream'],
+  accent: 'courtGilt', accentFam: 'gold', stone: 'marbleWhite', stoneFam: 'stone',
   motif: 'step', finial: 'disc', statue: 'figure', art: 'mosaic', art2: 'sunplate', lamp: 'glass'
 });
 FK.set({ culture: 'iziz', tier: 'common', S: IZIZ_COMMON, names: {
@@ -255,3 +269,36 @@ FURN({
     for (let i = 0; i < 4; i++) F.box(-0.45 + i * 0.3, 1.7, -0.38, 0.03, 0.24, 0.03, 0, I, 'metal');
   }
 });
+
+/* ---------------- the court's books and pictures (the owner, 2026-10-19). Drawn here as plain blocks and a plain canvas;
+   a page that binds the court sets (core/materials/patterns/court: books-a, books-b, painting-1..8) lays the spines on
+   the shelves and a painting in the frame (settlements/iziz/src/95i-iziz-interiors.js, COURT_DECALS). */
+FURN({
+  key: 'iziz_court_library_shelves', name: 'Mahogany library shelves', culture: 'iziz', tier: 'court', type: 'shelf', setting: 'indoor',
+  rooms: ['library', 'study', 'hall', 'antechamber', 'bedroom'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'gold', 'cloth'],
+  w: 1.6, d: 0.42, h: 2.4, variants: 1,
+  build: function (F) {
+    const m = F.col('mahoganyRed'), d = F.col('mahoganyDark'), g = F.col('gilt');
+    F.box(0, 0, -0.18, 1.6, 2.3, 0.06, 0, d, 'wood');                                    /* the back */
+    for (const s of [-1, 1]) F.box(s * 0.77, 0, 0, 0.06, 2.3, 0.42, 0, m, 'wood');      /* the sides */
+    F.box(0, 0, 0, 1.6, 0.1, 0.42, 0, d, 'wood');                                        /* the plinth */
+    for (let k = 0; k < 5; k++) F.box(0, 0.1 + k * 0.52, 0, 1.48, 0.04, 0.4, 0, m, 'wood');   /* the shelves */
+    for (let k = 0; k < 4; k++) F.box(0, 0.14 + k * 0.52, -0.02, 1.46, 0.4, 0.3, 0, F.col('mahoganyLight'), 'cloth');   /* the books (spines laid on by the page) */
+    F.box(0, 2.24, 0, 1.6, 0.1, 0.42, 0, g, 'gold');                                     /* the gilt cornice */
+  }
+});
+
+FURN({
+  key: 'iziz_court_painting', name: 'Painting in a gilt frame', culture: 'iziz', tier: 'court', type: 'art', setting: 'indoor',
+  rooms: ['hall', 'living', 'study', 'antechamber', 'library', 'bedroom', 'shrine'], anchor: 'wall', clearance: { front: 0.4 },
+  materials: ['gold', 'cloth'],
+  w: 1.3, d: 0.1, h: 2.4, variants: 1,
+  build: function (F) {
+    const g = F.col('gilt');
+    F.box(0, 1.36, -0.03, 1.14, 0.88, 0.03, 0, F.col('clothCream'), 'cloth');             /* the canvas (painted by the page) */
+    F.box(0, 1.28, -0.02, 1.3, 0.08, 0.06, 0, g, 'gold'); F.box(0, 2.24, -0.02, 1.3, 0.08, 0.06, 0, g, 'gold');
+    for (const s of [-1, 1]) F.box(s * 0.61, 1.28, -0.02, 0.08, 1.04, 0.06, 0, g, 'gold');   /* the frame */
+  }
+});
+

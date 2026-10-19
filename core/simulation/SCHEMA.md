@@ -155,6 +155,48 @@ of schedule falls due over the hour's first minutes instead of all at :00 (the h
 stay consistent (nothing waits). A world may add an actor's own `lagBase` minutes (the Voth city's trades in two
 buckets, half of them a half-hour later).
 
+## Settlements and their economies (P7a, 2026-10-19)
+
+A page may hold several settlements, each with its own economy (`settlements/isle-demo/PLAN.md` section 9). It is
+**opt-in**: a page that never names one runs one economy as before, and its results do not move (Voth's stocks proof,
+`test-sim.js`).
+
+- `SIM.settlement({id, faction, name?})` makes the record (kind `settlement`, registered on first use).
+- A place belongs to one: `SIM.place({..., settlement: id})`. An actor belongs to its home's (`SIM.settlementOf(x)`
+  takes a place id, a place or an actor).
+- `SIM.economy(config, {settlement: id})` makes that settlement's own economy: warehouses, sites, recipes, carts,
+  in-flight loads and books. Once one is keyed, every economy on the page must be (an unkeyed one throws).
+- `SIM.store`, `recipe`, `produce` and `cart` route by the place or actor they are given. `SIM.supply(g, n, whole, s)`,
+  `stockOf(g, s)`, `economyMeal(s)`, `economyDays(g, s)` and `economyReport(s)` take the settlement last, or run inside
+  `SIM.withEcon(s, fn)`. A purchase draws on its shop's settlement, a meal out on its place's.
+- `SIM.economyStep` and `economyJump` step every economy in turn. Inside a turn `SIM.ECON` is that economy, so the
+  module's own code is unchanged.
+- `SIM.stocks(s)` is one settlement's stocks, `SIM.stocksBy()` all of them; each keeps its own daily snapshots.
+- **Not yet split by settlement:** the items module's holdings (people's own things and their households' food are
+  counted in every settlement's stocks), the population deal (`SIM.populate`), the resolver's place search, and trade
+  between settlements (a carrier whose stops are two settlements' places, with exported, imported and in transit in
+  the books). They are P7a's remaining items.
+
+## The three levels (the contract for a settlement nobody is watching; P7d builds it)
+
+A settlement runs at one of three levels, chosen by the player's window, never by what it holds:
+
+| Level | When | What runs | What is drawn |
+|---|---|---|---|
+| **record** | always | the records exist: places, actors, stores, routes, the books | nothing |
+| **abstract** | the settlement is loaded but away from the window | each place produces and consumes by the hour from its workers and recipes, as `SIM.economyStep` does; carts are counted, not walked (a load moves when its trip's minutes are past); trade routes tick; the books balance | nothing; no actor is posed |
+| **presented** | the settlement is in the window | everything: actors posed, carts walking, groups on the map | everything |
+
+**The rules between them.**
+- The books are the same at every level: made + imported - exported - consumed = the change of the stock, per good and
+  per settlement, over any span.
+- Raising a settlement to presented places each actor where its schedule says it is at that minute (the wake), and
+  each cart part-way along its trip (the lag). Lowering it keeps every record and drops only the poses.
+- A carrier between two settlements is a record while away: it leaves one settlement's books (exported) and lands in the
+  other's (imported) after its route's minutes; while at sea it is counted `in transit`.
+- The abstract-level week test (`settlements/isle-demo/PLAN.md` section 7) fast-forwards a week with one town in the
+  window, then the other, and checks the books, every load and the arrival after days away.
+
 ## Navigation layers
 
 `pedestrian` (people), `road` (wheels and caravans: routes ask `minW`), `water` (boats), `animal` (riders across

@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    4.074,
+    8.107
+   ],
+   "seam_before": [
+    3.825,
+    7.671
+   ],
+   "source_size": [
+    439,
+    439
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.15,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "seam_axes": "none",
+   "size": 512
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "court/painting-5",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "court-painting-5.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/talia/paintings, cell 5: a still life: brass bowls, pomegranates, figs, a cobalt jug, books on marble; oil on canvas, late Byzantine warmed by Venetian colour",
+  "reuse": "a canvas in any court painting frame (the Iziz court set, palaces, galleries)",
+  "sha1": "1037b8fe7aee5b6259a7d7dd22f7de77729702b0"
+ }
+}
