@@ -59,7 +59,7 @@ editor), so both pages are about 3.9 MB.
 | `targets/hook/89z-rows.js` | `[G data]` the P0 run, then the ground stamps and the hosts: the site's named hosts, then one per free block of the Ancient grid by `KRAND` (seeded from the stretch, row and column; the type by the site's weights, the decay and the cut by the quarter's ruin level; a block near an avenue, on the Heights' front slope or over a Port footprint stays free); every host and quarter in `core/tags` before anything draws |
 | `src/88-hook-programme.js` | `[G data]` the town's programme (P2): each culture's kit and its lot classes (`culture:class`, the kits' own keys), the fallback chain, the quarters' wealth bias, the salvage draw, the host reach |
 | `src/90a-hook-city.js` | `[G data]` `core/city` steps 0-12 on the site after the terrain: the build zone onto the raster, cut to the quarters; every Port footprint and host filed as a landmark (hard ground); the quarters with their lot mix, holder, mood, layer and ruin level; the painted fields; the three avenues drawn and snapped; then the builder's own steps 6-12 (P2) with the programme's classes, the lot filler drawing a culture from the quarter's mix, the class from the street and the wealth, the piece by size; the records for the page (`HOOK_CITY.recs`: kit, key, variant, culture, class, quarter, salvage, host), each in `core/tags` |
-| `src/90b-hook-city-draw.js` | `[web]` the streets through core/city's own drawing; the quarters' outlines and labels and the markers (`z` shows them); the town: every kit piece built once at the origin by its kit's closure, flattened, and drawn merged (one mesh per material) within 520 m of the camera's target, as massing beyond, a footing under each lot on the slope; `window._city` for the verify |
+| `src/90b-hook-city-draw.js` | `[web]` the streets through core/city's own drawing; the quarters' outlines and labels and the markers (`z` shows them); the town: every kit piece built once at the origin by its kit's closure, flattened, and drawn merged (one mesh per material) within 400 m of the camera's target, as massing beyond, a footing under each lot on the slope; `window._city` for the verify |
 
 ## P2: the town
 
@@ -81,7 +81,7 @@ places without the drawing. A lot class is `culture:class`: the lot filler draws
 wealth with `core/city`'s own choosers, and the piece by size; a culture without a class builds the class below.
 Wealth is `core/city`'s rule from the Customs House plus the quarter's bias (`HOOK_PROG.wealthBias`). The records
 carry the nautical salvage draw and the host they stand against as tags; what the kits can do with them is in
-`KNOWN_ISSUES.md`, "The town". At the seed of the site's pixel the town has 671 lots in 51 ways; the verify holds it
+`KNOWN_ISSUES.md`, "The town". At the seed of the site's pixel the town has about 1700 lots in some 200 ways; the verify holds it
 to no two building boxes overlapping, no corner on a carriageway, every corner on dry ground, and every near piece
 built (`hook-lots`, `hook-lots-overlap`, `hook-lots-off-street`, `hook-lots-dry`, `hook-lots-drawn`).
 
@@ -189,8 +189,10 @@ ship (`vsPanamax`) along the platforms' west face, the wreck (`vsFeeder`) off th
 lies to Hook's NORTH (the owner, 2026-10-17), so the kit's `S` is the world's north and the run's "west to east" is
 the kit's -x to +x. Placing the frame on the model is the open world's business; nothing in the layout changes.
 
-Decays are per segment, from the plan's table: 0 repaired in the working harbour, 1 worn at the edges, 3 salvage
-where the salvagers live. `KNOWN_ISSUES.md` lists what the layout API could not give the plan.
+Decays are per segment, from the plan's table, with one change the owner made on seeing the town (2026-10-19): the
+working harbour's segments and the Customs House stand at the kit's worn decay 1 like the rest, not at 0, so the
+port's buildings take the kit's rust and match the ships; the Izani's fresh repairs come back as dressing records
+in P3. 3 is salvage, where the salvagers live. `KNOWN_ISSUES.md` lists what the layout API could not give the plan.
 
 The page is the kit's page: click to inspect, `n` night, `b` the segment-bounds overlay, `l` the LOD panel, `z` the
 site overlay. The presets are the views of `PLAN.md` section 5 that exist so far, plus the Heights, the Ancient

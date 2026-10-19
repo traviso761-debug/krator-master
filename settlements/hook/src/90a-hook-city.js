@@ -17,8 +17,10 @@ const HOOK_CITY=(()=>{
  const KL=KCITY.lib,SITE=HOOK_SITE,PROG=HOOK_PROG,half=1320;
  const tune={cell:2.5,rasterHalf:half,maxSlope:.22,exact:true,centre:PROG.centre,reach:PROG.reach,
   width:{avenue:14,main:8,side:5.5,alley:3.2,highway:12,lane:4.5},lot:{side:1.6,setback:1.6,rear:3,inset:1,step:3},
-  classes:PROG.classes(),fallback:PROG.fallbackTable(),civic:[],civicSpacing:200,voidMax:260,voidIters:30,voidBatch:10,sideSpacing:70,sideMax:220,
-  alleyFrac:.25,blindMax:80,interiorDepth:9,interiorRounds:4,plazaArt:{rich:['none'],middle:['none'],poor:['none'],commerce:['none']},mapHalf:half,avenueSnap:60,ringGap:6,verge:0,
+  /* the streets' reach, as Voth's and the isle demo's (voidMax 46-60, sideSpacing 48-70): a void deeper than voidMax
+     from any street gets a main street, a side street every sideSpacing along each main, the infill interiorRounds deep */
+  classes:PROG.classes(),fallback:PROG.fallbackTable(),civic:[],civicSpacing:200,voidMax:60,voidIters:40,voidBatch:14,sideSpacing:55,sideMax:240,
+  alleyFrac:.25,blindMax:100,interiorDepth:9,interiorRounds:6,plazaArt:{rich:['none'],middle:['none'],poor:['none'],commerce:['none']},mapHalf:half,avenueSnap:60,ringGap:6,verge:0,
   /* the slope under the whole site (KNOWN_ISSUES.md): a house's floor at its highest corner, its footing down to the lowest */
   stance:'high',stanceOpt:{maxDrop:7}};
  /* the kits' boxes (HOOK_DIMS, build.py dims_fragment): a Voth piece's variant has its own */

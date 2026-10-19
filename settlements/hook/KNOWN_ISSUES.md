@@ -44,11 +44,17 @@ from a Hook task.
       the west. The owner keeps the run as it is (2026-10-19): Iziz's segments east, Voth's west; `PLAN.md` section 1
       reads its zones from east to west.
 
-- [x] **A ruined host read as a ghost lattice** (the owner, 2026-10-19: the grid's Bastion at decay 1 in the Iron
-      Court). The kit's full decay eats 83 % of a tower's skin, leaving the window slots and the spine ribs up the
-      whole stump; Hook ran its hosts with the holes at 0.45. Now a ruin is holed a fifth and a repaired host a
-      third (`79-hook-ancient.js`, `HOLES`; Ys keeps 0.4 on its reclaimed hosts), so every host stands as a building
-      the town lives in. A ruin that should read as a wreck (the Stacks' toppled blocks) can take a higher value
+- [x] **The ghost tower at the Imperial quay** (the owner, 2026-10-19). A lattice of window panes, struts and tubes
+      some 190 m tall stood at the quay's seaward edge, near the kit's origin, since P1. It was every host's
+      instanced detail: the kit's `bodyGroup` (`54-mat-concrete.js`) calls `useGroupXF` on a sub-group whose matrix
+      is local to the builder's group and then `endGroupXF`, which replaced the host's frame by the sub-group's and
+      then cleared it, so every `kput` piece after that landed in local coordinates while the skin meshes, added to
+      the groups, stood on the pads. `79-hook-ancient.js` now composes the frame from the world matrix while a host
+      builds and falls back to the host's frame, never to none. (Ys places its hosts the same way: whether its
+      struts stand where they should is a question for its owner.) On the way: the hosts' skin meshes carry
+      `lodSkip` (a thin folded skin that `core/lod`'s clustering would thin at range), and the hosts' holes were
+      lowered from the kit's full decay (a ruin holed a fifth, a repaired host a third, `HOLES`; Ys keeps 0.4), so
+      a ruin stands as a building the town lives in; a wreck (the Stacks' toppled blocks) can take a higher value
       per record later.
 - [ ] **A host's pad flattens the slope it stands on.** A host on the Heights' front slope (row 2 of the grid) is
       skipped for that reason; the named hosts on the ridge's foot stand on a flat pad cut into the slope. The Ancient
@@ -76,11 +82,11 @@ from a Hook task.
       then its culture's addition on and into it (Ys pods on the face, markets hung from the towers, stilt decks in the
       shell). The hosts are filed as hard landmark footprints, so no lot stands ON one; a lot whose box stands within
       `HOOK_PROG.hostReach` (6 m) of a host's pad is marked `host: <the ruin's name>` in its record and in `core/tags`
-      (11 of 671 at this seed). The additions themselves need each kit's own host machinery (Ys's `hykAccrete`
+      (22 of 1728 at this seed). The additions themselves need each kit's own host machinery (Ys's `hykAccrete`
       and `HYK.placeOn` take a host record with `rAt`; the Vernacular and the Islanders have no host mode): P3, with
       the landmarks.
 - [ ] **The nautical salvage style is a tag too.** A poor lot takes it with chance 0.6, a middle lot 0.25
-      (`HOOK_PROG.salvage`; 204 of 671): the record and its tag carry `salvage: true`. Only the Islanders' poor
+      (`HOOK_PROG.salvage`; 591 of 1728): the record and its tag carry `salvage: true`. Only the Islanders' poor
       houses read anything like it (their own scrap patching, on by the kit's rule); hull roofs, container walls and
       crane-cab towers on the other kits' pieces are builder variants the kits do not have. Named in PLAN.md section 3;
       the kits' work.
@@ -96,7 +102,7 @@ from a Hook task.
       (its floor at its highest corner, a stone footing down to the lowest: `stance: 'high'`, `maxDrop` 7); a
       terrace per block (the plan's streets stepped by `core/city`) is the 10 % slope's proper answer (the P1 item
       above).
-- [ ] **The far town is massing.** Beyond `HOOK_DRAW.nearR` (520 m) of the camera's target a lot is a body and a
+- [ ] **The far town is massing.** Beyond `HOOK_DRAW.nearR` (400 m) of the camera's target a lot is a body and a
       roof in its kit's tone; within it the piece is built once per key and variant by its kit's closure and drawn
       merged, one mesh per material (the kits make a fresh material per build, so materials are canonicalised by
       their properties: `HOOK_DRAW.material`). The Port's showcase budget (900 draw calls) is met at most presets;

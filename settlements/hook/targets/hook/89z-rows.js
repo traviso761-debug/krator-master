@@ -19,16 +19,19 @@ const PORT_LAYOUT_DEF=(()=>{const ok=k=>!!PORT_REG.seg[k];
   ['hbFish',1,0],       // the Strand: the Hukoa harbour
   ['hbMarina',1,0],     // the Strand, east
   ['tmPass',1,0],       // the Tethyan quarter
-  ['cgStore',0,-20],    // the Customs, west of the pier
-  ['cgBox',0,-20],
-  ['cgCrane',0,-20],
-  ['pier',0,0],         // the Hook
-  ['quay',0,0],         // the Imperial quay
+  // the working harbour was decay 0 (the Izani's fresh repairs, PLAN.md section 6 question 5); the owner (2026-10-19)
+  // wants the port's buildings rusty like the ships, which is the kit's worn decay 1 on every segment; the fresh
+  // repairs come back as dressing records in P3 (scaffolds, new timber, orange rails), not as the kit's clean decay
+  ['cgStore',1,-20],    // the Customs, west of the pier
+  ['cgBox',1,-20],
+  ['cgCrane',1,-20],
+  ['pier',1,0],         // the Hook
+  ['quay',1,0],         // the Imperial quay
   ['cgCrane',1,20],     // the eastern crane, worn: the signal mast
   ['slBerth',1,20],     // the Iron Court
   ['slPen',1,20],
-  ['tmShip',0,0],       // the Arsenal
-  ['ddDock',0,0],
+  ['tmShip',1,0],       // the Arsenal
+  ['ddDock',1,0],
   ['ddShed',1,0],
   ['ddYard',1,0],
   ['tmHeli',1,0],       // the Sun Canton
@@ -47,7 +50,7 @@ const PORT_LAYOUT_DEF=(()=>{const ok=k=>!!PORT_REG.seg[k];
  if(pier)pier.fleet=[null];
  // land blocks: the Customs House behind the pier's axis, the granary canton behind it
  const push=(arr,b)=>{if(b)arr.push(b);return b;};
- if(pier){const a=push(back,portBehind(pier,'lbAuthority',{d:0}));if(a)push(back,portBehind(a,'lbStores',{d:1}));}
+ if(pier){const a=push(back,portBehind(pier,'lbAuthority',{d:1}));if(a)push(back,portBehind(a,'lbStores',{d:1}));}
  // the Sun Canton and the Stacks: the necropolis (tank farm) behind the heliport with the tank houses behind it, the
  // container towers and compounds behind the plain quays at the eastern edge
  if(heli){const t=push(back,portBehind(heli,'lbTanks',{d:1}));if(t)push(back,portBehind(t,'chTank',{d:3}));}

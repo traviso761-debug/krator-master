@@ -19,7 +19,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 |---|---|---|
 | `75d-hook-world.js` | 6 | HOOK: THE GROUND FROM THE SCALE MODEL ([G data]) (1) |
 | `76-hook-ground.js` | 4 | HOOK: THE GROUND BEHIND THE PORT ([G data]) (1) |
-| `79-hook-ancient.js` | 5 | HOOK: THE ANCIENT TOWN'S RUIN HOSTS (1) |
+| `79-hook-ancient.js` | 6 | HOOK: THE ANCIENT TOWN'S RUIN HOSTS (1) |
 | `88-hook-programme.js` | 6 | HOOK: THE TOWN'S PROGRAMME ([G data]) (1) |
 | `90a-hook-city.js` | 8 | HOOK: THE TOWN ON core/city, STEPS 0-12 ([G data (1) |
 | `90b-hook-city-draw.js` | 13 | HOOK: DRAWING THE TOWN ([web]) (1) |
@@ -30,5 +30,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `hook` | `89z-rows.js`, `91z-views.js` | 12 |
+| `hook` | `89z-rows.js`, `91z-views.js` | 13 |
 | `hook-site` | `94-hook-site-adapter.js`, `96-hook-site-model.js`, `98-hook-site-start.js` | 38 |

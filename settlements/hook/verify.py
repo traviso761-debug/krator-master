@@ -92,11 +92,15 @@ const R=[];
     for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){const a=B[i],b=B[j];if(Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])>a.r+b.r)continue;if(!sep(a,b))pairs.push([a.key+'#'+a.id,b.key+'#'+b.id]);}
     R.push({name:'hook-lots-overlap',ok:!pairs.length,detail:pairs.length?pairs.length+' overlapping pairs: '+JSON.stringify(pairs.slice(0,5)):B.length+' footprints, none overlap'});}
   else R.push({name:'hook-lots-overlap',ok:false,detail:'no plan'}); }
-// P2: nothing stands on a street (no building corner on a STREET cell) or in the water (every corner on ground above sea level)
-{ const C=window._city||{},recs=C.recs||[],KL=KCITY.lib,onStreet=[],wet=[];
+// P2: nothing stands on a carriageway (no building corner within a way's half width of its centreline, by the exact
+// lines, as the builder places with TUNE.exact; the raster's stamp is a cell wider at a junction) or in the water
+// (every corner on ground above sea level)
+{ const C=window._city||{},recs=C.recs||[],KL=KCITY.lib,onStreet=[],wet=[],ways=(C.plan&&C.plan.ways||[]).map(w=>({hw:w.w/2-.5,pts:w.pts,bb:w.pts.reduce((b,p)=>[Math.min(b[0],p[0]),Math.min(b[1],p[1]),Math.max(b[2],p[0]),Math.max(b[3],p[1])],[1e9,1e9,-1e9,-1e9])}));
+  // a corner a metre or less inside the kerb line is the builder's own tolerance at a junction, not a house in the road
+  const onWay=p=>{for(const w of ways){if(p[0]<w.bb[0]-w.hw||p[0]>w.bb[2]+w.hw||p[1]<w.bb[1]-w.hw||p[1]>w.bb[3]+w.hw)continue;for(let i=1;i<w.pts.length;i++)if(KL.segDist(p,w.pts[i-1],w.pts[i])<w.hw-1)return true;}return false;};
   for(const L of recs){const o={c:[L.x,L.z],u:[Math.cos(L.ry),-Math.sin(L.ry)],v:[Math.sin(L.ry),Math.cos(L.ry)],hw:L.w/2-.3,hd:L.d/2-.3};
     const corners=[[1,1],[1,-1],[-1,1],[-1,-1]].map(s=>[o.c[0]+o.u[0]*o.hw*s[0]+o.v[0]*o.hd*s[1],o.c[1]+o.u[1]*o.hw*s[0]+o.v[1]*o.hd*s[1]]).concat([o.c]);
-    if(corners.some(p=>C.raster(p[0],p[1])===C.OCC.STREET))onStreet.push(L.key+'#'+L.id);
+    if(corners.some(onWay))onStreet.push(L.key+'#'+L.id);
     if(corners.some(p=>terrainH(p[0],p[1])<0.2))wet.push(L.key+'#'+L.id);}
   R.push({name:'hook-lots-off-street',ok:!onStreet.length,detail:onStreet.length?onStreet.length+' on a street: '+onStreet.slice(0,5).join(', '):recs.length+' lots, none on a carriageway'});
   R.push({name:'hook-lots-dry',ok:!wet.length,detail:wet.length?wet.length+' in the water: '+wet.slice(0,5).join(', '):recs.length+' lots, every corner on dry ground'}); }

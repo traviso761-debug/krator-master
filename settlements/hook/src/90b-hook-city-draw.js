@@ -10,7 +10,7 @@
      a follow-up (KNOWN_ISSUES.md);
    - a footing under every lot that stands on the slope (its drop: a stone plinth), as one InstancedMesh.
    window._city holds what verify.py reads: the plan, the records and the drawing's counts. */
-const HOOK_DRAW={nearR:520,nearMax:2400,moveFor:60,protos:{},inst:[],built:0,failed:{},stats:{}};
+const HOOK_DRAW={nearR:400,nearMax:1600,moveFor:60,protos:{},inst:[],built:0,failed:{},stats:{}};
 HOOK_DRAW.kits={isk:(k,v)=>ISK.proto(k,v),izv:(k,v,L)=>IZV.proto(k,v,L&&/rich|manor/.test(L.cls)?2:L&&/poor/.test(L.cls)?0:1),
  hyk:(k,v)=>HYK.proto(k,v),vcat:(k,v)=>VCAT.proto(k,v),apoc:(k,v)=>KPA.proto(k,v)};
 HOOK_DRAW.denorm=function(a){if(!a.normalized)return 1;const r=a.array;

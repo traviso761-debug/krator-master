@@ -27,15 +27,28 @@ function hookHostBuild(key,scene,gx,gz,d,opt){const H=HOOK_HOSTS[key],y=hookHost
  /* the kit's full decay (1) eats 83 % of a tower's skin, which reads as a ghost lattice of window slots and ribs from
     the quays; a host the town lives in keeps its wall: a ruin a fifth holed, a repaired one a third (Ys keeps .4) */
  const hz=HOLES;HOLES=d===1?.18:d>0?.3:1;
- KOFF=[0,0,0];useGroupXF(G);
+ KOFF=[0,0,0];
+ /* the kit's instanced detail (kput) takes the group transform KXF. The kit's own bodyGroup (54-mat-concrete.js) calls
+    useGroupXF on a sub-group whose matrix is LOCAL to the builder's group, then endGroupXF, which would replace the
+    host's frame by the sub-group's and then clear it: every strut, pane and tube of every host then stood at the
+    origin, a ghost tower at the quay (the owner, 2026-10-19). While a host builds, the helpers compose from the
+    WORLD matrix and fall back to the host's frame, never to none */
+ const uG=useGroupXF,eG=endGroupXF,frame=P=>{P.updateWorldMatrix(true,false);return {m:P.matrixWorld.clone(),q:new THREE.Quaternion().setFromRotationMatrix(P.matrixWorld)};};
+ useGroupXF=function(P){KXF=frame(P);};endGroupXF=function(){KXF=frame(G);};
+ useGroupXF(G);
  const sub={add:o=>G.add(o)};      /* the builder makes its own group at the origin: it lands inside G, at the pad */
  const r0=REG.length;
  try{H.builder(sub,0,0,d);}catch(e){reportErr('host '+key+' d='+d+' '+e.stack);}
- YS_CUT=null;HOLES=hz;endGroupXF();KOFF=[0,0,0];
+ finally{useGroupXF=uG;endGroupXF=eG;}
+ YS_CUT=null;HOLES=hz;KXF=null;KOFF=[0,0,0];
  /* the kit's registered volume is generous (130 m for a tower): shrink it to the host's cap so it stays inside the pad
     and the clearance, as Ys does; the inspector then names the host only over its own ground */
  const cap=Math.min((H.spec.cap!=null?H.spec.cap:H.W/2)+2,H.W/2-PORT.CLEAR);   /* and inside the kit's clearance: KNOWN_ISSUES.md */
  for(let i=r0;i<REG.length;i++)REG[i].r=Math.min(REG[i].r,cap);
+ /* a host's skin is a thin folded prism: core/lod's vertex clustering collapses it at range and the tower reads as a
+    lattice of its window instances (the owner's ghost tower, 2026-10-19). The skin meshes stay out of the LOD; the
+    kit's instanced detail on the host is still managed */
+ G.traverse(o=>{if(o.isMesh&&!o.isInstancedMesh)o.userData.lodSkip=true;});
  return G;}
 function buildAnFacet(scene,gx,gz,d,opt){reseed(79010+d);return hookHostBuild('anFacet',scene,gx,gz,d,opt);}
 function buildAnBastion(scene,gx,gz,d,opt){reseed(79020+d);return hookHostBuild('anBastion',scene,gx,gz,d,opt);}

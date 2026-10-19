@@ -112,6 +112,12 @@ salvagers live.
 | `vsPanamax` | Panamax container ship | alongside the platforms' west face | 1 | the Empire's grain ship, unloading |
 | `vsFeeder` | Container feeder | off the L's east end | 3 | a wreck on the breakwater's end, the salvagers' bridgehead |
 
+**Built decays (the owner, 2026-10-19):** every segment listed at 0 above (the Customs' stores, dock and crane, the
+pier, the Imperial quay, the shipping terminal, the graving dock, the Customs House) is built at the kit's worn decay
+1, so the port's buildings carry the kit's rust and match the ships; the "repaired first" of section 6, question 5,
+becomes dressing records in P3 (scaffolds, new timber against old, Izani orange on the rails), not the kit's clean
+decay.
+
 The Ring Sea fleets alongside, from `kits/ringsea`: Iziz's turtle ship, dhoni, wheel galley and salvage lighter at the
 Imperial quay; the Islanders' oruwa, karakoa and lakatoi at the Strand; a Hykkousoi pearl baghlah at the marina; a
 captured Vothic chitin bireme in the covered dock; the Salvagers' refloated tug at the Stacks. No Ordinator flagship: it
