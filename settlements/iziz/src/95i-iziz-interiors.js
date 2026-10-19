@@ -8,9 +8,11 @@
 // at most; what still fails is listed in _interiors.residenceFails. Every piece is a core/tags record (prefix ixf, class
 // furniture, its building as parent), so the inspector names it. Each building is a cutaway unit (X; ] [ the storeys).
 // The furniture is drawn by the catalog's batch into one mesh per render family (a constant handful of draw calls).
+// IZIX.jobs (per job its building record, the instantiated buildings and rooms) and IZIX.placed (per piece its record
+// id and the batch's arguments) are what core/export's interiors and furniture sections read (94-city-export.js).
 // ?interiors=0 leaves the walls solid (89z-rows.js reads it) and furnishes nothing.
 const IZIX=(function(){
- const S={on:false,total:0,done:0,rooms:0,pieces:0,retries:0,residenceFails:[],dropped:[],units:[],ms:0,group:null,byKey:{},missing:{}};
+ const S={on:false,total:0,done:0,rooms:0,pieces:0,retries:0,residenceFails:[],dropped:[],units:[],ms:0,group:null,byKey:{},missing:{},jobs:[],placed:[]};
  const report=()=>{window._interiors={on:S.on,total:S.total,done:S.done,rooms:S.rooms,pieces:S.pieces,retries:S.retries,
   residenceFails:S.residenceFails.length,residenceFailList:S.residenceFails.slice(0,20),dropped:S.dropped.length,droppedList:S.dropped.slice(0,20),
   units:S.units.length,ms:Math.round(S.ms),walls:VHOLLOW.walls,bodies:VHOLLOW.bodies,structure:VHOLLOW.structure,
@@ -21,8 +23,10 @@ const IZIX=(function(){
  const build0=adapter.build;let curParent=null;
  adapter.build=function(p,room){const E=KratorFurniture.FURN_BY_KEY[p.key]||{},t={setting:'room'};
   if(E.culture)t.culture=E.culture;if(E.tier)t.tier=E.tier;if(room&&room.id!=null)t.room=String(room.id);
-  KTAGS.page.add({prefix:'ixf','class':'furniture',kind:E.type||null,key:p.key,name:E.name||null,parent:curParent,
+  const rec=KTAGS.page.add({prefix:'ixf','class':'furniture',kind:E.type||null,key:p.key,name:E.name||null,parent:curParent,
    at:[p.x,p.y||0,p.z],ry:p.ry||0,size:E.w?[E.w,E.d,E.h]:undefined,tags:t,frag:'95i-iziz-interiors.js'});
+  S.placed.push({id:rec.id,key:p.key,variant:p.variant|0,seed:p.seed,wealth:room?room.wealth:.5,span:p.span||0,x:p.x,y:p.y||0,z:p.z,ry:p.ry||0,
+   room:t.room||null,building:curParent});
   return build0.call(this,p,room);};
  // a drawn window belongs to a room when it stands on one of the room's walls (within 0.45 m) and inside its storey
  const segD=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz,t=L2?Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/L2)):0;return Math.hypot(p[0]-a[0]-dx*t,p[1]-a[1]-dz*t);};
@@ -48,7 +52,7 @@ const IZIX=(function(){
    P.placements.forEach(p=>{const k=p.key;S.byKey[k]=(S.byKey[k]||0)+1;});
    (P.missing||[]).forEach(m=>{S.missing[m.need||m]=(S.missing[m.need||m]||0)+1;});});
   if(res.fails.length)S.residenceFails=S.residenceFails.concat(res.fails);
-  S.pieces+=n;S.done++;
+  S.pieces+=n;S.done++;S.jobs.push({id,parent,inst,J});
   // the cutaway unit: the plot's box, its storeys from the plan (one per distinct floor height)
   const lv=[];J.levels.slice().sort((a,b)=>a.y-b.y).forEach(L=>{const y=J.y+L.y;if(!lv.length||Math.abs(lv[lv.length-1].y-y)>.5)lv.push({y,h:L.h,name:lv.length?'storey '+(lv.length+1):'ground'});});
   S.units.push({id,name:J.name+(J.v?' (v'+(J.v+1)+')':''),x:J.x,z:J.z,ry:J.ry,w:J.w,d:J.d,levels:lv,parent,rooms:inst.rooms.length,pieces:n,residence:res.residence?{beds:res.beds,food:res.food,items:res.items,fails:res.fails.length}:null});});

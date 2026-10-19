@@ -206,7 +206,8 @@ the first room graph through the container); for every other build they are stil
   room's door id is a record of the `fixtures` section (an exterior door) or the id of one of its building's links (an
   interior door); a link's `a` and `b` are room ids, or `outside` or `court` past an exterior door. `EXPORT.check`
   joins both (`joins.interiorsDoorsResolved` of `interiorsDoorRefs`) and requires each building in the registry.
-  Filled by Yuni (below, "Interiors"); Iziz answers it empty (its buildings are shells).
+  Filled by Yuni (below, "Interiors") and by a kit's sheet on Iziz's page (below, "The sheet's interiors"); Iziz's
+  city answers it empty (its buildings are shells).
 - **`furniture`**: GODOT-PLAN.md Phase 4's per-look scheme: `{format: 'krator-furniture', pieces: [{id:
   '<piece>/<variant>/<look>', entry: {tags, anchor, size, role, job, family per material}, lights, mesh (a glb node)}],
   placements: [{record (a core/tags furniture id), piece, at, ry}]}`. A placement's seed is reduced to one of K looks
@@ -428,12 +429,53 @@ godot --headless --path godot --script res://tests/export/iziz_test.gd -- --case
 ```
 
 The box is the sheet's industry mixed street (the Vernacular's smithy and salvage yard beside Pylon's workshop and smelter;
-the workshop furnished): 34 items, 826 instances, 5 buckets (the furniture), 20,918 triangles, 27 textures (24 of Iziz's
-pack, 3 of Pylon's); `world.glb` 1.5 MB. `--sheet` lets atmos be empty (a sheet has no weather) and checks that the
-ground is flat where the half-step negative would need relief. All checks pass in Godot 4.7.2, and the nightly runs it
-(`tools/test_all.py`, `GODOT_TESTS`: an entry may carry arguments). The furnished interiors arrive as world-space
-buckets of the catalog's furniture, not as the interiors section Yuni fills: a wide box of the sheet is mostly furniture
-(the mixed streets with every interior: 182,000 triangles, a 12 MB `world.glb`).
+the workshop furnished): 88 items (34 of the kit, 54 furniture items: 21 pieces of 22 placements), 880 instances, no
+buckets (the box's only plain meshes were the furniture), 27 textures (24 of Iziz's pack, 3 of Pylon's), the interiors of
+2 buildings (4 rooms, 4 links); `world.glb` 1.6 MB. `--sheet` lets atmos be empty (a sheet has no weather) and buckets
+too where the case has interiors, checks that the ground is flat where the half-step negative would need relief, and
+checks the interiors (below). All checks pass in Godot 4.7.2, and the nightly runs it (`tools/test_all.py`,
+`GODOT_TESTS`: an entry may carry arguments).
+
+### The sheet's interiors (2026-10-19)
+
+Until 2026-10-19 the furnished rooms arrived as world-space buckets of the catalog's furniture (the batch 95i flushes:
+one merged mesh per render family). They are now the interiors section and pieces of the furniture section, filled by
+the same contributor (`94-city-export.js`) from what `settlements/iziz/src/95i-iziz-interiors.js` keeps: `IZIX.jobs` (per
+furnished building its record and the interiors kit's instantiated plans, in the world frame) and `IZIX.placed` (per
+piece its `ixf` record and the batch's arguments: key, variant, seed, wealth, span, pose, room, building). On a page
+without interiors (Iziz's city) nothing changes: the district above, exported before and after, differs only in the
+clock and the sky picture, and its `world.glb` is byte-identical.
+
+- **interiors** (Yuni's contract, building-local under the building record: its `at`, turned by `ry`): one building
+  per furnished building with a piece in the box or its record's `at` in it; `storeys` from the plans' levels with their
+  rooms (95i's, with the windows the builder drew), `links` for every planned door (an exterior door `b: 'outside'`,
+  `fixture` the 69f door record within 1 m; `from` 0.45 m inside its room, `to` past the wall on the yard, at the
+  building's base) and every stair or ladder (`from` its foot, `to` its top), `walls` (exterior and partition, `col`),
+  `yard` the plot. `units` names the 95i jobs.
+- **furniture**: each placement in the box (by its origin) as `{record, piece, at, ry, room, building}`, its piece
+  `<key>/<variant>/<look>` once per look. The look is found, not reduced: each placement is built again alone at its
+  heading and turned back into the piece's frame (the catalog's frame adds `ry` to a tilted part's Euler angles, so a
+  turned build is not the ry 0 build turned: up to 0.69 m apart on the sheet's paintings), and placements whose meshes
+  match (names, materials, index, every value within 1e-4) share it. A piece names its `items` (one per render family and
+  painted panel, unit geometry with vertex colours, an instance per placement in the order of the item's `placements`,
+  the material the scene's merged mesh of that family has), `entry` (catalog tags, size, type, anchor) and `lights`
+  (`KratorFurniture.lightsOf`, in its frame). The merged meshes are then left out of the buckets.
+
+In the page (the whole sheet, box -100, -50 to 100, 1100, checked on Chromium with SwiftShader): every one of the 910
+placements' instances (864,772 vertices) lies within 1.2e-4 m of the piece built at its pose (float32 at z 1,000), the
+drawn furniture triangles equal the page's (545,026), and `EXPORT.check` resolves every join (29 buildings, 117 rooms,
+173 door refs). Against the buckets route on that box: `world.glb` 42.9 MB to 27.8 MB, bucket triangles 600,585 to
+55,559, the furniture's stored triangles 545,026 to 332,190 (361 pieces for 910 placements: the pieces whose seed changes
+what they carry, shelves, bookcases, sacks, vats, stay one look each), but 1,067 glb nodes for 147 (a MultiMesh per
+piece look and family: GODOT-PLAN.md's per-look scheme with K looks per variant would need 95i to place with K seeds, so
+that the page and the export agree; not done).
+
+In Godot (`iziz_test.gd -- --case=world-pylon --sheet`, section 6): every building of the section is a building record
+with its `Interior_<id>` under its Building node and its rooms drawn there; every room's door ref resolves to a link or a
+fixture, every link ends in its rooms (or outside) and an exterior door's fixture is its building's; every furnished
+placement resolves to its record (class furniture, its building the parent, its room tag), its room in the section and
+its piece with items, and every piece instance stands at its placement's pose (54 instances, 2e-7). Negatives: a
+placement moved to another building's room, an unknown piece, an unknown record and a pose 20 cm off do not resolve.
 
 ## Yuni (2026-10-18)
 
@@ -541,8 +583,10 @@ Where a figure here differs from the report, the report is right: it reads the f
 
 ## Not done
 
-- `sim` and `city` are contracts only; `furniture` is filled by Iziz alone; `fixtures` by Iziz and Yuni; `interiors`
-  by Yuni alone (above, "Interiors"; Iziz's buildings are shells, so it answers empty).
+- `sim` and `city` are contracts only; `furniture` is filled by Iziz alone (its kit slots, and on a kit's sheet the
+  furnished rooms' pieces); `fixtures` by Iziz and Yuni; `interiors` by Yuni and a kit's sheet on Iziz's page (above,
+  "Interiors" and "The sheet's interiors"; Iziz's city's buildings are shells, so it answers empty). Yuni's interiors
+  still carry no furniture.
 - The biome kits and Iziz contribute meshes; Girder's region still goes through `godot/tools/export_spike.py`'s glTF
   route (its merged furniture batches name no record); M6 is the isle demo (`ROADMAP.md` section 11), Voth after it.
 - The registry, atmos and KMAT adapters live here until their modules are rebuilt to carry them (no branch owns those
