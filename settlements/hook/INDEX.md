@@ -6,7 +6,7 @@ Hook: the Ancient port city of the Ring Sea's south-western shore, the Izani Emp
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/hook.html`
+Built output (never open it; edit `src/` and rebuild): `dist/hook-site.html`, `dist/hook.html`
 
 Build: `cd settlements/hook && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -30,3 +30,4 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `hook` | `89z-rows.js`, `91z-views.js` | 12 |
+| `hook-site` | `94-hook-site-adapter.js`, `96-hook-site-model.js`, `98-hook-site-start.js` | 38 |

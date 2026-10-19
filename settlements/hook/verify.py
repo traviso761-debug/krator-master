@@ -16,6 +16,9 @@ page's own `_api.extra()` checks, port-stamps-inside-footprint and port-clearanc
   port-every-key   every key registered with PORT_SEG or PORT_VESSEL is placed at least once (a layout item, or a
                    vessel a berth placed): settlements/hook/PLAN.md, section 2.
 
+The site editor: `python3 verify.py dist/hook-site.html --assert` runs the editor's own checks instead (hook-site-loaded,
+-select, -moved, -tools, -roundtrip: SITE_CHECK_JS) and shots the map and city views.
+
 SwiftShader flakes about one run in seven with a null shader-info-log TypeError: re-run before believing it. Budget
 20-40 s a screenshot; keep a run to 16 views and background it.
 """
@@ -80,8 +83,103 @@ const R=[];
 return R;}"""
 
 
+# The site editor (dist/hook-site.html): the page opened the current site, every quarter, marker, avenue and named host
+# can be selected and moved (through the tools, on a scratch copy), the tools round-trip (add, undo, redo, raise, undo),
+# and a save round-trips: SITE.clean(JSON.parse(SITE.json())) is the site again, with the quarters' fields, the hosts and
+# the grid. Returns {err, from, counts, select, moved, tools, roundTrip}.
+SITE_CHECK_JS = r"""()=>{
+const out={err:_site.error||null,from:_site.from,counts:{}};
+if(out.err)return out;
+const S=SITE.data,keep=JSON.stringify(S);
+out.counts={districts:S.districts.length,quarters:S.districts.filter(d=>d.type==='quarter').length,markers:S.markers.length,avenues:S.avenues.length,hosts:S.hosts.length,gridRows:S.grid.rows.length};
+/* every item selects (with the fly) and draws its marks; a quarter carries its fields */
+const sel=[];let marks=0;
+const tryS=(k,id)=>{try{TOOL.select({kind:k,id},true);if(!TOOL.item()||TOOL.item().id!==id)sel.push(k+':'+id+' not selected');marks+=TOOL.objs.length;}catch(e){sel.push(k+':'+id+' threw '+e.message);}};
+S.districts.forEach(d=>tryS('district',d.id));S.markers.forEach(m=>tryS('marker',m.id));S.avenues.forEach(a=>tryS('avenue',a.id));S.hosts.forEach(h=>tryS('host',h.id));
+out.select={failed:sel,marks};
+const q=S.districts.find(d=>d.type==='quarter');out.quarterFields=q?{layer:q.layer,ruin:q.ruin,cultures:Object.keys(q.cultures||{}).length,holder:!!q.holder,mood:q.mood}:null;
+/* moves, the way a drag ends (the record's x/z, then changed()): a marker, a host and a quarter's corner */
+const m=S.markers[0],h=S.hosts[0],d=S.districts.find(x=>x.type==='quarter');
+TOOL.select({kind:'marker',id:m.id});m.x+=10;SITE.dirty=true;SITE.changed();
+TOOL.select({kind:'host',id:h.id});h.z-=10;SITE.changed();
+TOOL.select({kind:'district',id:d.id});d.poly[0][0]+=5;SITE.changed();
+out.moved={marker:SITE.marker(m.id).x,host:SITE.host(h.id).z,corner:SITE.district(d.id).poly[0][0],listRows:document.querySelectorAll('#items .it').length,editor:document.getElementById('editor').style.display};
+/* the tools: a quarter, two markers, a host, an avenue; undo, redo; a raise stroke moves the ground and undoes */
+const n0={d:S.districts.length,m:S.markers.length,h:S.hosts.length,a:S.avenues.length};
+const Q=SITE.addDistrict('quarter',[[-600,-900],[-400,-900],[-400,-1000],[-600,-1000]]);
+const M1=SITE.addMarker(-500,-950),M2=SITE.addMarker(-520,-960);
+const H=SITE.addHost('anBell',-300,-950);SITE.addLine('avenue',[[-600,-950],[-300,-950]]);
+SITE.doUndo();const afterUndo=SITE.data.avenues.length-n0.a;SITE.doRedo();
+const h0=TERR.h(-500,-950);TOOL.terrLive=false;SITE.edit(X=>{X.terrain.push({m:'raise',r:80,s:6,pts:[[-500,-950]]});});const h1=TERR.h(-500,-950);SITE.doUndo();
+out.tools={quarter:Q.type,newMarkers:M1.id!==M2.id?2:1,host:H.key,hostId:H.id,avenues:SITE.data.avenues.length-n0.a,afterUndo,raised:+(h1-h0).toFixed(2),undoneGround:+(TERR.h(-500,-950)-h0).toFixed(2),
+  added:{d:SITE.data.districts.length-n0.d,m:SITE.data.markers.length-n0.m,h:SITE.data.hosts.length-n0.h}};
+/* the save round-trips: what SITE.json writes, cleaned again, is the site */
+SITE.load(JSON.parse(keep));
+const J=JSON.parse(SITE.json()),back=SITE.clean(J);
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+out.roundTrip={keys:Object.keys(J),districts:same(back.districts,SITE.data.districts),markers:same(back.markers,SITE.data.markers),avenues:same(back.avenues,SITE.data.avenues),
+  hosts:same(back.hosts,SITE.data.hosts),grid:same(back.grid,SITE.data.grid),hostFields:J.hosts.length?Object.keys(J.hosts[0]):[],
+  inlineSame:same(SITE.clean(HOOK_SITE).districts.map(d=>d.poly),SITE.data.districts.map(d=>d.poly))};
+TOOL.select(null);
+return out;}"""
+
+
+async def run_site(a):
+    from playwright.async_api import async_playwright
+    folder = os.path.dirname(os.path.abspath(a.html))
+    os.makedirs(a.out, exist_ok=True)
+    fails = []
+    async with async_playwright() as p:
+      with serve(os.path.dirname(folder)) as port:   # the folder above dist/, so ../site/hook-site.json is served too
+          b = await launch_chromium(p)
+          pg, errs, ready = await open_page(b, a.html, port, size=a.size, here=HERE, root=os.path.dirname(folder))
+          if not ready:
+              print("timed out waiting for the page to build")
+              fails.append("build timeout")
+          await pg.wait_for_function("window._site && window._site.ready", timeout=120000)
+          await pg.wait_for_timeout(1500)
+          st = await pg.evaluate(STATS_JS)
+          print("ERROR PANEL:", repr(st["errs"]) if st["errs"] else "clean")
+          if st["errs"]:
+              fails.append("error panel not clean")
+          if errs:
+              print("PAGE ERRORS:", errs[:5])
+              fails.append("page errors")
+          r = await pg.evaluate(SITE_CHECK_JS)
+          print("site loaded from", r["from"], "; counts", json.dumps(r["counts"]))
+          if r.get("err"):
+              print("EDITOR ERROR:", r["err"]); fails.append("editor failed")
+          else:
+              print("select:", json.dumps(r["select"]), "; quarter fields", json.dumps(r["quarterFields"]))
+              print("moved:", json.dumps(r["moved"]))
+              print("tools:", json.dumps(r["tools"]))
+              print("round trip:", json.dumps(r["roundTrip"]))
+              if a.assert_:
+                  c, t, rt = r["counts"], r["tools"], r["roundTrip"]
+                  if r["from"] not in ("server", "inline") or c["quarters"] < 10 or c["markers"] < 9 or c["avenues"] < 3 or c["hosts"] < 8 or not c["gridRows"]: fails.append("assert hook-site-loaded")
+                  if r["select"]["failed"] or not r["select"]["marks"] or not r["quarterFields"] or not r["quarterFields"]["layer"]: fails.append("assert hook-site-select")
+                  if r["moved"]["editor"] != "block" or r["moved"]["listRows"] < c["districts"] + c["markers"] + c["avenues"] + c["hosts"]: fails.append("assert hook-site-moved")
+                  if t["quarter"] != "quarter" or t["newMarkers"] != 2 or t["host"] != "anBell" or t["avenues"] != 1 or t["afterUndo"] != 0 or t["raised"] < 5 or abs(t["undoneGround"]) > 0.01 or t["added"] != {"d": 1, "m": 2, "h": 1}: fails.append("assert hook-site-tools")
+                  if not (rt["districts"] and rt["markers"] and rt["avenues"] and rt["hosts"] and rt["grid"] and rt["inlineSame"]) or "cut" not in rt["hostFields"]: fails.append("assert hook-site-roundtrip")
+          await pg.evaluate("()=>document.getElementById('v-map').onclick()")
+          await pg.wait_for_timeout(1200)
+          await pg.screenshot(path=os.path.join(a.out, "site_map.png"))
+          await pg.evaluate("()=>document.getElementById('v-city').onclick()")
+          await pg.wait_for_timeout(1200)
+          await pg.screenshot(path=os.path.join(a.out, "site_city.png"))
+          print("shot:", os.path.join(a.out, "site_map.png"), os.path.join(a.out, "site_city.png"))
+          await b.close()
+    if fails:
+        print("\nFAILED: " + "; ".join(fails))
+        return 1
+    print("\nOK")
+    return 0
+
+
 async def run(a):
     from playwright.async_api import async_playwright
+    if 'hook-site' in os.path.basename(a.html):
+        return await run_site(a)
     folder = os.path.dirname(os.path.abspath(a.html))
     os.makedirs(a.out, exist_ok=True)
     fails = []
