@@ -2,7 +2,8 @@
  "name": "The kipuka (station 2): islands of old hyperjungle in young lava on the windward west flank",
  "out": "throne-kipuka.html",
  "core": [
-  "35-core-anim.js"
+  "35-core-anim.js",
+  "36-core-walker.js"
  ],
  "kits": {
   "41-hyperjungle-globals.js": "../hyperjungle/src/41-hyperjungle-globals.js",

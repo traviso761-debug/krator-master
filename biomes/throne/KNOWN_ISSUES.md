@@ -139,12 +139,13 @@
       (`sections` in their `EXPORT_STATIONS` entry), so the error does not fail the run; `harness.py export` on them
       needs `--sections` the same way until it is fixed. The fix is either `89-atmos-8-export.js` in those stations'
       `station.json` `atmos` lists (then `atmos` joins their profiles) or a guard in `89-atmos-9-host.js`; both rebuild pages.
-- [ ] **The kipuka's and the frontier's committed pages fail the error panel** (found by the profile runs, 2026-10-18; not the
-      profile, which both pass): the hyperjungle's fauna, read in place from `biomes/hyperjungle/src`, lays its herds' loops
-      with `BIO.walkLoop` (`core/biome/36-core-walker.js`, which the hyperjungle's own build lists), and the two
-      `station.json` `core` lists have `35-core-anim.js` only, so `HYPERJUNGLE.buildFauna` throws `BIO.walkLoop is not a
-      function` and the page builds without its fauna. Fix: `36-core-walker.js` in both `core` lists, rebuild the two pages,
-      rewrite their baseline rows (a page change; not done with the profiles).
+- [x] **The kipuka's and the frontier's pages failed the error panel** (found by the profile runs, 2026-10-18; fixed the same
+      day): the hyperjungle's fauna, read in place from `biomes/hyperjungle/src`, lays its herds' loops with `BIO.walkLoop`
+      (`core/biome/36-core-walker.js`, which the hyperjungle's own build lists), and the two `station.json` `core` lists
+      had `35-core-anim.js` only, so `HYPERJUNGLE.buildFauna` threw `BIO.walkLoop is not a function` and the page built
+      without its fauna. Both `core` lists now hold `36-core-walker.js` (the sort by name puts it after `35-core-anim.js`
+      and before the hyperjungle fragments, as the hyperjungle's own build orders them); the two pages were rebuilt, verify
+      clean with their profile PASS, and their baseline rows were rewritten (only those two).
 - [ ] **`water` is left out of every profile.** No page of the Throne is on core/water (the acid lake, the hot pools, the lava
       lake and the sea are the hosts' own surfaces), so the section reads `empty` everywhere. Add it back when a station's
       water is named to core/water.
