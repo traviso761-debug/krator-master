@@ -640,7 +640,16 @@ two-settlement checks in `test-sim.js`, each with a negative; every older check 
 - Proof: `verify.py dist/isle-city.html --assert` on the Valapo page and `node tests/test-isle-sim.js` (the same numbers in
   node and Chromium): every census trade's lot a place, every resident housed and every worker employed in the town, and
   after a world day the food made, hauled and eaten with nothing short and the food made covering what was eaten, each
-  with a negative. No core/simulation change. Left for P7b: Kautoa, the run loop, the stocks map, the citizens drawn.
+  with a negative. No core/simulation change.
+
+**P7b, Kautoa (2026-10-19, second pass).** Declared with Valapo in one `ISLE.simDeclare` (one walking layer, in world
+metres; the towns in one order whichever is drawn): rows in the kinds table for its palace, envoys' and chiefs' houses
+(residences), Ridertown, Izanitown, the works and the dairy; its farm ring (the programme's world record beyond the wall)
+as 40 holdings until core/hamlet's farming villages; its bread from taro; each town keeps only the foods it makes.
+6,235 people, 2,472 workers, 40 carts; a day's books pass the same checks as Valapo's, and five days run clean. The page's
+run loop (`57`, held at first) and the stocks id map (`46`, for core/host's panel). Workarounds for two core/simulation
+issues (`SIM.REACH`, the 01:00 start) and the core branch's two pieces (meals by town, the nearest-job deal) are in
+`KNOWN_ISSUES.md`. Left for P7b: the citizens drawn near the camera.
 
 **Order of work.**
 

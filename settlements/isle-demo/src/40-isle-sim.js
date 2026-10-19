@@ -9,8 +9,10 @@
      ISLE.simPlaces(TS, R, G, nav)  the places, from the plan's records alone:
        - every lot whose key ISLE.TUNE.sim.kinds names, as [kind, {ACTIVITY: slots}] (Dhelv's table), its slots from its
          footprint (no interiors yet: Verge's rule), a dwelling's from its households (34: ISLE.households);
-       - every farm parcel (R.fields) by its kind, its crop kept for the economy;
-       - the door on the street nearest the lot (41: a split of the way), so a walk starts and ends on its street.
+       - every farm parcel (R.fields) by its kind, its crop kept for the economy; a town's farm ring (Kautoa's: the
+         programme's world record beyond the wall) as holdings, a stand-in until core/hamlet's farming villages (H6);
+       - the door on the street nearest the lot (41: a split of the way), so a walk starts and ends on its street; a
+         parcel or holding far from every way gets a track (the farm ring's from the highways out of the gates).
      Places are in WORLD metres (the town's frame added), keyed to their settlement; each carries tags {key, lot, trade
      (the census trade its key carries: kits/islanders IS_TRADES, as ISLE_TRADES), cls, district, role, crop}.
      The houses are registered in a hashed order (core/rand), so the roles dealt first (42) do not all live in the
@@ -18,10 +20,10 @@
 ISLE.SIM = null;
 ISLE.simInit = function (clock) {
   if (ISLE.SIM) return ISLE.SIM;
-  var T = ISLE.TUNE.sim, C = clock || { m: 0, day: 0, hour: 0.5 / 60, t: 0 };
+  var T = ISLE.TUNE.sim, m0 = T.clock.start, C = clock || { m: m0, day: Math.floor(m0 / 1440), hour: (m0 % 1440 + 0.5) / 60, t: 0 };
   var S = ISLE.SIM = { clock: C, towns: {}, order: [], problems: [], nav: null, ms: {} };
   SIM.init({ seed: T.seed, hour: function () { return C.hour; }, day: function () { return C.day; }, t: function () { return C.t; }, err: function (m) { S.problems.push(m); } });
-  SIM.STEP_MAX = T.clock.stepMax; SIM.LAG = T.clock.lag;
+  SIM.STEP_MAX = T.clock.stepMax; SIM.LAG = T.clock.lag; SIM.REACH = T.clock.reach;
   T.activities.forEach(function (a) { if (!SIM.R.activity[a]) SIM.activity({ id: a, indoor: T.indoor.indexOf(a) >= 0 }); });
   if (!SIM.R.faction.islanders) SIM.faction({ id: 'islanders', name: 'The Ring Sea Islanders' });
   ISLE.simItemsInit();
@@ -35,8 +37,8 @@ ISLE.tradeOf = function (key) {
 ISLE.simPlaces = function (TS, R, G, nav) {
   var T = ISLE.TUNE.sim, F = G.frame, s = TS.id, out = { places: [], homes: 0, beds: 0, posts: 0, byKind: {}, unmapped: {}, far: 0 };
   var world = function (x, z) { return { x: +(x + F.x).toFixed(2), y: +(G.h(x, z) + F.sea).toFixed(2), z: +(z + F.z).toFixed(2) }; };
-  var put = function (id, name, K, x, z, ry, area, beds, tags) {
-    var o = K[2] || {}, acts = {}, w = world(x, z), dn = nav.door(x, z, 3000), door = dn >= 0 ? nav.at(dn) : { x: w.x, y: w.y, z: w.z };
+  var put = function (id, name, K, x, z, ry, area, beds, tags, how) {
+    var o = K[2] || {}, acts = {}, w = world(x, z), dn = nav.door(x, z, 3000, how), door = dn >= 0 ? nav.at(dn) : { x: w.x, y: w.y, z: w.z };
     if (dn < 0) out.far++;
     if (beds) T.home.acts.forEach(function (a) { acts[a] = beds; });
     for (var a in K[1]) acts[a] = o.posts === 'beds' && a === 'WORK' ? beds : Math.max(1, Math.round(area / 100 * K[1][a]));
@@ -52,21 +54,35 @@ ISLE.simPlaces = function (TS, R, G, nav) {
   R.lots.forEach(function (L, i) {
     var K = T.kinds[L.key]; if (!K) { out.unmapped[L.key] = (out.unmapped[L.key] || 0) + 1; return; }
     var hh = ISLE.households(L.key), beds = hh * T.home.per;
-    var tags = { key: L.key, lot: L.id, trade: ISLE.tradeOf(L.key), cls: L.cls, district: L.district, role: L.role };
+    var tags = { key: L.key, lot: L.id, tag: L.tag, trade: ISLE.tradeOf(L.key), cls: L.cls, district: L.district, role: L.role };
     var rec = [s + '.' + L.lot, L.name || ISLE_DIMS[L.key] && ISLE_DIMS[L.key].role || L.key, K, L.x, L.z, L.ry, L.w * L.d, beds, tags];
     if (K[0] === 'home') homes.push({ h: KRAND.hash(T.seed, 71, i), rec: rec }); else put.apply(null, rec);
   });
   (R.fields || []).forEach(function (Fr) {
     var K = T.field[Fr.kind]; if (!K) return;
     put(s + '.' + Fr.id.split('.').pop(), Fr.kind + ' of ' + Fr.crop, K, Fr.x, Fr.z, 0, Fr.size * Fr.size, 0,
-      { key: 'field:' + Fr.crop, lot: Fr.id, trade: ISLE.tradeOf(Fr.kind === 'orchard' ? 'ie-farm-poor' : 'ie-farm'), cls: Fr.kind, district: 'farmland', role: null, crop: Fr.crop });
+      { key: 'field:' + Fr.crop, lot: Fr.id, tag: Fr.tag, trade: ISLE.tradeOf(Fr.kind === 'orchard' ? 'ie-farm-poor' : 'ie-farm'), cls: Fr.kind, district: 'farmland', role: null, crop: Fr.crop },
+      { track: T.track });
+  });
+  /* the farm ring beyond the square (a world record's sites: Kautoa's), each site a holding with one crop by a hash */
+  var Rg = T.ring, wt = Rg.crops.reduce(function (n, c) { return n + c.w; }, 0);
+  (R.world || []).filter(function (W) { return W.kind === Rg.kind && W.sites; }).forEach(function (W) {
+    W.sites.forEach(function (q, i) {
+      var r = KRAND.unit(KRAND.hash(T.seed, 73, TS.prefix.charCodeAt(0), i)) * wt, c = Rg.crops[Rg.crops.length - 1];
+      for (var k = 0; k < Rg.crops.length; k++) { r -= Rg.crops[k].w; if (r <= 0) { c = Rg.crops[k]; break; } }
+      var A = Rg.size * Rg.size, F0 = T.field[c.kind], K = [F0[0], { WORK: Rg.posts[c.kind] * 100 / A }, F0[2]];
+      put(s + '.r' + i, c.kind + ' of ' + c.crop + ' (the farm ring)', K, q[0], q[1], 0, A, 0,
+        { key: 'field:' + c.crop, lot: W.id + '.' + i, trade: ISLE.tradeOf(c.kind === 'orchard' ? 'ie-farm-poor' : 'ie-farm'), cls: c.kind, district: 'farm ring', role: null, crop: c.crop },
+        { track: T.track, prefer: 'highway' });
+    });
   });
   homes.sort(function (a, b) { return a.h - b.h || (a.rec[0] < b.rec[0] ? -1 : 1); }).forEach(function (H) { put.apply(null, H.rec); });
   return out;
 };
-/* the towns declared: plans [{R, G}] */
+/* the towns declared: plans [{R, G}], in ISLE.TOWNS order whatever the order given (so every page deals the same) */
 ISLE.simDeclare = function (plans, clock) {
   var S = ISLE.simInit(clock), T = ISLE.TUNE.sim, t0 = Date.now();
+  plans = plans.slice().sort(function (a, b) { return ISLE.TOWNS.indexOf(a.R.town) - ISLE.TOWNS.indexOf(b.R.town); });
   var navs = plans.map(function (p) { var TS = T.towns[p.R.town]; return ISLE.navOf(p.R, p.G, TS.prefix + 'n'); });
   plans.forEach(function (p, i) {
     var TS = T.towns[p.R.town], t1 = Date.now(); if (S.towns[TS.id]) return;
@@ -85,8 +101,8 @@ ISLE.simDeclare = function (plans, clock) {
   plans.forEach(function (p) {
     var TS = T.towns[p.R.town], X = S.towns[TS.id]; if (X.pop) return; var t1 = Date.now();
     X.pop = ISLE.simPeople(TS, X.places.places);
-    X.items = ISLE.simHouseholds(TS, X.places.places);
     X.econ = ISLE.simEconomy(TS, X.places.places);
+    X.items = ISLE.simHouseholds(TS, X.places.places, X.econ.foods);
     X.ms.people = Date.now() - t1;
   });
   S.problems = S.problems.concat(SIM.check());
@@ -99,3 +115,5 @@ ISLE.simRun = function (minutes, each) {
   for (var i = 0; i < minutes; i++) { C.m++; C.day = Math.floor(C.m / 1440); C.hour = (C.m % 1440 + 0.5) / 60; C.t += spm; SIM.step(); if (each) each(C.m); }
   return C.m;
 };
+/* a world day from the clock's start (verify.py's): run up to start + 1440 minutes, once */
+ISLE.simDay = function () { var C = ISLE.SIM.clock, end = ISLE.TUNE.sim.clock.start + 1440; return C.m < end ? ISLE.simRun(end - C.m) : C.m; };

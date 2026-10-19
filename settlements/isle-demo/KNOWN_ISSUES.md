@@ -55,25 +55,31 @@
 
 ## The towns on core/simulation (P7b, 2026-10-19)
 
-- [ ] **The page does not step the sim yet,** nor draw anyone: verify.py runs Valapo's day (`ISLE.simRun`). The run
-      loop (a generic sim clock for core/host, or `57-isle-run.js`), the stocks id map (`58-isle-stocks.js` for core/host's
-      stocks panel) and a few citizens drawn near the camera are the rest of P7b.
-- [ ] **Only Valapo is declared.** Kautoa takes the same table (`ISLE.TUNE.sim.kinds` has only the East set's keys and
-      Valapo's; Kautoa's West, Iziz Vernacular and Beast Rider keys need rows) and joins the one walking layer
-      (`ISLE.simDeclare` merges the towns' graphs; it must be called once with both).
-- [ ] **The meals' counts are page-wide.** `SIM.ITEMS.stats.meals` (at home, bought out, at a mess, kitchens short) is not
-      booked by town in core/simulation (the eaten, bought and out-of counts are: `statsBy`). With one town declared the
-      two agree; before Kautoa joins, the meals want booking by town too (a core/simulation change: Voth's verify diff).
+- [ ] **Nobody is drawn yet.** The page steps the sim (`57`, held at first) but draws no citizens; a few near the camera
+      are the rest of P7b. The run loop is the page's own; a generic sim clock for core/host (Voth's 56c lifted) is a
+      follow-up. The stocks id map (`46`) waits for the page to take core/host (PLAN.md section 10).
+- [ ] **The meals' counts are page-wide** until core/simulation books them by town (`SIM.ITEMS.statsBy[town].meals`, on the
+      core branch `claude/isle-p7a-rest`; `45` reads it once it lands). Until then the meals bought out are summed over the
+      town's own sellers (`stats.byShop`), and the meals at the mess, at home and the kitchens short are the page's.
+- [ ] **`SIM.REACH` is 6 km and the clock starts at 01:00:** two work-rounds for core/simulation (sent to the core branch).
+      `SIM.placesFor`'s ring search runs to the far edge of every place on the page, so with the towns 120 km apart a
+      search that finds too few places in one's own town scanned about 4 million empty cells (1.8 s a decision); the reach
+      bounds it. And at the first minutes a lagged minute is before the day's start, so `SIM.desire` has no hour.
+- [ ] **Kautoa's farm ring is a stand-in.** The programme leaves it a world record beyond the wall (40 sites) for the open
+      world; the sim declares each site a holding (`ISLE.TUNE.sim.ring`: one crop by a hash, 20 or 13 hands) with a track
+      from the highways, until core/hamlet's farming villages (H6) take it. Valapo's farms beyond the village (its
+      `farms` record) are not in the sim: its parcels inside the zone feed it.
 - [ ] **The walking graph is built here** (`41-isle-nav.js`) from `{cls, w, pts}` of the plan's ways: it fits any
       core/city plan, so it belongs on core/city's data side (asked of the city-layout work) or core/simulation; kept here
       until then so no other page moves.
-- [ ] **The work is dealt by load, not by distance** (`SIM.populate`'s rule): a worker may live across town from their
-      job. Valapo is about 1.5 km across, at most an hour's walk at 18 motion seconds a world minute. A `near` deal
-      (opt-in in core/simulation) would suit Kautoa.
+- [ ] **The work is dealt by load, not by distance** until core/simulation takes a role's `work.near` (the nearest-job
+      deal, on the core branch); every role here already asks for it. Kautoa's farm hands walk out to the ring, up to
+      about 90 world minutes.
 - [ ] **Only the food is an item.** No clothes, tools or wear; the weavers' cloth and the potters' pots pile up in the
       warehouses (nobody buys them yet), the windmill's sugar waits for the canoe line (P7c), and the smithies make
-      nothing until the iron mine (a hinterland village, core/hamlet H5) brings ore.
+      nothing until the iron mine (a hinterland village, core/hamlet H5) brings ore; Kautoa's cloves, cacao, salt, stone
+      and leather pile up for the canoe line too, and its weavers lack cotton (Valapo's).
 - [ ] **No needs** (`SIM.needs`): schedules only, no meters, moods or efficiency.
 - [ ] **The second morning's buying wave.** Every house opens with 1.5 to 3 days of food, so on day 2 most of them buy at
       once and the warehouses' days of fish and sweet potato dip (above a day with the present rates, five days run).
-      The farms beyond the village (`_city.world`) are not in the sim.
+      Kautoa makes about a fifth more food than it eats on the first day (29,136 servings to 24,475), Valapo a quarter.

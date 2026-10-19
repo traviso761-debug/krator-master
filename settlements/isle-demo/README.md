@@ -76,7 +76,7 @@ python3 build.py                                          # writes both pages; t
 python3 -m http.server 8829 --directory .                 # http://127.0.0.1:8829/dist/isle-city.html (?town=Valapo)
 python3 verify.py dist/isle-city.html --assert [--shots DIR]
 node tests/test-isle-city.js                              # the plan without a browser (about a minute)
-node tests/test-isle-sim.js [Valapo] [minutes]           # Valapo on core/simulation without a browser: declared, a day run (seconds)
+node tests/test-isle-sim.js [minutes]                    # both towns on core/simulation without a browser: declared, a day run (~20 s)
 node tools/scale-site.js                                  # (superseded: the owner's drawings are at size; --write needs --force)
 ```
 
@@ -122,11 +122,12 @@ the sea or on the wall, the vessels afloat, the programme's landmarks and distri
 origins, the wall's named gates, the landing, the size in citizens, the hug, the farmland; that the declared boxes are
 the bundles' own. Negatives: a building pushed onto another, one pushed into the sea, the palace taken away.
 
-## The towns on core/simulation (P7b, 2026-10-19): Valapo first
+## The towns on core/simulation (P7b, 2026-10-19)
 
-**Valapo is declared on core/simulation** (`src/15-isle-tune.js`, `40`-`45`, PLAN.md section 9), from its plan's records
-alone, in Dhelv's order (`settlements/dhelv/src/74-dhelv-sim.js`), and keyed as a settlement (core/simulation/SCHEMA.md,
-"Settlements and their economies"). The page declares it once both towns are planned, whichever town it draws.
+**Both towns are declared on core/simulation** (`src/15-isle-tune.js`, `40`-`46`, `57`; PLAN.md section 9), each from its
+plan's records alone, in Dhelv's order (`settlements/dhelv/src/74-dhelv-sim.js`), and keyed as a settlement
+(core/simulation/SCHEMA.md, "Settlements and their economies"): Valapo (2,155 people) and Kautoa (6,235). The page
+declares both once they are planned, in one order whichever town it draws, and holds the clock until "run the sim".
 - **Places** (`40`): every lot whose key `ISLE.TUNE.sim.kinds` names, as `[kind, {ACTIVITY: slots per 100 m2}, opts]`
   (Dhelv's table shape; the footprint is the capacity, there being no interiors yet); a dwelling's beds its households at
   five a household, so the sim holds the census's 2,155 people exactly; every farm parcel by its crop. Each carries the
@@ -143,11 +144,22 @@ alone, in Dhelv's order (`settlements/dhelv/src/74-dhelv-sim.js`), and keyed as 
   every house keeps a food store, the barracks eat at their mess. Valapo's own economy: the parcels grow their crops,
   the docks land fish, the pens raise pork, the bakehouses bake bread from sweet potato, the windmill crushes cane to
   sugar, the weavers and potters make cloth and pots; 39 warehouses and granaries, 14 carts.
-- **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`): every lot of a census trade is a place; every
+- **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`, for each town): every lot of a census trade is a place; every
   resident has a home and every worker a job in the town; after a world day run minute by minute, every food made and
   hauled, the food eaten, nothing short (draws, purchases, kitchens; a day's stock left) and the food made covering
-  what was eaten. Each has a negative. Five days run clean too (`node tests/test-isle-sim.js Valapo 7200`).
-- **Not yet:** the page does not step the sim or draw anyone (the run loop and the citizens near the camera); Kautoa;
-  the canoe line (P7c). See `HANDOFF.md`.
+  what was eaten; the stocks map finding every place from its lot. Each has a negative, for each town. Five days run
+  clean too (`node tests/test-isle-sim.js 7200`).
+- **Kautoa** takes the same table with rows for its own buildings (the palace, the envoys' and chiefs' houses as
+  residences, Ridertown's stables, roosts and shrines, Izanitown's houses, shops, tavern and workshops, the works, the
+  dairy). It grows nothing inside its wall: the programme's **farm ring** beyond it (40 sites, a world record) is declared
+  as its holdings (rice, taro, banana and coconut to eat, cloves and cacao to sell), a stand-in until core/hamlet's
+  farming villages, each with a track from the highways out of the gates. Its bread is taro. 2,472 workers (40%),
+  40 carts. A town sells and stores only the foods it makes.
+- **The run loop** (`57`): a world minute a `SIM.step`, at the 72-minute day times x1, x20 or x120, held when the page
+  opens; the HUD shows the day and hour and the drawn town's food in days. **The stocks id map** (`46`): `ISLE.simIdOf`
+  (a lot, its core/tags id or a place id to the town's places) and `ISLE.simHolds(town)` (the `extra` for core/host's
+  `KHOST.simHolds`, its stocks the town's own), ready for when the page takes core/host.
+- `SIM.REACH` is 6 km (a town and its farm ring) and the clock starts at 01:00: see `KNOWN_ISSUES.md`.
+- **Not yet:** the citizens drawn near the camera; the canoe line (P7c). See `HANDOFF.md`.
 
 See `KNOWN_ISSUES.md`.

@@ -8,7 +8,7 @@
      3. two ways that cross (the avenues) are split at the crossing and share a node
      4. a piece the joins missed is joined to the largest by its nearest node within `bridge` metres
    Then G.door(x, z) splits the nearest way at the point nearest (x, z) and returns that node: a place's door is on its
-   street. The graph is in WORLD metres (the town's frame added, the height over the world's datum), so two towns'
+   street (a place far from every way, a track to it). The graph is in WORLD metres (the town's frame added, the height over the world's datum), so two towns'
    graphs stand apart in one layer and a sea line can join them (P7c). The index is core/space's (KSPACE). */
 ISLE.NAV = { step: 12, reach: 6, bridge: 160 };
 ISLE.navOf = function (R, G, pre) {
@@ -88,9 +88,14 @@ ISLE.navOf = function (R, G, pre) {
     if (best) { edge(best.k, best.j, 'join', 3); bridged++; }
   });
   var out = { pre: pre, town: R.town, frame: F, N: N, E: E, stats: { ways: lines.length, joins: joins, crossings: cross, bridged: bridged, bodies: B0.size.length } };
-  /* a door on the street nearest (x, z), town metres, within `far`: the index of its node (a split of the way), or -1 */
-  out.door = function (x, z, far) {
-    var h = nearest(x, z, far == null ? 800 : far); return h ? split(h, 'door') : -1;
+  /* a door on the street nearest (x, z), town metres, within `far`: the index of its node (a split of the way), or -1.
+     o.track: a place farther than that from every way (a farm parcel, a holding beyond the wall) gets a track, a node at
+     (x, z) joined to the split; o.prefer: a way class tried first (the highways out of the gates, for the farm ring) */
+  out.door = function (x, z, far, o) {
+    o = o || {}; far = far == null ? 800 : far;
+    var h = (o.prefer && nearest(x, z, far, function (e) { return e.kind !== o.prefer; })) || nearest(x, z, far); if (!h) return -1;
+    var j = split(h, 'door'); if (o.track == null || h.d <= o.track) return j;
+    var n = node(x, z, 'track'); edge(j, n, 'track', 3); out.stats.tracks = (out.stats.tracks || 0) + 1; return n;
   };
   /* a node as a world point {x, y, z, node} (its id) */
   out.at = function (k) { var q = N[k]; return { x: +(q.x + F.x).toFixed(2), y: +(G.h(q.x, q.z) + F.sea).toFixed(2), z: +(q.z + F.z).toFixed(2), node: q.id }; };
