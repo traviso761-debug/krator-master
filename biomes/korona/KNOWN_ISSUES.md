@@ -2,10 +2,6 @@
 
 Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in and verified.
 
-- [ ] **Two traps do not move.** The bear traps' jaws, the ground stars, the trap pads and the numb thorns go off in the
-  shader (`50`, `trapHook`: hinge, fold, whip on the trap cycle); the coil tendril and the man-eater's lid are merged
-  bucket geometry and stay still. A tendril should lift its end, a lid drop: the same cycle on a per-plant uniform or
-  an instanced end piece.
 - [ ] **No glow.** The lace fan tree should glow at dusk (the northern highlands' bell-bulbs' emissive, raised by the
   night) and the monkeycup rims faintly blue; the page has no night uniform on these materials yet.
 - [ ] **No `core/atmos`.** The notes ask for the pressure preset (1.3 atm on the table, 1.7 in the gorge and the hollow,
@@ -27,11 +23,15 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   through `STAGE.topExtra`; the drawn top reads that function (`KSTACKS.mesh` through the export, on 150 rings and 1,200
   segments for a top with relief: about 10 m), so the basins and the knolls are drawn; a gridded top would be cleaner
   than a 180,000-vertex ring fan.
-- [ ] **The man-eater's lid is a plate, not a lathe.** The hood is drawn as a hinged disc standing open over the mouth
-  (horizontal rings, each the chord across the tilted disc), seated on the rim; a proper Nepenthes lid (a dome with a
-  spur, veined) wants its own geometry when the plant is redone.
+- [ ] **The man-eater's lid is a flat card.** It is an instanced disc hinged on the back of the rim (it moves on the trap
+  cycle); a proper Nepenthes lid (a dome with a spur, veined) wants its own geometry when the plant is redone.
 
 ## Closed
+
+- **Two traps did not move** (2026-10-19): the man-eater's lid is an instanced card hinged on the back of its rim on the
+  hinge hook (up while the trap waits, dropped flat over the mouth when it shuts) and the coil tendril's last quarter an
+  instanced rod on the whip hook (lying on along the coil, standing up on the grab), both on the trap cycle (`50`, `57`;
+  the library's skins copied onto them after the swap).
 
 - The open items of 2026-10-19 (the second pass): **the gorge's floor wears the desert's red soil** (`ground.redsoil`, a
   family in `materials.json`); **the trenches' lee has the eastern desert's kit** (read in place as the gorge reads it:
