@@ -137,8 +137,23 @@ declares both once they are planned, in one order whichever town it draws, and h
   the avenues split where they cross, stray pieces bridged; every door a split of its nearest street. One body, about
   2,300 nodes.
 - **People** (`42`): a role for each kind of work (farmhands, fishers, dockers, traders, bakers, keepers, craftsmen,
-  soldiers, officials), its count the posts its places offer, and the kin who fill the beds left; dealt by
-  `SIM.populate({settlement: 'valapo', prefix: 'v'})`. 805 workers, 37% of the people, every post filled.
+  soldiers, officials), its count the posts its places offer; by age (the owner, 2026-10-19), the children (36% of the
+  town), as many at school as the schools', temples' and shrines' STUDY places hold and the rest at housework, the
+  elders (8%) at housework, and the adults at home who fill the beds left; dealt by
+  `SIM.populate({settlement, prefix})`, then each person's age drawn in its band and the people of each 150 m square
+  dealt round its houses again so a house holds a family. `ISLE.simDemography(s)` is the breakdown (verify prints it):
+
+  | | Valapo | Kautoa |
+  |---|---|---|
+  | people | 2,155 | 6,235 |
+  | children (9-15, pupils 6-12) | 776: 245 at school, 531 at housework | 2,245: 530 at school, 1,715 at housework |
+  | adults (16-59) | 1,207: 811 employed, 396 at home | 3,491: 2,478 employed, 1,013 at home |
+  | elders (60-82) | 172 at housework | 499 at housework |
+  | employed | 38% of the people, 67% of the adults | 40%, 71% |
+  | households | 429, 19 without an earner | 1,227, 34 without an earner |
+- **Company in the free hours:** the plan's pocket parks and plazas (Kautoa 739, Valapo 103), its park and beach districts,
+  and more room at the markets, taverns, hall and square: at 10:30 every one of those who want company finds it (Kautoa
+  about 5,200 places, Valapo 1,700).
 - **Food** (`43`, `44`): the foods are items and goods (sweet potato, banana, coconut, fish, pork, bread); the market,
   chandlers, traders, butchers, bakehouses and fish docks sell them, the kava houses and the guest house serve meals;
   every house keeps a food store, the barracks eat at their mess. Valapo's own economy: the parcels grow their crops,

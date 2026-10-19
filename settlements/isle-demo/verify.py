@@ -125,18 +125,20 @@ WEEK_JS = r"""(neg)=>{if(!window._week){const w1=ISLE.simWeek('Valapo',7*1440),w
  return [];}"""
 WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided')
 SIM_TOWNS = ('Kautoa', 'Valapo')
-SIM_NEGS = ('lot', 'home', 'job', 'map', 'haul', 'short', 'made')
+SIM_NEGS = ('lot', 'home', 'job', 'age', 'social', 'map', 'haul', 'short', 'made')
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];
- if(!ISLE.SIM.dayMs){const t0=performance.now();ISLE.simDay();ISLE.SIM.dayMs=Math.round(performance.now()-t0);}
+ if(!ISLE.SIM.dayMs){const t0=performance.now(),c=ISLE.TUNE.sim.clock.start+630;ISLE.simRun(c-ISLE.SIM.clock.m);ISLE.SIM.soc={};ISLE.SIM.order.forEach(k=>{ISLE.SIM.soc[k]=ISLE.simSocial(k);});ISLE.simDay();ISLE.SIM.dayMs=Math.round(performance.now()-t0);}
  const books=ISLE.simBooks(s),res=()=>SIM.all('actor').filter(a=>!a.driven&&SIM.R.role[a.role].settlement===s).map(a=>Object.assign({},a)),cp=()=>JSON.parse(JSON.stringify(books));
  const own=()=>SIM.all('place').filter(P=>P.settlement===s),f0=Object.keys(books.foods)[0];
  if(!neg)return {info:{places:X.places.places.length,homes:X.places.homes,beds:X.places.beds,posts:X.places.posts,people:X.pop.actors,workers:X.pop.workers,carts:X.econ.carts,
    warehouses:X.econ.warehouses,foods:X.econ.foods,producers:X.econ.producers,nav:X.nav,problems:ISLE.SIM.problems.slice(0,3),routeFail:SIM.routeFail.length,declareMs:ISLE.SIM.ms.declare,dayMs:ISLE.SIM.dayMs},
-  checks:ISLE.simChecks(R).concat(ISLE.simFoodChecks(R,books))};
+  people:ISLE.simDemography(s),level:ISLE.SIM.soc[s].level,checks:ISLE.simChecks(R).concat(ISLE.simFoodChecks(R,books),ISLE.SIM.soc[s].level==='presented'?[ISLE.simSocialCheck(R,ISLE.SIM.soc[s])]:[])};
  const pick=(rs,re)=>rs.filter(c=>re.test(c.name));
  if(neg==='lot'){const L=R.lots.find(l=>ISLE.tradeOf(l.key));return pick(ISLE.simChecks(R,{places:own().filter(P=>P.tags.lot!==L.id)}),/census trade/);}
  if(neg==='home'){const A=res();A[0].home=s==='valapo'?'kautoa.0':'valapo.0';return pick(ISLE.simChecks(R,{actors:A}),/resident/);}
- if(neg==='job'){const A=res(),w=A.find(a=>a.work);w.work=undefined;return pick(ISLE.simChecks(R,{actors:A}),/worker/);}
+ if(neg==='job'){const A=res(),w=A.find(a=>a.status==='employed');w.work=undefined;return pick(ISLE.simChecks(R,{actors:A}),/worker/);}
+ if(neg==='age'){const A=res(),c=A.find(a=>a.ageBand==='child');c.age=30;return pick(ISLE.simChecks(R,{actors:A}),/every child/);}
+ if(neg==='social'){return [ISLE.simSocialCheck(R,Object.assign({},ISLE.SIM.soc[s],{placed:Math.floor(ISLE.SIM.soc[s].want/2)}))];}
  if(neg==='map'){const P=own().filter(p=>p.tags.lot).map(p=>Object.assign({},p,{tags:Object.assign({},p.tags)}));P[0].tags.lot='nowhere';return pick(ISLE.simChecks(R,{places:P}),/stocks map/);}
  if(neg==='haul'){const B=cp();B.foods[f0].hauled=0;return pick(ISLE.simFoodChecks(R,B),/made and hauled/);}
  if(neg==='short'){const B=cp();B.foods[f0].outOf=12;return pick(ISLE.simFoodChecks(R,B),/nothing short/);}
@@ -198,10 +200,14 @@ async def run_city(a):
                             for st in SIM_TOWNS:
                                 r0 = await pg.evaluate(SIM_JS, {'town': st, 'neg': None})
                                 print('  INFO  %s on core/simulation : %s' % (st, json.dumps(r0['info'])))
+                                print('  INFO  the people of %s : %s' % (st, json.dumps(r0['people'])))
                                 for r in r0['checks']:
                                     print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
                                     if not r['ok']: fails.append(r['name'])
+                                if r0['level'] != 'presented':
+                                    print('  INFO  %s is abstract on this page: its free hours are not measured (its people do not decide)' % st)
                                 for neg in SIM_NEGS:
+                                    if neg == 'social' and r0['level'] != 'presented': continue
                                     rs = await pg.evaluate(SIM_JS, {'town': st, 'neg': neg})
                                     caught = bool(rs) and not any(r['ok'] for r in rs)
                                     print(('  PASS  ' if caught else '  MISSED') + ' negative (%s sim %s) : ' % (st, neg) + '; '.join(r['detail'] for r in rs))

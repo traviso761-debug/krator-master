@@ -65,10 +65,15 @@
       abstract use; the imported foods are not yet sold in its shops or eaten in its meals, and the weavers of Kautoa still
       lack cotton (a recipe whose input never was made is not declared). Valapo makes no coffee yet (its upland farms are
       a world record), so the oruwa comes back from Valapo empty.
-- [ ] **Kautoa's kin mostly stay home in their free hours:** the town's places with SOCIALIZE room (the markets, the
-      hall, the taverns, the square, the palace) hold a few hundred of its 3,700 kin, so about 2,900 fall back to their
-      homes (a stay-put decision keeps its task). A capacity pass (`ISLE.TUNE.sim.kinds` SOCIALIZE slots, or parks and
-      beaches as open places) is owed; the books are unaffected.
+- [x] **Kautoa's kin mostly stayed home in their free hours** (2026-10-19): 425 places to be in company for 3,700. The
+      plan's pocket parks, plazas, park and beach districts are now places, and the markets, taverns, hall and square
+      hold more: everyone who wants company at 10:30 finds it (a verify check).
+- [ ] **Ages are drawn, not lived:** a person's age is a hash within its band and never changes; nobody is born, ages or
+      dies, and children under five are not counted (the census's five a household holds no infants). Housework is a
+      schedule at home and makes nothing; school teaches nothing yet (no skills). The pupils are the town's STUDY places'
+      worth (Valapo 32% of its children, Kautoa 24%), the youngest by band, not by who lives nearest a school.
+- [ ] **Valapo needs 20 carts** (was 14): with the cane and cotton to haul as well, 14 left coconut, pork and bread on the
+      sites for a day once the households changed.
 - [ ] **No sea route is drawn.** The lines run on SIM.trade's timer: a vessel shows at its berth while docked and is gone
       at sea. A `SIM.transport` line on a water layer between the two landings (122 km) would let the open world draw
       the voyage (P8). The berths stand up to 160 m from the landing, in the nearest water deep and clear enough.

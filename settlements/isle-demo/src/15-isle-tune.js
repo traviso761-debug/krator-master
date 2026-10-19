@@ -28,49 +28,49 @@ ISLE.TUNE.sim = {
   clock: { secPerMinute: 18, stepMax: 900, lag: 8, reach: 6000, start: 0 },
   track: 40,
   towns: {
-    Valapo: { id: 'valapo', name: 'Valapo', faction: 'islanders', prefix: 'v', carts: 14, inputs: { bread: { 'sweet-potato': 1 } } },
+    Valapo: { id: 'valapo', name: 'Valapo', faction: 'islanders', prefix: 'v', carts: 20, inputs: { bread: { 'sweet-potato': 1 } } },
     /* Kautoa grows nothing inside its wall: its farms are the programme's farm ring beyond it (`ring`), its bread is taro */
     Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } } }
   },
-  activities: ['SLEEP', 'EAT', 'REST', 'IDLE', 'WORK', 'BUY', 'SOCIALIZE', 'WORSHIP', 'HAUL'],
+  activities: ['SLEEP', 'EAT', 'REST', 'IDLE', 'WORK', 'BUY', 'SOCIALIZE', 'WORSHIP', 'HAUL', 'STUDY', 'HOUSEWORK'],
   indoor: ['SLEEP', 'REST', 'IDLE'],
-  home: { per: 5, acts: ['SLEEP', 'EAT', 'REST', 'IDLE'] },
+  home: { per: 5, acts: ['SLEEP', 'EAT', 'REST', 'IDLE', 'HOUSEWORK'] },
   kinds: {
     'ie-hut-garden': ['home', {}, { cls: 'poor' }], 'ie-hut-scrap': ['home', {}, { cls: 'poor' }],
     'ie-house-uma': ['home', {}, { cls: 'middle' }], 'ie-house-cross': ['home', {}, { cls: 'middle' }], 'ie-house-wealthy': ['home', {}, { cls: 'rich' }],
     'ie-barracks': ['barracks', { WORK: 0 }, { mess: true, posts: 'beds' }], 'ie-watchtower': ['watchtower', { WORK: 3 }],
-    'ie-market': ['market', { WORK: 3, BUY: 5, SOCIALIZE: 6 }, { open: [6, 19], out: true, wander: 4, shop: 'market' }],
+    'ie-market': ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 19], out: true, wander: 4, shop: 'market' }],
     'ie-chandler': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }],
     'ie-trader': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }],
     'ie-butcher': ['butcher', { WORK: 2.5, BUY: 3 }, { open: [6, 18], shop: 'pork' }],
     'ie-bakehouse': ['bakehouse', { WORK: 2.5, BUY: 3 }, { open: [5, 18], shop: 'bread' }],
-    'ie-kava-house': ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 8 }, { open: [10, 24], shop: 'meal' }],
-    'ie-guesthouse': ['inn', { WORK: 2.5, EAT: 5, SOCIALIZE: 5 }, { open: [6, 23], shop: 'meal' }],
+    'ie-kava-house': ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16 }, { open: [10, 24], shop: 'meal' }],
+    'ie-guesthouse': ['inn', { WORK: 2.5, EAT: 5, SOCIALIZE: 8 }, { open: [6, 23], shop: 'meal' }],
     'ie-weaver': ['weaver', { WORK: 2.5 }], 'ie-potter': ['potter', { WORK: 2.5 }], 'ie-smithy': ['smithy', { WORK: 2.5 }],
     'ie-fishdock': ['fishdock', { WORK: 2.5, BUY: 1 }, { out: true, wander: 6, shop: 'fish' }],
     'ie-quay': ['quay', { WORK: 1.7 }, { out: true, wander: 6 }],
     'ie-warehouse': ['warehouse', { WORK: 2.5 }], 'ie-granary': ['granary', { WORK: 1 }], 'ie-granary-great': ['granary', { WORK: 2 }],
     'ie-windmill': ['mill', { WORK: 2 }], 'ie-pens': ['pens', { WORK: 2.5 }, { out: true, wander: 5 }],
-    'ie-hall': ['hall', { WORK: 2.5, SOCIALIZE: 4 }, { open: [7, 21] }], 'ie-harbourmaster': ['customs', { WORK: 2.5 }],
-    'ie-canoeshed': ['canoeshed', { WORK: 2.5 }], 'ie-temple': ['temple', { WORK: 2.5, WORSHIP: 8 }, { open: [5, 21] }],
-    'ie-school': ['school', { WORK: 2.5 }], 'ie-healer': ['healer', { WORK: 2.5 }],
+    'ie-hall': ['hall', { WORK: 2.5, SOCIALIZE: 8 }, { open: [7, 21] }], 'ie-harbourmaster': ['customs', { WORK: 2.5 }],
+    'ie-canoeshed': ['canoeshed', { WORK: 2.5 }], 'ie-temple': ['temple', { WORK: 2.5, WORSHIP: 8, STUDY: 10 }, { open: [5, 21] }],
+    'ie-school': ['school', { WORK: 2.5, STUDY: 60 }, { open: [6, 16] }], 'ie-healer': ['healer', { WORK: 2.5 }],
     /* Kautoa's own: the palace, the envoys' and chiefs' houses (a residence: lived in by its households, staffed), the
        ceremonial square, the harbour's beacon, ferry and dockyard, the works, the dairy */
     'ip-palace': ['residence', { WORK: 0.4, SOCIALIZE: 0.3 }, { cls: 'rich' }], 'ie-envoy': ['residence', { WORK: 1 }, { cls: 'rich' }],
-    'ie-house-chief': ['residence', { WORK: 1 }, { cls: 'rich' }], 'ie-square': ['square', { WORK: 0.2, SOCIALIZE: 1, WORSHIP: 1 }, { out: true, wander: 15 }],
+    'ie-house-chief': ['residence', { WORK: 1 }, { cls: 'rich' }], 'ie-square': ['square', { WORK: 0.2, SOCIALIZE: 6, WORSHIP: 1 }, { out: true, wander: 15 }],
     'ie-beacon': ['beacon', { WORK: 3 }], 'ie-ferry': ['ferry', { WORK: 2 }, { out: true, wander: 5 }], 'ie-dockyard': ['dockyard', { WORK: 1 }, { out: true, wander: 10 }],
     'ie-quarry': ['quarry', { WORK: 2.5 }, { out: true, wander: 6 }], 'ie-saltworks': ['saltworks', { WORK: 2.5 }, { out: true, wander: 6 }],
     'ie-tannery': ['tannery', { WORK: 2.5 }], 'ie-byre': ['byre', { WORK: 2.5 }, { out: true, wander: 5 }],
     /* Ridertown (the Beast Riders kit): the mounts' stables and roosts, the shrines */
     br_bldg_great_byre: ['stable', { WORK: 1.5 }, { out: true, wander: 8 }], br_bldg_raptor_stable: ['stable', { WORK: 1.5 }],
     br_bldg_rookery_tower: ['rookery', { WORK: 3 }], br_port_mavs_roost: ['rookery', { WORK: 2 }],
-    br_port_mavs_shrine: ['shrine', { WORK: 1, WORSHIP: 6 }, { open: [5, 21] }],
+    br_port_mavs_shrine: ['shrine', { WORK: 1, WORSHIP: 6, STUDY: 10 }, { open: [5, 21] }],
     /* Izanitown (the Iziz Vernacular) */
     vern_house_poor_a: ['home', {}, { cls: 'poor' }], vern_house_poor_b: ['home', {}, { cls: 'poor' }], vern_house_poor_c: ['home', {}, { cls: 'poor' }],
     vern_house_mid_a: ['home', {}, { cls: 'middle' }], vern_house_mid_b: ['home', {}, { cls: 'middle' }], vern_house_mid_c: ['home', {}, { cls: 'middle' }],
     vern_house_rich_a: ['home', {}, { cls: 'rich' }], vern_house_rich_b: ['home', {}, { cls: 'rich' }],
     vern_governor_palace: ['residence', { WORK: 1 }, { cls: 'rich' }], vern_guard_tower: ['watchtower', { WORK: 1.5 }], vern_watch_house: ['watchtower', { WORK: 4 }],
-    vern_shops: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 8 }, { open: [10, 24], shop: 'meal' }],
+    vern_shops: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16 }, { open: [10, 24], shop: 'meal' }],
     vern_smithy: ['smithy', { WORK: 2.5 }], vern_workshop_a: ['workshop', { WORK: 2.5 }], vern_workshop_b: ['workshop', { WORK: 2.5 }]
   },
   /* the canoe stop (P7c): its dockers' posts per 100 m2 of the landing (the last number: its area, m2) */
@@ -91,10 +91,24 @@ ISLE.TUNE.sim = {
   },
   /* the homes the kin fill, in order: whatever beds the roles leave, the residences and barracks too */
   homes: ['home', 'residence', 'barracks'],
+  /* the people by age (2026-10-19, the owner: children at school or at housework, the elders at housework): shares of
+     each town's people; the pupils are as many as its schools', temples' and shrines' STUDY places hold (the youngest), the other
+     children help at home, the elders keep house; the adults are the workers (every post) and those at home. Ages in
+     years, drawn by a hash of the person within the band. A child under five is not counted: the census has no infants */
+  ages: { children: 0.36, elders: 0.08, bands: { pupil: [6, 12], child: [9, 15], adult: [16, 59], elder: [60, 82] } },
+  /* households: the people dealt round the houses of each `cell`-metre square of the town after the deal, so a house
+     holds a family (workers, those at home, children, elders), not one kind of person; nobody moves farther than the cell */
+  mix: { cell: 150 },
+  /* the places to be in company (SOCIALIZE): the plan's pocket parks and plazas (R.plan.greens), its park and beach
+     districts, per 100 m2 of ground (`per`), at most `cap` each */
+  greens: { per: 4, cap: 60, open: [5, 22] }, parks: { types: ['park', 'plaza'], per: 1, cap: 400, open: [5, 22] },
   sched: {
     work: [[0, 'SLEEP'], [5, 'EAT'], [6, 'WORK'], [17, 'SOCIALIZE'], [19, 'EAT'], [20, 'REST'], [22, 'SLEEP']],
     watch: [[0, 'SLEEP'], [6, 'EAT'], [7, 'WORK'], [18, 'EAT'], [19, 'SOCIALIZE'], [21, 'SLEEP']],
     kin: [[0, 'SLEEP'], [7, 'EAT'], [8, 'IDLE'], [10, 'SOCIALIZE'], [13, 'REST'], [15, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
+    pupil: [[0, 'SLEEP'], [6, 'EAT'], [7, 'STUDY'], [13, 'SOCIALIZE'], [15, 'HOUSEWORK'], [17, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
+    child: [[0, 'SLEEP'], [6, 'EAT'], [7, 'HOUSEWORK'], [11, 'SOCIALIZE'], [13, 'HOUSEWORK'], [16, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
+    elder: [[0, 'SLEEP'], [6, 'EAT'], [7, 'HOUSEWORK'], [10, 'SOCIALIZE'], [12, 'REST'], [15, 'HOUSEWORK'], [17, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
     free: ['SOCIALIZE', 'IDLE', 'REST']
   },
   items: {

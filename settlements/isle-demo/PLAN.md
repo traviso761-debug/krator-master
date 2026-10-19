@@ -671,6 +671,13 @@ town's food a worker a day abstract within 0.6-1.6 of the same town watched (abo
 in the abstract town; each with a negative. A week with Valapo watched took 12-16 s in node, with Kautoa watched
 28-33 s, both presented about 38 s.
 
+**The people by age and their company (owner, 2026-10-19).** Children (36%) at school as far as the STUDY places go, the
+rest at housework; elders (8%) at housework; the adults employed (every post) or at home; households mixed within each
+150 m square. More company: the plan's pocket parks, plazas, parks and beaches as places, and more room at the markets,
+taverns, hall and square. Checks: every child at school or at housework and every elder at housework, ages in their
+bands, no house of children alone; everyone wanting company at 10:30 placed; each with a negative (README.md, the
+breakdown).
+
 **Order of work.**
 
 | Step | What | Proof |

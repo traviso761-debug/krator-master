@@ -32,7 +32,7 @@ ISLE.simChecks = function (R, o) {
   ok('every resident has a home in the town (the census\'s people)', actors.length > 0 && homeless.length === 0 && actors.length === C.citizens,
     actors.length + ' residents, census ' + C.citizens + (homeless.length ? '; WITHOUT A HOME IN THE TOWN: ' + homeless.slice(0, 4).map(function (a) { return a.id; }).join(', ') : ''));
   /* the workers */
-  var workers = actors.filter(function (a) { var Rr = SIM.R.role[a.role]; return Rr && Rr.work; });
+  var workers = actors.filter(function (a) { var Rr = SIM.R.role[a.role]; return Rr && Rr.work && Rr.work.act === 'WORK'; });
   var jobless = workers.filter(function (a) { var W = pi[a.work]; return !W || W.settlement !== s || !(W.activities.WORK > 0); });
   var posts = places.reduce(function (n, q) { return n + (q.activities.WORK || 0); }, 0), load = {};
   workers.forEach(function (a) { if (a.work) load[a.work] = (load[a.work] || 0) + 1; });
@@ -40,6 +40,20 @@ ISLE.simChecks = function (R, o) {
   ok('every worker has a job in the town, every post filled', workers.length > 0 && jobless.length === 0 && workers.length === posts && over === 0,
     workers.length + ' workers, ' + posts + ' posts (' + Math.round(100 * workers.length / Math.max(1, actors.length)) + '% of the people)' + (over ? ', ' + over + ' places over their posts' : '') +
     (jobless.length ? '; WITHOUT A JOB IN THE TOWN: ' + jobless.slice(0, 4).map(function (a) { return a.id; }).join(', ') : ''));
+  /* by age (42): every child at school (a STUDY place of the town) or at housework (its home), every elder at housework,
+     each age in its band; the households mixed (no house of children alone) */
+  var Bd = ISLE.TUNE.sim.ages.bands, wrong = [];
+  actors.forEach(function (a) {
+    var Rr = SIM.R.role[a.role], nm = Rr.name, H = pi[a.home], W = pi[a.work];
+    if (a.ageBand === 'child' && !(nm === 'pupil' ? W && W.settlement === s && W.activities.STUDY > 0 : H && H.activities.HOUSEWORK > 0 && Rr.sched.indexOf('HOUSEWORK') >= 0)) wrong.push(a.id + ' (a child)');
+    else if (a.ageBand === 'elder' && !(H && H.activities.HOUSEWORK > 0 && Rr.sched.indexOf('HOUSEWORK') >= 0)) wrong.push(a.id + ' (an elder)');
+    var b = Bd[nm === 'pupil' ? 'pupil' : nm === 'child' ? 'child' : nm === 'elder' ? 'elder' : 'adult'];
+    if (!(a.age >= b[0] && a.age <= b[1])) wrong.push(a.id + ' aged ' + a.age);
+  });
+  var D = ISLE.simDemography(s), kids = actors.filter(function (a) { return a.ageBand === 'child'; }), eld = actors.filter(function (a) { return a.ageBand === 'elder'; });
+  ok('every child at school or at housework, every elder at housework, the households mixed', kids.length > 0 && eld.length > 0 && !wrong.length && D.households.onlyChildren === 0,
+    kids.length + ' children (' + (D.status.pupil || 0) + ' at school, ' + kids.filter(function (a) { return a.status === 'housework'; }).length + ' at housework), ' + eld.length + ' elders at housework; ' +
+    D.households.n + ' households, ' + D.households.onlyChildren + ' of children alone' + (wrong.length ? '; WRONG: ' + wrong.slice(0, 4).join(', ') : ''));
   /* the stocks map (46): every place found again from its lot, and the town's stocks read by settlement */
   var lost = places.filter(function (q) { return q.tags && q.tags.lot && ISLE.simIdOf({ lot: q.tags.lot }).indexOf(q.id) < 0; }), X = ISLE.SIM.towns[s];
   var St = SIM.stocks ? SIM.stocks(s) : null, rows = St ? (X.econ.foods || []).filter(function (f) { return St.by[f]; }).length : 0;
@@ -78,4 +92,16 @@ ISLE.simFoodChecks = function (R, books) {
   ok('the food made covers what the town ate', made - into >= ate, (made - into) + ' servings made (' + made + ', ' + into + ' of them baked into others), ' + ate + ' eaten (' + eaten + ' at home, ' +
     (meals.bought + meals.mess) * per + ' out and at the mess' + ')');
   return out;
+};
+/* the free hours: of those who want company now (wish SOCIALIZE), the share at a place for it rather than sent home; measured
+   in a presented town (an abstract town's people do not decide: verify skips the check there) */
+ISLE.simSocial = function (s) {
+  var A = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === s && a.wanted === 'SOCIALIZE'; });
+  var at = A.filter(function (a) { return a.activity === 'SOCIALIZE' && a.place !== a.home; }).length, slots = SIM.all('place').filter(function (P) { return P.settlement === s; }).reduce(function (n, P) { return n + (P.activities.SOCIALIZE || 0); }, 0);
+  return { town: s, minute: SIM.minute(), level: SIM.levelOf ? SIM.levelOf(s) : 'presented', want: A.length, placed: at, slots: slots };
+};
+ISLE.simSocialCheck = function (R, soc, least) {
+  least = least == null ? 0.9 : least; var q = soc.want ? soc.placed / soc.want : 0;
+  return { name: R.town + ': those who want company in their free hours find a place for it', ok: soc.want > 0 && q >= least,
+    detail: soc.placed + ' of ' + soc.want + ' wanting company placed (' + Math.round(100 * q) + '%, ' + Math.round(100 * least) + '% wanted) at ' + Math.floor(soc.minute % 1440 / 60) + ':' + ('0' + soc.minute % 60).slice(-2) + '; ' + soc.slots + ' places for it' };
 };

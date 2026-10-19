@@ -76,6 +76,21 @@ ISLE.simPlaces = function (TS, R, G, nav) {
         { track: T.track, prefer: 'highway' });
     });
   });
+  /* the places to be in company: the plan's pocket parks and plazas, and its park and beach districts (each at its
+     middle), SOCIALIZE by their ground, open */
+  var areaOf = function (P) { var a = 0; for (var i = 0, n = P.length; i < n; i++) { var p = P[i], q = P[(i + 1) % n]; a += p[0] * q[1] - q[0] * p[1]; } return Math.abs(a) / 2; };
+  var mid = function (P) { var x = 0, z = 0; P.forEach(function (p) { x += p[0]; z += p[1]; }); return [x / P.length, z / P.length]; };
+  var Gr = T.greens, Pk = T.parks;
+  (R.plan.greens || []).forEach(function (g) {
+    if (!g.poly || g.poly.length < 3) return; var A = areaOf(g.poly), c = mid(g.poly), n = Math.min(Gr.cap, Math.round(A / 100 * Gr.per)); if (n < 2) return;
+    put(s + '.g' + g.id, 'a ' + g.kind, [g.kind === 'plaza' ? 'plaza' : 'green', { SOCIALIZE: n * 100 / A }, { out: true, wander: Math.min(12, Math.sqrt(A) / 3), open: Gr.open }], c[0], c[1], 0, A, 0,
+      { key: 'green:' + g.kind, lot: null, trade: null, cls: 'green', district: g.district, role: g.kind }, { track: T.track });
+  });
+  (R.districts || []).forEach(function (d, i) {
+    if (Pk.types.indexOf(d.type) < 0 || d.role === 'zone' || !d.poly) return; var A = areaOf(d.poly), c = mid(d.poly), n = Math.min(Pk.cap, Math.round(A / 100 * Pk.per)); if (n < 2) return;
+    put(s + '.p' + i, d.name, ['park', { SOCIALIZE: n * 100 / A }, { out: true, wander: 15, open: Pk.open }], c[0], c[1], 0, A, 0,
+      { key: 'park:' + d.role, lot: null, trade: null, cls: 'park', district: d.name, role: d.role }, { track: T.track });
+  });
   /* the canoe stop at each trade landing (32: its berths; 47: its store and the line) */
   (R.landings || []).forEach(function (Ld, i) {
     put(s + '.stop' + (i ? i : ''), 'the canoe stop of ' + TS.name, T.stop, Ld.x, Ld.z, 0, T.stop[3], 0,

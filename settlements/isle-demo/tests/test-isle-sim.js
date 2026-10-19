@@ -29,7 +29,8 @@ towns.forEach(({ R, X }) => {
 });
 const line = (X) => { const B = ISLE.simBooks(X.id); return X.id + ': ' + Object.keys(B.foods).map(f => f + ' ' + B.foods[f].made + '/' + B.foods[f].hauled + '/' + B.foods[f].used + '/' + B.foods[f].stock).join(', ') + ' carts ' + JSON.stringify(B.carts); };
 t0 = Date.now();
-ISLE.simRun(minutes, m => { if (m % every === 0) { console.log('    ' + (m / 60) + ' h (' + (Date.now() - t0) + ' ms), made/hauled/used/stock'); towns.forEach(({ X }) => console.log('      ' + line(X))); } });
+const SOC = {};
+ISLE.simRun(minutes, m => { if (m === 630) towns.forEach(({ X }) => { SOC[X.id] = ISLE.simSocial(X.id); }); if (m % every === 0) { console.log('    ' + (m / 60) + ' h (' + (Date.now() - t0) + ' ms), made/hauled/used/stock'); towns.forEach(({ X }) => console.log('      ' + line(X))); } });
 console.log('--- ' + minutes + ' minutes run in ' + (Date.now() - t0) + ' ms; route failures ' + SIM.routeFail.length);
 const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0]; ok('negative: ' + what + ' is caught', r && !r.ok, r && r.detail); };
 towns.forEach(({ R, X }) => {
@@ -39,7 +40,12 @@ towns.forEach(({ R, X }) => {
   const own = () => SIM.all('place').filter(P => P.settlement === X.id), res = () => SIM.all('actor').filter(a => !a.driven && SIM.R.role[a.role].settlement === X.id).map(a => Object.assign({}, a));
   { const L = R.lots.find(l => ISLE.tradeOf(l.key)); caught(R.town + ': a census trade\'s lot that is no place', ISLE.simChecks(R, { places: own().filter(P => P.tags.lot !== L.id) }), /census trade/); }
   { const A = res(); A[0].home = X.id === 'valapo' ? 'kautoa.0' : 'valapo.0'; caught(R.town + ': a resident housed outside the town', ISLE.simChecks(R, { actors: A }), /resident/); }
-  { const A = res(), w = A.find(a => a.work); w.work = undefined; caught(R.town + ': a worker without a job', ISLE.simChecks(R, { actors: A }), /worker/); }
+  { const D = ISLE.simDemography(X.id); console.log('--- ' + R.town + "'s people: " + JSON.stringify(D)); }
+  if (SOC[X.id]) { ok(ISLE.simSocialCheck(R, SOC[X.id]).name, ISLE.simSocialCheck(R, SOC[X.id]).ok, ISLE.simSocialCheck(R, SOC[X.id]).detail);
+    const r = ISLE.simSocialCheck(R, Object.assign({}, SOC[X.id], { placed: Math.floor(SOC[X.id].want / 2) })); ok('negative: ' + R.town + ': half sent home from company is caught', !r.ok, r.detail); }
+  { const A = res(), c = A.find(a => a.ageBand === 'child'); c.age = 30; caught(R.town + ': a child aged 30', ISLE.simChecks(R, { actors: A }), /every child/); }
+  { const A = res(), e = A.find(a => a.ageBand === 'elder'); e.home = 'nowhere'; caught(R.town + ': an elder with no house to keep', ISLE.simChecks(R, { actors: A }), /every child/); }
+  { const A = res(), w = A.find(a => a.status === 'employed'); w.work = undefined; caught(R.town + ': a worker without a job', ISLE.simChecks(R, { actors: A }), /worker/); }
   { const P = own().filter(q => q.tags.lot).map(q => Object.assign({}, q, { tags: Object.assign({}, q.tags) })); P[0].tags.lot = 'nowhere'; caught(R.town + ': a place the stocks map cannot find', ISLE.simChecks(R, { places: P }), /stocks map/); }
   const f0 = Object.keys(books.foods)[0];
   { const B = JSON.parse(JSON.stringify(books)); B.foods[f0].hauled = 0; caught(R.town + ': a food never hauled', ISLE.simFoodChecks(R, B), /made and hauled/); }
