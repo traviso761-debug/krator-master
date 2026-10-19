@@ -53,6 +53,7 @@ OUT = 'beast-riders'
 BEFORE = ['krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js',
           'krator-master-furniture-beast-rider.js', 'krator-master-furniture-generic.js']
 OWN = ['50-br-mounts.js']
+OWN += ['55-br-rockcut.js', '56-br-rockcut-b.js']   # the rock-cut pieces and the Deep Root cavern's dressing (BR_ROCK)
 # the ports: Girder's and Mav's Refuge's engines and builders sealed (towns.py), then their buildings as ASSETs
 TOWNS = "TOWNS: Girder and Mav's Refuge sealed (GENERATED: towns.py)"
 PORTS = ['60-br-ports.js']
