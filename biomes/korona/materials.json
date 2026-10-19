@@ -1,6 +1,6 @@
 {
  "build": "korona",
- "note": "The Korona kit's adapter onto the material library (core/materials/PLAN.md; biomes/korona/NOTES.md). One pack for every station. The host's layers (47-host-land.js): ground.litter (the gorge floor's leaf litter), ground.talus (quartz scree at the walls' feet), ground.sand (the stream's banks), ground.bog (sphagnum on the summit's wet pavement and the hollow's edge), ground.peat (the pitcher hollow's floor), ground.bladder (the sucking pools' bed), rock.wall (the tepui's and the stacks' walls), rock.top (every top: the summit pavement), carving (the Hum's contour carvings, a tintable pattern strip on the wall). The kit's slots (BIO.libSwap, 50-biome-korona-species.js): the owner's Korona sheets of 2026-10-19 (full colour, shown by cell through each item's own uv), the Throne's snare flowers and the highlands' staghorn and giant pad; the skins of the man-eater (pitcher, throat) and the coil tendril; two barks. Run python3 tools/textures/pack.py biomes/korona after any change, then python3 build.py (and --station hollow).",
+ "note": "The Korona kit's adapter onto the material library (core/materials/PLAN.md; biomes/korona/NOTES.md). One pack for every station. The host's layers (47-host-land.js): ground.litter (the gorge floor's leaf litter), ground.talus (quartz scree at the walls' feet), ground.sand (the stream's banks), ground.bog (sphagnum on the summit's wet pavement and the hollow's edge), ground.peat (the pitcher hollow's floor), ground.bladder (the sucking pools' bed), ground.redsoil (the lee gorge's floor: the desert's red soil), ice (the hoar table's icefalls on its seep lines), ground.redsoil (the lee gorge's floor: the desert's red soil), ice (the hoar table's icefalls on its seep lines), rock.wall (the tepui's and the stacks' walls), rock.top (every top: the summit pavement), carving (the Hum's contour carvings, a tintable pattern strip on the wall). The kit's slots (BIO.libSwap, 50-biome-korona-species.js): the owner's Korona sheets of 2026-10-19 (full colour, shown by cell through each item's own uv), the Throne's snare flowers and the highlands' staghorn and giant pad; the skins of the man-eater (pitcher, throat) and the coil tendril; two barks. Run python3 tools/textures/pack.py biomes/korona after any change, then python3 build.py (and --station hollow).",
  "size": 512,
  "families": {
   "ground.litter": {
@@ -458,6 +458,33 @@
    "roughLift": 0.3,
    "specular": 0.2,
    "mapOnly": true
+  },
+  "ground.redsoil": {
+   "lib": "ground.redsoil",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ice": {
+   "lib": "ice.glacier",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "specular": 0.5
   }
  }
 }

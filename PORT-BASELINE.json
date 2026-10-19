@@ -25,32 +25,32 @@
    "sha256": "a8e07631edfe23a6244767474de7fb59e9c646d113086da2cf5511a9e5732bf5"
   },
   "biomes/korona/dist/korona-basin.html": {
-   "bytes": 596974,
-   "sha256": "30ef1f4637ac3a4c2ab48e0d0682387ed3fbe3eccc8c16d7400e4d16267e19fa"
+   "bytes": 865124,
+   "sha256": "7b5e5e860842d2302ffe5b14889d90451ac4e6c05a34b04d9f5da27d0a6d4a02"
   },
   "biomes/korona/dist/korona-gorge.html": {
-   "bytes": 721718,
-   "sha256": "b243f8565b7dd669409aa7e32856ad4dd20c434300697e4272c26ca7dd732952"
+   "bytes": 865431,
+   "sha256": "44b83ea4f7115486e4623bb378068b62f15216877357f71d071d9168acbdbe83"
   },
   "biomes/korona/dist/korona-hoar.html": {
-   "bytes": 675897,
-   "sha256": "3b6276f4a71637133d28d1ca15b4c308ebd1f66e44daf943539de87ac5366b37"
+   "bytes": 818974,
+   "sha256": "9e72738d98c504b190fdb34b0f5fc858db851a7f2f099a6d4ed53ea6bb32870d"
   },
   "biomes/korona/dist/korona-hollow.html": {
-   "bytes": 599314,
-   "sha256": "a334032860c6c95494a99dbb5dce609123ec809615134a3e67c3fb9caaf3246b"
+   "bytes": 742366,
+   "sha256": "e101d5ea1f51ba40df196f252d15efaa04a787addfc930e0970e7c98178bb272"
   },
   "biomes/korona/dist/korona-trench.html": {
-   "bytes": 596538,
-   "sha256": "082b77275ab82c2f5c3116028c52b5119342a1d832de57a992fec67cc28cb298"
+   "bytes": 1015239,
+   "sha256": "ea2526c56dc8c4436737d19abc7c8d400216c6b540ab931fcfa7e004f0e59d0c"
   },
   "biomes/korona/dist/korona.html": {
-   "bytes": 603955,
-   "sha256": "acdc301c7bd1a2eead94103a5d3997146408ee08ffc8eb1dd5cc6672134f9806"
+   "bytes": 745394,
+   "sha256": "6f43efddf28407d260aac6bfde14234d01ed67acec3e87ebf07fe84c80776e23"
   },
   "biomes/necanyons/dist/necanyons.html": {
-   "bytes": 776820,
-   "sha256": "10afbc8359233aba215674ed95be796ae3e232dc9cbed842fa8165ab5cddec6b"
+   "bytes": 780095,
+   "sha256": "c7d37b2de16b3063c9698a83da055cb57d67b656034aa58a36e0c012a6c13cf2"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
    "bytes": 5993806,
@@ -509,8 +509,8 @@
    "sha256": "5e55731f50cf78090a11b360a080f7f3a2831f71d4773bbd95d3a3985926dee3"
   },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
-   "bytes": 4329789,
-   "sha256": "7a2acc4962bfaea86c362bbbd972a1ed66a3a2f4b03cc4b6a8474a3c0ce9aa9f"
+   "bytes": 4333064,
+   "sha256": "4a6a1fc7dcb816fb203634647c16cd81e81965ee418b811786d17f7a1e778e5b"
   },
   "settlements/port/dist/cgBox.html": {
    "bytes": 883674,

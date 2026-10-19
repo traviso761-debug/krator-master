@@ -26,7 +26,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `27-mat.js` | 12 |  |
 | `30-geo.js` | 23 |  |
 | `36-def.js` | 6 |  |
-| `37-zj-walk.js` | 4 |  |
+| `37-zj-walk.js` | 3 |  |
 | `40-zj-cave.js` | 21 | the rock material (triplanar library sets, per-v (48); build: the plan to the walk registry, the chunks (102) |
 | `41-zj-block.js` | 3 |  |
 | `42-zj-forms.js` | 10 |  |

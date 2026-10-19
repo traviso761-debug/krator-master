@@ -39,6 +39,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `91-probe.js` | 4 | probe (window._api): everything a headless check (1) |
 | `91f-furnish.js` | 7 | furniture: PLACED from the catalog, not drawn (1) |
 | `91n-night.js` | 10 | NIGHT and dusk, and the invisible front-door mar (1) |
-| `92-camera.js` | 11 | camera, inspector, polygon tool, walk mode (1) |
+| `92-camera.js` | 12 | camera, inspector, polygon tool, walk mode (1) |
 | `93-anim.js` | 9 | ANIMATION: the clock, smoke, light volumes (1) |
 | `99-tail.html` | <1 |  |

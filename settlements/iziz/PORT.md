@@ -74,7 +74,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/92-camera.js` | 1.2 | [web] | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | what stays of the camera on core/host: ui, uiButton, setView, Labels (2026-10-15) |
 | `src/93-labels.js` | 6.2 | [G shader] | 7 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/95i-iziz-interiors.js` | 15.2 | [web] | 11 | 0 | 0 | 0 | 2 | 3 | 6 | 1 | 0 | 0 | 0 | split: data inside host code; keeps IZIX.jobs (the plans) and IZIX.placed (each piece's batch arguments) for core/export |
-| `src/99-start.js` | 1.8 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views, ground, records, inspector words, minimap; FRAME_HOOKS before the camera, the sky after it: host shell |
+| `src/99-start.js` | 1.9 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views, ground, records, inspector words, minimap; FRAME_HOOKS before the camera, the sky after it: host shell |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/city/84-city-geo.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/85-city-paint.js` | 5.4 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |

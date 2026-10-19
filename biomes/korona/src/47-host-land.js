@@ -53,6 +53,10 @@ const jungleMask=(x,z)=>{if(NECANYONS.rockAt(x,z))return 0;const fd=NECANYONS.fo
  return smooth(26,58,fd)*(STREAM_?smooth(STREAM_.w+10,STREAM_.w+40,STAGE.streamD(x,z)):1)*waterMask(x,z)*(STAGE.jungle?STAGE.jungle(x,z):1)*(1-.8*smooth(.55,.9,poorAt(x,z)));};
 const desertMask=(x,z)=>{if(NECANYONS.rockAt(x,z))return 0;const fd=NECANYONS.footD(x,z);return smooth(4,14,fd)*waterMask(x,z)*(STAGE.desert?STAGE.desert(x,z):0);};
 const highMask=(x,z)=>NECANYONS.rockAt(x,z)?waterMask(x,z)*(STAGE.high?STAGE.high(x,z):0):0;
+/* the ecotones (NOTES.md, "The life"): the nwlowlands kit on a lake shore (the basin: STAGE.shore), the nhighlands kit on a
+   dry crest (the trenches: STAGE.crest); both off the rock and the walls' feet, out of the water, where the station says */
+const shoreMask=(x,z)=>{if(NECANYONS.rockAt(x,z))return 0;const fd=NECANYONS.footD(x,z);return smooth(4,14,fd)*waterMask(x,z)*(STAGE.shore?STAGE.shore(x,z):0);};
+const crestMask=(x,z)=>{if(NECANYONS.rockAt(x,z))return 0;const fd=NECANYONS.footD(x,z);return smooth(4,14,fd)*waterMask(x,z)*(STAGE.crest?STAGE.crest(x,z):0);};
 let MASK=waterMask;
 const SPINE=STAGE.spine;
 BIO.init({tags:'korona',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
@@ -63,7 +67,7 @@ BIO.setSun(SUN_POS);
 BIO.host.bogAt=(x,z)=>STAGE.bogAt(x,z);BIO.host.korona={bias:STAGE.bias||{},path:STAGE.path||null,pools:STAGE.pools};
 
 // ---------------------------------------------------------------- the library layers (or procedural without the pack)
-const LAYER_KEYS=['ground.litter','ground.talus','ground.sand','ground.bog','ground.peat','ground.bladder','ground.snow','rock.wall','rock.top','carving'];
+const LAYER_KEYS=['ground.litter','ground.talus','ground.sand','ground.bog','ground.peat','ground.bladder','ground.snow','ground.redsoil','rock.wall','rock.top','carving','ice'];
 const LIB=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return {};const o={};
  LAYER_KEYS.forEach(k=>{const P=KMAT.packed('korona',k);if(P)o[k]=Object.assign({scale:P.scale[0]},KMAT.textures(P,{aniso:8}));});return o;})();
 const greyTex=(fn,S)=>BIO.canvasTex(S||256,S||256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -76,36 +80,61 @@ const PROC={
  'ground.peat':greyTex((x,y)=>120+50*(fbm(x/6,y/6,23,3)-.5)+30*(BIO.fn.h3(x,y,24)-.5)),
  'ground.bladder':greyTex((x,y)=>150+60*smooth(.6,.75,fbm(x/5,y/5,25,2))+20*(BIO.fn.h3(x,y,26)-.5)),
  'ground.snow':greyTex((x,y)=>236+14*(fbm(x/9,y/9,28,2)-.5)+8*(BIO.fn.h3(x,y,29)-.5)),
+ 'ground.redsoil':greyTex((x,y)=>165+30*(fbm(x/8,y/8,30,3)-.5)+36*(BIO.fn.h3(x,y,31)-.5)),
+ 'ice':greyTex((x,y)=>205+40*(fbm(x/6,y/30,32,3)-.5)-50*smooth(.62,.7,fbm(x/3,y/40,33,2))),
  'rock.wall':greyTex((x,y,w,h)=>165+30*(fbm(x/40,y/5,10,3)-.5)-70*Math.pow(fbm(x/9,y/120,11,2),2.5)+12*(BIO.fn.h3(x,y,12)-.5)),
  'rock.top':greyTex((x,y)=>175+26*(fbm(x/12,y/12,15,3)-.5)-70*smooth(.56,.66,fbm(x/26,y/26,16,2))+10*(BIO.fn.h3(x,y,17)-.5)),
  'carving':greyTex((x,y,w,h)=>{const row=Math.floor(y/(h/5)),yy=y-row*(h/5),line=Math.abs(yy-h/10)<1.5?-50:0,g=((x*7+row*31)%97<40&&Math.abs(yy-h/10-(((x*13+row*7)%3)-1)*h/25)<2)?-60:0;return 150+line+g+10*(BIO.fn.h3(x,y,27)-.5);})};
-const SCALE={'ground.litter':3,'ground.talus':2.4,'ground.sand':2,'ground.bog':2.2,'ground.peat':2.6,'ground.bladder':2.2,'ground.snow':3,'rock.wall':16,'rock.top':5,'carving':6};
+const SCALE={'ground.litter':3,'ground.talus':2.4,'ground.sand':2,'ground.bog':2.2,'ground.peat':2.6,'ground.bladder':2.2,'ground.snow':3,'ground.redsoil':2.6,'rock.wall':16,'rock.top':5,'carving':6,'ice':6};
 const layer=k=>LIB[k]?{map:LIB[k].map,normalMap:LIB[k].normalMap||null,roughnessMap:LIB[k].roughnessMap||null,s:LIB[k].scale,lib:true}:
  {map:PROC[k],normalMap:null,roughnessMap:null,s:SCALE[k],lib:false};
 LAYER_KEYS.forEach(k=>{const t=layer(k).map;if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;}});
 const col3=(lib,hex,k)=>{if(lib)return'vec3(1.0)';const c=new THREE.Color(hex).convertSRGBToLinear();return'vec3('+[c.r,c.g,c.b].map(v=>(v*(k||1.6)).toFixed(4)).join(',')+')';};
 
 // ---------------------------------------------------------------- the floor (one mesh: three layers by vertex weight, the station's)
-// DITHERED SAMPLING (the owner, 2026-10-19: the plateau tiled visibly): a map is read twice, at its scale and at a third of
-// it rotated, and the two mixed by the map's own coarse luminance, so no repeat lines up with another
-const DITHER='vec4 kdither(sampler2D m,vec2 p){vec4 a=texture2D(m,p);vec4 b=texture2D(m,vec2(p.x*0.29-p.y*0.17+0.37,p.x*0.17+p.y*0.29+0.11));float n=texture2D(m,p*0.0137+vec2(0.5,0.2)).g;return mix(a,b,smoothstep(0.32,0.68,n));}\n';
+// DITHERED SAMPLING (the owner, 2026-10-19, twice: the plateau tiled visibly; then the meadows read as furrows and the sand
+// as stripes from the default views). A map is read through a HEX-CELL BOMB: the plane is cut into triangles ~2 tiles
+// across, each corner turns and shifts the tile by its own hash, and a point blends the three corners' reads (weights
+// cubed, so most of a cell is one read: no ghosting), so no two cells show the tile the same way up and no repeat can line
+// up. That is done at the map's scale and again at a third of it (the leaves and grains three times larger) and the two
+// mixed by a value noise, with a second, coarser noise over the lot for the ground's own light and dark (48 m and 140 m:
+// the mottle no longer reads as one flat field close to). The walls keep their beds level (kditherW: the shift only, the
+// turn a few degrees). GLSL ES 1.0 (three r128); the hash is Hoskins' fract hash, not a sine.
+const DITHER=[
+ 'vec2 kh2(vec2 p){vec3 q=fract(vec3(p.xyx)*vec3(0.1031,0.1030,0.0973));q+=dot(q,q.yzx+33.33);return fract((q.xx+q.yz)*q.zy);}',
+ 'float kvn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(kh2(i).x,kh2(i+vec2(1.0,0.0)).x,f.x),mix(kh2(i+vec2(0.0,1.0)).x,kh2(i+vec2(1.0,1.0)).x,f.x),f.y);}',
+ 'float kfbm(vec2 p){return 0.6*kvn(p)+0.3*kvn(p*2.3+7.1)+0.1*kvn(p*5.1+3.7);}',
+ 'vec4 ksamp(sampler2D m,vec2 p,vec2 v,float sd,float rot){vec2 h=kh2(v*0.37+sd);float a=(h.x-0.5)*6.2831853*rot,ca=cos(a),sa=sin(a);return texture2D(m,vec2(ca*p.x-sa*p.y,sa*p.x+ca*p.y)+h*13.0);}',
+ 'vec4 kbomb(sampler2D m,vec2 p,float cell,float sd,float rot){vec2 st=p/cell;vec2 sk=vec2(st.x-st.y*0.57735027,st.y*1.1547005);vec2 b=floor(sk),f=fract(sk);vec2 v1,v2,v3;vec3 w;',
+ ' if(f.x+f.y<1.0){v1=b;v2=b+vec2(1.0,0.0);v3=b+vec2(0.0,1.0);w=vec3(1.0-f.x-f.y,f.x,f.y);}else{v1=b+vec2(1.0,1.0);v2=b+vec2(1.0,0.0);v3=b+vec2(0.0,1.0);w=vec3(f.x+f.y-1.0,1.0-f.y,1.0-f.x);}',
+ ' w=w*w*w;w/=(w.x+w.y+w.z);return ksamp(m,p,v1,sd,rot)*w.x+ksamp(m,p,v2,sd,rot)*w.y+ksamp(m,p,v3,sd,rot)*w.z;}',
+ 'vec4 kdither2(sampler2D m,vec2 p,float rot){vec4 a=kbomb(m,p,1.9,0.0,rot);vec4 b=kbomb(m,p*0.33+vec2(2.3,5.1),1.4,7.0,rot);float n=kfbm(p*0.055+vec2(1.7,9.2));return mix(a,b,0.2+0.6*smoothstep(0.3,0.7,n));}',
+ 'vec4 kdither(sampler2D m,vec2 p){return kdither2(m,p,1.0);}',
+ 'vec4 kditherW(sampler2D m,vec2 p){return kdither2(m,p,0.08);}',
+ 'vec3 kmacro(vec2 p){float mv=kfbm(p*0.021+vec2(4.2,1.3)),mh=kfbm(p*0.0072+vec2(9.1,3.3));return (0.76+0.48*mv)*mix(vec3(0.93,0.9,0.86),vec3(1.05,1.04,0.97),mh);}',
+ ''].join('\n');
+// a station may tint a layer (STAGE.layerMul: [r,g,b] per layer, on the library's own colour too; the trenches green their
+// windward litter) and may wear a FOURTH layer (STAGE.layers.d, its weight the third the station's weights() returns)
+const mul3=i=>{const m=STAGE.layerMul&&STAGE.layerMul[i];return m?'*vec3('+m.map(v=>(+v).toFixed(3)).join(',')+')':'';};
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
-{const La=layer(STAGE.layers.a),Lb=layer(STAGE.layers.b),Lc=layer(STAGE.layers.c),LC=STAGE.layerCol;
- MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uL={value:La.map};sh.uniforms.uR={value:Lb.map};sh.uniforms.uS={value:Lc.map};
+{const La=layer(STAGE.layers.a),Lb=layer(STAGE.layers.b),Lc=layer(STAGE.layers.c),Ld=STAGE.layers.d?layer(STAGE.layers.d):null,LC=STAGE.layerCol;
+ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uL={value:La.map};sh.uniforms.uR={value:Lb.map};sh.uniforms.uS={value:Lc.map};if(Ld)sh.uniforms.uD={value:Ld.map};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;varying vec3 vGWP;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uL,uR,uS;varying vec3 vW;varying vec3 vGWP;\n'+DITHER)
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uL,uR,uS'+(Ld?',uD':'')+';varying vec3 vW;varying vec3 vGWP;\n'+DITHER)
    .replace('#include <map_fragment>',['{vec2 p=vGWP.xz;',
-    'vec3 lt=pow(kdither(uL,p/'+La.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(La.lib,LC[0])+';',
-    'vec3 rd=pow(kdither(uR,p/'+Lb.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Lb.lib,LC[1])+';',
-    'vec3 sd=pow(kdither(uS,p/'+Lc.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Lc.lib,LC[2])+';',
-    'vec3 c=mix(lt*0.46,rd*0.8,vW.x);c=mix(c,sd*0.78,vW.y);diffuseColor.rgb*=c*vW.z;}'].join('\n'));};
- MAT_GROUND.customProgramCacheKey=()=>'korona-ground-'+STAGE.layers.a+STAGE.layers.b+STAGE.layers.c;}
+    'vec3 lt=pow(kdither(uL,p/'+La.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(La.lib,LC[0])+mul3(0)+';',
+    'vec3 rd=pow(kdither(uR,p/'+Lb.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Lb.lib,LC[1])+mul3(1)+';',
+    'vec3 sd=pow(kdither(uS,p/'+Lc.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Lc.lib,LC[2])+mul3(2)+';',
+    'vec3 c=mix(lt*0.46,rd*0.8,vW.x);c=mix(c,sd*0.78,vW.y);',
+    Ld?'vec3 dd=pow(kdither(uD,p/'+Ld.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Ld.lib,LC[3]==null?0x5a6a30:LC[3])+mul3(3)+';c=mix(c,dd*0.8,vW.z);':'',
+    'diffuseColor.rgb*=c*kmacro(p);}'].join('\n'));};
+ MAT_GROUND.customProgramCacheKey=()=>'korona-ground-'+STAGE.layers.a+STAGE.layers.b+STAGE.layers.c+(STAGE.layers.d||'')+JSON.stringify(STAGE.layerMul||0);}
 (function(){const N=440,S=STAGE.R*2.2,   /* 8 m cells: the talus is steep and a plant stands on the function's height (the owner, 2026-10-19: plants floated at 16 m) */
  g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const W=STAGE.weights(x,z);
-  w[3*i]=clamp(W[0],0,1);w[3*i+1]=clamp(W[1],0,1);w[3*i+2]=.85+.3*fbm(x*.006,z*.006,42,2);}
+  w[3*i]=clamp(W[0],0,1);w[3*i+1]=clamp(W[1],0,1);w[3*i+2]=clamp(W[2]==null?0:W[2],0,1);}
  g.setAttribute('aW',new THREE.BufferAttribute(w,3));g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel=STAGE.floorLabel||'The gorge floor';m.userData.host=true;scene.add(m);})();
 
@@ -124,7 +153,9 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog'),Ls=l
 (function(){const SMALL={spire:1,fin:1,balanced:1},Lw=layer('rock.wall'),Lt=layer('rock.top'),RC=STAGE.rockCol;
  const BAND=RC.band.map(h=>new THREE.Color(h)),WHITE=new THREE.Color(0xffffff),TOPC=new THREE.Color(RC.top),SOIL=new THREE.Color(RC.soil),c=new THREE.Color();
  const acc={wall:{pos:[],uv:[],col:[],idx:[],b:[],s:[]},top:{pos:[],uv:[],col:[],idx:[],b:[],s:[]}};
- STAGE.bodies.forEach(B=>{const small=!!SMALL[B.kind],m=KSTACKS.mesh(B,{step:small?2.5:7}),nv=m.part.length;
+ // a top that carries the station's own relief (STAGE.topExtra: the hoar table's knolls and its tarn's basin) is drawn on
+ // many more rings and segments, so the drawn pavement follows the field the plants stand on (the owner, 2026-10-19)
+ STAGE.bodies.forEach(B=>{const small=!!SMALL[B.kind],relief=!small&&!!STAGE.topExtra,m=KSTACKS.mesh(B,relief?{step:7,topRings:150,segMax:1200}:{step:small?2.5:7}),nv=m.part.length;
   const remap={wall:new Int32Array(nv).fill(-1),top:new Int32Array(nv).fill(-1)};
   for(let i=0;i<m.idx.length;i+=3){const a=m.idx[i],part=m.part[a],key=part===1?'top':'wall',A=acc[key],R=remap[key];
    for(let k=0;k<3;k++){const v=m.idx[i+k];if(R[v]<0){R[v]=A.pos.length/3;const x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2],b=B.beds[m.bed[v]];
@@ -144,7 +175,7 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog'),Ls=l
  {const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),STAGE.bodies.length),M4=new THREE.Matrix4();
   STAGE.bodies.forEach((B,i)=>{M4.makeTranslation(B.x,(B.y0+B.top)/2,B.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='rock anchors';A.frustumCulled=false;scene.add(A);}
  const MAT_WALL=new THREE.MeshStandardMaterial({map:Lw.map,normalMap:Lw.normalMap,roughnessMap:Lw.roughnessMap,roughness:1,metalness:0,vertexColors:true});
- MAT_WALL.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+DITHER).replace('#include <map_fragment>','{vec4 t=kdither(map,vUv);t=mapTexelToLinear(t);diffuseColor*=t;}');};MAT_WALL.customProgramCacheKey=()=>'korona-wall';
+ MAT_WALL.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+DITHER).replace('#include <map_fragment>','{vec4 t=kditherW(map,vUv);t=mapTexelToLinear(t);diffuseColor*=t;}');};MAT_WALL.customProgramCacheKey=()=>'korona-wall';
  mk(acc.wall,MAT_WALL,'Quartzite (a tepui\'s wall: pale beds streaked black by the rain\'s algae and lichen)');
  mk(acc.top,MAT_TOP,'The pavement (a top: bare quartzite crusted black, sphagnum in its hollows)');})();
 
@@ -154,8 +185,16 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog'),Ls=l
 // registered as a record of its own (key carving) for the inspector and the game.
 const CARVINGS=[];
 if(STAGE.carvings){const Cv=STAGE.carvings,B=STAGE.bodies.find(b=>b.id===Cv.body)||STAGE.bodies[0],K=KSTACKS;
- const bed=Cv.bed!=null?B.beds[Cv.bed]:(B.beds.find(b=>b.tier===Cv.tier)||B.beds[0]),Lc=layer('carving');
- const u0=(Cv.y0)/bed.h,u1=(Cv.y0+Cv.h)/bed.h,n=Math.max(24,Math.round((Cv.a1-Cv.a0)*K.footR(bed,(Cv.a0+Cv.a1)/2)/2.5));
+ // the strip stands Cv.y0 (eye height: 1.6) above the highest DRAWN ground along its arc at the face (the talus banks up
+ // to STAGE.talusH against a wall, the apron more: the owner, 2026-10-19, found carvings behind the slope), on whichever
+ // bed of the face's tier holds that height (Cv.tier picks the face: 0 the foot of the body, 1 a shoulder's wall)
+ const Lc=layer('carving'),tierBeds=B.beds.filter(b=>b.tier===(Cv.tier==null?0:Cv.tier)),b0=tierBeds[0]||B.beds[0];
+ let gy=-1e9;for(let i=0;i<=24;i++){const a=Cv.a0+(Cv.a1-Cv.a0)*i/24,q=NECANYONS.wall(B,b0,a,.05),px=q.x+q.nx*1.2,pz=q.z+q.nz*1.2,t=terrainH(px,pz);if(t<b0.y+b0.h*4&&t>gy)gy=t;}
+ if(gy<-1e8)gy=b0.y;
+ const base=gy+(Cv.y0==null?1.6:Cv.y0);let bed=tierBeds.find(b=>base>=b.y-.01&&base+Cv.h<=b.y+b.h-.5)||tierBeds.find(b=>b.y+b.h-.5>=base+Cv.h)||tierBeds[tierBeds.length-1]||b0;
+ let y0b=clamp(base-bed.y,.5,Math.max(.5,bed.h-Cv.h-.5));
+ if(Cv.bed!=null){bed=B.beds[Cv.bed];y0b=Cv.y0;}   /* an explicit bed keeps y0 above that bed's foot (the hoar table's rim marks) */
+ const u0=y0b/bed.h,u1=(y0b+Cv.h)/bed.h,n=Math.max(24,Math.round((Cv.a1-Cv.a0)*K.footR(bed,(Cv.a0+Cv.a1)/2)/2.5));
  const pos=[],uv=[],idx=[];let arc=0,prev=null;
  for(let i=0;i<=n;i++){const a=Cv.a0+(Cv.a1-Cv.a0)*i/n;
   const lo=NECANYONS.wall(B,bed,a,u0),hi=NECANYONS.wall(B,bed,a,u1),off=.09;
@@ -169,16 +208,46 @@ if(STAGE.carvings){const Cv=STAGE.carvings,B=STAGE.bodies.find(b=>b.id===Cv.body
  const am=(Cv.a0+Cv.a1)/2,mid=NECANYONS.wall(B,bed,am,(u0+u1)/2);
  const wallR=K.footR(bed,am)*K.prof(bed,(u0+u1)/2),wallD=Math.hypot(mid.x-bed.cx,mid.z-bed.cz)-wallR;
  const rec={name:Cv.name,key:'carving',kind:'carving',culture:'korona-tepui',x:mid.x,z:mid.z,y:mid.y-Cv.h,r:Math.max(12,arc/2*.35),h:Cv.h*2,hum:true,wallD};
- REGISTER(rec);CARVINGS.push(Object.assign({arc,n,body:B.id,bed:bed.k},rec));}
+ REGISTER(rec);CARVINGS.push(Object.assign({arc,n,body:B.id,bed:bed.k,groundY:gy,baseY:bed.y+y0b},rec));}
+
+// ---------------------------------------------------------------- THE ICEFALLS (the hoar table): the hanging gardens frozen
+// On the high cold table a seep line (NECANYONS.SEEPS: where a bed's parting weeps) hangs no garden but a fall of ice: a
+// strip down the bed's face below the parting, on the wall's own profile (NECANYONS.wall, as the carvings are), a hand's
+// width off it, narrowing to its foot; the ice map dithered, tinted blue-white. STAGE.icefalls {min (the seep strength
+// a fall needs), len(seep) (metres), w(seep) (metres across), every (1: every seep point, 2: every other)}
+const ICEFALLS=[];
+if(STAGE.icefalls&&LIB['ice']||STAGE.icefalls&&PROC['ice']){const IF=STAGE.icefalls,Li=layer('ice'),pos=[],uv=[],idx=[],K=KSTACKS,every=IF.every==null?2:IF.every,minS=IF.min==null?.45:IF.min;
+ (NECANYONS.SEEPS||[]).forEach((sp,i)=>{if(sp.seep<minS||i%every)return;const B=STAGE.bodies[sp.body],bed=B.beds[sp.bed];if(!bed)return;
+  const L=Math.min(bed.h*.92,IF.len?IF.len(sp.seep):18+30*sp.seep),w=IF.w?IF.w(sp.seep):5+8*sp.seep,R=K.footR(bed,sp.a),da=w/2/Math.max(8,R),rows=8,NC=5,base=pos.length/3;
+  /* NC columns across so the strip follows the wall's flutes, each column's own length (a ragged foot of icicles: hashed
+     from the seep's index and the column, core/rand), a hand and a half off the rock */
+  const colL=[];for(let c=0;c<NC;c++)colL.push(.55+.45*(KRAND.hash(STAGE.seed,i,c,61)%1000)/1000*(c===0||c===NC-1?.7:1));
+  for(let r=0;r<=rows;r++){const t=r/rows,ww=1-.4*t;
+   for(let c=0;c<NC;c++){const s=c/(NC-1)*2-1,a=sp.a+s*da*ww,u=1-t*L*colL[c]/bed.h,q=NECANYONS.wall(B,bed,a,u),off=.45;pos.push(q.x+q.nx*off,q.y,q.z+q.nz*off);uv.push((s*w*ww/2)/Li.s,(t*L*colL[c])/Li.s);}
+   if(r>0)for(let c=0;c<NC-1;c++){const k=base+r*NC+c,j=k-NC;idx.push(j,j+1,k,j+1,k+1,k);}}
+  ICEFALLS.push({x:sp.x,y:sp.y,z:sp.z,len:L,w,seep:sp.seep});});
+ if(pos.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
+  const mat=new THREE.MeshStandardMaterial({map:Li.map,normalMap:Li.normalMap,roughnessMap:Li.roughnessMap,color:Li.lib?0xbcd6e6:0xa8c8dc,roughness:.3,metalness:.1,side:THREE.DoubleSide});
+  mat.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+DITHER).replace('#include <map_fragment>','{vec4 t=kditherW(map,vUv);t=mapTexelToLinear(t);float v=kfbm(vUv*2.3);diffuseColor*=t*mix(vec4(0.72,0.84,0.96,1.0),vec4(1.0),v);}');};
+  mat.customProgramCacheKey=()=>'korona-icefall';
+  const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=IF.label||'An icefall (a seep line frozen: the hanging garden of the high cold)';me.userData.host=true;me.userData.rock=true;scene.add(me);
+  /* tag records only (BIO.record), not the probe's volumes: the falls are one merged mesh, and the probe samples a mesh once */
+  ICEFALLS.forEach(f=>BIO.record({name:'An icefall',key:'icefall',x:f.x,z:f.z,y:f.y-f.len,r:Math.max(3,f.w/2),h:f.len}));}}
 
 // ---------------------------------------------------------------- the water: the stream's ribbon, the rain pools, the station's pools
-const MAT_WATER=new THREE.MeshStandardMaterial({color:STAGE.waterCol||0x24302c,roughness:.08,metalness:.3,transparent:true,opacity:.88});
-(function(){const pos=[];if(STREAM_)for(let z=-STAGE.R*1.1;z<STAGE.R*1.1;z+=20){const a=[STREAM_.x(z),z],b=[STREAM_.x(z+20),z+20],ya=streamBed(a[1])+STREAM_.depth,yb=streamBed(b[1])+STREAM_.depth,w=STREAM_.w;
-  pos.push(a[0]-w,ya,a[1],b[0]-w,yb,b[1],b[0]+w,yb,b[1],a[0]-w,ya,a[1],b[0]+w,yb,b[1],a[0]+w,ya,a[1]);}
- const disc=p=>{const n=Math.max(14,Math.round(p.r*1.2));for(let k=0;k<n;k++){const a0=-k/n*TAU,a1=-(k+1)/n*TAU;pos.push(p.x,p.y,p.z,p.x+Math.cos(a0)*p.r,p.y,p.z+Math.sin(a0)*p.r,p.x+Math.cos(a1)*p.r,p.y,p.z+Math.sin(a1)*p.r);}};
- NECANYONS.POTHOLES.forEach(disc);STAGE.pools.forEach(disc);
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.material.side=THREE.DoubleSide;m.userData.probeSkip=true;m.userData.inspectLabel=STAGE.waterLabel||'Water (the stream; a rain pool on the pavement)';scene.add(m);})();
+// the stream and the standing water are core/water's since 2026-10-19 (89w-host-water.js: a record each, their drawing);
+// here only the page's own surfaces: the ice over a frozen pool, the sucking pools' beds
+(function(){
+ // A FROZEN POOL (a pool record with ice: the hoar table's tarn; the owner, 2026-10-19: it did not read as a tarn): an
+ // opaque plate of ice, pale blue-white on the snow map (dithered), a little sheen, a frost rim of its own
+ const ice=STAGE.pools.filter(p=>p.ice);if(ice.length){const Ls=layer('ground.snow'),ip=[],iu=[];
+  ice.forEach(p=>{const n=Math.max(24,Math.round(p.r*1.4)),y=p.y+.06;for(let k=0;k<n;k++){const a0=-k/n*TAU,a1=-(k+1)/n*TAU;
+   [[p.x,p.z],[p.x+Math.cos(a0)*p.r*1.08,p.z+Math.sin(a0)*p.r*1.08],[p.x+Math.cos(a1)*p.r*1.08,p.z+Math.sin(a1)*p.r*1.08]].forEach(q=>{ip.push(q[0],y,q[1]);iu.push(q[0]/Ls.s/2.2,q[1]/Ls.s/2.2);});}});
+  const ig=new THREE.BufferGeometry();ig.setAttribute('position',new THREE.Float32BufferAttribute(ip,3));ig.setAttribute('uv',new THREE.Float32BufferAttribute(iu,2));ig.computeVertexNormals();
+  const im=new THREE.MeshStandardMaterial({map:Ls.map,color:Ls.lib?0xa8c8dc:0x9cc0d4,roughness:.16,metalness:.12,envMapIntensity:1});
+  im.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+DITHER).replace('#include <map_fragment>','{vec4 t=kdither(map,vUv);t=mapTexelToLinear(t);float v=kfbm(vUv*3.1),w=kfbm(vUv*0.7+vec2(5.0,2.0));diffuseColor*=t*mix(vec4(0.55,0.74,0.92,1.0),vec4(1.0),v*0.5+w*0.5);}');};
+  im.customProgramCacheKey=()=>'korona-ice';
+  const me=new THREE.Mesh(ig,im);me.userData.probeSkip=true;me.userData.inspectLabel=STAGE.iceLabel||'The frozen tarn (ice over the melt, snow blown on it)';me.userData.host=true;scene.add(me);}})();
 // THE SUCKING POOLS' BED (the hollow): the bladder bed shows through the water where the station has pools of that kind
 if(STAGE.pools.some(p=>p.bed)){const Lb=layer('ground.bladder'),mat=new THREE.MeshLambertMaterial({map:Lb.map,color:Lb.lib?0xffffff:0x5a7a40});
  const pos=[],uv=[];STAGE.pools.filter(p=>p.bed).forEach(p=>{const n=Math.max(14,Math.round(p.r*1.2)),y=p.y-.35;for(let k=0;k<n;k++){const a0=-k/n*TAU,a1=-(k+1)/n*TAU;
