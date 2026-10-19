@@ -84,7 +84,10 @@ function buildTalBourse(G,o){reseed(9511+(o.v|0));const HW=16,HD=16,H=10,Y0=1.0,
  tanDrumDome(0,YT2+.8,Z0,4.8,{drumH:2.4,n:12,domeC:tile,ribs:16,gilt:gi,lit:true,band:wh,pil:true,pilC:wh});
  // lamps at the stair's foot and on the podium's front corners, the paving before the stair
  for(const s of[-1,1]){vnLampPost(s*5.2,0,pf+3.0,3.2);vnLampPost(s*(PW/2+1.0),Y0+.12,pf+1.0,2.6);}
- vnPaving(0,.04,pf+3.6,20,1.8,0,st,10);tanMeander(0,Y0+.12,pf+.2,PW-2,1.4,0,or,.3);}
+ vnPaving(0,.04,pf+3.6,20,1.8,0,st,10);tanMeander(0,Y0+.12,pf+.2,PW-2,1.4,0,or,.3);
+ /* the civic dress (the owner, 2026-10-19) */
+ for(const s of[-1,1])for(const dx of[3.2,9.6])tanStatue(s*dx,YT1+1.0,pf+.2,0,1.0,mb);
+ tanCartouche(0,Y0+H-1.0,zf,0,.7,wh,gi);}
 
 // ---------------------------------------------------------------- THE CARAVAN ROAD: the caravanserai, the stoa, the warehouse
 // Caravanserai: a Talian caravanserai: a white walled block of two storeys round a court, a tall gate block with a round

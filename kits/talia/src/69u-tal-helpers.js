@@ -390,3 +390,16 @@ function tanWalkSolids(snap){if(!tanWalkOn())return;
  const _vs=vnStairs;vnStairs=function(x,y,z,ry,w,rise,steps,item,c){_vs.apply(this,arguments);if(!tanWalkOn()||!VERN.cur||!(rise>.1))return;
   const K=VERN.cur,sc=K.o.scale||1,run=steps*.32,a=loc(x,z,0,run/2,ry),b=loc(x,z,0,-run/2,ry),wa=loc(K.x,K.z,a[0]*sc,a[1]*sc,K.ry),wb=loc(K.x,K.z,b[0]*sc,b[1]*sc,K.ry),by=K.o.y||0;
   KWALK.strip({a:[wa[0],wa[1],by+y*sc],b:[wb[0],wb[1],by+(y+rise)*sc],w:w*sc,name:K.D.key+' steps',tag:'stair'});};})();
+
+// ---------------------------------------------------------------- the civic dress (the owner, 2026-10-19: more elaborate)
+// a row of n statues along a ledge at y on a face centred at (x, z), facing ry, s their scale
+function tanStatueRow(x,y,z,ry,len,n,s,c){for(let k=0;k<n;k++){const p=loc(x,z,n>1?-len/2+k*len/(n-1):0,0,ry);tanStatue(p[0],y,p[1],ry,s,c);}}
+// a mosaic icon panel on a face: the orange-gold mosaic (plain orange without the library set) in a gilt frame
+function tanMosaicPanel(x,y,z,ry,w,h,gi){const f=loc(x,z,0,.04,ry);vB('taMosaicB',f[0],y,f[1],w,h,.06,ry,TAL_MATLIB.taMosaic?null:vC(TAPAL.orange[0]));
+ for(const [dx,dy,ww,hh] of[[0,-.08,w+.16,.08],[0,h,w+.16,.08],[-w/2-.04,0,.08,h],[w/2+.04,0,.08,h]]){const q=loc(x,z,dx,.08,ry);vB('taGilt',q[0],y+dy,q[1],ww,hh,.05,ry,gi);}}
+// a banner hung from a gilt rod on a face, its top at y: the cloth in c, a gilt sun on it, gilt knobs on the rod
+function tanBanner(x,y,z,ry,w,h,c,gi){const f=loc(x,z,0,.12,ry);vB('vClothB',f[0],y-h,f[1],w,h,.03,ry,c);vB('taGilt',f[0],y,f[1],w+.3,.06,.06,ry,gi);
+ tanDiscAt('taDiscGi',x,y-h*.38,z,ry,Math.min(w*.3,.45),.16,.03,gi);
+ for(const s of[-1,1]){const t=loc(f[0],f[1],s*(w/2+.18),0,ry);kput('taGiltBall',[t[0],y+.03,t[1]],null,[.07,.07,.07],gi);}}
+// a cartouche on a face: a white disc in a gilt ring with a gilt sunburst, centred at yc
+function tanCartouche(x,yc,z,ry,r,c,gi){tanDiscAt('taDisc',x,yc,z,ry,r,.06,.08,c);tanArcBand(x,yc,z,ry,r+.06,.12,.1,.09,gi,0,TAU,16,'taGilt');tanSunburst(x,yc,z,ry,r*.25,r*.85,12,gi,false);}

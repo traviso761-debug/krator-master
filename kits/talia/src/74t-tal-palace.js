@@ -128,7 +128,12 @@ function buildTalGovernorPalace(G,o){reseed(9691+(o.v|0));const T=1.2,G1=5.5,U1=
  {const [x,z]=P(34,-17);vnBarrel(x,0,z,.35,.9,null);}
  {const [x,z]=P(33.5,15);vB('vStone',x,0,z,3,.06,14,0,st);tanMosaicRing(x,.06,z,1.6,or,wh);
   for(const s of[-1,1]){const [px,pz]=P(33.5+s*3.2,6);vnPlanter(px,0,pz,1.2,3.2,0,mb);const [qx,qz]=P(33.5+s*3.2,24);vnPlanter(qx,0,qz,1.2,3.2,0,mb);}
-  for(const dv of[-4,4]){const [tx,tz]=P(33.5,15+dv);tanPot(tx,.06,tz,.5,null);}}}
+  for(const dv of[-4,4]){const [tx,tz]=P(33.5,15+dv);tanPot(tx,.06,tz,.5,null);}}
+ /* the civic dress (the owner, 2026-10-19) */
+ for(const s of[-1,1]){tanMosaicPanel(s*4.2,T+.8,5,0,1.8,3.4,gi);tanMosaicPanel(s*8.6,T+.8,5,0,1.8,3.4,gi);
+  for(const dx of[2.6,7.8])tanBanner(s*dx,R1+.9,P(-8.9,0)[1]+.55,0,1.0,3.4,or,gi);
+  for(const dx of[5.6,11])tanStatue(s*dx,yR+.95,P(-8.9,0)[1]+.1,0,1.0,mb);}
+ tanCartouche(0,T+5.0,5,0,.8,wh,gi);}
 
 VERN.def({key:'tal_governor_palace',name:'Governor\'s palace',family:'civic',
  tags:Object.assign({},TA_TAG('classical','civic',['civic'],true),{role:'governor'}),w:62,d:76,h:30,build:buildTalGovernorPalace});

@@ -42,7 +42,17 @@ function buildTalTemple(G,o){reseed(9751+(o.v|0));const P=3,BW=28,BD=30,H=14,Z0=
  const AZ=Z0-BD/2,AR=9.4;vPst('taDrumM',0,0,AZ,AR,P,mb);vPst('taDrumM',0,P,AZ,AR+.1,.12,wh);
  for(let k=0;k<12;k++){const a=1.82+(k+.5)*(4.46-1.82)/12,rr2=AR-.15;tanBalustrade(Math.sin(a)*rr2,P+.12,AZ+Math.cos(a)*rr2,a,2*rr2*Math.sin((4.46-1.82)/24)+.06,mb,1.0,{ball:gi,gilt:gi});}
  vPst('taDrum',0,P+.12,AZ,8,9,wh);tanDome(0,P+9.12,AZ,8.1,{kind:'hemi',h:5,c:tile,ribs:10,ribItem:'taRibGi',ribC:gi});
- for(const a of[Math.PI-1.05,Math.PI-.52,Math.PI,Math.PI+.52,Math.PI+1.05])tanArch(Math.sin(a)*8,P+1.6,AZ+Math.cos(a)*8,a,1.4,5.6,{kind:'point',fill:'C',band:or,bw:.14});}
+ for(const a of[Math.PI-1.05,Math.PI-.52,Math.PI,Math.PI+.52,Math.PI+1.05])tanArch(Math.sin(a)*8,P+1.6,AZ+Math.cos(a)*8,a,1.4,5.6,{kind:'point',fill:'C',band:or,bw:.14});
+ /* the civic dress (the owner, 2026-10-19) */
+ for(let k=0;k<5;k++)tanString(0,P+1.4+k*2.6,Z0,BW,BD,0,k%2?gi:or,.05,.12);
+ for(let k=0;k<17;k++){const x=-16+k*2;if(Math.abs(x)<6.5)continue;vB('vPlaster',x,P*.3,PF+.01,1.3,P*.34,.05,0,k%2?or:gi);}
+ for(const s of[-1,1]){for(let k=0;k<15;k++)vB('vPlaster',s*(BW/2+3+.01),P*.3,Z0-14+k*2,.05,P*.34,1.3,0,k%2?or:gi);
+  for(const dx of[2.85,3.55])tanColumn(s*dx,P+.12,ff+.45,8.2,.26,'corinthian',mb,gi);
+  tanMosaicPanel(s*7.6,P+1.6,zf,0,1.6,4.2,gi);tanBanner(s*4.4,FH-1.2,ff,0,1.1,5.2,or,gi);
+  tanStatue(s*16.3,P+.12,PF-.5,0,1.25,mb);tanStatue(s*7.3,P+.12,PF-.3,0,1.15,mb);}
+ tanSunburst(0,FH+1.5,zf+1.52,0,.45,1.3,16,gi,false);
+ kput('taRingGi',[0,YB+2.1+5.6,Z0],null,[DR+.3,1.6,DR+.3],gi);
+ for(const sx of[-1,1])for(const sz of[-1,1])kput('taRingGi',[sx*(BW/2-TR),YB+.3+5.6,Z0+sz*(BD/2-TR)],null,[TR+.2,1.4,TR+.2],gi);}
 
 // Chapel (refs/talia3 (2).jpg): a small white cube on a podium, a pointed portal with a cobalt transom, pointed cobalt
 // windows, an orange cornice, four pinnacles with little egg domes, a low drum and a white ribbed egg dome under a rib
@@ -59,9 +69,15 @@ function buildTalChapel(G,o){reseed(9756+(o.v|0));const W=9,Y0=.8,H=6,Z0=-1.5,zf
  tanString(0,YT,Z0,W,W,0,or,.15,.25);vB('vPlaster',0,YT+.25,Z0,W+.2,.12,W+.2,0,wh);
  for(const sx of[-1,1])for(const sz of[-1,1]){const x=sx*(W/2-.4),z=Z0+sz*(W/2-.4);vPst('taColP',x,YT+.37,z,.28,1.6,wh);kput('taEgg',[x,YT+1.97,z],null,[.38,.55,.38],wh);kput('taGiltBall',[x,YT+2.55,z],null,[.07,.07,.07],gi);}
  const yd=tanDrum(0,YT+.37,Z0,3.4,1.6,8,wh,{fill:'C',band:or,round:true,ww:.6,wh:1.1});
- const top=tanDome(0,yd,Z0,3.6,{kind:'egg',item:'taEgg',c:wh,ribs:12,ribItem:'taRib',ribC:wh});
+ const top=tanDome(0,yd,Z0,3.6,{kind:'egg',item:'taEgg',c:wh,ribs:12,ribItem:'taRibGi',ribC:gi});
  kput('taConeP',[0,top-.3,Z0],null,[.45,3.6,.45],wh);tanFinial(0,top+3.25,Z0,.12,gi);
- vnPaving(0,.04,zf+3,5,1.6,0,st,4);}
+ vnPaving(0,.04,zf+3,5,1.6,0,st,4);
+ /* the civic dress (the owner, 2026-10-19) */
+ for(const y of[Y0+2,Y0+4.2])tanString(0,y,Z0,W,W,0,or,.05,.12);
+ for(const s of[-1,1])tanColumn(s*1.55,Y0,zf+1.3,3.7,.17,'ionic',mb,gi);
+ vB('taMarble',0,Y0+3.7,zf+.7,3.8,.3,1.5,0,wh);tanPediment(0,Y0+4.0,zf+1.45,0,4.0,.9,wh,0,1.5,or,gi);
+ tanCartouche(0,Y0+5.3,zf,0,.45,wh,gi);
+ for(const sx of[-1,1])for(const sz of[-1,1])tanStatue(sx*(W/2+.4),Y0,Z0+sz*(W/2+.4),Math.atan2(sx,sz),.8,mb);}
 
 // Council house (PLAN.md: the city's own council, the local magistrates): a temple front on a high podium, six
 // Corinthian columns with two return columns, a gilt-friezed entablature round the whole, a pediment with an orange
@@ -83,7 +99,11 @@ function buildTalCouncilHouse(G,o){reseed(9761+(o.v|0));const P=2.4,CW=18,CD=22,
  vnGableRoof(0,YT,Z0-PD/2+.6,CD-PD+1.2,CW+.3,2.8,Math.PI/2,'taTileB',tile,.2,'vGablePl',wh,.2);
  tanPediment(0,YT,zf+PD+.45,0,CW+.6,2.8,wh,0,PD+1.2,or,gi);
  for(const s of[-1,1])tanFinial(s*(CW/2+.15),YT+.14,zf+PD+.2,.2,gi);
- for(const s of[-1,1])vnLampPost(s*7.6,0,PF+SN*.32+.5,3.4);}
+ for(const s of[-1,1])vnLampPost(s*7.6,0,PF+SN*.32+.5,3.4);
+ /* the civic dress (the owner, 2026-10-19) */
+ tanStatueRow(0,YT+.3,zf+PD+.15,0,7.2,5,.62,mb);tanStatue(0,YT+2.95,zf+PD+.1,0,.9,mb);
+ for(const s of[-1,1]){tanStatue(s*(CW/2+.4),P,PF-.5,0,1.3,mb);tanBanner(s*(CW/2-.7),P+HC-.4,zf+PD-.4,0,1.0,4.2,or,gi);}
+ tanMosaicRing(0,P+.12,zf+PD/2,1.6,or,wh);}
 
 // Memorial spire (refs/talia-memorial.jpg, talia-memorial2.jpg): over a reflecting pool, on a stepped base, a marble
 // drum of gilt-banded niches under a gadrooned dome with gilt ribs, a second drum, a ring of lotus petals edged in gilt, a

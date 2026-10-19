@@ -44,7 +44,9 @@ function buildTalUniHall(G,o){reseed(9601+(o.v|0));const BAY=3.6,N=11,W=N*BAY,D=
  for(const sx of[-1,1]){for(const sz of[-1,1])tanDrumDome(sx*(W/2-1.6),YR,Z0+.35+sz*(D/2-1.4),1.0,{drumH:1.5,n:6,kind:'onion',item:'taOnion',domeC:gi,lantern:false,finial:gi,fr:.1,band:or,lit:true});
   tanDrumDome(sx*W/4,YR,zf-1,.75,{drumH:1.2,n:6,kind:'onion',item:'taOnion',domeC:gi,lantern:false,finial:gi,fr:.08,band:or,lit:true});}
  for(const s of[-1,1])vnLampPost(s*(1.5*BAY+1),0,zf+1+SN*.32+.6,3.4);
- vnPaving(0,.04,zf+1+SN*.32+1.2,16,1.6,0,st,8);}
+ vnPaving(0,.04,zf+1+SN*.32+1.2,16,1.6,0,st,8);
+ /* the civic dress (the owner, 2026-10-19) */
+ for(const s of[-1,1]){for(const dx of[5.4,12.6,19.2])tanStatue(s*dx,YR+1.0,zf+.75,0,1.0,mb);tanBanner(s*1.6,Y1+H2-.3,zf+.7,0,.9,3.6,or,gi);}}
 
 // Cloister (refs/talia-cloisters.jpg): four ranges of two storeys round a court; inside, a gallery on each storey (a
 // marble Corinthian walk below, an Ionic walk above behind a gilt-balled balustrade) under orange coffered ceilings, a
@@ -109,7 +111,9 @@ function buildTalUniLibrary(G,o){reseed(9621+(o.v|0));const R=10.5,H1=6,H2=5,Y0=
  const YP=tanEntablature(0,Y0+HC,ZC+R+3.3,PW,4.6,0,wh,gi,{});tanPediment(0,YP,ZC+R+6.1,0,PW+.8,2.6,wh,0,5.2,or,gi);
  tanCoffers(0,Y0+HC-.14,ZC+R+3.3,PW-.6,4.2,0,or,wh,1.2);
  tanDoor(0,Y0,FZ,0,2.4,5,'taMarble',wh,wal,false);for(const s of[-1,1])tanNiche(s*3.6,Y0+.4,FZ,0,1.6,3.6,wh,or,mb);
- for(const s of[-1,1])vnLampPost(s*(PW/2-1),0,ZC+R+6.2+2.56+.6,3.2);}
+ for(const s of[-1,1])vnLampPost(s*(PW/2-1),0,ZC+R+6.2+2.56+.6,3.2);
+ /* the civic dress (the owner, 2026-10-19) */
+ tanStatue(0,YP+2.75,ZC+R+5.95,0,.9,mb);for(const s of[-1,1]){tanStatue(s*(PW/2+.1),YP+.14,ZC+R+5.95,0,.85,mb);tanBanner(s*(PW/2-1.2),Y0+HC-.3,ZC+R+4.6,0,.9,3.6,or,gi);}}
 
 // Senate house (PLAN.md 9b: the rector and the masters): a white baroque front of seven bays on a podium, the centre
 // bay forward between paired Corinthian columns on both storeys, a balcony over the door, pedimented windows above, a
@@ -138,7 +142,10 @@ function buildTalUniSenate(G,o){reseed(9631+(o.v|0));const BAY=3.4,N=7,W=N*BAY,D
  const YT=tanEntablature(0,Y1+H2,Z0+.4,W,D+.8,0,wh,gi,{});tanParapet(0,YT,Z0+.4,W+.4,D+1.2,0,mb,1.0,{ball:gi,gilt:gi});
  tanScrollGable(0,YT-.1,zf+1.4,0,BAY+2.6,1.8,wh,.12,gi);
  tanDrumDome(0,YT,Z0,2.3,{drumH:2.0,n:8,kind:'melon',domeC:tile,ribs:12,gilt:gi,lit:true,band:or});
- for(const s of[-1,1])vnLampPost(s*4.6,0,zf+1+reach+.5,3.2);}
+ for(const s of[-1,1])vnLampPost(s*4.6,0,zf+1+reach+.5,3.2);
+ /* the civic dress (the owner, 2026-10-19) */
+ for(const s of[-1,1])for(const dx of[4.6,11.4])tanStatue(s*dx,YT+1.0,Z0+.4+(D+1.2)/2,0,.95,mb);
+ tanCartouche(0,Y1+H2-.9,zf+.8,0,.55,wh,gi);}
 
 // ---------------------------------------------------------------- THE FACULTIES
 // Faculty (PLAN.md 9b: natural philosophy, law, letters, mathematics): a range of two storeys on a podium, an ochre

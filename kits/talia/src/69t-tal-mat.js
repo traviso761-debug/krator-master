@@ -38,9 +38,9 @@ const TARIB=new THREE.TorusGeometry(1,.05,6,10,Math.PI/2);
 // a flat ring (torus in the xz plane, facing up): mosaic ring medallions, column collars (scale [r, r, r]; tube 10%)
 const TARING=new THREE.TorusGeometry(1,.1,6,28).rotateX(Math.PI/2);
 // the column shaft: a lathe with entasis, base at y = 0, height 1, radius 1 at the foot and .82 at the neck
-const TACOL=new THREE.LatheGeometry([[1,0],[1,.05],[.98,.2],[1,.38],[.97,.6],[.9,.82],[.83,.97],[.82,1]].map(p=>new THREE.Vector2(p[0],p[1])),14);
+const TACOL=new THREE.LatheGeometry([[1,0],[1,.05],[.98,.2],[1,.38],[.97,.6],[.9,.82],[.83,.97],[.82,1]].map(p=>new THREE.Vector2(p[0],p[1])),10);
 // a baluster: a vase on a plinth, base at y = 0, height 1, its widest .34
-const TABAL=new THREE.LatheGeometry([[.3,0],[.3,.07],[.13,.09],[.13,.24],[.3,.4],[.34,.52],[.3,.64],[.16,.8],[.17,.92],[.3,.94],[.3,1]].map(p=>new THREE.Vector2(p[0],p[1])),8);
+const TABAL=new THREE.LatheGeometry([[.3,0],[.3,.07],[.13,.09],[.13,.24],[.3,.4],[.34,.52],[.3,.64],[.16,.8],[.17,.92],[.3,.94],[.3,1]].map(p=>new THREE.Vector2(p[0],p[1])),6);
 // an echinus: a flared drum, base at y = 0 (a Doric capital, a column base upside down)
 const TAECH=new THREE.CylinderGeometry(1,.78,1,14).translate(0,.5,0);
 // a bell: a Corinthian capital's core, flaring wider (top radius 1.3, bottom .8), base at y = 0

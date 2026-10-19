@@ -53,4 +53,12 @@
       (tanHollowTidy, 69u, run after each Talia builder).
 - [ ] The glasshouse's planting is simple stand-ins drawn on the page (palms, bananas, shrubs, potted ferns); the botanic
       garden's species could come from a biome kit (as Voth's gardens take the swbay kit's).
+- [x] The civic buildings' dress (the owner, 2026-10-19): the temple (coloured courses, a podium frieze, twin columns at the
+      portal, mosaic icon panels, banners, statues, the gable's sunburst, gilt rings on the domes), the chapel (a porch, a
+      cartouche, gilt ribs, bands, statues), the council house (a sculpted pediment, statues, banners), the palace (mosaic
+      panels and a cartouche in the loggia, banners, roof statues), the great hall, the Senate, the library and the bourse
+      (statues, banners, cartouches). Paid for by six-sided balusters and ten-sided column shafts.
+- [x] Walking (F) follows the floors: core/walk is read in place, the floors, stairs and terraces are registered (69u).
+      Walls are not blocks yet: a walker passes through them.
+- [x] The governor's palace's hall block is hollow and furnished (a cut-away unit); its pavilions are solid drums.
 
