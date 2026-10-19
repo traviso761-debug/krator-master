@@ -606,6 +606,13 @@ settlement, so Voth's stocks proof, `test-sim.js` and the baseline do not move.
    a load leaves one warehouse and lands in the other or is in transit; an unkeyed toy world gives the same results as
    before.
 
+**P7a progress (2026-10-19).** Done in `core/simulation`, opt-in: items 1 (the settlement record and key), 2 (an economy
+per settlement: warehouses, sites, recipes, carts, books; the purchases and meals routed by place), 5 (the stocks per
+settlement, `SIM.stocks(s)`, `SIM.stocksBy()`), 7 (the three levels written into `SCHEMA.md`) and 8 (seven
+two-settlement checks in `test-sim.js`, each with a negative; every older check unchanged). Still to do: 3 (the
+population deal per settlement), 4 (the place search scoped), 6 (trade between settlements: the carrier and its
+books), and the items module's holdings split by settlement.
+
 **Order of work.**
 
 | Step | What | Proof |
