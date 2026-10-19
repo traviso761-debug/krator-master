@@ -2,13 +2,14 @@
 
 - [ ] **No fauna**: it goes to the one fauna kit (biomes/README.md). The valley is the safest ground on the map in any case,
       but the monks' dairy and the pools' birds are not drawn.
-- [ ] **The Koppen classes are an estimate** (Cwb, Cfb, Dwb, ET) and the crops kit's pressure for the biome is inferred
-      (`CROPS.BIOMES.oidong`, `atmNote '?'`). The valley is now on the scale model's **biome layer** as 'Oidong Valley' (the
-      owner moved it from the geographic layer, 2026-10-19; px 725-1035 by 1234-1350, 69,000 km2, walls included), and its
-      rasters (4.21) read: the floor under 2,600 m (19,500 km2) Cfb 44 %, BSk 24 %, Csa 11 %, Cfa 9 %, highland lakes 8 %,
-      median rain 290 mm (wetter in the east: ~1,035 mm at Longsong), mean 11 C; the slopes to 4,000 m Dfc, Dsb, Dfb, Dsc,
-      mean 4 C; the heights ET and EF, mean -9 C. No Cwb or Dwb: the kit's tags and `CROPS.BIOMES.oidong` are the owner's
-      to bring into line (Cfb and Dfb for Cwb and Dwb, and BSk and Csa for the drier west).
+- [x] **The Koppen classes are the scale model's** (2026-10-19, the owner: "change the tags"): the 'Oidong Valley' overlay is on the
+      model's biome layer (px 725-1035 by 1234-1350, 69,000 km2, walls included) and its rasters (4.21) read: the floor under
+      2,600 m Cfb 44 %, BSk 24 %, Csa 11 %, Cfa 9 %, highland lakes 8 %, median rain 290 mm (wetter in the east: ~1,035 mm at
+      Longsong), mean 11 C; the slopes to 4,000 m Dfc, Dsb, Dfb, Dsc, mean 4 C; the heights ET and EF, mean -9 C. The kit's
+      estimate (Cwb, Cfb, Dwb, ET) became `OIDONG.KOPPEN` {Cfb, Dfb, BSk, Csa, ET}: Cwb to Cfb and Dwb to Dfb on every species
+      and plant, BSk on the gravel flats' plants and the cloud pine, Csa on the four Xanadu-shared trees of drier ground.
+      `CROPS.BIOMES.oidong`'s pressure is the model's (~1.24 atm on the floor: standard). Not yet done: the slopes' Dfc,
+      Dsb and Dsc and the floor's Cfa are not tags of any species.
 - [ ] **No core/atmos**: the kit binds no atmosphere (no wind or clock from ATMOS, no cloud deck), so the foliage sways on the
       core's own clock and the mist is this host's sprites. The pools' water is the host's own near-still shader, not the shared
       wave field (biomes/README.md asks for it on open water; these are small still pools, mirror-still by design): bind it

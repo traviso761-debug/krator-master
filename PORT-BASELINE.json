@@ -41,8 +41,8 @@
    "sha256": "d6e7435098fc972d784b39622fa8901edd078d4c4cfb47720642772f29e7756b"
   },
   "biomes/oidong/dist/oidong.html": {
-   "bytes": 2526981,
-   "sha256": "66e2eb7aecf09d2c872cc3f7afac1eecda182627bcb409f928725e4a23bd4815"
+   "bytes": 2527134,
+   "sha256": "083eb01d6901408927c9bbc9f0a8bcc41207bbe75ba5b283151c0fef8c232a02"
   },
   "biomes/rift/dist/rift.html": {
    "bytes": 5765462,
@@ -301,8 +301,8 @@
    "sha256": "1f1dac4edb9f7b8c5e829e168a867f467aa1384fd8e49d83caf7540f0e3c9c98"
   },
   "kits/crops/dist/crops.html": {
-   "bytes": 2554423,
-   "sha256": "38b2f3099581d54c09762cd46846e7fcff9467f7c2e9225f698a5f4fd46e1315"
+   "bytes": 2554507,
+   "sha256": "35cc09b70c64296f96ae08b4ff8c192cc45884c6fa33e6329c886eab95ad9489"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 14396002,
@@ -465,8 +465,8 @@
    "sha256": "b5ed935bcf91dc1831484f57c831217ab1bc9d622d129635b622145af2e0a037"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 842973,
-   "sha256": "18f62db80012a20c24feec42b905a0ca525573a74e9c8ebe7646dee2b7a63378"
+   "bytes": 843126,
+   "sha256": "a472ac426c86c7e8b6d041153bac7a82380d3ffd8321dbec486af2fe36447cf4"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9035356,
