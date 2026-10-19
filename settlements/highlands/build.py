@@ -96,7 +96,8 @@ FURNISH_DIR = os.path.join(ROOT, 'core', 'furnish')   # the furniture placement 
 FURNISH_FILES = sorted(f for f in os.listdir(FURNISH_DIR) if f[0].isdigit() and f.endswith('.js'))
 RAND_DIR = os.path.join(ROOT, 'core', 'rand')     # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(ROOT, 'core', 'tags')     # the tag registry the furniture is registered in (core/tags/README.md)
-TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')}
+WALK_DIR = os.path.join(ROOT, 'core', 'walk')   # KWALK: the interiors' floors, walls, stairs and entry flights (kits/interiors IX.walk)
+TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR, WALK_DIR) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
@@ -180,7 +181,7 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '89y-hl-furnish.js',                  # furniture placed through the catalog (FURNISH) and the interiors hook
     '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
-    '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
+    '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '20-core-walk.js',   # core/rand, core/tags, core/walk (no rnd())
     '81-rk-sky.js', '84-rk-geo.js', '93-rk-ui.js', '93b-rk-lod.js', '82e-anc-aa.js',   # roketstad: the vendored Krator sky, the geometry (noise only), the dev tools
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships

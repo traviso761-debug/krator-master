@@ -43,6 +43,10 @@
   "core/space",
   "30e465e74c51"
  ],
+ "20-core-walk.js": [
+  "core/walk",
+  "d09ebeabcfa5"
+ ],
  "20-core-water.js": [
   "core/water",
   "e0cca349eeb2"
@@ -117,7 +121,7 @@
  ],
  "50-core-furnish.js": [
   "core/furnish",
-  "7e1532e5f546"
+  "3474c3c8d39a"
  ],
  "50-core-tags.js": [
   "core/tags",
@@ -273,7 +277,7 @@
  ],
  "65r-reed-village.js": [
   "mungo",
-  "ec3f88576ed1"
+  "cde2b8eefc86"
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
@@ -281,11 +285,11 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "5034c7009477"
+  "04e8d475cd4b"
  ],
  "66-locus-furnish.js": [
   "locus",
-  "d57d9ebc21e1"
+  "b8a7348b1b79"
  ],
  "68-place.js": [
   "mungo (overrides locus)",
@@ -297,15 +301,15 @@
  ],
  "69a1-bio-core-head.js": [
   "core/biome",
-  "59f894e00b20"
+  "12bad8665f18"
  ],
  "69a2-bio-core-kit.js": [
   "core/biome",
-  "af1dcca206dd"
+  "32113708fbca"
  ],
  "69a3-bio-core-foliage.js": [
   "core/biome",
-  "ee0fed9cb7f9"
+  "29c9d7d37ac3"
  ],
  "69a4-bio-core-place.js": [
   "core/biome",
@@ -581,7 +585,7 @@
  ],
  "98-start.js": [
   "locus",
-  "11cf93c447eb"
+  "3f1411f79a13"
  ],
  "99-host-cutaway.js": [
   "core/host",

@@ -53,7 +53,7 @@ KHOST.on(function vergeSky(){const now=performance.now(),rdt=Math.min(.1,Math.ma
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.take({build:'verge',title:'Verge — the twin cities on the cataracts',
  hint:'Twin cities where the high desert falls ~860 m into the Eastern Abyss: Upper Verge in the canyon (the Governor of Iziz), the switchback and the seven cataracts, Lower Verge by the plunge pool (its elected Mayor)',
- scene,camera,renderer,ground:terrainH,clear:1.7,minR:2,maxR:16000,views:VIEWS,start:INITIAL_VIEW,
+ scene,camera,renderer,ground:terrainH,walk:KWALK,clear:1.7,minR:2,maxR:16000,views:VIEWS,start:INITIAL_VIEW,
  clock:{hour:CLOCK.hour,running:CLOCK.running},
  sky:{hour(){}},   // the hour slider and run / hold; the sky itself is set every frame by vergeSky above
  // the Krator sky's own scene first, the depth cleared, then the passes before the city, then the city

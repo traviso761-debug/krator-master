@@ -98,7 +98,7 @@ defBuilding({key:'iw-beacon',name:'Beacon tower (West)',seed:5372,cut:true,w:9,d
   isFurn([['islander_common_bed',-1,.6,-1.2,0],['generic_fuel',1.1,.6,-1.2,0],['generic_lamp_oil',1.2,.6,.6,0],['islander_common_stool',-.6,.6,.8,0]]);
   isNoCut(()=>{const H=13;for(const sx of [-1,1])for(const sz of [-1,1])beam('tarred',[sx*2.1,.6,sz*2.1],[sx*1.3,H,sz*1.3],.16,P('tarred'),true,8);
    for(let y=3.4;y<H;y+=3.2)for(const [a,b] of [[[-1,-1],[1,-1]],[[1,-1],[1,1]],[[1,1],[-1,1]],[[-1,1],[-1,-1]]]){const f=lerp(2.1,1.3,y/H);beam('wood',[a[0]*f,y,a[1]*f],[b[0]*f,y-1.6,b[1]*f],.07,P('woodD'),true,5);}
-   box('planks',0,H,0,3.6,.18,3.6,P('planks'));isLadder(1.7,2.4,0,H-.6,{});isBeacon(0,H+.18,0,1);
+   box('planks',0,H,0,3.6,.18,3.6,P('planks'));isLadder(1.7,1.75,0,H+.18,{});isBeacon(0,H+.18,0,1);
    for(const sx of [-1,1])for(const sz of [-1,1])cyl('wood',sx*1.5,H+.18,sz*1.5,.08,2.8,P('wood'),6);
    isSpire({hw:2.3,hd:2.3,sq:6,mk:'thatch',col:P('thatchW'),th:.22,nu:24,sub:3,prof:[[1,1,H+2.9],[.66,.66,H+3.9],[.3,.3,H+5.4],[.08,.08,H+6.6]]});
    cone('iron',0,H+6.5,0,.06,1.0,P('iron'),6);});}});

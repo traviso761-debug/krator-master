@@ -27,7 +27,7 @@
                                        ROOMS (noted for the kit's author; the page lists them)
        note: 'free text'               caveats worth keeping
      }
-     IX.sets.instantiate(item, ox, oz, ry, { seed, register, baseY, prefix }) ->
+     IX.sets.instantiate(item, ox, oz, ry, { seed, register, baseY, prefix, walk, walkTag }) ->
        { item, id, buildings: [B], specs: [{ shell, program }], rooms: [R] (every room, world metres) }
      IX.sets.auditResidence(inst, plansByRoomId) -> { residence, units, beds, food, items, fails: [] }
      IX.sets.shape: rect(w, d, cx, cz), circle(r, n, cx, cz), ell(w, d, cw, cd, cx, cz), offset(poly, dx, dz)
@@ -99,7 +99,7 @@
   S.instantiate = function (item, ox, oz, ry, o) {
     o = o || {};
     const T = xf(ox, oz, ry), baseY = o.baseY || 0, id = (o.prefix || item.set + '.') + item.key;
-    const out = { item: item, id: id, buildings: [], specs: [], rooms: [], x: ox, z: oz, ry: ry || 0 };
+    const out = { item: item, id: id, buildings: [], specs: [], rooms: [], x: ox, z: oz, ry: ry || 0, baseY: baseY };
     if (item.skip) return out;
     const poly = function (P) { return P.map(T); };
     const door = function (d) {
@@ -143,16 +143,17 @@
       R.setItem = item; R.setBody = r.id || 'r' + ri; R.explicit = true;
       out.rooms.push(R);
     });
+    if (o.walk && IX.walk) out.walkRecords = IX.walk.register(out, o.walk, { tag: o.walkTag || 'built:' + id });
     return out;
   };
 
   /* furnish a PLACED building in one call (a kit page, a settlement): instantiate the item at the building's
      placement, furnish every room through `catalog` (an adapter: IX.runtimeAdapter for a batch), build them.
-     o: { baseY, seed, prefix, register (default false: a world of many buildings need not fill IX.rooms) }
+     o: { baseY, seed, prefix, walk (a KWALK registry: floors, walls, stairs and entry flights go into core/walk), register (default false: a world of many buildings need not fill IX.rooms) }
      -> { inst, plans: { roomId: plan }, residence: IX.sets.auditResidence(...) } */
   S.furnish = function (item, ox, oz, ry, catalog, o) {
     o = o || {};
-    const inst = S.instantiate(item, ox, oz, ry, { baseY: o.baseY || 0, register: !!o.register, seed: o.seed || 0, prefix: o.prefix });
+    const inst = S.instantiate(item, ox, oz, ry, { baseY: o.baseY || 0, register: !!o.register, seed: o.seed || 0, prefix: o.prefix, walk: o.walk, walkTag: o.walkTag });
     const plans = {};
     inst.rooms.forEach(function (R) {
       const P = IX.furnishRoom(R, catalog, { seed: o.seed || 0 });

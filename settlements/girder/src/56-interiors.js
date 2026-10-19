@@ -70,6 +70,7 @@ function gixQueue(owner, id, key, def, fr, baseY, wcol, fallback){
   if(dropped.length) GIX.dropped.push(id+': '+dropped.map(function(d){ return d.kinds.join('+')+' ('+d.why+')'; }).join('; '));
   /* the planner's partitions: drawn with the kit's wall boxes (a doorway in each), solid for the walk mode */
   inst.buildings.forEach(function(B){ B.walls.forEach(function(w){ if(w.kind==='partition') gixPartition(w, wcol); }); });
+  KratorInteriors.walk.register(inst, KWALK, { tag:'interior:'+id });   /* floors, walls, stairs and entry flights into core/walk (the plan is final here: a fallback replans above) */
   GIX.msPlan += performance.now()-t0;
   var J = { owner:owner, id:id, key:key, item:item, inst:inst, x:fr.x, y:baseY, z:fr.z };
   owner.interior = { key:key, id:id, rooms:inst.rooms.length, kinds:inst.rooms.map(function(R){ return R.kind; }), furnished:false };

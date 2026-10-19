@@ -42,7 +42,7 @@ function iwHouse(o){const L=o.L,D=o.D,fy=o.floorY,wh=o.wallH||2.2,R=Object.assig
     pr.gable(pd/2+.2,top+.2,pw/2+.1,o.gableMk||'patGableW',{});});});});}
   if(o.pou)isNoCut(()=>{for(const s of [-1,1])isPou(s*(L/2-.1),fy,D/2+.25,wh-.1,.14,{mk:'carvedR',top:o.pou===true?'none':o.pou});});
   /* the way up */
-  const dx=o.doorX||0;isNoCut(()=>{if(fy>.35){if(o.stair==='ladder')isLadder(dx,D/2+.05,0,fy,{});else if(o.stair==='log')isLogLadder(dx,D/2+.05,0,fy);
+  const dx=isDoorX(o.doorX,o.front);isNoCut(()=>{if(fy>.35){if(o.stair==='ladder')isLadder(dx,D/2+.05,0,fy,{});else if(o.stair==='log')isLogLadder(dx,D/2+.05,0,fy);
    else if(o.stair!=='none')isStair(dx,D/2+.02+(o.porch?(o.porch.d||2.4):0),0,0,fy,o.stairW||1.0);}});
   if(o.underPig&&fy>1.2)place('pig',L*.25,-D*.15,PI*.7,{mode:'idle',sub:'west'});
   if(o.tier)isFurnRoom(L-.4,D-.4,fy,o.tier,{ceil:wh+R.ridgeH*.5,beds:o.beds,extra:o.furn});

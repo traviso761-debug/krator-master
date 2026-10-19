@@ -40,4 +40,14 @@ ok('the polygon floor exports as kind poly',P.export().floors.filter(f=>f.kind==
 ok('bounds take the polygons',P.bounds()[0]===0&&P.bounds()[1]===104,P.bounds()===null);
 threw=false;try{P.poly({pts:[[0,0,0],[6,0,0],[6,2,1],[2,2,1],[2,6,1],[0,6,0]]});}catch(e){threw=true;}ok('a sloped floor that is not convex is refused',threw,false);
 threw=false;try{P.poly({pts:[[0,0,0],[1,0,0]]});}catch(e){threw=true;}ok('a polygon of two points is refused',threw,false);
+// a block that switches (a door): off it neither blocks nor pushes; on again it does; the export says so
+const D=KWALK.create(),door=D.block([5,5.2,-1,1,0,2.4],'door'),pair=[D.block([8,8.2,-1,0,0,2.4],'d'),D.block([8,8.2,0,1,0,2.4],'d')];
+ok('a shut door blocks and pushes',D.blocked(5.1,0,0,0.3,1.7)===door&&D.push(4.9,0,0,0.3,1.7)[0]<4.9,D.blocked(5.1,0,0,0.3,1.7)===null);
+D.setBlock(door,false);
+ok('an open door neither blocks nor pushes',D.blocked(5.1,0,0,0.3,1.7)===null&&D.push(5.1,0,0,0.3,1.7)[0]===5.1,D.blocked(5.1,0,0,0.3,1.7)!==null);
+ok('the export marks the open door off',D.export().blocks[0].off===true&&D.export().blocks[1].off===undefined,D.export().blocks[0].off!==true);
+D.setBlock(door,true);
+ok('a shut-again door blocks',D.blocked(5.1,0,0,0.3,1.7)===door&&D.export().blocks[0].off===undefined,D.blocked(5.1,0,0,0.3,1.7)===null);
+D.setBlock(pair,false);ok('an array of blocks switches together',D.blocked(8.1,0,-0.5,0.3,1.7)===null&&D.blocked(8.1,0,0.5,0.3,1.7)===null,D.blocked(8.1,0,0.5,0.3,1.7)!==null);
+threw=false;try{D.setBlock({},false);}catch(e){threw=true;}ok('setBlock refuses what is not a block (a floor record)',threw,false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

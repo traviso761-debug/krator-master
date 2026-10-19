@@ -50,7 +50,7 @@ function ieHouse(o){const w=o.w,d=o.d,fy=o.floorY,wh=o.wallH||2.1,ver=o.ver===un
     else if(o.finial!=='none')isFigure(fx,fy2,0,0,.9,{mk:'carved'});}});});
  if(!o.hall&&!o.towers&&R.towerH<=0)towerTop=sk+.9;
  /* the steps up to the front veranda */
- isNoCut(()=>{if(fy>.35){if(o.stair==='ladder')isLadder(o.stairX||0,Dz1+.02,0,fy,{});else if(o.stair==='log')isLogLadder(o.stairX||0,Dz1+.02,0,fy);else if(o.stair!=='none')isStair(o.stairX||0,Dz1+.02,0,0,fy,o.stairW||1.2,{mk:'stone'===o.stairMk?'stone':'planks'});}
+ isNoCut(()=>{if(fy>.35){if(o.stair==='ladder')isLadder(isDoorX(o.stairX,o.front),Dz1+.02,0,fy,{});else if(o.stair==='log')isLogLadder(isDoorX(o.stairX,o.front),Dz1+.02,0,fy);else if(o.stair!=='none')isStair(isDoorX(o.stairX,o.front),Dz1+.02,0,0,fy,o.stairW||1.2,{mk:'stone'===o.stairMk?'stone':'planks'});}
   for(const t of o.tombs||[])isTomb(t[0],t[1],t[2]||0,{s:t[3]||1,figures:t[4]});});
  if(o.tier)isFurnRoom(w-.4,d-.4,fy,o.tier,{ceil:wh+R.skirtH*.6,beds:o.beds,extra:o.furn});
  if(o.underPig&&fy>1.2)place('pig',w*.2,-d*.1,PI*.3,{mode:'idle',sub:'east'});
@@ -127,7 +127,7 @@ defBuilding({key:'ie-house-great',name:'Great uma (Kautoa)',seed:6022,cut:true,w
  build(o){const r=ieHouse({w:10.4,d:10,floorY:2.0,wallH:2.6,ver:1.8,verFront:2.4,roof:{over:1.1,skirtH:2.1,skirtS:.46,towerH:15,towerS:.38,topSx:.19,topSz:.05,th:.38},
   wallMk:'planks',wallCol:P('woodL'),facade:'patGableE2',stair:'stair',stairW:2.0,finial:'figure',hornPosts:true,tier:'rich',beds:2,
   furn:[['islander_court_throne',0,-2.6,0],['islander_court_tapestry',-3,-4.6,0],['islander_court_statue',4.2,-4,0],['islander_court_statue',-4.2,-4,0],['islander_common_kava_bowl',0,1.8,0]],
-  tombs:[[0,9.4,0,1.4,true]]});
+  tombs:[[-4.6,9.4,0,1.2,true],[4.6,9.4,0,1.2,true]]});
   isNoCut(()=>{for(const s of [-1,1])isFlag(s*8.2,9.6,10,{ry:s>0?0:PI});});}});
 defBuilding({key:'ie-house-noble',name:'Noble compound (Kautoa)',seed:6023,cut:true,w:30,d:27,h:18,budget:260000,
  tags:{types:['dwelling-single'],wealth:'rich',style:'east',role:'compound'},

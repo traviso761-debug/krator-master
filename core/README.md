@@ -345,10 +345,11 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 
 | File | What |
 |---|---|
-| `walk/20-core-walk.js` | `KWALK`: one list of walkable floors (level rects, sloping strips) and blockers, written by whatever builds the geometry as it builds it (after Moria's carver). Queries `floorsAt`, `floorBelow`, `blocked`, `push` (a walker slides round corners), and `export()` (navigation-mesh source and collision boxes for Godot) |
+| `walk/20-core-walk.js` | `KWALK`: one list of walkable floors (level rects, sloping strips) and blockers, written by whatever builds the geometry as it builds it (after Moria's carver). Queries `floorsAt`, `floorBelow`, `blocked`, `push` (a walker slides round corners), `setBlock(rec, on)` (a door that opens and shuts: a block, or an array, switched off and on), and `export()` (navigation-mesh source and collision boxes for Godot) |
 | `sched/20-core-sched.js` | `KSCHED`: repeating timetables of eased segments (`timeline`), conflict-free phases (`slots`), a periodic event's strength (`eruption`: geysers), formations in the leader's frame, and a queued approach that slows as it arrives. Pure functions of t, so Godot plays them back identically |
 | `minimap/88-core-minimap.js` | `KMAP` ([G data]): a plan as records (rects, turned boxes, strips, discs, labels, a hill-shaded relief grid, or a `KWALK` registry), `pick`, `paint` and `overlay` onto any 2D-context-like object, `export()` the plan as data. No document, no canvas of its own, no input |
 | `minimap/88a-core-minimap-host.js` | the browser panel ([web], moves to `core/host/` in Phase 1): `KMAP.mount(M, op)`, also attached as `M.mount(op)`. Base painted once and repainted when `M.rev()` moves, overlay a few times a second, hover names, click goes there, M toggles. A build takes both files |
+| `walk/box/24-core-walk-box.js` | `KWALKBOX` ([G data]): for kits that build from boxes and declare no floors (Islanders, Lizardmen): a drawn upright box is read as a floor (flat: a deck, a slab, a stair tread) or a block (tall: a wall segment, a post); `ladder` is a strip, or rung floors when steep. Opt-in by path, not by the `walk/` listing (`kits/islanders/build.py`). `node core/walk/box/test-walk-box.js` |
 | `walk/test-walk.js`, `sched/test-sched.js`, `minimap/test-minimap.js` | `node core/<dir>/test-*.js` |
 
 **Used by** the first Voth (retired 2026-10-14; the minimap: its `build.py`, now `archive/voth-first/build.py`, read `core/minimap/` like `core/lod/`, and
