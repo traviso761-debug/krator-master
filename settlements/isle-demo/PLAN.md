@@ -678,6 +678,12 @@ taverns, hall and square. Checks: every child at school or at housework and ever
 bands, no house of children alone; everyone wanting company at 10:30 placed; each with a negative (README.md, the
 breakdown).
 
+**The economy calibrated (owner, 2026-10-19).** Each town makes 0-100 servings of food a day more than it eats (a factor
+on its food producers); cloves, cacao and cane at a tenth; ships of Voth, the Izani, the Hykkousoi, the salvagers and the
+outer isles buy the towns' cloves, cacao, sugar and coffee on their own days; a clothes and armour chain (cotton, cloth,
+garments; leather, sandals, armour) worn by everyone and carried between the towns by the lakatoi. A week-test check
+holds the ships to buying at least four fifths of the cloves and cacao made (README.md, the two weeks' books).
+
 **Order of work.**
 
 | Step | What | Proof |

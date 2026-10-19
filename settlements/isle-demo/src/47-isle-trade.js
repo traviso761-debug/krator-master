@@ -11,6 +11,9 @@
      - THE USES: every hour each town draws on its warehouses what it uses of the other's goods (`uses`, a person a day):
        that use, and what it could not get, are the want the line serves (a town that never had a good shows its want by
        its unmet draws).
+     - THE BUYERS FROM BEYOND THE ISLES (2026-10-19): ships of Voth, the Izani, the Hykkousoi, the salvagers and the outer
+       isles call on their days and buy the towns' spare cloves, cacao, sugar and coffee above a floor (ISLE.simBuyers),
+       booked exported;
      ISLE.simTrade()            after both towns are declared (40); returns the routes
      ISLE.tradeBooks()          a snapshot: each route's shipped, landed and carriers; each town's imports and exports by
                                 good (its economy's books), its stocks' rows of the traded goods (inbound, outbound, today's
@@ -32,6 +35,7 @@ ISLE.simTrade = function () {
   S.uses = { pop: {}, carry: {}, drawn: {}, short: {} };
   towns.forEach(function (s) { S.uses.pop[s] = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === s; }).length; });
   SIM.stepHooks.push(ISLE.simUses);
+  SIM.stepHooks.push(ISLE.simBuyers);
   return out;
 };
 ISLE.simUses = function (minute) {
@@ -42,6 +46,25 @@ ISLE.simUses = function (minute) {
     Object.keys(T[s]).forEach(function (g) {
       var k = s + ':' + g, c = (U.carry[k] || 0) + T[s][g] * U.pop[s] / 24, n = Math.floor(c); U.carry[k] = c - n; if (n <= 0) return;
       var got = SIM.supply(g, n, false, s); U.drawn[k] = (U.drawn[k] || 0) + got; if (got < n) U.short[k] = (U.short[k] || 0) + n - got;
+    });
+  });
+};
+/* the buyers from beyond the isles (the owner, 2026-10-19): each ship calls at its towns on its days, at `buyers.at`, and
+   buys up to its `buys` of each good the town makes (never what it imports) above the town's floor, booked exported (it leaves the map); ISLE.SIM.buyersSold
+   {town: {good: n}} and ISLE.SIM.ships {ship: {calls, bought: {good: n}}} keep the tally */
+ISLE.simBuyers = function (minute) {
+  var B = ISLE.TUNE.sim.trade.buyers, S = ISLE.SIM; if (!B || minute % 1440 !== B.at) return;
+  var day = Math.floor(minute / 1440), sold = S.buyersSold || (S.buyersSold = {}), tally = S.ships || (S.ships = {});
+  B.ships.forEach(function (sh) {
+    if ((day - sh.phase) % sh.every !== 0 || day < sh.phase) return;
+    var t = tally[sh.id] || (tally[sh.id] = { calls: 0, bought: {} }); t.calls++;
+    sh.calls.forEach(function (s) {
+      if (!SIM.econ(s)) return;
+      SIM.withEcon(s, function () { Object.keys(sh.buys).forEach(function (g) {
+        if (!SIM.ECON.goods[g] || !(S.towns[s].econ.goods[g] > 0)) return;   /* only what the town makes, never its imports */
+        var n = Math.min(sh.buys[g], Math.floor(SIM.stockOf(g) - (B.floor[g] || 0))); if (n <= 0) return; var got = SIM.economyTake(g, n); if (got <= 0) return;
+        SIM.economyBook('exported', g, got); var o = sold[s] || (sold[s] = {}); o[g] = (o[g] || 0) + got; t.bought[g] = (t.bought[g] || 0) + got;
+        SIM.logEvent('sold abroad', { settlement: s, ship: sh.id, good: g, n: got }); }); });
     });
   });
 };

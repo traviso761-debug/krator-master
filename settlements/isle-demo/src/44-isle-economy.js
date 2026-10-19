@@ -30,7 +30,9 @@ ISLE.simEconomy = function (TS, places) {
   places.forEach(function (P) {
     if (T.warehouses.indexOf(P.kind) >= 0) { SIM.store(P.id, { kind: 'warehouse' }); out.warehouses++; return; }
     var g = outOf(P); if (!g || !g.every(can)) return; var Pr = T.producers[P.kind];
-    SIM.recipe(P.id, { out: g.slice(), rate: Pr.rate, cap: Pr.cap });
+    /* the town's food factor on raw food (not the bakers'), a crop's own rate */
+    var raw = g.every(function (x) { return I.foods.indexOf(x) >= 0 && !inputs[x]; }), cr = P.tags.crop && T.cropRate ? T.cropRate[T.crops[P.tags.crop]] : null;
+    SIM.recipe(P.id, { out: g.slice(), rate: Pr.rate * (raw && TS.food != null ? TS.food : 1) * (cr == null ? 1 : cr), cap: Pr.cap });
     out.producers[P.kind] = (out.producers[P.kind] || 0) + 1; g.forEach(function (x) { out.goods[x] = (out.goods[x] || 0) + 1; });
   });
   /* the opening stock */

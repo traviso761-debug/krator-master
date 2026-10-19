@@ -27,6 +27,7 @@ ISLE.weekSnap = function () {
         bought: (B.bought || {})[g] || 0, eaten: (B.eaten || {})[g] || 0 };
     });
     X.econ.foods.forEach(function (f) { T.food += E.made[f] || 0; });
+    T.sold = Object.assign({}, (S.buyersSold || {})[s] || {});
     out.towns[s] = T;
   });
   var rep = SIM.tradeReport ? SIM.tradeReport() : {};
@@ -80,6 +81,15 @@ ISLE.weekChecks = function (w1, w2, o) {
     var ab = rate(W, s), pr = rate(Wp, s); rows.push({ s: s, ab: ab, pr: pr, q: pr > 0 ? ab / pr : 0 }); });
   ok('a town\'s food made a worker a day, abstract, within ' + band.join('-') + ' of the same town watched', rows.length === 2 && rows.every(function (r) { return r.q >= band[0] && r.q <= band[1]; }),
     rows.map(function (r) { return r.s + ' ' + r.ab.toFixed(1) + ' abstract, ' + r.pr.toFixed(1) + ' watched (' + r.q.toFixed(2) + ')'; }).join('; '));
+  /* the ships from beyond the isles bought what the towns make for them (the cloves and the cacao): over the two weeks,
+     at least four fifths of what was made, at either level */
+  var buy = [];
+  ['clove', 'cacao'].forEach(function (g) { var made = 0, sold = 0;
+    weeks.forEach(function (W) { Object.keys(W.b.towns).forEach(function (s) { var A = W.a.towns[s], Bt = W.b.towns[s];
+      made += (Bt.goods[g] ? Bt.goods[g].made : 0) - (A.goods[g] ? A.goods[g].made : 0); sold += (Bt.sold[g] || 0) - (A.sold[g] || 0); }); });
+    buy.push({ g: g, made: made, sold: sold }); });
+  ok('the ships from beyond the isles bought the cloves and the cacao the towns made', buy.every(function (x) { return x.made > 0 && x.sold >= 0.8 * x.made; }),
+    buy.map(function (x) { return x.g + ' ' + x.sold + ' bought of ' + x.made + ' made'; }).join('; '));
   /* nobody in the abstract town decided; the watched town's people did */
   ok('nobody in the abstract town decided (the watched town\'s people did)', weeks.every(function (W) { return W.decided === 0 && W.moved > 0; }),
     weeks.map(function (W) { return W.abstract + ' abstract (' + W.people + ' people): ' + W.decided + ' decisions; ' + W.watched + ' watched: ' + W.moved + ' decisions'; }).join('; '));

@@ -161,11 +161,27 @@ declares both once they are planned, in one order whichever town it draws, and h
   economy: the parcels grow their crops, the docks land fish, the pens raise meat, the bakehouses bake bread from sweet
   potato, the windmill crushes cane to sugar, the weavers and potters make cloth and pots; 39 warehouses and
   granaries, 20 carts. A town opens with two days of food, each in its share of what the town makes.
-- **Two weeks' books** (2026-10-19, both towns watched): after the opening days nothing runs short in either town; the
-  imports (Valapo's salt, rice, cloves and cacao, Kautoa's sugar) are short only on days 1-2, before the first canoe
-  lands. Every food is in surplus (Kautoa about +6,000 servings a day, Valapo +2,350; meat +230 and +112); Kautoa's
-  cloves (+5,200 a day) and cacao (+3,500) and Valapo's cane (+2,700) pile up, the line carrying only what the other
-  town uses.
+- **The economy calibrated** (the owner, 2026-10-19). Each town's food producers run at a factor
+  (`ISLE.TUNE.sim.towns[town].food`: Valapo 0.786, Kautoa 0.804) so it makes a little more food than it eats; cloves,
+  cacao and cane at a tenth, cotton at three quarters (`economy.cropRate`). **Ships from beyond the isles** call on
+  their own days (`trade.buyers`: Voth traders every 3 days, Izani merchants 4, Hykkousoi traders 5, the Ancients'
+  salvagers 6, Islanders of the outer isles 2) and buy what a town makes above a floor. **Clothes and armour:** Valapo's
+  weavers make cloth from cotton and garments from cloth, Kautoa's Vernacular workshops sandals and its smithies leather
+  armour from its tannery's leather; everyone wears a shirt, a wrap and sandals (two sets, worn out in 90 to 120 days and
+  bought again), the soldiers a cuirass; the lakatoi carries garments to Kautoa and sandals and armour to Valapo.
+- **Two weeks' books** (both towns watched, the daily average over days 4-14):
+
+  | | Valapo | Kautoa |
+  |---|---|---|
+  | food made over eaten | +18 a day (of 10,300 eaten) | +22 a day (of 28,200) |
+  | cloves, cacao | (imported by the oruwa) | made 517 and 349 a day, about 90% bought by the ships |
+  | sugar, cane | sugar 130 a day, all to Kautoa; cane +1 | sugar 130 imported, 125 used |
+  | cotton, cloth, garments | +9, +26, +1 a day (154 garments to Kautoa) | garments +20 (164 imported, 143 worn out) |
+  | leather, sandals, armour | (imported) | +14, +18, 0 a day |
+  | still piling up | pots +129 a day | pots +475, salt +436, stone +59 a day |
+
+  Nothing runs short after the opening days, but garments in Kautoa on days 3-4 and sandals in Valapo on days 2-3
+  (before the first loads land).
 - **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`, for each town; and on the page, the citizens
   drawn near the camera where their poses are, with a figure moved 50 m as the negative): every lot of a census trade is a place; every
   resident has a home and every worker a job in the town; after a world day run minute by minute, every food made and

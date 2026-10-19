@@ -27,10 +27,13 @@ ISLE.TUNE.sim = {
      start: the clock's first minute (midnight of day 0) */
   clock: { secPerMinute: 18, stepMax: 900, lag: 8, reach: 6000, start: 0 },
   track: 40,
+  /* towns[town].food: the town's food producers' rates times this (the parcels', the docks', the pens' and the byre's; not
+     the bakers', who turn food into food), so a town makes a little more food than it eats (2026-10-19, the owner: at
+     most 100 servings a day more); calibrated on two weeks' books (README.md) */
   towns: {
-    Valapo: { id: 'valapo', name: 'Valapo', faction: 'islanders', prefix: 'v', carts: 20, inputs: { bread: { 'sweet-potato': 1 } } },
+    Valapo: { id: 'valapo', name: 'Valapo', faction: 'islanders', prefix: 'v', carts: 20, inputs: { bread: { 'sweet-potato': 1 } }, food: 0.786 },
     /* Kautoa grows nothing inside its wall: its farms are the programme's farm ring beyond it (`ring`), its bread is taro */
-    Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } } }
+    Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } }, food: 0.804 }
   },
   activities: ['SLEEP', 'EAT', 'REST', 'IDLE', 'WORK', 'BUY', 'SOCIALIZE', 'WORSHIP', 'HAUL', 'STUDY', 'HOUSEWORK'],
   indoor: ['SLEEP', 'REST', 'IDLE'],
@@ -119,31 +122,44 @@ ISLE.TUNE.sim = {
        and emptied the town of it; 2026-10-19). The land animals' food is one good, meat (the pens' and the byre's), the
        sea's fish (owner, 2026-10-19) */
     shops: { market: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], staples: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], meat: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], bread: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], fish: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], meal: ['meal'] },
+    /* what everyone wears (2026-10-19): a shirt, a wrap and a pair of sandals (the item `sandal`; the good `sandals`), `sets` of each (one worn, the rest at home), each worn
+       out in `life` days and bought again from the town's warehouses; the soldiers a leather cuirass besides (one kept);
+       who sells them, by place kind */
+    worn: { shirt: { cat: 'clothes', slot: 'torso', life: 90, good: 'garments' }, wrap: { cat: 'clothes', slot: 'legs', life: 90, good: 'garments' },
+      sandal: { cat: 'clothes', slot: 'feet', life: 120, good: 'sandals' }, cuirass: { cat: 'armour', slot: 'torso', layer: 'armour', life: 180, good: 'armour' } },
+    sets: 2, armed: ['soldier'],
+    wares: { market: ['shirt', 'wrap', 'sandal'], shop: ['shirt', 'wrap', 'sandal'], weaver: ['shirt', 'wrap'], workshop: ['sandal'], smithy: ['cuirass'] },
     meals: 2, perMeal: 2, low: 1, days: 3, mins: 15, cool: 120, storeDays: [1.5, 3], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
   },
   economy: {
     goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
-      'clove', 'cacao', 'salt', 'stone', 'leather'],
+      'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour'],
     /* each town's bread is its own (towns[town].inputs over these) */
-    inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 } },
+    inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 } },
     every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40 },
     /* a good's own load worth a cart's trip (the cart's minLoad otherwise): the oruwa's light, dear goods land a few dozen
        at a time, under the 40 a cart waits for, and sat at the canoe stop (2026-10-19) */
-    minLoad: { clove: 5, cacao: 5, coffee: 5 },
+    minLoad: { clove: 5, cacao: 5, coffee: 5, armour: 5 },
+    /* a crop's own rate, times the parcels' (the owner, 2026-10-19: the spice, cane and cacao cut tenfold; the cotton to
+       what the weavers use) */
+    cropRate: { clove: 0.1, cacao: 0.1, 'sugar-cane': 0.087, cotton: 0.75 },
     /* the crops of the parcels (30-isle-programme.js farm) as the economy's goods */
     crops: { 'sweet potato': 'sweet-potato', banana: 'banana', coconut: 'coconut', 'sugar cane': 'sugar-cane', cotton: 'cotton', coffee: 'coffee',
       rice: 'rice', taro: 'taro', cloves: 'clove', cacao: 'cacao' },
     /* servings (food) or lots a worker-hour, into the place's own store up to cap */
     producers: {
       field: { rate: 6, cap: 3000 }, orchard: { rate: 6, cap: 3000 }, fishdock: { out: ['fish'], rate: 7, cap: 3000 }, pens: { out: ['meat'], rate: 4, cap: 1500 },
-      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { out: ['cloth'], rate: 0.5, cap: 400 },
+      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { out: ['cloth', 'garments'], rate: 1.2, cap: 600 },
       potter: { out: ['pots'], rate: 0.5, cap: 400 }, byre: { out: ['meat'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.5, cap: 400 },
-      saltworks: { out: ['salt'], rate: 2, cap: 1500 }, tannery: { out: ['leather'], rate: 0.5, cap: 400 }
+      saltworks: { out: ['salt'], rate: 2, cap: 1500 }, tannery: { out: ['leather'], rate: 0.5, cap: 400 },
+      /* the clothes and the armour (2026-10-19): the weavers make cloth and garments from it (above), the Vernacular's
+         workshops sandals from leather, the smithies leather armour (until the iron mine brings ore) */
+      workshop: { out: ['sandals'], rate: 0.45, cap: 400 }, smithy: { out: ['armour'], rate: 0.002, cap: 100 }
     },
     warehouses: ['warehouse', 'granary'],
     /* a town opens with `startDays` of its food, each food in its share of the town's making (its producers' posts times
        rate), and these lots of the other goods it makes (not of what it must import) */
-    startDays: 2, startLots: { cloth: 40, pots: 40, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40 }
+    startDays: 2, startLots: { cloth: 40, pots: 40, garments: 200, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40 }
   },
   /* P7c, the canoe line between the two trade landings (owner, 2026-10-19), on core/simulation's SIM.trade (47):
      uses     what each town uses a day, a person, of what the other makes (8c: Kautoa's salt, rice, cloves and cacao in
@@ -152,10 +168,22 @@ ISLE.TUNE.sim = {
               of 20 hours and a stay of 4 make a day), carrying the bulk goods; the oruwa, for the light and dear goods,
               one canoe round in a day, filling only what the receiver is low on (want, keep). goods: what each town may send */
   trade: {
+    /* the buyers from beyond the isles (the owner, 2026-10-19): ships of Voth, of the Izani, of the Hykkousoi, the Ancients'
+       salvagers and Islanders of the outer isles (their islands yet to be named) call at a town's landing every `every`
+       days (from day `phase`), at `at` minutes past midnight, and buy up to `buys` of each good, above the `floor` the
+       town keeps (for the canoe line and itself). Kautoa's civilian harbour moors their vessels (30-isle-programme.js) */
+    buyers: { at: 720, floor: { clove: 300, cacao: 300, sugar: 300, coffee: 100 },
+      ships: [
+        { id: 'voth', name: 'Voth traders', vessel: 'vothDhow', every: 3, phase: 0, calls: ['kautoa'], buys: { clove: 600, cacao: 400 } },
+        { id: 'izani', name: 'Izani merchants', vessel: 'izizDhoni', every: 4, phase: 1, calls: ['kautoa'], buys: { cacao: 600, clove: 300 } },
+        { id: 'hykkousoi', name: 'Hykkousoi traders', vessel: 'hykCorbita', every: 5, phase: 2, calls: ['kautoa', 'valapo'], buys: { clove: 800, sugar: 200 } },
+        { id: 'salvagers', name: 'Ancient salvagers', vessel: 'salvageTug', every: 6, phase: 3, calls: ['kautoa'], buys: { cacao: 300, clove: 300 } },
+        { id: 'outer', name: 'Islanders of the outer isles', vessel: 'islanderLakatoi', every: 2, phase: 1, calls: ['valapo', 'kautoa'], buys: { sugar: 100, coffee: 100, clove: 200, cacao: 200 } }
+      ] },
     uses: { valapo: { salt: 0.02, rice: 0.05, clove: 0.004, cacao: 0.008 }, kautoa: { sugar: 0.02 } },
     lines: [
-      { id: 'lakatoi', vessel: 'islanderLakatoi', cap: 3000, carriers: 2, minutes: 1200, mins: 240, keep: 1,
-        goods: { kautoa: ['salt', 'rice'], valapo: ['sugar'] } },
+      { id: 'lakatoi', vessel: 'islanderLakatoi', cap: 3000, carriers: 2, minutes: 1200, mins: 240, keep: 1, want: 6,
+        goods: { kautoa: ['salt', 'rice', 'sandals', 'armour'], valapo: ['sugar', 'garments'] } },
       { id: 'oruwa', vessel: 'islanderOruwa', cap: 150, carriers: 1, minutes: 600, mins: 120, keep: 1, want: 2,
         goods: { kautoa: ['clove', 'cacao'], valapo: ['coffee'] } }
     ]

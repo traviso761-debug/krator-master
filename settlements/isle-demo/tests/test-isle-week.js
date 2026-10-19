@@ -27,6 +27,7 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 { const a = cp(w1), R = a.b.routes.lakatoi, k = Object.keys(R.landed)[0], g = Object.keys(R.landed[k])[0]; R.landed[k][g] -= 10; caught('10 units lost at sea', ISLE.weekChecks(a, w2), /landed or is at sea/); }
 { const a = cp(w1), s = a.abstract, g = Object.keys(a.b.towns[s].goods).find(g => a.b.towns[s].goods[g].imported > a.a.towns[s].goods[g].imported); a.b.towns[s].goods[g].imported -= 5; caught('an import landed but not booked in the abstract town', ISLE.weekChecks(a, w2), /booked there/); }
 { const a = cp(w1); a.b.towns.kautoa.food = a.a.towns.kautoa.food; caught('an abstract town that made no food', ISLE.weekChecks(a, w2), /a worker a day/); }
+{ const a = cp(w1), b = cp(w2); a.b.towns.kautoa.sold = Object.assign({}, a.a.towns.kautoa.sold); b.b.towns.kautoa.sold = Object.assign({}, b.a.towns.kautoa.sold); caught('ships that bought nothing', ISLE.weekChecks(a, b), /ships from beyond/); }
 { const a = cp(w1); a.decided = 3; caught('three of the abstract town deciding', ISLE.weekChecks(a, w2), /decided/); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

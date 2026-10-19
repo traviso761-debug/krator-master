@@ -80,10 +80,14 @@
       town's whole list. The oruwa landed its cloves and cacao a few dozen at a time, under the 40 a cart waits for, so
       they sat at Valapo's canoe stop: they now take a load of 5 (`ISLE.TUNE.sim.economy.minLoad`). The land animals'
       food is now one good, meat (owner), and a town opens with each food in its share of what the town makes.
-- [ ] **Surpluses pile up:** Kautoa's rice, cloves and cacao, Valapo's cane, cotton and cloth, both towns' pots, stone and
-      leather grow without end (no store fills: the warehouses take any amount). Nothing eats the export crops but the
-      other town's small use; the mill turns 260 of Valapo's 3,000 cane a day. Prices, spoilage or a buyer beyond the isles
-      would bound them.
+- [ ] **Still piling up** (after the calibration, 2026-10-19): pots (Kautoa +475 a day, Valapo +129), Kautoa's salt (+436)
+      and stone (+59), a little leather and sandals (+14, +18). Nothing uses pots or stone yet, and only Valapo uses salt.
+      The ships could buy salt; the potters and the quarry want their own users (households' pots, building).
+- [ ] **Bread pulls on its flour crop:** the bakers draw taro (Kautoa) and sweet potato (Valapo) at a fixed rate, so those
+      two drift down (-170 and -50 a day over two weeks) while the households' share of them shrinks; they settle, but a
+      long run should be watched.
+- [ ] **The ships are timers, not vessels:** they buy on their days at the landing; the moored foreign vessels are drawn
+      as before, and no ship comes or goes. Their goods leave the map (exported) for nothing in return yet: no money.
 - [ ] **No sea route is drawn.** The lines run on SIM.trade's timer: a vessel shows at its berth while docked and is gone
       at sea. A `SIM.transport` line on a water layer between the two landings (122 km) would let the open world draw
       the voyage (P8). The berths stand up to 160 m from the landing, in the nearest water deep and clear enough.
