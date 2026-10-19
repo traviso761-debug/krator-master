@@ -169,6 +169,34 @@
     "sourceMean": 0.471
    }
   },
+  "shingle": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "shingle.albedo.webp"
+   },
+   "lib": "roof.shingle.neutral",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "2e4595107e0ed58e8929be54384dd77342a86ca7",
+    "normal": "a7e81e23c582d35d749bc531430bcfb85cd8eb81",
+    "roughness": "e9ffa7ebee5054fd2d0bf9650c361d59590d9f35"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.2,
+    "mean": 0.5,
+    "sourceMean": 0.6493
+   }
+  },
   "stone": {
    "breakup": null,
    "card": false,
@@ -251,6 +279,34 @@
     "keep": 0.2,
     "mean": 0.55,
     "sourceMean": 0.6497
+   }
+  },
+  "timber": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "timber.albedo.webp"
+   },
+   "lib": "wood.medieval_wood",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "f85fbf9b4abec9c72f4b9ee1a58477837533bad8",
+    "normal": "d1c7340193a2afb984766a67db7a3ec0ec9e7ea6",
+    "roughness": "6e3411a2ab34b6f328637d3554e5934dc156f8d5"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.2,
+    "mean": 0.5,
+    "sourceMean": 0.4121
    }
   },
   "wood": {

@@ -32,7 +32,7 @@ except Exception:
 CHECKS = r"""(neg)=>{const K=window._kit,R=[],tol=1.6;
  const built=K.built.map(b=>Object.assign({},b,{decl:Object.assign({},b.decl)}));
  if(neg==='box'){built[0].decl.w-=3;}
- R.push({name:'every building builds (the kit\'s own and the catalog\'s, every variant)',ok:K.errors.length===0&&new Set(built.map(b=>b.key)).size===K.keys.length,
+ R.push({name:'every building builds (the kit\'s own and the ports, every variant)',ok:K.errors.length===0&&new Set(built.map(b=>b.key)).size===K.keys.length,
    detail:K.keys.length+' buildings, '+built.length+' built'+(K.errors.length?'; '+K.errors.slice(0,3).join('; '):'')});
  const over=built.filter(b=>b.w>b.decl.w+tol||b.d>b.decl.d+tol||b.h>b.decl.h+tol);
  R.push({name:'each fits its declared box (+'+tol+' m)',ok:over.length===0,detail:over.length?over.slice(0,4).map(b=>b.key+' '+b.w+'x'+b.d+'x'+b.h+' > '+b.decl.w+'x'+b.decl.d+'x'+b.decl.h).join('; '):'all '+built.length});

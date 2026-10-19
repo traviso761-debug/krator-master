@@ -15,7 +15,10 @@ python3 ../../tools/textures/pack.py kits/beast-riders   # (from the repo root) 
 
 **Catalog buildings** (`ASSET`, culture `beast-rider`) on the catalog's engine (`kits/catalog`: `krator-furniture-core.js`,
 `krator-asset-engine.js`), read in place:
-- **The kit's own** (`src/50-br-mounts.js`), the mounts' buildings, which no build had:
+- **The kit's own** (`src/50-br-mounts.js`), the mounts' buildings, which no build had, drawn in Girder's vocabulary as
+  the ports show it (restyled 2026-10-18): Girder's palette turned to linear as Girder draws it, tarred stave walls,
+  steep shingle hips with verdigris ribs and a red eave band, red and gilt carved posts, beast-head finials, the
+  hall's tiered cone and gilt spire on the rookery tower; Girder's shingle and timber sets (`materials.json`):
   - `br_bldg_raptor_stable`: a long stable for the running mounts (raptor, staghorn, tiger), stalls on a straw floor
     under a hip roof, its fenced paddock before it (two variants: five stalls or four);
   - `br_bldg_great_byre`: an open byre on log posts for the great beasts (threehorn, hardshell, mammoth), hung hides
