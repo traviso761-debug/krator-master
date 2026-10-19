@@ -16,16 +16,21 @@ const VIEWS={
  const me=near('maneater',-1000,0);if(me)VIEWS['A man-eater low on the face']=[me.x+6,me.y+2.6,me.z+4.5,me.x,me.y+1.4,me.z];
  const lf=(KO&&KO.nearestTree)?KO.nearestTree(1,-700,0):null;if(lf){const H=lf.H||24;VIEWS['A lace fan in a gully']=[lf.x+H*1.3,lf.y0+H*1.05,lf.z+H*1.0,lf.x,lf.y0+H*.6,lf.z];}   /* from over the canopy (it stood inside a crown) */
  const sp=STAGE.bodies.find(B=>/^facestack/.test(B.id));if(sp){const H=sp.top-sp.y0;VIEWS['A spire on the windward face']=[sp.x+H*1.4+40,sp.top+H*.5+30,sp.z+H*1.1+30,sp.x,sp.y0+H*.55,sp.z];}
- const D=typeof SEDESERT!=='undefined'&&SEDESERT.TREES;if(D&&D.length){const dr=D.filter(T=>T.sp===0).sort((a,b)=>Math.hypot(a.x-700,a.z-200)-Math.hypot(b.x-700,b.z-200))[0]||D[0];{const H=dr.H||10;VIEWS['A dragon tree on the lee']=[dr.x+H*1.6+10,dr.y0+H*.9,dr.z+H*1.3+8,dr.x,dr.y0+H*.6,dr.z];}}})();
+ const D=typeof SEDESERT!=='undefined'&&SEDESERT.TREES;if(D&&D.length){const dr=D.filter(T=>T.sp===0).sort((a,b)=>Math.hypot(a.x-700,a.z-200)-Math.hypot(b.x-700,b.z-200))[0]||D[0];{const H=dr.H||10;VIEWS['A dragon tree on the lee']=[dr.x+H*1.6+10,dr.y0+H*.9,dr.z+H*1.3+8,dr.x,dr.y0+H*.6,dr.z];}}
+ /* the highlands' kit on the crest: a crag pine near the crest's middle, seen from the lee side over its crown */
+ const NH=typeof NHL!=='undefined'?NHL:null,cp=NH&&(NH.TREES||[]).filter(T=>T.sp===NH.KEY.cragpine&&T.lv>0).sort((a,b)=>Math.hypot(a.x-crestX(300),a.z-300)-Math.hypot(b.x-crestX(300),b.z-300))[0];
+ if(cp){const H=cp.H||20;VIEWS['Crag pines on the crest']=[cp.x+H*1.5,cp.y0+H*1.0,cp.z+H*1.2,cp.x-10,cp.y0+H*.5,cp.z-20];}})();
 
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=(r.y||0)-2&&p.y<=(r.y||0)+r.h+5){if(!best||r.r<best.r)best=r;}}
  const item=o.isInstancedMesh&&o.userData.biome?(o.name||'').replace(/^biome:/,''):null;
- const KO=typeof KORONA!=='undefined'?KORONA:null,SD=typeof SEDESERT!=='undefined'?SEDESERT:null;
+ const KO=typeof KORONA!=='undefined'?KORONA:null,SD=typeof SEDESERT!=='undefined'?SEDESERT:null,NH=typeof NHL!=='undefined'?NHL:null;
  const PLT=item&&((KO&&KO.plantOfItem(item))||NECANYONS.plantOfItem(item)||(HYPERJUNGLE.plantOfItem&&HYPERJUNGLE.plantOfItem(item))||(SD&&SD.plantOfItem&&SD.plantOfItem(item))),SPx=item&&((HYPERJUNGLE.speciesOfItem&&HYPERJUNGLE.speciesOfItem(item))||(SD&&SD.speciesOfItem&&SD.speciesOfItem(item)));
  const nm=BIO.nameAt?BIO.nameAt(p.x,p.y,p.z):null,NM=nm&&(!best||nm.r<best.r)?nm:null;
- const SB=best&&(NECANYONS.SPECIES.find(s=>best.key===s.key)||(KO&&KO.SPECIES.find(s=>best.key===s.key))||(SD&&SD.SPECIES&&SD.SPECIES.find(s=>best.key===s.key)));
- const F=PLT||SPx||SB||(NM&&NM.plant?((KO&&KO.PLANTS[NM.plant])||NECANYONS.PLANTS[NM.plant]):null),hv=F&&F.tags?F.tags.harvest:null,tr=F&&F.tags?F.tags.trap:null;
+ /* the highlands' trees register their volumes by species key; its small plants name themselves by the item's label (NHL.tagsOf) */
+ const SB=best&&(NECANYONS.SPECIES.find(s=>best.key===s.key)||(KO&&KO.SPECIES.find(s=>best.key===s.key))||(SD&&SD.SPECIES&&SD.SPECIES.find(s=>best.key===s.key))||(NH&&best.kind==='tree'&&NH.SPECIES.find(s=>best.key===s.key||best.name===s.name)));
+ const NHI=item&&NH&&!PLT&&!SPx?NH.tagsOf(o.userData.inspectLabel||''):null;
+ const F=PLT||SPx||NHI||SB||(NM&&NM.plant?((KO&&KO.PLANTS[NM.plant])||NECANYONS.PLANTS[NM.plant]):null),hv=F&&F.tags?F.tags.harvest:null,tr=F&&F.tags?F.tags.trap:null;
  const Z=NECANYONS.at(p.x,p.z),hell=hellAt(p.x,p.z);
  return(NM?NM.name:F?F.name:best?best.name:(o.userData.inspectLabel||item||o.name||'mesh'))+'  ·  '+(o.userData.inspectLabel||item||'')+
   (hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'')+
@@ -37,7 +42,7 @@ const BUDGET={
  showcase:{tris:16000000,calls:260},
  cls:{pass:7500000,host:1800000},
  type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','korona/trees':'pass','korona/carnivores':'pass','korona/floor':'pass',
-  'jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','host':'host'},
+  'jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','nhighlands/trees':'pass','nhighlands/floor':'pass','host':'host'},
 };
 const _itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome){const k=M.name.replace(/^biome:/,'');n[k]=(n[k]||0)+M.count;}});return n;};
 const HCHK={
@@ -51,8 +56,13 @@ const HCHK={
    if(Z.rock){const d=Math.abs(T.y0+.25-NECANYONS.top(T.x,T.z));worst=Math.max(worst,d);if(d>.05)off++;}});
   return{ok:rim===0&&off===0&&TREES.length>50,detail:TREES.length+' trees; '+rim+' on a rim or a wall; '+off+' off the rock\'s top (worst '+worst.toFixed(3)+' m)'};},
  carvings(CV){if(!CV.length)return{ok:false,detail:'no carvings'};const c=CV[0];
-  return{ok:c.arc>20&&c.hum===true&&Math.abs(c.wallD)<1.5,detail:'arc '+c.arc.toFixed(0)+' m on '+c.body+' bed '+c.bed+', '+c.wallD.toFixed(2)+' m off the wall'};}};
+  return{ok:c.arc>20&&c.hum===true&&Math.abs(c.wallD)<1.5,detail:'arc '+c.arc.toFixed(0)+' m on '+c.body+' bed '+c.bed+', '+c.wallD.toFixed(2)+' m off the wall'};},
+ // the highlands' kit keeps to the crest: every tree of it high on the ridge and off the windward face, crag pines among them
+ crest(T){const NH=typeof NHL!=='undefined'?NHL:null;let low=0,wind=0,pines=0;T.forEach(t=>{if(heightK(t.x,t.z)<.62)low++;if(STAGE.windward(t.x,t.z)>.75)wind++;if(NH&&t.sp===NH.KEY.cragpine)pines++;});
+  return{ok:T.length>20&&low===0&&wind===0&&pines>0,detail:T.length+' highlands trees; '+low+' below the crest band, '+wind+' on the windward face, '+pines+' crag pines'};}};
+const NHT=()=>typeof NHL!=='undefined'?(NHL.TREES||[]):[];
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),KO=KORONA;
+ add('the highlands\' kit on the crest, crag pines among it',HCHK.crest(NHT()));
  add('the rain line: life on the windward face, none on the salt',HCHK.rainline(KO.TRAPPED||[],NECANYONS.TREES.concat(KO.TREES||[])));
  add('the rule: carnivory only where poor, wet and warm',HCHK.rule(KO.TRAPPED||[]));
  add('no tree on a rim; feet on the rock',HCHK.cliffs(NECANYONS.TREES.concat(KO.TREES||[])));
@@ -63,9 +73,13 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a man-eater on the crest',HCHK.rule((KO.TRAPPED||[]).concat([{key:'maneater',x:crestX(200),z:200,trap:KO.TRAPS.maneater}])));
  add('a tree moved onto a rim',HCHK.cliffs(NECANYONS.TREES.concat([(()=>{const s=NECANYONS.SEEPS[0];return {x:s.x,z:s.z,y0:s.y};})()])));
  add('no carvings',HCHK.carvings([]));
+ add('a highlands tree on the windward face',HCHK.crest(NHT().concat([{x:-900,z:0,sp:-1}])));
  return R;}
 
 window._registered=REG.length;
+// the runtime LOD of the kits that build on chunk ranges (the nhighlands' hero trees and their far stand-ins, BIO.range):
+// which chunk meshes this camera draws, after the camera is placed and before the draw (the highlands page does the same)
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.take({build:'korona',title:'Krator biome — Korona: the trenches',
  hint:'Korona, station 4: a ring ridge\'s crest between two arms of the salt lake: wet and alive on its windward face, bare on its lee, the salt below where nothing grows',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
@@ -77,4 +91,4 @@ KHOST.take({build:'korona',title:'Krator biome — Korona: the trenches',
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
-  biome:()=>window._biome,jungle:()=>window._jungle,korona:()=>window._korona,hell:hellAt}});
+  biome:()=>window._biome,jungle:()=>window._jungle,korona:()=>window._korona,desert:()=>window._desert,crest:()=>window._crest,hell:hellAt}});

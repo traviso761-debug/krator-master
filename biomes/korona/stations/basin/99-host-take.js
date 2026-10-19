@@ -14,15 +14,19 @@ const VIEWS={
  const cv=CARVINGS[0];if(cv){const a=Math.atan2(cv.z-BENCH.z,cv.x-BENCH.x);VIEWS['The carvings (the lake\'s years)']=[cv.x+Math.cos(a)*14,cv.y+cv.h*.5,cv.z+Math.sin(a)*14,cv.x,cv.y+cv.h*.5,cv.z];}
  const me=near('maneater',BOG.x,BOG.z);if(me)VIEWS['A man-eater (the bog corner)']=[me.x+6,me.y+2.6,me.z+4.5,me.x,me.y+1.4,me.z];
  const cb=near('cobralily',0,0);if(cb)VIEWS['Cobra lilies at a seep']=[cb.x+6,cb.y+2.2,cb.z+4,cb.x-10,cb.y+.8,cb.z-6];
- const st=STAGE.bodies.find(B=>/^shorestack/.test(B.id));if(st)VIEWS['A spire on the shore']=[st.x+120,60,st.z+90,st.x,st.top*.5,st.z];})();
+ const st=STAGE.bodies.find(B=>/^shorestack/.test(B.id));if(st)VIEWS['A spire on the shore']=[st.x+120,60,st.z+90,st.x,st.top*.5,st.z];
+ /* the lowlands' kit on the shore band: from over the water, the willow line at the water's edge and the bamboo behind it */
+ const NW=typeof NWLOW!=='undefined'?NWLOW:null,gw=NW&&(NW.TREES||[]).filter(T=>T.sp===8&&T.lv>0).sort((a,b)=>Math.hypot(a.x-450,a.z)-Math.hypot(b.x-450,b.z))[0];
+ if(gw)VIEWS['The lowlands\' shore (glow-willows, bamboo)']=[gw.x+120,gw.y0+34,gw.z+90,gw.x-40,gw.y0+10,gw.z-60];})();
 
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=(r.y||0)-2&&p.y<=(r.y||0)+r.h+5){if(!best||r.r<best.r)best=r;}}
  const item=o.isInstancedMesh&&o.userData.biome?(o.name||'').replace(/^biome:/,''):null;
- const KO=typeof KORONA!=='undefined'?KORONA:null;
+ const KO=typeof KORONA!=='undefined'?KORONA:null,NW=typeof NWLOW!=='undefined'?NWLOW:null;
  const PLT=item&&((KO&&KO.plantOfItem(item))||NECANYONS.plantOfItem(item)||(HYPERJUNGLE.plantOfItem&&HYPERJUNGLE.plantOfItem(item))),SPx=item&&HYPERJUNGLE.speciesOfItem&&HYPERJUNGLE.speciesOfItem(item);
  const nm=BIO.nameAt?BIO.nameAt(p.x,p.y,p.z):null,NM=nm&&(!best||nm.r<best.r)?nm:null;
- const SB=best&&(NECANYONS.SPECIES.find(s=>best.key===s.key)||(KO&&KO.SPECIES.find(s=>best.key===s.key)));
+ /* the lowlands' trees register their volumes by species name (their small plants name themselves by the item's label) */
+ const SB=best&&(NECANYONS.SPECIES.find(s=>best.key===s.key)||(KO&&KO.SPECIES.find(s=>best.key===s.key))||(NW&&best.kind==='tree'&&NW.SPECIES.find(s=>best.name===s.name)));
  const F=PLT||SPx||SB||(NM&&NM.plant?((KO&&KO.PLANTS[NM.plant])||NECANYONS.PLANTS[NM.plant]):null),hv=F&&F.tags?F.tags.harvest:null,tr=F&&F.tags?F.tags.trap:null;
  const Z=NECANYONS.at(p.x,p.z),hell=hellAt(p.x,p.z);
  return(NM?NM.name:F?F.name:best?best.name:(o.userData.inspectLabel||item||o.name||'mesh'))+'  ·  '+(o.userData.inspectLabel||item||'')+
@@ -35,7 +39,7 @@ const BUDGET={
  showcase:{tris:16000000,calls:260},
  cls:{pass:7500000,host:1800000},
  type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','korona/trees':'pass','korona/carnivores':'pass','korona/floor':'pass',
-  'jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','host':'host'},
+  'jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','nwlow/trees':'pass','nwlow/floor':'pass','host':'host'},
 };
 const _itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome){const k=M.name.replace(/^biome:/,'');n[k]=(n[k]||0)+M.count;}});return n;};
 const HCHK={
@@ -51,8 +55,13 @@ const HCHK={
  carvings(CV){if(!CV.length)return{ok:false,detail:'no carvings'};const c=CV[0];
   return{ok:c.arc>20&&c.hum===true&&Math.abs(c.wallD)<1.5,detail:'arc '+c.arc.toFixed(0)+' m on '+c.body+' bed '+c.bed+', '+c.wallD.toFixed(2)+' m off the wall'};},
  // the lake stands where the stage says, and nothing roots in it
- lake(N){let wet=0;(KORONA.TREES||[]).concat(NECANYONS.TREES||[]).forEach(T=>{if(lakeD(T.x,T.z)<-2)wet++;});return{ok:wet===0&&STAGE.pools[0].y===0,detail:wet+' trees in the lake; level '+STAGE.pools[0].y};}};
+ lake(N){let wet=0;(KORONA.TREES||[]).concat(NECANYONS.TREES||[]).forEach(T=>{if(lakeD(T.x,T.z)<-2)wet++;});return{ok:wet===0&&STAGE.pools[0].y===0,detail:wet+' trees in the lake; level '+STAGE.pools[0].y};},
+ // the lowlands' kit keeps to the shore band: every tree of it within 220 m of the lake, out of the bog corner, off the rock
+ shore(T){let far=0,bog=0,rock=0;T.forEach(t=>{if(lakeD(t.x,t.z)>220)far++;if(Math.hypot(t.x-BOG.x,t.z-BOG.z)<BOG.r)bog++;if(NECANYONS.rockAt(t.x,t.z))rock++;});
+  return{ok:T.length>40&&far===0&&bog===0&&rock===0,detail:T.length+' lowlands trees; '+far+' past the shore band, '+bog+' in the bog corner, '+rock+' on the rock'};}};
+const NWT=()=>typeof NWLOW!=='undefined'?(NWLOW.TREES||[]):[];
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_itemCounts(),KO=KORONA;
+ add('the lowlands\' kit on the shore band',HCHK.shore(NWT()));
  add('the rule: no dangerous trap on rich ground; the traps in the bog corner',HCHK.rule(KO.TRAPPED||[]));
  add('the reagents in meadows on the shore',HCHK.meadows(KO.NAMED||[]));
  add('no tree on a rim; feet on the rock',HCHK.cliffs(NECANYONS.TREES.concat(KO.TREES||[])));
@@ -65,9 +74,13 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a tree moved onto a rim',HCHK.cliffs(NECANYONS.TREES.concat([(()=>{const s=NECANYONS.SEEPS[0];return {x:s.x,z:s.z,y0:s.y};})()])));
  add('no carvings',HCHK.carvings([]));
  add('a tree in the lake',(()=>{const T=KORONA.TREES;T.push({x:900,z:0,y0:0});const r=HCHK.lake(N);T.pop();return r;})());
+ add('a lowlands tree in the bog corner',HCHK.shore(NWT().concat([{x:BOG.x,z:BOG.z}])));
  return R;}
 
 window._registered=REG.length;
+// the runtime LOD of the kits that build on chunk ranges (the nwlowlands' hero trees and their far stand-ins, BIO.range):
+// which chunk meshes this camera draws, after the camera is placed and before the draw (the lowlands page does the same)
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.take({build:'korona',title:'Krator biome — Korona: the fertile basin',
  hint:'Korona, station 3: the Tiers\' lake and its shore meadows, where the rule turns kind: reagents in drifts, lace fans at the water, the rainforest behind; one bog corner keeps the traps',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
@@ -79,4 +92,4 @@ KHOST.take({build:'korona',title:'Krator biome — Korona: the fertile basin',
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
-  biome:()=>window._biome,jungle:()=>window._jungle,korona:()=>window._korona,hell:hellAt}});
+  biome:()=>window._biome,jungle:()=>window._jungle,korona:()=>window._korona,shore:()=>window._shore,hell:hellAt}});
