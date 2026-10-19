@@ -9,6 +9,7 @@ extends SceneTree
 
 const KTags := preload("res://tests/tags/ktags.gd")
 var CASE := "res://data/world-iziz/"   # -- --case=<name>: another city case under data/
+var SHEET := false   # -- --sheet: a kit's sheet on Iziz's page (--kit; kits/pylon): flat ground and no weather (atmos empty)
 const POS_TOL := 1e-4    # metres: a drawn instance or a record node against the position its record gives
 const GRID_TOL := 1e-4   # metres: the ground through the page's sampled heights
 
@@ -23,6 +24,8 @@ func ok(c: bool, m: String) -> void:
 
 func _initialize() -> void:
 	for a in OS.get_cmdline_user_args():
+		if a == "--sheet":
+			SHEET = true
 		if a.begins_with("--case="):
 			CASE = "res://data/%s/" % a.trim_prefix("--case=")
 	if not FileAccess.file_exists(CASE + "world.json"):
@@ -38,7 +41,7 @@ func _initialize() -> void:
 	ok((d["errors"] as Array).is_empty(), "the page reported no section errors")
 	var bad_sec := []
 	for s in ["items", "buckets", "materials", "textures", "registry", "terrain", "stage", "fixtures", "atmos"]:
-		if rep["sections"].get(s) != "ok":
+		if rep["sections"].get(s) != "ok" and not (SHEET and s == "atmos" and rep["sections"].get(s) == "empty"):
 			bad_sec.append(s)
 	ok(bad_sec.is_empty(), "sections filled: %s" % JSON.stringify(rep["sections"]))
 	ok(rep["sections"].get("interiors") == "empty" and rep["sections"].get("city") == "stub",
@@ -243,7 +246,10 @@ func _initialize() -> void:
 		if abs(KData.height_at(g, x + 0.5 * float(gr["step"]), z) - H[k]) > 1e-3:
 			gneg += 1
 	ok(d["terrain"]["source"] == "sampled" and gmax <= GRID_TOL, "terrain: the ground passes through its %d grid samples to %s m (tolerance %s m)" % [gn, str(gmax), str(GRID_TOL)])
-	ok(gneg > 0, "negative: half a step off, %d samples differ" % gneg)
+	if SHEET:   # the sheet's ground is flat: half a step off reads the same height, so the check is that it is flat
+		ok(gneg == 0 and H.size() > 0 and Array(H).max() - Array(H).min() < 1e-3, "the sheet's ground is flat (%d samples, every one at %s m)" % [H.size(), str(H[0])])
+	else:
+		ok(gneg > 0, "negative: half a step off, %d samples differ" % gneg)
 	ok(w.has_meta("stage") and (w.get_meta("stage") as Dictionary).get("format") == "krator-stage", "the stage (light, fog, sky, the painted ground's look) is there")
 
 	w.queue_free()

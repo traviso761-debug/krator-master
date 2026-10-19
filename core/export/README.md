@@ -411,6 +411,30 @@ both. What differs: beyond the box, the page draws the jungle and the city where
 sprites, additive) and its floating labels are not exported; the gate's passage reads lighter in Godot (the page's deep
 shade there is its own darker interior, not matched by Godot's ambient); the light is a little flatter in Godot.
 
+## A kit's sheet on Iziz's page: Pylon (2026-10-19)
+
+A kit built on Iziz's page (`settlements/iziz/build.py --kit`, `settlements/iziz/API.md`) exports through the city's
+contributor read in place: `kits/pylon/kit.json` lists `settlements/iziz/targets/city/94-city-export.js` and
+`core/biome/44-core-stage.js` under `external` and `export` in its target's core. The contributor looks a bound material up
+in Iziz's pack first, then in every other pack the page binds (the kit's own, `KMAT.pack('pylon')`); a texture names its
+pack, its id `tex:iziz:<pack>:<family>:<slot>` outside Iziz's (Iziz's own ids, and its export, are unchanged: the district
+above exported before and after differs only in the clock and the sky picture taken at that moment). The harness copies
+each pack as `tex/<pack>.pack.json` with its files side by side, and fails when two packs name one file;
+`world_import.gd` reads a texture's own pack file.
+
+```
+python3 tools/harness.py export kits/pylon/dist/pylon.html --out godot/data/world-pylon --box=-62,964,32,1000
+godot --headless --path godot --script res://tests/export/iziz_test.gd -- --case=world-pylon --sheet
+```
+
+The box is the sheet's industry mixed street (the Vernacular's smithy and salvage yard beside Pylon's workshop and smelter;
+the workshop furnished): 34 items, 826 instances, 5 buckets (the furniture), 20,918 triangles, 27 textures (24 of Iziz's
+pack, 3 of Pylon's); `world.glb` 1.5 MB. `--sheet` lets atmos be empty (a sheet has no weather) and checks that the
+ground is flat where the half-step negative would need relief. All checks pass in Godot 4.7.2, and the nightly runs it
+(`tools/test_all.py`, `GODOT_TESTS`: an entry may carry arguments). The furnished interiors arrive as world-space
+buckets of the catalog's furniture, not as the interiors section Yuni fills: a wide box of the sheet is mostly furniture
+(the mixed streets with every interior: 182,000 triangles, a 12 MB `world.glb`).
+
 ## Yuni (2026-10-18)
 
 Yuni was the template (`KRATOR_EXPORT`, `settlements/yuni/GAME_EXPORT.md`) and kept its own route: the Godot spike's

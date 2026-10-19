@@ -337,8 +337,8 @@
    "sha256": "4afcaad53c1742554caf146f341db16ad4bd362481876026a5025d30177b2028"
   },
   "kits/pylon/dist/pylon.html": {
-   "bytes": 2033888,
-   "sha256": "3cd56418ba06958443542c05f7dbbd0d26fd4483faf9f79e47a28c36a2adaac7"
+   "bytes": 2119369,
+   "sha256": "c11e1b66ed56ad00387c7f5911845b266472e76d7c6bbf9433dde9edd1c66011"
   },
   "kits/resources/dist/resources.html": {
    "bytes": 561669,
@@ -421,8 +421,8 @@
    "sha256": "9a42d0f00aa132a56689ed4925f9449e1406be153500621bee016d47f83720c3"
   },
   "settlements/iziz/dist/iziz.html": {
-   "bytes": 5353060,
-   "sha256": "93e539f120584c7f0dcdd8a7fcb90f5383cd56a80c077888e14147f8fc2c4bc2"
+   "bytes": 5355663,
+   "sha256": "3d4842e12f97ea8a67abd278f79a7fb1e4944133db0e638171a94aa08cb62e6d"
   },
   "settlements/iziz/dist/w-a.html": {
    "bytes": 1014209,
