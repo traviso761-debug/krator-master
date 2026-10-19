@@ -1055,6 +1055,36 @@
     "sourceMean": 0.277
    }
   },
+  "patMat": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patMat.albedo.webp",
+    "normalMap": "patMat.normal.webp",
+    "roughnessMap": "patMat.rough.webp"
+   },
+   "lib": "patterns/islander/mat-diamond",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.41
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "18247c8cea9b3fa1029699a9286bb858ed5c0e08",
+    "normal": "50ca7de59878f290565bd3e3061ffaeb40144106",
+    "roughness": "fe8d461d17a2313d75370d3b1001a426e189f1eb"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5134540353243959,
+    "sourceMean": 0.5135
+   }
+  },
   "patStory": {
    "breakup": null,
    "card": false,

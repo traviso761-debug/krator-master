@@ -1,0 +1,67 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1246,
+    1100
+   ],
+   "seam_after": [
+    1.161,
+    0.315
+   ],
+   "seam_before": [
+    2.436,
+    9.747
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.7,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "fibre",
+  "id": "islander/mat-diamond",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1.6,
+   1.41
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "islander-mat-diamond.webp",
+  "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+  "licence": "generated for this project by its owner",
+  "original_file": "33.webp",
+  "original_sha1": "6bda28ed529783a4789c250c2b89c472d382b2f5",
+  "prompt": "prompt not recorded: supplied as 33.webp, a plaited pandan mat in natural strips with black-edged ochre and cream nested diamonds, each with a red centre, between bands of red zigzags",
+  "reuse": "the East's plaited mat walls (patMat); any patterned plaited mat, floor mat or wall hanging in black, ochre and red",
+  "sha1": "6bda28ed529783a4789c250c2b89c472d382b2f5"
+ }
+}

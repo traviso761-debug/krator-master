@@ -18,6 +18,8 @@ THRONE.build=function(opt){opt=opt||{};const R=opt.R||2500,q=opt.quality==null?1
  if(BIO.hasField('cbelt')&&THRONE.buildCold){BIO.cur='throne/floor';out.cold=THRONE.buildCold(R,q);}
  // the lava tube's cave life: only where the host has the field (its own seed)
  if(BIO.hasField('cave')&&THRONE.buildCave){BIO.cur='throne/floor';out.cave=THRONE.buildCave(R,q);}
+ // the new flora (stations 1 and 7): only where the host has the field (its own seed)
+ if((BIO.hasField('riftlife')||BIO.hasField('ashlife'))&&THRONE.buildNewFlora){BIO.cur='throne/floor';out.newflora=THRONE.buildNewFlora(R,q);}
  BIO.cur=null;return out;};
 // THE GROUND'S LAYER SAMPLER for a host's ground shader (stochastic tiling: the owner asked for it on the kipuka's floor,
 // the savanna's kopjes and its burn). _lay(t,p,q,k,mt) reads a library layer at world xz p (and q, the same turned) with

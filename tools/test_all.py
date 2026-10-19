@@ -105,6 +105,9 @@ def steps(nightly, build):
         # cover 2 m forward, stay up, and leave the console clean
         s.append(('walk settlements/girder', [PY, 'tools/harness.py', 'walk', 'settlements/girder/girder.html', '--route', 'KeyW:20f',
                                                '--start', 'auto', '--min', '2', '--dir', '0,-1'] if pw else None))
+        # a report, never a failure (it prints the size of each exported case; --compare against godot/data/export-report.json)
+        s.append(('report: export sizes (tools/export_report.py)', [PY, 'tools/export_report.py', '--compare', 'godot/data/export-report.json']
+                  if os.path.isfile(os.path.join(ROOT, 'godot', 'data', 'export-report.json')) else [PY, 'tools/export_report.py']))
         g = os.environ.get('GODOT') or shutil.which('godot')
         for t in GODOT_TESTS:
             s.append(('godot ' + t, [g, '--headless', '--path', 'godot', '--script', t] if g else None))
@@ -138,6 +141,11 @@ def main(argv):
         r = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                            encoding='utf-8', errors='replace', timeout=1800)
         ok = r.returncode == 0
+        if name.startswith('report:'):    # a report prints and never fails the run
+            print('REPORT  %s  (%.1fs)' % (name[8:], time.time() - t), flush=True)
+            for ln in r.stdout.splitlines():
+                print('      ' + ln, flush=True)
+            continue
         print('%s  %s  (%.1fs)' % ('PASS' if ok else 'FAIL', name, time.time() - t), flush=True)
         if not ok:
             fails.append(name)

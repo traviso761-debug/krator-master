@@ -27,3 +27,7 @@
       paramo; the modelled swirl tussocks fill only the near band. Close up the print reads flat.
 - [ ] **The streams are painted, not water**: the ravines' streams are a dark wet band on the ground, with no water
       surface.
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.

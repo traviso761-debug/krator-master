@@ -667,7 +667,7 @@ carve; only sedesert's build takes `30-core-field.js`, so one export in about th
 (stage 2a-b's reseeding event, "Port: next" item 5, is still open). The simulation is not yet one contract: Voth is on
 `core/simulation`, Verge keeps its own `SIM` with its own Godot twin, and stage 5's three levels are not in `SCHEMA.md`.
 LOD needs a Godot-native policy written down: finding 16 (`GODOT-PLAN.md`) invented one in the importer on 2026-10-16
-(150 m cells, ranges widened by the half-diagonal), but it lives in `biome_import.gd`, not in the export contract.
+(150 m cells, ranges widened by the half-diagonal), ~~but it lives in `biome_import.gd`, not in the export contract~~ (2026-10-18: it is in the contract now, `convention.lod` in `core/export`; see item 4).
 
 **Stale or misread.** Forward+ on a real GPU has run: findings 15 to 20 record the 2026-10-16 run on the owner's
 machine (Godot 4.7.2), with frame rates and five same-day fixes; what remains is the editor import route, a perf table
@@ -697,6 +697,9 @@ report is extended to the export cases rather than a new tracking effort started
    fixed perf table per must-pass case (load time, frame time, VRAM, draw calls) on the owner's machine; the perceptual
    `compare_shots.py` metric already listed; and the 150 m LOD cell policy written into `core/export`'s contract, so
    pages never export LOD copies and the importer's cells are the one policy.
+   **Done 2026-10-18:** `convention.lod = {cell: 150, widen: 'half-diagonal', copies: 'none'}` in `07-core-export.js`;
+   `biome_import.gd` reads the cell from it (default 150 for older exports and the krator-biome JSON route);
+   `world_test.gd` asserts it and rift's 175/47/12 node counts (`core/export/README.md`, "LOD").
 5. **Stage 5 starts with the schema** (above): the three levels against the isle demo, then the `sim` section's required
    fields for its profile, before more sim features cross to Godot. Verge's own `SIM` retires when it moves to the core.
 6. **Stage 3 stays where the owner put it** (section 9) but does not gate items 1 and 2: the host shell is `[web]` work

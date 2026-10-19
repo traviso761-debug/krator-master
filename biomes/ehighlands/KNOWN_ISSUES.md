@@ -12,3 +12,7 @@
       honey with it).
 - [ ] **The ground is 12 m a cell**: the bog's pools (5-17 m) sit in soft hollows and the gully walls are coarse. The combs
       hang on that coarse face and may stand a little off the rock.
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.
