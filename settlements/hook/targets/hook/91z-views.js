@@ -23,5 +23,11 @@ const VIEWS=(()=>{const V={},L=PORT_LAYOUT,D=PORT.DECK,R=L.runs&&L.runs[0];if(!R
  if(heli){V['The Sun Canton']=portCam(heli.gx,D,heli.gz-60,.5,.38,320);}
  const stack=L.items.find(it=>it.key==='chStack');
  if(stack){const S=portRegOf('chStack');V['The Stacks']=[stack.gx-30,D+1.7,stack.gz-S.LAND/2,stack.gx+40,D+8,stack.gz-S.LAND/2-10];}
+ // P1: the Heights from the sea side (the ridge behind the Customs, the hosts on the grid), the Ancient town from the
+ // ridge looking down over the roofs to the Hook, and the cliff's foot
+ if(typeof HOOK_GROUND!=='undefined'){const r=HOOK_GROUND.ridge;
+  V['The Heights']=portCam((r.x0+r.x1)/2,r.yFront,r.z1+40,.1,.28,900);
+  V['The Ancient town']=[(r.x0+r.x1)/2+300,r.yBack+60,r.z0+60,(r.x0+r.x1)/2-100,D,120];
+  V['The cliff\'s foot']=[0,r.yBack+30,r.z0-40,0,HOOK_GROUND.cliff.yBack,HOOK_GROUND.cliff.z0];}
  V['Night']=portCam(cx,0,cz,-.6,.5,span*.8+300,1);
  return V;})();

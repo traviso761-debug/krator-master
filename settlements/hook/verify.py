@@ -55,6 +55,21 @@ const R=[];
 { const bad=[];for(const v of PORT_VPLACED){const V=PORT_REG.vessel[v.key];if(!V)continue;const h=terrainH(v.x,v.z);
     if(h>-V.draft+1.5)bad.push(v.key+'/'+v.d+' ground '+h.toFixed(1)+' m at midship, draft '+V.draft);}
   R.push({name:'hook-vessels-afloat',ok:!bad.length,budget:true,detail:bad.length?bad.join(' | '):PORT_VPLACED.length+' vessels, every midship over water deeper than its draft'}); }
+// P1: the site ran on core/city (steps 0-5): the quarters, the avenues and every footprint filed as a landmark
+{ const C=window._city||{};const ok=!!C.ready&&C.districts>=10&&C.ways>=3&&C.landmarks>=PORT_LAYOUT.items.filter(it=>it.vessel!==true).length;
+  R.push({name:'hook-site-plan',ok,detail:C.ready?(C.districts+' quarters, '+C.ways+' ways, '+C.landmarks+' landmark footprints ('+C.hosts+' Ancient hosts); '+JSON.stringify(C.log)):'the city plan did not run'}); }
+// P1: every named host of the site is placed (an unplaced one overlapped a Port footprint and reported an error)
+{ const want=(HOOK_SITE.hosts||[]).map(h=>h.id),have=PORT_LAYOUT.items.filter(it=>it.ancient).map(it=>it.opt.hostId);
+  const miss=want.filter(id=>have.indexOf(id)<0);
+  R.push({name:'hook-hosts-placed',ok:!miss.length,detail:miss.length?'named hosts not placed: '+miss.join(', '):want.length+' named hosts and '+(have.length-want.length)+' drawn on the grid'}); }
+// P1: the Heights stand 25-40 m above the quays at the palace's marker, and the cliff's foot rises behind the site
+{ const B=(HOOK_SITE.markers||[]).find(m=>m.id==='B'),r=HOOK_GROUND.ridge,c=HOOK_GROUND.cliff;
+  const hB=B?terrainH(B.x,B.z)-PORT.DECK:null,hC=terrainH(0,c.z0-20)-PORT.DECK;
+  const ok=hB!=null&&hB>=24&&hB<=42&&hC>=60;
+  R.push({name:'hook-heights',ok,detail:'the palace marker stands '+(hB==null?'?':hB.toFixed(1))+' m above the quays, the cliff\'s foot '+hC.toFixed(1)+' m'}); }
+// P1: every Ancient host and quarter has a core/tags record before it was drawn
+{ const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,a=T?T.audit():null,n=PORT_LAYOUT.items.filter(it=>it.ancient&&it.tag).length;
+  R.push({name:'hook-tags',ok:!!a&&n===PORT_LAYOUT.items.filter(it=>it.ancient).length,detail:a?(a.records+' records, '+n+' hosts tagged; unknown vocabulary '+a.unknown):'no registry'}); }
 return R;}"""
 
 

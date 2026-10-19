@@ -50,9 +50,9 @@ About 2.6 km of waterfront, 1.2 km deep to the cliff's foot. From west to east:
 | **The Stacks** | the container towers, compounds and silo houses at the eastern edge | the poor of every people; Voth's slave market |
 
 Behind every zone stands **the Ancient town** (the owner, 2026-10-19): the city the port served, on a grid of 110 m
-blocks and 20 m streets aligned to the waterfront, three rows deep behind the Customs and the Arsenal (z -130 to
--520 in the kit's frame), two behind the Strand, the Tethyan quarter and the Sun Canton, one behind the Point and the
-Stacks. The site's avenues are its streets: the pier's axis was the Ancient city's main avenue, the shore road its
+blocks and 20 m streets aligned to the waterfront, three rows deep behind the Customs and the Arsenal (z -150 to
+-540 in the kit's frame, the first row behind the shore road), two behind the Strand, the Tethyan quarter and the Sun
+Canton, one behind the Point and the Stacks (`site/hook-site.json` `grid`). The site's avenues are its streets: the pier's axis was the Ancient city's main avenue, the shore road its
 esplanade (the Arcades along it), and the Heights its upper terrace, reached by an Ancient stair and the stump of a
 funicular (`kits/ancients/src/8ap-funicular.js`, Verge's piece). Each later ruler reclaimed what stood and built on
 it in their own style, so the Ancient fabric shows in every zone: whole and repaired in the Customs and on the
@@ -206,7 +206,9 @@ The waterfront comes first, because the Port kit is finished and the city's shap
   with their roles and culture mixes, the avenues (the pier's axis up to the palace, the shore road, the Arsenal road)
   on the Ancient grid, and the Ancient town's `hosts` (section 3, "The Ancient town": the named ones by hand, the rest
   drawn on the grid by `core/rand`) drawn as plain ruins at their decay. Done when the owner has laid the site out in
-  the editor and `core/city` steps 0-5 run on it with the hosts filed as footprints.
+  the editor and `core/city` steps 0-5 run on it with the hosts filed as footprints. **Built 2026-10-19** on the
+  branch `claude/hook-p1`, except the editor page: the site file is seeded from `LAYOUT.svg` and the steps run on it
+  (`README.md`, "P1"); the editor is the open item (`KNOWN_ISSUES.md`), the owner edits the JSON until it comes.
 - **P2. The town on `core/city`.** Steps 6-12 with the kits' dims (`isDims`, the Vernacular's, the Ys kit's, Voth's
   catalog); the lot filler drawing a culture then a type; the salvage rule on the poor and middle lots; the host-lot
   rule (a lot on a ruin draws the ruin, then its culture's addition on it). Done when the
