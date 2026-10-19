@@ -217,44 +217,28 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 
 ### The Talia kit (`kits/talia`)
 
-The kit draws in the library's marble, gold and clay tile (`kits/talia/materials.json`); these four it has no set for
-(`kits/talia/PLAN.md` section 7). Each lands in the library or `patterns/talia/`; add its family to
-`kits/talia/materials.json` and repack.
+The kit's marble, gold, tile, mosaic, meander, jali and rose window are delivered and bound (`kits/talia/materials.json`).
+Two more (the owner, 2026-10-19): the paintings that hang in Talia's gallery and the book spines of its libraries. Each
+lands in `patterns/talia/`; add its family to `kits/catalog/materials.json` (the catalog's `talia` pieces draw them: the
+bookcase, the paintings as `art` pieces for the gallery, `tal_uni_gallery`, and the library) and repack.
 
-#### `mosaic.honeycomb`
-- Kind: tileable material, full colour; 1 m tile. The orange-gold mosaic over the trumpet vaults, coffers and column
-  flares of Talia's halls (`refs/taliaint3.jpg`) and the cloister ceilings (`talia-cloisters.jpg`).
-- Reuse: any gilded or orange mosaic vault or apse, Iziz's rich interiors.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A mosaic of small irregular polygonal glass tesserae about 2 cm across, packed like a honeycomb or a cracked glaze, each one a slightly different shade of warm orange and gold (#e89a30, #d8822a, #f0b048, #c87420), a few gold-leaf tesserae with a faint metallic sheen, thin pale cream grout lines (#efe6d2) between them, a slight unevenness of the surface. Full colour (do not mute).
-```
-
-#### `patterns/talia/meander`
-- Kind: pattern sheet, full colour, 2048x512, repeating along its length; a band 0.5 m tall. The Greek-key border of
-  Talia's floors and friezes (`refs/talia-cloisters.jpg`).
-- Reuse: any classical floor border or frieze band (Hykkousoi halls, Republic civic floors), tinted or as is.
+#### `patterns/talia/paintings`
+- Kind: one sheet of eight paintings, full colour, 2048x1024, not tiled: four across and two down, each painting a
+  512x512 cell edge to edge (the frames are geometry, so no frame in the image). The loader cuts the sheet into eight
+  canvases hung in the gallery's rooms and the state rooms.
+- Reuse: any gallery, palace or rich house that hangs paintings (Iziz's governor's palace, Xanadu's citadel).
 
 ```
-A flat, front-on decorative panel, 2048x512, a long horizontal band. Orthographic, flat even shadowless lighting, no perspective, no objects, no text, no border, no watermark. The band must repeat along its length: the left edge continues into the right edge. The panel: a Greek key (meander) border in white marble inlay (#f4f1ea) on a ground of orange marble (#ee7a1c), the key a continuous squared spiral line about a tenth of the band's height wide, running the whole length, with a thin white fillet along the top and bottom edges of the band; the marble shows faint veining, the inlay joints are fine and tight. Full colour (do not mute).
+A flat, front-on decorative panel, 2048x1024, divided into a grid of eight square paintings, four across and two down, each square exactly 512x512 and filling its cell edge to edge with no gap, no frame, no border and no gutter between them. Orthographic, flat even shadowless lighting, no perspective, no glare, no text, no signature, no watermark. Each square is an oil painting on canvas in the manner of late Byzantine icons warmed by Venetian Renaissance colour, visible brushwork and a faint craquelure, a warm ochre-and-umber underpaint showing at the edges of forms. The eight paintings, left to right on the top row then the bottom row: (1) a white hill city of domes and arcades stepping up to a temple crowned with orange ribbed domes, under a deep blue sky; (2) a caravan of camels and a six-wheeled steam crawler passing under a gate of two white drum towers with lotus-petal roofs, at dawn, mountains behind; (3) an icon of a gilt radiant sun facing a great banded green planet, on a gold-leaf ground (#d9a040), the two as father and mother; (4) a seated scholar in an orange robe (#e07a2a) with a white collar, one hand on an open book, a brass celestial globe beside him, a dark green curtain behind; (5) a still life of brass bowls, pomegranates, figs, a cobalt glass jug (#2f5fb8) and two closed books on a white marble ledge; (6) the high desert passes at evening, ochre and violet ridges, a thin road and tiny travellers; (7) two women in white and orange robes reading in a cloister of white columns under an orange coffered ceiling; (8) a night view of an observatory tower with its dome open and stars over it, a lamp in one window. Full colour (do not mute).
 ```
 
-#### `patterns/talia/jali`
-- Kind: cut-out sheet on magenta, near-colourless; 1 m across. The pierced stone screens of the jharokha bays and the
-  palace's upper pavilions (`refs/talia3.jpg`).
-- Reuse: any pierced stone or plaster screen: Mughal-style windows, a harem lattice, Erewhon's citadel.
+#### `patterns/talia/book-spines`
+- Kind: pattern sheet, full colour, 2048x1024, repeating along its length (left edge into right): two shelf rows of book
+  spines, each row 512 px tall standing for about 0.3 m; the loader maps a row onto each shelf of a bookcase.
+- Reuse: any library or study shelf: Yuni's scholars, the Aggonmekki, Voth's palace archive, a rich house's study.
 
 ```
-A flat, front-on decorative panel, square, 2048x2048, on a solid flat magenta background (#ff00ff). Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text, no border. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. The panel: a pierced stone screen (jali) of interlocking eight-pointed stars and small hexagons, the stone bars about two fingers wide with softly rounded carved edges and fine chisel texture, the openings about a third of the area, five star motifs across the image; every opening shows only the solid magenta background through it. Pale warm grey stone. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the stone.
-```
-
-#### `patterns/talia/rose-window`
-- Kind: one cut-out panel on magenta, full colour, 2048x2048, not tiled; the window is about 9 m across. The star rose of
-  Talia's temple front (`refs/talia-temple.jpg`), drawn now as a plain glazed disc.
-- Reuse: any rose or oculus window (a chapel, a guild hall's gable).
-
-```
-A flat, front-on decorative panel, square, 2048x2048, on a solid flat magenta background (#ff00ff). Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text. The panel: one circular stained-glass rose window filling the square, edge touching the edge, seen straight on and lit from behind: a sixteen-pointed star pattern of lozenge panes radiating from a white glass centre, the panes slate blue (#4a6a8a), pale gold (#d8c07a), cream (#efe6d2) and a few deep cobalt (#2f5fb8), set in dark lead cames (#2a2624) with a thin stone ring round the outside; everything outside the circle is solid magenta. Full colour (do not mute). Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the window.
+A flat, front-on decorative panel, 2048x1024, two horizontal rows of old book spines standing upright side by side, packed tight, each row exactly 512 pixels tall with the books' feet on the row's bottom edge and a thin dark gap above the shorter books. Orthographic, flat even shadowless lighting, no perspective, no shelf, no objects, no border, no watermark. The pattern must repeat horizontally: the left edge continues into the right edge. The spines: leather and cloth bindings of varied widths (thin pamphlets to fat folios) and heights, in burnt orange (#d2601e), oxblood (#7a2a22), indigo (#34406a), walnut brown (#6e3a22), dark green (#3f5a3a) and cream vellum (#e8dfc8), with raised bands across the spines, gilt tooling (#d9a040) in fillets and small fleurons, gilt title panels with abstract gilt marks only (no legible letters, no real words), some spines worn at the head and tail, a few vellum spines with faded ink panels. Full colour (do not mute).
 ```
 
 ## 3. Probably needed: check first
