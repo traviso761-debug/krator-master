@@ -647,9 +647,10 @@ metres; the towns in one order whichever is drawn): rows in the kinds table for 
 (residences), Ridertown, Izanitown, the works and the dairy; its farm ring (the programme's world record beyond the wall)
 as 40 holdings until core/hamlet's farming villages; its bread from taro; each town keeps only the foods it makes.
 6,235 people, 2,472 workers, 40 carts; a day's books pass the same checks as Valapo's, and five days run clean. The page's
-run loop (`57`, held at first) and the stocks id map (`46`, for core/host's panel). Workarounds for two core/simulation
-issues (`SIM.REACH`, the 01:00 start) and the core branch's two pieces (meals by town, the nearest-job deal) are in
-`KNOWN_ISSUES.md`. Left for P7b: the citizens drawn near the camera.
+run loop (`57`, held at first) and the stocks id map (`46`, for core/host's panel). The core branch
+`claude/isle-p7a-rest` is merged: each town's meals booked by town, the nearest-job deal (every role takes it), the
+nearest-place search fixed for towns 120 km apart and the lag at minute 0; five days run clean in both towns. Left for
+P7b: the citizens drawn near the camera.
 
 **Order of work.**
 

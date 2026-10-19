@@ -159,7 +159,8 @@ declares both once they are planned, in one order whichever town it draws, and h
   opens; the HUD shows the day and hour and the drawn town's food in days. **The stocks id map** (`46`): `ISLE.simIdOf`
   (a lot, its core/tags id or a place id to the town's places) and `ISLE.simHolds(town)` (the `extra` for core/host's
   `KHOST.simHolds`, its stocks the town's own), ready for when the page takes core/host.
-- `SIM.REACH` is 6 km (a town and its farm ring) and the clock starts at 01:00: see `KNOWN_ISSUES.md`.
+- Jobs are dealt nearest first (`work.near`), each town's meals booked by town, and nobody walks farther than 6 km
+  (`SIM.REACH`: a town and its farm ring).
 - **Not yet:** the citizens drawn near the camera; the canoe line (P7c). See `HANDOFF.md`.
 
 See `KNOWN_ISSUES.md`.

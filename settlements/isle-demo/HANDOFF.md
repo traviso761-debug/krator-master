@@ -20,9 +20,8 @@ registers the export's `city` section for every instance on a page.
 
 ## Next, in order
 
-1. **P7b, the rest:** a few citizens drawn near the camera; when the core branch `claude/isle-p7a-rest` lands (the meals
-   by town, the nearest-job deal), rebuild, re-read both towns' books and retune (`KNOWN_ISSUES.md`); drop `SIM.REACH` and
-   the 01:00 start once core/simulation bounds its ring search and clamps the lag. Then P7c: the canoe line as a
+1. **P7b, the rest:** a few citizens drawn near the camera (the core branch `claude/isle-p7a-rest` is merged: meals by
+   town, the nearest-job deal, the ring search and the lag fixed). Then P7c: the canoe line as a
    `SIM.transport` between the two trade landings and `SIM.trade({line})` on it (the timetable is the owner's: PLAN.md
    section 9). Any core/simulation change: diff Voth's whole `verify.py --assert` output against `main`'s page with the
    timings stripped (the method P7a used).

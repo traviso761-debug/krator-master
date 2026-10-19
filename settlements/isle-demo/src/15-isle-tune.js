@@ -23,10 +23,9 @@ var ISLE = ISLE || {};
 ISLE.TUNE = ISLE.TUNE || {};
 ISLE.TUNE.sim = {
   seed: 20261019,
-  /* reach: how far anyone looks for a place (SIM.REACH): a town and its farm ring, never the other town 122 km off (and
-     it bounds core/simulation's ring search, which otherwise spans every place on the page); start: the clock's first
-     minute (01:00, past the lag: a lagged minute before the day's start has no hour) */
-  clock: { secPerMinute: 18, stepMax: 900, lag: 8, reach: 6000, start: 60 },
+  /* reach: how far anyone walks to a place (SIM.REACH): a town and its farm ring, never the other town 122 km off;
+     start: the clock's first minute (midnight of day 0) */
+  clock: { secPerMinute: 18, stepMax: 900, lag: 8, reach: 6000, start: 0 },
   track: 40,
   towns: {
     Valapo: { id: 'valapo', name: 'Valapo', faction: 'islanders', prefix: 'v', carts: 14, inputs: { bread: { 'sweet-potato': 1 } } },

@@ -3,8 +3,7 @@
    SIM.populate({settlement, prefix}) over the town's own beds, once a town (P7a: homes and work in one's own town):
      - a role for each kind of work (ISLE.TUNE.sim.jobs): its count the posts (WORK slots) its kinds of place offer in
        the town, so every post is filled; it lives in the houses (the soldiers in the barracks first) and works where
-       the deal puts it: round-robin by load over the town's places of its kinds, or, once core/simulation takes a
-       role's `work.near` (asked for: the nearest-job deal), the nearest place of its kinds with a free post;
+       the deal puts it: the nearest place of its kinds with a free post (core/simulation's `work.near`);
      - the kin (children, elders, those who keep the house): the `fill` role, every bed left (the residences' and the
        barracks' too: ISLE.TUNE.sim.homes).
    The census's people are the sim's: the beds are the households at five a household (40), so the town holds the

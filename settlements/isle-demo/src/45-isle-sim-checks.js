@@ -12,9 +12,7 @@
      ISLE.simFoodChecks(R, books)  after a day: every food made and hauled, food eaten, nothing short (no draw on the
                                 warehouses unmet, no purchase out of stock, no kitchen without a meal), every food
                                 lasting a day more, and the food made (less what went into other food) covering what the town ate.
-                                The meals are the town's own once core/simulation books them by town (SIM.ITEMS.statsBy[town]
-                                .meals, asked for); until then the meals bought out are summed over the town's own sellers
-                                (stats.byShop) and the rest are the page's (books.meals.pageWide) */
+                                The meals are the town's own (core/simulation books them by town: SIM.ITEMS.statsBy[town].meals) */
 ISLE.simChecks = function (R, o) {
   o = o || {};
   var TS = ISLE.TUNE.sim.towns[R.town], s = TS.id, out = [];
@@ -52,8 +50,7 @@ ISLE.simChecks = function (R, o) {
 };
 ISLE.simBooks = function (s) {
   var E = SIM.economyReport(s), I = SIM.ITEMS, B = (I.statsBy || {})[s] || {}, X = ISLE.SIM.towns[s], F = X.econ.foods;
-  var M = B.meals ? Object.assign({}, B.meals) : Object.assign({}, I.stats.meals, { pageWide: true, bought: 0 });
-  if (!B.meals) X.places.places.forEach(function (P) { var b = I.stats.byShop[P.id]; if (b && b.meal) M.bought += b.meal; });
+  var M = Object.assign({ meal: 0, single: 0, none: 0, bought: 0, mess: 0, out: 0 }, B.meals || {});   /* the town's own meals (SIM.ITEMS.statsBy[town].meals) */
   var out = { town: s, foods: {}, meals: M, carts: E.carts, short: E.short };
   F.forEach(function (f) {
     var G = E.goods[f] || {};
@@ -68,7 +65,7 @@ ISLE.simFoodChecks = function (R, books) {
   var unmade = k.filter(function (f) { return !(F[f].made > 0) || !(F[f].hauled > 0); });
   ok('every food made and hauled', unmade.length === 0, k.map(function (f) { return f + ' ' + F[f].made + '/' + F[f].hauled; }).join(', ') + ' (made/hauled)' + (unmade.length ? '; NOT: ' + unmade.join(', ') : ''));
   var eaten = sum('eaten'), meals = books.meals;
-  ok('the food is eaten (meals at home, out and at the mess)', eaten > 0 && meals.meal > 0, eaten + ' servings eaten at home in ' + (meals.meal + meals.single) + ' meals; ' + meals.bought + ' bought out, ' + meals.mess + ' at the mess, ' + meals.none + ' with nothing at home' + (meals.pageWide ? ' (the meals but those bought out are the whole page)' : ''));
+  ok('the food is eaten (meals at home, out and at the mess)', eaten > 0 && meals.meal > 0, eaten + ' servings eaten at home in ' + (meals.meal + meals.single) + ' meals; ' + meals.bought + ' bought out, ' + meals.mess + ' at the mess, ' + meals.none + ' with nothing at home');
   var short = k.filter(function (f) { return F[f].short > 0 || F[f].outOf > 0; }), low = k.filter(function (f) { return F[f].days != null && F[f].days < 1; });
   ok('nothing short for a day (draws, purchases, kitchens; a day\'s stock left)', short.length === 0 && low.length === 0 && !meals.out,
     'short ' + sum('short') + ', out of stock ' + sum('outOf') + ', kitchens without a meal ' + (meals.out || 0) + '; days left ' + k.map(function (f) { return f + ' ' + F[f].days; }).join(', ') +
@@ -79,6 +76,6 @@ ISLE.simFoodChecks = function (R, books) {
   k.forEach(function (f) { var q = IN[f] || {}; for (var g in q) if (F[g]) into += F[f].made * q[g]; });
   var ate = eaten + (meals.bought + meals.mess) * per;
   ok('the food made covers what the town ate', made - into >= ate, (made - into) + ' servings made (' + made + ', ' + into + ' of them baked into others), ' + ate + ' eaten (' + eaten + ' at home, ' +
-    (meals.bought + meals.mess) * per + ' out and at the mess' + (meals.pageWide ? ', the mess the whole page' : '') + ')');
+    (meals.bought + meals.mess) * per + ' out and at the mess' + ')');
   return out;
 };
