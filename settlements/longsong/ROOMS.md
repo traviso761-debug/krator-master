@@ -220,10 +220,13 @@ harvest), and by the caravans. The fields' share is a number in the data (`LS.FA
    Archive, the Eastern Watch as the louvre tower, the Hall of Forms, the new outbuildings (mani wall, chorten garden,
    Garden of Held Water). One screenshot set against the chapterhouses.
 2. **The rooms as data** (`src/40-ls-plan.js` or a sibling `[G data]` fragment): every room above a record (id,
-   building, level, box, tier, use), so the people's places point at rooms and the interiors have their programme.
+   building, level, box, tier, use), so the people's places point at rooms and the interiors have their programme. Done
+   2026-10-19: `src/40c-ls-rooms.js` (`LS.ROOMS`), fitted inside the shells the page draws (a room's storey is the
+   building's; the blueprint's own rectangles did not fit the drawn ranges).
 3. **The interiors** on `kits/interiors` (ROOM() and the placer, the catalog adapter), level by level from the
    sumptuous rooms down; the furniture records baked headless (README.md, "Furniture that is not always drawn is data
-   first"; Mav's Refuge is the worked example).
+   first"; Mav's Refuge is the worked example). Done 2026-10-19 (`57a`, `bake_interiors.py`, `87`); what is left is in
+   `KNOWN_ISSUES.md`.
 4. **The textures** (`core/materials/PROMPTS-NEEDED.md`, section "Longsong"): the exterior's first, the interiors'
    before step 3. The first five (the glyph relief, the mosaic band, the red limewash, the prayer wheel's repoussé and
    the mani stones) were delivered 2026-10-19 and are wired.

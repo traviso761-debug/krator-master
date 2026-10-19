@@ -33,6 +33,20 @@ const VIEWS=(function(){const V={},PR=LS.PROCRASTINATOR,T=LS.ROCK.top;
  V['The paper mill\'s wheel and its race']=[-130,gh(-130,-184,6),-184,-150,gh(-150,-193.5,1),-193.5];
  V['The stream from the bridge']=[0,BRIDGE.deck+5,BRIDGE.z,-320,BRIDGE.water,-280];
  V['The yak pastures']=[-600,gh(-600,876,2.6),876,-626,gh(-626,904,.8),904];
+ // the interiors (P4, 2026-10-19): the eye in a room draws its floor (87); the cutaway (X) opens a palace storey by storey
+ {const R=LS.ROOMS.byId,I=(id,f)=>{const r=R[id];return f(r,(r.x0+r.x1)/2,(r.z0+r.z1)/2);};
+  V['Inside the Great Assembly Hall (the skylight columns)']=I('wp.assembly',(r,x,z)=>[r.circle.x-3,r.y+3.4,r.circle.z-r.circle.r+1.6,r.circle.x+1,r.y+2.2,r.circle.z+8]);
+  V['The Hall of the Founders (the chortens)']=I('rp.k0.founders',(r,x,z)=>[x+6,r.y+3.2,r.z0+1.2,x-2,r.y+1.8,r.z1-3]);
+  V['The Chapel of the Lost Monastery']=I('rp.k0.lost-chapel',(r,x,z)=>[r.x1-1,r.y+2.4,r.z1-1,r.x0,r.y+1.3,z]);
+  V['Archive Stacks I: the Peoples']=I('rp.k2.stacks-peoples',(r,x,z)=>[r.x1-1.2,r.y+2.6,r.z0+1.2,r.x0+10,r.y+.8,r.z1-12]);
+  V['The Catalogue of the Archive']=I('rp.k0.catalogue',(r,x,z)=>[x,r.y+2.4,r.z0+1,x,r.y+1,r.z1-6]);
+  V['A lecture hall of the School (the Cataclysm)']=I('wp.k0.w.out.cataclysm',(r,x,z)=>[x+4,r.y+2.8,r.z1-1,x-1,r.y+1,r.z0+1]);
+  V['A monk\'s cell']=I('wp.k1.cells-w.a06',(r,x,z)=>[r.x1-.5,r.y+1.7,z+1.2,r.x0,r.y+.6,z-.6]);
+  V['The Library\'s reading rooms']=I('wp.k2.library',(r,x,z)=>[r.x0+1,r.y+2.6,r.z0+1,r.x0+20,r.y+1,r.z1-1]);
+  V['The refectory']=I('wp.k1.refectory',(r,x,z)=>[r.x1-1,r.y+3,r.z0+1,x-3,r.y+.4,r.z0+22]);
+  V['The Council of the Order']=I('rp.k5.council.council',(r,x,z)=>[r.x1-2,r.y+3.4,r.z0+2,x,r.y+.8,z]);
+  V['The Chronicle Hall']=I('rp.k7.chronicle',(r,x,z)=>[x+8,r.y+4,r.z1-1.5,x,r.y+1.2,r.z0+4]);
+  V['The Hall of Hours (the clocks)']=I('lr.hours',(r,x,z)=>[r.circle.x,r.y+2.4,r.circle.z-r.circle.r+1,r.circle.x,r.y+1.4,r.circle.z+2]);}
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the record under the hit (a
@@ -101,6 +115,8 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
   'the people':{match:o=>!!(o.userData&&o.userData.people)},'sky':{objects:()=>[sky,giant,giantRing]}},
  exporters:{biome:()=>BIO.export(),plan:()=>({plan:{site:LS.SITE,rock:LS.ROCK,buildings:LS.BUILDINGS,vault:LS.VAULT,procrastinator:LS.PROCRASTINATOR,sealed:LS.SEALED,places:LS.PLACES},people:LS.PEOPLE.map(P=>({id:P.id,role:P.role,faction:P.faction,sub:P.sub,job:P.job,schedule:P.schedule}))})},
  minimap:{title:'Longsong'},
+ // the cutaway (X; ] [ a storey up, down): the palaces opened storey by storey, their rooms drawn as the cut shows them (87)
+ cutaway:{units:LSIXD.UNITS,show:(u,i)=>LSIXD.cut(u,i)},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

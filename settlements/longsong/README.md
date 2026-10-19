@@ -96,8 +96,31 @@ half quality), `?mat=proc` (the procedural maps instead of the library's), `?hou
 - **The depths' doors**: the Vault's rooms join by doorways cut in their shared walls (`LS.VAULT_DOORS`) and two passages
   (to the Unmaking Room; from the Long Stair's foot into the Procrastinator's hall); the eye walks through them. Its lamps
   are a float texture the shader loops over (no silent ceiling).
-- **The sky**: the Oidong kit's, drawn from Longsong's place (`LS.SKY`, from the model: the Throne at 334 degrees, the pass
-  down-valley at 292, no cataract at the head).
+- **The interiors** (PLAN.md P4, 2026-10-19; ROOMS.md sections 3-4): **the rooms are data** (`40c-ls-rooms.js`, `[G data]`):
+  320 records (`LS.ROOMS`), every room ROOMS.md names fitted inside the shell the page draws (the base's two storeys under
+  the rock top, the Lower Gate, the White Palace's ranges storey by storey, the Assembly drum, the Red Palace and its wings,
+  the roof's drums; the depths are the Vault's rooms by reference), each with its doors on the walls it shares, its tier,
+  its kind and, where the Order arranges a room itself, its layout. **Their pieces are data too** (`57a-ls-interiors.js`):
+  kits/interiors furnishes each room (`ROOM()`, `furnishRoom`, the catalog's runtime adapter) from the catalog's Xanadu
+  sets, the Order's own set (Yuni's, harvested into the catalog) and the generic goods, under Longsong's programmes; the
+  layouts come first (the Assembly's ring of twelve skylight columns and its cushion rows for 300 facing the throne, the
+  founders' nine chortens and the altar, the archive's ranks of scroll racks, the catalogue's card cabinets, the pupils'
+  desks before the board, the council's round table with its empty place, the Chronicle on its stand before 108 desks,
+  the clocks, the armillary, the Watch's three instruments). The NEW pieces FURNITURE.md listed are in the catalog
+  (`kits/catalog/krator-master-furniture-xanadu.js`, 2026-10-19). The records are baked headless (`bake_interiors.py` ->
+  `interiors-bake.json`, inlined by build.py with the kit hash and each room's fingerprint; README "Furniture that is not
+  always drawn is data first"). **The drawing** (`87-ls-interiors.js`) is a floor of one building at a time: the cutaway
+  (X; ] [ a storey up, down: core/host's, over the White Palace, the Red Palace and the Eastern Watch) or the eye in a
+  room shows that floor's rooms (their walls' inner faces with framed doorways, floors, ceilings, the Hall of Pillars'
+  forty columns, the stairs' flights) and its pieces in one catalog batch. Views: 'Inside the Great Assembly Hall', 'The
+  Hall of the Founders', 'Archive Stacks I', 'The Chronicle Hall' and the rest. The rooms corrected the shells they sit in: the
+  White Palace's back range is two wings either side of the Assembly drum (one block had filled the drum's hall), the
+  Red Palace's wings two blocks outside its walls (one block ran its face through the palace's rooms), the Assembly drum
+  2 m north (it ran into the Red Palace's front), the Hall of Hours and the Observatory on the wings' roofs (their drums
+  stood in the palace's walls).
+- **The sky**: the Oidong kit's, drawn from Longsong's place (`LS.SKY`, from the model: the Throne at 334 degrees, the valley's
+  head at 118 with the cascade the owner places at the valley's end (2026-10-19: below the horizon from the rock, 190 km
+  off), the pass down-valley at 280).
 - **The host**: core/host's whole interface (camera, inspector, marks and the polygon tool, minimap, editor), with
   this page's camera clamp (the eye may go under the ground only inside a room of the Vault).
 
@@ -114,4 +137,11 @@ house's grain with the rest's source named. Each has a negative control (a 25 m 
 rammed-earth granary, a Red Palace of one storey, a vault room above ground, a wheel that does not slow its seals, a
 second way down, a field of cotton, a field across the stream, a house that grows all its grain, the model's own stream levels (which
 rise downstream), a wheel set off the canal). The water: the stream only falls, the canal falls from the stream to the
-Mirror, each mill's wheel stands in the canal's water, the stream's banks hold it.
+Mirror, each mill's wheel stands in the canal's water, the stream's banks hold it. The rooms (`LS.ROOMS.check`, pure): every room ROOMS.md
+names is a record; every room inside its range's walls at its storey; no two rooms of a floor overlap; each door between
+rooms on both rooms' walls; every room reached through doors from a stair, a court or a landing. The interiors: every
+room's required pieces placed; the rooms that must hold what ROOMS.md lists hold it (the columns and cushions, the
+chortens, the name walls, the card cabinets, the map table, the council's table, the clocks ...); every piece inside its
+room; the interiors come from the bake. Negatives: a room ROOMS.md names that is not recorded, a room through the Red
+Palace's wall, two rooms on one floor, a door on one room's wall only, a room with no way in, a room lacking what it
+must hold, a piece outside its room.

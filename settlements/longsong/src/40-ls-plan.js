@@ -28,9 +28,10 @@ P.SITE={wx:-2000,wz:2080,px:954,py:1296,name:'Longsong',marker:{px:957,py:1294}}
 P.STREAM_FLOW=[-1,0];
 // what stands round the sky from here (the Oidong kit's sky takes it: OIDONG_SKY), read off the scale model's regions on
 // 2026-10-19 (region/source/regions.json): the Throne ('Throne/Volcano', centroid px 571,514) bears 334 degrees, 1,740 km
-// off; the Oidong Valley (px 725-1035 by 1234-1350) runs west-north-west, so the pass toward Xanadu is down-valley at
-// about 292 and the head wall up-valley at 112; the model has no cataract at the valley's head (the showcase's own)
-P.SKY={head:112,pass:292,throne:334,cataract:false};
+// off; the Oidong Valley's outline (px 725-1035 by 1234-1350) puts its head (its east end, round px 1028,1330) at
+// about 118 degrees, 190 km up-valley, and its west end toward the pass at about 280. The cascade at the valley's head
+// is the owner's (the model's painting, 2026-10-19): a thin thread on the head wall at that distance, if seen at all
+P.SKY={head:118,pass:280,throne:334,cataract:true};
 P.toWorld=(x,z)=>[x+P.SITE.wx,z+P.SITE.wz];
 
 // ---------------------------------------------------------------- the rock: Longsong's hill
@@ -142,7 +143,8 @@ b({id:'white-palace',name:'The White Palace (the School, the cells, the refector
  court:{x0:-34,x1:34,z0:30,z1:72},ranges:{front:4,outer:4,inner:5,back:4},
  base0:{x0:-95,x1:95,z0:8,z1:21,y0:-1.5,y1:40,name:'The White Palace\'s base (the storerooms, the granary, the cisterns: L1)'}});
 b({id:'debate-court',name:'The Debate Court (open from the School to the sky, curved arcaded galleries)',kind:'gallery',x:0,z:51,w:68,d:42,floors:2,storey:4.5,base:'rock',types:['religious','civic'],sheet:'L2'});
-b({id:'assembly',name:'The Great Assembly Hall (a drum under a tile cone and lantern, the skylight columns inside)',kind:'drum',x:0,z:82,r:14,floors:6,storey:4.5,base:'rock',types:['religious','civic'],sheet:'L3',cone:13,lantern:true,winFrom:4});
+// (z 80: at 82 the drum ran 2 m into the Red Palace's front, and its hall inside met the palace's wall; 2026-10-19)
+b({id:'assembly',name:'The Great Assembly Hall (a drum under a tile cone and lantern, the skylight columns inside)',kind:'drum',x:0,z:80,r:14,floors:6,storey:4.5,base:'rock',types:['religious','civic'],sheet:'L3',cone:13,lantern:true,winFrom:4});
 // --- the Red Palace: what the Order is for (R1 the Founders and the inner kora, R2 the Archive, R3 the Chronicle,
 // the Council, the Abbot, the Hall of Stillness), stepping up behind and over the White Palace
 b({id:'red-palace',name:'The Red Palace (the Founders\' tombs, the Great Archive, the Chronicle Hall, the Council, the Abbot)',kind:'red',
@@ -153,8 +155,10 @@ b({id:'red-wings',name:'The Red Palace\'s wings (the conservators, the map room,
 b({id:'gilt-chronicle',name:'The gilded roof over the Chronicle Hall',kind:'roofhall',x:0,z:120,w:22,d:16,floors:1,storey:5,base:40+9*4.5,types:['religious'],sheet:'LR',gilt:true});
 b({id:'gilt-founders-w',name:"The gilded roof over the West Founders' hall",kind:'roofhall',x:-36,z:126,w:14,d:12,floors:1,storey:4.5,base:40+9*4.5,types:['funerary','religious'],sheet:'LR',gilt:true});
 b({id:'gilt-founders-e',name:"The gilded roof over the East Founders' hall",kind:'roofhall',x:36,z:126,w:14,d:12,floors:1,storey:4.5,base:40+9*4.5,types:['funerary','religious'],sheet:'LR',gilt:true});
-b({id:'hall-of-hours',name:'The Hall of Hours (the water, sand and Ancient clocks; its dial faces the valley)',kind:'drum',x:-62,z:118,r:8,floors:2,storey:4.5,base:40+6*4.5,types:['civic'],sheet:'LR',cone:7,lantern:false,clock:true});
-b({id:'observatory',name:'The Observatory',kind:'drum',x:66,z:120,r:6.5,floors:2,storey:4.5,base:40+6*4.5,types:['civic'],sheet:'LR',cone:0,dome:true});
+// (x -71: at -62 its drum stood 3 m into the Red Palace's west wall; on the wing's roof now, 2026-10-19)
+b({id:'hall-of-hours',name:'The Hall of Hours (the water, sand and Ancient clocks; its dial faces the valley)',kind:'drum',x:-71,z:118,r:8,floors:2,storey:4.5,base:40+6*4.5,types:['civic'],sheet:'LR',cone:7,lantern:false,clock:true});
+// (x 72: at 66 its drum stood in the Red Palace's east wall; on the wing's roof now, 2026-10-19)
+b({id:'observatory',name:'The Observatory',kind:'drum',x:72,z:120,r:6.5,floors:2,storey:4.5,base:40+6*4.5,types:['civic'],sheet:'LR',cone:0,dome:true});
 b({id:'eastern-watch',name:"The Eastern Watch (the Order's bell; instruments that read the Lizardmen's strangeness)",kind:'louvre',r:5.4,x:96,z:118,w:11,d:11,floors:11,storey:4.5,base:'rock',types:['civic','religious'],sheet:'LR'});
 b({id:'meditation',name:"The masters' meditation cells (the rear terrace)",kind:'house',x:-70,z:168,w:44,d:12,floors:1,storey:3.6,base:'rock',types:['religious','dwelling-single'],sheet:'LR'});
 b({id:'rear-shrine',name:'The rear shrine and the spring house',kind:'house',x:52,z:170,w:24,d:14,floors:1,storey:4.5,base:'rock',types:['religious'],sheet:'R1'});
@@ -290,7 +294,7 @@ P.PLACES=[
  {id:'roof',activity:'STUDY',x:-58,z:60,y:40+5*4.5,r:14,cap:20,name:'The White Palace\'s roof terraces (reading in the sun)'},
  {id:'wheel',activity:'TURN_WHEEL',x:0,z:160,y:-62,r:11,cap:3,name:'The Procrastinator (the keepers at the wheel)'},
  {id:'vault',activity:'KEEP',x:-16,z:88,y:-14,r:12,cap:6,name:'The open vault'},
- {id:'assembly',activity:'PRAY',x:0,z:84,y:'rock',r:15,cap:300,indoor:true,name:'The Great Assembly Hall'},
+ {id:'assembly',activity:'PRAY',x:0,z:82,y:'rock',r:15,cap:300,indoor:true,name:'The Great Assembly Hall'},
  {id:'cells',activity:'SLEEP',x:-60,z:58,y:'rock',r:30,cap:300,indoor:true,name:'The cells'},
  {id:'library',activity:'STUDY_IN',x:60,z:58,y:'rock',r:20,cap:80,indoor:true,name:'The library and the scriptorium'},
  {id:'refectory',activity:'EAT',x:40,z:40,y:'rock',r:20,cap:300,indoor:true,name:'The refectory'},

@@ -138,7 +138,9 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
  blk(-80,80,z0,C.z0,RG.front,{winSides:'ns',blueCourse:true});
  for(const s of [-1,1]){const xo0=s<0?-95:80,xo1=s<0?-80:95,xi0=s<0?-80:C.x1,xi1=s<0?C.x0:80;
   blk(xo0,xo1,z0,z1,RG.outer,{winSides:s<0?'nws':'nes'});blk(xi0,xi1,C.z0,z1,RG.inner,{winSides:'nsew',rich:false});}
- blk(C.x0,C.x1,C.z1,z1,RG.back,{winSides:'n'});
+ // the back range in two wings either side of the Assembly drum (2026-10-19: one block across the court's head filled the
+ // drum's hall inside; the drum now stands between them)
+ {const A=LS.building('assembly'),xa=A.r+.6;blk(C.x0,-xa,C.z1,z1,RG.back,{winSides:'nw'});blk(xa,C.x1,C.z1,z1,RG.back,{winSides:'ne'});}
  // the loggia over the court (L4): a row of lacquered columns along the front range's roof
  const yL=T+RG.front*st+1.2;for(let x=-30;x<=30;x+=4)ARCH.cyl('wood',x,yL,z0+2,.2,.18,3.2,{seg:6,col:LSP.wood});
  ARCH.box('wood',0,yL+3.2,z0+2,64,.35,3,{col:LSP.woodDark});
@@ -164,7 +166,7 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
    const q0=[p0[2],p0[3]],q1=[p1[2],p1[3]];
    ARCH.quad('paving',[p1[0],y+st,p1[1]],[p0[0],y+st,p0[1]],[q0[0],y+st,q0[1]],[q1[0],y+st,q1[1]],LSP.granite);
    ARCH.quad('paving',[q1[0],y+st-.3,q1[1]],[q0[0],y+st-.3,q0[1]],[p0[0],y+st-.3,p0[1]],[p1[0],y+st-.3,p1[1]],LSP.granite2);}}
- lsDecal(SIGNS.sign('The Debate Court','Seen, said, inferred: say which. The examination is held here at the change of the year.'),0,T+2.2,C.z1-1.4,4.4,2.2,0,-1,{label:'The Debate Court\'s board'});})();
+ lsDecal(SIGNS.sign('The Debate Court','Seen, said, inferred: say which. The examination is held here at the change of the year.'),22,T+2.2,C.z1-1.4,4.4,2.2,0,-1,{label:'The Debate Court\'s board'});})();
 
 // ---------------------------------------------------------------- the drum halls: the Assembly, the Hall of Hours, the Observatory
 // the chapter house's round halls (ROOMS.md section 1): red fired brick on a granite plinth, the round relief-ringed
@@ -180,9 +182,14 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
 
 // ---------------------------------------------------------------- the Red Palace (R1-R3) and its wings; the gilded roofs over it
 (function(){const T=LS.ROCK.top;
- ['red-wings','red-palace'].forEach(id=>{const B=LS.building(id),y=LS.baseY(B),yg=T-.5;
-  lsBlock(B.x,B.z,B.w,B.d,yg,y,B.floors,B.storey,{col:LSP.red,rich:true,roundels:true,blueCourse:true,batter:B.floors*B.storey*.05,
-   round:!!B.roundWindows,roundFrom:4,winFrom:id==='red-palace'?3:2,win:{spacing:4.4}});});
+ // the wings are two blocks either side of the palace (2026-10-19: one block across the whole width ran its north face, its
+ // windows and its string course through the palace's rooms)
+ {const P=LS.building('red-palace'),W=LS.building('red-wings'),y=LS.baseY(W),ww=(W.w-P.w)/2;
+  for(const s of [-1,1])lsBlock(W.x+s*(P.w/2+ww/2),W.z,ww,W.d,T-.5,y,W.floors,W.storey,{col:LSP.red,rich:true,roundels:true,blueCourse:true,batter:W.floors*W.storey*.05,
+   winFrom:2,win:{spacing:4.4},winSides:s<0?'nws':'nes'});}
+ {const B=LS.building('red-palace'),y=LS.baseY(B);
+  lsBlock(B.x,B.z,B.w,B.d,T-.5,y,B.floors,B.storey,{col:LSP.red,rich:true,roundels:true,blueCourse:true,batter:B.floors*B.storey*.05,
+   round:!!B.roundWindows,roundFrom:4,winFrom:3,win:{spacing:4.4}});}
  // the white lower storeys of the Red Palace's front (the Potala's Red Palace stands on white)
  {const B=LS.building('red-palace');ARCH.box('wall',B.x,T,B.z-B.d/2+.4,B.w-.2,3*B.storey,1,{col:LSP.white,top:false,sides:'n'});
   lsWindows(B.x+B.w/2-2,B.z-B.d/2-.15,B.x-B.w/2+2,B.z-B.d/2-.15,0,-1,T,3,B.storey,{spacing:4.4});}
@@ -463,11 +470,13 @@ function monasteryChecks(add){add('every building a core/tags record of the Orde
  add('the climb is the rank (each threshold higher)',MCHK.climb());
  if(typeof farmChecks==='function')farmChecks(add);
  if(typeof waterChecks==='function')waterChecks(add);
+ if(typeof interiorChecks==='function')interiorChecks(add);
  if(typeof vaultChecks==='function')vaultChecks(add);}
 function monasteryNegatives(add){add('a building recorded as an Ancients one',MCHK.records(LS.BUILDINGS.concat([{id:'not-recorded'}])));
  add('a rammed-earth granary',MCHK.noEarth([{id:'x',name:'a rammed-earth granary'}],['wall']));
  add('the Red Palace given one storey (below the White)',(function(){const r=LS.building('red-palace'),f=r.floors;r.floors=1;const o=MCHK.climb();r.floors=f;return o;})());
  if(typeof farmNegatives==='function')farmNegatives(add);
  if(typeof waterNegatives==='function')waterNegatives(add);
+ if(typeof interiorNegatives==='function')interiorNegatives(add);
  if(typeof vaultNegatives==='function')vaultNegatives(add);}
 _mark('monastery');

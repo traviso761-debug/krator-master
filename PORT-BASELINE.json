@@ -297,8 +297,8 @@
    "sha256": "cd0bd6263cc72f51536fc129a05ce6600b6272b60ba15c33be5ad1d4d12b2714"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1681599,
-   "sha256": "1f1dac4edb9f7b8c5e829e168a867f467aa1384fd8e49d83caf7540f0e3c9c98"
+   "bytes": 1705034,
+   "sha256": "13fa540b713f5f5fa5cde07b3b9a819d041f5ed6fe5c080d59aad0578f320be2"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2554507,
@@ -317,8 +317,8 @@
    "sha256": "98434aa041ed480a93f3d0c3b0346a5db5e0b0ffdccd312c69404fdd76aaf8bb"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 9695438,
-   "sha256": "b99d6b39beb7cbf5f4fe20f97debe72accddc8e32be681a1d3c3e1245df34f72"
+   "bytes": 9718873,
+   "sha256": "1e6a3556a88839bffcf2802ce4becfae30a09270c5e483a7d856cf49552ccd9f"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 246684,
@@ -465,8 +465,8 @@
    "sha256": "b5ed935bcf91dc1831484f57c831217ab1bc9d622d129635b622145af2e0a037"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 1226237,
-   "sha256": "1e09c5a9a0095aecd1c4c603f55f024da9c43e36dd224fcfeb59261f3562a5a4"
+   "bytes": 2502379,
+   "sha256": "b6868837f304cb5423b5db9fc3c05346c52bd3383565270d99b9eedb694011a1"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9035356,
