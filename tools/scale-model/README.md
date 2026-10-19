@@ -228,13 +228,54 @@ rain recomputed for the land they cut (4.21: passes 2 and 3 agree to 0.08 mm on 
   1,620 km2 (the abyss's rebuilt lakes hold what used to reach it in excess). Kept as
   `lakes-4.21.compare.json` and `lakes-4.21.diff.jpg` (blue both, orange gained, yellow lost); the swipe page is the
   "Krator Lakes in Balance" artifact. Nothing on the model page changes.
+- **Region 65 lowered** (`LOWER`; the owner: down to the abyss's level, its edges smoothed). The region's ground goes
+  down to the median of its floor (-2,319 m), keeping 4% of its height over it; the land outside eases down to it over
+  4 cells (a smoothstep) and the band is blurred, so no step is left; nothing is raised. Its east side was the trench's
+  wall (to +433 m): lowered by up to 2,642 m, 6,369 km2 by more than 10 m. It runs before the abyss's lakes are laid out,
+  so its new floor takes part in them, and in the rain, rivers and climate.
 - **The climate** (step 7): wherever 4.21 moved the ground or a water surface (the gorges, the raised and filled beds,
   the abyss's floor, the dried and settled lakes), the temperatures lapse with it (6.5 C per km) and the rain, climate
   class and zone are recomputed from the unchanged land most like each cell (`edit_heights.reclimate`, as 4.18-4.20
-  did); the rain and climate maps are re-lit and repainted. The abyss's rebuilt floor takes the page's own rain there,
-  smoothed over the floor (a filled pit is still the floor; left to its look-alikes its rain swung by up to 2,850 mm
-  with where the lakes were laid, and the lakes with it). 45,800 map px recomputed, 12,700 changed class; the joined
-  island lake now stands at -1,810 m over 3,963 km2 on that rain.
+  did); the rain and climate maps are re-lit and repainted. The abyss's rebuilt floor takes its rain from 4.20's own
+  lake effect over today's lakes (`lake_rain`; the owner: desert spits between the new lakes). On 4.20 the floor is
+  wet beside its lakes (median ~1,460 mm within 4 km, half the wet abyssal class XA) and dry far from them (~200-450
+  mm): the floor's rain is a dry background (4.20's rain on floor land far from its water) times the ratio 4.20's floor
+  shows at each share of water within ~12 km, made monotone, over the final lakes; `reclimate`'s `force_rain` sets it
+  before the class is chosen, so the class follows it. Land between the lakes now reads ~1,500 mm, 62% XA (4.20's own
+  spits: ~1,690 mm, 57% XA). The lake effect feeds back on the lakes, so the build runs three times (`--rain`).
+- **The Bowl's lakes in their own look** (`LAKE_STYLE`; the owner: all alike, with the rim). The Bowl's lakes grew and
+  joined and laid an arm east; today's water there is painted as the Bowl's own 4.20 lakes were, the colour at each
+  distance from the shore sampled from them: an ochre salt rim ~5 px inside the shore, a teal core, a pale salt flat
+  ~8 px outside fading into the ground by ~14 px (`lake_style`; the rim narrowed on water too narrow for it, the fine
+  texture kept), on the satellite and relief maps.
+- **The Lake of Shim** (`CARVE`; the owner's to-do and the region's note, 2026-10-18). Carved in its outline (465 km2)
+  as features.py carved the Bay of Voth, at the land's level there: the level of the water it opens into, the SW
+  lowlands' lake (its lowest shore, so it holds), the bed 3 m under it at the outline and 25 m in the middle, the banks
+  outside easing down to 25 m over it within 2 px. It settles with that lake (-9 m) as its north lobe at the outlet, the
+  Shim river entering from the lake to the south and leaving north down the outlet's gorge; Shim (382,788) stands dry on
+  its eastern shore.
+- **Shallow beds the abyss's lakes spread over** (`ABYSS_LAKES['beds']`; the owner: regions 'lower' and 'lower2'). After
+  the lakes are laid out, each region is brought down under the level of the largest lake beside it, 2 m at its
+  outline and 15 m in the middle, and kept out of the old beds' filling; the water routed onto the floor then fills
+  them as far as it reaches: 'lower' about half (the joined island lake balances at ~-1,804 m, under the bed's shallow
+  edge), 'lower2' about three-fifths. The abyss's lakes hold ~10,400 km2 (from ~9,500). With the beds the lake effect
+  settles more slowly: the fifth pass is kept (rain 0.13 mm from the fourth on average, 131 mm at most).
+- **Dip Rivrh, Almua's river** (`NAMED_COURSES`; the owner, 2026-10-18, `settlements/almua/PLAN.md`). The coast cell within
+  10 px of Almua (446,553) best drained into the Ring Sea is found, and its main stem traced upstream by catchment; a
+  course already drawn down that valley takes the name if it reaches the mouth, else the named course starts below the
+  last cell they share (its bed cut to fall 0.5 m a cell where a hollow is crossed). It is the outflow of the lake Drïm
+  Rivrh runs through: 89 km from the lake (-1,500 m) to the coast at px 446.6,548.8, ~25,000 km2 of catchment and
+  ~38 m3/s at the mouth, the course marked `name_fixed` with its gloss so `river_names.py` keeps the name.
+- **The satellite map audited** (`sat_audit.py <4.21 page> <4.20 page> <out dir>`, kept as `satellite-audit-4.21.json`).
+  Fixed from it: the water flag in the heights raster now follows the water (9,500 cells of the settled and new lakes
+  were water only in the water raster; `extract_region.py` reads that flag); water paint on ground made dry where 4.21
+  changed the land (the dried and filled beds, the lowered region, the sea's arms the Beast Riders' grading made land) is
+  repainted from dry, unwatered land round it, 2,400 px new since 4.20 down to 400; and water laid where the map painted
+  land (the settled, grown and new lakes) takes the colour of the lake paint round it (22,500 px), so with the water
+  layer off the satellite shows today's shores. Left as 4.20 had them: ~2,500 px of water paint on dry land outside the
+  edits (most round the Iziz plain's salt depression, and the Ring Sea's eastern shore) and 78 cells the heights flag as
+  water and the water raster does not. The edited areas' edges are no sharper than the map's own (95th percentile colour
+  step 12.7 against 16.0).
 - `extract_region.py` now carries every river at its own width and depth with its discharge per vertex (`rivers`), and
   the dry valleys as `valleys` (beds without water); the escarpment is kept off the owner's drawn courses only.
   `openworld/little-demo/data` is still from 4.19: refresh it (its README) to place the rivers there.
@@ -253,6 +294,8 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
 
 ## To do on the model (owner's list)
 
+- **Done in 4.21 (the owner asked, 2026-10-19): the Lake of Shim**, above. Still to do from this item: refresh
+  `openworld/little-demo/source/` from the live collections. Almua's river is drawn (Dip Rivrh, above).
 - **4.22: the Lake of Shim** (when the Shim build is done, settlements/shim/PLAN.md; the owner, 2026-10-18). The region
   polygon "Lake of Shim" (`rshimlake0001`, about 32 by 12 km, px 376-382 by 780-796) is already in the artifact's
   `regions` collection and Shim's point (`sshimrest01`, 382,788) sits on its eastern shore. Carve it as the Bay of Voth
@@ -261,4 +304,3 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   re-run the river audit (`edit_rivers.py`) so the Shim river (r000) enters from the south and leaves north, record
   the lake with the others, relight, reclimate, repaint, publish, and refresh `openworld/little-demo/source/` from
   the live collections (which have lost the 2026-10-05 export's duplicate settlements and hold Voth at 470,688).
-  Almua's river (`Dip Rivrh`, `river_names.py`) wants a course drawn to its mouth at 446,553 in the same pass.
