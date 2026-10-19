@@ -10,7 +10,7 @@ status at the top, then sections 7 to 10. `core/hamlet/PLAN.md` holds the hinter
 | P1-P5 | done: the Islanders kit, the ringisles biome, the open world, the site planner, the owner's drawn towns | `kits/islanders`, `biomes/ringisles`, `openworld/isle-demo`, `site/isle-site.json` |
 | P6 | done: both towns on `core/city` (`dist/isle-city.html`), Ridertown on the Beast Rider ports | `src/20-34`, `58`, `60`, `98` |
 | P6b | in place: the city page's `verify.py --assert` checks `registry, materials, terrain, city` and reports the M6 target (3 of 13 met) | `verify.py` `EXPORT_PROFILE`, `EXPORT_TARGET` |
-| P7a | partly done: settlements and an economy per settlement in `core/simulation` (opt-in), stocks per settlement, the three levels in `SCHEMA.md`, seven tests | `core/simulation/77-sim-6-economy.js` (end), `77-sim-6-items.js`, `77-sim-7-stocks.js`, `test-sim.js`, `SCHEMA.md` |
+| P7a | done: settlements, an economy, stocks and the items' books per settlement; the population dealt per town; the search scoped to one's own town; trade between settlements (`SIM.trade`, a timer or a transport line); the three levels in `SCHEMA.md`; 30 two-settlement checks | `core/simulation/77-sim-6-trade.js`, `77-sim-6-economy.js` (end), `77-sim-6-population.js`, `77-sim-7-stocks.js` (end), `test-sim.js`, `SCHEMA.md` |
 | Hamlets H1-H4 | done: four resource villages in the open world (salt 112, mine 307, lumber 263, ranch 245), felling on the 72-minute clock | `core/hamlet`, `openworld/isle-demo/src/48-world-hamlets.js`, `88h-world-hamlets.js` |
 
 **Decided by the owner (2026-10-19):** the M6 export case is the region's open world, not a page per city (PLAN.md
@@ -19,20 +19,18 @@ registers the export's `city` section for every instance on a page.
 
 ## Next, in order
 
-1. **P7a's rest** (PLAN.md section 9): the population deal per settlement (`SIM.populate` and the hosts' dealing), the
-   resolver's place search scoped to one's own town first, **trade between settlements** (a carrier whose stops are two
-   settlements' places; departure buys from the origin's warehouses, arrival lands in the destination's; exported,
-   imported and in transit in the books; gated by the factions' `trade` relation), and the items module's holdings split
-   by settlement. Keep it opt-in; prove an unkeyed page unchanged by diffing Voth's whole `verify.py --assert` output
-   against `main`'s page with the timings stripped (the method used for P7a).
-2. **P7b, the isle host:** the towns' places, people, items and economy declared on the city page, Valapo first (the
+1. **P7b, the isle host:** the towns' places, people, items and economy declared on the city page, Valapo first (the
    template is Dhelv's `74-dhelv-sim.js`; the key map from Voth's census trades to Islander keys is `IS_TRADES`).
-   Populations: Kautoa about 6,300, Valapo about 2,150 (P6's census is to be re-tuned to these).
-3. **Move the towns into the open world** (their `KCITY` plans run live there, as the hamlets do), then move the export
+   Populations: Kautoa about 6,300, Valapo about 2,150 (P6's census is to be re-tuned to these). Each town's roles
+   carry `settlement`, and `SIM.populate({settlement, prefix})` runs once a town. Then P7c: the canoe line as a
+   `SIM.transport` between the two trade landings and `SIM.trade({line})` on it (the timetable is the owner's: PLAN.md
+   section 9). Any core/simulation change: diff Voth's whole `verify.py --assert` output against `main`'s page with the
+   timings stripped (the method P7a used).
+2. **Move the towns into the open world** (their `KCITY` plans run live there, as the hamlets do), then move the export
    profile to `openworld/isle-demo/verify.py` and grow it.
-4. **The compliance items** in PLAN.md section 10: the city page onto `core/host`, its sky and sea, `terrain=field`, and
+3. **The compliance items** in PLAN.md section 10: the city page onto `core/host`, its sky and sea, `terrain=field`, and
    little-demo's shared fragments (ask: both worlds' hashes move).
-5. **Hamlets:** the `gather` tag on the other biome kits (only ringisles has it); fishing and farming villages (H6); the
+4. **Hamlets:** the `gather` tag on the other biome kits (only ringisles has it); fishing and farming villages (H6); the
    villages in the sim once P7a's trade lands (H5).
 
 ## Watch out for

@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-7-stocks.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-7-stocks.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -499,6 +499,95 @@ function world(seed){
  ok('the stocks split by town: Kautoa\'s rows count rice, Valapo\'s coffee',SB&&SB.kautoa&&SB.valapo&&sk.by.rice&&sk.by.rice.total>0&&(!sk.by.coffee||sk.by.coffee.storage===0)&&sv.by.coffee&&sv.by.coffee.total>0,!SB);
 }
 
+
+// the population dealt per settlement and the search scoped (P7a items 3 and 4): a town's role lives in its own town's
+// homes and works in its own town; an actor looks for a place in its own town first, then anywhere
+{const {S,clock}=world(93);
+ ['WORK'].forEach(a=>S.activity({id:a}));
+ S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+ S.place({id:'kHome',kind:'home',x:0,z:0,activities:{SLEEP:3},settlement:'kautoa'});S.place({id:'vHome',kind:'home',x:150,z:0,activities:{SLEEP:4},settlement:'valapo'});
+ S.place({id:'kWork',kind:'field',x:0,z:0,activities:{WORK:5},open:[0,24],settlement:'kautoa'});S.place({id:'aWork',kind:'field',x:150,z:0,activities:{WORK:5},open:[0,24],settlement:'valapo'});
+ S.place({id:'kTav',kind:'tavern',x:140,z:0,activities:{SOCIALIZE:6},open:[0,24],settlement:'kautoa'});S.place({id:'vTav',kind:'tavern',x:10,z:0,activities:{SOCIALIZE:6},open:[0,24],settlement:'valapo'});
+ S.role({id:'kGrower',org:'folk',settlement:'kautoa',count:5,homes:['home'],work:{kinds:['field'],act:'WORK'},sched:[[0,'SOCIALIZE']]});
+ S.role({id:'vGrower',org:'folk',settlement:'valapo',count:2,homes:['home'],work:{kinds:['field'],act:'WORK'},sched:[[0,'SOCIALIZE']]});
+ const pk=S.populate({prefix:'k',settlement:'kautoa'}),pv=S.populate({prefix:'v',settlement:'valapo'});
+ const K=S.all('actor').filter(a=>a.role==='kGrower'),V=S.all('actor').filter(a=>a.role==='vGrower');
+ ok('a town\'s role is housed in its own town only: Kautoa\'s three beds take three of five, none overflows to Valapo',K.length===3&&K.every(a=>a.home==='kHome')&&pk.homeless.indexOf('kGrower')>=0&&pk.bySettlement.kautoa===3,K.some(a=>a.home==='vHome'));
+ ok('and works in its home\'s town (not Valapo\'s field, though it sorts first)',K.every(a=>a.work==='kWork')&&V.every(a=>a.work==='aWork')&&pv.bySettlement.valapo===2,K.some(a=>a.work==='aWork'));
+ ok('a deal for one town counts that town\'s beds only',pk.beds===3&&pv.beds===4,pk.beds===7);
+ clock.h=1;const k0=K[0];S.decide(k0,S.minute(),clock.t);const nearAny=S.placesFor('SOCIALIZE',k0,1,{near:[0,0],limit:3})[0];
+ ok('the search: a Kautoan socializes in Kautoa\'s tavern, the far one, not Valapo\'s at its door',k0.place==='kTav'&&nearAny&&nearAny.id==='vTav',k0.place==='vTav');
+ S.R.place.kTav.closed=true;const k1=K[1];S.decide(k1,S.minute(),clock.t);
+ ok('with none open in its own town it looks anywhere',k1.place==='vTav'||k1.place==='market',k1.place==='kTav');
+ S.R.place.kTav.closed=false;}
+
+// trade between settlements (P7a item 6, 77-sim-6-trade.js): a carrier leaves one town with what the other wants and
+// this one can spare; at sea the load is in neither town's stock but counted in transit; it lands in the other's
+// landing; the books balance in each town; a load is always in one town, at sea, or in the other; trade shut is refused
+{const {S,clock}=world(95);
+ ['EAT'].forEach(a=>S.activity({id:a}));
+ S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+ S.place({id:'kShed',kind:'warehouse',x:0,z:0,activities:{},settlement:'kautoa'});S.place({id:'vShed',kind:'warehouse',x:150,z:0,activities:{},settlement:'valapo'});
+ S.place({id:'vQuay',kind:'quay',x:150,z:0,activities:{},settlement:'valapo'});
+ S.place({id:'kHome',kind:'home',x:0,z:0,activities:{SLEEP:2,EAT:2},settlement:'kautoa'});S.place({id:'vHome',kind:'home',x:150,z:0,activities:{SLEEP:2,EAT:2},settlement:'valapo'});
+ const cfg=()=>({goods:{rice:{import:{route:'road',lot:50}},coffee:{}},window:1,imports:{days:3,scan:60},routes:{road:{minutes:600}}});
+ const EK=S.economy(cfg(),{settlement:'kautoa'}),EV=S.economy(cfg(),{settlement:'valapo'});
+ S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.store('vQuay',{kind:'site'});
+ S.R.place.kShed.stock={rice:400};S.R.place.vShed.stock={coffee:400,rice:10};
+ const R=S.trade({id:'sea',stops:[{settlement:'kautoa',place:'kShed'},{settlement:'valapo',place:'vQuay'}],cap:200,minutes:600,mins:100});
+ // each town eats its own and wants the other's: Valapo has a little rice and sends for more by import, Kautoa no coffee
+ const run=(h0,h1)=>{for(let m=h0*60;m<h1*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;
+   if(m%60===0){S.supply('rice',1,false,'kautoa');S.supply('rice',1,false,'valapo');S.supply('coffee',1,false,'valapo');S.supply('coffee',2,false,'kautoa');} S.step();}};
+ run(0,1);
+ ok('docked, it has sailed nothing yet',R.voyages===0&&!EK.exported.rice,R.voyages>0);
+ run(1,7);
+ const sk=S.stocks('kautoa'),sv=S.stocks('valapo'),rk=sk.by.rice,rv=sv.by.rice,sea=R.carriers[0].cargo.reduce((n,c)=>n+(c.good==='rice'?c.n:0),0);
+ ok('leaving Kautoa it took rice for Valapo (what Valapo wants and Kautoa can spare), booked exported in Kautoa',R.voyages===1&&sea>0&&sea<=200&&EK.exported.rice===sea&&!EK.exported.coffee,sea===0);
+ ok('at sea: outbound in Kautoa\'s row, inbound in Valapo\'s, and in neither town\'s total',rk.outbound===sea&&rv.inbound===sea&&rv.total===S.stockOf('rice','valapo')&&rk.total===S.stockOf('rice','kautoa'),rv.total>=sea);
+ ok('Kautoa keeps its floor: no more than its stock less six days of its own want',S.stockOf('rice','kautoa')>=6*24*0.9,S.stockOf('rice','kautoa')<100);
+ ok('Kautoa\'s day balances with the load gone (change = made + imported - exported - consumed)',rk.today.change===rk.today.made+rk.today.imported-rk.today.exported-rk.today.consumed&&rk.today.exported===sea,rk.today.exported!==sea);
+ ok('while it is at sea Valapo, under three days of rice in store, sends for none by import: the load at sea counts',S.tradeInbound('rice','valapo')===sea&&S.economyDays('rice','valapo')<3&&!EV.inflight.length&&!EV.sent,EV.sent>0);
+ run(7,13);
+ const rv2=S.stocks('valapo').by.rice;
+ ok('arriving, it lands in Valapo\'s quay (the landing\'s store), booked imported in Valapo',S.R.place.vQuay.stock.rice===sea&&EV.imported.rice===sea&&R.landed['kautoa>valapo'].rice===sea&&rv2.inbound===0,S.R.place.vQuay.stock.rice!==sea);
+ ok('Valapo\'s day balances with the load landed',rv2.today.change===rv2.today.made+rv2.today.imported-rv2.today.exported-rv2.today.consumed&&rv2.today.imported===sea,rv2.today.imported!==sea);
+ run(13,26);
+ ok('and back: leaving Valapo with coffee, landing in Kautoa\'s shed (Kautoa\'s landing is its warehouse)',(R.landed['valapo>kautoa']||{}).coffee>0&&EK.imported.coffee===R.landed['valapo>kautoa'].coffee&&(S.R.place.kShed.stock.coffee||0)>0,!(EK.imported.coffee>0));
+ const acct=g=>['kautoa>valapo','valapo>kautoa'].every(k=>((R.shipped[k]||{})[g]||0)===((R.landed[k]||{})[g]||0)+R.carriers.filter(C=>C.to!=null&&(R.stops[C.from].settlement+'>'+R.stops[C.to].settlement)===k).reduce((n,C)=>n+C.cargo.filter(c=>c.good===g).reduce((m,c)=>m+c.n,0),0));
+ ok('every load is accounted for: shipped = landed + at sea, each way',acct('rice')&&acct('coffee'),!acct('rice'));
+ const rep=S.tradeReport('sea');ok('the report: voyages, what went each way',rep.voyages===3&&rep.shipped['kautoa>valapo'].rice>0&&rep.carriers.length===1,!rep);
+ // the trade relation: a friendly faction trades; trade shut (relation trade:false) or a hostile one is refused
+ S.R.settlement.valapo.faction='nomads';const fr=S.trades('kautoa','valapo');S.R.relation['town>nomads'].trade=false;const shut=S.trades('kautoa','valapo');
+ S.R.settlement.valapo.faction='raiders';const host=S.trades('kautoa','valapo');
+ ok('trade between friendly factions is open; shut by the relation, or between hostile ones, it is not',fr&&!shut&&!host,!fr||shut);
+ const x0=EK.exported.rice,v0=R.voyages,f0=R.refused;run(26,50);
+ ok('refused: the carrier keeps its round but carries nothing, and nothing more is exported',R.refused>f0&&R.voyages>v0&&EK.exported.rice===x0,EK.exported.rice!==x0);
+ // the households and the items' books by town
+ S.items({kinds:{rice:{cat:'food',food:true},coffee:{cat:'food',food:true}},free:['IDLE'],secPerMinute:1,meal:{mult:3,single:1,none:0.2,mess:3}});
+ S.R.place.kHome.store={rice:5};S.R.place.vHome.store={rice:7};
+ S.role({id:'eater',org:'folk',sched:[[0,'EAT']],prefers:{EAT:{pin:'home'}}});const ve=S.actor({id:'ve',role:'eater',home:'vHome'});ve.wanted=null;S.decide(ve,S.minute(),clock.t);
+ const I=S.ITEMS,hk=S.stocks('kautoa').by.rice;
+ ok('a household\'s food counts in its own town only (Kautoa\'s rice storage: its shed and its 5, not Valapo\'s)',hk.storage===S.stockOf('rice','kautoa')+5,hk.storage>S.stockOf('rice','kautoa')+5);
+ ok('a Valapan\'s meal at home is booked to Valapo\'s items books, not Kautoa\'s',I.statsBy&&(I.statsBy.valapo.eaten.rice||0)>0&&!I.statsBy.kautoa,!!(I.statsBy&&I.statsBy.kautoa));}
+
+// trade on a transport line: the carrier is the line's vehicle; a load leaves as it leaves a landing and lands as it docks
+{const {S,clock}=world(97);
+ S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+ S.place({id:'kShed',kind:'warehouse',x:0,z:0,activities:{},settlement:'kautoa'});S.place({id:'vShed',kind:'warehouse',x:150,z:0,activities:{},settlement:'valapo'});
+ const cfg=()=>({goods:{rice:{}},window:1});const EK=S.economy(cfg(),{settlement:'kautoa'}),EV=S.economy(cfg(),{settlement:'valapo'});
+ S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.R.place.kShed.stock={rice:500};
+ S.transport({id:'canoe',layer:'pedestrian',stops:['kShed','vShed'],speed:2,dwell:60});S.transportBake('canoe');
+ const R=S.trade({id:'line',line:'canoe',stops:[{settlement:'kautoa',place:'kShed'},{settlement:'valapo',place:'vShed'}],cap:20});
+ let seenSea=false,sumOk=true;
+ for(let m=0;m<240;m++){clock.h=(m%1440)/60;clock.t+=40;if(m%10===0)S.supply('rice',1,false,'valapo');S.step();
+   const C=R.carriers[0],sea=C.cargo.reduce((n,c)=>n+c.n,0);if(sea>0)seenSea=true;
+   if(S.stockOf('rice','kautoa')+sea+S.stockOf('rice','valapo')+(EV.used.rice||0)!==500) sumOk=false;}
+ const out=S.LOG.filter(e=>e.kind==='trade out'&&e.route==='line'),inn=S.LOG.filter(e=>e.kind==='trade in'&&e.route==='line');
+ ok('on a line: loads leave Kautoa as the vehicle leaves and land in Valapo as it docks',seenSea&&EV.imported.rice>0&&(R.landed['kautoa>valapo']||{}).rice===EV.imported.rice&&inn.length>=1&&out.length>=inn.length,!(EV.imported.rice>0));
+ ok('and rice is conserved every minute: Kautoa\'s, at sea, Valapo\'s and used add to the 500 there were',sumOk,!sumOk);}
+
+// a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
+{const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 
 // the economy's carriers: an import comes as a caravan by its port, unloads into the caravanserai's store on arrival,
 // stays, buys the city's most plentiful made good as it leaves, and goes out the way it came
