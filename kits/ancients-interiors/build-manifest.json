@@ -1,6 +1,6 @@
 {
  "dist/ancients-interiors-core.js": "31c85e49a7e2",
- "dist/ancients-interiors.html": "d3bea7c39b3c",
+ "dist/ancients-interiors.html": "96baf5700361",
  "kits/interiors/adapters/catalog-adapter.js": "4509353a84c0",
  "kits/interiors/sets/noahs-regret.js": "962ec2af4090",
  "kits/interiors/src/10-core.js": "09e8810f26b0",
@@ -11,8 +11,9 @@
  "kits/interiors/src/46-planner.js": "681b19125de1",
  "kits/interiors/src/47-life.js": "e5f1f3aaae31",
  "kits/interiors/src/48-audit.js": "f59c1718660e",
- "kits/interiors/src/48b-sets.js": "8f3f951d845c",
+ "kits/interiors/src/48b-sets.js": "450c6ca913f2",
  "kits/interiors/src/49-exports.js": "aa12f0c1ef89",
+ "kits/interiors/src/49b-walk.js": "2f53b7133259",
  "kits/interiors/src/50-shell.js": "584635cc748c",
  "kits/interiors/src/55-cutaway.js": "e8796fbb1535",
  "src/00-head.html": "e52a109603ff",
