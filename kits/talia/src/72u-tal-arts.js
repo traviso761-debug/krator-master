@@ -114,14 +114,23 @@ function buildTalGlasshouse(G,o){reseed(9741+(o.v|0));const R=7.5,DH=4,Y0=.8,ZC=
  const wh=TA_WH(),or=TA_OR(),mb=vC(vPick(TAPAL.marble)),gi=vC(vPick(TAPAL.gilt)),st=TA_ST(),pane=vC(0xcfe6dc);
  vnReg('Glasshouse (civic)',0,ZC,R+1,16,{style:'byzantine'});vnReg('Glasshouse — the pool',0,PZ,8,1,{style:'byzantine'});
  vPst('taDrumM',0,0,ZC,R+2,Y0,mb);tanArcRun(0,Y0-.1,ZC,R+2,0,TAU,.4,.12,'vPlaster',or);vnStairs(0,0,ZC+R+2+.64,0,4,Y0,4,'taMarble',mb);
- tanDrum(0,Y0,ZC,R,DH,14,wh,{fill:'P',band:gi,gilt:true,pil:true,pilC:wh,capC:gi,round:true,ww:1.5,wh:2.8});
+ tanDrum(0,Y0,ZC,R,DH,14,wh,{fill:'P',band:gi,gilt:true,pil:true,pilC:wh,capC:gi,round:true,ww:1.5,wh:2.8,hollow:true});
  kput('taDomeGl',[0,Y0+DH,ZC],null,[R+.1,DGH,R+.1],pane);
+ /* the planting (simple stand-ins: the botanic species are a later pass, KNOWN_ISSUES.md) */
+ const trunk=vC(0x8a7a5a),soil=vC(0x4a3a2a),G1=vC(0x4e7a3a),G2=vC(0x5f8f44),G3=vC(0x3f6b32);
+ const palm=(x,y,z,h,r)=>{vPst('vPostB',x,y,z,.16,h,trunk);for(let k=0;k<8;k++){const a=k*TAU/8+rr(-.2,.2),p=[x+Math.sin(a)*r*.55,z+Math.cos(a)*r*.55];kput('vLeaf',[p[0],y+h-.15,p[1]],vQ(a,.45,0),[r*.22,.08,r*.6],k%2?G1:G2);}};
+ const banana=(x,y,z)=>{vPst('vPostB',x,y,z,.12,1.6,G3);for(let k=0;k<5;k++){const a=k*TAU/5+rr(-.3,.3),p=[x+Math.sin(a)*.5,z+Math.cos(a)*.5];kput('vLeaf',[p[0],y+1.9,p[1]],vQ(a,-.6,0),[.35,.06,.95],G2);}};
+ const shrub=(x,y,z,r)=>{for(let k=0;k<3;k++)kput('vLeaf',[x+rr(-r*.4,r*.4),y+r*.6+k*r*.25,z+rr(-r*.4,r*.4)],null,[r,r*.7,r],vPick([G1,G2,G3]));};
+ vPst('taDrumM',0,Y0,ZC,3.2,.45,mb);vPst('vPostS',0,Y0,ZC,3.0,.5,soil);palm(0,Y0+.5,ZC,7.6,3.4);
+ for(let k=0;k<4;k++){const a=k*TAU/4+.4;shrub(Math.sin(a)*1.8,Y0+.5,ZC+Math.cos(a)*1.8,.55);}
+ for(let k=0;k<8;k++){const a=k*TAU/8+.2,x=Math.sin(a)*5.4,z=ZC+Math.cos(a)*5.4;if(k%2)banana(x,Y0,z);else palm(x,Y0,z,4.2,2.2);shrub(Math.sin(a+.4)*6.3,Y0,ZC+Math.cos(a+.4)*6.3,.45);}
  for(let k=0;k<16;k++)kput('taRibGi',[0,Y0+DH,ZC],vQ(k*TAU/16,0,0),[R+.15,DGH+.05,R+.15],gi);
  kput('taRingGi',[0,Y0+DH,ZC],null,[R+.2,1.4,R+.2],gi);
  tanDrumDome(0,Y0+DH+DGH-.3,ZC,1.2,{drumH:1.3,n:6,kind:'onion',item:'taOnion',domeC:gi,lantern:false,finial:gi,fr:.18,band:gi,gilt:gi});
  // the wings: a low white wall, glazed uprights, a glass vault with gilt ribs, a glass end
  for(const s of[-1,1]){const x=s*WX;vB('taMarble',x,0,ZC,WL,Y0,6.6,0,mb);vB('vPlaster',x,Y0,ZC,WL,1.4,6,0,wh);vB('taPaneB',x,Y0+1.4,ZC,WL,1.6,5.8,0,pane);
   kput('taVaultGl',[x,Y0+3,ZC],vQ(Math.PI/2,0,0),[2.9,2.9,WL],pane);
+  for(let k=0;k<4;k++){const px=x-WL/2+1.1+k*(WL-2.2)/3;for(const sz of[-1,1]){tanPot(px,Y0+1.4,ZC+sz*2.0,.32);shrub(px,Y0+1.9,ZC+sz*2.0,.4);}}
   for(let k=0;k<5;k++)tanArcBand(x-WL/2+.4+k*(WL-.8)/4,Y0+3,ZC,Math.PI/2,2.95,.08,.08,.04,gi,0,Math.PI,10,'taGilt');
   tanDiscAt('taDiscP',x+s*WL/2,Y0+3,ZC,s*Math.PI/2,2.9,.03,.08,pane);}
  // the pool

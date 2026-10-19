@@ -48,3 +48,9 @@
       the mixed streets in targets/kit/89z-rows.js at their tier, re-verify, and close this entry.
 - [ ] Lit windows (rich and civic) keep the warm lit pane; their white glazing bars barely show on it by day.
 - [x] P7's gallery update: Krator Worlds S-Z version 8 (2026-10-19) carries the current page and card (gallery/README.md).
+- [x] Interiors showed from above and their floors flickered (the owner, 2026-10-19): a ceiling now closes every hollow body
+      under its top, and a thin slab across a room (a string course, a band) is drawn as a ring round it
+      (tanHollowTidy, 69u, run after each Talia builder).
+- [ ] The glasshouse's planting is simple stand-ins drawn on the page (palms, bananas, shrubs, potted ferns); the botanic
+      garden's species could come from a biome kit (as Voth's gardens take the swbay kit's).
+

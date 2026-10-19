@@ -92,7 +92,7 @@ kdef('taDrum',TADRUM,MAT.plaster);kdef('taDrumM',TADRUM,MAT.taMarble);
 // a plaster cone (the memorial's lathe spire, the chapel's rib spire)
 kdef('taConeP',TACONE,MAT.plaster);
 // glasshouse glass: a pale green-grey pane with a sheen, opaque (no sorting in the batch); tinted per instance
-MAT.taPane=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.55,roughness:.12,side:THREE.DoubleSide});
+MAT.taPane=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.15,roughness:.05,side:THREE.DoubleSide,transparent:true,opacity:.28,depthWrite:false});
 kdef('taDomeGl',VDOME,MAT.taPane);kdef('taDiscP',TADISC,MAT.taPane);kdef('taVaultGl',TAVAULT,MAT.taPane);kdef('taPaneB',VBOX,MAT.taPane);
 kdef('taRibI',TARIB,MAT.iron);
 // the cobalt glass carries its own colour (TAPAL.cobalt: no arch tints its fill); a double-sided copy for the pointed heads

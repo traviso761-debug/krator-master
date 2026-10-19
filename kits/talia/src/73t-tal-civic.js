@@ -18,7 +18,7 @@ function buildTalTemple(G,o){reseed(9751+(o.v|0));const P=3,BW=28,BD=30,H=14,Z0=
  for(const s of[-1,1]){kput('taMarble',[s*6.25,P/2+.45,PF+run/2],vQ(0,ang,0),[.5,.9,Math.hypot(run,P)+.2],mb);vB('taMarble',s*6.25,0,PF+run+.15,.6,1.0,.6,0,mb);kput('taGiltBall',[s*6.25,1.22,PF+run+.15],null,[.22,.22,.22],gi);
   tanBalustrade(s*11.8,P+.12,PF-.1,0,10.4,mb,1.0,{ball:gi,gilt:gi});tanBalustrade(s*(BW/2+2.9),P+.12,Z0,s*Math.PI/2,BD+3.8,mb,1.0,{ball:gi,gilt:gi});
   vnLampPost(s*7.6,0,PF+run+.6,3.6);}
- tanBalustrade(0,P+.12,Z0-BD/2-1.9,Math.PI,BW+5.8,mb,1.0,{ball:gi,gilt:gi});
+ for(const s of[-1,1])tanBalustrade(s*(9.3+(BW+5.8)/4-4.65),P+.12,Z0-BD/2-1.9,Math.PI,(BW+5.8)/2-9.3,mb,1.0,{ball:gi,gilt:gi});
  // the body: buttress pilasters and pointed cobalt windows down the sides, an orange coping
  vnBody('vPlaster',0,P+.12,Z0,BW,H,BD,0,wh,{t:.4});vB('vPlaster',0,YB,Z0,BW+.3,.3,BD+.3,0,or);
  for(const s of[-1,1]){for(let k=0;k<6;k++)tanPilaster(s*BW/2,P+.12,Z0-12.5+k*5,s*Math.PI/2,.9,H,wh,or);
@@ -39,7 +39,9 @@ function buildTalTemple(G,o){reseed(9751+(o.v|0));const P=3,BW=28,BD=30,H=14,Z0=
  vB('vPlaster',0,YB+.3,Z0,2*DR+2,1.6,2*DR+2,0,wh);vB('vPlaster',0,YB+1.9,Z0,2*DR+2.3,.2,2*DR+2.3,0,or);
  tanDrumDome(0,YB+2.1,Z0,DR,{drumH:5.5,n:16,kind:'egg',domeC:tile,ribs:16,gilt:gi,fill:'C',band:or,round:true,pil:true,pilC:wh});
  // the apse
- const AZ=Z0-BD/2;vPst('taDrum',0,P+.12,AZ,8,9,wh);tanDome(0,P+9.12,AZ,8.1,{kind:'hemi',h:5,c:tile,ribs:10,ribItem:'taRibGi',ribC:gi});
+ const AZ=Z0-BD/2,AR=9.4;vPst('taDrumM',0,0,AZ,AR,P,mb);vPst('taDrumM',0,P,AZ,AR+.1,.12,wh);
+ for(let k=0;k<12;k++){const a=1.82+(k+.5)*(4.46-1.82)/12,rr2=AR-.15;tanBalustrade(Math.sin(a)*rr2,P+.12,AZ+Math.cos(a)*rr2,a,2*rr2*Math.sin((4.46-1.82)/24)+.06,mb,1.0,{ball:gi,gilt:gi});}
+ vPst('taDrum',0,P+.12,AZ,8,9,wh);tanDome(0,P+9.12,AZ,8.1,{kind:'hemi',h:5,c:tile,ribs:10,ribItem:'taRibGi',ribC:gi});
  for(const a of[Math.PI-1.05,Math.PI-.52,Math.PI,Math.PI+.52,Math.PI+1.05])tanArch(Math.sin(a)*8,P+1.6,AZ+Math.cos(a)*8,a,1.4,5.6,{kind:'point',fill:'C',band:or,bw:.14});}
 
 // Chapel (refs/talia3 (2).jpg): a small white cube on a podium, a pointed portal with a cobalt transom, pointed cobalt
@@ -191,7 +193,7 @@ function buildTalSkyBridge(G,o){reseed(9791+(o.v|0));const L=o.len==null?14:o.le
   tanDoor(x,0,BW/2+.3,0,1.1,2.4,'vPlaster',or,wal,false);
   vB('vPlaster',x,Y+2.6,0,PW+.2,.25,BW+.8,0,or);tanDome(x,Y+2.85,0,1.4,{kind:'melon',c:tile,ribs:10,ribC:wh,finial:gi,fr:.08});}}
 
-VERN.def({key:'tal_temple',name:'Temple',family:'civic',tags:TA_TAG('byzantine','civic',['religious','civic'],true),w:36,d:42,h:40,build:buildTalTemple});
+VERN.def({key:'tal_temple',name:'Temple',family:'civic',tags:TA_TAG('byzantine','civic',['religious','civic'],true),w:36,d:58,h:40,build:buildTalTemple});
 VERN.def({key:'tal_chapel',name:'Chapel',family:'civic',tags:TA_TAG('byzantine','civic',['religious','civic'],true),w:14,d:16,h:19,build:buildTalChapel});
 VERN.def({key:'tal_council_house',name:'Council house',family:'civic',tags:TA_TAG('classical','civic',['civic'],true),w:24,d:36,h:18,build:buildTalCouncilHouse});
 VERN.def({key:'tal_memorial_spire',name:'Memorial spire',family:'civic',tags:TA_TAG('indic','civic',['civic','statue'],false),w:26,d:22,h:21,build:buildTalMemorialSpire});

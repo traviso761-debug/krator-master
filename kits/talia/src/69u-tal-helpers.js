@@ -154,8 +154,8 @@ function tanDome(x,y,z,r,o){o=o||{};const kind=o.kind||'hemi';let item=o.item,h=
  return y+h;}
 // a drum of radius r and height h: a cylinder with n arched windows round it (dark; o.fill 'L' when lit), pilasters
 // between when o.pil, a cornice ring on top. c the wall. o.round: the 24-sided drum (taDrum; else the 8-sided post);
-// o.ww, o.wh: the windows' width and height (default by r and h). Returns the top y
-function tanDrum(x,y,z,r,h,n,c,o){o=o||{};vPst(o.round?'taDrum':'vPostS',x,y,z,r,h,c);
+// o.ww, o.wh: the windows' width and height (default by r and h); o.hollow: a ring wall .4 m thick (a room inside). Returns the top y
+function tanDrum(x,y,z,r,h,n,c,o){o=o||{};if(o.hollow)tanArcRun(x,y,z,r-.2,0,TAU,.4,h,'vPlaster',c,Math.max(12,Math.round(TAU*r/1.2)));else vPst(o.round?'taDrum':'vPostS',x,y,z,r,h,c);
  const ww=o.ww==null?Math.min(1.2,r*.5):o.ww,wh=o.wh==null?Math.min(h-.5,ww*2.2):o.wh;
  for(let k=0;k<n;k++){const a=k*TAU/n+(o.a0||0);const p=[x+Math.sin(a)*r,z+Math.cos(a)*r];
   tanArch(p[0],y+(h-wh)/2,p[1],a,ww,wh,{fill:o.fill||'G',band:o.band,bw:.1,out:.04,gilt:o.gilt});
@@ -333,3 +333,36 @@ function tanSpandrel(x,yc,z,ry,R,hw,top,dp,out,c,n){n=n==null?Math.max(6,Math.ro
 // a round window on a face: a lit (fill 'L'), cobalt ('C') or dark-glass ('G') disc of radius r in a ring band, centred at yc
 function tanOculus(x,yc,z,ry,r,fill,bandC,gilt){tanDiscAt(fill==='C'?'taDiscC':fill==='G'?'taDiscG':'taDiscL',x,yc,z,ry,r,.03,.1,null);
  tanArcBand(x,yc,z,ry,r+.08,.16,.12,.07,bandC,0,TAU,14,gilt?'taGilt':'vPlaster');}
+
+// ---------------------------------------------------------------- interiors: ceilings, and storey slabs as rings (2026-10-19)
+// A hollow body (69e) is four walls and a floor: a flat-roofed Talia building had its solid box's top for a roof, so with an
+// interior the rooms showed from above, and a thin slab a builder draws across the body (a string course, a band, a floor
+// band) cut through the rooms or lay on the planner's floor (z-fighting). After each Talia builder, while the hollow list
+// is open: every such slab that spans a room is redrawn as a ring round it (as 69e's vnBand), when it lies above the room's
+// floor and below its top, or within a quarter metre of a floor the planner draws (the item's levels); a slab whose top
+// is a room's floor stays (the hill stack's tiers). Then a ceiling closes every hollow body just under its top: a flat
+// roof's underside, which on a stacked storey lies inside the planner's floor slab.
+function tanHollowTidy(C,snap){const H=C.hollow;if(!H||!H.length)return;
+ const inv=KXF?new THREE.Matrix4().copy(KXF.m).invert():null,qi=KXF?KXF.q.clone().invert():null,v=new THREE.Vector3();
+ const planes=[];for(const b of ((C.ixItem&&C.ixItem.bodies)||[])){if(!Array.isArray(b.levels))continue;let y=b.y||0;for(let k=0;k<b.levels.length-1;k++){y+=b.levels[k].h+.25;planes.push(y);}}
+ for(const [name,n0] of snap){const L=KIT.items[name];
+  for(let i=L.length-1;i>=n0;i--){const r=L[i],s=r.s;if(typeof s==='number'||s[1]>.45)continue;
+   v.set(r.p[0]-KOFF[0],r.p[1]-KOFF[1],r.p[2]-KOFF[2]);if(inv)v.applyMatrix4(inv);
+   const q=(r.q?r.q.clone():new THREE.Quaternion());if(qi)q.premultiply(qi);if(Math.abs(q.x)>1e-3||Math.abs(q.z)>1e-3)continue;
+   const yaw=2*Math.atan2(q.y,q.w),y0=v.y-s[1]/2,y1=v.y+s[1]/2;
+   for(const B of H){
+    const inRoom=y1>B.y+.06&&y0<B.y+B.h-.05,onFloor=planes.some(P=>P>=B.y-.3&&P<=B.y+B.h+.3&&y0<P+.02&&y1>P-.27);if(!inRoom&&!onFloor)continue;
+    let d=((yaw-B.ry)%Math.PI+Math.PI)%Math.PI;const quarter=Math.abs(d-Math.PI/2)<1e-3,straight=d<1e-3||Math.abs(d-Math.PI)<1e-3;if(!quarter&&!straight)continue;
+    const ex=(quarter?s[2]:s[0])/2,ez=(quarter?s[0]:s[2])/2,c=Math.cos(B.ry),sn=Math.sin(B.ry),dx=v.x-B.x,dz=v.z-B.z;
+    const bx=dx*c-dz*sn,bz=dx*sn+dz*c,iw=B.w/2-B.t,id=B.d/2-B.t,x0=bx-ex,x1=bx+ex,z0=bz-ez,z1=bz+ez;
+    if(x0>-iw*.85||x1<iw*.85||z0>-id*.85||z1<id*.85)continue;
+    L.splice(i,1);
+    const strip=(a0,a1,b0,b1)=>{if(a1-a0<.01||b1-b0<.01)return;const p=loc(B.x,B.z,(a0+a1)/2,(b0+b1)/2,B.ry);vB(name,p[0],y0,p[1],a1-a0,s[1],b1-b0,B.ry,r.c);};
+    strip(x0,x1,id,z1);strip(x0,x1,z0,-id);strip(x0,-iw,-id,id);strip(iw,x1,-id,id);break;}}}
+ for(const B of H)vB(B.item,B.x,B.y+B.h-.22,B.z,B.w-2*B.t+.02,.2,B.d-2*B.t+.02,B.ry,B.c);}
+// every Talia def's builder runs the tidy inside 69e's wrapper (wrapped before 69e wraps it, so the hollow list is open)
+(function(){const prev=VERN.def;
+ VERN.def=function(D){if(D&&typeof D.key==='string'&&D.key.indexOf('tal_')===0&&typeof D.build==='function'){const b=D.build;
+   D.build=function(G,o){const C=VERN.cur,snap=C&&C.hollow?KIT.order.filter(n=>KIT.defs[n].geo===VBOX).map(n=>[n,KIT.items[n].length]):null;
+    const out=b.apply(this,arguments);if(snap)tanHollowTidy(C,snap);return out;};}
+  return prev.apply(this,arguments);};})();
