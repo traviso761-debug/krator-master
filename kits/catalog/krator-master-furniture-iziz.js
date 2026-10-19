@@ -16,7 +16,10 @@ FURN_CULTURE('iziz', { name: 'Iziz', pack: 'iziz', influences: 'science fantasy;
     timberSawn: 0x9a6a42, timberSawnDark: 0x7a4e30, timberSawnLight: 0xa87a4e, timberGreyPost: 0x8a7a66, ironSoot: 0x2e2a26,
     steelCorrugate: 0x9a9488, sackingTan: 0xb8a080, sackingDark: 0xa89070, sackingPale: 0xc8b898, ropeFlax: 0xb8a888,
     leafVine: 0x3f7a34, leafBright: 0x4f9a3a, leafMoss: 0x2f6a2a, leafSpring: 0x6aa04a,
-    clothApricot: 0xf2a24a, clothAmber: 0xd8893c, clothVermilion: 0xc9442a, clothSaffron: 0xe0a030, clothRust: 0xb8552a
+    clothApricot: 0xf2a24a, clothAmber: 0xd8893c, clothVermilion: 0xc9442a, clothSaffron: 0xe0a030, clothRust: 0xb8552a,
+    /* the court finishes (2026-10-19): a hair off their plain twins, so they split into the court texture families below */
+    courtMahogany: 0x6b2b1f, courtBrocade: 0x9b2c2c, courtClothGold: 0xd3ae36, courtClothTeal: 0x2e8e89, courtClothCream: 0xf2e1bf,
+    courtGilt: 0xd8b13b, courtMarble: 0xe9e5dd
   } });
 /* END PALETTE */
 const IZIZ_COMMON = {
@@ -31,9 +34,20 @@ const IZIZ_COMMON = {
   shelfFill: 'scrolls', rack: 'cloaks', art: 'sunplate', art2: 'mosaic', statue: 'figure', tapestry: 'sun',
   canopy: true, board: 'panel'
 };
+/* the court's finishes (the owner, 2026-10-19): the court tier draws its veneer, upholstery, gilding and hearth in palette keys
+   of their own, which split into texture families (FAMILY_SPLITS, krator-furniture-core.js). A page that packs the court sets
+   maps them (settlements/iziz/src/95i-iziz-interiors.js, COURT_TRI): marquetry, brocade, opus sectile in full colour, gold
+   leaf and velvet as detail. Elsewhere the split only separates the batch's buckets; the colours are unchanged. */
+FAMILY_SPLITS.push(
+  [/^courtMahogany$/, ['mahogany', 'wood'], 'courtMarquetry'],
+  [/^courtBrocade$/, ['cloth'], 'courtBrocade'],
+  [/^courtCloth/, ['cloth'], 'courtVelvet'],
+  [/^courtGilt$/, ['gold', 'metal'], 'courtGilt'],
+  [/^courtMarble$/, ['ceramic', 'stone'], 'courtOpus']);
 const IZIZ_COURT = Object.assign({}, IZIZ_COMMON, {
-  cloth: ['clothGold', 'clothCrimson', 'clothTeal', 'clothCream'],
-  accent: 'gilt', accentFam: 'gold', stone: 'marbleWhite', stoneFam: 'stone',
+  wood: 'courtMahogany', tile: 'courtMarble',
+  cloth: ['courtClothGold', 'courtBrocade', 'courtClothTeal', 'courtClothCream'],
+  accent: 'courtGilt', accentFam: 'gold', stone: 'marbleWhite', stoneFam: 'stone',
   motif: 'step', finial: 'disc', statue: 'figure', art: 'mosaic', art2: 'sunplate', lamp: 'glass'
 });
 FK.set({ culture: 'iziz', tier: 'common', S: IZIZ_COMMON, names: {

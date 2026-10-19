@@ -65,4 +65,9 @@
       pack and laid on the Iziz court furniture and Talia's bookcase by Iziz's furnishing (95i, COURT_DECALS).
 - [ ] 95i is also edited on the branch claude/pylon-interiors-export (the interiors as core/export's interiors section, not
       merged): whichever lands second keeps both; that export may want to carry the decals with the furniture pieces.
+- [x] The court furniture textures (2026-10-19, second batch): sixteen Izani paintings, the gilt frame moulding, vase
+      glazes, sun carpets, marquetry, brocade, opus sectile; bound in Iziz's pack and laid by 95i (COURT_DECALS, COURT_TRI).
+- [ ] The triplanar court finishes are a browser shader hook on the batch materials: the Godot export carries a furniture
+      bucket's render family only, not its texture family (`userData.texFamily`), so Godot draws the plain colours until
+      the export writes it and the importer maps it (a StandardMaterial3D triplanar per family).
 

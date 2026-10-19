@@ -1,0 +1,824 @@
+[
+ {
+  "src": "court-painting-9.png",
+  "out": "core/materials/patterns/court/painting-9",
+  "record": {
+   "id": "court/painting-9",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-a: the walled city of Iziz from the air",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-10.png",
+  "out": "core/materials/patterns/court/painting-10",
+  "record": {
+   "id": "court/painting-10",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-a: the Emperor enthroned with the gilt orb",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-11.png",
+  "out": "core/materials/patterns/court/painting-11",
+  "record": {
+   "id": "court/painting-11",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-a: the retaking of Hook",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-12.png",
+  "out": "core/materials/patterns/court/painting-12",
+  "record": {
+   "id": "court/painting-12",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-a: icon of the imperial orb before the sun",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-13.png",
+  "out": "core/materials/patterns/court/painting-13",
+  "record": {
+   "id": "court/painting-13",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-a: the Izani come out of the jungle to the Ancient ruins",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-14.png",
+  "out": "core/materials/patterns/court/painting-14",
+  "record": {
+   "id": "court/painting-14",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-a: the Mutiny of the Third Legion at Roketstad",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-15.png",
+  "out": "core/materials/patterns/court/painting-15",
+  "record": {
+   "id": "court/painting-15",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-a: a games day at the arena",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-16.png",
+  "out": "core/materials/patterns/court/painting-16",
+  "record": {
+   "id": "court/painting-16",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-a: the Beast Hunters' trophy hall",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-17.png",
+  "out": "core/materials/patterns/court/painting-17",
+  "record": {
+   "id": "court/painting-17",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-b: a Forgemaster beside a half-built war-walker",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-18.png",
+  "out": "core/materials/patterns/court/painting-18",
+  "record": {
+   "id": "court/painting-18",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-b: portrait of an Izani noblewoman with a jade fan",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-19.png",
+  "out": "core/materials/patterns/court/painting-19",
+  "record": {
+   "id": "court/painting-19",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-b: a legion on parade before the palace gate",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-20.png",
+  "out": "core/materials/patterns/court/painting-20",
+  "record": {
+   "id": "court/painting-20",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-b: an Izani turtle ship in harbour at sunset",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-21.png",
+  "out": "core/materials/patterns/court/painting-21",
+  "record": {
+   "id": "court/painting-21",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-b: Salvagers in the Reliquary",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-22.png",
+  "out": "core/materials/patterns/court/painting-22",
+  "record": {
+   "id": "court/painting-22",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-b: a market slung from an Ancient skyscraper",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-23.png",
+  "out": "core/materials/patterns/court/painting-23",
+  "record": {
+   "id": "court/painting-23",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-b: still life of tropical fruit and a copper ewer",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-painting-24.png",
+  "out": "core/materials/patterns/court/painting-24",
+  "record": {
+   "id": "court/painting-24",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/paintings-iziz-b: the hyperjungle at dawn under the gas giant",
+    "reuse": "a canvas in any Izani court frame (iziz_court_painting)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "size": 512,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-frame-gilt.png",
+  "out": "core/materials/patterns/court/frame-gilt",
+  "record": {
+   "id": "court/frame-gilt",
+   "family": "gold",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0.6,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/frame-gilt: a carved and gilded Art Deco frame moulding, face-on",
+    "reuse": "every gilt picture frame and mirror; gilt cornices"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "size": 1024,
+   "rough_var": 0.15,
+   "normal_strength": 0.6,
+   "rough": 0.35,
+   "seam_axes": "x",
+   "band": 0.03
+  }
+ },
+ {
+  "src": "court-vase-glaze-a.png",
+  "out": "core/materials/patterns/court/vase-glaze-a",
+  "record": {
+   "id": "court/vase-glaze-a",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/vase-glaze-a: an unrolled band of glazed Deco ceramic",
+    "reuse": "any Izani glazed vessel: jars, ewers, vases"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "size": 1024,
+   "rough_var": 0.15,
+   "normal_strength": 0.3,
+   "rough": 0.3,
+   "seam_axes": "x",
+   "band": 0.03
+  }
+ },
+ {
+  "src": "court-vase-glaze-b.png",
+  "out": "core/materials/patterns/court/vase-glaze-b",
+  "record": {
+   "id": "court/vase-glaze-b",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/vase-glaze-b: an unrolled red-figure Deco frieze from an urn",
+    "reuse": "the larger vases and urns"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "size": 1024,
+   "rough_var": 0.15,
+   "normal_strength": 0.3,
+   "rough": 0.3,
+   "seam_axes": "x",
+   "band": 0.03
+  }
+ },
+ {
+  "src": "court-marquetry.png",
+  "out": "core/materials/patterns/court/marquetry",
+  "record": {
+   "id": "court/marquetry",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/marquetry: mahogany veneer with satinwood chevrons and brass stringing",
+    "reuse": "court cabinets, desks, tables, bed panels"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": false,
+   "delight": 0.0,
+   "lift": 0.0,
+   "size": 1024,
+   "rough_var": 0.15,
+   "normal_strength": 0.25,
+   "rough": 0.45,
+   "seam_axes": "xy",
+   "band": 0.03
+  }
+ },
+ {
+  "src": "court-brocade.png",
+  "out": "core/materials/patterns/court/brocade",
+  "record": {
+   "id": "court/brocade",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/brocade: crimson silk brocade with gold sun medallions",
+    "reuse": "court cushions, seats, bolsters, curtains"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": false,
+   "delight": 0.0,
+   "lift": 0.0,
+   "size": 1024,
+   "rough_var": 0.15,
+   "normal_strength": 0.35,
+   "rough": 0.7,
+   "seam_axes": "xy",
+   "band": 0.03
+  }
+ },
+ {
+  "src": "court-opus-sectile.png",
+  "out": "core/materials/patterns/court/opus-sectile",
+  "record": {
+   "id": "court/opus-sectile",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/opus-sectile: cut-marble inlay, stars in circles on white marble",
+    "reuse": "court hearths, table tops, fountain basins, floor insets"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": false,
+   "delight": 0.0,
+   "lift": 0.0,
+   "size": 1024,
+   "rough_var": 0.15,
+   "normal_strength": 0.2,
+   "rough": 0.3,
+   "seam_axes": "xy",
+   "band": 0.03
+  }
+ },
+ {
+  "src": "court-sun-carpet-a.png",
+  "out": "core/materials/patterns/court/sun-carpet-a",
+  "record": {
+   "id": "court/sun-carpet-a",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/sun-carpet: one whole Deco sun carpet (fine knotted)",
+    "reuse": "the Great sun carpet; court wall rugs"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "size": 1024,
+   "rough_var": 0.15,
+   "normal_strength": 0.3,
+   "rough": 0.9,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "court-sun-carpet-b.png",
+  "out": "core/materials/patterns/court/sun-carpet-b",
+  "record": {
+   "id": "court/sun-carpet-b",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+    "licence": "generated for this project by its owner",
+    "prompt": "patterns/court/sun-carpet: one whole Deco sun carpet (coarse woven)",
+    "reuse": "the common sun-medallion rug; wall rugs"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "size": 1024,
+   "rough_var": 0.15,
+   "normal_strength": 0.35,
+   "rough": 0.9,
+   "seam_axes": "none"
+  }
+ }
+]
