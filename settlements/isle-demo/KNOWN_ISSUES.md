@@ -1,5 +1,21 @@
 # settlements/isle-demo: known issues (the site planner)
 
+- [ ] **Ridertown still takes two of the catalog's hand-made copies** (2026-10-18): `br_bldg_nature_shrine` (class
+      `shrine`) and `br_bldg_roost_gallery` (class `rookery`) in `src/30-isle-programme.js` (ISLE.CLASSES), drawn through
+      `CAT` (`bundles.py`, which reads `kits/catalog/krator-master-buildings-beast-rider.js`). The Beast Riders kit now
+      has the towns' own buildings as ports (kits/beast-riders README, "The ports"). The switch:
+      - `shrine: [['br_port_mavs_shrine', 0]]` (Mav's Refuge's nature shrine) and, if the class should vary, the deck
+        lots' `br_port_mavs_lot` home (v0) or fine house (v1) are rider dwellings too;
+      - `rookery: [['br_bldg_rookery_tower', 0], ['br_port_mavs_roost', 0]]` (the great roost; v1 the main roost); a
+        roost is a lip and a stall on a level's rim, not a free-standing gallery, so the tower may be the better
+        stand-alone rookery and the roost a second choice;
+      - the stables stay the kit's own (`br_bldg_raptor_stable`, `br_bldg_great_byre`).
+      What it needs: `CAT` takes `kits/beast-riders/towns.py` `bundle()` (the two towns sealed, about 9.5 MB, nearly all
+      their library maps: put `BR_TOWN_IMG` in a sidecar, as the page's other packs, to stay under the gallery's 16 MB)
+      and `kits/beast-riders/src/60-br-ports.js` after its core; and the draw (`src/60-isle-draw.js`, which flattens a
+      proto per material) has to take the ports' own materials (the towns' MeshStandardMaterial with library maps, not
+      the catalog's vertex-colour families). Not switched yet: the page is unchanged.
+
 - [x] **Valapo's frame was inland** (2026-10-15). Its settlement point (one 2 km scale-model pixel) is 5.2 km from the
       sea, so its square held none. On the owner's word the origin moved 3.7 km toward the coast, north-north-west
       (`ISLE.SHIFT`, and the frame in `site/isle-site.json`). Now:

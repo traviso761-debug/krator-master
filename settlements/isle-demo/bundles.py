@@ -177,6 +177,9 @@ def izv_bundle():
 
 
 # ---------------------------------------------------------------- the catalog's Beast Rider buildings
+# Ridertown's shrine and roost gallery here are the catalog's hand-made copies of Mav's Refuge's (lossy). Their faithful
+# ports are kits/beast-riders' br_port_* (KNOWN_ISSUES.md: the keys to switch in src/30-isle-programme.js and what the
+# switch needs: kits/beast-riders/towns.py bundle(), its ASSETs in src/60-br-ports.js, the towns' maps as a sidecar).
 CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', f) for f in ('krator-furniture-core.js', 'krator-master-buildings-beast-rider.js')] +     [os.path.join(ROOT, 'kits', 'beast-riders', 'src', '50-br-mounts.js')]   # the Beast Riders kit's own (the mounts' buildings)
 
 

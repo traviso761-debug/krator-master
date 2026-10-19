@@ -2,16 +2,22 @@
 """Build dist/beast-riders.html: the Beast Riders kit's sheet (owner, 2026-10-18: the riders' buildings as a set of
 their own).
 
-The kit is the catalog's Beast Rider buildings (Girder's and Mav's Refuge's: kits/catalog/krator-master-buildings-
-beast-rider.js) and its own, the mounts' buildings (src/50-br-mounts.js: the raptor stable, the great byre, the
-rookery tower), all catalog ASSETs on the catalog's engine. Everything is READ IN PLACE, never copied; src/ holds the
+The kit is its own buildings, the mounts' (src/50-br-mounts.js: the raptor stable, the great byre, the rookery
+tower), on the catalog's engine, and the PORTS: Girder's and Mav's Refuge's own buildings, drawn by the towns' own
+builders on their own engines, sealed here (towns.py) and registered as catalog ASSETs (src/60-br-ports.js). The
+catalog's hand-made copies of the towns' buildings (kits/catalog/krator-master-buildings-beast-rider.js) are no
+longer on the sheet. Everything is READ IN PLACE, never copied; src/ holds the
 kit's own buildings and the page round them. One <script>, in this order:
 
   src/00-head.html                         page head, toolbar, error panel, three.js r128 loader
   kits/catalog: krator-furniture-core.js, krator-asset-engine.js, krator-symbols.js, krator-furniture-kit.js,
                 krator-master-furniture.js and the beast-rider and generic culture files (the pieces the buildings
-                place with F.furn), krator-master-buildings-beast-rider.js
+                place with F.furn)
   src/50-br-mounts.js                      the kit's own buildings
+  TOWNS (GENERATED: towns.py)              Girder's and Mav's Refuge's engines and builders, each sealed in a closure
+                                           (BR_GIRDER, BR_MAVS) with the kit's hook and port table (towns/), and the
+                                           library maps their packs point into (BR_TOWN_IMG)
+  src/60-br-ports.js                       the ports: the towns' own buildings as ASSETs (BR_PORTS)
   kits/catalog: krator-furniture-runtime.js, then KF_TEX (GENERATED: the catalog's packed detail maps with this kit's
                 tex/ over them, materials.json), then krator-furniture-detail.js: the detail maps (KF_API.detailize)
   src/90-br-sheet.js                       lays out every building and variant; the probe window._kit
@@ -45,8 +51,11 @@ DIST = os.path.join(HERE, 'dist')
 CAT = os.path.join(ROOT, 'kits', 'catalog')
 OUT = 'beast-riders'
 BEFORE = ['krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js',
-          'krator-master-furniture-beast-rider.js', 'krator-master-furniture-generic.js', 'krator-master-buildings-beast-rider.js']
+          'krator-master-furniture-beast-rider.js', 'krator-master-furniture-generic.js']
 OWN = ['50-br-mounts.js']
+# the ports: Girder's and Mav's Refuge's engines and builders sealed (towns.py), then their buildings as ASSETs
+TOWNS = "TOWNS: Girder and Mav's Refuge sealed (GENERATED: towns.py)"
+PORTS = ['60-br-ports.js']
 AFTER = ['krator-furniture-runtime.js']
 DETAIL = 'krator-furniture-detail.js'
 SHEET = ['90-br-sheet.js']
@@ -78,12 +87,20 @@ def kf_tex():
 
 
 def main():
+    sys.path.insert(0, HERE)
+    import towns
+    tjs, tfiles = towns.bundle()
     parts = [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in BEFORE] + [('src/' + f, read(os.path.join(SRC, f))) for f in OWN] + \
+            [(TOWNS, tjs)] + [('src/' + f, read(os.path.join(SRC, f))) for f in PORTS] + \
             [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in AFTER] + [('KF_TEX (GENERATED)', kf_tex())] + \
             [('kits/catalog/' + DETAIL, read(os.path.join(CAT, DETAIL)))] + [('src/' + f, read(os.path.join(SRC, f))) for f in SHEET] +             [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in TOOLS]
     if '--no-checks' not in sys.argv:
         errs, decl, keys = [], {}, {}
         for name, body in parts:
+            if name == TOWNS:      # closures: only their top-level names leak (BR_TOWN_IMG, BR_GIRDER, BR_MAVS)
+                for n in ('BR_TOWN_IMG', 'BR_GIRDER', 'BR_MAVS'):
+                    decl.setdefault(n, set()).add(name)
+                continue
             for m in RE_DECL.finditer(body):
                 decl.setdefault(m.group(1), set()).add(name)
             for kind, key in RE_REG.findall(body):
@@ -101,7 +118,9 @@ def main():
     with open(out, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n') as fh:
-        json.dump({n: hashlib.sha1(b.encode('utf-8')).hexdigest()[:12] for n, b in parts}, fh, indent=1, sort_keys=True)
+        man = {n: hashlib.sha1(b.encode('utf-8')).hexdigest()[:12] for n, b in parts}
+        man.update({'towns: ' + f: hashlib.sha1(towns.rd(os.path.join(ROOT, f)).encode('utf-8')).hexdigest()[:12] for f in tfiles})
+        json.dump(man, fh, indent=1, sort_keys=True)
     node = os.environ.get('NODE') or shutil.which('node')
     syn = 'syntax NOT CHECKED (no node)'
     if node:

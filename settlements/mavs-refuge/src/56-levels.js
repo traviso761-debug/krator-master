@@ -555,10 +555,13 @@ function lvlBays(P){
 }
 
 /* ---------------------------------------------------------------- run the levels */
+/* a room's frame: the middle of its outer face on its floor, looking out (45-kit.js PORT) */
+function roomFrame(P,R){ var F=lvlFrame(P,R.r1,(R.a0+R.a1)/2,R.y); return { x:F.x, y:R.y, z:F.z, ry:Math.atan2(F.ox,F.oz) }; }
 PLATS.forEach(function(P){
   if(P.levels.length<2) return;
   var tradeSeq = shuffle(LVL_TRADES.slice()), ti=0;
-  P.rooms.forEach(function(R){
+  P.rooms.forEach(function(R,ri){ PORT('room', P.id+'.'+ri, roomFrame(P,R), function(){ levelRoom(P,R,ri); }); });
+  function levelRoom(P,R,ri){
     var Lv=P.levels[R.lvl];
     if(R.whole){ if(R.kind==='apt'){ lvlSatApt(P,R,Lv); lvlTally('satApt'); } else if(R.kind==='roost'){ lvlSatRoost(P,R,Lv); lvlTally('roost'); } return; }
     if(R.kind==='apt'){ lvlApt(P,R,Lv); lvlTally('apt'); }
@@ -569,14 +572,15 @@ PLATS.forEach(function(P){
       var am=(R.a0+R.a1)/2, c=platXZ(P,(R.r0+R.r1)/2,am);
       lvlReg({ name:P.name, kind:R.kind, label:R.kind==='hangar'?'Beast hangar bay':'Roost bay', plat:P.id, lvl:R.lvl, x:c[0], z:c[1], y:R.y, h:R.H, r:Math.min((R.a1-R.a0)*R.r1,R.r1-R.r0)*0.5 });
     }
-  });
+  }
   P.levels.forEach(function(Lv,k){
     if(Lv.kind==='web'){ lvlWebLevel(P,Lv,k===P.levels.length-1); lvlTally('web'); }
     if(Lv.kind==='hangar'){ lvlHangarCurtains(P,Lv); lvlTally('roost'); }
   });
   if(P.main){ lvlBays(P); lvlTally('bays'); }
 });
-ROOSTS.forEach(function(Ro,i){ lvlRoost(Ro,i); });
+ROOSTS.forEach(function(Ro,i){ var Lv=Ro.plat.levels[Ro.lvl], F=lvlFrame(Ro.plat,Lv.Rout,Ro.ang,Ro.y);   /* a roost's frame: on the rim, its lip out front */
+  PORT('roost', i, { x:F.x, y:Ro.y, z:F.z, ry:Math.atan2(F.ox,F.oz) }, function(){ lvlRoost(Ro,i); }); });
 lvlTally('roost');
 
 /* ====================================================================== GOAL B: THE GATE TREES
@@ -830,7 +834,7 @@ function gtFacade(S,T,F,a,y,kind,W,H,K,yCap){
 /* ---------------------------------------------------------------- the ramp of one gate tree */
 function gtRamp(S){
   var T=S.tree, F=platFrame(T.x,T.z,0), span=S.turns*TAU, K=(S.y1-S.y0)/span, turnGap=(S.y1-S.y0)/S.turns;
-  var th=0, prevW=0, first=true;
+  var th=0, prevW=0, first=true, gtN=0;
   function lenPerRad(y){ return Math.hypot(trunkR(T,y)+1.0, K); }
   th = 12/lenPerRad(S.y0);                                  /* the gatehouse stands on the first metres */
   while(true){
@@ -848,6 +852,9 @@ function gtRamp(S){
     y=S.y0+K*th; if(y > S.y1-4.4) break;
     if(y > S.y1-7.2 && kind!=='guardpost' && kind!=='vault'){ kind='guardpost'; W=3.2; H=2.7; prevW=W; }
     var a=S.a0+S.dir*th;
+    /* a carving and the storeys above it, one building: its frame on the bark at its sill, looking out from the trunk */
+    var gr=Math.max(trunkR(T,y),trunkR(T,y+H));
+    PORT('gtfacade', SPIRALS.indexOf(S)+'.'+(gtN++)+'.'+kind, { x:T.x+Math.cos(a)*gr, y:y, z:T.z+Math.sin(a)*gr, ry:Math.atan2(Math.cos(a),Math.sin(a)) }, function(){
     var res=gtFacade(S,T,F,a,y,kind,W,H,K,yCap);
     lvlTally('gateFacade');
     /* the storeys above: up to the braces of the next turn (or the platform) */
@@ -856,6 +863,7 @@ function gtRamp(S){
     if(chance(kind==='dorm'?0.4:0.62)) gtUpper(T,F,a,yLo+(kind==='dorm'?0:rr(0,2.5)),yHi,res.cool||chance(0.12),res.col,false,0);
     if(chance(0.42)){ var y2=y+rr(17,turnGap-12); if(y2<yHi-2) gtUpper(T,F,a+rr(-3,3)/trunkR(T,y2),y2,yHi,chance(0.25),res.col,false,0); }
     lvlTally('gateUpper');
+    });
   }
 }
 

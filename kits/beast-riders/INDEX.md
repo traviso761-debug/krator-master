@@ -4,7 +4,7 @@
 
 The Beast Riders kit (catalog culture beast-rider): the riders' buildings as a set of their own, on the catalog's engine: its own mounts' buildings (the raptor stable with its paddock, the great byre for threehorns and hardshells, the rookery tower for the flyers) and Girder's and Mav's Refuge's thirteen (kits/catalog, read in place); the library's detail maps at building scale with its three surfaces (straw, guano, stable yard); the catalog's inspector, hover and polygon tools. Verified: build.py, verify.py --assert. Read README.md
 
-Docs: `KNOWN_ISSUES.md`, `README.md`
+Docs: `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/beast-riders.html`
 
@@ -17,5 +17,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 4 |  |
 | `50-br-mounts.js` | 11 | = (2) |
-| `90-br-sheet.js` | 3 | = (1) |
+| `60-br-ports.js` | 4 | = (1) |
+| `90-br-sheet.js` | 5 | = (1) |
 | `99-tail.html` | <1 |  |
