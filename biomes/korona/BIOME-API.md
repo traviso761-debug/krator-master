@@ -19,7 +19,8 @@ The host's `45-host-stage.js` (one per station) ends in one object, **`STAGE`**,
 | `floor(x,z)` | the ground without the rock; `talusH` the scree banked against a wall's foot |
 | `capY` | a top at or above it is a `cap` (the necanyons zones, `46`), below it a `bench` |
 | `stream`, `streamD` | the stream (or null), and the distance to it |
-| `pools` | `[{x, z, r, bed, ice}]`: standing pools; `bed` marks a sucking pool (the bladder bed, a trap); `ice` a frozen one, drawn as a plate of ice (the hoar table's tarn) |
+| `pools` | `[{x, z, r, bed, ice, name}]`: standing pools; `bed` marks a sucking pool (the bladder bed, a trap); `ice` a frozen one, drawn as a plate of ice (the hoar table's tarn). Every other pool is a `core/water` still record, drawn by `89w-host-water.js` |
+| `air` | `{pressure}`: the station's air in atm (`NOTES.md`, "The ground"); a record, exported with the layout; nothing drawn reads it yet |
 | `path` | `[[x,z],...]`: the safe path (the hollow); traps keep off it, cairns line it |
 | `windward(x,z)` | 0..1: how much of the rain a point takes (the wind is from the north-west) |
 | `warm(x,z)`, `rich(x,z)` | the air's heat and density; the soil's silt (the fields below) |

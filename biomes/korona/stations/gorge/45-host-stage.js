@@ -53,7 +53,12 @@ const wallD=(x,z)=>Math.min(Math.abs(x+WALLX)-WALLHALF,Math.abs(x-WALLX)-WALLHAL
 function floorBase(x,z){const far=smooth(1450,2700,Math.hypot(x,z));
  const knobs=smooth(.55,.72,fbm(x*.006+4,z*.006-2,61,3))*9*smooth(-200,400,x)*smooth(300,-500,z);
  return 10*(fbm(x*.0009+3.1,z*.0009-1.7,17,3)-.5)*2+3*(fbm(x*.004-2,z*.004+5,29,2)-.5)*2-.004*z+knobs+far*far*700*(.8+.4*fbm(x*.0012+9,z*.0012-4,33,3));}
-function floorH(x,z){const b=floorBase(x,z),cut=smooth(WADI.w+26,WADI.w*.5,wadiD(x,z)),basin=smooth(SPRING.r*3,SPRING.r*.8,springD(x,z));return b-3.5*cut-2.2*basin;}
+/* the spring's basin (2026-10-19): the floor inside it is LEVELLED to the floor at the spring's centre before the dip, and the
+   bank is steep (1.25 r to .95 r), so the spill point 47 samples on the shore ring (1.15 r) is above the basin's floor: before,
+   a wide shallow bowl on a sloping, wadi-cut floor put the water .3 to 3.5 m under the ground and the spring never showed */
+const floorCut=(x,z)=>floorBase(x,z)-3.5*smooth(WADI.w+26,WADI.w*.5,wadiD(x,z));
+const SPRING_H=floorCut(SPRING.x,SPRING.z);
+function floorH(x,z){const h=floorCut(x,z),basin=smooth(SPRING.r*1.25,SPRING.r*.95,springD(x,z));return mix(h,SPRING_H,basin)-4*basin;}
 
 // ---------------------------------------------------------------- the rock (KSTACKS records)
 const ROCK=(function(){const K=KSTACKS,L=[];
@@ -78,7 +83,7 @@ const WEST=ROCK[0];
 // ---------------------------------------------------------------- the station's say: STAGE (47 reads it)
 const STAGE={
  name:'Korona: the lee gorge',R:TERR.R,bodies:ROCK,floor:floorH,capY:WEST.y0+400,seed:15,talusH:24,heroR:1600,
- stream:null,streamD:()=>1e9,pools:[SPRING],
+ air:{pressure:1.7},stream:null,streamD:()=>1e9,pools:[SPRING],
  bare:(x,z)=>smooth(SPRING.r*1.35,SPRING.r*.95,springD(x,z)),   /* the pool itself: nothing roots in it */
  // the rain shadow: nothing is windward here; the wet is the spring's
  windward:(x,z)=>0,

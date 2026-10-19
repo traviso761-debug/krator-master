@@ -86,7 +86,7 @@ TABLE.beds.forEach(b=>{const s=1-.022*b.k;b.rx*=s;b.rz*=s;});APRON_B=TABLE.beds[
 const windwardOf=(x,z)=>{const a=Math.atan2(z-TABLE.z,x-TABLE.x),w=Math.cos(a)*WIND[0]+Math.sin(a)*WIND[1];return smooth(-.55,.55,w);};
 const STAGE={
  name:'Korona: the tepui',R:TERR.R,bodies:ROCK,floor:floorH,capY:TABLE.y0+470,seed:11,talusH:30,heroR:1600,
- stream:STREAM,streamD,pools:[],
+ air:{pressure:1.3},stream:STREAM,streamD,pools:[],
  windward:windwardOf,
  // the dense hot air of the gorge (1.7 atm, 30 degC): 1 on the floor, falling up the wall to .25 on the summit
  warm:(x,z)=>1-.75*clamp((NECANYONS.top(x,z)-TABLE.y0)/530,0,1),

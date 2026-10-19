@@ -4,13 +4,18 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 
 - [ ] **No glow.** The lace fan tree should glow at dusk (the northern highlands' bell-bulbs' emissive, raised by the
   night) and the monkeycup rims faintly blue; the page has no night uniform on these materials yet.
-- [ ] **No `core/atmos`.** The notes ask for the pressure preset (1.3 atm on the table, 1.7 in the gorge and the hollow,
-  2.1 at the salt: the dense-air look) and the giant's light at night; the pages run on the hyperjungle's sky as the
-  necanyons page does.
-- [ ] **The hazard key.** `core/tags` has no `hazard` key; the danger rides on `trap.danger` (`BIOME-API.md`). Propose the
-  key (`core/tags/PROPOSAL.md`) and the Throne's CO2 hollows and the natives' punji pits take it too.
+- [ ] **No night.** `core/atmos` is bound (2026-10-19: `89w-host-water.js`, its clock and skylight for the water, its
+  export section) with the hour pinned at 13; the giant's light at night, the dusk glow (above) and the weather wait for
+  a day cycle on the page. The station's pressure is a record (`STAGE.air`, exported with the layout: 1.3 atm on the
+  table, 1.74 in the hollow, 1.44 in the basin, 2.1 at the salt, 1.7 in the gorge, .8 on the hoar table) and changes
+  nothing drawn: the dense-air look (a heavier haze with the pressure) is the owner's call, since the six pages' fog was
+  judged as it is.
+- [ ] **The hazard key.** `core/tags` has no `hazard` key; the danger rides on `trap.danger` (`BIOME-API.md`). The key is
+  proposed (`core/tags/PROPOSAL.md`, "A hazard key", 2026-10-19); when it lands, the Throne's CO2 hollows and the
+  natives' punji pits take it too.
 - [ ] **The salt lake and the Tiers' lake are flat discs at the stage's edge**, far above their true depth (the trenches'
-  walls are 4 km). A station cannot hold that; the open world will.
+  walls are 4 km). A station cannot hold that; the open world will. Since 2026-10-19 they are `core/water` still
+  records like every pool (`89w-host-water.js`); the open world will make them `WATER.open` surfaces on a shore window.
 - [ ] **The tepui is one record.** The open world wants many tables placed from the scale model's ring crests
   (`NOTES.md`, "The ground"); the station builds one by hand (`STAGE.bodies`).
 - [ ] **Two textures came off their prompts** (`core/materials/PROMPTS-NEEDED.md`, "Delivered 2026-10-19, Korona"):
@@ -25,6 +30,14 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 
 ## Closed
 
+- **Water and air on the core** (2026-10-19, the core adoption audit, `CORE-ADOPTION.md`): the stream is a `WATER.flow`
+  (its ribbon drawn by `core/water`), every pool and every rain pool on the rock a `WATER.still` record, all drawn as one
+  mesh on `WATER.stillMaterial` (the sky in them from `core/atmos`'s skylight, the ripple on the module clock); the
+  export's `atmos` and `water` sections fill and `verify.py` requires them (every station's export box holds a water
+  record). Before, `47` drew a disc per pool and the stream on a plain material, and the page had no `core/atmos`. Found on
+  the way: the gorge's spring was under its own floor (a wide shallow bowl on a sloping, wadi-cut floor: the spill point `47`
+  samples on the shore ring sat below the basin), so its basin is levelled to the spring's centre and dipped 4 m with a
+  steep bank; the spring shows for the first time.
 - **Two traps did not move** (2026-10-19): the man-eater's lid is an instanced card hinged on the back of its rim on the
   hinge hook (up while the trap waits, dropped flat over the mouth when it shuts) and the coil tendril's last quarter an
   instanced rod on the whip hook (lying on along the coil, standing up on the grab), both on the trap cycle (`50`, `57`;

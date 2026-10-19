@@ -43,9 +43,9 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # The export profile (core/export/README.md, "Profiles"): the sections a tile of this kit must fill, checked under --assert
 # over EXPORT_BOX (the stacks east of the table and the gorge floor round them). Sampled terrain (no krator-field). --profile a,b,c
 # replaces the list for one run.
-EXPORT_BOX = [560, 320, 900, 660]   # station 1 (the stacks east of the table); the other stations' boxes by page name
-EXPORT_BOXES = {'korona-hollow.html': [-200, -200, 100, 100], 'korona-basin.html': [-100, -300, 250, 0], 'korona-trench.html': [-700, 0, -350, 350], 'korona-gorge.html': [-120, 180, 220, 480], 'korona-hoar.html': [-1000, -60, -520, 420]}
-EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
+EXPORT_BOX = [560, 320, 1040, 720]   # station 1 (the stacks east of the table, a rain pool on one); the other stations' boxes by page name. Every box holds a core/water record (the profile wants the water section)
+EXPORT_BOXES = {'korona-hollow.html': [-200, -200, 100, 100], 'korona-basin.html': [250, -300, 600, 0], 'korona-trench.html': [-160, -1060, 110, -780], 'korona-gorge.html': [-120, 180, 220, 480], 'korona-hoar.html': [-1040, -60, -520, 420]}
+EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']   # atmos, water: core/atmos and core/water (89w-host-water.js)
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.

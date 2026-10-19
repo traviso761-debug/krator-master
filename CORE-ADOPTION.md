@@ -282,4 +282,11 @@ against its `README.md`. "Water" here means `core/water` (the CDLOD mesh), not `
 - [ ] **core/materials library**: about half (crater-drylands, ebadlands, ehighlands, geyser, oidong, ringisles, shighlands, throne).
 - [ ] **`getImageData`** hits (triage placement vs texture painter; placement goes to `core/mask`): nhighlands 3, hyperjungle 2, nwlowlands 2, swlowlands 2, and 1 each in eastabyss, nwbay, oidong, rift, swbay.
 - [ ] **Math.sin hash** (move to `core/rand`): crater-drylands, ehighlands, throne.
-- [ ] **korona** has no `build.py` (built by stations, `biomes/korona/NOTES.md`): audit separately.
+- [x] **korona** (audited and brought up 2026-10-19; it has a `build.py`, run plain and `--station <name>` for six pages):
+  biome, space, tags, rand, clock, export, host, materials (its own pack and four kits' packs as sidecars), terrain
+  (`37-core-stacks.js`: the tepui and the stacks are KSTACKS records), **atmos** and **water** (taken in the audit:
+  `src/89w-host-water.js`, the stream a flow, every pool a still record, the export's two sections). Placement reads
+  fields and `core/rand` streams, never a canvas, no `Math.sin` hash, no own PRNG (`tools/check_port.py` passes). n/a:
+  terrain field (its ground is the KSTACKS family plus a floor function; one export per terrain family is ROADMAP 11
+  item 3), carve, walk (no interiors), minimap and the full host (a kit on `khost.SHELL` plus the polygon tool, like
+  necanyons), city, furnish, simulation. Open on the core's side: a `hazard` tag key (`core/tags/PROPOSAL.md`).

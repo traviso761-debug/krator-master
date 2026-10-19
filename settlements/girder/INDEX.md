@@ -58,7 +58,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `80-camera.js` | 8 | 25. CAMERA: GIRDER ON core/host (1) |
 | `81-glow.js` | 6 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
-| `83-walk.js` | 19 | 25b. WALK MODE (1) |
+| `83-walk.js` | 13 | 25b. WALK MODE, on core/walk (1) |
 | `84-flyers.js` | 24 | 84. FLYERS (1) |
 | `84a-flyers-routes.js` | 20 |  |
 | `84b-flyers-animals.js` | 21 |  |

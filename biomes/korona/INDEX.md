@@ -23,12 +23,13 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 11 | the gorge floor (43); the rock (KSTACKS records: core/terrain/37-core- (58); the station's say: STAGE (47 reads it; the pitch (83) |
-| `47-host-land.js` | 30 | the fields (biomes/WORLD.md; BIOME-API.md): wet, (27); the host binding (before the meshes: their paint (46); the library layers (or procedural without the pa (69); the floor (one mesh: three layers by vertex weig (94); the rock (KSTACKS meshes): the walls and the top (141); THE CARVINGS (LORE.md 6.18): a strip on a bed's  (182); THE ICEFALLS (the hoar table): the hanging garde (213); the water: the stream's ribbon, the rain pools,  (237) |
-| `50-biome-korona-species.js` | 25 | palettes (sRGB; a library card carries its own c (22); the trap records (core/biome/37-core-traps.js):  (34); the tree-scale species (54); harvest (biomes/FRUIT.md; kits/crops) (65); the small plants and the carnivores, tagged (74); leaf textures (procedural, greyscale: the fallba (102); geometries (the necanyons kit's, read in place)  (141); materials (147); instanced items: the owner's sheets by cell, two (193) |
+| `47-host-land.js` | 29 | the fields (biomes/WORLD.md; BIOME-API.md): wet, (27); the host binding (before the meshes: their paint (46); the library layers (or procedural without the pa (69); the floor (one mesh: three layers by vertex weig (94); the rock (KSTACKS meshes): the walls and the top (141); THE CARVINGS (LORE.md 6.18): a strip on a bed's  (182); THE ICEFALLS (the hoar table): the hanging garde (213); the water: the stream's ribbon, the rain pools,  (237) |
+| `50-biome-korona-species.js` | 26 | palettes (sRGB; a library card carries its own c (22); the trap records (core/biome/37-core-traps.js):  (34); the tree-scale species (54); harvest (biomes/FRUIT.md; kits/crops) (65); the small plants and the carnivores, tagged (74); leaf textures (procedural, greyscale: the fallba (102); geometries (the necanyons kit's, read in place)  (141); materials (147); instanced items: the owner's sheets by cell, two (200) |
 | `55-biome-korona-trees.js` | 9 | the placement grid (the necanyons zones + Korona (12); keep-clear between trees (core/space) (30); the builders: (T, st, lv) with lv 2 near, 1 mid (41); impostors (the far trees) (63); the passes (data: species, cell, acceptance by z (77) |
-| `57-biome-korona-carnivores.js` | 20 | the plants (24); the passes (126) |
+| `57-biome-korona-carnivores.js` | 21 | the plants (24); the passes (127) |
 | `60-biome-korona-floor.js` | 3 |  |
 | `70-biome-korona.js` | <1 |  |
 | `88-host-build.js` | 4 |  |
+| `89w-host-water.js` | 4 |  |
 | `99-host-take.js` | 12 | the inspector's words: a plant names its species (34); the probe's budgets and the kit's own checks (ve (50); the page, handed to the host (98) |
 | `99-tail.html` | <1 |  |

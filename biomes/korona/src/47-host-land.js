@@ -235,13 +235,9 @@ if(STAGE.icefalls&&LIB['ice']||STAGE.icefalls&&PROC['ice']){const IF=STAGE.icefa
   ICEFALLS.forEach(f=>BIO.record({name:'An icefall',key:'icefall',x:f.x,z:f.z,y:f.y-f.len,r:Math.max(3,f.w/2),h:f.len}));}}
 
 // ---------------------------------------------------------------- the water: the stream's ribbon, the rain pools, the station's pools
-const MAT_WATER=new THREE.MeshStandardMaterial({color:STAGE.waterCol||0x24302c,roughness:.08,metalness:.3,transparent:true,opacity:.88});
-(function(){const pos=[];if(STREAM_)for(let z=-STAGE.R*1.1;z<STAGE.R*1.1;z+=20){const a=[STREAM_.x(z),z],b=[STREAM_.x(z+20),z+20],ya=streamBed(a[1])+STREAM_.depth,yb=streamBed(b[1])+STREAM_.depth,w=STREAM_.w;
-  pos.push(a[0]-w,ya,a[1],b[0]-w,yb,b[1],b[0]+w,yb,b[1],a[0]-w,ya,a[1],b[0]+w,yb,b[1],a[0]+w,ya,a[1]);}
- const disc=p=>{const n=Math.max(14,Math.round(p.r*1.2));for(let k=0;k<n;k++){const a0=-k/n*TAU,a1=-(k+1)/n*TAU;pos.push(p.x,p.y,p.z,p.x+Math.cos(a0)*p.r,p.y,p.z+Math.sin(a0)*p.r,p.x+Math.cos(a1)*p.r,p.y,p.z+Math.sin(a1)*p.r);}};
- NECANYONS.POTHOLES.forEach(disc);STAGE.pools.filter(p=>!p.ice).forEach(disc);
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.material.side=THREE.DoubleSide;m.userData.probeSkip=true;m.userData.inspectLabel=STAGE.waterLabel||'Water (the stream; a rain pool on the pavement)';scene.add(m);
+// the stream and the standing water are core/water's since 2026-10-19 (89w-host-water.js: a record each, their drawing);
+// here only the page's own surfaces: the ice over a frozen pool, the sucking pools' beds
+(function(){
  // A FROZEN POOL (a pool record with ice: the hoar table's tarn; the owner, 2026-10-19: it did not read as a tarn): an
  // opaque plate of ice, pale blue-white on the snow map (dithered), a little sheen, a frost rim of its own
  const ice=STAGE.pools.filter(p=>p.ice);if(ice.length){const Ls=layer('ground.snow'),ip=[],iu=[];

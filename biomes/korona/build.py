@@ -9,6 +9,7 @@ Stations, like the Throne's (NOTES.md, "Building it"): each is its own showcase 
   00-head.html        page shell, opens <script>
   10..44              BIOME CORE (core/biome, with 37-core-traps: the carnivores' trap rules), core/rand, core/tags,
                       core/space, core/export, the material library and the packs (korona, necanyons, hyperjungle);
+                      core/water and core/atmos (the stream, the pools and the lakes drawn in 89w-host-water.js);
                       core/terrain/37-core-stacks.js (KSTACKS: the tepui, the stacks)
   45-host-stage       HOST: renderer, light, the station's landform (the floor function, the rock as KSTACKS records), STAGE
   46-nec-layout       the NECANYONS kit's layout, read in place: zones on the rock (floor, foot, ledge, bench, cap), seeps, potholes
@@ -111,6 +112,15 @@ for f in CORE_EXPORT:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# core/water (core/water/README.md): the stream a WATER.flow, every pool and pothole a WATER.still, drawn by core/water in
+# src/89w-host-water.js on core/atmos's clock, wave chunk and sky light (89-atmos-*: the core, the presets, the export so
+# the export's atmos section fills, the waves, the skylight). A src/ copy wins.
+CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
+for f in CORE_WATER:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+for f in CORE_ATMOS:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 # the host shell from core/host (core/host/README.md). src/99-host-take.js hands it the page (KHOST.take).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
 import host as khost

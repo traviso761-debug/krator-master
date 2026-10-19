@@ -26,6 +26,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `48-audit.js` | 12 | Plan audit (declared geometry) (1) |
 | `48b-sets.js` | 12 | Interior sets: a building kit's interiors as dat (1) |
 | `49-exports.js` | 2 | Build, export and the global names (1) |
+| `49b-walk.js` | 12 | Walk records: a placed set item's floors, walls  (1) |
 | `50-shell.js` | 7 | View: procedural room shells (THREE) (1) |
 | `51-building.js` | 12 | View: planned building shells (THREE) (1) |
 | `52-outline.js` | 7 | View: room-outline debug view (THREE) (1) |

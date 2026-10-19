@@ -70,7 +70,7 @@ const PATH=[[-1480,300],[-1150,250],[-820,170],[-520,70],[-220,-30],[80,-120],[3
 const dOf=(x,z)=>Math.hypot(x,z);
 const STAGE={
  name:'Korona: the pitcher hollow',R:TERR.R,bodies:ROCK,floor:floorH,capY:BUTTE.y0+150,seed:12,talusH:14,
- stream:null,streamD:()=>1e9,pools:POOLS,path:PATH,heroR:1600,
+ air:{pressure:1.74},stream:null,streamD:()=>1e9,pools:POOLS,path:PATH,heroR:1600,
  // the whole floor is wet (2,100 mm, nothing drains); the east, under the wall, wetter
  windward:(x,z)=>.8+.2*smooth(-600,700,x),
  wetExtra:(x,z)=>.25*smooth(900,620,dOf(x,z)),

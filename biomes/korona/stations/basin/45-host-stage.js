@@ -73,7 +73,7 @@ const BENCH=ROCK[0];
 // ---------------------------------------------------------------- the station's say: STAGE (47 reads it)
 const STAGE={
  name:'Korona: the fertile basin',R:TERR.R,bodies:ROCK,floor:floorH,capY:BENCH.y0+150,seed:13,talusH:16,
- stream:STREAM,streamD,pools:[LAKE],
+ air:{pressure:1.44},stream:STREAM,streamD,pools:[LAKE],
  windward:(x,z)=>.85+.15*smooth(600,-600,x),
  wetExtra:(x,z)=>.3*bogK(x,z)+.15*smooth(120,0,lakeD(x,z)),
  warm:(x,z)=>{const t=NECANYONS.top(x,z);return t>-1e8?.75:1;},
