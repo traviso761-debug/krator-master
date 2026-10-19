@@ -53,7 +53,7 @@ const CONTRACTS = {
  atmos: 'ATMOS.export() (core/atmos, krator-atmos): presets, clock, wind, lamps, glows, props; colours sRGB',
  water: 'WATER.export() (core/water, krator-water): {format, version, period, presets, field: "atmos" | "none", surfaces: [{id, kind, name, bounds, ...}], probes}; an open surface carries level, base, swell (the preset name or list), waves [{A, lambda, k, dir, H, phase, cycles, turns [tx, tz, tc]}], field (the share of the shared wave field, 0 without core/atmos), fieldShare, chop, kChop, tilt, lod, px, damp, amp, bed {x0, z0, cell, nx, nz, level, bytes (Uint8Array RGBA, PRESETS.bed\'s encoding)} or null, look, shore {band, clip, ...} and mask {...} where it has them; a flow its ribbon {count, sum}, a fall its curtain {count, sum} and plungePoint, a still pool its mesh {triangles, sum}; probes [x, z, t, h, surface id] from WATER\'s own twin (a river\'s with its current: vx, vz, speed, slope)',
  fixtures: 'STUB. Doors, windows, lights, signs as core/tags records with a placement each (Yuni\'s KRATOR_EXPORT.fixtures shape): {format: "krator-fixtures", records: [{id, uid, class: "fixture", kind, parent, at, ry, size, tags, host: {wall, side, sill}}]}',
- interiors: 'STUB. The room graph (kits/interiors ROOM()): {format: "krator-interiors", buildings: [{id (the building record), storeys: [{y, rooms: [{id, kind, poly, h, doors: [ids]}]}], links: [{a, b, kind: "door" | "stair" | "ladder", at}], walls: [{a, b, h, col: true}]}]}',
+ interiors: 'STUB. The room graph (kits/interiors ROOM()), building-local: {format: "krator-interiors", buildings: [{id (the building record), storeys: [{y, rooms: [{id, kind, poly, h, doors: [ids: a fixture record, or a link of this building]}]}], links: [{id, a, b (room ids; "outside" or "court" past an exterior door), kind: "door" | "stair" | "ladder", at, from, to}], walls: [{id, a, b, h, col: true}], yard?: {y, poly}}]}. Filled by Yuni (settlements/yuni/src/77-export.js); EXPORT.check joins the doors and the links',
  furniture: 'STUB. GODOT-PLAN.md Phase 4\'s per-look scheme: {format: "krator-furniture", pieces: [{id: "<piece>/<variant>/<look>", entry {tags, anchor, size, role, job, family per material}, lights, mesh (a glb node)}], placements: [{record (a core/tags furniture id), piece, at, ry}]}. A placement\'s seed is reduced to one of K looks (about 4) per variant, so placements share a mesh: one MultiMesh per piece and look',
  sim: 'STUB. core/simulation\'s export (krator-sim: places, actors, schedules, routes, the clock), first for the isle demo (M6, settlements/isle-demo/PLAN.md section 7); Verge and Dhelv write theirs through their verify (godot/data/verge, dhelv) until they register here',
  city: 'STUB. core/city registers it (EXPORT.register("city", fn, {by: "city"})) for the isle demo\'s two plans (M6, ROADMAP.md section 11). Expected: {format: "krator-city", plan (streets, blocks, lots as plain records keyed by stable ids), edits (krator-edits/1 deltas by id)}; buildings and their doors join the registry by id'
@@ -298,6 +298,28 @@ function check(w, opt){
  }
  if(w.registry && !R) bad('registry without records');
  if(R) for(const r of R.values()) if(r.parent != null && !R.has(r.parent)) bad('registry record ' + r.id + ': its parent ' + r.parent + ' is not in the registry');
+ if(w.interiors){   // the room graph: each building a registry record, a room's door a fixture record or one of the building's links, a link's ends its rooms
+  const fx = w.fixtures && w.fixtures.records ? ids(w.fixtures.records, 'fixture') : null;
+  J.interiorsBuildings = 0; J.interiorsRooms = 0; J.interiorsDoorRefs = 0; J.interiorsDoorsResolved = 0; J.interiorsLinks = 0;
+  if(w.interiors.format !== 'krator-interiors') bad('interiors is not a krator-interiors section');
+  ids(w.interiors.buildings, 'interiors building');
+  for(const B of w.interiors.buildings || []){
+   J.interiorsBuildings++;
+   if(R && !R.has(B.id)) bad('interiors building ' + B.id + ' is not in the registry');
+   const rooms = new Map(), links = new Map();
+   for(const l of B.links || []){ J.interiorsLinks++; if(l.id != null){ if(links.has(l.id)) bad('interiors building ' + B.id + ': duplicate link id ' + l.id); links.set(l.id, l); } }
+   for(const S of B.storeys || []) for(const r of S.rooms || []){ J.interiorsRooms++;
+    if(rooms.has(r.id)) bad('interiors building ' + B.id + ': duplicate room id ' + r.id); rooms.set(r.id, r);
+    if(!Array.isArray(r.poly) || r.poly.length < 3) bad('interiors room ' + r.id + ': no polygon'); }
+   for(const r of rooms.values()) for(const d of r.doors || []){ J.interiorsDoorRefs++;
+    if((fx && fx.has(d)) || links.has(d)) J.interiorsDoorsResolved++;
+    else bad('interiors room ' + r.id + ' names door ' + d + ', which neither the fixtures section nor its building\'s links hold'); }
+   for(const l of B.links || []){
+    if(['door', 'stair', 'ladder'].indexOf(l.kind) < 0) bad('interiors building ' + B.id + ': link ' + l.id + ' of kind ' + l.kind);
+    for(const e of [l.a, l.b]) if(e != null && !rooms.has(e) && e !== 'outside' && e !== 'court') bad('interiors building ' + B.id + ': link ' + l.id + ' ends in ' + e + ', which is not one of its rooms'); }
+   for(const wl of B.walls || []) if(!wl.a || !wl.b || wl.h == null) bad('interiors building ' + B.id + ': a wall without a, b and h');
+  }
+ }
  if(w.terrain){ const t = w.terrain;
   if(t.field && t.field.format !== 'krator-field') bad('terrain.field is not a krator-field');
   if(!t.field && !t.grid) bad('terrain with neither a field nor a grid'); }

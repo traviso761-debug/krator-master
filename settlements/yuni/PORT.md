@@ -60,7 +60,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/72-lights.js` | 5.1 | [G native] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-terrain.js` | 16.7 | [draw] | 32 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/76-doors.js` | 26.3 | [web] | 14 | 0 | 5 | 1 | 0 | 1 | 6 | 2 | 0 | 0 | 0 | split: data inside host code; 2026-10-15: its buttons (walk, doors, cutaway, export) in #ui, adopted by core/host's bar |
-| `src/77-export.js` | 3.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Yuni's part of core/export (2026-10-18): the fixtures section from the core/tags records 51-fixtures.js makes, with their host; interiors answers empty. Reads plain data at export time only |
+| `src/77-export.js` | 3.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Yuni's part of core/export (2026-10-18): the fixtures section from the core/tags records 51-fixtures.js makes, with their host, and the interiors section (the krator-interiors contract) from the interior plans. Reads plain data at export time only |
 | `src/80-camera.js` | 11.9 | [web] | 2 | 0 | 2 | 6 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | on core/host (2026-10-15): ctl shim (theta from +x), setView capture, CAM_FREE and the walk in camClamp, VIEWS, the walker's keys, camFrame and camDraw |
 | `src/81-glow.js` | 4.7 | [G native] | 12 | 2 | 0 | 0 | 0 | 2 | 3 | 2 | 0 | 0 | 0 | shader hook inside |
 | `src/82-daynight.js` | 6.2 | [G native] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

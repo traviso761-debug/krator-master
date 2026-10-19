@@ -641,16 +641,16 @@
    "sha256": "69da5d3ead1956643fb0cd57a9aa286ce3d8217dcc5c0ce3fd2f4fb9f42f125e"
   },
   "settlements/yuni/yuni-assets.html": {
-   "bytes": 1585867,
-   "sha256": "fc5d20c1ead2deada16511006ca873af13682759ffa5c44f59809e5b566ebd08"
+   "bytes": 1593503,
+   "sha256": "2df2b8b57d75f120c2e0bf25892c004892331a1ab514cfbdf67c5e6c4786daca"
   },
   "settlements/yuni/yuni-plants.html": {
-   "bytes": 1585864,
-   "sha256": "9a553f1a885e34f8dd3ec6cf29d56df2ab49a4cf419bc83ce68110213dbf57cb"
+   "bytes": 1593500,
+   "sha256": "fc24622e914888ff3fe18a30a1c4beac7e022b4af60c1c1e96ae500c27044fe3"
   },
   "settlements/yuni/yuni.html": {
-   "bytes": 1585803,
-   "sha256": "93c3b8d2a50bf18475f6aa5cee279d87bcc1896a662bece11f2938bcf4ea363d"
+   "bytes": 1593439,
+   "sha256": "df1a96535546f4cb17a69e8e4ec96914b73877fb7e44e060d005fba23494cc8b"
   }
  },
  "what": "SHA-256 of every built page; tools/port_baseline.py"

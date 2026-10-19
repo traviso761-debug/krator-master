@@ -736,11 +736,16 @@ pre-flight passes on Windows (`krand_test`, `atmos_test`, `--check`: five cases,
     wall section) is wanted before judging halos against buildings. Fixed the same day: ~~no fog banks (4c)~~, the
     spike never switched the environment's volumetric fog on, which FogVolumes need (`spike.gd` now does when a case
     has any; to recheck); ~~Shift+W~~ for the weather also moved the camera: now `F3`.
-19. **yuni.** Opens as intended (translucent building boxes, doors and windows as small panels, the compound's rooms
+19. ~~**yuni.** Opens as intended (translucent building boxes, doors and windows as small panels, the compound's rooms
     as open-topped boxes), but it cannot be judged by eye: there are no meshes, and a running game has no inspector
     for the metadata (5a to 5c unchecked). Wanted: an in-game click readout in the spike (the record under the
     cursor), and a scripted nav check (`bld_00005`: a path from one room to another through a door link) that prints
-    pass or fail, so this case needs no editor work. Meshes for Yuni wait on its second route (gap 13).
+    pass or fail, so this case needs no editor work.~~ Done 2026-10-18 for the nav check: Yuni fills core/export's
+    `interiors` section (`settlements/yuni/src/77-export.js`; `core/export/README.md`, "Interiors"), the `world-yuni`
+    case builds every planned interior under its building (`krator/world_import.gd` on the spike's own builder), and
+    `godot/tests/export/yuni_interiors_test.gd` paths from one room of `bld_00005` to another through its door links
+    and the yard, with the links removed as the negative; it prints pass or fail and exits with it. Still open: the
+    in-game click readout. Meshes for Yuni wait on its second route (gap 13).
 20. **Fauna motion (2026-10-16).** The core's `anim` kind moves in Godot: `shaders/lib/anim.gdshaderinc` (orbit, flit,
     walk; wings, legs, billboards; `anim.gdshader`, and `anim_add.gdshader` for the additive motes), each instance's
     path radius and `aP1` packed by both importers. Its twin `krator/kanim.gd` matches `BIO.animHook`'s own GLSL run on a

@@ -10,7 +10,7 @@
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
 extends Node3D
 
-const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert", "world-iziz", "world-sedesert-falls"]   # keys 1-9; world-iziz and world-sedesert-falls by name (tools/shot.sh world-iziz)
+const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni"]   # keys 1-9; world-iziz, world-sedesert-falls and world-yuni by name (tools/shot.sh world-iziz)
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
@@ -23,6 +23,7 @@ const ABOUT := {
 	"world-sedesert-falls": "krator-world (core/export): sedesert's notch, the river's last reach, the cataract and its plunge pool (core/water phases 3 and 4)",
 	"world-sedesert": "krator-world (core/export, M4): the same sedesert tile through the one container: world.json (records, materials, library maps by reference, the field, the stage) beside world.glb (EXT_mesh_gpu_instancing)",
 	"world-iziz": "krator-world (core/export, M5): a district of Iziz through the same container: the kit's instances with their item sets and owners, the plain meshes by material, the library and procedural maps, the sampled ground and its painted look, the buildings with their doors, windows and lamps (Records)",
+	"world-yuni": "krator-world (core/export): the Foundry's box of Yuni, records only: the buildings with their doors, windows and lights, and every planned interior (the interiors section: rooms, walls with -col, door links, a navmesh per storey and yard)",
 }
 
 var current := ""
@@ -131,7 +132,7 @@ func _load_case(name: String) -> Dictionary:
 		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
 	match name:
-		"world-sedesert", "world-iziz", "world-sedesert-falls":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district
+		"world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district, Yuni's records
 			var wv := KratorWorld.build(dir + "world.json")
 			world.add_child(wv)
 			report = wv.get_meta("report")
