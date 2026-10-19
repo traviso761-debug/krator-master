@@ -2646,7 +2646,8 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         p = P('violet', 0.03, [B('top', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.0, 0.02, 'solid', 'gold'),
                                B('bottom', 0.025, 0.08, 'diamonds', 'gold', 'violet', 0.06), B('bottom', 0.085, 0.095, 'solid', 'gold')])
         sl = P('violet', 0.03, [B('bottom', 0.0, 0.03, 'solid', 'gold')])
-        return [torso_tube(gid, TOP, ANKLE + 0.16, 0.012, p, hang_from=WAIST + 0.02, flare=0.24, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+        # to the ankle: a hem at mid-calf showed the trousers under it drawn in to the legs (50-figure.js SQUEEZE)
+        return [torso_tube(gid, TOP, ANKLE + 0.05, 0.012, p, hang_from=WAIST + 0.02, flare=0.24, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                 torso_tube(gid + '_sash', WAIST + 0.04, WAIST - 0.035, 0.026, P('kesar', 0.03, [B('top', 0.0, 0.012, 'solid', 'gold'), B('bottom', 0.0, 0.012, 'solid', 'gold')]),
                            rows=3, n=40, hull_from=WAIST + 0.1),
                 collar_disc(gid + '_collar', 0.05, P('gold', 0.02, [B('top', 0.0, 0.5, 'beads', 'pomegranate', 'gold', 0.02)]), drop=0.02, scallop=0.0, rows=2)] + \
