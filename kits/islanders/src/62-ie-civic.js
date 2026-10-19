@@ -61,7 +61,7 @@ function ieRoofY(rf,x,z){const f=rf.F(z<0?-1:1);let best=1e9,y=0;for(let i=0;i<=
 /* a solid flight of stone steps from the ground (at local z = run, outward) up to y1 (at z = 0), w wide, at (x, z) turned ry:
    each step a block down to the ground, carved balustrades along both sides ending in posts. Returns the run. */
 function ieSteps(x,z,ry,y1,w,o){o=o||{};const n=Math.max(2,Math.ceil(y1/.2)),rise=y1/n,go=o.go||.32,run=n*go,cv=P('carvN');
- W(x,0,z,ry,()=>{for(let i=0;i<n;i++)box('stone',0,0,run-go*(i+.5),w,rise*(i+1),go+.02,P('stone'));
+ W(x,0,z,ry,()=>{for(let i=0;i<n;i++){WKOFF=1;box('stone',0,0,run-go*(i+.5),w,rise*(i+1),go+.02,P('stone'));WKOFF=0;wkPad(0,run-go*(i+.5),w,go+.02,rise*(i+1));}
   if(o.rail!==false)for(const s of [-1,1]){beam('carved',[s*(w/2+.13),.45+.5,run],[s*(w/2+.13),y1+.5,0],.26,cv,false,undefined,1.0);box('carved',s*(w/2+.13),0,run,.4,1.25,.4,cv);
    box('stone',s*(w/2+.13),0,run/2,.26,.45,run,P('stone'));}});return run;}
 /* FURNISH a list: [key, x, y, z, ry, opts] */

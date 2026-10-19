@@ -22,21 +22,8 @@ function zwMinusHoles(poly,holes){let parts=[poly];
     if((cx-a[0])*n[0]+(cz-a[1])*n[1]>0)n=[-n[0],-n[1]];next.push(zwClip(rest,a,n));rest=zwClip(rest,a,[-n[0],-n[1]]);}}
   parts=next.filter(P=>P.length>=3&&zwArea(P)>.05);}
  return parts;}
-function zwItem(item,rec,o){o=o||{};if(!item)return null;const out={floors:0,blocks:0,strips:0};
- const inst=KratorInteriors.sets.instantiate(item,rec.x,rec.z,rec.ry,{baseY:rec.y,register:false,prefix:zwPrefix(rec)});
- const tag='built:'+rec.key,carvedDef=!!item.carved;
- for(const R of inst.rooms){if(R.setBody&&inst.buildings.length&&!R.explicit)continue;
-  const src=(item.rooms||[]).find(r=>(r.id||'')===R.setBody)||{};if(src.carved===true||(carvedDef&&src.carved!==false))continue;
-  KWALK.poly({pts:zwInset(R.poly,.3).map(p=>[p[0],p[1],R.y]),name:R.id,tag});out.floors++;
-  /* the room's own walls, a half-thickness out from its inner face, open at its doors */
-  const t=src.wall||item.wall||.22,ring=zwInset(R.poly,-t/2),gaps=R.doors.map(d=>[d.at[0],d.at[1],d.w/2+.15]);
-  for(let i=0;i<ring.length;i++)out.blocks+=zwWall(ring[i],ring[(i+1)%ring.length],R.y,R.y+R.h,t,gaps,tag);}
- for(const B of inst.buildings){
-  for(const F of B.floors){const parts=zwMinusHoles(zwInset(F.poly,.3),F.holes||[]);
-   parts.forEach((pts,i)=>{KWALK.poly({pts:pts.map(p=>[p[0],p[1],F.y]),name:B.id+'.floor.'+F.level+(parts.length>1?'.'+i:''),tag});out.floors++;});}
-  for(const Wl of B.walls){const dx=Wl.b[0]-Wl.a[0],dz=Wl.b[1]-Wl.a[1],L=Math.hypot(dx,dz)||1;
-   const gaps=(Wl.openings||[]).filter(q=>q.door).map(q=>[Wl.a[0]+dx*(q.u/L),Wl.a[1]+dz*(q.u/L),q.w/2+.1]);
-   out.blocks+=zwWall(Wl.a,Wl.b,Wl.y,Wl.y+(Wl.h||2.6),Wl.thick||.22,gaps,tag);}
-  const G=B.graph||{nodes:[]};for(const S of B.stairs){const f=G.nodes.find(n=>n.tag==='stairfoot'&&n.ref===S.id),tp=G.nodes.find(n=>n.tag==='stairtop'&&n.ref===S.id);
-   if(f&&tp){KWALK.strip({a:[f.x,f.z,f.y],b:[tp.x,tp.z,tp.y],w:Math.max(.6,S.w-.3),name:S.id,tag});out.strips++;}}}
- return out;}
+function zwItem(item,rec,o){o=o||{};if(!item)return null;
+ const inst=KratorInteriors.sets.instantiate(item,rec.x,rec.z,rec.ry,{baseY:rec.y,register:false,prefix:zwPrefix(rec)}),carvedDef=!!item.carved;
+ /* the floors, walls, stairs and entry flights are the interiors kit's (IX.walk, kits/interiors/src/49b-walk.js): a room marked carved (a carved def's, unless it says carved:false) is the cavern's */
+ return KratorInteriors.walk.register(inst,KWALK,{tag:'built:'+rec.key,blockStep:ZW_STEP,
+  skipRoom:R=>{const src=(item.rooms||[]).find(r=>(r.id||'')===R.setBody)||{};return src.carved===true||(carvedDef&&src.carved!==false);}});}

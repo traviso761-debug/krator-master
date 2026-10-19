@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.632,
+    0.207
+   ],
+   "seam_before": [
+    1.323,
+    0.22
+   ],
+   "source_size": [
+    1774,
+    444
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.25,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "court/books-b",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "court-books-b.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (Talia: the paintings, the book spines); cut into cells by the session",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/talia/book-spines: two rows of old leather and vellum book spines with gilt tooling; this is row B (one shelf row, about 0.3 m)",
+  "reuse": "the books on any court or scholar's bookcase (the Iziz court set, Talia, Yuni's scholars)",
+  "sha1": "2cf9d0da9349165a939013daebee4d41dc2913a5"
+ }
+}

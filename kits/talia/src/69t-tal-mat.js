@@ -26,7 +26,7 @@ MAT.taGilt=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.85,roughnes
 // tile: the shingle map (its courses read as tiles at this scale) tinted terracotta, on domes, hips and cones
 MAT.taTile=MAT.shingle.clone();vWorldUV(MAT.taTile,.5);
 // cobalt glass: a deep blue pane with a little metal in it
-MAT.taCobalt=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.35,roughness:.3});
+MAT.taCobalt=new THREE.MeshStandardMaterial({color:0x2f5fb8,metalness:.35,roughness:.3});
 // the lit pane and the glass, double-sided, for the pointed wedges
 MAT.taLit=MAT.warmPane.clone();MAT.taLit.side=THREE.DoubleSide;MAT.taGlass=MAT.darkGlass.clone();MAT.taGlass.side=THREE.DoubleSide;
 MAT.taVoid=MAT.void.clone();MAT.taVoid.side=THREE.DoubleSide;
@@ -38,9 +38,9 @@ const TARIB=new THREE.TorusGeometry(1,.05,6,10,Math.PI/2);
 // a flat ring (torus in the xz plane, facing up): mosaic ring medallions, column collars (scale [r, r, r]; tube 10%)
 const TARING=new THREE.TorusGeometry(1,.1,6,28).rotateX(Math.PI/2);
 // the column shaft: a lathe with entasis, base at y = 0, height 1, radius 1 at the foot and .82 at the neck
-const TACOL=new THREE.LatheGeometry([[1,0],[1,.05],[.98,.2],[1,.38],[.97,.6],[.9,.82],[.83,.97],[.82,1]].map(p=>new THREE.Vector2(p[0],p[1])),14);
+const TACOL=new THREE.LatheGeometry([[1,0],[1,.05],[.98,.2],[1,.38],[.97,.6],[.9,.82],[.83,.97],[.82,1]].map(p=>new THREE.Vector2(p[0],p[1])),10);
 // a baluster: a vase on a plinth, base at y = 0, height 1, its widest .34
-const TABAL=new THREE.LatheGeometry([[.3,0],[.3,.07],[.13,.09],[.13,.24],[.3,.4],[.34,.52],[.3,.64],[.16,.8],[.17,.92],[.3,.94],[.3,1]].map(p=>new THREE.Vector2(p[0],p[1])),10);
+const TABAL=new THREE.LatheGeometry([[.3,0],[.3,.07],[.13,.09],[.13,.24],[.3,.4],[.34,.52],[.3,.64],[.16,.8],[.17,.92],[.3,.94],[.3,1]].map(p=>new THREE.Vector2(p[0],p[1])),6);
 // an echinus: a flared drum, base at y = 0 (a Doric capital, a column base upside down)
 const TAECH=new THREE.CylinderGeometry(1,.78,1,14).translate(0,.5,0);
 // a bell: a Corinthian capital's core, flaring wider (top radius 1.3, bottom .8), base at y = 0
@@ -83,3 +83,29 @@ MAT.taJaliA=taCard();vWorldUV(MAT.taJaliA,1);MAT.taJaliG=taCard();vWorldUV(MAT.t
 kdef('taMosaicB',VBOX,MAT.taMosaic);kdef('taDiscMo',TADISC,MAT.taMosaicD);kdef('taVaultMo',TAVAULT,MAT.taMosaic);
 kdef('taMeanderB',VBOX,MAT.taMeander);kdef('taRenderW',VBOX,MAT.taRenderW);
 kdef('taJaliA',VPLANE,MAT.taJaliA);kdef('taJaliG',VPLANE,MAT.taJaliG);kdef('taRose',VPLANE,MAT.taRose);
+
+// ---------------------------------------------------------------- P4: the University and the civic set
+// a round drum (24 sides, base at y = 0): the big drums (library, temple, anatomy theatre, observatory), where the
+// Vernacular's eight-sided post reads as an octagon
+const TADRUM=new THREE.CylinderGeometry(1,1,1,24).translate(0,.5,0);
+kdef('taDrum',TADRUM,MAT.plaster);kdef('taDrumM',TADRUM,MAT.taMarble);
+// a plaster cone (the memorial's lathe spire, the chapel's rib spire)
+kdef('taConeP',TACONE,MAT.plaster);
+// glasshouse glass: a pale green-grey pane with a sheen, opaque (no sorting in the batch); tinted per instance
+MAT.taPane=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.15,roughness:.05,side:THREE.DoubleSide,transparent:true,opacity:.28,depthWrite:false});
+kdef('taDomeGl',VDOME,MAT.taPane);kdef('taDiscP',TADISC,MAT.taPane);kdef('taVaultGl',TAVAULT,MAT.taPane);kdef('taPaneB',VBOX,MAT.taPane);
+kdef('taRibI',TARIB,MAT.iron);
+// the cobalt glass carries its own colour (TAPAL.cobalt: no arch tints its fill); a double-sided copy for the pointed heads
+MAT.taCobaltDS=MAT.taCobalt.clone();MAT.taCobaltDS.side=THREE.DoubleSide;kdef('taGableC',VGABLE,MAT.taCobaltDS);
+// the column's small parts at low poly (its base torus and its capital's volutes: a column carries several of each)
+const TARINGS=new THREE.TorusGeometry(1,.1,4,12).rotateX(Math.PI/2),TANUB=new THREE.SphereGeometry(1,6,4);
+kdef('taRingMs',TARINGS,MAT.taMarble);kdef('taRingGiS',new THREE.TorusGeometry(1,.1,4,12),MAT.taGilt);kdef('taGiltNub',TANUB,MAT.taGilt);
+// P5: a verdigris melon dome for the palace's pavilions (the copper alternative to the orange tile, PLAN.md section 5)
+kdef('taDomeCu',VDOME,MAT.verdigris);
+
+// ---------------------------------------------------------------- real openings (the owner, 2026-10-19: no dark voids)
+// Talia's pane: the dark glass lifted to a sky grey (Pylon's pyPane, the same values), so a window reads as glass, not a
+// hole; double-sided for the pointed heads. Timber leaves for the doors' arched and pointed heads (white, tinted walnut).
+MAT.taWinPane=MAT.darkGlass.clone();MAT.taWinPane.color.set(0x7d97a3);MAT.taWinPane.roughness=.15;MAT.taWinPane.metalness=.55;
+MAT.taWinPaneDS=MAT.taWinPane.clone();MAT.taWinPaneDS.side=THREE.DoubleSide;
+kdef('taWinB',VBOX,MAT.taWinPane);kdef('taWinDisc',TADISC,MAT.taWinPane);kdef('taWinGable',VGABLE,MAT.taWinPaneDS);

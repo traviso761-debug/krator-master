@@ -11,7 +11,7 @@
 const VFURN=(function(){
  KratorFurniture.setDetail(.5);
  const F=KFURN.create(Object.assign(KFURN.flags(true),{
-  catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,tags:KTAGS.page,idPrefix:'vfurn',
+  catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,walk:KWALK,tags:KTAGS.page,idPrefix:'vfurn',
   seed:(o,ctx,R,x,y,z,loc)=>(((ctx.frame&&ctx.frame.seed)||1)*37+Math.round((loc?loc[0]:x)*11+(loc?loc[2]:z)*17)+997)&0xffff,
   onRecord:(rec,ctx)=>{if(rec.setting==='room'&&F.interiorsOn&&ctx.top&&ctx.top.interiorItem){rec.deferred='interiors';F.deferred++;return false;}},
   draw:(rec,ctx,o,A)=>{const r=KFURN.drawRec(F,rec,ctx.wealth!=null?ctx.wealth:.5);if(r.error)reportErr('furniture '+rec.key+': '+r.error);

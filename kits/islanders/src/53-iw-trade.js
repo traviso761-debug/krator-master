@@ -34,7 +34,7 @@ function iwRangkiang(x,z,ry,o){o=o||{};const L0=o.L0||3,D0=o.D0||2.2,L1=o.L1||4,
   door(0,fy,D0/2,0,.8);
   const rf=isSaddle({L:L1,W:D1,eaveY:t-.05,ridgeY:t+(o.ridgeH||2.2),sag:o.sag||.45,hornRise:o.hornRise||2.4,hornOut:o.hornOut||1.0,taper:1,over:.5,th:.22,nu:22,mk:'thatch',col:P('thatchW'),patch:o.patch||0});
   for(const s of [-1,1])rf.gable(s*L1/2,t,D1/2,'patGableW',{});iwSpikes(rf,.8);
-  isNoCut(()=>isLogLadder(.5,D0/2+.12,0,fy));
+  isNoCut(()=>isLogLadder(0,D0/2+.12,0,fy));   /* under the hatch (door x = 0); it stood 0.5 m to the side */
   if(o.furn!==false){FURNISH('job_bales',-L0/4,fy,-.25,0);FURNISH('generic_sack',L0/4,fy,-D0/4+.05,0);FURNISH('generic_sack',L0/4+.15,fy,D0/4-.1,.6);FURNISH('generic_basket',-L0/4,fy,D0/4+.12,0);}});
  CUTC=kc;}
 /* a lesung: the long log trough the women pound rice in, its pestles leaning on it */
@@ -191,12 +191,14 @@ defBuilding({key:'iw-shophouse',name:"Trader's shophouse (West)",seed:5352,cut:t
  build(o){const fy=.3,up=fy+2.75;iwHouse({L:9,D:6.4,floorY:fy,wallH:5.4,roof:{ridgeH:3.6,sag:1,hornRise:3,hornOut:1.4,taper:1,over:.9,th:.32},band:'patGableW',bandH:.45,dado:false,
   wallMk:'planks',front:[{x:0,w:1.2,h:2.2,door:true},{x:-3.0,w:2.2,y:.8,h:1.4},{x:3.0,w:2.2,y:.8,h:1.4},{x:-3.0,w:.8,y:3.3,h:.9},{x:0,w:.8,y:3.3,h:.9},{x:3.0,w:.8,y:3.3,h:.9}],
   back:[{x:-2,w:.7,y:.9,h:.7},{x:2,w:.7,y:3.4,h:.8}],left:[{x:0,w:.7,y:3.4,h:.8}],right:[{x:0,w:.7,y:3.4,h:.8}],shutMk:'patBand',shutCol:WHITE,stair:'none',finial:'spike',
-  extra:()=>{box('planks',0,up,0,8.8,.12,6.2,P('planks'));
+  extra:()=>{/* the upper floor with a stairwell along the back wall (it had no way up: stair 'none' and a catalog ladder through a closed slab) */
+   for(const [cx,cz,w,d] of [[0,.675,8.8,4.85],[2.3,-2.425,4.2,1.35],[-3.9,-2.425,1.0,1.35]])box('planks',cx,up,cz,w,.12,d,P('planks'));
+   isStair(0,-2.35,-PI/2,fy,up+.12,1.1,{rail:false});
    isNoCut(()=>{for(const s of [-1,1]){WX(s*3.0,fy+2.25,3.25,0,.32,0,()=>{box('planks',0,0,.62,2.5,.05,1.25,P('planks'));});pole('wood',[s*3.0-1.1,fy,4.2],[s*3.0-1.1,fy+1.86,4.39],.03,P('woodD'),5);pole('wood',[s*3.0+1.1,fy,4.2],[s*3.0+1.1,fy+1.86,4.39],.03,P('woodD'),5);}
     box('patStory',0,fy+2.5,3.27,3.2,.5,.05,WHITE);isMoonDisc(0,fy+2.75,3.33,0,.32);});
    const F=(k,x,z,ry,y)=>FURNISH(k,x,fy+(y||0),z,ry||0);
    for(const s of [-1,1])F('islander_common_wall_shelves',s*2.5,-2.98,0);F('islander_common_counter',-2.4,.5,0);F('generic_strongbox',-2.9,.5,0,1.05);F('generic_trade_display',2.6,.8,0);
-   F('generic_crate',3.85,-1.4,-PI/2);F('generic_crate',3.85,-1.4,-PI/2+.15,.42);F('generic_sack',-3.9,-1.3,.4);F('islander_common_ladder',3.7,-2.6,-PI/2);
+   F('generic_crate',3.85,-1.4,-PI/2);F('generic_crate',3.85,-1.4,-PI/2+.15,.42);F('generic_sack',-3.9,-1.3,.4);
    isFurnRoom(8.4,6.0,up+.06,'middle',{ceil:2.6,beds:2});}});
   isNoCut(()=>{const S={setting:'outdoor'};FURNISH('generic_crate',-5.4,0,3.4,.2,S);FURNISH('generic_crate',-5.3,.42,3.4,.5,S);FURNISH('generic_barrel',5.4,0,3.6,0,S);FURNISH('generic_bottle_crate',5.4,0,2.5,.3,S);isDrum(-5.6,0,1.8,{col:'drumY'});});}});
 defBuilding({key:'iw-weaver',name:"Weaver's house (West)",seed:5353,cut:true,w:14,d:11,h:9,budget:120000,

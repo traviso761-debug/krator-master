@@ -1,0 +1,11 @@
+{
+ "name": "The hoar table (station 6): a tepui summit above 3,500 m in the high cold country, the eastern highlands' cushions and the cold traps round the melt pools",
+ "out": "korona-hoar.html",
+ "kits": {
+  "49g1-eh-species.js": "../ehighlands/src/50-biome-ehigh-species.js",
+  "49g2-eh-trees.js": "../ehighlands/src/55-biome-ehigh-trees.js",
+  "49g3-eh-floor.js": "../ehighlands/src/60-biome-ehigh-floor.js",
+  "49g4-eh-build.js": "../ehighlands/src/70-biome-ehigh.js"
+ },
+ "packs": {"ehigh": "../ehighlands"}
+}

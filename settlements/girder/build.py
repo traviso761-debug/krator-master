@@ -67,6 +67,7 @@ LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')   # shared atmosphere: the sky's light on the library materials (core/atmos/README.md)
 FURNISH_DIR = os.path.join(ROOT, 'core', 'furnish')   # the furniture placement pass and its draw helpers (core/furnish/README.md)
+WALK_DIR = os.path.join(ROOT, 'core', 'walk')   # KWALK: the interiors' floors, walls, stairs and entry flights (kits/interiors IX.walk)
 RAND_DIR = os.path.join(ROOT, 'core', 'rand')   # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(ROOT, 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
 PORTS_DIR = os.path.join(ROOT, 'core', 'ports')   # PORT: each building's draw marked, for kits/beast-riders (core/ports/README.md)
@@ -88,6 +89,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js',   # core/materials/record (no rnd())
                  '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
                  '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
+                 '20-core-walk.js',    # core/walk (no rnd())
                  '44-core-ports.js',   # core/ports: the buildings' marks (no rnd())
                  '90-atmos-host.js',   # binds core/atmos
                  '98-start.js'}        # the take (KHOST.take)
@@ -238,7 +240,7 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for d in (LOD_DIR, RECORD_DIR, ATMOS_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, PORTS_DIR):   # a src/ copy with the same name overrides
+    for d in (LOD_DIR, RECORD_DIR, ATMOS_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, PORTS_DIR, WALK_DIR):   # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)

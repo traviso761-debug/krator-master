@@ -4,7 +4,7 @@
 
 Pinnacle Rock: the Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge (PLAN.md). So far the rock and the site (P0-P1): the mesa, its ten fins, the Garden and spurs as KSTACKS records from the settled plan (src/40-pr-layout.js), the necanyons and hyperjungle kits read in place, the floor and the far land to 60 km from the scale model (region/: its cut; the open world's fields read in place). Verified: build.py, verify.py --assert. Read README.md
 
-Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
+Docs: `HANDOFF.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/pinnacle-rock.html`
 

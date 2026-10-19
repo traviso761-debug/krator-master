@@ -61,7 +61,7 @@ var locCut = SITES.filter(function(S){ return S.box && S.ah >= 2.5; }).map(funct
   return { id:'asset-'+i, name:S.name, x:S.x, z:S.z, ry:S.box[2]||0, w:S.box[0]+1, d:S.box[1]+1, levels:lv }; });
 var LOCHOST = KHOST.take({
   build:CAM_BUILD, title:document.title, hint:CAM_HINT,
-  scene:scene, camera:camera, renderer:renderer, ground:terrainH, clampCam:camClamp, minR:4, maxR:9000,
+  scene:scene, camera:camera, renderer:renderer, ground:terrainH, walk:KWALK, clampCam:camClamp, minR:4, maxR:9000,
   views:locViews, start:VIEWS.length ? VIEWS[0][0] : 'Start',
   clock:{ hour:10, running:false, scale:1, speeds:[0, 1, 2, 4, 8] },   /* the world hour is the page's own clock (80-camera.js): no host hour */
   keys:SHEET ? { p:function(){} } : undefined,                          /* the sheet's P steps back (89-sheetui.js): marks stay on their button */

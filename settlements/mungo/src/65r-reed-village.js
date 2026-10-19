@@ -38,7 +38,7 @@ var REEDKIT = null, REED_BUILT = null;
     if(!LOCF.interiors) return; var n=0;
     REED_BUILT.placed.forEach(function(p, i){ var b=p.b, v=b.v|0, it=LOCF.item(p.key, v);
       if(!it){ var w=LOCF.why(p.key, v), u=LOCF.unfurnished[w], k=p.key+(v?'#'+v:''); u[k]=(u[k]||0)+1; return; }
-      var r=KratorInteriors.sets.furnish(it, b.x, b.z, b.ry||0, LOCF.adapter, { baseY:REED_Y, prefix:'rl.'+i+'.' });
+      var r=KratorInteriors.sets.furnish(it, b.x, b.z, b.ry||0, LOCF.adapter, { baseY:REED_Y, prefix:'rl.'+i+'.', walk:KWALK });
       r.inst.rooms.forEach(function(R){ var P=r.plans[R.id]; (P&&P.lights||[]).forEach(function(l){ nlLampAdd(l.x, l.y, l.z, l.intensity||0.7, l.distance||10, false); }); });
       LOCF.buildings.push({ key:p.key, variant:v, x:b.x, z:b.z, ry:b.ry||0, reed:true, interior:{ item:it.key, rooms:r.inst.rooms.length, residence:r.residence } }); n++; });
     window._reed.furnished = n; });

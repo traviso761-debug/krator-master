@@ -24,7 +24,7 @@ func _initialize() -> void:
 		var p := KHooks.include(id)
 		if not FileAccess.file_exists(p) or FileAccess.get_file_as_string(p).find("#ifndef K_") < 0:
 			missing.append(id)
-	ok(missing.is_empty() and KHooks.TABLE.size() == 11, "%d hooks, each with a guarded include in %s: %s" % [KHooks.TABLE.size(), KHooks.LIB, ", ".join(PackedStringArray(KHooks.TABLE.keys()))])
+	ok(missing.is_empty() and KHooks.TABLE.size() == 12, "%d hooks, each with a guarded include in %s: %s" % [KHooks.TABLE.size(), KHooks.LIB, ", ".join(PackedStringArray(KHooks.TABLE.keys()))])
 	var r1 := KHooks.resolve("world-uv+cloth-sway")
 	var r2 := KHooks.resolve("leaf")
 	var r3 := KHooks.resolve("irid+gloss")

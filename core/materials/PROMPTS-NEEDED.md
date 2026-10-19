@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 1 prompt (the one owed before Longsong), and 3 optional: section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). Longsong's fourteen were delivered 2026-10-19 ("Delivered 2026-10-19, Longsong's exterior", "... Longsong's depths and interiors"). A short list at the end names gaps that have no prompt yet.
+**Count: 1 prompt, and 3 optional: section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** The Iziz palace citadel's five were delivered 2026-10-19 ("Delivered 2026-10-19, the Iziz palace"). Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). Longsong's fourteen were delivered 2026-10-19 ("Delivered 2026-10-19, Longsong's exterior", "... Longsong's depths and interiors"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -167,6 +167,55 @@ cedar, the serpentwood and the banyan have library candidates already (`card.gin
 Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: smooth pale grey alder bark #9c9e96 heavily mottled with white and pale green-grey crustose lichen patches #d8dcd0 and #b8c4a8, a few dark horizontal lenticels #4a4a44, green moss creeping up from the bottom edge #5a7a26. Matte. One tile covers 1 metre.
 ```
 
+### Ys (`settlements/ys`)
+
+*All delivered 2026-10-14 (see "Delivered 2026-10-14" below).*
+
+From `settlements/ys/MATERIAL-PROMPTS.md`, "The ocean's rust" (Travis, 2026-10-05: "the ancient buildings here are quite
+rusty"); every other set in that file was delivered. Not tinted. Since 2026-10-06 Ys' ruined concrete takes
+`concrete.ancient` (`KMAT.bindMat`), so the drowned Ancients are textured, just not rusty; `MAT.rust` stays procedural.
+
+### The Fauna kit (`kits/fauna`)
+
+*All delivered 2026-10-14 (see "Delivered 2026-10-14" below).*
+
+From `PLAN.md`, "The Fauna kit": "Still needed for fauna". Triplanar detail maps under each animal's vertex colours, so
+both are near-colourless.
+
+### The Pylon kit (`kits/pylon`)
+
+The kit draws in the Iziz Vernacular's sets and the library's (`kits/pylon/materials.json`); these three it has no set for
+(`kits/pylon/PLAN.md` section 8). Each lands in the library or `patterns/pylon/`; add its family to
+`kits/pylon/materials.json` and repack.
+
+#### `tile.hex.glazed`
+- Kind: tileable material, near-colourless (tinted amber by the kit); 1 m tile. The honeycomb-tiled walls and street of
+  the owner's `refs/1b13731cac223929fb36a94b49c88603.jpg`: rich interiors, the scrap exchange's floors, hex paving.
+- Reuse: any glazed hexagonal tile floor or wall (a bath house, a Yuni kitchen, a Hykkousoi hall), tinted to taste.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Glazed ceramic hexagonal tiles about 10 cm across, set flat-side to flat-side in a honeycomb, about twenty tiles across the image: each tile slightly domed with a soft glaze sheen, faint variation of glaze thickness from tile to tile, a few hairline crazing cracks, one or two chipped corners, narrow dark grout lines between them. Pale grey glaze, dark grey grout. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+#### `patterns/pylon/hex-grille`
+- Kind: cut-out sheet on magenta, near-colourless; 1 m across. The Ancients' grille in the portholes and lattice
+  screens (`refs/ancient office.jpg`, `ancient 2.jpg`, `honeycomb arch.jpg`), drawn now as two crossed iron bars.
+- Reuse: any metal hex lattice: vents, gates, window grilles, a dome's skin, catwalk floors.
+
+```
+A flat, front-on decorative panel, square, 2048x2048, on a solid flat magenta background (#ff00ff). Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text, no border. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. The panel: a metal honeycomb grille, a lattice of flat bars about a finger wide forming regular hexagonal openings about a hand across, eight openings across the image, the bars bevelled at their edges with a little wear on the corners and faint machining lines along them; every opening shows only the solid magenta background through it. Dark neutral grey metal. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the metal.
+```
+
+#### `plaster.painted.worn`
+- Kind: tileable material, full colour; 2 m tile. The salvage tier's and the folk houses' orange paint, flaking to the grey
+  render and concrete beneath (the kit tints white stucco orange today, so wear does not show).
+- Reuse: any painted render worn back to its base: Talia's poor orange quarter (`talia (6).jpg`), weathered Iziz shops.
+- **Check:** `plaster.white_stucco_02` tinted orange may be enough at a distance; judge both on the folk houses first.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: An old rendered wall painted bright orange (#e07a2a), the paint faded and chalky and flaking away in irregular patches to show smooth grey cement render (#8e8b86) beneath, about a third of the surface bare; the paint edges lifted and cracked, a few hairline cracks in the render, faint vertical streaks of grime below the patches. Full colour (do not mute).
+```
+
 ### Longsong (`settlements/longsong`, 2026-10-19)
 
 All fourteen delivered on 2026-10-19 ("Delivered 2026-10-19, Longsong's exterior" and "Delivered 2026-10-19, Longsong's depths
@@ -207,6 +256,41 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
 ```
+
+## Delivered 2026-10-19, the Iziz palace (pasted into the chat as WebP, 1254 px, 1774 x 887 and 793 x 1983; batch `izpalace-2026-10-19.json`)
+
+The five the palace page had no set for, processed by `tools/textures/process.py` and packed into the palace's own pack
+(`settlements/iziz/palace/materials.json`, `python3 tools/textures/pack.py settlements/iziz/palace`), wired in
+`targets/palace/78r-palace-draw.js`:
+
+| Set | Family | Where |
+|---|---|---|
+| `patterns/iziz/coffer` | `palCoffer` | the decor-4 ceilings (world tiles of 2.4 m; the plain gold ribs went) |
+| `patterns/iziz/fresco-legions` | `palFresco` | the frieze of the feast rooms and the Hall of the Standards (decor 3 and 4): one 2:1 sheet per panel, 1.1 m high |
+| `patterns/iziz/bronze-door` | `palDoorLeaf` | the leaves of the decor-4 doors and the great door into the Aula (one sheet per leaf; its dark margin cropped) |
+| `patterns/iziz/crater-map` | `palMap` | inlaid in the floors of the map rooms (the Map of the Empire, the Map Rooms of the Legions and the Staff); the map tables stand at its ends |
+| `metal.deck.hangar` | `palDeck` | the Depot's working floors (the mech bays, the concourse, the Hangar Lift, the shops, the stores), grey, tinted; three plates to the tile, so 6 m |
+
+## Delivered 2026-10-19, Longsong's depths and interiors (the owner's `longsong.zip` and one pasted WebP, 1254 px, 2172 x 724, 1024 x 1536)
+
+Nine images, processed by `tools/textures/process.py` (batch `longsong-2026-10-19b.json`): `patterns/order/glyph-band` (the 3:1
+banner cropped by hand to its two rows and to nineteen glyph pitches, so it wraps; kept whole), `patterns/order/thangka-register`,
+`patterns/order/mandala-floor`, `patterns/order/mural-cataclysm` (3:1, not the 4:1 asked: a single frieze, kept whole) and
+`patterns/order/rug` (a whole rug with its border: a picture, not a tile) as pictures; `patterns/order/valance` and
+`patterns/order/column-paint` wrapped across; `patterns/order/book-spines` and `metal.lead.sheet` tiled. **Wired** in
+`settlements/longsong/materials.json`: `thangka` (the great thangka on the White Palace's face), `glyphband` (the Procrastinator's
+burning bands), `mandala` (its hall's floor), `lead` (the sealed doors), `valance` (the rich windows). **Not wired yet**: the column
+paint, the mural, the rug and the book spines wait for the interiors (`settlements/longsong/PLAN.md` P4).
+
+## Delivered 2026-10-19, Longsong's exterior (pasted into the chat as WebP, 1254 px and 1774 x 887)
+
+Five images from the owner, processed by `tools/textures/process.py` (batch `longsong-2026-10-19.json`, every prompt recorded in each
+set's `meta.json`): `patterns/order/glyph-relief` (pattern-cropped, four rows of four panels: 4.4 m a tile), `patterns/order/mosaic-band`
+(a band, wrapped across only, `keep_aspect`), `plaster.limewash.red`, `patterns/order/prayer-wheel` (a band, wrapped across only),
+`patterns/order/mani-stone`. All tiled on arrival or after the crop (seams 0.7 to 1.3). **Wired:** `settlements/longsong/materials.json`
+(families `glyph`, `mosaic`, `redwash`, `wheel`, `mani`): the Great Gate's pylons, the Chapterhouse Court's wall and the stele carry the
+glyph panels; the mosaic course is on every building of the Order and round every drum; the Red Palace is the red limewash; the prayer
+wheels turn in the repousse band; the mani wall is the carved stones.
 
 ## Delivered 2026-10-19, Korona (the owner's twenty images in `Downloads`, batches `korona-2026-10-19.json` and `korona-2026-10-19-cards.json`)
 
@@ -566,27 +650,6 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat
 ```
 
 ---
-
-## Delivered 2026-10-19, Longsong's depths and interiors (the owner's `longsong.zip` and one pasted WebP, 1254 px, 2172 x 724, 1024 x 1536)
-
-Nine images, processed by `tools/textures/process.py` (batch `longsong-2026-10-19b.json`): `patterns/order/glyph-band` (the 3:1
-banner cropped by hand to its two rows and to nineteen glyph pitches, so it wraps; kept whole), `patterns/order/thangka-register`,
-`patterns/order/mandala-floor`, `patterns/order/mural-cataclysm` (3:1, not the 4:1 asked: a single frieze, kept whole) and
-`patterns/order/rug` (a whole rug with its border: a picture, not a tile) as pictures; `patterns/order/valance` and
-`patterns/order/column-paint` wrapped across; `patterns/order/book-spines` and `metal.lead.sheet` tiled. **Wired** in
-`settlements/longsong/materials.json`: `thangka` (the great thangka on the White Palace's face), `glyphband` (the Procrastinator's
-burning bands), `mandala` (its hall's floor), `lead` (the sealed doors), `valance` (the rich windows). **Not wired yet**: the column
-paint, the mural, the rug and the book spines wait for the interiors (`settlements/longsong/PLAN.md` P4).
-
-## Delivered 2026-10-19, Longsong's exterior (pasted into the chat as WebP, 1254 px and 1774 x 887)
-
-Five images from the owner, processed by `tools/textures/process.py` (batch `longsong-2026-10-19.json`, every prompt recorded in each
-set's `meta.json`): `patterns/order/glyph-relief` (pattern-cropped, four rows of four panels: 4.4 m a tile), `patterns/order/mosaic-band`
-(a band, wrapped across only, `keep_aspect`), `plaster.limewash.red`, `patterns/order/prayer-wheel` (a band, wrapped across only),
-`patterns/order/mani-stone`. All tiled on arrival or after the crop (seams 0.7 to 1.3). **Wired:** `settlements/longsong/materials.json`
-(families `glyph`, `mosaic`, `redwash`, `wheel`, `mani`): the Great Gate's pylons, the Chapterhouse Court's wall and the stele carry the
-glyph panels; the mosaic course is on every building of the Order and round every drum; the Red Palace is the red limewash; the prayer
-wheels turn in the repousse band; the mani wall is the carved stones.
 
 ## Delivered 2026-10-19, the Oidong Valley and two Northern Highlands cards (pasted into the chat as WebP, 1254 px and 1536 x 1024)
 

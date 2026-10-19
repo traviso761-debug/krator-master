@@ -36,7 +36,11 @@ function isRail(a,b,y,o){o=o||{};const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.
    A door() is declared for each door (the way out +z). */
 function isWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||IS_T,fr=o.frame===undefined?P('woodD'):o.frame;opens=(opens||[]).slice().sort((a,b)=>a.x-b.x);let x=-L/2;
  const seg=(a,b,ya,yb)=>{if(b-a>.01&&yb-ya>.01)box(mk,(a+b)/2,y0+ya,0,b-a,yb-ya,t,col);};
- for(const q of opens){const a=q.x-q.w/2,b=q.x+q.w/2,sy=q.door?0:(q.y||.9);seg(x,a,0,h);seg(a,b,0,sy);seg(a,b,Math.min(h,sy+q.h),h);x=b;
+ let pv=null;   /* the opening before: a window stacked over a door (x ranges overlap) fills the wall between them, not the doorway */
+ for(const q of opens){const a=q.x-q.w/2,b=q.x+q.w/2,sy=q.door?0:(q.y||.9),stack=pv&&a<x-.01&&b>pv.a;
+  if(stack){seg(a,b,pv.top,sy);seg(a,b,Math.min(h,sy+q.h),h);}
+  else{seg(x,a,0,h);seg(a,b,0,sy);seg(a,b,Math.min(h,sy+q.h),h);}
+  x=Math.max(x,b);pv={a:a,top:sy+q.h};
   if(fr){for(const s of [a,b])box('wood',s,y0+sy,t*.6,.1,q.h,.06,fr);box('wood',q.x,y0+sy+q.h,t*.6,q.w+.2,.12,.07,fr);if(!q.door)box('wood',q.x,y0+sy-.08,t*.6,q.w+.16,.08,.1,fr);}
   if(q.door)door(q.x,y0,t/2,0,q.w);
   else if(o.shut!==false){for(const s of [-1,1])box(o.shutMk||'planks',q.x+s*(q.w*.75+.04),y0+sy,t*.5+.03,q.w/2,q.h,.04,o.shutCol||P('planks'));}}
@@ -52,6 +56,8 @@ function isPatchWall(L,y0,h,o){o=o||{};let x=-L/2;const mks=o.mks||['reclaimed',
   const hh=h-rr(0,.25);box(mk,x+w/2,y0,rr(-.02,.02),w,hh,o.t||.06,c);x+=w;}
  for(const s of [-1,1])box('wood',s*(L/2-.05),y0,0,.1,h,.1,P('woodD'));}
 /* ---------------------------------------------------------------- stairs and ladders */
+/* where the way up stands: the house's own x if it says (doorX / stairX), else under its first front door, so the stair or ladder lands at the door */
+function isDoorX(x,front){return x!=null?x:((front||[]).find(q=>q&&q.door)||{x:0}).x;}
 /* a flight from y0 (at local z = run, outward) up to y1 (at z = 0), w wide, in a frame turned ry at (x,z). Returns the run. */
 function isStair(x,z,ry,y0,y1,w,o){o=o||{};const n=Math.max(2,Math.ceil((y1-y0)/.21)),rise=(y1-y0)/n,go=o.go||.28,run=n*go,mk=o.mk||'planks',c=o.col||P('planks');
  W(x,0,z,ry,()=>{for(let i=0;i<n;i++)box(mk,0,y0+rise*(i+1)-.06,run-go*(i+.5),w,.06,go+.04,c);
@@ -59,9 +65,9 @@ function isStair(x,z,ry,y0,y1,w,o){o=o||{};const n=Math.max(2,Math.ceil((y1-y0)/
    if(o.rail!==false){beam('wood',[s*(w/2+.04),y0+.95,run],[s*(w/2+.04),y1+.95,0],.06,P('woodD'));box('wood',s*(w/2+.04),y0,run,.07,.95,.07,P('woodD'));}}});return run;}
 /* a ladder leaning from the ground (lean metres out along +z) up to y1, at (x,z) turned ry */
 function isLadder(x,z,ry,y1,o){o=o||{};const w=o.w||.55,lean=o.lean===undefined?.6:o.lean,c=o.col||P('bamboo'),mk=o.mk||'bamboo';
- W(x,0,z,ry,()=>{for(const s of [-1,1])pole(mk,[s*w/2,0,lean],[s*w/2,y1+.5,0],.035,c,6);const n=Math.floor(y1/.32);for(let i=1;i<=n;i++){const t=i*.32/y1;pole(mk,[-w/2,t*y1,lean*(1-t)],[w/2,t*y1,lean*(1-t)],.025,c,5);}});}
+ W(x,0,z,ry,()=>{wkLadder(0,0,lean,0,y1,0);for(const s of [-1,1])pole(mk,[s*w/2,0,lean],[s*w/2,y1+.5,0],.035,c,6);const n=Math.floor(y1/.32);for(let i=1;i<=n;i++){const t=i*.32/y1;pole(mk,[-w/2,t*y1,lean*(1-t)],[w/2,t*y1,lean*(1-t)],.025,c,5);}});}
 /* a notched log ladder (the poor's and the granaries'): one log with steps cut in it */
-function isLogLadder(x,z,ry,y1){W(x,0,z,ry,()=>{beam('wood',[0,0,.5],[0,y1,0],.13,P('wood'),true,8);const n=Math.floor(y1/.35);for(let i=1;i<=n;i++){const t=i/(n+1);box('wood',0,t*y1-.04,.5*(1-t)+.06,.2,.06,.1,P('woodD'));}});}
+function isLogLadder(x,z,ry,y1){W(x,0,z,ry,()=>{wkLadder(0,0,.5,0,y1,0);beam('wood',[0,0,.5],[0,y1,0],.13,P('wood'),true,8);const n=Math.floor(y1/.35);for(let i=1;i<=n;i++){const t=i/(n+1);box('wood',0,t*y1-.04,.5*(1-t)+.06,.2,.06,.1,P('woodD'));}});}
 /* ---------------------------------------------------------------- carved posts, figures and finials (the shared motifs) */
 /* a carved post (pou) at (x,y,z) h tall, radius r, facing ry: stacked ancestor figures, each a head with shell eyes and a
    red tongue, hands on the belly, a painted band under its feet. o.mk carvedR (the West's red) or carved (the East's natural);

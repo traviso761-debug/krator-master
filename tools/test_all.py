@@ -40,7 +40,8 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd
                'res://tests/water/falls_case_test.gd',
                'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd',
                # a test and its arguments (after Godot's --): Pylon's sheet on Iziz's page, through the city test (core/export/README.md)
-               ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet')]
+               ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet'),
+               ('res://tests/export/iziz_test.gd', '--case=world-talia', '--sheet')]
 # The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
 # passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
 COMPARE_CASES = ['world-sedesert', 'world-iziz']
@@ -89,6 +90,7 @@ def node_tests():
     tests = sorted(glob.glob(os.path.join(ROOT, 'core', '**', 'test-*.js'), recursive=True))
     tests += sorted(glob.glob(os.path.join(ROOT, 'settlements', '*', 'tests', 'test-*.js')))
     tests += sorted(glob.glob(os.path.join(ROOT, 'kits', '*', 'tests', 'test-*.js')))
+    tests += [os.path.join(ROOT, 'tools', 'walk_audit', 'test_audit.js')]   # the geometry walk audit (tools/walk_audit/README.md)
     return [os.path.relpath(t, ROOT) for t in tests]
 
 

@@ -138,3 +138,15 @@ Catalog verify pass (2026-10), not synced back here: kits/catalog recentred `br_
 raised the sizes of the beast-rider hypertree plants. Girder's palisade is a ring of radius `PALISADE.R` built
 in world coordinates (30-layout), not a 16 m section with an origin, and Girder declares no plant sizes. Nothing
 here maps onto the catalog's correction. The catalog copy is the centred one.
+
+## Walking (core/walk)
+
+- [x] **Girder walks on core/walk** (2026-10-19). `src/83-walk.js` no longer moves a body: it writes the builders' solids (`gwBox`, `gwSeg`, `gwDisc`: by tag, floors
+      or blocks) and the layout (floor plates, the switchback flights as strips, the plinth steps, the roost decks, the lift cages as floors that follow the cages,
+      the rope bridges as strips along the sag with rope sides as blocks, the palisade ring with the gates open, the trunks) into `KWALK`, and the host's
+      walker (`KHOST.take({walk: KWALK, walker: {step .55, drop 1.4, r .28, h 1.75}})`; F, W A S D, Shift) walks it. `window._walk` stays as a thin layer for
+      `tools/harness.py walk` and scripts. Checked headless: the first flight of a tower climbs to its half landing, a core wall stops the walker, a bridge
+      is crossed along its sag, the rope sides hold, the palisade stops the walker between the gates and a gate lets it out.
+- [ ] No jump and no gravity any more (Space did both): the host keeps to a deck's edge instead of letting a walker fall. The lift ride (the cage floor follows
+      the cage, a rider sends it) is written but I did not ride one.
+

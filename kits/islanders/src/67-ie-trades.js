@@ -10,11 +10,11 @@ defBuilding({key:'ie-temple',name:'Ancestor temple (Kautoa)',seed:6104,cut:true,
  tags:{types:['religious','funerary'],wealth:'rich',style:'east',role:'temple'},
  note:'the temple of the ancestors (the marapu): the tallest tower of golden thatch in the town on a coral platform, its face woven from skirt to ridge, the priests\' altar and the ancestors\' figures inside, and before it a court of megalith tombs, standing stones and the slab where the dead lie in state',
  build(o){box('coral',0,0,-1,15,.8,13,P('coral'));box('stone',0,.8,-1,15.4,.14,13.4,P('stone'));
-  W(0,.94,-1.5,0,()=>ieHouse({w:8.4,d:7.6,floorY:1.6,wallH:2.6,ver:1.4,verFront:2.0,roof:{over:1.0,skirtH:2.0,skirtS:.46,towerH:17,towerS:.38,topSx:.18,topSz:.05,th:.38},
+  W(0,.94,-3.1,0,()=>ieHouse({w:8.4,d:7.6,floorY:1.6,wallH:2.6,ver:1.4,verFront:2.0,roof:{over:1.0,skirtH:2.0,skirtS:.46,towerH:17,towerS:.38,topSx:.18,topSz:.05,th:.38},
    wallMk:'planks',wallCol:P('woodL'),facade:'patGableE2',stair:'stair',stairW:2,finial:'moon',hornPosts:true,
    extra:()=>{const fy=1.6;isFurn([['generic_trade_altar',0,fy,-2.8,0],['islander_court_statue',-2.6,fy,-2.8,PI/8],['islander_court_statue',2.6,fy,-2.8,-PI/8],['islander_court_candelabra',-1.3,fy,-2.4,0],
     ['islander_court_candelabra',1.3,fy,-2.4,0],['islander_court_tapestry',0,fy,-3.66,0],['islander_court_carpet',0,fy,0,0],['islander_common_banner',-3.9,fy,.4,PI/2],['islander_common_banner',3.9,fy,.4,-PI/2]]);}}));
-  isNoCut(()=>{ieSteps(0,5.5,0,.8,4,{});for(let k=0;k<4;k++){const x=-7.5+k*5;isTomb(x,10.4,0,{s:1.15,figures:k%2===0});}box('stone',0,0,8.2,3.2,.7,1.6,P('stoneD'));
+  isNoCut(()=>{ieSteps(0,5.5,0,.8,4,{});for(let k=0;k<4;k++){const x=-7.5+k*5;isTomb(x,10.4,0,{s:1.15,figures:k%2===0});}box('stone',0,0,9.4,3.2,.7,1.6,P('stoneD'));
    for(const s of [-1,1]){isMenhir(s*10.2,6.4,3.2,.42);isMenhir(s*10.8,12.4,2.4,.36);isPou(s*2.4,0,13.2,3.6,.24,{mk:'carved',top:'horns'});}});}});
 /* ---------------------------------------------------------------- food: the bakehouse, the butcher's and smokehouse */
 defBuilding({key:'ie-bakehouse',name:'Bakehouse (Kautoa)',seed:6310,cut:true,w:15,d:13,h:12.5,budget:110000,
@@ -71,7 +71,7 @@ defBuilding({key:'ie-beacon',name:'Beacon tower (Kautoa)',seed:6316,cut:true,w:8
  note:'the beacon on the headland: a tapering tower of coral stone, the keepers\' room at its foot, the fire basket on its top under a tall spire of golden thatch on posts, the moon on the spire',
  build(o){isCutFloor(0);sector('coral',0,0,2.2,2.8,PI/2+.3,PI/2+TAU-.3,0,2.6,P('coral'),20);sector('coral',0,0,2.2,2.8,PI/2-.3,PI/2+.3,2.0,2.6,P('coral'),3);door(0,0,2.8,0,1.2);
   cyl('earth',0,0,0,2.2,.06,P('earth'),18);isFurn([['islander_common_bed',-.9,0,-1,0],['generic_fuel',1,0,-1.1,0],['generic_lamp_oil',1.3,0,.5,0],['islander_common_stool',-.8,0,.9,0]]);
-  isNoCut(()=>{const H=14;cyl('coral',0,2.6,0,2.4,H-2.6,P('coral'),18,1.6/2.4);box('stone',0,H,0,4.2,.22,4.2,P('stone'));isLadder(2.6,2.6,PI/2,H-2.6,{});
+  isNoCut(()=>{const H=14;cyl('coral',0,2.6,0,2.4,H-2.6,P('coral'),18,1.6/2.4);box('stone',0,H,0,4.2,.22,4.2,P('stone'));isLadder(2.05,0,PI/2,H+.22,{});
    isBeacon(0,H+.22,0,1);for(const sx of [-1,1])for(const sz of [-1,1])cyl('wood',sx*1.7,H+.22,sz*1.7,.09,2.9,P('wood'),6);
    const sp=isSpire({hw:2.4,hd:2.4,sq:7,mk:'thatchR',col:P('thatchE'),th:.22,nu:24,sub:3,prof:[[1,1,H+3],[.6,.56,H+4.6],[.32,.24,H+6.6],[.16,.05,H+8.4]]});ieFinial('moon',sp,.8);});}});
 /* ---------------------------------------------------------------- the quarry, the sulphur diggings, the salt works */

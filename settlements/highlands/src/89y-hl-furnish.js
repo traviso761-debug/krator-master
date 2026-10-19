@@ -11,7 +11,7 @@ KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round
 // the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is the Highlands
 // adapter onto it: its seed rule (the record's place in the list), the murals' keep-clear boxes, full detail outside
 const HLF=KFURN.create(Object.assign(KFURN.flags(false),{
- catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,
+ catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,walk:KWALK,
  tags:(KTAGS.page=KTAGS.create({build:'highlands'})),   // every piece registered in core/tags (core/tags/README.md)
  seed:(o,ctx,R)=>R.placed.length+1,
  onRecord:(rec,ctx,o,A,dm)=>{const c=ctx.vern;   // murals fitted after the builder (hlFlush) keep clear of the piece

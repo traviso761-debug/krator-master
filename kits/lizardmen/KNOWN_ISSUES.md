@@ -29,3 +29,11 @@
 
 - [x] The kit adopts the library from the start (`materials.json`, 42 families). The ground is the Islanders' leafy grass
       tinted darker: the Rift floor's own ground set is the biome's to choose.
+
+## Walking (core/walk)
+
+- [x] **Floors and walls reach `core/walk`** (2026-10-19): `src/37-wk-rec.js` (a copy of the Islanders' fragment) reads every box a building draws as a
+      floor or a block (`core/walk/box`), and the host takes `walk: KWALK`. This kit has no stair or ladder helper: a flight is a run of treads.
+- [ ] `tools/walk_audit/run.py dist/lizardmen.html` lists `lz-tower` (the solid courses' tops above the hall: by design), `lz-seer` (the scale model's
+      tops, not a floor) and `lz-reliquary` (a 2.5 m2 ledge at 3 m). None is a missing stair that I could find.
+
