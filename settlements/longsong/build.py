@@ -7,8 +7,10 @@ Valley, built in situ on the scale model's land (PLAN.md, README.md; the program
                       core/terrain's 38-core-relief (KRELIEF: the noise the open world's fields take)
   39-ls-world-data    GENERATED (Pinnacle Rock's tools/world_data.py, read in place): the scale model round the site
                       (region/data, cut by tools/scale-model/extract_region.py), decoded at build time
+  10..40 crop         the CROPS kit, read in place (kits/crops/src): what the valley can grow
   40-ls-plan          THE PLAN as data [G data]: the site, the rock, the ward, every building, the Vault, the sealed
                       things, the people and their schedules
+  40b-ls-farms        THE FARMS AND GARDENS as data [G data]: fields, terraces, pools, groves, orchards, beds, herds
   41-world-fields     the open world's fields, read in place (openworld/little-demo/src): WORLD.H, the land at 1:1
   42-ls-world         HOST: WORLD.init, the page's origin on the model
   44-host-matlib-pack GENERATED (tools/textures/matlib_pack.py): Longsong's library maps and the Oidong kit's, as sidecars
@@ -20,6 +22,7 @@ Valley, built in situ on the scale model's land (PLAN.md, README.md; the program
   68-ls-life          HOST: the people drawn from the plan's records (the life layer's scaffold)
   82-host-sky         the Oidong Valley's sky (the standard Krator sky with the giant), read in place
   84-ls-ground        HOST: the ground, the stream and the pond
+  85-ls-farms         HOST: the farms and gardens drawn from 40b's records (the library's crop cards, the field walls)
   86-ls-far           HOST: the far terrain, the model's land to 60 km
   88-host-build       HOST: the build order (the monastery's records first, then the kit, then one bake)
   90..99              HOST (core/host: the whole interface) and 99-host-take, the page handed to it
@@ -84,6 +87,10 @@ for f in ('07-core-export.js', '09-core-export-adapters.js'):
 OD = os.path.join(ROOT, 'biomes', 'oidong')
 for f in ('50-biome-oidong-species.js', '55-biome-oidong-trees.js', '60-biome-oidong-floor.js', '70-biome-oidong.js', '82-host-sky.js'):
     PATH[f] = os.path.join(OD, 'src', f)
+# the Crops kit, read in place (kits/crops/API.md, "Reading it from a build"): what the Oidong Valley can grow; the farms
+# (40b-ls-farms.js) sow only its ids, and the page checks them (FCHK.crops)
+for f in ('10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '40-crop-query.js'):
+    PATH[f] = os.path.join(ROOT, 'kits', 'crops', 'src', f)
 # the open world's fields, read in place: the land round the site at 1:1
 PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'little-demo', 'src', '41-world-fields.js')
 # the host shell from core/host, the whole interface (core/host/README.md): the inspector, marks, pictures, the minimap,

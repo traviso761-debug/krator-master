@@ -54,6 +54,27 @@ half quality), `?mat=proc` (the procedural maps instead of the library's), `?hou
   the Unfinished Fire, the Moth of Many Eyes, the Falling Drop, the Second Sun, the Smiling Door, and an eighth seal
   left blank and open). The depths are lit only by their own lamps (a shader that ignores the sun); the layer
   'the ground (see the Vault)' hides the ground to see them in place.
+- **The Order's own buildings** (ROOMS.md section 1, revised 2026-10-19): the chapterhouses' neo-African forms, not
+  Yuni's Sahelian earth. The drum halls (the Assembly, the Hall of Hours, the Observatory, the Lower Gate's pair) are red
+  fired brick under terracotta cones, with round relief-ringed windows, the mosaic course and a row of carved glyph panels
+  under the eaves, the Assembly's eight-post lantern lit; the Debate Court's galleries are brick arcades with
+  pointed-parabolic heads; the Great Gate's pylons are carved glyph panels banded in mosaic; the Printing House is a small
+  Archive (brick fins, dark glazing, a wavy pale roof on timber slats, a second raised one); the Eastern Watch is the
+  Archive's louvre tower (a brick drum, eight wavy rings, the bell in the top ring); the Hall of Forms is the School
+  (undulating brick on a white dado, parabolic windows, a warped conoid roof). Inside the gate, the Chapterhouse Court:
+  the curved glyph-panel wall, two mosaic-lined reflecting pools, the tea rotunda and the stele of the vow. Outside: the
+  mani wall along the road (prayers and the containment's glyphs), the chorten garden by the east postern. Behind the
+  masters' cells, the Garden of Held Water (a fountain whose drops hang where they were; the held cherry, its petals
+  stopped as they fall). The Red Palace is the red-ochre limewash; the cones are terracotta (no blue tile).
+- **The farms and gardens** (`40b-ls-farms.js`, `[G data]`; `85-ls-farms.js`; ROOMS.md section 5): every crop a Crops kit
+  id the Oidong Valley allows (`kits/crops`, read in place; checked). The east and west fields in strips (frost oat, emmer,
+  helix bean, frostroot, flax, fallow in rotation) inside dry-stone walls, their threshing floors and field shrines; the
+  south terraces behind the rock (with a saffron terrace) and the tea garden above; the rice pools, the willow beds, the
+  bamboo grove and the chalice-grass beds for the paper; the leat to the tsampa mill and the paper mill's wheel; the yak
+  pastures with the herders' black tents and pens (placeholder yaks). Inside the wall: the orchard and the bee wall, the
+  kitchen gardens, the dye garden (saffron, woad for the Order's blue, broom) and its dye house, the physic terraces, the
+  upper orchards. `LS.FARMS.provision()`: the house's own fields grow about a quarter of its grain; the valley's tithe
+  the rest.
 - **The people** (`68-ls-life.js`): 162 records (monks, novices, operatives from Keepwell, masters of arms, keepers,
   wardens, lay servants, pilgrims) on their schedules; at noon the operatives drill at lightning speed in the ward
   (every strike leaves three afterimages), the master of arms stands in the drill ground's middle and every few seconds
@@ -75,5 +96,7 @@ front of the gate and none lies inside the walls; the rock is 40 m with a steep 
 core/tags record of the Order; stone and lime only (no earth in the plan or the materials); the monastery faces north,
 to the sun; the climb is the rank (gate, ward, stair's foot, Lower Gate, White Palace, Red Palace, each higher); the
 Vault is under the rock with the Procrastinator deepest; the Procrastinator turns and its seals are slowed; one stair
-down. Each has a negative control (a 25 m rock, an unrecorded building, a rammed-earth granary, a Red Palace of one
-storey, a vault room above ground, a wheel that does not slow its seals, a second way down).
+down; the farms sow only the Oidong Valley's crops, lie dry, outside the wall and off the track, and grow a share of the
+house's grain with the rest's source named. Each has a negative control (a 25 m rock, an unrecorded building, a
+rammed-earth granary, a Red Palace of one storey, a vault room above ground, a wheel that does not slow its seals, a
+second way down, a field of cotton, a field across the stream, a house that grows all its grain).

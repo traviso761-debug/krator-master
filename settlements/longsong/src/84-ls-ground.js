@@ -10,14 +10,14 @@ const GROUND=(function(){
   GRAVEL=K(0xaaa08a),GRAVEL2=K(0x968c78),PAVE=K(0xb4aea2),SOIL=K(0x6e5e44),KORA=K(0xc2b8a0);
  const colourAt=(x,z,h,slope)=>{const n=fbm(x*.04,z*.04,.3,2)-.5,pav=fbm(x*.012+5,z*.012-2,.7,2),pav2=fbm(x*.025-3,z*.025+8,.9,2);
   const Zn=LS.zoneAt(x,z);let rock=0,pave=0;
-  if(Zn.zone==='valley'||Zn.zone==='garden'){const Z=OIDONG.zones(x,z);
+  if(Zn.zone==='valley'||Zn.zone==='garden'||Zn.zone==='farm'){const Z=OIDONG.zones(x,z);
    c.copy(MEAD).lerp(MEAD2,smooth(.42,.62,pav)*.8).lerp(LITTER,smooth(.6,.72,pav2)*.3);
    t.copy(SAGE).lerp(OCHRE,smooth(.45,.7,pav2)*.7);c.lerp(t,smooth(.25,.6,Z.up)*.65);
    t.copy(MOSS).lerp(MOSS2,clamp(.5+n*2,0,1)*.6).lerp(LOAM,smooth(.5,.72,pav)*.5);c.lerp(t,clamp(Z.moss*1.4+Z.mistZ*1.2,0,1));
    c.lerp(LITTER,clamp(Z.bamboo*1.3,0,1)*.8);
    t.copy(SAND).lerp(SAND2,smooth(.4,.65,pav2)*.6);c.lerp(t,clamp(Z.flats*1.3,0,1));
    c.lerp(WET,clamp(Z.shore*1.2,0,1)*.6);c.lerp(WET,smooth(.4,.85,FIELD.flow(x,z))*.75);
-   if(Zn.zone==='garden')c.lerp(SOIL,.45);
+   if(Zn.zone==='garden'||Zn.zone==='farm')c.lerp(SOIL,Zn.zone==='farm'?.7:.45);
    rock=smooth(.35,.7,FIELD.rock(x,z));
    // the track and the kora: beaten pale ground
    const td=LS.trackD(x,z);c.lerp(KORA,smooth(6,3,td)*.85);

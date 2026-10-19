@@ -66,7 +66,8 @@ write to the model's store.
 | P1 | the monastery's massing from the blueprint on the kit (gate, ward rows, stair, White and Red Palaces, drums, Watch, roofs, chortens, wheels, flags, lamps) | done |
 | P2 | the Vault and the Procrastinator; the containment's dress | done |
 | P3 | the life layer's scaffold: the people, their schedules, the drill, the master | done (placeholder figures) |
-| P3b | the exterior revision toward the chapterhouses' neo-African forms, the new outbuildings (`ROOMS.md` sections 1-2; owner, 2026-10-19) | planned |
+| P3b | the exterior revision toward the chapterhouses' neo-African forms, the new outbuildings (`ROOMS.md` sections 1-2; owner, 2026-10-19): the brick drums under terracotta cones and lanterns (the Assembly, the Hall of Hours, the Observatory, the Lower Gate's pair), the Debate Court's brick arcades with parabolic heads, the gate's pylons in glyph panels, the mosaic course everywhere, the red limewash, the Printing House as a small Archive, the Eastern Watch as the louvre tower, the Hall of Forms, the Chapterhouse Court, the mani wall, the chorten garden, the Garden of Held Water | done |
+| P3c | the farms and gardens (`ROOMS.md` section 5; owner, 2026-10-19): the fields, terraces, pools, groves, orchards and beds as records on the Crops kit (`40b-ls-farms.js`), drawn with the library's crop cards (`85-ls-farms.js`); the leat and the mills, the herds | done (placeholder yaks) |
 | P4 | interiors on `kits/interiors`, room by room from `ROOMS.md` sections 3-4, (the Assembly Hall's skylight columns, the library, the cells) and furniture from `FURNITURE.md` on the catalog | next |
 | P5 | the people on `core/simulation` and `core/charactermodels` (the Order's robes), the night (butter lamps, the generator's bulbs), the festival day (the thangka, the pilgrims' camp) | to come |
 | P6 | the ward on `core/city` (its lanes and lots), the valley road joined to the open world's network, the gallery entry | to come |

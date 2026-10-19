@@ -16,6 +16,17 @@ const VIEWS=(function(){const V={},PR=LS.PROCRASTINATOR,T=LS.ROCK.top;
  V['The Procrastinator']=[PR.x+17,PR.y0+8,PR.z-14,PR.x,PR.y0+12,PR.z];
  V['The Procrastinator from below']=[PR.x-6,PR.y0+1.8,PR.z-20,PR.x,PR.y0+24,PR.z];
  V['From afar (the valley and its walls)']=[-1400,260,-2600,0,40,0];
+ // the exterior revision and the farms (ROOMS.md sections 1, 2, 5)
+ {const C=LS.COURT;V['The Chapterhouse Court (inside the gate)']=[C.x+26,gh(C.x,C.z,9),C.z-22,C.x,gh(C.x,C.z,1),C.z+6];}
+ {const P=LS.building('printing-house'),H=LS.building('hall-of-forms');
+  V['The Printing House (a small Archive)']=[P.x+48,LS.baseY(P)+16,P.z-34,P.x,LS.baseY(P)+5,P.z];
+  V['The Hall of Forms (the School)']=[H.x-30,LS.baseY(H)+9,H.z-26,H.x,LS.baseY(H)+4,H.z];}
+ V['The Assembly drum and the Debate Court\'s arcades']=[0,T+30,-30,0,T+14,70];
+ V['The Eastern Watch (the louvre tower)']=[150,T+40,40,96,T+40,118];
+ V['The east fields and the chorten garden']=[230,gh(230,-150,40),-170,420,gh(420,60,0),60];
+ V['The south terraces and the tea garden']=[0,gh(0,250,60),220,-60,gh(-60,560,0),560];
+ V['The Garden of Held Water']=[LS.HELD.x1+8,T+7,LS.HELD.z1-2,LS.HELD.fountain.x,T+2,LS.HELD.fountain.z];
+ V['The yak pastures']=[-575,gh(-575,830,9),830,-620,gh(-620,900,1),900];
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the record under the hit (a

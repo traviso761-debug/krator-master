@@ -21,6 +21,16 @@
       the model.
 - [ ] **No core/atmos**: the stream and the pond are this page's own water shader (as the Oidong kit's pools), not the
       shared wave field; the stream is a ribbon on the model's river line.
-- [ ] **Textures**: no library set for the glyph bands, the thangka or the plaques (painted on canvases here); the
-      Order's blue tile is the library's slate scales tinted. Ask the owner before generating any
-      (`core/materials/PROMPTS-NEEDED.md`).
+- [ ] **Textures**: the exterior's five are delivered and wired (2026-10-19: the glyph relief, the mosaic band, the red
+      limewash, the prayer wheel's repousse, the mani stones); still painted on canvases here: the Procrastinator's
+      glyph bands, the thangka, the plaques and the valances (their prompts are owed: `core/materials/PROMPTS-NEEDED.md`,
+      "Longsong"). The Order's blue tile is gone: the cones are terracotta now (ROOMS.md section 1).
+- [ ] **The herds are placeholder yaks** (boxes, instanced, standing still): the fauna kit has no yak or dzo yet. They
+      are records (`LS.FARMS.HERDS`, core/tags `life`), ready for a kit's animal.
+- [ ] **The fields drape the model's land**: the south terraces and the tea garden are contour bands with stone risers,
+      not cut treads (the land outside the grounds is the model's 4 km cells, smooth; cutting treads into it would move
+      the far terrain's seam). The farmland is a mesh over the ground (lifted 0.14 m with a polygon offset).
+- [ ] **The leat runs on the land, not in a cut**: its channel follows the ground from the stream to the ward's water
+      gate; it does not check that the water could flow (the bank falls toward the stream, not along the leat).
+- [ ] **The Hall of Forms is a shell**: its Room of Slow Water (the held basin) and its sprung floor wait for the
+      interiors (PLAN.md P4), as everything else does.

@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.11,
+    3.999
+   ],
+   "seam_before": [
+    2.778,
+    3.246
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.04,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.3,
+   "seam_axes": "x",
+   "size": 2048
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "order/prayer-wheel",
+  "metal": 0.8,
+  "pattern": true,
+  "roughness": 0.45,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "order-prayer-wheel.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/prayer-wheel`",
+  "reuse": "the repouss\u00e9 band round a prayer wheel (Longsong's rows, Xanadu's wheels); a gilt reliquary band",
+  "sha1": "9773e9e98e34353bfb9c218b1b448a88440d2ae3"
+ }
+}

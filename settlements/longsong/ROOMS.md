@@ -171,7 +171,49 @@ pieces the catalog lacks are in `FURNITURE.md` (the Order's set: `order_bookcase
 | Cistern of the rock | the rock's water | 0 |
 | The Long Stair and **the Procrastinator's hall** | the wheel, the eight seals, the keepers' walk; the floor mandala | 4 |
 
-## 5. The order of work
+## 5. The farms and the gardens (what the house eats, wears, burns and writes on)
+
+The owner (2026-10-19): flesh out the farms and gardens. Everything sown here is a crop the Crops kit allows in the
+Oidong Valley (`kits/crops`, `CROPS.forBiome('oidong')`: the valley floor and its flats are cool to mild and moist, about
+1.24 atm); the page checks it (`FCHK.crops`, with a negative: a field of cotton). The data is `src/40b-ls-farms.js`
+(`[G data]`); the drawing `src/85-ls-farms.js`.
+
+**What the house needs.** About 550 live inside the wall (200 monks, 50 lay scholars, 80 operatives, 100 wardens,
+120 lay servants) and up to fifty pilgrims on a festival day. Their staple is roasted grain ground to flour (the
+valley's tsampa: frost oat, eaten with butter tea): about 180 kg a head a year, some 100 t. At the valley's rain-fed
+yields (about 1.4 t a hectare: an assumption) the house's own fields grow about a quarter of it (25 t); the rest comes as the
+**tithe of the valley's villages** (the Order holds the estate: the tenants pay in grain, butter, wool and labour at
+harvest), and by the caravans. The fields' share is a number in the data (`LS.FARMS.provision()`), not a guess in prose.
+
+### 5.1 The fields outside the wall (the lay servants and the valley's tenants work them; dzo pull the ploughs)
+
+| Place | Where | What grows (the rotation, strip by strip) | What else |
+|---|---|---|---|
+| **The east fields** | the apron east of the rock (x 250-650), 14 m strips running down the slope | frost oat, frost oat, helix bean, frostroot, flax, fallow (grazed) | dry-stone walls every fourth strip; the **threshing floor** (a paved ring, the winnowing ground); the **field shrine** (a white cairn, juniper and flags: the harvest's first sheaf goes there) |
+| **The west fields** | the apron west of the pond (x -760 to -320) | frost oat, emmer, helix bean, frostroot, frost oat, fallow | the west threshing floor; scarecrows hung with the Order's old seal strips (the servants' joke) |
+| **The south terraces** (the blueprint's "barley terraces") | the rising apron behind the rock, south of the kora (z 280-520), contour terraces 20 m deep | emmer, frost oat, helix bean, basin amaranth, **saffron** (one terrace: the robes' dye and the kitchen's spice), fallow | stone risers; the reservoir's overflow runs down them |
+| **The tea garden** | above the terraces (z 540-640), in contour rows | the valley's wild tea, tended | the tea is the house's: butter tea is drunk all day; the pickers' shelter |
+| **The rice pools** | between the Mirror and the bridge, fed by the leat | wild rice in small walled pools | the pilgrims' first sight of the house is its water: the pools, the Mirror, the stream |
+| **The Mirror** (the lotus pond) | as now | lotus: the roots for the kitchen, the stems' silk for the **sutra wrappers** (the Order's most precious cloth) | — |
+| **The willow beds** | the stream's bank east of the bridge | withies (baskets, the hives' skeps, the paper mill's screens) | — |
+| **The bamboo grove and the chalice-grass beds** | the stream's bank west of the pond, on the dry ground above it | bamboo and chalice grass: the paper mill's pulp | the cut canes stacked to dry |
+| **The leat and the mills** | from the stream upstream (east) of the bridge, along the bank, into the ward under the north wall | — | the **tsampa mill** (roasting pans and a water-driven stone) beside the track; the paper mill's wheel; the tail race to the Mirror |
+| **The yak pastures** | the apron's upper slope toward the valley wall (z 700-1600) | grass | three herds of yak and dzo; the herders' black tents and stone pens; dung drying on the pens' walls (the house's fuel, with the coilbark the servants split); the dairy in the ward takes the milk |
+
+### 5.2 The gardens inside the wall
+
+| Garden | Where | What grows | What else |
+|---|---|---|---|
+| **The ward's orchard and the beehives** | the ward's south-west corner | apricot, crabapple, cherry in rows | the **bee wall**: a stone wall with niches, a willow skep in each (honey and wax: the butter lamps' wax is the bees'); the kit's wild plants at the edges |
+| **The kitchen gardens** | the ward's south-east corner | greens, helix bean, frostroot, murnong, umbel seed, fiddlehead (the shade bed), monk's sage | raised beds with stone kerbs, the compost and the seed store |
+| **The dye garden** | the ward, between the raked court and the drill ground | saffron crocus (the robes' saffron), valley woad (**the Order's blue**), broom (yellow) | the **dye house** (vats, the drying poles hung with cloth): the robes and the chapterhouses' banners are dyed here. Maroon comes from alder bark, bought in |
+| **The physic terraces** | the rock's west flank, in its five terraces | snow lotus, valley ginseng, monk's sage, sky poppy (kept: the infirmary's), camphor trees | the drying racks; the herbalist's shelter |
+| **The upper orchards** | the rock's south shoulder, inside the wall | persimmon, apricot, mulberry (leaf for the silkworms the paper mill's lay women keep) | — |
+| **The spring garden** | round the rear shrine | the kit's own plants, left wild (the founders' wish) | the spring's basin |
+| **The Garden of Held Water** | behind the masters' cells | moss and stone; **the held cherry**: in flower for two hundred years, its petals stopping in the air as they fall (the same stillness as round the master of arms) | the fountain whose jets hang |
+| **The mushroom cellar** | in the rock under the granaries (data only) | moon cap on the cut bamboo | dark beds (the Crops kit's `dark-beds` works) |
+
+## 6. The order of work
 
 1. **The exterior revision** (section 1): the drum compound forms (brick drums, terracotta cones and lanterns, the
    curved brick arcades, the Chapterhouse Court with its glyph wall, pool and rotunda), the Printing House as a small
@@ -183,4 +225,7 @@ pieces the catalog lacks are in `FURNITURE.md` (the Order's set: `order_bookcase
    sumptuous rooms down; the furniture records baked headless (README.md, "Furniture that is not always drawn is data
    first"; Mav's Refuge is the worked example).
 4. **The textures** (`core/materials/PROMPTS-NEEDED.md`, section "Longsong"): the exterior's first, the interiors'
-   before step 3.
+   before step 3. The first five (the glyph relief, the mosaic band, the red limewash, the prayer wheel's repoussé and
+   the mani stones) were delivered 2026-10-19 and are wired.
+5. **The farms and gardens** (section 5): the fields, terraces, pools, groves, orchards and beds as records, drawn with
+   the library's crop cards; the herds as placeholders until the fauna kit has a yak.

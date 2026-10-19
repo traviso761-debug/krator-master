@@ -64,7 +64,21 @@ P.WALL={h:7,t:3.2,towers:[[-200,-200],[200,-200],[200,200],[-200,200],[-200,0],[
 // the avenue from the gate to the Great Stair's foot, the pilgrims' square inside the gate; the outer kora round the
 // rock's foot (the pilgrims walk it without entering); the Great Stair: three ramps up the north face to the Lower Gate
 P.AVENUE={x0:-9,x1:9,z0:-196,z1:-2};
-P.SQUARE={x0:-48,x1:48,z0:-196,z1:-160,name:"The pilgrims' square"};
+P.SQUARE={x0:-48,x1:48,z0:-196,z1:-160,name:"The Chapterhouse Court (the pilgrims' square)"};
+// the Chapterhouse Court (ROOMS.md 2.2): the chapter house's circular forecourt inside the gate: the curved wall of
+// carved glyph panels on its west and east arcs (the axis open), two blue mosaic reflecting pools either side of the
+// path, the tea rotunda (eight posts under a terracotta cone) and the stele of the Order's vow
+P.COURT={x:0,z:-176,r:21,wallH:3.4,arcs:[[2.0,4.28],[-1.14,1.14]],pools:[{x:-11,z:-176,r:6.5},{x:11,z:-176,r:6.5}],
+ rotunda:{x:34,z:-180,r:4.6,name:'The tea rotunda (eight posts under a tile cone)'},stele:{x:-34,z:-180,name:'The stele of the Order\'s vow: seen, said, inferred; held, not hidden'}};
+// the mani wall along the road to the bridge (ROOMS.md 2.1): carved stones, prayers and the containment's glyphs ("what
+// is written here is held here"); the pilgrims keep it on their right as they walk to the gate; a chorten at each end
+P.MANI={pts:[[-214,-212],[-166,-218],[-118,-219]],h:1.5,w:1.8,name:'The mani wall (prayers, and the containment\'s glyphs: what is written here is held here)'};
+// the chorten garden outside the east postern (ROOMS.md 2.1): the Order's dead who are not founders, small chortens in
+// rows among juniper and incense cedar; the sang burner
+P.CHORTEN_GARDEN={x0:240,x1:330,z0:-140,z1:-62,rows:4,per:6,s:.32,burner:{x:250,z:-100},name:'The chorten garden (the Order\'s dead)'};
+// the Garden of Held Water behind the masters' cells (ROOMS.md 2.3): moss and stone, a fountain whose jets hang in the
+// air, the held cherry (in flower two hundred years, its petals stopped as they fall)
+P.HELD={x0:-94,x1:-46,z0:176,z1:198,fountain:{x:-70,z:187,r:3.2},cherry:{x:-56,z:192},name:'The Garden of Held Water'};
 // the Great Stair (the Potala's): three ramps zigzag across the White Palace's base, each a solid masonry wedge with
 // white parapets, from the forecourt at the avenue's head to the base's top, where the Lower Gate stands
 P.STAIR=[{x0:-6,x1:-66,y0:-1.5,y1:12},{x0:-66,x1:64,y0:12,y1:26},{x0:64,x1:-34,y0:26,y1:40}];
@@ -72,7 +86,8 @@ P.STAIR_Z=[1.5,7.5];   // the ramps' band in front of the base's face (z)
 P.KORA={cx:0,cz:95,a:235,b:150,w:5,name:'The outer kora (the pilgrims\' circuit of the rock)'};
 // outside the wall: the track from the west (the valley road to the pass and Xanadu) along the stream's south bank to
 // the bridge before the gate; the lotus pond between the wall and the stream
-P.TRACK=[[-1500,-240],[-900,-250],[-500,-245],[-260,-238],[-60,-232],[0,-225],[0,-200]];
+// (2026-10-19: it bends south round the Mirror, between the pond and the wall's north-west tower; it had run through the water)
+P.TRACK=[[-1500,-240],[-900,-250],[-560,-240],[-420,-200],[-330,-172],[-262,-170],[-228,-186],[-220,-214],[-170,-226],[-60,-227],[0,-225],[0,-200]];
 P.BRIDGE={x:0,z:-290,w:8,L:70,y:3,name:'The bridge of the Longsong stream'};
 P.TRACK_N=[[0,-330],[0,-420],[-200,-700],[-600,-1400]];   // north of the bridge, toward the valley's floor
 P.POND={x:-290,z:-235,r:52,y:-9.4,depth:3.2,name:'The Mirror of Longsong (the lotus pond)'};
@@ -85,7 +100,8 @@ const B=[];
 const b=(o)=>{o.storey=o.storey==null?4.2:o.storey;o.floors=o.floors==null?2:o.floors;B.push(o);return o;};
 // --- the ward, west rows (L0): the presses, the stores, the workshops, the wardens
 b({id:'paper-mill',name:'The paper mill',kind:'house',x:-150,z:-178,w:62,d:22,floors:2,base:'ward',types:['industry'],sheet:'L0',note:'the Order\'s copies go to the chapterhouses on this paper'});
-b({id:'printing-house',name:'The printing house',kind:'court',x:-150,z:-138,w:70,d:34,floors:2,base:'ward',types:['industry','civic'],sheet:'L0'});
+b({id:'printing-house',name:'The printing house (the Order\'s press: a small Archive, brick fins under a wavy roof)',kind:'archive',x:-150,z:-138,w:70,d:34,a:31,b:14,floors:2,base:'ward',types:['industry','civic'],sheet:'L0',
+ note:'ROOMS.md 2.2: the press hall, the woodblock store, the composing room, the drying loft, the bindery, the dispatch room'});
 b({id:'granary-w',name:'The granaries',kind:'house',x:-160,z:-98,w:46,d:24,floors:3,base:'ward',types:['infrastructure','farm'],sheet:'L0'});
 b({id:'smithy',name:'The smiths and the lens workshop',kind:'court',x:-150,z:-62,w:70,d:30,floors:1,storey:5,base:'ward',types:['industry'],sheet:'L0'});
 b({id:'barracks',name:"The wardens' barracks",kind:'court',x:-90,z:-110,w:44,d:52,floors:2,base:'ward',types:['civic','military','dwelling-multi'],sheet:'L0'});
@@ -97,6 +113,11 @@ b({id:'geomancers',name:"The Geomancers' lodge (walled; Yuni's friends)",kind:'c
 b({id:'servants',name:"The lay servants' houses",kind:'house',x:82,z:-128,w:46,d:18,floors:2,base:'ward',types:['dwelling-multi'],sheet:'L0',wealth:'middle'});
 b({id:'market',name:'The market hall and the tea houses',kind:'house',x:86,z:-96,w:40,d:16,floors:1,storey:5,base:'ward',types:['market','tavern'],sheet:'L0'});
 b({id:'infirmary',name:"The ward's infirmary (for travellers)",kind:'house',x:150,z:-62,w:56,d:22,floors:2,base:'ward',types:['civic'],sheet:'L0'});
+// the Order's own in the ward (ROOMS.md 2.2, 5.2): the operatives' drill hall in the School's form (undulating brick on a
+// white dado, parabolic heads, a warped conoid roof), across the avenue from the drill ground; the dye house by the dye garden
+b({id:'hall-of-forms',name:'The Hall of Forms (the operatives\' drill hall; the Room of Slow Water)',kind:'school',x:40,z:-88,w:34,d:22,floors:1,storey:7,base:'ward',types:['military','civic'],sheet:'L0',
+ note:'ROOMS.md 2.2: the sprung floor, the weapons racks, the Room of Slow Water (a basin whose falling water is held), the masters\' room'});
+b({id:'dye-house',name:'The dye house (the vats; the robes\' saffron and the Order\'s blue)',kind:'house',x:-45,z:-111,w:22,d:9,floors:1,storey:4.2,base:'ward',types:['industry'],sheet:'L0'});
 b({id:'dairy',name:'The dairy',kind:'house',x:86,z:-56,w:34,d:16,floors:1,storey:4.5,base:'ward',types:['farm','industry'],sheet:'L0'});
 // --- the gate, the corner towers are drawn from P.WALL; the gate's house over the parabolic arch
 b({id:'gatehouse',name:'The Great Gate: the parabolic arch between two pylons (the Order\'s), the gatehouse over it',kind:'gate',x:0,z:-200,w:46,d:16,floors:2,storey:5,base:'ward',types:['civic','infrastructure'],sheet:'L0'});
@@ -121,7 +142,7 @@ b({id:'gilt-founders-w',name:"The gilded roof over the West Founders' hall",kind
 b({id:'gilt-founders-e',name:"The gilded roof over the East Founders' hall",kind:'roofhall',x:36,z:126,w:14,d:12,floors:1,storey:4.5,base:40+9*4.5,types:['funerary','religious'],sheet:'LR',gilt:true});
 b({id:'hall-of-hours',name:'The Hall of Hours (the water, sand and Ancient clocks; its dial faces the valley)',kind:'drum',x:-62,z:118,r:8,floors:2,storey:4.5,base:40+6*4.5,types:['civic'],sheet:'LR',cone:7,lantern:false,clock:true});
 b({id:'observatory',name:'The Observatory',kind:'drum',x:66,z:120,r:6.5,floors:2,storey:4.5,base:40+6*4.5,types:['civic'],sheet:'LR',cone:0,dome:true});
-b({id:'eastern-watch',name:"The Eastern Watch (the Order's bell; instruments that read the Lizardmen's strangeness)",kind:'spire',x:96,z:118,w:11,d:11,floors:11,storey:4.5,base:'rock',types:['civic','religious'],sheet:'LR'});
+b({id:'eastern-watch',name:"The Eastern Watch (the Order's bell; instruments that read the Lizardmen's strangeness)",kind:'louvre',r:5.4,x:96,z:118,w:11,d:11,floors:11,storey:4.5,base:'rock',types:['civic','religious'],sheet:'LR'});
 b({id:'meditation',name:"The masters' meditation cells (the rear terrace)",kind:'house',x:-70,z:168,w:44,d:12,floors:1,storey:3.6,base:'rock',types:['religious','dwelling-single'],sheet:'LR'});
 b({id:'rear-shrine',name:'The rear shrine and the spring house',kind:'house',x:52,z:170,w:24,d:14,floors:1,storey:4.5,base:'rock',types:['religious'],sheet:'R1'});
 // --- the Closed Ward (L1: the people held, kindly) and the specimen hall beside it, on the rock's west shoulder
@@ -155,7 +176,8 @@ P.GARDENS=[{id:'orchard-w',x0:-196,x1:-112,z0:-40,z1:2,name:"The ward's orchard 
  {id:'kitchen-e',x0:112,x1:196,z0:-40,z1:2,name:'The kitchen gardens'},
  {id:'physic',x0:-200,x1:-150,z0:20,z1:190,name:'The physic terraces (the monks\' medicinal plants)'},
  {id:'rear',x0:-40,x1:150,z0:182,z1:200,name:'The upper orchards'},
- {id:'spring',x0:100,x1:150,z0:150,z1:182,name:'The spring garden'}];
+ {id:'spring',x0:100,x1:150,z0:150,z1:182,name:'The spring garden'},
+ {id:'dye',x0:-66,x1:-24,z0:-104,z1:-66,name:'The dye garden'}];
 P.RESERVOIR={x:-120,z:188,w:46,d:18,y:P.ROCK.top-6,name:'The reservoir'};
 // the raked court: the zen garden of the Order inside the west postern (the stones in threes)
 P.RAKED={x0:-60,x1:-24,z0:-150,z1:-120,name:'The raked court (the stones in threes)'};
@@ -280,7 +302,9 @@ P.whereAt=function(person,hour){const act=person.schedule[((Math.floor(hour)%24)
 
 // ---------------------------------------------------------------- zones (the inspector's words, the kit's mask)
 P.zoneAt=function(x,z){
- if(!P.inGrounds(x,z))return {zone:'valley',name:'The Oidong Valley'};
+ const Fm=P.FARMS&&P.FARMS.groupAt(x,z);
+ if(!P.inGrounds(x,z))return Fm?{zone:Fm.kind==='pasture'?'valley':'farm',name:Fm.name,id:Fm.id}:{zone:'valley',name:'The Oidong Valley'};
+ if(Fm&&Fm.inside)return {zone:'garden',name:Fm.name,id:Fm.id};
  for(const G of P.GARDENS)if(x>G.x0&&x<G.x1&&z>G.z0&&z<G.z1)return {zone:'garden',name:G.name,id:G.id};
  if(x>P.RAKED.x0&&x<P.RAKED.x1&&z>P.RAKED.z0&&z<P.RAKED.z1)return {zone:'raked',name:P.RAKED.name};
  if(x>P.SQUARE.x0&&x<P.SQUARE.x1&&z>P.SQUARE.z0&&z<P.SQUARE.z1)return {zone:'square',name:P.SQUARE.name};
@@ -293,6 +317,8 @@ P.zoneAt=function(x,z){
 // (the rock's faces and its top away from the buildings hold the kit's crag pines and terrace plants; pads: P.nearPad)
 P.nearPad=null;   // the host sets it: (x, z, m) -> true within m of a building's pad
 P.plantable=function(x,z){
+ // the farms first (40b-ls-farms.js): nothing wild on a field, a pool or a bed; a little at an orchard's edges
+ const Fp=P.FARMS&&P.FARMS.plant(x,z);if(Fp!=null)return Fp;
  if(P.inGrounds(x,z,8)){const Z=P.zoneAt(x,z);if(Z.zone==='garden')return 1;
   if((Z.zone==='rock'||Z.zone==='top')&&!(P.nearPad&&P.nearPad(x,z,10))){
    // keep the Great Stair's face, the hermits' ladders and the kora's inner edge clear
