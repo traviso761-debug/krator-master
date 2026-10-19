@@ -236,7 +236,8 @@ city places the citadel on its hill the same way.
 | `78r-palace-draw.js` | [draw] | `IZPALDRAW.draw(L, frame, {mark})`: the shells, liners, floors, ceilings, walls, doors, balustrades, stairs, shafts, panes, colonnades, finished by decor level; the palace's own materials (`MAT.pal*`, bound to the `izpalace` pack) |
 | `78s-palace-citadel.js` | [draw] | the VERN def `pal_citadel` (the page's one site): the hill, the Mech Gate, the precinct as the city builds it, the layout drawn, the precinct buildings' outsides; `IZPAL_SITE` |
 | `84-palace-geo.js` | [G data] | `PALGEO` and `terrainH`: the mesa (top 40 m over the city, r 96, the escarpment to r 132) and the Mech Gate's cutting |
-| `95p-palace-furnish.js` | [web] | `IZPALX`: rooms as core/tags records, the cutaway units; `IZPALF`: the furnishing; `window._palace` |
+| `95p-palace-furnish.js` | [web] | `IZPALX`: rooms as core/tags records, the cutaway units; `IZPALF`: the furnishing and the roof gardens' planting; `window._palace` |
+| `95q-palace-cutlabels.js` | [web] | `IZPALCUT`: the cut storey's room names over the view (a DOM overlay laid out each frame; N or the bar's button hides them) |
 | `89z-rows.js`, `91z-views.js` | | the site and the views (a cut view is a function that opens the cutaway) |
 
 **The frame.** The blueprint's: u from the citadel gate inward, v across, h up from the mesa top. On the page the hill's
@@ -287,8 +288,39 @@ and finishes" above): the sixteen paintings and their gilt frames, the book spin
 marquetry, brocade, velvet and gold leaf on the court pieces (the palace's own court pieces draw in the court keys too). Each piece is a
 core/tags record under its room; each room a record (class part, kind room) under its building, named from the sheet.
 
+**The precinct buildings** (`IZPAL.PREC`: the two great houses, the two barracks, the three services and the three terrace
+pavilions) are laid like the block: an envelope 0.6 m inside the rect (the outer wall fills that), storeys from `y0` (0.15
+on a plinth over the paving; the pavilions on the roofs they stand on), rooms from sheet I0 on the ground floor, I1's zone
+cut into rooms above, the barracks' own plan (`barracksRooms`: a hall from the court door to the drill-yard door, the guard
+room, the centurion's office, the armoury, the bath, the stores and the mess; contubernia of eight and a centurion's or an
+optio's rooms above), the pavilions one room each (the Orangery, the Summer Triclinium, the Belvedere of the Stars, where the
+builder's solid belvederes stood: 78s takes those out by position). `entries` are a building's doors to the outside, on a
+side of its envelope (`'v0'`: the side at the smallest v), into the space there: the Praetorium and the Hall of Embassies
+open from the palace's side doors (now on the axis of the Legates' and the Envoys' Waiting Rooms, u 11.5) under a covered
+way, and at the back for the staff; the barracks to the court and to the drill yard. The outsides (78s `LOOK`): ministry,
+service, barracks (the city's block: white bands, a roof upstand, cyan strips) and pavilion (the palace's sandstone under a
+pyramid with a banner).
+
+**The roof gardens** (`IZPAL_SITE.gardens`, 78s): raised beds with marble kerbs on the three terraces, clear of the
+builder's hedges, lamps, pavilions and flank stairs and of every edge, and three beds in the Orangery. 95p plants them from
+the catalog's plants (`krator-master-plants.js`, bundled as pieces: `furniture_bundle.bundle(..., plants=True)`, build.py
+`TARGET_FURN`): palms, dragon trees and tree ferns on the middle line of the wide beds only (no crown reaches out over the
+drop), heliconias, giant ferns, oleanders, agaves and succulents round them; each a core/tags record (class flora) under its
+bed's.
+
+**No two faces on one plane** (2026-10-19, after the owner's z-fighting report). Floors' tops are the storey's level (the
+furniture stands on them); ceilings hang 4 cm lower than before, so a ceiling never shares a face with the floor slab over
+it; a skin's top stands between its ceiling and that slab; liner skins are cut at the grid's lines, so each ends on its
+partition; a door's jambs and reveal and a portal's reveals run 3-4 cm into the opening past the wall's end; pilasters stop
+under their capitals' tops; window frames stand off the pilasters' plane; stairs are painted last, so a landing never lies
+over another room's floor; a room's walls rise through a void above only where that storey has a wall too (a gallery's
+balustrade stops them); carpets lie 1.5 cm over the floor and 8 mm over each other. The furniture keeps to its room's own
+cells (a room's rect can take in a void or a stair head). A check for this, run by hand: every pair of box instances with
+coplanar, same-facing, overlapping faces of different items or tints (the session's `zf.js`; KNOWN_ISSUES.md).
+
 `window._palace`: rooms, records, the units, unreached and dropped rooms, the draw's counts, and `furniture` (pieces,
-heroes, keys, missing keys, by class, ms). `verify.py --assert` checks it (`palace`). `?interiors=0` leaves the rooms bare.
+heroes, keys, plants, missing keys, by class, ms). `verify.py --assert` checks it (`palace`). `?interiors=0` leaves the
+rooms bare.
 
 ## Dev tools (project rule) — `92-camera.js`
 

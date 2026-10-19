@@ -37,7 +37,12 @@ saying what fixed it.
       - **Not walkable.** The walk (F) stands on `terrainH` (the mesa), so the upper storeys, the Depot and the Core are seen,
         not walked; there is no walk graph through the rooms and stairs yet (SKILL.md 5j, "Interiors belong on the
         pedestrian graph"). No people.
-      - **The barracks stay solid** (`izBarracks`): the sheets' Praetorian barracks (I0 #4, #5; I1 #26) have no rooms.
+      - **The barracks are laid** (2026-10-19, the owner: "barracks don't have rooms"): on the sheet's rects (I0 #4, #5), axis
+        true, so they stand a little off the city's `izBarracks` (turned with the hill's bearing); the drill yards are bare.
+      - **Z-fighting** (the owner's report, 2026-10-19): fixed for every pair of box instances the check found (API.md, "No two
+        faces on one plane"). The check is not in `verify.py` yet: a page-side scan of every box instance's faces, about a
+        minute under SwiftShader. Merged meshes (the furniture batch, the plants) are not scanned; the builder's own pieces
+        outside the masses (78-transplant 'palace': the grand entrance, the windows' surrounds) are the city's and unchanged.
       - **The heights are assumed** (BLUEPRINT.md left them open; `78q` header): the mesa 40 m, the Depot at the city's level,
         the Core 12 m under it, three storeys of 14/3 m per tier. The third storey of the base tier repeats sheet I1 as the
         freedmen's lodgings with the Library of the Palace; the tower's stair is one shaft (u 22..28, v 6..13), not the

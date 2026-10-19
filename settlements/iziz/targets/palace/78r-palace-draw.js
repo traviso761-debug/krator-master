@@ -42,7 +42,7 @@ const IZPALDRAW=(function(){
  const ST={shells:0,frustums:0,cleared:0,liners:0,walls:0,rails:0,doors:0,floors:0,ceilings:0,steps:0,panes:0,columns:0,portals:0,ms:0};
  const C={cream:vC(0xf3e2c0),orange:vC(0xefc79c),white:vC(0xf2ece2),plaster:vC(0xdcd2c2),teal:vC(0x2f8f8a),stone:vC(0xd8cbb4),conc:vC(0xc8c4bc),
   anc:vC(0xf0f0ec),dark:vC(0x3a3632),sand:tC(0xd4a05a),sandL:tC(0xe6bd7e),bronze:vC(0x8a6a2a),cyan:CYAN};
- let FR=null,Q=null,QV=null;
+ let FR=null,Q=null,QV=null;const CELLW=IZPAL.CELL;
  // a box in the citadel's frame: centre (u, v), base height y (from the mesa top), sizes along u, v and up
  const B=(item,u,v,y,su,sv,sy,c,q)=>{const p=FR.P(u,v);kput(item,[p[0],FR.Y(y)+sy/2,p[1]],q||Q,[sv,sy,su],c||null);};
  // the same for the base-anchored round items (palColM, palColF, palColG): base at y; flip stands it on its head (a capital)
@@ -72,7 +72,7 @@ const IZPALDRAW=(function(){
    if(sty.frieze&&h>3.2)W(sty.frieze,dir,line,s0,s1,side*.155,.04,y+h-sty.fh-.15,sty.fh,null);
    if(sty.cornice&&h>3)W('palGoldB',dir,line,s0,s1,side*.17,.12,y+h-.22,.14,null);
    if(sty.pil&&h>3.4){const n=Math.floor((s1-s0)/3.6);for(let i=1;i<=n;i++){const t=s0+(s1-s0)*i/(n+1);
-    W('palMarbleB',dir,line,t-.3,t+.3,side*.22,.18,y,h-sty.fh-.2,C.white);W('palGoldB',dir,line,t-.38,t+.38,side*.25,.22,y+h-sty.fh-.55,.35,null);
+    W('palMarbleB',dir,line,t-.3,t+.3,side*.22,.18,y,h-sty.fh-.24,C.white);W('palGoldB',dir,line,t-.38,t+.38,side*.25,.22,y+h-sty.fh-.55,.35,null);
     W('palGoldB',dir,line,t-.36,t+.36,side*.24,.2,y,.25,null);ST.columns++;}}}}
  /* ---------------------------------------------------------------- the masses' shells */
  // a battered face with rectangular holes: s along the face, y up; returns triangles in the citadel's frame
@@ -123,7 +123,7 @@ const IZPALDRAW=(function(){
    return along>-2&&along<P.len+3&&across<P.w/2+.6&&y>P.y0-.5&&y<P.y1+.5;});
   for(const name of['boxD','dot','lampI']){const it=KIT.items[name],keep=[];
    it.forEach((o,i)=>{if(i<mark[name]){keep.push(o);return;}const uv=FR.UV(o.p[0],o.p[2]),y=o.p[1]-FR.F.top;
-    if(inVol(uv[0],uv[1],y)||(name==='boxD'&&inPort(uv[0],uv[1],y)))ST.cleared++;else keep.push(o);});KIT.items[name]=keep;}
+    if(inVol(uv[0],uv[1],y)||(name!=='lampI'&&inPort(uv[0],uv[1],y)))ST.cleared++;else keep.push(o);});KIT.items[name]=keep;}
   // the builder's roof slabs (boxW, 1.5 m thick, at each tier's top: the tier's cornice lip outside, a slab across every
   // room inside): each becomes a ring round the liner of the storey it sat in, so the outside keeps its cornice and the
   // rooms their floors and ceilings
@@ -140,58 +140,85 @@ const IZPALDRAW=(function(){
   for(const[name,n]of want){const it=KIT.items[name];let taken=0;
    KIT.items[name]=it.filter((o,i)=>{if(i<mark[name]||taken>=n)return true;if(name==='frus85'&&Math.abs(o.p[1]-FR.Y(50))>.5)return true;taken++;ST.frustums++;return false;});}}
  /* ---------------------------------------------------------------- one storey */
- function storey(Bd,S,next,upper,anc){
+ // rect arithmetic in the frame: the overlap of two rects, and what is left of x once I is taken out of it
+ const inter=(a,b)=>({u0:Math.max(a.u0,b.u0),u1:Math.min(a.u1,b.u1),v0:Math.max(a.v0,b.v0),v1:Math.min(a.v1,b.v1)});
+ const solid=q=>q.u1-q.u0>.01&&q.v1-q.v0>.01;
+ const minus=(x,I)=>[{u0:x.u0,u1:I.u0,v0:x.v0,v1:x.v1},{u0:I.u1,u1:x.u1,v0:x.v0,v1:x.v1},{u0:I.u0,u1:I.u1,v0:x.v0,v1:I.v0},{u0:I.u0,u1:I.u1,v0:I.v1,v1:x.v1}].filter(solid);
+ function storey(Bd,S,next,upper,anc,below){
   const sp=S.spaces;
   const sty=s=>style(s,anc);
-  // floors
+  // how high the room at (u, v) rises: through every storey above whose space there is a void, to that storey's top; with
+  // a far point (across a partition) it stops at a storey where the far side is open floor (a gallery's balustrade there)
+  const riseAt=(u,v,fu,fv)=>{let top=S.y+S.h;for(const U of upper){const t=U.spaceAt(u,v);if(t&&t.void){if(fu!=null){const f=U.spaceAt(fu,fv);if(f&&f.open&&!f.void)break;}top=U.y+U.h;continue;}break;}return top;};
+  // a rect's ceiling in pieces of one height each (the parts under a void above rise through it)
+  const ceilPieces=q=>{let act=[q],top=S.y+S.h;const done=[];
+   for(const U of upper){const vr=[];U.spaces.forEach(t=>{if(t.void&&t.rects)t.rects.forEach(r=>vr.push(r));});const nx=[];
+    for(const p of act){let rest=[p];for(const r of vr){const nr=[];for(const x of rest){const I=inter(x,r);if(solid(I)){nx.push(I);nr.push(...minus(x,I));}else nr.push(x);}rest=nr;}rest.forEach(x=>done.push({q:x,top}));}
+    act=nx;if(!act.length)break;top=U.y+U.h;}
+   act.forEach(x=>done.push({q:x,top}));return done;};
+  // a skin's height runs along a stretch (t0..t1 on a line, the space on side): split where the room rises through a void
+  // (a skin's top stands 1 cm over its ceiling's top and 1 cm under the next floor's slab: no face shared with either)
+  const hRuns=(s,dir,line,t0,t1,side,cap)=>{const out=[];let a=t0,cur=null;
+   for(let t=t0;t<t1-1e-6;t+=CELLW){const tt=Math.min(t1,t+CELLW/2),p=dir==='u'?[line+side*.3,tt]:[tt,line+side*.3],f=dir==='u'?[line-side*.3,tt]:[tt,line-side*.3];
+    let h=(s.stair?S.y+S.h:cap?riseAt(p[0],p[1]):riseAt(p[0],p[1],f[0],f[1]))-.33-S.y;if(cap)h=Math.min(h,cap);
+    if(cur!=null&&Math.abs(h-cur)>.01){out.push([a,t,cur]);a=t;}cur=h;}
+   if(cur!=null)out.push([a,t1,cur]);return out;};
+  // floors (their tops at the storey's level: the furniture stands on it)
   sp.forEach(s=>{if(!s.floor||!s.rects)return;const st=sty(s);
-   if(s.floor==='landing'){const q=s.rect,land=landing(q);B(st.floor,(land.u0+land.u1)/2,(land.v0+land.v1)/2,S.y-.3,land.u1-land.u0,land.v1-land.v0,.33,st.fc);ST.floors++;return;}
-   s.rects.forEach(q=>{B(st.floor,(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y-.3,q.u1-q.u0,q.v1-q.v0,.33,st.fc);ST.floors++;});
+   if(s.floor==='landing'){const land=landing(s.rect);s.rects.forEach(r=>{const q=inter(r,land);if(solid(q)){B(st.floor,(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y-.33,q.u1-q.u0,q.v1-q.v0,.33,st.fc);ST.floors++;}});return;}
+   s.rects.forEach(q=>{B(st.floor,(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y-.33,q.u1-q.u0,q.v1-q.v0,.33,st.fc);ST.floors++;});
    // a sun medallion in the great rooms and the grand spaces' floors
    if(!anc&&s.decor>=4&&s.area>=90&&!s.stair&&s.kind!=='corridor'&&s.kind!=='lift_hall'){const q=s.rect,m=Math.min(q.u1-q.u0,q.v1-q.v0)*.62;
-    B(s.kind==='throne'||s.kind==='atrium'||s.kind==='vestibule'?'palMedalB':'palSunrayB',(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y+.03,m,m,.02,null);}});
+    B(s.kind==='throne'||s.kind==='atrium'||s.kind==='vestibule'?'palMedalB':'palSunrayB',(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y+.004,m,m,.012,null);}});
   // ceilings: under the floor of the first storey above that is not a void over this space (so a room under a void rises
-  // through it); the top storey's under the mass's roof
-  sp.forEach(s=>{if(s.void||!s.rects||s.stair)return;const st=sty(s);
-   s.rects.forEach(q=>{const cu=(q.u0+q.u1)/2,cv=(q.v0+q.v1)/2;let top=S.y+S.h;
-    for(const U of upper){const t=U.spaceAt(cu,cv);if(t&&t.void){top=U.y+U.h;continue;}break;}
-    const cy=top-.36;if(cy<=S.y+2)return;
+  // through it, piece by piece); the top storey's under the mass's roof
+  sp.forEach(s=>{if(s.void||!s.rects||s.stair)return;const st=sty(s);s.ceil=[];
+   s.rects.forEach(q0=>ceilPieces(q0).forEach(({q,top})=>{const cu=(q.u0+q.u1)/2,cv=(q.v0+q.v1)/2;
+    const cy=top-.4;if(cy<=S.y+2)return;s.ceil.push({q,y:cy});
     if(anc&&s.kind==='lift_hall'){const h={u0:10.2,u1:19.8,v0:-5.8,v1:3.8};
      [[q.u0,h.u0,q.v0,q.v1],[h.u1,q.u1,q.v0,q.v1],[h.u0,h.u1,q.v0,h.v0],[h.u0,h.u1,h.v1,q.v1]].forEach(r=>{if(r[1]-r[0]>.05&&r[3]-r[2]>.05)B(st.ceil,(r[0]+r[1])/2,(r[2]+r[3])/2,cy,r[1]-r[0],r[3]-r[2],.06,st.cc);});
      s.ceilY=cy;return;}
     B(st.ceil,cu,cv,cy,q.u1-q.u0,q.v1-q.v0,.06,st.cc);ST.ceilings++;
     if(st.coffer&&(q.u1-q.u0)>3&&(q.v1-q.v0)>3){const n1=Math.floor((q.u1-q.u0)/2.4),n2=Math.floor((q.v1-q.v0)/2.4);
      for(let i=1;i<=n1;i++)B('palGoldB',q.u0+(q.u1-q.u0)*i/(n1+1),cv,cy-.32,.22,q.v1-q.v0,.32,null);
-     for(let j=1;j<=n2;j++)B('palGoldB',cu,q.v0+(q.v1-q.v0)*j/(n2+1),cy-.32,q.u1-q.u0,.22,.32,null);
-     if(s.area>=60)B('palSunrayB',cu,cv,cy-.01,Math.min(q.u1-q.u0,q.v1-q.v0)*.42,Math.min(q.u1-q.u0,q.v1-q.v0)*.42,.02,null);}
+     for(let j=1;j<=n2;j++)B('palGoldB',cu,q.v0+(q.v1-q.v0)*j/(n2+1),cy-.33,q.u1-q.u0,.22,.32,null);
+     if(s.area>=60&&(q.u1-q.u0)*(q.v1-q.v0)>=40)B('palSunrayB',cu,cv,cy-.025,Math.min(q.u1-q.u0,q.v1-q.v0)*.42,Math.min(q.u1-q.u0,q.v1-q.v0)*.42,.01,null);}
     if(st.anc){const n=Math.floor((q.v1-q.v0)/4);for(let j=1;j<=n;j++)B('palLampB',cu,q.v0+(q.v1-q.v0)*j/(n+1),cy-.06,q.u1-q.u0-1,.35,.06,null);}
-    s.ceilY=Math.max(s.ceilY||0,cy);});});
-  // the liners: each envelope's four sides, split by the space inside each stretch, cut by the portals
+    s.ceilY=Math.max(s.ceilY||0,cy);}));
+   // the ceiling's height at a point (the furnishing hangs its chandeliers from it)
+   s.ceilAt=(u,v)=>{for(const c of s.ceil)if(u>=c.q.u0&&u<=c.q.u1&&v>=c.q.v0&&v<=c.q.v1)return c.y;return s.ceilY||S.y+S.h-.4;};});
+  // the liners: each envelope's four sides, split by the space inside each stretch (at the cell lines, so a stretch ends
+  // on its partition), cut by the portals and the entries
   S.env.forEach(e=>{if(e.open)return;ST.liners++;
    const sides=[['u',e.u0,-1,e.v0,e.v1],['u',e.u1,1,e.v0,e.v1],['v',e.v0,-1,e.u0,e.u1],['v',e.v1,1,e.u0,e.u1]];
    for(const[dir,line,out,t0,t1]of sides){
-    // the portals through this side
+    // the portals through this side, and the entries on it
     const gaps=(S.portals||[]).filter(P=>{const ia=dir==='u'?0:1;return(P.a[ia]-line)*(P.b[ia]-line)<0;}).map(P=>{const ia=dir==='u'?0:1,ib=1-ia,t=(line-P.a[ia])/(P.b[ia]-P.a[ia]),c=P.a[ib]+(P.b[ib]-P.a[ib])*t;
      return{t0:c-P.w/2,t1:c+P.w/2,h:P.h,P};});
-    // the spaces along the inside of the side, in stretches
-    let a=t0,cur=null;const stretch=[];const step=.5;
-    for(let t=t0;t<=t1+1e-6;t+=step){const tt=Math.min(t1-.01,t+.25),p=dir==='u'?[line-out*.3,tt]:[tt,line-out*.3];const s=S.spaceAt(p[0],p[1]);
-     if(s!==cur&&t>t0){stretch.push([a,t,cur]);a=t;}cur=s;}
-    stretch.push([a,t1,cur]);
-    stretch.forEach(([s0,s1,s])=>{if(!s||s.void&&!anc)return;const g=gaps.filter(g=>g.t1>s0&&g.t0<s1).map(g=>({t0:Math.max(s0,g.t0),t1:Math.min(s1,g.t1),h:g.h}));
-     const hh=(s.ceilY?s.ceilY-S.y:S.h)+.02;skin(sty(s),dir,line,s0,s1,-out,S.y,Math.min(hh,S.h+.4),g);});
+    const egaps=[];(S.outer||[]).forEach(w=>{if(w.dir!==dir||Math.abs(w.line-line)>.01)return;w.doors.forEach(d=>egaps.push({t0:d.t0,t1:d.t1,h:d.h}));});
+    // the stretches: cut at every grid line along the side, merged while the space inside is the same
+    const g=S.grid,base=dir==='u'?g.V0:g.U0,ts=[t0];for(let k=Math.ceil((t0-base)/g.cell+1e-6);base+k*g.cell<t1-1e-6;k++)ts.push(base+k*g.cell);ts.push(t1);
+    const stretch=[];ts.slice(0,-1).forEach((a,i)=>{const bb=ts[i+1],tt=(a+bb)/2,p=dir==='u'?[line-out*.3,tt]:[tt,line-out*.3],s=S.spaceAt(p[0],p[1]);
+     const last=stretch[stretch.length-1];if(last&&last[2]===s)last[1]=bb;else stretch.push([a,bb,s]);});
+    stretch.forEach(([s0,s1,s])=>{if(!s)return;let s2=s;
+     // a void's side is the room's below that rises through it (its style), from this floor to its ceiling
+     if(s.void){if(anc||!below)return;const c=dir==='u'?[line-out*.3,(s0+s1)/2]:[(s0+s1)/2,line-out*.3];s2=below.spaceAt(c[0],c[1]);if(!s2||s2.void)return;}
+     const g2=gaps.concat(egaps).filter(g=>g.t1>s0&&g.t0<s1).map(g=>({t0:Math.max(s0,g.t0),t1:Math.min(s1,g.t1),h:g.h}));
+     hRuns(s.void?{}:s,dir,line,s0,s1,-out,S.h+.4).forEach(([a,b2,h])=>skin(sty(s2),dir,line,a,b2,-out,S.y,h,g2.filter(g=>g.t1>a&&g.t0<b2).map(g=>({t0:Math.max(a,g.t0),t1:Math.min(b2,g.t1),h:g.h}))));});
     gaps.forEach(g=>{portalFrame(dir,line,g,S,sty(S.spaceAt(dir==='u'?line-out*.6:(g.t0+g.t1)/2,dir==='u'?(g.t0+g.t1)/2:line-out*.6)),out,e);});}});
   // partitions, balustrades, doors
   S.walls.forEach(w=>{const A=sp[w.a],Bs=sp[w.b];
    if(w.kind==='rail'){const s=A.void?Bs:A;const st=sty(s);W(anc?'palAncB':'palMarbleB',w.dir,w.line,w.t0,w.t1,0,.3,S.y,.95,anc?C.anc:C.white);
     W(anc?'palGlowB':'palGoldB',w.dir,w.line,w.t0-.05,w.t1+.05,0,anc?.1:.38,S.y+.95,.08,anc?C.cyan:null);ST.rails++;return;}
    const gaps=w.doors.map(d=>({t0:d.t0,t1:d.t1,h:d.h}));
-   const hA=A.void?0:(A.ceilY?A.ceilY-S.y:S.h),hB=Bs.void?0:(Bs.ceilY?Bs.ceilY-S.y:S.h);
+   // a portal through this partition (the great door crosses the sliver between the hall and the Aula) opens it too
+   (S.portals||[]).forEach(P=>{const ia=w.dir==='u'?0:1;if((P.a[ia]-w.line)*(P.b[ia]-w.line)>=0)return;const ib=1-ia,c=P.a[ib]+(P.b[ib]-P.a[ib])*(w.line-P.a[ia])/(P.b[ia]-P.a[ia]);
+    if(c+P.w/2>w.t0&&c-P.w/2<w.t1)gaps.push({t0:Math.max(w.t0,c-P.w/2),t1:Math.min(w.t1,c+P.w/2),h:P.h});});
    // a = the side of smaller u (dir 'u') or v; its skin stands at -off
-   if(hA>0)skin(sty(A),w.dir,w.line,w.t0,w.t1,-1,S.y,hA,gaps);
-   if(hB>0)skin(sty(Bs),w.dir,w.line,w.t0,w.t1,1,S.y,hB,gaps);
+   for(const[X,side]of[[A,-1],[Bs,1]]){if(X.void)continue;
+    hRuns(X,w.dir,w.line,w.t0,w.t1,side).forEach(([a,b2,h])=>skin(sty(X),w.dir,w.line,a,b2,side,S.y,h,gaps.filter(g=>g.t1>a&&g.t0<b2).map(g=>({t0:Math.max(a,g.t0),t1:Math.min(b2,g.t1),h:g.h}))));}
    w.doors.forEach(d=>{doorFrame(w.dir,w.line,d,S,sty(sp[d.from]),sty(d.to>=0?sp[d.to]:null),false,d.from===w.a?-1:1);});});
-  // the outer doors of a precinct building
+  // the outer doors of a precinct building (the gap in its liner is cut above)
   (S.outer||[]).forEach(w=>w.doors.forEach(d=>{const st=sty(sp[d.from]),e=S.env[0],into=w.dir==='u'?(w.line<=e.u0+.01?1:-1):(w.line<=e.v0+.01?1:-1);
    doorFrame(w.dir,w.line,d,S,st,st,true,into);}));
   // stairs
@@ -203,26 +230,28 @@ const IZPALDRAW=(function(){
  /* ---------------------------------------------------------------- doors and portals */
  function doorFrame(dir,line,d,S,stA,stB,ext,into){ST.doors++;const t=(d.t0+d.t1)/2,w=d.t1-d.t0,h=d.h,y=S.y;
   for(const side of[-1,1]){const st=side<0?stA:stB||stA;
-   // jambs and lintel, proud of the wall on each side
-   W(st.frame,dir,line,d.t0-.22,d.t0,side*.2,.12,y,h+.2,st.frameC);W(st.frame,dir,line,d.t1,d.t1+.22,side*.2,.12,y,h+.2,st.frameC);
+   // jambs and lintel, proud of the wall on each side; the jambs run 3 cm into the opening past the wall's end
+   W(st.frame,dir,line,d.t0-.22,d.t0+.03,side*.2,.12,y,h+.2,st.frameC);W(st.frame,dir,line,d.t1-.03,d.t1+.22,side*.2,.12,y,h+.2,st.frameC);
    W(st.frame,dir,line,d.t0-.22,d.t1+.22,side*.2,.12,y+h,.24,st.frameC);
    // a stepped deco crest over the state doors
    if(st.d>=4){W('palGoldB',dir,line,t-w*.32,t+w*.32,side*.24,.1,y+h+.24,.22,null);W('palGoldB',dir,line,t-w*.16,t+w*.16,side*.26,.1,y+h+.46,.18,null);}}
-  // the reveal through the wall
-  W(stA.frame,dir,line,d.t0-.02,d.t0,0,.3,y,h,stA.frameC);W(stA.frame,dir,line,d.t1,d.t1+.02,0,.3,y,h,stA.frameC);
+  // the reveal through the wall (through the precinct's outer wall, PWALL deep, for an outer door), 4 cm into the opening
+  const rd=ext?IZPAL.PWALL+.16:.32,ro=ext?-into*(IZPAL.PWALL-.16)/2:0;
+  W(stA.frame,dir,line,d.t0-.02,d.t0+.04,ro,rd,y,h,stA.frameC);W(stA.frame,dir,line,d.t1-.04,d.t1+.02,ro,rd,y,h,stA.frameC);
+  if(ext)W(stA.frame,dir,line,d.t0+.04,d.t1-.04,ro,rd,y+h-.04,.06,stA.frameC);
   // the leaves, open into the room: bronze in the state rooms, mahogany in the rich ones, none below
   const st=stB&&stB.d>stA.d?stB:stA;if(st.d<3&&!st.anc)return;const leaf=st.anc?'palAncB':st.d>=4?'izBronzeD':'palMahogB',lw=w/2-.02;
   if(!KIT.items[leaf])return;
-  for(const s of[-1,1]){const hinge=s<0?d.t0:d.t1,mid=hinge-s*.06;
+  for(const s of[-1,1]){const hinge=s<0?d.t0:d.t1,mid=hinge-s*.1;
    // a leaf standing open at right angles to the wall, against the jamb, on the room's side
    if(dir==='u')B(leaf,line+into*(lw/2+.2),mid,y,lw,.08,h-.05,st.anc?C.anc:null);else B(leaf,mid,line+into*(lw/2+.2),y,.08,lw,h-.05,st.anc?C.anc:null);
    if(st.d>=4&&!st.anc){if(dir==='u')B('palGoldB',line+into*(lw/2+.2),mid,y+h*.5,lw*.8,.1,.12,null);else B('palGoldB',mid,line+into*(lw/2+.2),y+h*.5,.1,lw*.8,.12,null);}}}
  function portalFrame(dir,line,g,S,st,out,e){ST.portals++;const y=S.y,h=Math.min(g.h,S.h+14);
   // the reveal back to the mass's face (the batter makes it deeper at the floor) and a stepped surround on the inside
   const M=e&&e.mass,dep=yy=>{if(!M)return 1;const hn=(dir==='u'?M.du:M.dv)/2*(1-(1-M.t)*Math.max(0,Math.min(1,(yy-M.y0)/M.H))),c=dir==='u'?M.u:M.v;return Math.max(.2,hn-Math.abs(line-c)-.05);};
-  const rv=st.frame==='palConcB'||st.anc?'palConcB':'palMarbleB',d0=dep(y),d1=dep(y+h*.6),d2=dep(y+h+.5);
-  for(const t of[g.t0-.25,g.t1]){W(rv,dir,line,t,t+.25,out*d0/2,d0,y,h*.6,C.white);W(rv,dir,line,t,t+.25,out*d1/2,d1,y+h*.6,h*.4,C.white);}
-  W(rv,dir,line,g.t0-.25,g.t1+.25,out*d2/2,d2,y+h,.5,C.white);
+  const rv=st.frame==='palConcB'||st.anc?'palConcB':'palMarbleB',d0=dep(y),d1=dep(y+h*.6),d2=dep(y+h+.5),sh=M?0:.03;   // no mass: the Depot's gate, in the facade
+  for(const[a,b]of[[g.t0-.25,g.t0+.04],[g.t1-.04,g.t1+.25]]){W(rv,dir,line,a,b,out*(d0/2+sh),d0,y,h*.6,C.white);W(rv,dir,line,a,b,out*(d1/2+sh),d1,y+h*.6,h*.4,C.white);}
+  W(rv,dir,line,g.t0-.25,g.t1+.25,out*(d2/2+sh),d2,y+h-.04,.54,C.white);
   W(st.d>=3?'palGoldB':st.frame,dir,line,g.t0-.5,g.t0-.25,-out*.2,.16,y,h+.6,st.d>=3?null:st.frameC);
   W(st.d>=3?'palGoldB':st.frame,dir,line,g.t1+.25,g.t1+.5,-out*.2,.16,y,h+.6,st.d>=3?null:st.frameC);
   W(st.d>=3?'palGoldB':st.frame,dir,line,g.t0-.5,g.t1+.5,-out*.2,.16,y+h,.6,st.d>=3?null:st.frameC);}
@@ -267,6 +296,20 @@ const IZPALDRAW=(function(){
    if(s.kind==='atrium'){const cu=(q.u0+q.u1)/2,cv=(q.v0+q.v1)/2,pu=du*.38,pv=dv*.3;
     B('palMarbleB',cu,cv,S.y,pu+.6,pv+.6,.35,C.white);B('palWaterB',cu,cv,S.y+.05,pu,pv,.28,null);
     B('palMosaicBB',cu,cv,S.y+.02,pu-.1,pv-.1,.05,null);B('palLampB',cu,cv,(s.ceilY||S.y+S.h)-.3,pu,pv,.05,null);}
+   // the Hangar Hall (the old hangar, where the House entertains): tall banners down both flanks' faces on gilt rods, each
+   // with a gilt sun; two great gilt sunbursts on the back wall either side of the great door
+   if(s.kind==='hall_hangar'){const cols=[0xc9442a,0xe07a2a,0x2f8f8a];
+    // (the middle pair would hang over the side doors: the Stair of the Hall's and the Consilium's, at u 15)
+    for(const[v,sd]of[[q.v0-.15,1],[q.v1+.15,-1]])for(const k of[0,1,3,4]){const u=q.u0+1.3+k*(du-2.6)/4,c=vC(cols[(k+(sd>0?0:1))%3]);
+     B('vClothB',u,v+sd*.05,S.y+2.6,1.6,.06,7.6,c);B('palGoldB',u,v+sd*.11,S.y+10.2,2,.1,.1,null);
+     B('palGoldB',u,v+sd*.1,S.y+7.4,.7,.05,.7,null);B('palGoldB',u,v+sd*.1,S.y+2.45,1.6,.05,.18,null);}
+    const gd=(S.portals||[]).find(P=>/great door/.test(P.name)),dv0=gd?(gd.a[1]+gd.b[1])/2:(q.v0+q.v1)/2;
+    // the back wall is the rear mass's battered face: the sunbursts stand just off it at their lowest ray
+    const M=IZPAL.MASS.rear,faceU=h=>M.u-M.du/2*(1-(1-M.t)*Math.max(0,h-M.y0)/M.H);
+    for(const sd of[-1,1]){const v=dv0+sd*6.6,yc=S.y+5.6,uf=faceU(yc-3.7)-.06,p=FR.P(uf,v);
+     for(let r=0;r<16;r++){const a=r/16*TAU,L2=r%2?1.7:2.6,cx=Math.cos(a)*(1+L2/2),cy=Math.sin(a)*(1+L2/2),pp=FR.P(uf,v+cx);
+      kput('palGoldB',[pp[0],FR.Y(yc+cy),pp[1]],new THREE.Quaternion().multiplyQuaternions(Q,qEuler(0,0,a)),[L2,.2,.08],null);}
+     kput('palMedalB',[p[0],FR.Y(yc),p[1]],new THREE.Quaternion().multiplyQuaternions(Q,qEuler(Math.PI/2,0,0)),[1.9,.06,1.9],null);ST.columns++;}}
    // the Aula: a stepped marble platform across the rear wall for the throne, three steps, a gilt edge
    if(s.kind==='throne'){const back=q.u1,cv=s.axisV!=null?s.axisV:(q.v0+q.v1)/2;for(let k=0;k<3;k++){const d=5.2-k*1.2,w=Math.min(2*Math.min(cv-q.v0,q.v1-cv)-1,14-k*2.4);
      B('palMarbleB',back-d/2-.2,cv,S.y+k*.3,d,w,.3,C.white);B('palGoldB',back-d-.2,cv,S.y+k*.3+.26,.08,w,.06,null);}
@@ -281,14 +324,16 @@ const IZPALDRAW=(function(){
     const inside=ax==='u'?[line-sg*.6,along]:[along,line-sg*.6];const s=S.spaceAt(inside[0],inside[1]);if(!s||s.void)continue;
     const off=-sg*.2,st=style(s,false);
     W('palPaneB',ax,line,along-w.w/2,along+w.w/2,off,.03,w.y-w.h/2,w.h,null);
-    W(st.frame,ax,line,along-w.w/2-.18,along-w.w/2,off*1.3,.1,w.y-w.h/2-.1,w.h+.2,st.frameC);W(st.frame,ax,line,along+w.w/2,along+w.w/2+.18,off*1.3,.1,w.y-w.h/2-.1,w.h+.2,st.frameC);
-    W(st.frame,ax,line,along-w.w/2-.18,along+w.w/2+.18,off*1.3,.1,w.y+w.h/2,.2,st.frameC);W('palMarbleB',ax,line,along-w.w/2-.25,along+w.w/2+.25,off*1.6,.3,w.y-w.h/2-.12,.12,C.white);
+    W(st.frame,ax,line,along-w.w/2-.18,along-w.w/2,off*1.35,.12,w.y-w.h/2-.1,w.h+.2,st.frameC);W(st.frame,ax,line,along+w.w/2,along+w.w/2+.18,off*1.35,.12,w.y-w.h/2-.1,w.h+.2,st.frameC);
+    W(st.frame,ax,line,along-w.w/2-.18,along+w.w/2+.18,off*1.35,.12,w.y+w.h/2+.1,.2,st.frameC);W('palMarbleB',ax,line,along-w.w/2-.25,along+w.w/2+.25,off*1.6,.3,w.y-w.h/2-.12,.12,C.white);
     ST.panes++;s.windows=(s.windows||[]).concat([{ax,line,along,w:w.w,y:w.y,h:w.h,sg}]);break;}});}
  /* ---------------------------------------------------------------- the whole */
  function draw(L,frame,o){const t0=performance.now();FR=frame;Q=qEuler(0,FR.ry,0);o=o||{};
   // the storeys' cell lookups (spaceAt in the citadel's frame)
-  L.buildings.forEach(Bd=>Bd.storeys.forEach(S=>{S.spaceAt=(u,v)=>{const g=S.grid,i=Math.floor((u-g.U0)/g.cell),j=Math.floor((v-g.V0)/g.cell);
-   if(i<0||j<0||i>=g.NU||j>=g.NV)return null;for(const s of S.spaces){if(!s.rects)continue;for(const q of s.rects)if(u>=q.u0&&u<q.u1&&v>=q.v0&&v<q.v1)return s;}return null;};}));
+  L.buildings.forEach(Bd=>Bd.storeys.forEach(S=>{const g=S.grid,cell=new Int32Array(g.NU*g.NV).fill(-1);
+   S.spaces.forEach((s,k)=>(s.rects||[]).forEach(q=>{const i0=Math.round((q.u0-g.U0)/g.cell),i1=Math.round((q.u1-g.U0)/g.cell),j0=Math.round((q.v0-g.V0)/g.cell),j1=Math.round((q.v1-g.V0)/g.cell);
+    for(let i=Math.max(0,i0);i<Math.min(g.NU,i1);i++)for(let j=Math.max(0,j0);j<Math.min(g.NV,j1);j++)if(cell[i*g.NV+j]<0)cell[i*g.NV+j]=k;}));
+   S.spaceAt=(u,v)=>{const i=Math.floor((u-g.U0)/g.cell),j=Math.floor((v-g.V0)/g.cell);if(i<0||j<0||i>=g.NU||j>=g.NV)return null;const k=cell[i*g.NV+j];return k>=0?S.spaces[k]:null;};}));
   if(o.mark)clear(o.mark,L);
   // the shells, with the portals' holes
   const pal=L.buildings.find(b=>b.id==='palace');
@@ -299,12 +344,12 @@ const IZPALDRAW=(function(){
   const g1=pal.storeys.find(S=>S.id==='G1'),dst=g1&&g1.spaces.find(s=>s.stair==='depot');if(dst)dst.floor='landing';
   const wins=IZPAL.windows();
   L.buildings.forEach(Bd=>{const anc=!!Bd.ancient;
-   Bd.storeys.forEach((S,i)=>{const upper=Bd.storeys.slice(i+1);storey(Bd,S,Bd.storeys[i+1],upper,anc);grandRooms(S,anc);if(Bd.id==='palace')panes(Bd,S,wins,anc);});});
+   Bd.storeys.forEach((S,i)=>{const upper=Bd.storeys.slice(i+1);storey(Bd,S,Bd.storeys[i+1],upper,anc,Bd.storeys[i-1]||null);grandRooms(S,anc);if(Bd.id==='palace')panes(Bd,S,wins,anc);});});
   shafts(L,dst);
   ST.ms=Math.round(performance.now()-t0);return ST;}
  // the two shafts through the rock between the Depot's ceiling and the palace's ground storey: the Well of the Machine (the
  // Ancient lift: a square of 9.6 m under the hall's medallion) and the Depot Stair (40 m of switchbacks)
- function shafts(L,dst){const mesa=L.buildings.find(b=>b.id==='mesa'),U1=mesa.storeys.find(S=>S.id==='U1'),y0=U1.y+U1.h-.36,y1=-.3;
+ function shafts(L,dst){const mesa=L.buildings.find(b=>b.id==='mesa'),U1=mesa.storeys.find(S=>S.id==='U1'),y0=U1.y+U1.h-.4,y1=-.3;
   const box=(q,c,item)=>{for(const[dir,line,out,t0,t1]of[['u',q.u0,-1,q.v0,q.v1],['u',q.u1,1,q.v0,q.v1],['v',q.v0,-1,q.u0,q.u1],['v',q.v1,1,q.u0,q.u1]]){
     W(item,dir,line,t0-.3,t1+.3,out*.15,.3,y0,y1-y0,c);for(let y=y0+3;y<y1-1;y+=4)W('palGlowB',dir,line,t0+.4,t1-.4,-out*.03,.04,y,.1,C.cyan);}};
   box({u0:10.2,u1:19.8,v0:-5.8,v1:3.8},C.anc,'palAncB');

@@ -46,13 +46,35 @@ const IZPAL=(function(){
  const HALL=R(8.3,22,-9.7,7.7,{open:'front',name:'hall'});
  // the Ancient levels in the mesa and the precinct buildings (pulled inside the curtain wall's inner face)
  const DEPOT=R(-70,70,-60,60),TUNNEL_END=112,TUNNEL=R(70,TUNNEL_END,-9,9),CORE=R(-50,50,-40,40);
+ // entries: a building's doors to the outside, on a side of its envelope ('u0' the side at the smallest u, 'v1' the
+ // largest v ...) at t along it, into the space there (which is reached from it); the services' one door is found
  const PREC={
-  praetorium:{name:'The Praetorium (the general staff)',rect:R(2,36,50,70),storeys:4,sh:4.5,decor:3},
-  embassies:{name:'The Hall of Embassies',rect:R(2,36,-70,-50),storeys:3,sh:4.5,decor:3},
-  kitchens:{name:'The Precinct Kitchens',rect:R(62,73,-30,-10),storeys:1,sh:5.5,decor:1},
-  mess:{name:'The Guard Mess',rect:R(64,77,-9,9),storeys:1,sh:5.5,decor:1},
-  stables:{name:'The Beast Stables',rect:R(62,73,10,30),storeys:1,sh:5.5,decor:1}};
- const PWALL=.6;   // a precinct building's outer wall
+  praetorium:{name:'The Praetorium (the general staff)',rect:R(2,36,50,70),storeys:4,sh:4.5,decor:3,look:'ministry',
+   entries:[{side:'v0',t:11.5,w:3.2,h:4,name:'the door from the palace',link:true},{side:'u1',t:60,w:2.2,h:3,name:'the staff door'}]},
+  embassies:{name:'The Hall of Embassies',rect:R(2,36,-70,-50),storeys:3,sh:4.5,decor:3,look:'ministry',
+   entries:[{side:'v1',t:11.5,w:3.2,h:4,name:'the door from the palace',link:true},{side:'u1',t:-60,w:2.2,h:3,name:'the staff door'}]},
+  // the two Praetorian barracks (sheet I0 #4, #5: the city's three-floor block, laid here): a hall through the ground
+  // floor from the court to the drill yard, the guard room, the armoury, the mess and the bath off it; the contubernia
+  // (eight men to a room) and the centurions' rooms above
+  barracks1:{name:'Praetorian Barracks I',rect:R(-30,0,55,69),storeys:3,sh:4.2,decor:1,look:'barracks',rooms:'barracks',
+   entries:[{side:'v0',t:-15,w:3.2,h:3.6,name:'the door to the court'},{side:'v1',t:-15,w:2.2,h:3,name:'the door to the drill yard'}]},
+  barracks2:{name:'Praetorian Barracks II',rect:R(-30,0,-69,-55),storeys:3,sh:4.2,decor:1,look:'barracks',rooms:'barracks',
+   entries:[{side:'v1',t:-15,w:3.2,h:3.6,name:'the door to the court'},{side:'v0',t:-15,w:2.2,h:3,name:'the door to the drill yard'}]},
+  kitchens:{name:'The Precinct Kitchens',rect:R(62,73,-30,-10),storeys:1,sh:5.5,decor:1,look:'service'},
+  mess:{name:'The Guard Mess',rect:R(64,77,-9,9),storeys:1,sh:5.5,decor:1,look:'service'},
+  stables:{name:'The Beast Stables',rect:R(62,73,10,30),storeys:1,sh:5.5,decor:1,look:'service'},
+  // the terrace pavilions (the builder's two belvederes on the base tier's roof and one on the lintel's, solid rooms with
+  // no use: hollowed here and given one; the east one moved off the flank stair and the Domus's face it stood on)
+  orangery:{name:'The Orangery',rect:R(12.3,19.7,-42.5,-33.5),y0:14.15,storeys:1,sh:7.2,decor:4,look:'pavilion',
+   room:['The Orangery: the exotic plants of the Empire','orangery','citrus, palms and the crater\'s flowers in tubs round a fountain'],
+   entries:[{side:'u0',t:-38,w:2.4,h:3.4,name:'the garden door'}]},
+  triclinium:{name:'The Summer Triclinium',rect:R(-13.4,-6,28,37),y0:14.15,storeys:1,sh:7.2,decor:4,look:'pavilion',
+   room:['The Summer Triclinium','feast_private','the House dines here in the hot months, the terrace gardens round it'],
+   entries:[{side:'v0',t:-9.7,w:2.4,h:3.4,name:'the garden door'}]},
+  belvedere:{name:'The Belvedere of the Stars',rect:R(12.3,19.7,-8.5,.5),y0:50.15,storeys:1,sh:7.2,decor:4,look:'pavilion',
+   room:['The Belvedere of the Stars','astronomers','the emperor\'s star room over the hall: the armillary, the charts, the view of the crater'],
+   entries:[{side:'u0',t:-4,w:2.4,h:3.4,name:'the roof door'}]}};
+ const PWALL=.6,PLINTH=.15;   // a precinct building's outer wall; its ground floor on a plinth over the paving
  const TSTAIR=[22,28,6,13];   // the tower's stair (the plan's TSTAIR is 6 x 12 at the apartments, the sheet's another place in the tower)
  /* ---------------------------------------------------------------- kinds */
  // open floor: flows into the corridor with no wall between (the Voth method: a hall, a passage, a gallery is floor)
@@ -67,7 +89,7 @@ const IZPAL=(function(){
   // for ext), w, h}. The grand entrance is the builder's doorway (8.4 x 8.2 at the front); the other three are the sheet's
   L.push({id:'G1',sheet:'I0',y:0,h:D1,env:t1(D1),name:'Ground storey: the entrance, the atrium, the secretariats',
    portals:[{a:[-19,0],b:[-23,0],w:7.2,h:8.2,ext:true,name:'the grand entrance'},{a:[59,0],b:[63,0],w:3,h:3.6,ext:true,name:'the rear door'},
-    {a:[20,44.5],b:[20,49],w:3,h:3.6,ext:true,name:'the door to the Praetorium'},{a:[20,-44.5],b:[20,-49],w:3,h:3.6,ext:true,name:'the door to the Hall of Embassies'}]});
+    {a:[11.5,44.5],b:[11.5,49],w:3.2,h:4,ext:true,name:'the door to the Praetorium'},{a:[11.5,-44.5],b:[11.5,-49],w:3.2,h:4,ext:true,name:'the door to the Hall of Embassies'}]});
   L.push({id:'G2',sheet:'I1',y:D1,h:D1,env:t1(2*D1),name:'Second storey: the Magister, the Master of Embassies, the envoys'});
   L.push({id:'G3',sheet:'I1',y:2*D1,h:D1,env:t1(14),third:true,name:'Third storey: the freedmen and the Library of the Palace'});
   L.push({id:'D1',sheet:'I2a',y:14,h:D1,env:t2(14+D1),name:'The Domus: the empress and the kin'});
@@ -115,7 +137,8 @@ const IZPAL=(function(){
   for(let i=0;i<NU;i++)for(let j=0;j<NV;j++){const u=cu(i),v=cv(j);if(S.env.some(e=>u>e.u0&&u<e.u1&&v>e.v0&&v<e.v1))G[i*NV+j]=-1;}
   // the rooms, clipped to the envelope their centre is in
   const spaces=[];
-  rooms.forEach(r=>{if(OUTDOOR[r.kind])return;const c=[(r.u0+r.u1)/2,(r.v0+r.v1)/2];
+  // the stairs are painted last: a shaft is the same rect on every storey it passes, whatever the sheet drew there
+  rooms.slice().sort((a,b)=>(a.kind==='stair')-(b.kind==='stair')).forEach(r=>{if(OUTDOOR[r.kind])return;const c=[(r.u0+r.u1)/2,(r.v0+r.v1)/2];
    let env=S.env.find(e=>c[0]>e.u0&&c[0]<e.u1&&c[1]>e.v0&&c[1]<e.v1);
    if(!env){let best=0;S.env.forEach(e=>{const a=area(inter(r,e));if(a>best){best=a;env=e;}});}
    if(!env)return;   // another building's room (the sheets draw the precinct round the block)
@@ -163,6 +186,13 @@ const IZPAL=(function(){
   // the doors, outward from the open floor (and the outside, through an outer portal)
   const reached=new Map();spaces.forEach((s,k)=>{if(s.open&&!s.gone)reached.set(k,0);});
   portals.forEach(P=>{if(P.ext&&P.sa>=0)reached.set(P.sa,0);});
+  // the entries: a door in the envelope's side into the space there, reached from the outside
+  const outer=[];
+  (S.entries||[]).forEach(E=>{const env=S.env[0],dir=E.side[0],line=env[E.side],inw=E.side[1]==='0'?1:-1;
+   const k=dir==='u'?at(line+inw*.3,E.t):at(E.t,line+inw*.3);if(k<0)return;const s=spaces[k];
+   const w={dir,line,t0:E.t-E.w/2-.3,t1:E.t+E.w/2+.3,a:k,b:-2,kind:'outer',doors:[],name:E.name};
+   const d={id:s.id+'.door'+s.doors.length,t0:E.t-E.w/2,t1:E.t+E.w/2,w:E.w,h:E.h,from:k,to:-2,ext:true,dir,line,name:E.name,link:!!E.link};
+   w.doors.push(d);s.doors.push(d);outer.push(w);reached.set(k,0);});
   const viaPortal=k=>{for(const P of portals){if(P.sa===k&&reached.has(P.sb))return true;if(P.sb===k&&reached.has(P.sa))return true;}return false;};
   const closed=spaces.map((s,k)=>k).filter(k=>!spaces[k].open&&!spaces[k].void&&!spaces[k].gone);
   const wallsOf=k=>walls.filter(w=>w.kind==='wall'&&(w.a===k||w.b===k)&&w.t1-w.t0>=1.6);
@@ -178,7 +208,6 @@ const IZPAL=(function(){
     if(best){putDoor(best[0],k,best[1]);reached.set(k,depth);changed=true;}}
    depth++;}
   // a room nothing reached: a door through the outer wall if it has one (the precinct buildings, the services)
-  const outer=[];
   for(const k of closed){if(reached.has(k))continue;const s=spaces[k],q=s.rect;
    const env=S.env.find(e=>q.u0>=e.u0-.01&&q.u1<=e.u1+.01&&q.v0>=e.v0-.01&&q.v1<=e.v1+.01);
    const sides=env?[['u',env.u0,q.u0,q.v0,q.v1],['u',env.u1,q.u1,q.v0,q.v1],['v',env.v0,q.v0,q.u0,q.u1],['v',env.v1,q.v1,q.u0,q.u1]].filter(x=>Math.abs(x[1]-x[2])<CELL+.01&&x[4]-x[3]>=1.6):[];
@@ -219,19 +248,36 @@ const IZPAL=(function(){
    B.storeys[1].spaces.forEach(s=>{if(s.stair==='depot')s.shaftTo='palace.G1';});
    out.buildings.push(finishBuilding(B));}
   // the precinct buildings: their ground floors from sheet I0, their upper floors from I1's zone cut into rooms
-  for(const key in PREC){const P=PREC[key],q=P.rect,env=R(q.u0+PWALL,q.u1-PWALL,q.v0+PWALL,q.v1-PWALL);
-   const B={id:key,name:P.name,decor:P.decor,extDoors:true,rect:q,storeys:[]};
-   const g=sheet('I0').rooms.map(r=>({n:r[0],name:r[1],kind:r[2],u0:r[3],u1:r[4],v0:r[5],v1:r[6],decor:r[7],note:r[8]||''}))
+  for(const key in PREC){const P=PREC[key],q=P.rect,env=R(q.u0+PWALL,q.u1-PWALL,q.v0+PWALL,q.v1-PWALL),y0=P.y0==null?PLINTH:P.y0;
+   const B={id:key,name:P.name,decor:P.decor,extDoors:true,rect:q,look:P.look,y0,storeys:[]};
+   // the ground floor: the pavilions' one room; the barracks' own plan; the others' rooms from sheet I0
+   let g=[];
+   if(P.room)g=[{n:1,name:P.room[0],kind:P.room[1],u0:env.u0,u1:env.u1,v0:env.v0,v1:env.v1,decor:P.decor,note:P.room[2]}];
+   else if(!P.rooms){g=sheet('I0').rooms.map(r=>({n:r[0],name:r[1],kind:r[2],u0:r[3],u1:r[4],v0:r[5],v1:r[6],decor:r[7],note:r[8]||''}))
     .filter(r=>{const c=[(r.u0+r.u1)/2,(r.v0+r.v1)/2];return c[0]>q.u0&&c[0]<q.u1&&c[1]>q.v0&&c[1]<q.v1;});
-   if(g.length===1)Object.assign(g[0],{u0:env.u0,u1:env.u1,v0:env.v0,v1:env.v1});
+    if(g.length===1)Object.assign(g[0],{u0:env.u0,u1:env.u1,v0:env.v0,v1:env.v1});}
    const st=P.storeys>1?{n:'st',name:'Stair',kind:'stair',key:'prec',decor:P.decor,u0:env.u0,u1:env.u0+6,v0:q.v0>0?env.v0:env.v1-4.5,v1:q.v0>0?env.v0+4.5:env.v1,note:''}:null;
    for(let s=0;s<P.storeys;s++){let rooms=g;
-    if(s>0){const z=sheet('I1').rooms.map(r=>({n:r[0],name:r[1],kind:r[2],u0:r[3],u1:r[4],v0:r[5],v1:r[6],decor:r[7],note:r[8]||''}))
+    if(P.rooms==='barracks')rooms=barracksRooms(env,q.v0>0,s);
+    else if(s>0){const z=sheet('I1').rooms.map(r=>({n:r[0],name:r[1],kind:r[2],u0:r[3],u1:r[4],v0:r[5],v1:r[6],decor:r[7],note:r[8]||''}))
       .filter(r=>r.kind==='ministry'&&area(inter(r,q))>20)[0];
      rooms=z?cutZone(z,env,key,s):[];}
     // one stair through every storey, in the corner nearest the palace and the court (painted last: it takes its cells)
-    B.storeys.push(layStorey(B,{id:'S'+(s+1),sheet:s?'I1':'I0',y:s*P.sh,h:P.sh,env:[env],decor:P.decor,name:P.name+', storey '+(s+1)},st?rooms.concat([st]):rooms,dropped));}
+    B.storeys.push(layStorey(B,{id:'S'+(s+1),sheet:s?'I1':'I0',y:y0+s*P.sh,h:P.sh,env:[env],decor:P.decor,name:P.name+(P.storeys>1?', storey '+(s+1):''),
+     entries:s===0?P.entries:null},st?rooms.concat([st]):rooms,dropped));}
    out.buildings.push(finishBuilding(B));}
+  return out;}
+ // a barracks storey: a corridor down the long axis (u), the stair at the u0 end on the court side; on the ground floor a
+ // hall across from the court door to the yard door (u -16.6..-13.4) with the guard room, the centurion's office and the
+ // armoury on the court side, the bath, the stores and the mess on the yard side; the contubernia above, a centurion's
+ // or an optio's rooms at the yard side's end
+ function barracksRooms(env,courtLow,s){const out=[],cw=2.4,mid=(env.v0+env.v1)/2,L0=env.u0+6,cv=courtLow?[env.v0,mid-cw/2]:[mid+cw/2,env.v1],yv=courtLow?[mid+cw/2,env.v1]:[env.v0,mid-cw/2];
+  let n=0;const room=(u0,u1,v,name,kind,decor)=>out.push({n:200+(++n),name,kind,u0,u1,v0:v[0],v1:v[1],decor,note:'storey '+(s+1)});
+  if(s===0){room(L0,-16.6,cv,'Guard Room of the Cohort','guard',2);room(-13.4,-7,cv,'Centurion\'s Office','office',2);room(-7,env.u1,cv,'Armoury of the Cohort','armoury',2);
+   room(env.u0,L0,yv,'Bath and Latrines','bath',1);room(L0,-16.6,yv,'Stores of the Cohort','store',1);room(-13.4,env.u1,yv,'Mess Hall of the Guard','servants_hall',1);
+   out.push({n:299,name:'Hall of the Barracks',kind:'passage',u0:-16.6,u1:-13.4,v0:env.v0,v1:env.v1,decor:1,note:'from the court to the drill yard'});return out;}
+  room(env.u0,L0,yv,s===1?'Centurion\'s Quarters':'Optio\'s Quarters','chamber',2);
+  const k=4,step=(env.u1-L0)/k;for(const v of[cv,yv])for(let i=0;i<k;i++)room(L0+i*step,L0+(i+1)*step,v,'Contubernium (eight men)','dormitory',1);
   return out;}
  // a ministry zone on an upper storey: a corridor down its long axis and rooms either side of about 8 m
  function cutZone(z,env,key,s){const q=env,alongU=(q.u1-q.u0)>=(q.v1-q.v0),out=[];
@@ -259,7 +305,7 @@ const IZPAL=(function(){
   row(8,-8,46,40,.88,22,28,34,6,2.2,4,x=>x>-11&&x<9);row(8,-8,46,40,.88,22,28,43,6,2.2,3,x=>x>-11&&x<9);
   for(let i=0;i<3;i++)row(16,-10,20,20,.85,30,50,56+i*8,2,3,3);
   return out;}
- return{PLAN,MASS,HALL,DEPOT,TUNNEL,TUNNEL_END,CORE,PREC,PWALL,TSTAIR,CELL,INSET,OPEN,VOID,liner,layout,windows,
+ return{PLAN,MASS,HALL,DEPOT,TUNNEL,TUNNEL_END,CORE,PREC,PWALL,PLINTH,TSTAIR,CELL,INSET,OPEN,VOID,liner,layout,windows,
   // the page's frame: the hill centre (cx, cz), the mesa top (top), the gate's bearing as a unit vector (gx, gz)
   frame(F){const ry=Math.atan2(F.gx,F.gz);
    return{F,ry,P:(u,v)=>[F.cx-u*F.gx+v*F.gz,F.cz-u*F.gz-v*F.gx],Y:h=>F.top+h,

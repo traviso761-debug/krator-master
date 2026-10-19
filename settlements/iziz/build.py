@@ -124,7 +124,7 @@ INTERIOR_SETS = ['iziz']
 # the schoolroom), and the palace's own pieces besides (kits/catalog -izpalace.js, the court's;
 # -izpalace-depot.js, the Depot's, the Core's and the service rooms'; both list only the palace's room kinds, so no other
 # build's furniture moves) and the catalog's detail maps (furniture_bundle tex=True: KF_TEX, about 1 MB)
-TARGET_FURN = {'palace': (FURN_CULTURES + ['talia', 'izpalace', 'izpalace-depot'], True)}
+TARGET_FURN = {'palace': (FURN_CULTURES + ['talia', 'izpalace', 'izpalace-depot'], True, True)}   # (cultures, tex, plants: the orangery and the roof gardens)
 # a target's own library pack (materials.json and tex/ in its folder, tools/textures/pack.py), registered as KMAT pack <name>
 # and written beside the page as its own sidecar, so the shared iziz.tex.js and every other page stay as they were
 TARGET_PACKS = {'palace': ('palace', 'izpalace', '69dp-palace-matlib-pack.js', 'iziz-palace.tex.js')}
@@ -207,7 +207,7 @@ DETERMINISTIC = {
     '69f-iziz-fixtures.js',               # the vernacular's doors, windows and lamps noted for core/tags (reads only)
     '69e-vern-hollow.js', '95i-iziz-interiors.js', '74z-vern-trades.js',   # the hollow bodies, the interiors, the trades table (no rnd())
     '07-core-export.js', '09-core-export-adapters.js', '94-city-export.js',   # core/export and the city's part of it (M5; runs at export time only)
-    '78p-palace-plan.js', '78q-palace-layout.js', '78r-palace-draw.js', '84-palace-geo.js', '95p-palace-furnish.js',   # the palace page (no rnd())
+    '78p-palace-plan.js', '78q-palace-layout.js', '78r-palace-draw.js', '84-palace-geo.js', '95p-palace-furnish.js', '95q-palace-cutlabels.js',   # the palace page (no rnd())
     '69dp-palace-matlib-pack.js',         # generated: the palace's library pack
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
@@ -431,8 +431,8 @@ def build_one(target, do_checks, assert_origin):
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
         import furniture_bundle, kit_bundle
-        cults, ftex = TARGET_FURN.get(target, (FURN_CULTURES, False))
-        bodies[FURN_BUNDLE] = furniture_bundle.bundle(cults, tex=ftex) + kit_bundle.bundle(INTERIOR_SETS)
+        cults, ftex, fplants = (TARGET_FURN.get(target, (FURN_CULTURES, False)) + (False,))[:3]
+        bodies[FURN_BUNDLE] = furniture_bundle.bundle(cults, tex=ftex, plants=fplants) + kit_bundle.bundle(INTERIOR_SETS)
         order = sorted(order + [FURN_BUNDLE])
     tside = None
     if target in TARGET_PACKS:   # the target's own pack, its own sidecar
