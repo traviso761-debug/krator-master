@@ -23,14 +23,15 @@ function seepN(B,a){const n=KR.fbm(Math.cos(a)*2.2+40,Math.sin(a)*2.2+40,1,2,B.s
 NECANYONS.seepN=seepN;
 
 // ---------------------------------------------------------------- lay: the grid of beds and wall distances
-// o: {bodies, floor:(x,z)=>y, R, capY (330: a top this high is a cap), cell (5 m), seed}
+// o: {bodies, floor:(x,z)=>y, R, capY (330: a top this high is a cap), cell (5 m), seed, footMax (60: how far out the
+// distance to a wall's foot is measured; footD reads this beyond it and off the grid)}
 NECANYONS.lay=function(o){
- L={bodies:o.bodies,floor:o.floor,R:o.R,capY:o.capY==null?330:o.capY,seed:o.seed==null?1:o.seed};
+ L={bodies:o.bodies,floor:o.floor,R:o.R,capY:o.capY==null?330:o.capY,seed:o.seed==null?1:o.seed,FM:o.footMax==null?60:o.footMax};
  const C=o.cell==null?5:o.cell,N=Math.ceil((o.R*2+400)/C),X0=-o.R-200,bodies=o.bodies;
- const who=new Int32Array(N*N),foot=new Float32Array(N*N);   // who: body*64+bed+1 (0: no rock); foot: m to the nearest wall foot (cap 60)
+ const who=new Int32Array(N*N),foot=new Float32Array(N*N);   // who: body*64+bed+1 (0: no rock); foot: m to the nearest wall foot (cap L.FM)
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=X0+(i+.5)*C,z=X0+(j+.5)*C,k=j*N+i;
   const a=K.at(bodies,x,z);if(a)who[k]=bodies.indexOf(a.S)*64+a.b.k+1;
-  let fd=60;for(let b=0;b<bodies.length;b++){const B=bodies[b];if(Math.abs(x-B.x)>B.R+60||Math.abs(z-B.z)>B.R+60)continue;
+  let fd=L.FM;for(let b=0;b<bodies.length;b++){const B=bodies[b];if(Math.abs(x-B.x)>B.R+L.FM||Math.abs(z-B.z)>B.R+L.FM)continue;
    const q=B.beds[0],d=Math.hypot(x-q.cx,z-q.cz)-K.footR(q,Math.atan2(z-q.cz,x-q.cx));if(d<fd)fd=d;}
   foot[k]=fd;}
  // an edge cell (a neighbour on another bed): its points are looked up exactly
@@ -48,7 +49,7 @@ NECANYONS.rockAt=function(x,z){const k=cellOf(x,z);if(k<0)return null;
  if(G.edge[k]){const a=K.at(L.bodies,x,z);return a?{B:a.S,b:a.b,top:a.top,d:a.d}:null;}
  const w=G.who[k];if(!w)return null;const B=L.bodies[(w-1)>>6],b=B.beds[(w-1)&63];return {B,b,top:K.topH(b,x,z),d:null};};
 NECANYONS.top=function(x,z){const r=NECANYONS.rockAt(x,z);return r?r.top:-Infinity;};
-NECANYONS.footD=function(x,z){const k=cellOf(x,z);if(k<0)return 60;const C=G.C,i=Math.floor((x-G.X0)/C),j=Math.floor((z-G.X0)/C),N=G.N;
+NECANYONS.footD=function(x,z){const k=cellOf(x,z);if(k<0)return L.FM;const C=G.C,i=Math.floor((x-G.X0)/C),j=Math.floor((z-G.X0)/C),N=G.N;
  // bilinear between the cell centres
  const u=(x-G.X0)/C-i-.5,v=(z-G.X0)/C-j-.5,i0=u<0?i-1:i,j0=v<0?j-1:j,fu=u<0?u+1:u,fv=v<0?v+1:v;
  if(i0<0||j0<0||i0>=N-1||j0>=N-1)return G.foot[k];const k0=j0*N+i0;

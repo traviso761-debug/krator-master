@@ -20,12 +20,18 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
   forest as a canopy surface opened over the rivers, the K'etsaal Baatar's valley 11 km south, the Inner Wall rising to
   ~3 km 48 km north.
 - **The plan is data** (`src/40-pr-layout.js`, `[G data]`): the settled layout's numbers (the diagram,
-  https://claude.ai/artifact/Dn8qzog9vCzCvcV9gxHpZH): the mesa, the ten fins by group, the Garden's thirteen stacks, the
+  https://claude.ai/artifact/Dn8qzog9vCzCvcV9gxHpZH): the mesa, the ten fins by group, the Garden's mesa and its sixteen stacks, the Heart, the
   shrine's balanced rock, seven spurs, the top's zones, the palisade, the nine bands' pastures, camps and hedges, the
   fair ground, the road and gate, the pond, the spring, the gorge; `PR.zoneAt`, `PR.topZoneAt`, `PR.forest`.
 - **The rock** is KSTACKS records (`core/terrain/37-core-stacks.js`) made from the plan (`45-host-stage.js`): the mesa
   (250 m over the south foot, 1.24 by 0.82 km), the fins each set in from the rim until their whole foot is 12 m inside
-  the edge, the Garden and the spurs.
+  the edge, the spurs, the Garden's mesa (55 m over the top) with its sixteen pinnacles, and the Heart in its middle: a
+  third mesa about half the central pinnacles' height (110 m over the Garden's mesa), weathered hardest (`weather` 2),
+  the three tallest pinnacles rising out of it. Every mesa is weathered as the owner's Monument Valley reference has it
+  (2026-10-19): flutes down the cliff, gullies notching the rim, a rough shoulder of thin ledges stepping back 30-45
+  degrees to a flat top (KSTACKS `weather`, `shoulder`), and round every wall's foot a **debris slope** (`LAND.talus`
+  in `45-host-stage.js`: about 34 degrees, 55-85 m high against the wall and ~115 m out, in ledge bands) strewn with
+  fallen blocks (`87-pr-talus.js`: up to ~9 m near the foot).
 - **The plants**: the necanyons kit (`biomes/necanyons`, read in place with its land fragment `47-host-land.js`, which
   takes this page's `LAND` hooks: the cap height, the LOD spine, the cleared ground, no creek) on the walls, ledges,
   spurs and stacks, kept off the town's ground past the 12 m rim band; the hyperjungle on the floor, kept out of the farms,
@@ -36,6 +42,9 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
 The shared invariants (registered volumes, NaN, budgets, the export profile) and the page's own (`99-host-take.js`
 `hostChecks`): the mesa's height and size; ten fins, each wholly on the top 12 m from the edge, 40-90 m over it, spread
 round the rim (at least five of eight sectors, no 250 m circle with more than three: the owner, 2026-10-19); the Garden
-on the middle; no tree on the town's ground; no forest standing in the farms or a band's ground; the floor equal to the
-model's land and the Inner Wall over 2.5 km above the knoll. Each has a negative control (the fins in one row, a fin over
-the edge, a 180 m mesa, a tree in the Crown, a tree in the farms).
+on its own mesa, tallest at the centre; the Heart (three pinnacles on it, its rise .4-.6 of theirs, weathered half as
+much again as the Garden's mesa, measured against the same body cut clean); no tree on the town's ground; no forest
+standing in the farms or a band's ground; the floor equal to the model's land and the Inner Wall over 2.5 km above the
+knoll. Each has a negative control (the fins in one row, a fin over the edge, a 180 m mesa, the Garden all one height,
+no Garden's mesa, no Heart, a Heart weathered like the Garden's mesa, a Heart as tall as its pinnacles, a tree in the
+Crown, a tree in the farms).

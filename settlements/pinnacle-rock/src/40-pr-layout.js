@@ -8,7 +8,8 @@
 //   PR.FINS                      ten fins round the rim in groups: {id, group, wing, a (angle from the middle), inset, rot
 //                                (strike), L (half-length), H}: placed on the top by the stage, inset from the rim
 //   PR.GARDEN_MESA               the Garden's mesa: a smaller, lower tier in the middle of the top, the pinnacles' ground
-//   PR.GARDEN                    the Garden's sixteen pinnacles (and its edge's balanced rocks and fin) {x, z, r, H, kind, ring}
+//   PR.HEART_MESA                the Heart: a third mesa in the Garden's middle, half the pinnacles' height, the most weathered
+//   PR.GARDEN                    the Garden's sixteen pinnacles (and its edge's balanced rocks and fin) {x, z, r, H, kind, ring, on}
 //   PR.SHRINE_ROCK               the balanced rock in whose lee the Winged Ones' shrine stands
 //   PR.SPURS                     seven lower buttresses against the walls (120-190 m): ledges, and the cliff's line broken
 //   PR.TOP                       the zones of the top (ellipses): crown, garden, quarters, precinct, the camp grounds
@@ -28,7 +29,8 @@ const PR = (function () {
   const ellD = (x, z, e) => Math.hypot((x - e.x) / e.rx, (z - e.z) / e.rz);   // 1 on the ellipse
 
   // ---------------------------------------------------------------- the rock
-  const MESA = { id: 'mesa', x: 0, z: 0, top: 250, r: Math.sqrt(600 * 400), e: 1.5, ry: Math.PI / 2, lobes: .17, weather: 1, seed: 2101,
+  const MESA = { id: 'mesa', x: 0, z: 0, top: 250, r: Math.sqrt(600 * 400), e: 1.5, ry: Math.PI / 2, lobes: .17, weather: 1,
+    shoulder: { h: 30, back: 34, bed: [4, 7] }, seed: 2101,   // the top's rim: 30 m of ledges stepping back ~40 degrees to the cap rock
     name: 'Pinnacle Rock (the mesa)' };
   // the fins: by group, each where the diagram drew it; the stage sets each one in from the rim by `inset` along its
   // angle, so the outline's noise cannot leave a fin hanging over the edge (the no-build band is 12 m)
@@ -42,7 +44,7 @@ const PR = (function () {
     seed: 2200 + i, inset: f[6] * .25 + 22 }));
   // THE GARDEN'S MESA: a smaller, lower mesa in the middle of the top (the owner, 2026-10-19), the Garden's ground, 55 m
   // over the main top and about 420 by 380 m; the pinnacles rise out of it
-  const GARDEN_MESA = { id: 'garden-mesa', x: 0, z: 10, r: Math.sqrt(212 * 192), e: 212 / 192, ry: 0, h: 55, lobes: .2, weather: 1, seed: 2600,
+  const GARDEN_MESA = { id: 'garden-mesa', x: 0, z: 10, r: Math.sqrt(212 * 192), e: 212 / 192, ry: 0, h: 55, lobes: .2, weather: 1, shoulder: { h: 16, back: 16, bed: [3, 5] }, bed: [10, 22], seed: 2600,
     name: 'The Garden\'s mesa (the inner tier of the top)' };
   // the pinnacles on it: the diagram's thirteen drawn in to fit (x .8) and three more, larger and taller toward the middle
   // (the owner: even larger): 130-250 m over the Garden's mesa, 16-28 m across the foot at the middle, 16 at the edge.
@@ -53,6 +55,15 @@ const PR = (function () {
     const kind = edge ? ['balanced', 'spire', 'fin'][i % 3] : 'spire';
     return { id: 'garden-' + i, x: g[0], z: g[1], ring, kind, seed: 2300 + i,
       r: kind === 'spire' ? Math.max(16, 28 - .09 * d) : 11, H: kind === 'spire' ? Math.round(255 - .85 * d + (i * 17) % 22 - 11) : 55 + (i * 13) % 30 }; });
+  // THE HEART: one more mesa in the middle of the Garden's (the owner, 2026-10-19), about half the central pinnacles' height
+  // (110 m over the Garden's mesa) and weathered harder than the others (weather 2: deep gullies, a rough shoulder of
+  // ledges); the three tallest pinnacles rise out of it (on: 'heart', drawn in and narrower at their higher foot, their tops
+  // unchanged), the ring round it moved out to clear its foot. Seed 2709: its gullies miss the three pinnacles' feet
+  const HEART_MESA = { id: 'heart-mesa', x: -4, z: 10, r: Math.sqrt(76 * 70), e: 76 / 70, ry: 0, h: 110, lobes: .12, weather: 2, shoulder: { h: 30, back: 12, bed: [3, 6] },
+    bed: [6, 14], seed: 2709, name: 'The Heart (the third mesa, in the Garden\'s middle)' };
+  const ON_HEART = { 'garden-4': [12, 22, 15], 'garden-5': [-20, 20, 15], 'garden-12': [-4, -6, 18] },
+    OUT = { 'garden-0': [-20, -14], 'garden-1': [0, -8], 'garden-2': [16, -16], 'garden-3': [20, 0], 'garden-7': [0, 8], 'garden-11': [-6, 0] };
+  GARDEN.forEach(G => { const h = ON_HEART[G.id], m = OUT[G.id]; if (h) { G.x = h[0]; G.z = h[1]; G.r = h[2]; G.on = 'heart'; } if (m) { G.x += m[0]; G.z += m[1]; } });
   const SHRINE_ROCK = { id: 'shrine-rock', x: 160, z: -260, r: 9, H: 30, kind: 'balanced', seed: 2400 };
   // the spurs: lower buttresses against the walls (angle from the middle in degrees, z south; k: the centre's distance
   // as a share of the foot's radius there; r the spur's radius; h its top over y 0). Not on the south nose (90: the
@@ -141,7 +152,7 @@ const PR = (function () {
     for (const k of ['precinct', 'crown', 'garden', 'house', 'trade', 'south']) if (inEll(x, z, TOP[k])) return { zone: k, name: TOP[k].name };
     for (const c of TOP.camps) if (inEll(x, z, c)) return { zone: 'camp', tribe: c.tribe, name: c.name };
     return { zone: 'margin', name: 'the top\'s open margin' }; }
-  return { MESA, FINS, GARDEN_MESA, GARDEN, SHRINE_ROCK, SPURS, TOP, PALISADE, PASTURES, CAMPS, HEDGES, FAIR, ROAD, GATE, POND, SPRING, GORGE, CLEARED,
+  return { MESA, FINS, GARDEN_MESA, HEART_MESA, GARDEN, SHRINE_ROCK, SPURS, TOP, PALISADE, PASTURES, CAMPS, HEDGES, FAIR, ROAD, GATE, POND, SPRING, GORGE, CLEARED,
     zoneAt, topZoneAt, forest, inFarms, inPoly, inEll, roadD, gorgeD };
 })();
 if (typeof module !== 'undefined') module.exports = PR;

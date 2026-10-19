@@ -47,14 +47,14 @@ const ROCK=(function(){const K=KSTACKS,L=[],M=PR.MESA;
  // the floor's lowest under and round the footprint (r along x and z: the strike is north-south)
  const footY=(x,z,rx,rz)=>{let m=1e9;for(let i=0;i<48;i++){const a=i/48*TAU;for(const k of [.5,.85,1.08])m=Math.min(m,floorH(x+Math.cos(a)*rx*k,z+Math.sin(a)*rz*k));}return m-3;};
  const y0=Math.min(-5,footY(M.x,M.z,M.r/Math.sqrt(M.e),M.r*Math.sqrt(M.e)));
- const mesa=K.make({id:M.id,kind:'butte',x:M.x,z:M.z,y0,seed:M.seed,lobes:M.lobes,weather:M.weather,tiers:[{h:M.top-y0,r:M.r,e:M.e,ry:M.ry}]});
+ const mesa=K.make({id:M.id,kind:'butte',x:M.x,z:M.z,y0,seed:M.seed,lobes:M.lobes,weather:M.weather,shoulder:M.shoulder,tiers:[{h:M.top-y0,r:M.r,e:M.e,ry:M.ry}]});
  mesa.name=M.name;L.push(mesa);
  const topB=mesa.beds[mesa.beds.length-1],topY=y=>K.topAt([mesa],y[0],y[1]),_top0=mesa.top;
  // THE SPURS: lower buttresses half into the wall (120-190 m), so the mesa is not a drum: their tops are ledges (the
  // necanyons kit's benches: hanging gardens), their walls break the cliff's line. None on the south nose (the Stair) or
  // under the north fins (the gorge face, the beast lift)
  PR.SPURS.forEach(P=>{const R=K.footR(mesa.beds[0],P.a)*P.k,x=M.x+Math.cos(P.a)*R,z=M.z+Math.sin(P.a)*R;
-  const s=K.make({id:P.id,kind:'butte',x,z,y0:Math.min(y0,footY(x,z,P.r,P.r)),seed:P.seed,lobes:.2,tiers:[{h:P.h-Math.min(y0,footY(x,z,P.r,P.r)),r:P.r,e:1.4,ry:P.a+Math.PI/2}]});
+  const s=K.make({id:P.id,kind:'butte',x,z,y0:Math.min(y0,footY(x,z,P.r,P.r)),seed:P.seed,lobes:.2,weather:1,shoulder:{h:14,back:13,bed:[3,5]},tiers:[{h:P.h-Math.min(y0,footY(x,z,P.r,P.r)),r:P.r,e:1.4,ry:P.a+Math.PI/2}]});
   s.name='A spur of the mesa (a ledge '+Math.round(P.h)+' m up)';L.push(s);});
  // a body on a top is accepted when every point of its foot is on that top and at least `pad` in from its edge
  const footOn=(B,pad,on)=>{const b=B.beds[0];for(let i=0;i<24;i++){const a=i/24*TAU,R=K.footR(b,a),x=b.cx+Math.cos(a)*R,z=b.cz+Math.sin(a)*R,A=K.at([on||mesa],x,z);
@@ -65,24 +65,37 @@ const ROCK=(function(){const K=KSTACKS,L=[],M=PR.MESA;
   if(!B){reportErr('pinnacle-rock: '+F.id+' finds no room on the top');return;}
   B.name='A fin on the rim ('+F.group+(F.wing?', the '+F.wing+'\'s roosts':', a lookout')+')';B.group=F.group;B.wing=F.wing;L.push(B);});
  // THE GARDEN'S MESA: the inner tier, standing on the main top (its foot set into it), weathered like the mesa
- const GM=PR.GARDEN_MESA,gy0=topY([GM.x,GM.z])-4,inner=K.make({id:GM.id,kind:'butte',x:GM.x,z:GM.z,y0:gy0,seed:GM.seed,lobes:GM.lobes,weather:GM.weather,
-  bed:[10,22],tiers:[{h:_top0+GM.h-gy0,r:GM.r,e:GM.e,ry:GM.ry}]});
+ const GM=PR.GARDEN_MESA,gy0=topY([GM.x,GM.z])-4,inner=K.make({id:GM.id,kind:'butte',x:GM.x,z:GM.z,y0:gy0,seed:GM.seed,lobes:GM.lobes,weather:GM.weather,shoulder:GM.shoulder,
+  bed:GM.bed,tiers:[{h:_top0+GM.h-gy0,r:GM.r,e:GM.e,ry:GM.ry}]});
  inner.name=GM.name;inner.garden=true;L.push(inner);
  const innerY=y=>K.topAt([inner],y[0],y[1]);
- // THE GARDEN'S PINNACLES on the inner mesa, and the shrine's balanced rock on the main top
- PR.GARDEN.forEach(G=>{const B=K.make({id:G.id,kind:G.kind,x:G.x,z:G.z,y0:innerY([G.x,G.z])-1.5,seed:G.seed,H:G.H,r:G.r,e:G.kind==='fin'?3.2:null});
-  if(!footOn(B,6,inner)){reportErr('pinnacle-rock: '+G.id+' is off the Garden\'s mesa');return;}
+ // THE HEART: the third mesa, on the Garden's (its foot set into it), half the central pinnacles' height, weathered hardest
+ const HM=PR.HEART_MESA,hy0=innerY([HM.x,HM.z])-4,_gtop=_top0+GM.h,heart=K.make({id:HM.id,kind:'butte',x:HM.x,z:HM.z,y0:hy0,seed:HM.seed,lobes:HM.lobes,
+  weather:HM.weather,shoulder:HM.shoulder,bed:HM.bed,tiers:[{h:_gtop+HM.h-hy0,r:HM.r,e:HM.e,ry:HM.ry}]});
+ heart.name=HM.name;heart.heart=true;L.push(heart);
+ // THE GARDEN'S PINNACLES on the inner mesa (the three tallest on the Heart: their tops where the plan has them), and the
+ // shrine's balanced rock on the main top
+ PR.GARDEN.forEach(G=>{const on=G.on==='heart'?heart:inner,y0=K.topAt([on],G.x,G.z)-1.5;
+  const B=K.make({id:G.id,kind:G.kind,x:G.x,z:G.z,y0,seed:G.seed,H:G.H-(y0+1.5-_gtop),r:G.r,e:G.kind==='fin'?3.2:null});
+  if(!footOn(B,on===heart?2:6,on)){reportErr('pinnacle-rock: '+G.id+' is off the '+(on===heart?'Heart':'Garden\'s mesa'));return;}
+  if(on===inner&&K.at([heart],G.x,G.z)){reportErr('pinnacle-rock: '+G.id+' stands in the Heart');return;}
   B.name=G.kind==='balanced'?'A balanced rock on the Garden\'s mesa':G.kind==='fin'?'A fin on the Garden\'s mesa':'A pinnacle of the Garden ('+Math.round(G.H)+' m)';
   B.ring=!!G.ring;L.push(B);});
  {const G=PR.SHRINE_ROCK,B=K.make({id:G.id,kind:G.kind,x:G.x,z:G.z,y0:topY([G.x,G.z])-1.5,seed:G.seed,H:G.H,r:G.r});
   if(footOn(B,8)){B.name='The balanced rock of the Winged Ones\' shrine';L.push(B);}else reportErr('pinnacle-rock: the shrine\'s rock is off the top');}
  return L;})();
-const MESA_B=ROCK[0],GARDEN_B=ROCK.find(B=>B.garden);
+const MESA_B=ROCK[0],GARDEN_B=ROCK.find(B=>B.garden),HEART_B=ROCK.find(B=>B.heart);
 const TOWN_GROUND=[MESA_B,GARDEN_B];   // the tops the town stands on (no trees past their rim bands)
 
 // ---------------------------------------------------------------- what necanyons' land fragment (47) reads from this page
 // the mesa's top is a cap (dry, bare: the town's ground); the LOD spine follows the rock and the floor's grounds; the
 // hyperjungle keeps out of the farms, the bands' grounds, the fair ground and the road, and stands thin on the cleared
 // ground (PR.forest)
-const LAND={capY:240,tags:'pinnacle-rock',creek:false,clear:(x,z)=>PR.forest(x,z),
+// THE DEBRIS SLOPE round the walls' feet (the owner's Monument Valley butte, 2026-10-19): the cliff stands on a rough
+// slope of its own fall, about 34 degrees, 55-85 m high against the wall and ~115 m out, in ledge bands (steep risers,
+// gentler treads), lumpy; the floor mesh fine enough (11 m) to show it
+const TALUS={w:125,h:(x,z,fd)=>{fd=Math.max(0,fd);const Ht=70+15*(fbm(x*.004+5,z*.004-3,46,2)-.5)*2,W=Ht/Math.tan(34*Math.PI/180),base=Ht*Math.max(0,1-fd/W);
+ const q=base/9,fl=Math.floor(q),fr=q-fl,step=9*(fl+(fr<.4?fr*2:.8+(fr-.4)/3));   // a ledge band every 9 m: riser, then tread
+ return (step+3.2*(fbm(x*.03,z*.03,47,2)-.5)*2*Math.min(1,base/6))*smooth(W+10,W-15,fd);}};
+const LAND={capY:240,tags:'pinnacle-rock',creek:false,clear:(x,z)=>PR.forest(x,z),talus:TALUS,groundN:440,wallStep:3.5,
  spine:[[0,0],[0,-560],[0,600],[-560,-90],[0,1000],[-900,300],[900,300]]};
