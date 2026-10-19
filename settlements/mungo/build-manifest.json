@@ -145,7 +145,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
-  "95a602022661"
+  "c53e5f55be79"
  ],
  "53-assets.js": [
   "locus",
@@ -281,11 +281,11 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "a16bdb684f9f"
+  "cc204933b9ec"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "04e8d475cd4b"
+  "f9c9044eccc6"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -373,11 +373,11 @@
  ],
  "77-sim-2-places.js": [
   "core/simulation",
-  "cc494265ae0d"
+  "2b690f8a7cbe"
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "c3fa8beba5ba"
+  "6cc0bd0d133e"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
@@ -393,11 +393,11 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "f72944508353"
+  "18f373ad1d3d"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "c2856052ba76"
+  "5ed88ecc84be"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
@@ -405,15 +405,11 @@
  ],
  "77-sim-6-population.js": [
   "core/simulation",
-  "4c8c19c3e7b2"
- ],
- "77-sim-6-trade.js": [
-  "core/simulation",
-  "00ea4cdabf57"
+  "1f6c887b3fae"
  ],
  "77-sim-7-stocks.js": [
   "core/simulation",
-  "befbf66bf9c8"
+  "edfe13d806b7"
  ],
  "77-sim-8-export.js": [
   "core/simulation",
