@@ -66,6 +66,7 @@ write to the model's store.
 | P1 | the monastery's massing from the blueprint on the kit (gate, ward rows, stair, White and Red Palaces, drums, Watch, roofs, chortens, wheels, flags, lamps) | done |
 | P2 | the Vault and the Procrastinator; the containment's dress | done |
 | P3 | the life layer's scaffold: the people, their schedules, the drill, the master | done (placeholder figures) |
-| P4 | interiors on `kits/interiors` (the Assembly Hall's skylight columns, the library, the cells) and furniture from `FURNITURE.md` on the catalog | next |
+| P3b | the exterior revision toward the chapterhouses' neo-African forms, the new outbuildings (`ROOMS.md` sections 1-2; owner, 2026-10-19) | planned |
+| P4 | interiors on `kits/interiors`, room by room from `ROOMS.md` sections 3-4, (the Assembly Hall's skylight columns, the library, the cells) and furniture from `FURNITURE.md` on the catalog | next |
 | P5 | the people on `core/simulation` and `core/charactermodels` (the Order's robes), the night (butter lamps, the generator's bulbs), the festival day (the thangka, the pilgrims' camp) | to come |
 | P6 | the ward on `core/city` (its lanes and lots), the valley road joined to the open world's network, the gallery entry | to come |

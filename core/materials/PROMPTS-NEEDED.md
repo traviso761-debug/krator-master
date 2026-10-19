@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 1 prompt, and 3 optional: section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 15 prompts (Longsong's fourteen in section 2, and the one owed before), and 3 optional: section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -165,6 +165,105 @@ cedar, the serpentwood and the banyan have library candidates already (`card.gin
 
 ```
 Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: smooth pale grey alder bark #9c9e96 heavily mottled with white and pale green-grey crustose lichen patches #d8dcd0 and #b8c4a8, a few dark horizontal lenticels #4a4a44, green moss creeping up from the bottom edge #5a7a26. Matte. One tile covers 1 metre.
+```
+
+### Longsong (`settlements/longsong`, 2026-10-19)
+
+The monastery's own sets, from `settlements/longsong/ROOMS.md` (the owner: the exterior consistent with the Order's chapterhouses,
+neo-African, no Sahelian earth). Reused from the library, no prompt needed: `brick.red` and `brick.oxblood` (the drums' fired brick),
+`roof.scale.terracotta` and `roof.clay_roof_tiles` (the cones), `wood.siding` (the wavy roofs' soffit slats), `plaster.white_stucco_02`,
+`stone.cut`, `rock.granite.tor`, `roof.scale.gilt`, `band.xanadu.twig`, `wood.lacquer.crimson`, `paving.flagstone`, `stone.chiselled`,
+`metal.bronze.cast`, `cloth.rug.wool`. The register's plaques, boards and the dial stay painted in code: a generated image does
+not keep the Order's English legible. Wire each into `settlements/longsong/materials.json` when it lands.
+
+#### Exterior (`settlements/longsong/ROOMS.md` section 1: before the exterior revision)
+
+`patterns/order/glyph-relief`: the chapterhouses' carved forecourt wall and the Great Gate's pylons; today the plain brick.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The pattern repeats horizontally; the top edge continues into the bottom. Material: a wall of low-relief panels in red fired brick and brick-red lime render (#a8553a, shadows #7a3a26), square panels about 1 m across in a row, each framed by a raised border and carrying one raised glyph of the Order of Historians: a disc inside a ring inside a ring; a diamond inside a diamond; three stepped horizontal bars; a disc over a cross. Between the panels, narrow brick pilasters. Crisp hand-cut edges, faint brick coursing showing through the render. Mostly one colour; the relief carries the design. Neo-African modernist (Nigerian 1960s civic architecture), not Sahelian mud.
+```
+
+`patterns/order/mosaic-band`: the blue-and-white string course on every building of the Order; today flat bands of colour.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The pattern repeats horizontally. Material: a band of small glazed ceramic tesserae, about 1.5 cm, set in white mortar: a running border of the Order's blue (#2e5a9c and #1f3f78) and white (#f0ece2), a central row of repeating eight-spoked wheels in blue on white, between two thin lines of interlocking blue and white triangles. Slight irregularity in the tile setting, a soft glaze sheen. Full colour.
+```
+
+`plaster.limewash.red`: the Red Palace's walls (now the white render tinted red, which reads pink in some light).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: thick lime render washed many times with Tibetan red-ochre limewash, deep maroon-red (#8e2f24, darker #6e241c, faded patches #a4483a), soft vertical streaks where rain has run the wash, small chips showing pale lime beneath, a faint brushed texture. Matte. One tile covers 3 metres.
+```
+
+`patterns/order/prayer-wheel`: the drum rows' wheels (today a canvas of red, gold and the Order's glyphs).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The pattern repeats horizontally; it wraps round a cylinder. Material: a band of hand-beaten repoussé brass and copper, warm gold (#c89a48) with darker recesses (#6a4a22): a row of raised script glyphs in rounded medallions, a bead border top and bottom, a lotus-petal edge, the high points polished by hands, the recesses dark with old soot. Full colour.
+```
+
+`patterns/order/mani-stone`: the new mani wall along the road (ROOMS.md 2.1).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a dry-stacked wall of flat grey slate stones of many sizes (#6a6c6e, #4e5052), each carved with a shallow line of script or a single round glyph, some letters painted in faded white, ochre and the Order's blue (#2e5a9c), lichen in the joints (#9aa28a). Full colour. One tile covers 2 metres.
+```
+
+`patterns/order/valance`: the pleated valances over the rich windows (today a flat saffron strip).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The pattern repeats horizontally. Material: a pleated cloth valance hung over a Tibetan window (a shambu): three tiers of narrow vertical pleats in saffron (#e0a030), white (#f0ead8) and the Order's blue (#2e5a9c), each tier with a scalloped hem, the cotton slightly sun-faded. Seen flat, front-on. Full colour.
+```
+
+#### The forbidden depths (`src/66-ls-vault.js`)
+
+`patterns/order/glyph-band`: the Procrastinator's burning glyph bands (today a canvas of invented glyphs); used as a mask: white glows, black does not.
+
+```
+Seamless tileable band, 4096x512 (8:1). Front-on, flat, no lighting, no perspective, no text in any real alphabet, no border, no watermark. The pattern repeats horizontally. Image: two rows of an invented seal script on pure black: each glyph a ring enclosing a few strokes, arcs, dots and short bars, about 40 glyphs in all, none repeated; pure white strokes of even weight, sharp edges, a thin white rule between the rows. Only black and white, nothing else.
+```
+
+`patterns/order/thangka-register`: the great thangka hung on the White Palace's face, and its copy in the Assembly Hall (today a canvas).
+
+```
+A single painting, not tiling, 2048x3072 (2:3 portrait). Front-on, flat, even lighting, no frame shadow, no text, no watermark. Image: a Tibetan thangka in mineral pigments on cotton, framed in a brocade border of the Order's blue (#1f3f78) and maroon (#6a2018). At its centre a towering prayer wheel of bronze and gold banded with burning glyphs, turned by three robed keepers; round it, in a ring of eight circular niches, eight sealed things, each held still behind a lattice: a many-armed shadow in mid-lunge, a cracked bell in mid-swing with its sound drawn as a ripple, a brazier of black flame, a moth with an eye on every scale, a drop of black water over a basin, a small sun stopped in a flare, a door ajar with something pressing, and one empty niche left blank. Above, the Order's sigil (a wheel of eight spokes round an hourglass) between clouds; below, monks in maroon and saffron seated in rows. Rich, calm, devotional; the colours of a Tibetan thangka.
+```
+
+`patterns/order/mandala-floor`: the Procrastinator hall's floor (today rings of bronze and blue).
+
+```
+A single image, not tiling, 2048x2048, seen straight down. Flat, even lighting, no perspective, no text, no watermark. Image: a circular floor inlay of polished stone, brass and blue lapis: concentric rings of interlocking glyph roundels, eight spokes running out to eight small sealed circles at the rim, a plain circle at the centre where an axle stands, worn smooth along a ring where feet have walked round it. Dark stone ground (#3a3632), brass (#b08a48), lapis (#2e4a7a).
+```
+
+`metal.lead.sheet`: the closed vault's and the quiet cells' doors (today a flat grey).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: old sheet lead nailed to a door: soft dull blue-grey (#6a6c74) with a white oxide bloom in patches, dents, scratches, rows of round nail heads along the seams, darker where hands have touched it. Matte. Keep colours natural but slightly muted and even, so the texture can be tinted. One tile covers 1 metre.
+```
+
+#### The interiors (`ROOMS.md` section 3: before the interiors)
+
+`patterns/order/column-paint`: the painted columns and brackets of the Hall of Pillars, the Assembly Hall, the Red Palace.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The pattern repeats vertically. Material: the painted shaft and capital of a Tibetan timber column, laid flat: the shaft red lacquer (#8e2f24) wrapped by a painted band of lotus petals and jewels, the capital's bracket (the bow-shaped zhu) painted in blue (#2e5a9c), green (#3a7a5a), gold (#d8b048) and white with cloud scrolls and the Order's eight-spoked wheel, fine black outlines. Full colour.
+```
+
+`patterns/order/mural-cataclysm`: the inner kora's murals round the Hall of the Founders.
+
+```
+Seamless tileable frieze, 4096x1024 (4:1). Front-on, flat, even lighting, no text, no border, no watermark. The pattern repeats horizontally. Image: a Tibetan mural in mineral pigments on a lime wall, telling the Order's chronicle as a continuous scene: towers of an ancient city falling, a volcano erupting into a second cone, scholars carrying books and devices up a mountain road, a monastery burning in the highlands, a long caravan of monks crossing passes, and a valley of pale gardens where a white palace rises on a rock; small figures in maroon and saffron throughout, cloud bands dividing the scenes, deep blue sky (#1f3f78), green hills, gold highlights. Calm, dense, devotional.
+```
+
+`patterns/order/rug`: the meditation cushions' rugs and the cells' floors.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hand-knotted Tibetan wool rug (a khaden): a field of deep maroon (#6a2018) with a lattice of small saffron (#e0a030) and blue (#2e5a9c) medallions, a border of interlocking T-shapes, a slight pile and fibre texture, softly worn. Full colour.
+```
+
+`patterns/order/book-spines`: the Archive's stacks, the library and the Sealed Library.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic, front-on view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a shelf of old bound books and Tibetan pecha (loose-leaf books wrapped in cloth between wooden boards) seen spine-on, filling the frame in rows: cloth wrappers in saffron, maroon, the Order's blue and faded green, worn leather spines, small brass tags, a few tied with cord; plain lines in place of titles. Full colour.
 ```
 
 ### Ys (`settlements/ys`)

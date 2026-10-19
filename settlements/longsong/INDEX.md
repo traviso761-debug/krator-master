@@ -4,7 +4,7 @@
 
 Longsong: the History Monks' monastery in the Oidong Valley, built in situ on the scale model (px 954,1296: the region cut in region/, the open world's fields read in place) on its own granite rock over the Longsong stream (PLAN.md): the plan as data (src/40-ls-plan.js: the rock, the ward, 30 buildings, the Vault, the sealed things, 162 people and their schedules), the Order's architecture in stone and lime (Tibetan massing in the chapterhouses' forms; no earth), the SCP-like register's dress, the forbidden depths with the Procrastinator, the Oidong kit read in place, the far land to 60 km. Verified: build.py, verify.py --assert. Read README.md
 
-Docs: `BLUEPRINT.md`, `FURNITURE.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
+Docs: `BLUEPRINT.md`, `FURNITURE.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`, `ROOMS.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/longsong.html`
 
@@ -22,7 +22,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `00-head.html` | 1 |  |
 | `40-ls-plan.js` | 30 **big** | the site (PLAN.md section 1) (19); the rock: Longsong's hill (27); the ward and the grounds (49); the ways (63); the buildings (BLUEPRINT.md L0, L1-L4, R1-R3, LR (80); the sacred furniture of the grounds (137); the planted ground (the kit grows only here insi (152); the Vault (BLUEPRINT.md LV; LORE.md 6.15) (164); the people (the life layer's scaffold; README.md (219); zones (the inspector's words, the kit's mask) (281) |
 | `42-ls-world.js` | <1 |  |
-| `45-host-stage.js` | 12 | the land, cached (29); the plan's shapes on the land (47); the stream as a line (page metres): flow, the br (89); the fields the Oidong kit reads (BIOME-API.md) (100); the host binding (126) |
+| `45-host-stage.js` | 12 | the land, cached (29); the plan's shapes on the land (47); the stream as a line (page metres): flow, the br (93); the fields the Oidong kit reads (BIOME-API.md) (104); the host binding (130) |
 | `62-ls-arch.js` | 16 | the pieces (the vocabulary), in the kit's local  (81) |
 | `63-ls-signs.js` | 8 |  |
 | `64-ls-monastery.js` | 33 **big** | the outer wall, its towers and gates (17); the Great Gate: the parabolic arch between two p (38); the ward: the terraces' retaining walls, the ave (70); the Great Stair and the White Palace's base (L1) (102); the White Palace round the Debate Court (L2-L4) (123); the drum halls: the Assembly, the Hall of Hours, (156); the Red Palace (R1-R3) and its wings; the gilded (187); the Eastern Watch: the Order's spire and bell (202); the Lower Gate and its paired drums (L1) (215); the rock top's other houses: the Closed Ward, th (225) |

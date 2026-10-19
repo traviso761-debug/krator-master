@@ -2,7 +2,8 @@
 
 The History Monks' monastery in the Oidong Valley (LORE.md 6.15): the Order of Historians' training, research,
 archival and containment house, built **in situ** on the scale model's land, on its own rock over the Longsong stream.
-`BLUEPRINT.md` is the programme (the owner's brief of 2026-10-15, the Potala study, the floors); `PLAN.md` is how the
+`BLUEPRINT.md` is the programme (the owner's brief of 2026-10-15, the Potala study, the floors); `ROOMS.md` the plan of
+every room and outbuilding before the interiors, and the exterior's revision toward the chapterhouses; `PLAN.md` is how the
 build reads it (the site, the decisions of 2026-10-19, the order of work); `KNOWN_ISSUES.md` is what is open.
 
 ```
