@@ -53,8 +53,9 @@ the far land to 60 km is drawn from the same cut.
 
 **The mesa clears the canopy** (settled 2026-10-18). The northern margin's forest is Girder's size (150-270 m; the
 contradiction with Mav's 290-480 m stays in `LORE.md` §12 for the deep jungle). The mesa rises **about 250 m** from
-the knoll's foot, the **fins round the rim 40 to 90 m** more and the **Garden's central pinnacles 120 to 160 m** (owner,
-2026-10-19: taller pinnacles in the centre of the rock), so the lowest roost deck stands above the tallest crown and a
+the knoll's foot, the **fins round the rim 40 to 90 m** more and the **Garden's pinnacles 130 to 250 m** over the Garden's mesa (owner,
+2026-10-19: larger pinnacles rising out of a smaller, lower mesa in the middle; in its middle the Heart, a third mesa
+about half the central pinnacles' height, the most weathered, the three tallest rising out of it), so the lowest roost deck stands above the tallest crown and a
 flyer can leave a perch and fall into clear air. The mesa top is about
 1.2 by 0.8 km, long axis north-south, red sandstone in horizontal beds. The stacks are the **fins**, spread round the
 rim in groups of one to three, each group on its own strike (owner, 2026-10-19: not one row), and the **Garden**, a
@@ -79,6 +80,8 @@ live by water, not on the fins, so they camp on the floor). Nine grounds on the 
 |---|---|---|
 | **The Roosts** | the fins round the rim and the four tallest Garden spires | platforms ringed round each pinnacle at one or two heights, roost stalls along the outer edge (Girder's stall: posts, low partitions, lean-to shingle roof, perch beam), the keeper's shelter on each, rope and timber bridges between the fins of one group, a beast lift down the gorge face |
 | **The Crown** | the open top between the two stack groups | the assembly hall (Girder's round tajug-roofed hall, larger), the speakers' stones, the market round it, the shrine of the Winged Ones in the lee of a balanced rock |
+| **The Garden's mesa** | the middle of the top | a smaller, lower mesa (owner, 2026-10-19): about 450 m across, 55 m over the main top, its walls weathered like the mesa's, with the Garden's **sixteen pinnacles** rising out of it (130-250 m over it, the tallest at the centre, 16-28 m across the foot; a few balanced rocks and a fin at its edge). The Garden's great-houses stand on it among the pinnacles; P3 gives it its ways up (stairs and a ramp cut in its walls) |
+| **The Heart** | the middle of the Garden's mesa | the third mesa (owner, 2026-10-19): about 150 by 140 m, 110 m over the Garden's mesa (half its central pinnacles' height), weathered hardest of the three (deep gullies, a rough shoulder of ledges, plants and rain pools on its top), the Garden's three tallest pinnacles rising out of it. No town on it: a place to climb to (a way up is P3's) |
 | **The town** | the slopes and benches among the Garden's stacks | the **sedentary** Beast Rider style (owner, 2026-10-19): houses poor to rich (round huts, joglo, longhouses, and the kit's larger houses: clan great-houses, chiefs' compounds, rock-backed longhouse blocks where land is tight), every trade a Rider town has in its pre-electric form (`kits/beast-riders`, the trades after the Isle demo's census), the Wings' barracks (named by Wing), the tack and feed stores; **rock-cut** rooms, facades, shrines and cisterns in the stacks and the mesa's walls (the carved-tree rooms of Mav's Refuge re-cut in sandstone) |
 | **The Deep Root cavern** | the top's north-west, between the Crown and the house quarter | one of the Riders' holiest sites (owner, 2026-10-19), where all five nature shrines are honoured under the Deep Root: a ring of twelve standing stones (nothing built inside), a processional way from the Crown, a court sunk 8 m into the beds with a stair, a carved face (the twelve tribes' beasts under the claw) round the door, the passage of the tribes (a niche per tribe), and a hall about 44 by 26 m and 15 m high: reliefs, the five shrines' lamp niches, ledges of offerings, an altar stone left standing, and a stack fig over a light well whose roots hang 12 m into a rain pool. `KCAVERN` (`core/terrain/39-core-cavern.js`): trench, stair, hall, monolith, fixtures, a `door` and a `well` opening; `KSTACKS.mesh` needs a list of holes for the well |
 | **The upper camp grounds** | the mesa top's open margins, away from the Crown | a designated ground for a band of **each tribe** (the Quetzal, Wingclaw, Nightwing, Raptor, Staghorn, Threehorn, Hardshell, Tiger, Longcrawler; the Dragonfly, Spider and Mammoth camp on the floor only), pitched in the kit's **tent set** (hide domes, barrel pavilions for the band's chief and council, the band's trade tents, its pens and trainer structures), each ground under its tribe's banner; the **flyers' bands camp only here** (owner, 2026-10-19), by their Wing's fins, their grounds the larger (about nine tents); the other six tribes' grounds about five tents |
@@ -115,7 +118,9 @@ The town is "un-assailable" the way Mav's gateway trees are: one stair, gated th
 
 **Status (2026-10-19): P0 and P1 are done** (README.md): the page stands on the model's land with the far land to the
 Inner Wall; the mesa, the ten fins round the rim, the Garden, the shrine's rock and seven spurs as KSTACKS records from
-the settled plan; `verify.py --assert` passes. The Stair (listed under P1) moves to P2 with the lifts and the rock-cut
+the settled plan; the Garden's mesa and the Heart; every mesa weathered as the owner's Monument Valley reference
+(flutes, gullies, a shoulder of ledges, the debris slope and its fallen blocks); `verify.py --assert` passes. The owner
+signed the rock off on 2026-10-19 ("I think we're in business"). The Stair (listed under P1) moves to P2 with the lifts and the rock-cut
 stair pieces (`kits/beast-riders`).
 
 - **P0. The site and the harness.** Find the mesa (section 1), write the point back, `build.py` reading the catalog,

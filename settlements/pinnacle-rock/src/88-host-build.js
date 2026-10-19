@@ -4,9 +4,9 @@
 // and on the Garden's stacks; its trees become obstacles; then the hyperjungle plants the floor (necanyons' jungleMask:
 // off the rock and the walls' feet, out of the farms and the bands' grounds, thin on the cleared ground); then one bake.
 window._biome=null;window._jungle=null;
-// the kit's mask on this page: the water's, and nothing on the mesa's top more than 12 m in from its edge
-const topMask=(x,z)=>{const A=KSTACKS.at([MESA_B],x,z);if(!A)return 1;const on=KSTACKS.at(ROCK,x,z);
- if(on&&on.S!==MESA_B)return 1;return A.d>-12?1:0;};
+// the kit's mask on this page: the water's, and nothing on the town's ground (the mesa's top and the Garden's mesa) more
+// than 12 m in from its edge; the stacks on it keep theirs
+const topMask=(x,z)=>{const on=KSTACKS.at(ROCK,x,z);if(!on||TOWN_GROUND.indexOf(on.S)<0)return 1;return on.d>-12?1:0;};
 (function(){
  const t0=performance.now();
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
@@ -16,6 +16,7 @@ const topMask=(x,z)=>{const A=KSTACKS.at([MESA_B],x,z);if(!A)return 1;const on=K
  (NECANYONS.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.6+1,y0:T.y0-3,y1:T.y0+T.H}));
  if(!Q.has('nojungle')){try{MASK=jungleMask;window._jungle=HYPERJUNGLE.build({R:TERR.R-60,quality:q*.7,heroR:900,fauna:!Q.has('nofauna')});}catch(e){reportErr('hyperjungle: '+e.stack);}finally{MASK=waterMask;}}
  _mark('jungle');
+ try{window._talus=dressTalus(q);}catch(e){reportErr('talus: '+e.stack);}   // the debris slope's fallen blocks (87)
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
  _mark('bake');window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);

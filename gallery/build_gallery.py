@@ -267,6 +267,7 @@ ENTRIES = [
     ('biome', 'ringisles', 'biomes/ringisles/dist/ringisles.html', 'Ring Sea isles', "One island of the Ring Sea archipelago at the sea's level: zones by the scale model's climate classes (hypertropic jungle under the mountain, monsoon forest, tall-grass and abyssal savanna, hot steppe, salt steppe and a salt pan), the beach, a mangrove lagoon, the reef flat and tide pools, a geyser field, and a village's gardens of the islanders' crops (coconut, mango, banana, coffee, cloves, breadfruit; rice, taro, sweet potato, kava, herbs, greens, sugar cane)."),
     ('biome', 'oidong', 'biomes/oidong/dist/oidong.html', 'The Oidong Valley', "The History Monks' country east of Xanadu, the safest ground on Krator and serene before anything else: a chilly high valley of mirror-still pools with giant lotuses, moss woods, cherry and haze blossom, a marble grove of swirled-pastel boles, chalice trees spilling water from their caps in the cataract's mist, bamboo, and pale flats the wind rakes round standing stones in threes, fives and sevens; the holy plants and the monks' physic grow wild (peyote in the gravel, sky poppies, snow lotus, bell-pod willows); Longsong's rock stands empty for the monastery.", 'new'),
     ('biome', 'geyser', 'biomes/geyser/dist/geyser.html', 'The geyser basin', "A basin in the Steampits cut into the hyperjungle: geysers erupting on their own clocks (Erupt buttons, a timetable), the Great Prism and its mat-banded run-off, mud pots and fumaroles, a dead forest drowned in silica, travertine pools stepping down to the sea; thermophile life.", 'new'),
+    ('biome', 'necanyons', 'biomes/necanyons/dist/necanyons.html', 'The north-eastern canyons', "The hyperjungle's transition to Korona's tepuis: red sandstone mesas, benches, buttes, towers and stacks rising out of the jungle (the Bench with its rim fins and its garden of spires and balanced rocks, the High Cap and its hoodoos), the forest filling the canyons between them and thinning northward, the tops bare and dry with pans and seeps; the first large carnivorous plants, their traps on their own cycles, none able to hold a person. Pinnacle Rock stands on the first of its mesas.", 'new'),
 ]
 
 
@@ -276,8 +277,9 @@ THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 # page above. One page joins its kind's section; several make a section of their own after it. Names come from the
 # pages' <title>s, the description from the build's README.md or INDEX.md. An ENTRIES line replaces all of that.
 KINDS = {'settlements': 'world', 'openworld': 'world', 'biomes': 'biome', 'kits': 'kit'}
-UNLISTED = {'settlements/isle-demo'}   # build folders ('kits/furniture') never to list, though they have pages; the isle
-# demo's site planner is a tool that saves through its own serve.py
+UNLISTED = {'settlements/isle-demo', 'settlements/pinnacle-rock'}   # build folders ('kits/furniture') never to list,
+# though they have pages; the isle demo's site planner is a tool that saves through its own serve.py; Pinnacle Rock
+# not until its town is built (the owner, 2026-10-19)
 # Builds published as their own artifact, each with the script that makes its site: left out of the Krator Worlds
 # artifact (gallery/site/), whose index links to them instead (index.template.html), but kept in any other --out site
 # (the LAN host's), where size does not matter. The Throne's eleven stations are about 25 MB with their shared maps.
