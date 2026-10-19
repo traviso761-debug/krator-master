@@ -13,8 +13,6 @@
       the ward's buildings (section 2) have no interiors. The depths are the Vault's own (66), not on kits/interiors.
       The pieces FURNITURE.md marked NEW for the grounds and the depths (the press, the paper vat, the drying rack, the
       well, the lead case, the furnace, the bath's pool and basin, the wall fountain, the relic crate) are still to make.
-- [ ] **The model's Longsong marker** (px 957,1294) is 7 km from the build's site (px 954,1296): the owner's call
-      whether to move it (PLAN.md section 1). The page does not write to the scale model's store.
 - [ ] **The ward is not on core/city**: its rows are the blueprint's rectangles drawn by the kit. Porting it (lanes,
       lots, infill) is PLAN.md P6; no occupancy grid of its own was written.
 - [ ] **The valley road** is a track drawn on the ground from the page's west edge to the bridge: the open world has

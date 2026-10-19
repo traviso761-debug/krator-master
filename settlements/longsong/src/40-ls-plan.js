@@ -18,10 +18,12 @@ const P={};
 
 // ---------------------------------------------------------------- the site (PLAN.md section 1)
 // px 954, 1296 on the scale model (4.21): the gentle apron south of the Longsong stream (Lõsõ-bi Siṭrīm, r105, ~40 m3/s
-// here, its bed ~2,050 m), 7 km west-south-west of the model's Longsong marker (957,1294), which sits on the medial swell
-// between the valley's two streams 8 km from either. The apron rises ~3 % to the southern wall's foot 4 km south; the
+// here, its bed ~2,050 m), 7 km west-south-west of where the model's Longsong marker stood (957,1294, on the medial swell
+// between the valley's two streams 8 km from either). The apron rises ~3 % to the southern wall's foot 4 km south; the
 // lake the stream feeds (2,000 m) is 40 km west.
-P.SITE={wx:-2000,wz:2080,px:954,py:1296,name:'Longsong',marker:{px:957,py:1294}};
+// the model's marker was moved onto the build's site by the owner (2026-10-19: px 957,1294 to 954,1296, in the Scale
+// Model's settlements collection); it had stood 7 km east-north-east, on the medial swell
+P.SITE={wx:-2000,wz:2080,px:954,py:1296,name:'Longsong',marker:{px:954,py:1296}};
 // the Longsong stream runs WEST here (to the highland lake at 2,000 m, 40 km west): the page's stream takes its level from
 // the east end down (45: STREAM). The model's 4 km levels inside the page cannot say which way it runs (both ends stand
 // higher than the dip at the site), so the plan does

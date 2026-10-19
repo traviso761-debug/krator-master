@@ -34,8 +34,10 @@ region's frame for 3 km) and the land rises gently south (~3 %) to the valley wa
 - Nothing in the model's data argues against it: the climate (Cwb-like, ~1,035 mm of rain, a mean of 11 C at the
   marker) is the valley's; the apron is outside the stream's carved bed (the page checks no water inside the walls).
 
-The model's marker is the owner's to move (to px 954,1296) or to keep as the valley's name tag: the page does not
-write to the model's store.
+**The marker moved (2026-10-19).** The owner moved the model's Longsong marker onto the build's site: px 957,1294 to
+954,1296 in the Scale Model's settlements collection (doc `sq80bzd7ep`), and in the repo's snapshots of that collection
+(`region/source/settlements.json` here, Pinnacle Rock's, the two open-world demos') and this page's region cut
+(`region/data/region.json`). The page itself still does not write to the model's store.
 
 ## 2. Decisions taken (2026-10-19)
 

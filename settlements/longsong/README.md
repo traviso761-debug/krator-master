@@ -21,8 +21,8 @@ half quality), `?mat=proc` (the procedural maps instead of the library's), `?hou
   the cut's box added as `regions-cut.json`), decoded at build time by Pinnacle Rock's `tools/world_data.py` (read in
   place, with this page's kit line). The kit grows on the model's 'Oidong Valley' overlay (moved to the biome layer by the
   owner, 2026-10-19). The page's origin is the foot of the rock, at px 954,1296 (`LS.SITE`): the apron
-  south of the Longsong stream (the model's r105, *Lõsõ-bi Siṭrīm*), 7 km west-south-west of the model's Longsong
-  marker (957,1294), which sits on the medial swell 8 km from either of the valley's streams (PLAN.md, section 1).
+  south of the Longsong stream (the model's r105, *Lõsõ-bi Siṭrīm*), where the owner moved the model's Longsong
+  marker (2026-10-19; it had stood 7 km east-north-east, at 957,1294 on the medial swell; PLAN.md, section 1).
   The floor IS the model's land (WORLD.H), with what the plan shapes finer than its 4 km cells: the rock, the ward's
   terraces, the building pads, the lotus pond. The far terrain draws the cut to 60 km.
 - **The plan is data** (`src/40-ls-plan.js`, `[G data]`): the rock (`LS.ROCK`, `rockY`), the grounds and the ward,

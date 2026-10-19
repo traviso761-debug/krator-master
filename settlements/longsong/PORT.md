@@ -13,7 +13,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/40-ls-plan.js` | 37.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the plan as records and pure queries (LS): the site, the rock, the buildings, the Vault, the sealed things, the people and their schedules |
+| `src/40-ls-plan.js` | 37.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the plan as records and pure queries (LS): the site, the rock, the buildings, the Vault, the sealed things, the people and their schedules |
 | `src/40b-ls-farms.js` | 12.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the farms and gardens as records and pure queries (LS.FARMS): groups, cells, trees, walls, the herds, the provision |
 | `src/40c-ls-rooms.js` | 40.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the rooms as records (LS.ROOMS: 320, fitted in the drawn shells, doors on shared walls) and their pure checks |
 | `src/42-ls-world.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | WORLD.init and the page's origin on the model; landH/worldWater wrappers |
