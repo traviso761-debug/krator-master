@@ -4,6 +4,11 @@
 // screen, the rest hidden until the view opens them out. An overlay that takes no clicks, laid out each frame from
 // FRAME_HOOKS; closing the cut, or another storey, clears it. The labels toggle with N (and the button by the cut's bar);
 // the hover tip names a room too (its core/tags record, 95p).
+// (and a guard the page needs: inside the artifact viewer's frame a pointerdown can arrive for a pointer that is already gone,
+// and setPointerCapture then throws NotFoundError into the error panel; core/host's camera calls it unguarded,
+// core/host/90-host-camera.js, so a press there is harmless but reported. The page-wide guard lives here until core/host
+// guards it for every build.)
+{const EP=Element.prototype;for(const k of['setPointerCapture','releasePointerCapture']){const f=EP[k];if(f)EP[k]=function(id){try{return f.call(this,id);}catch(e){}};}}
 const IZPALCUT=(function(){
  const site=IZPAL_SITE;if(!site.L||typeof FRAME_HOOKS==='undefined')return null;
  const FR=site.FR,box=document.createElement('div');box.id='izpal-rooms';

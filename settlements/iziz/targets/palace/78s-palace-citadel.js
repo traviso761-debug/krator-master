@@ -30,17 +30,26 @@ VERN.def({key:'pal_citadel',name:'The Palace Citadel of Iziz',w:280,d:280,h:140,
    const nu=Math.round(TAU*(P.r0+16)/2),nv=20,w=P.r1-P.r0+3;
    const esc=gridSurface((a,t)=>{const th=a*TAU,e=palGeoEdge(th),r=e-1+t*w,bump=Math.sin(Math.PI*t),n2=fbm(th*9,t*3,7.3,3),cr=fbm(th*33,t*8,5.1,2);
      const R2=r+((n2-.5)*5+(cr-.5)*2.4)*bump;return[P.cx+R2*Math.cos(th),Math.max(0,terrainH(P.cx+r*Math.cos(th),P.cz+r*Math.sin(th))+.3*bump+(cr-.5)*1.4*bump),P.cz+R2*Math.sin(th)];},
-    nu,nv,{uS:TAU*(P.r0+16)/6.3,vS:w/6.3,hole:(a,t)=>{const th=a*TAU,r=palGeoEdge(th)-1+t*w,x=P.cx+r*Math.cos(th),z=P.cz+r*Math.sin(th),c=FR.UV(x,z);return c[0]>P.cutU-2&&Math.abs(c[1])<P.cutHalf+1.5;}});
+    nu,nv,{uS:TAU*(P.r0+16)/6.3,vS:w/6.3,hole:(a,t)=>{const th=a*TAU,r=palGeoEdge(th)-1+t*w,x=P.cx+r*Math.cos(th),z=P.cz+r*Math.sin(th),c=FR.UV(x,z);return c[0]>P.cutU-1.4&&Math.abs(c[1])<P.cutHalf+1.5;}});
    const em=new THREE.Mesh(esc,MAT.izEsc);em.name='palace hill escarpment';scene.add(em);
-   // the cutting's two rock walls, stepped down the slope; its floor is the city's level (the page's ground)
-   for(let u=P.cutU-2;u<P.r1+4;u+=2){const hh=Math.max(0,palGeoH(...FR.P(u,P.cutHalf+3)));if(hh<.2)continue;
-    for(const s of[-1,1]){const p=FR.P(u+1,s*(P.cutHalf+1.4));kput('izRockB',[p[0],hh/2-.2,p[1]],Q,[2.8,hh+.4,2.2],vC(0xa08870));}}
+   // the cutting's two rock walls, one face each from the gate to the plain, their tops following the hill beside the
+   // cutting (they were blocks stepped down the slope, and did not meet); its floor is the city's level (the page's ground)
+   for(const s of[-1,1]){const pos=[],uv=[],idx=[],vi=P.cutHalf+.2,vo=P.cutHalf+2.6,us=[];for(let u=P.cutU-2;u<=P.r1+4;u+=1)us.push(u);
+    const ht=u=>Math.max(.4,palGeoH(...FR.P(u,P.cutHalf+3))+.3);let n=0;
+    const quad=(a,b,c,d,ua,ub,va,vb)=>{for(const[pp,tu,tv]of[[a,ua,va],[b,ub,va],[c,ub,vb],[d,ua,vb]]){pos.push(...pp);uv.push(tu,tv);}
+     const e1=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],e2=[d[0]-a[0],d[1]-a[1],d[2]-a[2]];idx.push(n,n+1,n+2,n,n+2,n+3);n+=4;};
+    for(let i=0;i+1<us.length;i++){const u0=us[i],u1=us[i+1],h0=ht(u0),h1=ht(u1),A=FR.P(u0,s*vi),Bp=FR.P(u1,s*vi),C2=FR.P(u0,s*vo),D=FR.P(u1,s*vo);
+     quad([A[0],-.2,A[1]],[Bp[0],-.2,Bp[1]],[Bp[0],h1,Bp[1]],[A[0],h0,A[1]],u0/4,u1/4,0,h0/4);                         // the face to the cutting
+     quad([A[0],h0,A[1]],[Bp[0],h1,Bp[1]],[D[0],h1,D[1]],[C2[0],h0,C2[1]],u0/4,u1/4,0,.6);}                              // the top
+    const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g2.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+    g2.setIndex(idx);g2.computeVertexNormals();const m=new THREE.Mesh(g2,MAT.izRock);m.name='the Mech Gate cutting\'s wall';scene.add(m);}
    // the ramp road out of the cutting, onto the plain
    {const p=FR.P(P.cutU+22,0);kput('boxC',[p[0],.04,p[1]],Q,[2*P.cutHalf-1,.12,44],IZ_CONC_TINT);}}
   /* ---------------------------------------------------------------- the Mech Gate's facade (u = cutU, the rear face) */
-  {const U=P.cutU,hh=palGeoH(...FR.P(U+.5,0))+2,y=-top,GW=18,GH=11.4;   // y: the city's level, from the mesa top
-   const pc=(P.cutHalf+.6+GW/2)/2,pw=P.cutHalf+.6-GW/2;B('boxC',U+.8,-pc,y,1.6,pw,hh+2,IZ_CONC_TINT);B('boxC',U+.8,pc,y,1.6,pw,hh+2,IZ_CONC_TINT);
-   B('boxC',U+.8,0,y+GH,1.6,2*P.cutHalf+1,hh-GH+2,IZ_CONC_TINT);
+  {const U=P.cutU,hh=palGeoH(...FR.P(U+.5,P.cutHalf+3))+2,y=-top,GW=18,GH=11.4;   // y: the city's level, from the mesa top; hh: the hill beside the cutting (the cutting's own floor is 0)
+   // the facade runs 2.5 m back into the hill (where the hill's surface is cut away over the gate), so it closes the joint
+   const pc=(P.cutHalf+.6+GW/2)/2,pw=P.cutHalf+.6-GW/2;B('boxC',U-.45,-pc,y,4.1,pw,hh+2,IZ_CONC_TINT);B('boxC',U-.45,pc,y,4.1,pw,hh+2,IZ_CONC_TINT);
+   B('boxC',U-.45,0,y+GH,4.1,2*P.cutHalf+1,hh-GH+2,IZ_CONC_TINT);
    B('palAncB',U+2,0,y+GH,1.2,GW+4,1.6,vC(0xf0f0ec));for(let k=0;k<3;k++)B('palGlowB',U+2.65,0,y+GH+.35+k*.45,.05,GW+3,.08,CYAN);
    // the blast doors: two leaves rolled half back into the walls, orange and black chevrons at their meeting edges
    for(const s of[-1,1]){B('palAncB',U-.4,s*(GW/2-2.65),y,1.1,5.1,GH-.2,vC(0xe8e6e0));for(let k=0;k<5;k++)B('vClothB',U-.95,s*(GW/2-.9),y+1+k*2,.06,1.2,1,vC(k%2?0x1c1a18:0xe07a2a));
@@ -68,7 +77,26 @@ VERN.def({key:'pal_citadel',name:'The Palace Citadel of Iziz',w:280,d:280,h:140,
     const w=FR.UV(o.p[0],o.p[2]),y=o.p[1]-top;if(w[0]>-1.6&&w[0]<6.6&&w[1]>-31&&w[1]<-24.4&&y>27.9&&y<33){n++;return false;}return true;});}
    IZPAL_SITE.terraceCleared=n;}
   REG.push({name:'Palace — grand entrance',x:P.cx+25*gx,y:top,z:P.cz+25*gz,r:13,h:17,cls:'building',key:'iziz_palace_entrance',tags:{culture:'iziz-old',type:['civic'],wealth:'civic',lit:true,role:'palace entrance',place:'outdoor'}});
-  TSTAT.cur='iziz_curtain/0';izCurtainWall(scene,t=>84,P.cx,P.cz,72,14,[g],9,null);
+  TSTAT.cur='iziz_curtain/0';{const m0={};for(const k in KIT.items)m0[k]=KIT.items[k].length;izCurtainWall(scene,t=>84,P.cx,P.cz,72,14,[g],9,null);
+   // the gate (izCurtainWall's: a solid block with a dark arch drawn on its face, and the wall left open 13 m either side of
+   // its middle): the block and the arch out; piers either side of an 8 m passage under a lintel, two bronze leaves standing
+   // open in it, a gilt band round the opening, and the rampart run on to the piers on both sides
+   const R=84,H=14,gu=-R,yb=-3;let n=0;
+   for(const name of['boxC','archOpen']){const m=m0[name]||0;KIT.items[name]=KIT.items[name].filter((o,i)=>{if(i<m)return true;const w=FR.UV(o.p[0],o.p[2]);
+    if(Math.abs(w[0]-gu)<3&&Math.abs(w[1])<3&&(name==='archOpen'||Array.isArray(o.s)&&Math.abs(o.s[0]-13)<.01)){n++;return false;}return true;});}
+   for(const sd of[-1,1]){B('boxC',gu,sd*6,yb,13,4,H+4,IZ_CONC_TINT);B('palGoldB',gu-6.55,sd*4.1,yb+3,.12,.2,9.8,null);B('palGoldB',gu+6.55,sd*4.1,yb+3,.12,.2,9.8,null);
+    // the leaves: the door sheet, 4 m by 9.4, against the piers' faces inside the passage
+    B('palDoorB',gu+1.2,sd*3.9,yb+3,3.9,.14,9.4,null);}
+   B('boxC',gu,0,yb+12.6,13,8,H+4-12.6,IZ_CONC_TINT);B('palGoldB',gu-6.55,0,yb+12.6,.12,8.4,.2,null);B('palGoldB',gu+6.55,0,yb+12.6,.12,8.4,.2,null);
+   // the rampart from each pier to the first segment the city kept (its segments' ends on the circle r 84, 72 of them)
+   const sgn=x=>{let d=x-g;while(d>Math.PI)d-=TAU;while(d<=-Math.PI)d+=TAU;return d;};
+   for(const sd of[-1,1]){const seg=TAU/72;let best=null;for(let i=0;i<72;i++){const t0=i*seg,t1=(i+1)*seg;if(angDiff((t0+t1)/2,g)<.16)continue;
+     const d=sgn(sd>0?t0:t1);if(sd*d>0&&(best==null||sd*d<sd*best))best=d;}
+    const a=g+best;
+    const ea=g+sd*8/R,pa=[P.cx+R*Math.cos(ea),P.cz+R*Math.sin(ea)],pb=[P.cx+R*Math.cos(a),P.cz+R*Math.sin(a)],len=Math.hypot(pb[0]-pa[0],pb[1]-pa[1]);
+    if(len>.3){const ang=Math.atan2(pb[1]-pa[1],pb[0]-pa[0]),q=qEuler(0,-ang,0),mx=(pa[0]+pb[0])/2,mz=(pa[1]+pb[1])/2,base=top+yb;
+     kput('boxC',[mx,base+H/2,mz],q,[len+.6,H,7],IZ_CONC_TINT);kput('boxC',[mx,base+H+.5,mz],q,[len+.6,1.0,8.2],IZ_CONC_TINT);n++;}}
+   IZPAL_SITE.gateParts=n;}
   TSTAT.cur='iziz_statue/0';izStatue(P.cx+46*gx,P.cz+46*gz,14,2,g+Math.PI,top-.3);
   // the triumphal plaza (I0 #2): marble paving from the gate to the steps, the axis in a darker band; lamp columns and
   // banner poles in pairs (#44), the axis lit

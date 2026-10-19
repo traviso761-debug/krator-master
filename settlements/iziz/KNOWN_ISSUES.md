@@ -37,6 +37,13 @@ saying what fixed it.
       - **Not walkable.** The walk (F) stands on `terrainH` (the mesa), so the upper storeys, the Depot and the Core are seen,
         not walked; there is no walk graph through the rooms and stairs yet (SKILL.md 5j, "Interiors belong on the
         pedestrian graph"). No people.
+      - **The gates** (2026-10-19, the owner): the citadel gate (the city's `izCurtainWall`: a solid block with a dark arch on
+        its face, the rampart left open 13 m either side) is a passage on this page, with bronze leaves open in it and the
+        rampart run on to its piers; the Mech Gate's facade rises to the hill beside the cutting (it was sized from the
+        cutting's own floor, 4 m) and runs back into it, and the cutting's walls are one face each. The city's own gate is
+        unchanged until `izCurtainWall` is fixed there. The page guards `setPointerCapture` (95q): core/host's camera calls it
+        unguarded and the artifact viewer's frame made it throw into the error panel; the fix belongs in
+        `core/host/90-host-camera.js`, with every build that takes core/host rebuilt.
       - **The terrace stairs** (2026-10-19, the owner: "steep and unclimbable"): the builder's eight 1.75 m blocks up each flank
         are replaced by straight stairs of 77 risers of 18 cm with landings, balustrades and a bridge onto the second
         terrace. The builder's garden terrace's west end (a planter, a hedge, a lamp) hung off the roof and is gone.
