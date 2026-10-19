@@ -1,20 +1,19 @@
 # settlements/isle-demo: known issues (the site planner)
 
-- [ ] **Ridertown still takes two of the catalog's hand-made copies** (2026-10-18): `br_bldg_nature_shrine` (class
-      `shrine`) and `br_bldg_roost_gallery` (class `rookery`) in `src/30-isle-programme.js` (ISLE.CLASSES), drawn through
-      `CAT` (`bundles.py`, which reads `kits/catalog/krator-master-buildings-beast-rider.js`). The Beast Riders kit now
-      has the towns' own buildings as ports (kits/beast-riders README, "The ports"). The switch:
-      - `shrine: [['br_port_mavs_shrine', 0]]` (Mav's Refuge's nature shrine) and, if the class should vary, the deck
-        lots' `br_port_mavs_lot` home (v0) or fine house (v1) are rider dwellings too;
-      - `rookery: [['br_bldg_rookery_tower', 0], ['br_port_mavs_roost', 0]]` (the great roost; v1 the main roost); a
-        roost is a lip and a stall on a level's rim, not a free-standing gallery, so the tower may be the better
-        stand-alone rookery and the roost a second choice;
-      - the stables stay the kit's own (`br_bldg_raptor_stable`, `br_bldg_great_byre`).
-      What it needs: `CAT` takes `kits/beast-riders/towns.py` `bundle()` (the two towns sealed, about 9.5 MB, nearly all
-      their library maps: put `BR_TOWN_IMG` in a sidecar, as the page's other packs, to stay under the gallery's 16 MB)
-      and `kits/beast-riders/src/60-br-ports.js` after its core; and the draw (`src/60-isle-draw.js`, which flattens a
-      proto per material) has to take the ports' own materials (the towns' MeshStandardMaterial with library maps, not
-      the catalog's vertex-colour families). Not switched yet: the page is unchanged.
+- [x] **Ridertown took two of the catalog's hand-made copies** (2026-10-18; switched the same day):
+      `br_bldg_nature_shrine` (class `shrine`) and `br_bldg_roost_gallery` (class `rookery`). Now the Beast Riders kit's
+      ports of Mav's Refuge's own buildings, drawn by the town's own builders: `shrine: br_port_mavs_shrine`, `rookery:
+      br_bldg_rookery_tower` or `br_port_mavs_roost` (the great roost, v0); the stables stay the kit's own. `CAT`
+      (`bundles.py`) seals `kits/beast-riders/towns.py` `bundle(side)` and `src/60-br-ports.js` after the catalog's core
+      (the catalog's buildings file is no longer read); the towns' maps (`BR_TOWN_IMG`, 8 MB) are the sidecar
+      `dist/isle-city.tex.brtowns.js`, the page 4.6 MB. The plan's boxes for the ports (`ISLE_DIMS`) are the ports' declared
+      boxes (`60-br-ports.js` DIMS, the largest variant), checked by verify. The draw (`src/60-isle-draw.js`):
+      `DRAW.portMats` puts the towns' shader hooks (world UVs, sway, contact shading, night light) on their plain-mesh
+      branch, since the ports' shapes come with those baked and are drawn instanced here; `DRAW.flatten` now scales a
+      normalized integer attribute (the ports' furniture colours are `Uint8`), which had drawn that furniture white.
+      Left: a roost is a lip and a stall on a level's rim, so on the ground it reads as a yard with a hoist (the tower is
+      the better stand-alone rookery; the owner may drop the roost); and the city page has no tone mapping where the
+      kit's page and the towns use ACES, so the ports read a little lighter here than in their towns.
 
 - [x] **Valapo's frame was inland** (2026-10-15). Its settlement point (one 2 km scale-model pixel) is 5.2 km from the
       sea, so its square held none. On the owner's word the origin moved 3.7 km toward the coast, north-north-west
@@ -34,8 +33,8 @@
 - [ ] **No geyser relief here.** The planner's ground leaves out the geyser fields' relief (openworld/isle-demo's
       89-world-geysers.js needs the geyser kit). The nearest vent is 6 km from Kautoa and 28 km from Valapo, beyond the
       square, so neither town's ground differs.
-- [ ] **City page (P6) stand-ins.** Ridertown takes the Beast Riders kit's stables, byre and rookery tower; its shrines
-      and roost galleries are the catalog's copies of Mav's Refuge's (lossy until the kit's faithful port). The
+- [ ] **City page (P6) stand-ins.** Ridertown is the Beast Riders kit's (its stables, byre and rookery tower, and its ports
+      of Mav's Refuge's shrine and roost). The
       Islanders have no caravanserai (the guest house stands in), no bloomery for Valapo's smelter (the smithy), and no
       cooperage or rope walk for the works quarter.
 - [ ] **City page: no furniture, no crop stands.** FURNISH places nothing on this page (P6b's export profile brings the

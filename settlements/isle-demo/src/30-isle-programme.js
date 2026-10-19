@@ -5,9 +5,9 @@
    world records beyond the planning square. Keys are the kits' own:
      ie-* ip-*        kits/islanders, the East set (Kautoa's)
      vern_*           the Iziz Vernacular (settlements/iziz/src), Izanitown's
-     br_bldg_*        the Beast Riders' buildings, Ridertown's: the kit's own (kits/beast-riders: the raptor stable, the
-                      great byre, the rookery tower) and the catalog's (from Girder and Mav's Refuge: the nature shrine,
-                      the roost gallery)
+     br_bldg_* br_port_*  the Beast Riders' buildings, Ridertown's (kits/beast-riders): the kit's own (the raptor
+                      stable, the great byre, the rookery tower) and its ports of Mav's Refuge's own buildings (the nature
+                      shrine, the great roost), drawn by the town's own builders
      ringsea keys     kits/ringsea's vessels (islanderDrua, vothDhow ...) */
 ISLE.PROG = {};
 /* The programme's own coordinates (a centre, the brief's added districts) and lengths (the reach of the wealth, the
@@ -45,8 +45,8 @@ ISLE.CLASSES = {
   vshop: [['vern_shops', 0], ['vern_workshop_a', 0], ['vern_workshop_b', 0], ['vern_smithy', 0], ['vern_tavern', 0]],
   vmilitary: [['vern_guard_tower', 0], ['vern_watch_house', 0]],
   /* Ridertown: the riders' shrines, rookeries and stables (kits/beast-riders) */
-  shrine: [['br_bldg_nature_shrine', 0]],
-  rookery: [['br_bldg_rookery_tower', 0], ['br_bldg_roost_gallery', 0]],
+  shrine: [['br_port_mavs_shrine', 0]],
+  rookery: [['br_bldg_rookery_tower', 0], ['br_port_mavs_roost', 0]],
   stable: [['br_bldg_raptor_stable', 0], ['br_bldg_raptor_stable', 1], ['br_bldg_great_byre', 0]]
 };
 ISLE.FALLBACK = { manor: 'rich', rich: 'middle', middle: 'poor', shop: 'poor', tavern: 'shop', industrial: 'poor', works: 'industrial', farm: 'poor',

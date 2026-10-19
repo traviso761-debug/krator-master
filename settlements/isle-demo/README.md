@@ -109,9 +109,12 @@ core/city's builder. A new layout, not a hash-identical port.
 integers decoded by build.py (`WORLD_RAW`): the page reads no canvas.
 
 **Drawing** (`src/60-isle-draw.js`): the kits read in place and sealed in closures (`bundles.py`): `ISK` (the Islanders,
-with kits/resources and the farm animals), `IZV` (the Iziz Vernacular), `CAT` (the catalog's Beast Rider buildings),
-`RINGSEA` (through `settlements/voth/ringsea.py`). Each piece is built once and drawn instanced: in full within 520 m of
-the camera's target (2,600 at most), as massing beyond. No furniture on this page (the export profile, P6b, brings it).
+with kits/resources and the farm animals), `IZV` (the Iziz Vernacular), `CAT` (the Beast Riders kit's buildings: its own,
+and its ports of Mav's Refuge's shrine and roost drawn by the town's sealed engine, `kits/beast-riders/towns.py`, whose
+maps are the sidecar `isle-city.tex.brtowns.js`), `RINGSEA` (through `settlements/voth/ringsea.py`). Each piece is built
+once and drawn instanced: in full within 520 m of the camera's target (2,600 at most), as massing beyond. A port keeps its
+town's materials, the towns' shader hooks put on their plain-mesh branch (`DRAW.portMats`). No furniture on this page (the
+export profile, P6b, brings it), but what a port's town drew into it.
 
 **Checks** (`src/34-isle-census.js`, run by verify and the node test): exact footprint overlap, nothing on a street, in
 the sea or on the wall, the vessels afloat, the programme's landmarks and districts, both harbours' vessels and the six
