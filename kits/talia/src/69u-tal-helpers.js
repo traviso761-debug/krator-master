@@ -11,7 +11,7 @@ function tanDiscAt(item,x,yc,z,ry,r,out,d,c){const f=loc(x,z,0,out-d/2,ry);kput(
 // `out` proud, from angle a0 to a1 (from +x, counterclockwise seen from outside), in n straight segments
 function tanArcBand(x,yc,z,ry,K,bw,dp,out,c,a0,a1,n,item){n=n||Math.max(4,Math.round((a1-a0)*K*3));const seg=(a1-a0)/n,L=2*K*Math.sin(seg/2)+bw*.6;
  for(let k=0;k<n;k++){const a=a0+(k+.5)*seg;const p=loc(x,z,Math.cos(a)*K,out-dp/2,ry);vBq(item||'vPlaster',p[0],yc+Math.sin(a)*K,p[1],bw,L,dp,vQ(ry,0,a),c);}}
-const TA_FILL={D:['vDarkB','taDiscD','taGableD'],G:['vWinGlass','taDiscG','taGableG'],L:['vWinLit','taDiscL','taGableL'],W:['vPlaster','taDisc','vGablePl'],M:['taMarble','taDiscM','taGableM'],C:['taCobalt','taDiscC','taGableG']};
+const TA_FILL={D:['vDarkB','taDiscD','taGableD'],G:['vWinGlass','taDiscG','taGableG'],L:['vWinLit','taDiscL','taGableL'],W:['vPlaster','taDisc','vGablePl'],M:['taMarble','taDiscM','taGableM'],C:['taCobalt','taDiscC','taGableC']};
 // an arched opening of width w and height h (foot to apex) on a face. o = {kind: 'round' (default) | 'point' | 'cusp' |
 // 'flat' (a square head), fill: 'D' dark | 'G' glass | 'L' lit | 'W' blind (wall colour) | 'M' marble | 'C' cobalt,
 // fc: fill colour, band: the archivolt's colour (none: no band), bw: the band's width (.14), out: its stand-off (.06),
@@ -47,12 +47,12 @@ function tanArcade(x,y,z,ry,n,w,h,pier,o){o=o||{};const len=n*w+(n+1)*pier;for(l
 // order ('doric': an echinus and an abacus; 'ionic': the same with two volutes; 'corinthian': a bell and an abacus;
 // 'plain': a small echinus), c the stone, capC the capital (gilt on the rich and civic; defaults to c). Returns the top y
 function tanColumn(x,y,z,h,r,order,c,capC){order=order||'doric';capC=capC||c;const ab=r*.32,cap=order==='corinthian'?r*2.2:r*1.1,sh=h-ab*2-cap;
- vB('taMarble',x,y,z,r*2.4,ab,r*2.4,0,c);kput('taRingM',[x,y+ab+r*.1,z],null,[r*1.0,r*1.0,r*1.0],c);
+ vB('taMarble',x,y,z,r*2.4,ab,r*2.4,0,c);kput('taRingMs',[x,y+ab+r*.1,z],null,[r*1.0,r*1.0,r*1.0],c);
  vPst('taCol',x,y+ab,z,r,sh,c);
  const yt=y+ab+sh;
- if(order==='corinthian'){kput('taBellGi',[x,yt,z],null,[r*.95,cap,r*.95],capC);for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;kput('taGiltBall',[x+Math.sin(a)*r*1.15,yt+cap*.5,z+Math.cos(a)*r*1.15],null,[r*.3,r*.5,r*.3],capC);}}
+ if(order==='corinthian'){kput('taBellGi',[x,yt,z],null,[r*.95,cap,r*.95],capC);for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/4;kput('taGiltNub',[x+Math.sin(a)*r*1.15,yt+cap*.5,z+Math.cos(a)*r*1.15],null,[r*.3,r*.5,r*.3],capC);}}
  else if(order==='plain')kput('taEchinus',[x,yt,z],null,[r*1.1,cap,r*1.1],c);
- else{kput('taEchinus',[x,yt,z],null,[r*1.3,cap,r*1.3],capC);if(order==='ionic')for(const s of[-1,1])kput('taRingGi',[x+s*r*1.3,yt+cap*.5,z],qEuler(0,0,Math.PI/2),[r*.42,r*.42,r*.42],capC);}
+ else{kput('taEchinus',[x,yt,z],null,[r*1.3,cap,r*1.3],capC);if(order==='ionic')for(const s of[-1,1])kput('taRingGiS',[x+s*r*1.3,yt+cap*.5,z],qEuler(0,0,Math.PI/2),[r*.42,r*.42,r*.42],capC);}
  vB('taMarble',x,yt+cap,z,r*2.4,ab,r*2.4,0,capC);
  return y+h;}
 // a colonnade along a face: n+1 columns from -len/2 to len/2 about (x, z) on the face, standing `out` in front of it
@@ -104,9 +104,10 @@ function tanDome(x,y,z,r,o){o=o||{};const kind=o.kind||'hemi';let item=o.item,h=
  if(o.finial)tanFinial(x,y+h-.02,z,o.fr||Math.max(.1,r*.08),o.finial);
  return y+h;}
 // a drum of radius r and height h: a cylinder with n arched windows round it (dark; o.fill 'L' when lit), pilasters
-// between when o.pil, a cornice ring on top. c the wall. Returns the top y
-function tanDrum(x,y,z,r,h,n,c,o){o=o||{};vPst('vPostS',x,y,z,r,h,c);
- const ww=Math.min(1.2,r*.5),wh=Math.min(h-.5,ww*2.2);
+// between when o.pil, a cornice ring on top. c the wall. o.round: the 24-sided drum (taDrum; else the 8-sided post);
+// o.ww, o.wh: the windows' width and height (default by r and h). Returns the top y
+function tanDrum(x,y,z,r,h,n,c,o){o=o||{};vPst(o.round?'taDrum':'vPostS',x,y,z,r,h,c);
+ const ww=o.ww==null?Math.min(1.2,r*.5):o.ww,wh=o.wh==null?Math.min(h-.5,ww*2.2):o.wh;
  for(let k=0;k<n;k++){const a=k*TAU/n+(o.a0||0);const p=[x+Math.sin(a)*r,z+Math.cos(a)*r];
   tanArch(p[0],y+(h-wh)/2,p[1],a,ww,wh,{fill:o.fill||'D',band:o.band,bw:.1,out:.04,gilt:o.gilt});
   if(o.pil){const b=(k+.5)*TAU/n+(o.a0||0);const q=[x+Math.sin(b)*r,z+Math.cos(b)*r];tanPilaster(q[0],y,q[1],b,.4,h-.1,o.pilC||c,o.capC);}}
@@ -120,7 +121,7 @@ function tanLantern(x,y,z,r,h,c,domeC,finialC,o){o=o||{};tanDrum(x,y,z,r,h,(o.n=
 // colour, gilt: a colour (the ribs, the lantern's finial and the drum's capitals in it), lit: true (lit windows), band,
 // pil: pilasters between the windows}
 function tanDrumDome(x,y,z,r,o){o=o||{};const dh=o.drumH||r*.8,n=(o.n==null?8:o.n),gi=o.gilt||null,dc=o.drumC||vC(vPick(TAPAL.white));
- const yt=tanDrum(x,y,z,r,dh,n,dc,{fill:o.lit?'L':'D',band:o.band,pil:o.pil,pilC:o.pilC,capC:gi||o.capC,gilt:!!gi});
+ const yt=tanDrum(x,y,z,r,dh,n,dc,{fill:o.fill||(o.lit?'L':'D'),band:o.band,pil:o.pil,pilC:o.pilC,capC:gi||o.capC,gilt:!!gi,round:o.round,ww:o.ww,wh:o.wh});
  const yd=tanDome(x,yt,z,r+.1,{kind:o.kind,c:o.domeC,item:o.item,ribs:o.ribs,ribItem:gi?'taRibGi':o.ribItem,ribC:gi||o.ribC,finial:o.lantern===false?(o.finial||gi):null,fr:o.fr});
  if(o.lantern!==false)return tanLantern(x,yd-.08,z,Math.max(.4,r*.22),Math.max(.8,r*.4),dc,o.lanternC||o.domeC,o.finial||gi,{band:o.band});
  return yd;}
@@ -232,3 +233,49 @@ function tanShopFront(x,y,z,ry,w,h,bandC,o){o=o||{};const wood=o.woodC||vC(vPick
  for(let k=0;k<3;k++){const g=loc(x,z,.4-cw/2+(k+.5)*cw/3,.35,ry);const t=rng();if(t<.4)vnCrate(g[0],y+.9,g[1],.38,ry+rr(-.3,.3));else if(t<.7)vPst('vClayPot',g[0],y+.9,g[1],.16,.38,vC(vPick(TAPAL.tile)));else kput('vSack',[g[0],y+1.06,g[1]],null,[.2,.17,.2],vC(vPick(VPAL.awning)));}
  if(o.awning!==false)vnAwning(x,y+2.7,z,ry,w+.6,1.4,o.awnC);
  if(o.sign){const s=loc(x,z,w/2+.5,0,ry);vnSign(s[0],y+2.9,s[1],ry,o.sign);}}
+
+// ---------------------------------------------------------------- P4: tiers, petals, rays, coffers, niches (72t-73t)
+// a run of boxes round a horizontal arc centred (x, z): mid radius r, yaw a0 to a1 (a point at yaw a is (x + sin a r,
+// z + cos a r), as the drums place theirs), each box dr deep radially and h high from y, in n pieces (default by length):
+// a theatre's tier, a curved wall, a ring's coping
+function tanArcRun(x,y,z,r,a0,a1,dr,h,item,c,n){n=n==null?Math.max(3,Math.round(Math.abs(a1-a0)*r/1.2)):n;const seg=(a1-a0)/n,L=2*r*Math.abs(Math.sin(seg/2))+.06;
+ for(let k=0;k<n;k++){const a=a0+(k+.5)*seg;vB(item||'vPlaster',x+Math.sin(a)*r,y,z+Math.cos(a)*r,L,h,dr,a,c);}}
+// a ring of n lotus petals round (x, z) at radius r, from y up h: white ellipsoids leaning out by tilt, each backed by a
+// slightly larger, thinner one in rimC (gilt: the edge that shows round the petal); returns the petals' top y
+function tanLotus(x,y,z,r,h,n,c,rimC,tilt){tilt=tilt==null?.32:tilt;const pw=Math.max(.12,r*Math.sin(Math.PI/n)*1.25),pt=Math.max(.05,h*.07);
+ for(let k=0;k<n;k++){const a=k*TAU/n,px=x+Math.sin(a)*r*.82,pz=z+Math.cos(a)*r*.82,q=vQ(a,tilt,0);
+  kput('taBallM',[px,y+h*.48,pz],q,[pw,h*.52,pt],c);
+  if(rimC){const b=loc(px,pz,0,-pt*.7,a);kput('taGiltBall',[b[0],y+h*.48,b[1]],q,[pw*1.1,h*.56,pt*.6],rimC);}}
+ return y+h;}
+// a lotus roof (refs/talia ornament.jpg): tiers of petals rising and narrowing round a white egg core, a gilt finial;
+// r the base radius at y. Returns the top y (under the finial)
+function tanLotusRoof(x,y,z,r,c,rimC,tiers){tiers=tiers==null?4:tiers;kput('taEgg',[x,y,z],null,[r*.78,r*2.3,r*.78],c);
+ for(let k=0;k<tiers;k++){const kr=r*(1-k*.2),ky=y+k*r*.52,kh=r*.95*(1-k*.13);tanLotus(x,ky,z,kr,kh,Math.max(6,12-2*k),c,rimC,.3-k*.05);}
+ const top=y+r*2.3-.05;if(rimC)tanFinial(x,top,z,Math.max(.12,r*.12),rimC);return top;}
+// a sunburst on a face: n rays (long and short alternating) from r0 to r1 round a gilt disc of r0, centred at yc on
+// the face (x, z), standing out .08; half: the upper half only (over an arch). c the rays (gilt)
+function tanSunburst(x,yc,z,ry,r0,r1,n,c,half){tanDiscAt('taDiscGi',x,yc,z,ry,r0,.1,.1,c);const a1=half?Math.PI:TAU,m=half?n+1:n;
+ for(let k=0;k<m;k++){const a=half?k*Math.PI/n:k*TAU/n,re=k%2?r0+(r1-r0)*.7:r1,rm=(r0+re)/2;if(half&&(a<0||a>a1))continue;
+  const p=loc(x,z,Math.cos(a)*rm,.05,ry);vBq('taGilt',p[0],yc+Math.sin(a)*rm,p[1],(k%2?.08:.12),re-r0,.05,vQ(ry,0,a-Math.PI/2),c);}}
+// a coffered soffit: a slab w x d whose underside is at y (c: the vault's orange), with a grid of ribs hanging under it
+// every `pitch` both ways (gridC: white), turned by ry about (x, z): the cloister walks' ceilings (talia-cloisters.jpg)
+function tanCoffers(x,y,z,w,d,ry,c,gridC,pitch){pitch=pitch==null?1.1:pitch;vB('vPlaster',x,y,z,w,.14,d,ry,c);
+ const nx=Math.max(1,Math.round(w/pitch)),nz=Math.max(1,Math.round(d/pitch));
+ for(let k=0;k<=nx;k++){const p=loc(x,z,-w/2+k*w/nx,0,ry);vB('vPlaster',p[0],y-.14,p[1],.12,.14,d,ry,gridC);}
+ for(let k=0;k<=nz;k++){const p=loc(x,z,0,-d/2+k*d/nz,ry);vB('vPlaster',p[0],y-.14,p[1],w,.14,.12,ry,gridC);}}
+// a statue on a plinth (a figure of marble), standing at (x, y, z) facing ry; s its scale (1: life size)
+function tanStatue(x,y,z,ry,s,c,plinthC){s=s==null?1:s;vB('taMarble',x,y,z,.7*s,.6*s,.7*s,ry,plinthC||c);kput('figB',[x,y+.6*s,z],qEuler(0,ry,0),[s*1.05,s,s*1.05],c);kput('taBallM',[x,y+.6*s+1.62*s,z],null,[.16*s,.2*s,.16*s],c);}
+// a statue niche on a face: a round-headed recess (fill marble in a shade darker than the wall) in a band, a statue in it
+function tanNiche(x,y,z,ry,w,h,c,bandC,statueC){tanArch(x,y,z,ry,w,h,{fill:'M',fc:c.clone().multiplyScalar(.8),band:bandC,bw:.12,sill:bandC});
+ const p=loc(x,z,0,.38,ry);tanStatue(p[0],y,p[1],ry,Math.min(1,(h-.8)/2.4),statueC||c);}
+// a pane fill for tanArch (fill 'P': the glasshouse's pale glass, taPaneB / taDiscP; a pointed head stays dark glass)
+TA_FILL.P=['taPaneB','taDiscP','taGableG'];
+// a spandrel: the face between an arch of radius R centred at yc and a level line `top`, over the half-width hw (<= R)
+// about (x, z) on a face, filled with n vertical strips dp deep whose front stands `out` from the face: closes the
+// corners over a vaulted passage's ends, or the bridge's face between its arch and its deck
+function tanSpandrel(x,yc,z,ry,R,hw,top,dp,out,c,n){n=n==null?Math.max(6,Math.round(hw*4)):n;const sw=2*hw/n;
+ for(let k=0;k<n;k++){const u=-hw+(k+.5)*sw,ua=Math.min(R,Math.abs(u)),yb=yc+Math.sqrt(Math.max(0,R*R-ua*ua));if(yb>=top-.01)continue;
+  const p=loc(x,z,u,out-dp/2,ry);vB('vPlaster',p[0],yb,p[1],sw+.01,top-yb,dp,ry,c);}}
+// a round window on a face: a lit (fill 'L'), cobalt ('C') or dark-glass ('G') disc of radius r in a ring band, centred at yc
+function tanOculus(x,yc,z,ry,r,fill,bandC,gilt){tanDiscAt(fill==='C'?'taDiscC':fill==='G'?'taDiscG':'taDiscL',x,yc,z,ry,r,.03,.1,null);
+ tanArcBand(x,yc,z,ry,r+.08,.16,.12,.07,bandC,0,TAU,14,gilt?'taGilt':'vPlaster');}

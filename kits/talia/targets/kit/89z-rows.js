@@ -13,6 +13,16 @@ const TAL_ROWS=[
  ['Trade',['tal_customs_house','tal_bourse','tal_bath']],
  ['Trade — the caravan road',['tal_caravanserai','tal_agora_stoa','tal_warehouse']],
  ['Trade — the street',['tal_shop_arcade','tal_inn','tal_press']],
+ ['University — the core',['tal_uni_hall','tal_uni_cloister','tal_uni_library','tal_uni_senate']],
+ ['University — the faculties, the anatomy theatre',[['tal_uni_faculty',{v:0}],['tal_uni_faculty',{v:1}],['tal_uni_faculty',{v:2}],'tal_uni_anatomy']],
+ ['University — the hospital, the observatory, the colleges',['tal_uni_hospital','tal_observatory',['tal_uni_college',{wealth:'rich'}],['tal_uni_college',{wealth:'poor',lit:false}]]],
+ ['The arts',['tal_odeon','tal_academy','tal_theatre','tal_uni_gallery','tal_glasshouse']],
+ ['Civic — the temple, the chapel, the council',['tal_temple','tal_chapel','tal_council_house','tal_fountain']],
+ ['Civic — the memorial, the sky bridge',['tal_memorial_spire','tal_sky_bridge']],
+];
+// the city wall laid with no gaps, as a wall is built: segments butt the towers (at x = +-4) and the gate (at x = +-10)
+const TAL_WALLS=[
+ ['The city wall and the Gate of the Passes',['tal_wall','tal_wall_tower','tal_wall','tal_east_gate','tal_wall','tal_wall_tower','tal_wall']],
 ];
 // the mixed street: Talia's buildings between Vernacular ones of their tier, at the gaps a city lot would leave (4 m)
 const TAL_MIXED=[
@@ -20,6 +30,7 @@ const TAL_MIXED=[
  ['Mixed street — middle',['vern_house_mid_a','tal_loggia_house','vern_house_mid_b','tal_dome_house','vern_house_mid_c','tal_tenement']],
  ['Mixed street — middle, multi',['vern_shops','tal_arcade_block','vern_tavern','tal_tenement']],
  ['Mixed street — trade',['vern_market','tal_shop_arcade','vern_shops','tal_press','vern_tavern','tal_inn','vern_warehouse','tal_warehouse']],
+ ['Mixed street — civic',['vern_school','tal_chapel','vern_watch_house','tal_council_house','vern_hospital',['tal_uni_faculty',{v:0}]]],
  ['Mixed street — rich',['vern_house_rich_a','tal_palazzo','vern_house_rich_b','tal_jharokha_house','tal_peristyle_villa']],
 ];
 const ROWZ=[];const ROWNAME=[];const SITES=[];const TAL_OPT={};
@@ -30,4 +41,6 @@ const ROWZ=[];const ROWNAME=[];const SITES=[];const TAL_OPT={};
  const norm=rows=>rows.map(([n,row])=>[n,row.map((k,i)=>{if(typeof k==='string')return k;TAL_OPT[n+'#'+i]=k[1];return k[0];})]);
  TAL_ROWS.splice(0,TAL_ROWS.length,...norm(TAL_ROWS));
  for(const [n,row] of TAL_ROWS)lay(n,row,10);
+ TAL_MIXED.splice(0,TAL_MIXED.length,...norm(TAL_MIXED));
+ for(const [n,row] of TAL_WALLS)lay(n,row,0);
  for(const [n,row] of TAL_MIXED)lay(n,row,4);}
