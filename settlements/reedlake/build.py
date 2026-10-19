@@ -149,6 +149,7 @@ DETERMINISTIC = {
     '90w-rl-lake.js',                     # the lake on core/water
     '90x-rl-still.js',                    # the troughs' and wallow's still water on core/water (Phase 4)
 }
+DETERMINISTIC |= {'82-rl-trades.js'}   # the Voth census table (data only, read by tools/check_trades.py)
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-reedlake-tags.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 

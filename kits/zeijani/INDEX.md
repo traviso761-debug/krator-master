@@ -42,6 +42,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `52-zj-trade.js` | 6 |  |
 | `53-zj-additions.js` | 9 |  |
 | `54-zj-square.js` | 7 |  |
+| `55-zj-trades.js` | 6 |  |
 | `81-sky.js` | 10 |  |
 | `89-rows.js` | 2 |  |
 | `90-scene.js` | 8 | layout: rows by family, fronts (+z) toward the c (41); (re)build the world (50) |

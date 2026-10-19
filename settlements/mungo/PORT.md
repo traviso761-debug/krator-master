@@ -31,6 +31,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/84-mungo-life.js` | 18.4 | [web] | 8 | 0 | 5 | 1 | 2 | 18 | 0 | 2 | 0 | 0 | 0 | split: the embodiment reads SIM.pose (port: the Godot life autoload); the census panel and path-viz registry are [web]; 2026-10-15: the census panel sits under the paths select (the polygon tool's box is gone) |
 | `src/85-probe.js` | 1.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88c-mungo-minimap.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/88d-mungo-trades.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table MUNGO_TRADES: no three.js, no geometry, no DOM |
 | `src/reed/90-mungo-reed-glue.js` | 6.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the Reed Lake kit's mungo_reed_village def and the API Mungo calls; runs inside the wrapped kit |
 
 ## Notes

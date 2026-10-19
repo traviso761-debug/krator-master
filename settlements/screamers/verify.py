@@ -159,6 +159,9 @@ async def run(a):
                     print(tag + r["name"] + " : " + r["detail"])
                     if not r["ok"] and not soft:
                         fails.append("assert " + r["name"])
+                import check_trades; _ok, _d, _ = check_trades.trades_check(os.path.dirname(os.path.abspath(__file__)))   # the Voth census table (tools/check_trades.py)
+                print(("  PASS  " if _ok else "  FAIL  ") + "voth-trades : " + _d)
+                if not _ok: fails.append("assert voth-trades")
                 print("\n--- per type (scene triangles, instances, meshes) ---")
                 ts = await pg.evaluate("()=>window._api.typeStats()")
                 for k in sorted(ts, key=lambda k: -ts[k]["tris"]):

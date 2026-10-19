@@ -85,6 +85,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/94-life.js` | 10.7 | [draw] | 19 | 0 | 0 | 0 | 0 | 4 | 0 | 5 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/95-pathviz.js` | 4.0 | [web] | 10 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the path tracker; its Routes and Tracks are core/host layers (window._tracker, 2026-10-15) |
 | `src/96t-screamers-tags.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md): class and tags from the name and builder type (2026-10-15) |
+| `src/96s-screamers-trades.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table SCREAM_TRADES: no three.js, no geometry, no DOM |
 | `src/99-start.js` | 2.1 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views, ground, records, TICKS, the sky, layers (rings, routes, tracks), inspector words, minimap: host shell |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/furniture/89z-rows.js` | 0.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

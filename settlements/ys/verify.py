@@ -30,6 +30,7 @@ Requires: pip install playwright==1.56.0 (matches the pre-installed Chromium in 
 `playwright install`). Set VERIFY_CHROME=/path/to/chromium to launch another build.
 """
 import argparse, asyncio, http.server, json, os, socketserver, sys, threading
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))   # tools/check_trades.py
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
@@ -164,6 +165,11 @@ async def run(a):
                     print(tag + r["name"] + " : " + r["detail"])
                     if not r["ok"] and not soft:
                         fails.append("assert " + r["name"])
+                from check_trades import trades_check
+                t_ok, t_detail, _t = trades_check(here)
+                print(("  PASS  " if t_ok else "  FAIL  ") + "voth-trades : " + t_detail)
+                if not t_ok:
+                    fails.append("assert voth-trades")
                 print("\n--- per type (scene triangles, instances, meshes) ---")
                 ts = await pg.evaluate("()=>window._api.typeStats()")
                 for k in sorted(ts, key=lambda k: -ts[k]["tris"]):

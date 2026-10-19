@@ -98,6 +98,8 @@ RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
 # target without the Post-Apoc bundle: the village's bundle brings its own copy and sets window.KTAGS itself (70e)
 TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
               if f[0].isdigit() and f.endswith('.js')}
+# core/walk (KWALK: the interiors' floors, walls, stairs and entry flights; kits/interiors IX.walk, the village's furnishing pass takes it)
+WALK_FILES = {'20-core-walk.js': os.path.join(ROOT, 'core', 'walk', '20-core-walk.js')}
 # core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks (they replace
 # the old 93-polytool.js), pictures, minimap and cutaway, with core/clock and core/minimap, as Iziz takes them. Not core/space:
 # the vendored hyperjungle's scatter takes another path when it is on the page (settlements/iziz/KNOWN_ISSUES.md, 2026-10-13).
@@ -182,13 +184,14 @@ DETERMINISTIC = {
     '23-mat-record.js', '25-matlib-host.js', MATLIB_PACK, '72c-matlib.js',   # the material library (no rng())
     '71a-apoc-homes.js',   # the salvage homes: sited on a fixed ring, built by KratorPostApoc on its own stream (no rng())
     '91-probe.js', '92-camera.js', '70c-furniture.js', '72a-wind.js', '95-pathviz.js', '99-tail.html',
-    '99-start.js', '96t-screamers-tags.js',   # the take (core/host); REG into core/tags (reads only)
+    '99-start.js', '96t-screamers-tags.js', '96s-screamers-trades.js',   # the take (core/host); REG into core/tags (reads only)
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
 # do not add one without an accompanying KNOWN_ISSUES entry.
+DETERMINISTIC |= set(WALK_FILES)
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES)   # core/host, core/rand, core/tags: no rng()
 
 SEED_COLLISION_EXCEPTIONS = {
@@ -301,6 +304,7 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
     if target != 'screamers':   # the village's Post-Apoc bundle brings core/rand and core/tags (above)
         src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    src.update({f: p for f, p in WALK_FILES.items() if f not in src})
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)

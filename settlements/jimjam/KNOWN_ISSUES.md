@@ -45,3 +45,25 @@
       overview, 0.86 M at eye level, with fewer draw calls.
 - [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
+
+## Voth census trades (2026-10-19)
+
+The table `JJ_TRADES` in `src/78-jj-trades.js` sets each of the Voth city's 44 census trades against this build's buildings (15 carried, 2 partly, 13 gaps, 14 na of 44). `tools/check_trades.py` and verify.py's `voth-trades` assert check it. Gaps to fill later:
+
+- [ ] butchers: a butcher's shop
+- [ ] weavers and dyers: a weaver's and dyer's workshop (the cloth and carpet merchant only sells)
+- [ ] brewers: a brewhouse
+- [ ] tanners: a tannery
+- [ ] shipwrights and boatbuilders: a small boatyard on the lake shore
+- [ ] shrine keepers: a wayside shrine
+- [ ] industrial workers: a works (brick kiln, foundry or press)
+- [ ] guild officers and clerks: a guild hall
+- [ ] healers and nurses: a house of healing (the alchemist's shop only sells)
+- [ ] priests and undertakers: a funerary temple or burial court (partly carried: jj_temple_sun)
+- [ ] fishers: a fishing dock on the lake
+- [ ] market traders: a market square or hall (only the stall frame is drawn) (partly carried: jj_furn_market_stall)
+- [ ] orchardmen: an orchard plot
+- [ ] quarrymen and masons: a stone yard or brick kiln (the marble trim and the brick are drawn, their makers are not)
+- [ ] dairymen: a dairy
+
+The `na` rows (sea trades on a landlocked build, trades the lore does not hold) are in the table with their reasons.

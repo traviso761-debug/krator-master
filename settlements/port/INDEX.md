@@ -62,6 +62,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89a-ch-stack.js` | 32 **big** | materials and kit (28); small helpers (51); the container dwelling (94); the stacked tower (120); the block: ground, footways, sides (254); chStack: tall stacked towers (306) |
 | `89b-ch-court.js` | 13 | yard props (16); the compound (50); chCourt (125) |
 | `89c-ch-tank.js` | 16 |  |
+| `89x-port-trades.js` | 5 |  |
 | `89y-sp-1-yard.js` | 34 **big** | sides (47); stamps (89); small geometry (106); edges (116); containers (203); the warehouse (226); the yard office (273); the gantry (297); the reach stacker (328); floating things (d=3) (350) |
 | `90-scene.js` | 8 | scene (1); THE PORT (36) |
 | `91-probe.js` | 6 | probe (window._api) (1) |

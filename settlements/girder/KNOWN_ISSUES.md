@@ -150,3 +150,9 @@ here maps onto the catalog's correction. The catalog copy is the centred one.
 - [ ] No jump and no gravity any more (Space did both): the host keeps to a deck's edge instead of letting a walker fall. The lift ride (the cage floor follows
       the cage, a rider sends it) is written but I did not ride one.
 
+
+## Voth census trades (2026-10-19)
+
+The table is `src/65-gi-trades.js` (`GI_TRADES`; checked by `tools/check_trades.py` and `verify.py --assert` as `voth-trades`). 11 trades carried, 3 partly, 17 gaps, 13 na (no coast, no electricity, no embassies, no palace).
+- [ ] Gaps (a later session builds them; Girder's buildings are copied into `kits/beast-riders`, which already has most of these as `br_bldg_*`): bakery, butcher, brewhouse/mead hall (also innkeepers and servers), tannery, temple hall (priests, monks, undertakers' funerary court), barracks, school, toll house, house of healing, mine head, quarry, granary and mill, dairy shed, fungus house.
+- [ ] Partly carried: weavers and dyers (stall only; no weaving house or dye works), innkeepers and grooms (roost keepers; no inn), swineherds and duck keepers (millipede pen; no sties or coops).

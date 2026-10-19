@@ -52,6 +52,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `87-host-views.js` | 3 |  |
 | `88-host-build.js` | <1 |  |
 | `89t-shade-tags.js` | 3 |  |
+| `89s-shade-trades.js` | 5 | THE VOTH CENSUS OF TRADES (1) |
 | `91-shade-probe.js` | 28 | the Shade checks (37) |
 | `99-shade-take.js` | 4 | the inspector's words where no record holds the  (7); the page, handed to the host (19) |
 | `99-tail.html` | <1 |  |
