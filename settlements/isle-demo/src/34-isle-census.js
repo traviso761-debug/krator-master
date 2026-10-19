@@ -7,18 +7,20 @@
    Each returns plain records; a check is {name, ok, detail}. */
 ISLE.EXPECT = {
   Kautoa: {
-    roles: { palace: 1, envoy: 5, 'ceremonial square': 1, governor: 1, 'ancestor temple': 1, barracks: 2, 'watch tower': 4, quarry: 1, 'salt works': 1, caravanserai: 1 },
+    /* the owner's redrawing (2026-10-18): about 6,000 people, at least two thirds of the build area built */
+    roles: { palace: 1, envoy: 4, 'ceremonial square': 1, governor: 1, 'ancestor temple': 1, barracks: 2, 'watch tower': 1, quarry: 1, 'salt works': 1, 'council hall': 1, caravanserai: 1 },
     districts: { izani: { kit: 'izv', share: 0.8 }, works: { cls: ['works', 'industrial'], share: 0.5 }, riders: { cls: ['shrine', 'stable', 'rookery'], each: 3 } },
-    vessels: { naval: ['islanderDrua', 'islanderKorakora', 'islanderKarakoa', 'islanderLanong'],
-      civilian: ['islanderOruwa', 'islanderLakatoi', 'vothDhow', 'hykCorbita', 'izizDhoni', 'beastWaa', 'salvageTug'] },
+    vessels: { naval: ['islanderDrua', 'islanderKorakora', 'islanderKarakoa', 'islanderLanong'], fishing: ['islanderOruwa', 'islanderLakatoi'],
+      civilian: ['vothDhow', 'hykCorbita', 'izizDhoni', 'beastWaa', 'salvageTug'] },
     origins: ['ringsea-islander', 'voth', 'hykkousoi', 'iziz-vernacular', 'beast-rider', 'ancients-salvage'],
-    wall: { gates: ['North Gate', 'West Gate', 'East Gate'] }, landing: 1, citizens: [4000, 6500], fields: 120
+    wall: { gates: 2 }, landing: 1, citizens: [5500, 6500], fields: 0, built: 0.66
   },
   Valapo: {
-    roles: { 'village hall': 1, 'ancestor temple': 1, garrison: 2, smelter: 1 },
-    districts: { fringe: { cls: ['farm'], each: 12 } },
+    /* the owner's redrawing (2026-10-18): about a third of Kautoa, built from the centre out */
+    roles: { 'village hall': 1, 'ancestor temple': 1, garrison: 2, smelter: 1, caravanserai: 1 },
+    districts: {},
     vessels: { civilian: ['islanderOruwa', 'islanderLakatoi'] }, origins: ['ringsea-islander'],
-    wall: null, landing: 1, citizens: [1300, 2300], fields: 100
+    wall: null, landing: 1, citizens: [1700, 2300], fields: 0
   }
 };
 ISLE.census = function (R) {
@@ -87,17 +89,25 @@ ISLE.checks = function (R, ground, o) {
   }
   var lackO = E.origins.filter(function (c) { return !C.vessels.origins[c]; });
   ok('vessels of every origin (' + E.origins.length + ')', lackO.length === 0, JSON.stringify(C.vessels.origins));
-  if (E.wall) { var lg = E.wall.gates.filter(function (g) { return C.wall.gates.indexOf(g) < 0; }); ok('the wall and its named gates', C.wall.pieces > 100 && lg.length === 0, C.wall.pieces + ' pieces, gates ' + C.wall.gates.join(', ')); }
+  if (E.wall) {
+    /* named gates, or (the owner's redrawing) a count of them: gates found where the avenues reach the wall */
+    var lg = typeof E.wall.gates === 'number' ? (C.wall.gates.filter(function (g) { return / Gate/.test(g); }).length >= E.wall.gates ? [] : ['at least ' + E.wall.gates + ' named'])
+      : E.wall.gates.filter(function (g) { return C.wall.gates.indexOf(g) < 0; });
+    ok('the wall and its gates', C.wall.pieces > 40 && lg.length === 0, C.wall.pieces + ' pieces, gates ' + C.wall.gates.join(', ') + (lg.length ? '; missing ' + lg.join(', ') : ''));
+  }
   else ok('no wall (an open village)', C.wall.pieces === 0, C.wall.pieces + ' pieces');
   ok('the trade route\'s landing', R.landings.length >= E.landing, R.landings.length + '');
   /* the size (owner, 2026-10-18: Kautoa about 5,000 people, Valapo a third of it), at five a household */
   ok('a town of its size (' + E.citizens.join('-') + ' citizens)', C.citizens >= E.citizens[0] && C.citizens <= E.citizens[1], C.buildings + ' buildings, ' + C.households + ' households, ' + C.citizens + ' citizens');
   /* the hug: the houses keep to the shore, the landmarks and the avenues (PR.hug); the rest is farmland */
-  var Hg = ISLE.PROG[R.town].hug;
+  var Hg = (R.prog || ISLE.PROG[R.town]).hug;
   if (Hg && R.hug) {
     var hl = lots.filter(function (L) { return Hg.roles.indexOf(L.district) >= 0; }), inn = hl.filter(function (L) { var d = R.hug(L.x, L.z); return d != null && d <= Hg.r1; }).length;
     ok('the houses hug the shore, the landmarks and the avenues', hl.length > 0 && inn >= 0.9 * hl.length, inn + ' of ' + hl.length + ' within ' + Hg.r1 + ' m');
   }
+  if (E.built) ok('at least ' + Math.round(E.built * 100) + '% of the build area built (buildings and their compounds, streets, landmarks and markets)', R.cover && R.cover.share >= E.built,
+    R.cover ? Math.round(R.cover.share * 100) + '% built: lots ' + Math.round(R.cover.lots * 100) + '%, streets ' + Math.round(R.cover.streets * 100) + '%, landmarks and markets ' + Math.round(R.cover.landmarksAndMarkets * 100) +
+      '%, street verges ' + Math.round(R.cover.verges * 100) + '%; open ' + Math.round(R.cover.open * 100) + '%, parks ' + Math.round(R.cover.parks * 100) + '%, steep or walled ' + Math.round(R.cover.steepOrOut * 100) + '%; roofs alone ' + Math.round(R.cover.roofs * 100) + '% of ' + R.cover.landKm2 + ' km2' : 'no cover');
   var fc = {}; (R.fields || []).forEach(function (F) { fc[F.crop] = (fc[F.crop] || 0) + 1; });
   ok('farms and orchards on the open ground (' + E.fields + ' parcels or more)', (R.fields || []).length >= E.fields, (R.fields || []).length + ' parcels: ' + JSON.stringify(fc));
   ok('every key in the kits (none missing)', Object.keys(R.missing).length === 0, JSON.stringify(R.missing));

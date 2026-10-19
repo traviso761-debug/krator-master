@@ -16,10 +16,10 @@ ISLE.PROG = {};
    the same scale: ISLE.scaledProg(P, scaled) is P with those moved and shortened alike. Sizes of things (buildings,
    streets, the hug's walking distances) do not scale */
 ISLE.scaledProg = function (P, sc) {
-  if (!sc || sc.factor === 1) return P;
-  var s = sc.factor, a = sc.anchor, pt = function (p) { return [a[0] + s * (p[0] - a[0]), a[1] + s * (p[1] - a[1])]; }, Q = {};
-  for (var k in P) Q[k] = P[k];
-  Q.centre = pt(P.centre); Q.reach = P.reach * s; if (P.fringe != null) Q.fringe = P.fringe * s;
+  var Q = {}; for (var k in P) Q[k] = P[k];      /* always a copy: the city fills in a centre and reach of its own */
+  if (!sc || sc.factor === 1) return Q;
+  var s = sc.factor, a = sc.anchor, pt = function (p) { return [a[0] + s * (p[0] - a[0]), a[1] + s * (p[1] - a[1])]; };
+  if (P.centre) Q.centre = pt(P.centre); if (P.reach) Q.reach = P.reach * s; if (P.fringe != null) Q.fringe = P.fringe * s;
   Q.addDistricts = (P.addDistricts || []).map(function (d) { var e = {}; for (var j in d) e[j] = d[j]; e.poly = d.poly.map(pt); return e; });
   return Q;
 };
@@ -67,116 +67,118 @@ ISLE.DRAWS = {
 /* the role table (core/city KCITY.site.roles): a district's name first, then its type */
 ISLE.ROLES = KCITY.site.roles({ types: [],
   names: [[/^build (region|area)$/, 'zone'], [/^ceremonial park$/, 'ceremonial'], [/white sand beach/, 'beach'], [/^military harbor$/, 'naval'], [/^harbor$/, 'harbour'],
-    [/^ridertown$/, 'riders'], [/^izanitown$/, 'izani'], [/^warrior's square$/, 'warriors'], [/^works quarter$/, 'works'], [/^park/, 'park'], [/^market/, 'market'],
+    [/^ridertown$/, 'riders'], [/^izanitown$/, 'izani'], [/^warrior's square$/, 'warriors'], [/^works quarter$/, 'works'], [/^park/, 'park'], [/^market/, 'market'], [/^plaza/, 'plaza'],
     [/^funerary/, 'funerary']], other: 'misc' });
 /* (no district type is its own role: the names decide, so Warrior's Square, typed a plaza, is the warriors') */
 
 ISLE.PROG.Kautoa = {
-  cell: 2.5, half: 4400, gridCell: 5, wall: true, maxSlope: 0.32, maxDrop: 6,
-  centre: [0, 130], reach: 3600,
-  /* districts the brief adds (to draw): the works quarter between Avenues 2 and 5, east of Izanitown (PLAN 8a) */
-  addDistricts: [{ id: 'w1', type: 'misc', name: 'works quarter', poly: [[1750, 200], [2600, 200], [2600, 680], [1750, 680]] }],
-  /* how dense each role is (the share of frontage built: core/city's vacant rule); the residential ground thins from the
-     centre to the wall */
-  dens: { izani: 0.95, works: 0.9, harbour: 0.6, naval: 0.6, riders: 0.45, res: [0.24, 0.04] },
-  /* the hug (owner, 2026-10-18): the houses keep to the shore, the landmarks and the avenues; beyond them, farmland */
-  hug: { r0: 55, r1: 140, floor: 0.03, roles: ['res', 'riders'] },
-  /* at the town's scale (0.35) fewer, wider-spaced streets, so the farmland between them reads as fields */
-  tune: { voidMax: 90, voidIters: 12, sideSpacing: 90 },
-  /* the farmland inside the wall (8c: the wet lowland's rice paddies, cloves and cacao rain-fed, and the isles' own coconut,
-     banana and taro) */
-  farm: { cell: 24, crops: [{ crop: 'rice', kind: 'paddy', w: 4, maxSlope: 0.14, maxH: 360 }, { crop: 'cloves', kind: 'orchard', w: 3 },
-    { crop: 'cacao', kind: 'orchard', w: 2, maxH: 600 }, { crop: 'coconut', kind: 'orchard', w: 1, maxH: 250 }, { crop: 'banana', kind: 'orchard', w: 1 },
-    { crop: 'taro', kind: 'field', w: 1, maxSlope: 0.12 }] },
-  /* the ceremonial centre: each faces the park, its front parallel to the nearest side of the ring (PLAN 8a) */
+  /* the owner's redrawing at the town's size (2026-10-18): about 5,000 people, and at least two thirds of the build area
+     buildings and streets, not farms, orchards or empty ground. So: every frontage built (no hug), and the houses stand in
+     walled compounds (Sumba's: a yard behind and beside each house), which the census counts with their houses */
+  cell: 2.5, half: 4400, gridCell: 5, wall: true, maxSlope: 0.34, maxDrop: 9,
+  centre: null, reach: null,          /* the ceremonial park's middle; the build area's farthest corner from it */
+  /* the works quarter by the harbour (owner, 2026-10-18; 8a: where Valapo's ingots land and are worked): inland of the
+     harbour's eastern half, north of Avenue 1 and east of Izanitown */
+  addDistricts: [{ id: 'w1', type: 'misc', name: 'works quarter', poly: [[1150, 960], [1610, 800], [1640, 985], [1190, 1175]] }],
+  dens: { izani: 0.97, harbour: 0.95, riders: 0.9, res: [0.87, 0.74] },
+  lot: { side: 7, setback: 3, rear: 10, inset: 1.0, step: 3 },
+  /* the households: single houses in their compounds (a multi-family house would be three households) */
+  classes: { poor: [['ie-hut-garden', 0], ['ie-hut-scrap', 0]], middle: [['ie-house-uma', 0], ['ie-house-cross', 0]],
+    rich: [['ie-house-wealthy', 0]] },
+  tune: { voidMax: 45, voidIters: 24, sideSpacing: 50, interiorDepth: 7, interiorRounds: 3 },
+  /* what open ground is left is cultivated: kitchen orchards and taro (8c) */
+  farm: { cell: 24, crops: [{ crop: 'cloves', kind: 'orchard', w: 3 }, { crop: 'cacao', kind: 'orchard', w: 2 }, { crop: 'banana', kind: 'orchard', w: 2 },
+    { crop: 'coconut', kind: 'orchard', w: 1, maxH: 250 }, { crop: 'taro', kind: 'field', w: 1, maxSlope: 0.12 }] },
+  /* the ceremonial centre (owner's note on the park: "civic buildings should orient to this park and it should have at
+     least 4 envoy houses around it"): the palace, the square and the Governor's House at their markers, each facing the
+     park, its front parallel to the nearest side of the ring; then the envoy houses and the civic buildings round the ring
+     wherever they fit, facing it too */
   ring: { district: 'ceremonial park', gap: 8 },
   aligned: [
     { marker: 'PALACE', key: 'ip-palace', role: 'palace', name: 'Palace of Kautoa' },
-    { marker: 'A', key: 'ie-envoy', role: 'envoy', name: 'Envoy house A' },
-    { marker: 'B', key: 'ie-envoy', role: 'envoy', name: 'Envoy house B' },
-    { marker: 'C', key: 'ie-envoy', role: 'envoy', name: 'Envoy house C' },
-    { marker: 'D', key: 'ie-envoy', role: 'envoy', name: 'Envoy house D' },
-    { marker: 'E', key: 'ie-envoy', role: 'envoy', name: 'Envoy house E' },
-    { marker: 'SQUARE', key: 'ie-square', role: 'ceremonial square', name: 'Ceremonial square', ringed: true, over: ['Avenue 1', 'Avenue 3'] },
-    { marker: "IZIZ GOVERNOR'S HOUSE", key: 'vern_governor_palace', role: 'governor', name: "Governor's House (the old)" }
+    { marker: 'CEREMONIAL SQUARE', key: 'ie-square', role: 'ceremonial square', name: 'Ceremonial square', ringed: true, over: 'auto' },
+    { marker: 'GOVERNOR HOUSE', key: 'vern_governor_palace', role: 'governor', name: "Governor's House (the old)" }
   ],
-  /* landmarks at a marker or a district (the first that fits, hunted outward) */
+  ringAround: [{ key: 'ie-envoy', role: 'envoy', count: 5 }, { key: 'ie-hall', role: 'council hall', count: 1 }, { key: 'ie-school', role: 'school', count: 1 },
+    { key: 'ie-healer', role: 'healer', count: 1 }, { key: 'ie-house-chief', role: "chief's house", count: 2 }],
   fixed: [
-    { marker: 'QUARRIES', keys: ['ie-quarry', 'ie-quarry', 'ie-quarry'], role: 'quarry', spread: 60 },
-    { marker: 'SALT WORKS', keys: ['ie-saltworks', 'ie-saltworks', 'ie-saltworks', 'ie-saltworks'], role: 'salt works', spread: 50 },
-    /* no Islander caravanserai: the guest house (an inn) stands for it (KNOWN_ISSUES.md) */
-    { marker: 'CARAVANSERAI', keys: ['ie-guesthouse', 'ie-warehouse', 'ie-pens'], role: 'caravanserai', spread: 40 },
-    { district: 'Funerary 1', keys: ['ie-temple'], role: 'ancestor temple' }
+    { marker: 'QUARRIES', keys: ['ie-quarry', 'ie-quarry'], role: 'quarry', spread: 40 },
+    { marker: 'SALT WORKS', keys: ['ie-saltworks', 'ie-saltworks', 'ie-saltworks'], role: 'salt works', spread: 40 },
+    { district: 'Funerary 1', keys: ['ie-temple'], role: 'ancestor temple' },
+    /* the caravanserai by Ridertown (owner, 2026-10-18), inside it near the west gate where Avenue 8 leaves the town: the
+       Islanders have none, so the guest house (an inn), a warehouse, the stock pens and a byre stand for it */
+    { at: [-110, 1185], keys: ['ie-guesthouse', 'ie-warehouse', 'ie-pens', 'ie-byre'], role: 'caravanserai', name: 'Caravanserai', spread: 35 }
   ],
-  /* the native military round Warrior's Square: barracks and the war-canoe captains' halls along its sides, watch towers
-     at its corners, all facing the square */
-  squareRing: { district: "Warrior's Square", sides: ['ie-barracks', 'ie-house-long', 'ie-barracks', 'ie-barracks', 'ie-house-long', 'ie-barracks'], corners: 'ie-watchtower', inset: 4 },
-  markets: { 'Market 1': { keys: ['ie-market', 'ie-market', 'ie-trader', 'ie-chandler', 'ie-kava-house'], gap: 14 },
-    'Market 2': { keys: ['ie-market', 'ie-market', 'ie-trader', 'ie-weaver', 'ie-potter', 'ie-kava-house'], gap: 16 },
-    'Market 3': { keys: ['ie-market', 'ie-trader', 'ie-chandler'], gap: 14 } },
-  /* the avenues the brief asks for (to draw): rings round these, and the western loop (routed over the ground) */
-  rings: ['Market 2', 'Market 3', 'Park 3'],
-  routes: [{ name: 'Avenue Market 3 - Park 2', from: 'Market 3', to: 'Park 3' }, { name: 'Avenue Park 2 - Market 2', from: 'Park 3', to: 'Market 2' }],
-  /* the highways beyond the wall start at three gates (PLAN 8a): a spur out through the wall, the rest a world record */
-  gates: [{ name: 'North Gate', avenue: 'Avenue 7', end: 'last', toward: 'beast rider territory' },
-    { name: 'West Gate', avenue: 'Avenue 8', end: 'last', toward: 'the western fishing villages' },
-    { name: 'East Gate', avenue: 'Avenue 10', end: 'last', toward: 'the eastern fishing villages' }],
-  civic: [{ key: 'ie-school', near: 'res' }, { key: 'ie-school', near: 'res' }, { key: 'ie-school', near: 'riders' }, { key: 'ie-healer', near: 'res' },
-    { key: 'ie-healer', near: 'harbour' }, { key: 'ie-healer', near: 'res' }, { key: 'ie-hall', near: 'res' }, { key: 'ie-hall', near: 'res' }, { key: 'ie-hall', near: 'riders' },
-    { key: 'ie-granary-great', near: 'res' }, { key: 'ie-granary-great', near: 'res' }, { key: 'ie-temple', near: 'res' }, { key: 'ie-windmill', near: 'works' },
-    { key: 'ie-windmill', near: 'res' }],
-  /* the harbours (PLAN 8a): their shore pieces, then the vessels moored off them */
+  markets: { 'Market 1': { keys: ['ie-market', 'ie-market', 'ie-trader', 'ie-chandler', 'ie-kava-house'], gap: 10 },
+    'Market 2': { keys: ['ie-market', 'ie-trader', 'ie-weaver', 'ie-potter'], gap: 10 } },
+  rings: [], routes: [],
+  /* a gate where an avenue ends at the build area's edge, a spur out through the wall (named by its side) */
+  gates: 'auto',
+  civic: [{ key: 'ie-granary-great', near: 'res' }, { key: 'ie-windmill', near: 'res' }, { key: 'ie-healer', near: 'harbour' }, { key: 'ie-bakehouse', near: 'res' }],
+  /* the harbour (the owner's note: "military east, trade middle, fishing west"): its shore in thirds, west to east */
   harbours: [
-    { district: 'military harbor', shore: ['ie-canoeshed', 'ie-canoeshed', 'ie-canoeshed', 'ie-canoeshed', 'ie-dockyard', 'ie-canoeshed', 'ie-canoeshed'],
-      vessels: [['islanderDrua', 3], ['islanderKorakora', 3], ['islanderKarakoa', 3], ['islanderLanong', 2]], use: 'naval' },
-    { district: 'Harbor', shore: ['ie-quay', 'ie-fishdock', 'ie-quay', 'ie-fishdock', 'ie-harbourmaster', 'ie-quay', 'ie-fishdock', 'ie-beacon', 'ie-fishdock', 'ie-quay', 'ie-fishdock', 'ie-ferry'],
-      vessels: [['islanderOruwa', 8], ['islanderLakatoi', 5], ['vothDhow', 2], ['vothJunk', 1], ['vothHulk', 1], ['vothBarge', 1], ['hykCorbita', 2], ['hykGalley', 1], ['hykPearl', 1],
-        ['izizDhoni', 2], ['izizLighter', 1], ['izizTurtle', 1], ['beastWaa', 2], ['beastRookery', 1], ['salvageTug', 1]], use: 'civilian', landing: true }
+    { district: 'harbor', part: [0, 1 / 3], shore: ['ie-fishdock', 'ie-fishdock', 'ie-ferry', 'ie-fishdock'],
+      vessels: [['islanderOruwa', 8], ['islanderLakatoi', 4]], use: 'fishing' },
+    { district: 'harbor', part: [1 / 3, 2 / 3], shore: ['ie-quay', 'ie-harbourmaster', 'ie-quay', 'ie-beacon', 'ie-quay'],
+      inland: [['ie-warehouse', 'cargo shed'], ['ie-warehouse', 'cargo shed'], ['ie-smithy', 'iron works'], ['ie-smithy', 'iron works']],
+      vessels: [['vothDhow', 2], ['vothJunk', 1], ['vothHulk', 1], ['vothBarge', 1], ['hykCorbita', 1], ['hykGalley', 1], ['hykPearl', 1],
+        ['izizDhoni', 2], ['izizLighter', 1], ['izizTurtle', 1], ['beastWaa', 2], ['beastRookery', 1], ['salvageTug', 1], ['islanderLakatoi', 2]], use: 'civilian', landing: true },
+    { district: 'harbor', part: [2 / 3, 1], shore: ['ie-canoeshed', 'ie-canoeshed', 'ie-dockyard', 'ie-canoeshed'],
+      inland: [['ie-barracks', 'barracks'], ['ie-barracks', 'barracks'], ['ie-watchtower', 'watch tower']],
+      vessels: [['islanderDrua', 3], ['islanderKorakora', 2], ['islanderKarakoa', 2], ['islanderLanong', 2]], use: 'naval' }
   ],
-  /* beyond the planning square (PLAN 8a): world records the open world places later */
   beyond: [
-    { kind: 'farm ring', note: 'farms and orchards round the wall, outside the planning square (8c: rice, cloves, cacao)', ring: [800, 2600], count: 40 },
+    { kind: 'farm ring', note: 'farms and orchards round the wall (8c: rice paddies, cloves, cacao)', ring: [300, 1800], count: 40 },
     { kind: 'fishing village', note: 'small fishing villages along the coast highways (8a), placed in a later step', count: 4 },
-    { kind: 'highway', note: 'west along the coast from the West Gate', from: 'West Gate' },
-    { kind: 'highway', note: 'east along the coast from the East Gate', from: 'East Gate' },
-    { kind: 'highway', note: 'north past Ridertown to beast rider territory', from: 'North Gate' }
+    { kind: 'highway', note: 'the roads beyond the gates: west and east along the coast, north to beast rider territory (8a)', from: 'the gates' }
   ]
 };
 
 ISLE.PROG.Valapo = {
-  cell: 2.5, half: 4400, gridCell: 5, wall: false, maxSlope: 0.3, maxDrop: 5, village: true,
-  centre: [420, -1580], reach: 2600,
-  /* the open village (8b), about a third of Kautoa's size (owner, 2026-10-18): the build area is the dense part; it fades
-     to suburbs and then farms for this far beyond it */
-  fringe: 900,
+  /* the owner's redrawing (2026-10-18): no build area drawn. Buildings keep close to the shore and the avenues and infill
+     outward from the village's centre (the village hall) until the village holds about a third of Kautoa (about 2,000):
+     the zone is the drawing's outline grown by `zonePad`, the frontage thinning from the centre out (`dens.res` over
+     `reach`) and away from the shore, the avenues and the landmarks (the hug). Its parks are white sand beaches */
+  cell: 2.5, half: 4400, gridCell: 5, wall: false, maxSlope: 0.34, maxDrop: 8,
+  zoneFrom: 'drawing', zonePad: 420, centreMarker: 'VILLAGE HALL', reach: 900,
+  parksAre: 'beach',
   addDistricts: [],
-  dens: { harbour: 0.55, naval: 0.6, res: [0.36, 0.08], fringe: [0.12, 0.03] },
-  hug: { r0: 55, r1: 140, floor: 0.03, roles: ['res', 'fringe'] },
-  tune: { voidMax: 90, voidIters: 12, sideSpacing: 90 },
-  /* the farmland (8c: sugar cane and cotton on the dry savanna, coffee on the cooler upland, sweet potato) */
+  /* the village grows from the centre: built ground within grow.R of the village hall, or near the shore and the avenues */
+  grow: { R: 270, hug: 65 },
+  dens: { harbour: 0.9, res: [0.95, 0.7] },
+  lot: { side: 5, setback: 2.5, rear: 7, inset: 1.0, step: 3 },
+  classes: { poor: [['ie-hut-garden', 0], ['ie-hut-scrap', 0]], middle: [['ie-house-uma', 0], ['ie-house-cross', 0]], rich: [['ie-house-wealthy', 0]] },
+  tune: { voidMax: 45, voidIters: 18, sideSpacing: 50, interiorDepth: 9, interiorRounds: 2 },
+  /* the farmland on what open ground is left (8c: sugar cane and cotton on the dry savanna, coffee upland, sweet potato) */
   farm: { cell: 24, crops: [{ crop: 'sugar cane', kind: 'field', w: 4, maxSlope: 0.12 }, { crop: 'cotton', kind: 'field', w: 3, maxSlope: 0.12 },
     { crop: 'coffee', kind: 'orchard', w: 3, minH: 180 }, { crop: 'sweet potato', kind: 'field', w: 1 }, { crop: 'coconut', kind: 'orchard', w: 1, maxH: 120 },
     { crop: 'banana', kind: 'orchard', w: 1 }] },
   aligned: [],
   fixed: [
     { marker: 'VILLAGE HALL', keys: ['ie-hall'], role: 'village hall' },
-    { marker: 'MILITARY', keys: ['ie-barracks', 'ie-watchtower', 'ie-barracks'], role: 'garrison', spread: 30 },
-    { district: 'Funerary 1', keys: ['ie-temple'], role: 'ancestor temple' }
+    { district: 'Funerary 1', keys: ['ie-temple'], role: 'ancestor temple' },
+    /* marker A, the owner's note "caravanserai": the Islanders have none, so the guest house, a warehouse and pens */
+    { marker: 'A', keys: ['ie-guesthouse', 'ie-warehouse', 'ie-pens'], role: 'caravanserai', name: 'Caravanserai', spread: 30 }
   ],
-  markets: { 'Market 1': { keys: ['ie-market', 'ie-trader', 'ie-chandler', 'ie-market', 'ie-kava-house'], gap: 14 } },
+  markets: { 'Market 1': { keys: ['ie-market', 'ie-trader', 'ie-chandler', 'ie-kava-house'], gap: 8 },
+    'Market 2': { keys: ['ie-market', 'ie-trader', 'ie-potter'], gap: 8 } },
   rings: [], routes: [], gates: [],
-  civic: [{ key: 'ie-school', near: 'res' }, { key: 'ie-healer', near: 'res' }, { key: 'ie-granary-great', near: 'fringe' }, { key: 'ie-windmill', near: 'fringe' }],
+  civic: [{ key: 'ie-school', near: 'res' }, { key: 'ie-healer', near: 'res' }, { key: 'ie-granary-great', near: 'res' }, { key: 'ie-windmill', near: 'res' }],
   harbours: [
-    /* the harbour smelter (8b: bloomeries fired with charcoal; the ingots shipped to Kautoa): the kit has no bloomery yet,
-       its smithy stands for one (KNOWN_ISSUES.md) */
-    { district: 'harbor', shore: ['ie-quay', 'ie-fishdock', 'ie-canoeshed', 'ie-fishdock', 'ie-quay', 'ie-fishdock', 'ie-harbourmaster'],
+    /* the west harbour: the fishing fleet, the trade landing and the garrison's war-canoe shed */
+    { district: 'harbor', shore: ['ie-quay', 'ie-fishdock', 'ie-canoeshed', 'ie-fishdock', 'ie-harbourmaster'],
+      inland: [['ie-barracks', 'garrison'], ['ie-watchtower', 'garrison']],
+      vessels: [['islanderOruwa', 6], ['islanderLakatoi', 2], ['islanderKarakoa', 1]], use: 'civilian', landing: true },
+    /* the south harbour by Market 2: the smelter (8b: bloomeries fired with charcoal; the ingots shipped to Kautoa; the kit
+       has no bloomery yet, its smithy stands for one) and the ingot store */
+    { district: 'harbor 2', shore: ['ie-quay', 'ie-fishdock', 'ie-quay'],
       inland: [['ie-smithy', 'smelter'], ['ie-smithy', 'smelter'], ['ie-warehouse', 'ingot store']],
-      vessels: [['islanderOruwa', 6], ['islanderLakatoi', 3], ['islanderDrua', 1], ['islanderKarakoa', 1]], use: 'civilian', landing: true }
+      vessels: [['islanderLakatoi', 3], ['islanderOruwa', 3], ['islanderDrua', 1]], use: 'civilian' }
   ],
   beyond: [
-    { kind: 'iron mine camp', note: 'the iron mining settlement in the mountains 12-18 km south-west (8b), on a kits/resources iron node, grade x1 (the owner\'s call)',
+    { kind: 'iron mine camp', note: "the iron mining settlement in the mountains 12-18 km south-west (8b), on a kits/resources iron node, grade x1, the owner's call",
       box: [[-13000, 9000], [-5000, 17000]], minH: 700, node: 'node-iron-medium' },
     { kind: 'cart road', note: 'the cart road down from the mine camp to the harbour smelter, about 15-20 km (8b)', from: 'iron mine camp', to: 'smelter' },
-    { kind: 'farms', note: 'the farms beyond the suburbs, outside the planning square (8b, 8c: coffee upland, sugar cane, cotton)', ring: [1200, 3000], count: 25 }
+    { kind: 'farms', note: 'the farms beyond the village (8b, 8c: coffee upland, sugar cane, cotton)', ring: [300, 2500], count: 25 }
   ]
 };

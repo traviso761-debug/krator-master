@@ -15,6 +15,9 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 const HERE = path.join(__dirname, '..'), FULL = path.join(HERE, 'site', 'isle-site.full.json'), SITE = path.join(HERE, 'site', 'isle-site.json');
 const arg = (k, d) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : d; };
 const WRITE = process.argv.includes('--write'), COAST = 300;
+/* Superseded (2026-10-18): the owner redrew both towns at their size in the planner, so the site file no longer holds a
+   scaled drawing. Writing would replace those drawings with a scaled copy of the old full-size one: --force only */
+if (WRITE && !process.argv.includes('--force')) { console.error('scale-site.js: both towns are now the owner drawings at size; --write --force to overwrite them anyway'); process.exit(1); }
 global.window = global;
 vm.runInThisContext(fs.readFileSync(path.join(HERE, 'dist', 'isle-city.plan.js'), 'utf8'), { filename: 'isle-city.plan.js' });
 ISLE.initWorld();

@@ -31,7 +31,10 @@
       has added since; one shared list in settlements/iziz is a follow-up (Verge's misses 71a-c and 73b-c).
 - [ ] **City page: headless verify draws fewer pieces** in full for its screenshots (the nearest 600): software GL times
       out on the full near set.
-- [ ] **City page: the scaled drawing's coast pieces are snapped by a rule** (`tools/scale-site.js`); the owner checks
-      them in the planner.
+- [ ] **City page: the first drawing's programme items not in the redrawing** are left out until the owner draws them:
+      Warrior's Square (the native military stands in the harbour's eastern third instead), Market 3, Park 2 and its
+      loop, the envoy markers (the envoys are placed round the ring).
+- [ ] **City page: Valapo's raised beach** (the owner's ground edits) stands as a sand bar in the shallows south of the
+      village; it is what the strokes make of the sea floor there.
 - [ ] **The in-app browser pane can stall** loading this page while several world pages are open in other tabs (GPU).
       Close them first. Headless and alone it loads in under a second.

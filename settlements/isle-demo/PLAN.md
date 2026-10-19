@@ -80,12 +80,10 @@ the latest Voth viewer as the base.
   re-extract must keep the new name (`openworld/isle-demo/source/settlements.json`).
 - **P6 is done** (2026-10-18): `dist/isle-city.html`, both towns on core/city from section 8 (this folder's `README.md`,
   "The city page").
-  - **The scale changed** (owner): the ceremonial park was to be two or three times the palace, not eight. Each town's
-    drawing is scaled toward its harbour, Kautoa 0.35 and Valapo 0.363 (its build area a third of Kautoa's), the coast
-    pieces put back on the shore (`tools/scale-site.js`; the full-size drawing kept as `site/isle-site.full.json`).
-  - **About half the town is farmland** (owner): houses hug the coast, the landmarks and the avenues; the rest is paddy,
-    orchard and field by 8c's crops.
-  - Kautoa about 1,100 buildings and 4,900 people, Valapo about 340 and 1,540 (owner: about 5,000, Valapo a third).
+  - **The owner redrew both towns at their size** (the first drawing's ceremonial park was eight times the palace;
+    the full-size drawing is kept as `site/isle-site.full.json`). Kautoa about 6,000 people with at least two thirds of
+    its build area built (houses in walled compounds); Valapo about a third of it, grown from the village hall along the
+    shore and the avenues, its parks white sand beaches, the owner's ground edits replayed.
   - `verify.py dist/isle-city.html --assert` and `node tests/test-isle-city.js`: every check of section 8 per town, with
     negatives. Stand-ins and gaps: `KNOWN_ISSUES.md`.
   - Ridertown's buildings go in a new set, **kits/beast-riders** (owner): the catalog's Girder and Mav's Refuge buildings
@@ -367,8 +365,8 @@ alone).
 
 The drawings are in `site/isle-site.json`. Coordinates are each town's frame (metres, x east, z south, so north is
 -z). **The coordinates below are the owner's full-size drawing** (`site/isle-site.full.json`); since P6 the site file
-holds it scaled toward each harbour (Kautoa 0.35, Valapo 0.363: the status above), so a district's size here is about
-three times what the page draws. Every drawn avenue is 12 m wide. What the owner asked for that is not drawn yet is marked **to draw**: P6 adds it
+holds the owner's redrawings at the towns' size (the status above): the districts and markers named here are the
+first drawing's, and some are gone from the redrawing (Warrior's Square, Market 3, Park 2's loop). Every drawn avenue is 12 m wide. What the owner asked for that is not drawn yet is marked **to draw**: P6 adds it
 as records, or the owner draws it in the planner.
 
 ### 8a. Kautoa, the walled city

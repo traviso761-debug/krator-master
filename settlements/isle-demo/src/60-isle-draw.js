@@ -151,6 +151,27 @@ DRAW.records = function (R) {
   var foot = new THREE.InstancedMesh(fg, new THREE.MeshLambertMaterial({ color: 0x7b7366 }), Math.max(1, fl.length)), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
   fl.forEach(function (L, i) { q.setFromEuler(e.set(0, L.ry, 0)); m4.compose(new THREE.Vector3(L.x, L.y + 0.05, L.z), q, new THREE.Vector3(L.w * 0.92, L.drop + 0.6, L.d * 0.92)); foot.setMatrixAt(i, m4); });
   foot.count = fl.length; foot.name = 'footings'; scene.add(foot); DRAW.stats.footings = fl.length;
+  /* the compound walls: a low stone wall round each house's lot (its yard), a gate's gap in the side toward the street */
+  var yl = R.lots.filter(function (L) { return L.yard && L.yard.hw > L.w / 2 + 1.5 && /^(poor|middle|rich|manor|vpoor|vmiddle|vrich)$/.test(L.cls); });
+  var wg = new THREE.BoxGeometry(1, 1, 1); wg.translate(0, 0.5, 0);
+  var walls = new THREE.InstancedMesh(wg, new THREE.MeshLambertMaterial({ color: 0x8c8170 }), Math.max(1, yl.length * 5)), nw = 0, G = ISLE.cur.G;
+  var seg = function (a, b) {
+    var dx = b[0] - a[0], dz = b[1] - a[1], len = Math.hypot(dx, dz); if (len < 0.5) return;
+    var mx = (a[0] + b[0]) / 2, mz = (a[1] + b[1]) / 2, y = Math.min(G.h(a[0], a[1]), G.h(b[0], b[1]), G.h(mx, mz)) - 0.3;
+    q.setFromEuler(e.set(0, Math.atan2(-dz, dx), 0)); m4.compose(new THREE.Vector3(mx, y, mz), q, new THREE.Vector3(len, 1.4 + Math.abs(G.h(a[0], a[1]) - G.h(b[0], b[1])) / 2, 0.45));
+    walls.setMatrixAt(nw++, m4);
+  };
+  yl.forEach(function (L) {
+    var Y = L.yard, f = [Math.sin(L.ry), Math.cos(L.ry)], C = [];
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (s2) { C.push([Y.c[0] + Y.u[0] * Y.hw * s2[0] + Y.v[0] * Y.hd * s2[1], Y.c[1] + Y.u[1] * Y.hw * s2[0] + Y.v[1] * Y.hd * s2[1]]); });
+    for (var i = 0; i < 4; i++) {
+      var a = C[i], b = C[(i + 1) % 4], mid = [(a[0] + b[0]) / 2 - Y.c[0], (a[1] + b[1]) / 2 - Y.c[1]];
+      if (mid[0] * f[0] + mid[1] * f[1] > 0.5) {        /* the street side: two runs with a 3 m gate between */
+        var t = 1.5 / Math.hypot(b[0] - a[0], b[1] - a[1]); seg(a, [a[0] + (b[0] - a[0]) * (0.5 - t), a[1] + (b[1] - a[1]) * (0.5 - t)]); seg([a[0] + (b[0] - a[0]) * (0.5 + t), a[1] + (b[1] - a[1]) * (0.5 + t)], b);
+      } else seg(a, b);
+    }
+  });
+  walls.count = nw; walls.name = 'compound walls'; scene.add(walls); DRAW.stats.compoundWalls = yl.length;
   DRAW.near(null, true);
 };
 DRAW.matOf = function (L, s) {

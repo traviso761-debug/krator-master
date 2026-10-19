@@ -23,9 +23,31 @@ ISLE.city = function (town, o) {
   var dims = function (key, v) { var D = o.dims(key, v); if (!D) { OUT.missing[key] = (OUT.missing[key] || 0) + 1; return null; } return { key: key, v: v || 0, w: D.w, d: D.d, h: D.h }; };
   /* the districts with their roles (the site file's and the brief's), the markers */
   var DIST = S.districts.concat(PR.addDistricts || []).map(function (d) { return { id: d.id, name: d.name, type: d.type, role: ISLE.ROLES(d), poly: d.poly }; });
-  var dist = function (name) { for (var i = 0; i < DIST.length; i++) if (DIST[i].name === name) return DIST[i]; return null; };
-  var marker = function (id) { for (var i = 0; i < S.markers.length; i++) if (S.markers[i].id === id) return S.markers[i]; return null; };
+  /* names as the owner typed them: matched without case or stray spaces ("harbor ", "Market 1") */
+  var same = function (a, b) { return String(a).trim().toLowerCase() === String(b).trim().toLowerCase(); };
+  var dist = function (name) { for (var i = 0; i < DIST.length; i++) if (same(DIST[i].name, name)) return DIST[i]; return null; };
+  var marker = function (id) { for (var i = 0; i < S.markers.length; i++) if (same(S.markers[i].id, id)) return S.markers[i]; return null; };
+  /* a town whose parks are beaches (the owner's Valapo: "the parks will be white sand beaches") */
+  if (PR.parksAre) DIST.forEach(function (d) { if (d.role === 'park') d.role = PR.parksAre; });
   var ZONE = DIST.filter(function (d) { return d.role === 'zone'; })[0];
+  /* no build area drawn (zoneFrom 'drawing'): the outline of everything drawn (districts, avenues, markers), grown by zonePad */
+  if (!ZONE && PR.zoneFrom === 'drawing') {
+    var all = [];
+    S.districts.forEach(function (d) { all = all.concat(d.poly); }); S.avenues.forEach(function (a) { all = all.concat(a.pts); }); S.markers.forEach(function (m) { all.push([m.x, m.z]); });
+    var hl = (function (pts) {
+      var Pp = pts.slice().sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }), cr = function (O, A, B) { return (A[0] - O[0]) * (B[1] - O[1]) - (A[1] - O[1]) * (B[0] - O[0]); }, lo = [], up = [], i2;
+      for (i2 = 0; i2 < Pp.length; i2++) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], Pp[i2]) <= 0) lo.pop(); lo.push(Pp[i2]); }
+      for (i2 = Pp.length - 1; i2 >= 0; i2--) { while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], Pp[i2]) <= 0) up.pop(); up.push(Pp[i2]); }
+      return lo.slice(0, -1).concat(up.slice(0, -1));
+    })(all);
+    ZONE = { id: 'zone', name: 'the drawing, grown ' + PR.zonePad + ' m', type: 'misc', role: 'zone', poly: KL.offsetConvex(hl, PR.zonePad, 6).map(function (p) { return [+p[0].toFixed(1), +p[1].toFixed(1)]; }) };
+    DIST.push(ZONE);
+  }
+  if (!PR.centre && PR.centreMarker) { var cm = marker(PR.centreMarker); if (cm) PR.centre = [cm.x, cm.z]; }
+  /* a programme without its own centre takes the ceremonial park's middle (else the build area's), its reach the build
+     area's farthest corner from it */
+  if (!PR.centre) { var pkc = PR.ring ? dist(PR.ring.district) : null; PR.centre = pkc ? KL.polyCentroid(pkc.poly) : KL.polyCentroid(ZONE.poly); }
+  if (!PR.reach) PR.reach = Math.max.apply(null, ZONE.poly.map(function (p) { return V.dist(p, PR.centre); }));
   var avenue = function (name) { for (var i = 0; i < S.avenues.length; i++) if (S.avenues[i].name === name) return S.avenues[i]; return null; };
   var centroid = function (P) { return KL.polyCentroid(P); };
   /* what a landmark must keep clear of before the streets exist: the drawn avenues and the rings to come (polylines) */
@@ -91,18 +113,42 @@ ISLE.city = function (town, o) {
      along the side's normal until it is clear of the ring avenue, then along the side */
   var aligned = function (A, park, gap) {
     var m = marker(A.marker); if (!m) { OUT.failed.push({ key: A.key, role: A.role, why: 'no marker ' + A.marker }); return null; }
+    /* over 'auto': the avenues that end at the marker (the square where the processional avenues meet it) */
+    var over = A.over !== 'auto' ? A.over : S.avenues.filter(function (av) { var e0 = av.pts[0], e1 = av.pts[av.pts.length - 1]; return Math.min(Math.hypot(e0[0] - m.x, e0[1] - m.z), Math.hypot(e1[0] - m.x, e1[1] - m.z)) < 90; }).map(function (av) { return av.name; });
+    var L = alignedAt(A, [m.x, m.z], park, gap, 160, over);
+    if (L) L.marker = A.marker;
+    return L;
+  };
+  /* the envoy houses and the civic buildings round the ring (the owner's note on the park): slots along each side of the
+     park, the sides' middles first, each a building facing the park wherever it fits near its slot */
+  var ringAround = function (list, park, gap) {
+    var slots = [], n = 0;
+    [0.5, 0.25, 0.75, 0.12, 0.88, 0.38, 0.62].forEach(function (f) { for (var i = 0; i < park.length; i++) slots.push(V.lerp(park[i], park[(i + 1) % park.length], f)); });
+    var used = slots.map(function () { return false; });
+    list.forEach(function (A) {
+      for (var c = 0; c < A.count; c++) {
+        var L = null;
+        for (var k = 0; k < slots.length && !L; k++) { if (used[k]) continue; L = alignedAt(A, slots[k], park, gap, 40, null, true); if (L) used[k] = true; }
+        if (L) n++; else OUT.failed.push({ key: A.key, role: A.role, why: 'no room round the ring' });
+      }
+    });
+    return n;
+  };
+  var alignedAt = function (A, p, park, gap, along, over, quiet) {
     var it = dims(A.key, 0); if (!it) return null;
-    var c = centroid(park), p = [m.x, m.z], best = null, bd = Infinity;
+    var c = centroid(park), best = null, bd = Infinity;
     for (var i = 0; i < park.length; i++) { var a = park[i], b = park[(i + 1) % park.length], d = segDist(p, a, b); if (d < bd) { bd = d; best = [a, b]; } }
     var t = V.norm(V.sub(best[1], best[0])), n = V.perp(t); if (V.dot(n, V.sub(c, best[0])) < 0) n = V.mul(n, -1);
     var ry = ryFacing(n), out = V.mul(n, -1), dl = V.dot(V.sub(p, best[0]), out);
     var need = gap + W + 4 + it.d / 2, base = V.add(p, V.mul(out, Math.max(0, need - dl)));
-    for (var q = 0; q <= 120; q += 10) for (var r = 0; r <= 220; r += 6) for (var sg = -1; sg <= 1; sg += 2) {
+    /* slid out from the ring (at most `along` / 2 + 20 m beyond the first clear line) and along its side (`along` m either way) */
+    for (var q = 0; q <= Math.min(120, along / 2 + 20); q += 10) for (var r = 0; r <= along; r += 6) for (var sg = -1; sg <= 1; sg += 2) {
       var pt = V.add(V.add(base, V.mul(t, sg * r)), V.mul(out, q));
-      var L = put(A.key, pt[0], pt[1], ry, { role: A.role, name: A.name, over: A.over });
-      if (L) { L.marker = A.marker; L.moved = +V.dist(pt, p).toFixed(1); return L; }
+      var L = put(A.key, pt[0], pt[1], ry, { role: A.role, name: A.name, over: over });
+      if (L) { L.moved = +V.dist(pt, p).toFixed(1); L.facesRing = true; return L; }
     }
-    OUT.failed.push({ key: A.key, role: A.role, at: p }); return null;
+    if (!quiet) OUT.failed.push({ key: A.key, role: A.role, at: p });
+    return null;
   };
   /* a market's stalls and halls: rows along the market's longest side, alternate rows facing each other */
   var market = function (D, M) {
@@ -146,6 +192,7 @@ ISLE.city = function (town, o) {
   var shoreOf = function (D) {
     var P = D.poly, pts = [], c = centroid(P), u = [1, 0], best = 0, xs = P.map(function (q) { return q[0]; }), zs = P.map(function (q) { return q[1]; });
     for (var i = 0; i < P.length; i++) { var l = V.dist(P[i], P[(i + 1) % P.length]); if (l > best) { best = l; u = V.norm(V.sub(P[(i + 1) % P.length], P[i])); } }
+    if (u[0] < 0) u = V.mul(u, -1);     /* the axis runs west to east */
     var x0 = Math.min.apply(null, xs) - 60, x1 = Math.max.apply(null, xs) + 60, z0 = Math.min.apply(null, zs) - 60, z1 = Math.max.apply(null, zs) + 60;
     for (var z = z0; z <= z1; z += 4) for (var x = x0; x <= x1; x += 4) {
       var y = h(x, z); if (y < 0.5 || y > 1.3) continue;
@@ -162,6 +209,9 @@ ISLE.city = function (town, o) {
   var harbour = function (H) {
     var D = dist(H.district); if (!D) { OUT.failed.push({ role: 'harbour', why: 'no district ' + H.district }); return; }
     var pts = shoreOf(D), placed = [], ki = 0, a = -Infinity;
+    /* a part of the district's shore (the owner's Kautoa: "military east, trade middle, fishing west"): its share of the
+       shore points along the axis, west to east */
+    if (H.part && pts.length) { var a0 = pts[0].a, a1 = pts[pts.length - 1].a; pts = pts.filter(function (q) { var f = (q.a - a0) / Math.max(1e-6, a1 - a0); return f >= H.part[0] && f <= H.part[1]; }); }
     for (var i = 0; i < pts.length && ki < H.shore.length; i++) {
       var key = H.shore[ki], it = dims(key, 0); if (!it) { ki++; continue; }
       if (pts[i].a < a) continue;
@@ -170,7 +220,7 @@ ISLE.city = function (town, o) {
       if (L) { L.harbour = H.use; placed.push(L); a = q.a + it.w + 14; ki++; }
     }
     if (ki < H.shore.length) OUT.failed.push({ role: 'harbour', name: D.name, why: (H.shore.length - ki) + ' shore pieces found no shore', shore: pts.length });
-    LOG['shore ' + D.name] = placed.length + ' of ' + H.shore.length + ' pieces on ' + pts.length + ' shore points';
+    LOG['shore ' + D.name.trim() + (H.part ? ' (' + H.use + ')' : '')] = placed.length + ' of ' + H.shore.length + ' pieces on ' + pts.length + ' shore points';
     /* inland of the shore: the works the harbour carries (Valapo's smelter) */
     var land = placed.length ? placed[0] : null;
     (H.inland || []).forEach(function (kr) {
@@ -217,12 +267,12 @@ ISLE.city = function (town, o) {
       }
       OUT.failed.push({ key: key, role: 'vessel', why: 'no mooring found', harbour: D.name });
     });
-    LOG['vessels ' + D.name] = n + ' of ' + list.length;
+    LOG['vessels ' + D.name.trim() + (H.part ? ' (' + H.use + ')' : '')] = n + ' of ' + list.length;
   };
 
   /* ---------------------------------------------------------------- the rules */
   var roleAt = function (p) {
-    var r = KCITY.site.roleAt(p, DIST, { skip: ['zone', 'misc', 'beach', 'ceremonial', 'park', 'market', 'warriors', 'funerary'] });
+    var r = KCITY.site.roleAt(p, DIST, { skip: ['zone', 'misc', 'beach', 'ceremonial', 'park', 'market', 'warriors', 'plaza', 'funerary'] });
     if (r) return r;
     if (PR.fringe && ZONE && !inPoly(p, ZONE.poly)) return 'fringe';
     return 'res';
@@ -234,11 +284,17 @@ ISLE.city = function (town, o) {
      and the routed loop), on a coarse grid made at the first lot; the frontage of the roles PR.hug names thins with it
      from r0 to r1, down to `floor`. What is left open is farmland (the fields, after the plan) */
   var HUG = null;
-  var hugGrid = function () {
+  /* fromSite: before the plan has ways or landmarks (step 0), from the drawing itself: its avenues and markers */
+  var hugGrid = function (fromSite) {
     var Hc = 20, hf = PR.half, n = Math.round(2 * hf / Hc) + 1, D = new Float32Array(n * n).fill(1e9), P = KL.plan(), i, j, k;
     var seedAt = function (x, z) { var a = Math.round((x + hf) / Hc), b = Math.round((z + hf) / Hc); if (a >= 0 && b >= 0 && a < n && b < n) D[b * n + a] = 0; };
-    P.ways.forEach(function (w) { if (w.cls === 'avenue' || w.cls === 'highway') KL.resample(w.pts, 10, false).forEach(function (q) { seedAt(q[0], q[1]); }); });
-    P.landmarks.forEach(function (L) { obbCorners(L.bo).concat([L.bo.c]).forEach(function (q) { seedAt(q[0], q[1]); }); });
+    if (fromSite) {
+      S.avenues.forEach(function (av) { KL.resample(av.pts, 10, false).forEach(function (q) { seedAt(q[0], q[1]); }); });
+      S.markers.forEach(function (m) { seedAt(m.x, m.z); });
+    } else {
+      P.ways.forEach(function (w) { if (w.cls === 'avenue' || w.cls === 'highway') KL.resample(w.pts, 10, false).forEach(function (q) { seedAt(q[0], q[1]); }); });
+      P.landmarks.forEach(function (L) { obbCorners(L.bo).concat([L.bo.c]).forEach(function (q) { seedAt(q[0], q[1]); }); });
+    }
     for (j = 0; j < n; j++) for (i = 0; i < n; i++) {
       var x = -hf + i * Hc, z = -hf + j * Hc;
       if (h(x, z) > 0.5 && (h(x + Hc, z) <= 0.5 || h(x - Hc, z) <= 0.5 || h(x, z + Hc) <= 0.5 || h(x, z - Hc) <= 0.5)) D[j * n + i] = 0;
@@ -271,8 +327,8 @@ ISLE.city = function (town, o) {
   var tune = {
     cell: PR.cell, rasterHalf: PR.half, mapHalf: PR.half, maxSlope: PR.maxSlope, exact: true,
     width: { avenue: W, main: 8, side: 5.5, alley: 3.2, highway: 10, lane: 4.5 },
-    lot: { side: 2.2, setback: 2, rear: 4, inset: 1.0, step: 3 },
-    classes: ISLE.CLASSES, fallback: ISLE.FALLBACK,
+    lot: PR.lot || { side: 2.2, setback: 2, rear: 4, inset: 1.0, step: 3 },
+    classes: (function () { var C = {}; for (var k in ISLE.CLASSES) C[k] = ISLE.CLASSES[k]; for (var j in (PR.classes || {})) C[j] = PR.classes[j]; return C; })(), fallback: ISLE.FALLBACK,
     civic: PR.civic.map(function (c) { return { key: c.key, v: 0, near: c.near }; }), civicSpacing: 260,
     voidMax: 60, voidIters: 18, voidBatch: 14, sideSpacing: 70, sideMax: 240, alleyFrac: 0.2, blindMax: 90, interiorDepth: 12, interiorRounds: 2,
     avenueSnap: 80, ringGap: 8, verge: 6, centre: C0, reach: PR.reach,
@@ -289,6 +345,18 @@ ISLE.city = function (town, o) {
       var zone = PR.fringe ? KL.offsetConvex(hull(ZONE.poly), PR.fringe, 6) : ZONE.poly;
       P.zone = zone;
       LOG.land = KCITY.site.zoneRaster(R, zone, { dry: 0.8, maxSlope: tune.maxSlope, h: h });
+      /* a village that grows from its centre (PR.grow, the owner's Valapo: "close to shoreline and avenues and infill as
+         needed ... going from the center out"): only ground within R of the centre, or within `hug` of the shore, an avenue
+         or a marker, is built on; R is the dial that sets the size */
+      if (PR.grow) {
+        var HG = hugGrid(true), c0 = PR.centre, cut = 0;
+        for (var jg = 0; jg < R.n; jg++) for (var ig = 0; ig < R.n; ig++) {
+          var kg = jg * R.n + ig; if (R.occ[kg] !== OCC.FREE) continue;
+          var xg = R.cx(ig), zg = R.cx(jg);
+          if (Math.hypot(xg - c0[0], zg - c0[1]) > PR.grow.R && HG.at(xg, zg) > PR.grow.hug) { R.occ[kg] = OCC.OUT; cut++; }
+        }
+        LOG.land -= cut; LOG.grow = 'within ' + PR.grow.R + ' m of the centre or ' + PR.grow.hug + ' m of the shore, an avenue or a marker';
+      }
       SL.minSpacing = KCITY.site.minSpacing();
     } },
     { name: 'landmarks', run: function () {
@@ -296,13 +364,14 @@ ISLE.city = function (town, o) {
       if (pk) AVOID.push({ name: 'ring ' + pk.name, pts: ringOf(pk.poly, PR.ring.gap).concat([ringOf(pk.poly, PR.ring.gap)[0]]) });
       (PR.rings || []).forEach(function (nm) { var D = dist(nm); if (D) { var r = ringOf(D.poly, tune.ringGap); AVOID.push({ name: 'ring ' + nm, pts: r.concat([r[0]]) }); } });
       if (pk) PR.aligned.forEach(function (A) { var L = aligned(A, pk.poly, PR.ring.gap); if (L) { n++; if (A.ringed) LOG.squareLot = L.id; } });
+      if (pk && PR.ringAround) { var nr = ringAround(PR.ringAround, pk.poly, PR.ring.gap); LOG.ringAround = nr; n += nr; }
       (PR.fixed || []).forEach(function (F) {
         var at = F.marker ? marker(F.marker) : null, D = F.district ? dist(F.district) : null;
-        var p = at ? [at.x, at.z] : D ? centroid(D.poly) : null; if (!p) { OUT.failed.push({ role: F.role, why: 'no ' + (F.marker || F.district) }); return; }
+        var p = F.at ? F.at : at ? [at.x, at.z] : D ? centroid(D.poly) : null; if (!p) { OUT.failed.push({ role: F.role, why: 'no ' + (F.marker || F.district) }); return; }
         var rs = rsOf('fixed:' + F.role);
         F.keys.forEach(function (key, i) {
           var a = rs.rr(0, Math.PI * 2), r = i ? (F.spread == null ? 40 : F.spread) * (0.6 + 0.4 * rs.rnd()) : 0, ry = rs.rr(0, Math.PI * 2);
-          if (hunt(key, p[0] + Math.cos(a) * r, p[1] + Math.sin(a) * r, [ry, ry + Math.PI / 2, ry + Math.PI], { role: F.role, name: F.marker || F.district, radius: 200, step: 7 })) n++;
+          if (hunt(key, p[0] + Math.cos(a) * r, p[1] + Math.sin(a) * r, [ry, ry + Math.PI / 2, ry + Math.PI], { role: F.role, name: F.name || F.marker || F.district, radius: 200, step: 7 })) n++;
         });
       });
       if (PR.squareRing) { var Dq = dist(PR.squareRing.district); if (Dq) n += squareRing(Dq, PR.squareRing); }
@@ -314,7 +383,7 @@ ISLE.city = function (town, o) {
       var P = KL.plan();
       DIST.forEach(function (d) {
         if (d.role === 'ceremonial' || d.role === 'park' || d.role === 'beach' || d.role === 'funerary') SL.R.eachInPoly(d.poly, function (k) { if (SL.R.occ[k] === OCC.FREE) SL.R.occ[k] = OCC.GREEN; });
-        else if (d.role === 'market' || d.role === 'warriors') SL.R.eachInPoly(d.poly, function (k) { if (SL.R.occ[k] === OCC.FREE) SL.R.occ[k] = OCC.HARD; });
+        else if (d.role === 'market' || d.role === 'warriors' || d.role === 'plaza') SL.R.eachInPoly(d.poly, function (k) { if (SL.R.occ[k] === OCC.FREE) SL.R.occ[k] = OCC.HARD; });
         if (d.role !== 'zone') P.districts.push({ kind: d.role, name: d.name, poly: d.poly, born: 2, art: [] });
       });
     } },
@@ -338,9 +407,25 @@ ISLE.city = function (town, o) {
     { name: 'highways', run: function () {
       /* the start of each highway beyond the wall (PLAN 8a): a spur from its avenue's end out through the wall */
       LOG.spurs = 0;
+      /* gates 'auto': every avenue end within 150 m of the build area's edge, heading out, gets a gate, named by the side of
+         the town it opens on (North Gate, West Gate...; a second on one side is "2") */
+      if (PR.gates === 'auto') {
+        var zc = KL.polyCentroid(ZONE.poly), Zp = ZONE.poly, edgeD = function (q) { var d = Infinity; for (var i = 0; i < Zp.length; i++) d = Math.min(d, segDist(q, Zp[i], Zp[(i + 1) % Zp.length])); return d; };
+        var found = [], seen = {};
+        S.avenues.forEach(function (A) {
+          var P = A.pts.filter(function (p, i) { return !i || V.dist(p, A.pts[i - 1]) > 1; }); if (P.length < 2) return;
+          [[P[P.length - 1], P[P.length - 2]], [P[0], P[1]]].forEach(function (ep) {
+            var e = ep[0], d = V.norm(V.sub(e, ep[1])); if (edgeD(e) > 150 || V.dot(d, V.sub(e, zc)) <= 0 || h(e[0], e[1]) < 2) return;
+            var b = Math.atan2(e[0] - zc[0], -(e[1] - zc[1])) * 180 / Math.PI, side = b < -135 || b >= 135 ? 'South' : b < -45 ? 'West' : b < 45 ? 'North' : 'East';
+            seen[side] = (seen[side] || 0) + 1;
+            found.push({ name: side + ' Gate' + (seen[side] > 1 ? ' ' + seen[side] : ''), avenue: A.name, end: e, dir: d });
+          });
+        });
+        PR.gates = found;
+      }
       (PR.gates || []).forEach(function (Gt) {
         var A = avenue(Gt.avenue); if (!A) return;
-        var P = A.pts.filter(function (p, i) { return !i || V.dist(p, A.pts[i - 1]) > 1; }), e = P[P.length - 1], d = V.norm(V.sub(e, P[P.length - 2])), pts = [e];
+        var P = A.pts.filter(function (p, i) { return !i || V.dist(p, A.pts[i - 1]) > 1; }), e = Gt.end || P[P.length - 1], d = Gt.dir || V.norm(V.sub(e, P[P.length - 2])), pts = [e];
         for (var s = 20; s <= 260; s += 20) { var q = V.add(e, V.mul(d, s)); if (SL.R.idx(q[0], q[1]) < 0 || h(q[0], q[1]) < 1) break; pts.push(q); }
         if (pts.length > 3) { var w = SL.addWay('highway', pts, 4, { tag: Gt.name, stamp: true }); w.gate = Gt.name; Gt._way = w; Gt._end = pts[pts.length - 1]; LOG.spurs++; }
       });
@@ -349,7 +434,7 @@ ISLE.city = function (town, o) {
       if (!PR.wall) return;
       var T = tune.wall, P = KL.plan(), ways = P.ways.filter(function (w) { return w.cls === 'avenue' || w.cls === 'highway'; });
       var chain = ZONE.poly.concat([ZONE.poly[0]]);
-      var named = (PR.gates || []).map(function (Gt) { var A = avenue(Gt.avenue), e = A.pts[A.pts.length - 1]; return { x: e[0], z: e[1], marker: Gt.avenue, name: Gt.name }; });
+      var named = (PR.gates || []).map(function (Gt) { var A = avenue(Gt.avenue), e = Gt.end || A.pts[A.pts.length - 1]; return { x: e[0], z: e[1], marker: Gt.avenue, name: Gt.name }; });
       var Wr = P.wallRec = KCITY.site.wall(chain, ways, { towerGap: T.towerGap, clear: T.clear, gateFind: T.gateFind, named: named });
       Wr.nodes.forEach(function (n) { n.gx = n.x; n.gz = n.z; if (n.kind === 'gate' && n.way) n.towerOff = ((tune.width[n.way.cls] || 10) + T.gatePass) / 2 + T.gateTower / 2; });
       /* the sea is the harbour's wall: no run, tower or gate stands where the ground is under it */
@@ -396,13 +481,39 @@ ISLE.city = function (town, o) {
     finish: [function () { (PR.harbours || []).forEach(moor); }, function () { fields(); }]
   });
   var t0 = Date.now(), P = K.run(); LOG.ms = Date.now() - t0; LOG.stepMs = P.stats.ms;
+  /* how built the build area is (owner, 2026-10-18: at least two thirds buildings and streets, not farms, orchards or empty
+     ground), on the plan's own raster: every cell of the build area on land (over 0.8 m, however steep), counted as built
+     (a lot: the house and its compound yard; a landmark, market, plaza or the wall's band; a street or alley; an alley
+     entrance) or open (free ground, which the farmland takes; parks; ground too steep to build). `roofs` is the share the
+     buildings' own footprints cover. */
+  var cover = (function () {
+    var R = SL.R, c = { land: 0, built: 0, streets: 0, verges: 0, lots: 0, hard: 0, green: 0, free: 0, out: 0 }, Zp = ZONE.poly;
+    R.eachInPoly(Zp, function (k, i, j) {
+      if (h(R.cx(i), R.cx(j)) <= 0.8) return;
+      c.land++; var v = R.occ[k];
+      if (v === OCC.STREET || v === OCC.ALLEY) { c.built++; c.streets++; }
+      else if (v === OCC.LOT || v === OCC.RESERVE) { c.built++; c.lots++; }
+      else if (v === OCC.HARD) { c.built++; c.hard++; }
+      else if (v === OCC.GREEN) c.green++;
+      /* a street's verge: open ground within 2.5 m of its carriageway's edge (the kerb, the gaps between frontages) */
+      else if (v === OCC.FREE && R.sdw[k] >= 0 && P.ways[R.sdw[k]] && R.sd[k] <= P.ways[R.sdw[k]].w / 2 + 2.5) { c.built++; c.verges++; }
+      else if (v === OCC.FREE) c.free++; else c.out++;
+    });
+    var a = R.c * R.c, roofs = 0;
+    P.lots.forEach(function (L) { if (L.died == null && L.bo && inPoly([L.x, L.z], Zp)) roofs += L.w * L.d; });
+    var r = function (n) { return +(n * a / 1e6).toFixed(3); };
+    return { landKm2: r(c.land), share: +(c.built / Math.max(1, c.land)).toFixed(3), streets: +(c.streets / c.land).toFixed(3), verges: +(c.verges / c.land).toFixed(3), lots: +(c.lots / c.land).toFixed(3),
+      landmarksAndMarkets: +(c.hard / c.land).toFixed(3), parks: +(c.green / c.land).toFixed(3), open: +(c.free / c.land).toFixed(3), steepOrOut: +(c.out / c.land).toFixed(3),
+      roofs: +(roofs / (c.land * a)).toFixed(3) };
+  })();
+  LOG.cover = cover;
 
   /* ---------------------------------------------------------------- the records */
   var kitOf = function (key) { var D = o.dims(key, 0); return D ? D.kit : null; };
   var lots = P.lots.filter(function (L) { return L.died == null && L.bo; }).map(function (L) {
     return { id: town + '.' + L.id, lot: L.id, marker: L.marker || null, moved: L.moved == null ? null : L.moved, town: town, kit: kitOf(L.key), key: L.key, v: L.v || 0, cls: L.cls, role: L.role || null, name: L.name || null,
       district: L.cls === 'landmark' ? (L.name || L.role) : roleAt([L.x, L.z]), x: +L.x.toFixed(2), z: +L.z.toFixed(2), y: +L.y.toFixed(2), ry: +L.ry.toFixed(4),
-      w: L.w, d: L.d, h: L.h, drop: L.drop == null ? null : +L.drop.toFixed(2), terrace: L.terrace || null, shore: !!L.shore, harbour: L.harbour || null, tag: L.tag || null, wealth: +(L.wealth || 0).toFixed(2), bo: L.bo };
+      w: L.w, d: L.d, h: L.h, yard: L.cls !== 'landmark' && L.lot ? { c: L.lot.c, u: L.lot.u, v: L.lot.v, hw: L.lot.hw, hd: L.lot.hd } : null, drop: L.drop == null ? null : +L.drop.toFixed(2), terrace: L.terrace || null, shore: !!L.shore, harbour: L.harbour || null, tag: L.tag || null, wealth: +(L.wealth || 0).toFixed(2), bo: L.bo };
   });
   /* the wall as pieces: runs of the kit's wall, towers and gates (its records, KCITY.site.wall) */
   var Wr = P.wallRec;
@@ -427,7 +538,8 @@ ISLE.city = function (town, o) {
   /* beyond the square: world records, placed later by the open world */
   (PR.beyond || []).forEach(function (B, i) {
     var R = { id: town + '.world' + i, town: town, kind: B.kind, note: B.note, placed: false };
-    if (B.from) { var g = (PR.gates || []).filter(function (Gt) { return Gt.name === B.from; })[0]; if (g && g._end) R.from = [+g._end[0].toFixed(1), +g._end[1].toFixed(1)]; else R.from = B.from; }
+    if (B.from === 'the gates') R.from = (PR.gates || []).filter(function (Gt) { return Gt._end; }).map(function (Gt) { return { gate: Gt.name, at: [+Gt._end[0].toFixed(1), +Gt._end[1].toFixed(1)] }; });
+    else if (B.from) { var g = (PR.gates || []).filter(function (Gt) { return Gt.name === B.from; })[0]; if (g && g._end) R.from = [+g._end[0].toFixed(1), +g._end[1].toFixed(1)]; else R.from = B.from; }
     if (B.to) R.to = B.to;
     if (B.ring) {
       var rs = rsOf('beyond:' + B.kind), pts = [], c = centroid(ZONE.poly), F = G.frame, guard = 0;
@@ -451,7 +563,7 @@ ISLE.city = function (town, o) {
     if (B.count && !B.ring) R.count = B.count;
     OUT.world.push(R);
   });
-  return { town: town, K: K, plan: P, lots: lots, wall: OUT.wall, vessels: OUT.vessels, landings: OUT.landings, world: OUT.world, districts: DIST, fields: OUT.fields,
+  return { town: town, K: K, plan: P, lots: lots, wall: OUT.wall, vessels: OUT.vessels, landings: OUT.landings, world: OUT.world, districts: DIST, fields: OUT.fields, cover: cover, prog: PR,
     hug: function (x, z) { return HUG ? HUG.at(x, z) : null; },
     log: LOG, missing: OUT.missing, failed: OUT.failed, seed: seed, tune: tune };
 };

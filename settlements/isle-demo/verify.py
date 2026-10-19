@@ -88,7 +88,8 @@ async def run_city(a):
     folder = os.path.dirname(os.path.dirname(os.path.abspath(a.html)))
     page = os.path.relpath(os.path.abspath(a.html), folder).replace(os.sep, '/')
     fails = []
-    views = {'Kautoa': ('overview', 'ceremonial centre', 'palace', 'harbour', 'izanitown', 'ridertown'), 'Valapo': ('overview', 'village and harbour', 'garrison')}
+    views = {'Kautoa': ('overview', 'ceremonial centre', 'palace', 'harbour', 'works quarter', 'izanitown', 'ridertown'),
+             'Valapo': ('overview', 'village and harbour', 'south harbour', 'garrison')}
     with harness.serve(folder) as port:
         async with async_playwright() as p:
             b = await harness.launch_chromium(p)

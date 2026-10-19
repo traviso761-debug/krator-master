@@ -16,7 +16,7 @@ const ok = (name, pass, detail) => { if (!pass) bad++; console.log((pass ? 'PASS
 const fnv = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0; return h.toString(16); };
 const hash = R => fnv(JSON.stringify([R.lots.map(L => [L.key, L.x, L.z, L.ry]), R.plan.ways.map(w => w.pts.map(p => [+p[0].toFixed(2), +p[1].toFixed(2)])), R.fields.map(F => [F.crop, F.x, F.z])]));
 ISLE.initWorld();
-const plan = town => { const S = SITE_INIT.towns[town], P = ISLE.PROG[town], G = ISLE.townGround(S.frame, { half: P.half, cell: P.gridCell });
+const plan = town => { const S = SITE_INIT.towns[town], P = ISLE.PROG[town], G = ISLE.siteGround(S, P);
   const R = ISLE.city(town, { site: S, ground: G, tags: KTAGS.create({ build: 'isle-demo:' + town }), dims: k => ISLE_DIMS[k] || null, vdims: k => ISLE_VDIMS[k] || null });
   return { R, G }; };
 const runs = {};

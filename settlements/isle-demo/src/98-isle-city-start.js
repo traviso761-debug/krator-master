@@ -25,27 +25,33 @@ CAM.bind = function () {
   el.addEventListener('wheel', function (e) { e.preventDefault(); CAM.dist = Math.max(40, Math.min(14000, CAM.dist * Math.exp(e.deltaY * 0.0012))); CAM.apply(); }, { passive: false });
 };
 /* the views: [target x, z, distance, yaw, pitch], or a landmark's role to look at */
+/* the views, from the drawing itself (the owner redraws the towns): {zone} the whole build area, {district: name} a
+   district's middle, {role} a landmark's front; dist the camera's distance (zone: from the area's size), yaw, pitch */
 ISLE.VIEWS = {
-  Kautoa: { overview: [300, 700, 9000, 0.4, 0.9], 'ceremonial centre': [80, 120, 1300, 0.7, 0.55], palace: { role: 'palace', dist: 420 },
-    'harbour': [700, 1700, 1600, 2.6, 0.45], 'military harbour': [-760, 3050, 1200, 2.2, 0.5], izanitown: [1150, 420, 900, 0.9, 0.55],
-    ridertown: [300, -1700, 1200, 0.3, 0.55], "warrior's square": [954, -377, 600, 0.6, 0.6], 'street level': { role: 'envoy', dist: 140, pitch: 0.22 } },
-  Valapo: { overview: [-200, -1900, 7000, 0.2, 0.95], 'village and harbour': [300, -1500, 1300, 3.0, 0.5], 'village hall': { role: 'village hall', dist: 220 },
+  Kautoa: { overview: { zone: true, yaw: 2.6, pitch: 0.85 }, 'ceremonial centre': { district: 'ceremonial park', dist: 700, yaw: 2.4, pitch: 0.55 },
+    palace: { role: 'palace', dist: 380 }, harbour: { district: 'harbor', dist: 900, yaw: 0.4, pitch: 0.45 }, 'works quarter': { district: 'works quarter', dist: 600, yaw: 0.6, pitch: 0.55 },
+    izanitown: { district: 'izanitown', dist: 650, yaw: 2.4, pitch: 0.55 }, ridertown: { district: 'ridertown', dist: 900, yaw: 1.6, pitch: 0.55 },
+    'street level': { role: 'envoy', dist: 140, pitch: 0.22 } },
+  Valapo: { overview: { zone: true, yaw: 2.2, pitch: 0.85 }, 'village and harbour': { district: 'harbor', dist: 750, yaw: 3.6, pitch: 0.5 },
+    'south harbour': { district: 'harbor 2', dist: 750, yaw: 3.6, pitch: 0.5 }, 'village hall': { role: 'village hall', dist: 220 },
     garrison: { role: 'garrison', dist: 260 }, 'street level': { role: 'village hall', dist: 110, pitch: 0.2 } }
 };
 ISLE.view = function (name) {
-  var V = ISLE.VIEWS[ISLE.cur.town][name]; if (!V) return false;
-  /* the views are in the owner's full-size drawing's frame: they take the drawing's scale (tools/scale-site.js) */
-  var sc = SITE_INIT.towns[ISLE.cur.town].scaled, s = sc ? sc.factor : 1, a = sc ? sc.anchor : [0, 0];
-  if (Array.isArray(V)) { CAM.t = [a[0] + s * (V[0] - a[0]), 0, a[1] + s * (V[1] - a[1])]; CAM.dist = Math.max(250, V[2] * s * 1.15); CAM.yaw = V[3]; CAM.pitch = V[4]; }
-  else {
-    var L = ISLE.cur.R.lots.filter(function (x) { return x.role === V.role; })[0]; if (!L) return false;
+  var V = ISLE.VIEWS[ISLE.cur.town][name], R = ISLE.cur.R; if (!V) return false;
+  var same = function (a, b) { return String(a).trim().toLowerCase() === String(b).trim().toLowerCase(); };
+  if (V.zone || V.district) {
+    var D = V.zone ? R.districts.filter(function (d) { return d.role === 'zone'; })[0] : R.districts.filter(function (d) { return same(d.name, V.district); })[0]; if (!D) return false;
+    var c = KCITY.lib.polyCentroid(D.poly), e = 0; D.poly.forEach(function (p) { e = Math.max(e, Math.hypot(p[0] - c[0], p[1] - c[1])); });
+    CAM.t = [c[0], 0, c[1]]; CAM.dist = V.dist || e * 2.4; CAM.yaw = V.yaw == null ? 0.5 : V.yaw; CAM.pitch = V.pitch == null ? 0.6 : V.pitch;
+  } else {
+    var L = R.lots.filter(function (x) { return x.role === V.role; })[0]; if (!L) return false;
     CAM.t = [L.x, 0, L.z]; CAM.dist = V.dist; CAM.yaw = L.ry; CAM.pitch = V.pitch == null ? 0.5 : V.pitch;
   }
   CAM.apply(); return true;
 };
 ISLE.plan = function (town, file) {
   var S = ISLE.townSite(file, town), P = ISLE.PROG[town], t0 = performance.now();
-  var G = ISLE.townGround(S.frame, { half: P.half, cell: P.gridCell }), tg = Math.round(performance.now() - t0);
+  var G = ISLE.siteGround(S, P), tg = Math.round(performance.now() - t0);
   var tags = KTAGS.create({ build: 'isle-demo:' + town });
   var R = ISLE.city(town, { site: S, ground: G, tags: tags, dims: function (k) { return ISLE_DIMS[k] || null; }, vdims: function (k) { return ISLE_VDIMS[k] || null; } });
   var C = ISLE.census(R), K = ISLE.checks(R, G);
