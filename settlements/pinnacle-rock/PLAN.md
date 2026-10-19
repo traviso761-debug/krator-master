@@ -162,6 +162,12 @@ Heart (the roost plan's ascents), two compounds, ten great-houses and rock longh
 its paths; the Garden check and four negatives pass. Not as planned: the ways up are timber galleries, not cut ways
 (KNOWN_ISSUES.md). P3 awaits the owner's look. Next: P4, the life.
 
+**The owner's first look at P3 (2026-10-19)**: the Deep Root now opens from the Garden's mesa's wall, its passage
+spiralling down and back out under the first mesa to the hall and the light well; storerooms cut in the Garden's mesa's
+wall; upper stall tiers on the Garden's pinnacles (113 stalls to 173); the Heart's climb started clear of its fused
+neighbours; the carved door's crossed arch legs fixed in the kit; the whole viewer (core/host FULL), core/walk, core/lod
+and core/water's still water taken.
+
 - **P0. The site and the harness.** Find the mesa (section 1), write the point back, `build.py` reading the catalog,
   Girder's flyers and `core/terrain` in place, the port lint, `verify.py` on `tools/harness.py`. Done when a bare red
   mesa stands in the hyperjungle on the page and `--assert` passes.

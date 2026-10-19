@@ -4,7 +4,8 @@
 // (CAT.dims). Every house and path is in core/tags before 89g draws it.
 const GARDEN_TOWN=(function(){if(!GARDEN_B||!HEART_B)return null;try{const t0=performance.now();
  const stacks=ROCK.filter(B=>/^garden-/.test(B.id)&&B!==GARDEN_B&&B!==HEART_B&&Math.abs(B.y0-(GARDEN_B.top-2))<5);
- const G=PRG.plan({K:KSTACKS,rock:ROCK,garden:GARDEN_B,heart:HEART_B,stacks,ascents:ROOST.ascents||[],climbs:ROOST.climbs,dims:(k,v)=>CAT.dims(k,v),tags:BIO.tagReg(),seed:null});
+ const G=PRG.plan({K:KSTACKS,rock:ROCK,garden:GARDEN_B,heart:HEART_B,stacks,ascents:ROOST.ascents||[],climbs:ROOST.climbs,dims:(k,v)=>CAT.dims(k,v),
+  wallR:(S,cx,cz,a,y)=>PRR.wallR(KSTACKS,S,cx,cz,a,y),base:MESA_B.top,door:PR.TOP.deepRoot?PR.TOP.deepRoot.a:null,tags:BIO.tagReg(),seed:null});
  G.ms=Math.round(performance.now()-t0);return G;}
  catch(e){reportErr('garden plan: '+(e&&e.stack||e));return null;}})();
 _mark('gardenplan');

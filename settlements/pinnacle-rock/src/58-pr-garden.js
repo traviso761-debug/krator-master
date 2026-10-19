@@ -3,12 +3,16 @@
 // the clans' great-houses, two chiefs' compounds and the rock longhouses backed against the pinnacles' feet, on the
 // Garden's top among its sixteen pinnacles, round the Heart (the third mesa, no town on it); a path round the Heart's foot
 // joining the ways up (the Garden's stair and ramp, the stair up the Heart: the roost plan's ascents) and every house's
-// door. Plain records only: no THREE, no DOM.
+// door. THE STOREROOMS (owner, 2026-10-19: "storerooms carved into the 2nd mesa using the same code used to carve them into
+// the gate trees for Mav's Refuge"): the kit's rock-cut storehouse and strongroom facades (its port of Mav's gtFacade) and
+// store fronts, cut into the Garden's mesa's drawn wall round its foot on the first mesa's top, facing the ring avenue,
+// clear of the Deep Root's door and of the ways up. Plain records only: no THREE, no DOM.
 //
 //   o = {K (KSTACKS), rock, garden (the Garden's mesa), heart (the Heart), stacks (the pinnacles on the Garden's top),
 //        ascents (the roost plan's: their ends kept clear), climbs (the pinnacles' climbs: their starts kept clear),
-//        dims(key, v), tags, seed}
-//   -> {houses, path, keep, log}
+//        dims(key, v), wallR(S, cx, cz, a, y) (a body's drawn wall: PRR.wallR), base (the first mesa's top), door (the
+//        Deep Root's door's bearing from the Garden's middle), tags, seed}
+//   -> {houses, ways, stores, keep, log}
 //
 // THE GROUND: the Garden's own cap 8 m in from its rim, 6 m off every pinnacle's foot (a rock longhouse's back 1.2 m off
 // it), 10 m off the Heart's foot, 8 m off an ascent's end and a climb's start, and off the path. THE HOUSES are pitched as
@@ -77,13 +81,43 @@ const PRG = (function () {
     // the compounds and the great-houses round the Heart, facing it: spread round the ring at even angles
     HOUSES.forEach((Hs, i) => { const a = i / HOUSES.length * Math.PI * 2 + 0.3, Rm = 0.5 * (Math.max(...ring.map(q => Math.hypot(q[0] - H.x, q[1] - H.z))) + 175);
       place(Hs[0], Hs[1], H.x + Math.cos(a) * Rm, H.z + Math.sin(a) * Rm, 60, (x, z) => { const f = facing(x, z, H.x, H.z); return [f, f + Math.PI / 2, f - Math.PI / 2]; }, null); });
+    // THE STOREROOMS round the Garden's mesa's foot: a candidate every 2 degrees, its face on the drawn wall 2 m over the
+    // first mesa's top, its normal from the wall either side; a straight enough stretch, 50 m along the wall clear of the
+    // Deep Root's door, 6 m clear of every way up below 16 m over the top, 3 m from the next storeroom
+    const stores = [];
+    if (o.wallR && o.base != null) {
+      const KINDS = [['br_bldg_rock_facade', 0, 'a storehouse cut in the Garden\'s mesa'], ['br_bldg_rock_room_front', 1, 'a store front cut in the Garden\'s mesa'],
+        ['br_bldg_rock_facade', 0, 'a storehouse cut in the Garden\'s mesa'], ['br_bldg_rock_facade', 1, 'a strongroom cut in the Garden\'s mesa']];
+      const yW = o.base + 2, wp = a => { const r = o.wallR(G, G.x, G.z, a, yW); return [G.x + Math.cos(a) * r, G.z + Math.sin(a) * r]; };
+      const low = (o.ascents || []).filter(A => A.body === G.id).map(A => A.pts.filter(p => p[1] < o.base + 16)).reduce((s, P) => s.concat(P), []);
+      let k = 0, lastEnd = null;
+      for (let g = 0; g < 360; g += 2) { const a = g * Math.PI / 180, D = o.dims(KINDS[k % KINDS.length][0], KINDS[k % KINDS.length][1]); if (!D) break;
+        const p = wp(a), q0 = wp(a - 0.02), q1 = wp(a + 0.02), q2 = wp(a - 0.05), q3 = wp(a + 0.05), tl = Math.hypot(q1[0] - q0[0], q1[1] - q0[1]) || 1;
+        let n = [(q1[1] - q0[1]) / tl, -(q1[0] - q0[0]) / tl]; if (n[0] * (p[0] - G.x) + n[1] * (p[1] - G.z) < 0) n = [-n[0], -n[1]];
+        // the weathered wall's run over the piece's width (five points): its face set at the proudest of them, so no rock
+        // stands through the carving; a stretch whose deepest point lies more than 1.2 m behind that is passed over (its
+        // raw rim covers what gap there is behind the sides)
+        const R0 = Math.hypot(p[0] - G.x, p[1] - G.z), da = (D.w / 2) / R0, run = [-1, -.5, 0, .5, 1].map(f => wp(a + f * da)).map(q => (q[0] - p[0]) * n[0] + (q[1] - p[1]) * n[1]);
+        const proud = Math.max(...run), deep = Math.min(...run); if (proud - deep > 1.2) continue;
+        if (o.door != null) { let dd = Math.abs(((a - o.door + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI) * Math.hypot(p[0] - G.x, p[1] - G.z); if (dd < 50) continue; }
+        if (low.some(q => Math.hypot(q[0] - p[0], q[2] - p[1]) < D.w / 2 + 6)) continue;
+        if (lastEnd && Math.hypot(p[0] - lastEnd[0], p[1] - lastEnd[1]) < D.w + 3) continue;
+        const off = D.d / 2 - 0.5 + proud;
+        stores.push({ key: KINDS[k % KINDS.length][0], v: KINDS[k % KINDS.length][1], x: +(p[0] + n[0] * off).toFixed(3), z: +(p[1] + n[1] * off).toFixed(3), y: +o.base.toFixed(2), ry: +Math.atan2(n[0], n[1]).toFixed(4),
+          w: D.w, d: D.d, h: D.h, face: [+p[0].toFixed(3), +p[1].toFixed(3)], n, name: KINDS[k % KINDS.length][2], tag: null });
+        lastEnd = p; k++;
+        g += Math.max(0, Math.round((D.w + 3) / Math.hypot(p[0] - G.x, p[1] - G.z) * 180 / Math.PI) - 2); }
+    }
+    // some storerooms, not a wall of them: every fifth of those that fit, spread round the wall
+    { const keepN = stores.filter((s, i) => i % 5 === 0); stores.length = 0; keepN.forEach(s => stores.push(s)); }
     if (tags) {
+      stores.forEach(h => { const T = tags.add({ 'class': 'building', kind: 'storeroom', key: h.key, at: [h.x, h.y, h.z], ry: h.ry, size: [h.w, h.d, h.h], note: h.name, src: 'pinnacle-rock' }); if (T) h.tag = T.id; });
       houses.forEach(h => { const T = tags.add({ 'class': 'building', kind: 'house', key: h.key, at: [h.x, h.y, h.z], ry: h.ry, size: [h.w, h.d, h.h], note: h.name, src: 'pinnacle-rock' }); if (T) h.tag = T.id; });
       ways.forEach(W => { const m = W.pts[W.pts.length >> 1], T = tags.add({ 'class': 'infrastructure', kind: 'path', key: 'path', at: [m[0], top, m[1]], ry: 0, size: [W.w, 0, 0], note: W.name, src: 'pinnacle-rock' }); if (T) W.tag = T.id; });
     }
     LOG.houses = houses.length + ' houses (' + houses.filter(h => h.key === 'br_bldg_great_house').length + ' great-houses, ' + houses.filter(h => h.key === 'br_bldg_chief_compound').length +
-      ' compounds, ' + houses.filter(h => h.key === 'br_bldg_longhouse_block').length + ' rock longhouses), ' + ways.length + ' paths';
-    return { houses, ways, keep, log: LOG };
+      ' compounds, ' + houses.filter(h => h.key === 'br_bldg_longhouse_block').length + ' rock longhouses), ' + ways.length + ' paths, ' + stores.length + ' storerooms in its wall';
+    return { houses, ways, stores, keep, log: LOG };
   }
   return { plan, RIM, STACK, HEART, END, GAP, PATH_W };
 })();

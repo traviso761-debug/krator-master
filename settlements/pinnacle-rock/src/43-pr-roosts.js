@@ -149,7 +149,7 @@ const PRR = (function () {
       for (; k < 8; k++) { const r2 = rAt(a + dir * da, y2), q = [c[0] + Math.cos(a + dir * da) * r2, c[1] + Math.sin(a + dir * da) * r2]; if (Math.hypot(q[0] - p[0], q[1] - p[2]) >= .49) break; da *= 1.2; }
       a += dir * da; y = y2; }
     const r = rAt(a, D.y); pts.push([c[0] + Math.cos(a) * r, D.y, c[1] + Math.sin(a) * r]);   // the last tread on the wall at the deck's own height
-    return { id: 'climb-' + D.id, deck: D.id, from, pts, w: 1.8, a1: a }; }
+    return { id: 'climb-' + D.id, deck: D.id, body: S.id, from, pts, w: 1.8, a1: a }; }
 
   // ---------------------------------------------------------------- the plan
   function plan(o) {
@@ -166,14 +166,19 @@ const PRR = (function () {
     carriers.forEach(C => { const S = C.S, h = S.top - C.foot, garden = C.group === 'garden';
       const look = { y: S.top - (garden ? 12 : 8) };
       if (C.wing) { const y = C.foot + (garden ? clamp(.42 * h, 60, 100) : clamp(.55 * h, 24, 52));
-        const D = deck(o, rock, K, S, 'stall', y, { wing: C.wing, group: C.group }); D.foot = C.foot; decks.push(D);
-        if (look.y - y >= 16) decks.push(Object.assign(deck(o, rock, K, S, 'look', look.y, { wing: C.wing, group: C.group }), { below: D.id })); }
+        let D = deck(o, rock, K, S, 'stall', y, { wing: C.wing, group: C.group }); D.foot = C.foot; D.tier = 1; decks.push(D);
+        // THE UPPER TIERS (owner, 2026-10-19: "the platforms could still accommodate more roosts"): another stall deck
+        // every 17 m up a fin (26 m up a Garden pinnacle: a deck higher clears more of its neighbours, so more of its edge
+        // has a way out) while the lookout ring stands 16 m over it; a fin one more, a pinnacle up to two
+        for (let t = 2; t <= (garden ? 3 : 2); t++) { const y2 = D.y + (garden ? 26 : 17); if (look.y - y2 < 16) break;
+          const D2 = Object.assign(deck(o, rock, K, S, 'stall', y2, { wing: C.wing, group: C.group }), { below: D.id, tier: t }); D2.id += '-' + t; decks.push(D2); D = D2; }
+        if (look.y - D.y >= 16) decks.push(Object.assign(deck(o, rock, K, S, 'look', look.y, { wing: C.wing, group: C.group }), { below: D.id })); }
       else decks.push(Object.assign(deck(o, rock, K, S, 'look', look.y, { wing: null, group: C.group }), { foot: C.foot })); });
     const deckOf = id => decks.find(D => D.id === id);
 
     // THE BRIDGES: between the stall decks of a group's fins (the north pair, the east three, the west pair), at the nearest
     // points of their outer edges, each end 1.5 m in on its deck
-    const sd = decks.filter(D => D.level === 'stall' && D.group !== 'garden');
+    const sd = decks.filter(D => D.level === 'stall' && D.group !== 'garden' && !(D.tier > 1));   // the first tier's (the bridges' level)
     const pairs = []; ['north', 'east', 'west'].forEach(g => { const L = sd.filter(D => D.group === g).sort((a, b) => Math.atan2(a.z, a.x) - Math.atan2(b.z, b.x));
       for (let i = 1; i < L.length; i++) pairs.push([L[i - 1], L[i]]); });
     const heads = {};   // arc positions on a deck's edge taken by a bridge's head
@@ -235,7 +240,7 @@ const PRR = (function () {
         const sc = D.group === 'garden' ? -(m.nx * (m.x - P.GARDEN_MESA.x) + m.nz * (m.z - P.GARDEN_MESA.z)) / Math.hypot(m.x - P.GARDEN_MESA.x, m.z - P.GARDEN_MESA.z)
           : Math.abs(Math.atan2(p.tx * q.tz - p.tz * q.tx, p.tx * q.tx + p.tz * q.tz));
         if (sc > best) { best = sc; sb = s; } }
-      { const m = normAt(A, sb, D); shelters.push({ id: 'shelter-' + D.stack, deck: D.id, x: m.x - m.nx * 4.6, y: D.y, z: m.z - m.nz * 4.6, ry: Math.atan2(m.nx, m.nz), w: 5.2, d: 4 }); }
+      { const m = normAt(A, sb, D); shelters.push({ id: 'shelter-' + D.id.replace(/^deck-/, ''), deck: D.id, x: m.x - m.nx * 4.6, y: D.y, z: m.z - m.nz * 4.6, ry: Math.atan2(m.nx, m.nz), w: 5.2, d: 4 }); }
       const shR = [sb - 3.8, sb + 3.8];
       let k = 0;
       for (let s = 0; s + w <= A.per + .01; ) {
@@ -261,14 +266,28 @@ const PRR = (function () {
       let C; if (D.below) { const B0 = deckOf(D.below), c0 = climbs.find(c => c.deck === B0.id); C = climb(rock, K, S, D, B0.id, B0.y, (c0 ? c0.a1 : 0) + Math.PI * .6, 1); }
       else {
         // the climb's start: from the town's side by preference, but its first quarter-turn clear of every other body's rock
-        // (a Garden pinnacle beside the Heart starts away from the Heart's wall, not into it)
-        const others = rock.filter(B => B !== S && B.top > D.foot && Math.hypot(B.x - S.x, B.z - S.z) < B.R + S.R + 10), pref = Math.atan2(t[1] - S.z, t[0] - S.x) - .5;
-        let a0 = pref, bestS = 1e9;
+        // (a Garden pinnacle beside the Heart starts away from the Heart's wall, not into it), with room beside it (owner,
+        // 2026-10-19: a stair began "at an impossible angle between two spires"): its foot and its first quarter-turn 4 m
+        // or more from any other body's foot, and open ground 8 m straight out from its foot
+        const others = rock.filter(B => B !== S && B.top > D.foot + 2 && Math.hypot(B.x - S.x, B.z - S.z) < B.R + S.R + 10)   /* not the body it stands on (the Heart under its three pinnacles: level with the foot) */, pref = Math.atan2(t[1] - S.z, t[0] - S.x) - .5;
+        let a0 = pref, bestS = 1e9; const cands = [];
         for (let k = 0; k < 16; k++) { const s0 = pref + k / 16 * TAU; let hit = 0;
           for (let u = 0; u <= 1.2; u += .1) { const a = s0 + u, c = centreAt(K, S, D.foot + 2), r = wallR(K, S, c[0], c[1], a, D.foot + 1) + 1.6, x = c[0] + Math.cos(a) * r, z = c[1] + Math.sin(a) * r;
-            if (others.length && K.topAt(others, x, z) > D.foot + .5) hit++; }
-          const sc = hit * 10 + Math.min(k, 16 - k) * .01; if (sc < bestS) { bestS = sc; a0 = s0; } }
-        C = climb(rock, K, S, D, 'foot', D.foot, a0, 1); }
+            if (others.length && K.topAt(others, x, z) > D.foot + .5) hit++;
+            else if (others.length) { const f = K.foot(others, x, z); if (f && f.d < 4) hit++; } }
+          { const c = centreAt(K, S, D.foot + 2), r = wallR(K, S, c[0], c[1], s0, D.foot + 1); for (const e of [4, 8]) { const x = c[0] + Math.cos(s0) * (r + e), z = c[1] + Math.sin(s0) * (r + e);
+            if (others.length && (K.topAt(others, x, z) > D.foot + .5 || (K.foot(others, x, z) || { d: 99 }).d < 3)) hit += 3; } }
+          const sc = hit * 10 + Math.min(k, 16 - k) * .01; cands.push({ s0, sc }); if (sc < bestS) { bestS = sc; a0 = s0; } }
+        // the whole way up, not only its start: where other bodies stand close (the Heart's three pinnacles, fused at their
+        // feet), the four best starts are each climbed both ways round and the climb kept that comes least within 2.2 m of
+        // another body's drawn wall (a tread in a cleft has no room beside it)
+        if (others.length) { let bestC = null, bestN = 1e9;
+          cands.sort((p, q) => p.sc - q.sc).slice(0, 4).forEach((cd, ci) => [1, -1].forEach(dir => { const Cc = climb(rock, K, S, D, 'foot', D.foot, cd.s0, dir);
+            let n = 0; Cc.pts.forEach(q => { for (const B of others) { if (q[1] > B.top - .5) continue; const c = centreAt(K, B, q[1]), a = Math.atan2(q[2] - c[1], q[0] - c[0]);
+              if (Math.hypot(q[0] - c[0], q[2] - c[1]) - wallR(K, B, c[0], c[1], a, q[1]) < 2.2) { n++; break; } } });
+            const sc = n * 10 + cd.sc + ci * .001 + (dir < 0 ? .0005 : 0); if (sc < bestN) { bestN = sc; bestC = Cc; } }));
+          C = bestC; }
+        else C = climb(rock, K, S, D, 'foot', D.foot, a0, 1); }
       climbs.push(C);
       // the hatch: the deck's inner band left open over the climb's last 5 m of run
       const n = C.pts.length, i1 = Math.round(((Math.atan2(C.pts[n - 1][2] - D.z, C.pts[n - 1][0] - D.x) / TAU * N) % N + N) % N), span = Math.ceil(5 / (TAU * (D.R - D.W) / N)) + 1;

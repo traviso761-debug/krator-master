@@ -207,6 +207,10 @@ const PRT = (function () {
         if (RO.stair) RO.stair.gates.forEach(g => { if (Math.abs(g.y - top) < 3) R.eachNearSeg([g.x, g.z], [g.x, g.z - 10], 8, off); });
         // the Deep Root precinct (P3d) and the bands' grounds (P3c)
         R.eachInPoly(ell(T.precinct, 6), off);
+        // and the ground before the Deep Root's door, in the Garden's mesa's wall (P3d): a band 68 m wide out along its bearing
+        // (the door is cut where the wall is flattest within 0.12 rad of it: 57-pr-cavern.js)
+        if (T.deepRoot) { const a = T.deepRoot.a, c = Math.cos(a), sn = Math.sin(a), G = PR.GARDEN_MESA, P = [[150, -34], [270, -34], [270, 34], [150, 34]].map(q => [G.x + c * q[0] - sn * q[1], G.z + sn * q[0] + c * q[1]]);
+          R.eachInPoly(P, off); }
         T.camps.forEach(c => R.eachInPoly(ell(c, 4), off));
         LOG.zone = LOG.land + ' cells of cap, ' + cut + ' kept clear (the rim, the rock, the heads, the precinct, the grounds)';
         SL.minSpacing = KCITY.site.minSpacing();

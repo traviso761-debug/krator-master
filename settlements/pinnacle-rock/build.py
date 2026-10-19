@@ -105,8 +105,21 @@ for f in CORE_SPACE:
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
 import host as khost
-CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
+# THE WHOLE VIEWER (owner, 2026-10-19: "make sure pinnacle rock is accommodating ALL relevant core modules including the
+# viewer"): host.FULL, the shell and the record inspector, stocks, marks (they supersede the polytool), pictures, the
+# minimap, the editor and the cutaway, with core/edits, core/space and core/minimap; the page's edits log inlined
+# (host.edits_js: <build>/edits.json, or a newer browser draft)
+CORE_HOST=khost.FULL
 khost.resolve(PATH,CORE_HOST)
+# core/walk (KWALK): the floors a walker stands on that the ground does not carry (the decks, the climbs, the bridges, the
+# Stair, the lift road, the Deep Root: 89h-host-walk.js, and KCAVERN writes its own); core/lod (every build takes it:
+# 09 defines LOD, 97 applies it to the finished scene); core/atmos's core, presets, wave clock and sky light with
+# core/water (the still water: the paddies, the spring, the seep pond, the rain pool: 89w-host-water.js)
+CORE_X={'20-core-walk.js':('walk','20-core-walk.js'),'09-lod.js':('lod','09-lod.js'),'97-lod-auto.js':('lod','97-lod-auto.js')}
+for f in ('89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-a-waves.js','89-atmos-b-skylight.js'): CORE_X[f]=('atmos',f)
+for f in ('20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js'): CORE_X[f]=('water',f)
+for f,(d,n) in CORE_X.items():
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,n))
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
 # the material library (core/materials/record, PLAN.md): the record and its browser half, and the packs of the library
@@ -224,6 +237,7 @@ def flyers_fragment():
             'return _PRFLY_OUT;\n})(terrainH);}catch(e){reportErr(\'flyers: \'+(e&&e.stack||e));}\n_mark(\'flyers\');\n')
 GFLY=tuple(f for f in _json.load(open(os.path.join(GIRDER,'tex','pack.json'),encoding='utf-8'))['families'] if not f.startswith('fly'))
 VIRTUAL={'39-pr-world-data.js':_wd.fragment(os.path.join(HERE,'region')),
+         khost.EDITS_JS:khost.edits_js(HERE,'pinnacle-rock'),
          '49a-pr-kcity.js':_isle.kcity_bundle(),
          '49b-host-cat.js':cat_fragment(SIDE),
          '44d-host-matlib-pack-girder-flyers.js':_mp.fragment(GIRDER,'girder',exclude=GFLY,side=SIDE),

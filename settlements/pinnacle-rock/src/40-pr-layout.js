@@ -92,6 +92,11 @@ const PR = (function () {
       { wing: 'nightwing', x: -301, z: 20, w: 70, d: 22, ry: Math.PI / 2 }],
     well: { x: -238, z: -190 }, court: { x: -189, z: -224 },   // the Deep Root cavern's light well (the stack fig) and its sunken court
     stairHead: { x: 0, z: 560 }, liftTop: { x: 0, z: -596 }, capstan: { x: 41, z: 582 } };
+  // THE DEEP ROOT'S DOOR (owner, 2026-10-19: the cavern opens from the Garden's mesa's wall): the bearing from the Garden's
+  // mesa's middle to the hall's door end (33.4 m from the court's old place toward the light well), where the door is cut
+  // (57-pr-cavern.js) and the ground before it kept clear (the town, the Garden's storerooms)
+  { const ux = TOP.well.x - TOP.court.x, uz = TOP.well.z - TOP.court.z, l = Math.hypot(ux, uz), ex = TOP.court.x + ux / l * 33.4, ez = TOP.court.z + uz / l * 33.4;
+    TOP.deepRoot = { hallAt: 33.4, a: Math.atan2(ez - GARDEN_MESA.z, ex - GARDEN_MESA.x) }; }
 
   // ---------------------------------------------------------------- the floor (the lower plan)
   // the palisade: the diagram's four cubic curves, sampled

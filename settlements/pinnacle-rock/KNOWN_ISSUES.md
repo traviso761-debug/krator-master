@@ -8,10 +8,16 @@
       Where a way crosses a gully or a notch of these weathered walls it spans it (up to 8 m: the check allows such runs
       off the drawn rock, the roosts' climbs none); no beam is drawn under a span yet.
 - [ ] **The Deep Root is lit like the open air**: no darkness under the rock, no lamp light from the niches (the night
-      and the lamps are P4); its walls take the stacks' cross-bedded sandstone map, projected by facing. The carved door
-      is the kit's piece scaled to 0.53 to fit the 8 m court (its door reads small: about 1.8 m); its passage is drawn,
-      not walked (no core/walk floors yet). The cap's hole is cut on this page (`89f`), not by KSTACKS (its mesh takes no
-      holes): a change to necanyons' top rings or the cap's material moves it; a KSTACKS `holes` option is the clean fix.
+      and the lamps are P4); its walls take the stacks' cross-bedded sandstone map, projected by facing. The cap's hole
+      over the light well and the doorway through the Garden's wall are cut on this page (`89f`), not by KSTACKS (its mesh
+      takes no holes): a change to necanyons' top rings or walls moves them; a KSTACKS `holes` option is the clean fix.
+      Between the drawn wall and KSTACKS' outline the passage's first metre or two can stand proud of the drawn face; the
+      carved face covers it.
+- [ ] **Draw calls**: the showcase camera draws about 1,800 calls (the budget's 240 is the biome kits'); the town, the
+      camps and the farms are instanced by prototype and material, several hundred meshes. core/lod culls by distance;
+      merging the town's prototypes by material would cut it further.
+- [ ] **The upper roost tiers are on the Garden's pinnacles only**: a fin's lookout ring stands too close over its stall
+      deck for another tier (17 m and 16 m clear are both needed).
 - [ ] **The hedges' runs are drawn light** (a ragged band of brush, `89e`): the kit's own run piece is 9.7 k triangles of
       cut thorn and the nine hedges are 14 km of it; its gate pieces are drawn whole. The cut thorn has no library set
       (`foliage.thorn.cut`, owed: `core/materials/PROMPTS-NEEDED.md`). The pastures are the floor's ground (no grass

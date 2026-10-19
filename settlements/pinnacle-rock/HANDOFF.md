@@ -40,6 +40,9 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
 - **P3e is done** (same branch): the ways up the Garden's mesa and the Heart (`PRR.plan` `o.ascents`, set in `47b`,
   drawn with the climbs in `89`), the Garden's great-houses (`src/58-pr-garden.js` `PRG.plan`, run in `58b`, drawn by
   `89g`). **All of P3 is done and awaits the owner's look**: P2 and P3 are on `claude/pinnacle-p2`, unmerged.
+- **The owner's first look at P3** (same branch): the Deep Root's door in the Garden's mesa's wall (57 rewritten), the
+  storerooms (58), the upper stall tiers and the climbs' starts (43), the full viewer, core/walk (89h), core/lod and
+  core/water (89w) (build.py); the kit's cavern door (an open variant; its arch legs no longer cross the doorway).
 - **Not in the gallery** (the owner, 2026-10-19): `gallery/build_gallery.py` lists it in `UNLISTED` until the town is
   built. The north-eastern canyons biome it stands on is in Krator Biomes and Objects.
 

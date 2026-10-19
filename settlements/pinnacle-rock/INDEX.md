@@ -17,28 +17,34 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-pr-layout.js` | 17 |  |
+| `40-pr-layout.js` | 18 |  |
 | `42-pr-world.js` | <1 |  |
-| `43-pr-roosts.js` | 42 **big** |  |
+| `43-pr-roosts.js` | 45 **big** |  |
 | `45-host-stage.js` | 10 | the floor: the knoll's top, as the scale model h (33); the rock (KSTACKS records from the layout) (43); what necanyons' land fragment (47) reads from th (90) |
 | `47b-host-roosts-plan.js` | 4 |  |
-| `54-pr-town.js` | 27 |  |
+| `54-pr-town.js` | 28 |  |
 | `54b-host-town-plan.js` | <1 |  |
 | `55-pr-farms.js` | 19 |  |
 | `55b-host-farms-plan.js` | <1 |  |
 | `56-pr-camps.js` | 15 |  |
 | `56b-host-camps-plan.js` | 1 |  |
-| `57-pr-cavern.js` | 9 |  |
+| `57-pr-cavern.js` | 13 |  |
 | `57b-host-cavern-plan.js` | 1 |  |
-| `58-pr-garden.js` | 10 |  |
-| `58b-host-garden-plan.js` | <1 |  |
+| `58-pr-garden.js` | 14 |  |
+| `58b-host-garden-plan.js` | 1 |  |
 | `86-pr-far.js` | 3 |  |
 | `87-pr-talus.js` | 2 |  |
 | `88-host-build.js` | 2 |  |
@@ -46,7 +52,9 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89c-host-town.js` | 7 |  |
 | `89d-host-farms.js` | 11 |  |
 | `89e-host-camps.js` | 6 |  |
-| `89f-host-cavern.js` | 13 |  |
-| `89g-host-garden.js` | 1 |  |
-| `99-host-take.js` | 66 **big** | the inspector's words: the rock, the zone of the (44); the probe's budgets and the page's checks (verif (56); THE DRAWN ROCK, measured by rays (62); the page, handed to the host (500) |
+| `89f-host-cavern.js` | 16 |  |
+| `89g-host-garden.js` | 2 |  |
+| `89h-host-walk.js` | 2 |  |
+| `89w-host-water.js` | 3 |  |
+| `99-host-take.js` | 71 **big** | the inspector's words: the rock, the zone of the (44); the probe's budgets and the page's checks (verif (56); THE DRAWN ROCK, measured by rays (62); the page, handed to the host (525) |
 | `99-tail.html` | <1 |  |

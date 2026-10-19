@@ -19,7 +19,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 35 | 715 | 56 | 0 | 15 | 325 | 319 | 2 |  | yes | yes |
 | [`settlements/mungo`](settlements/mungo/PORT.md) | 20 | 210 | 110 | 0 | 5 | 60 | 35 | 4 | atmos | yes | yes |
 | [`settlements/noahs-regret`](settlements/noahs-regret/PORT.md) | 34 | 274 | 30 | 13 | 10 | 66 | 156 | 4 | atmos | yes | yes |
-| [`settlements/pinnacle-rock`](settlements/pinnacle-rock/PORT.md) | 27 | 297 | 131 | 0 | 0 | 23 | 143 | 2 | biome | yes | yes |
+| [`settlements/pinnacle-rock`](settlements/pinnacle-rock/PORT.md) | 29 | 322 | 152 | 0 | 0 | 24 | 146 | 1 | biome, atmos | yes | yes |
 | [`settlements/port`](settlements/port/PORT.md) | 114 | 765 | 43 | 4 | 0 | 33 | 685 | 4 | atmos | yes | yes |
 | [`settlements/reedlake`](settlements/reedlake/PORT.md) | 42 | 353 | 58 | 33 | 0 | 19 | 244 | 4 | atmos | yes | yes |
 | [`settlements/screamers`](settlements/screamers/PORT.md) | 79 | 574 | 26 | 19 | 27 | 34 | 468 | 6 |  | yes | yes |
@@ -32,7 +32,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/ancients`](kits/ancients/PORT.md) | 222 | 2603 | 250 | 34 | 174 | 32 | 2113 | 12 |  | yes | yes |
 | [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 11 | 110 | 98 | 0 | 0 | 12 | 0 | 0 |  |  | yes |
 | [`kits/ash-nomads`](kits/ash-nomads/PORT.md) | 24 | 164 | 27 | 6 | 10 | 24 | 96 | 2 | atmos | yes | yes |
-| [`kits/beast-riders`](kits/beast-riders/PORT.md) | 18 | 442 | 15 | 0 | 0 | 11 | 416 | 3 |  |  | yes |
+| [`kits/beast-riders`](kits/beast-riders/PORT.md) | 18 | 443 | 15 | 0 | 0 | 11 | 417 | 3 |  |  | yes |
 | [`kits/catalog`](kits/catalog/PORT.md) | 43 | 1947 | 42 | 0 | 10 | 59 | 1836 | 3 |  |  | yes |
 | [`kits/crops`](kits/crops/PORT.md) | 7 | 47 | 41 | 0 | 0 | 7 | 0 | 0 |  | yes | yes |
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 25 | 159 | 30 | 6 | 10 | 24 | 88 | 2 | atmos | yes | yes |

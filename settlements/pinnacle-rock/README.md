@@ -129,25 +129,40 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
   camp's inner gate to the nearest palisade gate whose way crosses neither the farms nor another band's hedge, coming
   in along the gate's front (the Staghorn's takes one bend); the tracks are PR's ways, cleared before the forest grows.
 - **The Deep Root cavern** (P3d) is records (`src/57-pr-cavern.js`, `PRD.plan`, `[G data]`; run in `57b`, drawn by
-  `89f-host-cavern.js`) and a KCAVERN plan (`core/terrain/39-core-cavern.js`, now on this page): in the precinct, on the
-  line from the court (`PR.TOP.court`) to the light well (`PR.TOP.well`), a court 24 by 20 m sunk 8 m into the cap with an
-  open stair cut down into it, the passage of the tribes going down 10 m from its west wall to the hall (44 by 26 m, its
-  vault's crown 15 m over its floor, 3 m of rock over that), the light well from the hall's vault to the sky, two well
-  openings through the cap. The dressing is the kit's rock-cut pieces against their walls: the carved face round the door
-  (scaled to the court's 8 m: the kit's is 14.8 m high), the twelve tribes' niches down the passage in the lore's order,
-  the five shrines' lamp niches and two ledges of offerings along the hall, the altar stone at its west end. Over the
-  well, a stack fig with its roots hanging 12 m down it, in a ring of twelve standing stones; a rain pool on the hall's
-  floor under it; the processional paved from the town's avenue to the court's stair. The cap (necanyons' land fragment
-  draws a top as five coarse rings) is re-cut where it reaches an opening: each such triangle is refined toward the hole's
-  edge to a metre and the parts inside dropped, and the cavern's own ground inside the rim (drawn with the cap's material)
-  closes the seam. The camera may go into the voids (`clampCam`).
+  `89f-host-cavern.js`) and a KCAVERN plan (`core/terrain/39-core-cavern.js`; its ground the first mesa's top and the
+  Garden's mesa as one heightfield; its floors written to core/walk). **It opens from the Garden's mesa's wall** (owner,
+  2026-10-19): the door is cut on the side toward the precinct, where the drawn wall is flattest within 0.12 rad of the
+  bearing (`PR.TOP.deepRoot`: a line fitted through the wall over the carved face's width), with the kit's carved face
+  at full size, its doorway open (`br_bldg_rock_cavern_door` v1), the wall cut away behind it (`89f`). The passage goes
+  in level 12 m, turns down round a newel one and a half times inside the Garden's mesa (12.5 m), comes back out under
+  its own door heading the way it came, and runs down under the first mesa's top as the passage of the tribes (the twelve
+  niches in the lore's order) to the hall: 44 by 26 m, its vault's crown 15 m over its floor, 3 m of rock over that, the
+  five shrines' lamp niches and two ledges of offerings along it, the altar stone at its west end, the rain pool under the
+  light well. Over the well, on the first mesa's top, the stack fig with its roots hanging down the well to the pool, in
+  a ring of twelve standing stones (the precinct: nothing built inside); the processional paved from the town's avenue to
+  the ring, an apron before the door. The cap is re-cut over the well (necanyons' land fragment draws a top as five coarse
+  rings: each triangle that reaches the hole is refined toward its edge and the parts inside dropped); the cavern's own
+  ground is drawn only inside the well's rim (with the cap's material), and none of its cliff (the heightfield draws a
+  cliff as slivers). The camera and the walker go into the voids (`clampCam`, core/walk).
 - **The Garden** (P3e): its ways up are the roost plan's ascents (`43-pr-roosts.js`, `o.ascents`, made by the climbs'
   builder round the drawn wall, drawn with the climbs: timber treads bracketed into the beds): the Garden's stair up its
-  south wall from the main top, its ramp for the beasts (1 in 7) up its west wall from the north, and the stair up the
+  south wall from the main top, its ramp for the beasts (1 in 7) up its north and east walls from the north (not across the Deep Root's door), and the stair up the
   Heart from the Garden's top on its east. Its great-houses are records (`src/58-pr-garden.js`, `PRG.plan`, `[G data]`;
   run in `58b`, drawn by `89g-host-garden.js`): two chiefs' compounds and ten clans' great-houses round the Heart facing
   it, and rock longhouses backed against four of the edge pinnacles, on the Garden's own top 8 m in from its rim and off
-  the pinnacles' and the Heart's feet; a path round the Heart's foot and one in from each way up.
+  the pinnacles' and the Heart's feet; a path round the Heart's foot and one in from each way up. **Storerooms** (owner,
+  2026-10-19) are cut in its wall round its foot on the first mesa's top: the kit's rock-cut storehouse and strongroom
+  facades (its port of Mav's Refuge's gate-tree carvings, `gtFacade`) and store fronts, about eighteen, spread round the
+  wall (every fifth stretch that takes one: a stretch whose wall lies within 1.2 m of the piece's back over its width, the
+  face at its proudest point), 50 m clear of the Deep Root's door and clear of the ways up.
+- **The viewer and the core modules** (owner, 2026-10-19: "make sure pinnacle rock is accommodating ALL relevant core
+  modules including the viewer"): the page takes core/host's whole interface (`host.FULL`: the record inspector, stocks,
+  marks, pictures, the minimap (M) from the core/tags records, the editor with core/edits and its `edits.json`, the
+  cutaway), core/walk (`89h-host-walk.js`: every deck's ring, every tread of the climbs and the ways up, the bridges, the
+  Stair, the lift road; KCAVERN writes the Deep Root's), core/lod (`09-lod.js`, `97-lod-auto.js`), and core/water's still
+  water on core/atmos's core, presets, wave clock and sky light (`89w-host-water.js`: the paddies, the spring, the seep
+  pond, the rain pool). Not yet: core/atmos's lights, particles and weather, core/simulation, core/sched and
+  core/charactermodels (the life and the night: P4).
 - **The plants**: the necanyons kit (`biomes/necanyons`, read in place with its land fragment `47-host-land.js`, which
   takes this page's `LAND` hooks: the cap height, the LOD spine, the cleared ground, no creek) on the walls, ledges,
   spurs and stacks, kept off the town's ground past the 12 m rim band; the hyperjungle on the floor, kept out of the farms,
@@ -173,7 +188,8 @@ each end on its deck; the lifts' cables 3 m or more clear of the wall; the Stair
 flight steeper than 35 degrees, gated at its head and foot (owner, 2026-10-19: the middle gate, which stood in the walk, removed), and, **measured against the drawn rock by rays** (`ROCKRAY`: the rock
 meshes as drawn, not KSTACKS' outline), clear and carried at every bed of the mesa it passes: every tread's walkway out
 of the rock .5, 1.3 and 2.1 m over it, every cut tread's masonry and every gallery bracket meeting the rock under it,
-every landing slab clear over its middle and carried, the head never over a drawn ledge; a climb to every deck, every
+every landing slab clear over its middle and carried, the head never over a drawn ledge; a climb to every deck (its start and its way round chosen clear of other bodies: the Heart's three pinnacles are fused at
+their feet), every
 tread against its stack's drawn wall and clear of rock 1 m and 1.8 m over it, every bracket and every deck strut in the
 rock; every gate's posts, leaves and lintel out of the drawn rock; a quetzal sent
 in to the east fins lands on a perch, and in 90 s of traffic no beast aloft is in the rock; each Wing's beasts in its own

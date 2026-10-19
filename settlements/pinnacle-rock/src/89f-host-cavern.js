@@ -1,5 +1,6 @@
 // ================================================================= HOST — the Deep Root cavern (P3d): the voids, the cap opened, the dressing
-// Draws CAVERN's records (57b). The cavern's chunks (KCAVERN surface nets, 0.5 m) are split by what each triangle is:
+// Draws CAVERN's records (57b). The door: the Garden's mesa's drawn wall is cut away behind the carved face's doorway
+// (its wall triangles near the door split toward the doorway's edge and those in it dropped). The cavern's chunks (KCAVERN surface nets, 0.5 m) are split by what each triangle is:
 // the ground inside an opening's rim (the cap round the court and the light well) takes the cap's own slickrock material
 // and its map's world UVs, so it meets the cap with no seam, and wins where they overlap; the voids' walls, floors and
 // vaults take the stacks' cross-bedded sandstone, mapped by the face's facing, darkened by the chunk's occlusion. The cap
@@ -13,7 +14,7 @@ const CAVERN_DRAW=(function(){if(!CAVERN)return null;try{
  const mark=o=>{o.userData.host=true;o.userData.cavern=true;return o;};
  const meshBy=lab=>{let m=null;scene.traverse(o=>{if(!m&&o.isMesh&&o.userData.rock&&String(o.userData.inspectLabel).indexOf(lab)===0)m=o;});return m;};
  const capMesh=meshBy('Slickrock'),stackMesh=meshBy('Red sandstone (a stack'),wallMesh=meshBy('Red sandstone (a mesa');
- const holes=D.openings.map(q=>({c:q.c,R:q.r+q.rim}));
+ const holes=D.openings.filter(q=>q.kind==='well').map(q=>({c:q.c,R:q.r+q.rim}));
  // ---------------------------------------------------------------- the cap re-cut over the openings
  let capCut=0;
  if(capMesh){const g=capMesh.geometry,P=g.attributes.position,U=g.attributes.uv,Cl=g.attributes.color,I=g.index.array,TOP=D.y.top;
@@ -47,6 +48,33 @@ const CAVERN_DRAW=(function(){if(!CAVERN)return null;try{
    const idx=new Uint32Array(keep.length+nAdd);idx.set(keep);for(let k=0;k<nAdd;k++)idx[keep.length+k]=nOld+k;
    const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.BufferAttribute(pos,3));g2.setAttribute('uv',new THREE.BufferAttribute(uv,2));g2.setAttribute('color',new THREE.BufferAttribute(col,3));
    g2.setIndex(new THREE.BufferAttribute(idx,1));g2.computeVertexNormals();g2.computeBoundingSphere();capMesh.geometry=g2;g.dispose();}}
+ // ---------------------------------------------------------------- the doorway cut through the Garden's mesa's drawn wall
+ let wallCut=0;
+ if(wallMesh&&D.door){const g=wallMesh.geometry,P=g.attributes.position,U=g.attributes.uv,Cl=g.attributes.color,I=g.index.array,Dp=D.door,n=D.door.n,t=[-n[1],n[0]];
+  // the doorway in the wall's frame: s along the face, y up, dn out of it
+  const S=(x,z)=>(x-Dp.x)*t[0]+(z-Dp.z)*t[1],N=(x,z)=>(x-Dp.x)*n[0]+(z-Dp.z)*n[1],y0=Dp.y-1,y1=Dp.y+5.7,HW=1.6;
+  const inDoor=(x,y,z)=>Math.abs(S(x,z))<HW&&y>y0&&y<y1&&N(x,z)>-5&&N(x,z)<4;
+  const keep=[],add={p:[],u:[],c:[]};
+  for(let tt=0;tt<I.length;tt+=3){const a=I[tt],b=I[tt+1],c=I[tt+2],xs=[P.getX(a),P.getX(b),P.getX(c)],zs=[P.getZ(a),P.getZ(b),P.getZ(c)],ys=[P.getY(a),P.getY(b),P.getY(c)];
+   const near=xs.every((x,k)=>Math.hypot(x-Dp.x,zs[k]-Dp.z)<40)&&Math.min(...ys)<y1+1&&Math.max(...ys)>y0-1&&xs.some((x,k)=>Math.abs(N(x,zs[k]))<6);
+   if(!near){keep.push(a,b,c);continue;}
+   wallCut++;
+   const at=w=>[[xs[0]*w[0]+xs[1]*w[1]+xs[2]*w[2],ys[0]*w[0]+ys[1]*w[1]+ys[2]*w[2],zs[0]*w[0]+zs[1]*w[1]+zs[2]*w[2]],
+     [U.getX(a)*w[0]+U.getX(b)*w[1]+U.getX(c)*w[2],U.getY(a)*w[0]+U.getY(b)*w[1]+U.getY(c)*w[2]],[Cl.getX(a)*w[0]+Cl.getX(b)*w[1]+Cl.getX(c)*w[2],Cl.getY(a)*w[0]+Cl.getY(b)*w[1]+Cl.getY(c)*w[2],Cl.getZ(a)*w[0]+Cl.getZ(b)*w[1]+Cl.getZ(c)*w[2]]];
+   // split while it is over 0.4 m and some of it is in the doorway and some not; drop it when its middle is in it
+   const refine=(A,B,Cq,dep)=>{const pa=at(A),pb=at(B),pc=at(Cq),ins=[pa,pb,pc].map(q=>inDoor(q[0][0],q[0][1],q[0][2]));
+    const L=Math.max(Math.hypot(pa[0][0]-pb[0][0],pa[0][1]-pb[0][1],pa[0][2]-pb[0][2]),Math.hypot(pb[0][0]-pc[0][0],pb[0][1]-pc[0][1],pb[0][2]-pc[0][2]),Math.hypot(pc[0][0]-pa[0][0],pc[0][1]-pa[0][1],pc[0][2]-pa[0][2]));
+    const ss=[pa,pb,pc].map(q=>S(q[0][0],q[0][2])),yy=[pa,pb,pc].map(q=>q[0][1]),straddle=Math.min(...ss)<HW&&Math.max(...ss)>-HW&&Math.min(...yy)<y1&&Math.max(...yy)>y0;
+    if(straddle&&L>.4&&dep<14&&!(ins[0]&&ins[1]&&ins[2])){const ab=[(A[0]+B[0])/2,(A[1]+B[1])/2,(A[2]+B[2])/2],bc=[(B[0]+Cq[0])/2,(B[1]+Cq[1])/2,(B[2]+Cq[2])/2],ca=[(Cq[0]+A[0])/2,(Cq[1]+A[1])/2,(Cq[2]+A[2])/2];
+     refine(A,ab,ca,dep+1);refine(ab,B,bc,dep+1);refine(ca,bc,Cq,dep+1);refine(ab,bc,ca,dep+1);return;}
+    const m=at([(A[0]+B[0]+Cq[0])/3,(A[1]+B[1]+Cq[1])/3,(A[2]+B[2]+Cq[2])/3]);if(inDoor(m[0][0],m[0][1],m[0][2]))return;
+    [pa,pb,pc].forEach(q=>{add.p.push(...q[0]);add.u.push(...q[1]);add.c.push(...q[2]);});};
+   refine([1,0,0],[0,1,0],[0,0,1],0);}
+  if(wallCut){const nOld=P.count,nAdd=add.p.length/3,pos=new Float32Array((nOld+nAdd)*3),uv=new Float32Array((nOld+nAdd)*2),col=new Float32Array((nOld+nAdd)*3);
+   pos.set(P.array);uv.set(U.array);col.set(Cl.array);pos.set(add.p,nOld*3);uv.set(add.u,nOld*2);col.set(add.c,nOld*3);
+   const idx=new Uint32Array(keep.length+nAdd);idx.set(keep);for(let k=0;k<nAdd;k++)idx[keep.length+k]=nOld+k;
+   const g2=new THREE.BufferGeometry();g2.setAttribute('position',new THREE.BufferAttribute(pos,3));g2.setAttribute('uv',new THREE.BufferAttribute(uv,2));g2.setAttribute('color',new THREE.BufferAttribute(col,3));
+   g2.setIndex(new THREE.BufferAttribute(idx,1));g2.computeVertexNormals();g2.computeBoundingSphere();wallMesh.geometry=g2;g.dispose();}}
  // ---------------------------------------------------------------- the cavern's chunks
  // the cap's world-UV scale, read off its own vertices (uv = x / s on the tops)
  let sTop=4;if(capMesh){const g=capMesh.geometry,P=g.attributes.position,U=g.attributes.uv;for(let i=0;i<P.count;i++){const x=P.getX(i);if(Math.abs(x)>20){sTop=x/U.getX(i);break;}}}
@@ -61,7 +89,9 @@ const CAVERN_DRAW=(function(){if(!CAVERN)return null;try{
    else{if(ny>.7){uv[i*2]=x/sWall;uv[i*2+1]=z/sWall;}else if(nx>nz){uv[i*2]=z/sWall;uv[i*2+1]=y/sWall;}else{uv[i*2]=x/sWall;uv[i*2+1]=y/sWall;}
     const o=.5+.5*ch.occ[i];col[i*3]=o*.95;col[i*3+1]=o*.86;col[i*3+2]=o*.8;}}
   const gi=[],wi=[];for(let t=0;t<ch.idx.length;t+=3){const a=ch.idx[t],b=ch.idx[t+1],c=ch.idx[t+2];
-   if(ch.prim[a]===G&&ch.prim[b]===G&&ch.prim[c]===G){const mx=(ch.pos[a*3]+ch.pos[b*3]+ch.pos[c*3])/3,mz=(ch.pos[a*3+2]+ch.pos[b*3+2]+ch.pos[c*3+2])/3;
+   /* a triangle touching the ground (the cap, or the Garden's cliff, which the heightfield draws as long slivers) is the
+      ground's: kept only inside a well's rim; the voids' own surfaces (no ground vertex) are the walls */
+   if(ch.prim[a]===G||ch.prim[b]===G||ch.prim[c]===G){const mx=(ch.pos[a*3]+ch.pos[b*3]+ch.pos[c*3])/3,mz=(ch.pos[a*3+2]+ch.pos[b*3+2]+ch.pos[c*3+2])/3;
     if(holes.some(h=>Math.hypot(mx-h.c[0],mz-h.c[1])<h.R))gi.push(a,b,c);}else wi.push(a,b,c);}
   const base=new THREE.BufferGeometry();base.setAttribute('position',new THREE.BufferAttribute(ch.pos,3));base.setAttribute('normal',new THREE.BufferAttribute(ch.nrm,3));
   base.setAttribute('uv',new THREE.BufferAttribute(uv,2));base.setAttribute('color',new THREE.BufferAttribute(col,3));
@@ -92,10 +122,10 @@ const CAVERN_DRAW=(function(){if(!CAVERN)return null;try{
  // ---------------------------------------------------------------- the rain pool and the processional
  {const P=D.pool,g=new THREE.CircleGeometry(P.r,28);g.rotateX(-Math.PI/2);const me=mark(new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:new THREE.Color(0x2f4a4a).convertSRGBToLinear(),roughness:.06,metalness:.1,transparent:true,opacity:.88})));
   me.position.set(P.c[0],P.y,P.c[1]);me.userData.inspectLabel=P.name;grp.add(me);}
- if(D.way){const G=townGroundMat('sandstone','The processional (sandstone flags)'),col=townLin(0xa88068);grp.add(mark(townRibbons([D.way],G,(x,z)=>{const t=KSTACKS.topAt([MESA_B],x,z);return t>-1e8?t:D.y.top;},()=>col,.14)));}
+ {const G=townGroundMat('sandstone','The processional and the apron before the door (sandstone flags)'),col=townLin(0xa88068);grp.add(mark(townRibbons([D.way,D.apron].filter(Boolean),G,(x,z)=>{const t=KSTACKS.topAt([MESA_B],x,z);return t>-1e8?t:D.y.top;},()=>col,.14)));}
  scene.add(grp);CAVERN_MESH.group=grp;
  D.dress.forEach(d=>REG.push({name:d.name,key:'cavern.'+d.key,x:d.x,z:d.z,y:d.y,r:Math.hypot(d.w,d.d)/2,h:d.h}));
- REG.push({name:'The Deep Root (the court, the passage of the tribes, the hall)',key:'cavern',x:D.axis.c[0]+D.axis.u[0]*40,z:D.axis.c[1]+D.axis.u[1]*40,y:D.y.hall,r:45,h:D.y.top-D.y.hall});
- return {chunks,tris:Math.round(tris),capCut,ms:Math.round(performance.now()-t0)};}
+ REG.push({name:'The Deep Root (the door, the passage of the tribes, the hall)',key:'cavern',x:D.axis.c[0]+D.axis.u[0]*55,z:D.axis.c[1]+D.axis.u[1]*55,y:D.y.hall,r:40,h:D.y.top-D.y.hall});
+ return {chunks,tris:Math.round(tris),capCut,wallCut,ms:Math.round(performance.now()-t0)};}
  catch(e){reportErr('cavern: '+(e&&e.stack||e));return null;}})();
 _mark('cavern');

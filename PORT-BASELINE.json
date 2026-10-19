@@ -293,8 +293,8 @@
    "sha256": "3ff58d2b59b89ee1247f1ebcbe545105c367c941f1fcc6353aa919938d74cd16"
   },
   "kits/beast-riders/dist/beast-riders.html": {
-   "bytes": 12770979,
-   "sha256": "cd0bd6263cc72f51536fc129a05ce6600b6272b60ba15c33be5ad1d4d12b2714"
+   "bytes": 12771638,
+   "sha256": "688ff2f3b3d079f12b64732892cc9e9fb29572c64c146b7ff67f38f0f6f686aa"
   },
   "kits/catalog/dist/catalog.html": {
    "bytes": 1709147,
@@ -477,8 +477,8 @@
    "sha256": "aea6fc8f5bf89186ac068f4b19c9e1e2fc34743e793d545b0bd6aec4df716763"
   },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
-   "bytes": 3936363,
-   "sha256": "14b7195d6a2c98593edb2ab8d99abfcbd99f0cdbc99e38bdc537a6b4c106ebb1"
+   "bytes": 4225942,
+   "sha256": "afc91403e2431cb9faec97d4e9cd84d428f2a525c3d0fd282465dd5aebe20023"
   },
   "settlements/port/dist/cgBox.html": {
    "bytes": 878316,
