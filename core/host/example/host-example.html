@@ -834,8 +834,8 @@ var KHOST_EDITS = (function(){ var f = null;
     var sig=SIM.order.place.length+':'+(SIM.placeVersion||0);
     if(GSIG!==sig){ GRIDS={}; GSIG=sig; }
     if(GRIDS[act]) return GRIDS[act];
-    var G={ cells:{}, n:0, x0:Infinity, x1:-Infinity, z0:Infinity, z1:-Infinity, bias:false };
-    SIM.all('place').forEach(function(P){ if(!SIM.offers(P, act) || (P.access==='private' && !(P.guests && P.guests[act]))) return; var k=Math.floor(P.x/GCELL)+','+Math.floor(P.z/GCELL); (G.cells[k]||(G.cells[k]=[])).push(P); G.n++;
+    var G={ cells:{}, list:[], n:0, x0:Infinity, x1:-Infinity, z0:Infinity, z1:-Infinity, bias:false };
+    SIM.all('place').forEach(function(P){ if(!SIM.offers(P, act) || (P.access==='private' && !(P.guests && P.guests[act]))) return; var ix=Math.floor(P.x/GCELL), iz=Math.floor(P.z/GCELL), k=ix+','+iz; if(!G.cells[k]){ G.cells[k]=[]; G.list.push({ i:ix, j:iz, C:G.cells[k] }); } G.cells[k].push(P); G.n++;
       if(P.bias) G.bias=true; G.x0=Math.min(G.x0,P.x); G.x1=Math.max(G.x1,P.x); G.z0=Math.min(G.z0,P.z); G.z1=Math.max(G.z1,P.z); });
     return (GRIDS[act]=G);
   }
@@ -848,9 +848,14 @@ var KHOST_EDITS = (function(){ var f = null;
          cannot change the first `limit`, so stop there */
       var ci=Math.floor(near[0]/GCELL), cj=Math.floor(near[1]/GCELL), D=function(P){ return Math.hypot(P.x-near[0], P.z-near[1]); };
       var rmax=Math.ceil(Math.max(Math.abs(near[0]-G.x0), Math.abs(near[0]-G.x1), Math.abs(near[1]-G.z0), Math.abs(near[1]-G.z1))/GCELL)+1;
+      var look=function(C){ if(!C) return; for(var q=0;q<C.length;q++) if(passes(C[q], act, actor, hour, opt)) out.push(C[q]); }, cell=function(i, j){ look(G.cells[i+','+j]); };
       for(var r=0;r<=rmax;r++){
-        for(var i=ci-r;i<=ci+r;i++) for(var j=cj-r;j<=cj+r;j++){ if(r && i>ci-r && i<ci+r && j>cj-r && j<cj+r) continue;
-          var C=G.cells[i+','+j]; if(!C) continue; for(var q=0;q<C.length;q++) if(passes(C[q], act, actor, hour, opt)) out.push(C[q]); }
+        /* past the point where a ring holds more cells than the grid has filled ones (two towns far apart: rings over
+           empty sea), the filled cells not yet looked at are taken directly; every candidate is still found, so the
+           nearest `limit` are the same */
+        if(r>2 && 8*r > G.list.length){ G.list.forEach(function(L){ if(Math.max(Math.abs(L.i-ci), Math.abs(L.j-cj)) >= r) look(L.C); }); break; }
+        if(!r) cell(ci, cj);
+        else { for(var i=ci-r;i<=ci+r;i++){ cell(i, cj-r); cell(i, cj+r); } for(var j=cj-r+1;j<cj+r;j++){ cell(ci-r, j); cell(ci+r, j); } }   /* the ring's edge only */
         if(out.length>=opt.limit){ out.sort(byNear(near)); if(D(out[opt.limit-1]) < r*GCELL) break; }
         if(opt.maxR!=null && r*GCELL > opt.maxR) break;
       }
@@ -941,7 +946,8 @@ var KHOST_EDITS = (function(){ var f = null;
     return R.sched;
   }
   SIM.schedOf = schedOf;
-  function hourOf(m){ return Math.floor((m%1440)/60); }
+  function md(x, n){ return ((x%n)+n)%n; }   /* a minute before 0 (a lag at the start of time) falls on the day before */
+  function hourOf(m){ return Math.floor(md(m, 1440)/60); }
 
   /* ---------------------------------------------------------------- what the actor wants now */
   SIM.desire = function(a, minute){
@@ -1217,9 +1223,9 @@ var KHOST_EDITS = (function(){ var f = null;
     if(a.wanted==null || !a.task || want!==a.wanted) return minute+1;
     /* the next hour its schedule changes (by midnight at the latest: a new day, its week); hourly while an errand waits
        or in free time (the items' hourly looks: a shop open, the household's store) */
-    var lg=SIM.lagOf(a), ml=minute-lg, sc=SIM.schedOf(a, ml), h=Math.floor((ml%1440)/60), nh=h+1, midnight=ml-ml%1440+1440+lg;   /* on its own (lagged) day */
+    var lg=SIM.lagOf(a), ml=minute-lg, sc=SIM.schedOf(a, ml), h=hourOf(ml), nh=h+1, midnight=ml-md(ml, 1440)+1440+lg;   /* on its own (lagged) day */
     if(sc){ while(nh<24 && sc[nh]===sc[h]) nh++; }
-    var w=Math.min(midnight, ml-ml%60+(nh-h)*60+lg), R=SIM.R.role[a.role], cyc=R.cycle && R.cycle[a.activity];
+    var w=Math.min(midnight, ml-md(ml, 60)+(nh-h)*60+lg), R=SIM.R.role[a.role], cyc=R.cycle && R.cycle[a.activity];
     if(a.cmd) w=Math.min(w, a.cmd.until);                                           /* a command's end */
     if(SIM.ITEMS && (a.errand || (SIM.ITEMS.free[sc ? sc[h] : a.wanted]))) w=Math.min(w, minute-minute%60+60+lg);   /* the items' hourly look, its lag after the hour */
     if(a.task.failed) w=Math.min(w, minute-minute%15+15);
@@ -1932,6 +1938,9 @@ var KHOST_EDITS = (function(){ var f = null;
     return out; };
   function stat(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
   /* a counter the stocks read (77-sim-7-stocks.js CUM): on a page with settlements, booked to the actor's town as well (I.statsBy[key]) */
+  /* a meal's count (stats.meals: at home, single, bought, at a mess, out, none, fine), by town as well on a page with settlements */
+  function mealStat(a, k){ var I=SIM.ITEMS; I.stats.meals[k]=(I.stats.meals[k]||0)+1; if(!SIM.ECONS) return; var t=SIM.settlementOf(a); if(t==null) return;
+    var B=I.statsBy||(I.statsBy={}), T=B[t]||(B[t]={}); var M=T.meals||(T.meals={ meal:0, single:0, none:0, bought:0, mess:0, out:0 }); M[k]=(M[k]||0)+1; }
   function cum(a, key, k, n){ var I=SIM.ITEMS; stat(I.stats[key], k, n); if(!SIM.ECONS) return; var t=SIM.settlementOf(a); if(t==null) return;
     var B=I.statsBy||(I.statsBy={}), T=B[t]||(B[t]={}); stat(T[key]||(T[key]={}), k, n); }
   function anchor(a){ var H=SIM.R.place[a.home]; return H ? [H.x, H.z] : (a.at || [0,0]); }
@@ -2060,17 +2069,17 @@ var KHOST_EDITS = (function(){ var f = null;
   /* a meal out draws on the settlement of the place it is eaten at (P7a) */
   function meal(a, P){ return SIM.ECONS ? SIM.withEcon(SIM.settlementOf(P.id), function(){ return meal0(a, P); }) : meal0(a, P); }
   function meal0(a, P){
-    var I=SIM.ITEMS, M=I.meal, S=I.stats.meals;
+    var I=SIM.ITEMS, M=I.meal;
     var fine = 1 + (M.rich||0)*(a.wealth||0);                                     /* a richer table: more filling, more relaxing */
-    if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ S.out++; return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
-    if(P.id!==a.home){ S.bought++; stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
-    if(P.mess){ S.mess++; return M.mess; }
-    var st=P.store; if(!st || !I.foods.length){ S.none++; return M.none; }
+    if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ mealStat(a, 'out'); return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
+    if(P.id!==a.home){ mealStat(a, 'bought'); stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
+    if(P.mess){ mealStat(a, 'mess'); return M.mess; }
+    var st=P.store; if(!st || !I.foods.length){ mealStat(a, 'none'); return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
     var Q=function(f){ var K=I.kinds[f]; return K && K.quality!=null ? K.quality : 1; };   /* a better food (cheese) makes a better meal */
-    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); S.meal++; if(Q(have[0])>1 || Q(have[1])>1) S.fine=(S.fine||0)+1; return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
-    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); S.single++; return M.single*Q(have[0]); }
-    S.none++; return M.none;
+    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); mealStat(a, 'meal'); if(Q(have[0])>1 || Q(have[1])>1) mealStat(a, 'fine'); return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
+    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); mealStat(a, 'single'); return M.single*Q(have[0]); }
+    mealStat(a, 'none'); return M.none;
   }
   /* the items' share of a worker's efficiency: a broken tool, a hurt */
   SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
@@ -2238,7 +2247,7 @@ var KHOST_EDITS = (function(){ var f = null;
 // ==================== simulation/77-sim-6-population.js
 // ================================================================= CORE — simulation 6: the population, from the roles' data
 // A settlement's residents are not typed one by one: each ROLE says how many (`count`), which kinds of home it lives in
-// (`homes`, in order of preference), the work place it is pinned to (`work: {kinds, act}`, dealt round-robin over the
+// (`homes`, in order of preference), the work place it is pinned to (`work: {kinds, act, near?}`, dealt round-robin over the
 // places of those kinds that offer `act`), and whether it keeps a boat at a dock (`boat`) or a vehicle at a base
 // (`vehicle: {base}`). A role marked `fill` takes every bed the others leave. Beds are a home's SLEEP slots.
 // A `homes` entry is a place kind or, when no place has that kind, a place id. A role with `deal:'round'` deals its
@@ -2253,6 +2262,8 @@ var KHOST_EDITS = (function(){ var f = null;
 // that town, and an actor's work is dealt among the places of its home's town only. SIM.populate({settlement}) deals
 // only that town's roles over its own beds (call it once a town, each with its own prefix); out.bySettlement counts
 // the actors dealt per town. A page without settlements deals exactly as before.
+// NEAR (opt-in, `work.near: true`): each actor's job is the nearest place of its kinds with a post still free (its
+// `act` slots over the actors dealt there), ties by load then id; when every post is taken, the load rule as before.
 (function(root){
   'use strict';
   var SIM = root.SIM;
@@ -2279,6 +2290,10 @@ var KHOST_EDITS = (function(){ var f = null;
       var W=R.work; if(!W) return null; var ht=townOf(H);
       var L=SIM.all('place').filter(function(P){ return W.kinds.indexOf(P.kind)>=0 && SIM.offers(P, W.act) > 0 && (ht==null || townOf(P)===ht); });   /* work in the home's own town */
       if(!L.length) return null;
+      if(W.near && H){ var F=L.filter(function(P){ return (workLoad[P.id]||0) < SIM.offers(P, W.act); });   /* the nearest with a free post (opt-in) */
+        if(F.length){ var d=function(P){ return Math.hypot(P.x-H.x, P.z-H.z); };
+          F.sort(function(p,q){ return d(p)-d(q) || ((workLoad[p.id]||0)-(workLoad[q.id]||0)) || (p.id<q.id?-1:1); });
+          workLoad[F[0].id] = (workLoad[F[0].id]||0) + 1; return F[0]; } }
       L.sort(function(p,q){ return ((workLoad[p.id]||0)/SIM.offers(p,W.act)) - ((workLoad[q.id]||0)/SIM.offers(q,W.act)) || (p.id<q.id?-1:1); });
       workLoad[L[0].id] = (workLoad[L[0].id]||0) + 1; return L[0];
     }

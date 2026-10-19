@@ -62,7 +62,8 @@
     return R.sched;
   }
   SIM.schedOf = schedOf;
-  function hourOf(m){ return Math.floor((m%1440)/60); }
+  function md(x, n){ return ((x%n)+n)%n; }   /* a minute before 0 (a lag at the start of time) falls on the day before */
+  function hourOf(m){ return Math.floor(md(m, 1440)/60); }
 
   /* ---------------------------------------------------------------- what the actor wants now */
   SIM.desire = function(a, minute){
@@ -338,9 +339,9 @@
     if(a.wanted==null || !a.task || want!==a.wanted) return minute+1;
     /* the next hour its schedule changes (by midnight at the latest: a new day, its week); hourly while an errand waits
        or in free time (the items' hourly looks: a shop open, the household's store) */
-    var lg=SIM.lagOf(a), ml=minute-lg, sc=SIM.schedOf(a, ml), h=Math.floor((ml%1440)/60), nh=h+1, midnight=ml-ml%1440+1440+lg;   /* on its own (lagged) day */
+    var lg=SIM.lagOf(a), ml=minute-lg, sc=SIM.schedOf(a, ml), h=hourOf(ml), nh=h+1, midnight=ml-md(ml, 1440)+1440+lg;   /* on its own (lagged) day */
     if(sc){ while(nh<24 && sc[nh]===sc[h]) nh++; }
-    var w=Math.min(midnight, ml-ml%60+(nh-h)*60+lg), R=SIM.R.role[a.role], cyc=R.cycle && R.cycle[a.activity];
+    var w=Math.min(midnight, ml-md(ml, 60)+(nh-h)*60+lg), R=SIM.R.role[a.role], cyc=R.cycle && R.cycle[a.activity];
     if(a.cmd) w=Math.min(w, a.cmd.until);                                           /* a command's end */
     if(SIM.ITEMS && (a.errand || (SIM.ITEMS.free[sc ? sc[h] : a.wanted]))) w=Math.min(w, minute-minute%60+60+lg);   /* the items' hourly look, its lag after the hour */
     if(a.task.failed) w=Math.min(w, minute-minute%15+15);
