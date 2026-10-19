@@ -5,17 +5,19 @@ Voth a few months before game start (`LORE.md` section 6.2, the Hook entry; sect
 is the plan: the Ancient Port kit (`settlements/port`) lays the waterfront, the Ancient town behind it is the layer
 under every other, `core/city` lays the town, and six building kits dress the layers of its history. **This folder is
 at phase P1**: the waterfront (P0, every Port segment and vessel placed at least once), the ground behind it, the
-site on `core/city` (steps 0-5) and the Ancient town's ruin hosts on their grid. `LAYOUT.svg` is the layout the
-owner approved (2026-10-19), drawn to scale over the P0 run.
+site on `core/city` (steps 0-5), the Ancient town's ruin hosts on their grid and the site editor page. `LAYOUT.svg`
+is the layout the owner approved (2026-10-19), drawn to scale over the P0 run.
 
 ## The build
 
 ```
 git lfs pull --include="settlements/port/tex/*"    # the kit's texture pack is in LFS: pointer files build black surfaces
 cd settlements/hook
-python3 build.py                                   # dist/hook.html (+ dist/hook.tex.port.js, the kit's texture pack)
+python3 build.py                                   # dist/hook.html and dist/hook-site.html (+ dist/hook*.tex.port.js, the kit's texture pack)
 python3 verify.py dist/hook.html --assert --views "Overview;The Ancient town" --out shots/x
+python3 verify.py dist/hook-site.html --assert --out shots/site      # the site editor's own checks
 python3 build.py --vendor-check                    # every src/ file that shadows a kit fragment, against the kit's copy
+python3 serve.py                                   # http://127.0.0.1:8814/dist/hook-site.html: the editor, saving into site/
 ```
 
 `build.py` reads the Port kit **in place**: every fragment of `settlements/port/src`, the core lists the kit's own
@@ -44,12 +46,41 @@ P1 adds to the page, read in place too (`build.py`, "P1"):
 | `src/90a-hook-city.js` | `[G data]` `core/city` steps 0-5 on the site after the terrain: the build zone onto the raster, every Port footprint and host filed as a landmark (hard ground), the quarters with their lot mix, holder, mood, layer and ruin level, the painted fields, the three avenues drawn and snapped. Steps 6-12 are P2 |
 | `src/90b-hook-city-draw.js` | `[web]` the streets through core/city's own drawing, the quarters' outlines and labels, the markers; `z` toggles the overlay; `window._city` for the verify |
 
-**The site file** (`site/hook-site.json`) is the owner's to edit until the editor page comes (`KNOWN_ISSUES.md`):
-`districts` (the `zone`, the ten `quarter`s with `cultures`, `holder`, `mood`, `layer`, `ruin`, the `field`s),
-`markers` A to I (the landmarks of `PLAN.md` section 1), `avenues` (the Hook's axis, the shore road, the Arsenal
-road), `hosts` (the named ruins: key, position, decay, cut) and `grid` (the Ancient town's blocks per stretch of
-coast, the probability and the weights of the drawn hosts). The frame is the kit's: x west to east, +z the sea
-(the world's north), -z inland. Rebuild after an edit; `verify.py --assert` checks the result.
+**The site file** (`site/hook-site.json`) is what the site editor saves (below) and what the owner may still edit
+by hand: `districts` (the `zone`, the ten `quarter`s with `cultures`, `holder`, `mood`, `layer`, `ruin`, the
+`field`s), `markers` A to I (the landmarks of `PLAN.md` section 1), `avenues` (the Hook's axis, the shore road,
+the Arsenal road), `hosts` (the named ruins: key, position, decay, cut) and `grid` (the Ancient town's blocks per
+stretch of coast, the probability and the weights of the drawn hosts). The frame is the kit's: x west to east,
++z the sea (the world's north), -z inland. Rebuild after an edit; `verify.py --assert` checks the result.
+
+## The site editor (`targets/hook-site`, `dist/hook-site.html`)
+
+Voth's site editor on Hook's page: `python3 serve.py`, open `http://127.0.0.1:8814/dist/hook-site.html`, draw, and
+**save** writes `site/hook-site.json` (without the server the button downloads the file: put it in `site/`). Then
+`python3 build.py` inlines it into both pages. Every quarter, marker, avenue and named host of the site can be
+selected (the list on the right, or a click) and dragged; a quarter's editor holds its layer, ruin level, cultures
+("hukoa 70, salvage 30"), holder and mood, a field's its kind and strength, a host's its type, decay, cut, turn and
+note. Modes: `1` select, `2` quarter, `3` field, `4` zone, `5` marker, `6` avenue, `7` host, `R`/`L`/`M` the ground
+brushes; Ctrl+Z undoes; `z` shows the city plan's own drawing (90b) under the editor's marks.
+
+`build.py` makes the page as a *site target* (`SITE_TARGETS`): Hook's page (the `hook` target's layout and views)
+plus Voth's editor **read in place** from `settlements/voth/targets/voth-site`: the model (`10-site-model.js`, as
+`93-site-model.js`: `SITE`, the undo stack, the `TERR` delta grid), the tools (`55-site-tools.js`, as `95`) and
+the panels of its head (`00-head.html`, lifted into `93a-site-dom.js`, which inserts them into the Port page).
+Not Voth's ground (`20-site-cantons.js`, `50-site-scene.js`). Hook's own fragments stand on them:
+
+| Fragment | What |
+|---|---|
+| `targets/hook-site/94-hook-site-adapter.js` | `[web]` what the tools read from Voth's scene, on the Port's terrain: `VIEW.ext` (the zone's extent), `VIEW.surf`/`pick` (terrainH plus the delta, a hidden pick mesh refined by marching), the overlay as a draped mesh (the Port's terrain shader is left alone), `VIEW.refreshTerrain` onto the Port's terrain chunks, `VIEW.sprite`, the minimap base, `TERR` re-sized to the square, `VOTH` (SEA 0, terrainH, landDist along z, no cantons or causeways), the catalog engine's camera names on the Port's `ctl` and `applyCam`, the frame hooks from `PORT_FRAME`; the Port's orbit, inspector and WASD kept out of a drag, a click and a text field |
+| `targets/hook-site/96-hook-site-model.js` | `[web]` Hook's records and tools over Voth's: the district types (zone, quarter, field), a quarter's fields and a field's kind kept through `SITE.clean`, the hosts and the grid saved and loaded, `SITE.json` in Hook's shape (Voth's causeways, stations and routes kept empty in memory and left out of the file), the host mode, selection, dragging and editor, Hook's painting (a quarter in its layer's colour, the damage field hatched, the zone an outline) and minimap, saving to `/save/hook-site` |
+| `targets/hook-site/98-hook-site-start.js` | `[web]` the start: the scene pieces, the panel, the site from the server or the inlined copy; `window._site` for the verify |
+
+`verify.py dist/hook-site.html --assert` runs the editor's checks (`SITE_CHECK_JS`): the site loaded with its ten
+quarters, nine markers, three avenues, eight hosts and the grid; every item selects and draws its marks; a marker,
+a host and a quarter's corner move; the tools add a quarter, two markers, a host and an avenue, undo and redo, a
+raise stroke moves the ground and undoes; and a save round-trips (`SITE.clean(JSON.parse(SITE.json()))` is the site
+again, hosts and grid included). It shots the map and city views. The ground strokes are saved but not yet applied
+by `build.py` (`KNOWN_ISSUES.md`).
 
 `verify.py` is on `tools/harness.py` and runs the kit's invariants (`settlements/port/verify.py`, imported) plus
 Hook's own:
@@ -90,6 +121,6 @@ town and the cliff's foot (`targets/hook/91z-views.js`).
 
 ## Next
 
-The site editor page (`KNOWN_ISSUES.md`, the first item), then P2 (`PLAN.md` section 4): the town on `core/city`
+P2 (`PLAN.md` section 4): the town on `core/city`
 steps 6-12 with the kits' dims, the lot filler drawing a culture then a type, the salvage rule, and the host-lot rule
 (a lot on a ruin draws the ruin, then its culture's addition on it).

@@ -404,9 +404,13 @@
    "bytes": 7333533,
    "sha256": "930593e9ecb34a1ede22900f9600ba5877a531892f8cc41871f44774bdfc0dcb"
   },
+  "settlements/hook/dist/hook-site.html": {
+   "bytes": 1282223,
+   "sha256": "f18aa5b8014fcc87b3fa1f0ca1032cde56225c30cd8f3c84dbaab038b1c08f1a"
+  },
   "settlements/hook/dist/hook.html": {
-   "bytes": 1174574,
-   "sha256": "83e22c8569095d59747991fa31a21a238e7a6ce96ef643c97eb30f6b14ee53e0"
+   "bytes": 1176108,
+   "sha256": "edbed246b9070d3790f80821dc70d6c4dff1e088d24b044130ce4ecf5ae9178a"
   },
   "settlements/isle-demo/dist/isle-city.html": {
    "bytes": 5069883,
