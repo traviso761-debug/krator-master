@@ -1,5 +1,5 @@
 {
- "water_paint_on_dry_land_px": 2892,
+ "water_paint_on_dry_land_px": 2895,
  "same_in_4.20_px": 5795,
  "patches_40px_plus": [
   [
@@ -94,14 +94,14 @@
    ]
   ]
  ],
- "new_since_4.20_px": 407,
+ "new_since_4.20_px": 410,
  "flags": {
   "h_water_not_wl": 78,
   "wl_water_not_h": 0
  },
- "water_over_land_paint_px": 10943,
+ "water_over_land_paint_px": 10938,
  "seams": {
-  "changed_px": 48602,
+  "changed_px": 48715,
   "edge_grad_p95": 12.4,
   "map_grad_p95": 16.0,
   "edge_grad_p99": 21.0,

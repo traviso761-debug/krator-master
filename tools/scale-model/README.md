@@ -259,7 +259,13 @@ rain recomputed for the land they cut (4.21: passes 2 and 3 agree to 0.08 mm on 
   outline and 15 m in the middle, and kept out of the old beds' filling; the water routed onto the floor then fills
   them as far as it reaches: 'lower' about half (the joined island lake balances at ~-1,804 m, under the bed's shallow
   edge), 'lower2' about three-fifths. The abyss's lakes hold ~10,400 km2 (from ~9,500). With the beds the lake effect
-  settles more slowly: the fourth pass is kept (rain 0.4 mm from the third on average).
+  settles more slowly: the fifth pass is kept (rain 0.13 mm from the fourth on average, 131 mm at most).
+- **Dip Rivrh, Almua's river** (`NAMED_COURSES`; the owner, 2026-10-18, `settlements/almua/PLAN.md`). The coast cell within
+  10 px of Almua (446,553) best drained into the Ring Sea is found, and its main stem traced upstream by catchment; a
+  course already drawn down that valley takes the name if it reaches the mouth, else the named course starts below the
+  last cell they share (its bed cut to fall 0.5 m a cell where a hollow is crossed). It is the outflow of the lake Drïm
+  Rivrh runs through: 89 km from the lake (-1,500 m) to the coast at px 446.6,548.8, ~25,000 km2 of catchment and
+  ~38 m3/s at the mouth, the course marked `name_fixed` with its gloss so `river_names.py` keeps the name.
 - **The satellite map audited** (`sat_audit.py <4.21 page> <4.20 page> <out dir>`, kept as `satellite-audit-4.21.json`).
   Fixed from it: the water flag in the heights raster now follows the water (9,500 cells of the settled and new lakes
   were water only in the water raster; `extract_region.py` reads that flag); water paint on ground made dry where 4.21
@@ -289,7 +295,7 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
 ## To do on the model (owner's list)
 
 - **Done in 4.21 (the owner asked, 2026-10-19): the Lake of Shim**, above. Still to do from this item: refresh
-  `openworld/little-demo/source/` from the live collections, and draw Almua's river to its mouth.
+  `openworld/little-demo/source/` from the live collections. Almua's river is drawn (Dip Rivrh, above).
 - **4.22: the Lake of Shim** (when the Shim build is done, settlements/shim/PLAN.md; the owner, 2026-10-18). The region
   polygon "Lake of Shim" (`rshimlake0001`, about 32 by 12 km, px 376-382 by 780-796) is already in the artifact's
   `regions` collection and Shim's point (`sshimrest01`, 382,788) sits on its eastern shore. Carve it as the Bay of Voth
@@ -298,4 +304,3 @@ the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask i
   re-run the river audit (`edit_rivers.py`) so the Shim river (r000) enters from the south and leaves north, record
   the lake with the others, relight, reclimate, repaint, publish, and refresh `openworld/little-demo/source/` from
   the live collections (which have lost the 2026-10-05 export's duplicate settlements and hold Voth at 470,688).
-  Almua's river (`Dip Rivrh`, `river_names.py`) wants a course drawn to its mouth at 446,553 in the same pass.

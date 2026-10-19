@@ -2,11 +2,12 @@
 
 From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from, and the mean flow at the mouth (m3/s; dry valleys have none to speak of).
 
-## vothic (29)
+## vothic (30)
 
 | id | name | from the English | kind | flow |
 |---|---|---|---|---|
-| r000 | Vink Rivrh | Wing river | river | 5671 |
+| r863 | Dip Rivrh | the Deep river (the navigable channel that makes the harbour; the owner, 2026-10-18) | river | 38 |
+| r000 | Vink Rivrh | Wing river | river | 5670 |
 | r029 | Vast Rivrh | swift river | river | 131 |
 | r273 | Blak Rivrh | black river | river | 77 |
 | r058 | Drïm Rivrh | Drum river | river | 73 |
@@ -16,7 +17,7 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r104 | Rit Chhim | reed stream | river | 43 |
 | r115 | Tzhar Chhim | star stream | river | 40 |
 | r126 | Volz Chhim | falls stream | river | 38 |
-| r130 | Golt Chhim | gold stream | river | 35 |
+| r131 | Golt Chhim | gold stream | river | 35 |
 | r337 | Blït Chhim | blood stream | river | 31 |
 | r159 | Phirh Chhim | spear stream | river | 29 |
 | r335 | Khul Chhim | skull stream | river | 21 |
@@ -31,8 +32,8 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r650 | Chu Drai | true dry valley | dry valley |  |
 | r700 | Tzant Drai | sand dry valley | dry valley |  |
 | r710 | Bitrh Drai | bitter dry valley | dry valley |  |
-| r745 | Khai Drai | sky dry valley | dry valley |  |
-| r749 | Thon Drai | thorn dry valley | dry valley |  |
+| r744 | Khai Drai | sky dry valley | dry valley |  |
+| r748 | Thon Drai | thorn dry valley | dry valley |  |
 | r764 | Tznek Drai | snake dry valley | dry valley |  |
 | r792 | Vulv Drai | wolf dry valley | dry valley |  |
 
@@ -93,8 +94,8 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r673 | Vali Il | eel dry valley | dry valley |  |
 | r733 | Vali Guilo | willow dry valley | dry valley |  |
 | r862 | Vali Pain | pine dry valley | dry valley |  |
-| r746 | Vali Fern | fern dry valley | dry valley |  |
-| r748 | Vali Mos | moss dry valley | dry valley |  |
+| r745 | Vali Fern | fern dry valley | dry valley |  |
+| r747 | Vali Mos | moss dry valley | dry valley |  |
 | r760 | Vali Oni | honey dry valley | dry valley |  |
 | r817 | Vali Milga | milk dry valley | dry valley |  |
 | r834 | Vali Rrein | rain dry valley | dry valley |  |
@@ -141,20 +142,20 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | id | name | from the English | kind | flow |
 |---|---|---|---|---|
 | r019 | the Bigga | the big one (Yuni clips the word, as it does Labbo and Deppo) | river | 180 |
-| r041 | Veladiga Rivvo | Veladiga river | river | 101 |
-| r066 | Saltie Rivvo | salt river | river | 63 |
+| r042 | Veladiga Rivvo | Veladiga river | river | 95 |
+| r067 | Saltie Rivvo | salt river | river | 62 |
 | r077 | Yuni river | the Yuni river (its name on the record) | river | 56 |
 | r094 | Fallsi Krikki | falls stream | river | 48 |
-| r358 | Coldi Krikki | cold stream | river | 40 |
+| r359 | Coldi Krikki | cold stream | river | 40 |
 | r328 | Quicki Krikki | swift stream | river | 40 |
 | r327 | Longo Krikki | long stream | river | 27 |
 | r180 | Reedi Krikki | reed stream | river | 25 |
 | r375 | Woiti Krikki | white stream | river | 24 |
 | r329 | Stoni Krikki | stone stream | river | 21 |
-| r357 | Servo Krikki | servo stream | river | 20 |
+| r358 | Servo Krikki | servo stream | river | 20 |
 | r220 | Dingo Krikki | dingo stream | river | 19 |
 | r330 | Ghosti Krikki | ghost stream | river | 17 |
-| r241 | Crooki Krikki | crook stream | river | 16 |
+| r239 | Crooki Krikki | crook stream | river | 16 |
 | r267 | Reddi Krikki | red stream | river | 11 |
 | r268 | Rocko Krikki | rock stream | river | 11 |
 | r476 | Dusti Gulli | dust dry valley | dry valley |  |
@@ -165,7 +166,7 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r641 | Oiro Gulli | iron dry valley | dry valley |  |
 | r678 | Blacko Gulli | black dry valley | dry valley |  |
 | r721 | Snakey Gulli | snake dry valley | dry valley |  |
-| r740 | Sando Gulli | sand dry valley | dry valley |  |
+| r751 | Sando Gulli | sand dry valley | dry valley |  |
 | r752 | Greeno Gulli | green dry valley | dry valley |  |
 
 ## dalab (61)
@@ -181,14 +182,14 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r297 | Wifriba | swift river | river | 99 |
 | r283 | Tonriba | stone river | river | 85 |
 | r048 | Riidriba | reed river | river | 81 |
-| r079 | Dagodriba | god river | river | 54 |
-| r080 | Daranchriba | ranch river | river | 54 |
+| r080 | Dagodriba | god river | river | 54 |
+| r081 | Daranchriba | ranch river | river | 54 |
 | r097 | Lizabruk | lizard stream | river | 46 |
 | r106 | Dalab Bruk | Dalab stream | river | 43 |
 | r391 | Okbruk | oak stream | river | 41 |
 | r116 | Konbruk | corn stream | river | 40 |
 | r299 | Modbruk | mud stream | river | 34 |
-| r140 | Wiitbruk | sweet stream | river | 33 |
+| r141 | Wiitbruk | sweet stream | river | 33 |
 | r405 | Krukibruk | crooked stream | river | 31 |
 | r150 | Sunbruk | sun stream | river | 30 |
 | r160 | Solbruk | salt stream | river | 29 |
@@ -228,7 +229,7 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r727 | Tundaguli | thunder dry valley | dry valley |  |
 | r729 | Winguli | wind dry valley | dry valley |  |
 | r730 | Silbaguli | silver dry valley | dry valley |  |
-| r741 | Kopaguli | copper dry valley | dry valley |  |
+| r740 | Kopaguli | copper dry valley | dry valley |  |
 | r768 | Glasguli | glass dry valley | dry valley |  |
 | r776 | Soodguli | sword dry valley | dry valley |  |
 | r783 | Shiilguli | shield dry valley | dry valley |  |
@@ -269,10 +270,10 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r325 | Araptar Baatar | raptor stream | river | 45 |
 | r103 | Grį Baatar | green stream | river | 44 |
 | r352 | K'etsaal Baatar | quetzal stream | river | 38 |
-| r127 | Taagar Baatar | tiger stream | river | 37 |
+| r128 | Taagar Baatar | tiger stream | river | 37 |
 | r326 | Ispaadar Baatar | spider stream | river | 35 |
 | r353 | Mamuł Baatar | mammoth stream | river | 35 |
-| r142 | Tł'oolar Baatar | crawler stream | river | 32 |
+| r143 | Tł'oolar Baatar | crawler stream | river | 32 |
 | r362 | Biist' Baatar | beast stream | river | 28 |
 | r166 | Khon Baatar | horn stream | river | 27 |
 | r170 | Łii Baatar | three stream | river | 27 |
@@ -293,12 +294,12 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r102 | Rīfar Rīd | Reed stream | river | 44 |
 | r114 | Rīfar al-Ṣolṭ | salt stream | river | 41 |
 | r165 | Rīfar al-Rid | red stream | river | 28 |
-| r187 | Rīfar al-Qamal | camel stream | river | 24 |
+| r188 | Rīfar al-Qamal | camel stream | river | 24 |
 | r371 | Rīfar al-Isṭōn | stone stream | river | 23 |
 | r197 | Rīfar al-Ṣanḍ | sand stream | river | 22 |
 | r200 | Rīfar al-Biṭar | bitter stream | river | 21 |
 | r228 | Rīfar al-Jōst | ghost stream | river | 18 |
-| r234 | Rīfar al-Jinn | jinn stream | river | 17 |
+| r229 | Rīfar al-Jinn | jinn stream | river | 18 |
 | r251 | Rīfar al-Thirst | thirst stream | river | 14 |
 | r260 | Rīfar al-Bālm | palm stream | river | 13 |
 | r370 | Rīfar al-Dayt | date stream | river | 12 |
@@ -332,7 +333,7 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 | r719 | Wādī al-Wilō | willow dry valley | dry valley |  |
 | r843 | Wādī al-Bāyn | pine dry valley | dry valley |  |
 | r814 | Wādī al-Fern | fern dry valley | dry valley |  |
-| r750 | Wādī al-Mōṣ | moss dry valley | dry valley |  |
+| r749 | Wādī al-Mōṣ | moss dry valley | dry valley |  |
 | r777 | Wādī al-Ḥanī | honey dry valley | dry valley |  |
 | r791 | Wādī al-Milk | milk dry valley | dry valley |  |
 | r807 | Wādī al-Rayn | rain dry valley | dry valley |  |
@@ -342,15 +343,15 @@ From `tools/scale-model/river_names.py`: the tongue, the name, what it grew from
 
 | id | name | from the English | kind | flow |
 |---|---|---|---|---|
-| r081 | Aribar n Tamaḍart | mother river | river | 54 |
-| r148 | Aribar n Aṣolṭ | salt stream | river | 31 |
-| r231 | Aribar n Awayl | oil stream | river | 18 |
+| r079 | Aribar n Tamaḍart | mother river | river | 55 |
+| r127 | Aribar n Aṣolṭ | salt stream | river | 37 |
+| r232 | Aribar n Awayl | oil stream | river | 18 |
 | r494 | Awadi n Arid | red dry valley | dry valley |  |
 | r507 | Awadi n Aṣanḍ | sand dry valley | dry valley |  |
 | r579 | Awadi n Agost | ghost dry valley | dry valley |  |
 | r861 | Awadi n Abiṭar | bitter dry valley | dry valley |  |
 | r737 | Awadi n Aqamal | camel dry valley | dry valley |  |
-| r744 | Awadi n Atorn | thorn dry valley | dry valley |  |
+| r743 | Awadi n Atorn | thorn dry valley | dry valley |  |
 | r813 | Awadi n Aṣan | sun dry valley | dry valley |  |
 | r761 | Awadi n Astar | star dry valley | dry valley |  |
 | r775 | Awadi n Mungo | Mungo dry valley | dry valley |  |
