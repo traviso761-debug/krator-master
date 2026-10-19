@@ -459,6 +459,47 @@ function world(seed){
  const p=S.actor({id:'p1',role:'sick',home:'homeA'});p.hurt=0;p.itDay=Math.floor(S.minute()/1440);S.errand(p,'poultice');run(20,22);
  ok('out of the herbs a poultice takes: the errand fails, nothing bought',S.ITEMS.stats.outOf.poultice===1&&!S.ITEMS.stats.bought.poultice&&p.hurt!=null,S.ITEMS.stats.bought.poultice===1);}
 
+// two settlements on one page (P7a, settlements/isle-demo/PLAN.md section 9): each its own economy, warehouses, carts
+// and books; a cart works only its own town; a draw takes only from the settlement named; the stocks split by town
+{const {S,clock}=world(91);
+ ['WORK','HAUL','UNLOAD','EAT'].forEach(a=>S.activity({id:a}));
+ S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+ S.place({id:'kFarm',kind:'field',x:0,z:0,activities:{WORK:6},open:[0,24],settlement:'kautoa'});
+ S.place({id:'kShed',kind:'warehouse',x:50,z:0,activities:{},settlement:'kautoa'});
+ S.place({id:'kMess',kind:'mess',x:50,z:0,activities:{EAT:9},settlement:'kautoa'});S.R.place.kMess.mess=true;
+ S.place({id:'vFarm',kind:'field',x:150,z:0,activities:{WORK:6},open:[0,24],settlement:'valapo'});
+ S.place({id:'vShed',kind:'warehouse',x:100,z:0,activities:{},settlement:'valapo'});
+ S.place({id:'kHome',kind:'home',x:0,z:0,activities:{SLEEP:4},settlement:'kautoa'});S.place({id:'vHome',kind:'home',x:150,z:0,activities:{SLEEP:4},settlement:'valapo'});
+ S.role({id:'grower',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+ const cfg=()=>({goods:{rice:{},coffee:{}},every:60,window:1,cart:{cap:30,load:5,unload:5,minLoad:5},meal:{per:2,foods:['rice','coffee']}});
+ let threw=false;
+ const EK=S.economy(cfg(),{settlement:'kautoa'}),EV=S.economy(cfg(),{settlement:'valapo'});
+ try{S.economy(cfg());}catch(e){threw=true;}
+ ok('a page that keys its economies refuses an unkeyed one, and each settlement has its own',threw&&S.econ('kautoa')===EK&&S.econ('valapo')===EV&&EK!==EV,!threw);
+ S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});
+ S.recipe('kFarm',{out:['rice'],rate:2,cap:200});S.recipe('vFarm',{out:['coffee'],rate:2,cap:200});
+ ok('a store and a recipe go to their place\'s settlement',EK.warehouses.length===1&&EK.warehouses[0].id==='kShed'&&EV.warehouses[0].id==='vShed'&&EK.recipes.kFarm&&!EK.recipes.vFarm&&EV.recipes.vFarm,!!EK.recipes.vFarm);
+ [0,1,2].forEach(i=>S.actor({id:'kg'+i,role:'grower',home:'kHome',work:'kFarm'}));[0,1,2].forEach(i=>S.actor({id:'vg'+i,role:'grower',home:'vHome',work:'vFarm'}));
+ const kc=S.actor({id:'kc',role:'carter',home:'kHome'}),vc=S.actor({id:'vc',role:'carter',home:'vHome'});S.cart(kc);S.cart(vc);
+ ok('a cart belongs to its home\'s settlement',EK.carts.indexOf(kc)>=0&&EV.carts.indexOf(vc)>=0&&EK.carts.indexOf(vc)<0,EK.carts.indexOf(vc)>=0);
+ clock.d=0;const run=(h0,h1)=>{for(let m=h0*60;m<h1*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}};
+ run(0,12);
+ ok('each town makes and books its own goods (Kautoa rice, Valapo coffee), and neither books the other\'s',
+   EK.made.rice>0&&!EK.made.coffee&&EV.made.coffee>0&&!EV.made.rice,!!EK.made.coffee);
+ const kh=S.R.place.kShed.stock,vh=S.R.place.vShed.stock;
+ ok('a cart hauls only within its own town: Kautoa\'s shed holds rice, Valapo\'s coffee, never the other',
+   (kh.rice||0)>0&&!(kh.coffee)&&(vh.coffee||0)>0&&!(vh.rice),!!kh.coffee||!!vh.rice);
+ const k0=S.stockOf('rice','kautoa'),v0=S.stockOf('rice','valapo'),got=S.supply('rice',5,false,'kautoa'),none=S.supply('rice',5,true,'valapo');
+ ok('a draw takes only from the settlement named (Valapo has no rice to give)',got===5&&S.stockOf('rice','kautoa')===k0-5&&none===0&&v0===0&&EV.short.rice===5,got!==5);
+ S.items({kinds:{rice:{cat:'food',food:true}},free:['IDLE'],secPerMinute:1,mins:5,cool:60,hurt:0});
+ const kRice=S.stockOf('rice','kautoa');const meals=S.withEcon('kautoa',()=>S.economyMeal());
+ ok('a meal at Kautoa\'s mess takes from Kautoa\'s store',meals&&S.stockOf('rice','kautoa')<kRice&&S.stockOf('coffee','valapo')===(vh.coffee||0),!meals);
+ run(12,26);
+ const SB=S.stocksBy(),sk=S.stocks('kautoa'),sv=S.stocks('valapo');
+ ok('the stocks split by town: Kautoa\'s rows count rice, Valapo\'s coffee',SB&&SB.kautoa&&SB.valapo&&sk.by.rice&&sk.by.rice.total>0&&(!sk.by.coffee||sk.by.coffee.storage===0)&&sv.by.coffee&&sv.by.coffee.total>0,!SB);
+}
+
+
 // the economy's carriers: an import comes as a caravan by its port, unloads into the caravanserai's store on arrival,
 // stays, buys the city's most plentiful made good as it leaves, and goes out the way it came
 {const {S,clock}=world(73);

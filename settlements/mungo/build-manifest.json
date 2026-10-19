@@ -297,15 +297,15 @@
  ],
  "69a1-bio-core-head.js": [
   "core/biome",
-  "59f894e00b20"
+  "12bad8665f18"
  ],
  "69a2-bio-core-kit.js": [
   "core/biome",
-  "af1dcca206dd"
+  "32113708fbca"
  ],
  "69a3-bio-core-foliage.js": [
   "core/biome",
-  "ee0fed9cb7f9"
+  "29c9d7d37ac3"
  ],
  "69a4-bio-core-place.js": [
   "core/biome",
@@ -389,11 +389,11 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "18f373ad1d3d"
+  "c251d354250b"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "5ed88ecc84be"
+  "0cc66fe9c0ff"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
@@ -405,7 +405,7 @@
  ],
  "77-sim-7-stocks.js": [
   "core/simulation",
-  "edfe13d806b7"
+  "1178dc4a7edc"
  ],
  "77-sim-8-export.js": [
   "core/simulation",

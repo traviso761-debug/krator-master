@@ -214,4 +214,58 @@
       .sort(function(p, q){ return q.held-p.held || (p.id<q.id?-1:1); });
     return out;
   };
+
+  /* ---------------------------------------------------------------- settlements: one economy each (P7a) */
+  /* settlements/isle-demo/PLAN.md section 9, P7a items 1, 2 and 5. OPT-IN: a page that never names a settlement runs one
+     economy as before (SIM.ECONS stays null, every call below passes straight through). A page that does:
+       SIM.settlement({id, faction, name?})           the settlement as a record (kind 'settlement')
+       SIM.place({..., settlement: id})                a place belongs to one; an actor to its home's (SIM.settlementOf)
+       SIM.economy(config, {settlement: id})           that settlement's own economy: its warehouses, sites, carts,
+                                                       recipes, in-flight loads and books, apart from every other's
+     Then SIM.store / recipe / produce / cart route to the economy of the place or actor they are given; SIM.supply,
+     stockOf, economyMeal, economyDays and economyReport take a settlement as their last argument (or run inside
+     SIM.withEcon); SIM.economyStep and economyJump step every economy in turn, in the order they were made. Inside an
+     economy's turn SIM.ECON is that economy, so everything above runs unchanged on its own warehouses and books.
+       SIM.econ(key)        the settlement's economy (SIM.ECON on an unkeyed page)
+       SIM.withEcon(key, fn) fn() with SIM.ECON that settlement's (fn() as it is on an unkeyed page or an unknown key) */
+  SIM.ECONS = null;
+  SIM.ECON_ORDER = [];
+  SIM.settlement = function(o){ if(!SIM.R.settlement){ SIM.R.settlement={}; SIM.order.settlement=[]; }   /* made on first use: an unkeyed page's registry is as it was */
+    return SIM.add('settlement', o); };
+  SIM.settlementOf = function(x){
+    if(x==null) return null;
+    if(typeof x!=='object'){ var P=SIM.R.place && SIM.R.place[x]; return P && P.settlement!=null ? P.settlement : null; }
+    if(x.settlement!=null) return x.settlement;
+    if(x.home!=null){ var Hm=SIM.R.place && SIM.R.place[x.home]; return Hm && Hm.settlement!=null ? Hm.settlement : null; }
+    return null; };
+  SIM.econ = function(key){ return SIM.ECONS ? (key==null ? null : SIM.ECONS[key] || null) : SIM.ECON; };
+  SIM.withEcon = function(key, fn){
+    if(!SIM.ECONS || key==null || !SIM.ECONS[key]) return fn();
+    var prev=SIM.ECON; SIM.ECON=SIM.ECONS[key];
+    try { return fn(); } finally { SIM.ECON=prev; } };
+  var economy0=SIM.economy;
+  SIM.economy = function(o, opt){
+    var key=opt && opt.settlement!=null ? opt.settlement : null;
+    if(key==null){ if(SIM.ECONS) throw new Error('SIM.economy: this page keys its economies by settlement; name one'); return economy0(o); }
+    var prev=SIM.ECON, E=economy0(o); E.settlement=key;
+    if(!SIM.ECONS){ SIM.ECONS={}; SIM.ECON_ORDER=[]; prev=null; route(); }
+    if(SIM.ECONS[key]) throw new Error('SIM.economy: settlement '+key+' has an economy already');
+    SIM.ECONS[key]=E; SIM.ECON_ORDER.push(key); SIM.ECON=prev || E;   /* SIM.ECON outside a turn: the first made (an "on" flag for the other modules) */
+    return E; };
+  /* the routed calls, installed when the first keyed economy is made (an unkeyed page keeps the plain ones): by the
+     place or actor given, or by a settlement passed last */
+  function route(){
+    function byPlace(f){ return function(id){ var args=arguments; return SIM.withEcon(SIM.settlementOf(id), function(){ return f.apply(null, args); }); }; }
+    function byLast(f, n){ return function(){ var args=Array.prototype.slice.call(arguments, 0, n), key=arguments.length>n ? arguments[n] : null;
+      return SIM.withEcon(key, function(){ return f.apply(null, args); }); }; }
+    SIM.store=byPlace(SIM.store); SIM.recipe=byPlace(SIM.recipe); SIM.produce=byPlace(SIM.produce);
+    var cart0=SIM.cart; SIM.cart = function(a){ return SIM.withEcon(SIM.settlementOf(a), function(){ return cart0(a); }); };
+    SIM.supply=byLast(SIM.supply, 3); SIM.stockOf=byLast(SIM.stockOf, 1); SIM.economyMeal=byLast(SIM.economyMeal, 0);
+    SIM.economyDays=byLast(SIM.economyDays, 1); SIM.economyReport=byLast(SIM.economyReport, 0);
+    var step0=SIM.economyStep, jump0=SIM.economyJump;
+    SIM.economyStep = function(minute, t){ if(!SIM.ECONS) return step0(minute, t);
+      SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ step0(minute, t); }); }); };
+    SIM.economyJump = function(minute){ if(!SIM.ECONS) return jump0(minute);
+      SIM.ECON_ORDER.forEach(function(k){ SIM.withEcon(k, function(){ jump0(minute); }); }); };
+  }
 })(typeof window!=='undefined'?window:globalThis);
