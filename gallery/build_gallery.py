@@ -74,6 +74,8 @@ ENTRIES = [
 
     ('world', 'mungo', 'settlements/mungo/dist/mungo.html', 'Mungo',
      "A trade village on a salt lake in the Eastern Abyss: a floating reed village with its great tavern, Reed's Local, one pontoon to an abyssal town at a marshy river mouth, and the Geomancers' chapterhouse with their dune buggies. Its people live by core/simulation: fishers out at dawn, caravans and lizard riders stopping overnight, a buggy off the map and back.", 'new'),
+    ('world', 'pinnacle-rock', 'settlements/pinnacle-rock/dist/pinnacle-rock.html', 'Pinnacle Rock',
+     "The Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge, on the scale model's own land: the mesa 250 m over its south foot, ten fins round its rim, the Garden of stacks and the shrine's balanced rock, seven spurs, the dry gorge under the north rim, the canyons' plants on the walls and the hyperjungle on the floor, the far land to 60 km with the Inner Wall rising to the north. So far the rock and the site (P0 and P1); the roosts, the Stair, the town and the Deep Root cavern are to come.", 'new'),
 
     ('kit', 'jimjam-kit', 'settlements/jimjam/dist/jimjam-kit.html', 'Jimjam',
      'The exotic city of red and yellow brick with white marble trim: domes, thick staged spires, raised plazas, ornamental brick chimneys, and a temple whose arch frames the solstice sunset.'),

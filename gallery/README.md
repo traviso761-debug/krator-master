@@ -346,6 +346,14 @@ Krator Worlds I–S version 20 (2026-10-19): `worlds/iziz-mechs.html` replaced (
 kit with six more Iziz mechs, seventeen in all: the Clipeus, Lictor, Baiulus, Turris, Speculator and Catulus) and its card's
 blurb in the live index (version 19's index, one entry edited, as in `build_gallery.py`). Every other file is as in version 19.
 
+Krator Biomes and Objects version 16 and Krator Worlds I–S version 21 (2026-10-19), from `main` at fd3d156c: the two
+brand-new builds of the day. `worlds/necanyons.html` added to Biomes and Objects (the north-eastern canyons, `biomes/necanyons`,
+0.5 MB and its two sidecars, `necanyons.tex.necanyons.js` and `necanyons.tex.hyperjungle.js`, 10.3 MB in all) and
+`worlds/pinnacle-rock.html` to I–S (Pinnacle Rock, `settlements/pinnacle-rock`, 0.7 MB and its two sidecars,
+`pinnacle-rock.tex.necanyons.js` and `pinnacle-rock.tex.hyperjungle.js`, 10.5 MB in all; the part is now about 247 MiB of its
+256). Each live index was edited in place with the one card added (both now have `ENTRIES` lines in `build_gallery.py`); every
+other file is as it was. One call each. I–S version 20 was published elsewhere and is not logged here.
+
 Krator Biomes and Objects versions 17 and 18 (2026-10-19): `worlds/necanyons.html` (the north-eastern canyons) and its two packs
 replaced from `claude/bold-cori-iluy70` after main was merged into it (8fe053f3; merged to `main` the same day: KSTACKS'
 flutes, shoulders and undersides; necanyons' `footMax` and the land fragment's hooks). The live index (version 16) kept: the card's size is
