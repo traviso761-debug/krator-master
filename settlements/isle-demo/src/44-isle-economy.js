@@ -3,12 +3,12 @@
    ISLE.TUNE.sim.economy. Units are servings for food (a meal is the items' perMeal of them) and lots for the rest.
      - THE PRODUCERS: each farm parcel grows its own crop (PLAN.md 8c, the programme's farm: sweet potato, banana and
        coconut to eat; sugar cane and cotton for the mill and the weavers), the fish docks land fish, the pens raise
-       pork, the bakehouses bake bread from sweet potato, the windmill crushes cane to sugar, the weavers make cloth from
+       meat (the land animals' food is one good, meat; the sea's, fish), the bakehouses bake bread from sweet potato, the windmill crushes cane to sugar, the weavers make cloth from
        cotton, the potters pots; each at `rate` a worker-hour into its own store (`cap`). The smithies wait for ore (the
        iron mine is a hinterland village, core/hamlet: H5).
      - THE FOODS a town keeps are those it makes (a producer's or a parcel's, bread only where what it is made of grows:
        Valapo's from sweet potato, Kautoa's from taro, `towns[town].inputs`); its meals and its shops take only those.
-       Kautoa's farm ring grows rice, taro, banana and coconut to eat and cloves and cacao to sell; its byre gives milk,
+       Kautoa's farm ring grows rice, taro, banana and coconut to eat and cloves and cacao to sell; its byre meat,
        its works salt, stone and leather.
      - THE WAREHOUSES: the warehouses and the granaries are the town's store, opened with `startDays` of each of its
        foods at the town's use (its people's meals) and `startLots` of the rest, dealt round them.
@@ -18,7 +18,7 @@
        SIM.trade). Returns the setup: producers by kind and good, warehouses, carts. */
 ISLE.simEconomy = function (TS, places) {
   var T = ISLE.TUNE.sim.economy, I = ISLE.TUNE.sim.items, s = TS.id, goods = {};
-  T.goods.forEach(function (g) { goods[g] = {}; });
+  T.goods.forEach(function (g) { goods[g] = T.minLoad && T.minLoad[g] != null ? { minLoad: T.minLoad[g] } : {}; });
   /* the foods the town makes: a producer's out, a parcel's crop (its bread only if it grows what bread is made of) */
   var inputs = Object.assign({}, T.inputs, TS.inputs || {}), outOf = function (P) { var Pr = T.producers[P.kind]; if (!Pr || !P.activities.WORK) return null;
     return Pr.out ? Pr.out : P.tags.crop && T.crops[P.tags.crop] ? [T.crops[P.tags.crop]] : null; };
@@ -35,9 +35,13 @@ ISLE.simEconomy = function (TS, places) {
   });
   /* the opening stock */
   var W = E.warehouses, pop = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === s; }).length;
-  var perFood = pop * I.meals * I.perMeal / Math.max(1, foods.length);
+  /* each food's share of the town's making (its producers' posts times rate), so the opening stock is in the proportions
+     the town keeps up; the other goods their lots, only of what the town makes */
+  var share = {}, tot = 0;
+  places.forEach(function (P) { var g = outOf(P); if (!g || !E.recipes[P.id]) return; g.forEach(function (x) { if (foods.indexOf(x) < 0) return; var w = P.activities.WORK * E.recipes[P.id].rate / g.length; share[x] = (share[x] || 0) + w; tot += w; }); });
+  var need = pop * I.meals * I.perMeal * T.startDays;
   if (W.length) T.goods.forEach(function (g) {
-    var n = Math.round(foods.indexOf(g) >= 0 ? perFood * T.startDays : made[g] ? (T.startLots[g] || 0) : 0);   /* lots only of what it makes */
+    var n = Math.round(foods.indexOf(g) >= 0 ? (tot > 0 ? need * (share[g] || 0) / tot : need / foods.length) : made[g] ? (T.startLots[g] || 0) : 0);
     W.forEach(function (P, j) { P.stock[g] = Math.floor(n / W.length) + (j < n % W.length ? 1 : 0); });
   });
   /* the carts */

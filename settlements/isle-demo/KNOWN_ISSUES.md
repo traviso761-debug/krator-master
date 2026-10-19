@@ -72,8 +72,18 @@
       dies, and children under five are not counted (the census's five a household holds no infants). Housework is a
       schedule at home and makes nothing; school teaches nothing yet (no skills). The pupils are the town's STUDY places'
       worth (Valapo 32% of its children, Kautoa 24%), the youngest by band, not by who lives nearest a school.
-- [ ] **Valapo needs 20 carts** (was 14): with the cane and cotton to haul as well, 14 left coconut, pork and bread on the
+- [ ] **Valapo needs 20 carts** (was 14): with the cane and cotton to haul as well, 14 left coconut, meat and bread on the
       sites for a day once the households changed.
+- [x] **Kautoa ran out of pork and milk; Valapo of cloves and cacao** (two weeks' books, 2026-10-19). A household buys its
+      days of food at its nearest seller, each food in proportion to the warehouses' stock, and the butchers sold only
+      pork and milk: their neighbours bought nothing else, and from day 9 both were gone. Every food seller now sells the
+      town's whole list. The oruwa landed its cloves and cacao a few dozen at a time, under the 40 a cart waits for, so
+      they sat at Valapo's canoe stop: they now take a load of 5 (`ISLE.TUNE.sim.economy.minLoad`). The land animals'
+      food is now one good, meat (owner), and a town opens with each food in its share of what the town makes.
+- [ ] **Surpluses pile up:** Kautoa's rice, cloves and cacao, Valapo's cane, cotton and cloth, both towns' pots, stone and
+      leather grow without end (no store fills: the warehouses take any amount). Nothing eats the export crops but the
+      other town's small use; the mill turns 260 of Valapo's 3,000 cane a day. Prices, spoilage or a buyer beyond the isles
+      would bound them.
 - [ ] **No sea route is drawn.** The lines run on SIM.trade's timer: a vessel shows at its berth while docked and is gone
       at sea. A `SIM.transport` line on a water layer between the two landings (122 km) would let the open world draw
       the voyage (P8). The berths stand up to 160 m from the landing, in the nearest water deep and clear enough.

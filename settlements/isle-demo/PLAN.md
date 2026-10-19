@@ -635,7 +635,7 @@ two-settlement checks in `test-sim.js`, each with a negative; every older check 
 - a role per kind of work, counted from the posts, and the kin to fill the beds, dealt by `SIM.populate({settlement:
   'valapo', prefix: 'v'})`: 805 workers, every post filled;
 - the foods as items and goods, the shops and households, and Valapo's own economy (`SIM.economy(cfg, {settlement})`):
-  the 8c crops on the parcels, fish, pork, bread from sweet potato, sugar from cane, cloth from cotton, pots; 39
+  the 8c crops on the parcels, fish, meat, bread from sweet potato, sugar from cane, cloth from cotton, pots; 39
   warehouses and granaries, 14 carts.
 - Proof: `verify.py dist/isle-city.html --assert` on the Valapo page and `node tests/test-isle-sim.js` (the same numbers in
   node and Chromium): every census trade's lot a place, every resident housed and every worker employed in the town, and

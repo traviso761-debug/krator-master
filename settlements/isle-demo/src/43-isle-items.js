@@ -4,9 +4,9 @@
      ISLE.simItemsInit()        once a page: the kinds (the foods and the meal bought out), the free hours errands run
                                 in, the meal's size, the household stores' low mark and the days a purchase buys
      ISLE.simHouseholds(TS, places, foods)  a town's shops and homes, with the foods the town makes (44):
-       - a place whose kind's opts name a `shop` sells that list, of the town's foods (the market every food, a chandler's
-         or a trader's the staples, the butcher pork and milk, the bakehouse bread, the fish dock fish; the kava house,
-         the guest house and the Vernacular's tavern a meal): a food nobody makes there is not on its shelves;
+       - a place whose kind's opts name a `shop` sells that list, of the town's foods (the market, chandlers, traders,
+         butchers, bakehouses and fish docks every food the town makes; the kava house, the guest house and the
+         Vernacular's tavern a meal): a food nobody makes there is not on its shelves;
        - every home knows its people; the barracks eat at their mess (the garrison's kitchen draws on the warehouses);
          every other home keeps a food store, opened with a hashed `storeDays` of meals in two or three of the town's foods.
    No clothes, tools or wear yet: the census's crafts make goods the town stores (44); what people keep is a later pass. */

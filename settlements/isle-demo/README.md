@@ -154,11 +154,18 @@ declares both once they are planned, in one order whichever town it draws, and h
 - **Company in the free hours:** the plan's pocket parks and plazas (Kautoa 739, Valapo 103), its park and beach districts,
   and more room at the markets, taverns, hall and square: at 10:30 every one of those who want company finds it (Kautoa
   about 5,200 places, Valapo 1,700).
-- **Food** (`43`, `44`): the foods are items and goods (sweet potato, banana, coconut, fish, pork, bread); the market,
-  chandlers, traders, butchers, bakehouses and fish docks sell them, the kava houses and the guest house serve meals;
-  every house keeps a food store, the barracks eat at their mess. Valapo's own economy: the parcels grow their crops,
-  the docks land fish, the pens raise pork, the bakehouses bake bread from sweet potato, the windmill crushes cane to
-  sugar, the weavers and potters make cloth and pots; 39 warehouses and granaries, 14 carts.
+- **Food** (`43`, `44`): the foods are items and goods (Valapo: sweet potato, banana, coconut, fish, meat, bread;
+  Kautoa: taro, rice, banana, coconut, fish, meat, bread; the land animals' food is one good, meat, the sea's fish);
+  the market, chandlers, traders, butchers, bakehouses and fish docks each sell every food the town makes, the kava
+  houses and the guest house serve meals; every house keeps a food store, the barracks eat at their mess. Valapo's own
+  economy: the parcels grow their crops, the docks land fish, the pens raise meat, the bakehouses bake bread from sweet
+  potato, the windmill crushes cane to sugar, the weavers and potters make cloth and pots; 39 warehouses and
+  granaries, 20 carts. A town opens with two days of food, each in its share of what the town makes.
+- **Two weeks' books** (2026-10-19, both towns watched): after the opening days nothing runs short in either town; the
+  imports (Valapo's salt, rice, cloves and cacao, Kautoa's sugar) are short only on days 1-2, before the first canoe
+  lands. Every food is in surplus (Kautoa about +6,000 servings a day, Valapo +2,350; meat +230 and +112); Kautoa's
+  cloves (+5,200 a day) and cacao (+3,500) and Valapo's cane (+2,700) pile up, the line carrying only what the other
+  town uses.
 - **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`, for each town; and on the page, the citizens
   drawn near the camera where their poses are, with a figure moved 50 m as the negative): every lot of a census trade is a place; every
   resident has a home and every worker a job in the town; after a world day run minute by minute, every food made and

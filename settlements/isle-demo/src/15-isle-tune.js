@@ -42,7 +42,7 @@ ISLE.TUNE.sim = {
     'ie-market': ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 19], out: true, wander: 4, shop: 'market' }],
     'ie-chandler': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }],
     'ie-trader': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }],
-    'ie-butcher': ['butcher', { WORK: 2.5, BUY: 3 }, { open: [6, 18], shop: 'pork' }],
+    'ie-butcher': ['butcher', { WORK: 2.5, BUY: 3 }, { open: [6, 18], shop: 'meat' }],
     'ie-bakehouse': ['bakehouse', { WORK: 2.5, BUY: 3 }, { open: [5, 18], shop: 'bread' }],
     'ie-kava-house': ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16 }, { open: [10, 24], shop: 'meal' }],
     'ie-guesthouse': ['inn', { WORK: 2.5, EAT: 5, SOCIALIZE: 8 }, { open: [6, 23], shop: 'meal' }],
@@ -113,29 +113,36 @@ ISLE.TUNE.sim = {
   },
   items: {
     /* every food on the isles; a town sells and stores only those it makes (44: ISLE.simFoods) */
-    foods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'pork', 'milk', 'bread'],
-    shops: { market: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'pork', 'milk', 'bread'],
-      staples: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'bread'], pork: ['pork', 'milk'], bread: ['bread'], fish: ['fish'], meal: ['meal'] },
+    foods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'],
+    /* every food seller keeps the town's whole list (a household buys its days of food at the nearest seller, each food
+       in proportion to the warehouses' stock: a butcher selling only meat had its neighbours buy nothing else,
+       and emptied the town of it; 2026-10-19). The land animals' food is one good, meat (the pens' and the byre's), the
+       sea's fish (owner, 2026-10-19) */
+    shops: { market: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], staples: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], meat: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], bread: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], fish: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'], meal: ['meal'] },
     meals: 2, perMeal: 2, low: 1, days: 3, mins: 15, cool: 120, storeDays: [1.5, 3], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
   },
   economy: {
-    goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'pork', 'milk', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
+    goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
       'clove', 'cacao', 'salt', 'stone', 'leather'],
     /* each town's bread is its own (towns[town].inputs over these) */
     inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 } },
     every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40 },
+    /* a good's own load worth a cart's trip (the cart's minLoad otherwise): the oruwa's light, dear goods land a few dozen
+       at a time, under the 40 a cart waits for, and sat at the canoe stop (2026-10-19) */
+    minLoad: { clove: 5, cacao: 5, coffee: 5 },
     /* the crops of the parcels (30-isle-programme.js farm) as the economy's goods */
     crops: { 'sweet potato': 'sweet-potato', banana: 'banana', coconut: 'coconut', 'sugar cane': 'sugar-cane', cotton: 'cotton', coffee: 'coffee',
       rice: 'rice', taro: 'taro', cloves: 'clove', cacao: 'cacao' },
     /* servings (food) or lots a worker-hour, into the place's own store up to cap */
     producers: {
-      field: { rate: 6, cap: 3000 }, orchard: { rate: 6, cap: 3000 }, fishdock: { out: ['fish'], rate: 7, cap: 3000 }, pens: { out: ['pork'], rate: 4, cap: 1500 },
+      field: { rate: 6, cap: 3000 }, orchard: { rate: 6, cap: 3000 }, fishdock: { out: ['fish'], rate: 7, cap: 3000 }, pens: { out: ['meat'], rate: 4, cap: 1500 },
       bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { out: ['cloth'], rate: 0.5, cap: 400 },
-      potter: { out: ['pots'], rate: 0.5, cap: 400 }, byre: { out: ['milk'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.5, cap: 400 },
+      potter: { out: ['pots'], rate: 0.5, cap: 400 }, byre: { out: ['meat'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.5, cap: 400 },
       saltworks: { out: ['salt'], rate: 2, cap: 1500 }, tannery: { out: ['leather'], rate: 0.5, cap: 400 }
     },
     warehouses: ['warehouse', 'granary'],
-    /* a town opens with these lots of the goods it makes (not of what it must import) */
+    /* a town opens with `startDays` of its food, each food in its share of the town's making (its producers' posts times
+       rate), and these lots of the other goods it makes (not of what it must import) */
     startDays: 2, startLots: { cloth: 40, pots: 40, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40 }
   },
   /* P7c, the canoe line between the two trade landings (owner, 2026-10-19), on core/simulation's SIM.trade (47):
