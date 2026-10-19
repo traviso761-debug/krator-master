@@ -99,12 +99,12 @@
   "h_water_not_wl": 78,
   "wl_water_not_h": 0
  },
- "water_over_land_paint_px": 10407,
+ "water_over_land_paint_px": 10943,
  "seams": {
-  "changed_px": 42521,
-  "edge_grad_p95": 12.7,
+  "changed_px": 48602,
+  "edge_grad_p95": 12.4,
   "map_grad_p95": 16.0,
-  "edge_grad_p99": 22.1,
-  "map_grad_p99": 32.5
+  "edge_grad_p99": 21.0,
+  "map_grad_p99": 32.6
  }
 }

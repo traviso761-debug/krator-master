@@ -257,7 +257,9 @@ rain recomputed for the land they cut (4.21: passes 2 and 3 agree to 0.08 mm on 
 - **Shallow beds the abyss's lakes spread over** (`ABYSS_LAKES['beds']`; the owner: regions 'lower' and 'lower2'). After
   the lakes are laid out, each region is brought down under the level of the largest lake beside it, 2 m at its
   outline and 15 m in the middle, and kept out of the old beds' filling; the water routed onto the floor then fills
-  them as far as it reaches.
+  them as far as it reaches: 'lower' about half (the joined island lake balances at ~-1,804 m, under the bed's shallow
+  edge), 'lower2' about three-fifths. The abyss's lakes hold ~10,400 km2 (from ~9,500). With the beds the lake effect
+  settles more slowly: the fourth pass is kept (rain 0.4 mm from the third on average).
 - **The satellite map audited** (`sat_audit.py <4.21 page> <4.20 page> <out dir>`, kept as `satellite-audit-4.21.json`).
   Fixed from it: the water flag in the heights raster now follows the water (9,500 cells of the settled and new lakes
   were water only in the water raster; `extract_region.py` reads that flag); water paint on ground made dry where 4.21
