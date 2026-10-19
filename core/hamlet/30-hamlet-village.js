@@ -72,7 +72,7 @@ KHAMLET.box = function (spec, row, key) {
   var d = spec.dims ? spec.dims(key) : null;
   if (!d && row.pending && row.pending[key]) d = row.pending[key];
   if (!d) throw new Error('KHAMLET: no box for ' + key);
-  return {w: +d.w, d: +d.d, h: +(d.h || 8)};
+  return {w: +d.w, d: +d.d, h: d.h == null ? 8 : +d.h};
 };
 /* an oriented rectangle: centre, unit axis u (its width), half sizes; the front faces +v (ry: (sin ry, cos ry) is +v) */
 KHAMLET.rect = function (x, z, ux, uz, w, d) { return {x: x, z: z, ux: ux, uz: uz, hw: w / 2, hd: d / 2}; };

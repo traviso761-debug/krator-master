@@ -62,13 +62,12 @@ DRAW.orchards = function (R, G) {
   crown.translate(0, 1, 0); trunk.translate(0, 0.5, 0);
   var mc = new THREE.InstancedMesh(crown, new THREE.MeshLambertMaterial({ color: 0xffffff }), Math.max(1, n)), mt = new THREE.InstancedMesh(trunk, new THREE.MeshLambertMaterial({ color: 0x5a4632 }), Math.max(1, n));
   var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), col = new THREE.Color(), k = 0;
-  list.forEach(function (Fr, fi) {
-    for (var t = 0; t < per; t++) {
-      var u = KRAND.unit(KRAND.hash(7, fi, t, 1)) - 0.5, v = KRAND.unit(KRAND.hash(7, fi, t, 2)) - 0.5, s = 3 + 3 * KRAND.unit(KRAND.hash(7, fi, t, 3));
-      var x = Fr.x + u * Fr.size * 0.85, z = Fr.z + v * Fr.size * 0.85, y = G.h(x, z), hgt = s * (Fr.crop === 'coconut' ? 3.2 : 1.6);
+  list.forEach(function (Fr) {
+    (Fr.trees || []).forEach(function (Tr) {     /* the trees are the plan's records (32-isle-city.js fields): drawn, not placed, here */
+      var x = Tr.x, z = Tr.z, y = Tr.y, s = Tr.s, hgt = Tr.hgt;
       m4.compose(new THREE.Vector3(x, y + hgt * 0.55, z), q, new THREE.Vector3(s, s * 0.8, s)); mc.setMatrixAt(k, m4); mc.setColorAt(k, col.setHex(DRAW.TREE[Fr.crop] || 0x3a5a26));
       m4.compose(new THREE.Vector3(x, y, z), q, new THREE.Vector3(s * 0.6, hgt * 0.6, s * 0.6)); mt.setMatrixAt(k, m4); k++;
-    }
+    });
   });
   mc.count = mt.count = k; mc.name = 'orchard crowns'; mt.name = 'orchard trunks'; scene.add(mc); scene.add(mt);
   DRAW.stats.orchardTrees = k; DRAW.stats.fields = R.fields.length;

@@ -78,7 +78,7 @@ ORDER = (
      ('core/biome', '35-core-anim.js'), ('core/biome', '36-core-walker.js'), ('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'),
      ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
      ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
-     ('core/atmos', '89-atmos-b-skylight.js'),
+     ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
      ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
      ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
      ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
@@ -179,7 +179,7 @@ def main():
     if SIDE:   # the packs beside the page (dist/isle-demo.tex.<kit>.js), loaded by <script src> ahead of its code
         html = _mp.write_sidecar(SIDE, html, DIST, 'isle-demo.tex.js')
     dst = os.path.join(DIST, OUT)
-    open(dst, 'w', encoding='utf8').write(html)
+    open(dst, 'w', encoding='utf8', newline='\n').write(html)
     node = find_node()
     note = 'syntax NOT CHECKED (no node: set NODE=/path/to/node)'
     if node:
@@ -196,7 +196,7 @@ def main():
     art = html.replace(html[:html.index('<title>')], '', 1).replace('</head><body>', '', 1).replace('</body></html>', '')
     m = re.search(r"<script>document\.write\('<script src=\"(https://cdnjs[^\"]+)\".*?</script>", art)
     art = art[:m.start()] + '<script src="%s"></script>' % m.group(1) + art[m.end():]
-    open(os.path.join(DIST, OUT.replace('.html', '.artifact.html')), 'w', encoding='utf8').write(art)
+    open(os.path.join(DIST, OUT.replace('.html', '.artifact.html')), 'w', encoding='utf8', newline='\n').write(art)
     print('built dist/%s  (%d fragments, %d KB)  %s' % (OUT, len(ORDER), len(html) // 1024, note))
 
 
