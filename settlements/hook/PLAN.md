@@ -20,6 +20,7 @@ Pirate Emperors, Voth, and Iziz again under Vinzenda IX).
 | Kits, read in place | `kits/islanders` (West: the Hukoa; East: the Kautoan layer), `settlements/ys` (the Hykkousoi kit: the Tethyan quarter), the Iziz Vernacular and the Ancients core as Verge's `IZV` bundle (`settlements/iziz/VASSAL-KITS.md` section 1), `settlements/voth/catalog` (the Vothic layer's lots, as `core/city` builds Voth) with `settlements/voth/src` lifted by name for its landmarks (`vothlift.py`), `kits/post-apoc` (culture-neutral salvage infill), `kits/ringsea` and the Port vessels (the harbour's ships) |
 | Core | `core/rand`, `core/mask`, `core/tags`, `core/space`, `core/lod`, `core/host`, the shared sky and camera; `core/furnish` once interiors come |
 | Ground | the Port kit's natural coast (`71-port-terrain.js`) extended inland by a heights ridge behind the harbour (the Vernacular's quarter sits on it, as Iziz's rich do on their mesas) |
+| The Ancient town | the port's own city behind the waterfront (the owner, 2026-10-19): a grid of Ancient blocks on the Port's 110 m module, its ruins from `kits/ancients` (read in place through the `IZV` bundle; decay 0 to 5) placed as **host records**, and every later culture's additions built on and into them (section 3, "The Ancient town") |
 
 Hook is a settlement and goes in the gallery when it first reaches `main` (`gallery/README.md`).
 
@@ -47,6 +48,16 @@ About 2.6 km of waterfront, 1.2 km deep to the cliff's foot. From west to east:
 | **The Arsenal** | the graving docks and the boat yard, the shipping terminal | Iziz, kept by every ruler since |
 | **The Sun Canton** | the heliport pad and the tank farm, the land blocks behind | Voth |
 | **The Stacks** | the container towers, compounds and silo houses at the eastern edge | the poor of every people; Voth's slave market |
+
+Behind every zone stands **the Ancient town** (the owner, 2026-10-19): the city the port served, on a grid of 110 m
+blocks and 20 m streets aligned to the waterfront, three rows deep behind the Customs and the Arsenal (z -150 to
+-540 in the kit's frame, the first row behind the shore road), two behind the Strand, the Tethyan quarter and the Sun
+Canton, one behind the Point and the Stacks (`site/hook-site.json` `grid`). The site's avenues are its streets: the pier's axis was the Ancient city's main avenue, the shore road its
+esplanade (the Arcades along it), and the Heights its upper terrace, reached by an Ancient stair and the stump of a
+funicular (`kits/ancients/src/8ap-funicular.js`, Verge's piece). Each later ruler reclaimed what stood and built on
+it in their own style, so the Ancient fabric shows in every zone: whole and repaired in the Customs and on the
+Heights, ruined and toppled at the edges, grown over in the Tethyan quarter, patched with scrap in the Strand and the
+Stacks.
 
 The eastern harbour (the Iron Court, the Arsenal's east end, the Stacks' seaward row) carries the reconquest's fresh
 damage; the town surrendered whole when the Iron Court fell, so the Point, the Strand, the Tethyan quarter and the
@@ -105,6 +116,7 @@ Every building is registered in `core/tags` with `culture` and `layer` tags befo
 
 | Layer | Kit | Where it stands | Share of lots |
 |---|---|---|---|
+| `ancient` | `kits/ancients` read in place (the `IZV` bundle carries it): the ruin hosts of the Ancient town, placed as records with a type, a footprint and a decay (0 intact, 1 ruined, 2 toppled, 3 repaired, 4 rehabilitated, 5 worn); the five host types (`8ap-host-*`: the Facet and the Bastion towers, the Arcades, the Capsule Stalks, the Bell Hall) where a culture builds onto the ruin, the kit's other types as plain ruins; the funicular stump and the Ancient stair up the Heights | everywhere behind the waterfront: the Ancient town's grid (section 1) | the hosts of about 40% of the lots in the core (the Customs, the Heights, the Tethyan quarter) and 15% at the edges; no lots of its own |
 | `hukoa` | `kits/islanders` West set, `scrap` patching on; the boat houses and stilt houses of `hbFish` | the Point, the Strand, the Arsenal's boat yard, the Stacks | 30% |
 | `tethys` | the Ys kit's Hykkousoi buildings (`settlements/ys`: grown pods on Ancient hosts, the moles) | the Tethyan quarter, the marina | 8% |
 | `kautoa` | `kits/islanders` East set: the governor's house (a palace court, `ip`), ancestor shrines, a few rich houses | the Heights' eastern end, the Tethyan quarter's edge | 5% |
@@ -143,6 +155,33 @@ middle buildings may take (the owner: "heavy on nautical salvage architecture"):
 - rope bridges, stair towers and awnings between everything (Noah's Regret's pirate timber);
 - nets, buoys, anchors and chain as the ornament of every tier, gilded on Voth's and the Pirates'.
 
+**The Ancient town** (the owner, 2026-10-19: "more ancient ruins, a small city behind the port itself, reclaimed with
+additions built on in each culture's style") is the layer under every other, and its rule is the **host lot**:
+
+- The site carries the Ancient town's ruins as `hosts`: records `{id, type, x, z, ry, decay, plan}` on the Ancient
+  grid, the `plan` from the kit's `HOSTSPEC_*` data (pure data, the shape of Ys's `YS_HOST_TYPES`), placed by
+  `core/rand` from the site's seed and the block's cell, never by hand except the named ones (the two towers on the
+  pier's axis, the Arcades on the esplanade, the Bell Hall that became the Tethyan sea temple, the funicular). The
+  city builder files them in `core/space` as footprints before step 6, so streets route round them and no lot
+  overlaps one.
+- A lot whose footprint meets a host becomes a **host lot**: the ruin is drawn at its decay, then the lot's culture
+  builds its addition on and into it, with the culture's own kit:
+  `tethys` grows Ys pods on the host's face (`hykAccrete`, the way Ys does it, with a way in on every plate);
+  `hukoa` decks the shell with stilt floors and scrap patching (the Islanders' `scrap` rule) and roofs it with a hull;
+  `iziz` hangs its markets from the reclaimed towers (the Ancient Iziz style, the kit's `iziz-style` target) and
+  fills the shell with the Vernacular's timber and plaster, copper on the civic;
+  `kautoa` sets a spire roof on a cut host (the East set's shrines);
+  `voth` builds its townhouses into the shell with purple render over the concrete and the diamond on the lintel;
+  `salvage` stacks containers and post-apoc scrap inside and over it.
+  A lot off every host builds as before. The addition is a second record on the same lot (`host` names the ruin), so
+  a builder still draws a record.
+- Decay follows the zone and the culture, through a `ruin` field painted on the site like `damage`: the Izani kept
+  the core whole (repaired 3 and rehabilitated 4 in the Customs and on the Heights, worn 5 on the civic they use);
+  ruined 1 and toppled 2 at the edges and in the Stacks; the Tethyan quarter's hosts cut at a storey, as Ys cuts
+  them. The reconquest's `damage` field adds to it on the eastern harbour.
+- Interiors come with P5: a host lot's rooms are the kit's (`kits/ancients-interiors` plans, every room a socket for
+  any culture's furniture), so the Customs House's and the palace's blueprints may take Ancient rooms.
+
 **The governor's palace** is the shared vassal programme (`VASSAL-KITS.md` section 3), on the Heights, in Hook's
 dress: the terrace is an Ancient deck on columns (`73-port-edges.js`), the pavilions' domes are ships' radar domes
 and crane cabs in copper and orange, the forecourt's gate a pair of anchors. It was the Kautoan governor's house, the
@@ -164,10 +203,15 @@ The waterfront comes first, because the Port kit is finished and the city's shap
   `dist/hook.html` shows the whole waterfront with every key placed and `port-every-key` passes.
 - **P1. The ground and the site.** The coast extended inland to the Heights' ridge; the site editor
   (`dist/hook-site.html`, Voth's read in place) saving `site/hook-site.json`; the zones of section 1 drawn as polygons
-  with their roles and culture mixes, the avenues (the pier's axis up to the palace, the shore road, the Arsenal road).
-  Done when the owner has laid the site out in the editor and `core/city` steps 0-5 run on it.
+  with their roles and culture mixes, the avenues (the pier's axis up to the palace, the shore road, the Arsenal road)
+  on the Ancient grid, and the Ancient town's `hosts` (section 3, "The Ancient town": the named ones by hand, the rest
+  drawn on the grid by `core/rand`) drawn as plain ruins at their decay. Done when the owner has laid the site out in
+  the editor and `core/city` steps 0-5 run on it with the hosts filed as footprints. **Built 2026-10-19** on the
+  branch `claude/hook-p1`, except the editor page: the site file is seeded from `LAYOUT.svg` and the steps run on it
+  (`README.md`, "P1"); the editor is the open item (`KNOWN_ISSUES.md`), the owner edits the JSON until it comes.
 - **P2. The town on `core/city`.** Steps 6-12 with the kits' dims (`isDims`, the Vernacular's, the Ys kit's, Voth's
-  catalog); the lot filler drawing a culture then a type; the salvage rule on the poor and middle lots. Done when the
+  catalog); the lot filler drawing a culture then a type; the salvage rule on the poor and middle lots; the host-lot
+  rule (a lot on a ruin draws the ruin, then its culture's addition on it). Done when the
   town fills the site with no overlap, nothing on a street or in the water, `node core/city/test-city.js` green.
 - **P3. The layers' landmarks**, placed as records with `near` scorers: the Customs House, the governor's palace, the
   Temple of the Sun, the Iron Court's fortress wall, the Tethyan hall and sea temple, the Kautoan house, the necropolis,

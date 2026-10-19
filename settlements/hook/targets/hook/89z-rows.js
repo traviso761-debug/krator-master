@@ -5,7 +5,11 @@
 // the Hook); the five vessels. Every key the kit registers is placed at least once (verify.py: port-every-key).
 // Decays are per segment, from the plan's table: 0 repaired (the working harbour in the middle), 1 worn (the edges),
 // 3 salvage (where the salvagers live).
-const TITLE='Krator — Hook, the waterfront (P0)';
+// P1 (2026-10-19): the ground behind the port (76-hook-ground.js: the Heights' ridge and the cliff's foot, as layout
+// stamps) and the Ancient town's ruin hosts (79-hook-ancient.js) on its grid: the site's named hosts
+// (site/hook-site.json `hosts`), then a host per free block by KRAND, seeded from (HOOK_SEED, stretch, row, column),
+// never from how many came before. Each host is registered in core/tags before anything draws it.
+const TITLE='Krator — Hook, the waterfront and the Ancient town (P1)';
 const PORT_LAYOUT_DEF=(()=>{const ok=k=>!!PORT_REG.seg[k];
  // the coast, west to east: [key, decay, set-back]. Set-backs keep neighbours within 40 m of each other.
  const plan=[
@@ -65,6 +69,53 @@ const PORT_LAYOUT_DEF=(()=>{const ok=k=>!!PORT_REG.seg[k];
   if(VS){const host=sea.length?sea[1]:pier,f=portFoot(host),sx=f?(f.x0+f.x1)/2+30:pier.gx,sz=(f?f.z1:e.z1)+VS.length/2+40;
    moored.push({vessel:true,key:'slSub',d:3,gx:sx,gz:sz,heading:.5,run:0});
    stamps.push({kind:'dig',x0:sx-VS.length/2-30,x1:sx+VS.length/2+30,z0:sz-VS.length/2-30,z1:sz+VS.length/2+30,y:-(VS.draft+8),soft:40});}}
+ // ---------------------------------------------------------------- P1: the ground behind the port
+ for(const s of HOOK_GROUND.stamps())stamps.push(s);
+ // ---------------------------------------------------------------- P1: the Ancient town's ruin hosts
+ // A host is a land block (place 'land') whose item sits at the pad's seaward edge: gz = z + W/2 for a host centred
+ // on z (79-hook-ancient.js). opt carries what the builder needs beyond the kit's fields: ry, cutY, the record's name.
+ const hosts=[],SITE=HOOK_SITE,KL=KCITY.lib;
+ const hostItem=(key,x,z,d,o)=>{const W=HOOK_HOSTS[key].W;return {key,d,gx:x,gz:z+W/2,place:'land',slot:0,run:0,ancient:true,
+  opt:{ry:o.ry==null?0:o.ry,cutY:o.cutY==null?null:o.cutY,hostName:o.name||key,hostId:o.id}};};
+ const hostFoot=it=>{const W=HOOK_HOSTS[it.key].W;return {x0:it.gx-W/2,x1:it.gx+W/2,z0:it.gz-W,z1:it.gz};};
+ const overlap=(a,b,pad)=>a.x0<b.x1+pad&&a.x1>b.x0-pad&&a.z0<b.z1+pad&&a.z1>b.z0-pad;
+ const taken=items.concat(back).map(portFoot).filter(Boolean);   // the Port's own footprints
+ for(const h of (SITE.hosts||[])){if(!HOOK_HOSTS[h.key])continue;
+  const cutY=hookHostCut(h.key,h.cut,KRAND.unit(KRAND.hash(KRAND.child(HOOK_SEED,'host-cut:'+h.id),1)));
+  const it=hostItem(h.key,h.x,h.z,h.d==null?1:h.d,{ry:h.ry,cutY,name:h.name,id:h.id});const f=hostFoot(it);
+  if(taken.some(t=>overlap(f,t,4))){reportErr('host '+h.id+' overlaps a Port footprint: not placed');continue;}
+  hosts.push(it);taken.push(f);}
+ // the rest of the grid: a host per free block by hash. A block near an avenue stays free (the avenues are laid at
+ // step 3 and would knock a host out); a block under the Heights' front slope stays free (the stair and the funicular,
+ // P3); the type by the site's weights, the decay by the quarter's ruin level, the cut by the quarter too.
+ const G=SITE.grid||{},rows=G.rows||[],z1=G.z1==null?-150:G.z1,B=G.block||110,S=G.street||20,W=G.weights||{anArcades:1};
+ const keys=Object.keys(W).filter(k=>HOOK_HOSTS[k]),wsum=keys.reduce((s,k)=>s+W[k],0);
+ const quarters=(SITE.districts||[]).filter(d=>d.type==='quarter');
+ const quarterAt=(x,z)=>quarters.find(q=>KL.inPoly([x,z],q.poly))||null;
+ const nearAvenue=(x,z,r)=>(SITE.avenues||[]).some(a=>{for(let i=1;i<a.pts.length;i++)if(KL.segDist([x,z],a.pts[i-1],a.pts[i])<r)return true;return false;});
+ const ridge=HOOK_GROUND.ridge,gridSeed=KRAND.child(HOOK_SEED,'host-grid');
+ rows.forEach((st,si)=>{const [xa,xb,n]=st;
+  for(let r=0;r<n;r++){const bz1=z1-r*(B+S),bz0=bz1-B;
+   for(let xs=xa+S/2,c=0;xs+B<=xb;xs+=B+S,c++){const cx=xs+B/2,cz=(bz0+bz1)/2;
+    const h=KRAND.stream(KRAND.hash(gridSeed,si,r,c));
+    const core=cx>-730&&cx<810,p=core?(G.p==null?.45:G.p):(G.pEdge==null?.3:G.pEdge);
+    if(h.next()>=p)continue;
+    if(nearAvenue(cx,cz,B/2+8))continue;
+    if(cx>ridge.x0&&cx<ridge.x1&&cz<ridge.z1+ridge.soft&&cz>ridge.z1-20)continue;   // the front slope of the Heights
+    let u=h.next()*wsum,key=keys[keys.length-1];for(const k of keys){u-=W[k];if(u<=0){key=k;break;}}
+    const q=quarterAt(cx,cz),ruin=q?(q.ruin==null?.5:q.ruin):.5;
+    const d=ruin<.33?3:1,cut=ruin<.33?'tall':ruin<.66?'mid':'low';
+    const cutY=hookHostCut(key,cut,h.next());
+    const it=hostItem(key,cx,cz,d,{ry:0,cutY,name:HOOK_HOSTS[key].spec.name,id:'g'+si+'-'+r+'-'+c});const f=hostFoot(it);
+    if(taken.some(t=>overlap(f,t,4)))continue;
+    hosts.push(it);taken.push(f);}}});
+ // every host and quarter in core/tags before anything is drawn (CLAUDE.md): building records of the ancient layer
+ const T=KTAGS.create({build:'hook'});
+ for(const it of hosts){const W=HOOK_HOSTS[it.key].W,S=HOOK_HOSTS[it.key].spec;
+  it.tag=T.add({class:'building',kind:'ruin',key:it.key,name:it.opt.hostName,at:[it.gx,0,it.gz-W/2],ry:it.opt.ry,size:[W,W,it.opt.cutY||S.H],
+   tags:{culture:'ancients',types:['civic'],wealth:'civic',decay:it.d,layer:'ancient'},note:it.opt.hostId}).id;}
+ for(const q of quarters){let cx=0,cz=0;for(const p of q.poly){cx+=p[0];cz+=p[1];}cx/=q.poly.length;cz/=q.poly.length;
+  T.add({class:'feature',kind:'quarter',key:q.id,name:q.name,at:[cx,0,cz],size:[1,1,1],tags:{layer:q.layer,holder:q.holder,mood:q.mood},note:q.id});}
  const run=Object.assign({d:0,back,sea,moored},R);
- return {items:items.concat(back,sea,moored),runs:[run],stamps,vessels:portVesselKeys(),
-  harbour:{pier,back,sea},hook:{at,pier,berth,heli}};})();
+ return {items:items.concat(back,hosts,sea,moored),runs:[run],stamps,vessels:portVesselKeys(),
+  harbour:{pier,back,sea},hook:{at,pier,berth,heli,hosts,tags:T}};})();
