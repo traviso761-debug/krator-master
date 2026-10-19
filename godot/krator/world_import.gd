@@ -230,6 +230,7 @@ static func build(path: String) -> Node3D:
 		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water"]):
 			meta[k] = d[k]
 	root.set_meta("world", meta)
+	KratorBiome.cell = KratorBiome.policy_cell(d["convention"])   # the export contract's LOD cell (convention.lod)
 	root.set_meta("krator", {"box": d["box"], "build": d["build"], "convention": d["convention"]})
 	report["counts"] = {"items": d["items"].size(), "instances": ids["instances"], "buckets": d["buckets"].size(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": tc, "records": by_id.size(), "load_ms": Time.get_ticks_msec() - t0}

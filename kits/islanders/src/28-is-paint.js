@@ -62,7 +62,7 @@ function ispMoon(g,W,H){const c=W/2;g.fillStyle=ISP_C.black;g.fillRect(0,0,W,H);
  for(const [x,y,r] of [[-.16,-.12,.16],[.14,.02,.12],[-.04,.2,.1],[.2,-.2,.06]]){g.beginPath();g.arc(c+x*W,c+y*W,r*W*.5,0,TAU);g.fill();}}
 /* the materials: a canvas stand-in for every painted key the pack lacks */
 const ISP_SHEETS={patGableW:[ispGableW,2.4],patGableE:[ispGableE,2.2],patBand:[ispBand,1.2],patStory:[ispStory,3.2],patWeave:[ispWeave,2.4],medMoon:[ispMoon,1],
- patGableW2:[ispGableW,2.4],patGableE2:[ispGableE,2.2],patHinggi:[ispGableE,2]};   /* the variants and the hinggi draw as their kin */
+ patGableW2:[ispGableW,2.4],patGableE2:[ispGableE,2.2],patHinggi:[ispGableE,2],patMat:[ispWeave,1.6]};   /* the variants, the hinggi and the plaited mat draw as their kin */
 const ISP_STANDIN=[];
 for(const k in ISP_SHEETS){if(KIT_HAS(k))continue;   /* ?mat=proc still shows the motifs: they are the culture, not a surface detail */
  const m=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.82,metalness:0,map:ispCanvas(ISP_SHEETS[k][0]),side:THREE.DoubleSide});

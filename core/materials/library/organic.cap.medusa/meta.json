@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.494,
+    1.462
+   ],
+   "seam_before": [
+    2.306,
+    2.26
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": false,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.cap.medusa",
+  "metal": 0,
+  "roughness": 0.55,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "organic.cap.medusa.webp",
+  "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.cap.medusa` (section 6, the Throne's new flora)",
+  "reuse": "the medusa cap's dome; any spotted maroon cap or fruiting body",
+  "sha1": "5ea5ad3e3aea40ce9c7e43a57b02bd51b96ac2ab"
+ }
+}

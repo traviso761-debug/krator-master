@@ -11,7 +11,19 @@ const ANIM := preload("res://shaders/anim.gdshader")
 const ANIM_ADD := preload("res://shaders/anim_add.gdshader")
 const ANIM_PHASE := preload("res://shaders/anim_phase.gdshader")
 const CHUNK := 1200.0   # BIO.LOD.chunk (three's LOD box; only named in the report now)
-const CELL := 150.0     # the importer's LOD cell: finer than a 300 m tile, so a tile changes detail progressively
+const CELL := 150.0     # the default LOD cell: finer than a 300 m tile, so a tile changes detail progressively
+# the cell in force: convention.lod.cell of the file being built (core/export/README.md, "LOD"), else CELL (older exports,
+# and the krator-biome JSON route, whose convention has no lod entry)
+static var cell := CELL
+
+
+# the cell a world's convention declares; CELL when it names none (or a nonsense one)
+static func policy_cell(convention) -> float:
+	if convention is Dictionary and convention.get("lod") is Dictionary:
+		var c = convention["lod"].get("cell")
+		if (c is float or c is int) and float(c) > 0.0:
+			return float(c)
+	return CELL
 
 
 static func build(path: String) -> Node3D:
@@ -24,6 +36,7 @@ static func build(path: String) -> Node3D:
 		report["gaps"]["format"] = "not a krator-biome file"
 		root.set_meta("report", report)
 		return root
+	cell = policy_cell(d.get("convention"))
 	root.set_meta("krator", {"kits": d["kits"], "box": d["box"], "core": d["core"], "convention": d["convention"]})
 
 	# textures: PNG data URLs (sRGB images)
@@ -195,20 +208,20 @@ static func _gap(report: Dictionary, key: String, text: String) -> void:
 	report["gaps"][key] = text
 
 
-# A LOD-chunked item or bucket is split into CELL-sized cells (instances by position, buckets by connected piece),
+# A LOD-chunked item or bucket is split into `cell`-sized cells (instances by position, buckets by connected piece),
 # one node per cell at the cell's centre. Godot's visibility range is measured from the node, three's from the
 # chunk's box (BIO.lodTick). Placed per chunk, a 300 m tile inside one 1.2 km chunk changed detail all at one moment
 # (GODOT-PLAN.md, finding 16); per cell, detail thins progressively and the range is widened only by the cell's
 # half-diagonal. A record without `lod` stays one node at the origin (cell key "").
 static func _cell_key(x: float, z: float) -> String:
-	return "%d,%d" % [int(floor(x / CELL)), int(floor(z / CELL))]
+	return "%d,%d" % [int(floor(x / cell)), int(floor(z / cell))]
 
 
 static func _cell_origin(key: String) -> Vector3:
 	if key == "":
 		return Vector3.ZERO
 	var c: PackedStringArray = key.split(",")
-	return Vector3((float(c[0]) + 0.5) * CELL, 0.0, (float(c[1]) + 0.5) * CELL)
+	return Vector3((float(c[0]) + 0.5) * cell, 0.0, (float(c[1]) + 0.5) * cell)
 
 
 # cell key -> the indices of the instances in that cell
@@ -323,10 +336,12 @@ static func _sub_mesh(arrays: Array, tris: PackedInt32Array, origin: Vector3, ma
 
 
 # half: the half-diagonal of the box the node stands at the centre of (a cell here; world_import.gd places whole chunks)
-static func _apply_lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary, half := CELL * 0.7071) -> void:
+static func _apply_lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary, half := -1.0) -> void:
 	var lod = rec.get("lod")
 	if lod == null:
 		return
+	if half < 0.0:
+		half = cell * 0.7071
 	# three measures to the chunk's box, Godot to the node: widen by the half-diagonal of the box the node stands for
 	gi.visibility_range_end = float(lod["range"]) + half
 	gi.visibility_range_end_margin = 60.0
@@ -334,7 +349,7 @@ static func _apply_lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictiona
 		gi.visibility_range_begin = max(0.0, float(lod["minRange"]) - half)
 		gi.visibility_range_begin_margin = 60.0
 	gi.visibility_range_fade_mode = GeometryInstance3D.VISIBILITY_RANGE_FADE_SELF
-	_gap(report, "lod", "LOD is per chunk box in three (%.0f m) and per node point in Godot: LOD-chunked items and buckets are split into %.0f m cells (instances by position, buckets by connected piece), one node per cell at its centre, ranges widened by the cell half-diagonal (%.0f m), so a tile's detail thins cell by cell; stand-ins and impostors are not LOD levels of what they replace" % [CHUNK, CELL, half])
+	_gap(report, "lod", "LOD is per chunk box in three (%.0f m) and per node point in Godot: LOD-chunked items and buckets are split into %.0f m cells (instances by position, buckets by connected piece), one node per cell at its centre, ranges widened by the cell half-diagonal (%.0f m), so a tile's detail thins cell by cell; stand-ins and impostors are not LOD levels of what they replace" % [CHUNK, cell, half])
 
 
 # MultiMesh.buffer: per instance 12 floats (the 3x4 transform, row by row), 4 colour, 4 custom.

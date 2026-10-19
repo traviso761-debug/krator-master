@@ -12,7 +12,8 @@ Steps:
               each blended pixel split back into the subject's colour and an alpha; key_hi is then the distance from the
               key beyond which a pixel is solid subject); `choke` (n pixels) then
               shrinks the alpha to drop a tinted fringe the spill pass leaves.
-  1. crop     (anchor 'tight': the opaque box only, stretched square on resize, for a wing mapped by its bounding box) to the opaque pixels (alpha > 16), then pad back to a square. `anchor` says where the content sits:
+  1. crop     (anchor 'none': no crop at all, the frame kept, for a 3 x 3 sheet a host cuts into equal cells or a
+              keyed surface that tiles; anchor 'tight': the opaque box only, stretched square on resize, for a wing mapped by its bounding box) to the opaque pixels (alpha > 16), then pad back to a square. `anchor` says where the content sits:
               'center' (a spray seen from above), 'bottom' (a frond or a plant: its base on the bottom edge,
               centred) or 'top' (a hanging chain: its hung end on the top edge, centred). `pad` is the margin.
   2. resize   to SIZE.
@@ -29,6 +30,8 @@ VERSION = 1
 
 
 def crop_square(im, anchor, pad):
+    if anchor == 'none':      # the whole frame as it is: a sheet whose cells a host cuts by thirds (or a cut-out surface that tiles)
+        return im
     a = np.asarray(im.getchannel('A'))
     ys, xs = np.nonzero(a > 16)
     x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1

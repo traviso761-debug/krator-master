@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.03,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.lattice.cage",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.45,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "organic.lattice.cage.webp",
+  "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+  "licence": "generated for this project by its owner",
+  "note": "a tiling surface with its holes keyed to alpha (a card set, anchor none: no crop, so it still tiles); no normal map",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.lattice.cage` (section 6, the Throne's new flora)",
+  "reuse": "the cage lantern's bulb; any open chitin or coral cage",
+  "sha1": "ad4f2f9c182429e2733b01263df7282eb6fdea92"
+ }
+}

@@ -69,6 +69,25 @@ linear for instances, vertices and materials (three's working values as hex: do 
 and the atmosphere; typed arrays `{type, n, b64}` (little-endian bytes); ids as core/tags makes them; the box rule
 (an instance by its origin, `x0 <= x < x1`; a bucket piece by its foot).
 
+#### LOD
+
+`convention.lod = {cell: 150, widen: 'half-diagonal', copies: 'none'}` is the one declared LOD policy (ROADMAP.md
+section 11 item 4; GODOT-PLAN.md finding 16).
+
+- **What a page exports.** No LOD render copies: `core/lod`'s `extras.lodCopy` meshes are skipped, so the glTF holds each
+  original once. A record that three draws in LOD chunks carries `lod: {chunk, range, minRange}` in the JSON form.
+- **What Godot does.** Visibility is measured from a node's point, three's from the chunk's box, so the importer splits
+  each LOD-chunked item (instances by position) and bucket (connected pieces by centroid) into `cell`-metre cells, one
+  node per cell at its centre, and widens `range` (and narrows `minRange`) by the cell's half-diagonal, `cell * 0.7071`
+  (106 m at 150). A 300 m tile then thins cell by cell instead of all at once. `krator/biome_import.gd` reads
+  `convention.lod.cell` (`KratorBiome.policy_cell`) and falls back to its `CELL` constant, 150, for an older export or
+  the krator-biome JSON route, whose convention has no `lod` entry. `world_import.gd` places whole chunks and keeps the
+  chunk's own widening.
+- **Changing it.** A case sets `lod.cell` in the convention (a smaller cell gives smoother thinning and more nodes: the
+  rift tile is 175 item nodes and 47 bucket nodes over 12 cells at 150, 607 and 119 over 28 at 75). A change to the
+  default is a change to `07-core-export.js`, so every page that lists it rebuilds. `godot/tests/export/world_test.gd`
+  asserts the entry on the sedesert case and the rift counts at both cells.
+
 ### The sections
 
 | Section | Filled by | Shape |
@@ -250,6 +269,21 @@ Each must-pass case names its profile in its `verify.py` (`EXPORT_BOX`, `EXPORT_
 | Iziz's district (M5) | `40,-225,280,15` (the triumphal plaza and its statues: the Godot case's box, `-120,292,120,532`, holds no registered furniture, the gap the profile catches; move the case to this box when it is re-exported) | `registry, items, buckets, materials, textures, terrain, stage, atmos, fixtures, furniture, interiors?` (its buildings are shells; its ground is sampled, ROADMAP.md section 11, item 3) |
 | Yuni (`settlements/yuni/verify.py`, the world page) | `140,-80,340,90` (the Foundry, `bld_00005`: the Godot spike's yuni case, and the street before it) | `registry, fixtures, interiors?` (its buildings and fixtures are the core/tags records `51-fixtures.js` makes; its rooms go out building-local through `KRATOR_EXPORT.building` until they take the kits/interiors shape, so `interiors` reads empty; it contributes no meshes: the page's geometry is not baked into item sets, ROADMAP.md section 11, item 3) |
 | the isle demo (M6; `settlements/isle-demo/PLAN.md` section 7) | not yet registered: the page is not built | `registry, items, buckets, materials, textures, terrain=field` (the extracted heights, not `EXPORT.ground`'s samples), `city` (two `KCITY` plans, registered by core/city), `fixtures`, `interiors` (the kit's rooms), `furniture` (the catalog placements, by look), `sim` (places, actors, stocks per settlement, the canoe route and its books), `stage`, `atmos`; its verify names it when P6b lands, before P7, so the sim's export is written to it |
+| crater-drylands (2026-10-18) | `600,-1200,900,-900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| eastabyss (2026-10-18) | `2100,-300,2400,0` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| ebadlands (2026-10-18) | `-300,0,0,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| ehighlands (2026-10-18) | `900,1200,1200,1500` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| geyser (2026-10-18) | `300,0,600,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| hyperjungle (2026-10-18) | `-600,-300,-300,0` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| nhighlands (2026-10-18) | `-1500,-1200,-1200,-900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| nwbay (2026-10-18) | `600,600,900,900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| nwlowlands (2026-10-18) | `-900,-1200,-600,-900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| rift (2026-10-18) | `300,0,600,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| ringisles (2026-10-18) | `-300,-900,0,-600` | `registry, items, buckets, materials, textures, terrain, stage, water` (sampled terrain; atmos left out, its KNOWN_ISSUES.md) |
+| shighlands (2026-10-18) | `-1800,-900,-1500,-600` | `registry, items, buckets, materials, textures, terrain, stage, atmos` (sampled terrain; water left out, its KNOWN_ISSUES.md) |
+| swbay (2026-10-18) | `0,0,300,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| swlowlands (2026-10-18) | `600,0,900,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| xanadu (2026-10-18) | `-300,1800,0,2100` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 
 Every other build is preview-only until it names a profile and meets it.
 
@@ -382,6 +416,34 @@ No meshes come through this route (Yuni's geometry is drawn by its kit, not bake
 records only: `Records/Building_<id>` nodes with their fixtures as children, no `Items`, no terrain. `verify.py
 --assert` checks the profile (`registry, fixtures, interiors?`) over that box; `--profile registry,fixtures,sim` fails
 on the stub.
+
+## Report
+
+`python3 tools/export_report.py [case ...] [--json] [--compare old.json]` prints one row per case under `godot/data`
+that holds a `world.json` and a `world.glb` (ROADMAP.md section 11, the cross-case size report; it extends the idea of
+`tools/geometry_report.py`, which counts a page's draw calls in Chromium, to the exported files). Pure Python: `json`
+over `world.json` and `struct` over the glb's header and JSON chunk (accessor counts give vertices and triangles,
+`EXT_mesh_gpu_instancing`'s TRANSLATION count gives instances); no Chromium, no Godot, no 3D library. Columns: bytes of
+`world.json`, `world.glb` and `tex/` (an LFS pointer counts as the file it names); sections by status (`ok empty stub
+none`); item sets and instances; buckets and bucket triangles (`itris`: the items' triangles, unit triangles times
+instances); `mats` and `texs` (records in the lists) beside `usedm` and `usedt` (those a node or a material names);
+`draws`, the draw-call proxy (item sets + buckets, one MultiMesh or mesh node each in Godot); the terrain source.
+`--json` writes `godot/data/export-report.json` (committed: it is the baseline); `--compare` prints each column's delta
+against such a file. `tools/test_all.py --nightly` runs it with `--compare` as a report that never fails the run.
+
+Reconciled with the tables above (the files in `godot/data` of 2026-10-13):
+
+| | M4 sedesert | M5 Iziz |
+|---|---|---|
+| instances | 7,280, as the table | 9,638, as the table |
+| items, buckets, bucket triangles | 34, 3, 47,471, as the table | 130, 33, 60,735, as the table |
+| bucket records | **60** (the table is right; 60 is sedesert's figure) | **49** (the Iziz table says 49 of 49; the 60 in the Iziz row of a summary is the 60,735 triangles, not records) |
+| materials | **36** records (the M4 row says 35: it was written before stage 2e added the ground's `world-uv` record, `stats.materials` and the file count 36); 28 are named by a node | 220, as the table |
+| textures | **27** listed: 20 library maps and 7 PNGs (the M4 row's 25 = 18 + 7 was the first export; the ground layers' two library maps of stage 2e, `world-sedesert` re-exported in cd29d616, make 27, as the references line says); 25 are named by a material | 68, as the table (57 library + 11 PNGs); all named |
+| files | json 7.9 MB (the table says 7.7 MB, before the ground records), glb 2.8 MB, tex 2.0 MB | 8.2 MB, 3.1 MB, 11.0 MB, as the table |
+| draw-call proxy | 37 | 163 (the glb's node count) |
+
+Where a figure here differs from the report, the report is right: it reads the files the Godot tests import.
 
 ## Not done
 
