@@ -460,6 +460,22 @@ The kit's header lists every style-sheet field and value. `FK.set()` declares `m
 sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<culture>_<tier>_<role>`
 (or `prefix`), and names them from `names`. Build, then `verify.py --assert`.
 
+### The Iziz palace's pieces (2026-10-19)
+
+Two category files, like `-jobs.js`: every piece is culture `iziz`, and every `rooms` list names only the palace's room
+kinds (`pal_*`), so no other build's placer ever picks one; a bundle carries them only when it names `izpalace` or
+`izpalace-depot` (`settlements/iziz/build.py` `TARGET_FURN`, the palace page). Each adds the palette keys it needs as
+defaults (the Iziz file's own values win). The palace's furnishing places them by key
+(`settlements/iziz/targets/palace/95p-palace-furnish.js`); the blueprint's NEW list (`settlements/iziz/palace/FURNITURE.md`)
+is covered.
+
+| File | Pieces |
+|---|---|
+| `krator-master-furniture-izpalace.js` (court, 25) | the imperial throne on its dais with the Orb (unique), bust niche, altar of the House, bath pool, bath slab, strongbox (role strongbox), map table with the crater inlaid, lectern, armillary, legion standard, heliograph; and for the dressing: great chandelier (ceiling), torchere, orb on a pedestal, gilt sun relief (wall), marble urn, palm in a bronze pot, kline, banquet table, pier mirror (wall), harp, mech trophy of Hook, fan screen, runner (rug), baldachin |
+| `krator-master-furniture-izpalace-depot.js` (Ancient and service, 22) | the power core (unique), the Ancient radio set (unique), power-cell rack, the lift platform (unique), mech cradle, chain hoist (ceiling), the shield emitter (unique), relic case, cauldron, roasting spit, brig grate, manacles, drum stand, laundry copper, ice chest, bath basin, Ancient light column, Ancient terminal, tool cart, munitions stack, shell rack, armour-plate stack |
+
+Verified: `tests/test-segments.js`; `verify.py dist/catalog.html --sheet furniture --query cultures=iziz --assert`.
+
 ### Pieces added in the 2026-10 interiors pass
 
 | Culture | Pieces (anchor) |

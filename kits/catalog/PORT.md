@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 42 (2%) | 0 (0%) | 10 (1%) | 59 (3%) | 1836 (94%) |
+| KB | 42 (2%) | 0 (0%) | 10 (0%) | 59 (3%) | 1948 (95%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -29,6 +29,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-master-furniture-hykkousoi.js` | 30.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 55 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `krator-master-furniture-islander.js` | 4.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-iziz.js` | 17.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 66 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture-izpalace-depot.js` | 53.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 340 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture-izpalace.js` | 59.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 382 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-jobs.js` | 20.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 84 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `krator-master-furniture-lizardmen.js` | 6.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-nomad.js` | 112.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 590 | 0 | 0 | 0 | 0 | 0 |  |

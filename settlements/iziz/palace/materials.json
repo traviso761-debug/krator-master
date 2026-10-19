@@ -1,0 +1,204 @@
+{
+ "build": "iziz-palace",
+ "note": "The Iziz palace citadel's own library families (the palace page only: settlements/iziz/build.py packs them as KMAT pack 'izpalace' into iziz-palace.tex.izpalace.js beside the page, so no other Iziz page changes). The floors, walls, friezes and ceilings of the blueprint's decor levels (BLUEPRINT.md, 'Finishes by decor level'; targets/palace/78r-palace-draw.js): white marble ashlar (sumptuous floors, dados, pilasters, columns), the Iziz sun-star mosaic (rich floors), its teal twin (baths), the Iziz tile (fine floors and dados), the gilt frieze band and gold leaf (state rooms' friezes, coffers, capitals, door surrounds), white stucco tinted per room (walls, ceilings), the Ancients' white panel and concrete (the Depot and the Core), hyper-mahogany (rich dados and doors), the sun banner (rich friezes), and two floor medallions (the sun star and the sunray: one across a piece's top, no world tiling). Full-colour sets keep their hue (keep 1, mean null); the stucco and the concrete are grey detail maps the instance colour tints. Scale is metres per tile, the same as each MAT key's vWorldUV.",
+ "size": 512,
+ "families": {
+  "palMarble": {
+   "lib": "stone.marble.ashlar",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.6,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "palMosaic": {
+   "lib": "patterns/iziz/mosaic",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "palMosaicB": {
+   "lib": "patterns/iziz/mosaic-b",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "palTile": {
+   "lib": "patterns/iziz/tile",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "palGilt": {
+   "lib": "patterns/iziz/gilt",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0.55,
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "palGold": {
+   "lib": "metal.gold",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0.85,
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "palStucco": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.82
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "palAncient": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.82
+   },
+   "metal": 0.15,
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "palConc": {
+   "lib": "concrete.ancient",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.72
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "palMahog": {
+   "lib": "wood.mahogany",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.55
+  },
+  "palSunBanner": {
+   "lib": "patterns/iziz/sun-banner",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "palMedal": {
+   "lib": "patterns/common/medallion-sun-amber",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.6
+  },
+  "palSunray": {
+   "lib": "patterns/common/medallion-sunray",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.5
+  }
+ }
+}

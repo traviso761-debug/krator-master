@@ -12,7 +12,21 @@ python build.py --vendor-check                      # are the vendored Ancients 
 python jscheck.py .syntax-vernacular.js             # parse check on a machine without node
 python verify.py dist/iziz-vernacular.html --assert --views "Overview,Middle — eye level" --out shots
 python verify.py dist/iziz.html --assert --views "Overview,Palace hill,Arena hill" --out shots   # the city (~3.4 M tris, ~40 s build in SwiftShader)
+python build.py --target palace                     # the palace citadel on its hill, furnished: dist/iziz-palace.html
+python verify.py dist/iziz-palace.html --assert --views "Inside: the Aula Regia,Cut: the hall level" --out shots
+node palace/test-palace.js                          # the blueprint's layout, headless: every room reached, every stair joined
 ```
+
+## The palace citadel (2026-10-19: `targets/palace`, `dist/iziz-palace.html`)
+
+The palace hill on its own page, the owner's blueprint (`palace/BLUEPRINT.md`, the sheets in `palace/floors/`) laid inside
+it and furnished: the precinct inside the Ancient curtain wall (the palace, the barracks, the orb-bearer, the triumphal
+plaza, the Praetorium, the Hall of Embassies, the kitchens, the mess and the stables), every storey of the palace block
+from the Vestibule of the Orb to the Beacon Chamber, and the Depot and the Core in the mesa with the Mech Gate on the rear
+face. 227 rooms on 27 storeys of seven buildings, 6,391 pieces of furniture. X cuts a building away (] [ the
+storeys); the view list has the cuts and eye-level views inside the great rooms. How it is made: `API.md`, "The palace
+citadel"; what is left: `KNOWN_ISSUES.md`. All of it is in `targets/palace/` (and the palace's own texture pack in
+`palace/materials.json`, `palace/tex/`), so no other Iziz page changes; it moves into `src/` when the city is rebuilt.
 
 * **`DESIGN.md`** — the Vernacular brief (materials, wealth tiers, lighting rule).
 * **`API.md`** — the contract: registry, kit items, helpers, how to add a building.

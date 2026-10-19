@@ -121,6 +121,15 @@ if(A.trades&&!window.CITY){ const t=A.trades();
 { const I=window._interiors;
   if(I&&I.on) R.push({name:'interiors', ok:I.done===I.total&&I.residenceFails===0,
           detail:I.done+'/'+I.total+' buildings, '+I.rooms+' rooms, '+I.pieces+' pieces'+(I.residenceFails?'; residence fails: '+I.residenceFailList.join(' | '):'')+(I.dropped?'; dropped: '+I.droppedList.slice(0,4).join(' | '):'')}); }
+
+// 8. the palace citadel (targets/palace: 78q laid the blueprint, 95p furnished it): every room reached by a door, the seven
+//    buildings cut-away units, the only rooms dropped the two slivers the liners leave, every heroic piece and every key
+//    the dressing names in the bundle, and the furniture there.
+{ const P=window._palace;
+  if(P){const F=P.furniture||{},miss=Object.keys(F.missing||{}),drop=(P.dropped||[]).filter(n=>!/Great Door|Imperial Guard of the Aula/.test(n));
+   R.push({name:'palace', ok:!P.error&&P.unreached===0&&(P.units||[]).length===7&&!drop.length&&F.on&&F.pieces>=3000&&!miss.length,
+    detail:P.error||(P.rooms+' rooms, '+(P.units||[]).join(' ')+', unreached '+P.unreached+(drop.length?', dropped '+drop.join(' | '):'')
+     +'; furniture '+F.pieces+' pieces in '+F.rooms+' rooms ('+F.heroes+' heroes, '+F.keys+' keys, '+F.ms+' ms)'+(miss.length?'; missing keys: '+miss.join(' '):''))});}}
 return R;}"""
 
 

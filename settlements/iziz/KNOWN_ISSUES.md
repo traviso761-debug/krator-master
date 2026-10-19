@@ -24,12 +24,36 @@ saying what fixed it.
       - FURN_JOBS has no salvage or electrics job: the tinker is tagged carpentry, the salvage yard smithing.
       - Surfaces with no good texture (core/materials/PROMPTS-NEEDED.md, "Gaps with no prompt yet"): dyed cloth, still water,
         world-UV crag rock.
-- [ ] (2026-10-15) **The palace citadel's interior, for the Iziz rebuild:** the agreed programme is `settlements/iziz/palace/`
-      (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`): the whole precinct inside the 84 m curtain wall, an open
-      Roman-style imperial family in the tiered block, the general staff and the diplomatic corps in new flank buildings and
-      the base tier's secretariats, a mech depot and the Ancient core in the mesa, the lararium of the emperors off the Aula,
-      the tower. Nothing is built yet: the palace builder (`src/78-transplant.js`) has no interior. Do it with the rebuild,
-      not before (owner, 2026-10-15).
+- [ ] (2026-10-15; first pass 2026-10-19) **The palace citadel's interior:** the agreed programme is `settlements/iziz/palace/`
+      (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`). The owner asked to start it (2026-10-19: "start building the
+      Iziz palace according to the blueprints ... decorate extravagantly"), so it is built on its own page, `targets/palace`
+      (`dist/iziz-palace.html`; README.md, API.md "The palace citadel"): every sheet laid (227 rooms on 27 storeys of seven
+      buildings, every room reached), finished by decor level, furnished (6,391 pieces, 47 of them new catalog pieces), the
+      Depot and the Core in the mesa, the Mech Gate. `verify.py --assert` passes (`palace`); `node palace/test-palace.js`
+      passes. Left open:
+      - **Not in the city yet.** The fragments are the target's, so no other page changed; when the city is rebuilt they move
+        to `src/` and the city places `pal_citadel` on `HILL.palace` (the frame takes any hill and gate bearing: `IZPAL.frame`).
+        The city's own palace-hill dressing (87-city-layout's court paint, the crag band) is not on this page.
+      - **Not walkable.** The walk (F) stands on `terrainH` (the mesa), so the upper storeys, the Depot and the Core are seen,
+        not walked; there is no walk graph through the rooms and stairs yet (SKILL.md 5j, "Interiors belong on the
+        pedestrian graph"). No people.
+      - **The barracks stay solid** (`izBarracks`): the sheets' Praetorian barracks (I0 #4, #5; I1 #26) have no rooms.
+      - **The heights are assumed** (BLUEPRINT.md left them open; `78q` header): the mesa 40 m, the Depot at the city's level,
+        the Core 12 m under it, three storeys of 14/3 m per tier. The third storey of the base tier repeats sheet I1 as the
+        freedmen's lodgings with the Library of the Palace; the tower's stair is one shaft (u 22..28, v 6..13), not the
+        sheets' two places; the Mech Gate is at the tunnel's end (u 112), past the sheet's (u 70..80).
+      - **Two sheet rooms cannot fit**: the Great Door's 2 m sliver and the Imperial Guard of the Aula (u 22..24) lie between
+        the hall and the rear mass's liner; the great door is drawn as a portal instead. The sheets' Stair of the Hall is
+        2.9 m wide inside the flank's liner, as the flank is.
+      - **Windows** are seen from inside as daylight panes on the liners at the builder's window positions, not as openings;
+        the precinct buildings' too.
+      - **The furniture's marble** draws in the catalog's `stone` detail family (rough rock), and the court cloth in plain silk:
+        a `marble` and a `damask` family are a catalog-wide change (every build bundling the detail maps), not made here.
+        Texture prompts for the six surfaces the palace has no set for (coffers, bronze doors, the crater map, the fresco,
+        the hangar deck, the damask) are in `core/materials/PROMPTS-NEEDED.md`.
+      - **Heavy page**: about 4 M triangles with every room furnished (the furniture at half detail); furnishing takes ~5.5 s
+        in SwiftShader. Nothing is furnished lazily yet (Girder and Verge furnish near the camera first).
+      - No mechs stand in the bays or on the hall's lift (the Mechs kit, `KratorMechs`, could be bundled).
 - [x] (2026-10-15) Iziz on core/host (ROADMAP.md section 10, step 3; core/host/README.md): the camera, the controls, the walk (F),
       the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records, the full registry of
       91t-iziz-tags.js), marks (P, they replace the polygon tool) and the minimap (M) are core/host's; `src/92-camera.js` keeps only

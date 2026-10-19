@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 1 prompt, and 3 optional: section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 7 prompts, and 3 optional: section 1 (the Iziz palace citadel's six, 2026-10-19), section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -119,6 +119,81 @@ Full colour. Palette `ISP_C`: red earth #9a2a1e, dark red #6e1a12, black #1e1a18
 
 `settlements/iziz/KNOWN_ISSUES.md`, "Two surfaces have no good library texture" (the second material pilot, 2026-10-13).
 Both near-colourless, tinted.
+
+### The Iziz palace citadel (`settlements/iziz`, the palace page, 2026-10-19)
+
+The palace page (`settlements/iziz/targets/palace`, `dist/iziz-palace.html`) draws its finishes from the library
+(`settlements/iziz/palace/materials.json`: marble ashlar, the Iziz mosaics and tile, the gilt band, gold leaf, stucco,
+mahogany, the sun banner, the Ancients' panel and concrete, two floor medallions). These six it has no set for
+(`settlements/iziz/KNOWN_ISSUES.md`, "The palace citadel's interior: first pass"). Each lands in the library or
+`patterns/iziz/`; add its family to `settlements/iziz/palace/materials.json`, run
+`python3 tools/textures/pack.py settlements/iziz/palace`, and wire it in `targets/palace/78r-palace-draw.js` (the note
+under each says where).
+
+#### `patterns/iziz/coffer`
+- Kind: tileable pattern, full colour; one coffer per 2.4 m tile. The sumptuous rooms' ceilings (the Aula, the Hangar
+  Hall's neighbours, the emperor's rooms, the state galleries): today cream stucco crossed by plain gold ribs.
+- Wire: `palCoffer` on the decor-4 ceiling slab in `78r` `storey()` (the coffer ribs then go).
+- Reuse: any Art Deco or Roman coffered ceiling: Talia's halls, Voth's state rooms, a Xanadu dome's soffit.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: One square coffer of an Art Deco palace ceiling seen from directly below, filling the tile: a deep stepped frame of three receding gilded mouldings (#d4a640, #b8862a) with fine chevron and bead ornament, the sunken centre field in deep teal plaster (#1f6e6a) with a small gilded sixteen-rayed sun rosette (#e0b050) and a thin cream (#f3e2c0) inner border, the ribs between coffers in cream plaster with a gilt fillet. The pattern repeats exactly one coffer across and one down. Full colour (do not mute).
+```
+
+#### `patterns/iziz/bronze-door`
+- Kind: single sheet, full colour, portrait 1024x2560 (one door leaf). The state rooms' open bronze leaves (`78r`
+  `doorFrame`: plain dark bronze boxes today) and the great door between the Hangar Hall and the Aula.
+- Wire: a `palDoorLeaf` kit item (a box whose front face carries the whole sheet, no world UVs, like `palMedalB`) in place
+  of `izBronzeD` for decor-4 leaves.
+- Reuse: any cast bronze door: Talia's cathedral, the Ancients kit's reclaimed vaults, Voth's palace gate.
+
+```
+A flat, front-on decorative panel, portrait, 1024x2560. Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text, no border, no watermark. A single composition, not a repeating tile: clear margin of plain dark background round it. Material: One leaf of a monumental cast bronze door in Art Deco style, seen straight on: a tall rectangle divided into five stacked panels by raised bronze rails studded with round bosses; the top panel a half sunburst of sixteen stepped rays rising from the bottom edge, the middle panels stepped chevrons and fluted columns in low relief, the bottom panel a kneeling figure holding up an orb; warm dark bronze (#6e4a22) with a thin brown patina, the raised edges polished bright (#c8962a), a little green verdigris (#4a8a70) in the deepest hollows. Full colour (do not mute).
+```
+
+#### `patterns/iziz/crater-map`
+- Kind: single sheet, full colour, square 2048x2048. The Map of the Empire (the tower's first floor: "the whole crater
+  inlaid in the floor; the legions as bronze markers", BLUEPRINT.md I5), and the map tables' tops.
+- Wire: a floor medallion in the tower's map room (`78r` floors: `palMapB`, the way `palMedalB` is laid).
+- Reuse: any map floor or map table of the Iziz Empire; a wall map in the Praetorium.
+
+```
+A flat, front-on decorative panel, square, 2048x2048. Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text, no border, no watermark. A single composition, not a repeating tile: clear margin of plain cream marble round it. Material: A floor map inlaid in coloured marble and bronze, seen from directly above: a great round crater about four fifths of the frame across, its rim a ring of reddish-brown stone (#8a5a3a) with mountain ridges picked out in darker veins, the crater floor green-grey jungle marble (#5a7a5a) crossed by blue-grey river channels (#5a7a8a) running to a dark lake near the centre (#2a4a5a); cities as gilt studs (#d4a640) with small gilt rings round the largest, roads as thin bronze lines between them, a sixteen-rayed sun compass rose in gilt at one edge, a border of cream marble (#efe3c8) with an orange chevron band (#e07a2a). No lettering. Full colour (do not mute).
+```
+
+#### `patterns/iziz/fresco-legions`
+- Kind: tileable pattern, full colour, landscape 2048x1024 (repeats left to right); 4 m across, 2 m high. A painted frieze
+  for the feast rooms and the Hall of the Standards (the triclinium, the Hangar Hall's flanks, the Praetorium), above the
+  dado where the sun-banner frieze runs today.
+- Wire: `palFresco` as the decor-3 and decor-4 frieze in `78r` `style()` for the feast and trophy kinds.
+- Reuse: any Roman-style painted frieze: a Talia or Xanadu banquet hall.
+
+```
+Seamless tileable texture, landscape, 2048x1024. Orthographic, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge. Material: A Roman fresco frieze in an Art Deco hand, painted on smooth plaster with slight age crazing: a procession of legionaries in orange tunics and bronze helmets carrying sun-disc standards, two tall walking war machines (mechs) in white and orange plates striding among them, palm trees and a stepped pyramid behind, against a warm cream ground (#efe0c0); a deep red (#9c2d2d) band below and a teal (#2f8f8a) band with a gilt fillet above. Flat matte fresco colours, a little faded. Full colour (do not mute).
+```
+
+#### `metal.deck.hangar`
+- Kind: tileable material, near-colourless (tinted by the build); 4 m tile. The Depot's floors (the mech bays, the
+  concourse, the repair shop, the forge: Ancient concrete today) and the Hangar Lift's surround.
+- Wire: `palDeck` (family in `palace/materials.json`) as the floor of the Ancient level's work kinds in `78r` `style()`.
+- Reuse: any hangar, dock or vehicle bay floor: Girder's yards, the motor-vehicles kit's garages, the Ancients kit's depots.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy steel hangar deck plates, each about 2 m square, set in a grid with recessed welded seams: a fine raised diamond tread on every plate, flush round tie-down rings set into the plate corners, scuffed tyre and footpad marks, oil stains and a little dust in the seams, faint worn remains of painted guide lines along one seam. Neutral mid grey steel only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+#### `cloth.damask.court`
+- Kind: tileable material, near-colourless (the piece's colour tints it); 0.6 m tile. The court tier's cloth (hangings,
+  upholstery, the baldachins, the runner, the carpets): the catalog's `cloth` family is plain silk today, so the court's
+  crimson and gold read as flat paint at arm's length.
+- Wire: a `damask` family in `kits/catalog/materials.json` and a `FAMILY_SPLITS` row in `kits/catalog/krator-furniture-core.js`
+  routing the court cloth keys (`clothGold`, `clothCrimson`) to it. That is a catalog-wide change: every build that bundles
+  the detail maps (`tex=True`) gains it, so rebuild those (`CLAUDE.md`, "Rebuild what a shared change reaches").
+- Reuse: every culture's court cloth (Voth, Xanadu, Talia, Islanders' palace).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Woven silk damask, the pattern in the weave alone: a repeating figure of a sixteen-rayed sun inside a stepped Art Deco lozenge, with chevron borders between the lozenges, the figure in a glossy satin weave and the ground in a matte twill so the design shows only by its sheen; fine visible threads, a slight softness and a few faint creases. Pale grey only, one colour. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
 
 ### The Resources kit (`kits/resources`)
 

@@ -29,6 +29,7 @@ settlements/yuni/*.tex.*.js filter=lfs diff=lfs merge=lfs -text
 settlements/locus/*.tex.*.js filter=lfs diff=lfs merge=lfs -text
 settlements/girder/*.tex.*.js filter=lfs diff=lfs merge=lfs -text
 settlements/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
+settlements/*/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
 kits/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
 biomes/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
 openworld/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
