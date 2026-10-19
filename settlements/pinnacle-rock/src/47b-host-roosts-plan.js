@@ -2,7 +2,7 @@
 // PRR (43-pr-roosts.js) on this page's rock, here rather than with its drawing (89) so its ways (the Stair's path down the
 // debris slope, the lift road) are cleared before anything grows or falls on them: PR.addWay takes each, and PR.forest,
 // the necanyons kit's mask (88), the talus blocks (87) and PR.zoneAt keep off it.
-const ROOST=(function(){try{const t0=performance.now(),P=PRR.plan({rock:ROCK,K:KSTACKS,PR,ground:groundH,footD:(x,z)=>NECANYONS.footD(x,z),talusW:TALUS.w});
+const ROOST=(function(){try{const t0=performance.now(),P=PRR.plan({rock:ROCK,K:KSTACKS,PR,ground:groundH,footD:(x,z)=>NECANYONS.footD(x,z),talusW:TALUS.w,wallStep:{big:LAND.wallStep||6,small:2.5}});   /* the walls as 47 draws them */
  P.ms=Math.round(performance.now()-t0);P.ways.forEach(W=>PR.addWay(W));return P;}
  catch(e){reportErr('roosts: '+e.stack);return {decks:[],roosts:[],shelters:[],climbs:[],bridges:[],lifts:[],stair:null,roads:[],ways:[],why:{}};}})();
 // a way's mask for the plants and the blocks: nothing within 3 m of its edge

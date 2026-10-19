@@ -41,6 +41,32 @@ const BUDGET={
  cls:{pass:7000000,host:1600000},
  type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','pinnacle/talus':'pass','host':'host'},
 };
+// ---------------------------------------------------------------- THE DRAWN ROCK, measured by rays
+// What hangs on the rock is checked against the rock AS DRAWN (the merged meshes of 47-host-land.js), not against KSTACKS'
+// outline, which the mesh only approximates (its wall rings are at most 160 segments: on the mesa the drawn face stands up
+// to 12 m inside the outline). near(box) gathers the rock's triangles in a box into one small mesh to cast at;
+// gap(M, x, y, z, dx, dz) the distance along a level direction from the point to the drawn rock (cast from 8 m back:
+// positive in the air, negative in the rock, null when the point is deeper in than 8 m or nothing is there)
+const ROCKRAY=(function(){let meshes=null;const RC=new THREE.Raycaster(),CACHE=new Map();
+ function near(x0,x1,z0,z1,y0,y1){const key=[x0,x1,z0,z1,y0,y1].map(Math.round).join(',');let m=CACHE.get(key);if(m)return m;
+  if(!meshes){meshes=[];scene.traverse(o=>{if(o.isMesh&&o.userData.rock)meshes.push(o);});}
+  const pos=[];meshes.forEach(o=>{const g=o.geometry,P=g.attributes.position,I=g.index,n=I?I.count:P.count;
+   for(let t=0;t<n;t+=3){let inBox=false;const v=[];for(let k=0;k<3;k++){const i=I?I.getX(t+k):t+k,x=P.getX(i),y=P.getY(i),z=P.getZ(i);v.push(x,y,z);
+     if(x>=x0&&x<=x1&&z>=z0&&z<=z1&&y>=y0&&y<=y1)inBox=true;}if(inBox)for(const q of v)pos.push(q);}});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeBoundingSphere();
+  m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));m.updateMatrixWorld(true);CACHE.set(key,m);return m;}
+ function gap(M,x,y,z,dx,dz){const L=Math.hypot(dx,dz)||1;dx/=L;dz/=L;RC.set(new THREE.Vector3(x-dx*8,y,z-dz*8),new THREE.Vector3(dx,0,dz));RC.far=60;
+  const h=RC.intersectObject(M,false)[0];return h?h.distance-8:null;}
+ // the drawn surface under a point (the first rock a ray down from 30 m over it meets), or null
+ function under(M,x,y,z){RC.set(new THREE.Vector3(x,y+30,z),new THREE.Vector3(0,-1,0));RC.far=90;const h=RC.intersectObject(M,false)[0];return h?y+30-h.distance:null;}
+ // in the rock: (dx, dz) points at the rock the point hangs on; a ray from the point itself goes the OTHER way, out from
+ // it, and the first wall it meets (faces seen edge-on, a top's, skipped) faces away when the ray is leaving rock it
+ // started in (the rock's faces wind outward: KSTACKS.mesh), and faces it when the point is in the air (another body's
+ // wall across a cleft). Nothing met: in the air. The point's own position decides, not where a ray starts
+ function inRock(M,x,y,z,dx,dz){const L=Math.hypot(dx,dz)||1;dx=-dx/L;dz=-dz/L;RC.set(new THREE.Vector3(x,y,z),new THREE.Vector3(dx,0,dz));RC.far=60;
+  for(const h of RC.intersectObject(M,false)){const n=h.face&&h.face.normal;if(!n)continue;const d=n.x*dx+n.z*dz;if(Math.abs(d)<.05)continue;return d>0&&h.distance>.1;}
+  return false;}
+ return {near,gap,under,inRock};})();
 // the plan's numbers (PLAN.md section 1, the settled layout)
 const HCHK={
  // the mesa: 250 m over its south foot, about 1.2 km north-south by 0.8 km
@@ -107,22 +133,36 @@ const HCHK={
  // the lifts: the cable hangs 3 m or more clear of the wall all the way down, the landing on the ground under the tip
  lifts(L){const bad=[];L.forEach(l=>{if(l.clear<3)bad.push(l.id+' '+l.clear.toFixed(1)+' m off the wall');if(Math.abs(l.foot.y-terrainH(l.foot.x,l.foot.z))>1.5)bad.push(l.id+' landing off the ground');});
   return{ok:L.length===2&&!bad.length,detail:L.map(l=>l.id+': '+l.len.toFixed(0)+' m boom, '+l.clear.toFixed(1)+' m clear, '+(_top-l.foot.y).toFixed(0)+' m drop').join('; ')+(bad.length?'; '+bad.join(', '):'')};},
- // the Stair: from the top to the fair ground, gated three times, no step steeper than the plan's (35 degrees on the
- // flights), every cut flight's tread out of the rock
- // ATTACHED BED BY BED (owner, 2026-10-19: "check it is actually wrapping at each slice of the plateau"): for every bed of
- // the mesa a flight passes, every cut tread there has rock under its inner .2 m at least (the face's reach at the tread's
- // height reaches past its inner edge), and every built-out tread's brackets find rock within 3.5 m of its inner edge 3.6 m
- // under it; the head down the shoulder never stands over a ledge's surface
- stair(S){if(!S)return{ok:false,detail:'no Stair'};const K=KSTACKS,P=S.pts,g=S.ground,end=g[g.length-1],Z=PR.zoneAt(end[0],end[2]).zone,cx=MESA_B.x,cz=MESA_B.z;
-  let steep=0,over=0;for(let i=S.shoulder;i+1<P.length;i++){const p=P[i],q=P[i+1],run=Math.hypot(q[0]-p[0],q[2]-p[2]);if(run>.05)steep=Math.max(steep,Math.abs(q[1]-p[1])/run);}
-  for(let i=0;i<S.shoulder;i++){const p=P[i],tp=K.topAt([MESA_B],p[0],p[2]);if(tp>-1e8&&p[1]>tp+.05)over++;}   // over the rock (the last step is at the lip)
-  const bedOf=y=>MESA_B.beds.findIndex(b=>y>=b.y&&y<b.y+b.h),passed=new Set(),loose=new Set();let nLoose=0;
-  for(let i=S.shoulder;i<P.length;i++){const p=P[i],a=Math.atan2(p[2]-cz,p[0]-cx),k=p[4],bi=bedOf(p[1]);if(bi<0)continue;passed.add(bi);
-   const ok=k%2?(p[5]>0&&(p[3]-S.w/2)-(p[5]-.3)<=3.5):PRR.reach([MESA_B],K,cx,cz,a,p[1]-.3,MESA_B.R)>=p[3]-S.w/2+.2;
-   if(!ok){loose.add(bi);nLoose++;}}
-  return{ok:Math.abs(P[0][1]-_top)<1.5&&(Z==='fair'||PR.inEll(end[0],end[2],PR.FAIR,15))&&S.gates.length===3&&steep<.7&&!over&&!loose.size,
-   detail:'from '+P[0][1].toFixed(0)+' m to the '+Z+'; '+S.flights+' flights, '+S.landings.length+' landings, '+S.gates.length+' gates; steepest '+(Math.atan(steep)*180/Math.PI).toFixed(0)+
-    ' degrees; attached on '+(passed.size-loose.size)+' of the '+passed.size+' beds it passes'+(nLoose?' ('+nLoose+' treads loose, beds '+[...loose].slice(0,6).join(', ')+')':'')+(over?'; '+over+' head steps over a ledge':'')};},
+ // the Stair: from the top to the fair ground, gated three times, no flight steeper than 35 degrees, and ON THE ROCK AT
+ // EVERY BED (owner, 2026-10-19: "check it is actually wrapping at each slice of the plateau"; "clips when there's an
+ // overhang"), measured against the DRAWN rock (ROCKRAY), tread by tread: CLEAR (the walkway's middle out of the rock
+ // .5, 1.3 and 2.1 m over the tread: no bed juts through it) and CARRIED (a cut tread's masonry meets the rock 2.7 m
+ // under it, a gallery's bracket 3.6 m under it); every landing's slab clear over its middle and carried at both ends and
+ // its middle; the head down the shoulder never over the drawn ledges. Reported bed by bed
+ stair(S){if(!S)return{ok:false,detail:'no Stair'};const P=S.pts,g=S.ground,end=g[g.length-1],Z=PR.zoneAt(end[0],end[2]).zone,cx=MESA_B.x,cz=MESA_B.z;
+  let steep=0;for(let i=S.shoulder;i+1<P.length;i++){const p=P[i],q=P[i+1],run=Math.hypot(q[0]-p[0],q[2]-p[2]);if(run>.05)steep=Math.max(steep,Math.abs(q[1]-p[1])/run);}
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,y0=1e9,y1=-1e9;P.forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[2]);z1=Math.max(z1,p[2]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);});
+  const M=ROCKRAY.near(x0-40,x1+40,z0-40,z1+40,y0-12,y1+6);
+  /* a point dr out from p along its ray from the mesa's middle (dy up), and the gap from there inward to the drawn rock
+     (null: deeper in the rock than 8 m) */
+  const G=(p,dr,dy)=>{const a=Math.atan2(p[2]-cz,p[0]-cx);return ROCKRAY.gap(M,p[0]+Math.cos(a)*dr,p[1]+(dy||0),p[2]+Math.sin(a)*dr,-Math.cos(a),-Math.sin(a));};
+  const clipped=(p,h)=>{const a=Math.atan2(p[2]-cz,p[0]-cx);return ROCKRAY.inRock(M,p[0],p[1]+h,p[2],-Math.cos(a),-Math.sin(a));};   /* the walkway's middle h over the tread in the drawn rock */
+  const offRock=v=>v!=null&&v>.1;
+  const bedOf=y=>MESA_B.beds.findIndex(b=>y>=b.y&&y<b.y+b.h),passed=new Set(),loose=new Set(),why={clip:0,unsupported:0,bracket:0,landing:0,head:0};let worst=0;
+  const flag=(bi,k,v)=>{loose.add(bi);why[k]++;if(v!=null&&isFinite(v))worst=Math.max(worst,Math.abs(v));};
+  const lipR=P[S.shoulder-1][3];for(let i=0;i<S.shoulder;i++){const p=P[i];if(p[3]>lipR-1.6)continue;const u=ROCKRAY.under(M,p[0],p[1],p[2]);if(u!=null&&p[1]>u+.1)flag(bedOf(p[1]),'head',p[1]-u);}   /* the steps at the lip are the first flight's */
+  for(let i=S.shoulder;i<P.length;i++){const p=P[i],k=p[4],bi=bedOf(p[1]-.25);if(bi<0)continue;passed.add(bi);
+   for(const h of [.5,1.3,2.1]){if(clipped(p,h)){flag(bi,'clip',null);break;}}
+   if(!(p[5]>0)){flag(bi,'unsupported',null);continue;}
+   const v=Math.min(...[0,.3].map(dy=>G(p,p[5]-(k%2?.3:.2)-p[3],-(k%2?3.6:2.7)+dy)).map(x=>x==null?-1:x));
+   if(v>.1)flag(bi,k%2?'bracket':'unsupported',v);}
+  (S.slabs||[]).forEach(L=>{const bi=bedOf(L.y-.25),c=[cx+Math.cos(L.a)*(L.ends[1].inner+L.outer)/2,L.y,cz+Math.sin(L.a)*(L.ends[1].inner+L.outer)/2];
+   for(const h of [.5,1.3,2.1]){if(clipped(c,h)){flag(bi,'landing',null);break;}}
+   const f=[cx+Math.cos(L.a)*(L.rf-.2),L.y,cz+Math.sin(L.a)*(L.rf-.2)],vf=Math.min(...[0,.3].map(dy=>G(f,0,-3+dy)).map(x=>x==null?-1:x));if(!(L.rf>0)||vf>.1)flag(bi,'landing',vf);});
+  const ok=Math.abs(P[0][1]-_top)<1.5&&(Z==='fair'||PR.inEll(end[0],end[2],PR.FAIR,15))&&S.gates.length===3&&steep<.7&&!loose.size;
+  return{ok,detail:'from '+P[0][1].toFixed(0)+' m to the '+Z+'; '+S.flights+' flights, '+S.landings.length+' landings, '+S.gates.length+' gates; steepest '+(Math.atan(steep)*180/Math.PI).toFixed(0)+
+   ' degrees; clear and carried on the drawn rock at '+(passed.size-[...loose].filter(b=>passed.has(b)).length)+' of the '+passed.size+' beds it passes'+
+   (loose.size?' (fails at beds '+[...loose].slice(0,8).join(', ')+': '+Object.keys(why).filter(k=>why[k]).map(k=>why[k]+' '+k).join(', ')+'; worst '+worst.toFixed(2)+' m)':'')};},
  // THE LIFT ROAD: from the beast lift's landing to the palisade (the north-west gate), no steeper than 1 in 7 where it is
  // a road, through no band's ground nor the pond, and cleared: no plant of the rock's, nor anything of the forest within 6 m of the ground, on it (a crown beside it may overhang)
  road(Rd,L){if(!Rd||!L)return{ok:false,detail:'no lift road'};const P=Rd.pts,s=P[0],e=P[P.length-1];let g=0,through=null;
@@ -133,19 +173,24 @@ const HCHK={
   return{ok:Math.hypot(s[0]-L.foot.x,s[2]-L.foot.z)<8&&atGate&&g<=1/7&&!through&&!trees&&!forest,
    detail:Math.round(P.length*3)+' m from the landing ('+s[1].toFixed(0)+' m) to the north-west gate ('+e[1].toFixed(0)+' m)'+(atGate?'':' (NOT at the palisade)')+', '+(Rd.benchEnd*3)+' m of it a bench on the slope; steepest 1 in '+(1/Math.max(g,1e-6)).toFixed(1)+
     (through?'; through the '+through:'')+'; '+trees+' plants and '+forest+' forest points on it'};},
- // the climbs: every deck has one, from the ground at its stack's foot (or the deck under it) to its own height
- // ... and hugs its stack: rock within 1.4 m of the tread's centre toward the stack's middle (its inner edge .1 m off it)
- // at nineteen treads in twenty (a leaning stack's middle and a bed standing proud for headroom account for the rest),
- // every bracket's foot in the rock; and every deck's struts find rock under it
- climbs(C,D){const bad=[];let loose=0,all=0,feet=0,feetBad=0;D.forEach(d=>{const c=C.find(c=>c.deck===d.id);if(!c){bad.push(d.id+' no climb');return;}const P=c.pts,last=P[P.length-1],S=ROCK.find(B=>B.id===d.stack);
+ // the climbs: every deck has one, from the ground at its stack's foot (or the deck under it) to its own height, and each
+ // ATTACHED, measured against the DRAWN rock (ROCKRAY): every tread's inner edge within .3 m of the drawn wall, every
+ // bracket's foot on or in it; every deck's struts find rock under it
+ climbs(C,D){const bad=[];let loose=0,all=0,feet=0,feetBad=0,worst=0,clip=0;D.forEach(d=>{const c=C.find(c=>c.deck===d.id);if(!c){bad.push(d.id+' no climb');return;}const P=c.pts,last=P[P.length-1],S=ROCK.find(B=>B.id===d.stack);
    if(Math.abs(last[1]-d.y)>.05)bad.push(d.id+' short');let st=0;for(let i=0;i+1<P.length;i++){const run=Math.hypot(P[i+1][0]-P[i][0],P[i+1][2]-P[i][2]);if(run>.05)st=Math.max(st,(P[i+1][1]-P[i][1])/run);}if(st>.66)bad.push(d.id+' steep');
-   let l=0;P.forEach(p=>{const cc=KSTACKS.ring(S,Math.min(p[1],S.top-.5),24);let mx=S.x,mz=S.z;if(cc){mx=0;mz=0;cc.forEach(q=>{mx+=q[0];mz+=q[1];});mx/=cc.length;mz/=cc.length;}
-    const dx=mx-p[0],dz=mz-p[2],L=Math.hypot(dx,dz)||1,x=p[0]+dx/L*1.4,z=p[2]+dz/L*1.4;all++;if(KSTACKS.topAt([S],x,z)<p[1]-.5){l++;loose++;}
-    if(p.length>=6){feet++;if(KSTACKS.topAt([S],p[3],p[5])<p[4]-.05)feetBad++;}});
-   if(l>P.length*.05)bad.push(d.id+' off the rock ('+l+' of '+P.length+')');
+   const M=ROCKRAY.near(S.x-S.R-10,S.x+S.R+10,S.z-S.R-10,S.z+S.R+10,S.y0-5,S.top+5);let l=0;
+   P.forEach((p,i)=>{const q=P[Math.min(P.length-1,i+1)],r=P[Math.max(0,i-1)],tx=q[0]-r[0],tz=q[2]-r[2],tl=Math.hypot(tx,tz)||1;
+    /* the inward side: the side of the tread nearer the stack's middle at that height */
+    const cc=KSTACKS.ring(S,Math.min(p[1],S.top-.5),24);let mx=S.x,mz=S.z;if(cc){mx=0;mz=0;cc.forEach(v=>{mx+=v[0];mz+=v[1];});mx/=cc.length;mz/=cc.length;}
+    let nx=tz/tl,nz=-tx/tl;if(nx*(mx-p[0])+nz*(mz-p[2])<0){nx=-nx;nz=-nz;}
+    const gg=[-.2,-.5].map(dy=>ROCKRAY.gap(M,p[0]+nx*.9,p[1]+dy,p[2]+nz*.9,nx,nz)).map(v=>v==null?-1:v),gm=Math.min(...gg);all++;   /* the nearer of two heights: a ray through the seam between two beds' rows is not a gap */if(gm>.3&&!(i===0&&c.from!=='foot')){l++;loose++;worst=Math.max(worst,gm);}   /* a lookout's climb starts on the stall deck's walkway */
+    /* never under rock: the tread's middle 1 m and 1.8 m over it out of the drawn rock */
+    for(const h of [1,1.8]){if(ROCKRAY.inRock(M,p[0],p[1]+h,p[2],nx,nz)){clip++;break;}}
+    if(p.length>=6){feet++;const gf=Math.min(...[0,.3].map(dy=>ROCKRAY.gap(M,p[3],p[4]+dy,p[5],mx-p[3],mz-p[5])).map(v=>v==null?-1:v));if(gf>.1)feetBad++;}});
+   if(l)bad.push(d.id+' off the rock at '+l+' of '+P.length+' treads');
    const fe=(d.feet||[]).filter((f,i)=>i%3===0&&!(f[3]>0)).length;if(fe)bad.push(d.id+' '+fe+' struts on no rock');});
-  if(feetBad)bad.push(feetBad+' climb brackets on no rock');
-  return{ok:!bad.length,detail:C.length+' climbs for '+D.length+' decks, '+C.reduce((s,c)=>s+c.pts.length,0)+' steps, '+(all-loose)+' of '+all+' against the rock, '+(feet-feetBad)+' of '+feet+' brackets in it'+(bad.length?'; '+bad.slice(0,4).join(', '):'')};},
+  if(feetBad)bad.push(feetBad+' climb brackets off the rock');if(clip)bad.push(clip+' climb treads under rock');
+  return{ok:!bad.length,detail:C.length+' climbs for '+D.length+' decks, '+C.reduce((s,c)=>s+c.pts.length,0)+' steps, '+(all-loose)+' of '+all+' against the drawn rock'+(loose?' (worst '+worst.toFixed(2)+' m off)':'')+', '+(feet-feetBad)+' of '+feet+' brackets in it'+(bad.length?'; '+bad.slice(0,4).join(', '):'')};},
  // EACH WING'S BEASTS IN ITS OWN STALLS (owner, 2026-10-19): every beast on a perch, or coming in to one, is one its bay
  // takes (the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx, the Nightwing's bats; the Garden the three)
  wings(list){if(!PRFLY)return{ok:false,detail:'no flyers'};const L=PRFLY.LABEL,bad=list.filter(a=>a.bay&&a.bay.allow&&a.bay.allow.indexOf(a.sp)<0),by={};

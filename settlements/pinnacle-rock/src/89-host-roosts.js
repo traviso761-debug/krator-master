@@ -166,13 +166,24 @@ const ROOST_MESH={},ROOST_CAGES=[];
   let seg=[];const flush=()=>{if(seg.length<2){seg=[];return;}const k=seg[0][4],odd=k%2===1;
    steps(odd?'plank':'stone',seg,w,odd?COL.plank:COL.stone,null);
    const out=p=>ray(p,w/2),inn=p=>ray(p,-w/2);
-   if(odd){rail(seg.map(out),6,1,null);for(let i=0;i<seg.length;i+=5){const p=seg[i],rf=p[5];if(!(rf>0))continue;const a=inn(p),b=out(p),ft=ray(p,rf-.3-p[3],-3.6);
+   const every5=[];for(let i=0;i<seg.length;i+=5)every5.push(i);if(every5[every5.length-1]!==seg.length-1)every5.push(seg.length-1);   // its ends too: the landings hang on them
+   if(odd){rail(seg.map(out),6,1,null);for(const i of every5){const p=seg[i],rf=p[5];if(!(rf>0))continue;const a=inn(p),b=out(p),ft=ray(p,rf-.3-p[3],-3.6);
      beam('timber',ft,[b[0],b[1]-.2,b[2]],.3,.3,COL.tar);beam('timber',ft,[a[0],a[1]-.2,a[2]],.28,.28,COL.tar);beam('timber',ray(p,rf-.3-p[3],-.25),[b[0],b[1]-.25,b[2]],.26,.32,COL.tar);}}
-   else{for(let i=0;i+1<seg.length;i++){const p=seg[i],q=seg[i+1],ob=out(p),oq=out(q),rp=p[5]>0?p[5]:p[3],rq=q[5]>0?q[5]:q[3];
-     quad('stone',[ob[0],ob[1],ob[2]],[oq[0],oq[1],oq[2]],ray(q,rq-.2-q[3],-2.7),ray(p,rp-.2-p[3],-2.7),COL.stoneDk);}
+   else{for(let i=0;i+1<seg.length;i++){const p=seg[i],q=seg[i+1],ob=out(p),oq=out(q),ib=inn(p),iq=inn(q),rp=p[5]>0?p[5]:p[3],rq=q[5]>0?q[5]:q[3],fp=ray(p,rp-.2-p[3],-2.7),fq=ray(q,rq-.2-q[3],-2.7);
+     /* the masonry under the tread: from both its edges down to the rock 2.7 m under it (PRR rf), closed under an overhang */
+     quad('stone',[ob[0],ob[1],ob[2]],[oq[0],oq[1],oq[2]],fq,fp,COL.stoneDk);quad('stone',[ib[0],ib[1],ib[2]],[iq[0],iq[1],iq[2]],fq,fp,COL.stoneDk);}
     for(let i=0;i+2<seg.length;i+=2){const a=out(seg[i]),b=out(seg[i+2]);beam('stone',[a[0],a[1]+.45,a[2]],[b[0],b[1]+.45,b[2]],.5,.9,COL.stone);}}
    seg=[];};
   run.forEach(p=>{if(seg.length&&seg[seg.length-1][4]!==p[4]){const last=seg[seg.length-1];flush();seg=[last.slice(0,4).concat([p[4],last[5]])];}seg.push(p);});flush();
+  // THE LANDINGS: a stone slab at each turn, from the cut flight's inner edge (in the face) out past the gallery's outer
+  // edge, 3.6 m along the face, its outer edge and its sides carried down on a stone wedge to the rock 3 m under it
+  (S.slabs||[]).forEach(L=>{const y=L.y,E=L.ends,A=(a,r,h)=>[cx+Math.cos(a)*r,y+h,cz+Math.sin(a)*r],rf=(L.rf>0?L.rf:E[1].inner+1.5)-.2;
+   for(let i=0;i+1<E.length;i++){const e=E[i],f=E[i+1];
+    quad('stone',A(e.a,e.inner,.02),A(e.a,L.outer,.02),A(f.a,L.outer,.02),A(f.a,f.inner,.02),COL.stone);
+    quad('stone',A(e.a,L.outer,0),A(f.a,L.outer,0),A(f.a,rf,-3),A(e.a,rf,-3),COL.stoneDk);
+    quad('stone',A(e.a,e.inner,0),A(f.a,f.inner,0),A(f.a,rf,-3),A(e.a,rf,-3),COL.stoneDk);
+    beam('stone',A(e.a,L.outer-.25,.45),A(f.a,L.outer-.25,.45),.5,.9,COL.stone);}
+   [E[0],E[E.length-1]].forEach(e=>{quad('stone',A(e.a,e.inner,0),A(e.a,L.outer,0),A(e.a,rf,-3),A(e.a,Math.min(rf,e.inner),-3),COL.stoneDk);});});
   // the path of steps down the debris slope, seated on the drawn ground (the plan keeps it clear of blocks and plants)
   steps('stone',S.ground.map(p=>[p[0],seatH(p[0],p[2])+.15,p[2]]),2.4,COL.stone,{face:.8,faceCol:COL.stoneDk});
   // the three gates: posts, a lintel with the red band, a small shingle roof, the leaves open

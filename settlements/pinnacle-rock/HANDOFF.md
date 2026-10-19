@@ -44,6 +44,11 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
   `84c` by their section comments and closes the closure Girder's `84` opens (its `84d` is not taken). A change to
   `settlements/girder/src/84*.js` reaches this page: rebuild and verify both. The roost records keep Girder's shapes
   (`ROOSTS`, `BRIDGES`) for this; change `43-pr-roosts.js`'s stall frame and the flyers' touchdown moves with it.
+- **The Stair and the climbs hang on the rock AS DRAWN** (owner, 2026-10-19, after four rounds: "proceed carefully"):
+  the rock mesh's wall rings are capped at 160 segments, so the drawn mesa face stands up to 12 m inside KSTACKS' outline.
+  `PRR.wallR` reads the wall from `KSTACKS.mesh` itself, and the checks measure the drawn rock with rays (`ROCKRAY` in
+  `99-host-take.js`: `inRock` casts from the point outward and reads the first wall's facing). Judge attachment by
+  those rays, never by `KSTACKS.topAt`/`reach` alone.
 - **The roost plan reads the rock** (`KSTACKS.topAt`, the rings fitted at each height from the rock's own middle):
   a change to the fins, the Garden or KSTACKS moves the rings and the stalls. The checks (`HCHK.decks`, `stalls`,
   `bridges`, `lifts`, `stair`, `climbs`, `flyers`) say what moved.

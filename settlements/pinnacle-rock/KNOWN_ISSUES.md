@@ -18,9 +18,13 @@
       the shelters, the climbs, the bridges, the lifts and the gates are drawn from their records by `89-host-roosts.js`
       in Girder's vocabulary. The records (`43-pr-roosts.js`) are what Godot draws from; a Godot builder is owed.
 - [ ] **The Stair's cut flights have no notch over them.** KSTACKS draws no notch into a wall, so a cut flight runs half
-      into the face (the wall's surface crosses its tread) with a stone wedge under its outer half; there is no cut
-      ceiling or back wall. The return flight is a timber gallery on brackets let into the rock. A notch in the rock mesh
-      would make the flights read as cut into the beds.
+      into the face (the wall's surface crosses its tread) with masonry under it; there is no cut ceiling or back wall.
+      Where a bed juts out over the flight, the flight stands out at its face on masonry (up to ~5.5 m off the recessed
+      bed under it, two stretches); a notch in the rock mesh would let it cut in instead.
+- [ ] **What hangs on the rock follows the DRAWN wall, not KSTACKS' outline** (`PRR.wallR`, from `KSTACKS.mesh` with the
+      page's wall steps). The mesh's wall rings are capped at 160 segments (`core/terrain/37-core-stacks.js`), so on the
+      mesa the drawn face stands up to 12 m inside the outline; a change to that cap, to `LAND.wallStep` or to KSTACKS'
+      weathering moves the Stair and the climbs, and the checks (rays at the drawn rock) say where.
 - [ ] **No walker yet on the roosts**: the climbs, the decks, the bridges and the Stair are drawn and recorded, not on a
       nav graph (Girder's `NAV`); a walker and the town's people come with P3 and P4. A climb comes up through a hatch
       in its deck's inner band; the lookout climbs pass the stall deck's walkway.

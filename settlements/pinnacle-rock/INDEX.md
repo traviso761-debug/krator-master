@@ -26,12 +26,12 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `40-pr-layout.js` | 17 |  |
 | `42-pr-world.js` | <1 |  |
-| `43-pr-roosts.js` | 34 **big** |  |
+| `43-pr-roosts.js` | 41 **big** |  |
 | `45-host-stage.js` | 10 | the floor: the knoll's top, as the scale model h (33); the rock (KSTACKS records from the layout) (43); what necanyons' land fragment (47) reads from th (90) |
 | `47b-host-roosts-plan.js` | 3 |  |
 | `86-pr-far.js` | 3 |  |
 | `87-pr-talus.js` | 2 |  |
 | `88-host-build.js` | 2 |  |
-| `89-host-roosts.js` | 24 |  |
-| `99-host-take.js` | 27 | the inspector's words: the rock, the zone of the (26); the probe's budgets and the page's checks (verif (38); the page, handed to the host (217) |
+| `89-host-roosts.js` | 25 |  |
+| `99-host-take.js` | 32 **big** | the inspector's words: the rock, the zone of the (26); the probe's budgets and the page's checks (verif (38); THE DRAWN ROCK, measured by rays (44); the page, handed to the host (262) |
 | `99-tail.html` | <1 |  |
