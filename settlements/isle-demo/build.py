@@ -169,7 +169,7 @@ def dims_fragment():
             for tag, t in (('VTAG_SF', 'dwelling-single'), ('VTAG_MF', 'dwelling-multi')):   # settlements/iziz/src/70-vern-dwellings.js
                 if tag in m.group(2):
                     out[m.group(1)]['types'] = [t]
-    s = read(os.path.join(ROOT, 'kits', 'catalog', 'krator-master-buildings-beast-rider.js'))
+    s = read(os.path.join(ROOT, 'kits', 'catalog', 'krator-master-buildings-beast-rider.js')) + read(os.path.join(ROOT, 'kits', 'beast-riders', 'src', '50-br-mounts.js'))
     for m in re.finditer(r"ASSET\(\{\s*key:\s*'([^']+)'(.*?)\bbuild\s*:", s, re.S):
         out[m.group(1)] = rec(m.group(2), 'cat', 'types')
         out[m.group(1)]['wealth'] = None

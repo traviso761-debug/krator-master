@@ -35,7 +35,6 @@ ISLE.census = function (R) {
     var trade = D.job || D.role; if (trade) inc(C.trades, trade);
     var hh = types.indexOf('dwelling-multi') >= 0 ? 3 : (types.indexOf('dwelling-single') >= 0 || D.family === 'dwelling') ? 1 : 0;
     if (hh) { C.dwellings++; C.households += hh; }
-    if (L.cls === 'stable') inc(C.standIns, 'stable: ' + L.key + ' (kits/beast-riders will bring the stable)');
   });
   C.citizens = C.households * 5;
   R.vessels.forEach(function (Vr) { var D = ISLE_VDIMS[Vr.key] || {}; inc(C.vessels.byKey, Vr.key); inc(C.vessels.byUse, Vr.use); inc(C.vessels.origins, D.culture || '?'); });

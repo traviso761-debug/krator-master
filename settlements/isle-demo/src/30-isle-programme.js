@@ -5,9 +5,9 @@
    world records beyond the planning square. Keys are the kits' own:
      ie-* ip-*        kits/islanders, the East set (Kautoa's)
      vern_*           the Iziz Vernacular (settlements/iziz/src), Izanitown's
-     br_bldg_*        the catalog's Beast Rider buildings (kits/catalog, from Girder and Mav's Refuge), Ridertown's: the
-                      Beast Riders kit (kits/beast-riders, waiting on three textures) will bring the stables and the
-                      rookery tower; until then a stable is the Islanders' byre (ie-byre), named a stand-in in the census
+     br_bldg_*        the Beast Riders' buildings, Ridertown's: the kit's own (kits/beast-riders: the raptor stable, the
+                      great byre, the rookery tower) and the catalog's (from Girder and Mav's Refuge: the nature shrine,
+                      the roost gallery)
      ringsea keys     kits/ringsea's vessels (islanderDrua, vothDhow ...) */
 ISLE.PROG = {};
 /* The programme's own coordinates (a centre, the brief's added districts) and lengths (the reach of the wealth, the
@@ -44,10 +44,10 @@ ISLE.CLASSES = {
   vrich: [['vern_house_rich_a', 0], ['vern_house_rich_b', 0]],
   vshop: [['vern_shops', 0], ['vern_workshop_a', 0], ['vern_workshop_b', 0], ['vern_smithy', 0], ['vern_tavern', 0]],
   vmilitary: [['vern_guard_tower', 0], ['vern_watch_house', 0]],
-  /* Ridertown: the riders' shrines, rookeries and stables (the stable a stand-in until kits/beast-riders has one) */
+  /* Ridertown: the riders' shrines, rookeries and stables (kits/beast-riders) */
   shrine: [['br_bldg_nature_shrine', 0]],
-  rookery: [['br_bldg_roost_gallery', 0]],
-  stable: [['ie-byre', 0]]
+  rookery: [['br_bldg_rookery_tower', 0], ['br_bldg_roost_gallery', 0]],
+  stable: [['br_bldg_raptor_stable', 0], ['br_bldg_raptor_stable', 1], ['br_bldg_great_byre', 0]]
 };
 ISLE.FALLBACK = { manor: 'rich', rich: 'middle', middle: 'poor', shop: 'poor', tavern: 'shop', industrial: 'poor', works: 'industrial', farm: 'poor',
   military: 'middle', vrich: 'vmiddle', vmiddle: 'vpoor', vshop: 'vpoor', vmilitary: 'vshop', vpoor: null, shrine: 'poor', rookery: 'stable',

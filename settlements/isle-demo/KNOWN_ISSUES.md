@@ -18,11 +18,10 @@
 - [ ] **No geyser relief here.** The planner's ground leaves out the geyser fields' relief (openworld/isle-demo's
       89-world-geysers.js needs the geyser kit). The nearest vent is 6 km from Kautoa and 28 km from Valapo, beyond the
       square, so neither town's ground differs.
-- [ ] **City page (P6) stand-ins.** The Beast Riders kit (`kits/beast-riders`, waiting on three textures:
-      `core/materials/PROMPTS-NEEDED.md` section 6) brings Ridertown's stables (the Islanders' byre stands in, named in the
-      census) and a free-standing rookery tower (the catalog's roost gallery stands in). The Islanders have no
-      caravanserai (the guest house stands in), no bloomery for Valapo's smelter (the smithy), and no cooperage or rope walk
-      for the works quarter.
+- [ ] **City page (P6) stand-ins.** Ridertown takes the Beast Riders kit's stables, byre and rookery tower; its shrines
+      and roost galleries are the catalog's copies of Mav's Refuge's (lossy until the kit's faithful port). The
+      Islanders have no caravanserai (the guest house stands in), no bloomery for Valapo's smelter (the smithy), and no
+      cooperage or rope walk for the works quarter.
 - [ ] **City page: no furniture, no crop stands.** FURNISH places nothing on this page (P6b's export profile brings the
       furniture); the farmland is drawn as tinted ground and simple orchard trees, not kits/crops' stands.
 - [ ] **City page: the white sand beaches** are tinted, not widened: the terrain edit (the strand's sand recoloured white)

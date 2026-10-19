@@ -177,11 +177,12 @@ def izv_bundle():
 
 
 # ---------------------------------------------------------------- the catalog's Beast Rider buildings
-CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', f) for f in ('krator-furniture-core.js', 'krator-master-buildings-beast-rider.js')]
+CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', f) for f in ('krator-furniture-core.js', 'krator-master-buildings-beast-rider.js')] +     [os.path.join(ROOT, 'kits', 'beast-riders', 'src', '50-br-mounts.js')]   # the Beast Riders kit's own (the mounts' buildings)
 
 
 def cat_bundle():
-    """CAT: the catalog's geometry kit and its Beast Rider buildings (Girder's and Mav's Refuge's), sealed; CAT.proto(key, v)
+    """CAT: the catalog's geometry kit, its Beast Rider buildings (Girder's and Mav's Refuge's) and the Beast Riders kit's
+    own (kits/beast-riders: the stables, the byre, the rookery tower), sealed; CAT.proto(key, v)
     builds one at the origin into a new group (no furniture: the catalog's pieces are not on this page)"""
     return safe('/* CAT: the catalog\'s Beast Rider buildings in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/catalog. */' + NL +
                 'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + body(CAT_FILES) +
