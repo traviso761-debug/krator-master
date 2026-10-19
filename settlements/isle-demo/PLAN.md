@@ -489,7 +489,8 @@ So Kautoa is the wet one, and Valapo the drier one with real uplands. In `CROPS.
   - Cloves want rain all year (1,500 mm and up, no long dry season): Kautoa's Af.
   - Rice paddies on the wet lowland need no irrigation works there.
   - Cacao is an Af crop.
-- **Valapo exports coffee, sugar and iron ingots**, and salt and soda ash (below).
+- **Valapo exports coffee, sugar and iron ingots.** (Salt and soda ash went to Kautoa: the owner chose the north-west
+  pan, 2026-10-18.)
   - Upland coffee grows on the mountain slopes, the only cool ground either town has.
   - Sugar cane wants about 1,300 mm or more and a dry season to ripen in: Valapo's XV savanna by the town gets about
     1,340 mm; Kautoa's dry belt only about 900.
@@ -497,8 +498,9 @@ So Kautoa is the wet one, and Valapo the drier one with real uplands. In `CROPS.
     does well on 900 mm. Cotton is grown in both, or becomes the north-west savanna's crop for Kautoa.
 - **Both grow** coconut, banana, breadfruit, taro, kava, greens and herbs for themselves (the owner's crop list).
 - **What goes back:**
-  - Kautoa sends tools and worked iron, cloth dyed with its indigo, sulfur, and the goods the foreign ships bring;
-  - Valapo sends ingots, coffee, sugar, salt, soda ash or glass, and salt fish.
+  - Kautoa sends tools and worked iron, cloth dyed with its indigo, sulfur, salt, soda ash or glass, and the goods the
+    foreign ships bring;
+  - Valapo sends ingots, coffee, sugar and salt fish.
 
 **The rest of the region (a survey of every climate patch and vent, 2026-10-18).** The climate grid is 2 km a cell, so
 sizes and centres are rough. Distances are from the town's settlement point.
@@ -513,9 +515,10 @@ sizes and centres are rough. Distances are from the town's settlement point.
 | The west isle (Af) | 632 km2 about 43 km north-west of Valapo, ~2,100 mm | a third wet producer (spice, cacao, timber): a place for a third settlement |
 | North of Kautoa (Aw) | 428 km2 about 61 km north, joined by the neck to beast rider country | grazing, and the riders' mounts and hides along the north highway |
 
-The big north-west salt pan and the north grazing land suit villages on Kautoa's coast and north highways, trading
-into the city rather than with Valapo. None of these has a resource node placed yet: sulfur at the geyser fields and
-salt at the pans must be placed (`kits/resources`) before P7 can count them.
+**The salt village is on the big north-west pan, under Kautoa** (owner, 2026-10-18; `core/hamlet/PLAN.md` section 4):
+its salt and soda ash make glass and soap Kautoa's trades. The north grazing land suits a ranching village on the
+north highway. None of these has a resource placed yet: sulfur at the geyser fields and the pans' `gather.salt` tag
+come first (`core/hamlet` H1), before P7 can count them.
 
 P7 (the simulation) puts these crops on the two towns' farms and the trade route, so that the books show each town
 short of what the other makes.
@@ -589,10 +592,10 @@ settlement, so Voth's stocks proof, `test-sim.js` and the baseline do not move.
 **Things the owner decides before P7b:**
 - ~~the population to aim for in each town~~ **settled (owner, 2026-10-18): Kautoa about 6,300, Valapo about 2,150.**
   P6's census (4,900 and 1,540) is re-tuned to these. The hinterland villages come on top, at most 500 each
-  (`core/hinterland/PLAN.md`);
+  (`core/hamlet/PLAN.md`);
 - whether Valapo's iron mine, the resource nodes (sulfur, salt) and the farm ring outside the planner square are sim
   places in P7 (the economy needs them to make ore, sulfur and salt) or wait for P8's world records. **Proposed
-  answer:** they are the hinterland villages of `core/hinterland/PLAN.md` (salt, mine, lumber, ranch; then fishing and
+  answer:** they are the hinterland villages of `core/hamlet/PLAN.md` (salt, mine, lumber, ranch; then fishing and
   farming), each a settlement with its town as parent, placed with their resources;
 - the canoe line's timetable: how many canoes, and how often (122 km by sea, about a day each way under sail).
 

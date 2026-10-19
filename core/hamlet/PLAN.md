@@ -1,4 +1,4 @@
-# core/hinterland: the hinterland settlements module (plan, 2026-10-18)
+# core/hamlet: the hinterland settlements module (plan, 2026-10-18)
 
 A core module that makes the small settlements round a town: **resource villages** (salt, mining, lumber, ranching)
 and, by the same machinery, **fishing and farming villages**. Placing a village also places what it works, on the map.
@@ -8,8 +8,15 @@ Kautoa and Valapo. Nothing is built yet; this is the plan for the owner to settl
 **Why a core module.** `core/city/README.md` ("Debts") lists the country (lanes, villages, farmsteads, fields) as an
 add-on still inside Voth (`VC.village`, `VC.farmstead` in `settlements/voth/targets/voth-city/33-vc-country.js`). Every
 settlement will want a hinterland, so it is written once. It reads core/city's primitives in place (`KCITY.prim`:
-`frontageRun`, `packPolygon`, `clearSpot`, `faceNearestStreet`) and does not edit `core/city`. **To ask the city-layout
-work:** whether the module should instead live in `core/city` as its country add-on. The plan holds either way.
+`frontageRun`, `packPolygon`, `clearSpot`, `faceNearestStreet`) and does not edit `core/city`. **It is its own
+module, `core/hamlet`** (owner, 2026-10-18), not part of `core/city`.
+
+**Small settlements in general.** The name is `hamlet`, not `hinterland`, because the same machinery is to make
+other small settlements later. **Nomadic camps** are the first named: a camp is a village spec with tents for houses,
+no warehouse but a cache or the herd itself, and a site that moves with the season (the nomad kits,
+`kits/desert-nomads`, `kits/ash-nomads`). So the spec's parts are kept separate: what it needs (the required
+buildings), how big it is (the census), how it is laid out (green and lanes, or a ring of tents), and where it sits
+(fixed, or a route of sites). A camp swaps the layout and the siting and keeps the rest.
 
 **The Godot rule** (as `core/city`'s): the data side is free of three.js and the DOM, `[G data]`. Records are keyed
 by stable ids, edits are deltas by id, and the rules are plain functions on records. Placement draws from `core/rand`
@@ -19,7 +26,7 @@ placed is registered in `core/tags` before it is drawn.
 ## 1. A village
 
 ```
-KHINTER.village({
+KHAMLET.village({
   id, world, seed,
   culture,        // a culture row (section 3): which kit's buildings, which religious and civic building
   focus,          // 'salt' | 'mine' | 'lumber' | 'ranch' | 'fishing' | 'farming'
@@ -95,7 +102,7 @@ gather: {pasture: 0..1, fish: 0..1, salt: true}     /* on a zone, or on the code
 - **Timber: the trees' `harvest.wood` tag**, which every biome species already carries as free text. Examples:
   `timber`, `light timber`, `timber, pitch`, `fuel`, `fuel, posts`, `poles`, `thatch`, `fibre`, and `none` on 304 of
   them.
-  - The module reads that text through one fixed list of uses (`KHINTER.woodUse(text) -> {timber, fuel, poles,
+  - The module reads that text through one fixed list of uses (`KHAMLET.woodUse(text) -> {timber, fuel, poles,
     thatch, fibre}`), so the books count a good, not a phrase.
   - A word the list does not know fails `verify` (the tags-vocabulary check's pattern) rather than being dropped.
   - A lumber village's stand is the trees within its felling radius whose use includes `timber` (a sawpit and log
@@ -110,7 +117,7 @@ year**, so the owner can watch how it behaves and adjust.
   `{tree id, felledAt}`, kept in the village's edits (`core/edits`).
 - While the delta is under a year old, the drawing shows a stump, then a sapling (the kits' immature level). Past a
   year the delta is dropped and the tree is whole again.
-- **The regrowth time is a tunable** (`TUNE.hinter.regrowDays: 365`). Setting it per species later (fast bamboo,
+- **The regrowth time is a tunable** (`TUNE.hamlet.regrowDays: 365`). Setting it per species later (fast bamboo,
   slow hardwood) changes nothing else.
 - Nodes never run out (kits/resources, as now). Fields renew each season.
 
@@ -120,7 +127,7 @@ A **culture row** is plain data, one per building kit, so a Voth or Iziz hinterl
 code:
 
 ```
-KHINTER.CULTURES.islander_east = {
+KHAMLET.CULTURES.islander_east = {
   kit: 'islanders', household: 4.5, workShare: .45, slopeMax: .35,
   religious: 'ip-shrine',  civic: 'ie-hall',       /* village scale: section 6 */
   general: 'ie-trader',    food: '(new: ie-store-food)', warehouse: 'ie-warehouse',
@@ -154,7 +161,7 @@ The climate grid is 2 km a cell, so a site is placed exactly at generation, with
 
 | Focus | Patch | Centre (world) | From its town | Parent | Notes |
 |---|---|---|---|---|---|
-| **salt** | XS salt steppe, 136 km2, ~800 mm | (-22,700, 97,700) | 44 km south of Valapo | Valapo | keeps salt and soda ash as Valapo's exports. **Or** the big north-west pan (268 km2, ~700 mm, at (-14,800, -107,800), 71 km from Kautoa): question 1 |
+| **salt** | XS salt steppe, the big north-west pan, 268 km2, ~700 mm | (-14,800, -107,800) | 71 km north-west of Kautoa | Kautoa | the owner's choice (2026-10-18): the bigger and drier pan, so the better salt. Salt and soda ash become Kautoa's; Valapo's southern pans (136 and 64 km2) stay unworked for now |
 | **mine** (iron) | Valapo's mountains, 700-1,130 m | about (-18,000, 66,000) | 12-18 km south-west of Valapo | Valapo | the iron node (`kits/resources`) placed with it; ore carted down to the smelter at Valapo's harbour |
 | **lumber** | the wettest jungle (XA), 596 km2, ~2,750 mm | (74,700, -43,000) | 41 km east of Kautoa | Kautoa | hardwood for Kautoa's shipyards. Valapo's charcoal comes from its own upland forest |
 | **ranch** | savanna (Aw), 428 km2, ~890 mm | (20,100, -117,100) | 61 km north of Kautoa | Kautoa | on the north highway toward beast rider territory; buffalo, hides, and perhaps mounts |
@@ -186,8 +193,8 @@ demo's plan (section 9).
 | Step | What | Proof |
 |---|---|---|
 | H0 | This plan; the owner's answers (section 7) | — |
-| H1 | **Resources:** the field shape in `kits/resources` (`[G data]`); the `gather` tag (pasture, fish, salt) wired into ringisles, then swbay, the Throne, eastabyss and rift, with an audit of every kit that draws pans or fishing water; `KHINTER.woodUse` over every biome's `harvest.wood` | `node` test: every `harvest.wood` text parses and every `gather` key is known, each with a negative; a field's capacity from known tag weights; kits' `verify.py --assert` unchanged except the new tag |
-| H2 | **The village generator** (`core/hinterland`, `[G data]`): spec to census, siting, green, lanes, houses, works and stores, on `KCITY.prim`, `KSPACE`, `KRAND`, `core/tags` | `node core/hinterland/test-hinter.js`: every village has its required buildings; population ≤ 500 and staffed (every job a worker, every household a house); no overlap; deterministic (same spec, same hash); refuses a cliff site; each with a negative |
+| H1 | **Resources:** the field shape in `kits/resources` (`[G data]`); the `gather` tag (pasture, fish, salt) wired into ringisles, then swbay, the Throne, eastabyss and rift, with an audit of every kit that draws pans or fishing water; `KHAMLET.woodUse` over every biome's `harvest.wood` | `node` test: every `harvest.wood` text parses and every `gather` key is known, each with a negative; a field's capacity from known tag weights; kits' `verify.py --assert` unchanged except the new tag |
+| H2 | **The village generator** (`core/hamlet`, `[G data]`): spec to census, siting, green, lanes, houses, works and stores, on `KCITY.prim`, `KSPACE`, `KRAND`, `core/tags` | `node core/hamlet/test-hamlet.js`: every village has its required buildings; population ≤ 500 and staffed (every job a worker, every household a house); no overlap; deterministic (same spec, same hash); refuses a cliff site; each with a negative |
 | H3 | **The Islanders' missing buildings** (section 3), after the owner's textures | islanders `verify.py --assert`; a sheet shot per new building |
 | H4 | **The four isle villages** placed on the open world from their specs, with their resources; timber regrowth as deltas | the isle world's checks in the browser pane; a felled tree is a stump, then a sapling, then whole after the tunable |
 | H5 | **The villages in the sim** once P7a lands: settlements with a parent; goods to the parent's books | a load traced from a village's warehouse to its town's; the abstract-level week balances for each village |
@@ -195,10 +202,12 @@ demo's plan (section 9).
 
 ## 7. Questions for the owner
 
-1. **Which salt flats:** Valapo's southern pan (keeps salt Valapo's trade good) or the big north-west pan near
-   Kautoa (bigger and drier, which makes better salt)?
-2. **Where the module lives:** its own `core/hinterland` (proposed) or `core/city`'s country add-on (the city-layout
-   work to say).
+Settled (owner, 2026-10-18):
+- **The salt flats:** the big north-west pan near Kautoa (section 4).
+- **Where the module lives:** its own core module, `core/hamlet`, kept general enough for nomadic camps later.
+
+Still open:
+
 3. **The ranch:** buffalo and pigs only, or the beast riders' mounts too, with a stable and rookery as in Ridertown?
 4. **The `gather` tag by kit:** which zones carry pasture and fish, and how much (a starting table is proposed in H1 for the
    owner to adjust).
