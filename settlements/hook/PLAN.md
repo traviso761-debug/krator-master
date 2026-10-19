@@ -223,6 +223,9 @@ The waterfront comes first, because the Port kit is finished and the city's shap
   catalog); the lot filler drawing a culture then a type; the salvage rule on the poor and middle lots; the host-lot
   rule (a lot on a ruin draws the ruin, then its culture's addition on it). Done when the
   town fills the site with no overlap, nothing on a street or in the water, `node core/city/test-city.js` green.
+  **Built 2026-10-19** on `claude/hook-p1` (`README.md`, "P2"): 671 lots of the six cultures from five kits sealed in
+  closures; the salvage rule and the host-lot rule are tags on the records until the kits can draw them
+  (`KNOWN_ISSUES.md`, "The town"); no civic pieces yet (P3's landmarks).
 - **P3. The layers' landmarks**, placed as records with `near` scorers: the Customs House, the governor's palace, the
   Temple of the Sun, the Iron Court's fortress wall, the Tethyan hall and sea temple, the Kautoan house, the necropolis,
   the slave market. The reconquest's damage as a decay field over the eastern harbour. Done when each landmark is in

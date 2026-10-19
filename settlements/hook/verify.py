@@ -80,6 +80,29 @@ const R=[];
 // P1: every Ancient host and quarter has a core/tags record before it was drawn
 { const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,a=T?T.audit():null,n=PORT_LAYOUT.items.filter(it=>it.ancient&&it.tag).length;
   R.push({name:'hook-tags',ok:!!a&&n===PORT_LAYOUT.items.filter(it=>it.ancient).length,detail:a?(a.records+' records, '+n+' hosts tagged; unknown vocabulary '+a.unknown):'no registry'}); }
+// P2: the town's lots (steps 6-12): some hundreds of them, of every culture the quarters name
+{ const C=window._city||{},recs=C.recs||[],L=C.log||{};const cults=Object.keys(L.byCulture||{});
+  R.push({name:'hook-lots',ok:recs.length>=300&&cults.length>=5,detail:recs.length+' lots: '+JSON.stringify(L.byCulture)+' classes '+JSON.stringify(L.byClass)+'; salvage '+L.salvage+', host lots '+L.hostLots+'; ways '+JSON.stringify(L.ways)}); }
+// P2: no two standing footprints overlap: every lot's BUILDING box (its yard may touch a neighbour's) and every landmark's
+// footprint, exact SAT with 0.1 m slack
+{ const C=window._city||{},P=C.plan,KL=KCITY.lib,pairs=[];
+  if(P){const B=(C.boxes||[]).map(l=>{const o=l.box;return {id:l.id,key:l.key,c:o.c,u:o.u,v:[-o.u[1],o.u[0]],hw:o.hw,hd:o.hd,r:Math.hypot(o.hw,o.hd)};});
+    const proj=(b,ax)=>{const cx=b.c[0]*ax[0]+b.c[1]*ax[1],e=Math.abs((b.u[0]*ax[0]+b.u[1]*ax[1])*b.hw)+Math.abs((b.v[0]*ax[0]+b.v[1]*ax[1])*b.hd);return [cx-e,cx+e];};
+    const sep=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const p=proj(a,ax),q=proj(b,ax);if(p[1]<q[0]+.1||q[1]<p[0]+.1)return true;}return false;};
+    for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){const a=B[i],b=B[j];if(Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])>a.r+b.r)continue;if(!sep(a,b))pairs.push([a.key+'#'+a.id,b.key+'#'+b.id]);}
+    R.push({name:'hook-lots-overlap',ok:!pairs.length,detail:pairs.length?pairs.length+' overlapping pairs: '+JSON.stringify(pairs.slice(0,5)):B.length+' footprints, none overlap'});}
+  else R.push({name:'hook-lots-overlap',ok:false,detail:'no plan'}); }
+// P2: nothing stands on a street (no building corner on a STREET cell) or in the water (every corner on ground above sea level)
+{ const C=window._city||{},recs=C.recs||[],KL=KCITY.lib,onStreet=[],wet=[];
+  for(const L of recs){const o={c:[L.x,L.z],u:[Math.cos(L.ry),-Math.sin(L.ry)],v:[Math.sin(L.ry),Math.cos(L.ry)],hw:L.w/2-.3,hd:L.d/2-.3};
+    const corners=[[1,1],[1,-1],[-1,1],[-1,-1]].map(s=>[o.c[0]+o.u[0]*o.hw*s[0]+o.v[0]*o.hd*s[1],o.c[1]+o.u[1]*o.hw*s[0]+o.v[1]*o.hd*s[1]]).concat([o.c]);
+    if(corners.some(p=>C.raster(p[0],p[1])===C.OCC.STREET))onStreet.push(L.key+'#'+L.id);
+    if(corners.some(p=>terrainH(p[0],p[1])<0.2))wet.push(L.key+'#'+L.id);}
+  R.push({name:'hook-lots-off-street',ok:!onStreet.length,detail:onStreet.length?onStreet.length+' on a street: '+onStreet.slice(0,5).join(', '):recs.length+' lots, none on a carriageway'});
+  R.push({name:'hook-lots-dry',ok:!wet.length,detail:wet.length?wet.length+' in the water: '+wet.slice(0,5).join(', '):recs.length+' lots, every corner on dry ground'}); }
+// P2: every piece near the opening camera built (its kit's closure ran it) and the massing stands for the rest
+{ const C=window._city||{},S=C.draw||{},F=C.failed||{},n=Object.keys(F).length;
+  R.push({name:'hook-lots-drawn',ok:S.protos>0&&n===0,detail:S.protos+' prototypes built, '+S.near+' near in full, '+S.massing+' as massing, '+S.footings+' footings'+(n?'; FAILED '+n+': '+JSON.stringify(Object.keys(F).slice(0,6).map(k=>k+' '+String(F[k]).slice(0,80))):'')}); }
 return R;}"""
 
 

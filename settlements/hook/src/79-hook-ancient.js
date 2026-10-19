@@ -24,7 +24,9 @@ function hookHostStamps(o){const W=HOOK_HOSTS[o.key].W,w=W/2,y=hookHostPad(o);
 function hookHostBuild(key,scene,gx,gz,d,opt){const H=HOOK_HOSTS[key],y=hookHostPad(opt),cz=gz-H.W/2;
  const G=new THREE.Group();G.position.set(gx,y,cz);G.rotation.y=opt.ry||0;scene.add(G);G.updateMatrix();
  YS_CUT=(opt.cutY!=null)?{cutY:opt.cutY}:null;
- const hz=HOLES;HOLES=d>0?.45:1;   /* the kit's full decay eats most of a tower's skin; a reclaimed host keeps its wall (Ys's rule) */
+ /* the kit's full decay (1) eats 83 % of a tower's skin, which reads as a ghost lattice of window slots and ribs from
+    the quays; a host the town lives in keeps its wall: a ruin a fifth holed, a repaired one a third (Ys keeps .4) */
+ const hz=HOLES;HOLES=d===1?.18:d>0?.3:1;
  KOFF=[0,0,0];useGroupXF(G);
  const sub={add:o=>G.add(o)};      /* the builder makes its own group at the origin: it lands inside G, at the pad */
  const r0=REG.length;

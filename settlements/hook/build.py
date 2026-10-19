@@ -116,6 +116,132 @@ P1_DETERMINISTIC = {n for n, _ in CORE_PLACE} | {KCITY_FRAG, SITE_FRAG, SKY_FRAG
                                                  '90a-hook-city.js', '90b-hook-city-draw.js'}
 
 
+# ---------------------------------------------------------------- P2: the kits the town draws with, each sealed in a closure
+# Each culture's kit is READ IN PLACE and sealed in a closure of its own (its MAT, REG, rng, terrainH... meet neither the
+# Port page's nor another kit's), with proto(key, v) building one piece at the origin into a group, as the isle demo's
+# city page takes them (settlements/isle-demo/bundles.py: ISK the Islanders, IZV the Vernacular, both imported from
+# there). VCAT (the Voth building catalog on the catalog's core), HYK (the Hykkousoi, on settlements/voth/foreign.py's
+# file list) and KPA (kits/post-apoc through its own apoc_bundle) are sealed here the same way. The kits' boxes are
+# scraped from their sources into HOOK_DIMS (dims_fragment) so the plan needs none of the drawing. The library packs
+# the Islanders and the Vernacular bind come first (77-hook-packs.js), beside the page as sidecars.
+PACKS_FRAG = '77-hook-packs.js'
+DIMS_FRAG = '77f-hook-dims.js'
+BUNDLE_FRAGS = {'77a-isk-bundle.js': 'isk', '77b-izv-bundle.js': 'izv', '77c-vcat-bundle.js': 'vcat', '77d-hyk-bundle.js': 'hyk', '77e-apoc-bundle.js': 'apoc'}
+VOTH_CAT = os.path.join(ROOT, 'settlements', 'voth', 'catalog', 'registry')
+VCAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'), os.path.join(ROOT, 'kits', 'catalog', 'krator-master-buildings-voth.js')] + \
+             [os.path.join(VOTH_CAT, f) for f in ('voth-housing.js', 'voth-manors.js', 'voth-shops.js', 'voth-taverns.js', 'voth-warehouses.js')]
+HYK_EXTRA = ['70-hyk-housing.js', '71-hyk-shops.js', '72-hyk-hospitality.js', '76-hyk-industry.js', '76b-hyk-warehouse-round.js']
+APOC_DEFS = ['40-dw-small.js', '42-lg-dwell.js', '44-civic.js', '46-shops.js', '48-industry.js']
+P2_DETERMINISTIC = {PACKS_FRAG, DIMS_FRAG, '88-hook-programme.js'} | set(BUNDLE_FRAGS)
+
+
+def closure(js):
+    """the kit's shared-scope rule reads declarations at column 0; a closure's are not shared, so they step in one space"""
+    return re.sub(r'^(const|let|var|function)\b', r' \1', js, flags=re.M)
+
+
+def shim_head():
+    return ('var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) { var v = t[k]; return typeof v === "function" && !/^[A-Z]/.test(String(k)) ? v.bind(t) : v; },\n'
+            '  set: function (t, k, v) { if (k === "onerror") return true; t[k] = v; return true; } });\n'
+            'var scene = new THREE.Group(), renderer = { capabilities: { getMaxAnisotropy: function () { return 4; } } };\n'
+            'var SVF = { WEALTH: {}, missing: {}, placed: [] }; function svfNewBatch() {} function FURNISH() { return null; } function FURNISH_HANG() { return null; } function svfH(k, v, d) { return d; }\n'
+            'var KratorFurniture = { FURN_BY_KEY: {}, has: function () { return false; }, entryDims: function () { return { w: 1, d: 1, h: 1 }; }, setDetail: function () {},\n'
+            '  batch: function () { return { place: function () { return null; }, flush: function () { return new THREE.Group(); }, count: 0 }; } };\n'
+            'var KratorInteriors = { sets: { find: function () { return null; } }, runtimeAdapter: function () { return null; } };\n')
+
+
+def vcat_bundle():
+    body = ''.join('/* ---- %s ---- */\n%s\n;\n' % (os.path.relpath(f, ROOT).replace(os.sep, '/'), rd(f)) for f in VCAT_FILES)
+    return ('/* VCAT: the Voth building catalog on the catalog core, one closure (settlements/hook/build.py). GENERATED: edit kits/catalog or settlements/voth/catalog. */\n'
+            'var VCAT = (function(){\n' + shim_head() + body +
+            'function vcatProto(key, v) { var A = ASSET_BY_KEY[key]; if (!A) return null; var g = buildAsset(key, 0, 0, 0, { variant: v | 0, seed: 1, y: 0 }); if (!g) return null;\n'
+            '  scene.remove(g); INSTANCES.length = 0; var d = entryDims(A, v | 0); g.userData = { key: key, v: v | 0, w: d.w, d: d.d, h: d.h, error: g.userData.error }; return g; }\n'
+            'return { proto: vcatProto, ASSET_BY_KEY: ASSET_BY_KEY };\n})();\n')
+
+
+def hyk_bundle():
+    sys.path.insert(0, os.path.join(ROOT, 'settlements', 'voth'))
+    import foreign
+    B = [b for b in foreign.BUILDS if b['name'] == 'ys'][0]
+    files = [f for f in B['files'] if f != '74f-hyk-civic-minor.js'] + HYK_EXTRA
+    body = foreign._head_js(B['src']).replace("const ERRS=document.getElementById('errs');", 'var ERRS = { style: {}, textContent: "" };')
+    body += ''.join('/* ---- %s ---- */\n%s\n' % (os.path.relpath(foreign._path(B['src'], f), ROOT).replace(os.sep, '/'), rd(foreign._path(B['src'], f))) for f in sorted(files))
+    return ('/* HYK: the Hykkousoi kit of Ys, one closure (settlements/hook/build.py, on settlements/voth/foreign.py\'s file list). GENERATED: edit settlements/ys/src. */\n'
+            'var HYK = (function(){\n' + shim_head() + body +
+            'var HYK_ERRS = []; reportErr = function (m) { HYK_ERRS.push(String(m).slice(0, 600)); if (typeof console !== "undefined") console.error("HYK: " + m); };\n'
+            'function hykProto(key, v) { var D = HYK.defs[key]; if (!D) return null; var G = new THREE.Group(); G.name = key + "#" + (v | 0);\n'
+            '  for (var n in KIT.items) KIT.items[n].length = 0; REG.length = 0;\n'
+            '  HYK.place(G, key, 0, 0, 0, { y: 0, v: v | 0 }); hykFlush(G); kbake(G);\n'
+            '  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h }; return G; }\n'
+            'return { proto: hykProto, HYK: HYK, errors: HYK_ERRS };\n})();\n')
+
+
+def apoc_bundle():
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'post-apoc'))
+    import apoc_bundle as ab
+    return ('/* KPA: kits/post-apoc through its apoc_bundle, sealed again with the furniture and interiors stubbed (no furniture on the town page). GENERATED: edit kits/post-apoc. */\n'
+            'var KPA = (function(){\n' + shim_head() + ab.bundle(APOC_DEFS) + '\n'
+            'function kpaProto(key, v) { var D = KratorPostApoc.DEFS[key]; if (!D) return null;\n'
+            '  var G = KratorPostApoc.build([{ key: key, x: 0, z: 0, ry: 0, o: { v: v | 0, y: 0 } }], { culture: "generic" }); if (!G) return null;\n'
+            '  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h }; return G; }\n'
+            'return { proto: kpaProto, DEFS: KratorPostApoc.DEFS, K: KratorPostApoc };\n})();\n')
+
+
+def dims_fragment():
+    """every kit piece's declared box, read from the kits' sources (as settlements/isle-demo/build.py dims_fragment):
+    the plan places by these, so it needs none of the drawing bundles"""
+    import glob
+    out = {}
+    num = lambda s, n: (re.search(r'\b%s\s*:\s*([\d.]+)' % n, s) or [None, None])[1]
+    strv = lambda s, n: (re.search(r"\b%s\s*:\s*['\"]([^'\"]*)['\"]" % n, s) or [None, None])[1]
+    rec = lambda b, kit, h=None: {'w': float(num(b, 'w')), 'd': float(num(b, 'd')), 'h': float(num(b, 'h') or h or 8), 'kit': kit, 'wealth': strv(b, 'wealth')}
+    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'islanders', 'src', '*.js'))):
+        for m in re.finditer(r"defBuilding\(\{\s*key\s*:\s*'([^']+)'(.*?)\bbuild\s*[:(]", rd(f), re.S):
+            b = m.group(2)
+            if re.search(r"cls\s*:\s*'(life|flora)'", b) or not num(b, 'w'):
+                continue
+            out[m.group(1)] = rec(b, 'isk')
+    for f in sorted(glob.glob(os.path.join(ROOT, 'settlements', 'iziz', 'src', '7*-vern-*.js'))):
+        for m in re.finditer(r"VERN\.def\(\{key:'([^']+)'(.*?)build:", rd(f)):
+            out[m.group(1)] = rec(m.group(2), 'izv', 8)
+    for f in HYK_EXTRA:
+        for m in re.finditer(r"HYK\.def\(\{key:'([^']+)'(.*?)build:", rd(os.path.join(ROOT, 'settlements', 'ys', 'src', f))):
+            if num(m.group(2), 'w'):
+                out[m.group(1)] = rec(m.group(2), 'hyk')
+    for f in VCAT_FILES[1:]:
+        for m in re.finditer(r"ASSET\(\{\s*key:\s*'([^']+)'(.*?)\bbuild\s*:", rd(f), re.S):
+            b = m.group(2)
+            if not num(b, 'w'):
+                continue
+            r = rec(b, 'vcat')
+            vd = re.search(r'variantDims\s*:\s*\[(.*?)\]', b, re.S)
+            if vd:
+                r['vd'] = [{'w': float(x[0]), 'd': float(x[1]), 'h': float(x[2])} for x in re.findall(r'\{\s*w:\s*([\d.]+),\s*d:\s*([\d.]+),\s*h:\s*([\d.]+)', vd.group(1))]
+            out[m.group(1)] = r
+    for f in APOC_DEFS:
+        for m in re.finditer(r"defBuilding\(\{key:'([^']+)'(.*?)build:", rd(os.path.join(ROOT, 'kits', 'post-apoc', 'src', f))):
+            if num(m.group(2), 'w'):
+                out[m.group(1)] = rec(m.group(2), 'apoc')
+    return ('/* GENERATED by build.py: the kits\' declared boxes (kits/islanders, settlements/iziz, settlements/ys, the Voth catalog, kits/post-apoc) */\n'
+            'var HOOK_DIMS = ' + json.dumps(out, sort_keys=True, separators=(',', ':')) + ';\n')
+
+
+def p2_bodies(bodies, side):
+    sys.path.insert(0, os.path.join(ROOT, 'settlements', 'isle-demo'))
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import bundles, matlib_pack
+    izp = os.path.join(ROOT, 'settlements', 'iziz')
+    izfams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
+    bodies[PACKS_FRAG] = (matlib_pack.fragment(os.path.join(ROOT, 'kits', 'islanders'), 'islanders', side=side) +
+                          matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith(('fauna', 'city'))], side=side))
+    bodies['77a-isk-bundle.js'] = closure(bundles.isk_bundle()[0])
+    bodies['77b-izv-bundle.js'] = closure(bundles.izv_bundle()[0])
+    bodies['77c-vcat-bundle.js'] = closure(vcat_bundle())
+    bodies['77d-hyk-bundle.js'] = closure(hyk_bundle())
+    bodies['77e-apoc-bundle.js'] = closure(apoc_bundle())
+    bodies[DIMS_FRAG] = dims_fragment()
+
+
 # ---------------------------------------------------------------- the site editor (targets/hook-site -> dist/hook-site.html)
 # A site target is the base target's page (its layout and views) plus Voth's editor fragments read in place under names
 # that load after the kit's camera (92): the model (10-site-model.js: SITE, TERR, undo), the tools (55-site-tools.js) and
@@ -269,7 +395,12 @@ def build_one(target, do_checks):
     # or inlined with --inline-packs
     side = None if '--inline-packs' in sys.argv else {}
     bodies[PB.MATLIB_PACK] = matlib_pack.fragment(PORT, PACK_KEY, side=side)
-    order = sorted(order + [PB.MATLIB_PACK])
+    p2_bodies(bodies, side)
+    for n in list(bodies):
+        if n not in paths:
+            paths[n] = None
+    PB.DETERMINISTIC |= P2_DETERMINISTIC
+    order = sorted(set(order) | set(bodies))
 
     if do_checks:
         errs = PB.check(order, bodies)

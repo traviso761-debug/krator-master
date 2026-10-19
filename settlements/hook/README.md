@@ -4,10 +4,11 @@ Hook is the Ancient port city of the Ring Sea's south-western shore, the Izani E
 Voth a few months before game start (`LORE.md` section 6.2, the Hook entry; section 6.12, "Hook is lost"). `PLAN.md`
 is the plan: the Ancient Port kit (`settlements/port`) lays the waterfront, the Ancient town behind it is the layer
 under every other, `core/city` lays the town, and six building kits dress the layers of its history. **This folder is
-at phase P1**: the waterfront (P0, every Port segment and vessel placed at least once), the ground behind it, the
-site on `core/city` (steps 0-5), the Ancient town's ruin hosts on their grid and the site editor page, all of it standing on the Krator
-Scale Model's ground at 1:1 ("The ground" below). `LAYOUT.svg` is the layout the owner approved (2026-10-19), drawn to
-scale over the P0 run.
+at phase P2**: the waterfront (P0, every Port segment and vessel placed at least once), the ground behind it, the
+site on `core/city` and the Ancient town's ruin hosts on their grid (P1), the site editor page, all of it standing on
+the Krator Scale Model's ground at 1:1 ("The ground" below), and the town itself (P2): `core/city` steps 6-12 on the
+quarters, every lot drawn from its own culture's kit. `LAYOUT.svg` is the layout the owner approved (2026-10-19),
+drawn to scale over the P0 run.
 
 ## The build
 
@@ -40,6 +41,14 @@ P1 adds to the page, read in place too (`build.py`, "P1"):
   `HBLH`: the Port's haven has the name), with the skyscraper and glass-shard helpers they call lifted from
   `52-sky-abc.js` and `42-offices.js` (`78-sky-helpers.js`).
 
+P2 adds the town's kits, each sealed in a closure (`build.py`, "P2"; "P2: the town" below): the Islanders' and the
+Vernacular's library packs beside the page (`77-hook-packs.js`, sidecars `dist/hook.tex.islanders.js` and
+`.tex.iziz.js`), `77a` ISK and `77b` IZV through `settlements/isle-demo/bundles.py`, `77c` VCAT (the catalog core and
+the Voth registries), `77d` HYK (`settlements/voth/foreign.py`'s Ys file list plus its housing, shops, hospitality
+and industry), `77e` KPA (`kits/post-apoc/apoc_bundle.py`, the furniture and interiors stubbed), and the kits' boxes
+scraped into `HOOK_DIMS` (`77f-hook-dims.js`). The site editor page carries them too (it is the base page plus the
+editor), so both pages are about 3.9 MB.
+
 ## P1: the ground, the site, the Ancient town
 
 | Fragment | What |
@@ -48,8 +57,33 @@ P1 adds to the page, read in place too (`build.py`, "P1"):
 | `src/76-hook-ground.js` | `[G data]` the Heights (a ramp 31 to 46 m, the quays at 6) and the hill behind (70 to 95 m over z -1180 to -1400) as the kit's own layout stamps, kept only where the model has no such relief (on the 4.21 cut: neither); `hookGroundH` for what stands on them |
 | `src/79-hook-ancient.js` | `[draw]` the five host types registered as Port segments (`anFacet`, `anBastion`, `anArcades`, `anStalks`, `anBell`: a land block the width of the podium, a flat pad at the ground's height, the kit's builder run in a group at the pad with the group transform on, cut at a storey through the kit's Ys hook) |
 | `targets/hook/89z-rows.js` | `[G data]` the P0 run, then the ground stamps and the hosts: the site's named hosts, then one per free block of the Ancient grid by `KRAND` (seeded from the stretch, row and column; the type by the site's weights, the decay and the cut by the quarter's ruin level; a block near an avenue, on the Heights' front slope or over a Port footprint stays free); every host and quarter in `core/tags` before anything draws |
-| `src/90a-hook-city.js` | `[G data]` `core/city` steps 0-5 on the site after the terrain: the build zone onto the raster, every Port footprint and host filed as a landmark (hard ground), the quarters with their lot mix, holder, mood, layer and ruin level, the painted fields, the three avenues drawn and snapped. Steps 6-12 are P2 |
-| `src/90b-hook-city-draw.js` | `[web]` the streets through core/city's own drawing, the quarters' outlines and labels, the markers; `z` toggles the overlay; `window._city` for the verify |
+| `src/88-hook-programme.js` | `[G data]` the town's programme (P2): each culture's kit and its lot classes (`culture:class`, the kits' own keys), the fallback chain, the quarters' wealth bias, the salvage draw, the host reach |
+| `src/90a-hook-city.js` | `[G data]` `core/city` steps 0-12 on the site after the terrain: the build zone onto the raster, cut to the quarters; every Port footprint and host filed as a landmark (hard ground); the quarters with their lot mix, holder, mood, layer and ruin level; the painted fields; the three avenues drawn and snapped; then the builder's own steps 6-12 (P2) with the programme's classes, the lot filler drawing a culture from the quarter's mix, the class from the street and the wealth, the piece by size; the records for the page (`HOOK_CITY.recs`: kit, key, variant, culture, class, quarter, salvage, host), each in `core/tags` |
+| `src/90b-hook-city-draw.js` | `[web]` the streets through core/city's own drawing; the quarters' outlines and labels and the markers (`z` shows them); the town: every kit piece built once at the origin by its kit's closure, flattened, and drawn merged (one mesh per material) within 520 m of the camera's target, as massing beyond, a footing under each lot on the slope; `window._city` for the verify |
+
+## P2: the town
+
+The quarters' lots are `core/city`'s steps 6-12 on Hook's site, drawn with five kits read in place and sealed each in
+a closure of its own (`build.py`, "P2"; the Islanders and the Vernacular through `settlements/isle-demo/bundles.py`):
+
+| Culture (`layer`) | Kit | Closure | Pieces |
+|---|---|---|---|
+| `hukoa` | `kits/islanders`, the West set (`iw-*`) | `ISK` | huts, rumah, batak, tongkonan and gadang houses, the chief's house, shophouses and trades, kava house, godowns |
+| `kautoa` | `kits/islanders`, the East set (`ie-*`) | `ISK` | the Kautoan houses poor to noble, traders, kava house, guesthouse, warehouse, smithy |
+| `tethys` | `settlements/ys` (`hyk_*`) | `HYK` | the Hykkousoi houses poor to rich, eleven shops, tavern, inn, warehouses, smithies |
+| `iziz` | the Iziz Vernacular (`vern_*`) with its Ancients core | `IZV` | houses poor to rich, shops, workshops, smithy, tavern, warehouse, silos |
+| `voth` | the Voth building catalog (`voth_*`) on the catalog core | `VCAT` | houses poor to rich in five variants, townhouses, manors, seven shops, taverns, warehouses |
+| `salvage` | `kits/post-apoc` (`dw-*`, `lg-*`, shops, industry) | `KPA` | container, silo, tyre, bus and tank dwellings, the stack and bulkhead blocks, shops, smithy, warehouse |
+
+The kits' boxes are scraped from their sources at build time into `HOOK_DIMS` (`77f-hook-dims.js`), so the plan
+places without the drawing. A lot class is `culture:class`: the lot filler draws the culture from the quarter's
+`cultures` (the site file), the class (poor, middle, rich, manor, shop, tavern, industrial) from the street and the
+wealth with `core/city`'s own choosers, and the piece by size; a culture without a class builds the class below.
+Wealth is `core/city`'s rule from the Customs House plus the quarter's bias (`HOOK_PROG.wealthBias`). The records
+carry the nautical salvage draw and the host they stand against as tags; what the kits can do with them is in
+`KNOWN_ISSUES.md`, "The town". At the seed of the site's pixel the town has 671 lots in 51 ways; the verify holds it
+to no two building boxes overlapping, no corner on a carriageway, every corner on dry ground, and every near piece
+built (`hook-lots`, `hook-lots-overlap`, `hook-lots-off-street`, `hook-lots-dry`, `hook-lots-drawn`).
 
 **The site file** (`site/hook-site.json`) is what the site editor saves (below) and what the owner may still edit
 by hand: `districts` (the `zone`, the ten `quarter`s with `cultures`, `holder`, `mood`, `layer`, `ruin`, the
@@ -164,6 +198,7 @@ town and the hill behind (`targets/hook/91z-views.js`).
 
 ## Next
 
-P2 (`PLAN.md` section 4): the town on `core/city`
-steps 6-12 with the kits' dims, the lot filler drawing a culture then a type, the salvage rule, and the host-lot rule
-(a lot on a ruin draws the ruin, then its culture's addition on it).
+P3 (`PLAN.md` section 4): the layers' landmarks as records with `near` scorers (the Customs House, the governor's
+palace, the Temple of the Sun, the Iron Court's wall, the Tethyan hall and sea temple, the Kautoan house, the
+necropolis, the slave market), the reconquest's damage as a decay field, and the host-lot additions on the ruins
+(`KNOWN_ISSUES.md`, "The town").

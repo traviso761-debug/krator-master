@@ -44,6 +44,12 @@ from a Hook task.
       the west. The owner keeps the run as it is (2026-10-19): Iziz's segments east, Voth's west; `PLAN.md` section 1
       reads its zones from east to west.
 
+- [x] **A ruined host read as a ghost lattice** (the owner, 2026-10-19: the grid's Bastion at decay 1 in the Iron
+      Court). The kit's full decay eats 83 % of a tower's skin, leaving the window slots and the spine ribs up the
+      whole stump; Hook ran its hosts with the holes at 0.45. Now a ruin is holed a fifth and a repaired host a
+      third (`79-hook-ancient.js`, `HOLES`; Ys keeps 0.4 on its reclaimed hosts), so every host stands as a building
+      the town lives in. A ruin that should read as a wreck (the Stacks' toppled blocks) can take a higher value
+      per record later.
 - [ ] **A host's pad flattens the slope it stands on.** A host on the Heights' front slope (row 2 of the grid) is
       skipped for that reason; the named hosts on the ridge's foot stand on a flat pad cut into the slope. The Ancient
       stair and the funicular (P3) will dress the step.
@@ -64,8 +70,46 @@ from a Hook task.
       drawn hosts beside the 8 named ones. The owner tunes `p`, `pEdge` and `weights` in the site file; P2 fills the
       other blocks with the cultures' lots.
 
-## The layout against the plan (P0)
+## The town (P2)
 
+- [ ] **The host-lot rule is a tag, not a building yet.** `PLAN.md` section 3 wants a lot on a ruin to draw the ruin,
+      then its culture's addition on and into it (Ys pods on the face, markets hung from the towers, stilt decks in the
+      shell). The hosts are filed as hard landmark footprints, so no lot stands ON one; a lot whose box stands within
+      `HOOK_PROG.hostReach` (6 m) of a host's pad is marked `host: <the ruin's name>` in its record and in `core/tags`
+      (11 of 671 at this seed). The additions themselves need each kit's own host machinery (Ys's `hykAccrete`
+      and `HYK.placeOn` take a host record with `rAt`; the Vernacular and the Islanders have no host mode): P3, with
+      the landmarks.
+- [ ] **The nautical salvage style is a tag too.** A poor lot takes it with chance 0.6, a middle lot 0.25
+      (`HOOK_PROG.salvage`; 204 of 671): the record and its tag carry `salvage: true`. Only the Islanders' poor
+      houses read anything like it (their own scrap patching, on by the kit's rule); hull roofs, container walls and
+      crane-cab towers on the other kits' pieces are builder variants the kits do not have. Named in PLAN.md section 3;
+      the kits' work.
+- [ ] **No civic buildings, no side streets.** Step 6 places nothing (`tune.civic` is empty: the landmarks are P3),
+      and at this seed step 10 made no side streets (the 51 ways are 3 avenues, 5 main streets and 43 alleys): the
+      blocks are filled by the alleys and the infill. The Customs' and the Heights' lots stand on the alleys more than
+      on streets; P3's landmarks and a side-street pass with the quarters' own spacing are the next step.
+- [ ] **The quarters' mixes are the site file's, not the plan's totals.** PLAN.md section 3 gives the city's shares
+      (hukoa 30 %, iziz 27 %...); at this seed the lots are iziz 258, voth 159, hukoa 130, salvage 58, tethys 39,
+      kautoa 27 of 671, because the Customs and the Heights hold most of the buildable ground and the Point and the
+      Strand little. The owner tunes the quarters' `cultures` in the site file (the editor saves them).
+- [ ] **The kits' pieces stand on the slope with a plinth, not terraced.** Every lot takes the hillside stance
+      (its floor at its highest corner, a stone footing down to the lowest: `stance: 'high'`, `maxDrop` 7); a
+      terrace per block (the plan's streets stepped by `core/city`) is the 10 % slope's proper answer (the P1 item
+      above).
+- [ ] **The far town is massing.** Beyond `HOOK_DRAW.nearR` (520 m) of the camera's target a lot is a body and a
+      roof in its kit's tone; within it the piece is built once per key and variant by its kit's closure and drawn
+      merged, one mesh per material (the kits make a fresh material per build, so materials are canonicalised by
+      their properties: `HOOK_DRAW.material`). The Port's showcase budget (900 draw calls) is met at most presets;
+      a preset on the Heights looking over the whole core may still run over (a soft OVER in the verify). This is
+      the isle demo's drawing rule (`settlements/isle-demo/src/60-isle-draw.js`) copied; one shared copy, in
+      `core/city` beside `52-city-host-buildings.js`, is a follow-up for the city-layout module's owner.
+- [ ] **The kits are sealed with stubs.** The Hykkousoi and the post-apoc closures stand in for the furniture and the
+      interiors (`build.py shim_head`): no furniture is placed on the town page; the post-apoc set is built with the
+      `generic` culture pack. `KPA.proto` rebuilds its whole site list per prototype (the kit's `build()` resets it),
+      which is fine for one piece at a time.
+- [ ] **Three bundle copies.** The Islanders and the Vernacular come through `settlements/isle-demo/bundles.py`
+      (imported); the Voth catalog, the Hykkousoi and the post-apoc closures are Hook's own in `build.py`, on the
+      same pattern as `settlements/voth/foreign.py`. One shared bundler under `tools/` is owed to three builds now.
 
 ## The layout against the plan (P0)
 
