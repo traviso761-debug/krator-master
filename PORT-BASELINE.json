@@ -373,8 +373,8 @@
    "sha256": "227e15b6e31430fa2428fea0369c3caf68f9f9da2daab12a6c111c2354fd562b"
   },
   "kits/zeijani/dist/zeijani.html": {
-   "bytes": 1339758,
-   "sha256": "ed627c30e46482b7e8d0c6578d6676a1e3b440883134097235617ed1da2aeba3"
+   "bytes": 1345976,
+   "sha256": "cd4fc9bda3d5f1c466c8c08b5808d38185bd5766e26b2d03fbd3df309d62241b"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
    "bytes": 4561429,
@@ -401,8 +401,8 @@
    "sha256": "18d8e0ed6391f503f561dcf3ee37d0e2efc19ba97182632966a70510ce47da58"
   },
   "settlements/dhelv/dist/dhelv.html": {
-   "bytes": 2214324,
-   "sha256": "c7ceebdee90d0490c6f61e5402ca8097ce2c672f2c25afdb85fee9c81718f980"
+   "bytes": 2220542,
+   "sha256": "2093744f44c1393f23cc0eca00d84ad849ce7a88977b301d7726a3c15a0d2822"
   },
   "settlements/girder/girder-hero.html": {
    "bytes": 9733673,
