@@ -25,7 +25,7 @@ uniform vec4 kcB[16];
 // the radius at b (kcA.w is at a): a limb tapers (make_mpfb.py colliders ra, rb)
 uniform float kcR[16];
 uniform vec3 kcH;
-// 1.2 cm more for a loose top (a robe's hem lies over the skirt it covers), 3.2 cm over trousers
+// 2 cm more for a loose top (a robe's hem lies over the skirt it covers), 4 cm over trousers
 uniform float kcP = 0.0;
 uniform float kcL = 0.0;
 uniform float kcT = 0.0;

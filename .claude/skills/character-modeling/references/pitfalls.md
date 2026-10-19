@@ -90,6 +90,21 @@ area you are about to change.
 
 ## 5. Cloth chains
 
+- **Cloth that lies on the body must not hang on chains.** A cloak hung plumb from the shoulder blades stands 4-6 cm
+  off the small of the back; on chains held by the chest it swung into the back whenever the spine bent (holes with
+  blocky edges, which look like texture alpha but are geometry: check the material is opaque before chasing alpha).
+  Bind cloth within ~4 cm of the skin to the body's own weights, fading to the chains by ~9 cm, except over the legs
+  (a skirt on a thigh must leave it as the leg swings).
+- **The seat is in no limb's capsule.** A thigh capsule runs down the femur and the trunk's up the spine; the buttocks
+  sit between, and every robe's back tore there in an idle. Give the chains and the per-vertex push a seat capsule
+  per side, its ends rest points carried by the Hips joint.
+- **A capsule needs a radius per end.** One radius per limb (a median of the surface) let the calf and the top of the
+  thigh through long garments; measure the 90th percentile near each end, inside the limb (past its ends lie the foot,
+  the hand, the trunk), and interpolate along the capsule in the shader.
+- **The push and the trouser squeeze share a margin.** Drawing trousers in less put them out through the robe's knee;
+  pushing the robe further out makes spiky folds. Keep the squeeze tight (8 mm) and the loose top's pad ~2 cm.
+- **Layer order spans garments.** Chain layers were per garment, so a breechcloth flap (layer 1) and a shirt's skirt
+  (layer 1) crossed; rank by slot first (legs under torso under head).
 - Spring-bone chains on hanging garments (not trousers): roots pinned, collision against capsules on the legs and body.
 - **Collisions undone** → the final length-keeping pass must run before collision, not after.
 - **Robes crumpled onto the lap by a capsule lever** → reverted; simple capsules.
@@ -129,6 +144,9 @@ area you are about to change.
 - Five rounds of guessing angles from screenshots ended when the user got a Posture panel with Copy/Apply JSON. Build
   that kind of control first next time; keep the values in `data/posture.json`.
 
+- **A clip that stands on the ball of a foot pitches the toes into the ground**, and a sandal's flat sole with them
+  (it looked like a garment bug). After the clip, turn each toe joint up until a point ~6 cm ahead stays on the ground.
+
 ## 8. Props and hands
 
 - Measure each body's hand frame at rest (palm normal, finger direction) and define grips in it.
@@ -136,6 +154,10 @@ area you are about to change.
   missed on the giant until multiplied by its scale.
 - **Wrong hand** (lantern) → the hold names a hand per clip; check `hold` in the clip data before touching the prop.
 - **Shield facing backward** → flip the prop's model, and check a low-hand variant separately.
+
+- **Headgear gets the shoulders' weights.** MakeHuman weights a garment from the nearest skin, so a broad brim, a wing
+  or an ear flap reaching down beside the neck bends with the arms (a third of one headdress's weight was on them).
+  Weight everything of a head item above the neck to the Head joint; leave a hood's cowl below it alone.
 
 ## 9. Body mods, giants and extra arms
 
@@ -183,5 +205,10 @@ area you are about to change.
 - A JSON file reformatted by a load-and-dump → insert the entry textually instead.
 - A screenshot helper clicking a button that doesn't exist fails silently → check selectors first.
 - Tests that race a page re-dressing → wait for the loading overlay to hide.
+- **A pipeline reads each script when its step starts**, not when the run starts: an edit made mid-run may or may not
+  be in it. Check the output for the change (the colliders in skeleton.json, a weight table) before judging shots.
+- **Survey, don't spot-check.** One script that dresses every culture's outfits on the same body, holds the same clip
+  moment after letting the cloth settle (~2 s), and shoots back and front into one grid found more than the reports
+  did, and shows at a glance whether a shared fix helped everywhere.
 - **The port lint warns on numeric defaults written with `||`** in `[G data]` fragments (`it.arms || 2`: a 0 passed
   becomes the default) → write `x == null ? N : x`; regenerate the golden and confirm it is unchanged.

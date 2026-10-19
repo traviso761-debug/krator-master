@@ -735,14 +735,15 @@ function KCharFigure(body, sliders, load){
   var NCAP = 16, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
   var pushU = { kcA:{ value:capV() }, kcR:{ value:new Array(NCAP).fill(0) },
                 kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() },
-                kcT:{ value:0 }, kcS:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.012, PAD_OVER = 0.02, SQUEEZE = 0.025;
+                kcT:{ value:0 }, kcS:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_OVER = 0.02, SQUEEZE = 0.008;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
      toward the body's axis by up to TUCK (kcT), so a waistband stays under the top in any pose; under a loose top that
      reaches below the knees (kit item long) trousers below the hips are drawn in to within SQUEEZE of the legs'
-     capsules (kcS: the first six, thighs, shins and feet), so wide ones stay under the robe. A capsule's radius is a
-     median of the leg's surface, so SQUEEZE stays well past it: at 6 mm the trousers sank into the calves and, the
-     skin under them hidden, the court's legs read thin */
+     capsules (kcS: the first six, thighs, shins and feet), so wide ones stay under the robe. The radius is the tapered
+     one (ra to rb): at one radius per capsule (a median of the leg's surface) the trousers sank into the calves and,
+     the skin under them hidden, the court's legs read thin; a looser squeeze (2.5 cm) put them out through the robes'
+     knees instead */
   function pushOut(mat, pad, loose, legs){
     var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0 }, looseU = { value:loose ? 1 : 0 };
     mat.onBeforeCompile = function(sh, r){

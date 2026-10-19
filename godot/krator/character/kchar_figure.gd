@@ -1147,7 +1147,7 @@ func _is_loose(part: Dictionary) -> bool:
 
 # a top or trousers as kchar_push.gdshader: the imported material's look, and the push and tuck (pushOut in 50-figure.js)
 const TUCK := 0.025
-const SQUEEZE := 0.025
+const SQUEEZE := 0.008
 func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMaterial:
 	var pm := ShaderMaterial.new()
 	pm.shader = PUSH_SHADER
@@ -1169,11 +1169,11 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 			top = x
 		if x["id"] == rec.get("armour", {}).get("legs"):
 			legs = x
-	# a loose top pushes 1.2 cm further, so a robe's hem lies over the skirt it covers, and 2 cm more over trousers
+	# a loose top pushes 2 cm further, so a robe's hem lies over the skirt it covers, and 2 cm more over trousers
 	# (PAD_TOP, PAD_OVER in 50-figure.js)
 	var pad := 0.0
 	if loose and part["slot"] == "torso":
-		pad = 0.012 + (0.02 if legs != null and not legs.get("loose", false) else 0.0)
+		pad = 0.02 + (0.02 if legs != null and not legs.get("loose", false) else 0.0)
 	pm.set_shader_parameter("kcP", pad)
 	pm.set_shader_parameter("kcT", TUCK if part["slot"] == "legs" and top != null and top.get("tucks", false) else 0.0)
 	# trousers under a loose top that reaches below the knees are drawn in to the legs (SQUEEZE in 50-figure.js)
