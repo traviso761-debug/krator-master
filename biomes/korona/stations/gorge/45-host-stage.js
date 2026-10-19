@@ -90,7 +90,7 @@ const STAGE={
  poorExtra:(x,z)=>.78,
  bogAt:(x,z)=>0,
  // red gravel, the wadi's sand and the spring's margin, the spring's green ring
- layers:{a:'ground.talus',b:'ground.sand',c:'ground.bog'},layerCol:[0x9a5a3a,0xc8a070,0x5a6a30],
+ layers:{a:'ground.redsoil',b:'ground.sand',c:'ground.bog'},layerCol:[0x9a5a3a,0xc8a070,0x5a6a30],   /* the desert's red soil (the library's ground.redsoil) since 2026-10-19 */
  weights:(x,z)=>[smooth(WADI.w+30,WADI.w+4,wadiD(x,z))+smooth(90,40,springD(x,z)),smooth(70,22,springD(x,z))],
  rockCol:{band:[0xa88478,0xb89486,0x9a7868,0xc4a494],top:0xb09a8c,soil:0x8a5a40},waterCol:0x1e4a48,
  floorLabel:'The gorge floor (red gravel, leached sand)',waterLabel:'The spring',

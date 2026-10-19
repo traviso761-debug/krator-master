@@ -16,8 +16,6 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 - [ ] **The ecotone species are not read.** The notes name the nwlowlands' bamboo, ferns and glow-willows for the lake
   shores (the fertile basin) and the nhighlands' crag pine and beard lichen for the dry crests (the trenches); the pages
   draw the hyperjungle and the necanyons kit only. Read those two kits in place the way the kipuka station does.
-- [ ] **The trenches' lee has nothing of its own.** The rain shadow is bare scree by design, but the eastern desert's
-  Socotran palette (`biomes/sedesert`) is the right neighbour for it; nothing is read from it yet.
 - [ ] **The salt lake and the Tiers' lake are flat discs at the stage's edge**, far above their true depth (the trenches'
   walls are 4 km). A station cannot hold that; the open world will.
 - [ ] **The tepui is one record.** The open world wants many tables placed from the scale model's ring crests
@@ -25,29 +23,23 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 - [ ] **Two textures came off their prompts** (`core/materials/PROMPTS-NEEDED.md`, "Delivered 2026-10-19, Korona"):
   `ground.quartzite.black` is pale with black patches (the summit reads lighter than Roraima's crust), `ground.peat.black`
   a rusty moss rather than black peat. Usable; a redo is the owner's call.
-- [ ] **The gorge's ground is the kit's own, not the desert's.** The sedesert pack's ground layers are left out of the
-  gorge's page (as the ring isles leave them out); the floor wears Korona's gravel, sand and bog families. A red desert
-  soil family for the gorge (the sedesert's `ground.redsoil` is in the library) is a one-line addition to
-  `materials.json` when wanted.
-- [ ] **The hoar table's walls have no icefalls.** The seep lines are bare rock (the staghorns are barred there); the notes
-  want the hanging gardens frozen to ice. A hung ice card (`ice.glacier` is in the library) on each seep line.
 - [ ] **The hoar table's pavement is drawn on rings.** The table's top carries the station's knolls and its tarn's basin
-  through `STAGE.topExtra`; since 2026-10-19 the drawn top reads that function (`KSTACKS.mesh` through the export, on 72
-  rings and 520 segments for a top with relief), so the tarn's basin is drawn and the Mother Cushion's knoll mostly is,
-  but the rings are still 20 to 30 m apart on a 1,480 m table: the smaller knolls (12 to 16 m) are drawn low and a
-  cushion on one can stand a few metres over the pavement. A gridded top for a body with relief is the fix.
+  through `STAGE.topExtra`; the drawn top reads that function (`KSTACKS.mesh` through the export, on 150 rings and 1,200
+  segments for a top with relief: about 10 m), so the basins and the knolls are drawn; a gridded top would be cleaner
+  than a 180,000-vertex ring fan.
 - [ ] **The man-eater's lid is a plate, not a lathe.** The hood is drawn as a hinged disc standing open over the mouth
   (horizontal rings, each the chord across the tilted disc), seated on the rim; a proper Nepenthes lid (a dome with a
   spur, veined) wants its own geometry when the plant is redone.
-- [ ] **The trenches' "spire" and "lace fan" preset views stand inside the jungle** (the camera is set from the stack's
-  foot inside the trees); a clear line of sight needs the view set from a ray, as the carvings' view is.
-- [ ] **The basin's "shore meadows" preset view starts inside a lace fan's leaf** (the camera at 7 m by the rainbow fans);
-  the same fix.
-- [ ] **Not in the gallery.** Six pages (`dist/korona.html`, `korona-hollow.html`, `korona-basin.html`,
-  `korona-trench.html`, `korona-gorge.html`, `korona-hoar.html`) with five texture sidecars shared between them
-  (`korona.tex.korona.js`, `.necanyons.js`, `.hyperjungle.js`, `.sedesert.js` for the gorge, `.ehigh.js` for the hoar table).
 
 ## Closed
+
+- The open items of 2026-10-19 (the second pass): **the gorge's floor wears the desert's red soil** (`ground.redsoil`, a
+  family in `materials.json`); **the trenches' lee has the eastern desert's kit** (read in place as the gorge reads it:
+  dragon trees and the stands on the rain shadow's scree, thin; a `desert` mask and the kit's fields in the stage);
+  **the hoar table's seep lines hang icefalls** (`47`, `STAGE.icefalls`: a strip of `ice.glacier` down the bed's face under
+  every strong seep, on the wall's profile, a tag record each); the preset views that stood inside the trees look
+  from over the canopy; the pavement under the knolls is drawn at about 10 m. **"Not in the gallery"** was stale: the six
+  pages are in Krator Biomes and Objects v19 (the pre-pass pages; a republish is the owner's call).
 
 - The look pass of 2026-10-19 (the owner, from the published stations): **the ground tiled as furrows and stripes** (the
   meadows of the basin, the sand of the gorge): every library map on a floor, top or wall is read through a hex-cell

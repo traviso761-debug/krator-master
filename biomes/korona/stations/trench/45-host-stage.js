@@ -23,6 +23,7 @@ window._t={t0:performance.now()};const _mark=k=>{window._t[k]=Math.round(perform
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
 const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}
+var SEDESERT_WATER={hue:.46};   // the desert kit's reeds and blooms (none here: the lee has no water) follow it
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;document.body.appendChild(renderer.domElement);
@@ -93,8 +94,12 @@ const STAGE={
   return[(1-w)*.9+.3*smooth(.75,1,k),salt,w*(1-salt)*smooth(.98,.5,k)*(.4+.6*smooth(.38,.62,fbm(x*.008+3,z*.008-5,55,2)))];},
  rockCol:{band:[0x8a7f78,0x9a8e86,0x7a6e68,0xa89c94],top:0xa39890,soil:0x6a5a48},waterCol:0x8ab0a8,
  floorLabel:'The ridge (the crest and its two faces)',waterLabel:'The salt lake (an arm of it, far below its true depth)',
- // the rainforest climbs the windward face from the salt; nothing on the lee or the crest
+ // the rainforest climbs the windward face from the salt; nothing of it on the lee or the crest
  // (denser and higher up the windward face since 2026-10-19: the rain line is the station's point)
+ // THE LEE'S OWN (KNOWN_ISSUES, closed 2026-10-19): the eastern desert's Socotran kit (biomes/sedesert, read in place as the
+ // gorge reads it) on the rain shadow's scree below the crest, thin: dragon trees and the stands on its shoulder
+ desert:(x,z)=>(1-windwardOf(x,z))*smooth(.97,.6,heightK(x,z))*smooth(-410,-330,floorH(x,z)),desertQ:.85,
+ fields:{canyon:(x,z)=>Math.max(.4*(1-windwardOf(x,z)),smooth(220,40,NECANYONS.footD(x,z))),oasis:(x,z)=>0,dune:(x,z)=>smooth(.52,.68,fbm(x*.0022-7,z*.0022+3,62,2))*(1-windwardOf(x,z))*smooth(.6,.25,heightK(x,z)),rim:(x,z)=>smooth(.7,.95,heightK(x,z))*(1-windwardOf(x,z)),abyss:(x,z)=>0},
  jungle:(x,z)=>windwardOf(x,z)*smooth(1,.72,heightK(x,z))*smooth(-410,-330,floorH(x,z)),jungleQ:.9,necQ:.9,
  bias:{lacefan:(x,z)=>2*windwardOf(x,z),cointree:.6,rainbowfan:1,lacepitcher:1,stormpod:1.2,greatsundew:(x,z)=>1.5*windwardOf(x,z),
   cobralily:.6,bloodbulb:.4,bloodtrumpet:.6,maneater:.8,coiltendril:.6,groundstar:.6,punjipit:.7,beartrap:.7,numbthorn:.8,snareflower:.6},

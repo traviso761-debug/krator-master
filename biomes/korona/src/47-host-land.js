@@ -63,7 +63,7 @@ BIO.setSun(SUN_POS);
 BIO.host.bogAt=(x,z)=>STAGE.bogAt(x,z);BIO.host.korona={bias:STAGE.bias||{},path:STAGE.path||null,pools:STAGE.pools};
 
 // ---------------------------------------------------------------- the library layers (or procedural without the pack)
-const LAYER_KEYS=['ground.litter','ground.talus','ground.sand','ground.bog','ground.peat','ground.bladder','ground.snow','rock.wall','rock.top','carving'];
+const LAYER_KEYS=['ground.litter','ground.talus','ground.sand','ground.bog','ground.peat','ground.bladder','ground.snow','ground.redsoil','rock.wall','rock.top','carving','ice'];
 const LIB=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return {};const o={};
  LAYER_KEYS.forEach(k=>{const P=KMAT.packed('korona',k);if(P)o[k]=Object.assign({scale:P.scale[0]},KMAT.textures(P,{aniso:8}));});return o;})();
 const greyTex=(fn,S)=>BIO.canvasTex(S||256,S||256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -76,10 +76,12 @@ const PROC={
  'ground.peat':greyTex((x,y)=>120+50*(fbm(x/6,y/6,23,3)-.5)+30*(BIO.fn.h3(x,y,24)-.5)),
  'ground.bladder':greyTex((x,y)=>150+60*smooth(.6,.75,fbm(x/5,y/5,25,2))+20*(BIO.fn.h3(x,y,26)-.5)),
  'ground.snow':greyTex((x,y)=>236+14*(fbm(x/9,y/9,28,2)-.5)+8*(BIO.fn.h3(x,y,29)-.5)),
+ 'ground.redsoil':greyTex((x,y)=>165+30*(fbm(x/8,y/8,30,3)-.5)+36*(BIO.fn.h3(x,y,31)-.5)),
+ 'ice':greyTex((x,y)=>205+40*(fbm(x/6,y/30,32,3)-.5)-50*smooth(.62,.7,fbm(x/3,y/40,33,2))),
  'rock.wall':greyTex((x,y,w,h)=>165+30*(fbm(x/40,y/5,10,3)-.5)-70*Math.pow(fbm(x/9,y/120,11,2),2.5)+12*(BIO.fn.h3(x,y,12)-.5)),
  'rock.top':greyTex((x,y)=>175+26*(fbm(x/12,y/12,15,3)-.5)-70*smooth(.56,.66,fbm(x/26,y/26,16,2))+10*(BIO.fn.h3(x,y,17)-.5)),
  'carving':greyTex((x,y,w,h)=>{const row=Math.floor(y/(h/5)),yy=y-row*(h/5),line=Math.abs(yy-h/10)<1.5?-50:0,g=((x*7+row*31)%97<40&&Math.abs(yy-h/10-(((x*13+row*7)%3)-1)*h/25)<2)?-60:0;return 150+line+g+10*(BIO.fn.h3(x,y,27)-.5);})};
-const SCALE={'ground.litter':3,'ground.talus':2.4,'ground.sand':2,'ground.bog':2.2,'ground.peat':2.6,'ground.bladder':2.2,'ground.snow':3,'rock.wall':16,'rock.top':5,'carving':6};
+const SCALE={'ground.litter':3,'ground.talus':2.4,'ground.sand':2,'ground.bog':2.2,'ground.peat':2.6,'ground.bladder':2.2,'ground.snow':3,'ground.redsoil':2.6,'rock.wall':16,'rock.top':5,'carving':6,'ice':6};
 const layer=k=>LIB[k]?{map:LIB[k].map,normalMap:LIB[k].normalMap||null,roughnessMap:LIB[k].roughnessMap||null,s:LIB[k].scale,lib:true}:
  {map:PROC[k],normalMap:null,roughnessMap:null,s:SCALE[k],lib:false};
 LAYER_KEYS.forEach(k=>{const t=layer(k).map;if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;}});
@@ -149,7 +151,7 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog'),Ls=l
  const acc={wall:{pos:[],uv:[],col:[],idx:[],b:[],s:[]},top:{pos:[],uv:[],col:[],idx:[],b:[],s:[]}};
  // a top that carries the station's own relief (STAGE.topExtra: the hoar table's knolls and its tarn's basin) is drawn on
  // many more rings and segments, so the drawn pavement follows the field the plants stand on (the owner, 2026-10-19)
- STAGE.bodies.forEach(B=>{const small=!!SMALL[B.kind],relief=!small&&!!STAGE.topExtra,m=KSTACKS.mesh(B,relief?{step:7,topRings:72,segMax:520}:{step:small?2.5:7}),nv=m.part.length;
+ STAGE.bodies.forEach(B=>{const small=!!SMALL[B.kind],relief=!small&&!!STAGE.topExtra,m=KSTACKS.mesh(B,relief?{step:7,topRings:150,segMax:1200}:{step:small?2.5:7}),nv=m.part.length;
   const remap={wall:new Int32Array(nv).fill(-1),top:new Int32Array(nv).fill(-1)};
   for(let i=0;i<m.idx.length;i+=3){const a=m.idx[i],part=m.part[a],key=part===1?'top':'wall',A=acc[key],R=remap[key];
    for(let k=0;k<3;k++){const v=m.idx[i+k];if(R[v]<0){R[v]=A.pos.length/3;const x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2],b=B.beds[m.bed[v]];
@@ -203,6 +205,30 @@ if(STAGE.carvings){const Cv=STAGE.carvings,B=STAGE.bodies.find(b=>b.id===Cv.body
  const wallR=K.footR(bed,am)*K.prof(bed,(u0+u1)/2),wallD=Math.hypot(mid.x-bed.cx,mid.z-bed.cz)-wallR;
  const rec={name:Cv.name,key:'carving',kind:'carving',culture:'korona-tepui',x:mid.x,z:mid.z,y:mid.y-Cv.h,r:Math.max(12,arc/2*.35),h:Cv.h*2,hum:true,wallD};
  REGISTER(rec);CARVINGS.push(Object.assign({arc,n,body:B.id,bed:bed.k,groundY:gy,baseY:bed.y+y0b},rec));}
+
+// ---------------------------------------------------------------- THE ICEFALLS (the hoar table): the hanging gardens frozen
+// On the high cold table a seep line (NECANYONS.SEEPS: where a bed's parting weeps) hangs no garden but a fall of ice: a
+// strip down the bed's face below the parting, on the wall's own profile (NECANYONS.wall, as the carvings are), a hand's
+// width off it, narrowing to its foot; the ice map dithered, tinted blue-white. STAGE.icefalls {min (the seep strength
+// a fall needs), len(seep) (metres), w(seep) (metres across), every (1: every seep point, 2: every other)}
+const ICEFALLS=[];
+if(STAGE.icefalls&&LIB['ice']||STAGE.icefalls&&PROC['ice']){const IF=STAGE.icefalls,Li=layer('ice'),pos=[],uv=[],idx=[],K=KSTACKS,every=IF.every==null?2:IF.every,minS=IF.min==null?.45:IF.min;
+ (NECANYONS.SEEPS||[]).forEach((sp,i)=>{if(sp.seep<minS||i%every)return;const B=STAGE.bodies[sp.body],bed=B.beds[sp.bed];if(!bed)return;
+  const L=Math.min(bed.h*.92,IF.len?IF.len(sp.seep):18+30*sp.seep),w=IF.w?IF.w(sp.seep):5+8*sp.seep,R=K.footR(bed,sp.a),da=w/2/Math.max(8,R),rows=8,NC=5,base=pos.length/3;
+  /* NC columns across so the strip follows the wall's flutes, each column's own length (a ragged foot of icicles: hashed
+     from the seep's index and the column, core/rand), a hand and a half off the rock */
+  const colL=[];for(let c=0;c<NC;c++)colL.push(.55+.45*(KRAND.hash(STAGE.seed,i,c,61)%1000)/1000*(c===0||c===NC-1?.7:1));
+  for(let r=0;r<=rows;r++){const t=r/rows,ww=1-.4*t;
+   for(let c=0;c<NC;c++){const s=c/(NC-1)*2-1,a=sp.a+s*da*ww,u=1-t*L*colL[c]/bed.h,q=NECANYONS.wall(B,bed,a,u),off=.45;pos.push(q.x+q.nx*off,q.y,q.z+q.nz*off);uv.push((s*w*ww/2)/Li.s,(t*L*colL[c])/Li.s);}
+   if(r>0)for(let c=0;c<NC-1;c++){const k=base+r*NC+c,j=k-NC;idx.push(j,j+1,k,j+1,k+1,k);}}
+  ICEFALLS.push({x:sp.x,y:sp.y,z:sp.z,len:L,w,seep:sp.seep});});
+ if(pos.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
+  const mat=new THREE.MeshStandardMaterial({map:Li.map,normalMap:Li.normalMap,roughnessMap:Li.roughnessMap,color:Li.lib?0xbcd6e6:0xa8c8dc,roughness:.3,metalness:.1,side:THREE.DoubleSide});
+  mat.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+DITHER).replace('#include <map_fragment>','{vec4 t=kditherW(map,vUv);t=mapTexelToLinear(t);float v=kfbm(vUv*2.3);diffuseColor*=t*mix(vec4(0.72,0.84,0.96,1.0),vec4(1.0),v);}');};
+  mat.customProgramCacheKey=()=>'korona-icefall';
+  const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=IF.label||'An icefall (a seep line frozen: the hanging garden of the high cold)';me.userData.host=true;me.userData.rock=true;scene.add(me);
+  /* tag records only (BIO.record), not the probe's volumes: the falls are one merged mesh, and the probe samples a mesh once */
+  ICEFALLS.forEach(f=>BIO.record({name:'An icefall',key:'icefall',x:f.x,z:f.z,y:f.y-f.len,r:Math.max(3,f.w/2),h:f.len}));}}
 
 // ---------------------------------------------------------------- the water: the stream's ribbon, the rain pools, the station's pools
 const MAT_WATER=new THREE.MeshStandardMaterial({color:STAGE.waterCol||0x24302c,roughness:.08,metalness:.3,transparent:true,opacity:.88});

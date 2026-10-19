@@ -5,7 +5,7 @@ Korona (`NOTES.md`: the corona country under the giant) is three kits on one pag
 flora and its harmless carnivores, and **KORONA**, this kit, with the summit's life and the man-eaters. One `src/`, one
 pack, one host; each station its own page (`build.py --station <name>`; `stations/<name>/` holds that station's host
 fragments, `station.json` its page name and, as the Throne's, any other kit it reads in place (`kits`: slot to path) and
-that kit's pack (`packs`): the lee gorge reads the **sedesert** kit so.
+that kit's pack (`packs`): the lee gorge and the trenches (on the rain shadow's scree) read the **sedesert** kit so.
 
 ## What the host gives the kits
 
@@ -28,6 +28,7 @@ The host's `45-host-stage.js` (one per station) ends in one object, **`STAGE`**,
 | `rockCol`, `waterCol`, labels | the procedural fallback's tints, the inspector's words |
 | `jungle(x,z)`, `jungleQ`, `necQ` | the hyperjungle's extra mask and the two borrowed kits' quality |
 | `bias` | `{plant: number | (x,z,Z)=>number}`: this station's say on each Korona plant's density (`57`, `60` multiply by it); `cobraMeadow` is an extra acceptance for the cobra lilies on the floor |
+| `icefalls` | optional `{min, every, len(seep), w(seep), label}`: on the hoar table, a strip of `ice` down the bed's face under every seep line (`NECANYONS.SEEPS`) of strength `min` or more, on the wall's profile, a ragged foot; a tag record `icefall` each (not a probe volume: one merged mesh) |
 | `carvings` | `{body, tier, a0, a1, y0, h, name}`: the Hum's contour carvings, a strip on that tier's face, its foot `y0` metres (eye height, 1.6) above the highest DRAWN ground along its arc (the talus and the apron banked against the wall included; `47` finds the bed). With an explicit `bed`, `y0` is above that bed's foot instead (the hoar table's rim marks) |
 | `spine` | the LOD origins |
 | `fields` | `{name: (x,z)=>v}`: a station's own fields, merged into the kit's (the gorge: `canyon`, `oasis`, `dune` for the sedesert kit) |

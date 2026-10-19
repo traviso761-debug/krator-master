@@ -25,28 +25,28 @@
    "sha256": "997e30acaf261d71b171845f0134c9ce8f7f9bcd05a015ac85db26c00c648464"
   },
   "biomes/korona/dist/korona-basin.html": {
-   "bytes": 609028,
-   "sha256": "150fa79064800a18cbb4f9cd8b2c5819daf8a2698f9d87d95fde17fc2c48d5c9"
+   "bytes": 612423,
+   "sha256": "0e0bd3dd57a8669214fd3e8171beb4932a6132cdc418712895836042d4e45a17"
   },
   "biomes/korona/dist/korona-gorge.html": {
-   "bytes": 733871,
-   "sha256": "6b44779886db10274f6ae2458ad13b027fff47662f5bd6824514f5e4066c3385"
+   "bytes": 737256,
+   "sha256": "fb4e24ea5b2a5a83ee6f8439b9f261df9387421b0f6f9c58decf9e79825e4f39"
   },
   "biomes/korona/dist/korona-hoar.html": {
-   "bytes": 687735,
-   "sha256": "7d6973c47b3376cef0be6306a11bafcdd29b34d0b7f49a495bc3a26b673279de"
+   "bytes": 691277,
+   "sha256": "a688b5ad42ea0d5d8b051d0514c30112601bae9a7fc159409dcd88399c04dfd6"
   },
   "biomes/korona/dist/korona-hollow.html": {
-   "bytes": 611363,
-   "sha256": "6e9a2e046325abcd2f480d67687340686a299056e208929736b17bdf0f5d0773"
+   "bytes": 614668,
+   "sha256": "f198be0c6a655aee4f754c0107443fca5e24c4d8e50a4d2f8c09a0bf218a2429"
   },
   "biomes/korona/dist/korona-trench.html": {
-   "bytes": 609690,
-   "sha256": "d935a923fbb28c04022721dcb1f9fb1fbf715846bde78b005e6e5ec94fbbe0bd"
+   "bytes": 737807,
+   "sha256": "fe75147298ea69995b93257281f24e1d7b38b6cb7cfe301bcf52059e9d40c199"
   },
   "biomes/korona/dist/korona.html": {
-   "bytes": 614392,
-   "sha256": "ae52c485c3fb8b56ab83b989b9ee3eb263b40058a4d2c43816a5bfda95c4065e"
+   "bytes": 617697,
+   "sha256": "a489e06a151dbd6935f7eab5327112740c4643af4b942926a5d14834222cf98c"
   },
   "biomes/necanyons/dist/necanyons.html": {
    "bytes": 534985,

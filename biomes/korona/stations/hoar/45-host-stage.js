@@ -70,6 +70,8 @@ const knolls=(x,z)=>{let h=0;[[380,-420,230,38],[-300,600,180,16],[700,500,150,1
 const STAGE={
  name:'Korona: the hoar table',R:TERR.R,bodies:ROCK,floor:floorH,capY:TABLE.top-80,seed:16,talusH:0,heroR:1600,
  stream:null,streamD:()=>1e9,pools:POOLS,topExtra:knolls,
+ // THE ICEFALLS (47): the hanging gardens frozen: a fall of ice down the wall under every strong seep line
+ icefalls:{min:.4,every:2,len:s=>20+40*s,w:s=>6+10*s,label:'An icefall (a seep line frozen: the ice tribes\' hanging gardens)'},
  windward:(x,z)=>.55+.45*smooth(400,-400,(x+z)*Math.SQRT1_2),
  wetExtra:(x,z)=>.45*smooth(60,8,poolD(x,z)),
  // ET: nothing on the table is warm; the gorge floor below is in cloud and out of the page's life
