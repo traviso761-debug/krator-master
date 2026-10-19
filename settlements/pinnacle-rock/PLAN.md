@@ -36,10 +36,20 @@ floor at -900 to -1,000 m (the scan: 541 m over the ring's median; the 4 km cell
 -424 on the top, -746 to -1,010 north, -1,315 east), 11 km from the **K'etsaal Baatar** (the page's name; the repo's
 namer is behind it), rain about 3,000 mm. The others were 170 m or less over their rings, under the canopy. The
 point was moved to 755,351 and typed `town` (notes on the record). It is inside the Beast Riders' and hyperjungle
-polygons; the Painted Men's polygon begins 10 km north, the Inner Wall behind it, Korona beyond; Mav's Refuge is
+polygons; the Painted Men's polygon begins 44 km north, the Inner Wall behind it, Korona beyond; Mav's Refuge is
 250 km south, Girder 375 km, the Hexahedron 400 km west. The knoll is a 10 km upland at the model's resolution: the
-mesa itself stands on its top, and the 1:1 ground round it falls away as the cells say, steepest to the north and
-east.
+mesa itself stands on its top, and the 1:1 ground round it falls away as the cells say.
+
+**Checked against the model (4.21, 2026-10-19), and the page takes its land.** The knoll is a ridge about 6 km wide and
+10 km long running north-south (its top -325 m at px 753-755, 349-351), standing 500 to 1,000 m over the jungle floor:
+the mesa's long axis follows it and the 4.4 km page lies on its top. The ground falls **steepest east and south** (860 m
+within 8 km east; 1,100 m within 12 km south, most of it beyond 4 km), gentler north and west; within the page the
+model's crown runs ~20 m higher west and north-west and falls 40-80 m to the south and south-east corners (2.5% across
+the farm ring: the contour terraces take it). The **K'etsaal Baatar** runs west 11 km due south (from px 787,366 to
+743,362), the **Inner Wall** rises north and north-east to 2,100 m at 32 km and 2,800-3,100 m at 48 km; the site is in
+the Hyperjungle overlay 8 km inside its edge, Korona's 48 km off. The page's floor is the model's land at 1:1 (the open
+world's fields over a cut round the site, `region/`; README.md), with the dry gorge cut finer than the model's cells;
+the far land to 60 km is drawn from the same cut.
 
 **The mesa clears the canopy** (settled 2026-10-18). The northern margin's forest is Girder's size (150-270 m; the
 contradiction with Mav's 290-480 m stays in `LORE.md` §12 for the deep jungle). The mesa rises **about 250 m** from
@@ -101,6 +111,11 @@ strangers; the beast lift (Mav's cage lift on a capstan) hangs down the gorge fa
 The town is "un-assailable" the way Mav's gateway trees are: one stair, gated three times.
 
 ## 3. The order of work
+
+**Status (2026-10-19): P0 and P1 are done** (README.md): the page stands on the model's land with the far land to the
+Inner Wall; the mesa, the ten fins round the rim, the Garden, the shrine's rock and seven spurs as KSTACKS records from
+the settled plan; `verify.py --assert` passes. The Stair (listed under P1) moves to P2 with the lifts and the rock-cut
+stair pieces (`kits/beast-riders`).
 
 - **P0. The site and the harness.** Find the mesa (section 1), write the point back, `build.py` reading the catalog,
   Girder's flyers and `core/terrain` in place, the port lint, `verify.py` on `tools/harness.py`. Done when a bare red

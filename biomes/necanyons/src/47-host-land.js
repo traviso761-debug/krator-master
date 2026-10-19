@@ -1,7 +1,11 @@
 // ================================================================= HOST — the land: the kit's layout, the height, the water, the fields, the meshes, the binding
 // The kit lays out the rock (46: NECANYONS.lay) on the floor; the height is then the rock's top over a body and the floor
 // elsewhere: the same KSTACKS functions the rock's mesh is made from, so a plant's foot is on the drawn rock.
-NECANYONS.lay({bodies:ROCK,floor:floorH,R:TERR.R,capY:330,cell:5,seed:7});
+// Another world reads this fragment in place (settlements/pinnacle-rock) and says what differs in a LAND object its host
+// stage defines: {capY, spine (the LOD origins), tags, creek:false (no creek ribbon), clear:(x,z)=>0..1 (cleared ground:
+// the hyperjungle thinned by it)}. Without one, this page's own values.
+const LANDO=typeof LAND==='undefined'?{}:LAND;
+NECANYONS.lay({bodies:ROCK,floor:floorH,R:TERR.R,capY:LANDO.capY==null?330:LANDO.capY,cell:5,seed:7});
 _mark('layout');
 const _tm={x:NaN,z:NaN,h:0};
 // the TALUS: the floor rises against a wall's foot, the rock's fall and sand banked up (the wall goes down into it)
@@ -28,11 +32,11 @@ const FIELD={
 const OBSTACLES=[];
 const waterMask=(x,z)=>{const w=waterH(x,z);if(w<-1e8)return 1;const d=terrainH(x,z)-w;return d<.15?0:d<.7?(d-.15)/.55:1;};
 const jungleMask=(x,z)=>{if(NECANYONS.rockAt(x,z))return 0;const fd=NECANYONS.footD(x,z);if(fd<28)return 0;
- return smooth(28,60,fd)*smooth(CREEK.w+10,CREEK.w+40,creekD(x,z))*(.55+.45*smooth(-1400,600,z))*waterMask(x,z);};
+ return smooth(28,60,fd)*smooth(CREEK.w+10,CREEK.w+40,creekD(x,z))*(.55+.45*smooth(-1400,600,z))*waterMask(x,z)*(LANDO.clear?LANDO.clear(x,z):1);};
 let MASK=waterMask;
 // the LOD spine: the middle, the bodies, the creek
-const SPINE=[[0,0],[300,0],[-60,560],[CREEK.x(400),400]];
-BIO.init({tags:'necanyons',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
+const SPINE=LANDO.spine||[[0,0],[300,0],[-60,560],[CREEK.x(400),400]];
+BIO.init({tags:LANDO.tags||'necanyons',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:83,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:420,mid:950,far:2400,floor:[260,650]}});
 BIO.setSun(SUN_POS);
@@ -109,7 +113,7 @@ const ROCK_GEOS=[];
 
 // ---------------------------------------------------------------- the water: the creek's ribbon and the rain pools
 const MAT_WATER=new THREE.MeshStandardMaterial({color:0x2a3a34,roughness:.08,metalness:.3,transparent:true,opacity:.88});
-(function(){const pos=[];for(let z=-TERR.R*1.1;z<TERR.R*1.1;z+=20){const a=[CREEK.x(z),z],b=[CREEK.x(z+20),z+20],ya=creekBed(a[1])+CREEK.depth,yb=creekBed(b[1])+CREEK.depth,w=CREEK.w;
+(function(){const pos=[];if(LANDO.creek!==false)for(let z=-TERR.R*1.1;z<TERR.R*1.1;z+=20){const a=[CREEK.x(z),z],b=[CREEK.x(z+20),z+20],ya=creekBed(a[1])+CREEK.depth,yb=creekBed(b[1])+CREEK.depth,w=CREEK.w;
   pos.push(a[0]-w,ya,a[1],b[0]-w,yb,b[1],b[0]+w,yb,b[1],a[0]-w,ya,a[1],b[0]+w,yb,b[1],a[0]+w,ya,a[1]);}
  const P=NECANYONS.POTHOLES;P.forEach(p=>{const n=14;for(let k=0;k<n;k++){const a0=-k/n*TAU,a1=-(k+1)/n*TAU;pos.push(p.x,p.y,p.z,p.x+Math.cos(a0)*p.r,p.y,p.z+Math.sin(a0)*p.r,p.x+Math.cos(a1)*p.r,p.y,p.z+Math.sin(a1)*p.r);}});
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
