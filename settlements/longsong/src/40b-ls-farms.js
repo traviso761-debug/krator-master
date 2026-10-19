@@ -60,7 +60,8 @@ F.OTHER=[{id:'mirror',crops:['lotus-root','lotus-silk'],name:'The Mirror of Long
 // tsampa mill's wheel stands in it), into the ward under the north wall, along the paper mill's north side to its wheel;
 // the tail race on from the wheel, out under the wall west of the corner tower, to the Mirror. Its levels fall all the
 // way (the host's CANAL: from just under the stream's level at the intake to the pond's)
-F.LEAT={pts:[[300,-266],[220,-254],[40,-248],[-24,-240],[-100,-238],[-106,-226],[-108,-201],[-112,-194],[-150,-193.5]],w:2.2,name:'The leat (the paper mill\'s and the tsampa mill\'s water)'};
+// (2026-10-19: the intake moved from 300 m to 1.1 km upstream, for the head a mill needs: about 3 m to the paper mill)
+F.LEAT={pts:[[1100,-240],[960,-232],[760,-236],[560,-244],[400,-250],[300,-252],[220,-254],[40,-248],[-24,-240],[-100,-238],[-106,-226],[-108,-201],[-112,-194],[-150,-193.5]],w:2.2,name:'The leat (the paper mill\'s and the tsampa mill\'s water)'};
 F.TAIL={pts:[[-150,-193.5],[-186,-193.5],[-186,-206],[-214,-224],[-246,-233]],w:1.8,name:'The tail race to the Mirror'};
 F.WHEELS=[{id:'wheel-tsampa',at:'leat',x:-80,z:-238.6,r:2.4,name:'The tsampa mill\'s wheel (undershot, in the leat)'},
  {id:'wheel-paper',at:'leat',x:-150,z:-193.5,r:2.8,name:'The paper mill\'s wheel (undershot, in its race)'}];

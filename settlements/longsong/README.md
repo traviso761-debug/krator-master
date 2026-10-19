@@ -74,7 +74,8 @@ half quality), `?mat=proc` (the procedural maps instead of the library's), `?hou
   pastures with the herders' black tents and pens (placeholder yaks). Inside the wall: the orchard and the bee wall, the
   kitchen gardens, the dye garden (saffron, woad for the Order's blue, broom) and its dye house, the physic terraces, the
   upper orchards. `LS.FARMS.provision()`: the house's own fields grow about a quarter of its grain; the valley's tithe
-  the rest.
+  the rest. The herds are the Fauna kit's yak and highland cow (`kits/fauna`, its farm group bundled; each kind baked in
+  its pose and drawn instanced).
 - **The people** (`68-ls-life.js`): 162 records (monks, novices, operatives from Keepwell, masters of arms, keepers,
   wardens, lay servants, pilgrims) on their schedules; at noon the operatives drill at lightning speed in the ward
   (every strike leaves three afterimages), the master of arms stands in the drill ground's middle and every few seconds
@@ -92,6 +93,11 @@ half quality), `?mat=proc` (the procedural maps instead of the library's), `?hou
   standing in it at each mill; the Mirror, the rice pools (level basins cut into the slope, bunded), the court's
   reflecting pools, the reservoir and the held fountain still water (one record each, one mesh). The page checks that
   the water only falls, that each wheel stands in it and that the banks hold it.
+- **The depths' doors**: the Vault's rooms join by doorways cut in their shared walls (`LS.VAULT_DOORS`) and two passages
+  (to the Unmaking Room; from the Long Stair's foot into the Procrastinator's hall); the eye walks through them. Its lamps
+  are a float texture the shader loops over (no silent ceiling).
+- **The sky**: the Oidong kit's, drawn from Longsong's place (`LS.SKY`, from the model: the Throne at 334 degrees, the pass
+  down-valley at 292, no cataract at the head).
 - **The host**: core/host's whole interface (camera, inspector, marks and the polygon tool, minimap, editor), with
   this page's camera clamp (the eye may go under the ground only inside a room of the Vault).
 

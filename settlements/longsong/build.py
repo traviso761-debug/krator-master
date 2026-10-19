@@ -22,6 +22,7 @@ Valley, built in situ on the scale model's land (PLAN.md, README.md; the program
   68-ls-life          HOST: the people drawn from the plan's records (the life layer's scaffold)
   82-host-sky         the Oidong Valley's sky (the standard Krator sky with the giant), read in place
   84-ls-ground        HOST: the ground, the stream and the pond
+  58-fauna-bundle     GENERATED (kits/fauna/fauna_bundle.py): the Fauna kit's farm group, KratorFauna (the herds)
   85-ls-farms         HOST: the farms and gardens drawn from 40b's records (the library's crop cards, the field walls)
   86-ls-far           HOST: the far terrain, the model's land to 60 km
   88-host-build       HOST: the build order (the monastery's records first, then the kit, then one bake)
@@ -116,12 +117,19 @@ for f in ('23-mat-record.js', '25-matlib-host.js'):
 sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
 import matlib_pack as _mp
 SIDE = None if '--inline-packs' in sys.argv else {}
+def _fauna_bundle():
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'fauna'))
+    import fauna_bundle
+    return fauna_bundle.bundle(['farm'], tex=False, mdl=False) + '\n'
 # the world data: Pinnacle Rock's decoder, read in place (its tools/world_data.py), with this page's kit line
 sys.path.insert(0, os.path.join(ROOT, 'settlements', 'pinnacle-rock', 'tools'))
 import world_data as _wd
 VIRTUAL = {'39-ls-world-data.js': _wd.fragment(os.path.join(HERE, 'region'),
                 kits="var WORLD_KITS=[{name:'oidong',global:'OIDONG',overlay:'oidong valley'}];\n", name='39-ls-world-data.js'),
            '44-host-matlib-pack.js': _mp.fragment(HERE, 'longsong', side=SIDE),
+           # the Fauna kit (kits/fauna/fauna_bundle.py): the farm group (the yak, the cattle) for the herds, without its
+           # detail maps or its baked models (85 bakes each posed kind into one instanced mesh)
+           '58-fauna-bundle.js': _fauna_bundle(),
            '44b-host-matlib-pack-oidong.js': _mp.fragment(OD, 'oidong', side=SIDE),
            khost.EDITS_JS: khost.edits_js(HERE, 'longsong')}
 for f in VIRTUAL:

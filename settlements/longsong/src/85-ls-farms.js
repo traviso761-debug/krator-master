@@ -116,7 +116,16 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  const dry=(x0,z0,x1,z1,h,w)=>{const L=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(L/5)),ry=Math.atan2(-(z1-z0),x1-x0);
   for(let i=0;i<n;i++){const t=(i+.5)/n,x=lerp(x0,x1,t),z=lerp(z0,z1,t),g0=Math.min(terrainH(lerp(x0,x1,i/n),lerp(z0,z1,i/n)),terrainH(lerp(x0,x1,(i+1)/n),lerp(z0,z1,(i+1)/n)));
    ARCH.box('drystone',x,g0-.3,z,L/n+.08,h+.3+(terrainH(x,z)-g0),w,{ry,col:0xffffff,batter:.12,topCol:0xb8b4a8});}};
- F.GROUPS.forEach(o=>{if(o.kind==='pools')return;F.walls(o).forEach(sg=>dry(sg[0],sg[1],sg[2],sg[3],o.kind==='terraces'?1.1:.95,o.kind==='terraces'?.9:.7));});
+ F.GROUPS.forEach(o=>{if(o.kind==='pools'||o.kind==='terraces')return;F.walls(o).forEach(sg=>dry(sg[0],sg[1],sg[2],sg[3],.95,.7));});
+ // the terraces' risers: between two treads, from the lower to 0.35 m over the higher (the stage's levels: 45 TERRACES);
+ // round the group's edge, between the tread and the land it was cut from or built over
+ const riser=(x0,z0,x1,z1,lo,hi)=>{const L=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(L/5)),ry=Math.atan2(-(z1-z0),x1-x0);
+  for(let k=0;k<n;k++){const t=(k+.5)/n,x=lerp(x0,x1,t),z=lerp(z0,z1,t),a=lo(x,z),b=hi(x,z),y0=Math.min(a,b)-.35;
+   ARCH.box('drystone',x,y0,z,L/n+.08,Math.max(a,b)+.35-y0,.9,{ry,col:0xffffff,batter:.12,topCol:0xb8b4a8});}};
+ for(const id in TERRACES){const T=TERRACES[id],o=T.o,R=T.rows,lev=j=>(x=>R[j].a+R[j].b*x);
+  for(let j=1;j<R.length;j++){const z=R[j].s.z0;riser(o.x0,z,o.x1,z,lev(j-1),lev(j));}
+  riser(o.x0,o.z0,o.x1,o.z0,(x)=>terrainBase(x,o.z0-1.5),lev(0));riser(o.x1,o.z1,o.x0,o.z1,lev(R.length-1),(x)=>terrainBase(x,o.z1+1.5));
+  R.forEach((r,j)=>{for(const xe of [o.x0,o.x1])riser(xe,r.s.z0,xe,r.s.z1,(x,z)=>r.a+r.b*xe,(x,z)=>terrainBase(xe+(xe===o.x0?-1.5:1.5),z));});}
  // the rice pools' bunds: round every pool, from the ground (its basin cut on the high side) to 0.2 m over its water
  {const o=F.group('rice-pools');F.strips(o).forEach(s=>{const y=poolLevel(s)+.2;
   for(const [x0,z0,x1,z1] of [[s.x0,s.z0,s.x1,s.z0],[s.x1,s.z0,s.x1,s.z1],[s.x1,s.z1,s.x0,s.z1],[s.x0,s.z1,s.x0,s.z0]]){const L=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(L/3)),ry=Math.atan2(-(z1-z0),x1-x0);
@@ -138,6 +147,8 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  // the culverts under the outer wall (a dark opening through it) and the slabs where the track crosses the canal
  for(const P of [CANAL.leat,CANAL.tail])for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];
   if((a[1]+200)*(b[1]+200)<0){const t=(-200-a[1])/(b[1]-a[1]),x=lerp(a[0],b[0],t),y=lerp(a[3],b[3],t);ARCH.box('dark',x,y-.6,LS.GROUNDS.z0,CANAL.w+.5,1.2,LS.WALL.t+.5,{col:LSP.black});}
+  // (and under the causeway from the bridge to the gate, on the avenue's line)
+  if(a[0]*b[0]<0){const t=-a[0]/(b[0]-a[0]),z=lerp(a[1],b[1],t),y=lerp(a[3],b[3],t);if(z>BRIDGE.z+BRIDGE.L/2&&z<LS.GROUNDS.z0)ARCH.box('dark',0,y-.6,z,LS.BRIDGE.w+1.6,1.2,CANAL.w+.5,{col:LSP.black});}
   const L=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let s=0;s<L;s+=1){const x=lerp(a[0],b[0],s/L),z=lerp(a[1],b[1],s/L);
    if(LS.trackD(x,z)<1){ARCH.box('ashlar',x,Math.max(terrainH(x,z),lerp(a[3],b[3],s/L)+.35),z,CANAL.w+1.6,.3,CANAL.w+1.6,{col:LSP.granite});break;}}}
  // a water wheel: rim, spokes and paddles in the plane through (x,y,z) along (ax,az) (the flow), axle across it
@@ -184,20 +195,28 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  F.PENS.forEach(Pn=>{const N=Math.ceil(Pn.r*2*Math.PI/3);for(let i=0;i<N;i++){if(i===0)continue;const a=(i+.5)/N*Math.PI*2,x=Pn.x+Math.cos(a)*Pn.r,z=Pn.z+Math.sin(a)*Pn.r,y=terrainH(x,z);
    ARCH.box('drystone',x,y-.3,z,Pn.r*2*Math.PI/N+.1,1.5,.8,{ry:-a+Math.PI/2,col:0xd8d4c8,topCol:0x5a4a3a});}   // dung cakes drying on the top
   REGISTER({name:'A stone pen (the herd\'s night fold; dung drying on its wall)',cls:'infrastructure',kind:'pen',key:'longsong_'+Pn.id,x:Pn.x,z:Pn.z,y:terrainH(Pn.x,Pn.z)-1,r:Pn.r+1,h:3,tags:{culture:'order',types:['farm']}});});
- // the herds: a placeholder yak (body, hump, skirt, head, horns), instanced, black, brown and white-faced
- const yak=(function(){const parts=[];const box=(w,h,d,x,y,z)=>{const b=new THREE.BoxGeometry(w,h,d);b.translate(x,y,z);parts.push(b.toNonIndexed());};
-  box(1.7,.8,.85,0,.95,0);box(.7,.35,.7,-.35,1.45,0);box(1.6,.35,.95,0,.55,0);box(.45,.45,.4,1.05,1.05,0);
-  for(const s of [-1,1]){box(.08,.32,.08,1.05,1.38,s*.22);for(const fx of [-.6,.6])box(.2,.6,.2,fx,.3,s*.28);}
-  const P=[],N=[];parts.forEach(b=>{P.push(...b.attributes.position.array);N.push(...b.attributes.normal.array);});
-  const gy=new THREE.BufferGeometry();gy.setAttribute('position',new THREE.Float32BufferAttribute(P,3));gy.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));return gy;})();
- const HP=[];F.HERDS.forEach((Hd,hi)=>{for(let k=0;k<Hd.n;k++){const a=u(61,hi,k,1)*6.28,r=Math.sqrt(u(61,hi,k,2))*Hd.r,x=Hd.x+Math.cos(a)*r,z=Hd.z+Math.sin(a)*r;
-  HP.push([x,terrainH(x,z),z,u(61,hi,k,3)*6.28,u(61,hi,k,4)]);}});
- const ym=new THREE.MeshLambertMaterial({color:0xffffff}),herd=new THREE.InstancedMesh(yak,ym,HP.length),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler(),S=new THREE.Vector3(1,1,1),V=new THREE.Vector3();
- const YC=[0x2a2420,0x3a2c22,0x4a3a2e,0x1e1a18].map(h=>new THREE.Color(h));
- HP.forEach((p,i)=>{E.set(0,p[3],0);Q.setFromEuler(E);V.set(p[0],p[1],p[2]);M.compose(V,Q,S);herd.setMatrixAt(i,M);herd.setColorAt(i,YC[Math.floor(p[4]*YC.length)]);});
- herd.userData.host=true;herd.userData.cls='life';herd.userData.inspectLabel='Yak and dzo of the Order\'s herds (placeholder figures)';scene.add(herd);
+ // the herds: the Fauna kit's yak (its black, brown and dun) and its highland cow standing for the dzo (kits/fauna, read
+ // in place as a bundle: 58-fauna-bundle.js). Each kind is built once, posed (grazing or standing), and baked into one
+ // vertex-coloured geometry (its parts' transforms applied), then drawn instanced: a handful of draw calls for every
+ // beast on the pastures. They stand still (a baked pose): the herd's animals are data (LS.FARMS.HERDS), each of them
+ // ready for the kit's animate() when the life layer runs them (core/simulation, PLAN.md P5).
+ const BREEDS=[{key:'yak',variant:0,mode:'graze',t:.3},{key:'yak',variant:1,mode:'graze',t:1.1},{key:'yak',variant:2,mode:'idle',t:.6},
+  {key:'yak',variant:0,mode:'idle',t:2.2},{key:'cattle',variant:3,mode:'graze',t:.8,dzo:true}];
+ const bake=b=>{const g=KratorFauna.build(b.key,{variant:b.variant,seed:b.variant+7});KratorFauna.animate(g,b.t,b.mode);g.updateMatrixWorld(true);
+  const P=[],N=[],C=[],v=new THREE.Vector3(),n=new THREE.Vector3(),nm=new THREE.Matrix3();
+  g.traverse(o=>{if(!o.isMesh)return;const G=o.geometry.index?o.geometry.toNonIndexed():o.geometry,pa=G.attributes.position,na=G.attributes.normal,ca=G.attributes.color,mc=o.material.color||new THREE.Color(1,1,1);
+   nm.getNormalMatrix(o.matrixWorld);for(let i=0;i<pa.count;i++){v.fromBufferAttribute(pa,i).applyMatrix4(o.matrixWorld);n.fromBufferAttribute(na,i).applyMatrix3(nm).normalize();
+    P.push(v.x,v.y,v.z);N.push(n.x,n.y,n.z);C.push((ca?ca.getX(i):1)*mc.r,(ca?ca.getY(i):1)*mc.g,(ca?ca.getZ(i):1)*mc.b);}});
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(P,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
+  geo.setAttribute('color',new THREE.Float32BufferAttribute(C,3));geo.computeBoundingSphere();return {geo,name:g.userData.name+(b.dzo?' (a dzo: the highland cow stands for it)':' ('+g.userData.variantName+')')};};
+ const HP=BREEDS.map(()=>[]);F.HERDS.forEach((Hd,hi)=>{for(let k=0;k<Hd.n;k++){const a=u(61,hi,k,1)*6.28,r=Math.sqrt(u(61,hi,k,2))*Hd.r,x=Hd.x+Math.cos(a)*r,z=Hd.z+Math.sin(a)*r;
+  const bi=u(61,hi,k,4)<.18?4:Math.floor(u(61,hi,k,5)*4);HP[bi].push([x,terrainH(x,z),z,u(61,hi,k,3)*6.28]);}});
+ const herd=[],hm=new THREE.MeshLambertMaterial({vertexColors:true}),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler(),S=new THREE.Vector3(1,1,1),V=new THREE.Vector3();
+ if(typeof KratorFauna!=='undefined')BREEDS.forEach((b,bi)=>{if(!HP[bi].length)return;const T=bake(b),im=new THREE.InstancedMesh(T.geo,hm,HP[bi].length);
+  HP[bi].forEach((p,i)=>{E.set(0,p[3],0);Q.setFromEuler(E);V.set(p[0],p[1]-.03,p[2]);M.compose(V,Q,S);im.setMatrixAt(i,M);});
+  im.userData.host=true;im.userData.cls='life';im.userData.inspectLabel='The Order\'s herds: '+T.name;scene.add(im);herd.push(im);});
  F.HERDS.forEach(Hd=>REGISTER({name:'A herd of yak and dzo ('+Hd.n+')',cls:'life',kind:'herd',key:'longsong_'+Hd.id,x:Hd.x,z:Hd.z,y:terrainH(Hd.x,Hd.z)-3,r:Hd.r+3,h:12,tags:{culture:'order'}}));
- return {ground,cards:nCards,cardMesh,canes,herd,records:FREC,yaks:HP.length,wheels:WHEELDRAW};})();
+ return {ground,cards:nCards,cardMesh,canes,herd,records:FREC,beasts:HP.reduce((t,a)=>t+a.length,0),wheels:WHEELDRAW};})();
 _mark('farms');
 
 // ---------------------------------------------------------------- the farms' checks (verify.py --assert; 64's monasteryChecks calls them)

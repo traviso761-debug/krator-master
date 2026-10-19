@@ -22,6 +22,15 @@ const P={};
 // between the valley's two streams 8 km from either. The apron rises ~3 % to the southern wall's foot 4 km south; the
 // lake the stream feeds (2,000 m) is 40 km west.
 P.SITE={wx:-2000,wz:2080,px:954,py:1296,name:'Longsong',marker:{px:957,py:1294}};
+// the Longsong stream runs WEST here (to the highland lake at 2,000 m, 40 km west): the page's stream takes its level from
+// the east end down (45: STREAM). The model's 4 km levels inside the page cannot say which way it runs (both ends stand
+// higher than the dip at the site), so the plan does
+P.STREAM_FLOW=[-1,0];
+// what stands round the sky from here (the Oidong kit's sky takes it: OIDONG_SKY), read off the scale model's regions on
+// 2026-10-19 (region/source/regions.json): the Throne ('Throne/Volcano', centroid px 571,514) bears 334 degrees, 1,740 km
+// off; the Oidong Valley (px 725-1035 by 1234-1350) runs west-north-west, so the pass toward Xanadu is down-valley at
+// about 292 and the head wall up-valley at 112; the model has no cataract at the valley's head (the showcase's own)
+P.SKY={head:112,pass:292,throne:334,cataract:false};
 P.toWorld=(x,z)=>[x+P.SITE.wx,z+P.SITE.wz];
 
 // ---------------------------------------------------------------- the rock: Longsong's hill
@@ -163,6 +172,9 @@ P.topY=o=>P.baseY(o)+o.floors*o.storey;
 // chortens (white stupas, gilt finials): at the gate, at the stair's foot, at the kora's corners
 P.CHORTENS=[{x:-26,z:-185,s:1},{x:26,z:-185,s:1},{x:-20,z:-17,s:1.4},{x:20,z:-17,s:1.4},{x:-215,z:-160,s:.9},{x:215,z:-160,s:.9},{x:-232,z:240,s:1.1},{x:150,z:255,s:1.1},{x:0,z:-150,s:2.2,name:'The Great Chorten (the Order\'s founders\' first relics)'}];
 // prayer-wheel galleries: the drum rows along the avenue and round the rock's foot (the kora's inner edge)
+// each wheel's turning (rad/s; 0: nobody has passed it lately): a third stand still, the rest turn clockwise seen from
+// above (as the pilgrims walk) at their own pace; seeded per wheel (core/rand), so a row built alone turns the same
+P.wheelSpin=i=>{const u=KRAND.unit(KRAND.hash(97,i));return u<.34?0:(u<.67?1.6:-2.4)*(.6+u);};
 P.WHEELS=[{x0:-13,z0:-150,x1:-13,z1:-20},{x0:13,z0:-150,x1:13,z1:-20},{x0:-195,z0:212,x1:195,z1:212},{x0:-222,z0:-25,x1:-222,z1:180},{x0:222,z0:-25,x1:222,z1:180}];
 // prayer flags: lines from the roofs and the Watch to the ground, and across the stream
 // a: [x, y, z] (y over the datum), or [x, h, z, 'pole']: a pole h m over the ground there
@@ -200,7 +212,25 @@ P.VAULT=[
  {id:'unmaking',name:'The Unmaking Room (for what must not exist)',x0:56,x1:76,z0:100,z1:116,y0:-14,h:6,cls:'bare'},
  {id:'oath-room',name:'The Oath Room',x0:-30,x1:-6,z0:56,z1:74,y0:-14,h:6,cls:'rich'},
  {id:'sealed-library',name:'The Sealed Library (the quarantine of knowledge: one reading room, one desk)',x0:-6,x1:30,z0:46,z1:74,y0:-14,h:8,cls:'rich',stacks:true},
- {id:'spiral',name:'The Long Stair down to the Procrastinator (the eldest keepers only)',x0:-8,x1:8,z0:114,z1:130,y0:-62,h:55,shaft:true,cls:'bare'}];
+ {id:'spiral',name:'The Long Stair down to the Procrastinator (the eldest keepers only)',x0:-8,x1:8,z0:114,z1:130,y0:-62,h:55,shaft:true,cls:'bare'},
+ // the two passages where rooms do not meet (2026-10-19)
+ {id:'unmaking-passage',name:'The passage to the Unmaking Room',x0:48,x1:56,z0:100,z1:104,y0:-14,h:3.4,cls:'bare'},
+ {id:'stair-foot',name:'The foot of the Long Stair (the last passage before the hall)',x0:-2.2,x1:2.2,z0:130,z1:134,y0:-62,h:4.6,cls:'bare'}];
+// THE DOORS between the rooms (2026-10-19: the rooms had been separate boxes): each in a wall two rooms share, on axis
+// 'x' (the wall at x = at, the opening from s0 to s1 along z) or 'z' (at z, from s0 to s1 along x), from the floor y0,
+// h high. The rooms all join, from the Deep Stair down to the Procrastinator's hall (VCHK.joined)
+P.VAULT_DOORS=[
+ {a:'deep-stair',b:'wardens-gate',axis:'z',at:96,s0:41.6,s1:46.4,y0:-14,h:3.2},
+ {a:'wardens-gate',b:'open-vault',axis:'x',at:24,s0:85.6,s1:90.4,y0:-14,h:3.4},
+ {a:'open-vault',b:'closed-vault',axis:'z',at:102,s0:-34,s1:-30,y0:-14,h:3.2},
+ {a:'open-vault',b:'quiet-cells',axis:'x',at:-56,s0:88,s1:91.2,y0:-14,h:3},
+ {a:'open-vault',b:'oath-room',axis:'z',at:74,s0:-20,s1:-16.4,y0:-14,h:3.2},
+ {a:'open-vault',b:'sealed-library',axis:'z',at:74,s0:4,s1:7.6,y0:-14,h:3.2},
+ {a:'deep-stair',b:'unmaking-passage',axis:'x',at:48,s0:100.4,s1:103.6,y0:-14,h:3},
+ {a:'unmaking-passage',b:'unmaking',axis:'x',at:56,s0:100.4,s1:103.6,y0:-14,h:3},
+ {a:'closed-vault',b:'spiral',axis:'x',at:-8,s0:116,s1:119.6,y0:-14,h:3.2},
+ {a:'spiral',b:'stair-foot',axis:'z',at:130,s0:-1.7,s1:1.7,y0:-62,h:4.2},
+ {a:'stair-foot',b:'procrastinator-hall',axis:'z',at:134,s0:-1.7,s1:1.7,y0:-62,h:4.6}];
 // THE PROCRASTINATOR: a prayer wheel the size of a tower, turning on its axle in a drum-shaped hall cut far under the
 // rock. Its glyphs burn; the keepers turn it at every bell and it is never let stop. Its field slows time inside the
 // eight seals round the hall's wall to a near standstill (LORE.md 6.15: the Monks are said to speed time and slow it;

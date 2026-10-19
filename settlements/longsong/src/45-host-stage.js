@@ -67,34 +67,35 @@ function pondCut(x,z,h){const P=LS.POND,d=Math.hypot(x-P.x,z-P.z);if(d>P.r+18)re
 // ---------------------------------------------------------------- the stream as a line (page metres), on a level that only falls
 // The model's river line carries its 4 km cells' water level, which rises and falls along the stream here (the site sits
 // in a dip of the cells: -8.5 m at the bridge, +1 m 600 m downstream). The page's stream takes a level that only falls
-// downstream (west; PLAN.md section 1): the running minimum of the model's level from the upstream end, falling at least
+// downstream (west: LS.STREAM_FLOW; PLAN.md section 1): the running minimum of the model's level from the upstream end, falling at least
 // 0.3 m/km, smoothed (a mean over a falling run keeps it falling). The bed is cut under it (streamCut); where the model's
 // land climbs above it to the west the cut is a ravine (KNOWN_ISSUES.md). core/water draws it (89w-ls-water.js).
 const STREAM=(function(){const L=WORLD.riverLines(16).map(R=>({name:R.name,width:R.width,pts:R.pts.map(p=>[p[0]-WX,p[1]-WZ,p[2]-WORLD_H0]).filter(p=>Math.abs(p[0])<TERR.R*1.6&&Math.abs(p[1])<TERR.R*1.6)})).filter(R=>R.pts.length>1);
- L.forEach(R=>{const P=R.pts,n=P.length,k=Math.max(1,Math.floor(n/5));let up=0,dn=0;for(let i=0;i<k;i++){up+=P[i][2];dn+=P[n-1-i][2];}
-  if(dn>up)P.reverse();R.model=P.map(p=>p[2]);   // upstream first
+ L.forEach(R=>{const P=R.pts,n=P.length,F=LS.STREAM_FLOW;
+  if((P[n-1][0]-P[0][0])*F[0]+(P[n-1][1]-P[0][1])*F[1]<0)P.reverse();R.model=P.map(p=>p[2]);   // upstream first (LS.STREAM_FLOW says which way)
   let lev=P[0][2];const raw=[lev];for(let i=1;i<n;i++){const s=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);lev=Math.min(lev-.0003*s,P[i][2]);raw.push(lev);}
   const W=4;for(let i=0;i<n;i++){let t=0,c=0;for(let j=Math.max(0,i-W);j<=Math.min(n-1,i+W);j++){t+=raw[j];c++;}P[i][2]=t/c;}});
  return L;})();
-// a quick reject: per 20 m of x, the band of z the line passes through (within 60 m): a point outside it is far from it
+// a quick reject: per 20 m of x, the band of z the line passes through (within 110 m): a point outside it is far from it
 const SBAND=(function(){const B={};for(const R of STREAM)for(let i=1;i<R.pts.length;i++){const a=R.pts[i-1],c=R.pts[i],n=Math.ceil(Math.hypot(c[0]-a[0],c[1]-a[1])/5);
-  for(let k=0;k<=n;k++){const x=lerp(a[0],c[0],k/n),z=lerp(a[1],c[1],k/n);for(let b=Math.floor((x-60)/20);b<=Math.floor((x+60)/20);b++){const q=B[b]||(B[b]=[1e9,-1e9]);q[0]=Math.min(q[0],z);q[1]=Math.max(q[1],z);}}}return B;})();
-function streamNear(x,z){const q=SBAND[Math.floor(x/20)];if(!q||z<q[0]-60||z>q[1]+60)return null;let best=null;for(const R of STREAM){const P=R.pts;for(let i=1;i<P.length;i++){const a=P[i-1],c=P[i];if(Math.abs(x-a[0])>400&&Math.abs(x-c[0])>400)continue;
+  for(let k=0;k<=n;k++){const x=lerp(a[0],c[0],k/n),z=lerp(a[1],c[1],k/n);for(let b=Math.floor((x-110)/20);b<=Math.floor((x+110)/20);b++){const q=B[b]||(B[b]=[1e9,-1e9]);q[0]=Math.min(q[0],z);q[1]=Math.max(q[1],z);}}}return B;})();
+function streamNear(x,z){const q=SBAND[Math.floor(x/20)];if(!q||z<q[0]-110||z>q[1]+110)return null;let best=null;for(const R of STREAM){const P=R.pts;for(let i=1;i<P.length;i++){const a=P[i-1],c=P[i];if(Math.abs(x-a[0])>400&&Math.abs(x-c[0])>400)continue;
   const dx=c[0]-a[0],dz=c[1]-a[1],l=dx*dx+dz*dz||1,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l,0,1),d=Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);
   if(!best||d<best.d)best={d,y:lerp(a[2],c[2],t),hw:R.width/2,R};}}return best;}
 function streamD(x,z){const n=streamNear(x,z);return n?n.d:1e9;}
-// the bed under the level: 1.4 m deep at the line, the banks cut back to just over the water at a slope of 1 in 2.5
-// where the land stands higher (a levee 0.2 m over it where the land is lower); nothing past 40 m from the bank
-function streamCut(x,z,h){const n=streamNear(x,z);if(!n||n.d>n.hw+40)return h;const y=n.y,hw=n.hw;
+// the bed under the level: 1.4 m deep at the line, the banks cut back to just over the water at a slope of 1 in 6
+// where the land stands higher (a levee 0.2 m over it where the land is lower); nothing past 90 m from the bank
+// (2026-10-19: the sides at 1 in 6, not 1 in 2.5: west of the pond, where the cut is deep, a valley rather than a ravine)
+function streamCut(x,z,h){const n=streamNear(x,z);if(!n||n.d>n.hw+90)return h;const y=n.y,hw=n.hw;
  if(n.d<hw){const q=n.d/hw;return Math.min(h,y-.25-1.15*(1-q*q));}
- const top=y+.2,run=Math.max(4,(h-top)*2.5),k=smooth(hw,hw+run,n.d);
+ const top=y+.2,run=Math.min(75,Math.max(4,(h-top)*6)),k=smooth(hw,hw+run,n.d);
  return h>top?lerp(top,h,k):lerp(top,h,smooth(hw+3,hw+12,n.d));}   // (a levee where the land lies lower)
 // the canal (the leat to the mills, the tail race to the Mirror): its level falls from the intake (just under the stream's
 // there) to the paper mill's wheel and on to the pond; its bed is cut 0.55 m under it, the cut's sides at 1 in 1.5. Inside
 // the ward and wherever the land lies lower, it runs in a raised stone race (85-ls-farms.js draws it)
 const CANAL=(function(){const F=LS.FARMS,line=pts=>{let s=0;return pts.map((p,i)=>{if(i)s+=Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1]);return [p[0],p[1],s];});};
  const leat=line(F.LEAT.pts),tail=line(F.TAIL.pts),Ll=leat[leat.length-1][2],Lt=tail[tail.length-1][2];
- const intake=streamNear(leat[0][0],leat[0][1]),y0=(intake?intake.y:-6)-.1,yW=Math.min(y0-.3,LS.wardY(-190)+.4),yP=LS.POND.y;
+ const intake=streamNear(leat[0][0],leat[0][1]),y0=(intake?intake.y:-6)-.1,yW=Math.min(y0-.3,LS.wardY(-190)+.8),yP=LS.POND.y;
  leat.forEach(p=>p.push(lerp(y0,yW,p[2]/Ll)));tail.forEach(p=>p.push(lerp(yW-.15,yP,p[2]/Lt)));
  return {leat,tail,w:F.LEAT.w,wt:F.TAIL.w,y0,yW,yP};})();
 function canalNear(x,z){let best=null;for(const [P,w] of [[CANAL.leat,CANAL.w],[CANAL.tail,CANAL.wt]])for(let i=1;i<P.length;i++){const a=P[i-1],c=P[i];
@@ -105,6 +106,17 @@ function canalCut(x,z,h){const n=canalNear(x,z);if(!n||n.d>n.hw+12)return h;cons
 // the rice pools: each a level basin at its ground's mean, the high side cut down to it (the low side is held by its bund)
 const POOLS=(function(){const o=LS.FARMS.group('rice-pools');return {o,cells:LS.FARMS.strips(o),lev:null};})();
 function poolLevel(s){if(s.lev==null){let t=0;for(const p of [[s.x0,s.z0],[s.x1,s.z0],[s.x0,s.z1],[s.x1,s.z1],[(s.x0+s.x1)/2,(s.z0+s.z1)/2]])t+=terrainBase(p[0],p[1]);s.lev=t/5;}return s.lev;}
+// the terraces (the south terraces, the tea garden): each row a level tread along its contour, the land cut and filled
+// to it: its level a line along x fitted to the land at the row's middle (the contour runs nearly east-west here), level
+// across its depth; the risers between the rows are drawn by 85 (2026-10-19: they had draped the model's land)
+const TERRACES=(function(){const T={};for(const o of LS.FARMS.GROUPS){if(o.kind!=='terraces')continue;
+  T[o.id]={o,rows:LS.FARMS.strips(o).map(s=>{const zm=(s.z0+s.z1)/2;let n=0,sx=0,sy=0,sxx=0,sxy=0;
+   for(let x=s.x0;x<=s.x1+.01;x+=10){const y=(terrainBase(x,s.z0+1)+terrainBase(x,zm)+terrainBase(x,s.z1-1))/3;n++;sx+=x;sy+=y;sxx+=x*x;sxy+=x*y;}
+   const b=(n*sxy-sx*sy)/Math.max(1e-9,n*sxx-sx*sx),a=(sy-b*sx)/n;return {s,a,b};})};}
+ return T;})();
+function terraceLevel(id,j,x){const r=TERRACES[id].rows[j];return r.a+r.b*x;}
+function terraceCut(x,z,h){for(const id in TERRACES){const T=TERRACES[id],o=T.o;if(x<o.x0||x>o.x1||z<o.z0||z>o.z1)continue;
+  for(const r of T.rows)if(z>=r.s.z0&&z<=r.s.z1)return r.a+r.b*x;}return h;}
 function poolCut(x,z,h){const o=POOLS.o;if(x<o.x0-1||x>o.x1+1||z<o.z0-1||z>o.z1+1)return h;
  for(const s of POOLS.cells)if(x>=s.x0-.3&&x<=s.x1+.3&&z>=s.z0-.3&&z<=s.z1+.3)return Math.min(h,poolLevel(s)-.3);return h;}
 // the outer wall's line: a strip 5 m wide the wall stands on, level along it on the ward's sides
@@ -128,7 +140,7 @@ function terrainBase(x,z){
  // the pond
  return pondCut(x,z,h);}
 // the land with the water's cuts: the stream's bed, the canal's, the rice pools'
-function terrainH0(x,z){return poolCut(x,z,canalCut(x,z,streamCut(x,z,terrainBase(x,z))));}
+function terrainH0(x,z){return terraceCut(x,z,poolCut(x,z,canalCut(x,z,streamCut(x,z,terrainBase(x,z)))));}
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 // the water: the stream (the model's), the lotus pond

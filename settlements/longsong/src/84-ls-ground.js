@@ -52,24 +52,26 @@ const GROUND=(function(){
     (PT?'vec3 pt=pow(texture2D(uPave,vGWP.xz/3.0).rgb,vec3(2.2))*1.45;dt=mix(dt,pt,vRP.y*0.8);':'')+
     'diffuseColor.rgb*=dt;}');};
  mat.customProgramCacheKey=()=>'ls-ground'+(RT?'r':'')+(PT?'p':'');
- // a square grid S wide, step st, centred on (0, cz); hole: leave out the cells within it of (0, 60) (the inner mesh's);
+ // (the grid's edges: see below)
  // skirt: the edge's vertices dropped 2.5 m (hides the seam with the coarser mesh)
- const mesh=(S,st,cz,hole,skirt)=>{const n=Math.round(S/st)+1,x0=-S/2,z0=cz-S/2,pos=new Float32Array(n*n*3),col=new Float32Array(n*n*3),rp=new Float32Array(n*n*2);
-  const H=new Float32Array(n*n);
-  for(let j=0;j<n;j++)for(let i=0;i<n;i++)H[j*n+i]=terrainH(x0+i*st,z0+j*st);
-  for(let j=0;j<n;j++)for(let i=0;i<n;i++){const k=j*n+i,x=x0+i*st,z=z0+j*st,y=H[k];
-   const edge=skirt&&(i===0||j===0||i===n-1||j===n-1);pos[k*3]=x;pos[k*3+1]=y-(edge?2.5:0);pos[k*3+2]=z;
-   const hx=H[j*n+Math.min(n-1,i+1)]-H[j*n+Math.max(0,i-1)],hz=H[Math.min(n-1,j+1)*n+i]-H[Math.max(0,j-1)*n+i],slope=clamp(Math.hypot(hx,hz)/(2*st)*1.6,0,1);
+ // a grid Sx by Sz, step st, centred on (0, cz); hole(x, z): leave that cell out (the finer mesh's)
+ const mesh=(Sx,Sz,st,cz,hole,skirt)=>{const nx=Math.round(Sx/st)+1,nz=Math.round(Sz/st)+1,n=nx,x0=-Sx/2,z0=cz-Sz/2,pos=new Float32Array(nx*nz*3),col=new Float32Array(nx*nz*3),rp=new Float32Array(nx*nz*2);
+  const H=new Float32Array(nx*nz);
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)H[j*n+i]=terrainH(x0+i*st,z0+j*st);
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*n+i,x=x0+i*st,z=z0+j*st,y=H[k];
+   const edge=skirt&&(i===0||j===0||i===nx-1||j===nz-1);pos[k*3]=x;pos[k*3+1]=y-(edge?2.5:0);pos[k*3+2]=z;
+   const hx=H[j*n+Math.min(nx-1,i+1)]-H[j*n+Math.max(0,i-1)],hz=H[Math.min(nz-1,j+1)*n+i]-H[Math.max(0,j-1)*n+i],slope=clamp(Math.hypot(hx,hz)/(2*st)*1.6,0,1);
    const r=colourAt(x,z,y,slope);c.convertSRGBToLinear();col[k*3]=c.r;col[k*3+1]=c.g;col[k*3+2]=c.b;rp[k*2]=r.rock;rp[k*2+1]=r.pave;}
   const idx=[];
-  for(let j=0;j<n-1;j++)for(let i=0;i<n-1;i++){const x=x0+(i+.5)*st,z=z0+(j+.5)*st;if(hole&&Math.abs(x)<hole&&Math.abs(z-60)<hole)continue;
+  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const x=x0+(i+.5)*st,z=z0+(j+.5)*st;if(hole&&hole(x,z))continue;
    const a=j*n+i,b=a+n,cc=b+1,d=a+1;idx.push(a,b,d,b,cc,d);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
   g.setAttribute('aRP',new THREE.BufferAttribute(rp,2));g.setIndex(idx);g.computeVertexNormals();
   const m=new THREE.Mesh(g,mat);m.userData.probeSkip=true;m.userData.ground=true;m.userData.inspectLabel='The ground';scene.add(m);return m;};
  // the inner mesh holds the rock whole (centred 60 m south of the origin); the outer leaves a hole a little smaller
- const inner=mesh(640,2,60,0,true);
- const outer=mesh(TERR.R*2,10,0,318,false);
+ // (2026-10-19: the fine mesh reaches south over the terraces and the tea garden, whose treads a 10 m grid would smear)
+ const inner=mesh(640,920,2,200,null,true);
+ const outer=mesh(TERR.R*2,TERR.R*2,10,0,(x,z)=>Math.abs(x)<318&&z>-258&&z<658,false);
  return {inner,outer,mat};})();
 _mark('ground');
 

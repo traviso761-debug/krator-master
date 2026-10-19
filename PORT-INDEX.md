@@ -19,7 +19,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 35 | 715 | 56 | 0 | 15 | 325 | 319 | 2 |  | yes | yes |
 | [`settlements/mungo`](settlements/mungo/PORT.md) | 20 | 210 | 110 | 0 | 5 | 60 | 35 | 4 | atmos | yes | yes |
 | [`settlements/noahs-regret`](settlements/noahs-regret/PORT.md) | 34 | 274 | 30 | 13 | 10 | 66 | 156 | 4 | atmos | yes | yes |
-| [`settlements/longsong`](settlements/longsong/PORT.md) | 17 | 248 | 47 | 0 | 0 | 30 | 171 | 1 | biome, atmos | yes | yes |
+| [`settlements/longsong`](settlements/longsong/PORT.md) | 17 | 258 | 50 | 0 | 0 | 32 | 176 | 1 | biome, atmos | yes | yes |
 | [`settlements/pinnacle-rock`](settlements/pinnacle-rock/PORT.md) | 8 | 36 | 14 | 0 | 0 | 10 | 12 | 1 | biome | yes | yes |
 | [`settlements/port`](settlements/port/PORT.md) | 114 | 765 | 43 | 4 | 0 | 33 | 685 | 4 | atmos | yes | yes |
 | [`settlements/reedlake`](settlements/reedlake/PORT.md) | 42 | 353 | 58 | 33 | 0 | 19 | 244 | 4 | atmos | yes | yes |
@@ -60,7 +60,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 14 | 243 | 0 | 0 | 34 | 36 | 173 | 6 | biome | yes | yes |
 | [`biomes/nwbay`](biomes/nwbay/PORT.md) | 15 | 274 | 1 | 0 | 10 | 65 | 198 | 7 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 12 | 176 | 1 | 0 | 13 | 31 | 131 | 5 | biome | yes | yes |
-| [`biomes/oidong`](biomes/oidong/PORT.md) | 11 | 179 | 1 | 0 | 11 | 13 | 154 | 2 | biome, atmos | yes | yes |
+| [`biomes/oidong`](biomes/oidong/PORT.md) | 11 | 180 | 1 | 0 | 11 | 13 | 154 | 2 | biome, atmos | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 12 | 208 | 1 | 0 | 16 | 27 | 164 | 5 | biome | yes | yes |
 | [`biomes/ringisles`](biomes/ringisles/PORT.md) | 19 | 188 | 64 | 14 | 14 | 39 | 57 | 2 | biome, atmos | yes | yes |
 | [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 208 | 1 | 0 | 14 | 59 | 135 | 6 | biome, atmos | yes | yes |

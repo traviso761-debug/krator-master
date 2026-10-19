@@ -20,19 +20,19 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-ls-plan.js` | 34 **big** | the site (PLAN.md section 1) (19); the rock: Longsong's hill (27); the ward and the grounds (49); the ways (63); the buildings (BLUEPRINT.md L0, L1-L4, R1-R3, LR (99); the sacred furniture of the grounds (162); the planted ground (the kit grows only here insi (177); the Vault (BLUEPRINT.md LV; LORE.md 6.15) (190); the people (the life layer's scaffold; README.md (245); zones (the inspector's words, the kit's mask) (307) |
-| `40b-ls-farms.js` | 12 | what the house needs (BLUEPRINT.md's numbers) (20); the fields outside the wall (ROOMS.md 5.1) (28); the gardens inside the wall (ROOMS.md 5.2) (42); the farm's works and marks (57); the cells: which strip, terrace, pool, bed or tr (78) |
+| `40-ls-plan.js` | 37 **big** | the site (PLAN.md section 1) (19); the rock: Longsong's hill (36); the ward and the grounds (58); the ways (72); the buildings (BLUEPRINT.md L0, L1-L4, R1-R3, LR (108); the sacred furniture of the grounds (171); the planted ground (the kit grows only here insi (189); the Vault (BLUEPRINT.md LV; LORE.md 6.15) (202); the people (the life layer's scaffold; README.md (275); zones (the inspector's words, the kit's mask) (337) |
+| `40b-ls-farms.js` | 13 | what the house needs (BLUEPRINT.md's numbers) (20); the fields outside the wall (ROOMS.md 5.1) (28); the gardens inside the wall (ROOMS.md 5.2) (42); the farm's works and marks (57); the cells: which strip, terrace, pool, bed or tr (79) |
 | `42-ls-world.js` | <1 |  |
-| `45-host-stage.js` | 17 | the land, cached (29); the plan's shapes on the land (47); the stream as a line (page metres), on a level t (67); the fields the Oidong kit reads (BIOME-API.md) (147); the host binding (173) |
+| `45-host-stage.js` | 18 | the land, cached (29); the plan's shapes on the land (47); the stream as a line (page metres), on a level t (67); the fields the Oidong kit reads (BIOME-API.md) (159); the host binding (185) |
 | `62-ls-arch.js` | 27 | the pieces (the vocabulary), in the kit's local  (111); the Order's own pieces (ROOMS.md section 1: the  (207) |
 | `63-ls-signs.js` | 8 |  |
 | `64-ls-monastery.js` | 48 **big** | the outer wall, its towers and gates (17); the Great Gate: the parabolic arch between two p (38); the ward: the terraces' retaining walls, the ave (73); the Great Stair and the White Palace's base (L1) (105); the White Palace round the Debate Court (L2-L4) (133); the drum halls: the Assembly, the Hall of Hours, (169); the Red Palace (R1-R3) and its wings; the gilded (181); the Eastern Watch: the Archive's louvre tower (196); the Lower Gate and its paired drums (L1) (220); the rock top's other houses: the Closed Ward, th (229) |
-| `66-ls-vault.js` | 33 **big** | THE PROCRASTINATOR (104); the lights' arrays for the shader (fixed after t (258); the Vault's checks (verify.py --assert) (263) |
+| `66-ls-vault.js` | 36 **big** | THE PROCRASTINATOR (119); the lights' arrays for the shader (fixed after t (275); the Vault's checks (verify.py --assert) (280) |
 | `68-ls-life.js` | 12 |  |
-| `84-ls-ground.js` | 7 | the water's records (core/water draws it: 89w-ls (76) |
-| `85-ls-farms.js` | 27 | the farms' checks (verify.py --assert; 64's mona (203) |
+| `84-ls-ground.js` | 8 | the water's records (core/water draws it: 89w-ls (78) |
+| `85-ls-farms.js` | 29 | the farms' checks (verify.py --assert; 64's mona (222) |
 | `86-ls-far.js` | 2 |  |
 | `88-host-build.js` | 2 |  |
 | `89w-ls-water.js` | 7 | the water's checks (verify.py --assert; 64's mon (42) |
-| `99-host-take.js` | 10 | the inspector's words: the record under the hit  (36); the camera: above the ground, or inside the Vaul (53); the probe's budgets and the page's checks (verif (60); the page, handed to the host (83) |
+| `99-host-take.js` | 10 | the inspector's words: the record under the hit  (38); the camera: above the ground, or inside the Vaul (55); the probe's budgets and the page's checks (verif (66); the page, handed to the host (89) |
 | `99-tail.html` | <1 |  |

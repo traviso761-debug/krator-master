@@ -14,6 +14,8 @@ const VIEWS=(function(){const V={},PR=LS.PROCRASTINATOR,T=LS.ROCK.top;
  V['The lotus pond and the valley road']=[LS.POND.x+70,LS.POND.y+9,LS.POND.z-70,LS.POND.x,LS.POND.y+1,LS.POND.z];
  V['The open vault (the forbidden depths)']=[16,LS.VAULT_Y+2.2,80,-50,LS.VAULT_Y+2,96];
  V['The Procrastinator']=[PR.x+17,PR.y0+8,PR.z-14,PR.x,PR.y0+12,PR.z];
+ V['Through the Warden\'s gate into the open vault']=[44,LS.VAULT_Y+1.8,88,10,LS.VAULT_Y+1.6,88];
+ V['Down the Long Stair\'s foot into the hall']=[0,PR.y0+2,128.5,0,PR.y0+6,150];
  V['The Procrastinator from below']=[PR.x-6,PR.y0+1.8,PR.z-20,PR.x,PR.y0+24,PR.z];
  V['From afar (the valley and its walls)']=[-1400,260,-2600,0,40,0];
  // the exterior revision and the farms (ROOMS.md sections 1, 2, 5)
@@ -30,7 +32,7 @@ const VIEWS=(function(){const V={},PR=LS.PROCRASTINATOR,T=LS.ROCK.top;
  V['The rice pools and the tsampa mill']=[-60,gh(-60,-262,14),-262,-150,gh(-150,-252,0),-252];
  V['The paper mill\'s wheel and its race']=[-130,gh(-130,-184,6),-184,-150,gh(-150,-193.5,1),-193.5];
  V['The stream from the bridge']=[0,BRIDGE.deck+5,BRIDGE.z,-320,BRIDGE.water,-280];
- V['The yak pastures']=[-575,gh(-575,830,9),830,-620,gh(-620,900,1),900];
+ V['The yak pastures']=[-600,gh(-600,876,2.6),876,-626,gh(-626,904,.8),904];
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the record under the hit (a
@@ -53,7 +55,11 @@ let _hostH=null;const KHOST_CLOCK_H=()=>_hostH&&_hostH.clock?_hostH.clock.hour:1
 // ---------------------------------------------------------------- the camera: above the ground, or inside the Vault
 // The eye may go under the ground only inside a room of the Vault (or the Procrastinator's hall), where it is kept
 // within the room's walls: the forbidden depths are visited, not tunnelled into.
-function clampCam(pos,target){const R=typeof VAULT_ROOMS!=="undefined"?VAULT_ROOMS.find(r=>pos.x>r.x0-.5&&pos.x<r.x1+.5&&pos.z>r.z0-.5&&pos.z<r.z1+.5&&pos.y>r.y0-1&&pos.y<r.y0+r.h+1):null;
+// in the Vault the eye stays inside a room, except in a doorway (LS.VAULT_DOORS): there it may pass to the next room
+function vaultDoorAt(p){for(const D of LS.VAULT_DOORS){const a=D.axis==='x'?p.x:p.z,s=D.axis==='x'?p.z:p.x;
+  if(Math.abs(a-D.at)<.9&&s>Math.min(D.s0,D.s1)+.2&&s<Math.max(D.s0,D.s1)-.2&&p.y>D.y0+.3&&p.y<D.y0+D.h-.2)return D;}return null;}
+function clampCam(pos,target){if(typeof VAULT_ROOMS!=="undefined"&&vaultDoorAt(pos))return;
+ const R=typeof VAULT_ROOMS!=="undefined"?VAULT_ROOMS.find(r=>pos.x>r.x0-.5&&pos.x<r.x1+.5&&pos.z>r.z0-.5&&pos.z<r.z1+.5&&pos.y>r.y0-1&&pos.y<r.y0+r.h+1):null;
  if(R){pos.x=clamp(pos.x,R.x0+.4,R.x1-.4);pos.z=clamp(pos.z,R.z0+.4,R.z1-.4);pos.y=clamp(pos.y,R.y0+.5,R.y0+R.h-.4);return;}
  const g=Math.max(terrainH(pos.x,pos.z),waterH(pos.x,pos.z))+1.8;if(pos.y<g)pos.y=g;}
 

@@ -9,3 +9,5 @@ const WORLD_H0=WORLD.H(WX,WZ);
 // the model's land in page coordinates (minWave: leave out detail finer than it, for the far terrain)
 function landH(x,z,mw){return WORLD.H(x+WX,z+WZ,mw||0)-WORLD_H0;}
 function worldWater(x,z){const w=WORLD.water(x+WX,z+WZ);return w>-1e8?w-WORLD_H0:-1e9;}
+// the Oidong kit's sky (82-host-sky.js, read in place) drawn from Longsong's place in the valley: the plan's bearings
+var OIDONG_SKY=LS.SKY;

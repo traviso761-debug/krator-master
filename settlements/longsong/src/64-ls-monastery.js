@@ -411,7 +411,7 @@ const WHEELS=(function(){const pos=[],rot=[];
  const WL=(typeof KMAT!=='undefined'&&KMAT.mode==='lib')?KMAT.packed('longsong','wheel'):null,WT=WL?KMAT.textures(WL,{aniso:8}):null;
  const m=WT?new THREE.MeshStandardMaterial({map:WT.map,normalMap:WT.normalMap||null,roughnessMap:WT.roughnessMap||null,roughness:.5,metalness:.55}):new THREE.MeshLambertMaterial({map:t});
  if(WT&&WT.map){WT.map.wrapS=THREE.RepeatWrapping;}
- const spin=new Float32Array(pos.length);for(let i=0;i<pos.length;i++){const u=KRAND.unit(KRAND.hash(97,i));spin[i]=u<.34?0:(u<.67?1.6:-2.4)*(.6+u);}
+ const spin=new Float32Array(pos.length);for(let i=0;i<pos.length;i++)spin[i]=LS.wheelSpin(i);   // the plan's (40): data, not the shader's
  m.onBeforeCompile=sh=>{sh.uniforms.uT={value:0};m.userData.sh=sh;
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uT;attribute float aSpin;')
    .replace('#include <begin_vertex>','#include <begin_vertex>\n{float a=uT*aSpin;float c=cos(a),s=sin(a);transformed.xz=mat2(c,-s,s,c)*transformed.xz;}');};
