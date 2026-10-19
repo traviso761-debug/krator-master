@@ -47,8 +47,7 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
   const lo=Math.min(...H),hi=Math.max(...H);return hi-lo>.4?null:{lo,hi,y:hi+.3};};
  F.GROUPS.forEach(o=>{if(!(o.kind==='strips'||o.kind==='terraces'||o.kind==='pools'||o.kind==='beds'))return;
   F.strips(o).forEach(s=>{const tone=TONE[s.crop]==null?0x7a6a4a:TONE[s.crop],st=Math.min(3,(s.x1-s.x0)/2,(s.z1-s.z0)/2);
-   if(o.kind==='pools'){const w=Math.min(terrainH(s.x0,s.z0),terrainH(s.x1,s.z0),terrainH(s.x0,s.z1),terrainH(s.x1,s.z1))+.12;
-    sheet(s.x0,s.x1,s.z0,s.z1,st,()=>w,0x4a6a62,()=>0,true);return;}
+   if(o.kind==='pools')return;   // its water is core/water's (89w), in the basin the stage cuts (45: poolCut)
    const ns=o.run!=='ew'&&o.kind!=='terraces';
    if(o.kind==='beds'){const L=bedLevel(s);if(L)sheet(s.x0,s.x1,s.z0,s.z1,st,()=>L.y,tone,x=>x,false);return;}
    sheet(s.x0,s.x1,s.z0,s.z1,st,(x,z)=>terrainH(x,z)+lift,tone,ns?(x=>x):((x,z)=>z),false);});});
@@ -82,7 +81,7 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
    const BL=o.kind==='beds'?bedLevel(s):null;if(o.kind==='beds'&&!BL)return;
    const nx=Math.max(1,Math.floor((s.x1-s.x0)/step)),nz=Math.max(1,Math.floor((s.z1-s.z0)/(o.id==='tea-garden'?o.rows:step)));
    for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=s.x0+(i+.5+(u(gi,s.i,k,1)-.5)*.6)*(s.x1-s.x0)/nx,z=s.z0+(j+.5+(u(gi,s.i,k,2)-.5)*.6)*(s.z1-s.z0)/nz;
-    const y=BL?BL.y:o.kind==='pools'?Math.min(terrainH(s.x0,s.z0),terrainH(s.x1,s.z1))+base:terrainH(x,z)+base;
+    const y=BL?BL.y:o.kind==='pools'?poolLevel(s)-.05:terrainH(x,z)+base;
     cross(x,y-.05,z,h*1.2*(.85+.3*u(gi,s.i,k,3)),h*(.85+.3*u(gi,s.i,k,4)),u(gi,s.i,k,5)*Math.PI,cell,.82+.18*u(gi,s.i,k,6));}});});
  // the trees: orchards and groves (bamboo is drawn as canes below)
  const TREES=[];
@@ -117,28 +116,47 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  const dry=(x0,z0,x1,z1,h,w)=>{const L=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(L/5)),ry=Math.atan2(-(z1-z0),x1-x0);
   for(let i=0;i<n;i++){const t=(i+.5)/n,x=lerp(x0,x1,t),z=lerp(z0,z1,t),g0=Math.min(terrainH(lerp(x0,x1,i/n),lerp(z0,z1,i/n)),terrainH(lerp(x0,x1,(i+1)/n),lerp(z0,z1,(i+1)/n)));
    ARCH.box('drystone',x,g0-.3,z,L/n+.08,h+.3+(terrainH(x,z)-g0),w,{ry,col:0xffffff,batter:.12,topCol:0xb8b4a8});}};
- F.GROUPS.forEach(o=>F.walls(o).forEach(sg=>dry(sg[0],sg[1],sg[2],sg[3],o.kind==='terraces'?1.1:o.kind==='pools'?.45:.95,o.kind==='terraces'?.9:.7)));
+ F.GROUPS.forEach(o=>{if(o.kind==='pools')return;F.walls(o).forEach(sg=>dry(sg[0],sg[1],sg[2],sg[3],o.kind==='terraces'?1.1:.95,o.kind==='terraces'?.9:.7));});
+ // the rice pools' bunds: round every pool, from the ground (its basin cut on the high side) to 0.2 m over its water
+ {const o=F.group('rice-pools');F.strips(o).forEach(s=>{const y=poolLevel(s)+.2;
+  for(const [x0,z0,x1,z1] of [[s.x0,s.z0,s.x1,s.z0],[s.x1,s.z0,s.x1,s.z1],[s.x1,s.z1,s.x0,s.z1],[s.x0,s.z1,s.x0,s.z0]]){const L=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(L/3)),ry=Math.atan2(-(z1-z0),x1-x0);
+   for(let k=0;k<n;k++){const t=(k+.5)/n,x=lerp(x0,x1,t),z=lerp(z0,z1,t),g=Math.min(terrainH(x,z),poolLevel(s)-.3)-.2;ARCH.box('drystone',x,g,z,L/n+.1,y-g,.55,{ry,col:0xb8ae96,topCol:0x8a9a6a});}}});}
  // the kitchen gardens', the dye garden's and the physic terraces' beds: stone kerbs
  F.GROUPS.filter(o=>o.kind==='beds'&&o.inside).forEach(o=>F.strips(o).forEach(s=>{const L=bedLevel(s);if(!L)return;const cx=(s.x0+s.x1)/2,cz=(s.z0+s.z1)/2;
   ARCH.box('drystone',cx,L.lo-.2,cz,s.x1-s.x0+.2,L.y+.03-(L.lo-.2),s.z1-s.z0+.2,{col:0xd0ccc0,top:false});}));
 
  // ---------------------------------------------------------------- the water: the leat and the tail race; the mills' wheels
- const channel=(L,w)=>{for(let i=1;i<L.length;i++){const a=L[i-1],b=L[i],len=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(len/4),ry=Math.atan2(-(b[1]-a[1]),b[0]-a[0]),nx=-(b[1]-a[1])/len,nz=(b[0]-a[0])/len;
-  for(let k=0;k<n;k++){const t=(k+.5)/n,x=lerp(a[0],b[0],t),z=lerp(a[1],b[1],t),y=terrainH(x,z);
-   ARCH.box('slate',x,y-.3,z,len/n+.06,.32,w,{ry,col:0x3a5a66,sides:''});
-   for(const s of [-1,1])ARCH.box('drystone',x+nx*s*(w/2+.25),y-.4,z+nz*s*(w/2+.25),len/n+.06,.75,.5,{ry,col:0xd8d4c8});}}};
- channel(F.LEAT.pts,F.LEAT.w);channel(F.TAIL.pts,F.TAIL.w);
+ // The canal's line and its falling levels are the stage's (45: CANAL, its bed cut by canalCut); its water is core/water's
+ // (89w-ls-water.js). Here its stonework: where the land stands over the water, a low kerb at the cut's lip; where the
+ // land lies lower (the ward, the bank by the Mirror), a raised race, its walls from the ground to 0.35 m over the water
+ const canal=(P,w)=>{for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i],len=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.ceil(len/3)),ry=Math.atan2(-(b[1]-a[1]),b[0]-a[0]),nx=-(b[1]-a[1])/len,nz=(b[0]-a[0])/len;
+  for(let k=0;k<n;k++){const t=(k+.5)/n,x=lerp(a[0],b[0],t),z=lerp(a[1],b[1],t),y=lerp(a[3],b[3],t);
+   for(const sd of [-1,1]){const kx=x+nx*sd*(w/2+.3),kz=z+nz*sd*(w/2+.3),g=terrainH(kx,kz),top=Math.max(g+.15,y+.35);
+    ARCH.box('drystone',kx,Math.min(g,y-.6)-.2,kz,len/n+.08,top-(Math.min(g,y-.6)-.2),.6,{ry,col:0xd8d4c8,topCol:0xc0bcb0});}
+   ARCH.box('drystone',x,y-.62,z,len/n+.08,.1,w+.1,{ry,col:0x8a8478,sides:''});}}};   // the bed's lining
+ canal(CANAL.leat,CANAL.w);canal(CANAL.tail,CANAL.wt);
+ // the culverts under the outer wall (a dark opening through it) and the slabs where the track crosses the canal
+ for(const P of [CANAL.leat,CANAL.tail])for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];
+  if((a[1]+200)*(b[1]+200)<0){const t=(-200-a[1])/(b[1]-a[1]),x=lerp(a[0],b[0],t),y=lerp(a[3],b[3],t);ARCH.box('dark',x,y-.6,LS.GROUNDS.z0,CANAL.w+.5,1.2,LS.WALL.t+.5,{col:LSP.black});}
+  const L=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let s=0;s<L;s+=1){const x=lerp(a[0],b[0],s/L),z=lerp(a[1],b[1],s/L);
+   if(LS.trackD(x,z)<1){ARCH.box('ashlar',x,Math.max(terrainH(x,z),lerp(a[3],b[3],s/L)+.35),z,CANAL.w+1.6,.3,CANAL.w+1.6,{col:LSP.granite});break;}}}
  // a water wheel: rim, spokes and paddles in the plane through (x,y,z) along (ax,az) (the flow), axle across it
  const wheel=(x,y,z,r,ax,az)=>{const N=12,nx=-az,nz=ax,P=(a,rr,o)=>[x+ax*Math.cos(a)*rr+nx*o,y+Math.sin(a)*rr,z+az*Math.cos(a)*rr+nz*o];
   for(let i=0;i<N;i++){const a=i/N*Math.PI*2,b=(i+1)/N*Math.PI*2;
    for(const o of [-.35,.35]){ARCH.quad('wood',P(a,r,o),P(b,r,o),P(b,r-.2,o),P(a,r-.2,o),LSP.woodDark);ARCH.quad('wood',P(b,r,o),P(a,r,o),P(a,r-.2,o),P(b,r-.2,o),LSP.woodDark);}
    ARCH.quad('wood',P(a,r+.25,-.4),P(a,r+.25,.4),P(a,r-.4,.4),P(a,r-.4,-.4),LSP.wood);ARCH.quad('wood',P(a,r+.25,.4),P(a,r+.25,-.4),P(a,r-.4,-.4),P(a,r-.4,.4),LSP.wood);
-   ARCH.quad('wood',P(a,.1,.05),P(a,r-.2,.05),P(a,r-.2,-.05),P(a,.1,-.05),LSP.woodDark);ARCH.quad('wood',P(a,r-.2,.05),P(a,.1,.05),P(a,.1,-.05),P(a,r-.2,-.05),LSP.woodDark);}
-  ARCH.box('wood',x,y-.2,z,Math.abs(nx)*1.4+.4,.4,Math.abs(nz)*1.4+.4,{col:LSP.woodDark});};
+   ARCH.quad('wood',P(a,.1,.05),P(a,r-.2,.05),P(a,r-.2,-.05),P(a,.1,-.05),LSP.woodDark);ARCH.quad('wood',P(a,r-.2,.05),P(a,.1,.05),P(a,.1,-.05),P(a,r-.2,-.05),LSP.woodDark);}};
+ // the wheels: undershot, their lowest paddles 0.45 m into the canal's water where they stand, turned along its flow; the
+ // axle across the race to its mill (a bearing on a stone pier on the far side)
+ const WHEELDRAW=F.WHEELS.map(Wh=>{let best=null;for(const P of [CANAL.leat])for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i],dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz||1,
+   t=clamp(((Wh.x-a[0])*dx+(Wh.z-a[1])*dz)/l,0,1),d=Math.hypot(Wh.x-a[0]-dx*t,Wh.z-a[1]-dz*t);if(!best||d<best.d)best={d,x:a[0]+dx*t,z:a[1]+dz*t,y:lerp(a[3],b[3],t),ax:dx/Math.sqrt(l),az:dz/Math.sqrt(l)};}
+  const yc=best.y+Wh.r-.45;wheel(best.x,yc,best.z,Wh.r,best.ax,best.az);
+  const nx=-best.az,nz=best.ax,mill=Wh.id==='wheel-paper'?LS.building('paper-mill'):F.MILL,toward=Math.sign((mill.x-best.x)*nx+(mill.z-best.z)*nz)||1,reach=Wh.id==='wheel-paper'?4.6:7.4;
+  ARCH.box('wood',best.x+nx*toward*reach/2,yc-.18,best.z+nz*toward*reach/2,Math.abs(nx)*reach+Math.abs(nz)*.36,.36,Math.abs(nz)*reach+Math.abs(nx)*.36,{col:LSP.woodDark});
+  const px=best.x-nx*toward*(CANAL.w/2+.7),pz=best.z-nz*toward*(CANAL.w/2+.7),gp=terrainH(px,pz);ARCH.box('drystone',px,gp-.3,pz,.9,yc-gp+.3,.9,{col:0xd8d4c8});
+  return {id:Wh.id,x:best.x,y:yc,z:best.z,r:Wh.r,water:best.y,dist:best.d};});
  {const M=F.MILL,g0=terrainH(M.x,M.z);lsBlock(M.x,M.z,M.w,M.d,g0-.5,g0,1,3.8,{batter:.25,win:{spacing:3}});
-  const W=M.wheel;wheel(W.x,terrainH(W.x,W.z)+.4,W.z,W.r,1,0);
-  REGISTER({name:M.name,cls:'building',kind:'mill',key:'longsong_'+M.id,x:M.x,z:(M.z+W.z)/2,y:g0-1.5,r:7,h:8,tags:{culture:'order',types:['industry','farm']}});}
- {const B=LS.building('paper-mill'),y=LS.baseY(B),wx=B.x+B.w/2+2.2,wz=B.z-4;channel([[F.LEAT.pts[F.LEAT.pts.length-1][0],LS.GROUNDS.z0+2],[wx,wz-3]],1.6);wheel(wx,y+.8,wz,2.8,0,1);}
+  const W=WHEELDRAW[0];REGISTER({name:M.name,cls:'building',kind:'mill',key:'longsong_'+M.id,x:M.x,z:(M.z+W.z)/2,y:Math.min(g0,W.water)-1.5,r:8,h:9,tags:{culture:'order',types:['industry','farm']}});}
 
  // ---------------------------------------------------------------- the works: threshing floors, field shrines, the bee wall, the dye house's poles
  F.THRESH.forEach(T=>{const y=terrainH(T.x,T.z);ARCH.cyl('paving',T.x,y-.3,T.z,T.r,T.r,.45,{seg:28,col:0xc4bcaa});
@@ -179,7 +197,7 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  HP.forEach((p,i)=>{E.set(0,p[3],0);Q.setFromEuler(E);V.set(p[0],p[1],p[2]);M.compose(V,Q,S);herd.setMatrixAt(i,M);herd.setColorAt(i,YC[Math.floor(p[4]*YC.length)]);});
  herd.userData.host=true;herd.userData.cls='life';herd.userData.inspectLabel='Yak and dzo of the Order\'s herds (placeholder figures)';scene.add(herd);
  F.HERDS.forEach(Hd=>REGISTER({name:'A herd of yak and dzo ('+Hd.n+')',cls:'life',kind:'herd',key:'longsong_'+Hd.id,x:Hd.x,z:Hd.z,y:terrainH(Hd.x,Hd.z)-3,r:Hd.r+3,h:12,tags:{culture:'order'}}));
- return {ground,cards:nCards,cardMesh,canes,herd,records:FREC,yaks:HP.length};})();
+ return {ground,cards:nCards,cardMesh,canes,herd,records:FREC,yaks:HP.length,wheels:WHEELDRAW};})();
 _mark('farms');
 
 // ---------------------------------------------------------------- the farms' checks (verify.py --assert; 64's monasteryChecks calls them)
@@ -191,7 +209,8 @@ const FCHK={
  clear(G){const bad=[];G.forEach(o=>{const S=LS.FARMS.strips(o),T=LS.FARMS.trees(o);
    const cells=S.length?S:T.length?T.map(t=>({x0:t.x,x1:t.x,z0:t.z,z1:t.z})):[{x0:o.x0,x1:o.x1,z0:o.z0,z1:o.z1}];
    cells.forEach(s=>{const x=(s.x0+s.x1)/2,z=(s.z0+s.z1)/2;
-    if(waterH(x,z)>terrainH(x,z)-.2)bad.push(o.id+' (in the water)');
+    // (a rice pool is water by design: it must keep out of the stream)
+    if(o.kind==='pools'?(()=>{const n=streamNear(x,z);return !!n&&n.d<n.hw+3;})():waterH(x,z)>terrainH(x,z)-.2)bad.push(o.id+' (in the water)');
     if(!o.inside&&LS.inGrounds(x,z,2))bad.push(o.id+' (inside the wall)');if(o.inside&&!LS.inGrounds(x,z))bad.push(o.id+' (outside the wall)');
     if(!o.inside&&LS.trackD(x,z)<6)bad.push(o.id+' (on the track)');});});
   const u=[...new Set(bad)];return{ok:!u.length,detail:u.length?u.slice(0,4).join(', '):G.length+' groups: the fields dry and clear of the wall, the track and the pond; the gardens inside'};},

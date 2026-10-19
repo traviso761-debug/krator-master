@@ -56,11 +56,15 @@ F.OTHER=[{id:'mirror',crops:['lotus-root','lotus-silk'],name:'The Mirror of Long
 
 // ---------------------------------------------------------------- the farm's works and marks
 // (the stream's south bank runs at z -260 to -272 along the front: the pools, beds and groves keep to dry ground north of it)
-// the leat: from the stream upstream of the bridge (the stream runs west), along the south bank, under the track, into
-// the ward under the north wall to the paper mill's wheel; the tail race out to the Mirror
-F.LEAT={pts:[[300,-266],[220,-254],[40,-248],[-24,-240],[-100,-238],[-106,-226],[-108,-201]],w:2.2,name:'The leat (the paper mill\'s and the tsampa mill\'s water)'};
-F.TAIL={pts:[[-178,-201],[-196,-222],[-246,-232]],w:1.8,name:'The tail race to the Mirror'};
-F.MILL={id:'tsampa-mill',x:-80,z:-247.5,w:9,d:7,name:'The tsampa mill (roasting pans, a water-driven stone)',wheel:{x:-80,z:-238.6,r:2.4}};
+// the leat: from the stream upstream of the bridge (the stream runs west), along the south bank, under the track (the
+// tsampa mill's wheel stands in it), into the ward under the north wall, along the paper mill's north side to its wheel;
+// the tail race on from the wheel, out under the wall west of the corner tower, to the Mirror. Its levels fall all the
+// way (the host's CANAL: from just under the stream's level at the intake to the pond's)
+F.LEAT={pts:[[300,-266],[220,-254],[40,-248],[-24,-240],[-100,-238],[-106,-226],[-108,-201],[-112,-194],[-150,-193.5]],w:2.2,name:'The leat (the paper mill\'s and the tsampa mill\'s water)'};
+F.TAIL={pts:[[-150,-193.5],[-186,-193.5],[-186,-206],[-214,-224],[-246,-233]],w:1.8,name:'The tail race to the Mirror'};
+F.WHEELS=[{id:'wheel-tsampa',at:'leat',x:-80,z:-238.6,r:2.4,name:'The tsampa mill\'s wheel (undershot, in the leat)'},
+ {id:'wheel-paper',at:'leat',x:-150,z:-193.5,r:2.8,name:'The paper mill\'s wheel (undershot, in its race)'}];
+F.MILL={id:'tsampa-mill',x:-80,z:-247.5,w:9,d:7,name:'The tsampa mill (roasting pans, a water-driven stone)'};
 F.THRESH=[{id:'thresh-east',x:290,z:-72,r:10,name:'The east threshing floor'},{id:'thresh-west',x:-345,z:-62,r:10,name:'The west threshing floor'}];
 F.SHRINES=[{id:'lhatho-east',x:640,z:-62,name:'The field shrine (the first sheaf, juniper, flags)'},{id:'lhatho-west',x:-760,z:-52,name:'The west field shrine'},
  {id:'lhatho-terraces',x:310,z:528,name:'The terraces\' shrine'}];

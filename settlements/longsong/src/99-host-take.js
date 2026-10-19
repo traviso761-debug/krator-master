@@ -26,6 +26,10 @@ const VIEWS=(function(){const V={},PR=LS.PROCRASTINATOR,T=LS.ROCK.top;
  V['The east fields and the chorten garden']=[230,gh(230,-150,40),-170,420,gh(420,60,0),60];
  V['The south terraces and the tea garden']=[0,gh(0,250,60),220,-60,gh(-60,560,0),560];
  V['The Garden of Held Water']=[LS.HELD.x1+8,T+7,LS.HELD.z1-2,LS.HELD.fountain.x,T+2,LS.HELD.fountain.z];
+ // the water on core/water (2026-10-19): the canal, its wheels, the rice pools, the stream
+ V['The rice pools and the tsampa mill']=[-60,gh(-60,-262,14),-262,-150,gh(-150,-252,0),-252];
+ V['The paper mill\'s wheel and its race']=[-130,gh(-130,-184,6),-184,-150,gh(-150,-193.5,1),-193.5];
+ V['The stream from the bridge']=[0,BRIDGE.deck+5,BRIDGE.z,-320,BRIDGE.water,-280];
  V['The yak pastures']=[-575,gh(-575,830,9),830,-620,gh(-620,900,1),900];
  return V;})();
 

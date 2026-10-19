@@ -85,6 +85,13 @@ half quality), `?mat=proc` (the procedural maps instead of the library's), `?hou
   (`45-host-stage.js`: wet from the rain and the water, flow on the stream's banks, upland and cold over the floor,
   rock on the steeps and Longsong's rock, three raked gravel fans the stream left, a little mist over the stream);
   inside the wall only in the gardens, on the rock's faces and, thinly, on its top away from the buildings.
+- **The water** (`89w-ls-water.js`, on core/water and core/atmos; no water shader of the page's own): the Longsong
+  stream a flow down the model's river line on a level that only falls downstream, its bed cut under it (`45`:
+  `STREAM`, `streamCut`); the canal (the leat from the stream to the tsampa mill and the paper mill, the tail race to the
+  Mirror) a flow on levels falling all the way, cut into the land or carried in a raised stone race, an undershot wheel
+  standing in it at each mill; the Mirror, the rice pools (level basins cut into the slope, bunded), the court's
+  reflecting pools, the reservoir and the held fountain still water (one record each, one mesh). The page checks that
+  the water only falls, that each wheel stands in it and that the banks hold it.
 - **The host**: core/host's whole interface (camera, inspector, marks and the polygon tool, minimap, editor), with
   this page's camera clamp (the eye may go under the ground only inside a room of the Vault).
 
@@ -99,4 +106,6 @@ Vault is under the rock with the Procrastinator deepest; the Procrastinator turn
 down; the farms sow only the Oidong Valley's crops, lie dry, outside the wall and off the track, and grow a share of the
 house's grain with the rest's source named. Each has a negative control (a 25 m rock, an unrecorded building, a
 rammed-earth granary, a Red Palace of one storey, a vault room above ground, a wheel that does not slow its seals, a
-second way down, a field of cotton, a field across the stream, a house that grows all its grain).
+second way down, a field of cotton, a field across the stream, a house that grows all its grain, the model's own stream levels (which
+rise downstream), a wheel set off the canal). The water: the stream only falls, the canal falls from the stream to the
+Mirror, each mill's wheel stands in the canal's water, the stream's banks hold it.

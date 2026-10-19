@@ -25,6 +25,8 @@ Valley, built in situ on the scale model's land (PLAN.md, README.md; the program
   85-ls-farms         HOST: the farms and gardens drawn from 40b's records (the library's crop cards, the field walls)
   86-ls-far           HOST: the far terrain, the model's land to 60 km
   88-host-build       HOST: the build order (the monastery's records first, then the kit, then one bake)
+  89-atmos, 20..51    core/atmos (the clock, the waves, the sky's light) and core/water, read in place
+  89w-ls-water        HOST: the stream, the canal, the pond and the pools on core/water
   90..99              HOST (core/host: the whole interface) and 99-host-take, the page handed to it
   99-tail.html        closes <script>
 
@@ -91,6 +93,13 @@ for f in ('50-biome-oidong-species.js', '55-biome-oidong-trees.js', '60-biome-oi
 # (40b-ls-farms.js) sow only its ids, and the page checks them (FCHK.crops)
 for f in ('10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '40-crop-query.js'):
     PATH[f] = os.path.join(ROOT, 'kits', 'crops', 'src', f)
+# core/water and core/atmos (core/water/README.md, "Taking it into a build"; biomes/sedesert is the worked example): the
+# stream and the canal are flows, the pond and the pools still water, drawn by 89w-ls-water.js on core/atmos's clock, wave
+# chunk and sky light (8-export: ATMOS.export, so the export's atmos section fills)
+for f in ('20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js'):
+    PATH.setdefault(f, os.path.join(ROOT, 'core', 'water', f))
+for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-8-export.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js'):
+    PATH.setdefault(f, os.path.join(ROOT, 'core', 'atmos', f))
 # the open world's fields, read in place: the land round the site at 1:1
 PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'little-demo', 'src', '41-world-fields.js')
 # the host shell from core/host, the whole interface (core/host/README.md): the inspector, marks, pictures, the minimap,

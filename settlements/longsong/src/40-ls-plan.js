@@ -72,7 +72,7 @@ P.COURT={x:0,z:-176,r:21,wallH:3.4,arcs:[[2.0,4.28],[-1.14,1.14]],pools:[{x:-11,
  rotunda:{x:34,z:-180,r:4.6,name:'The tea rotunda (eight posts under a tile cone)'},stele:{x:-34,z:-180,name:'The stele of the Order\'s vow: seen, said, inferred; held, not hidden'}};
 // the mani wall along the road to the bridge (ROOMS.md 2.1): carved stones, prayers and the containment's glyphs ("what
 // is written here is held here"); the pilgrims keep it on their right as they walk to the gate; a chorten at each end
-P.MANI={pts:[[-214,-212],[-166,-218],[-118,-219]],h:1.5,w:1.8,name:'The mani wall (prayers, and the containment\'s glyphs: what is written here is held here)'};
+P.MANI={pts:[[-178,-217],[-148,-219],[-118,-220]],h:1.5,w:1.8,name:'The mani wall (prayers, and the containment\'s glyphs: what is written here is held here)'};
 // the chorten garden outside the east postern (ROOMS.md 2.1): the Order's dead who are not founders, small chortens in
 // rows among juniper and incense cedar; the sang burner
 P.CHORTEN_GARDEN={x0:240,x1:330,z0:-140,z1:-62,rows:4,per:6,s:.32,burner:{x:250,z:-100},name:'The chorten garden (the Order\'s dead)'};

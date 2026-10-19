@@ -19,8 +19,10 @@
 - [ ] **The sky is the Oidong showcase's** (read in place: its painted snow ranges and the Throne's azimuth were drawn
       for the showcase's valley); the real ranges are the far terrain's. A Longsong sky would place the Throne from
       the model.
-- [ ] **No core/atmos**: the stream and the pond are this page's own water shader (as the Oidong kit's pools), not the
-      shared wave field; the stream is a ribbon on the model's river line.
+- [ ] **The stream's western ravine**: the page's stream is core/water's flow on a level that only falls downstream
+      (west); the model's 4 km land climbs about 10 m along it west of the pond, so its bed is cut there as a widening
+      ravine (up to ~10 m at the page's edge). The far terrain beyond the page shows the model's own land and water: a step
+      at the seam seen from far off. A finer cut of the region (the model's river at its own resolution) would end it.
 - [ ] **Textures**: all fourteen of the build's are delivered (2026-10-19). The exterior's, the thangka, the glyph band, the
       mandala floor, the lead and the valances are wired; the column paint, the Cataclysm mural, the rug and the book spines
       are in the library and wait for the interiors. The plaques, boards and the dial stay painted on canvases (legible text).
@@ -29,7 +31,8 @@
 - [ ] **The fields drape the model's land**: the south terraces and the tea garden are contour bands with stone risers,
       not cut treads (the land outside the grounds is the model's 4 km cells, smooth; cutting treads into it would move
       the far terrain's seam). The farmland is a mesh over the ground (lifted 0.14 m with a polygon offset).
-- [ ] **The leat runs on the land, not in a cut**: its channel follows the ground from the stream to the ward's water
-      gate; it does not check that the water could flow (the bank falls toward the stream, not along the leat).
+- [ ] **The canal is gravity-honest but short of head**: it takes off 300 m upstream of the bridge, just under the
+      stream's level there, and falls 0.3 m to the paper mill's wheel (undershot, in its race) and 1.5 m more to the Mirror.
+      A real mill would want more head: a longer leat further upstream (the stream falls ~1 m a km here).
 - [ ] **The Hall of Forms is a shell**: its Room of Slow Water (the held basin) and its sprung floor wait for the
       interiors (PLAN.md P4), as everything else does.

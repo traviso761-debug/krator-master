@@ -99,7 +99,7 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
   [[-8,-6,2.6],[5,3,1.8],[9,-7,1.2]].forEach(([dx,dz,h])=>ARCH.cyl('ashlar',cx+dx,y,cz+dz,1.1*h/2,.6*h/2,h,{seg:7,col:LSP.granite2}));
   REGISTER({name:R.name,cls:'feature',kind:'garden',key:'longsong_raked',x:cx,z:cz,y:y-1,r:24,h:6,tags:{culture:'order',types:['park']}});}
  // the reservoir on the rock's rear terrace
- {const R=LS.RESERVOIR,rb=Math.min(minG(R.x,R.z,R.w+2,R.d+2),R.y)-1;ARCH.box('ashlar',R.x,rb,R.z,R.w+2,R.y+6.1-rb,R.d+2,{col:LSP.granite,top:false,batter:.5});ARCH.box('paving',R.x,R.y+5.2,R.z,R.w,.1,R.d,{col:0x5a7a82,sides:''});
+ {const R=LS.RESERVOIR,rb=Math.min(minG(R.x,R.z,R.w+2,R.d+2),R.y)-1;ARCH.box('ashlar',R.x,rb,R.z,R.w+2,R.y+6.1-rb,R.d+2,{col:LSP.granite,top:false,batter:.5});ARCH.box('paving',R.x,R.y+3.6,R.z,R.w,.1,R.d,{col:0x4a5a5e,sides:''});   // its floor (its water: core/water, 89w)
   REGISTER({name:R.name,cls:'infrastructure',kind:'reservoir',key:'longsong_reservoir',x:R.x,z:R.z,y:R.y-1,r:26,h:9,tags:{culture:'order',types:['infrastructure']}});}})();
 
 // ---------------------------------------------------------------- the Great Stair and the White Palace's base (L1)
@@ -327,7 +327,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
   for(const t of [a0,a1])ARCH.box('ashlar',C.x+Math.cos(t)*(R+.4),y,C.z+Math.sin(t)*(R+.4),1.3,C.wallH+.6,1.3,{col:LSP.granite,ry:-t});}
  // the reflecting pools: a mosaic kerb, the water (dark blue, glossy)
  C.pools.forEach(Pq=>{ARCH.bandRing('mosaic',Pq.x,y-.05,Pq.z,Pq.r+.3,.5,{seg:32});ARCH.cyl('paving',Pq.x,y+.45,Pq.z,Pq.r+.3,Pq.r+.3,.06,{seg:32,col:LSP.granite});
-  ARCH.cyl('slate',Pq.x,y+.24,Pq.z,Pq.r,Pq.r,.01,{seg:32,col:0x1f3f78});});
+  });   // (its water: core/water, 89w-ls-water.js)
  // the tea rotunda: eight brick posts, a terracotta cone, a brass ball
  {const Rr=C.rotunda,yr=y;ARCH.cyl('ashlar',Rr.x,yr-.3,Rr.z,Rr.r+.6,Rr.r+.6,.6,{seg:24,col:LSP.granite});
   for(let i=0;i<8;i++){const a=i/8*Math.PI*2;ARCH.cyl('brick',Rr.x+Math.cos(a)*Rr.r,yr+.3,Rr.z+Math.sin(a)*Rr.r,.28,.24,3.2,{seg:8,col:0xf2ece6});}
@@ -362,7 +362,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
 // the fountain's jets stand in the air, every drop where it was; the held cherry's petals stop as they fall
 const HELD=(function(){const G=LS.HELD,T=LS.ROCK.top,F=G.fountain,cx=(G.x0+G.x1)/2,cz=(G.z0+G.z1)/2;
  const gb=Math.min(minG(cx,cz,G.x1-G.x0,G.z1-G.z0),T)-1;ARCH.box('ashlar',cx,gb,cz,G.x1-G.x0,T+.15-gb,G.z1-G.z0,{col:LSP.granite2,topCol:0x6e8a52,batter:.3});
- ARCH.cyl('ashlar',F.x,T,F.z,F.r+.4,F.r+.4,.7,{seg:24,col:LSP.granite});ARCH.cyl('slate',F.x,T+.55,F.z,F.r,F.r,.01,{seg:24,col:0x2e4a6a});
+ ARCH.cyl('ashlar',F.x,T,F.z,F.r+.4,F.r+.4,.7,{seg:24,col:LSP.granite,top:false});ARCH.cyl('ashlar',F.x,T+.1,F.z,F.r,F.r,.01,{seg:24,col:0x3a4a5a});   // the basin (its water: 89w)
  ARCH.cyl('ashlar',F.x,T,F.z,.5,.4,1.6,{seg:10,col:LSP.granite2});
  // the held jets: drops along eight arcs, each one still (instanced spheres: they do not move, ever)
  const drops=[];for(let j=0;j<8;j++){const a=j/8*Math.PI*2;for(let k=1;k<26;k++){const t=k/26,r=t*F.r*.92,h=1.6+4*t*(1-t)*2.4;drops.push([F.x+Math.cos(a)*r,T+h,F.z+Math.sin(a)*r]);}}
@@ -462,10 +462,12 @@ function monasteryChecks(add){add('every building a core/tags record of the Orde
  add('the monastery faces north, to the sun',MCHK.facing());
  add('the climb is the rank (each threshold higher)',MCHK.climb());
  if(typeof farmChecks==='function')farmChecks(add);
+ if(typeof waterChecks==='function')waterChecks(add);
  if(typeof vaultChecks==='function')vaultChecks(add);}
 function monasteryNegatives(add){add('a building recorded as an Ancients one',MCHK.records(LS.BUILDINGS.concat([{id:'not-recorded'}])));
  add('a rammed-earth granary',MCHK.noEarth([{id:'x',name:'a rammed-earth granary'}],['wall']));
  add('the Red Palace given one storey (below the White)',(function(){const r=LS.building('red-palace'),f=r.floors;r.floors=1;const o=MCHK.climb();r.floors=f;return o;})());
  if(typeof farmNegatives==='function')farmNegatives(add);
+ if(typeof waterNegatives==='function')waterNegatives(add);
  if(typeof vaultNegatives==='function')vaultNegatives(add);}
 _mark('monastery');

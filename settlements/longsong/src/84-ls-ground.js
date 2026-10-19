@@ -73,35 +73,7 @@ const GROUND=(function(){
  return {inner,outer,mat};})();
 _mark('ground');
 
-// ---------------------------------------------------------------- the water: the Longsong stream and the lotus pond
-// The stream is a ribbon down the model's river line at its water's height (WORLD.riverLines), with a slow current
-// drawn in the shader; the pond is mirror-still, as the valley's pools are.
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xd4dcea)}}]),
- vertexShader:['#include <fog_pars_vertex>','attribute float aFlow;varying float vFlow;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vFlow=aFlow;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying float vFlow;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){float f=vFlow;',
-  ' vec3 n=normalize(vec3(0.012*sin(vWP.x*0.31+uT*0.6)+f*0.05*sin(vWP.x*0.9-uT*2.4+vWP.z*0.4),1.0,0.012*cos(vWP.z*0.27+uT*0.5)+f*0.05*cos(vWP.z*1.1+uT*1.7)));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),2.6);',
-  ' vec3 col=mix(vCol,uSky,0.18+fr*0.7);vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),220.0)*0.6*vec3(1.0,0.98,0.95);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-const WATER=(function(){const out=[],c0=new THREE.Color(0x3a5a52).convertSRGBToLinear(),c1=new THREE.Color(0x6a8a7a).convertSRGBToLinear();
- STREAM.forEach(R=>{const P=R.pts,pos=[],col=[],fl=[],idx=[],hw=R.width/2+3;
-  for(let i=0;i<P.length;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(P.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1,nx=-dz/L,nz=dx/L;
-   for(const s of [-1,0,1]){pos.push(P[i][0]+nx*hw*s,P[i][2]+.05,P[i][1]+nz*hw*s);const cc=s===0?c0:c1;col.push(cc.r,cc.g,cc.b);fl.push(s===0?1:.4);}
-   if(i>0){const o=(i-1)*3;idx.push(o,o+3,o+1,o+1,o+3,o+4,o+1,o+4,o+2,o+2,o+4,o+5);}}
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
-  g.setAttribute('aFlow',new THREE.Float32BufferAttribute(fl,1));g.setIndex(idx);g.computeVertexNormals();
-  const m=new THREE.Mesh(g,MAT_WATER);m.material.side=THREE.DoubleSide;m.userData.probeSkip=true;m.userData.inspectLabel=R.name+' (the Longsong stream)';m.renderOrder=1;scene.add(m);out.push(m);});
- // the pond
- {const P=LS.POND,PN=56,pos=[P.x,P.y,P.z],col=[c0.r,c0.g,c0.b],fl=[0],idx=[];
-  for(let k=0;k<=PN;k++){const a=k/PN*TAU;pos.push(P.x+Math.cos(a)*(P.r+3),P.y,P.z+Math.sin(a)*(P.r+3));col.push(c1.r,c1.g,c1.b);fl.push(0);}for(let k=0;k<PN;k++)idx.push(0,k+2,k+1);
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setAttribute('aFlow',new THREE.Float32BufferAttribute(fl,1));g.setIndex(idx);
-  const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel=P.name;m.renderOrder=1;scene.add(m);out.push(m);}
- return out;})();
+// ---------------------------------------------------------------- the water's records (core/water draws it: 89w-ls-water.js)
 REGISTER({name:LS.POND.name,cls:'feature',kind:'pond',key:'longsong_pond',x:LS.POND.x,z:LS.POND.z,y:LS.POND.y-4,r:LS.POND.r+2,h:10});
 REGISTER({name:'The Longsong stream (Lõsõ-bi Siṭrīm, the scale model\'s r105)',cls:'feature',kind:'river',key:'longsong_stream',x:0,z:BRIDGE.z,y:BRIDGE.water-4,r:60,h:12});
 FANS.forEach((F,i)=>REGISTER({name:'A gravel fan the stream left (raked by the wind)',cls:'feature',kind:'flats',key:'longsong_fan_'+i,x:F.x,z:F.z,y:terrainH(F.x,F.z)-4,r:F.rx,h:14}));
