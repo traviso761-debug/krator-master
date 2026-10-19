@@ -116,6 +116,11 @@ const gd=K.cluster({id:'g',seed:5,c:[0,0],rad:200,n:12,H:[30,60],r:[6,12],gap:5}
 ok('a garden\'s stacks keep their gap ('+gd.length+' placed)',gd.length>=8&&gd.every((a,i)=>gd.every((b,j)=>i===j||Math.hypot(a.x-b.x,a.z-b.z)>5)),false);
 ok('the same garden from the same seed',JSON.stringify(K.cluster({id:'g',seed:5,c:[0,0],rad:200,n:12,H:[30,60],r:[6,12],gap:5}))===JSON.stringify(gd),
   JSON.stringify(K.cluster({id:'g',seed:6,c:[0,0],rad:200,n:12,H:[30,60],r:[6,12],gap:5}))===JSON.stringify(gd));
+// ---- the variety ranges: asked for, each stack draws its own taper, lean and crown; not asked for, the garden is as before
+{const gv=K.cluster({id:'g',seed:5,c:[0,0],rad:200,n:12,H:[30,60],r:[6,12],gap:5,taper:[.2,.6],lean:[0,.15],crown:[.5,1],lift:(x,z,r)=>r});
+ const tp=B=>B.beds[B.beds.length-1].tp,lean=B=>Math.hypot(B.beds[0].tx,B.beds[0].tz)/B.beds[0].h;
+ ok('variety: the same places, taller by the lift, crowns and leans of their own',gv.length===gd.length&&gv.every((B,i)=>B.x===gd[i].x&&B.z===gd[i].z&&B.top-B.y0>gd[i].top-gd[i].y0+5)&&new Set(gv.map(B=>tp(B).toFixed(3))).size>6&&new Set(gv.map(B=>lean(B).toFixed(3))).size>6,
+   gv.every((B,i)=>tp(B)===tp(gd[i])));}
 ok('a mesh is the same every time',K.hash(K.mesh(mesa))===K.hash(K.mesh(K.load(K.export([mesa]))[0])),K.hash(K.mesh(mesa))===K.hash(K.mesh(sp)));
 threw=false;try{K.load({format:'x'});}catch(e){threw=true;}ok('a foreign export is refused',threw,false);
 

@@ -1,6 +1,7 @@
 // ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host (station 4: the trenches)
 const VIEWS={
- 'The crest (looking south)':[crestX(-1300)+10,floorH(crestX(-1300),-1300)+30,-1300,crestX(600),floorH(crestX(600),600)+10,600],
+ 'The crest (looking north to the prow)':[crestX(1350)+60,floorH(crestX(1350),1350)+70,1350,PROW.x,PROW.top-60,PROW.z],
+ 'The crest (looking south)':[crestX(-640)+10,floorH(crestX(-640),-640)+30,-640,crestX(900),floorH(crestX(900),900)+10,900],
  'The windward face':[-1300,-150,300,-300,220,-100],
  'The lee (the rain shadow)':[1250,-120,-300,300,240,100],
  'The salt (from the crest)':[crestX(300)-30,floorH(crestX(300),300)+20,300,-2400,-440,300],
@@ -13,16 +14,17 @@ const VIEWS={
  const cv=CARVINGS[0];if(cv){const a=Math.atan2(cv.z-PROW.z,cv.x-PROW.x);VIEWS['The carvings (the road-marks)']=[cv.x+Math.cos(a)*14,cv.y+cv.h*.5,cv.z+Math.sin(a)*14,cv.x,cv.y+cv.h*.5,cv.z];}
  const gs=near('greatsundew',-500,200);if(gs)VIEWS['A great sundew on the face']=[gs.x+7,gs.y+3,gs.z+5,gs.x,gs.y+1.5,gs.z];
  const me=near('maneater',-1000,0);if(me)VIEWS['A man-eater low on the face']=[me.x+6,me.y+2.6,me.z+4.5,me.x,me.y+1.4,me.z];
- const lf=(KO&&KO.nearestTree)?KO.nearestTree(1,-700,0):null;if(lf)VIEWS['A lace fan in a gully']=[lf.x+14,lf.y0+6,lf.z+10,lf.x,lf.y0+lf.H*.6,lf.z];
- const sp=STAGE.bodies.find(B=>/^facestack/.test(B.id));if(sp)VIEWS['A spire on the windward face']=[sp.x+100,sp.y0+60,sp.z+80,sp.x,sp.y0+sp.top*.0+(sp.top-sp.y0)*.5,sp.z];})();
+ const lf=(KO&&KO.nearestTree)?KO.nearestTree(1,-700,0):null;if(lf){const H=lf.H||24;VIEWS['A lace fan in a gully']=[lf.x+H*1.3,lf.y0+H*1.05,lf.z+H*1.0,lf.x,lf.y0+H*.6,lf.z];}   /* from over the canopy (it stood inside a crown) */
+ const sp=STAGE.bodies.find(B=>/^facestack/.test(B.id));if(sp){const H=sp.top-sp.y0;VIEWS['A spire on the windward face']=[sp.x+H*1.4+40,sp.top+H*.5+30,sp.z+H*1.1+30,sp.x,sp.y0+H*.55,sp.z];}
+ const D=typeof SEDESERT!=='undefined'&&SEDESERT.TREES;if(D&&D.length){const dr=D.filter(T=>T.sp===0).sort((a,b)=>Math.hypot(a.x-700,a.z-200)-Math.hypot(b.x-700,b.z-200))[0]||D[0];{const H=dr.H||10;VIEWS['A dragon tree on the lee']=[dr.x+H*1.6+10,dr.y0+H*.9,dr.z+H*1.3+8,dr.x,dr.y0+H*.6,dr.z];}}})();
 
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=(r.y||0)-2&&p.y<=(r.y||0)+r.h+5){if(!best||r.r<best.r)best=r;}}
  const item=o.isInstancedMesh&&o.userData.biome?(o.name||'').replace(/^biome:/,''):null;
- const KO=typeof KORONA!=='undefined'?KORONA:null;
- const PLT=item&&((KO&&KO.plantOfItem(item))||NECANYONS.plantOfItem(item)||(HYPERJUNGLE.plantOfItem&&HYPERJUNGLE.plantOfItem(item))),SPx=item&&HYPERJUNGLE.speciesOfItem&&HYPERJUNGLE.speciesOfItem(item);
+ const KO=typeof KORONA!=='undefined'?KORONA:null,SD=typeof SEDESERT!=='undefined'?SEDESERT:null;
+ const PLT=item&&((KO&&KO.plantOfItem(item))||NECANYONS.plantOfItem(item)||(HYPERJUNGLE.plantOfItem&&HYPERJUNGLE.plantOfItem(item))||(SD&&SD.plantOfItem&&SD.plantOfItem(item))),SPx=item&&((HYPERJUNGLE.speciesOfItem&&HYPERJUNGLE.speciesOfItem(item))||(SD&&SD.speciesOfItem&&SD.speciesOfItem(item)));
  const nm=BIO.nameAt?BIO.nameAt(p.x,p.y,p.z):null,NM=nm&&(!best||nm.r<best.r)?nm:null;
- const SB=best&&(NECANYONS.SPECIES.find(s=>best.key===s.key)||(KO&&KO.SPECIES.find(s=>best.key===s.key)));
+ const SB=best&&(NECANYONS.SPECIES.find(s=>best.key===s.key)||(KO&&KO.SPECIES.find(s=>best.key===s.key))||(SD&&SD.SPECIES&&SD.SPECIES.find(s=>best.key===s.key)));
  const F=PLT||SPx||SB||(NM&&NM.plant?((KO&&KO.PLANTS[NM.plant])||NECANYONS.PLANTS[NM.plant]):null),hv=F&&F.tags?F.tags.harvest:null,tr=F&&F.tags?F.tags.trap:null;
  const Z=NECANYONS.at(p.x,p.z),hell=hellAt(p.x,p.z);
  return(NM?NM.name:F?F.name:best?best.name:(o.userData.inspectLabel||item||o.name||'mesh'))+'  ·  '+(o.userData.inspectLabel||item||'')+
@@ -35,7 +37,7 @@ const BUDGET={
  showcase:{tris:16000000,calls:260},
  cls:{pass:7500000,host:1800000},
  type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','korona/trees':'pass','korona/carnivores':'pass','korona/floor':'pass',
-  'jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','host':'host'},
+  'jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','host':'host'},
 };
 const _itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome){const k=M.name.replace(/^biome:/,'');n[k]=(n[k]||0)+M.count;}});return n;};
 const HCHK={

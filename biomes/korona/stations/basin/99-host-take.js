@@ -8,8 +8,8 @@ const VIEWS={
 };
 (function(){const KO=typeof KORONA!=='undefined'?KORONA:null,TR=(KO&&KO.TRAPPED)||[],near=(k,x,z)=>TR.filter(t=>t.key===k).sort((a,b)=>Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z))[0];
  const rf=(KO&&KO.NAMED||[]).filter(t=>t.plant==='rainbowfan'&&NECANYONS.at(t.x,t.z).zone==='floor').sort((a,b)=>Math.hypot(a.x-200,a.z)-Math.hypot(b.x-200,b.z))[0];
- if(rf)VIEWS['The shore meadows (rainbow fans)']=[rf.x+5,rf.y+2.2,rf.z+4,rf.x-14,rf.y+.5,rf.z-10];
- const lf=(KO&&KO.nearestTree)?KO.nearestTree(1,300,0):null;if(lf)VIEWS['A lace fan at the water']=[lf.x+14,lf.y0+6,lf.z+10,lf.x,lf.y0+lf.H*.6,lf.z];
+ if(rf)VIEWS['The shore meadows (rainbow fans)']=[rf.x+20,rf.y+14,rf.z+16,rf.x-6,rf.y+.4,rf.z-5];   /* from over the drift (it stood inside a lace fan's leaf) */
+ const lf=(KO&&KO.nearestTree)?KO.nearestTree(1,300,0):null;if(lf){const H=lf.H||24;VIEWS['A lace fan at the water']=[lf.x+H*1.3,lf.y0+H*1.05,lf.z+H*1.0,lf.x,lf.y0+H*.6,lf.z];}
  const top=BENCH.beds[BENCH.beds.length-1];VIEWS['The bench (the summit life)']=[top.cx+50,BENCH.top+8,top.cz+90,top.cx-50,BENCH.top-6,top.cz-60];
  const cv=CARVINGS[0];if(cv){const a=Math.atan2(cv.z-BENCH.z,cv.x-BENCH.x);VIEWS['The carvings (the lake\'s years)']=[cv.x+Math.cos(a)*14,cv.y+cv.h*.5,cv.z+Math.sin(a)*14,cv.x,cv.y+cv.h*.5,cv.z];}
  const me=near('maneater',BOG.x,BOG.z);if(me)VIEWS['A man-eater (the bog corner)']=[me.x+6,me.y+2.6,me.z+4.5,me.x,me.y+1.4,me.z];

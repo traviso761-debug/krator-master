@@ -38,7 +38,7 @@ KORONA.TRAPS={
  greatsundew:TR({kind:'flypaper',mouth:.5,preyMax:'medium',lure:'dew',danger:.15}),
  cobralily:TR({kind:'pitfall',mouth:.2,preyMax:'small',lure:'nectar'}),
  bloodtrumpet:TR({kind:'pitfall',mouth:.3,preyMax:'medium',lure:'nectar',danger:.1}),
- maneater:TR({kind:'pitfall',mouth:1.3,preyMax:'person',lure:'scent',danger:1}),
+ maneater:TR({kind:'pitfall',mouth:1.3,preyMax:'person',lure:'scent',danger:1,cycle:{wait:600,shut:1.5,digest:86400,reopen:600}}),   /* a pitfall has no cycle of its own; the lid's drop takes the grab's */
  groundstar:TR({kind:'snap',mouth:1.4,preyMax:'large',lure:'scent',danger:.6}),
  bloodbulb:TR({kind:'flypaper',mouth:.15,preyMax:'small',lure:'dew',danger:.05}),
  coiltendril:TR({kind:'grab',mouth:2,preyMax:'person',lure:null,danger:1}),
@@ -81,10 +81,10 @@ KORONA.PLANTS={
  greatsundew:PK('Great sundew','tropic','humid','yes',['Af','Cfa'],'foot',['gsundew0','gsundew1'],HV('none',[],true,'A sundew the size of a tree fern: a fountain of arching fronds beaded with dew that holds a frog, a bird, a child\'s arm, and curls over it in an hour. The first trap in Korona that holds more than an insect; its dew is the rimdew\'s syrup, stronger.'),'greatsundew'),
  cobralily:PK('Cobra lily','tropic','humid','yes',['Af'],'foot',['cobra0','cobra1','cobrab0','cobrab1'],HV('none',[],false,'Hooded green tubes twisting up to a cobra\'s head with translucent windows and a forked red tongue: a pitfall for frogs and lizards. A meadow of them stands where the seeps run out into a hollow; the safe path crosses it.'),'cobralily'),
  bloodtrumpet:PK('Blood trumpet','tropic','humid','yes',['Af'],'floor',['trumpet0','trumpet1'],HV('none',[],false,'Waist-high crimson trumpets with a cream throat, glossy as if wet: a pitfall that takes a rat or a small dog.'),'bloodtrumpet'),
- maneater:PK('Man-eater pitcher','hypertropic','humid','yes',['Af','XA'],'floor',['lure0','lure1'],HV('none',[],false,'THE MAN-EATER: a pitcher two or three metres tall, waxy green mottled with blood, its lid half open, a lure flower on a stalk beside it. A person who slips on its rim goes into a throat of downward hairs and digestive fluid. Danger 1. Only where the ground is poor, wet and warm (the hell field).'),'maneater'),
+ maneater:PK('Man-eater pitcher','hypertropic','humid','yes',['Af','XA'],'floor',['lure0','lure1','hood'],HV('none',[],false,'THE MAN-EATER: a pitcher two or three metres tall, waxy green mottled with blood, its lid half open, a lure flower on a stalk beside it. A person who slips on its rim goes into a throat of downward hairs and digestive fluid. Danger 1. Only where the ground is poor, wet and warm (the hell field).'),'maneater'),
  groundstar:PK('Ground star','tropic','humid','yes',['Af'],'floor',['star0','star1'],HV('none',[],false,'A red tentacled mouth lying flat on the peat, a metre across: tread on it and it closes on the leg. Danger 0.6.'),'groundstar'),
  bloodbulb:PK('Blood bulbs','tropic','humid','yes',['Af'],'floor',['bulb0','bulb1'],HV('none',[],true,'Fist-sized sticky red heads on thin dark stalks standing in thousands across the open flats of a hollow: the moor. Each holds what brushes it; a person walks through and comes out bleeding and sticky. The heads are a styptic.'),'bloodbulb'),
- coiltendril:PK('Coil tendril','hypertropic','humid','yes',['Af','XA'],'floor',['stalk'],HV('none',[],false,'Yellow-green banded coils lying across the floor, warty and waxy, that lift and wind round whatever steps inside the coil. Danger 1.'),'coiltendril'),
+ coiltendril:PK('Coil tendril','hypertropic','humid','yes',['Af','XA'],'floor',['stalk','tendriltip'],HV('none',[],false,'Yellow-green banded coils lying across the floor, warty and waxy, that lift and wind round whatever steps inside the coil. Danger 1.'),'coiltendril'),
  bladderpool:PK('Sucking pool','tropic','humid','yes',['Af'],'floor',['pad'],HV('none',[],false,'A black pool whose bed is a carpet of green bladders: a foot that stirs them is sucked down to the knee. Danger 0.3. Trap pads float on it.'),'bladderpool'),
  trappad:PK('Trap pad','tropic','humid','yes',['Af'],'floor',['pad'],HV('none',[],false,'A giant lily pad floating on a sucking pool, its edge fringed with hairs: it folds on what lands on it. Danger 0.4.'),'trappad'),
  snareflower:PK('Snare flower','tropic','humid','yes',['Af'],'floor',['snare'],HV('none',[],false,'The Throne\'s snare flower, here on the warm poor floor: petals that are a noose. Danger 0.5.'),'snareflower'),
@@ -155,10 +155,13 @@ const M=KORONA.MAT={
  star:leaf(TX.star,'star',{swayW:'0.0',swayA:0}),lure:leaf(TX.bloom,'lure',{swayA:.06}),bulb:leaf(TX.bulb,'bulb',{swayA:.08}),
  snare:leaf(TX.bloom,'snare',{swayA:.05}),giantpad:leaf(TX.pad,'giantpad',{swayW:'0.0',swayA:0}),staghorn:leaf(TX.stag,'staghorn',{swayA:.03}),
  jaw:leaf(TX.jaw,'jaw',{swayW:'0.0',swayA:0,alphaTest:.45}),lid:leaf(TX.lid,'lid',{swayW:'0.0',swayA:0}),petal:leaf(TX.fan,'petal',{swayW:'0.0',swayA:0}),
+ /* the moving ends (instanced, on the trap cycle): the man-eater's lid in the pitcher's skin, the coil tendril's tip in the tendril's; their maps follow the buckets' after the swap */
+ hood:leaf(KORONA.SKIN.pitcher,'hood',{swayW:'0.0',swayA:0,alphaTest:0}),tendriltip:(()=>{const m=BIO.barkMat(KORONA.SKIN.tendril);m.vertexColors=false;m.userData.bio={kind:'bark',key:BIO.kitKey('tendriltip')};return m;})(),   /* a bark (Lambert) on a rod: the leaf hook shades a cylinder dark */
  solid:BIO.solidMat(null)};
 // THE LIBRARY (core/materials/PLAN.md): the slots materials.json names take the library's maps; the procedural ones stay
 // without the pack. A sheet's cell is the item's uv (cellUV), not the pack's: one texture per sheet, many cells
 KORONA.LIB=BIO.libSwap('korona',M);
+if(M.pitcher.map){M.hood.map=M.pitcher.map;M.hood.needsUpdate=true;}if(M.tendril.map){M.tendriltip.map=M.tendril.map;M.tendriltip.needsUpdate=true;}   /* the library's skins on the moving ends too */
 const LIBWHITE=C(0xf4f2ec);
 const FULL=slot=>{if(!KORONA.LIB[slot]||typeof KMAT==='undefined'||!KMAT.packed)return false;const L=KMAT.packed('korona',slot);return !!(L&&L.tint&&L.tint.keep>=.99);};
 KORONA.libCol=(slot,c)=>FULL(slot)?LIBWHITE.clone().lerp(c&&c.isColor?c:C(c),.14):c;
@@ -185,6 +188,10 @@ trapHook(M.star,KORONA.TRAPS.groundstar,'fold');
 trapHook(M.giantpad,KORONA.TRAPS.trappad,'fold');
 M.thorn=BIO.solidMat(null);trapHook(M.thorn,KORONA.TRAPS.numbthorn,'whip');
 trapHook(M.petal,KORONA.TRAPS.numbthorn,'hinge');
+// THE MOVING ENDS (KNOWN_ISSUES, closed 2026-10-19): the man-eater's lid is a card hinged on the back of its rim (hinge: up at
+// its angle while the trap waits, dropped flat over the mouth when it shuts); the coil tendril's tip is a rod whipping about
+// its base (whip: lying on along the coil while it waits, standing up when it shuts: the grab)
+trapHook(M.hood,KORONA.TRAPS.maneater,'hinge');trapHook(M.tendriltip,KORONA.TRAPS.coiltendril,'whip');
 
 [['bark.coin','Coin-tree trunks'],['bark.lacefan','Lace-fan boles (dark, fibrous)'],['pitcher','Man-eater pitchers (the waxy outside)'],['throat','Man-eater throats (hairs and fluid)'],['tendril','Coil tendrils (banded, warty)']]
  .forEach(([k,lab])=>{const m=k==='bark.coin'?M.bark.coin:k==='bark.lacefan'?M.bark.lacefan:M[k];BIO.bucket(k,m,{label:lab,uvScale:k==='pitcher'?[1.4,1.4]:k==='throat'?[1,1]:k==='tendril'?[.8,.8]:[2,3]});});
@@ -212,6 +219,8 @@ BIO.def('lid',G.pad(),M.lid,{label:'Punji-pit lids (dead leaves flush with the f
 BIO.def('mouth',G.pad(),M.solid,{label:'Maws (a punji pit\'s open mouth, a trap pad\'s middle)'});
 BIO.def('spike',BIO.geo.rod(4),M.solid,{label:'Spikes and teeth'});
 {const g=BIO.geo.rod(4);g.translate(0,.5,0);BIO.def('thorn',g,M.thorn,{attrs:['aTrap'],label:'Numb thorns (they whip)'});}
+{const g=G.pad();g.translate(0,0,.5);BIO.def('hood',g,M.hood,{attrs:['aTrap'],label:'Man-eater lids (hinged on the rim: they drop)'});}
+{const g=BIO.geo.rod(6);g.translate(0,.5,0);BIO.def('tendriltip',g,M.tendriltip,{attrs:['aTrap'],label:'Coil-tendril tips (they whip up)'});}
 BIO.def('petal',cellUV(G.lobe(),CELL(4)),M.petal,{attrs:['aTrap'],label:'Lash-flower petals (they fold over the throat)'});
 BIO.def('stalk',BIO.geo.rod(5),M.solid,{label:'Stalks and stems'});
 })();
