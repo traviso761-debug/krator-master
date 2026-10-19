@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.064,
+    1.078
+   ],
+   "seam_before": [
+    1.231,
+    1.134
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "plaster",
+  "id": "plaster.limewash.red",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   3.0,
+   3.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "plaster.limewash.red.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `plaster.limewash.red`",
+  "reuse": "Longsong's Red Palace; any Tibetan red-ochre limewashed wall (Xanadu's red halls, a gompa's protector chapel)",
+  "sha1": "9aed648117c3004ec9a7d1d929be610371ee4747"
+ }
+}

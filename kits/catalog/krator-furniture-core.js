@@ -473,7 +473,10 @@ const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'she
    by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
 const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
   'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading',
-  'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking'];
+  'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking',
+  /* the 2026-10-19 trades audit (the Voth census yardstick): bakers, butchers, healers and apothecaries, scribes and teachers, shipwrights, quarrymen, customs
+     and weigh-house clerks, the cult's priests, dairies (nomad herds). FK.ROLES.works draws most of them */
+  'baking', 'butchery', 'healing', 'scribing', 'shipwrighting', 'quarrying', 'customs', 'worship', 'dairy'];
 /* the activity an NPC can do AT a piece (simulation layer, 2026-10): `task: [..]` from FURN_TASKS. A trade (`job`) is
    what a worker produces; a task is what any NPC does: sleep, eat, read. A building holding a piece with a task is a
    destination for that task. Derived when an entry leaves task out: FURN_ROLE_TASK[role] first (a kit piece, [] = none),

@@ -14,11 +14,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 11.1 | [web] | 7 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/50-biome-oidong-species.js` | 65.8 | [draw] | 0 | 6 | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-oidong-species.js` | 65.9 | [draw] | 0 | 6 | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-oidong-trees.js` | 42.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-oidong-floor.js` | 16.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-biome-oidong.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/82-host-sky.js` | 10.8 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
+| `src/82-host-sky.js` | 11.4 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/84-host-ground.js` | 15.7 | [draw] | 19 | 7 | 0 | 0 | 0 | 4 | 10 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 1.0 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-host-take.js` | 13.7 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |  |

@@ -1605,3 +1605,7 @@ FURN({
 /* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed nomad_training_<role> */
 FK.set({ culture: 'nomad', tier: 'common', roles: 'training', prefix: 'nomad_training_', S: NOMAD_COMMON, names: {
   training_dummy: 'Felt practice dummy', archery_butt: 'Horse-archery target' } });
+
+/* butchery, healing and dairy pieces (FK.ROLES.works, the 2026-10-19 trades audit; the owner's scope for the nomad kits: tanning, brewing and smithing were here already). Keyed nomad_works_<role> */
+FK.set({ culture: 'nomad', tier: 'common', roles: 'works', prefix: 'nomad_works_', S: NOMAD_COMMON, skip: ['bread_oven', 'scribe_desk', 'hull_stocks', 'quarry_block', 'weigh_scale', 'tally_board'], names: {
+  butcher_block: 'Butcher\'s block', meat_rack: 'Drying meat rack', herb_bench: 'Healer\'s herb bench', sickbed: 'Healer\'s sickbed', churn: 'Camel-milk churn', cheese_press: 'Cheese press' } });

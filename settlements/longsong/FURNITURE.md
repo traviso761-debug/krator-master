@@ -346,6 +346,14 @@ the summit: the gilded roof over the Chronicle Hall and the Founders' hall, the 
 
 ## Pieces the catalog lacks (NEW)
 
+**2026-10-19:** in the catalog now (`kits/catalog/krator-master-furniture-xanadu.js`): the skylight column, the
+meditation cushions (a row of four on a platform, with a low table, or one alone), the relic case, the scroll rack, the
+card cabinet, the chorten, the altar, the water clock, the armillary, the map table, the debating dais, the tea copper,
+the specimen jar, the planter, the Ancient clock, the anomaly instruments, the wall of names, the strongbox; and two the
+list lacked, the rack of butter lamps and the Council's round table. Still to make: the press, the paper vat, the drying
+rack, the well, the lead case, the furnace, the bath's pool and basin, the wall fountain, the relic crate (the grounds'
+and the depths' pieces). The Order's own set (`order_*`) is the catalog's harvested `yuni_order_*`.
+
 - `xanadu_common_ancient_clock`: the Ancient clock that still runs (unique) (x1)
 - `xanadu_common_anomaly_instrument`: an instrument of the Eastern Watch: brass, glass and a needle that should not move (x4)
 - `xanadu_common_bath_basin`: a stone basin (x0)

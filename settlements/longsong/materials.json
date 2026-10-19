@@ -1,0 +1,601 @@
+{
+ "build": "longsong",
+ "note": "Longsong's adapter onto the material library (core/materials/PLAN.md). The monastery is stone and lime, never earth (the owner, 2026-10-19: no Sahelian mud or rammed earth): wall is the whitewashed lime render over dressed stone (the White Palace, the ward), coloured per mesh (white, the Red Palace's ochre-red, the Order's blue band); ashlar the dressed granite of the plinths, stairs, the gate's pylons and the parabolic arch; rock the hill (Longsong's rock, granite); slate the glazed scale tiles of the prayer-wheel galleries' roofs and the water (the cones are terracotta since 2026-10-19); gilt the gilded roofs, finials and the Procrastinator's rims; twig the maroon penbey band under the parapets (twig, as Xanadu's: not earth); wood the lacquered columns, brackets and window frames; paving the courts and the avenue; vault the chiselled stone of the forbidden depths. keep 0 sets are grey detail under the mesh colour. Run python3 tools/textures/pack.py settlements/longsong after any change, then python3 build.py. The Order's own (2026-10-19, ROOMS.md section 1): brick the chapterhouses' fired brick of the drums, the arcades, the archive and the school; terra the terracotta tile of the cones; glyph the carved glyph-panel walls and the gate's pylons; mosaic the blue-and-white string course (a band: mapped by its height); redwash the Red Palace's red-ochre limewash; wheel the prayer wheels' repousse band; mani the mani wall's carved stones; drystone the field walls; slat the archive roof's soffit; tilled the fields' ground; the c_ families are the crop and orchard cards of the farms (85-ls-farms.js). 2026-10-19 (the second delivery): thangka the great thangka of the register and glyphband the Procrastinator's burning bands (pictures: colour maps only), mandala the Procrastinator hall's inlaid floor and lead the sealed doors (the Vault's own shader reads the colour map only), valance the rich windows' pleated tiers. Delivered but not wired until the interiors: patterns/order/column-paint, mural-cataclysm, rug, book-spines.",
+ "size": 512,
+ "families": {
+  "wall": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "roughLift": 0.35,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "ashlar": {
+   "lib": "stone.cut",
+   "scale": [
+    2.0,
+    1.92
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.35,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rock": {
+   "lib": "rock.granite.tor",
+   "scale": [
+    7.0,
+    7.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "slate": {
+   "lib": "roof.scale.slate",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.35
+  },
+  "gilt": {
+   "lib": "roof.scale.gilt",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.62
+   },
+   "roughLift": 0.1,
+   "specular": 0.6
+  },
+  "twig": {
+   "lib": "band.xanadu.twig",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.5
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "wood": {
+   "lib": "wood.lacquer.crimson",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.35
+  },
+  "paving": {
+   "lib": "paving.flagstone",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.35,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "vault": {
+   "lib": "stone.chiselled",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.35,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "brick": {
+   "lib": "brick.red",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "terra": {
+   "lib": "roof.scale.terracotta",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.35
+  },
+  "glyph": {
+   "lib": "patterns/order/glyph-relief",
+   "scale": [
+    4.4,
+    4.36
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "mosaic": {
+   "lib": "patterns/order/mosaic-band",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.5,
+   "size": [
+    1024,
+    587
+   ]
+  },
+  "redwash": {
+   "lib": "plaster.limewash.red",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "wheel": {
+   "lib": "patterns/order/prayer-wheel",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.5,
+   "size": [
+    512,
+    267
+   ]
+  },
+  "mani": {
+   "lib": "patterns/order/mani-stone",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "drystone": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "slat": {
+   "lib": "wood.siding",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "tilled": {
+   "lib": "ground.tilled",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.35,
+   "specular": 0.2
+  },
+  "c_grain": {
+   "lib": "card.crop.grainhead",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_bean": {
+   "lib": "card.crop.bean",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_clover": {
+   "lib": "card.crop.clover",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_flax": {
+   "lib": "card.crop.flax",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_plume": {
+   "lib": "card.crop.plume",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_saffron": {
+   "lib": "card.crop.saffron",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_woad": {
+   "lib": "card.crop.woad",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_tea": {
+   "lib": "card.crop.tea",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_greens": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_rosette": {
+   "lib": "card.crop.rosette",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_orchard": {
+   "lib": "card.orchard.broad",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512
+  },
+  "c_blossom": {
+   "lib": "card.blossom.cherry",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512
+  },
+  "c_weeper": {
+   "lib": "card.weeper",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512
+  },
+  "c_juniper": {
+   "lib": "card.juniper",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512
+  },
+  "c_sage": {
+   "lib": "card.sage",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "c_broom": {
+   "lib": "card.broom",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 256
+  },
+  "thangka": {
+   "lib": "patterns/order/thangka-register",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.1,
+   "size": [
+    512,
+    768
+   ],
+   "mapOnly": true
+  },
+  "glyphband": {
+   "lib": "patterns/order/glyph-band",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0,
+   "size": [
+    2048,
+    278
+   ],
+   "mapOnly": true
+  },
+  "mandala": {
+   "lib": "patterns/order/mandala-floor",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.5,
+   "size": 1024,
+   "mapOnly": true
+  },
+  "lead": {
+   "lib": "metal.lead.sheet",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.2,
+   "specular": 0.4,
+   "size": 512,
+   "mapOnly": true
+  },
+  "valance": {
+   "lib": "patterns/order/valance",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.2,
+   "size": 512
+  }
+ }
+}
