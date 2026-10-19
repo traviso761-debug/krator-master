@@ -2,13 +2,11 @@
 // The Hykkousoi's siege ship, the heaviest thing on the Ring Sea that still rows: a 48 m hull with
 // three banks of great oars pulled two men to the oar, a bronze triple ram, shields along the rails,
 // two crenellated fighting towers fore and aft, a torsion stone-thrower amidships, a boarding bridge
-// raised on its post at the bow, one great square sail with the Hykkousoi wave-sun and a small
+// raised on its post at the bow, one great square sail with the Hykkousoi wind and wave and a small
 // artemon on a raked foremast. The blue aphlaston of the trireme curls over the stern.
-function rsHykWaveSun(g,W,H,P){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#e6eff0');gr.addColorStop(1,'#bcd2d8');g.fillStyle=gr;g.fillRect(0,0,W,H);
+function rsHykWindWave(g,W,H,P){const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#e6eff0');gr.addColorStop(1,'#bcd2d8');g.fillStyle=gr;g.fillRect(0,0,W,H);
  rsCloth(g,W,H,'rgba(0,0,0,0)',8,'v');g.save();rsPolyPath(g,P);g.clip();g.lineWidth=W*.06;g.strokeStyle='#3f6a82';rsPolyPath(g,P);g.stroke();
- const [cx,cy]=rsCentroid(P),R=Math.min(W,H)*.26;g.fillStyle='#d8a640';g.beginPath();g.arc(cx,cy-R*.15,R*.55,Math.PI,0);g.fill();
- for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;g.strokeStyle='#d8a640';g.lineWidth=R*.07;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.65,cy-R*.15+Math.sin(a)*R*.65);g.lineTo(cx+Math.cos(a)*R*.95,cy-R*.15+Math.sin(a)*R*.95);g.stroke();}
- g.strokeStyle='#2c5a74';g.lineWidth=R*.1;for(let k=0;k<3;k++){g.beginPath();for(let x=-R;x<=R;x+=4){const y=cy+k*R*.22+Math.sin(x/R*Math.PI*2)*R*.08;x===-R?g.moveTo(cx+x,y):g.lineTo(cx+x,y);}g.stroke();}g.restore();}
+ const [cx,cy]=rsCentroid(P),R=Math.min(W,H)*.3;rsSymWindWave(g,cx,cy,R,'#d8a640','#2c5a74');g.restore();}
 function buildRsHykHexareme(){reseed(72200);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
  const BLUE=0x3f86a6,TEAL=0x5fb4c0,WOOD=0x7a5030,GOLD=0xd8a640,DARK=0x3a2a1e;
@@ -42,11 +40,11 @@ function buildRsHykHexareme(){reseed(72200);
  // the great square sail on the mainmast, braced; the artemon on its raked foremast
  const base=dY(.5),mx=-1,mh=24;rsLink(B,'wood',[mx,base-1,0],[mx,base+mh,0],.3,0x7a5634,8,.18);
  const w=17,a=.95,U=[Math.sin(a),0,Math.cos(a)];
- rsRig(B,[mx,0]);const S=rsSail(B,{key:'hyk-wavesun',O:[mx+.4,base+6,0],U,V:[0,1,0],belly:-1.4,A:t=>[(t-.5)*w,mh-6.8+Math.abs(t-.5)*1.2],Bf:t=>[(t-.5)*w*.92,0],draw:rsHykWaveSun});
+ rsRig(B,[mx,0]);const S=rsSail(B,{key:'hyk-windwave',O:[mx+.4,base+6,0],U,V:[0,1,0],belly:-1.4,A:t=>[(t-.5)*w,mh-6.8+Math.abs(t-.5)*1.2],Bf:t=>[(t-.5)*w*.92,0],draw:rsHykWindWave});
  rsSailEdge(B,S,0,.2,0x6a4a2c);rsSailEdge(B,S,1,.1,0x6a4a2c);const tp=[mx,base+mh,0];rsRope(B,tp,S.at(0,0));rsRope(B,tp,S.at(1,0));rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[H.xAt(0,1)+1,H.ys(0),0]);
  rsPennant(B,[mx,base+mh+.2,0],5,.9,[BLUE,0xf0e8d8]);rsRigEnd(B);
  {const fx=18.5,fy=dY(H.uAt(fx)),ft=[fx+4.5,fy+9,0];rsLink(B,'wood',[fx,fy,0],ft,.14,0x7a5634,8,.1);const w2=5.5;
-  const S2=rsSail(B,{key:'hyk-wavesun',O:[ft[0]-2.4,fy+3.6,0],U:[Math.sin(.9),0,Math.cos(.9)],V:[.25,1,0],belly:-.6,A:t=>[(t-.5)*w2,4.6],Bf:t=>[(t-.5)*w2*.9,0],draw:rsHykWaveSun});rsSailEdge(B,S2,0,.09,0x6a4a2c);}
+  const S2=rsSail(B,{key:'hyk-windwave',O:[ft[0]-2.4,fy+3.6,0],U:[Math.sin(.9),0,Math.cos(.9)],V:[.25,1,0],belly:-.6,A:t=>[(t-.5)*w2,4.6],Bf:t=>[(t-.5)*w2*.9,0],draw:rsHykWindWave});rsSailEdge(B,S2,0,.09,0x6a4a2c);}
  for(const x of[-8,-4,2,9])rsFigure(B,[x,dY(H.uAt(x)),rr(-2,2)],rr(0,TAU),[0x3a5a78,0xe0d8c8,0x8a3020][Math.floor(rng()*3)]);
  for(const s of[-1,1]){const p=H.pt(.07,s,.9);rsLink(B,'wood',[p[0]+1,p[1]+.6,p[2]*1.05],[p[0]-3,-1.6,p[2]*1.25],.12,0x7a5634,6);rsBox(B,'wood',[2,1.1,.1],[p[0]-2.6,-1.3,p[2]*1.24],[0,0,.55],0x7a5634);}
  rsBake(B,V.group,'hykHexareme');V.deckY=base;return V;}

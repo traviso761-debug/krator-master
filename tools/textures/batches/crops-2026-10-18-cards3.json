@@ -1,0 +1,34 @@
+[
+ {
+  "src": "card.crop.indigo.png",
+  "out": "core/materials/library/card.crop.indigo",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 50,
+   "key_hi": 120,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.indigo",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4, card.crop.indigo; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "indigo and any pinnate-leaved dye shrub or vine (Jungle indigo)"
+   }
+  }
+ }
+]

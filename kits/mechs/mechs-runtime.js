@@ -120,10 +120,11 @@ const KM_API = (function () {
     if (_bannerTex.has(key)) return _bannerTex.get(key);
     let tex;
     if (P.pattern === 'sun' && TEX.sunbanner) {
-      /* the sun sheet: a window from the middle of one tile (the generated sheet is not quite periodic, so no wrap) */
+      /* the sun sheet (the owner's periodic redo, 2026-10-14): tiled at its size in metres, its middle on the banner's, so a
+         banner of any size takes as many suns as fit */
       tex = new THREE.TextureLoader().load(TEX.sunbanner.src);
-      tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping; tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 4;
-      const S = TEX.sunbanner.size, rx = Math.min(0.92, w / S[0]), ry = Math.min(0.92, h / S[1]);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 4;
+      const S = TEX.sunbanner.size, rx = w / S[0], ry = h / S[1];
       tex.repeat.set(rx, ry); tex.offset.set((1 - rx) / 2, (1 - ry) / 2);
     } else if (P.pattern === true && TEX.banner) {
       tex = new THREE.TextureLoader().load(TEX.banner.src && TEX.banner.src.isTexture ? TEX.banner.src.image.src : TEX.banner.src);

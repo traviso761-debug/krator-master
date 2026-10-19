@@ -3,8 +3,9 @@
 
     python3 tools/test_all.py              # the push checks: lints, node tests, rebuild everything, hash baseline
     python3 tools/test_all.py --nightly    # also: the furniture fingerprint, verify.py --assert on the critical
-                                           # builds, the Godot headless tests (each skipped, and said so, when its
-                                           # tool is missing: playwright, godot)
+                                           # builds, the Godot headless tests, the shot compare on the must-pass
+                                           # cases (each skipped, and said so, when its tool is missing: playwright,
+                                           # godot, numpy and Pillow)
     python3 tools/test_all.py --no-build   # skip the rebuild and the baseline (lints and tests only)
     python3 tools/test_all.py --list       # print the steps and exit
 
@@ -28,15 +29,20 @@ NIGHTLY_VERIFY = [
     # the first Voth (voth.html) is retired (owner, 2026-10-14; archive/voth-first); Voth is settlements/voth's voth-city, whose
     # verify --assert runs simulated days (about 40 min alone) and so waits for a short mode before it joins the nightly list
     ('settlements/verge', 'dist/verge.html', ['--assert']),
+    ('settlements/yuni', 'yuni.html', ['--assert']),   # its export profile (registry, fixtures, interiors?) since 2026-10-18
 ]
 GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd',
                'res://tests/mask/kmask_test.gd', 'res://tests/atmos/atmos_test.gd',
                'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd',
                'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
-               'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/water/water_test.gd',
+               'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/water/water_test.gd',
                'res://tests/water/falls_case_test.gd',
-               'res://tests/shaders/library_test.gd']
+               'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd']
+# The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
+# passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
+COMPARE_CASES = ['world-sedesert', 'world-iziz']
+COMPARE_ASSERT = False
 
 
 # A build that reads another build's output builds after it: kits/ancients-interiors loads kits/interiors'
@@ -99,9 +105,21 @@ def steps(nightly, build):
         # cover 2 m forward, stay up, and leave the console clean
         s.append(('walk settlements/girder', [PY, 'tools/harness.py', 'walk', 'settlements/girder/girder.html', '--route', 'KeyW:20f',
                                                '--start', 'auto', '--min', '2', '--dir', '0,-1'] if pw else None))
+        # a report, never a failure (it prints the size of each exported case; --compare against godot/data/export-report.json)
+        s.append(('report: export sizes (tools/export_report.py)', [PY, 'tools/export_report.py', '--compare', 'godot/data/export-report.json']
+                  if os.path.isfile(os.path.join(ROOT, 'godot', 'data', 'export-report.json')) else [PY, 'tools/export_report.py']))
         g = os.environ.get('GODOT') or shutil.which('godot')
         for t in GODOT_TESTS:
             s.append(('godot ' + t, [g, '--headless', '--path', 'godot', '--script', t] if g else None))
+        # the perf capture (ROADMAP.md section 11, item 4; godot/README.md "The perf capture") smoked headless: it must run and
+        # write its files into shots/perf (gitignored); its numbers mean nothing here and are never checked
+        s.append(('godot perf capture (headless smoke)', [g, '--headless', '--path', 'godot', '--script', 'res://tests/perf/perf_capture.gd', '--',
+                                                           '--cases=world-sedesert,world-iziz', '--frames=10', '--out=res://shots/perf'] if g else None))
+        # the perceptual compare (ROADMAP.md stage 4, section 11 item 4): the page and the spike shot from one camera on the
+        # must-pass cases, scored by SSIM (godot/README.md "Scoring the pairs"). A report until COMPARE_ASSERT is True.
+        img = pw and g and importlib.util.find_spec('numpy') is not None and importlib.util.find_spec('PIL') is not None
+        s.append(('compare shots ' + ('(assert)' if COMPARE_ASSERT else '(report)'),
+                  [PY, 'godot/tools/compare_shots.py'] + COMPARE_CASES + ['--assert' if COMPARE_ASSERT else '--report'] if img else None))
     return s
 
 
@@ -123,6 +141,11 @@ def main(argv):
         r = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                            encoding='utf-8', errors='replace', timeout=1800)
         ok = r.returncode == 0
+        if name.startswith('report:'):    # a report prints and never fails the run
+            print('REPORT  %s  (%.1fs)' % (name[8:], time.time() - t), flush=True)
+            for ln in r.stdout.splitlines():
+                print('      ' + ln, flush=True)
+            continue
         print('%s  %s  (%.1fs)' % ('PASS' if ok else 'FAIL', name, time.time() - t), flush=True)
         if not ok:
             fails.append(name)

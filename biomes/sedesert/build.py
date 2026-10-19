@@ -53,7 +53,7 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 # shared fragments from core/terrain, opt-in by name (core/README.md): '30-core-field.js' gives KFIELD, the baked
 # heightmap the ground is read from; '36-core-carve.js' gives BIO.carve, overhangs on the heightfield. A local src/
 # copy with the same name wins.
-CORE_TERRAIN=['30-core-field.js','36-core-carve.js']
+CORE_TERRAIN=['30-core-field.js','31-core-field-brush.js','36-core-carve.js']   # 31: the ground brushes (core/host's editor, step 4)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
@@ -85,14 +85,14 @@ for f in CORE_SPACE:
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']   # 8-export: ATMOS.export, so the export's atmos section fills (its profile requires it)
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
 import host as khost
-CORE_HOST=khost.SHELL
+CORE_HOST=khost.FULL   # the whole interface (step 4: fauna mode and the ground brushes on KFIELD; core/host/README.md)
 khost.resolve(PATH,CORE_HOST)
 # the material library (core/materials/record: KMAT and the loader) and the GENERATED pack of the textures materials.json
 # names (tools/textures/matlib_pack.py from tex/, written by tools/textures/pack.py). Without tex/pack.json the pack is
@@ -101,7 +101,12 @@ for f in ('23-mat-record.js','25-matlib-host.js'):
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record',f))
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
 import matlib_pack
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'sedesert')}
+# kits/fauna's desert group (KratorFauna: the kit's copies of this biome's animals and the rest of the desert's), for the editor's
+# fauna mode (src/99-host-take.js), and the page's edits (core/host/host.py edits_js: edits.json or this browser's draft)
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','kits','fauna')))
+import fauna_bundle
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'sedesert'),'39-host-fauna.js':fauna_bundle.bundle(['desert'],tex=False),
+         khost.EDITS_JS:khost.edits_js(HERE,'sedesert')}
 for f in VIRTUAL: PATH[f]=None
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]

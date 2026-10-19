@@ -1,0 +1,20 @@
+{
+ "targets": {
+  "kit": "talia.html"
+ },
+ "interiors": [
+  "kit"
+ ],
+ "core": {
+  "kit": [
+   "furnish"
+  ]
+ },
+ "deterministic": [
+  "69t-tal-mat.js",
+  "69u-tal-helpers.js",
+  "88yt-tal-matlib.js"
+ ],
+ "external": [],
+ "pack": "talia"
+}

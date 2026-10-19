@@ -210,6 +210,28 @@ ok('the placement hash is golden.json\'s (SL streams and KRAND streams)', G.sl =
     run > 150 && Math.abs(onBank - 1.3) < 1e-6 && Math.abs(offBank - (0.05 * 60 - 1)) < 1e-6 && pad && corners.every(y => Math.abs(y - 4) < 1e-6), flat === null,
     run + ' m banked; pad cut ' + (pad && pad.cut.toFixed(2)) + ', fill ' + (pad && pad.fill.toFixed(2))); }
 
+// routed avenues (KCITY.site.routeAvenues): round a hill, not over it; two that would run close merge; a river bridged
+{ const SQ = [[-250, -250], [250, -250], [250, 250], [-250, 250]];
+  const routed = (h, specs, o) => { const C = KCITY.create({ tune: tune(), seed: 5, ground: { h }, kit: { dims }, steps: [
+    { name: 'site', run() { const R = SL.R = new Raster(TUNE.rasterHalf, TUNE.cell); R.occ.fill(OCC.OUT); KCITY.site.zoneRaster(R, SQ, { dry: 0.6, maxSlope: 0.35 }); SL.minSpacing = KCITY.site.minSpacing(); } },
+    { name: 'routed', run() { C.out = KCITY.site.routeAvenues(specs, 1, o); } }] }); C.run(); return C; };
+  const top = (C, h) => Math.max.apply(null, C.plan.ways.map(w => Math.max.apply(null, w.pts.map(p => h(p[0], p[1])))));
+  const beside = P => { let n = 0; P.ways.forEach(A => P.ways.forEach(B => { if (A === B) return; let run = 0, best = 0;
+    for (let i = 1; i < A.pts.length; i++) { const m = V.lerp(A.pts[i - 1], A.pts[i], 0.5); let d = Infinity; for (let k = 1; k < B.pts.length; k++) d = Math.min(d, segDist(m, B.pts[k - 1], B.pts[k]));
+      if (d < 20) { run += V.dist(A.pts[i - 1], A.pts[i]); best = Math.max(best, run); } else run = 0; } if (best > 60) n++; })); return n; };
+  const hill = (x, z) => 3 + 25 * Math.exp(-(x * x + z * z) / 7200), H = [{ name: 'across', from: [-180, 0], to: [180, 0] }];
+  const round = routed(hill, H, {}), over = routed(hill, H, { riseK: 0, slopeK: 0 });
+  ok('a routed avenue goes round a hill, not over it (its ground never more than 6 m above its ends)', round.out.made >= 1 && top(round, hill) < 3 + 6 + 1, top(over, hill) > 3 + 15,
+    'round it ' + top(round, hill).toFixed(1) + ' m at most; with no rise or slope price ' + top(over, hill).toFixed(1) + ' m');
+  const flat = () => 3, twins = [{ name: 'a', from: [-200, -30], to: [200, -30] }, { name: 'b', from: [-200, -12], to: [200, -12] }];
+  const merged = routed(flat, twins, {}), apart = routed(flat, twins, { merge: 0 });
+  ok('two avenues that would run 18 m apart merge into one (none runs beside another)', beside(merged.plan) === 0 && merged.out.merged > 300, beside(apart.plan) > 0,
+    merged.plan.ways.length + ' ways, ' + Math.round(merged.out.merged) + ' m merged; with merge 0, ' + beside(apart.plan) + ' running beside another');
+  const river = (x, z) => Math.abs(z) < 16 ? -1 : 3, X = [{ name: 'over', from: [0, -120], to: [0, 120] }];
+  const br = routed(river, X, { cross: (x, z) => [-8, 0, 8].some(d => river(x, z + d) < 0.6) })   /* water, or a bank the zone's slope probe left out */, nb = routed(river, X, {});
+  ok('a routed avenue bridges a river it may cross (its own straight way, no frontage), and fails where it may not', br.out.bridges.length === 1 && br.out.bridges[0].way.noFrontage && br.out.made === 2,
+    nb.out.failed.length === 1 && !nb.out.bridges.length, br.out.bridges.length + ' bridge, ' + br.out.made + ' land runs; without cross: ' + nb.out.failed.join(', ')); }
+
 // ---------------------------------------------------------------- 8. the strategies (33-city-strategies.js): frontage-courts on polygon blocks
 const GRID = [-225, -75, 75, 225];
 function courtsCity(o) {

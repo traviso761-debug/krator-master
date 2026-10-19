@@ -1,0 +1,660 @@
+{
+ "body": "male",
+ "base": "base_m",
+ "regions": [
+  "torso",
+  "hands",
+  "legs",
+  "feet"
+ ],
+ "face_joints": [
+  "face_nose",
+  "face_mouth",
+  "face_chin",
+  "face_jaw",
+  "face_eye_L",
+  "face_eye_R",
+  "face_brow_L",
+  "face_brow_R",
+  "face_cheek_L",
+  "face_cheek_R"
+ ],
+ "heads": [
+  {
+   "id": "styv",
+   "name": "Styv",
+   "style": "bald",
+   "glb": "pieces/male/head_styv.glb",
+   "face": {
+    "face_nose": [
+     -0.0115,
+     1.6225,
+     0.0446
+    ],
+    "face_mouth": [
+     -0.0115,
+     1.5825,
+     0.0326
+    ],
+    "face_chin": [
+     -0.0115,
+     1.5375,
+     0.0146
+    ],
+    "face_jaw": [
+     -0.0115,
+     1.5625,
+     -0.0304
+    ],
+    "face_eye_L": [
+     0.0205,
+     1.6575,
+     0.0046
+    ],
+    "face_eye_R": [
+     -0.0435,
+     1.6575,
+     0.0046
+    ],
+    "face_brow_L": [
+     0.0235,
+     1.6775,
+     0.0196
+    ],
+    "face_brow_R": [
+     -0.0465,
+     1.6775,
+     0.0196
+    ],
+    "face_cheek_L": [
+     0.0385,
+     1.6275,
+     -0.0054
+    ],
+    "face_cheek_R": [
+     -0.0615,
+     1.6275,
+     -0.0054
+    ]
+   }
+  },
+  {
+   "id": "phil",
+   "name": "Phil",
+   "style": "hair",
+   "glb": "pieces/male/head_phil.glb",
+   "face": {
+    "face_nose": [
+     0.0012,
+     1.6193,
+     0.0127
+    ],
+    "face_mouth": [
+     0.0012,
+     1.5793,
+     0.0007
+    ],
+    "face_chin": [
+     0.0012,
+     1.5343,
+     -0.0173
+    ],
+    "face_jaw": [
+     0.0012,
+     1.5593,
+     -0.0623
+    ],
+    "face_eye_L": [
+     0.0332,
+     1.6543,
+     -0.0273
+    ],
+    "face_eye_R": [
+     -0.0308,
+     1.6543,
+     -0.0273
+    ],
+    "face_brow_L": [
+     0.0362,
+     1.6743,
+     -0.0123
+    ],
+    "face_brow_R": [
+     -0.0338,
+     1.6743,
+     -0.0123
+    ],
+    "face_cheek_L": [
+     0.0512,
+     1.6243,
+     -0.0373
+    ],
+    "face_cheek_R": [
+     -0.0488,
+     1.6243,
+     -0.0373
+    ]
+   }
+  },
+  {
+   "id": "hide",
+   "name": "Horned helm",
+   "style": "helmet",
+   "glb": "pieces/male/head_hide.glb",
+   "face": {
+    "face_nose": [
+     0.0136,
+     1.6595,
+     0.0153
+    ],
+    "face_mouth": [
+     0.0136,
+     1.6195,
+     0.0033
+    ],
+    "face_chin": [
+     0.0136,
+     1.5745,
+     -0.0147
+    ],
+    "face_jaw": [
+     0.0136,
+     1.5995,
+     -0.0597
+    ],
+    "face_eye_L": [
+     0.0456,
+     1.6945,
+     -0.0247
+    ],
+    "face_eye_R": [
+     -0.0184,
+     1.6945,
+     -0.0247
+    ],
+    "face_brow_L": [
+     0.0486,
+     1.7145,
+     -0.0097
+    ],
+    "face_brow_R": [
+     -0.0214,
+     1.7145,
+     -0.0097
+    ],
+    "face_cheek_L": [
+     0.0636,
+     1.6645,
+     -0.0347
+    ],
+    "face_cheek_R": [
+     -0.0364,
+     1.6645,
+     -0.0347
+    ]
+   }
+  },
+  {
+   "id": "scout",
+   "name": "Scout",
+   "style": "hair",
+   "glb": "pieces/male/head_scout.glb",
+   "face": {
+    "face_nose": [
+     -0.0094,
+     1.6036,
+     0.0204
+    ],
+    "face_mouth": [
+     -0.0094,
+     1.5636,
+     0.0084
+    ],
+    "face_chin": [
+     -0.0094,
+     1.5186,
+     -0.0096
+    ],
+    "face_jaw": [
+     -0.0094,
+     1.5436,
+     -0.0546
+    ],
+    "face_eye_L": [
+     0.0226,
+     1.6386,
+     -0.0196
+    ],
+    "face_eye_R": [
+     -0.0414,
+     1.6386,
+     -0.0196
+    ],
+    "face_brow_L": [
+     0.0256,
+     1.6586,
+     -0.0046
+    ],
+    "face_brow_R": [
+     -0.0444,
+     1.6586,
+     -0.0046
+    ],
+    "face_cheek_L": [
+     0.0406,
+     1.6086,
+     -0.0296
+    ],
+    "face_cheek_R": [
+     -0.0594,
+     1.6086,
+     -0.0296
+    ]
+   }
+  },
+  {
+   "id": "bone",
+   "name": "Bearded",
+   "style": "hair",
+   "glb": "pieces/male/head_bone.glb",
+   "face": {
+    "face_nose": [
+     0.0121,
+     1.6194,
+     0.0722
+    ],
+    "face_mouth": [
+     0.0121,
+     1.5794,
+     0.0602
+    ],
+    "face_chin": [
+     0.0121,
+     1.5344,
+     0.0422
+    ],
+    "face_jaw": [
+     0.0121,
+     1.5594,
+     -0.0028
+    ],
+    "face_eye_L": [
+     0.0441,
+     1.6544,
+     0.0322
+    ],
+    "face_eye_R": [
+     -0.0199,
+     1.6544,
+     0.0322
+    ],
+    "face_brow_L": [
+     0.0471,
+     1.6744,
+     0.0472
+    ],
+    "face_brow_R": [
+     -0.0229,
+     1.6744,
+     0.0472
+    ],
+    "face_cheek_L": [
+     0.0621,
+     1.6244,
+     0.0222
+    ],
+    "face_cheek_R": [
+     -0.0379,
+     1.6244,
+     0.0222
+    ]
+   }
+  },
+  {
+   "id": "bronze",
+   "name": "Clean-cut",
+   "style": "hair",
+   "glb": "pieces/male/head_bronze.glb",
+   "face": {
+    "face_nose": [
+     0.0041,
+     1.6023,
+     -0.0027
+    ],
+    "face_mouth": [
+     0.0041,
+     1.5623,
+     -0.0147
+    ],
+    "face_chin": [
+     0.0041,
+     1.5173,
+     -0.0327
+    ],
+    "face_jaw": [
+     0.0041,
+     1.5423,
+     -0.0777
+    ],
+    "face_eye_L": [
+     0.0361,
+     1.6373,
+     -0.0427
+    ],
+    "face_eye_R": [
+     -0.0279,
+     1.6373,
+     -0.0427
+    ],
+    "face_brow_L": [
+     0.0391,
+     1.6573,
+     -0.0277
+    ],
+    "face_brow_R": [
+     -0.0309,
+     1.6573,
+     -0.0277
+    ],
+    "face_cheek_L": [
+     0.0541,
+     1.6073,
+     -0.0527
+    ],
+    "face_cheek_R": [
+     -0.0459,
+     1.6073,
+     -0.0527
+    ]
+   }
+  },
+  {
+   "id": "base_m",
+   "name": "Base",
+   "style": "base",
+   "glb": "pieces/male/head_base_m.glb",
+   "face": {
+    "face_nose": [
+     0.0005,
+     1.5959,
+     0.0606
+    ],
+    "face_mouth": [
+     0.0005,
+     1.5559,
+     0.0486
+    ],
+    "face_chin": [
+     0.0005,
+     1.5109,
+     0.0306
+    ],
+    "face_jaw": [
+     0.0005,
+     1.5359,
+     -0.0144
+    ],
+    "face_eye_L": [
+     0.0325,
+     1.6309,
+     0.0206
+    ],
+    "face_eye_R": [
+     -0.0315,
+     1.6309,
+     0.0206
+    ],
+    "face_brow_L": [
+     0.0355,
+     1.6509,
+     0.0356
+    ],
+    "face_brow_R": [
+     -0.0345,
+     1.6509,
+     0.0356
+    ],
+    "face_cheek_L": [
+     0.0505,
+     1.6009,
+     0.0106
+    ],
+    "face_cheek_R": [
+     -0.0495,
+     1.6009,
+     0.0106
+    ]
+   }
+  }
+ ],
+ "armour": [
+  {
+   "id": "hide",
+   "name": "Rider's hide",
+   "glb": "pieces/male/armour_hide.glb",
+   "slots": {
+    "feet": {
+     "triangles": 721,
+     "hide": {
+      "legs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAACAABCCEAAAAAAAAAASAAgAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAIAAAACAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAQgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAgAEAAIAAAAAgAAAAAAACAAAEAAgAQAAAAAAAAAAABAAABAQBgAAUBAAARCAAAABSAAASAAAAAoAAQQAAAAAgAAAARAAAECAAIAAAAAAAICAAIAAAAAAQAgAAAAMAAAgAEAAAoAABAAAAAAACoAAAAABAAAAAAAAAABAkAAAAAAGAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAACCAAAAAFAAEAAAAAAEIADBAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      "feet": "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P"
+     },
+     "lifted": 803
+    },
+    "legs": {
+     "triangles": 9365,
+     "hide": {
+      "torso": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAACAAAACAAEAAAAgBAAAQAQEAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlAhBIAAIEAogEAAEQEAACAIAAQACABygIAEMIBgTUEhCARSBgUFBAGAYABAAQQIAAAAAAAAAoAAAAAAAAQANwQBAAAAAAAABAEAQAAANAAAEAAEABAAAAAAUAABAACCAAAgAAAAAAIAAAAAAAEAAQJAAgAAAAACAACAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAABAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAACABMgBAQC4FDAAgACKAFAAAAAAAAKAAAAAAAAgAACAAIAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAQAAAIAAAIgAwAAAAACAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "legs": "///////////////////////3////////7//37r/////39u+//37///937///7//f//////3//f53//vv/4///K/f/////v/7/3/7///+v//76////d+/3/f//9/7///X/7//O5/3b///f/7+///V/v9f/P+//77////6ff93/+/f//////v/ff9/69+5//3f/6s/9v7/9s/f/erX/X//3//7/f+f+ff+/O7f/v797///N9/+d3/fn/7v/u77/8bX/nvPnav8//d9Hb/+X/73d//n3+3/+89fL////17/n/+h//FP/xt28vu548+/7m38Kyvw/+Lvn/y1djc2/hb/vz/57OF33473dskr/65MbMa/+/z/r4I72nl/5zl6HuBRfsbu+0tnfbv7IU9TuV8ZrPbco/6dw9ff+rs//6flp7n/97t9f/5/JYOP38f+Jm+vbf/9b2//d7/v//adjSfrE8v38/sP+33G4vWPOejtH9WX2156m+GqPcZtrHw/aPjtH+P55NzVvle987jC+rf3X7q/d78T//TlbfL/WN+/ff203+674e8T/5u02t5rn+/3/ReytmaX6vP8l/+//f0P3q/tt9/9/T/bb93ef+v++8PVtf+2x/89/v3X+N///ff/v+Z8m2o7++e//mvUzNatHr78hPc7P/4n6Ss+pxO/3yBrNoN0v7L3feenaGBQuwdDnAkvQuFRgbVlxh/L77WL3PXP//+/v//p/tuP/uf/+//v/ef6/fmvf++O/O9///26X1/f////9f////+5/f7/2//3/v+/////7////0++7//77w//3/jcf+//f/va+9ffz//+/tdT3/e1///v/uv2897//371K50Sv7//9sf/fnjv7Nuzyvlyfr/aSvT7N3/7JZ7nT3PeNsd1WD4f1t91nvnm7FlG8gMBefzv9K3/kS0Kv2zi9deVV/+TlO9P3/XX/hot8i3nHL6+hP9izT9/063vfj+6uieaXzg4x4ffYp+37+n05n7n9ueP4f+e8huuJfVfP47fb4/uvP3+s7zu/5/8+y1e813zMdn4w5+Gv58f/h8rWbFG+/9v+Oe9/c844qad9ue/fXXmuXm92rDX+1f/+nP//pv/z/7+/o3f//t/f8b/v9f+939+8L+3X/v3X7v/+X7//+9/9t///7//7//9+r/f/7X//3/zf//7z1/27//v/P7/7/f793///2/+////9///3f3/v7ff+////e/7////++////f+/////3++//++///+/////////7//f3/////+r////c3//3f/+r+//r7/3/++///++r2f///+f99/+vLv9/vrt/v///+e7V9+t3/91/9b39f9//n//30//43/nrkr/Ltq/Pf2dt8+9fe793ub/+v79+//f/f1/v//3+f7v/+/++PT/////////////wA=",
+      "feet": "AAAAAAAAgACIAAxQIhwopbwmmMislz8b3HDHg++sMfB+3/P0mx/c94UDIGATprUF9EbmmGYnSJBJEjJVOAAEJSDIiARECMgCCiizAVUMQkkg8hD6lrC8W+lZRMa/yf5zQvMotWFvvlBd/Hk8N3uq+vp+V7v6Z/93O34m/P2b/1G2o/37/87/Lxe5//4Py2U/+H+pv8icrynAdjUAtqAIGv7ekllsnCE4VgSqejIoGjxwcW/wTQDDjuDbv3kuBzg7O24/7N/69k/wdazff87n7tVi/P+fN+P87Vkdw23/H8lx1hzdn57//93/p/e/8Ocf/D/+v/bvB7/v/q79OzEWZ5S4wzRRgTiIELOFKUguUDAgCQABAAAAAAAAAAAAAAAAAADv+e//dXmiLYjTnIRAAqIYBkCACulI6HHX978ftPb/z/3/+/Prv/OU17mo26DnHCd4fNiXfi63gAnXmRd1+34+rv/W2/+hvEn8Xf37+/38/D/5/+/8s8//Vfev+7v6+z53Xb4WLKt+0Y9b/B/841/4H9+/e+rzg7fen6f76/5Ly3rn////z3fXm4/mF+1JACvHHnz1xbMaUh+YFY4c9N9nOpgG9lHXS/M3yXwS/xwQ5FlCJrgfYPwhI3BAgPMRGBCAjAC5AoI4mAAAwBGAMNhFIKQ9B0JygIaXAp4Q8O5HyS5kClH8hJwJXc2iMRt+EDAH+oyrESiIISwQAjAAAAgIQAAAAAAAAAAAAAAAAAAA"
+     },
+     "lifted": 9884
+    },
+    "torso": {
+     "triangles": 13913,
+     "hide": {
+      "torso": "/////////////////////////////////////3/7///3X3///9//////7//f//////+//fv/////////////////////////////////////e//////////////////////////////////////////////////////////////////7////+//1//3b/f/////3////78//r//3/f/+//vz83P7/+///55X//z/6/f//von3v9vru9/3/3369zv/vn39X//7//3v//+9///9//5///////////f/77/vf/++f5///77l7bX/+19/1z/f////7///3///////3/xP91/B78/pvvzMubIFanp2AMgAd5avpotJvDo3LPjqQNflGPIAbK9pR0d6/fsSUgv+e7x+wc7boOyT6+3y6feRHva5W2xt/f/tP/926/7vf7//z3v////2f//f989//v////r+/07k9k0UHAZcOo0gtGC72MMAAAQgACgggCNABBACBqEaD1MheUBWnZeI1sLE9vivmaPl984uO+s+mJ8b//mbffV1sLvvtqu/L2T0w+nvXZ5fvtc/3x08YvkK8g1MAGhG1YOFovsDHzwEgc30+KVfr1o9/+P+dxOt/j/+/V3/9//+//1///3//37///f////b//////f9////7///9///////9///3/////f//////////7/3////f/f///////+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////7/////z////7+/3//////f7//H////9/+//7/v/9///////////////////////////////////////////////////////////////////////////9/////////////////3////////////////////////////////////////////////////v//////////9/////////A84FAAAAIDoA",
+      "hands": "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P",
+      "legs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAACAAAAABAAAABAAAAAAAAAAAADAAYAgAABAQgABAECAAACQMAAAAAIABAhYAAAAAAAgQoChAEAAACgEQE4EABgAAAhAnAKAAAABAQAAYBgwAAIAAg2AoAMAAAAAAAARAAQAMAAgADAAAAAAAAAGAAAAAAIACAAQAEAAAIAoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAgAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAIAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAEAAACAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAIAAAAAIQAAAAACAAAAwAAAAAAAAgAAAAAIAAAAAAAAEAAAAAAAQAgAAQAAAAACAAQBAAAAAAAAAAAAAAAAAAAAAGAAAEAAAAAAgAIAAAAAABkgKgAAAAkBAAAAACAAAAACEAAKAAAAERAAEAAAAAAgIAAAAAAAAEAAABAAAABAAgAIAgAAAAAAAQAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+     },
+     "lifted": 8444
+    }
+   },
+   "gloves": true
+  },
+  {
+   "id": "scout",
+   "name": "Scout's quilting",
+   "glb": "pieces/male/armour_scout.glb",
+   "slots": {
+    "feet": {
+     "triangles": 2915,
+     "hide": {
+      "legs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAEAAAAAAAAIAAAAAAAAEAAAAAAAEAAAAEAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAEAAAAAAAAAAAAAAAQAgDAAAAAIgBAAAABAAAAgIAAACAAQAAEAAAAAAAAAAAAAAAAQgAAAACAABAAAACAAAAAgAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAIQAARAwAGAAYADAAzoQASAAASBUIRAESAAF0gC0BwEKZAAAkAYChNOCBBDCgYRmYCAAAgkIGiBAQiAAITAAAKA0AIAEAIAAAgAAKABAAABAAAQJCEAAAAQAAAQBAAAAAMAAAgAEAAAoCABAAAAAAADoAAAAAAAAAAAAAAAAABkAAAAAAEAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAABAQAAAAAIAAAAACAACCAEAAkCEAAAAAIADaAAACgBAWAAUSQCRAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      "feet": "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P"
+     },
+     "lifted": 6328
+    },
+    "legs": {
+     "triangles": 12638,
+     "hide": {
+      "torso": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAACAAAUIAAAAAAAAAAAABAAABQCAAAAAQAQCLCYAAAAAUAAACAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAQAAAAAAACAAIAAAAAEAAAAAAoAAAAABAAAANwBJgAAAAAAABAEAAAJAEAAAAAAEAAACQACEAAAAgAACAACAAAAEAAQAAAhAgAAAAkCAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACgAAAAgAACAE0AAAAAAAKAEAQAAAAgBACAAAAAAAAAAAAAAAAAEAIAAABQAAAAAAFAAAAAAEAAAAUAQgAgAQAAIgAwBAAAAGQAAAQAAAAAEBAAAAgAAAAAAAAAAAAAAAAcAAAAIoIkBQAQSA4+xY+iTN+GPyFkFFhgt8clAIhIAABAAAFFAAAAAAAAQCAIAAoIEAEAiwQAIQAAACAIBiIAAAAAAAgAAAIAQBIAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "legs": "//+//////////t///////+/3///////////3//////////////////////////////////v//d+////v/////vf/v///f/+3/2/7////9////7//////+//7337/////+////9///////////7ff9/9//v+///v8///+f////7////////v/////7+f/+//+//9////////v///3////f////3///99/3////3/fv///v9/3///79///f77//97//3/d3v//n+t/X477f//3f+++//+/f/9fX//398+v//7Vf/J++d/7O6+3n83re35+j//e/X9/2xe+wnP7xn/F9uz+7d/tFw559P9r3QRf5/+v6gz6nx+93/EzBHlZv376/t/Pz6v3Nz95/XxanT1z/Nft+4t309////zv8v/P3//r/7vt9/T//7Ou/Mr75uz/7///7e/1fzv/G+bcnjb/c0nnc/t8+33vonXPOej9v/fV/15+G/AqncZtvHw/7PvtH+L8dNzXvlf9+7zC/xf3X/689b/T//TtffLf3N+vff31//r74/+T/7+w/99rn//3/x/y8+b36vP9t////f0P3q/999/9/z/7f/3ef+/++8P1tf++x/89//3X+P///ff/v+Z+m2o7++e//2vUzNa9H778hPc7P/4n6SE+phO/36BrdoN0v7L3feenaGBwuwdDngkv6uFVgfd91x/P7/X7/f////+/v//r/tuP/+f/+//v/ef6/fmvf++P/O9///m6X1/b////9N3//3+4/f7/3//3/u+/////7////0+/5//77wf/3/jdP+//f/v6/9ff//+O/teTX/83///v/v/2997//zyla/07//97/v//fc+/aP+jf/03/vfbzHa3sq//P6/3zc//T8gGX/g4Xtz3v8EnbXvW26VLK3Nh1zn/3RH73+/2//0fSH/3/35fxPW/Pe+nY/ZnvPavnz/V2ftv163/1q9789HL++Pn/b4If5P//6+Qs3Ymxr1yw3zjf/NE+9dY4ozzhun3tzqD6/O/T3d+/wfW3v797uWL7fG/XZff/qP3U5D2i43we+Nlv3uo8uedgGW+RZ0+X3gx+//u0h17OudPdv79v879VvLf3Lv9e/H//ZP+dp///73Z/8v3f///7/P3/+//99///////P//+////bn37837/f//y3/2v/u///v/v7vz/t1m/+7996T/+/f+/Pvvr//P/v99/W27/f/f++T+/7P5/9/+87+e/779//T+/97///7+df9/73////v///3//c3/////+/+/+r7///++/f///73/////f///+vrP9//7//v////f799/////9////////+n//39f//5//rtv/v/f//////////////+//////+///////////////////////////////////wA=",
+      "feet": "AAAAAAAAAAAAAAAAAAAAACgmAAiAlAMJ5CDHAcnsEOA+z+H0G2tch6YDMCAxdjDX1cCGgLYGkoxORDoUgEAKA0BCQW0YKzZQhCAEhGvDFohQja8P+UxTjkaOMH6SwgF9/RQPEBqxMaw6Ar7kbtacxx9AvHBHs1wQ+IOaIAv5LdExEqkoQAMjSWCfglIATQDMOBCYABUI6CCNEAsAIAAAQIAAQhAB5AEjASGAACmoqCADBDReAAgDxRgitTAkYYi5BmgPKNOQAA6KNIwTV8bDxFVgLDkEE8DsrQkVg03cFIjBoAN4HKQaPa5DyUt0/3gIuw5HSMnJgUBQEMNGHBQOpW2TOhQUhAIiboAhLIKEGAUoIQckquBC2UUaXCxfz+r/8//v+Qt2FHEzpSm2ISfT/RHvtR/9Jjb/3/9/73/9f3n8fhvEbw5UTPyUgQWIEATAAO9AICAE5AEmcA4QISACChHQxdkkE2+qIDUJrmqEcAEjAUPJE9FtCPjhcrUSAAgkQMFBAzrbHTv0qedJzDDSooH4G4MMPwjhA5uf5Lc4TjiH6vyp4Ij6r4gL43/BweXYf2GeQ65yTEMGGTwwUwkQ9NdqA5gK2c5WAzSkyRsQTwcELRRTBLMAYOACwEZCAKBQABAGABUNBAGQIgBLCAYQoMMhIKIHBCQAsASCFHSQ/O8sQYdsnlDpg0BMUCiiMAp8dDAH/ozvMbjIYexR1jFSAE4IZXj0JwYAJInlUxEIAAAA"
+     },
+     "lifted": 8650
+    },
+    "torso": {
+     "triangles": 7443,
+     "hide": {
+      "torso": "73hn65r710uvbW5+92bpyfej/P/z////////////////////////////////////////v//////f//////3/+////////////////////////////////f//+fz/e36/X//6/1r33fff3rm5f3W//d/5v/Ps/vPP4/Px3z2f3r/8v/f/377v/9b/9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////37/////+/7//3+//////////////////////////+////3f/d//aP9z9P//3///////73/v3//v////+96O5//7V8O73fo+X/n3+/xr0+/78cvT7+3y+fe5nva522xt/f/9P//2//+///7/33//////f///////t8Zjfry9f/Nb//////////////7////d/v//6///39/n/73uN/Fez/Phe23/n//73v/v9b//d7+7/t/9+/v+f6+7+7uR/fV3eLvr9/+v5/Xx0+v7TpJAMc2AE80+RgAKYgXEEEhG1SONolvrGhwmyc112DAafz9d3+f96+y/1/v/89ffd//e/f/vfNfft///6n9av7v/n/ou/+u/v//////////////////////////+/////7/////v+///e93//f//////9///////////////////////+////////////////////////////////////////////////////////f/////////////f//////+//z///v9/vf/+vv/dZ97zO33x1b7p/f/r+H/ezzt1czv7+i/J93lvr+//X+f+7vt3fb/6c7vr3/X/+7+3//////7//////////////////////////////////////////////////////////////////////////////////////////////fe/3f///9/fuX//fn/v7t/f+f597vuPBMQAhD+/0MAEBAG",
+      "hands": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFAQQQAEQJzDzuctfIbWqwPoPSagRNIxqpHyf/v3/+3u/hunQRqToxIIIADAAAABAAGSEcGMgAAUDGSqTl2YIUIRggXAzAFEEBSISIAEACBBThQyGgQBgIbFoBDg3QiPqjQ3w2aLjoV7acz5KOIgwAAUGAsUVmQSgrElkQEgZIVAigAYRwQCRP6EQBKnqzu/7BOMOCDE56ArZTMAzdJCcHQhBGcgQATAQAIBAiwAADiiAICACABoAAAAAAAAAAAIAQSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "legs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAABAAAKAACAAAAABQBgAAACAABAAABAAAAAAAAEAAAAAAAAAAQAAAECAuACAQAAAAAAEAAAAAIAEAAAACIQABAgAAAAAAAAgQAAAAaADABEBAAAYEBAgAAAECQAAACAACIBAAAAgAAAIAHgAYEokQFUFAI0KAKoAhgCAoQiAUQAgIAAYAoggAIQJAihwgQsQYEADAAQ6ADACgACAAiBQAIAhEABgAAACQAAAQIAhAAAABAA5QAAAABAAAAAIAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAEAAAAAAAACAAAAgAAAAAAAAAgAAAAAAAAAAAABAAAAAQAAAAAAQAAABAAAAAAAAAAAABAAAABAAgAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAEAAAAAAAAAAAAAABAAAAABAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAQAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAIAAAAAAAAAAAgAAAQAAAAAAAAAAAAAAAAAEAAQAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAgAAAAAAAAAAAAAAAAAEAAAgAABAAABACEAAKAAAAQAAAAAAAAAAAAIAAAAAAAAQAAAAACABAAgAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA="
+     },
+     "lifted": 7785
+    }
+   },
+   "gloves": false
+  },
+  {
+   "id": "bone",
+   "name": "Bone plate",
+   "glb": "pieces/male/armour_bone.glb",
+   "slots": {
+    "feet": {
+     "triangles": 2061,
+     "hide": {
+      "legs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAlKQCAAACCECAAAAAAAgCAAAAgAAAAAAAAAAAAAAAAAAAAAAABAAEIAEAAAAAIAAAAAAAAEAAAAAAAAAAAAEAAEAAAAACAAAAAAAAAEAAAAAAAAAAgAAAABAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAACAAACAAAAgAAAAAAAAAAAEAAAAgAEAAAQAAAAAAQAAYAQAACIAAAAAAAABAABAAAAAIAAAAAAAACAAICAAAAACAAAAAAgQgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAgACAAAAAAAAIAAAAAAACAAQEAAgAQEgAAAQCAAAABoBADSABgABSQBAIxBAgAABCAAASDAAgCiAQQQAAAAAAAAAARAgAEAAAoIAAAAAAACAAIAAAAAAAAgABAAAQAAACCAAAAAAAAABAAAAAAAAAAABAACAAACAAABAgAAAAAACQACAAAAACEBAKAAAAAQQAAAAAAAAAAAAAAIAAAAAAAAAACCgAAAAAIAAAAQAAAAEACAAAAAAAAAAAAAAAQAAAAAAAIAAAAAAAAAAAAAAABAAAAAAAAAAAAAIAAAACAAAACAEAAkCAAAAEAIADDAAAAgBAWAAUAACRAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      "feet": "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P"
+     },
+     "lifted": 2491
+    },
+    "legs": {
+     "triangles": 10888,
+     "hide": {
+      "torso": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBACAAAAAAAAIAAIgAAAAAAABAEAAAJAAAAAAAAAAAACQACEAAAAgAAAAACAAAAEAAQAAAhAgAAAAkIAAQAAAAACAASAAAAAAAAAAAIAAAAAAAAEAAAAAAAAAgAAAAAAAAAAAAAAAAAAABAAIAAAQAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBABAAEAAIAAAAAAAAAAAAAQAAgAAAAAIIAIAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAEAAAAAABAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAACABEAAAQAACAAAACAAABAEAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAEAAAAAAAAAAAQAAAABCQAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "legs": "////////////////f///K9vPf/3+/l////7+/f2//f9/+//+/99u7//v/m/3//f9z//vv+//7n///v73+zv/z/v7/bX9+95f///////7t9/f//////+//+///1////////3/9v/////+/////7f/9fv/////+3/2///7////7+/8/////f//f/7//9/7/9////+3///38///9f/2f///3/+///+/v/////7f////9n//19/+f/////////77/97/////n//9//9/f3//f//3f////e/////bf+///9/////9/fv/////7/u+7/3///////9+/////v//9/////////f/3/////7/v/73///v3///////9+f/////+///r///z/v9///++//+7//9/fb/3+/3/f6/f9r2/+/W//f//f//v////x//8///7///////////////f///////////X//////////////////v//3////////////////////////7////////////////////////////////+/////////////////////////////////////////////9////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+f/////////////////9//////////////////////////////////f/////////////////////////////////////////////////n/////3///////////////v//9//////v/////////////P//3//////v//////////////1///////////zf//771/v//f/u//3/v/9/7+/ff//vvf/e///+/9/83/3////7///++7q////d/9//67z//9/+f+ck/u//777v6398//9t3+53//7//7f5d29vd/v9s/t/18Lfy+v/X8L2/9f0/8/2/8//evu9z/9//P///t+3/u//7v//P95//vV9/+////v7/+X//1/3///9//v///v/k59v///97v/96//q/976/9/d+v/t//y//f/f/+z///fz/////f+//7d9f/f+/9z///7v/////39/7/v//////c//////////+r7///++/7v//7///v+/d///+/rvd//7//v////f799/+///9/////////n///9f//5//rtv/v/f/////////////////////////////////////////////////////////wE=",
+      "feet": "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P"
+     },
+     "lifted": 9583
+    },
+    "torso": {
+     "triangles": 8225,
+     "hide": {
+      "torso": "b9hW59IED1YKDyifwP0K+ruvb/uvv/f///d///////////79////////////////////////////////////////////////////////////////////////////////////////+/////n9//+/39//////////5vO9n9f//v/79///3z/9+7/9/+37/+3/9f///v//+9d/v//v3/////v38/f///////9///////////9////////////////////3///////////////////9/////////////////////f////////f////9d3/12///3////z////////9//fv//////9////////f//////////////////2//f///////P7///39///fv/f/v///5/1//78e/T7/3y/fe53va42yxt/f3+p//+/++vf/7vzn/+//9uffz//ud/3///3/f6+/y2d/3MT366f9r7//Vune//eTX/3/7buq/363+t+1jn263UAq+PMmj3GH0ra9dy719/DHnX/3///767/fub//l/+Bp//q8fL+X1w+v/Xx5fv97/3/0/dvkK8g/NmmrHVaevo/vqHz5u6933+LXf/v9///f/v//////3////9///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3////9//7d///993///33//39///f//v////////3///////+P/////////7/v/5//9///////////9/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9///X9/T/88MmH/BcXx14QGbAsANgAAHuMJAAAA",
+      "hands": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAACIAAEAACIQCkIAIwQAAAAAAAAAQAABCSJCAQHg07ayiQACbpACMIAhAAEAIBgGUAQEMgEAULCgCTlyQAUIBAQXAhAEEEBAQEIAgEABBRAgQAAERAAIEKBAAQQAACBAAAAUAgAAIEAAAAAIIAAAAEA8AAgAGAjIFgQkAAAEAiAAABwACBAYBABICqQoVqBMAIDAAByAoQTEAQcJAAHQgBicAAATAIAIJCCwCADimgBCAAAAoAAAEAAABAAAIAQCAIBAAAIAIAAEgAiAACCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "legs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAYAgAAABAgAAEAAAAAAUMAAAUQAIBgBAAAAAAAAgBACgAMAAABAEQAwEAFgIAAhApACAkAAAAwAAQAgAAAAAAggAAAIAAAAAAAAQAAQAMAAAABAAAAAAAAAEAAAAAAIACAAAAEAAIIAoAABAAAAAAAAAAAAQAAAAAAAAAACAAAAAAAgAAAAAJAAAAAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAYAQAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAEAAAAAAAAAABAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAABACAAAAAAAAAAAAEAAQAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAACAAACAAAAAAAAAAACAAAAAAAAAAAAAAAAAAABAAgAAAAAAAACAAQAAAAAAAAAAAAAAAAAAAACAAAAAACABAAAAAAAoAAAAAIAAAAAAAAAAAgAAAQQAIAAIAAAAAAAAAAAEAAQCEwAAYAAAAAAQCAAAAACAACAAAAAAAAAAAAAAAAAgAAAAAAAAIAAQAAAAACAAAAwAAAAACAAkAAgAAAAAAAAAAAAAAAAAAAQAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAEAAAAAAgAIAAAAAABEAIAAAAAkBIAAAADCAAAACEBAKAAAEkQAIEAwAAAAiIAAAAAAAAEQAAJAEAABAAgAIAgAAAAAQAQAAAAAAAAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+     },
+     "lifted": 6304
+    }
+   },
+   "gloves": false
+  },
+  {
+   "id": "bronze",
+   "name": "Bronze scale",
+   "glb": "pieces/male/armour_bronze.glb",
+   "slots": {
+    "feet": {
+     "triangles": 1434,
+     "hide": {
+      "legs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAkCQCAABCCEAAAAAAAAAASAAgAABAACAAAAAAAAQAAEAAAAAABAAEIAEAAAAAIAAAAAAAAAAAAAAAAEAAAAEAAEAAAAACAAAAAAAAAEAAAAAAAAAAgAAAABAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAACAAACAAAAgAAAAAAAAAAAAAAAAgAEAAAQAAAAAAAAAYAAAgDAAAAAIAAAAAAAAAAAgIAAAABAAAAAAAAQAAAACACAAIBAQoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAIQAARAwACAAYAAAAAoAAAAAAACAAREAAgAQEhA0AQGIAAABuDAjSYRgAhXThAIRCAgAABSCCASCAAAAqCAQAAAAAAgEAAAQAgAECAAoAAAAAAQACEAIAAQAAAAAAAAAAEAAAAAAAAAAAAAAABAAAAAAAAAAABAAAAAACAAABAAAAAAAACAAAAAAAAAEAAIAAAAACQAAAAgAAAAAAAAAAAAAAAAAAAAACAAAAAAEAAAAAAAAAEACAAAAIAAAAAAAAAAQAAAAAAAIAAAAAAAAAAAAAAQAAAAAABAQACAAAIAQAACAgACCAEAAACAAAAEAIABaAAACABAUAAQSQCBAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+      "feet": "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P"
+     },
+     "lifted": 1713
+    },
+    "legs": {
+     "triangles": 11991,
+     "hide": {
+      "torso": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAACAAAACAAEAAAAABAAAQAQEAAAAEAAAAAAAAAgAAAIAAAAAAAQIAAAAAAAAAAABAAAAkABAEAAIAAgIEAAAQAAACAIAAQACABSgIAAMIBwCUEhAABSBgEFBAGAYCAAIQAIAAAAAAAAAIBAACQBAAAAJgABgAAAAAAABAAAAABABAAAAAAAABJCQACAUAABBACCAACgAAAAAAYAAAhAgAFAA0LAAiQAAAACAACAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAEAAAAgAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAIgBAQCgAAAggABCAFAAAgAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAQAAAAgAAAAAAAAAAAAACAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "legs": "/////////////////////////////////////////////////////////////////////////f/////v/6///v//v/////+//3/7////v////7////+//////9//////////f9/////////////f//////+////+///6f////+/f//////v//////9/7///+/7u/93//f////f73/z//3//7////+////P//////7H//t93/d7/9///v/u//98bX/3/f3//4//d/Hb7/f//3f//7//n3f/9bv////17/v/+1//F//1s+fv+/v9+/7j3+r//w/3J/3/2/cjc2/h/v9/z87N/vVw5/9P9t/YZf/8e/6kz6r4c9//FzBHlZv376/t/Oz7v3Nz957Xxenb1z/Nftu4o309/f//zv8vfP3//r/7vt9/T/97Ou/Mr75uz/7///7e/1fzv/G+bcnja/U0nnc/t8+33von3tOejtP/XV/15+G/AqncZtvHw/7P/tH+L4dN3Xvlf9+7zC/5f3X/6897/T//TtffLf3N+vff31//774//T/7+w+99r3//3/R/y/+b/6vP9/////f8P3q/999/9/z/7f/3ef+/++8P1tf++x/89//3X+P///ff/v+Z+m2o7++e//2vUzNa9H778hPc7P/4n6Ss+pxO/36BrdoN0v7L3feenaGBwu0dDnhkv6uFVgfd915/P7/Xz/f//9/+/v//r/tuP/+f/+//v/ef6/fmvf++P/O9///m6X1/b////9N3//3+4/f7/3//3/u+/////7////8+/5////wf///zdv+//7/v6/9ff//+O7teTH/c3///v/u/0c97//zytK90T//97/tf/fcuvaN+jX/02frfbSHa3Mi3/PY/3TUfeRsAGXrgYXtx1P8EnbVnW26VLqXJh1jn/1RH63+/2//UfSH+3135fxPW/Pe+nY7ZnvPavnz/V2bt/063/Vq/7u3FL++On/b4If5O//6+Rs/6ubqVz427Cf5dk9/X45rz5hom3t///2vO/+/P/2x/G////7fX7//e+/ebX/vb/77S+/9/+e/dl/+/++/786z/+///t3fx3+/P/f7X7e+/Pdv/1q/7/V/Pfz/v/39b//9/9/63//////v2/z7v//v////////f/77//v//9/vX////3/3/T//X/71/3///f//////f6+5//////5//////u///////f+///v/3//////+////f7//////+//7d9f//+/f/////v////7/9/7////////f//93v///////3/3////7v/+////v++9////v7/ffv/v///////79//+/////////////3//////////////////////////////////////+///////////////////////////////////wA=",
+      "feet": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkEEAcBAFEGwnc4wUBUCgAiSEoIHaAKkH8TaCqsAHPKr3VeOJ8vQT+3NWo23vi2xh/u1/dfR4K/0/fn8WbPP6G36R72vUPVHs5n3x3/t/4XY++//9+efv7x49ny/+2fPWatECHR+y4pRTjtkiJYn2+BsN7ONyIcnKA5yFOeXiItiBIfv7csV1tHbM8dvZK7r5E1u7cum8hp/d+Nsc/yN77mTdH6JHkP7/l2fM16+c/vz8bF/+99/to/3033q/6/5/1/PbOu/77/+2c/z/f3f/7/z7+L9/vdz9x+0FSENMG/PTujfS9px8VjAqg7sO/Pq7g2EmOInV9/+RUXU3NPDwPB6l/Ue8Jexsg3Gv/9X++af/z/p/V/7h3X+8bMAAgCkBACzCQGA4QQg7UC7ycgUbIABgYAd9AQCSGzIWm0A9AISACIyfA5dH0Ef8rKDUo537kaQ3zK1PTd/39Y+vz+v0z7///X2/+9lk5+t8vhp+/9a/t23/fn///1ef//PR9P6JN6s/cyfWTOf8+MdavjAb6i/cminEa+np+5sPmkz94+Q8z/5d6ep8j81X3PzBu37l8S9bjDvNU3fGE+fnoIlBiWPYgEHMCjCE9BLHAwhBLiBcUsNNEICYGBGZwMAYHFPWAHAMsQIdsnlH5g4hMUKykMTp2XDAn/oitMdth4c1ikgHAKuIQJ0TAkQIFJAiFAAEAAAAI"
+     },
+     "lifted": 12672
+    },
+    "torso": {
+     "triangles": 10068,
+     "hide": {
+      "torso": "////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+///3//v//+//////v//u//////79/////99+7/9/+3//+//9f///r//+9d/v//v2//+//v38/f///v///93//z7+/f//v8//v9v/+//3//3/93v7/319X///////f/////////9/////////////////////f7//////7b//v19/3//f///9//v/3/z//////75f+9/d7//vu/7uvzsBv/r+79h4d5aqnkhMPLY8Lvz6cEfhOPaRXb95b0O+3fg+2+n3//xr4877oMrX6+3y9fe3W/+7/21t/f/tf//W636vf76PT1v//K6nas0663qckIJjbrCsfVJB5gk0nAdMuokktGi76N8Yxt6r4unnyQPGfB2KJ/AaT8NhOWBwndeIxsLG9PyvPuOl9tv/u///O+716n+Y/Zl0eEJp9q8fL+T2y+n7Xx6fvta/3/00YvkK8g1NkmpCRbeH49vqH75vod302KUdu9r/39H8ZyL913738Xnb9//Pf7lPtEzbsxC64nlQ/Qvbj0QmN+Kt5//39/+f9//7v99//9/93/////fu/39/f7/u+7+v+d//bb//3///////////v/////////////////////////////////////////////////////////////////////////v///////f/3////9//99/+//9////33/////+/7//v7+/v////z///////+f/////////9////////f7///////+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AQDM//MLAAAA",
+      "hands": "//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8P",
+      "legs": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAABAAAKIACAAAAABQBgAAACAABAAABAAAAAAAAEAAAAAAAAIAQAAAECAuACAQAAAAAAEAAAAAIAEAAAgCIQABAAAAAAAAAAAAAAAAAAAAAAAAAAIEBAgAAAQAAAAAAAABgBAAAAAAAAgAADgAMIgAAAEAAkCABAIAAoCIAAAwAAABgAAAIggAIYBAgAwqQMACEAAAAAQAAAAQAAAACAAAEAAAQIBBAAABAIABAAASgAAAAAoAAAAAAAAAAAABAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAgAAAAAAAAAgAAAAAAAAAAAABAAAAAQAAAAAAQAAABAAgAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAQAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAACAAAAAAAAAAACAAAAAAAAAAAAAAAAAAABAAgAAAAAAAAAAABAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAIAAAAAAAAAAAgAAAQQAAAAAAAAAAAAAAAAEAAQCEACAAAAAAAAQAAAAAAAACCAACQAAAAAIAAAAAAAAAACAIAAAIAAAAAAAACAAAAwAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAQAAAAEAAAAACAAAAAAAAAAAAAAAAAAAAAAAAACAEAEAAAAAAgAIAAAAAAAEAIAAAAAEBIAAAACCAAAACEAACQAAAEQAAEAgAAAAgIAAAAAAAAEAAABAAAAAAAgAIAgAAAAAQAQAAAAAgAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA="
+     },
+     "lifted": 9917
+    }
+   },
+   "gloves": true
+  }
+ ],
+ "hair": [
+  {
+   "id": "hair_m_short",
+   "name": "Short tousled",
+   "kind": "hair",
+   "head": "styv",
+   "glb": "pieces/male/hair_m_short__styv.glb"
+  },
+  {
+   "id": "hair_m_short",
+   "name": "Short tousled",
+   "kind": "hair",
+   "head": "base_m",
+   "glb": "pieces/male/hair_m_short__base_m.glb"
+  },
+  {
+   "id": "hair_m_long",
+   "name": "Low ponytail",
+   "kind": "hair",
+   "head": "styv",
+   "glb": "pieces/male/hair_m_long__styv.glb"
+  },
+  {
+   "id": "hair_m_long",
+   "name": "Low ponytail",
+   "kind": "hair",
+   "head": "base_m",
+   "glb": "pieces/male/hair_m_long__base_m.glb"
+  },
+  {
+   "id": "hair_m_braid",
+   "name": "Shaved, long braid",
+   "kind": "hair",
+   "head": "styv",
+   "glb": "pieces/male/hair_m_braid__styv.glb"
+  },
+  {
+   "id": "hair_m_braid",
+   "name": "Shaved, long braid",
+   "kind": "hair",
+   "head": "base_m",
+   "glb": "pieces/male/hair_m_braid__base_m.glb"
+  },
+  {
+   "id": "hair_m_buzz",
+   "name": "Buzz cut",
+   "kind": "hair",
+   "head": "styv",
+   "glb": "pieces/male/hair_m_buzz__styv.glb"
+  },
+  {
+   "id": "hair_m_buzz",
+   "name": "Buzz cut",
+   "kind": "hair",
+   "head": "base_m",
+   "glb": "pieces/male/hair_m_buzz__base_m.glb"
+  },
+  {
+   "id": "hair_m_wild",
+   "name": "Wild curls",
+   "kind": "hair",
+   "head": "styv",
+   "glb": "pieces/male/hair_m_wild__styv.glb"
+  },
+  {
+   "id": "hair_m_wild",
+   "name": "Wild curls",
+   "kind": "hair",
+   "head": "base_m",
+   "glb": "pieces/male/hair_m_wild__base_m.glb"
+  },
+  {
+   "id": "beard_full",
+   "name": "Full beard",
+   "kind": "beard",
+   "head": "styv",
+   "glb": "pieces/male/beard_full__styv.glb"
+  },
+  {
+   "id": "beard_full",
+   "name": "Full beard",
+   "kind": "beard",
+   "head": "base_m",
+   "glb": "pieces/male/beard_full__base_m.glb"
+  }
+ ],
+ "base_tris": {
+  "torso": 6355,
+  "hands": 3356,
+  "legs": 8625,
+  "feet": 4484
+ }
+}

@@ -1,0 +1,48 @@
+{
+ "about": "Body and face sliders. Each value runs -1..1 (0 = the piece as made). KCHAR.pose (src/10-rig.js) and character.gd read this. Ops, per listed joint, at value v: scale s -> the joint's skin scale (its own vertices, in its own frame; not passed to children) times s^v per axis. len f -> skin scale y times f^v and every child's rest offset times f^v (bones point along +y). girth f -> skin scale x and z times f^v. grow f -> the joint and its whole subtree: skin scale times f^v, every rest offset below it times f^v. move d -> rest offset plus v*d (metres, in the parent's frame). root f -> the whole figure times f^v.",
+ "groups": ["Body", "Face"],
+ "sliders": [
+  {"id": "height", "label": "Height", "group": "Body", "ops": [{"op": "root", "f": 1.1}]},
+  {"id": "build", "label": "Build", "group": "Body", "ops": [
+    {"op": "girth", "f": 1.22, "joints": ["Hips", "Spine", "Spine1", "Spine2", "LeftArm", "LeftForeArm", "RightArm", "RightForeArm", "LeftUpLeg", "LeftLeg", "RightUpLeg", "RightLeg", "Neck"]}]},
+  {"id": "shoulders", "label": "Shoulder width", "group": "Body", "ops": [
+    {"op": "len", "f": 1.3, "joints": ["LeftShoulder", "RightShoulder"]},
+    {"op": "girth", "f": 1.08, "joints": ["Spine2"]}]},
+  {"id": "chest", "label": "Chest", "group": "Body", "ops": [{"op": "scale", "s": [1.12, 1, 1.22], "joints": ["Spine2"]}]},
+  {"id": "belly", "label": "Belly", "group": "Body", "ops": [{"op": "scale", "s": [1.15, 1, 1.35], "joints": ["Spine", "Spine1"]}]},
+  {"id": "hips", "label": "Hip width", "group": "Body", "ops": [
+    {"op": "scale", "s": [1.18, 1, 1.05], "joints": ["Hips"]},
+    {"op": "move", "d": [0.025, 0, 0], "joints": ["LeftUpLeg"]},
+    {"op": "move", "d": [-0.025, 0, 0], "joints": ["RightUpLeg"]}]},
+  {"id": "torso", "label": "Torso length", "group": "Body", "ops": [{"op": "len", "f": 1.1, "joints": ["Spine", "Spine1", "Spine2"]}]},
+  {"id": "arms", "label": "Arm length", "group": "Body", "ops": [{"op": "len", "f": 1.1, "joints": ["LeftArm", "LeftForeArm", "RightArm", "RightForeArm"]}]},
+  {"id": "armgirth", "label": "Arm muscle", "group": "Body", "ops": [{"op": "girth", "f": 1.3, "joints": ["LeftArm", "LeftForeArm", "RightArm", "RightForeArm"]}]},
+  {"id": "legs", "label": "Leg length", "group": "Body", "ops": [{"op": "len", "f": 1.1, "joints": ["LeftUpLeg", "LeftLeg", "RightUpLeg", "RightLeg"]}]},
+  {"id": "leggirth", "label": "Leg muscle", "group": "Body", "ops": [{"op": "girth", "f": 1.25, "joints": ["LeftUpLeg", "LeftLeg", "RightUpLeg", "RightLeg"]}]},
+  {"id": "neck", "label": "Neck length", "group": "Body", "ops": [{"op": "len", "f": 1.35, "joints": ["Neck"]}]},
+  {"id": "neckgirth", "label": "Neck thickness", "group": "Body", "ops": [{"op": "girth", "f": 1.25, "joints": ["Neck"]}]},
+  {"id": "headsize", "label": "Head size", "group": "Body", "ops": [{"op": "grow", "f": 1.12, "joints": ["Head"]}]},
+  {"id": "hands", "label": "Hand size", "group": "Body", "ops": [{"op": "grow", "f": 1.2, "joints": ["LeftHand", "RightHand"]}]},
+  {"id": "feet", "label": "Foot size", "group": "Body", "ops": [{"op": "grow", "f": 1.2, "joints": ["LeftFoot", "RightFoot"]}]},
+
+  {"id": "facewidth", "label": "Face width", "group": "Face", "ops": [{"op": "scale", "s": [1.1, 1, 1], "joints": ["Head", "face_nose", "face_mouth", "face_chin", "face_jaw", "face_eye_L", "face_eye_R", "face_brow_L", "face_brow_R", "face_cheek_L", "face_cheek_R"]},
+    {"op": "move", "d": [0.004, 0, 0], "joints": ["face_eye_L", "face_brow_L", "face_cheek_L"]},
+    {"op": "move", "d": [-0.004, 0, 0], "joints": ["face_eye_R", "face_brow_R", "face_cheek_R"]}]},
+  {"id": "jaw", "label": "Jaw width", "group": "Face", "ops": [{"op": "scale", "s": [1.35, 1, 1.05], "joints": ["face_jaw"]}]},
+  {"id": "chinlen", "label": "Chin length", "group": "Face", "ops": [{"op": "move", "d": [0, -0.012, 0], "joints": ["face_chin"]}, {"op": "scale", "s": [1, 1.2, 1], "joints": ["face_chin"]}]},
+  {"id": "chinfwd", "label": "Chin forward", "group": "Face", "ops": [{"op": "move", "d": [0, 0, 0.012], "joints": ["face_chin"]}]},
+  {"id": "chinwidth", "label": "Chin width", "group": "Face", "ops": [{"op": "scale", "s": [1.4, 1, 1], "joints": ["face_chin"]}]},
+  {"id": "nosesize", "label": "Nose size", "group": "Face", "ops": [{"op": "scale", "s": [1.3, 1.3, 1.3], "joints": ["face_nose"]}]},
+  {"id": "noselen", "label": "Nose length", "group": "Face", "ops": [{"op": "scale", "s": [1, 1.1, 1.5], "joints": ["face_nose"]}]},
+  {"id": "noseheight", "label": "Nose height", "group": "Face", "ops": [{"op": "move", "d": [0, 0.008, 0], "joints": ["face_nose"]}]},
+  {"id": "mouthwidth", "label": "Mouth width", "group": "Face", "ops": [{"op": "scale", "s": [1.3, 1, 1], "joints": ["face_mouth"]}]},
+  {"id": "mouthheight", "label": "Mouth height", "group": "Face", "ops": [{"op": "move", "d": [0, 0.007, 0], "joints": ["face_mouth"]}]},
+  {"id": "cheeks", "label": "Cheekbones", "group": "Face", "ops": [{"op": "scale", "s": [1.25, 1.2, 1.25], "joints": ["face_cheek_L", "face_cheek_R"]},
+    {"op": "move", "d": [0.006, 0.002, 0.005], "joints": ["face_cheek_L"]}, {"op": "move", "d": [-0.006, 0.002, 0.005], "joints": ["face_cheek_R"]}]},
+  {"id": "browheight", "label": "Brow height", "group": "Face", "ops": [{"op": "move", "d": [0, 0.007, 0], "joints": ["face_brow_L", "face_brow_R"]}]},
+  {"id": "browdepth", "label": "Brow ridge", "group": "Face", "ops": [{"op": "move", "d": [0, 0, 0.008], "joints": ["face_brow_L", "face_brow_R"]}]},
+  {"id": "eyespace", "label": "Eye spacing", "group": "Face", "ops": [{"op": "move", "d": [0.006, 0, 0], "joints": ["face_eye_L"]}, {"op": "move", "d": [-0.006, 0, 0], "joints": ["face_eye_R"]}]},
+  {"id": "eyeheight", "label": "Eye height", "group": "Face", "ops": [{"op": "move", "d": [0, 0.006, 0], "joints": ["face_eye_L", "face_eye_R"]}]},
+  {"id": "eyesize", "label": "Eye size", "group": "Face", "ops": [{"op": "scale", "s": [1.25, 1.25, 1.1], "joints": ["face_eye_L", "face_eye_R"]}]}
+ ]
+}

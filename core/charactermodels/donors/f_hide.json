@@ -1,0 +1,11 @@
+{
+ "id": "f_hide",
+ "outfit": "beast rider hide armor: a layered lamellar cuirass of tough reptile hide, leather shoulder guards, leather bracers and gloves, hide trousers with knee guards, tall wrapped boots, earthy brown and ochre",
+ "body": "female",
+ "kind": "outfit",
+ "prompt": "Full body game character, an adult woman of average athletic build, standing in A-pose, stylized realistic, bare head with short dark hair tied back, face visible, wearing beast rider hide armor: a layered lamellar cuirass of tough reptile hide, leather shoulder guards, leather bracers and gloves, hide trousers with knee guards, tall wrapped boots, earthy brown and ochre. Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.",
+ "preview": "01a125ee-cc07-7087-a12f-5b8cf68c9ab2",
+ "refine": "01a125f0-43fa-77c6-bed6-97ae6bbbe7cd",
+ "rig": "01a125f0-fdce-76d0-a57c-7bcdf2535546",
+ "glb": "f_hide.glb"
+}

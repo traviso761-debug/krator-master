@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.257,
+    1.249
+   ],
+   "seam_before": [
+    1.701,
+    1.756
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.cassiterite",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Tin-Bearing Granite Quartz Vein Texture.png",
+  "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Tin-Bearing Granite Quartz Vein Texture.png",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.cassiterite`",
+  "reuse": "tin mine faces, greisen, tin-bearing granite",
+  "sha1": "b487e476c940f81df7962370f2fb1c8fac02ae69"
+ }
+}

@@ -81,14 +81,14 @@ $('polyCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('polyo
 // ---------------------------------------------------------------- go to
 const GO=[];
 function addGo(label,fn){GO.push({label,fn});}
-addGo('Overview: the whole region from 600 km up',()=>{camera.position.set(0,650000,560000);lookAt(0,0,30000);});
-addGo('The eastern desert from 40 km up, looking east',()=>{setView(40000,40000,40000,-Math.PI/2,-.55);});
-const order=['Shade','Verge','Locus','Yuni','Veladiga','Mungo'];
+/* the region's own views and settlement order (46-world-config.js) */
+for(const v of WORLD_CONFIG.goViews)addGo(v.label,v.pos?()=>{camera.position.set(...v.pos);lookAt(...v.look);}:()=>{setView(...v.view);});
+const order=WORLD_CONFIG.goOrder;
 const P=PLACES.list.slice().sort((a,b)=>{const ia=order.indexOf(a.name),ib=order.indexOf(b.name);return (ia<0?99:ia)-(ib<0?99:ib)||((b.cand?1:0)-(a.cand?1:0))||a.name.localeCompare(b.name);});
 for(const p of P)addGo((p.cand?'↳ ':'')+p.name+' · '+p.type+(p.biome?' · '+p.biome:''),()=>{setView(p.x+900,p.z+1400,320,0,-.18);lookAt(p.x,WORLD.H(p.x,p.z)+40,p.z);});
-// one spot well inside each kit's overlay: the inside pixel of that kit nearest the kit's own centroid
+// one spot well inside each kit's overlay: the inside dry pixel of that kit nearest the kit's own centroid (dry: an archipelago's centroid is sea)
 WORLD.KITS.forEach((k,ki)=>{const B=M.frame.box_px;let sx=0,sz=0,n=0;const pts=[];
- for(let py=B[1]+4;py<B[3]-4;py+=6)for(let px=B[0]+4;px<B[2]-4;px+=6){const [x,z]=WORLD.fromPx(px,py);if(!WORLD.inside(x,z))continue;if(WORLD.kitW(ki,x,z)>.99){pts.push([x,z]);sx+=x;sz+=z;n++;}}
+ for(let py=B[1]+4;py<B[3]-4;py+=6)for(let px=B[0]+4;px<B[2]-4;px+=6){const [x,z]=WORLD.fromPx(px,py);if(!WORLD.inside(x,z))continue;if(WORLD.kitW(ki,x,z)>.99&&!(WORLD.lakeWater(x,z)>WORLD.H(x,z))){pts.push([x,z]);sx+=x;sz+=z;n++;}}
  if(!n)return;sx/=n;sz/=n;let best=pts[0],bd=1e18;for(const q of pts){const d=(q[0]-sx)**2+(q[1]-sz)**2;if(d<bd){bd=d;best=q;}}
  addGo('Biome: '+k+' (ground level)',()=>{setView(best[0],best[1],1.7,.6,-.05);});
  addGo('Biome: '+k+' (300 m up)',()=>{setView(best[0],best[1],300,.6,-.25);});});

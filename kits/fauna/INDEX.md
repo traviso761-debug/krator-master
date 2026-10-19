@@ -17,7 +17,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `fauna-core.js` | 15 |  |
+| `fauna-core.js` | 16 |  |
 | `krator-fauna-abyss.js` | 52 **big** | the salt-lake flamingo (114); the frilled lizard (202); the marsh emu (273); the pack lizard (358); the riding lizard (419); the dromedary (484) |
 | `krator-fauna-ash.js` | 11 |  |
 | `krator-fauna-bay.js` | 53 **big** |  |
@@ -30,7 +30,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-fauna-mounts.js` | 8 |  |
 | `krator-fauna-pets.js` | 4 |  |
 | `krator-fauna-ringsea.js` | 6 |  |
-| `krator-fauna-runtime.js` | 27 |  |
+| `krator-fauna-runtime.js` | 28 |  |
 | `krator-fauna-voth.js` | 63 **big** | the seagull (84-fauna.js 62-73) (54); the cliff racer (84-fauna.js 75-88) (110); the silt strider (79c-strider-model.js 37-182, 4 (181); the arena tiger (78j-life-arena.js 187-223, 533- (273); the pit lizard (78j-life-arena.js 187-223, 533-5 (409); the giant beetle (65k-granary-mills-ranch.js 435 (473); the staghorn beetle (first drawn here, 2026-10-0 (554) |
 | `krator-fauna-wild.js` | 214 **big** |  |
 

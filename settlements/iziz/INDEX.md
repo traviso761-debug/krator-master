@@ -13,11 +13,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`, `opt/69a-world-uv.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 2 |  |
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
@@ -40,14 +46,21 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
+| `69e-vern-hollow.js` | 13 |  |
 | `69f-iziz-fixtures.js` | 3 |  |
-| `70-vern-dwellings.js` | 20 | POOR (9); MIDDLE (61); RICH (126) |
-| `71-vern-trade.js` | 18 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (42); workshops (70); scrap smithy: forge under a salvaged roof on pip (103); market canopy: a great two-tier rain roof over r (131); warehouse: long timber shed clad in board and sh (154) |
+| `70-vern-dwellings.js` | 23 | POOR (24); MIDDLE (83); RICH (148) |
+| `71-vern-trade.js` | 19 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (44); workshops (72); scrap smithy: forge under a salvaged roof on pip (107); market canopy: a great two-tier rain roof over r (135); warehouse: long timber shed clad in board and sh (158) |
+| `71a-vern-food.js` | 22 | props (7); the bakery: the family over the bakehouse, the o (26); the butcher: the open meat shop under its deep e (66); the brewery: the long brewhouse, its tun loft, c (119); the provisioner: the caravan outfitter's two sto (161) |
+| `71b-vern-cloth.js` | 22 | weaver and dyer: the loom room behind tall shutt (36); tannery: an open thatch shed over the pits, hide (84); tailor and clothier: a narrow two-storey shop, i (131); scribe and bookseller: a stone ground storey, a  (169) |
+| `71c-vern-craft.js` | 28 | props (7); apothecary: the street shop of medicines, the st (51); tinker and relic-wright: a salvage-electrics wor (94); glassworks: the hall with its sales front, the f (133); salvage breaker's yard: Ancient scrap broken up  (180) |
 | `72-vern-civic.js` | 17 | school: hall with a bell tower, two classroom wi (13); hospital: a long ward block with deep verandas b (45); barracks and drill yard: palisade, two barrack b (72); the alchemist's compound: walled; house with a d (109) |
 | `73-police.js` | 5 |  |
 | `73-vern-infra.js` | 9 | grain silos: four stave silos on stilts under th (5); storage tank: a reclaimed Ancient tank on a ston (24); electric generator: stone engine house, a reclai (47) |
+| `73b-vern-works.js` | 31 **big** | mine head: adit into the rock, pipe headframe ov (53); quarry: a stepped cut in a block of orange stone (118); watermill: mill house on a stone plinth, oversho (178); fungus house: a long windowless shed banked with (239) |
+| `73c-vern-land.js` | 35 **big** | yard pieces (9); FARMHOUSE (middle): the farm belt's homestead (54); BYRE AND DAIRY (poor): the cattle house (111); STOCK PENS (poor): the swineherd's and duck keep (153); BOATWRIGHT'S YARD (middle): river boats and moat (191); FISH LANDING AND SMOKEHOUSE (poor) (265) |
 | `74-vern-guilds.js` | 35 **big** | local helpers (LOCAL frame, y = base of the piec (8); Farmers' Guild: half-timber hall on a stone plin (86); Beast Hunters' Guild: trophy hall with a towerin (140); caravanserai: walled court, gatehouse with a two (190); Forgemaster's Hall: tall stone hall with a 9 m o (238) |
-| `74b-vern-frontier.js` | 38 **big** | local helpers (LOCAL frame, y = base of the piec (9); the Governor's Palace: walled forecourt, iron ga (41); the guard tower and barracks: a square stone tow (99); the watch house: a two-storey city-watch post, s (141); the toll house: at the trailhead, a toll window  (161); the palisade: ONE modular segment, o.len metres  (194); the palisade gate: two log towers either side of (205); the mustering ground: an open drill yard inside  (230); the rest stop on the cliff trail. v0: cut into t (259) |
+| `74b-vern-frontier.js` | 38 **big** | local helpers (LOCAL frame, y = base of the piec (9); the Governor's House: walled forecourt, iron ga (41); the guard tower and barracks: a square stone tow (99); the watch house: a two-storey city-watch post, s (141); the toll house: at the trailhead, a toll window  (161); the palisade: ONE modular segment, o.len metres  (194); the palisade gate: two log towers either side of (205); the mustering ground: an open drill yard inside  (230); the rest stop on the cliff trail. v0: cut into t (259) |
+| `74z-vern-trades.js` | 6 |  |
 | `75-port-embassy.js` | 24 | textures (near-grey, tinted per instance; 128 px (10); materials (35); geometry (43); kit items (58); local helpers (vp prefix) (68); the embassy (84) |
 | `76-campus.js` | 11 |  |
 | `76-port-chapterhouse.js` | 17 |  |
@@ -69,8 +82,10 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `90-scene.js` | 3 | scene (1); build every site the target lists (31) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91t-iziz-tags.js` | 5 | CORE TAGS: IZIZ'S REG (1) |
-| `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
+| `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
+| `95i-iziz-interiors.js` | 6 |  |
+| `99-start.js` | 2 | 99. the take: Iziz on core/host (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
@@ -80,7 +95,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-35-core-anim.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-58-biome-hyperjungle-fauna.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js`, `94-city-export.js` | 319 |
-| `vernacular` | `89z-rows.js`, `91z-views.js` | 5 |
+| `vernacular` | `89z-rows.js`, `91z-views.js` | 6 |
 | `wA` | `89z-rows.js`, `91z-views.js` | 2 |
 | `wB` | `89z-rows.js`, `91z-views.js` | 1 |
 | `wC` | `89z-rows.js`, `91z-views.js` | 2 |

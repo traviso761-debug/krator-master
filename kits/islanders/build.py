@@ -12,6 +12,7 @@ The page is one <script> made of, in filename order:
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
+  kits/resources        42r-res-ore.js, 44r-res-nodes.js, read IN PLACE (the ore nodes and the rule the mines work them by)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-fauna-bundle.js    GENERATED (kits/fauna/fauna_bundle.py): the animals as one closure, KratorFauna
@@ -68,6 +69,8 @@ KIT_ID = 'islanders'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos')]
+# kits/resources' ore (owner, 2026-10-15: the nodes are their own kit): read in place, never copied
+RESOURCES = {f: os.path.join(ROOT, 'kits', 'resources', 'src', f) for f in ('42r-res-ore.js', '44r-res-nodes.js')}
 VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
 # the engine, shared with the Scyvoi kit it was forked from: fix it there, then copy it here
 VENDORED.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('10-core.js', '30-geo.js', '36-def.js', '90-scene.js',
@@ -77,6 +80,11 @@ FURN_CULTURES = ['islander', 'generic', 'generic-goods', 'jobs', 'scrap']   # th
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-fauna-bundle.js'}
 BUNDLE_GLOBALS = ('KratorFurniture', 'KratorFauna')
 FAUNA_GROUPS = ['farm']   # kits/fauna: the pigs, hens, ducks and water buffalo of the farms
+
+
+# the library pack beside the page (<build>.tex.<key>.js); --inline-packs puts it back in the page (2026-10-14: the
+# gallery takes no file over 16 MB)
+SIDE = None if '--inline-packs' in sys.argv else {}
 
 
 def matlib_pack():
@@ -95,10 +103,16 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if SIDE is not None:   # the pack beside the page (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        SIDE[KIT_ID] = body
+        return _mp.loader(KIT_ID)
     return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
             '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
-            "KMAT.pack('" + KIT_ID + "', {\n" + ',\n'.join(out) + '\n});\n')
+            "KMAT.pack('" + KIT_ID + "', " + body + ');\n')
 
 
 def virtual_bodies():
@@ -121,6 +135,7 @@ def sources():
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     core = dict(paths)
+    paths.update(RESOURCES)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
 
@@ -161,6 +176,10 @@ def main():
         print('BUILD RULES FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     html = ''.join(bodies[f] for f in files)
     os.makedirs(DIST, exist_ok=True)
+    if SIDE:   # the pack beside the page, under the gallery's 16 MB a file
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        html = _mp.write_sidecar(SIDE, html, os.path.dirname(OUT), 'islanders.tex.js', prune=False)
     open(OUT, 'w', encoding='utf-8', newline='').write(html)
     json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n'), indent=1, sort_keys=True)
     body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]

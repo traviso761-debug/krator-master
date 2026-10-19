@@ -7,15 +7,25 @@ Verge** spreads round the plunge pool and the river at the bottom: it is run by 
 built in the Yuni and Eastern Abyssal styles, like Locus. The two cities are joined by a switchback trail of about 16 long,
 irregular legs and about 7 km, with a toll house and a small palisade at each end and four rest stops at the 200, 400, 600 and 800 m marks
 of the descent. The rusted, broken remnants of an Ancient funicular run steeply down the same spur's north edge, above the gorge. Salt
-lakes lie far to the east. Each city has about 800 to 900 buildings: Upper Verge packed into the canyon, Lower Verge
-spread over the floor.
+lakes lie far to the east. Upper Verge has about 1,140 buildings packed into the canyon, Lower Verge about 1,520 strung
+along the river highway on the floor.
+
+**The streets and lots are core/city's** (2026-10-15; `core/city/README.md`), the street and alley infill Voth is laid
+out with, one instance a level (`src/70-verge-place.js` `cityPlan`). Avenues are routed over the ground from the market
+and the trailhead to each landmark's door (`KCITY.site.routeAvenues`): they keep to the floor (no stretch steeper than
+20%, none climbing above both its ends: the `avenues-keep-to-the-floor` check), merge where two would run within 30 m
+(`avenues-merge`), and bridge the river where they must. Main streets, side streets, alleys and the lots along them are
+the module's steps 7-12. Lower Verge's edge is a ragged ring round the trailhead, a corridor along the highway and a
+disc round each landmark. This is a new layout, not the grown lanes' (840 and 728 buildings, 1,668 short streets): the
+landmarks are hunted as before, and the record ids, doors and the sim's places are kept.
 
 `DESIGN.md` reads the brief back as decisions. `API.md` is the contract every fragment keeps. `KNOWN_ISSUES.md` lists
 what is still open. `PORT.md` says how each fragment reaches Godot.
 
 ## What Verge owns, and what it reads from home
 
-Verge's `src/` holds only its host: the layout, the stage, the placement, the life layer, the camera and the probe.
+Verge's `src/` holds only its host: the layout, the stage, the placement, the life layer, the probe and the take (the camera,
+the loop, the panel and the inspector are `core/host`'s).
 Every kit, biome and core module is **read from its own folder at build time**, never copied. A building added for Verge
 went into its culture's kit and interior set, so it is there for every other build:
 
@@ -27,7 +37,7 @@ went into its culture's kit and interior set, so it is there for every other bui
 | `kits/interiors/sets` | the interiors of every building | `iziz.js` (all 36 vernacular keys), `yuni.js` (the Yuni assets Verge places), additions to `abyss.js` |
 | `kits/catalog` | the furniture, through `core/furnish` | none |
 | `biomes/sedesert`, `biomes/eastabyss` | the flora and fauna: the plateau and canyon, the abyss floor | deer and coyotes (sedesert), flamingos and frilled lizards (eastabyss) |
-| `core/` | rand, walk, sched, clock, mask, tags, furnish, biome | none |
+| `core/` | rand, walk, sched, clock, mask, tags, furnish, biome, host (minimap) | none |
 | `settlements/locus/src/21-sky.js`, `82-daynight.js` | the lighting system (vendored copies `81`, `82`) | none |
 
 ## Build and verify

@@ -1,8 +1,55 @@
 # gallery/
 
-The shareable gallery of every built world: https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9
+The shareable gallery of every built world, in four parts (below); it starts at https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9
 
 It is shared as anyone-with-the-link.
+
+## Four artifacts, the worlds by the alphabet (2026-10-16)
+
+The owner (2026-10-16): the world parts are split alphabetically and titled by their range. Today:
+
+- **Krator Worlds A–H**: https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9 (was "Krator Worlds"; anyone with the link)
+- **Krator Worlds I–S**: https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z (was "Krator Worlds II")
+- **Krator Worlds V–Z**: https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM (new 2026-10-16; private until shared from its page)
+- **Krator Biomes and Objects**: https://claude.ai/artifact/CaKSU16sowMsexa3djES5g (the biomes and objects on their own)
+
+One artifact version holds 256 MiB and no file over 16 MiB (build.py writes no file over 15 MB,
+`tools/textures/matlib_pack.py` PART_LIMIT). After `build_gallery.py`:
+
+```
+python3 gallery/split_site.py --alpha --alone "biome,objects=Krator Biomes and Objects"   --urls "https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z,https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM"   --link "Krator Biomes and Objects=https://claude.ai/artifact/CaKSU16sowMsexa3djES5g"
+```
+
+`--alpha` sorts the world and kit pages by name (a leading "The" or "A" ignored), fills as few parts as fit under 250 MB,
+each an even share, and titles each by its first and last letter. A part keeps its own copy of every pack its pages load
+(a pack two parts share is in both). `--urls` gives the parts' artifacts in order; each index links to the others under
+their range titles. **A range moves when pages are added**: the URLs stay in order (A… first), so republish every part
+whose pages changed, with nulls for the files it no longer holds.
+
+Publishing a re-split, learned 2026-10-16:
+- copies between artifacts (`files` {artifact, path}) count toward a call's 64 MB, and a version's 256 MiB counts the files
+  it keeps: an artifact near the cap must drop files before it takes new ones;
+- when two parts each hold packs the other needs, stage the packs in a part with room first, then update each part
+  (copies first, nulls with them), then remove the staged copies;
+- an HTML page cannot be copied between artifacts: download it (read with a `path`) and upload it.
+
+`worlds/voth.html` (the Voth city plan, 19.3 MB) is over the 16 MB per-file cap: Krator Worlds V–Z carries the live
+2026-10-15 copy (11.9 MB) until the page is slimmed or its pack moved beside it.
+
+## Tongues of Krator link (2026-10-15)
+
+`index.template.html` links the Tongues of Krator artifact (https://claude.ai/artifact/FFEn2MEBPxMgqPJkcV6sNt, the
+page `lore/tongues-of-krator.html`) under the Scale Model. Only Krator Worlds' index was republished with it (version
+75); Krator Worlds II and Krator Biomes and Objects pick it up at their next rebuild.
+
+## Character lab links (2026-10-16)
+
+`index.template.html` links the two labs of `core/charactermodels` after the Throne: the Cosmetic Lab
+(https://claude.ai/artifact/VaNLVcaDZaYHAHpEgxKsSw) and the Animation Lab (https://claude.ai/artifact/WStXx16aNHT63stCoz331x).
+They stay their own artifacts (each loads about 240 MB of pieces beside its page) and are not built by
+`build_gallery.py` (core/ is not discovered). They were published private: a gallery viewer opens them only once the
+owner shares them (each page's Share menu). Only Krator Worlds A–H's index was republished with the two links (version 86, the
+published index edited in place); the other parts pick them up at their next rebuild.
 
 ## Update it
 
@@ -244,3 +291,36 @@ Pending (2026-10-14, the owner): the first Voth (`voth.html`, now `archive/voth-
 city plan on `core/city` (`settlements/voth/dist/voth-city.html`) is now simply "Voth", under the old slug
 (`worlds/voth.html`, so links keep working). `ENTRIES` says so; it goes out with the next gallery rebuild: the index
 (the live one's Voth card retitled and re-described, no second Voth card) and the one page, in one call.
+
+Rebuilt 2026-10-15 from `main` at 058a5740 (the Roketstad, Verge, Godot viewer and hung-cloths merges, 26 builds rebuilt):
+all three parts republished with every page that differed from the live copy. Krator Worlds version 78 (three calls; Fauna,
+Highlands and Roketstad moved out to II, Girder, Girder · Hero, Scyvoi and Screamer furniture moved in), Krator Worlds II
+version 9 (three calls), Krator Biomes and Objects version 5 (two calls). This also shipped the pending Voth item above:
+`worlds/voth.html` is the `core/city` plan, its card retitled "Voth". Krator Worlds II is private (owner only) while the
+other two are anyone-with-the-link: share it from its page's Share menu for its link to open for others.
+
+Rebuilt 2026-10-16 from `main` at d010d53b (the Lizardmen kit, the Voth citadel and interiors merges): every page that
+differed from the live copy republished. Krator Worlds version 81 (three calls: `worlds/lizardmen.html` and its two packs
+added, Fauna moved in from II, Ash Nomads moved out to II), Krator Worlds II version 11 (two calls), Krator Biomes and
+Objects version 7 (two calls). **Pending: `worlds/voth.html`** (`settlements/voth/dist/voth-city.html`) is now 19.3 MB, over
+the artifact's 16 MB per-file cap, so Krator Worlds keeps its 2026-10-15 copy (11.9 MB) until the Voth page is slimmed or
+its pack moved beside it (`tools/textures/matlib_pack.py`); its card was regenerated with the new blurb and size.
+
+Version 8 of Krator Biomes and Objects (2026-10-16): `worlds/hyperjungle.html` replaced (3.7 MB, from `main` at 952944c9:
+hero limbs and young trunks on their own species' bark, the plant-naming inspector, the brook as water). The live index
+(version 7) was kept unchanged. One publish call.
+
+Rebuilt 2026-10-16 from `main` at 9ee3373c (the isle demo merge): **Krator Biomes and Objects version 9** (one call):
+`worlds/ringisles.html` (the Ring Sea isles biome, `biomes/ringisles`) and its six packs added, the index regenerated with
+its card; no other page republished (the rest differ from the live copies only by the link bar). The world parts that waited on a third artifact went out the same day (below).
+
+Republished 2026-10-16 from `main` at aea22429, split alphabetically (the owner): Krator Worlds A–H version 85 (was
+Krator Worlds), Krator Worlds I–S version 15 (was Krator Worlds II), Krator Worlds V–Z version 6 (new), Krator Biomes
+and Objects version 11 (every page rebuilt with core/biome's name index, the new index). Every file checked against the
+split by name and size. New in the gallery: the Islanders kit's trade buildings and mines, the Resources kit and the Isle
+Demo open world (I–S), Ring Sea isles (Biomes and Objects).
+
+Krator Worlds I–S version 16 (2026-10-18): the Pylon kit added (`worlds/pylon.html`, 1.9 MB, from `claude/vassal-kits` at
+1e3177b4, the kit through P5, the governor's palace), its card in the live index (version 15's index with one entry added,
+its `ENTRIES` line now in `build_gallery.py`). The page loads `worlds/iziz.tex.iziz.js`, which the part already carried
+(the same size as the local pack). Every other file is as in version 15.

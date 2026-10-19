@@ -35,6 +35,100 @@
     "sourceMean": 0.3787
    }
   },
+  "cityBrass": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "cityBrass.albedo.webp",
+    "normalMap": "cityBrass.normal.webp",
+    "roughnessMap": "cityBrass.rough.webp"
+   },
+   "lib": "metal.bronze.cast",
+   "metal": 0.75,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "460cafdd3200e2f8ec066aef288a175f3bb1f0c0",
+    "normal": "2394431826faa626ec9290bfe918511a3bebc050",
+    "roughness": "85883aae6cb27847277db7c9ea7a56a9051651d6"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.15,
+    "mean": 0.8,
+    "sourceMean": 0.4554
+   }
+  },
+  "cityBronze": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "cityBronze.albedo.webp",
+    "normalMap": "cityBronze.normal.webp",
+    "roughnessMap": "cityBronze.rough.webp"
+   },
+   "lib": "metal.bronze.cast",
+   "metal": 0.7,
+   "normalScale": 1.0,
+   "roughLift": 0.05,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "460cafdd3200e2f8ec066aef288a175f3bb1f0c0",
+    "normal": "2394431826faa626ec9290bfe918511a3bebc050",
+    "roughness": "85883aae6cb27847277db7c9ea7a56a9051651d6"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.35,
+    "mean": 0.62,
+    "sourceMean": 0.4554
+   }
+  },
+  "cityConcRust": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "cityConcRust.albedo.webp",
+    "normalMap": "cityConcRust.normal.webp",
+    "roughnessMap": "cityConcRust.rough.webp"
+   },
+   "lib": "concrete.rust.streaked",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.9,
+    3.9
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "7444eafe4ff0f1edb095798cbc21adb339432df1",
+    "normal": "193fb482391fe0be59320fa53443a6b7d1512799",
+    "roughness": "dbe9f4d2bd382cd9ef722ef055c68e162001a5df"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.2,
+    "keep": 0.55,
+    "mean": 0.66,
+    "sourceMean": 0.5416
+   }
+  },
   "cityRock": {
    "breakup": {
     "cell": 6,

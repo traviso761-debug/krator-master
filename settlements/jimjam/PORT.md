@@ -6,13 +6,13 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 7 (2%) | 23 (5%) | 10 (2%) | 34 (8%) | 355 (83%) |
+| KB | 9 (2%) | 23 (5%) | 10 (2%) | 26 (6%) | 355 (84%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/00-head.html` | 2.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/00-head.html` | 1.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/10-core.js` | 3.0 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/12-stats.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/30-kit.js` | 3.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 2 | 2 | 5 | 0 | 0 | 0 |  |
@@ -39,10 +39,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/84-jj-furniture.js` | 5.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/85-jj-flora-placeholder.js` | 1.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/90-scene.js` | 3.9 | [web] | 9 | 0 | 1 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 |  |
+| `src/90-scene.js` | 3.9 | [web] | 9 | 0 | 1 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | the shadow box follows core/host's orbit target (KHOST.cam.ctl) |
 | `src/91-probe.js` | 6.2 | [web] | 4 | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 2 | 0 | 0 |  |
-| `src/92-camera.js` | 9.9 | [web] | 12 | 0 | 20 | 14 | 4 | 2 | 0 | 1 | 3 | 0 | 0 |  |
+| `src/91t-jj-tags.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md); Jimjam's spellings mapped, 0 unknowns |
+| `src/92-camera.js` | 1.4 | [web] | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | what stays of the camera on core/host: ui, uiButton, setView with a view's sky, Labels (2026-10-15) |
 | `src/93-labels.js` | 4.0 | [G shader] | 6 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
+| `src/99-start.js` | 1.7 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views (a view's sky through onView), ground, records, inspector words, minimap; FRAME_HOOKS before the camera, the sky after it: host shell |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/kit/89z-rows.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/kit/91z-views.js` | 2.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

@@ -2,6 +2,30 @@
 
 What is still open, as of 2026-10-05. Each item says what it is, where it lives and what would close it.
 
+## The host (core/host)
+
+- [x] (2026-10-15) **Verge is on core/host** (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`). `build.py` takes
+      the whole interface less `core/space` (core/biome's `40-core-place.js` takes its grid when it is on the page, which would
+      move the scatter) and `core/edits` (no editor world yet). `src/90-verge-camera.js` is gone; `src/99-start.js` is the take:
+      the views, the ground, the draw (the Krator sky's scene, then the city), the sky and the light in a 'view' subscriber,
+      TICKS in a 'view' subscriber too (after the camera, as before: the interiors' queue and the life layer read the camera),
+      the inspector's words for a creature, a place, the trail or the terrain (a building or a piece is its core/tags label),
+      and the probe (`window._api`, handed over as `api`). **One clock:** `CLOCK`'s fields read and write the host's clock and
+      its methods call it, so the host's speeds, hour slider and run / hold reach the sky, the lamps and the life layer, and
+      `CLOCK.set` / `CLOCK.run` (verify.py) reach the host's. Proof: `verify.py --assert` 15 PASS, RESULT PASS, as before
+      (the old page from its own folder); the scene census at four views equals the old page's exactly with the furnishing
+      flushed (`?furnishMs=100000`; old against old 0 differences too); with the default 28 ms a frame the first view's
+      furniture differs by how far the queue got, old against old as well; the inspector names a tavern (`bld_00312`) from its
+      record, the minimap draws 1580 records, a mark measures, 0 unknown tags, no errors; the host's clock and CLOCK agree.
+- [ ] (2026-10-15) What changed with the host: the polygon tool and its panel are gone (the host's marks, P); the Inspector box is
+      the hover button (I, on as before); the HUD's camera line is the stats panel (the day there, the hour in the time row);
+      the hour slider and run / hold are the host's (`#clk-hour`, `#clk-run`). The keys are the host's (W A S D, Q / E, F walk,
+      G and double-click the pin, I, P, M minimap). The 'Sky panel' button is a host control (81's own button found no `#ui`
+      at load).
+- [x] (2026-10-15) The marks file: core/host (94) reads `<build>/marks.json` only on a page served by `tools/edits/serve.py`
+      (GET `/__file`, 204 when none was saved); anywhere else the browser's draft, so no 404 reaches the console. The take passes
+      no `marksUrl`.
+
 ## The world
 
 - **The trail does not use the funicular's track.** The brief allowed the path to use parts of the ruined track. It
@@ -16,7 +40,10 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
   modelled. There are no carved overhangs on the spur (core/terrain carve patches would add them).
 - **Each Lower Verge run can miss a landmark.** One or two of its nine warehouses can find no spot near the trailhead
   (`window._place.failed`). The porters need only one warehouse on each level, so the timetable stays full.
-- **Doors without a link.** About 10 to 20 doors find no street within reach (`window._sim.unlinkedDoors`). Citizens
+- **Upper Verge does not cross its river.** Its avenues may bridge the river (`routeAvenues`' `cross`), but none of its
+  landmarks lies north of it, so no route does and the north bank of the canyon floor stays empty. Lower Verge's one
+  bridge opens its north bank. A landmark or an avenue target across the river would open Upper Verge's.
+- **Doors without a link.** Two doors (10 to 20 before the move onto core/city) find no street within reach (`window._sim.unlinkedDoors`). Citizens
   whose home is behind such a door start from the nearest node.
 
 ## Interiors and furniture
@@ -55,10 +82,21 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
 - **The pink lake hides the flamingos.** Against the eastabyss kit's default pink lake (hue 0) they are hard to see.
   Verge's salt lakes are turquoise (`EASTABYSS_LAKE.hue` 0.52), so this does not apply here.
 
+## Determinism (2026-10-15)
+
+- [x] **The sim's rest-stop picks were shuffled with a random comparator.** `src/74-verge-sim.js` chose a through
+      caravan's one or two rest stops with `RESTS.slice().sort(()=>R0.next()-.5)`. A random comparator is inconsistent,
+      and V8 can order the same array under the same draws differently between loads (Roketstad's town changed from load
+      to load for this: `settlements/highlands/KNOWN_ISSUES.md`). Replaced with `shuffle(a, R)`, a seeded Fisher-Yates on
+      the stream. Four loads in a row give the same groups, stops, dwells and phases. The shuffle draws differently, so the
+      timetable moved once (same rules). Never shuffle with a random comparator.
+
 ## Cost
 
-- **About 10 M triangles with everything on.** The biomes take about 4 M of it; the ground takes 2.3 M (with the 2 m
-  switchback tiles), and the rest is the cities and the life layer. `?flora=0` drops it to 5 to 6 M.
+- **About 12 M triangles with everything on** (since the move onto core/city, 2026-10-15: 2,661 buildings, from 1,572).
+  The biomes take about 4 M of it; the ground takes 2.3 M (with the 2 m switchback tiles), and the rest is the cities and
+  the life layer. `?flora=0` drops it to 7 to 8 M. Lower Verge's edge (`zoneR`, `corridor`, `landR` in `lower()`) is the
+  knob if it is too heavy.
 - **Headless loads are slow.** Under SwiftShader a full load takes 2 to 4 minutes; with `flora=0&interiors=0`, about
   40 s.
 

@@ -1,0 +1,213 @@
+{
+ "rig": "01a125d2-135e-7787-813b-846e3515f442",
+ "batches": [
+  {
+   "ids": [
+    544,
+    111,
+    555,
+    551,
+    552,
+    524,
+    16,
+    89,
+    4,
+    97
+   ],
+   "names": [
+    "Walk Backward",
+    "Injured Walk",
+    "Limping Walk 1",
+    "Carry Heavy Object Walk",
+    "Carry Water Bucket Walk",
+    "Cautious Crouch Walk Forward",
+    "Run Fast",
+    "Combat Idel",
+    "Attack",
+    "Left Slash"
+   ],
+   "task": "01a130cf-b086-7560-9c4c-bfcc0d82948e",
+   "glb": "actions_0.glb"
+  },
+  {
+   "ids": [
+    219,
+    240,
+    242,
+    92,
+    237,
+    238,
+    128,
+    560,
+    220,
+    224
+   ],
+   "names": [
+    "Right-hand Sword Slash",
+    "Thrust Slash",
+    "Charged Slash",
+    "Double Combo Attack",
+    "Charged Axe Chop",
+    "Axe Spin Attack",
+    "Heavy Hammer Swing",
+    "Spear Walk",
+    "Shield Push Left",
+    "Archery Shot"
+   ],
+   "task": "01a130cf-b2ba-733b-b9b8-3fb20c5e347f",
+   "glb": "actions_1.glb"
+  },
+  {
+   "ids": [
+    222,
+    228,
+    231,
+    104,
+    232,
+    236,
+    170,
+    165,
+    234,
+    239
+   ],
+   "names": [
+    "Draw and Shoot from Back",
+    "Walk Forward with Bow Aimed",
+    "Archery Aim with Lateral Scan",
+    "Side Shot",
+    "Cowboy Quick Draw Shooting",
+    "Draw and Shoot Left",
+    "Standing Reload",
+    "Kneeling Reload",
+    "Walk Forward While Shooting",
+    "Crouch Pull and Throw"
+   ],
+   "task": "01a130cf-b53c-762d-aa2e-662a5fed20c6",
+   "glb": "actions_2.glb"
+  },
+  {
+   "ids": [
+    138,
+    139,
+    147,
+    149,
+    156,
+    158,
+    162,
+    384,
+    178,
+    179
+   ],
+   "names": [
+    "Block1",
+    "Block2",
+    "Sword Parry",
+    "Two-handed Parry",
+    "Stand Dodge",
+    "Roll Dodge",
+    "Stand Dodge 2",
+    "Quick Step and Spin Dodge",
+    "Hit Reaction",
+    "Hit Reaction 1"
+   ],
+   "task": "01a130cf-b72b-72ff-8547-3d2f80b34e0d",
+   "glb": "actions_3.glb"
+  },
+  {
+   "ids": [
+    171,
+    366,
+    502,
+    187,
+    189,
+    8,
+    344,
+    568,
+    569,
+    570
+   ],
+   "names": [
+    "Hit Reaction to Waist",
+    "Falling Down",
+    "Fall 1",
+    "Knock Down",
+    "Dying Backwards",
+    "Dead",
+    "Stand Up 1",
+    "Swim Idle",
+    "Swim Forward",
+    "Swimming to Edge"
+   ],
+   "task": "01a130cf-b905-727f-a12e-5089ed0257da",
+   "glb": "actions_4.glb"
+  },
+  {
+   "ids": [
+    436,
+    438,
+    437,
+    435,
+    276,
+    274,
+    284,
+    57,
+    33,
+    32
+   ],
+   "names": [
+    "Ladder Mount Start",
+    "Ladder Climb Loop",
+    "Slow Ladder Climb",
+    "Ladder Climb Finish",
+    "Male Bend Over Pick Up",
+    "Female Crouch Pick Up Place Side",
+    "Collect Object",
+    "Stand to Sit Transition Male",
+    "Chair Sit Idle Male",
+    "Chair Sit Idle Female"
+   ],
+   "task": "01a130cf-badc-7769-91bf-f8c13cf676c5",
+   "glb": "actions_5.glb"
+  },
+  {
+   "ids": [
+    53,
+    362,
+    343,
+    342,
+    371,
+    267,
+    270,
+    271,
+    285,
+    283
+   ],
+   "names": [
+    "Sit to Stand Transition Male",
+    "Sit Cross-legged",
+    "Sit and Drink",
+    "Stand and Drink",
+    "Sit Lie Bed",
+    "Sleep Normally",
+    "Toss and Turn",
+    "Wake Up and Look Up",
+    "Open Door",
+    "Pull Radish"
+   ],
+   "task": "01a130cf-bcc9-75a2-bd6f-e2e0f44a1c45",
+   "glb": "actions_6.glb"
+  },
+  {
+   "ids": [
+    277,
+    261
+   ],
+   "names": [
+    "Female Crouch Pick Fruit Basket Stand",
+    "Push and Walk Forward"
+   ],
+   "task": "01a130cf-bed7-73ce-9e45-25636d7b15fb",
+   "glb": "actions_7.glb"
+  }
+ ]
+}

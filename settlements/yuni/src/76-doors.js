@@ -268,8 +268,8 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
 
   /* ---------------------------------------------------------------- UI */
   (function(){
-    var host=document.getElementById('polyToggle'); if(!host) return; host=host.parentNode;
-    var box=document.createElement('div'); host.parentNode.insertBefore(box, host);
+    var host=document.getElementById('ui'); if(!host) return;   /* #ui, adopted by core/host's bar (the polygon tool it sat by is the host's marks now) */
+    var box=document.createElement('div'); host.appendChild(box);
     function btn(id, txt, fn){ var b=document.createElement('button'); b.id=id; b.textContent=txt; b.onclick=fn; box.appendChild(b); return b; }
     btn('walkToggle', 'Walk: Off', function(){ DOORS.walk(); });
     btn('doorMode', 'Doors: auto', function(){ DOORS.mode = DOORS.mode==='auto'?'open':DOORS.mode==='open'?'shut':'auto'; this.textContent='Doors: '+DOORS.mode; });

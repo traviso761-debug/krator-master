@@ -77,12 +77,74 @@ Typed arrays are `{type, n, b64}`: the array's bytes, base64. `Float32Array`,
 frame), `geometry` (the unit mesh once: `position`, `normal`, `uv`, `color` if any,
 `index` if any), `matrices` (16 floats an instance), `colours` (3 an instance), `extras`
 (per-instance attributes: `aN` the foliage normal, 3; `aC2` the second colour, 3; `aP0`,
-`aP1` a fauna path, 4 each). With core/tags: `record`, `recordClass`, `recordKey`, `records`, `recordIndex` (below).
+`aP1` a fauna path, 4 each; `aPh` an `anim-phase` body's phase, 1). With core/tags: `record`, `recordClass`, `recordKey`,
+`records`, `recordIndex` (below). A moving item (`dynamic`) also carries `motion`: its baked track (below).
 
 **Bucket**: `name` (the family), `kit`, `label`, `material`, `lod`, `triangles`,
 `geometry` (indexed `position`, `normal`, `uv`, `color`; a tile keeps the whole vertex list
 and only the triangles inside it, so an importer drops unused vertices). With core/tags: `records`, `recordIds`,
 `pieces` (below).
+
+## Motion: fauna a kit moves on the CPU (2026-10-16)
+
+Some fauna hold their motion in no shader: the kit rewrites the instance matrices every tick (`BIO.dynamic`: sedesert's
+kites, swifts, striders, deer and coyotes, eastabyss, Shade; swbay's and nwbay's flocks and swimmers, swbay's herd and
+stalker, hyperjungle's striders). The export bakes that motion to data, one mechanism for every kit, and Godot replays
+it on the module clock (`atm_time`). No kit's tick is ported.
+
+**The rule a mover keeps**: its pose is a pure function of the BIO clock (`BIO.WIND.t`, which the core pins for the
+bake): nothing integrated frame to frame, no draw from a stream. A walker is the pattern: `core/biome/36-core-walker.js`
+(opt-in; lifted from sedesert's deer, which keep their own copy) lays a closed loop out at build (`BIO.walkLoop`,
+seeded from KRAND by the animal's place), and `BIO.walkAt(W, t)` gives the pose, the ground under it and the gait phase
+(the distance walked: no jump inside the period, whole turns over it) at any clock; the kit declares `W.P` as the
+instance's period. swbay's herd and stalker (one loop, period declared) and hyperjungle's striders (a loop each, grazing
+stops, the gait in `aP1`) moved onto it on 2026-10-16; before, they integrated `dt` and drew targets as they went. A
+tick that integrates or draws is caught by the bake, which samples the first clock again after the sweep: a mesh whose
+pose differs exports `motion: {error: 'state'}` and stands at its snapshot. The fix is in the kit (a pose from the
+clock), not in the port. A kit that skips far animals (a cull by `BIO.eye()`) poses every animal once at build, or one
+skipped then stands at the origin until the eye comes near.
+
+**The bake** (`BIO.motionBake`, `core/biome/42-core-export.js`, run by the export; `opt.motion: false` skips it). The core
+knows every tick a kit registers (`BIO.tick`, or `BIO.host.ticks` after `BIO.init`). For each clock on a grid
+`t0 + k / hz` it pins the clock (`BIO.WIND.t` and the ticks' `t`; `BIO.eye()` is null meanwhile, so no far-away cull
+skips an animal), calls every tick, and copies the kept instances' matrices and any per-instance attribute that
+changes; then it calls them once more at the page's own clock, so the page is where it was. Per instance:
+
+- **a period** `P` the kit declares (`BIO.dynamic(..., {motion: {period: i => seconds}})`; sedesert's walkers: the
+  loop's `W.P`): the frames cover one period, and the replay is exact at every clock, for ever;
+- **otherwise a loop** of `loop` seconds with a cross-fade of `fade` (the kits' orbits and lissajous wanders, whose
+  periods do not close): the frames cover `loop + fade`; the replay is the page's pose while `(t - t0) mod loop` is past
+  `fade`, and blends the loop's end into its start inside it.
+
+Defaults `hz` 10, `loop` 120 s, `fade` 2 s, `t0 = -fade` (so the exact window is clock 0 to 118 s), a period over 400 s
+taken as a loop; a kit sets its own (`{motion: {hz, loop, fade, period}}`), the export may override `hz`, `loop`, `t0`.
+
+**The record**, `item.motion` (typed arrays as everywhere here):
+
+| Key | What |
+|---|---|
+| `format`, `version` | `'krator-motion'`, 1 |
+| `t0`, `hz`, `loop`, `fade` | the grid's first clock and rate, the loop and its fade (seconds) |
+| `channels` | `['matrix']`, then any per-instance attribute that moves (`'aP1'`: an `anim` walker's gait), in frame order |
+| `stride` | floats a frame: 12 for the matrix (three's column-major 4x4 without its last row: basis x, y, z, then the origin) plus each channel's size |
+| `period` | Float32, one an instance: its period in seconds, or 0 for the loop |
+| `start`, `frames` | Uint32, one an instance: its first frame in `data` and how many frames it has |
+| `data` | Float32, `stride` floats a frame |
+| `error` | instead of the rest: `'state'` (not a function of the clock), with `count` |
+
+**The replay** (one function; `BIO.motionAt` is its JS twin, `krator/kmotion.gd` its GDScript one): `u = t - t0`; with a
+period, `u = u mod P`, the pose is frame `u * hz` (linear between the two frames round it); with the loop, `w = u mod
+loop`, the pose is frame `w * hz`, and while `w < fade` it is `mix(frame((w + loop) * hz), frame(w * hz), smoothstep(0, fade, w))` (a smoothstep, so the
+seam keeps the animal's speed as well as its place).
+Linear between frames: at 10 Hz a deer's leg (a 1.5 to 2.4 s stride) and a swift's turn stay within about a centimetre
+of the page's pose.
+
+**In Godot** (`krator/kmotion.gd`): both importers (`biome_import.gd` for the JSON, `gltf_instancing.gd` for world.glb,
+where the track is a node's `extras.krator_motion`, its arrays as accessors) hand each moving MultiMesh to one
+`KMotion` player, which every frame writes the transforms (and an `aP1` channel's custom data) into the MultiMesh's
+buffer from `Atmos.t`, the clock the shaders read as `atm_time`; the node's `custom_aabb` covers the whole track, so a
+roaming animal is never culled. It runs on the CPU: cheap for the hundreds a tile holds (a whole page's thousands want
+it moved into the vertex shader, a data texture per item, the same replay).
 
 ## Records (core/tags, 2026-10-12)
 
@@ -151,8 +213,9 @@ registered tree, log, stand, herd or feature):
 
 Every instance the core bakes is in a set (the sets' counts equal `BIO.bake`'s, plus `BIO.dynamic` fauna). Not
 registered: what a page draws outside `BIO.put` and `BIO.dynamic`: ebadlands' variant-library trees
-(`86-host-variants.js`, 13,953 instances: host-drawn InstancedMeshes), and the swbay and nwbay fauna, which build their
-own InstancedMeshes (`75-biome-*-fauna.js`); moving them onto `BIO.dynamic` would register them.
+(`86-host-variants.js`, 13,953 instances: host-drawn InstancedMeshes), and the swbay and nwbay glints, which build
+their own Points (`75-biome-*-fauna.js`); their flocks, swimmers and swbay's herd and stalker moved onto `BIO.dynamic`
+on 2026-10-16.
 
 **The cost** (2026-10-12, measured on the cloud container under a load average of 20 to 50, so wall times are noisy):
 nothing per instance until bake; then 4 bytes per instance only where LOD splits an item over several meshes (the index
@@ -178,7 +241,8 @@ and options as data (the hook code still lives in the kit):
 | `gloss` | nwlowlands, swlowlands (`barkMat2`) | `alt` (linear), `mean`, `gain`, `gloss`: the map is data (red brightness, green a mask) | `bark.gdshader` mode 2 |
 | `far` | rift, swlowlands (`farMat`): the far impostors | `pack` (`c2-rule`: rift, `gloss`: swlowlands) and `uv`: what the impostor packs into its uvs | `bark.gdshader` modes 3, 4 |
 | `hang` | nhighlands' glowing bulbs and pods | `swayA`, `swayW`, `night` (the emissive intensity by day and by night); the material's `emissive` | `bark.gdshader` mode 5 |
-| `anim-phase` | swbay, nwbay fauna (`animMat`) | `mode` (bird, swim, walk), `attribute: 'aPh'` | not yet |
+| `anim` | the core (`BIO.animMat`, `core/biome/35-core-anim.js`): hyperjungle's rays, darts, butterflies, motes, striders | `mode` (orbit, flit, walk), `flap` {rate, amp, root}, `legs` {top, amp}, `billboard`, `basic`, `additive`; per instance `aP0.w` (the path's radius) and `aP1` | `anim.gdshader`, `anim_add.gdshader` (`lib/anim`; 2026-10-16) |
+| `anim-phase` | swbay, nwbay fauna (`animMat`) | `mode` (bird, swim, grazer), `attribute: 'aPh'` (per instance: the beat's rate and phase) | `anim_phase.gdshader` (the wing-beat; 2026-10-16). The flocks' paths are baked (`motion`, above) |
 
 They still export `hooked:true`. Each is to become a core kind whose hook lives once in the core, so that `kind`
 names the library shader (`GODOT-PLAN.md`, rule 7), and the record then moves onto the plan's

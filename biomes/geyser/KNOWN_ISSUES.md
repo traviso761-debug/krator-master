@@ -4,12 +4,13 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
 
 ## Textures
 
-- [ ] **Six surfaces are procedural** until the owner's textures arrive (prompts in `core/materials/PROMPTS-ready.md`,
-  "The geyser basin"): the flame streamers, the nodding clubmoss, the steam comb's fan, the stilt pandan's strap
-  leaves (the crowns from above are `card.screwpine`), the travertine of the Stair (stone.travertine.tufa greyed stands
-  in: Pamukkale's rims are whiter and smoother) and the geyserite of the cones (ground.clay.popcorn's nodules stand in).
-- [ ] **The grass and the reeds are procedural**: the library's grass and reed cards are centre-anchored (a plant in
-  the middle of its cell), and the kit's tufts stand on the card's bottom edge. A base-anchored panic-grass card would do.
+- [x] **Six surfaces were procedural** until the owner's textures came (2026-10-14): the flame streamers (card.streamer),
+  the nodding clubmoss (card.clubmoss), the steam comb's fan (card.steamcomb), the stilt pandan's strap leaves
+  (card.strap.pandan; the crowns from above stay card.screwpine), the Stair's travertine (ground.travertine.white, at 0.2
+  of its colour: its painted pools would otherwise show where the shader lays no water) and the cones' geyserite
+  (stone.geyserite). One plant of each nine-cell sheet: every instance of a species shows the same one.
+- [ ] **The reeds are procedural**: the library's reed cards are centre-anchored and panic grass is no reed. The grass took
+  the owner's base-anchored `card.grass.panic` (2026-10-14), tinted by the panic grass palette as before.
 
 ## The ground
 
@@ -43,3 +44,7 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
       (`src/99-host-take.js` hands the page to `KHOST.take`; no core/host file is overridden). The kit's G (and N for
       night) are handed over as `keys`, which win over the host's keys, so on this page a dropped pin is reached by
       F (walk from it) only. The timetable (`#tt`) is a host panel of its own ("The geysers", right side).
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.

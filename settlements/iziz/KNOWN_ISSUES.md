@@ -5,6 +5,42 @@ saying what fixed it.
 
 ## Open, 2026-10-05
 
+- [ ] (2026-10-16) **The trades round** (the owner: "give me an Iziz Vernacular version of every trades and industry-related
+      building the Iziz Vernacular kit doesn't have yet. Build interiors for the Iziz residences and trade buildings, but skip
+      civic buildings for now"). 21 new buildings (src/71a-71c, 73b, 73c), the 8 dwellings and 7 trade buildings made hollow,
+      and every one furnished (API.md, "Interiors"). Left open:
+      - Civic buildings (school, hospital, barracks, the guilds, the frontier set, the generator) stay solid, as asked. Their items in
+        kits/interiors/sets/iziz.js are ready for when they are hollowed.
+      - The city target has no interiors: no furniture bundle, `VERN.interiors` off, every building solid as before. Turn it on
+        with the rebuild on core/city (about 3000 vernacular placements: furnish near the camera, as Girder and Verge do).
+      - The stone manor's 5 m ground storey only takes a ladder (the planner's straight stair does not fit the rise); the townhouse's
+        and the tavern's upper rooms see out only through the deco shutter strips (dark slots, not openings).
+      - The planner puts a stair along the street wall when it can (its score likes the street door): the weaver's was steered by
+        its doors; elsewhere a stair foot can show through a front window. The tailor's shop and workroom come side by side.
+      - Loading doors drawn above a hoist (the provisioner, the mill) are openings the planner does not know; furniture may stand
+        in front of them. The fungus house is built at ground level (only its earth bank reads as sunk) and entered at its -x end.
+      - No animals in the byre or the pens; the boatyard's and the fish landing's water is at the plot's front edge for a city to
+        lay (the dugout sits 0.4 m inside it). The tinker's dish is a flat disc (no concave item).
+      - FURN_JOBS has no salvage or electrics job: the tinker is tagged carpentry, the salvage yard smithing.
+      - Surfaces with no good texture (core/materials/PROMPTS-NEEDED.md, "Gaps with no prompt yet"): dyed cloth, still water,
+        world-UV crag rock.
+- [ ] (2026-10-15) **The palace citadel's interior, for the Iziz rebuild:** the agreed programme is `settlements/iziz/palace/`
+      (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`): the whole precinct inside the 84 m curtain wall, an open
+      Roman-style imperial family in the tiered block, the general staff and the diplomatic corps in new flank buildings and
+      the base tier's secretariats, a mech depot and the Ancient core in the mesa, the lararium of the emperors off the Aula,
+      the tower. Nothing is built yet: the palace builder (`src/78-transplant.js`) has no interior. Do it with the rebuild,
+      not before (owner, 2026-10-15).
+- [x] (2026-10-15) Iziz on core/host (ROADMAP.md section 10, step 3; core/host/README.md): the camera, the controls, the walk (F),
+      the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records, the full registry of
+      91t-iziz-tags.js), marks (P, they replace the polygon tool) and the minimap (M) are core/host's; `src/92-camera.js` keeps only
+      what the page calls (ui, uiButton, setView, Labels) and `src/99-start.js` is the take. FRAME_HOOKS run as before, f(dt, ms),
+      before the camera. Proof: verify.py --assert unchanged on the vernacular sheet and the city; a scene census (every mesh's
+      name, visibility and triangles, the camera to 4 decimals) at four views of each matches the old pages exactly (both are
+      deterministic: two old runs match each other exactly too). The city's last-frame triangle count moves run to run on the old
+      page as on the new (4.65 M to 4.74 M over three old runs). Not core/space (the biome's scatter takes its grid when the module
+      is on the page, 2026-10-13 below) and no editor or cutaway yet (no catalog furniture, no interiors).
+- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not
+      handed to core/host, as it was never run by the old camera either.
 - [ ] (2026-10-05) Fauna sheets: `settlements/iziz/materials.json` (families fauna_wing, fauna_fur, fauna_hide, fauna_ray; all optional) and `fauna_pack()` in build.py
       write `HYPERJUNGLE.FAUNATEX` as a generated fragment `86-bio-57-fauna-pack.js` (city target only; nothing is written until a sheet exists). Today the sloth
       (`fur.sloth`) and strider (`hide.strider`) sheets are in; `wing.butterfly` and `skin.sky-ray` are in too (2026-10-06), and the darts are not textured by design
@@ -304,21 +340,9 @@ maps, base64); it was already over the gallery's 16 MB a file.
       where it read as a board grid, a little greyer and cooler than the procedural tan (first packed at contrast 1.3 and
       the concrete's mean it read near white; now mean 0.62, normal scale 0.6). `?mat=proc`
       shows the old look. Verge leaves the `city*` families out of its copy of the pack (its build.py), so its page is unchanged.
-- [ ] **Two surfaces have no good library texture** (the owner sources them; prompts in core/materials/PLAN.md's template,
-      base text first, then the material line):
-      `metal.bronze.cast` for the heroic statues (izBronze, izBronzeCyl, izBronzeD on MAT.bronze, bronzeDark) and the embassy's
-      vpGilt and vpBrass, which stay plain metal: `metal.bronze` is a riveted, seamed verdigris panel, wrong on a cast figure,
-      and the statues' kit UVs stretch with each instance's scale. Material line: "Cast bronze surface of a large outdoor
-      statue: smooth cast metal with very fine casting porosity and a soft hammer-dressed undulation, a thin warm brown patina
-      with small mottled patches of pale green verdigris gathered in the hollows; no seams, rivets, panels, letters or edges,
-      isotropic with no direction. Keep colours natural but slightly muted and even, so the texture can be tinted to
-      different palettes without looking stained."
-      `concrete.rust.streaked` for MAT.concRust (the rust-streaked skyscraper skin, 112k triangles), which stays procedural:
-      no library concrete carries the streaks. Material line: "Weathered poured concrete stained by rust: smooth grey
-      board-formed concrete with faint horizontal formwork lines and small round tie holes, long vertical rust-brown streaks
-      and drips running down from small rusted bolts near the top edge, water stains and a little grime in the board joints.
-      Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking
-      stained."
+- [x] **Two surfaces had no good library texture.** Fixed 2026-10-14 with the owner's sets: `metal.bronze.cast` on the
+      heroic statues (`cityBronze`: MAT.bronze, bronzeDark) and the embassy's gilt and brass (`cityBrass`: vpGilt, vpBrass),
+      `concrete.rust.streaked` on MAT.concRust (`cityConcRust`), bound through IZIZ_MATALIAS (88y). Verge leaves them out.
 - [ ] The painted ground stays the 4 m painted canvas at eye level: the library has the street sets (`ground.road.ruts`,
       `paving.*`), but Iziz's ground shader has no detail layer to take them (a ground-layer hook weighted by the road mask,
       core/export's `EXPORT.groundLayers`, is the shape). Not a texture gap.

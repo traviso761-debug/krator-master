@@ -1,5 +1,18 @@
 # Jimjam: known issues
 
+- [x] (2026-10-15) Jimjam on core/host (ROADMAP.md section 10, step 5; core/host/README.md): the camera, the controls, the walk
+      (F), the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records, REG read into
+      `KTAGS.page` by `src/91t-jj-tags.js`, 206 records, 0 unknowns), marks (P, they replace the polygon tool) and the minimap
+      (M) are core/host's (host.FULL without core/edits); `src/92-camera.js` keeps only what the page calls (ui, uiButton,
+      setView with a view's sky, Labels) and `src/99-start.js` is the take. FRAME_HOOKS run as before, f(dt, ms), before the
+      camera; a preset's 7th element (the solstice view's {hour, day}) reaches the sun through the take's onView; the shadow
+      box follows the host's orbit target (90-scene.js). Proof: verify.py --assert (Opening, Overview) unchanged (every
+      invariant PASS, 487 calls, 1,208,663 triangles, the per-type table identical); a scene census (every mesh's name,
+      visibility and triangles, the camera to 4 decimals, the draw calls) at four views matches the old page exactly (two old
+      runs match each other exactly too: 445 / 344 / 401 / 148 calls); the solstice check still passes (clearance 4.5 m). No
+      cutaway (the kit's buildings have no storeys to cut) and no editor (no core/furnish pieces).
+- [ ] (2026-10-15) core/tags has no Jimjam culture (`core/tags/52-core-tags-vocab.js`): 91t-jj-tags.js says `culture: 'jimjam'`
+      as `style: 'jimjam'`, so the records have no culture. When the vocabulary takes Jimjam, map it back to the culture.
 - [ ] `sock()` (and so `jjAwning`/`jjBanner`) ignores `JJ.frame`: a socket declared inside `jjWithYaw` drops the yaw. Every family passes `ry` explicitly or uses its own frame-aware wrapper (`jjMilSock`); fix it in the adapter and then remove the workarounds together.
 - [ ] `jjDome`'s finial ignores `JJ.frame` and the placement scale; `jjPalDome` and the housing onion are frame-aware local replacements.
 - [ ] `jjStairs` draws floating step slabs (fine on the ground, wrong on a podium); `jjTempleFlight` and the housing stair are solid versions.

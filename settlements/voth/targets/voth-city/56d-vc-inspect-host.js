@@ -14,7 +14,8 @@
      those drawn this frame: who, their job (workplace, post, shift, rota day off), what they are doing (the activity and
      where, the leg of the trip they are on and where it ends, when they arrive, what the schedule says next and when),
      their desires (the needs' meters, happiness, efficiency, loyalty, what the meters ask for in free time, an errand)
-     and their things (what they wear and how worn, the tool, what they carry, the household's food store). An animal:
+     and their things (what they wear and how worn, the tool, what they carry, the household's food store: read from
+     core/simulation's SIM.contents since 2026-10-14, 56e). An animal:
      species, its pen or its household, its age, what it is doing. Picking costs nothing per actor in the city: only the
      bodies drawn near the camera (VC.SIMBODY, at most TUNE.sim.embody.max) are tested, each as a point against the
      cursor's ray (within 12 pixels, or half a metre), behind the ground or another lot's box left out. The card is read
@@ -133,23 +134,23 @@ VC.taskHTML = function (a, t, m) {
   if (a.wake != null && isFinite(a.wake)) h += ' <span class="k">&middot; asked again at ' + VC.hm(a.wake) + '</span>';
   return h;
 };
+/* what it holds: read from core/simulation (SIM.contents, 77-sim-7-stocks.js), not from the actor's fields */
 VC.thingsHTML = function (a) {
-  var I = SIM.ITEMS; if (!I) return '';
-  var h = '<div class="sec">things</div>', worn = [], POS = ['head', 'torso', 'torso+', 'legs', 'legs+', 'feet', 'lhand', 'rhand'];
-  POS.forEach(function (p) { var e = a.eq && a.eq[p]; if (!e) return; var K = I.kinds[e.k] || {};
-    worn.push(VC.itemName(e.k) + ' <span class="k">' + p + ', ' + Math.round(e.w * 100) + '% worn' + (K.life ? ' of ' + K.life + ' days' : '') + '</span>'); });
-  h += worn.length ? 'wears ' + worn.join(' &middot; ') : '<span class="k">wears nothing the items count</span>';
-  if (a.tool) { var Kt = I.kinds[a.tool.k] || {}; h += '<br>tool ' + VC.itemName(a.tool.k) + ' <span class="k">' + Math.round(a.tool.w * 100) + '% worn' + (Kt.workLife ? ' of ' + Kt.workLife + ' worked hours' : '') + '</span>'; }
-  else if (a.toolRack) h += '<br>tools drawn at work';
-  if (a.toolNeed) h += '<br><span style="color:#ff9a7a">tool broken: needs a ' + VC.itemName(a.toolNeed) + '</span>';
-  var inv = Object.keys(a.inv || {}).filter(function (k) { return a.inv[k] > 0; });
-  if (inv.length) h += '<br>at home: ' + inv.map(function (k) { return VC.itemName(k) + (a.inv[k] > 1 ? ' &times;' + a.inv[k] : ''); }).join(', ');
+  var C = SIM.contents && SIM.contents(a.id); if (!C || (!SIM.ITEMS && !C.items.length && !C.group)) return '';
+  var by = function (as) { return C.items.filter(function (e) { return e.as === as; }); }, h = '<div class="sec">things</div>';
+  var worn = by('worn').map(function (e) { return VC.itemName(e.item) + ' <span class="k">' + e.slot + ', ' + Math.round(e.wear * 100) + '% worn' + (e.life ? ' of ' + e.life + ' days' : '') + '</span>'; });
+  if (SIM.ITEMS) h += worn.length ? 'wears ' + worn.join(' &middot; ') : '<span class="k">wears nothing the items count</span>';
+  by('tool').forEach(function (e) { h += '<br>tool ' + VC.itemName(e.item) + ' <span class="k">' + Math.round(e.wear * 100) + '% worn' + (e.workLife ? ' of ' + e.workLife + ' worked hours' : '') + '</span>'; });
+  if (C.toolRack) h += '<br>tools drawn at work';
+  if (C.toolNeed) h += '<br><span style="color:#ff9a7a">tool broken: needs a ' + VC.itemName(C.toolNeed) + '</span>';
+  var home = by('kept at home'); if (home.length) h += '<br>at home: ' + home.map(function (e) { return VC.itemName(e.item) + (e.n > 1 ? ' &times;' + e.n : ''); }).join(', ');
+  C.items.forEach(function (e) { if (e.state === 'transit') h += '<br>carrying ' + VC.fmt(e.n) + ' ' + VC.itemName(e.item) + ' <span class="k">(in transit)</span>'; });
   if (a.hurt != null) h += '<br><span style="color:#ff9a7a">hurt on day ' + (a.hurt + 1) + '</span>';
-  if (a.issued) h += '<br><span class="k">issued: the keeper replaces what wears out</span>';
-  var H = SIM.R.place[a.home];
-  if (H && H.mess) h += '<br>the household eats at its mess';
-  else if (H && H.store) { var tot = 0, foods = Object.keys(H.store).filter(function (f) { tot += H.store[f]; return H.store[f] > 0; }), per = (H.people || 1) * I.meals * I.perMeal;
-    h += '<br>household food: ' + (foods.length ? foods.map(function (f) { return VC.itemName(f) + ' ' + Math.floor(H.store[f]); }).join(', ') : 'none') + ' <span class="k">(' + (H.people || 1) + ' people, ' + (tot / per).toFixed(1) + ' days)</span>'; }
+  if (C.issued) h += '<br><span class="k">issued: the keeper replaces what wears out</span>';
+  var Hh = C.household;
+  if (Hh && Hh.mess) h += '<br>the household eats at its mess';
+  else if (Hh) h += '<br>household food: ' + (Hh.items.length ? Hh.items.map(function (e) { return VC.itemName(e.item) + ' ' + Math.floor(e.n); }).join(', ') : 'none') + ' <span class="k">(' + (Hh.people || 1) + ' people, ' + (Hh.days != null ? Hh.days.toFixed(1) : '-') + ' days)</span>';
+  if (C.group && C.group.items.length) h += '<br>its ' + C.group.kind + ' carries ' + C.group.items.map(function (e) { return VC.fmt(e.n) + ' ' + VC.itemName(e.item) + ' <span class="k">(' + e.as + ')</span>'; }).join(', ');
   return h;
 };
 VC.actorHTML = function (a, kind) {
@@ -157,7 +158,8 @@ VC.actorHTML = function (a, kind) {
   var t = SIM.time(), m = SIM.minute(), R = SIM.R.role[a.role] || {}, h = '';
   if (kind === 'cart' || a.cart) {
     var K = a.cart || {};
-    return '<b>Cart</b> <span class="k">' + a.id + '</span><br>' + (K.phase || 'idle') + (K.load ? ', carrying ' + K.load.n + ' ' + K.load.good : '') +
+    var Cc = SIM.contents ? SIM.contents(a.id) : null, ld = Cc ? Cc.items.filter(function (e) { return e.state === 'transit'; })[0] : null;
+    return '<b>Cart</b> <span class="k">' + a.id + '</span><br>' + (K.phase || 'idle') + (ld ? ', carrying ' + VC.fmt(ld.n) + ' ' + VC.itemName(ld.item) + ' <span class="k">(in transit)</span>' : '') +
       (K.site ? '<br>bound for ' + VC.placeName(K.site) : '') + (K.wh ? '<br>to the warehouse ' + VC.placeName(K.wh) : '') + (K.until != null ? '<br>until ' + VC.hm(K.until) : '') + '<br>yard: ' + VC.placeName(a.home) + VC.taskHTML(a, t, m);
   }
   if (a.animal) {
@@ -186,9 +188,8 @@ VC.actorHTML = function (a, kind) {
   VC.describe = function (r) {
     var X = VC.INSP, hit = null;
     try { hit = VC.pickBody(r); } catch (e) { console.warn('pickBody: ' + e.message); }
-    var tip = $('tip');
-    if (hit) { X.a = hit.a; X.kind = hit.kind; if (tip) tip.classList.add('card'); return VC.actorHTML(hit.a, hit.kind); }
-    X.a = null; if (tip) tip.classList.remove('card');
+    if (hit) { X.a = hit.a; X.kind = hit.kind; return VC.actorHTML(hit.a, hit.kind); }
+    X.a = null;
     return describe(r);
   };
 })();
@@ -198,11 +199,12 @@ VC.inspectUI = function () {
     if (VC.typing(e) || e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key === 'k' || e.key === 'K' || e.key === 'Pause') { VC.pause(); e.preventDefault(); }
   });
-  /* the marker over the one described, and the card kept current while the cursor rests (on real time) */
+  /* the marker over the one described, and the card kept current while the cursor rests (on real time): in core/host's
+     hover tip (93-host-inspect.js, #khost-tip), which shows VC.describe's card (97-vc-host-take.js VC.inspectRay) */
   var mk = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.8, 4).rotateX(Math.PI), new THREE.MeshBasicMaterial({ color: 0xffd34a, depthTest: false, transparent: true, opacity: 0.9 }));
   mk.renderOrder = 60; mk.visible = false; mk.userData.probeSkip = true; mk.frustumCulled = false; scene.add(mk); VC.INSP.mark = mk;
   window._frameHooks.push(function () {
-    var X = VC.INSP, tip = $('tip'), a = X.a, on = a && tip && tip.style.display === 'block' && tip.classList.contains('card');
+    var X = VC.INSP, tip = $('khost-tip'), a = X.a, on = a && tip && tip.style.display === 'block' && window.KHOST && KHOST.hoverOn;
     if (!on) { mk.visible = false; return; }
     var t = SIM.time(), y = 2.3;
     if (X.kind === 'animal') { var g = VC.SIMBODY.animals && VC.SIMBODY.animals.live[a.id]; if (g) { mk.position.set(g.position.x, g.position.y + 1.2 + 1.2 * g.scale.y, g.position.z); mk.visible = g.visible; } else mk.visible = false; }

@@ -29,8 +29,12 @@ const VIEWS={
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=(r.y||0)-2&&p.y<=(r.y||0)+r.h+5){if(!best||r.r<best.r)best=r;}}
  const item=o.isInstancedMesh&&o.userData.biome?(o.name||'').replace(/^biome:/,''):null,S=item&&HYPERJUNGLE.speciesOfItem(item),PLT=item&&!S&&HYPERJUNGLE.plantOfItem(item);
- const SB=!item&&best&&HYPERJUNGLE.SPECIES.find(s=>best.name===s.name+' hypertree'),F=S||SB||PLT,hv=F?F.tags.harvest:null;
- return((S||PLT)?(S||PLT).name+'  ·  '+(o.userData.inspectLabel||item):(best?best.name:(o.userData.inspectLabel||o.name||'mesh')))+
+ // a plant the register leaves out (a young or far tree, an understorey plant: BIO.nameAt, filled by 55-trees and 60-floor)
+ // names the hit when it is smaller than the register's best: the shared items (understorey cards, fronds, small trunks) say only what part they are
+ const nm=BIO.nameAt?BIO.nameAt(p.x,p.y,p.z):null,NM=nm&&(!best||nm.r<best.r)?nm:null,
+  NF=NM?(NM.sp!=null?HYPERJUNGLE.SPECIES[NM.sp]:NM.plant?HYPERJUNGLE.PLANTS[NM.plant]:null):null;
+ const SB=!item&&best&&HYPERJUNGLE.SPECIES.find(s=>best.name===s.name+' hypertree'),F=S||SB||PLT||NF,hv=F?F.tags.harvest:null;
+ return(NM?NM.name+'  ·  '+(o.userData.inspectLabel||item||o.name||'mesh'):(S||PLT)?(S||PLT).name+'  ·  '+(o.userData.inspectLabel||item):(best?best.name:(o.userData.inspectLabel||o.name||'mesh')))+
   (hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // Budgets per biome pass come from BIO.stats (charged by BIO.cur inside the biome).

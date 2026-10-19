@@ -1,0 +1,59 @@
+{
+ "rig": "01a125d2-135e-7787-813b-846e3515f442",
+ "batches": [
+  {
+   "ids": [
+    0,
+    11,
+    12,
+    243,
+    244,
+    245,
+    246,
+    247,
+    248,
+    249
+   ],
+   "names": [
+    "Idle",
+    "Idle 1",
+    "Idle 2",
+    "Idle 3",
+    "Idle 4",
+    "Idle 5",
+    "Idle 6",
+    "Idle 7",
+    "Idle 8",
+    "Idle 9"
+   ],
+   "task": "01a125f6-38c2-759e-bbc4-e7d6a04b8b2c",
+   "glb": "idles_0.glb"
+  },
+  {
+   "ids": [
+    250,
+    251,
+    252,
+    253,
+    254,
+    599,
+    36,
+    38,
+    48
+   ],
+   "names": [
+    "Idle 10",
+    "Idle 11",
+    "Idle 12",
+    "Idle 13",
+    "Idle 14",
+    "Idle 15",
+    "Confused Scratch",
+    "Dozing Elderly",
+    "Mirror Viewing"
+   ],
+   "task": "01a125f6-3bb4-760d-84f1-8475b4e44a8e",
+   "glb": "idles_1.glb"
+  }
+ ]
+}

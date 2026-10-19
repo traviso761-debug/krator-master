@@ -1,0 +1,9 @@
+{
+ "id": "bronze",
+ "outfit": "heavy bronze scale armor: an overlapping bronze scale shirt to the hips, bronze vambraces and gauntlets, bronze greaves, red cloth underlayer, heavy boots",
+ "prompt": "Full body game character, an adult man of average athletic build, standing in A-pose, stylized realistic, bare head with short dark hair, clean shaven, face visible, wearing heavy bronze scale armor: an overlapping bronze scale shirt to the hips, bronze vambraces and gauntlets, bronze greaves, red cloth underlayer, heavy boots. Arms, hands and legs fully covered. No cape, no cloak, no weapon, no shield, nothing held.",
+ "preview": "01a125ce-eed9-7127-a312-b1eb42cf1514",
+ "refine": "01a125cf-ecaa-708b-97db-40649eddb666",
+ "rig": "01a125d2-126a-7673-b573-de1596a42ccf",
+ "glb": "bronze.glb"
+}

@@ -70,6 +70,7 @@
     for(var k=Math.max(0, d-E.window); k<d; k++){ if(E.day[k]){ tot+=E.day[k].used[g]||0; days++; } }
     var td=E.day[d]; if(td && m>60){ tot+=td.used[g]||0; days+=m/1440; }
     return days>0 ? tot/days : 0; }
+  SIM.economyUse = useRate;   /* a good's use a day (77-sim-7-stocks.js) */
   SIM.economyDays = function(g){ var r=useRate(g), s=SIM.stockOf(g); return r>0 ? s/r : Infinity; };
   /* the days left, asked many times a minute (each cart, each unit made): computed once a minute */
   function daysOf(g){ var E=SIM.ECON, m=SIM.minute(); if(E.dlAt!==m){ E.dl={}; E.dlAt=m; } var v=E.dl[g]; return v!=null ? v : (E.dl[g]=SIM.economyDays(g)); }

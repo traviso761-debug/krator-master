@@ -1,12 +1,12 @@
 // ================================================================= HYPERJUNGLE — trees
 // The hero hypertrees of Girder's 60-trees.js, ported onto the biome core:
 // fluted buttressed boles (BIO.lathe into 'bark'+sp), surface roots and every
-// bough, secondary and twig as BIO.tube into 'limb', instanced leaf clumps hung
+// bough, secondary and twig as BIO.tube into 'limb'+sp (the bole's bark), instanced leaf clumps hung
 // along the boughs, ghostwood racemes and baobab pods. Girder's trees leaned
 // on the city's structural branches for half their crown; here every tree
 // grows three tiers of its own boughs (top tuft, crown fillers and a lower
 // tier at u 0.50-0.75) so the crown is full on its own. Between them stand
-// immature hypertrees ('trunk' item + rod boughs + clump cards) and beyond
+// immature hypertrees ('saptrunk'+sp item + rod boughs + clump cards) and beyond
 // heroR the impostor far forest (vertex-coloured blob crowns, 'far' bucket).
 // Placement goes through BIO.scatter / BIO.grid (host mask + keep-clear);
 // every count scales with q; everything is charged to BIO.cur by the core.
@@ -132,17 +132,15 @@ function buildHero(T,ti,q,st){
   i0=i1;}
  // ---- surface roots, one off each buttress ----
  // A root takes the trunk's colour at its height above the ground (band and moss): it matches the trunk where it leaves it and the mossy base on the
- // ground. Roots stay in the 'limb' bucket (the floor reads the bark bucket as the bole's profile), so the bole colour is carried into limb space:
- // the limb tint of a band renders as that band's bole colour, and the same per-channel ratio carries the moss.
- const toLimb=(c,h)=>{const k=(Math.floor(h/22)+ti)%3,b=boleCol(sp,k).clone().convertSRGBToLinear(),l=limbCol(sp,k).clone().convertSRGBToLinear(),x=c.clone().convertSRGBToLinear();
-  return x.setRGB(x.r*l.r/Math.max(.02,b.r),x.g*l.g/Math.max(.02,b.g),x.b*l.b/Math.max(.02,b.b)).convertLinearToSRGB();};
- const rootAt=h=>toLimb(trunkPt(h).col,h),rootCol=rootAt(1.5);
+ // ground. Roots and limbs wear the bole's own bark (bucket 'limb'+sp, on the species' bark material: the floor reads
+ // 'bark'+sp as the bole's profile, so they stay out of it), so the bole colour carries over as it is.
+ const lfam='limb'+sp,rootAt=h=>trunkPt(h).col,rootCol=rootAt(1.5);
  lobes.forEach(L=>{if(sp===3&&rng()<.45)return;
   const ang=L.a,R0=trunkR(T,T.y0+7)*(1+Hb.butA*.35*L.amp),len=rr(26,70)*(sp===3?.6:1)*(.6+.4*L.amp),rr0=clamp(T.rb*.17*L.amp,1,3.2),pts=[],wob=rr(0,TAU);
   for(let j=0;j<=9;j++){const t=j/9,d=R0*.72+len*t,a=ang+.32*Math.sin(wob+t*5.2)*t+.10*Math.sin(wob*2+t*11);
    const x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;if(j>1&&(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,2)))break;
    const r=mix(rr0,.22,Math.pow(t,.75));pts.push({x:x,y:BIO.terrainH(x,z)+r*(j===0?1.6:.22)+(j===0?3:0),z:z,r:r,col:rootAt(r*(j===0?1.6:.22)+(j===0?3:0))});}
-  if(pts.length>3){st.root+=BIO.tube('limb',pts,rootCol,{seg:6});st.roots++;}});
+  if(pts.length>3){st.root+=BIO.tube(lfam,pts,rootCol,{seg:6});st.roots++;}});
  // ---- boughs of my own: top tuft, crown fillers, and the lower tier ----
  const mine=[],nTop=ri(Hb.topN[0],Hb.topN[1]),a0=rr(0,TAU);
  function ownBough(u,ang,len,el,curve,rScale,rMin,rMax){
@@ -163,9 +161,9 @@ function buildHero(T,ti,q,st){
  const yMinFol=T.y0+T.H*T.crown0-17,spots=[],hangs=[];
  const terGap=Hb.terGap*(farHalf?1.35:1);
  mine.forEach(Lm=>{const pts=Lm.pts,r0=pts[0].r,n=pts.length;
-  const lc=limbCol(sp,(Math.floor(clamp(pts[0].y-T.y0,0,Hend)/22)+ti)%3);   // the trunk's colour band at this height, kept along the limb, its boughs and twigs
+  const lc=boleCol(sp,(Math.floor(clamp(pts[0].y-T.y0,0,Hend)/22)+ti)%3);   // the trunk's colour band at this height, kept along the limb, its boughs and twigs
   const cpts=pts.map((p,i)=>({x:p.x,y:p.y,z:p.z,r:p.r,col:lc}));
-  st.limb+=BIO.tube('limb',cpts,lc,{seg:r0>=4.5?10:(r0>=2.6?8:6),cap:true});
+  st.limb+=BIO.tube(lfam,cpts,lc,{seg:r0>=4.5?10:(r0>=2.6?8:6),cap:true});
   const cum=treeCum(pts),L=cum[n-1],sStart=L*Hb.secStart;let side=rng()<.5?1:-1;
   for(let s=sStart+rr(0,Hb.secGap*.5);s<L*.985;s+=Hb.secGap*rr(.75,1.3)){
    const at=treePolyAt(pts,cum,s),t=s/L;side=-side;
@@ -175,7 +173,7 @@ function buildHero(T,ti,q,st){
    const sec=treeGrow(at,d1,len1,rS,.14,4,Hb.secCurve+rr(-.05,.05),.07);let ok=true;
    for(let j=1;j<sec.length;j++)if(!clear3(sec[j].x,sec[j].y,sec[j].z,sec[j].r+2.5,sec[j].r+2.5)){ok=false;break;}
    if(!ok)continue;
-   st.bough+=BIO.tube('limb',sec,lc,{seg:rS>.9?5:4});st.boughs++;
+   st.bough+=BIO.tube(lfam,sec,lc,{seg:rS>.9?5:4});st.boughs++;
    const sprd=clamp(len1*.26,5,12);
    spots.push({p:sec[2],s:sprd,inner:true},{p:sec[3],s:sprd},{p:sec[4],s:sprd*.9,tip:true});
    if(sp===3&&rng()<.8)hangs.push({x:sec[1].x,y:sec[1].y-sec[1].r*.7,z:sec[1].z});
@@ -190,7 +188,7 @@ function buildHero(T,ti,q,st){
     const d2=treeDir(a2.tx,a2.ty,a2.tz,sd2,rr(.5,.9),rr(.6,1),Hb.secUp*.8+rr(-.15,.25));
     const tw=treeGrow(a2,d2,len2,Math.max(.15,a2.r*.6),.08,2,Hb.secCurve,.05);
     if(!clear3(tw[2].x,tw[2].y,tw[2].z,2.5,2.5)||!clear3(tw[1].x,tw[1].y,tw[1].z,2.5,2.5))continue;
-    st.twig+=BIO.tube('limb',tw,lc,{seg:3});st.twigs++;
+    st.twig+=BIO.tube(lfam,tw,lc,{seg:3});st.twigs++;
     spots.push({p:tw[1],s:clamp(len2*.4,3.6,8)},{p:tw[2],s:clamp(len2*.45,3.6,8.5),tip:true});
     if(sp===1&&rng()<.55)hangs.push({x:tw[2].x,y:tw[2].y-.5,z:tw[2].z});
     if(sp===1&&rng()<.30)hangs.push({x:tw[1].x,y:tw[1].y-.5,z:tw[1].z});
@@ -236,7 +234,7 @@ function buildHero(T,ti,q,st){
 }
 
 // ---------------------------------------------------------------- an immature hypertree
-// Girder's TREE_SAPLINGS: a 'trunk' item in the species' bark tint, a few
+// Girder's TREE_SAPLINGS: a 'saptrunk'+sp item (the species' bark) in its bole tint, a few
 // arcing boughs (rod beams near the origin, virtual further out), clump cards.
 const SAP_BAND=[[.30,.92],[.42,.9],[.55,.9],[.78,.9],[.62,.94],[.45,.9]],SAP_CR=[.20,.24,.34,.24,.22,.36],SAP_EL=[[0,.3],[.7,1.1],[.35,.7],[.2,.6],[.3,.65],[-.05,.15]];
 function buildSapling(Sd,si,q,st){
@@ -244,9 +242,9 @@ function buildSapling(Sd,si,q,st){
  const d0=BIO.lodD(Sd.x,Sd.z),lodK=clamp(BIO.lod(Sd.x,Sd.z),.5,1)*(Sd.ring?.6:1),beams=Sd.ring?0:(d0<420?2:(d0<760?1:0));
  for(let k=0;k<=7;k++){const u=k/7,r=sp===3?rb*(u<.55?mix(1,1.1,u/.55):mix(1.1,.18,smooth(.55,1,u))):rb*mix(1,.12,Math.pow(u,.85))*(1+.6*Math.exp(-u*H/4));
   pts.push({x:Sd.x+Math.cos(lean)*lk*u*u+Math.sin(u*5+si)*.4,y:Sd.y0+H*u*(sp===3?.9:1),z:Sd.z+Math.sin(lean)*lk*u*u,r:Math.max(.15,r)});}
- const tc=limbCol(sp,si%3),rc=rodCol(sp,si%3);
- BIO.put('trunk',[Sd.x,Sd.y0,Sd.z],qUp([Math.cos(lean)*lk/H*.8,1,Math.sin(lean)*lk/H*.8]),[rb/.4,H*(sp===3?.9:1),rb/.4],tc);
- st.sapTris+=BIO.defs.trunk.tris;
+ const tc=boleCol(sp,si%3),rc=rodCol(sp,si%3);
+ BIO.put('saptrunk'+sp,[Sd.x,Sd.y0,Sd.z],qUp([Math.cos(lean)*lk/H*.8,1,Math.sin(lean)*lk/H*.8]),[rb/.4,H*(sp===3?.9:1),rb/.4],tc);
+ st.sapTris+=BIO.defs['saptrunk'+sp].tris;
  const nB=Sd.ring?ri(3,5):ri(5,8),spots=[],band=SAP_BAND[sp];let a=rr(0,TAU);
  for(let k=0;k<nB;k++){a+=GOLD+rr(-.3,.3);const u2=mix(band[0],band[1],(k+rr(0,.8))/nB),i2=Math.min(6,Math.floor(u2*7)),bp=pts[i2],bq=pts[i2+1],f=u2*7-i2;
   const o={x:mix(bp.x,bq.x,f),y:mix(bp.y,bq.y,f),z:mix(bp.z,bq.z,f)},tk=(u2-band[0])/(band[1]-band[0]);
@@ -327,6 +325,9 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
  heroes.forEach((T,ti)=>buildHero(T,ti,q,st));
  fars.forEach((T,fi)=>buildFar(T,fi,st));
  SAPS.forEach((Sd,si)=>buildSapling(Sd,si,q,st));
+ // the inspector's names for what the register leaves out: the young trees and the far hypertrees (BIO.nameAt)
+ if(BIO.nameSet){BIO.nameSet('hyperjungle.saplings',SAPS.map(Sd=>({name:'Young '+SP[Sd.sp].name.toLowerCase()+' (immature hypertree)',sp:Sd.sp,x:Sd.x,z:Sd.z,y:Sd.y0,r:Sd.cr,h:Sd.H})));
+  BIO.nameSet('hyperjungle.far',fars.map(T=>({name:SP[T.sp].name+' hypertree (far)',sp:T.sp,x:T.x,z:T.z,y:T.y0,r:T.crownR||T.rb*4,h:T.H})));}
  const ct=BIO.defs.clump0.tris,bark=st.trunk+st.limb+st.bough+st.twig+st.root,leaves=st.clumps*ct,hang=st.racemes*BIO.defs.raceme.tris+(st.pods+st.capsules)*BIO.defs.pod.tris;
  const sap=st.sapTris+st.sapClumps*ct;
  const mix6=SP.map(S=>0);heroes.forEach(T=>mix6[T.sp]++);

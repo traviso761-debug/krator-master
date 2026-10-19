@@ -37,8 +37,8 @@ function fieldsAt(x,z,h,slope){const th=FLOWS.thickAt(x,z),age=FLOWS.ageAt(x,z),
  const rock=clamp(Math.max(smooth(.55,.85,slope)*Math.max(hl.k,yd),scoured*.7,smooth(.7,.95,slope)),0,1);
  return{wet:.12,flow:0,upland:0,canyon:0,rim:0,rock,dune:dk,oasis:0,slope,abyss:0,salt:0,cold:0,geo:0,barren:Math.max(hollow,D.slip*.7),
   humid:0,plume:plumeAt(x,z),vent:0,acid:0,cinder:0,skylight:0,ash,owned:0,kedge:0,knear:0,field:0,clear:0,coast:0,edge:0,city:0,path:0,
-  hill:hl.k,yard:yd,hollow,ashdeep:smooth(.5,.85,ash)};}
-const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','humid','plume','vent','acid','cinder','skylight','ash','owned','kedge','knear','field','clear','coast','edge','city','path','hill','yard','hollow','ashdeep'];
+  hill:hl.k,yard:yd,hollow,ashdeep:smooth(.5,.85,ash),ashlife:1};}
+const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','humid','plume','vent','acid','cinder','skylight','ash','owned','kedge','knear','field','clear','coast','edge','city','path','hill','yard','hollow','ashdeep','ashlife'];
 const FC=(function(){const N=520,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}

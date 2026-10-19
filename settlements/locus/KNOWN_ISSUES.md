@@ -1,5 +1,32 @@
 # Locus world — known issues (Sep 2026)
 
+## core/host (2026-10-15)
+
+- [x] (2026-10-15) Locus on core/host (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`; Girder is the worked example),
+      all four pages (`locus.html`, `locus-kit.html`, `abyss-kit.html`, `locus-plants.html`): the camera, loop, panel and probe are
+      the host's (`build.py` takes `khost.FULL`); `80-camera.js` keeps a ctl shim, setView (CAM_FREE for a view below ground, through
+      the host's `clampCam`), VIEWS, the world clock (LCLOCK) and the page's frame (`camFrame`, `camDraw`); `98-start.js` is the take.
+      Every REGISTER()ed site is a core/tags record (45-kit.js: the buildings as turned boxes from 53-assets.js, bridges, flora; a
+      catalog piece keeps core/furnish's record), and with ?interiors=1 every interior piece too (66-locus-furnish.js, ids `ixf_`).
+      The inspector (I, click), marks (P), pictures (629 catalog pieces), the editor (B, the world page: pieces placed live, the
+      page's own moved or removed on reload, `66-locus-furnish.js locfVetoed`) and the cutaway (X: every building, storeys of about
+      3.4 m) are new. Proof: `verify.py --assert` every invariant PASS on the three committed pages, counters identical to the old
+      pages', draw calls the same (179 / 94 / 110); the scene census (LOD flushed) of `locus-kit` and `abyss-kit` identical at four
+      views, of `locus` at three views within the old page's own run-to-run noise (only the LOD `Mesh` total moves, as between two
+      old runs); `core/furnish/fingerprint.py locus locus-kit abyss-kit` the same as before the change for all six (interiors off
+      and on; only the tags' record counts grow); `audit().unknown` 0 on all four; an edits.json of three ops applied on load
+      (one batched piece vetoed, one moved and drawn on its own, one added). `fingerprint.json` itself was already stale for these
+      pages before the change (not rewritten).
+- [ ] (2026-10-15) Keys are the host's one keymap: F walks (the host's walker; the page had none), G flies to the pin, I is the
+      hover tip (the old Inspector button), P marks, B edits, X cuts. On a kit sheet P still steps back (89-sheetui.js; marks stay on
+      their button) and there is no editor (a sheet has no edits log). M is the page's own minimap (88b-locus-minimap.js on
+      core/minimap's KMAP, which colours footprints by family and which Mungo extends): the host's minimap is not mounted; with the
+      editor on and a piece selected M also starts a move.
+- [ ] (2026-10-15) The cutaway's storeys are a guess (the asset's height in steps of about 3.4 m): the assets do not record their floors.
+- [ ] (2026-10-15) Mungo and Verge read Locus's fragments by name: Mungo takes 45-kit, 53-assets, 66-locus-furnish, 86-inspect and
+      98-start (it moved onto core/host in the next commit); Verge's YKIT bundle takes 45-kit and 53-assets, whose REGISTER leaves
+      core/tags alone when TARGET is 'verge' (rebuilt: `verify.py --assert` as before).
+
 ## Queued by Travis (done 2026-10-01)
 
 - [x] Some roads need bridges (or causeways) over the marsh pools they currently run straight across. 2026-10-01: `68c-locus-crossings.js` finds every street-graph edge under the water plane and builds 8 plank bridges on piles (<= 30 m of water) and 4 earth causeways with 8 stone-headed culverts (338 m of open water in all, incl. the SE highway's three pool crossings); the deck is published through `bridgeDeckAt`/`XING_AT`, so walkers, riders, carts and the highway ribbons stand on it (NAV probe: 16 walk edges cross, 0 wet gaps, 0 route failures).

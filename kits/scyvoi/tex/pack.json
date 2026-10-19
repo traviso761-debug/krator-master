@@ -1493,6 +1493,36 @@
     "sourceMean": 0.453
    }
   },
+  "patRoof": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patRoof.albedo.webp",
+    "normalMap": "patRoof.normal.webp",
+    "roughnessMap": "patRoof.rough.webp"
+   },
+   "lib": "patterns/scyvoi/applique-roof",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "792643de22bb885a5a531d0e013d5dfbd149b342",
+    "normal": "5013bd9e6d37b7076dff5fea36419c2540f3c0c8",
+    "roughness": "bd0ee8c2689422008263dcc456efef65ef1a4f43"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6733362855320351,
+    "sourceMean": 0.6733
+   }
+  },
   "patRose": {
    "breakup": null,
    "card": false,

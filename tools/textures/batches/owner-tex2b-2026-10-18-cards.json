@@ -1,0 +1,130 @@
+[
+ {
+  "src": "Magenta Arabesque Stone Lattice.png",
+  "out": "core/materials/patterns/talia/jali-arabesque",
+  "record": {
+   "id": "talia/jali-arabesque",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+    "licence": "generated for this project by its owner",
+    "original_title": "Magenta Arabesque Stone Lattice.png",
+    "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+    "reuse": "jali screens (cut-out): Talia's rich houses and temple"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Magenta Geometric Stone Lattice.png",
+  "out": "core/materials/patterns/talia/jali-geometric",
+  "record": {
+   "id": "talia/jali-geometric",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+    "licence": "generated for this project by its owner",
+    "original_title": "Magenta Geometric Stone Lattice.png",
+    "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+    "reuse": "jali screens (cut-out)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Symmetrical Stained-Glass Rose Window.png",
+  "out": "core/materials/patterns/talia/rose-star",
+  "record": {
+   "id": "talia/rose-star",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+    "licence": "generated for this project by its owner",
+    "original_title": "Symmetrical Stained-Glass Rose Window.png",
+    "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+    "reuse": "the star rose window disc (talia-temple); any round stained-glass window"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Industrial Honeycomb Grid on Magenta.png",
+  "out": "core/materials/patterns/pylon/hex-grille",
+  "record": {
+   "id": "pylon/hex-grille",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+    "licence": "generated for this project by its owner",
+    "original_title": "Industrial Honeycomb Grid on Magenta.png",
+    "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+    "reuse": "hex grilles and hex-lattice domes (Pylon): a cut-out"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

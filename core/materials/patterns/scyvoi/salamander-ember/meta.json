@@ -1,0 +1,63 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.352,
+    1.272
+   ],
+   "seam_before": [
+    1.372,
+    1.425
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "skin",
+  "id": "scyvoi/salamander-ember",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   0.8,
+   0.8
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "28.webp",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 28.webp)",
+  "licence": "generated for this project by its owner",
+  "original_file": "28.webp",
+  "original_sha1": "abfb22ff21a39805ab92ec922ce3059a5571247d",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The back skin of a giant fire salamander seen from above: smooth, moist, slightly glossy skin with fine pores and soft wrinkles, no scales and no hair, fire-black (#161414) with irregular rounded blotches of ember orange (#f07418) and amber (#f4a020) of different sizes, some merging into short broken stripes running along the body, the blotches' edges soft. The pattern repeats in both directions. Full colour.",
+  "reuse": "the fire-black salamanders' skin (fauna salEmber)",
+  "sha1": "abfb22ff21a39805ab92ec922ce3059a5571247d"
+ }
+}

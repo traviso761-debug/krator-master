@@ -2,7 +2,8 @@
 # MultiMeshInstance3D of its mesh, one instance per TRANSLATION / ROTATION / SCALE, coloured by a custom _COLOR
 # (linear rgb) when there is one. godot/tools/spike_export.js writes it for three's InstancedMesh; core/export's world.glb
 # (a node whose extras name a krator_item) also carries _AN, _AC2 (packed into the colour's alpha and the custom data, as
-# the biome importer packs them) and _AP0, _AP1 (kept as metadata).
+# the biome importer packs them), _AP0, _AP1 (kept as metadata) and _APH (an anim-phase beat), and a moving item its baked
+# motion in extras.krator_motion, which a KMotion player replays (krator/kmotion.gd).
 # Registered by krator/gltf_region.gd for runtime loads and by addons/krator_gltf for the editor's importer.
 class_name KratorGltfInstancing
 extends GLTFDocumentExtension
@@ -40,6 +41,10 @@ func _generate_scene_node(state: GLTFState, gltf_node: GLTFNode, scene_parent: N
 		# (biomes/GODOT.md, "In Godot"): COLOR = (r, g, b, c2.r), INSTANCE_CUSTOM = (oct(aN).x, oct(aN).y, c2.g, c2.b)
 		var AN := _floats(state, attrs.get("_AN", -1))
 		var C2 := _floats(state, attrs.get("_AC2", -1))
+		# an animated body (kind 'anim'): COLOR.a its path's radius (aP0.w), INSTANCE_CUSTOM = aP1 (shaders/anim_body.gdshaderinc)
+		var P0 := _floats(state, attrs.get("_AP0", -1))
+		var P1 := _floats(state, attrs.get("_AP1", -1))
+		var PH := _floats(state, attrs.get("_APH", -1))   # an anim-phase body's beat: INSTANCE_CUSTOM.x
 		mm.use_colors = true
 		mm.use_custom_data = true
 		mm.mesh = mesh
@@ -63,15 +68,33 @@ func _generate_scene_node(state: GLTFState, gltf_node: GLTFNode, scene_parent: N
 				buf[b + 16] = e.x; buf[b + 17] = e.y
 			buf[b + 18] = C2[i * 3 + 1] if C2.size() > 0 else 1.0
 			buf[b + 19] = C2[i * 3 + 2] if C2.size() > 0 else 1.0
+			if P1.size() > 0:
+				buf[b + 15] = P0[i * 4 + 3] if P0.size() > 0 else 0.0
+				buf[b + 16] = P1[i * 4]; buf[b + 17] = P1[i * 4 + 1]; buf[b + 18] = P1[i * 4 + 2]; buf[b + 19] = P1[i * 4 + 3]
+			if PH.size() > 0:
+				buf[b + 16] = PH[i]
 		mm.buffer = buf
 		var it := MultiMeshInstance3D.new()
 		it.multimesh = mm
 		it.name = gltf_node.resource_name
 		it.set_meta("krator_instances", n)
 		it.set_meta("krator_item", ex["krator_item"])
-		for k in ["_AP0", "_AP1"]:   # a fauna path (biomes/GODOT.md): kept as data; the anim shader is not ported
+		for k in ["_AP0", "_AP1"]:   # a fauna path (biomes/GODOT.md): packed above for the anim shader, and kept as data
 			if attrs.has(k):
 				it.set_meta("krator" + k.to_lower(), _floats(state, attrs[k]))
+		# a moving item's baked motion (biomes/GODOT.md, "Motion"): its fields in the extras, its arrays as accessors
+		var mo = ex.get("krator_motion")
+		if mo is Dictionary and mo.has("error"):
+			it.set_meta("krator_motion_error", mo)
+		elif mo is Dictionary:
+			var tr := {"t0": float(mo["t0"]), "hz": float(mo["hz"]), "loop": float(mo["loop"]), "fade": float(mo["fade"]),
+				"stride": int(mo["stride"]), "channels": mo["channels"], "period": _floats(state, int(mo["period"])),
+				"start": _uints(state, int(mo["start"])), "frames": _uints(state, int(mo["frames"])), "data": _floats(state, int(mo["data"]))}
+			var sel := PackedInt32Array()
+			sel.resize(n)
+			for i in n:
+				sel[i] = i
+			KMotion.attach(it, tr, sel, Vector3.ZERO)
 		return it
 	mm.use_colors = C.size() > 0
 	mm.mesh = mesh
@@ -102,6 +125,18 @@ func _generate_scene_node(state: GLTFState, gltf_node: GLTFNode, scene_parent: N
 			if ex.get("krator_index") is Array:
 				mmi.set_meta("krator_index", PackedInt32Array(ex["krator_index"]))
 	return mmi
+
+
+# a uint32 accessor (componentType 5125), tightly packed
+static func _uints(state: GLTFState, idx: int) -> PackedInt32Array:
+	if idx < 0:
+		return PackedInt32Array()
+	var j: Dictionary = state.json
+	var a: Dictionary = j["accessors"][idx]
+	var v: Dictionary = j["bufferViews"][int(a["bufferView"])]
+	var start := int(v.get("byteOffset", 0)) + int(a.get("byteOffset", 0))
+	var buf: PackedByteArray = state.buffers[int(v["buffer"])]
+	return buf.slice(start, start + int(a["count"]) * 4).to_int32_array()
 
 
 # a float accessor, tightly packed (as the spike's exporter writes it)

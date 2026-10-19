@@ -228,3 +228,25 @@ FURN({
     for (const a of [0.4, 2.1, 4.0]) F.ball(Math.sin(a) * 0.4, 0.32, Math.cos(a) * 0.4, 0.04, F.col('flame'), 'glow');   /* candles on the step */
   }
 });
+/* an ornamental plant in a glazed pot (owner, 2026-10-15: "ornamental plants are also noted, both here [the wealthy
+   houses] and more extensively in the palace"): the foyers, halls, reception rooms and atria take a few */
+FURN({
+  key: 'voth_planter', name: 'Ornamental planter', culture: 'voth', tier: 'common', type: 'planter', setting: 'both',
+  rooms: ['hall', 'court', 'foyer', 'antechamber', 'library', 'atrium', 'reception', 'banquet', 'apartment', 'study'], anchor: 'floor', clearance: {}, wealth: [0.35, 1],
+  materials: ['ceramic', 'foliage', 'stone'],
+  w: 1.3, d: 1.3, h: 2.4, variants: 2,
+  build: function (F) {
+    const pot = F.variant ? F.col('stoneGraphite') : F.col('ceramicAsh');
+    F.frustum(0, 0, 0, 0.34, 0.46, 0.7, 0, pot, 'ceramic', 10);
+    F.cyl(0, 0.7, 0, 0.5, 0.1, 0, F.shade(pot, 0.12), 'ceramic');
+    F.cyl(0, 0.3, 0, 0.42, 0.08, 0, F.col('clothVothPurple'), 'ceramic');                       /* the glaze band */
+    F.cyl(0, 0.8, 0, 0.4, 0.04, 0, F.col('stoneUmber'), 'stone');                                /* the soil */
+    /* the plant: a fan of broad blades from the middle, a few drooping, and a flower spike */
+    for (let i = 0; i < 9; i++) {
+      const a = i / 9 * F.TAU + F.rr(-0.2, 0.2), r = 0.12 + (i % 3) * 0.1, h = 0.9 + F.rr(0, 0.6);
+      F.blob(Math.cos(a) * r, 0.84 + h * 0.5, Math.sin(a) * r, 0.1, h, a, F.pick(['leafMadder', 'leaf', 'leafOchre']), 'leafy');
+    }
+    F.rod(0, 0.84, 0, 0.08, 2.1, 0.05, 0.02, F.col('leaf'), 'plant');
+    F.ball(0.08, 2.18, 0.05, 0.12, F.variant ? F.col('clothCrimson') : F.col('clothGold'), 'plant');
+  }
+});

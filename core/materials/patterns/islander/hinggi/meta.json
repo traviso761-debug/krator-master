@@ -1,0 +1,69 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1246,
+    1254
+   ],
+   "seam_after": [
+    0.962,
+    1.221
+   ],
+   "seam_before": [
+    1.675,
+    2.348
+   ],
+   "source_size": [
+    1258,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "islander/hinggi",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.9,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "islander-hinggi.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 16.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to its period across (1246 px); the height is left whole (seam_axes x: a cloth shows one sheet top to bottom) before processing, so the sheet repeats on its own period.",
+  "original_file": "16.webp",
+  "original_sha1": "76ee3ec8fba350f250de7f47e75d4d39078a3f14",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Sumba hinggi, a hand-woven warp-ikat cloth: the motifs were dyed into the threads before weaving, so every edge is soft and feathered along the vertical threads. Horizontal registers mirrored about the middle of the cloth: wide bands of stylised horses with riders, deer, roosters and crayfish in cream (#e6d8b8) and ochre (#c8922e) on a deep indigo ground (#23304a), separated by narrow bands of small hooked diamonds and stripes in morinda red (#9a2a1e) and dark red (#6e1a12), with thin black (#1e1a18) lines between the bands. Visible plain weave, slightly faded and uneven dye. The pattern repeats horizontally. Full colour.",
+  "reuse": "the Kautoa weaver's ikat cloths (patHinggi); any ikat or hinggi cloth",
+  "sha1": "41b089cd0946f05f7105bd4feee4ea7fe3f63cd5"
+ }
+}

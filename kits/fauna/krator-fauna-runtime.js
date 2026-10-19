@@ -22,7 +22,14 @@ const KratorFaunaAPI = (function () {
   'use strict';
   /* per family: [roughness, metalness, detail strength (0 the vertex colour alone, 1 the full map)] */
   const LOOK = { coat: [0.95, 0, 0.6], hair: [0.9, 0, 0.8], skin: [0.45, 0, 0.75], horn: [0.5, 0, 0.8], hoof: [0.6, 0, 1], eye: [0.12, 0, 1], mouth: [0.6, 0, 1], plain: [0.8, 0, 1],
-    chitin: [0.35, 0.05, 0.8], membrane: [0.88, 0, 0.7], glow: [1, 0, 0], scale: [0.55, 0, 0.85], sleek: [0.7, 0, 0.55], feather: [0.85, 0, 0.7], shag: [0.95, 0, 0.75] };
+    chitin: [0.35, 0.05, 0.8], membrane: [0.88, 0, 0.7], glow: [1, 0, 0], scale: [0.55, 0, 0.85], sleek: [0.7, 0, 0.55], feather: [0.85, 0, 0.7], shag: [0.95, 0, 0.75],
+    fleece: [0.95, 0, 0.75], flight: [0.85, 0, 0.7], salEmber: [0.45, 0, 1], salDun: [0.45, 0, 1] };
+  /* FULL COLOUR families: the packed map is the surface's colour (triplanar, as the detail maps), not a grain under the vertex
+     colour; the underside (the part frame's -y faces) keeps its vertex colour (a salamander's pale belly). Without a packed map
+     the vertex colours (the procedural markings) show as before. */
+  const FULL = { salEmber: 1, salDun: 1 };
+  /* a wing part's feathers take the flight feathers (feather.flight), the body's the plumage (feather.plumage) */
+  const famOf = (fam, part) => (fam === 'feather' && /^wing/.test(part) ? 'flight' : fam);
   const MATS = {}, TEXST = { on: typeof FA_TEX !== 'undefined' && !!FA_TEX, pending: 0, families: [] }, TEXC = {};
   function detail(fam) {
     if (!TEXST.on || typeof FA_TEX === 'undefined' || !FA_TEX || !FA_TEX[fam]) return null;
@@ -38,7 +45,7 @@ const KratorFaunaAPI = (function () {
     const lk = LOOK[fam] || LOOK.plain;
     /* glow: unlit, its vertex colour is its light (a glint's abdomen); membrane and hair: seen from both sides (wings, locks) */
     if (fam === 'glow') return (MATS[fam] = new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false }));
-    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: lk[0], metalness: lk[1], side: fam === 'hair' || fam === 'membrane' || fam === 'feather' ? THREE.DoubleSide : THREE.FrontSide });
+    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: lk[0], metalness: lk[1], side: fam === 'hair' || fam === 'membrane' || fam === 'feather' || fam === 'flight' ? THREE.DoubleSide : THREE.FrontSide });
     if (fam === 'eye') m.emissive = new THREE.Color(0x050403);
     const D = detail(fam);
     if (D) {
@@ -50,7 +57,9 @@ const KratorFaunaAPI = (function () {
         sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vFaP;varying vec3 vFaN;uniform float uDetTile;uniform float uDetGain;uniform float uDetMix;')
           .replace('#include <map_fragment>', ['#ifdef USE_MAP', 'vec3 fW=pow(abs(normalize(vFaN))+1e-4,vec3(4.0));fW/=(fW.x+fW.y+fW.z);vec3 fP=vFaP*uDetTile;',
             'vec4 texelColor=texture2D(map,fP.zy)*fW.x+texture2D(map,fP.xz)*fW.y+texture2D(map,fP.xy)*fW.z;texelColor=mapTexelToLinear(texelColor);',
-            'diffuseColor.rgb*=mix(vec3(1.0),texelColor.rgb*uDetGain,uDetMix);', '#endif'].join('\n'));
+            FULL[fam] ? 'vec3 faFull=texelColor.rgb;' : 'diffuseColor.rgb*=mix(vec3(1.0),texelColor.rgb*uDetGain,uDetMix);', '#endif'].join('\n'));
+        if (FULL[fam]) sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', ['#include <color_fragment>', '#ifdef USE_MAP',
+          'diffuseColor.rgb=mix(faFull,diffuseColor.rgb,1.0-smoothstep(-0.75,-0.45,normalize(vFaN).y));', '#endif'].join('\n'));
       };
       m.customProgramCacheKey = function () { return 'fauna-det-' + fam; };
     }
@@ -145,7 +154,7 @@ const KratorFaunaAPI = (function () {
     for (const name of order) {
       const part = A.parts[name], grp = new THREE.Group();
       grp.name = name; grp.position.set(part.pivot[0], part.pivot[1], part.pivot[2]); grp.userData.rest = { x: part.pivot[0], y: part.pivot[1], z: part.pivot[2] };
-      for (const fam in part.buckets) { const b = part.buckets[fam]; if (!b.idx.length) continue; grp.add(mesh(b, fam)); tris += b.idx.length / 3; }
+      for (const fam in part.buckets) { const b = part.buckets[fam]; if (!b.idx.length) continue; grp.add(mesh(b, famOf(fam, name))); tris += b.idx.length / 3; }
       root.add(grp);
       const m = /^leg(\d+)$/.exec(name), sg = /^seg(\d+)$/.exec(name);
       if (m) P.legs[+m[1]] = grp; else if (sg) (P.segs || (P.segs = []))[+sg[1]] = grp; else P[name] = grp;

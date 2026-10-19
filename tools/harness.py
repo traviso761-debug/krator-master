@@ -293,10 +293,43 @@ EXPORT_FILES = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-expor
 STAGE_HOOK = os.path.join(ROOT, 'godot', 'tools', 'stage_hook.js')
 STAGE_JS = os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')
 EXPORT_JS = """([opt, split]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null });
+  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile: opt.profile || null });
   if (!split) return { world: w, check: chk };
   const g = EXPORT.glb(w);
   return { world: g.json, glb: EXPORT.pack(g.glb).b64, glbStats: g.stats, check: chk }; }"""
+PROFILE_JS = """([opt, profile]) => { const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile });
+  const sections = {}; for (const k in w.sections) sections[k] = w.sections[k].status;
+  return { sections, errors: w.errors, stats: w.stats, check: chk }; }"""
+
+
+async def check_profile(pg, box, profile, opt=None):
+    """The export profile check a verify.py --assert runs (core/export/README.md, "Profiles"; ROADMAP.md section 11,
+    item 1): EXPORT.world over the case's box, then EXPORT.check with the sections the case must fill. Waits for the
+    library textures first, as `export` does. Returns (ok, lines): ok is false when a required section is missing or
+    not what the profile asks (a stub, empty, sampled terrain), a section errored or a join failed; the lines say
+    which, the first one the statuses. opt: more for EXPORT.world (sky: a small panorama keeps the check quick)."""
+    if not await pg.evaluate("typeof EXPORT !== 'undefined'"):
+        return False, ['core/export is not in the page (its build.py does not list 07-core-export.js)']
+    try:
+        await pg.wait_for_function("!window._texPending", timeout=180000)
+    except Exception:
+        return False, ['library textures still decoding after 180 s']
+    if not await pg.evaluate("typeof KSTAGE !== 'undefined'"):   # a page without the stage module (Iziz): `export` injects it the same way
+        await pg.add_script_tag(path=STAGE_JS)
+    o = dict(opt or {})
+    o['box'] = list(box)
+    o.setdefault('sky', 256)
+    r = await pg.evaluate(PROFILE_JS, [o, list(profile)])
+    chk, lines = r['check'], []
+    lines.append('sections: ' + ', '.join('%s %s' % (k, v) for k, v in r['sections'].items()))
+    lines.append('profile ' + ','.join(profile) + ': ' + json.dumps(chk['joins'].get('profile')) + '; stats ' + json.dumps(r['stats']))
+    ok = chk['ok'] and not r['errors']
+    for e in r['errors']:
+        lines.append('section error: ' + json.dumps(e)[:300])
+    for p in chk['problems'][:8]:
+        lines.append('problem: ' + p)
+    return ok, lines
 
 
 def _pack_dir(name, page):
@@ -328,12 +361,15 @@ async def export_main(argv):
     ap = argparse.ArgumentParser(prog='harness.py export')
     ap.add_argument('html'); ap.add_argument('--out', required=True); ap.add_argument('--box'); ap.add_argument('--sections')
     ap.add_argument('--sky', type=int); ap.add_argument('--json', action='store_true'); ap.add_argument('--query', default='')
+    ap.add_argument('--profile', help='the sections the case must fill (core/export/README.md, "Profiles"): a,b,c=field,d?')
     a = ap.parse_args(argv)
     opt = {}
     if a.box:
         opt['box'] = [float(v) for v in a.box.split(',')]
     if a.sections:
         opt['sections'] = [s.strip() for s in a.sections.split(',') if s.strip()]
+    if a.profile:
+        opt['profile'] = [s.strip() for s in a.profile.split(',') if s.strip()]
     if a.sky is not None:
         opt['sky'] = a.sky
     out = os.path.abspath(a.out)
@@ -410,6 +446,8 @@ async def export_main(argv):
     print('exported in %.0f s: %s' % (time.time() - t1, json.dumps(w['stats'])))
     print('sections: ' + ', '.join('%s %s' % (k, v['status']) for k, v in w['sections'].items()))
     print('joins: ' + json.dumps(chk['joins']))
+    if a.profile:
+        print('profile ' + ','.join(opt['profile']) + ': ' + ('met' if chk['joins'].get('profile', {}).get('met') == len(opt['profile']) else 'NOT MET'))
     if res.get('glbStats'):
         print('glb: ' + json.dumps(res['glbStats']))
     print('wrote ' + ', '.join('%s %.1f MB' % (k, v / 1e6) for k, v in files.items()) + ' in ' + os.path.relpath(out, ROOT).replace(os.sep, '/'))

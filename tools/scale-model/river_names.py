@@ -179,6 +179,9 @@ def compose_place(t, place, word):
     return '%s %s' % (place, word)
 
 
+# Fixed river names the lore has settled ahead of the model: the river at Almua's mouth is 'Dip Rivrh', the Deep river
+# (the owner, 2026-10-18; settlements/almua/PLAN.md). No course reaches Almua in 4.21; when one is drawn, give it this
+# name rather than one from the pool.
 # a settlement's name in the tongue, where the record gives one
 # (English place names run through the same changes: Girder is gördar in Tl'aai on the record, Hook loses its h and
 # takes -a with k voiced in Izani, Span loses s- before a stop in Dalab, Strongwall breaks s+t with a vowel in Xanadui)

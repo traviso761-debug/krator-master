@@ -62,10 +62,10 @@ const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal
 HYPERJUNGLE.HARVEST={
  ironbark:HV('posts, beams (from fallen limbs)',[],false,'Too hard for an axe above the buttresses: the wind-felled limbs are the timber.'),
  ghostwood:HV('light timber, carving',[],true,'The pale bark is scraped for a fever tea; the violet racemes feed the sky rays.'),
- prismgum:HV('timber',[],true,'The iridescent gum seals hulls and dresses cuts.'),
+ prismgum:HV('timber, torch resin',[],true,'The iridescent gum seals hulls and dresses cuts; boiled down and cooled it is a torch resin that burns bright and smoky.'),
  baobab:HV('none (the hollow boles are lived in)',['gatepod pulp','seeds (roasted)','leaves (cooked)'],true,'The orange velvet pods are sawn into rounds; the chalky pulp dries into gatepod chalk that keeps a year.','generic_fruit_gatepod'),
- mahogany:HV('timber (the finest red wood)',['seeds (roasted)'],true,'The woody capsules split for winged seeds, roasted and eaten wing and all; the bark is a fever tea.','generic_fruit_mahogany_nut'),
- kapok:HV('light timber, dugouts',['young pods (cooked)','seed oil'],false,'Ripe pods burst into cream floss for stuffing; the black seeds are pressed for oil.','generic_fruit_silkpod'),
+ mahogany:HV('timber (the finest red wood), fuel (the spent capsules)',['seeds (roasted)'],true,'The woody capsules split for winged seeds, roasted and eaten wing and all; the bark is a fever tea. The spent capsules are hard, dry and burn long: the jungle\'s charcoal.','generic_fruit_mahogany_nut'),
+ kapok:HV('light timber, dugouts, fuel (the floss: tinder and wicks)',['young pods (cooked)','seed oil'],false,'Ripe pods burst into cream floss for stuffing, and the dry floss is the jungle\'s tinder and lamp wick; the black seeds are pressed for oil.','generic_fruit_silkpod'),
 };
 HYPERJUNGLE.SPECIES.forEach(S=>{S.tags.harvest=HYPERJUNGLE.HARVEST[S.key]||HV('none');});
 HYPERJUNGLE.byKey={};HYPERJUNGLE.SPECIES.forEach(S=>{HYPERJUNGLE.byKey[S.key]=S;});
@@ -79,6 +79,7 @@ HYPERJUNGLE.PLANTS={
  treefern:PK('Giant tree fern',[],HV('trunk fibre (planting pots)',['croziers (cooked)'],false,'The young croziers are boiled; the trunk fibre is cut into pots for orchids.')),
  ginger:PK('Heliconia and ginger',['bract'],HV('none',['ginger rhizome'],true,'The rhizome spices food and settles the stomach; the bracts hold rain water.')),
  bromeliad:PK('Bromeliad',[],HV('none',['rain water in the tanks'],false,'The tanks hold water and frogs.')),
+ pitchvine:PK('Pitch vine',[],HV('fuel (the resin-soaked vine, dried)',[],true,'A woody liana that hangs from the hero boles and bleeds a sticky resin from its cut stems. Dried on a rack, the vine burns hot and smoky even in the wet, so it is the jungle\'s torch and kindling; the resin dresses cuts and stings.')),
 };
 HYPERJUNGLE.plantOfItem=item=>{for(const k in HYPERJUNGLE.PLANTS)if(HYPERJUNGLE.PLANTS[k].items.indexOf(item)>=0)return HYPERJUNGLE.PLANTS[k];return null;};
 // what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
@@ -253,7 +254,10 @@ HYPERJUNGLE.LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?
  // the fauna sheets (58-fauna's optional FAUNATEX): from the pack when no host set them
  if(!HYPERJUNGLE.FAUNATEX){const F={};for(const k of ['wing','fur','hide','ray']){const L=P('fauna.'+k);if(L)F[k]=L.map;}if(Object.keys(F).length)HYPERJUNGLE.FAUNATEX=F;}}
 HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.bucket('bark'+i,HYPERJUNGLE.MAT.bark[i],{label:S.name+' bark',uvScale:HYPERJUNGLE.LIBSCALE['bark'+i]||[14,18]}));
-BIO.bucket('limb',HYPERJUNGLE.MAT.limb,{label:'Hypertree limbs',uvScale:HYPERJUNGLE.LIBSCALE.limb||[6,9]});
+/* a hero's limbs, boughs, twigs and roots wear its own bole's bark (the library's or the canvas), at the bole's tile size: one
+   bucket per species on that species' bark material (not 'bark'+sp itself: the floor reads those as the bole's profile).
+   MAT.limb (LIMBTEX, or the library's 'limb') no longer draws limbs */
+HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.bucket('limb'+i,HYPERJUNGLE.MAT.bark[i],{label:S.name+' limbs',uvScale:HYPERJUNGLE.LIBSCALE['bark'+i]||[14,18]}));
 BIO.bucket('wood',HYPERJUNGLE.MAT.wood,{label:'Dead wood',uvScale:HYPERJUNGLE.LIBSCALE.wood||[3,4]});
 BIO.bucket('rock',HYPERJUNGLE.MAT.rock,{label:'Boulders',uvScale:HYPERJUNGLE.LIBSCALE.rock||[6,6]});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far forest (impostors)'});
@@ -276,6 +280,9 @@ BIO.def('lobe',BIO.geo.lobe(),HYPERJUNGLE.MAT.solid,{label:'Bush lobes'});
 BIO.def('bloom',BIO.geo.bloom(),HYPERJUNGLE.MAT.bloom,{label:'Blooms'});
 BIO.def('rod',BIO.geo.rod(7),HYPERJUNGLE.MAT.solid,{label:'Stems'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.limb.map||HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});   /* the limbs' map (the library's when bound) */
+/* a young hypertree's trunk wears its species' bole bark (the library's when bound), as the heroes' limbs do: on the shared
+   limb map a young ghostwood or baobab grew a red-brown trunk. 'trunk' stays for the floor's palms, tree ferns and sub-canopy trees */
+HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.def('saptrunk'+i,BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.bark[i].map),{label:'Young '+S.name.toLowerCase()+' trunk'}));
 BIO.def('fungus',new THREE.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),HYPERJUNGLE.MAT.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new THREE.IcosahedronGeometry(1,1),BIO.solidMat(HYPERJUNGLE.ROCKTEX),{label:'Boulders (small)'});
 // the PANDAN-KEY HEAD (the screwpine's fruit, biomes/FRUIT.md: generic_fruit_pandan_keys): a head of 42 wedge keys on a

@@ -219,8 +219,18 @@ CITY_CHECK = r"""() => {
     wp.push(at(Math.min(rIn, R0 - 4), cA));
     const cr = (P.core.x - M.x) * n[0] + (P.core.z - M.z) * n[1];
     wp.push(at(cr + (cr < rIn ? 1 : -1) * (TUNE.interiors.core - 1), cA));
+    /* round the stair well to the first flight's foot, never across it: over a dungeon the ground storey's core floor has
+       the well open (the stair rises through it from below), so the walk goes by a ring 1.2 m outside the well */
+    { const W2 = VC.intWell(P), wa = Math.abs(P.axis[0]) > 0.5 ? W2[0] : W2[1], wpp = Math.abs(P.axis[0]) > 0.5 ? W2[1] : W2[0], A = wa + 1.2, B = wpp + 1.2;
+      const loc = q => [(q[0] - P.core.x) * P.axis[0] + (q[1] - P.core.z) * P.axis[1], (q[0] - P.core.x) * P.perp[0] + (q[1] - P.core.z) * P.perp[1]];
+      const wld = (u, v) => [P.core.x + P.axis[0] * u + P.perp[0] * v, P.core.z + P.axis[1] * u + P.perp[1] * v];
+      const p = loc(wp[wp.length - 1]), u = Math.max(-A, Math.min(A, p[0])), v = Math.max(-B, Math.min(B, p[1]));
+      wp.push(wld(u, v));
+      if (u >= A - 1e-6) wp.push(wld(A, -B));          /* the +axis side: down to its -perp corner */
+      else if (v >= B - 1e-6) wp.push(wld(-A, B));     /* the +perp side: across to its -axis corner */
+      wp.push(wld(-A, -B)); }
     wp.push([P.core.x - P.axis[0] * (TUNE.interiors.well[1] + 1.2) - P.perp[0] * TUNE.interiors.well[0] / 2, P.core.z - P.axis[1] * (TUNE.interiors.well[1] + 1.2) - P.perp[1] * TUNE.interiors.well[0] / 2]);
-    P.flights.filter(f => !(P.storeys[f.storey] || {}).dungeon).forEach((f, i) => { wp.push(f.a, f.b); if (i % 2 === 0) { const L = P.floors.filter(q => q.kind === 'landing' && q.storey === f.storey)[0]; if (L) wp.push([(L.x0 + L.x1) / 2, (L.z0 + L.z1) / 2]); } });
+    P.flights.filter(f => f.kind === 'core' && !(P.storeys[f.storey] || {}).dungeon).forEach((f, i) => {   /* the core stair only: the suites' grand and inner stairs (40b) are not on the way up */ wp.push(f.a, f.b); if (i % 2 === 0) { const L = P.floors.filter(q => q.kind === 'landing' && q.storey === f.storey)[0]; if (L) wp.push([(L.x0 + L.x1) / 2, (L.z0 + L.z1) / 2]); } });
     wp.push(P.house.door, [P.house.door[0] + P.house.n[0] * 4, P.house.door[1] + P.house.n[1] * 4]);
     const r = walk([dock.a[0], dock.a[1], dock.y0], wp);
     out[cn] = r.ok ? 'OK, top at ' + r.end[2] + ' (deck ' + P.M.top.y.toFixed(1) + ')' : JSON.stringify(r);
@@ -303,7 +313,7 @@ CITY_CHECK = r"""() => {
       const seen = {}, drawErr = []; let drawn = 0;
       VC.IX.units.forEach(u => { if (seen[u.type] || drawn >= 12) return; seen[u.type] = 1; try { const g = VC.ixDraw(u.i); if (!g || !g.userData.stats.rooms) drawErr.push(u.type); else drawn++; VC.ixShow(u.i, false); } catch (e) { drawErr.push(u.type + ': ' + e.message); } });
       const u = VC.IX.units.find(q => q.residents && q.short == null && VC.IX.types[q.type].storeys > 1);
-      if (u) { VC.cutTo(u.i, 1); out.ix.cut = { unit: u.i, storey: VC.INTD.cut.storey, shown: VC.IXD.groups[u.i].visible, bar: document.getElementById('cut-storey').innerText.trim().slice(0, 120) }; VC.cutOff(); out.ix.cut.off = !VC.IXD.groups[u.i].visible; }
+      if (u) { VC.cutTo(u.i, 1); out.ix.cut = { unit: u.i, storey: VC.INTD.cut.storey, shown: VC.IXD.groups[u.i].visible, bar: document.getElementById('khost-cut-storey').innerText.trim().slice(0, 120) }; VC.cutOff(); out.ix.cut.off = !VC.IXD.groups[u.i].visible; }
       out.ix.drawn = drawn; out.ix.drawErr = drawErr;
       VC.ixDensityToggle(); out.ix.density = document.getElementById('ixlegend').innerText.split('\n')[0]; VC.ixDensityToggle(); VC.ixDensityToggle();
       out.ix.densityWork = document.getElementById('ixlegend').innerText.split('\n').slice(0, 4).join(' | '); VC.ixDensityToggle(); out.ix.densityOff = VC.IXD.density === 0;
@@ -431,7 +441,9 @@ def items_bad(sc):
     b = it['bought']
     if not any(b.get(f) for f in ('corn', 'peppers', 'mushrooms', 'fish', 'eggs', 'bread')): return 'no food bought'
     if not any(b.get(c) for c in ('shirt', 'trousers', 'dress', 'shoes')): return 'no clothes bought'
-    if not it['tools']['replacedAtWork']: return 'no tool replaced during work time'
+    # a tool that wore out at work is replaced during work time (whether one wears out in two days is the hash's: about one
+    # in two hundred tool holders; the replacing itself is core/simulation/test-sim.js's)
+    if it['tools']['broken'] and not it['tools']['replacedAtWork']: return 'no tool replaced during work time'
     if not it['hurt']['poultices']: return 'no poultice bought'
     m = it['meals']; tot = m['meal'] + m['single'] + m['none'] + m['bought'] + m['mess']
     if not tot or (m['meal'] + m['bought'] + m['mess']) < 0.7 * tot: return 'full meals %s of %s' % (m['meal'] + m['bought'] + m['mess'], tot)
@@ -654,7 +666,8 @@ def verify_city(a, port, rel, sync_playwright):
                 or not sc['stairs']['walkerSampled'] or sc['stairs']['walkerOk'] != sc['stairs']['walkerSampled'] \
                 or not sc.get('workday') or week_bad(sc) or needs_bad(sc) or items_bad(sc) or econ_bad(sc) or animals_bad(sc):
             bad.append('phase C: citizens and the pedestrian layer (bodies %s, cut off %s, citizens %s of %s, out of work %s, A* fails %s, decisions %s / %s, stairs %s)' % (
-                au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['stairs'])))
+                au.get('bodies'), json.dumps(au.get('cutOff')), pc.get('citizens'), pc.get('census'), pc.get('unemployed'), sc['walk'] and sc['walk']['fail'], json.dumps(sc['d8']), json.dumps(sc['d2']), json.dumps(sc['stairs']))
+                + ' [week %s, needs %s, items %s, economy %s, animals %s, check %s, out of work over 10%%: %s]' % (bool(sc.get('workday') and week_bad(sc)), sc.get('workday') and needs_bad(sc), sc.get('workday') and items_bad(sc), sc.get('workday') and econ_bad(sc), sc.get('workday') and animals_bad(sc), bool(sc['check']), bool(pc) and pc['unemployed'] > 0.1 * pc['workers']))
         if len([g for g in r['named'] if not g.endswith('?')]) < 3: bad.append('named gates')
         if r['ways'].get('highway', 0) < 5: bad.append('highways')
         if r['overlapPairs'] or r['wet'] or r['onWall']: bad.append('buildings overlap, stand in water or on the wall')

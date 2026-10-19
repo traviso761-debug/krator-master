@@ -1,0 +1,233 @@
+[
+ {
+  "src": "Nine Isolated Seagrass Clumps.png",
+  "out": "core/materials/library/card.seagrass",
+  "record": {
+   "id": "card.seagrass",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.seagrass`",
+    "original_title": "Nine Isolated Seagrass Clumps.png",
+    "reuse": "eelgrass, any submerged meadow",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Nine Ivy Clippings on Magenta Grid.png",
+  "out": "core/materials/library/card.creeper.beach",
+  "record": {
+   "id": "card.creeper.beach",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.creeper.beach`",
+    "original_title": "Nine Ivy Clippings on Magenta Grid.png",
+    "reuse": "any creeper over sand or rock",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Botanical Sprig Grid on Magenta.png",
+  "out": "core/materials/library/card.naupaka",
+  "record": {
+   "id": "card.naupaka",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.naupaka`",
+    "original_title": "Botanical Sprig Grid on Magenta.png",
+    "reuse": "any fleshy coastal shrub",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Sea Grape Leaf Sprite Grid.png",
+  "out": "core/materials/library/card.seagrape",
+  "record": {
+   "id": "card.seagrape",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.seagrape`",
+    "original_title": "Sea Grape Leaf Sprite Grid.png",
+    "reuse": "any big round-leaved shrub",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Tropical Leaf and Fruit Grid.png",
+  "out": "core/materials/library/card.breadfruit",
+  "record": {
+   "id": "card.breadfruit",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.breadfruit`",
+    "original_title": "Tropical Leaf and Fruit Grid.png",
+    "reuse": "any big lobed tropical leaf",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Nine Feathery Botanical Sprigs.png",
+  "out": "core/materials/library/card.tamarisk",
+  "record": {
+   "id": "card.tamarisk",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.tamarisk`",
+    "original_title": "Nine Feathery Botanical Sprigs.png",
+    "reuse": "she-oak needles, any feathery shrub",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "Tropical Leaf Sprigs Grid.png",
+  "out": "core/materials/library/card.croptree.glossy",
+  "record": {
+   "id": "card.croptree.glossy",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `card.croptree.glossy`",
+    "original_title": "Tropical Leaf Sprigs Grid.png",
+    "reuse": "any glossy evergreen (citrus, bay, mangrove)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

@@ -1,0 +1,152 @@
+{
+ "build": "resources",
+ "note": "The Resources kit's adapter onto the material library (core/materials/PLAN.md): the ore nodes' rock is the same boulder set the Islanders kit draws its stone with, so a node reads the same in either kit. The ore faces (coal, tar, efflor, malachite, quartz, cassiterite, galena, gossan, pegmatite) are library sets in full colour, no tint; the vertex colour only varies them. The nuggets are vertex colours. The ground is the Scyvoi kit's withered grass, a neutral backdrop. The sulfur crusts are the library's ground.sulphur, in full colour.",
+ "size": 512,
+ "families": {
+  "stone": {
+   "lib": "rock.rock_boulder_dry",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.78,
+    "contrast": 1.15
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.08,
+    "cell": 6
+   }
+  },
+  "earth": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.78
+   },
+   "roughLift": 0.4,
+   "specular": 0.15
+  },
+  "ground": {
+   "lib": "ground.withered_grass",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.66,
+    "contrast": 1.1
+   },
+   "roughLift": 0.4,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.6,
+    "macro": 0.12,
+    "cell": 14
+   }
+  },
+  "sulphur": {
+   "lib": "ground.sulphur",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.95,
+    "mean": 0.8
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "coal": {
+   "lib": "rock.coal",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "roughLift": 0.1,
+   "specular": 0.2
+  },
+  "tar": {
+   "lib": "ground.tar.seep",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "roughLift": 0.1,
+   "specular": 0.2
+  },
+  "efflor": {
+   "lib": "ground.efflorescence",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "roughLift": 0.1,
+   "specular": 0.2
+  },
+  "malachite": {
+   "lib": "rock.malachite",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "roughLift": 0.1,
+   "specular": 0.2
+  },
+  "quartz": {
+   "lib": "rock.quartz.vein",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "roughLift": 0.1,
+   "specular": 0.2
+  },
+  "cassiterite": {
+   "lib": "rock.cassiterite",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "roughLift": 0.1,
+   "specular": 0.2
+  },
+  "galena": {
+   "lib": "rock.galena",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "roughLift": 0.1,
+   "specular": 0.2
+  },
+  "gossan": {
+   "lib": "rock.gossan",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "roughLift": 0.1,
+   "specular": 0.2
+  },
+  "pegmatite": {
+   "lib": "rock.pegmatite",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "roughLift": 0.1,
+   "specular": 0.2
+  }
+ }
+}

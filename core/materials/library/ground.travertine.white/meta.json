@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.325,
+    1.247
+   ],
+   "seam_before": [
+    1.807,
+    1.426
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.travertine.white",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   6,
+   6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "library__ground.travertine.white.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `ground.travertine.white` (the redo) (delivered as \"Dry Travertine Terrace Texture.png\")",
+  "reuse": "any travertine spring (the geyser basin's Stair)",
+  "sha1": "ccfc0a9182ee2515492efbe4d4bd7afb691ea534"
+ }
+}

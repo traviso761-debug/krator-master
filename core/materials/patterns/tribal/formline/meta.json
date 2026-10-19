@@ -1,0 +1,69 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1228
+   ],
+   "seam_after": [
+    0.679,
+    0.891
+   ],
+   "seam_before": [
+    2.164,
+    6.611
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.75,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "tribal/formline",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "2.webp",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 2.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "the design is mirror-symmetric, not periodic: process.py crops it to its best self-match (1247 x 1228) and the 1.5 % cross-fade leaves a doubled eye pair at the x seam and a soft band at the y seam.",
+  "original_file": "2.webp",
+  "original_sha1": "26d40e2ccfd4dfb5914fe5f3772318bc1589a8cf",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Northwest-coast formline painting on cedar: bold swelling black (#171311) formlines with ovoids and U-shapes, the inner shapes in red (#b3322a) and teal (#2e9488), on a cedar-wood ground (#b27a4c, shading to #8a5634), hand-painted and slightly worn, the wood grain faintly showing. Abstract: no readable figures. The pattern repeats horizontally. Full colour.",
+  "reuse": "Highlands Tribal frieze boards (formF); NW-coast painted panels, chests, screens, the catalog Painted culture",
+  "sha1": "26d40e2ccfd4dfb5914fe5f3772318bc1589a8cf"
+ }
+}

@@ -435,6 +435,23 @@ canvas with no code change (`KIT_HAS`). West = the rumah houses of the western R
 | `patterns/islander/weave` | `patWeave` | Flat, front-on panel of a woven split-bamboo wall: flat strips about four centimetres wide in a twill, pale natural bamboo (#d8c294) and smoked dark strips (#6a5236) stepping into a pattern of nested diamonds, the strips' edges catching a little light. The pattern repeats in both directions. Full colour. |
 | `patterns/islander/medallion-moon` | `medMoon` | Flat, front-on decorative panel of one round painted emblem, centred, clear margin: the white island moon, a pale full moon (#f6f0e2) with soft grey seas, on a sea-teal (#2a7a7a) disc ringed with white shell discs, inside a black (#1e1a18) ring and an ochre (#c8922e) rim, painted on wood with a little wear. A single motif, not a repeat. Full colour. |
 
+#### Lizardmen (`kits/lizardmen`, 2026-10-16)
+
+Palette (`kits/lizardmen/src/26k-kit.js`, `SVPAL`): verdigris #4a8a7a, black lacquer #1a1612, oxblood #5a1a16, bone #e4dcc6.
+The look is Shang bronze, not reptile portraiture (`DESIGN.md` 2.1, 2.3a): the **leiwen** (a squared spiral) is the built
+ornament, the **round whorl** the carved one, and every leiwen band carries exactly one deliberate break. Today the kit draws
+all three as geometry (`40-lz-kit.js`: `lzLeiwen`, `lzGlyphSpiral`, `lzEye`), heavy and aliased at a distance; the three
+sheets replace that at a distance and are `optional: true` families in `kits/lizardmen/materials.json` (`leiwenS`,
+`glyphS`, `eyeS`), so `pack.py` skips them and the kit keeps its geometry until they arrive. No procedural stand-in is drawn
+for them on purpose. Glyph rule (`DESIGN.md` 2.4): the strokes are small squared spirals and angular bars, Indus-seal and
+oracle-bone in feel, never a human face and never a readable letter. Paste-ready copies are in `PROMPTS-ready.md`.
+
+| id | family | Material line |
+|---|---|---|
+| `patterns/lizardmen/leiwen` | `leiwenS` | Flat, front-on decorative panel of a cast bronze leiwen (thunder-pattern) block as on a Shang ding: a square grid of four-by-four cells, each cell filled by one squared spiral of raised ridges winding in to its centre in seven right-angled turns, the spirals in the left half winding clockwise and in the right half anticlockwise, mirrored. Ridges in verdigris (#4a8a7a) with the worn tops a paler green-grey (#8ab0a4), the grooves between them black lacquer (#1a1612). One cell, and only one, is missing a single stroke of its spiral: a deliberate break in an otherwise perfect pattern. Hard, precise, machine-exact edges; nothing is organic. The pattern repeats in both directions. Full colour. |
+| `patterns/lizardmen/glyph-band` | `glyphS` | Flat, front-on decorative panel of an inscription band four times as wide as tall, carved in low relief into dark grey-green basalt (#5e6a5e) and inlaid with verdigris bronze (#4a8a7a): a single row of about twenty glyphs of an unknown angular script, each glyph built from short straight strokes and small squared spirals and hooks, between a thin oxblood (#5a1a16) line along the top edge and another along the bottom. The glyphs resemble Indus seal signs and oracle-bone script in feel but match no real writing; none depicts a face, an animal outline or a letter. Five of the signs recur: a zigzag, two parallel bars, a cross, a hook ending in a squared spiral, and a bar broken in the middle. The pattern repeats horizontally. Full colour. |
+| `patterns/lizardmen/spiral-eye` | `eyeS` | Flat, front-on decorative panel of one round spiral eye, centred, clear margin: a cast bronze disc in verdigris (#4a8a7a) with a raised rim, its face a single raised spiral ridge winding in two and a half turns from the rim to a round pupil of black lacquer (#1a1612), the ridge's worn crest a paler green-grey (#8ab0a4), fine casting grain in the grooves, a few flecks of bone-white (#e4dcc6) patina near the rim. The square corners outside the disc are flat solid magenta (#ff00ff), so the eye can be keyed out. A single motif, not a repeat. Full colour. |
+
 #### Dalab
 
 Palette (`69d-dalab-mat.js`): cream wash #e6d8b8, red ochre #a8382a, turquoise #2f9a8a, gold #d8a838, black #2a2420,
@@ -1105,8 +1122,9 @@ the area), metal 558, cloth 523, stone 367, rope 236, plaster 179, bronze 171, g
 **Prompted earlier and still owed:** `roof.reed` / `reed.bundle` (Reed Lake reed furniture, 37 pieces; `roof.thatch.reed`, delivered 2026-10-06, may
 serve the reed family until then), `patterns/tribal/formline` (Painted's formline colours; `patterns/republic/folk-formline-*` may already serve).
 
-**No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss, Lizardmen,
-Nomad, Screamer. Each needs a style read of its culture file before a prompt is written.
+**No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss,
+Nomad, Screamer. Each needs a style read of its culture file before a prompt is written. (Lizardmen: prompted 2026-10-16, see
+"Lizardmen" under "Pattern-sheet prompts by culture".)
 
 **Family splits, done 2026-10-06, as texture families** (`kits/catalog/krator-furniture-core.js`, `FAMILY_SPLITS`, `furnFamily()`):
 a part keeps its render family (its look, the batch's grouping, the declared `materials` and every check stay as they were) and gains
@@ -1281,6 +1299,41 @@ Provisional, to be judged in the demo kit. In the owner's AmbientCG folder, each
 | `Metal058C` | turquoise verdigris paint | `metal.verdigris` |
 | `MetalPlates001` | grey plates with rivet groups | `metal.plated` |
 
+
+#### Characters: cybernetic arms and the giants' metal (`core/charactermodels`, added 2026-10-13)
+
+The body mods' cybernetic pairs (`core/charactermodels/tools/mods.py` `CYBER`) and the giants' gold and bronze are flat
+colours today. These are the gaps, one row per surface. Use the base template, with "Keep colours natural but slightly
+muted" for the tintable rows and without it for the gold. Each wants a roughness map (and a metalness map where the
+row says metal); the plates repeat about every 0.25 m on an arm, so ask for fine detail.
+
+| id | Material line |
+|---|---|
+| `cyber.plate.bronze` | Machined bronze armour plate (#b08d57), satin finish with fine circular machining marks, thin engraved panel lines in a loose grid, a few countersunk screw heads, dark oxidation in the panel lines and edge wear showing brighter bronze. Metal. |
+| `cyber.plate.loader` | Heavy industrial steel plate painted mid grey (#6b6e72), chipped and scuffed paint showing bare steel at the edges, faint stencil-like panel seams, rows of round bolt heads, grease smudges and dust. Painted metal, tintable. |
+| `cyber.stripe.hazard` | Hazard band: diagonal stripes of worn safety yellow (#d9a521) and near-black (#25272a) at 45 degrees, the paint chipped and scratched, bare steel in the chips. Repeats horizontally. |
+| `cyber.ceramic.surgical` | Smooth white medical ceramic composite (#e6e4de), very fine matte texture, hairline seams forming long rounded panels, a few tiny inset sensor dots in pale teal (#3fc6c0), barely visible fingerprint smudges. Not metal; low roughness. |
+| `cyber.joint.rubber` | Dark graphite flexible joint sleeve (#2a2c30): fine ribbed rubber bellows in parallel rings, a slight sheen on the ridges, dust caught in the grooves. Tintable. |
+| `cyber.cable.bundle` | Close-packed braided cable sheathing: woven black and dark grey nylon braid around cables, a fine diagonal herringbone weave, a few strands of teal tracer thread. Repeats along the cable. |
+| `cyber.hydraulic` | Hydraulic ram: polished chrome piston rod with a thin oil film and a few fine scratches, beside a dark steel cylinder with machining rings. Metal; the chrome far less rough than the cylinder. |
+| `metal.gold.temple` | Hammered temple gold (#d4a63a): soft hammer facets, a warm mirror sheen in the facets, darker gold in the hollows, fine punched dot borders. Metal; for the Dalab temple guard's pectoral, belt and armbands. Not tinted. |
+| `metal.bronze.lt` | La Tene cast bronze (#a8803a) for the Free Giants' helmet, brooch and armbands: a cast surface with fine casting pits, incised spiral and triskele ornament, green verdigris in the incisions, polished high points. Metal. |
+| `metal.gold.torc` | Twisted gold torc rod seen side-on and unrolled flat: tight helical twist ridges running across the frame, warm gold (#d8b04a) with darker gold in the twist grooves. Metal. Repeats horizontally. |
+
+#### Characters: clothing fabrics (every culture, `core/charactermodels`, added 2026-10-13, moved 2026-10-14)
+
+**Moved to `core/charactermodels/prompt-clothes.md`**, which lists the library sets the clothes can use as they are
+(`cloth.plain` for linen, `cloth.silk`, the procedural `cloth.felt`, `cloth.weave.twill` and `cloth.knit`,
+`cloth.weave.burlap` for maguey, the `hide.leather` sets, `hide.fur.brown`, `fibre.rope`, `shell.nacre`) and gives
+ready-to-paste prompts for the 17 gaps: `cloth.wool`, `cloth.velvet`, `cloth.quilted`, `cloth.cotton.coarse`,
+`cloth.bazin`, `cloth.oiled`, `leather.polished`, `leather.buckskin`, `fur.short`, `fur.astrakhan`, `straw.plaited`,
+`feather.quetzal`, `beads.glass`, `metal.brass.braid`, `embroidery.cross`, `embroidery.saxon`, `pattern.bogolan`.
+(The first version of this list asked again for `cloth.linen`, `cloth.felt` and `cloth.silk`, which the library has.)
+**Delivered 2026-10-14 and processed**, all 17 (`tools/textures/batches/chatgpt-2026-10f-clothes.json`, sources
+`clo1.zip`, `clo3.zip` and a pasted velvet image): scales 0.12 to 0.4 m a tile (about 20 cm of cloth a frame);
+the embroideries, the bogolan, the braid and the bazin damask cropped to their pattern period; the braid metal; the
+quetzal feathers, the embroideries, the bogolan and the braid not tinted, the rest muted for tinting. The garment
+painter reads them since 2026-10-14 (the colour image only; `core/charactermodels/prompt-clothes.md`).
 
 #### Second survey (2026-10-03): biomes, city streets and parks, furniture
 
@@ -1612,6 +1665,17 @@ What the first delivery taught:
 
 ## How a build adopts the library (built 2026-10-03; Girder is the pilot)
 
+*2026-10-15, Voth's canton interiors (`settlements/voth/materials.json`, families `int_*`, `tap_*`, `inlay_*`, `jali`,
+`frieze_red`, `canopy_kilim`, `medallion_sun`, `lantern_paper`): two ways of using a set on geometry with no UVs. A SET
+family (eroded banco over brick, smooth banco, big sandstone blocks, the patterned clay plaster, the amber tiles, travertine,
+the timber beam, carved wood, gold leaf) is sampled by world position on three planes, blended by the face normal, as a grey
+detail under each canton's own colours (56-vc-interiors-host.js `VC.intSetMat`, the site scene's `VIEW.hook` idea). A SHEET
+family (the Voth banners, the solar and the Ordinator sheets, Voth's kilims, the inlay bands, the red palmette frieze, the
+sun-ray medallion, the diamond jali, lantern paper) is UV-mapped on a turned unit box: the whole sheet once per face, or
+repeated along the box's length every `tile` m, the vertex shader reading the instance's scale (`VC.intSheetMat`). Reuse:
+any build whose interiors are instanced boxes (the lot buildings take the same materials in 56b) can take both; the sheets
+Voth still wants are in `PROMPTS-ready.md` ("The Voth interiors"), each with the common set that stands in for it.*
+
 - **The code** is `core/materials/record/` (not under `core/materials/`'s top level, so the Ancients-lineage builds
   that take every top-level fragment do not pick it up): `23-mat-record.js` (`KMAT`: the record above, a build's
   adapter, the pack registry, `table()` for the exporter), `24-tex-def.js` (`TEX`: a procedural texture as a record,
@@ -1721,6 +1785,97 @@ tail; the horned figures' lower border) and were redone with cross-faded edges i
 | `card.mushroom.alecap` | Purple Mushroom Cluster | key #ff00ff 50/120, spill edge (keeps the purples), choke 1 | the alecap, 3 x 3: beds and wild (a Throne species) |
 | `card.crop.yam` | Heart-Leaf Vines on Stakes | key 60/170, spill all | yam vines on stakes, 3 x 3: terraces; any staked climbing crop |
 | `patterns/zeijani/jali` | Beige Stone Lattice on Magenta | a cut-out tile (cards.py, anchor tight, RGBA) | the temple's glowing pierced dome and screens |
+
+#### Delivered 2026-10-18 and processed: the Throne's new flora (pasted, 6 images)
+
+Batches `throne-flora-2026-10-18.json` (surfaces: `ground.moss.crimson`, `organic.cap.medusa`, `organic.coil.ribbed`) and
+`throne-flora-2026-10-18-cards.json` (`card.blade.pyre` and `card.fan.lace`, 3 x 3 sheets, and `organic.lattice.cage`, a tiling
+surface with its holes keyed to alpha; all kept whole with `cards.py`'s new anchor `none`). Wired in `biomes/throne`
+(`materials.json`, re-packed): the red velvet (given a ragged alpha outline), the medusa cap's dome, the coil horns' tubes, the
+pyre thistle's blades and the lace-fan tree's fans (their bright veins glow at night), the cage lantern's lattice. Reuse: any red
+moss carpet, spotted maroon cap, ribbed yellow tube, black spiked rosette, perforated fungal fan, open chitin cage.
+
+#### Delivered 2026-10-15 and processed: the Voth interiors, eleven extras, five redos (`Downloads/vothtex.zip`, 32 images)
+
+Batches `voth-interiors-2026-10-15.json` (27 sets) and `redos-2026-10-15.json` (5). The sixteen sheets of `PROMPTS-ready.md`'s "The Voth
+interiors", each wired in `settlements/voth/materials.json` (the Palace's stucco, tiles, inlay and columns in their own colour, the
+rest as UV-mapped sheets). The owner's eleven extras, for variety and for the myth of the three brothers (the Chichani, the Zeijani
+and the Andaru): two frescoes (`fresco-three-brothers`: their reunion and welcome; `fresco-brothers-ascent`: their climb up the
+sunlit mountain), a purple damask, the ringed giant in mosaic, two filigrees, a hanging of ancestor masks, two more glyph banners,
+a mudcloth and a banded brown kilim (`patterns/common`: the Sahelian, Yuni, Dalab and nomad builds can take them). Single panels
+(tapestries, frescoes, banners, the icon, the mural, the carpet) are processed with no seam pass (`seam_axes: none`, their shape
+kept); the chandelier drum wraps across only.
+
+The five redos (`PROMPTS-NEEDED.md` section 0: `ground.travertine.white`, `hide.sleek`, `patterns/islander/storyboard`,
+`patterns/islander/gable-east-b`, `patterns/common/grime-streaks`) replace their first takes in the library; **no build is
+re-packed**: biomes/geyser, kits/fauna and kits/islanders read stale until they are (`GODOT-PLAN.md`, "Before an export").
+
+| Set | Reuse |
+|---|---|
+| `patterns/voth/fresco-three-brothers`, `fresco-brothers-ascent` | the Palace and the Temple; the Zeijani's and the Andaru's own halls (the same myth told from their side) |
+| `patterns/voth/damask-purple-gold`, `filigree-crimson`, `filigree-purple` | any court's hangings, screens and panelling |
+| `patterns/voth/mosaic-ringed-giant` | temples and observatories of the sky in any culture |
+| `patterns/common/mudcloth`, `kilim-banded-brown` | the Sahelian and Yuni cultures, Dalab, the nomads, Beast Riders |
+| `library/cloth.hide.canopy` | canopies, tents, awnings, drum skins (tinted) |
+
+#### Delivered 2026-10-14 and processed: thirty-five owed prompts (seven batches, pasted as WebP)
+
+Batches `owner-2026-10-14.json` (process.py) and `owner-2026-10-14-cards.json` (cards.py); the prompts are the entries of
+`PROMPTS-NEEDED.md` (now its "Delivered 2026-10-14" section). Every image came as a 1254 px WebP (the caihua 1774 x 887),
+smaller than the template's 2048: the pipeline writes 1024 px sets, so nothing was upscaled. **Hand crops first:** where a
+sheet's own period is shorter than the image (found by shifted self-difference) it was cropped to a whole number of periods
+before processing, and 12 px of its own continuation appended so process.py's period search lands on it exactly (each
+meta's `source.note` gives the crop): the Islander sheets, the harlequins, the sun banner (now exactly periodic: two suns
+by two rows), the applique roof, the lattice (five diamonds) and the fringe. **cards.py `spill: 'unmix'`** (new): each
+pixel blended with the magenta is split back into the subject's colour and an alpha (least squares against the nearest
+solid colour), for the hair-thin clubmoss needles and the translucent streamers, which kept a pink fringe under the
+`all` spill. The fringe and the panic grass are keyed hard (60 -> 120..230); the lattice, steam comb and pandan key clean
+at the usual 60..170.
+
+| Set | Image | Checks | Wired |
+|---|---|---|---|
+| `patterns/highlands/caihua` | 1 (three bands) | one band cut out (y 17..307); mapped once, so not made seamless | Highlands `hCaihua` (the painted beams over each bay) |
+| `patterns/tribal/formline` | 2 | **not periodic** (mirror-symmetric): process.py's crop and fade leave a doubled eye pair at the x seam, a soft band at y | Highlands `formF`, the frieze boards of every branch (0.5 m panel) |
+| `patterns/reedlake/fringe` (redo, cut-out) | 3 | keys clean (no tinted opaque pixel); a thin dark purple-brown edge where the strands' shadows lay | Reed Lake `rlFringe`, replacing the opaque set |
+| `card.steamcomb` | 4 | 3 x 3 cells separate; the water beads let magenta through and key pale mauve-grey (keep 0 hides it) | geyser `comb` |
+| `patterns/reedlake/reed-lattice` (cut-out) | 5 | keys clean, five diamond periods | Reed Lake `rlLattice` |
+| `ground.travertine.white` | 6 | tiles; **turquoise water painted in the pools** (the prompt asked for it) | geyser `ground.tufa`, keep 0.2: the pools read as pale smooth crust and the shader lays the water |
+| `card.streamer` | 7 | cells separate; unmix key | geyser `streamer` (the straight clump, flipped onto the ribbon) |
+| `stone.geyserite` | 8 | tiles | geyser `sinter` (cones, beads) |
+| `card.clubmoss` | 9 | cells separate; unmix key | geyser `club` |
+| `card.strap.pandan` | 10 | cells separate, keys clean | geyser `strap` (one leaf, flipped onto the frond) |
+| `patterns/islander/medallion-moon` | 11 | a single panel, mapped once | Islanders `medMoon` |
+| `patterns/islander/weave` | 12 | exact period 627 px | Islanders `patWeave` |
+| `patterns/islander/kowhaiwhai` | 13 | exact period | Islanders `patBand` |
+| `patterns/islander/gable-east` | 14 | exact period (three diamonds by two rows) | Islanders `patGableE` |
+| `feather.flight` | 15 | tiles | fauna `flight`: every wing part's feather mesh (the runtime maps `feather` on a `wing*` part to it) |
+| `patterns/islander/hinggi` | 16 | x period exact; height left whole | Islanders `patHinggi`: the Kautoa weaver's four rail cloths |
+| `patterns/scyvoi/applique-roof` | 17 | period 642 x 586 | Scyvoi `patRoof`: the three Tibetan tents' roofs |
+| `metal.bronze.cast` | 18 | tiles, isotropic | Iziz `cityBronze` (statues), `cityBrass` (the embassy's gilt and brass) |
+| `concrete.rust.streaked` | 19 | tiles across; streaks run down | Iziz `cityConcRust` (MAT.concRust) |
+| `patterns/islander/storyboard` | 20 | one canoe by one register pair; **one frigate bird is cut at the x seam** | Islanders `patStory` |
+| `skin.smooth` | 21 | tiles | fauna `skin` (was hide.leather033c) |
+| `hide.sleek` | 22 | tiles; came mid-brown, muted 0.8 | fauna `sleek` (was hide.strider) |
+| `metal.rust.heavy` | 23 | tiles | Ys `rust`, `pipeRust` |
+| `patterns/highlands/harlequin-dark` | 24 | exact period (6 x 5 diamonds) | Highlands `hHarlGt` |
+| `patterns/highlands/harlequin-red` | 25 | exact period (8 x 6 diamonds) | Highlands `hHarlR` |
+| `patterns/scyvoi/salamander-dun` | 26 | tiles | fauna `salDun` (FULL colour) |
+| `patterns/iziz/sun-banner` (redo) | 27 | repeats exactly (626 x 564 px periods) | replaces the old sheet; the mechs' sun banners now tile it |
+| `patterns/scyvoi/salamander-ember` | 28 | tiles | fauna `salEmber` (FULL colour) |
+| `card.grass.panic` | 29 | cells separate, bases on the cell edges; the panicles came pinkish (magenta through them) | geyser `grass`, grey under the panic grass palette |
+| `concrete.rust.streaked.sea` | 30 | tiles | Ys `concreteR` |
+| `patterns/islander/gable-west` | 31 | exact period | Islanders `patGableW` |
+| `patterns/common/grime-streaks` | 32 | 20 x 8 cells, dark on white (asked: 16 x 8 on transparent) | **not wired**: the `grime` parameter of the breakup hook is not built |
+| `wool.fleece` | 33 | tiles | fauna `fleece`: the sheep's wool (face and legs stay sleek) |
+| `patterns/islander/gable-west-b` | 34 (extra) | exact period | Islanders `patGableW2` (the rumah gadang) |
+| `patterns/islander/gable-east-b` | 35 (extra) | drifts: no exact period, a soft seam | Islanders `patGableE2` (the great uma) |
+
+New code with them: the fauna runtime's `fleece` and `flight` families and its FULL-colour families (`salEmber`, `salDun`:
+the map is the skin's colour, triplanar, the belly keeping the vertex colour; without the pack the markings stay vertex
+colours); the Islanders' variant keys `patGableW2`, `patGableE2` and `patHinggi`; Scyvoi's `patRoof`; the geyser's
+`GEYSER.libCol` (a full-colour card's instances take a near-white); Highlands' repeats for the new sheets in 88y; Iziz's
+aliases onto three `city*` families (Verge leaves them out); Ys gives `pipeRust` world UVs (2 m) in 79z, not in the
+vendored files.
 
 ## Next steps
 

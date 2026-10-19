@@ -21,7 +21,8 @@ Processing, per family:
            distance gets its furrows and seams back. tint.colour ('#rrggbb', optional) gives the grey part a hue at the
            same brightness: for builds whose procedural maps carry their colour (Reed Lake's straw), so a grey set
            matches the map it replaces under the same instance tint.
-  normal   resized and renormalised (OpenGL convention, as the library and Godot use); written as LOSSLESS WebP
+  normal   resized and renormalised (OpenGL convention, as the library and Godot use); written as LOSSLESS WebP of its
+           channels kept to 6 bits (NORMAL_BITS: 0.7 degrees mean error, 40% smaller than 8 bits)
   rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map
   lib      a library id, or a pattern sheet as 'patterns/<culture>/<name>'
   size     per family: overrides the build's map size; [w, h] keeps a sheet's shape (a dome's sky, not a tile)
@@ -66,8 +67,18 @@ def load(path, size, mode):
     return np.asarray(im).astype(np.float64) / 255.0
 
 
-def webp(arr, quality, mode, lossless=False):
-    a = np.clip(np.rint(arr * 255.0), 0, 255).astype(np.uint8)
+NORMAL_BITS = 6   # a normal's channels kept to 6 bits (each value the middle of its step): lossless WebP of it is 40%
+                  # smaller than of 8 bits, for 0.7 degrees mean error (1.3 at the 99th percentile; brick at 512 px,
+                  # 2026-10-14). The pages were three times their lossy size with 8-bit lossless normals
+
+
+def quantize(a, bits):
+    s = 8 - bits
+    return a if s <= 0 else (((a >> s) << s) + (1 << (s - 1))).astype(np.uint8)
+
+
+def webp(arr, quality, mode, lossless=False, bits=8):
+    a = quantize(np.clip(np.rint(arr * 255.0), 0, 255).astype(np.uint8), bits)
     im = Image.fromarray(a, mode)
     buf = io.BytesIO()
     if lossless:
@@ -118,8 +129,9 @@ def process(fam, cfg, size):
         n = load(pn, size, 'RGB') * 2 - 1
         n /= np.maximum(np.linalg.norm(n, axis=2, keepdims=True), 1e-6)
         # lossless: lossy WebP is always 4:2:0, which halves the X and Y the normal keeps in red and green (measured on
-        # wood.timber at 512 px: lossy q92 10.9 degrees mean error, 136 KB; lossless 0.14 degrees, 550 KB; 2026-10-08)
-        out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True)
+        # wood.timber at 512 px: lossy q92 10.9 degrees mean error, 136 KB; lossless 0.14 degrees, 550 KB; 2026-10-08),
+        # its channels kept to NORMAL_BITS
+        out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB', lossless=True, bits=NORMAL_BITS)
     # roughness
     if os.path.isfile(pr) and not card and not cfg.get('mapOnly'):
         r = load(pr, size, 'L')

@@ -10,6 +10,8 @@ Usage:  python3 tools/make_index.py      (from anywhere; rewrites every INDEX.md
 import ast, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# core modules that are builds of their own (a build.py and src/): indexed and audited like a kit
+CORE_BUILDS = ['core/charactermodels']
 BIG = 30 * 1024          # CLAUDE.md: never read a fragment this size whole
 
 ABOUT = {
@@ -29,6 +31,7 @@ ABOUT = {
     'settlements/noahs-regret': "Noah's Regret: an Ancient floating harbour city of the Ring Sea, aground on the south shore, Bloody Ruephus's pirate base: a catamaran of two hulls joined at the bow, the harbour open astern (holds half full of the sea, four decks, rounded terraced sterns, scalloped balconies), the grand atrium, the bridge, the grand dining room, twin silent engine rooms, two crew messes, the greenhouse, fifteen ship's rooms, the bridge house with the bridge on top, a forecourt plaza over the forward third of the harbour with terraces and a grand stair, nine Ancient buildings (barracks, a mess hall, the HQ under his flag on the plaza), the liner mole and finger piers, every room furnished from the catalog through the interiors kit, a deck cut to see inside; no life layer yet.",
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
     'settlements/port': 'The Ancient Port kit (a kit, not a settlement, despite the folder): modular Ancient port segments and vessels tiling along a coast, a sibling of kits/ancients built the same way. It will build Hook (the ancient port city recently retaken from Voth, LORE.md) and may serve other coasts after. Read CONTRACT.md, then API.md.',
+    'settlements/hook': "Hook: the Ancient port city of the Ring Sea's south-western shore, the Izani Empire's premier port, retaken from Voth a few months before game start (LORE.md 6.2; PLAN.md). Built on the Ancient Port kit (settlements/port), read in place: P0 is the waterfront, every Port segment and vessel placed at least once in one coastal run with the Customs' and the Sun Canton's land blocks behind and the hooked L of sea platforms off the great pier.",
     'settlements/ys': 'Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 2: the Hykkousoi kit, 89 pieces on the kit sheet; phase 3 prep: the layout, shore and nav).',
     'settlements/xanadu': 'Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.',
     'settlements/mungo': "Mungo: a trade village at a river mouth on a salt lake in the Eastern Abyss: a floating reed village (the Reed Lake kit, run inside the page; Reed's Local), one pontoon to an Eastern Abyssal town, the Geomancers' chapterhouse among Yuni houses with their dune buggies. Shares the Locus engine and kits by name (build.py); the first world on core/simulation (SIM) and core/clock: a scheduled life layer whose data is world/*.json.",
@@ -37,9 +40,15 @@ ABOUT = {
     'kits/mechs': 'Mechs: animated walking machines any world takes as one bundle (KratorMechs: a skinned rig, leg IK with planted feet, idle, walk and attack clips with fire and impact events, swinging banners and feathers) on the catalog core; eleven Iziz war-walkers (the Castra in two variants); a verified kit sheet with a z-fighting audit.',
     'kits/motor-vehicles': 'Motor Vehicles: procedural motor vehicles any world takes as one bundle (KratorVehicles: wheels to spin and steer, switchable lamps, simulation data) on the catalog core; five vehicles in five culture files (the Geomancer dune buggy, the Republic salvage crawler, the Izani six-wheeler, the Abyssal caravan truck, the Post-Apoc tracked hab); a verified kit sheet.',
     'kits/ringsea': 'Ring Sea watercraft: 31 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.',
+    'kits/pylon': "Pylon: Iziz's vassal arcology city round the ruined Monolith, its post-Cataclysm buildings imitating the Ancients in white render and Iziz orange; built on the Iziz Vernacular contract (settlements/iziz/build.py --kit), so the Vernacular stands beside it on the sheet (the mixed street). PLAN.md is the design.",
+    'kits/talia': "Talia: Iziz's vassal university and caravan city at the foot of the eastern passes, Greek and Byzantine forms with baroque and Indian dress, white with Iziz orange; built on the Iziz Vernacular contract (settlements/iziz/build.py --kit), so the Vernacular stands beside it on the sheet (the mixed street). PLAN.md is the design.",
     'kits/fauna': "The Fauna kit: one kit for every animal (KratorFauna), data first: tags by biome and climate, diet, activity and temperament; traits (edible, milkable, tameable, rideable, draught, eggs), yields and life on every animal; drawn as parts that idle, graze, walk, fly and swim by gait. 51 species gathered from every biome kit and settlement (farm stock, mounts, desert, bay, abyss and hyperjungle fauna, giant flyers and crawlers, Voth's beasts) and drawn for the cultures (the Scyvoi's bison, the Ash Nomads' staghorn beetle and ash runner), each listing the builds that draw it; a verified sheet.",
     'kits/scyvoi': "The Scyvoi kit: the salamander riders of the crater drylands, gers and Tibetan tents in polychrome and appliqué. Five small and five large tents (gers, a bell tent, goat-hair tents, a white appliqué tent and a gur, two Tibetan halls, an appliqué tent), the chief's great tent and carved vardo, the shaman's ger, the smithy, hidemaker, supply and cartwright's tents, all furnished from the catalog's Scyvoi culture (core/furnish) with a cut-away; salamanders (riding, war, draught), goats, bison and cattle from kits/fauna with life data and their pens, chariots and carts, tethering; and the Baelu, a fitted-stone fire redoubt. Its engine (the KIT record, materials, tent kit, scene) is vendored by the Desert and Ash Nomads kits; a verified kit sheet.",
     'kits/desert-nomads': "The Desert Nomads kit (catalog culture nomad, the Eastern Nomads): the camel nomads of the eastern high desert and the eastern abyss. Black goat-hair tents, khaimas, square hair-cloth tents, white caidal tents, a Tuareg leather tent, the Saharan pavilion (austere outside: brown or white with simple contrasting bands; Moroccan and Arabian inside, muted), the sheikh's tent and guest pavilion, the seer's tent, the hookah tent, smithy, hidemaker and supply tents; camels (riding, war, pack), horses, riding and pack lizards with tack, a camel cart and litter, goats, sheep, cattle and emus in zaribas and folds; forked from kits/scyvoi; a verified kit sheet.",
+    'biomes/ringisles': "The Ring Sea isles biome kit (the isle demo, settlements/isle-demo/PLAN.md): one kit whose zones follow the scale model's climate classes (XA, Af, Am rainforest; Aw, XV tall-grass savanna in a burn mosaic; BSh hot steppe; XS salt steppe and pans), with the strand, a mangrove lagoon, a reef flat, tide pools, a geyser field and town gardens of the owner's crops (coconut, mango, banana, coffee, cloves, breadfruit; rice, taro, sweet potato, kava, herbs, greens, sugar cane). Borrows the Throne, swbay, eastabyss, sedesert and geyser kits' species in place; the showcase is one synthetic island. Verified: build.py, verify.py --assert.",
+    'settlements/isle-demo': "The isle demo (roadmap stage 6's example): PLAN.md, the assay and the plan for two Islander towns on the Ring Sea isles; the site planner (dist/isle-site.html, P4): Voth's site editor read in place on the open world's ground, one town at a time in its own frame, saving both towns to site/isle-site.json through serve.py",
+    'openworld/isle-demo': "Isle Demo: the scale model's Ring Sea isles at 1:1 (the isle demo, settlements/isle-demo/PLAN.md, P3): an archipelago of about 9,800 km2 of land in 128 x 250 km, Kautoa and Valapo marked, twelve geyser vents. The world is openworld/little-demo's, read in place; this build adds the isles' fields (the climate classes as weights, the coast), its config and its kit registry (empty until the flora step).",
+    'kits/resources':"The Resources kit: world content that belongs to no culture. So far the resource nodes the building kits' works draw on: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter and oil, each in a low, a medium and a high grade, placeable. A mine works the nearest node it can within 400 m (everything but oil); oil takes a derrick (Locus's pumpjack, ind_pumpjack); the grade sets the yield (x0.5, x1, x2); nodes do not run out. The rule (42r-res-ore.js) is plain data for core/simulation. Runs on the Scyvoi engine, read in place; kits/islanders reads its two fragments in place.",
     'kits/islanders': "The Islanders kit (catalog culture islander): the Ring Sea Islanders in two related styles. The WEST builds after the Indonesian rumah (long houses on piles under saddle roofs sagging into horns: gonjong spikes, Batak gables, Toraja prows; black palm thatch, red-black-white painted gables); KAUTOA, the old island kingdom of the EAST, after Sumba (spire towers over golden thatch skirts, woven facades, megalith tombs). Each: three poor (patched with scrap: corrugated iron, tin, tarps, tyres), three middle and three rich houses, a village hall, a ceremonial square, a school, farms, granaries, a turning windmill, a warehouse, a smithy, six shops, a fishing dock, a great dockyard, palisade or wall, gate, watch tower and barracks; Kautoa's palace of seven courts under a 44 m spire; carved posts, buffalo horns and the white island moon shared by both; farm stock from kits/fauna, placeholder crops, the shore and the Ring Sea; forked from the Scyvoi engine; a verified kit sheet.",
     'kits/ash-nomads': "The Ash Nomads kit (catalog culture ashnomad): the beetle riders of the ash plains. Peaked tents of every kind, black to grey under ornate yellow and red Nazca and Dunmer patterns: spire tents, hide domes, ridge and petal bell tents, the star tent, the chieftain's five-spired tent, the assembly and mess hall under its sun disc, the shaman's hut, smithy, chitin worker and supply tents; staghorn beetles (riding, war, pack), pack millipedes, herds of millipedes and six-legged runners in their pens; no wheels; forked from kits/scyvoi; a verified kit sheet.",
     'kits/post-apoc': 'The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture\'s marks.',
@@ -47,6 +56,7 @@ ABOUT = {
     'kits/interiors': 'Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; the building SETS (Highlands, Post-Apoc, Beast Rider, Locus, Abyss, Reed Lake, Yuni: every building\'s rooms as data, the residence rule checked); a verified demo, a sets sheet, and a walkable mockup of furnished rooms inside the real buildings.',
     'kits/ancients-interiors': 'Ancients interiors: the Ancients\' ship interiors backported from Noah\'s Regret, on kits/interiors: the ship\'s room kinds as programmes (sick bay, chart room, strongroom, armoury, brig, sail loft, laundry), ship\'s rooms and cabins as room shapes, and fourteen hall recipes (crew mess, dining hall, greenhouse, engine room, bridge, officers\' hall, chart deck, chain locker, store hall, drill hall, gallery, stern lounge, plaza, quay) in two dresses (as built, as the pirates hold them), each audited; a verified demo sheet.',
     'kits/catalog': 'The master catalog: asset engine, the parametric furniture kit and 1674 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court, plus trade and household pieces: forge, anvil, stall, vat, still, bunk, larder ..., and the furniture harvested from the Highlands, Post-Apoc, Beast Rider and Abyss kits) over 25 cultures, one file per culture, with generic goods (containers, food, drink, supplies), biome fruit and a jobs file (work items by trade); a verified contact sheet in five pages (indoor, outdoor, both, rugs, jobs).',
+    'core/charactermodels': 'Characters: MakeHuman (MPFB2) bodies with morphing face, build and ancestry; library clothes, hair and beards that follow the morphs; skin and hair tint; peoples (data/peoples.json) that keep a culture\'s strangers in range; two pages: the Cosmetic Lab (one figure, every look; strangers in bulk for NPCs) and the Animation Lab (six bodies, every clip, a review mark per clip); a Godot twin (godot/krator/character/, behind).',
 }
 # Files that are generated or duplicated elsewhere: never edit or read them whole.
 GENERATED = {
@@ -108,17 +118,20 @@ def core_lists(build):
             files = ast.literal_eval(m.group(2))
             if files:
                 out.append(('core/biome' if m.group(1) == 'CORE_BIOME' else 'core/terrain', files))
-        # the host shell (core/host/host.py): CORE_HOST = khost.SHELL, khost.SHELL+[...], or a literal list
-        m = re.match(r'\s*CORE_HOST\s*=\s*(khost\.SHELL)?\s*\+?\s*(\[[^\]]*\])?', line)
-        if m and (m.group(1) or m.group(2)):
+        # the host shell (core/host/host.py): CORE_HOST = khost.SHELL, khost.FULL, khost.SHELL+[...], a comprehension over them,
+        # or a literal list: the expression is evaluated against host.py itself, nothing else in scope
+        m = re.match(r'\s*CORE_HOST\s*=\s*([^#\n]+)', line)
+        if m:
             import importlib.util
             spec = importlib.util.spec_from_file_location('khost', os.path.join(ROOT, 'core', 'host', 'host.py'))
             mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
-            files = (list(mod.SHELL) if m.group(1) else []) + (ast.literal_eval(m.group(2)) if m.group(2) else [])
-            for where in ('host', 'clock'):
+            try:
+                files = list(eval(m.group(1).strip(), {'__builtins__': {}}, {'khost': mod}))
+            except Exception:
+                continue
+            for where in sorted(set(mod.WHERE.get(f, 'host') for f in files)):
                 fs = [f for f in files if mod.WHERE.get(f, 'host') == where]
-                if fs:
-                    out.append(('core/' + where, fs))
+                out.append(('core/' + where, fs))
     return out
 
 
@@ -196,7 +209,7 @@ def build_index(build):
         fh.write('\n'.join(lines) + '\n')
     sizes = [fsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
     sizes += [fsize(os.path.join(d, f)) for f in top]
-    return len(sizes), sum(sizes), max(sizes), outs
+    return len(sizes), sum(sizes), max(sizes) if sizes else 0, outs   # a build whose fragments all live elsewhere (Hook on the Port kit)
 
 
 def main():
@@ -206,6 +219,7 @@ def main():
             b = '%s/%s' % (top, name)
             if os.path.isfile(os.path.join(ROOT, b, 'build.py')) and os.path.isdir(os.path.join(ROOT, b, 'src')):
                 builds.append(b)
+    builds += CORE_BUILDS
     rows = []
     for b in builds:
         n, total, biggest, outs = build_index(b)

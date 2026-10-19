@@ -8,6 +8,10 @@ const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 const SPI=k=>THRONE.SPECIES.indexOf(THRONE.byKey[k]);
 function nearTree(key,x,z,minH){return THRONE.nearestTree(SPI(key),x,z,minH)||THRONE.nearestTree(SPI(key),x,z)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
 function atTree(T,d,az,dy,ty){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*(ty==null?.6:ty),T.z];}
+function nearItem(name,x,z){let bx=x,bz=z,bd=1e9;const m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||M.name!=='biome:'+name)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,s);const d=Math.hypot(p.x-x,p.z-z);if(d<bd){bd=d;bx=p.x;bz=p.z;}}});return[bx,bz];}
+function atItem(name,x,z,d,az,dy,ty){const c=nearItem(name,x,z),cx=c[0]+Math.cos(az)*d,cz=c[1]+Math.sin(az)*d,y0=gh(c[0],c[1]);
+ return[cx,Math.max(gh(cx,cz,1.2),y0+(dy==null?1.4:dy)),cz,c[0],y0+(ty==null?.4:ty),c[1]];}
 const across=(x,z,az,d,h,th)=>{const tx=x+Math.cos(az)*d,tz=z+Math.sin(az)*d;return[x,gh(x,z,h),z,tx,gh(tx,tz,th==null?2:th),tz];};
 // the ash desert's places (45, 47, 86): a point and an aim
 const toward=(x,z,tx,tz,d,h,th)=>{const a=Math.atan2(tz-z,tx-x),cx=tx-Math.cos(a)*d,cz=tz-Math.sin(a)*d;return[cx,Math.max(gh(cx,cz,h),waterH(cx,cz)+h),cz,tx,gh(tx,tz,th==null?1:th),tz];};
@@ -20,6 +24,9 @@ const VIEWS={
  'A yardang':toward(Y0.x-UP[0]*Y0.len*1.6,Y0.z-UP[1]*Y0.len*1.6,Y0.x,Y0.z,Y0.len*1.4,2,Y0.h*.4),
  'Striped rhyolite hills':toward(H0.x+H0.r*1.6,H0.z+H0.r*.4,H0.x,H0.z,H0.r*2,4,H0.h*.5),
  'Soot cups and stalk daisies':(function(){const x=H0.x+H0.r*.55,z=H0.z+H0.r*.1;return toward(x+14,z+6,x,z,12,1.6,.4);})(),
+ 'Geode pods on the rhyolite':atItem('geocore',H0.x,H0.z,3.2,1.1,1.3,.35),
+ 'Pyre thistles in the ash':(function(){const T=TT('pyre');return atTree(T,T.crownR*2.4+4,1.2,1.6,.65);})(),
+ 'A chalice parasol over the ash':(function(){const T=TT('chalice');return atTree(T,70,.7,6,.55);})(),
  'A drizzle trumpet':(function(){const T=TT('drizzle');return atTree(T,T.crownR*2.2+5,rr(0,TAU),1.8,.6);})(),
  'The CO2 hollow':toward(HOLLOW.x+HOLLOW.r*2.2,HOLLOW.z+HOLLOW.r*.8,HOLLOW.x,HOLLOW.z,HOLLOW.r*2.3,4,-HOLLOW.depth*.6),
  'Lamp caps at night':(function(){const T=TT('lampcap');return atTree(T,6,rr(0,TAU),1.4,.5);})(),
@@ -67,8 +74,10 @@ const HCHK={
  // the ash weather is the shared module's, opt-in: its two modes are offered here, its state and uniform answer
  ashWeather(W,U){const ok=!!W&&W.MODES.indexOf('ash')>=0&&W.MODES.indexOf('ashfall')>=0&&typeof W.ash==='number'&&!!U&&!!U.ash;
   return{ok,detail:ok?'modes '+W.MODES.join(', ')+'; ash now '+W.ash.toFixed(2)+' ('+W.mode+')':'no ash weather'};},
- placed(C){const here=THRONE.SPECIES.filter(S=>['pagoda','drizzle','ropepuff','lampcap'].indexOf(S.key)>=0),zero=here.filter(S=>!(C[S.i]>0)).map(S=>S.key);
+ placed(C){const here=THRONE.SPECIES.filter(S=>['pagoda','drizzle','ropepuff','lampcap','pyre','chalice','cagebulb','coilhorn'].indexOf(S.key)>=0),zero=here.filter(S=>!(C[S.i]>0)).map(S=>S.key);
   return{ok:!zero.length,detail:zero.length?'never placed: '+zero.join(', '):here.length+' species, the scarcest '+Math.min(...here.map(S=>C[S.i]))};},
+ ownPage(T,rf,af){const bad=T.filter(t=>{const S=t.S||THRONE.SPECIES[t.sp];return S&&(S.rift||S.ashp)&&!((S.rift&&rf)||(S.ashp&&af));});
+  return{ok:!bad.length,detail:bad.length?bad.length+' new-flora trees off their page (first '+(bad[0].S||THRONE.SPECIES[bad[0].sp]).key+')':'the new flora stays on its own page'};},
  tagged(L){const reg=Object.keys(THRONE.KOPPEN),bad=[];
   for(const S of L){const t=S.tags||{},k=t.koppen||[];
    if(!t.climate||!t.aridity||t.abyssal==null||!t.riparian||ORIGINS.indexOf(t.origin)<0||LIVES.indexOf(t.plume)<0||!t.harvest||!k.length||k.some(c=>reg.indexOf(c)<0))bad.push(S.key||S.name);}
@@ -81,6 +90,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing lives in the CO2 hollow',HCHK.hollow(THRONE.TREES,P));
  add('the ash weather (core/atmos, opt-in) is here',HCHK.ashWeather(ATMOS.W,ATMOS.U));
  add('every species of the ash desert placed',HCHK.placed(counts(THRONE.TREES)));
+ add('the new flora stays on its own page',HCHK.ownPage(THRONE.TREES,BIO.hasField('riftlife'),BIO.hasField('ashlife')));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
@@ -89,6 +99,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a plant in the hollow',HCHK.hollow(THRONE.TREES,[[HOLLOW.x,terrainH(HOLLOW.x,HOLLOW.z),HOLLOW.z,'biome:fern']]));
  add('a weather without the ash',HCHK.ashWeather(Object.assign({},ATMOS.W,{MODES:ATMOS.MODES}),ATMOS.U));
  {const C=counts(THRONE.TREES);C[SPK('pagoda')]=0;add('a species never placed',HCHK.placed(C));}
+ add('a rift-only tree in the ash desert',HCHK.ownPage(THRONE.TREES.concat([{sp:SPK('medusa')>=0?SPK('medusa'):0,S:{key:'medusa',rift:true}}]),BIO.hasField('riftlife'),BIO.hasField('ashlife')));
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
  return R;}

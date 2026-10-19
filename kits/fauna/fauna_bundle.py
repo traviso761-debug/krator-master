@@ -64,7 +64,7 @@ def textures(on=True):
     return 'const FA_TEX = %s;\n' % json.dumps(out, sort_keys=True)
 
 
-def models(groups=None, on=True):
+def models(groups=None, on=True, side=None):
     """FA_MODELS: the packed baked models (models/<key>.json, models_pack.py) of the requested groups, as one object. A group
     without a model (livestock, mounts ...) gets `null` and the runtime never reads it: those bundles stay as small as before."""
     if not on or not os.path.isdir(MODELS):
@@ -77,16 +77,20 @@ def models(groups=None, on=True):
         group = json.loads(text)['group']
         if groups is None or group in groups:
             out.append('%s: %s' % (json.dumps(f[:-5]), text))
+    if out and side is not None:   # the models beside the page (build.py writes them): the page's own <script src>
+        side['models'] = '{\n' + ',\n'.join(' ' + e for e in out) + '\n}'
+        return ("const FA_MODELS = (typeof FA_MODELS_SIDE !== 'undefined' && FA_MODELS_SIDE) || "
+                "(console.warn('fauna: the models are missing (the page\\'s .tex.models.js did not load): drawn models'), null);\n")
     return ('const FA_MODELS = {%s};\n' % ',\n'.join(out)) if out else 'const FA_MODELS = null;\n'
 
 
-def bundle(groups=None, tex=True, mdl=False):
+def bundle(groups=None, tex=True, mdl=False, side=None):
     fs = files(groups)
     body = ''.join('/* ---- kits/fauna/%s ---- */\n%s\n' % (f, read(f)) for f in fs[:-1])
     body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures(tex)
     # mdl: True takes the baked models of every bundled group; a list takes only those groups' (a city wanting its pets'
     # models without the farm's dozen)
-    body += '/* ---- the packed baked models (models/, models_pack.py) ---- */\n' + (models(mdl, True) if isinstance(mdl, (list, tuple)) else models(groups, mdl))
+    body += '/* ---- the packed baked models (models/, models_pack.py) ---- */\n' + (models(mdl, True, side) if isinstance(mdl, (list, tuple)) else models(groups, mdl, side))
     body += '/* ---- kits/fauna/%s ---- */\n%s\n' % (fs[-1], read(fs[-1]))
     return safe('/* kits/fauna bundle (fauna_bundle.py): %s. GENERATED; edit the kit files. */\n'
                 'var KratorFauna = (function () {\n%s\nreturn KratorFaunaAPI;\n})();\n' % (', '.join(fs), body))

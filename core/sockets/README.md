@@ -55,13 +55,13 @@ mkCulture({key:'yuni', name:'Yuni',
   signBg:'#dcb42c', signFg:'#3a2c08', signFrame:0x5a4410, pole:0x5a4410, flagStyle:'rect'});
 ```
 A new symbol is one function in `SYMBOLS` (`38-symbols.js`): `(g, cx, cy, R, ink, ink2)` on a 2D canvas context, drawn inside a box of half-size R; re-copy the file to `kits/catalog/krator-symbols.js` afterwards. Shipped: `sun` (Iziz),
-`triskele` (Republic), `diamond` (Voth), `hyperboloid` (Yuni: a cooling-tower waist with its ruling lines), `claw` (Beast Riders: three talon slashes), `wavesun` (Hykkousoi: a half sun over three waves), `wheel` (Xanadu: the eight-spoked wheel), `moon` (Ring Sea Islanders: the white moon); and, added by the furniture sets for cultures that have no pack yet (a pack that arrives later takes its symbol from `SYMBOL_OF`): `serpent` (Lizardmen), `star` (East Abyss), `horns` (Eastern Nomads), `fir` (Rustic Highlanders), `raven` (Painted Men: a formline raven's head), `fish` (Reed Lake), `skull` (Screamers), `gear` (Post-Apoc salvage and scrap).
+`triskele` (Republic), `diamond` (Voth), `hyperboloid` (Yuni: a cooling-tower waist with its ruling lines), `claw` (Beast Riders: three talon slashes), `windwave` (Hykkousoi: three wind-curls over a breaking wave), `wheel` (Xanadu: the eight-spoked wheel), `moon` (Ring Sea Islanders: the white moon); and, added by the furniture sets for cultures that have no pack yet (a pack that arrives later takes its symbol from `SYMBOL_OF`): `serpent` (Lizardmen), `star` (East Abyss), `horns` (Eastern Nomads), `fir` (Rustic Highlanders), `raven` (Painted Men: a formline raven's head), `fish` (Reed Lake), `skull` (Screamers), `gear` (Post-Apoc salvage and scrap).
 For a fully custom pack skip the factory and call `cultDef({key,name,paint,fill:{awning,banner,flag,emblem,sign,paint}})` with your own drawing functions; any `fill`
 you omit falls back to the generic pack.
 
 Shipped palettes: **Iziz** orange and teal, striped awnings. **Republic** Voth's deep red with cream, ochre and the triskelion. **Voth** deep purple with an ash-white glyph, ragged cloth.
 **Yuni** yellow with the hyperboloid. **Beast Riders** green with the claw, ragged hide-and-cloth.
-**Hykkousoi** pale sea-linen and slate blue with the gold wave-sun. **Xanadu** saffron bordered in maroon with the gold-hubbed wheel. **Ring Sea Islanders** bark-dyed cloth
+**Hykkousoi** pale sea-linen and slate blue, with gold wind over a slate wave. **Xanadu** saffron bordered in maroon with the gold-hubbed wheel. **Ring Sea Islanders** bark-dyed cloth
 and pandanus with the white moon, pennant streamers. These three take their colours from the sails in `kits/ringsea`, so a culture's ships and buildings match.
 **Zeijani** alecap purple bordered in soot, ochre bands, a bone-white `spiralarch` (a spiral sinking into a stepped arch: the way in), felt and hide awnings, pennants; signs bone on soot.
 **Screamers** ochre daub on rag with black and bone white and the skull, ragged cloth, pennants (the Hexahedron's salvage homes wear it).

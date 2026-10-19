@@ -34,6 +34,18 @@
         "settlements/xanadu"
       ],
       "port": 8807
+    },
+    {
+      "name": "hook",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8811",
+        "--directory",
+        "settlements/hook/dist"
+      ],
+      "port": 8811
     }
   ]
 }

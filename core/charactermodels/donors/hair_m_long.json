@@ -1,0 +1,10 @@
+{
+ "id": "hair_m_long",
+ "outfit": "long dark brown hair tied back in a low ponytail, a man's hairstyle",
+ "body": "male",
+ "kind": "piece",
+ "prompt": "long dark brown hair tied back in a low ponytail, a man's hairstyle, as a separate game asset on its own: hair only, no head, no face, no skin, no body, hollow inside where the head would be, front facing +Z, stylized realistic, natural colour.",
+ "preview": "01a125fd-baa0-7722-9d22-f8b1a85e9a7b",
+ "refine": "01a125fe-b80e-70cc-ac7f-1e422e9a8b85",
+ "glb": "hair_m_long.glb"
+}

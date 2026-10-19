@@ -119,6 +119,9 @@ def srcpath(f, base=None):
 # table and view list, merged into the one sorted filename order. Everything
 # else — core, helpers, all 33 builders — is shared, so a fix to a builder lands
 # in every target that shows it and the two cannot drift.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost   # core/host (core/host/README.md; ROADMAP.md section 10, step 3): the shell and the whole interface, as Iziz takes it
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]   # not core/space (Roketstad's band reads its own copy); no editor world yet
 TARGET_CORE = {'roketstad': ['mask']}   # core/<module> fragments a target takes (core/mask: the placement raster)
 # A target's BIOME, read IN PLACE (biomes/WORLD.md: several kits on one page; as biomes/geyser reads the hyperjungle):
 # core/space, core/biome and one biome kit's fragments, under slot names in the 86-bio- band, so they load after the
@@ -182,6 +185,7 @@ DETERMINISTIC = {
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
+DETERMINISTIC |= set(CORE_HOST) | {'99-start.js', '91h-hl-tags.js'}   # core/host (no rnd()); the take; the sites into core/tags
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -207,7 +211,7 @@ def virtual_bodies():
     import furniture_bundle, kit_bundle
     return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(['highlands'])}
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES) or f in VIRTUAL
+    return f.startswith(SCOPED_PREFIXES) or f in VIRTUAL or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -307,6 +311,7 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(FURNISH_DIR, f) for f in FURNISH_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
@@ -332,7 +337,10 @@ def build_one(target, do_checks, assert_origin):
             bodies[f] = fh.read()
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
-    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'highlands')
+    # the pack beside the pages (highlands.tex.highlands.js), one file every page of the build shares; --inline-packs puts it back in
+    # each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+    side = None if '--inline-packs' in sys.argv else {}
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'highlands', side=side)
     order = sorted(order + [MATLIB_PACK])
     if bio:   # the biome kit's library pack (its tex/), before the biome code
         bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', bio['kit']), bio['kit'])
@@ -356,6 +364,8 @@ def build_one(target, do_checks, assert_origin):
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
+    if side:
+        html = matlib_pack.write_sidecar(side, html, DIST, 'highlands.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:

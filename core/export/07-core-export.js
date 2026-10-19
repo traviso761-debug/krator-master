@@ -13,9 +13,12 @@
 //   EXPORT.world({box?, sections?, build?, ...})  -> the container (below). box: [x0, z0, x1, z1], a tile; sections: the
 //        names to fill (an unknown name throws); the rest of opt reaches every contributor as ctx.opt.
 //        A contributor that throws is reported in `errors` and its part skipped; the other sections still fill.
-//   EXPORT.check(world, {uid})  -> {ok, problems, joins}: every reference resolves (an item's or bucket's material, a
+//   EXPORT.check(world, {uid, profile})  -> {ok, problems, joins}: every reference resolves (an item's or bucket's material, a
 //        material's maps, an item's set and a bucket's volumes in the registry, the side tables' lengths); uid(cls, key,
-//        [x,y,z]) recomputes every instance's uid from its matrix (KTAGS.uid in a page)
+//        [x,y,z]) recomputes every instance's uid from its matrix (KTAGS.uid in a page). profile: the sections this case
+//        must fill (ROADMAP.md section 11, item 1), as names: 'items', 'terrain=field' (its source must be field, not
+//        sampled), 'interiors?' (may read empty); a required section that reads stub, none, error or skipped (or empty
+//        without the ?) is a problem. Without a profile the statuses are not judged (the behaviour before 2026-10-18)
 //   EXPORT.glb(world)  -> {json, glb (Uint8Array), stats}: the meshes as binary glTF 2.0 (an item a node with
 //        EXT_mesh_gpu_instancing, a bucket a node with its mesh), the rest as JSON naming each node (`glb`)
 //   EXPORT.terrain(box, {h, water?, field?, step?, probes?})  -> the terrain section: the build's KFIELD (core/terrain)
@@ -40,7 +43,7 @@ const LIST = { items: 1, buckets: 1, materials: 1, textures: 1 };
 // sections no module fills yet: their contract is written (README.md, "Stubs") so the first contributor has a shape to meet
 const STUB = { fixtures: 1, interiors: 1, furniture: 1, sim: 1, city: 1 };
 const CONTRACTS = {
- items: 'instanced meshes: {id, name, kit, label, material, lod, count, dynamic, geometry, matrices, colours, extras, record, recordClass, recordKey, records, recordIndex}',
+ items: 'instanced meshes: {id, name, kit, label, material, lod, count, dynamic, geometry, matrices, colours, extras, record, recordClass, recordKey, records, recordIndex, motion (the baked track of a moving item: biomes/GODOT.md, "Motion"; world.glb carries it in the node extras.krator_motion)}',
  buckets: 'merged meshes: {id, name, kit, label, material, lod, triangles, geometry (compacted to the tile), records, recordIds, pieces}',
  materials: 'one vocabulary (core/materials/record KMAT fields: family, colour, map, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib) plus the source module\'s own (a biome material\'s kind, key, options, sway); hook names the Godot library shader(s), joined by + (godot/README.md, "The shader library"); a ground\'s layers (EXPORT.groundLayers: hook world-uv, role ground, layers {terms [{maps [{map, scale, offset}], gain, amount, weight}]}, weights {x0, z0, step, nx, nz, names, values})',
  textures: '{id, from: "png" | "library" | "none", png?, lib?, pack?, family?, slot?, wrap, repeat, offset, flipY, size?}: a library map by reference (the build\'s pack, tex/pack.json), never as pixels',
@@ -52,8 +55,8 @@ const CONTRACTS = {
  fixtures: 'STUB. Doors, windows, lights, signs as core/tags records with a placement each (Yuni\'s KRATOR_EXPORT.fixtures shape): {format: "krator-fixtures", records: [{id, uid, class: "fixture", kind, parent, at, ry, size, tags, host: {wall, side, sill}}]}',
  interiors: 'STUB. The room graph (kits/interiors ROOM()): {format: "krator-interiors", buildings: [{id (the building record), storeys: [{y, rooms: [{id, kind, poly, h, doors: [ids]}]}], links: [{a, b, kind: "door" | "stair" | "ladder", at}], walls: [{a, b, h, col: true}]}]}',
  furniture: 'STUB. GODOT-PLAN.md Phase 4\'s per-look scheme: {format: "krator-furniture", pieces: [{id: "<piece>/<variant>/<look>", entry {tags, anchor, size, role, job, family per material}, lights, mesh (a glb node)}], placements: [{record (a core/tags furniture id), piece, at, ry}]}. A placement\'s seed is reduced to one of K looks (about 4) per variant, so placements share a mesh: one MultiMesh per piece and look',
- sim: 'STUB. core/simulation\'s export (krator-sim: places, actors, schedules, routes, the clock); Verge and Dhelv write theirs through their verify (godot/data/verge, dhelv) until they register here',
- city: 'STUB, owned by the Voth branch (core/city, settlements/voth): core/city registers here when that branch pauses. Expected: {format: "krator-city", plan (streets, blocks, lots as plain records keyed by stable ids), edits (krator-edits/1 deltas by id)}; buildings and their doors join the registry by id'
+ sim: 'STUB. core/simulation\'s export (krator-sim: places, actors, schedules, routes, the clock), first for the isle demo (M6, settlements/isle-demo/PLAN.md section 7); Verge and Dhelv write theirs through their verify (godot/data/verge, dhelv) until they register here',
+ city: 'STUB. core/city registers it (EXPORT.register("city", fn, {by: "city"})) for the isle demo\'s two plans (M6, ROADMAP.md section 11). Expected: {format: "krator-city", plan (streets, blocks, lots as plain records keyed by stable ids), edits (krator-edits/1 deltas by id)}; buildings and their doors join the registry by id'
 };
 const CONVENTION = {
  units: 'm', up: '+Y', x: 'east', z: 'south', handed: 'right (as glTF and Godot)',
@@ -65,7 +68,10 @@ const CONVENTION = {
   textures: 'sRGB images', stage: 'linear (as hex)', atmos: 'sRGB' },
  typed: '{type, n, b64}: the array\'s bytes, little-endian, base64; Float32Array, Uint16Array, Uint32Array',
  ids: 'core/tags: a record id is <prefix>_<5 digits> (or the build\'s own); an instance of an item set is <set id>#<index>; a uid is KTAGS.uid(class, key, at): KRAND.hash(0, fnv1a(class), fnv1a(key), floor(x*10+.5), floor(y*10+.5), floor(z*10+.5)) as 8 hex digits',
- box: '[x0, z0, x1, z1]: an instance belongs to a tile when x0 <= x < x1 and z0 <= z < z1 (its origin); a bucket piece by its foot (the xz of its lowest vertex)'
+ box: '[x0, z0, x1, z1]: an instance belongs to a tile when x0 <= x < x1 and z0 <= z < z1 (its origin); a bucket piece by its foot (the xz of its lowest vertex)',
+ lod: { cell: 150,   /* metres: the cell a LOD-chunked item or bucket is split into on import */
+  widen: 'half-diagonal',   /* a visibility range is widened by the cell's half-diagonal (cell * 0.7071) */
+  copies: 'none' }   /* pages export no LOD render copies (core/lod's extras.lodCopy are skipped) */
 };
 const reg = {}; SECTIONS.forEach(s => { reg[s] = []; });
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
@@ -304,7 +310,26 @@ function check(w, opt){
   }
   for(const p of w.water.probes || []) if(!sids.has(p[4])) bad('a water probe names surface ' + p[4] + ', which the section does not hold');
  }
+ if(opt.profile) profile(w, opt.profile, bad, J);
  return { ok: !P.length, problems: P, joins: J };
+}
+
+// a profile: the sections a case must fill (ROADMAP.md section 11, item 1; README.md, "Profiles"). Each entry is a
+// section name, with '?' after it when the section may read empty (Iziz's interiors: its buildings are shells) and
+// '=<source>' when the part's `source` must be that (terrain=field: a krator-field, not sampled heights). An unknown
+// name throws, as register does: a profile is written by hand, so a typo is a programming error, not data
+function profile(w, prof, bad, J){
+ if(!Array.isArray(prof)) throw new Error('profile: a list of section names');
+ J.profile = { required: 0, met: 0 };
+ for(const e of prof){
+  const m = /^([a-z]+)(\?)?(?:=([a-z]+))?$/.exec(String(e));
+  if(!m || SECTIONS.indexOf(m[1]) < 0) throw new Error('profile: unknown section ' + e);
+  const s = m[1], mayEmpty = !!m[2], src = m[3] || null, st = w.sections && w.sections[s] ? w.sections[s].status : 'none';
+  J.profile.required++;
+  if(st !== 'ok' && !(st === 'empty' && mayEmpty)){ bad('profile: ' + s + ' is required and reads ' + st + (w.sections && w.sections[s] ? '' : ' (no status)')); continue; }
+  if(src && st === 'ok' && !(w[s] && w[s].source === src)){ bad('profile: ' + s + ' must come from ' + src + ', not ' + (w[s] && w[s].source || 'nothing')); continue; }
+  J.profile.met++;
+ }
 }
 
 // ---------------------------------------------------------------- glb: the meshes as binary glTF
@@ -362,7 +387,8 @@ function glb(w){
   if(g.index){ let I = unpack(g.index); if(I.constructor === Uint16Array && nv >= 65535) I = Uint32Array.from(I); p.indices = acc(I, 1); }
   if(matIx.has(matId)) p.material = matIx.get(matId);
   J.meshes.push({ name, primitives: [p] }); return J.meshes.length - 1; };
- const strip = (r, k, kind, node) => { const o = {}; for(const key in r) if(['geometry', 'matrices', 'colours', 'extras'].indexOf(key) < 0) o[key] = r[key];
+ const strip = (r, k, kind, node) => { const o = {}; for(const key in r) if(['geometry', 'matrices', 'colours', 'extras', 'motion'].indexOf(key) < 0) o[key] = r[key];
+  if(r.motion) o.motion = r.motion.error ? r.motion : { channels: r.motion.channels, stride: r.motion.stride };
   o.glb = node; return o; };
  const items = (w.items || []).map((it, k) => {
   const n = it.count, M = unpack(it.matrices), T = new Float32Array(n * 3), R = new Float32Array(n * 4), S = new Float32Array(n * 3);
@@ -373,6 +399,10 @@ function glb(w){
   const name = 'item_' + k;
   J.nodes.push({ name, mesh: mesh(it.geometry, it.material, name), extensions: { EXT_mesh_gpu_instancing: { attributes: ext } },
    extras: { krator_item: it.id, krator: it.record == null ? null : it.record } });
+  // a moving item's baked track (biomes/GODOT.md, "Motion"): its fields in the node's extras, its arrays as scalar accessors
+  const mo = it.motion; if(mo && !mo.error){ const x = {}; for(const key in mo) x[key] = ['period', 'start', 'frames', 'data'].indexOf(key) < 0 ? mo[key] : acc(unpack(mo[key]), 1);
+   J.nodes[J.nodes.length - 1].extras.krator_motion = x; }
+  else if(mo) J.nodes[J.nodes.length - 1].extras.krator_motion = mo;
   J.scenes[0].nodes.push(J.nodes.length - 1); instanced += n;
   return strip(it, k, 'item', { node: name, instances: n, attributes: names });
  });

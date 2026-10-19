@@ -7,6 +7,9 @@
      KCITY.site.minSpacing()            the spacing rule's distance (the shallowest 'middle' lot, half a main and a side street)
      KCITY.site.nearestWay(p, cls, skip)  the nearest point on a way (of the classes in cls)
      KCITY.site.avenues(list, o)        the drawn avenues, each loose end joined to an avenue (o.snap) or a landing (o.landings)
+     KCITY.site.routeAvenues(specs, step, o)  avenues routed over the ground (a world with none drawn): A* kept to the
+                                        floor (not steeper than o.maxSlope, priced above both ends), merged where two
+                                        would run within o.merge, bridged where o.cross allows
      KCITY.site.ring(pts, step, tag)    a ring avenue round a district, kept where it is dry and not on an avenue already
      KCITY.site.blockCorridor(pts, hw)  a corridor (a causeway, a bridge's line) no lot or street takes
      KCITY.site.clearUnder(pts, w, step, pad, skip)  what stands under a way laid over it comes down
@@ -115,6 +118,94 @@ KCITY.site.ring = function (ring, step, tag, o) {
     if (run.length > 4) { SL.addWay('avenue', run, step, { tag: tag }); made++; }
   }
   return made;
+};
+/* avenues ROUTED over the ground, for a world with none drawn (Verge). specs [{from, to, name}], laid in order: each an
+   A* route over a coarse grid of the ground (o.c, 5 m) from `from` to within o.reach (14 m) of `to`. The ground decides
+   the line:
+     impassable  off the build zone (OUT on the raster) unless o.cross(x, z) says it may be bridged (a river), HARD and
+                 GREEN ground, ground steeper than o.maxSlope (TUNE.maxSlope);
+     the price   per metre 1 + o.slopeK * grade^2, plus o.riseK for each metre the ground stands more than o.rise above
+                 the lower of the route's two ends (an avenue keeps to the valley floor, it does not climb the mountain to
+                 save a bend), plus o.crossK on bridged ground; on an avenue already laid, o.reuse of that (routes
+                 converge on a trunk).
+   Merging: a route's points within o.merge of an avenue already laid are dropped, so two avenues that would run close
+   become one. Each run left is tied at its nearest point to the avenue it leaves or meets; one shorter than o.minRun is
+   dropped. Bridged ground is its own straight way (tag 'bridge', noFrontage); a span longer than o.maxSpan ends the
+   route there. Returns {made, merged (metres of route left to the avenues already there), failed, ways, bridges} */
+KCITY.site.routeAvenues = function (specs, step, o) {
+  o = o || {};
+  var R = SL.R, f = Math.max(1, Math.round((o.c == null ? 5 : o.c) / R.c)), n = Math.floor(R.n / f), c = R.c * f, half = R.half, h = o.h || CG.base;
+  var W = TUNE.width.avenue, maxSlope = o.maxSlope == null ? TUNE.maxSlope : o.maxSlope, slopeK = o.slopeK == null ? 60 : o.slopeK;
+  var rise = o.rise == null ? 6 : o.rise, riseK = o.riseK == null ? 0.6 : o.riseK, crossK = o.crossK == null ? 30 : o.crossK, reuse = o.reuse == null ? 0.35 : o.reuse;
+  var merge = o.merge == null ? 30 : o.merge, minRun = o.minRun == null ? 40 : o.minRun, maxSpan = o.maxSpan == null ? 90 : o.maxSpan, reach = o.reach == null ? 14 : o.reach;
+  var cx = function (i) { return -half + (i + 0.5) * c; }, G = { n: n, c: c }, H = new Float32Array(n * n), K = new Uint8Array(n * n);   /* K: 0 open, 1 bridged, 2 impassable */
+  for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) {
+    var x = cx(i), z = cx(j), occ = R.at(x, z), q = j * n + i;
+    H[q] = h(x, z);
+    K[q] = occ === OCC.OUT ? (o.cross && o.cross(x, z) ? 1 : 2) : (occ === OCC.HARD || occ === OCC.GREEN) ? 2 : 0;
+  }
+  var grade = function (i, j) {
+    var gx = (H[j * n + Math.min(n - 1, i + 1)] - H[j * n + Math.max(0, i - 1)]) / (2 * c), gz = (H[Math.min(n - 1, j + 1) * n + i] - H[Math.max(0, j - 1) * n + i]) / (2 * c);
+    return Math.sqrt(gx * gx + gz * gz);
+  };
+  var onAvenue = function (x, z) { var k = R.idx(x, z); return k >= 0 && R.sd[k] <= W / 2 && R.sdw[k] >= 0 && PLAN.ways[R.sdw[k]] && PLAN.ways[R.sdw[k]].cls === 'avenue'; };
+  var cellOf = function (p) { return Math.floor((p[1] + half) / c) * n + Math.floor((p[0] + half) / c); };
+  var out = { made: 0, merged: 0, failed: [], ways: [], bridges: [] };
+  specs.forEach(function (sp) {
+    var from = cellOf(sp.from), hRef = Math.min(h(sp.from[0], sp.from[1]), h(sp.to[0], sp.to[1])), goals = new Set();
+    var gi = Math.floor((sp.to[0] + half) / c), gj = Math.floor((sp.to[1] + half) / c), gr = Math.ceil(reach / c);
+    for (var b = -gr; b <= gr; b++) for (var a = -gr; a <= gr; a++) {
+      var ii = gi + a, jj = gj + b; if (ii < 0 || jj < 0 || ii >= n || jj >= n || K[jj * n + ii] !== 0) continue;
+      if (Math.hypot(cx(ii) - sp.to[0], cx(jj) - sp.to[1]) <= reach) goals.add(jj * n + ii);
+    }
+    if (from < 0 || from >= n * n || !goals.size) { out.failed.push(sp.name); return; }
+    var cost = function (k, i, j) {
+      if (K[k] === 2 && k !== from) return Infinity;
+      var g = grade(i, j); if (K[k] === 0 && g > maxSlope) return Infinity;
+      var p = 1 + slopeK * g * g + riseK * Math.max(0, H[k] - hRef - rise) + (K[k] === 1 ? crossK : 0);
+      return onAvenue(cx(i), cx(j)) ? p * reuse : p;
+    };
+    var path = ASTAR(G, from, goals, cost, null, 1.0);
+    if (!path) { out.failed.push(sp.name); return; }
+    var P = path.map(function (k) { return { p: [cx(k % n), cx((k / n) | 0)], bridge: K[k] === 1 }; });
+    P[0].p = sp.from.slice();
+    P.forEach(function (e) { var q = KCITY.site.nearestWay(e.p, ['avenue']); e.near = !!q && q.d < merge; });
+    /* runs of points away from the avenues laid already, each tied to the avenue at its ends */
+    var runs = [], cur = null;
+    P.forEach(function (e, i) {
+      if (e.near) { if (cur) { cur.endNear = true; runs.push(cur); cur = null; } out.merged += c; return; }
+      if (!cur) cur = { pts: [], startNear: i > 0 };
+      cur.pts.push(e);
+    });
+    if (cur) runs.push(cur);
+    for (var r = 0; r < runs.length; r++) {
+      var run = runs[r], E = run.pts, stop = false;
+      if (run.startNear) { var s0 = KCITY.site.nearestWay(E[0].p, ['avenue']); if (s0 && s0.d < merge * 1.5) E.unshift({ p: s0.p, bridge: false }); }
+      if (run.endNear) { var s1 = KCITY.site.nearestWay(E[E.length - 1].p, ['avenue']); if (s1 && s1.d < merge * 1.5) E.push({ p: s1.p, bridge: false }); }
+      /* land pieces and the bridges between them */
+      var pieces = [], land = [];
+      for (var t = 0; t < E.length && !stop; t++) {
+        if (!E[t].bridge) { land.push(E[t].p); continue; }
+        var t1 = t; while (t1 < E.length && E[t1].bridge) t1++;
+        var A = land.length ? land[land.length - 1] : (t ? E[t - 1].p : null), B = t1 < E.length ? E[t1].p : null;
+        if (!A || !B || V.dist(A, B) > maxSpan) { stop = true; break; }
+        pieces.push({ pts: land, bridge: false }, { pts: [A, B], bridge: true }); land = [B]; t = t1;
+      }
+      pieces.push({ pts: land, bridge: false });
+      pieces.forEach(function (pc) {
+        if (pc.bridge) {
+          var bw = SL.addWay('avenue', pc.pts, step, { tag: 'bridge ' + sp.name }); bw.noFrontage = true; bw.bridge = true;
+          out.ways.push(bw); out.bridges.push({ a: pc.pts[0], b: pc.pts[1], way: bw }); return;
+        }
+        if (pc.pts.length < 2 || plLen(pc.pts) < minRun) return;
+        var pts = pc.pts.length > 3 ? chaikin(rdp(pc.pts, o.rdp == null ? 4 : o.rdp), 2) : pc.pts;
+        pts[0] = pc.pts[0]; pts[pts.length - 1] = pc.pts[pc.pts.length - 1];
+        out.ways.push(SL.addWay('avenue', pts, step, { tag: sp.name })); out.made++;
+      });
+      if (stop) break;
+    }
+  });
+  return out;
 };
 KCITY.site.blockCorridor = function (P, hw) {
   var R = SL.R;

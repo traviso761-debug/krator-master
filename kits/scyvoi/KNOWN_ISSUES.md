@@ -34,7 +34,7 @@
 
 - [x] `tkPavilion` drew its lining OUTSIDE the walls (the wall normal's sign was flipped), so the Saharan pavilion showed its arch lining outside and its felt scroll inside. Fixed in `40-tk-tentkit.js` (the pavilion has since gone to kits/desert-nomads, which vendors the fix).
 - [x] The engine took a `KIT` record (`26k-kit.js`) so the Desert and Ash Nomads kits vendor its fragments unchanged; the page's behaviour is the same.
-- [ ] The Tibetan tents' roofs are the blue appliqué sheet (`patApp`), which is dense; a white roof sewn with a few large blue knots (the references) would want its own sheet (`patterns/scyvoi/applique-roof`), not asked for yet.
+- [x] The Tibetan tents' roofs were the dense blue appliqué sheet (`patApp`). Fixed 2026-10-14: they take the owner's white roof sewn with large blue knots (`patRoof`, `patterns/scyvoi/applique-roof`); `patApp` stays on the yurt-hall's walls.
 
 ## Shared code touched
 

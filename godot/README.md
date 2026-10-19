@@ -34,14 +34,18 @@ godot --headless --path godot --script res://tests/verge/verge_sim_test.gd   # V
 godot --headless --path godot --script res://tests/dhelv/dhelv_sim_test.gd   # Dhelv's ramblers: KSim.pose (core/simulation's twin) against the page's trace
 godot --headless --path godot --script res://tests/dhelv/dhelv_nav_test.gd   # Dhelv's walk floors baked to a navmesh: gate to temple, through the braid
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
+godot --headless --path godot --script res://tests/character/kchar_test.gd   # core/charactermodels: records and morphs against the JS golden, a MakeHuman figure from the pieces
+godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz   # the perf table (PERF.md, perf-<case>.json): run it on the real GPU, below
 ```
 
 Or open `godot/project.godot` in the editor (Import, then F5). The editor skips `data/` (`data/.gdignore`): the
 spike loads its exports at runtime, and the editor's glTF import of a 20 MB region with LOD generation took over
 twenty minutes. To try the editor's import route, copy a `.glb` out of `data/` (`CHECKLIST.md` item 3).
 
-In the window: right mouse drag to look, WASD to move, Q/E down and up, Shift for x5, wheel for speed. `[` `]` step the
-hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather (or start with `-- --weather=storm`), `F1` hides the help, `F2` prints the case's report.
+In the window: left or right mouse drag to look, middle drag to orbit the point ahead, arrow keys to turn and tilt,
+WASD to move, Q/E down and up, Shift for x5, wheel to zoom (dolly), Ctrl+wheel for speed, `+` `-` to narrow or widen the lens
+(Backspace resets it). `[` `]` step the
+hour, `T` runs a time-lapse, `P` pauses the clock, `F3` cycles the weather (or start with `-- --weather=storm`), `F1` hides the help, `F2` prints the case's report.
 
 ## The cases
 
@@ -60,6 +64,43 @@ hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather 
 
 Each case also loads `terrain.json`: the page's ground height sampled on a grid. No exporter carries the ground yet;
 this stands in for the `core/terrain` bake (Phase 2) so the plants have something to stand on.
+
+## Scoring the pairs
+
+`tools/compare_shots.py` shoots the page and the spike from one camera (`shots/compare/<case>-web.png`, `<case>-godot.png`,
+the composite `<case>.png`) and scores each pair (ROADMAP.md stage 4, "a perceptual metric"; section 11 item 4). Both shots
+are the same case, view and size: 1600 x 900 on both sides (the page at device pixel ratio 1, the spike's window), and where
+they still differ (a window clipped to a small screen) both are downscaled to the smaller before scoring and the table says
+so. Each pair gets, on grey copies:
+
+- **SSIM**, structural similarity (Wang 2004) on a 400-px-wide copy with 8 x 8 mean windows, numpy only. At that scale a
+  tree, a wall or a water sheet is one feature and a leaf's exact placement is not. 1 is identical, 0 unrelated.
+- **MAD**, the mean absolute difference at the common size, as a fraction of full range.
+- **diff**, the fraction of pixels differing by more than `--diff` (default 0.10 of full range).
+- `<case>-diff.png`, the grey difference amplified x3 (brighter is further apart), next to the shots and gitignored like them.
+
+`--threshold=<ssim>` (default **0.40**) and `--assert` make a pair under it, or a pair with a shot missing, exit 1; `--report`
+prints the same table and exits 0; `--score` scores the shots already present without taking new ones; `scores.json` keeps
+the last table. The worst SSIM prints first. `tools/test_all.py --nightly` runs it on the must-pass cases (`COMPARE_CASES`:
+`world-sedesert`, `world-iziz`) as a report; set `COMPARE_ASSERT = True` there to make it a gate once the first numbers below
+have been read. CI takes the shots under Xvfb on the Compatibility renderer (`tools/shot.sh`); a desktop runs the binary
+directly on the same renderer, so the two tables differ in the GPU, not the renderer. Needs numpy and Pillow (the nightly
+workflow installs both).
+
+**Why 0.40.** The first pairs (below) scored 0.54 and 0.71. The failures the gate exists to catch, measured on the same
+shots, all scored under 0.32: a black render 0.00, the wrong case 0.24 to 0.26 (sedesert's page against Iziz's spike and the
+reverse), a mirrored camera 0.29 to 0.31. 0.40 sits 0.09 over the worst failure and 0.14 under the worst good pair. It is a
+gate against an empty render, a wrong camera or a missing world, not against a shade: a pair whose sky matches and whose
+ground is flat grey still scores about 0.65, so a dropped layer shows in the `diff` column and the difference image, not in
+SSIM. Raise the threshold only after the pairs above it have been looked at, and record the new numbers here.
+
+**First baseline** (2026-10-18, the owner's machine: Godot 4.7.2 Compatibility on the GPU, the page in headless Chromium on
+SwiftShader; both 1600 x 900):
+
+| case | SSIM | MAD | diff > 0.10 | what the eye sees |
+|---|---|---|---|---|
+| `world-sedesert` | 0.542 | 0.128 | 54.8% | the pond, its shore plants and the mesa agree; the page's sky has the ringed planet and clouds, the spike's a plain haze; the spike draws far terrain the page fogs out and misses the page's far cliff: the diff is mostly sky and horizon |
+| `world-iziz` | 0.707 | 0.134 | 25.4% | the gate, towers, wall, tavern, stalls and street shadows agree; the page draws its in-canvas building labels, the spike a billboard the page does not; the far trees differ in colour (Compatibility's colour space, below) |
 
 ## Layout
 
@@ -83,6 +124,7 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `krator/water_import.gd` | `KratorWater`: the `water` section's open surfaces drawn (a grid in world space on `shaders/water.gdshader`), and `check_probes` (the page's own heights against KWater) |
 | `krator/lamps_import.gd` | a page's lamps (`lamps.json`, krator-lamps; Girder's `_api.lamps`): halos on `halo.gdshader` and the nearest 32 as OmniLight3D, run by `atmos_lights.gd` |
 | `krator/records_import.gd` | Yuni's records to stand-in nodes, each node's `krator` metadata its core/tags record (`tags.json`; a MultiMesh keeps its instances' records in a `records` side table) |
+| `krator/character/` | `kchar.gd` (the twin of core/charactermodels' `KCHAR` for the MakeHuman bodies: morph weights and joints, strangers by people, parts, hidden skin) and `kchar_figure.gd` (a character on one Skeleton3D: morphs as shared blend shapes from `<piece>.gshapes.bin`, skin as one surface of cover regions dropped by `kchar_skin.gdshader`, garments through `kchar_push.gdshader` (their look, the push out of the limbs, the waistband tuck), cloth chains, moved joints and binds, tint, `kchar_eye.gdshader`); data in `data/characters/` (`tools/sync_core.py`: the JSON and golden are tracked, the pieces are copied in and gitignored); body mods (`KChar.mods`, `arms`, `fits`: a second pair of arms or rib gills, drawn as pieces on the lower-arm joints every skeleton has; the lower arms driven from the upper by `_arms2` when the body has four) and a giant (`kit.scale`, the man's clips at its own pace); `tests/character/kchar_test.gd` checks it against the JS golden, `kchar_shot.gd` draws five strangers (`--giant`: three giants) |
 | `krator/fly_camera.gd` | the camera |
 | `krator/dhelv_import.gd`, `dhelv_sim_node.gd`, `dhelv_nav.gd` | the dhelv case: stand-ins, the frame (ramblers and the agent), and the walk floors as Recast source (`KratorDhelvNav`: both windings for floors, the blocks' sides; cell 0.25 m, walker 0.25 m by 1.7 m, step 0.6) with DHN's own route for comparison |
 | `shaders/lib/` | **the shader library** (below): one `.gdshaderinc` per hook id, `world-uv`, `breakup`, `foliage`, `bark`, `cloth-sway`, `flag`, `glass`, `coursing`, `water` |
@@ -98,13 +140,15 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `tests/shaders/` | `library_test.gd` (headless): every hook has its include, hooks resolve (an unknown one is reported), and on `world-sedesert` the ground's layers sit on the terrain's `ground.gdshader` (maps, scales, gains, the crack weight to a byte of the page's) and the pond on `water.gdshader` (its uniforms; KWater's heights equal the page's probes), each with a negative. `library_gpu_check.gd` (needs a renderer: Xvfb + Compatibility): `lib/water`'s `wtr_height` and `wtr_damp` on three surfaces read back against KWater (and a 5% taller wave that must miss), and the other eight includes compiled together, twenty values against GDScript twins |
 | `tests/water/` | `water_test.gd` and its `golden.json` (written by `tools/water_golden.js` from core/water through core/export's water adapter): KWater against WATER at fixed (x, z, t), with negatives |
 | `tools/water_golden.js` | writes `tests/water/golden.json` (rerun it after changing core/water, core/atmos's waves or the water adapter) |
+| `tests/perf/` | `perf_capture.gd`: the perf capture (below), which writes `PERF.md` and `perf-<case>.json` beside `spike-report.json` |
+| `PERF.md`, `perf-<case>.json` | the perf table and the captures it is built from (kept, like `spike-report.json`; the header says which machine and renderer wrote them) |
 | `tools/atmos_waves.js` | writes `shaders/atmos_waves.gdshaderinc` from `ATMOS.waveGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.waves`) |
 | `tools/atmos_clouddeck.js` | writes `shaders/atmos_clouddeck.gdshaderinc` from `ATMOS.deckGLSL()` (rerun it, then `atmos_golden.js`, after changing `presets.clouddeck`). With no node on the machine: `python3 tools/node_in_chromium.py godot/tools/atmos_clouddeck.js --write` |
 | `data/<case>/` | the exports (below); `meta.json` says where each came from |
 | `tools/export_spike.py` | writes `data/` from the built pages (headless Chromium; `pip install playwright`) |
 | `tools/spike_export.js`, `tools/vendor/GLTFExporter.r128.js` | the glTF region exporter injected into a page, and three r128's own exporter (MIT, from the three@0.128.0 npm package) |
 | `tools/stage_hook.js` | an init script for a page: finds its cameras and what it renders each frame, so `KSTAGE` can read the scenes |
-| `tools/compare_shots.py` | the web page and the spike side by side from the same camera (`shots/compare/`) |
+| `tools/compare_shots.py` | the web page and the spike side by side from the same camera (`shots/compare/`), each pair scored by SSIM, mean absolute difference and the differing fraction, with a difference image ("Scoring the pairs", below); `--assert` gates on `--threshold`; the nightly runs it on the must-pass cases |
 | `tools/shot.sh` | a screenshot on a machine with no display (Xvfb + Compatibility) |
 | `shots/` | screenshots from `tools/shot.sh` (gitignored, like every `shots/` in the repo) |
 
@@ -132,12 +176,14 @@ normal is `StandardMaterial3D`'s `detail_*` fields fed from a record's `detail`,
 | `glass` | `lib/glass` | `core/materials/22-materials.js` `MAT.glass` (GLASS FRESNEL): the rim as `EMISSION` | none | none yet |
 | `coursing` | `lib/coursing` | none yet: the TEX kind `coursing` (`core/materials/PLAN.md`, "From spiderbench") waits for its pilot, Voth's canton walls (the Voth branch's) | `coursing` {courseH, blockW, slide, joint, tone, seed} | none yet |
 | `water` | `lib/water` | `core/water/50-core-water-draw.js` `WATER.glsl` and `WATER.draw` | core/export's `water` section | `water` |
+| `anim` | `lib/anim` | `core/biome/35-core-anim.js` `BIO.animHook`: fauna on a path (orbit, flit), walkers' legs, flapping wings, billboard motes | `options`; per instance `aP0.w` (COLOR.a) and `aP1` (INSTANCE_CUSTOM) | `anim`, `anim_add` |
 
 What it proves: `tests/shaders/library_test.gd` (the table, the resolution, the sedesert case's ground and pond),
 `tests/water/water_test.gd` (KWater equals WATER to 1e-14 m), `tests/shaders/library_gpu_check.gd` (every include
-compiles, and computes what its GDScript twin does: water within 0.5 mm, the rest within 2e-4). Not yet: a record field
+compiles, and computes what its GDScript twin does: water within 0.5 mm, the rest within 2e-4), `tests/motion/motion_test.gd` (the baked motion of CPU-moved fauna against the page's ticks: `tools/motion_golden.py`; `krator/kmotion.gd`), `tests/anim/anim_test.gd`
+(`krator/kanim.gd`, the anim twin, against `BIO.animHook`'s own GLSL run on a GPU: `tools/anim_golden.py`; the importer's packing). Not yet: a record field
 that selects `cloth-sway`, `flag`, `glass` or `coursing` on an exported mesh (no export carries those materials yet: Girder
-and Iziz still go through the glTF route), the fauna's `anim` kind (reported unknown), a texture array for bark variants,
+and Iziz still go through the glTF route), fauna a kit moves on the CPU (`BIO.dynamic`; swbay's and nwbay's flocks), a texture array for bark variants,
 and pre-compiling the library at load.
 
 ## Driving the editor (Godot MCP)
@@ -154,6 +200,34 @@ With the editor open, Claude can read and edit scenes, scripts and project setti
   `take_screenshot` timed out there: the main scene loads a whole biome tile under software rendering. Use
   `tools/shot.sh` for screenshots in the cloud.
 - The plugin talks only to `127.0.0.1:6505`. The server's optional visualizer (`map_project`) serves on port 6510.
+
+## The perf capture
+
+The tests above prove parity, not speed. `tests/perf/perf_capture.gd` measures each must-pass case on the machine it runs on
+(ROADMAP.md section 11, item 4) and writes the table:
+
+```
+godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz
+godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-iziz --compare    # the deltas against the last perf-world-iziz.json
+godot --headless --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert --frames=10 --out=res://shots/perf   # the nightly's smoke
+```
+
+For each case it imports the world through the spike's own loader (`spike.gd` `_load_case`, so nothing is forked), records the
+import wall time and the time to the first drawn frame, then puts the camera at four fixed poses (`POSES` in the script: the
+whole tile from two high oblique corners, an eye-level view from the tile's edge, a walker's eye at the centre) and samples
+`--frames` frames (120) at each after `--warmup` (10): the frame delta (mean, 95th percentile, fps), `Performance.TIME_PROCESS`
+(the worst process step of the last second, as the max seen), the RenderingServer's draw calls, primitives and objects in frame,
+video, texture and buffer memory, static memory; plus the scene's node count and its MultiMesh instance total. It writes
+`perf-<case>.json` and rebuilds `PERF.md` from every `perf-*.json` in `--out` (default `res://`, next to `spike-report.json`),
+with the Godot version, renderer, GPU (`RenderingServer.get_video_adapter_name()`), window, date and git commit at the top of
+each case's table. The window is set to 1600x900 (`--size=WxH`) and vsync is turned off (`--vsync` keeps it), so frame time
+is the GPU's and the table says what it measured at.
+
+**Only a run in Forward+ on a real GPU counts** (`CHECKLIST.md`, item 7): `--headless` never draws (draw calls and memory read
+0, frame time is the script's own), and CI's llvmpipe is not the owner's machine. The headless run is what
+`tools/test_all.py --nightly` smokes, into `shots/perf/` so it never overwrites a real table; it fails only if the script
+crashes or cannot write, never on a number. `--compare` prints, before overwriting, each figure that moved against the
+previous capture of the case (`--compare=<dir>` reads them from elsewhere).
 
 ## Re-exporting the data
 

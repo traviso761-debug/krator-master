@@ -1,0 +1,280 @@
+{
+ "build": "talia",
+ "families": {
+  "taGilt": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "taGilt.albedo.webp",
+    "normalMap": "taGilt.normal.webp",
+    "roughnessMap": "taGilt.rough.webp"
+   },
+   "lib": "metal.gold",
+   "metal": 0.85,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d3a5017f533685d869831a27b56771d350f233be",
+    "normal": "660d78bd0baaf87903d7317c9da582e2b2785719",
+    "roughness": "8d1da247889f8a0cc55f0297881452c84be67e4a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5703598102704217,
+    "sourceMean": 0.5704
+   }
+  },
+  "taJaliA": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "taJaliA.albedo.webp"
+   },
+   "lib": "patterns/talia/jali-arabesque",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9565f92e9604daf27233169f88101a29805d47dc"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.73159893685514,
+    "sourceMean": 0.7316
+   }
+  },
+  "taJaliG": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "taJaliG.albedo.webp"
+   },
+   "lib": "patterns/talia/jali-geometric",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "8b5d8f92f0ebe5e8b58db5fbc3055c01b29a1e75"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.7185530070573244,
+    "sourceMean": 0.7186
+   }
+  },
+  "taMarble": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "taMarble.albedo.webp",
+    "normalMap": "taMarble.normal.webp",
+    "roughnessMap": "taMarble.rough.webp"
+   },
+   "lib": "stone.marble.ashlar",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "5b0c4317fcce75c123e00ecefbbd97bc09d9c732",
+    "normal": "3acc17d8c74c1e7488a6dae3bbd300218f23d982",
+    "roughness": "3d3778d339725448395c0027271bfd76661d8d42"
+   },
+   "specular": 0.4,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.85,
+    "sourceMean": 0.8656
+   }
+  },
+  "taMeander": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "taMeander.albedo.webp",
+    "normalMap": "taMeander.normal.webp",
+    "roughnessMap": "taMeander.rough.webp"
+   },
+   "lib": "patterns/talia/meander",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    0.9,
+    0.9
+   ],
+   "size": [
+    512,
+    171
+   ],
+   "source": {
+    "albedo": "efbe269cef2a5c9a1b388bd95f81b29c8496fb2e",
+    "normal": "33f55b51ade16db18c0e8d1bc2036eecd2c9277f",
+    "roughness": "7748bd8c2cb256853a17962e3c15fcf45a4e5872"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6454502296898291,
+    "sourceMean": 0.6455
+   }
+  },
+  "taMosaic": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "taMosaic.albedo.webp",
+    "normalMap": "taMosaic.normal.webp",
+    "roughnessMap": "taMosaic.rough.webp"
+   },
+   "lib": "mosaic.orange.honeycomb",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fcfa81d827af3985c1661c40abec4c549b167136",
+    "normal": "c3b6e8bf509b59fc199e5b6c8876cca04f87b466",
+    "roughness": "d8309dababcc88e88bb669902d4bb5f83e57089b"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6195104323084213,
+    "sourceMean": 0.6195
+   }
+  },
+  "taRenderW": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "taRenderW.albedo.webp",
+    "normalMap": "taRenderW.normal.webp",
+    "roughnessMap": "taRenderW.rough.webp"
+   },
+   "lib": "render.orange.worn",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "05b1d8885a02e26fc4c004c2acd0d20b38a70904",
+    "normal": "fbda20277655c59e391a78a72cad080a27c3d4eb",
+    "roughness": "c9be2efedd28c0d73aa75ad3ead1bb90895e60d7"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.54102370766434,
+    "sourceMean": 0.541
+   }
+  },
+  "taRose": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "taRose.albedo.webp"
+   },
+   "lib": "patterns/talia/rose-star",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "216619e6876d9fb3504946eb306e5ce512e46564"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5083742343554482,
+    "sourceMean": 0.5084
+   }
+  },
+  "taTile": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "taTile.albedo.webp",
+    "normalMap": "taTile.normal.webp",
+    "roughnessMap": "taTile.rough.webp"
+   },
+   "lib": "roof.clay_roof_tiles",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "33fd4815b6396595108e8b669b30a8761f502ad2",
+    "normal": "1ec6885a77dc8cd6fa4b52cc8e8aca0fa001743c",
+    "roughness": "f5596887dd35bb431aa1025004e326e4392b3e97"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.2252
+   }
+  }
+ },
+ "size": 512,
+ "what": "generated by tools/textures/pack.py from materials.json; do not edit"
+}

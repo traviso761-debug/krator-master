@@ -5,7 +5,8 @@ Usage: python3 build.py [--no-checks]
        python3 build.py --vendor-check   (a core or kit file shadowed by src/)
 
 The page is one <script> made of, in filename order:
-  core                  as the kit's: rand, walk, materials/record, tags, furnish, atmos, sockets; terrain/39-core-cavern.js
+  core                  as the kit's: rand, walk, materials/record, tags, furnish, atmos, sockets; terrain/39-core-cavern.js;
+                        core/host (CORE_HOST: the camera, loop, panel, inspector, marks, minimap, probe; src/99-start.js is the take)
   kits/zeijani/src/*    the kit: every def, the cavern host, the furnishing, the night, the smoke, the sky, the camera and dev
                         tools; less its sheet's host (KIT_SKIP: the head, the test block, the rows, the scene, the probe)
   src/*                 Dhelv: the layout (41-dhelv-layout.js, [G data]) and its host (the head, the scene, the probe).
@@ -56,12 +57,20 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(DIST, 'dhelv.html')
 KIT = os.path.join(ROOT, 'kits', 'zeijani')
 KIT_SRC = os.path.join(KIT, 'src')
-KIT_SKIP = {'00-head.html', '41-zj-block.js', '89-rows.js', '90-scene.js', '91-probe.js'}   # the kit sheet's host
+KIT_SKIP = {'00-head.html', '41-zj-block.js', '89-rows.js', '90-scene.js', '91-probe.js',   # the kit sheet's host
+            '92-camera.js'}   # the kit's camera and loop: Dhelv's are core/host's (src/92-dhelv-camera.js, src/99-start.js)
 TEX_DIR = os.path.join(KIT, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets', 'clock', 'sched', 'simulation')]   # clock, sched, simulation: the ramblers (P6)
 CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
 # the biome core (BIO: the kits' registry, foliage, placement, the stage) for the kipuka's forest (P5b)
 CORE_FILES += [os.path.join(ROOT, 'core', 'biome', f) for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js', '44-core-stage.js')]
+# core/host (core/host/README.md; ROADMAP.md section 10, stage 3 step 5): the whole interface less core/space (core/biome's
+# 40-core-place.js takes its grid when it is on the page, which would move the kipuka's scatter) and core/edits (no editor
+# world yet). src/99-start.js is the take
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+CORE_FILES += [khost.path(f) for f in CORE_HOST]
 # the HYPERJUNGLE kit, read in place and WRAPPED in one closure: its 41 declares the core's helpers (TAU, rng, fbm...) at top
 # level for itself, which the Zeijani kit declares too; inside the closure they and its PRNG stream stay its own. Its fauna
 # (58, which wants core/biome 35-core-anim) is left out
@@ -77,6 +86,7 @@ def thr_skip():
     fams = json.load(open(os.path.join(THR, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
     return [k for k in fams if k.startswith('ground.') or k.startswith('roof.') or k.startswith('card.kelp') or k == 'card.seaweed']
 CLOSED = {'10-core-head.js'}   # its helpers are declared inside its closure (BIO.fn), not at top level: not scanned for clashes
+CLOSED |= set(CORE_HOST)   # core/host: each file one closure (KHOST), its names its own
 SIDE = {}   # the hyperjungle's library maps, written beside the page (dist/dhelv.tex.js: tools/textures/matlib_pack.py)
 VENDORED = {}
 # GENERATED fragments, never written to src/
@@ -102,10 +112,16 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if SIDE is not None:   # the pack beside the page (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        SIDE['zeijani'] = body
+        return _mp.loader('zeijani')
     return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
             '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
-            "KMAT.pack('zeijani', {\n" + ',\n'.join(out) + '\n});\n')
+            "KMAT.pack('zeijani', " + body + ');\n')
 
 
 def virtual_bodies():

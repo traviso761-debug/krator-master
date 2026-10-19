@@ -4,7 +4,7 @@
 #   godot --path godot -- --case=rift           start on a case
 #   godot --headless --path godot -- --check    load every case, print the reports, write spike-report.json, quit
 #   godot --path godot -- --case=girder --shot=shots/girder.png   render, save a screenshot, quit
-#     (--eye=x,y,z --at=x,y,z place the camera relative to the case's focus; --hour=h sets the clock)
+#     (--eye=x,y,z --at=x,y,z place the camera relative to the case's focus; --hour=h sets the clock; --clock=T pins the module clock, atm_time)
 #
 # Each case's report (counts and the gaps the importer met) is printed and shown on screen: that list is what
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
@@ -37,6 +37,8 @@ var reports := {}
 var _shot := ""
 var _stage_base := {}   # the stage's sun, ambient and fog, which the clock and the weather scale
 var _shot_frames := 0
+var case_focus := Vector3.ZERO   # the loaded case's focus (the box centre on the ground): tests/perf/perf_capture.gd poses its camera from it
+var driven := false   # set by a driver before add_child (tests/perf/perf_capture.gd): _ready builds the stage and loads no case of its own
 
 
 func _ready() -> void:
@@ -44,6 +46,8 @@ func _ready() -> void:
 	var args := _args()
 	if args.has("check"):
 		_check_all.call_deferred()
+		return
+	if driven:
 		return
 	if args.has("shot"):
 		_shot = args["shot"]
@@ -194,12 +198,17 @@ func _load_case(name: String) -> Dictionary:
 	ground = terrain
 	if terrain:
 		focus.y = KData.height_at(terrain, focus.x, focus.z)
+	case_focus = focus
 	_stage_base = {}
 	if stage is Dictionary and not _args().has("nostage"):   # --nostage: the spike's own stock light, to compare   # the page's light, fog, tonemapping and sky (krator/stage.gd)
 		_stage_base = load("res://krator/stage.gd").apply(stage, env, sun, world)
 		report["stage"] = _stage_base.get("report", {})
 	else:
 		_default_stage()
+	# FogVolumes (Iziz's fog banks) draw only with the environment's volumetric fog on; its own density stays 0, so only
+	# the volumes show (Forward+ only: the Compatibility renderer ignores both)
+	env.volumetric_fog_enabled = not world.find_children("*", "FogVolume", true, false).is_empty()
+	env.volumetric_fog_density = 0.0
 	var span := 60.0 if name in ["girder", "yuni"] else 900.0 if name == "verge" else 160.0 if name == "dhelv" else 140.0
 	cam.look_from(focus + Vector3(span * 0.6, span * 0.45, span * 0.8), focus)
 	cam.set("speed", span * 0.25)
@@ -218,6 +227,9 @@ func _load_case(name: String) -> Dictionary:
 		hud.visible = false
 	if args.has("hour"):
 		Atmos.hour = float(args["hour"])
+	if args.has("clock"):   # --clock=T: the module clock (atm_time: sway, fauna paths, waves) pinned at T seconds, to match a page's
+		Atmos.t = float(args["clock"])
+		Atmos.paused = true
 	if args.has("weather"):   # --weather=rain|storm|fog|clear|auto
 		Atmos.set_weather(str(args["weather"]))
 		Atmos.W["rain"] = 1.0 if args["weather"] in ["rain", "storm"] else 0.0   # start at full strength, for a screenshot
@@ -327,7 +339,9 @@ func _update_hud() -> void:
 	var s := "%s: %s\nhour %.1f  wind %s  weather %s (rain %.2f fog %.2f)  fps %d" % [current, ABOUT.get(current, ""), Atmos.hour, str(Atmos.wind_now().snapped(Vector2(0.01, 0.01))),
 		Atmos.W["mode"] if Atmos.weather_on else "off", Atmos.rain, Atmos.fog, Engine.get_frames_per_second()]
 	if help_on:
-		s += "\n1-9 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
+		s += "
+1-9 case (%s)   drag look   MMB orbit   arrows turn   WASD QE move   Shift fast   wheel zoom   Ctrl+wheel speed   +/- lens
+[ ] hour   T time-lapse   P pause clock   F3 weather   F1 hide help   F2 print report" % " ".join(CASES)
 	hud.text = s
 
 
@@ -349,7 +363,7 @@ func _unhandled_input(e: InputEvent) -> void:
 		Atmos.hour_rate = 0.0 if Atmos.hour_rate > 0.0 else 1.0
 	elif k == KEY_P:
 		Atmos.paused = not Atmos.paused
-	elif k == KEY_W and (e as InputEventKey).shift_pressed:   # Shift+W: the next weather mode
+	elif k == KEY_F3:   # F3: the next weather mode (Shift+W also moved the camera)
 		var i := Atmos.MODES.find(Atmos.W["mode"]) if Atmos.weather_on else -1
 		Atmos.set_weather(Atmos.MODES[(i + 1) % Atmos.MODES.size()])
 	_update_hud()

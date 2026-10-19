@@ -36,6 +36,7 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
 const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
 const KN=KRELIEF.noise;
 const N1=KN(101),N2=KN(202),N3=KN(303),N4=KN(404),N5=KN(505),NW=KN(606),N6=KN(707),N7=KN(808),NM=KN(909),NC=KN(1111),NS=KN(1212);
+W.landHook=null;   // (x, z, h, minWave) -> h: a world's own shaping of the land after the detail, before the towns and roads (H below)
 W.FIELDS=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','mist'];
 
 // ---------------------------------------------------------------- the styles: how each biome's land is shaped
@@ -322,6 +323,8 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  let cd=1e9,cut=0,cw=0,co=0;
  if(minWave<400){carveAt(x,z,h,S.wallK,CH,SC);h-=CH.k;cd=CH.d;cut=CH.cut;cw=CH.hw;co=CH.co;}
  if(minWave<13)h+=(N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3;
+ // a world's own shaping of its land (W.landHook: openworld/isle-demo's coast, reef and mangrove flats); none here
+ if(W.landHook)h=W.landHook(x,z,h,minWave);
  // the roads, last: the carriageway is level at the road's height whatever the detail did
  // a town's own ground: inside its footprint the land is the town's, easing back over its band
  if(!nt&&TOWNS.length){townAt(x,z);if(TW.w>0)h=lerp(h,TW.h,TW.w);}

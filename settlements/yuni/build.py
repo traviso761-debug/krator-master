@@ -71,8 +71,13 @@ TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags') 
 # minimap: KMAP and its panel (fed by 88b-yuni-minimap.js); materials/record: KMAT, TEX and the library loader
 # (core/materials/PLAN.md, "How a build adopts the library"). core/rand gives the tags' uid only: Yuni keeps its own
 # Park-Miller rnd() and noise (the exception in GODOT-PLAN.md, Phase 2 item 1).
-CORE_MODULES = ['clock', 'sched', 'minimap', os.path.join('materials', 'record')]
+# export: core/export (07-core-export.js and its adapters: the krator-world container; core/export/README.md), which
+# 77-export.js fills with Yuni's fixtures beside its KRATOR_EXPORT route (GAME_EXPORT.md, "Two routes").
+CORE_MODULES = ['clock', 'sched', 'minimap', 'export', os.path.join('materials', 'record')]
 CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR) + tuple(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', m) for m in CORE_MODULES)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
+import host as khost                         # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
+CORE_HOST = khost.FULL                       # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
 TEX_DIR = os.path.join(HERE, 'tex')          # the library pack: tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '46-matlib-pack.js'          # GENERATED from tex/ (never written to src/)
 # The eastern badlands biome (biomes/ebadlands, BIOME-API.md: "the valley of Yuni" is its humid south): core/biome and
@@ -97,13 +102,18 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
-                 '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '88b-yuni-minimap.js', '89-sheetui.js', '69b-yuni-biohost.js', '69z-yuni-badlands.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
+                 '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '88b-yuni-minimap.js', '89-sheetui.js', '69b-yuni-biohost.js', '69z-yuni-badlands.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html', '77-export.js'}
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 CORE_FRAGS = set()   # fragments taken from a core/ directory: each is a unit of its own, never grouped with a src/ prefix
 PALETTE_FILE = '05-palette.js'
 
 
-def matlib_pack():
+# the library pack beside the pages (<build>.tex.<key>.js), one file every page of the build shares; --inline-packs puts
+# it back in each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+SIDE = None if '--inline-packs' in sys.argv else {}
+
+
+def matlib_pack(side=None):
     """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack), as Girder's build.py
     does. It reads the committed tex/ files only, never the library or an image encoder, so the build stays
     deterministic. With no tex/pack.json, Yuni runs on its procedural maps."""
@@ -121,10 +131,16 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if side is not None:   # the pack beside the pages (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(_ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        side['yuni'] = body
+        return _mp.loader('yuni')
     return ('/* ============================== 11a. LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
             '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
-            "KMAT.pack('yuni', {\n" + ',\n'.join(out) + '\n});\n')
+            "KMAT.pack('yuni', " + body + ');\n')
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
 RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
@@ -205,8 +221,10 @@ def check(order, bodies):
         head = RE_HEAD_SEED.sub('', strip_head_comments(bodies[f]), 1)
         if strip_head_comments(head).startswith('(function'):
             continue      # whole fragment is one IIFE: nothing leaks
-        if '-bio-' in f:
-            # the biome core and kit (BIO_CANON): one `var` (BIO / EBADLANDS) then IIFEs; everything else is local
+        if '-bio-' in f or re.match(r'var\s+[A-Za-z_$][\w$]*\s*=\s*\(function', strip_head_comments(head)):
+            # the biome core and kit (BIO_CANON): one `var` (BIO / EBADLANDS) then IIFEs; everything else is local.
+            # Likewise a module that is one `var X = (function(){...})()` (core/export's EXPORT): its inner column-0
+            # functions are the IIFE's own
             for m in re.finditer(r'^var\s+([A-Za-z_$][\w$]*)', bodies[f], re.M):
                 decl.setdefault(m.group(1), set()).add(f)
             continue
@@ -237,6 +255,12 @@ def main():
                 CORE_FRAGS.add(f)
     paths[PACK_FRAGMENT] = None            # generated below, not read from disk
     CORE_FRAGS.add(PACK_FRAGMENT)
+    khost.resolve(paths, CORE_HOST)        # core/host and the modules it reads (core/clock, core/minimap are in already)
+    for f in CORE_HOST:
+        if paths[f] == khost.path(f):
+            CORE_FRAGS.add(f)
+    paths[khost.EDITS_JS] = None           # generated: edits.json as KHOST_EDITS (core/host/host.py)
+    CORE_FRAGS.add(khost.EDITS_JS)
     for f, p in BIO_CANON.items():         # the biome core and the eastern badlands kit, in place (a src/ copy overrides)
         if f not in paths:
             paths[f] = p
@@ -245,7 +269,7 @@ def main():
     bodies = {}
     for f in order:
         if paths[f] is None:
-            bodies[f] = matlib_pack()
+            bodies[f] = matlib_pack(SIDE) if f == PACK_FRAGMENT else khost.edits_js(HERE, 'yuni')
             continue
         with open(paths[f], encoding='utf-8') as fh:
             bodies[f] = fh.read()
@@ -259,6 +283,10 @@ def main():
             sys.exit(1)
 
     html = ''.join(bodies[f] for f in order)
+    if SIDE:   # the pack beside the pages, one file they all share
+        sys.path.insert(0, os.path.join(_ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        html = _mp.write_sidecar(SIDE, html, HERE, 'yuni.tex.js', prune=False)
     with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
     def flavour(target, title, h1, loading):

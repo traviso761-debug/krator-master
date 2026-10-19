@@ -66,6 +66,16 @@ ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
+# core/rand and core/tags (every target): the registry core/host's inspector and minimap read (src/91t-ys-tags.js fills
+# KTAGS.page from REG). The city took core/rand already (TARGET_CORE below); the same files, so no clash.
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[0].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap and cutaway, with core/clock and core/minimap. Not core/space: the vendored biome core's scatter takes its grid
+# when the module is on the page (Iziz's KNOWN_ISSUES.md, 2026-10-13). Not core/edits: the city's editor is its own.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
 TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '26-matlib-pack.js'        # GENERATED at build time from tex/, never written to src/
 
@@ -144,7 +154,7 @@ for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js'
 # (--vendor-check); the city target alone takes them (TARGET_ONLY). Not taken: 72-vern-civic (nothing in it fits a
 # foreign plot), 73b-hl-frame (74 does not need it, and its overrides of vnWin/vnGableRoof/vnHipRoof would redraw the
 # Iziz houses), 75-rep-trade and 89y-hl-furnish (FURNISH places furniture from the master catalog; 88c stubs it).
-VENDORED_IZIZ_FQ = ['70-vern-dwellings.js', '71-vern-trade.js', '75-port-embassy.js', '76-port-chapterhouse.js']
+VENDORED_IZIZ_FQ = ['69e-vern-hollow.js', '70-vern-dwellings.js', '71-vern-trade.js', '75-port-embassy.js', '76-port-chapterhouse.js']   # 69e: vnBody/vnBand, which 70 and 71 call (solid here: Ys never turns VERN.interiors on)
 VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']
 for _f in VENDORED_IZIZ_FQ:
     VENDORED[_f] = 'settlements/iziz/src'
@@ -193,6 +203,7 @@ ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', 
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '69e-vern-hollow.js',   # the vernacular's hollow bodies (no rnd())
     '00-head.html', '08-core-rand.js', '10-core.js', '69a-world-uv.js', '42-offices.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
@@ -215,12 +226,13 @@ DETERMINISTIC = {
     '71w-port-sea.js',   # the sea on core/water (vendored from the port kit)
 }
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
+DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'91t-ys-tags.js', '99-start.js'}   # core/host, core/tags (no rnd()); the records; the take
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
 # declarations live inside a closure and they keep their own PRNG.
 SCOPED_PREFIXES = ('86-bio-',)
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES)
+    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST or f in TAGS_FILES   # core/host, core/tags: each file one IIFE
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -311,6 +323,8 @@ def build_one(target, do_checks):
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
     src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         src.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js') and f not in src})

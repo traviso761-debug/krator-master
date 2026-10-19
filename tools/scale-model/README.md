@@ -262,4 +262,18 @@ the biome overlays (smaller wins an overlap; uncovered pixels take the nearest o
 drainage network, the named rivers (`DATA.rivers`: the course every 4th point with the carved height under it, a
 width and a water depth), the settlements inside the polygon and the canyon candidates for each ruin. The escarpment's
 sharpening is kept off a named river's corridor (off within 3 cells, back by 6): the river's descent is the owner's. `openworld/little-demo/`
-is the first user (its README.md says how to refresh it).
+is the first user (its README.md says how to refresh it). `--add <polygons.json>` (2026-10-15) adds more polygons to
+the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask is the union (`region.json` region `added`,
+`union_km2`). The isle demo uses it for the two areas its owner added (`openworld/isle-demo/source/added-areas.json`).
+
+## To do on the model (owner's list)
+
+- **4.22: the Lake of Shim** (when the Shim build is done, settlements/shim/PLAN.md; the owner, 2026-10-18). The region
+  polygon "Lake of Shim" (`rshimlake0001`, about 32 by 12 km, px 376-382 by 780-796) is already in the artifact's
+  `regions` collection and Shim's point (`sshimrest01`, 382,788) sits on its eastern shore. Carve it as the Bay of Voth
+  was carved (`features.py`), but at the land's level there, not the sea's: the bed a few metres under the lake at the
+  shore and 20-30 m at the middle, banks eased over about 2 px, the level the lowest shore cell's so it holds. Then
+  re-run the river audit (`edit_rivers.py`) so the Shim river (r000) enters from the south and leaves north, record
+  the lake with the others, relight, reclimate, repaint, publish, and refresh `openworld/little-demo/source/` from
+  the live collections (which have lost the 2026-10-05 export's duplicate settlements and hold Voth at 470,688).
+  Almua's river (`Dip Rivrh`, `river_names.py`) wants a course drawn to its mouth at 446,553 in the same pass.

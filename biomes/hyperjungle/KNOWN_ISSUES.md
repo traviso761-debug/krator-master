@@ -8,9 +8,10 @@ Read before changing anything here. `build.py` prints the open count.
       58-biome-hyperjungle-fauna.js maps fur on the sloth, hide on the striders, skin on the sky rays and a wing cut-out on the butterflies. Unset, the fauna is
       exactly the vertex-coloured one. The dart/flitter material takes no texture (wing and body share UVs). Each part's UV repeats once over the part, so the
       fur is set to repeat 2x.
-- [ ] (2026-10-05) Tree tints (55-biome-hyperjungle-trees.js): roots now take the trunk's tint at their height above the ground (band and moss), carried into limb space because they stay in the `limb` bucket (60-floor's `boleProfile` reads the bark bucket, so roots there would push the floor dress away), and limbs, boughs
-      and twigs use the limb tint of the trunk's colour band at the attachment height. The limbs still use the shared pale `limb` texture; only their colour is
-      matched to the trunk. Iziz carries a hand-patched copy.
+- [x] (2026-10-16) Tree tints and bark: a hero's limbs, boughs, twigs and roots now wear its own bole's bark (buckets `limb0`..`limb5` on
+      `MAT.bark[sp]`, with the bole tint; still out of the `bark`+sp buckets, which 60-floor's `boleProfile` reads). Before, they shared one `limb` map
+      painted in ironbark's browns, whose tint clipped at white, so ghostwood and baobab grew brown limbs under pale boles. Young trees' trunks
+      likewise wear their species' bark (items `saptrunk0`..`saptrunk5`, bole tint); `trunk` (the limb map) is left to the floor's palms and small trees. Iziz carries a hand-patched copy of the old fragment: re-vendor (`build.py --vendor-bio`) when its session allows.
 
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/hyperjungle.html`; strip everything before `<title>` and the trailing
@@ -20,8 +21,7 @@ Read before changing anything here. `build.py` prints the open count.
       and kapok canvases are painted near-grey and tinted from SPECIES.bark only;
       repaint the older four the same way. Until then, changing one of those
       canvases changes the rendered bole colour twice.
-- [ ] Ghostwood limbs are slightly warmer than its near-white bole (the pale limb
-      texture cannot be brightened past white).
+- [x] Ghostwood limbs are slightly warmer than its near-white bole: gone with the limbs on the bole's own bark (2026-10-16).
 - [ ] Faint horizontal seams where a bole's lathe sections change texture repeat
       (inherited from Girder).
 - [ ] Saplings beyond 760 m from the origin have clumps on virtual arcs with no
@@ -79,3 +79,7 @@ Read before changing anything here. `build.py` prints the open count.
       "branches not taking bark texture ... a recurring issue with biome imports"): their sets (`limb`, `wood`) were in
       materials.json but never bound. `50-biome-hyperjungle-species.js` binds them (and the small trunks take the limbs' map).
       Iziz vendors this kit (`settlements/iziz/targets/city/86-bio-*`): its copy still has the gap until it is re-vendored.
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.

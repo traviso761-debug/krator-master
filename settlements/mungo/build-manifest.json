@@ -1,7 +1,7 @@
 {
  "00-head.html": [
   "mungo (overrides locus)",
-  "df3b1ef160d4"
+  "2bd8262162e3"
  ],
  "01-reedkit.html": [
   "virtual",
@@ -38,6 +38,10 @@
  "20-core-sched.js": [
   "core/sched",
   "932d088efbab"
+ ],
+ "20-core-space.js": [
+  "core/space",
+  "30e465e74c51"
  ],
  "20-core-water.js": [
   "core/water",
@@ -83,13 +87,21 @@
   "mungo (overrides locus)",
   "bb63f1e7d2d9"
  ],
+ "39-host-edits.js": [
+  "virtual",
+  "9fdd35e3ad16"
+ ],
+ "40-core-edits.js": [
+  "core/edits",
+  "7fb8d5f0f0ea"
+ ],
  "40-ground.js": [
   "mungo (overrides locus)",
   "cab2dcdcb811"
  ],
  "45-kit.js": [
   "locus",
-  "77eb0628731c"
+  "82f0c9eb275e"
  ],
  "46-matlib-pack.js": [
   "virtual",
@@ -133,7 +145,7 @@
  ],
  "53-assets.js": [
   "locus",
-  "23ae272a1b3f"
+  "394b56e86e01"
  ],
  "53-core-furnish-host.js": [
   "core/furnish",
@@ -265,15 +277,15 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "2484c61e85bc"
+  "a16bdb684f9f"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "70939fbc305d"
+  "5034c7009477"
  ],
  "66-locus-furnish.js": [
   "locus",
-  "606019ae7028"
+  "d57d9ebc21e1"
  ],
  "68-place.js": [
   "mungo (overrides locus)",
@@ -285,7 +297,7 @@
  ],
  "69a1-bio-core-head.js": [
   "core/biome",
-  "306a77c56377"
+  "59f894e00b20"
  ],
  "69a2-bio-core-kit.js": [
   "core/biome",
@@ -361,7 +373,7 @@
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "97e46dfadc2e"
+  "6cc0bd0d133e"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
@@ -377,11 +389,11 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "b154cb08d075"
+  "18f373ad1d3d"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "2c63970fb9d3"
+  "5ed88ecc84be"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
@@ -390,6 +402,10 @@
  "77-sim-6-population.js": [
   "core/simulation",
   "1f6c887b3fae"
+ ],
+ "77-sim-7-stocks.js": [
+  "core/simulation",
+  "edfe13d806b7"
  ],
  "77-sim-8-export.js": [
   "core/simulation",
@@ -409,7 +425,7 @@
  ],
  "80-camera.js": [
   "mungo (overrides locus)",
-  "2ed36c756b2e"
+  "01cebbe24228"
  ],
  "81-glow.js": [
   "locus",
@@ -421,7 +437,7 @@
  ],
  "84-mungo-life.js": [
   "mungo",
-  "c4c1845b8df6"
+  "b6f08b00bdc4"
  ],
  "85-probe.js": [
   "mungo (overrides locus)",
@@ -429,7 +445,7 @@
  ],
  "86-inspect.js": [
   "locus",
-  "691cd805f759"
+  "82e0982cbab4"
  ],
  "87-pathviz.js": [
   "locus",
@@ -515,17 +531,61 @@
   "locus",
   "5a5166f0db52"
  ],
+ "90-host-camera.js": [
+  "core/host",
+  "5ee8af014319"
+ ],
  "90w-lake.js": [
   "locus",
   "c915b3d2fe2f"
+ ],
+ "91-host-loop.js": [
+  "core/host",
+  "3c7fb5c1f35a"
+ ],
+ "92-host-panel.js": [
+  "core/host",
+  "a4f990ec0c38"
+ ],
+ "93-host-inspect.js": [
+  "core/host",
+  "11e39ccb6260"
+ ],
+ "93-host-stocks.js": [
+  "core/host",
+  "27dd6b526848"
+ ],
+ "94-host-marks.js": [
+  "core/host",
+  "66fcb2bedaf5"
+ ],
+ "95-host-probe.js": [
+  "core/host",
+  "94fec2e5025a"
+ ],
+ "96-host-pictures.js": [
+  "core/host",
+  "1c6b36cc7ca2"
+ ],
+ "97-host-minimap.js": [
+  "core/host",
+  "bb80eeaa8a43"
  ],
  "97-lod-auto.js": [
   "core/lod",
   "88ec9e581127"
  ],
+ "98-host-edit.js": [
+  "core/host",
+  "66535c6a9cdd"
+ ],
  "98-start.js": [
   "locus",
-  "05665ea7386d"
+  "11cf93c447eb"
+ ],
+ "99-host-cutaway.js": [
+  "core/host",
+  "5fc10889d24e"
  ],
  "99-tail.html": [
   "locus",

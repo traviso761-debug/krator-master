@@ -67,7 +67,7 @@ Seed blocks: dwellings 7100–7399, trade 7400–7499, civic 7500–7599, infra
 
 ### The frontier set — `74b-vern-frontier.js` (Verge's upper city)
 
-`vern_governor_palace` (42 x 36, walled forecourt, gate on +z), `vern_guard_tower` (26 x 20: three-storey tower at
+`vern_governor_palace` (the Governor's House, renamed from "Governor's Palace" 2026-10-18 so it is not taken for the vassal kits' palaces; the key is kept; 42 x 36, walled forecourt, gate on +z), `vern_guard_tower` (26 x 20: three-storey tower at
 -x, two-storey barracks at +x, doors on +z), `vern_watch_house` (10 x 9), `vern_toll_house` (14 x 10: the toll window
 and counter face **+x**, the road side; the raised toll bar stands at the +x/+z corner), `vern_palisade` (ONE segment,
 `o.len` metres along local x, default 6; every part inside x = ±len/2; +z is the outer face, the braces lean to -z),
@@ -138,6 +138,46 @@ scales instance sizes when `o.scale` ≠ 1). Restore `KOFF=[0,0,0]` afterwards. 
 *repaired* state (`HOLES` may be set to .55 around the call, as `90-scene.js` in the Ancients kit does).
 Vendor the builder fragment byte-identical from `../ancients/src/` and add it to `VENDORED` in build.py.
 
+### Interiors: hollow bodies and furnished rooms — `69e-vern-hollow.js`, `95i-iziz-interiors.js` (2026-10-16)
+
+The residences and trade buildings have rooms you can see into (cutaway, X; `]` `[` the storeys). Civic buildings do not
+yet (the owner: "skip civic buildings for now"). Two parts:
+
+* **The builder** draws every enclosed wall block with `vnBody(item,x,y,z,w,h,d,ry,c,{t, floor, floorC})` in place of
+  `vB(...)`, and a full-footprint slab between storeys with `vnBand(item,x,y,z,w,h,d,ry,c,t)`. With `VERN.interiors` on
+  and an item for the def in `kits/interiors/sets/iziz.js`, a body is four walls of thickness `t` cut where the
+  builder's own `vnDoor`/`vnWin` calls on its faces open them, over a board floor; a band is a ring. Call `vnBody`
+  before the doors and windows on it. A door on a hollow face is drawn open (the leaf swung in); a window has no dark
+  backing plate. Once the builder returns, the item's planned storeys are drawn in the kit's items: the upper floors
+  with the stair's well, the partitions and their doorways, the stairs and ladders. **With interiors off, no item, a
+  `skip` item, or `o.scale` ≠ 1, `vnBody` and `vnBand` draw exactly the `vB` they replaced**: the city, Verge (which
+  takes 69e for this) and Ys build what they always did. `69c` is untouched (five builds vendor it): 69e wraps
+  `VERN.def`, `vnDoor` and `vnWin` by assignment, as `69f` does.
+* **The item** (`kits/interiors/sets/README.md`) says the rooms in the builder's frame: `bodies` for planned storeys
+  (`poly` = the body's outer face, `y` its base, `levels` the clear heights so that each upper floor `y + h + 0.25`
+  lands on the drawn upper body, `wall` = `t`, `doors` where the builder draws them) or explicit `rooms`. The trades'
+  room kinds `izwork_<t>` (the workroom: requires the trade's station by catalog role) and `izshop_<t>` (the selling
+  room: requires its goods) are defined at the top of the set file for t in `bakery butcher brewery weaver dyer
+  tannery tailor scribe apothecary tinker glass provisioner mill salvage boat smith`.
+
+`95i` plans every hollow placement again in the world frame, replaces the planner's windows on each room with the
+windows the builder drew on that room's walls, furnishes the rooms from the master catalog (`iziz`, with `generic`,
+`scrap` and the `jobs` work pieces; the catalog's `iziz_trade_*` set, `iziz_bread_oven`, `iziz_butcher_block`), retries
+a residence that fails the rule (a bed, a food and an item container per household) with another seed, registers every
+piece in core/tags (prefix `ixf`, class furniture, its building as parent) and hands the cutaway one unit per building.
+`window._interiors` reports it; `verify.py --assert` checks `interiors` (every building done, no residence failing) and
+`voth-trades` (below). The furniture and the interiors kit come in a generated fragment (`88z-iziz-furniture-bundle.js`,
+build.py `INTERIOR_TARGETS`: the vernacular sheet only; the city has none, and its buildings stay solid).
+
+`python3 ixshot.py dist/iziz-vernacular.html --keys <k,..> | --all [--back] --out shots/ix` shoots each building at eye
+level and cut away at each storey, and prints its rooms, pieces and residence counts. `?interiors=0` turns it all off.
+
+### The trades — `74z-vern-trades.js`
+
+`VERN_TRADES`: every trade in the Voth city's census, and the Voth catalog's shop trades, with the Voth building and the
+Vernacular defs that carry it (`civic: true` where that building is civic; `na` and why, where the trade cannot exist in
+Iziz). `_api.trades()` checks every named def exists.
+
 ### Adding a building
 
 1. New `function buildVernX(G,o){reseed(7xx1+(o.v|0)); … vnReg(...); …}` in the
@@ -158,6 +198,16 @@ A target contributes `89z-rows.js` (`TITLE`, `GROUND_C`, `SITES`) and
 `91z-views.js` (`VIEWS`; the first entry is the opening shot). `90-scene.js`
 loops `SITES` through `VERN.place`, tags every `REG` entry with its site key,
 then `kbake(scene)`.
+
+**A kit on this page (`--kit`, 2026-10-18).** A kit written on the Vernacular's contract (`kits/pylon`, later `kits/talia`;
+`VASSAL-KITS.md`) is built here with no copy of anything: `python build.py --kit <folder>` (the kit's own `build.py`
+calls it) merges the folder's `src/` into this build's one fragment order (a name that clashes stops the build), takes
+its `targets/` and `kit.json` (`targets` name -> page, `interiors`, `core`, `deterministic`, and `external`: repo-relative
+fragments read in place by their own names, such as the Ancients kit's Monolith; and `pack`: the kit's own library
+families, packed into its `tex/` from its `materials.json` and inlined as `KMAT.pack('<pack>')`, which the kit's own
+fragment binds with `KMAT.bindMat`), applies the build rules to
+its fragments, and writes the pages to the kit's `dist/`, the manifests and the syntax file to the kit's folder, and
+prints the kit's KNOWN_ISSUES. Without `--kit` the build is byte-identical to before.
 
 ## Dev tools (project rule) — `92-camera.js`
 

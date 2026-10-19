@@ -13,8 +13,8 @@
   `verify.py --eval "()=>KratorMechs.audit('iz_rota')"` to list them by bone. The usual causes, avoided in new parts:
   a joint drum as wide as its limb (MP.joint now stands 16 mm proud), two plates of one height side by side, a trim
   stripe flush with the plate it lies on, a stack of boxes meeting edge to edge with an overlap.
-- [ ] **The sun banner sheet is not periodic.** `patterns/iziz/sun-banner` (generated) does not repeat exactly; banners
-  show a window from the middle of one tile (no wrap), so a banner wider than 1.8 m or taller than 1.3 m would clamp.
+- [x] **The sun banner sheet is not periodic.** Fixed 2026-10-14: the owner's periodic redo of `patterns/iziz/sun-banner`
+  repeats exactly (two periods each way, 2 x 1.8 m a sheet), and the runtime tiles it, so a banner of any size takes it.
 - [ ] **Feathers have no texture.** They are flat triangles with no UVs; the library's `card.feather.*` would need
   UV'd quads.
 - [ ] **Turning in place.** The gait has no turn: a host that spins a standing mech gets stance feet that rotate on

@@ -81,7 +81,7 @@ GEYSER.PLANTS={
  streamer:PK('Flame streamers','hypertropic','humid','yes',['XA','XV'],'native','water',['streamer'],HV('none',[],false,'Krator\'s own: orange filaments a metre long streaming in the warm run-off, the mats grown into weed.')),
  jelly:PK('Mat jelly','hypertropic','humid','yes',['XA','XV'],'native','water',['jelly'],HV('none',['(boiled: a salty jelly)'],false,'Gelatinous mounds of the mats on the run-off\'s banks, orange and green.')),
  kettlelily:PK('Kettle lily','hypertropic','humid','yes',['XA','XV','Af'],'native','water',['lily','lilyflower'],HV('none',['rhizome (roasted)'],false,'Pads on the warm water of the Stair\'s lower pools and the creek, yellow and pink flowers; the rhizome roasts like a potato.')),
- reed:PK('Warm reed','hypertropic','humid','yes',['XA','Af'],'earth','margin',['reed'],HV('thatch',[],false,'Along the warm creek.')),
+ reed:PK('Warm reed','hypertropic','humid','yes',['XA','Af'],'earth','margin',['reed'],HV('thatch, fuel (dried)',[],false,'Along the warm creek; cut and dried in the steam it is a quick, hot fuel.')),
 };
 GEYSER.plantOfItem=item=>{for(const k in GEYSER.PLANTS)if(GEYSER.PLANTS[k].items.indexOf(item)>=0)return GEYSER.PLANTS[k];return null;};
 GEYSER.FRUIT_KEYS=[...new Set(GEYSER.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
@@ -185,6 +185,11 @@ const M=GEYSER.MAT;
 // cut to its cell); without the pack (an open world) the procedural ones stay. The painters above ran either way, so the
 // random stream, and every plant's place and shape, are the same
 GEYSER.LIB=BIO.libSwap('geyser',M);
+// a full-colour card (streamer, club, strap: the owner's, 2026-10-14) carries its own colour: its instances take a near-white,
+// a sixth of the procedural colour kept for variety (a cool streamer a little greener). The procedural colour is computed
+// as before, in place, so the random stream does not move.
+const LIBWHITE=C(0xf4f2ec);
+GEYSER.libCol=(slot,c)=>GEYSER.LIB[slot]?LIBWHITE.clone().lerp(c&&c.isColor?c:C(c),.16):c;
 GEYSER.LIBMEAN={};
 {const P=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('geyser',n):null;
  ['bark0','bark1','bark2','wood','glass','sinter'].forEach(k=>{const L=P(k);if(L&&L.mean>0)GEYSER.LIBMEAN[k]=L.mean;});}

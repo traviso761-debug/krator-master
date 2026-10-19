@@ -99,6 +99,15 @@ MATLIB_PACK = '88x-matlib-pack.js'
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+# core/rand (KRAND: the tags' uid is its hash) and core/tags (the registry REG is read into: src/91t-reedlake-tags.js)
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[0].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap and cutaway, with core/clock and core/minimap, as Highlands takes them. Not core/space and not core/edits (no editor
+# world yet), as on Iziz and Highlands.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
 # the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
 # (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the lake is a WATER.open surface
 # (src/90w-rl-lake.js), the troughs' and the wallow's water WATER.still (src/90x-rl-still.js). Listed by name, like core/materials/record above; a src/ copy with the same name wins.
@@ -141,6 +150,7 @@ DETERMINISTIC = {
     '90x-rl-still.js',                    # the troughs' and wallow's still water on core/water (Phase 4)
 }
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
+DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-reedlake-tags.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -153,7 +163,7 @@ SEED_COLLISION_EXCEPTIONS = set()
 # reseed rule does not apply either. Matched by filename prefix.
 SCOPED_PREFIXES = ('86-bio-',)
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES)
+    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -253,6 +263,8 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
     src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
@@ -266,7 +278,10 @@ def build_one(target, do_checks, assert_origin):
             bodies[f] = fh.read()
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
-    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'reedlake')
+    # the pack beside the pages (reedlake.tex.reedlake.js), one file every page of the build shares; --inline-packs puts it back in
+    # each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+    side = None if '--inline-packs' in sys.argv else {}
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'reedlake', side=side)
     order = sorted(order + [MATLIB_PACK])
 
     if do_checks:
@@ -287,6 +302,8 @@ def build_one(target, do_checks, assert_origin):
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
+    if side:
+        html = matlib_pack.write_sidecar(side, html, DIST, 'reedlake.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:

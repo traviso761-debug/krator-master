@@ -1,0 +1,135 @@
+[
+ {
+  "src": "Golden Amber Mosaic Tiles.png",
+  "out": "core/materials/library/mosaic.orange.honeycomb",
+  "record": {
+   "id": "mosaic.orange.honeycomb",
+   "family": "mosaic",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+    "licence": "generated for this project by its owner",
+    "original_title": "Golden Amber Mosaic Tiles.png",
+    "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+    "reuse": "Talia's orange honeycomb-mosaic vaults; any amber tessera"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Weathered Terracotta Peeling Wall Texture.png",
+  "out": "core/materials/library/render.orange.worn",
+  "record": {
+   "id": "render.orange.worn",
+   "family": "plaster",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Terracotta Peeling Wall Texture.png",
+    "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+    "reuse": "worn orange render with grey patches (Talia's old quarter, Pylon's painted render)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Weathered Hexagonal Ceramic Tile Texture.png",
+  "out": "core/materials/library/tile.hex.ceramic",
+  "record": {
+   "id": "tile.hex.ceramic",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Hexagonal Ceramic Tile Texture.png",
+    "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+    "reuse": "hex paving and floors (Pylon)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.55,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "meander-band.png",
+  "out": "core/materials/patterns/talia/meander",
+  "record": {
+   "id": "talia/meander",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    3.0,
+    1.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18), for the Talia and Pylon kits",
+    "licence": "generated for this project by its owner",
+    "original_title": "Greek Key on Burnt Orange Marble.png (cropped to the band)",
+    "prompt": "kits/talia/PLAN.md section 7 / kits/pylon/PLAN.md section 8 (no prompt written: the owner generated it)",
+    "reuse": "meander border strip: Talia's paving and cloister floors, friezes"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "x",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024,
+   "keep_aspect": true
+  }
+ }
+]

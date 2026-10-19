@@ -4,6 +4,22 @@
 
 ## Done
 
+- [x] (2026-10-15) The Screamers on core/host (ROADMAP.md section 10, step 5; core/host/README.md): the camera, the controls, the walk
+      (F), the frame loop and its TICKS, the panel, the probe's frame, the inspector (a click, I hover: core/tags records), marks (P)
+      and the minimap (M) are core/host's on the village and the furniture catalogue, as on Iziz (host.FULL without core/space, which
+      changes the vendored hyperjungle's scatter, and core/edits). `src/92-camera.js` keeps ui, setView, the title and LOD_OPTIONS;
+      `src/00-head.html` loses #cap, #insp and #hud; `src/93-polytool.js` is gone (its Inspect / Polygon / Path are the host's marks,
+      its Rings button a `rings` layer); `src/95-pathviz.js`'s Routes and Tracks are layers (window._tracker's setters) with a legend;
+      `src/99-start.js` is the take (the sky, the giant and its rings kept on the eye; the eye 2 m over the flat ground, as before);
+      `src/96t-screamers-tags.js` reads REG (only names, volumes and builder types) into KTAGS.page: on the village, the registry
+      the Post-Apoc bundle's furniture is already in (253 records), on the catalogue its own (11, core/rand and core/tags added for
+      that target only); 0 unknown. TICKS take motion time (the host's clock), not performance.now()/1000: the life layer's walkers
+      stand at another phase at a given moment (core/host/README.md, "The TICKS shim"). Proof: verify.py --assert passes the same six
+      invariants with the same numbers on both pages; the scene census at four views of each matches the old pages exactly (two old
+      runs match each other exactly too; the draw calls at Ground level move 136 to 138 run to run on old and new). Hostcheck: the
+      inspector names "Screamer village — a smithy" and "Furniture — chest" from their records, minimap and marks work, the error
+      panel is clean.
+
 - [x] Fork, single `screamers` target, Hexahedron on the origin.
 - [x] Hyperjungle atmosphere: green-white haze, jungle floor opening to trodden
       red soil where the village has cleared it, volcano shield far to the south.

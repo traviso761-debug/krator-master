@@ -179,7 +179,8 @@ function buildAsset(key, x,z,ry, opt){
   opt=opt||{}; var F=assetFrame(x,z,ry,opt); F.asset=A;
   try{ A.build(F); }catch(e){ ERR('asset '+key+': '+(e&&e.stack||e)); }
   var nm = A.name + (A.variantNames ? ' — '+A.variantNames[F.variant%A.variantNames.length] : (A.variants>1 ? ' · variant '+'ABCDEFGH'[F.variant%8] : ''));
-  REGISTER({ name:nm, kind:'asset', label:'building · '+(A.culture ? assetTags(A)+' · ' : A.family+' · ')+A.w+' x '+A.d+' m · key '+A.key, x:x, y:F.y-1, z:z, r:Math.hypot(A.w,A.d)/2, h:(A.h||8)+3 });
+  REGISTER({ name:nm, kind:'asset', label:'building · '+(A.culture ? assetTags(A)+' · ' : A.family+' · ')+A.w+' x '+A.d+' m · key '+A.key, x:x, y:F.y-1, z:z, r:Math.hypot(A.w,A.d)/2, h:(A.h||8)+3,
+    key:A.key, fam:A.family, culture:A.culture||null, box:[A.w, A.d, ry||0], ah:A.h||8 });   /* key .. ah: its core/tags record, a turned box (45-kit.js regRecord) */
   return { key:key, name:nm, x:x, z:z, ry:ry, w:A.w, d:A.d, doors:F.doors||[] };
 }
 

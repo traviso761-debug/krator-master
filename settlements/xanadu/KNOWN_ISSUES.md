@@ -2,6 +2,21 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [x] (2026-10-15) Xanadu on core/host (ROADMAP.md section 10, step 5; core/host/README.md): the camera, the controls, the walk (F),
+      the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records), marks (P, they replace the
+      polygon tool) and the minimap (M) are core/host's on the kit page and Erewhon, as on Iziz and Highlands (host.FULL without
+      core/space and core/edits). `src/92-camera.js` is re-vendored from Highlands (only ui, uiButton, setView, Labels stay;
+      `--vendor-check`: all 19 identical), `src/00-head.html` loses #cap, #insp, #poly and #hud, `src/99-start.js` is the take
+      (FRAME_HOOKS as before, f(dt, ms), in a tick subscriber), `src/91t-xanadu-tags.js` reads REG into KTAGS.page (1,557 records
+      on the kit page, 5,759 on Erewhon; 0 unknown: the Palopó twins' `paint` is a finish, the def's `kit` is said by its key, the
+      biome's plants are flora). Proof: verify.py --assert passes the same invariants with the same numbers on both pages. The
+      scene census at four views differs only in the biome's bark and leaf meshes, as the old page differs from itself: kit page,
+      two old runs 2 names a view (xbark0 382,791 / 387,899 / 323,312 over three old runs), the new page 1 to 2 names, its xbark0
+      323,312 one of the old values; Erewhon, two old runs 1 name a view, the new page 1 to 2 (xbark0, xbark2, within 3,410
+      triangles). Hostcheck: the inspector names "Earth farmhouse (poor)" and "Jet allée" from their records, minimap and marks
+      work, the error panel is clean.
+- [ ] (2026-10-15) TICKS still runs nowhere: 69-mat-salvage.js's fire flicker (a tick reading the Ancients camera's NIGHT) is not handed
+      to core/host, as it was never run by the old camera either.
 - [x] Vendored fragments are copied from `../highlands/src`, which itself carries the Iziz/Ancients drift noted in the Highlands KNOWN_ISSUES; re-vendor all three kits together. — 2026-10-01: re-vendored together. Highlands took `69b 69c 91-probe 93-labels` from Iziz (its showcase budget moved to `targets/highlands/91z-views.js`); Xanadu took `30-kit 36-decor 38-helpers2 54-mat-concrete 69-mat-salvage 69b 69c 91-probe 93-labels` from Highlands. `build.py --vendor-check` now compares `81-sky.js` with `../iziz/src` (Highlands has no src copy of it) and reports all 19 identical.
 - [x] `vnStairs` (vendored) centres its run at `run/2` while treads span `steps*.32`; the kit uses its own solid `xnFlight` everywhere instead. — 2026-10-01: not a fault. As Highlands found (its round 10), `vnStairs` is self-consistent: `run` IS `steps*.32` and the treads sit at `run/2-run*t`, so the flight is centred on its z and spans exactly `run`. The Highlands bug was `hnKryltso` sizing its run from `rise`; Xanadu's one caller (`74-xa-dwell.js`) is unaffected.
 - [x] (2026-10-13) `--vendor-check` reported `91-probe.js` drifted from `../highlands/src`. — The Ancients re-vendor

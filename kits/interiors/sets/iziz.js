@@ -21,19 +21,70 @@
   const L = [];
   const add = function (it) { L.push(it); return it; };
 
+  /* ---------------- THE TRADES' ROOMS (2026-10-16: the trade buildings after the Voth census, settlements/iziz VERN_TRADES).
+     A trade's selling room `izshop_<t>` requires its goods; its workroom `izwork_<t>` requires its workstation, by catalog
+     role (the iziz_trade_* set, the iziz common set's loom, workbench, desk and bookcase, iziz_bread_oven, iziz_butcher_block;
+     a poor room takes the generic and scrap sets' pieces of the same role through the culture chain). Each kind also takes
+     the pieces of the older kinds in IX.KIND_ALIAS: `workshop` only for the trades whose stations are workshop pieces, so
+     a bakery's or a brewery's room is not filled with an anvil or a lathe (`alias`); `shelves` for the trades that shelve
+     their stock (the Iziz bookcase holds scrolls, which a bakehouse does not). A building item names these kinds in its programme like any other. */
+  const SEATS = IX.SEAT_TYPES, FOOD = IX.FOOD_ROLES, SURFACE = IX.SURFACE_GROUP;
+  const IZ_TRADES = [
+    { t: 'bakery', goods: { types: ['counter', 'stack', 'storage', 'shelf'], n: 1 }, work: { types: ['stove'], roles: ['oven', 'hearth'], n: 1 }, alias: ['bakery', 'kitchen', 'store'] },
+    { t: 'butcher', goods: { types: ['counter', 'storage'], n: 1 }, work: { types: ['workstation'], roles: ['block'], n: 1 }, alias: ['butcher', 'kitchen', 'store'] },
+    { t: 'brewery', goods: { types: ['storage'], roles: ['barrel'], n: 1 }, work: { types: ['workstation', 'storage'], roles: ['still', 'vat'], n: 1 }, alias: ['store', 'kitchen', 'tavern', 'shop'] },
+    { t: 'weaver', shelves: true, goods: { types: ['rack', 'stack', 'shelf'], n: 1 }, work: { types: ['loom'], roles: ['loom'], n: 1 }, alias: ['hall', 'store'] },
+    { t: 'dyer', work: { types: ['storage'], roles: ['vat'], n: 1 }, alias: ['store'] },
+    { t: 'tannery', work: { types: ['storage'], roles: ['vat'], n: 1 }, alias: ['store'] },
+    { t: 'tailor', shelves: true, goods: { types: ['rack', 'stack', 'shelf'], n: 1 }, work: { types: ['table', 'workstation'], roles: ['table', 'workbench'], n: 1 } },
+    { t: 'scribe', shelves: true, goods: { types: ['shelf'], roles: ['bookcase', 'wall_shelves'], n: 1 }, work: { types: ['desk'], roles: ['desk'], n: 1 }, alias: ['study', 'library', 'store'] },
+    { t: 'apothecary', shelves: true, goods: { types: ['shelf', 'vessel'], n: 2 }, work: { types: ['workstation'], roles: ['still', 'workbench'], n: 1 }, alias: ['study', 'shop', 'store'] },
+    { t: 'tinker', shelves: true, goods: { types: ['shelf', 'stack', 'rack'], n: 1 }, work: { types: ['workstation'], roles: ['workbench', 'lathe', 'grindstone'], n: 1 } },
+    { t: 'glass', shelves: true, goods: { types: ['shelf', 'stack'], n: 1 }, work: { types: ['stove'], roles: ['kiln'], n: 1 } },
+    { t: 'provisioner', goods: { types: ['storage', 'stack', 'vessel'], roles: FOOD, n: 2 } },
+    { t: 'mill', work: { types: ['workstation', 'storage'], roles: ['press', 'bin'], n: 1 }, alias: ['shop', 'store'] },
+    { t: 'salvage', work: { types: ['workstation', 'stove'], roles: ['workbench', 'forge', 'anvil', 'grindstone'], n: 1 } },
+    { t: 'boat', work: { types: ['workstation'], roles: ['workbench', 'lathe'], n: 1 } },
+    { t: 'mason', work: { types: ['workstation'], roles: ['grindstone', 'workbench'], n: 1 }, alias: ['yard', 'store'] },
+    { t: 'smith', work: { types: ['stove', 'workstation'], roles: ['forge', 'anvil'], n: 1 }, also: ['smithy'] }
+  ];
+  if (!IX.PROGRAMS.izwork_bakery) {
+    IZ_TRADES.forEach(function (T) {
+      if (T.goods) {
+        /* the selling room's optional pieces stay within its own goods' types (a scribe's shop takes no vat or hayrack) */
+        const goods = ['shelf'].concat(T.goods.types.filter(function (t) { return t !== 'counter' && t !== 'shelf'; }));
+        IX.PROGRAMS['izshop_' + T.t] = { require: [Object.assign({ need: 'goods' }, T.goods)],
+          optional: [{ types: ['counter'], max: 1 }, { types: goods, max: 3 }, { types: SEATS, max: 1 }, { types: ['lamp'], max: 2 }, SURFACE],
+          extra: 5 };
+        IX.KIND_ALIAS['izshop_' + T.t] = ['shop'];
+        IX.KIND_WEIGHT['izshop_' + T.t] = 1.4;
+      }
+      if (T.work) {
+        IX.PROGRAMS['izwork_' + T.t] = { require: [Object.assign({ need: 'work' }, T.work)],
+          /* no optional workstation or rack: an optional slot cannot be held to the trade's roles, and it brought a still to the
+             scribe and a hayrack and a press to the tailor. The required station is the trade's own */
+          optional: [{ types: (T.shelves ? ['shelf', 'stack'] : ['stack']).concat(T.work.types.indexOf('storage') >= 0 ? ['storage'] : []), max: 3 }, { types: SEATS, max: 1 }, { types: ['table'], max: 1 }, { types: ['lamp'], max: 1 }, SURFACE],
+          extra: 5 };
+        IX.KIND_ALIAS['izwork_' + T.t] = T.alias || ['workshop', 'store'].concat(T.also || []);
+        IX.KIND_WEIGHT['izwork_' + T.t] = 1.6;
+      }
+    });
+  }
+
   /* ================================================================ dwellings (70-vern-dwellings.js) */
   add({ key: 'vern_house_poor_a', name: 'Stilt hut', wealth: POOR, types: SF, lot: [8, 10],
     bodies: [{ id: 'hut', poly: rect(5.3, 5.9), y: 1.7, levels: [{ h: 2.5 }], wall: 0.15, roof: 'gable', pitch: pt(2.7 / 2.95),
       doors: [{ at: [0, 2.95], w: 0.95 }], program: ['cottage'] }],
     note: 'one board room on stilts (floor 1.7), entered from the front platform up the ladder; the thatch loft is not planned' });
   add({ key: 'vern_house_poor_b', name: 'Corrugate shack', wealth: POOR, types: SF, lot: [10, 8],
-    bodies: [{ id: 'shack', poly: rect(6, 5), y: 0.35, levels: [{ h: 2.6 }], wall: 0.12, roof: 'flat',
-      doors: [{ at: [-1.4, 2.5], w: 0.95 }], program: ['cottage'] }],
+    bodies: [{ id: 'shack', poly: rect(5.8, 4.8), y: 0.35, levels: [{ h: 2.6 }], wall: 0.12, roof: 'flat',
+      doors: [{ at: [-1.4, 2.4], w: 0.95 }], program: ['cottage'] }],
     note: 'one salvage room on a rubble pad under a shed roof (planned flat); the tarp lean-to on +x is open' });
   add({ key: 'vern_house_poor_c', name: 'Panel house', wealth: POOR, types: SF, lot: [9, 10],
-    bodies: [{ id: 'house', poly: rect(6.4, 6.2), y: 0.6, levels: [{ h: 2.7 }], wall: 0.15, roof: 'hip', pitch: pt(2.4 / 3.1),
-      doors: [{ at: [-0.6, 3.1], w: 0.95 }], program: ['cottage'] }],
-    note: 'one panel-walled room on low stilts, the veranda in front is open' });
+    bodies: [{ id: 'house', poly: rect(6.2, 6.0), y: 0.6, levels: [{ h: 2.7 }], wall: 0.1, roof: 'hip', pitch: pt(2.4 / 3.1),
+      doors: [{ at: [-0.6, 3.0], w: 0.95 }], program: ['cottage'] }],
+    note: 'one panel-walled room on low stilts, the veranda in front is open; hollow, the room is the board lining inside the ' +
+      'panels (6.2 x 6.0), and the panels are cut round the door and windows' });
   add({ key: 'vern_house_mid_a', name: 'Plaster townhouse', wealth: MID, types: SF, lot: [10, 13],
     bodies: [{ id: 'house', poly: rect(8.4, 8.8), y: 0.4, levels: [{ h: 3.35 }, { h: 3.0 }], wall: 0.3, roof: 'gable', pitch: pt(2.5 / 4.4),
       doors: [{ at: [-1.6, 4.4], w: 1.15 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom']] }],
@@ -46,21 +97,25 @@
     note: 'two households: the ground storey (two street doors) and the set-back upper storey, entered from the roof terrace up ' +
       'the outside stair on +x, each its own body; the terrace is open' });
   add({ key: 'vern_house_mid_c', name: 'Long house', wealth: MID, types: SF, lot: [15, 14],
-    bodies: [{ id: 'house', poly: rect(11, 7.2), y: 0.5, levels: [{ h: 3.7 }], wall: 0.25, roof: 'hip', pitch: pt(2.8 / 3.6),
-      doors: [{ at: [-1.8, 3.6], w: 1.1 }, { at: [2.8, 3.6], w: 1.0 }], program: ['living', 'kitchen', 'bedroom', 'bedroom'] }],
+    bodies: [{ id: 'house', poly: rect(10.88, 7.08), y: 0.5, levels: [{ h: 3.7 }], wall: 0.25, roof: 'hip', pitch: pt(2.8 / 3.6),
+      doors: [{ at: [-1.8, 3.54], w: 1.1 }, { at: [2.8, 3.54], w: 1.0 }], program: ['living', 'kitchen', 'bedroom', 'bedroom'] }],
     note: 'one storey on low stilts behind the full-width veranda (open)' });
   add({ key: 'vern_house_rich_a', name: 'Stone manor', wealth: RICH, types: SF, lot: [28, 24],
-    bodies: [{ id: 'manor', poly: rect(11, 9.4), y: 0.6, levels: [{ h: 5.75 }, { h: 3.4 }], wall: 0.45, roof: 'hip', pitch: pt(2.7 / 4.7),
+    bodies: [{ id: 'manor', poly: [[-3.7, -4.7], [5.5, -4.7], [5.5, 4.7], [-5.5, 4.7], [-5.5, -2.7], [-3.7, -2.7]], y: 1.6,
+      levels: [{ h: 4.77 }, { h: 3.4 }], wall: 0.45, roof: 'hip', pitch: pt(2.7 / 4.7),
       doors: [{ at: [0, 4.7], w: 1.7 }], program: [['hall', 'kitchen'], ['bedroom', 'bedroom', 'study']] }],
-    note: 'both storeys are planned on the gallery storey\'s 11 x 9.4 (the battered ground storey is 14 x 12 at its foot, 12 x 10.3 ' +
-      'at its head: the planner wants one footprint for a stair to pass); the stepped cornice is ' +
-      '1.4 m of solid stone, so the ground storey is planned 5.75 high to put the gallery floor on its drawn height (6.62); the ' +
-      'corner tower, the balcony and the walled court are not planned' });
+    note: 'hollow, the ground storey is drawn as straight ashlar walls 0.91 thick on the cornice\'s outline (12.04 x 10.32) over a ' +
+      'battered skirt 1 m high (its top the floor, 1.6), a stone perron up to the door; both storeys are planned on the gallery ' +
+      'storey\'s 11 x 9.4 (the ground storey\'s inner face, give or take 6 cm), less the corner the solid tower takes; the plinth cap ' +
+      'and the stepped cornice are 1.42 m of stone, so the ground storey is planned 4.77 high to put the gallery floor on its drawn ' +
+      'height (6.62); the tower, the balcony (no door onto it) and the walled court are not planned. Without interiors the ground ' +
+      'storey is the battered block (14 x 12 at its foot) it always was' });
   add({ key: 'vern_house_rich_b', name: 'Domed house', wealth: RICH, types: SF, lot: [26, 23],
-    bodies: [{ id: 'house', poly: rect(12.4, 11.6), y: 0.5, levels: [{ h: 4.65 }, { h: 3.5 }], wall: 0.45, roof: 'flat',
-      doors: [{ at: [0, 5.8], w: 1.6 }], program: [['hall', 'living', 'kitchen', 'store'], ['bedroom', 'bedroom', 'study', 'bedroom']] }],
-    note: 'two ashlar storeys under a parapet and the dome (the drum is not planned), the upper one (11.8 x 11 drawn) planned on the ' +
-      'ground footprint; the loggia in front and the garden are open' });
+    bodies: [{ id: 'house', poly: rect(11.8, 11), y: 0.5, levels: [{ h: 4.65 }, { h: 3.5 }], wall: 0.15, roof: 'flat',
+      doors: [{ at: [0, 5.5], w: 1.6 }], program: [['hall', 'living', 'kitchen', 'store'], ['bedroom', 'bedroom', 'study', 'bedroom']] }],
+    note: 'two ashlar storeys under a parapet and the dome (the drum is not planned), both planned on the upper storey\'s ' +
+      '11.8 x 11 with a 0.15 wall, which puts the planned inner face on both drawn ones (the ground storey 12.4 x 11.6 with walls ' +
+      '0.45, the upper 11.8 x 11 with 0.15; a per-storey outline leaves no wall for the stair); the loggia in front and the garden are open' });
 
   /* ================================================================ trade and industry (71-vern-trade.js) */
   add({ key: 'vern_shops', name: 'Shop row', wealth: MID, types: ['market/shop'], lot: [18, 12],
@@ -71,28 +126,31 @@
     note: 'three units under one roof, each its own body (the party walls); each sells over the counter in its shop-front opening, ' +
       'the door beside it' });
   add({ key: 'vern_tavern', name: 'Tavern', wealth: MID, types: ['tavern/inn'], lot: [22, 20],
-    bodies: [{ id: 'hall', poly: rect(16, 10), y: 0.35, levels: [{ h: 4.05 }, { h: 2.6 }], wall: 0.3, roof: 'gable', pitch: pt(4.2 / 5),
-      doors: [{ at: [0, 5], w: 1.5 }], program: [['tavern', 'kitchen', 'store'], ['bedroom', 'bedroom', 'bedroom', 'bedroom']] }],
+    bodies: [{ id: 'hall', poly: rect(15.84, 9.84), y: 0.35, levels: [{ h: 4.05 }, { h: 2.6 }], wall: 0.3, roof: 'gable', pitch: pt(4.2 / 5),
+      doors: [{ at: [0, 4.92], w: 1.5 }], program: [['tavern', 'kitchen', 'store'], ['bedroom', 'bedroom', 'bedroom', 'bedroom']] }],
     note: 'the long hall and the inn rooms in the board storey above; the cross-gabled porch is open' });
   add({ key: 'vern_workshop_a', name: "Carpenter's workshop", wealth: MID, types: ['industry'], lot: [14, 12],
     bodies: [{ id: 'store', poly: rect(8.8, 3.85, 0, -1.575), y: 0.2, levels: [{ h: 3.4 }], wall: 0.12, roof: 'flat',
-      doors: [{ at: [-1.2, 0.35], w: 1.0 }], program: ['store'] }],
+      doors: [{ at: [-3.2, 0.35], w: 1.0 }], program: ['store'] }],
     rooms: [{ id: 'shed', kind: 'workshop', poly: rect(8.7, 2.9, 0, 1.85), y: 0.2, h: 3.3, doors: [{ at: [0, 3.3], w: 8.0, swing: 'none' }],
       fixtures: [{ id: 'bench-a', kind: 'bench', x: -2.2, z: 2.1, ry: 0, w: 3.2, d: 0.9, h: 0.9, reach: false },
-        { id: 'bench-b', kind: 'bench', x: 2.4, z: 2.2, ry: 0, w: 2.4, d: 0.8, h: 0.9, reach: false }] }],
-    note: 'the open-fronted shed (its two benches are fixtures) and the board-walled back half as a store; the builder draws no ' +
-      'door into the back half: one is assumed from the shed' });
+        { id: 'bench-b', kind: 'bench', x: 2.4, z: 2.2, ry: 0, w: 2.4, d: 0.8, h: 0.9, reach: false },
+        { id: 'planks', kind: 'bench', x: 2.9, z: 1.0, ry: 0, w: 2.7, d: 0.4, h: 1.3, reach: false },
+        { id: 'sawhorses', kind: 'bench', x: 0, z: 0.95, ry: 0, w: 2.7, d: 0.6, h: 1.1, reach: false }] }],
+    note: 'the open-fronted shed (its benches, plank stack and sawhorses are fixtures) and the board-walled back half as the ' +
+      'timber store, its door from the shed drawn only when hollow (the solid block has none; hollow, the planks and sawhorses ' +
+      'stand in the shed, not through the store\'s wall)' });
   add({ key: 'vern_workshop_b', name: "Potter's workshop", wealth: MID, types: ['industry', 'market/shop'], lot: [16, 12],
-    bodies: [{ id: 'shop', poly: rect(8, 7), y: 0.3, levels: [{ h: 3.2 }], wall: 0.25, roof: 'hip', pitch: pt(2.1 / 3.5),
-      doors: [{ at: [2.4, 3.5], w: 1.0 }], program: ['shop', 'workshop'] }],
+    bodies: [{ id: 'shop', poly: rect(7.86, 6.86), y: 0.3, levels: [{ h: 3.2 }], wall: 0.25, roof: 'hip', pitch: pt(2.1 / 3.5),
+      doors: [{ at: [2.4, 3.43], w: 1.0 }], program: ['shop', 'workshop'] }],
     note: 'the sales front (its counter stands outside the opening) and the workroom; the kiln and its drying shelves are outside' });
   add({ key: 'vern_smithy', name: 'Scrap smithy', wealth: POOR, types: ['industry'], lot: [18, 14],
     skip: 'open forge shed on pipe posts: one back wall of plate, nothing enclosed' });
   add({ key: 'vern_market', name: 'Market canopy', wealth: MID, types: ['market/shop'], lot: [30, 22],
     skip: 'open market canopy on posts over rows of stalls: nothing enclosed' });
   add({ key: 'vern_warehouse', name: 'Warehouse', wealth: MID, types: ['industry'], lot: [30, 20],
-    bodies: [{ id: 'shed', poly: rect(22, 12), y: 0.9, levels: [{ h: 5.2 }], wall: 0.25, roof: 'gable', pitch: pt(3.4 / 11),
-      doors: [{ at: [-6, 6], w: 2.2 }, { at: [0, 6], w: 2.2 }, { at: [6, 6], w: 2.2 }, { at: [11, -1], w: 3.6 }], program: ['store', 'store', 'store'] },
+    bodies: [{ id: 'shed', poly: rect(21.8, 11.8), y: 0.9, levels: [{ h: 5.2 }], wall: 0.25, roof: 'gable', pitch: pt(3.4 / 11),
+      doors: [{ at: [-6, 5.9], w: 2.2 }, { at: [0, 5.9], w: 2.2 }, { at: [6, 5.9], w: 2.2 }, { at: [10.9, -1], w: 3.6 }], program: ['store', 'store', 'store'] },
       { id: 'office', poly: rect(4.6, 4.8, -13.6, 3.5), y: 0, levels: [{ h: 3.0 }], wall: 0.15, roof: 'flat',
         doors: [{ at: [-13.6, 5.9], w: 1.0 }], program: ['study'] }],
     note: 'the shed at loading height (0.9) behind the dock, three doors on the front and the gable door on +x; the lean-to office ' +
@@ -160,14 +218,15 @@
       doors: [{ at: [-4.5, 1], w: 2.0 }, { at: [-10.5, -9], w: 1.1 }], program: ['hall', 'store', 'study'] }],
     note: 'the trophy hall; the towering porch, the beast pen and the watch platform are open' });
   add({ key: 'vern_caravanserai', name: 'Caravanserai', wealth: MID, types: ['tavern/inn', 'market/shop'], lot: [36, 30],
-    bodies: [-12.96, -6.48, 0, 6.48, 12.96].map(function (x, i) {
-      return { id: 'lodging' + (i + 1), poly: rect(6.48, 3.9, x, -11.35), y: 0.4, levels: [{ h: 2.9 }], wall: 0.2, roof: 'flat',
+    bodies: [[-16.2, -9.6], [-9.6, -3.6], [-3.6, 3.6], [3.6, 9.6], [9.6, 16.2]].map(function (e, i) {
+      return { id: 'lodging' + (i + 1), poly: rect(e[1] - e[0], 3.9, (e[0] + e[1]) / 2, -11.35), y: 0.4, levels: [{ h: 2.9 }], wall: 0.2, roof: 'flat',
         doors: [{ at: [[-12, -6, 0, 6, 12][i], -9.4], w: 1.1 }], program: ['dormitory'] };
     }).concat([-1, 1].map(function (s) {
       return { id: s < 0 ? 'stores-w' : 'stores-e', poly: rect(11.3, 3.9, s * 10.45, 11.35), y: 0.4, levels: [{ h: 2.9 }], wall: 0.2, roof: 'flat',
         doors: [{ at: [s * 7.6, 9.4], w: 1.7 }, { at: [s * 12.4, 9.4], w: 1.7 }], program: ['store', 'store'] };
     })),
-    note: 'the lodging range on the back wall (five rooms, one per door) and the store ranges either side of the gate; the room over ' +
+    note: 'the lodging range on the back wall (five rooms, one per door; hollow, the builder draws the party walls between them, ' +
+      'clear of the windows) and the store ranges either side of the gate; the room over ' +
       'the gate has no stair and no door (not planned); the stables and the stall arcade are open' });
   add({ key: 'vern_forgemasters_hall', name: "Forgemaster's Hall", wealth: CIVIC, types: ['civic', 'industry'], lot: [40, 32],
     rooms: [{ id: 'hall', kind: 'smithy', poly: rect(28, 18, 0, -5), y: 0.5, h: 9.5, doors: [{ at: [0, 4], w: 9, swing: 'none' }],
@@ -179,7 +238,7 @@
     note: 'one hollow hall behind the 9 m opening; the mech in its gantry, the forge, the benches and the drums are fixtures' });
 
   /* ================================================================ the frontier (74b-vern-frontier.js, Verge's upper city) */
-  add({ key: 'vern_governor_palace', name: "Governor's Palace", wealth: CIVIC, types: ['civic', 'single-family dwelling'], lot: [42, 36],
+  add({ key: 'vern_governor_palace', name: "Governor's House", wealth: CIVIC, types: ['civic', 'single-family dwelling'], lot: [42, 36],
     bodies: [{ id: 'palace', poly: [[-15, -14], [15, -14], [15, 0], [5.5, 0], [5.5, 4.4], [-5.5, 4.4], [-5.5, 0], [-15, 0]], y: 1.63,
       levels: [{ h: 5.22 }, { h: 4.2 }], wall: 0.5, roof: 'hip', pitch: pt(3.4 / 6.8),
       doors: [{ at: [0, 4.4], w: 2.2 }, { at: [15, -10], w: 1.4 }],
@@ -222,6 +281,132 @@
     rooms: [{ id: 'shelter', kind: 'living', poly: rect(4.7, 4.3, -5.8, -2.3), y: 0.15, h: 2.8, doors: [{ at: [-3.45, -2.3], w: 1.0 }] }],
     note: 'the one-room stone shelter with its hearth (the chimney on the back wall), entered from the platform on its +x end; the ' +
       'platform, the trough and the shade by the parapet are open' });
+
+  /* ================================================================ the trades round: food trades (71a-vern-food.js) */
+  add({ key: 'vern_bakery', name: 'Bakery', wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [19, 16],
+    bodies: [{ id: 'bakehouse', poly: rect(10, 8), y: 0.4, levels: [{ h: 3.35 }, { h: 2.9 }], wall: 0.3, roof: 'gable', pitch: pt(2.5 / 4),
+      doors: [{ at: [-4.0, 4], w: 1.0 }, { at: [2.8, -4], w: 1.0 }], program: [['izshop_bakery', 'izwork_bakery'], ['living', 'bedroom']] }],
+    note: 'the shop (street door, counter hatch) and the bakehouse below, the household above; the domed oven, its lean-to and the ' +
+      'woodpile stand outside the +x wall; the gable attic is not planned' });
+  add({ key: 'vern_butcher', name: "Butcher's shop and smokehouse", wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [16, 18],
+    bodies: [{ id: 'shop', poly: rect(7.6, 6.4, -2.4, 1.0), y: 0.35, levels: [{ h: 3.2 }], wall: 0.25, roof: 'gable', pitch: pt(2.0 / 3.2),
+      doors: [{ at: [0.35, 4.2], w: 1.0 }, { at: [-0.9, -2.2], w: 0.95 }], program: ['izshop_butcher', 'izwork_butcher'] },
+      { id: 'cottage', poly: rect(7.0, 4.4, -2.4, -5.4), y: 0.35, levels: [{ h: 2.9 }], wall: 0.25, roof: 'hip', pitch: pt(1.8 / 2.2),
+        doors: [{ at: [-5.9, -5.4], w: 0.95 }], program: ['cottage'] },
+      { id: 'smokehouse', poly: rect(3.6, 3.6, 4.6, -1.4), y: 0.15, levels: [{ h: 4.2 }], wall: 0.15, roof: 'gable', pitch: pt(1.4 / 1.8),
+        doors: [{ at: [4.0, 0.4], w: 0.95 }], program: ['store'] }],
+    note: 'the meat shop sells over the counter in its wide hatch under the deep eave (the hooks and the block are outside); the ' +
+      'butcher\'s cottage behind across the passage; the smokehouse is a store, its meat racks hung above 3 m, seen through the slats' });
+  add({ key: 'vern_brewery', name: 'Brewery', wealth: MID, types: ['industry', 'tavern/inn'], lot: [21, 17],
+    bodies: [{ id: 'brewhouse', poly: rect(15, 8, -0.8, 0), y: 0.4, levels: [{ h: 4.2 }], wall: 0.3, roof: 'gable', pitch: pt(3.0 / 4),
+      doors: [{ at: [-4.55, 4], w: 1.1 }, { at: [0.45, 4], w: 1.7 }, { at: [5.45, -4], w: 1.0 }, { at: [6.7, -2.7], w: 1.2 }],
+      program: ['izshop_brewery', 'izwork_brewery', 'store'] }],
+    note: 'the taproom (-x, behind its veranda), the brewing floor and the store along the long hall; the tun loft and the copper ' +
+      'kettle stack over the roof are solid; the barrel yard and the malt racks are outside' });
+  add({ key: 'vern_provisioner', name: 'Provisioner', wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [16, 18],
+    bodies: [{ id: 'store', poly: rect(10, 8.4), y: 0.5, levels: [{ h: 3.45 }, { h: 3.0 }], wall: 0.3, roof: 'gable', pitch: pt(3.0 / 5),
+      doors: [{ at: [-3.6, 4.2], w: 1.0 }, { at: [2.6, 4.2], w: 1.8 }, { at: [2.6, -4.2], w: 1.0 }],
+      program: [['izshop_provisioner', 'store'], ['living', 'bedroom']] }],
+    note: 'the outfitter\'s shop and its store below (the cart door under the hoist), the household above; the loading door in ' +
+      'the upper front is not a planned door; the veranda of goods and the loading platform are open' });
+
+  /* ================================================================ the trades round: cloth, leather and letters (71b-vern-cloth.js) */
+  add({ key: 'vern_weaver', name: "Weaver and dyer's house", wealth: MID, types: ['industry', 'market/shop', 'single-family dwelling'], lot: [15, 19],
+    bodies: [{ id: 'house', poly: rect(10, 7.6, 0, 1.6), y: 0.45, levels: [{ h: 3.75 }, { h: 2.9 }], wall: 0.3, roof: 'gable', pitch: pt(2.4 / 3.8),
+      stair: { w: 0.9, riser: 0.22, tread: 0.25 },
+      doors: [{ at: [-0.4, 5.4], w: 1.2 }, { at: [3.0, -2.2], w: 1.0 }], program: [['izwork_weaver', 'izwork_dyer'], ['living', 'bedroom']] }],
+    note: 'the loom room behind the tall shuttered openings (its back door to the dye yard) and the dye room, which carries the ' +
+      'stair along the windowless -x wall (stair: a 0.22 riser so the 4 m storey fits a flight), the family above; the dye ' +
+      'lean-to, the vats and the drying poles in the yard behind are open' });
+  add({ key: 'vern_tannery', name: 'Tannery', wealth: POOR, types: ['industry'], lot: [21, 16],
+    bodies: [{ id: 'store', poly: rect(5.6, 4.0, 6.6, -3.6), y: 0.35, levels: [{ h: 2.6 }], wall: 0.12, roof: 'flat',
+      doors: [{ at: [5.2, -1.6], w: 0.95 }], program: ['izwork_tannery', 'store'] }],
+    note: 'only the board store and office is enclosed (the tanner\'s room and a hide store); the pit shed, the hide frames, the ' +
+      'scraping beam and the bark store are open' });
+  add({ key: 'vern_tailor', name: 'Tailor and clothier', wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [10, 15],
+    bodies: [{ id: 'shop', poly: rect(7.2, 9.6), y: 0.4, levels: [{ h: 3.45 }, { h: 3.0 }], wall: 0.25, roof: 'gable', pitch: pt(2.6 / 3.6),
+      doors: [{ at: [2.6, 4.8], w: 0.95 }, { at: [-2.2, -4.8], w: 0.9 }], program: [['izshop_tailor', 'izwork_tailor'], ['living', 'bedroom']] }],
+    note: 'the shop behind the display opening, the cutting room behind it (the back door to the yard), the family above; the ' +
+      'display ledge and the robes are outside the wall' });
+  add({ key: 'vern_scribe', name: 'Scribe and bookseller', wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [15, 13],
+    bodies: [{ id: 'house', poly: rect(9.2, 8.4), y: 0.55, levels: [{ h: 3.65 }, { h: 3.0 }], wall: 0.35, roof: 'hip', pitch: pt(2.6 / 4.2),
+      doors: [{ at: [-1.8, 4.2], w: 1.2 }, { at: [4.6, -1.6], w: 0.95 }], program: [['izshop_scribe', 'izwork_scribe'], ['living', 'bedroom']] }],
+    note: 'the book room on the street and the scribe\'s writing room (its side door to the press shed) in the stone storey, the ' +
+      'scribe\'s rooms above; the book stall, the lectern and the press shed are open' });
+
+  /* ================================================================ the trades round: crafts and salvage (71c-vern-craft.js) */
+  add({ key: 'vern_apothecary', name: 'Apothecary', wealth: MID, types: ['market/shop', 'single-family dwelling'], lot: [17, 14],
+    bodies: [{ id: 'house', poly: rect(9.6, 8.4), y: 0.4, levels: [{ h: 3.35 }, { h: 2.9 }], wall: 0.3, roof: 'gable', pitch: pt(2.6 / 4.2),
+      doors: [{ at: [-2.7, 4.2], w: 1.1 }, { at: [2.6, -4.2], w: 1.0 }],
+      program: [['izshop_apothecary', 'izwork_apothecary'], ['living', 'bedroom']] }],
+    note: 'the shop and the workroom on the ground storey (street door, back door to the yard), the family above; the still\'s ' +
+      'lean-to on -x and the herb rack on +x are open' });
+  add({ key: 'vern_tinker', name: 'Tinker and relic-wright', wealth: POOR, types: ['market/shop', 'industry', 'single-family dwelling'], lot: [18, 14],
+    bodies: [{ id: 'shop', poly: rect(8.8, 6.6), y: 0.45, levels: [{ h: 3.0 }], wall: 0.15, roof: 'gable', pitch: pt(1.9 / 3.3),
+      doors: [{ at: [2.4, 3.3], w: 1.0 }], program: ['izshop_tinker', 'izwork_tinker'] },
+      { id: 'back', poly: rect(3.4, 4.6, -6.1, -0.2), y: 0.45, levels: [{ h: 2.4 }], wall: 0.15, roof: 'flat',
+        doors: [{ at: [-5.6, 2.1], w: 0.9 }], program: ['cottage'] }],
+    note: 'the counter room and the workbench room under the gable; the family\'s board lean-to on -x has its own door; the porch is open' });
+  add({ key: 'vern_glassworks', name: 'Glassworks', wealth: MID, types: ['industry', 'market/shop'], lot: [20, 14],
+    bodies: [{ id: 'hall', poly: rect(11.4, 8.2, -3.3, 0), y: 0.35, levels: [{ h: 4.0 }], wall: 0.3, roof: 'gable', pitch: pt(2.4 / 4.1),
+      doors: [{ at: [-6.9, 4.1], w: 1.2 }, { at: [2.4, -1.4], w: 1.3 }], program: ['izshop_glass', 'store', 'izwork_glass'] }],
+    note: 'the sales room on the street door, the store, the workroom with its door to the furnace house; the furnace house ' +
+      '(+x, the beehive furnace, its stack and the annealing oven) and the cullet bins are open' });
+  add({ key: 'vern_salvage_yard', name: 'Salvage breaker\'s yard', wealth: POOR, types: ['industry'], lot: [30, 26],
+    bodies: [{ id: 'works', poly: rect(8.4, 6.6, -8.6, -6.4), y: 0.2, levels: [{ h: 3.4 }], wall: 0.15, roof: 'gable', pitch: pt(1.8 / 3.3),
+      doors: [{ at: [-7.0, -3.1], w: 1.9 }], program: ['izwork_salvage'] },
+      { id: 'office', poly: rect(4.6, 3.8, -9.8, 6.6), y: 0.3, levels: [{ h: 2.7 }], wall: 0.15, roof: 'flat',
+        doors: [{ at: [-7.5, 6.2], w: 0.95 }], program: ['study'] }],
+    note: 'the closed workshop at the back and the office by the gate; the walled yard, the gantry, the piles and the cutting ' +
+      'forge\'s lean-to are open' });
+
+  /* ================================================================ the trades round: mines, quarry, mill, fungus (73b-vern-works.js) */
+  add({ key: 'vern_mine', name: 'Mine head', wealth: POOR, types: ['industry'], lot: [26, 22],
+    bodies: [{ id: 'hut', poly: rect(7, 5.5, 8.5, 1.5), y: 0.5, levels: [{ h: 2.6 }], wall: 0.15, roof: 'gable', pitch: pt(2.3 / 2.87),
+      doors: [{ at: [6.9, 4.25], w: 0.95 }], program: ['store', 'dormitory'] }],
+    note: 'the miners\' hut only (a tool store and the bunk room, on low stilts); the adit, the shaft and headframe, the open winch ' +
+      'shed and the heaps are outside' });
+  add({ key: 'vern_quarry', name: 'Quarry and mason\'s lodge', wealth: MID, types: ['industry'], lot: [28, 24],
+    bodies: [{ id: 'lodge', poly: rect(8, 5.5, 8.5, 6), y: 0.35, levels: [{ h: 3.0 }], wall: 0.25, roof: 'gable', pitch: pt(1.9 / 2.75),
+      doors: [{ at: [6.3, 8.75], w: 1.1 }], program: ['izwork_mason', 'store'] }],
+    note: 'the masons\' lodge only; the banker benches stand under its open front lean-to, the cut, the shear legs and the ramp are open' });
+  add({ key: 'vern_mill', name: 'Watermill', wealth: MID, types: ['industry', 'single-family dwelling'], lot: [22, 20],
+    bodies: [{ id: 'mill', poly: rect(9, 8, -2.5, 0), y: 1.2, levels: [{ h: 3.25 }, { h: 2.7 }], wall: 0.3, roof: 'gable', pitch: pt(2.6 / 4),
+      doors: [{ at: [-4.7, 4], w: 1.15 }], program: [['izwork_mill', 'store'], ['living', 'bedroom']] }],
+    note: 'the mill floor (the wheel turns on the +x wall) and its sack store below, the miller\'s household above; the taking-in ' +
+      'door under the hoist is drawn as an unglazed opening. The grain lean-to on -x, the wheel pit and the flume are open' });
+  add({ key: 'vern_fungus_shed', name: 'Fungus house', wealth: POOR, types: ['farm'], lot: [22, 14],
+    bodies: [{ id: 'shed', poly: rect(13, 6, 0, -1.5), y: 0.1, levels: [{ h: 2.3 }], wall: 0.2, roof: 'gable', pitch: pt(2.4 / 3),
+      doors: [{ at: [-6.5, -1.5], w: 1.0 }], program: ['store', 'store', 'store'], windows: false }],
+    note: 'the dark growing house, windowless, banked with earth to the eaves; entered down the cutting on its -x end. Drawn at grade ' +
+      '(the bank makes it read half-sunk) so the floor stays above the ground plane' });
+
+  /* ================================================================ the trades round: farm, stock and water (73c-vern-land.js) */
+  add({ key: 'vern_farmhouse', name: 'Farmhouse', wealth: MID, types: ['farm', 'single-family dwelling'], lot: [24, 20],
+    bodies: [{ id: 'house', poly: rect(12, 8, -2.2, -2.5), y: 1.6, levels: [{ h: 3.2 }], wall: 0.25, roof: 'gable', pitch: pt(2.6 / 4),
+      doors: [{ at: [-4.6, 1.5], w: 1.1 }], program: ['living', 'kitchen', 'bedroom', 'bedroom', 'store'] }],
+    note: 'one plaster storey on stilts (floor 1.6) behind the full-width veranda (open, its stair on the -x end); the cart shed, ' +
+      'the raised granary and the vegetable plot are open or solid' });
+  add({ key: 'vern_byre', name: 'Byre and dairy', wealth: POOR, types: ['farm'], lot: [22, 16],
+    bodies: [{ id: 'byre', poly: rect(10, 7, -3, 0), y: 0.25, levels: [{ h: 3.1 }], wall: 0.18, roof: 'gable', pitch: pt(2.6 / 3.5),
+      doors: [{ at: [-4, 3.5], w: 2.4 }, { at: [1, -3.5], w: 1.1 }], program: ['stable'] },
+      { id: 'dairy', poly: rect(4.4, 7, 4.2, 0), y: 0.25, levels: [{ h: 3.1 }], wall: 0.22, roof: 'gable', pitch: pt(2.6 / 3.5),
+        doors: [{ at: [4.2, 3.5], w: 1.0 }], program: ['store'] }],
+    note: 'the board byre (its stalls from the catalog) and the limewashed dairy under one thatch; the hay loft is the roof space ' +
+      '(its door in the -x gable, not planned); the fold, the milk stand and the hay rick are open' });
+  add({ key: 'vern_pens', name: 'Stock pens', wealth: POOR, types: ['farm'], lot: [20, 16],
+    bodies: [{ id: 'hut', poly: rect(4.2, 3.8, -6.2, -4.6), y: 0.5, levels: [{ h: 2.4 }], wall: 0.12, roof: 'gable', pitch: pt(1.7 / 1.9),
+      doors: [{ at: [-5.4, -2.7], w: 0.9 }], program: ['cottage'] }],
+    note: 'the herder\'s one-room hut; the sty, its lean-to shelters, the duck house over the pond and the duck run are open' });
+  add({ key: 'vern_boatyard', name: 'Boatwright\'s yard', wealth: MID, types: ['industry'], lot: [26, 22],
+    bodies: [{ id: 'workshop', poly: rect(7.4, 6.4, 8.6, -5.4), y: 0.3, levels: [{ h: 3.25 }, { h: 2.4 }], wall: 0.25, roof: 'gable', pitch: pt(2.6 / 3.7),
+      doors: [{ at: [7.1, -2.2], w: 1.8 }], program: [['izwork_boat', 'store'], ['store']] }],
+    note: 'the closed workshop and its timber loft (the loft\'s front door is boarded); the boat shed over the slip, the steam box ' +
+      'and the timber stacks are open' });
+  add({ key: 'vern_fish_landing', name: 'Fish landing and smokehouse', wealth: POOR, types: ['industry'], lot: [18, 16],
+    bodies: [{ id: 'smokehouse', poly: rect(4.2, 3.6, -4.6, -4.2), y: 0.25, levels: [{ h: 2.5 }], wall: 0.2, roof: 'gable', pitch: pt(1.9 / 1.8),
+      doors: [{ at: [-4.0, -2.4], w: 0.9 }], program: ['store'] }],
+    note: 'the daub smokehouse as a store (its racks are the catalog\'s); the landing stage, the net frames and the fish racks are open' });
 
   IX.sets.add({ set: 'iziz', title: 'Iziz Vernacular', culture: 'iziz', items: L });
 })(KratorInteriors);

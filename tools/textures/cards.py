@@ -8,9 +8,12 @@ OUT_DIR/albedo.png (RGBA, SIZE x SIZE) and meta.json (record.kind = 'card').
 
 Steps:
   0. key      (option `key`: "#ff00ff" or "#00ff00", with `key_lo`/`key_hi` distances) cuts a flat-colour background out first;
-              `spill` ('edge', 'all', 'none') says where the key's tint is taken out (key_out); `choke` (n pixels) then
+              `spill` ('edge', 'all', 'none') says where the key's tint is taken out (key_out), or 'unmix' (key_unmix:
+              each blended pixel split back into the subject's colour and an alpha; key_hi is then the distance from the
+              key beyond which a pixel is solid subject); `choke` (n pixels) then
               shrinks the alpha to drop a tinted fringe the spill pass leaves.
-  1. crop     (anchor 'tight': the opaque box only, stretched square on resize, for a wing mapped by its bounding box) to the opaque pixels (alpha > 16), then pad back to a square. `anchor` says where the content sits:
+  1. crop     (anchor 'none': no crop at all, the frame kept, for a 3 x 3 sheet a host cuts into equal cells or a
+              keyed surface that tiles; anchor 'tight': the opaque box only, stretched square on resize, for a wing mapped by its bounding box) to the opaque pixels (alpha > 16), then pad back to a square. `anchor` says where the content sits:
               'center' (a spray seen from above), 'bottom' (a frond or a plant: its base on the bottom edge,
               centred) or 'top' (a hanging chain: its hung end on the top edge, centred). `pad` is the margin.
   2. resize   to SIZE.
@@ -27,6 +30,8 @@ VERSION = 1
 
 
 def crop_square(im, anchor, pad):
+    if anchor == 'none':      # the whole frame as it is: a sheet whose cells a host cuts by thirds (or a cut-out surface that tiles)
+        return im
     a = np.asarray(im.getchannel('A'))
     ys, xs = np.nonzero(a > 16)
     x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
@@ -101,10 +106,42 @@ def key_out(im, key, lo, hi, spill_mode='edge'):
     return Image.fromarray(np.rint(out).astype(np.uint8), 'RGBA')
 
 
+def key_unmix(im, key, solid_d):
+    """Chroma key by UNMIXING (option `spill`: 'unmix'): for fine, translucent subjects (needles, filaments, straw ends, water
+    beads) whose pixels are a blend of the subject and the key, where 'edge' and 'all' leave a mauve fringe or turn the blend
+    grey-blue. Pixels further than `solid_d` (option `key_hi`) from the key are the subject as it is; every other pixel P is
+    taken as a*S + (1 - a)*K, with S the colour of the nearest solid subject (bled outward by growing box blurs, as bleed()
+    does) and K the key: a = (P - K).(S - K) / |S - K|^2 (least squares), and the colour (P - (1 - a)K) / a, leaning on S as a
+    falls (where the division is noisy). So a filament half covering the key keeps its own colour at half alpha."""
+    k = np.array([int(key.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)], dtype=np.float64)
+    P = np.asarray(im.convert('RGB')).astype(np.float64)
+    d = np.sqrt(((P - k) ** 2).sum(-1))
+    solid = (d > solid_d).astype(np.float64)[..., None]
+    acc_c, acc_w = P * solid, solid.copy()
+    S = P.copy(); filled = solid[..., 0] > 0
+    for r in (1, 2, 4, 8, 16, 32, 64):
+        c, w = box(acc_c, r), box(acc_w, r)
+        ok = (w[..., 0] > 1e-3) & ~filled
+        S[ok] = (c / np.maximum(w, 1e-6))[ok]; filled |= ok
+    if (~filled).any():
+        S[~filled] = (P * solid).sum((0, 1)) / max(solid.sum(), 1)
+    SK, PK = S - k, P - k
+    a = np.clip((PK * SK).sum(-1) / np.maximum((SK * SK).sum(-1), 1.0), 0, 1)
+    a = np.where(solid[..., 0] > 0, 1.0, a)
+    raw = (P - (1 - a[..., None]) * k) / np.maximum(a[..., None], 1e-3)
+    t = np.clip((a - 0.15) / 0.6, 0, 1)[..., None]           # trust the unmixed colour as alpha rises
+    col = np.where(solid > 0, P, np.clip(raw, 0, 255) * t + S * (1 - t))
+    a = np.where(a < 0.08, 0.0, a)
+    out = np.concatenate([np.clip(col, 0, 255), (a * 255)[..., None]], -1)
+    return Image.fromarray(np.rint(out).astype(np.uint8), 'RGBA')
+
+
 def run_one(src, out_dir, rec, opt):
     size, anchor, pad = int(opt.get('size', 1024)), opt.get('anchor', 'center'), float(opt.get('pad', 0.03))
     im = Image.open(src).convert('RGBA')
-    if opt.get('key'):
+    if opt.get('key') and opt.get('spill') == 'unmix':
+        im = key_unmix(im, opt['key'], float(opt.get('key_hi', 200)))
+    elif opt.get('key'):
         im = key_out(im, opt['key'], float(opt.get('key_lo', 45)), float(opt.get('key_hi', 120)), opt.get('spill', 'edge'))
     if int(opt.get('choke', 0)):          # shrink the alpha by n source pixels: drops a key-tinted fringe the spill pass leaves (a WebP's colour bleed)
         im.putalpha(im.getchannel('A').filter(ImageFilter.MinFilter(2 * int(opt['choke']) + 1)))

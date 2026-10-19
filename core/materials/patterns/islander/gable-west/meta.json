@@ -1,0 +1,69 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    626,
+    650
+   ],
+   "seam_after": [
+    1.485,
+    1.08
+   ],
+   "seam_before": [
+    5.755,
+    1.396
+   ],
+   "source_size": [
+    638,
+    662
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "islander/gable-west",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   2.4,
+   2.4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "islander-gable-west.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-14 (1254 px WebP; 31.webp)",
+  "licence": "generated for this project by its owner",
+  "note": "hand-cropped by tools/textures (scratch prep, 2026-10-14) to one period across (626 px) and two spiral rows down (650 px) before processing, so the sheet repeats on its own period.",
+  "original_file": "31.webp",
+  "original_sha1": "532424e1f463a64a86900102a044db53378e4113",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a painted and lightly carved Batak gable board (gorga): on a red earth (#9a2a1e) ground, pairs of large interlocking spirals drawn as bold black (#1e1a18) lines edged in white (#efe6d2), a white lozenge between each pair with a black diamond at its heart, and toothed borders of black triangles between thin white and black bands. Hand-painted on adzed wood, slightly worn and uneven. The pattern repeats horizontally and vertically. Full colour.",
+  "reuse": "the West's (Batak) gable boards (patGableW)",
+  "sha1": "158fea7cdc155dfdc5b01b5527110bf1232c5a7a"
+ }
+}

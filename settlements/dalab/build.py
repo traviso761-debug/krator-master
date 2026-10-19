@@ -95,6 +95,15 @@ CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (co
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+# core/rand (KRAND: the tags' uid is its hash) and core/tags (the registry REG is read into: src/91t-dalab-tags.js)
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+              if f[0].isdigit() and f.endswith('.js')}
+# core/host (core/host/README.md; ROADMAP.md section 10, step 5): the camera, loop, panel, probe, inspector, marks, pictures,
+# minimap and cutaway, with core/clock and core/minimap, as Iziz takes them. Not core/space: the vendored biome's scatter takes
+# another path when it is on the page (settlements/iziz/KNOWN_ISSUES.md, 2026-10-13). Not core/edits: no editor world yet.
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
 
 
 def srcpath(f, base=None):
@@ -129,6 +138,7 @@ DETERMINISTIC = {
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
+DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-dalab-tags.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -141,7 +151,7 @@ SEED_COLLISION_EXCEPTIONS = set()
 # reseed rule does not apply either. Matched by filename prefix.
 SCOPED_PREFIXES = ('86-bio-',)   # none yet: the settlement pass vendors a biome the way Iziz's city did
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES)
+    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -238,6 +248,8 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
@@ -254,7 +266,10 @@ def build_one(target, do_checks, assert_origin):
             bodies[f] = fh.read()
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
-    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'dalab')
+    # the pack beside the pages (dalab.tex.dalab.js), one file every page of the build shares; --inline-packs puts it back in
+    # each page (2026-10-14: the gallery outgrew an artifact with the pack in every page)
+    side = None if '--inline-packs' in sys.argv else {}
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'dalab', side=side)
     order = sorted(order + [MATLIB_PACK])
     if any(f.startswith('86-bio-') for f in order):   # the vendored swlowlands biome: its library pack, before the biome code
         bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'swlowlands'), 'swlowlands')
@@ -278,6 +293,8 @@ def build_one(target, do_checks, assert_origin):
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
+    if side:
+        html = matlib_pack.write_sidecar(side, html, DIST, 'dalab.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:

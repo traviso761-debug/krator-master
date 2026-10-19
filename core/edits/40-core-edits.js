@@ -121,10 +121,12 @@ var KEDITS = (function () {
     });
     return out;
   }
-  /* Streetlab's city edits (settlements/voth/site/voth-city-edits.json, 35-vc-steps.js applyEdits/applyDeletes):
+  /* Streetlab's city edits (the Voth city plan's file before core/host, settlements/voth/site/voth-city-edits.json; the plan's
+     log is settlements/voth/edits.json since 2026-10-16, read back by 35-vc-steps.js VC.editsFromLog):
      buildings [{key, v, x, z, ry}] -> ADD building; streets [{cls, pts}] -> ADD infrastructure (kind way);
-     del [{x, z}] -> REMOVE building at that point (Streetlab matches the lot within 1.5 m); flora [{key|kind, x, z, del?}]
-     -> ADD or REMOVE flora. Read-only: Streetlab's own file and code are not changed. */
+     del [{x, z}] -> REMOVE building at that point (Streetlab matches the lot within 1.5 m); flora [{key|kind, x, z, del?}],
+     or the city plan's own {del: [{kind, key, x, z}], add: [{kind, key, x, z, y, H?}]} (kind: tree or plant, kept with H on
+     the record) -> ADD or REMOVE flora. Read-only: Streetlab's own file and code are not changed. */
   function fromStreetlab(E, build) {
     var L = log(build || (E && E.site) || null), opt = { cause: 'import:streetlab' };
     if (!E) return L;
@@ -137,10 +139,11 @@ var KEDITS = (function () {
       add(L, { 'class': 'building', key: b.key, variant: b.v || 0, at: [b.x, 0, b.z], ry: b.ry || 0 }, opt);
     });
     (E.del || []).forEach(function (q) { remove(L, { 'class': 'building', at: [q.x, 0, q.z] }, null, opt); });
-    (E.flora || []).forEach(function (f) {
-      var key = f.key != null ? f.key : f.kind;
+    var F = E.flora || [], fl = Array.isArray(F) ? F : (F.del || []).map(function (f) { return Object.assign({ del: true }, f); }).concat(F.add || []);
+    fl.forEach(function (f) {
+      var key = f.key != null ? f.key : f.kind, kind = f.key != null && f.kind != null ? f.kind : null;
       if (f.del) remove(L, { 'class': 'flora', key: key, at: [f.x, 0, f.z] }, null, opt);
-      else add(L, { 'class': 'flora', key: key, at: [f.x, f.y || 0, f.z], ry: f.ry || 0 }, opt);
+      else { var r = { 'class': 'flora', key: key, at: [f.x, f.y || 0, f.z], ry: f.ry || 0 }; if (kind) r.kind = kind; if (f.H != null) r.H = f.H; add(L, r, opt); }
     });
     return L;
   }

@@ -36,6 +36,9 @@ function brookDist(x,z){return Math.abs(x-90*Math.sin(z*.0012));}
 const OBSTACLES=[];
 BIO.init({tags:'hyperjungle',THREE:THREE,scene:scene,terrainH:terrainH,
  mask:(x,z)=>{const b=brookDist(x,z);return b<14?0:b<26?(b-14)/12:1;},   // the brook bed is bare
+ // the local water surface: the brook ribbon below (18 m wide, 0.35 m over its bed), no water anywhere else. Without
+ // it the core's default sea at y=0 stood over this floor (which lies below 0) and every exported tile came in drowned
+ waterH:(x,z)=>{const cx=90*Math.sin(z*.0012);return Math.abs(x-cx)<9?terrainH(cx,z)+.35:-1e9;},
  obstacles:OBSTACLES,ticks:tick,seed:7,origin:[0,0],err:reportErr});
 BIO.setSun([-1200,900,-600]);
 // the ground as one mesh, painted dark litter with the brook bed lighter

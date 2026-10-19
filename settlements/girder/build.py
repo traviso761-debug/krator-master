@@ -69,6 +69,9 @@ ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')   # shared atmosphere: the sky's
 FURNISH_DIR = os.path.join(ROOT, 'core', 'furnish')   # the furniture placement pass and its draw helpers (core/furnish/README.md)
 RAND_DIR = os.path.join(ROOT, 'core', 'rand')   # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(ROOT, 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
+CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 2), with core/edits, core/space, core/minimap
 TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pack.py writes it from materials.json
 OUT = os.path.join(HERE, 'girder.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
@@ -84,7 +87,9 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js',   # core/materials/record (no rnd())
                  '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
                  '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
-                 '90-atmos-host.js'}   # binds core/atmos
+                 '90-atmos-host.js',   # binds core/atmos
+                 '98-start.js'}        # the take (KHOST.take)
+DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 # GENERATED fragment, never written to src/: the catalog's furniture (kits/catalog/furniture_bundle.py: one
 # closure exposing KratorFurniture) and the interiors core with the Beast Rider interior set
@@ -93,7 +98,7 @@ DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}
 # do not apply to them. The furniture cultures: beast-rider and its fallback chain (IX.CULTURE_FAMILY).
 FURN_CULTURES = ['beast-rider', 'lizardmen', 'generic', 'generic-goods', 'generic-fruit']   # generic-fruit: the fruit-seller stalls (55-arch.js); generic-goods holds the fruit colours (FPAL generic)
 INTERIOR_SETS = ['beast-rider']
-VIRTUAL = {'51-furniture-bundle.js', '46-matlib-pack.js'}
+VIRTUAL = {'51-furniture-bundle.js', '46-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
 
 
 def virtual_bodies():
@@ -101,7 +106,13 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
     return {'51-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS),
-            '46-matlib-pack.js': matlib_pack()}
+            '46-matlib-pack.js': matlib_pack(),
+            khost.EDITS_JS: khost.edits_js(HERE, 'girder')}
+
+
+# the library pack beside the page (<build>.tex.<key>.js); --inline-packs puts it back in the page (2026-10-14: the
+# gallery takes no file over 16 MB)
+SIDE = None if '--inline-packs' in sys.argv else {}
 
 
 def matlib_pack():
@@ -121,10 +132,16 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    body = '{\n' + ',\n'.join(out) + '\n}'
+    if SIDE is not None:   # the pack beside the page (tools/textures/matlib_pack.py write_sidecar)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        SIDE['girder'] = body
+        return _mp.loader('girder')
     return ('/* ============================== 11a. LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
             '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
-            "KMAT.pack('girder', {\n" + ',\n'.join(out) + '\n});\n')
+            "KMAT.pack('girder', " + body + ');\n')
 
 
 PALETTE_FILE = '05-palette.js'
@@ -223,6 +240,7 @@ def main():
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)
+    khost.resolve(paths, CORE_HOST)        # a src/ copy with a shell file's name would override it (none today)
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:
@@ -240,6 +258,10 @@ def main():
             sys.exit(1)
 
     html = ''.join(bodies[f] for f in order)
+    if SIDE:   # the pack beside the page, under the gallery's 16 MB a file
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        html = _mp.write_sidecar(SIDE, html, os.path.dirname(OUT), 'girder.tex.js', prune=False)
     with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
     with open(MANIFEST, 'w', encoding='utf-8') as fh:

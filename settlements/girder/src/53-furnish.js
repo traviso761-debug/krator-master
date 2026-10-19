@@ -22,18 +22,35 @@
 KratorFurniture.setDetail(.5);   /* settlement scale: half the segments on round furniture parts */
 /* the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is Girder's
    adapter onto it: its seed rule (the record's place in the list), its rounding, its walk solids and its lights */
+regFlush();   /* the sites registered before core/tags' vocabulary loaded (45-kit.js REGISTER) */
 var GFURN = KFURN.create(Object.assign(KFURN.flags(true), {
   catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors,
-  tags: (KTAGS.page = KTAGS.create({ build:'girder' })),   /* every piece registered in core/tags (core/tags/README.md) */
+  tags: (KTAGS.page = KTAGS.page || KTAGS.create({ build:'girder' })),   /* every piece registered in core/tags (core/tags/README.md); the sites are already there (45-kit.js REGISTER) */
   seed: function(o, ctx, R){ return R.placed.length + 1; },
   finish: function(r){ r.x=+r.x.toFixed(3); r.y=+r.y.toFixed(3); r.z=+r.z.toFixed(3); r.ry=+wrapPi(r.ry).toFixed(4); },
   onRecord: function(rec, ctx, o, A, dm){   /* the walk mode bumps into it */
     if(A.anchor!=='ceiling' && A.anchor!=='surface' && A.type!=='lamp' && A.type!=='rug' && dm.h>=0.3) gwBox(rec.x, rec.y, rec.z, dm.w, dm.h, dm.d, rec.ry, 'furniture'); },
-  draw: function(rec, ctx, o){ var b = KFURN.drawRec(GFURN, rec, ctx.wealth);
+  draw: function(rec, ctx, o){ if(gfVetoed(KTAGS.page.get(rec.id))){ GEDIT.vetoed.push(rec.id); return; }   /* the owner's edits: moved or removed (98-start.js) */
+    var b = KFURN.drawRec(GFURN, rec, ctx.wealth);
     if(b.error) ERR('furniture '+rec.key+': '+b.error);
     if(!o.noLight) gfLights(b, 0.7); }
 }));
 Object.assign(GFURN, { cur: null, ixPlaced: [], residenceFails: [], ms: 0 });
+/* ---------------------------------------------------------------- the owner's edits, as the page is made
+   KHOST_EDITS (39-host-edits.js, written by core/host/host.py from edits.json or this browser's draft) is a core/edits log.
+   A piece merged into the batch cannot be taken out of it afterwards, so a piece the log moves or removes is not drawn
+   at all (its record stays, for the log to find); 98-start.js applies the log once the interiors are furnished: the
+   moved piece is drawn on its own where it went, an added one likewise. A target is its core/tags uid, else its key
+   within 1.5 m (core/edits/README.md). */
+var GEDIT = { log: (typeof KHOST_EDITS !== 'undefined' && KHOST_EDITS && KHOST_EDITS.ops) ? KHOST_EDITS : null, vetoed: [] };
+GEDIT.hits = GEDIT.log ? GEDIT.log.ops.filter(function(op){ return (op.op==='REMOVE' || op.op==='MOVE') && op.target && (op.target['class']==='furniture' || op.target['class']==='flora'); }) : [];
+function gfVetoed(r){
+  if(!GEDIT.hits.length || !r) return false;
+  for(var i=0;i<GEDIT.hits.length;i++){ var t=GEDIT.hits[i].target;
+    if(t.uid != null){ if(t.uid === r.uid) return true; }
+    else if(t.at && t.key === r.key && Math.hypot(t.at[0]-r.at[0], t.at[2]-r.at[2]) < 1.5 && Math.abs((t.at[1]||0)-r.at[1]) < 1.5) return true; }
+  return false;
+}
 KFURN.useBatch(GFURN, KratorFurniture, KratorInteriors, { indexed: true });   /* indexed meshes (kits/catalog/README.md) */
 if(!GFURN.on) GFURN.adapter.build = function(p, room){   /* ?furniture=0: plan the rooms, keep the data, build nothing */
   return { key:p.key, variant:p.variant, seed:p.seed, x:p.x, y:p.y, z:p.z, ry:p.ry, building:room?room.building:null, room:room?room.id:null, setting:'indoor', lights:[] }; };

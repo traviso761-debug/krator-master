@@ -1,0 +1,354 @@
+[
+ {
+  "src": "card.crop.plume.png",
+  "out": "core/materials/library/card.crop.plume",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.plume",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.crop.plume`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "amaranth, quinoa, wild rice, sorghum and any plume-headed crop (Basin amaranth, Shore wild-rice)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.clover.png",
+  "out": "core/materials/library/card.crop.clover",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.clover",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.crop.clover`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "oca, oxalis, clover and any low trifoliate ground crop (Frostroot)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.bean.png",
+  "out": "core/materials/library/card.crop.bean",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.bean",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.crop.bean`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "runner, tepary, bambara and any twining pulse (Helix bean, Tepary bean, Bambara groundnut)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.grainhead.png",
+  "out": "core/materials/library/card.crop.grainhead",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.grainhead",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.crop.grainhead`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "emmer, oat, barley, millet, rye and any grass grain (Plain emmer, Frostoat, Ashmillet)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.rosette.png",
+  "out": "core/materials/library/card.crop.rosette",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.rosette",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.crop.rosette`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "murnong yam-daisy, dandelion, chicory and any flat-rosette root crop (Murnong)"
+   }
+  }
+ },
+ {
+  "src": "card.crop.umbrella.png",
+  "out": "core/materials/library/card.crop.umbrella",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.umbrella",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.crop.umbrella`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "konjac, elephant-foot yam, papaya-like umbrella plants (Ashroot)"
+   }
+  }
+ },
+ {
+  "src": "card.orchard.broad.png",
+  "out": "core/materials/library/card.orchard.broad",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.orchard.broad",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.orchard.broad`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "apricot, crabapple, serviceberry, persimmon, plum, tamarillo, mulberry and any broadleaf fruit tree"
+   }
+  }
+ },
+ {
+  "src": "card.crop.tea.png",
+  "out": "core/materials/library/card.crop.tea",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.tea",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.crop.tea`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "tea, camellia and any clipped hedge shrub (Mist tea)"
+   }
+  }
+ },
+ {
+  "src": "card.sunthorn.png",
+  "out": "core/materials/library/card.sunthorn",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.sunthorn",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.sunthorn`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "sea-buckthorn, oleaster and any silver-leaved berry shrub (Gully sunthorn)"
+   }
+  }
+ },
+ {
+  "src": "card.orchard.small.png",
+  "out": "core/materials/library/card.orchard.small",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.orchard.small",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.orchard.small`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "pomegranate, sidr jujube, carob, olive and any small-leaved fruit tree"
+   }
+  }
+ },
+ {
+  "src": "card.crop.palmate.png",
+  "out": "core/materials/library/card.crop.palmate",
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.palmate",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `card.crop.palmate`; a nine-cell sheet on flat magenta (#ff00ff)",
+    "reuse": "manioc, cassava and any palmate-leaved shrub crop (Shade manioc)"
+   }
+  }
+ }
+]

@@ -101,6 +101,34 @@ arrival (`SIM.economyStop`, called by the stepper at an itinerary leg's `stop`) 
 days left (made the day before, over `exports.minDays`), at most the day's surplus times `exports.days`. An import
 decision counts what the sites hold. A route without a carrier or a port delivers by timer. `landed` counts both ways.
 
+**What things hold, and the stocks** (`77-sim-7-stocks.js`, read only: it changes no record and draws nothing; on
+when the economy or the items are). `SIM.contents(id)` -> `{id, type: 'place' | 'actor' | 'group', name, items:
+[{item, n, state, as, wear?, life?, workLife?, slot?}]}` (null for an id no record has): a place's store (`store:
+{kind, cap, held, state}`, `makes`, `inputs`, `carts` bound for it), its household's food (`household: {people,
+servings, days, low}`), `sells` (and `shelf`: `warehouses` with the economy on, a shop keeping no stock of its own),
+`mess`; an actor's worn items (`wear` 0..1 of `life` days), its tool (of `workLife` worked hours), what it keeps at home
+(`inv`), a cart's load, its household's food and its group's load beside (`household`, `group`); a group's lot coming
+in (an import's carrier) and its cargo going out (an export). The **states**: `production` (a store of a place with a
+recipe: made, not yet hauled), `transit` (a cart's load; a carrier's lot or cargo while its group is on the map; a lot
+landed at a site store with no recipe, the carrier's unloading place, waiting for the carts), `storage` (the
+warehouses; the households' food stores), `owned` (worn, kept at home, tools); `ordered` (a timer import, no carrier on
+the map) stays out of the total. `SIM.stocks()` -> `{minute, order, by: {item: {total, production, transit, storage,
+owned, ordered, use, days, low, out, wanting, day, today}}, day: {from, to, partial, jumped}, today, households: {n, low,
+empty}, rule: {lowDays}}`: every good of the economy and every item kind (not `meal`). **The daily snapshot**:
+`SIM.stocksStep` (the stepper's, after the economy) keeps the totals and the economy's and the items' running counters
+at the first step of each world day; `day` is the last two snapshots' difference, `today` now against the last
+(`SIM.stocksJump`: a jump of more than a minute marks the span `jumped`). A good's flows: `made`, `imported` (as it
+enters the map: a carrier's lot from its arrival, a timer's on landing), `exported` (as it leaves the map: a carrier's
+cargo when its group is gone), so that `change` = made + imported - exported - consumed, `used` (drawn from the warehouses or a site's own store), `stocked` (food bought into
+households' stores: a move), `eaten` (meals at home, the items' new `stats.eaten`), `consumed` = used - stocked + eaten,
+`unmet` (the economy's `short` and the items' `outOf`), `change`; an item's: `bought`, `issued`, `worn`, `broken` (the
+items' new `stats.brokenBy`), `consumed`, `unmet`, `change`. **The marks**: `low`, days of cover (`SIM.economyUse`: the
+use a day, the warehoused stock over it) under the economy's `imports.days`; `out`, an unmet draw or purchase over the
+last day or today; `wanting`, the actors short of a kept set or with a broken tool now. `SIM.holders(item, top)` ->
+`{item, count, total, list: [{id, type, name, state, n, as}]}`, most first; `SIM.placeAt(x, z, r)` the nearest place
+that holds anything within its `r` (or `r` metres); `SIM.whereIs(id, t)` a place's, an actor's (its pose) or a group's
+(its leader's) position. Voth's stocks panel and inspector (`settlements/voth/targets/voth-city/56e`) read only these.
+
 **Animals** (a world's: the Voth city's 47-vc-sim-animals.js). An actor with `animal` is counted apart (the needs'
 census leaves it out unless `opt.animals`); `herd` names the place it is kept at. A role's `needs.free` is its own list
 of free-time choices (an animal's feeding, grazing, drinking, resting, loafing) in place of the world's `free`. A recipe's

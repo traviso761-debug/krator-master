@@ -128,8 +128,9 @@ static func build(path: String) -> Node3D:
 			for u in it["records"]:
 				if str(u).length() == 8:
 					ids["instances_with_uid"] += 1
-		if it["dynamic"]:
-			report["gaps"]["fauna"] = "dynamic items (fauna on aP0/aP1 paths) are placed static: the anim kind has no Godot shader yet"
+		var mrec: Dictionary = mats.get(it["material"], {})
+		if it["dynamic"] and str((mrec.get("options") if mrec.get("options") is Dictionary else {}).get("mode", "orbit")) == "walk":
+			report["gaps"]["fauna walk"] = "walking fauna (anim mode 'walk') are moved by the page's own host tick (a herd's CPU path), which no export carries: they stand at their export pose, wings flapping"
 	var buckets := Node3D.new()
 	buckets.name = "Buckets"
 	root.add_child(buckets)
@@ -229,6 +230,7 @@ static func build(path: String) -> Node3D:
 		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water"]):
 			meta[k] = d[k]
 	root.set_meta("world", meta)
+	KratorBiome.cell = KratorBiome.policy_cell(d["convention"])   # the export contract's LOD cell (convention.lod)
 	root.set_meta("krator", {"box": d["box"], "build": d["build"], "convention": d["convention"]})
 	report["counts"] = {"items": d["items"].size(), "instances": ids["instances"], "buckets": d["buckets"].size(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": tc, "records": by_id.size(), "load_ms": Time.get_ticks_msec() - t0}
@@ -529,4 +531,4 @@ static func _lod(gi: GeometryInstance3D, rec: Dictionary, report: Dictionary) ->
 			out.surface_set_material(s, src.surface_get_material(s))
 		(gi as MeshInstance3D).mesh = out
 	gi.position = o
-	KratorBiome._apply_lod(gi, rec, report)
+	KratorBiome._apply_lod(gi, rec, report, KratorBiome.CHUNK * 0.7071)   # a whole chunk at its centre

@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1246,
+    1221
+   ],
+   "seam_after": [
+    1.556,
+    1.108
+   ],
+   "seam_before": [
+    1.896,
+    2.088
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "reed",
+  "id": "islander/gable-east-b",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__islander__gable-east-b.png",
+  "generator": "supplied by the owner (Downloads/vothtex.zip, 2026-10-15), the redo asked in core/materials/PROMPTS-NEEDED.md section 0",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 0, `patterns/islander/gable-east-b` (the redo) (delivered as \"Seamless Geometric Bamboo Weave.png\")",
+  "reuse": "kits/islanders `patGableE2` (the great uma)",
+  "sha1": "449e5a56574d3a7815718ca24a51a42b4faca452"
+ }
+}

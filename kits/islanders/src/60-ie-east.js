@@ -32,7 +32,9 @@ function ieHouse(o){const w=o.w,d=o.d,fy=o.floorY,wh=o.wallH||2.1,ver=o.ver===un
   if(ver>.5)for(const s of [-1,1])isRail([s*W2,Dz1],[s*W2,Dz0],fy,{h:.75,panel:'lattice'});});
  /* the roof: one skirt over the whole deck, a tower out of it (or several) */
  const hw=W2+R.over,hd=(dd)/2+R.over,eY=top-.05,sk=eY+R.skirtH;let towerTop=sk;
- W(0,0,dcz,0,()=>{
+ /* o.hall: the village hall's roof instead (owner, 2026-10-14: the East borrows its broad horned saddles, crossed and spired) */
+ if(o.hall)W(0,0,dcz,0,()=>{towerTop=ieHallRoof(Object.assign({L:dw,W:dd,eY,col,gx:w/2,wallTop:top,gw:d/2-Math.abs(dcz)},o.hall)).top;});
+ else W(0,0,dcz,0,()=>{
   const towers=o.towers||(R.towerH>0?[[0,0,1]]:[]);
   isSpire({hw,hd,sq:R.sq,mk:R.mk,col,patch:R.patch,th:R.th,cap:!towers.length,
    prof:towers.length?[[1,1,eY],[R.skirtS,R.skirtS,sk],[R.skirtS*.62,R.skirtS*.6,sk+.6]]:[[1,1,eY],[R.skirtS*.5,R.skirtS*.15,sk+.9]]});
@@ -45,7 +47,7 @@ function ieHouse(o){const w=o.w,d=o.d,fy=o.floorY,wh=o.wallH||2.1,ver=o.ver===un
    for(const s of [-1,1]){const fx=s*sp.topW*.85,fy2=sp.top+.15;
     if(o.finial==='horns')isHorns(fx,fy2,0,s>0?-PI/2:PI/2,1.0);else if(o.finial==='moon'){if(s>0)isMoonDisc(0,fy2+.6,0,0,.5);}
     else if(o.finial!=='none')isFigure(fx,fy2,0,0,.9,{mk:'carved'});}});});
- if(!o.towers&&R.towerH<=0)towerTop=sk+.9;
+ if(!o.hall&&!o.towers&&R.towerH<=0)towerTop=sk+.9;
  /* the steps up to the front veranda */
  isNoCut(()=>{if(fy>.35){if(o.stair==='ladder')isLadder(o.stairX||0,Dz1+.02,0,fy,{});else if(o.stair==='log')isLogLadder(o.stairX||0,Dz1+.02,0,fy);else if(o.stair!=='none')isStair(o.stairX||0,Dz1+.02,0,0,fy,o.stairW||1.2,{mk:'stone'===o.stairMk?'stone':'planks'});}
   for(const t of o.tombs||[])isTomb(t[0],t[1],t[2]||0,{s:t[3]||1,figures:t[4]});});
@@ -53,6 +55,24 @@ function ieHouse(o){const w=o.w,d=o.d,fy=o.floorY,wh=o.wallH||2.1,ver=o.ver===un
  if(o.underPig&&fy>1.2)place('pig',w*.2,-d*.1,PI*.3,{mode:'idle',sub:'east'});
  if(o.extra)o.extra(top,sk,towerTop);
  return {top,sk,towerTop,W2,Dz0,Dz1};}
+/* the village hall's roof at any size (62-ie-civic.js's ie-hall): a horned saddle of golden thatch along x, its gables painted;
+   o.cross a second saddle across it (true, or {L, W, rise}); o.spire a spire rising where they meet (its height; o.spireS its
+   base half-size). o: L (the ridge, x), W (the depth, z), eY, rise, sag, hornRise, hornOut, over, mk, col, patch, th, nu, gx, gw,
+   wallTop (the gable panels at x = +-gx over a wall top, half-width gw; gableMk false: none), moon, finial. Returns {top, rf}. */
+function ieHallRoof(o){const col=o.col||P('thatchE'),mk=o.mk||'thatchR',eY=o.eY,rise=o.rise==null?4:o.rise,hr=o.hornRise===undefined?rise*.85:o.hornRise,
+  ho=o.hornOut===undefined?1.8:o.hornOut,th=o.th==null?.32:o.th,gm=o.gableMk===undefined?'patGableE':o.gableMk;
+ const rf=isSaddle({L:o.L,W:o.W,eaveY:eY,ridgeY:eY+rise,sag:o.sag===undefined?.5:o.sag,hornRise:hr,hornOut:ho,taper:.3,over:o.over===undefined?.7:o.over,p:3.5,mk,col,th,nu:o.nu==null?30:o.nu,concave:.35,patch:o.patch});
+ let top=eY+rise+hr;
+ if(gm&&o.gx)for(const s of [-1,1])rf.gable(s*(o.gx+.02),o.wallTop,o.gw+.02,gm,{});
+ if(o.cross){const c=o.cross===true?{}:o.cross,cw=c.W==null?o.L*.5:c.W,cr=c.rise==null?rise*1.2:c.rise,cl=c.L==null?o.W:c.L,cy=eY+.6;
+  W(0,0,0,-PI/2,()=>{const cf=isSaddle({L:cl,W:cw,eaveY:cy,ridgeY:cy+cr,sag:.4,hornRise:hr*.9,hornOut:ho*.85,taper:.3,over:.6,p:3.5,mk,col,th,nu:24,concave:.35,patch:o.patch});
+   if(gm)for(const s of [-1,1])cf.gable(s*(cl/2-.4),cy,cw/2-.2,gm,{});
+   if(o.moon!==false)for(const s of [-1,1]){const t=cf.R(s);isMoonDisc(t[0]*.97,t[1]+.45,0,s>0?PI/2:-PI/2,.4);}});
+  top=Math.max(top,cy+cr+hr*.9);}
+ if(o.spire){const s=o.spireS==null?Math.min(o.L,o.W)*.16:o.spireS,b=eY+rise*.55,h=o.spire;
+  const sp=isSpire({hw:s,hd:s,sq:6,mk,col,th:.28,nu:24,sub:3,prof:[[1,1,b],[.9,.86,b+h*.3],[.62,.5,b+h*.6],[.38,.22,b+h*.86],[.22,.06,b+h]]});
+  ieFinial(o.finial||'figure',sp,.8);top=Math.max(top,sp.top+1);}
+ return {top,rf};}
 /* ---------------------------------------------------------------- the poor */
 defBuilding({key:'ie-hut-scrap',name:'Scrap hut (Kautoa)',seed:6001,cut:true,w:8.2,d:7.4,h:5.0,budget:60000,
  tags:{types:['dwelling-single'],wealth:'poor',style:'east'},
@@ -104,7 +124,7 @@ defBuilding({key:'ie-house-great',name:'Great uma (Kautoa)',seed:6022,cut:true,w
  tags:{types:['dwelling-multi','religious'],wealth:'rich',style:'east',role:'ancestral house'},
  note:'the ancestral house of a noble clan: the tallest tower in the village, verandas all round on carved posts, a great tomb with stone figures, the ancestors\' shrine in the roof',
  build(o){const r=ieHouse({w:10.4,d:10,floorY:2.0,wallH:2.6,ver:1.8,verFront:2.4,roof:{over:1.1,skirtH:2.1,skirtS:.46,towerH:15,towerS:.38,topSx:.19,topSz:.05,th:.38},
-  wallMk:'planks',wallCol:P('woodL'),facade:'patGableE',stair:'stair',stairW:2.0,finial:'figure',hornPosts:true,tier:'rich',beds:2,
+  wallMk:'planks',wallCol:P('woodL'),facade:'patGableE2',stair:'stair',stairW:2.0,finial:'figure',hornPosts:true,tier:'rich',beds:2,
   furn:[['islander_court_throne',0,-2.6,0],['islander_court_tapestry',-3,-4.6,0],['islander_court_statue',4.2,-4,0],['islander_court_statue',-4.2,-4,0],['islander_common_kava_bowl',0,1.8,0]],
   tombs:[[0,9.4,0,1.4,true]]});
   isNoCut(()=>{for(const s of [-1,1])isFlag(s*8.2,9.6,10,{ry:s>0?0:PI});});}});
@@ -119,3 +139,24 @@ defBuilding({key:'ie-house-noble',name:'Noble compound (Kautoa)',seed:6023,cut:t
    for(const s of [-1,1])W(s*10,0,-6,0,()=>{isPiles(isSpan(-1.1,1.1,2),isSpan(-1.1,1.1,2),1.8,{r:.12,beams:false});for(const x of [-1.1,1.1])for(const z of [-1.1,1.1])cyl('wood',x,1.4,z,.32,.06,P('woodD'),10);
     isDeck(2.8,2.8,1.95,{col:P('planks'),beam:false});box('bamboo',0,1.95,0,2.4,1.3,2.4,P('bamboo'));isHip({hw:1.9,hd:1.9,eaveY:3.2,topY:6.2,topS:.2,topS2:.06,mk:'thatchR',col:P('thatchE'),th:.2});});
    for(let k=0;k<3;k++)isTomb(-7+k*7,8.6,0,{s:.9,figures:k===1});});}});
+/* ---------------------------------------------------------------- the village hall's roof on houses (owner, 2026-10-14: more overlap with the West) */
+defBuilding({key:'ie-house-long',name:'Long house (Kautoa)',seed:6014,cut:true,w:19,d:15,h:13.5,budget:150000,
+ tags:{types:['dwelling-multi'],wealth:'middle',style:'east'},
+ note:'a long house for an extended family under the village hall\'s roof: one broad horned saddle of golden thatch, its gables woven in diamonds, a short spire at the middle, a long veranda on carved posts, tombs before it',
+ build(o){ieHouse({w:11,d:5.6,floorY:1.6,wallH:2.2,ver:1.0,verFront:1.6,hall:{rise:3.4,hornOut:1.5,spire:5.2,spireS:1.5,finial:'figure'},
+  front:[{x:-3,w:1,h:1.8,door:true},{x:3,w:1,h:1.8,door:true},{x:0,w:.7,y:.9,h:.7}],wallMk:'bamboo',facade:'patWeave',stair:'stair',stairX:-3,stairW:1.3,
+  tier:'middle',beds:2,underPig:true,furn:[['islander_common_loom',3.4,0,-PI/2]],tombs:[[3.6,6.6,0,.85,false]]});}});
+defBuilding({key:'ie-house-cross',name:'Cross-roofed house (Kautoa)',seed:6015,cut:true,w:15,d:17,h:16,budget:150000,
+ tags:{types:['dwelling-single'],wealth:'middle',style:'east'},
+ note:'a family house roofed like a little village hall: two horned saddles crossing over a square room, the moon on the cross roof\'s horns, a spire where they meet, horns on the veranda posts',
+ build(o){ieHouse({w:7,d:6.6,floorY:1.7,wallH:2.2,ver:1.0,verFront:1.6,hall:{rise:3.0,hornOut:1.2,cross:{rise:3.8},spire:6.4,spireS:1.3},
+  wallMk:'bamboo',facade:'patGableE',stair:'stair',stairW:1.3,hornPosts:true,tier:'middle',beds:2,tombs:[[-3.4,6.6,0,.8,true]]});}});
+defBuilding({key:'ie-house-chief',name:"Chief's house (Kautoa)",seed:6024,cut:true,w:25,d:24,h:24,budget:240000,
+ tags:{types:['dwelling-single','civic'],wealth:'rich',style:'east',role:'chief'},
+ note:'the village chief\'s house: the village hall\'s roof at house scale (two horned saddles crossing, a tall spire where they meet), the floor high on carved pillars, the veranda round it, facades woven in nested diamonds, a broad stair between carved posts, the chief\'s tombs and standing stones before it',
+ build(o){ieHouse({w:12,d:8,floorY:2.8,wallH:2.6,ver:1.6,verFront:2.4,pileR:.24,hall:{rise:4.6,hornOut:2.2,cross:{rise:5.6},spire:9.5,spireS:2.0,finial:'moon',th:.36},
+  wallMk:'planks',wallCol:P('woodL'),facade:'patGableE',stair:'stair',stairW:2.2,hornPosts:true,tier:'rich',beds:2,
+  front:[{x:0,w:1.4,h:2.2,door:true},{x:-4,w:.9,y:1,h:1},{x:4,w:.9,y:1,h:1}],
+  furn:[['islander_court_throne',0,-2.6,0],['islander_court_tapestry',-2.6,-3.8,0],['islander_court_tapestry',2.6,-3.8,0],['islander_court_statue',5.2,-3.2,0],['islander_court_statue',-5.2,-3.2,0],['islander_common_kava_bowl',0,1,0]],
+  tombs:[[-5.6,10.4,0,1.2,true],[5.6,10.4,0,1.2,true]]});
+  isNoCut(()=>{for(const s of [-1,1]){isPou(s*2.2,0,10.6,3.4,.22,{mk:'carved',top:'horns'});isMenhir(s*10.5,8.6,2.4,.38);isFlag(s*11,4,9.5,{ry:s>0?0:PI});}});}});

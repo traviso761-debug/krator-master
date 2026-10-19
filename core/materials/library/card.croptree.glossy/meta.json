@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.croptree.glossy",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Tropical Leaf Sprigs Grid.png",
+  "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)",
+  "original_title": "Tropical Leaf Sprigs Grid.png",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `card.croptree.glossy`",
+  "reuse": "any glossy evergreen (citrus, bay, mangrove)",
+  "sha1": "0a399e72f85c0c2b12367753eb63452b39c1dde5"
+ }
+}

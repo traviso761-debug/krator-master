@@ -2,6 +2,23 @@
 build.py prints every unticked item on each build. Claude: when Travis asks for changes to this world,
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
+- [x] (2026-10-15) Girder on core/host (ROADMAP.md section 10, step 2; `core/host/README.md`): the camera, loop, panel and probe are
+      the host's; the inspector (I, click) reads core/tags (every REGISTER()ed site and every interior piece is a record now);
+      marks (P) replace the polygon tool; the picture menu, minimap (M), editor (B) and cutaway (X: a tower's thirty storeys,
+      the houses, the hall) are new. Proof: `verify.py --assert` unchanged (every invariant, the same draw calls); a scene census
+      (every mesh's name, visibility and triangles at four views, the camera to 4 decimals) matches the old page within the old
+      page's own run-to-run difference (the interiors' merge and the life layer); chrome-hidden shots differ only where the
+      wind, the water and the villagers move. The budget row `furn.calls 80 / 54` fails as it did on main before the move.
+- [ ] (2026-10-15) Keys changed with the host's one keymap: **F** walks (it was G), **G** flies to the pin (double-click the
+      ground to drop one), Esc lifts it; I is the hover tip (the old Inspector button), P marks, B edits, X cuts, O is free.
+- [ ] (2026-10-15) The editor moves, removes and places **catalog pieces** only. A piece the page was made with is merged into
+      the furniture batch, so moving or removing it is marked and applies on reload (`53-furnish.js gfVetoed`); a placed piece is
+      drawn on its own at once. Plant mode offers the catalog's planters and shrine saplings: the hypertrees, saplings and
+      undergrowth are woven into shared stores and cannot be edited one by one yet; the plant registry (krator-master-plants.js)
+      needs the asset engine, which Girder does not load.
+- [ ] (2026-10-15) The world hour stays the sky's own clock (21-sky.js, the Time of day slider and Pause); the host's speed
+      buttons (pause, 1x to 8x) set the motion time the sky, the wind and the life layer advance by. One clock is the host's
+      (`KCLOCK`) once the sky takes an hour from it.
 - [x] (2026-10-05) The NAV walk graph against the walk solids (`navAudit()` in Girder Hero, `hero/PORT.md`): 810 of 2,958
       edges and 184 nodes could not be walked. Fixed in 30-layout.js: the gallery loops ran along the column line (now
       `GALLERY_WALK`, 20.2 m, inside the columns; 704 edges, 176 nodes), the roost-deck walk crossed the lift notch (its nodes

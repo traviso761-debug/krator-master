@@ -11,6 +11,8 @@ home: a sawn round, a handful of seeds, a jar.
 
 Where a species has no fruit drawn yet, this note says so ("not drawn").
 
+> **New crops, fibres and dyes (2026-10-18):** proposals for every biome that lacked a native crop, fruit tree, fibre or dye, with where else each could grow and whether it needs irrigation, are in `kits/crops` (the Crops kit: `PLAN.md`, `FIBRE.md`, `DYES.md`). It is the home for crops that no one biome owns; this file stays the list of what each biome kit draws.
+
 ## To do: put the fruit in the biomes
 
 Done 2026-10-06 for all twelve biome kits: every species carries a harvest tag naming its catalog fruit (`<KIT>.HARVEST`, ebadlands'

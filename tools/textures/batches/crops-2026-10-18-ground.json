@@ -1,0 +1,29 @@
+[
+ {
+  "src": "ground-tilled.png",
+  "out": "core/materials/library/ground.tilled",
+  "record": {
+   "id": "ground.tilled",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit), `ground.tilled`",
+    "reuse": "every crop bed, field and terrace; any ploughed ground in any farming settlement"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "mute": 0.5
+  }
+ }
+]

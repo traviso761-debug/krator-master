@@ -1,5 +1,29 @@
 # settlements/dhelv: known issues
 
+- [x] (2026-10-15) **Dhelv is on core/host** (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`). `build.py` takes the
+      whole interface less `core/space` (core/biome's `40-core-place.js` takes its grid when it is on the page, which would move
+      the kipuka's scatter) and `core/edits` (no editor world yet), and leaves out the kit's `92-camera.js` (`KIT_SKIP`; the kit's
+      sheet keeps it). `src/92-dhelv-camera.js` keeps the slot (the world built, `VIEWS`) and the names the page and verify.py
+      call (`ctl`, `setView`, `applyCam`, `WALK.on`, `toggleWalk`, `MARK.at`, `cutSet`), each a word to the host;
+      `src/99-start.js` is the take: the floor (`camGroundY`, none in a void), the walk on the page's core/walk floors, the draw
+      (the sky's scene, then the city), FRAME_HOOKS, the sun, the sky camera and the atmosphere in a 'view' subscriber (after
+      the camera, the kit's loop's order), the inspector's words (the kit's: a piece, a site and its people), the buttons, and
+      the probe as `api`. Proof: `verify.py --assert` 44 PASS, 0 FAIL, the error panel clean, as before; the scene census at
+      four views (the rock streamed without a budget) equals the old page's but for 240 hidden triangles, the kit's hidden
+      marker pin (the host's pin is its own), and the walkers' instanced bodies, which move (old against old: 112 triangles
+      at the west mouth); the inspector names the Smithy (`bld_00027`) from its record, the minimap draws 169 records, a mark
+      measures, 0 unknown tags, no errors; C and N and the buttons work; `node tests/test-layout.js` all passed.
+- [ ] (2026-10-15) **Keys changed with the host:** Dhelv's own map is K (M is the host's minimap; `93-dhelv-map.js`); T (the
+      inspector) is I, the hover button; P (the polygon tool) is the host's marks, P; R (run) is gone (Shift is faster, the wheel
+      sets the walking speed); the marker is the host's pin (double-click, G, F walks from it, Esc lifts it, as Esc still lets
+      a followed walker go). The inspector's card is plain text (the kit's was coloured HTML). C, N, V, [ and ] are as before.
+- [ ] (2026-10-15) `?t=` (verify.py loads `?t=4`) pins the host's motion time: FRAME_HOOKS and the atmosphere are handed dt 0
+      (the kit's loop handed them real seconds; the shader clock was the only thing `?t` pinned). The ramblers keep their own
+      clock (95), the stone door its own step.
+- [x] (2026-10-15) The marks file: core/host (94) reads `<build>/marks.json` only on a page served by `tools/edits/serve.py`
+      (GET `/__file`, 204 when none was saved); anywhere else the browser's draft, so no 404 reaches the console. The take passes
+      no `marksUrl`.
+
 - [ ] **Meshing the rock is slow: about 7 ms a chunk** (16 m, 32 cells a side). The page meshes near the camera within a
       budget a frame, so a jump to a far view fills in over a few seconds. A worker (P5c) or coarser chunks far off would help.
 - [ ] **The direct sun's beam is shadowed only by the meshed rock.** Its spot through an opening casts shadows from the

@@ -9,7 +9,7 @@ Each case loads a built page headless (software GL, so a page takes one to five 
 window._ready, calls the page's own exporter, and writes godot/data/<case>/. The cases are chosen to
 cover the routes the plan names and to differ from each other:
 
-  hyperjungle  krator-biome JSON (BIO.export), a 300 m tile round a hero hypertree; DataTexture leaf atlases; no LOD chunks
+  hyperjungle  krator-biome JSON (BIO.export), a 360 m tile round two hero hypertrees; DataTexture leaf atlases; no LOD chunks
   rift         krator-biome JSON, one tile; every mesh LOD-chunked; hooked materials (irid bark, far impostors)
   sedesert     krator-biome JSON, a 300 m tile round the pond, whose ground carries the page's core/terrain field (krator-field)
   girder       glTF (three's own GLTFExporter over a region) plus its material records (KMAT.table) and pack (tex/)
@@ -43,7 +43,7 @@ HEIGHT_JS = """([box, step, fn]) => { const h = eval(fn); const nx = Math.floor(
 
 CASES = {
     "hyperjungle": dict(page="biomes/hyperjungle/dist/hyperjungle.html", kind="biome",
-                        box=[12, -897, 312, -597]),   # centred on a hero hypertree (162, -747)
+                        box=[-750, -450, -390, -90]),   # a ghostwood (-633, -178) and a gate baobab (-506, -355) hero, saplings of all six species (was [12, -897, 312, -597]: one prism gum)
     "rift": dict(page="biomes/rift/dist/rift.html", kind="biome",
                  box=[-450, 150, -150, 450]),
     # the first page on a core/terrain field (2026-10-08): its export's ground carries the baked heightmap (`field`)
