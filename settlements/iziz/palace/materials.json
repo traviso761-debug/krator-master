@@ -1,6 +1,6 @@
 {
  "build": "iziz-palace",
- "note": "The Iziz palace citadel's own library families (the palace page only: settlements/iziz/build.py packs them as KMAT pack 'izpalace' into iziz-palace.tex.izpalace.js beside the page, so no other Iziz page changes). The floors, walls, friezes and ceilings of the blueprint's decor levels (BLUEPRINT.md, 'Finishes by decor level'; targets/palace/78r-palace-draw.js): white marble ashlar (sumptuous floors, dados, pilasters, columns), the Iziz sun-star mosaic (rich floors), its teal twin (baths), the Iziz tile (fine floors and dados), the gilt frieze band and gold leaf (state rooms' friezes, coffers, capitals, door surrounds), white stucco tinted per room (walls, ceilings), the Ancients' white panel and concrete (the Depot and the Core), hyper-mahogany (rich dados and doors), the sun banner (rich friezes), and two floor medallions (the sun star and the sunray: one across a piece's top, no world tiling). Full-colour sets keep their hue (keep 1, mean null); the stucco and the concrete are grey detail maps the instance colour tints. Scale is metres per tile, the same as each MAT key's vWorldUV.",
+ "note": "The Iziz palace citadel's own library families (the palace page only: settlements/iziz/build.py packs them as KMAT pack 'izpalace' into iziz-palace.tex.izpalace.js beside the page, so no other Iziz page changes). The floors, walls, friezes and ceilings of the blueprint's decor levels (BLUEPRINT.md, 'Finishes by decor level'; targets/palace/78r-palace-draw.js): white marble ashlar (sumptuous floors, dados, pilasters, columns), the Iziz sun-star mosaic (rich floors), its teal twin (baths), the Iziz tile (fine floors and dados), the gilt frieze band and gold leaf (state rooms' friezes, coffers, capitals, door surrounds), white stucco tinted per room (walls, ceilings), the Ancients' white panel and concrete (the Depot and the Core), hyper-mahogany (rich dados and doors), the sun banner (rich friezes), and two floor medallions (the sun star and the sunray: one across a piece's top, no world tiling). Full-colour sets keep their hue (keep 1, mean null); the stucco and the concrete are grey detail maps the instance colour tints. Scale is metres per tile, the same as each MAT key's vWorldUV. 2026-10-19, delivered: the coffer (decor-4 ceilings), the legions fresco (the feast rooms' and the Hall of the Standards' frieze, one sheet per 2:1 panel), the bronze door leaf (the state rooms' leaves and the great door's; one sheet per leaf), the crater map (inlaid in the map rooms' floors; one sheet) and the hangar deck (the Depot's working floors, grey, tinted).",
  "size": 512,
  "families": {
   "palMarble": {
@@ -199,6 +199,90 @@
    "metal": 0,
    "roughLift": 0.1,
    "specular": 0.5
+  },
+  "palCoffer": {
+   "lib": "patterns/iziz/coffer",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.7
+  },
+  "palFresco": {
+   "lib": "patterns/iziz/fresco-legions",
+   "scale": [
+    4,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.3,
+   "size": [
+    1024,
+    574
+   ]
+  },
+  "palDoorLeaf": {
+   "lib": "patterns/iziz/bronze-door",
+   "scale": [
+    1.6,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0.5,
+   "roughLift": 0.1,
+   "specular": 0.8,
+   "size": [
+    384,
+    1024
+   ]
+  },
+  "palMap": {
+   "lib": "patterns/iziz/crater-map",
+   "scale": [
+    8,
+    8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.7,
+   "size": 1024
+  },
+  "palDeck": {
+   "lib": "metal.deck.hangar",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.72
+   },
+   "metal": 0.4,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
   }
  }
 }

@@ -186,7 +186,10 @@ const IZPALF=(function(){
    grid(1.8,2.4,2.2,(u,v)=>{const f=[b[2],b[3]];return!!put('iziz_common_bench',1,u,v,f[0]?-f[0]:0,f[1]?-f[1]:0);},12);break;}
   case'bath':{hero('iziz_court_bath_pool',cu,cv,lu?1:0,lu?0:1);grid(3.2,3.2,1.4,(u,v,i)=>!!put(i%3?'iziz_court_bath_slab':'iziz_court_palm_pot',0,u,v,lu?0:1,lu?1:0),6);
    put('iziz_common_bath_basin',0,q.u0+.5,cv+2,1,0);put('iziz_court_mirror',0,q.u0+.25,cv-2,1,0);break;}
-  case'map_room':{if(R.B.id==='palace'&&s.decor>=3)hero('iziz_court_map_table',cu,cv,1,0);if(du*dv>220){hero('iziz_court_map_table',cu-du/4,cv,1,0);}
+  case'map_room':{if(s.floorMap){// the crater inlaid in the floor (78r): kept clear, the map tables at its two ends
+    const M=s.floorMap,h2=M.m/2;mark(M.u-h2,M.u+h2,M.v-h2,M.v+h2,2);
+    for(const sd of[-1,1]){const u=lu?M.u+sd*(h2+1.1):M.u,v=lu?M.v:M.v+sd*(h2+1.1);put('iziz_court_map_table',0,u,v,lu?-sd:0,lu?0:-sd);}}
+   else{if(R.B.id==='palace'&&s.decor>=3)hero('iziz_court_map_table',cu,cv,1,0);if(du*dv>220){hero('iziz_court_map_table',cu-du/4,cv,1,0);}}
    grid(3,3,1.6,(u,v,i)=>!!put(i%2?'talia_court_map_case':'iziz_court_standard',0,u,v,1,0),6);put('talia_court_globe',0,cu+2.2,cv+2.2,1,0);break;}
   case'council':{// the council table: court tables end to end down the room, chairs both sides
    const n=Math.max(1,Math.min(6,Math.floor(((lu?du:dv)-6)/2.4)));for(let i=0;i<n;i++){const a=(i-(n-1)/2)*2.42,u=lu?cu+a:cu,v=lu?cv:cv+a;

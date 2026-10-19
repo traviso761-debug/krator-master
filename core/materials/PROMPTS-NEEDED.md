@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 6 prompts, and 3 optional: section 1 (the Iziz palace citadel's five, 2026-10-19), section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 1 prompt, and 3 optional: section 2 (the Northern Highlands' `bark.alder.lichen`), and section 6's three optional (necanyons).** The Iziz palace citadel's five were delivered 2026-10-19 ("Delivered 2026-10-19, the Iziz palace"). Korona's nineteen were delivered 2026-10-19 ("Delivered 2026-10-19, Korona"), the Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel the same day ("Delivered 2026-10-19"), necanyons' five required ones too ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -119,68 +119,6 @@ Full colour. Palette `ISP_C`: red earth #9a2a1e, dark red #6e1a12, black #1e1a18
 
 `settlements/iziz/KNOWN_ISSUES.md`, "Two surfaces have no good library texture" (the second material pilot, 2026-10-13).
 Both near-colourless, tinted.
-
-### The Iziz palace citadel (`settlements/iziz`, the palace page, 2026-10-19)
-
-The palace page (`settlements/iziz/targets/palace`, `dist/iziz-palace.html`) draws its finishes from the library
-(`settlements/iziz/palace/materials.json`: marble ashlar, the Iziz mosaics and tile, the gilt band, gold leaf, stucco,
-mahogany, the sun banner, the Ancients' panel and concrete, two floor medallions). These five it has no set for (the court cloth it lacked came with the court sets: brocade and velvet, 2026-10-19)
-(`settlements/iziz/KNOWN_ISSUES.md`, "The palace citadel's interior: first pass"). Each lands in the library or
-`patterns/iziz/`; add its family to `settlements/iziz/palace/materials.json`, run
-`python3 tools/textures/pack.py settlements/iziz/palace`, and wire it in `targets/palace/78r-palace-draw.js` (the note
-under each says where).
-
-#### `patterns/iziz/coffer`
-- Kind: tileable pattern, full colour; one coffer per 2.4 m tile. The sumptuous rooms' ceilings (the Aula, the Hangar
-  Hall's neighbours, the emperor's rooms, the state galleries): today cream stucco crossed by plain gold ribs.
-- Wire: `palCoffer` on the decor-4 ceiling slab in `78r` `storey()` (the coffer ribs then go).
-- Reuse: any Art Deco or Roman coffered ceiling: Talia's halls, Voth's state rooms, a Xanadu dome's soffit.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: One square coffer of an Art Deco palace ceiling seen from directly below, filling the tile: a deep stepped frame of three receding gilded mouldings (#d4a640, #b8862a) with fine chevron and bead ornament, the sunken centre field in deep teal plaster (#1f6e6a) with a small gilded sixteen-rayed sun rosette (#e0b050) and a thin cream (#f3e2c0) inner border, the ribs between coffers in cream plaster with a gilt fillet. The pattern repeats exactly one coffer across and one down. Full colour (do not mute).
-```
-
-#### `patterns/iziz/bronze-door`
-- Kind: single sheet, full colour, portrait 1024x2560 (one door leaf). The state rooms' open bronze leaves (`78r`
-  `doorFrame`: plain dark bronze boxes today) and the great door between the Hangar Hall and the Aula.
-- Wire: a `palDoorLeaf` kit item (a box whose front face carries the whole sheet, no world UVs, like `palMedalB`) in place
-  of `izBronzeD` for decor-4 leaves.
-- Reuse: any cast bronze door: Talia's cathedral, the Ancients kit's reclaimed vaults, Voth's palace gate.
-
-```
-A flat, front-on decorative panel, portrait, 1024x2560. Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text, no border, no watermark. A single composition, not a repeating tile: clear margin of plain dark background round it. Material: One leaf of a monumental cast bronze door in Art Deco style, seen straight on: a tall rectangle divided into five stacked panels by raised bronze rails studded with round bosses; the top panel a half sunburst of sixteen stepped rays rising from the bottom edge, the middle panels stepped chevrons and fluted columns in low relief, the bottom panel a kneeling figure holding up an orb; warm dark bronze (#6e4a22) with a thin brown patina, the raised edges polished bright (#c8962a), a little green verdigris (#4a8a70) in the deepest hollows. Full colour (do not mute).
-```
-
-#### `patterns/iziz/crater-map`
-- Kind: single sheet, full colour, square 2048x2048. The Map of the Empire (the tower's first floor: "the whole crater
-  inlaid in the floor; the legions as bronze markers", BLUEPRINT.md I5), and the map tables' tops.
-- Wire: a floor medallion in the tower's map room (`78r` floors: `palMapB`, the way `palMedalB` is laid).
-- Reuse: any map floor or map table of the Iziz Empire; a wall map in the Praetorium.
-
-```
-A flat, front-on decorative panel, square, 2048x2048. Orthographic, flat even shadowless lighting, no cast shadows, no perspective, no text, no border, no watermark. A single composition, not a repeating tile: clear margin of plain cream marble round it. Material: A floor map inlaid in coloured marble and bronze, seen from directly above: a great round crater about four fifths of the frame across, its rim a ring of reddish-brown stone (#8a5a3a) with mountain ridges picked out in darker veins, the crater floor green-grey jungle marble (#5a7a5a) crossed by blue-grey river channels (#5a7a8a) running to a dark lake near the centre (#2a4a5a); cities as gilt studs (#d4a640) with small gilt rings round the largest, roads as thin bronze lines between them, a sixteen-rayed sun compass rose in gilt at one edge, a border of cream marble (#efe3c8) with an orange chevron band (#e07a2a). No lettering. Full colour (do not mute).
-```
-
-#### `patterns/iziz/fresco-legions`
-- Kind: tileable pattern, full colour, landscape 2048x1024 (repeats left to right); 4 m across, 2 m high. A painted frieze
-  for the feast rooms and the Hall of the Standards (the triclinium, the Hangar Hall's flanks, the Praetorium), above the
-  dado where the sun-banner frieze runs today.
-- Wire: `palFresco` as the decor-3 and decor-4 frieze in `78r` `style()` for the feast and trophy kinds.
-- Reuse: any Roman-style painted frieze: a Talia or Xanadu banquet hall.
-
-```
-Seamless tileable texture, landscape, 2048x1024. Orthographic, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no text, no border, no watermark. The left edge must continue into the right edge. Material: A Roman fresco frieze in an Art Deco hand, painted on smooth plaster with slight age crazing: a procession of legionaries in orange tunics and bronze helmets carrying sun-disc standards, two tall walking war machines (mechs) in white and orange plates striding among them, palm trees and a stepped pyramid behind, against a warm cream ground (#efe0c0); a deep red (#9c2d2d) band below and a teal (#2f8f8a) band with a gilt fillet above. Flat matte fresco colours, a little faded. Full colour (do not mute).
-```
-
-#### `metal.deck.hangar`
-- Kind: tileable material, near-colourless (tinted by the build); 4 m tile. The Depot's floors (the mech bays, the
-  concourse, the repair shop, the forge: Ancient concrete today) and the Hangar Lift's surround.
-- Wire: `palDeck` (family in `palace/materials.json`) as the floor of the Ancient level's work kinds in `78r` `style()`.
-- Reuse: any hangar, dock or vehicle bay floor: Girder's yards, the motor-vehicles kit's garages, the Ancients kit's depots.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy steel hangar deck plates, each about 2 m square, set in a grid with recessed welded seams: a fine raised diamond tread on every plate, flush round tie-down rings set into the plate corners, scuffed tyre and footpad marks, oil stains and a little dust in the seams, faint worn remains of painted guide lines along one seam. Neutral mid grey steel only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
 
 ### The Resources kit (`kits/resources`)
 
@@ -312,6 +250,20 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
 ```
+
+## Delivered 2026-10-19, the Iziz palace (pasted into the chat as WebP, 1254 px, 1774 x 887 and 793 x 1983; batch `izpalace-2026-10-19.json`)
+
+The five the palace page had no set for, processed by `tools/textures/process.py` and packed into the palace's own pack
+(`settlements/iziz/palace/materials.json`, `python3 tools/textures/pack.py settlements/iziz/palace`), wired in
+`targets/palace/78r-palace-draw.js`:
+
+| Set | Family | Where |
+|---|---|---|
+| `patterns/iziz/coffer` | `palCoffer` | the decor-4 ceilings (world tiles of 2.4 m; the plain gold ribs went) |
+| `patterns/iziz/fresco-legions` | `palFresco` | the frieze of the feast rooms and the Hall of the Standards (decor 3 and 4): one 2:1 sheet per panel, 1.1 m high |
+| `patterns/iziz/bronze-door` | `palDoorLeaf` | the leaves of the decor-4 doors and the great door into the Aula (one sheet per leaf; its dark margin cropped) |
+| `patterns/iziz/crater-map` | `palMap` | inlaid in the floors of the map rooms (the Map of the Empire, the Map Rooms of the Legions and the Staff); the map tables stand at its ends |
+| `metal.deck.hangar` | `palDeck` | the Depot's working floors (the mech bays, the concourse, the Hangar Lift, the shops, the stores), grey, tinted; three plates to the tile, so 6 m |
 
 ## Delivered 2026-10-19, Korona (the owner's twenty images in `Downloads`, batches `korona-2026-10-19.json` and `korona-2026-10-19-cards.json`)
 

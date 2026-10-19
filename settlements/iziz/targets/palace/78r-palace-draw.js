@@ -3,7 +3,7 @@
    liners, floors, ceilings, partitions, doors, balustrades, stairs and shafts, finished by each space's decor level (the
    blueprint's "Finishes by decor level"):
      4 sumptuous  marble floor (a sun medallion in the great rooms), marble dado, cream stucco, a gilt frieze, marble
-                  pilasters with gilt capitals, a coffered ceiling with gilt ribs, gilt door surrounds and bronze leaves
+                  pilasters with gilt capitals, a coffered ceiling (the coffer sheet), gilt door surrounds and bronze leaves (the door sheet)
      3 rich       mosaic floor, mahogany dado, warm orange stucco, the sun-banner frieze, a gilt cornice, mahogany doors
      2 fine       teal tile floor and dado, white stucco
      1 plain      stone floor, plaster
@@ -27,6 +27,14 @@ MAT.palMahog=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.42,metaln
 MAT.palSunBanner=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.85,metalness:0});vWorldUV(MAT.palSunBanner,1/1.6);
 MAT.palMedal=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.32,metalness:0});           // one medallion across the piece's top
 MAT.palSunray=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.4,metalness:0});
+// delivered 2026-10-19 (core/materials/PROMPTS-NEEDED.md, the palace's five): the coffer (world tiles of 2.4 m on the
+// sumptuous ceilings), the deck (world tiles of 6 m on the Depot's working floors, grey, tinted), and three single sheets on
+// a box's faces: the legions fresco (one 2:1 panel per frieze piece), the bronze door leaf, the crater map
+MAT.palCoffer=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.5,metalness:.2});vWorldUV(MAT.palCoffer,1/2.4);
+MAT.palDeck=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.6,metalness:.35});vWorldUV(MAT.palDeck,1/6);
+MAT.palFresco=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.9,metalness:0});
+MAT.palDoorLeaf=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.42,metalness:.5});
+MAT.palMap=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.32,metalness:0});
 MAT.palWater=new THREE.MeshStandardMaterial({color:vC(0x2f8f8a),roughness:.08,metalness:.3,transparent:true,opacity:.82});
 MAT.palPane=new THREE.MeshBasicMaterial({color:vC(0xdce8ef)});     // a window's daylight, seen from inside
 MAT.palLamp=new THREE.MeshBasicMaterial({color:vC(0xffe4b4)});     // an electric light panel, a lit skylight
@@ -34,6 +42,7 @@ kdef('palFloorM',VBOX,MAT.palMarble);kdef('palFloorMo',VBOX,MAT.palMosaic);kdef(
 kdef('palMarbleB',VBOX,MAT.palMarble);kdef('palStuccoB',VBOX,MAT.palStucco);kdef('palMahogB',VBOX,MAT.palMahog);kdef('palGiltB',VBOX,MAT.palGilt);
 kdef('palGoldB',VBOX,MAT.palGold);kdef('palAncB',VBOX,MAT.palAncient);kdef('palConcB',VBOX,MAT.palConc);kdef('palTileB',VBOX,MAT.palTile);kdef('palMosaicBB',VBOX,MAT.palMosaicB);
 kdef('palSunBannerB',VBOX,MAT.palSunBanner);kdef('palMedalB',VBOX,MAT.palMedal);kdef('palSunrayB',VBOX,MAT.palSunray);kdef('palWaterB',VBOX,MAT.palWater);
+kdef('palCofferB',VBOX,MAT.palCoffer);kdef('palDeckB',VBOX,MAT.palDeck);kdef('palFrescoB',VBOX,MAT.palFresco);kdef('palDoorB',VBOX,MAT.palDoorLeaf);kdef('palMapB',VBOX,MAT.palMap);
 kdef('palPaneB',VBOX,MAT.palPane);kdef('palLampB',VBOX,MAT.palLamp);kdef('palGlowB',VBOX,MAT.strip);
 kdef('palColM',new THREE.CylinderGeometry(1,1,1,16).translate(0,.5,0),MAT.palMarble);kdef('palColG',new THREE.CylinderGeometry(1,1,1,16).translate(0,.5,0),MAT.palGold);
 kdef('palColF',new THREE.CylinderGeometry(.9,1,1,16).translate(0,.5,0),MAT.palGold);   // a flared gilt capital or base
@@ -41,7 +50,7 @@ KMAT.bindMat('izpalace',MAT,{});   // the palace's own pack (build.py TARGET_PAC
 const IZPALDRAW=(function(){
  const ST={shells:0,frustums:0,cleared:0,liners:0,walls:0,rails:0,doors:0,floors:0,ceilings:0,steps:0,panes:0,columns:0,portals:0,ms:0};
  const C={cream:vC(0xf3e2c0),orange:vC(0xefc79c),white:vC(0xf2ece2),plaster:vC(0xdcd2c2),teal:vC(0x2f8f8a),stone:vC(0xd8cbb4),conc:vC(0xc8c4bc),
-  anc:vC(0xf0f0ec),dark:vC(0x3a3632),sand:tC(0xd4a05a),sandL:tC(0xe6bd7e),bronze:vC(0x8a6a2a),cyan:CYAN};
+  anc:vC(0xf0f0ec),deck:vC(0xb4b2ac),dark:vC(0x3a3632),sand:tC(0xd4a05a),sandL:tC(0xe6bd7e),bronze:vC(0x8a6a2a),cyan:CYAN};
  let FR=null,Q=null,QV=null;const CELLW=IZPAL.CELL;
  // a box in the citadel's frame: centre (u, v), base height y (from the mesa top), sizes along u, v and up
  const B=(item,u,v,y,su,sv,sy,c,q)=>{const p=FR.P(u,v);kput(item,[p[0],FR.Y(y)+sy/2,p[1]],q||Q,[sv,sy,su],c||null);};
@@ -52,11 +61,15 @@ const IZPALDRAW=(function(){
   if(dir==='u')B(item,line+off,m,y,th,L,h,c);else B(item,m,line+off,y,L,th,h,c);};
  /* ---------------------------------------------------------------- finishes */
  // a space's style: its wall, its dado, its frieze, its floor, its ceiling, its door frame
+ // the Depot's working floors take the hangar deck; the feast rooms and the Hall of the Standards the legions fresco
+ const DECK={mech_bay:1,repair_shop:1,forge:1,hall:1,lift_hall:1,entrance:1,passage:1,workshop:1,store:1,cells:1,armoury:1},FRESCO={feast_private:1,trophy:1};
  function style(s,anc){const d=s?s.decor:2,k=s?s.kind:'';
-  if(anc)return{wall:'palAncB',wc:C.anc,dado:null,band:'palGlowB',bandC:C.cyan,floor:d>=3||k==='core'||k==='control_room'?'palAncB':'palConcB',fc:d>=3?C.anc:C.conc,
-   ceil:'palAncB',cc:C.anc,frame:'palAncB',frameC:C.anc,anc:true,d};
-  if(d>=4)return{wall:'palStuccoB',wc:C.cream,dado:'palMarbleB',dh:1.2,dc:null,frieze:'palGiltB',fh:.55,floor:k==='bath'?'palFloorMoB':'palFloorM',fc:null,ceil:'palStuccoB',cc:C.cream,coffer:true,frame:'palGoldB',frameC:null,pil:true,d};
-  if(d===3)return{wall:'palStuccoB',wc:C.orange,dado:'palMahogB',dh:1.0,dc:null,frieze:'palSunBannerB',fh:.6,floor:k==='bath'?'palFloorMoB':'palFloorMo',fc:null,ceil:'palStuccoB',cc:C.cream,cornice:true,frame:'palMahogB',frameC:null,d};
+  if(anc){const deck=s&&DECK[k]&&/\.U1\./.test(s.id);
+   return{wall:'palAncB',wc:C.anc,dado:null,band:'palGlowB',bandC:C.cyan,floor:deck?'palDeckB':d>=3||k==='core'||k==='control_room'?'palAncB':'palConcB',fc:deck?C.deck:d>=3?C.anc:C.conc,
+   ceil:'palAncB',cc:C.anc,frame:'palAncB',frameC:C.anc,anc:true,d};}
+  const fr=FRESCO[k]&&d>=3;
+  if(d>=4)return{wall:'palStuccoB',wc:C.cream,dado:'palMarbleB',dh:1.2,dc:null,frieze:fr?'palFrescoB':'palGiltB',fh:fr?1.1:.55,floor:k==='bath'?'palFloorMoB':'palFloorM',fc:null,ceil:'palCofferB',cc:null,frame:'palGoldB',frameC:null,pil:true,d};
+  if(d===3)return{wall:'palStuccoB',wc:C.orange,dado:'palMahogB',dh:1.0,dc:null,frieze:fr?'palFrescoB':'palSunBannerB',fh:fr?1.1:.6,floor:k==='bath'?'palFloorMoB':'palFloorMo',fc:null,ceil:'palStuccoB',cc:C.cream,cornice:true,frame:'palMahogB',frameC:null,d};
   if(d===2)return{wall:'palStuccoB',wc:C.white,dado:'palTileB',dh:.9,dc:null,floor:'palFloorT',fc:null,ceil:'palStuccoB',cc:C.white,frame:'palMahogB',frameC:null,d};
   if(d===1)return{wall:'palStuccoB',wc:C.plaster,dado:null,skirt:true,floor:'vStone',fc:C.stone,ceil:'palStuccoB',cc:C.plaster,frame:'palStuccoB',frameC:C.stone,d};
   return{wall:'palConcB',wc:C.conc,floor:'palConcB',fc:C.conc,ceil:'palConcB',cc:C.conc,frame:'palConcB',frameC:C.conc,d};}
@@ -69,7 +82,9 @@ const IZPALDRAW=(function(){
    if(sty.dado)W(sty.dado,dir,line,s0,s1,side*.155,.04,y,sty.dh,sty.dc);
    if(sty.skirt)W('palStuccoB',dir,line,s0,s1,side*.155,.04,y,.18,C.dark);
    if(sty.band)W(sty.band,dir,line,s0,s1,side*.16,.05,y+Math.min(2.6,h-.4),.08,sty.bandC);
-   if(sty.frieze&&h>3.2)W(sty.frieze,dir,line,s0,s1,side*.155,.04,y+h-sty.fh-.15,sty.fh,null);
+   if(sty.frieze==='palFrescoB'){if(h>sty.dh+sty.fh+1.4){const n=Math.max(1,Math.round((s1-s0)/(2*sty.fh))),L=(s1-s0)/n;
+     for(let i=0;i<n;i++)W('palFrescoB',dir,line,s0+i*L,s0+(i+1)*L,side*.155,.04,y+h-sty.fh-.15,sty.fh,null);}}
+   else if(sty.frieze&&h>3.2)W(sty.frieze,dir,line,s0,s1,side*.155,.04,y+h-sty.fh-.15,sty.fh,null);
    if(sty.cornice&&h>3)W('palGoldB',dir,line,s0,s1,side*.17,.12,y+h-.22,.14,null);
    if(sty.pil&&h>3.4){const n=Math.floor((s1-s0)/3.6);for(let i=1;i<=n;i++){const t=s0+(s1-s0)*i/(n+1);
     W('palMarbleB',dir,line,t-.3,t+.3,side*.22,.18,y,h-sty.fh-.24,C.white);W('palGoldB',dir,line,t-.38,t+.38,side*.25,.22,y+h-sty.fh-.55,.35,null);
@@ -168,7 +183,9 @@ const IZPALDRAW=(function(){
    if(s.floor==='landing'){const land=landing(s.rect);s.rects.forEach(r=>{const q=inter(r,land);if(solid(q)){B(st.floor,(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y-.33,q.u1-q.u0,q.v1-q.v0,.33,st.fc);ST.floors++;}});return;}
    s.rects.forEach(q=>{B(st.floor,(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y-.33,q.u1-q.u0,q.v1-q.v0,.33,st.fc);ST.floors++;});
    // a sun medallion in the great rooms and the grand spaces' floors
-   if(!anc&&s.decor>=4&&s.area>=90&&!s.stair&&s.kind!=='corridor'&&s.kind!=='lift_hall'){const q=s.rect,m=Math.min(q.u1-q.u0,q.v1-q.v0)*.62;
+   if(!anc&&s.kind==='map_room'&&s.decor>=3){const q=s.rect,m=Math.min(q.u1-q.u0,q.v1-q.v0)*.78;s.floorMap={u:(q.u0+q.u1)/2,v:(q.v0+q.v1)/2,m};
+    B('palMapB',s.floorMap.u,s.floorMap.v,S.y+.004,m,m,.012,null);ST.maps=(ST.maps||0)+1;}
+   else if(!anc&&s.decor>=4&&s.area>=90&&!s.stair&&s.kind!=='corridor'&&s.kind!=='lift_hall'){const q=s.rect,m=Math.min(q.u1-q.u0,q.v1-q.v0)*.62;
     B(s.kind==='throne'||s.kind==='atrium'||s.kind==='vestibule'?'palMedalB':'palSunrayB',(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y+.004,m,m,.012,null);}});
   // ceilings: under the floor of the first storey above that is not a void over this space (so a room under a void rises
   // through it, piece by piece); the top storey's under the mass's roof
@@ -178,7 +195,7 @@ const IZPALDRAW=(function(){
     if(anc&&s.kind==='lift_hall'){const h={u0:10.2,u1:19.8,v0:-5.8,v1:3.8};
      [[q.u0,h.u0,q.v0,q.v1],[h.u1,q.u1,q.v0,q.v1],[h.u0,h.u1,q.v0,h.v0],[h.u0,h.u1,h.v1,q.v1]].forEach(r=>{if(r[1]-r[0]>.05&&r[3]-r[2]>.05)B(st.ceil,(r[0]+r[1])/2,(r[2]+r[3])/2,cy,r[1]-r[0],r[3]-r[2],.06,st.cc);});
      s.ceilY=cy;return;}
-    B(st.ceil,cu,cv,cy,q.u1-q.u0,q.v1-q.v0,.06,st.cc);ST.ceilings++;
+    B(st.ceil,cu,cv,cy,q.u1-q.u0,q.v1-q.v0,.06,st.cc);ST.ceilings++;if(st.ceil==='palCofferB')ST.coffered=(ST.coffered||0)+1;
     if(st.coffer&&(q.u1-q.u0)>3&&(q.v1-q.v0)>3){const n1=Math.floor((q.u1-q.u0)/2.4),n2=Math.floor((q.v1-q.v0)/2.4);
      for(let i=1;i<=n1;i++)B('palGoldB',q.u0+(q.u1-q.u0)*i/(n1+1),cv,cy-.32,.22,q.v1-q.v0,.32,null);
      for(let j=1;j<=n2;j++)B('palGoldB',cu,q.v0+(q.v1-q.v0)*j/(n2+1),cy-.33,q.u1-q.u0,.22,.32,null);
@@ -240,12 +257,12 @@ const IZPALDRAW=(function(){
   W(stA.frame,dir,line,d.t0-.02,d.t0+.04,ro,rd,y,h,stA.frameC);W(stA.frame,dir,line,d.t1-.04,d.t1+.02,ro,rd,y,h,stA.frameC);
   if(ext)W(stA.frame,dir,line,d.t0+.04,d.t1-.04,ro,rd,y+h-.04,.06,stA.frameC);
   // the leaves, open into the room: bronze in the state rooms, mahogany in the rich ones, none below
-  const st=stB&&stB.d>stA.d?stB:stA;if(st.d<3&&!st.anc)return;const leaf=st.anc?'palAncB':st.d>=4?'izBronzeD':'palMahogB',lw=w/2-.02;
+  const st=stB&&stB.d>stA.d?stB:stA;if(st.d<3&&!st.anc)return;const leaf=st.anc?'palAncB':st.d>=4?'palDoorB':'palMahogB',lw=w/2-.02;
   if(!KIT.items[leaf])return;
   for(const s of[-1,1]){const hinge=s<0?d.t0:d.t1,mid=hinge-s*.1;
    // a leaf standing open at right angles to the wall, against the jamb, on the room's side
    if(dir==='u')B(leaf,line+into*(lw/2+.2),mid,y,lw,.08,h-.05,st.anc?C.anc:null);else B(leaf,mid,line+into*(lw/2+.2),y,.08,lw,h-.05,st.anc?C.anc:null);
-   if(st.d>=4&&!st.anc){if(dir==='u')B('palGoldB',line+into*(lw/2+.2),mid,y+h*.5,lw*.8,.1,.12,null);else B('palGoldB',mid,line+into*(lw/2+.2),y+h*.5,.1,lw*.8,.12,null);}}}
+}}
  function portalFrame(dir,line,g,S,st,out,e){ST.portals++;const y=S.y,h=Math.min(g.h,S.h+14);
   // the reveal back to the mass's face (the batter makes it deeper at the floor) and a stepped surround on the inside
   const M=e&&e.mass,dep=yy=>{if(!M)return 1;const hn=(dir==='u'?M.du:M.dv)/2*(1-(1-M.t)*Math.max(0,Math.min(1,(yy-M.y0)/M.H))),c=dir==='u'?M.u:M.v;return Math.max(.2,hn-Math.abs(line-c)-.05);};
@@ -254,7 +271,10 @@ const IZPALDRAW=(function(){
   W(rv,dir,line,g.t0-.25,g.t1+.25,out*(d2/2+sh),d2,y+h-.04,.54,C.white);
   W(st.d>=3?'palGoldB':st.frame,dir,line,g.t0-.5,g.t0-.25,-out*.2,.16,y,h+.6,st.d>=3?null:st.frameC);
   W(st.d>=3?'palGoldB':st.frame,dir,line,g.t1+.25,g.t1+.5,-out*.2,.16,y,h+.6,st.d>=3?null:st.frameC);
-  W(st.d>=3?'palGoldB':st.frame,dir,line,g.t0-.5,g.t1+.5,-out*.2,.16,y+h,.6,st.d>=3?null:st.frameC);}
+  W(st.d>=3?'palGoldB':st.frame,dir,line,g.t0-.5,g.t1+.5,-out*.2,.16,y+h,.6,st.d>=3?null:st.frameC);
+  // the great door: two leaves of cast bronze (the delivered sheet), open at right angles into the Aula
+  if(g.P&&/great door/.test(g.P.name)){const lw=(g.t1-g.t0)/2-.05,into=-out;ST.leaves=(ST.leaves||0)+2;
+   for(const[hinge,sd]of[[g.t0,1],[g.t1,-1]]){const m=hinge+sd*.12;if(dir==='u')B('palDoorB',line+into*(lw/2+.3),m,y,lw,.12,h-.05,null);else B('palDoorB',m,line+into*(lw/2+.3),y,.12,lw,h-.05,null);}}}
  /* ---------------------------------------------------------------- stairs */
  // two flights side by side along the shaft's long axis with a half landing at the far end; a straight flight when the
  // shaft is too narrow for two. y0 -> y1; the flights leave and arrive at the entry end (landing())

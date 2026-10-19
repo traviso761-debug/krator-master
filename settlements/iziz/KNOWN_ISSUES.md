@@ -54,9 +54,7 @@ saying what fixed it.
         the precinct buildings' too.
       - **The furniture's marble** draws in the catalog's `stone` detail family (rough rock): a `marble` family is a
         catalog-wide change (every build bundling the detail maps), not made here. The court's cloth, veneer and gilding take
-        the court sets (brocade, velvet, marquetry, gold leaf: 95i's `courtFinish`, 2026-10-19). Texture prompts for the five
-        surfaces the palace has no set for (coffers, bronze doors, the crater map, the fresco, the hangar deck) are in
-        `core/materials/PROMPTS-NEEDED.md`.
+        the court sets (brocade, velvet, marquetry, gold leaf: 95i's `courtFinish`, 2026-10-19). The five surfaces the palace had no set for (the coffers, the bronze leaves, the crater map, the legions fresco, the hangar deck) were delivered and wired on 2026-10-19 (`core/materials/PROMPTS-NEEDED.md`, "Delivered 2026-10-19, the Iziz palace").
       - **Heavy page**: about 4 M triangles with every room furnished (the furniture at half detail); furnishing takes ~5.5 s
         in SwiftShader. Nothing is furnished lazily yet (Girder and Verge furnish near the camera first).
       - No mechs stand in the bays or on the hall's lift (the Mechs kit, `KratorMechs`, could be bundled).
