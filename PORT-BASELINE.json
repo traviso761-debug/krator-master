@@ -285,8 +285,8 @@
    "sha256": "92f2909cafff2ff2ab5b78850e19c78b116a6322321508757d62aec998d8e819"
   },
   "kits/beast-riders/dist/beast-riders.html": {
-   "bytes": 1897452,
-   "sha256": "8cc173ae99bf593a65d0d6752e0761b765dc7571f1350bb58dca3173137ed106"
+   "bytes": 12111054,
+   "sha256": "e8e552d806e22054f5b8f90a960b74837cd5f6d330c27e73616d55d35ea112b6"
   },
   "kits/catalog/dist/catalog.html": {
    "bytes": 1669465,
@@ -389,12 +389,12 @@
    "sha256": "80d60217c59149daae705bba53c49c0ddb44c0b7251c2f0b65639d7fa6a417d9"
   },
   "settlements/girder/girder-hero.html": {
-   "bytes": 9689011,
-   "sha256": "6b2f1115cf8729aa4be7ee2139a7dcc34df4991142c020f53648589440d1474e"
+   "bytes": 9706395,
+   "sha256": "712c310e52600a0364df2db46cfef71854837cb2e8915e15e239419904d92b94"
   },
   "settlements/girder/girder.html": {
-   "bytes": 1638186,
-   "sha256": "884741d9d35faeea67f3b1e4d774e4b1bfc77f286ee4134ccd6aba20c4a1a6f9"
+   "bytes": 1648202,
+   "sha256": "ed9b9ad14ba5025671a65821ab4de3c71e653704788194f9d663121efe5cb252"
   },
   "settlements/highlands/dist/highlands.html": {
    "bytes": 1789266,
@@ -409,8 +409,8 @@
    "sha256": "4bff490b3ba3005f149a0525a74acdb2201855e2bcf918fb7627098043afaf5a"
   },
   "settlements/isle-demo/dist/isle-city.html": {
-   "bytes": 2694454,
-   "sha256": "d0a49416db52eaf2581b9b9cb2c8e8782a545ad123eb47ecf283967b369e4535"
+   "bytes": 3019179,
+   "sha256": "6f4f3d8eed639369cdd1bb9b1be6b9bd341d399fd5e9ec749dd1ea557a913fa4"
   },
   "settlements/isle-demo/dist/isle-site.html": {
    "bytes": 1257975,
@@ -457,8 +457,8 @@
    "sha256": "a4a4eb1f775695ab7b2c9676c6ad3d64ccd0af1fc54f2ca1e74377327f21ccc6"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
-   "bytes": 9024853,
-   "sha256": "e8fb1b5caef9cde2131ac3d39564fc39096fb97e9f2f6773ad2a134521e8f942"
+   "bytes": 9035097,
+   "sha256": "575bada04bb5cd544074eb4c08728db2a86f8a72694f2a1d8c97564f1f507743"
   },
   "settlements/mungo/dist/mungo.html": {
    "bytes": 3871792,
