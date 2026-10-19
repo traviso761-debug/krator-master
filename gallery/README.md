@@ -338,3 +338,10 @@ materials bind and its sidecar. Every other file is as in version 18.
 Krator Worlds I–S version 20 (2026-10-19): `worlds/iziz-mechs.html` replaced (1.6 MB, from `main` at af5ac54d: the Mechs
 kit with six more Iziz mechs, seventeen in all: the Clipeus, Lictor, Baiulus, Turris, Speculator and Catulus) and its card's
 blurb in the live index (version 19's index, one entry edited, as in `build_gallery.py`). Every other file is as in version 19.
+
+Krator Biomes and Objects versions 17 and 18 (2026-10-19): `worlds/necanyons.html` (the north-eastern canyons) and its two packs
+replaced from `claude/bold-cori-iluy70` after main was merged into it (8fe053f3; merged to `main` the same day: KSTACKS'
+flutes, shoulders and undersides; necanyons' `footMax` and the land fragment's hooks). The live index (version 16) kept: the card's size is
+unchanged (10.3 MB). Pinnacle Rock is in `UNLISTED` until its town is built (the owner, 2026-10-19); `ENTRIES` now
+carries the necanyons card's line. Version 17 carried the page and both packs from 50a07a9f; version 18 the page alone,
+rebuilt after the merge (the packs unchanged).
