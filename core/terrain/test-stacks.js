@@ -30,13 +30,25 @@ const fo=K.foot(ALL,0,-900);ok('the foot reports the distance to the lowest bed'
 // ---- the field, the height and the mesh agree (nwbay's lesson): every top vertex is on topAt
 function topsAgree(B,list){const m=K.mesh(B);let worst=0,n=0;
   for(let i=0;i<m.part.length;i++){if(m.part[i]!==1)continue;const x=m.pos[3*i],y=m.pos[3*i+1],z=m.pos[3*i+2];
-    // a top vertex on the very edge may belong to the bed's own rim: sample a hair inside it, toward the bed's centre
-    const b=B.beds[m.bed[i]],ix=x+(b.cx-x)*.01,iz=z+(b.cz-z)*.01,t=K.at(list,ix,iz);if(!t||t.b!==b)continue;
+    // a top vertex on the very edge may belong to the bed's own rim: sample a hair inside it, toward the top's centre (a
+    // stack leans: the top's centre is the bed's shifted by tx, tz)
+    const b=B.beds[m.bed[i]],ix=x+(b.cx+(b.tx||0)-x)*.01,iz=z+(b.cz+(b.tz||0)-z)*.01,t=K.at(list,ix,iz);if(!t||t.b!==b)continue;
     worst=Math.max(worst,Math.abs(t.top-K.topH(b,ix,iz)));worst=Math.max(worst,Math.abs(y-K.topH(b,x,z)));n++;}
   return {worst,n};}
 const ag=topsAgree(mesa,ALL);ok('the mesh\'s tops lie on the height the field reports ('+ag.n+' vertices)',ag.n>500&&ag.worst<1e-4,false);
 const mBad=K.mesh(mesa);{const i0=mBad.part.indexOf(1);mBad.pos[3*i0+1]+=3;}{let w=0;for(let i=0;i<mBad.part.length;i++)if(mBad.part[i]===1){w=Math.max(w,Math.abs(mBad.pos[3*i+1]-K.topH(mesa.beds[mBad.bed[i]],mBad.pos[3*i],mBad.pos[3*i+2])));}
   ok('a moved vertex would be caught',true,w<1e-4);}
+// ---- a stack is one tapering, leaning column (Pinnacle Rock, 2026-10-19: not a pile of drums): each bed's top outline is
+// the next bed's foot, and the tops still lie on the field
+function seams(B){let worst=0;for(let k=0;k<B.beds.length-1;k++){const b=B.beds[k],c=B.beds[k+1];if(B.kind==='balanced'&&k===B.beds.length-2)continue;
+  const top=K.ring(B,b.y+b.h-1e-7,24),foot=K.ring(B,c.y+1e-7,24);
+  for(let i=0;i<24;i++)worst=Math.max(worst,Math.hypot(top[i][0]-foot[i][0],top[i][1]-foot[i][1])/Math.max(c.rx,c.rz));}return worst;}
+const leaner=K.make({id:'s2',kind:'spire',x:0,z:900,y0:0,seed:11,H:110,r:13,lean:.12});
+ok('a spire\'s beds meet: each top is the next foot (worst '+(seams(leaner)*100).toFixed(1)+'% of a radius)',seams(leaner)<.08&&seams(sp)<.08,false);
+{const stepped=JSON.parse(JSON.stringify(leaner));stepped.beds.forEach(b=>{b.tp=1;b.tx=0;b.tz=0;});
+  ok('a stepped stack (the old drums) would be caught',true,seams(stepped)<.08);}
+const ags=topsAgree(leaner,[leaner]);ok('a leaning spire\'s tops lie on the field ('+ags.n+' vertices)',ags.n>40&&ags.worst<1e-4,false);
+ok('its crest narrows (the shoulders weathered round)',leaner.beds[leaner.beds.length-1].tp<.9,false);
 
 // ---- the mesh faces out: walls away from the axis, tops up, an overhang's underside down
 function shares(B){const m=K.mesh(B),P=m.pos,I=m.idx;let wall=0,wallOut=0,top=0,up=0,und=0,down=0;

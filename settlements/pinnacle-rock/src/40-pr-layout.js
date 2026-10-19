@@ -39,13 +39,15 @@ const PR = (function () {
     ['sw', 'lookout', null, -262, 420, .85, 24, 46], ['se', 'lookout', null, 262, 420, -.85, 24, 44]];
   const FINS = FIN_AT.map((f, i) => ({ id: 'fin-' + f[0], group: f[1], wing: f[2], a: Math.atan2(f[4], f[3]), x: f[3], z: f[4], rot: f[5], L: f[6], w: 7, H: f[7],
     seed: 2200 + i, inset: f[6] * .25 + 22 }));
-  // the Garden: the diagram's thirteen, its radii (the plan's blobs) taken as the foot's; the four the diagram ringed are
-  // the tallest and carry roost rings
+  // the Garden: the diagram's thirteen. Its pinnacles stand tallest at the middle (the owner, 2026-10-19: taller pinnacles
+  // in the centre of the rock): 120-160 m within 100 m of the middle, falling away outward; the four the diagram ringed
+  // carry roost rings; the outer ones mixed with balanced rocks and a fin
   const GARDEN = [[-90, -60, 22], [-20, -110, 18], [60, -70, 26], [110, 10, 17], [40, 40, 24], [-60, 30, 20], [-120, 90, 15],
     [10, 120, 21], [90, 110, 16], [-40, 160, 14], [140, -90, 15], [-140, -10, 18], [0, -20, 12]].map((g, i) => {
-    const ring = [0, 2, 4, 7].indexOf(i) >= 0;
-    return { id: 'garden-' + i, x: g[0], z: g[1], r: g[2] * .55, H: ring ? 72 + (i * 7) % 18 : 36 + (i * 13) % 28,
-      kind: ring ? 'spire' : ['spire', 'balanced', 'spire', 'fin', 'balanced'][i % 5], ring, seed: 2300 + i }; });
+    const ring = [0, 2, 4, 7].indexOf(i) >= 0, d = Math.hypot(g[0], g[1]), tall = d < 100;
+    const H = tall ? Math.round(168 - .5 * d + (i * 17) % 14 - 7) : ring ? Math.round(150 - .45 * d) : 40 + (i * 13) % 28;
+    return { id: 'garden-' + i, x: g[0], z: g[1], r: Math.max(g[2] * (tall || ring ? .62 : .55), tall ? 10 : 0), H,
+      kind: tall || ring ? 'spire' : ['spire', 'balanced', 'spire', 'fin', 'balanced'][i % 5], ring, seed: 2300 + i }; });
   const SHRINE_ROCK = { id: 'shrine-rock', x: 160, z: -260, r: 9, H: 30, kind: 'balanced', seed: 2400 };
   // the spurs: lower buttresses against the walls (angle from the middle in degrees, z south; k: the centre's distance
   // as a share of the foot's radius there; r the spur's radius; h its top over y 0). Not on the south nose (90: the

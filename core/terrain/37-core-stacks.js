@@ -13,7 +13,8 @@
 //        mesa/butte: tiers:[{h (the tier's rise), r (radius), e (elongation, 1 round), ry (strike, radians), dx, dz (the
 //                    tier's centre from the body's)}], bed:[lo,hi] (bed thickness, m), lobes (.16: how ragged the outline)
 //        spire/balanced/fin: H (height), r (radius at the foot), e (fin: 3..6), ry (strike), lean (radians), taper (.45)
-//        -> a record {id, kind, x, z, y0, seed, beds:[{k, y, h, cx, cz, rx, rz, ry, ch (chamfer), nt (notch), lob, ns, tier}],
+//        -> a record {id, kind, x, z, y0, seed, beds:[{k, y, h, cx, cz, rx, rz, ry, ch (chamfer), nt (notch), lob, ns, tier,
+//           tp, tx, tz (a stack's taper and lean up the bed, run on into the next: one column, not a pile of drums)}],
 //           top, R (bounding radius about x,z)}
 //   KSTACKS.footR(b, ang)      the bed's footprint radius at an angle about its own centre (the one footprint function)
 //   KSTACKS.topH(b, x, z)      the bed's top surface at x,z (flat, a little rough: the one top function)
@@ -54,7 +55,14 @@
 
   // ---------------------------------------------------------------- the bodies
   var KINDS={mesa:1,butte:1,spire:1,fin:1,balanced:1};
-  function bed(k,y,h,cx,cz,rx,rz,ry,ch,nt,lob,ns,tier){return {k:k,y:y,h:h,cx:cx,cz:cz,rx:rx,rz:rz,ry:ry,ch:ch,nt:nt,lob:lob,ns:ns>>>0,tier:tier};}
+  // tp: the bed's radius at its top over its foot's, tx/tz: its centre's shift up the bed (a stack's taper and lean, run
+  // on into the bed above, so a spire is one tapering, leaning column with its partings drawn as lines, not a pile of
+  // drums); 1, 0, 0 for a mesa's or a butte's beds (their walls stand straight)
+  function bed(k,y,h,cx,cz,rx,rz,ry,ch,nt,lob,ns,tier){return {k:k,y:y,h:h,cx:cx,cz:cz,rx:rx,rz:rz,ry:ry,ch:ch,nt:nt,lob:lob,ns:ns>>>0,tier:tier,tp:1,tx:0,tz:0};}
+  // a bed's outline at height share u (0 its foot, 1 its top): its centre and its radius factor (the footprint function
+  // footR times this) there
+  function cAt(b,u){return [b.cx+(b.tx||0)*u,b.cz+(b.tz||0)*u];}
+  function tAt(b,u){return 1+((b.tp==null?1:b.tp)-1)*u;}
   function make(o){
     if(!o||!KINDS[o.kind]) throw new Error('KSTACKS.make: kind must be mesa, butte, spire, fin or balanced');
     if(o.id==null) throw new Error('KSTACKS.make: a body needs an id');
@@ -81,6 +89,11 @@
         if(cap&&o.kind==='balanced'){rr=r0*r.range(.95,1.25);hh=Math.max(hh,rr*r.range(.7,1.1));}
         var rm=Math.max(rr*Math.sqrt(e2),rr/Math.sqrt(e2)),fine=i===neck||(cap&&o.kind==='balanced');   // metres again: a stack's partings are fine, a neck's deep
         beds.push(bed(i,yy,hh,ccx,ccz,rr*Math.sqrt(e2),rr/Math.sqrt(e2),ry2+r.range(-.02,.02),(fine?r.range(.6,1.2):r.range(.15,.4))/rm,(fine?r.range(.5,1):r.range(.1,.35))/rm,lobS,KR.hash(seed,0,9),0));yy+=hh;}   // one outline up the stack (one noise seed, one tier): its beds differ in the fret only
+      // the taper and the lean run on: each bed's top meets the next bed's foot (a balanced rock's neck keeps its own width
+      // under the cap); the crest narrows (its shoulders weathered round)
+      for(i=0;i<n;i++){var b0=beds[i],b1=beds[i+1];
+        if(b1&&!(o.kind==='balanced'&&i===n-2)){b0.tp=Math.min(b1.rx/b0.rx,1.15);b0.tx=b1.cx-b0.cx;b0.tz=b1.cz-b0.cz;}
+        else if(!b1)b0.tp=o.kind==='balanced'?.9:.8;}
     }
     var R=0;beds.forEach(function(b){var m=Math.max(b.rx,b.rz)*(1+2.5*b.lob)+Math.hypot(b.cx-x,b.cz-z);if(m>R)R=m;});
     var tp=beds[beds.length-1];
@@ -89,9 +102,11 @@
 
   // ---------------------------------------------------------------- queries
   function inBed(b,x,z,shrink){var dx=x-b.cx,dz=z-b.cz,dist=Math.hypot(dx,dz),R=footR(b,Math.atan2(dz,dx))*shrink;return dist-R;}
+  // the same at the bed's top (its taper and lean): where its top surface is
+  function inTop(b,x,z,shrink){var c=cAt(b,1),dx=x-c[0],dz=z-c[1];return Math.hypot(dx,dz)-footR(b,Math.atan2(dz,dx))*tAt(b,1)*shrink;}
   function at(list,x,z){var best=null;
     for(var i=0;i<list.length;i++){var B=list[i];if(Math.abs(x-B.x)>B.R||Math.abs(z-B.z)>B.R)continue;
-      for(var k=B.beds.length-1;k>=0;k--){var b=B.beds[k],d=inBed(b,x,z,1-b.ch);if(d<0){var t=topH(b,x,z);if(!best||t>best.top)best={S:B,b:b,top:t,d:d};break;}}}
+      for(var k=B.beds.length-1;k>=0;k--){var b=B.beds[k],d=inTop(b,x,z,1-b.ch);if(d<0){var t=topH(b,x,z);if(!best||t>best.top)best={S:B,b:b,top:t,d:d};break;}}}
     return best;}
   function topAt(list,x,z){var a=at(list,x,z);return a?a.top:-Infinity;}
   function foot(list,x,z){var best=null;
@@ -102,8 +117,8 @@
   function ledge(list,x,z){var a=at(list,x,z);if(!a)return null;var B=a.S,k=a.b.k;if(k>=B.beds.length-1)return null;
     var up=B.beds[k+1],dUp=inBed(up,x,z,1-up.nt);if(dUp<=0)return null;return {S:B,b:a.b,w:-a.d,out:dUp};}
   function ring(B,y,n){n=n||48;var b=null;for(var k=0;k<B.beds.length;k++){var q=B.beds[k];if(y>=q.y&&y<=q.y+q.h){b=q;break;}}
-    if(!b)return null;var u=(y-b.y)/b.h,f=prof(b,u),out=[];
-    for(var i=0;i<n;i++){var a=i/n*TAU,R=footR(b,a)*f;out.push([b.cx+Math.cos(a)*R,b.cz+Math.sin(a)*R]);}return out;}
+    if(!b)return null;var u=(y-b.y)/b.h,f=prof(b,u)*tAt(b,u),c=cAt(b,u),out=[];
+    for(var i=0;i<n;i++){var a=i/n*TAU,R=footR(b,a)*f;out.push([c[0]+Math.cos(a)*R,c[1]+Math.sin(a)*R]);}return out;}
 
   // ---------------------------------------------------------------- the mesh
   // Rows of `seg` vertices round a bed (the angle runs clockwise seen from above, rows rising or closing in, so the quads (a, a+1, b) are CCW from
@@ -116,16 +131,16 @@
     for(var k=0;k<B.beds.length;k++){var b=B.beds[k],per=TAU*Math.max(b.rx,b.rz)*(1+b.lob),seg=Math.max(16,Math.min(160,Math.round(per/step)));
       var ang=function(s){return -s/seg*TAU;};                                        // clockwise from above
       var arc=[0];for(var s=1;s<=seg;s++){var a0=ang(s-1),a1=ang(s),r0=footR(b,a0),r1=footR(b,a1);arc.push(arc[s-1]+Math.hypot(Math.cos(a1)*r1-Math.cos(a0)*r0,Math.sin(a1)*r1-Math.sin(a0)*r0));}
-      var us=[0,.06,.2,.5,.78,.9,1],wall=us.map(function(u){return function(s){var a=ang(s),R=footR(b,a)*prof(b,u),y=b.y+u*b.h;
-        return [b.cx+Math.cos(a)*R,y,b.cz+Math.sin(a)*R,arc[s],y,u<.2?.55+.45*(u/.2):1];};});
-      wall[wall.length-1]=(function(){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch),x=b.cx+Math.cos(a)*R,z=b.cz+Math.sin(a)*R;return [x,topH(b,x,z),z,arc[s],b.y+b.h,1];};})();
+      var us=[0,.06,.2,.5,.78,.9,1],c1=cAt(b,1),t1=tAt(b,1),wall=us.map(function(u){return function(s){var a=ang(s),c=cAt(b,u),R=footR(b,a)*prof(b,u)*tAt(b,u),y=b.y+u*b.h;
+        return [c[0]+Math.cos(a)*R,y,c[1]+Math.sin(a)*R,arc[s],y,u<.2?.55+.45*(u/.2):1];};});
+      wall[wall.length-1]=(function(){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,topH(b,x,z),z,arc[s],b.y+b.h,1];};})();
       grid(wall,seg,0,k,false);
       // the top: rings in from the chamfer's edge to the centre, on topH exactly
-      var tops=[1,.8,.55,.3,.08].map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*rho,x=b.cx+Math.cos(a)*R,z=b.cz+Math.sin(a)*R;return [x,topH(b,x,z),z,x,z,1];};});
+      var tops=[1,.8,.55,.3,.08].map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1*rho,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,topH(b,x,z),z,x,z,1];};});
       grid(tops,seg,1,k,false);
       // an overhang's underside (a balanced cap, a bed wider than the top below it): a disc facing down at its foot
       var below=k>0?B.beds[k-1]:null,over=false;
-      if(below)for(s=0;s<seg&&!over;s+=4){var aa=ang(s);if(footR(b,aa)*(1-b.nt)>footR(below,aa)*(1-below.ch)*1.08)over=true;}
+      if(below)for(s=0;s<seg&&!over;s+=4){var aa=ang(s);if(footR(b,aa)*(1-b.nt)>footR(below,aa)*(1-below.ch)*tAt(below,1)*1.08)over=true;}
       if(over){var und=[1,.6,.25].map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.nt)*rho,x=b.cx+Math.cos(a)*R,z=b.cz+Math.sin(a)*R;return [x,b.y,z,x,z,.35];};});
         grid(und,seg,2,k,true);}
     }

@@ -47,9 +47,12 @@ const HCHK={
   const sec=new Set(F.map(B=>Math.floor(((Math.atan2(B.z,B.x)+TAU)%TAU)/(TAU/8))));
   let crowd=0;F.forEach(A=>{crowd=Math.max(crowd,F.filter(B=>Math.hypot(A.x-B.x,A.z-B.z)<250).length);});
   return{ok:F.length===10&&!bad.length&&sec.size>=5&&crowd<=3,detail:F.length+' fins; '+sec.size+' of 8 sectors; at most '+crowd+' within 250 m'+(bad.length?'; '+bad.join(', '):'')};},
- // the Garden: ten or more spires and balanced rocks on the top's middle, four carrying roost rings
- garden(G){const mid=G.filter(B=>Math.hypot(B.x,B.z)<200&&B.y0>_top-8);
-  return{ok:mid.length>=10&&G.filter(B=>B.ring).length===4,detail:mid.length+' stacks on the middle of the top; '+G.filter(B=>B.ring).length+' tall enough for rings'};},
+ // the Garden: ten or more spires and balanced rocks on the top's middle, four carrying roost rings; its pinnacles tallest
+ // at the centre (the owner, 2026-10-19): those within 100 m of the middle 120 m or more on average, over the outer ones
+ garden(G){const mid=G.filter(B=>Math.hypot(B.x,B.z)<200&&B.y0>_top-8),h=B=>B.top-B.y0,avg=L=>L.length?L.reduce((s,B)=>s+h(B),0)/L.length:0;
+  const inner=mid.filter(B=>Math.hypot(B.x,B.z)<100),outer=mid.filter(B=>Math.hypot(B.x,B.z)>=100),hi=avg(inner),lo=avg(outer);
+  return{ok:mid.length>=10&&G.filter(B=>B.ring).length===4&&hi>=120&&hi>lo+30,detail:mid.length+' stacks on the middle of the top; '+G.filter(B=>B.ring).length+
+   ' tall enough for rings; the centre\'s pinnacles '+hi.toFixed(0)+' m on average, the outer '+lo.toFixed(0)+' m'};},
  // no tree on the top (the town's ground) past its 12 m rim band, except on the Garden's stacks
  noTrees(T){const on=T.filter(t=>{const A=KSTACKS.at([MESA_B],t.x,t.z);if(!A||A.d>-12)return false;const S=KSTACKS.at(ROCK,t.x,t.z);return !S||S.S===MESA_B;});
   return{ok:on.length===0,detail:on.length+' trees on the town\'s ground ('+T.length+' trees on the page)'};},
@@ -81,6 +84,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the fins in one row on the north rim (as first drawn)',HCHK.fins(F.map((B,i)=>Object.assign({},B,{x:-270+i*60,z:-520}))));
  add('a fin over the edge',HCHK.fins(F.map((B,i)=>i?B:Object.assign({},B,{beds:[Object.assign({},B.beds[0],{cx:B.beds[0].cx*1.25,cz:B.beds[0].cz*1.25})]}))));
  add('a mesa 180 m high',HCHK.mesa(Object.assign({},MESA_B,{top:MESA_B.top-70})));
+ add('the Garden all one height (no taller centre)',HCHK.garden(_garden().map(B=>Object.assign({},B,{top:B.y0+60}))));
  add('a tree in the Crown',HCHK.noTrees((NECANYONS.TREES||[]).concat([{x:0,z:-300,y0:_top}])));
  add('a tree in the farms',HCHK.cleared(_forestPts().concat([[-400,800]])));   // in the fields west of the road
  return R;}
