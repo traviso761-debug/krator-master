@@ -334,3 +334,7 @@ catalog culture, nine furnished buildings, doors and panes for the black voids) 
 `worlds/iziz.tex.pylon.js` (1.1 MB); the card's blurb and size in the live index (version 18's index, one entry edited, as
 in `build_gallery.py`). Versions 17 and 18 were published elsewhere and not logged here; 18 carried the P5 page with the
 materials bind and its sidecar. Every other file is as in version 18.
+
+Krator Worlds I–S version 20 (2026-10-19): `worlds/iziz-mechs.html` replaced (1.6 MB, from `main` at af5ac54d: the Mechs
+kit with six more Iziz mechs, seventeen in all: the Clipeus, Lictor, Baiulus, Turris, Speculator and Catulus) and its card's
+blurb in the live index (version 19's index, one entry edited, as in `build_gallery.py`). Every other file is as in version 19.
