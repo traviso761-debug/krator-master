@@ -373,7 +373,7 @@
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "5ed51309bab8"
+  "e04abbe2996e"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
@@ -389,11 +389,11 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "f72944508353"
+  "8ef9b0253f9e"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "e55461ec26c3"
+  "eeb6c057732e"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
@@ -406,6 +406,10 @@
  "77-sim-6-trade.js": [
   "core/simulation",
   "00ea4cdabf57"
+ ],
+ "77-sim-7-lod.js": [
+  "core/simulation",
+  "f90a4ab966ae"
  ],
  "77-sim-7-stocks.js": [
   "core/simulation",

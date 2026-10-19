@@ -302,6 +302,7 @@
         if(L && (L.together || L.away)) continue;                                  /* the group (or the trip) moves it */
       }
       if(!a.present || a.driven) continue;                                         /* a cart: the economy drives it */
+      if(SIM.ABSTRACT && SIM.ABSTRACT[SIM.settlementOf(a)]) continue;               /* a town nobody watches: its books only (77-sim-7-lod.js) */
       if(SIM.WAKE && a.wake!=null && minute<a.wake && a.task){ SIM.skipped++; continue; }   /* nothing it wants can change before then */
       var want=SIM.desire(a, minute), Rr=SIM.R.role[a.role], cyc=Rr.cycle && Rr.cycle[a.activity];
       if(want!==a.wanted || !a.task || (a.task.failed && (minute%15===0))){ SIM.decide(a, minute, t); budget--; made++; }
@@ -355,7 +356,7 @@
     var minute=SIM.minute(), t=SIM.time();
     if(SIM.ECON) SIM.economyJump(minute);
     if(SIM.stocksJump) SIM.stocksJump(minute);
-    SIM.all('actor').forEach(function(a){ a.wake=null; if(!a.present || a.plan || a.driven) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); if(SIM.ITEMS) SIM.itemsJump(a, minute); SIM.decide(a, minute, t);
+    SIM.all('actor').forEach(function(a){ a.wake=null; if(!a.present || a.plan || a.driven) return; if(SIM.ABSTRACT && SIM.ABSTRACT[SIM.settlementOf(a)]) return; a.wanted=null; if(SIM.NEED) SIM.needsJump(a, minute); if(SIM.ITEMS) SIM.itemsJump(a, minute); SIM.decide(a, minute, t);
       if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; if(SIM.NEED) a.ndFrom=minute; } });
     SIM.logEvent('jump', { minute:minute });
   };
