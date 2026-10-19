@@ -8,7 +8,7 @@
 //    plaza's paving, lamp columns and banner poles (BLUEPRINT.md I0: #2, #3, #44);
 //  - the blueprint laid (78q) and drawn (78r), the palace's frustums swapped for shells with doorways;
 //  - the precinct buildings' outsides: the Praetorium and the Hall of Embassies (orange ashlar on a plinth, cream bands at
-//    each floor, deco fins, lit windows, a stepped attic under a verdigris pyramid, standards at the corners) and the three
+//    each floor, deco fins, glazed windows, a stepped attic under a verdigris pyramid, standards at the corners) and the three
 //    services (one storey under a verdigris hip roof); a door portal with a canopy where the layout put an outer door.
 // IZPAL_SITE keeps the layout and the frame for the furnishing (95p-palace-furnish.js).
 MAT.izEsc=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x9a8670,roughness:.97,metalness:0,side:THREE.DoubleSide});   // bound by 88y (cityStrata)
@@ -58,9 +58,15 @@ VERN.def({key:'pal_citadel',name:'The Palace Citadel of Iziz',w:280,d:280,h:140,
    for(const name in KIT.items){const it=KIT.items[name],m0=mark[name]||0;
     KIT.items[name]=it.filter((o,i)=>{if(i<m0)return true;const w=FR.UV(o.p[0],o.p[2]),y=o.p[1]-top;
      if(!boxes.some(b=>Math.abs(w[0]-b[0])<4.7&&Math.abs(w[1]-b[1])<5.4&&y>b[2]-.2&&y<b[2]+15))return true;
-     if(name==='boxW'&&Array.isArray(o.s)&&Math.abs(o.s[0]-3.2)<.01&&Math.abs(o.s[1]-1.75)<.01)return true;   // the flank stair's steps stay
      n++;return false;});}
    IZPAL_SITE.belvedereParts=n;}
+  // the builder's flank stairs (eight 1.75 m blocks from the base tier's roof to the second's: no one could climb them) and
+  // the west end of its garden terrace (a planter, its hedge and a lamp hanging 2 m off the roof's edge: the terrace was
+  // laid for a block 4 m to the east): out; the terrace stairs below take the flanks' place
+  {let n=0;for(const name in KIT.items){const m0=mark[name]||0;KIT.items[name]=KIT.items[name].filter((o,i)=>{if(i<m0)return true;
+    if(name==='boxW'&&Array.isArray(o.s)&&Math.abs(o.s[0]-3.2)<.01&&Math.abs(o.s[1]-1.75)<.01){n++;return false;}
+    const w=FR.UV(o.p[0],o.p[2]),y=o.p[1]-top;if(w[0]>-1.6&&w[0]<6.6&&w[1]>-31&&w[1]<-24.4&&y>27.9&&y<33){n++;return false;}return true;});}
+   IZPAL_SITE.terraceCleared=n;}
   REG.push({name:'Palace — grand entrance',x:P.cx+25*gx,y:top,z:P.cz+25*gz,r:13,h:17,cls:'building',key:'iziz_palace_entrance',tags:{culture:'iziz-old',type:['civic'],wealth:'civic',lit:true,role:'palace entrance',place:'outdoor'}});
   TSTAT.cur='iziz_curtain/0';izCurtainWall(scene,t=>84,P.cx,P.cz,72,14,[g],9,null);
   TSTAT.cur='iziz_statue/0';izStatue(P.cx+46*gx,P.cz+46*gz,14,2,g+Math.PI,top-.3);
@@ -85,12 +91,12 @@ VERN.def({key:'pal_citadel',name:'The Palace Citadel of Iziz',w:280,d:280,h:140,
    // the base tier's roof (h 14): the west strip, the east strip, the front strip either side of the axis, the rear strip
    {u0:-13,u1:-3,v0:-41,v1:-35,y:14,plant:'palms'},{u0:-1,u1:9,v0:-41,v1:-35,y:14,plant:'flowers'},
    {u0:21,u1:25.5,v0:-41.5,v1:-34.5,y:14,plant:'succulents'},
-   {u0:-2,u1:9,v0:39.5,v1:42.5,y:14,plant:'flowers'},{u0:21,u1:44,v0:39.5,v1:42.5,y:14,plant:'flowers'},
+   {u0:-2,u1:9,v0:41.1,v1:43.4,y:14,plant:'flowers'},{u0:25.6,u1:44,v0:41.1,v1:43.4,y:14,plant:'flowers'},
    {u0:-15,u1:-8,v0:-26,v1:-13,y:14,plant:'palms'},{u0:-15,u1:-8,v0:11,v1:24,y:14,plant:'ferns'},
    {u0:54,u1:57.5,v0:-26,v1:-6,y:14,plant:'succulents'},{u0:54,u1:57.5,v0:4,v1:28,y:14,plant:'ferns'},
    // the second tier's roof (h 28): the west strip beside the flank and the rear mass, the narrow east strip
    {u0:10,u1:20,v0:-25,v1:-17.5,y:28,plant:'palms'},{u0:23,u1:33,v0:-25,v1:-17.5,y:28,plant:'ferns'},{u0:36,u1:47,v0:-25,v1:-17.5,y:28,plant:'palms'},
-   {u0:10,u1:47,v0:31.8,v1:33.6,y:28,plant:'flowers'},
+   {u0:10,u1:21.6,v0:31.8,v1:33.6,y:28,plant:'flowers'},{u0:25.2,u1:47,v0:31.8,v1:33.6,y:28,plant:'flowers'},
    // the tops (h 50): the rear mass beside the tower, the east flank, the west flank's narrow top
    {u0:25,u1:33,v0:-11,v1:3,y:50,plant:'palms'},{u0:41.5,u1:45.5,v0:8,v1:26,y:50,plant:'succulents'},{u0:10.5,u1:19,v0:11.5,v1:27.5,y:50,plant:'ferns'},
    {u0:10.5,u1:20,v0:-14,v1:-11.2,y:50,plant:'flowers'},
@@ -103,6 +109,22 @@ VERN.def({key:'pal_citadel',name:'The Palace Citadel of Iziz',w:280,d:280,h:140,
    B('izBoxS',cu,cv,g.y,du-2*k,dv-2*k,.5,vC(0x5a3e28));g.top=g.y+.5;
    REG.push({name:g.name||'Roof garden',x:FR.P(cu,cv)[0],y:top+g.y,z:FR.P(cu,cv)[1],r:Math.hypot(du,dv)/2,h:6,cls:'farm',key:'iziz_palace_'+g.id,
     tags:{culture:'iziz-old',type:['park'],wealth:'civic',role:'roof garden',place:'outdoor'}});});
+  /* ---------------------------------------------------------------- the terrace stairs */
+  // Up each flank from the base tier's roof (h 14.1) to the second tier's (h 28): a straight stair along the second tier's
+  // face, 2.4 m wide, 77 risers of 18 cm on treads of 28 cm in three flights with two landings, a top landing and a bridge
+  // onto the terrace; solid sandstone under marble treads, a marble balustrade with a gilt rail on both sides.
+  TSTAT.cur='pal_stairs/0';
+  {const sl=tC(0xe6bd7e),y0=14.1,y1=28,n=77,r=(y1-y0)/n,uA=-3,uB=24.4,LD=2,tr=(uB-uA-3*LD)/n,flights=[26,26,25];
+   for(const[vIn,vOut,edge]of[[-30.2,-32.6,-26.6],[38.2,40.6,34.6]]){const vc=(vIn+vOut)/2,W2=Math.abs(vOut-vIn),rail=(u0,u1,yb)=>{for(const vr of[vIn,vOut]){const vv=vr+(vr===vIn?-1:1)*Math.sign(vOut-vIn)*-.12;
+      B('palMarbleB',(u0+u1)/2,vv,yb,u1-u0,.2,.95,vC(0xf2ece2));B('palGoldB',(u0+u1)/2,vv,yb+.95,u1-u0+.002,.26,.06,null);}};
+    let u=uA,k=0;
+    flights.forEach((m,fi)=>{for(let i=0;i<m;i++,k++){const t=(k+1)*r;B('boxW',u+tr/2,vc,y0,tr,W2,t,sl);B('palMarbleB',u+tr/2-.015,vc,y0+t,tr+.03,W2+.04,.04,vC(0xf2ece2));rail(u,u+tr,y0+t+.04);u+=tr;}
+     const t=k*r;B('boxW',u+LD/2,vc,y0,LD,W2,t,sl);B('palMarbleB',u+LD/2,vc,y0+t,LD,W2+.04,.04,vC(0xf2ece2));rail(u,u+LD,y0+t+.04);u+=LD;});
+    // the bridge from the top landing onto the terrace, and the top landing's far rail
+    const vb0=Math.min(vIn,edge),vb1=Math.max(vIn,edge);B('boxW',uB-LD/2,(vb0+vb1)/2,y1-.4,LD,vb1-vb0,.4,sl);B('palMarbleB',uB-LD/2,(vb0+vb1)/2,y1,LD,vb1-vb0,.04,vC(0xf2ece2));
+    for(const ue of[uB-LD+.1,uB-.1]){B('palMarbleB',ue,(vb0+vb1)/2,y1+.04,.2,vb1-vb0,.95,vC(0xf2ece2));B('palGoldB',ue,(vb0+vb1)/2,y1+.99,.26,vb1-vb0,.06,null);}
+    const c=FR.P((uA+uB)/2,vc);REG.push({name:'Terrace stair ('+(vIn<0?'west':'east')+')',x:c[0],y:top+y0,z:c[1],r:(uB-uA)/2,h:y1-y0+1,cls:'building',key:'iziz_palace_stair_'+(vIn<0?'w':'e'),
+     tags:{culture:'iziz-old',type:['civic'],wealth:'civic',role:'terrace stair',place:'outdoor'}});}}
   /* ---------------------------------------------------------------- the precinct buildings' outsides */
   // Each by its look: the two great houses orange ashlar with cream bands, deco fins and a stepped attic under a verdigris
   // pyramid; the services one storey under a verdigris hip; the barracks the city's block (white panel bands, a roof upstand,
@@ -111,10 +133,10 @@ VERN.def({key:'pal_citadel',name:'The Palace Citadel of Iziz',w:280,d:280,h:140,
   // outer door is an opening through it with a stepped sill, a canopy, or a covered way to the palace's side door.
   TSTAT.cur='pal_precinct/0';
   const LOOK={
-   ministry:{wall:'izBoxW',wc:vC(0xe2a068),band:'izBoxCap',bc:vC(0xf0d8b0),cap:'izBoxCap',cc:vC(0xe6c08a),fins:true,crown:'attic'},
-   service:{wall:'izBoxW',wc:vC(0xe2a068),band:'izBoxCap',bc:vC(0xf0d8b0),cap:'izBoxCap',cc:vC(0xe6c08a),crown:'hip'},
-   barracks:{wall:'izBoxS',wc:null,band:'izBoxW',bc:null,cap:'izBoxCap',cc:null,crown:'flat'},
-   pavilion:{wall:'boxW',wc:tC(0xd4a05a),band:'boxW',bc:tC(0xe6bd7e),cap:'boxW',cc:tC(0xe6bd7e),crown:'pyr',tall:true}};
+   ministry:{wall:'izBoxW',wc:vC(0xe2a068),band:'izBoxCap',bc:vC(0xf0d8b0),cap:'izBoxCap',cc:vC(0xe6c08a),frame:'palMahogB',fc:null,fins:true,crown:'attic'},
+   service:{wall:'izBoxW',wc:vC(0xe2a068),band:'izBoxCap',bc:vC(0xf0d8b0),cap:'izBoxCap',cc:vC(0xe6c08a),frame:'palMahogB',fc:null,crown:'hip'},
+   barracks:{wall:'izBoxS',wc:null,band:'izBoxW',bc:null,cap:'izBoxCap',cc:null,frame:'palAncB',fc:vC(0xf0f0ec),crown:'flat'},
+   pavilion:{wall:'boxW',wc:tC(0xd4a05a),band:'boxW',bc:tC(0xe6bd7e),cap:'boxW',cc:tC(0xe6bd7e),frame:'palBronzeB',fc:null,crown:'pyr'}};
   const PW=IZPAL.PWALL;
   L.buildings.forEach(Bd=>{if(!Bd.rect)return;const q=Bd.rect,K=LOOK[Bd.look]||LOOK.ministry,n=Bd.storeys.length,sh=Bd.storeys[0].h,y0=Bd.y0||0,H=n*sh,
     cu=(q.u0+q.u1)/2,cv=(q.v0+q.v1)/2,du=q.u1-q.u0,dv=q.v1-q.v0,yb=y0-.75;
@@ -122,26 +144,31 @@ VERN.def({key:'pal_citadel',name:'The Palace Citadel of Iziz',w:280,d:280,h:140,
    // the plinth ring: from 0.6 outside the rect to the wall's middle (the floor's cells reach under the wall), its top at the floor
    for(const[a0,a1,b0,b1]of[[q.u0-.6,q.u0+.3,q.v0-.6,q.v1+.6],[q.u1-.3,q.u1+.6,q.v0-.6,q.v1+.6],[q.u0+.3,q.u1-.3,q.v0-.6,q.v0+.3],[q.u0+.3,q.u1-.3,q.v1-.3,q.v1+.6]])
     B('izBoxCap',(a0+a1)/2,(b0+b1)/2,yb,a1-a0,b1-b0,y0-yb,vC(0xe6c08a));
-   // a side: line (the rect's edge), the stretch t0..t1 the wall runs (the 'v' sides between the 'u' sides' ends), out
-   const side=(dir,line,t0,t1,out,f0,f1)=>{const env=line-out*PW,gs=doors.filter(d=>d.dir===dir&&Math.abs(d.line-env)<.01).sort((a,b)=>a.t0-b.t0);
-    const Wl=(m,len,y,h,item,c,off,th)=>{if(dir==='u')B(item,line+off,m,y,th,len,h,c);else B(item,m,line+off,y,len,th,h,c);};
-    let a=t0;const segs=[];
-    gs.forEach(d=>{segs.push([a,d.t0]);const L2=d.t1-d.t0,m=(d.t0+d.t1)/2;
-     Wl(m,L2,y0+d.h,H-d.h,K.wall,K.wc,-out*PW/2,PW);                                         // the wall over the opening
-     Wl(m,L2+1.6,yb,y0-.07-yb,'izBoxS',vC(0xe6c08a),out*1.1,2.2);                              // the step, under the floor's level
-     if(d.link){// a covered way to the palace's side door: a slab on gilt-edged beams, 2.9 m out
-      Wl(m,L2+2.4,y0+d.h+.35,.35,'izBoxCap',vC(0xe6c08a),out*1.45,2.9);for(const sd of[-1,1])Wl(m+sd*(L2/2+1.1),.2,y0+d.h+.2,.2,'palGoldB',null,out*1.45,2.9);}
-     else Wl(m,L2+2.4,y0+d.h+.5,.35,K.cap,K.cc,out*1.4,2.6);                                   // a canopy
-     a=d.t1;});segs.push([a,t1]);
-    for(const[s0,s1]of segs)if(s1-s0>.05)Wl((s0+s1)/2,s1-s0,y0,H,K.wall,K.wc,-out*PW/2,PW);
-    // a band at each floor line (the top one under the roof's cap), fins, lit windows on every storey but by a door
-    for(let k=1;k<=n;k++)Wl((f0+f1)/2,f1-f0+.5,y0+k*sh-(k===n?.42:.35),.35,K.band,k===n?K.cc:K.bc,out*.08,.25);
-    const nw=Math.max(1,Math.floor((t1-t0)/(K.tall?2.6:4.4)));
-    for(let k=0;k<n;k++)for(let i=0;i<nw;i++){const tt=t0+(t1-t0)*(i+.5)/nw;if(k===0&&gs.some(d=>tt>d.t0-1.6&&tt<d.t1+1.6))continue;
-     const wh=K.tall?sh-3:Math.min(2.4,sh-1.9),yy=y0+k*sh+(K.tall?1.2:1.3);
-     Wl(tt,1.8,yy,wh+.3,'vDarkB',null,out*.02,.3);Wl(tt,1.4,yy+.15,wh,'vWinLit',null,out*.1,.2);
-     Wl(tt,1.4,yy+.15,wh,'palPaneB',null,-out*(PW+.2),.04);Wl(tt,1.7,yy+.02,.1,'palMarbleB',vC(0xf2ece2),-out*(PW+.25),.18);
-     if(K.fins&&i<nw-1)Wl(t0+(t1-t0)*(i+1)/nw,.5,y0+.4,H-1.2,'finW',null,out*.12,.3);}};
+   // a side: line (the rect's edge), the stretch t0..t1 the wall runs (the 'v' sides between the 'u' sides' ends), out. Built
+   // storey by storey round its openings (78q precinctWindows; the ground floor's doors): piers between them, the wall under
+   // each sill and over each head; in each window glass in the wall's thickness with glazing bars, a sill and a head outside
+   const side=(dir,line,t0,t1,out,f0,f1)=>{const env=line-out*PW,gs=doors.filter(d=>d.dir===dir&&Math.abs(d.line-env)<.01);
+    const Wl=(m,len,y,h,item,c,off,th)=>{if(len<.02||h<.02)return;if(dir==='u')B(item,line+off,m,y,th,len,h,c);else B(item,m,line+off,y,len,th,h,c);};
+    const wall=(m,len,y,h)=>Wl(m,len,y,h,K.wall,K.wc,-out*PW/2,PW);
+    for(let k=0;k<n;k++){const S=Bd.storeys[k],yb0=y0+k*sh,yb1=yb0+sh;
+     const ops=(S.wins||[]).filter(w=>w.ax===dir&&Math.abs(w.line-env)<.01).map(w=>({t0:w.along-w.w/2,t1:w.along+w.w/2,y0:w.y0,y1:w.y1,win:w}));
+     if(k===0)gs.forEach(d=>ops.push({t0:d.t0,t1:d.t1,y0:yb0,y1:yb0+d.h,door:d}));
+     ops.sort((p,q2)=>p.t0-q2.t0);let a=t0;
+     for(const o of ops){if(o.t0>a)wall((a+o.t0)/2,o.t0-a,yb0,sh);const m=(o.t0+o.t1)/2,L2=o.t1-o.t0;
+      if(o.y0>yb0+.01)wall(m,L2,yb0,o.y0-yb0);if(o.y1<yb1-.01)wall(m,L2,o.y1,yb1-o.y1);a=o.t1;
+      if(o.win){const h=o.y1-o.y0;Wl(m,L2,o.y0+.01,h-.02,'palGlassB',null,-out*.3,.03);
+       Wl(m,.06,o.y0,h,K.frame,K.fc,-out*.3,.1);for(const f of[.38,.7])Wl(m,L2,o.y0+h*f,.06,K.frame,K.fc,-out*.3,.1);
+       Wl(m,L2+.3,o.y0-.1,.12,'izBoxCap',K.cc,out*.12,.3);Wl(m,L2+.4,o.y1-.02,.18,K.cap,K.cc,out*.07,.14);}
+      else{const d=o.door;
+       Wl(m,L2+1.6,yb,y0-.07-yb,'izBoxS',vC(0xe6c08a),out*1.1,2.2);                              // the step, under the floor's level
+       if(d.link){// a covered way to the palace's side door: a slab on gilt-edged beams, 2.9 m out
+        Wl(m,L2+2.4,y0+d.h+.35,.35,'izBoxCap',vC(0xe6c08a),out*1.45,2.9);for(const sd of[-1,1])Wl(m+sd*(L2/2+1.1),.2,y0+d.h+.2,.2,'palGoldB',null,out*1.45,2.9);}
+       else Wl(m,L2+2.4,y0+d.h+.5,.35,K.cap,K.cc,out*1.4,2.6);}}                                   // a canopy
+     if(a<t1)wall((a+t1)/2,t1-a,yb0,sh);}
+    // a band at each floor line (the top one under the roof's cap); deco fins between the top storey's windows
+    for(let k=1;k<=n;k++)Wl((f0+f1)/2,f1-f0+.5,y0+k*sh-(k===n?.42:.37),.35,K.band,k===n?K.cc:K.bc,out*.08,.25);
+    if(K.fins){const ts=(Bd.storeys[n-1].wins||[]).filter(w=>w.ax===dir&&Math.abs(w.line-env)<.01).map(w=>w.along).sort((p,q2)=>p-q2);
+     for(let i=0;i+1<ts.length;i++)Wl((ts[i]+ts[i+1])/2,.5,y0+.4,H-1.2,'finW',null,out*.12,.3);}};
    side('u',q.u0,q.v0,q.v1,-1,q.v0,q.v1);side('u',q.u1,q.v0,q.v1,1,q.v0,q.v1);
    side('v',q.v0,q.u0+PW,q.u1-PW,-1,q.u0,q.u1);side('v',q.v1,q.u0+PW,q.u1-PW,1,q.u0,q.u1);
    // the roof: a slab, then the crown

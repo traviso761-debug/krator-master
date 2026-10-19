@@ -301,6 +301,19 @@ way, and at the back for the staff; the barracks to the court and to the drill y
 service, barracks (the city's block: white bands, a roof upstand, cyan strips) and pavilion (the palace's sandstone under a
 pyramid with a banner).
 
+**Windows and doors** (2026-10-19). 78q gives each storey its window openings (`S.wins`): the palace's at the builder's
+positions along each face (`palaceWindows`: the storey the row's middle falls in, centred on it; the mass whose face it is;
+the liner behind), the precinct buildings' evenly along each side (`precinctWindows`). 78r cuts them through the shells
+(`shellGeo` holes) and the liners' skins (a gap with a sill: the wall, dado and skirting run under it), lines the opening
+with stone, glazes it 0.55 m behind the face with bronze bars, and redraws the builder's surround to fit; the builder's
+own (a dark box, a lit panel, its stones) is taken out in `clear`. A window with no single room behind it is blind:
+curtained glass on the face. 78s builds the precinct walls storey by storey round the openings. Every door has leaves
+(bronze, mahogany or oak by its finish; the delivered door sheet on the state doors and the great door's two), standing
+open into the room; outer doors stand closed in the wall.
+
+**The terrace stairs** (78s): up each flank from the base tier's roof to the second's, straight along the second tier's
+face (77 risers of 18 cm, three flights, a top landing and a bridge onto the terrace), in place of the builder's blocks.
+
 **The roof gardens** (`IZPAL_SITE.gardens`, 78s): raised beds with marble kerbs on the three terraces, clear of the
 builder's hedges, lamps, pavilions and flank stairs and of every edge, and three beds in the Orangery. 95p plants them from
 the catalog's plants (`krator-master-plants.js`, bundled as pieces: `furniture_bundle.bundle(..., plants=True)`, build.py

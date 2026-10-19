@@ -37,6 +37,9 @@ saying what fixed it.
       - **Not walkable.** The walk (F) stands on `terrainH` (the mesa), so the upper storeys, the Depot and the Core are seen,
         not walked; there is no walk graph through the rooms and stairs yet (SKILL.md 5j, "Interiors belong on the
         pedestrian graph"). No people.
+      - **The terrace stairs** (2026-10-19, the owner: "steep and unclimbable"): the builder's eight 1.75 m blocks up each flank
+        are replaced by straight stairs of 77 risers of 18 cm with landings, balustrades and a bridge onto the second
+        terrace. The builder's garden terrace's west end (a planter, a hedge, a lamp) hung off the roof and is gone.
       - **The barracks are laid** (2026-10-19, the owner: "barracks don't have rooms"): on the sheet's rects (I0 #4, #5), axis
         true, so they stand a little off the city's `izBarracks` (turned with the hill's bearing); the drill yards are bare.
       - **Z-fighting** (the owner's report, 2026-10-19): fixed for every pair of box instances the check found (API.md, "No two
@@ -50,8 +53,12 @@ saying what fixed it.
       - **Two sheet rooms cannot fit**: the Great Door's 2 m sliver and the Imperial Guard of the Aula (u 22..24) lie between
         the hall and the rear mass's liner; the great door is drawn as a portal instead. The sheets' Stair of the Hall is
         2.9 m wide inside the flank's liner, as the flank is.
-      - **Windows** are seen from inside as daylight panes on the liners at the builder's window positions, not as openings;
-        the precinct buildings' too.
+      - **Windows and doors are real** (2026-10-19, the owner: "get rid of all dark voids and blank white windows/doors"):
+        openings through the shell and the liner (the precinct buildings' through their outer wall), glazed, with bronze
+        bars; the builder's rows straddled floors, so each window moved to the middle of the storey it falls in, and 20
+        with no room behind them (a void, a stair, a partition) are curtained glass on the face. Every door and doorway has
+        leaves; the outer doors stand closed. The glass is one transparent InstancedMesh: seen through several panes at
+        once its sorting can be off.
       - **The furniture's marble** draws in the catalog's `stone` detail family (rough rock): a `marble` family is a
         catalog-wide change (every build bundling the detail maps), not made here. The court's cloth, veneer and gilding take
         the court sets (brocade, velvet, marquetry, gold leaf: 95i's `courtFinish`, 2026-10-19). The five surfaces the palace had no set for (the coffers, the bronze leaves, the crater map, the legions fresco, the hangar deck) were delivered and wired on 2026-10-19 (`core/materials/PROMPTS-NEEDED.md`, "Delivered 2026-10-19, the Iziz palace").

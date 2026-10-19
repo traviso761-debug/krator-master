@@ -35,6 +35,11 @@ MAT.palDeck=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.6,metalnes
 MAT.palFresco=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.9,metalness:0});
 MAT.palDoorLeaf=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.42,metalness:.5});
 MAT.palMap=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.32,metalness:0});
+// the windows (2026-10-19, the owner: "actual doors and windows"): clear glass the rooms are seen through, a curtained glass
+// for the blind ones (no room behind: a void, a stair, a partition), bronze glazing bars
+MAT.palGlass=new THREE.MeshStandardMaterial({color:0xb8d0dc,roughness:.04,metalness:.2,transparent:true,opacity:.26,depthWrite:false});
+MAT.palGlassD=new THREE.MeshStandardMaterial({color:0xe2c690,roughness:.35,metalness:.05,emissive:0x5a3c14});   // a blind window: lit curtains behind the glass
+MAT.palBronze=new THREE.MeshStandardMaterial({color:0x6e4e26,roughness:.38,metalness:.7});
 MAT.palWater=new THREE.MeshStandardMaterial({color:vC(0x2f8f8a),roughness:.08,metalness:.3,transparent:true,opacity:.82});
 MAT.palPane=new THREE.MeshBasicMaterial({color:vC(0xdce8ef)});     // a window's daylight, seen from inside
 MAT.palLamp=new THREE.MeshBasicMaterial({color:vC(0xffe4b4)});     // an electric light panel, a lit skylight
@@ -43,6 +48,7 @@ kdef('palMarbleB',VBOX,MAT.palMarble);kdef('palStuccoB',VBOX,MAT.palStucco);kdef
 kdef('palGoldB',VBOX,MAT.palGold);kdef('palAncB',VBOX,MAT.palAncient);kdef('palConcB',VBOX,MAT.palConc);kdef('palTileB',VBOX,MAT.palTile);kdef('palMosaicBB',VBOX,MAT.palMosaicB);
 kdef('palSunBannerB',VBOX,MAT.palSunBanner);kdef('palMedalB',VBOX,MAT.palMedal);kdef('palSunrayB',VBOX,MAT.palSunray);kdef('palWaterB',VBOX,MAT.palWater);
 kdef('palCofferB',VBOX,MAT.palCoffer);kdef('palDeckB',VBOX,MAT.palDeck);kdef('palFrescoB',VBOX,MAT.palFresco);kdef('palDoorB',VBOX,MAT.palDoorLeaf);kdef('palMapB',VBOX,MAT.palMap);
+kdef('palGlassB',VBOX,MAT.palGlass);kdef('palGlassDB',VBOX,MAT.palGlassD);kdef('palBronzeB',VBOX,MAT.palBronze);
 kdef('palPaneB',VBOX,MAT.palPane);kdef('palLampB',VBOX,MAT.palLamp);kdef('palGlowB',VBOX,MAT.strip);
 kdef('palColM',new THREE.CylinderGeometry(1,1,1,16).translate(0,.5,0),MAT.palMarble);kdef('palColG',new THREE.CylinderGeometry(1,1,1,16).translate(0,.5,0),MAT.palGold);
 kdef('palColF',new THREE.CylinderGeometry(.9,1,1,16).translate(0,.5,0),MAT.palGold);   // a flared gilt capital or base
@@ -50,7 +56,7 @@ KMAT.bindMat('izpalace',MAT,{});   // the palace's own pack (build.py TARGET_PAC
 const IZPALDRAW=(function(){
  const ST={shells:0,frustums:0,cleared:0,liners:0,walls:0,rails:0,doors:0,floors:0,ceilings:0,steps:0,panes:0,columns:0,portals:0,ms:0};
  const C={cream:vC(0xf3e2c0),orange:vC(0xefc79c),white:vC(0xf2ece2),plaster:vC(0xdcd2c2),teal:vC(0x2f8f8a),stone:vC(0xd8cbb4),conc:vC(0xc8c4bc),
-  anc:vC(0xf0f0ec),deck:vC(0xb4b2ac),dark:vC(0x3a3632),sand:tC(0xd4a05a),sandL:tC(0xe6bd7e),bronze:vC(0x8a6a2a),cyan:CYAN};
+  anc:vC(0xf0f0ec),deck:vC(0xb4b2ac),oak:vC(0x8a6440),dark:vC(0x3a3632),sand:tC(0xd4a05a),sandL:tC(0xe6bd7e),bronze:vC(0x8a6a2a),cyan:CYAN};
  let FR=null,Q=null,QV=null;const CELLW=IZPAL.CELL;
  // a box in the citadel's frame: centre (u, v), base height y (from the mesa top), sizes along u, v and up
  const B=(item,u,v,y,su,sv,sy,c,q)=>{const p=FR.P(u,v);kput(item,[p[0],FR.Y(y)+sy/2,p[1]],q||Q,[sv,sy,su],c||null);};
@@ -77,7 +83,10 @@ const IZPALDRAW=(function(){
  function skin(sty,dir,line,t0,t1,side,y,h,gaps){if(t1-t0<.05)return;const th=.13,off=side*.075;
   // the pieces between the door gaps, and above each gap a lintel piece of the wall
   const segs=[];let a=t0;(gaps||[]).slice().sort((p,q)=>p.t0-q.t0).forEach(g=>{if(g.t0>a)segs.push([a,g.t0]);
-   const top=Math.min(h,g.h);if(top<h-.02)W(sty.wall,dir,line,g.t0,g.t1,off,th,y+top,h-top,sty.wc);a=Math.max(a,g.t1);});if(a<t1)segs.push([a,t1]);
+   const top=Math.min(h,g.h);if(top<h-.02)W(sty.wall,dir,line,g.t0,g.t1,off,th,y+top,h-top,sty.wc);
+   if(g.y0>.02){const b=Math.min(g.y0,h);W(sty.wall,dir,line,g.t0,g.t1,off,th,y,b,sty.wc);if(sty.dado)W(sty.dado,dir,line,g.t0,g.t1,side*.155,.04,y,Math.min(sty.dh,b),sty.dc);
+    if(sty.skirt)W('palStuccoB',dir,line,g.t0,g.t1,side*.155,.04,y,.18,C.dark);}
+   a=Math.max(a,g.t1);});if(a<t1)segs.push([a,t1]);
   for(const[s0,s1]of segs){W(sty.wall,dir,line,s0,s1,off,th,y,h,sty.wc);ST.walls++;
    if(sty.dado)W(sty.dado,dir,line,s0,s1,side*.155,.04,y,sty.dh,sty.dc);
    if(sty.skirt)W('palStuccoB',dir,line,s0,s1,side*.155,.04,y,.18,C.dark);
@@ -129,6 +138,14 @@ const IZPALDRAW=(function(){
   return out;}
  /* ---------------------------------------------------------------- the builder's instances inside the masses */
  function clear(mark,L){const vols=[];
+  // the builder's windows (78-transplant.js izOne: a dark box, a lit panel, two jambs, a lintel, a drip, a sill at each of
+  // IZPAL.windows()): all out; the openings are drawn in their place (palWindow), fitted to the storeys
+  {const W0=IZPAL.windows();for(const name of['boxW','boxD','dot']){const it=KIT.items[name];
+   KIT.items[name]=it.filter((o,i)=>{if(i<mark[name])return true;if(name==='boxW'&&Array.isArray(o.s)&&Math.max(o.s[0],o.s[2])>5)return true;
+    const uv=FR.UV(o.p[0],o.p[2]),y=o.p[1]-FR.F.top;
+    for(const w of W0){const dn=(uv[0]-w.u)*w.nu+(uv[1]-w.v)*w.nv,dt=w.nu?uv[1]-w.v:uv[0]-w.u,dy=y-w.y;
+     if(Math.abs(dt)<=w.w/2+.75&&dn>-.6&&dn<1&&dy>-w.h/2-.6&&dy<w.h/2+1.1){ST.cleared++;return false;}}
+    return true;});}}
   L.buildings.forEach(Bd=>Bd.storeys.forEach(S=>S.env.forEach(e=>{if(e.open)return;vols.push([e.u0+.1,e.u1-.1,e.v0+.1,e.v1-.1,S.y+.05,S.y+S.h]);})));
   // the doorways (the builder's dark boxes in them)
   const ports=[];L.buildings.forEach(Bd=>Bd.storeys.forEach(S=>(S.portals||[]).forEach(P=>{const du=P.b[0]-P.a[0],dv=P.b[1]-P.a[1],n=Math.hypot(du,dv);
@@ -181,7 +198,8 @@ const IZPALDRAW=(function(){
   // floors (their tops at the storey's level: the furniture stands on it)
   sp.forEach(s=>{if(!s.floor||!s.rects)return;const st=sty(s);
    if(s.floor==='landing'){const land=landing(s.rect);s.rects.forEach(r=>{const q=inter(r,land);if(solid(q)){B(st.floor,(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y-.33,q.u1-q.u0,q.v1-q.v0,.33,st.fc);ST.floors++;}});return;}
-   s.rects.forEach(q=>{B(st.floor,(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y-.33,q.u1-q.u0,q.v1-q.v0,.33,st.fc);ST.floors++;});
+   // (a precinct building's floor stops at its envelope: the cells past it lie under the outer wall)
+   s.rects.forEach(q0=>{const q=Bd.rect?inter(q0,S.env[0]):q0;if(!solid(q))return;B(st.floor,(q.u0+q.u1)/2,(q.v0+q.v1)/2,S.y-.33,q.u1-q.u0,q.v1-q.v0,.33,st.fc);ST.floors++;});
    // a sun medallion in the great rooms and the grand spaces' floors
    if(!anc&&s.kind==='map_room'&&s.decor>=3){const q=s.rect,m=Math.min(q.u1-q.u0,q.v1-q.v0)*.78;s.floorMap={u:(q.u0+q.u1)/2,v:(q.v0+q.v1)/2,m};
     B('palMapB',s.floorMap.u,s.floorMap.v,S.y+.004,m,m,.012,null);ST.maps=(ST.maps||0)+1;}
@@ -213,6 +231,7 @@ const IZPALDRAW=(function(){
     const gaps=(S.portals||[]).filter(P=>{const ia=dir==='u'?0:1;return(P.a[ia]-line)*(P.b[ia]-line)<0;}).map(P=>{const ia=dir==='u'?0:1,ib=1-ia,t=(line-P.a[ia])/(P.b[ia]-P.a[ia]),c=P.a[ib]+(P.b[ib]-P.a[ib])*t;
      return{t0:c-P.w/2,t1:c+P.w/2,h:P.h,P};});
     const egaps=[];(S.outer||[]).forEach(w=>{if(w.dir!==dir||Math.abs(w.line-line)>.01)return;w.doors.forEach(d=>egaps.push({t0:d.t0,t1:d.t1,h:d.h}));});
+    (S.wins||[]).forEach(w=>{if(w.blind||w.ax!==dir||Math.abs(w.line-line)>.01)return;egaps.push({t0:w.along-w.w/2,t1:w.along+w.w/2,h:w.y1-S.y,y0:w.y0-S.y});});
     // the stretches: cut at every grid line along the side, merged while the space inside is the same
     const g=S.grid,base=dir==='u'?g.V0:g.U0,ts=[t0];for(let k=Math.ceil((t0-base)/g.cell+1e-6);base+k*g.cell<t1-1e-6;k++)ts.push(base+k*g.cell);ts.push(t1);
     const stretch=[];ts.slice(0,-1).forEach((a,i)=>{const bb=ts[i+1],tt=(a+bb)/2,p=dir==='u'?[line-out*.3,tt]:[tt,line-out*.3],s=S.spaceAt(p[0],p[1]);
@@ -220,8 +239,8 @@ const IZPALDRAW=(function(){
     stretch.forEach(([s0,s1,s])=>{if(!s)return;let s2=s;
      // a void's side is the room's below that rises through it (its style), from this floor to its ceiling
      if(s.void){if(anc||!below)return;const c=dir==='u'?[line-out*.3,(s0+s1)/2]:[(s0+s1)/2,line-out*.3];s2=below.spaceAt(c[0],c[1]);if(!s2||s2.void)return;}
-     const g2=gaps.concat(egaps).filter(g=>g.t1>s0&&g.t0<s1).map(g=>({t0:Math.max(s0,g.t0),t1:Math.min(s1,g.t1),h:g.h}));
-     hRuns(s.void?{}:s,dir,line,s0,s1,-out,S.h+.4).forEach(([a,b2,h])=>skin(sty(s2),dir,line,a,b2,-out,S.y,h,g2.filter(g=>g.t1>a&&g.t0<b2).map(g=>({t0:Math.max(a,g.t0),t1:Math.min(b2,g.t1),h:g.h}))));});
+     const g2=gaps.concat(egaps).filter(g=>g.t1>s0&&g.t0<s1).map(g=>({t0:Math.max(s0,g.t0),t1:Math.min(s1,g.t1),h:g.h,y0:g.y0}));
+     hRuns(s.void?{}:s,dir,line,s0,s1,-out,S.h+.4).forEach(([a,b2,h])=>skin(sty(s2),dir,line,a,b2,-out,S.y,h,g2.filter(g=>g.t1>a&&g.t0<b2).map(g=>({t0:Math.max(a,g.t0),t1:Math.min(b2,g.t1),h:g.h,y0:g.y0}))));});
     gaps.forEach(g=>{portalFrame(dir,line,g,S,sty(S.spaceAt(dir==='u'?line-out*.6:(g.t0+g.t1)/2,dir==='u'?(g.t0+g.t1)/2:line-out*.6)),out,e);});}});
   // partitions, balustrades, doors
   S.walls.forEach(w=>{const A=sp[w.a],Bs=sp[w.b];
@@ -257,11 +276,15 @@ const IZPALDRAW=(function(){
   W(stA.frame,dir,line,d.t0-.02,d.t0+.04,ro,rd,y,h,stA.frameC);W(stA.frame,dir,line,d.t1-.04,d.t1+.02,ro,rd,y,h,stA.frameC);
   if(ext)W(stA.frame,dir,line,d.t0+.04,d.t1-.04,ro,rd,y+h-.04,.06,stA.frameC);
   // the leaves, open into the room: bronze in the state rooms, mahogany in the rich ones, none below
-  const st=stB&&stB.d>stA.d?stB:stA;if(st.d<3&&!st.anc)return;const leaf=st.anc?'palAncB':st.d>=4?'palDoorB':'palMahogB',lw=w/2-.02;
-  if(!KIT.items[leaf])return;
+  const st=stB&&stB.d>stA.d?stB:stA,leaf=st.anc?'palAncB':st.d>=4?'palDoorB':'palMahogB',lc=st.anc?C.anc:st.d<3?C.oak:null,lw=w/2-.02;
+  // an outer door stands closed (two leaves in the wall's thickness, a bronze rail across them); the covered ways' stay open
+  if(ext&&!d.link){const n=-into*IZPAL.PWALL*.45;for(const sd of[-1,1]){const m=t+sd*(w/4);
+    if(dir==='u'){B(leaf,line+n,m,y,.08,w/2-.03,h-.04,lc);B('palBronzeB',line+n-into*.06,m,y+h*.45,.04,w/2-.25,.08,null);}
+    else{B(leaf,m,line+n,y,w/2-.03,.08,h-.04,lc);B('palBronzeB',m,line+n-into*.06,y+h*.45,w/2-.25,.04,.08,null);}}
+   ST.leaves=(ST.leaves||0)+2;return;}
   for(const s of[-1,1]){const hinge=s<0?d.t0:d.t1,mid=hinge-s*.1;
    // a leaf standing open at right angles to the wall, against the jamb, on the room's side
-   if(dir==='u')B(leaf,line+into*(lw/2+.2),mid,y,lw,.08,h-.05,st.anc?C.anc:null);else B(leaf,mid,line+into*(lw/2+.2),y,.08,lw,h-.05,st.anc?C.anc:null);
+   if(dir==='u')B(leaf,line+into*(lw/2+.2),mid,y,lw,.08,h-.05,lc);else B(leaf,mid,line+into*(lw/2+.2),y,.08,lw,h-.05,lc);
 }}
  function portalFrame(dir,line,g,S,st,out,e){ST.portals++;const y=S.y,h=Math.min(g.h,S.h+14);
   // the reveal back to the mass's face (the batter makes it deeper at the floor) and a stepped surround on the inside
@@ -272,9 +295,13 @@ const IZPALDRAW=(function(){
   W(st.d>=3?'palGoldB':st.frame,dir,line,g.t0-.5,g.t0-.25,-out*.2,.16,y,h+.6,st.d>=3?null:st.frameC);
   W(st.d>=3?'palGoldB':st.frame,dir,line,g.t1+.25,g.t1+.5,-out*.2,.16,y,h+.6,st.d>=3?null:st.frameC);
   W(st.d>=3?'palGoldB':st.frame,dir,line,g.t0-.5,g.t1+.5,-out*.2,.16,y+h,.6,st.d>=3?null:st.frameC);
-  // the great door: two leaves of cast bronze (the delivered sheet), open at right angles into the Aula
-  if(g.P&&/great door/.test(g.P.name)){const lw=(g.t1-g.t0)/2-.05,into=-out;ST.leaves=(ST.leaves||0)+2;
-   for(const[hinge,sd]of[[g.t0,1],[g.t1,-1]]){const m=hinge+sd*.12;if(dir==='u')B('palDoorB',line+into*(lw/2+.3),m,y,lw,.12,h-.05,null);else B('palDoorB',m,line+into*(lw/2+.3),y,.12,lw,h-.05,null);}}}
+  // the leaves, open at right angles into the room (once a portal: it may cross two liners): the great door's cast bronze
+  // (the delivered sheet), the others by their finish; none at the grand entrance (the builder's bronze leaves stand outside
+  // it), a stair's landing or the Mech Gate (its blast doors are 78s's)
+  const nm=g.P&&g.P.name||'';S.leafed=S.leafed||{};
+  if(nm&&!/grand entrance|landing|Mech Gate/.test(nm)&&!S.leafed[nm]){S.leafed[nm]=1;const lw=(g.t1-g.t0)/2-.05,into=-out,big=/great door/.test(nm);
+   const leaf=st.anc?'palAncB':big||st.d>=4?'palDoorB':'palMahogB',lc=st.anc?C.anc:st.d<3?C.oak:null,th=big?.12:.08;ST.leaves=(ST.leaves||0)+2;
+   for(const[hinge,sd]of[[g.t0,1],[g.t1,-1]]){const m=hinge+sd*(th/2+.06);if(dir==='u')B(leaf,line+into*(lw/2+.3),m,y,lw,th,h-.05,lc);else B(leaf,m,line+into*(lw/2+.3),y,th,lw,h-.05,lc);}}}
  /* ---------------------------------------------------------------- stairs */
  // two flights side by side along the shaft's long axis with a half landing at the far end; a straight flight when the
  // shaft is too narrow for two. y0 -> y1; the flights leave and arrive at the entry end (landing())
@@ -334,19 +361,34 @@ const IZPALDRAW=(function(){
    if(s.kind==='throne'){const back=q.u1,cv=s.axisV!=null?s.axisV:(q.v0+q.v1)/2;for(let k=0;k<3;k++){const d=5.2-k*1.2,w=Math.min(2*Math.min(cv-q.v0,q.v1-cv)-1,14-k*2.4);
      B('palMarbleB',back-d/2-.2,cv,S.y+k*.3,d,w,.3,C.white);B('palGoldB',back-d-.2,cv,S.y+k*.3+.26,.08,w,.06,null);}
     s.dais={u:back-2.2,v:cv,y:S.y+.9};}});}
- /* ---------------------------------------------------------------- windows: the builder's, seen from inside */
- function panes(Bd,S,wins,anc){if(anc)return;
-  wins.forEach(w=>{if(w.y-w.h/2<S.y+.3||w.y+w.h/2>S.y+S.h+.2)return;
-   // the liner line on this face: the envelope whose side the window looks through
-   for(const e of S.env){if(e.open)continue;const ax=w.nu?'u':'v',sg=w.nu||w.nv,line=ax==='u'?(sg<0?e.u0:e.u1):(sg<0?e.v0:e.v1),along=ax==='u'?w.v:w.u;
-    const lo=ax==='u'?e.v0:e.u0,hi=ax==='u'?e.v1:e.u1;if(along-w.w/2<lo+.3||along+w.w/2>hi-.3)continue;
-    const face=ax==='u'?w.u:w.v;if(Math.abs(face-line)>6)continue;
-    const inside=ax==='u'?[line-sg*.6,along]:[along,line-sg*.6];const s=S.spaceAt(inside[0],inside[1]);if(!s||s.void)continue;
-    const off=-sg*.2,st=style(s,false);
-    W('palPaneB',ax,line,along-w.w/2,along+w.w/2,off,.03,w.y-w.h/2,w.h,null);
-    W(st.frame,ax,line,along-w.w/2-.18,along-w.w/2,off*1.35,.12,w.y-w.h/2-.1,w.h+.2,st.frameC);W(st.frame,ax,line,along+w.w/2,along+w.w/2+.18,off*1.35,.12,w.y-w.h/2-.1,w.h+.2,st.frameC);
-    W(st.frame,ax,line,along-w.w/2-.18,along+w.w/2+.18,off*1.35,.12,w.y+w.h/2+.1,.2,st.frameC);W('palMarbleB',ax,line,along-w.w/2-.25,along+w.w/2+.25,off*1.6,.3,w.y-w.h/2-.12,.12,C.white);
-    ST.panes++;s.windows=(s.windows||[]).concat([{ax,line,along,w:w.w,y:w.y,h:w.h,sg}]);break;}});}
+ /* ---------------------------------------------------------------- windows: openings through the shell and the liner */
+ // For a palace window (78q palaceWindows): n is measured outward from the face at the opening's middle (the battered face
+ // leans back above it, forward below); the opening runs from the room (just proud of the liner's skin) out through the
+ // shell, lined with stone; the glass stands 0.55 m behind the face with bronze glazing bars, the surround (jambs, lintel and
+ // drip, sill) is the builder's design redrawn to the opening. A blind window (no room behind) is curtained glass on the face.
+ function palWindow(w){const WN=(item,t0,t1,n0,n1,y,h,c)=>{const n=(n0+n1)/2;if(w.ax==='u')B(item,w.face+w.sg*n,(t0+t1)/2,y,Math.abs(n1-n0),t1-t0,h,c);
+   else B(item,(t0+t1)/2,w.face+w.sg*n,y,t1-t0,Math.abs(n1-n0),h,c);};
+  const a=w.along,hw=w.w/2,h=w.y1-w.y0,sl=C.sandL,dr=tC(0xd4a05a,.9);
+  if(!w.blind){const nIn=w.sg*(w.line-w.face)-.16;
+   WN('palMarbleB',a-hw-.1,a-hw+.02,nIn,.45,w.y0,h,C.white);WN('palMarbleB',a+hw-.02,a+hw+.1,nIn,.45,w.y0,h,C.white);
+   WN('palMarbleB',a-hw-.1,a+hw+.1,nIn,.45,w.y1-.02,.14,C.white);WN('palMarbleB',a-hw-.1,a+hw+.1,nIn,.45,w.y0-.12,.14,C.white);
+   WN('palGlassB',a-hw,a+hw,-.565,-.535,w.y0+.01,h-.02,null);}
+  else WN('palGlassDB',a-hw,a+hw,.4,.46,w.y0+.01,h-.02,null);
+  // the glazing bars: two uprights on the wide windows (one on the narrow), two transoms
+  const gn=w.blind?.43:-.55,ups=w.w>=2.6?[-w.w/6,w.w/6]:[0];
+  ups.forEach(o=>WN('palBronzeB',a+o-.035,a+o+.035,gn-.06,gn+.06,w.y0,h,null));
+  for(const f of[1/3,2/3])WN('palBronzeB',a-hw,a+hw,gn-.06,gn+.06,w.y0+h*f-.035,.07,null);
+  WN('palBronzeB',a-hw,a+hw,gn-.07,gn+.07,w.y0,.05,null);WN('palBronzeB',a-hw,a+hw,gn-.07,gn+.07,w.y1-.05,.05,null);
+  // the surround (78-transplant.js izOne's, fitted to the opening)
+  WN('boxW',a-hw-.6,a-hw,0,.7,w.y0-.2,h+.4,sl);WN('boxW',a+hw,a+hw+.6,0,.7,w.y0-.2,h+.4,sl);
+  WN('boxW',a-hw-.7,a+hw+.7,0,.8,w.y1,.7,sl);WN('boxW',a-hw-.3,a+hw+.3,.3,.8,w.y1+.725,.25,dr);WN('boxW',a-hw-.5,a+hw+.5,0,.9,w.y0-.5,.5,sl);
+  ST.panes++;}
+ // the openings through a storey's liner need a room behind them, the same room all across; else the window is blind
+ function placeWindows(Bd){(Bd.storeys||[]).forEach(S=>{if(!S.wins)return;S.wins=S.wins.filter(w=>{
+   const p=(t,n)=>w.ax==='u'?[w.line-w.sg*n,t]:[t,w.line-w.sg*n],A=S.spaceAt(...p(w.along-w.w/2+.1,.3)),Bs=S.spaceAt(...p(w.along+w.w/2-.1,.3));
+   const crossed=(S.portals||[]).some(P=>{const c=[(P.a[0]+P.b[0])/2,(P.a[1]+P.b[1])/2];return Math.abs((w.ax==='u'?c[1]:c[0])-w.along)<w.w/2+P.w/2+.3&&Math.abs((w.ax==='u'?c[0]:c[1])-w.line)<4;});
+   if(!A||A!==Bs||A.void||A.stair||crossed){w.blind=true;return false;}
+   A.windows=(A.windows||[]).concat([{ax:w.ax,line:w.line,along:w.along,w:w.w,y:(w.y0+w.y1)/2,h:w.y1-w.y0,sg:w.sg}]);return true;});});}
  /* ---------------------------------------------------------------- the whole */
  function draw(L,frame,o){const t0=performance.now();FR=frame;Q=qEuler(0,FR.ry,0);o=o||{};
   // the storeys' cell lookups (spaceAt in the citadel's frame)
@@ -356,15 +398,16 @@ const IZPALDRAW=(function(){
    S.spaceAt=(u,v)=>{const i=Math.floor((u-g.U0)/g.cell),j=Math.floor((v-g.V0)/g.cell);if(i<0||j<0||i>=g.NU||j>=g.NV)return null;const k=cell[i*g.NV+j];return k>=0?S.spaces[k]:null;};}));
   if(o.mark)clear(o.mark,L);
   // the shells, with the portals' holes
-  const pal=L.buildings.find(b=>b.id==='palace');
+  const pal=L.buildings.find(b=>b.id==='palace');L.buildings.forEach(placeWindows);
   for(const key of['t1','t2','rear','west','east','lintel','tower']){const M=IZPAL.MASS[key],holes=[];
    pal.storeys.forEach(S=>(S.portals||[]).forEach(P=>portalHoles(M,P,S.y).forEach(h=>holes.push(h))));
+   (pal.wins||[]).forEach(w=>{if(!w.blind&&w.mass===key)holes.push({ax:w.ax,sgn:w.sg,s0:w.along-w.w/2,s1:w.along+w.w/2,y0:w.y0,y1:w.y1});});
    kdef('palShell_'+key,shellGeo(M,holes),MAT.white);kput('palShell_'+key,[0,0,0],null,[1,1,1],C.sand);ST.shells++;}
   // the Depot Stair arrives in the palace from the shaft below: its ground-storey floor is only the landing
   const g1=pal.storeys.find(S=>S.id==='G1'),dst=g1&&g1.spaces.find(s=>s.stair==='depot');if(dst)dst.floor='landing';
-  const wins=IZPAL.windows();
   L.buildings.forEach(Bd=>{const anc=!!Bd.ancient;
-   Bd.storeys.forEach((S,i)=>{const upper=Bd.storeys.slice(i+1);storey(Bd,S,Bd.storeys[i+1],upper,anc,Bd.storeys[i-1]||null);grandRooms(S,anc);if(Bd.id==='palace')panes(Bd,S,wins,anc);});});
+   Bd.storeys.forEach((S,i)=>{const upper=Bd.storeys.slice(i+1);storey(Bd,S,Bd.storeys[i+1],upper,anc,Bd.storeys[i-1]||null);grandRooms(S,anc);});});
+  (pal.wins||[]).forEach(palWindow);
   shafts(L,dst);
   ST.ms=Math.round(performance.now()-t0);return ST;}
  // the two shafts through the rock between the Depot's ceiling and the palace's ground storey: the Well of the Machine (the

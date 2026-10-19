@@ -238,7 +238,7 @@ const IZPAL=(function(){
   // the palace block and its tower
   {const B={id:'palace',name:'The Palace of the House',decor:3,storeys:[]};
    blockStoreys().forEach(S=>{S.decor=S.id[0]==='T'?3:S.id==='G1'?4:3;B.storeys.push(layStorey(B,S,roomsFor(S),dropped));});
-   out.buildings.push(finishBuilding(B));}
+   palaceWindows(B);out.buildings.push(finishBuilding(B));}
   // the Ancient levels in the mesa
   {const B={id:'mesa',name:'The Depot and the Core (Ancient, in the mesa)',decor:1,ancient:true,storeys:[]};
    B.storeys.push(layStorey(B,{id:'U2',sheet:'IU2',y:-52,h:10.5,env:[CORE],decor:1,name:'Level U2: the Core'},roomsFor({sheet:'IU2'}),dropped));
@@ -265,7 +265,7 @@ const IZPAL=(function(){
     // one stair through every storey, in the corner nearest the palace and the court (painted last: it takes its cells)
     B.storeys.push(layStorey(B,{id:'S'+(s+1),sheet:s?'I1':'I0',y:y0+s*P.sh,h:P.sh,env:[env],decor:P.decor,name:P.name+(P.storeys>1?', storey '+(s+1):''),
      entries:s===0?P.entries:null},st?rooms.concat([st]):rooms,dropped));}
-   out.buildings.push(finishBuilding(B));}
+   precinctWindows(B,P);out.buildings.push(finishBuilding(B));}
   return out;}
  // a barracks storey: a corridor down the long axis (u), the stair at the u0 end on the court side; on the ground floor a
  // hall across from the court door to the yard door (u -16.6..-13.4) with the guard room, the centurion's office and the
@@ -290,6 +290,33 @@ const IZPAL=(function(){
    const nm=names[(idx+s*2)%names.length];idx++;
    out.push(alongU?{n:100+idx,name:nm[0],kind:nm[1],u0:a,u1:b,v0:c0,v1:c1,decor:nm[2],note:'storey '+(s+1)}:{n:100+idx,name:nm[0],kind:nm[1],u0:c0,u1:c1,v0:a,v1:b,decor:nm[2],note:'storey '+(s+1)});}
   return out;}
+ /* ---------------------------------------------------------------- the windows as openings (2026-10-19) */
+ // The palace's: the builder's rows (windows() below) along each face, each in the storey its middle falls in and centred
+ // on that storey's height (the builder's rows straddled floors), through the face of the mass it is on and the liner
+ // behind it. A record: the face's axis (ax 'u': a face of constant u) and outward sign, the position along it, the
+ // width, the opening's sill and head (y0, y1), the face at its middle, the liner line behind (none: a blind window,
+ // drawn on the face), and the mass. B.wins holds all; S.wins the ones through that storey's liner.
+ function palaceWindows(B){B.wins=[];
+  windows().forEach((w,i)=>{const ax=w.nu?'u':'v',sg=w.nu||w.nv,along=ax==='u'?w.v:w.u,fp=ax==='u'?w.u:w.v;
+   const S=B.storeys.find(S=>w.y>=S.y&&w.y<S.y+S.h);if(!S)return;
+   let M=null,MK=null;for(const k in MASS){const m=MASS[k];if(w.y<m.y0||w.y>m.y0+m.H)continue;const f=1-(1-m.t)*(w.y-m.y0)/m.H;
+    const c=ax==='u'?m.u:m.v,hn=(ax==='u'?m.du:m.dv)/2*f,cs=ax==='u'?m.v:m.u,hs=(ax==='u'?m.dv:m.du)/2*f;
+    if(Math.abs(c+sg*hn-fp)<.3&&Math.abs(along-cs)<hs){M=m;MK=k;break;}}
+   if(!M)return;
+   const h=Math.min(w.h,S.h-1.3),yc=Math.min(S.y+S.h/2-.1,M.y0+M.H-h/2-.8),y0=yc-h/2,y1=yc+h/2,f=1-(1-M.t)*(yc-M.y0)/M.H;
+   const rec={id:'win'+i,ax,sg,along,w:w.w,y0,y1,face:(ax==='u'?M.u:M.v)+sg*(ax==='u'?M.du:M.dv)/2*f,slope:(ax==='u'?M.du:M.dv)/2*(1-M.t)/M.H,mass:MK,storey:S.id};
+   const e=S.env.find(e=>{if(e.open)return false;const line=ax==='u'?(sg<0?e.u0:e.u1):(sg<0?e.v0:e.v1),lo=ax==='u'?e.v0:e.u0,hi=ax==='u'?e.v1:e.u1;
+    return Math.abs(fp-line)<6&&along-w.w/2>lo+.3&&along+w.w/2<hi-.3;});
+   if(e){rec.line=ax==='u'?(sg<0?e.u0:e.u1):(sg<0?e.v0:e.v1);(S.wins=S.wins||[]).push(rec);}else rec.blind=true;
+   B.wins.push(rec);});}
+ // A precinct building's: on every storey, evenly along each side (2.6 m apart on the pavilions, 4.4 elsewhere), none by
+ // a door on the ground floor; through the outer wall (the face is the rect's edge, the line the envelope's side).
+ function precinctWindows(B,P){const q=B.rect,tall=P.look==='pavilion';
+  const sides=[['u',q.u0,-1,q.v0,q.v1],['u',q.u1,1,q.v0,q.v1],['v',q.v0,-1,q.u0+PWALL,q.u1-PWALL],['v',q.v1,1,q.u0+PWALL,q.u1-PWALL]];
+  B.storeys.forEach((S,k)=>{S.wins=[];const doors=[];if(k===0)S.outer.forEach(w=>w.doors.forEach(d=>doors.push({dir:w.dir,line:w.line,t0:d.t0,t1:d.t1})));
+   for(const[ax,face,sg,t0,t1]of sides){const line=face-sg*PWALL,nw=Math.max(1,Math.floor((t1-t0)/(tall?2.6:4.4))),w=tall?1.5:1.4,h=tall?S.h-2.6:Math.min(2.4,S.h-1.9);
+    for(let i=0;i<nw;i++){const t=t0+(t1-t0)*(i+.5)/nw;if(doors.some(d=>d.dir===ax&&Math.abs(d.line-line)<.01&&t>d.t0-1.6&&t<d.t1+1.6))continue;
+     S.wins.push({id:B.id+'.'+S.id+'.win'+S.wins.length,ax,sg,along:t,w,y0:S.y+1.1,y1:S.y+1.1+h,face,line,wall:true});}}});}
  /* ---------------------------------------------------------------- the windows the builder drew (78-transplant.js izWin) */
  // per row: the mass the row's frustum is (in the builder's local x = v, z = 20 - u), the row's height, count, pane size
  // and the front-face skip. Each window is the face point, its outward normal, and its width and height.
