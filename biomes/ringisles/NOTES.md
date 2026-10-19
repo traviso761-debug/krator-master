@@ -8,7 +8,7 @@ and 2). Built 2026-10-14 on branch `claude/isle-demo` (phase P2 of that plan).
 The isle demo's ~9,800 km2 of land lies at the Ring Sea's level, -1,500 m below the datum (about 1.9 atm): annual means
 27-39 degC, rain 550-4,000 mm. By class: hypertropic jungle XA 2,588 km2; rainforest Af 2,012; tropical savanna Aw
 1,780; abyssal savanna XV 1,564; hot steppe BSh 784; abyssal salt steppe XS 648; monsoon Am 588. The savanna and steppe
-classes are half the land, and the owner wanted most for them. Twelve geyser vents. Two Kautoan towns (Kautoa, Walapo).
+classes are half the land, and the owner wanted most for them. Twelve geyser vents. Two Kautoan towns (Kautoa, Valapo).
 The X classes are Krator's abyssal ones (over 1.9 atm): on an island they are its low ground by the sea, the denser and
 hotter air; the A and B classes its higher ground.
 

@@ -28,6 +28,12 @@ const RES_LOOK={iron:{vein:[0x8a3e1e,0xa4521e,0x6e2e16],lump:0x2a2624,pile:0x6a3
  sulfur:{vein:[0xd6c23a,0xe8d84a,0xc8a828],lump:0xf0e060,pile:0xd0b838},
  saltpeter:{vein:[0xf2efe6,0xe8e4d8,0xfaf8f2],lump:0xf6f4ee,pile:0xe0dccf},
  oil:{vein:[0x0e0c0a,0x1a1614],lump:0x141210,pile:0x2a2420}};
+/* the ore sets (materials.json families, full colour): a face takes its set where the page packs it (this kit) and falls back to
+   the old key and vertex colour where it does not (a building kit reading this file in place). resK picks the key, resC the colour:
+   a packed set carries its own colour, so the vertex colour only varies it. */
+const RES_SET={iron:'gossan',copper:'malachite',gold:'quartz',tin:'cassiterite',silver:'galena','rare-earth':'pegmatite',coal:'coal',saltpeter:'efflor',oil:'tar'};
+function resK(k,fb){return MAT[k]&&MAT[k].map?k:fb;}
+function resC(k,c){if(!(MAT[k]&&MAT[k].map))return c;const m=(a,b)=>Math.round(a+(b-a)*.78);return (m(c>>16&255,255)<<16)|(m(c>>8&255,255)<<8)|m(c&255,255);}
 function resOutcrop(S,rich,fn,o){o=o||{};const nb=4+rich*3,strike=rr(0,PI);
  for(let i=0;i<nb;i++){const t=nb<2?0:i/(nb-1)-.5,x=Math.cos(strike)*t*S*.7+rr(-.12,.12)*S,z=Math.sin(strike)*t*S*.7+rr(-.12,.12)*S;
   const bw=rr(.22,.34)*S,bd=rr(.18,.28)*S,bh=(.55-Math.abs(t)*.6)*S*rr(.75,1.05),sink=bh*.18;
@@ -36,22 +42,22 @@ function resLoose(S,n,cols,mk){for(let i=0;i<n;i++){const a=rr(0,TAU),r=rr(.45,.
 function resNode(kind,grade){const L=RES_LOOK[kind],G=RES_ORE.grades[grade],S=G.size,rich=G.rank;
  if(kind==='iron'||kind==='copper'||kind==='gold'||kind==='silver'){
   resOutcrop(S,rich,(i,bw,bh,bd)=>{const nv=1+rich+(i%2);for(let k=0;k<nv;k++){const c=L.vein[(i+k)%L.vein.length],y=bh*rr(.25,.85),th=(kind==='gold'?.06:.035)*S*(1+rich*.35),side=k%2?1:-1;
-    box(kind==='gold'?'stone':kind==='silver'?'iron':'plain',0,y,side*(bd/2+.006),bw*rr(.7,1.0),th,.012,c);
+    {const vk=resK(RES_SET[kind],kind==='gold'?'stone':kind==='silver'?'iron':'plain');box(vk,0,y,side*(bd/2+.006),bw*rr(.7,1.0),th,.012,resC(vk,c));}
     if(kind==='silver'){box('plain',0,y+th,side*(bd/2+.007),bw*rr(.5,.8),th*.5,.012,L.vein[2]);for(let f=0;f<2+rich;f++)box('plain',rr(-.4,.4)*bw,y-th*.3,side*(bd/2+.012),.03*S,.012*S,.008,L.lump);}
     if(kind==='gold')for(let f=0;f<2+rich*2;f++)box('brass',rr(-.4,.4)*bw,y+th*.3,side*(bd/2+.014),.022*S,.018*S,.01,L.lump);}
-   if(kind==='iron')box('plain',0,bh,0,bw*.92,.012,bd*.92,L.vein[i%3]);
-   if(kind==='copper')box('plain',0,bh,0,bw*rr(.5,.85),.012,bd*rr(.5,.85),L.vein[i%3]);});
+   if(kind==='iron'){const vk=resK('gossan','plain');box(vk,0,bh,0,bw*.92,.012,bd*.92,resC(vk,L.vein[i%3]));}
+   if(kind==='copper'){const vk=resK('malachite','plain');box(vk,0,bh,0,bw*rr(.5,.85),.012,bd*rr(.5,.85),resC(vk,L.vein[i%3]));}});
   resLoose(S,rich*7,kind==='gold'?[L.pile,L.vein[0]]:[L.pile,L.lump],kind==='gold'?'stone':'plain');return;}
  if(kind==='tin'){
   /* pale granite, white quartz stringers across the blocks, dark cassiterite grains studding them */
   resOutcrop(S,rich,(i,bw,bh,bd)=>{const nv=1+rich;for(let k=0;k<nv;k++){const y=bh*rr(.2,.8),side=k%2?1:-1,th=.03*S*(1+rich*.3);
-    box('stone',0,y,side*(bd/2+.006),bw*rr(.6,1),th,.012,L.vein[2]);
+    {const vk=resK('cassiterite','stone');box(vk,0,y,side*(bd/2+.006),bw*rr(.6,1),th,.012,resC(vk,L.vein[2]));}
     for(let f=0;f<3+rich*3;f++){const q=rr(.015,.035)*S;box('plain',rr(-.42,.42)*bw,y+rr(-.3,.8)*th,side*(bd/2+.012),q,q,.01,L.vein[f%2]);}}},{col:i=>L.host[i%2]});
   resLoose(S,rich*6,[L.pile,L.lump]);return;}
  if(kind==='rare-earth'){
   resOutcrop(S,rich,(i,bw,bh,bd)=>{const n=6+rich*8;for(let k=0;k<n;k++){const side=k%2?1:-1,q=rr(.012,.03)*S;
-    box('plain',rr(-.42,.42)*bw,bh*rr(.1,.9),side*(bd/2+.006),q,q,.01,L.vein[k%3]);}
-   for(let k=0;k<2+rich*2;k++){const q=rr(.015,.03)*S;box('plain',rr(-.4,.4)*bw,bh,rr(-.4,.4)*bd,q,.008,q,L.vein[k%3]);}},{col:i=>i%2?L.lump:P('stoneD')});
+    {const vk=resK('pegmatite','plain');box(vk,rr(-.42,.42)*bw,bh*rr(.1,.9),side*(bd/2+.006),q,q,.01,resC(vk,L.vein[k%3]));}}
+   for(let k=0;k<2+rich*2;k++){const q=rr(.015,.03)*S;{const vk=resK('pegmatite','plain');box(vk,rr(-.4,.4)*bw,bh,rr(-.4,.4)*bd,q,.008,q,resC(vk,L.vein[k%3]));}}},{col:i=>i%2?L.lump:P('stoneD')});
   resLoose(S,rich*6,[L.pile,L.vein[0],L.vein[1]]);return;}
  if(kind==='coal'){
   /* a cut bank in a low rise: pale sandstone beds stepping back up the slope, black coal seams between them (thicker with
@@ -60,8 +66,8 @@ function resNode(kind,grade){const L=RES_LOOK[kind],G=RES_ORE.grades[grade],S=G.
   W(0,0,0,strike,()=>{ellip('earth',0,0,-S*.5,len*.6,H*.85,S*.36,P('earth'),0,14);
    for(let b=0;b<beds;b++){const bh=unit*rr(.85,1.15),back=-b*.1*S,dz=S*.42-b*.06*S;
     box('stone',0,y,back,len*(1-b*.07),bh,dz,L.bed[b%3]);y+=bh;
-    if(b<beds-1){const sh=unit*seamF*(b===1?1.5:1);box('plain',0,y,back-.05*S,len*(1-b*.07)*.97,sh,dz-.02,L.vein[b%2]);y+=sh;}}
-   for(let i=0;i<4+rich*6;i++){const q=rr(.03,.07)*S;box('plain',rr(-.45,.45)*len,0,S*rr(.22,.4),q,q*.8,q,L.lump,rr(0,TAU));}});return;}
+    if(b<beds-1){const sh=unit*seamF*(b===1?1.5:1);const ck=resK('coal','plain');box(ck,0,y,back-.05*S,len*(1-b*.07)*.97,sh,dz-.02,resC(ck,L.vein[b%2]));y+=sh;}}
+   for(let i=0;i<4+rich*6;i++){const q=rr(.03,.07)*S;const ck=resK('coal','plain');box(ck,rr(-.45,.45)*len,0,S*rr(.22,.4),q,q*.8,q,resC(ck,L.lump),rr(0,TAU));}});return;}
  if(kind==='sulfur'){
   /* a low mound stained by the vapour, yellow crusts laid on its surface, the fuming vent on top ringed with crystals */
   const R=.66*S,hm=.12*S*(1+rich*.3),surf=r=>hm*Math.sqrt(Math.max(0,1-(r/R)*(r/R)));
@@ -79,18 +85,18 @@ function resNode(kind,grade){const L=RES_LOOK[kind],G=RES_ORE.grades[grade],S=G.
   /* a weathered outcrop of dark earth and soft rock, the white bloom flush on its faces and tops, crusting the ground before it */
   const EC=[0x5a4632,0x4e3c2a,0x665038];
   resOutcrop(S*.9,rich,(i,bw,bh,bd)=>{const n=4+rich*5;for(let k=0;k<n;k++){const side=k%2?1:-1,q=rr(.03,.07)*S;
-    box('plain',rr(-.4,.4)*bw,bh*rr(.05,.85),side*(bd/2+.006),q*1.6,q*.6,.01,L.vein[k%3]);}
-   box('plain',0,bh,0,bw*rr(.6,.9),.012,bd*rr(.6,.9),L.vein[i%3]);},{col:i=>EC[i%3]});
-  for(let i=0;i<5+rich*6;i++){const a=rr(-.5,.5)+PI/2,r=rr(.4,.7)*S;ellip('sand',Math.cos(a)*r,0,Math.sin(a)*r,rr(.06,.14)*S,.008*S,rr(.05,.12)*S,L.vein[i%3],rr(0,TAU),8);}
+    {const vk=resK('efflor','plain');box(vk,rr(-.4,.4)*bw,bh*rr(.05,.85),side*(bd/2+.006),q*1.6,q*.6,.01,resC(vk,L.vein[k%3]));}}
+   {const vk=resK('efflor','plain');box(vk,0,bh,0,bw*rr(.6,.9),.012,bd*rr(.6,.9),resC(vk,L.vein[i%3]));}},{col:i=>EC[i%3]});
+  for(let i=0;i<5+rich*6;i++){const a=rr(-.5,.5)+PI/2,r=rr(.4,.7)*S;const vk=resK('efflor','sand');ellip(vk,Math.cos(a)*r,0,Math.sin(a)*r,rr(.06,.14)*S,.008*S,rr(.05,.12)*S,resC(vk,L.vein[i%3]),rr(0,TAU),8);}
   return;}
  if(kind==='oil'){
   /* the seep: an irregular stain of tar-crusted dead ground, the pool (or pools) of oil with its sheen, tar humps and
      bubbles, a few bleached stones */
-  for(let i=0;i<4+rich*2;i++){const a=rr(0,TAU),r=rr(0,.3)*S;ellip('earth',Math.cos(a)*r,0,Math.sin(a)*r,rr(.35,.5)*S,.01*S,rr(.3,.45)*S,i%2?0x2a2420:0x3a3026,rr(0,TAU),14);}
+  for(let i=0;i<4+rich*2;i++){const a=rr(0,TAU),r=rr(0,.3)*S;const tk=resK('tar','earth');ellip(tk,Math.cos(a)*r,0,Math.sin(a)*r,rr(.35,.5)*S,.01*S,rr(.3,.45)*S,resC(tk,i%2?0x2a2420:0x3a3026),rr(0,TAU),14);}
   const np=1+rich;for(let p=0;p<np;p++){const a=p/np*TAU+rr(-.3,.3),r=np>1?rr(.16,.28)*S:0,pr=rr(.14,.22)*S*(1+rich*.15);
-   W(Math.cos(a)*r,0,Math.sin(a)*r,rr(0,TAU),()=>{ellip('plain',0,0,0,pr*1.2,.03*S,pr*.95,L.vein[1],0,16);ellip('water',0,.022*S,0,pr,.006*S,pr*.78,L.vein[0],0,16);
+   W(Math.cos(a)*r,0,Math.sin(a)*r,rr(0,TAU),()=>{{const tk=resK('tar','plain');ellip(tk,0,0,0,pr*1.2,.03*S,pr*.95,resC(tk,L.vein[1]),0,16);}ellip('water',0,.022*S,0,pr,.006*S,pr*.78,L.vein[0],0,16);
     for(let k=0;k<3+rich*2;k++){const b=rr(0,TAU),br=rr(0,.6)*pr;sph('plain',Math.cos(b)*br,.026*S,Math.sin(b)*br*.78,rr(.008,.018)*S,L.lump,.5,6);}});}
-  for(let i=0;i<3+rich*3;i++){const a=rr(0,TAU),r=rr(.35,.6)*S;ellip('plain',Math.cos(a)*r,0,Math.sin(a)*r,rr(.04,.08)*S,rr(.02,.04)*S,rr(.04,.07)*S,L.vein[1],rr(0,TAU),8);}
+  for(let i=0;i<3+rich*3;i++){const a=rr(0,TAU),r=rr(.35,.6)*S;const tk=resK('tar','plain');ellip(tk,Math.cos(a)*r,0,Math.sin(a)*r,rr(.04,.08)*S,rr(.02,.04)*S,rr(.04,.07)*S,resC(tk,L.vein[1]),rr(0,TAU),8);}
   for(let i=0;i<2+rich*2;i++){const a=rr(0,TAU),r=rr(.6,.8)*S;sph('stone',Math.cos(a)*r,0,Math.sin(a)*r,rr(.03,.06)*S,0xb8b0a0,.6,6);}
   return;}}
 /* a node def's body (its key and seed are written out below, one def each, so the build's seed check sees them) */

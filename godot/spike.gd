@@ -37,6 +37,8 @@ var reports := {}
 var _shot := ""
 var _stage_base := {}   # the stage's sun, ambient and fog, which the clock and the weather scale
 var _shot_frames := 0
+var case_focus := Vector3.ZERO   # the loaded case's focus (the box centre on the ground): tests/perf/perf_capture.gd poses its camera from it
+var driven := false   # set by a driver before add_child (tests/perf/perf_capture.gd): _ready builds the stage and loads no case of its own
 
 
 func _ready() -> void:
@@ -44,6 +46,8 @@ func _ready() -> void:
 	var args := _args()
 	if args.has("check"):
 		_check_all.call_deferred()
+		return
+	if driven:
 		return
 	if args.has("shot"):
 		_shot = args["shot"]
@@ -194,6 +198,7 @@ func _load_case(name: String) -> Dictionary:
 	ground = terrain
 	if terrain:
 		focus.y = KData.height_at(terrain, focus.x, focus.z)
+	case_focus = focus
 	_stage_base = {}
 	if stage is Dictionary and not _args().has("nostage"):   # --nostage: the spike's own stock light, to compare   # the page's light, fog, tonemapping and sky (krator/stage.gd)
 		_stage_base = load("res://krator/stage.gd").apply(stage, env, sun, world)

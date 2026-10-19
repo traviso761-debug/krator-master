@@ -21,9 +21,12 @@ every node test under `core/`, a rebuild of every build and the hash baseline (`
 the Chromium launcher, the local three.js, `smoke`, `walk`, `export`); do not paste a launcher into one. Built pages,
 bundles and texture packs are in Git LFS (`.gitattributes`): a checkout needs `git lfs`.
 
-**Who works where.** The owner's Voth economy work forks from here and owns `core/simulation/` and Voth's
-simulation fragments (`settlements/voth/targets/voth-city/34`, `41`-`47`, the host's `56b`/`56c`). The city-layout
-module work owns `core/city/` and Voth's layout fragments (`15`, `30`-`35`). Keep out of the other's files, or ask.
+**Who works where.** No separate economy session runs any more (owner, 2026-10-18): `core/simulation/` is edited
+on `main` like any other core module, and **the isle demo (`settlements/isle-demo`) is the test case the economy is
+tuned on as it is built** (two towns of one polity trading by sea; `settlements/isle-demo/PLAN.md` sections 5 and 7).
+A change to `core/simulation` keeps Voth's stocks proof, `test-sim.js` and the baseline unchanged unless the change is
+meant to move them. The city-layout module work owns `core/city/` and Voth's layout fragments (`15`, `30`-`35`); keep
+out of its files, or ask.
 
 **Rebuild what a shared change reaches.** On 2026-10-08, 29 committed pages and the hash baseline were behind
 their sources because a change to `core/` was rebuilt into one build only. After editing anything under `core/`,
@@ -82,6 +85,7 @@ The catalog furniture batch keeps indices when a build asks (`KF.batch({indexed:
 | `kits/pylon/` | the Pylon kit (culture `pylon`): Iziz's vassal arcology city round the ruined Monolith, post-Cataclysm buildings imitating the Ancients in white render and Iziz orange. Written on the Iziz Vernacular contract and built on its page (`settlements/iziz/build.py --kit`; the Vernacular stands beside it: the mixed street). Read `PLAN.md`; the contract shared with the Vernacular and `kits/talia` is `settlements/iziz/VASSAL-KITS.md` |
 | `kits/islanders/` | the Islanders kit (catalog culture `islander`): the Ring Sea Islanders in two styles, the West (rumah: horned saddle roofs on piles) and Kautoa (Sumba: spire roofs over thatch skirts), poor to rich houses, civic, trade, harbour and defence buildings, Kautoa's palace; a building for every Voth census trade in both sets, mines; scrap on the poor; forked from the Scyvoi engine (vendored). Verified: `build.py`, `verify.py --assert`. Read `API.md` |
 | `kits/resources/` | the Resources kit: world content that belongs to no culture. So far the resource nodes (iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, oil; three grades) that works draw on by the nearest-node rule (a mine; oil a derrick: Locus's pumpjack), the grade setting the yield. Runs on the Scyvoi engine read in place; building kits read its fragments in place. Verified: `build.py`, `verify.py --assert` |
+| `kits/crops/` | the Crops kit: world content that belongs to no culture or biome. 118 crops (grain, pulse, tuber, nut, oil, vegetable, greens, mushroom, fruit, berry, spice, herb, sweetener, beverage, and fibre, dye, reagent and fuel) in 25 buckets, each a range on warmth, air pressure and aridity; the biome kits are zones on those axes, so a settlement calls `CROPS.forBiome`, `CROPS.at`, `CROPS.pick` or `CROPS.palette` for what its place could plausibly grow, irrigated or not, what a recipe's bucket may be, and which dyes and plaids it can make. Dark-grown fungus crops (alecap, pale fungi, the mat, glow mushroom) take a works, not a climate. Plain data and pure functions (`[G data]`); read the fragments in place. Verified: `build.py`, `tests/test-crops.js`, `verify.py --assert`. Read `PLAN.md`, `API.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `openworld/<region>/` | a region of the scale model at 1:1, streamed, with the biome kits' flora: `little-demo` (the eastern desert). Its data comes from `tools/scale-model/extract_region.py` |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |

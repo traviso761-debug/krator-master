@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.386,
+    1.032
+   ],
+   "seam_before": [
+    1.326,
+    1.443
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.galena",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Seamless Galena Quartz Crystal Texture.png",
+  "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Seamless Galena Quartz Crystal Texture.png",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.galena`",
+  "reuse": "silver and lead mine faces, galena veins",
+  "sha1": "96a072c8cf2d36affda11f2616f23a701f79ed0f"
+ }
+}

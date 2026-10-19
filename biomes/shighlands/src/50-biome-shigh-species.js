@@ -94,7 +94,7 @@ SHIGH.byKey={};SHIGH.SPECIES.forEach((S,i)=>{S.i=i;SHIGH.byKey[S.key]=S;S.spiral
 // fruit the catalog holds. None of these is in the catalog yet (KNOWN_ISSUES), so `fruit` is null throughout.
 const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
 SHIGH.HARVEST={
- coilbark:HV('timber (it splits along its twist: turned work only)',[],false,'Bowls and spindles are turned from it so the grain\'s spiral runs round them.'),
+ coilbark:HV('timber (it splits along its twist: turned work only), fuel (the split offcuts)',[],false,'Bowls and spindles are turned from it so the grain\'s spiral runs round them; the splits and offcuts are the winter firewood.'),
  trumpet:HV('poles',['trumpet water'],false,'The funnels hold rain and cloud-drip; a ladder up a stacked trumpet is a well.'),
  volute:HV('timber',['young scroll tips (boiled)'],false,'The tips of the scrolls are cut and boiled like fiddleheads; the old scrolls are left: they are a hundred years in the winding.'),
  crozier:HV('none',['croziers (boiled)','trunk starch (famine)'],true,'The croziers are the season\'s first green food; the hairs are a wound packing.'),

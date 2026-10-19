@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 120,
+   "key_lo": 50,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.crop.saffron",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.crop.saffron.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 4 (Crops kit, fungi, fibre and dye plants), `card.crop.saffron`; a nine-cell sheet on flat magenta (#ff00ff)",
+  "reuse": "saffron crocus and any bulb dye or spice plant (Vale saffron)",
+  "sha1": "f5cb577a83abc3d6e595f576d6aa03c3d945df4c"
+ }
+}

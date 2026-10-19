@@ -1,0 +1,140 @@
+{
+  "case": "world-iziz",
+  "counts": {
+    "buckets": 33,
+    "instances": 9638,
+    "items": 130,
+    "load_ms": 1439,
+    "materials": 220,
+    "records": 263,
+    "textures": {
+      "library": 57,
+      "missing": 0,
+      "png": 11
+    },
+    "triangles": 60735
+  },
+  "first_frame_ms": 1479.781,
+  "frames": 120,
+  "gaps": 3,
+  "import_ms": 1468.893,
+  "instances": 12298,
+  "load_ms": 1439,
+  "machine": {
+    "commit": "4acd620d1d5b",
+    "date": "2026-10-18 21:09:25",
+    "driver": "vulkan",
+    "godot": "4.7.2-stable (official)",
+    "gpu": "",
+    "gpu_api": "",
+    "gpu_vendor": "",
+    "headless": true,
+    "os": "Windows",
+    "renderer": "forward_plus",
+    "vsync": false,
+    "window": "0x0"
+  },
+  "mesh_nodes": 191,
+  "multimeshes": 157,
+  "nodes_total": 1265,
+  "nodes_world": 1254,
+  "poses": [
+    {
+      "at": [
+        0.0,
+        18.39,
+        412.0
+      ],
+      "buffer_mb": 0.0,
+      "draw_calls": 0,
+      "eye": [
+        200.0,
+        178.39,
+        672.0
+      ],
+      "fps": 56.6,
+      "frame_ms_mean": 17.654,
+      "frame_ms_p95": 22.381,
+      "name": "whole tile, high oblique",
+      "objects": 0,
+      "primitives": 0,
+      "process_ms_max": 1501.261,
+      "static_mb": 167.0,
+      "tex_mb": 0.0,
+      "vram_mb": 0.0
+    },
+    {
+      "at": [
+        0.0,
+        18.39,
+        412.0
+      ],
+      "buffer_mb": 0.0,
+      "draw_calls": 0,
+      "eye": [
+        -180.0,
+        238.39,
+        232.0
+      ],
+      "fps": 34.2,
+      "frame_ms_mean": 29.259,
+      "frame_ms_p95": 20.67,
+      "name": "whole tile, from the far side",
+      "objects": 0,
+      "primitives": 0,
+      "process_ms_max": 945.664,
+      "static_mb": 167.0,
+      "tex_mb": 0.0,
+      "vram_mb": 0.0
+    },
+    {
+      "at": [
+        0.0,
+        22.39,
+        412.0
+      ],
+      "buffer_mb": 0.0,
+      "draw_calls": 0,
+      "eye": [
+        -120.0,
+        26.28,
+        412.0
+      ],
+      "fps": 144.9,
+      "frame_ms_mean": 6.9,
+      "frame_ms_p95": 7.095,
+      "name": "edge, eye level, looking in",
+      "objects": 0,
+      "primitives": 0,
+      "process_ms_max": 790.421,
+      "static_mb": 167.0,
+      "tex_mb": 0.0,
+      "vram_mb": 0.0
+    },
+    {
+      "at": [
+        0.0,
+        19.39,
+        412.0
+      ],
+      "buffer_mb": 0.0,
+      "draw_calls": 0,
+      "eye": [
+        10.0,
+        20.09,
+        422.0
+      ],
+      "fps": 143.9,
+      "frame_ms_mean": 6.948,
+      "frame_ms_p95": 7.743,
+      "name": "near, a walker at the centre",
+      "objects": 0,
+      "primitives": 0,
+      "process_ms_max": 5.051,
+      "static_mb": 167.0,
+      "tex_mb": 0.0,
+      "vram_mb": 0.0
+    }
+  ],
+  "warmup": 10
+}

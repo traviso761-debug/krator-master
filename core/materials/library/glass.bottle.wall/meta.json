@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.204,
+    1.606
+   ],
+   "seam_before": [
+    1.932,
+    4.366
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "glass",
+  "id": "glass.bottle.wall",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1.28,
+   1.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Recycled Glass Bottle Mosaic Wall.png",
+  "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Recycled Glass Bottle Mosaic Wall.png",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `glass.bottle.wall`",
+  "reuse": "Post-Apoc's bottle walls; any bottle-built wall",
+  "sha1": "d43e28a5b32b037d49da24025eb3e175d640e086"
+ }
+}

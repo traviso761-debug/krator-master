@@ -692,6 +692,19 @@
    },
    "roughLift": 0.2,
    "specular": 0.2
+  },
+  "patMat": {
+   "lib": "patterns/islander/mat-diamond",
+   "scale": [
+    1.6,
+    1.41
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
   }
  }
 }

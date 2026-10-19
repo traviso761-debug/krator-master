@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Serve the isle demo's site planner and let it save into the repo.
 
-    python3 serve.py [port]          # default 8817; open http://127.0.0.1:8817/dist/isle-site.html (?town=Walapo)
+    python3 serve.py [port]          # default 8817; open http://127.0.0.1:8817/dist/isle-site.html (?town=Valapo)
 
 A static server rooted at this folder, plus one write: POST /save/isle-site?town=<name> with one town's site (its
 frame and its drawing, as the planner sends it) puts it into site/isle-site.json under towns.<name>, leaving the
@@ -12,7 +12,7 @@ import http.server, json, os, re, socketserver, sys, urllib.parse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FILE = os.path.join(HERE, 'site', 'isle-site.json')
-TOWNS = ('Kautoa', 'Walapo')
+TOWNS = ('Kautoa', 'Valapo')
 
 
 def write(data):

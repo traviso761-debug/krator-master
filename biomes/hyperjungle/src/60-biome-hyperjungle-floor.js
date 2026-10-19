@@ -367,7 +367,7 @@ HYPERJUNGLE.buildFloor=function(R,q){
    lianaRun([top[0],top[1]+.5,top[2]],mid,r,hc,leafy&&rng()<.5);lianaRun(mid,[gx,gy-.3,gz],r*.9,hc,leafy);
    if(rng()<.6){const L3=rr(10,30),xo=top[0]+rr(-.8,.8),zo=top[2]+rr(-.8,.8);   // a free-hanging aerial root beside it
     BIO.put('strand',[xo,top[1],zo],qUp([rr(-.15,.15),1,rr(-.15,.15)]).multiply(qEuler(0,rr(0,TAU),0)),[rr(.6,1.2),L3,L3*.1],leafCol(PAL.vine,1.4,.06));}
-   card(gx,gy+1,gz,rr(2,3.2),2.2,leafCol(SHRUB,1.45),.3);st.lianas++;}});});
+   card(gx,gy+1,gz,rr(2,3.2),2.2,leafCol(SHRUB,1.45),.3);st.lianas++;FLOORN.push({name:'Pitch vine',plant:'pitchvine',x:gx,z:gz,y:gy,r:2.5,h:len});}});});
 
  const tt=st.tris;let total=0;for(const k in tt)total+=tt[k];tt.total=total;
  return{under:{ferns:st.ferns,shrubs:st.shrubs,aroids:st.aroids,palms:st.palms,subtrees:st.subtrees,boulders:st.boulders,fungi:st.fungi,logs:st.logs,

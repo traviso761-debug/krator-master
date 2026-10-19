@@ -43,6 +43,17 @@ func _initialize() -> void:
 	ok(bad_sec.is_empty(), "sections filled: %s" % JSON.stringify(rep["sections"]))
 	ok(rep["sections"].get("city") == "stub" and rep["gaps"].has("section city"), "the stubs arrive as stubs, and the report names them")
 
+	# LOD cell policy (ROADMAP.md section 11 item 4): the contract declares it, the importer reads it
+	var lod = d["convention"].get("lod")
+	ok(lod is Dictionary and float(lod.get("cell", 0)) == 150.0 and lod.get("widen") == "half-diagonal" and lod.get("copies") == "none",
+		"convention.lod = %s (cell 150 m, widened by the half-diagonal, no LOD render copies)" % JSON.stringify(lod))
+	ok(KratorBiome.cell == 150.0 and KratorBiome.policy_cell(d["convention"]) == 150.0,
+		"the importer reads the cell from the convention (%.0f m)" % KratorBiome.cell)
+	ok(KratorBiome.policy_cell({}) == KratorBiome.CELL and KratorBiome.policy_cell({"lod": {"cell": 0}}) == KratorBiome.CELL
+		and KratorBiome.policy_cell({"lod": {"cell": 75}}) == 75.0 and KratorBiome.policy_cell(null) == KratorBiome.CELL,
+		"negative: no entry or a nonsense cell falls back to the default; a case's own cell (75) is taken")
+	_rift_cells()
+
 	# 1. every instance carries its record uid, aligned with the instances
 	var tags: Dictionary = w.get_meta("tags", {})
 	var items := w.get_node("Items").get_children()
@@ -236,3 +247,43 @@ static func _acc(J: Dictionary, bytes: PackedByteArray, bin0: int, ix: int) -> P
 	var comps: int = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4}[a["type"]]
 	var start := bin0 + int(v.get("byteOffset", 0)) + int(a.get("byteOffset", 0))
 	return bytes.slice(start, start + int(a["count"]) * comps * 4).to_float32_array()
+
+
+# GODOT-PLAN.md finding 16: the rift tile (krator-biome JSON route, whose convention has no lod entry, so the 150 m default
+# applies) is 175 item nodes and 47 bucket nodes over 12 cells; a 75 m cell must split it finer, and the cell comes back.
+func _rift_cells() -> void:
+	var path := "res://data/rift/biome.json"
+	if not FileAccess.file_exists(path):
+		print("skip rift cells: no godot/data/rift/biome.json")
+		return
+	var counts := {}
+	for c in [150.0, 75.0]:
+		var rd: Dictionary = KData.read_json(path)
+		rd["convention"]["lod"] = {"cell": c}
+		var tmp := "user://rift_lod_%d.json" % int(c)
+		var f := FileAccess.open(tmp, FileAccess.WRITE)
+		f.store_string(JSON.stringify(rd))
+		f.close()
+		var b := KratorBiome.build(tmp)
+		var cells := {}
+		var n_items := 0
+		var n_buckets := 0
+		var nodes := []
+		nodes.append_array(b.get_node("Items").get_children())
+		for bn in b.get_node("Buckets").get_children():
+			nodes.append_array(bn.get_children())
+		for m in nodes:
+			if m is MultiMeshInstance3D:
+				n_items += 1
+			elif m is MeshInstance3D:
+				n_buckets += 1
+			var k = m.get_meta("krator", {})
+			if k is Dictionary and k.get("cell", "") != "":
+				cells[k["cell"]] = true
+		counts[c] = [n_items, n_buckets, cells.size()]
+		b.free()
+		DirAccess.remove_absolute(tmp)
+	print("rift cell counts (items, buckets, cells): ", counts)
+	ok(counts[150.0] == [175, 47, 12], "rift at cell 150: 175 item nodes, 47 bucket nodes, 12 cells (finding 16): %s" % [counts[150.0]])
+	ok(counts[75.0][0] > counts[150.0][0] and counts[75.0][2] > counts[150.0][2], "negative: a 75 m cell gives more nodes and cells: %s" % [counts[75.0]])
+	KratorBiome.cell = KratorBiome.CELL

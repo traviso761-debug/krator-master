@@ -2,19 +2,7 @@
 
 `build.py` prints the open ones (`- [ ]`) after every build.
 
-- [ ] The veins, seams, pools and grains are vertex colours on simple shapes. The library has no ore or mineral sets, so
-      the prompts are in `core/materials/PROMPTS-NEEDED.md` (section 1, "The Resources kit", added 2026-10-15):
-      - `rock.coal`;
-      - `ground.tar.seep`;
-      - `ground.efflorescence` (saltpeter);
-      - `rock.malachite` (copper);
-      - `rock.quartz.vein` (gold);
-      - `rock.cassiterite` (tin);
-      - `rock.galena` (silver).
-
-      Section 3 holds two more to check first: `rock.gossan` (iron; `rock.basalt.oxidised` may do) and `rock.pegmatite`
-      (rare earth; `rock.granite.tor` may do). Each lands as a family in `materials.json`, and the node draws that face with
-      its key in place of `plain`.
+- [x] Ore sets (2026-10-18): coal, tar (ground.tar.seep), efflor (ground.efflorescence), malachite, quartz (rock.quartz.vein), cassiterite, galena, gossan, pegmatite are families in `materials.json`, full colour, no tint. `resK(set, fallback)` and `resC` in 44r draw each node's mineral face with its set where the page packs it, and a page without them (a building kit reading 44r in place, such as Islanders) keeps the old key and vertex colour. Still vertex colours: the loose rubble round a foot, tin's cassiterite grains, copper and iron's heaps, ore nuggets.
 - [x] Sulfur is the library's `ground.sulphur` (2026-10-15): the mound, its crown and its crusts. A page without the family
       (a building kit reading 44r in place) draws them as tinted stone.
 - [ ] **Oil has one derrick:** Locus's Geomancer pumpjack (`ind_pumpjack`, a catalog asset). The rule names it by key

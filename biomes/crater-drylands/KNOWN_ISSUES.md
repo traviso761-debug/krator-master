@@ -70,3 +70,7 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
       (`keys.f`, 89-host-fire.js's click-to-light), so this page has no walking (a build's keys win over the camera's;
       walking wants another key, or the fire another). An armed click lights a fire before the inspector
       or the polygon tool sees it (`click`). The fire's bar sits in the bar's `#ui` after the view select (it was first).
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.

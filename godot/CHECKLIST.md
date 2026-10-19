@@ -68,3 +68,21 @@ a software GPU. What that could not show is the **look on a real GPU in Forward+
 - [ ] Run `--check` again and paste `spike-report.json`'s gap list into GODOT-PLAN.md if anything new turned up.
 - [ ] Decide what M4 (the first tile with materials and tags) needs first. Tonight's list suggests: tags and ids on
       the biome records, the kit hooks as core material kinds, a terrain export, and fauna animation, in that order.
+
+## 7. The perf table (ROADMAP.md section 11, item 4): Forward+ on the real GPU
+
+The Godot tests prove parity, not speed, and the fps in findings 15 to 17 were read by eye. `PERF.md` in this folder is
+the fixed table; the copy committed so far was written headless (its header says so) and its numbers mean nothing.
+
+- [ ] With the project on Forward+ (the default), close other GPU work and run
+      `godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz`
+      (README.md, "The perf capture"). It opens a 1600x900 window with vsync off, visits four poses per case and quits;
+      about a minute. Do not move the mouse over the window while it runs (the fly camera listens).
+- [ ] Check `PERF.md`'s header reads `forward_plus vulkan` and names your GPU, then commit `PERF.md` and the
+      `perf-<case>.json` beside `spike-report.json`.
+- [ ] Paste the two tables into `GODOT-PLAN.md`, "The spike: first findings" (a finding of their own, dated), with a line on
+      what they say against findings 15 to 17 (hyperjungle's 30 to 60 fps by eye).
+- [ ] Rerun with `--compare` after a change to `core/export`, an importer or the shader library that is meant to move the
+      numbers (the ROADMAP's LOD work above all), and paste the deltas into the change's note.
+- [ ] Optional: the older spike cases (`--cases=hyperjungle,rift,girder`) for a row against the eye readings. The poses are
+      relative to each case's focus, so they fit any case the spike loads.

@@ -21,14 +21,12 @@ Open items are `- [ ]`; `build.py` counts them.
 
 ## Stand-ins (procedural or a near library set until the owner's texture comes; prompts below)
 
-- [ ] The lagoon's floor: the library's wet beach sand (`ground.damp_beach_sand`) with seagrass meadows painted in the
-  ground's shader from the kit's meadow noise. Wants `ground.lagoon.seagrass`.
-- [ ] The reef flat and the bench: `rock.limestone.karst`. Wants `ground.reef.flat`.
-- [ ] The coral heads' surface: `stone.coral` (a building block of coral limestone) on the brain and table corals; the
-  procedural meanders without the pack. Wants `organic.coral.brain`.
-- [ ] Seagrass blades, the beach creeper's leaves, naupaka, the sea grape's and the breadfruit's leaves: procedural
-  (52-biome-ringisles-look.js). Want `card.seagrass`, `card.creeper.beach`, `card.naupaka`, `card.seagrape`, `card.breadfruit`.
-- [ ] The salt cedar's foliage: `card.heath` (a fine-leaved shrub, near enough); wants `card.tamarisk`.
+- [x] Wired 2026-10-18 from the owner's tex2 delivery (materials.json): the lagoon floor (`ground.wetsand` -> `ground.lagoon.seagrass`; the
+  ground shader still paints its own dark seagrass meadows over it, a second layer that could now be thinned), the reef flat and
+  bench (`ground.reef` -> `ground.reef.flat`), the coral heads (`coral` -> `organic.coral.brain`, grey, tinted by the head's colour),
+  seagrass (middle cell of `card.seagrass`), the beach creeper (a cell of `card.creeper.beach`), naupaka (`card.naupaka`), the sea grape
+  (`card.seagrape`), the breadfruit (`card.breadfruit`), the salt cedar (`card.tamarisk`, whole sheet, replaces `card.heath`) and the
+  mango, coffee and clove (`card.croptree.glossy`). The sea grape, breadfruit and naupaka cards are full colour (`keep` 1, so the red leaves, the fruit and the white flowers show; `RINGISLES.libCol` keeps a sixth of the species colour); the rest are grey detail maps tinted by the instance colour. One cell fills a clump quad (a clump quad draws v up, so these cells are listed bottom-first to stand upright).
 - [ ] The banana's leaves: procedural. `card.paddle` has banana leaves but they lie diagonally in their cells, and BIO.libSwap
   cuts a cell without turning it; the crater drylands' `libCell(..., rot)` would turn one upright (code, no new texture).
 - [ ] The mango's, coffee's and clove's leaves: one procedural glossy-lance card (`glossy`). Wants `card.croptree.glossy`.
@@ -52,3 +50,7 @@ Open items are `- [ ]`; `build.py` counts them.
 ## Texture prompts
 
 The prompts for the stand-ins above are in `core/materials/PROMPTS-NEEDED.md` (section 1, "The Ring Sea isles biome", moved there 2026-10-15): `ground.lagoon.seagrass`, `ground.reef.flat`, `organic.coral.brain`, `card.seagrass`, `card.creeper.beach`, `card.naupaka`, `card.seagrape`, `card.breadfruit`, `card.tamarisk`, `card.croptree.glossy`.
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js). Add each back when the kit fills it.

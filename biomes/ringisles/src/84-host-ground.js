@@ -85,8 +85,8 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   'c=mix(c,'+L('reef')+',vW.y);'+
   'c=mix(c,'+L('sand')+',vT.x);'+
   'c=mix(c,'+L('wetsand')+'*vec3(0.42,0.5,0.46),vT.y);'+
-  // the seagrass meadows: blades combed by the current, dark green over the lagoon's sand (stand-in: KNOWN_ISSUES.md)
-  '{float sg=texture2D(uMacro,vec2(p.x*0.35,p.y*0.05)).b*0.6+texture2D(uMacro,p*0.09).g*0.6;c=mix(c,pow(vec3(0.16,0.26,0.12),vec3(2.2))*(0.7+0.6*sg),vW.w*smoothstep(0.35,0.6,sg)*0.9);}'+
+  // the seagrass meadows: blades combed by the current, dark green over the lagoon's sand; with the library's seagrass floor on the sand the painted meadow is only a third as strong (the floor has its own)
+  '{float sg=texture2D(uMacro,vec2(p.x*0.35,p.y*0.05)).b*0.6+texture2D(uMacro,p*0.09).g*0.6;c=mix(c,pow(vec3(0.16,0.26,0.12),vec3(2.2))*(0.7+0.6*sg),vW.w*smoothstep(0.35,0.6,sg)*'+(lib('wetsand')?'0.3':'0.9')+');}'+
   'c=mix(c,c*0.7+vec3(0.02,0.02,0.01),rock*0.3);'+
   // the vent's field (the geyser kit's record): sinter, its mats by the heat on the film, acid clay
   'c=mix(c,'+L('sinter')+'*vec3(0.78,0.76,0.72),vV.x);'+

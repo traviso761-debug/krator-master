@@ -28,6 +28,19 @@ code. This file is the contract for that data.
 - `python3 verify_walk.py <html> --asset <key> --variant <n>` writes
   `shots/export-<key>-<n>.json` for one building as part of its walk-through.
 
+## Two routes
+
+The data above leaves the page two ways, from the same registries (`FIX`, `KTAGS.page`), so the ids and uids agree.
+`KRATOR_EXPORT` is Yuni's own route: the buttons, `KRATOR_EXPORT.building(id)` with its interior and kit, and
+`fixtures()` and `tags()`, which the Godot spike's `yuni` case reads directly (`godot/tools/export_spike.py`,
+`godot/data/yuni/`). Since 2026-10-18 `src/77-export.js` also makes Yuni a contributor to core/export's
+`krator-world` container (`core/export/README.md`, "Yuni"): the `registry` section carries every building and fixture
+record, the `fixtures` section the doors, windows and lights in the box with their `host` (the shell wall of the
+interior plan that holds the opening, the side, the sill above the building's base), and `interiors` reads empty
+until the plan below takes the kits/interiors shape. `verify.py --assert` checks that profile over the Foundry's box
+(`EXPORT_BOX`), and `python3 tools/harness.py export yuni.html --out godot/data/world-yuni --box 140,-80,340,90`
+writes it for `godot/krator/world_import.gd`, which puts each fixture under its building node.
+
 ## Coordinates
 
 Every value is in **metres, +Y up, right-handed**, which is glTF's own convention:

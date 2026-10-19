@@ -67,7 +67,7 @@ Seed blocks: dwellings 7100–7399, trade 7400–7499, civic 7500–7599, infra
 
 ### The frontier set — `74b-vern-frontier.js` (Verge's upper city)
 
-`vern_governor_palace` (42 x 36, walled forecourt, gate on +z), `vern_guard_tower` (26 x 20: three-storey tower at
+`vern_governor_palace` (the Governor's House, renamed from "Governor's Palace" 2026-10-18 so it is not taken for the vassal kits' palaces; the key is kept; 42 x 36, walled forecourt, gate on +z), `vern_guard_tower` (26 x 20: three-storey tower at
 -x, two-storey barracks at +x, doors on +z), `vern_watch_house` (10 x 9), `vern_toll_house` (14 x 10: the toll window
 and counter face **+x**, the road side; the raised toll bar stands at the +x/+z corner), `vern_palisade` (ONE segment,
 `o.len` metres along local x, default 6; every part inside x = ±len/2; +z is the outer face, the braces lean to -z),

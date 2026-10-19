@@ -16,6 +16,12 @@ references are as of that commit.
 > 2026-10-12: the owner's Voth citizen brief (needs, items, economy, guards, monks, the arena, imports) and the phased
 > plan for it are in `settlements/voth/SIM-ROADMAP.md`. It is this plan's Phase 2 and Phase 5 done on the Voth
 > city page first; the modules it adds (`77-sim-6-needs.js`, `-items.js`, `-economy.js`, `77-sim-7-lod.js`) are core's.
+>
+> 2026-10-18: no separate economy session runs any more. **The isle demo (`settlements/isle-demo`, PLAN.md sections 5
+> and 7) is the test case the economy is tuned on**: two towns of one polity, the settlement key, the economy
+> partitioned by it, trade between settlements as a carrier with books, and the three levels (record, abstract,
+> presentation) written into `SCHEMA.md` against it (ROADMAP stage 5 and section 11). Voth's page is rebuilt and its
+> stocks proof read before a tuning change is committed.
 
 The survey in §1 was taken on a 1 Oct checkout. Between that and `main` on 2 Oct,
 work landed that changes the plan's assumptions. Each item below is folded into

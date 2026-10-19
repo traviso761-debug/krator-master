@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Crops Kit</title>
+<style>
+:root{color-scheme:light dark;--bg:#faf9f5;--fg:#141413;--mut:#6b6a63;--card:#fff;--line:#dcd9cc;--acc:#2f6f3a;--wild:#2f6f3a;--rain:#3a6aa0;--irr:#b0702a;--bed:#6a4a8a;--node:#7a6a50;--trade:#8a8a80}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1c19;--fg:#ecebe4;--mut:#a5a396;--card:#2a2925;--line:#44423b;--acc:#7cc488;--wild:#7cc488;--rain:#8ab4e8;--irr:#e8b070;--bed:#c0a0e0;--node:#c0b090;--trade:#a0a094}}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,sans-serif}
+#app{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:0 0 2px}.sub{color:var(--mut);margin:0 0 12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 12px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:8px}
+.bar label{display:flex;gap:6px;align-items:center;color:var(--mut)}
+select,button{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.pal{margin:0 0 12px;color:var(--mut)}.pal b{color:var(--fg)}
+.grp{margin:18px 0 6px;font-size:15px;border-bottom:1px solid var(--line);padding-bottom:3px}
+.bk{margin:10px 0 4px;color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:3px}
+.c .im{height:90px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--bg) 70%,#6a8a5a 30%);border-radius:6px;overflow:hidden}
+.c img{max-height:90px;max-width:100%}.c .nm{font-weight:600;font-size:13px}.c .mt{color:var(--mut);font-size:11px}
+.tag{display:inline-block;border-radius:10px;padding:0 7px;font-size:11px;color:#fff;width:max-content}
+.t-wild{background:var(--wild)}.t-rain{background:var(--rain)}.t-irrigated{background:var(--irr)}.t-bed{background:var(--bed)}.t-node{background:var(--node)}.t-trade{background:var(--trade)}
+#errs{white-space:pre-wrap;color:#b00020}
+</style></head><body><div id="app"></div><pre id="errs"></pre>
+<script>

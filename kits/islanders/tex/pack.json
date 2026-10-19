@@ -953,16 +953,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "e2e876beef466b21a4955f8ae0b9dc3694dc4d2a",
-    "normal": "9a0e07bf5f7127c3adbd36a2943ff78987da4b7d",
-    "roughness": "5d8c8a679eaa674fd9eb3d4cfbb6624d8accc3aa"
+    "albedo": "72144a51a508f5ecc9dd9cc10333b3b5ef1558ae",
+    "normal": "e413078c9df9ce5cb82df098fa5daee4b1fe8957",
+    "roughness": "55888e63ef9daf23d9efbd9180c815c9a5505e02"
    },
    "specular": 0.15,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.4618663208127489,
-    "sourceMean": 0.4619
+    "mean": 0.47317677357692345,
+    "sourceMean": 0.4732
    }
   },
   "patGableW": {
@@ -1055,6 +1055,36 @@
     "sourceMean": 0.277
    }
   },
+  "patMat": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patMat.albedo.webp",
+    "normalMap": "patMat.normal.webp",
+    "roughnessMap": "patMat.rough.webp"
+   },
+   "lib": "patterns/islander/mat-diamond",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.41
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "18247c8cea9b3fa1029699a9286bb858ed5c0e08",
+    "normal": "50ca7de59878f290565bd3e3061ffaeb40144106",
+    "roughness": "fe8d461d17a2313d75370d3b1001a426e189f1eb"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5134540353243959,
+    "sourceMean": 0.5135
+   }
+  },
   "patStory": {
    "breakup": null,
    "card": false,
@@ -1073,16 +1103,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "9a27898c91ed39ed8d68917ce76e137cc4b98c61",
-    "normal": "52c1fec3b6bf8044d8b16ca43704c0bd01073cfa",
-    "roughness": "8ff757226f7e1aba551550ee09e90c97cb56f6e1"
+    "albedo": "28738307e9cd1c1e1314c945e89ff996d028d525",
+    "normal": "7d48c434b897aa46a82e85a01ac57d7c58a075f3",
+    "roughness": "778bbcf9b3d9f4e909268f2bfa65b99ce27fa1e2"
    },
    "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.3812928743070715,
-    "sourceMean": 0.3813
+    "mean": 0.3747033644492953,
+    "sourceMean": 0.3747
    }
   },
   "patWeave": {

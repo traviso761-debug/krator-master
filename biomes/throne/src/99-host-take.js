@@ -13,6 +13,10 @@ const seamX=z=>{let bx=0,bd=9;for(let x=-2400;x<=2400;x+=20){const d=Math.abs(pl
 function nearTree(key,x,z,minH){return THRONE.nearestTree(SPI(key),x,z,minH)||THRONE.nearestTree(SPI(key),x,z)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
 // a camera d metres from a tree, looking at its crown
 function atTree(T,d,az,dy,ty){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;return[cx,Math.max(gh(cx,cz,2),T.y0+(dy==null?T.H*.45:dy)),cz,T.x,T.y0+T.H*(ty==null?.6:ty),T.z];}
+function nearItem(name,x,z){let bx=x,bz=z,bd=1e9;const m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||M.name!=='biome:'+name)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,s);const d=Math.hypot(p.x-x,p.z-z);if(d<bd){bd=d;bx=p.x;bz=p.z;}}});return[bx,bz];}
+function atItem(name,x,z,d,az,dy,ty){const c=nearItem(name,x,z),cx=c[0]+Math.cos(az)*d,cz=c[1]+Math.sin(az)*d,y0=gh(c[0],c[1]);
+ return[cx,Math.max(gh(cx,cz,1.2),y0+(dy==null?1.4:dy)),cz,c[0],y0+(ty==null?.4:ty),c[1]];}
 // from a point, looking a given way across the ground
 const across=(x,z,az,d,h,th)=>{const tx=x+Math.cos(az)*d,tz=z+Math.sin(az)*d;return[x,gh(x,z,h),z,tx,gh(tx,tz,th==null?2:th),tz];};
 const NC=coneOf('newcone'),SN=coneOf('sentinel'),FN=flowOf('new'),SK=TUBE.sky[Math.floor(TUBE.sky.length/2)]||{x:0,z:0,r:12,d:10};
@@ -38,6 +42,12 @@ const VIEWS={
  'A skylight into the tube':[SK.x+SK.r*1.6,gh(SK.x,SK.z,SK.d+6),SK.z+SK.r*.8,SK.x,gh(SK.x,SK.z,1),SK.z],
  'Night: lamp caps under the plume':atTree(nearTree('lampcap',1500,400),5,2.0,1.2,.4),
  'Night: under the plume':across(1300,-200,1.3,600,5,2),
+ 'Red velvet and wire-stalks at the pools':atItem('sporeball',POOLS[0].x,POOLS[0].z,4.5,1.8,1.3,.8),
+ 'Snare rafts on the acid lake':atItem('acidpad',PIT.x,PIT.z,10,.9,3,.2),
+ 'Chalice parasols on the shore':atTree(nearTree('chalice',PIT.x,PIT.z,20),46,2.4,6,.5),
+ 'Lace fans at a vent':atTree(nearTree('lacefan',NC.x,NC.z),15,2.4,3,.5),
+ 'A medusa cap':atTree(nearTree('medusa',PIT.x,PIT.z),11,2.2,2,.45),
+ 'Cage lanterns':atTree(nearTree('cagebulb',NC.x,NC.z),14,2.6,3,.6),
  'From afar':look(-1800,2600,260,400,-1200,60),
 };
 VMODE['Night: lamp caps under the plume']='night';VMODE['Night: under the plume']='night';
@@ -72,7 +82,7 @@ const ORIGINS=['earth','krator','native'],LIVES=['shoulder','seam','plume','vent
 const HCHK={
  // every species of the table is placed somewhere on the stage
  // (the species of this station: the windward ones live on the windward stations' pages)
- placed(C){const here=THRONE.SPECIES.filter(S=>S.tags.plume!=='windward'&&!S.vents&&!S.cold),zero=here.filter(S=>!(C[S.i]>0)).map(S=>S.key);
+ placed(C){const here=THRONE.SPECIES.filter(S=>S.tags.plume!=='windward'&&!S.vents&&!S.cold&&(S.rift||!S.ashp)),zero=here.filter(S=>!(C[S.i]>0)).map(S=>S.key);
   return{ok:C.length===THRONE.SPECIES.length&&!zero.length,detail:zero.length?'never placed: '+zero.join(', '):here.length+' species of this station, the scarcest '+Math.min(...here.map(S=>C[S.i]))};},
  // every species and floor plant carries its tags: the project's, its origin and where it lives, Koppen inside the region
  tagged(L){const reg=Object.keys(THRONE.KOPPEN),bad=[];
@@ -91,6 +101,9 @@ const HCHK={
  // the bone bells grow only in the vents' steam
  bells(T,v){const b=T.filter(t=>THRONE.SPECIES[t.sp].key==='bonebell'),bad=b.filter(t=>v(t.x,t.z)<.06);
   return{ok:b.length>0&&!bad.length,detail:bad.length?bad.length+' bone bells out of the steam (first at '+[bad[0].x|0,bad[0].z|0]+')':b.length+' bone bells, all in the steam'};},
+ // the new flora stays on its own page: every placed tree with rift or ashp is on a page whose field exists
+ ownPage(T,rf,af){const bad=T.filter(t=>{const S=t.S||THRONE.SPECIES[t.sp];return S&&(S.rift||S.ashp)&&!((S.rift&&rf)||(S.ashp&&af));});
+  return{ok:!bad.length,detail:bad.length?bad.length+' new-flora trees off their page (first '+(bad[0].S||THRONE.SPECIES[bad[0].sp]).key+')':'the new flora stays on its own page'};},
  // the night lights Krator's own life: the glow at night is many times the day's
  glow(f){const d=f(0),n=f(1);f(LIGHT_MODE==='night'?1:0);return{ok:n.lamp>d.lamp*4&&n.bracket>d.bracket*4,detail:'lamp '+d.lamp.toFixed(2)+' to '+n.lamp.toFixed(2)+', bracket '+d.bracket.toFixed(2)+' to '+n.bracket.toFixed(2)};},
  // nothing roots under the water: no instance's origin more than a metre under the local surface
@@ -108,6 +121,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the plume turns the life to Krator\'s own',HCHK.turn(THRONE.TREES,plumeAt));
  add('the new flow lies on top',HCHK.onTop(FLOWS,'new',2));
  add('bone bells only in the steam',HCHK.bells(THRONE.TREES,FIELD.vent));
+ add('the new flora stays on its own page',HCHK.ownPage(THRONE.TREES,BIO.hasField('riftlife'),BIO.hasField('ashlife')));
  add('the night lights the native life',HCHK.glow(THRONE.setNight));
  add('nothing rooted under the water',HCHK.dry(P));
  add('no tree on a sheer rock face',HCHK.cliffs(THRONE.TREES));
@@ -121,6 +135,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the plume read backwards',HCHK.turn(THRONE.TREES,(x,z)=>1-plumeAt(x,z)));
  add('a flow buried by an older one',HCHK.onTop(FLOWS,'new',38));
  add('a bone bell on the shoulder',HCHK.bells([{sp:SPI('bonebell'),x:-2000,z:-500}],FIELD.vent));
+ add('an ash-desert tree on the rift',HCHK.ownPage(THRONE.TREES.concat([{sp:SPI('pyre')>=0?SPI('pyre'):0,S:{key:'pyre',ashp:true}}]),BIO.hasField('riftlife'),BIO.hasField('ashlife')));
  add('a glow that ignores the night',HCHK.glow(()=>({lamp:.2,bracket:.1})));
  add('a plant on the acid lake\'s bed',HCHK.dry([[PIT.x,PIT.lake-3,PIT.z,'test']]));
  {let bx=PIT.x,bz=PIT.z,bs=-1;for(let z=PIT.z-200;z<=PIT.z+200;z+=4)for(let x=PIT.x-200;x<=PIT.x+200;x+=4){const s=FIELD.slope(x,z)*FIELD.rock(x,z);if(s>bs){bs=s;bx=x;bz=z;}}

@@ -337,7 +337,10 @@ start. Not all 31 at once. The sky preset moves to `core/atmos`. The inspector b
 - Split `godot/` into `runtime/`, `import/`, `rendering/`, `world/`, `tests/`; `spike.gd` becomes disposable.
 - The mesh round trip as an assertion test: for each exported build, object, instance, triangle, material and
   tag counts, bounds, and terrain samples, against the page's own census. Today only Verge's sim has one.
-- `compare_shots.py` gets a perceptual metric and runs nightly.
+- ~~`compare_shots.py` gets a perceptual metric and runs nightly.~~ Done 2026-10-18: SSIM, mean absolute difference and the
+  differing fraction per pair, a difference image, `--threshold` and `--assert`; `tools/test_all.py --nightly` runs it on the
+  must-pass cases as a report (`COMPARE_ASSERT` switches it to a gate once the owner has read the first numbers:
+  `godot/README.md`, "Scoring the pairs").
 - The streamer: little-demo's scheme (quadtree terrain chunks, 512 m flora tiles cell-seeded, 128 m floor
   chunks, baked town tiles) ported as the world loader, reading `core/export` tiles.
 - Forward+ on a real GPU: only the owner's machine can do this (`godot/CHECKLIST.md`); it gates the look, not the
@@ -347,23 +350,31 @@ start. Not all 31 at once. The sky preset moves to `core/atmos`. The inspector b
 
 - **Done on `Voth-sim` and merged (2026-10-14, `fbdb7d6c`; `settlements/voth/HANDOFF-REFACTOR.md`):** Voth's
   citizens on `core/simulation` (places, the pedestrian layer, 53k actors with homes, jobs and rotas; needs, items,
-  economy, carriers, animals and pets; the wake, the lag and the half-hour buckets). The owner forks back off it to
-  keep tuning the economy; that work stays the Voth branch's (settlements/voth, core/simulation, core/city). Next: the
-  handoff's known defects (river barges by timer, happiness drifting down over a week, the arena's beast paths and
-  double drawing, verify's windows, the scarcity decision), Phase E's remainder (porters, barges, fodder, breeding,
-  beef), Phase F (guards and the night watch, Ordinators and priests, arena bouts, dhows, taxis, the pleasure barge),
-  then Verge onto the same core against its golden trace. For the refactor: the place grid
-  (`77-sim-2-places.js`) onto `KSPACE`; Godot replays baked tasks (a lazy leg resolved by `SIM.legRoute` before it is
-  baked; the export carries the economy's and animals' records when the runtime needs them).
-- Adopt ChatGPT §22's three levels explicitly in `SCHEMA.md`: record (exists), abstract (travels, works, eats,
-  no animation), presentation (near the player only). `PLAN.md` implies it; naming it keeps the Godot runtime
-  from being written against nodes.
+  economy, carriers, animals and pets; the wake, the lag and the half-hour buckets). **No separate economy session
+  runs any more (owner, 2026-10-18): the economy is tuned on the isle demo as it is built** (`settlements/isle-demo`,
+  two towns of one polity trading by sea; its PLAN.md sections 5 and 7), and `core/simulation` is edited on `main`.
+  Next, in the isle demo's order: the settlement key and the economy partitioned by it, trade between settlements as a
+  carrier with books, stocks per settlement; then the handoff's known defects (river barges by timer, happiness
+  drifting down over a week, the arena's beast paths and double drawing, verify's windows, the scarcity decision) as
+  the isle demo reaches each feature, Phase E's remainder (porters, barges, fodder, breeding, beef), Phase F (guards
+  and the night watch, Ordinators and priests, arena bouts, dhows, taxis, the pleasure barge), then Verge onto the same
+  core against its golden trace. For the refactor: the place grid (`77-sim-2-places.js`) onto `KSPACE`; Godot replays
+  baked tasks (a lazy leg resolved by `SIM.legRoute` before it is baked; the export carries the economy's and animals'
+  records when the runtime needs them).
+- **Stage 5 starts with the schema** (section 11, item 5). Write ChatGPT §22's three levels into `SCHEMA.md` against the
+  isle demo: record (exists), abstract (a town nobody is watching: its places produce and consume by the hour, its
+  books and routes tick, nobody is posed), presentation (near the player only); what an unloaded town window ticks,
+  what it does not, and what the books must balance to when the player arrives after days away. Then the `sim`
+  export section's required fields for the isle demo's profile. Naming the levels keeps the Godot runtime from being
+  written against nodes.
 
 ### Stage 6: one world (M7)
 
-Two kits and one settlement streaming together in Godot from the scale model's terrain, the owner's trial list
-from `openworld/little-demo/KNOWN_ISSUES.md` worked in order (the Shade tile, the Verge cliff, highways joining
-street graphs, town tiles keeping their shaders).
+Two kits and one settlement streaming together in Godot from the scale model's terrain. **Since 2026-10-18 this is
+the isle demo's region** (section 11): the ring isles biome and the Islanders kit with the two towns M6 opened,
+streamed at 1:1 across the 122 km of sea between them. The owner's trial list from
+`openworld/little-demo/KNOWN_ISSUES.md` (the Shade tile, the Verge cliff, highways joining street graphs, town tiles
+keeping their shaders) is worked after it, on little-demo.
 
 ### What not to do (all three agree)
 
@@ -449,7 +460,7 @@ Hykkousoi vessels to the Ring Sea kit, and renamed "silt strider" to "elephant b
   a placement hash and a screenshot pair.
 - **`core/export` gets a `city` section** (ways, lots, greens and their steps), so Godot receives a city as records
   and baked meshes. *The section exists as a registration point with a written contract (2026-10-13,
-  `core/export/README.md`, "Stubs"); `core/city` registers into it when the Voth branch pauses.*
+  `core/export/README.md`, "Stubs"); `core/city` registers into it for the isle demo's city plan (its P6; section 11).*
 - **Stage 5 starts from the transport routes.** Voth's ferries, elephant bugs and ships used random departures
   that Godot could not reproduce; `SIM.transportBake` and `SIM.vehiclePose` make them timetables, which is the
   Phase 5 rule. Verge's own `SIM` moves onto the core with them.
@@ -570,9 +581,9 @@ Voth city page first, adding `core/simulation` modules (`77-sim-6-needs.js`, `-i
 
 **The directive.** Streetlab's Voth city plan and site editor is the most complete viewer and editor in the repo; every
 settlement takes it. This is the roadmap's stage 3 (`GODOT-PLAN.md` Phase 1, "one host shell") with Streetlab as the
-template instead of a shell written from scratch. Because the Voth and simulation branch is still changing Streetlab,
-the interface is **copied and generalised into `core/host/`**; Streetlab's own files are not edited, and it switches to
-`core/host` when that branch pauses (a note maps its `VC.*` calls to `KHOST.*`).
+template instead of a shell written from scratch. Because the Voth and simulation branch was still changing Streetlab
+at the time, the interface was **copied and generalised into `core/host/`**; Streetlab's own files were not edited, and
+Voth switches to `core/host` when next touched (step 6 below; a note maps its `VC.*` calls to `KHOST.*`).
 
 **What it is** (inventory from the source, 2026-10-12): the bar with layers, legend and export; foldable panels;
 orbit, pan, fly and walk with a pin and a ledge guard; a depth range that follows the camera; the inspector; the
@@ -630,7 +641,7 @@ and sheet, 97 minimap (moved from `core/minimap/88a`), 98 edit modes (emit opera
 | 3 | Iziz (the Ancients lineage, full registry), then Highlands (the same camera). **Done 2026-10-15** (the vernacular sheet, the city, the rows and Roketstad on `core/host`; `core/host/README.md`, "Used by") | 2 |
 | 4 | fauna mode and ground brushes on `KFIELD`. **Owner, 2026-10-13:** the fauna kit was fleshed out on its own branch (`ccr-05259b8d-kuy4pm`: the six-limbed beasts, the centaur, arboreal and climbing gaits, the Rift and lowland gliders, the plumelands' ash runner and racer), so fauna mode is built on that kit once it is merged: it places and edits animals from `kits/fauna`'s registry and life data (biome, diet, activity, traits, gait), as ADD/MOVE/REMOVE ops in `core/edits`, not a copy of Streetlab's flora mode. **Done 2026-10-15** on Sedesert (the one `KFIELD` build): fauna mode from `kits/fauna`, ground brushes (`core/terrain/31-core-field-brush.js`), strokes as `core/edits` ADDs replayed on undo (`core/host/README.md`) | 1 |
 | 5 | every other settlement and kit sheet: Dalab, Xanadu, Reed Lake, Screamers, Jimjam, Mav's Refuge, Yuni, Locus, Mungo, Shade, Verge, Noah's Regret, Ys, Dhelv, the kits | about half a session each |
-| 6 | Voth (`settlements/voth`) onto it, with the Voth branch, when it pauses | with that branch |
+| 6 | Voth (`settlements/voth`) onto it, when next touched (no separate branch owns it since 2026-10-18) | 2 |
 
 Each step is proven by screenshots with the chrome hidden matching the old ones, `verify.py --assert` unchanged, the
 scripted walk, and a baseline that moves only for the adopted pages.
@@ -640,6 +651,67 @@ scripted walk, and a baseline that moves only for the adopted pages.
 from +x, Iziz's from +z), on frame hooks (four conventions) and on keys (Q/E, F, G, [ ], b, x, p, i): the host has one
 keymap and leaves Alt+click to `tools/edits`. The host is `[web]` and is not ported to Godot; the operation log is plain
 data, so Godot's tools read and write the same log.
+
+## 11. The refactor audit (2026-10-18) and the adjusted roadmap
+
+ChatGPT's read-only audit of `main` at `a4ace118` (the owner's "Krator refactor audit" doc) reviewed stages 0 to 2.
+Its verdict: continue from the refactored architecture, treat the export's stubs as the gap, and make the next
+milestone one complete, tested settlement through the canonical export rather than more isolated exporter or importer
+features. Checked against the tree the same day:
+
+**Right.** The export's stubs are the real gap: five sections are declared stubs, Iziz alone fills `fixtures` and
+`furniture`, `sim` travels through Verge's and Dhelv's own verify scripts, `city` has only its registration point, and
+nothing says which sections a given case must have, so a world file can pass `EXPORT.check` with no interiors,
+furniture or citizens. The terrain field has one taker: seventeen builds list `CORE_TERRAIN`, but that is mostly the
+carve; only sedesert's build takes `30-core-field.js`, so one export in about thirty carries a `krator-field` ground
+(stage 2a-b's reseeding event, "Port: next" item 5, is still open). The simulation is not yet one contract: Voth is on
+`core/simulation`, Verge keeps its own `SIM` with its own Godot twin, and stage 5's three levels are not in `SCHEMA.md`.
+LOD needs a Godot-native policy written down: finding 16 (`GODOT-PLAN.md`) invented one in the importer on 2026-10-16
+(150 m cells, ranges widened by the half-diagonal), ~~but it lives in `biome_import.gd`, not in the export contract~~ (2026-10-18: it is in the contract now, `convention.lod` in `core/export`; see item 4).
+
+**Stale or misread.** Forward+ on a real GPU has run: findings 15 to 20 record the 2026-10-16 run on the owner's
+machine (Godot 4.7.2), with frame rates and five same-day fixes; what remains is the editor import route, a perf table
+and side-by-side comparisons. The `84-host-ground.js` fragments are not terrain duplication: they are the biome core's
+browser-side ground draw, tagged `[web]`, where the port rules put drawing; the field is the data side. Its stage 1
+items 1 and 2 are done: `checks.yml` runs `tools/test_all.py` on every push and fails on a dirty tree after the
+rebuild, and ten biome builds plus Iziz already call the exporter from their build scripts. Its P2 points (duplication,
+`core/space` adoption, geometry counts) are covered by stage 1's geometry report and `core/city/PLAN.md`; the geometry
+report is extended to the export cases rather than a new tracking effort started.
+
+**The adjustments** (owner's call, 2026-10-18, with the isle demo as the lived-in settlement):
+
+1. **Export profiles** (new, small, first). `EXPORT.check(world, {profile})` takes the sections a case must fill; a
+   required section that reads `stub`, `none` or `error` fails that build's `verify.py --assert`, and the nightly runs
+   it on the must-pass set. The audit's best new idea; one session.
+2. **The must-pass set,** named in `GODOT-PLAN.md`'s milestones: sedesert's tile (M4, done), Iziz's district (M5,
+   done), **the isle demo's two towns (M6)**. Every other build is preview-only until it meets a profile. The isle demo
+   replaces the Voth district as M6 because it is smaller (a few thousand citizens, not 53k), stands on the scale
+   model's own ground from the start, is the first real taker of the `sim` and `city` sections, and its two towns 122
+   km apart test what Voth cannot: a settlement nobody is watching, and trade between settlements
+   (`settlements/isle-demo/PLAN.md`, section 7). Voth becomes the scale test after M6.
+3. **The terrain measure.** Replace "39 `terrainH` definitions" with exports whose ground is a field, one per terrain
+   family: a biome heightfield (sedesert, done), the scale-model region (the isle demo), a carve build (the Throne or
+   Xanadu), a city on sampled ground (Iziz). Migrate one build at a time with an accepted baseline rewrite: the
+   audit's noise warning and this roadmap's own rule.
+4. **Stage 4's Godot items, rewritten.** Strike the first GPU run. Add: the editor import route (CHECKLIST item 3c); a
+   fixed perf table per must-pass case (load time, frame time, VRAM, draw calls) on the owner's machine; the perceptual
+   `compare_shots.py` metric already listed; and the 150 m LOD cell policy written into `core/export`'s contract, so
+   pages never export LOD copies and the importer's cells are the one policy.
+   **Done 2026-10-18:** `convention.lod = {cell: 150, widen: 'half-diagonal', copies: 'none'}` in `07-core-export.js`;
+   `biome_import.gd` reads the cell from it (default 150 for older exports and the krator-biome JSON route);
+   `world_test.gd` asserts it and rift's 175/47/12 node counts (`core/export/README.md`, "LOD").
+5. **Stage 5 starts with the schema** (above): the three levels against the isle demo, then the `sim` section's required
+   fields for its profile, before more sim features cross to Godot. Verge's own `SIM` retires when it moves to the core.
+6. **Stage 3 stays where the owner put it** (section 9) but does not gate items 1 and 2: the host shell is `[web]` work
+   and touches no export.
+7. **No separate economy session.** The owner's Voth economy fork is closed (2026-10-18); `core/simulation` is edited
+   on `main`, and the isle demo is the economy's test case as it is built. CLAUDE.md "Who works where" and the isle
+   demo's PLAN.md say so; the "Voth branch's" notes in `core/export/README.md` and `GODOT-PLAN.md` are amended.
+
+**The order from here:** the isle demo's P5 (the owner lays out the towns) and P6 (two `KCITY` plans, `core/city`
+registering its `city` section), item 1 (profiles) as P6b, item 5 (the schema) opening P7, P7 (the partition, trade,
+the abstract-level week test), then P8 as M6 and M7. Stage 3's step 5 (the other settlements onto `core/host`) and
+item 3's terrain families run beside it whenever a session has room.
 
 ## Appendix: how this evaluation was made
 
