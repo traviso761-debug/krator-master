@@ -26,5 +26,18 @@
   "kits/ancients/src/89d3-arcube-ruin.js",
   "kits/ancients/src/89g-monolith.js"
  ],
- "pack": "pylon"
+ "pack": "pylon",
+ "furniture": [
+  "iziz",
+  "pylon",
+  "post-apoc",
+  "generic",
+  "generic-goods",
+  "scrap",
+  "jobs"
+ ],
+ "interiorSets": [
+  "iziz",
+  "pylon"
+ ]
 }

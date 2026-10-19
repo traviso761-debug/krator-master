@@ -18,7 +18,7 @@ function buildPylSalvagersGuild(G,o){reseed(9201+(o.v|0));const W=26,D=14,H=9.5,
  vnReg('Salvagers\' Guild — the hall',0,Z,14,H+1,{role:'guild'});vnReg('Salvagers\' Guild — tower',-W/2-1.5,Z-1,3.6,17);vnReg('Salvagers\' Guild — the vault of finds',W/2+3.2,Z+1,4,5);
  vB('vStone',0,0,Z,W+1,.35,D+1,0,st);vB('vStone',0,0,zf+2.2,W-4,.2,3.6,0,st);vB('vStone',0,0,zf+1,W-2,.35,1.6,0,st);
  vnBody('vPlaster',0,.35,Z,W,H,D,0,cr,{t:.4});
- for(let k=0;k<N;k++){const x=-W/2+(k+.5)*W/N;pynFrame('tomb',x,.35,zf,0,2.4,4.6,{rim:.22,n:2,cs:[sf,or],fill:k===3?'D':'G',out:.05});if(k%2===1)vnLamp(x+1.85,4.2,zf+.02,0);}
+ for(let k=0;k<N;k++){const x=-W/2+(k+.5)*W/N;pynFrame('tomb',x,.35,zf,0,2.4,4.6,{rim:.22,n:2,cs:[sf,or],fill:k===3?'W':'G',fc:k===3?vC(PYPAL.walnut[0]):null,out:.05});if(k%2===1)vnLamp(x+1.85,4.2,zf+.02,0);}
  pynBand(0,5.6,Z,W,D,.3,.15,0,or);
  pynPortCluster(0,6.2,zf,0,W-1.5,H-6.6,11,1.25,sf,'G');
  vB('vPlaster',0,H+.35,Z,W+.3,.4,D+.3,0,or);vB('vPlaster',0,H+.75,Z,W,.6,D,0,cr);
@@ -70,9 +70,9 @@ function buildPylCultShrine(G,o){reseed(9231+(o.v|0));const Z=-1.5;
  vnReg('Shrine of the Ancients',0,Z,6.5,10,{type:['religious'],role:'priest'});
  vB('vStone',0,0,Z,12.4,.4,7.6,0,st);vnStairs(0,0,Z+4.4,0,3.2,.4,2,'vStone',st);
  for(const s of[-1,1]){kput('vBatterP',[s*3.7,.4,Z],null,[3.6,9,4.6],wh);vB('vPlaster',s*3.7,7.2,Z,3.3,.35,4.2,0,or);
-  const lean=Math.atan(.32/9),hz=2.3-.32*3.5/9;vBq('vDarkB',s*3.7,3.9,Z+hz+.03,.4,5.8,.08,vQ(0,-lean,0),null);vB('vPlaster',s*3.7,.4,Z+2.1,3.2,.35,.2,0,or);}
+  const lean=Math.atan(.32/9),hz=2.3-.32*3.5/9;vBq('pyPaneB',s*3.7,3.9,Z+hz+.03,.4,5.8,.08,vQ(0,-lean,0),null);vB('vPlaster',s*3.7,.4,Z+2.1,3.2,.35,.2,0,or);}
  vB('vPlaster',0,.4,Z-.4,4,6.2,3.2,0,wh);
- pynFrame('point',0,.4,Z+1.2,0,1.8,4.6,{rim:.2,n:2,cs:[sf,or],fill:'D',out:.05});
+ pynDoorway('point',0,.4,Z+1.2,0,1.8,4.6,{rim:.2,n:2,cs:[sf,or],out:.05});
  const pf=loc(0,Z+1.0,0,0,0);kput('vGablePl',[pf[0],6.6,pf[1]],vQ(Math.PI/2,0,0),[.6,1.8,7.6],or);
  for(const s of[-1,1])for(const z of[Z+4.9,Z+6.9]){vB('vPlaster',s*5,0,z,.5,4.2,.5,0,wh);kput('vPyrS',[s*5,4.2,z],null,[.5,.6,.5],sf);vBall('vBulb',s*5,4.95,z,.12);}}
 

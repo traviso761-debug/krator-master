@@ -240,7 +240,7 @@ paving), the hex grille card (`pyGrille`, `pyGrilleD`: portholes), and the worn 
 | P3 | salvage and industry, civic | **built 2026-10-18**: 11 salvage, industry and trade buildings and 6 civic, in three more mixed-street rows; the post-apoc pack (section 4) still to wire |
 | P4 | the Ancient families in three states, the temple, the Monolith read in place, the grid as a saved `core/city` site (section 5) | **built 2026-10-18** except the grid: six families in four states (Pylon's `repaired` added beside Iziz's `rehab`), the temple, the Monolith in place; the grid is the city page's job |
 | P5 | the governor's palace: blueprint sheets after the forks (`VASSAL-KITS.md` §3.4), then the building | **built 2026-10-18**: the exterior on the blueprint's frame (x = -v, z = 1 - u); its rooms come with the interior set (P6) |
-| P6 | the catalog culture file, interiors | |
+| P6 | the catalog culture file, interiors | **built 2026-10-18**: `kits/catalog/krator-master-furniture-pylon.js` (four pieces: the leather banquette, the hearth block, the walnut platform bed, the niche planter; the rest from Iziz outright, the owner's call), `kits/interiors/sets/pylon.js` (nine buildings furnished, the rest skipped with reasons; the culture chains pylon -> iziz -> post-apoc -> scrap -> generic), kit.json `furniture` and `interiorSets`. Every profiled opening is a door, a pane or a glow, no black voids (`pynDoorway`, the W and M kinds, `pyPane`). Later: the vault rows, the neo villa, the guild, the shrine, the clinic and the palace on its blueprint |
 | P7 | the Godot export check, the gallery | `tools/test_all.py` passes |
 
 ## 10. Open questions for the owner
