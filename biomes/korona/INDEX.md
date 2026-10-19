@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/korona-basin.html`, `dist/korona-hollow.html`, `dist/korona-trench.html`, `dist/korona.html`
+Built output (never open it; edit `src/` and rebuild): `dist/korona-basin.html`, `dist/korona-gorge.html`, `dist/korona-hoar.html`, `dist/korona-hollow.html`, `dist/korona-trench.html`, `dist/korona.html`
 
 Build: `cd biomes/korona && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -23,12 +23,12 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 10 | the gorge floor (43); the rock (KSTACKS records: core/terrain/37-core- (58); the station's say: STAGE (47 reads it; the pitch (79) |
-| `47-host-land.js` | 19 | the fields (biomes/WORLD.md; BIOME-API.md): wet, (24); the host binding (before the meshes: their paint (42); the library layers (or procedural without the pa (58); the floor (one mesh: three layers by vertex weig (80); the rock (KSTACKS meshes): the walls and the top (104); THE CARVINGS (LORE.md 6.18): a strip on a bed's  (143); the water: the stream's ribbon, the rain pools,  (166) |
-| `50-biome-korona-species.js` | 24 | palettes (sRGB; a library card carries its own c (22); the trap records (core/biome/37-core-traps.js):  (34); the tree-scale species (52); harvest (biomes/FRUIT.md; kits/crops) (63); the small plants and the carnivores, tagged (72); leaf textures (procedural, greyscale: the fallba (98); geometries (the necanyons kit's, read in place)  (137); materials (143); instanced items: the owner's sheets by cell, two (188) |
+| `47-host-land.js` | 20 | the fields (biomes/WORLD.md; BIOME-API.md): wet, (27); the host binding (before the meshes: their paint (46); the library layers (or procedural without the pa (65); the floor (one mesh: three layers by vertex weig (88); the rock (KSTACKS meshes): the walls and the top (112); THE CARVINGS (LORE.md 6.18): a strip on a bed's  (151); the water: the stream's ribbon, the rain pools,  (174) |
+| `50-biome-korona-species.js` | 25 | palettes (sRGB; a library card carries its own c (22); the trap records (core/biome/37-core-traps.js):  (34); the tree-scale species (54); harvest (biomes/FRUIT.md; kits/crops) (65); the small plants and the carnivores, tagged (74); leaf textures (procedural, greyscale: the fallba (102); geometries (the necanyons kit's, read in place)  (141); materials (147); instanced items: the owner's sheets by cell, two (193) |
 | `55-biome-korona-trees.js` | 9 | the placement grid (the necanyons zones + Korona (12); keep-clear between trees (core/space) (30); the builders: (T, st, lv) with lv 2 near, 1 mid (41); impostors (the far trees) (63); the passes (data: species, cell, acceptance by z (77) |
-| `57-biome-korona-carnivores.js` | 16 | the plants (23); the passes (97) |
+| `57-biome-korona-carnivores.js` | 20 | the plants (24); the passes (118) |
 | `60-biome-korona-floor.js` | 3 |  |
 | `70-biome-korona.js` | <1 |  |
-| `88-host-build.js` | 2 |  |
+| `88-host-build.js` | 3 |  |
 | `99-host-take.js` | 12 | the inspector's words: a plant names its species (34); the probe's budgets and the kit's own checks (ve (50); the page, handed to the host (98) |
 | `99-tail.html` | <1 |  |

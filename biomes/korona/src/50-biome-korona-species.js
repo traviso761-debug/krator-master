@@ -47,6 +47,8 @@ KORONA.TRAPS={
  snareflower:TR({kind:'snare',mouth:.6,preyMax:'medium',lure:'scent',danger:.5}),
  punjipit:TR({kind:'pitfall',mouth:1.1,preyMax:'person',lure:null,danger:1}),
  beartrap:TR({kind:'snap',mouth:1.3,preyMax:'large',lure:'scent',danger:.8}),
+ frosttank:TR({kind:'tank',mouth:.3,preyMax:'small',lure:null,danger:.2}),
+ butterwort:TR({kind:'flypaper',mouth:.03,preyMax:'insect',lure:'dew'}),
  numbthorn:TR({kind:'snare',mouth:.1,preyMax:'person',lure:null,danger:.7,cycle:{wait:900000,shut:.4,digest:300000,reopen:60000}})};
 
 // ---------------------------------------------------------------- the tree-scale species
@@ -88,7 +90,9 @@ KORONA.PLANTS={
  snareflower:PK('Snare flower','tropic','humid','yes',['Af'],'floor',['snare'],HV('none',[],false,'The Throne\'s snare flower, here on the warm poor floor: petals that are a noose. Danger 0.5.'),'snareflower'),
  punjipit:PK('Punji pit','hypertropic','humid','yes',['Af','XA'],'floor',['lid','spike','mouth'],HV('none',[],false,'A pitcher that lives under the ground: only its lid shows, a round of dead leaves flush with the floor, and a person who steps on it goes through onto spikes of bone-hard leaf and into the fluid below. A third stand with the mouth open and the lid thrown back. Danger 1.'),'punjipit'),
  beartrap:PK('Bear-trap plant','tropic','humid','yes',['Af'],'floor',['jaw'],HV('none',[],false,'A flytrap of a kind: two toothed jaws a metre and more across lying open on the peat, their teeth interlocked when they shut. A leg stepped between them is held to the bone; they shut in a blink and open again in a week. Danger 0.8.'),'beartrap'),
- numbthorn:PK('Numb thorn','tropic','humid','yes',['Af','Cfa'],'floor',['stalk','spike'],HV('none',[],true,'A swollen green stalk bristling with long hollow thorns, red at the tip, that whip at whatever brushes it. The venom numbs a limb in a minute and the whole body in ten; the floor\'s other traps finish the work. The tribes milk the thorns for a hunting poison and a surgeon\'s numbing. Danger 0.7.'),'numbthorn'),
+ numbthorn:PK('Lash flower (the numb thorn)','tropic','humid','yes',['Af','Cfa'],'floor',['petal','mouth'],HV('none',[],true,'A thick segmented stalk out of a rosette of leaves, and on it a flower of four big pleated orange petals round a hot-pink throat, a long tongue hanging from it. The tongue lashes at what comes near and its touch numbs a limb in a minute, the whole body in ten; the petals fold over the throat on what it holds, and the floor\'s other traps finish the rest. The tribes milk the tongue for a hunting poison and a surgeon\'s numbing. Danger 0.7.'),'numbthorn'),
+ frosttank:PK('Frost tank','polar','humid','yes',['ET','Dsc'],'cap',['mouth'],HV('none',[],false,'A small pale pitcher of the ice tables that holds meltwater: it freezes at night, takes what falls through the thin ice by day, and splits in spring to drop a winter\'s catch. A foot goes through it to the ankle. Danger 0.2.'),'frosttank'),
+ butterwort:PK('Butterworts','polar','humid','yes',['ET','Dsc'],'cap',['pad'],HV('none',[],true,'Sticky pale rosettes flat on the melt pools\' margins, the ice tables\' flypaper for the summer\'s flies. Their leaves curdle milk and heal a cut.'),'butterwort'),
  wallfern:PK('Staghorn ferns','tropic','humid','yes',['Af','Cfa'],'ledge',['staghorn'],HV('none',[],false,'Staghorn ferns pressed to the wet wall under every seep line: the hanging gardens\' green.')),
  cairn:PK('A cairn (the safe path)','tropic','humid','no',['Af'],'floor',['cairn'],HV('none',[],false,'A stone the tribes set every twenty paces along the one way through a hollow. Whistle the Hum and keep to the cairns.')),
 };
@@ -150,7 +154,7 @@ const M=KORONA.MAT={
  cobra:leaf(TX.tubes,'cobra',{swayA:.04}),cobrab:leaf(TX.tubes,'cobrab',{swayA:.04}),trumpet:leaf(TX.tubes,'trumpet',{swayA:.03}),
  star:leaf(TX.star,'star',{swayW:'0.0',swayA:0}),lure:leaf(TX.bloom,'lure',{swayA:.06}),bulb:leaf(TX.bulb,'bulb',{swayA:.08}),
  snare:leaf(TX.bloom,'snare',{swayA:.05}),giantpad:leaf(TX.pad,'giantpad',{swayW:'0.0',swayA:0}),staghorn:leaf(TX.stag,'staghorn',{swayA:.03}),
- jaw:leaf(TX.jaw,'jaw',{swayW:'0.0',swayA:0,alphaTest:.45}),lid:leaf(TX.lid,'lid',{swayW:'0.0',swayA:0}),
+ jaw:leaf(TX.jaw,'jaw',{swayW:'0.0',swayA:0,alphaTest:.45}),lid:leaf(TX.lid,'lid',{swayW:'0.0',swayA:0}),petal:leaf(TX.fan,'petal',{swayW:'0.0',swayA:0}),
  solid:BIO.solidMat(null)};
 // THE LIBRARY (core/materials/PLAN.md): the slots materials.json names take the library's maps; the procedural ones stay
 // without the pack. A sheet's cell is the item's uv (cellUV), not the pack's: one texture per sheet, many cells
@@ -180,6 +184,7 @@ trapHook(M.jaw,KORONA.TRAPS.beartrap,'hinge');
 trapHook(M.star,KORONA.TRAPS.groundstar,'fold');
 trapHook(M.giantpad,KORONA.TRAPS.trappad,'fold');
 M.thorn=BIO.solidMat(null);trapHook(M.thorn,KORONA.TRAPS.numbthorn,'whip');
+trapHook(M.petal,KORONA.TRAPS.numbthorn,'hinge');
 
 [['bark.coin','Coin-tree trunks'],['bark.lacefan','Lace-fan boles (dark, fibrous)'],['pitcher','Man-eater pitchers (the waxy outside)'],['throat','Man-eater throats (hairs and fluid)'],['tendril','Coil tendrils (banded, warty)']]
  .forEach(([k,lab])=>{const m=k==='bark.coin'?M.bark.coin:k==='bark.lacefan'?M.bark.lacefan:M[k];BIO.bucket(k,m,{label:lab,uvScale:k==='pitcher'?[1.4,1.4]:k==='throat'?[1,1]:k==='tendril'?[.8,.8]:[2,3]});});
@@ -207,5 +212,6 @@ BIO.def('lid',G.pad(),M.lid,{label:'Punji-pit lids (dead leaves flush with the f
 BIO.def('mouth',G.pad(),M.solid,{label:'Maws (a punji pit\'s open mouth, a trap pad\'s middle)'});
 BIO.def('spike',BIO.geo.rod(4),M.solid,{label:'Spikes and teeth'});
 {const g=BIO.geo.rod(4);g.translate(0,.5,0);BIO.def('thorn',g,M.thorn,{attrs:['aTrap'],label:'Numb thorns (they whip)'});}
+BIO.def('petal',cellUV(G.lobe(),CELL(4)),M.petal,{attrs:['aTrap'],label:'Lash-flower petals (they fold over the throat)'});
 BIO.def('stalk',BIO.geo.rod(5),M.solid,{label:'Stalks and stems'});
 })();

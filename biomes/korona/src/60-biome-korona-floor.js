@@ -7,7 +7,7 @@ const PAL=KORONA.PAL,C=KORONA.C,P=KORONA.PLANTS,SEED=0x0C0A3;const {bright,vary}
 const col=(slot,set,k)=>KORONA.libCol(slot,bright(vary(pick(set),.03,.08,.06),k==null?1.2:k));
 const tuft=(item,x,z,h,w,c)=>BIO.put(item,[x,BIO.terrainH(x,z)-.04,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[w,h,w],c);
 const NAMED=[];
-KORONA.buildFloor=function(R,q){q=q==null?1:q;R=R||1500;const L=BIO.radii(),st={lace:0,rfan:0,stormpod:0},H=BIO.host,bias=KORONA.bias,F=KORONA.F;
+KORONA.buildFloor=function(R,q){q=q==null?1:q;R=R==null?1500:R;const L=BIO.radii(),st={lace:0,rfan:0,stormpod:0},H=BIO.host,bias=KORONA.bias,F=KORONA.F;
  NAMED.length=0;
  const lvOf=(x,z)=>{const d=BIO.lodD(x,z);return d<L.floor[0]?2:d<L.floor[1]?1:0;};
  const bog=(x,z)=>H.bogAt?H.bogAt(x,z):0,top=Z=>Z.zone==='cap'||Z.zone==='bench';

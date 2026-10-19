@@ -68,7 +68,8 @@ const windwardOf=(x,z)=>smooth(320,-320,x-crestX(z));
 const heightK=(x,z)=>clamp((floorH(x,z)+440)/860,0,1);   // 0 at the salt, 1 on the crest
 const STAGE={
  name:'Korona: the trenches',R:TERR.R,bodies:ROCK,floor:floorH,capY:PROW.y0+140,seed:14,talusH:18,
- stream:null,streamD:()=>1e9,pools:SALT,
+ stream:null,streamD:()=>1e9,pools:SALT,heroR:1600,
+ bare:(x,z)=>smooth(-330,-392,floorH(x,z)),
  windward:windwardOf,
  // the salt: nothing roots on the crust (wet taken away, poor given)
  wetExtra:(x,z)=>-.9*smooth(-300,-410,floorH(x,z))+.12*(1-heightK(x,z))*windwardOf(x,z),

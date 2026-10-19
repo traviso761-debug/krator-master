@@ -97,6 +97,7 @@ if STATION:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
     for f in STN.get('core',[]): CORE_BIOME=CORE_BIOME+[f] if f not in CORE_BIOME else CORE_BIOME
+    for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))   # another kit read in place (the gorge: sedesert)
 for slot,(d,p) in KITS.items(): PATH[slot]=os.path.join(d,p)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
@@ -130,6 +131,13 @@ SIDE=None if '--inline-packs' in sys.argv else {}
 VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'korona',side=SIDE),
          '44b-host-matlib-pack-necanyons.js':_mp.fragment(NEC,'necanyons',side=SIDE),
          '44c-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE)}
+# a station's other kits' packs (station.json "packs": {pack: that kit's folder, from this one}), without their ground layers
+if STATION:
+    import json as _json2
+    for _pn,_pd in STN.get('packs',{}).items():
+        _pj=os.path.join(HERE,_pd,'tex','pack.json')
+        _ex=[f for f in (sorted(_json2.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []) if f.startswith('ground') or f.startswith('tower') or f.startswith('jetty')]
+        VIRTUAL['44d-host-matlib-pack-%s.js'%_pn]=_mp.fragment(os.path.normpath(os.path.join(HERE,_pd)),_pn,exclude=_ex,side=SIDE)
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]

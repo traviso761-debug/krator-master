@@ -19,6 +19,7 @@ const blocked=(x,z,pad)=>SPACE.some(x,z,pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+pad)|
 const offPath=(x,z)=>smooth(3,9,KORONA.pathD(x,z));
 // the cobra meadow is a station's extra (the hollow's edge): 0 without one, unlike a bias
 const meadow=(x,z,Z)=>{const H=BIO.host.korona,b=H&&H.bias&&H.bias.cobraMeadow;return b==null?0:typeof b==='function'?b(x,z,Z):b;};
+const extra=(k,x,z,Z)=>{const H=BIO.host.korona,b=H&&H.bias&&H.bias[k];return b==null?0:typeof b==='function'?b(x,z,Z):b;};
 
 // ---------------------------------------------------------------- the plants
 const tuft=(item,x,z,h,w,c,y)=>BIO.put(item,[x,(y==null?BIO.terrainH(x,z):y)-.04,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[w,h,w],c);
@@ -59,7 +60,8 @@ function maneater(x,y,z,lv,st,id){const H=rr(2.1,3.2),R=H*.42,a=rr(0,TAU),lean=r
 function tendril(x,y,z,lv,st,id){const n=lv===2?26:14,turns=rr(1.3,2),r0=rr(2,3.2),dir=rng()<.5?1:-1,a0=rr(0,TAU),pts=[];
  for(let i=0;i<=n;i++){const t=i/n,ang=a0+dir*t*TAU*turns,rho=r0*(1-.65*t),px=x+Math.cos(ang)*rho,pz=z+Math.sin(ang)*rho;
   pts.push({x:px,y:BIO.terrainH(px,pz)+.14+2.4*t*t*t,z:pz,r:.24-.13*t});}
- st.tris+=BIO.tube('tendril',pts,col('tendril',PAL.tendril,1),{seg:lv===2?8:5,cap:true});st.tendril++;return r0;}
+ st.tris+=BIO.tube('tendril',pts,col('tendril',PAL.tendril,1),{seg:lv===2?8:5,cap:true});
+ BIO.put('mouth',[x,y+.02,z],qEuler(0,rr(0,TAU),0),[.6,1,.6],C(0x1a2a12));st.tendril++;return r0;}
 // THE PUNJI PIT: a lid of dead leaves flush with the floor with the spikes just through it; a third stand open, the lid
 // thrown back, the mouth black, the spikes round its rim (the owner, 2026-10-19: a pitcher that lives under the ground)
 function punji(x,y,z,lv,st,id){const r=rr(.5,.85),open=KTRAPS.phase(id+'/o')<.35,bone=bright(pick([0xd8d0b8,0xc8c0a8,0xe0d8c0]),1),n=lv===2?ri(7,12):5;
@@ -83,26 +85,45 @@ function trapPad(x,y,z,r,lv,st,k,id){const fold=false,ry=rr(0,TAU),c=col('giantp
  for(let i=0;i<n;i++){const a=i/n*TAU+rr(-.1,.1),h=rr(.18,.32)*r;if(fold&&Math.sin(a-ry)>0)continue;
   BIO.put('spike',[x+Math.cos(a)*r*.94,y+.04+h*.4,z+Math.sin(a)*r*.94],qEuler(-.9*Math.sin(a),0,.9*Math.cos(a)),[.03*r,h,.03*r],bone);}
  st.pad++;}
-// THE NUMB THORN (the owner, 2026-10-19): a swollen stalk bristling with long hollow thorns that whip at what brushes it; the
-// venom numbs a limb in a minute, and the floor's other traps finish the work
-function numbthorn(x,y,z,lv,st,id){const H=rr(1.1,2),n=lv===2?ri(7,11):5,sc=bright(pick([0x4a5a2a,0x3a4a22,0x5a6a30]),1),bone=bright(pick([0xe0d8c0,0xd0c8b0]),1),tip=C(0xb02020);
- BIO.put('stalk',[x,y+H*.5,z],qEuler(rr(-.08,.08),0,rr(-.08,.08)),[.16,H,.16],sc);BIO.put('cairn',[x,y+.12,z],null,[.5,.3,.5],sc);
- for(let k=0;k<n;k++){const a=k*2.4+rr(-.3,.3),h=y+H*(.2+.75*(k/n)),L=rr(.5,.95),el=rr(-.35,.35);
-  const dx=Math.cos(a)*Math.cos(el),dz=Math.sin(a)*Math.cos(el),dy=Math.sin(el);
-  BIO.put('thorn',[x,h,z],qEuler(0,-a,Math.PI/2-el),[.035,L,.035],bone,{aTrap:[(KTRAPS.phase(id)+k*.07)%1,1,rr(.6,1),0]});
-  BIO.put('spike',[x+dx*L*.96,h+dy*L*.96,z+dz*L*.96],qEuler(0,-a,Math.PI/2-el),[.03,.1,.03],tip);}
- st.numbthorn++;return .9;}
+// THE LASH FLOWER, the numb thorn (the owner, 2026-10-19, after the Jumanji plant): a thick segmented green stalk out of a
+// rosette of leaves, leaning; on it a flower of four big pleated orange petals round a hot-pink throat, and from the
+// throat a long tongue that lashes at what comes near: its touch numbs a limb in a minute. The petals fold over the
+// throat when it goes off (the hinge hook on 'petal'); the tongue is a tube and stays
+function numbthorn(x,y,z,lv,st,id){const H=rr(1.5,2.5),la=rr(0,TAU),lean=rr(.08,.22),sc=bright(pick([0x5a8a30,0x4e7a2a,0x6a9a38]),1),ph=KTRAPS.phase(id);
+ const pts=[];for(let k=0;k<=4;k++){const t=k/4,s=Math.sin(t*1.6);pts.push({x:x+Math.cos(la)*lean*H*s,y:y-.1+H*t,z:z+Math.sin(la)*lean*H*s,r:.1-.035*t});}
+ st.tris+=BIO.tube('tendril',pts,sc,{seg:lv===2?7:5,cap:true});
+ const top=pts[4],n=lv===2?5:3;
+ for(let k=0;k<n;k++){const a=rr(0,TAU),s=rr(.5,.85);BIO.put('staghorn',[x+Math.cos(a)*.15,y+.02,z+Math.sin(a)*.15],qEuler(-1.15,Math.atan2(Math.cos(a),Math.sin(a)),0),[s,s,s],col('staghorn',PAL.stag,1.15));}
+ BIO.put('mouth',[top.x,top.y+.02,top.z],qEuler(0,rr(0,TAU),0),[.5,1,.5],C(0xe0206a));
+ const pc=KORONA.libCol('petal',bright(pick([0xf0a040,0xe89030,0xf8b050]),1.05)),pw=rr(.55,.85),ph2=rr(.8,1.2);
+ for(let k=0;k<4;k++){const a=k*Math.PI/2+rr(-.2,.2);BIO.put('petal',[top.x+Math.cos(a)*.14,top.y+.03,top.z+Math.sin(a)*.14],qEuler(0,Math.PI/2-a,0),[pw,ph2,1],pc,{aTrap:[ph,1,rr(.85,1.05),0]});}
+ // the tongue: out of the throat, arching down and out, a red sting at its end
+ const ta=la+rr(-.8,.8),L=rr(1.2,2.1),tp=[];for(let k=0;k<=5;k++){const t=k/5;tp.push({x:top.x+Math.cos(ta)*L*t,y:top.y+.15+L*(.35*Math.sin(t*2.6)-.45*t),z:top.z+Math.sin(ta)*L*t,r:.04-.02*t});}
+ st.tris+=BIO.tube('tendril',tp,bright(0x8ab040,1),{seg:5});const e=tp[5];BIO.put('spike',[e.x,e.y,e.z],qEuler(rr(0,1),rr(0,TAU),0),[.03,.14,.03],C(0xc01828));
+ st.numbthorn++;return Math.max(.9,L*.6);}
+// THE COLD TRAPS (station 6, the hoar table; the owner, 2026-10-19): where the only wet is meltwater on frost-shattered rock.
+// A FROST TANK: a small pitcher that holds meltwater, freezes at night and splits in spring to drop a winter's catch (a
+// tank, danger .2: a foot through its ice). BUTTERWORTS: sticky pale rosettes flat on the melt pools' margins (flypaper,
+// insects). Placed only where a station says (extras, 0 without): the hoar table's bias gives them its pools and bogs
+function frosttank(x,y,z,lv,st,id){const H=rr(.8,1.3),R=H*.36,a=rr(0,TAU),skin=KORONA.libCol('pitcher',bright(pick([0xb8d0c8,0xc8dcd4,0xa8c4bc]),1.05)),ice=C(0xe8f4f8);
+ const prof=[[0,.3],[.15,.6],[.4,.9],[.65,1],[.85,.86],[1,.95]];
+ const rings=prof.map(([u,k])=>({x,y:y+u*H,z,yy:u*H,r:R*k,col:skin}));
+ st.tris+=BIO.lathe('pitcher',rings,lv===2?12:8,2,1.4,(rg,ang)=>rg.r*(1+.04*Math.sin(ang*5+rg.yy*3)),null);
+ BIO.put('mouth',[x,y+H*.88,z],null,[R*1.7,1,R*1.7],ice);st.frosttank++;return R*1.2;}
+function butterwort(x,y,z,lv,st){const n=lv===2?ri(3,7):2;
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.15,.7):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,r=rr(.1,.22);
+  BIO.put('pad',[px,BIO.terrainH(px,pz)+.025,pz],qEuler(0,rr(0,TAU),0),[r*2,1,r*2],KORONA.libCol('giantpad',bright(pick([0xb8d070,0xc8dc80,0xa8c468]),1.1)),{aTrap:[0,1,0,0]});st.butterwort++;}}
 function cairnAt(x,z,st){const y=BIO.terrainH(x,z),n=ri(3,5);for(let k=0;k<n;k++){const r=rr(.16,.3)*(1-.12*k);BIO.put('cairn',[x+rr(-.08,.08),y+k*.22+r*.6,z+rr(-.08,.08)],qEuler(rr(0,TAU),rr(0,TAU),0),[r*1.3,r*.8,r*1.3],bright(pick(PAL.cairn),1));}st.cairn++;}
 
 // ---------------------------------------------------------------- the passes
-KORONA.buildCarnivores=function(R,q){q=q==null?1:q;R=R||1500;const L=BIO.radii(),H=BIO.host.korona||{};
- const st={greatsundew:0,cobra:0,trumpet:0,star:0,bulb:0,snare:0,maneater:0,lure:0,tendril:0,pad:0,stag:0,cairn:0,punji:0,beartrap:0,numbthorn:0,tris:0};
+KORONA.buildCarnivores=function(R,q){q=q==null?1:q;R=R==null?1500:R;const L=BIO.radii(),H=BIO.host.korona||{};
+ const st={greatsundew:0,cobra:0,trumpet:0,star:0,bulb:0,snare:0,maneater:0,lure:0,tendril:0,pad:0,stag:0,cairn:0,punji:0,beartrap:0,numbthorn:0,frosttank:0,butterwort:0,tris:0};
  NAMES.length=0;KORONA.TRAPPED.length=0;SPACE.clear();
  const lvOf=(x,z)=>{const d=BIO.lodD(x,z);return d<L.hero?2:d<L.mid?1:0;};
  const F=KORONA.F,hell=KORONA.hell,bias=KORONA.bias;
  // STAGHORNS on the wet wall under every seep line (the necanyons layout's SEEPS)
  NECANYONS.SEEPS.forEach((s,i)=>{const lv=lvOf(s.x,s.z);if(lv===0)return;reseed(KRAND.hash(SEED,1,i));
-  if(rng()>s.seep*.8*q)return;const B=NECANYONS.bodies()[s.body],q0=B.beds[s.bed],a=s.a,n=lv===2?ri(2,4):1;
+  if(rng()>s.seep*.8*q*bias('wallfern',s.x,s.z,null))return;const B=NECANYONS.bodies()[s.body],q0=B.beds[s.bed],a=s.a,n=lv===2?ri(2,4):1;
   for(let k=0;k<n;k++){const u=rr(.55,.96),w=NECANYONS.wall(B,q0,a+rr(-.012,.012),u),sz=rr(.7,1.3);
    BIO.put('staghorn',[w.x+w.nx*.12,w.y,w.z+w.nz*.12],qEuler(rr(.1,.35),Math.atan2(w.nx,w.nz),0),[sz,sz,sz],col('staghorn',PAL.stag,1.2));st.stag++;}});
  // GREAT SUNDEWS: the walls' wet feet, the seeping ledges, the wettest poor floor
@@ -133,6 +154,11 @@ KORONA.buildCarnivores=function(R,q){q=q==null?1:q;R=R||1500;const L=BIO.radii()
   const id='maneater:'+i+','+j,m=maneater(x,y,z,lv,st,id);SPACE.insert({x,z,r:m.R*1.3},x,z,m.R*2);reg('maneater',x,y,z,m.R*1.5,m.H+.6,Z.zone,id);},{R,lodMax:L.mid});
  KORONA.place(22,208,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.55,.85,hell(x,z))*.5*bias('coiltendril',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(lv===0||blocked(x,z,3.5))return;
   const id='tendril:'+i+','+j,r=tendril(x,y,z,lv,st,id);SPACE.insert({x,z,r},x,z,r+1);reg('coiltendril',x,y,z,r+.3,2.8,Z.zone,id);},{R,lodMax:L.mid});
+ // THE COLD TRAPS (the hoar table): frost tanks and butterworts round the melt pools, where the station's extras say
+ const bogH=(x,z)=>BIO.host.bogAt?BIO.host.bogAt(x,z):0;
+ KORONA.place(5,212,(x,z,Z)=>(Z.zone==='cap'||Z.zone==='bench')?smooth(.55,.85,bogH(x,z))*.45*extra('butterwort',x,z,Z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);butterwort(x,y,z,lv,st);if(lv===2&&(i+j)%6===0)reg('butterwort',x,y,z,1,.2,Z.zone,'butter:'+i+','+j);},{R,lodMax:L.floor[1]});
+ KORONA.place(12,213,(x,z,Z)=>(Z.zone==='cap'||Z.zone==='bench')?smooth(.45,.8,bogH(x,z))*.45*extra('frosttank',x,z,Z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(lv===0||blocked(x,z,1))return;
+  const id='frost:'+i+','+j,r=frosttank(x,y,z,lv,st,id);SPACE.insert({x,z,r},x,z,r+1);reg('frosttank',x,y,z,r+.2,1.4,Z.zone,id);},{R,lodMax:L.mid});
  // THE SUCKING POOLS: registered as traps, trap pads floating on them
  (H.pools||[]).forEach((p,i)=>{if(!p.bed)return;reseed(KRAND.hash(SEED,8,i));const lv=lvOf(p.x,p.z);
   reg('bladderpool',p.x,p.y,p.z,p.r,.6,'floor','pool:'+i);

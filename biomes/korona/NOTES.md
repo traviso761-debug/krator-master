@@ -200,11 +200,36 @@ Read as 4 km cells; each station is a 5 km piece carved inside the cell's climat
 | fertile basin, alternative | (702, 116) | a through lake at -5 m, 128 km², Af, in the western trench, 321 m deep | 1,662 | Af, 28 °C (43 / 13) | 1.63 |
 | the trenches | (784, 188) | a ring ridge at 1,600 to 1,700 m between two arms of the salt lake at -2,600 m (12 km west of the crest, 24 km east): 4,200 m of wall on each side; the crest straddles the rain line (3,607 mm at px 782, 925 at 784, 282 at 786), Cfa on the crest and BSh on the lee shoulder, the abyssal salt lake (WX, 40 °C) below | 925 on the crest | Cfa, 19 °C (32 / 6) on the crest; 40 °C at the lake | 1.30 on the crest, 2.1 at the lake |
 
+## The high cold country (the owner, 2026-10-19)
+
+The 40% of the polygon above 3,000 m ("Three Koronas", 3: BSk, Dsc, BWk, 62 mm, 5 degC, -24 in winter, 0.6 to 1 atm)
+stays Korona's: its coldest microclimates, not another kit's ground. **The owner: there may be winter gene-modded tribes
+of humans or therians up there** (as the Dalabites carry the chloroplast and pressure mods, LORE.md 7): the cold tables
+are not the empty ones the whistles cross.
+
+- **The mods** (for `core/charactermodels`, `data/peoples.json`, and its body mods): a coat of fur or down on a therian
+  frame, brown fat and a short deep build on a human one; blood that does not freeze; a wide chest and more red cells for
+  0.6 atm; a membrane over the eye against the glare on snow; a torpor through the dark months. Their home tongue is
+  whatever their throat allows; the Hum they whistle farther than anyone, in thin still air.
+- **What they live on:** the rule gives them little to eat that is not caught. Lichen (rock tripe) and the ice fungi
+  under the snow banks; the frost tanks' winter catch; the dyes of the lichens (orchil, the stone dyes) and the snow
+  lotus, traded down to the warm rings and the Painted Men (`kits/crops`, the dye and reagent buckets).
+- **Station 6, the hoar table** (built the same night, `stations/hoar`): a tepui summit above 3,500 m. Frost-shattered pavement, permanent snow in
+  the lee hollows, summer melt pools in the windward ones with butterwort lawns and a cold sundew; the frost tank (a
+  pitcher that holds meltwater, freezes at night and splits in spring); the walls' seep lines frozen to icefalls; the
+  eastern highlands kit read in place for the cushions, snow wool and glass towers (everything leaning toward the giant,
+  huge and sharp in that air; giantshine on the snow at night). The tribe's marks: the carvings as road-marks on the
+  crests, cairns, a whistle post. Their camp is a settlement kit's work, not the biome's.
+- **The crest road:** a ring crest at 4,000 m where the wind is the climate (yardangs, snow wool, krummholz of the
+  northern highlands' wind spruce in the gullies), the Hum's road-marks between tables, the Painted Men's trails across.
+
 ## Building it
 
-**Built 2026-10-19 (the owner's overnight brief): four stations.** `src/` is station 1, the tepui (`dist/korona.html`);
-`stations/hollow`, `stations/basin` and `stations/trench` are the pitcher hollow, the fertile basin (the Tiers' lake) and the
-trenches (`dist/korona-<name>.html`). The contract is `BIOME-API.md`, the open items `KNOWN_ISSUES.md`. The rest of this
+**Built 2026-10-19 (the owner's overnight brief): six stations.** `src/` is station 1, the tepui (`dist/korona.html`);
+`stations/hollow`, `stations/basin`, `stations/trench`, `stations/gorge` and `stations/hoar` are the pitcher hollow, the fertile
+basin (the Tiers' lake), the trenches, the lee gorge (a dry gorge in a ring's rain shadow, the sedesert kit read in place:
+`station.json` names the kits and packs a station adds) and the hoar table (the high cold country, the ehighlands kit read in
+place) (`dist/korona-<name>.html`). The contract is `BIOME-API.md`, the open items `KNOWN_ISSUES.md`. The rest of this
 section is the plan as written before the build; where it and the build differ, the build is the record.
 
 ### Stations, like the Throne

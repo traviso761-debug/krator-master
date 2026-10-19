@@ -80,7 +80,7 @@ KORONA.PASSES=[
  {sp:1,cell:15,accept:(x,z,Z)=>((Z.zone==='foot'?smooth(6,14,Z.footD)*smooth(44,24,Z.footD)*.5:Z.zone==='floor'?.07:0)*smooth(.55,.85,KORONA.F('wet',x,z))*(1-.7*smooth(.5,.8,KORONA.F('poor',x,z))))*KORONA.bias('lacefan',x,z,Z),pad:3},
 ];
 const newStats=()=>({trunk:0,limb:0,far:0,leaves:0,heroes:0,fars:0,byS:SP.map(()=>0)});
-KORONA.buildTrees=function(R,q){q=q==null?1:q;R=R||1500;
+KORONA.buildTrees=function(R,q){q=q==null?1:q;R=R==null?1500:R;
  const st=newStats(),TREES=KORONA.TREES;TREES.length=0;SPACE.clear();const LOD=BIO.radii();
  KORONA.PASSES.forEach((P,pi)=>{const S=SP[P.sp];
   KORONA.place(P.cell,100+pi,(x,z,Z)=>P.accept(x,z,Z)*q,(x,y,z,Z,i,j)=>{if(blocked(x,z,P.pad)||NECANYONS.blocked(x,z,P.pad))return;

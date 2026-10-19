@@ -47,10 +47,11 @@ const BOG={x:-700,z:760,r:330};
 const bogK=(x,z)=>smooth(BOG.r*1.15,BOG.r*.55,Math.hypot(x-BOG.x,z-BOG.z));
 // the floor: the shore slopes gently up westward from the lake (the basin's floor), the bog corner sunk a little, the
 // lake bed falling away under the water; the basin's walls rise far off
-function floorBase(x,z){const d=lakeD(x,z),far=smooth(1400,2800,Math.hypot(x+600,z));
- const land=1.5+.045*Math.max(0,-d*-1)*0+Math.max(0,-d)*.03+4*(fbm(x*.0012+3.1,z*.0012-1.7,17,3)-.5)*2+1.5*(fbm(x*.005-2,z*.005+5,29,2)-.5)*2;
- const bed=-2-.03*Math.max(0,-d)-6*smooth(0,-120,d);
- return (d<0?bed:land+.03*(-d>0?0:0)+.0*0)+(d<0?0:.028*Math.max(0,-d))*0+(d>=0?0:0)-far*0+far*far*500*(.8+.4*fbm(x*.0012+9,z*.0012-4,33,3))-8*bogK(x,z);}
+function floorBase(x,z){const d=lakeD(x,z);
+ const rough=4*(fbm(x*.0012+3.1,z*.0012-1.7,17,3)-.5)*2+1.5*(fbm(x*.005-2,z*.005+5,29,2)-.5)*2;
+ if(d<0)return -2-.03*(-d)-6*smooth(0,-120,d)+rough*.3;   /* the lake bed, falling away under the water */
+ const far=smooth(1400,2800,Math.hypot(x+600,z))*smooth(-50,200,d);   /* the basin's walls: on the land side only */
+ return 1.5+.02*d+rough+far*far*500*(.8+.4*fbm(x*.0012+9,z*.0012-4,33,3))-8*bogK(x,z);}
 function floorH(x,z){const b=floorBase(x,z),sd=streamD(x,z),cut=smooth(STREAM.w+18,STREAM.w*.4,sd)*smooth(-40,40,lakeD(x,z));return b-3.6*cut;}
 
 // ---------------------------------------------------------------- the rock (KSTACKS records)

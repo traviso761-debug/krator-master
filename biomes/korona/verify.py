@@ -43,7 +43,8 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # The export profile (core/export/README.md, "Profiles"): the sections a tile of this kit must fill, checked under --assert
 # over EXPORT_BOX (the stacks east of the table and the gorge floor round them). Sampled terrain (no krator-field). --profile a,b,c
 # replaces the list for one run.
-EXPORT_BOX = [560, 320, 900, 660]
+EXPORT_BOX = [560, 320, 900, 660]   # station 1 (the stacks east of the table); the other stations' boxes by page name
+EXPORT_BOXES = {'korona-hollow.html': [-200, -200, 100, 100], 'korona-basin.html': [-100, -300, 250, 0], 'korona-trench.html': [-700, 0, -350, 350], 'korona-gorge.html': [-120, 180, 220, 480], 'korona-hoar.html': [-1000, -60, -520, 420]}
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
 
 # Structure names contain em dashes; the Windows console default codepage
@@ -183,10 +184,11 @@ async def run(a):
 
                 print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
                 prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-                pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                box = EXPORT_BOXES.get(os.path.basename(a.html), EXPORT_BOX)
+                pok, lines = await check_profile(pg, box, prof)
                 for ln in lines:
                     print("  " + ln)
-                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
                 if not pok:
                     fails.append("assert export-profile")
 

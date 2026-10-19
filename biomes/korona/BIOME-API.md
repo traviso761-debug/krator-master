@@ -4,7 +4,8 @@ Korona (`NOTES.md`: the corona country under the giant) is three kits on one pag
 **hyperjungle** (read in place) on the warm wet floor, the **necanyons** kit (read in place) on the rock with its canyon
 flora and its harmless carnivores, and **KORONA**, this kit, with the summit's life and the man-eaters. One `src/`, one
 pack, one host; each station its own page (`build.py --station <name>`; `stations/<name>/` holds that station's host
-fragments, `station.json` its page name).
+fragments, `station.json` its page name and, as the Throne's, any other kit it reads in place (`kits`: slot to path) and
+that kit's pack (`packs`): the lee gorge reads the **sedesert** kit so.
 
 ## What the host gives the kits
 
@@ -28,6 +29,14 @@ The host's `45-host-stage.js` (one per station) ends in one object, **`STAGE`**,
 | `bias` | `{plant: number | (x,z,Z)=>number}`: this station's say on each Korona plant's density (`57`, `60` multiply by it); `cobraMeadow` is an extra acceptance for the cobra lilies on the floor |
 | `carvings` | `{body, tier, a0, a1, y0, h, name}`: the Hum's contour carvings, a strip on that bed's face |
 | `spine` | the LOD origins |
+| `fields` | `{name: (x,z)=>v}`: a station's own fields, merged into the kit's (the gorge: `canyon`, `oasis`, `dune` for the sedesert kit) |
+| `desert(x,z)`, `desertQ` | where the sedesert kit may root (a station that reads it in place: `station.json` `kits` and `packs`), and its quality |
+| `bare(x,z)` | ground the station bars from every kit (the trenches' salt crust, the gorge's pool) |
+| `high(x,z)`, `highQ` | where the ehighlands kit may root on the tops (the hoar table), and its quality |
+| `topExtra(x,z)` | extra relief on every top (the hoar table's knolls): wrapped into `KSTACKS.topH`, so the beds' tops, the drawn mesh and every plant's foot move together |
+| `snowAt(x,z)` | snow on a top (the top mesh's third layer, `ground.snow`) |
+| `windows` | `BIO.init` windows (the Mother Cushion's) |
+| `heroR`, `jungleQ` (0: no hyperjungle) | the hyperjungle's hero radius and quality |
 
 `47` hands the kit what it needs through the core: `BIO.host.bogAt` and `BIO.host.korona = {bias, path, pools}`.
 

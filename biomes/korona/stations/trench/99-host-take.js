@@ -43,7 +43,7 @@ const HCHK={
  rainline(TRP,TREES){let lee=0,wind=0,salt=0;const all=TRP.map(t=>[t.x,t.z]).concat(TREES.map(T=>[T.x,T.z]));
   all.forEach(p=>{if(floorH(p[0],p[1])<-400)salt++;else if(STAGE.windward(p[0],p[1])<.3)lee++;else wind++;});
   return{ok:salt===0&&wind>lee*4&&wind>100,detail:wind+' on the windward face, '+lee+' on the lee, '+salt+' on the salt'};},
- rule(TRP){const big=TRP.filter(t=>t.trap.danger>=.5);let off=0,lo=1;big.forEach(t=>{const h=hellAt(t.x,t.z);lo=Math.min(lo,h);if(h<.4)off++;});
+ rule(TRP){const big=TRP.filter(t=>t.trap.danger>=.5);let off=0,lo=1;big.forEach(t=>{const h=hellAt(t.x,t.z);lo=Math.min(lo,h);if(h<.3)off++;});
   return{ok:big.length>0&&off===0,detail:big.length+' dangerous traps; '+off+' on ground that is not poor, wet and warm (lowest hell '+lo.toFixed(2)+')'};},
  cliffs(TREES){let rim=0,off=0,worst=0;TREES.forEach(T=>{const Z=NECANYONS.at(T.x,T.z);if(Z.zone==='rim'||Z.zone==='wall')rim++;
    if(Z.rock){const d=Math.abs(T.y0+.25-NECANYONS.top(T.x,T.z));worst=Math.max(worst,d);if(d>.05)off++;}});

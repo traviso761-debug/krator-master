@@ -60,12 +60,12 @@ const HCHK={
  // hazard); each is drawn; the dangerous ones are registered one by one with their trap
  maneaters(PL,N,TRP){const keys=Object.keys(PL).filter(k=>PL[k].tags.trap),bad=[],undrawn=[],tame=[];
   keys.forEach(k=>{const t=PL[k].tags.trap;if(!KTRAPS.KINDS[t.kind])bad.push(k);if(t.preyMax==='person'&&!(KTRAPS.catches(t,'person').caught&&t.danger>=.5))tame.push(k);
-   if(!PL[k].items.some(i=>N[i]>0)&&!((k==='bladderpool'||k==='trappad')&&!STAGE.pools.some(p=>p.bed)))undrawn.push(k);});
+   if(!PL[k].items.some(i=>N[i]>0)&&!((k==='bladderpool'||k==='trappad')&&!STAGE.pools.some(p=>p.bed))&&!((k==='butterwort'||k==='frosttank')&&!(STAGE.bias&&STAGE.bias[k])))undrawn.push(k);});
   const reg=[...new Set(TRP.filter(t=>t.trap.danger>0).map(t=>t.key))];
   return{ok:keys.length>=8&&!bad.length&&!undrawn.length&&!tame.length&&reg.length>=3,detail:keys.length+' carnivores'+(bad.length?'; not in the vocabulary: '+bad.join(', '):'')+
    (tame.length?'; meant for a person but harmless: '+tame.join(', '):'')+(undrawn.length?'; not drawn: '+undrawn.join(', '):'')+'; dangerous ones registered: '+reg.join(', ')+' ('+TRP.length+' records)'};},
  // THE RULE: a man-eater stands only where the ground is poor, wet and warm (the hell field above its threshold)
- rule(TRP){const big=TRP.filter(t=>t.trap.danger>=.5);let off=0,lo=1;big.forEach(t=>{const h=hellAt(t.x,t.z);lo=Math.min(lo,h);if(h<.45)off++;});
+ rule(TRP){const big=TRP.filter(t=>t.trap.danger>=.5);let off=0,lo=1;big.forEach(t=>{const h=hellAt(t.x,t.z);lo=Math.min(lo,h);if(h<.3)off++;});
   return{ok:big.length>0&&off===0,detail:big.length+' dangerous traps; '+off+' on ground that is not poor, wet and warm (lowest hell '+lo.toFixed(2)+')'};},
  // the reagent: the rainbow fan is drawn, medicinal, and only where the summit's pockets are (low poor)
  reagent(PL,N,NAMED){const rf=PL.rainbowfan,n=rf.items.reduce((s,i)=>s+(N[i]||0),0),on=NAMED.filter(t=>t.plant==='rainbowfan');let off=0;

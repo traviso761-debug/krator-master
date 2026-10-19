@@ -55,7 +55,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/ehighlands`](biomes/ehighlands/PORT.md) | 12 | 142 | 13 | 17 | 16 | 32 | 63 | 2 | biome | yes | yes |
 | [`biomes/geyser`](biomes/geyser/PORT.md) | 17 | 166 | 38 | 35 | 14 | 35 | 44 | 2 | biome, atmos | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 14 | 149 | 2 | 0 | 12 | 15 | 120 | 6 | biome | yes | yes |
-| [`biomes/korona`](biomes/korona/PORT.md) | 11 | 96 | 16 | 0 | 0 | 13 | 68 | 3 | biome | yes | yes |
+| [`biomes/korona`](biomes/korona/PORT.md) | 11 | 103 | 16 | 0 | 0 | 14 | 74 | 3 | biome | yes | yes |
 | [`biomes/necanyons`](biomes/necanyons/PORT.md) | 12 | 98 | 33 | 0 | 0 | 10 | 55 | 3 | biome | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 14 | 243 | 0 | 0 | 34 | 36 | 173 | 6 | biome | yes | yes |
 | [`biomes/nwbay`](biomes/nwbay/PORT.md) | 15 | 274 | 1 | 0 | 10 | 65 | 198 | 7 | biome | yes | yes |
@@ -72,7 +72,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 6 | 36 | 18 | 0 | 0 | 17 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 55 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 178 | 21 | 0 | 0 | 96 | 61 | 0 |  |  | yes |
-| **all** | 2194 | 28879 | 5710 (20%) | 619 (2%) | 1103 (4%) | 3681 (13%) | 17766 (62%) | 273 | | | |
+| **all** | 2194 | 28885 | 5710 (20%) | 619 (2%) | 1103 (4%) | 3682 (13%) | 17772 (62%) | 273 | | | |
 
 ## Host-shell copies
 
@@ -82,7 +82,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 |---|---|---|---|
 | `sky` | 22 | 5 | 436 |
 | `host-stage` | 22 | 22 | 395 |
-| `host-build` | 22 | 22 | 28 |
+| `host-build` | 22 | 22 | 29 |
 | `camera` | 19 | 15 | 132 |
 | `host-sky` | 19 | 17 | 267 |
 | `probe` | 18 | 16 | 80 |

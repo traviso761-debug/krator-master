@@ -25,9 +25,15 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
 - [ ] **Two textures came off their prompts** (`core/materials/PROMPTS-NEEDED.md`, "Delivered 2026-10-19, Korona"):
   `ground.quartzite.black` is pale with black patches (the summit reads lighter than Roraima's crust), `ground.peat.black`
   a rusty moss rather than black peat. Usable; a redo is the owner's call.
-- [ ] **Not in the gallery.** Four pages (`dist/korona.html`, `korona-hollow.html`, `korona-basin.html`,
-  `korona-trench.html`) with three texture sidecars shared between them (`korona.tex.korona.js`, `.necanyons.js`,
-  `.hyperjungle.js`).
+- [ ] **The gorge's ground is the kit's own, not the desert's.** The sedesert pack's ground layers are left out of the
+  gorge's page (as the ring isles leave them out); the floor wears Korona's gravel, sand and bog families. A red desert
+  soil family for the gorge (the sedesert's `ground.redsoil` is in the library) is a one-line addition to
+  `materials.json` when wanted.
+- [ ] **The hoar table's walls have no icefalls.** The seep lines are bare rock (the staghorns are barred there); the notes
+  want the hanging gardens frozen to ice. A hung ice card (`ice.glacier` is in the library) on each seep line.
+- [ ] **Not in the gallery.** Six pages (`dist/korona.html`, `korona-hollow.html`, `korona-basin.html`,
+  `korona-trench.html`, `korona-gorge.html`, `korona-hoar.html`) with five texture sidecars shared between them
+  (`korona.tex.korona.js`, `.necanyons.js`, `.hyperjungle.js`, `.sedesert.js` for the gorge, `.ehigh.js` for the hoar table).
 
 ## Closed
 

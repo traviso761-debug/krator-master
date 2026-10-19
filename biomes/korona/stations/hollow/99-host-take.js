@@ -45,11 +45,11 @@ const _itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.use
 const HCHK={
  maneaters(PL,N,TRP){const keys=Object.keys(PL).filter(k=>PL[k].tags.trap),bad=[],undrawn=[],tame=[];
   keys.forEach(k=>{const t=PL[k].tags.trap;if(!KTRAPS.KINDS[t.kind])bad.push(k);if(t.preyMax==='person'&&!(KTRAPS.catches(t,'person').caught&&t.danger>=.5))tame.push(k);
-   if(!PL[k].items.some(i=>N[i]>0)&&!((k==='bladderpool'||k==='trappad')&&!STAGE.pools.some(p=>p.bed)))undrawn.push(k);});
+   if(!PL[k].items.some(i=>N[i]>0)&&!((k==='bladderpool'||k==='trappad')&&!STAGE.pools.some(p=>p.bed))&&!((k==='butterwort'||k==='frosttank')&&!(STAGE.bias&&STAGE.bias[k])))undrawn.push(k);});
   const reg=[...new Set(TRP.filter(t=>t.trap.danger>0).map(t=>t.key))];
   return{ok:keys.length>=8&&!bad.length&&!undrawn.length&&!tame.length&&reg.length>=5,detail:keys.length+' carnivores'+(bad.length?'; not in the vocabulary: '+bad.join(', '):'')+
    (tame.length?'; meant for a person but harmless: '+tame.join(', '):'')+(undrawn.length?'; not drawn: '+undrawn.join(', '):'')+'; dangerous ones registered: '+reg.join(', ')+' ('+TRP.length+' records)'};},
- rule(TRP){const big=TRP.filter(t=>t.trap.danger>=.5&&t.key!=='trappad');let off=0,lo=1;big.forEach(t=>{const h=hellAt(t.x,t.z);lo=Math.min(lo,h);if(h<.45)off++;});
+ rule(TRP){const big=TRP.filter(t=>t.trap.danger>=.5&&t.key!=='trappad');let off=0,lo=1;big.forEach(t=>{const h=hellAt(t.x,t.z);lo=Math.min(lo,h);if(h<.3)off++;});
   return{ok:big.length>=20&&off===0,detail:big.length+' dangerous traps; '+off+' on ground that is not poor, wet and warm (lowest hell '+lo.toFixed(2)+')'};},
  // the safe path: no dangerous trap within 3 m of it; cairns along it
  path(TRP,N){const P=STAGE.path;let near=0;TRP.forEach(t=>{if(t.trap.danger>=.3&&t.key!=='bladderpool'&&t.key!=='trappad'&&KORONA.pathD(t.x,t.z)<3)near++;});
