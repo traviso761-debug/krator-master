@@ -99,6 +99,11 @@ for f in ('10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '40-cr
 # chunk and sky light (8-export: ATMOS.export, so the export's atmos section fills)
 for f in ('20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'water', f))
+# core/simulation (SIM), read in place: the people's world (40d-ls-sim.js declares it; 68-ls-life.js draws SIM.pose)
+for f in ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js', '77-sim-4-nav.js', '77-sim-5-motion.js',
+          '77-sim-5r-routes.js', '77-sim-6-economy.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-6-population.js', '77-sim-6-trade.js',
+          '77-sim-7-stocks.js', '77-sim-8-export.js'):
+    PATH.setdefault(f, os.path.join(ROOT, 'core', 'simulation', f))
 for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-2-lights.js', '89-atmos-8-export.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'atmos', f))
 # the open world's fields, read in place: the land round the site at 1:1

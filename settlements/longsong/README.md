@@ -81,8 +81,13 @@ lamps in the windows; `89x`).
   wardens, lay servants, pilgrims) on their schedules; at noon the operatives drill at lightning speed in the ward
   (every strike leaves three afterimages), the master of arms stands in the drill ground's middle and every few seconds
   is simply somewhere else, and the petals falling round him stop in the air within his reach; monks debate in the
-  court, pilgrims walk the kora clockwise, the keepers walk the wheel. The hour slider moves everyone (`LS.whereAt`).
-  Drawn as placeholder figures (`KNOWN_ISSUES.md`).
+  court, pilgrims walk the kora clockwise, the keepers walk the wheel. They live on `core/simulation` (`40d-ls-sim.js`:
+  the walk graph, the ward's cells round the buildings, the Great Stair's flights, the Debate Court's floor and the
+  rooms' doors; the places from `LS.PLACES`; a role per `LS.ROLES`): SIM steps a world minute at a time as the clock
+  runs, each person walks between places on the graph (out of sight through the rooms), and the hour slider jumps them
+  (`SIM.jump`). `node tests/test-sim.js` runs a whole day headless (every route found, the stair climbed, no one stood
+  in a wall; a cut stair must fail). Drawn as placeholder figures; their `core/charactermodels` records are made
+  (`people-kchar.json`, `tools/kchar_people.js`) but not drawn yet (`KNOWN_ISSUES.md`).
 - **The plants**: the Oidong kit (`biomes/oidong`, read in place) on the model's land, its fields bound here
   (`45-host-stage.js`: wet from the rain and the water, flow on the stream's banks, upland and cold over the floor,
   rock on the steeps and Longsong's rock, three raked gravel fans the stream left, a little mist over the stream);

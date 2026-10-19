@@ -302,7 +302,7 @@ P.PLACES=[
  {id:'gardens',activity:'FARM',x:150,z:-20,y:'ward',r:28,cap:20,name:'The kitchen gardens'},
  {id:'orchard',activity:'FARM',x:-150,z:-20,y:'ward',r:28,cap:20,name:"The ward's orchard"},
  {id:'gate',activity:'GUARD',x:0,z:-188,y:'ward',r:9,cap:8,name:'The Great Gate'},
- {id:'stair-guard',activity:'GUARD',x:-28,z:16,y:28,r:4,cap:4,name:'The Lower Gate'},
+ {id:'stair-guard',activity:'GUARD',x:-30,z:14,y:'rock',r:4,cap:4,name:'The Lower Gate'},   // before it, at the stair's head
  {id:'roof',activity:'STUDY',x:-58,z:60,y:40+5*4.5,r:14,cap:20,name:'The White Palace\'s roof terraces (reading in the sun)'},
  {id:'wheel',activity:'TURN_WHEEL',x:0,z:160,y:-62,r:11,cap:3,name:'The Procrastinator (the keepers at the wheel)'},
  {id:'vault',activity:'KEEP',x:-16,z:88,y:-14,r:12,cap:6,name:'The open vault'},

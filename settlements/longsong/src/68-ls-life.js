@@ -1,12 +1,16 @@
 // ================================================================= LONGSONG — the people (the life layer's scaffold)
-// [draw] Every person is a record of the plan (LS.PEOPLE: faction, sub-faction, job, a schedule of 24 activities); where
-// they are at an hour is the plan's answer (LS.whereAt), never decided here. This fragment draws them as robed figures
-// (placeholders until core/charactermodels dresses the Order: KNOWN_ISSUES.md) and animates what each activity looks like:
+// [draw] Every person is a record of the plan (LS.PEOPLE: faction, sub-faction, job, a schedule of 24 activities) and an
+// actor of core/simulation (40d-ls-sim.js declares the world: the walk graph, the places, the roles). Where each one is,
+// and whether walking or arrived, is SIM's answer (SIM.pose, a pure function of the clock's motion time), never decided
+// here: SIM steps once a world minute and jumps when the hour slider moves. Out of sight while walking through a room or
+// under the rock (LSS.hidden), and at an indoor place. This fragment draws them as robed figures (placeholders until the
+// page draws their core/charactermodels records: KNOWN_ISSUES.md) and animates what each activity looks like:
 //   DRILL     the operatives' forms at lightning speed, each strike leaving its afterimages (three ghosts, fading)
 //   the master of arms in the drill ground's middle: still, and every few seconds he is simply somewhere else (an
 //             afterimage left where he stood), and the petals falling round him stop in the air within his reach
 //   DEBATE    the questioner stands and claps the point home; the defender sits
 //   KORA      walking the circuit clockwise; TURN_WHEEL the keepers walking the Procrastinator round, pushing its handles
+//   walking   between places: the arms swing
 const PEOPLE_DRAWN=(function(){
  const N=LS.PEOPLE.length,DRESS={monk:[0x7a2a22,0xe0a030],novice:[0x9a4030,0xd8b060],operative:[0x2e3a4e,0xe0a030],master:[0xd8962a,0x7a2a22],
   keeper:[0x2a2a30,0x2e5a9c],warden:[0x24406e,0x8e2f24],servant:[0x6e5a40,0xb0a080],pilgrim:[0x4a6a8a,0xc04a3a]};
@@ -31,14 +35,27 @@ const PEOPLE_DRAWN=(function(){
   C.setHSL(.07,.35,.36+u*.16).convertSRGBToLinear();head.setColorAt(i,C);staff.setColorAt(i,L(P.role==='warden'?0x5a3a20:0x000000));});
  [robe,head,arm,sash,staff].forEach(m=>{if(m.instanceColor)m.instanceColor.needsUpdate=true;});
  // where each one stands, per hour (the plan's), and the ground's height there
- const S=LS.PEOPLE.map(()=>({x:0,y:-1e4,z:0,ry:0,act:null,place:null,shown:false}));
- const yOf=(pl,x,z)=>pl.y==='rock'?LS.ROCK.top:pl.y==='ward'?terrainH(x,z):typeof pl.y==='number'?pl.y:terrainH(x,z);
- function place(h){let shown=0;LS.PEOPLE.forEach((P,i)=>{const w=LS.whereAt(P,h),s=S[i];s.act=w.activity;s.place=w.place;s.shown=!w.indoor&&!!w.place;
-   if(s.shown){s.x=w.x;s.z=w.z;s.y=yOf(w.place,w.x,w.z);shown++;
-    // facing: the drill faces the master; debaters face their partner; the rest face the place's middle
-    const pl=w.place;s.ry=pl.x!=null?Math.atan2(pl.x-w.x,pl.z-w.z):0;}});
+ const S=LS.PEOPLE.map(()=>({x:0,y:-1e4,z:0,ry:0,act:null,place:null,shown:false,korT:null}));
+ // SIM: declared on the first frame (core/simulation loads after this fragment), then stepped a world minute at a time
+ const SIMS={on:false,last:0,actors:null,err:null},PLACE=new Map(LS.PLACES.map(p=>[p.id,p]));
+ const clk=()=>typeof _hostH!=='undefined'&&_hostH&&_hostH.clock;
+ function simStart(){if(SIMS.on||SIMS.err)return SIMS.on;const C=clk();if(!C||typeof SIM==='undefined')return false;
+  try{LSS.init(C);SIM.jump();SIMS.last=SIM.minute();SIMS.actors=LS.PEOPLE.map(P=>SIM.get('actor',P.id));SIMS.on=true;}
+  catch(e){SIMS.err=e;reportErr('people: core/simulation: '+(e.stack||e));}return SIMS.on;}
+ // the slider moved the hour: everyone re-placed from the schedule (SIM.jump; a share of them mid-walk)
+ function place(h){if(!SIMS.on)return;SIM.jump();SIMS.last=SIM.minute();S.forEach(s=>{s.korT=null;});}
+ function simFrame(t){let n=0;while(SIMS.last<SIM.minute()&&n++<30){SIMS.last++;SIM.step();}if(SIMS.last<SIM.minute())SIMS.last=SIM.minute();
+  let shown=0;for(let i=0;i<N;i++){const a=SIMS.actors[i],s=S[i];if(!a){s.shown=false;continue;}const q=SIM.pose(a,t);
+   s.shown=!q.hidden&&!(q.moving&&LSS.hidden(q.x,q.y,q.z));
+   const act=q.moving?'MOVE':a.activity;if(act!==s.act)s.korT=null;s.act=act;s.place=a.place?PLACE.get(a.place)||null:null;
+   if(!s.shown)continue;shown++;s.x=q.x;s.z=q.z;
+   // on the ward's terraces the drawn ground (the stage's relief) rather than the terrace's datum
+   s.y=LS.inWard(q.x,q.z)&&Math.abs(q.y-LS.wardY(q.z))<.6?terrainH(q.x,q.z):q.y;
+   // facing: walking, the way; arrived, the place's middle (the drill faces the master; debaters their partner)
+   const pl=s.place;s.ry=q.moving||!pl||pl.x==null?q.h:Math.atan2(pl.x-q.x,pl.z-q.z);
+   if(act==='KORA'&&s.korT==null)s.korT=t;}
   out.shown=shown;}
- const out={shown:0,place,S};
+ const out={shown:0,place,S,sim:SIMS};
  // the master of arms (the first master) stands in the drill ground's middle
  const MASTER=LS.PEOPLE.findIndex(P=>P.role==='master');
  const M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler(),V=new THREE.Vector3(),SC=new THREE.Vector3(1,1,1),HIDE=new THREE.Matrix4().makeScale(0,0,0);
@@ -52,7 +69,8 @@ const PEOPLE_DRAWN=(function(){
    o.x=s.x+Math.sin(o.ry)*.35*strike;o.z=s.z+Math.cos(o.ry)*.35*strike;
    if(side){o.a0=-1.55*strike;o.a1=-.4;}else{o.a1=-1.55*strike;o.a0=-.4;}o.r0=.12+.5*(k%3===2?strike:0);return o;}
   if(s.act==='DEBATE'){const q=KRAND.unit(KRAND.hash(P.seed,7))<.5;if(q){const c=Math.max(0,Math.sin(t*1.3+ph));o.a0=-1.2*c-.2;o.a1=-1.1*c-.2;o.r0=.4*c;o.r1=-.4*c;}else{o.sy=.55;o.y=s.y;}return o;}
-  if(s.act==='KORA'||s.act==='PILGRIM'&&false){const K=LS.KORA,sp=1.1/Math.max(K.a,K.b),a0=Math.atan2((s.z-K.cz)/K.b,(s.x-K.cx)/K.a),a=a0-t*sp;   // clockwise seen from above
+  if(s.act==='MOVE'){const st=Math.sin(t*5.5+ph);o.a0=.35*st;o.a1=-.35*st;o.y=s.y+.03*Math.abs(st);return o;}
+  if(s.act==='KORA'){const K=LS.KORA,sp=1.1/Math.max(K.a,K.b),a0=Math.atan2((s.z-K.cz)/K.b,(s.x-K.cx)/K.a),a=a0-(t-(s.korT==null?t:s.korT))*sp;   // clockwise seen from above, from where one joined it
    o.x=K.cx+Math.cos(a)*K.a;o.z=K.cz+Math.sin(a)*K.b;o.y=terrainH(o.x,o.z);o.ry=Math.atan2(Math.sin(a)*K.a,-Math.cos(a)*K.b);const st=Math.sin(t*5+ph);o.a0=.3*st;o.a1=-.3*st;return o;}
   if(s.act==='TURN_WHEEL'){const Pr=LS.PROCRASTINATOR,R=Pr.wheelR+4.2,a=t*Pr.turn+KRAND.unit(KRAND.hash(P.seed,9))*6.28;
    o.x=Pr.x+Math.cos(-a)*R;o.z=Pr.z+Math.sin(-a)*R;o.y=Pr.y0+1.4;o.ry=-a+Math.PI;o.a0=-1.3;o.a1=-1.3;return o;}
@@ -62,6 +80,7 @@ const PEOPLE_DRAWN=(function(){
  // the master's step through time: every 5-7 s he is elsewhere within 9 m; the place he left keeps his afterimage 2 s
  const MS={x:0,z:0,from:null,at:-10,next:3};
  function tick(dt,t){
+  if(simStart())simFrame(t);
   for(let i=0;i<N;i++){const s=S[i];
    if(!s.shown){robe.setMatrixAt(i,HIDE);head.setMatrixAt(i,HIDE);sash.setMatrixAt(i,HIDE);staff.setMatrixAt(i,HIDE);arm.setMatrixAt(2*i,HIDE);arm.setMatrixAt(2*i+1,HIDE);continue;}
    pose(i,t,s,o);
@@ -105,6 +124,13 @@ const PEOPLE_DRAWN=(function(){
  out.personOf=(o,id)=>{if(id==null)return null;if(o===robe||o===head||o===sash||o===staff)return LS.PEOPLE[id];if(o===arm)return LS.PEOPLE[id>>1];
   if(gRobe.indexOf(o)>=0)return LS.PEOPLE[OPS[id]];if(gArm.indexOf(o)>=0)return LS.PEOPLE[OPS[id>>1]];return null;};
  out.records=N;
+ // the checks (64's monasteryChecks): the people's world declared with no unknown reference, every route found, and
+ // people out walking at noon; the negative is the same reading of a world that failed to declare
+ const PCHK={sim(st){if(!st.on)return{ok:false,detail:'core/simulation did not start'+(st.err?': '+st.err.message:'')};
+   const fails=SIM.routeFail.length,prob=LSS.problems.length,out=st.out;
+   return{ok:!fails&&!prob&&out>0,detail:LSS.places+' places, '+SIM.all('actor').length+' people on a graph of '+LSS.graph().nodes.length+' nodes; '+prob+' problems, '+fails+' routes failed, '+out+' out of doors now'};}};
+ window.peopleChecks=function(add){simStart();if(SIMS.on)simFrame(clk().t);add('the people walk on core/simulation',PCHK.sim({on:SIMS.on,err:SIMS.err,out:out.shown}));};
+ window.peopleNegatives=function(add){add('a people\'s world that failed to declare',PCHK.sim({on:false,err:new Error('no places')}));};
  return out;})();
 function placePeople(h){PEOPLE_DRAWN.place(h);}
 _mark('people');

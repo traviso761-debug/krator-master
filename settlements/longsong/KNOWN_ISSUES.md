@@ -3,7 +3,10 @@
 - [ ] **The people are placeholder figures** (a robe, a head, two arms, a sash; instanced). Their records are made
       (`people-kchar.json`, `tools/kchar_people.js`: each of LS.PEOPLE a `core/charactermodels` stranger, the Order in its
       standing's dress, made 2026-10-19: novice, monk, elder, field agent; the lay people in Xanadu's), but the page does
-      not draw them yet, and they run on `LS.whereAt`, not on `core/simulation` (SIM): PLAN.md P5b.
+      not draw them yet (PLAN.md P5b: they run on `core/simulation` since 2026-10-19). Their walk graph is the ward's
+      cells round the buildings, the stair and the court: inside, they walk unseen along door edges, not through the
+      rooms' own floors (`40c`); a stair room's storeys are not joined for them. The world day is 72 real minutes, so a
+      walk across the ward takes most of a world hour.
 - [ ] **The interiors are a first pass** (PLAN.md P4, 2026-10-19). Every room ROOMS.md sections 3-4 names is a record and
       furnished (`40c`, `57a`, the bake), but: the rooms' walls are solid inside (the palaces' windows are painted on the
       outside; no light comes through them); by night a room is lit by the nearest six of its furniture's lamps
