@@ -51,15 +51,21 @@ function floorH(x,z){return floorBase(x,z);}
 // ---------------------------------------------------------------- the rock (KSTACKS records)
 const ROCK=(function(){const K=KSTACKS,L=[];
  const footY=(x,z,r)=>{let m=1e9;for(let i=0;i<32;i++){const a=i/32*TAU;for(const k of [.4,.8,1.15])m=Math.min(m,floorH(x+Math.cos(a)*r*k,z+Math.sin(a)*r*k));}return m-3;};
- const add=(B,name)=>{B.name=name;L.push(B);return B;};
- // THE PROW: a butte with a bench and a cap at the crest's north end
- add(K.make({id:'prow',kind:'mesa',x:crestX(-900),z:-900,y0:footY(crestX(-900),-900,240),seed:6201,bed:[35,80],lobes:.24,weather:.9,tiers:[{h:110,r:240,e:1.5,ry:1.5},{h:70,r:150,e:1.3,ry:1.5,dx:0,dz:-20}]}),'The prow (a butte at the crest\'s north end)');
- // THE FINS along the crest
- K.row({id:'crestfin',seed:6301,a:[crestX(-400),-400],b:[crestX(1100),1100],n:8,H:[45,95],r:[9,15],e:[4,7],jitter:14,ground:(x,z)=>footY(x,z,14)+2}).forEach(B=>add(B,'A fin on the crest'));
+ /* the ground's drop across a stack's foot (a stack on a slope: its foot is set under the lowest ground, so KSTACKS lifts it by this) */
+ const dropAt=(x,z,r)=>{let lo=1e9,hi=-1e9;for(let i=0;i<16;i++){const a=i/16*TAU,h=floorH(x+Math.cos(a)*r*1.15,z+Math.sin(a)*r*1.15);if(h<lo)lo=h;if(h>hi)hi=h;}return hi-lo;};
+ const add=(B,name)=>{B.name=B.plates?'A pile of plates (Roraima\'s kind: thin beds, deep partings, a top-heavy head)':name;L.push(B);return B;};   /* plates: KSTACKS, Roraima's piles */
+ // THE PROW: a butte with a bench and a cap at the crest's north end. Its foot is set under the lowest ground round it (the
+ // flanks, ~260 m below the crest), so the first tier is that much taller: the body stands in the ridge and the bench and
+ // the cap stand 110 and 180 m CLEAR OF THE CREST (the owner, 2026-10-19: the prow was wholly inside the ridge)
+ const PX=crestX(-900),PZ=-900,PY=footY(PX,PZ,240),CREST_Y=floorH(PX,PZ);
+ add(K.make({id:'prow',kind:'mesa',x:PX,z:PZ,y0:PY,seed:6201,bed:[35,80],lobes:.24,weather:.9,tiers:[{h:110+(CREST_Y-PY),r:240,e:1.5,ry:1.5},{h:70,r:150,e:1.3,ry:1.5,dx:0,dz:-20}]}),'The prow (a butte at the crest\'s north end)');
+ // THE FINS along the crest, each its own height, taper and crown; lifted by the ground's fall across its foot
+ K.row({id:'crestfin',seed:6301,a:[crestX(-400),-400],b:[crestX(1100),1100],n:8,H:[30,120],r:[8,16],e:[4,7],jitter:14,taper:[.25,.5],crown:[.5,1],plates:[2,6],platesShare:.4,lift:dropAt,ground:(x,z)=>footY(x,z,14)+2}).forEach(B=>add(B,'A fin on the crest'));
  const big=L.slice();
  const clear=(x,z,r,pad)=>{for(const B of big){const f=K.foot([B],x,z);if(f&&f.d<r+pad)return false;}return saltD(x,z)>r+80&&Math.hypot(x,z)<TERR.R*.92;};
- // SPIRES on the windward face
- K.cluster({id:'facestack',seed:6302,c:[-520,200],rad:420,n:6,H:[40,110],r:[8,16],gap:40,kinds:{spire:.75,balanced:.25},ground:(x,z)=>footY(x,z,14)+2,accept:(x,z,r)=>clear(x,z,r,50)}).forEach(B=>add(B,B.kind==='balanced'?'A balanced rock on the windward face':'A spire on the windward face'));
+ // SPIRES on the windward face (a 50 degree slope: each is lifted by the drop across its foot, so it stands as tall above
+ // the uphill ground as its height says), each its own taper, lean, girth and crown
+ K.cluster({id:'facestack',seed:6302,c:[-520,200],rad:420,n:6,H:[35,130],r:[7,18],gap:40,kinds:{spire:.75,balanced:.25},taper:[.3,.6],lean:[0,.12],e:[1,1.6],crown:[.45,1],plates:[2,6],platesShare:.5,lift:dropAt,ground:(x,z)=>footY(x,z,14)+2,accept:(x,z,r)=>clear(x,z,r,50)}).forEach(B=>add(B,B.kind==='balanced'?'A balanced rock on the windward face':'A spire on the windward face'));
  return L;})();
 const PROW=ROCK[0];
 
@@ -67,7 +73,7 @@ const PROW=ROCK[0];
 const windwardOf=(x,z)=>smooth(320,-320,x-crestX(z));
 const heightK=(x,z)=>clamp((floorH(x,z)+440)/860,0,1);   // 0 at the salt, 1 on the crest
 const STAGE={
- name:'Korona: the trenches',R:TERR.R,bodies:ROCK,floor:floorH,capY:PROW.y0+140,seed:14,talusH:18,
+ name:'Korona: the trenches',R:TERR.R,bodies:ROCK,floor:floorH,capY:PROW.top-40,seed:14,talusH:18,
  stream:null,streamD:()=>1e9,pools:SALT,heroR:1600,
  bare:(x,z)=>smooth(-330,-392,floorH(x,z)),
  windward:windwardOf,
@@ -79,15 +85,19 @@ const STAGE={
  // the windward gullies hold soil; the crest's pockets; the lee has little
  rich:(x,z)=>{const t=NECANYONS.top(x,z);if(t>-1e8)return .5*smooth(.55,.7,fbm(x*.013+2,z*.013-6,51,2));return clamp((.55*windwardOf(x,z)*smooth(.52,.66,fbm(x*.0025-4,z*.0025+1,52,3))+.1)*smooth(-380,-250,floorH(x,z)),0,1);},
  bogAt:(x,z)=>.3*smooth(.5,.62,fbm(x*.02+5,z*.02+1,53,2))*windwardOf(x,z),
- // litter on the windward face, scree on the lee and the crest, the salt crust at the edges
- layers:{a:'ground.litter',b:'ground.talus',c:'ground.sand'},layerCol:[0x3a3a28,0x8a8278,0xe8e4dc],
- weights:(x,z)=>{const w=windwardOf(x,z),h=floorH(x,z);return[(1-w)*.9+.3*smooth(.75,1,heightK(x,z)),smooth(-300,-420,h)];},
+ // THE RAIN LINE (the owner, 2026-10-19: the two faces were too alike): the windward face wears sphagnum (the fourth layer)
+ // over litter tinted green, thickest low on the face where the rain is, thinning to the crest; the lee is pale warm scree
+ layers:{a:'ground.litter',b:'ground.talus',c:'ground.sand',d:'ground.bog'},layerCol:[0x3a3a28,0x8a8278,0xe8e4dc,0x5a6a30],
+ layerMul:[[.52,.92,.42],[1.1,1.04,.94],[1,1,1],[.42,1,.4]],   /* the library's litter and sphagnum are yellow-olive at a distance: pulled green */
+ weights:(x,z)=>{const w=windwardOf(x,z),h=floorH(x,z),k=heightK(x,z),salt=smooth(-300,-420,h);
+  return[(1-w)*.9+.3*smooth(.75,1,k),salt,w*(1-salt)*smooth(.98,.5,k)*(.4+.6*smooth(.38,.62,fbm(x*.008+3,z*.008-5,55,2)))];},
  rockCol:{band:[0x8a7f78,0x9a8e86,0x7a6e68,0xa89c94],top:0xa39890,soil:0x6a5a48},waterCol:0x8ab0a8,
  floorLabel:'The ridge (the crest and its two faces)',waterLabel:'The salt lake (an arm of it, far below its true depth)',
  // the rainforest climbs the windward face from the salt; nothing on the lee or the crest
- jungle:(x,z)=>windwardOf(x,z)*smooth(.95,.6,heightK(x,z))*smooth(-410,-330,floorH(x,z)),jungleQ:.7,necQ:.8,
- bias:{lacefan:(x,z)=>1.4*windwardOf(x,z),cointree:.6,rainbowfan:1,lacepitcher:1,stormpod:1.2,greatsundew:(x,z)=>1.2*windwardOf(x,z),
+ // (denser and higher up the windward face since 2026-10-19: the rain line is the station's point)
+ jungle:(x,z)=>windwardOf(x,z)*smooth(1,.72,heightK(x,z))*smooth(-410,-330,floorH(x,z)),jungleQ:.9,necQ:.9,
+ bias:{lacefan:(x,z)=>2*windwardOf(x,z),cointree:.6,rainbowfan:1,lacepitcher:1,stormpod:1.2,greatsundew:(x,z)=>1.5*windwardOf(x,z),
   cobralily:.6,bloodbulb:.4,bloodtrumpet:.6,maneater:.8,coiltendril:.6,groundstar:.6,punjipit:.7,beartrap:.7,numbthorn:.8,snareflower:.6},
- carvings:{body:'prow',tier:0,a0:1.9,a1:3.3,y0:9,h:2.8,name:'Contour carvings: the Hum (a crest tribe\'s road-marks, on the prow\'s face)'},
+ carvings:{body:'prow',tier:0,a0:1.9,a1:3.3,y0:1.6,h:2.8,name:'Contour carvings: the Hum (a crest tribe\'s road-marks, on the prow\'s face)'},
  spine:(function(){const S=[];for(let z=-1400;z<=1400;z+=400)S.push([crestX(z),z]);S.push([PROW.x,PROW.z],[-520,200],[-900,600],[-1100,-500],[700,300]);return S;})(),
 };

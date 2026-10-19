@@ -50,13 +50,17 @@ function floorH(x,z){return floorBase(x,z)-poolDip(x,z);}
 // ---------------------------------------------------------------- the rock (KSTACKS records)
 const ROCK=(function(){const K=KSTACKS,L=[];
  const footY=(x,z,r)=>{let m=1e9;for(let i=0;i<32;i++){const a=i/32*TAU;for(const k of [.4,.8,1.15])m=Math.min(m,floorH(x+Math.cos(a)*r*k,z+Math.sin(a)*r*k));}return m-3;};
- const add=(B,name)=>{B.name=name;L.push(B);return B;};
+ /* the ground's drop across a stack's foot (a stack on a slope: its foot is set under the lowest ground, so KSTACKS lifts it by this) */
+ const dropAt=(x,z,r)=>{let lo=1e9,hi=-1e9;for(let i=0;i<16;i++){const a=i/16*TAU,h=floorH(x+Math.cos(a)*r*1.15,z+Math.sin(a)*r*1.15);if(h<lo)lo=h;if(h>hi)hi=h;}return hi-lo;};
+ const add=(B,name)=>{B.name=B.plates?'A pile of plates (Roraima\'s kind: thin beds, deep partings, a top-heavy head)':name;L.push(B);return B;};   /* plates: KSTACKS, Roraima's piles */
  // THE RIM BUTTE on the south rim: a bench and a cap
  add(K.make({id:'rimbutte',kind:'mesa',x:-200,z:1180,y0:footY(-200,1180,230),seed:4201,bed:[30,70],lobes:.2,weather:.7,tiers:[{h:120,r:230,e:1.3,ry:.3},{h:70,r:150,e:1.2,ry:.3,dx:20,dz:10}]}),'The rim butte (a bench and a cap on the hollow\'s south rim)');
  const big=L.slice();
  const clear=(x,z,r,pad)=>{for(const B of big){const f=K.foot([B],x,z);if(f&&f.d<r+pad)return false;}return Math.hypot(x,z)>700&&Math.hypot(x,z)<TERR.R*.92&&!POOLS.some(p=>Math.hypot(p.x-x,p.z-z)<p.r+r+20);};
  // STACKS on the slopes: spires out of the rainforest
- K.cluster({id:'slopestack',seed:4301,c:[600,-700],rad:520,n:5,H:[60,130],r:[10,20],gap:40,kinds:{spire:.7,fin:.2,balanced:.1},ground:(x,z)=>footY(x,z,18)+2,accept:(x,z,r)=>clear(x,z,r,60)}).forEach(B=>add(B,B.kind==='fin'?'A quartzite fin on the slope':B.kind==='balanced'?'A balanced rock on the slope':'A quartzite spire on the slope'));
+// THE VARIETY of the stacks (the owner, 2026-10-19: no two neighbours alike): each draws its own taper, lean, girth and crown
+ // (KSTACKS cluster: taper, lean, e, crown ranges; lift for a stack on a slope)
+ K.cluster({id:'slopestack',seed:4301,c:[600,-700],rad:520,n:5,H:[50,145],r:[9,22],gap:40,kinds:{spire:.7,fin:.2,balanced:.1},taper:[.3,.6],lean:[0,.12],e:[1,1.6],crown:[.45,1],plates:[2,6],platesShare:.5,lift:dropAt,ground:(x,z)=>footY(x,z,18)+2,accept:(x,z,r)=>clear(x,z,r,60)}).forEach(B=>add(B,B.kind==='fin'?'A quartzite fin on the slope':B.kind==='balanced'?'A balanced rock on the slope':'A quartzite spire on the slope'));
  return L;})();
 const BUTTE=ROCK[0];
 // THE SAFE PATH: from the west rim through the floor and out to the north-east
@@ -89,6 +93,6 @@ const STAGE={
   cobraMeadow:(x,z)=>smooth(560,610,dOf(x,z))*smooth(790,720,dOf(x,z))*.9,
   cobralily:.4,bloodbulb:(x,z)=>1.5*smooth(620,520,dOf(x,z)),maneater:1.3,coiltendril:1.3,groundstar:1.2,snareflower:1,bloodtrumpet:1.1,greatsundew:.5,
   punjipit:1.3,beartrap:1.2,numbthorn:1.2,lacefan:(x,z)=>1.6*smooth(560,760,dOf(x,z)),cointree:.4,rainbowfan:1,lacepitcher:1,stormpod:.6},
- carvings:{body:'rimbutte',tier:0,a0:-2.2,a1:-.9,y0:9,h:2.6,name:'Contour carvings: the Hum (the hollow\'s warning, cut on the butte\'s face)'},
+ carvings:{body:'rimbutte',tier:0,a0:-2.2,a1:-.9,y0:1.6,h:2.6,name:'Contour carvings: the Hum (the hollow\'s warning, cut on the butte\'s face)'},
  spine:(function(){const S=[[0,0]];PATH.forEach((p,i)=>{if(i%2===0)S.push(p);});POOLS.forEach(p=>S.push([p.x,p.z]));S.push([BUTTE.x,BUTTE.z],[600,-700]);return S;})(),
 };

@@ -17,17 +17,18 @@ The host's `45-host-stage.js` (one per station) ends in one object, **`STAGE`**,
 | `floor(x,z)` | the ground without the rock; `talusH` the scree banked against a wall's foot |
 | `capY` | a top at or above it is a `cap` (the necanyons zones, `46`), below it a `bench` |
 | `stream`, `streamD` | the stream (or null), and the distance to it |
-| `pools` | `[{x, z, r, bed}]`: standing pools; `bed` marks a sucking pool (the bladder bed, a trap) |
+| `pools` | `[{x, z, r, bed, ice}]`: standing pools; `bed` marks a sucking pool (the bladder bed, a trap); `ice` a frozen one, drawn as a plate of ice (the hoar table's tarn) |
 | `path` | `[[x,z],...]`: the safe path (the hollow); traps keep off it, cairns line it |
 | `windward(x,z)` | 0..1: how much of the rain a point takes (the wind is from the north-west) |
 | `warm(x,z)`, `rich(x,z)` | the air's heat and density; the soil's silt (the fields below) |
 | `poorExtra`, `wetExtra`, `rockExtra` | a station's additions to those fields (the hollow's acid floor) |
 | `bogAt(x,z)` | the sphagnum on a top (the summit's wet hollows): the top mesh's second layer and the lace pitchers' ground |
-| `layers`, `layerCol`, `weights(x,z)` | the floor mesh's three layers (families of `materials.json`) and their vertex weights |
+| `layers`, `layerCol`, `weights(x,z)` | the floor mesh's three layers `a`, `b`, `c` (families of `materials.json`) and their vertex weights (`weights` returns `[wB, wC]`); an optional fourth `layers.d` takes a third weight (the trenches' sphagnum) |
+| `layerMul` | optional `[[r,g,b], ...]` per layer: a tint on the layer, on the library's own colour too (the trenches pull their windward litter and sphagnum green) |
 | `rockCol`, `waterCol`, labels | the procedural fallback's tints, the inspector's words |
 | `jungle(x,z)`, `jungleQ`, `necQ` | the hyperjungle's extra mask and the two borrowed kits' quality |
 | `bias` | `{plant: number | (x,z,Z)=>number}`: this station's say on each Korona plant's density (`57`, `60` multiply by it); `cobraMeadow` is an extra acceptance for the cobra lilies on the floor |
-| `carvings` | `{body, tier, a0, a1, y0, h, name}`: the Hum's contour carvings, a strip on that bed's face |
+| `carvings` | `{body, tier, a0, a1, y0, h, name}`: the Hum's contour carvings, a strip on that tier's face, its foot `y0` metres (eye height, 1.6) above the highest DRAWN ground along its arc (the talus and the apron banked against the wall included; `47` finds the bed). With an explicit `bed`, `y0` is above that bed's foot instead (the hoar table's rim marks) |
 | `spine` | the LOD origins |
 | `fields` | `{name: (x,z)=>v}`: a station's own fields, merged into the kit's (the gorge: `canyon`, `oasis`, `dune` for the sedesert kit) |
 | `desert(x,z)`, `desertQ` | where the sedesert kit may root (a station that reads it in place: `station.json` `kits` and `packs`), and its quality |

@@ -1,6 +1,7 @@
 // ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host (station 4: the trenches)
 const VIEWS={
- 'The crest (looking south)':[crestX(-1300)+10,floorH(crestX(-1300),-1300)+30,-1300,crestX(600),floorH(crestX(600),600)+10,600],
+ 'The crest (looking north to the prow)':[crestX(1350)+60,floorH(crestX(1350),1350)+70,1350,PROW.x,PROW.top-60,PROW.z],
+ 'The crest (looking south)':[crestX(-640)+10,floorH(crestX(-640),-640)+30,-640,crestX(900),floorH(crestX(900),900)+10,900],
  'The windward face':[-1300,-150,300,-300,220,-100],
  'The lee (the rain shadow)':[1250,-120,-300,300,240,100],
  'The salt (from the crest)':[crestX(300)-30,floorH(crestX(300),300)+20,300,-2400,-440,300],

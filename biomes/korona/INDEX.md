@@ -22,11 +22,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 10 | the gorge floor (43); the rock (KSTACKS records: core/terrain/37-core- (58); the station's say: STAGE (47 reads it; the pitch (79) |
-| `47-host-land.js` | 20 | the fields (biomes/WORLD.md; BIOME-API.md): wet, (27); the host binding (before the meshes: their paint (46); the library layers (or procedural without the pa (65); the floor (one mesh: three layers by vertex weig (88); the rock (KSTACKS meshes): the walls and the top (112); THE CARVINGS (LORE.md 6.18): a strip on a bed's  (151); the water: the stream's ribbon, the rain pools,  (174) |
+| `45-host-stage.js` | 11 | the gorge floor (43); the rock (KSTACKS records: core/terrain/37-core- (58); the station's say: STAGE (47 reads it; the pitch (83) |
+| `47-host-land.js` | 26 | the fields (biomes/WORLD.md; BIOME-API.md): wet, (27); the host binding (before the meshes: their paint (46); the library layers (or procedural without the pa (65); the floor (one mesh: three layers by vertex weig (88); the rock (KSTACKS meshes): the walls and the top (135); THE CARVINGS (LORE.md 6.18): a strip on a bed's  (176); the water: the stream's ribbon, the rain pools,  (207) |
 | `50-biome-korona-species.js` | 25 | palettes (sRGB; a library card carries its own c (22); the trap records (core/biome/37-core-traps.js):  (34); the tree-scale species (54); harvest (biomes/FRUIT.md; kits/crops) (65); the small plants and the carnivores, tagged (74); leaf textures (procedural, greyscale: the fallba (102); geometries (the necanyons kit's, read in place)  (141); materials (147); instanced items: the owner's sheets by cell, two (193) |
 | `55-biome-korona-trees.js` | 9 | the placement grid (the necanyons zones + Korona (12); keep-clear between trees (core/space) (30); the builders: (T, st, lv) with lv 2 near, 1 mid (41); impostors (the far trees) (63); the passes (data: species, cell, acceptance by z (77) |
-| `57-biome-korona-carnivores.js` | 20 | the plants (24); the passes (118) |
+| `57-biome-korona-carnivores.js` | 20 | the plants (24); the passes (126) |
 | `60-biome-korona-floor.js` | 3 |  |
 | `70-biome-korona.js` | <1 |  |
 | `88-host-build.js` | 3 |  |

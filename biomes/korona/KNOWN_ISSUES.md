@@ -31,11 +31,44 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   `materials.json` when wanted.
 - [ ] **The hoar table's walls have no icefalls.** The seep lines are bare rock (the staghorns are barred there); the notes
   want the hanging gardens frozen to ice. A hung ice card (`ice.glacier` is in the library) on each seep line.
+- [ ] **The hoar table's pavement is drawn on rings.** The table's top carries the station's knolls and its tarn's basin
+  through `STAGE.topExtra`; since 2026-10-19 the drawn top reads that function (`KSTACKS.mesh` through the export, on 72
+  rings and 520 segments for a top with relief), so the tarn's basin is drawn and the Mother Cushion's knoll mostly is,
+  but the rings are still 20 to 30 m apart on a 1,480 m table: the smaller knolls (12 to 16 m) are drawn low and a
+  cushion on one can stand a few metres over the pavement. A gridded top for a body with relief is the fix.
+- [ ] **The man-eater's lid is a plate, not a lathe.** The hood is drawn as a hinged disc standing open over the mouth
+  (horizontal rings, each the chord across the tilted disc), seated on the rim; a proper Nepenthes lid (a dome with a
+  spur, veined) wants its own geometry when the plant is redone.
+- [ ] **The trenches' "spire" and "lace fan" preset views stand inside the jungle** (the camera is set from the stack's
+  foot inside the trees); a clear line of sight needs the view set from a ray, as the carvings' view is.
+- [ ] **The basin's "shore meadows" preset view starts inside a lace fan's leaf** (the camera at 7 m by the rainbow fans);
+  the same fix.
 - [ ] **Not in the gallery.** Six pages (`dist/korona.html`, `korona-hollow.html`, `korona-basin.html`,
   `korona-trench.html`, `korona-gorge.html`, `korona-hoar.html`) with five texture sidecars shared between them
   (`korona.tex.korona.js`, `.necanyons.js`, `.hyperjungle.js`, `.sedesert.js` for the gorge, `.ehigh.js` for the hoar table).
 
 ## Closed
+
+- The look pass of 2026-10-19 (the owner, from the published stations): **the ground tiled as furrows and stripes** (the
+  meadows of the basin, the sand of the gorge): every library map on a floor, top or wall is read through a hex-cell
+  bomb (`47`, `kdither`: each cell of ~2 tiles turns and shifts the tile by its own hash, three corners blended, at the
+  map's scale and at a third of it, mixed by a value noise) under a coarse luminance and hue drift (48 m and 140 m), so
+  no repeat can line up and the mottle is no longer one flat field; the walls keep their beds level (`kditherW`).
+  **The trenches' two faces were too alike**: the windward face wears sphagnum (a fourth floor layer, `STAGE.layers.d`)
+  over litter pulled green (`STAGE.layerMul`, on the library's colour), the lee pale warm scree; the rainforest climbs
+  higher and denser (`jungleQ` .9, the lace fans and great sundews biased up). **The stacks all looked alike**: every
+  cluster and row draws each stack's taper, lean, girth and crown from ranges of its own (`KSTACKS` variety options;
+  unasked, a layout draws exactly as before: necanyons and Pinnacle Rock proved unchanged record for record), and half
+  of them are **piles of plates, Roraima's kind** (`plates`: thin beds of their own widths and outlines, deep partings).
+  **The prow stood wholly inside the ridge** (its foot was set under the flanks, 260 m below the crest, and its 180 m of
+  tiers never cleared it): its first tier is taller by that drop, so the bench and the cap stand 110 and 180 m over the
+  crest; a stack on a slope is lifted by the ground's drop across its foot (`lift`). **Carvings wound up behind the
+  talus**: a strip now stands 1.6 m over the highest drawn ground along its arc (`47` finds the bed). **The man-eater's
+  hood floated** over its rim (a hinged lid now, seated on the rim); **the punji pit's thrown-back lid floated** (it lies
+  on the ground beyond the rim) and **the pits read too dark** (the lid lifted 1.8x). **The frozen tarn did not read**:
+  it was a water disc under the pavement's own 2.5 m bumps; it is an opaque plate of ice (`pools[].ice`) in a 3.6 m
+  basin with the bumps damped, and the drawn top follows the station's relief at all (it did not before: `KSTACKS.mesh`
+  read the module's own top function, not the wrapped export).
 
 - The plateau texture tiled visibly and plants floated at the walls' feet (the owner, 2026-10-19): the top, floor and
   wall sample their maps twice at different scales mixed by the map's own coarse luminance (`47`, `kdither`), and the
