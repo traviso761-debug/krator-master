@@ -14,6 +14,8 @@ kit's own buildings and the page round them. One <script>, in this order:
                 krator-master-furniture.js and the beast-rider and generic culture files (the pieces the buildings
                 place with F.furn)
   src/50-br-mounts.js                      the kit's own buildings
+  src/51-54 (51-br-trades.js ... 54-br-houses.js)   the sedentary trades (BR_TRADES: every Voth census trade) and the
+                                           larger houses and the farmhouse (2026-10-19)
   TOWNS (GENERATED: towns.py)              Girder's and Mav's Refuge's engines and builders, each sealed in a closure
                                            (BR_GIRDER, BR_MAVS) with the kit's hook and port table (towns/), and the
                                            library maps their packs point into (BR_TOWN_IMG)
@@ -52,7 +54,8 @@ CAT = os.path.join(ROOT, 'kits', 'catalog')
 OUT = 'beast-riders'
 BEFORE = ['krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js',
           'krator-master-furniture-beast-rider.js', 'krator-master-furniture-generic.js']
-OWN = ['50-br-mounts.js']
+OWN = ['50-br-mounts.js',
+       '51-br-trades.js', '52-br-trades-b.js', '53-br-trades-c.js', '54-br-houses.js']   # the sedentary trades and the larger houses (2026-10-19)
 # the ports: Girder's and Mav's Refuge's engines and builders sealed (towns.py), then their buildings as ASSETs
 TOWNS = "TOWNS: Girder and Mav's Refuge sealed (GENERATED: towns.py)"
 PORTS = ['60-br-ports.js']

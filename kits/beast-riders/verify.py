@@ -11,18 +11,25 @@ The page is loaded headless (tools/harness.py) and checked:
   - the detail maps: the kit's three surfaces (straw, guano, yard) are attached, and every map loaded
   - the dev tools are on the page: the click inspector, the hover inspector (T) and the polygon tool (P)
   - negative control: a building's declared box shrunk by 3 m must fail the box check
+  - the sedentary trades and the larger houses (src/51-54, BRT_ROWS): each carries a `job` from the catalog's FURN_JOBS or
+    a `role`; each variant places 4+ catalog pieces; a building declared `against: 'back'` (the rock-backed longhouse)
+    draws nothing behind its back plane (local z = -d/2) and reaches it
+  - the census: every trade of the Voth city's census (IS_TRADES, read from kits/islanders/src/68-is-trades.js) has a
+    row in BR_TRADES, carried by Beast Rider buildings of this page (culture beast-rider) or `na` with a reason; and
+    the negatives: a row stripped of its buildings, and a row dropped, must both fail
   - the ports are their towns' buildings: each port's fabric (the town's kit meshes, no furniture), measured here in its
     local frame, matches the box the kit's own record of its marks gives (core/ports T.box); and (unless --no-towns) the
     box the TOWN'S PAGE gives for the same mark (settlements/girder/girder.html, settlements/mavs-refuge/mavs-refuge.html:
     window._ports.box, measured there from what the town drew), within 0.05 m on every face, and its furniture is the
     town's, piece for piece (key, variant, local place)
 """
-import argparse, asyncio, json, os, sys
+import argparse, asyncio, json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 TOWN_PAGES = {'girder': 'settlements/girder/girder.html', 'mavs-refuge': 'settlements/mavs-refuge/mavs-refuge.html'}
 TOL = 0.05
+IS_TRADES_JS = os.path.join(ROOT, 'kits', 'islanders', 'src', '68-is-trades.js')
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
 try:
     sys.stdout.reconfigure(encoding='utf-8')
@@ -48,6 +55,29 @@ CHECKS = r"""(neg)=>{const K=window._kit,R=[],tol=1.6;
    detail:bad.length?bad.slice(0,4).map(b=>b.key+' v'+b.v+' off '+off(b.fabric,b.tracker).toFixed(3)).join('; '):ports.length+' port variants'});
  return R;}"""
 
+# the sedentary trades and the houses (src/51-54): tags, furniture, the flat back
+BRT_JS = r"""()=>{const R=[],keys=new Set((typeof BRT_ROWS!=='undefined'?BRT_ROWS:[]).flatMap(r=>r.keys)),b=_kit.built.filter(e=>keys.has(e.key));
+ const badTag=[...new Set(b.filter(e=>!(e.tags&&(FURN_JOBS.indexOf(e.tags.job)>=0||(!e.tags.job&&e.tags.role)))).map(e=>e.key))];
+ R.push({name:'the trades and houses carry a catalog job or a role',ok:b.length>0&&badTag.length===0,detail:badTag.length?badTag.join(', '):keys.size+' buildings, '+b.length+' variants'});
+ const few=b.filter(e=>e.nf<4);
+ R.push({name:'each trade and house variant places 4+ catalog pieces',ok:b.length>0&&few.length===0,detail:few.length?few.map(e=>e.key+' v'+e.v+' '+e.nf).join('; '):'min '+Math.min(...b.map(e=>e.nf))+' pieces'});
+ const back=b.filter(e=>e.tags.against==='back'),off=back.filter(e=>!(e.min[2]>=-e.decl.d/2-0.05&&e.min[2]<=-e.decl.d/2+0.3));
+ R.push({name:'a rock-backed building draws nothing behind its back plane (z = -d/2) and reaches it',ok:back.length>0&&off.length===0,detail:off.length?off.map(e=>e.key+' v'+e.v+' back '+e.min[2]+' vs '+(-e.decl.d/2)).join('; '):back.length+' variants flat'});
+ return R;}"""
+# the census table: every IS_TRADES trade carried (keys of this page, culture beast-rider) or na with a reason
+TRADES_JS = r"""([census,neg])=>{let T=(typeof BR_TRADES!=='undefined'?BR_TRADES:[]).map(r=>Object.assign({},r));
+ if(neg==='strip'){const i=T.findIndex(r=>!r.na);T[i]=Object.assign({},T[i],{keys:[]});}
+ if(neg==='drop'){T=T.slice(1);}
+ const by={};T.forEach(r=>{by[r.trade]=r;});
+ const bad=[];
+ census.forEach(t=>{const r=by[t];
+   if(!r){bad.push(t+': no row');return;}
+   if(r.na){if(typeof r.na!=='string'||r.na.length<10||(r.keys&&r.keys.length))bad.push(t+': na without a reason');return;}
+   if(!r.keys||!r.keys.length){bad.push(t+': no building');return;}
+   r.keys.forEach(k=>{const A=ASSET_BY_KEY[k];if(!A||A.culture!=='beast-rider')bad.push(t+': '+k+' is not a beast-rider building here');});});
+ T.forEach(r=>{if(census.indexOf(r.trade)<0)bad.push(r.trade+': not a census trade');});
+ const na=T.filter(r=>r.na).length;
+ return {ok:bad.length===0,detail:bad.length?bad.slice(0,4).join('; '):census.length+' census trades: '+(census.length-na)+' carried, '+na+' na'};}"""
 PORTS_JS = "()=>_kit.built.filter(b=>b.port).map(b=>({key:b.key,v:b.v,town:b.town,name:b.name,def:b.def,fabric:b.fabric,furn:b.furn}))"
 TOWN_JS = """(defs)=>defs.map(d=>{ const P=window._ports; if(!P) return {err:'no window._ports'};
   const ms=P.find(d); if(!ms.length) return {err:'no mark '+d.kind+' '+d.id};
@@ -117,10 +147,27 @@ async def run(a):
                 print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a box shrunk by 3 m) : ' + r['detail'])
                 if r['ok']:
                     fails.append('negative box')
+                for r in await pg.evaluate(BRT_JS):
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                    if not r['ok']:
+                        fails.append(r['name'])
+                with open(IS_TRADES_JS, encoding='utf-8') as fh:
+                    census = re.findall(r"\{trade:'([^']+)'", fh.read())
+                name = 'every census trade (IS_TRADES) is carried by a Beast Rider building, or na with a reason (BR_TRADES)'
+                r = await pg.evaluate(TRADES_JS, [census, None])
+                print(('  PASS  ' if r['ok'] and len(census) >= 40 else '  FAIL  ') + name + ' : ' + r['detail'])
+                if not (r['ok'] and len(census) >= 40):
+                    fails.append(name)
+                for neg in ('strip', 'drop'):
+                    r = await pg.evaluate(TRADES_JS, [census, neg])
+                    print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a census row %s) : ' % ('stripped of its buildings' if neg == 'strip' else 'dropped') + r['detail'])
+                    if r['ok']:
+                        fails.append('negative census ' + neg)
                 ports = await pg.evaluate(PORTS_JS)
             if a.shots:
                 os.makedirs(a.shots, exist_ok=True)
-                for i, name in enumerate(('mounts', 'girder', 'mavs')):
+                titles = await pg.evaluate('_kit.rows.map(R=>R.title)')
+                for i, name in enumerate(re.sub(r'[^a-z]+', '-', t.lower().split('(')[0]).strip('-')[:40] for t in titles):
                     await pg.evaluate("(i)=>{const R=_kit.rows[i];ctl.target.set((R.x0+R.x1)/2,4,R.z+10);ctl.dist=Math.max(70,(R.x1-R.x0)*0.55);ctl.az=0.5;ctl.el=0.45;updateCamera();if(typeof render==='function')render();}", i)
                     await pg.wait_for_timeout(1200)
                     await pg.screenshot(path=os.path.join(a.shots, 'beast-riders-%s.png' % name), timeout=120000)

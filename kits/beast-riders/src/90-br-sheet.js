@@ -11,11 +11,15 @@
 (function () {
   if (/[?&]tex=0/.test(location.search)) KF_API.setTextures(false);
   const OWN = ['br_bldg_raptor_stable', 'br_bldg_great_byre', 'br_bldg_rookery_tower'];
+  /* the sedentary trades and the larger houses (src/51-54: BRT_ROWS), a row per group after the mounts */
+  const BRT_R = typeof BRT_ROWS === 'undefined' ? [] : BRT_ROWS;
+  BRT_R.forEach(function (R) { R.keys.forEach(function (k) { OWN.push(k); }); });
   const PORT_KEYS = BR_PORTS.keys;
   const all = ASSETS.filter(function (A) { return A.culture === 'beast-rider'; });
-  const rows = [{ title: 'The mounts (this kit)', list: all.filter(function (A) { return OWN.indexOf(A.key) >= 0; }) },
+  const rows = [{ title: 'The mounts (this kit)', list: all.filter(function (A) { return OWN.indexOf(A.key) >= 0 && !BRT_R.some(function (R) { return R.keys.indexOf(A.key) >= 0; }); }) }].concat(
+    BRT_R.map(function (R) { return { title: R.title, list: R.keys.map(function (k) { return ASSET_BY_KEY[k]; }).filter(Boolean) }; })).concat([
     { title: "Girder's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'girder'; }) },
-    { title: "Mav's Refuge's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'mavs-refuge'; }) }];
+    { title: "Mav's Refuge's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'mavs-refuge'; }) }]);
   const out = { ready: false, keys: OWN.concat(PORT_KEYS), built: [], errors: BR_PORTS.errors.slice(), rows: [] };
   const _v = new THREE.Vector3();
   function fabricBox(g) {                    /* the port's fabric (its town's kit meshes, not the furniture), local */
@@ -51,7 +55,8 @@
           const e = { key: A.key, v: v, own: OWN.indexOf(A.key) >= 0, port: !!A.port, w: +M.w.toFixed(2), d: +M.d.toFixed(2), h: +M.h.toFixed(2),
             decl: { w: dm.w, d: dm.d, h: dm.h },
             min: M.min ? [+(M.min.x - cx).toFixed(2), +M.min.y.toFixed(2), +(M.min.z - cz).toFixed(2)] : null,
-            max: M.max ? [+(M.max.x - cx).toFixed(2), +M.max.y.toFixed(2), +(M.max.z - cz).toFixed(2)] : null, missing: g.userData.missingFurniture || [] };
+            max: M.max ? [+(M.max.x - cx).toFixed(2), +M.max.y.toFixed(2), +(M.max.z - cz).toFixed(2)] : null, missing: g.userData.missingFurniture || [],
+            nf: (g.userData.furniture || []).length, tags: { job: A.job || null, role: A.role || null, against: A.against || null } };
           if (A.port) {
             const V = BR_PORTS.built[A.key][v];
             e.town = A.port.town; e.name = V.name; e.def = V.def; e.fabric = fabricBox(V.group); e.tracker = { min: V.box.min, max: V.box.max, inst: V.box.inst, tris: V.box.tris };
