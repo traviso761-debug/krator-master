@@ -25,8 +25,8 @@
    "sha256": "14e71c1a9528c986d73ba0f034d44572bda80c2d0e4e924e9b8792b9b4bbe6dd"
   },
   "biomes/necanyons/dist/necanyons.html": {
-   "bytes": 524199,
-   "sha256": "8c6126a98eb798516af68c7a61d39bff6c211a81780ee547be50f74bf02dbe6d"
+   "bytes": 525652,
+   "sha256": "ce8375feeee7bdff3af4dd53171afbd0e6a644eb59d43f79e53748f4f0885089"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
    "bytes": 5623499,
@@ -289,8 +289,8 @@
    "sha256": "45135376ea1764dcec9eb455510d1afa8ed8ae67ce9f215dca1d2b12e1bbe1a4"
   },
   "kits/beast-riders/dist/beast-riders.html": {
-   "bytes": 12318697,
-   "sha256": "690f8ebe9f178ce7878f346ce959e7bf6606e9799606a44a9b89547b877ea9ec"
+   "bytes": 12319578,
+   "sha256": "66d70a415c1504d439c07103dfa78882144d5269268b1b8337dde8606492a3d2"
   },
   "kits/catalog/dist/catalog.html": {
    "bytes": 1672503,
@@ -473,8 +473,8 @@
    "sha256": "9213e3ee2c49e7d38d86a023cc5fccfbd381d7db27ee5f6afe831dcb795b2c8b"
   },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
-   "bytes": 714030,
-   "sha256": "00d6630eb374f6c1bb57366382978b2d94193ac67f4ff2e33d88907e0d7cdb7f"
+   "bytes": 716388,
+   "sha256": "2da5935029465ce92316f734ace22966ab9a3c179d8732e2c1c5b31f21cba1b7"
   },
   "settlements/port/dist/cgBox.html": {
    "bytes": 878316,

@@ -73,12 +73,13 @@ function brrCavernDoor(F) {
   K.slab(-3.5, 3.5, 0.18, 0.18, -K.e, 2.05, shade(col, -0.1), BRR_STONE);
   K.slab(-3.1, 3.1, 0.36, 0.18, -K.e, 1.45, shade(col, -0.06), BRR_STONE);
   /* the band the roundels stand on: a sunk arc of darker stone from the outer order to beyond the roundels */
+  /* an arch ring as voussoirs: wedge stones turned along the curve (each as wide as the arc at its outer edge, so no gap
+     opens), each in its own frame on the face (a wrapped wall's curve followed). Vertical slices drew the curve in steps */
   const arcSlices = function (r0, r1, yC, n0, n1, cl, step) {
-    const ns = Math.max(8, Math.round(2 * r1 / (step || 0.3)));
+    const ns = Math.max(12, Math.round(Math.PI * r1 / (step || 0.3))), dt = Math.PI / ns, w = r1 * dt * 1.04, nm = (n0 + n1) / 2;
     for (let i = 0; i < ns; i++) {
-      const u0 = -r1 + 2 * r1 * i / ns, u1 = -r1 + 2 * r1 * (i + 1) / ns, um = (u0 + u1) / 2;
-      const yo = yC + Math.sqrt(Math.max(0, r1 * r1 - um * um)), yi = Math.abs(um) < r0 ? yC + Math.sqrt(r0 * r0 - um * um) : yC;
-      if (yo - yi > 0.02) K.slab(u0, u1, yi, yo - yi, n0, n1, typeof cl === 'function' ? cl(i) : cl, BRR_STONE);
+      const t = Math.PI - (i + 0.5) * dt, c = Math.cos(t), sn = Math.sin(t), um = (r0 + r1) / 2 * c;
+      K.g(um).beam(r0 * c - um, yC + r0 * sn, nm, r1 * c - um, yC + r1 * sn, nm, w, n1 - n0, typeof cl === 'function' ? cl(i) : cl, BRR_STONE);
     }
   };
   arcSlices(2.9, Rb + 0.9, ys, -K.e, 0.22, shade(col, -0.24), 0.16);

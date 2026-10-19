@@ -176,11 +176,17 @@ function brrTop(K, m) { return K.H - 0.27 - 0.92 * m; }
 /* an arched head over an opening (gtFacade's): the soffit cut in n slices, its spring at ys, its crown rise above, the
    head block to yHead; from n0 (the recess) to n1 (the face of the jambs) */
 function brrArchHead(K, u, w, ys, rise, yHead, n0, n1, col) {
-  const nsl = Math.max(6, Math.round(w / 0.35));
+  /* the head over an arch: slices down to the curve, and along each slice's chord a stone (the intrados) whose underside
+     IS the chord, so the arch's edge reads as a curve, not as steps */
+  const nsl = Math.max(10, Math.round(w / 0.18)), yA = function (v) { return ys + rise * Math.sqrt(Math.max(0, 1 - 4 * v * v / (w * w))); };
+  const nm = (n0 + n1) / 2;
   for (let i = 0; i < nsl; i++) {
-    const v0 = -w / 2 + w * i / nsl, v1 = -w / 2 + w * (i + 1) / nsl, vm = (v0 + v1) / 2;
-    const yA = ys + rise * Math.sqrt(Math.max(0, 1 - 4 * vm * vm / (w * w)));
-    if (yHead - yA > 0.02) K.slab(u + v0, u + v1, yA, yHead - yA, n0, n1, i % 2 ? col : shade(col, -0.04), BRR_STONE);
+    const v0 = -w / 2 + w * i / nsl, v1 = -w / 2 + w * (i + 1) / nsl, vm = (v0 + v1) / 2, a0 = yA(v0), a1 = yA(v1), hi = Math.max(a0, a1);
+    const c = i % 2 ? col : shade(col, -0.04);
+    if (yHead - hi > 0.02) K.slab(u + v0, u + v1, hi, yHead - hi, n0, n1, c, BRR_STONE);
+    const dx = v1 - v0, dy = a1 - a0, L = Math.hypot(dx, dy), th = Math.min(Math.abs(dy) + 0.06, Math.max(0.06, yHead - Math.min(a0, a1)));
+    const ox = -dy / L * th / 2, oy = dx / L * th / 2;   /* up the chord's normal by half the stone's thickness */
+    K.g(u + vm).beam(v0 - vm + ox, a0 + oy, nm, v1 - vm + ox, a1 + oy, nm, th, n1 - n0, c, BRR_STONE);
   }
 }
 /* a portal: plinth step, jambs, recess (the door wall at nP), head (square or arched), the keystone; returns its heights.

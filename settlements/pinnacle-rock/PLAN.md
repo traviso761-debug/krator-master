@@ -53,7 +53,8 @@ the far land to 60 km is drawn from the same cut.
 
 **The mesa clears the canopy** (settled 2026-10-18). The northern margin's forest is Girder's size (150-270 m; the
 contradiction with Mav's 290-480 m stays in `LORE.md` §12 for the deep jungle). The mesa rises **about 250 m** from
-the knoll's foot, the **pinnacles 40 to 90 m** more, so the lowest roost deck stands above the tallest crown and a
+the knoll's foot, the **fins round the rim 40 to 90 m** more and the **Garden's central pinnacles 120 to 160 m** (owner,
+2026-10-19: taller pinnacles in the centre of the rock), so the lowest roost deck stands above the tallest crown and a
 flyer can leave a perch and fall into clear air. The mesa top is about
 1.2 by 0.8 km, long axis north-south, red sandstone in horizontal beds. The stacks are the **fins**, spread round the
 rim in groups of one to three, each group on its own strike (owner, 2026-10-19: not one row), and the **Garden**, a
