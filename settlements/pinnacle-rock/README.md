@@ -63,10 +63,12 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
     `wallR`, `drawnTop`, from `KSTACKS.mesh` with the page's wall steps), and a tread's middle stands on the drawn wall
     of the bed under it and never under rock over it: where a bed juts out within 2.2 m over the tread, the tread stands
     out at that bed's face, on masonry from both its edges down to the rock 2.7 m under it, the flight easing out to the
-    overhang and back in over the treads either side (no jog). The cut flights stand half into the face; the return
-    flight is a timber gallery 1.7 m off them, on brackets and ledgers let into the rock 3.6 m under it, so no flight
-    turns under another; a stone landing slab at each turn, fitted to the wall at both its ends and its middle, on
-    masonry to the rock; a path of steps down the debris slope to the fair ground, seated on the drawn ground and kept
+    overhang and back in over the treads either side (no jog). The cut flights stand half into the face, the head and
+    the top flight 4.5 m wide and the others 3 m (owner, 2026-10-19: the last switchback up was tight); the return flight
+    is a timber gallery off them, clear of the widest cut flight, on brackets and ledgers let into the rock 3.6 m under
+    it, so no flight turns under another; a stone landing platform at each turn, from the cut flight's inner edge out past
+    the gallery's, running 4.5 m on past the turn, fitted to the wall at both its ends and its middle, on masonry to the
+    rock; a path of steps down the debris slope to the fair ground, seated on the drawn ground and kept
     clear of fallen blocks and plants; gated at its head, its middle landing and its foot. The climbs round the fins
     and pinnacles follow the same rule on their stacks' drawn walls (inner edge .2 m in, never under rock over it, a
     clear start beside a neighbouring body: a Garden pinnacle's climb in its cleft with the Heart), every fourth tread
@@ -102,17 +104,17 @@ standing in the farms or a band's ground; the floor equal to the model's land an
 knoll. The roosts (P2): a stall deck on each Wing's fin and the four Garden pinnacles and a ring on every fin, no rock
 standing on any deck; every Wing's eight or more stalls, each with its way out open; four bridges, each within a group,
 each end on its deck; the lifts' cables 3 m or more clear of the wall; the Stair from the top to the fair ground, no
-flight steeper than 35 degrees, gated three times, and, **measured against the drawn rock by rays** (`ROCKRAY`: the rock
+flight steeper than 35 degrees, gated at its head and foot (owner, 2026-10-19: the middle gate, which stood in the walk, removed), and, **measured against the drawn rock by rays** (`ROCKRAY`: the rock
 meshes as drawn, not KSTACKS' outline), clear and carried at every bed of the mesa it passes: every tread's walkway out
 of the rock .5, 1.3 and 2.1 m over it, every cut tread's masonry and every gallery bracket meeting the rock under it,
 every landing slab clear over its middle and carried, the head never over a drawn ledge; a climb to every deck, every
 tread against its stack's drawn wall and clear of rock 1 m and 1.8 m over it, every bracket and every deck strut in the
-rock; a quetzal sent
+rock; every gate's posts, leaves and lintel out of the drawn rock; a quetzal sent
 in to the east fins lands on a perch, and in 90 s of traffic no beast aloft is in the rock; each Wing's beasts in its own
 stalls; the lift road from the landing to the palisade, no steeper than 1 in 7, through no band's ground nor the pond,
 nothing standing on it. Each has a negative control (the fins
 in one row, a fin over the edge, a 180 m mesa, the Garden all one height, no Garden's mesa, no Heart, a Heart weathered
 like the Garden's mesa, a Heart as tall as its pinnacles, a tree in the Crown, a tree in the farms; a deck cut into its
-fin, a perch facing its fin, a bridge from the north fins to the east, a cable rubbing the wall, the Stair with two gates,
+fin, a perch facing its fin, a bridge from the north fins to the east, a cable rubbing the wall, the Stair with one gate,
 the Stair ending in the gorge, a deck with no climb, a quetzal sent to a lookout ring, the Stair's flights 4 m out from
-the face, a climb 3 m out from its fin, an archaeopteryx in a Quetzal stall, the lift road through the seep pond).
+the face, a climb 3 m out from its fin, an archaeopteryx in a Quetzal stall, the lift road through the seep pond, a gate sunk into the cap rock).

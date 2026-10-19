@@ -20,7 +20,7 @@ const VIEWS=(function(){const V={},n0=_fin('fin-n0'),e1=_fin('fin-e1');
  {const G=ROOST.decks.find(d=>d.id==='deck-garden-2');if(G)V['The Garden\'s roost rings']=[G.x+150,G.y+30,G.z+120,G.x,G.y-10,G.z];}
  {const L=ROOST.lifts.find(l=>l.id==='lift-north');if(L)V['The beast lift over the gorge']=[L.tip.x+90,L.tip.y-60,L.tip.z-90,L.tip.x,L.tip.y-90,L.tip.z];}
  {const Rd=(ROOST.roads||[])[0];if(Rd){const m=Rd.pts[Math.floor(Rd.benchEnd*.45)];V['The lift road (cut along the debris slope)']=[m[0]-150,m[1]+70,m[2]-120,m[0],m[1],m[2]];}}
- {const S=ROOST.stair;if(S&&S.landings.length){const m=S.pts[S.landings[0]];V['The Stair (its middle gate)']=[m[0]-30,m[1]+6,m[2]+45,m[0],m[1]-4,m[2]];}}
+ {const S=ROOST.stair;if(S&&S.landings.length){const m=S.pts[S.landings[0]];V['The Stair (its upper landing)']=[m[0]-30,m[1]+6,m[2]+45,m[0],m[1]-4,m[2]];}}
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the rock, the zone of the top or
@@ -133,7 +133,7 @@ const HCHK={
  // the lifts: the cable hangs 3 m or more clear of the wall all the way down, the landing on the ground under the tip
  lifts(L){const bad=[];L.forEach(l=>{if(l.clear<3)bad.push(l.id+' '+l.clear.toFixed(1)+' m off the wall');if(Math.abs(l.foot.y-terrainH(l.foot.x,l.foot.z))>1.5)bad.push(l.id+' landing off the ground');});
   return{ok:L.length===2&&!bad.length,detail:L.map(l=>l.id+': '+l.len.toFixed(0)+' m boom, '+l.clear.toFixed(1)+' m clear, '+(_top-l.foot.y).toFixed(0)+' m drop').join('; ')+(bad.length?'; '+bad.join(', '):'')};},
- // the Stair: from the top to the fair ground, gated three times, no flight steeper than 35 degrees, and ON THE ROCK AT
+ // the Stair: from the top to the fair ground, gated at its head and its foot (owner, 2026-10-19: no middle gate), no flight steeper than 35 degrees, and ON THE ROCK AT
  // EVERY BED (owner, 2026-10-19: "check it is actually wrapping at each slice of the plateau"; "clips when there's an
  // overhang"), measured against the DRAWN rock (ROCKRAY), tread by tread: CLEAR (the walkway's middle out of the rock
  // .5, 1.3 and 2.1 m over the tread: no bed juts through it) and CARRIED (a cut tread's masonry meets the rock 2.7 m
@@ -159,10 +159,22 @@ const HCHK={
   (S.slabs||[]).forEach(L=>{const bi=bedOf(L.y-.25),c=[cx+Math.cos(L.a)*(L.ends[1].inner+L.outer)/2,L.y,cz+Math.sin(L.a)*(L.ends[1].inner+L.outer)/2];
    for(const h of [.5,1.3,2.1]){if(clipped(c,h)){flag(bi,'landing',null);break;}}
    const f=[cx+Math.cos(L.a)*(L.rf-.2),L.y,cz+Math.sin(L.a)*(L.rf-.2)],vf=Math.min(...[0,.3].map(dy=>G(f,0,-3+dy)).map(x=>x==null?-1:x));if(!(L.rf>0)||vf>.1)flag(bi,'landing',vf);});
-  const ok=Math.abs(P[0][1]-_top)<1.5&&(Z==='fair'||PR.inEll(end[0],end[2],PR.FAIR,15))&&S.gates.length===3&&steep<.7&&!loose.size;
+  const ok=Math.abs(P[0][1]-_top)<1.5&&(Z==='fair'||PR.inEll(end[0],end[2],PR.FAIR,15))&&S.gates.length===2&&steep<.7&&!loose.size;
   return{ok,detail:'from '+P[0][1].toFixed(0)+' m to the '+Z+'; '+S.flights+' flights, '+S.landings.length+' landings, '+S.gates.length+' gates; steepest '+(Math.atan(steep)*180/Math.PI).toFixed(0)+
    ' degrees; clear and carried on the drawn rock at '+(passed.size-[...loose].filter(b=>passed.has(b)).length)+' of the '+passed.size+' beds it passes'+
    (loose.size?' (fails at beds '+[...loose].slice(0,8).join(', ')+': '+Object.keys(why).filter(k=>why[k]).map(k=>why[k]+' '+k).join(', ')+'; worst '+worst.toFixed(2)+' m)':'')};},
+ // THE GATES: every gate's posts, open leaves and lintel out of the drawn rock, at the heights they stand; a gate on a
+ // landing with its leaves over the landing's platform (inside its span along the face and between its inner and outer
+ // edges), so they open flat onto it and touch no stair
+ gates(S){if(!S)return{ok:false,detail:'no Stair'};const cx=MESA_B.x,cz=MESA_B.z,bad=[];
+  S.gates.forEach(G=>{const c=Math.cos(G.ry),s=Math.sin(G.ry),L=(a,h,b)=>[G.x+c*a+s*b,G.y+h,G.z-s*a+c*b],hw=G.w/2,pts=[];
+   [-1,1].forEach(q=>{for(const h of [.3,2.4,4.4])pts.push(['post',L(q*(hw+.3),h,0)]);for(const b of [.4,.8,1.6])for(const h of [.3,1.8,3.4])pts.push(['leaf',L(q*(hw+.2)-q*.1*b/1.6,h,b)]);});
+   pts.push(['lintel',L(-hw-.9,4.4,0)],['lintel',L(hw+.9,4.4,0)]);
+   const M=ROCKRAY.near(G.x-30,G.x+30,G.z-30,G.z+30,G.y-10,G.y+10);
+   pts.forEach(([what,p])=>{const dx=cx-p[0],dz=cz-p[2];if(ROCKRAY.inRock(M,p[0],p[1],p[2],dx,dz))bad.push(G.id+' '+what+' in the rock');});
+   if(G.landing!=null){const Ld=S.slabs[G.landing];if(!Ld){bad.push(G.id+' no landing');return;}const E=Ld.ends,a0=Math.min(E[0].a,E[E.length-1].a),a1=Math.max(E[0].a,E[E.length-1].a),rin=Math.max(...E.map(e=>e.inner));
+    pts.filter(q=>q[0]==='leaf').forEach(([w,p])=>{const a=Math.atan2(p[2]-cz,p[0]-cx),r=Math.hypot(p[0]-cx,p[2]-cz);if(a<a0-.001||a>a1+.001||r<rin-.05||r>Ld.outer+.05)bad.push(G.id+' leaf off its landing');});}});
+  const u=[...new Set(bad)];return{ok:!u.length,detail:S.gates.length+' gates'+(u.length?': '+u.slice(0,6).join(', '):', clear of the rock')};},
  // THE LIFT ROAD: from the beast lift's landing to the palisade (the north-west gate), no steeper than 1 in 7 where it is
  // a road, through no band's ground nor the pond, and cleared: no plant of the rock's, nor anything of the forest within 6 m of the ground, on it (a crown beside it may overhang)
  road(Rd,L){if(!Rd||!L)return{ok:false,detail:'no lift road'};const P=Rd.pts,s=P[0],e=P[P.length-1];let g=0,through=null;
@@ -225,10 +237,11 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the stalls: every Wing\'s, each with its way out open',HCHK.stalls(ROOST.roosts));
  add('the bridges between a group\'s fins',HCHK.bridges(ROOST.bridges,ROOST.decks));
  add('the lifts: the cables clear of the wall',HCHK.lifts(ROOST.lifts));
- add('the Stair: the top to the fair ground, gated three times',HCHK.stair(ROOST.stair));
+ add('the Stair: the top to the fair ground, gated at head and foot',HCHK.stair(ROOST.stair));
  add('a climb to every deck',HCHK.climbs(ROOST.climbs,ROOST.decks));
  add('the flyers: a quetzal lands on an east fin',HCHK.flyers(['deck-fin-e0','deck-fin-e1','deck-fin-e2']));
  add('each Wing\'s beasts in its own stalls',HCHK.wings(PRFLY?PRFLY.list():[]));
+ add('the gates: clear of the rock',HCHK.gates(ROOST.stair));
  add('the lift road: the beast lift to the north-west gate, cleared',HCHK.road((ROOST.roads||[])[0],ROOST.lifts.find(l=>l.id==='lift-north')));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
@@ -249,13 +262,14 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const n0=ROOST.decks.find(d=>d.id==='deck-fin-n0'),e0=ROOST.decks.find(d=>d.id==='deck-fin-e0');
   if(n0&&e0)add('a bridge from the north fins to the east',HCHK.bridges(ROOST.bridges.map((b,i)=>i?b:Object.assign({},b,{b:{x:e0.outer[0][0],y:e0.y,z:e0.outer[0][1],deck:e0.id}})),ROOST.decks));}
  add('a lift whose cable rubs the wall',HCHK.lifts(ROOST.lifts.map((l,i)=>i?l:Object.assign({},l,{clear:l.clear-6}))));
- add('the Stair with two gates',HCHK.stair(Object.assign({},ROOST.stair,{gates:ROOST.stair.gates.slice(1)})));
+ add('the Stair with one gate',HCHK.stair(Object.assign({},ROOST.stair,{gates:ROOST.stair.gates.slice(1)})));
  add('the Stair ending in the gorge',HCHK.stair(Object.assign({},ROOST.stair,{ground:ROOST.stair.ground.concat([[0,0,PR.GORGE.z(0)]])})));
  add('a deck with no climb',HCHK.climbs(ROOST.climbs.slice(1),ROOST.decks));
  add('a quetzal sent to a lookout ring (no stalls)',HCHK.flyers(['deck-fin-ne-look']));
  {const S=ROOST.stair;add('the Stair\'s flights 4 m out from the face',HCHK.stair(Object.assign({},S,{pts:S.pts.map((p,i)=>i<S.shoulder?p:[p[0]+(p[0]-MESA_B.x)/p[3]*4,p[1],p[2]+(p[2]-MESA_B.z)/p[3]*4,p[3]+4,p[4],p[5]-1e3])})));}
  {const c0=ROOST.climbs[0];add('a climb 3 m out from its fin',HCHK.climbs(ROOST.climbs.map(c=>c!==c0?c:Object.assign({},c,{pts:c.pts.map(p=>{const S=ROCK.find(B=>'deck-'+B.id===c.deck),dx=p[0]-S.x,dz=p[2]-S.z,L=Math.hypot(dx,dz)||1;return [p[0]+dx/L*3,p[1],p[2]+dz/L*3];})})),ROOST.decks));}
  if(PRFLY){const B=PRFLY.bays.find(b=>b.plat.wing==='quetzal');add('an archaeopteryx in a Quetzal stall',HCHK.wings(PRFLY.list().concat([{sp:PRFLY.SP.A,bay:B}])));}
+ add('a gate in the rock (the head gate sunk 3 m into the cap rock)',HCHK.gates(Object.assign({},ROOST.stair,{gates:ROOST.stair.gates.map((g,i)=>i?g:Object.assign({},g,{y:g.y-3}))})));
  {const Rd=(ROOST.roads||[])[0];if(Rd)add('the lift road through the seep pond',HCHK.road(Object.assign({},Rd,{pts:Rd.pts.concat([[PR.POND.x,0,PR.POND.z]])}),ROOST.lifts.find(l=>l.id==='lift-north')));}
  return R;}
 

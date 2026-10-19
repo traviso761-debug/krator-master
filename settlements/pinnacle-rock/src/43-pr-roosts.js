@@ -277,18 +277,21 @@ const PRR = (function () {
     // of it whose face stands least in and out, bed to bed and flute to flute: no gully), the capstan lift east of it.
     // The head 6 m in from the top's edge; straight down the shoulder's ledges to the cliff's lip, cut down into them (never
     // over a ledge's surface, never steeper than 45 degrees); then flights along the face, falling TREAD, each following the
-    // face bed by bed (the reach of the bed under its tread; one standing proud over it is the cut's ceiling): the flights cut half their 3 m
-    // into the face, a stone wedge under their outer half down to the rock; each return flight a timber gallery 1.7 m off the
-    // face beyond them on brackets let into the rock 3.6 m under it, so no flight turns under the one before it; a landing
-    // at each turn. Where it meets the debris slope, a path of steps down the slope to the fair ground. Gated three times:
-    // the head, the middle landing, the foot
+    // face bed by bed, on the wall as drawn, never under rock over it: the flights cut half their width (4.5 m for the top
+    // flight and the head, 3 m the rest) into the face over masonry down to the rock; each return flight a timber gallery
+    // off the face beyond them on brackets let into the rock 3.6 m under it, so no flight turns under the one before it; a
+    // landing platform at each turn. Where it meets the debris slope, a path of steps down the slope to the fair ground. Gated at
+    // the head and the foot (the owner removed the middle gate, 2026-10-19)
     const stair = (function () { const Rm = mesa.R, cx = mesa.x, cz = mesa.z, OUT = 3.2, SPAN = .145;
       const rch = (a, y) => wallR(K, mesa, cx, cz, a, y);   // the DRAWN wall
       // a tread's middle: on the drawn wall of the bed under it, and NEVER UNDER ROCK OVER IT: where a bed juts out within
       // 2.2 m over the tread, the tread stands out at that bed's face, carried on masonry down to the bed under it
       const above = (a, y) => { let m = 0; for (const h of [.4, 1, 1.6, 2.2]) m = Math.max(m, rch(a, y + h)); return m; };
       const face = (a, y) => Math.max(rch(a, y - .2), above(a, y));
-      const at = (a, r, y, k, rf) => [cx + Math.cos(a) * r, y, cz + Math.sin(a) * r, r, k, rf];
+      // the flights' widths (owner, 2026-10-19: the last switchback up was tight): the head and the top flight 4.5 m, the
+      // others 3 m; a point carries its flight's width
+      const WK = k => k <= 0 ? 4.5 : 3, WE = 4.5, WO = 3;
+      const at = (a, r, y, k, rf) => [cx + Math.cos(a) * r, y, cz + Math.sin(a) * r, r, k, rf, WK(k)];
       const lipY = mesa.top - P.MESA.shoulder.h - .5, capA = Math.atan2(P.TOP.capstan.z - cz, P.TOP.capstan.x - cx);
       // the span: the least rough, a little cost for straying from the nose
       let a0 = Math.PI / 2, best = 1e9;
@@ -307,8 +310,9 @@ const PRR = (function () {
       const pts = sh.map((p, i) => at(aE, p[0], shY[i], -1, 0)), nSh = pts.length;
       // the flights
       const raw = []; let a = aE, y = lipY, dir = 1, k = 0, guard = 0;
-      const cOf = (f, k) => k % 2 ? f + 1.5 + .2 + 1.5 : f;   // a flight's centre from the face: cut (k even), built out (odd)
-      const gw = (a, y, k) => { const r = cOf(face(a, y), k) + 1.5; return ground(cx + Math.cos(a) * r, cz + Math.sin(a) * r); };
+      // a flight's centre from the face: cut (k even) on it, built out (k odd) clear of the widest cut flight's outer edge
+      const cOf = (f, k) => k % 2 ? f + WE / 2 + .2 + WO / 2 : f;
+      const gw = (a, y, k) => { const r = cOf(face(a, y), k) + WK(k) / 2; return ground(cx + Math.cos(a) * r, cz + Math.sin(a) * r); };
       while (guard++ < 8000) { raw.push([a, y, k, face(a, y)]); if (y <= gw(a, y, k) + .6) break;
         let na = a + dir * .5 / Math.max(50, raw[raw.length - 1][3]);
         if (na > aW || na < aE) { k++; dir = -dir; raw.push([a, y, k, face(a, y)]); na = a + dir * .5 / Math.max(50, raw[raw.length - 1][3]); }
@@ -324,15 +328,19 @@ const PRR = (function () {
       // brackets 3.6 m down
       raw.forEach((p, i) => { if (i && raw[i - 1][2] !== p[2]) landings.push(pts.length);
         pts.push(at(p[0], cOf(rr[i], p[2]), p[1], p[2], rch(p[0], p[1] - (p[2] % 2 ? 3.6 : 2.7)))); });
-      // THE LANDINGS: a slab at each turn, its inner edge fitted at both ends and its middle by the tread's rule (1.5 m into
-      // the face, never under rock over it), its outer edge past the gallery's, on masonry down to the rock 3 m under it
-      const slabs = landings.map(li => { const p = pts[li], q = pts[li - 1], a = Math.atan2(p[2] - cz, p[0] - cx), y = p[1];
-        return { li, a, y, ends: [-1.8, 0, 1.8].map(s => { const aa = a + s / p[3]; return { a: aa, inner: face(aa, y) - 1.5 }; }), outer: Math.max(p[3], q[3]) + 1.5, rf: rch(a, y - 3) }; });
+      // THE LANDINGS: a platform at each turn, from the cut flight's inner edge (fitted to the wall at its ends and middle by
+      // the tread's rule: half the flight into the face, never under rock over it) out past the gallery's outer edge, running
+      // on 4.5 m past the turn the way the flight above came (room to turn), on masonry down to the rock 3 m under it. sg: the way (+1/-1 in angle);
+      // edge: the line between the two flights
+      const slabs = landings.map(li => { const p = pts[li], q = pts[li - 1], q2 = pts[li - 2] || q, a = Math.atan2(p[2] - cz, p[0] - cx), y = p[1];
+        const sg = Math.sign(Math.atan2(q[2] - cz, q[0] - cx) - Math.atan2(q2[2] - cz, q2[0] - cx)) || 1, ev = p[4] % 2 ? q : p, od = p[4] % 2 ? p : q, r = ev[3];
+        return { li, a, y, sg, out: p[4] % 2 === 1, ends: [-.5, 2, 4.5].map(t => { const aa = a + sg * t / r; return { a: aa, t, inner: face(aa, y) - WK(ev[4]) / 2 }; }),
+          outer: od[3] + WO / 2, edge: ev[3] + WK(ev[4]) / 2 + .1, rf: rch(a + sg * 2 / r, y - 3) }; });
       const foot = pts[pts.length - 1], g = [], fair = [P.FAIR.x - 30, P.FAIR.z - P.FAIR.rz + 8], dx = fair[0] - foot[0], dz = fair[1] - foot[2], Lg = Math.hypot(dx, dz);
       for (let s = 0; s <= Lg; s += 1) { const x = foot[0] + dx * s / Lg, z = foot[2] + dz * s / Lg; g.push([x, ground(x, z), z]); }
-      const mid = landings.length ? pts[landings[Math.floor((landings.length - 1) / 2)]] : pts[Math.floor(pts.length / 2)], ryOf = (p, q) => Math.atan2(q[0] - p[0], q[2] - p[2]);
+      const ryOf = (p, q) => Math.atan2(q[0] - p[0], q[2] - p[2]);
+      // two gates (owner, 2026-10-19: the middle one stood in the walk; removed): the head and the foot
       const gates = [{ id: 'gate-head', name: 'The Stair\'s head gate', x: pts[0][0], y: pts[0][1], z: pts[0][2], ry: ryOf(pts[0], pts[1]), w: 3.6 },
-        { id: 'gate-mid', name: 'The Stair\'s middle gate', x: mid[0], y: mid[1], z: mid[2], ry: ryOf(mid, [cx, mid[1], cz]), w: 3.6 },
         { id: 'gate-foot', name: 'The Stair\'s foot gate', x: g[2][0], y: g[2][1], z: g[2][2], ry: ryOf(g[2], g[Math.min(8, g.length - 1)]), w: 3.6 }];
       return { id: 'stair', name: 'The Stair (the one walking way up, cut in the south nose)', pts, shoulder: nSh, flights: k + 1, landings, slabs, ground: g, gates, w: 3, out: OUT, a0: aE, a1: aW, rough: best }; })();
 

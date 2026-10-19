@@ -159,13 +159,13 @@ const ROOST_MESH={},ROOST_CAGES=[];
  if(S){const P=S.pts,w=S.w,head=P.slice(0,S.shoulder+1),run=P.slice(S.shoulder),cx=MESA_B.x,cz=MESA_B.z;
   const ray=(p,dr,dy)=>{const a=Math.atan2(p[2]-cz,p[0]-cx);return [p[0]+Math.cos(a)*dr,p[1]+(dy||0),p[2]+Math.sin(a)*dr];};
   // the head: steps cut down through the shoulder's ledges (never over a ledge's surface: PRR)
-  steps('stone',head,w,COL.stone,{face:.6,faceCol:COL.stoneDk});
+  steps('stone',head,head[0][6]||w,COL.stone,{face:.6,faceCol:COL.stoneDk});
   // the flights by k: the cut ones (k even), half into the face, a stone wedge under their outer half down to the rock
   // (PRR rf: the rock's reach 1.2 m under the tread) and a parapet; the returns (k odd) a timber gallery 1.7 m off the
   // face, carried on brackets and ledgers let into the rock 3.6 m under it
-  let seg=[];const flush=()=>{if(seg.length<2){seg=[];return;}const k=seg[0][4],odd=k%2===1;
-   steps(odd?'plank':'stone',seg,w,odd?COL.plank:COL.stone,null);
-   const out=p=>ray(p,w/2),inn=p=>ray(p,-w/2);
+  let seg=[];const flush=()=>{if(seg.length<2){seg=[];return;}const k=seg[0][4],odd=k%2===1,ww=seg[seg.length-1][6]||w;   /* the flight's own width */
+   steps(odd?'plank':'stone',seg,ww,odd?COL.plank:COL.stone,null);
+   const out=p=>ray(p,ww/2),inn=p=>ray(p,-ww/2);
    const every5=[];for(let i=0;i<seg.length;i+=5)every5.push(i);if(every5[every5.length-1]!==seg.length-1)every5.push(seg.length-1);   // its ends too: the landings hang on them
    if(odd){rail(seg.map(out),6,1,null);for(const i of every5){const p=seg[i],rf=p[5];if(!(rf>0))continue;const a=inn(p),b=out(p),ft=ray(p,rf-.3-p[3],-3.6);
      beam('timber',ft,[b[0],b[1]-.2,b[2]],.3,.3,COL.tar);beam('timber',ft,[a[0],a[1]-.2,a[2]],.28,.28,COL.tar);beam('timber',ray(p,rf-.3-p[3],-.25),[b[0],b[1]-.25,b[2]],.26,.32,COL.tar);}}
@@ -174,9 +174,10 @@ const ROOST_MESH={},ROOST_CAGES=[];
      quad('stone',[ob[0],ob[1],ob[2]],[oq[0],oq[1],oq[2]],fq,fp,COL.stoneDk);quad('stone',[ib[0],ib[1],ib[2]],[iq[0],iq[1],iq[2]],fq,fp,COL.stoneDk);}
     for(let i=0;i+2<seg.length;i+=2){const a=out(seg[i]),b=out(seg[i+2]);beam('stone',[a[0],a[1]+.45,a[2]],[b[0],b[1]+.45,b[2]],.5,.9,COL.stone);}}
    seg=[];};
-  run.forEach(p=>{if(seg.length&&seg[seg.length-1][4]!==p[4]){const last=seg[seg.length-1];flush();seg=[last.slice(0,4).concat([p[4],last[5]])];}seg.push(p);});flush();
-  // THE LANDINGS: a stone slab at each turn, from the cut flight's inner edge (in the face) out past the gallery's outer
-  // edge, 3.6 m along the face, its outer edge and its sides carried down on a stone wedge to the rock 3 m under it
+  run.forEach(p=>{if(seg.length&&seg[seg.length-1][4]!==p[4]){const last=seg[seg.length-1];flush();seg=[last.slice(0,4).concat([p[4],last[5],p[6]])];}seg.push(p);});flush();
+  // THE LANDINGS: a stone platform at each turn, from the cut flight's inner edge (in the face) out past the gallery's
+  // outer edge, 5 m along the face (PRR: 4.5 m on past the turn), its outer edge and its sides carried down on a stone
+  // wedge to the rock 3 m under it
   (S.slabs||[]).forEach(L=>{const y=L.y,E=L.ends,A=(a,r,h)=>[cx+Math.cos(a)*r,y+h,cz+Math.sin(a)*r],rf=(L.rf>0?L.rf:E[1].inner+1.5)-.2;
    for(let i=0;i+1<E.length;i++){const e=E[i],f=E[i+1];
     quad('stone',A(e.a,e.inner,.02),A(e.a,L.outer,.02),A(f.a,L.outer,.02),A(f.a,f.inner,.02),COL.stone);

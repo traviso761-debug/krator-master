@@ -33,5 +33,5 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `87-pr-talus.js` | 2 |  |
 | `88-host-build.js` | 2 |  |
 | `89-host-roosts.js` | 25 |  |
-| `99-host-take.js` | 32 **big** | the inspector's words: the rock, the zone of the (26); the probe's budgets and the page's checks (verif (38); THE DRAWN ROCK, measured by rays (44); the page, handed to the host (262) |
+| `99-host-take.js` | 34 **big** | the inspector's words: the rock, the zone of the (26); the probe's budgets and the page's checks (verif (38); THE DRAWN ROCK, measured by rays (44); the page, handed to the host (276) |
 | `99-tail.html` | <1 |  |

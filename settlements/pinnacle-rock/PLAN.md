@@ -112,7 +112,7 @@ indexed batch) goes in the Beast Rider buildings file; the stall and the keeper'
 
 **Access** is the Riders' way: most traffic comes and goes by air; the Stair is for the farms, the market and
 strangers; the beast lift (Mav's cage lift on a capstan) hangs down the gorge face for loads a flyer cannot carry.
-The town is "un-assailable" the way Mav's gateway trees are: one stair, gated three times.
+The town is "un-assailable" the way Mav's gateway trees are: one stair, gated (at its head and its foot: the owner removed the middle gate, 2026-10-19).
 
 ## 3. The order of work
 
@@ -127,7 +127,7 @@ stair pieces (`kits/beast-riders`).
 (`src/43-pr-roosts.js`), a deck ring on each Wing's fin and the four ringed Garden pinnacles and a lookout ring on every
 fin (25 rings), 113 stalls in Girder's frame and record shape with their ways out proved, eleven keepers' shelters, a
 climb to every ring, four rope bridges within the groups, the beast lift on the gorge face and the capstan lift by the
-Stair, the Stair down the south nose gated three times; Girder's flyers read in place on them (`flyers/`): a quetzal sent
+Stair, the Stair down the south nose gated at its head and foot; Girder's flyers read in place on them (`flyers/`): a quetzal sent
 in lands on an east fin's perch, and the roost traffic runs. Not as planned: the rings are drawn from their records on
 the page, not a catalog entry (a ring follows its stack's outline), and the Stair's flights have no notch cut over them
 (KNOWN_ISSUES.md). The owner's first look (2026-10-19) asked for more stalls on the platforms (113 now: stalls follow
