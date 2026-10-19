@@ -293,7 +293,14 @@ def main():
     used = {t: set() for t in W_}
     names = {t: set() for t in W_}
     # rivers by flow, then dry valleys by catchment; the largest river of each tongue is its 'mother'
-    order = sorted([r for r in rivers if r['_t']], key=lambda r: (r['kind'] != 'river',
+    # a course whose name the lore has settled keeps it (edit_rivers.py NAMED_COURSES: 'name_fixed' with its gloss)
+    for r in rivers:
+        if r.get('name_fixed'):
+            if r['_t']:
+                r['tongue'] = r['_t']
+                used.setdefault(r['_t'], set())
+            r.pop('_t', None)
+    order = sorted([r for r in rivers if r.get('_t')], key=lambda r: (r['kind'] != 'river',
                    -(r['q_mouth_m3s'] if r['kind'] == 'river' else r['catchment_km2'])))
     seen_mother = set()
     report = []

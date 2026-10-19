@@ -82,6 +82,13 @@ LAKE_STYLE = ('The Bowl',)
 # of Shim: the Shim river widened where Shim stands (its east shore, px 382,788), ~32 by 12 km, the river entering from
 # the SW lowlands' lake to the south and leaving north down the lake's outlet gorge
 CARVE = {'Lake of Shim': dict(shore=3.0, depth=25.0, bank=2.0)}
+# 4.21, the owner: courses the lore has named ahead of the model, drawn and designated whatever their flow: the main stem
+# of the land that drains to the coast nearest `near` (map px; the coast cell within `reach` px that drains the most),
+# traced upstream along the routed flow, with its fixed name and gloss. Almua's river (settlements/almua/PLAN.md, LORE.md
+# 6.12): Dip Rivrh, the Deep river, coming down from the south to the harbour; Almua's point stands ~12 km offshore of
+# the coast it reaches (446,553, on Ring Sea water).
+NAMED_COURSES = {'Dip Rivrh': dict(near=(446, 553), reach=10, gloss='the Deep river (the navigable channel that makes '
+                                   'the harbour; the owner, 2026-10-18)', tongue='vothic')}
 LOWER = {'Region 65': dict(floor_q=50.0, relief=0.04, feather=4.0, blur=1.2)}
 ARM_R, ARM_MIN = 2, 4
 # the lakes the model draws at 0 m in the north basin and the trough below it (the owner: the dams there held lakes at
@@ -1374,6 +1381,42 @@ def main():
     setts = [s for s in SET if s.get('px') is not None]
     recs, idx = [], {}
     allc = [('river', c) for c in riv2] + [('wadi', c) for c in wad2]
+    # the named courses (NAMED_COURSES): the coast's best-drained cell near the point, its main stem upstream
+    named_at = {}
+    report['named_courses'] = []
+    taken_cells = set(c for _, (p_, _m, _j) in allc for c in p_)
+    for nm, nc in NAMED_COURSES.items():
+        j0, i0 = int(round(nc['near'][1] * sv)), int(round(nc['near'][0] * su))
+        rr = int(math.ceil(nc['reach'] * su))
+        best = None
+        for j in range(max(1, j0 - rr), min(E.shape[0] - 1, j0 + rr + 1)):
+            for i in range(max(1, i0 - rr), min(E.shape[1] - 1, i0 + rr + 1)):
+                a_, b_ = rt2['rec'][j, i]
+                if not rt2['term'][j, i] and a_ >= 0 and (H2['sea'][a_, b_] or G['whas'][a_, b_]) and \
+                        (best is None or area2[j, i] > area2[best]):
+                    best = (j, i)
+        if best is None:
+            sys.exit('%s: no coast within %d px of %s' % (nm, nc['reach'], nc['near']))
+        ups = {}
+        for (j, i) in zip(*np.nonzero(area2 > 0)):
+            a_, b_ = rt2['rec'][j, i]
+            if a_ >= 0:
+                ups.setdefault((a_, b_), []).append((j, i))
+        path = [best]
+        while ups.get(path[-1]):
+            path.append(max(ups[path[-1]], key=lambda c: area2[c]))
+        path = path[::-1]
+        rises_ = rises(path, rt2['S'], G['whas'])
+        if rises_:
+            sys.exit('%s climbs at %s' % (nm, rises_[:3]))
+        if any(c in taken_cells for c in path):
+            sys.exit('%s runs into a course already designated' % nm)
+        named_at[len(recs) + len(allc)] = nm
+        allc.append(('river', (path, tuple(rt2['rec'][best]), False)))
+        report['named_courses'].append({'name': nm, 'mouth_px': px(*best), 'cells': len(path),
+                                        'catchment_km2': round(float(area2[best])), 'q_m3s': round(float(Q2[best]), 2)})
+        print('named course %s: %d cells to the coast at px %s, %d km2 of catchment, %.2f m3/s' % (
+            nm, len(path), px(*best), area2[best], Q2[best]))
     for kind, (path, mouth, joins) in allc:
         idx[path[-1]] = len(recs)
         recs.append(dict(kind=kind, path=path, mouth=mouth, joins=joins))
@@ -1399,6 +1442,8 @@ def main():
         reg = region_of(path)
         if k == yuni_k:
             name = 'Yuni river'
+        elif k in named_at:
+            name = named_at[k]
         else:
             word = {'wadi': 'wadi'}.get(r['kind'], 'river' if q[-1] >= 50 else 'stream')
             base = '%s %s' % (reg or 'unnamed', word)
@@ -1434,6 +1479,9 @@ def main():
                    q_mouth_m3s=round(q[-1], 1), source_m=round(bed[0]), mouth_m=round(bed[-1]),
                    region=reg, to=to, settlements=sorted(set(near)),
                    px=P_, bed_m=[round(v) for v in bed], q_m3s=[round(v, 1) for v in q])
+        if k in named_at:
+            nc = NAMED_COURSES[named_at[k]]
+            rec.update(name_fixed=True, gloss=nc['gloss'], tongue=nc['tongue'])
         if r['kind'] == 'river':
             rec['width_m'] = round(4.5 * q[-1] ** .5)
             rec['depth_m'] = round(.35 * q[-1] ** .38, 1)
