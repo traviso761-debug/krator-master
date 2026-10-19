@@ -8,8 +8,13 @@ negative):
 - **H1:** resource fields are in `kits/resources/src/43r-res-fields.js`.
 - **H2:** the village generator is `20-hamlet-cultures.js` and `30-hamlet-village.js`. All six foci make villages with
   no overlap, staffed and housed, at most 500 people.
-- **H3:** the texture list is below (section 3): nothing new to source. The buildings wait for the owner's go-ahead.
-- **Next:** H3 (the buildings), then H4 (the four isle villages in the open world).
+- **H3 is done** (2026-10-19): `kits/islanders/src/69-ie-hamlet.js` has the sawpit and log yard (`ie-sawpit`), the
+  charcoal kiln (`ie-kiln`), the corral (`ie-corral`), the food store (`ie-store-food`) and the bloomery (`ie-bloomery`),
+  on library sets only (seven new families: `endgrain logbark banco turf charcoal ash clay`). The culture row uses them,
+  and the ranch's stable and rookery are the Beast Riders kit's (`br_bldg_raptor_stable`, `br_bldg_rookery_tower`).
+  The kiln carries no job tag: the catalog's job vocabulary (`core/tags`) has no charcoal burning, lumber or smelting.
+  Adding them is a `core/tags` change for later.
+- **Next:** H4 (the four isle villages in the open world), and the `gather` tag on the other biome kits.
 
 A core module that makes the small settlements round a town: **resource villages** (salt, mining, lumber, ranching)
 and, by the same machinery, **fishing and farming villages**. Placing a village also places what it works, on the map.

@@ -137,8 +137,8 @@ const cliff = H.village(spec('mine', { ground: { ok: () => false } }));
 const shelf = H.village(spec('mine', { resource: { x: 420, z: 40 }, ground: { ok: (x, z) => Math.hypot(x - 320, z) < 260 } }));
 ok('no dry flat ground in reach: refused; dry ground 320 m off: the village moves there', !!cliff.error && /dry flat/.test(cliff.error) && !shelf.error && Math.hypot(shelf.site.x - 320, shelf.site.z) < 240,
   !H.village(spec('mine')).error, shelf.error || '');
-ok('a building the kit lacks is placed as its declared box and marked pending (the lumber village\'s sawpit and kiln)',
-  V.lumber.records.some(r => r.key === 'hamlet-sawpit' && r.pending) && V.salt.records.every(r => !r.pending), V.ranch.records.some(r => r.key === 'ie-byre' && !r.pending));
+ok('a key the host has no box for is placed as its declared box and marked pending (the ranch\'s Beast Rider rookery); the Islanders\' own sawpit is not',
+  V.ranch.records.some(r => r.key === 'br_bldg_rookery_tower' && r.pending) && V.lumber.records.some(r => r.key === 'ie-sawpit' && !r.pending) && V.salt.records.every(r => !r.pending), V.ranch.records.some(r => r.key === 'ie-byre' && !r.pending));
 
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);
