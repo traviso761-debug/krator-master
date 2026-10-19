@@ -96,8 +96,8 @@
    "normalScale": 1.0,
    "roughLift": 0.25,
    "scale": [
-    6.0,
-    6.0
+    4.0,
+    4.0
    ],
    "size": 512,
    "source": {
@@ -411,6 +411,32 @@
     "sourceMean": 0.4296
    }
   },
+  "jaw": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "jaw.albedo.webp"
+   },
+   "lib": "organic.trap.lobe",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 1024,
+   "source": {
+    "albedo": "028d1b779b32ce96fc26d85603046b7814d3ab2c"
+   },
+   "specular": 0.35,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4286119272625561,
+    "sourceMean": 0.4286
+   }
+  },
   "lace": {
    "breakup": null,
    "card": true,
@@ -461,6 +487,32 @@
     "keep": 1.0,
     "mean": 0.5469295925277903,
     "sourceMean": 0.5469
+   }
+  },
+  "lid": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "lid.albedo.webp"
+   },
+   "lib": "card.litter",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 1024,
+   "source": {
+    "albedo": "16e2f7b84f00c678496903eb25944288ec7066e0"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.41458997338690595,
+    "sourceMean": 0.4146
    }
   },
   "lure": {
@@ -588,8 +640,8 @@
    "normalScale": 1.0,
    "roughLift": 0.25,
    "scale": [
-    16.0,
-    16.0
+    30.0,
+    30.0
    ],
    "size": 512,
    "source": {

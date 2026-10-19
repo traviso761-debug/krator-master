@@ -17,6 +17,8 @@ function reg(key,x,y,z,r,h,zone,id){const o={name:P[key].name,key,kind:'flora',x
 const SPACE=KSPACE.create({cell:16});
 const blocked=(x,z,pad)=>SPACE.some(x,z,pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+pad)||KORONA.blocked(x,z,pad)||NECANYONS.blocked(x,z,pad);
 const offPath=(x,z)=>smooth(3,9,KORONA.pathD(x,z));
+// the cobra meadow is a station's extra (the hollow's edge): 0 without one, unlike a bias
+const meadow=(x,z,Z)=>{const H=BIO.host.korona,b=H&&H.bias&&H.bias.cobraMeadow;return b==null?0:typeof b==='function'?b(x,z,Z):b;};
 
 // ---------------------------------------------------------------- the plants
 const tuft=(item,x,z,h,w,c,y)=>BIO.put(item,[x,(y==null?BIO.terrainH(x,z):y)-.04,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[w,h,w],c);
@@ -30,7 +32,7 @@ function cobra(x,y,z,lv,st){const n=lv===2?ri(3,7):2;
   tuft(rng()<.5?two('cobra'):two('cobrab'),px,pz,h,h*.7,col(rng()<.5?'cobra':'cobrab',PAL.cobra));st.cobra++;}}
 function trumpet(x,y,z,lv,st){const n=lv===2?ri(2,4):1;
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.4,1):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,h=rr(.7,1.3);tuft(two('trumpet'),px,pz,h,h*.8,col('trumpet',PAL.trumpet));st.trumpet++;}}
-function groundstar(x,y,z,lv,st){const r=rr(.6,1.3);BIO.put(two('star'),[x,y+.04,z],qEuler(0,rr(0,TAU),0),[r*2,1,r*2],col('star',PAL.star,1.1));st.star++;return r;}
+function groundstar(x,y,z,lv,st,id){const r=rr(.6,1.3);BIO.put(two('star'),[x,y+.04,z],qEuler(0,rr(0,TAU),0),[r*2,1,r*2],col('star',PAL.star,1.1),{aTrap:[KTRAPS.phase(id),1,rr(1.1,1.4),0]});st.star++;return r;}
 function bulbs(x,y,z,lv,st){const n=lv===2?ri(2,5):lv===1?2:1;
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.2,1):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,h=rr(.9,1.7);tuft(two('bulb'),px,pz,h,h*.5,col('bulb',PAL.bulb,1.15));st.bulb++;}}
 function snare(x,y,z,lv,st){const h=rr(1,1.9);tuft('snare',x,z,h,h*.8,col('snare',PAL.snare));st.snare++;}
@@ -49,18 +51,52 @@ function maneater(x,y,z,lv,st,id){const H=rr(2.1,3.2),R=H*.42,a=rr(0,TAU),lean=r
  // the hood: a dome leaning back from the mouth's far side (open)
  const hood=[];for(let k=0;k<=4;k++){const t=k/4,back=R*(.4+.9*t),up=R*(.25+.95*t)*.8;hood.push({x:x+cx-Math.cos(a)*back,y:y+H+up,z:z+cz-Math.sin(a)*back,yy:H+up,r:R*1.08*Math.sqrt(Math.max(0,1-t*t))+.02,col:skin});}
  st.tris+=BIO.lathe('pitcher',hood,lv===2?12:8,2,1.4,(rg,ang)=>rg.r,null);
- if(lv===2){const la=a+rr(1.2,2.4),d=R*1.5;lure(x+Math.cos(la)*d,BIO.terrainH(x+Math.cos(la)*d,z+Math.sin(la)*d),z+Math.sin(la)*d,rr(1.6,H+.4),st);}
+ // the fluid in the throat (a dark disc half way down): the plant's own instance, inside its registered volume
+ BIO.put('mouth',[x+cx*.5,y+H*.5,z+cz*.5],null,[R*1.7,1,R*1.7],C(0x1a2210));
+ if(lv===2){const la=a+rr(1.2,2.4),d=R*1.15;lure(x+Math.cos(la)*d,BIO.terrainH(x+Math.cos(la)*d,z+Math.sin(la)*d),z+Math.sin(la)*d,rr(1.6,H+.4),st);}
  st.maneater++;return {R,H};}
 // THE COIL TENDRIL: a spiral lying on the floor, lifting at its end; a tube in the banded skin
 function tendril(x,y,z,lv,st,id){const n=lv===2?26:14,turns=rr(1.3,2),r0=rr(2,3.2),dir=rng()<.5?1:-1,a0=rr(0,TAU),pts=[];
  for(let i=0;i<=n;i++){const t=i/n,ang=a0+dir*t*TAU*turns,rho=r0*(1-.65*t),px=x+Math.cos(ang)*rho,pz=z+Math.sin(ang)*rho;
   pts.push({x:px,y:BIO.terrainH(px,pz)+.14+2.4*t*t*t,z:pz,r:.24-.13*t});}
  st.tris+=BIO.tube('tendril',pts,col('tendril',PAL.tendril,1),{seg:lv===2?8:5,cap:true});st.tendril++;return r0;}
+// THE PUNJI PIT: a lid of dead leaves flush with the floor with the spikes just through it; a third stand open, the lid
+// thrown back, the mouth black, the spikes round its rim (the owner, 2026-10-19: a pitcher that lives under the ground)
+function punji(x,y,z,lv,st,id){const r=rr(.5,.85),open=KTRAPS.phase(id+'/o')<.35,bone=bright(pick([0xd8d0b8,0xc8c0a8,0xe0d8c0]),1),n=lv===2?ri(7,12):5;
+ const spike=(px,pz,py,h,tilt,ta)=>BIO.put('spike',[px,py+h*.5,pz],qEuler(tilt*Math.cos(ta),0,tilt*Math.sin(ta)),[.022,h,.022],bone);
+ if(!open){BIO.put('lid',[x,y+.05,z],qEuler(0,rr(0,TAU),0),[r*2.1,1,r*2.1],col('lid',[0x3a3020,0x4a3a28,0x2e261a],1));
+  for(let k=0;k<n;k++){const a=rr(0,TAU),d=r*.75*Math.sqrt(rng()),h=rr(.22,.45);spike(x+Math.cos(a)*d,z+Math.sin(a)*d,y,h,rr(.05,.3),a+Math.PI);}}
+ else{BIO.put('mouth',[x,y+.03,z],qEuler(0,rr(0,TAU),0),[r*1.9,1,r*1.9],C(0x07100a));const la=rr(0,TAU);
+  BIO.put('lid',[x+Math.cos(la)*r*1.05,y+r*.55,z+Math.sin(la)*r*1.05],qEuler(-1.15,-la+Math.PI/2,0),[r*2,1,r*2],col('lid',[0x3a3020,0x4a3a28],1));
+  for(let k=0;k<n;k++){const a=rr(0,TAU),h=rr(.3,.55);spike(x+Math.cos(a)*r*.92,z+Math.sin(a)*r*.92,y-.05,h,rr(.35,.6),a+Math.PI);}}
+ st.punji++;return r;}
+// THE BEAR TRAP: two toothed jaws hinged on the ground, open nearly flat (aTrap: phase, side, open angle), a stub between
+function beartrap(x,y,z,lv,st,id){const w=rr(.9,1.45),a=rr(0,TAU),ph=KTRAPS.phase(id),op=rr(1.15,1.4),c=KORONA.libCol('jaw',bright(pick([0xa8202a,0xc83a30,0xb8c050]),1.1));
+ for(const side of[1,-1])BIO.put('jaw',[x,y+.04,z],qEuler(0,-a,0),[w,w*.62,1],c,{aTrap:[ph,side,op,0]});
+ BIO.put('stalk',[x,y-.2,z],null,[.09,.5,.09],bright(pick(PAL.stalk),.9));st.beartrap++;return w*.6;}
+// A TRAP PAD punched up (the owner, 2026-10-19): bigger, a ring of inward teeth round its rim, a dark red maw at its middle;
+// one in four caught half-folded on something
+function trapPad(x,y,z,r,lv,st,k,id){const fold=false,ry=rr(0,TAU),c=col('giantpad',PAL.pad,1.1);
+ BIO.put('pad',[x,y+.03,z],qEuler(0,ry,0),[r*2,1,r*2],c,{aTrap:[KTRAPS.phase(id),1,rr(1,1.3),0]});
+ BIO.put('mouth',[x,y+.045,z],qEuler(0,ry,0),[r*.5,1,r*.5],C(0x4a0a10));
+ const n=lv===2?Math.round(r*9):Math.round(r*4),bone=bright(pick([0xd8d0b8,0xc8b8a0]),1);
+ for(let i=0;i<n;i++){const a=i/n*TAU+rr(-.1,.1),h=rr(.18,.32)*r;if(fold&&Math.sin(a-ry)>0)continue;
+  BIO.put('spike',[x+Math.cos(a)*r*.94,y+.04+h*.4,z+Math.sin(a)*r*.94],qEuler(-.9*Math.sin(a),0,.9*Math.cos(a)),[.03*r,h,.03*r],bone);}
+ st.pad++;}
+// THE NUMB THORN (the owner, 2026-10-19): a swollen stalk bristling with long hollow thorns that whip at what brushes it; the
+// venom numbs a limb in a minute, and the floor's other traps finish the work
+function numbthorn(x,y,z,lv,st,id){const H=rr(1.1,2),n=lv===2?ri(7,11):5,sc=bright(pick([0x4a5a2a,0x3a4a22,0x5a6a30]),1),bone=bright(pick([0xe0d8c0,0xd0c8b0]),1),tip=C(0xb02020);
+ BIO.put('stalk',[x,y+H*.5,z],qEuler(rr(-.08,.08),0,rr(-.08,.08)),[.16,H,.16],sc);BIO.put('cairn',[x,y+.12,z],null,[.5,.3,.5],sc);
+ for(let k=0;k<n;k++){const a=k*2.4+rr(-.3,.3),h=y+H*(.2+.75*(k/n)),L=rr(.5,.95),el=rr(-.35,.35);
+  const dx=Math.cos(a)*Math.cos(el),dz=Math.sin(a)*Math.cos(el),dy=Math.sin(el);
+  BIO.put('thorn',[x,h,z],qEuler(0,-a,Math.PI/2-el),[.035,L,.035],bone,{aTrap:[(KTRAPS.phase(id)+k*.07)%1,1,rr(.6,1),0]});
+  BIO.put('spike',[x+dx*L*.96,h+dy*L*.96,z+dz*L*.96],qEuler(0,-a,Math.PI/2-el),[.03,.1,.03],tip);}
+ st.numbthorn++;return .9;}
 function cairnAt(x,z,st){const y=BIO.terrainH(x,z),n=ri(3,5);for(let k=0;k<n;k++){const r=rr(.16,.3)*(1-.12*k);BIO.put('cairn',[x+rr(-.08,.08),y+k*.22+r*.6,z+rr(-.08,.08)],qEuler(rr(0,TAU),rr(0,TAU),0),[r*1.3,r*.8,r*1.3],bright(pick(PAL.cairn),1));}st.cairn++;}
 
 // ---------------------------------------------------------------- the passes
 KORONA.buildCarnivores=function(R,q){q=q==null?1:q;R=R||1500;const L=BIO.radii(),H=BIO.host.korona||{};
- const st={greatsundew:0,cobra:0,trumpet:0,star:0,bulb:0,snare:0,maneater:0,lure:0,tendril:0,pad:0,stag:0,cairn:0,tris:0};
+ const st={greatsundew:0,cobra:0,trumpet:0,star:0,bulb:0,snare:0,maneater:0,lure:0,tendril:0,pad:0,stag:0,cairn:0,punji:0,beartrap:0,numbthorn:0,tris:0};
  NAMES.length=0;KORONA.TRAPPED.length=0;SPACE.clear();
  const lvOf=(x,z)=>{const d=BIO.lodD(x,z);return d<L.hero?2:d<L.mid?1:0;};
  const F=KORONA.F,hell=KORONA.hell,bias=KORONA.bias;
@@ -74,17 +110,24 @@ KORONA.buildCarnivores=function(R,q){q=q==null?1:q;R=R||1500;const L=BIO.radii()
   return(Z.zone==='foot'?smooth(3,8,Z.footD)*smooth(42,22,Z.footD)*smooth(.35,.7,w)*.45:Z.zone==='ledge'?.5*Z.seep:Z.zone==='floor'?.12*smooth(.4,.7,hell(x,z)):0)*bias('greatsundew',x,z,Z)*q;},(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,2.5))return;
   const id='gsun:'+i+','+j;greatsundew(x,y,z,lv,st,id);SPACE.insert({x,z,r:2.2},x,z,3);if(lv===2)reg('greatsundew',x,y,z,2.4,2.2,Z.zone,id);},{R,lodMax:L.mid});
  // COBRA LILIES: where the seeps run out at a wall's foot (and a hollow's edge, by the station's bias)
- KORONA.place(4,202,(x,z,Z)=>((Z.zone==='foot'?smooth(2,5,Z.footD)*smooth(30,14,Z.footD)*smooth(.2,.5,Z.seep)*.6:Z.zone==='floor'?.04*smooth(.3,.6,hell(x,z)):0)*bias('cobralily',x,z,Z)+(Z.zone==='floor'?bias('cobraMeadow',x,z,Z)*.75:0))*offPath(x,z)*q,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,.8))return;
+ KORONA.place(4,202,(x,z,Z)=>((Z.zone==='foot'?smooth(2,5,Z.footD)*smooth(30,14,Z.footD)*smooth(.2,.5,Z.seep)*.6:Z.zone==='floor'?.04*smooth(.3,.6,hell(x,z)):0)*bias('cobralily',x,z,Z)+(Z.zone==='floor'?meadow(x,z,Z)*.75:0))*offPath(x,z)*q,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,.8))return;
   cobra(x,y,z,lv,st);if(lv===2&&(i+j)%5===0)reg('cobralily',x,y,z,1.4,1.6,Z.zone,'cobra:'+i+','+j);},{R,lodMax:L.mid});
  // BLOOD TRUMPETS, GROUND STARS, SNARE FLOWERS and BLOOD BULBS on the hell floor, by the hell field and the station's bias
  KORONA.place(5,203,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.3,.6,hell(x,z))*.4*bias('bloodtrumpet',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,.8))return;
   trumpet(x,y,z,lv,st);if(lv===2&&(i+j)%4===0)reg('bloodtrumpet',x,y,z,1.2,1.3,Z.zone,'trumpet:'+i+','+j);},{R,lodMax:L.mid});
  KORONA.place(8,204,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.45,.7,hell(x,z))*.35*bias('groundstar',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,1.4))return;
-  const id='star:'+i+','+j,r=groundstar(x,y,z,lv,st);SPACE.insert({x,z,r},x,z,r+1);if(lv>=1)reg('groundstar',x,y,z,r,.3,Z.zone,id);},{R,lodMax:L.mid});
+  const id='star:'+i+','+j,r=groundstar(x,y,z,lv,st,id);SPACE.insert({x,z,r},x,z,r+1);if(lv>=1)reg('groundstar',x,y,z,r,.3,Z.zone,id);},{R,lodMax:L.mid});
  KORONA.place(10,205,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.45,.75,hell(x,z))*.3*bias('snareflower',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,1))return;
   snare(x,y,z,lv,st);if(lv===2&&(i+j)%3===0)reg('snareflower',x,y,z,1,1.9,Z.zone,'snare:'+i+','+j);},{R,lodMax:L.mid});
  KORONA.place(2.8,206,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.25,.55,hell(x,z))*.5*bias('bloodbulb',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,.4))return;
   bulbs(x,y,z,lv,st);if(lv===2&&(i+j)%9===0)reg('bloodbulb',x,y,z,1.2,1.7,Z.zone,'bulb:'+i+','+j);},{R,lodMax:L.floor[1]});
+ // PUNJI PITS and BEAR TRAPS on the hell floor, hidden among the rest
+ KORONA.place(14,209,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.4,.7,hell(x,z))*.35*bias('punjipit',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,1.6))return;
+  const id='punji:'+i+','+j,r=punji(x,y,z,lv,st,id);SPACE.insert({x,z,r:r+.4},x,z,r+1);reg('punjipit',x,y,z,r+.3,.8,Z.zone,id);},{R,lodMax:L.mid});
+ KORONA.place(12,210,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.35,.65,hell(x,z))*.35*bias('beartrap',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,1.4))return;
+  const id='bear:'+i+','+j,r=beartrap(x,y,z,lv,st,id);SPACE.insert({x,z,r},x,z,r+1);reg('beartrap',x,y,z,r+.3,.5,Z.zone,id);},{R,lodMax:L.mid});
+ KORONA.place(11,211,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.3,.6,hell(x,z))*.3*bias('numbthorn',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(blocked(x,z,1.2))return;
+  const id='thorn:'+i+','+j,r=numbthorn(x,y,z,lv,st,id);SPACE.insert({x,z,r},x,z,r+1);if(lv>=1)reg('numbthorn',x,y,z,r+.3,2,Z.zone,id);},{R,lodMax:L.mid});
  // THE MAN-EATERS and THE COIL TENDRILS: only where the hell is near full
  KORONA.place(14,207,(x,z,Z)=>(Z.zone==='floor'||Z.zone==='foot')?smooth(.5,.8,hell(x,z))*.55*bias('maneater',x,z,Z)*offPath(x,z)*q:0,(x,y,z,Z,i,j)=>{const lv=lvOf(x,z);if(lv===0||blocked(x,z,2.5))return;
   const id='maneater:'+i+','+j,m=maneater(x,y,z,lv,st,id);SPACE.insert({x,z,r:m.R*1.3},x,z,m.R*2);reg('maneater',x,y,z,m.R*1.5,m.H+.6,Z.zone,id);},{R,lodMax:L.mid});
@@ -93,8 +136,8 @@ KORONA.buildCarnivores=function(R,q){q=q==null?1:q;R=R||1500;const L=BIO.radii()
  // THE SUCKING POOLS: registered as traps, trap pads floating on them
  (H.pools||[]).forEach((p,i)=>{if(!p.bed)return;reseed(KRAND.hash(SEED,8,i));const lv=lvOf(p.x,p.z);
   reg('bladderpool',p.x,p.y,p.z,p.r,.6,'floor','pool:'+i);
-  for(let k=0,n=Math.round(p.r*.35*q);k<n;k++){const a=rr(0,TAU),d=p.r*Math.sqrt(rng())*.8,x=p.x+Math.cos(a)*d,z=p.z+Math.sin(a)*d,r=rr(.9,2.2);
-   BIO.put('pad',[x,p.y+.03,z],qEuler(0,rr(0,TAU),0),[r*2,1,r*2],col('giantpad',PAL.pad,1.1));st.pad++;if(lv===2&&k%2===0)reg('trappad',x,p.y,z,r,.3,'floor','pad:'+i+','+k);}});
+  for(let k=0,n=Math.round(p.r*.3*q);k<n;k++){const a=rr(0,TAU),d=p.r*Math.sqrt(rng())*.78,x=p.x+Math.cos(a)*d,z=p.z+Math.sin(a)*d,r=rr(1.4,3);
+   trapPad(x,p.y,z,r,lv,st,k,'pad:'+i+','+k);if(lv===2&&k%2===0)reg('trappad',x,p.y,z,r,.6,'floor','pad:'+i+','+k);}});
  // THE SAFE PATH: cairns every twenty metres along it
  if(H.path&&H.path.length>1){reseed(KRAND.hash(SEED,9,0));const Pth=H.path;let acc=0;
   for(let i=1;i<Pth.length;i++){const ax=Pth[i-1][0],az=Pth[i-1][1],bx=Pth[i][0],bz=Pth[i][1],L2=Math.hypot(bx-ax,bz-az);

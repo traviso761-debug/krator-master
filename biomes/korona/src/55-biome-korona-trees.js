@@ -45,9 +45,10 @@ B[0]=function(T,st,lv){const S=SP[0],bc=bright(pick(PAL.coinBark),1),lean=rr(.1,
  const hf=T.H*rr(.35,.5),top={x:T.x+Math.cos(la)*lean*hf,y:T.y0+hf,z:T.z+Math.sin(la)*lean*hf};
  st.trunk+=BIO.tube('bark.coin',[{x:T.x,y:T.y0-.2,z:T.z,r:T.rb},{x:(T.x+top.x)/2,y:(T.y0+top.y)/2+.1,z:(T.z+top.z)/2,r:T.rb*.85},Object.assign({},top,{r:T.rb*.6})],bc,{seg:lv===2?6:4});
  const tips=[];for(let b=0,nb=ri(2,3);b<nb;b++){const p=grow(top,dirOf(la+rr(-1.4,1.4),rr(.3,.9)),(T.H-hf)*rr(.6,1),T.rb*.55,T.rb*.2,3,-.06,.16);st.limb+=BIO.tube('bark.coin',p,bc,{seg:lv===2?4:3});tips.push(p[3],p[2]);}
+ let reach=T.crownR;tips.forEach(p=>{reach=Math.max(reach,Math.hypot(p.x-T.x,p.z-T.z)+1);});
  tips.forEach((p,i)=>{const n=lv===2?ri(2,4):1,s=T.crownR*rr(.45,.7);for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.2,.6):0;
   BIO.put(rng()<.5?'coin0':'coin1',[p.x+Math.cos(a)*d,p.y-.1,p.z+Math.sin(a)*d],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[s,s*1.1,s],KORONA.libCol('coin',leafCol(S.leaf,1.15)));st.leaves++;}});
- regTree(T,S,T.crownR,T.H+.5);};
+ regTree(T,S,reach,T.H+.5);};
 // 1 the LACE FAN: a twisted dark bole, three to five tiers, each a ring of lace fans radiating from the bole
 B[1]=function(T,st,lv){const S=SP[1],bc=bright(pick(PAL.lacefanBark),1),tw=rr(0,TAU);
  const pts=[];for(let k=0;k<=5;k++){const t=k/5,wob=.12*T.H*Math.sin(t*2.2+tw)*t;pts.push({x:T.x+Math.cos(tw+t*2)*wob,y:T.y0-.3+T.H*t*.92,z:T.z+Math.sin(tw+t*2)*wob,r:T.rb*(1.15-.7*t)});}

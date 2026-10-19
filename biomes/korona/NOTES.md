@@ -202,6 +202,11 @@ Read as 4 km cells; each station is a 5 km piece carved inside the cell's climat
 
 ## Building it
 
+**Built 2026-10-19 (the owner's overnight brief): four stations.** `src/` is station 1, the tepui (`dist/korona.html`);
+`stations/hollow`, `stations/basin` and `stations/trench` are the pitcher hollow, the fertile basin (the Tiers' lake) and the
+trenches (`dist/korona-<name>.html`). The contract is `BIOME-API.md`, the open items `KNOWN_ISSUES.md`. The rest of this
+section is the plan as written before the build; where it and the build differ, the build is the record.
+
 ### Stations, like the Throne
 
 One kit, one `src/`, each station its own page: `python3 build.py` builds station 1 (the tepui) from `src/` as it

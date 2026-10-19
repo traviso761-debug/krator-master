@@ -13,7 +13,7 @@ window._biome=null;window._jungle=null;window._korona=null;
  if(typeof KORONA!=='undefined'&&KORONA.build){try{window._korona=KORONA.build({R:STAGE.R-60,quality:q});}catch(e){reportErr('korona: '+e.stack);}
   (KORONA.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.6+1,y0:T.y0-3,y1:T.y0+T.H}));}
  _mark('korona');
- if(!Q.has('nojungle')){try{MASK=jungleMask;window._jungle=HYPERJUNGLE.build({R:STAGE.R-60,quality:q*(STAGE.jungleQ==null?.7:STAGE.jungleQ),heroR:900,fauna:!Q.has('nofauna')});}catch(e){reportErr('hyperjungle: '+e.stack);}finally{MASK=waterMask;}}
+ if(!Q.has('nojungle')){try{MASK=jungleMask;window._jungle=HYPERJUNGLE.build({R:STAGE.R-60,quality:q*(STAGE.jungleQ==null?.7:STAGE.jungleQ),heroR:STAGE.heroR||1200,fauna:!Q.has('nofauna')});}catch(e){reportErr('hyperjungle: '+e.stack);}finally{MASK=waterMask;}}
  _mark('jungle');
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();

@@ -46,9 +46,13 @@ const WIND=[-Math.SQRT1_2,-Math.SQRT1_2];   // from the north-west: a face whose
 // THE STREAM: down the windward side of the gorge, north to south; its bed ~4 m under the floor, 14 m across
 const STREAM={x:z=>-640+90*Math.sin(z*.0019+.7)+30*Math.sin(z*.0061+2.1),w:7,depth:.6,name:'The gorge stream (down the windward side)'};
 const streamD=(x,z)=>Math.abs(x-STREAM.x(z));
+// THE APRON: the table's skirt of fallen rock and soil, forested, rising 55 m against the wall's foot over 300 m (set from
+// the table's lowest bed once it is made: APRON_B); the first bed goes down into it
+let APRON_B=null;
+const apron=(x,z)=>{const b=APRON_B;if(!b)return 0;const a=Math.atan2(z-b.cz,x-b.cx),d=Math.hypot(x-b.cx,z-b.cz)-KSTACKS.footR(b,a);return d>300?0:55*Math.pow(smooth(300,-30,d),1.6)*(.85+.3*fbm(x*.004+1,z*.004-3,47,2));};
 // the floor: long swells and a finer roughness, falling gently south; beyond R the trench's far walls rise into the haze
 function floorBase(x,z){const d=Math.hypot(x,z),far=smooth(1380,2700,d);
- return 12*(fbm(x*.0009+3.1,z*.0009-1.7,17,3)-.5)*2+4*(fbm(x*.004-2,z*.004+5,29,2)-.5)*2-.003*z+far*far*900*(.75+.5*fbm(x*.0012+9,z*.0012-4,33,3));}
+ return apron(x,z)+12*(fbm(x*.0009+3.1,z*.0009-1.7,17,3)-.5)*2+4*(fbm(x*.004-2,z*.004+5,29,2)-.5)*2-.003*z+far*far*900*(.75+.5*fbm(x*.0012+9,z*.0012-4,33,3));}
 function floorH(x,z){const b=floorBase(x,z),d=streamD(x,z),cut=smooth(STREAM.w+20,STREAM.w*.4,d);return b-4.2*cut;}
 
 // ---------------------------------------------------------------- the rock (KSTACKS records: core/terrain/37-core-stacks.js)
@@ -56,11 +60,12 @@ function floorH(x,z){const b=floorBase(x,z),d=streamD(x,z),cut=smooth(STREAM.w+2
 const ROCK=(function(){const K=KSTACKS,L=[];
  const footY=(x,z,r)=>{let m=1e9;for(let i=0;i<32;i++){const a=i/32*TAU;for(const k of [.4,.8,1.15])m=Math.min(m,floorH(x+Math.cos(a)*r*k,z+Math.sin(a)*r*k));}return m-3;};
  const add=(B,name)=>{B.name=name;L.push(B);return B;};
- // THE TABLE: the body (380 m, beds 55 to 110 m thick: each parting a ledge) and the summit block set back on it
- add(K.make({id:'table',kind:'mesa',x:60,z:-120,y0:footY(60,-120,560),seed:2101,bed:[55,110],lobes:.14,
+ // THE TABLE: the body (380 m, beds 55 to 110 m thick: each parting a ledge) and the summit block set back on it; weathered
+ // (KSTACKS weather: each bed retreats by its own metres, gullies notch the rim), so the walls are stepped and ragged, not drums
+ add(K.make({id:'table',kind:'mesa',x:60,z:-120,y0:footY(60,-120,560),seed:2101,bed:[55,110],lobes:.3,weather:1,
   tiers:[{h:380,r:560,e:1.35,ry:.45},{h:150,r:455,e:1.3,ry:.45,dx:30,dz:-25}]}),'The table (a tepui: its walls, its shoulder, its summit)');
  // THE OUTLIER: a butte cut off from the table's south-west by a side gorge
- add(K.make({id:'outlier',kind:'butte',x:-860,z:640,y0:footY(-860,640,190),seed:2102,bed:[40,90],tiers:[{h:300,r:190,e:1.2,ry:-.5}]}),'The outlier (a butte cut off from the table)');
+ add(K.make({id:'outlier',kind:'butte',x:-860,z:640,y0:footY(-860,640,190),seed:2102,bed:[40,90],lobes:.18,weather:.7,tiers:[{h:300,r:190,e:1.2,ry:-.5}]}),'The outlier (a butte cut off from the table)');
  const big=L.slice();
  const clear=(x,z,r,pad)=>{for(const B of big){const f=K.foot([B],x,z);if(f&&f.d<r+pad)return false;}return streamD(x,z)>r+40&&Math.hypot(x,z)<TERR.R*.9;};
  // THE STACKS on the floor east of the table: the remains of a fallen rim
@@ -68,13 +73,15 @@ const ROCK=(function(){const K=KSTACKS,L=[];
   ground:(x,z)=>footY(x,z,24)+2,accept:(x,z,r)=>clear(x,z,r,80)}).forEach(B=>add(B,B.kind==='fin'?'A quartzite fin (a fallen rim)':B.kind==='balanced'?'A balanced rock':'A quartzite spire (a fallen rim)'));
  return L;})();
 const TABLE=ROCK[0];
+// the beds step in up the table (each parting a ledge of its own width), and the apron is set from its foot
+TABLE.beds.forEach(b=>{const s=1-.022*b.k;b.rx*=s;b.rz*=s;});APRON_B=TABLE.beds[0];
 
 // ---------------------------------------------------------------- the station's say: STAGE (47 reads it; the pitcher hollow's 45 writes its own)
 // windward: 1 on the north-west faces and the ground before them, 0 in the table's lee (the rain shadow); the same for
 // a point on the floor, since the gorge lies round the table
 const windwardOf=(x,z)=>{const a=Math.atan2(z-TABLE.z,x-TABLE.x),w=Math.cos(a)*WIND[0]+Math.sin(a)*WIND[1];return smooth(-.55,.55,w);};
 const STAGE={
- name:'Korona: the tepui',R:TERR.R,bodies:ROCK,floor:floorH,capY:TABLE.y0+470,seed:11,talusH:22,
+ name:'Korona: the tepui',R:TERR.R,bodies:ROCK,floor:floorH,capY:TABLE.y0+470,seed:11,talusH:30,heroR:1600,
  stream:STREAM,streamD,pools:[],
  windward:windwardOf,
  // the dense hot air of the gorge (1.7 atm, 30 degC): 1 on the floor, falling up the wall to .25 on the summit
@@ -83,7 +90,7 @@ const STAGE={
  rich:(x,z)=>{const t=NECANYONS.top(x,z);if(t>-1e8)return .55*smooth(.6,.75,fbm(x*.011+2,z*.011-6,51,2));
   return clamp(.75*smooth(60,10,streamD(x,z))+.4*smooth(.52,.66,fbm(x*.0018-4,z*.0018+1,52,3)),0,1);},
  // the summit's bogs: the wet hollows of the pavement on the windward half
- bogAt:(x,z)=>smooth(.5,.62,fbm(x*.017+5,z*.017+1,53,2))*mix(.35,1,windwardOf(x,z)),
+ bogAt:(x,z)=>smooth(.44,.56,fbm(x*.017+5,z*.017+1,53,2))*mix(.35,1,windwardOf(x,z)),
  // the floor's layers (47): litter everywhere, quartz scree at the walls' feet, sand by the stream
  layers:{a:'ground.litter',b:'ground.talus',c:'ground.sand'},layerCol:[0x3a3a28,0x8a8278,0xa89a86],
  weights:(x,z)=>{const fd=NECANYONS.footD(x,z),sd=streamD(x,z);return[smooth(48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2)),smooth(STREAM.w+16,STREAM.w+2,sd)];},
@@ -92,7 +99,7 @@ const STAGE={
  jungle:(x,z)=>mix(.5,1,windwardOf(x,z)),
  // THE CARVINGS: the Hum's contour carvings (LORE.md 6.18) on the summit block's lowest bed, above the shoulder, on the
  // dry lee face where the tribe's ledges are: angle band a0..a1 about the bed's centre, h tall, y0 above the bed's foot
- carvings:{body:'table',tier:1,a0:-1.1,a1:.35,y0:4,h:3.2,name:'Contour carvings: the Hum (one groove a syllable, above or below the line)'},
+ carvings:{body:'table',tier:1,a0:-1.1,a1:.35,y0:13,h:3.2,name:'Contour carvings: the Hum (one groove a syllable, above or below the line)'},
  // the LOD spine: the table's rim all round, the shoulder, the summit, the stream, the outlier
  spine:(function(){const S=[];for(let k=0;k<10;k++){const a=k/10*TAU,b=TABLE.beds[0];S.push([b.cx+Math.cos(a)*KSTACKS.footR(b,a)*1.05,b.cz+Math.sin(a)*KSTACKS.footR(b,a)*1.05]);}
   S.push([TABLE.x,TABLE.z],[TABLE.x+120,TABLE.z-80],[STREAM.x(300),300],[STREAM.x(-600),-600],[-860,640],[760,520]);return S;})(),

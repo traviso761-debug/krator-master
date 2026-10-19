@@ -22,7 +22,7 @@ KORONA.TAGS={climate:'tropic',aridity:'humid',abyssal:false,riparian:'no',koppen
 // ---------------------------------------------------------------- palettes (sRGB; a library card carries its own colour)
 const PAL=KORONA.PAL={
  coin:[0xa8bcc8,0xc4d2da,0xd05a48,0xd8a040],coinBark:[0x6a6660,0x7a7670,0x5a5650],
- lacefan:[0xf0a060,0xf8c890,0xe8904a],lacefanBark:[0x4a3528,0x3a2a20,0x5a4030],
+ lacefan:[0xf0a060,0xf8c890,0xe8904a],lacefanBark:[0x7a5a48,0x6a4c3c,0x86685a],
  lace:[0xf0ece4,0xe8e0d0,0x9a1e2a],gsundew:[0x9ab040,0xb8302a,0x6a8a34],
  rfan:[0xe04020,0xd8e040,0x40c8c0,0x60a0e0,0xf0b030,0x90e0a0,0xf0e0c0,0x182848,0xc02020],
  stormpod:[0x5a9a30,0x8ac040,0xc8c890],cobra:[0x7aa040,0xb8c850,0xa02828],trumpet:[0x7a1018,0xb8202a,0x4a6a2a],
@@ -44,7 +44,10 @@ KORONA.TRAPS={
  coiltendril:TR({kind:'grab',mouth:2,preyMax:'person',lure:null,danger:1}),
  bladderpool:TR({kind:'suction',mouth:.3,preyMax:'medium',lure:null,danger:.3}),
  trappad:TR({kind:'snap',mouth:1.8,preyMax:'large',lure:null,danger:.4}),
- snareflower:TR({kind:'snare',mouth:.6,preyMax:'medium',lure:'scent',danger:.5})};
+ snareflower:TR({kind:'snare',mouth:.6,preyMax:'medium',lure:'scent',danger:.5}),
+ punjipit:TR({kind:'pitfall',mouth:1.1,preyMax:'person',lure:null,danger:1}),
+ beartrap:TR({kind:'snap',mouth:1.3,preyMax:'large',lure:'scent',danger:.8}),
+ numbthorn:TR({kind:'snare',mouth:.1,preyMax:'person',lure:null,danger:.7,cycle:{wait:900000,shut:.4,digest:300000,reopen:60000}})};
 
 // ---------------------------------------------------------------- the tree-scale species
 const K=(climate,aridity,riparian,koppen,zone)=>Object.assign({},KORONA.TAGS,{climate,aridity,riparian,koppen,zone});
@@ -83,6 +86,9 @@ KORONA.PLANTS={
  bladderpool:PK('Sucking pool','tropic','humid','yes',['Af'],'floor',['pad'],HV('none',[],false,'A black pool whose bed is a carpet of green bladders: a foot that stirs them is sucked down to the knee. Danger 0.3. Trap pads float on it.'),'bladderpool'),
  trappad:PK('Trap pad','tropic','humid','yes',['Af'],'floor',['pad'],HV('none',[],false,'A giant lily pad floating on a sucking pool, its edge fringed with hairs: it folds on what lands on it. Danger 0.4.'),'trappad'),
  snareflower:PK('Snare flower','tropic','humid','yes',['Af'],'floor',['snare'],HV('none',[],false,'The Throne\'s snare flower, here on the warm poor floor: petals that are a noose. Danger 0.5.'),'snareflower'),
+ punjipit:PK('Punji pit','hypertropic','humid','yes',['Af','XA'],'floor',['lid','spike','mouth'],HV('none',[],false,'A pitcher that lives under the ground: only its lid shows, a round of dead leaves flush with the floor, and a person who steps on it goes through onto spikes of bone-hard leaf and into the fluid below. A third stand with the mouth open and the lid thrown back. Danger 1.'),'punjipit'),
+ beartrap:PK('Bear-trap plant','tropic','humid','yes',['Af'],'floor',['jaw'],HV('none',[],false,'A flytrap of a kind: two toothed jaws a metre and more across lying open on the peat, their teeth interlocked when they shut. A leg stepped between them is held to the bone; they shut in a blink and open again in a week. Danger 0.8.'),'beartrap'),
+ numbthorn:PK('Numb thorn','tropic','humid','yes',['Af','Cfa'],'floor',['stalk','spike'],HV('none',[],true,'A swollen green stalk bristling with long hollow thorns, red at the tip, that whip at whatever brushes it. The venom numbs a limb in a minute and the whole body in ten; the floor\'s other traps finish the work. The tribes milk the thorns for a hunting poison and a surgeon\'s numbing. Danger 0.7.'),'numbthorn'),
  wallfern:PK('Staghorn ferns','tropic','humid','yes',['Af','Cfa'],'ledge',['staghorn'],HV('none',[],false,'Staghorn ferns pressed to the wet wall under every seep line: the hanging gardens\' green.')),
  cairn:PK('A cairn (the safe path)','tropic','humid','no',['Af'],'floor',['cairn'],HV('none',[],false,'A stone the tribes set every twenty paces along the one way through a hollow. Whistle the Hum and keep to the cairns.')),
 };
@@ -110,6 +116,11 @@ TX.star=BIO.alphaTex(256,S9((g,S)=>{const c=S/2;g.lineCap='round';for(let k=0;k<
 /* a pom-pom head on a stalk (the blood bulb) and a bloom on a stalk (the lure) */
 TX.bulb=BIO.alphaTex(256,S9((g,S)=>{g.strokeStyle=G2(90);g.lineWidth=S*.02;g.beginPath();g.moveTo(S*.5,S);g.lineTo(S*.52,S*.35);g.stroke();g.fillStyle=G2(200);for(let k=0;k<40;k++){const a=rr(0,TAU),d=S*.14*Math.sqrt(rng());g.beginPath();g.arc(S*.52+Math.cos(a)*d,S*.3+Math.sin(a)*d,S*.018,0,TAU);g.fill();}}),[190,60,50]);
 TX.bloom=BIO.alphaTex(256,S9((g,S)=>{g.strokeStyle=G2(90);g.lineWidth=S*.02;g.beginPath();g.moveTo(S*.5,S);g.lineTo(S*.5,S*.42);g.stroke();for(let k=0;k<5;k++){const a=k/5*TAU;g.fillStyle=G2(rr(190,245));g.beginPath();g.ellipse(S*.5+Math.cos(a)*S*.14,S*.3+Math.sin(a)*S*.14,S*.12,S*.06,a,0,TAU);g.fill();}g.fillStyle=G2(120);g.beginPath();g.arc(S*.5,S*.3,S*.05,0,TAU);g.fill();}),[220,200,160]);
+/* a snap trap's lobe: a half moon, hinge at the bottom, teeth round the arc (the bear trap) */
+TX.jaw=BIO.alphaTex(256,S9((g,S)=>{const cx=S/2,cy=S*.95,R=S*.4;g.fillStyle=G2(180);g.beginPath();g.arc(cx,cy,R,Math.PI,TAU);g.closePath();g.fill();
+  g.strokeStyle=G2(235);g.lineWidth=S*.025;for(let k=1;k<16;k++){const a=Math.PI+k/16*Math.PI;g.beginPath();g.moveTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);g.lineTo(cx+Math.cos(a)*R*1.25,cy+Math.sin(a)*R*1.25);g.stroke();}}),[150,60,50]);
+/* dead leaves lying flat (the punji pit's lid) */
+TX.lid=BIO.alphaTex(128,(g,S)=>{for(let i=0;i<70;i++){const x=S*rr(.1,.9),y=S*rr(.1,.9),r=S*rr(.05,.1);g.fillStyle=G2(rr(90,190));g.beginPath();g.ellipse(x,y,r,r*.6,rr(0,TAU),0,TAU);g.fill();}},[110,80,50]);
 /* a lily pad from above, a fern pressed flat */
 TX.pad=BIO.alphaTex(128,(g,S)=>{g.fillStyle=G2(180);g.beginPath();g.arc(S/2,S/2,S*.46,.3,TAU-.3);g.lineTo(S/2,S/2);g.closePath();g.fill();},[80,120,50]);
 TX.stag=BIO.alphaTex(128,(g,S)=>{g.strokeStyle=G2(190);g.lineWidth=S*.08;g.lineCap='round';for(let k=0;k<5;k++){const a=-Math.PI/2+(k-2)*.35;g.beginPath();g.moveTo(S/2,S);g.lineTo(S/2+Math.cos(a)*S*.8,S+Math.sin(a)*S*.8);g.stroke();}},[80,120,60]);
@@ -139,6 +150,7 @@ const M=KORONA.MAT={
  cobra:leaf(TX.tubes,'cobra',{swayA:.04}),cobrab:leaf(TX.tubes,'cobrab',{swayA:.04}),trumpet:leaf(TX.tubes,'trumpet',{swayA:.03}),
  star:leaf(TX.star,'star',{swayW:'0.0',swayA:0}),lure:leaf(TX.bloom,'lure',{swayA:.06}),bulb:leaf(TX.bulb,'bulb',{swayA:.08}),
  snare:leaf(TX.bloom,'snare',{swayA:.05}),giantpad:leaf(TX.pad,'giantpad',{swayW:'0.0',swayA:0}),staghorn:leaf(TX.stag,'staghorn',{swayA:.03}),
+ jaw:leaf(TX.jaw,'jaw',{swayW:'0.0',swayA:0,alphaTest:.45}),lid:leaf(TX.lid,'lid',{swayW:'0.0',swayA:0}),
  solid:BIO.solidMat(null)};
 // THE LIBRARY (core/materials/PLAN.md): the slots materials.json names take the library's maps; the procedural ones stay
 // without the pack. A sheet's cell is the item's uv (cellUV), not the pack's: one texture per sheet, many cells
@@ -147,27 +159,53 @@ const LIBWHITE=C(0xf4f2ec);
 const FULL=slot=>{if(!KORONA.LIB[slot]||typeof KMAT==='undefined'||!KMAT.packed)return false;const L=KMAT.packed('korona',slot);return !!(L&&L.tint&&L.tint.keep>=.99);};
 KORONA.libCol=(slot,c)=>FULL(slot)?LIBWHITE.clone().lerp(c&&c.isColor?c:C(c),.14):c;
 KORONA.FULL=FULL;
+// THE TRAPS GO OFF IN THE SHADER (core/biome/37-core-traps.js, KTRAPS.GLSL; the owner, 2026-10-19): each trap item carries
+// aTrap = [phase, side, angle, 0]; its vertices move by its trap's k (0 open .. 1 shut) from the wind clock and the phase
+// hashed from the trap's id (SPEED compresses the week between snaps for a page). Three motions: HINGE (a jaw turning
+// about its hinge line, side +1/-1), FOLD (a pad folding in half about its middle), WHIP (a thorn swinging about its base).
+KORONA.SPEED=20000;
+function trapHook(mat,trap,kind){const c=trap.cycle,sp=KORONA.SPEED,base=mat.onBeforeCompile;
+ const U={value:new T3.Vector4(c.wait/sp,c.shut,c.digest/sp,c.reopen/sp)};
+ const xf=kind==='fold'?'{float k=ktrapK(uWindT,uCyc,aTrap.x);float th=aTrap.z*k;float c=cos(th),s=sin(th);transformed=vec3(position.x*c,position.y+abs(position.x)*s,position.z);}'
+  :'{float k=ktrapK(uWindT,uCyc,aTrap.x);float th=aTrap.y*mix(aTrap.z,0.05,k);float c=cos(th),s=sin(th);transformed=vec3(position.x,position.y*c-position.z*s,position.y*s+position.z*c);}';
+ const hooked=!!base;
+ mat.onBeforeCompile=sh=>{sh.uniforms.uCyc=U;if(!hooked)sh.uniforms.uWindT=BIO.WIND.t;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aTrap;\nuniform vec4 uCyc;\nuniform float uWindT;\n'+KTRAPS.GLSL)
+   .replace('#include <begin_vertex>','vec3 transformed=vec3(position);\n'+xf);
+  if(base)base(sh);
+  sh.vertexShader=sh.vertexShader.replace(/uniform float uWindT;\n(?=[\s\S]*uniform float uWindT;)/,'');};
+ if(!mat.userData.bio)mat.userData.bio={kind:'solid'};mat.userData.bio.trap=trap.kind;
+ const ck='kotrap|'+BIO.kitKey(kind)+'|'+(mat.userData.bio.key||kind);mat.customProgramCacheKey=function(){return ck;};}
+trapHook(M.jaw,KORONA.TRAPS.beartrap,'hinge');
+trapHook(M.star,KORONA.TRAPS.groundstar,'fold');
+trapHook(M.giantpad,KORONA.TRAPS.trappad,'fold');
+M.thorn=BIO.solidMat(null);trapHook(M.thorn,KORONA.TRAPS.numbthorn,'whip');
 
 [['bark.coin','Coin-tree trunks'],['bark.lacefan','Lace-fan boles (dark, fibrous)'],['pitcher','Man-eater pitchers (the waxy outside)'],['throat','Man-eater throats (hairs and fluid)'],['tendril','Coil tendrils (banded, warty)']]
  .forEach(([k,lab])=>{const m=k==='bark.coin'?M.bark.coin:k==='bark.lacefan'?M.bark.lacefan:M[k];BIO.bucket(k,m,{label:lab,uvScale:k==='pitcher'?[1.4,1.4]:k==='throat'?[1,1]:k==='tendril'?[.8,.8]:[2,3]});});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items: the owner's sheets by cell, two or more cells each
-const cells=(name,geoFn,mat,ks,label)=>{ks.forEach((k,i)=>BIO.def(name+i,cellUV(geoFn(),CELL(k)),mat,{label}));};
+const cells=(name,geoFn,mat,ks,label)=>{ks.forEach((k,i)=>BIO.def(name+i,cellUV(geoFn(),CELL(k)),mat,{label}));};let ks;
 cells('lace',G.tuft,M.lace,[0,4],'Lace pitchers (the summit\'s sun pitcher)');
 cells('gsundew',G.fan,M.gsundew,[0,4],'Great sundew fronds');
 cells('coin',G.tuft,M.coin,[1,6],'Coin-tree twigs (frosted coin leaves)');
-cells('rfan',G.fan,M.rfan,[0,2,4,6,8],'Rainbow fans (the reagent)');
+cells('rfan',G.tuft,M.rfan,[0,2,4,6,8],'Rainbow fans (the reagent)');
 cells('lacefan',G.fan,M.lacefan,[0,4],'Lace fans (a fungus-tree\'s crowns)');
 cells('stormpod',G.tuft,M.stormpod,[0,4],'Storm pods');
 cells('cobra',G.tuft,M.cobra,[0,4],'Cobra lilies');cells('cobrab',G.tuft,M.cobrab,[1,5],'Cobra lilies');
 cells('trumpet',G.tuft,M.trumpet,[0,4],'Blood trumpets');
-cells('star',G.pad,M.star,[0,4],'Ground stars (a trap flat on the peat)');
+ks=[0,4];ks.forEach((k,i)=>BIO.def('star'+i,cellUV(G.pad(),CELL(k)),M.star,{attrs:['aTrap'],label:'Ground stars (a trap flat on the peat)'}));
 cells('lure',G.tuft,M.lure,[0,4],'Lures (false flowers over the traps)');
 cells('bulb',G.tuft,M.bulb,[0,4],'Blood bulbs (the sticky moor)');
 BIO.def('snare',cellUV(G.tuft(),CELL(4)),M.snare,{label:'Snare flowers'});
-BIO.def('pad',G.pad(),M.giantpad,{label:'Trap pads (on the sucking pools)'});
+BIO.def('pad',G.pad(),M.giantpad,{attrs:['aTrap'],label:'Trap pads (on the sucking pools)'});
 BIO.def('staghorn',G.fan(),M.staghorn,{label:'Staghorn ferns (on the wet wall)'});
 BIO.def('cairn',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Cairns (the safe path)'});
+BIO.def('jaw',cellUV(G.lobe(),CELL(4)),M.jaw,{attrs:['aTrap'],label:'Bear-trap jaws'});
+BIO.def('lid',G.pad(),M.lid,{label:'Punji-pit lids (dead leaves flush with the floor)'});
+BIO.def('mouth',G.pad(),M.solid,{label:'Maws (a punji pit\'s open mouth, a trap pad\'s middle)'});
+BIO.def('spike',BIO.geo.rod(4),M.solid,{label:'Spikes and teeth'});
+{const g=BIO.geo.rod(4);g.translate(0,.5,0);BIO.def('thorn',g,M.thorn,{attrs:['aTrap'],label:'Numb thorns (they whip)'});}
 BIO.def('stalk',BIO.geo.rod(5),M.solid,{label:'Stalks and stems'});
 })();

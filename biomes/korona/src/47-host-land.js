@@ -3,6 +3,9 @@
 // its floor function, its wind, where the soil is rich, which layers the floor wears, its pools and carvings); this
 // fragment lays the necanyons zones over the rock (46, read in place: NECANYONS.lay), makes the height, the water,
 // Korona's fields, the meshes, and binds the biome core.
+// THE RIMS WEATHERED ROUND (the owner, 2026-10-19: 20 to 30 degrees off the vertical at the edge): each tier's top bed curves in
+// over its top fifth by rimCh of its radius (.05: ~23 degrees on the table), the partings notch a little deeper
+STAGE.bodies.forEach(B=>{if(B.kind!=='mesa'&&B.kind!=='butte')return;B.beds.forEach((b,i)=>{const nx=B.beds[i+1],top=!nx||nx.tier!==b.tier;b.ch=Math.max(b.ch,top?(STAGE.rimCh==null?.06:STAGE.rimCh):.012);b.nt=Math.max(b.nt,.01);});});
 NECANYONS.lay({bodies:STAGE.bodies,floor:STAGE.floor,R:STAGE.R,capY:STAGE.capY,cell:5,seed:STAGE.seed});
 _mark('layout');
 const _tm={x:NaN,z:NaN,h:0};
@@ -16,7 +19,7 @@ const streamBed=z=>STAGE.floor(STREAM_.x(z),z);
 const poolAt=(x,z)=>{const P=STAGE.pools;for(let i=0;i<P.length;i++){const p=P[i];if(Math.abs(x-p.x)<p.r&&Math.abs(z-p.z)<p.r&&Math.hypot(x-p.x,z-p.z)<p.r)return p;}return null;};
 function waterH(x,z){if(STREAM_&&STAGE.streamD(x,z)<STREAM_.w*1.3)return streamBed(z)+STREAM_.depth;
  const q=NECANYONS.potholeAt(x,z);if(q)return q.y;const p=poolAt(x,z);return p?p.y:-1e9;}
-STAGE.pools.forEach(p=>{let lo=1e9;for(let k=0;k<16;k++){const a=k/16*TAU;lo=Math.min(lo,groundH(p.x+Math.cos(a)*p.r*1.15,p.z+Math.sin(a)*p.r*1.15));}p.y=lo-.25;});
+STAGE.pools.forEach(p=>{if(p.y!=null)return;let lo=1e9;for(let k=0;k<16;k++){const a=k/16*TAU;lo=Math.min(lo,groundH(p.x+Math.cos(a)*p.r*1.15,p.z+Math.sin(a)*p.r*1.15));}p.y=lo-.25;});
 
 // ---------------------------------------------------------------- the fields (biomes/WORLD.md; BIOME-API.md): wet, flow, rock, poor, rich, warm, upland
 // read off the necanyons zones (46) and the station's say (45). poor is THE RULE (NOTES.md): where the ground is bare rock
@@ -75,19 +78,23 @@ LAYER_KEYS.forEach(k=>{const t=layer(k).map;if(t){t.wrapS=t.wrapT=THREE.RepeatWr
 const col3=(lib,hex,k)=>{if(lib)return'vec3(1.0)';const c=new THREE.Color(hex).convertSRGBToLinear();return'vec3('+[c.r,c.g,c.b].map(v=>(v*(k||1.6)).toFixed(4)).join(',')+')';};
 
 // ---------------------------------------------------------------- the floor (one mesh: three layers by vertex weight, the station's)
+// DITHERED SAMPLING (the owner, 2026-10-19: the plateau tiled visibly): a map is read twice, at its scale and at a third of
+// it rotated, and the two mixed by the map's own coarse luminance, so no repeat lines up with another
+const DITHER='vec4 kdither(sampler2D m,vec2 p){vec4 a=texture2D(m,p);vec4 b=texture2D(m,vec2(p.x*0.29-p.y*0.17+0.37,p.x*0.17+p.y*0.29+0.11));float n=texture2D(m,p*0.0137+vec2(0.5,0.2)).g;return mix(a,b,smoothstep(0.32,0.68,n));}\n';
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
 {const La=layer(STAGE.layers.a),Lb=layer(STAGE.layers.b),Lc=layer(STAGE.layers.c),LC=STAGE.layerCol;
  MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uL={value:La.map};sh.uniforms.uR={value:Lb.map};sh.uniforms.uS={value:Lc.map};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;varying vec3 vGWP;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uL,uR,uS;varying vec3 vW;varying vec3 vGWP;')
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uL,uR,uS;varying vec3 vW;varying vec3 vGWP;\n'+DITHER)
    .replace('#include <map_fragment>',['{vec2 p=vGWP.xz;',
-    'vec3 lt=pow(texture2D(uL,p/'+La.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(La.lib,LC[0])+';',
-    'vec3 rd=pow(texture2D(uR,p/'+Lb.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Lb.lib,LC[1])+';',
-    'vec3 sd=pow(texture2D(uS,p/'+Lc.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Lc.lib,LC[2])+';',
+    'vec3 lt=pow(kdither(uL,p/'+La.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(La.lib,LC[0])+';',
+    'vec3 rd=pow(kdither(uR,p/'+Lb.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Lb.lib,LC[1])+';',
+    'vec3 sd=pow(kdither(uS,p/'+Lc.s.toFixed(2)+').rgb,vec3(2.2))*'+col3(Lc.lib,LC[2])+';',
     'vec3 c=mix(lt*0.46,rd*0.8,vW.x);c=mix(c,sd*0.78,vW.y);diffuseColor.rgb*=c*vW.z;}'].join('\n'));};
  MAT_GROUND.customProgramCacheKey=()=>'korona-ground-'+STAGE.layers.a+STAGE.layers.b+STAGE.layers.c;}
-(function(){const N=220,S=STAGE.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
+(function(){const N=440,S=STAGE.R*2.2,   /* 8 m cells: the talus is steep and a plant stands on the function's height (the owner, 2026-10-19: plants floated at 16 m) */
+ g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const W=STAGE.weights(x,z);
   w[3*i]=clamp(W[0],0,1);w[3*i+1]=clamp(W[1],0,1);w[3*i+2]=.85+.3*fbm(x*.006,z*.006,42,2);}
@@ -103,8 +110,8 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog');
  m.onBeforeCompile=sh=>{sh.uniforms.uB={value:Lb.map};sh.uniforms.uBS={value:Lt.s/Lb.s};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aB;varying float vB;')
    .replace('#include <begin_vertex>','#include <begin_vertex>\nvB=aB;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uB;uniform float uBS;varying float vB;')
-   .replace('#include <map_fragment>','{vec4 tc=texture2D(map,vUv);vec4 tb=texture2D(uB,vUv*uBS)*vec4('+(Lb.lib?'1.0,1.0,1.0':'0.55,0.6,0.3')+',1.0);vec4 t=mix(tc,tb,vB);t=mapTexelToLinear(t);diffuseColor*=t;}');};
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uB;uniform float uBS;varying float vB;\n'+DITHER)
+   .replace('#include <map_fragment>','{vec4 tc=kdither(map,vUv);vec4 tb=kdither(uB,vUv*uBS)*vec4('+(Lb.lib?'1.0,1.0,1.0':'0.55,0.6,0.3')+',1.0);vec4 t=mix(tc,tb,vB);t=mapTexelToLinear(t);diffuseColor*=t;}');};
  m.customProgramCacheKey=()=>'korona-top';return m;})();
 (function(){const SMALL={spire:1,fin:1,balanced:1},Lw=layer('rock.wall'),Lt=layer('rock.top'),RC=STAGE.rockCol;
  const BAND=RC.band.map(h=>new THREE.Color(h)),WHITE=new THREE.Color(0xffffff),TOPC=new THREE.Color(RC.top),SOIL=new THREE.Color(RC.soil),c=new THREE.Color();
@@ -117,7 +124,8 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog');
      if(key==='top'){A.uv.push(m.uv[2*v]/Lt.s,m.uv[2*v+1]/Lt.s);const bog=small?0:STAGE.bogAt(x,z);A.b.push(bog);
       c.copy(Lt.lib?WHITE:TOPC).lerp(SOIL,(!small&&y<STAGE.capY)?.3+.3*fbm(x*.01,z*.01,43,2):.05);}
      else{A.uv.push(m.uv[2*v]/Lw.s,m.uv[2*v+1]/Lw.s);const h=KRAND.hash(B.seed,b.k,77)%BAND.length;
-      c.copy(Lw.lib?WHITE:BAND[h]).lerp(BAND[h],Lw.lib?.08:0).multiplyScalar(small?.84+.16*m.occ[v]:.62+.38*m.occ[v]);A.b.push(0);}
+      const ang=Math.atan2(z-B.z,x-B.x),streak=small?1:.74+.26*smooth(.3,.7,fbm(ang*9+B.seed%13,y*.012,46,3));
+      c.copy(Lw.lib?WHITE:BAND[h]).lerp(BAND[h],Lw.lib?.14:0).multiplyScalar((small?.84+.16*m.occ[v]:.62+.38*m.occ[v])*streak);A.b.push(0);}
      A.col.push(c.r,c.g,c.b);}
     A.idx.push(R[v]);}}
   REGISTER({name:B.name||B.id,key:'rock.'+B.kind,x:B.x,z:B.z,y:B.y0,r:Math.min(B.R,small?B.R:B.R*.8),h:B.top-B.y0});});
@@ -128,6 +136,7 @@ const MAT_TOP=(function(){const Lt=layer('rock.top'),Lb=layer('ground.bog');
  {const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),STAGE.bodies.length),M4=new THREE.Matrix4();
   STAGE.bodies.forEach((B,i)=>{M4.makeTranslation(B.x,(B.y0+B.top)/2,B.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='rock anchors';A.frustumCulled=false;scene.add(A);}
  const MAT_WALL=new THREE.MeshStandardMaterial({map:Lw.map,normalMap:Lw.normalMap,roughnessMap:Lw.roughnessMap,roughness:1,metalness:0,vertexColors:true});
+ MAT_WALL.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+DITHER).replace('#include <map_fragment>','{vec4 t=kdither(map,vUv);t=mapTexelToLinear(t);diffuseColor*=t;}');};MAT_WALL.customProgramCacheKey=()=>'korona-wall';
  mk(acc.wall,MAT_WALL,'Quartzite (a tepui\'s wall: pale beds streaked black by the rain\'s algae and lichen)');
  mk(acc.top,MAT_TOP,'The pavement (a top: bare quartzite crusted black, sphagnum in its hollows)');})();
 
@@ -150,7 +159,8 @@ if(STAGE.carvings){const Cv=STAGE.carvings,B=STAGE.bodies.find(b=>b.id===Cv.body
  const mat=new THREE.MeshStandardMaterial({map:Lc.map,normalMap:Lc.normalMap,roughnessMap:Lc.roughnessMap,color:tint,roughness:1,metalness:0,side:THREE.DoubleSide});
  const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=Cv.name;me.userData.host=true;me.userData.rock=true;scene.add(me);
  const am=(Cv.a0+Cv.a1)/2,mid=NECANYONS.wall(B,bed,am,(u0+u1)/2);
- const rec={name:Cv.name,key:'carving',kind:'carving',culture:'korona-tepui',x:mid.x,z:mid.z,y:mid.y-Cv.h,r:Math.max(12,arc/2*.35),h:Cv.h*2,hum:true};
+ const wallR=K.footR(bed,am)*K.prof(bed,(u0+u1)/2),wallD=Math.hypot(mid.x-bed.cx,mid.z-bed.cz)-wallR;
+ const rec={name:Cv.name,key:'carving',kind:'carving',culture:'korona-tepui',x:mid.x,z:mid.z,y:mid.y-Cv.h,r:Math.max(12,arc/2*.35),h:Cv.h*2,hum:true,wallD};
  REGISTER(rec);CARVINGS.push(Object.assign({arc,n,body:B.id,bed:bed.k},rec));}
 
 // ---------------------------------------------------------------- the water: the stream's ribbon, the rain pools, the station's pools

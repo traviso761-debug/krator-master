@@ -1,11 +1,15 @@
 // ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host (station 2: the pitcher hollow)
 const VIEWS={
- 'The hollow (from the west rim)':[-1500,170,420,0,-160,0],
+ 'The hollow (from the west rim)':[-1150,40,330,200,-150,-60],
+ 'The hollow (from the air)':[-900,300,500,100,-160,-100],
  'From afar':[-2200,600,2000,0,-120,0],
  'Krator rising':[-400,-150,900,1900,500,-2100],
 };
 (function(){const TR=(typeof KORONA!=='undefined'&&KORONA.TRAPPED)||[],near=(k,x,z)=>TR.filter(t=>t.key===k).sort((a,b)=>Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z))[0];
  const me=near('maneater',0,0);if(me)VIEWS['A man-eater']=[me.x+6,me.y+2.6,me.z+4.5,me.x,me.y+1.4,me.z];
+ const pj=near('punjipit',0,0);if(pj)VIEWS['A punji pit']=[pj.x+4,pj.y+2,pj.z+3,pj.x,pj.y+.2,pj.z];
+ const bt=near('beartrap',0,0);if(bt)VIEWS['A bear-trap plant']=[bt.x+3.5,bt.y+1.8,bt.z+2.5,bt.x,bt.y+.2,bt.z];
+ const nt=near('numbthorn',0,0);if(nt)VIEWS['A numb thorn']=[nt.x+4,nt.y+2,nt.z+3,nt.x,nt.y+1,nt.z];
  const td=near('coiltendril',0,0);if(td)VIEWS['A coil tendril']=[td.x+7,td.y+3,td.z+5,td.x,td.y+.6,td.z];
  const gs=near('groundstar',100,100);if(gs)VIEWS['Ground stars on the peat']=[gs.x+5,gs.y+2.5,gs.z+4,gs.x,gs.y,gs.z];
  const bb=near('bloodbulb',-300,200);if(bb)VIEWS['The moor (blood bulbs)']=[bb.x+8,bb.y+2.2,bb.z+6,bb.x-30,bb.y+1,bb.z-20];
@@ -41,7 +45,7 @@ const _itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.use
 const HCHK={
  maneaters(PL,N,TRP){const keys=Object.keys(PL).filter(k=>PL[k].tags.trap),bad=[],undrawn=[],tame=[];
   keys.forEach(k=>{const t=PL[k].tags.trap;if(!KTRAPS.KINDS[t.kind])bad.push(k);if(t.preyMax==='person'&&!(KTRAPS.catches(t,'person').caught&&t.danger>=.5))tame.push(k);
-   if(!PL[k].items.some(i=>N[i]>0))undrawn.push(k);});
+   if(!PL[k].items.some(i=>N[i]>0)&&!((k==='bladderpool'||k==='trappad')&&!STAGE.pools.some(p=>p.bed)))undrawn.push(k);});
   const reg=[...new Set(TRP.filter(t=>t.trap.danger>0).map(t=>t.key))];
   return{ok:keys.length>=8&&!bad.length&&!undrawn.length&&!tame.length&&reg.length>=5,detail:keys.length+' carnivores'+(bad.length?'; not in the vocabulary: '+bad.join(', '):'')+
    (tame.length?'; meant for a person but harmless: '+tame.join(', '):'')+(undrawn.length?'; not drawn: '+undrawn.join(', '):'')+'; dangerous ones registered: '+reg.join(', ')+' ('+TRP.length+' records)'};},
@@ -55,8 +59,8 @@ const HCHK={
  cliffs(TREES){let rim=0,off=0,worst=0;TREES.forEach(T=>{const Z=NECANYONS.at(T.x,T.z);if(Z.zone==='rim'||Z.zone==='wall')rim++;
    if(Z.rock){const d=Math.abs(T.y0+.25-NECANYONS.top(T.x,T.z));worst=Math.max(worst,d);if(d>.05)off++;}});
   return{ok:rim===0&&off===0&&TREES.length>50,detail:TREES.length+' trees; '+rim+' on a rim or a wall; '+off+' off the rock\'s top (worst '+worst.toFixed(3)+' m)'};},
- carvings(CV){if(!CV.length)return{ok:false,detail:'no carvings'};const c=CV[0],Z=NECANYONS.at(c.x,c.z),d=Z.rock?Z.d:1;
-  return{ok:c.arc>20&&c.hum===true&&Math.abs(d)<6,detail:'arc '+c.arc.toFixed(0)+' m on '+c.body+' bed '+c.bed+', '+(Z.rock?'d '+Z.d.toFixed(1)+' m from the edge':'off the rock')};}};
+ carvings(CV){if(!CV.length)return{ok:false,detail:'no carvings'};const c=CV[0];
+  return{ok:c.arc>20&&c.hum===true&&Math.abs(c.wallD)<1.5,detail:'arc '+c.arc.toFixed(0)+' m on '+c.body+' bed '+c.bed+', '+c.wallD.toFixed(2)+' m off the wall'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_itemCounts(),KO=KORONA;
  add('man-eaters: trap records, dangerous, drawn, registered',HCHK.maneaters(KO.PLANTS,N,KO.TRAPPED||[]));
  add('the rule: carnivory only where poor, wet and warm',HCHK.rule(KO.TRAPPED||[]));

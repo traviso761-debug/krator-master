@@ -18,6 +18,11 @@ const VIEWS={
  const st=STAGE.bodies.find(B=>/^gorgestack/.test(B.id));if(st)VIEWS['The stacks (a fallen rim)']=[st.x+260,120,st.z+200,st.x,st.top*.6,st.z];
  const me=(typeof KORONA!=='undefined'&&KORONA.TRAPPED||[]).filter(t=>t.key==='maneater').sort((a,b)=>Math.hypot(a.x,a.z)-Math.hypot(b.x,b.z))[0];
  if(me)VIEWS['A man-eater (the hell at the walls\' feet)']=[me.x+6,me.y+2.6,me.z+4.5,me.x,me.y+1.4,me.z];
+ {const TR=(typeof KORONA!=='undefined'&&KORONA.TRAPPED)||[],near=(k,x,z)=>TR.filter(t=>t.key===k).sort((a,b)=>Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z))[0];
+ const pj=near('punjipit',0,0);if(pj)VIEWS['A punji pit']=[pj.x+4,pj.y+2,pj.z+3,pj.x,pj.y+.2,pj.z];
+ const bt=near('beartrap',0,0);if(bt)VIEWS['A bear-trap plant']=[bt.x+3.5,bt.y+1.8,bt.z+2.5,bt.x,bt.y+.2,bt.z];
+ const nt=near('numbthorn',0,0);if(nt)VIEWS['A numb thorn']=[nt.x+4,nt.y+2,nt.z+3,nt.x,nt.y+1,nt.z];
+ }
  const gs=(typeof KORONA!=='undefined'&&KORONA.TRAPPED||[]).filter(t=>t.key==='greatsundew')[0];
  if(gs)VIEWS['A great sundew']=[gs.x+7,gs.y+3,gs.z+5,gs.x,gs.y+1.5,gs.z];
  const rf=(typeof KORONA!=='undefined'&&KORONA.NAMED||[]).filter(t=>t.plant==='rainbowfan')[0];
@@ -55,7 +60,7 @@ const HCHK={
  // hazard); each is drawn; the dangerous ones are registered one by one with their trap
  maneaters(PL,N,TRP){const keys=Object.keys(PL).filter(k=>PL[k].tags.trap),bad=[],undrawn=[],tame=[];
   keys.forEach(k=>{const t=PL[k].tags.trap;if(!KTRAPS.KINDS[t.kind])bad.push(k);if(t.preyMax==='person'&&!(KTRAPS.catches(t,'person').caught&&t.danger>=.5))tame.push(k);
-   if(!PL[k].items.some(i=>N[i]>0))undrawn.push(k);});
+   if(!PL[k].items.some(i=>N[i]>0)&&!((k==='bladderpool'||k==='trappad')&&!STAGE.pools.some(p=>p.bed)))undrawn.push(k);});
   const reg=[...new Set(TRP.filter(t=>t.trap.danger>0).map(t=>t.key))];
   return{ok:keys.length>=8&&!bad.length&&!undrawn.length&&!tame.length&&reg.length>=3,detail:keys.length+' carnivores'+(bad.length?'; not in the vocabulary: '+bad.join(', '):'')+
    (tame.length?'; meant for a person but harmless: '+tame.join(', '):'')+(undrawn.length?'; not drawn: '+undrawn.join(', '):'')+'; dangerous ones registered: '+reg.join(', ')+' ('+TRP.length+' records)'};},
@@ -71,8 +76,8 @@ const HCHK={
    if(Z.rock){const d=Math.abs(T.y0+.25-NECANYONS.top(T.x,T.z));worst=Math.max(worst,d);if(d>.05)off++;}});
   return{ok:rim===0&&off===0&&TREES.length>50,detail:TREES.length+' trees; '+rim+' on a rim or a wall; '+off+' off the rock\'s top (worst '+worst.toFixed(3)+' m)'};},
  // the carvings: a strip on the wall, registered as a carving record, its middle on the bed's face
- carvings(CV){if(!CV.length)return{ok:false,detail:'no carvings'};const c=CV[0],Z=NECANYONS.at(c.x,c.z),d=Z.rock?Z.d:1;
-  return{ok:c.arc>20&&c.hum===true&&Math.abs(d)<6,detail:'arc '+c.arc.toFixed(0)+' m on '+c.body+' bed '+c.bed+', '+(Z.rock?'d '+Z.d.toFixed(1)+' m from the edge':'off the rock')};}};
+ carvings(CV){if(!CV.length)return{ok:false,detail:'no carvings'};const c=CV[0];
+  return{ok:c.arc>20&&c.hum===true&&Math.abs(c.wallD)<1.5,detail:'arc '+c.arc.toFixed(0)+' m on '+c.body+' bed '+c.bed+', '+c.wallD.toFixed(2)+' m off the wall'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_itemCounts(),KO=KORONA;
  add('man-eaters: trap records, dangerous, drawn, registered',HCHK.maneaters(KO.PLANTS,N,KO.TRAPPED||[]));
  add('the rule: carnivory only where poor, wet and warm',HCHK.rule(KO.TRAPPED||[]));
@@ -84,7 +89,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a man-eater made harmless',HCHK.maneaters(Object.assign({},PL,{maneater:{name:'x',items:PL.maneater.items,tags:Object.assign({},PL.maneater.tags,{trap:KTRAPS.make({kind:'pitfall',preyMax:'person',danger:0})})}}),N,KO.TRAPPED||[]));
  add('a carnivore not drawn',HCHK.maneaters(PL,Object.assign({},N,{[PL.bloodbulb.items[0]]:0,[PL.bloodbulb.items[1]]:0,[PL.bloodbulb.items[2]]:0}),KO.TRAPPED||[]));
  add('a man-eater on the summit (rich, cool)',HCHK.rule((KO.TRAPPED||[]).concat([{key:'maneater',x:TABLE.x,z:TABLE.z,trap:KO.TRAPS.maneater}])));
- add('the reagent on bare pavement',HCHK.reagent(PL,N,(KO.NAMED||[]).concat([{plant:'rainbowfan',x:760,z:520}])));
+ {let bare=null;for(let k=0;k<400&&!bare;k++){const a=k*2.4,r=80+k*.9,x=TABLE.x+Math.cos(a)*r,z=TABLE.z+Math.sin(a)*r;if(NECANYONS.at(x,z).zone==='cap'&&BIO.field('poor',x,z)>.8)bare={plant:'rainbowfan',x,z};}
+  add('the reagent on bare pavement',HCHK.reagent(PL,N,(KO.NAMED||[]).concat([bare||{plant:'rainbowfan',x:760,z:520}])));}
  add('a tree moved onto a rim',HCHK.cliffs(NECANYONS.TREES.concat([(()=>{const s=NECANYONS.SEEPS[0];return {x:s.x,z:s.z,y0:s.y};})()])));
  add('no carvings',HCHK.carvings([]));
  return R;}
