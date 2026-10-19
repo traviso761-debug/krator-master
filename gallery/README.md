@@ -371,3 +371,14 @@ removed (about 254 MiB). The cards' sizes and blurbs were edited in each live in
 whose page changed only by catalog data it does not draw, was not republished; Voth stays the live 11.9 MB copy.
 
 Krator Biomes and Objects version 19 (2026-10-19): Korona's six stations added (`biomes/korona`, from `main` at cb583576) as six biome cards in station order, named "Korona 1 · the tepui" to "Korona 6 · the hoar table" so the alphabetical sort keeps the order: `worlds/korona.html` (the tepui), `worlds/korona-hollow.html` (the pitcher hollow), `worlds/korona-basin.html` (the fertile basin), `worlds/korona-trench.html` (the trenches), `worlds/korona-gorge.html` (the lee gorge) and `worlds/korona-hoar.html` (the hoar table), 0.6 to 0.7 MB each, with the five packs they share (`korona.tex.korona.js`, `.necanyons.js`, `.hyperjungle.js`, `.sedesert.js`, `.ehigh.js`, 24.1 MB; each card's size counts the packs its page loads, 21.1 to 23.8 MB): 27.6 MB in one call, the part now about 176 MB. The six cards were inserted into the live index (version 18's; their lines are in `ENTRIES`, the pages copied byte for byte); every other file is as in version 18. Korona went into this part rather than its own artifact like the Throne because the part had the room. Not done: Pinnacle Rock, published to Krator Worlds I–S as version 21 from `claude/strange-antonelli-8eef33` (7bd89a44, not logged above: `worlds/pinnacle-rock.html`, its two packs and its card), is still in that live part although `UNLISTED` keeps it out of a rebuild (the owner, 2026-10-19); taking it down is the owner's call.
+
+Krator Worlds I–S version 23, S–Z version 11 and Krator Biomes and Objects version 21 (2026-10-19, from `main` at
+7bafd764: Pinnacle Rock merged with P2, P3 and the night). I–S: `worlds/pinnacle-rock.html` replaced (4.3 MB: the roosts,
+the Stair, the town, the farms, the camps, the Deep Root, the Garden, the night) and its four new sidecars added
+(`pinnacle-rock.tex.beast-riders.js`, `-brtowns.js`, `-girder.js`, `-kftex.js`; the hyperjungle and necanyons packs were
+already there at the local sizes), its card's blurb and size (24.9 MB) edited in the live index as in `build_gallery.py`
+(Pinnacle Rock is out of `UNLISTED`). The part would have held about 268 MiB, so **Scyvoi moved to S–Z** (its page,
+downloaded from I–S and uploaded, its two packs copied server side, its card moved between the live indexes): I–S now
+ends at Screamers, S–Z begins at Scyvoi, and the parts keep their range titles. Biomes and Objects: `worlds/necanyons.html`
+replaced (the night, core/water, the full viewer), its card's size and blurb edited; the Korona pages there are the Korona
+session's own republish of the same hour (their source differs from `main` only by necanyons' numeric-default fix).
