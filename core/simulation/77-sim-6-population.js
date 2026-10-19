@@ -1,6 +1,6 @@
 // ================================================================= CORE — simulation 6: the population, from the roles' data
 // A settlement's residents are not typed one by one: each ROLE says how many (`count`), which kinds of home it lives in
-// (`homes`, in order of preference), the work place it is pinned to (`work: {kinds, act}`, dealt round-robin over the
+// (`homes`, in order of preference), the work place it is pinned to (`work: {kinds, act, near?}`, dealt round-robin over the
 // places of those kinds that offer `act`), and whether it keeps a boat at a dock (`boat`) or a vehicle at a base
 // (`vehicle: {base}`). A role marked `fill` takes every bed the others leave. Beds are a home's SLEEP slots.
 // A `homes` entry is a place kind or, when no place has that kind, a place id. A role with `deal:'round'` deals its
@@ -15,6 +15,8 @@
 // that town, and an actor's work is dealt among the places of its home's town only. SIM.populate({settlement}) deals
 // only that town's roles over its own beds (call it once a town, each with its own prefix); out.bySettlement counts
 // the actors dealt per town. A page without settlements deals exactly as before.
+// NEAR (opt-in, `work.near: true`): each actor's job is the nearest place of its kinds with a post still free (its
+// `act` slots over the actors dealt there), ties by load then id; when every post is taken, the load rule as before.
 (function(root){
   'use strict';
   var SIM = root.SIM;
@@ -41,6 +43,10 @@
       var W=R.work; if(!W) return null; var ht=townOf(H);
       var L=SIM.all('place').filter(function(P){ return W.kinds.indexOf(P.kind)>=0 && SIM.offers(P, W.act) > 0 && (ht==null || townOf(P)===ht); });   /* work in the home's own town */
       if(!L.length) return null;
+      if(W.near && H){ var F=L.filter(function(P){ return (workLoad[P.id]||0) < SIM.offers(P, W.act); });   /* the nearest with a free post (opt-in) */
+        if(F.length){ var d=function(P){ return Math.hypot(P.x-H.x, P.z-H.z); };
+          F.sort(function(p,q){ return d(p)-d(q) || ((workLoad[p.id]||0)-(workLoad[q.id]||0)) || (p.id<q.id?-1:1); });
+          workLoad[F[0].id] = (workLoad[F[0].id]||0) + 1; return F[0]; } }
       L.sort(function(p,q){ return ((workLoad[p.id]||0)/SIM.offers(p,W.act)) - ((workLoad[q.id]||0)/SIM.offers(q,W.act)) || (p.id<q.id?-1:1); });
       workLoad[L[0].id] = (workLoad[L[0].id]||0) + 1; return L[0];
     }

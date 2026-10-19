@@ -568,7 +568,19 @@ function world(seed){
  S.role({id:'eater',org:'folk',sched:[[0,'EAT']],prefers:{EAT:{pin:'home'}}});const ve=S.actor({id:'ve',role:'eater',home:'vHome'});ve.wanted=null;S.decide(ve,S.minute(),clock.t);
  const I=S.ITEMS,hk=S.stocks('kautoa').by.rice;
  ok('a household\'s food counts in its own town only (Kautoa\'s rice storage: its shed and its 5, not Valapo\'s)',hk.storage===S.stockOf('rice','kautoa')+5,hk.storage>S.stockOf('rice','kautoa')+5);
- ok('a Valapan\'s meal at home is booked to Valapo\'s items books, not Kautoa\'s',I.statsBy&&(I.statsBy.valapo.eaten.rice||0)>0&&!I.statsBy.kautoa,!!(I.statsBy&&I.statsBy.kautoa));}
+ ok('a Valapan\'s meal at home is booked to Valapo\'s items books, not Kautoa\'s',I.statsBy&&(I.statsBy.valapo.eaten.rice||0)>0&&!I.statsBy.kautoa,!!(I.statsBy&&I.statsBy.kautoa));
+ {const VM=I.statsBy.valapo.meals,GM=I.stats.meals,n=k=>VM[k]||0;
+  ok('and the meal itself is counted in Valapo\'s meals (the page-wide count too)',VM&&n('meal')+n('single')===1&&(GM.meal||0)+(GM.single||0)>=1,!VM||n('meal')+n('single')!==1);}}
+
+// the nearest-job deal (opt-in, a role's work.near): each actor's job is the nearest place of its kinds with a post free
+{const deal=near=>{const {S}=world(101);S.activity({id:'WORK'});
+   S.place({id:'hut1',kind:'hut',x:0,z:0,activities:{SLEEP:3}});
+   S.place({id:'aFar',kind:'field',x:150,z:0,activities:{WORK:2},open:[0,24]});S.place({id:'zNear',kind:'field',x:0,z:0,activities:{WORK:2},open:[0,24]});
+   S.role({id:'hand',org:'folk',count:3,homes:['hut'],work:{kinds:['field'],act:'WORK',near:near},sched:[[0,'WORK']]});
+   S.populate({prefix:'h'});return S.all('actor').filter(a=>a.role==='hand').map(a=>a.work);};
+ const N=deal(true),L=deal(false);
+ ok('near: the first two hands work the field at their door, the third (its posts taken) the far one',N[0]==='zNear'&&N[1]==='zNear'&&N[2]==='aFar',N[0]==='aFar');
+ ok('without it the load rule deals as before (the first to the field that sorts first)',L[0]==='aFar',L[0]==='zNear');}
 
 // trade on a transport line: the carrier is the line's vehicle; a load leaves as it leaves a landing and lands as it docks
 {const {S,clock}=world(97);

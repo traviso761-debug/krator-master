@@ -175,11 +175,12 @@ A page may hold several settlements, each with its own economy (`settlements/isl
 - **People.** A role may name its `settlement`: its actors live in that town's homes only, and every actor's work is
   dealt among the places of its home's town. `SIM.populate({settlement, prefix})` deals one town's roles over its own
   beds (call it once a town); its result counts `bySettlement`.
+  A role's `work.near: true` (opt-in, any page) deals each actor the nearest place of its kinds with a post free.
 - **The search.** The resolver looks for a place in the actor's own town first and anywhere only when its town has
   none (`SIM.placesFor(..., {settlement})` filters by town); an errand's seller likewise.
 - **The items' books.** Each town's stocks count only its own households' food and its own people's things (by their
   home), and its item flows (bought, eaten, worn, issued, broken, unmet) from the items module's books by town
-  (`SIM.ITEMS.statsBy[s]`).
+  (`SIM.ITEMS.statsBy[s]`), which also count its meals (`statsBy[s].meals`, the shape of `stats.meals`).
 - **Trade between settlements** (`77-sim-6-trade.js`): `SIM.trade({id, stops:[{settlement, place}, ...], cap,
   carriers?, minutes? | line?, mins?, goods?, keep?, want?, most?})`. A carrier goes round the stops on a timer
   (`minutes` a passage, `mins` a stay) or as a `SIM.transport` line's vehicle. Leaving a landing it buys from that

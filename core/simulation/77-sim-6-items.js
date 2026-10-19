@@ -72,6 +72,9 @@
     return out; };
   function stat(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
   /* a counter the stocks read (77-sim-7-stocks.js CUM): on a page with settlements, booked to the actor's town as well (I.statsBy[key]) */
+  /* a meal's count (stats.meals: at home, single, bought, at a mess, out, none, fine), by town as well on a page with settlements */
+  function mealStat(a, k){ var I=SIM.ITEMS; I.stats.meals[k]=(I.stats.meals[k]||0)+1; if(!SIM.ECONS) return; var t=SIM.settlementOf(a); if(t==null) return;
+    var B=I.statsBy||(I.statsBy={}), T=B[t]||(B[t]={}); var M=T.meals||(T.meals={ meal:0, single:0, none:0, bought:0, mess:0, out:0 }); M[k]=(M[k]||0)+1; }
   function cum(a, key, k, n){ var I=SIM.ITEMS; stat(I.stats[key], k, n); if(!SIM.ECONS) return; var t=SIM.settlementOf(a); if(t==null) return;
     var B=I.statsBy||(I.statsBy={}), T=B[t]||(B[t]={}); stat(T[key]||(T[key]={}), k, n); }
   function anchor(a){ var H=SIM.R.place[a.home]; return H ? [H.x, H.z] : (a.at || [0,0]); }
@@ -200,17 +203,17 @@
   /* a meal out draws on the settlement of the place it is eaten at (P7a) */
   function meal(a, P){ return SIM.ECONS ? SIM.withEcon(SIM.settlementOf(P.id), function(){ return meal0(a, P); }) : meal0(a, P); }
   function meal0(a, P){
-    var I=SIM.ITEMS, M=I.meal, S=I.stats.meals;
+    var I=SIM.ITEMS, M=I.meal;
     var fine = 1 + (M.rich||0)*(a.wealth||0);                                     /* a richer table: more filling, more relaxing */
-    if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ S.out++; return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
-    if(P.id!==a.home){ S.bought++; stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
-    if(P.mess){ S.mess++; return M.mess; }
-    var st=P.store; if(!st || !I.foods.length){ S.none++; return M.none; }
+    if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ mealStat(a, 'out'); return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
+    if(P.id!==a.home){ mealStat(a, 'bought'); stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
+    if(P.mess){ mealStat(a, 'mess'); return M.mess; }
+    var st=P.store; if(!st || !I.foods.length){ mealStat(a, 'none'); return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
     var Q=function(f){ var K=I.kinds[f]; return K && K.quality!=null ? K.quality : 1; };   /* a better food (cheese) makes a better meal */
-    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); S.meal++; if(Q(have[0])>1 || Q(have[1])>1) S.fine=(S.fine||0)+1; return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
-    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); S.single++; return M.single*Q(have[0]); }
-    S.none++; return M.none;
+    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); mealStat(a, 'meal'); if(Q(have[0])>1 || Q(have[1])>1) mealStat(a, 'fine'); return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
+    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); mealStat(a, 'single'); return M.single*Q(have[0]); }
+    mealStat(a, 'none'); return M.none;
   }
   /* the items' share of a worker's efficiency: a broken tool, a hurt */
   SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
