@@ -248,8 +248,17 @@ module is on the page) and without `core/edits` (no editor world yet): their cam
 from +z), so `src/92-camera.js` keeps only `ui`, `uiButton`, `setView` and the Labels button, and `src/99-start.js` is the take
 (`FRAME_HOOKS` as before, `f(dt, ms)`, in a tick subscriber; the showcase sky after the camera). Iziz's records are its full
 registry (`91t-iziz-tags.js`); Highlands adds its sites to the furniture's registry (`91h-hl-tags.js`). The vernacular sheet,
-the city and the Highlands rows match the old pages' scene census exactly; Roketstad within its own run-to-run noise. The
-builds that vendor that camera (Dalab, Xanadu, Reed Lake) keep the old one until step 5 (their `KNOWN_ISSUES.md`).
+the city and the Highlands rows match the old pages' scene census exactly; Roketstad within its own run-to-run noise. Of the
+builds that vendor that camera, Xanadu and Reed Lake keep the old one until their turn in step 5 (their `KNOWN_ISSUES.md`).
+
+**Dalab** (2026-10-15, step 5, the first of its list) takes the same set as Iziz (`FULL` without `core/space` and `core/edits`),
+both pages: the kit's set and the settlement. `src/92-camera.js` and `src/00-head.html` are re-vendored from Iziz, `src/99-start.js`
+is the take (`FRAME_HOOKS` in a tick subscriber; a preset's seventh element, its hour, set by `onView`), `src/91t-dalab-tags.js`
+reads its registry into core/tags (98 records on the set, 3,377 on the city; `dalab` is not a core/tags culture yet, so culture
+null and style `dalab`), and `94-dalab-light.js` no longer sets a walk speed (the host's 9 m/s is the one it had). Proof:
+`verify.py --assert` the same six invariants on both pages; the scene census at four views identical on the set and, with
+core/lod's time-budgeted proxy queue flushed, on the city (`settlements/dalab/KNOWN_ISSUES.md`). Its one tick (the salvage
+fire flicker) is not handed over, as the old camera never ran it either.
 
 **Fauna mode and the ground brushes** (2026-10-15, step 4), first on **Sedesert** (the one build with a `KFIELD`): 98 gains a
 *fauna* mode (palette items with `cls: 'life'`: Sedesert offers `kits/fauna`'s desert group, its own animals first; each put
