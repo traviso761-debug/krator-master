@@ -11,9 +11,11 @@ kit's own buildings and the page round them. One <script>, in this order:
 
   src/00-head.html                         page head, toolbar, error panel, three.js r128 loader
   kits/catalog: krator-furniture-core.js, krator-asset-engine.js, krator-symbols.js, krator-furniture-kit.js,
-                krator-master-furniture.js and the beast-rider and generic culture files (the pieces the buildings
-                place with F.furn)
+                krator-master-furniture.js and the beast-rider, generic and generic goods files (the pieces the
+                buildings place with F.furn)
   src/50-br-mounts.js                      the kit's own buildings
+  src/70-79 (TENTS)                        the tent set: the tent kit, the tents, pens and trainers, the bands' grounds, the
+                                           boundaries, BR_CAMP (core/rand/08-core-rand.js leads the script: KRAND)
   TOWNS (GENERATED: towns.py)              Girder's and Mav's Refuge's engines and builders, each sealed in a closure
                                            (BR_GIRDER, BR_MAVS) with the kit's hook and port table (towns/), and the
                                            library maps their packs point into (BR_TOWN_IMG)
@@ -51,8 +53,14 @@ DIST = os.path.join(HERE, 'dist')
 CAT = os.path.join(ROOT, 'kits', 'catalog')
 OUT = 'beast-riders'
 BEFORE = ['krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js',
-          'krator-master-furniture-beast-rider.js', 'krator-master-furniture-generic.js']
+          'krator-master-furniture-beast-rider.js', 'krator-master-furniture-generic.js', 'krator-master-furniture-generic-goods.js']
 OWN = ['50-br-mounts.js']
+# the tent set (2026-10-19): the tent kit, the tents, the pens and trainers, the bands' grounds, the boundaries, BR_CAMP;
+# core/rand first (KRAND: every varying choice in the tents is hashed from its own indices)
+CORE_JS = ['core/rand/08-core-rand.js']
+TENTS = ['70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js', '73-br-tents-pens.js', '74-br-tents-bands.js',
+         '75-br-tents-bounds.js', '79-br-camp.js']
+OWN_PREFIX = ('br_bldg_', 'br_tent_', 'br_hedge_', 'br_fence_')
 # the ports: Girder's and Mav's Refuge's engines and builders sealed (towns.py), then their buildings as ASSETs
 TOWNS = "TOWNS: Girder and Mav's Refuge sealed (GENERATED: towns.py)"
 PORTS = ['60-br-ports.js']
@@ -90,7 +98,8 @@ def main():
     sys.path.insert(0, HERE)
     import towns
     tjs, tfiles = towns.bundle()
-    parts = [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in BEFORE] + [('src/' + f, read(os.path.join(SRC, f))) for f in OWN] + \
+    parts = [(f, read(os.path.join(ROOT, f))) for f in CORE_JS] + \
+            [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in BEFORE] + [('src/' + f, read(os.path.join(SRC, f))) for f in OWN + TENTS] + \
             [(TOWNS, tjs)] + [('src/' + f, read(os.path.join(SRC, f))) for f in PORTS] + \
             [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in AFTER] + [('KF_TEX (GENERATED)', kf_tex())] + \
             [('kits/catalog/' + DETAIL, read(os.path.join(CAT, DETAIL)))] + [('src/' + f, read(os.path.join(SRC, f))) for f in SHEET] +             [('kits/catalog/' + f, read(os.path.join(CAT, f))) for f in TOOLS]
@@ -108,7 +117,7 @@ def main():
         errs += ['top-level name `%s` declared in more than one file: %s' % (n, ', '.join(sorted(fs))) for n, fs in sorted(decl.items()) if len(fs) > 1]
         errs += ['%s key %r registered more than once: %s' % (k[0], k[1], ', '.join(fs)) for k, fs in sorted(keys.items()) if len(fs) > 1]
         own = [k for (kind, k), fs in keys.items() if any(f.startswith('src/') for f in fs)]
-        errs += ['%s: the kit\'s own keys start br_bldg_' % k for k in own if not k.startswith('br_bldg_')]
+        errs += ['%s: the kit\'s own keys start %s' % (k, ' or '.join(OWN_PREFIX)) for k in own if not k.startswith(OWN_PREFIX)]
         if errs:
             print('BUILD RULES FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     script = ''.join('/* ---------- %s ---------- */\n%s%s' % (n, b, '' if b.endswith('\n') else '\n') for n, b in parts)

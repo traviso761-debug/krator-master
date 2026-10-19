@@ -29,3 +29,20 @@
       (used on the deck and the short perch rails only).
 - [ ] **The rider mounts themselves** (raptors, threehorns, quetzals...) are not placed in the stables: kits/fauna's
       mounts, a later pass.
+
+## The tent set (src/70-79, 2026-10-19)
+
+- [ ] **The thorn hedge has no texture of its own**: the cut brush is thin branches of geometry with `bark.ironbark` as its
+      detail map. `foliage.thorn.cut` is owed (core/materials/PROMPTS-NEEDED.md, section 1); wire it as the family `thorn`.
+- [ ] **The painted marks are geometry**: the sigils on the hides, the chevrons and diamonds on the pavilions' shoulder
+      bands, the awnings' stripes and the pennants are thin strokes and flat quads in palette colours, not a painted
+      sheet; up close they read as appliqué. A painted band sheet would need UVs the catalog's meshes do not carry.
+- [ ] **No mounts in the pens**: the corrals, kennels, perch frames, the pond and the grove are empty (kits/fauna's
+      mounts, a later pass, as for the stables). The hardshell (glyptodont) and the mammoth are not in kits/fauna yet:
+      their pens are sized from their real kin (about 3.5 m and 6 m long).
+- [ ] **The grove's trees are the catalog's generic tree** (`F.tree`, 'olive'): their places are hashed (KRAND), but the
+      tree helper draws its limbs from the frame's own stream, and they are not the hyperjungle's species.
+- [ ] **A tent stands on flat ground**: its floor, skirt and stakes start at y 0; a camp on a slope needs the settlement
+      to level a pad (hedge and fence runs follow the ground piece by piece, not within a piece).
+- [ ] **Interiors are placed by hand** (F.furn round the wall: `brtIn`), not planned rooms in `kits/interiors`.
+- [ ] **No camp is laid on the sheet**: `BR_CAMP` says what a band pitches, not where; Pinnacle Rock lays them.

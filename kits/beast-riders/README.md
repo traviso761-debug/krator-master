@@ -47,11 +47,56 @@ python3 ../../tools/textures/pack.py kits/beast-riders   # (from the repo root) 
   The catalog's hand-made copies (`kits/catalog/krator-master-buildings-beast-rider.js`) are no longer on the sheet;
   they stay in the catalog for the builds that read them.
 
+**The tent set** (`src/70-79`, 2026-10-19; the owner: "a tent-based nomadic/semi nomadic set, still consistent with the
+style, inspired by yurts and these types of barrel-shaped tents, that has the same trades as scyvoi and appropriate pen
+and animal trainer structures"): the bands' camps, 28 keys, every one with 2 or 3 variants, a declared box per variant
+(guy ropes and stakes inside it) and `tags` (`job`, `role`, `style`, `tribe`). Its two main forms are the owner's two
+reference images, in Girder's palette with its beast-head finials and the claw: the **hide dome** (a squat dome about as
+wide as tall, a patchwork of pale cream hides in gores and courses, a skirt of spotted fur with a torn hem, a bound-leather
+crown ring or an ochre sunburst cap, a short mast with a plank sign board or a banner with a gilt claw on a cross-bar,
+painted claw and spiral-claw sigils, guy ropes to black iron hook stakes; a door, or a trader's wide cut-away front) for
+the dwellings and the traders, and the **barrel pavilion** (a lower drum of orange cloth panels between poles, a sloping
+cream and red shoulder band with chevrons and diamonds, a narrower clerestory drum, a flat pale roof disc, the poles over
+both rims with gilt finials, striped awnings with hanging diamonds, pennant strips, ladders, an arched door under a fringed
+valance) for the chiefs, councils, shrines and large trades.
+- `70-br-tent-kit.js`: the builders (`brtDome`, `brtBarrel`, `brtGuy`, `brtAwning`, `brtPennant`, `brtCrown`, `brtSigil`,
+  `brtLattice`, `brtCorral`, `brtRail`, `brtThorn`, `brtVault`, `brtLeanTo`); small parts merged per colour (`brtBatch`),
+  so a tent is tens of meshes. Every varying choice is `KRAND.hash` of the thing's own indices (`brtU`; core/rand leads
+  the script).
+- `71-br-tents-dwell.js`: `br_tent_dome_small` (poor), `_dome_family`, `_dome_double` (two domes and a vestibule),
+  `_chief` (the chief's barrel pavilion, the skull throne), `_council` (a ring of seats round the speaker's hearth),
+  `_shrine` (the Winged Ones; the Deep Root).
+- `72-br-tents-trade.js`: every trade the Scyvoi camp has (`kits/scyvoi/src/48-tt-trade.js`), its `job` or `role` in
+  `tags`: `br_tent_shaman` (shaman and healer; a potion seller's), `_smithy` (a hide dome on an open lattice; an
+  armourer's), `_hidemaker` (a ridge awning of hides: tanning), `_trader` (the cut-away dome, a plank counter, ledgers
+  and a lamp; the band's supply tent), `_tackmaker` (the riders' cartwright: saddle trees, a howdah on trestles, lance
+  shafts: carpentry).
+- `73-br-tents-pens.js`: pens and trainers sized from the mounts (kits/fauna): `br_tent_corral` (rope and poles for the
+  runners; log rails for the great beasts; a low beetle pen with rotting logs: herding), `_lunge_ring`, `_hitch_line`
+  (tethering), `_perch_frame` (the quetzals' great perch log, the wingclaws' two-level frame, the nightwings' hanging bar
+  under a shade), `_feed_shelter`, `_training_yard` (jump rails, weaving poles, a ramp; a lance course), `_breaking_pen`
+  (a snubbing post), `_kennel_row` (raptors), `_crawler_shed` (longcrawlers).
+- `74-br-tents-bands.js`: the Dragonfly's `br_tent_pond_nets` (a frame of nets over a pond's reed margin) and
+  `_net_house`; the Spider's `_spider_grove` (a fenced grove: climbing frames, silk lines, orb webs), `_silk_house`,
+  `_spinning_shed`; the Mammoth's `_mammoth_paddock` (a byre of hides on log posts).
+- `75-br-tents-bounds.js`: `br_hedge_thorn` (cut thorn on stakes: a run, a gate) and `br_fence_rail` (a pasture's split
+  rails: a run, a field gate), parametric: `buildAsset(key, x, z, ry, {variant, span})`, local +x along the line.
+- `79-br-camp.js` (`[G data]`): `BR_CAMP`, what a band of each of the twelve tribes pitches on its grounds (`upper` on
+  the mesa top: the flyers' bands only there, about nine tents, perch frames and feeding shelters; `lower` on the floor:
+  the camp and its pasture inside the band's thorn hedge; the Dragonfly, Spider and Mammoth only there), each entry
+  `{key, n, v}`, with the tribe's mount, its size and its banner colour; `brcGround`, `brcKeys`, `brcCount`; and
+  `BR_RUN(pts, {key, closed, gates, seed})`, which cuts a boundary polyline into hedge or fence pieces.
+
+Another build takes the set as it takes the mounts: the catalog's core and the beast-rider, generic and generic goods
+furniture files, `core/rand/08-core-rand.js`, then `src/50-br-mounts.js` and `src/70-79`, read in place.
+
 **Textures** (`materials.json`, `tex/`): the library's detail maps on the vertex-coloured, UV-less meshes, triplanar
 (the catalog's `krator-furniture-detail.js`), at building scale with Girder's picks (thatch, planks, ironbark, rock,
 cloth, rope, leather, cane), and the kit's three surfaces (delivered 2026-10-18): `straw.bedding` (stall floors, hay,
 nests: family `'straw/cloth'`), `wood.guano` (the perches and the roost deck: `'guano/wood'`), `ground.stable.yard`
-(the paddocks and yards: `'yard/stone'`). The build merges the catalog's packed maps with the kit's into `KF_TEX`; the
+(the paddocks and yards: `'yard/stone'`); and the tents' four (2026-10-19): `tenthide` (cloth.hide.canopy: the domes'
+hides), `pelt` (hide.pelt.cat: the fur skirt), `canvas` (cloth.canvas.tent: the pavilions), `lash` (wood.lash: lashed
+poles). The cut thorn has no set (`foliage.thorn.cut` is owed: core/materials/PROMPTS-NEEDED.md). The build merges the catalog's packed maps with the kit's into `KF_TEX`; the
 catalog itself is unchanged.
 
 **The page**: every building and variant in rows (the kit's own first), with the catalog's dev tools read in place:
@@ -74,7 +119,10 @@ declared (`w`, `d`, `h` per variant) and holds everything it draws.
 
 `verify.py --assert`: the page loads clean; every building builds, every variant; each fits its declared box (1.6 m
 allowed, the catalog's rule); every catalog piece placed exists; the kit's three surfaces attach and every map loads;
-the inspector, hover and polygon tools are on the page; a negative (a box shrunk by 3 m) is caught. For the ports: each
+the inspector, hover and polygon tools are on the page; a negative (a box shrunk by 3 m) is caught. For the tent set:
+every Scyvoi trade (read from `kits/scyvoi/src`) has a Beast Rider tent with that job or role (negative: the smithy
+taken away); every tribe's `BR_CAMP` grounds name keys and variants that exist and keep the plan's rules (negative: a
+key that does not exist); `BR_RUN` lays a closed boundary whole. For the ports: each
 one's fabric, measured on the sheet, is what its marks drew; and each is its town's building: verify.py loads
 `settlements/girder/girder.html` and `settlements/mavs-refuge/mavs-refuge.html` and measures the same mark there
 (`window._ports`), the box within 0.05 m on every face and the furniture the same, piece for piece (`--no-towns` skips
