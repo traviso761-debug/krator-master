@@ -11,6 +11,13 @@ The page is loaded headless (tools/harness.py) and checked:
   - the detail maps: the kit's three surfaces (straw, guano, yard) are attached, and every map loaded
   - the dev tools are on the page: the click inspector, the hover inspector (T) and the polygon tool (P)
   - negative control: a building's declared box shrunk by 3 m must fail the box check
+  - the tent set (src/70-79): every trade the Scyvoi camp has (kits/scyvoi/src: each trade tent's job or role, and the
+    herding and tethering roles of its pens, read from the Scyvoi source) has a Beast Rider tent or pen carrying that
+    job or role (negative: the smithy taken away must fail); every tribe of the twelve has its camp in BR_CAMP and every
+    key and variant a ground names exists, the flyers' bands camp only on the top with perch frames and feeding shelters
+    and no pasture or hedge, the Dragonfly, Spider and Mammoth only on the floor, every floor ground inside a thorn hedge
+    (negative: a key that does not exist must fail); BR_RUN cuts a closed boundary into pieces whose lengths add up to
+    it, none longer than its span, its gates where asked
   - the ports are their towns' buildings: each port's fabric (the town's kit meshes, no furniture), measured here in its
     local frame, matches the box the kit's own record of its marks gives (core/ports T.box); and (unless --no-towns) the
     box the TOWN'S PAGE gives for the same mark (settlements/girder/girder.html, settlements/mavs-refuge/mavs-refuge.html:
@@ -39,7 +46,8 @@ CHECKS = r"""(neg)=>{const K=window._kit,R=[],tol=1.6;
  const miss=[...new Set(built.flatMap(b=>b.missing||[]))];
  R.push({name:'every catalog piece placed is in the catalog',ok:miss.length===0,detail:miss.length?miss.join(', '):'none missing'});
  const fams=KF_API.textureInfo(),need=['straw','guano','yard'].filter(f=>fams.families.indexOf(f)<0);
- R.push({name:'the kit\'s surfaces attached (straw, guano, yard) and every map loaded',ok:need.length===0&&fams.pending===0,detail:fams.families.length+' families, '+fams.pending+' pending'+(need.length?'; missing '+need.join(', '):'')});
+ ['tenthide','pelt','canvas','lash'].forEach(f=>{if(fams.families.indexOf(f)<0)need.push(f);});
+ R.push({name:'the kit\'s surfaces attached (straw, guano, yard; the tents\' tenthide, pelt, canvas, lash) and every map loaded',ok:need.length===0&&fams.pending===0,detail:fams.families.length+' families, '+fams.pending+' pending'+(need.length?'; missing '+need.join(', '):'')});
  const tools=['insp','hoverBtn','polyBtn'].filter(id=>!document.getElementById(id));
  R.push({name:'the dev tools are on the page (inspector, hover T, polygon P)',ok:tools.length===0,detail:tools.length?'missing '+tools.join(', '):'all three'});
  const ports=built.filter(b=>b.port), off=(a,b)=>Math.max(...[0,1,2].map(i=>Math.max(Math.abs(a.min[i]-b.min[i]),Math.abs(a.max[i]-b.max[i]))));
@@ -47,6 +55,57 @@ CHECKS = r"""(neg)=>{const K=window._kit,R=[],tol=1.6;
  R.push({name:'each port\'s fabric, measured, is what its marks drew (core/ports T.box)',ok:ports.length>0&&bad.length===0,
    detail:bad.length?bad.slice(0,4).map(b=>b.key+' v'+b.v+' off '+off(b.fabric,b.tracker).toFixed(3)).join('; '):ports.length+' port variants'});
  return R;}"""
+
+TENT_TRADES_JS = r"""(a)=>{const A=ASSETS.filter(x=>/^br_(tent|hedge|fence)_/.test(x.key)&&x.key!==a.drop);
+ const by=t=>A.filter(x=>x.tags&&(x.tags.job===t||x.tags.role===t)).map(x=>x.key);
+ const miss=a.trades.filter(t=>!by(t).length);
+ return {ok:a.trades.length>0&&miss.length===0,detail:miss.length?'no Beast Rider tent for: '+miss.join(', '):a.trades.map(t=>t+' -> '+by(t).join('/')).join('; ')};}"""
+
+CAMP_JS = r"""(neg)=>{const C=JSON.parse(JSON.stringify(BR_CAMP)),bad=[];
+ if(neg)C.raptor.grounds.lower.pens.push({key:'br_tent_no_such_pen',n:1,v:0});
+ if(BR_CAMP_TRIBES.length!==12)bad.push(BR_CAMP_TRIBES.length+' tribes');
+ const counts=[];
+ BR_CAMP_TRIBES.forEach(t=>{const T=C[t];if(!T){bad.push(t+': no camp');return;}
+  const gs=Object.keys(T.grounds);
+  gs.forEach(g=>{const G=T.grounds[g],ks=[];G.tents.concat(G.pens).forEach(e=>ks.push([e.key,e.v]));
+   if(G.hedge){ks.push([G.hedge.key,G.hedge.v]);ks.push([G.hedge.gate.key,G.hedge.gate.v]);}
+   if(G.pasture){ks.push([G.pasture.fence.key,G.pasture.fence.v]);ks.push([G.pasture.fence.gate.key,G.pasture.fence.gate.v]);}
+   ks.forEach(k=>{const A=ASSET_BY_KEY[k[0]];if(!A)bad.push(t+'/'+g+': no '+k[0]);else if(!(k[1]>=0&&k[1]<A.variants))bad.push(t+'/'+g+': '+k[0]+' has no variant '+k[1]);});
+   if(g==='lower'&&!(G.hedge&&G.hedge.key==='br_hedge_thorn'))bad.push(t+'/lower: no thorn hedge');
+   counts.push(t+'/'+g+' '+G.tents.reduce((s,e)=>s+e.n,0)+'t '+G.pens.reduce((s,e)=>s+e.n,0)+'p');});
+  const pens=g=>(T.grounds[g]?T.grounds[g].pens.map(e=>e.key):[]);
+  if(BR_CAMP_FLYERS.indexOf(t)>=0){if(gs.join()!=='upper')bad.push(t+': a flyers band camps only on the top');
+   const U=T.grounds.upper;if(U&&(U.hedge||U.pasture))bad.push(t+': a flyers camp needs no pasture or hedge');
+   if(pens('upper').indexOf('br_tent_perch_frame')<0||pens('upper').indexOf('br_tent_feed_shelter')<0)bad.push(t+': perch frames and a feeding shelter');}
+  else if(['dragonfly','spider','mammoth'].indexOf(t)>=0){if(gs.join()!=='lower')bad.push(t+': camps only on the floor');}
+  else if(gs.slice().sort().join()!=='lower,upper')bad.push(t+': a ground on the top and one on the floor');});
+ const own={dragonfly:['br_tent_pond_nets','br_tent_net_house'],spider:['br_tent_spider_grove','br_tent_silk_house','br_tent_spinning_shed'],mammoth:['br_tent_mammoth_paddock']};
+ for(const t in own)own[t].forEach(k=>{const G=C[t].grounds.lower;if(!G.tents.concat(G.pens).some(e=>e.key===k))bad.push(t+': no '+k);});
+ return {ok:bad.length===0,detail:bad.length?bad.slice(0,5).join('; '):counts.join(', ')};}"""
+
+RUN_JS = r"""()=>{const sq=[[0,0],[40,0],[40,30],[0,30]],R=BR_RUN(sq,{key:'br_hedge_thorn',closed:true,gates:[20,95],seed:3}),
+ tot=R.reduce((s,p)=>s+p.span,0),gates=R.filter(p=>p.v===1).length,long=R.filter(p=>p.span>8.0001&&p.v===0).length,F=BR_RUN(sq,{key:'br_fence_rail',closed:true});
+ const ok=Math.abs(tot-140)<0.01&&gates===2&&long===0&&R.every(p=>p.key==='br_hedge_thorn')&&Math.abs(F.reduce((s,p)=>s+p.span,0)-140)<0.01;
+ return {ok:ok,detail:R.length+' hedge pieces, '+tot.toFixed(2)+' m of 140, '+gates+' gates; '+F.length+' fence pieces'};}"""
+
+
+def scyvoi_trades():
+    """the Scyvoi camp's trades, read from its source: the job or role of every trade tent (types industry, shop, market,
+    religious) and the herding and tethering roles of its pens"""
+    import glob, re
+    out = []
+    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'scyvoi', 'src', '*.js'))):
+        src = open(f, encoding='utf-8').read()
+        for m in re.finditer(r"defBuilding\(\{key:'([^']+)'.*?tags:\{([^}]*)\}", src, re.S):
+            tags = m.group(2)
+            job, role = re.search(r"job:'([^']+)'", tags), re.search(r"role:'([^']+)'", tags)
+            trade = re.search(r"types:\[[^\]]*'(industry|shop|market|religious)'", tags)
+            if trade and (job or role):
+                out.append((job or role).group(1))
+            elif role and role.group(1) in ('herding', 'tethering'):
+                out.append(role.group(1))
+    return sorted(set(out))
+
 
 PORTS_JS = "()=>_kit.built.filter(b=>b.port).map(b=>({key:b.key,v:b.v,town:b.town,name:b.name,def:b.def,fabric:b.fabric,furn:b.furn}))"
 TOWN_JS = """(defs)=>defs.map(d=>{ const P=window._ports; if(!P) return {err:'no window._ports'};
@@ -117,10 +176,23 @@ async def run(a):
                 print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a box shrunk by 3 m) : ' + r['detail'])
                 if r['ok']:
                     fails.append('negative box')
+                tr = scyvoi_trades()
+                for name, js, arg, neg in (("every Scyvoi trade has a Beast Rider tent (%s)" % ', '.join(tr), TENT_TRADES_JS, {'trades': tr, 'drop': ''}, {'trades': tr, 'drop': 'br_tent_smithy'}),
+                                           ("every tribe's camp (BR_CAMP) names existing keys and keeps the plan's grounds", CAMP_JS, False, True),
+                                           ("BR_RUN lays a closed boundary into pieces and gates", RUN_JS, None, None)):
+                    r = await pg.evaluate(js, arg) if arg is not None else await pg.evaluate(js)
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + name + ' : ' + r['detail'])
+                    if not r['ok']:
+                        fails.append(name)
+                    if neg is not None:
+                        r = await pg.evaluate(js, neg)
+                        print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + ('the smithy taken away' if isinstance(neg, dict) else 'a key that does not exist') + ') : ' + r['detail'])
+                        if r['ok']:
+                            fails.append('negative: ' + name)
                 ports = await pg.evaluate(PORTS_JS)
             if a.shots:
                 os.makedirs(a.shots, exist_ok=True)
-                for i, name in enumerate(('mounts', 'girder', 'mavs')):
+                for i, name in enumerate(('mounts', 'girder', 'mavs', 'tents', 'trades', 'pens', 'bands', 'bounds')):
                     await pg.evaluate("(i)=>{const R=_kit.rows[i];ctl.target.set((R.x0+R.x1)/2,4,R.z+10);ctl.dist=Math.max(70,(R.x1-R.x0)*0.55);ctl.az=0.5;ctl.el=0.45;updateCamera();if(typeof render==='function')render();}", i)
                     await pg.wait_for_timeout(1200)
                     await pg.screenshot(path=os.path.join(a.shots, 'beast-riders-%s.png' % name), timeout=120000)

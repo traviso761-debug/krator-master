@@ -6,16 +6,23 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 4 (14%) | 0 (0%) | 0 (0%) | 10 (40%) | 11 (45%) |
+| KB | 15 (9%) | 0 (0%) | 0 (0%) | 10 (6%) | 141 (85%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 4.3 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/50-br-mounts.js` | 11.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 65 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/50-br-mounts.js` | 18.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 90 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-br-ports.js` | 3.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the ports as ASSETs: copies of the sealed towns' groups (towns.py) |
-| `src/90-br-sheet.js` | 5.5 | [web] | 1 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/70-br-tent-kit.js` | 43.6 | [draw] | 3 | 0 | 0 | 0 | 0 | 74 | 0 | 0 | 0 | 0 | 0 | the tent kit's builders (hide dome, barrel pavilion, guys, awnings, corrals, thorn); meshes through the core's _surfGeo and _matDbl; choices hashed with KRAND |
+| `src/71-br-tents-dwell.js` | 13.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 47 | 0 | 0 | 0 | 0 | 0 | the tents as ASSETs: dwellings, chief, council, shrine |
+| `src/72-br-tents-trade.js` | 15.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 48 | 0 | 0 | 0 | 0 | 0 | the tents as ASSETs: the Scyvoi set's trades |
+| `src/73-br-tents-pens.js` | 23.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 102 | 0 | 0 | 0 | 0 | 0 | the pens and trainer structures as ASSETs |
+| `src/74-br-tents-bands.js` | 17.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 46 | 0 | 0 | 0 | 0 | 0 | the Dragonfly, Spider and Mammoth bands' grounds as ASSETs |
+| `src/75-br-tents-bounds.js` | 4.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | the thorn hedge and rail fence, parametric pieces (F.span) |
+| `src/79-br-camp.js` | 14.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | BR_CAMP (a band's camp by tribe), BR_RUN (a boundary along a polyline): plain data and pure functions; BR_SHEET_TENTS the sheet's rows |
+| `src/90-br-sheet.js` | 5.8 | [web] | 1 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

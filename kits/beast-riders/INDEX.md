@@ -16,7 +16,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 4 |  |
-| `50-br-mounts.js` | 11 | = (2) |
+| `50-br-mounts.js` | 19 | = (2) |
 | `60-br-ports.js` | 4 | = (1) |
-| `90-br-sheet.js` | 5 | = (1) |
+| `70-br-tent-kit.js` | 44 **big** | = (2); THE HIDE DOME (123); THE BARREL PAVILION (313); FRAMES, FENCES, HEDGES (463) |
+| `71-br-tents-dwell.js` | 14 | = (2) |
+| `72-br-tents-trade.js` | 15 | = (2) |
+| `73-br-tents-pens.js` | 23 | = (2) |
+| `74-br-tents-bands.js` | 18 | = (2) |
+| `75-br-tents-bounds.js` | 5 | = (2) |
+| `79-br-camp.js` | 15 | = (2) |
+| `90-br-sheet.js` | 6 | = (1) |
 | `99-tail.html` | <1 |  |

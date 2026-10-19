@@ -10,12 +10,14 @@
    ====================================================================== */
 (function () {
   if (/[?&]tex=0/.test(location.search)) KF_API.setTextures(false);
-  const OWN = ['br_bldg_raptor_stable', 'br_bldg_great_byre', 'br_bldg_rookery_tower'];
+  const TENT_ROWS = typeof BR_SHEET_TENTS !== 'undefined' ? BR_SHEET_TENTS : [];   /* the tent set's rows (79-br-camp.js) */
+  const OWN = ['br_bldg_raptor_stable', 'br_bldg_great_byre', 'br_bldg_rookery_tower'].concat([].concat.apply([], TENT_ROWS.map(function (R) { return R.keys; })));
   const PORT_KEYS = BR_PORTS.keys;
   const all = ASSETS.filter(function (A) { return A.culture === 'beast-rider'; });
-  const rows = [{ title: 'The mounts (this kit)', list: all.filter(function (A) { return OWN.indexOf(A.key) >= 0; }) },
+  const rows = [{ title: 'The mounts (this kit)', list: all.filter(function (A) { return OWN.indexOf(A.key) >= 0 && OWN.indexOf(A.key) < 3; }) },
     { title: "Girder's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'girder'; }) },
-    { title: "Mav's Refuge's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'mavs-refuge'; }) }];
+    { title: "Mav's Refuge's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'mavs-refuge'; }) }]
+    .concat(TENT_ROWS.map(function (R) { return { title: R.title, list: R.keys.map(function (k) { return ASSET_BY_KEY[k]; }).filter(Boolean) }; }));
   const out = { ready: false, keys: OWN.concat(PORT_KEYS), built: [], errors: BR_PORTS.errors.slice(), rows: [] };
   const _v = new THREE.Vector3();
   function fabricBox(g) {                    /* the port's fabric (its town's kit meshes, not the furniture), local */
