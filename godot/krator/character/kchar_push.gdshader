@@ -5,7 +5,7 @@
 //   two cloth chains. A soft shell: d from the bone within r + 0.04 lands at r + d * 0.04 / (r + 0.04), so two tiers
 //   of one skirt keep their order; inside a leg a vertex leaves on the side away from the body's axis (kcH), never
 //   behind the knee. The arms' capsules (kcB.w 1) are hard: only what is inside moves, so a raised arm lifts a
-//   mantle's hem (and a giant's lower arms, 10-13). kcA / kcB: the capsules' ends in the skeleton's space, kcA.w the radius (_leg_caps).
+//   mantle's hem (and a giant's lower arms, 10-13; the seat, 14-15). kcA / kcB: the capsules' ends in the skeleton's space, kcA.w the radius (_leg_caps).
 // - kcT > 0 (trousers or a skirt under a top that closes round the waist, kit item 'tucks'): the band above the hips
 //   drawn in toward the body's axis by up to kcT, so a waistband stays under the top in any pose.
 // - kcS > 0 (trousers under a loose top that reaches below the knees, kit item 'long'): below the hips drawn in to
@@ -20,8 +20,10 @@ uniform sampler2D ntex : hint_normal, filter_linear_mipmap, repeat_enable;
 uniform float nscale = 0.0;
 uniform float rough = 0.85;
 uniform float metal = 0.0;
-uniform vec4 kcA[14];
-uniform vec4 kcB[14];
+uniform vec4 kcA[16];
+uniform vec4 kcB[16];
+// the radius at b (kcA.w is at a): a limb tapers (make_mpfb.py colliders ra, rb)
+uniform float kcR[16];
 uniform vec3 kcH;
 // 1.2 cm more for a loose top (a robe's hem lies over the skirt it covers), 3.2 cm over trousers
 uniform float kcP = 0.0;
@@ -31,16 +33,16 @@ uniform float kcS = 0.0;
 
 void vertex() {
 	if (kcL > 0.5) {
-		for (int i = 0; i < 14; i++) {
+		for (int i = 0; i < 16; i++) {
 			if (kcA[i].w <= 0.0) {
 				continue;
 			}
 			vec3 a = kcA[i].xyz;
 			vec3 ab = kcB[i].xyz - a;
 			float sh = kcB[i].w > 0.5 ? 0.0 : 0.04;
-			float r = kcA[i].w + (sh > 0.0 ? kcP : 0.0);
-			float R = r + sh;
 			float t = clamp(dot(VERTEX - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
+			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + (sh > 0.0 ? kcP : 0.0);
+			float R = r + sh;
 			vec3 q = a + ab * t;
 			vec3 d = VERTEX - q;
 			float l = length(d);
@@ -65,8 +67,9 @@ void vertex() {
 			}
 			vec3 a = kcA[i].xyz;
 			vec3 ab = kcB[i].xyz - a;
-			float r = kcA[i].w + kcS;
-			vec3 q = a + ab * clamp(dot(VERTEX - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
+			float st = clamp(dot(VERTEX - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
+			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, st) + kcS;
+			vec3 q = a + ab * st;
 			vec3 d = VERTEX - q;
 			float l = length(d);
 			if (l > r && l < r + 0.15) {

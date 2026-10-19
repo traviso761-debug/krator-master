@@ -325,9 +325,15 @@ reaches below the crotch hangs at the back from just under the seat, not from th
 never push through it), each chain hanging from
 the spine joint above it, and writes them beside the garment (`<id>.cloth.json`). `make_mpfb.py cloth_bones` turns
 them into joints of the garment's GLB ('cloth:<item>:<chain>:<bone>', inverse bind T(-p) at an anchor vertex) and
-weights the cloth below each chain's top to the two chains either side and the bone of its stretch; `kit.json` keeps
+weights the cloth below each chain's top to the two chains either side and the bone of its stretch, except cloth that
+lies on the body: within 4 cm of the skin it keeps the body's own weights, fading to the chains' by 9 cm (`CONTACT`),
+so a tilma lying on the back, a mantle over the shoulders and a skirt's band over the hips move with them (on chains
+held by the chest a cloak swung into the small of the back as the idle leaned forward); never over the legs, where a
+skirt lying on a thigh must leave it as the leg swings. `kit.json` keeps
 per chain its parent joint and anchor vertices, and `skeleton.json colliders` the body's capsules (thighs, shins,
-pelvis, chest, arms: a base radius and its change per morph target, `KCHAR.colliders`). The figure (`50-figure.js`
+pelvis, chest, arms: a base radius and its change per morph target, `KCHAR.colliders`; for the push a radius at each
+end, `ra` and `rb`, since a limb tapers; and the seat, a pair of upright capsules behind the hip joints that cover the
+buttocks, whose ends are rest points carried by the Hips joint, `pa` and `pb`). The figure (`50-figure.js`
 cloth section; `kchar_figure.gd _cloth_*`) reads each chain's rest off the morphed garment, so a broad or tall body's
 skirt hangs from its own hips, then runs every chain point as a Verlet particle at 60 Hz: pulled to its rigid rest
 by the part's stiffness (mantles stiff, capes loose), under Krator's gravity (7.4 m/s²) and the drag of Voth's dense
@@ -337,7 +343,9 @@ that lies across the cloth's fall (a seated thigh, a raised arm) leaves on the s
 chain drapes over the limb; along an upright limb it leaves on the side away from the body's axis, so cloth never
 ends up behind a leg in a stride. `fig.cloth = false` hangs
 them rigid (the Animation Lab's Cloth button). Each part has a `layer` (0 a skirt, 1 a robe's hem, a flap or a
-skirt's over-tier, 2 a cape, a mantle or headgear): a chain point stays 3 cm outside the lower layers' chains near it,
+skirt's over-tier, 2 a cape, a mantle or headgear), within its item's slot (legs under torso under head: the figure
+adds 3 x the slot's rank, so a breechcloth's flap stays under a shirt's skirt): a chain point stays 3 cm outside the
+lower layers' chains near it,
 measured out from the body's axis (`layered`). Inside one garment a skirt under an over-tier or apron goes further:
 `make_mpfb.py cover_weights` gives each covered vertex the weights of the outer part's nearest vertex, so where the
 two overlap they move as one and cannot cross. The same goes for a part that does not hang under one that hangs over
@@ -349,7 +357,10 @@ what lies outside the outer part (a belt across an open coat's gap) keep their o
 **Clipping** (both runtimes, every frame after the clip): a garment marked `loose` in the kit (the Voth tunics, robes
 and skirts, the kimono, the long skirts) has every vertex pushed out of the thighs, shins and feet on the GPU after
 skinning (`pushOut` / `kchar_push.gdshader`, which in Godot also carries the garment's own look: albedo, alpha
-cutoff, normal map), so a knee cannot come through between two chains. The upper arms and forearms are hard
+cutoff, normal map), so a knee cannot come through between two chains, and out of the seat, so a robe's back covers
+the buttocks. Each capsule's radius runs from `ra` to `rb` along it (the thigh from about 12 cm at the hip to 8 cm
+at the knee, the shin from 8.6 cm at the calf to 5.3 at the ankle on the man): at one radius the calves and the tops
+of the thighs came through the robes. The upper arms and forearms are hard
 capsules in the same pass (only what is inside them moves), so a raised arm lifts a mantle's or a cape's hem. The push is a soft
 shell, not a projection (a vertex d from the bone within r + 4 cm lands at r + d x 4 cm / (r + 4 cm)), so two tiers
 keep their order; a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
@@ -359,8 +370,15 @@ and still do with cloth off (no swing then: each frame starts from the rigid res
 (kit item `tucks`, `make_mpfb.py encloses()`: rays out from the hips meet it all round; an open cloak or a cropped top
 does not) has the trousers or skirt under it tucked: their band above the hips drawn in toward the body's axis by up
 to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top that reaches below the knees (kit item
-`long`: a robe, the kimono) trousers below the hips are drawn in to within 6 mm of the legs' capsules, so wide ones
-(harem pants) stay under it (`kcS`).
+`long`: a robe, the kimono) trousers below the hips are drawn in to within 2.5 cm of the legs' capsules (their
+tapered radii), so wide ones (harem pants) stay under it (`kcS`); at 6 mm they sank into the calves and the court's
+legs read thin.
+**Headgear** moves with the head: `make_mpfb.py head_weights` gives every vertex of a head item above the neck the
+Head joint's weight alone (MakeHuman weights a garment from the skin nearest it, so a broad brim, a wing or an ear
+flap took the shoulders' and arms' weights and bent as they moved); a hood's cowl, below, keeps following the neck.
+**The feet roll on their balls**: `toesFlat` (`_toes_flat`) turns each toe joint up after the clip until a point 6
+cm ahead of it (scaled with the figure) is no lower than the ground, so a clip that stands on the ball of a foot does
+not push the toes, and a sandal's sole with them, down into it.
 `bodyFix` turns an upper arm or forearm out when the clip puts an elbow or hand inside the pelvis, chest or its own
 thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
 

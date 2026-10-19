@@ -330,5 +330,10 @@ static func colliders(skel: Dictionary, w: PackedFloat64Array) -> Array:
 			var ti := int(t)
 			if ti < w.size():
 				r += w[ti] * float(c["dr"][t])
-		out.append({"a": int(c["a"]), "b": int(c["b"]), "r": maxf(0.01, r)})
+		# the seat's have rest ends (pa, pb: the body's model space) carried by joints a and b
+		# the push's end radii (ra, rb) scale with the capsule's
+		var k: float = maxf(0.01, r) / float(c["r"])
+		out.append({"a": int(c["a"]), "b": int(c["b"]), "r": maxf(0.01, r),
+			"pa": _v(c["pa"]) if c.has("pa") else null, "pb": _v(c["pb"]) if c.has("pb") else null,
+			"ra": float(c.get("ra", c["r"])) * k, "rb": float(c.get("rb", c["r"])) * k})
 	return out

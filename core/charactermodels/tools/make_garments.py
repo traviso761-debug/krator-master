@@ -1056,6 +1056,8 @@ def hood(gid, paint, ease=0.035, ease_low=0.055, open_front=0.95, low=-0.45, row
     Q[-1] = c + (Q[-1] - c) * 0.2 + t * ease + x * peak
     Q[-2] = c + (Q[-2] - c) * 0.65 + t * ease * 0.6 + x * peak * 0.5
     Q = smooth_push(Q, False, ease, iters=2, rows_ease=eases)
+    # closed over the crown: the last ring drawn in to one point (at 20 % of its radius it left a hole on top)
+    Q[-1] = Q[-1].mean(0)
     return Part(gid, Q, False, ['body'] * rows, paint)
 
 
@@ -1975,10 +1977,11 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 
     def _yhead(sex=sex):
         if sex == 'm':                        # the Fulani cone: a broad straw cone, its crown in leather
-            return [brim('yuni_m_peasant_hat', 0.66, 0.2, P('sand', 0.08, [B('top', 0.0, 0.3, 'rays', 'ochre', 'sand', 0.025), B('bottom', 0.0, 0.015, 'solid', 'mud')],
+            # high on the head (at 0.66 with a 9 cm droop it hid the head and the nape from behind)
+            return [brim('yuni_m_peasant_hat', 0.74, 0.2, P('sand', 0.08, [B('top', 0.0, 0.3, 'rays', 'ochre', 'sand', 0.025), B('bottom', 0.0, 0.015, 'solid', 'mud')],
                                                          fabric='straw.plaited'),
-                         droop=0.09, rows=6, n=40, ease=0.012),
-                    head_rings('yuni_m_peasant_hat_crown', 0.66, 1.0, 0.016, P('leather', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'ochre')]), n=32, rows=5, apex=True),
+                         droop=0.06, rows=6, n=40, ease=0.012),
+                    head_rings('yuni_m_peasant_hat_crown', 0.74, 1.0, 0.016, P('leather', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'ochre')]), n=32, rows=5, apex=True),
                     horn('yuni_m_peasant_hat_tip', [J('Head', 'tail') + np.array([0, 0, 0.0]), J('Head', 'tail') + np.array([0, 0, 0.17])], 0.05, 0.006,
                          P('leather', 0.05, [B('top', 0.0, 0.3, 'stripes', 'ochre', 'leather', 0.0)]), n=16, rows=6)]
         gid = 'yuni_f_peasant_wrap'
@@ -2113,10 +2116,11 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         plate = P('iron', 0.03, [B('top', 0.0, 0.3, 'dots', 'ancient', 'iron', 0.04), B('bottom', 0.0, 0.01, 'solid', 'rust')])
         apron = P('leather', 0.06, [B('top', 0.0, 0.012, 'solid', 'brass'), B('bottom', 0.0, 0.015, 'solid', 'umber')])
         hem = CROTCH - 0.02 if sex == 'm' else CROTCH - 0.06
+        # the plates stand out past the jacket's shoulders (at 4.5 cm off the arm they were inside them, showing in patches)
         return [torso_tube(gid, TOP, hem, 0.026, quilt, hang_from=WAIST - 0.03, flare=0.08, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                 flap(gid + '_apron', _front(WAIST + 0.02, 0.05), 0.32 if sex == 'm' else 0.29, WAIST - KNEE + 0.08, np.array([0, -1.0, 0]), apron,
                      group_below=CROTCH + 0.02, sway=0.01),
-                pauldron(gid + '_plate_L', L, plate, reach=0.4, ease=0.045), pauldron(gid + '_plate_R', R, plate, reach=0.4, ease=0.045)] + \
+                pauldron(gid + '_plate_L', L, plate, reach=0.4, ease=0.068), pauldron(gid + '_plate_R', R, plate, reach=0.4, ease=0.068)] + \
             izani_belt(gid, P('leather', 0.05, [B('top', 0.0, 0.01, 'solid', 'brass'), B('bottom', 0.0, 0.01, 'solid', 'brass')]), P('umber', 0.06),
                        ease=0.06) + sleeves(gid, 'wrist', 0.026, sl, ease_end=0.03, rows=8)
     GARMENTS['rep_%s_trade_jacket' % sex] = ('torso', b, 'Guild jacket, plates and apron', _rwork)
@@ -2136,10 +2140,14 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         a_, b_, up, bk, left = head_frame()
         gid = 'rep_%s_trade_ushanka' % sex
         fur = P('fur', 0.14)
-        out = [head_rings(gid, 0.5, 1.0, 0.035, P('drab', 0.06, [B('top', 0.0, 0.03, 'solid', 'umber')]), n=32, rows=7, apex=True),
-               head_rings(gid + '_brim', 0.5, 0.64, 0.05, fur, n=36, rows=3)]
+        brim_ = head_rings(gid + '_brim', 0.5, 0.64, 0.05, fur, n=36, rows=3)
+        out = [head_rings(gid, 0.5, 1.0, 0.035, P('drab', 0.06, [B('top', 0.0, 0.03, 'solid', 'umber')]), n=32, rows=7, apex=True), brim_]
         for k, sd in enumerate((-1, 1)):
-            f = flap('%s_ear%d' % (gid, k), a_ + (b_ - a_) * 0.5 + left * sd * 0.105, 0.085, 0.11, left * sd, fur, cols=5, rows=5, ease=0.02)
+            # from the fur brim's lowest ring at that side, so the flap hangs from the brim (from a point 10.5 cm off
+            # the head's axis it hung clear of the cap)
+            ring = brim_.P[0]
+            top = ring[np.argmax((ring - ring.mean(0)) @ (left * sd))] - up * 0.004
+            f = flap('%s_ear%d' % (gid, k), top, 0.085, 0.11, left * sd, fur, cols=5, rows=5, ease=0.02)
             f.cloth = None
             out.append(f)
         return out
@@ -2240,7 +2248,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
             return [torso_tube(gid, TOP, CROTCH - 0.02, 0.026, quilt, hang_from=WAIST - 0.03, flare=0.08, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                     flap(gid + '_apron', _front(WAIST + 0.02, 0.05), 0.32, WAIST - KNEE + 0.08, np.array([0, -1.0, 0]), apron,
                          group_below=CROTCH + 0.02, sway=0.01),
-                    pauldron(gid + '_plate_L', L, plate, reach=0.4, ease=0.045), pauldron(gid + '_plate_R', R, plate, reach=0.4, ease=0.045)] + \
+                    pauldron(gid + '_plate_L', L, plate, reach=0.4, ease=0.068), pauldron(gid + '_plate_R', R, plate, reach=0.4, ease=0.068)] + \
                 izani_belt(gid, P('leather', 0.05, [B('top', 0.0, 0.01, 'solid', 'brass'), B('bottom', 0.0, 0.01, 'solid', 'brass')]), P('umber', 0.06),
                            ease=0.06) + sleeves(gid, 'wrist', 0.026, sl, ease_end=0.03, rows=8)
         # a guildswoman: the long belted Saxon coat in red wool, ochre facings, over a linen blouse
@@ -2266,10 +2274,12 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         if sex == 'm':                        # the ushanka: a fur crown and ear flaps
             gid = 'rep_m_fest_trade_ushanka'
             fur = P('fur', 0.14)
-            out = [head_rings(gid, 0.5, 1.0, 0.035, P('greyblue', 0.06, [B('top', 0.0, 0.03, 'solid', 'umber')]), n=32, rows=7, apex=True),
-                   head_rings(gid + '_brim', 0.5, 0.64, 0.05, fur, n=36, rows=3)]
+            brim_ = head_rings(gid + '_brim', 0.5, 0.64, 0.05, fur, n=36, rows=3)
+            out = [head_rings(gid, 0.5, 1.0, 0.035, P('greyblue', 0.06, [B('top', 0.0, 0.03, 'solid', 'umber')]), n=32, rows=7, apex=True), brim_]
             for k, sd in enumerate((-1, 1)):
-                f = flap('%s_ear%d' % (gid, k), a_ + (b_ - a_) * 0.5 + left * sd * 0.105, 0.085, 0.11, left * sd, fur, cols=5, rows=5, ease=0.02)
+                ring = brim_.P[0]                 # from the brim's lowest ring at that side (as the guild's ushanka)
+                top = ring[np.argmax((ring - ring.mean(0)) @ (left * sd))] - up * 0.004
+                f = flap('%s_ear%d' % (gid, k), top, 0.085, 0.11, left * sd, fur, cols=5, rows=5, ease=0.02)
                 f.cloth = None
                 out.append(f)
             return out

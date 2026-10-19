@@ -101,7 +101,7 @@ def neutral(img, role):
     return Image.fromarray(np.rint(a * 255).astype(np.uint8), img.mode)
 
 
-def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=None):
+def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=None, body=None, head_above=None):
     """role(material name) -> 'skin', 'hair' or None: that material's colour texture is made neutral (neutral()).
     skirt: a height (glTF y) below which the item hangs as one piece (skirt_weights). cloth: (item id, its
     make_garments.py chain spec): bone chains are added (cloth_bones), and what the kit needs of them is put in
@@ -153,9 +153,11 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=Non
         b[off:off + arr.nbytes] = M.transpose(0, 2, 1).astype(np.float32).tobytes()
     if skirt is not None:
         skirt_weights(j, b, skirt)
+    if head_above is not None:
+        head_weights(j, b, head_above)
     cloth_blobs = {}
     if cloth is not None:
-        cloth['out'] = cloth_bones(j, b, cloth['id'], cloth['spec'], cloth_blobs)
+        cloth['out'] = cloth_bones(j, b, cloth['id'], cloth['spec'], cloth_blobs, body)
     # textures: smaller; PNG kept where the image has alpha (hair cards, lashes)
     blobs, holes, means, soft = dict(cloth_blobs), {}, {}, {}
     eye_imgs = set()
@@ -270,6 +272,23 @@ def body_primitive(path):
     raise SystemExit('make_mpfb.py: no body primitive in ' + path)
 
 
+def body_contact(path):
+    """for cloth_bones: the base skin's points (a KD tree) and, per point, how much of its weight is on the legs"""
+    j, b = glbio.read_glb(open(path, 'rb').read())
+    node = next(n for n in j['nodes'] if 'mesh' in n and 'skin' in n)
+    names = [j['nodes'][k].get('name', '').split(':')[-1] for k in j['skins'][node['skin']]['joints']]
+    leg = np.array([any(x in n for x in ('UpLeg', 'Leg', 'Foot', 'Toe')) for n in names])
+    for m in j['meshes']:
+        for p in m['primitives']:
+            if 'material' in p and j['materials'][p['material']]['name'].endswith('.body'):
+                at = p['attributes']
+                P = glbio.accessor(j, b, at['POSITION']).astype(float)
+                JJ = glbio.accessor(j, b, at['JOINTS_0']).astype(int)
+                WW = glbio.accessor(j, b, at['WEIGHTS_0']).astype(float)
+                return cKDTree(P), (WW * leg[JJ]).sum(1) / np.maximum(WW.sum(1), 1e-9)
+    raise SystemExit('make_mpfb.py: no body primitive in ' + path)
+
+
 def all_triangles(path):
     """positions and triangles of every primitive of a GLB, as one mesh"""
     j, b = glbio.read_glb(open(path, 'rb').read())
@@ -343,6 +362,42 @@ def skirt_weights(j, b, y0, band=0.12):
             b[ow:ow + WW.nbytes] = WW.tobytes()
 
 
+def head_weights(j, b, y0):
+    """headgear moves with the head: every vertex above height y0 (glTF y, a little above the neck joint) takes its
+    weight from the Head joint alone. MakeHuman weights a garment from the skin nearest it, so a wide brim, a wing or
+    a flap that reaches down beside the neck took the shoulders' and arms' weights and bent as they moved (the Yuni
+    hat's brim, the Beast Rider chieftess's wings: a third of their weight on the arms). A hood's cowl, below y0, keeps
+    following the neck and shoulders"""
+    for node in j['nodes']:
+        if 'mesh' not in node or 'skin' not in node:
+            continue
+        names = [j['nodes'][k].get('name', '').split(':')[-1] for k in j['skins'][node['skin']]['joints']]
+        if 'Head' not in names:
+            continue
+        hj = names.index('Head')
+        for prim in j['meshes'][node['mesh']]['primitives']:
+            at = prim['attributes']
+            P = glbio.accessor(j, bytes(b), at['POSITION'])
+            aj, aw = j['accessors'][at['JOINTS_0']], j['accessors'][at['WEIGHTS_0']]
+            JJ = glbio.accessor(j, bytes(b), at['JOINTS_0']).copy()
+            WW = glbio.accessor(j, bytes(b), at['WEIGHTS_0']).copy()
+            dw = glbio.CT[aw['componentType']]
+            if aw.get('normalized'):                    # the accessor gave them as fractions: back to the stored integers
+                WW = np.round(WW * np.iinfo(dw).max).astype(dw)
+            up = P[:, 1] > y0
+            if not up.any():
+                continue
+            one = np.iinfo(WW.dtype).max if np.issubdtype(WW.dtype, np.integer) else 1.0
+            JJ[up] = 0; WW[up] = 0
+            JJ[up, 0] = hj; WW[up, 0] = one
+            for acc, arr in ((aj, JJ), (aw, WW)):
+                bv = j['bufferViews'][acc['bufferView']]
+                if bv.get('byteStride') and bv['byteStride'] != arr.itemsize * 4:
+                    raise SystemExit('make_mpfb.py head_weights: interleaved attributes are not handled')
+                off = bv.get('byteOffset', 0) + acc.get('byteOffset', 0)
+                b[off:off + arr.nbytes] = arr.astype(glbio.CT[acc['componentType']]).tobytes()
+
+
 def take_weights(JJ, WW, gi, src, f):
     """vertex gi's weights moved toward vertex src's by f (the four heaviest kept, normalized)"""
     mix = {}
@@ -397,13 +452,22 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
                     take_weights(JJ, WW, gi, O[k], f)
 
 
-def cloth_bones(j, b, item, spec, blobs):
+# metres off the skin: cloth nearer than the first keeps the body's weights, past the second the chains'. Wide: a cloak
+# hung plumb from the shoulder blades stands 4-6 cm off the small of the back, and on chains held by the chest it
+# swung into the back as the idle leaned forward; above the seat cloth now moves with the body, below it swings
+CONTACT = (0.04, 0.09)
+
+
+def cloth_bones(j, b, item, spec, blobs, body=None):
     """the garment's hanging parts as bone chains (spec: make_garments.py's, by the garment's own vertex order, which
     the export keeps as _VIDX). Per chain a joint per bone, named 'cloth:<item>:<chain>:<bone>', a child of the spine
     joint it hangs from, its inverse bind T(-p) at its anchor vertex; the vertices below each chain's top weighted to
     the two chains either side of them (by column) and the bone of their stretch (by row), faded in over two rows from
     the top. Returns the kit entry: per chain its parent joint and anchor vertices (glTF indices, so the page and Godot
-    can read the morphed rest from their own meshes), per part its chains and whether they close round"""
+    can read the morphed rest from their own meshes), per part its chains and whether they close round.
+    body (body_contact): cloth that lies on the skin (within CONTACT[0], fading out by CONTACT[1]) keeps the body's
+    weights, so a cloak or a mantle lying on the back and shoulders moves with them; only cloth hanging clear goes to
+    the chains. Not over the legs: a skirt lying on a thigh at rest leaves it as the leg swings (skirt_weights)"""
     node = next((n for n in j['nodes'] if 'mesh' in n and 'skin' in n), None)
     if node is None:
         return None
@@ -485,6 +549,10 @@ def cloth_bones(j, b, item, spec, blobs):
             bl = (0.35 - sfrac) / 0.35 * 0.5
             out = {ch['joints'][k]: 1 - bl, ch['joints'][k - 1]: bl}
         return out, float(np.clip((r - rows[0]) / 2.0, 0, 1))
+    if body is not None:
+        gap, near = body[0].query(P)
+        lying = np.clip((gap - CONTACT[0]) / (CONTACT[1] - CONTACT[0]), 0, 1)
+        lying[body[1][near] > 0.5] = 1.0
     for gi in range(len(P)):
         w = where.get(int(V[gi]))
         if w is None or w[0] not in by_part:
@@ -507,6 +575,8 @@ def cloth_bones(j, b, item, spec, blobs):
         wa, fa = chain_w(chains[cs[lo]], r)
         wb, fb = chain_w(chains[cs[hi]], r)
         share = (1 - t) * fa + t * fb
+        if body is not None:
+            share *= lying[gi]
         if share <= 0:
             continue
         mix = {}
@@ -578,11 +648,61 @@ def colliders(c, J, base_glb, npz):
                 r1 = float(np.quantile(seg(P[sel] + dv, A[k] + da, B[k] + db)[0], 0.65))
                 if abs(r1 - r0) > 2e-4:
                     dr[str(ti)] = round(r1 - r0, 4)
-        out.append({'a': J[a], 'b': J[b2], 'r': round(r0, 4), 'dr': dr})
+        # the push's radii at each end (the 90th percentile near it): a limb tapers, and at one radius the calf and the
+        # top of the thigh stood out through a robe (the GPU push in 50-figure.js; the chains keep r)
+        ends = []
+        for lo, hi in ((0.1, 0.35), (0.65, 0.9)):       # inside the limb: past its ends lie the foot, the hand, the trunk
+            e = np.nonzero((own == k) & (t >= lo) & (t <= hi))[0]
+            ends.append(round(float(min(np.quantile(d[e], 0.9), 1.6 * r0)), 4) if len(e) > 10 else round(r0, 4))
+        out.append({'a': J[a], 'b': J[b2], 'r': round(r0, 4), 'dr': dr, 'ra': ends[0], 'rb': ends[1]})
     # the lower pair's joints (mods.py, on every body) are copies of the upper: the same capsules on their own joints
     for k, (a, b2) in enumerate(CAPSULES):
         if 'Arm' in a and mods.lower(a) in J and mods.lower(b2) in J:
             out.append(dict(out[k], a=J[mods.lower(a)], b=J[mods.lower(b2)]))
+    out += seat(c, J, P, V, npz, tgts, bones)
+    return out
+
+
+def seat(c, J, P, V, npz, tgts, bones):
+    """the buttocks, which neither a thigh's capsule (down the femur) nor the trunk's (up the spine) covers: per side
+    an upright capsule behind the hip joint, from just above it to most of the way down to the fold under the buttock
+    (14 cm below the joint on the man), its back at the skin's (the 85th
+    percentile of how far back the seat's skin reaches). Its ends are rest points (pa, pb: the base's model space)
+    carried by the Hips joint (KCHAR.colliders); dr per target from the morphed skin, as the others'"""
+    hj = c.jpos[c.J['Hips']]
+    toe, foot = c.jpos[c.J['LeftToeBase']], c.jpos[c.J['LeftFoot']]
+    fwd = np.array([0.0, 0.0, 1.0 if toe[2] > foot[2] else -1.0])
+    out = []
+    for s in ('Left', 'Right'):
+        hip = c.jpos[c.J[s + 'UpLeg']]
+        side = np.sign(hip[0] - hj[0])
+        k = c.jpos[c.J[s + 'Leg']]
+        fold = hip[1] - 0.16 * (hip[1] - k[1]) / 0.45           # the fold under the buttock, scaled by the thigh's length
+        sel = np.nonzero((P[:, 1] > fold) & (P[:, 1] < hip[1] + 0.03) & ((P[:, 0] - hj[0]) * side > 0.01) &
+                         ((P[:, 2] - hip[2]) * fwd[2] < -0.03))[0]
+        if len(sel) < 20:
+            continue
+        back = np.quantile(-(P[sel, 2] - hip[2]) * fwd[2], 0.85)       # how far behind the hip joint the seat reaches
+        x = float(np.median(P[sel, 0]))
+        r0 = 0.075
+        zc = hip[2] - fwd[2] * (back - r0)
+        pa = np.array([x, hip[1] + 0.02, zc]); pb = np.array([x, fold + 0.05, zc])
+        dr = {}
+        if npz is not None:
+            Db = npz['d_base']
+            ha = npz['d_joints'][:, bones.index('Hips')] @ RY.T if 'Hips' in bones else np.zeros((len(tgts), 3))
+            for ti in range(len(tgts)):
+                q = P[sel] + Db[ti, V[sel]] @ RY.T
+                b1 = np.quantile(-(q[:, 2] - (hip[2] + ha[ti][2])) * fwd[2], 0.85)
+                if abs(b1 - back) > 2e-4:
+                    dr[str(ti)] = round(float(b1 - back), 4)
+        out.append({'a': J['Hips'], 'b': J['Hips'], 'r': r0, 'dr': dr,
+                    'pa': [round(float(v), 4) for v in pa], 'pb': [round(float(v), 4) for v in pb]})
+    if len(out) == 2:                     # the pair mirrored about the hips (a hip's flare pulled one side's median out)
+        w = (abs(out[0]['pa'][0] - hj[0]) + abs(out[1]['pa'][0] - hj[0])) / 2
+        for o in out:
+            sx = 1 if o['pa'][0] > hj[0] else -1
+            o['pa'][0] = o['pb'][0] = round(float(hj[0] + sx * w), 4)
     return out
 
 
@@ -927,6 +1047,7 @@ def main():
     c.J = {n: i for i, n in enumerate(c.joints)}
     mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))
     tree = cKDTree(BP)
+    contact = body_contact(os.path.join(pieces, 'base.glb'))
     items = []
     man['items'] = [it for it in man['items'] if it['id'] not in SKIP.get(body, ())]
     if big:
@@ -942,7 +1063,8 @@ def main():
             cl = {'id': it['id'], 'spec': json.load(open(os.path.join(src, it['cloth'])))}
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
-                     skirt=crotch if hangs(it) else None, cloth=cl)
+                     skirt=crotch if hangs(it) else None, cloth=cl, body=contact,
+                     head_above=c.jpos[c.J['Neck']][1] + 0.06 if it['slot'] == 'head' else None)
         roles.update(r)
         if it['id'] in DECIMATE:
             print('%-8s decimated %s: %d -> %d triangles' % ((name, it['id']) + decimate.decimate_glb(os.path.join(pieces, it['id'] + '.glb'), DECIMATE[it['id']])))
