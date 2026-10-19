@@ -489,14 +489,33 @@ So Kautoa is the wet one, and Valapo the drier one with real uplands. In `CROPS.
   - Cloves want rain all year (1,500 mm and up, no long dry season): Kautoa's Af.
   - Rice paddies on the wet lowland need no irrigation works there.
   - Cacao is an Af crop.
-- **Valapo exports coffee, sugar and cotton**, and iron ingots.
+- **Valapo exports coffee, sugar and iron ingots**, and salt and soda ash (below).
   - Upland coffee grows on the mountain slopes, the only cool ground either town has.
-  - Sugar cane sweetens best with a dry season to ripen in: Valapo's XV savanna.
-  - Cotton needs a dry harvest: the same savanna.
+  - Sugar cane wants about 1,300 mm or more and a dry season to ripen in: Valapo's XV savanna by the town gets about
+    1,340 mm; Kautoa's dry belt only about 900.
+  - **Cotton is not an advantage** (corrected 2026-10-18): Kautoa has dry savanna of its own (below), where cotton
+    does well on 900 mm. Cotton is grown in both, or becomes the north-west savanna's crop for Kautoa.
 - **Both grow** coconut, banana, breadfruit, taro, kava, greens and herbs for themselves (the owner's crop list).
 - **What goes back:**
-  - Kautoa sends tools and worked iron, cloth dyed with its indigo, and the goods the foreign ships bring;
-  - Valapo sends ingots, coffee, sugar, cotton and salt fish.
+  - Kautoa sends tools and worked iron, cloth dyed with its indigo, sulfur, and the goods the foreign ships bring;
+  - Valapo sends ingots, coffee, sugar, salt, soda ash or glass, and salt fish.
+
+**The rest of the region (a survey of every climate patch and vent, 2026-10-18).** The climate grid is 2 km a cell, so
+sizes and centres are rough. Distances are from the town's settlement point.
+
+| Area | Where | What it could give |
+|---|---|---|
+| Kautoa's dry belt: savanna Aw 784 km2 (~900 mm), abyssal savanna XV 604 km2, hot steppe BSh 212 km2 (~640 mm) | 22, 49 and 81 km north-west of Kautoa | cotton, grazing and buffalo; the reason cotton is not Valapo's |
+| Salt pans (XS) | 268 km2 about 71 km north-west of Kautoa (~700 mm); 136 and 64 km2 at 44-50 km south of Valapo | salt in bulk; glasswort and samphire burnt to **soda ash** for **glass and soap**, which neither town makes yet. Valapo's pans are the closer ones to a town |
+| Hot steppe in Valapo's mountains (BSh) | 272 km2 about 27 km south-west of Valapo, ~980 mm, 27 C mean (the coolest patch in the region) | the dry side of the mountains by the iron mine: goats, sisal rope, tepary beans |
+| Geyser fields | one 6 km west of Kautoa, three more within 35-70 km; Valapo's nearest 27-40 km south and north-west | **sulfur** (a `kits/resources` node) for Kautoa's works, hot baths, heated beds (`CROPS` `heated`) |
+| The wettest jungle (XA) | 596 km2 about 41 km east of Kautoa at ~2,750 mm; 716 km2 about 50 km north-east of Valapo at ~2,280 mm | hardwood for Kautoa's shipyards; charcoal for Valapo's smelter |
+| The west isle (Af) | 632 km2 about 43 km north-west of Valapo, ~2,100 mm | a third wet producer (spice, cacao, timber): a place for a third settlement |
+| North of Kautoa (Aw) | 428 km2 about 61 km north, joined by the neck to beast rider country | grazing, and the riders' mounts and hides along the north highway |
+
+The big north-west salt pan and the north grazing land suit villages on Kautoa's coast and north highways, trading
+into the city rather than with Valapo. None of these has a resource node placed yet: sulfur at the geyser fields and
+salt at the pans must be placed (`kits/resources`) before P7 can count them.
 
 P7 (the simulation) puts these crops on the two towns' farms and the trade route, so that the books show each town
 short of what the other makes.

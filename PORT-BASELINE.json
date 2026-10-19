@@ -41,8 +41,8 @@
    "sha256": "b322b26546a4e7b52efa9f4879be3509b62204647bb46ee45d08f1222befa607"
   },
   "biomes/ringisles/dist/ringisles.html": {
-   "bytes": 2076902,
-   "sha256": "af0781d33c52bd9a855c1a07c49ec864a8e586cd0657877240080206e9ca93bb"
+   "bytes": 2113939,
+   "sha256": "c0389586cbe9833e0b073dd4f77735aba423421f04bbae021411de2c3b65d487"
   },
   "biomes/sedesert/dist/sedesert.html": {
    "bytes": 4514522,
@@ -53,8 +53,8 @@
    "sha256": "0d05c5f290aefb118948b31e8ac422bf0e9ef99c23895fdb2d9b82d0df1affa2"
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 5428950,
-   "sha256": "2caf0ba80a823820327f9f614650a78b0929a7387739171ff9fae10f4c47be6f"
+   "bytes": 5431556,
+   "sha256": "90be36f2171d635dc0ff5f123d3aa8ad9f0fb4f7b0271e51a215509a49d12cf6"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
    "bytes": 5692516,
@@ -357,12 +357,12 @@
    "sha256": "bf2a209c6f2a10b94cfcd7b72f0297adecd0b57e80fc4107b0cef4275ef91c94"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 1315178,
-   "sha256": "87db245340ec347ac985dc87d5165222df4099f151fa5eb098d1deaa409b8953"
+   "bytes": 1349869,
+   "sha256": "cc9ade569f9dfdf446fd47b2fa79b7199cceaab769d966128dd3a3a061b51952"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 1315436,
-   "sha256": "9b97d4178cc665a8eea35412d20af56c942271266e77f0253bd031c0358e4aa3"
+   "bytes": 1350127,
+   "sha256": "3796c45f5d66a14c00fb8b7eeb2dfbaf1e55fc8b66eafcb82a762166b4cd2fc4"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5082796,
@@ -613,8 +613,8 @@
    "sha256": "661f132d6b446a9c7ffb7f7c254314cb496050169db4c7f6131435bd26fc9f7c"
   },
   "settlements/voth/dist/voth-city.html": {
-   "bytes": 19309401,
-   "sha256": "39e4eeb7f76cb5b2c0448efb87abd396b74f077f8a7d1075bc17891c0537ccb1"
+   "bytes": 19309727,
+   "sha256": "cfa49492539b34ed9ef66113d937d54e80c6e171ff96c918d87097152a910c07"
   },
   "settlements/voth/dist/voth-site.html": {
    "bytes": 3611657,
