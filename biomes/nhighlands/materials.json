@@ -478,6 +478,30 @@
     1.0
    ],
    "size": 512
+  },
+  "staghorn": {
+   "lib": "card.staghorn",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.7
+   },
+   "size": 512
+  },
+  "wheel": {
+   "lib": "card.sunwheel",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.7
+   },
+   "size": 512
   }
  }
 }

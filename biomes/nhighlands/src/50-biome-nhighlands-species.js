@@ -571,15 +571,22 @@ Object.assign(M,{
 });
 M.spore.userData.bio={kind:'glow',key:BIO.kitKey('spore'),opts:{night:[.04,1.2]}};
 NHL._glowMaterials.push(M.spore);
+// the owner's cards (2026-10-19): the staghorn frond and the sun-wheel take their library cards (the slots are added after the main swap above)
+Object.assign(NHL.LIB,BIO.libSwap('nhighlands',{staghorn:M.staghorn,wheel:M.wheel}));
 // a SPORE PIN: a hair-thin stalk and a round head, origin at the base, one high (14 triangles), the head pale
 G.spore=function(){const pos=[],nor=[],uv=[],col=[];
  const add=(g,c)=>{g=g.toNonIndexed();const a=g.attributes.position.array,n=g.attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);col.push(c,c,c);}};
  add(new T3.CylinderGeometry(.05,.07,.8,3,1,true).translate(0,.4,0),.55);add(new T3.OctahedronGeometry(.15,0).translate(0,.86,0),1.2);
  return BIO.geo._make(pos,nor,uv,col);};
+// an ANTLER FROND: a plain strip along +x, one wide, arching up and drooping, u across and v along it (the staghorn card has its base at the top)
+G.antler=function(){const pos=[],uv=[],nor=[],nseg=3,P=[];for(let i=0;i<=nseg;i++){const t=i/nseg;P.push([t,.22*Math.sin(t*2.2)-.2*t*t,t]);}
+ for(let i=0;i<nseg;i++){const a=P[i],b=P[i+1],v=[[a[0],a[1],-.5,0,a[2]],[b[0],b[1],-.5,0,b[2]],[b[0],b[1],.5,1,b[2]],[a[0],a[1],.5,1,a[2]]];
+  [0,1,2,0,2,3].forEach(k=>{pos.push(v[k][0],v[k][1],v[k][2]);uv.push(v[k][3],v[k][4]);nor.push(0,1,0);});}
+ return BIO.geo._make(pos,nor,uv);};
 // the shag maple's moss sleeves: a bark-style bucket on the moss skin, tinted by the vertex colours like the barks
 BIO.bucket('nmoss',BIO.barkMat(NHL.MOSSTEX),{label:'Moss sleeves',uvScale:[2,2]});
 BIO.def('fan',BIO.geo.clump(),M.fan,{attrs:['aN'],label:'Fan-leaf leaves'});
-BIO.def('staghorn',BIO.geo.frond(3),M.staghorn,{label:'Staghorns'});
+BIO.def('staghorn',NHL.LIB.staghorn?G.antler():BIO.geo.frond(3),M.staghorn,{label:'Staghorns'});
 BIO.def('wheel',G.flat(),M.wheel,{label:'Sun-wheels'});
 BIO.def('sporepin',G.spore(),M.spore,{label:'Spore lamps'});
 })();
