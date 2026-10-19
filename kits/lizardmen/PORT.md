@@ -29,6 +29,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/56-sa-beasts.js` | 2.8 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/57-lc-camp.js` | 10.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | the camp's tents: geometry only |
 | `src/58-lz-monument.js` | 4.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/59-lz-trades.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: no three.js, no geometry, no DOM |
 | `src/60-lz-reliquary.js` | 10.7 | [draw] | 7 | 2 | 0 | 0 | 0 | 12 | 2 | 0 | 0 | 0 | 0 | split: the antechamber's dust (a Points layer on a frame hook) and the shimmer material hook are browser side; in Godot a GPU particle and a .gdshader |
 | `src/62-lk-capital.js` | 18.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |

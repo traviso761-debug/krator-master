@@ -70,6 +70,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `87c-xa-erewhon.js` | 24 | a small boat and the pleasure barge (8); the quay, the boat shed, the warehouse (26); the lighthouse: an octagonal stone tower on a ro (60); the garden teahouse: on a double rill plot (16 m (80); the prison, cut into the cliff (96); the Caves of Ice (round 9c): a small ice cavern (110); the palace gate: a mosaic iwan between two gilt- (147); the Pleasure Dome of the Bay: the biome's ruin o (158); a street bridge over the stream (round 9c): the  (178) |
 | `88-xa-dress.js` | 12 | the palette and the painted motifs (colour-carry (13); the paint filter on kput (58); the twins (102) |
 | `88y-xanadu-matlib.js` | 1 |  |
+| `89-xa-trades.js` | 5.3 | Voth census trades table (XANADU_TRADES) |
 | `90-scene.js` | 7 | scene (Xanadu showcase) (1); build every site the target lists (61) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91t-xanadu-tags.js` | 3 | CORE TAGS: XANADU'S REG (1) |

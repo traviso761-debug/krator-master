@@ -192,7 +192,7 @@ for _b in BIO_VENDORED:
     VENDORED['86-bio-%s.js' % _b] = 'core/biome' if '-core-' in _b else 'biomes/nwbay/src'
 # src fragments only the named targets take: prefix -> targets. The kit sheet and the mock carry no biome and no
 # foreign kits.
-TARGET_ONLY = {'86-bio-': ('city',)}
+TARGET_ONLY = {'86-bio-': ('city',), '89x-ys-trades': ('city',)}   # the Voth census table (89x-ys-trades.js) is the city page's only
 for _f in VENDORED_IZIZ_FQ + VENDORED_HL + VENDORED_DROWNED:
     TARGET_ONLY[_f] = ('city',)
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
@@ -224,6 +224,7 @@ DETERMINISTIC = {
     # city's foreign pass (88c) picks and places from KRAND streams, and every builder it calls reseeds itself
     '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '88c-city-foreign.js',
     '71w-port-sea.js',   # the sea on core/water (vendored from the port kit)
+    '89x-ys-trades.js',   # the Voth census table (data only: YS_TRADES, read by tools/check_trades.py)
 }
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'91t-ys-tags.js', '99-start.js'}   # core/host, core/tags (no rnd()); the records; the take

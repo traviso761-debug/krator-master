@@ -15,6 +15,7 @@
                         'pedestrian' layer, the population) and Shade's own audits
   86..88                HOST: overlays, the preset views, build order
   89t-shade-tags        HOST: the page's core/tags registry (KTAGS.page): buildings, places, trees, water, carve patches
+  89s-shade-trades      DATA: the Voth census of trades, SHADE_TRADES (tools/check_trades.py)
   08-core-rand, 50..53-core-tags   read from core/rand and core/tags (CORE_MODULES)
   90..99-host-*, 20-core-space, 88-core-minimap   read from core/host (CORE_HOST: the whole interface less core/edits;
                         core/host/README.md): the camera, the loop, the panel, the inspector, marks, pictures, minimap,

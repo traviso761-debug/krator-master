@@ -5,7 +5,7 @@
  ],
  "01-reedkit.html": [
   "virtual",
-  "de966d06a105"
+  "e3c4c20f6922"
  ],
  "01b-build-open.html": [
   "mungo",
@@ -470,6 +470,10 @@
  "88c-mungo-minimap.js": [
   "mungo",
   "c6eafeffa678"
+ ],
+ "88d-mungo-trades.js": [
+  "mungo",
+  "deab75868f13"
  ],
  "89-atmos-0-core.js": [
   "core/atmos",

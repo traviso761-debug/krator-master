@@ -37,3 +37,14 @@
 - [ ] `tools/walk_audit/run.py dist/lizardmen.html` lists `lz-tower` (the solid courses' tops above the hall: by design), `lz-seer` (the scale model's
       tops, not a floor) and `lz-reliquary` (a 2.5 m2 ledge at 3 m). None is a missing stair that I could find.
 
+
+## Voth census trades (2026-10-19)
+
+The table is `LZ_TRADES` in `src/59-lz-trades.js` (checked by `tools/check_trades.py`, `verify.py` assert `voth-trades`): 17 carried, 1 partly, 5 gaps, 21 na (no shops, no coin, landlocked, never trade; embassy tabled).
+
+- [ ] bakers: a bake house or yam oven (the windmill makes flour, nothing bakes it).
+- [ ] brewers: a fermenting house for a spore or yam drink.
+- [ ] fishers: a small fishing weir or drying rack on the Rift's water.
+- [ ] orchardmen: an orchard of Rift fruit trees (the farm has greens, pods and yam only).
+- [ ] miners: a mine head (ore for the bronze hall).
+- [ ] quarrymen and masons (partly, the bronze and stone hall cuts stone): a quarry.

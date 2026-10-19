@@ -33,6 +33,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `56-sa-beasts.js` | 3 |  |
 | `57-lc-camp.js` | 10 |  |
 | `58-lz-monument.js` | 4 |  |
+| `59-lz-trades.js` | 5 | Voth census table LZ_TRADES |
 | `60-lz-reliquary.js` | 11 |  |
 | `62-lk-capital.js` | 18 |  |
 | `81-sky.js` | 10 |  |
