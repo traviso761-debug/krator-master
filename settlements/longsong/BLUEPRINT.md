@@ -44,6 +44,10 @@ Eastern Watch is the toron spire with the Order's bell. The library and school f
 (`order_bookcase`, `order_reading_table`, `order_lectern`, `order_library_ladder`, `order_globe_stand`,
 `order_pupil_desk`, `order_master_chair`, `order_writing_board`, `order_mat_rack`, in `settlements/yuni/src/59-civic.js`).
 
+**Stone and lime, not earth (the owner, 2026-10-19).** The build (`README.md`, `PLAN.md`) keeps the Order's forms above
+but none of the chapterhouses' Sahelian earth: no banco, no toron, no laterite. Where they are earth, Longsong is granite
+and lime render; the Eastern Watch is a granite spire, not a Sankore one.
+
 ## What the references teach
 
 - **The Potala.** A White Palace (the living and governing: the Dalai Lama's apartments, the assembly hall, the
@@ -129,8 +133,11 @@ reaches (the Restoration Halls, the Vault, the Hall of Hours); elsewhere lamps.
 
 ## Assumptions and open points
 
-- There is no Longsong build yet; the sheets are the programme for one, on the Xanadu kit (`settlements/xanadu`,
-  package X-D's monastery and Grand Temple are the nearest forms; the dzong gate from X-G).
+- **The build exists** (2026-10-19: `dist/longsong.html`, `README.md`, `PLAN.md`): in situ on the scale model at px
+  954,1296, on its own kit (`src/62-ls-arch.js`: the Xanadu kit's Tibetan sacred register without its rammed earth),
+  the rock 40 m over the ward, the frame u -> +z (south, uphill), v -> +x (east), the Great Gate in the north wall
+  (Krator's sun is in the north). Below the Vault it adds what the owner added to the lore: the Procrastinator's hall
+  and its eight seals (`PLAN.md` section 2).
 - The rock's height (30 m) and the storey (4.5 m) are assumptions; the Potala's stair and the step-backs will want
   tuning against the hill the build chooses in the Oidong Valley. The grounds may be rectangular (owner): the sheet
   draws a square; a 400 x 320 site drops the two outer rows of the ward or the rear gardens.

@@ -1,0 +1,149 @@
+{
+ "build": "longsong",
+ "note": "Longsong's adapter onto the material library (core/materials/PLAN.md). The monastery is stone and lime, never earth (the owner, 2026-10-19: no Sahelian mud or rammed earth): wall is the whitewashed lime render over dressed stone (the White Palace, the ward), coloured per mesh (white, the Red Palace's ochre-red, the Order's blue band); ashlar the dressed granite of the plinths, stairs, the gate's pylons and the parabolic arch; rock the hill (Longsong's rock, granite); slate the glazed scale tiles of the drum halls' cones (tinted the Order's blue); gilt the gilded roofs, finials and the Procrastinator's rims; twig the maroon penbey band under the parapets (twig, as Xanadu's: not earth); wood the lacquered columns, brackets and window frames; paving the courts and the avenue; vault the chiselled stone of the forbidden depths. keep 0 sets are grey detail under the mesh colour. Run python3 tools/textures/pack.py settlements/longsong after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "wall": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "roughLift": 0.35,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "ashlar": {
+   "lib": "stone.cut",
+   "scale": [
+    2.0,
+    1.92
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.35,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rock": {
+   "lib": "rock.granite.tor",
+   "scale": [
+    7.0,
+    7.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "slate": {
+   "lib": "roof.scale.slate",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.35
+  },
+  "gilt": {
+   "lib": "roof.scale.gilt",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.62
+   },
+   "roughLift": 0.1,
+   "specular": 0.6
+  },
+  "twig": {
+   "lib": "band.xanadu.twig",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.5
+   },
+   "roughLift": 0.4,
+   "specular": 0.2
+  },
+  "wood": {
+   "lib": "wood.lacquer.crimson",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.35
+  },
+  "paving": {
+   "lib": "paving.flagstone",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.35,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "vault": {
+   "lib": "stone.chiselled",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.35,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  }
+ }
+}
