@@ -11,11 +11,17 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `37-core-stacks.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `35-core-anim.js`, `36-core-walker.js`, `37-core-traps.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `35-core-anim.js`, `36-core-walker.js`, `37-core-traps.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
 ## src/
 
@@ -24,12 +30,14 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 7 | the canyon floor (43); the rock (KSTACKS records: core/terrain/37-core- (52) |
 | `46-biome-necanyons-layout.js` | 8 | lay: the grid of beds and wall distances (25); the height of the rock (45); the zone of a point (58); the wall: a point on a bed's face, and its outwa (73); the seep lines (data: where the hanging gardens  (79); potholes: rain pools on the caps and the stacks' (90) |
-| `47-host-land.js` | 12 | the fields (biomes/WORLD.md): wet, flow, rock, u (23); the host binding (before the meshes: their paint (33); the library layers (or procedural without the pa (48); the floor (one mesh: litter, talus at the walls' (66); the rock (KSTACKS meshes): three meshes, by mate (87); the water: the creek's ribbon and the rain pools (118) |
+| `47-host-land.js` | 13 | the fields (biomes/WORLD.md): wet, flow, rock, u (23); the host binding (before the meshes: their paint (33); the library layers (or procedural without the pa (48); the floor (one mesh: litter, talus at the walls' (66); the rock (KSTACKS meshes): three meshes, by mate (87); the water: the creek and the rain pools (118) |
 | `50-biome-necanyons-species.js` | 27 | palettes (sRGB; a library card carries its own c (20); the trap records (core/biome/37-core-traps.js) (34); the tree-scale species (45); harvest (biomes/FRUIT.md; kits/crops) (65); the small plants and the carnivores, tagged (78); leaf textures (procedural, greyscale: the fallba (98); bark textures (grey, mean ~.6) (138); geometries (kit-local), and cell mapping (147); materials (176); instanced items (221) |
 | `55-biome-necanyons-trees.js` | 16 | the placement grid (15); keep-clear between trees (core/space) (27); the builders: (T, st, lv) with lv 2 near, 1 mid (46); impostors (the far trees) (123); the passes (data: species, cell, acceptance by z (137) |
 | `57-biome-necanyons-carnivores.js` | 10 | the plants (21); the passes (58) |
 | `60-biome-necanyons-floor.js` | 2 |  |
 | `70-biome-necanyons.js` | <1 |  |
 | `88-host-build.js` | 1 |  |
-| `99-host-take.js` | 11 | the inspector's words: a plant names its species (26); the probe's budgets and the kit's own checks (ve (40); the page, handed to the host (94) |
+| `89n-host-night.js` | 3 |  |
+| `89w-host-water.js` | 2 |  |
+| `99-host-take.js` | 13 | the inspector's words: a plant names its species (26); the probe's budgets and the kit's own checks (ve (40); the page, handed to the host (108) |
 | `99-tail.html` | <1 |  |

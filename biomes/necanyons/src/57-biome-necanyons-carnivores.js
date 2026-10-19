@@ -56,7 +56,7 @@ function vine(B,a,y0,Hc,cups,lv,st){const pts=[];let y=y0;
  st.vines++;return pts[0];}
 
 // ---------------------------------------------------------------- the passes
-NECANYONS.buildCarnivores=function(R,q){q=q==null?1:q;R=R||1500;const L=BIO.radii(),st={rimdew:0,sunpitcher:0,clapjaw:0,traps:0,turncoat:0,yellowtube:0,pitchers:0,vines:0,vineTris:0,curtains:0,wort:0,seeps:0};
+NECANYONS.buildCarnivores=function(R,q){q=q==null?1:q;R=R==null?1500:R;const L=BIO.radii(),st={rimdew:0,sunpitcher:0,clapjaw:0,traps:0,turncoat:0,yellowtube:0,pitchers:0,vines:0,vineTris:0,curtains:0,wort:0,seeps:0};
  NAMES.length=0;NECANYONS.TRAPPED.length=0;
  const lvOf=(x,z)=>{const d=BIO.lodD(x,z);return d<L.hero?2:d<L.mid?1:0;};
  // THE SEEP LINES: curtains from the lip, plants on the ledge between the lip and the cap's foot

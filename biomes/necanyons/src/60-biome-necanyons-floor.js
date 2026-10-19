@@ -6,7 +6,7 @@
 const PAL=NECANYONS.PAL,C=NECANYONS.C;const {bright,vary}=BIO.col;
 const col=(slot,set,k)=>NECANYONS.libCol(slot,bright(vary(pick(set),.03,.1,.06),k==null?1.2:k));
 function tuft(item,x,z,h,w,c){BIO.put(item,[x,BIO.terrainH(x,z)-.04,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[w,h,w],c);}
-NECANYONS.buildFloor=function(R,q){q=q==null?1:q;R=R||1500;const L=BIO.radii(),st={fonio:0,ringgrass:0,ferns:0};
+NECANYONS.buildFloor=function(R,q){q=q==null?1:q;R=R==null?1500:R;const L=BIO.radii(),st={fonio:0,ringgrass:0,ferns:0};
  const lvOf=(x,z)=>{const d=BIO.lodD(x,z);return d<L.floor[0]?2:d<L.floor[1]?1:0;};
  // FONIO in the pans
  NECANYONS.place(2.4,301,(x,z,Z)=>(Z.zone==='cap'||Z.zone==='bench')?Z.pan*smooth(-4.5,-6,Z.d)*(Z.zone==='cap'?.75:.45)*q:0,(x,y,z,Z)=>{const lv=lvOf(x,z),n=lv===2?ri(3,7):lv===1?2:1;

@@ -55,6 +55,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89f-host-cavern.js` | 16 |  |
 | `89g-host-garden.js` | 2 |  |
 | `89h-host-walk.js` | 2 |  |
-| `89w-host-water.js` | 3 |  |
-| `99-host-take.js` | 71 **big** | the inspector's words: the rock, the zone of the (44); the probe's budgets and the page's checks (verif (56); THE DRAWN ROCK, measured by rays (62); the page, handed to the host (525) |
+| `89w-host-water.js` | 4 |  |
+| `89y-host-night.js` | 4 |  |
+| `99-host-take.js` | 73 **big** | the inspector's words: the rock, the zone of the (44); the probe's budgets and the page's checks (verif (56); THE DRAWN ROCK, measured by rays (62); the page, handed to the host (538) |
 | `99-tail.html` | <1 |  |

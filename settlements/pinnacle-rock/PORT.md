@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 152 (47%) | 0 (0%) | 0 (0%) | 24 (7%) | 146 (45%) |
+| KB | 156 (48%) | 0 (0%) | 0 (0%) | 24 (7%) | 149 (45%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -38,8 +38,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89f-host-cavern.js` | 16.3 | [draw] | 24 | 0 | 0 | 0 | 2 | 8 | 0 | 2 | 0 | 0 | 0 | draws CAVERN's records: the chunks (ground in the cap's material, walls hewn), the cap re-cut over the openings, the dressing, the stones, the fig, the pool, the processional |
 | `src/89g-host-garden.js` | 1.6 | [draw] | 1 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | draws GARDEN_TOWN's records: the houses (CAT, instanced), the paths |
 | `src/89h-host-walk.js` | 1.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the walk registry (core/walk): the decks' rings, the climbs' and ascents' treads, the bridges, the Stair, the lift road |
-| `src/89w-host-water.js` | 3.1 | [draw] | 6 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | core/water's still water on core/atmos (the paddies, the spring, the seep pond, the rain pool) |
-| `src/99-host-take.js` | 70.8 | [draw] | 9 | 0 | 0 | 0 | 0 | 14 | 0 | 2 | 8 | 0 | 0 |  |
+| `src/89w-host-water.js` | 4.1 | [draw] | 8 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | core/water's still water on core/atmos (the paddies, the spring, the seep pond, the Deep Root's pool, the rain pools on the slickrock); core/atmos bound on the host's hour |
+| `src/89y-host-night.js` | 4.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the night's fires and lamps placed from the records with core/atmos (braziers, beacons, the glow layer, one hall light); core/atmos's export carries them (its lamps and glows) |
+| `src/99-host-take.js` | 72.8 | [draw] | 9 | 0 | 0 | 0 | 0 | 14 | 0 | 2 | 8 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

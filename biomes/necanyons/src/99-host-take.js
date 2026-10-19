@@ -73,7 +73,18 @@ const HCHK={
  snaps(list){const m=list||[];if(!list)scene.traverse(M=>{if(M.isInstancedMesh&&/lobe$/.test(M.name))m.push(M);});let n=0,sides=0;
   m.forEach(M=>{const a=M.geometry.getAttribute('aTrap');if(!a)return;for(let i=0;i<a.count;i++){n++;if(a.getY(i)!==0)sides++;}});
   return{ok:n>0&&sides===n,detail:n+' lobes, '+sides+' hinged'};}};
+// the water: core/water's records (the creek a flow line over its bed, a still surface for every rain pool) and drawn
+HCHK.water=(W,D)=>{if(!W)return{ok:false,detail:'no core/water records'};const c=W.creek;let worst=0;
+ if(c)c.pts.forEach(p=>{worst=Math.max(worst,Math.abs(p.y-(creekBed(p.z)+CREEK.depth)));});
+ const ok=!!c&&c.kind==='flow'&&worst<.01&&W.pools.length===NECANYONS.POTHOLES.length&&W.pools.every(S=>S.kind==='still')&&!!D&&!!D.creek&&(!W.pools.length||!!D.pools);
+ return{ok,detail:(c?'the creek: '+c.pts.length+' points, off its bed by '+worst.toFixed(3)+' m':'no creek')+'; '+W.pools.length+' rain pools of '+NECANYONS.POTHOLES.length+'; drawn: '+(D?Object.keys(D).join(', '):'none')};};
+// the night: midnight's key light is the giant's and dim, the dome and the fog dark; noon's are the page's own
+HCHK.night=N=>{const h0=N.hourNow;N.hour(0);const n={i:sun.intensity,sky:sky.material.color.getHSL({}).l,fog:scene.fog.color.getHSL({}).l,f:N.f};
+ N.hour(13);const d={i:sun.intensity,sky:sky.material.color.getHSL({}).l,fog:scene.fog.color.getHSL({}).l,f:N.f};N.hour(h0);
+ return{ok:n.f===1&&d.f===0&&n.i<d.i*.3&&n.sky<.3&&n.fog<.2&&d.sky>.9,detail:'midnight: key '+n.i.toFixed(2)+', dome '+n.sky.toFixed(2)+', fog '+n.fog.toFixed(2)+'; noon: key '+d.i.toFixed(2)+', dome '+d.sky.toFixed(2)};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N=_itemCounts();
+ add('the creek and the rain pools on core/water',HCHK.water(WATER_RECS,WATER_DRAW));
+ add('the night darkens the light, the dome and the fog',HCHK.night(NIGHT));
  add('fruit tagged, catalogued and drawn',HCHK.fruit(NECANYONS.SPECIES,NECANYONS.PLANTS,N));
  add('a fruit, a staple and a medicinal plant',HCHK.three(NECANYONS.SPECIES,NECANYONS.PLANTS,N));
  add('carnivores: trap records, harmless to a person, drawn, registered',HCHK.carnivores(NECANYONS.PLANTS,N,NECANYONS.TRAPPED||[]));
@@ -81,6 +92,9 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),N
  add('the clapjaws\' lobes hinge',HCHK.snaps());
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),N=_itemCounts(),PL=NECANYONS.PLANTS;
+ add('the creek lifted off its bed',HCHK.water(Object.assign({},WATER_RECS,{creek:Object.assign({},WATER_RECS.creek,{pts:WATER_RECS.creek.pts.map((p,i)=>i===5?Object.assign({},p,{y:p.y+1}):p)})}),WATER_DRAW));
+ add('a rain pool missing',HCHK.water(Object.assign({},WATER_RECS,{pools:WATER_RECS.pools.slice(1)}),WATER_DRAW));
+ add('a night that does not darken',HCHK.night({hourNow:12,f:0,hour(h){this.hourNow=h;this.f=h<6?1:0;}}));
  add('a fruiting species with no catalog fruit',HCHK.fruit(NECANYONS.SPECIES.map(S=>S.key==='stackfig'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),PL,N));
  add('no figs drawn',HCHK.fruit(NECANYONS.SPECIES,PL,Object.assign({},N,{fig:0})));
  add('the medicinal plant not medicinal',HCHK.three(NECANYONS.SPECIES,Object.assign({},PL,{rimdew:{name:'x',items:PL.rimdew.items,tags:Object.assign({},PL.rimdew.tags,{harvest:Object.assign({},PL.rimdew.tags.harvest,{medicinal:false})})}}),N));
@@ -94,13 +108,16 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.take({build:'necanyons',title:'Krator biome — the north-eastern canyons',
- hint:'The north-eastern canyons: red sandstone benches, caps and stacks out of the hyperjungle; the first carnivorous plants',
+ hint:'The north-eastern canyons: red sandstone benches, caps and stacks out of the hyperjungle; the first carnivorous plants. N for night',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
+ // the world hour (the panel's slider, ?hour=): the night's light, fog and dome (89n-host-night.js); N flips noon and midnight
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},hour:h=>NIGHT.hour(h)},
+ clock:{hour:13},keys:{n:()=>NIGHT.flip()},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'carnivores':{match:o=>!!(o.isInstancedMesh&&o.userData&&o.userData.biome&&NECANYONS.plantOfItem((o.name||'').replace(/^biome:/,''))&&NECANYONS.plantOfItem((o.name||'').replace(/^biome:/,'')).tags.trap)},
-  'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},'sky':{objects:()=>[sky,giant,giantRing]}},
+  'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},'water':{match:o=>!!(o.name&&/^water:/.test(o.name))||o===(WATER_DRAW&&WATER_DRAW.pools)},'sky':{objects:()=>[sky,giant,giantRing]}},
  exporters:{biome:()=>BIO.export(),layout:()=>NECANYONS.records()},
+ minimap:{title:'The north-eastern canyons'},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

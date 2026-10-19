@@ -43,8 +43,11 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
 - **The owner's first look at P3** (same branch): the Deep Root's door in the Garden's mesa's wall (57 rewritten), the
   storerooms (58), the upper stall tiers and the climbs' starts (43), the full viewer, core/walk (89h), core/lod and
   core/water (89w) (build.py); the kit's cavern door (an open variant; its arch legs no longer cross the doorway).
-- **Not in the gallery** (the owner, 2026-10-19): `gallery/build_gallery.py` lists it in `UNLISTED` until the town is
-  built. The north-eastern canyons biome it stands on is in Krator Biomes and Objects.
+- **The night, and merged** (owner, 2026-10-19: "add night mode alone, then merge to main-origin and update gallery; full
+  sim to come later"): the hour slider and N, necanyons' night fragment read in place (`89n`), the fires and lamps on
+  core/atmos (`89y`), the water's clock on the host's ticks (it had been fed milliseconds); necanyons brought onto the
+  whole viewer, core/water (its creek and rain pools), core/atmos's export and core/biome's stage. Merged to main and
+  listed in the gallery.
 
 ## What to do next
 

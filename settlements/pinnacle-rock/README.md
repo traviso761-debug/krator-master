@@ -161,8 +161,18 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
   cutaway), core/walk (`89h-host-walk.js`: every deck's ring, every tread of the climbs and the ways up, the bridges, the
   Stair, the lift road; KCAVERN writes the Deep Root's), core/lod (`09-lod.js`, `97-lod-auto.js`), and core/water's still
   water on core/atmos's core, presets, wave clock and sky light (`89w-host-water.js`: the paddies, the spring, the seep
-  pond, the rain pool). Not yet: core/atmos's lights, particles and weather, core/simulation, core/sched and
-  core/charactermodels (the life and the night: P4).
+  pond, the Deep Root's pool, the rain pools on the slickrock, whose records necanyons' land fragment makes), core/atmos's
+  lights and export, and core/biome's stage (KSTAGE). Not yet: core/atmos's particles and weather, core/simulation,
+  core/sched and core/charactermodels (the life: P4).
+- **The night** (owner, 2026-10-19: "add night mode alone ... full sim to come later"): the panel's hour slider (the
+  host's world clock; `?hour=`; N flips noon and midnight) drives necanyons' night fragment (`89n-host-night.js`, read in
+  place: the key light becomes the giant's cold light, the sky light, the fill, the fog, the dome and the exposure ease
+  over dusk and dawn by core/atmos's night curve) and the fires and lamps (`89y-host-night.js`, on core/atmos, each with
+  its hours): braziers round the Crown's square and before the assembly hall, a lamp at every stall's head (all 173), a
+  lantern at every keeper's shelter, at the Stair's gates and the lifts, turning beacons on the two beacon towers, a fire before each band's
+  chief's pavilion, braziers at the Deep Root's door, its niches lit at every hour and one warm light in its hall; the
+  farms dark (a lantern at each palisade gate). The water's sky light is taken again as the hour moves. Checked at
+  midnight and noon (`HCHK.night`).
 - **The plants**: the necanyons kit (`biomes/necanyons`, read in place with its land fragment `47-host-land.js`, which
   takes this page's `LAND` hooks: the cap height, the LOD spine, the cleared ground, no creek) on the walls, ledges,
   spurs and stacks, kept off the town's ground past the 12 m rim band; the hyperjungle on the floor, kept out of the farms,

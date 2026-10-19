@@ -1,16 +1,17 @@
 // ================================================================= HOST — the still water (core/water, on core/atmos's clock and sky light)
 // The page's water is core/water's still water: the paddies (each cell's sheet inside its bund), the spring below the
-// Stair, the seep pond at the west foot and the Deep Root's rain pool are WATER.still records (WATER.heightAt and
-// core/export read them) drawn with WATER.stillMaterial (the sky in it, a faint ripple on the one clock), as Reed Lake's
-// troughs are (settlements/reedlake/src/90x-rl-still.js). ATMOS is bound here (the wave clock, the sky light: only the
-// water reflects the sky, the page's tuned materials keep theirs); its frame hooks run from the host's frame (FRAME_HOOKS).
-const FRAME_HOOKS=[];
+// Stair, the seep pond at the west foot, the Deep Root's rain pool and the rain pools on the slickrock (necanyons' 47 makes
+// their records: WATER_RECS.pools) are WATER.still records (WATER.heightAt and core/export read them) drawn with
+// WATER.stillMaterial (the sky in it, a faint ripple on the one clock), as Reed Lake's troughs are
+// (settlements/reedlake/src/90x-rl-still.js). ATMOS is bound here (the wave clock, the sky light: only the water reflects
+// the sky, the page's tuned materials keep theirs; the night's lights, 89y) on the host's world hour (89n-host-night.js);
+// its frame hooks run from the host's ticks (fn(dt): the module clock's seconds).
 const STILL=(function(){if(typeof ATMOS==='undefined'||typeof WATER==='undefined')return null;try{
- ATMOS.init({THREE,scene,camera,hour:()=>13,onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:2601,
+ ATMOS.init({THREE,scene,camera,hour:()=>NIGHT.hourNow,onFrame:fn=>TICKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:2601,
   err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
  const env=new THREE.Scene(),HOLD={environment:null};
  if(typeof sky!=='undefined'&&sky&&sky.geometry)env.add(new THREE.Mesh(sky.geometry,sky.material));
- ATMOS.skylight({renderer,sky:env,scene:HOLD,ground:()=>new THREE.Color(0x2a3a26)});
+ ATMOS.skylight({renderer,sky:env,scene:HOLD,ground:()=>new THREE.Color(0x2a3a26),key:()=>Math.round(NIGHT.f*8)});
  const mat=()=>WATER.stillMaterial({color:new THREE.Color(.06,.12,.10),roughness:.08,metalness:.1,envMapIntensity:.35}),recs=[];
  const ring=(c,rx,rz,n)=>{const P=[];for(let k=0;k<n;k++){const a=k/n*TAU;P.push([c[0]+Math.cos(a)*rx,c[1]+Math.sin(a)*rz]);}return P;};
  // the paddies: each cell's sheet, 1.1 m in from its corners (89d drew it), its level the cell's top
@@ -27,5 +28,10 @@ const STILL=(function(){if(typeof ATMOS==='undefined'||typeof WATER==='undefined
  // the Deep Root's rain pool
  if(CAVERN){const Pl=CAVERN.pool;recs.push(WATER.still({name:Pl.name,level:Pl.y,poly:ring(Pl.c,Pl.r,Pl.r,28)}));
   CAVERN_MESH.group&&CAVERN_MESH.group.traverse(o=>{if(o.isMesh&&o.userData.inspectLabel===Pl.name)o.material=mat();});}
- return {still:recs.length};}catch(e){reportErr('water: '+(e&&e.stack||e));return null;}})();
+ // the rain pools on the slickrock (the records necanyons' land fragment made): one mesh of discs at their levels
+ let pools=null;if(WATER_RECS&&WATER_RECS.pools.length){const pos=[];WATER_RECS.pools.forEach(S=>{const P=S.poly,n=P.length;let cx=0,cz=0;P.forEach(q=>{cx+=q[0];cz+=q[1];});cx/=n;cz/=n;
+   for(let k=0;k<n;k++){const a=P[k],b=P[(k+1)%n];pos.push(cx,S.level,cz,b[0],S.level,b[1],a[0],S.level,a[1]);}});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
+  pools=new THREE.Mesh(g,mat());pools.userData.probeSkip=true;pools.userData.host=true;pools.userData.inspectLabel='A rain pool on the slickrock';pools.renderOrder=1;scene.add(pools);}
+ return {still:recs.length+(WATER_RECS?WATER_RECS.pools.length:0),pools};}catch(e){reportErr('water: '+(e&&e.stack||e));return null;}})();
 _mark('water');

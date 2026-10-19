@@ -194,6 +194,8 @@ and core/water's still water taken.
   - **P3e, the Garden's great-houses and the ways up** to the Garden's mesa and the Heart.
 - **P4. The life.** Riders and keepers (`core/charactermodels`, the beast-rider clothes), the Wings' banners (the
   claw, green), the night: fires on the Crown, lamps at the stall heads, the farms dark. Done when the night view reads.
+  **The night is done without the life** (owner, 2026-10-19: "add night mode alone ... full sim to come later"): the hour
+  slider, the light and the lamps (README, "The night"); the riders, the keepers, the banners and the simulation remain.
 - **P5. The record.** `README.md`, `KNOWN_ISSUES.md`, `PORT.md`, the gallery entry, the hash into `PORT-BASELINE.json`.
 
 ## 4. Views for the verify

@@ -15,6 +15,9 @@
   82-host-sky         the hyperjungle's sky, read in place
   86-pr-far           HOST: the far terrain, the model's land to 60 km
   88-host-build       HOST: the build order (the kit off the town's ground, the forest out of the farms)
+  89-atmos-*          core/atmos: the core, presets, lights (the night's fires and lamps), export, wave clock, sky light
+  89n-host-night      the night (the light, the fog, the dome by the world hour), read in place (biomes/necanyons/src)
+  89w-host-water      HOST: the still water on core/water; 89y-host-night: the fires and lamps on core/atmos
   90..98              HOST (core/host)
   99-host-take        the page handed to core/host
   99-tail.html        closes <script>
@@ -83,7 +86,7 @@ for slot,p in KITS.items(): PATH[slot]=os.path.join(HJ,p)
 # in place: its own stage (45), build (88) and page (99) are this page's
 NC=os.path.normpath(os.path.join(HERE,'..','..','biomes','necanyons'))
 for f in ('46-biome-necanyons-layout.js','47-host-land.js','50-biome-necanyons-species.js','55-biome-necanyons-trees.js',
-          '57-biome-necanyons-carnivores.js','60-biome-necanyons-floor.js','70-biome-necanyons.js'):
+          '57-biome-necanyons-carnivores.js','60-biome-necanyons-floor.js','70-biome-necanyons.js','89n-host-night.js'):
     PATH[f]=os.path.join(NC,'src',f)
 # the open world's fields (openworld/little-demo/src/41-world-fields.js), read in place: the land round the site at 1:1
 PATH['41-world-fields.js']=os.path.normpath(os.path.join(HERE,'..','..','openworld','little-demo','src','41-world-fields.js'))
@@ -114,9 +117,12 @@ khost.resolve(PATH,CORE_HOST)
 # core/walk (KWALK): the floors a walker stands on that the ground does not carry (the decks, the climbs, the bridges, the
 # Stair, the lift road, the Deep Root: 89h-host-walk.js, and KCAVERN writes its own); core/lod (every build takes it:
 # 09 defines LOD, 97 applies it to the finished scene); core/atmos's core, presets, wave clock and sky light with
-# core/water (the still water: the paddies, the spring, the seep pond, the rain pool: 89w-host-water.js)
-CORE_X={'20-core-walk.js':('walk','20-core-walk.js'),'09-lod.js':('lod','09-lod.js'),'97-lod-auto.js':('lod','97-lod-auto.js')}
-for f in ('89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-a-waves.js','89-atmos-b-skylight.js'): CORE_X[f]=('atmos',f)
+# core/water (the still water: the paddies, the spring, the seep pond, the rain pools: 89w-host-water.js); core/atmos's lights
+# (the night's braziers, beacons, lamps and the glow layer: 89y-host-night.js) and its export; core/biome's stage (KSTAGE: the
+# export's light, air and sky)
+CORE_X={'20-core-walk.js':('walk','20-core-walk.js'),'09-lod.js':('lod','09-lod.js'),'97-lod-auto.js':('lod','97-lod-auto.js'),
+        '44-core-stage.js':('biome','44-core-stage.js')}
+for f in ('89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-2-lights.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js'): CORE_X[f]=('atmos',f)
 for f in ('20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js'): CORE_X[f]=('water',f)
 for f,(d,n) in CORE_X.items():
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core',d,n))

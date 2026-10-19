@@ -436,7 +436,18 @@ function _forestPts(low){const out=[],v=new THREE.Vector3(),M=new THREE.Matrix4(
    for(let i=0;i<P.count;i+=13){v.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);if(v.y-terrainH(v.x,v.z)<4)out.push([v.x,v.z]);}}});
  return out;}
 const _fins=()=>ROCK.filter(B=>/^fin-/.test(B.id)),_garden=()=>ROCK.filter(B=>/^garden-/.test(B.id));
+// the night (89n, 89y): midnight's key light is the giant's and dim, the dome and the fog dark, noon's the page's own; the
+// Crown's fires, a lamp at every stall's shelter, the beacons, the bands' fires and the Deep Root's lights all placed, and
+// at midnight lit (a brazier's flame shown, the glow layer's night up), at noon out
+HCHK.night=(N,L,stalls)=>{const h0=N.hourNow,flame=()=>{let k=0;if(typeof ATMOS!=='undefined'&&ATMOS.root)ATMOS.root.traverse(o=>{if(o.isMesh&&o.material&&o.material.color&&o.material.color.getHex()===0xffa040&&o.visible)k++;});return k;};
+ const tick=h=>{N.hour(h);if(typeof ATMOS!=='undefined'&&ATMOS.hooks)ATMOS.hooks.forEach(f=>f(0,h,0));};
+ tick(0);const n={i:sun.intensity,sky:sky.material.color.getHSL({}).l,fog:scene.fog.color.getHSL({}).l,f:N.f,lit:flame()};
+ tick(13);const d={i:sun.intensity,sky:sky.material.color.getHSL({}).l,f:N.f,lit:flame()};tick(h0);
+ const ok=n.f===1&&d.f===0&&n.i<d.i*.3&&n.sky<.3&&n.fog<.2&&d.sky>.9&&!!L&&L.braziers>=12&&L.stalls===stalls&&L.lamps>stalls&&L.beacons>=2&&L.halls===1&&n.lit===L.braziers&&d.lit===0;
+ return{ok,detail:'midnight: key '+n.i.toFixed(2)+', dome '+n.sky.toFixed(2)+', fog '+n.fog.toFixed(2)+', '+n.lit+' fires burning; noon: key '+d.i.toFixed(2)+', dome '+d.sky.toFixed(2)+', '+d.lit+' burning; '+
+  (L?L.braziers+' braziers, '+L.lamps+' lamps ('+(L.stalls||0)+' of '+stalls+' stall heads lit), '+L.beacons+' beacons, '+L.halls+' hall light':'no lights')};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
+ add('the night: the light, the dome, the fog, the fires and lamps',HCHK.night(NIGHT,NIGHT_LIGHTS,(ROOST.roosts||[]).length));
  add('the mesa: 250 m, 1.2 by 0.8 km',HCHK.mesa(MESA_B));
  add('ten fins on the rim, spread round it',HCHK.fins(_fins()));
  add('the Garden\'s mesa and its pinnacles',HCHK.garden(_garden(),GARDEN_B));
@@ -461,6 +472,9 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the lift road: the beast lift to the north-west gate, cleared',HCHK.road((ROOST.roads||[])[0],ROOST.lifts.find(l=>l.id==='lift-north')));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
+ add('a night that does not darken',HCHK.night({hourNow:12,f:0,hour(h){this.hourNow=h;this.f=h<6?1:0;}},NIGHT_LIGHTS,(ROOST.roosts||[]).length));
+ add('no beacons lit',HCHK.night(NIGHT,NIGHT_LIGHTS&&Object.assign({},NIGHT_LIGHTS,{beacons:0}),(ROOST.roosts||[]).length));
+ add('a stall head left dark',HCHK.night(NIGHT,NIGHT_LIGHTS&&Object.assign({},NIGHT_LIGHTS,{stalls:NIGHT_LIGHTS.stalls-1}),(ROOST.roosts||[]).length));
  add('the fins in one row on the north rim (as first drawn)',HCHK.fins(F.map((B,i)=>Object.assign({},B,{x:-270+i*60,z:-520}))));
  add('a fin over the edge',HCHK.fins(F.map((B,i)=>i?B:Object.assign({},B,{beds:[Object.assign({},B.beds[0],{cx:B.beds[0].cx*1.25,cz:B.beds[0].cz*1.25})]}))));
  add('a mesa 180 m high',HCHK.mesa(Object.assign({},MESA_B,{top:MESA_B.top-70})));
@@ -525,19 +539,21 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
- hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts, the town on the top, the Garden, the Deep Root, the farms and the bands\' grounds)',
+ hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts, the town on the top, the Garden, the Deep Root, the farms and the bands\' grounds). N for night',
  scene,camera,renderer,ground:terrainH,clear:1.8,
  walk:typeof KWALK!=='undefined'?KWALK:null,   // the walker on the decks, the stairs, the bridges and in the Deep Root (89h, KCAVERN)
  minimap:{frame:[-1450,1450,-950,1750],title:'Pinnacle Rock'},   // the plan from the records (core/minimap: M)
- frameHooks:typeof FRAME_HOOKS!=='undefined'?FRAME_HOOKS:[],   // core/atmos's clock (the still water's ripple: 89w)
  clampCam:(p,t)=>{if(typeof CAVERN!=='undefined'&&CAVERN&&p.y<MESA_B.top&&CAVERN.C.voidSD(p.x,p.y,p.z)<-.8)return;const g=terrainH(p.x,p.z)+1.8;if(p.y<g)p.y=g;},   // into the Deep Root's voids (P3d)
 registry:REG,views:VIEWS,ticks:TICKS,
  hourTicks:[(dt,hour)=>{if(PRFLY)PRFLY.update(dt,hour);}],   // Girder's flyers on the roosts (89b, build.py flyers_fragment)
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
+ // the world hour (the panel's slider, ?hour=): the night's light, fog and dome (necanyons' 89n-host-night.js) and the fires and
+ // lamps on core/atmos (89y); N flips noon and midnight
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},hour:h=>NIGHT.hour(h)},
+ clock:{hour:13},keys:{n:()=>NIGHT.flip()},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
   'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the farms':{match:o=>!!(o.userData&&o.userData.farms)},'the camps':{match:o=>!!(o.userData&&o.userData.camps)},'the Deep Root':{match:o=>!!(o.userData&&o.userData.cavern)},'the Garden':{match:o=>!!(o.userData&&o.userData.garden)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
-  'the far land':{match:o=>!!(o.userData&&o.userData.far)},'sky':{objects:()=>[sky,giant,giantRing]}},
+  'the far land':{match:o=>!!(o.userData&&o.userData.far)},'the night\'s lights':{objects:()=>typeof ATMOS!=='undefined'&&ATMOS.root?[ATMOS.root]:[]},'sky':{objects:()=>[sky,giant,giantRing]}},
  exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST,town:TOWN?TOWN.K.export():null,farms:FARMS?{terraces:FARMS.terraces,cells:FARMS.cells,houses:FARMS.houses,palisade:FARMS.palisade,tracks:FARMS.tracks}:null,camps:CAMPS?{grounds:CAMPS.grounds,tracks:CAMPS.tracks}:null,cavern:CAVERN?Object.assign(CAVERN.C.export(),{dress:CAVERN.dress,stones:CAVERN.stones,fig:CAVERN.fig}):null,garden:GARDEN_TOWN?{houses:GARDEN_TOWN.houses,ways:GARDEN_TOWN.ways,ascents:ROOST.ascents}:null})},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
