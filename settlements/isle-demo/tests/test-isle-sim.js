@@ -46,5 +46,21 @@ towns.forEach(({ R, X }) => {
   { const B = JSON.parse(JSON.stringify(books)); B.foods[f0].outOf = 12; caught(R.town + ': a purchase out of stock', ISLE.simFoodChecks(R, B), /nothing short/); }
   { const B = JSON.parse(JSON.stringify(books)); Object.keys(B.foods).forEach(f => { B.foods[f].made = Math.floor(B.foods[f].made / 2); }); caught(R.town + ': too little made', ISLE.simFoodChecks(R, B), /covers/); }
 });
+/* P7c, the canoe line: the world run on to mid-morning of the next day (both lines have sailed both ways and are at sea
+   again), then its checks and their negatives */
+{
+  const end = ISLE.TUNE.sim.clock.start + 1440 + 600; if (ISLE.SIM.clock.m < end) ISLE.simRun(end - ISLE.SIM.clock.m);
+  const P = {}; plans.forEach(p => { P[p.R.town] = p; });
+  const books = ISLE.tradeBooks(), cp = () => JSON.parse(JSON.stringify(books));
+  console.log('--- the canoe line at minute ' + books.minute + ': ' + JSON.stringify(Object.keys(books.routes).map(id => [id, books.routes[id].voyages, books.routes[id].landed])));
+  ISLE.tradeChecks(books, P).forEach(c => ok(c.name, c.ok, c.detail));
+  const tc = (what, B, re) => caught(what, ISLE.tradeChecks(B, P), re);
+  { const B = cp(), L = plans[1].R.lots[0]; B.berths.valapo[0].x = L.x; B.berths.valapo[0].z = L.z; tc('a berth moved onto land', B, /berth/); }
+  { const B = cp(); B.routes.lakatoi.shipped['kautoa>valapo'] = {}; tc('a lakatoi that never left Kautoa', B, /both ways/); }
+  { const B = cp(); B.routes.lakatoi.landed['valapo>kautoa'] = {}; tc('a load that never landed', B, /traced/); }
+  { const B = cp(); Object.keys(B.towns.kautoa.rows).forEach(g => { B.towns.kautoa.rows[g].imported = 0; }); tc('Kautoa\'s imports dropped from its books', B, /goods imported/); }
+  { const B = cp(), g = books.goods.find(g => B.towns.valapo.rows[g]); B.towns.valapo.rows[g].inbound += 5; tc('an inbound count off by 5', B, /in transit/); }
+  { const B = cp(), g = books.goods.find(g => B.towns.kautoa.rows[g] && B.towns.kautoa.rows[g].today); B.towns.kautoa.rows[g].today.change += 10; tc('a change of stock that the flows do not explain', B, /balance/); }
+}
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

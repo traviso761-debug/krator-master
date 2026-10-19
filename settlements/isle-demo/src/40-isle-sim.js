@@ -76,6 +76,11 @@ ISLE.simPlaces = function (TS, R, G, nav) {
         { track: T.track, prefer: 'highway' });
     });
   });
+  /* the canoe stop at each trade landing (32: its berths; 47: its store and the line) */
+  (R.landings || []).forEach(function (Ld, i) {
+    put(s + '.stop' + (i ? i : ''), 'the canoe stop of ' + TS.name, T.stop, Ld.x, Ld.z, 0, T.stop[3], 0,
+      { key: 'canoe stop', lot: Ld.id, trade: ISLE.tradeOf('ie-quay'), cls: 'canoe stop', district: 'harbour', role: 'canoe stop', berths: (Ld.berths || []).map(function (B) { return Object.assign({}, B); }) });
+  });
   homes.sort(function (a, b) { return a.h - b.h || (a.rec[0] < b.rec[0] ? -1 : 1); }).forEach(function (H) { put.apply(null, H.rec); });
   return out;
 };
@@ -105,6 +110,7 @@ ISLE.simDeclare = function (plans, clock) {
     X.items = ISLE.simHouseholds(TS, X.places.places, X.econ.foods);
     X.ms.people = Date.now() - t1;
   });
+  S.trade = ISLE.simTrade();
   S.problems = S.problems.concat(SIM.check());
   S.ms.declare = Date.now() - t0;
   return S;

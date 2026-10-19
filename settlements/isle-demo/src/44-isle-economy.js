@@ -37,7 +37,7 @@ ISLE.simEconomy = function (TS, places) {
   var W = E.warehouses, pop = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === s; }).length;
   var perFood = pop * I.meals * I.perMeal / Math.max(1, foods.length);
   if (W.length) T.goods.forEach(function (g) {
-    var n = Math.round(foods.indexOf(g) >= 0 ? perFood * T.startDays : (T.startLots[g] || 0));
+    var n = Math.round(foods.indexOf(g) >= 0 ? perFood * T.startDays : made[g] ? (T.startLots[g] || 0) : 0);   /* lots only of what it makes */
     W.forEach(function (P, j) { P.stock[g] = Math.floor(n / W.length) + (j < n % W.length ? 1 : 0); });
   });
   /* the carts */

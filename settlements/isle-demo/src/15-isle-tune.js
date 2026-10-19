@@ -73,6 +73,8 @@ ISLE.TUNE.sim = {
     vern_shops: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 8 }, { open: [10, 24], shop: 'meal' }],
     vern_smithy: ['smithy', { WORK: 2.5 }], vern_workshop_a: ['workshop', { WORK: 2.5 }], vern_workshop_b: ['workshop', { WORK: 2.5 }]
   },
+  /* the canoe stop (P7c): its dockers' posts per 100 m2 of the landing (the last number: its area, m2) */
+  stop: ['canoe stop', { WORK: 3 }, { out: true, wander: 6 }, 200],
   field: { field: ['field', { WORK: 0.9 }, { out: true, wander: 8, open: [5, 19] }], orchard: ['orchard', { WORK: 0.55 }, { out: true, wander: 8, open: [5, 19] }] },
   /* a town's farm ring (a world record of `kind` beyond the square: R.world's sites): each site a holding of `size` metres
      square with one crop by a hash of the town and the site (core/rand), weighted; a stand-in until core/hamlet's farming
@@ -81,7 +83,7 @@ ISLE.TUNE.sim = {
     crops: [{ crop: 'rice', kind: 'field', w: 3 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 2 }, { crop: 'coconut', kind: 'orchard', w: 1 },
       { crop: 'cloves', kind: 'orchard', w: 2 }, { crop: 'cacao', kind: 'orchard', w: 1 }] },
   jobs: {
-    farmhand: { kinds: ['field', 'orchard', 'pens', 'byre'] }, fisher: { kinds: ['fishdock'] }, docker: { kinds: ['quay', 'warehouse', 'granary', 'customs', 'ferry', 'beacon'] },
+    farmhand: { kinds: ['field', 'orchard', 'pens', 'byre'] }, fisher: { kinds: ['fishdock'] }, docker: { kinds: ['quay', 'warehouse', 'granary', 'customs', 'ferry', 'beacon', 'canoe stop'] },
     trader: { kinds: ['market', 'shop', 'butcher'] }, baker: { kinds: ['bakehouse', 'mill'] }, keeper: { kinds: ['tavern', 'inn'] },
     craftsman: { kinds: ['weaver', 'potter', 'smithy', 'workshop', 'tannery', 'dockyard'] }, labourer: { kinds: ['quarry', 'saltworks'] },
     groom: { kinds: ['stable', 'rookery'] }, soldier: { kinds: ['barracks', 'watchtower', 'canoeshed'], homes: ['barracks', 'home'], sched: 'watch' },
@@ -119,6 +121,22 @@ ISLE.TUNE.sim = {
       saltworks: { out: ['salt'], rate: 2, cap: 1500 }, tannery: { out: ['leather'], rate: 0.5, cap: 400 }
     },
     warehouses: ['warehouse', 'granary'],
-    startDays: 2, startLots: { cloth: 40, pots: 40 }
+    /* a town opens with these lots of the goods it makes (not of what it must import) */
+    startDays: 2, startLots: { cloth: 40, pots: 40, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40 }
+  },
+  /* P7c, the canoe line between the two trade landings (owner, 2026-10-19), on core/simulation's SIM.trade (47):
+     uses     what each town uses a day, a person, of what the other makes (8c: Kautoa's salt, rice, cloves and cacao in
+              Valapo's kitchens; Valapo's sugar in Kautoa's), drawn on its warehouses every hour: the want the line serves
+     lines    the lakatoi, the towns' bulk carrier: two a day, one each way (the two start at opposite landings; a passage
+              of 20 hours and a stay of 4 make a day), carrying the bulk goods; the oruwa, for the light and dear goods,
+              one canoe round in a day, filling only what the receiver is low on (want, keep). goods: what each town may send */
+  trade: {
+    uses: { valapo: { salt: 0.02, rice: 0.05, clove: 0.004, cacao: 0.008 }, kautoa: { sugar: 0.02 } },
+    lines: [
+      { id: 'lakatoi', vessel: 'islanderLakatoi', cap: 3000, carriers: 2, minutes: 1200, mins: 240, keep: 1,
+        goods: { kautoa: ['salt', 'rice'], valapo: ['sugar'] } },
+      { id: 'oruwa', vessel: 'islanderOruwa', cap: 150, carriers: 1, minutes: 600, mins: 120, keep: 1, want: 2,
+        goods: { kautoa: ['clove', 'cacao'], valapo: ['coffee'] } }
+    ]
   }
 };

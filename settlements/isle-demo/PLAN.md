@@ -653,6 +653,15 @@ nearest-place search fixed for towns 120 km apart and the lag at minute 0; five 
 citizens near the camera (`59`): up to 120 instanced stand-ins posed from `SIM.pose`, with a verify check and its
 negative. **P7b is done**; origin/main merged (2026-10-19).
 
+**P7c, the canoe line (2026-10-19; the owner's answers: two lakatoi a day, one each way; an oruwa for light, urgent goods;
+a canoe stop in each harbour).** Each trade landing has a canoe stop on the plan (a berth for each vessel) and in the sim
+(a place with a site store). The lakatoi line and the oruwa route are `SIM.trade` routes on the timer between the two
+stops (`47`); the want is each town's hourly use of the other's goods (8c: salt, rice, cloves and cacao to Valapo, sugar
+to Kautoa). The docked vessel is drawn at its berth (`61`). Proof (verify's Valapo page and the node test): loads traced
+both ways, each town's books showing the other's goods imported, what is at sea counted in transit, the books balancing
+in both towns, each check with a negative. Left: the imported foods on the shelves, coffee from Valapo's uplands, a sea
+route to draw the voyage (KNOWN_ISSUES.md).
+
 **Order of work.**
 
 | Step | What | Proof |

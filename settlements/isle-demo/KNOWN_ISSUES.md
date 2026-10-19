@@ -60,6 +60,14 @@
       clothes. core/charactermodels has no light path into a settlement yet (its README asks for a crowd cost plan first:
       instancing or impostors, LOD, a download budget), so its bodies replace these later. A place's workers stand round
       its door's spot (the posts have no spots of their own: no interiors), so a market's traders cluster.
+- [ ] **The canoe line's want is a town's use, not its shelves** (P7c): each town draws hourly on its warehouses what it
+      uses of the other's goods (`ISLE.TUNE.sim.trade.uses`: Valapo's salt, rice, cloves and cacao, Kautoa's sugar), as an
+      abstract use; the imported foods are not yet sold in its shops or eaten in its meals, and the weavers of Kautoa still
+      lack cotton (a recipe whose input never was made is not declared). Valapo makes no coffee yet (its upland farms are
+      a world record), so the oruwa comes back from Valapo empty.
+- [ ] **No sea route is drawn.** The lines run on SIM.trade's timer: a vessel shows at its berth while docked and is gone
+      at sea. A `SIM.transport` line on a water layer between the two landings (122 km) would let the open world draw
+      the voyage (P8). The berths stand up to 160 m from the landing, in the nearest water deep and clear enough.
 - [ ] **The run loop is the page's own** (`57`); a generic sim clock for core/host (Voth's 56c lifted) is a follow-up. The
       stocks id map (`46`) waits for the page to take core/host (PLAN.md section 10).
 - [x] **The meals by town, the nearest-job deal, the ring search and the lag at minute 0** (2026-10-19): fixed in

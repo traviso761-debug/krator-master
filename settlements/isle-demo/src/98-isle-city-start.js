@@ -3,7 +3,7 @@
    so the probe carries both towns' census and checks; then both towns are declared on core/simulation (P7b), held until
    "run the sim" (57). window._city is the probe verify.py reads:
      {ready, both, town, ms, census: {town: ...}, checks: {town: [...]}, draw: DRAW.stats, failed, missing, errors, view(name),
-      sim (ISLE.SIM), simPlans: {town: R}, holds (ISLE.simHolds(town): the stocks map for core/host), simError}
+      sim (ISLE.SIM), simPlans: {town: R}, otherG (the other town's ground), holds (ISLE.simHolds(town): the stocks map for core/host), simError}
    The camera orbits a target on the ground: drag to turn, right-drag (or shift-drag) to pan, the wheel to zoom; the near
    set of full pieces follows the target. The view buttons are each town's places. */
 var CAM = { t: [0, 0, 0], yaw: 0.6, pitch: 0.55, dist: 2600 };
@@ -80,7 +80,7 @@ setTimeout(function () {
     Object.keys(ISLE.VIEWS[town]).forEach(function (v) { var b = document.createElement('button'); b.textContent = v; b.onclick = function () { ISLE.view(v); }; ui.appendChild(b); });
     var hud = document.getElementById('hud');
     var hudAt = 0, simLine = '';
-    var loop = function () { requestAnimationFrame(loop); var now = performance.now(); if (typeof RINGSEA !== 'undefined') RINGSEA.tick(now / 1000); ISLE.runTick(now); ISLE.citizens.tick(now); renderer.render(scene, camera);
+    var loop = function () { requestAnimationFrame(loop); var now = performance.now(); if (typeof RINGSEA !== 'undefined') RINGSEA.tick(now / 1000); ISLE.runTick(now); ISLE.citizens.tick(now); ISLE.canoes.tick(now); renderer.render(scene, camera);
       if (now - hudAt > 500) { hudAt = now; simLine = ISLE.runText(town); }
       if (hud) hud.textContent = town + ': ' + cur.census.buildings + ' buildings, ' + cur.census.households + ' households · near ' + DRAW.stats.near + ' full · ' + renderer.info.render.calls + ' calls' + (simLine ? ' · ' + simLine : ''); };
     loop();
@@ -100,7 +100,7 @@ setTimeout(function () {
            their checks */
         try {
           window._city.sim = ISLE.simDeclare([{ R: cur.R, G: cur.G }, { R: O.R, G: O.G }]);
-          var sp = {}; sp[town] = cur.R; sp[other] = O.R; window._city.simPlans = sp; window._city.holds = ISLE.simHolds(town);
+          var sp = {}; sp[town] = cur.R; sp[other] = O.R; window._city.simPlans = sp; window._city.otherG = O.G; window._city.holds = ISLE.simHolds(town);
           ISLE.runUI(ui); lap('sim');
         } catch (e2) { window._city.simError = String(e2 && e2.stack || e2); }
       } catch (e) { window._city.otherError = String(e && e.stack || e); }

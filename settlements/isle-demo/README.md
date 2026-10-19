@@ -165,6 +165,16 @@ declares both once they are planned, in one order whichever town it draws, and h
 - **The citizens near the camera** (`59`): up to 120 of the drawn town's people within 260 m of the camera's target,
   where `SIM.pose` puts them (nobody indoors, no carts), chosen every half second and posed each frame the clock moves;
   stand-ins (an instanced body and head, coloured by their work), core/charactermodels' bodies later.
-- **Not yet:** the canoe line (P7c). See `HANDOFF.md`.
+- **The canoe line** (P7c; the owner's timetable, 2026-10-19; `47`, `61`). Each town's trade landing has a **canoe stop**
+  (on the plan: a berth for the lakatoi and one for the oruwa, the nearest water deep and clear enough; in the sim: a place
+  with a site store the carts empty). Two **SIM.trade** routes on the timer: the **lakatoi**, the towns' bulk carrier,
+  two a day, one each way (they start at opposite stops: a 20-hour passage and a 4-hour stay make a day), carrying
+  Kautoa's salt and rice and Valapo's sugar; the **oruwa**, one canoe round a day, carrying only what the receiver is low
+  on of the light, dear goods (Kautoa's cloves and cacao; Valapo's coffee when its upland farms are in the sim). The
+  want is each town's hourly use of the other's goods (`ISLE.TUNE.sim.trade.uses`). The docked vessel is drawn at its
+  berth (`61`). Checks: the berths afloat and clear; the lakatoi both ways with loads; a load traced from Valapo's
+  warehouses to Kautoa's and one back; each town's books showing the other's goods imported; what is at sea counted
+  inbound and outbound; the books balancing in both towns; the vessels drawn exactly while docked. Each has a negative.
+- **Not yet:** the abstract level (P7d). See `HANDOFF.md`.
 
 See `KNOWN_ISSUES.md`.

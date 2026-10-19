@@ -60,7 +60,8 @@ opened (?town=) and, once both towns are planned (window._city.both):
   - the declared boxes the plan placed by (ISLE_DIMS, ISLE_VDIMS, read from the kits' sources) are the bundles' own
   - negative controls: a building pushed onto its neighbour, one pushed into the sea, the palace (or Valapo's hall) taken
     away: each must fail its check
-  - on the Valapo page, both towns on core/simulation (SIM_JS below) and the citizens drawn near the camera (CIT_JS)"""
+  - on the Valapo page, both towns on core/simulation (SIM_JS below), the citizens drawn near the camera (CIT_JS), the
+    canoe line (CANOE_JS, TRADE_JS)"""
 CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.G;
  if(!neg){
   for(const t in C.checks)C.checks[t].forEach(c=>out.push(c));
@@ -95,6 +96,21 @@ half the food made."""
 # at a busy place of the drawn town; the negative moves one drawn figure 50 m from its actor's pose
 CIT_JS = r"""(neg)=>{const S=ISLE.SIM,end=ISLE.TUNE.sim.clock.start+1440+600;if(S.clock.m<end)ISLE.simRun(end-S.clock.m);
  ISLE.view(ISLE.cur.town==='Valapo'?'village hall':'palace');ISLE.citizens.update();return ISLE.citizens.check({shift:!!neg});}"""
+# P7c, the canoe line (src/47-isle-trade.js, 61-isle-canoes.js): an hour into the next day (a lakatoi docked at each stop),
+# the drawn town's vessels shown exactly while docked (the negative flips one); then, after the citizens (mid-morning),
+# the line's checks on a snapshot of the books (ISLE.tradeChecks) and each with its negative on a changed copy
+CANOE_JS = r"""(neg)=>{const S=ISLE.SIM,end=ISLE.TUNE.sim.clock.start+1440+60;if(S.clock.m<end)ISLE.simRun(end-S.clock.m);return ISLE.canoes.check({flip:!!neg});}"""
+TRADE_JS = r"""(neg)=>{const P={};Object.keys(_city.simPlans).forEach(t=>{P[t]={R:_city.simPlans[t],G:t===_city.town?_city.cur.G:_city.otherG};});
+ const B=ISLE.tradeBooks(),C=()=>JSON.parse(JSON.stringify(B)),pick=(rs,re)=>rs.filter(c=>re.test(c.name));
+ if(!neg)return ISLE.tradeChecks(B,P);
+ if(neg==='berth'){const b=C(),L=P.Valapo.R.lots[0];b.berths.valapo[0].x=L.x;b.berths.valapo[0].z=L.z;return pick(ISLE.tradeChecks(b,P),/berth/);}
+ if(neg==='ways'){const b=C();b.routes.lakatoi.shipped['kautoa>valapo']={};return pick(ISLE.tradeChecks(b,P),/both ways/);}
+ if(neg==='trace'){const b=C();b.routes.lakatoi.landed['valapo>kautoa']={};return pick(ISLE.tradeChecks(b,P),/traced/);}
+ if(neg==='imported'){const b=C();Object.keys(b.towns.kautoa.rows).forEach(g=>{b.towns.kautoa.rows[g].imported=0;});return pick(ISLE.tradeChecks(b,P),/goods imported/);}
+ if(neg==='sea'){const b=C(),g=B.goods.find(g=>b.towns.valapo.rows[g]);b.towns.valapo.rows[g].inbound+=5;return pick(ISLE.tradeChecks(b,P),/in transit/);}
+ if(neg==='balance'){const b=C(),g=B.goods.find(g=>b.towns.kautoa.rows[g]&&b.towns.kautoa.rows[g].today);b.towns.kautoa.rows[g].today.change+=10;return pick(ISLE.tradeChecks(b,P),/balance/);}
+ return [];}"""
+TRADE_NEGS = ('berth', 'ways', 'trace', 'imported', 'sea', 'balance')
 SIM_TOWNS = ('Kautoa', 'Valapo')
 SIM_NEGS = ('lot', 'home', 'job', 'map', 'haul', 'short', 'made')
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];
@@ -177,12 +193,26 @@ async def run_city(a):
                                     caught = bool(rs) and not any(r['ok'] for r in rs)
                                     print(('  PASS  ' if caught else '  MISSED') + ' negative (%s sim %s) : ' % (st, neg) + '; '.join(r['detail'] for r in rs))
                                     if not caught: fails.append('%s: negative sim %s' % (st, neg))
+                            r = await pg.evaluate(CANOE_JS, None)
+                            print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                            if not r['ok']: fails.append(r['name'])
+                            r = await pg.evaluate(CANOE_JS, 'flip')
+                            print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a vessel shown in the wrong state) : ' + r['detail'])
+                            if r['ok']: fails.append('negative canoes')
                             r = await pg.evaluate(CIT_JS, None)
                             print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                             if not r['ok']: fails.append(r['name'])
                             r = await pg.evaluate(CIT_JS, 'shift')
                             print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a figure 50 m off its pose) : ' + r['detail'])
                             if r['ok']: fails.append('negative citizens')
+                            for r in await pg.evaluate(TRADE_JS, None):
+                                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
+                                if not r['ok']: fails.append(r['name'])
+                            for neg in TRADE_NEGS:
+                                rs = await pg.evaluate(TRADE_JS, neg)
+                                caught = bool(rs) and not any(r['ok'] for r in rs)
+                                print(('  PASS  ' if caught else '  MISSED') + ' negative (canoe line %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
+                                if not caught: fails.append('negative canoe line ' + neg)
                     if town == 'Kautoa':
                         prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
                         pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)
