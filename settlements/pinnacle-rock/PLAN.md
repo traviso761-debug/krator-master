@@ -118,7 +118,9 @@ The town is "un-assailable" the way Mav's gateway trees are: one stair, gated th
 
 **Status (2026-10-19): P0 and P1 are done** (README.md): the page stands on the model's land with the far land to the
 Inner Wall; the mesa, the ten fins round the rim, the Garden, the shrine's rock and seven spurs as KSTACKS records from
-the settled plan; `verify.py --assert` passes. The Stair (listed under P1) moves to P2 with the lifts and the rock-cut
+the settled plan; the Garden's mesa and the Heart; every mesa weathered as the owner's Monument Valley reference
+(flutes, gullies, a shoulder of ledges, the debris slope and its fallen blocks); `verify.py --assert` passes. The owner
+signed the rock off on 2026-10-19 ("I think we're in business"). The Stair (listed under P1) moves to P2 with the lifts and the rock-cut
 stair pieces (`kits/beast-riders`).
 
 - **P0. The site and the harness.** Find the mesa (section 1), write the point back, `build.py` reading the catalog,

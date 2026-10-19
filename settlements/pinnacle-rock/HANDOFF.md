@@ -1,0 +1,62 @@
+# Pinnacle Rock — handoff (2026-10-19)
+
+For the next session on Pinnacle Rock. Read `CLAUDE.md`, then this, then `PLAN.md` (the settled plan and the order of
+work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
+
+## Where it stands
+
+- **P0 and P1 are done and signed off** (the owner, 2026-10-19: "I think we're in business"). The page
+  (`dist/pinnacle-rock.html`, `python3 build.py`, `python3 verify.py dist/pinnacle-rock.html --assert`) stands on the
+  scale model's land (4.21, px 755,351; `region/`, `tools/world_data.py`) with the far land drawn to 60 km (the Inner
+  Wall 48 km north). The rock: the mesa (250 m, 1.2 by 0.8 km), ten fins round the rim in groups, seven spurs, the
+  Garden's mesa (55 m over the top) with sixteen pinnacles, the Heart (a third mesa 110 m over the Garden's, the three
+  tallest pinnacles rising out of it), the shrine's balanced rock. Every mesa is weathered to the owner's reference
+  (Merrick Butte, Monument Valley): flutes, gullies, a shoulder of thin ledges to a flat usable top, and a ~34 degree
+  debris slope round every wall's foot with fallen blocks (`87-pr-talus.js`).
+- **The layout is settled** (diagram: https://claude.ai/artifact/Dn8qzog9vCzCvcV9gxHpZH) and is data in
+  `src/40-pr-layout.js` (`PR`, `[G data]`): the zones of the top, the Deep Root cavern's precinct, the palisade, the
+  nine bands' pastures, camps and thorn hedges, the farms as contour cells, the fair ground, the road, the gate, the pond,
+  the spring, the gorge. Nothing past the rock is drawn yet: the cleared ground round the mesa is bare.
+- **Not in the gallery** (the owner, 2026-10-19): `gallery/build_gallery.py` lists it in `UNLISTED` until the town is
+  built. The north-eastern canyons biome it stands on is in Krator Biomes and Objects.
+
+## What to do next
+
+1. **P2, the roosts** (`PLAN.md` section 2 and 3): the bracketed rings on the fins and on the four ringed Garden
+   pinnacles (`B.ring`), the stalls and keepers' shelters, the bridges between a group's fins, the Stair on the south
+   nose (rock-cut, `kits/beast-riders` 55/56), the capstan and the beast lift down the gorge face; Girder's flyers
+   landing and leaving. Done when a quetzal lands on an east fin perch in the walk.
+2. **P3, the town and the farms**: the town on `core/city` (read `core/city/README.md`, "Porting a settlement"; no new
+   occupancy grid: `core/space`), the Deep Root cavern (KCAVERN with a KSTACKS hole, BR_ROCK dressing; the ring of twelve
+   stones with nothing built inside), the farms as contour cells with twelve farmhouses, the camps (`BR_CAMP`, hedges
+   and fences from `BR_RUN`), the mounts (the Longcrawler is rideable; the jungle staghorn is the staghorn's
+   jungle-coloured variant), ways up to the Garden's mesa and the Heart.
+3. Then `PLAN.md` P4 (the life, the night) and P5 (the record, the gallery entry: take Pinnacle Rock out of `UNLISTED`).
+
+## Things that will bite
+
+- **The rock is shared code.** KSTACKS is `core/terrain/37-core-stacks.js` (`node core/terrain/test-stacks.js`); the
+  land comes from `biomes/necanyons/src/46` and `47`, read in place, which take this page's `LAND` hooks (`45-host-stage.js`).
+  A change to any of them: rebuild and verify **both** necanyons and Pinnacle Rock, and rewrite only their baseline
+  entries.
+- **The Heart's gullies are seed-chosen** (`PR.HEART_MESA.seed` 2709) to miss its three pinnacles' feet. A change to
+  KSTACKS' weathering can move a gully; the stage then reports which pinnacle lost its footing. Re-fit offline with a
+  short node script (make the bodies with KSTACKS, sample each foot against the top by a pad), not by rebuilding the
+  page per seed.
+- **`necanyons.footD` is capped** at `footMax` (Pinnacle passes the debris slope's width + 10 m; 60 by default).
+- **The debris slope's ground is necanyons' talus texture** (reads ochre from the floor; the blocks carry the red):
+  `KNOWN_ISSUES.md`. A tint hook or a red talus set is a follow-up if the owner asks.
+- **Index tools rewrite every build** (`tools/audit_port.py`, `tools/make_index.py`): keep only your builds' files
+  and revert the rest. Tag new fragments in `PORT.md` by hand when the audit guesses wrong (it calls `87-pr-talus.js`
+  `[G data]`; it draws: `[draw]`).
+- **Git LFS**: built pages are LFS. After merging main, `git add --renormalize` the dist folders you rebuilt if Git warns
+  of "files that should have been pointers". In a checkout without every build's textures, the hash baseline reports
+  other builds' pages as changed: they are not; do not rewrite their entries.
+- **`verify.py --shots` on the 12 MB beast-riders page** times out in this container's software GL; its checks pass.
+
+## Owner's decisions to keep (2026-10-19)
+
+The Deep Root cavern north-west of the top; the fins spread round the rim in groups, never one row; the flyer bands
+(Quetzal, Wingclaw, Nightwing) camp on the mesa only; every band's pasture and camp inside its own thorn hedge; farms
+that do not overlap; Dragonfly, Spider and Mammoth camps with smaller pastures on the floor; a usable flat top with
+rough 30-45 degree slopes at the edges, not a mesa weathered all over.
