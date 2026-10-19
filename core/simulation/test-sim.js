@@ -582,6 +582,25 @@ function world(seed){
  ok('near: the first two hands work the field at their door, the third (its posts taken) the far one',N[0]==='zNear'&&N[1]==='zNear'&&N[2]==='aFar',N[0]==='aFar');
  ok('without it the load rule deals as before (the first to the field that sorts first)',L[0]==='aFar',L[0]==='zNear');}
 
+// two towns far apart (the isle demo: 120 km): the nearest-place search from one town for what only the other has
+// answers as a full scan would, and fast (filled cells taken directly, not rings over empty sea)
+{const {S}=world(103);S.activity({id:'PRAY'});
+ for(let i=0;i<30;i++) S.place({id:'shrineA'+i,kind:'shrine',x:(i%6)*40,z:Math.floor(i/6)*40,activities:{PRAY:1}});
+ for(let i=0;i<30;i++) S.place({id:'shrineB'+i,kind:'shrine',x:120000+(i%6)*40,z:5000+Math.floor(i/6)*40,activities:{PRAY:1}});
+ const far=[119990,5010],t0=Date.now(),got=S.placesFor('PRAY',null,null,{near:[10,10],limit:3,kinds:['shrine'],ids:null,exclude:{shrineA0:1,shrineA1:1}}).map(P=>P.id),ms=Date.now()-t0;
+ const brute=S.placesFor('PRAY',null,null,{near:[10,10],kinds:['shrine'],exclude:{shrineA0:1,shrineA1:1}}).slice(0,3).map(P=>P.id);
+ const all=S.all('place').filter(P=>P.activities.PRAY).map(P=>P.id);for(const id of all) if(/^shrineA/.test(id)) S.R.place[id].closed=true;S.placesChanged();
+ const t1=Date.now(),across=S.placesFor('PRAY',null,12,{near:[10,10],limit:3}).map(P=>P.id),ms2=Date.now()-t1;
+ const bruteX=S.placesFor('PRAY',null,12,{near:[10,10]}).slice(0,3).map(P=>P.id);
+ ok('the grid search finds the nearest three as a full scan does',got.join()===brute.join(),got.join()!==brute.join());
+ ok('with none open at home it finds the other town\'s, 120 km off, as a full scan does, in well under a second',across.join()===bruteX.join()&&across.length===3&&/^shrineB/.test(across[0])&&ms2<300,ms2>=300||across.join()!==bruteX.join());}
+
+// a lag at the start of time: at minute 1 an actor whose day runs 8 minutes behind is on the day before, not nowhere
+{const {S,clock}=world(105);S.LAG=8;clock.d=0;clock.h=1/60;let a=null;for(let i=0;i<20&&!(a&&S.lagOf(a)>1);i++) a=S.actor({id:'early'+i,role:'farmer',home:'homeA'});
+ const lag=S.lagOf(a),want=S.desire(a,1);
+ ok('a lagged actor at minute 1 ('+lag+' minutes behind) wants its schedule\'s hour (the day before\'s 23:00, SLEEP), never undefined',lag>1&&want==='SLEEP',want===undefined);
+ const w=S.wakeOf(Object.assign(a,{wanted:want,task:{}}),1,want);ok('and its wake is a minute ahead, not before now',w>1&&Number.isFinite(w),!(w>1));}
+
 // trade on a transport line: the carrier is the line's vehicle; a load leaves as it leaves a landing and lands as it docks
 {const {S,clock}=world(97);
  S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});

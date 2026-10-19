@@ -369,11 +369,11 @@
  ],
  "77-sim-2-places.js": [
   "core/simulation",
-  "cc494265ae0d"
+  "0acdf2b487c1"
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "c3fa8beba5ba"
+  "5ed51309bab8"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
