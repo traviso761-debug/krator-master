@@ -25,7 +25,7 @@ The Beast Rider buildings place their furniture as catalog pieces with `F.furn` 
 | `krator-symbols.js` | VENDORED from `core/sockets/38-symbols.js`: the culture symbols (`SYMBOLS`, `SYMBOL_OF`) the hangings paint |
 | `krator-furniture-core.js` | the half of the engine with no page in it (split out 2026-10): `TAU`/`shade`, `mat()`, the geometry kit `mk*` (and `mkDecal`), the registries and vocabularies, `CATALOG_MATERIALS`, `FPAL`, the frame `makeFrame()` (`F.*`, `F.furn`), `buildFurn/buildPlant/buildAsset`, `rebuildInstance`, `measureInstance`. Loaded BEFORE the engine |
 | `krator-furniture-detail.js`, `materials.json`, `tex/` | the material library on catalog furniture, opt-in: `furniture_bundle.bundle(cultures, tex=True)` inlines `KF_TEX` (47 families, about 1 MB) and the detail pass; a batch's `flush` then gives each family's mesh its set as a triplanar detail map keyed by texture family, then render family. `KF.setTextures(false)` turns it off, `KF.textureInfo()` reports. Default off: the bundle is byte-identical without it. Re-pack with `python3 tools/textures/pack.py kits/catalog` after editing `materials.json`; a host's own rows win by using its own adapter |
-| `krator-furniture-runtime.js`, `furniture_bundle.py` | the catalog's furniture inside another build: `furniture_bundle.bundle(cultures)` wraps the core, the symbols, the kit, the culture files and the runtime in one closure exposing only `KratorFurniture` (batches merged per render family). See "Furniture in a kit build" |
+| `krator-furniture-runtime.js`, `furniture_bundle.py` | the catalog's furniture inside another build: `furniture_bundle.bundle(cultures)` wraps the core, the symbols, the kit, the culture files and the runtime in one closure exposing only `KratorFurniture` (batches merged per render family). See "Furniture in a kit build"; `plants=True` adds `krator-master-plants.js` with every plant joining `FURN_BY_KEY` as a piece (type `plant`), so a batch places a palm as it places a chair (the Iziz palace's orangery and roof gardens, 2026-10-19; default off, byte-identical) |
 | `krator-asset-engine.js` | the page: scene, camera, controls, ground, labels, frame loop; with the core: geometry kit (`F.box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof/hipRoof`, the soft furnishings `F.pillow` (a stuffed cushion: domed faces, rounded corners, an optional boxed wall; returns its top height and its seams for piping) and `F.bolster` (gathered ends; banded by sections), `F.shift`, and `F.decal`: a painted canvas panel, cached per key), the `FURN`/`PLANT`/`ASSET` registries with `buildFurn/buildPlant/buildAsset`, `CATALOG_MATERIALS` and `CORE_MATERIAL_MAP`, `furnAnchorY`, the furniture palette `FPAL` (`F.col`), `FURN_CULTURE()` and `FURN_TIERS`, `BUILDING_TYPES` |
 | `krator-furniture-kit.js` | **the furniture kit `FK`**: one parametric builder per role (bed, throne, hearth, tapestry, wall art ...) driven by a culture's style sheet, motif and finial helpers, `FK.ROLES` per tier and `FK.set()`, which registers a whole tier for a culture. Read its header before writing a set |
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
@@ -459,6 +459,23 @@ FURN({ key: 'newfolk_court_relic', ... });                   /* bespoke pieces a
 The kit's header lists every style-sheet field and value. `FK.set()` declares `materials` from the
 sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<culture>_<tier>_<role>`
 (or `prefix`), and names them from `names`. Build, then `verify.py --assert`.
+
+### The Iziz palace's pieces (2026-10-19)
+
+Two category files, like `-jobs.js`: every piece is culture `iziz`, and every `rooms` list names only the palace's room
+kinds (`pal_*`), so no other build's placer ever picks one; a bundle carries them only when it names `izpalace` or
+`izpalace-depot` (`settlements/iziz/build.py` `TARGET_FURN`, the palace page). Each adds the palette keys it needs as
+defaults (the Iziz file's own values win); the court pieces draw their veneer, upholstery and gilding in the court keys
+(`courtMahogany`, `courtBrocade`, `courtCloth*`, `courtGilt`), so a page that packs the court sets finishes them. The palace's furnishing places them by key
+(`settlements/iziz/targets/palace/95p-palace-furnish.js`); the blueprint's NEW list (`settlements/iziz/palace/FURNITURE.md`)
+is covered.
+
+| File | Pieces |
+|---|---|
+| `krator-master-furniture-izpalace.js` (court, 25) | the imperial throne on its dais with the Orb (unique), bust niche, altar of the House, bath pool, bath slab, strongbox (role strongbox), map table with the crater inlaid, lectern, armillary, legion standard, heliograph; and for the dressing: great chandelier (ceiling), torchere, orb on a pedestal, gilt sun relief (wall), marble urn, palm in a bronze pot, kline, banquet table, pier mirror (wall), harp, mech trophy of Hook, fan screen, runner (rug), baldachin |
+| `krator-master-furniture-izpalace-depot.js` (Ancient and service, 22) | the power core (unique), the Ancient radio set (unique), power-cell rack, the lift platform (unique), mech cradle, chain hoist (ceiling), the shield emitter (unique), relic case, cauldron, roasting spit, brig grate, manacles, drum stand, laundry copper, ice chest, bath basin, Ancient light column, Ancient terminal, tool cart, munitions stack, shell rack, armour-plate stack |
+
+Verified: `tests/test-segments.js`; `verify.py dist/catalog.html --sheet furniture --query cultures=iziz --assert`.
 
 ### Pieces added in the 2026-10 interiors pass
 

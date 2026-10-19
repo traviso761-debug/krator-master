@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1607,
+    887
+   ],
+   "seam_after": [
+    1.266,
+    1.914
+   ],
+   "seam_before": [
+    2.86,
+    3.661
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "iziz/fresco-legions",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.9,
+  "scale": [
+   4,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "iziz-fresco-legions.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-19 (pasted in the session; 7.webp), from the prompt in core/materials/PROMPTS-NEEDED.md (the Iziz palace citadel)",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/iziz/fresco-legions: a Roman fresco frieze in an Art Deco hand, legionaries with sun-disc standards and two walking mechs, palms and a stepped pyramid, a teal sun band above and a red palmette band below",
+  "reuse": "any Roman-style painted frieze: a Talia or Xanadu banquet hall",
+  "sha1": "3fdf459fa1ed0647e1a94135a43218120b16bd57"
+ }
+}

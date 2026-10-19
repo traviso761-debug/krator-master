@@ -24,6 +24,30 @@
    "bytes": 3852949,
    "sha256": "997e30acaf261d71b171845f0134c9ce8f7f9bcd05a015ac85db26c00c648464"
   },
+  "biomes/korona/dist/korona-basin.html": {
+   "bytes": 596974,
+   "sha256": "30ef1f4637ac3a4c2ab48e0d0682387ed3fbe3eccc8c16d7400e4d16267e19fa"
+  },
+  "biomes/korona/dist/korona-gorge.html": {
+   "bytes": 721718,
+   "sha256": "b243f8565b7dd669409aa7e32856ad4dd20c434300697e4272c26ca7dd732952"
+  },
+  "biomes/korona/dist/korona-hoar.html": {
+   "bytes": 675897,
+   "sha256": "3b6276f4a71637133d28d1ca15b4c308ebd1f66e44daf943539de87ac5366b37"
+  },
+  "biomes/korona/dist/korona-hollow.html": {
+   "bytes": 599314,
+   "sha256": "a334032860c6c95494a99dbb5dce609123ec809615134a3e67c3fb9caaf3246b"
+  },
+  "biomes/korona/dist/korona-trench.html": {
+   "bytes": 596538,
+   "sha256": "082b77275ab82c2f5c3116028c52b5119342a1d832de57a992fec67cc28cb298"
+  },
+  "biomes/korona/dist/korona.html": {
+   "bytes": 603750,
+   "sha256": "484e548d84b8447b1d2ee29fafb22615d53545b1b6faa3be46dd62e72e5d454c"
+  },
   "biomes/necanyons/dist/necanyons.html": {
    "bytes": 531710,
    "sha256": "c37ff661bcdcc58e1b6ea9cbc5885584201b338693d7ffac43874a56401f68a9"
@@ -297,8 +321,8 @@
    "sha256": "cd0bd6263cc72f51536fc129a05ce6600b6272b60ba15c33be5ad1d4d12b2714"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1709147,
-   "sha256": "f9f5cb1ef93a2136766448c797966a0026395303c79fd3f2d8802140f60eb83c"
+   "bytes": 1825392,
+   "sha256": "ad32339da94b321aa7d0d9d6001d4bcdd0c4b567e590f7808c65c0b9b60d5bb0"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2554423,
@@ -423,6 +447,10 @@
   "settlements/isle-demo/dist/isle-site.html": {
    "bytes": 1258200,
    "sha256": "fa1989546256c0903e9609baecd64180ce1b1399f7ca6acc22aeb272708c3277"
+  },
+  "settlements/iziz/dist/iziz-palace.html": {
+   "bytes": 3159657,
+   "sha256": "b4c08294ce996c0b5c43ad0767a91619b2cb7dbe3768d3acfb38dc36387ae578"
   },
   "settlements/iziz/dist/iziz-vernacular.html": {
    "bytes": 1724360,

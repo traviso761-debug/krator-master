@@ -33,7 +33,9 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-generic.js` | 5 |  |
 | `krator-master-furniture-hykkousoi.js` | 30 **big** | the helpers (all through F) (38); the pieces (91) |
 | `krator-master-furniture-islander.js` | 5 |  |
-| `krator-master-furniture-iziz.js` | 18 | Harvested from settlements/iziz/src/69c-vern-hel (89) |
+| `krator-master-furniture-iziz.js` | 21 | Harvested from settlements/iziz/src/69c-vern-hel (103) |
+| `krator-master-furniture-izpalace-depot.js` | 54 **big** | the Ancient core and its levels (BLUEPRINT: the  (78); the mech depot (BLUEPRINT: Mech Bays I-IV, the F (347); the court's relics (563); the kitchens, the laundry and the baths (611); the brig, the guard and the music (754) |
+| `krator-master-furniture-izpalace.js` | 60 **big** | the blueprint's NEW pieces (settlements/iziz/pal (98); extras, for extravagance (the owner: "decorate e (541) |
 | `krator-master-furniture-jobs.js` | 20 | Harvested from settlements/locus (10 pieces): th (47); The builders' yard (2026-10): timber for the Eas (187) |
 | `krator-master-furniture-lizardmen.js` | 6 |  |
 | `krator-master-furniture-nomad.js` | 112 **big** | Seating (268); Tables and vessels (401); Storage (590); Light (800); Textiles (873); Fire (982); Riders' gear (1073); Work (1268); Tanning: the hidemaker's tent (job tanning) (1361); The smithy (1452) |
@@ -46,7 +48,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-scrap.js` | 98 **big** | Harvested from kits/post-apoc (61 pieces) (111) |
 | `krator-master-furniture-screamer.js` | 6 |  |
 | `krator-master-furniture-scyvoi.js` | 104 **big** | Seating (240); Tables and storage (350); Light (479); Vessels (556); Fire (618); Riders' gear (767); Felts and rugs (962); Work (1002); The shaman's things (1089); Tanning: the hidemaker's tent (2026-10-06) (1227) |
-| `krator-master-furniture-talia.js` | 23 |  |
+| `krator-master-furniture-talia.js` | 24 |  |
 | `krator-master-furniture-voth.js` | 18 |  |
 | `krator-master-furniture-xanadu.js` | 7 |  |
 | `krator-master-furniture-yuni-common.js` | 1 |  |

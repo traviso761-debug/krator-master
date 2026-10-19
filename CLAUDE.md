@@ -34,7 +34,8 @@ their sources because a change to `core/` was rebuilt into one build only. After
 Throne's stations (`python3 build.py --station <name>` in `biomes/throne`) and Girder's hero page (`build_hero.py`)
 are separate build commands; `kits/interiors` builds before `kits/ancients-interiors` (which loads its
 `dist/interiors-core.js`). Then `python3 tools/port_baseline.py`; rewrite the baseline only for pages you changed
-on purpose and checked.
+on purpose and checked. A change that rebuilds every build (or most of them) takes the items parked in `TODO.md`, "Ride along with the
+next all-builds rebuild", with it.
 
 **Write code that is the same on every machine and in Godot.**
 - Every text-mode `open()` in a build.py names `encoding='utf-8'` (and `newline='\n'` when writing).
