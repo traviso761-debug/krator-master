@@ -11,7 +11,10 @@
 // coast is not a ruled line. Continuous and C1 everywhere.
 // kept landward of z~+6 so a 40 m berth never ends against a sand bar
 function portShore(x){return -10+60*(fbm(x/1400+3.7,1.3,.7,3)-.5)+10*(fbm(x/170,4.1,2.2,2)-.5);}
-function portNatH(x,z){
+// A build may bring its own natural ground: PORT.natH = (x,z) => height (sea level 0), set before the terrain is
+// built, replaces the coast below (Hook stands on the scale model's ground: settlements/hook/src/75d-hook-world.js).
+function portNatH(x,z){return PORT.natH?PORT.natH(x,z):portNatH0(x,z);}
+function portNatH0(x,z){
  const zz=z-portShore(x);                        // + seaward of the natural waterline
  if(zz>=0){const q=Math.pow(zz/260,1.6),f=1-Math.exp(-q);
   return .6+(PORT.SEABED-.6)*f+(fbm(x/140,z/140,4.1,2)-.5)*2.2*clamp(zz/80,0,1);}
@@ -281,7 +284,7 @@ function portNatureScatter(X0,X1){reseed(19990);const k0=KOFF;KOFF=[0,0,0];
   const zz=z-portShore(x);if(zz>-58)continue;
   const pa=fbm(x/260,z/260,6.2,2);if(pa<.47||rng()>clamp((pa-.47)*5,0,1))continue;
   const C=portCands(x);let ok=true;if(C)for(const s of C)if(portSD(s,x,z)<s.soft+6){ok=false;break;}if(!ok)continue;
-  const h=portNatH(x,z);
+  const h=portNatH(x,z);if(h<1)continue;   // a build's own ground may put the sea where the kit's shore line has land
   if(rng()<.62)VEG.tree(x,h,z,i%3,rr(5,13));
   else kput('leafCard',[x,h+.7,z],qEuler(0,rng()*TAU,0),[rr(1,2.2),rr(.7,1.2),rr(1,2.2)],new THREE.Color().setHSL(rr(.16,.3),rr(.3,.5),rr(.35,.55)));}
  KOFF=k0;}
