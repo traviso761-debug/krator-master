@@ -352,3 +352,13 @@ flutes, shoulders and undersides; necanyons' `footMax` and the land fragment's h
 unchanged (10.3 MB). Pinnacle Rock is in `UNLISTED` until its town is built (the owner, 2026-10-19); `ENTRIES` now
 carries the necanyons card's line. Version 17 carried the page and both packs from 50a07a9f; version 18 the page alone,
 rebuilt after the merge (the packs unchanged).
+
+Krator Worlds S–Z versions 9 and 10 and Krator Worlds I–S version 22 (2026-10-19, from `main` at bd5ed646: the Iziz court
+furniture textures). S–Z: `worlds/talia.html` and `worlds/verge.html` replaced, the Iziz pack in two parts
+(`iziz.tex.iziz.js`, `iziz.tex.iziz-2.js`; the court sets made it outgrow one file), Verge's sidecars (`verge.tex.iziz.js`,
+`-2`, and `verge.tex.eastabyss.js`, `verge.tex.locus.js`, which the part lacked), and **Pylon moved in from I–S** with
+`iziz.tex.pylon.js`: with the larger Iziz pack I–S would have held about 257 MiB, over a version's 256. I–S version 22:
+`worlds/iziz.html`, `worlds/iziz-vernacular.html` and the Iziz pack in two parts replaced, Pylon's page and sidecar
+removed (about 254 MiB). The cards' sizes and blurbs were edited in each live index (Pylon's card moved). Roketstad,
+whose page changed only by catalog data it does not draw, was not republished; Voth stays the live 11.9 MB copy.
+
