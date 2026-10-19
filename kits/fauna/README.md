@@ -100,12 +100,12 @@ every tribe in the lore's list must have a row here, and every row a key that is
 | Nightwing | giant bat (span 9 m) | `giant-bat` | flyers | |
 | Spider | giant riding spider | `giant-spider` | crawlers | climbs trunks and leaps on draglines (Mav's Refuge) |
 | Raptor | riding raptor | `riding-raptor` | riders | **new**. The Dalab ridge raptor (`ridge-raptor`, wild, 160 kg) is a wild cousin, not a mount |
-| Staghorn | staghorn beetle | `staghorn-beetle` | voth | the Ash Nomads' mount, rideable; still tagged for the ash plains and herded by `ashnomad` only (KNOWN_ISSUES.md) |
+| Staghorn | staghorn beetle | `staghorn-beetle` | voth | rideable; the Staghorn tribe's is variant 3, the **jungle staghorn** (moss-green, gold sheen, rust-red mandibles), and the beetle is tagged for the hyperjungle and herded by `beast-riders` as well as the Ash Nomads (the owner, 2026-10-19) |
 | Threehorn | threehorn | `threehorn` | riders | **new**. The Dalab tricorn (`tricorn`, wild) is a smaller wild cousin |
 | Hardshell | hardshell | `hardshell` | riders | **new** |
 | Tiger | riding tiger | `riding-tiger` | riders | **new**. Voth's arena tiger (`arena-tiger`) is a wild beast of the bay, not tameable |
 | Mammoth | jungle mammoth | `jungle-mammoth` | riders | **new** |
-| Longcrawler | draught millipede | `draught-millipede` | crawlers | a draught beast (the beast lifts' capstans), not flagged rideable (KNOWN_ISSUES.md) |
+| Longcrawler | draught millipede | `draught-millipede` | crawlers | rideable and draught (the owner, 2026-10-19): the Longcrawlers ride theirs, a saddle on the fourth ring and a bridle at the head (anchors `saddle`, `bridle`) |
 
 The new mounts (each with two breeds and three variants, herded by `beast-riders`, `data.tribe` naming the tribe, tagged for the
 hyperjungle; sizes at breed scale 1):

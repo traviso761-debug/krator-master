@@ -45,8 +45,8 @@
    "sha256": "b8cbe92f023c6e259d485ef8fec14ad0d4645d5ed6a6933526f9ef2e6974aa3c"
   },
   "biomes/ringisles/dist/ringisles.html": {
-   "bytes": 2111548,
-   "sha256": "e0c93612f51735251a958e28a08f1e81ad65f08b39d58f9c6982501ef6666102"
+   "bytes": 2112174,
+   "sha256": "81aa4fbb479724f8808bf08594fe85cb173b12923abe83766a098589fadb4042"
   },
   "biomes/sedesert/dist/sedesert.html": {
    "bytes": 4514781,
@@ -285,8 +285,8 @@
    "sha256": "8b5c88a613ccd56fe868dd9c148c02db924e557d043ee9aa7e795afe776b0ade"
   },
   "kits/ash-nomads/dist/ash-nomads.html": {
-   "bytes": 15708194,
-   "sha256": "a595c4d83f2919d1c00d14a954f899eb819c545211a1a3f90baeb39f143dff26"
+   "bytes": 15709277,
+   "sha256": "45135376ea1764dcec9eb455510d1afa8ed8ae67ce9f215dca1d2b12e1bbe1a4"
   },
   "kits/beast-riders/dist/beast-riders.html": {
    "bytes": 11798982,
@@ -305,8 +305,8 @@
    "sha256": "eb0388e4703263d4449ea65442ec47f0017c20c75205378217832cd23e5e1845"
   },
   "kits/fauna/dist/fauna.html": {
-   "bytes": 1190755,
-   "sha256": "08cce58d841d9bc82d4c3b63190d80dff52b57e4ac700ea22bd4a1e2a7858521"
+   "bytes": 1191838,
+   "sha256": "d89b375b56b6c46c764588956625d1395433ca8604ded3b54ee5edfac08758ed"
   },
   "kits/interiors/dist/interiors-sets.html": {
    "bytes": 628867,
@@ -625,8 +625,8 @@
    "sha256": "e8c38d2102c1775c6e94adc7298c1bc76554b177a4a73ad5d5741015983a8718"
   },
   "settlements/voth/dist/voth-city.html": {
-   "bytes": 19309869,
-   "sha256": "1625ee50ebd313d8d5b1386f7f07dcb21b2cdbc912c6ac36daf5d225a1e12381"
+   "bytes": 19310495,
+   "sha256": "fd9720524dab088eefda431e7d47d4f048644bc07f894b81f842bf3025332860"
   },
   "settlements/voth/dist/voth-site.html": {
    "bytes": 3611916,
