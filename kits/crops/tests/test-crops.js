@@ -62,6 +62,12 @@ ok('every biome has a fruit, berry, vegetable or greens', bio.every(b => ['veget
 ok('the Hykkousoi pale blue grows in nwbay', C.palette('nwbay').colours.includes('blue'), !C.palette('sedesert').colours.includes('blue') && C.palette('sedesert', { grow: true }).colours.includes('blue'));
 ok('Voth purple is swbay own (the bay snail)', C.palette('swbay').colours.includes('purple'), !C.palette('hyperjungle').colours.includes('purple'));
 ok('Iziz orange and teal-blue grow in the hyperjungle', C.palette('hyperjungle').colours.includes('orange') && C.palette('hyperjungle').colours.includes('blue'), !C.palette('ebadlands').colours.includes('orange'));
+const nec = C.forBiome('necanyons');
+ok('necanyons: fonio is rain-fed on its pans, and no polar crop', how(nec, 'sandpan-fonio') !== 'no', how(C.at({ warmth: 'polar', atm: 'thin', arid: 'arid' }), 'sandpan-fonio') === 'no');
+ok('necanyons: its fruit, staple and medicine (the stack fig, fonio, rimdew)', ['stack-fig', 'sandpan-fonio', 'rimdew'].every(id => how(nec, id) !== 'no') && C.isBucket(C.BY_ID.rimdew, 'medicine'),
+  !C.isBucket(C.BY_ID['stack-fig'], 'medicine'));
+ok('the ember plum stands in for a medicine', C.isGroup(C.BY_ID['ember-plum'], 'utility') || C.isBucket(C.BY_ID['ember-plum'], 'medicine'), !C.isBucket(C.BY_ID['sandpan-fonio'], 'medicine'));
+ok('the rock bottle carries its hazard', C.BY_ID['rock-bottle'].hazard === 'poison', C.BY_ID.rimdew.hazard !== 'poison');
 ok('the northern clans can make a plaid', C.canPlaid('nhighlands'), !C.canPlaid('sedesert'));
 ok('copper and sulfur nodes give a desert its third colour', C.canPlaid('sedesert', { nodes: ['copper', 'sulfur'] }), !C.canPlaid('sedesert', { nodes: [] }));
 ok('growing dyes widens a palette (irrigated indigo in the wadis)', C.palette('sedesert', { grow: true }).colours.length > C.palette('sedesert').colours.length, true);

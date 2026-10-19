@@ -1083,3 +1083,48 @@ FURN({
     }
   }
 });
+
+/* ================= The north-eastern canyons (2 pieces) ================= */
+
+FURN({
+  key: 'generic_fruit_stack_fig', name: 'Stack Figs', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food'],
+  biome: 'necanyons', source: ['stackfig'],
+  w: 0.3, d: 0.2, h: 0.05, variants: 2, variantNames: ['a cluster cut from the root', 'dried on a string'],
+  variantDims: [{ w: 0.2, d: 0.2, h: 0.05 }, { w: 0.3, d: 0.08, h: 0.035 }],
+  build: function (F) {
+    const fig = F.col('fruitStackFig'), ripe = F.col('fruitStackFigRipe'), flesh = F.col('fruitStackFigFlesh');
+    if (F.variant === 0) {
+      /* a cluster cut from the pale root it grew on: purple-red figs, two split to their pink flesh */
+      KFRUIT.leaf(F, 0, 0, 0.1, F.col('vegLeaf'));
+      F.rod(-0.08, 0.015, -0.02, 0.08, 0.015, 0.02, 0.008, F.col('stoneCream'), 'food');
+      for (let i = 0; i < 8; i++) { const a = i * 0.8, r = 0.03 + (i % 3) * 0.012; F.ball(Math.cos(a) * r, 0.022, Math.sin(a) * r, 0.016, i % 2 ? fig : ripe, 'food'); }
+      KFRUIT.half(F, 0.065, 0.012, -0.045, 0.02, ripe, flesh); KFRUIT.half(F, -0.06, 0.012, 0.05, 0.02, fig, flesh);
+    } else {
+      /* dried and strung for keeping: flattened brown-purple figs on a cord */
+      F.shift(-0.15, 0);
+      F.rod(0, 0.012, 0, 0.3, 0.012, 0, 0.0025, F.col('fruitStackFigString'), 'food');
+      for (let i = 0; i < 9; i++) F.blob(0.025 + i * 0.031, 0.014, 0, 0.016, 0.01, i, F.shade(ripe, (i % 3) * 0.04 - 0.06), 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_ember_plum', name: 'Ember Plums', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'necanyons', source: ['emberplum'],
+  w: 0.2, d: 0.2, h: 0.07, variants: 2, variantNames: ['a handful, fresh', 'pounded to a powder (against scurvy)'],
+  variantDims: [{ w: 0.18, d: 0.18, h: 0.045 }, { w: 0.2, d: 0.2, h: 0.07 }],
+  build: function (F) {
+    const plum = F.col('fruitEmberPlum'), ripe = F.col('fruitEmberPlumRipe'), meal = F.col('fruitEmberPlumMeal');
+    if (F.variant === 0) {
+      /* small green-gold oval plums, very sour, on a leaf */
+      KFRUIT.leaf(F, 0, 0, 0.085, F.col('vegLeaf'));
+      for (let i = 0; i < 7; i++) { const a = i * 0.9, r = i ? 0.035 + (i % 2) * 0.012 : 0; F.blob(Math.cos(a) * r, 0.02, Math.sin(a) * r, 0.013, 0.018, a, i % 3 ? plum : ripe, 'food'); }
+    } else {
+      /* dried and pounded: a bowl of the pale gold powder the Wings carry */
+      KGEN.bowl(F, 0, 0, 0, 0.09, 0.05, F.col('stoneCream'), 'stone', meal);
+      for (let i = 0; i < 3; i++) F.blob(0.07 + i * 0.012, 0.012, -0.07 + i * 0.02, 0.012, 0.01, i, F.shade(ripe, -0.15), 'food');
+    }
+  }
+});

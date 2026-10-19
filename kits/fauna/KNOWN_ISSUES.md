@@ -37,4 +37,7 @@
       are Meshy's baked maps, not library sets; a perched wing is a rigid fold (the membrane cannot gather); the bat's and
       quetzal's perched wings are scaled shorter instead. Their sheet-pose builds (`pose: 'fly'`) are not model-driven: the model
       flies by `animate(g, t, 'fly')`. Rebuilding one means re-running `rig/` (read `rig/README.md`: working code from one session, tuned by eye per model); `models_pack.py` only repacks a finished GLB.
-
+- [ ] The five new mounts (`riders`, 2026-10-19) are the kit's choices where the lore is silent: the riding tiger (only the tribe's
+      name), the raptor's size (the lore says velociraptor), the jungle mammoth (thin-haired, for the heat), every yield, life figure
+      and temperament. Their legs turn rigidly at the hip like every animal's here, so a walking mammoth or threehorn lifts its feet
+      by turning, not by bending; the mammoth's hair is strips, which read as a fringe up close. No Meshy model variants.

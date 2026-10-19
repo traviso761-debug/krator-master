@@ -21,6 +21,18 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
+## Ride along with the next all-builds rebuild
+
+Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
+along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
+
+- **core/host: guard the camera's pointer capture** (the owner, 2026-10-19). `core/host/90-host-camera.js` calls
+  `cv.setPointerCapture(e.pointerId)` on pointerdown unguarded; inside the claude.ai artifact viewer's frame a press can
+  arrive for a pointer that is already gone, and it throws `NotFoundError` into the error panel. Wrap it (and any
+  `releasePointerCapture`) in `try { } catch (e) { }`, as `core/host/98-host-edit.js` already does. About 138 builds take
+  core/host. The Iziz palace page carries a page-only guard until then (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`,
+  its first lines): take that out in the same change.
+
 ## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
 
 The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md` (phases, rules, milestones),

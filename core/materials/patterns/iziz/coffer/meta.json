@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1103,
+    1205
+   ],
+   "seam_after": [
+    0.664,
+    0.633
+   ],
+   "seam_before": [
+    1.473,
+    2.086
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "plaster",
+  "id": "iziz/coffer",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.55,
+  "scale": [
+   2.4,
+   2.4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "iziz-coffer.png",
+  "generator": "ChatGPT image generation, delivered by the owner 2026-10-19 (pasted in the session; 6.webp), from the prompt in core/materials/PROMPTS-NEEDED.md (the Iziz palace citadel)",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/iziz/coffer: one square coffer of an Art Deco palace ceiling, gilded stepped mouldings, a teal field with a gilt sixteen-rayed sun, cream ribs",
+  "reuse": "any Art Deco or Roman coffered ceiling: Talia's halls, Voth's state rooms, a Xanadu dome's soffit",
+  "sha1": "3d1e2d1fc69fa9602275e91d6d454c2dce60f2c3"
+ }
+}

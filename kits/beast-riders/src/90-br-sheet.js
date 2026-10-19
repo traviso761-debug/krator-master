@@ -10,13 +10,22 @@
    ====================================================================== */
 (function () {
   if (/[?&]tex=0/.test(location.search)) KF_API.setTextures(false);
+  const TENT_ROWS = typeof BR_SHEET_TENTS !== 'undefined' ? BR_SHEET_TENTS : [];   /* the tent set's rows (79-br-camp.js) */
   const OWN = ['br_bldg_raptor_stable', 'br_bldg_great_byre', 'br_bldg_rookery_tower'];
+  /* the sedentary trades and the larger houses (src/51-54: BRT_ROWS), a row per group after the mounts */
+  const BRT_R = typeof BRT_ROWS === 'undefined' ? [] : BRT_ROWS;
+  BRT_R.forEach(function (R) { R.keys.forEach(function (k) { OWN.push(k); }); });
+  TENT_ROWS.forEach(function (R) { R.keys.forEach(function (k) { OWN.push(k); }); });
   const PORT_KEYS = BR_PORTS.keys;
   const all = ASSETS.filter(function (A) { return A.culture === 'beast-rider'; });
-  const rows = [{ title: 'The mounts (this kit)', list: all.filter(function (A) { return OWN.indexOf(A.key) >= 0; }) },
+  const rows = [{ title: 'The mounts (this kit)', list: all.filter(function (A) { return OWN.indexOf(A.key) >= 0 && OWN.indexOf(A.key) < 3; }) }].concat(
+    BRT_R.map(function (R) { return { title: R.title, list: R.keys.map(function (k) { return ASSET_BY_KEY[k]; }).filter(Boolean) }; })).concat([
     { title: "Girder's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'girder'; }) },
-    { title: "Mav's Refuge's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'mavs-refuge'; }) }];
+    { title: "Mav's Refuge's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'mavs-refuge'; }) }])
+    .concat(TENT_ROWS.map(function (R) { return { title: R.title, list: R.keys.map(function (k) { return ASSET_BY_KEY[k]; }).filter(Boolean) }; }));
+  rows.splice(1, 0, ...BR_ROCK.rows(all));   /* the rock-cut pieces and the Deep Root cavern (src/55-56), and the wrapped ones */
   const out = { ready: false, keys: OWN.concat(PORT_KEYS), built: [], errors: BR_PORTS.errors.slice(), rows: [] };
+  out.keys = out.keys.concat(BR_ROCK.keys);
   const _v = new THREE.Vector3();
   function fabricBox(g) {                    /* the port's fabric (its town's kit meshes, not the furniture), local */
     const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
@@ -32,8 +41,9 @@
   let z = 0, tris = 0;
   rows.forEach(function (R) {
     let x = 0, depth = 0;
+    if (R.build) { const r = R.build(z, out); x = r.x; depth = r.depth; tris += r.tris; }
     R.list.forEach(function (A) {
-      const nv = A.port ? A.variants : Math.min(3, A.variants || 1);
+      const nv = A.port || R.rock ? A.variants : Math.min(3, A.variants || 1);
       for (let v = 0; v < nv; v++) {
         const dm = entryDims(A, v);
         let w = Math.max(dm.w, 6), d = Math.max(dm.d, 6), cx = x + w / 2, cz = z + d / 2;
@@ -51,7 +61,9 @@
           const e = { key: A.key, v: v, own: OWN.indexOf(A.key) >= 0, port: !!A.port, w: +M.w.toFixed(2), d: +M.d.toFixed(2), h: +M.h.toFixed(2),
             decl: { w: dm.w, d: dm.d, h: dm.h },
             min: M.min ? [+(M.min.x - cx).toFixed(2), +M.min.y.toFixed(2), +(M.min.z - cz).toFixed(2)] : null,
-            max: M.max ? [+(M.max.x - cx).toFixed(2), +M.max.y.toFixed(2), +(M.max.z - cz).toFixed(2)] : null, missing: g.userData.missingFurniture || [] };
+            max: M.max ? [+(M.max.x - cx).toFixed(2), +M.max.y.toFixed(2), +(M.max.z - cz).toFixed(2)] : null, missing: g.userData.missingFurniture || [],
+            nf: (g.userData.furniture || []).length, tags: { job: A.job || null, role: A.role || null, against: A.against || null } };
+          if (R.rock) e.rock = BR_ROCK.backOf(g, A.key, v, null, cx, cz, 0);
           if (A.port) {
             const V = BR_PORTS.built[A.key][v];
             e.town = A.port.town; e.name = V.name; e.def = V.def; e.fabric = fabricBox(V.group); e.tracker = { min: V.box.min, max: V.box.max, inst: V.box.inst, tris: V.box.tris };
@@ -63,6 +75,7 @@
         x += w + 12; depth = Math.max(depth, d);
       }
     });
+    if (R.rock && !R.build) BR_ROCK.backdrop(z, x);
     out.rows.push({ title: R.title, z: z, x0: 0, x1: x });
     groundLabel(R.title, -18, z + depth / 2, true);
     z += depth + 30;

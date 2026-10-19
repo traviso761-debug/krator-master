@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.314,
+    1.202
+   ],
+   "seam_before": [
+    1.476,
+    1.814
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.pitcher.giant",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "organic.pitcher.giant.png",
+  "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.pitcher.giant` (section 7, Korona)",
+  "reuse": "the man-eater pitcher's outside, the star pitcher and the barrel (Korona); any giant pitcher or carnivorous barrel",
+  "sha1": "a5e4b092bbeb2ccb8a00522b1e1d17133fcd5854"
+ }
+}

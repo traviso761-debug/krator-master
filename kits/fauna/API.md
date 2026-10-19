@@ -8,7 +8,7 @@ x its left (three.js yaw: rotation.y > 0 turns +z toward +x).
 | File | What |
 |---|---|
 | `fauna-core.js` | `ANIMAL({...})` (the registry), `FAUNA_VOCAB`, `FAUNA_YIELDS`, `FAUNA_FAMILIES`, `faHash`/`faNoise` (patches and markings), `faunaFrame` (the part builder below) |
-| `krator-fauna-<group>.js` | the species, one file per group (README's table): livestock, mounts, farm, abyss, desert, bay, hyperjungle, flyers, crawlers, voth, ash. Prefixes: `FA_SAL`, `faFm`, `faAb`, `faDs`, `faBy`, `faHj`, `faFl`, `faCr`, `faVo`, `faAs` |
+| `krator-fauna-<group>.js` | the species, one file per group (README's table): livestock, mounts, farm, abyss, desert, bay, hyperjungle, flyers, crawlers, voth, ash, riders. Prefixes: `FA_SAL`, `faFm`, `faAb`, `faDs`, `faBy`, `faHj`, `faFl`, `faCr`, `faVo`, `faAs`, `faRd`. A file that draws on another's helpers needs it in the same bundle: `wild`, `ringsea` and `riders` need `hyperjungle` |
 | `krator-fauna-runtime.js` | `KratorFauna`: list, entry, has, build, animate, profile, lifeOf, setTextures, textures, warm, VOCAB, YIELDS |
 | `fauna_bundle.py` | `bundle(groups)`: the closure; `files(groups)`; the packed maps as `FA_TEX` |
 | `src/` | the sheet page (head, vendored sky, 90-sheet, hover inspector, polygon tool) |
@@ -59,7 +59,11 @@ Gait data an animal sets (`data`): `gait {type, freq, stride}`, `legs`, `wings`,
 A flyer or insect with legs walks by its leg count (2 biped, 4 quadruped, 6 hexapod). Gait `climber`: an animal hanging by a `grip`
 anchor walks hand over hand along its bough (the sheet hangs it from one). Every frame starts from the rest pose, so no mode leaves a turn behind.
 
-`KratorFauna.profile(key, breed, pose)` returns `{at(t) -> {z, y, hw, hh}, S, anchors}` or null. `KratorFauna.lifeOf(key)` returns
+`KratorFauna.profile(key, breed, pose)` returns `{at(t) -> {z, y, hw, hh}, S, anchors}` or null (t from the tail tip, 0, to the snout, 1).
+The anchor names in use: `saddle` (where a rider's hips sit), `bridle`, `chest`, `pack`, `lead`, `headRoot`, `tailRoot`; on the heavy
+beasts `howdah` (a platform's centre on the back), `harness` (the collar) and `trace` (where the traces meet a load); `grip` (a climber's
+hold), `spread<i>` (a glider's limbs in flight). A Beast Rider mount names its tribe as `data.tribe` (the `riders` group).
+ `KratorFauna.lifeOf(key)` returns
 the life layer's record (diet, feeding, activity, temperament, habitat, locomotion, fleeDistance, aggression, herd, speed,
 schedule[24], traits, yields, life). `KratorFauna.warm()` starts every packed detail map decoding (call it before building only a
 few animals, so a later build does not wait on one).
@@ -69,5 +73,7 @@ few animals, so a later build does not wait on one).
 vocabulary, traits, yields (each trait backed: milkable has milk, eggs has eggs, edible has meat), life (with size and source),
 builds (every variant and breed, no NaN), inside the declared box (+10%), parts (legs == `data.legs`, wings if `data.wings`),
 on the ground (legged builds), triangle budget (`data.budget`, default 9 000), animation (every mode keeps the animal in its
-box), determinism, textures decoded. `--only key,key` loads the page with only those animals laid out (the assertions still
+box), determinism, textures decoded, and `rider-mounts`: every tribe in LORE.md 6.6's "Known tribes" has a row in README.md's
+table "The Beast Riders' mounts" whose key is registered and rideable or draught (with negatives: an unregistered key, a MISSING
+row and an absent tribe must fail it). `--only key,key` loads the page with only those animals laid out (the assertions still
 build every animal).

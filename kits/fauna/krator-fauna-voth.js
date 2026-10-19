@@ -560,21 +560,24 @@ ANIMAL({
    The war breed is bigger (1.2) with longer, heavier mandibles. The saddle sits on the top of the back behind the
    pronotum; the bridle on the head between the mandibles' roots; the tack is the culture's (anchors and the profile). */
 const FA_VO_STAG = [{ shell: 0x16120e, sheen: 0xc07a22, leg: 0x0e0c0a, mand: 0x2a1a10 }, { shell: 0x4e2412, sheen: 0xc8682a, leg: 0x2a140a, mand: 0x5a2a14 },
-  { shell: 0x111611, sheen: 0x3e8a40, leg: 0x0a0d0a, mand: 0x1e2418 }];
+  { shell: 0x111611, sheen: 0x3e8a40, leg: 0x0a0d0a, mand: 0x1e2418 },
+  /* the jungle staghorn (the Staghorn tribe of the Beast Riders, the hyperjungle; the owner, 2026-10-19): moss-green, a gold sheen, rust-red mandibles */
+  { shell: 0x1e3a1c, sheen: 0xd2a234, leg: 0x16120c, mand: 0x7a2c14 }];
 /* the body profile, t from the elytra's tip (0) to the head's front (1): [t, z, y of the centre line, half-width, half-height] */
 const FA_VO_STAG_P = [[0, -1.42, 1.12, .05, .05], [.1, -1.2, 1.12, .5, .28], [.3, -.7, 1.12, .72, .38], [.5, -.15, 1.12, .68, .34], [.58, .1, 1.12, .52, .24],
   [.7, .4, 1.12, .6, .3], [.82, .75, 1.08, .42, .22], [.9, .95, 1.03, .5, .2], [1, 1.18, 1.0, .32, .12]];
 ANIMAL({
   key: 'staghorn-beetle', name: 'Staghorn beetle', group: 'voth',
-  tags: { biomes: ['swbay', 'crater-drylands'], koppen: ['BSh', 'BSk', 'Aw'], aridity: ['semiarid', 'arid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['ashnomad'], diet: 'herbivore', feeding: 'mixed', activity: 'diurnal', temperament: 'defensive',
+  tags: { biomes: ['swbay', 'crater-drylands', 'hyperjungle'], koppen: ['BSh', 'BSk', 'Aw', 'Af', 'Am'], aridity: ['semiarid', 'arid', 'humid'], climate: ['tropic', 'temperate', 'hypertropic'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['ashnomad', 'beast-riders'], diet: 'herbivore', feeding: 'mixed', activity: 'diurnal', temperament: 'defensive',
     habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'climbs'] },
   size: { length: 2.6, height: 1.5 },
-  source: [{ build: 'kits/fauna', file: 'krator-fauna-voth.js', note: 'first drawn here (2026-10-07), derived from the giant beetle: the Ash Nomads\' mount on the ash plains round the great volcano (no ash-plain biome yet: the southwest bay, which holds the volcano, and the crater drylands stand in); the Zeijani of Dhelv ride it too (not yet a catalog culture, so not in herdedBy)' }],
+  source: [{ build: 'kits/fauna', file: 'krator-fauna-voth.js', note: 'first drawn here (2026-10-07), derived from the giant beetle: the Ash Nomads\' mount on the ash plains round the great volcano (no ash-plain biome yet: the southwest bay, which holds the volcano, and the crater drylands stand in); the Zeijani of Dhelv ride it too (not yet a catalog culture, so not in herdedBy)' },
+    { build: 'LORE.md', file: '6.6', note: 'variant 3, the jungle staghorn: the Staghorn tribe of the Beast Riders in the hyperjungle (the owner, 2026-10-19), the same beetle in moss-green with a gold sheen and rust-red mandibles' }],
   traits: { edible: false, milkable: false, tameable: true, rideable: true, draught: true, eggs: false },
   yields: { chitin: { amount: 45, note: 'the cast skins of the grub\'s moults and the shell of a beetle that dies: elytra for shields and bowls, the mandibles for blades and tent poles; the Ash Nomads do not eat it' } },
   life: { maturity: 3, lifespan: 16, litter: 30, gestation: 30, note: 'eggs in rotten wood or dung; three years a grub, then a beetle broken to the saddle in its first season; gestation: incubation' },
-  variants: 3, variantNames: ['black, amber sheen', 'chestnut', 'greenish-black'],
+  variants: 4, variantNames: ['black, amber sheen', 'chestnut', 'greenish-black', 'jungle staghorn: moss-green, gold sheen, rust-red mandibles (the Beast Riders\' Staghorn tribe)'],
   breeds: { riding: { scale: 1, mass: 750, role: 'riding mount; light draught (a sledge, a travois)' }, war: { scale: 1.2, mass: 1300, role: 'war mount: bigger mandibles' } },
   w: 2.95, d: 4.0, h: 1.75,
   data: { mass: 750, legs: 6, speed: { walk: 1.4, run: 6 }, gait: { type: 'hexapod', freq: 1.3, stride: 0.5 }, grazePitch: 0.25,

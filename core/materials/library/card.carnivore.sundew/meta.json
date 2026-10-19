@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 0,
+   "key": "#ff00ff",
+   "key_hi": 110,
+   "key_lo": 40,
+   "pad": 0.03,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.carnivore.sundew",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.carnivore.sundew.webp",
+  "generator": "supplied by the owner (pasted into the chat, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet, kept whole (anchor none). The generator drew the glandular hairs hot pink, close to the key: keyed with spill 'all', which turns the pink left in the hairs to red",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `card.carnivore.sundew` (section 6, necanyons)",
+  "reuse": "rimdew, the medicinal sundew (necanyons); any sundew (the southern highlands' bogs, Korona)",
+  "sha1": "d982237907ff3ab0ecef7448441ed747864f6bbf"
+ }
+}

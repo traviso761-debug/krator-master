@@ -131,6 +131,32 @@
     "sourceMean": 0.4398
    }
   },
+  "card_carnivore_sundew": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "card_carnivore_sundew.albedo.webp"
+   },
+   "lib": "card.carnivore.sundew",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "055641f4ea585089690a9a96806b32e12301a4c2"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3680955192540619,
+    "sourceMean": 0.3681
+   }
+  },
   "card_crop": {
    "breakup": null,
    "card": true,

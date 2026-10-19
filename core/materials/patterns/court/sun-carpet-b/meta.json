@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.37,
+    0.967
+   ],
+   "seam_before": [
+    1.503,
+    1.121
+   ],
+   "source_size": [
+    1536,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.35,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "court/sun-carpet-b",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.9,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "court-sun-carpet-b.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz)",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/court/sun-carpet: one whole Deco sun carpet (coarse woven)",
+  "reuse": "the common sun-medallion rug; wall rugs",
+  "sha1": "699af0bb7641a06c8162d7e235877dd46d0e34c3"
+ }
+}

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 196 (21%) | 6 (1%) | 13 (1%) | 70 (7%) | 649 (69%) |
+| KB | 196 (21%) | 6 (1%) | 13 (1%) | 70 (8%) | 649 (69%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -76,7 +76,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/roketstad/88-rk-place.js` | 12.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/roketstad/89z-rows.js` | 0.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/roketstad/90a-rk-world.js` | 7.9 | [web] | 9 | 1 | 0 | 0 | 2 | 3 | 3 | 0 | 0 | 0 | 0 |  |
-| `targets/roketstad/90b-rk-build.js` | 41.4 | [web] | 7 | 0 | 0 | 0 | 4 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/roketstad/90b-rk-build.js` | 41.7 | [web] | 7 | 0 | 0 | 0 | 4 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/roketstad/91z-views.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/roketstad/93-rk-ui.js` | 2.6 | [web] | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/roketstad/93b-rk-lod.js` | 3.2 | [G native] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |  |

@@ -12,6 +12,7 @@ render_mode cull_disabled;
 #include "res://shaders/kcolour.gdshaderinc"   // three draws most library surfaces front-only; a few are double-sided, and glTF carries the flag per material
 #include "res://shaders/lib/breakup.gdshaderinc"
 #include "res://shaders/lib/world-uv.gdshaderinc"
+#include "res://shaders/lib/triplanar.gdshaderinc"
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
@@ -43,12 +44,21 @@ uniform bool has_albedo = true;
 uniform bool flip_v = false;
 uniform vec3 emission = vec3(0.0);
 uniform bool unlit = false;
+// hook 'triplanar' (lib/triplanar.gdshaderinc: the Iziz court finishes): the map projected from three sides in the mesh's own
+// frame, tri_per_m tiles per metre, times tri_gain (a detail set's 1 / mean^2.2; 1 where the set is the surface)
+uniform bool triplanar = false;
+uniform float tri_per_m = 2.0;
+uniform float tri_gain = 1.0;
 
 varying vec3 v_wp;
 varying vec2 v_uv;
+varying vec3 v_op;
+varying vec3 v_on;
 
 void vertex() {
 	v_wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	v_op = VERTEX;
+	v_on = NORMAL;
 	v_uv = UV * uv_scale.xy + uv_offset.xy;
 	if (world_uv) {   // MODEL_MATRIX is the instance's (the region node is unscaled), as instanceMatrix is in three
 		v_uv = wuv_box(UV, NORMAL, wuv_instance_scale(MODEL_MATRIX), 1.0 / tile_m) + (world_uv_offset ? wuv_box_offset(MODEL_MATRIX[3].xz) : vec2(0.0));
@@ -61,8 +71,8 @@ void vertex() {
 void fragment() {
 	vec2 uv = v_uv;
 	float m = bu_mask(v_wp, bu_mix, bu_cell);
-	vec4 a = has_albedo ? bu_tex(albedo_tex, uv, m) : vec4(1.0);
-	vec3 c = (has_albedo ? k_tex(a.rgb) : vec3(1.0)) * colour * (tint ? COLOR.rgb : vec3(1.0));
+	vec4 a = has_albedo ? (triplanar ? tri_sample(albedo_tex, v_op, v_on, tri_per_m) : bu_tex(albedo_tex, uv, m)) : vec4(1.0);
+	vec3 c = (has_albedo ? k_tex(a.rgb) * (triplanar ? tri_gain : 1.0) : vec3(1.0)) * colour * (tint ? COLOR.rgb : vec3(1.0));
 	c *= bu_bright(v_wp, bu_macro, bu_cell);
 	ALBEDO = unlit ? vec3(0.0) : k_albedo(c);
 	EMISSION = unlit ? c : emission;

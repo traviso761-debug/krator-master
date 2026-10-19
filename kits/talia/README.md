@@ -37,7 +37,13 @@ mixed street.
 | Trade — civic (lit, gilt) | `tal_customs_house` (the Emperor's customs on the east road: a baroque front up an imperial stair, the weighing court with its beam balance between two vaulted bonded stores, the road gate), `tal_bourse` (the caravan exchange: a square hall in a Corinthian arcade under the great drum-dome; taliaint3 inside, P6), `tal_bath` (talia hall: the domed hall, two wings of small domes, the pool court in its colonnade) |
 | Trade — the caravan road | `tal_caravanserai` (a two-storey gallery round a court, the gate under a jharokha, corner towers, camel bays off the back walk, crawler bays through the back wall), `tal_agora_stoa` (a Doric-and-Ionic stoa before a row of shops; `o.len`), `tal_warehouse` (four barrel vaults over the stores, a walled loading court) |
 | Trade — the street | `tal_shop_arcade` (shops under an arcade on piers, two storeys of flats over), `tal_inn` (a merchants' inn round a galleried court, a carriage gate, the tap room), `tal_press` (printers and bookbinders: the screw press in an open bay, a drying loft of printed sheets on the roof) |
-| The mixed street, five rows | each tier's Talia buildings between Vernacular ones of the same tier (`vern_house_poor_*`, `vern_house_mid_*`, `vern_shops` and `vern_tavern`, `vern_market`, `vern_shops`, `vern_tavern` and `vern_warehouse` for the trade row, `vern_house_rich_*`) |
+| University — the core (lit, gilt) | `tal_uni_hall` (talia (3): eleven bays, an ochre ground storey, cobalt oculi, the clock tower under a gilt onion), `tal_uni_cloister` (talia-cloisters: two storeys of galleries round a court, orange coffered walks, a ring-and-meander floor, the gate passage under an orange vault), `tal_uni_library` (taliaint: a rotunda of two arcaded storeys under a ribbed dome and a lantern, a Corinthian portico), `tal_uni_senate` (a baroque front, paired columns, the imperial stair, a cupola) |
+| University — faculties and the rest | `tal_uni_faculty` (`o.v` 0, 1, 2: 5, 7 or 9 bays; a cupola from 7, domed end pavilions at 9), `tal_uni_anatomy` (a three-storey drum under a tile cone and a skylight lantern), `tal_uni_hospital` (the Innocenti's loggia: Corinthian columns, cobalt roundels, ranges round a court, the chapel dome), `tal_observatory` (a banded tower, a gallery, a verdigris dome with its slot open), `tal_uni_college` (`o.wealth` 'rich' or 'poor'; place a poor one with `o.lit` false: a court, the hall under a tile roof, the chapel dome, the gate tower) |
+| The arts | `tal_odeon` (a half-round cavea under a low ribbed dome, an Ionic portico), `tal_academy` (a classical front of niches and windows, the studios under a sawtooth of north lights), `tal_theatre` (open air: twelve tiers, five aisles, an arcaded outer wall, the scaenae frons; it stands on its wall on flat ground), `tal_uni_gallery` (the Glyptothek: blind walls of statue niches, glass clerestories, an Ionic portico, a domed rotunda), `tal_glasshouse` (talia hall: a glass dome with gilt ribs on a drum of glazed arches, two glass wings, a pool) |
+| Civic | `tal_temple` (talia fancy, talia-temple: a Byzantine cluster on a podium, the axial stair, the pointed portal with the Sun and the Giant on its leaves, the star rose, four towers under melon domes, the egg dome on a drum of cobalt windows, the apse; a landmark, about 38 m), `tal_chapel` (talia3 (2): a white egg dome and rib spire), `tal_council_house` (a Corinthian temple front on a podium), `tal_fountain` (a nymphaeum: three statue niches, an aedicule, gilt spouts, a basin), `tal_memorial_spire` (talia-memorial: gadrooned domes, a lotus ring, the lathe spire, a reflecting pool), `tal_sky_bridge` (talia11: `o.len` span, `o.deck` deck height (not `o.y`, the placer's base); `o.piers` false in a city, where its ends meet two buildings) |
+| The city wall | `tal_wall` (one segment `o.len` long, default 12: round-topped merlons capped in orange), `tal_wall_tower` (w 8: walls butt it at x = +-4), `tal_east_gate` (talia ornament: the Gate of the Passes, lotus roofs over two drum towers, a cusped arch under a sunburst, the road 5 m clear along z; walls butt it at x = +-10). On the sheet laid with no gaps, as a wall is built |
+| The governor's palace (`src/74t-tal-palace.js`, lit, gilt) | `tal_governor_palace`: the govpalace massing on its blueprint (`palace/BLUEPRINT.md`; the building's x = -v, z = 1 - u, so every pavilion, court and stair stands where the sheets put it): a white marble terrace on a moulded base, the imperial front stair with an orange runner and lions on its newels, the hall block's two storeys of white arcades (Corinthian columns and a gilt frieze below, a balustraded gallery and a lit Ionic arcade above), the great drum of lit arches between pilasters under an orange-tiled dome with sixteen gilt ribs and a white lantern with an orange cupola, seven chhatri pavilions (melon domes in tile or verdigris with gilt ribs; the two rear residence pavilions jali-screened above), the straight outside stair on the chancery flank landing under a small pediment, the walled forecourt with its gate piers under chhatris, the round kitchen, the garden. One row on the sheet (views "Governor's palace", "Governor's palace — eye level"); the guard's barracks stand outside the grounds, not in this def |
+| The mixed street, six rows | each tier's Talia buildings between Vernacular ones of the same tier (`vern_house_poor_*`, `vern_house_mid_*`, `vern_shops` and `vern_tavern`, `vern_market`, `vern_shops`, `vern_tavern` and `vern_warehouse` for the trade row, `vern_house_rich_*`); `vern_school`, `vern_watch_house` and `vern_hospital` for the civic row) |
 
 **The helpers** (`src/69u-tal-helpers.js`): `tanArch` (round, pointed, cusped or flat; a fill of dark, glass, lit, blind,
 marble or cobalt; a band of boxes in segments, `tanArcBand`, so the band keeps its width on any span; jambs, keystone,
@@ -48,9 +54,32 @@ lathe with entasis; Doric, Ionic, Corinthian or plain capitals, gilt on the rich
 `tanDrumDome`, `tanKiosk` (the chhatri), `tanJharokha`, `tanJali`, `tanWallStair`, `tanImperialStair`, `tanMosaicRing`,
 `tanMeander`, `tanRoundBox` (rounded vertical edges), `tanParapetWall`, `tanPot`, `tanTrail`, `tanVault` (a barrel vault with closed ends), `tanCourtGallery` (one storey of an
 arcaded gallery round a court, each corner column once, a gate's bay kept clear), `tanShopFront` (an opening, a folded
-door leaf, a counter of goods, an awning and a sign). Kit items (`src/69t-tal-mat.js`,
+door leaf, a counter of goods, an awning and a sign). P4 adds `tanArcRun` (boxes round a horizontal arc: a theatre's tiers,
+a ring), `tanLotus` and `tanLotusRoof` (petals edged in gilt), `tanSunburst`, `tanCoffers` (a coffered soffit),
+`tanStatue` and `tanNiche`, `tanSpandrel` (closes the face between an arch and a level line), `tanOculus` (a round
+window in a ring band), and `tanDrum` takes `round` (the 24-sided drum) and the windows' size. Kit items (`src/69t-tal-mat.js`,
 prefix `ta`): marble, gilt, tile, cobalt boxes; discs; ribs and rings; the column and baluster lathes; echinus and bell;
 domes in tile, marble, plaster and gilt; egg and onion lathes; the tile cone and hip; pointed heads in the fill materials.
 
-**Next** (PLAN.md section 8): P4 the University, the civic set, the temple, the
-memorials and the east gate, P5 the governor's palace, P6 the catalog culture file and interiors.
+**No dark voids** (the owner, 2026-10-19). Every opening is a door, a window or an open portal, never a black plate:
+`tanArch` takes a dark fill (or none) as a DOOR when it is door-shaped (2 m or more, taller than wide, no sill or rail;
+`o.door` overrides) and as a WINDOW otherwise. Doors are walnut leaves with raised panels and a brass pull under a glazed
+fanlight (`tanLeaves`, `tanArchDoor`; glazed double doors at 2.4 m wide or more); windows are Talia's sky-grey pane
+(`taWinB`, the same values as Pylon's) with glazing bars (`tanGlaze`). On a hollow body both cut the wall (`vnHole`), so
+they open into the furnished rooms, the leaves swung in. `tanDoor` and `tanWin` stand in for the Vernacular's `vnDoor` and
+`vnWin` (closed leaves instead of the dark recess; the pane over the dark glass). The loggias open their heads into the
+recess under orange vaults; the court galleries alternate doors and windows; the slits are glazed between stone lips; the
+observatory's slot shows its shutters drawn back and the telescope; the palace's light courts are glazed over.
+
+**Interiors and furniture (P6).** `kits/catalog/krator-master-furniture-talia.js` is Talia's culture: 27 pieces (tub
+armchairs and ottomans in orange, the white sofa, brass and walnut tables, the plaster bench and wall niche, the painted
+chest and the jar stand, bookcase, map and specimen cases, the plaster and canopy beds, the hearth, the lectern, the
+scholar's desk, the slate, the globe, the easel, the modelling stand, the kilim and the meander rug, the palm planter, the
+brass lantern, the aedicule). `kits/interiors/sets/talia.js` furnishes 32 of the kit's 45 items (one per key, the faculty's
+three sizes each) and registers Talia's room kinds, `lecture` and `studio`; the rest say why they are skipped. The page
+bundles them through `kit.json` (`furniture`, `interiorSets`). With an item, a body is hollow: `tanRoundBox` then draws one
+hollow body with round corner piers. Check: `cd kits/interiors && python3 verify.py dist/interiors-sets.html --sets
+--assert --query set=talia`.
+
+**Next** (PLAN.md section 8): P7, the Godot export check and the gallery; the interiors the set skips (the library's
+well, the anatomy theatre's tiers, the caravanserai and the stoa, the palace by its blueprint).

@@ -201,6 +201,8 @@ func _initialize() -> void:
 	var lib_on := 0
 	var wuv_on := 0
 	var wuv_want := 0
+	var tri_want := 0
+	var tri_on := 0
 	var hooks := {}
 	for n in items + bnodes:
 		var gi := n as GeometryInstance3D
@@ -218,6 +220,11 @@ func _initialize() -> void:
 				map_bad += 1
 			elif rec.get("map") != null and texs[rec["map"]].get("from") == "library":
 				lib_on += 1
+			if rec.get("triplanar") is Dictionary:   # an Iziz court finish (95i COURT_TRI): projected, its mode and tile as the page's
+				tri_want += 1
+				var tr: Dictionary = rec["triplanar"]
+				if sm.get_shader_parameter("triplanar") and is_equal_approx(float(sm.get_shader_parameter("tri_per_m")), 1.0 / float(tr["tile"])) 						and bool(sm.get_shader_parameter("tint")) == bool(tr["detail"]) and sm.get_shader_parameter("albedo_tex") != null:
+					tri_on += 1
 			if rec.get("worldUV") is Dictionary and n is MultiMeshInstance3D and not rec.get("transparent", false):
 				wuv_want += 1
 				if sm.get_shader_parameter("world_uv") and is_equal_approx((sm.get_shader_parameter("tile_m") as Vector2).x, 1.0 / float(rec["worldUV"]["K"])):
@@ -227,6 +234,8 @@ func _initialize() -> void:
 	ok(lib_on > 0 and int(rep["counts"]["textures"]["library"]) > 0 and int(rep["counts"]["textures"]["missing"]) == 0,
 		"library maps by reference load from tex/ (%d textures, on %d meshes); %d PNGs (the procedural maps)" % [rep["counts"]["textures"]["library"], lib_on, rep["counts"]["textures"]["png"]])
 	ok(unknown.is_empty() and hooks.size() > 0, "every material's hook names library includes: %s" % JSON.stringify(hooks.keys()))
+	if tri_want > 0:
+		ok(tri_on == tri_want, "court finishes: %d of %d triplanar meshes drawn projected, at the page's tile, full colour or detail as the page" % [tri_on, tri_want])
 	ok(wuv_want > 0 and wuv_on == wuv_want, "world-uv: %d of %d instanced world-UV meshes tile at 1/K metres" % [wuv_on, wuv_want])
 	ok((KHooks.resolve("world-uv+no-such-hook")["unknown"] as Array) == ["no-such-hook"], "negative: a hook no include answers is reported")
 	var kmat_ok := 0

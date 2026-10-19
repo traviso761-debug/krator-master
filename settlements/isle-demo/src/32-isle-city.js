@@ -485,7 +485,7 @@ ISLE.city = function (town, o) {
     LOG.fields = OUT.fields.length + ' parcels, ' + Math.round(OUT.fields.length * c * c / 1e4) + ' ha';
   };
   var K = KCITY.create({
-    tune: tune, site: S, seed: seed, rand: 'krand', index: { order: 'insertion' }, tags: tags,
+    name: town, tune: tune, site: S, seed: seed, rand: 'krand', index: { order: 'insertion' }, tags: tags,
     ground: { h: h, grid: G.grid }, kit: { dims: dims },
     rules: { wealth: wealth, roleAt: roleAt, vacant: vacant, choosers: { avenue: chooser('avenue'), main: chooser('main'), side: chooser('side'), alley: chooser('alley') },
       groundOk: KCITY.reliefOk({ dry: 0.8, maxRelief: PR.maxDrop == null ? 6 : PR.maxDrop }) },
