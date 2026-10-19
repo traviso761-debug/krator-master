@@ -29,6 +29,9 @@ const VIEWS=(function(){const V={},n0=_fin('fin-n0'),e1=_fin('fin-e1');
  // THE FARMS (P3b): the terraces from over the south-west, a farmhouse among the paddies
  if(typeof FARMS!=='undefined'&&FARMS){V['The terraces and the palisade (from the south-west)']=[-760,150,1250,-250,0,700];
   const Hp=FARMS.houses.find(h=>h.v===2);if(Hp)V['A paddy farm by the spring']=[Hp.x+60,Hp.y+28,Hp.z+55,Hp.x,Hp.y+2,Hp.z];}
+ // THE BANDS' GROUNDS (P3c): the Quetzal's on the top by the east fins, a floor camp in its hedge
+ if(typeof CAMPS!=='undefined'&&CAMPS){const Q=CAMPS.grounds.find(g=>g.tribe==='quetzal'&&g.ground==='upper');if(Q)V['The Quetzal band\'s ground (by the east fins)']=[Q.ell.x-110,_top+45,Q.ell.z+90,Q.ell.x,_top+3,Q.ell.z];
+  const T=CAMPS.grounds.find(g=>g.tribe==='threehorn'&&g.ground==='lower');if(T)V['The Threehorn band\'s camp and pasture (in its thorn hedge)']=[T.ell.x+190,90,T.ell.z+260,T.ell.x-120,0,T.ell.z-60];}
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the rock, the zone of the top or
@@ -220,7 +223,8 @@ const HCHK={
  town(T){if(!T)return{ok:false,detail:'no town'};const L=T.lots,K=KSTACKS,KL=KCITY.lib,bad=[],TP=PR.TOP;
   const box=l=>{const c=Math.cos(l.ry),s=Math.sin(l.ry),u=[c,-s],v=[s,c],hw=l.w/2,hd=l.d/2;return {c:[l.x,l.z],u,v,hw,hd,C:[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[l.x+u[0]*hw*q[0]+v[0]*hd*q[1],l.z+u[1]*hw*q[0]+v[1]*hd*q[1]])};};
   const B=L.map(box),ell=(E,x,z,p)=>((x-E.x)/(E.rx+p))**2+((z-E.z)/(E.rz+p))**2<1;
-  const sat=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const pr=P=>P.map(q=>q[0]*ax[0]+q[1]*ax[1]),A=pr(a.C),Bq=pr(b.C);if(Math.max(...A)<=Math.min(...Bq)+.05||Math.max(...Bq)<=Math.min(...A)+.05)return false;}return true;};
+  // apart, or touching within 15 cm (core/city's clash counts two boxes that touch as apart, and a float's worth more)
+  const sat=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const pr=P=>P.map(q=>q[0]*ax[0]+q[1]*ax[1]),A=pr(a.C),Bq=pr(b.C);if(Math.max(...A)<=Math.min(...Bq)+.15||Math.max(...Bq)<=Math.min(...A)+.15)return false;}return true;};
   // the grid the overlap test buckets by (20 m)
   const G=new Map();B.forEach((b,i)=>{const r=Math.hypot(b.hw,b.hd);for(let gx=Math.floor((b.c[0]-r)/20);gx<=Math.floor((b.c[0]+r)/20);gx++)for(let gz=Math.floor((b.c[1]-r)/20);gz<=Math.floor((b.c[1]+r)/20);gz++){const k=gx+','+gz;(G.get(k)||G.set(k,[]).get(k)).push(i);}});
   let over=0,street=0,cap=0,res=0,nh=0,ground=0;const seen=new Set();
@@ -280,6 +284,40 @@ const HCHK={
   const by={};C.forEach(c=>by[c.kind]=(by[c.kind]||0)+1);
   return{ok:!bad.length,detail:C.length+' cells on '+per.filter(Boolean).length+' terraces ('+Object.keys(by).map(k=>by[k]+' '+k).join(', ')+'), '+F.houses.length+' farmhouses, '+P.gates.length+' gates, '+P.posts.length+' posts'+
    (bad.length?': '+bad.slice(0,8).join('; '):'; no overlap, all on farmland, the palisade unbroken')};},
+ // THE BANDS' GROUNDS (P3c): a ground for each tribe as the kit's table has it (BR_CAMP: the flyers' only on the top, the
+ // Dragonfly's, the Spider's and the Mammoth's only on the floor), every tent and pen it names pitched, no two overlapping,
+ // each inside its ground (the top's on the cap 12 m in from the rim and off the rock; the floor's tents in the camp,
+ // its pens in the hedge), none on a town lot or street; every hedge closed (its pieces end to end) with its two gates,
+ // every pasture's fence with its gate; a banner on every ground; a track from every floor camp to a palisade gate,
+ // through no farm and no other band's hedge
+ camps(Cm){if(!Cm)return{ok:false,detail:'no camps'};const bad=[],G=Cm.grounds,K=KSTACKS,TOP=_top,ON=ROCK.filter(B=>B!==MESA_B&&Math.abs(B.y0-(TOP-1))<4);
+  const want=[];CAT.CAMP&&Object.keys(CAT.CAMP).forEach(t=>Object.keys(CAT.CAMP[t].grounds).forEach(gr=>want.push(t+'/'+gr)));
+  const have=G.map(g=>g.tribe+'/'+g.ground);want.forEach(w=>{if(have.indexOf(w)<0)bad.push('no '+w+' ground');});have.forEach(h=>{if(want.indexOf(h)<0)bad.push(h+': not in BR_CAMP');});
+  const box=it=>{const c=Math.cos(it.ry),sn=Math.sin(it.ry),u=[c,-sn],v=[sn,c];return {u,v,C:[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[it.x+u[0]*it.w/2*q[0]+v[0]*it.d/2*q[1],it.z+u[1]*it.w/2*q[0]+v[1]*it.d/2*q[1]])};};
+  const sat=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const pr=P=>P.map(q=>q[0]*ax[0]+q[1]*ax[1]),A=pr(a.C),B2=pr(b.C);if(Math.max(...A)<=Math.min(...B2)+.15||Math.max(...B2)<=Math.min(...A)+.15)return false;}return true;};
+  const all=[];G.forEach(g=>g.items.forEach(it=>all.push({g,it,b:box(it)})));
+  const inE=(E,q,k)=>((q[0]-E.x)/(E.rx*k))**2+((q[1]-E.z)/(E.rz*k))**2<=1;
+  const tl=TOWN?TOWN.lots.map(box):[];
+  G.forEach(g=>{const T=CAT.CAMP[g.tribe],gr=T&&T.grounds[g.ground];if(gr){const n=gr.tents.concat(gr.pens).reduce((s,e)=>s+e.n,0);if(g.items.length!==n)bad.push(g.tribe+'/'+g.ground+' '+g.items.length+' of '+n+' pitched');
+    if(!g.items.some(it=>/chief/.test(it.key)))bad.push(g.tribe+'/'+g.ground+' no chief');}
+   if(!g.banner)bad.push(g.tribe+'/'+g.ground+' no banner');});
+  for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++){const A=all[i],B=all[j];if(Math.hypot(A.it.x-B.it.x,A.it.z-B.it.z)>60)continue;if(sat(A.b,B.b)&&bad.length<10)bad.push('overlap: '+A.it.name+' / '+B.it.name);}
+  all.forEach(({g,it,b})=>{const pts=b.C.concat([[it.x,it.z]]);
+   if(g.ground==='upper'){if(pts.some(q=>{const a=K.at(ROCK,q[0],q[1]);if(!a||a.S!==MESA_B||a.d>-11.5||a.top<TOP-5)return true;const f=K.foot(ON,q[0],q[1]);return f&&f.d<5.5;})&&bad.length<12)bad.push(it.name+' off the cap or on the rock');
+    if(!pts.every(q=>inE(g.ell,q,1.02))&&bad.length<12)bad.push(it.name+' out of its ground');
+    if(tl.some(t=>Math.hypot(t.C[0][0]-it.x,t.C[0][1]-it.z)<60&&sat(t,b))&&bad.length<12)bad.push(it.name+' on a town lot');}
+   else{const i2=PR.CAMPS.findIndex(c=>c.tribe===g.tribe),H=PR.HEDGES[i2];if(H&&!pts.every(q=>PR.inPoly(q[0],q[1],H.pts))&&bad.length<12)bad.push(it.name+' out of its hedge');}});
+  if(TOWN){const W=TOWN.ways;all.filter(a=>a.g.ground==='upper').forEach(({it,b})=>{for(const w of W){const P=w.closed?w.pts.concat([w.pts[0]]):w.pts;for(let k=1;k<P.length;k++){if(KCITY.lib.polySegDist(b.C,P[k-1],P[k])<w.w/2-.05){if(bad.length<12)bad.push(it.name+' on '+(w.tag||'a street'));return;}}}});}
+  // the hedges and fences: closed, with their gates
+  G.filter(g=>g.ground==='lower').forEach(g=>{[['hedge',g.hedge,2],['fence',g.fence,1]].forEach(([nm,P,ng])=>{if(!P.length){if(nm==='hedge')bad.push(g.tribe+' no hedge');return;}
+    const ends=P.map(p=>{const ux=Math.cos(p.ry),uz=-Math.sin(p.ry);return [[p.x-ux*p.span/2,p.z-uz*p.span/2],[p.x+ux*p.span/2,p.z+uz*p.span/2]];});
+    let gap=0;ends.forEach((e,k)=>{const n=ends[(k+1)%ends.length];if(Math.hypot(e[1][0]-n[0][0],e[1][1]-n[0][1])>.5)gap++;});
+    if(gap)bad.push(g.tribe+' '+nm+': '+gap+' gaps');const gs=P.filter(p=>p.v===1).length;if(gs!==ng)bad.push(g.tribe+' '+nm+': '+gs+' gates (want '+ng+')');});
+   if(!g.track)bad.push(g.tribe+' no track');else{const P=g.track.pts;const e0=P[P.length-1];if(P.some(q=>Math.hypot(q[0]-e0[0],q[1]-e0[1])>4&&PR.inFarms(q[0],q[1])))bad.push(g.track.name+' through the farms');
+    const end=P[P.length-1];if(!FARMS||!FARMS.palisade.gates.some(G2=>Math.hypot(G2.x-end[0],G2.z-end[1])<3))bad.push(g.track.name+' does not reach a gate');
+    PR.HEDGES.forEach((H,k)=>{if(PR.CAMPS[k].tribe===g.tribe)return;if(P.some(q=>PR.inPoly(q[0],q[1],H.pts))&&bad.length<14)bad.push(g.track.name+' through the '+PR.CAMPS[k].tribe+' hedge');});}});
+  const up=G.filter(g=>g.ground==='upper').length,lo=G.length-up;
+  return{ok:!bad.length,detail:G.length+' grounds ('+up+' on the top, '+lo+' on the floor), '+all.length+' tents and pens'+(bad.length?': '+bad.slice(0,8).join('; '):'; every one pitched, apart, in its ground; the hedges closed, the gates and tracks there')};},
  // EACH WING'S BEASTS IN ITS OWN STALLS (owner, 2026-10-19): every beast on a perch, or coming in to one, is one its bay
  // takes (the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx, the Nightwing's bats; the Garden the three)
  wings(list){if(!PRFLY)return{ok:false,detail:'no flyers'};const L=PRFLY.LABEL,bad=list.filter(a=>a.bay&&a.bay.allow&&a.bay.allow.indexOf(a.sp)<0),by={};
@@ -321,6 +359,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the gates: clear of the rock',HCHK.gates(ROOST.stair));
  add('the town on the top: every building on the cap, apart, off the streets; every trade',HCHK.town(TOWN));
  add('the farms: six terraces of fields, twelve farmhouses, the palisade and its gates',HCHK.farms(FARMS));
+ add('the bands\' grounds: every tribe\'s, pitched, hedged, with its track',HCHK.camps(CAMPS));
  add('the lift road: the beast lift to the north-west gate, cleared',HCHK.road((ROOST.roads||[])[0],ROOST.lifts.find(l=>l.id==='lift-north')));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
@@ -365,25 +404,33 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add('a gap in the palisade',HCHK.farms(Object.assign({},F,{palisade:Object.assign({},F.palisade,{runs:F.palisade.runs.filter((r,i)=>i!==1)})})));
   add('no forest gate',HCHK.farms(Object.assign({},F,{palisade:Object.assign({},F.palisade,{gates:F.palisade.gates.filter(g=>!g.road)})})));
   {const pd=F.cells.find(c=>c.kind==='paddy');if(pd)add('a paddy by the east gate',HCHK.farms(Object.assign({},F,{cells:F.cells.map(x=>x.k===1&&x.kind==='crop'&&x.g<40?Object.assign({},x,{kind:'paddy'}):x)})));}}
+ if(CAMPS){const C=CAMPS,mv=(f)=>Object.assign({},C,{grounds:C.grounds.map(f)}),up=C.grounds.find(g=>g.ground==='upper'),lo=C.grounds.find(g=>g.ground==='lower');
+  if(up)add('a tent in the Crown',HCHK.camps(mv(g=>g!==up?g:Object.assign({},g,{items:g.items.map((it,i)=>i?it:Object.assign({},it,{x:0,z:-330}))}))));
+  if(lo)add('a gap in a thorn hedge',HCHK.camps(mv(g=>g!==lo?g:Object.assign({},g,{hedge:g.hedge.filter((p,i)=>i<5||i>8)}))));
+  if(lo)add('a hedge with no gates',HCHK.camps(mv(g=>g!==lo?g:Object.assign({},g,{hedge:g.hedge.map(p=>Object.assign({},p,{v:0}))}))));
+  if(up)add('a band\'s ground without its chief',HCHK.camps(mv(g=>g!==up?g:Object.assign({},g,{items:g.items.filter(it=>!/chief/.test(it.key))}))));
+  if(lo&&lo.track)add('a camp\'s track through the farms',HCHK.camps(mv(g=>g!==lo?g:Object.assign({},g,{track:Object.assign({},g.track,{pts:[[0,900]].concat(g.track.pts)})}))));
+  add('a flyer band camped on the floor',HCHK.camps(Object.assign({},C,{grounds:C.grounds.concat([Object.assign({},lo,{tribe:'quetzal'})])})));}
  {const Rd=(ROOST.roads||[])[0];if(Rd)add('the lift road through the seep pond',HCHK.road(Object.assign({},Rd,{pts:Rd.pts.concat([[PR.POND.x,0,PR.POND.z]])}),ROOST.lifts.find(l=>l.id==='lift-north')));}
  return R;}
 
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
- hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts, the town on the top and the farms; the camps are to come)',
+ hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts, the town on the top, the farms and the bands\' grounds)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  hourTicks:[(dt,hour)=>{if(PRFLY)PRFLY.update(dt,hour);}],   // Girder's flyers on the roosts (89b, build.py flyers_fragment)
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
-  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the farms':{match:o=>!!(o.userData&&o.userData.farms)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
+  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the farms':{match:o=>!!(o.userData&&o.userData.farms)},'the camps':{match:o=>!!(o.userData&&o.userData.camps)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
   'the far land':{match:o=>!!(o.userData&&o.userData.far)},'sky':{objects:()=>[sky,giant,giantRing]}},
- exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST,town:TOWN?TOWN.K.export():null,farms:FARMS?{terraces:FARMS.terraces,cells:FARMS.cells,houses:FARMS.houses,palisade:FARMS.palisade,tracks:FARMS.tracks}:null})},
+ exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST,town:TOWN?TOWN.K.export():null,farms:FARMS?{terraces:FARMS.terraces,cells:FARMS.cells,houses:FARMS.houses,palisade:FARMS.palisade,tracks:FARMS.tracks}:null,camps:CAMPS?{grounds:CAMPS.grounds,tracks:CAMPS.tracks}:null})},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
   biome:()=>window._biome,jungle:()=>window._jungle,far:()=>({rings:FAR.rings,around:FAR.around,water:FAR.water}),
   town:()=>TOWN?{ms:TOWN.ms,lots:TOWN.lots.length,ways:TOWN.ways.length,log:TOWN.log,failed:TOWN.failed,missing:TOWN.missing,trades:TOWN.trades,draw:TOWN_DRAW}:null,
   farms:()=>FARMS?{ms:FARMS.ms,cells:FARMS.cells.length,houses:FARMS.houses.length,log:FARMS.log,draw:FARMS_DRAW}:null,
+  camps:()=>CAMPS?{ms:CAMPS.ms,log:CAMPS.log,draw:CAMPS_DRAW}:null,
   roosts:()=>({ms:ROOST.ms,decks:ROOST.decks.length,stalls:ROOST.roosts.length,bridges:ROOST.bridges.length,lifts:ROOST.lifts.length,climbs:ROOST.climbs.length,why:ROOST.why})}});

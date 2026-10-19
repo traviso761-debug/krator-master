@@ -194,6 +194,11 @@ const PRT = (function () {
         let cut = 0; const off = k => { if (R.occ[k] === OCC.FREE) { R.occ[k] = OCC.OUT; cut++; } };
         // the rim band
         for (let i = 0; i < CAP.length; i++) R.eachNearSeg(CAP[i], CAP[(i + 1) % CAP.length], RIM, off);
+        // and, near the rim, the rock's own edge (KSTACKS.at: the sampled outline's chords cut inside its lobes and gullies):
+        // a cell is kept only RIM + 2 m in from it (a lot's corner may reach a metre and a half past its cells)
+        { const seen = new Uint8Array(R.occ.length);
+          for (let i = 0; i < CAP.length; i++) R.eachNearSeg(CAP[i], CAP[(i + 1) % CAP.length], RIM + 18, k => { if (seen[k] || R.occ[k] !== OCC.FREE) return; seen[k] = 1;
+            const x = R.cx(k % R.n), z = R.cx(Math.floor(k / R.n)), a = KS.at(o.rock, x, z); if (!a || a.S !== M || a.d > -(RIM + 2) || a.top < top - 5) off(k); }); }
         // the rock standing on the top, grown by its margin
         ON.forEach(B => footPoly(B, MARGIN(B)).forEach(Pp => R.eachInPoly(Pp, off)));
         // the climbs' starts, the lifts' heads, the Stair's head (its gate and the walk to it)

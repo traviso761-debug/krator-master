@@ -1,8 +1,15 @@
 # Pinnacle Rock — known issues
 
-- [ ] **The camps, the Deep Root cavern and the Garden's great-houses are not built yet** (P3c-e): the bands' grounds on
-      the top and the floor, the precinct and the Garden's mesa are bare until they are laid (`PLAN.md` section 3). The
-      town on the top (P3a) and the farms (P3b) are.
+- [ ] **The Deep Root cavern and the Garden's great-houses are not built yet** (P3d-e): the precinct and the Garden's
+      mesa are bare until they are laid (`PLAN.md` section 3). The town (P3a), the farms (P3b) and the bands' grounds
+      (P3c) are.
+- [ ] **The hedges' runs are drawn light** (a ragged band of brush, `89e`): the kit's own run piece is 9.7 k triangles of
+      cut thorn and the nine hedges are 14 km of it; its gate pieces are drawn whole. The cut thorn has no library set
+      (`foliage.thorn.cut`, owed: `core/materials/PROMPTS-NEEDED.md`). The pastures are the floor's ground (no grass
+      sward), and no mount stands in them yet (the beasts, kits/fauna, with the life: P4).
+- [ ] **The top's grounds moved in from the diagram's places** (`PR.TOP.camps`, 2026-10-19): seven of the nine stood partly
+      over the rim band or the fins' feet (the Hardshell's almost wholly over the rim); each now stands 90% or more on the
+      usable cap. The town re-plans round them.
 - [ ] **The farms are drawn simply**: each field a levelled slab over the floor mesh (the floor is not cut to the
       terraces), its crop as instanced rows, the orchards' trees a trunk and a crown, the paddies' water a sheet with no
       channels from the spring; the crops are the plan's named few, not drawn from `kits/crops` (`CROPS.forBiome`). The

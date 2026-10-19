@@ -32,6 +32,9 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
 - **P3b is done** (same branch): the farms (`src/55-pr-farms.js` `PRF.plan`, run in `55b`, drawn by `89d`): six terraces
   of field cells measured out from the mesa's smoothed foot, orchards on the outer two, paddies by the spring, twelve
   farmhouses, the palisade (stakes, Girder's gatehouses and watch posts), the terrace way and the gates' tracks.
+- **P3c is done** (same branch): the bands' grounds (`src/56-pr-camps.js` `PRC.plan`, run in `56b`, drawn by `89e`): the
+  kit's `BR_CAMP` grounds pitched on the top and the floor, the hedges and fences cut by `BR_RUN`, the tracks to the
+  palisade's gates. `CAT.proto(key, v, {span, seed})` builds a parametric piece (build.py).
 - **Not in the gallery** (the owner, 2026-10-19): `gallery/build_gallery.py` lists it in `UNLISTED` until the town is
   built. The north-eastern canyons biome it stands on is in Krator Biomes and Objects.
 
@@ -40,7 +43,7 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
 1. **P2 follow-ups, if the owner asks** (KNOWN_ISSUES.md): a notch in the rock mesh so the Stair's flights are cut into
    the face; plants kept off the rings (plan the roosts before the necanyons kit builds); the roosts on a nav graph with
    a walker (with P3's people); a Godot builder for the roost records.
-2. **P3c-e** (P3a, the town, and P3b, the farms, are done): the Deep Root cavern (KCAVERN with a KSTACKS hole, BR_ROCK dressing; the ring of twelve
+2. **P3d-e** (P3a-c, the town, the farms and the bands' grounds, are done): the Deep Root cavern (KCAVERN with a KSTACKS hole, BR_ROCK dressing; the ring of twelve
    stones with nothing built inside), the farms as contour cells with twelve farmhouses, the camps (`BR_CAMP`, hedges
    and fences from `BR_RUN`), the mounts (the Longcrawler is rideable; the jungle staghorn is the staghorn's
    jungle-coloured variant), ways up to the Garden's mesa and the Heart.

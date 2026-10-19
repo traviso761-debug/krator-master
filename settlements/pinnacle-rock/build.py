@@ -155,11 +155,12 @@ def kf_tex_json():
                           'map':'data:image/webp;base64,'+base64.b64encode(open(os.path.join(d,name),'rb').read()).decode()}
     return _json.dumps(out,sort_keys=True)
 CAT_PROTO=r'''
-/* CAT.proto(key, v): the building at the origin (y 0, front +z) in a new group, out of the closure's scene; the kit's own
+/* CAT.proto(key, v, o): the building at the origin (y 0, front +z) in a new group, out of the closure's scene; the kit's own
    meshes take the library's detail maps (KF_API.detailize, as the kit's sheet does), a port keeps its town's materials */
-function catProto(key, v) {
+function catProto(key, v, o) {
   var A = ASSET_BY_KEY[key]; if (!A) return null;
-  var g = buildAsset(key, 0, 0, 0, { variant: v | 0, seed: 1, y: 0 }); if (!g) return null;
+  /* o: {span, seed} for a parametric piece (a hedge's or a fence's run, BR_RUN) */
+  var g = buildAsset(key, 0, 0, 0, { variant: v | 0, seed: o && o.seed != null ? o.seed : 1, y: 0, span: o ? o.span : undefined }); if (!g) return null;
   scene.remove(g); INSTANCES.length = 0;
   if (!A.port) { g.traverse(function (m) { if (m.isMesh) m.userData.furniture = true; }); KF_API.detailize(g); }
   var D = (A.variantDims && A.variantDims[v | 0]) || A;

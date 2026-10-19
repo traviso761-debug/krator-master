@@ -2,8 +2,8 @@
 
 The Beast Riders' roost town on a red sandstone mesa at the north-eastern edge of the hyperjungle (`PLAN.md`; the lore is
 `LORE.md` §6.6). Built in stages (`PLAN.md` section 3). **Done: P0 and P1, the rock and the site; P2, the roosts, the
-Stair, the lifts and the flyers; P3a, the town on the top; P3b, the farms.** The bands' camps, the Deep Root cavern and the
-Garden's great-houses (P3c-e) are the stages to come.
+Stair, the lifts and the flyers; P3a, the town on the top; P3b, the farms; P3c, the bands' grounds.** The Deep Root cavern and
+the Garden's great-houses (P3d-e) are the stages to come.
 
 ```
 python3 build.py                                   # dist/pinnacle-rock.html (+ its texture sidecars)
@@ -116,6 +116,18 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
   east gate, Girder's stretch with its watch post about every 220 m, ending where the debris slope rises at each end.
   The terrace way runs round the ring between the third and fourth terraces, with a track in from each gate; the forest
   road runs from the fair ground out through the forest gate.
+- **The bands' grounds** (P3c) are records (`src/56-pr-camps.js`, `PRC.plan`, `[G data]`; run in `56b`, drawn by
+  `89e-host-camps.js`) from the kit's table (`BR_CAMP`, `kits/beast-riders/src/79-br-camp.js`): nine grounds on the top
+  (the Quetzal's, the Wingclaw's and the Nightwing's only there, by their Wing's fins, with their perch frames; the six
+  ground tribes' smaller, with a hitching line), moved in from the diagram's places so each stands on the usable cap; nine
+  camps on the floor, each with its pasture inside its own thorn hedge (two gates), the pasture fenced in rails (one gate,
+  toward the camp). Each ground's tents and pens are pitched largest first, each the first fit on rings out from its
+  place, facing the chief's pavilion, 2 m clear of the others; on the floor the pens take the hedged ground, a corral or
+  a ring wholly in the pasture or wholly out of it. Each band's banner (its tribe's colour) stands before its chief's
+  pavilion. The hedges and fences are cut by the kit's `BR_RUN`; the hedges' runs are drawn as a light band of brush
+  (the kit's run piece is 9.7 k triangles and the hedges 14 km), its gate pieces whole. A track runs from each floor
+  camp's inner gate to the nearest palisade gate whose way crosses neither the farms nor another band's hedge, coming
+  in along the gate's front (the Staghorn's takes one bend); the tracks are PR's ways, cleared before the forest grows.
 - **The plants**: the necanyons kit (`biomes/necanyons`, read in place with its land fragment `47-host-land.js`, which
   takes this page's `LAND` hooks: the cap height, the LOD spine, the cleared ground, no creek) on the walls, ledges,
   spurs and stacks, kept off the town's ground past the 12 m rim band; the hyperjungle on the floor, kept out of the farms,
@@ -155,11 +167,17 @@ no two overlapping, every cell's corners, edges' middles and centre on farmland,
 the orchards on the two outer terraces and only there; ten paddies or more, each within 300 m of the spring; twelve
 farmhouses, each wholly in its cell, none overlapping; the palisade unbroken from end to end but at its gates and posts;
 the forest gate on the road and the north-west gate where the lift road comes in; a track from each other gate to the
-terrace way. Each has a negative control (the fins
+terrace way. The bands' grounds (P3c): a ground for each tribe as `BR_CAMP` has it (the flyers' only on the top, the
+Dragonfly's, the Spider's and the Mammoth's only on the floor), every tent and pen it names pitched, a chief's pavilion
+and a banner on each, no two overlapping, each inside its ground (on the top on the cap 12 m in and off the rock, on
+no town lot or street; on the floor in its hedge), every hedge closed with its two gates and every pasture's fence with
+its gate, a track from every floor camp to a palisade gate through no farm and no other band's hedge. Each has a
+negative control (the fins
 in one row, a fin over the edge, a 180 m mesa, the Garden all one height, no Garden's mesa, no Heart, a Heart weathered
 like the Garden's mesa, a Heart as tall as its pinnacles, a tree in the Crown, a tree in the farms; a deck cut into its
 fin, a perch facing its fin, a bridge from the north fins to the east, a cable rubbing the wall, the Stair with one gate,
 the Stair ending in the gorge, a deck with no climb, a quetzal sent to a lookout ring, the Stair's flights 4 m out from
 the face, a climb 3 m out from its fin, an archaeopteryx in a Quetzal stall, the lift road through the seep pond, a gate sunk into the cap rock; a house on an avenue, in the Wingclaw band's ground, on the rim, two
 houses on one footprint, no assembly hall, no tannery; a field on the forest road, an orchard on the first terrace, a farmhouse half off its
-cell, a gap in the palisade, no forest gate, paddies by the east gate).
+cell, a gap in the palisade, no forest gate, paddies by the east gate; a tent in the Crown, a gap in a thorn hedge, a hedge
+with no gates, a ground without its chief, a camp's track through the farms, a flyer band camped on the floor).
