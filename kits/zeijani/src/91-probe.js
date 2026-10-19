@@ -1,7 +1,7 @@
 // ================================================================= PROBE (window._api): everything a headless check needs
 // hostChecks() and hostNegatives(): the kit's own invariants (verify.py --assert runs both). Every check has a negative: a
 // broken copy of its input that the same check must FAIL (PLAN.md section 3).
-window._api={REG,DEFS,SITES,ROWS,ZJ_LIFE,
+const ZJ_API={REG,DEFS,SITES,ROWS,ZJ_LIFE,
  // the measured world-space box of each top-level site against its declared w x d x h
  footprints(){return REG.filter(r=>!r.parent).map(r=>{const D=r.decl,b=r.bbox;const bw=b.mx[0]-b.mn[0],bd=b.mx[2]-b.mn[2],bh=b.mx[1]-b.mn[1];
   return {key:r.key,name:r.name,w:D.w,d:D.d,h:D.h,bw:+bw.toFixed(2),bd:+bd.toFixed(2),bh:+bh.toFixed(2),ex:+Math.max(0,bw-D.w).toFixed(2),ez:+Math.max(0,bd-D.d).toFixed(2),eh:+Math.max(0,bh-D.h).toFixed(2),tris:r.tris,budget:D.budget};});},
