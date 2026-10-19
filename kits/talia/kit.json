@@ -16,5 +16,17 @@
   "88yt-tal-matlib.js"
  ],
  "external": [],
- "pack": "talia"
+ "pack": "talia",
+ "furniture": [
+  "iziz",
+  "talia",
+  "generic",
+  "generic-goods",
+  "scrap",
+  "jobs"
+ ],
+ "interiorSets": [
+  "iziz",
+  "talia"
+ ]
 }

@@ -194,7 +194,12 @@ function tanMeander(x,y,z,w,d,ry,c,t){t=(t==null?.3:t);const wh=vC(0xf4f1ea),M=!
   if(M)continue;const n=Math.max(1,Math.round(L/(t*2)));for(let k=0;k<n;k++){const q=loc(p[0],p[1],-L/2+(k+.5)*L/n,0,ry+a);vB('vPlaster',q[0],y+.03,q[1],t*.5,.012,t*.5,ry+a,wh);}}}
 // a rounded block: a box whose vertical edges are rounded by r (a cross of two boxes and four corner posts); the deeper
 // box through vnBody so a hollow set can take it later. c the wash
-function tanRoundBox(x,y,z,w,h,d,ry,c,r){r=(r==null?.3:r);vnBody('vPlaster',x,y,z,w,h,d-2*r,ry,c,{t:.3});vB('vPlaster',x,y,z,w-2*r,h,d,ry,c);
+// With an interior (VERN.cur.hollow: the def has an item in kits/interiors/sets/talia.js and the page asks for interiors)
+// the cross of two boxes would fill the room, so it draws ONE hollow body w x d with a round pier on each corner (69e
+// draws four straight walls); a world without interiors keeps the true rounded corners.
+function tanRoundBox(x,y,z,w,h,d,ry,c,r){r=(r==null?.3:r);
+ if(VERN.cur&&VERN.cur.hollow){vnBody('vPlaster',x,y,z,w,h,d,ry,c,{t:.3});for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*w/2,sz*d/2,ry);vPst('vPostS',p[0],y,p[1],r,h,c);}return;}
+ vnBody('vPlaster',x,y,z,w,h,d-2*r,ry,c,{t:.3});vB('vPlaster',x,y,z,w-2*r,h,d,ry,c);
  for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*(w/2-r),sz*(d/2-r),ry);vPst('vPostS',p[0],y,p[1],r,h,c);}}
 // a flat roof's parapet: a low wall round the block with a coping (poor and middle: no balusters)
 function tanParapetWall(x,y,z,w,d,ry,c,h,capC){h=(h==null?.7:h);for(const [lx,lz,a,L] of[[0,d/2-.12,0,w],[0,-d/2+.12,0,w],[w/2-.12,0,Math.PI/2,d],[-w/2+.12,0,Math.PI/2,d]]){const p=loc(x,z,lx,lz,ry);vB('vPlaster',p[0],y,p[1],L,h,.24,ry+a,c);vB('vPlaster',p[0],y+h,p[1],L+.06,.08,.32,ry+a,capC||c);}}

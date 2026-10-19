@@ -61,5 +61,15 @@ window in a ring band), and `tanDrum` takes `round` (the 24-sided drum) and the 
 prefix `ta`): marble, gilt, tile, cobalt boxes; discs; ribs and rings; the column and baluster lathes; echinus and bell;
 domes in tile, marble, plaster and gilt; egg and onion lathes; the tile cone and hip; pointed heads in the fill materials.
 
-**Next** (PLAN.md section 8): P5 the governor's palace, P6 the catalog culture file and interiors (the library's well,
-the trading floor, the anatomy theatre's tiers, the studios), P7 the Godot export check and the gallery.
+**Interiors and furniture (P6).** `kits/catalog/krator-master-furniture-talia.js` is Talia's culture: 27 pieces (tub
+armchairs and ottomans in orange, the white sofa, brass and walnut tables, the plaster bench and wall niche, the painted
+chest and the jar stand, bookcase, map and specimen cases, the plaster and canopy beds, the hearth, the lectern, the
+scholar's desk, the slate, the globe, the easel, the modelling stand, the kilim and the meander rug, the palm planter, the
+brass lantern, the aedicule). `kits/interiors/sets/talia.js` furnishes 32 of the kit's 45 items (one per key, the faculty's
+three sizes each) and registers Talia's room kinds, `lecture` and `studio`; the rest say why they are skipped. The page
+bundles them through `kit.json` (`furniture`, `interiorSets`). With an item, a body is hollow: `tanRoundBox` then draws one
+hollow body with round corner piers. Check: `cd kits/interiors && python3 verify.py dist/interiors-sets.html --sets
+--assert --query set=talia`.
+
+**Next** (PLAN.md section 8): P7, the Godot export check and the gallery; the interiors the set skips (the library's
+well, the anatomy theatre's tiers, the caravanserai and the stoa, the palace by its blueprint).

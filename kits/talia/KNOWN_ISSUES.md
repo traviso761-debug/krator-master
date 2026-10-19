@@ -24,8 +24,11 @@
       Pylon's (settlements/iziz/KNOWN_ISSUES.md, 2026-10-05). The harness's teardown, not the page.
 - [ ] P4 (2026-10-18): the theatre's cavea stands on its own outer wall on flat ground; on the city's hill (PLAN.md 9b:
       "on the slope") the slope should carry the tiers and the outer arcade go into the ground.
-- [ ] The P4 interiors are owed to P6: the library's well, the anatomy theatre's tiers, the odeon's cavea, the studios,
-      the hospital's wards. Their bodies are vnBody, so a set in kits/interiors can hollow them later.
+- [ ] P6 (2026-10-19) furnishes 32 of 45 items. Owed: the round hollow bodies (the library's well, the anatomy theatre's
+      tiers, the odeon's cavea), the caravanserai and stoa (their rooms open through arches with no cut), the hospital's
+      side and back ranges, the college and cloister ranges' doors (planner doors, not cut), the palace by its blueprint.
+- [ ] With an interior, the rounded whitewash cubes (cube house, hill stack, loggia house) draw square hollow bodies with
+      round corner piers (69e draws four straight walls); without one they keep their rounded corners.
 - [ ] To keep the sheet inside its budgets (the cloister came to 288k of 250k triangles, the sheet to 2.85M of 3M), P4
       made every column's base ring and capital volutes low-poly (`taRingMs`, `taRingGiS`, `taGiltNub`) and the baluster
       lathe eight-sided: P2 and P3 buildings changed with it (the sheet is now 2.36M). Judge the capitals at eye level.

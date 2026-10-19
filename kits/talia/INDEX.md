@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `69t-tal-mat.js` | 10 | materials and kit items (prefix ta) (21); the owner's delivery of 2026-10-18 (materials.js (71); P4: the University and the civic set (87) |
-| `69u-tal-helpers.js` | 31 **big** | arches (6); columns, balusters, entablature (45); drums, domes, lanterns (93); bays, screens, stairs, paving (134); vaults, courts, shop fronts (the trade buildings (206); P4: tiers, petals, rays, coffers, niches (72t-73 (237) |
+| `69u-tal-helpers.js` | 31 **big** | arches (6); columns, balusters, entablature (45); drums, domes, lanterns (93); bays, screens, stairs, paving (134); vaults, courts, shop fronts (the trade buildings (211); P4: tiers, petals, rays, coffers, niches (72t-73 (242) |
 | `70t-tal-dwellings.js` | 16 | POOR (23); MIDDLE (81) |
 | `70u-tal-rich.js` | 11 |  |
 | `71t-tal-trade.js` | 36 **big** | CIVIC: the customs, the bourse, the baths (7); THE CARAVAN ROAD: the caravanserai, the stoa, th (89); THE STREET: the shop arcade, the inn, the press (165) |

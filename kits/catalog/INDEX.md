@@ -39,12 +39,14 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-nomad.js` | 112 **big** | Seating (268); Tables and vessels (401); Storage (590); Light (800); Textiles (873); Fire (982); Riders' gear (1073); Work (1268); Tanning: the hidemaker's tent (job tanning) (1361); The smithy (1452) |
 | `krator-master-furniture-painted.js` | 50 **big** | Harvested from settlements/highlands (tribal bra (79) |
 | `krator-master-furniture-post-apoc.js` | 9 | Harvested from kits/post-apoc (3 pieces) (75) |
+| `krator-master-furniture-pylon.js` | 5 |  |
 | `krator-master-furniture-reedlake.js` | 13 | Hospitality and households (2026-10: the Reed La (66) |
 | `krator-master-furniture-republican.js` | 75 **big** | Harvested from settlements/highlands (Republican (88) |
 | `krator-master-furniture-rustic.js` | 37 **big** | Harvested from settlements/highlands (rustic bra (83) |
 | `krator-master-furniture-scrap.js` | 98 **big** | Harvested from kits/post-apoc (61 pieces) (111) |
 | `krator-master-furniture-screamer.js` | 6 |  |
 | `krator-master-furniture-scyvoi.js` | 104 **big** | Seating (240); Tables and storage (350); Light (479); Vessels (556); Fire (618); Riders' gear (767); Felts and rugs (962); Work (1002); The shaman's things (1089); Tanning: the hidemaker's tent (2026-10-06) (1227) |
+| `krator-master-furniture-talia.js` | 23 |  |
 | `krator-master-furniture-voth.js` | 18 |  |
 | `krator-master-furniture-xanadu.js` | 7 |  |
 | `krator-master-furniture-yuni-common.js` | 1 |  |
