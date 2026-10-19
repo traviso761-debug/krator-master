@@ -29,3 +29,29 @@
       (used on the deck and the short perch rails only).
 - [ ] **The rider mounts themselves** (raptors, threehorns, quetzals...) are not placed in the stables: kits/fauna's
       mounts, a later pass.
+
+## The sedentary trades and the larger houses (src/51-54, 2026-10-19)
+
+- [ ] **Their furniture is placed by hand** (`F.furn`, 4+ catalog pieces a variant, as the mounts' buildings place theirs),
+      not planned as rooms in `kits/interiors/sets/beast-rider.js`; the households of the terrace, the longhouse block
+      and the great-house are parted by plain stave partitions, with no inner doors.
+- [ ] **The beasts are not there**: the whims (mill, bark mill, bellows, mine shaft, landing crane), the stalls under the
+      great-house, the byres, the beetle house and run, the carrier stage stand empty (kits/fauna's mounts, a later pass,
+      as for the mounts' buildings).
+- [ ] **The mine's adit and the quarry draw their own rock face** (red sandstone boxes, the colour of Pinnacle Rock's
+      beds); set against a real cliff (the mesa's wall, `core/terrain`) the face should be the ground's own: a variant
+      without the face is still to come. The rock-backed longhouse block draws NO rock: it is flat behind
+      (`against: 'back'`, checked) for a layout to set against a stack (`KSTACKS`).
+- [ ] **Water is a flat translucent box** at ground level (the river landing, the water mill's race, the paddy farm's
+      paddies and duck pond), not a water surface of the shared kind.
+- [ ] **The glow fungus is the catalog's unlit 'glow' material**: it shows, but casts no light (no `F.lamp`: the kit's
+      buildings place no lights).
+- [ ] **`BRT_CENTRE` and the declared boxes are measured numbers** (`src/51-br-trades.js`, each ASSET's `variantDims`):
+      after a change that moves a builder's extent, remeasure on the sheet (`window._kit.built`: `min`, `max`, `w d h`).
+- [ ] **Some census trades are stretched to fit a rider town**: the coast guard (the war-canoe shed and the Wings'
+      patrols from the rookery), the lighthouse keepers (the fire beacon and the signal mast), the dairymen (the farms'
+      beast sheds and the great byre: no dairy of its own), the monks (the Green Silence's keepers in the temple's
+      precinct), the guild clerks (the ports' assembly hall and council: no guild hall). `BR_TRADES` notes each.
+- [ ] **Fragments 51 and 52 are over 30 KB** (each building is an indexed section: `INDEX.md`).
+- [ ] **`INDEX.md`'s one-line summary** comes from `tools/make_index.py` (`ABOUT['kits/beast-riders']`), outside the kit:
+      it still names only the mounts and the ports.

@@ -16,7 +16,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 4 |  |
-| `50-br-mounts.js` | 11 | = (2) |
+| `50-br-mounts.js` | 19 | = (2) |
+| `51-br-trades.js` | 56 **big** | = (2); helpers (129); the bake house (274); the butcher's (333); the mead hall and the brewhouse (382); the tannery (438); the weaving house and the dye works (481); the smithy (535); the potter's (574); the rope walk (610) |
+| `52-br-trades-b.js` | 44 **big** | = (2); the store (39); the granary (91); the mill (142); the haulers' yard (210); the carrier-beast stage (250); the beetle pen (291); the fungus house (343); the mine head (398); the quarry (461) |
+| `53-br-trades-c.js` | 33 **big** | = (2); the riders' inn (36); the barracks (125); the school (180); the temple (223); the toll house (288); the watch tower (350); the beacon (409) |
+| `54-br-houses.js` | 25 | = (2); the clan great-house (44); the chief's compound (90); the longhouse block against rock (162); the terrace row (210); the farmhouse (258) |
 | `60-br-ports.js` | 4 | = (1) |
-| `90-br-sheet.js` | 5 | = (1) |
+| `90-br-sheet.js` | 6 | = (1) |
 | `99-tail.html` | <1 |  |
