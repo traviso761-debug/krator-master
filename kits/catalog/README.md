@@ -169,7 +169,7 @@ FURN({
   bowls are `vessel`, candles `lamp`.
 - **Job** (optional, 2026-10). `job: '<trade>'` from `FURN_JOBS` (`farming fishing salt oil smithing milling
   warehousing brewing weaving tanning pottery carpentry mining herding trading`, and the Zeijani trades of 2026-10-07:
-  `fungiculture alchemy dyeing masonry lampmaking knapping ropemaking`) marks a work item: the piece goes on the
+  `fungiculture alchemy dyeing masonry lampmaking knapping ropemaking`, and the trades audit of 2026-10-19: `baking butchery healing scribing shipwrighting quarrying customs worship dairy`) marks a work item: the piece goes on the
   sheet's Jobs page, a row per job. Every entry of `krator-master-furniture-jobs.js` carries one; `verify.py`
   rejects a job not in the list. `KratorFurniture.FURN_JOBS` exposes the list to a host. `alchemy` was added 2026-10
   (`voth_still_cluster`); the kit's `still` role stays under `brewing`.
@@ -486,6 +486,19 @@ sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<cu
 | ashnomad | the Ash Nomads kit's tent and camp furnishings (2026-10-07): floor_cushion, bolster, sleeping_mat (wall), carapace_stool, chitin_bench, carapace_table, mess_table and serving_counter (the mess hall), brew_set (surface), cookpot, chitin_chest, bedding_stack (wall), saddle_bags, grub_jars, egg_basket, water_gourds, supply_bales; paper_lantern, hanging_lantern (ceiling), chitin_lamp, lantern_pole (outdoor); hanging_banner (ceiling), ash_screen, rug, wall_hanging (wall); fire_pit, brazier, smoke_rack (outdoor) |
 | ashnomad | riders, herders, crafts, the shaman and the court: beetle_saddle_rack, tack_pegs (wall), spear_rack, tying_post and grub_trough (outdoor, type pen); chitin_bench_work, plate_stack, carapace_stack (carpentry), ground_loom, hide_frame, fleshing_beam, tanning_vat, hide_stack, drying_line (tanning), bellows; spirit_pole, shaman_drum, bone_rack, herb_bundles (ceiling), smoke_bowl, skull_shrine; chief_seat, chief_divan, war_standard. Patterns painted by ASHNOMAD_FX: step-frets and Nazca figures in red and yellow on black |
 
+### The works (the 2026-10-19 trades audit)
+
+`FK.ROLES.works` adds 12 parametric roles for the trades the trade set lacks, registered like it with
+`FK.set({ culture, tier: 'common', roles: 'works', prefix: '<culture>_works_', S, skip })` and keyed
+`<culture>_works_<role>`; each role carries its job (`R.job`): `bread_oven` `baking`, `butcher_block` and
+`meat_rack` `butchery`, `herb_bench` and `sickbed` `healing`, `scribe_desk` `scribing`, `hull_stocks`
+`shipwrighting`, `quarry_block` `quarrying`, `weigh_scale` and `tally_board` `customs`, `churn` and
+`cheese_press` `dairy`. `worship` is the trade set's altar (`FK.TRADE_JOB`). Registered for the Islanders (all 12),
+Lizardmen (all 12), Xanadu and the Screamers (11: no hull stocks, landlocked) and, by the owner's scope for the
+nomad kits, for `nomad` and `scyvoi` (butcher's block, meat rack, herb bench, sickbed, churn, cheese press) and
+`ashnomad` (the first four; no dairy). Their tanning, brewing and smithing pieces were already here. Islander,
+Lizardmen, Xanadu and Screamer also take the trade set (20 roles each, `<culture>_trade_*`).
+
 ### Trades and households (the 2026-10 interiors-sets pass)
 
 The building sets' interiors (`kits/interiors/sets`) furnish shops, smithies, stables, workshops,
@@ -495,8 +508,8 @@ roles, each drawn in the culture's own style sheet, registered with
 for the Beast Riders). Each trade piece carries the job of its role (`FK.TRADE_JOB`: forge, anvil,
 grindstone, armour stand and weapon rack `smithing`; trough and hay rack `herding`; stall and display
 `trading`; vat `weaving`; still and barrel rack `brewing`; bin and larder `warehousing`; lathe `carpentry`;
-press `milling`; kiln `pottery`), so the sheet's Jobs page shows them in the job rows beside the jobs file's
-pieces. The bunk, locker and altar have no job and keep a row per culture (`Jobs · trade · <culture>`;
+press `milling`; kiln `pottery`; altar `worship`, 2026-10-19), so the sheet's Jobs page shows them in the job rows beside the jobs file's
+pieces. The bunk and locker have no job and keep a row per culture (`Jobs · trade · <culture>`;
 `?keys=_trade_` shows every trade piece).
 
 | Role | Type | Rooms | What |

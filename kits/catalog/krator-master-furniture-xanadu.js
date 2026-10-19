@@ -88,3 +88,10 @@ FURN({
 /* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed xanadu_training_<role> */
 FK.set({ culture: 'xanadu', tier: 'common', roles: 'training', prefix: 'xanadu_training_', S: XAN_COMMON, names: {
   training_dummy: 'Gilt practice post', archery_butt: 'Silk-ringed archery target' } });
+
+/* trades and households (FK.ROLES.trade, the 2026-10-19 trades audit) in this culture's style sheet, keyed xanadu_trade_<role> */
+FK.set({ culture: 'xanadu', tier: 'common', roles: 'trade', prefix: 'xanadu_trade_', S: XAN_COMMON, names: {
+  forge: 'Gilded-hood forge', anvil: 'Anvil on a stone block', trough: 'Carved watering trough', stall: 'Horse stall', hayrack: 'Fodder rack', display: 'Silk-draped display steps', armour_stand: 'Lacquered armour on a stand', weapon_rack: 'Halberd and bow rack', vat: 'Dye vat', still: 'Rice-wine still', bin: 'Grain bins', larder: 'Lacquered larder', bunk: 'Soldier\'s bunk', locker: 'Lacquered locker', lathe: 'Foot-treadle lathe', press: 'Tea and oil press', kiln: 'Porcelain kiln', grindstone: 'Grindstone', altar: 'Household shrine altar', barrel: 'Wine cask cradle' } });
+/* the works (FK.ROLES.works): baking, butchery, healing, scribing, shipwrighting, quarrying, customs and dairy pieces, keyed xanadu_works_<role>; skipped here: hull_stocks */
+FK.set({ culture: 'xanadu', tier: 'common', roles: 'works', prefix: 'xanadu_works_', S: XAN_COMMON, skip: ['hull_stocks'], names: {
+  bread_oven: 'Brick bread oven', butcher_block: 'Butcher\'s block', meat_rack: 'Hanging duck and ham rack', herb_bench: 'Physician\'s herb bench', sickbed: 'Physician\'s sickbed', scribe_desk: 'Scholar\'s writing desk', hull_stocks: 'Barge on its stocks', quarry_block: 'Stonecutter\'s bench', weigh_scale: 'Customs weigh-beam', tally_board: 'Abacus and tally board', churn: 'Butter churn', cheese_press: 'Cheese press' } });

@@ -26,7 +26,9 @@
    'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading',
    // the Zeijani trades (kits/zeijani, 2026-10-07): the alecap and cave-fungus farms, the fungal alchemists, the dyers,
    // the stonecutters, the lampwrights, the obsidian knappers and the rope and caving outfitters
-   'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking'];
+   'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking',
+   // the trades audit of 2026-10-19: FK.ROLES.works and the culture files' bespoke work pieces
+   'baking', 'butchery', 'healing', 'scribing', 'shipwrighting', 'quarrying', 'customs', 'worship', 'dairy'];
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
