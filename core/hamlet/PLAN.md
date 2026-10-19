@@ -85,11 +85,20 @@ ground says what can be gathered from it, as the trees' `harvest.wood` says what
 gather: {pasture: 0..1, fish: 0..1, salt: true}     /* on a zone, or on the code that draws a feature */
 ```
 
-- **Pasture** goes on a zone: the share of that zone that is grazing.
-  - Examples: the isles' Aw and XV savanna high, BSh steppe middling, rainforest none, the strand none.
-  - A floor grass can carry a matching `forage` harvest tag.
-- **Fish** goes on the water zones: the isles' `lagoon`, `reef` and shelf, and the kelp beds and shoals of the kits
-  that have them. The value is the catch a canoe can take.
+- **Pasture goes on every zone with a decent understory** (owner, 2026-10-18): ground cover that stock can graze.
+  - The weight follows the zone's floor: grass, herbs and low shrub cover. Closed canopy, bare sand, rock, salt crust
+    and the strand score little or nothing.
+  - Examples on the isles: Aw and XV savanna high, BSh steppe middling, the open edges of the forest some, closed
+    rainforest none.
+  - A floor plant that is good forage carries a matching `forage` harvest tag, so the weight can be checked against
+    what the floor actually grows.
+- **Fishing grounds are zones of their own** (owner, 2026-10-18), designated where real fishing is good: **reefs,
+  estuaries and river mouths, lakes**, and the like (lagoons, mangrove channels, kelp beds, shoals and banks, the
+  shelf edge).
+  - Each is a `fish` zone in the kit that draws that water, with `gather.fish` its catch: what a canoe can take in a
+    day.
+  - On the isles: the reef crest and lagoon, the mangal, the river mouths of the open world's drainage, and the shelf.
+  - Lakes and rivers inland count too, in the kits that draw them.
 - **Salt** goes on the salt pan code itself (`gather.salt: true`) in every biome that draws pans. That is ringisles'
   XS pans, eastabyss and rift for certain; H1 audits the other kits that mention salt (sedesert, crater-drylands and
   others), so a pan is tagged wherever it is drawn.
@@ -115,11 +124,15 @@ gather: {pasture: 0..1, fish: 0..1, salt: true}     /* on a zone, or on the code
 year**, so the owner can watch how it behaves and adjust.
 - The open world's trees are records made from a hash of their tile, so felling one is **a delta by id**:
   `{tree id, felledAt}`, kept in the village's edits (`core/edits`).
+- **The deltas live only while the game runs** (owner, 2026-10-18). They are not written to the world or the export
+  until a save system exists, so a reload starts every forest whole. Godot keeps them the same way.
 - While the delta is under a year old, the drawing shows a stump, then a sapling (the kits' immature level). Past a
   year the delta is dropped and the tree is whole again.
 - **The regrowth time is a tunable** (`TUNE.hamlet.regrowDays: 365`). Setting it per species later (fast bamboo,
   slow hardwood) changes nothing else.
-- Nodes never run out (kits/resources, as now). Fields renew each season.
+- **Nothing runs out for now** (owner, 2026-10-18). Nodes never run out (kits/resources, as now), and **pasture and
+  fish are effectively infinite** too: a field's `gather` weight sets how many can work it, not a stock that drains.
+  Salt pans the same. Depletion, if it comes, is a tunable added later, as timber's regrowth is.
 
 ## 3. Cultures and the works
 
@@ -136,7 +149,7 @@ KHAMLET.CULTURES.islander_east = {
     salt:    ['ie-saltworks'],
     mine:    ['ie-mine', 'ie-sulphur'],
     lumber:  ['(new: sawpit and log yard)', '(new: charcoal kiln)'],
-    ranch:   ['ie-byre', 'ie-pens', '(new: corral)'],
+    ranch:   ['ie-byre', 'ie-pens', '(new: corral)', '(beast rider: stable, rookery)'],
     fishing: ['ie-fishdock', 'ie-canoeshed'],
     farming: ['ie-farm', 'ie-granary']
   }
@@ -146,7 +159,7 @@ KHAMLET.CULTURES.islander_east = {
 **The Islanders kit has most of this.** It lacks:
 - a sawpit and log yard;
 - a charcoal kiln;
-- a corral (a stable too, if the ranch keeps riders' mounts: question 3);
+- a corral; and for the riders' mounts a **stable and a rookery**. These are the Beast Rider set's, `kits/beast-riders` (planned with P6, after the owner's three textures), lent to the Islander village as Ridertown borrows them;
 - a small food store;
 - village-scale variants of the hall and the temple, if `ie-hall` and `ie-temple` are too big for 500 people;
 - a bloomery or smelter, which Valapo's harbour needs anyway (section 8b).
@@ -164,7 +177,7 @@ The climate grid is 2 km a cell, so a site is placed exactly at generation, with
 | **salt** | XS salt steppe, the big north-west pan, 268 km2, ~700 mm | (-14,800, -107,800) | 71 km north-west of Kautoa | Kautoa | the owner's choice (2026-10-18): the bigger and drier pan, so the better salt. Salt and soda ash become Kautoa's; Valapo's southern pans (136 and 64 km2) stay unworked for now |
 | **mine** (iron) | Valapo's mountains, 700-1,130 m | about (-18,000, 66,000) | 12-18 km south-west of Valapo | Valapo | the iron node (`kits/resources`) placed with it; ore carted down to the smelter at Valapo's harbour |
 | **lumber** | the wettest jungle (XA), 596 km2, ~2,750 mm | (74,700, -43,000) | 41 km east of Kautoa | Kautoa | hardwood for Kautoa's shipyards. Valapo's charcoal comes from its own upland forest |
-| **ranch** | savanna (Aw), 428 km2, ~890 mm | (20,100, -117,100) | 61 km north of Kautoa | Kautoa | on the north highway toward beast rider territory; buffalo, hides, and perhaps mounts |
+| **ranch** | savanna (Aw), 428 km2, ~890 mm | (20,100, -117,100) | 61 km north of Kautoa | Kautoa | on the north highway toward beast rider territory; buffalo, pigs and hides, and **some beast rider mounts** (owner, 2026-10-18), with their stable and rookery, and perhaps mounts |
 
 **Later, by the same calls:**
 - **fishing villages** along Kautoa's east and west coast highways (8a);
@@ -205,11 +218,9 @@ demo's plan (section 9).
 Settled (owner, 2026-10-18):
 - **The salt flats:** the big north-west pan near Kautoa (section 4).
 - **Where the module lives:** its own core module, `core/hamlet`, kept general enough for nomadic camps later.
+- **The ranch** keeps buffalo, pigs and some beast rider mounts, with a stable and a rookery (section 3).
+- **Pasture** goes on every zone with a decent understory; **fishing grounds** are zones of their own where real
+  fishing is good (reefs, estuaries, lakes and the like). Both are effectively infinite for now (section 2).
+- **Felled trees** are kept only while the game runs, until a save system exists (section 2).
 
-Still open:
-
-3. **The ranch:** buffalo and pigs only, or the beast riders' mounts too, with a stable and rookery as in Ridertown?
-4. **The `gather` tag by kit:** which zones carry pasture and fish, and how much (a starting table is proposed in H1 for the
-   owner to adjust).
-5. **Villages and the timber delta in Godot:** felled trees are edits by id. Should they be saved with the world
-   (persistent) or kept only in the running sim until the save system exists?
+Still open: the starting `gather` weights per kit and zone, proposed in H1 for the owner to adjust.
