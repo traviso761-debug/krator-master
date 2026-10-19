@@ -1410,10 +1410,12 @@ def main():
         cut_n = 0.0
         for n_ in range(1, len(path)):
             c_, p_ = path[n_], path[n_ - 1]
-            if not G['whas'][c_] and En[c_] > En[p_] - 0.5:
-                cut_n = max(cut_n, float(En[c_] - (En[p_] - 0.5)))
-                En[c_] = En[p_] - 0.5
-                rt2['S'][c_] = En[c_]
+            S_ = rt2['S']
+            if not G['whas'][c_] and S_[c_] > S_[p_] - 0.5:
+                lo_ = S_[p_] - 0.5
+                cut_n = max(cut_n, float(En[c_] - min(En[c_], lo_)))
+                En[c_] = min(En[c_], lo_)
+                S_[c_] = lo_
         rises_ = rises(path, rt2['S'], G['whas'])
         if rises_:
             sys.exit('%s climbs at %s' % (nm, rises_[:3]))
