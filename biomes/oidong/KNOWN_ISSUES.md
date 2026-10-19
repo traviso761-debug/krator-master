@@ -24,7 +24,7 @@
       flats) and a `mist` field at any cataract, or it gets no raked flats and no chalice trees (BIOME-API.md).
 - [ ] **The raked ripples ring only the first 32 stone groups** (`NSTONE` in 84-host-ground.js, a uniform array); the floor
       places about 125 groups, so the rest sit in the parallel ripples. Raise the count or pack the groups into a texture.
-- [ ] **The budget is the measured total, 15.7M triangles at q=1** (19.5M ceiling in `99-host-take.js`); draw calls 65-100 by
+- [ ] **The budget is the measured total, 18.1M triangles at q=1** (19.5M ceiling in `99-host-take.js`; the trees pass 14.9M of a 15.5M ceiling); draw calls 65-100 by
       view. The bamboo groves (6,600 clumps) and the marble groves' lace are the heaviest passes: thin them first if it creeps up.
 - [ ] **The far marble birches read as pale poles** past the hero range: their lace impostor blobs are near-white against a
       pale sky. A second, tinted blob or a denser lace card would fix it.
