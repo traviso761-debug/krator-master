@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1 (0%) | 6 (2%) | 0 (0%) | 48 (17%) | 225 (80%) |
+| KB | 1 (0%) | 6 (2%) | 0 (0%) | 48 (17%) | 226 (80%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -17,7 +17,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/12-stats.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/30-kit.js` | 3.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 2 | 2 | 5 | 0 | 0 | 0 |  |
 | `src/40-rs-core.js` | 13.8 | [draw] | 26 | 1 | 0 | 0 | 0 | 10 | 6 | 0 | 0 | 0 | 0 |  |
-| `src/41-rs-tex.js` | 10.7 | [draw] | 14 | 9 | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 |  |
+| `src/41-rs-tex.js` | 11.8 | [draw] | 14 | 9 | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/42-rs-hull.js` | 5.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/43-rs-rig.js` | 11.3 | [draw] | 16 | 0 | 0 | 0 | 0 | 6 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/44-rs-parts.js` | 4.6 | [draw] | 5 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
@@ -34,7 +34,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/69-rs-islander-oruwa.js` | 2.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-rs-islander-karakoa.js` | 5.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/71-rs-voth-chitin.js` | 4.7 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/72-rs-hyk-hexareme.js` | 6.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/72-rs-hyk-hexareme.js` | 6.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/73-rs-hyk-pearl.js` | 6.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74-rs-iziz-wheel.js` | 5.4 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-rs-beast-rookery.js` | 5.7 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

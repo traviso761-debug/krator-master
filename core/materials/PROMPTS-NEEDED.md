@@ -4,7 +4,7 @@ Every texture or pattern sheet the owner still has to source or generate, each w
 as it is, one image per block. Nothing in sections 1 to 3 is in `core/materials/library/` or `core/materials/patterns/` on any branch
 or worktree (checked 2026-10-14; the two redos in section 3 replace sets that came unusable), and no "Delivered" log in `PLAN.md` or `PROMPTS-ready.md` covers it.
 
-**Count: 20 prompts: 1 in section 2 (the Northern Highlands' `bark.alder.lichen`) and 19 in section 7 (Korona: 9 for the tepui station, 10 for the pitcher hollow; generate each station's before that station is built).** The Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel were delivered 2026-10-19 (see "Delivered 2026-10-19"). Sections 4 to 6 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
+**Count: 20 prompts, and 3 optional: 1 in section 2 (the Northern Highlands' `bark.alder.lichen`), 19 in section 7 (Korona: 9 for the tepui station, 10 for the pitcher hollow; generate each station's before that station is built), and section 6's three optional (necanyons).** The Oidong Valley's thirteen and the Northern Highlands' staghorn and sun-wheel were delivered 2026-10-19 (see "Delivered 2026-10-19"); necanyons' five required ones the same day ("Delivered 2026-10-19, necanyons"). Sections 4 and 5 were delivered on 2026-10-18 ("Delivered 2026-10-18, the Beast Riders kit and two more"). Everything in sections 1 to 3 was delivered on 2026-10-18 (`tex2.zip`, see "Delivered 2026-10-18"). A short list at the end names gaps that have no prompt yet.
 
 This file replaces the scattered "still owed" lists as the place to look. The prompts were gathered from
 `PLAN.md` ("Prompts for generated sources" and the audits below it), `PROMPTS-ready.md`, `PROMPTS-nomads.md`,
@@ -132,6 +132,19 @@ colour: the colour is the point. Sulfur needs no image: `ground.sulphur` is in t
 
 `biomes/ringisles/KNOWN_ISSUES.md`, "Stand-ins": the lagoon floor, the reef, the coral and seven leaf cards are procedural or near library sets. Each lands as a family in `biomes/ringisles/materials.json` (a card through `BIO.libSwap`). The banana, rice, cane and greens leaves have no prompt yet (see "Gaps with no prompt yet").
 
+### The Beast Riders kit's tents (`kits/beast-riders`, 2026-10-19)
+
+`kits/beast-riders/KNOWN_ISSUES.md`, "The thorn hedge has no texture of its own": the cut-thorn barrier
+(`br_hedge_thorn`, `src/75-br-tents-bounds.js`) is thin branches of geometry with `bark.ironbark` on them as a detail
+map. Lands as the family `thorn` in `kits/beast-riders/materials.json` (tinted: the branches keep their two palette
+browns); `70-br-tent-kit.js` `BRT_THORN` then reads `'thorn/bark'`.
+
+#### `foliage.thorn.cut`
+
+```
+Seamless tileable texture, 2048x2048, front orthographic, flat even lighting, no shadows: a dense tangle of cut, dry thorn-tree branches piled as a livestock barrier (an African boma), seen side-on: grey-brown twisted branches #5a4632 and #7a6446, thin twigs crossing every way, long straight pale thorns #c8b896 in pairs along every twig, a few dead curled leaves #8a7448, small gaps of near-black shadow #1e1812 between the branches. Muted, tintable. Matte. One tile covers 1.5 metres.
+```
+
 ## 2. Still owed (no open known issue; the build draws its own today)
 
 ### Highlands (`settlements/highlands`)
@@ -248,6 +261,37 @@ A flat, front-on decorative panel, square, 2048x2048, on a solid flat magenta ba
 ## 3. Probably needed: check first
 
 Each has a reason it may not be owed. Settle the reason, then generate or drop the entry.
+
+## 6. necanyons (`biomes/necanyons`, 2026-10-19)
+
+The north-eastern canyons, the hyperjungle's transition to Korona (`biomes/necanyons/PLAN.md` section 6, which lists the
+library sets it reuses). The five required images were delivered on 2026-10-19 (see "Delivered 2026-10-19, necanyons"
+below); `rock.sandstone.bedded.red` was delivered on 2026-10-18 for Pinnacle Rock and serves here too. Three optional
+sheets are left; each names the library fallback the kit uses without it.
+
+#### `card.palm.fan` (optional; fallback `card.palm`'s palmetto cells)
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one leaf per cell.
+- Used by: the gorge fan palm's crown. Reuse: any fan palm (Livistona, Washingtonia, the bays' palms).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one fan-palm leaf (Livistona) on a long, thin, spiny stalk rising from the bottom of its cell: a round fan wider than it is tall, split two thirds of the way to its centre into about sixty narrow ribbon segments whose tips droop and hang down; glossy mid green (#4a7a3a, #5a8a40) with paler yellow-green (#a0b060) along the folds, one or two old leaves going brown (#8a6a3a) at the tips. Vary how far the segments droop between the nine. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.flametip` (optional; fallback `card.croptree.glossy`, tinted)
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one twig end per cell.
+- Used by: the flametip scrub forest of the benches. Reuse: any tree with a red new flush (the tepuis, mango and cinnamon flushes).
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: a short leafy twig end of a tepui shrub-tree standing up from the bottom of its cell: thick, leathery, glossy oval leaves crowded in a spiral at the twig tip, the older leaves below dark olive green (#3e5230), the new flush at the tip bright scarlet to orange-red (#c8321e, #e0602a); on four of the nine a few pale cream five-petalled flowers (#efe2c8) among the leaves. Vary how much of each twig is in red flush. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.
+```
+
+#### `card.treelily` (optional; fallback `card.ichu` and `card.flower.claw`)
+- Kind: cut-out card sheet, 3 x 3 on magenta, full colour; one branch tip per cell. The flowers are lilac: key with `spill: edge` (as `card.crop.saffron`).
+- Used by: the stilt lily of the cap plateaus. Reuse: any tree-lily or dracaena-like tuft.
+
+```
+A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
+```
 
 ## 7. Korona (`biomes/korona`, planned 2026-10-19): one list per station, to generate before that station is built
 
@@ -818,6 +862,14 @@ Batches `tools/textures/batches/owner-2026-10-18-beast-riders.json` (surfaces, `
   top-heavy in the source, so a tall surface shows a band of drips each tile.
 - `rock.sandstone.bedded.red`: for settlements/pinnacle-rock, not built yet: in the library only until it is wired.
 - `card.crop.indigo`: for kits/crops (Jungle indigo): in the library only until the Crops kit wires it.
+
+## Delivered 2026-10-19, necanyons
+
+Five prompts of section 6, pasted into the chat as 1254 px WebPs: `ground.slickrock`, `rock.sandstone.varnish` (batch
+`necanyons-2026-10-19.json`) and `card.carnivore.monkeycup`, `organic.trap.lobe`, `card.carnivore.sundew` (batch
+`necanyons-2026-10-19-cards.json`, keyed off magenta and kept whole, anchor `none`). The sundew's glandular hairs came hot
+pink, close to the key: keyed with `spill: all`, which turns the pink left in them red, as the prompt asked. Wired in
+`biomes/necanyons/materials.json`.
 
 ## Delivered 2026-10-18, the Throne's new flora
 
