@@ -1,0 +1,35 @@
+[
+ {
+  "src": "islander-mat-diamond.webp",
+  "out": "core/materials/patterns/islander/mat-diamond",
+  "record": {
+   "id": "islander/mat-diamond",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.41
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "original_file": "33.webp",
+    "original_sha1": "6bda28ed529783a4789c250c2b89c472d382b2f5",
+    "prompt": "prompt not recorded: supplied as 33.webp, a plaited pandan mat in natural strips with black-edged ochre and cream nested diamonds, each with a red centre, between bands of red zigzags",
+    "reuse": "the East's plaited mat walls (patMat); any patterned plaited mat, floor mat or wall hanging in black, ochre and red"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough_var": 0.15,
+   "normal_strength": 0.7,
+   "rough": 0.85
+  }
+ }
+]
