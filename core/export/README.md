@@ -262,7 +262,8 @@ as before 2026-10-18. `test-export.js` has the positive case and the negatives (
 terrain, an unknown name).
 
 Each must-pass case names its profile in its `verify.py` (`EXPORT_BOX`, `EXPORT_PROFILE`) and checks it under
-`--assert` through the shared `check_profile` (`tools/harness.py`: it waits for the library maps, injects
+`--assert` through the shared `check_profile` (`tools/harness.py`: it waits for the library maps, with `inject=True`
+injects core/export the way `export` does into a page that does not embed it (the Throne), injects
 `44-core-stage.js` where the page lacks it, exports the box with a small sky and prints the statuses); the nightly
 (`tools/test_all.py --nightly`) runs those verifies. `--profile a,b,c` on a verify replaces the list for one run: add
 `sim` to any of them and the run fails on the stub, which is the proof the check bites.
@@ -288,6 +289,17 @@ Each must-pass case names its profile in its `verify.py` (`EXPORT_BOX`, `EXPORT_
 | swbay (2026-10-18) | `0,0,300,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | swlowlands (2026-10-18) | `600,0,900,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
 | xanadu (2026-10-18) | `-300,1800,0,2100` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| the Throne, station 1 (`biomes/throne/dist/throne.html`; 2026-10-18; its eleven pages check through `check_profile(..., inject=True)`: the pages do not embed core/export, below, "Not done"; the table is `EXPORT_STATIONS` in its verify.py) | `-400,40,-100,340` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; water left out: no page is on core/water; atmos left out of every Throne row, `biomes/throne/KNOWN_ISSUES.md`, "Export profile") |
+| the Throne, the kipuka (`throne-kipuka.html`) | `-240,-700,60,-400` | `registry, items, buckets, materials, textures, terrain, stage` (its committed page fails the error panel on the hyperjungle fauna's `BIO.walkLoop`, a page fix in its KNOWN_ISSUES.md; the profile passes) |
+| the Throne, the spice frontier (`throne-frontier.html`) | `-560,-400,-260,-100` | `registry, items, buckets, materials, textures, terrain, stage` (the same page fault as the kipuka's) |
+| the Throne, the geyser isle (`throne-isle.html`) | `-300,-300,0,0` | `registry, items, buckets, materials, textures, terrain, stage` |
+| the Throne, the cloud forest (`throne-cloud.html`) | `-1720,570,-1420,870` | `registry, items, buckets, materials, textures, terrain, stage`; exported with `--sections` of the same (its atmos section throws: the station lists the atmos host without `89-atmos-8-export.js`) |
+| the Throne, the savanna (`throne-savanna.html`) | `-1050,350,-750,650` | `registry, items, buckets, materials, textures, terrain, stage` |
+| the Throne, the ash desert (`throne-ash.html`) | `-350,50,-50,350` | `registry, items, buckets, materials, textures, terrain, stage`; `--sections` the same (atmos throws, as the cloud forest's) |
+| the Throne, vent country (`throne-vents.html`) | `-330,-430,-30,-130` | `registry, items, buckets, materials, textures, terrain, stage`; `--sections` the same (atmos throws) |
+| the Throne, the glacier (`throne-glacier.html`) | `-1800,-600,-1500,-300` | `registry, items, buckets, materials, textures, terrain, stage`; `--sections` the same (atmos throws) |
+| the Throne, the caldera rim (`throne-caldera.html`) | `0,-1500,300,-1200` | `registry, items, buckets?, materials, textures, terrain, stage`; `--sections` the same (atmos throws). No cell of its map holds a bucket: the kit's baked meshes are trees and the summit has none, so `buckets?` |
+| the Throne, the lava tube (`throne-tube.html`) | `-320,-320,-20,-20` | `registry, items, buckets, materials, textures, terrain, stage` (`HEAT.render` draws the shimmer after the scene; the stage's panorama and the terrain read ok, as the caldera's) |
 
 Every other build is preview-only until it names a profile and meets it.
 
@@ -513,8 +525,12 @@ Where a figure here differs from the report, the report is right: it reads the f
   modules since 2026-10-18).
 - Profiles are built (above, "Profiles"; 2026-10-18) and named by sedesert and Iziz; the isle demo's is listed there
   and lands with its verify.
-- The Throne and its ten stations, Verge, little-demo and the settlements that read core/biome in place do not list
-  core/export; the harness injects it for an export.
+- **The Throne keeps the injection route** (2026-10-18): its eleven pages do not list core/export, because station 1's
+  page is at its 20M size ceiling (`biomes/throne/KNOWN_ISSUES.md`); `tools/harness.py export` injects the two fragments
+  at export time (`inject_export`), and its `verify.py` names each page's box and profile (`EXPORT_STATIONS`, the eleven
+  rows above) and checks them through the same injection (`check_profile(..., inject=True)`), so the proof is of the
+  route the export takes. Verge, little-demo and the settlements that read core/biome in place do not list core/export
+  either; the harness injects it for an export, and they name no profile yet.
 - No PNG or EXR height export, no carver floors (core/terrain's own "not yet"). The `water` section carries a page's
   water only where the page names it to core/water (sedesert's pond, river, cataract and plunge pool since 2026-10-13, and
   every core/water taker); the other biome hosts' water is still only the grid's `water` and the field's named surfaces.

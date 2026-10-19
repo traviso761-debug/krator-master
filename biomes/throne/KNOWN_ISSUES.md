@@ -120,3 +120,31 @@
       loop: a tick's second argument is now the clock's motion time, not seconds since the page opened, so an animation
       stands at another phase at a given moment (identical with time frozen, which is how the pages were proven); and the
       heat shimmer's `dt` is the clock's, so it holds still while the clock is paused.
+
+## Export profile (core/export, 2026-10-18)
+
+- [ ] **The Throne keeps the injection route.** No page of the Throne lists core/export in its build: station 1's page is
+      at its 20M size ceiling (above), so the two fragments are not added to the pages. `tools/harness.py export` injects
+      them at export time (the biome core's `42`/`43` queued their parts), and `verify.py --assert` checks each page's
+      export profile through the same injection (`check_profile(..., inject=True)`), one box and profile per page in
+      `EXPORT_STATIONS` (`verify.py`; the table is also in `core/export/README.md`, "Profiles"). Every profile is
+      `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain: the kit has no krator-field). The
+      caldera's and the tube's `stage` and `terrain` sections read ok: `HEAT.render` draws on the frame after the scene,
+      and the stage capture renders the scenes with its own cube camera, so the shimmer is not in the panorama.
+- [ ] **`atmos` is left out of every profile, and errors on four stations.** The ash desert, the caldera, the cloud forest,
+      the glacier and vent country list `89-atmos-9-host.js` but not `89-atmos-8-export.js`; the host fragment wraps
+      `ATMOS.export` over the export fragment's, so on those pages `ATMOS.export` throws (`_export is not a function`) and
+      the section reads `error` (the frontier and the isle, on the waves only, read `none`; station 1, the kipuka, the
+      savanna and the tube have no core/atmos). The verify exports only the profile's sections on those five pages
+      (`sections` in their `EXPORT_STATIONS` entry), so the error does not fail the run; `harness.py export` on them
+      needs `--sections` the same way until it is fixed. The fix is either `89-atmos-8-export.js` in those stations'
+      `station.json` `atmos` lists (then `atmos` joins their profiles) or a guard in `89-atmos-9-host.js`; both rebuild pages.
+- [ ] **The kipuka's and the frontier's committed pages fail the error panel** (found by the profile runs, 2026-10-18; not the
+      profile, which both pass): the hyperjungle's fauna, read in place from `biomes/hyperjungle/src`, lays its herds' loops
+      with `BIO.walkLoop` (`core/biome/36-core-walker.js`, which the hyperjungle's own build lists), and the two
+      `station.json` `core` lists have `35-core-anim.js` only, so `HYPERJUNGLE.buildFauna` throws `BIO.walkLoop is not a
+      function` and the page builds without its fauna. Fix: `36-core-walker.js` in both `core` lists, rebuild the two pages,
+      rewrite their baseline rows (a page change; not done with the profiles).
+- [ ] **`water` is left out of every profile.** No page of the Throne is on core/water (the acid lake, the hot pools, the lava
+      lake and the sea are the hosts' own surfaces), so the section reads `empty` everywhere. Add it back when a station's
+      water is named to core/water.

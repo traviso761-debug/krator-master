@@ -303,25 +303,44 @@ PROFILE_JS = """([opt, profile]) => { const w = EXPORT.world(opt);
   return { sections, errors: w.errors, stats: w.stats, check: chk }; }"""
 
 
-async def check_profile(pg, box, profile, opt=None):
+async def inject_export(pg):
+    """core/export and the stage module into a page whose build does not list them (the Throne and its stations, Verge:
+    core/export/README.md, "Not done"): their modules queued their parts in EXPORT_QUEUE, which 07 drains on load.
+    Each file goes in only where the page lacks it. Returns the names injected (empty on a page that embeds both)."""
+    injected = []
+    if not await pg.evaluate("typeof EXPORT !== 'undefined'"):
+        for f in EXPORT_FILES:
+            await pg.add_script_tag(path=f)
+        injected.append('core/export')
+    if not await pg.evaluate("typeof KSTAGE !== 'undefined'"):   # a page without the stage module (Iziz)
+        await pg.add_script_tag(path=STAGE_JS)
+        injected.append('core/biome/44-core-stage.js')
+    return injected
+
+
+async def check_profile(pg, box, profile, opt=None, inject=False):
     """The export profile check a verify.py --assert runs (core/export/README.md, "Profiles"; ROADMAP.md section 11,
     item 1): EXPORT.world over the case's box, then EXPORT.check with the sections the case must fill. Waits for the
     library textures first, as `export` does. Returns (ok, lines): ok is false when a required section is missing or
     not what the profile asks (a stub, empty, sampled terrain), a section errored or a join failed; the lines say
-    which, the first one the statuses. opt: more for EXPORT.world (sky: a small panorama keeps the check quick)."""
-    if not await pg.evaluate("typeof EXPORT !== 'undefined'"):
+    which, the first one the statuses. opt: more for EXPORT.world (sky: a small panorama keeps the check quick).
+    inject: a page built without core/export (the Throne, whose station 1 is at its page-size ceiling) gets it injected
+    here the way `export` injects it (inject_export), so the verify proves the route the export takes; without it such a
+    page fails with the message below, as before."""
+    if not inject and not await pg.evaluate("typeof EXPORT !== 'undefined'"):
         return False, ['core/export is not in the page (its build.py does not list 07-core-export.js)']
     try:
         await pg.wait_for_function("!window._texPending", timeout=180000)
     except Exception:
         return False, ['library textures still decoding after 180 s']
-    if not await pg.evaluate("typeof KSTAGE !== 'undefined'"):   # a page without the stage module (Iziz): `export` injects it the same way
-        await pg.add_script_tag(path=STAGE_JS)
+    injected = await inject_export(pg)
     o = dict(opt or {})
     o['box'] = list(box)
     o.setdefault('sky', 256)
     r = await pg.evaluate(PROFILE_JS, [o, list(profile)])
     chk, lines = r['check'], []
+    if injected:
+        lines.append('injected: ' + ', '.join(injected) + ' (the page does not embed them; tools/harness.py export does the same)')
     lines.append('sections: ' + ', '.join('%s %s' % (k, v) for k, v in r['sections'].items()))
     lines.append('profile ' + ','.join(profile) + ': ' + json.dumps(chk['joins'].get('profile')) + '; stats ' + json.dumps(r['stats']))
     ok = chk['ok'] and not r['errors']
@@ -386,14 +405,7 @@ async def export_main(argv):
                 await pg.wait_for_function("!window._texPending", timeout=180000)
             except Exception:
                 fails.append('library textures still decoding after 180 s')
-            injected = []
-            if not await pg.evaluate("typeof EXPORT !== 'undefined'"):
-                for f in EXPORT_FILES:
-                    await pg.add_script_tag(path=f)
-                injected.append('core/export')
-            if not await pg.evaluate("typeof KSTAGE !== 'undefined'"):
-                await pg.add_script_tag(path=STAGE_JS)
-                injected.append('core/biome/44-core-stage.js')
+            injected = await inject_export(pg)
             await pg.wait_for_timeout(1500)   # a few frames, so the stage hook has seen what the page renders
             t1 = time.time()
             res = await pg.evaluate(EXPORT_JS, [opt, not a.json])

@@ -38,8 +38,49 @@ import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, th
 # the UTF-8 console). A fix there reaches every verify.py that imports it.
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
 import harness as _harness
-from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
+from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views, check_profile
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
+
+# The export profiles (core/export/README.md, "Profiles"; ROADMAP.md section 11, item 1), one per page, keyed by the built
+# page's name (station 1 is dist/throne.html; a station's page is its station.json "out"). The Throne does not list
+# core/export in its build (station 1's page is at its 20M size ceiling, KNOWN_ISSUES.md): tools/harness.py's export
+# injects core/export into the page at export time, and the check here goes through the same injection
+# (check_profile(..., inject=True)), so it proves the route the export takes. Each box is a 300 m tile round the station's
+# default view that holds item sets and at least one bucket; the profile is the sections that box must fill. Sampled
+# terrain (no krator-field). atmos and water are named only where that station's box fills them (the stations with core/atmos
+# list no 89-atmos-8-export.js, so atmos reads none or throws; no page is on core/water): KNOWN_ISSUES.md, "Export profile".
+# "only": export the profile's sections alone (the five pages whose atmos section throws: a section error would fail the
+# check whatever the profile names; tools/harness.py export takes --sections the same way). The boxes were found by
+# exporting round each page's default view and, for the caldera and the glacier, by scanning the map in 300 m cells
+# (2026-10-18). --profile a,b,c replaces the list for one run (add sim to see a stub fail).
+EXPORT_SECTIONS = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
+EXPORT_STATIONS = {
+    # station 1, the plume's edge: the rift's shoulder east of the default view (95 item sets, 7 buckets)
+    'throne.html': {'box': [-400, 40, -100, 340]},
+    # the kipuka (2): the old hyperjungle west of the skylight (42 sets, 8 buckets, 30k bucket triangles)
+    'throne-kipuka.html': {'box': [-240, -700, 60, -400]},
+    # the spice frontier (3): the terraces at the default view (20 sets, 3 buckets)
+    'throne-frontier.html': {'box': [-560, -400, -260, -100]},
+    # the geyser isle (4): the basin's crown, the richest cell of the scan (49 sets, 8 buckets, 24k instances)
+    'throne-isle.html': {'box': [-300, -300, 0, 0]},
+    # the cloud forest (5): the elfin wood at the default view (41 sets, 6 buckets, 98k instances)
+    'throne-cloud.html': {'box': [-1720, 570, -1420, 870], 'only': True},
+    # the savanna (6): the gill-parasol wood at the default view (53 sets, 4 buckets)
+    'throne-savanna.html': {'box': [-1050, 350, -750, 650]},
+    # the ash desert (7): the dunes at the default view (110 sets, 4 buckets)
+    'throne-ash.html': {'box': [-350, 50, -50, 350], 'only': True},
+    # vent country (8): the graben at the default view (104 sets, 3 buckets)
+    'throne-vents.html': {'box': [-330, -430, -30, -130], 'only': True},
+    # the glacier (9): the glass willows by the outwash river, the richest cell of the scan (6 sets, 3 buckets)
+    'throne-glacier.html': {'box': [-1800, -600, -1500, -300], 'only': True},
+    # the caldera rim (10): the penitentes' plateau. No cell of its map holds a bucket (the kit's baked plain meshes are
+    # trees; the summit has none, and the rim, the lake and the penitentes are the host's own or instanced), so buckets
+    # may read empty here (4 sets, 139 instances)
+    'throne-caldera.html': {'box': [0, -1500, 300, -1200], 'profile': ['registry', 'items', 'buckets?', 'materials', 'textures', 'terrain', 'stage'], 'only': True},
+    # the lava tube (11): the tube under the skylights at the default view (68 sets, 2 buckets); HEAT.render's shimmer
+    # draws on the frame after the scene, so the stage's panorama and the terrain read ok
+    'throne-tube.html': {'box': [-320, -320, -20, -20]},
+}
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
 try:
@@ -175,6 +216,22 @@ async def run(a):
                           % (k, v["tris"], v["limit"], v["cls"], v["inst"], v["meshes"],
                              "   OVER" if v["over"] else ""))
 
+                print("\n--- export profile (core/export/README.md, \"Profiles\"; injected, as tools/harness.py export does) ---")
+                stn = EXPORT_STATIONS.get(name)
+                if not stn:
+                    print("  FAIL  export-profile : no entry for %s in EXPORT_STATIONS (one per page of the Throne)" % name)
+                    fails.append("assert export-profile")
+                else:
+                    box = stn["box"]
+                    prof = [t.strip() for t in a.profile.split(",") if t.strip()] if a.profile else stn.get("profile", EXPORT_SECTIONS)
+                    opt = {"sections": [t.split("=")[0].rstrip("?") for t in prof]} if stn.get("only") else None
+                    pok, lines = await check_profile(pg, box, prof, opt=opt, inject=True)
+                    for ln in lines:
+                        print("  " + ln)
+                    print(("  PASS  " if pok else "  FAIL  ") + "export-profile : %s, box %s" % (name, box))
+                    if not pok:
+                        fails.append("assert export-profile")
+
             if a.baseline and os.path.exists(a.baseline):
                 base = json.load(open(a.baseline))
                 print("\n--- delta vs %s ---" % os.path.basename(a.baseline))
@@ -277,4 +334,5 @@ if __name__ == "__main__":
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate (repeatable)")
     ap.add_argument("--size", default="1280x800")
+    ap.add_argument("--profile", default="", help="under --assert: the export profile for this run, a,b,c (default: the page's EXPORT_STATIONS profile)")
     sys.exit(asyncio.run(run(ap.parse_args())))
