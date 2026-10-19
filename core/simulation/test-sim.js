@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -600,6 +600,49 @@ function world(seed){
  const lag=S.lagOf(a),want=S.desire(a,1);
  ok('a lagged actor at minute 1 ('+lag+' minutes behind) wants its schedule\'s hour (the day before\'s 23:00, SLEEP), never undefined',lag>1&&want==='SLEEP',want===undefined);
  const w=S.wakeOf(Object.assign(a,{wanted:want,task:{}}),1,want);ok('and its wake is a minute ahead, not before now',w>1&&Number.isFinite(w),!(w>1));}
+
+// the levels (77-sim-7-lod.js): a town nobody watches runs on its books only (no decisions, no routes), makes about what
+// it makes when watched, hauls, eats and restocks, and its books balance; raised, everyone is where the schedule says
+{const mk=(abs)=>{const {S,clock}=world(107);
+   ['WORK','EAT','HAUL','UNLOAD'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'kHome',kind:'house',x:0,z:0,activities:{SLEEP:4,EAT:4},settlement:'kautoa'});S.place({id:'kFarm',kind:'field',x:50,z:0,activities:{WORK:4},open:[0,24],settlement:'kautoa'});
+   S.place({id:'kShed',kind:'warehouse',x:100,z:0,activities:{},settlement:'kautoa'});
+   S.place({id:'vHome',kind:'house',x:150,z:0,activities:{SLEEP:4,EAT:4},settlement:'valapo'});S.place({id:'vFarm',kind:'field',x:100,z:60,activities:{WORK:4},open:[0,24],settlement:'valapo'});
+   S.place({id:'vShed',kind:'warehouse',x:50,z:0,activities:{},settlement:'valapo'});
+   const cfg=()=>({goods:{rice:{},coffee:{}},every:60,window:1,cart:{cap:40,load:5,unload:5,minLoad:5}});
+   const EK=S.economy(cfg(),{settlement:'kautoa'}),EV=S.economy(cfg(),{settlement:'valapo'});
+   S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.recipe('kFarm',{out:['rice'],rate:5,cap:300});S.recipe('vFarm',{out:['coffee'],rate:5,cap:300});
+   S.R.place.kShed.stock={rice:50,coffee:50};S.R.place.vShed.stock={rice:200,coffee:20};
+   S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'EAT'],[19,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},WORK:{pin:'work'}}});
+   S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+   [0,1,2].forEach(i=>S.actor({id:'kg'+i,role:'grower',home:'kHome',work:'kFarm'}));[0,1,2].forEach(i=>S.actor({id:'vg'+i,role:'grower',home:'vHome',work:'vFarm'}));
+   S.cart(S.actor({id:'kc',role:'carter',home:'kHome'}));S.cart(S.actor({id:'vc',role:'carter',home:'vHome'}));
+   S.items({kinds:{rice:{cat:'food',food:true},coffee:{cat:'food',food:true}},free:['IDLE'],secPerMinute:40,days:2,low:1});
+   S.R.place.kHome.store={rice:6,coffee:6};S.R.place.vHome.store={rice:6,coffee:6};S.R.place.kHome.people=3;S.R.place.vHome.people=3;
+   clock.d=0;clock.h=0;if(abs) S.level('valapo','abstract');
+   const run=(h0,h1)=>{for(let m=h0*60;m<h1*60;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}};
+   return {S,clock,EK,EV,run};};
+ const P=mk(false),A=mk(true);P.run(0,26);
+ const V0=A.S.all('actor').filter(a=>/^vg/.test(a.id)).map(a=>a.wanted),T0=A.S.R.actor.vg0.task;A.run(0,26);
+ const VA=A.S.all('actor').filter(a=>/^vg/.test(a.id)),KA=A.S.all('actor').filter(a=>/^kg/.test(a.id));
+ ok('abstract: Valapo\'s people are not decided (no wants, no routes) while Kautoa\'s are',A.S.levelOf('valapo')==='abstract'&&VA.every(a=>a.wanted==null&&a.task==null)&&KA.every(a=>a.wanted!=null&&a.task),VA.some(a=>a.task!=null));
+ const mp=P.EV.made.coffee||0,ma=A.EV.made.coffee||0;
+ ok('and makes about what it makes watched, by its schedules ('+ma+' coffee abstract, '+mp+' watched)',ma>0&&ma>=0.8*mp&&ma<=1.3*mp,ma===0);
+ ok('Kautoa, watched, is the same in both worlds',(A.EK.made.rice||0)===(P.EK.made.rice||0),(A.EK.made.rice||0)!==(P.EK.made.rice||0));
+ const vc=A.S.R.actor.vc;ok('its cart hauls on timed trips, no route',(A.EV.hauled.coffee||0)>0&&A.EV.trips>0&&(!vc.task||vc.task.abstract&&vc.task.legs.length===0),!(A.EV.hauled.coffee>0));
+ const I=A.S.ITEMS,VB=(I.statsBy||{}).valapo||{};
+ ok('its households eat from their stores and restock from the warehouses (booked to Valapo)',(VB.meals&&VB.meals.meal>0)&&(VB.eaten&&(VB.eaten.rice||0)>0)&&(VB.bought&&((VB.bought.rice||0)+(VB.bought.coffee||0))>0)&&(A.EV.used.rice||0)>0,!(VB.meals&&VB.meals.meal>0));
+ const sv=A.S.stocks('valapo'),bal=g=>{const f=sv.by[g].today;return f.change===f.made+f.imported-f.exported-f.consumed;};
+ ok('its books balance at the abstract level (change = made + imported - exported - consumed, both goods)',sv.today&&bal('rice')&&bal('coffee'),!bal('coffee'));
+ ok('lowered, it draws nothing: Valapo abstract leaves Kautoa\'s decisions as in the watched world',KA.every(a=>a.place===P.S.R.actor[a.id].place&&a.activity===P.S.R.actor[a.id].activity),KA.some(a=>a.place!==P.S.R.actor[a.id].place));
+ // raised mid-morning with the cart on a trip: everyone where the schedule says, the cart given its route, arriving at the same minute
+ A.run(26,30);const C=A.S.R.actor.vc;let h=30;for(;h<40;h+=1/60){A.run(h,h+1/60);if(C.task&&C.task.abstract&&A.clock.t<C.task.arrive)break;}
+ const ct=C.task,onTrip=!!(ct&&ct.abstract&&A.clock.t<ct.arrive),arr=ct&&ct.arrive;
+ A.S.level('valapo','presented');
+ ok('raised: each Valapan decided where its schedule says (in the working day, WORK at the farm)',A.S.levelOf('valapo')==='presented'&&VA.every(a=>a.task&&a.activity==='WORK'&&a.place==='vFarm'),VA.some(a=>!a.task));
+ ok('and a cart caught on a trip given its route, arriving at the same minute',onTrip&&C.task.legs.length>0&&C.task.arrive===arr&&!C.task.abstract,!!C.task.abstract);
+ A.run(h+1/60,h+2);ok('watched again it runs as before (decisions, carts walking)',VA.every(a=>a.wanted!=null)&&(A.EV.made.coffee||0)>ma,VA.some(a=>a.wanted==null));}
 
 // trade on a transport line: the carrier is the line's vehicle; a load leaves as it leaves a landing and lands as it docks
 {const {S,clock}=world(97);

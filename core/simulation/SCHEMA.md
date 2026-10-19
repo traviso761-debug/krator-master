@@ -210,6 +210,13 @@ A settlement runs at one of three levels, chosen by the player's window, never b
   each cart part-way along its trip (the lag). Lowering it keeps every record and drops only the poses.
 - A carrier between two settlements is a record while away: it leaves one settlement's books (exported) and lands in the
   other's (imported) after its route's minutes; while at sea it is counted `in transit`.
+- **In code** (`77-sim-7-lod.js`, P7d): `SIM.level(s, 'abstract' | 'presented')`, `SIM.levelOf(s)`. Abstract: `SIM.step`
+  and `SIM.jump` skip the town's actors; a producer makes by the workers whose schedule says WORK at their job and its
+  animals at home, at the efficiency they had when lowered; a cart's trip is the straight line times
+  `SIM.ABSTRACT_DETOUR` at its speed, with no route; households eat from their stores (a mess from the warehouses) and
+  restock when low (`SIM.itemsAbstractHome`), booked as a watched town books them. Meals out, errands and wear wait.
+  Raised: every actor decided afresh (SIM.jump's rule), and a cart on a trip given its route, arriving at the same
+  minute.
 - The abstract-level week test (`settlements/isle-demo/PLAN.md` section 7) fast-forwards a week with one town in the
   window, then the other, and checks the books, every load and the arrival after days away.
 
