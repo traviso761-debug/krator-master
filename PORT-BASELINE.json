@@ -289,8 +289,8 @@
    "sha256": "45135376ea1764dcec9eb455510d1afa8ed8ae67ce9f215dca1d2b12e1bbe1a4"
   },
   "kits/beast-riders/dist/beast-riders.html": {
-   "bytes": 12034962,
-   "sha256": "63dd472f4cc79e08bdead13371ba043fce9ba588e217f995a7b21dd9b125b47e"
+   "bytes": 12156250,
+   "sha256": "a552c5b3e9f8c6c8116d25c6cc17f2a6818f8b42db13a2e9863e5ce1ae74b140"
   },
   "kits/catalog/dist/catalog.html": {
    "bytes": 1672503,
@@ -309,12 +309,12 @@
    "sha256": "d89b375b56b6c46c764588956625d1395433ca8604ded3b54ee5edfac08758ed"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 628867,
-   "sha256": "094c18a175de8ba64fa709ed4a81a1df05ef94c587738ef0e88ecc7b6693944d"
+   "bytes": 649160,
+   "sha256": "0bc793e0efd32b1ba11c4becddf056bb9de1d944cabb53b47504f237efa3c984"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 9657788,
-   "sha256": "ad7ccef912f90007deefb0cafce424dc56646c1608ef01f32b230170cb59740e"
+   "bytes": 9678081,
+   "sha256": "e58ac55ee62b5f8793acb4d3ba8616b7f6bb3f7944ca91609fc36c99ca8e5ab8"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 246684,

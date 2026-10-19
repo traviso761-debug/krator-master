@@ -18,6 +18,9 @@ The page is loaded headless (tools/harness.py) and checked:
     and no pasture or hedge, the Dragonfly, Spider and Mammoth only on the floor, every floor ground inside a thorn hedge
     (negative: a key that does not exist must fail); BR_RUN cuts a closed boundary into pieces whose lengths add up to
     it, none longer than its span, its gates where asked
+  - the rock-cut pieces (src/55-56): each one's back within its declared depth, nothing deeper under the wall's face
+    than its embed, flat and wrapped round a stack (BR_ROCK.backOf); every kind present; their two surfaces attached;
+    negative control: the same check with each embed 0.3 m less must fail
   - the ports are their towns' buildings: each port's fabric (the town's kit meshes, no furniture), measured here in its
     local frame, matches the box the kit's own record of its marks gives (core/ports T.box); and (unless --no-towns) the
     box the TOWN'S PAGE gives for the same mark (settlements/girder/girder.html, settlements/mavs-refuge/mavs-refuge.html:
@@ -39,6 +42,7 @@ except Exception:
 CHECKS = r"""(neg)=>{const K=window._kit,R=[],tol=1.6;
  const built=K.built.map(b=>Object.assign({},b,{decl:Object.assign({},b.decl)}));
  if(neg==='box'){built[0].decl.w-=3;}
+ if(neg==='back'){built.forEach(b=>{if(b.rock)b.rock=Object.assign({},b.rock,{e:b.rock.e-0.3});});}
  R.push({name:'every building builds (the kit\'s own and the ports, every variant)',ok:K.errors.length===0&&new Set(built.map(b=>b.key)).size===K.keys.length,
    detail:K.keys.length+' buildings, '+built.length+' built'+(K.errors.length?'; '+K.errors.slice(0,3).join('; '):'')});
  const over=built.filter(b=>b.w>b.decl.w+tol||b.d>b.decl.d+tol||b.h>b.decl.h+tol);
@@ -50,6 +54,15 @@ CHECKS = r"""(neg)=>{const K=window._kit,R=[],tol=1.6;
  R.push({name:'the kit\'s surfaces attached (straw, guano, yard; the tents\' tenthide, pelt, canvas, lash) and every map loaded',ok:need.length===0&&fams.pending===0,detail:fams.families.length+' families, '+fams.pending+' pending'+(need.length?'; missing '+need.join(', '):'')});
  const tools=['insp','hoverBtn','polyBtn'].filter(id=>!document.getElementById(id));
  R.push({name:'the dev tools are on the page (inspector, hover T, polygon P)',ok:tools.length===0,detail:tools.length?'missing '+tools.join(', '):'all three'});
+ /* the rock-cut pieces (src/55-56): every back within the declared depth, nothing deeper under the wall's face than the
+    piece's embed (flat and wrapped round a stack), every kind there (seven facades, twelve tribes, five shrines), their maps */
+ const rk=built.filter(b=>b.rock),badB=rk.filter(b=>!(b.rock.minZ>=-b.decl.d/2-0.03&&b.rock.minN>=-b.rock.e-0.03));
+ R.push({name:'each rock-cut piece\'s back stays within its declared depth and behind the wall\'s face by no more than its embed',ok:rk.length>0&&badB.length===0,
+   detail:badB.length?badB.slice(0,4).map(b=>b.key+' v'+b.v+(b.wrapped?' (wrapped '+b.wrapped+')':'')+' minZ '+b.rock.minZ+' (d/2 '+(b.decl.d/2).toFixed(2)+') minN '+b.rock.minN+' (embed '+b.rock.e+')').join('; '):rk.length+' rock-cut builds, '+rk.filter(b=>b.wrapped).length+' wrapped round a stack'});
+ const vs=k=>new Set(rk.filter(b=>b.key===k&&!b.wrapped).map(b=>b.v)).size,cov={facade:vs('br_bldg_rock_facade'),tribes:vs('br_bldg_rock_tribe_niche'),shrines:vs('br_bldg_rock_lamp_niche')};
+ R.push({name:'the rock-cut kinds: seven gate-tree facades, twelve tribes\' niches, five shrines\' lamp niches, the cavern door and altar',ok:cov.facade===7&&cov.tribes===12&&cov.shrines===5&&vs('br_bldg_rock_cavern_door')===1&&vs('br_bldg_rock_altar')===1,detail:JSON.stringify(cov)});
+ const rf=['sandstone','navajo'].filter(f=>fams.families.indexOf(f)<0);
+ R.push({name:'the rock-cut surfaces attached (sandstone, navajo)',ok:rf.length===0,detail:rf.length?'missing '+rf.join(', '):'both'});
  const ports=built.filter(b=>b.port), off=(a,b)=>Math.max(...[0,1,2].map(i=>Math.max(Math.abs(a.min[i]-b.min[i]),Math.abs(a.max[i]-b.max[i]))));
  const bad=ports.filter(b=>!(off(b.fabric,b.tracker)<=0.05));
  R.push({name:'each port\'s fabric, measured, is what its marks drew (core/ports T.box)',ok:ports.length>0&&bad.length===0,
@@ -189,6 +202,10 @@ async def run(a):
                         print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + ('the smithy taken away' if isinstance(neg, dict) else 'a key that does not exist') + ') : ' + r['detail'])
                         if r['ok']:
                             fails.append('negative: ' + name)
+                r = [x for x in await pg.evaluate(CHECKS, 'back') if x['name'].startswith('each rock-cut')][0]
+                print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a rock-cut back 0.3 m deeper than its embed) : ' + r['detail'][:200])
+                if r['ok']:
+                    fails.append('negative back')
                 ports = await pg.evaluate(PORTS_JS)
             if a.shots:
                 os.makedirs(a.shots, exist_ok=True)

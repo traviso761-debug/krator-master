@@ -61,6 +61,7 @@ CORE_JS = ['core/rand/08-core-rand.js']
 TENTS = ['70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js', '73-br-tents-pens.js', '74-br-tents-bands.js',
          '75-br-tents-bounds.js', '79-br-camp.js']
 OWN_PREFIX = ('br_bldg_', 'br_tent_', 'br_hedge_', 'br_fence_')
+OWN += ['55-br-rockcut.js', '56-br-rockcut-b.js']   # the rock-cut pieces and the Deep Root cavern's dressing (BR_ROCK)
 # the ports: Girder's and Mav's Refuge's engines and builders sealed (towns.py), then their buildings as ASSETs
 TOWNS = "TOWNS: Girder and Mav's Refuge sealed (GENERATED: towns.py)"
 PORTS = ['60-br-ports.js']

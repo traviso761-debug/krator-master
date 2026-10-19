@@ -38,11 +38,28 @@
       bands, the awnings' stripes and the pennants are thin strokes and flat quads in palette colours, not a painted
       sheet; up close they read as appliqué. A painted band sheet would need UVs the catalog's meshes do not carry.
 - [ ] **No mounts in the pens**: the corrals, kennels, perch frames, the pond and the grove are empty (kits/fauna's
-      mounts, a later pass, as for the stables). The hardshell (glyptodont) and the mammoth are not in kits/fauna yet:
-      their pens are sized from their real kin (about 3.5 m and 6 m long).
+      mounts, a later pass, as for the stables). The pens were sized before the hardshell and the jungle mammoth reached
+      kits/fauna (2026-10-19), from their real kin (about 3.5 m and 6 m long): check them against `hardshell` (5.3 m) and
+      `jungle-mammoth` (7.7 m).
 - [ ] **The grove's trees are the catalog's generic tree** (`F.tree`, 'olive'): their places are hashed (KRAND), but the
       tree helper draws its limbs from the frame's own stream, and they are not the hyperjungle's species.
 - [ ] **A tent stands on flat ground**: its floor, skirt and stakes start at y 0; a camp on a slope needs the settlement
       to level a pad (hedge and fence runs follow the ground piece by piece, not within a piece).
 - [ ] **Interiors are placed by hand** (F.furn round the wall: `brtIn`), not planned rooms in `kits/interiors`.
 - [ ] **No camp is laid on the sheet**: `BR_CAMP` says what a band pitches, not where; Pinnacle Rock lays them.
+
+## The rock-cut pieces (src/55-56, 2026-10-19)
+
+- [ ] **The rock-cut pieces are proud of the wall, not cut into it** (src/55-56): a piece cannot cut the world's rock, so
+      its dressed face stands on the wall's face inside a raw rim of the rock and the carving stands proud of that; a
+      recess (a door's, a niche's) is at most about 0.6 m deep. A world that carves its rock (Pinnacle Rock's KCAVERN, a
+      carve patch) can set a piece back into the cut (opt.embed) and cut the rooms behind it from
+      `kits/interiors/sets/beast-rider-rock.js` (its `voids`).
+- [ ] **The rock-cut rims are boxes**: rough chunks of the raw stone in three steps; up close the top brow reads a
+      little like crenellation. The beasts and the claw are reliefs of ellipsoids and tubes, one material each.
+- [ ] **A wrapped piece's wide straight parts are segments** (≤ 1.2 m along the arc), its reliefs and lamps locally
+      flat; a stack under about 0.6 × the piece's width in radius is clamped to that.
+- [ ] **The Deep Root cavern's pieces are its dressing only**: the passage, the hall, the light well and the stack fig's
+      roots are Pinnacle Rock's (KCAVERN). The face carries all twelve tribes (the owner, 2026-10-19).
+- [ ] **The sheet's rock is a backdrop**: the wall behind each rock row and the stack in the wrapped row are plain
+      boxes on the sheet, not part of any piece.

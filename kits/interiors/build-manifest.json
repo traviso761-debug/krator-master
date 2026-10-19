@@ -1,10 +1,11 @@
 {
  "adapters/catalog-adapter.js": "e5e61806292b",
  "dist/interiors-core.js": "0652305073c7",
- "dist/interiors-sets.html": "cc32b3084802",
- "dist/interiors-walk.html": "5180db5083f6",
+ "dist/interiors-sets.html": "b5a9932e05dd",
+ "dist/interiors-walk.html": "592f9019dccf",
  "dist/interiors.html": "77cd4c40f0f2",
  "sets/abyss.js": "d473b9b52924",
+ "sets/beast-rider-rock.js": "701bda3f1719",
  "sets/beast-rider.js": "c397de98dc46",
  "sets/highlands.js": "e83b50011258",
  "sets/iziz.js": "7f4fd0912fc5",

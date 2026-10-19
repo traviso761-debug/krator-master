@@ -18,7 +18,9 @@
     { title: "Girder's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'girder'; }) },
     { title: "Mav's Refuge's own (ported from its builders)", list: all.filter(function (A) { return A.port && A.port.town === 'mavs-refuge'; }) }]
     .concat(TENT_ROWS.map(function (R) { return { title: R.title, list: R.keys.map(function (k) { return ASSET_BY_KEY[k]; }).filter(Boolean) }; }));
+  rows.splice(1, 0, ...BR_ROCK.rows(all));   /* the rock-cut pieces and the Deep Root cavern (src/55-56), and the wrapped ones */
   const out = { ready: false, keys: OWN.concat(PORT_KEYS), built: [], errors: BR_PORTS.errors.slice(), rows: [] };
+  out.keys = out.keys.concat(BR_ROCK.keys);
   const _v = new THREE.Vector3();
   function fabricBox(g) {                    /* the port's fabric (its town's kit meshes, not the furniture), local */
     const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
@@ -34,8 +36,9 @@
   let z = 0, tris = 0;
   rows.forEach(function (R) {
     let x = 0, depth = 0;
+    if (R.build) { const r = R.build(z, out); x = r.x; depth = r.depth; tris += r.tris; }
     R.list.forEach(function (A) {
-      const nv = A.port ? A.variants : Math.min(3, A.variants || 1);
+      const nv = A.port || R.rock ? A.variants : Math.min(3, A.variants || 1);
       for (let v = 0; v < nv; v++) {
         const dm = entryDims(A, v);
         let w = Math.max(dm.w, 6), d = Math.max(dm.d, 6), cx = x + w / 2, cz = z + d / 2;
@@ -54,6 +57,7 @@
             decl: { w: dm.w, d: dm.d, h: dm.h },
             min: M.min ? [+(M.min.x - cx).toFixed(2), +M.min.y.toFixed(2), +(M.min.z - cz).toFixed(2)] : null,
             max: M.max ? [+(M.max.x - cx).toFixed(2), +M.max.y.toFixed(2), +(M.max.z - cz).toFixed(2)] : null, missing: g.userData.missingFurniture || [] };
+          if (R.rock) e.rock = BR_ROCK.backOf(g, A.key, v, null, cx, cz, 0);
           if (A.port) {
             const V = BR_PORTS.built[A.key][v];
             e.town = A.port.town; e.name = V.name; e.def = V.def; e.fabric = fabricBox(V.group); e.tracker = { min: V.box.min, max: V.box.max, inst: V.box.inst, tris: V.box.tris };
@@ -65,6 +69,7 @@
         x += w + 12; depth = Math.max(depth, d);
       }
     });
+    if (R.rock && !R.build) BR_ROCK.backdrop(z, x);
     out.rows.push({ title: R.title, z: z, x0: 0, x1: x });
     groundLabel(R.title, -18, z + depth / 2, true);
     z += depth + 30;
