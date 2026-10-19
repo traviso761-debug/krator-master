@@ -370,7 +370,8 @@ MAINS.forEach(function(P){
   if(!P.slots.length) return;
   var bias={ dark:rr(0.05,0.35), joglo:rr(0.05,0.30), stave:rr(0.05,0.25), shingle:rr(0.10,0.45) };
   if(P.kind==='gate'){ bias.dark=0.5; bias.stave=0.35; }
-  P.slots.forEach(function(S){ buildLot(P,S,bias); });
+  P.slots.forEach(function(S,si){ var am=(S.a0+S.a1)/2, c=platXZ(P,(S.r0+S.r1)/2,am), o=platOutDir(P,am);   /* a lot's front looks out */
+    PORT('lot', P.id+'.'+si, { x:c[0], y:S.y, z:c[1], ry:Math.atan2(o[0],o[1]) }, function(){ buildLot(P,S,bias); }); });
 });
 
 /* ================================================================== 2. FURNITURE + MIDDLE ZONES */
@@ -616,8 +617,8 @@ MAINS.forEach(function(P){
     brfDone(REGISTER({name:'The Public Plaza',kind:'plaza',label:'Main public plaza',plat:P.id,x:c[0],y:y,z:c[1],r:Rp,h:3}));
   })();
 
-  /* ---- the rain canopy ---- */
-  (function(){
+  /* ---- the rain canopy (its frame: the trunk's axis on the Crown's deck) ---- */
+  PORT('canopy', 0, { x:T.x, y:y, z:T.z, ry:0 }, function(){
     var F=platFrame(T.x,T.z,0), NP=30, yIn=y+51, yOut=y+40, rIn=trunkR(T,yIn)+7.0, rOut=105, off=0.11-TAU/20;
     function cy(r){ return mix(yIn,yOut,(r-rIn)/(rOut-rIn)); }
     var limbs=BRANCHES.filter(function(b){ return b.tree===T || b.tree===T.id; });
@@ -657,12 +658,12 @@ MAINS.forEach(function(P){
       FURNISH_AT('br_h_hanging_lantern',lp[0],lp[1]-9.9,lp[2],0,{v:2,lamp:[1.3,24,false,1]}); ARCH.lamps++;   /* furniture: the great lantern */
       ROD(lp[0],lp[1]-7.6,lp[2],lp[0],lp[1],lp[2],0.02,ROPEC[1],'rope'); }                               /* the rest of its cord */
     REGISTER({name:'The Rain Canopy',kind:'canopy',label:'Leaf-thatch rain canopy',plat:P.id,x:T.x,y:yOut-1,z:T.z,r:rOut+2,h:14});
-  })();
+  });
   ARCH.marketStalls=nst;
 })();
 
-/* ================================================================== 4. THE COUNCIL CHAMBER */
-(function(){
+/* ================================================================== 4. THE COUNCIL CHAMBER (its front: the first door) */
+PORT('council', 0, { x:P_CC.x, y:P_CC.y, z:P_CC.z, ry:Math.atan2(platOutDir(P_CC,P_CC.hall.doors[0])[0], platOutDir(P_CC,P_CC.hall.doors[0])[1]) }, function(){
   var P=P_CC, y=P.y, T=P.tree, F=P, r0=P.hall.r0, r1=P.hall.r1, doors=P.hall.doors, HW=6.6, yw=y+HW;
   var red=ORNATEC[0], gilt=ORNATEC[1], verd=ORNATEC[2], deep=ORNATEC[3], wcol=shade(WALLC[2],0.06), tc=shade(TIMBERC[2],-0.1);
   var dHalf=1.9/r1;
@@ -764,7 +765,7 @@ MAINS.forEach(function(P){
   ARCH.councilRoofH=+(top-yw).toFixed(1);
   brfDone(REGISTER({name:'The Council Chamber',kind:'council',label:'Council hall — seat of the Refuge',plat:P.id,x:P.x,y:y,z:P.z,r:r1+4.2,h:top-y}));
   ARCH.buildings++;
-})();
+});
 
 /* a hut's walls: seg flat faces (face i centred on angle rot+(i+0.5)/seg*TAU), a lining 0.1 m inside, the windows'
    openings (holes[i] = { y0, y1, hw } on face i, centred on it) cut through both with a reveal between */

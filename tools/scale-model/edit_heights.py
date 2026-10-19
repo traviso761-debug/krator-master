@@ -280,7 +280,7 @@ def cut(E, su, sv, pts, floor, lake, feather, seed):
     return En, lk, inside
 
 
-def reclimate(D, E, En, whas, forced, cap=None):
+def reclimate(D, E, En, whas, forced, cap=None, force_rain=None):
     """4.18: rain, climate class and zone recomputed where the heights changed (the model's own generator is not in the
     repo, so they are re-derived from the model itself). A changed cell takes the rain, class and zone of the unchanged
     land cells most like it nearby: the nearest in (place, height, windward slope under the north-west wind, mean
@@ -331,6 +331,10 @@ def reclimate(D, E, En, whas, forced, cap=None):
     if cap is not None:     # a cut's dry rain (main): over the cut and its eased edge, which are recomputed with it
         dry, k = cap
         rain2 = rain2 + k * (np.minimum(rain2, dry) - rain2)
+        q = q | (k > 0) & ~forced & ~airless & ~wetF
+    if force_rain is not None:   # (rain, weight): a rain set from outside (4.21's abyss floor), the class following it
+        fr_, k = force_rain
+        rain2 = rain2 + k * (fr_ - rain2)
         q = q | (k > 0) & ~forced & ~airless & ~wetF
     # 4.19: THE CLASS FOLLOWS THE CELL'S OWN CLIMATE. 4.18 voted the class from its look-alikes apart from the rain, so a
     # cell could take a wet rain and a desert class (abyssal desert at 1,400 mm). Now each recomputed cell takes the class

@@ -34,7 +34,7 @@ Reads the page as saved (Artifact read) and the two collections (one JSON list e
 6. THE PAINT. Rivers drawn on the satellite and relief maps (st, t), wider with flow; dry valleys are not painted.
 7. THE CLIMATE. Wherever the ground or a water surface moved, the temperatures lapse with it (6.5 C per km) and the
    rain, climate class and zone are recomputed from the unchanged land most like each cell (edit_heights.reclimate, as
-   4.18-4.20 did; the abyss's rebuilt floor takes the page's own rain there, smoothed over the floor); the rain and
+   4.18-4.20 did; the abyss's rebuilt floor takes 4.20's own lake effect over today's lakes, lake_rain); the rain and
    climate maps are re-lit and repainted.
 """
 import heapq, io, json, math, os, re, sys
@@ -67,6 +67,29 @@ RIVER_RGB = (63, 111, 134)
 # sea's level and joined to it is raised to `sea` + `lift` + `grade` m per km of its distance up
 # the valley from the shore, so the floors run down to the sea; the painted maps take the colour of the land beside them.
 GRADE = {'Beast Riders': dict(sea=-1500.0, lift=5.0, grade=3.0)}
+# 4.21, the owner: regions brought down to the abyss's level, their edges smoothed into the land round them. The level is
+# the `floor_q` percentile of the region's floor (its ground under -1,400 m); every cell over it goes down to it, keeping
+# `relief` of its height above it, and the land outside eases down to it over `feather` cells (a smoothstep), the band
+# blurred so no step is left. Nothing is raised.
+# 4.21, the owner: the lakes of these regions all look alike, with their rim: today's water there (the Bowl's lakes grew
+# and joined, and laid new arms) is painted as the region's own lakes were in 4.20, an ochre salt rim inside the shore,
+# a teal core and a pale salt flat round it (lake_style), on the satellite and relief maps
+LAKE_STYLE = ('The Bowl',)
+# 4.21, the owner (the region's note and the README's to-do, 2026-10-18): lakes carved as features.py carved the Bay of
+# Voth, in a region's outline, at the land's level there (the water it opens into, the nearest water body: the lowest
+# shore, so it holds): the bed `shore` m under that level at the outline and `depth` m under it in the middle, the banks
+# outside easing down to 25 m over it within `bank` px. The Lake
+# of Shim: the Shim river widened where Shim stands (its east shore, px 382,788), ~32 by 12 km, the river entering from
+# the SW lowlands' lake to the south and leaving north down the lake's outlet gorge
+CARVE = {'Lake of Shim': dict(shore=3.0, depth=25.0, bank=2.0)}
+# 4.21, the owner: courses the lore has named ahead of the model, drawn and designated whatever their flow: the main stem
+# of the land that drains to the coast nearest `near` (map px; the coast cell within `reach` px that drains the most),
+# traced upstream along the routed flow, with its fixed name and gloss. Almua's river (settlements/almua/PLAN.md, LORE.md
+# 6.12): Dip Rivrh, the Deep river, coming down from the south to the harbour; Almua's point stands ~12 km offshore of
+# the coast it reaches (446,553, on Ring Sea water).
+NAMED_COURSES = {'Dip Rivrh': dict(near=(446, 553), reach=10, gloss='the Deep river (the navigable channel that makes '
+                                   'the harbour; the owner, 2026-10-18)', tongue='vothic')}
+LOWER = {'Region 65': dict(floor_q=50.0, relief=0.04, feather=4.0, blur=1.2)}
 ARM_R, ARM_MIN = 2, 4
 # the lakes the model draws at 0 m in the north basin and the trough below it (the owner: the dams there held lakes at
 # distinctly different heights; the east dam burst first and broke the west one; today they are not joined, and a river
@@ -132,7 +155,9 @@ ABYSS_WEST_KM = 300.0
 # repainted on the maps from the land round them. Then the water is routed again onto the new floor.
 ABYSS_LAKES = dict(region='e abysss', zone_m=-1400.0, deep_m=-1900.0, keep=(987, 715), keep_km=24.0, seed=4021,
                    min_km2=40.0, spare=1.15, r=(1.2, 2.4), bend=(12, 20), gap=2, depth=120.0, rim=10.0, slope=3.0, span=400.0, blend=1.5,
-                   merge=[((1041, 493), (1039, 465))], merge_reach=20)
+                   merge=[((1041, 493), (1039, 465))], merge_reach=20,
+                   # the owner: these regions lowered to shallow beds the lakes beside them spread over
+                   beds={'lower': dict(shore=2.0, depth=15.0), 'lower2': dict(shore=2.0, depth=15.0)})
 ABYSS_CUT_M = 600.0     # m: a hollow whose way to the floor would cut more than this is left (reported; as deep as the western outlets)
 
 # the readout row and its lookup (a coarse grid of the courses' vertices, the nearest within 3 map px)
@@ -308,11 +333,12 @@ def body_at(lab, x, y, su, sv):
     return lab == lab[ys[c], xs[c]]
 
 
-def inpaint(arr, hole):
+def inpaint(arr, hole, src=None):
     """the pixels of `hole` painted from the picture round them: each from the nearest scale of a normalized blur
-    that reaches enough of it (fine at the edges, broad inside), then blended in over a pixel"""
+    that reaches enough of it (fine at the edges, broad inside), then blended in over a pixel; `src`: the pixels it may
+    take colour from (all outside the hole by default)"""
     out = arr.astype(float).copy()
-    valid = (~hole).astype(float)
+    valid = (~hole if src is None else ~hole & src).astype(float)
     done = np.zeros(hole.shape, bool)
     for sg in (1.5, 3.0, 6.0, 12.0, 24.0, 48.0):
         w = nd.gaussian_filter(valid, sg)
@@ -322,10 +348,73 @@ def inpaint(arr, hole):
                 out[..., c][ok] = (nd.gaussian_filter(arr[..., c].astype(float) * valid, sg)[ok] / w[ok])
             done |= ok
     if (hole & ~done).any():
-        _, (iy, ix) = nd.distance_transform_edt(hole, return_indices=True)
+        _, (iy, ix) = nd.distance_transform_edt(valid < 0.5, return_indices=True)
         out[hole & ~done] = arr[iy, ix][hole & ~done]
     soft = np.clip(nd.gaussian_filter(hole.astype(float), 1.0) * 1.5, 0, 1)[..., None]
     return np.clip(arr * (1 - soft) + out * soft, 0, 255).astype(np.uint8)
+
+
+def lake_rain(rain0, wet0, wet, zr, sig=6.0, bg_sig=15.0):
+    """the abyss floor's rain from 4.20's own lake effect (its floor is wet beside its lakes, ~1,500 mm within 4 km, and
+    dry far from them, ~200-450 mm): a dry background (4.20's rain on floor land far from its water, spread over the
+    floor) times the ratio 4.20's floor land shows at each share of water round it (a gaussian of `sig` px), made
+    monotone; applied to today's water `wet` over the floor `zr` (full-res masks). Returns (rain, the table)"""
+    fr0 = nd.gaussian_filter(wet0.astype(float), sig)
+    fr = nd.gaussian_filter(wet.astype(float), sig)
+    land0 = zr & ~wet0
+    far0 = land0 & (fr0 < 0.03)
+    num = nd.gaussian_filter(np.where(far0, rain0, 0.0), bg_sig)
+    den = nd.gaussian_filter(far0.astype(float), bg_sig)
+    bg = np.where(den > 1e-3, num / np.maximum(den, 1e-6), np.median(rain0[far0]))
+    edges = np.array([0, .02, .05, .1, .15, .2, .3, .4, .55, .7, 1.01])
+    cent, med = [], []
+    q = rain0 / np.maximum(bg, 50)
+    for a, b in zip(edges[:-1], edges[1:]):
+        m = land0 & (fr0 >= a) & (fr0 < b)
+        if m.sum() > 30:
+            cent.append(float(np.median(fr0[m])))
+            med.append(float(np.median(q[m])))
+    med = np.maximum.accumulate(np.array(med))
+    med = med / med[0]
+    return bg * np.interp(fr, cent, med), [[round(c, 3), round(float(m), 2)] for c, m in zip(cent, med)]
+
+
+def lake_style(arr, arr0, poly, wet0, wet, reach_in=8, reach_out=14):
+    """the region's lakes painted as its own lakes were (the Bowl's: an ochre salt rim inside the shore, a teal core,
+    a pale salt flat outside fading into the ground): the colour at each distance from the shore, inside and out, is
+    sampled from the old picture `arr0` round the old water `wet0`, and laid over today's water `wet` and its shores
+    (the rim narrowed on water too narrow for it), the picture's fine texture kept. Full-res masks; returns the picture"""
+    w0 = wet0 & poly
+    if w0.sum() < 50:
+        return arr
+    din0, dout0 = nd.distance_transform_edt(w0), nd.distance_transform_edt(~w0)
+    a0 = arr0.astype(float)
+    prof_in = []
+    for d in range(1, reach_in + 1):
+        m = w0 & (np.abs(din0 - d) < 0.5) if d < reach_in else w0 & (din0 >= reach_in - 0.5)
+        prof_in.append(np.median(a0[m], 0) if m.sum() > 10 else (prof_in[-1] if prof_in else a0[w0].mean(0)))
+    prof_out = []
+    for d in range(1, reach_out + 1):
+        m = poly & ~wet0 & (np.abs(dout0 - d) < 0.5)
+        prof_out.append(np.median(a0[m], 0) if m.sum() > 10 else prof_out[-1])
+    prof_in, prof_out = np.array(prof_in), np.array(prof_out)
+    w = wet & poly
+    din, dout = nd.distance_transform_edt(w), nd.distance_transform_edt(~w)
+    # water narrower than the old lakes' rim and core: its distances stretched, so it keeps a core
+    half = nd.maximum_filter(np.where(w, din, 0), size=9)
+    din_eff = np.where(w, din / np.clip(half / reach_in, 0.35, 1.0), 0)
+    a = arr.astype(float)
+    col = np.zeros_like(a)
+    ii = np.clip(np.round(din_eff).astype(int), 1, reach_in) - 1
+    oo = np.clip(np.round(dout).astype(int), 1, reach_out) - 1
+    col[w] = prof_in[ii[w]]
+    shore = poly & ~w & (dout <= reach_out)
+    col[shore] = prof_out[oo[shore]]
+    wgt = np.where(w, 1.0, np.where(shore, np.clip(1 - (dout - 1) / reach_out, 0, 1), 0.0))
+    wgt = nd.gaussian_filter(wgt, 0.8) * (nd.gaussian_filter(poly.astype(float), 2.0) > 0.5)
+    detail = a - nd.gaussian_filter(a, (1.5, 1.5, 0))
+    new = col + 0.6 * detail
+    return np.clip(a * (1 - wgt[..., None]) + new * wgt[..., None], 0, 255).astype(np.uint8)
 
 
 def biggest(m):
@@ -334,8 +423,10 @@ def biggest(m):
     return lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1) if n > 1 else m
 
 
-def snake_lakes(En, zone, w0, lv0, A_, KM2, merges=()):
+def snake_lakes(En, zone, w0, lv0, A_, KM2, merges=(), beds=()):
     """ABYSS_LAKES' layout: each lake of w0 (levels lv0) laid out again as a long, winding one in the basin it lies in.
+    beds: (mask, shore m, depth m) regions lowered to shallow beds under the level of the lake beside them, which it
+    may spread over (the bed `shore` m under the level at the outline, `depth` in the middle).
     merges: pairs of cells, one in each of two lakes to be made one, at the higher one's level: the lower one's basin
     (and any island in it) is filled over that level round the lake as it lies, and a channel joins them.
     Returns (En, rows (cells, not px), the troughs, the old beds filled, deepest cut, highest fill)."""
@@ -511,6 +602,24 @@ def snake_lakes(En, zone, w0, lv0, A_, KM2, merges=()):
         rows.append({'at_cell': tuple(int(v) for v in np.argwhere(both).mean(0).round()), 'was_cells': int(both.sum()),
                      'level_m': round(L), 'cut_most_m': round(cut_ch), 'filled_most_m': round(float((up - E)[rise].max())) if rise.any() else 0,
                      'cells': int((both | ch).sum()), 'length_cells': 0.0, 'merged': True})
+    # the shallow beds (beds): each region under the level of the largest lake beside it
+    for bm, sh_, dp_ in beds:
+        sl_, _ = nd.label(snakes, structure=np.ones((3, 3)))
+        near = nd.binary_dilation(bm, iterations=3) & snakes
+        if not near.any():
+            continue
+        ks, cn = np.unique(sl_[near], return_counts=True)
+        sizes_ = [(int((sl_ == k).sum()), k) for k in ks]
+        lake_ = sl_ == max(sizes_)[1]
+        L = float(np.nanmedian(lvmap[lake_]))
+        dB = nd.distance_transform_edt(bm)
+        bed = L - sh_ - (dp_ - sh_) * np.clip(dB / 2.0, 0, 1) ** 2 * (3 - 2 * np.clip(dB / 2.0, 0, 1))
+        En = np.where(bm, np.minimum(En, bed), En)
+        taken |= bm & w0
+        snakes |= bm
+        lvmap[bm] = L
+        rows.append({'at_cell': tuple(int(v) for v in np.argwhere(bm).mean(0).round()), 'was_cells': 0, 'level_m': round(L),
+                     'cut_most_m': 0, 'filled_most_m': 0, 'cells': int(bm.sum()), 'length_cells': 0.0, 'bed': True})
     # old beds no trough took (lakes too small, or the rest of one a trough crossed): filled over their level,
     # falling towards the nearest trough
     left = w0 & ~taken & ~snakes
@@ -703,6 +812,31 @@ def main():
         print("graded %s: %d cells of the sea's arms made land;" % (nm, int(arms.sum())), end=' ')
         print('graded %s: %d cells (%d valleys) raised to run down to the sea at %d m, by up to %d m' % (
             nm, int(up.sum()), nk, g['sea'], float((En - E)[up].max())))
+    # the regions lowered to the abyss's level (LOWER)
+    lowered_m = np.zeros(E.shape, bool)
+    report['lowered'] = []
+    for nm, l_ in LOWER.items():
+        r_ = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == nm), None)
+        if r_ is None:
+            sys.exit('no region named %r' % nm)
+        im = Image.new('L', (E.shape[1], E.shape[0]), 0)
+        ImageDraw.Draw(im).polygon([(a * su, b * sv) for a, b in r_['points']], fill=1)
+        inr = np.array(im).astype(bool)
+        T = float(np.percentile(En[inr & (En < -1400)], l_['floor_q']))
+        t_ = np.clip(1 - nd.distance_transform_edt(~inr) / l_['feather'], 0, 1)
+        w_ = t_ * t_ * (3 - 2 * t_)
+        tgt = T + l_['relief'] * (En - T)
+        E2 = np.where(En > tgt, En * (1 - w_) + tgt * w_, En)
+        band = nd.binary_dilation((w_ > 0) & (w_ < 1), iterations=1) | (inr & ~nd.binary_erosion(inr, iterations=1))
+        E2 = np.where(band, np.minimum(E2, nd.gaussian_filter(E2, l_['blur'])), E2)
+        dn = np.minimum(En, E2)
+        m_ = dn < En - 10.0
+        report['lowered'].append({'region': nm, 'level_m': round(T), 'cells': int(m_.sum()), 'km2': round(float(m_.sum() * KM2)),
+                                  'lowered_most_m': round(float((En - dn)[m_].max())) if m_.any() else 0})
+        print('lowered %s to the abyss level (%d m): %d km2, by up to %d m' % (nm, T, m_.sum() * KM2,
+                                                                              (En - dn)[m_].max() if m_.any() else 0))
+        En = dn
+        lowered_m |= m_
     # the owner's river (the Yuni river, 4.19): its drawn course on the grid, 8-connected, down to the first water; the
     # bed under it falls all the way (cut only), and the routing follows it
     force = []
@@ -843,6 +977,36 @@ def main():
                                   'cut_km': round(over * KM), 'deepest_cut_m': round(cut_most)})
         print('breach %s: from the hollow floor at %d m, %d km, cut through %d km, at most %d m deep' % (
             nm, lv, len(path) * KM, over * KM, cut_most))
+    # the lakes carved in a region's outline (CARVE), before the lakes settle (the carved bed fills with them)
+    report['carved'] = []
+    sst = lambda a_, b_, x_: np.clip((x_ - a_) / (b_ - a_), 0, 1) ** 2 * (3 - 2 * np.clip((x_ - a_) / (b_ - a_), 0, 1))
+    for nm, c_ in CARVE.items():
+        r_ = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == nm), None)
+        if r_ is None:
+            sys.exit('no region named %r' % nm)
+        im = Image.new('L', (E.shape[1], E.shape[0]), 0)
+        ImageDraw.Draw(im).polygon([(a * su, b * sv) for a, b in r_['points']], fill=1)
+        B = np.array(im).astype(bool)
+        bl_, _ = nd.label(G['whas'] & ~H['sea'], structure=np.ones((3, 3)))
+        near = nd.binary_dilation(B, iterations=4) & (bl_ > 0)
+        ids, cnt = np.unique(bl_[near], return_counts=True)
+        if not len(ids):
+            sys.exit('%s: no water within 4 cells' % nm)
+        into = bl_ == ids[np.argmax(cnt)]
+        L = float(np.nanmedian(G['wlev'][into]))
+        dB = nd.distance_transform_edt(B) / su                # px into the outline
+        bed = L - c_['shore'] - (c_['depth'] - c_['shore']) * sst(0, 3, dB)
+        dOut = nd.distance_transform_edt(~B) / su
+        bank = L + 25 + (np.maximum(En, L + 25) - (L + 25)) * sst(0, c_['bank'], dOut)
+        E2 = np.where(B, np.minimum(En, bed), np.where(dOut <= c_['bank'], np.minimum(En, bank), En))
+        cut = float((En - E2).max())
+        report['carved'].append({'lake': nm, 'opens_into_level_m': round(L), 'cells': int(B.sum()), 'km2': round(float(B.sum() * KM2)),
+                                 'bed_min_m': round(float(E2[B].min())), 'lowered_most_m': round(cut)})
+        print('carved %s in its outline: %d km2 opening into the water at %d m, bed to %d m, lowered by up to %d m' % (
+            nm, B.sum() * KM2, L, E2[B].min(), cut))
+        En = E2
+    if CARVE:
+        H = setup(dict(G, E=En))
     # the lakes resettled where their water stands (SETTLE)
     dried = np.zeros(E.shape, bool)
     settled = np.zeros(E.shape, bool)
@@ -1014,8 +1178,17 @@ def main():
         # long axis, swinging across its width, the lake as wide as it takes to hold the area; its bed cut `depth` m
         # under its level and walled over it, the rest of its old bed filled to just over the level, falling to it
         cell = lambda x, y: (int(round(y * sv)), int(round(x * su)))
+
+        def region_mask(nm_):
+            r_ = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == nm_), None)
+            if r_ is None:
+                sys.exit('no region named %r' % nm_)
+            im_ = Image.new('L', (E.shape[1], E.shape[0]), 0)
+            ImageDraw.Draw(im_).polygon([(a * su, b * sv) for a, b in r_['points']], fill=1)
+            return np.array(im_).astype(bool)
         En, rows, snakes, filled, cut_most, fill_most = snake_lakes(
-            En, zone, w0, lv0, A_, KM2, [(cell(*a), cell(*b)) for a, b in A_.get('merge', ())])
+            En, zone, w0, lv0, A_, KM2, [(cell(*a), cell(*b)) for a, b in A_.get('merge', ())],
+            [(region_mask(nm_), b_['shore'], b_['depth']) for nm_, b_ in A_.get('beds', {}).items()])
         abyss_beds = filled | (flag & ~snakes)
         abyss_zone = zone
         for r_ in rows:
@@ -1208,6 +1381,65 @@ def main():
     setts = [s for s in SET if s.get('px') is not None]
     recs, idx = [], {}
     allc = [('river', c) for c in riv2] + [('wadi', c) for c in wad2]
+    # the named courses (NAMED_COURSES): the coast's best-drained cell near the point, its main stem upstream
+    named_at = {}
+    report['named_courses'] = []
+    taken_cells = {c: n_ for n_, (_, (p_, _m, _j)) in enumerate(allc) for c in p_}
+    for nm, nc in NAMED_COURSES.items():
+        j0, i0 = int(round(nc['near'][1] * sv)), int(round(nc['near'][0] * su))
+        rr = int(math.ceil(nc['reach'] * su))
+        best = None
+        for j in range(max(1, j0 - rr), min(E.shape[0] - 1, j0 + rr + 1)):
+            for i in range(max(1, i0 - rr), min(E.shape[1] - 1, i0 + rr + 1)):
+                a_, b_ = rt2['rec'][j, i]
+                if not rt2['term'][j, i] and a_ >= 0 and (H2['sea'][a_, b_] or G['whas'][a_, b_]) and \
+                        (best is None or area2[j, i] > area2[best]):
+                    best = (j, i)
+        if best is None:
+            sys.exit('%s: no coast within %d px of %s' % (nm, nc['reach'], nc['near']))
+        ups = {}
+        for (j, i) in zip(*np.nonzero(area2 > 0)):
+            a_, b_ = rt2['rec'][j, i]
+            if a_ >= 0:
+                ups.setdefault((a_, b_), []).append((j, i))
+        path = [best]
+        while ups.get(path[-1]):
+            path.append(max(ups[path[-1]], key=lambda c: area2[c]))
+        path = path[::-1]
+        # a course already drawn down this valley: the one that reaches the mouth takes the name (a wadi made a river);
+        # else the named course starts below the last cell it shares, the other joining it there
+        if path[-1] in taken_cells:
+            m_ = taken_cells[path[-1]]
+            allc[m_] = ('river', allc[m_][1])
+            named_at[m_] = nm
+            report['named_courses'].append({'name': nm, 'mouth_px': px(*path[-1]), 'named_existing': True,
+                                            'cells': len(allc[m_][1][0]),
+                                            'catchment_km2': round(float(area2[path[-1]]))})
+            print('named course %s: the course already drawn to px %s takes the name' % (nm, px(*path[-1])))
+            continue
+        shared = [n_ for n_, c in enumerate(path) if c in taken_cells]
+        if shared:
+            path = path[shared[-1] + 1:]
+        # its bed cut to fall all the way (cut only, as the Yuni river's): a hollow the routing crosses on its way
+        cut_n = 0.0
+        for n_ in range(1, len(path)):
+            c_, p_ = path[n_], path[n_ - 1]
+            S_ = rt2['S']
+            if not G['whas'][c_] and S_[c_] > S_[p_] - 0.5:
+                lo_ = S_[p_] - 0.5
+                cut_n = max(cut_n, float(En[c_] - min(En[c_], lo_)))
+                En[c_] = min(En[c_], lo_)
+                S_[c_] = lo_
+        rises_ = rises(path, rt2['S'], G['whas'])
+        if rises_:
+            sys.exit('%s climbs at %s' % (nm, rises_[:3]))
+        named_at[len(recs) + len(allc)] = nm
+        allc.append(('river', (path, tuple(rt2['rec'][best]), False)))
+        report['named_courses'].append({'name': nm, 'mouth_px': px(*best), 'cells': len(path),
+                                        'catchment_km2': round(float(area2[best])), 'q_m3s': round(float(Q2[best]), 2),
+                                        'bed_cut_most_m': round(cut_n)})
+        print('named course %s: %d cells to the coast at px %s, %d km2 of catchment, %.2f m3/s, bed cut by up to %d m' % (
+            nm, len(path), px(*best), area2[best], Q2[best], cut_n))
     for kind, (path, mouth, joins) in allc:
         idx[path[-1]] = len(recs)
         recs.append(dict(kind=kind, path=path, mouth=mouth, joins=joins))
@@ -1233,6 +1465,8 @@ def main():
         reg = region_of(path)
         if k == yuni_k:
             name = 'Yuni river'
+        elif k in named_at:
+            name = named_at[k]
         else:
             word = {'wadi': 'wadi'}.get(r['kind'], 'river' if q[-1] >= 50 else 'stream')
             base = '%s %s' % (reg or 'unnamed', word)
@@ -1268,6 +1502,9 @@ def main():
                    q_mouth_m3s=round(q[-1], 1), source_m=round(bed[0]), mouth_m=round(bed[-1]),
                    region=reg, to=to, settlements=sorted(set(near)),
                    px=P_, bed_m=[round(v) for v in bed], q_m3s=[round(v, 1) for v in q])
+        if k in named_at:
+            nc = NAMED_COURSES[named_at[k]]
+            rec.update(name_fixed=True, gloss=nc['gloss'], tongue=nc['tongue'])
         if r['kind'] == 'river':
             rec['width_m'] = round(4.5 * q[-1] ** .5)
             rec['depth_m'] = round(.35 * q[-1] ** .38, 1)
@@ -1314,6 +1551,7 @@ def main():
         q_ = np.where(np.abs(En - E) > 0.05, enc, (h2[..., 0] << 8) | h2[..., 1])
         h2[..., 0], h2[..., 1] = q_ >> 8, q_ & 255
         h2[..., 2] = np.where(arms | dried, 0, h2[..., 2])
+        h2[..., 2] = np.where(G['whas'] | newlake, 255, h2[..., 2])     # the water flag follows the water (extract_region reads it)
         rep['h'] = b64(Image.fromarray(h2.astype(np.uint8), 'RGB'), optimize=True)
     if newlake.any() or arms.any() or settled.any() or reshaped.any():
         wl = raster(D, 'wl').astype(np.int64)
@@ -1350,16 +1588,18 @@ def main():
         rep[k] = b64(Image.fromarray(np.clip(v2 + 90, 0, 255).astype(np.uint8), 'L'), optimize=True)
     DC = dict(D, p=p_drawn, **{k: rep[k] for k in ['tm', 'th', 'tl', 'tw', 'tc']})
     rain0 = raster(DC, 'p', 'L').astype(float) / 255 * 4000
-    # the abyss's rebuilt floor keeps the page's own rain there, smoothed over the floor: a filled pit is still the
-    # abyss floor, not the land of its new height, and the rain must not hang on where the lakes were laid (water kept
-    # its old rain, recomputed land took its look-alikes', and each pass's lakes moved with it)
+    # the abyss's rebuilt floor takes its rain from 4.20's own lake effect over today's lakes (lake_rain): a filled pit
+    # is still the abyss floor, not the land of its new height (its look-alikes elsewhere swung the rain with where the
+    # lakes were laid), and the floor beside the new lakes is as wet as 4.20's was beside its own (the owner: desert
+    # spits between the lakes)
     kz = np.clip(nd.gaussian_filter(nd.zoom(abyss_zone.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW], 2.0) * 2, 0, 1)
     zr = kz > 0
-    floor_rain = nd.gaussian_filter(rain0 * zr, 8.0) / np.maximum(nd.gaussian_filter(zr.astype(float), 8.0), 1e-6)
-    rain2, cls2, zon2, _, report['climate'] = reclimate(DC, E, En, G['whas'], np.zeros((OH, OW), bool),
+    upF = lambda a: nd.zoom(a.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5
+    floor_rain, report['abyss_lake_rain'] = lake_rain(rain0, upF(whas0), upF(G['whas'] | newlake), zr)
+    rain2, cls2, zon2, _, report['climate'] = reclimate(DC, E, En, G['whas'], np.zeros((OH, OW), bool), None,
                                                          (floor_rain, kz) if abyss_zone.any() else None)
     if abyss_zone.any():
-        rain2 = rain2 * (1 - kz) + floor_rain * kz
+        rain2 = rain2 * (1 - kz) + floor_rain * kz          # on the water too (reclimate leaves water's rain)
     print('climate:', report['climate'])
     pal = np.array([[int(c['color'][i:i + 2], 16) for i in (1, 3, 5)] for c in D['climate']['classes']], float)
     c0 = raster(D, 'c', 'L')
@@ -1381,21 +1621,54 @@ def main():
         from edit_heights import relight
         imgs, _, _ = relight(D, E, np.where(graded, E, En), keys=('st', 't'))   # the gorges shaded into the maps
         DP = dict(D, **imgs)
-    # the old lakes' beds that are land now (dried, the abyss's filled floor): painted from the land round them,
-    # so no old shoreline shows on the maps
-    old = (dried | abyss_beds) & ~G['whas']
+    # the old lakes' beds that are land now (dried, the abyss's filled floor) and the lowered regions: painted from the
+    # land round them, so no old shoreline or wall shows on the maps
+    old = (dried | abyss_beds | lowered_m) & ~G['whas']
     oF = nd.zoom(old.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=1)[:OH, :OW] > .35
-    oF = nd.binary_dilation(oF, iterations=1) & ~(nd.zoom(G['whas'].astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5)
+    wetF_ = nd.zoom((G['whas'] | newlake).astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5
+    oF = nd.binary_dilation(oF, iterations=1) & ~wetF_
+    # and any water paint left on dry ground where 4.21 changed the land or its water (the satellite's blue over red)
+    edited = nd.binary_dilation(lowered_m | dried | abyss_beds | (np.abs(En - E) > 1) | (whas0 & ~G['whas']), iterations=3)
+    st0_ = np.array(Image.open(io.BytesIO(__import__('base64').b64decode(D['st']))).convert('RGB')).astype(float)
+    wpaint = (st0_[..., 2] - st0_[..., 0] > 35) & ~nd.binary_dilation(wetF_, iterations=2) & \
+        (nd.zoom(edited.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5)
+    oF |= nd.binary_dilation(wpaint, iterations=1) & ~wetF_
+    # the sea's arms made land (GRADE) were painted as sea
+    oF |= nd.binary_dilation(nd.zoom(arms.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5,
+                             iterations=1) & ~wetF_
+    # colour only from dry land that is not painted as water
+    land_src = ~nd.binary_dilation(wetF_, iterations=1) & ~((st0_[..., 2] - st0_[..., 0] > 35) & (st0_[..., 1] > st0_[..., 0] + 20))
+    # the other way: water where the map paints land (lakes settled, grown or laid out anew) takes the colour of the
+    # lake paint round it, so the satellite with the water layer off shows today's shores
+    wpaint_all = (st0_[..., 2] - st0_[..., 0] > 35) & (st0_[..., 1] > st0_[..., 0] + 20)
+    nF = wetF_ & ~wpaint_all & (nd.zoom(((G['whas'] | newlake) & ~whas0).astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5)
+    water_src = wetF_ & wpaint_all
+    if not water_src.any():
+        nF[:] = False
+    report['water_painted_px'] = int(nF.sum())
+    report['repainted_px'] = int(oF.sum())
     for key in ('st', 't'):
         src = Image.open(io.BytesIO(__import__('base64').b64decode(DP[key])))
-        if graded.any() or oF.any():
+        if graded.any() or oF.any() or nF.any() or LAKE_STYLE:
             arr = np.array(src.convert('RGB'))
             if graded.any():
                 land = arr[iy, ix]
                 soft = nd.gaussian_filter(gF.astype(float), 1.0)[..., None]
                 arr = np.clip(arr * (1 - soft) + land * soft, 0, 255).astype(np.uint8)
             if oF.any():
-                arr = inpaint(arr, oF)
+                arr = inpaint(arr, oF, land_src)
+            if nF.any():
+                arr = inpaint(arr, nF, water_src)
+            # the regions whose lakes keep their own look (LAKE_STYLE): today's water painted as their old lakes were
+            for nm_ in LAKE_STYLE:
+                r_ = next((r for r in json.load(open(rpath, encoding='utf8')) if r.get('name', '').strip() == nm_), None)
+                if r_ is None:
+                    sys.exit('no region named %r' % nm_)
+                pim = Image.new('L', (OW, OH), 0)
+                ImageDraw.Draw(pim).polygon([tuple(p_) for p_ in r_['points']], fill=1)
+                arr0_ = np.array(Image.open(io.BytesIO(__import__('base64').b64decode(D[key]))).convert('RGB'))
+                arr = lake_style(arr, arr0_, np.array(pim).astype(bool),
+                                 nd.zoom(whas0.astype(float), (OH / E.shape[0], OW / E.shape[1]), order=0)[:OH, :OW] > .5, wetF_)
             src2 = Image.fromarray(arr)
             src2.quantization = getattr(src, 'quantization', None)
             im = src2.convert('RGBA')
