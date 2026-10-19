@@ -16,16 +16,20 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
 - **The layout is settled** (diagram: https://claude.ai/artifact/Dn8qzog9vCzCvcV9gxHpZH) and is data in
   `src/40-pr-layout.js` (`PR`, `[G data]`): the zones of the top, the Deep Root cavern's precinct, the palisade, the
   nine bands' pastures, camps and thorn hedges, the farms as contour cells, the fair ground, the road, the gate, the pond,
-  the spring, the gorge. Nothing past the rock is drawn yet: the cleared ground round the mesa is bare.
+  the spring, the gorge. Nothing past the rock and the roosts is drawn yet: the cleared ground round the mesa is bare.
+- **P2 is done** (2026-10-19, branch `claude/pinnacle-p2`; not yet signed off by the owner): the roosts as records
+  (`src/43-pr-roosts.js`, `PRR.plan`) drawn by `89-host-roosts.js`: 25 rings, 101 stalls (Girder's frame), shelters,
+  climbs, four bridges, the beast lift and the capstan lift, the Stair with three gates; Girder's flyers read in place
+  on them (`flyers/`, sealed by `build.py` `flyers_fragment`): a quetzal sent in lands on an east fin's perch. Six new
+  checks and eight negatives; `verify.py --assert` passes.
 - **Not in the gallery** (the owner, 2026-10-19): `gallery/build_gallery.py` lists it in `UNLISTED` until the town is
   built. The north-eastern canyons biome it stands on is in Krator Biomes and Objects.
 
 ## What to do next
 
-1. **P2, the roosts** (`PLAN.md` section 2 and 3): the bracketed rings on the fins and on the four ringed Garden
-   pinnacles (`B.ring`), the stalls and keepers' shelters, the bridges between a group's fins, the Stair on the south
-   nose (rock-cut, `kits/beast-riders` 55/56), the capstan and the beast lift down the gorge face; Girder's flyers
-   landing and leaving. Done when a quetzal lands on an east fin perch in the walk.
+1. **P2 follow-ups, if the owner asks** (KNOWN_ISSUES.md): a notch in the rock mesh so the Stair's flights are cut into
+   the face; plants kept off the rings (plan the roosts before the necanyons kit builds); the roosts on a nav graph with
+   a walker (with P3's people); a Godot builder for the roost records.
 2. **P3, the town and the farms**: the town on `core/city` (read `core/city/README.md`, "Porting a settlement"; no new
    occupancy grid: `core/space`), the Deep Root cavern (KCAVERN with a KSTACKS hole, BR_ROCK dressing; the ring of twelve
    stones with nothing built inside), the farms as contour cells with twelve farmhouses, the camps (`BR_CAMP`, hedges
@@ -34,6 +38,14 @@ work), `README.md` (what the page is and its checks) and `KNOWN_ISSUES.md`.
 3. Then `PLAN.md` P4 (the life, the night) and P5 (the record, the gallery entry: take Pinnacle Rock out of `UNLISTED`).
 
 ## Things that will bite
+
+- **The flyers are Girder's code, read in place** (`flyers/README.md`). `build.py` lifts sections of Girder's `84a` and
+  `84c` by their section comments and closes the closure Girder's `84` opens (its `84d` is not taken). A change to
+  `settlements/girder/src/84*.js` reaches this page: rebuild and verify both. The roost records keep Girder's shapes
+  (`ROOSTS`, `BRIDGES`) for this; change `43-pr-roosts.js`'s stall frame and the flyers' touchdown moves with it.
+- **The roost plan reads the rock** (`KSTACKS.topAt`, the rings fitted at each height from the rock's own middle):
+  a change to the fins, the Garden or KSTACKS moves the rings and the stalls. The checks (`HCHK.decks`, `stalls`,
+  `bridges`, `lifts`, `stair`, `climbs`, `flyers`) say what moved.
 
 - **The rock is shared code.** KSTACKS is `core/terrain/37-core-stacks.js` (`node core/terrain/test-stacks.js`); the
   land comes from `biomes/necanyons/src/46` and `47`, read in place, which take this page's `LAND` hooks (`45-host-stage.js`).

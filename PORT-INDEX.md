@@ -19,7 +19,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 35 | 715 | 56 | 0 | 15 | 325 | 319 | 2 |  | yes | yes |
 | [`settlements/mungo`](settlements/mungo/PORT.md) | 20 | 210 | 110 | 0 | 5 | 60 | 35 | 4 | atmos | yes | yes |
 | [`settlements/noahs-regret`](settlements/noahs-regret/PORT.md) | 34 | 274 | 30 | 13 | 10 | 66 | 156 | 4 | atmos | yes | yes |
-| [`settlements/pinnacle-rock`](settlements/pinnacle-rock/PORT.md) | 8 | 36 | 14 | 0 | 0 | 10 | 12 | 1 | biome | yes | yes |
+| [`settlements/pinnacle-rock`](settlements/pinnacle-rock/PORT.md) | 11 | 98 | 40 | 0 | 0 | 13 | 46 | 1 | biome | yes | yes |
 | [`settlements/port`](settlements/port/PORT.md) | 114 | 765 | 43 | 4 | 0 | 33 | 685 | 4 | atmos | yes | yes |
 | [`settlements/reedlake`](settlements/reedlake/PORT.md) | 42 | 353 | 58 | 33 | 0 | 19 | 244 | 4 | atmos | yes | yes |
 | [`settlements/screamers`](settlements/screamers/PORT.md) | 79 | 574 | 26 | 19 | 27 | 34 | 468 | 6 |  | yes | yes |

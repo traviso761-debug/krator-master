@@ -123,6 +123,15 @@ the settled plan; the Garden's mesa and the Heart; every mesa weathered as the o
 signed the rock off on 2026-10-19 ("I think we're in business"). The Stair (listed under P1) moves to P2 with the lifts and the rock-cut
 stair pieces (`kits/beast-riders`).
 
+**Status (2026-10-19, later): P2 is done** (README.md, "The roosts", "The flyers"): the roost plan as records
+(`src/43-pr-roosts.js`), a deck ring on each Wing's fin and the four ringed Garden pinnacles and a lookout ring on every
+fin (25 rings), 101 stalls in Girder's frame and record shape with their ways out proved, eleven keepers' shelters, a
+climb to every ring, four rope bridges within the groups, the beast lift on the gorge face and the capstan lift by the
+Stair, the Stair down the south nose gated three times; Girder's flyers read in place on them (`flyers/`): a quetzal sent
+in lands on an east fin's perch, and the roost traffic runs. Not as planned: the rings are drawn from their records on
+the page, not a catalog entry (a ring follows its stack's outline), and the Stair's flights are built out on the face,
+not notched into it (KNOWN_ISSUES.md). Next: P3.
+
 - **P0. The site and the harness.** Find the mesa (section 1), write the point back, `build.py` reading the catalog,
   Girder's flyers and `core/terrain` in place, the port lint, `verify.py` on `tools/harness.py`. Done when a bare red
   mesa stands in the hyperjungle on the page and `--assert` passes.

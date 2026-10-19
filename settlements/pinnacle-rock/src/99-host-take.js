@@ -116,7 +116,15 @@ const HCHK={
  // the climbs: every deck has one, from the ground at its stack's foot (or the deck under it) to its own height
  climbs(C,D){const bad=[];D.forEach(d=>{const c=C.find(c=>c.deck===d.id);if(!c){bad.push(d.id+' no climb');return;}const P=c.pts,last=P[P.length-1];
    if(Math.abs(last[1]-d.y)>.05)bad.push(d.id+' short');let st=0;for(let i=0;i+1<P.length;i++){const run=Math.hypot(P[i+1][0]-P[i][0],P[i+1][2]-P[i][2]);if(run>.05)st=Math.max(st,(P[i+1][1]-P[i][1])/run);}if(st>.66)bad.push(d.id+' steep');});
-  return{ok:!bad.length,detail:C.length+' climbs for '+D.length+' decks, '+C.reduce((s,c)=>s+c.pts.length,0)+' steps'+(bad.length?'; '+bad.slice(0,4).join(', '):'')};}};
+  return{ok:!bad.length,detail:C.length+' climbs for '+D.length+' decks, '+C.reduce((s,c)=>s+c.pts.length,0)+' steps'+(bad.length?'; '+bad.slice(0,4).join(', '):'')};},
+ // the flyers (Girder's, on these roosts): a quetzal sent in from 300 m out lands on an east fin's perch (P2's test), and
+ // in a minute and a half of traffic no beast aloft passes through the rock
+ flyers(decks){if(!PRFLY)return{ok:false,detail:'no flyers'};const F=PRFLY,sent=[];
+  decks.forEach(id=>{const a=F.land(id,F.SP.Q,12);if(a)sent.push(a);});
+  let inRock=0,samples=0;for(let k=0;k<180;k++){F.sim(.5,12);for(const a of F.list()){if(a.state!=='fly')continue;samples++;if(KSTACKS.topAt(ROCK,a.x,a.z)>a.y+.5)inRock++;}}
+  const landed=sent.filter(a=>a.state==='perch'&&a.bay&&/deck-fin-e/.test(a.bay.plat.id)),S=F.stats();
+  return{ok:landed.length>=1&&inRock===0&&S.usable>=60,detail:sent.length+' quetzals sent to the east fins, '+landed.length+' on a perch; '+S.usable+' of '+(S.bays.ok+S.bays.blocked)+' bays in use; '+
+   S.animals+' beasts, '+S.totals.arrivals+' arrivals and '+S.totals.departures+' departures so far; '+inRock+' of '+samples+' samples aloft in the rock'};}};
 // where the forest STANDS, sampled: the hyperjungle's instances (every 7th) and its merged meshes' vertices within 4 m of the
 // ground (a trunk's foot, a fern: a crown leaning over a hedge is not the forest inside it)
 function _forestPts(){const out=[],v=new THREE.Vector3(),M=new THREE.Matrix4();
@@ -140,6 +148,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('the lifts: the cables clear of the wall',HCHK.lifts(ROOST.lifts));
  add('the Stair: the top to the fair ground, gated three times',HCHK.stair(ROOST.stair));
  add('a climb to every deck',HCHK.climbs(ROOST.climbs,ROOST.decks));
+ add('the flyers: a quetzal lands on an east fin',HCHK.flyers(['deck-fin-e0','deck-fin-e1','deck-fin-e2']));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
  add('the fins in one row on the north rim (as first drawn)',HCHK.fins(F.map((B,i)=>Object.assign({},B,{x:-270+i*60,z:-520}))));
@@ -162,6 +171,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the Stair with two gates',HCHK.stair(Object.assign({},ROOST.stair,{gates:ROOST.stair.gates.slice(1)})));
  add('the Stair ending in the gorge',HCHK.stair(Object.assign({},ROOST.stair,{ground:ROOST.stair.ground.concat([[0,0,PR.GORGE.z(0)]])})));
  add('a deck with no climb',HCHK.climbs(ROOST.climbs.slice(1),ROOST.decks));
+ add('a quetzal sent to a lookout ring (no stalls)',HCHK.flyers(['deck-fin-ne-look']));
  return R;}
 
 // ---------------------------------------------------------------- the page, handed to the host
@@ -169,10 +179,11 @@ window._registered=REG.length;
 KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
  hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the site and the roosts; the town is to come)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
+ hourTicks:[(dt,hour)=>{if(PRFLY)PRFLY.update(dt,hour);}],   // Girder's flyers on the roosts (89b, build.py flyers_fragment)
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
-  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},
+  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
   'the far land':{match:o=>!!(o.userData&&o.userData.far)},'sky':{objects:()=>[sky,giant,giantRing]}},
  exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST})},
  budget:BUDGET,types:()=>BIO.stats,

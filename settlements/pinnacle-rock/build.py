@@ -129,7 +129,42 @@ BRK=os.path.normpath(os.path.join(HERE,'..','..','kits','beast-riders'))
 BR_FAMS=('wood','timber','shingle','rope','straw','sandstone')
 import json as _json
 BR_SKIP=tuple(f for f in _json.load(open(os.path.join(BRK,'materials.json'),encoding='utf-8'))['families'] if f not in BR_FAMS)
+# THE FLYERS (PLAN.md P2; flyers/README.md): Girder's flyers READ IN PLACE (settlements/girder/src 84-flyers.js, 84b, the
+# generic sections of 84a and 84c lifted by their section markers; its palette and detail maps), sealed in one closure
+# with this page's world, obstacles, bays and starting circuits (flyers/). Girder's 84 opens a closure its 84d closes;
+# this page does not take 84d (its hooks and audits are Girder's towers'), so the sandbox closes it.
+GIRDER=os.path.normpath(os.path.join(HERE,'..','..','settlements','girder'))
+FLYD=os.path.join(HERE,'flyers')
+def _rd(p):
+    with open(p,encoding='utf-8') as f: return f.read()
+def _lift(path,start,end=None):
+    s=_rd(path);i=s.find(start) if start else 0
+    if i<0: sys.exit('build.py: %s has lost the marker %r (the flyers lift its sections by it)'%(path,start))
+    j=len(s) if end is None else s.find(end,i)
+    if j<0: sys.exit('build.py: %s has lost the marker %r (the flyers lift its sections by it)'%(path,end))
+    return s[i:j]
+def flyers_fragment():
+    G=lambda f:os.path.join(GIRDER,'src',f);F=lambda f:_rd(os.path.join(FLYD,f))
+    A,C=G('84a-flyers-routes.js'),G('84c-flyers-update.js');SEC='/* ------------------------------------------------------------------ '
+    parts=[('flyers/10-shim.js',F('10-shim.js')),('settlements/girder/src/05-palette.js',_rd(G('05-palette.js'))),('flyers/20-world.js',F('20-world.js')),
+      ('settlements/girder/src/48-detail.js',_rd(G('48-detail.js'))),('settlements/girder/src/84-flyers.js',_rd(G('84-flyers.js'))),
+      ('flyers/30-routes.js',F('30-routes.js')),
+      ('settlements/girder/src/84a-flyers-routes.js: paths',_lift(A,SEC+'paths',SEC+'roost bays')),
+      ('settlements/girder/src/84a-flyers-routes.js: flyCurveHit, flyCurveTight',_lift(A,'var flyLastHit = null;','function flyBV(')),
+      ('settlements/girder/src/84a-flyers-routes.js: arrivals, departures, routes, meshes',_lift(A,'function flyBV(')),
+      ('settlements/girder/src/84b-flyers-animals.js',_rd(G('84b-flyers-animals.js'))),
+      ('settlements/girder/src/84c-flyers-update.js: pose, circuits',_lift(C,None,SEC+'initial population')),
+      ('flyers/40-start.js',F('40-start.js')),
+      ('settlements/girder/src/84c-flyers-update.js: scheduler, update',_lift(C,SEC+'scheduler + per-frame update')),
+      ('flyers/90-out.js',F('90-out.js'))]
+    body=''.join('/* ---- %s ---- */\n%s\n'%(n,s) for n,s in parts)
+    return ('/* PRFLY: Girder\'s flyers on Pinnacle Rock\'s roosts (build.py flyers_fragment). GENERATED: edit flyers/ and settlements/girder/src. */\n'
+            'var PRFLY=null;\ntry{PRFLY=(function(pageTerrainH){\nvar _PRFLY_OUT=null;\n'+body+'})();   /* Girder\'s 84 closure, closed here (84d is not taken) */\n'
+            'return _PRFLY_OUT;\n})(terrainH);}catch(e){reportErr(\'flyers: \'+(e&&e.stack||e));}\n_mark(\'flyers\');\n')
+GFLY=tuple(f for f in _json.load(open(os.path.join(GIRDER,'tex','pack.json'),encoding='utf-8'))['families'] if not f.startswith('fly'))
 VIRTUAL={'39-pr-world-data.js':_wd.fragment(os.path.join(HERE,'region')),
+         '44d-host-matlib-pack-girder-flyers.js':_mp.fragment(GIRDER,'girder',exclude=GFLY,side=SIDE),
+         '89b-host-flyers.js':flyers_fragment(),
          '44-host-matlib-pack.js':_mp.fragment(NC,'necanyons',side=SIDE),
          '44b-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE),
          '44c-host-matlib-pack-beast-riders.js':_mp.fragment(BRK,'beast-riders',exclude=BR_SKIP,side=SIDE)}
