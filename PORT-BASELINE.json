@@ -41,8 +41,8 @@
    "sha256": "b322b26546a4e7b52efa9f4879be3509b62204647bb46ee45d08f1222befa607"
   },
   "biomes/ringisles/dist/ringisles.html": {
-   "bytes": 2113939,
-   "sha256": "c0389586cbe9833e0b073dd4f77735aba423421f04bbae021411de2c3b65d487"
+   "bytes": 2116341,
+   "sha256": "e32d17a42b8f5d69adfbf909235459bd0345793f549158783f6e4bffd0d681e2"
   },
   "biomes/sedesert/dist/sedesert.html": {
    "bytes": 4514522,
@@ -341,8 +341,8 @@
    "sha256": "7f6a53ee5adf2aedd47e4c3b80bafe26320be3bd49f11d08ec3a18418c49a109"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 561669,
-   "sha256": "ee802174209044a3eb35cb841094dfbcbd9088126fac06cda540c5cc78bba979"
+   "bytes": 566490,
+   "sha256": "b96bb9765725b5a76defcdaec14dc70e7a2bfa408cf8561f76a054d0b4534042"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 4638988,

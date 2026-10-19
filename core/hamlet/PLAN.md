@@ -1,5 +1,16 @@
 # core/hamlet: the hinterland settlements module (plan, 2026-10-18)
 
+**Status (2026-10-18):** H1 and H2 are built. `node core/hamlet/test-hamlet.js` holds them (30 checks, each with a
+negative):
+- **H1:** `KHAMLET.woodUse` reads all 553 `harvest.wood` tags in 17 biome kits. Four trees are marked not to fell.
+- **H1:** the `gather` tag is on the isles kit (`biomes/ringisles/src/57-biome-ringisles-gather.js`). The other kits
+  (swbay, the Throne, eastabyss, rift) are still to tag.
+- **H1:** resource fields are in `kits/resources/src/43r-res-fields.js`.
+- **H2:** the village generator is `20-hamlet-cultures.js` and `30-hamlet-village.js`. All six foci make villages with
+  no overlap, staffed and housed, at most 500 people.
+- **H3:** the texture list is below (section 3): nothing new to source. The buildings wait for the owner's go-ahead.
+- **Next:** H3 (the buildings), then H4 (the four isle villages in the open world).
+
 A core module that makes the small settlements round a town: **resource villages** (salt, mining, lumber, ranching)
 and, by the same machinery, **fishing and farming villages**. Placing a village also places what it works, on the map.
 The first case is the isle demo (`settlements/isle-demo/PLAN.md` section 8): four villages in the hinterland of
@@ -164,8 +175,20 @@ KHAMLET.CULTURES.islander_east = {
 - village-scale variants of the hall and the temple, if `ie-hall` and `ie-temple` are too big for 500 people;
 - a bloomery or smelter, which Valapo's harbour needs anyway (section 8b).
 
-**The owner wants the texture list before a build**, so H3 starts with that list in `core/materials/PROMPTS-NEEDED.md`.
-Most of these should take the kit's own wood, thatch and earth sets.
+**The texture list (2026-10-18), before the build: nothing new to source.** Every surface is in the library already;
+each is added to `kits/islanders/materials.json` as a family when the building is written:
+
+| Building | Surfaces | Library sets |
+|---|---|---|
+| sawpit and log yard | log stacks: bark and cut ends; sawn planks; the pit's packed floor; the trestle and shed | `bark.mahogany` (or the stand's own bark), `wood.endgrain`, the kit's `planks`, `earth.floor.packed`, the kit's `wood` and `thatch` |
+| charcoal kiln | the earth-and-turf mound, its smoke vents; charcoal heaps; ash | `earth.banco`, `roof.turf`, `bark.char`, `ground.ash` |
+| corral | poles and lashing; the trodden ground | the kit's `wood` and `lash`, `earth.floor.packed` |
+| food store | the kit's shop: walls, thatch, baskets | the kit's `bamboo`, `thatch`, `mat` |
+| bloomery (Valapo's harbour) | the clay shaft furnace, its bellows shed, slag | `earth.banco`, `ceramic.terracotta.sooty`, `ground.ash`, the kit's `thatch` |
+| stable and rookery | the Beast Rider set's (`kits/beast-riders`) | that set's own three textures (its PROMPTS-NEEDED entry, on the P6 branch); until then the village holds their footprints (`pending`) |
+
+The village hall and the shrine: `ie-hall` (29 x 25 m) and `ip-shrine` (10 x 12 m) fit a village of 500, so no
+village-scale variants are needed.
 
 ## 4. The isle demo's four villages
 

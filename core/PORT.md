@@ -54,6 +54,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `furnish/50-core-furnish.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `furnish/52-core-furnish-draw.js` | 2.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `furnish/53-core-furnish-host.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `hamlet/10-hamlet-wood.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `hamlet/12-hamlet-gather.js` | 2.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `hamlet/20-hamlet-cultures.js` | 3.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `hamlet/30-hamlet-village.js` | 17.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | the village generator: plain records; its "geom" hits are its own box and rectangle maths, no three.js |
 | `host/90-host-camera.js` | 11.6 | [web] | 7 | 0 | 0 | 10 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
 | `host/91-host-loop.js` | 8.2 | [web] | 3 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `host/92-host-panel.js` | 14.7 | [web] | 0 | 0 | 10 | 8 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | split: data inside host code |
