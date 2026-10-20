@@ -72,6 +72,9 @@ void vertex() {
 					if (s < 0.0) {
 						d -= 2.0 * s * o;
 					}
+					float w = 1.0 - l / r;   // deep in the limb, straight out that side (pushOut in 50-figure.js)
+					w *= w;
+					d = normalize(d) * (1.0 - w) + o * w;
 				}
 				VERTEX = q + normalize(d) * (r - sh + l * 2.0 * sh / R);   // a thin band: [0, r + sh] into [r - sh, r + sh]
 			}

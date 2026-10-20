@@ -97,6 +97,11 @@ area you are about to change.
   morph data no longer lines up. Keep every vertex referenced.
 - **A cape's edge as a long spike at the idle** → a chain colliding with the arm (an elbow hangs at the waist) moves one
   column alone; chains do not collide with arms, the per-vertex push keeps cloth out of them.
+- **A knee through a robe's front in a run, though the push covers it** → the robe's front lagged almost onto the
+  thigh's axis (1-3 cm from the bone), and "out along the line from the bone" is noise there: neighbouring vertices went
+  out left and right and the cloth split open round the knee. Blend the way out toward the leg's outward side the deeper
+  the vertex lies (`(1 - d/r)^2`). Find this kind of fault with a CPU replay of the shader on `boneTransform` positions
+  and a ray from each skin vertex out of its limb; pushing along the cloth's own normal measured worse.
 - **A flap that poofs out in a stride** → the per-vertex push sends cloth between the thighs out sideways; a garment of
   flaps only is not pushed, its chains keep it off the legs.
 - **Fitting order between items** → each garment is fitted alone, so an under-item's flap 3 cm off the body stood

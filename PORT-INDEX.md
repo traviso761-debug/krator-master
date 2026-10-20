@@ -72,7 +72,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 218 | 2 | 0 | 12 | 31 | 172 | 5 | biome | yes | yes |
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 6 | 36 | 18 | 0 | 0 | 17 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
-| [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 195 | 21 | 0 | 0 | 96 | 78 | 0 |  |  | yes |
+| [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 196 | 21 | 0 | 0 | 96 | 79 | 0 |  |  | yes |
 | **all** | 2313 | 30691 | 6370 (21%) | 626 (2%) | 1100 (4%) | 3868 (13%) | 18727 (61%) | 275 | | | |
 
 ## Host-shell copies

@@ -434,7 +434,9 @@ rest); a thigh pushes nothing behind it in its top third (its capsule runs down 
 and at the radius that covers the flesh within it took in the buttock: the seat covers that), though in front it
 does (else a kimono showed wide harem pants at the hips); a garment of a band and flaps alone (`make_mpfb.py FLAPS`:
 the loincloth) is not pushed at all, its chains keep it off the legs (pushed, a flap between the thighs in a stride
-went out of each sideways and its corners stood out like wings); a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
+went out of each sideways and its corners stood out like wings); a vertex inside a leg leaves on the side away from the body's axis, never behind the knee, and the deeper it lies the more
+it goes straight out that side (near the bone the way out from it is noise: a robe's front, left inside a raised thigh in a
+run, split left and right round the knee and showed it); and a
 torso garment's shell is 2 cm wider (at 1.2 cm a bent knee's thigh came through a gown's front), so a robe's hem
 lies over the skirt under it, and 3.5 cm wider again over
 trousers (at 2 cm a stride's knee came through a deel's front; trousers stand further out of the capsules than a skirt's chains). The chains collide the same way,

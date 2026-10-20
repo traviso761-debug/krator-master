@@ -918,7 +918,10 @@ function KCharFigure(body, sliders, load){
         '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
         '\t\tif(cl < cR && cl > 1e-5){\n' +
         '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); float col = length(co);\n' +
-        '\t\t\tif(cl < cr && csh > 0.0 && col > 1e-4){ co /= col; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co; }\n' +
+        // and the deeper it lies the more it goes straight out that side: near the bone the way out from it is noise, and a
+        // robe's front, left inside a raised thigh in a run, split left and right round the knee and showed it
+        '\t\t\tif(cl < cr && csh > 0.0 && col > 1e-4){ co /= col; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
+        '\t\t\t\tfloat cw = 1.0 - cl / cr; cw *= cw; cd = normalize(cd) * (1.0 - cw) + co * cw; }\n' +
         '\t\t\ttransformed = cq + normalize(cd) * (cr - csh + cl * 2.0 * csh / cR);\n\t\t}\n\t}\n' +
         '\tif(kcS > 0.0 && transformed.y < kcH.y){\n\t\tfloat sb = 1e9; vec3 sbq = vec3(0.0); float sbr = 0.0;\n' +
         '\t\tfor(int ci = 0; ci < 6; ci++){\n\t\t\tif(kcA[ci].w <= 0.0) continue;\n' +

@@ -2,7 +2,8 @@
 
 - **The Cosmetic Lab is full.** A published version holds at most 256 MiB and the lab is at about 245; the Order of
   Historians' and Xanadu's clothes (`order_`, `xan_`, 2026-10-19) went into a lab of their own (README, Publishing the
-  labs). The fix is to split the lab by people or by body (one page per body, sharing the code) before more clothes come.
+  labs); since 2026-10-20 the main lab carries them too (its stale `.morph.txt` files removed), and the Order's own lab
+  keeps the older page. The fix is to split the lab by people or by body (one page per body, sharing the code) before more clothes come.
 - **Trousers under a mid-calf hem look thin.** Under a loose top that reaches below the knees (kit item `long`) the
   figure draws trousers in to 6 mm outside the legs' collision capsules (`50-figure.js` SQUEEZE, and the twin's shader),
   which are slimmer than the calves; under an ankle-length robe that is hidden, but below a hem at mid-calf the shins
@@ -58,7 +59,10 @@
   a shoulder (no capsule) can show through a mantle in a full overhead reach. A chain point inside a limb leaves on
   the side of the point above it, so a seated lap or a raised arm is draped, but only points collide: a 20 cm segment
   whose two ends are clear can still cut through a knee's corner. In a deep crouch or on a seat, a long robe's layers
-  can still show one through another for a frame or two where the chains swing.
+  can still show one through another for a frame or two where the chains swing. In a run, a long robe (the Order's,
+  the court robes, the kimono) has its back pierced by the shin as the trailing leg kicks up, and for a frame a patch at
+  the back of that hip can show: the push skips the back of a thigh's top third (the seat covers it at rest), and the
+  seat capsules do not swing with the thigh.
   The headgear (a wrap, a quetzal headdress) is rigid: the headdress's fan swings, its band does not.
 - **The Izani clothing is generated too** (as the Voth, above): the hood is a stiff shell (no chains), the sun halo
   and the shoulder plate are rigid, pouches are simple solids, the boots are tubes (a toe shows a seam), and the hex
