@@ -1,5 +1,25 @@
 # settlements/isle-demo: known issues (the site planner)
 
+- [x] **City page: the towns read pale** (2026-10-19; fixed the same day). The kits draw their detail as InstancedMeshes
+      with a colour PER INSTANCE (the kit's `kput` colour becomes `instanceColor` at `kbake`: the Islanders' patterned
+      walls and thatch, the Vernacular's timber), and the flatten (`src/58-isle-protos.js` `isleFlatten`, `DRAW.flatten`)
+      copied each instance's geometry and matrix but not its colour, so every tinted piece came out in its material's
+      base colour, white. Found by the owner on Hook's town, built on the same pattern (`settlements/hook/src/
+      90b-hook-city-draw.js` has the same fix). Now every flattened part gets a `color` attribute (the source's, times the
+      instance's colour, white where it has neither), the material groups are keyed without `color` so parts with and
+      without one merge, and every material the parts use reads vertex colours. `DRAW.near` draws the flattened parts as
+      they are and the massing's tints (`DRAW.records` KC) are set per instance on their own meshes, so neither lost a
+      colour. The open world's hamlets (`openworld/isle-demo`) and Pinnacle Rock's cavern town read this fragment in
+      place and take the fix on their next rebuild. A second loss sat under it: the two Beast Rider towns sealed in
+      `CAT` (`bundles.py`, `kits/beast-riders/towns.py`) each load `core/materials/record/23-mat-record.js`, whose last
+      line sets `window.KMAT` to the town's own, so the page's `KMAT` (the Islanders' and Iziz's packs registered on it)
+      was the last town's by the time `ISK` and `IZV` ran, and neither bound a library map: no thatch or pattern sheets
+      on the Islanders, no brick or render on the Vernacular, each surface its palette tint alone. `CAT` now shadows the
+      page's window as `ISK` and `IZV` do, keeping that one write off it (`CAT_WINDOW`). The export profile's
+      `materials` section had been met by that leak too (the last town's record table): now `ISK` registers the
+      Islanders' records as the kit's own page does (93-anim.js, lifted into `ISK_TAIL`) and `IZV` takes Iziz's own
+      `88y-iziz-matlib.js` (its aliases, tiles and records) in place of the tail's plain bind, so the section holds
+      the two towns' own materials (51 and 43 records).
 - [x] **Ridertown took two of the catalog's hand-made copies** (2026-10-18; switched the same day):
       `br_bldg_nature_shrine` (class `shrine`) and `br_bldg_roost_gallery` (class `rookery`). Now the Beast Riders kit's
       ports of Mav's Refuge's own buildings, drawn by the town's own builders: `shrine: br_port_mavs_shrine`, `rookery:
