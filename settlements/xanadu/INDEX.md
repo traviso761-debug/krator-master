@@ -41,7 +41,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `72-xa-helpers.js` | 33 **big** | vectors in the local frame (32); walls: the battered mass (53); the Turkish overhang (cumba) and the Indian bay  (120); the Persian note: arches, iwans, arcades, domes (149); the gilded roof (the Tibetan "gyaphib") and pavi (202); pennants, poles, shrines, roundels (224); footings, terraces, gardens, water (251) |
 | `74-xa-dwell.js` | 25 | POOR (9); MIDDLE (68); RICH (145) |
 | `75-xa-trade.js` | 8 | the bazaar row: three shops under arches, rooms  (15); the workshop: dyer and potter round a yard (32); the scrap smithy (51) |
-| `76-xa-farm.js` | 15 | the terraced farm: four terraces down a slope (13); the farmstead: house, yard wall, byre, hay on th (34); the granary: a stone store on a plinth, slit ven (62); the windmill (asbad): a vertical rotor between t (79); the watermill: a horizontal wheel under a stone  (98) |
+| `76-xa-farm.js` | 19 | the terraced farm: four terraces down a slope (13); the farmstead: house, yard wall, byre, hay on th (34); the granary: a stone store on a plinth, slit ven (62); the windmill (asbad): a vertical rotor between t (79); the watermill: a horizontal wheel under a stone  (104); the herders' works (2026-10-20: core/hamlet's ra (130) |
 | `77-xa-sacred.js` | 11 | the temple (31); the monastery on its terrace (47); the Grand Temple of the capital (73) |
 | `78-xa-palace.js` | 11 | the Sultan's Palace (18); the Pleasure Dome and its grounds (55) |
 | `79-xa-guild.js` | 17 | Farmers' Guild (22); Miners' Guild (36); Goldsmiths' Guild (55); Alchemists' Guild (71); Masons' Guild (89); the generator (109) |

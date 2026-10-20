@@ -87,6 +87,11 @@ URL with `longsong.tex.*.js` and `kchar/*` beside it (two calls: the female body
 after). It was published private: a gallery viewer opens it only once the owner shares it (the page's Share menu).
 Version 3 (2026-10-20, `main` at 8f640f72): the interiors' second pass, the crowd, the villages on the Xanadu kit with
 their squares; the page and its four packs in one call (`kchar/` unchanged, kept from the last version).
+Version 4 (2026-10-20, `main` at 0724d383): the rooms walked round their furniture and up their flights, the courts'
+galleries, the festival's four-week cycle, the farm year, the herds' gait, the villages' pens, corrals, dairies and
+turning windmills; the page alone (its packs and `kchar/` unchanged). The Xanadu kit's two pages went with it, each with
+the kit's new pack: Krator Worlds S–Z version 13 (`worlds/xanadu-kit.html`) and A–H version 89 (`worlds/erewhon.html`),
+bundled by `build_gallery.bundle()` alone (no full gallery rebuild), their indexes unchanged.
 
 ## The Throne: its own artifact (2026-10-07)
 

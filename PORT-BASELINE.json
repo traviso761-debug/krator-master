@@ -20,6 +20,10 @@
    "bytes": 637289,
    "sha256": "57f4a587b11159428beea5777dbe12f975c8421f8d16552d920cc5f21829b3cd"
   },
+  "biomes/guilin/dist/guilin.html": {
+   "bytes": 648171,
+   "sha256": "3487d011085236b9f033d31c2259db4c0768ad5c06e22ba0822ca5d0666fdbd8"
+  },
   "biomes/hyperjungle/dist/hyperjungle.html": {
    "bytes": 4622444,
    "sha256": "8bc7bfa0521fc7548062a3ef82fd1f39c6933ea3c61796a6a5d406bff5de1424"
@@ -509,8 +513,8 @@
    "sha256": "e6c31625003c38418a1cecaf53bdb0d412b7eedde603f6943c1fb0ad09da713d"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 4385304,
-   "sha256": "63d2b69412669626f3cca69def46fd46ea7121f50ce62c2a0a930de3ee7a4e01"
+   "bytes": 4660761,
+   "sha256": "d5302d5b347afe59d296eaa53c81dda73d6757121009ca04264df6039fb445d5"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9075103,
@@ -689,12 +693,12 @@
    "sha256": "21569ec2ce48816247ffa64b049fc04add09c60fb4ce3ddec8cc02c74f8a3a32"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 6475258,
-   "sha256": "d93dfb0d6e7ecd9ddf21392de973d59c1da24b9a18ed42db3a040be36c16c19a"
+   "bytes": 6479284,
+   "sha256": "b5b4ca87b0476b22030e1576861f2255520d07b249701b675571726ca266f4e3"
   },
   "settlements/xanadu/dist/xanadu.html": {
-   "bytes": 6258034,
-   "sha256": "3a2eb16167e77c0503da2ea9497f1cb59f4d8902d9221ef206b42adbe32b3ba4"
+   "bytes": 6262060,
+   "sha256": "ec3c26b6f335ec5b7ad70c5d18293210693cfdaf6b5be2d83ef6a4dd15188cb9"
   },
   "settlements/ys/dist/kit.html": {
    "bytes": 1585127,

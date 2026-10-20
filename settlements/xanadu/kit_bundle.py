@@ -67,14 +67,14 @@ TAIL = r'''
 reportErr = function (m) { XAK_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('XAK: ' + m); };
 /* XAK.proto(key, v, o): the def built once at the origin on flat ground into a new group, only its own kit items baked;
    o.drop the slope footing's depth under it (the def's fw x fd, as the kit page sites a building on a hill), o.footC its
-   colour. Every InstancedMesh of one kit item shares one material across protos (userData.kdef names the item), so a
+   colour, o.rotor false: the windmill without its rotors' arms and sails (the host turns its own: XAK.rotors). Every InstancedMesh of one kit item shares one material across protos (userData.kdef names the item), so a
    host that flattens them (settlements/isle-demo/src/58-isle-protos.js) merges a whole village by material */
 var XAK_SHARED = {};
 function xakProto(key, v, o) {
   var D = VERN.defs[key]; if (!D) return null; o = o || {};
   KIT.order.forEach(function (n) { KIT.items[n].length = 0; KIT.meshes[n] = null; });
   var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length;
-  try { withFlatGround(function () { VERN.place(G, key, 0, 0, 0, { y: 0, v: v | 0, drop: o.drop || 0, footC: o.footC }); }); kbake(G);
+  try { withFlatGround(function () { VERN.place(G, key, 0, 0, 0, { y: 0, v: v | 0, drop: o.drop || 0, footC: o.footC, rotor: o.rotor }); }); kbake(G);
     KIT.order.forEach(function (n) { var im = KIT.meshes[n]; if (!im) return; im.userData.kdef = n; im.name = n;
       im.material = XAK_SHARED[n] || (XAK_SHARED[n] = im.material); im.material.userData.kdef = n; }); }
   catch (e) { XAK_ERRS.push(key + ': ' + String(e && e.stack || e).slice(0, 600)); return null; }
@@ -85,8 +85,11 @@ function xakProto(key, v, o) {
 function xakDims() { var out = {}; VERN.order.forEach(function (k) { var D = VERN.defs[k]; if (!/^xa_/.test(k)) return;
   out[k] = { w: D.w, d: D.d, h: D.h || 8, fw: D.fw == null ? D.w * .92 : D.fw, fd: D.fd == null ? D.d * .92 : D.fd, name: D.name, family: D.family,
     types: [].concat((D.tags && D.tags.type) || []), wealth: D.tags && D.tags.wealth, variants: D.nv || D.variants || 2 }; }); return out; }
+/* XAK.rotors(key, v): what of a def a host turns itself (built with {rotor: false}): the windmill's rotors, in the def's
+   frame (xnAsbadRotors, src/76-xa-farm.js); [] for any other def */
+function xakRotors(key, v) { return key === 'xa_windmill' ? xnAsbadRotors({ v: v | 0 }) : []; }
 function xakBind(K) { if (!K || !K.bindMat || !K.packed || !K.packed('xanadu', 'xWash')) return null; return K.bindMat('xanadu', MAT, { tile: K.ANCIENT_TILES }); }
-return { proto: xakProto, dims: xakDims, bind: xakBind, VERN: VERN, MAT: MAT, ticks: TICKS, errors: XAK_ERRS };
+return { proto: xakProto, dims: xakDims, bind: xakBind, rotors: xakRotors, VERN: VERN, MAT: MAT, ticks: TICKS, errors: XAK_ERRS };
 '''
 
 

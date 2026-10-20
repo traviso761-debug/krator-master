@@ -3,7 +3,10 @@
 // plan, a whole day stepped a minute at a time. Each check runs on a broken input too, which must fail.
 var path = require('path'), fs = require('fs'), vm = require('vm');
 var HERE = path.join(__dirname, '..'), ROOT = path.join(HERE, '..', '..');
-function world(breakIt) {
+// the rooms' walks round their furniture: the bake's (interiors-bake.json, bake_interiors.py), as the page hands them over
+// (57a LSIX.walkOf; the page also checks each room's fingerprint, which needs the catalog: not here)
+var BAKE = JSON.parse(fs.readFileSync(path.join(HERE, 'interiors-bake.json'), 'utf8'));
+function world(breakIt, noWalks) {
   var ctx = { console: console, Math: Math, JSON: JSON, Object: Object, Array: Array, Set: Set, Map: Map, Error: Error, String: String, Number: Number,
     Date: Date, Infinity: Infinity, isFinite: isFinite, Float64Array: Float64Array, Float32Array: Float32Array, Int32Array: Int32Array, Uint8Array: Uint8Array,
     Uint32Array: Uint32Array, Int8Array: Int8Array, Uint16Array: Uint16Array };
@@ -11,9 +14,11 @@ function world(breakIt) {
   var run = function (f) { vm.runInContext(fs.readFileSync(f, 'utf8'), ctx, { filename: f }); };
   run(path.join(ROOT, 'core', 'rand', '08-core-rand.js'));
   vm.runInContext('var LS;' + fs.readFileSync(path.join(HERE, 'src', '40-ls-plan.js'), 'utf8') + ';this.LS=LS;', ctx);
+  ['40b-ls-farms.js', '40c-ls-rooms.js'].forEach(function (f) { run(path.join(HERE, 'src', f)); });   // the rooms: the walk graph's interiors
   vm.runInContext(fs.readFileSync(path.join(HERE, 'src', '40d-ls-sim.js'), 'utf8') + ';this.LSS=LSS;', ctx);
   fs.readdirSync(path.join(ROOT, 'core', 'simulation')).filter(function (f) { return /^77-sim-.*\.js$/.test(f) && f !== '77-sim-9-debug.js'; }).sort()
     .forEach(function (f) { run(path.join(ROOT, 'core', 'simulation', f)); });
+  if (!noWalks) ctx.LSS.walkOf = function (id) { var B = BAKE.rooms[id]; return B && B.w || null; };
   var clock = { hour: 3.5, day: 0, t: 0 };
   ctx.LSS.init(clock, breakIt ? { edges: breakIt } : null);
   return { ctx: ctx, clock: clock };
@@ -22,20 +27,23 @@ function world(breakIt) {
 function day(W, d0) {
   var SIM = W.ctx.SIM, LSS = W.ctx.LSS, C = W.clock;
   if (d0 != null) { C.day = d0; C.hour = 3.5; }
-  var f0 = SIM.routeFail.length, M = SIM.minute(), seen = {}, hiddenStill = [], out = 0, moving = 0, stair = 0, acts = {};
+  var f0 = SIM.routeFail.length, M = SIM.minute(), seen = {}, hiddenStill = [], out = 0, moving = 0, stair = 0, acts = {}, inRooms = 0, upstairs = 0, rooms = {}, folk = {}, flights = 0;
   SIM.jump(); M = SIM.minute(); var roles = {};
   for (var m = 0; m < 1440; m++) {
     M++; C.day = Math.floor(M / 1440); C.hour = (M % 1440 + .5) / 60; C.t += 3; SIM.step();
     if (m % 10) continue;
     SIM.all('actor').forEach(function (a) {
       var s = SIM.pose(a, C.t); if (s.hidden) return; out++;
-      if (s.leg >= 0 && LSS.hidden(s.x, s.y, s.z)) return;   // walking through a room or the rock: unseen (68 hides it)
+      if (s.leg >= 0 && LSS.hidden(s.x, s.y, s.z)) {   // walking through a room or the rock: unseen from outside (68 draws it on a floor shown)
+        var R = W.ctx.LS.ROOMS.at(s.x, s.y, s.z); if (R) { inRooms++; rooms[R.id] = 1; if (s.y > W.ctx.LS.ROCK.top + 3) upstairs++; if (R.flight && s.y > R.y + .3 && s.y < R.y + R.flight.rise - .3) flights++; }
+        return; }
       if (s.moving) { moving++; if (s.y > 2 && s.y < 39) stair++; }
       else if (LSS.hidden(s.x, s.y, s.z) && a.activity !== 'KEEP' && a.activity !== 'TURN_WHEEL' && hiddenStill.length < 5) hiddenStill.push(a.id + ' ' + a.activity + ' at ' + [s.x, s.y, s.z].map(function (v) { return v.toFixed(0); }).join(','));
-      acts[a.activity] = (acts[a.activity] || 0) + 1; seen[a.id] = 1; var r = a.role.split('.')[0]; roles[r] = (roles[r] || 0) + 1;
+      acts[a.activity] = (acts[a.activity] || 0) + 1; seen[a.id] = 1; var r = a.role.split('.')[0]; roles[r] = (roles[r] || 0) + 1; if (r === 'festgoer') folk[a.id] = 1;
     });
   }
-  return { fails: SIM.routeFail.slice(f0), problems: LSS.problems, out: out, moving: moving, stair: stair, hiddenStill: hiddenStill, seen: Object.keys(seen).length, acts: acts, roles: roles };
+  return { fails: SIM.routeFail.slice(f0), problems: LSS.problems, out: out, moving: moving, stair: stair, hiddenStill: hiddenStill, seen: Object.keys(seen).length, acts: acts, roles: roles,
+    inRooms: inRooms, upstairs: upstairs, rooms: Object.keys(rooms).length, folk: Object.keys(folk).length, flights: flights };
 }
 if (require.main !== module) { module.exports = { world: world, day: day }; return; }
 var bad = 0;
@@ -58,5 +66,35 @@ ok('the festival day: the house on the forecourt, the valley in for it', F.acts.
   'festival: ' + (F.acts.FESTIVAL || 0) + ' samples on the forecourt, ' + (F.roles.festgoer || 0) + ' of the valley\'s out, ' + (F.acts.CAMP || 0) + ' at the camp, ' + F.fails.length + ' routes failed; an ordinary day: ' + (D.acts.FESTIVAL || 0) + ' and ' + (D.roles.festgoer || 0), false);
 ok('everyone out in the world at some hour', D.seen + nFest === W.ctx.SIM.all('actor').length, D.seen + ' of ' + W.ctx.SIM.all('actor').length + ' seen outside on an ordinary day (the ' + nFest + ' from the valley come only for the festival)', false);
 ok('no one stands still inside a building or the rock', !D.hiddenStill.length, D.hiddenStill.join('; ') || 'none', false);
+// the interiors in the walk graph (2026-10-20): every room reached from the gate (a few cut-off parts joined to their
+// building, counted), and people walking the rooms, the upper storeys among them; the broken input: the rooms left out
+var LSS = W.ctx.LSS, Rm = LSS.rooms || { n: 0, reached: 0 };
+ok('every room of the palaces and the ward in the walk graph, reached from the gate', Rm.n > 600 && Rm.reached === Rm.n && !LSS.patched.length,
+  Rm.reached + ' of ' + Rm.n + ' rooms reached; ' + LSS.patched.length + ' cut-off parts joined to their building' + (LSS.patched.length ? ' (' + LSS.patched.slice(0, 4).join('; ') + ')' : ''), false);
+var Wn = world(function (E) { return E.filter(function (e) { return !/^[RDOLWFS]:/.test(e.a) && !/^[RDOLWFS]:/.test(e.b); }); }), Dn = day(Wn);
+ok('people walk the rooms and the stairs', D.inRooms > 0 && D.upstairs > 0 && D.rooms > 50 && D.flights > 0,
+  D.inRooms + ' walker-samples inside rooms (' + D.rooms + ' rooms walked through), ' + D.upstairs + ' on the upper storeys, ' + D.flights + ' climbing a stair room\'s flight; the graph without its rooms: ' + Dn.inRooms + ', ' + Dn.fails.length + ' routes failed',
+  Dn.inRooms > 0 && Dn.rooms > 50 && !Dn.fails.length);
+// the rooms crossed round their furniture (2026-10-20): each furnished room's walks from the bake (the placer's free cells:
+// a door to the room's hub, the spots off the pieces) in the graph; the broken input: the graph built without them
+var nFurn = Object.keys(BAKE.rooms).filter(function (id) { return Rm.n && W.ctx.LS.ROOMS.byId[id] && LSS.graph().byId['R:' + id]; }).length,
+  Wk = world(null, true), aisles = function (G) { return G.nodes.filter(function (n) { return n.tag === 'aisle'; }).length; };
+ok('the rooms are walked round their furniture', Rm.walks >= nFurn * .95 && aisles(LSS.graph()) > 1000,
+  Rm.walks + ' of the ' + nFurn + ' furnished rooms in the graph walked on their free cells (' + aisles(LSS.graph()) + ' aisle waypoints); without the walks: ' + (Wk.ctx.LSS.rooms.walks || 0),
+  (Wk.ctx.LSS.rooms.walks || 0) >= nFurn * .95);
+// the festival's four programmes, a week each (2026-10-20): the cham danced in the first two, not in the great debate's
+// (the lamas dispute) nor the valley's day (the house at prayer); the valley comes in by each one's turnout. The broken
+// input: the first festival four times over
+var FW = [F].concat([13, 20, 27].map(function (d) { return day(world(), d); })), LSp = W.ctx.LS, nF = nFest,
+  prog = function (L) { var bad = [];
+    L.forEach(function (X, v) { var cham = X.acts.CHAM || 0, deb = X.acts.DEBATE || 0, want = Math.round(nF * LSp.FESTIVAL.turnout[v]);
+      if ((v < 2) !== (cham > 0)) bad.push(LSp.FESTIVAL.programmes[v] + ': the cham ' + cham);
+      if (v === 2 && !deb) bad.push('the great debate: no debate');
+      if (Math.abs(X.folk - want) > nF * .12) bad.push(LSp.FESTIVAL.programmes[v] + ': ' + X.folk + ' of the valley in, not ~' + want);
+      if (X.fails.length) bad.push(LSp.FESTIVAL.programmes[v] + ': ' + X.fails.length + ' routes failed'); });
+    return bad; }, pb = prog(FW);
+ok('the festival changes from week to week', !pb.length,
+  FW.map(function (X, v) { return LSp.FESTIVAL.programmes[v] + ': cham ' + (X.acts.CHAM || 0) + ', debate ' + (X.acts.DEBATE || 0) + ', kora ' + (X.acts.KORA || 0) + ', ' + X.folk + ' of the valley'; }).join('; ') + (pb.length ? ' -- ' + pb.join('; ') : ''),
+  !prog([F, F, F, F]).length);
 console.log(bad ? 'test-sim: ' + bad + ' failed' : 'test-sim: all passed');
 process.exit(bad ? 1 : 0);

@@ -34,6 +34,8 @@ const LSNIGHT=(function(){const T=THREE,C=c=>new T.Color(c);
  const LH=LS.LIGHT_HOURS;let nWin=0;
  LS_WINLIT.forEach((w,i)=>{if(i%2)return;nWin++;ATMOS.glowAdd(w[0]+w[3]*.3,w[1]+w[6]*.5,w[2]+w[4]*.3,[1,.72,.38],2.4,LH.windows[0],LH.windows[1]);});
  LS.LAMPS.forEach(L=>ATMOS.glowAdd(L.x,gY(L.x,L.z)+3.2,L.z,[1,.93,.78],5,LH.bulbs[0],LH.bulbs[1]));
+ // the valley's villages: a lamp at each house's door after dusk (85h: LSHAMLETS.glows)
+ if(typeof LSHAMLETS!=='undefined')LSHAMLETS.glows.forEach(g=>ATMOS.glowAdd(g[0],g[1],g[2],[1,.7,.36],2.2,LH.windows[0],LH.windows[1]));
  const glow=ATMOS.buildGlow();
  // ---------------------------------------------------------------- the rooms' lamps: a pool of point lights round the eye
  const POOL=[];for(let i=0;i<6;i++){const l=new T.PointLight(0xffc070,0,9,2);scene.add(l);POOL.push(l);}

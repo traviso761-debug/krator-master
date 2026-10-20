@@ -360,14 +360,36 @@ P.SCHEDULES={
 // at dusk. The valley comes in for the day, and the pilgrims camp in the ward that night (the camp ground: its tents,
 // cook fires and trough are pitched only then). A role's festival schedule (FEST_SCHEDULES) replaces its day's.
 P.FESTIVAL={name:'The festival of the register',week:7,day:6,hung:[6,18.5],
+ // the festival's programmes, a week each in turn (P.festWeek; core/simulation's week is the whole cycle: 40d): the cham
+ // danced before the house; the procession first (the kora in the morning, the cham after noon); the great debate (the
+ // lamas and the cham's monks dispute in the court, the house watches, the cham not danced); the valley's day (the house at
+ // prayer, the pilgrims and the valley walk the kora). turnout: the share of the valley's folk who come in for it
+ cycle:4,programmes:['the cham','the procession','the great debate','the valley\'s day'],turnout:[1,.7,.5,1],
  // the butter-lamp offering that night: rows of lamps at the foot of the base under the thangka and round the Debate Court
- lamps:[18.6,30],cham:{dancers:24,masks:[0xf2ede0,0xb02818,0x1e3c8c,0x2a6a3a,0xd8a020,0x2a2a2a]}};
+ lamps:[18.6,30],
+ // the cham's dancers wear the dance's three kinds of mask in turn: the black hats (the Shanag: the wide brim, the tall
+ // crown), the deer (Shawa: the red face, the antlers) and the skull (the lords of the charnel ground: the white skull,
+ // a crown of five little skulls)
+ cham:{dancers:24,masks:['black hat','deer','skull']}};
 P.isFestival=day=>((day%P.FESTIVAL.week)+P.FESTIVAL.week)%P.FESTIVAL.week===P.FESTIVAL.day;
+// which of the cycle's programmes a day's week holds (0 .. cycle-1)
+P.festWeek=day=>{const n=P.FESTIVAL.cycle;return ((Math.floor(day/P.FESTIVAL.week)%n)+n)%n;};
+// a role's festival schedule under programme v (FEST_SCHEDULES is the cham's: v 0)
+const ORDER_ROLES={monk:1,novice:1,elder:1,cham:1,master:1,operative:1};
+P.festVariant=function(sched,v,role){return sched.map((a,h)=>{
+ if(v===1){if(h>=10&&h<13)return sched[h+4];if(h>=14&&h<17)return sched[h-4];return a;}
+ if(v===2){if(a==='CHAM')return 'DEBATE';if(a==='WATCH'&&role==='elder')return 'DEBATE';return a;}
+ if(v===3){if(a==='CHAM'||a==='WATCH')return ORDER_ROLES[role]?'PRAY':'KORA';return a;}
+ return a;});};
 P.CAMP={x0:106,x1:192,z0:-88,z1:-75,name:"The pilgrims' camp ground (festival days)",trough:{x:149,z:-76.5,w:6,d:1.2},
  // the tents: two rows of the valley's white cotton tents (a ridge, blue appliqué knots), each with its cook fire; placed
  // from the camp's own stream, not the order of drawing
  tents:(function(){const out=[];for(let row=0;row<2;row++)for(let i=0;i<10;i++){const u=KRAND.unit(KRAND.hash(5507,row,i)),v=KRAND.unit(KRAND.hash(5507,row,i,1));
    out.push({x:110+i*8.4+u*2,z:row?-79.5:-84.5,ry:(row?0:Math.PI)+(v-.5)*.3,w:3.2+u*.8,d:4+v,h:2.3+v*.4,fire:i%2===row});}return out;})()};
+// the tents pitched for programme v: as many as its turnout brings (a share of the slots, by a hash of the week's
+// programme and the slot, never by their order); the rest of the ground is left bare that week
+P.CAMP.pitched=v=>{const T=P.CAMP.tents,k=Math.round(T.length*P.FESTIVAL.turnout[v]),by=T.map((t,i)=>i).sort((a,b)=>KRAND.hash(5509,v,a)-KRAND.hash(5509,v,b)),on=T.map(()=>false);
+ by.slice(0,k).forEach(i=>{on[i]=true;});return on;};
 // the wells (the catalog's xanadu_common_well, FURNITURE.md L0): in the middle of the courts that draw water (the
 // smiths' and the caravanserai's, in the ward; the Closed Ward's garden on the rock) instead of their chorten, and one at
 // the camp ground, between the tents' rows by the trough. `court` names the building whose court holds it (64 draws it there)
@@ -414,6 +436,8 @@ P.PEOPLE=(function(){const out=[];let k=0;
   out.push({id:'ls-'+R.role+'-'+String(i).padStart(2,'0'),role:R.role,faction:R.faction,sub:R.sub,job:R.job,dress:R.dress,seed,
    variant:Array.isArray(P.SCHEDULES[R.role][0])?i%P.SCHEDULES[R.role].length:0,cham:R.role==='monk'&&i<P.FESTIVAL.cham.dancers,
    fest:R.role==='monk'&&i<P.FESTIVAL.cham.dancers?P.FEST_SCHEDULES.cham:P.FEST_SCHEDULES[R.role],
+   // the valley's folk come in for a programme by its turnout: the first share of them (by a hash, not their order)
+   comes:R.role!=='festgoer'?null:P.FESTIVAL.turnout.map(t=>KRAND.unit(KRAND.hash(7403,i))<t),
    schedule:Array.isArray(P.SCHEDULES[R.role][0])?P.SCHEDULES[R.role][i%P.SCHEDULES[R.role].length]:P.SCHEDULES[R.role]});k++;}});
  return out;})();
 P.placeOf=function(activity,seed){const L=P.PLACES.filter(p=>p.activity===activity);return L.length?L[seed%L.length]:null;};

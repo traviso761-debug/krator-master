@@ -35,6 +35,7 @@ scale Krator map for rough placement, not in this repo.
 | *planned* the scablands (in "n semiarid": scale model 4.20) | `scablands` | its basin's long lake to the south |
 | *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
 | the Oidong Valley (east of the Vale of Xanadu, LORE.md 6.15) | `oidong` | xanadu (over the pass at the valley's west end; the five shared species are the ecotone), the ranges round it (steep: nothing grows on the walls' tops) |
+| the South China karst (Guilin's towers and the Stone Forest, `guilin/NOTES.md`) | `guilin` | *to be placed on the scale model* (a wet subtropical lowland on limestone: Cfa/Cwa, ~1 atm) |
 
 **Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
 structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and

@@ -66,11 +66,11 @@ const LSFIG=(function(){const O={on:false,ready:0,want:0,err:null,slots:[],loads
    const c=CLIP(i,S[i].act);if(c!==s.clip){s.clip=c;s.fig.play(c);}s.fig.update(dt);}});
  // ---------------------------------------------------------------- the crowd past them (core/charactermodels KCharCrowd, 2026-10-20)
  // Everyone not dressed as a figure, out to FAR, is drawn in a LOOK: the commonest outfits (body, robe, legs) each worn
- // by the first person who wears it, that figure baked still (standing, at two strides of the walk, sitting) and drawn
+ // by the first person who wears it, that figure baked still (standing, at WALKN frames of the walk, sitting) and drawn
  // instanced; a person whose outfit is not among them takes the commonest look of their body and their side (the Order
  // or the valley). The looks are baked one at a time after the page is up, on one figure per body kept off the scene;
  // till a person's look is ready they stay the placeholder (68). ?crowd=N sets FAR (0: none), ?looks=N how many.
- const FAR=Q.has('crowd')?Math.max(0,+Q.get('crowd')||0):170,NL=Q.has('looks')?Math.max(1,+Q.get('looks')||1):16,N=LS.PEOPLE.length;
+ const WALKN=4,FAR=Q.has('crowd')?Math.max(0,+Q.get('crowd')||0):170,NL=Q.has('looks')?Math.max(1,+Q.get('looks')||1):16,N=LS.PEOPLE.length;
  const CR=O.crowd={looks:[],of:new Int16Array(N).fill(-1),ready:0,shown:0,err:null,tris:0};PD.crowd=new Set();
  if(FAR>0&&typeof KCharCrowd!=='undefined'){
   const side=r=>(r.armour.torso||'').indexOf('order_')===0?'order':'valley',key=r=>r.body+'|'+(r.armour.torso||'')+'|'+(r.armour.legs||'');
@@ -82,20 +82,22 @@ const LSFIG=(function(){const O={on:false,ready:0,want:0,err:null,slots:[],loads
    CR.of[i]=L;if(L>=0)CR.looks[L].n++;}
   const FIG={},figFor=b=>FIG[b]||(FIG[b]=new KCharFigure(D.bodies[b],D.sliders,load));
   const bakeLook=L=>{const f=figFor(L.body);return f.apply(recOf(L.who)).then(()=>KCharCrowd.bake(f,'idle',.5)).then(a=>{
-    const w=f.clips.walk?f.clips.walk.duration:1;return KCharCrowd.bake(f,'walk',w*.25).then(b=>KCharCrowd.bake(f,'walk',w*.75).then(c=>[a,b,c]));})
+    const w=f.clips.walk?f.clips.walk.duration:1;let ch=Promise.resolve([a]);
+    for(let k=0;k<WALKN;k++)ch=ch.then(G=>KCharCrowd.bake(f,'walk',w*(k+.25)/WALKN).then(b=>G.concat([b])));return ch;})
    .then(G=>KCharCrowd.bake(figFor(L.body),'sit_floor',.6).then(d=>G.concat([d])))
    .then(G=>{L.sets=G.map(g=>{const im=KCharCrowd.set(g.geo,L.n);im.userData.people=true;im.userData.probeSkip=true;im.userData.inspectLabel='A person of Longsong';scene.add(im);CR.tris+=g.tris;CR.from=(CR.from||0)+g.from;return im;});CR.ready++;});};
   let chain=Promise.resolve();
   const startBake=()=>{CR.looks.forEach(L=>{chain=chain.then(()=>bakeLook(L)).catch(e=>{CR.err=String(e&&e.message||e);});});};
   // after the page is up (the figures' own loads first)
   setTimeout(startBake,1500);
-  const STRIDE=(i,t)=>((t*1.7+KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,11)))%1)<.5?1:2;
-  TICKS.push(function(dt){const P=PD.POS,S=PD.S,t=performance.now()/1000,use=CR.looks.map(()=>[0,0,0,0]);PD.crowd.clear();let shown=0;
+  // the walk played as WALKN frames, each walker at its own point of the cycle (a stride about every 0.6 s)
+  const STRIDE=(i,t)=>1+Math.floor(((t*.85+KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,11)))%1)*WALKN)%WALKN,SIT=1+WALKN,NS=2+WALKN;
+  TICKS.push(function(dt){const P=PD.POS,S=PD.S,t=performance.now()/1000,use=CR.looks.map(()=>new Array(NS).fill(0));PD.crowd.clear();let shown=0;
    for(let i=0;i<N;i++){const L=CR.looks[CR.of[i]];if(!L||!L.sets||!S[i].shown||PD.dressed.has(i))continue;
     const d=Math.hypot(P[i*4]-cam.x,P[i*4+1]-cam.y,P[i*4+2]-cam.z);if(d>FAR)continue;
-    const a=S[i].act,k=a==='MOVE'||a==='KORA'||a==='CHAM'||a==='WALK'?STRIDE(i,t):SITS[CLIP(i,a)]?3:0,j=use[CR.of[i]][k]++;
+    const a=S[i].act,k=a==='MOVE'||a==='KORA'||a==='CHAM'||a==='WALK'?STRIDE(i,t):SITS[CLIP(i,a)]?SIT:0,j=use[CR.of[i]][k]++;
     L.sets[k].put(j,P[i*4],P[i*4+1],P[i*4+2],P[i*4+3]);PD.crowd.add(i);shown++;}
-   CR.looks.forEach((L,l)=>{if(!L.sets)return;for(let k=0;k<4;k++)L.sets[k].flush(use[l][k]);});
+   CR.looks.forEach((L,l)=>{if(!L.sets)return;for(let k=0;k<NS;k++)L.sets[k].flush(use[l][k]);});
    CR.shown=shown;});}
  O.recOf=recOf;O.load=load;O.max=MAX;
  return O;})();

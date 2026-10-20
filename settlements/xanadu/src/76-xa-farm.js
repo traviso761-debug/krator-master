@@ -77,6 +77,11 @@ function buildXaGranary(G,o){reseed(30621+(o.v|0));const V=xV(o),W=V===2?11:7,D=
  vnSacks(-3.5,0,D/2+2,5);vnSacks(3,0,D/2+1.6,3);kput('vThatchB',[4.5,.5,-1],qEuler(0,.3,0),[2.4,1,1.8],xC(xPick(VPAL.thatch)));
  for(let k=0;k<4;k++)vPst('vClayPot',-5.5,0,-3+k*1.4,.5,.8,xC(0x9a5a38));vnFolk(1,D/2+4,2,1.2);}
 // ---------------------------------------------------------------- the windmill (asbad): a vertical rotor between two funnel walls
+// its rotors in the def's frame (a host that turns them draws its own: XAK.proto(key, v, {rotor: false}) leaves the arms
+// and the sails out, XAK.rotors(key, v) says where they stand): each {x, z, y (the millstone floor), h, R, arms: [y, y],
+// sail: [y, h]}
+function xnAsbadRotors(o){const V=xV(o),PW=V===4?15:10,PH=V===1?2.6:4.2,WH=V===2?10:7.5,gap=2.6,NR=V===4?2:1,tw=(PW-gap*NR)/(NR+1),out=[];
+ for(let i=0;i<NR;i++)out.push({x:-PW/2+tw+gap/2+i*(tw+gap),z:.6,y:PH,h:WH,R:2.0,arms:[PH+.8,PH+WH-1.2],sail:[PH+WH/2-.2,WH-2.4]});return out;}
 function buildXaWindmill(G,o){reseed(30631+(o.v|0));const V=xV(o),PW=V===4?15:10,PD=8,PH=V===1?2.6:4.2,WH=V===2?10:7.5,KIND=V===3?'stone':'earth';
  const earth=xC(xPick(XPAL.earth)),rub=xC(xPick(XPAL.rubble)),aged=xC(xPick(XPAL.aged)),reed=xC(xPick(VPAL.thatch));
  vnReg('Windmill (asbad)',0,0,7.5,PH+WH+1.5);
@@ -90,8 +95,9 @@ function buildXaWindmill(G,o){reseed(30631+(o.v|0));const V=xV(o),PW=V===4?15:10
  const slots=[];for(let i=0;i<NR;i++)slots.push(-PW/2+tw+gap/2+i*(tw+gap));for(const sx of slots)vB('xEarthB',sx,PH,-PD*.45+.2,gap+.4,WH*.55,.5,0,earth);
  // the rotor: a vertical shaft on the millstone, eight arms with reed-mat sails, a top bearing beam
  for(const cx of slots){const cz=.6,R=2.0;vPst('vPostB',cx,PH-.6,cz,.2,WH+.5,aged);vB('vWood',cx,PH+WH-.3,cz,gap+.8,.3,.3,0,aged);
-  for(let k=0;k<8;k++){const a=k/8*TAU+.3,dx=Math.sin(a),dz=Math.cos(a);for(const yy of[PH+.8,PH+WH-1.2])beam('vWood',[cx,yy,cz],[cx+dx*R,yy,cz+dz*R],.08,.08,aged);
-   const mx=cx+dx*R*.55,mz=cz+dz*R*.55;kput('vThatchB',[mx,PH+WH/2-.2,mz],qEuler(0,a,0),[.06,WH-2.4,R*.85],reed.clone().multiplyScalar(rr(.85,1.05)));}}
+  for(let k=0;k<8;k++){const a=k/8*TAU+.3,dx=Math.sin(a),dz=Math.cos(a),sc=rr(.85,1.05);if(o.rotor===false)continue;   // (its draw kept: the rest of the mill seeded the same)
+   for(const yy of[PH+.8,PH+WH-1.2])beam('vWood',[cx,yy,cz],[cx+dx*R,yy,cz+dz*R],.08,.08,aged);
+   const mx=cx+dx*R*.55,mz=cz+dz*R*.55;kput('vThatchB',[mx,PH+WH/2-.2,mz],qEuler(0,a,0),[.06,WH-2.4,R*.85],reed.clone().multiplyScalar(sc));}}
  vB('vWood',0,PH+WH,0,PW+.6,.24,PD*.9+.6,0,aged);for(let k=0;k<6;k++)kput('vRock',[rr(-4,4),PH+WH+.3,rr(-3,3)],qEuler(rng(),rng(),0),[.3,.2,.3],rub);
  // the meal: sacks, a cart, a low wall round the yard
  vnSacks(3,0,PD/2+2,5);vnSacks(-4,0,PD/2+3,3);vnFence(0,0,0,PW+8,PD+8,0,aged,3,1);vnFolk(0,PD/2+4,2,1.5);}
@@ -121,9 +127,43 @@ function buildXaWatermill(G,o){reseed(30641+(o.v|0));const V=xV(o),W=7,D=8,P=2.4
  for(let k=0;k<2;k++)kput('vPostS',[W/2+2.6,.4,-2+k*1.6],qEuler(0,0,Math.PI/2+.1),[.8,.28,.8],xC(0xb0aaa0));
  vnSacks(3.6,0,5.6,4);xnTree(-6,4,4.5);vnFolk(4,7.5,2,1.2);}
 
+// ---------------------------------------------------------------- the herders' works (2026-10-20: core/hamlet's ranch villages asked for them)
+// the stone pen: a drystone ring (the gate to the south), a lean-to of poles and thatch along its back, a trough, hay
+function buildXaPens(G,o){reseed(30651+(o.v|0));const V=xV(o),W=V===2?12:14,D=V===2?12:14,H=1.5;
+ const rub=xC(xPick(XPAL.rubble)),aged=xC(xPick(XPAL.aged)),thatch=xC(xPick(VPAL.thatch));
+ vnReg('Stone pen',0,0,W/2+.5,H+2);
+ xnWall(0,0,-D/2+.4,W,H,.8,0,rub,'stone');for(const s of[-1,1])xnWall(s*(W/2-.4),0,0,.8,H,D-1.6,0,rub,'stone');
+ for(const s of[-1,1])xnWall(s*(W/4+.6),0,D/2-.4,W/2-1.2,H,.8,0,rub,'stone');   // the gate's gap between the south wall's two halves
+ for(const s of[-1,1])vPst('vPost',s*1.25,0,D/2-.4,.1,H+.4,aged);
+ // the lean-to: poles at the front, the thatch sloping back onto the north wall
+ for(let k=0;k<4;k++)vPst('vPost',-W/2+1.6+k*(W-3.2)/3,0,-D/2+3.2,.08,H+.6,aged);
+ kput('vThatchB',[0,H+.75,-D/2+2],qEuler(-.28,0,0),[W-1.4,.18,3.4],thatch);
+ vB('vStone',W/2-2.4,0,1.2,2.2,.5,.7,0,rub);vB('xPaint',W/2-2.4,.42,1.2,1.9,.06,.45,0,xC(XPAL.water));   // the trough and its water
+ xnFodder(-W/2+2,0,-D/2+1.4,2.4,0,thatch);xnFodder(-W/2+2,.7,-D/2+1.4,1.8,0,thatch);vnFolk(0,D/2+1.6,1,1);}
+// the corral for the dzo: a post-and-rail fence round a beaten ring, a gate, the snubbing post in the middle, a trough
+function buildXaCorral(G,o){reseed(30661+(o.v|0));const V=xV(o),W=V===2?16:18,D=V===2?16:18;
+ const aged=xC(xPick(XPAL.aged)),rub=xC(xPick(XPAL.rubble)),earth=xC(0x8a7658);
+ vnReg('Corral',0,0,W/2+.5,3);
+ vB('xEarthB',0,-.02,0,W-.4,.04,D-.4,0,earth);vnFence(0,0,0,W,D,0,aged,3.2,1.4);
+ vPst('vPostB',0,0,0,.16,1.9,aged);vB('vStone',-W/2+1.6,0,-D/2+3,.7,.5,2.4,0,rub);vB('xPaint',-W/2+1.6,.42,-D/2+3,.45,.06,2.1,0,xC(XPAL.water));
+ vnFolk(1.5,D/2+1.4,1,1);}
+// the dairy: a whitewashed house of one storey on a fieldstone plinth, its churns and the cheese drying on a rack
+function buildXaDairy(G,o){reseed(30671+(o.v|0));const V=xV(o),W=8,D=5.6,P=.5,H=3.3;
+ const rub=xC(xPick(XPAL.rubble)),wash=xC(xPick(XPAL.wash)),aged=xC(xPick(XPAL.aged)),trim=xC(xPick(XPAL.trim));
+ vnReg('Dairy',0,0,5.5,P+H+1);
+ xnWall(0,0,0,W+.6,P,D+.6,0,rub,'stone');const S=xnStack(0,P,0,W,D,0,[H],wash,'wash');
+ vnDoor(-1.6,P,D/2*.99,0,1,1.9,'vWood',aged,aged,true);vnWin(1.8,P+1.3,D/2*.99,0,.6,.6,'open','xPaint',trim);vnWin(W/2*.99,P+1.3,0,Math.PI/2,.5,.5,'shut','xPaint',trim);
+ xnFlatRoof(0,P+H,0,S.w,S.d,0,wash,{parapet:.45});
+ for(let k=0;k<4;k++)vPst('vClayPot',-W/2+.6+k*.7,0,D/2+.9,.24,.95,xC(0xd8d0c0));      // the churns by the door
+ for(const s of[-1,1])vPst('vPost',W/2+1.6,0,s*1.6,.06,1.8,aged);for(const yy of[1.0,1.5])beam('vWood',[W/2+1.6,yy,-1.6],[W/2+1.6,yy,1.6],.05,.05,aged);
+ for(let k=0;k<6;k++)kput('vClayPot',[W/2+1.6,1.06+(k%2)*.5,-1.2+Math.floor(k/2)*1.2],null,[.16,.1,.16],xC(0xe8d8a8));   // the cheeses on the rack
+ vnFolk(0,D/2+2.2,1,1);}
 const XTAG_FARM=(wealth,more)=>({type:['farm'].concat(more||[]),wealth,lit:false});
 XA.def({key:'xa_farm',name:'Terraced fields',family:'Farms and mills',tags:XTAG_FARM('poor'),w:56,d:44,h:6,fw:48,fd:40,build:buildXaFarm});
 XA.def({key:'xa_farmhouse',name:'Farmstead',family:'Farms and mills',tags:XTAG_FARM('poor',['single-family dwelling']),w:30,d:26,h:10,fw:24,fd:20,build:buildXaFarmhouse});
 XA.def({key:'xa_granary',name:'Granary',family:'Farms and mills',tags:XTAG_FARM('middle'),w:16,d:16,h:8,build:buildXaGranary});
 XA.def({key:'xa_windmill',name:'Windmill (asbad)',family:'Farms and mills',tags:XTAG_FARM('middle',['industry']),w:20,d:20,h:13,build:buildXaWindmill});
+XA.def({key:'xa_pens',name:'Stone pen',family:'Farms and mills',tags:XTAG_FARM('poor'),w:14,d:14,h:1.5,fw:14,fd:14,nv:2,build:buildXaPens});
+XA.def({key:'xa_corral',name:'Corral (the dzo)',family:'Farms and mills',tags:XTAG_FARM('poor'),w:20,d:20,h:1.4,fw:18,fd:18,nv:2,build:buildXaCorral});
+XA.def({key:'xa_dairy',name:'Dairy',family:'Farms and mills',tags:XTAG_FARM('poor',['industry']),w:10,d:7,h:4.6,fw:9,fd:7,build:buildXaDairy});
 XA.def({key:'xa_watermill',name:'Watermill',family:'Farms and mills',tags:XTAG_FARM('middle',['industry']),w:20,d:30,h:9,build:buildXaWatermill});
