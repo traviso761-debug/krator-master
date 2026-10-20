@@ -265,8 +265,10 @@ variants. Korona, later, needs the same `bed` and `salt` response for its share 
 
 ## 9. Order of work
 
-1. **Data.** Refresh `source/regions.json` from the live collection; the extractor's overlay layer and the floods,
-   lakes, dams and the flood lake in `region.json`.
+1. **Data.** *Done 2026-10-20:* the live collections in `openworld/north-basin/source/` (little-demo's copy stays its
+   frozen 4.19 input); the extractor's overlay layer (`overlay.png`) and the old waters (`palaeo.png`, `region.json`
+   `palaeo`: each dam lake, the flood lake at 834 m, the dams and floods); the north basin cut into
+   `openworld/north-basin/data/` (its README).
 2. **`KBASIN` and `KSCOUR`** in `core/terrain`, `[G data]`, with node tests (a tile alone and in a full build give the
    same records).
 3. **`biomes/nsemiarid`**, the kit and its showcase.

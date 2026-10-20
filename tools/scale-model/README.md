@@ -295,6 +295,16 @@ is the first user (its README.md says how to refresh it). `--add <polygons.json>
 the cut, a JSON list of `{name, map_px}`: the box covers them all and the mask is the union (`region.json` region `added`,
 `union_km2`). The isle demo uses it for the two areas its owner added (`openworld/isle-demo/source/added-areas.json`).
 
+**Overlays and the old waters (2026-10-20, `biomes/nsemiarid/PLAN.md` section 3).** The regions in `OVERLAYS` (`floodzone`,
+`dam`, `dam 2`) are layers that own no ground: they stay out of `biome.png` and are written, as drawn, one bit each to
+`overlay.png` (`region.json` `overlays`: bit, name, the build that draws it). The owner's tool polygons (`Region 65`) are
+no biome either. Where the page carries `DATA.palaeolakes`, `palaeo.png` (one bit per body, on the height grid, dilated
+`PALAEO_PAD` cells: the world's own contour at the level draws the shore) and `region.json` `palaeo` give each dam lake
+(level, sill = its notch's floor, the bathtub ring's 30 m, the water over and under the sill, its remnant lakes today),
+the **flood lake** (every dam lake's water over its sill pooled where the last breach ends, from that body's level today:
+4.21 gives 834 m over 79,930 km2) and the dams and floods' courses in px and metres. Both only when they reach the box,
+so the other cuts are unchanged. `openworld/north-basin/` is the first user.
+
 ## To do on the model (owner's list)
 
 - **Done in 4.21 (the owner asked, 2026-10-19): the Lake of Shim**, above. Still to do from this item: refresh
