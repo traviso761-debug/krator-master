@@ -1443,6 +1443,7 @@ def izani_sash(gid, paint, tail_paint, ease=0.026, tail=0.34):
     c = spine_at(WAIST - 0.02)
     d = np.array([0.85, -0.5, 0]); d /= np.linalg.norm(d)
     t = flap(gid + '_sash_tail', _out(c, d, ease + 0.01), 0.09, tail, d, tail_paint, cols=4, rows=8, ease=0.02, sway=0.02)
+    t.cloth['layer'] = 2                      # over the robe's hem (at 1, the same layer, a stride's robe came through it)
     return [torso_tube(gid + '_sash', WAIST + 0.03, WAIST - 0.045, ease, paint, rows=3, n=40, hull_from=WAIST + 0.1), t]
 
 

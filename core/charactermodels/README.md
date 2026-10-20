@@ -329,7 +329,12 @@ weights the cloth below each chain's top to the two chains either side and the b
 lies on the body: within 4 cm of the skin it keeps the body's own weights, fading to the chains' by 9 cm (`CONTACT`),
 so a tilma lying on the back, a mantle over the shoulders and a skirt's band over the hips move with them (on chains
 held by the chest a cloak swung into the small of the back as the idle leaned forward); never over the legs, where a
-skirt lying on a thigh must leave it as the leg swings. `kit.json` keeps
+skirt lying on a thigh must leave it as the leg swings, nor for a legs item at all (a loincloth's back flap took each
+buttock's weights and pinched to a strip as the legs stood). A mantle or a cape (layer 2) lies on the garment's own
+layers under it as on the skin (over a tunic's shoulders or a bone plate it stood more than 4 cm off the skin, went to
+chains held by the spine, and the shoulders came out through it as the arms came down from the A-pose), and where it
+hangs clear of both it takes none of the arm's weight, the collarbone's instead (a cape's side edge took the A-posed
+upper arm's and swung out as the arm came down). `kit.json` keeps
 per chain its parent joint and anchor vertices, and `skeleton.json colliders` the body's capsules (thighs, shins,
 pelvis, chest, arms: a base radius and its change per morph target, `KCHAR.colliders`; for the push a radius at each
 end, `ra` and `rb`, since a limb tapers; and the seat, a pair of upright capsules behind the hip joints that cover the

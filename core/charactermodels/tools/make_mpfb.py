@@ -570,8 +570,31 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
         return out, float(np.clip((r - rows[0]) / 2.0, 0, 1))
     if body is not None:
         gap, near = body[0].query(P)
+        # a mantle or a cape (layer 2) lies on the garment's own layers under it as on the skin: over a tunic's
+        # shoulders or a bone plate it stood more than 4 cm off the skin, went to chains held by the spine, and the
+        # shoulders under it came out through it as the arms came down from the A-pose
+        lay = np.array([spec['parts'][where[int(v)][0]].get('layer', 0) if int(v) in where else -1 for v in V])
+        outer = lay == 2
+        if outer.any() and (~outer).any():
+            gap[outer] = np.minimum(gap[outer], cKDTree(P[~outer]).query(P[outer])[0])
         lying = np.clip((gap - CONTACT[0]) / (CONTACT[1] - CONTACT[0]), 0, 1)
         lying[body[1][near] > 0.5] = 1.0
+        # and where it hangs clear of both, it takes none of the arm's weight (the collarbone's instead): a cape's
+        # side edge, beside the A-posed upper arm, took the arm's and swung out as the arm came down
+        for gi in np.nonzero(outer)[0]:
+            for q in range(4):
+                n = names[int(JJ[gi, q])] if int(JJ[gi, q]) < len(names) else ''
+                sd = 'Left' if n.startswith('Left') else 'Right' if n.startswith('Right') else None
+                if WW[gi, q] > 0 and sd and ('Arm' in n or 'Hand' in n) and sd + 'Shoulder' in names:
+                    mv = WW[gi, q] * lying[gi]
+                    if mv <= 0: continue
+                    WW[gi, q] -= mv
+                    sh = names.index(sd + 'Shoulder')
+                    hit = [k for k in range(4) if int(JJ[gi, k]) == sh] or [k for k in range(4) if WW[gi, k] <= 1e-6]
+                    if not hit:
+                        WW[gi, q] += mv                 # no free slot: it keeps the arm's
+                        continue
+                    JJ[gi, hit[0]] = sh; WW[gi, hit[0]] += mv
     for gi in range(len(P)):
         w = where.get(int(V[gi]))
         if w is None or w[0] not in by_part:
@@ -1083,7 +1106,7 @@ def main():
             cl = {'id': it['id'], 'spec': json.load(open(os.path.join(src, it['cloth'])))}
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
-                     skirt=crotch if hangs(it) else None, cloth=cl, body=contact,
+                     skirt=crotch if hangs(it) else None, cloth=cl, body=contact if it['slot'] != 'legs' else None,
                      head_above=c.jpos[c.J['Neck']][1] + 0.06 if it['slot'] == 'head' else None)
         roles.update(r)
         if it['id'] in DECIMATE:
