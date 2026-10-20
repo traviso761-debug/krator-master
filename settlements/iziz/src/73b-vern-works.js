@@ -58,7 +58,7 @@ function buildVernMine(G,o){reseed(8401+(o.v|0));const wood=vC(vPick(VPAL.woodPo
  // the rock mass: a battered hummock of grey-orange stone, crags on its brow and boulders at its foot
  vwkCrag(0,-7.5,24,7.8,7,rock,[[AX,2.6],[SX,0]]);
  // the adit: a dark mouth in the face, three timber sets lagged with boards, dry-stone wing walls
- vB('vDarkB',AX,0,-4.2,2.6,2.75,.7,0);
+ vB('vStone',AX,0,-4.5,2.6,2.75,.1,0,vC(0x4a4038));for(const s of[-1,1])vB('vWood',AX+s*.66,0,-4.0,1.26,2.6,.08,0,vC(VPAL.woodPoor[0]));vB('vWood',AX,1.2,-3.94,2.5,.14,.06,0,vC(VPAL.woodPoor[0]));
  for(const z of[-3.95,-2.95,-1.95]){for(const s of[-1,1])vPst('vPostB',AX+s*1.38,0,z,.15,2.8,dark);vB('vWood',AX,2.8,z,3.3,.3,.34,0,dark);}
  for(let k=0;k<8;k++)vB('vWood',AX-1.55+k*.44,3.1,-2.95,.4,.08,2.5,0,wood.clone().multiplyScalar(rr(.8,1.1)));
  for(const s of[-1,1]){vPl('vBoard',AX+s*1.55,.75,-2.95,2.2,1.4,s*Math.PI/2,wood);
@@ -75,7 +75,7 @@ function buildVernMine(G,o){reseed(8401+(o.v|0));const wood=vC(vPick(VPAL.woodPo
   for(const s of[-1,1])for(const t of[-1,1])vPst('vPost',cx+s*1.05,0,cz+t*.9,.07,1.05,dark);vwkHeap(cx,cz+.1,.95,.8,.75,ore,12);}
  {const bx=AX+2.2,bz=2.4;vB('vRustB',bx,.4,bz,.7,.4,1.0,.3);vwkCyl('vPipe',[bx-.1,.2,bz+.75],[bx+.1,.2,bz+.75],.2,iron);vBeam([bx-.35,.6,bz-.5],[bx-.45,.55,bz-1.3],.05,dark);vBeam([bx+.35,.6,bz-.5],[bx+.25,.55,bz-1.3],.05,dark);}
  // the shaft: a timber collar round the dark well, a four-legged headframe of salvaged pipe, braced; the sheave on top
- for(const s of[-1,1]){vB('vWood',SX,0,SZ+s*1.05,2.5,.45,.4,0,dark);vB('vWood',SX+s*1.05,0,SZ,.4,.45,1.7,0,dark);}vB('vDarkB',SX,0,SZ,1.72,.43,1.72,0);
+ for(const s of[-1,1]){vB('vWood',SX,0,SZ+s*1.05,2.5,.45,.4,0,dark);vB('vWood',SX+s*1.05,0,SZ,.4,.45,1.7,0,dark);}vB('vWood',SX,.33,SZ,1.72,.1,1.72,0,dark);
  const TOP=8.4,leg=(s,t,y)=>{const f=y/TOP;return[SX+s*(1.5-1.05*f),y,SZ+t*(1.5-1.05*f)];};
  for(const s of[-1,1])for(const t of[-1,1]){vwkCyl('vPipeR',leg(s,t,0),leg(s,t,TOP),.12,rust.clone().multiplyScalar(rr(.85,1.1)));vB('vStone',SX+s*1.5,-.1,SZ+t*1.5,.6,.25,.6,0,rock);}
  for(const y of[2.8,5.6]){for(const s of[-1,1]){vBeam(leg(s,-1,y),leg(s,1,y),.12,dark);vBeam(leg(-1,s,y),leg(1,s,y),.12,dark);}}

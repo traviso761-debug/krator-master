@@ -14,7 +14,16 @@ const IZIZ_HOST=KHOST.take({
  cutaway:IZIX.units.length?{units:IZIX.units}:undefined,   // every furnished building (95i-iziz-interiors.js)
  exporters:{tags:()=>KTAGS.page.export()},
  budget:BUDGET,api:window._api,
+ // E opens or shuts the nearest door within reach (69e5, 95j); flying, E still climbs as well
+ keys:{e:()=>{const D=izNearDoor();if(D)IZDOOR.toggle(D,{by:'player'});}},
 });
+// the door within reach of the eye: walking, the feet are the eye height below it
+function izNearDoor(){const p=camera.position,walk=!!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk);
+ return IZDOOR.nearest(p.x,p.y-(walk?1.7:1.2),p.z,walk?2.4:3);}
+{const tip=document.createElement('div');tip.id='izdoor';tip.style.cssText='position:fixed;left:50%;bottom:64px;transform:translateX(-50%);padding:4px 10px;border-radius:4px;background:rgba(20,16,12,.72);color:#f3e6cf;font:13px system-ui,sans-serif;pointer-events:none;display:none;z-index:20';
+ document.body.appendChild(tip);let n=0;
+ FRAME_HOOKS.push(()=>{if(n++%8)return;const D=IZDOOR.list.length?izNearDoor():null;
+  if(D){tip.textContent='E: '+(D.target>.5?'shut':'open')+' the door';tip.style.display='block';}else tip.style.display='none';});}
 KHOST.on(function izizHooks(dt){const now=performance.now();for(const f of FRAME_HOOKS)f(dt,now);},'tick');
 KHOST.on(function izizSky(){if(sky)sky.position.copy(camera.position);if(giant)giant.position.copy(camera.position).addScaledVector(giantDir,4000);},'view');
 KHOST.hover(true);   // the inspector's hover tip on, as Iziz's was

@@ -33,7 +33,7 @@ NIGHTLY_VERIFY = [
 ]
 GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd',
                'res://tests/mask/kmask_test.gd', 'res://tests/atmos/atmos_test.gd',
-               'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd',
+               'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd', 'res://tests/isle/isle_books_test.gd', 'res://tests/export/isle_test.gd', ('res://tests/export/isle_test.gd', '--case=world-isle-valapo', '--town=valapo'),
                'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
                'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/export/yuni_interiors_test.gd', 'res://tests/water/water_test.gd',
@@ -59,7 +59,8 @@ EXPORT_ASSERT = False
 BUILD_FIRST = ['kits/interiors']
 # A node test that reads a build's output runs after the builds (in CI its input is an LFS pointer until the build
 # writes it); with --no-build it runs with the other node tests, on the committed output.
-NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js']   # dist/isle-city.plan.js
+NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js', 'settlements/isle-demo/tests/test-isle-sim.js',
+                    'settlements/isle-demo/tests/test-isle-week.js', 'settlements/isle-demo/tests/test-isle-export.js']   # dist/isle-city.plan.js
 
 
 def builds():

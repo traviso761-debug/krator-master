@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 400 (31%) | 24 (2%) | 52 (4%) | 131 (10%) | 668 (52%) |
+| KB | 485 (31%) | 24 (2%) | 54 (3%) | 129 (8%) | 890 (56%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -17,7 +17,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/12-stats.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/30-kit.js` | 3.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 2 | 2 | 5 | 0 | 0 | 0 |  |
 | `src/32-surfaces.js` | 7.7 | [draw] | 16 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/34-kitdefs.js` | 9.0 | [draw] | 24 | 2 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/34-kitdefs.js` | 10.1 | [draw] | 25 | 2 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/36-decor.js` | 13.2 | [draw] | 12 | 0 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/38-helpers2.js` | 7.8 | [draw] | 14 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-factory-extras.js` | 4.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
@@ -25,56 +25,72 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/46-bunker.js` | 4.7 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/48-library.js` | 3.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-registry.js` | 0.6 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/52-sky-abc.js` | 28.9 | [G native] | 19 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/52-sky-abc.js` | 30.1 | [G native] | 19 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/54-mat-concrete.js` | 4.2 | [draw] | 8 | 2 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-sky-d.js` | 5.8 | [G native] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/57-sky-e.js` | 3.4 | [G native] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/58-sky-f.js` | 4.7 | [G native] | 1 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-houses-def.js` | 8.8 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/57-sky-e.js` | 3.5 | [G native] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/58-sky-f.js` | 5.2 | [G native] | 1 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/64-houses-def.js` | 9.3 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/66-office-c.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/69-mat-salvage.js` | 15.6 | [draw] | 32 | 5 | 0 | 0 | 0 | 14 | 5 | 1 | 0 | 0 | 0 |  |
-| `src/69b-vern-mat.js` | 14.0 | [draw] | 27 | 8 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69c-vern-helpers.js` | 22.0 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69e-vern-hollow.js` | 12.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/67-cultural.js` | 7.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/69-mat-salvage.js` | 16.7 | [draw] | 34 | 5 | 0 | 0 | 0 | 14 | 5 | 1 | 0 | 0 | 0 |  |
+| `src/69b-vern-mat.js` | 14.4 | [draw] | 28 | 8 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/69c-vern-helpers.js` | 22.3 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/69e-vern-hollow.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/69e5-iziz-openings.js` | 16.0 | [draw] | 6 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69f-iziz-fixtures.js` | 3.0 | [G data] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | M5: notes the vernacular helpers' doors, windows and lamps in the world frame (THREE.Vector3 for the kit transform only); 91t registers them |
-| `src/70-vern-dwellings.js` | 23.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/70-vern-dwellings.js` | 23.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/71-vern-trade.js` | 19.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/71a-vern-food.js` | 22.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/71b-vern-cloth.js` | 22.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/71c-vern-craft.js` | 28.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/72-vern-civic.js` | 16.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/73-police.js` | 4.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/72-vern-civic.js` | 17.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/73-police.js` | 8.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/73-vern-infra.js` | 8.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/73b-vern-works.js` | 30.9 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/73b-vern-works.js` | 31.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/73c-vern-land.js` | 34.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/74-vern-guilds.js` | 34.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/74-vern-guilds.js` | 35.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74b-vern-frontier.js` | 38.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/74z-vern-trades.js` | 6.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/75-port-embassy.js` | 23.6 | [draw] | 17 | 4 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/75-hotel.js` | 15.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/75-port-embassy.js` | 24.8 | [draw] | 16 | 4 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76-campus.js` | 10.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/76-port-chapterhouse.js` | 16.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/77-anc-guilds.js` | 20.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/77z-iziz-style.js` | 52.7 | [draw] | 37 | 1 | 0 | 0 | 0 | 32 | 3 | 0 | 0 | 0 | 0 |  |
+| `src/76-port-chapterhouse.js` | 17.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/77-anc-guilds.js` | 20.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/77z-iziz-style.js` | 54.7 | [draw] | 37 | 1 | 0 | 0 | 0 | 32 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/78-factory-silo.js` | 2.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/78-transplant.js` | 25.1 | [draw] | 11 | 0 | 0 | 0 | 0 | 9 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/78-transplant.js` | 25.2 | [draw] | 11 | 0 | 0 | 0 | 0 | 9 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/78s-iziz-towers-plan.js` | 34.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/78t-iziz-temple-ix.js` | 8.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/78u-iziz-arena-ix.js` | 7.0 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/78v-iziz-guilds-ix.js` | 9.2 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/78v-iziz-towers-ix.js` | 33.4 | [draw] | 15 | 0 | 0 | 0 | 0 | 10 | 0 | 1 | 2 | 0 | 0 |  |
+| `src/78w-iziz-ancients-plan.js` | 35.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/79-government.js` | 7.7 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/79-iziz-original.js` | 22.5 | [draw] | 17 | 0 | 0 | 0 | 0 | 14 | 1 | 0 | 0 | 0 | 0 |  |
+| `src/79-iziz-original.js` | 22.9 | [draw] | 17 | 0 | 0 | 0 | 0 | 14 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/80-aa-battery.js` | 1.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-houses-abc.js` | 6.3 | [draw] | 9 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
-| `src/82-apartments.js` | 8.0 | [draw] | 6 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/82-apartments.js` | 12.8 | [draw] | 9 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/83-amphitheater.js` | 8.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/84-fuel.js` | 4.0 | [draw] | 3 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/84-fuel.js` | 4.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-factory.js` | 9.1 | [draw] | 5 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88y-iziz-matlib.js` | 5.0 | [G data] | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | the material library on MAT and the city's late tables (KMAT.bindMat), and every material as a KMAT record naming its shader-library hook |
-| `src/89-lab.js` | 6.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-lab.js` | 9.5 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89x-iziz-defight.js` | 5.1 | [draw] | 1 | 0 | 0 | 0 | 0 | 4 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/8aj-alt-a-bole.js` | 15.2 | [draw] | 14 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8aj-alt-d-flat.js` | 9.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8ak-alt-a-houses.js` | 25.1 | [draw] | 28 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8ak-alt-b-civic.js` | 27.2 | [draw] | 22 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8ak-alt-c-works.js` | 20.6 | [draw] | 19 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-scene.js` | 3.4 | [web] | 14 | 1 | 1 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 2.9 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/91t-iziz-tags.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | REG into core/tags before the first frame (core/tags/README.md); M5: lots, fixtures as children, the kit's item sets |
 | `src/92-camera.js` | 1.2 | [web] | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | what stays of the camera on core/host: ui, uiButton, setView, Labels (2026-10-15) |
 | `src/93-labels.js` | 6.2 | [G shader] | 7 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
-| `src/95i-iziz-interiors.js` | 15.2 | [web] | 11 | 0 | 0 | 0 | 2 | 3 | 6 | 1 | 0 | 0 | 0 | split: data inside host code; keeps IZIX.jobs (the plans) and IZIX.placed (each piece's batch arguments) for core/export |
-| `src/99-start.js` | 1.9 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views, ground, records, inspector words, minimap; FRAME_HOOKS before the camera, the sky after it: host shell |
+| `src/95i-iziz-interiors.js` | 22.1 | [web] | 16 | 0 | 0 | 0 | 2 | 4 | 6 | 1 | 0 | 0 | 0 | split: data inside host code; keeps IZIX.jobs (the plans) and IZIX.placed (each piece's batch arguments) for core/export |
+| `src/95j-iziz-doors.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/99-start.js` | 2.8 | [web] | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views, ground, records, inspector words, minimap; FRAME_HOOKS before the camera, the sky after it: host shell |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/city/84-city-geo.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/85-city-paint.js` | 5.4 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
@@ -91,14 +107,17 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/city/86-bio-65-biome-hyperjungle-dress.js` | 6.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/86-bio-70-biome-hyperjungle.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/87-city-layout.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/city/88-city-place.js` | 14.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/city/89z-rows.js` | 0.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/90a-city-world.js` | 9.0 | [web] | 9 | 1 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/city/90b-city-build.js` | 42.8 | [draw] | 9 | 0 | 0 | 0 | 4 | 6 | 3 | 0 | 0 | 0 | 0 | split: the city's placement and build passes in one (clusters, guilds and civic, vernacular fill, farms, jungle): a [G data] pass that writes placement records, then the [draw] pass and bakes; timing reads go to the host. Was provisionally [web] |
+| `targets/city/88-city-place.js` | 16.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/city/89z-rows.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/city/90a-city-world.js` | 9.5 | [web] | 9 | 1 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/city/90b-city-build.js` | 45.7 | [draw] | 9 | 0 | 0 | 0 | 4 | 6 | 3 | 0 | 0 | 0 | 0 | split: the city's placement and build passes in one (clusters, guilds and civic, vernacular fill, farms, jungle): a [G data] pass that writes placement records, then the [draw] pass and bakes; timing reads go to the host. Was provisionally [web] |
 | `targets/city/90c-city-atmos.js` | 10.5 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `targets/city/91z-views.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/93-city-ui.js` | 4.3 | [web] | 1 | 2 | 6 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/city/94-city-export.js` | 33.7 | [web] | 8 | 3 | 0 | 0 | 0 | 6 | 5 | 3 | 0 | 0 | 0 | M5: the city's core/export contributor; reads the three.js scene at export time (canvas 2D only for the PNG bakes of procedural maps), draws nothing. On a page with interiors (95i: a kit's sheet) also the interiors section and the furniture as pieces (each rebuilt alone through the catalog batch, never added to the scene) |
+| `targets/city/94-city-export.js` | 22.8 | [web] | 2 | 0 | 0 | 0 | 0 | 6 | 1 | 1 | 0 | 0 | 0 | M5: the city's core/export contributor; reads the three.js scene at export time (canvas 2D only for the PNG bakes of procedural maps), draws nothing. On a page with interiors (95i: a kit's sheet) also the interiors section and the furniture as pieces (each rebuilt alone through the catalog batch, never added to the scene) |
+| `targets/ixtest/89y-ix-wrappers.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/ixtest/89z-rows.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/ixtest/91z-views.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/palace/78p-palace-plan.js` | 17.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | generated by palace/export_plan.py: the blueprint's rooms, plain data |
 | `targets/palace/78q-palace-layout.js` | 32.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the blueprint laid into storeys (spaces, walls, doors, stairs): no three.js, no DOM; node palace/test-palace.js runs it |
 | `targets/palace/78r-palace-draw.js` | 43.1 | [draw] | 30 | 0 | 0 | 0 | 2 | 13 | 0 | 0 | 0 | 0 | 0 | draws 78q's layout into kit instances (shells, liners, finishes, stairs); its output crosses as meshes |

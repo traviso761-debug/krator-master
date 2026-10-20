@@ -27,10 +27,10 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
    // and hid the floors) at a grid fine enough to line up with it, and the
    // plates are pale with a dark soffit instead of dark on dark
    mesh(lathe({rFn:y=>rFn(y+y0)*.86,H:H-y0,cut:cut!=null?L:null,jag:6,nu:64,nv:Math.max(8,Math.round(L/6)),hole,seed:47}),MAT.guts,P);
-   for(let y=6;y<L-2;y+=6){const rp=rFn(y+y0);
+   if(!skyIx())for(let y=6;y<L-2;y+=6){const rp=rFn(y+y0);
     kput('slab',[0,y,0],null,[rp*.9,.6,rp*.9],new THREE.Color(0xbdb7ad));
     kput('slab',[0,y-1.3,0],null,[rp*.87,.7,rp*.87],new THREE.Color(0x191b1f));}
-   skyRooms({rFn:y=>rFn(y+y0)*.84,y0:6,y1:L-2,step:6,soff:1.3,hole,d,seed:47});}   // interiors behind the openings (52-sky-abc.js)
+   if(!skyIx())skyRooms({rFn:y=>rFn(y+y0)*.84,y0:6,y1:L-2,step:6,soff:1.3,hole,d,seed:47});}   // interiors behind the openings (52-sky-abc.js)
   const NB=28,burns=PROJ?fireMask('D',NB,Math.ceil(L/12),9134,9):null;
   const dRib=[];   // the ruined ribbons merge; the intact ones are glass, which does not
   for(let y=12-((y0)%12);y<L-4;y+=12){const yy=y+y0;const r0=rFn(yy)*.95; // glass ribbon in each recess

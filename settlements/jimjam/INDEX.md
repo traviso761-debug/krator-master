@@ -26,7 +26,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 8 | surfaces (1) |
-| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
+| `34-kitdefs.js` | 10 | kit definitions (shared geometry) (1); THE LEAF CARD (54) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `37-sockets.js` | 2 | SOCKETS: where a culture's marks go (shared: cor (1) |
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
@@ -44,7 +44,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `75-jj-palace.js` | 22 | - (149) |
 | `76-jj-military.js` | 31 **big** |  |
 | `77-jj-agri.js` | 26 |  |
-| `78-jj-trades.js` | 5.0 | Voth census trades table (JIMJAM_TRADES) |
+| `78-jj-trades.js` | 5 |  |
 | `80-cultures.js` | 15 | CULTURE PACKS (shared: core/sockets/) (1); generic: faded tarp, rag, plain iron (17); symbols: each draws in the box (cx,cy,R) with tw (45); the factory: a culture is a palette, a symbol an (60); the packs (add a culture = one mkCulture call) (80) |
 | `81-sky.js` | 10 |  |
 | `84-jj-furniture.js` | 5 |  |

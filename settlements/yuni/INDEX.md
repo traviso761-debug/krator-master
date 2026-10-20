@@ -28,7 +28,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `yuni.tex.yuni.js` | 12087 **big** |  |
+| `yuni.tex.yuni.js` | <1 |  |
 
 ## src/
 
@@ -74,7 +74,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `64-interiors.js` | 77 **big** | 15d. INTERIORS (1); THE PLANNER (225); THE MINIMUM KIT (554); GEOMETRY (703) |
 | `65-summit.js` | 2 | 17. THE SUMMIT (1) |
 | `66-canal.js` | 7 | 16b. THE CANAL WORKS (1) |
-| `67-yu-trades.js` | 6 | YU_TRADES: the Voth census table (1) |
+| `67-yu-trades.js` | 6 | = (1) |
 | `68-place.js` | 40 **big** | 18b. THE INNER-CITY PLACEMENT PASS (1) |
 | `69b-yuni-biohost.js` | 7 | 18c. YUNI — the biome host binding (1) |
 | `69z-yuni-badlands.js` | 3 | 18d. YUNI — planting the eastern badlands (1) |

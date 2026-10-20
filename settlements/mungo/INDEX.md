@@ -44,4 +44,4 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `84-mungo-life.js` | 18 | 20. THE LIFE LAYER — MUNGO: the embodiment (1) |
 | `85-probe.js` | 1 | 29. PROBE — MUNGO (1) |
 | `88c-mungo-minimap.js` | 1 | MINIMAP — MUNGO's own records (1) |
-| `88d-mungo-trades.js` | 6 | THE VOTH CENSUS OF TRADES (1) |
+| `88d-mungo-trades.js` | 7 | THE VOTH CENSUS OF TRADES [G data] (1) |

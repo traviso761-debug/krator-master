@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 26 (5%) | 19 (3%) | 27 (5%) | 34 (6%) | 468 (81%) |
+| KB | 32 (6%) | 19 (3%) | 27 (5%) | 34 (6%) | 468 (81%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -84,8 +84,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/92-camera.js` | 1.5 | [web] | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | what stays of the camera on core/host: ui, setView, the title, LOD's options (2026-10-15) |
 | `src/94-life.js` | 10.7 | [draw] | 19 | 0 | 0 | 0 | 0 | 4 | 0 | 5 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/95-pathviz.js` | 4.0 | [web] | 10 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the path tracker; its Routes and Tracks are core/host layers (window._tracker, 2026-10-15) |
+| `src/96s-screamers-trades.js` | 5.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table SCREAM_TRADES: no three.js, no geometry, no DOM |
 | `src/96t-screamers-tags.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md): class and tags from the name and builder type (2026-10-15) |
-| `src/96s-screamers-trades.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table SCREAM_TRADES: no three.js, no geometry, no DOM |
 | `src/99-start.js` | 2.1 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views, ground, records, TICKS, the sky, layers (rings, routes, tracks), inspector words, minimap: host shell |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/furniture/89z-rows.js` | 0.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

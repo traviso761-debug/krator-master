@@ -1,7 +1,9 @@
 /* ============================== 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK ============================== */
 /* [web] ?town=Kautoa (the default) or Valapo: that town is planned and drawn; then the other is planned too (not drawn),
-   so the probe carries both towns' census and checks. window._city is the probe verify.py reads:
-     {ready, both, town, ms, census: {town: ...}, checks: {town: [...]}, draw: DRAW.stats, failed, missing, errors, view(name)}
+   so the probe carries both towns' census and checks; then both towns are declared on core/simulation (P7b), held until
+   "run the sim" (57). window._city is the probe verify.py reads:
+     {ready, both, town, ms, census: {town: ...}, checks: {town: [...]}, draw: DRAW.stats, failed, missing, errors, view(name),
+      sim (ISLE.SIM), simPlans: {town: R}, otherG (the other town's ground), holds (ISLE.simHolds(town): the stocks map for core/host), simError}
    The camera orbits a target on the ground: drag to turn, right-drag (or shift-drag) to pan, the wheel to zoom; the near
    set of full pieces follows the target. The view buttons are each town's places. */
 var CAM = { t: [0, 0, 0], yaw: 0.6, pitch: 0.55, dist: 2600 };
@@ -77,8 +79,10 @@ setTimeout(function () {
     ISLE.TOWNS.forEach(function (t) { var b = document.createElement('button'); b.textContent = t; if (t === town) b.className = 'on'; b.onclick = function () { location.search = '?town=' + t; }; ui.appendChild(b); });
     Object.keys(ISLE.VIEWS[town]).forEach(function (v) { var b = document.createElement('button'); b.textContent = v; b.onclick = function () { ISLE.view(v); }; ui.appendChild(b); });
     var hud = document.getElementById('hud');
-    var loop = function () { requestAnimationFrame(loop); if (typeof RINGSEA !== 'undefined') RINGSEA.tick(performance.now() / 1000); renderer.render(scene, camera);
-      if (hud) hud.textContent = town + ': ' + cur.census.buildings + ' buildings, ' + cur.census.households + ' households · near ' + DRAW.stats.near + ' full · ' + renderer.info.render.calls + ' calls'; };
+    var hudAt = 0, simLine = '';
+    var loop = function () { requestAnimationFrame(loop); var now = performance.now(); if (typeof RINGSEA !== 'undefined') RINGSEA.tick(now / 1000); ISLE.runTick(now); ISLE.citizens.tick(now); ISLE.canoes.tick(now); renderer.render(scene, camera);
+      if (now - hudAt > 500) { hudAt = now; simLine = ISLE.runText(town); }
+      if (hud) hud.textContent = town + ': ' + cur.census.buildings + ' buildings, ' + cur.census.households + ' households · near ' + DRAW.stats.near + ' full · ' + renderer.info.render.calls + ' calls' + (simLine ? ' · ' + simLine : ''); };
     loop();
     if (note) note.style.display = 'none';
     var census = {}, checks = {}; census[town] = cur.census; checks[town] = cur.checks;
@@ -91,8 +95,19 @@ setTimeout(function () {
         var other = ISLE.TOWNS.filter(function (t) { return t !== town; })[0], O = ISLE.plan(other, SITE_INIT);
         census[other] = O.census; checks[other] = O.checks; window._city.other = { town: other, ms: O.ms, failed: O.R.failed, missing: O.R.missing, log: O.R.log, world: O.R.world };
         lap('plan ' + other);
+        /* P7b: both towns declared on core/simulation (src/40-46), in the same order whichever town is drawn; held until
+           "run the sim" (57), the drawn town's people near the camera (59); verify.py runs their day (ISLE.simDay) and
+           their checks */
+        try {
+          window._city.sim = ISLE.simDeclare([{ R: cur.R, G: cur.G }, { R: O.R, G: O.G }]);
+          var sp = {}; sp[town] = cur.R; sp[other] = O.R; window._city.simPlans = sp; window._city.otherG = O.G; window._city.holds = ISLE.simHolds(town);
+          ISLE.simWatch(town);   /* P7d: the drawn town presented, the other abstract */
+          ISLE.runUI(ui); lap('sim');
+        } catch (e2) { window._city.simError = String(e2 && e2.stack || e2); }
       } catch (e) { window._city.otherError = String(e && e.stack || e); }
-      window._city.both = true;
+      /* ?simAt=minute: the sim run to that minute first (the export's case: 355, people on their way to work) */
+      var sa = /[?&]simAt=(\d+)/.exec(location.search); if (sa && ISLE.SIM && +sa[1] > ISLE.SIM.clock.m) ISLE.simRun(+sa[1] - ISLE.SIM.clock.m);
+      window._city.both = true; window._ready = true;   /* tools/harness.py (export, smoke) waits for it */
     }, 30);
   } catch (e) { fail(e); }
 }, 50);

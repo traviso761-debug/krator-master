@@ -5,7 +5,7 @@
 const VTAG_CIV={type:['civic'],wealth:'civic',lit:true};
 
 // stone civic block helper: stone box, stepped cornice, deco strips between lit windows on the front face
-function vnCivicBlock(x,y,z,w,h,d,ry,st,stD,winY,winH,nWin,strips){vB('vStone',x,y,z,w,h,d,ry,st);const top=vnCornice('vStone',x,y+h,z,w,d,ry,st,2);
+function vnCivicBlock(x,y,z,w,h,d,ry,st,stD,winY,winH,nWin,strips){vnBody('vStone',x,y,z,w,h,d,ry,st,{t:.45});const top=vnCornice('vStone',x,y+h,z,w,d,ry,st,2);
  for(let i=0;i<nWin;i++){const lx=-w/2+w*(i+.5)/nWin;const p=loc(x,z,lx,d/2,ry);vnWin(p[0],y+winY,p[1],ry,1.2,winH,'lit','vStone',st);
   if(strips&&i<nWin-1){const q=loc(x,z,lx+w/(2*nWin),d/2+.02,ry);vnStrip(q[0],y+winY-.5,q[1],ry,.55,winH+1.1,'vStone',stD);}}
  return top;}
@@ -15,7 +15,7 @@ function buildVernSchool(G,o){reseed(7501+(o.v|0));const st=vC(vPick(VPAL.stone)
  vnReg('School',0,0,17,15);
  const HW=16,HD=8,HZ=-7,Y0=.5;vB('vStone',0,0,0,30,Y0,26,0,stD);
  // main hall: two storeys of stone
- vB('vStone',0,Y0,HZ,HW,4.0,HD,0,st);const c1=vnCornice('vStone',0,Y0+4.0,HZ,HW,HD,0,st,1,false);
+ vnBody('vStone',0,Y0,HZ,HW,4.0,HD,0,st,{t:.45});const c1=vnCorniceBand('vStone',0,Y0+4.0,HZ,HW,HD,0,st,1,false,.45);
  const top=vnCivicBlock(0,c1,HZ,HW-.4,3.6,HD-.4,0,st.clone().multiplyScalar(1.03),stD,1.0,1.6,5,true);
  for(const x of[-5,-2.5,2.5,5])vnWin(x,Y0+1.3,HZ+HD/2,0,1.2,1.8,'lit','vStone',st);vnDoor(0,Y0,HZ+HD/2,0,1.7,2.9,'vStone',st,vC(0x4a2e1c));
  for(const s of[-1,1])for(const z of[-2,2]){vnWin(s*HW/2,Y0+1.3,HZ+z,s*Math.PI/2,1.1,1.7,'lit','vStone',st);vnWin(s*(HW/2-.2),c1+1.0,HZ+z,s*Math.PI/2,1.1,1.5,'lit','vStone',st);}
@@ -27,9 +27,9 @@ function buildVernSchool(G,o){reseed(7501+(o.v|0));const st=vC(vPick(VPAL.stone)
   kput('vPyrCu',[tx,TH+3.45,tz],null,[3.8,2.2,3.8],cu);vBall('vFinial',tx,TH+5.9,tz,.22);
   vB('vWood',tx,TH+2.9,tz,.1,.4,.1,0,wood);kput('vBall',[tx,TH+2.0,tz],null,[.5,.6,.5],vC(0x7a6a2a));}
  // classroom wings: single storey stone with timber verandas facing the yard, copper shed roofs
- for(const s of[-1,1]){const wx=s*10.5,WW=7,WD=13,wz=1.5;vB('vStone',wx,Y0,wz,WW,3.6,WD,0,st);const t=vnCornice('vStone',wx,Y0+3.6,wz,WW,WD,0,st,1);
+ for(const s of[-1,1]){const wx=s*10.5,WW=7,WD=13,wz=1.5;vnBody('vStone',wx,Y0,wz,WW,3.6,WD,0,st,{t:.4});const t=vnCornice('vStone',wx,Y0+3.6,wz,WW,WD,0,st,1);
   vnShedRoof(wx,t,wz,WD,WW,1.4,-s*Math.PI/2,'vCopperB',cu,.9,.16);   // high on the outer wall: the roof drains toward the yard, onto the veranda roof below it
-  const fx=wx-s*WW/2;for(const z of[-4.2,-1.4,1.4,4.2])vnWin(fx,Y0+1.2,wz+z,-s*Math.PI/2,1.3,1.7,'lit','vStone',st);vnDoor(fx,Y0,wz-5.6,-s*Math.PI/2,1.2,2.4,'vStone',st,vC(0x4a2e1c),false);
+  const fx=wx-s*WW/2;for(const z of[-4.2,-1.4,1.4,4.2])vnWin(fx,Y0+1.2,wz+z,-s*Math.PI/2,1.3,1.7,'lit','vStone',st);vnDoor(fx,Y0,wz,-s*Math.PI/2,1.2,2.4,'vStone',st,vC(0x4a2e1c),false);   /* between the middle windows: at wz-5.6 it stood where the wing overlaps the hall, the hall's wall a metre behind it */
   vnVeranda(fx-s*1.3,Y0,wz,WD,2.6,-s*Math.PI/2,.04,3.0,wood);vnShedRoof(fx-s*1.3,Y0+3.0,wz,WD,2.6,.6,-s*Math.PI/2,'vCopperB',cu,.4,.12);
   for(const z of[-3,0,3])vnWin(wx+s*WW/2,Y0+1.4,wz+z,s*Math.PI/2,1.1,1.3,'glass','vStone',st);}
  // the yard: paving, a thatch shade on posts with benches under it, planters, lamps, a low wall with a gate to the front
@@ -46,17 +46,17 @@ function buildVernSchool(G,o){reseed(7501+(o.v|0));const st=vC(vPick(VPAL.stone)
 function buildVernHospital(G,o){reseed(7511+(o.v|0));const st=vC(vPick(VPAL.stone)),stD=vC(vPick(VPAL.stoneDark)),wood=vC(vPick(VPAL.woodRich)),cu=vC(0xffffff);
  vnReg('Hospital',0,0,20,18);
  const W=26,D=9,H=4.8,Y0=.7;vB('vStone',0,0,0,34,Y0,24,0,stD);
- vB('vStone',0,Y0,-2,W,H,D,0,st);const top=vnCornice('vStone',0,Y0+H,-2,W,D,0,st,2);
+ vnBody('vStone',0,Y0,-2,W,H,D,0,st,{t:.45});const top=vnCornice('vStone',0,Y0+H,-2,W,D,0,st,2);
  vnGableRoof(0,top,-2,W,D,2.6,0,'vGableCu',cu,1.2,'vGableSt',st,.16);
  // ward verandas both long sides: timber posts, copper shed roofs, rails; tall lit windows and doors between them
  for(const s of[-1,1]){const fz=-2+s*D/2;vnVeranda(0,Y0,fz+s*1.5,W-2,3.0,s>0?0:Math.PI,.04,3.4,wood);vnShedRoof(0,Y0+3.4,fz+s*1.5,W-2,3.0,.7,s>0?0:Math.PI,'vCopperB',cu,.5,.12);
-  for(let i=0;i<7;i++){const x=-W/2+W*(i+.5)/7;if(i%3===1)vnDoor(x,Y0,fz,s>0?0:Math.PI,1.3,2.6,'vStone',st,vC(0x4a2e1c),false);else vnWin(x,Y0+1.1,fz,s>0?0:Math.PI,1.4,2.4,'lit','vStone',st);}}
+  for(let i=0;i<7;i++){const x=s>0&&i===4?2.8:-W/2+W*(i+.5)/7;if(i%3===1)vnDoor(x,Y0,fz,s>0?0:Math.PI,1.3,2.6,'vStone',st,vC(0x4a2e1c),false);   /* the front's second door 0.9 m in from the pavilion's corner (into the pavilion, not its wall) */else vnWin(x,Y0+1.1,fz,s>0?0:Math.PI,1.4,2.4,'lit','vStone',st);}}
  for(const s of[-1,1])for(const z of[-4.5,-2,.5])vnWin(s*W/2,Y0+1.3,z,s*Math.PI/2,1.2,2.0,'lit','vStone',st);
  // entrance pavilion on the front: two storeys, cornices, a drum and copper dome, the door between stone piers
- {const PW=8,PD=6,PZ=-2+D/2+PD/2-.3;vB('vStone',0,Y0,PZ,PW,H,PD,0,st);const c1=vnCornice('vStone',0,Y0+H,PZ,PW,PD,0,st,1,false);
-  vB('vStone',0,c1,PZ,PW-.4,3.0,PD-.4,0,st.clone().multiplyScalar(1.03));const c2=vnCornice('vStone',0,c1+3.0,PZ,PW-.4,PD-.4,0,st,3);
+ {const PW=8,PD=6,PZ=-2+D/2+PD/2-.3;vnBody('vStone',0,Y0,PZ,PW,H,PD,0,st,{t:.45});const c1=vnCorniceBand('vStone',0,Y0+H,PZ,PW,PD,0,st,1,false,.45);
+  vnBody('vStone',0,c1,PZ,PW-.4,3.0,PD-.4,0,st.clone().multiplyScalar(1.03),{t:.45});const c2=vnCornice('vStone',0,c1+3.0,PZ,PW-.4,PD-.4,0,st,3);
   vPst('vPostS',0,c2,PZ,2.6,1.2,st);vB('vStone',0,c2+1.2,PZ,5.6,.25,5.6,0,stD);kput('vDomeC',[0,c2+1.45,PZ],null,[2.8,2.4,2.8],cu);vBall('vFinial',0,c2+3.95,PZ,.25);
-  for(let k=0;k<8;k++){const a=k/8*TAU;vB('vDarkB',Math.cos(a)*2.6,c2+.3,PZ+Math.sin(a)*2.6,.5,.7,.2,-a+Math.PI/2);}
+  for(let k=0;k<8;k++){const a=k/8*TAU;vnPlate(Math.cos(a)*2.6,c2+.3,PZ+Math.sin(a)*2.6,.5,.7,.2,-a+Math.PI/2);}
   vnStairs(0,0,PZ+PD/2+1.2,0,4.4,Y0,3,'vStone',st);vnDoor(0,Y0,PZ+PD/2,0,1.9,3.0,'vStone',st,vC(0x4a2e1c),false);
   for(const s of[-1,1]){vB('vStone',s*1.7,Y0,PZ+PD/2+.3,.6,H-.3,.6,0,stD);vnStrip(s*3.2,Y0+.8,PZ+PD/2,0,.6,3.2,'vStone',stD);vnWin(s*2.4,c1+.9,PZ+PD/2-.2,0,1.2,1.6,'lit','vStone',st);}
   for(const s of[-1,1]){vnWin(s*PW/2,Y0+1.3,PZ,s*Math.PI/2,1.2,2.0,'lit','vStone',st);vnWin(s*(PW/2-.2),c1+.9,PZ,s*Math.PI/2,1.1,1.6,'lit','vStone',st);}
@@ -66,7 +66,7 @@ function buildVernHospital(G,o){reseed(7511+(o.v|0));const st=vC(vPick(VPAL.ston
  for(const x of[-8,-4,4,8])vnPlanter(x,Y0,7.5,2.6,1.1,0,wood);for(const s of[-1,1])vnLampPost(s*11,Y0,7.5,3.4);
  {const cx=-W/2-2.4;vB('vStone',cx,Y0,-2,3,1.2,3,0,stD);vPst('vTankW',cx,Y0+1.2,-2,1.3,2.4,null);vBq('vHoop',cx,Y0+2.0,-2,1.34,1.34,1,qEuler(Math.PI/2,0,0),vC(0x2e2a26));vBq('vHoop',cx,Y0+3.2,-2,1.34,1.34,1,qEuler(Math.PI/2,0,0),vC(0x2e2a26));
   vB('vIron',cx,Y0+3.6,-2,2.8,.12,2.8,0,vC(0x2e2a26));vPst('vPipe',cx+1.3,Y0+.5,0,.06,.9,vC(0x2e2a26));kput('vPipe',[cx+1.3,Y0+1.4,-.9],qEuler(Math.PI/2,0,0),[.06,1.9,.06],vC(0x2e2a26));vB('vStone',cx+1.3,Y0,.9,1.2,.6,.9,0,stD);}
- {const sx=W/2+2.6;vB('vStone',sx,Y0,-2,3.2,3.2,5,0,st);vnCornice('vStone',sx,Y0+3.2,-2,3.2,5,0,st,1);vnHipRoof('vHipCu',sx,Y0+3.2+.58,-2,3.2,5,1.2,0,cu,.6);vnDoor(sx,Y0,.5,0,1.0,2.1,'vStone',st,vC(0x4a2e1c),false);}
+ {const sx=W/2+2.6;vnBody('vStone',sx,Y0,-2,3.2,3.2,5,0,st,{t:.4});vnCornice('vStone',sx,Y0+3.2,-2,3.2,5,0,st,1);vnHipRoof('vHipCu',sx,Y0+3.2+.58,-2,3.2,5,1.2,0,cu,.6);vnDoor(sx,Y0,.5,0,1.0,2.1,'vStone',st,vC(0x4a2e1c),false);}
  vnFolk(0,11,6,4);}
 
 // ---------------------------------------------------------------- barracks and drill yard: palisade, two barrack blocks, armoury, watch tower, pells, standard
@@ -80,15 +80,15 @@ function buildVernBarracks(G,o){reseed(7521+(o.v|0));const wood=vC(vPick(VPAL.wo
  vB('vWood',0,4.6,CD/2,5.0,.2,1.4,0,wood);vB('vWood',0,4.8,CD/2+.6,5.0,.9,.08,0,wood);
  for(const s of[-1,1])kput('vWood',[s*1.35,2.2,CD/2+.1],vQ(0,0,0).multiply(qEuler(0,s*.5,0)),[2.4,4.2,.1],wood.clone().multiplyScalar(.85));   // gate leaves, half open
  // two barrack blocks along the sides: timber frame + plaster, verandas to the yard, corrugate gable roofs
- for(const s of[-1,1]){const bx=s*13.5,BW=8,BD=20,Y0=.4;vB('vStone',bx,-.1,-2,BW+.5,.5,BD+.5,0,stD);vnFrame(bx,Y0,-2,BW,3.6,BD,0,wood,.16);vB('vPlaster',bx,Y0,-2,BW-.14,3.6,BD-.14,0,pl);
+ for(const s of[-1,1]){const bx=s*13.5,BW=8,BD=20,Y0=.4;vB('vStone',bx,-.1,-2,BW+.5,.5,BD+.5,0,stD);vnFrame(bx,Y0,-2,BW,3.6,BD,0,wood,.16);vnBody('vPlaster',bx,Y0,-2,BW-.14,3.6,BD-.14,0,pl,{t:.3});
   const t=vnCornice('vWood',bx,Y0+3.6,-2,BW,BD,0,wood,1);vnGableRoof(bx,t,-2,BD,BW,2.4,Math.PI/2,'vGableC',null,1.0,'vGablePl',pl,.12);
   const fx=bx-s*BW/2;vnVeranda(fx-s*1.2,Y0,-2,BD-1,2.4,-s*Math.PI/2,.04,2.9,wood);vnShedRoof(fx-s*1.2,Y0+2.9,-2,BD-1,2.4,.6,-s*Math.PI/2,'vCorr',null,.4,.12);
   for(let i=0;i<6;i++){const z=-2-BD/2+BD*(i+.5)/6;if(i%3===1)vnDoor(fx,Y0,z,-s*Math.PI/2,1.2,2.3,'vWood',wood,vC(0x5a3a24),false);else vnWin(fx,Y0+1.3,z,-s*Math.PI/2,1.2,1.2,'open','vWood',wood,true);}
   for(let i=0;i<5;i++)vnWin(bx+s*BW/2,Y0+1.4,-2-BD/2+BD*(i+.5)/5,s*Math.PI/2,1.0,1.0,'shut','vWood',wood);
   vnChimney(bx,t+2.6,-2-BD/2+3,1.8,.16,true);vnDryingRack(bx,0,-2+BD/2+2.2,0,4);}
  // armoury at the back: squat stone, iron door, lamp
- {const AW=9,AD=6,az=-CD/2+AD/2+1.5;vB('vStone',0,0,az,AW,3.4,AD,0,st);vnCornice('vStone',0,3.4,az,AW,AD,0,st,2);vnHipRoof('vHipC',0,3.4+.84,az,AW,AD,1.4,0,null,.7);
-  vB('vDarkB',0,0,az+AD/2,1.6,2.4,.1,0);vB('vIron',0,0,az+AD/2+.06,1.5,2.35,.08,0,vC(0x3a3632));for(const s of[-1,1])vB('vStone',s*1.05,0,az+AD/2+.1,.3,2.6,.3,0,stD);vB('vStone',0,2.6,az+AD/2+.1,2.6,.3,.4,0,stD);
+ {const AW=9,AD=6,az=-CD/2+AD/2+1.5;vnBody('vStone',0,0,az,AW,3.4,AD,0,st,{t:.5});vnCornice('vStone',0,3.4,az,AW,AD,0,st,2);vnHipRoof('vHipC',0,3.4+.84,az,AW,AD,1.4,0,null,.7);
+  vnOpening(0,0,az+AD/2,0,1.6,2.4,'door',vC(0x3a3632));for(const s of[-1,1])vB('vStone',s*1.05,0,az+AD/2+.1,.3,2.6,.3,0,stD);vB('vStone',0,2.6,az+AD/2+.1,2.6,.3,.4,0,stD);
   for(const x of[-3,3])vnWin(x,1.6,az+AD/2,0,.7,.6,'open','vStone',st);vnLamp(0,3.0,az+AD/2,0);
   for(let k=0;k<6;k++)kput('vWood',[-3.4+k*.5,1.6,az+AD/2+.9],vQ(0,.15,0),[.06,3.2,.06],vC(0x5a4632));vB('vWood',-2.2,1.05,az+AD/2+.6,3.0,.12,.4,0,wood);}   // spear rack
  // watch tower on the back corner
@@ -114,8 +114,8 @@ function buildVernAlchemist(G,o){reseed(7531+(o.v|0));const st=vC(vPick(VPAL.sto
  for(const s of[-1,1]){const L=CW/2-1.7;vB('vStone',s*(1.7+L/2),0,CD/2,L,h,.6,0,stD);vB('vStone',s*(1.7+L/2),h,CD/2,L+.3,.3,.9,0,st);vB('vStone',s*1.95,0,CD/2,1.0,h+1.0,1.0,0,st);kput('vPyrCu',[s*1.95,h+1.0,CD/2],null,[1.2,.8,1.2],cu);}
  for(let k=-2;k<=2;k++)vB('vIron',k*.6,0,CD/2,.06,h-.2,.06,0,vC(0x2e2a26));for(const y of[.5,h-.5])vB('vIron',0,y,CD/2,3.0,.08,.08,0,vC(0x2e2a26));vnLampPost(-3.4,0,CD/2+1.2,3.2);vnLampPost(3.4,0,CD/2+1.2,3.2);
  // the house: two storeys of stone with a round lab tower carrying a copper dome and a glass lantern
- {const HW=11,HD=8,hx=-5,hz=-5,Y0=.4;vB('vStone',hx,Y0,hz,HW,3.8,HD,0,st);const c1=vnCornice('vStone',hx,Y0+3.8,hz,HW,HD,0,st,1,false);
-  vB('vWood',hx,c1,hz,HW-.3,3.2,HD-.3,0,wood);const c2=vnCornice('vWood',hx,c1+3.2,hz,HW-.3,HD-.3,0,wood,2);vnHipRoof('vHipCu',hx,c2,hz,HW-.3,HD-.3,2.4,0,cu,1.2);
+ {const HW=11,HD=8,hx=-5,hz=-5,Y0=.4;vnBody('vStone',hx,Y0,hz,HW,3.8,HD,0,st,{t:.4});const c1=vnCorniceBand('vStone',hx,Y0+3.8,hz,HW,HD,0,st,1,false,.4);
+  vnBody('vWood',hx,c1,hz,HW-.3,3.2,HD-.3,0,wood,{t:.4});const c2=vnCornice('vWood',hx,c1+3.2,hz,HW-.3,HD-.3,0,wood,2);vnHipRoof('vHipCu',hx,c2,hz,HW-.3,HD-.3,2.4,0,cu,1.2);
   vnDoor(hx+1.5,Y0,hz+HD/2,0,1.4,2.6,'vStone',st,vC(0x4a2e1c));for(const x of[-3.5,-1.2])vnWin(hx+x,Y0+1.2,hz+HD/2,0,1.2,1.7,'lit','vStone',st);vnStrip(hx+3.9,Y0+.7,hz+HD/2+.02,0,.6,2.8,'vStone',stD);
   for(const x of[-3.6,-1.2,1.2,3.6])vnWin(hx+x,c1+.9,hz+HD/2-.15,0,1.1,1.5,'lit','vWood',wood);
   for(const s of[-1,1])for(const z of[-2,2]){vnWin(hx+s*HW/2,Y0+1.2,hz+z,s*Math.PI/2,1.1,1.7,'lit','vStone',st);vnWin(hx+s*(HW/2-.15),c1+.9,hz+z,s*Math.PI/2,1.0,1.5,'lit','vWood',wood);}

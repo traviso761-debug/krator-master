@@ -63,11 +63,16 @@ GATES.forEach((g,i)=>{izGate(scene,g,wallR(g),CITY.PLATEAU,i);const R=wallR(g);B
  TSTAT.cur='trans_temple/0';
  TRANS.place(scene,'temple','anc',H.x-18*gx,H.z-18*gz,Math.atan2(gx,gz),.72,SEED_CITY+12,{role:'temple',wealth:'civic'},top);
  occAdd({x:H.x-18*gx,z:H.z-18*gz,hx:44,hz:50,ry:Math.atan2(gx,gz)});   // the stairs run out diagonally past the pyramid's foot
- for(let k=-1;k<=1;k+=2)for(const r of[30,46])izLampColumn(H.x+r*gx+k*14*-gz,H.z+r*gz+k*14*gx);}
+ for(let k=-1;k<=1;k+=2)for(const r of[30,46])izLampColumn(H.x+r*gx+k*14*-gz,H.z+r*gz+k*14*gx);
+ // the sanctum and the priests' offices inside it (78t; the temple is built open for them: IZS_HOLLOW, 89z-rows.js). Last in the
+ // block: the arena's placement reseeds after it
+ if(VERN.interiors){TSTAT.cur='iziz_temple_ix/0';const s0=_seed;VERN.place(scene,'iziz_temple_ix',H.x-18*gx,H.z-18*gz,Math.atan2(gx,gz),{y:top});_seed=s0;}}
 // ---------------------------------------------------------------- the arena hill: the new arena, the Ancient amphitheatre (rust, intact) at its foot, the ruined needle
 {const H=HILL.arena,g=H.gate,gx=Math.cos(g),gz=Math.sin(g),top=H.top;
  TSTAT.cur='trans_arena/0';
  TRANS.place(scene,'arena','anc',H.x,H.z,Math.atan2(gx,gz),.82,SEED_CITY+13,{role:'arena',wealth:'civic'},top);
+ // the ring of bays behind its shell (78u; the shell is cut for its gates: IZS_HOLLOW). The stream is put back after it
+ if(VERN.interiors){TSTAT.cur='iziz_arena_ix/0';const s0=_seed;VERN.place(scene,'iziz_arena_ix',H.x,H.z,Math.atan2(gx,gz),{y:top});_seed=s0;}
  occAdd({x:H.x,z:H.z,hx:56,hz:50,ry:0});
  for(let k=0;k<8;k++){const a=k/8*TAU+.2;izLampColumn(H.x+70*Math.cos(a),H.z+70*Math.sin(a));}
  TSTAT.cur='iziz_needle/0';izNeedle(scene,NEEDLE.x,NEEDLE.z,64);occAdd({x:NEEDLE.x,z:NEEDLE.z,hx:17,hz:17,ry:0});}

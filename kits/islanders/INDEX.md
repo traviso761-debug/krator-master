@@ -21,10 +21,10 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
-| `26k-kit.js` | 6 |  |
+| `26k-kit.js` | 7 |  |
 | `27-mat.js` | 6 |  |
 | `28-is-paint.js` | 9 |  |
-| `30-geo.js` | 22 |  |
+| `30-geo.js` | 23 |  |
 | `36-def.js` | 6 |  |
 | `37-wk-rec.js` | 2 |  |
 | `40-is-kit.js` | 15 |  |

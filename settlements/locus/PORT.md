@@ -6,14 +6,14 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 94 (10%) | 5 (1%) | 16 (2%) | 165 (17%) | 685 (71%) |
+| KB | 101 (10%) | 5 (1%) | 16 (2%) | 165 (17%) | 685 (70%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 5.4 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/05-palette.js` | 13.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/05-palette.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/10-core.js` | 16.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/20-stage.js` | 14.0 | [web] | 22 | 8 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/21-sky.js` | 56.4 | [web] | 67 | 0 | 19 | 6 | 0 | 9 | 26 | 0 | 0 | 0 | 0 |  |
@@ -53,7 +53,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/65-abyss-80-military.js` | 13.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 32 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/65-abyss-90-farm.js` | 12.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/66-locus-furnish.js` | 10.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (frame seed and spot), the frame stack round every ASSET build, the open rooms deferred to the interiors, the interior-set item per variant, night lamps, inspector entries, the linear colours at the flush; 2026-10-15: locfVetoed (the owner's edits log vetoes a moved or removed piece at draw); interior pieces registered (ixf_) |
-| `src/67-lo-trades.js` | 5.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table LO_TRADES (2026-10-19): plain data, a row per census trade; checked by tools/check_trades.py |
+| `src/67-lo-trades.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table LO_TRADES (2026-10-19): plain data, a row per census trade; checked by tools/check_trades.py |
 | `src/68-place.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/68c-locus-crossings.js` | 10.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69b-locus-biohost.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

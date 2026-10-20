@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 2 (1%) | 0 (0%) | 12 (6%) | 31 (14%) | 169 (79%) |
+| KB | 2 (1%) | 0 (0%) | 12 (6%) | 31 (14%) | 172 (79%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,7 +14,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 17.9 | [web] | 7 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
-| `src/46-host-ground.js` | 11.2 | [draw] | 21 | 2 | 0 | 0 | 0 | 4 | 9 | 0 | 0 | 0 | 0 | builds the ground and water meshes from terrainH and the fields: the Godot terrain bake replaces it |
+| `src/46-host-ground.js` | 14.6 | [draw] | 22 | 2 | 0 | 0 | 0 | 4 | 9 | 0 | 0 | 0 | 0 | builds the ground and water meshes from terrainH and the fields: the Godot terrain bake replaces it |
 | `src/50-biome-xanadu-species.js` | 59.6 | [draw] | 0 | 4 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/52-biome-xanadu-library.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/55-biome-xanadu-trees.js` | 66.6 | [draw] | 0 | 1 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 | placement pass: `XANADU.buildTrees` (line 535); `mk` (line 539) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 613) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar` for the far impostor. The two passes share one function but not one loop; `XANADU.treeAt` (line 625) places one tree at a point and draws it in one call |

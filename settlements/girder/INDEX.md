@@ -27,8 +27,8 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `girder.tex.girder-2.js` | 1229 **big** |  |
-| `girder.tex.girder.js` | 14510 **big** |  |
+| `girder.tex.girder-2.js` | <1 |  |
+| `girder.tex.girder.js` | <1 |  |
 
 ## src/
 
@@ -52,9 +52,9 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `60-trees.js` | 41 **big** | 14. TREES (1) |
 | `62-jungle.js` | 47 **big** | 15. JUNGLE (Girder) (1) |
 | `64-cards.js` | 8 | 15b. LIBRARY CARDS: the rest of the Beast Rider  (1) |
-| `65-gi-trades.js` | 4 | GI_TRADES: the Voth census table (1) |
+| `65-gi-trades.js` | 6 | = (1) |
 | `72-lights.js` | 3 | 18. FIXED LAMPS (1) |
-| `75-terrain.js` | 13 | 20. EMIT + GROUND + RIVER (1) |
+| `75-terrain.js` | 9 | 20. EMIT + GROUND + RIVER (1) |
 | `78-life.js` | 61 **big** | 78. LIFE — GIRDER (2) |
 | `80-camera.js` | 8 | 25. CAMERA: GIRDER ON core/host (1) |
 | `81-glow.js` | 6 | 26. NIGHT GLOW (1) |
@@ -69,5 +69,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `86-inspect.js` | 4 | 27. INSPECTOR WORDS (core/host's inspector) (1) |
 | `87-pathviz.js` | 3 | 28. PATH VISUALIZER (1) |
 | `90-atmos-host.js` | 2 | ATMOS: the shared atmosphere module, bound to Gi (1) |
+| `90w-brook-water.js` | 2 | BROOK WATER: the brook on core/water (1) |
 | `98-start.js` | 8 | 99. START: GIRDER ON core/host (1) |
 | `99-tail.html` | <1 |  |
