@@ -1,0 +1,436 @@
+{
+ "build": "necanyons",
+ "note": "The necanyons kit's adapter onto the material library (core/materials/PLAN.md; biomes/necanyons/PLAN.md section 6). The host's layers (47-host-land.js): ground.litter (the floor's leaf litter), ground.talus (red soil at the walls' feet), ground.sand (the creek's banks), rock.wall (the mesas' and towers' walls: the owner's rock.sandstone.varnish), rock.stack (the stacks' cross-bedded walls), rock.top (every top: the owner's ground.slickrock; a bench's top reddened by vertex colour). The kit's slots (BIO.libSwap, 50-biome-necanyons-species.js): the owner's carnivore sheets (sundew, cup, lobe: full colour, shown by cell through each item's own uv, not the pack's cell, because one sheet serves several items), card.carnivore.plants (sunpit) and card.moss.carnivorous (carnmoss) from the Throne, and the reused leaf, grass and flower cards (tinted grey, keep 0); the barks. Run python3 tools/textures/pack.py biomes/necanyons after any change, then python3 build.py. Owed (optional, PROMPTS-NEEDED section 6): card.palm.fan, card.flametip, card.treelily; rock.sandstone.bedded.red (section 5) for the bedded walls when it lands.",
+ "size": 512,
+ "families": {
+  "ground.litter": {
+   "lib": "leaf.scatteredleaves008",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.talus": {
+   "lib": "ground.redsoil",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.sand": {
+   "lib": "ground.ground080",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "rock.wall": {
+   "lib": "rock.sandstone.varnish",
+   "scale": [
+    20.0,
+    20.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "rock.stack": {
+   "lib": "rock.sandstone.navajo",
+   "scale": [
+    12.0,
+    12.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "rock.top": {
+   "lib": "ground.slickrock",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "sundew": {
+   "lib": "card.carnivore.sundew",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.35,
+   "size": 1024
+  },
+  "cup": {
+   "lib": "card.carnivore.monkeycup",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.4,
+   "size": 1024
+  },
+  "lobe": {
+   "lib": "organic.trap.lobe",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024
+  },
+  "sunpit": {
+   "lib": "card.carnivore.plants",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.25,
+   "size": 1024
+  },
+  "carnmoss": {
+   "lib": "card.moss.carnivorous",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 1024
+  },
+  "fan": {
+   "lib": "card.palm",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.69
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "fern": {
+   "lib": "card.fern.green",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "figleaf": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "flametip": {
+   "lib": "card.croptree.glossy",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.74
+   },
+   "roughLift": 0,
+   "specular": 0.35
+  },
+  "plumleaf": {
+   "lib": "card.orchard.broad",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "fonio": {
+   "lib": "card.crop.plume",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "ringgrass": {
+   "lib": "card.ichu",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "lilytuft": {
+   "lib": "card.ichu",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "bloom": {
+   "lib": "card.flower.bloom",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.77
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "lilybloom": {
+   "lib": "card.flower.claw",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.75
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "strap": {
+   "lib": "card.strap.pandan",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0,
+   "specular": 0.3
+  },
+  "petiole": {
+   "lib": "card.strap.pandan",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0,
+   "specular": 0.3
+  },
+  "vine": {
+   "lib": "card.vine",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "bark.palm": {
+   "lib": "bark.palm",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.fig": {
+   "lib": "bark.strangler",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.wood": {
+   "lib": "bark.smooth",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.lily": {
+   "lib": "bark.skirt",
+   "scale": [
+    1.0,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.5
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "bark.caudex": {
+   "lib": "bark.baobab",
+   "scale": [
+    8.0,
+    8.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "rock.red": {
+   "lib": "rock.sandstone.red",
+   "scale": [
+    12.0,
+    12.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "rock.bed": {
+   "lib": "rock.sandstone.bedded.red",
+   "scale": [
+    20.0,
+    20.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "rock.cap": {
+   "lib": "rock.sandstone_cracks",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  }
+ }
+}

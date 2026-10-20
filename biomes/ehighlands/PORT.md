@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 13 (9%) | 17 (12%) | 16 (11%) | 32 (23%) | 63 (44%) |
+| KB | 13 (9%) | 18 (13%) | 16 (11%) | 32 (22%) | 63 (44%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -19,7 +19,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/60-biome-ehigh-floor.js` | 12.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-ehigh.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-host-sky.js` | 11.3 | [G native] | 19 | 1 | 0 | 0 | 0 | 4 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset (WORLD.md: the thin-air light, the dense-air section read the other way) |
-| `src/84-host-ground.js` | 17.4 | [G shader] | 19 | 3 | 0 | 0 | 0 | 4 | 15 | 0 | 0 | 0 | 0 | the ground painter and the ice; the turf polygons are a shader |
+| `src/84-host-ground.js` | 18.1 | [G shader] | 19 | 3 | 0 | 0 | 0 | 4 | 15 | 0 | 0 | 0 | 0 | the ground painter and the ice; the turf polygons are a shader |
 | `src/86-host-geysers.js` | 4.8 | [G native] | 10 | 1 | 0 | 0 | 0 | 2 | 5 | 0 | 0 | 0 | 0 | steam: GPUParticles3D in Godot |
 | `src/88-host-build.js` | 1.0 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-host-take.js` | 14.4 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |

@@ -169,6 +169,60 @@
     "sourceMean": 0.3782
    }
   },
+  "ground.wetmoss": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.wetmoss.albedo.webp"
+   },
+   "lib": "ground.ground047",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3361b5751fec0beafb042a0fd89748540f531575",
+    "normal": "4db45a98ed1bd8bea8e8d7f00864ba5ec9f7cbd6",
+    "roughness": "ce79f8492231749c4fcb697783141e2dfad2a7d8"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.2620945302985696,
+    "sourceMean": 0.2621
+   }
+  },
+  "leaf.groundsel": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "leaf.groundsel.albedo.webp"
+   },
+   "lib": "card.groundsel",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "57c90fed185b618e7d977b0950dee654eb129e82"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.5,
+    "mean": 0.85,
+    "sourceMean": 0.564
+   }
+  },
   "leaf.moss": {
    "breakup": null,
    "card": true,
@@ -219,6 +273,38 @@
     "keep": 0.0,
     "mean": 0.66,
     "sourceMean": 0.5607
+   }
+  },
+  "lichen": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ],
+   "files": {
+    "map": "lichen.albedo.webp"
+   },
+   "lib": "card.lichen",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "8fe6bf0a8f2d90f20259a6c514a741ff747026bd"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.7,
+    "sourceMean": 0.5211
    }
   },
   "stone.granite": {

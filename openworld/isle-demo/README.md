@@ -9,11 +9,25 @@ world's machinery.
   **4.21**.
 - **The isles:** they lie in the Ring Sea at -1,500 m, about 1.9 atm. The land is hypertropic jungle, rainforest,
   monsoon forest, savanna, hot steppe and salt steppe.
-- **On the map:** two towns, **Kautoa** (the city, Af) and **Walapo** (the village, XA), sixteen geyser vents and one
+- **On the map:** two towns, **Kautoa** (the city, Af) and **Valapo** (the village, XA), sixteen geyser vents and one
   short named river (Są Baatar).
 - **Built output:** `dist/isle-demo.html`.
 - **Build:** `python3 build.py`.
 - **Verify:** `python3 verify.py dist/isle-demo.html --assert --views 0,1,14`. Use `--list` to print the views.
+
+## The hamlets (core/hamlet, 2026-10-19)
+
+Four resource villages stand in the world, sited and laid out at load from `src/48-world-hamlets.js` (`[G data]`: the
+specs, the resource found in each patch, the ground rule) and drawn by `src/88h-world-hamlets.js` (`[web]`): the salt
+village on the north-west pan, the iron mine in Valapo's mountains, the lumber village east of Kautoa, the ranch to its
+north (`core/hamlet/PLAN.md` section 4).
+- **The buildings** are the Islanders' and the Beast Riders' own pieces, from the city page's bundles
+  (`settlements/isle-demo/bundles.py`) and its shared instancer (`settlements/isle-demo/src/58-isle-protos.js`): full
+  pieces within 3.5 km of the camera, massing out to 30 km.
+- **The lanes and greens** are ribbons on the ground. The flora and the floor keep off them (`WORLD.clearHook`).
+- **The world clock:** `core/clock`, the 72-minute day, as every settlement runs (`HOST.clock`; `?hour=`, `?day=`,
+  `?time=run`). The lumber village's felling reads it: stumps, saplings and grown trees by the day.
+- **`window._hamlets`** holds the villages, resources, counts and the tag audit. `verify.py` checks them, with a negative.
 
 ## How it is made
 

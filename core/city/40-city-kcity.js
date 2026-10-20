@@ -32,6 +32,7 @@ KCITY.defaults = { dims: SL.dims, wealth: SL.wealth, choosers: SL.choosers, vaca
   /* a point's district role: the smallest site district holding it (PLAN.site), else 'res' */
   roleAt: function (p) { return KCITY.site.roleAt(p, PLAN.site || [], { skip: ['zone', 'wall', 'misc'], fallback: function () { return 'res'; } }); } };
 KCITY.cur = null;
+KCITY.instances = [];   /* every instance made on the page, in order: the export's city section reads them */
 KCITY.STEPS = SL.STEPS;
 /* what a run leaves on SL, saved into the instance when another is bound */
 KCITY.sync = function (C) {
@@ -65,8 +66,10 @@ KCITY.create = function (o) {
       roads: KCITY.segIndex({ order: ix.order, window: ix.roadWindow }),
       fields: KCITY.boxIndex({ bucket: ix.fieldBucket || 80, reach: 2, eps: 0, live: false, order: ix.order, window: ix.fieldWindow })
     },
-    plan: null, raster: null, F: null, items: {}, minSpacing: null, groundGrid: undefined
+    plan: null, raster: null, F: null, items: {}, minSpacing: null, groundGrid: undefined,
+    name: o.name == null ? 'city' + KCITY.instances.length : String(o.name)
   };
+  KCITY.instances.push(C);
   C.bind = function () { return KCITY.bind(C); };
   C.run = function () {
     KCITY.bind(C);
@@ -130,3 +133,31 @@ KCITY.exportPlan = function () {
   };
 };
 SL.exportPlan = function () { return JSON.stringify(KCITY.exportPlan()); };
+
+/* ---------------------------------------------------------------- the export's city section (core/export) */
+/* Every instance on the page that has run, as {format: 'krator-city', version, plans: [{name, ...KCITY.exportPlan()}]}.
+   In a tile (ctx.box) a plan keeps the lots whose centre lies in the box and the ways with a point in it (cropped says
+   how many of how many); the wall, gates, districts and greens are kept whole. Exporting binds each instance in turn and
+   rebinds the one that was bound. A page that loads core/export after core/city calls KCITY.registerExport() itself. */
+KCITY.registerExport = function () {
+  if (typeof EXPORT === 'undefined' || KCITY._exportReg) return false;
+  KCITY._exportReg = EXPORT.register('city', function (ctx) {
+    var ran = KCITY.instances.filter(function (C) { return C.plan; });
+    if (!ran.length) return null;
+    var prev = KCITY.cur, plans = [];
+    try {
+      ran.forEach(function (C) {
+        var P = C.export(), lots = P.lots.length, ways = P.ways.length;
+        if (ctx.box) {
+          P.lots = P.lots.filter(function (L) { return ctx.inBox(L.x, L.z); });
+          P.ways = P.ways.filter(function (w) { return w.pts.some(function (q) { return ctx.inBox(q[0], q[1]); }); });
+          P.cropped = { lots: [P.lots.length, lots], ways: [P.ways.length, ways] };
+        }
+        P.name = C.name; plans.push(P);
+      });
+    } finally { if (prev) KCITY.bind(prev); }
+    return { format: 'krator-city', version: 1, plans: plans, edits: null };
+  }, { by: 'city' });
+  return true;
+};
+KCITY.registerExport();

@@ -36,6 +36,7 @@ TEX.rsWater.encoding=THREE.LinearEncoding;
 // ---------------------------------------------------------------- ring sea materials
 rsDefMat('wood',new THREE.MeshStandardMaterial({map:TEX.rsPlank,vertexColors:true,roughness:.82,side:DS}));
 rsDefMat('paint',new THREE.MeshStandardMaterial({map:TEX.rsGrain,vertexColors:true,roughness:.62,side:DS}));
+rsDefMat('hullpaint',new THREE.MeshStandardMaterial({map:TEX.rsGrain,vertexColors:true,roughness:.62,side:DS}));   /* the library's painted steel hull (patterns/common/hull-paint): UV v is the hull's height fraction, so the three bands sit where the paint did; the grain stands in under ?mat=proc */
 rsDefMat('metal',new THREE.MeshStandardMaterial({vertexColors:true,metalness:.8,roughness:.36,side:DS}));
 rsDefMat('rope',new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,side:DS}));
 rsDefMat('cloth',new THREE.MeshStandardMaterial({map:TEX.rsCloth,vertexColors:true,roughness:.95,side:DS}));

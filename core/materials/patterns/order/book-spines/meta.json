@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1247
+   ],
+   "seam_after": [
+    0.741,
+    1.315
+   ],
+   "seam_before": [
+    1.266,
+    1.031
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.1,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.7,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "order/book-spines",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "order-book-spines.png",
+  "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/book-spines`",
+  "reuse": "the Archive's stacks, Longsong's library and the Sealed Library; any shelf of old books and pecha",
+  "sha1": "4a7bac0dd3f7c6c0f734c891d0a8b6ffdc3ac785"
+ }
+}

@@ -32,6 +32,9 @@ blender -b --python tools/make_garments.py -- male|female [--only ids] [--render
 blender -b --python tools/mpfb_build.py -- male <export dir>
 python3 tools/make_mpfb.py male|female <export dir>
 python3 tools/make_mpfb.py giant <the man's export dir>
+# a few new garments alone (no whole library here): the base and them, merged into the kit as it stands
+blender -b --python tools/mpfb_build.py -- male <export dir> --only <ids>
+python3 tools/make_mpfb.py male <export dir> --merge
 
 # pages and checks (in core/charactermodels)
 python3 build.py [--thumbs]

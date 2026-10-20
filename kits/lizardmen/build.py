@@ -11,6 +11,7 @@ The page is one <script> made of, in filename order:
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
+  core/walk             20-core-walk.js, box/24-core-walk-box.js (KWALK, KWALKBOX: the boxes a building draws are its floors and walls; src/37-wk-rec.js)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
@@ -67,11 +68,17 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 KIT_ID = 'lizardmen'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'walk', 'walk/box')]
+# the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
+# and the authoring tools (inspect, polygon, path). src/99-host-take.js (vendored from kits/scyvoi, with 92-world.js) hands it the
+# page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = khost.SHELL + ['94-host-polytool.js']
 VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
 # the engine, shared with the Islanders kit it was forked from (itself the Scyvoi engine): fix it there, then copy it here
 VENDORED.update({f: os.path.join(ROOT, 'kits', 'islanders', 'src', f) for f in ('10-core.js', '30-geo.js', '36-def.js', '90-scene.js',
-    '27-mat.js', '91-probe.js', '91f-furnish.js', '91n-night.js', '92-camera.js', '93-anim.js', '99-tail.html')})
+    '27-mat.js', '91f-furnish.js', '91n-night.js', '92-world.js', '99-host-take.js', '93-anim.js', '99-tail.html')})
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['lizardmen', 'generic', 'generic-goods', 'jobs']   # the Lizardmen's pieces, the shared goods, the trades
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-fauna-bundle.js'}
@@ -131,6 +138,7 @@ def sources():
     paths = {}
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
+    paths.update({f: khost.path(f) for f in CORE_HOST})
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
@@ -147,7 +155,7 @@ def main():
     if '--no-checks' not in sys.argv:
         decl = {}
         for f in files:
-            if not f.endswith('.js') or f in VIRTUAL: continue
+            if not f.endswith('.js') or f in VIRTUAL or f in CORE_HOST: continue   # the host's files are IIFEs: each its own scope
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
         for n in BUNDLE_GLOBALS:
             if n in decl: errs.append('top-level name `%s` in %s clashes with the generated furniture bundle' % (n, ', '.join(sorted(decl[n]))))

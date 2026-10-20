@@ -179,6 +179,9 @@ def compose_place(t, place, word):
     return '%s %s' % (place, word)
 
 
+# Fixed river names the lore has settled ahead of the model: the river at Almua's mouth is 'Dip Rivrh', the Deep river
+# (the owner, 2026-10-18; settlements/almua/PLAN.md). edit_rivers.py NAMED_COURSES draws it and marks it 'name_fixed';
+# the naming here keeps it.
 # a settlement's name in the tongue, where the record gives one
 # (English place names run through the same changes: Girder is gördar in Tl'aai on the record, Hook loses its h and
 # takes -a with k voiced in Izani, Span loses s- before a stop in Dalab, Strongwall breaks s+t with a vowel in Xanadui)
@@ -289,11 +292,21 @@ def main():
         r['_t'] = TONGUE[best[0][0]] if best else None
     used = {t: set() for t in W_}
     names = {t: set() for t in W_}
+    report_fixed = []
     # rivers by flow, then dry valleys by catchment; the largest river of each tongue is its 'mother'
-    order = sorted([r for r in rivers if r['_t']], key=lambda r: (r['kind'] != 'river',
+    # a course whose name the lore has settled keeps it (edit_rivers.py NAMED_COURSES: 'name_fixed' with its gloss)
+    for r in rivers:
+        if r.get('name_fixed'):
+            if r['_t']:
+                r['tongue'] = r['_t']
+                used.setdefault(r['_t'], set())
+            r.pop('_t', None)
+            report_fixed.append((r.get('tongue'), r['id'], r['name'], r['name'], r.get('gloss'), r['kind'],
+                                 r['q_mouth_m3s']))
+    order = sorted([r for r in rivers if r.get('_t')], key=lambda r: (r['kind'] != 'river',
                    -(r['q_mouth_m3s'] if r['kind'] == 'river' else r['catchment_km2'])))
     seen_mother = set()
-    report = []
+    report = list(report_fixed)
     for r in order:
         t = r['_t']
         if r['kind'] == 'river' and t not in seen_mother:

@@ -71,7 +71,9 @@ TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags') 
 # minimap: KMAP and its panel (fed by 88b-yuni-minimap.js); materials/record: KMAT, TEX and the library loader
 # (core/materials/PLAN.md, "How a build adopts the library"). core/rand gives the tags' uid only: Yuni keeps its own
 # Park-Miller rnd() and noise (the exception in GODOT-PLAN.md, Phase 2 item 1).
-CORE_MODULES = ['clock', 'sched', 'minimap', os.path.join('materials', 'record')]
+# export: core/export (07-core-export.js and its adapters: the krator-world container; core/export/README.md), which
+# 77-export.js fills with Yuni's fixtures beside its KRATOR_EXPORT route (GAME_EXPORT.md, "Two routes").
+CORE_MODULES = ['clock', 'sched', 'minimap', 'export', os.path.join('materials', 'record')]
 CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR) + tuple(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', m) for m in CORE_MODULES)
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
 import host as khost                         # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
@@ -100,7 +102,8 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
-                 '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '88b-yuni-minimap.js', '89-sheetui.js', '69b-yuni-biohost.js', '69z-yuni-badlands.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
+                 '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '88b-yuni-minimap.js', '89-sheetui.js', '69b-yuni-biohost.js', '69z-yuni-badlands.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html', '77-export.js'}
+DETERMINISTIC.add('67-yu-trades.js')   # the Voth census table (plain data, no rnd())
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 CORE_FRAGS = set()   # fragments taken from a core/ directory: each is a unit of its own, never grouped with a src/ prefix
 PALETTE_FILE = '05-palette.js'
@@ -219,8 +222,10 @@ def check(order, bodies):
         head = RE_HEAD_SEED.sub('', strip_head_comments(bodies[f]), 1)
         if strip_head_comments(head).startswith('(function'):
             continue      # whole fragment is one IIFE: nothing leaks
-        if '-bio-' in f:
-            # the biome core and kit (BIO_CANON): one `var` (BIO / EBADLANDS) then IIFEs; everything else is local
+        if '-bio-' in f or re.match(r'var\s+[A-Za-z_$][\w$]*\s*=\s*\(function', strip_head_comments(head)):
+            # the biome core and kit (BIO_CANON): one `var` (BIO / EBADLANDS) then IIFEs; everything else is local.
+            # Likewise a module that is one `var X = (function(){...})()` (core/export's EXPORT): its inner column-0
+            # functions are the IIFE's own
             for m in re.finditer(r'^var\s+([A-Za-z_$][\w$]*)', bodies[f], re.M):
                 decl.setdefault(m.group(1), set()).add(f)
             continue

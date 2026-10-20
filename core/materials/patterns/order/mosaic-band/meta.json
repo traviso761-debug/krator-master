@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1572,
+    887
+   ],
+   "seam_after": [
+    1.127,
+    1.277
+   ],
+   "seam_before": [
+    3.61,
+    2.993
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.1,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "seam_axes": "x",
+   "size": 2048
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "order/mosaic-band",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.4,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "order-mosaic-band.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-19 as WebP, converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/mosaic-band`",
+  "reuse": "the Order's blue-and-white mosaic string course on every building of the Order; a reflecting pool's rim; any chapterhouse band",
+  "sha1": "31d74656d35b3dab0cf0d94657f25cc93b92e368"
+ }
+}

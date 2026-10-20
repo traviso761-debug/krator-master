@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.287,
+    1.134
+   ],
+   "seam_before": [
+    1.53,
+    1.042
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.sandstone.bedded.red",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   4,
+   4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.sandstone.bedded.red.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-18 as WebP, 1254 px; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "note": "for settlements/pinnacle-rock (not built yet): in the library only until that build wires it",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.sandstone.bedded.red`",
+  "reuse": "any red-bed cliff or butte (the desert's mesas beside rock.sandstone.navajo, Shade's lower cliffs, the Rift's mesa ridges)",
+  "sha1": "14962714c0d687f0175bd7e30011aea501ad4fa0"
+ }
+}

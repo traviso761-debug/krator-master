@@ -403,7 +403,7 @@ equal to `WATER.heightAt` within 1e-14 m (`tests/water/water_test.gd`), and the 
 detail layers travel as a `world-uv` material record (`EXPORT.groundLayers`) and its pond as a core/water surface.
 Not yet: Iziz as the second material pilot (the other half of stage 2e); records that select `cloth-sway`, `flag`,
 `glass` or `coursing` on an exported mesh (Girder and Iziz still export through glTF); `coursing`'s three.js TEX kind
-(its pilot is Voth's, the Voth branch's); the `detail` record field (no shader by design: `StandardMaterial3D`'s
+(its pilot is Voth's); the `detail` record field (no shader by design: `StandardMaterial3D`'s
 `detail_*`); bark variants as a texture array; pre-compiling the library at load.
 
 *Status 2026-10-13 (ROADMAP.md stage 2e, the pilot half): **Iziz is the second pilot.*** Its vernacular, the Ancients MAT
@@ -480,7 +480,7 @@ unknown section name is refused. What is filled and by whom:
 | `atmos` | done | an adapter over `ATMOS.export()` (unchanged) |
 | `fixtures`, `interiors`, `furniture` | Iziz (M5); a stub elsewhere | Iziz's doors, windows and lamps as children of their buildings, its furniture slots; no interiors (its buildings are shells) |
 | `sim` | stub | a written contract (`EXPORT.CONTRACTS`) |
-| `city` | stub | the Voth branch's (`core/city`); only its registration point is here |
+| `city` | stub | `core/city` registers it for the isle demo's two plans (M6); only its registration point is here |
 | `sockets` | not a section yet | — |
 
 The harness writes it: `python3 tools/harness.py export <page> --out godot/data/<case>/ --box x0,z0,x1,z1` (the shared
@@ -501,8 +501,8 @@ atmosphere. `godot/krator/world_import.gd` reads it without an Iziz-only path (a
 `shaders/library.gdshader`; a `Records` node of `Building_<id>` with its fixtures). The proof is a 240 m district inside
 the south gate (`godot/data/world-iziz`, `godot/tests/export/iziz_test.gd`): 9,638 instances, the kit's 2,158 uids
 recomputed in GDScript with 0 mismatches, 139 fixtures each under its building, every material and map resolving with
-its hook, the ground through its samples to 0 m. Not yet: Voth (M6, the Voth branch's), the Ancients kit's openings as
-fixtures, interiors, records on the biome sets in the city.
+its hook, the ground through its samples to 0 m. Not yet: the isle demo (M6, ROADMAP section 11), the Ancients kit's
+openings as fixtures, interiors, records on the biome sets in the city.
 
 ### Phase 5: the simulation layer as data
 
@@ -605,7 +605,8 @@ on Travis's (or his friend's) machine; `godot/README.md` should say how.
 
 **The spike: first findings (2026-10-05).** `godot/` exists (`godot/README.md`; tomorrow's steps in
 `godot/CHECKLIST.md`). Run in a cloud container with Godot 4.5-stable: headless for the imports, the Compatibility
-renderer on a software GPU for screenshots. **Not yet run: Forward+ on a real GPU, the editor's import route, speed.**
+renderer on a software GPU for screenshots. **Forward+ on a real GPU ran 2026-10-16 (findings 15 to 20); still to
+run: the editor's import route and the perf table (ROADMAP section 11, item 4).**
 Five cases, chosen to differ: hyperjungle and rift tiles (`krator-biome`), Girder and Iziz regions as glTF (three's
 own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krator-atmos`, Yuni's `KRATOR_EXPORT` records.
 `godot --headless --path godot -- --check` prints each importer's gap list.
@@ -637,7 +638,8 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
    no `key` either, so the report cannot even name them). Fauna (`anim`, `aP0`/`aP1`) stand still at their path centre.
    *Compensated 2026-10-05:* every kit hook is named as data (`irid`, `gloss`, `far`, `hang`, `anim-phase`:
    `biomes/GODOT.md`); `irid`, `gloss`, `far` (both packings) and `hang` (the sway and the night glow) have Godot
-   shaders (`bark.gdshader` modes 1 to 5). Open: both fauna kinds.
+   shaders (`bark.gdshader` modes 1 to 5). Open: both fauna kinds. *The `anim` kind done 2026-10-16* (finding 20); *`anim-phase` and the CPU-moved fauna
+   the same day* (finding 20: baked motion).
 7. **`swayW` is GLSL text** in the export. The three values the kits use map to `c + dot(w, position)`; make it data.
    *Done 2026-10-05:* the export adds `sway` as data.
 8. **LOD is measured to the chunk's box in three and to a point in Godot:** the spike widens ranges by the chunk
@@ -734,11 +736,50 @@ pre-flight passes on Windows (`krand_test`, `atmos_test`, `--check`: five cases,
     wall section) is wanted before judging halos against buildings. Fixed the same day: ~~no fog banks (4c)~~, the
     spike never switched the environment's volumetric fog on, which FogVolumes need (`spike.gd` now does when a case
     has any; to recheck); ~~Shift+W~~ for the weather also moved the camera: now `F3`.
-19. **yuni.** Opens as intended (translucent building boxes, doors and windows as small panels, the compound's rooms
+19. ~~**yuni.** Opens as intended (translucent building boxes, doors and windows as small panels, the compound's rooms
     as open-topped boxes), but it cannot be judged by eye: there are no meshes, and a running game has no inspector
     for the metadata (5a to 5c unchecked). Wanted: an in-game click readout in the spike (the record under the
     cursor), and a scripted nav check (`bld_00005`: a path from one room to another through a door link) that prints
-    pass or fail, so this case needs no editor work. Meshes for Yuni wait on its second route (gap 13).
+    pass or fail, so this case needs no editor work.~~ Done 2026-10-18 for the nav check: Yuni fills core/export's
+    `interiors` section (`settlements/yuni/src/77-export.js`; `core/export/README.md`, "Interiors"), the `world-yuni`
+    case builds every planned interior under its building (`krator/world_import.gd` on the spike's own builder), and
+    `godot/tests/export/yuni_interiors_test.gd` paths from one room of `bld_00005` to another through its door links
+    and the yard, with the links removed as the negative; it prints pass or fail and exits with it. Still open: the
+    in-game click readout. Meshes for Yuni wait on its second route (gap 13).
+20. **Fauna motion (2026-10-16).** The core's `anim` kind moves in Godot: `shaders/lib/anim.gdshaderinc` (orbit, flit,
+    walk; wings, legs, billboards; `anim.gdshader`, and `anim_add.gdshader` for the additive motes), each instance's
+    path radius and `aP1` packed by both importers. Its twin `krator/kanim.gd` matches `BIO.animHook`'s own GLSL run on a
+    GPU (`tools/anim_golden.py`, 72 cases; `tests/anim/anim_test.gd`), and on the hyperjungle tile a butterfly pinned at
+    the same clock (`--clock=T`, new) stands on the same pixel in the page and in Godot at 100 s and at 103 s. Not
+    ported, because no shader holds their motion: fauna a kit moves on the CPU each tick (`BIO.dynamic`: eastabyss,
+    sedesert's deer, swifts and striders, Shade), which export a snapshot; walkers of the `anim` kind (their host moves
+    them); swbay's and nwbay's flocks (`anim-phase`), which no export carries. Those want their motion baked to data
+    (keyframed paths, as Stage 5 plans for the sim's tasks) or their ticks ported to GDScript.
+    *Baked, the same day* (`biomes/GODOT.md`, "Motion"): one mechanism, no kit's tick ported. The export pins the BIO
+    clock on a grid (10 Hz by default), calls every tick the kits registered, and keeps each moving instance's matrix
+    (and any per-instance attribute that moves) as a track on its item (`motion`; world.glb: the node's
+    `extras.krator_motion`, arrays as accessors). An instance whose kit declares its period (sedesert's walkers: deer
+    and coyotes) keeps one period and replays exactly at every clock; the rest keep a 120 s loop cross-faded (a
+    smoothstep) over 2 s, exact between clock 0 and 118 s. `krator/kmotion.gd` replays it into each MultiMesh's
+    buffer from `Atmos.t`, attached by both importers; `shaders/anim_phase.gdshader` draws swbay's and nwbay's beat
+    (their flocks moved onto `BIO.dynamic`). Proof: `tests/motion/motion_test.gd` against the page's own ticks at nine
+    pinned clocks (`tools/motion_golden.py`: sedesert's buck with antlers and legs and four swifts, four of swbay's
+    soarers; on the grid to float32, between frames within 1.6 cm, the buck at 1000 s within 2 mm; five negatives),
+    `core/biome/test-motion.js` (the bake, the purity check, the page restored), and sedesert's buck and herd on the
+    same pixels in the page (`?t=`) and the spike (`--clock=`) at 100 s and 103 s. The core now takes core/host's
+    motion time as its clock (`KHOST.host.clock.t`), so a page pinned with `?t=` pins the deer and the foliage too
+    (before, `BIO.WIND.t` kept counting from load while the ticks read the pinned clock). *The stateful movers posed
+    from the clock, the same day*: sedesert's walker is a core module (`core/biome/36-core-walker.js`: `BIO.walker`,
+    `BIO.walkAt`, `BIO.walkLoop`; `core/biome/test-walker.js`), opt-in for a build. swbay's herd and stalker walk a
+    loop laid out at build (their period declared), hyperjungle's striders are walkers with grazing stops on one
+    `BIO.dynamic` mesh (no longer a baked item) whose gait is the `aP1` channel, and swbay's and nwbay's swimmers moved
+    onto `BIO.dynamic` (each pod's circle its period). No mover in swbay, nwbay or hyperjungle is refused now; the
+    golden gains swbay's herd and stalker and three striders (on the grid to float32, the gait in `INSTANCE_CUSTOM.x`
+    exact, the periods holding at 1000 s within 4 cm). Open: eastabyss, Shade (vendored copies) and
+    nwbay are not re-exported yet; Iziz's and Ys's vendored copies of the hyperjungle and nwbay fauna still run the old
+    code (both already drift from upstream: a re-vendor). A loop's fade glides fast fliers across the gap between the loop's end and its
+    start; a per-instance loop length chosen where the path nearly closes would shrink it. The player runs on the CPU
+    (fine for a tile's hundreds; a world's thousands want it in the vertex shader).
 
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
 material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the
@@ -889,8 +930,12 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 | M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
 | M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start). **Done 2026-10-13:** sedesert's 300 m tile (`godot/data/world-sedesert`): 7,280 instances each with its uid (recomputed in GDScript from the glb, 0 mismatches), every material and map resolved (18 library maps by reference), the terrain the page's field (probes agree to 3e-12 m); `godot/tests/export/world_test.gd` |
 | M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export; Iziz's export uses the `KRATOR_EXPORT` record shape and the library's city sets. **Iziz done 2026-10-13** (`core/export/README.md`, "Iziz"): a district inside the south gate (`godot/data/world-iziz`) opens from `core/export` with its buildings, doors, windows and lamps on the record shape, the kit's item sets (2,158 uids recomputed in GDScript, 0 differ), its materials on the library sets with their hooks, the sampled ground and the atmosphere (`tests/export/iziz_test.gd`). Open: interiors (Iziz has none), Girder's furnished rooms from `furniture` (waits on `wip/furniture-indexed`) |
-| M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5), its citizens drawn as `core/charactermodels` figures from their records and playing the clip mapped to each activity |
-| M7 one world | two kits and one settlement stream together in Godot from the scale model's terrain (Phase 7, `biomes/WORLD.md`) |
+| M6 first settlement | **The isle demo (`settlements/isle-demo`), since 2026-10-18 (ROADMAP section 11):** its two towns open in Godot from the canonical export under the build's profile (terrain as a field, city, buildings, fixtures, interiors, furniture, sim), their citizens drawn as `core/charactermodels` figures from their records and playing the clip mapped to each activity, the trade route's books balancing after a replayed week with one town abstract. Voth's 53k citizens are the scale test after it |
+| M7 one world | the isle demo's region streams in Godot from the scale model's terrain: the ring isles biome and the Islanders kit with M6's two towns, at 1:1 across the sea between them (Phase 7, `biomes/WORLD.md`) |
+
+**The must-pass set** (ROADMAP section 11, item 2): sedesert's tile (M4), Iziz's district (M5) and the isle demo's two
+towns (M6). Each has an export profile, the sections it must fill, and the nightly fails it on a stubbed or missing
+one. Every other build is preview-only until it meets a profile of its own.
 
 M1 to M3 are repo hygiene and can be done without Godot installed. The spike is the first point where the Godot
 project exists. **M4 no longer waits on M2 and M3** (2026-10-02): a biome tile needs the biome export, which exists,

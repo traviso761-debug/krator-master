@@ -1,0 +1,433 @@
+[
+ {
+  "src": "Layered Coal Seam Texture.png",
+  "out": "core/materials/library/rock.coal",
+  "record": {
+   "id": "rock.coal",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.coal`",
+    "original_title": "Layered Coal Seam Texture.png",
+    "reuse": "coal heaps, a mine's spoil, any coal face"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Iridescent Oil-Slick Mud Texture.png",
+  "out": "core/materials/library/ground.tar.seep",
+  "record": {
+   "id": "ground.tar.seep",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.tar.seep`",
+    "original_title": "Iridescent Oil-Slick Mud Texture.png",
+    "reuse": "tar pits, a boatyard's pitch ground, a derrick's spill"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024,
+   "dark_gloss": 0.5
+  }
+ },
+ {
+  "src": "White Mineral Crust on Cracked Earth.png",
+  "out": "core/materials/library/ground.efflorescence",
+  "record": {
+   "id": "ground.efflorescence",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.efflorescence`",
+    "original_title": "White Mineral Crust on Cracked Earth.png",
+    "reuse": "saltpeter caves, nitre beds, salt-bloomed earthen walls"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Malachite and Azurite Rock Texture.png",
+  "out": "core/materials/library/rock.malachite",
+  "record": {
+   "id": "rock.malachite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.malachite`",
+    "original_title": "Malachite and Azurite Rock Texture.png",
+    "reuse": "copper mine faces, verdigris-stained rock"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Gold-Flecked Quartz Vein in Dark Stone.png",
+  "out": "core/materials/library/rock.quartz.vein",
+  "record": {
+   "id": "rock.quartz.vein",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.quartz.vein`",
+    "original_title": "Gold-Flecked Quartz Vein in Dark Stone.png",
+    "reuse": "quartz reefs, gold diggings"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Tin-Bearing Granite Quartz Vein Texture.png",
+  "out": "core/materials/library/rock.cassiterite",
+  "record": {
+   "id": "rock.cassiterite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.cassiterite`",
+    "original_title": "Tin-Bearing Granite Quartz Vein Texture.png",
+    "reuse": "tin mine faces, greisen, tin-bearing granite"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Seamless Galena Quartz Crystal Texture.png",
+  "out": "core/materials/library/rock.galena",
+  "record": {
+   "id": "rock.galena",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.galena`",
+    "original_title": "Seamless Galena Quartz Crystal Texture.png",
+    "reuse": "silver and lead mine faces, galena veins"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Rusted Honeycomb Iron Ore Texture.png",
+  "out": "core/materials/library/rock.gossan",
+  "record": {
+   "id": "rock.gossan",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.gossan`",
+    "original_title": "Rusted Honeycomb Iron Ore Texture.png",
+    "reuse": "iron mine faces, ironstone, rust-red weathered ground"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Pink and Purple Pegmatite Crystal Texture.png",
+  "out": "core/materials/library/rock.pegmatite",
+  "record": {
+   "id": "rock.pegmatite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `rock.pegmatite`",
+    "original_title": "Pink and Purple Pegmatite Crystal Texture.png",
+    "reuse": "pegmatite dykes, a rare-earth mine's face"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Recycled Glass Bottle Mosaic Wall.png",
+  "out": "core/materials/library/glass.bottle.wall",
+  "record": {
+   "id": "glass.bottle.wall",
+   "family": "glass",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.28,
+    1.28
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `glass.bottle.wall`",
+    "original_title": "Recycled Glass Bottle Mosaic Wall.png",
+    "reuse": "Post-Apoc's bottle walls; any bottle-built wall"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Sandy Seabed Seagrass Texture.png",
+  "out": "core/materials/library/ground.lagoon.seagrass",
+  "record": {
+   "id": "ground.lagoon.seagrass",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.lagoon.seagrass`",
+    "original_title": "Sandy Seabed Seagrass Texture.png",
+    "reuse": "a warm shallow sea floor"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Seamless Coral Reef Rock Texture.png",
+  "out": "core/materials/library/ground.reef.flat",
+  "record": {
+   "id": "ground.reef.flat",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.reef.flat`",
+    "original_title": "Seamless Coral Reef Rock Texture.png",
+    "reuse": "reef flat, tide-pool bench, a coral quarry's floor"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "Seamless Brain Coral Maze Texture.png",
+  "out": "core/materials/library/organic.coral.brain",
+  "record": {
+   "id": "organic.coral.brain",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, `organic.coral.brain`",
+    "original_title": "Seamless Brain Coral Maze Texture.png",
+    "reuse": "coral heads (brain and table), tinted by instance colour"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "seam_axes": "xy",
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 1.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "size": 1024,
+   "mute": 0.6
+  }
+ }
+]

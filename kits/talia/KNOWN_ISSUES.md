@@ -1,0 +1,72 @@
+# kits/talia: known issues
+
+`build.py` prints the open ones (`- [ ]`) on every build.
+
+- [x] No `materials.json` yet. **2026-10-18:** `materials.json` binds `taMarble` (stone.marble.ashlar), `taGilt` (metal.gold)
+      and `taTile` (roof.clay_roof_tiles) (src/88yt-tal-matlib.js, packed into tex/); the honeycomb mosaic, meander, jali and
+      rose window were owed in core/materials/PROMPTS-NEEDED.md.
+- [x] **Delivered and wired 2026-10-18** (owner-tex2b batch): `taMosaic` (mosaic.orange.honeycomb: the paving medallions'
+      disc, `tanMosaicRing`; the item `taVaultMo` is ready for the interiors' trumpet vaults), `taMeander` (the border band,
+      the paving and terrace borders of `tanMeander`), `taRenderW` (render.orange.worn: the tenement's walls), `taJaliA` /
+      `taJaliG` (the two jali cut-outs, chosen by place: the jharokha bays' front openings, `tanJali`), `taRose`
+      (`tanRoseWindow`, ready for the temple). All full colour (keep 1). With `?mat=proc` the old strips, rings and bars draw.
+- [ ] The wired sets leave the neighbours on the procedural look: the tenement's turret shaft and corbel stay burnt-orange
+      plaster (a round post, the render set is on boxes), so the turret reads redder than the walls; the medallion's boss
+      and the meander's colour are the sets' own (not the kit's `or`). `taRose` has no caller until the temple (P4), and
+      the `taVaultMo` / the trumpet vault wait for `taliaint3`. The jali card repeats each metre (one tile a metre), so a
+      wide screen shows the lattice's own edge bars as lines every metre.
+- [ ] A loggia (`tanLoggia`) is a real recess only up to the arch's springing; the round head above it is a dark disc on
+      the front plane, so from a high angle the head reads as a plate. A hollow body (the interiors set) would cut it.
+- [ ] Arched windows elsewhere (`tanArch`) are fills on the wall plane, as the Vernacular's windows are, not recesses.
+- [ ] The hill stack stands on a white retaining mass so it builds on the flat sheet; `o.slope` is not read yet. On the
+      city page the site's terrain should carry the tiers (PLAN.md section 9: Talia is on a hill).
+- [ ] `verify.py --assert` ends FAILED on `WebGL: CONTEXT_LOST_WEBGL` in the console: the same as Iziz's own pages and
+      Pylon's (settlements/iziz/KNOWN_ISSUES.md, 2026-10-05). The harness's teardown, not the page.
+- [ ] P4 (2026-10-18): the theatre's cavea stands on its own outer wall on flat ground; on the city's hill (PLAN.md 9b:
+      "on the slope") the slope should carry the tiers and the outer arcade go into the ground.
+- [ ] P6 (2026-10-19) furnishes 32 of 45 items. Owed: the round hollow bodies (the library's well, the anatomy theatre's
+      tiers, the odeon's cavea), the caravanserai and stoa (their rooms open through arches with no cut), the hospital's
+      side and back ranges, the college and cloister ranges' doors (planner doors, not cut), the palace by its blueprint.
+- [ ] With an interior, the rounded whitewash cubes (cube house, hill stack, loggia house) draw square hollow bodies with
+      round corner piers (69e draws four straight walls); without one they keep their rounded corners.
+- [ ] To keep the sheet inside its budgets (the cloister came to 288k of 250k triangles, the sheet to 2.85M of 3M), P4
+      made every column's base ring and capital volutes low-poly (`taRingMs`, `taRingGiS`, `taGiltNub`) and the baluster
+      lathe eight-sided: P2 and P3 buildings changed with it (the sheet is now 2.36M). Judge the capitals at eye level.
+- [ ] P5 (2026-10-18): the governor's palace (`tal_governor_palace`) is the heaviest type on the sheet, 228k of its 250k
+      triangles (the sheet 2.59M of 3M): the 130 columns of the pavilions and the loggia, and the front balustrades, carry
+      most of it. The sides, the back and the light courts take coped parapets, not balustrades, to stay inside. A sixth
+      or seventh heavy type will want the pavilions' upper columns on a lower-poly lathe.
+- [ ] The palace's outside stair is one straight flight of 22 steps (0.30 m risers, as Pylon's): the blueprint's three
+      runs of at most 16 steps with landings (`SKILL.md` 5j) do not fit its 10 m footprint as a straight flight. The
+      front pavilions' inner columns stand inside the hall block's corners, where the round pavilions overlap it (as
+      the sheets draw the pavilions as squares). Its rooms (the blueprint's B, G, U and L sheets) come with P6.
+- [ ] No dark voids (2026-10-19): the Talia kit's openings are doors, panes and open portals. The Iziz Vernacular houses on
+      the sheet (the mixed streets) still draw the Vernacular's dark door recesses and dark glass where their walls are not
+      hollow: that is the shared Vernacular helper (settlements/iziz 69c, vendored byte-identical by five builds), the owner's call.
+      TODO (the owner, 2026-10-19): when the Iziz Vernacular's own sheet fixes its dark voids, rebuild this kit (it reads
+      Iziz's src/ in place, so the fixed doors and windows come in with the rebuild), add any NEW Vernacular buildings to
+      the mixed streets in targets/kit/89z-rows.js at their tier, re-verify, and close this entry.
+- [ ] Lit windows (rich and civic) keep the warm lit pane; their white glazing bars barely show on it by day.
+- [x] P7's gallery update: Krator Worlds S-Z version 8 (2026-10-19) carries the current page and card (gallery/README.md).
+- [x] Interiors showed from above and their floors flickered (the owner, 2026-10-19): a ceiling now closes every hollow body
+      under its top, and a thin slab across a room (a string course, a band) is drawn as a ring round it
+      (tanHollowTidy, 69u, run after each Talia builder).
+- [ ] The glasshouse's planting is simple stand-ins drawn on the page (palms, bananas, shrubs, potted ferns); the botanic
+      garden's species could come from a biome kit (as Voth's gardens take the swbay kit's).
+- [x] The civic buildings' dress (the owner, 2026-10-19): the temple (coloured courses, a podium frieze, twin columns at the
+      portal, mosaic icon panels, banners, statues, the gable's sunburst, gilt rings on the domes), the chapel (a porch, a
+      cartouche, gilt ribs, bands, statues), the council house (a sculpted pediment, statues, banners), the palace (mosaic
+      panels and a cartouche in the loggia, banners, roof statues), the great hall, the Senate, the library and the bourse
+      (statues, banners, cartouches). Paid for by six-sided balusters and ten-sided column shafts.
+- [x] Walking (F) follows the floors: core/walk is read in place, the floors, stairs and terraces are registered (69u).
+      Walls are not blocks yet: a walker passes through them.
+- [x] The governor's palace's hall block is hollow and furnished (a cut-away unit); its pavilions are solid drums.
+- [x] The book spines and paintings (2026-10-19): the owner's delivery is in the library (`patterns/court/`), bound in Iziz's
+      pack and laid on the Iziz court furniture and Talia's bookcase by Iziz's furnishing (95i, COURT_DECALS).
+- [ ] 95i is also edited on the branch claude/pylon-interiors-export (the interiors as core/export's interiors section, not
+      merged): whichever lands second keeps both; that export may want to carry the decals with the furniture pieces.
+- [x] The court furniture textures (2026-10-19, second batch): sixteen Izani paintings, the gilt frame moulding, vase
+      glazes, sun carpets, marquetry, brocade, opus sectile; bound in Iziz's pack and laid by 95i (COURT_DECALS, COURT_TRI).
+- [x] The court textures in Godot (2026-10-19): the overlays export as parts of their pieces (95i courtParts, 94 ixFurniture),
+      and the finishes as materials with hook 'triplanar' (tile, detail, gain), drawn by godot/shaders/library.gdshader through
+      lib/triplanar.gdshaderinc in the piece's own frame; iziz_test.gd checks them; tests/export/court_shot.gd renders them.

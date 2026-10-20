@@ -38,35 +38,37 @@ TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.Li
 const GROUNDU={uNight:{value:0}};
 // THE LIBRARY GROUND (materials.json): the kipuka's leaf litter, the old flows' laterite, the young flows' moss, the lava,
 // the skylights' glow carpet; laid in order, the later winning, each sampled twice (anti-tiling, as the plume's edge)
-const GL_KEYS=['litter','laterite','wetmoss','lava','glowcarpet'];
+const GL_KEYS=['litter','laterite','wetmoss','lava','glowcarpet','crust','obsidian','mycgold'];
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k of GL_KEYS){const P=KMAT.packed('throne','ground.'+k);if(!P)return null;o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xb0aaa4});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uNight=GROUNDU.uNight;
  if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};GL_KEYS.forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0;attribute float aL1;varying vec4 vL0;varying float vL1;')
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0,aL1;varying vec4 vL0,vL1;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;');
- const W={litter:'vL0.x',laterite:'vL0.y',wetmoss:'vL0.z',lava:'vL0.w',glowcarpet:'vL1'};
- let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying vec4 vL0;varying float vL1;',body,emit='';
+ const W={litter:'vL0.x',laterite:'vL0.y',wetmoss:'vL0.z',lava:'vL0.w',glowcarpet:'vL1.x',crust:'vL1.y',obsidian:'vL1.z',mycgold:'vL1.w'};
+ let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying vec4 vL0,vL1;',body,emit='';
  if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.GLSL_LAY;   // stochastic tiling: the kit's (70)
-  body='vec3 _E_glowcarpet=vec3(0.0);\n{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
+  body='vec3 _E_glowcarpet=vec3(0.0),_E_crust=vec3(0.0),_E_mycgold=vec3(0.0);\n{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
-   GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='glowcarpet'?'_E_glowcarpet=L;':'')).join('')+'}';
-  emit='{totalEmissiveRadiance+=uNight*_E_glowcarpet*smoothstep(0.05,0.3,_E_glowcarpet.b-_E_glowcarpet.r)*'+W.glowcarpet+'*2.0;}';}
+   GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='glowcarpet'?'_E_glowcarpet=L;':k==='crust'?'_E_crust=L;':k==='mycgold'?'_E_mycgold=L;':'')).join('')+'}';
+  emit='{totalEmissiveRadiance+=uNight*_E_glowcarpet*smoothstep(0.05,0.3,_E_glowcarpet.b-_E_glowcarpet.r)*'+W.glowcarpet+'*2.0+uNight*_E_mycgold*smoothstep(0.08,0.3,_E_mycgold.r-_E_mycgold.b)*'+W.mycgold+'*0.55+(0.05+uNight*0.8)*_E_crust*smoothstep(0.05,0.25,_E_crust.r-_E_crust.b)*'+W.crust+'*2.0;}';}
  else body='{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=dt*dt2*1.12;}';
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl)
   .replace('#include <map_fragment>','#include <map_fragment>\n'+body).replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n'+emit);};
 const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
- const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx);
+ const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   const age=FLOWS.ageAt(x,z),S4=THRONE.stages(age),th=FLOWS.thickAt(x,z),onF=smooth(.4,2,th)*(1-smooth(1500,4000,age));
   const own=FC.at(FC.a.owned,x,z),bank=FC.at(FC.a.flow,x,z),sky=FC.at(FC.a.skylight,x,z),n1=fbm(x*.006+3,z*.006-4,8431,2);
   L0[k*4]=own*.9;L0[k*4+1]=Math.max(onF*S4.mature*.85,smooth(.4,.8,bank)*.5,own*smooth(.62,.75,n1)*.4);
-  L0[k*4+2]=onF*(S4.young*smooth(10,120,age)*.85+S4.mature*smooth(.45,.65,n1)*.5);L0[k*4+3]=onF*(S4.fresh+S4.young*(1-smooth(20,140,age)*.7))*.9;L1[k]=smooth(.78,.97,sky)*.85;}
+  L0[k*4+2]=onF*(S4.young*smooth(10,120,age)*.85+S4.mature*smooth(.45,.65,n1)*.5);L0[k*4+3]=onF*(S4.fresh+S4.young*(1-smooth(20,140,age)*.7))*.9;L1[k*4]=smooth(.78,.97,sky)*.85;
+  /* the library's lava crust (glowing) over the fresh flow, glassy obsidian on the young, the gold mycelium on the islands' damp floors (it glows at night) */
+  L1[k*4+1]=onF*S4.fresh*smooth(.45,.7,fbm(x*.02+4,z*.02-6,8434,2))*.8;L1[k*4+2]=onF*S4.young*smooth(.5,.72,fbm(x*.017-8,z*.017+3,8435,2))*.6;L1[k*4+3]=own*(1-L1[k*4])*smooth(.56,.7,fbm(x*.012+2,z*.012+7,8436,2))*.6;}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,1));
+ g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s windward flank';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the streams' water

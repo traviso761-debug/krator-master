@@ -21,6 +21,8 @@
 //   W.push(x,y,z,r,h)             [x,z] moved out of every block it overlaps: pushed to the nearest point of each
 //                                 box (a hair past it, so blocked() agrees), three passes for corners, so a walker
 //                                 slides round them instead of stopping
+//   W.setBlock(rec, on)           switch a block (or an array of them) off or on: a door that opens and shuts. rec is what block() returned;
+//                                 off, blocked() and push() skip it and export() marks it off:true
 //   W.bounds()                    [x0,x1,z0,z1] over everything registered, or null
 //   W.export()                    {format:'krator-walk', version, convention, floors, blocks}: for Godot, the
 //                                 floors become navigation-mesh source and the blocks collision boxes
@@ -105,7 +107,7 @@
     function candidates(x,y,z,r,h){
       var out=[],seen=new Set(),i0=Math.floor((x-r)/CELL),i1=Math.floor((x+r)/CELL),j0=Math.floor((z-r)/CELL),j1=Math.floor((z+r)/CELL);
       for(var i=i0;i<=i1;i++)for(var j=j0;j<=j1;j++){var a=grid.get(key(i,j));if(!a)continue;
-        for(var k=0;k<a.length;k++){var b=a[k];if(!b.box||b.kind||seen.has(b))continue;seen.add(b);
+        for(var k=0;k<a.length;k++){var b=a[k];if(!b.box||b.kind||b.off||seen.has(b))continue;seen.add(b);
           if(b.box[5]>y&&b.box[4]<y+h)out.push(b);}}
       out.sort(function(p,q){return p.seq-q.seq;});return out;
     }
@@ -141,10 +143,13 @@
         floors:floors.map(function(f){return f.kind==='rect'?{kind:'rect',rect:f.rect.slice(),y:f.y,name:f.name,tag:f.tag}
           :f.kind==='poly'?{kind:'poly',pts:f.pts.map(function(p){return p.slice();}),name:f.name,tag:f.tag}
           :{kind:'strip',a:f.a.slice(),b:f.b.slice(),w:f.w,name:f.name,tag:f.tag};}),
-        blocks:blocks.map(function(k){return {box:k.box.slice(),tag:k.tag};})};
+        blocks:blocks.map(function(k){var o={box:k.box.slice(),tag:k.tag};if(k.off)o.off=true;return o;})};
     }
+    // a block that can be switched: a door that opens and shuts. rec is what block() returned (or an array of them); on false takes it out of
+    // blocked() and push() until it is put back. The grid is untouched (the record stays where it was indexed); export() marks it off:true.
+    function setBlock(r,on){var L=Array.isArray(r)?r:[r];for(var i=0;i<L.length;i++){if(!L[i]||!L[i].box)throw new Error('KWALK.setBlock: not a block record');L[i].off=!on;}return on;}
     function clear(){floors.length=0;blocks.length=0;grid.clear();seq=0;}
-    return {floor:floor,strip:strip,poly:poly,block:block,floorsAt:floorsAt,floorBelow:floorBelow,blocked:blocked,push:push,
+    return {floor:floor,strip:strip,poly:poly,block:block,setBlock:setBlock,floorsAt:floorsAt,floorBelow:floorBelow,blocked:blocked,push:push,
       bounds:bounds,export:exp,clear:clear,floors:floors,blocks:blocks,heightOn:heightOn};
   }
   var W=create();W.create=create;

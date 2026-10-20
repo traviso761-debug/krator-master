@@ -72,11 +72,15 @@ function buildGround(){
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*40+(BIO.fn.h3(x,y,9)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);});
  const MAT=new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
- MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;')
+ /* the library's two ground layers (materials.json ground.mulch: leaf and needle mulch, ground.meadow: green meadow), by zone: the montane needle floor and the glades */
+ const GLY=(function(){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nhighlands','ground.mulch'):null,M=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nhighlands','ground.meadow'):null;if(!L||!M)return null;
+  return{mulch:KMAT.textures(L,{aniso:8}).map,mulchK:1/L.scale[0],meadow:KMAT.textures(M,{aniso:8}).map,meadowK:1/M.scale[0]};})();
+ MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};if(GLY){sh.uniforms.uGMulch={value:GLY.mulch};sh.uniforms.uGMeadow={value:GLY.meadow};}
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec2 aGL;varying vec2 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec2 vGL;'+(GLY?'uniform sampler2D uGMulch,uGMeadow;vec3 gkAnti(sampler2D t,vec2 p,float k){float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));vec2 q=mat2(0.799,-0.602,0.602,0.799)*p;return mix(pow(texture2D(t,p*k).rgb,vec3(2.2)),pow(texture2D(t,q*k*0.53+vec2(0.37,0.21)).rgb,vec3(2.2)),m);}':''))
    .replace('#include <map_fragment>',['#include <map_fragment>',
     '{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);',
+    (GLY?'{vec3 _pd=diffuseColor.rgb;diffuseColor.rgb=mix(_pd,diffuse*gkAnti(uGMulch,vGWP.xz,'+GLY.mulchK.toFixed(4)+')*1.25,clamp(vGL.x*0.7,0.0,0.7));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkAnti(uGMeadow,vGWP.xz,'+GLY.meadowK.toFixed(4)+')*1.2,clamp(vGL.y*0.75,0.0,0.75));}':''),
     // granite on the steep: grey bands, wandering, lichen-stained (the paint is sRGB-decoded, so these are linear)
     ' float steep=1.0-clamp(vGWN.y,0.0,1.0); float y=vGWP.y+5.0*sin(vGWP.x*0.005+vGWP.z*0.004)+2.0*sin(vGWP.x*0.033);',
     ' float b1=0.5+0.5*sin(y*0.24), b2=smoothstep(0.6,0.95,sin(y*0.08+1.3));',
@@ -86,6 +90,7 @@ function buildGround(){
  const NXg=720,g=new THREE.PlaneGeometry(SX,SZ,NXg,NXg);g.rotateX(-Math.PI/2);g.translate((TERR.X0+TERR.X1)/2,0,(TERR.Z0+TERR.Z1)/2);
  const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
  const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(p.getX(i)-TERR.X0)/SX,1-(p.getZ(i)-TERR.Z0)/SZ);
+ {const gl=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const u=(p.getX(i)-TERR.X0)/SX,v=(p.getZ(i)-TERR.Z0)/SZ;gl[i*2]=zat('montane',u,v);gl[i*2+1]=zat('glade',u,v);}g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));}
  g.computeVertexNormals();const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The northern highlands (ground)';scene.add(m);
  // the apron: a vertical skirt 70 m deep round the square's edge, in the paint's edge colour
  {const pos=[],uvs=[],N=NXg,ed=[];for(let k=0;k<=N;k++){const f=k/N;ed.push([TERR.X0+f*SX,TERR.Z0],[TERR.X1,TERR.Z0+f*SZ],[TERR.X1-f*SX,TERR.Z1],[TERR.X0,TERR.Z1-f*SZ]);}

@@ -433,3 +433,15 @@
       day and night), `simulation/` (`94-life.js` is straight lines; `core/simulation/PLAN.md` Phase 4 names this page
       the Change testbed), `walk/`, `minimap/`, `atmos/`, `terrain/`. `54-mat-concrete.js` and `69-mat-salvage.js` stay
       vendored and drifted on purpose (`core/README.md`, "What is not here yet").
+
+## Voth census trades (2026-10-19)
+
+The table is `SCREAM_TRADES` in `src/96s-screamers-trades.js` (on both pages; checked by `tools/check_trades.py`, `verify.py` assert `voth-trades`): 8 carried, 0 partly, 14 gaps, 22 na (inland, no shops or coin, no inns; embassy tabled). Gaps, each a building the village lacks:
+
+- [ ] bakers: a cookhouse with a bake oven. brewers: a brewing shed. butchers: a slaughter and smoke house for the millipede ranch. tanners: a tannery.
+- [ ] weavers and dyers: a weaving and dye shed.
+- [ ] temple priests, shrine keepers: a rite place for the hypertree the captives are fed to, and a skull shrine.
+- [ ] soldiers: a warriors' lodge or armoury. teachers: the elders' place where captives learn to Talk Good.
+- [ ] healers: a healer's hut. priests and undertakers: a burial or bone ground.
+- [ ] fishers: a fishing platform on a jungle stream. market traders: a barter ground on the plaza.
+- [ ] granary keepers and millers: a granary and a mill.

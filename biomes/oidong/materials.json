@@ -1,0 +1,323 @@
+{
+ "build": "oidong",
+ "note": "The Oidong Valley kit's adapter onto the material library (core/materials/PLAN.md). The first eight surface sets are reused library sets; on 2026-10-19 the owner delivered the kit's own cards and surfaces (the iridescent lily, peyote, moon cap, bead-and-bell string, sacred-fig leaves, birch lace, cherry blossom, giant pad; the marble, bamboo, cedar, chalice-cap and moss-ball surfaces: PROMPTS-NEEDED.md, section 2, delivered), named here by their material slot (heart, lace, lily, cherrybloom, mooncapcard, peyotecard, padcard, beadscard: BIO.libSwap) or by family (bark.*, organic.*). bark.cherry, bark.smooth and bark.whorled replace the cherry's, the pale and the whorled bark canvases as grey detail under the species' vertex colours (keep 0; the marble birch's painted bole and the ribbed stalks stay the kit's own); leaf.moss and leaf.small replace the moss and small-leaf clump cards (keep 0: the instance colour colours them); stone.granite is the standing stones, boulders and stones; ground.moss and ground.sand are the ground's two library layers (84-host-ground.js), hex-tiled and blended per vertex by the zones: moss under the woods and the mist, park sand on the raked flats, each half and half with the painted colour. Run python3 tools/textures/pack.py biomes/oidong after any change, then python3 build.py. ?mat=proc shows the procedural textures.",
+ "size": 512,
+ "families": {
+  "leaf.small": {
+   "lib": "card.sage",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.moss": {
+   "lib": "card.moss",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "bark.cherry": {
+   "lib": "bark.cherry",
+   "scale": [
+    1.2,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.smooth": {
+   "lib": "bark.smooth",
+   "scale": [
+    1.6,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.whorled": {
+   "lib": "bark.whorled",
+   "scale": [
+    1.4,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "stone.granite": {
+   "lib": "rock.granite.tor",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.72
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.moss": {
+   "lib": "ground.moss002",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.sand": {
+   "lib": "ground.park_sand",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "heart": {
+   "lib": "card.heartleaf",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "lace": {
+   "lib": "card.lace.birch",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "lily": {
+   "lib": "card.lily.iridescent",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "cherrybloom": {
+   "lib": "card.blossom.cherry",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "mooncapcard": {
+   "lib": "card.mooncap",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "peyotecard": {
+   "lib": "card.peyote",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "padcard": {
+   "lib": "card.giantpad",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "beadscard": {
+   "lib": "card.beads.bell",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "bark.marble": {
+   "lib": "bark.marble",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "bark.bamboo": {
+   "lib": "bark.bamboo.jade",
+   "scale": [
+    1.2,
+    2.4
+   ],
+   "size": [
+    256,
+    512
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.cedar": {
+   "lib": "bark.cedar.red",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "organic.cap": {
+   "lib": "organic.chalicecap",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.62
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "organic.mossball": {
+   "lib": "organic.mossball",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": 0.62
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.forest": {
+   "lib": "ground.ground106",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "stone.marblecliff": {
+   "lib": "rock.marble012",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  }
+ }
+}

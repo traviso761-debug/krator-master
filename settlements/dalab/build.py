@@ -138,7 +138,7 @@ DETERMINISTIC = {
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
-DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-dalab-tags.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
+DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-dalab-tags.js', '77-dalab-trades.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;

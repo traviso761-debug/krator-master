@@ -15,7 +15,7 @@ function hykOwnEnd(snap){const o=HYK_OWNER;HYK_OWNER=null;if(o==null||!snap)retu
 // the owner of each stretch of a merged mesh, in hykMerge's order: [{o,v0,v1,i0,i1}] (vertex and index bounds; runs of one owner joined)
 function hykOwnRanges(geos){const R=[];let vo=0,io=0;for(const g of geos){const c=g.attributes.position.count,n=g.index?g.index.count:c;const o=g.userData.owner==null?null:g.userData.owner;const last=R[R.length-1];
  if(last&&last.o===o){last.v1=vo+c;last.i1=io+n;}else R.push({o,v0:vo,v1:vo+c,i0:io,i1:io+n});vo+=c;io+=n;}return R;}
-function hykPut(matKey,geo,inside){if(!geo)return null;if(!MAT[matKey]){reportErr('hykPut: no material '+matKey);return null;}
+function hykPut(matKey,geo,inside){if(!geo)return null;if(matKey==='hkNacre'&&HYK.cur&&HYK.cur.x!=null&&MAT.hkNacreB)matKey=HK_NACRE_VAR[KRAND.hash(0x4e43,Math.round(HYK.cur.x*2),Math.round(HYK.cur.z*2))%HK_NACRE_VAR.length];if(!MAT[matKey]){reportErr('hykPut: no material '+matKey);return null;}
  const F=HYK.cur;if(F&&F.G){geo.applyMatrix4(F.G.matrix);(F.geos||(F.geos=[])).push(geo);}   // the building's own, for hykCutDoorways
  const t=tcur();if(t)t.tris+=triOf(geo);if(HYK_OWNER!=null)geo.userData.owner=HYK_OWNER;
  const side=inside?'in':'out';(HYK_BK[side][matKey]||(HYK_BK[side][matKey]=[])).push(geo);return geo;}

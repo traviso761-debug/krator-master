@@ -94,7 +94,7 @@ SHIGH.byKey={};SHIGH.SPECIES.forEach((S,i)=>{S.i=i;SHIGH.byKey[S.key]=S;S.spiral
 // fruit the catalog holds. None of these is in the catalog yet (KNOWN_ISSUES), so `fruit` is null throughout.
 const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
 SHIGH.HARVEST={
- coilbark:HV('timber (it splits along its twist: turned work only)',[],false,'Bowls and spindles are turned from it so the grain\'s spiral runs round them.'),
+ coilbark:HV('timber (it splits along its twist: turned work only), fuel (the split offcuts)',[],false,'Bowls and spindles are turned from it so the grain\'s spiral runs round them; the splits and offcuts are the winter firewood.'),
  trumpet:HV('poles',['trumpet water'],false,'The funnels hold rain and cloud-drip; a ladder up a stacked trumpet is a well.'),
  volute:HV('timber',['young scroll tips (boiled)'],false,'The tips of the scrolls are cut and boiled like fiddleheads; the old scrolls are left: they are a hundred years in the winding.'),
  crozier:HV('none',['croziers (boiled)','trunk starch (famine)'],true,'The croziers are the season\'s first green food; the hairs are a wound packing.'),
@@ -225,7 +225,7 @@ function smoothN(pos){const map=new Map(),n=new Float32Array(pos.length),key=i=>
  for(let i=0;i<pos.length;i+=3){const s=map.get(key(i)),l=Math.hypot(s[0],s[1],s[2])||1;n[i]=s[0]/l;n[i+1]=s[1]/l;n[i+2]=s[2]/l;}
  return Array.from(n);}
 // a mesh builder: tri(a,b,c, ca,cb,cc) with colours [r,g,b]; out() gives the geometry with smooth (or flat) normals
-function Mesh(){const pos=[],col=[],uv=[];return{tri(a,b,c,ca,cb,cc){pos.push(...a,...b,...c);col.push(...ca,...(cb||ca),...(cc||ca));uv.push(0,0,0,0,0,0);},
+function Mesh(){const pos=[],col=[],uv=[];return{tri(a,b,c,ca,cb,cc,ua,ub,uc){pos.push(...a,...b,...c);col.push(...ca,...(cb||ca),...(cc||ca));uv.push(...(ua||[0,0]),...(ub||[0,0]),...(uc||[0,0]));},
  quad(a,b,c,d,ca,cb,cc,cd){this.tri(a,b,c,ca,cb,cc);this.tri(a,c,d,ca,cc,cd);},
  out(flat){let nor;if(flat){nor=[];for(let i=0;i<pos.length;i+=9){const ux=pos[i+3]-pos[i],uy=pos[i+4]-pos[i+1],uz=pos[i+5]-pos[i+2],vx=pos[i+6]-pos[i],vy=pos[i+7]-pos[i+1],vz=pos[i+8]-pos[i+2];
   let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;for(let j=0;j<3;j++)nor.push(nx/l,ny/l,nz/l);}}else nor=smoothN(pos);
@@ -273,7 +273,8 @@ G.whorl=function(o){const M=Mesh();const n=o.n;
   const w1=W*(o.wid0==null?.55:o.wid0),w2=W,keel=W*.35;
   const b0=at(0,-w1*.5),b1=at(0,w1*.5),m0=at(.5,-w2),m1=at(.5,w2),mk_=at(.45,0),T=at(1,0);mk_[1]+=keel;
   const cB=o.cB,cM=t>.7&&o.cI?o.cI:o.cM,cT=o.cT;
-  M.tri(b0,mk_,b1,cB,cM,cB);M.tri(b0,m0,mk_,cB,cM,cM);M.tri(b1,mk_,m1,cB,cM,cM);M.tri(m0,T,mk_,cM,cT,cM);M.tri(mk_,T,m1,cM,cT,cM);}
+  const U=o.uv?{b0:[.43,.93],b1:[.57,.93],m0:[.26,.5],m1:[.74,.5],k:[.5,.52],t:[.5,.05]}:{};   /* a card's leaf in its cell: base low, tip high */
+  M.tri(b0,mk_,b1,cB,cM,cB,U.b0,U.k,U.b1);M.tri(b0,m0,mk_,cB,cM,cM,U.b0,U.m0,U.k);M.tri(b1,mk_,m1,cB,cM,cM,U.b1,U.k,U.m1);M.tri(m0,T,mk_,cM,cT,cM,U.m0,U.t,U.k);M.tri(mk_,T,m1,cM,cT,cM,U.k,U.t,U.m1);}
  return M.out(true);};
 // the RUFFLE-CROWN leaf: a long blade along +x, its margins ruffled in waves that grow toward the tip (refs/07, 08),
 // vertex-coloured green at the midrib to coral and gold at the frill; unit length
@@ -395,6 +396,8 @@ SHIGH.MAT={
  lichen:BIO.leafMat(TX.lichen,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
  vcol:BIO.leafMat(null,'vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  vsway:BIO.leafMat(null,'vsway',{swayW:'(position.y)',swayA:.035,alphaTest:0,vertexColors:true}),
+ gleaf:BIO.leafMat(null,'gleaf',{swayW:'(position.y)',swayA:.035,alphaTest:0,vertexColors:true}),
+ gsilver:BIO.leafMat(null,'gsilver',{swayW:'(position.y)',swayA:.035,alphaTest:0,vertexColors:true}),
  vhang:BIO.leafMat(null,'vhang',{swayW:'(-position.y)',swayA:.06,alphaTest:0,vertexColors:true}),
  frillfin:BIO.leafMat(TX.frill,'frillfin',{aN:true,irid:true,swayW:'(position.x)',swayA:.07}),
  solid:BIO.solidMat(null,0xffffff),
@@ -409,11 +412,21 @@ const M=SHIGH.MAT;
 // without the pack (an open world) keeps the procedural ones; ?mat=proc shows them here.
 const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('shigh',n):null;
 SHIGH.LIB={has:n=>!!LIBP(n)};
+function libCell(n,box,W,H){const L=LIBP(n);if(!L)return null;const c=document.createElement('canvas');c.width=W;c.height=H;
+ const t=new T3.CanvasTexture(c);t.flipY=false;t.encoding=T3.sRGBEncoding;t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;t.anisotropy=4;
+ const img=new Image();if(typeof window!=='undefined')window._texPending=(window._texPending||0)+1;
+ img.onload=()=>{const w=img.width,h=img.height,g=c.getContext('2d');g.drawImage(img,box[0]*w,box[1]*h,(box[2]-box[0])*w,(box[3]-box[1])*h,0,0,W,H);t.needsUpdate=true;window._texPending--;};
+ img.onerror=()=>{window._texPending--;BIO.err('shigh: a library card failed to decode: '+n);};
+ img.src=L.map;return t;}
+const CELL=(i,j)=>[i/3+.005,j/3+.005,(i+1)/3-.005,(j+1)/3-.005];   /* a cell of a 3 x 3 sheet, column i, row j */
 function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;
  t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return t;}
 {const use=(k,t,at)=>{if(t){M[k].map=t;M[k].alphaTest=at==null?.4:at;}};
  // the moss card on the limbs' clumps; the floor's moss mats keep the procedural clusters (the card laid flat read as a square)
- use('small',libCard('leaf.small'));use('moss',libCard('leaf.moss'),.38);}
+ use('small',libCard('leaf.small'));use('moss',libCard('leaf.moss'),.38);
+ use('lichen',libCell('lichen',CELL(1,1),256,256),.3);
+ /* the giant groundsel's cabbages and the silver rosettes: the owner's nine Dendrosenecio leaves, the green one and the felted silver one, on the whorls' blades (their vertex colours still tint them) */
+ use('gleaf',libCell('leaf.groundsel',CELL(0,0),256,256));use('gsilver',libCell('leaf.groundsel',CELL(1,1),256,256));}
 // the barks: bark.wrung keeps half its own colour (its moss), the others are grey detail under the species' vertex colours.
 // The bucket's uvScale becomes the set's tile size (the trunk lathes read it), and means() (55) divides out the pack's
 // brightness instead of the canvas's, so a species' bark colour renders the same on either map
@@ -445,10 +458,10 @@ BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Rosette lichen'});
 // a small silver rosette (the lobelia's base, the paramo's rosettes, the tank bromeliads on the limbs)
 BIO.def('aloe',G.whorl({n:44,div:TAU*2/5-.05,len:t=>1-.62*t,wid:t=>.21,wid0:.7,el:t=>mix(.12,1.05,Math.pow(t,1.3)),curl:.35,cB:[.55,.72,.62],cM:[.72,.9,.78],cT:[1.1,.55,.42]}),M.vcol,{label:'Spiral aloes'});
 BIO.def('aloelo',G.whorl({n:16,div:TAU*2/5-.05,len:t=>1-.62*t,wid:t=>.3,wid0:.7,el:t=>mix(.12,1.05,Math.pow(t,1.3)),curl:.35,cB:[.55,.72,.62],cM:[.72,.9,.78],cT:[1.1,.55,.42]}),M.vcol,{label:'Spiral aloes (mid distance)'});
-BIO.def('cabbage',G.whorl({n:24,div:GOLD,len:t=>1-.55*t,wid:t=>.36,wid0:.5,el:t=>mix(.35,1.35,Math.pow(t,1.1)),curl:-.25,cB:[.62,.7,.52],cM:[.6,.74,.52],cI:[.78,.86,.66],cT:[.72,.82,.6]}),M.vsway,{label:'Groundsel cabbages'});
-BIO.def('cabbagelo',G.whorl({n:8,div:GOLD,len:t=>1-.55*t,wid:t=>.5,wid0:.5,el:t=>mix(.35,1.35,Math.pow(t,1.1)),curl:-.25,cB:[.62,.7,.52],cM:[.6,.74,.52],cI:[.78,.86,.66],cT:[.72,.82,.6]}),M.vsway,{label:'Groundsel cabbages (mid distance)'});
-BIO.def('rosette',G.whorl({n:24,div:GOLD,len:t=>1-.6*t,wid:t=>.18,wid0:.6,el:t=>mix(.2,1.2,t),curl:.2,cB:[.7,.74,.68],cM:[.86,.9,.84],cT:[.95,.97,.92]}),M.vcol,{label:'Silver rosettes and tank bromeliads'});
-BIO.def('rosettelo',G.whorl({n:10,div:GOLD,len:t=>1-.6*t,wid:t=>.28,wid0:.6,el:t=>mix(.2,1.2,t),curl:.2,cB:[.7,.74,.68],cM:[.86,.9,.84],cT:[.95,.97,.92]}),M.vcol,{label:'Silver rosettes and tank bromeliads (mid distance)'});
+BIO.def('cabbage',G.whorl({uv:1,n:24,div:GOLD,len:t=>1-.55*t,wid:t=>.36,wid0:.5,el:t=>mix(.35,1.35,Math.pow(t,1.1)),curl:-.25,cB:[.62,.7,.52],cM:[.6,.74,.52],cI:[.78,.86,.66],cT:[.72,.82,.6]}),M.gleaf,{label:'Groundsel cabbages'});
+BIO.def('cabbagelo',G.whorl({uv:1,n:8,div:GOLD,len:t=>1-.55*t,wid:t=>.5,wid0:.5,el:t=>mix(.35,1.35,Math.pow(t,1.1)),curl:-.25,cB:[.62,.7,.52],cM:[.6,.74,.52],cI:[.78,.86,.66],cT:[.72,.82,.6]}),M.gleaf,{label:'Groundsel cabbages (mid distance)'});
+BIO.def('rosette',G.whorl({uv:1,n:24,div:GOLD,len:t=>1-.6*t,wid:t=>.18,wid0:.6,el:t=>mix(.2,1.2,t),curl:.2,cB:[.7,.74,.68],cM:[.86,.9,.84],cT:[.95,.97,.92]}),M.gsilver,{label:'Silver rosettes and tank bromeliads'});
+BIO.def('rosettelo',G.whorl({uv:1,n:10,div:GOLD,len:t=>1-.6*t,wid:t=>.28,wid0:.6,el:t=>mix(.2,1.2,t),curl:.2,cB:[.7,.74,.68],cM:[.86,.9,.84],cT:[.95,.97,.92]}),M.gsilver,{label:'Silver rosettes and tank bromeliads (mid distance)'});
 BIO.def('frillleaf',G.frillLeaf(),M.vsway,{label:'Ruffle-crown leaves'});
 BIO.def('frillfin',BIO.geo.frond(3),M.frillfin,{attrs:['aN','aC2'],label:'Spiral frill fins'});
 BIO.def('trumpet',G.trumpet(10,18),M.vsway,{label:'Spiral trumpets'});

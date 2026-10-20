@@ -106,10 +106,17 @@ Object.defineProperty(CULT.packs,'beastriders',{value:CULT.packs['beast-rider'],
 mkCulture({key:'hykkousoi',name:'Hykkousoi',field:'#e4eff0',edge:'#3f6a82',band:'#2c5a74',disc:null,ink:'#d8a640',ink2:'#2c5a74',sym:'windwave',pole:0x6a4a2c,
  awn:{mode:'stripes',cols:['#3f6a82','#e4eff0','#aec8d0','#e4eff0'],n:8},
  paint:[0x3f6a82,0x2c5a74,0xaec8d0,0xe4eff0,0xd8a640],signBg:'#3f6a82',signFg:'#e4eff0',signFrame:0x2c5a74});
-// Xanadu: saffron bordered in maroon, the gold-hubbed eight-spoked wheel, turquoise in the livery
-mkCulture({key:'xanadu',name:'Xanadu',field:'#e89a2a',edge:'#7a1a24',band:'#d8a838',disc:null,ink:'#7a1a24',ink2:'#d8a838',sym:'wheel',pole:0x7a1a24,
- awn:{mode:'stripes',cols:['#e89a2a','#7a1a24','#e89a2a','#d8a838'],n:8},
- paint:[0x7a1a24,0xe89a2a,0xd8a838,0x1f9aa8,0xe8dcc0],signBg:'#7a1a24',signFg:'#e8c060',signFrame:0xd8a838});
+// Xanadu (the owner, 2026-10-20): rose bordered in wine, gold bands, the white lotus outlined in wine; rose and white awnings;
+// turquoise in the livery (it had been saffron with the wheel, which is now the Order of Historians' saffron and scroll)
+mkCulture({key:'xanadu',name:'Xanadu',field:'#d4637e',edge:'#6e1a32',band:'#d8a838',disc:null,ink:'#f8f4ec',ink2:'#6e1a32',sym:'lotus',pole:0x6e1a32,
+ awn:{mode:'stripes',cols:['#d4637e','#f8f4ec','#d4637e','#d8a838'],n:8},
+ paint:[0xd4637e,0x6e1a32,0xd8a838,0x1f9aa8,0xf8f4ec],signBg:'#6e1a32',signFg:'#f8e8ee',signFrame:0xd8a838});
+// The Order of Historians (the History Monks; culture tag `order`; the owner, 2026-10-20): the Order's deep saffron, bordered
+// in maroon with gold bands, the scroll with the wheel written on it in maroon on parchment; saffron and maroon awnings;
+// signs gold on maroon. Deeper than Xanadu's saffron, whose wheel stands alone (settlements/longsong: the robes' dye)
+mkCulture({key:'order',name:'The Order of Historians',field:'#c8601a',edge:'#5a1418',band:'#d8a838',disc:null,ink:'#5a1418',ink2:'#f0e4c4',sym:'scroll',pole:0x5a1418,
+ awn:{mode:'stripes',cols:['#c8601a','#5a1418','#c8601a','#d8a838'],n:8},
+ paint:[0xc8601a,0x5a1418,0xd8a838,0x2e4a8a,0xf0e4c4],signBg:'#5a1418',signFg:'#e8c060',signFrame:0xc8601a});
 // Ring Sea Islanders: bark-dyed cloth and pandanus, the white moon, feather-streamer pennants
 mkCulture({key:'ringsea-islander',name:'Ring Sea Islanders',field:'#8a5a32',edge:'#4a2a14',band:'#c49a5a',disc:null,ink:'#f0e8d4',sym:'moon',pole:0x5a3a22,flagStyle:'pennant',
  awn:{mode:'cloth',cols:[0x8a5a32,0xb08850,0x7a4a2a,0xc4a468]},

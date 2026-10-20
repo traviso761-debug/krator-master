@@ -27,17 +27,23 @@ scale Krator map for rough placement, not in this repo.
 | eastern badlands | `ebadlands` | sedesert, eastabyss (its gentle east rim), the outer rim (airless: nothing grows) |
 | crater drylands (two regions) | `crater-drylands` | swbay, the hyperjungle's southern savannah (gentle: the burn mosaic thins into them) |
 | the Steampits (and every geyser field: the West Ring's isles, the Throne's) | `geyser` | hyperjungle (it walls the basins in; the showcase loads it), the abyssal savanna (XV) between the basins, the Ring Sea coast. A shared kit: a world lays out each field from its own data or from a scale-model point (`GEYSER.cluster`) |
-| *planned* Korona | `korona` | nwlowlands, nhighlands |
+| Korona (`korona/NOTES.md`; six stations built 2026-10-19: the tepui, the pitcher hollow, the fertile basin, the trenches, the lee gorge, the hoar table) | `korona` | nwlowlands, nhighlands (as first given; the model, 4.21, says nhighlands, sedesert, the east lobe's lake, e badlands, crater drylands, the hyperjungle: `korona/NOTES.md`, "Borders") |
+| north-eastern canyons (overlies the hyperjungle's polygon for now) | `necanyons` | hyperjungle (gentle: the forest thins onto the rock), korona (gentle: the benches rise into tepuis), nhighlands (steep: the Inner Wall). Plan: `biomes/necanyons/PLAN.md` |
 | southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
 | *possible* | `sbadlands`, micro-biomes | |
 | *planned* the scablands (in "n semiarid": scale model 4.20) | `scablands` | its basin's long lake to the south |
 | *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
+| the Oidong Valley (east of the Vale of Xanadu, LORE.md 6.15) | `oidong` | xanadu (over the pass at the valley's west end; the five shared species are the ecotone), the ranges round it (steep: nothing grows on the walls' tops) |
 
 **Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
 structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and
 microclimates. Its neighbours above are as first given; with Korona in the NE, its border with
-the NW lowlands needs checking against the scale model.
+the NW lowlands needs checking against the scale model. *Checked on 4.21 (2026-10-19, `korona/NOTES.md`,
+"What the scale model says"): the NW lowlands' polygon is 164 km from Korona's, with the n highlands' northern arm
+and the east lobe between them; Korona's long borders are the eastern desert (south-east, a 1,600 m step down) and the
+n highlands (west, dry steppe both sides), and the east lobe's lake laps 3,360 km² into it. The 4.19 spill from the
+east lobe into Korona's trenches is closed (4.20): in 4.21 no flood channel enters Korona.*
 
 **Two candidates read off the scale model (4.19, Travis, Oct 2026).** Both are Earth landforms that are rare
 because their conditions are rare, and Krator has the conditions.

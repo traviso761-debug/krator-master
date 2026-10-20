@@ -113,6 +113,8 @@ function dMuralTex(v){return canvasTex(256,256,(g,w,h)=>{
   for(let c=0;c<3;c++)d[i+c]=d[i+c]+(214-d[i+c])*wear*.8;const gr=(fbm(x/5,y/5,1.7,1)-.5)*14;d[i]+=gr;d[i+1]+=gr;d[i+2]+=gr;}
  g.putImageData(id,0,0);});}
 TEX.dMural=dMuralTex(0);TEX.dMural1=dMuralTex(1);TEX.dMural2=dMuralTex(2);TEX.dMural3=dMuralTex(3);
+/* variants 4 to 7 (the library's giants, harvest, priests and the eye-god's second hall) have no painter of their own: the procedural stand-ins repeat the first four */
+for(let v=4;v<8;v++)TEX['dMural'+v]=dMuralTex(v-4);
 // The same stepped-fret height field, in COLOUR: cream faces over turquoise recesses (the inlay of the deco temples).
 TEX.dReliefTq=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const CELL=64;
  const hf=(x,y)=>{const cx=x%CELL,cy=y%CELL;const bx=Math.floor(x/CELL),by=Math.floor(y/CELL);
@@ -176,12 +178,24 @@ MAT.dirt.map=TEX.dGround;MAT.dirt.needsUpdate=true;
 
 // ---------------------------------------------------------------- materials
 MAT.dRammed=new THREE.MeshStandardMaterial({map:TEX.dRammed,color:0xffffff,roughness:.98,metalness:0,side:DS});vWorldUV(MAT.dRammed,.5);
+// four more library surfaces (2026-10-19), each its own material so the kit's other earth and stone keep theirs: eroded
+// banco (earth.banco.eroded.b) for the poor quarter's walls, rendered stone (stone.rendered) for the bath house's hot room,
+// ruined render (stone.rendered.ruined) for the watch tower's footing, sandstone blocks (rock.sandstone_blocks_04) for the
+// scribes' hall's podium. The procedural maps stand in under ?mat=proc.
+MAT.dBancoE=new THREE.MeshStandardMaterial({map:TEX.dRammed,color:0xffffff,roughness:.98,metalness:0,side:DS});vWorldUV(MAT.dBancoE,.5);
+MAT.dRender=new THREE.MeshStandardMaterial({map:TEX.stone,color:0xffffff,roughness:.96,metalness:0,side:DS});vWorldUV(MAT.dRender,.5);
+MAT.dRenderR=new THREE.MeshStandardMaterial({map:TEX.stone,color:0xffffff,roughness:.97,metalness:0,side:DS});vWorldUV(MAT.dRenderR,.5);
+MAT.dBlock=new THREE.MeshStandardMaterial({map:TEX.stone,color:0xffffff,roughness:.96,metalness:0,side:DS});vWorldUV(MAT.dBlock,.5);
 MAT.dRelief=new THREE.MeshStandardMaterial({map:TEX.dRelief,color:0xffffff,roughness:.95,metalness:0,side:DS});vWorldUV(MAT.dRelief,.25);
 MAT.dMural=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});vWorldUV(MAT.dMural,.5);   // boxes: a 2 m band shows the whole frieze and tiles along the wall
 MAT.dMuralP=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});                          // planes: one whole tile stretched to the plane (round-house facets)
-for(const v of[1,2,3]){MAT['dMural'+v]=new THREE.MeshStandardMaterial({map:TEX['dMural'+v],color:0xffffff,roughness:.94,metalness:0,side:DS});vWorldUV(MAT['dMural'+v],.5);MAT['dMuralP'+v]=new THREE.MeshStandardMaterial({map:TEX['dMural'+v],color:0xffffff,roughness:.94,metalness:0,side:DS});}
+for(const v of[1,2,3,4,5,6,7]){MAT['dMural'+v]=new THREE.MeshStandardMaterial({map:TEX['dMural'+v],color:0xffffff,roughness:.94,metalness:0,side:DS});vWorldUV(MAT['dMural'+v],.5);MAT['dMuralP'+v]=new THREE.MeshStandardMaterial({map:TEX['dMural'+v],color:0xffffff,roughness:.94,metalness:0,side:DS});}
 MAT.dReliefTq=new THREE.MeshStandardMaterial({map:TEX.dReliefTq,color:0xffffff,roughness:.9,metalness:0,side:DS});vWorldUV(MAT.dReliefTq,.25);
 MAT.dDecoPanel=new THREE.MeshStandardMaterial({map:TEX.dDecoPanel,color:0xffffff,roughness:.9,metalness:0,side:DS});
+/* second takes of the pier panel, the cream-and-turquoise fret and the carved relief: the same procedural maps stand in under ?mat=proc */
+MAT.dDecoPanelB=new THREE.MeshStandardMaterial({map:TEX.dDecoPanel,color:0xffffff,roughness:.9,metalness:0,side:DS});
+MAT.dReliefRd=new THREE.MeshStandardMaterial({map:TEX.dReliefTq,color:0xffffff,roughness:.9,metalness:0,side:DS});vWorldUV(MAT.dReliefRd,.25);
+MAT.dReliefCh=new THREE.MeshStandardMaterial({map:TEX.dRelief,color:0xffffff,roughness:.95,metalness:0,side:DS});vWorldUV(MAT.dReliefCh,.25);
 MAT.dChecker=new THREE.MeshStandardMaterial({map:TEX.dChecker,color:0xffffff,roughness:.7,metalness:0,side:DS});vWorldUV(MAT.dChecker,.5);
 MAT.dBanner=new THREE.MeshStandardMaterial({map:TEX.dBanner,color:0xffffff,roughness:.9,metalness:0,side:DS});                          // plain UVs: the device must not tile
 MAT.dTurf=new THREE.MeshStandardMaterial({map:TEX.dTurf,color:0xffffff,roughness:1,metalness:0,side:DS});vWorldUV(MAT.dTurf,.25);
@@ -208,10 +222,11 @@ const DDOMELOW=new THREE.SphereGeometry(1,24,8,0,TAU,0,Math.PI/2);
 
 // ---------------------------------------------------------------- kit items
 kdef('dEarth',VBOX,MAT.dRammed);kdef('dEarthBat',VBATTER,MAT.dRammed);kdef('dEarthDrum',DDRUM,MAT.dRammed);kdef('dEarthDrumB',DDRUMB,MAT.dRammed);kdef('dEarthDome',DDOMELOW,MAT.dRammed);
-kdef('dRelief',VBOX,MAT.dRelief);kdef('dReliefTq',VBOX,MAT.dReliefTq);kdef('dDecoPanel',VPLANE,MAT.dDecoPanel);kdef('dChecker',VBOX,MAT.dChecker);kdef('dReliefBat',VBATTER,MAT.dRelief);kdef('dReliefDrum',DDRUM,MAT.dRelief);
+kdef('dRelief',VBOX,MAT.dRelief);kdef('dReliefTq',VBOX,MAT.dReliefTq);kdef('dDecoPanel',VPLANE,MAT.dDecoPanel);kdef('dChecker',VBOX,MAT.dChecker);kdef('dDecoPanelB',VPLANE,MAT.dDecoPanelB);kdef('dReliefRd',VBOX,MAT.dReliefRd);kdef('dReliefCh',VBOX,MAT.dReliefCh);kdef('dReliefBat',VBATTER,MAT.dRelief);kdef('dReliefDrum',DDRUM,MAT.dRelief);
+kdef('dRenderDrum',DDRUM,MAT.dRender);kdef('dRenderRDrum',DDRUM,MAT.dRenderR);kdef('dBlockB',VBOX,MAT.dBlock);kdef('dEarthE',VBOX,MAT.dBancoE);kdef('dEarthBatE',VBATTER,MAT.dBancoE);
 kdef('dStoneDrum',DDRUM,MAT.stone);kdef('dStoneDrumB',DDRUMB,MAT.stone);kdef('dStoneDome',DDOMELOW,MAT.stone);kdef('dStonePyr',VPYR,MAT.stone);
-kdef('dMural',VPLANE,MAT.dMuralP);kdef('dMuralB',VBOX,MAT.dMural);for(const v of[1,2,3]){kdef('dMural'+v,VPLANE,MAT['dMuralP'+v]);kdef('dMuralB'+v,VBOX,MAT['dMural'+v]);}
-const DMURALS=['dMural','dMural1','dMural2','dMural3'],DMURALBS=['dMuralB','dMuralB1','dMuralB2','dMuralB3'];
+kdef('dMural',VPLANE,MAT.dMuralP);kdef('dMuralB',VBOX,MAT.dMural);for(const v of[1,2,3,4,5,6,7]){kdef('dMural'+v,VPLANE,MAT['dMuralP'+v]);kdef('dMuralB'+v,VBOX,MAT['dMural'+v]);}
+const DMURALS=['dMural','dMural1','dMural2','dMural3','dMural4','dMural5','dMural6','dMural7'],DMURALBS=['dMuralB','dMuralB1','dMuralB2','dMuralB3','dMuralB4','dMuralB5','dMuralB6','dMuralB7'];
 kdef('dBanner',VPLANE,MAT.dBanner);
 kdef('dTurf',VBOX,MAT.dTurf);kdef('dTurfDome',DDOMELOW,MAT.dTurf);kdef('dTurfDrum',DDRUMB,MAT.dTurf);kdef('dTurfCone',DCONESH,MAT.dTurf);
 kdef('dWoodDrum',DDRUM,MAT.woodV);kdef('dStaveDrum',new THREE.CylinderGeometry(1,1,1,18).translate(0,.5,0),MAT.woodV);

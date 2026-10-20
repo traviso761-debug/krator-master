@@ -79,6 +79,11 @@ def main():
                 shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
     for b in list(data['bodies']) + ['props']:          # each body's pieces, and the hand-held props they share
         src_dir, out_dir = os.path.join(HERE, 'pieces', b), os.path.join(DIST, 'pieces', b)
+        if not os.path.isdir(src_dir):
+            # pieces/ is not in Git: a checkout without the Blender half has none of a body's, or only those a
+            # partial build made (make_mpfb.py --merge). The page is built all the same; publish only what is here
+            print('build.py: no pieces/%s here: the page is built, its pieces are not' % b)
+            continue
         os.makedirs(out_dir, exist_ok=True)
         for f in os.listdir(out_dir):
             os.remove(os.path.join(out_dir, f))
@@ -123,6 +128,14 @@ def main():
             print('build.py: thumbs.mjs failed; the chips show names only')
     pack_thumbs()
     man = {k: hashlib.sha1(v).hexdigest() for k, v in sorted(inputs.items())}
+    # the pieces this checkout does not have keep the hashes the last whole build wrote (they did not change here)
+    old = os.path.join(HERE, 'build-manifest.json')
+    if os.path.exists(old):
+        kept = {k: v for k, v in json.load(open(old)).items() if k.startswith('pieces/') and k not in man
+                and not os.path.exists(os.path.join(HERE, k)) and os.path.isfile(os.path.join(HERE, 'data', k.split('/')[1], 'kit.json'))}
+        man.update(kept)
+        if kept:
+            print('build.py: %d pieces not here keep their last hashes' % len(kept))
     for page, whole in wholes.items():
         man['dist/%s.html' % page] = hashlib.sha1(whole.encode()).hexdigest()
     json.dump(man, open(os.path.join(HERE, 'build-manifest.json'), 'w'), indent=1, sort_keys=True)

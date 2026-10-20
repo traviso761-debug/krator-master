@@ -3,7 +3,7 @@
 
     python3 verify.py dist/isle-site.html --assert [--shots DIR]
 
-For each town (Kautoa, Walapo) the page is loaded headless and checked:
+For each town (Kautoa, Valapo) the page is loaded headless and checked:
   - it loads clean: no page error, the probe (window._site) ready without an error
   - the frame: the town's origin is its settlement point in the open world (moved by ISLE.SHIFT where the owner had it
     moved), its centre stands on land, the settlement point and a shore lie in the planning square
@@ -38,16 +38,120 @@ CHECKS = r"""(neg)=>{const R=[],F=ISLE.F,S=WORLD_DATA.meta.settlements.find(s=>s
   let sea=null;for(let r=0;r<=12000&&sea==null;r+=250)for(let k=0;k<64;k++){const w=WORLD.lakeWater(F.x+Math.cos(k/64*6.2832)*r,F.z+Math.sin(k/64*6.2832)*r);if(w>-1e8){sea=w;break;}}
   const ok=worst<0.01&&sea!=null&&Math.abs(sea-F.sea)<0.01;
   R.push({name:"the ground is the open world's",ok,detail:'24 samples, worst '+worst.toFixed(3)+' m at '+at+'; the frame sea '+F.sea+', the world water '+(sea==null?'none':sea.toFixed(2))});}
- {const u0=SITE.undo.length,d=SITE.addDistrict('plaza',[[-60,-60],[60,-60],[60,60],[-60,60]]),m=SITE.addMarker(100,100),a=SITE.addLine('avenue',[[-200,0],[200,0]]);
+ {const c0=[SITE.data.districts.length,SITE.data.markers.length,SITE.data.avenues.length];
+  const u0=SITE.undo.length,d=SITE.addDistrict('plaza',[[-60,-60],[60,-60],[60,60],[-60,60]]),m=SITE.addMarker(100,100),a=SITE.addLine('avenue',[[-200,0],[200,0]]);
   const n1=[SITE.data.districts.length,SITE.data.markers.length,SITE.data.avenues.length];
   SITE.doUndo();SITE.doUndo();SITE.doUndo();const n0=[SITE.data.districts.length,SITE.data.markers.length,SITE.data.avenues.length];
   SITE.doRedo();const area=SITE.area(SITE.district(d.id).poly);
   const P=JSON.parse(ISLE.townJSON());if(neg==='payload')delete P.frame;
   const pay=P.frame&&P.frame.town===F.town&&isFinite(P.frame.sea)&&Array.isArray(P.districts)&&P.districts.some(q=>q.id===d.id);
   SITE.doUndo();while(SITE.undo.length>u0)SITE.doUndo();SITE.dirty=false;TOOL.status();
-  const ok=n1.join()==='1,1,1'&&n0.join()==='0,0,0'&&Math.abs(area-14400)<1&&!!pay;
-  R.push({name:'the editor draws on it and saves the town with its frame',ok,detail:'added '+n1+', undone '+n0+', redone plaza '+area.toFixed(0)+' m2; payload '+(pay?'carries the frame and the drawing':'MISSING its frame or drawing')});}
+  const ok=n1.join()===c0.map(c=>c+1).join()&&n0.join()===c0.join()&&Math.abs(area-14400)<1&&!!pay;
+  R.push({name:'the editor draws on it and saves the town with its frame',ok,detail:'drawn '+c0+', added '+n1+', undone '+n0+', redone plaza '+area.toFixed(0)+' m2; payload '+(pay?'carries the frame and the drawing':'MISSING its frame or drawing')});}
  return R;}"""
+
+
+"""The city page (dist/isle-city.html, P6): python3 verify.py dist/isle-city.html --assert [--shots DIR]. Each town is
+opened (?town=) and, once both towns are planned (window._city.both):
+  - it loads clean: no page error, no kit error (ISK.errors, IZV.errors), every piece drawn near the camera built
+  - each town's checks (src/34-isle-census.js ISLE.checks): exact footprint overlap, nothing on a street, in the sea or
+    on the wall, the vessels afloat, the programme (PLAN.md section 8: the landmarks, Izanitown, the works quarter,
+    Ridertown, both harbours' vessels and origins, the wall's named gates, the landing), the size, the hug, the farmland
+  - the declared boxes the plan placed by (ISLE_DIMS, ISLE_VDIMS, read from the kits' sources) are the bundles' own
+  - negative controls: a building pushed onto its neighbour, one pushed into the sea, the palace (or Valapo's hall) taken
+    away: each must fail its check"""
+CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.G;
+ if(!neg){
+  for(const t in C.checks)C.checks[t].forEach(c=>out.push(c));
+  const bad=[],ik=ISK.dims(),iz=IZV.dims();
+  for(const k in ISLE_DIMS){const D=ISLE_DIMS[k],B=D.kit==='isk'?ik[k]:D.kit==='izv'?iz[k]:D.kit==='cat'?CAT.ASSET_BY_KEY[k]:null;
+   if(!B||Math.abs(B.w-D.w)>1e-6||Math.abs(B.d-D.d)>1e-6||Math.abs((B.h||8)-D.h)>1e-6)bad.push(k);}
+  for(const k in ISLE_VDIMS){const B=RINGSEA.dims[k];if(B&&(B.L!==ISLE_VDIMS[k].L||B.B!==ISLE_VDIMS[k].B))bad.push(k);}
+  const used=new Set(R.vessels.map(v=>v.key));const lack=[...used].filter(k=>!RINGSEA.dims[k]);
+  out.push({name:'the declared boxes the plan placed by are the bundles\' own',ok:!bad.length&&!lack.length,detail:Object.keys(ISLE_DIMS).length+' pieces, '+Object.keys(ISLE_VDIMS).length+' vessels'+(bad.length?'; differ: '+bad.slice(0,6).join(', '):'')+(lack.length?'; not bundled: '+lack.join(', '):'')});
+  const ke=ISK.errors.concat(IZV.errors),pf=Object.keys(C.failed);
+  out.push({name:town+': the kits build every piece drawn (no kit error)',ok:!ke.length&&!pf.length,detail:C.draw.protos+' pieces built, '+C.draw.near+' drawn in full, '+C.draw.vessels+' vessels'+(ke.length?'; '+ke[0].slice(0,200):'')+(pf.length?'; failed '+pf.join(', '):'')});
+  return out;}
+ const L=R.lots.map(l=>Object.assign({},l));
+ if(neg==='overlap'){const a=L.find(l=>l.cls!=='landmark'),b=L.find(l=>l!==a&&l.cls!=='landmark');b.bo=Object.assign({},b.bo,{c:a.bo.c.slice()});b.x=a.x;b.z=a.z;
+  return ISLE.checks(R,G,{lots:L}).filter(c=>/overlap/.test(c.name));}
+ if(neg==='sea'){const a=L.find(l=>l.cls!=='landmark'&&!l.shore),v=R.vessels[0];a.bo=Object.assign({},a.bo,{c:[v.x,v.z]});a.x=v.x;a.z=v.z;
+  return ISLE.checks(R,G,{lots:L}).filter(c=>/in the sea/.test(c.name));}
+ if(neg==='landmark'){const R2=Object.assign({},R,{lots:R.lots.filter(l=>l.role!=='palace'&&l.role!=='village hall')});
+  return ISLE.checks(R2,G).filter(c=>/landmarks the brief/.test(c.name));}
+ return [];}"""
+
+
+# The export profile (P6b; PLAN.md section 7; core/export/README.md, "Profiles"). The case is Kautoa's ceremonial centre (the
+# palace, the square, the envoys' houses, the park and the streets round it), in the town's frame. EXPORT_TARGET is M6's
+# whole list; EXPORT_PROFILE is what the page must fill now (verify --assert fails without it), the rest of the target
+# is reported section by section until each lands. --profile a,b,c checks a list for one run; --profile target checks
+# the whole target and fails on every section not yet filled (the proof the check bites).
+EXPORT_BOX = [-700, -700, 700, 700]
+EXPORT_TARGET = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain=field', 'city', 'fixtures', 'interiors',
+                 'furniture', 'sim', 'stage', 'atmos']
+# met on 2026-10-19 (P6b): the registry (core/tags, the drawn town's), the KMAT materials, the terrain (sampled:
+# EXPORT.ground on the plan's ground; terrain=field waits for a KFIELD from the extracted heights, PLAN.md section 10)
+EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city']   # city: core/city's contributor, 2026-10-19
+
+
+async def run_city(a):
+    import harness
+    from playwright.async_api import async_playwright
+    folder = os.path.dirname(os.path.dirname(os.path.abspath(a.html)))
+    page = os.path.relpath(os.path.abspath(a.html), folder).replace(os.sep, '/')
+    fails = []
+    views = {'Kautoa': ('overview', 'ceremonial centre', 'palace', 'harbour', 'works quarter', 'izanitown', 'ridertown'),
+             'Valapo': ('overview', 'village and harbour', 'south harbour', 'garrison')}
+    with harness.serve(folder) as port:
+        async with async_playwright() as p:
+            b = await harness.launch_chromium(p)
+            for town in ('Kautoa', 'Valapo'):
+                pg = await b.new_page(viewport={'width': 1280, 'height': 800})
+                errs = []
+                pg.on('pageerror', lambda e: errs.append(str(e)))
+                await pg.goto('http://127.0.0.1:%d/%s?town=%s' % (port, page, town), timeout=0)
+                await pg.wait_for_function('window._city && (_city.error || _city.both)', timeout=900000, polling=1000)
+                st = json.loads(await pg.evaluate('JSON.stringify({err:_city.error||_city.otherError||null,town:_city.town,ms:_city.ms,draw:_city.draw})'))
+                print('--- %s (%s) ---' % (town, st.get('ms')))
+                if st['err'] or st['town'] != town:
+                    print('  FAIL  loads clean : ' + str(st['err'] or 'opened ' + st['town'])); fails.append(town + ' load'); await pg.close(); continue
+                if a.assert_:
+                    seen = set()
+                    for r in await pg.evaluate(CITY_JS, None):
+                        if r['name'] in seen: continue
+                        seen.add(r['name'])
+                        print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
+                        if not r['ok']: fails.append(r['name'])
+                    for neg in ('overlap', 'sea', 'landmark'):
+                        rs = await pg.evaluate(CITY_JS, neg)
+                        caught = bool(rs) and not any(r['ok'] for r in rs)
+                        print(('  PASS  ' if caught else '  MISSED') + ' negative (' + neg + ') : ' + '; '.join(r['detail'] for r in rs))
+                        if not caught: fails.append(town + ': negative ' + neg)
+                    if town == 'Kautoa':
+                        prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
+                        pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)
+                        print(('  PASS  ' if pok else '  FAIL  ') + 'export-profile : box %s, %s' % (EXPORT_BOX, ', '.join(prof)))
+                        for ln in lines: print('        ' + ln)
+                        if not pok: fails.append('export-profile')
+                        if not a.profile:   # the rest of M6's target, reported (not failed) until each section lands
+                            tok, tl = await harness.check_profile(pg, EXPORT_BOX, EXPORT_TARGET)
+                            print('  INFO  export target (M6) : ' + next((ln for ln in tl if ln.startswith('profile ')), '').split(': ', 1)[-1].split(';')[0] + ' met')
+                            print('        ' + next((ln for ln in tl if ln.startswith('sections: ')), ''))
+                if a.shots:
+                    os.makedirs(a.shots, exist_ok=True)
+                    # software GL: the nearest 600 pieces in full (the rest as massing), and time for each frame
+                    await pg.evaluate('DRAW.nearMax=600;DRAW.at=null')
+                    for v in views[town]:
+                        await pg.evaluate('_city.view(%s)' % json.dumps(v))
+                        await pg.wait_for_timeout(1500)
+                        await pg.screenshot(path=os.path.join(a.shots, 'city-%s-%s.png' % (town.lower(), v.replace(' ', '-'))), timeout=300000)
+                if errs:
+                    print('  FAIL  page errors : ' + '; '.join(errs[:3])); fails.append(town + ' page errors')
+                await pg.close()
+            await b.close()
+    print('\nOK' if not fails else '\nFAILED: ' + ', '.join(fails))
+    return 1 if fails else 0
 
 
 def hashes_ok():
@@ -66,10 +170,10 @@ def merge_ok():
         fr = {'x': 1, 'z': 2, 'sea': -3}
         site = lambda n: {'frame': dict(fr), 'districts': [{'id': 'd1', 'n': n}], 'markers': []}
         serve.merge('Kautoa', site('k'))
-        serve.merge('Walapo', site('w'))
+        serve.merge('Valapo', site('w'))
         serve.merge('Kautoa', site('k2'))
         d = json.load(open(serve.FILE, encoding='utf-8'))
-        both = d['towns']['Walapo']['districts'][0]['n'] == 'w' and d['towns']['Kautoa']['districts'][0]['n'] == 'k2'
+        both = d['towns']['Valapo']['districts'][0]['n'] == 'w' and d['towns']['Kautoa']['districts'][0]['n'] == 'k2'
         refused = 0
         for town, s in (('Kautoa', {'districts': [], 'markers': []}), ('Atlantis', site('x'))):
             try:
@@ -91,7 +195,7 @@ async def run(a):
     with harness.serve(folder) as port:
         async with async_playwright() as p:
             b = await harness.launch_chromium(p)
-            for town in ('Kautoa', 'Walapo'):
+            for town in ('Kautoa', 'Valapo'):
                 pg = await b.new_page(viewport={'width': 1280, 'height': 800})
                 errs = []
                 pg.on('pageerror', lambda e: errs.append(str(e)))
@@ -136,4 +240,6 @@ if __name__ == '__main__':
     ap.add_argument('html')
     ap.add_argument('--assert', dest='assert_', action='store_true')
     ap.add_argument('--shots', default='')
-    sys.exit(asyncio.run(run(ap.parse_args())))
+    ap.add_argument('--profile', default='', help='the city page under --assert: an export profile a,b,c for this run, or target (M6)')
+    args = ap.parse_args()
+    sys.exit(asyncio.run(run_city(args) if os.path.basename(args.html).startswith('isle-city') else run(args)))

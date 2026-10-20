@@ -10,7 +10,7 @@
    WORLD.ground: the same ground the world draws, the isle's coast included), the causeway heights, primitive
    collectors for the causeways the owner draws, and Voth's own things (cantons, piers, districts) as empty lists.
    CANT stands in for Voth's canton plan (20-site-cantons.js, not on this page): no cantons, so no canton ends. */
-var ISLE = { TOWNS: ['Kautoa', 'Walapo'], F: null };
+var ISLE = { TOWNS: ['Kautoa', 'Valapo'], F: null };
 ISLE.settlement = function (name) { return WORLD_DATA.meta.settlements.filter(function (s) { return s.name === name; })[0] || null; };
 /* the water's level nearest (x, z): rings out from the point until one meets water (the Ring Sea is one level) */
 ISLE.seaNear = function (x, z) {
@@ -20,10 +20,10 @@ ISLE.seaNear = function (x, z) {
   }
   return WORLD.H(x, z) - 2;
 };
-/* a frame's origin moved off the settlement point (metres): Walapo's point (one 2 km pixel of the scale model) lies
+/* a frame's origin moved off the settlement point (metres): Valapo's point (one 2 km pixel of the scale model) lies
    5.2 km inland, so its square held no sea; the owner (2026-10-15) had it moved toward its coast, north-north-west,
    until the shore is 1.6 km from the origin (as Kautoa's is 1.8 km). The point itself stays inside the square */
-ISLE.SHIFT = { Walapo: [-1400, -3400] };
+ISLE.SHIFT = { Valapo: [-1400, -3400] };
 /* a town's frame: the saved one when the site file has it (so a drawing never moves), else made from the world */
 ISLE.frame = function (name, saved) {
   var s = ISLE.settlement(name);
@@ -71,7 +71,7 @@ var VOTH = (function () {
   function FR3(x, y, z, w, h, d, ry, c, f) { PRIMS.push(['fr3', x, y, z, w, h, d, ry == null ? 0 : ry, c, f]); }
   function CYL(x, y, z, r, h, ry, c, f) { PRIMS.push(['cyl', x, y, z, r, h, r, ry == null ? 0 : ry, c, f]); }
   function shade(hex, f) { var g = function (s) { return Math.max(0, Math.min(255, Math.round((hex >> s & 255) * (1 + f)))); }; return g(16) << 16 | g(8) << 8 | g(0); }
-  function reseed(s) { seed = (s >>> 0) || 1; }
+  function reseed(s) { seed = s >>> 0; }   /* 0 is a real seed: the LCG steps from it like any other */
   function rr(a, b) { seed = (seed * 1664525 + 1013904223) >>> 0; return a + (b - a) * seed / 4294967296; }
   /* a drawn causeway's segment, in place of Voth's span() and reclaimedCauseway(): a plain deck from end to end (a
      bridge, on a low skirt) or a fill from the sea bed to RLAND (a mole). Stand-ins: the islanders' own jetties and

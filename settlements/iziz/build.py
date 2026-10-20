@@ -93,12 +93,12 @@ CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 # core/rand (KRAND: the tags' uid is its hash) and core/tags (the registry REG is read into: src/91t-iziz-tags.js)
-TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for f in os.listdir(os.path.join(ROOT, 'core', d))
+TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags', 'walk') for f in os.listdir(os.path.join(ROOT, 'core', d))
               if f[0].isdigit() and f.endswith('.js')}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
-TARGET_CORE = {'city': ['atmos', 'mask', 'export']}   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
+TARGET_CORE = {'city': ['atmos', 'mask', 'export', 'furnish'], 'vernacular': ['furnish'], 'palace': ['furnish'], 'ixtest': ['furnish']}   # furnish: core/furnish's colour step for the interiors' furniture (95i)   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
 # core/host (core/host/README.md; ROADMAP.md section 10, step 3): the camera, loop, panel, probe, inspector, marks, pictures,
 # minimap, editor and cutaway, with core/clock and core/minimap. Not core/space: the hyperjungle's scatter takes another path
 # when it is on the page (KNOWN_ISSUES.md, 2026-10-13), so the inspector scans the records instead. Not core/edits: Iziz has
@@ -112,6 +112,22 @@ CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edi
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 MATLIB_PACK = '69d-matlib-pack.js'
+# GENERATED fragment for the targets with interiors (the vernacular sheet; 2026-10-16): the catalog's furniture
+# (kits/catalog/furniture_bundle.py: one closure exposing KratorFurniture) and the interiors core with the Iziz interior
+# set (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). Both are closures, so the build rules do not
+# apply to them. The cultures: iziz, the generic and scrap sets its poor tier falls back to, and the jobs' work pieces.
+FURN_BUNDLE = '88z-iziz-furniture-bundle.js'
+INTERIOR_TARGETS = {'vernacular', 'palace', 'city', 'ixtest'}   # the city since 2026-10-19: every building hollow, the civic and Ancient ones furnished (95i)
+FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'scrap', 'jobs']   # not generic-fruit: it laid figs on a scribe's counter
+INTERIOR_SETS = ['iziz', 'iziz-ancient']   # iziz-ancient: the city's Ancient civic buildings (the temple, the arena...)
+# the palace page (targets/palace, 2026-10-19): Talia's (the vassal university city's: its envoys' rooms, the libraries and
+# the schoolroom), and the palace's own pieces besides (kits/catalog -izpalace.js, the court's;
+# -izpalace-depot.js, the Depot's, the Core's and the service rooms'; both list only the palace's room kinds, so no other
+# build's furniture moves) and the catalog's detail maps (furniture_bundle tex=True: KF_TEX, about 1 MB)
+TARGET_FURN = {'palace': (FURN_CULTURES + ['talia', 'izpalace', 'izpalace-depot'], True, True)}   # (cultures, tex, plants: the orangery and the roof gardens)
+# a target's own library pack (materials.json and tex/ in its folder, tools/textures/pack.py), registered as KMAT pack <name>
+# and written beside the page as its own sidecar, so the shared iziz.tex.js and every other page stay as they were
+TARGET_PACKS = {'palace': ('palace', 'izpalace', '69dp-palace-matlib-pack.js', 'iziz-palace.tex.js')}
 
 
 def srcpath(f, base=None):
@@ -129,6 +145,8 @@ def srcpath(f, base=None):
 # in every target that shows it and the two cannot drift.
 TARGET_OUT = {
     'vernacular': 'iziz-vernacular.html',      # the Iziz Vernacular set showcase
+    'ixtest': 'iziz-ixtest.html',              # the interiors test sheet: every building given an interior on 2026-10-19
+    'palace': 'iziz-palace.html',              # the palace citadel on its hill, its blueprint laid and furnished (targets/palace)
     'city': 'iziz.html',                        # the city
     'wA': 'w-a.html', 'wB': 'w-b.html', 'wC': 'w-c.html',   # per-agent work sheets (round 2)
 }
@@ -150,9 +168,30 @@ _OLD_TARGETS = {
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
 }
 
+# --kit <folder>: build a kit that is written on the Vernacular's contract (kits/pylon, kits/talia; settlements/iziz/
+# VASSAL-KITS.md) on this build's page, with no copy of it. The kit folder holds src/ (its own fragments, merged into the
+# one sorted order with this build's src/; a name that clashes stops the build), targets/<t>/ (rows and views, as here),
+# and kit.json: {"targets": {"kit": "pylon.html"}, "interiors": ["kit"], "deterministic": ["69p-pyl-mat.js"],
+# "external": ["kits/ancients/src/89g-monolith.js"]} (repo-relative fragments read in place, by their own names). Its pages
+# and manifests go to the kit's dist/ and folder; its KNOWN_ISSUES.md is the one printed. The kit's build.py calls this.
+KIT = None
+if '--kit' in sys.argv:
+    _kd = os.path.abspath(sys.argv[sys.argv.index('--kit') + 1])
+    with open(os.path.join(_kd, 'kit.json'), encoding='utf-8') as _fh:
+        KIT = json.load(_fh)
+    KIT['dir'] = _kd
+    TARGETS = os.path.join(_kd, 'targets')
+    DIST = os.path.join(_kd, 'dist')
+    TARGET_OUT = dict(KIT['targets'])
+    INTERIOR_TARGETS = set(KIT.get('interiors', []))
+    TARGET_CORE = dict(KIT.get('core', {}))
+    FURN_CULTURES = KIT.get('furniture', FURN_CULTURES)       # the catalog cultures the kit's page bundles
+    INTERIOR_SETS = KIT.get('interiorSets', INTERIOR_SETS)    # the kits/interiors sets it bundles
+
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
+    '89x-iziz-defight.js',                             # the z-fighting pass: shrinks boxes, no draws
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '20-core-clock.js',                                # core/clock: the world clock (no randomness)
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
@@ -165,14 +204,22 @@ DETERMINISTIC = {
     '84-city-geo.js', '93-city-ui.js',    # city target: geometry constants, dev-tool UI
     '86-bio-57-fauna-pack.js',            # generated: the library's fauna sheets as data URLs (fauna_pack)
     '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '69d-matlib-pack.js', '88y-iziz-matlib.js', '86-bio-00-matlib-pack.js',   # the material library (no rnd())
-    '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
+    '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '20-core-walk.js',   # core/rand, core/tags, core/walk (no rnd())
     '91t-iziz-tags.js',                   # REG into core/tags (reads only)
     '69f-iziz-fixtures.js',               # the vernacular's doors, windows and lamps noted for core/tags (reads only)
+    '69e-vern-hollow.js', '95i-iziz-interiors.js', '74z-vern-trades.js',   # the hollow bodies, the interiors, the trades table (no rnd())
+    '69e5-iziz-openings.js', '95j-iziz-doors.js',   # the openings and the door registry (no rnd())
+    '78s-iziz-towers-plan.js', '78v-iziz-towers-ix.js', '78w-iziz-ancients-plan.js',   # the skyscrapers' and the other Ancient buildings' plans and their drawing (hashes and the kit's noise, no rnd())
     '07-core-export.js', '09-core-export-adapters.js', '94-city-export.js',   # core/export and the city's part of it (M5; runs at export time only)
+    '78p-palace-plan.js', '78q-palace-layout.js', '78r-palace-draw.js', '84-palace-geo.js', '95p-palace-furnish.js', '95q-palace-cutlabels.js',   # the palace page (no rnd())
+    '69dp-palace-matlib-pack.js',         # generated: the palace's library pack
 }
 # core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js'}   # core/host (no rnd()); the take
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'furnish')) if f[0].isdigit() and f.endswith('.js')}   # core/furnish (the vernacular's interiors)
+if KIT:
+    DETERMINISTIC |= set(KIT.get('deterministic', [])) | {'69dz-kit-matlib-pack.js'}
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -186,7 +233,7 @@ SEED_COLLISION_EXCEPTIONS = {
 # fragments): their column-0 declarations live inside a closure, so the
 # shared-scope name checks do not apply. They keep their own PRNG too, so the
 # reseed rule does not apply either. Matched by filename prefix.
-SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '94-city-export')   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
+SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '94-city-export', FURN_BUNDLE)   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
 def scoped(f):
     return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
@@ -309,10 +356,12 @@ def fauna_pack():
 SIDE = None if '--inline-packs' in sys.argv else {}
 
 
-def matlib_pack(side=None):
+def matlib_pack(side=None, tex_dir=None, pack_name='iziz'):
     """GENERATED fragment: materials.json's architecture families (every one but the fauna_* sheets) as data URLs
-    (KMAT.pack('iziz')), as Girder's build.py. It reads the committed tex/ files only, so the build stays deterministic."""
+    (KMAT.pack('iziz')), as Girder's build.py. It reads the committed tex/ files only, so the build stays deterministic.
+    A kit (--kit) packs its own tex/ under its own name the same way (tex_dir, pack_name)."""
     import base64
+    TEX_DIR = tex_dir or globals()['TEX_DIR']
     pj = os.path.join(TEX_DIR, 'pack.json')
     fams = json.load(open(pj, encoding='utf-8')).get('families', {}) if os.path.isfile(pj) else {}
     out = []
@@ -330,11 +379,11 @@ def matlib_pack(side=None):
     if side is not None:   # the pack beside the pages (tools/textures/matlib_pack.py write_sidecar)
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
-        side['iziz'] = body
-        return _mp.loader('iziz')
+        side[pack_name] = body
+        return _mp.loader(pack_name)
     return ('/* ============================== 69d. LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
-            "KMAT.pack('iziz', " + body + ');\n')
+            "KMAT.pack('" + pack_name + "', " + body + ');\n')
 
 
 def build_one(target, do_checks, assert_origin):
@@ -349,6 +398,18 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
+    if KIT:   # the kit's own fragments join the one order; they may not shadow this build's
+        ksrc = os.path.join(KIT['dir'], 'src')
+        kf = {f: os.path.join(ksrc, f) for f in os.listdir(ksrc) if f[0].isdigit()} if os.path.isdir(ksrc) else {}
+        clash = set(src) & set(kf)
+        if clash:
+            sys.exit('kit %s shadows a fragment of settlements/iziz: %s' % (KIT['dir'], ', '.join(sorted(clash))))
+        for rel in KIT.get('external', []):   # fragments read in place from elsewhere in the repo (no copy)
+            f = os.path.basename(rel)
+            if f in src or f in kf:
+                sys.exit('kit %s: external fragment %s clashes with a fragment already in the order' % (KIT['dir'], f))
+            kf[f] = os.path.join(ROOT, rel)
+        src.update(kf)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
@@ -365,6 +426,24 @@ def build_one(target, do_checks, assert_origin):
             bodies[f] = fh.read()
     bodies[MATLIB_PACK] = matlib_pack(SIDE)
     order = sorted(order + [MATLIB_PACK])
+    # a kit with its own library families (kit.json "pack": its name; its materials.json packed into its tex/ by
+    # tools/textures/pack.py): KMAT.pack('<name>') from the kit's tex/, bound by the kit's own fragment (KMAT.bindMat)
+    if KIT and KIT.get('pack') and os.path.isfile(os.path.join(KIT['dir'], 'tex', 'pack.json')):
+        bodies['69dz-kit-matlib-pack.js'] = matlib_pack(SIDE, os.path.join(KIT['dir'], 'tex'), KIT['pack'])
+        order = sorted(order + ['69dz-kit-matlib-pack.js'])
+    if target in INTERIOR_TARGETS:
+        sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
+        sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
+        import furniture_bundle, kit_bundle
+        cults, ftex, fplants = (TARGET_FURN.get(target, (FURN_CULTURES, False)) + (False,))[:3]
+        bodies[FURN_BUNDLE] = furniture_bundle.bundle(cults, tex=ftex, plants=fplants) + kit_bundle.bundle(INTERIOR_SETS)
+        order = sorted(order + [FURN_BUNDLE])
+    tside = None
+    if target in TARGET_PACKS:   # the target's own pack, its own sidecar
+        tdir_, tname, tfrag, tfile = TARGET_PACKS[target]
+        tside = {} if SIDE is not None else None
+        bodies[tfrag] = matlib_pack(tside, os.path.join(HERE, tdir_, 'tex'), tname)
+        order = sorted(order + [tfrag])
     if target == 'city':   # the vendored hyperjungle biome: its library pack, before the biome code (86-bio-*)
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
@@ -397,9 +476,11 @@ def build_one(target, do_checks, assert_origin):
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
         html = _mp.write_sidecar(SIDE, html, DIST, 'iziz.tex.js', prune=False)
+        if tside:
+            html = _mp.write_sidecar(tside, html, DIST, TARGET_PACKS[target][3], prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
-    with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(KIT['dir'] if KIT else HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].replace('\r\n', '\n').encode()).hexdigest()[:12] for f in order},   # LF-normalised: one hash on every platform
                   fh, indent=1, sort_keys=True)
     return order, html, out
@@ -414,7 +495,12 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '76-campus.js', '78-factory-silo.js', '79-government.js', '80-aa-battery.js', '81-houses-abc.js',
             '82-apartments.js', '83-amphitheater.js', '84-fuel.js', '88-factory.js', '89-lab.js',
             # the Ancient Iziz Style: transplant families, wreck(), and the Iziz variants of the kit
-            '77z-iziz-style.js']
+            '77z-iziz-style.js',
+            # the Ancient buildings the owner brought in on 2026-10-19 (the interiors sheet): the alternates' undulant house,
+            # bridge house, fin apartments, star laboratory and undulant flatiron (with their helper fragments), the cultural
+            # centre and the hotel
+            '8aj-alt-a-bole.js', '8aj-alt-d-flat.js', '8ak-alt-a-houses.js', '8ak-alt-b-civic.js', '8ak-alt-c-works.js',
+            '67-cultural.js', '75-hotel.js']
 
 
 BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '35-core-anim', '40-core-place',
@@ -526,7 +612,8 @@ def main():
     if '--vendor-bio' in sys.argv:
         vendor_bio()
         return
-    vendor_manifest()
+    if not KIT:   # a kit build (--kit) points TARGETS at the kit, where the city's vendored biome rows are not: leave VENDOR.json
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     assert_origin = '--assert-origin' in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]
@@ -550,7 +637,7 @@ def main():
 
         # --- syntax check (honest about node being absent) -------------------
         body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
-        chk = os.path.join(HERE, '.syntax-%s.js' % target)
+        chk = os.path.join(KIT['dir'] if KIT else HERE, '.syntax-%s.js' % target)
         with open(chk, 'w', encoding='utf-8') as fh:
             fh.write(body)
         try:
@@ -563,7 +650,7 @@ def main():
             syntax = '  syntax NOT CHECKED (no node - verify.py is this project\'s only syntax check)'
 
         print('built %-26s (%2d fragments, %3.0f KB)%s%s%s'
-              % (os.path.relpath(out, HERE), len(order), os.path.getsize(out) / 1024,
+              % (os.path.relpath(out, KIT['dir'] if KIT else HERE), len(order), os.path.getsize(out) / 1024,
                  syntax, origin_note, '' if do_checks else '  [checks skipped]'))
 
 
@@ -571,7 +658,7 @@ if __name__ == '__main__':
     main()
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
-_ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
+_ki = os.path.join(KIT['dir'] if KIT else HERE, 'KNOWN_ISSUES.md')
 if os.path.exists(_ki):
     _open = [l.rstrip() for l in open(_ki, encoding='utf-8') if l.startswith('- [ ]')]
     if _open:

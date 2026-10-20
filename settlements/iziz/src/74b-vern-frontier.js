@@ -1,5 +1,5 @@
 // ================================================================= IZIZ VERNACULAR — the frontier (Verge's upper city)
-// The buildings an Iziz governor puts up in a desert caravan town at the head of a cliff trail: his palace, the
+// The buildings an Iziz governor puts up in a desert caravan town at the head of a cliff trail: the Governor's House, the
 // guard tower and barracks the city watch patrols from, a watch post, the toll house at the trailhead, the
 // palisade (one modular segment) and its road gate, the mustering ground, and a rest stop on the switchback
 // trail down the cliff (variant 0 cut into the rock, variant 1 built out on the cliff edge).
@@ -38,9 +38,9 @@ function vfFlagpole(x,z,h,c){const iron=vC(0x2e2a26);vB('vStone',x,0,z,1.2,.5,1.
  const fy=.5+h-1.1;vPl('vCloth',x+1.5,fy,z,2.8,1.7,0,c||vC(0xe07a2a));vPl('vCloth',x+1.5,fy,z+.02,2.8,.3,0,vC(0x2f8f8a));vPl('vCloth',x+1.5,fy,z-.02,2.8,.3,0,vC(0x2f8f8a));
  for(const yy of[fy+.8,fy-.85])vB('vIron',x+.06,yy,z,.14,.05,.05,0,iron);}
 
-// ---------------------------------------------------------------- the Governor's Palace: walled forecourt, iron gate, a stone block on a battered podium, domed front pavilion, a flag tower
+// ---------------------------------------------------------------- the Governor's House (Kautoa's isle demo calls for it by name; the key stays vern_governor_palace): walled forecourt, iron gate, a stone block on a battered podium, domed front pavilion, a flag tower
 function buildVernGovernorPalace(G,o){reseed(8001+(o.v|0));const st=vC(vPick(VPAL.stone)),stD=vC(vPick(VPAL.stoneDark)),wood=vC(vPick(VPAL.woodRich)),trim=vC(vPick(VPAL.trim)),cu=vC(0xffffff),iron=vC(0x2e2a26),org=vC(0xe07a2a),leaf=vC(0x4a2e1c);
- vnReg("Governor's Palace",0,-4,17,23,{type:['civic','single-family dwelling'],role:'palace'});vnReg("Governor's Palace — forecourt wall",0,0,21,3.6,{part:'wall'});
+ vnReg("Governor's House",0,-4,17,23,{type:['civic','single-family dwelling'],role:'palace'});vnReg("Governor's House — forecourt wall",0,0,21,3.6,{part:'wall'});
  const CW=40,ZB=-17,ZF=16.5,WH=3.4,T=.8,GO=4.4;
  // ---- the compound wall: stone with a cap and stepped merlons; the gate in the front wall between copper-capped piers
  vfWall(0,ZB+T/2,CW+T,0,WH,T,stD,st,1.7);
@@ -70,7 +70,7 @@ function buildVernGovernorPalace(G,o){reseed(8001+(o.v|0));const st=vC(vPick(VPA
  vB('vStone',0,p1,PZ,PW-.3,H2,PD-.3,0,st.clone().multiplyScalar(1.03));const p2=vnCornice('vStone',0,p1+H2,PZ,PW-.3,PD-.3,0,st,2);
  vB('vStone',0,p2,PZ,PW-.6,3.8,PD-.6,0,st.clone().multiplyScalar(1.06));const p3=vnCornice('vStone',0,p2+3.8,PZ,PW-.6,PD-.6,0,st,3);
  for(const sx of[-1,1])for(const sz of[-1,1]){const x=sx*((PW-.6)/2-.7),z=PZ+sz*((PD-.6)/2-.7);vB('vStone',x,p3,z,1.4,1.0,1.4,0,st);kput('vPyrCu',[x,p3+1.0,z],null,[1.7,1.2,1.7],cu);}
- vPst('vPostS',0,p3,PZ,3.0,1.7,st);vB('vStone',0,p3+1.7,PZ,6.6,.3,6.6,0,stD);for(let k=0;k<12;k++){const a=k/12*TAU;vB('vDarkB',Math.cos(a)*3.0,p3+.5,PZ+Math.sin(a)*3.0,.5,.8,.2,-a+Math.PI/2);}
+ vPst('vPostS',0,p3,PZ,3.0,1.7,st);vB('vStone',0,p3+1.7,PZ,6.6,.3,6.6,0,stD);for(let k=0;k<12;k++){const a=k/12*TAU;vnPlate(Math.cos(a)*3.0,p3+.5,PZ+Math.sin(a)*3.0,.5,.8,.2,-a+Math.PI/2);}
  kput('vDomeC',[0,p3+2.0,PZ],null,[3.2,2.9,3.2],cu);vBall('vFinial',0,p3+5.05,PZ,.34);vPst('vPipeC',0,p3+5.2,PZ,.05,1.2,cu);
  // pavilion front: the great door up the steps, lit windows, a balcony over the door, orange banners, fluted strips on the top storey
  vfSteps(0,0,4.9+.85,0,5.0,YD,5,'vStone',st);vnDoor(0,YD,PF,0,2.2,3.6,'vStone',st,leaf,false);
@@ -111,7 +111,7 @@ function buildVernGuardTower(G,o){reseed(8011+(o.v|0));const st=vC(vPick(VPAL.st
  // storey 1: the door up two steps, arrow slits; storeys 2 and 3: lit windows either side of a fluted strip on every face
  vnDoor(TX,Y0,TZ+TW/2,0,1.6,2.6,'vStone',st,leaf,false);vfSteps(TX,0,TZ+TW/2+.34,0,2.6,Y0,2,'vStone',stD);
  for(let f=0;f<4;f++){const a=f*Math.PI/2;
-  for(const lx of f===0?[-3,3]:[-2.4,0,2.4]){const p=loc(TX,TZ,lx,TW/2+.03,a);vB('vDarkB',p[0],Y0+1.0,p[1],.22,1.5,.1,a);}
+  for(const lx of f===0?[-3,3]:[-2.4,0,2.4]){const p=loc(TX,TZ,lx,TW/2+.03,a);vnPlate(p[0],Y0+1.0,p[1],.22,1.5,.1,a);}
   for(const k of[1,2]){const y=Y0+k*SH+.9;for(const lx of[-2.6,2.6]){const p=loc(TX,TZ,lx,TW/2,a);vnWin(p[0],y,p[1],a,.9,1.5,'lit','vStone',st,true);}}
   const q=loc(TX,TZ,0,TW/2+.02,a);vnStrip(q[0],Y0+SH+.5,q[1],a,.6,2*SH-1.0,'vStone',stD);}
  for(const lx of[-3.4,3.4]){const p=loc(TX,TZ,lx,TW/2,0);vnLamp(p[0],Y0+SH+.4,p[1],0);}
@@ -182,7 +182,7 @@ function buildVernTollHouse(G,o){reseed(8031+(o.v|0));const st=vC(vPick(VPAL.sto
  for(const x of[-2,1.4])vnWin(BXc+x,Y0+1.3,-FZ,Math.PI,.9,1.0,'shut','vWood',wood);vnWin(BXc,c1+.8,-FZ,Math.PI,1.0,1.2,'glass','vWood',wood);
  // the strongroom: a squat stone annex on the -x end, entered from inside, one barred slit, an iron-bound roof slab
  {const sx=BXc-W/2-1.3,sz=-.6,SW=2.6,SD=4.4;vB('vStone',sx,0,sz,SW+.1,2.9,SD,0,stD);vnCornice('vStone',sx,2.9,sz,SW+.1,SD,0,st,1);
-  vB('vDarkB',sx-SW/2-.07,1.9,sz,.1,.35,.8,0);for(let k=-1;k<=1;k++)vB('vIron',sx-SW/2-.12,1.9,sz+k*.24,.04,.35,.04,0,iron);
+  vB('vPlaster',sx-SW/2-.07,1.9,sz,.1,.35,.8,0,IZ_ROOMC);for(let k=-1;k<=1;k++)vB('vIron',sx-SW/2-.12,1.9,sz+k*.24,.04,.35,.04,0,iron);
   for(const z of[-1.4,1.4])vB('vIron',sx,3.15,sz+z,SW+.2,.06,.1,0,iron);}
  // the toll bar at the road's edge, raised: a striped pole on a stone pier, a counterweight
  {const px=6.45,pz=4.2,py=1.15,a=.26,L=5.2;vPst('vPostS',px,0,pz,.28,py,stD);vB('vIron',px,py-.05,pz,.2,.25,.5,0,iron);
@@ -286,7 +286,7 @@ function buildVernRestStop(G,o){reseed(8071+(o.v|0));const wood=vC(vPick(VPAL.wo
   vB('vWood',0,2.9,sz,2*OW-.9,.35,.12,0,wood);vB('vWood',0,3.25,sz,2*OW-1.8,.35,.12,0,wood);
   vnDoor(0,.2,sz+.07,0,1.1,2.25,'vWood',wood,trim,false);for(const s of[-1,1])vnWin(s*1.6,1.3,sz+.07,0,.6,.7,'open','vWood',wood);}
  // the shrine niche cut into the face west of the arch: a dark recess on a sill, a little stone figure, pots and a flame
- {const nx=-7.2,ny=1.25;vB('vDarkB',nx,ny,FZ+.03,1.0,1.3,.1,0);vB('vStone',nx,ny-.18,FZ+.18,1.4,.18,.4,0,rockL);vB('vStone',nx,ny+1.3,FZ+.15,1.4,.22,.34,0,rockL);vB('vStone',nx,ny+1.52,FZ+.12,.9,.18,.28,0,vC(0xe07a2a));
+ {const nx=-7.2,ny=1.25;vB('vStone',nx,ny,FZ+.03,1.0,1.3,.1,0,vC(0x5e564e));vB('vStone',nx,ny-.18,FZ+.18,1.4,.18,.4,0,rockL);vB('vStone',nx,ny+1.3,FZ+.15,1.4,.22,.34,0,rockL);vB('vStone',nx,ny+1.52,FZ+.12,.9,.18,.28,0,vC(0xe07a2a));
   vPst('vPostS',nx,ny,FZ+.2,.16,.5,rockL);vBall('vRock',nx,ny+.62,FZ+.2,.16,rockL);for(const s of[-1,1])vPst('vClayPot',nx+s*.42,ny,FZ+.24,.1,.24,vC(0x9a5a38));vBall('vEmber',nx+.25,ny+.08,FZ+.3,.05);}
  // stone benches along the face under the awning
  for(const s of[-1,1])vB('vStone',s*(OW+1.6),0,FZ+.45,2.0,.45,.6,0,rockL);vB('vStone',-7.2,0,FZ+.45,2.4,.45,.6,0,rockL);
@@ -325,7 +325,7 @@ function vfRestStopCliff(o,wood,trim,org,rock,rockD,rockL,fl){const st=vC(vPick(
   kput('vClothB',[3.1,2.95,3.2],vQ(0,-.08,0),[6.0,.05,3.4],org);vB('vStone',3.1,0,4.75,5.4,.45,.5,0,rockL);vB('vWood',3.1,0,3.2,1.6,.75,.9,0,wood);}
  vnBarrel(-1.6,0,1.2,.4,.95,wood);vnSacks(-1.0,0,-.4,3);vnFolk(2.6,.6,3,1.6);}
 
-VERN.def({key:'vern_governor_palace',name:"Governor's Palace",family:'civic',tags:{type:['civic','single-family dwelling'],wealth:'civic',lit:true},w:42,d:36,h:24,build:buildVernGovernorPalace});
+VERN.def({key:'vern_governor_palace',name:"Governor's House",family:'civic',tags:{type:['civic','single-family dwelling'],wealth:'civic',lit:true},w:42,d:36,h:24,build:buildVernGovernorPalace});
 VERN.def({key:'vern_guard_tower',name:'Guard tower and barracks',family:'civic',tags:{type:['military','civic'],wealth:'civic',lit:true},w:26,d:20,h:19,build:buildVernGuardTower});
 VERN.def({key:'vern_watch_house',name:'Watch house',family:'civic',tags:{type:['civic','military'],wealth:'civic',lit:true},w:10,d:9,h:11,build:buildVernWatchHouse});
 VERN.def({key:'vern_toll_house',name:'Toll house',family:'civic',tags:{type:['civic','infrastructure'],wealth:'civic',lit:true},w:14,d:10,h:11,build:buildVernTollHouse});

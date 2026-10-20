@@ -28,20 +28,20 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 8 | surfaces (1) |
-| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
+| `34-kitdefs.js` | 10 | kit definitions (shared geometry) (1); THE LEAF CARD (54) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
-| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
+| `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
+| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (116); kit items (141) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
-| `71-hl-mat.js` | 8 | world UV with separate u/v tile sizes (26); materials (32); geometry (51); kit items (71) |
-| `71b-hl-motif.js` | 33 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
+| `71-hl-mat.js` | 9 | world UV with separate u/v tile sizes (26); materials (32); geometry (54); kit items (74) |
+| `71b-hl-motif.js` | 34 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
 | `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
-| `73-hl-carve.js` | 32 **big** | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (33); dougong (painted bracket sets under eaves) (77); bargeboards, gable finials, horns (97); windows, porches, balconies (122); towers (Peles, clocktowers, wall towers) (155); bamboo (tribal and the poorest Republican/Rustic (184); cliff walkways (tribal cliff settlements) (197); yard furniture of the highlands (221); round 4: fitting murals and bracket rows (hlFlus (251) |
-| `73b-hl-frame.js` | 31 **big** | textures (29); the house's frame, chosen once (like the Fachwer (65); the pieces (76); a frame face (the new hnFachFace) (94); the four overrides (144); the frame and the roof (round 7b) (164); harlequin roofs (the Izmailovo temple, round 7b) (231); balustrades (round 7c) (245); the temple's great dome, flattened (round 7c) (263); glazed polychrome tile (round 10) (274) |
+| `73-hl-carve.js` | 32 **big** | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (35); dougong (painted bracket sets under eaves) (79); bargeboards, gable finials, horns (99); windows, porches, balconies (124); towers (Peles, clocktowers, wall towers) (157); bamboo (tribal and the poorest Republican/Rustic (186); cliff walkways (tribal cliff settlements) (199); yard furniture of the highlands (223); round 4: fitting murals and bracket rows (hlFlus (253) |
+| `73b-hl-frame.js` | 32 **big** | textures (29); the house's frame, chosen once (like the Fachwer (68); the pieces (79); a frame face (the new hnFachFace) (97); the four overrides (147); the frame and the roof (round 7b) (167); harlequin roofs (the Izmailovo temple, round 7b) (234); balustrades (round 7c) (248); the temple's great dome, flattened (round 7c) (266); glazed polychrome tile (round 10) (277) |
 | `74-rep-dwell.js` | 33 **big** | R-A kit items and helpers (prefix hRA / hnRA) (9); POOR (65); MIDDLE (96); RICH (135); RICH (cont.) (236) |
 | `75-rep-trade.js` | 48 **big** | R-A trade furniture (prefix hnRA) (9); TAVERNS AND INNS (58); SHOPS AND WORKSHOPS (199); SMITHIES (310); STABLES AND WAREHOUSES (361); registry (443) |
 | `76-rep-civic.js` | 45 **big** | R-B kit items (prefix hRB) (9); R-B helpers (prefix hnRB) (38) |
@@ -63,6 +63,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `85b-tri-salvage.js` | 11 | 1. the tank roundhouse (7); 2. the container longhouse (29); 3. the hull meeting house (50); 4. the silo drum-house (68); 5. the scrap forge and trading shelter (87) |
 | `88-hl-dress.js` | 10 | RECLAIMED variants (round 3) (25); clocks (round 5) (87); glazed roof tile, per building (round 10e) (96) |
 | `88y-highlands-matlib.js` | 3 |  |
+| `89-hl-trades.js` | 5 |  |
 | `89y-hl-furnish.js` | 4 | furniture: PLACED from the catalog, not drawn (1) |
 | `90-scene.js` | 6 | scene (Highlands showcase) (1); build every site the target lists (60) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |

@@ -1,5 +1,17 @@
 # core/charactermodels: known issues
 
+- **The Cosmetic Lab is full.** A published version holds at most 256 MiB and the lab is at about 245; the Order of
+  Historians' and Xanadu's clothes (`order_`, `xan_`, 2026-10-19) went into a lab of their own (README, Publishing the
+  labs). The fix is to split the lab by people or by body (one page per body, sharing the code) before more clothes come.
+- **Trousers under a mid-calf hem look thin.** Under a loose top that reaches below the knees (kit item `long`) the
+  figure draws trousers in to 6 mm outside the legs' collision capsules (`50-figure.js` SQUEEZE, and the twin's shader),
+  which are slimmer than the calves; under an ankle-length robe that is hidden, but below a hem at mid-calf the shins
+  show thin (the owner, 2026-10-19, on Xanadu's jama, now cut to the ankle). A long top with a shorter hem needs the
+  squeeze limited to what the hem covers, or the skin's own radius.
+- **Merged garments hide no skin in Godot yet.** `make_mpfb.py --merge` (the Order's and Xanadu's clothes) packs the new
+  items' own blend shapes but does not remake the base's cover regions (`base.gshapes.bin`): in the Godot twin the skin
+  under them is still drawn (it is hidden on the page, which reads `hide` from kit.json). The next whole build
+  (`mpfb_build.py` and `make_mpfb.py` on every item) fixes it.
 - **The Godot twin blends normals linearly.** Its blend shapes carry each target's normals (NORMALIZED mode), so a
   reshaped body's normals turn, but as a weighted sum of the targets' turns, where the page re-sums them from the
   morphed faces: close, not exact, when many targets stack. Its skin is one surface of cover regions (the triangles the

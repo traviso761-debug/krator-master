@@ -8,9 +8,11 @@ is NOT APPLICABLE while this region has none of what it checks (no biome kit yet
 highway, no town tile). The isle's own checks:
   - the isle fields: every field 43-world-isles.js adds is a number at both towns, and the class weights sum to 1 on land
     (the towns are on land), 0 at sea (a point well out in the Ring Sea);
-  - the towns stand on land, the climate the assay found (Kautoa Af, Walapo XA);
+  - the towns stand on land, the climate the assay found (Kautoa Af, Valapo XA);
   - every geyser vent has its thermal ground (the 'floor' field 1 at the vent).
-  - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest.
+  - the coast (43-world-isles.js landHook): rays out from both towns cross a lagoon and then a reef crest;
+  - the hamlets (core/hamlet H4): the four resource villages made with no error, on dry ground, at most 500 people each,
+    every record's tags known (the negative drops the salt village).
 Each check has a negative: the weights summed with a class removed, a town moved out to sea, a vent moved 5 km, the
 coast hook switched off.
 Uses tools/harness.py (the Chromium launcher, the pinned three.js). On a machine whose headless SwiftShader cannot compile
@@ -33,22 +35,31 @@ APPLIES = {'flora placement is seeded by cell (order-free)': 'kits', 'nothing ro
            'the highways lie on the land and keep their grade': 'roads', 'nothing grows on a highway or in a town': 'kits'}
 HAS = "({kits:WORLD_KITS.length>0,rivers:(WORLD_DATA.meta.rivers||[]).length>0,roads:!!WORLD_DATA.roads,towns:!!WORLD_DATA.towns})"
 ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(f=>f.startsWith('koppen:'));
- const town=n=>{const s=M.settlements.find(q=>q.name===n);return neg==='town'&&n==='Walapo'?{x:s.x-60000,z:s.z}:{x:s.x,z:s.z};};
+ const town=n=>{const s=M.settlements.find(q=>q.name===n);return neg==='town'&&n==='Valapo'?{x:s.x-60000,z:s.z}:{x:s.x,z:s.z};};
  const sum=A=>KF.reduce((a,f)=>a+(neg==='class'&&f==='koppen:XA'?0:A[f]),0);
- {const bad=[];for(const n of ['Kautoa','Walapo']){const p=town(n),A=WORLD.at(p.x,p.z);for(const f of F)if(typeof A[f]!=='number'||!isFinite(A[f]))bad.push(n+' '+f);
+ {const bad=[];for(const n of ['Kautoa','Valapo']){const p=town(n),A=WORLD.at(p.x,p.z);for(const f of F)if(typeof A[f]!=='number'||!isFinite(A[f]))bad.push(n+' '+f);
    if(Math.abs(sum(A)-1)>1e-6)bad.push(n+' weights sum '+sum(A).toFixed(3));}
   const S=WORLD.at(-60000,0);if(S.depth>0&&sum(S)!==0)bad.push('sea weights sum '+sum(S));if(!(S.depth>0))bad.push('the sea point is not at sea');
   R.push({name:'the isle fields',ok:!bad.length,detail:bad.length?bad.join('; '):F.length+' fields at both towns; the classes sum to 1 on land, 0 at sea'});}
- {const bad=[],want={Kautoa:'Af',Walapo:'XA'};for(const n in want){const p=town(n),A=WORLD.at(p.x,p.z);if(!(A.depth<0))bad.push(n+' in the water');else if(A.clim!==want[n])bad.push(n+' '+A.clim);}
-  R.push({name:'the towns on land, in their climate',ok:!bad.length,detail:bad.length?bad.join('; '):'Kautoa on Af ground, Walapo on XA, both above the sea'});}
+ {const bad=[],want={Kautoa:'Af',Valapo:'XA'};for(const n in want){const p=town(n),A=WORLD.at(p.x,p.z);if(!(A.depth<0))bad.push(n+' in the water');else if(A.clim!==want[n])bad.push(n+' '+A.clim);}
+  R.push({name:'the towns on land, in their climate',ok:!bad.length,detail:bad.length?bad.join('; '):'Kautoa on Af ground, Valapo on XA, both above the sea'});}
  {const bad=[];WORLD.VENTS.forEach(([x,z],i)=>{const A=WORLD.at(neg==='vent'?x+5000:x,z);if(A.floor<.99)bad.push('vent '+(i+1)+' floor '+A.floor.toFixed(2));});
   R.push({name:'every vent has its thermal ground',ok:!bad.length&&WORLD.VENTS.length>0,detail:bad.length?bad.join('; '):WORLD.VENTS.length+' vents, the floor field 1 at each'});}
  {const keep=WORLD.landHook;if(neg==='coast')WORLD.landHook=null;let rays=0,reefs=0;
-  try{for(const n of ['Kautoa','Walapo'])for(let a=0;a<24;a++){const s=town(n),dx=Math.cos(a/24*Math.PI*2),dz=Math.sin(a/24*Math.PI*2);let sea=false,lag=false,crest=false;
+  try{for(const n of ['Kautoa','Valapo'])for(let a=0;a<24;a++){const s=town(n),dx=Math.cos(a/24*Math.PI*2),dz=Math.sin(a/24*Math.PI*2);let sea=false,lag=false,crest=false;
     for(let r=0;r<16000&&!crest;r+=100){const d=WORLD.lakeWater(s.x+dx*r,s.z+dz*r)-WORLD.H(s.x+dx*r,s.z+dz*r);
      if(!sea){if(d>0)sea=true;else continue;}if(d>1.5&&d<3.2)lag=true;else if(lag&&d>0&&d<.8)crest=true;else if(d>40)break;}
     rays++;if(crest)reefs++;}}finally{WORLD.landHook=keep;}
   R.push({name:'the coast: a lagoon behind a reef crest',ok:reefs>=4,detail:reefs+' of '+rays+' rays from the towns cross a lagoon (1.5-3.2 m) then a crest (under 0.8 m)'});}
+ {const HM=window._hamlets,bad=[];if(!HM)bad.push('no hamlets on the page');else{
+   const V=HM.villages.filter(v=>!(neg==='hamlet'&&v.focus==='salt')),want=['salt','mine','lumber','ranch'];
+   for(const f of want){const v=V.find(q=>q.focus===f);if(!v){bad.push('no '+f+' village');continue;}
+    if(v.error)bad.push(v.id+': '+v.error);if(!v.site)bad.push(v.id+': no site');
+    if(!(v.census&&v.census.pop>0&&v.census.pop<=500))bad.push(v.id+': population '+(v.census&&v.census.pop));
+    if(v.site&&WORLD.water(v.site.x,v.site.z)>WORLD.H(v.site.x,v.site.z)-.5)bad.push(v.id+': its green is in the water');}
+   HM.stats.errors.forEach(e=>bad.push(e));const A=HM.tags();if(A.unknown)bad.push(A.unknown+' unknown tag values');}
+  R.push({name:'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged',ok:!bad.length,
+   detail:bad.length?bad.join('; '):HM.villages.map(v=>v.focus+' '+v.census.pop+' people, '+v.buildings+' buildings').join('; ')});}
  return R;}"""
 
 
@@ -89,7 +100,8 @@ async def run(a):
                     print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                     if not r['ok']: fails.append(r['name'])
                 print('--- negative controls (each must fail) ---')
-                for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest')):
+                for neg, nm in (('class', 'the isle fields'), ('town', 'the towns on land, in their climate'), ('vent', 'every vent has its thermal ground'), ('coast', 'the coast: a lagoon behind a reef crest'),
+                                ('hamlet', 'the hamlets: four resource villages, each on dry ground, at most 500 people, tagged')):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

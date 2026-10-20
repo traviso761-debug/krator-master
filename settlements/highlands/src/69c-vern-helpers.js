@@ -173,7 +173,8 @@ function vnDryingRack(x,y,z,ry,L){for(const s of[-1,1]){const p=loc(x,z,s*L/2,0,
  for(let k=0;k<Math.round(L/.9);k++){const p=loc(x,z,-L/2+.5+k*.9,0,ry);kput('vCloth',[p[0],y+1.55,p[1]],vQ(ry,0,0),[.6,1.05,1],vC(vPick(VPAL.awning)));}}
 // Striped awning on two poles, sloping down and out from the wall at (x,z,ry-face).
 function vnAwning(x,y,z,ry,w,out,c){const q=vQ(ry,.42,0);const p=loc(x,z,0,out/2,ry);const n=new THREE.Vector3(0,1,0).applyQuaternion(q);
- kput('vClothB',[p[0]+n.x*.03,y-Math.tan(.42)*out/2+.35,p[1]+n.z*.03],q,[w,.06,out/Math.cos(.42)],c||vC(vPick(VPAL.awning)));
+ const ac=c||vC(vPick(VPAL.awning)),red=!c&&((Math.round(x*2)+Math.round(z*2))&1);   // an awning with no colour of its own is, half the time by where it stands, the library's red stripe in its own colours
+ kput(red?'vClothRB':'vClothB',[p[0]+n.x*.03,y-Math.tan(.42)*out/2+.35,p[1]+n.z*.03],q,[w,.06,out/Math.cos(.42)],red?vC(0xffffff):ac);
  for(const s of[-1,1]){const pp=loc(x,z,s*(w/2-.1),out-.1,ry);vPst('vPost',pp[0],y-3,pp[1],.05,y-Math.tan(.42)*out+.3-(y-3),vC(0x6a5a48));}}
 function vnBannerPole(x,y,z,ry,h,c){vPst('vPost',x,y,z,.08,h,vC(0x5a4632));const p=loc(x,z,.55,0,ry);vB('vWood',p[0],y+h-.2,p[1],1.1,.08,.08,ry,vC(0x5a4632));
  kput('vCloth',[p[0],y+h-1.6,p[1]],vQ(ry+Math.PI/2,0,0),[.7,2.7,1],c||vC(vPick(VPAL.orange)));}

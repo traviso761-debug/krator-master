@@ -68,10 +68,28 @@ How the biome zones itself from those (55-trees, `NHL.zones`):
 | burn | fbm patch in the boreal band | burn snags over fireweed, birch coming back |
 | dark | fbm patch | black grass, smoke bush, dark spurge, purple millet, teal aroids (≤ ~15% of the floor, never the canopy) |
 
+**The new flora** (`HANDOFF-FLORA.md`; species 25-30, placed after every other pass on their own stream, so nothing
+older moved):
+
+| species / plant | habit or item | zone |
+|---|---|---|
+| Ghost alder | `broad` (grey birch-type bark, mossed) | temperate × `low` × wet flats; the low banks |
+| Shag maple | `shag` (limbs in moss sleeves, the `nmoss` bucket; curtains of moss) | temperate, wet; more in the mist and on the banks |
+| Serpentwood | `serpent` (two to five braided S-curved trunks) | temperate in the mist, the old wood |
+| Fan-leaf | `broad` with the `fan` leaf card | temperate glades' edges, a few montane |
+| Table cedar | `table` (flat tiers of needle plates) | montane, rocky spurs; a few temperate |
+| Veil banyan | `banyan` (fused strands, level limbs, prop roots, glowing hanging roots) | temperate × `low` × wet, rare |
+| Moss collars, staghorns | `cushion`; `staghorn` fronds on a `paddle` shield | the straight boles of temperate hero trees |
+| Crown ferns | `lady` (upright vases) | the banks, temperate mist and gullies |
+| Fern sea | `frond` (sword ferns) | low temperate under closed canopy, near band |
+| Moss hummocks | `cushion` + `mossmat` apron | low wet hollows in the mist, the old wood |
+| Sun-wheels (alien) | `wheel` (flat rosette card) | temperate, on the moss under the canopy, near band |
+| Spore lamps (alien, glow) | `sporepin` | on about one near-band hummock in seven |
+
 ## Night
 
 The bell-bulbs and lantern pods glow faintly at night. `NHL.setNight(k)` (0..1) raises the glow
-materials' emissive (bulbs `.05 → 1.35`, pods `.04 → 1.5`) and shows a small, dim additive halo on
+materials' emissive (bulbs `.05 → 1.35`, pods `.04 → 1.5`, the spore lamps `.04 → 1.2`) and shows a small, dim additive halo on
 half the clusters (hidden by day). The host's light modes call it (`LIGHT_HOOKS`).
 
 ## Tags (project rule)
@@ -92,7 +110,9 @@ plants ON geometry the host hands it.
 ## What the biome exports
 
 ```js
-NHL.build({R, quality, box}) -> {trees, heroes, far, colonies, bySpecies, ..., under, ms}
+NHL.build({R, quality, box, flora}) -> {trees, heroes, far, colonies, bySpecies, ..., under, newflora, ms}
+                                // flora (default true): the new flora (HANDOFF-FLORA.md); false builds the forest
+                                // as it was before it
                                 // box [x0,z0,x1,z1]: the world's own extent; the placement grids skip every cell
                                 // outside it (the disc of radius R is a third larger than a square map). ms: the
                                 // trees' and the floor's build times
@@ -103,10 +123,15 @@ NHL.dress(geometries, opt)      // growth on a structure: the HANGING FLORA (cur
                                 // trumpet saplings and seedlings on the ledges); opt {y0,h,coldTop} makes the
                                 // upper storeys boreal (beard lichen for moss). opt {kind:'crag'}: a rock
                                 // (crag pines, heath, lichen).
+NHL.buildTrees(R, q, box, {flora}) // the tree passes alone; the six new species only with {flora:true} (Roketstad
+                                // calls it without, so its forest is unchanged until it takes them on purpose)
+NHL.buildNewFlora(R, q, box)    // the epiphytes and the new floor plants, after buildFloor -> {newflora:{...counts}}
+NHL.HUMMOCKS                    // the near band's moss hummocks {x,y,z,r,lamp} (the preset views find them)
 NHL.setNight(k)                 // the glow, 0..1
 NHL.canopyH(x,z)                // approximate canopy top
 NHL.treeAt(x,y,z,key,opt)       // one tree at a point (a world's own placement)
-NHL.SPECIES, NHL.PLANTS, NHL.PAL, NHL.KEY
+NHL.SPECIES, NHL.PLANTS, NHL.PAL, NHL.KEY   // a species may carry farShape: its far impostor's blob ('dome',
+                                // 'low', 'umbrella', ...) when its habit is one the impostor does not know
 NHL.zones(x,z)                  // the zone weights a world can reuse (the host's ground paint does); `low` is the
                                 // foot of the temperate band, where the broadleaves lead
 NHL.TREES, NHL.COLONIES         // what was placed

@@ -74,6 +74,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `64-interiors.js` | 77 **big** | 15d. INTERIORS (1); THE PLANNER (225); THE MINIMUM KIT (554); GEOMETRY (703) |
 | `65-summit.js` | 2 | 17. THE SUMMIT (1) |
 | `66-canal.js` | 7 | 16b. THE CANAL WORKS (1) |
+| `67-yu-trades.js` | 6 | = (1) |
 | `68-place.js` | 40 **big** | 18b. THE INNER-CITY PLACEMENT PASS (1) |
 | `69b-yuni-biohost.js` | 7 | 18c. YUNI — the biome host binding (1) |
 | `69z-yuni-badlands.js` | 3 | 18d. YUNI — planting the eastern badlands (1) |
@@ -82,6 +83,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `72-lights.js` | 5 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 17 | 20. EMIT + GROUND + RIVER (1) |
 | `76-doors.js` | 26 | 20b. WORKING DOORS, INTERIORS, WALKING (1) |
+| `77-export.js` | 9 | 20c. CORE/EXPORT: YUNI'S PART (1) |
 | `80-camera.js` | 12 | 25. CAMERA: ON core/host (1); THE PAGE'S FRAME (98-start.js runs it after the  (104) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |

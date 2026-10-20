@@ -158,7 +158,8 @@ defBuilding({key:'ip-tower',name:'Wall tower (Kautoa)',seed:6505,w:8,d:8,h:18,bu
   box('planks',0,1,3.12,1.1,2,.1,P('woodD'));door(0,0,3.15,0,1.1);
   box('planks',0,5.7,0,7.2,.2,7.2,P('planks'));
   for(const [x,z] of [[-3.3,-3.3],[3.3,-3.3],[-3.3,3.3],[3.3,3.3]])isPou(x,5.9,z,2.3,.14,{mk:'carved',n:2,ry:isFace(-x,-z)});
-  for(const [ry,len] of [[0,6.6],[PI,6.6],[PI/2,6.6],[-PI/2,6.6]])W(0,0,0,ry,()=>{box('bamboo',0,5.9,3.3,len,1.0,.1,P('bamboo'));box('patWeave',0,5.95,3.36,len-.4,.85,.02,WHITE);});
+  for(const [ry,len] of [[0,6.6],[PI,6.6],[PI/2,6.6],[-PI/2,6.6]])W(0,0,0,ry,()=>{if(ry===0){box('bamboo',-1.1,5.9,3.3,4.4,1.0,.1,P('bamboo'));box('bamboo',2.8,5.9,3.3,1.0,1.0,.1,P('bamboo'));}else box('bamboo',0,5.9,3.3,len,1.0,.1,P('bamboo'));   /* the front parapet is open at the ladder */box('patWeave',0,5.95,3.36,len-.4,.85,.02,WHITE);});
+  isLadder(1.7,3.6,0,5.9,{lean:.4});   /* the way up: the watch room had none (the door is painted on a solid base) */
   ipSpire(4.0,4.0,8.2,{skirtH:1.1,skirtS:.55,towerH:6.2,towerS:.44,topSx:.22,finial:'horns',fs:.9});});}});
 /* a colonnaded gallery L 30 along x, open to the front (+z) on posts (every other one carved), its back against a wall, a long
    hip of golden thatch and a spire tower at each end (the "sumba - square" reference). o.guard: the guards' benches and racks */

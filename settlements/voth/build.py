@@ -321,7 +321,7 @@ def voth_pathviz_fragment():
 # THREE before the kit's fragment 50 loads (it builds textures and materials at load, BIOME-API.md); the city binds its
 # facts later (37-vc-light's neighbour 38-vc-flora.js, the host's VC.drawFlora). SWBAY_TEMPLE_H, the canopy ceiling,
 # is kept low: small hypertrees in the parks (owner, 2026-10-09).
-BIO_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js']
+BIO_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '36-core-walker.js', '40-core-place.js']
 BIO_KIT = ['50-biome-swbay-species.js', '55-biome-swbay-trees.js', '60-biome-swbay-floor.js', '65-biome-swbay-dress.js',
            '70-biome-swbay.js', '75-biome-swbay-fauna.js']
 SWBAY_TEMPLE_H = 40
@@ -420,8 +420,8 @@ def main():
         page('voth-city.html', city, CITY_VENDOR, [voth_city_fragment(), core_place_fragment(), voth_strider_fragment(), foreign.foreign_fragment(), ringsea.ringsea_fragment(), site_fragment(), edits_fragment(), voth_pathviz_fragment(), biome_fragment(), voth_furniture_fragment(), core_time_fragment(), voth_sky_fragment(), interiors_fragment(), fauna_fragment(),
              tex_fragment(('stone', 'ground', 'rock', 'sand', 'grass', 'road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts',
                            # the canton interiors' sets and sheets (40-vc-interiors.js, 56-vc-interiors-host.js VC.intSetMat / intSheetMat), the street canopies' and banners' (56f)
-                           'int_wall', 'int_banco', 'int_blocks', 'int_relief', 'int_floor', 'int_stone', 'int_beam', 'int_carved', 'int_gilt', 'int_rug', 'int_silk', 'int_canopy',
-                           'tap_solar', 'tap_voth', 'tap_ordinator', 'tap_kilim', 'inlay_voth', 'inlay_jade', 'medallion_sun', 'lantern_paper', 'canopy_kilim', 'frieze_red', 'jali',
+                           'int_wall', 'int_banco', 'int_blocks', 'int_relief', 'int_floor', 'int_stone', 'int_beam', 'int_carved', 'int_gilt', 'int_scale', 'int_rug', 'int_silk', 'int_canopy',
+                           'tap_solar', 'tap_voth', 'tap_ordinator', 'tap_kilim', 'inlay_voth', 'inlay_voth_b', 'inlay_jade', 'medallion_sun', 'lantern_paper', 'canopy_kilim', 'frieze_red', 'jali',
                            'pal_stucco', 'pal_tile', 'pal_inlay', 'column_inlaid', 'screen_lattice', 'relief_ancestors', 'awning_stall', 'hide_canopy', 'tap_tzintzun', 'tap_procession', 'tap_temple', 'tap_masks', 'carpet_palace', 'chandelier_drum', 'icon_sanctuary', 'mural_shrine', 'banner_blue', 'banner_rust', 'banner_lavender', 'fresco_brothers', 'fresco_ascent', 'damask_purple', 'mosaic_giant', 'filigree_crimson', 'filigree_purple', 'mudcloth', 'kilim_brown', 'int_ashlar', 'int_paving', 'int_wood', 'int_earth', 'int_stucco', 'int_tuff', 'int_basalt', 'int_oldwall', 'int_flag', 'int_mosaic'), ('map',),
                           ('road_flag', 'road_cobble', 'road_paving', 'road_alley', 'road_ruts'))], True, CITY_JS)
 

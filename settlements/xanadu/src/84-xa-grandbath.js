@@ -59,7 +59,7 @@ function buildXaGrandBath(G,o){reseed(32201+(o.v|0));const V=xV(o),lit=xLit();
  // the ring roof: a flat slab over the walks, its soffit in mosaic, a gilt cornice, small tiled domes over every bay on v1
  const RW=bw+1.2;for(const s of[-1,1]){vB('vStone',s*(HW/2-bw/2+.6),PH,HZ,RW,.6,HD+PW+.5,0,stone);kput('xMosB',[s*(HW/2-bw/2+.6),PH-.02,HZ],qEuler(Math.PI/2,0,0),[RW-.6,HD-2.4,1],null);
   vB('vStone',0,PH,HZ+s*(HD/2-bw/2+.6),HW-2*RW+.4,.6,RW,0,stone);kput('xMosB',[0,PH-.02,HZ+s*(HD/2-bw/2+.6)],qEuler(Math.PI/2,0,0),[HW-2*RW-1.4,RW-.6,1],null);}
- xnParapet(0,PH+.6,HZ,HW+PW+.5,HD+PW+.5,0,.7,stone);vB('xFriezeB',0,PH+.15,HZ+HD/2+PW/2+.3,HW+PW+.6,.36,.12,0);vB('xGoldB',0,PH+.62,HZ,HW+PW+.9,.14,HD+PW+.9,0,gold);
+ xnParapet(0,PH+.6,HZ,HW+PW+.5,HD+PW+.5,0,.7,stone);xvFr(0,PH+.15,HZ+HD/2+PW/2+.3,HW+PW+.6,.36,.12,0);vB('xGoldB',0,PH+.62,HZ,HW+PW+.9,.14,HD+PW+.9,0,gold);
  if(V===1)for(let i=0;i<NX;i++)for(let j=0;j<NZ;j++){if(i>0&&i<NX-1&&j>0&&j<NZ-1)continue;if((i+j)%2)continue;xnDome(px[i],PH+1.3,pz[j],2.2,'T',{fin:.8});}
  else for(let i=0;i<NX;i++)for(let j=0;j<NZ;j++){if(i>0&&i<NX-1&&j>0&&j<NZ-1)continue;kput('xBulbG',[px[i],PH+1.3,pz[j]],null,[1.0,1.4,1.0],gold);}
  // the emerald lake in the open centre: lobed, with paved tongues between the lobes, folk on the tongues

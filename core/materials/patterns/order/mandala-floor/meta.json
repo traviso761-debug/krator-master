@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1254,
+    1254
+   ],
+   "seam_after": [
+    0.766,
+    0.959
+   ],
+   "seam_before": [
+    1.091,
+    1.373
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "seam_axes": "none",
+   "size": 2048
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "order/mandala-floor",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.4,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "order-mandala-floor.png",
+  "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/mandala-floor`",
+  "reuse": "the Procrastinator hall's floor; any round inlaid floor of the Order",
+  "sha1": "29471a154a7f8285db615d2dafdfc87b1b830cc6"
+ }
+}

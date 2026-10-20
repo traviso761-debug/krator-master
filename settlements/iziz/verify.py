@@ -35,8 +35,18 @@ import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, th
 # the UTF-8 console). A fix there reaches every verify.py that imports it.
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
 import harness as _harness
-from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
+from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views, check_profile
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
+
+# The export profile (core/export/README.md, "Profiles"; ROADMAP.md section 11, item 1): the sections M5's district must
+# fill, checked under --assert on the city page over EXPORT_BOX. Beyond a biome tile's sections the city must carry its
+# fixtures (doors, windows, lamps under their buildings) and its furniture (the registered kit slots: the box holds the
+# triumphal plaza and its statues); interiors may read empty (its buildings are shells: 'interiors?'); terrain is
+# sampled here (a city on sampled ground, ROADMAP.md section 11, item 3), so no '=field'. The box is the plaza district:
+# the Godot case's box (godot/data/world-iziz, -120,292,120,532) holds no registered furniture, which is the gap the
+# profile exists to catch. --profile a,b,c replaces the list for one run (add sim to see a stub fail).
+EXPORT_BOX = [40, -225, 280, 15]
+EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'fixtures', 'furniture', 'interiors?']
 # this verify's own: the console lines that mean a shader or GL call failed (they raise no page error). They were in the
 # old helpers block and went with it on 2026-10-08, which left the console handler raising NameError on every line
 GL_ERR = re.compile(r"THREE\.WebGL(Program|Shader)|shader error|ERROR: 0:|GL_INVALID|INVALID_(OPERATION|VALUE|ENUM|FRAMEBUFFER_OPERATION)|CONTEXT_LOST|too many errors")
@@ -99,6 +109,28 @@ const R=[];
 // 5. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
+
+// 6. every Voth census trade is carried by a defined Vernacular building, or says why not (src/74z-vern-trades.js).
+//    The vernacular sheet only: an agent's sheet or the city defines the same set, but this is the set's own check.
+if(A.trades&&!window.CITY){ const t=A.trades();
+  R.push({name:'voth-trades', ok:!t.bad.length,
+          detail: t.bad.length ? t.bad.slice(0,6).join(' | ') : t.carried+' of '+t.trades+' trades carried, '+t.na+' cannot exist here'}); }
+
+// 7. the interiors (69e-vern-hollow.js, 95i-iziz-interiors.js): every hollow building furnished, every residence holding a
+//    bed, a food and an item container per household.
+{ const I=window._interiors;
+  if(I&&I.on) R.push({name:'interiors', ok:I.done===I.total&&I.residenceFails===0,
+          detail:I.done+'/'+I.total+' buildings, '+I.rooms+' rooms, '+I.pieces+' pieces'+(I.residenceFails?'; residence fails: '+I.residenceFailList.join(' | '):'')+(I.dropped?'; dropped: '+I.droppedList.slice(0,4).join(' | '):'')}); }
+
+// 8. the palace citadel (targets/palace: 78q laid the blueprint, 95p furnished it): every room reached by a door, the twelve
+//    buildings (the palace, the mesa, the two great houses, the two barracks, the three services, the three terrace
+//    pavilions) cut-away units, the only rooms dropped the two slivers the liners leave, every heroic piece and every key
+//    the dressing names in the bundle, the furniture there and the roof gardens planted.
+{ const P=window._palace;
+  if(P){const F=P.furniture||{},miss=Object.keys(F.missing||{}),drop=(P.dropped||[]).filter(n=>!/Great Door|Imperial Guard of the Aula/.test(n));
+   R.push({name:'palace', ok:!P.error&&P.unreached===0&&(P.units||[]).length===12&&!drop.length&&F.on&&F.pieces>=3000&&F.plants>=40&&!miss.length,
+    detail:P.error||(P.rooms+' rooms, '+(P.units||[]).join(' ')+', unreached '+P.unreached+(drop.length?', dropped '+drop.join(' | '):'')
+     +'; furniture '+F.pieces+' pieces in '+F.rooms+' rooms ('+F.heroes+' heroes, '+F.keys+' keys, '+F.plants+' plants, '+F.ms+' ms)'+(miss.length?'; missing keys: '+miss.join(' '):''))});}}
 return R;}"""
 
 
@@ -176,6 +208,16 @@ async def run(a):
                     print("  %-12s %9d / %7d  %-6s  inst %7d  meshes %5d%s"
                           % (k, v["tris"], v["limit"], v["cls"], v["inst"], v["meshes"],
                              "   OVER" if v["over"] else ""))
+
+                if await pg.evaluate("()=>!!window.CITY"):   # the city page carries core/export; the vernacular sheet does not
+                    print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
+                    prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
+                    pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                    for ln in lines:
+                        print("  " + ln)
+                    print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                    if not pok:
+                        fails.append("assert export-profile")
 
             if a.baseline and os.path.exists(a.baseline):
                 base = json.load(open(a.baseline))
@@ -284,4 +326,5 @@ if __name__ == "__main__":
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate (repeatable)")
     ap.add_argument("--size", default="1280x800")
+    ap.add_argument("--profile", default="", help="under --assert: the export profile for this run, a,b,c (default EXPORT_PROFILE)")
     sys.exit(asyncio.run(run(ap.parse_args())))

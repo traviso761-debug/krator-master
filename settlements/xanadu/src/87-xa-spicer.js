@@ -44,7 +44,7 @@ function buildXaGuildSpicer(G,o){reseed(32501+(o.v|0));const V=xV(o),lit=xLit();
  // the carved timber porch: two storeys of carved columns, a great arch under a deep carved gable, lanterns
  {const z=D/2,pw=9,pd=4.2;vB('vWood',X0,1.0,z+pd/2,pw+1,.3,pd+.6,0,timD);
   for(const s of[-1,1]){xnCol(X0+s*(pw/2-.5),1.3,z+pd-.5,3.8,.28,0,tim,gold);xnCol(X0+s*(pw/2-.5),1.3,z+.6,3.8,.28,0,tim,gold);xnCol(X0+s*(pw/2-2.4),1.3,z+pd-.5,3.8,.22,0,tim,gold);}
-  vB('vWood',X0,5.1,z+pd/2,pw+.6,.5,pd+.4,0,tim);vB('xFriezeB',X0,4.6,z+pd+.05,pw,.5,.12,0);
+  vB('vWood',X0,5.1,z+pd/2,pw+.6,.5,pd+.4,0,tim);xvFr(X0,4.6,z+pd+.05,pw,.5,.12,0);
   kput('xArchP',[X0,1.3,z+pd-.1],null,[pw*.9,4.0,.5],tim);kput('xArcP',[X0,5.6,z+pd+.1],null,[pw*.8,2.4,.4],tim);kput('xArcP',[X0,5.7,z+pd+.32],null,[pw*.55,1.7,.16],cream);   // the arch and the carved tympanum
   vnGableRoof(X0,5.6,z+pd/2,pw+1.2,pd+1.4,2.6,0,'xGableT',timD,.9);for(const s of[-1,1])xnMember('xFriezeB',[X0,8.3,z+pd+.9],[X0+s*(pw/2+.7),5.7,z+pd+.9],.4,.1,[0,0,1],null);   // the carved barge boardsvB('xGoldB',X0,8.2,z+pd/2,.3,.8,.3,0,gold);vBall('xGold',X0,9.0,z+pd/2,.22,gold);
   vnDoor(X0,1.3,z+.02,0,2.2,3.4,'xPaint',timD,xC(0x2a1a10),false);kput('xArcP',[X0,4.7,z+.06],null,[2.8,1.2,.16],tim);
@@ -55,7 +55,7 @@ function buildXaGuildSpicer(G,o){reseed(32501+(o.v|0));const V=xV(o),lit=xLit();
  // the octagonal timber bays on the front corners, rising two tiers, under tiered spires
  for(const s of[-1,1]){const bx=X0+s*(W/2-.4),bz=D/2-.6,R=1.9,yb=4.2,hb=5.6,ap=R*Math.cos(Math.PI/8);   // XOCT is unit-RADIUS: ap is the face's distancekput('xOctW',[bx,yb,bz],qEuler(0,Math.PI/8,0),[R,hb,R],tim);kput('xOctP',[bx,yb-.24,bz],qEuler(0,Math.PI/8,0),[R+.4,.26,R+.4],timD);
   for(const a of[0,s*Math.PI/4,s*Math.PI/2]){const p=loc(bx,bz,0,ap+.02,a);for(const yy of[yb+.6,yb+3.2])xnTibWin(p[0],yy,p[1],a,1.0,1.6,lit?'lit':'glass',cream,{noVal:true});}
-  for(const yy of[yb+2.5,yb+hb-.5])kput('xOctP',[bx,yy,bz],qEuler(0,Math.PI/8,0),[R+.2,.3,R+.2],cream);for(const yy of[yb+2.8,yb+hb-.2]){for(let k=0;k<8;k++){const a=k*Math.PI/4+Math.PI/8;const q=loc(bx,bz,0,ap+.04,a);vB('xFriezeB',q[0],yy,q[1],R*.74,.3,.08,a);}}   // carved bands round the bay
+  for(const yy of[yb+2.5,yb+hb-.5])kput('xOctP',[bx,yy,bz],qEuler(0,Math.PI/8,0),[R+.2,.3,R+.2],cream);for(const yy of[yb+2.8,yb+hb-.2]){for(let k=0;k<8;k++){const a=k*Math.PI/4+Math.PI/8;const q=loc(bx,bz,0,ap+.04,a);xvFr(q[0],yy,q[1],R*.74,.3,.08,a);}}   // carved bands round the bay
   for(const a of[.2,s*Math.PI/4,s*Math.PI/2-.2*s]){const p=loc(bx,bz,0,R*.9,a),f=loc(bx,bz,0,R*.3,a);xnMember('vWood',[f[0],yb-1.6,f[1]],[p[0],yb-.24,p[1]],.16,.14,xRot(a,[1,0,0]),timD);}
   xnXNSpire(bx,yb+hb,bz,R*.95,xC(XSP.saffronD));}
  // the spice market: a long timber shed along the right flank, open to the front, five stalls under it, sacks,
@@ -64,7 +64,7 @@ function buildXaGuildSpicer(G,o){reseed(32501+(o.v|0));const V=xV(o),lit=xLit();
   vB('xPaint',MX,0,MZ-MD/2-2.5,ML,6.4,5,0,saf);vB('xPaint',MX,6.0,MZ-MD/2-2.5,ML+.2,.36,5.2,0,cream);for(let i=0;i<5;i++)xnTibWin(MX-ML/2+ML*(i+.5)/5,3.6,MZ-MD/2,0,1.0,1.4,lit?'lit':'glass',cream,{noVal:true});   // the spice store behind
   vnDryingRack(MX-4,6.4,MZ-MD/2-2.5,0,5);vnDryingRack(MX+4,6.4,MZ-MD/2-2.5,0,5);for(let k=0;k<4;k++)vnSacks(MX-ML/2+4+k*5,6.4,MZ-MD/2-3.5,2);
   const n=Math.round(ML/3.6);for(let i=0;i<=n;i++){const x=MX-ML/2+ML*i/n;vPst('vPost',x,0,MZ+MD/2,.12,4.0,timD);vPst('vPost',x,0,MZ-MD/2+.3,.12,4.6,timD);}
-  vnShedRoof(MX,4.0,MZ,ML+.6,MD,.9,Math.PI,'xGableT',xC(XSP.saffronD),.8);vB('vWood',MX,3.9,MZ+MD/2,ML+.8,.2,.25,0,tim);vB('xFriezeB',MX,3.45,MZ+MD/2+.05,ML,.4,.1,0);
+  vnShedRoof(MX,4.0,MZ,ML+.6,MD,.9,Math.PI,'xGableT',xC(XSP.saffronD),.8);vB('vWood',MX,3.9,MZ+MD/2,ML+.8,.2,.25,0,tim);xvFr(MX,3.45,MZ+MD/2+.05,ML,.4,.1,0);
   for(let i=0;i<n;i++){const x=MX-ML/2+ML*(i+.5)/n;xnXNStall(x,MZ+.6,0,lit);}
   for(let i=1;i<n;i++){const x=MX-ML/2+ML*i/n;xnXNChillies([x-1.7,3.6,MZ+MD/2],[x+1.7,3.6,MZ+MD/2],8);}
   for(let k=0;k<3;k++)vnBarrel(MX-ML/2+1+k*1.1,0,MZ+MD/2+3,.34,.9,xC(0x8a6a48));vnSacks(MX+6,0,MZ+MD/2+3.2,5);vnCrate(MX+9.5,0,MZ+MD/2+2.6,1.0,.3);vnCrate(MX+9.5,.8,MZ+MD/2+2.6,.8,.6);

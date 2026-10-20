@@ -80,8 +80,9 @@ function fieldsAt(x,z,h,slope){const G=grabenAt(x,z),V=valleyAt(x,z),F=fissAt(x,
  return{wet:clamp(.25+.35*V.fl+.4*marsh+.15*acid,0,1),flow:V.fl,upland:0,canyon:0,rim:0,rock,dune:0,oasis:0,slope,abyss:0,salt:0,cold:0,geo:0,
   barren:Math.max(hollow,pools*.9,F.crack,crack,clamp(sparse,0,.7),smooth(.2,.45,hotAt(x,z))),humid:0,plume:pl,vent,acid:clamp(acid,0,1),cinder:clamp(cin,0,1),skylight:0,ash:pl*(1-smooth(.5,.85,slope))*.55*(1-marsh),
   owned:0,kedge:0,knear:0,field:0,clear:0,coast:0,edge:0,city:0,path:0,graben:G.in,marsh,pools,valley:V.fl,hollow,fiss,
-  sulph:clamp(Math.max(smooth(1.3,.85,md),smooth(.22,.6,vent),V.fl*.55),0,1)*(1-hollow)*(1-pools)*(1-smooth(.2,.45,hotAt(x,z)))};}
-const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','humid','plume','vent','acid','cinder','skylight','ash','owned','kedge','knear','field','clear','coast','edge','city','path','graben','marsh','pools','valley','hollow','fiss','sulph'];
+  sulph:clamp(Math.max(smooth(1.3,.85,md),smooth(.22,.6,vent),V.fl*.55),0,1)*(1-hollow)*(1-pools)*(1-smooth(.2,.45,hotAt(x,z))),
+  riftlife:1};}   /* the rift's new flora (HANDOFF-FLORA.md), as on station 1 */
+const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','humid','plume','vent','acid','cinder','skylight','ash','owned','kedge','knear','field','clear','coast','edge','city','path','graben','marsh','pools','valley','hollow','fiss','sulph','riftlife'];
 const FC=(function(){const N=600,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}

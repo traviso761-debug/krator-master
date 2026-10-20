@@ -1,0 +1,657 @@
+{
+ "build": "crops",
+ "note": "The Crops kit sheet shows each crop by its library card (core/materials/library, card.*); one family per card, full colour, 256 px. The cards are the plants as other builds draw them; a build that adopts the kit lists the cards it uses in its own materials.json.",
+ "size": 256,
+ "families": {
+  "card_acacia": {
+   "lib": "card.acacia",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_baobab": {
+   "lib": "card.baobab",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_breadfruit": {
+   "lib": "card.breadfruit",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_broadleaf": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_broom": {
+   "lib": "card.broom",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_carnivore_sundew": {
+   "lib": "card.carnivore.sundew",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop": {
+   "lib": "card.crop",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_annatto": {
+   "lib": "card.crop.annatto",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_bean": {
+   "lib": "card.crop.bean",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_clover": {
+   "lib": "card.crop.clover",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_cotton": {
+   "lib": "card.crop.cotton",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_flax": {
+   "lib": "card.crop.flax",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_grainhead": {
+   "lib": "card.crop.grainhead",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_indigo": {
+   "lib": "card.crop.indigo",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_nettle": {
+   "lib": "card.crop.nettle",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_palmate": {
+   "lib": "card.crop.palmate",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_plume": {
+   "lib": "card.crop.plume",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_rosette": {
+   "lib": "card.crop.rosette",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_saffron": {
+   "lib": "card.crop.saffron",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_tea": {
+   "lib": "card.crop.tea",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_umbrella": {
+   "lib": "card.crop.umbrella",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_woad": {
+   "lib": "card.crop.woad",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_crop_yam": {
+   "lib": "card.crop.yam",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_croptree_glossy": {
+   "lib": "card.croptree.glossy",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_fern_green": {
+   "lib": "card.fern.green",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_frond_coconut": {
+   "lib": "card.frond.coconut",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_ghostwood": {
+   "lib": "card.ghostwood",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_ichu": {
+   "lib": "card.ichu",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_juniper": {
+   "lib": "card.juniper",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_lobed": {
+   "lib": "card.lobed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_mahogany": {
+   "lib": "card.mahogany",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_mushroom_alecap": {
+   "lib": "card.mushroom.alecap",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_mushroom_glow": {
+   "lib": "card.mushroom.glow",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_mushroom_pale": {
+   "lib": "card.mushroom.pale",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_orchard_broad": {
+   "lib": "card.orchard.broad",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_orchard_small": {
+   "lib": "card.orchard.small",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_paddle": {
+   "lib": "card.paddle",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_palm": {
+   "lib": "card.palm",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_pine": {
+   "lib": "card.pine",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_pine_b": {
+   "lib": "card.pine.b",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_pods": {
+   "lib": "card.pods",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_prismgum": {
+   "lib": "card.prismgum",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_reed": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_samphire": {
+   "lib": "card.samphire",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_screwpine": {
+   "lib": "card.screwpine",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_succulent_spotted": {
+   "lib": "card.succulent.spotted",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_sunthorn": {
+   "lib": "card.sunthorn",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_sword": {
+   "lib": "card.sword",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_vine": {
+   "lib": "card.vine",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "card_weeper": {
+   "lib": "card.weeper",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  }
+ }
+}

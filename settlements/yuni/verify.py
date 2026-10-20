@@ -33,8 +33,19 @@ import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, th
 # the UTF-8 console). A fix there reaches every verify.py that imports it.
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
 import harness as _harness
-from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
+from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views, check_profile
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
+# --------------------------------------------------------------------------
+
+# The export profile (core/export/README.md, "Profiles"; ROADMAP.md section 11, item 1): the sections Yuni's page must
+# fill through core/export (src/77-export.js beside its own KRATOR_EXPORT route, GAME_EXPORT.md), checked under
+# --assert on the world page over EXPORT_BOX: the Foundry (bld_00005, the Godot spike's yuni case) and the street
+# before it. registry (its buildings and fixtures, core/tags) and fixtures (the doors, windows and lights with their
+# host) and interiors (the room graph of every planned building in the box, since 2026-10-18) are required.
+# A required section that reads stub, none, error or empty fails the run. --profile a,b,c replaces the list for one
+# run (add sim to see a stub fail; interiors? would let an empty room graph pass).
+EXPORT_BOX = [140, -80, 340, 90]
+EXPORT_PROFILE = ['registry', 'fixtures', 'interiors']
 # --------------------------------------------------------------------------
 SWEEP_JS = """()=>{const bb=new THREE.Box3();const p=new THREE.Vector3();const out=[];const boxes=[];const m=new THREE.Matrix4();
 const pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
@@ -234,6 +245,11 @@ async def run(a):
                     print(("  PASS  " if r["ok"] else "  FAIL  ") + r["name"] + " : " + r["detail"])
                     if not r["ok"]:
                         fails.append("assert " + r["name"])
+                from check_trades import trades_check
+                tok, tdetail, _trep = trades_check(os.path.dirname(os.path.abspath(__file__)))
+                print(("  PASS  " if tok else "  FAIL  ") + "voth-trades : " + tdetail)
+                if not tok:
+                    fails.append("assert voth-trades")
                 bg = await pg.evaluate(BUDGET_JS)
                 if bg:
                     print("\n--- budget ---")
@@ -244,6 +260,19 @@ async def run(a):
                         print("  %s  %-10s %9d / %9d  (%d%%)" % ("PASS" if ok else "OVER", k, cur, lim, 100 * cur // lim))
                         if not ok:
                             fails.append("budget " + k)
+
+                target = await pg.evaluate("()=>window._api&&window._api.TARGET")
+                if target == "world":
+                    print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
+                    prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
+                    pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+                    for ln in lines:
+                        print("  " + ln)
+                    print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+                    if not pok:
+                        fails.append("assert export-profile")
+                else:
+                    print("\n(export profile: the world page only; this is the %s sheet)" % target)
 
             if a.baseline and os.path.exists(a.baseline):
                 base = json.load(open(a.baseline))
@@ -334,4 +363,5 @@ if __name__ == "__main__":
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate and print (repeatable)")
     ap.add_argument("--size", default="1000x640")
+    ap.add_argument("--profile", default="", help="under --assert: the export profile for this run, a,b,c (default EXPORT_PROFILE)")
     sys.exit(asyncio.run(run(ap.parse_args())))

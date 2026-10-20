@@ -28,6 +28,12 @@ const sun=new THREE.DirectionalLight(0xfff2dc,1.55);sun.position.copy(SUN_DIR);s
 const fill=new THREE.DirectionalLight(0xd8b8a0,.22);fill.position.set(900,300,900).normalize();scene.add(fill);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
 const TICKS=[];
+// the world clock (core/clock: one world day is 72 real minutes, as every settlement runs), when the build lists
+// core/clock/20-core-clock.js: ?hour=H sets the hour, ?day=N the day, ?time=run starts it (held by default, as the
+// preview pages hold it). Stepped every frame with the real seconds; what counts days (the hamlets' felling) reads it.
+// The world's light is still pinned (the sun at HOST.SUN_DIR, ATMOS at 11.5): moving them to the hour is still to do.
+const CLOCK=(()=>{if(typeof KCLOCK==='undefined')return null;const q=new URLSearchParams(location.search),n=(k,d)=>q.has(k)&&isFinite(+q.get(k))?+q.get(k):d;
+ const C=KCLOCK.make({hour:n('hour',11.5),day:n('day',0),running:q.get('time')==='run'});TICKS.push(dt=>C.step(dt));return C;})();
 
 // ---------------------------------------------------------------- the field sources
 const SRC={mode:'world',profile:null,grid:null};
@@ -48,7 +54,7 @@ BIO.init({THREE,scene,terrainH,waterH,
  err:m=>reportErr('biome: '+m)});
 BIO.setSun([SUN_DIR.x,SUN_DIR.y,SUN_DIR.z]);
 
-return{renderer,scene,camera,sun,hemi,fill,HAZE,SUN_DIR,TICKS,SRC,
+return{renderer,scene,camera,sun,hemi,fill,HAZE,SUN_DIR,TICKS,SRC,clock:CLOCK,
  // the nursery: flat ground at the origin with a fixed profile; origin is the LOD spine the builders measure from
  nursery(profile,origin){SRC.mode='nursery';SRC.profile=profile;BIO.host.origin=[origin||[0,0]];BIO.host.center=origin||[0,0];lx=NaN;},
  world(){SRC.mode='world';SRC.profile=null;BIO.host.origin=[[0,0]];BIO.host.center=[0,0];lx=NaN;},

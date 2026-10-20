@@ -12,7 +12,7 @@ function buildVernSilos(G,o){reseed(7601+(o.v|0));const wood=vC(vPick(VPAL.woodM
   vB('vWood',x,FL-.2,z,r*2.3,.2,r*2.3,0,wood);
   vPst('vStave',x,FL,z,r,H,stv.clone().multiplyScalar(rr(.9,1.08)));for(const yy of[.6,H*.45,H-.5])vBq('vHoop',x,FL+yy,z,r*1.02,r*1.02,1,qEuler(Math.PI/2,0,0),vC(0x2e2a26));
   vnThatchCone(x,FL+H,z,r,r*1.3,th);vB('vWood',x,FL+H+r*1.3-.3,z,.16,.9,.16,0,wood);
-  vB('vDarkB',x,FL+.6,z+r-.05,.8,.9,.2,0);vB('vWood',x,FL+.6,z+r+.05,.75,.85,.06,0,wood);      // hatch and its board
+  vB('vWood',x,FL+.6,z+r+.05,.75,.85,.06,0,wood);      // hatch and its board
   vnLadder(x+r*.55,0,z+r+.5,0,FL+.4,wood);});
  // covered loading deck in front of the row: a long thatch shed on posts, sacks and a cart-less pile
  vB('vWood',0,.9-.2,3.2,15,.2,3.2,0,wood);for(let i=0;i<=6;i++)vPst('vPostB',-7.5+15*i/6,-.1,4.7,.13,.9,wood);
@@ -39,7 +39,7 @@ function buildVernTank(G,o){reseed(7611+(o.v|0));const st=vC(vPick(VPAL.stoneDar
  kput('vPipe',[R+.4,B+.4+1.2,0],qEuler(0,0,Math.PI/2),[.16,.9,.16],iron);vPst('vPipe',R+.85,.3,0,.16,B+1.3,iron);kput('vPipe',[R+.85+3,.5,0],qEuler(0,0,Math.PI/2),[.14,6,.14],iron);
  vB('vStone',R+7.4,0,0,3.0,.8,1.2,0,st);vB('vDarkB',R+7.4,.6,0,2.6,.25,.9,0);vPst('vPipe',R+6.4,.8,0,.08,1.2,iron);kput('vPipe',[R+6.7,1.9,0],qEuler(0,0,Math.PI/2),[.07,.6,.07],iron);
  for(let k=0;k<3;k++)vB('vIron',R+2+k*1.8,0,.35,.18,.5,.18,0,iron);
- {const hx=-R-3.6;vB('vWood',hx,0,1.5,3.2,2.6,3.0,0,wood);vnShedRoof(hx,2.6,1.5,3.2,3.0,.8,0,'vCorr',null,.5,.1);vnDoor(hx,0,3.0,0,.9,2.0,'vWood',wood,vC(0x6a4a30),false);
+ {const hx=-R-3.6;vnBody('vWood',hx,0,1.5,3.2,2.6,3.0,0,wood,{t:.12});vnShedRoof(hx,2.6,1.5,3.2,3.0,.8,0,'vCorr',null,.5,.1);vnDoor(hx,0,3.0,0,.9,2.0,'vWood',wood,vC(0x6a4a30),false);
   kput('vPipe',[(hx+1.6-R)/2,.5,1.5],qEuler(0,0,Math.PI/2),[.12,-R-(hx+1.6),.12],iron);vnBarrel(hx-2.0,0,-.5,.4,1,wood);}
  vnPaving(0,.02,0,R*3.4,R*3.4,0,vC(0x7a7068),20);vnWaterButt(2,0,R+2.6,.45,1.0);vnWaterButt(3.1,0,R+2.6,.45,1.0);
  vnFolk(0,R+4,2,1.5);}

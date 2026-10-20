@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 114 (11%) | 13 (1%) | 16 (2%) | 157 (15%) | 758 (72%) |
+| KB | 129 (12%) | 13 (1%) | 16 (1%) | 157 (15%) | 758 (71%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -52,6 +52,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/64-interiors.js` | 77.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 77 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/65-summit.js` | 1.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/66-canal.js` | 7.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/67-yu-trades.js` | 6.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table YU_TRADES (2026-10-19): plain data, a row per census trade; checked by tools/check_trades.py |
 | `src/68-place.js` | 39.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69b-yuni-biohost.js` | 7.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/69z-yuni-badlands.js` | 2.6 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
@@ -60,6 +61,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/72-lights.js` | 5.1 | [G native] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-terrain.js` | 16.7 | [draw] | 32 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/76-doors.js` | 26.3 | [web] | 14 | 0 | 5 | 1 | 0 | 1 | 6 | 2 | 0 | 0 | 0 | split: data inside host code; 2026-10-15: its buttons (walk, doors, cutaway, export) in #ui, adopted by core/host's bar |
+| `src/77-export.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Yuni's part of core/export (2026-10-18): the fixtures section from the core/tags records 51-fixtures.js makes, with their host, and the interiors section (the krator-interiors contract) from the interior plans. Reads plain data at export time only |
 | `src/80-camera.js` | 11.9 | [web] | 2 | 0 | 2 | 6 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | on core/host (2026-10-15): ctl shim (theta from +x), setView capture, CAM_FREE and the walk in camClamp, VIEWS, the walker's keys, camFrame and camDraw |
 | `src/81-glow.js` | 4.7 | [G native] | 12 | 2 | 0 | 0 | 0 | 2 | 3 | 2 | 0 | 0 | 0 | shader hook inside |
 | `src/82-daynight.js` | 6.2 | [G native] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

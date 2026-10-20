@@ -156,8 +156,8 @@ function xnIwan(x,y,z,ry,w,h,d,c,o){o=o||{};c=c||xC(xPick(XPAL.wash));const P=(u
  vB('xWashB',fr[0],y,fr[1],w,h,d,ry,c);
  const aw=w*.78,ah=h*.86;const a=P(0,d+.02);vB('vDarkB',a[0],y,a[1],aw*.72,ah*.9,.04,ry);
  kput(o.mosaic===false?'xArchW':'xArchM',[a[0],y,a[1]],qEuler(0,ry,0),[aw,ah,.14],o.mosaic===false?c:null);
- const b=P(0,d+.05);vB('xFriezeB',b[0],y+ah+.05,b[1],w-.4,Math.max(.5,(h-ah)*.55),.12,ry);
- for(const s of[-1,1]){const q=P(s*(w/2-.3),d+.05);vB('xFriezeB',q[0],y+.3,q[1],.5,ah-.3,.1,ry);}
+ const b=P(0,d+.05);xvFr(b[0],y+ah+.05,b[1],w-.4,Math.max(.5,(h-ah)*.55),.12,ry);
+ for(const s of[-1,1]){const q=P(s*(w/2-.3),d+.05);xvFr(q[0],y+.3,q[1],.5,ah-.3,.1,ry);}
  const dz=P(0,d+.06);vnDoor(dz[0],y,dz[1],ry,Math.min(2.2,aw*.4),Math.min(3.2,ah*.5),'vStone',xC(xPick(XPAL.stone)),xC(xPick(XPAL.dark)),false);
  vB('xPaint',fr[0],y+h,fr[1],w+.2,.14,d+.2,ry,xC(XPAL.white));
  if(o.guldasta){for(const s of[-1,1]){const t=P(s*(w/2-.4),d/2);vPst('xColS',t[0],y+h,t[1],.32,1.6,xC(xPick(XPAL.stone)));kput('xBulbT',[t[0],y+h+1.6,t[1]],null,[.5,.7,.5],xC(xPick(XPAL.tile)));vBall('xGold',t[0],y+h+2.4,t[1],.1,xC(XPAL.gold[0]));}}}
@@ -175,7 +175,7 @@ function xnIwanOpen(x,y,z,ry,w,h,d,c,o){o=o||{};c=c||xC(xPick(XPAL.wash));const 
   xnMember('xMosBB',[A[0],y+a[1]/1.35*FH-.03,A[1]],[B[0],y+b[1]/1.35*FH-.03,B[1]],.08,d-.1,ax,null);}
  for(const s of[-1,1]){const q=P(s*(w/2-(w-FW)/4),-d/2);vB('xWashB',q[0],y,q[1],(w-FW)/2+.02,h,d,ry,c);}       // the pilasters
  const t=P(0,-d/2);vB('xWashB',t[0],y+FH-.02,t[1],FW+.04,h-FH+.02,d,ry,c);vB('xPaint',t[0],y+h,t[1],w+.2,.14,d+.2,ry,xC(XPAL.white));
- const f=P(0,.05);vB('xFriezeB',f[0],y+FH+.2,f[1],w-.6,Math.max(.5,(h-FH)*.55),.12,ry);for(const s of[-1,1]){const q=P(s*(w/2-.3),.05);vB('xFriezeB',q[0],y+.3,q[1],.5,FH-.3,.1,ry);}
+ const f=P(0,.05);xvFr(f[0],y+FH+.2,f[1],w-.6,Math.max(.5,(h-FH)*.55),.12,ry);for(const s of[-1,1]){const q=P(s*(w/2-.3),.05);xvFr(q[0],y+.3,q[1],.5,FH-.3,.1,ry);}
  vB('xTilesB',m[0],y-.04,m[1],ow-.1,.1,d-.1,ry,xC(xPick(XPAL.turquoise)));                                          // the floor through the vault
  for(const s of[-1,1])for(const v of[-d*.3,d*.3]){const q=P(s*(ow/2-.06),-d/2+v);kput('xArcDark',[q[0],y+.8,q[1]],qEuler(0,ry+s*Math.PI/2,0),[1.4,2.6,.12]);kput('xArcM',[P(s*(ow/2-.1),-d/2+v)[0],y+.8,P(s*(ow/2-.1),-d/2+v)[1]],qEuler(0,ry+s*Math.PI/2,0),[1.8,3.0,.06],null);kput('xArcDark',[P(s*(ow/2-.12),-d/2+v)[0],y+.8,P(s*(ow/2-.12),-d/2+v)[1]],qEuler(0,ry+s*Math.PI/2,0),[1.4,2.6,.1]);}   // the niches
  if(!o.through){const b=P(0,-d+.2);vB('xWashB',b[0],y,b[1],ow,oh,.4,ry,c);vnDoor(P(0,-d+.4)[0],y,P(0,-d+.4)[1],ry,Math.min(2.2,ow*.4),Math.min(3.2,oh*.5),'vStone',xC(xPick(XPAL.stone)),xC(xPick(XPAL.dark)),false);}
@@ -190,7 +190,7 @@ function xnArcade(x,y,z,ry,w,h,n,item,c,dep,o){o=o||{};dep=dep||.5;const bw=w/n;
 function xnDome(x,y,z,r,kind,o){o=o||{};let yy=y;kind=kind||'T';const dc=o.c||(kind==='T'?xC(xPick(XPAL.tile)):kind==='G'?xC(xPick(XPAL.gold)):kind==='W'?xC(xPick(XPAL.wash)):null);
  if(o.drum){kput(o.drumItem||'xDrumW',[x,yy,z],null,[r*.92,o.drum,r*.92],o.drumC||xC(xPick(XPAL.wash)));
   if(o.win!==false)for(let k=0;k<8;k++){const a=k/8*TAU+Math.PI/8;const p=loc(x,z,0,r*.92,a);xnArch('xArchS',p[0],yy+o.drum*.2,p[1],a,r*.4,o.drum*.62,.16,xC(xPick(XPAL.stone)));}
-  vB('xFriezeB',x,yy+o.drum-.5,z,r*1.9,.5,r*1.9,0);yy+=o.drum;}
+  xvFr(x,yy+o.drum-.5,z,r*1.9,.5,r*1.9,0);yy+=o.drum;}
  kput('xDome'+kind,[x,yy,z],null,[r,r*1.25,r],dc);yy+=r*1.25;
  const fh=o.fin===undefined?r*.6:o.fin;if(fh){vPst('xColG',x,yy-.1,z,.06,fh*.6,xC(XPAL.gold[0]));vBall('xGold',x,yy+fh*.5,z,Math.max(.12,r*.09),xC(xPick(XPAL.gold)));kput('xConeG',[x,yy+fh*.55,z],null,[.08,fh*.5,.08],xC(XPAL.gold[0]));}
  return yy+fh;}
@@ -288,4 +288,7 @@ function xnYak(x,z,ry,y){y=y||0;const c=xC(xPick([0x2a221c,0x3a2c22,0x4a3a2c,0x6
 // a stack of firewood / fodder on a parapet or a roof edge (the Tibetan roofline)
 function xnFodder(x,y,z,w,ry,c){const q=ry?qEuler(0,ry,0):null;kput('vThatchB',[x,y+.35,z],q,[w,.7,.6],c||xC(xPick(VPAL.thatch)));}
 // a wall-hung mosaic panel (item xMosA | xMosB) on a face, a thin painted frame round it
-function xnMural(item,x,y,z,ry,w,h){const f=loc(x,z,0,.04,ry);vB('xPaint',f[0],y-.08,f[1],w+.16,h+.16,.06,ry,xC(XPAL.white));const p=loc(x,z,0,.08,ry);kput(item||'xMosA',[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}
+/* a face's own parity (the same on every run): which of two takes a panel or a frieze band gets */
+const xnPar=(x,z)=>(Math.round(x*2)+Math.round(z*2))&1;
+function xvFr(x,y,z,w,h,d,ry,c){vB(xnPar(x,z)?'xFriezeC':'xFriezeB',x,y,z,w,h,d,ry,c);}
+function xnMural(item,x,y,z,ry,w,h){if(xnPar(x,z)){if(item==='xMosA')item='xMosC';else if(item==='xMosB')item='xMosD';}const f=loc(x,z,0,.04,ry);vB('xPaint',f[0],y-.08,f[1],w+.16,h+.16,.06,ry,xC(XPAL.white));const p=loc(x,z,0,.08,ry);kput(item||'xMosA',[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}

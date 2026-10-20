@@ -39,12 +39,13 @@ THRONE.TREES=[];
 //             valley): the brimstone candelabras, reeds, acid pads and gas bladders
 //   savanna / capwood / braid / burn   the south-flank savanna's (stations/savanna): the tall grass, the gill-parasol
 //             woodland, the braided lahar channels' margins, a fresh burn. Where they are, the open stages stand down
+//   riftlife / ashlife / hill / yard / hollowRim   station 1's and the ash desert's new flora gates, and the ash desert's hills, yardangs and CO2 hollow rim
 const nz=(x,z)=>.22*(fbm(x*.004+11,z*.004-7,4741,2)-.5);
 // the frontier station's fields (0 on every other page): field a plantation's ground, clear a fresh clearing (cut and
 // burnt), coast the shore's strip, edge the forest's margin where it meets the clearings (the natives' poison gardens)
 function zones(x,z){const F=n=>BIO.field(n,x,z);const owned=F('owned'),kedge=F('kedge'),knear=F('knear'),field=F('field'),clear=F('clear'),coast=F('coast'),edge=F('edge'),grove=F('grove'),iwood=F('iwood'),beach=F('beach'),cforest=F('cforest');
  // the savanna station's (stations/savanna): it zones all its ground itself, so the open stages stand down there
- const ashdeep=F('ashdeep'),sulph=F('sulph'),rivbank=F('rivbank'),dz=F('deathzone'),cbelt=F('cbelt'),tundra=F('tundra'),warm=F('warm'),snow=F('snow'),sav=F('savanna'),capw=F('capwood'),braid=F('braid'),burn=F('burn'),savAll=Math.min(1,sav+capw+braid);
+ const ashdeep=F('ashdeep'),sulph=F('sulph'),rivbank=F('rivbank'),dz=F('deathzone'),cbelt=F('cbelt'),tundra=F('tundra'),warm=F('warm'),snow=F('snow'),sav=F('savanna'),capw=F('capwood'),braid=F('braid'),burn=F('burn'),savAll=Math.min(1,sav+capw+braid),riftlife=F('riftlife'),ashlife=F('ashlife'),hill=F('hill'),yard=F('yard'),hollow=F('hollow');
  const plume=F('plume'),vent=F('vent'),acid=F('acid'),cin=F('cinder'),skl=F('skylight'),gully=F('flow'),rock=F('rock'),slope=F('slope'),wet=F('wet'),ash=F('ash');
  const age=THRONE.ageAt(x,z),S=THRONE.stages(age);
  const cliff=smooth(.8,.95,slope)*smooth(.3,.6,rock),barren=F('barren'),live=(1-cliff)*(1-barren);
@@ -52,7 +53,7 @@ function zones(x,z){const F=n=>BIO.field(n,x,z);const owned=F('owned'),kedge=F('
  const v=smooth(.25,.6,vent)*live,halo=smooth(.06,.22,vent)*(1-smooth(.25,.5,vent))*live,marsh=smooth(.35,.7,acid)*(1-v*.5)*live,sky=smooth(.35,.7,skl)*live;
  const cinder=smooth(.35,.7,cin)*(1-v)*live,gul=smooth(.35,.7,gully)*(1-sky)*live;
  const open=(1-v)*(1-marsh)*(1-cinder)*(1-gul*.8)*(1-sky)*live*(1-smooth(.2,.55,owned))*(1-field)*(1-clear)*(1-savAll),wetW=BIO.hasField('humid')?F('humid'):smooth(.45,.7,wet);
- return{plume,alien,seam:4*alien*(1-alien),age,cliff,vent:v,halo,marsh,sky,cinder,gully:gul,open,wet,ash,rock,slope,wetW,dryW:1-wetW,owned,kedge:kedge*live,knear:knear*live,field:field*live,clear:clear*live,coast:coast*live,edge:edge*live,grove:grove*live,iwood:iwood*live*(1-smooth(.2,.55,owned)),beach:beach*live,cforest:cforest*live*(1-smooth(.2,.55,owned)),ashdeep,sulph:sulph*live,cbelt:cbelt*live,rivbank:rivbank*live,dz,tundra:tundra*live,warm:warm*live,snow,savanna:sav*live,capwood:capw*live,braid:braid*live,burn:burn,
+ return{plume,alien,seam:4*alien*(1-alien),age,cliff,vent:v,halo,marsh,sky,cinder,gully:gul,open,wet,ash,rock,slope,wetW,dryW:1-wetW,owned,kedge:kedge*live,knear:knear*live,field:field*live,clear:clear*live,coast:coast*live,edge:edge*live,grove:grove*live,iwood:iwood*live*(1-smooth(.2,.55,owned)),beach:beach*live,cforest:cforest*live*(1-smooth(.2,.55,owned)),ashdeep,sulph:sulph*live,cbelt:cbelt*live,rivbank:rivbank*live,dz,tundra:tundra*live,warm:warm*live,snow,savanna:sav*live,capwood:capw*live,braid:braid*live,burn:burn,riftlife:riftlife*live,ashlife:ashlife*live,hill:hill*live,yard:yard*live,hollowRim:smooth(0,.3,hollow)*(1-smooth(.6,.95,hollow))*live,
   fresh:open*S.fresh,young:open*S.young,mature:open*S.mature,old:open*S.old};}
 THRONE.zones=zones;
 
@@ -513,8 +514,8 @@ THRONE.buildCasts=function(R,q){reseed(560047);q=q==null?1:q;let n=0;
  // landmarks, not a forest of them: a few tens on a map, only where the flow touched the trees
  BIO.grid(90,0,R,(x,z)=>{const Z=zones(x,z);return smooth(.15,.4,Z.knear)*(Z.young+Z.mature+Z.fresh*.6)*Z.wetW*.22*q;},(x,y,z)=>{if(blocked(x,z,2))return;
   const h=rr(2.5,11),r0=rr(.9,2.6),lean=rr(-.08,.08),la=rr(0,TAU),seg=12,P=[];
-  for(let k=0;k<=5;k++){const t=k/5,rk=r0*(1+.35*smooth(.3,0,t))*(1-.12*t);P.push({x:x+Math.cos(la)*lean*h*t,y:y-.6+(h+.6)*t,z:z+Math.sin(la)*lean*h*t,r:rk,col:shade(C(pick([0x4a4644,0x3e3a38,0x56504c])),rr(-.1,.05))});}
-  BIO.tube('bark1',P,P[0].col,{seg,cap:false,rfn:(i,a)=>1+.07*Math.sin(a*5+i)+(i===5?.18*Math.sin(a*3+x):0)});
+  for(let k=0;k<=5;k++){const t=k/5,rk=r0*(1+.35*smooth(.3,0,t))*(1-.12*t);P.push({x:x+Math.cos(la)*lean*h*t,y:y-.6+(h+.6)*t,z:z+Math.sin(la)*lean*h*t,r:rk,col:shade(C(pick(THRONE.LIB.cast?[0x8a8480,0x7a7470,0x948a84]:[0x4a4644,0x3e3a38,0x56504c])),rr(-.1,.05))});}
+  BIO.tube(THRONE.LIB.cast?'cast':'bark1',P,P[0].col,{seg,cap:false,rfn:(i,a)=>1+.07*Math.sin(a*5+i)+(i===5?.18*Math.sin(a*3+x):0)});
   // the hollow: an inner wall, dark, a little narrower (the burnt-out heart)
   const I=P.map(p=>({x:p.x,y:p.y,z:p.z,r:p.r*.72,col:C(0x161412)}));I[0].y+=1.2;BIO.tube('bark1',I,I[0].col,{seg:10,cap:false});
   // moss or lichen on its broken rim, rubble of its fallen crust at its foot (and the inspector's volume holds them)
@@ -595,6 +596,94 @@ B[25]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR;
    if(lv===2&&rng()<.5){const l=rr(.3,1.1);BIO.beam('rod',[p.x,p.y,p.z],[p.x+rr(-.05,.05),p.y-l,p.z+rr(-.05,.05)],.03,.006,C(0xe0f0fa));}}}
  regTree(T,S,R+1.5,H+1);};
 
+// ---------------------------------------------------------------- the new flora (stations 1 and 7: HANDOFF-FLORA.md)
+const spI=k=>THRONE.byKey[k].i;
+// 31 the PYRE THISTLE (ref 30, the ash desert and station 1's cinder): a squat black bulb with claw roots on the ash, a
+// spiky rosette of serrated black blades glowing ember-orange along the midline, and a pale arcing stalk with an orange lure
+B[spI('pyre')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark'+S.barkK;
+ BIO.put('pyrebulb',[T.x,T.y0+T.rb*.7,T.z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[T.rb*1.4,T.rb,T.rb*1.4],vary(C(pick(PAL.pyreBlade)),.02,.04,.04));
+ for(let k=0,n=lv===2?ri(5,8):3;k<n;k++){const a=k/n*TAU+rr(-.25,.25),L=T.rb*rr(2.2,3.8),m=lv===2?4:2,rpts=[],rc=barkCol(S,k);
+  for(let j=0;j<=m;j++){const u=j/m,d=T.rb*.8+L*u,ang=a+u*u*rr(-.35,.35),rx=T.x+Math.cos(ang)*d,rz=T.z+Math.sin(ang)*d;
+   rpts.push({x:rx,y:BIO.terrainH(rx,rz)+(1-u)*T.rb*.35-(u>.75?(u-.75)*.35:0),z:rz,r:T.rb*.22*(1-u*.8),col:rc});}
+  st.limb+=BIO.tube(fam,rpts,rc,{seg:lv===2?4:3,cap:true});}
+ for(let k=0,nb=lv===2?ri(14,24):ri(6,8),a0=rr(0,TAU);k<nb;k++){const ring=k%3,a=a0+k/nb*TAU+rr(-.12,.12),el=mix(1.1,1.45,ring/2)+rr(-.04,.04),bh=H*mix(.72,1.04,ring/2)*rr(.9,1.1),bw=bh*rr(.28,.38),d=T.rb*(.82-ring*.22);
+  const PBC=THRONE.LIB.cardsOf('pyreblade'),bp=[T.x+Math.cos(a)*d,T.y0+T.rb*(.7+ring*.18),T.z+Math.sin(a)*d],bq=qEuler(rr(-.08,.08),-a,el);
+  if(PBC.length)BIO.put(pick(PBC),bp,bq,[bh,bw,bh*.55],null);else BIO.put('pyreblade',bp,bq,[bh,bw,bw],vary(C(0xffffff),.02,.05,.04));}
+ const la=rr(0,TAU),sc=vary(C(pick(PAL.pyreStalk)),.02,.05,.04),spts=treeGrow({x:T.x,y:T.y0+T.rb*.9,z:T.z},dirOf(la,rr(1.22,1.38)),H*1.35,T.rb*.15,T.rb*.05,lv===2?7:4,-.15,.03);
+ spts.forEach(p=>p.col=sc);st.trunk+=BIO.tube(fam,spts,sc,{seg:lv===2?5:3,cap:true});
+ const tp=tip(spts),ls=T.rb*rr(.45,.7);BIO.put('pyrelure',[tp.x,tp.y-ls*.8,tp.z],qEuler(rr(-.2,.2),la,rr(-.2,.2)),[ls*.55,ls*1.3,ls*.55],vary(C(pick(PAL.pyreLure)),.02,.08,.05));st.caps++;
+ regTree(T,S,R+1,H*1.5);};
+// 27 the CHALICE PARASOL (ref 21): a very tall slender pale stalk flaring at its foot into a fluted skirt on a mound, a
+// smallish near-flat orange cap with glowing amber gills under it
+B[spI('chalice')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark'+S.barkK;
+ BIO.put('chalskirt',[T.x,T.y0-.3,T.z],qEuler(0,rr(0,TAU),0),[T.rb*5,H*.16,T.rb*5],barkCol(S,0));
+ const pts=bole(T,S,fam,T.x,T.z,H*.96,T.rb*1.3,T.rb*.7,rr(.01,.04),rr(0,TAU),.015,lv===2?8:4,st,lv===2?8:4),p=tip(pts);
+ cap(p,R,.18,C(pick(PAL.chalCap)),st);
+ BIO.put('glowgill',[p.x,p.y-R*.015,p.z],qEuler(0,rr(0,TAU),0),[R*.95,R*.3,R*.95],vary(C(pick(PAL.chalGlow)),.02,.05,.05));
+ regTree(T,S,Math.max(R,T.rb*5)+1,H+1);};
+// 28 the CAGE LANTERN (ref 22): three to five root-strands braided into a trunk on splayed feet; on top an egg of red
+// lattice with a glowing core in it; thin roots hanging from under the bulb
+B[spI('cagebulb')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark'+S.barkK,top=T.y0+H-R*1.3;
+ for(let k=0,n=lv===2?ri(3,5):3;k<n;k++){const a0=k/n*TAU+rr(-.2,.2),turn=rr(2,3.5),m=lv===2?6:3,c=barkCol(S,k),pts=[];
+  for(let j=0;j<=m;j++){const t=j/m,ang=a0+t*turn,off=T.rb*.9*(1-.4*t)+T.rb*1.6*Math.pow(1-t,3);
+   pts.push({x:T.x+Math.cos(ang)*off,y:mix(T.y0-.3,top,t),z:T.z+Math.sin(ang)*off,r:T.rb*.45*(1-.4*t),col:c});}
+  st.limb+=BIO.tube(fam,pts,c,{seg:lv===2?5:3,cap:true});}
+ const by=top-R*.15;
+ BIO.put('cagebulb',[T.x,by,T.z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[R,R*1.4,R],THRONE.LATTICE?C(0xffffff).multiplyScalar(rr(.85,1)):vary(C(pick(PAL.cageBulb)),.02,.06,.05));st.caps++;
+ BIO.put('geocore',[T.x,by+R*.65,T.z],qEuler(0,rr(0,TAU),0),R*.35,vary(C(pick(PAL.cageCore)),.02,.05,.05));
+ if(lv===2)for(let k=0,n=ri(6,12);k<n;k++){const a=rr(0,TAU),r0=R*rr(.45,.62),x=T.x+Math.cos(a)*r0,z=T.z+Math.sin(a)*r0,y=by+R*rr(.2,.35),l=rr(1,3);
+  BIO.beam('rod',[x,y,z],[x+rr(-.1,.1),Math.max(y-l,T.y0+.3),z+rr(-.1,.1)],.04,.015,vary(C(pick(PAL.cageRoot)),.02,.05,.05));}
+ regTree(T,S,R+1,H+R*.3);};
+// 29 the MEDUSA CAP (ref 24): a glossy maroon dome on a thin stalk, its underside glowing orange-red, a curtain of long
+// dark-red tendrils hanging from its rim nearly to the ground
+B[spI('medusa')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark'+S.barkK;
+ const pts=treeGrow({x:T.x,y:T.y0,z:T.z},dirOf(rr(0,TAU),rr(1.45,1.57)),H*.92,T.rb,T.rb*.6,lv===2?4:2,0,.03);capTube(fam,S,pts,lv,st,lv===2?5:3);
+ const p=tip(pts),q=qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1));
+ if(THRONE.LIB.medusa)BIO.put('medusadome',[p.x,p.y,p.z],q,[R,R*3.8,R],C(0xffffff).multiplyScalar(rr(.85,1)));else BIO.put('disc',[p.x,p.y,p.z],q,[R,R*3.8,R],vary(C(pick(PAL.medusaDome)),.02,.05,.05));st.caps++;
+ BIO.put('glowgill',[p.x,p.y-R*.12,p.z],q,[R*.92,R*.3,R*.92],vary(C(pick(PAL.medusaGlow)),.02,.05,.05));
+ for(let k=0,n=lv===2?ri(14,24):ri(4,6);k<n;k++){const a=k/n*TAU+rr(-.15,.15),r0=R*rr(.72,.95),o={x:p.x+Math.cos(a)*r0,y:p.y-R*.1,z:p.z+Math.sin(a)*r0},len=Math.min(H*rr(.5,.85),o.y-T.y0-.4),c=vary(C(pick(PAL.medusaTendril)),.02,.06,.05);
+  if(lv===2){const L=treeGrow(o,dirOf(a,-1.5),len,.04,.01,5,0,.06);L.forEach(q=>q.col=c);st.limb+=BIO.tube(fam,L,c,{seg:3});}
+  else BIO.beam('rod',[o.x,o.y,o.z],[o.x,o.y-len,o.z],.04,.012,c);}
+ regTree(T,S,R+.5,H+R*.6);};
+// 30 the LACE-FAN TREE (ref 27): a squat ribbed trunk splitting into thick branches, each ending in a ribbed cup, from
+// each cup two lace fans glowing orange-white from within
+B[spI('lacefan')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark'+S.barkK;
+ const pts=bole(T,S,fam,T.x,T.z,H*.4,T.rb,T.rb*.75,rr(0,.04),rr(0,TAU),.05,lv===2?6:3,st,lv===2?7:4),o=tip(pts);let top=o.y,reach=R*.5;
+ for(let k=0,n=lv===2?ri(4,7):3,a0=rr(0,TAU);k<n;k++){const a=a0+k/n*TAU+rr(-.3,.3),bp=treeGrow(o,dirOf(a,rr(.6,1.2)),H*rr(.35,.55),T.rb*.45,T.rb*.25,lv===2?4:2,-.05,.08);
+  limb(fam,S,bp,k,lv,st);const e=tip(bp);
+  BIO.put('tfunnel',[e.x,e.y-.2,e.z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[T.rb*.6,T.rb*.9,T.rb*.6],barkCol(S,k));
+  for(let f=0,nf=lv===2?2:1;f<nf;f++){const af=a+rr(-.5,.5),s=R*rr(.45,.7);
+   const LFC=THRONE.LIB.cardsOf('lacecard');
+   if(LFC.length)BIO.put(pick(LFC),[e.x,e.y+.05,e.z],qEuler(rr(-.25,.25),-af,rr(.95,1.35)),[s*1.05,s*.5,s*1.25],null);
+   else BIO.put('lacefan',[e.x,e.y+.1,e.z],qEuler(-rr(.5,1.0),Math.PI/2-af,0),[s,s,s],vary(C(pick(PAL.laceFan)),.02,.05,.05));st.caps++;
+   top=Math.max(top,e.y+s);reach=Math.max(reach,Math.hypot(e.x-T.x,e.z-T.z)+s);}}
+ regTree(T,S,reach+1,top-T.y0+1);};
+// 31 the BRAID CAP (ref 29): a pale violet stem in a helix of dark vines, a flared foot, a spotted purple cap at the top
+// and one to three smaller ones on short side stalks
+B[spI('braidcap')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,fam='bark'+S.barkK;
+ BIO.put('chalskirt',[T.x,T.y0-.3,T.z],qEuler(0,rr(0,TAU),0),[T.rb*2.5,H*.06,T.rb*2.5],barkCol(S,0));
+ const pts=treeGrow({x:T.x,y:T.y0-.3,z:T.z},dirOf(rr(0,TAU),rr(1.45,1.56)),H,T.rb,T.rb*.55,lv===2?8:4,0,.05);capTube(fam,S,pts,lv,st,lv===2?6:4);
+ if(lv===2)for(let k=0,n=ri(3,5),a0=rr(0,TAU);k<n;k++){const tw=rr(5,8),c=vary(C(pick(PAL.braidVine)),.02,.05,.05),V=[];
+  for(let i=0;i<=12;i++){const u=i/12,p=along(pts,u*.85),ang=a0+k/n*TAU+u*tw,r=p.r*1.1;V.push({x:p.x+Math.cos(ang)*r,y:p.y,z:p.z+Math.sin(ang)*r,r:.06*(1-.5*u),col:c});}
+  st.limb+=BIO.tube('bark0',V,c,{seg:3,cap:true});}
+ const bcap=(p,s)=>{const q=qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),c=vary(C(pick(PAL.braidCap)),.02,.05,.05);BIO.put('disc',[p.x,p.y,p.z],q,[s,s*.3,s],c);BIO.put('gills',[p.x,p.y,p.z],q,[s,s*.3,s],shade(c,-.25));st.caps++;};
+ bcap(tip(pts),R);
+ for(let k=0,n=lv===2?ri(1,3):1;k<n;k++){const b=along(pts,rr(.45,.8)),sp=treeGrow(b,dirOf(rr(0,TAU),rr(.4,.7)),rr(.6,1.5),.08,.05,2,0,.02);
+  capTube(fam,S,sp,lv,st,3);bcap(tip(sp),R*rr(.35,.6));}
+ regTree(T,S,R+1,H+1);};
+// 32 COIL HORNS (ref 31): a cluster of three to nine ribbed yellow tubes mottled with mould, rising from the ground and
+// coiling into a hooked tip
+B[spI('coilhorn')]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR;
+ for(let h=0,n=lv===2?ri(3,9):ri(2,4);h<n;h++){const f=h?rr(.45,1):1,a=rr(0,TAU),d=h?R*rr(.4,1.1):0,cx=T.x+Math.cos(a)*d,cz=T.z+Math.sin(a)*d,y0=BIO.terrainH(cx,cz)-.3;
+  const Rr=R*f,rb=T.rb*f,a0=rr(0,TAU),dx=Math.cos(a0),dz=Math.sin(a0),turn=rr(1.2,1.7)*TAU,drift=rr(-.3,.3)*Rr,m=lv===2?18:7,pts=[];
+  for(let k=0;k<=m;k++){const t=k/m,th=t*turn,rho=Rr*(1-.7*t),side=Rr*Math.sin(th)*(1-.7*t),c=THRONE.LIB.coil?C(0xffffff).multiplyScalar(.82+.18*h3(h,k,31)):C(pick(PAL.coilYellow));if(!THRONE.LIB.coil&&k%3===1)c.lerp(C(pick(PAL.coilMould)),.6);
+   pts.push({x:cx+dx*side-dz*drift*t,y:y0+Rr-rho*Math.cos(th),z:cz+dz*side+dx*drift*t,r:rb*(1-t*.85),col:c});}
+  st.limb+=BIO.tube(THRONE.LIB.coil?'coil':'bark5',pts,pts[0].col,{seg:lv===2?10:5,cap:true});}
+ // a crust of mould on the ground round the cluster (an instanced item: the tubes alone are merged bark, which the probe's
+ // registered volumes cannot see)
+ BIO.put('lichen',[T.x,BIO.terrainH(T.x,T.z)+.03,T.z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[R*.9,1,R*.9],vary(C(pick(PAL.coilMould)),.02,.06,.05));
+ regTree(T,S,R+1,H+1);};
+
 // ---------------------------------------------------------------- the pass
 SP.forEach((S,i)=>{if(typeof B[i]!=='function')BIO.err('throne: no builder for species '+i+' '+S.key);});
 const newStats=()=>({fruit:0,drips:0,trunk:0,limb:0,far:0,clumps:0,caps:0,funnels:0,pods:0,stars:0,tiers:0,pitchers:0,bells:0,puffs:0,lamps:0,resin:0,heroes:0,fars:0,byS:SP.map(()=>0)});
@@ -614,6 +703,7 @@ THRONE.buildTrees=function(R,q){
    {patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,pad:pad+2,depth:opt.depth,noMask:!!opt.depth});
   return n;}
  THRONE.PASSES.forEach(pass);
+ if(BIO.hasField('riftlife')||BIO.hasField('ashlife'))THRONE.PASSES_NEW.forEach(pass);
  TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  THRONE.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),caps:st.caps,funnels:st.funnels,pods:st.pods,stars:st.stars,
@@ -678,6 +768,19 @@ THRONE.PASSES=[
  // the glass willows (after the gill-corals: a pass added last moves nothing before it): scattered at the treeline above the
  // woods and among them
  {sp:25,cell:24,accept:Z=>(Z.tundra*.16+Z.cbelt*.05)*(1-.6*Z.rivbank)*(1-Z.dz),opt:{pad:3,reach:T=>T.crownR*1.1,patch:.5,patchScale:.01}},
+];
+// THE NEW FLORA (stations 1 and 7: the 'riftlife' and 'ashlife' fields; HANDOFF-FLORA.md). Its own list, run after every
+// other pass and only on a page with one of the fields, so no other page draws from the generator for it
+THRONE.PASSES_NEW=[
+ {sp:spI('pyre'),cell:20,accept:Z=>(Z.young*.03+Z.old*.02+Z.ashdeep*(1-Z.cliff)*.02)*Z.ashlife+Z.cinder*Z.alien*.05*Z.riftlife,opt:{pad:2.5,reach:T=>T.crownR*1.1,patch:.55,patchScale:.01}},
+ // (station 1's gullies lie on the clear shoulder and its skylights barely reach the plume: the plume's own trees take
+ // its old ground and the acid shores, the gullies only a little)
+ {sp:spI('chalice'),cell:44,accept:Z=>(Z.marsh*.35+woods(Z)*Z.alien*.012+Z.gully*.04)*Z.riftlife+(Z.old*.02+Z.mature*.015)*Z.ashlife,opt:{pad:5,reach:T=>T.crownR*1.1+1,patch:.5,patchScale:.006}},
+ {sp:spI('cagebulb'),cell:30,accept:Z=>(Z.halo*.2+Z.old*Z.alien*.006)*Z.riftlife+(Z.old*.018+Z.young*.012)*Z.ashlife,opt:{pad:3,reach:T=>T.crownR*1.2+.5,patch:.5,patchScale:.01}},
+ {sp:spI('medusa'),cell:22,accept:Z=>(woods(Z)*Z.alien*.008+Z.sky*.35+Z.marsh*.2+Z.gully*.03)*Z.riftlife,opt:{pad:2.5,reach:T=>T.crownR*1.1,patch:.55,patchScale:.012,small:true}},
+ {sp:spI('lacefan'),cell:36,accept:Z=>(Z.halo*.15+Z.old*Z.alien*.005+Z.sky*.1)*Z.riftlife,opt:{pad:3.5,reach:T=>T.crownR*1.1,patch:.5,patchScale:.01}},
+ {sp:spI('braidcap'),cell:30,accept:Z=>(woods(Z)*Z.alien*.006+Z.marsh*.2+Z.sky*.25+Z.gully*.03)*Z.riftlife,opt:{pad:3,reach:T=>T.crownR*1.1,patch:.5,patchScale:.01}},
+ {sp:spI('coilhorn'),cell:14,accept:Z=>(Z.marsh*.15+Z.gully*.02)*Z.riftlife+(Z.hollowRim*.6+Z.yard*.15)*Z.ashlife,opt:{pad:2,reach:T=>T.crownR*1.2,patch:.6,patchScale:.014,small:true}},
 ];
 
 // ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)

@@ -281,6 +281,17 @@ function courtsCity(o) {
     runs.join() === '0,13,21,29,37' && ring.length === 1 + 8 + 10 && grid[0].join() === '12,0' && grid[1].join() === '12,0' && face[0][0][1] === 1,
     runs.join() !== '0,8,16,24,32', runs.join()); }
 
+// ---- the export's city section (core/export loaded after core/city: the page calls KCITY.registerExport itself)
+{ load('core/export/07-core-export.js');
+  const reg = KCITY.registerExport(), again = KCITY.registerExport();
+  const bound = KCITY.cur, W = EXPORT.world({ sections: ['city'] }), C = W.city, st = W.sections && W.sections.city;
+  const named = C && C.plans.length === KCITY.instances.filter(c => c.plan).length && C.plans.every(p => p.format === 'krator-city' && typeof p.name === 'string');
+  const T = EXPORT.world({ sections: ['city'], box: [-60, -60, 60, 60] }).city, full = C && C.plans[0].lots.length, kept = T && T.plans[0].lots.length;
+  ok('the export\'s city section: every plan that ran, named, cropped to a tile\'s box, the bound instance kept',
+    reg && !again && named && C.format === 'krator-city' && kept < full && T.plans[0].cropped.lots[1] === full && KCITY.cur === bound,
+    EXPORT.world({ sections: ['city'] }).city.plans.every(p => p.lots.length === full) === false || full === 0,
+    C ? C.plans.length + ' plans; the first ' + full + ' lots, ' + kept + ' in the 120 m box' : 'none: ' + JSON.stringify(st)); }
+
 if (WRITE) fs.writeFileSync(GOLD, JSON.stringify(gold, null, 1) + '\n');
 ok('the frontage-courts placement hash is golden.json\'s', G.courts === gold.courts, gold.courts !== H1, gold.courts + (G.courts === gold.courts ? '' : '; golden ' + G.courts));
 console.log(bad ? bad + ' FAILED' : 'all passed');

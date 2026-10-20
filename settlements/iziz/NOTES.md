@@ -1,5 +1,26 @@
 # Iziz — notes
 
+## The trades round (Oct 16 2026) — every Voth trade, and interiors
+
+Brief from Travis: "Take a look at the current Voth kit and give me an Iziz Vernacular version of every trades and
+industry-related building the Iziz Vernacular kit doesn't have yet. Build interiors for the Iziz residences and trade
+buildings, but skip civic buildings for now."
+
+* **The trades.** Voth's city census (44 trades) and its catalog's shops, against what the Vernacular had: 21 new
+  buildings. Food (71a): bakery, butcher and smokehouse, brewery, provisioner. Cloth and letters (71b): weaver and dyer,
+  tannery, tailor, scribe and bookseller. Crafts and salvage (71c): apothecary, tinker and relic-wright (Iziz's enchanter
+  keeps Ancient electrics and shield cells alive), glassworks, salvage breaker's yard. Works (73b): mine head, quarry and
+  mason's lodge, watermill, fungus house. Land and water (73c): farmhouse, byre and dairy, stock pens, boatwright's yard,
+  fish landing. `VERN_TRADES` (74z) maps every trade; 10 cannot exist in Iziz (coast guard, lighthouse, ferries,
+  elephant bugs, beetles, chinampas, and the temple, shrine, funerary and palace staffs, which are civic or the Ancients
+  kit's). Rows 18-22 of the sheet, an eye-level view of each.
+* **Interiors.** 69e makes a builder's wall blocks hollow (vnBody, vnBand) and draws the planned storeys inside; 95i
+  furnishes the rooms from the catalog and gives the cutaway (X) a unit per building. The catalog gained Iziz's trade set
+  (`iziz_trade_*`), a bread oven and a butcher's block; the interiors set gained the trade room kinds (`izwork_*`,
+  `izshop_*`). 36 buildings, 124 rooms, about 800 pieces; every residence passes. With interiors off every builder makes
+  exactly the calls it made before (checked call by call), so the city, Verge and Ys are unchanged.
+* Built by six agents in parallel on their own sheets (temporary targets, removed), merged and checked here.
+
 ## Round 1 (Sep 23 2026) — the Vernacular set
 
 Brief from Travis: re-do Iziz; first make the new **Iziz Vernacular** style

@@ -96,6 +96,23 @@ ok(w.errors.length === 0, 'no errors' + (w.errors.length ? ': ' + JSON.stringify
 
 // ---- ids join ----
 const chk = E.check(w, { uid: K.uid });
+// the interiors join (Yuni fills the section: a room's door is a fixture record or one of its building's links, a link ends in rooms)
+{ const bid = w.registry.records[0].id, room = (id, doors) => ({ id, kind: 'hall', poly: [[0, 0], [4, 0], [4, 3], [0, 3]], y: 0, h: 2.5, doors });
+  const fixtures = { format: 'krator-fixtures', records: [{ id: 'door_1', uid: 'x', class: 'fixture', kind: 'door', parent: bid, at: [0, 0, 0] }] };
+  const good = { format: 'krator-interiors', buildings: [{ id: bid, storeys: [{ y: 0, rooms: [room('r0', ['door_1', 'r0.door']), room('r1', ['r0.door'])] }],
+    links: [{ id: 'door_1', kind: 'door', a: 'r0', b: 'outside', at: [0, 0, 0] }, { id: 'r0.door', kind: 'door', a: 'r0', b: 'r1', at: [4, 0, 1] }], walls: [{ id: 'w0', a: [0, 0], b: [4, 0], h: 2.5, col: true }] }] };
+  const wi = Object.assign({}, w, { fixtures, interiors: good }), ci = E.check(wi);
+  ok(ci.ok && ci.joins.interiorsBuildings === 1 && ci.joins.interiorsRooms === 2 && ci.joins.interiorsDoorRefs === 3 && ci.joins.interiorsDoorsResolved === 3 && ci.joins.interiorsLinks === 2,
+    'interiors join: a room\'s exterior door resolves in the fixtures section, its interior door in the building\'s links: ' + JSON.stringify(ci.joins).replace(/.*"interiorsBuildings/, '{"interiorsBuildings'));
+  const b1 = JSON.parse(JSON.stringify(good)); b1.buildings[0].storeys[0].rooms[0].doors.push('door_9');
+  const c1 = E.check(Object.assign({}, wi, { interiors: b1 }));
+  ok(!c1.ok && c1.problems.some(p => /names door door_9/.test(p)), 'negative: a door neither the fixtures nor the links hold: ' + c1.problems[0]);
+  const b2 = JSON.parse(JSON.stringify(good)); b2.buildings[0].links[1].b = 'r9';
+  const c2 = E.check(Object.assign({}, wi, { interiors: b2 }));
+  ok(!c2.ok && c2.problems.some(p => /ends in r9/.test(p)), 'negative: a link that ends in no room of its building: ' + c2.problems[0]);
+  const b3 = JSON.parse(JSON.stringify(good)); b3.buildings[0].id = 'bld_nowhere';
+  const c3 = E.check(Object.assign({}, wi, { interiors: b3 }));
+  ok(!c3.ok && c3.problems.some(p => /bld_nowhere is not in the registry/.test(p)), 'negative: an interiors building the registry does not hold'); }
 ok(chk.ok && chk.joins.setsResolved === chk.joins.itemsWithSet && chk.joins.itemsWithSet === w.items.length && chk.joins.uidsChecked === w.stats.instances &&
   chk.joins.uidsDiffer === 0 && chk.joins.bucketRecords > 0 && chk.joins.bucketRecordsResolved === chk.joins.bucketRecords,
   'every item names a set the registry holds, every uid recomputes from its matrix, every bucket record resolves: ' + JSON.stringify(chk.joins) + (chk.ok ? '' : ' ' + chk.problems.slice(0, 3).join('; ')));
@@ -106,6 +123,26 @@ ok(!c1.ok && c1.joins.uidsDiffer === 1 && c1.problems.some(p => /flora_99999/.te
   'negative: a wrong uid, a bucket record the registry lacks and an unknown material are each reported (' + c1.problems.length + ' problems)');
 const bad2 = JSON.parse(JSON.stringify(w)); bad2.registry.records = bad2.registry.records.filter(r => r.id !== w.items[0].record);
 ok(!E.check(bad2).ok, 'negative: an item whose set is cropped out of the registry is reported');
+
+// ---- profiles: the sections a case must fill (ROADMAP.md section 11, item 1) ----
+const PROF = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain=field', 'atmos?'];
+const cp = E.check(w, { uid: K.uid, profile: PROF });
+ok(cp.ok && cp.joins.profile.required === PROF.length && cp.joins.profile.met === PROF.length,
+  'positive: a profile every named section meets passes (atmos? allows the empty atmos; terrain=field holds a krator-field): ' + JSON.stringify(cp.joins.profile));
+const cs = E.check(w, { profile: PROF.concat(['sim']) });
+ok(!cs.ok && cs.problems.length === 1 && /profile: sim is required and reads stub/.test(cs.problems[0]) && cs.joins.profile.met === PROF.length,
+  'negative: a required section that is a stub fails the check: ' + cs.problems[0]);
+const ce = E.check(w, { profile: ['atmos', 'stage'] });
+ok(!ce.ok && ce.problems.some(p => /atmos is required and reads empty/.test(p)) && ce.problems.some(p => /stage is required and reads none/.test(p)),
+  'negative: empty without ? and none each fail');
+const sampled = JSON.parse(JSON.stringify(w)); sampled.terrain.source = 'sampled';
+const cts = E.check(sampled, { profile: ['terrain=field'] });
+ok(!cts.ok && /terrain must come from field, not sampled/.test(cts.problems[0]), 'negative: terrain=field refuses sampled heights: ' + cts.problems[0]);
+const skipped = E.world({ box: BOX, sections: ['items', 'materials', 'textures', 'registry'] });
+ok(!E.check(skipped, { profile: ['items', 'terrain'] }).ok && E.check(skipped, { profile: ['items'] }).ok, 'negative: a required section the export skipped fails; the one it filled passes');
+ok(E.check(w).ok && E.check(w, {}).joins.profile == null, 'without a profile the statuses are not judged (as before)');
+let r0 = false; try { E.check(w, { profile: ['items', 'citizens'] }); } catch (e) { r0 = /unknown section citizens/.test(e.message); }
+ok(r0, 'refused: a profile naming an unknown section throws');
 
 // ---- the registry, cropped to the tile ----
 const R = w.registry, rid = new Set(R.records.map(r => r.id));

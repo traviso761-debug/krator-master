@@ -87,3 +87,7 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **Frill-tree fins: use the owner's fractal frond** (`card.frond.fractal`) next pass, for the frill tree, carrot frill,
       cloud frill and barrel frill (`biomes/README.md`, "To do: frill-tree fins"; the Throne's frill tree is the example).
 - [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.

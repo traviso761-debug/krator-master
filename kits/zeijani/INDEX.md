@@ -13,16 +13,20 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `10-core.js` | 4 | error panel (5); rng + noise (14) |
 | `27-mat.js` | 12 |  |
 | `30-geo.js` | 23 |  |
 | `36-def.js` | 6 |  |
-| `37-zj-walk.js` | 4 |  |
+| `37-zj-walk.js` | 3 |  |
 | `40-zj-cave.js` | 21 | the rock material (triplanar library sets, per-v (48); build: the plan to the walk registry, the chunks (102) |
 | `41-zj-block.js` | 3 |  |
 | `42-zj-forms.js` | 10 |  |
@@ -30,7 +34,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `44-zj-gallery.js` | 4 |  |
 | `45-zj-estate.js` | 4 |  |
 | `46-zj-built.js` | 9 |  |
-| `47-zj-shops.js` | 4 |  |
+| `47-zj-shops.js` | 5 |  |
 | `48-zj-sacred.js` | 13 |  |
 | `49-zj-civic.js` | 15 |  |
 | `50-zj-works.js` | 13 |  |
@@ -38,12 +42,14 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `52-zj-trade.js` | 6 |  |
 | `53-zj-additions.js` | 9 |  |
 | `54-zj-square.js` | 7 |  |
+| `55-zj-trades.js` | 5 | = (2) |
 | `81-sky.js` | 10 |  |
 | `89-rows.js` | 2 |  |
 | `90-scene.js` | 8 | layout: rows by family, fronts (+z) toward the c (41); (re)build the world (50) |
 | `91-probe.js` | 27 | the cavern and the walk map (P2) (22) |
 | `91f-furnish.js` | 13 |  |
 | `91n-night.js` | 3 |  |
-| `92-camera.js` | 17 |  |
+| `92-world.js` | <1 |  |
 | `93-anim.js` | 3 |  |
+| `99-host-take.js` | 7 | the inspector's words: a click names what is und (12); the cut-away (C), night (N, in 91n-night.js), sh (33); the frame, around the host's: the sun and the sk (40); the page, handed to the host (50) |
 | `99-tail.html` | <1 |  |

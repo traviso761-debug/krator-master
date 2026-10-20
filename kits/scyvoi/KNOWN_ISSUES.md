@@ -40,3 +40,57 @@
 
 - [x] core/tags' vocabulary took the Scyvoi culture (`52-core-tags-vocab.js`, `test-tags.js`: 19 cultures, export digest
       2670333f). Every build that bundles core/tags embeds the vocabulary: their pages differ by that text until rebuilt.
+
+## Host port (2026-10-18): the engine on core/host
+
+The engine's own `92-camera.js` (orbit, WASD, walk, hover inspector, polygon tool, cut-away and night buttons, the frame
+loop) and `91-probe.js` (`window._api`) are gone; the camera, loop, panel, polygon tool and probe are core/host's
+(`CORE_HOST = khost.SHELL + ['94-host-polytool.js']` in `build.py`). Two fragments replace them: `92-world.js` (`buildWorld()`
+and `VIEWS`, before `93-anim.js`, which reads the smoke sources the build records) and `99-host-take.js` (`KHOST.take`: views,
+inspector words, controls, the engine's frame work, the probe's fields; it must sort after core/host's `95-host-probe.js`).
+The kits' `00-head.html` lost the engine's own `#ui`, `#cap`, `#hud`, `#insp` and `#poly` (the host's panel makes its own).
+Proof: every `verify.py --assert` unchanged in all seven kits; chrome-hidden shots (`?t=4`, every sixth view plus the cut-away
+and night) identical to the old pages' pixel for pixel, bar the night's lamp flicker and Islanders' animated sea (both also
+differ between two runs of the old page). The committed pages were already behind their sources (core/atmos and the fauna
+bundle had moved), so the baseline is a rebuild of the unchanged sources, and the hash baseline moves for these pages for
+that reason too.
+
+What the old pieces did and what the host does:
+
+| Engine | core/host | Difference kept or lost |
+|---|---|---|
+| orbit `ctl` (theta from +z, phi from +y, radius), `setView` | `90-host-camera.js`, same convention to the bit | none; floor `clear:.4`, zoom `minR:1`, `maxR:2500` as before |
+| WASD pans the target at 0.6 x radius | same speed; Q / E down / up, Shift x3.4, Ctrl slower | Shift and Ctrl are new on the orbit |
+| walk (F): 4 m/s, feet on `terrainH`, Q / E fly | host walk (F; 9 m/s, wheel sets speed), from the pin when there is one | faster; Zeijani's walk map is passed as `walk: KWALK` with `walker {step .6, r .3, h 1.7}`; its R run key and its own marker (double-click, G) are the host's pin now |
+| hover inspector (T), HTML card | click inspector in `#insp` (`o.inspect`), plain text | **the hover tip is gone** (the host's I-tip belongs to `FULL`); the cut-away filter on hits is kept |
+| polygon tool (P): `[x,z]` or `{x,z,y}` | `94-host-polytool.js`: Polygon and Path buttons in the inspector panel; a ring of `[x,y,z]` | **format changed**; `window._poly` is now `window.POLYTOOL` |
+| HUD (cam, calls, tris, records, furniture) | `#stats` with `o.stats` | same facts |
+| `FRAME_HOOKS(dt, now)` | `KHOST.on(..., 'view')`, after the camera is placed (the engine ran them after `applyCam`), `dt` = the host clock's | pause and the speed buttons now slow the engine's animation; `?t=` still pins `ANIM.t` |
+| sun box on the target, `skyCam`, `atmosFrame`, two-pass draw | the same work in that subscriber and `o.draw` | none |
+| `91n-night.js`: `nightSet`, N key | unchanged; N is `o.keys`, the button a `controls` entry painted each frame | none. The sky hour stays the engine's (`?hour=`, `SKY.hour`): no hour slider (no `sky.hour`), the host clock's hour is unused |
+| `cutSet`, C key, Shadows button | same, as `controls` / `o.keys` | none |
+| `91-probe.js` fields | `o.api` (`ENGINE_API`); the host adds `BUDGET`, `typeStats`, `regOccupancy` (empty: no `o.registry`, the engine's `REG` records carry boxes, not cylinders), `views()`, `go()`, `clock()` | `_api.REG` is still the engine's record list |
+| `99-tail.html` | unchanged (it only closes the script) | none |
+
+Takers: Islanders, Lizardmen, Desert Nomads and Ash Nomads vendor `92-world.js` and `99-host-take.js` with the rest (their
+copies of the engine files were identical to the engine's; Lizardmen's vendor source is Islanders); Resources reads them in
+place. **Zeijani** is a fork, not a vendor: it had its own `91-probe.js`, `92-camera.js`, `90-scene.js`, `91f-furnish.js`,
+`27-mat.js` and `93-anim.js`. Its `92-camera.js` is gone; its `99-host-take.js` is this one with its names (`ZJF`, `ZJTAGS`,
+`ZJ_LIFE`, `ZJ_CUT`), the interiors' furniture records in the inspector and `walk: KWALK`; its `91-probe.js` keeps the cavern
+and walk-map checks and hands the host `ZJ_API` (it used to assign `window._api`). No taker overrides `91n-night.js` or
+`99-tail.html`. Nothing in core/host was changed.
+
+- [ ] The hover tip (T) and the polygon tool's `[x,z]` output are not carried over; if the kits want the tip, take `host.FULL`'s inspector (`93-host-inspect.js`) and give it the engine's `regAt` / `furnAt` words.
+
+## Voth census trades (2026-10-19)
+
+The table is `src/60-sy-trades.js` (checked by `python3 tools/check_trades.py kits/scyvoi -v` and the `voth-trades` assert in verify.py). Most census trades are `na` for a nomad camp; these have no building yet (owner scope: butcher, brewing, tannery, dairy and healer rows covered):
+
+- [ ] butchers: a butcher's tent (slaughter post, hanging rack, drying line).
+- [ ] weavers and dyers: a felt-maker's and dyer's tent.
+- [ ] brewers: a brewing tent (fermented drink in skins and jars).
+- [ ] innkeepers and grooms: a guest tent with a salamander tether line.
+- [ ] healers and nurses: a healer's tent (bonesetter, herbalist, cots).
+- [ ] quarrymen and masons: a quarry and mason's yard for the Baelu's fitted stone.
+- [ ] innkeepers and servers (partial): a mess tent or tavern (tent-tibet-great, the festival tent, is only a dwelling-multi).
+- [ ] dairymen (partial): a milking pen and cheese tent beside the goat fold and bison pen.

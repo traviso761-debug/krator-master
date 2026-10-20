@@ -487,6 +487,85 @@
     "mean": 0.78
    },
    "roughLift": 0.25
+  },
+  "xMosC": {
+   "lib": "patterns/common/mosaic-star-lapis",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xMosD": {
+   "lib": "patterns/common/mosaic-arabesque-lapis",
+   "scale": [
+    1.2,
+    0.8
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xBandC": {
+   "lib": "patterns/common/frieze-star-maroon",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xSun": {
+   "lib": "patterns/xanadu/sun-emblem",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.2,
+   "normalScale": 0.5
+  },
+  "clothR": {
+   "lib": "patterns/canvas/stripe-red",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.15
+  },
+  "xValance": {
+   "lib": "patterns/common/valance-scallop",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "metal": 0,
+   "normalScale": 0.5
   }
  }
 }

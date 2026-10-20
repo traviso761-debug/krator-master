@@ -128,8 +128,9 @@ static func build(path: String) -> Node3D:
 			for u in it["records"]:
 				if str(u).length() == 8:
 					ids["instances_with_uid"] += 1
-		if it["dynamic"]:
-			report["gaps"]["fauna"] = "dynamic items (fauna on aP0/aP1 paths) are placed static: the anim kind has no Godot shader yet"
+		var mrec: Dictionary = mats.get(it["material"], {})
+		if it["dynamic"] and str((mrec.get("options") if mrec.get("options") is Dictionary else {}).get("mode", "orbit")) == "walk":
+			report["gaps"]["fauna walk"] = "walking fauna (anim mode 'walk') are moved by the page's own host tick (a herd's CPU path), which no export carries: they stand at their export pose, wings flapping"
 	var buckets := Node3D.new()
 	buckets.name = "Buckets"
 	root.add_child(buckets)
@@ -222,13 +223,14 @@ static func build(path: String) -> Node3D:
 	if d.get("stage") is Dictionary:
 		root.set_meta("stage", d["stage"])
 	# a city's buildings, fixtures and furniture slots as nodes (the KRATOR_EXPORT shape)
-	if d.get("fixtures") is Dictionary or d.get("furniture") is Dictionary:
+	if d.get("fixtures") is Dictionary or d.get("furniture") is Dictionary or d.get("interiors") is Dictionary:
 		report["records"] = records(root, d, by_id)
 	var meta := {}
 	for k in d:
 		if not (k in ["items", "buckets", "textures", "stage", "registry", "terrain", "atmos", "water"]):
 			meta[k] = d[k]
 	root.set_meta("world", meta)
+	KratorBiome.cell = KratorBiome.policy_cell(d["convention"])   # the export contract's LOD cell (convention.lod)
 	root.set_meta("krator", {"box": d["box"], "build": d["build"], "convention": d["convention"]})
 	report["counts"] = {"items": d["items"].size(), "instances": ids["instances"], "buckets": d["buckets"].size(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": tc, "records": by_id.size(), "load_ms": Time.get_ticks_msec() - t0}
@@ -408,6 +410,14 @@ static func _standard(rec: Dictionary, tex: Dictionary, texrec: Dictionary, inst
 		sm.set_shader_parameter("bu_mix", float(b.get("mix", 0.0)))
 		sm.set_shader_parameter("bu_macro", float(b.get("macro", 0.0)))
 		sm.set_shader_parameter("bu_cell", float(b.get("cell", 8.0)))
+	# hook 'triplanar' (the Iziz court finishes): the map from three sides in the mesh's frame; no UVs, so no normal map
+	var tri = rec.get("triplanar")
+	if "triplanar" in hk["ids"] and tri is Dictionary and img:
+		sm.set_shader_parameter("triplanar", true)
+		sm.set_shader_parameter("tri_per_m", 1.0 / max(float(tri.get("tile", 0.5)), 0.01))
+		sm.set_shader_parameter("tri_gain", float(tri.get("gain", 1.0)) if bool(tri.get("detail", false)) else 1.0)
+		sm.set_shader_parameter("has_normal", false)
+		sm.set_shader_parameter("has_rough", false)
 	if "glass" in hk["ids"]:
 		_gap_once(report, "hook glass", "records with hook 'glass' draw as the library surface: lib/glass.gdshaderinc's Fresnel is not wired into library.gdshader yet")
 	sm.set_meta("krator", {"material": rec["id"], "hooks": hk["ids"], "shader": "library.gdshader", "world_uv": "world-uv" in hk["ids"] and instanced})
@@ -422,8 +432,10 @@ static func _gap_once(report: Dictionary, k: String, msg: String) -> void:
 # a city's records as nodes, in the KRATOR_EXPORT shape (Yuni's GAME_EXPORT.md; core/export/README.md, "Iziz"): a
 # "Records" node holding Building_<id> (Building.<id> as a valid node name) per building record of the registry (at its base centre, turned by ry; meta
 # krator the record), each building's fixtures as its children (Door_<id>, Window_<id>, Light_<id>: Marker3D, local +z out,
-# meta krator the record and krator_host its host), and Furniture_<record> per furniture placement (meta krator_piece).
-# Returns {buildings, fixtures, fixtures_parented, furniture, furniture_resolved}.
+# meta krator the record and krator_host its host), each building's interior (the interiors section: Interior_<id>, below),
+# and Furniture_<record> per furniture placement (meta krator_piece).
+# Returns {buildings, fixtures, fixtures_parented, furniture, furniture_resolved} and, with an interiors section,
+# {interiors, rooms, walls, links, interiors_unparented}.
 static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionary:
 	var out := {"buildings": 0, "fixtures": 0, "fixtures_parented": 0, "furniture": 0, "furniture_resolved": 0}
 	var R := Node3D.new()
@@ -457,6 +469,60 @@ static func records(root: Node3D, d: Dictionary, by_id: Dictionary) -> Dictionar
 			else:
 				R.add_child(m)
 				m.transform = _rec_xf(r)
+	# the interiors section (krator-interiors, building-local): each building's room graph under its Building node as
+	# Interior_<id>, built by the spike's own interior builder (krator/records_import.gd _interior: rooms as floor
+	# polygons with their record, walls as StaticBody3D boxes named -col, a NavigationRegion3D per storey and one for
+	# the yard, a NavigationLink3D per door, stair and ladder link), plus a Marker3D per link (Links/Link_<id>, meta
+	# krator the link, krator_kind its kind) at the threshold
+	var I = d.get("interiors")
+	if I is Dictionary and I.get("buildings") is Array:
+		out["interiors"] = 0
+		out["rooms"] = 0
+		out["walls"] = 0
+		out["links"] = 0
+		out["interiors_unparented"] = 0
+		var irep := {"gaps": {}}
+		for B in I["buildings"]:
+			var p = bnodes.get(B.get("id"))
+			if p == null:
+				out["interiors_unparented"] += 1
+				continue
+			var it := {"frame": "building-local", "rooms": [], "walls": B.get("walls", []), "nav": {"nodes": [], "edges": []}}
+			if B.get("yard") is Dictionary:
+				it["yard"] = B["yard"]
+			for S in B.get("storeys", []):
+				for r in S.get("rooms", []):
+					var rr: Dictionary = (r as Dictionary).duplicate()
+					rr["lvl"] = int(S.get("k", 0))
+					it["rooms"].append(rr)
+			var L := Node3D.new()
+			L.name = "Links"
+			for l in B.get("links", []):
+				var lid := str(l.get("id", ""))
+				var m := Marker3D.new()
+				m.name = ("Link_%s" % lid).validate_node_name()
+				var at: Array = l.get("at", [0, 0, 0])
+				m.position = Vector3(float(at[0]), float(at[1]), float(at[2]))
+				m.set_meta("krator", l)
+				m.set_meta("krator_kind", l.get("kind"))
+				L.add_child(m)
+				var fa: Array = l.get("from", at)
+				var ta: Array = l.get("to", at)
+				if Vector3(fa[0], fa[1], fa[2]).distance_to(Vector3(ta[0], ta[1], ta[2])) < 0.05:
+					continue   # an interior door between two rooms whose floors meet: the regions join by their edges
+				it["nav"]["nodes"].append({"id": lid + ".a", "x": fa[0], "y": fa[1], "z": fa[2]})
+				it["nav"]["nodes"].append({"id": lid + ".b", "x": ta[0], "y": ta[1], "z": ta[2]})
+				it["nav"]["edges"].append({"id": lid, "a": lid + ".a", "b": lid + ".b", "kind": l.get("kind")})
+			var n: Node3D = KratorRecords._interior({"building": {"id": B["id"]}, "interior": it}, irep)
+			n.add_child(L)
+			(p as Node3D).add_child(n)
+			out["interiors"] += 1
+			out["rooms"] += it["rooms"].size()
+			out["walls"] += (it["walls"] as Array).size()
+			out["links"] += (B.get("links", []) as Array).size()
+		for k in irep["gaps"]:
+			if k != "wall openings":   # solid boxes: every build's walls, known (records_import.gd)
+				out["interiors_gap_" + str(k)] = irep["gaps"][k]
 	var U = d.get("furniture")
 	if U is Dictionary:
 		var pieces := {}
@@ -480,9 +546,12 @@ static func _rec_xf(r: Dictionary) -> Transform3D:
 	return Transform3D(Basis(Vector3.UP, float(r.get("ry", 0.0))), Vector3(float(at[0]), float(at[1]), float(at[2])))
 
 
-# a library map by reference: <dir>/tex/pack.json's family names its file for the slot (tools/textures/pack.py's output)
+# a library map by reference: <dir>/tex/pack.json's family names its file for the slot (tools/textures/pack.py's output);
+# an export from several packs (a kit on Iziz's page) holds <pack>.pack.json for each, its files side by side in tex/
 static func _library(dir: String, t: Dictionary, packs: Dictionary) -> Texture2D:
-	var pj := dir + "/tex/pack.json"
+	var pj := dir + "/tex/%s.pack.json" % str(t.get("pack", ""))
+	if not FileAccess.file_exists(pj):
+		pj = dir + "/tex/pack.json"
 	if not packs.has(pj):
 		packs[pj] = KData.read_json(pj) if FileAccess.file_exists(pj) else {}
 	var fams: Dictionary = (packs[pj] as Dictionary).get("families", {})

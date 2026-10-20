@@ -21,9 +21,12 @@ every node test under `core/`, a rebuild of every build and the hash baseline (`
 the Chromium launcher, the local three.js, `smoke`, `walk`, `export`); do not paste a launcher into one. Built pages,
 bundles and texture packs are in Git LFS (`.gitattributes`): a checkout needs `git lfs`.
 
-**Who works where.** The owner's Voth economy work forks from here and owns `core/simulation/` and Voth's
-simulation fragments (`settlements/voth/targets/voth-city/34`, `41`-`47`, the host's `56b`/`56c`). The city-layout
-module work owns `core/city/` and Voth's layout fragments (`15`, `30`-`35`). Keep out of the other's files, or ask.
+**Who works where.** No separate economy session runs any more (owner, 2026-10-18): `core/simulation/` is edited
+on `main` like any other core module, and **the isle demo (`settlements/isle-demo`) is the test case the economy is
+tuned on as it is built** (two towns of one polity trading by sea; `settlements/isle-demo/PLAN.md` sections 5 and 7).
+A change to `core/simulation` keeps Voth's stocks proof, `test-sim.js` and the baseline unchanged unless the change is
+meant to move them. The city-layout module work owns `core/city/` and Voth's layout fragments (`15`, `30`-`35`); keep
+out of its files, or ask.
 
 **Rebuild what a shared change reaches.** On 2026-10-08, 29 committed pages and the hash baseline were behind
 their sources because a change to `core/` was rebuilt into one build only. After editing anything under `core/`,
@@ -31,7 +34,8 @@ their sources because a change to `core/` was rebuilt into one build only. After
 Throne's stations (`python3 build.py --station <name>` in `biomes/throne`) and Girder's hero page (`build_hero.py`)
 are separate build commands; `kits/interiors` builds before `kits/ancients-interiors` (which loads its
 `dist/interiors-core.js`). Then `python3 tools/port_baseline.py`; rewrite the baseline only for pages you changed
-on purpose and checked.
+on purpose and checked. A change that rebuilds every build (or most of them) takes the items parked in `TODO.md`, "Ride along with the
+next all-builds rebuild", with it.
 
 **Write code that is the same on every machine and in Godot.**
 - Every text-mode `open()` in a build.py names `encoding='utf-8'` (and `newline='\n'` when writing).
@@ -73,14 +77,17 @@ The catalog furniture batch keeps indices when a build asks (`KF.batch({indexed:
 | `settlements/port/` | **a kit, not a settlement**: the Ancient Port segments and vessels (a sibling of `kits/ancients`), which will build Hook and may be reused on other coasts. Call it the Ancient Port kit |
 | `kits/ancients/` | the Ancients building kit and its per-site targets |
 | `kits/ringsea/` | the Ring Sea watercraft kit: 31 vessels, one fragment each |
-| `kits/catalog/` | master catalog: asset engine, 1674 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
+| `kits/catalog/` | master catalog: asset engine, 1696 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
 | `kits/ancients-interiors/` | the Ancients' ship interiors (backported from Noah's Regret) on `kits/interiors`: the ship's room kinds, ship's rooms and cabins, fourteen hall recipes in two dresses, each audited; bundled as `KratorAncientsInteriors` (`kit_bundle.bundle()`). Verified: `build.py`, `verify.py --assert`. Read `API.md` |
 | `kits/furniture/` | scaffolding only: read `SPEC.md` |
 | `kits/motor-vehicles/` | the Motor Vehicles kit: a `VEHICLE` registry on the catalog core, one file per culture (geomancer, republic, iziz, eastabyss, post-apoc: a buggy, an eight-wheeled crawler, a six-wheeler, a caravan truck, a tracked hab), bundled for any world as `KratorVehicles` (`vehicle_bundle.bundle()`), textured from the library as detail maps (`materials.json`, `tex/`). Verified: `build.py`, `verify.py --assert` |
-| `kits/mechs/` | the Mechs kit: skinned, animated walkers (leg IK with planted feet, idle / walk / attack clips with fire and impact events, a z-fighting audit) on the catalog core and the motor-vehicles frame, bundled as `KratorMechs`; one file per mech (now Iziz: eleven war-walkers, the Castra in two variants). Verified: `build.py`, `verify.py --assert`. Read `README.md`, `API.md` |
+| `kits/mechs/` | the Mechs kit: skinned, animated walkers (leg IK with planted feet, idle / walk / attack clips with fire and impact events, a z-fighting audit) on the catalog core and the motor-vehicles frame, bundled as `KratorMechs`; one file per mech (now Iziz: seventeen walkers, from a hound-sized drone to a walking siege tower, the Castra in two variants). Verified: `build.py`, `verify.py --assert`. Read `README.md`, `API.md` |
+| `kits/pylon/` | the Pylon kit (culture `pylon`): Iziz's vassal arcology city round the ruined Monolith, post-Cataclysm buildings imitating the Ancients in white render and Iziz orange. Written on the Iziz Vernacular contract and built on its page (`settlements/iziz/build.py --kit`; the Vernacular stands beside it: the mixed street). Read `PLAN.md`; the contract shared with the Vernacular and `kits/talia` is `settlements/iziz/VASSAL-KITS.md` |
 | `kits/islanders/` | the Islanders kit (catalog culture `islander`): the Ring Sea Islanders in two styles, the West (rumah: horned saddle roofs on piles) and Kautoa (Sumba: spire roofs over thatch skirts), poor to rich houses, civic, trade, harbour and defence buildings, Kautoa's palace; a building for every Voth census trade in both sets, mines; scrap on the poor; forked from the Scyvoi engine (vendored). Verified: `build.py`, `verify.py --assert`. Read `API.md` |
+| `kits/beast-riders/` | the Beast Riders kit (catalog culture `beast-rider`): the mounts' buildings (raptor stable, great byre, rookery tower) as catalog ASSETs with the library's detail maps, beside Girder's and Mav's Refuge's buildings from the catalog (lossy copies until the faithful port: its `KNOWN_ISSUES.md`); the catalog's inspector, hover and polygon tools. Verified: `build.py`, `verify.py --assert`. Read `README.md` |
 | `kits/resources/` | the Resources kit: world content that belongs to no culture. So far the resource nodes (iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, oil; three grades) that works draw on by the nearest-node rule (a mine; oil a derrick: Locus's pumpjack), the grade setting the yield. Runs on the Scyvoi engine read in place; building kits read its fragments in place. Verified: `build.py`, `verify.py --assert` |
+| `kits/crops/` | the Crops kit: world content that belongs to no culture or biome. 118 crops (grain, pulse, tuber, nut, oil, vegetable, greens, mushroom, fruit, berry, spice, herb, sweetener, beverage, and fibre, dye, reagent and fuel) in 25 buckets, each a range on warmth, air pressure and aridity; the biome kits are zones on those axes, so a settlement calls `CROPS.forBiome`, `CROPS.at`, `CROPS.pick` or `CROPS.palette` for what its place could plausibly grow, irrigated or not, what a recipe's bucket may be, and which dyes and plaids it can make. Dark-grown fungus crops (alecap, pale fungi, the mat, glow mushroom) take a works, not a climate. Plain data and pure functions (`[G data]`); read the fragments in place. Verified: `build.py`, `tests/test-crops.js`, `verify.py --assert`. Read `PLAN.md`, `API.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `openworld/<region>/` | a region of the scale model at 1:1, streamed, with the biome kits' flora: `little-demo` (the eastern desert). Its data comes from `tools/scale-model/extract_region.py` |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
@@ -88,6 +95,7 @@ The catalog furniture batch keeps indices when a build asks (`KF.batch({indexed:
 | `core/furnish/` | the furniture placement pass (`KFURN`) Girder, Mav's Refuge, Locus, Highlands and Post-Apoc share; `fingerprint.py` proves a change moved no piece (`core/furnish/README.md`) |
 | `core/charactermodels/` | a core module that is also a build of its own (`CORE_BUILDS` in the index tools): the characters every settlement's citizens are to be drawn from. The Cosmetic Lab (character editor, NPC crowds) and the Animation Lab (every clip on six bodies, with review marks): MakeHuman (MPFB2) bodies with morphing face, build and ancestry, library clothes, hair and beards that follow, skin and hair tint, and peoples (`data/peoples.json`) for drawing a culture's strangers; body mods any body can wear (a second pair of arms, flesh or cybernetic, on lower-arm joints every skeleton has; rib gills: `tools/mods.py`) and the Giants, the Dalab's and the Free Giants (`tools/giant.py`); Godot twin (`godot/krator/character/`, behind). Read `README.md`. Roadmap: its README, "A core module: where it goes next", and GODOT-PLAN.md Phase 5 |
 | `core/city/` | the city builder and its infill (steps 6-12: civic, avenue lots, main streets, side streets, alleys, the infill of the blocks) as plain records, and their drawing. Voth's city plan (`settlements/voth`) and Verge's two levels (`settlements/verge`) are on it. **Every settlement should eventually be ported to it** (`core/city/README.md`, "Porting a settlement") |
+| `core/hamlet/` | small settlements: resource villages (salt, mining, lumber, ranching) and fishing and farming villages, at most 500 people, placed with the resources they work (`KHAMLET.village`); fields from the biome kits' `gather` tag, timber from the trees' `harvest.wood`. Nomad camps later. Plain records (`[G data]`). Read `README.md`, `PLAN.md` |
 | `godot/` | the Godot project (the port spike): importers for each export, shaders, `data/` exports made by `godot/tools/export_spike.py` (`godot/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |

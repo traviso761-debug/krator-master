@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.423,
+    1.266
+   ],
+   "seam_before": [
+    1.632,
+    1.582
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.5,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.tar.seep",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   3.0,
+   3.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Iridescent Oil-Slick Mud Texture.png",
+  "generator": "supplied by the owner (Downloads/tex2.zip, 2026-10-18)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Iridescent Oil-Slick Mud Texture.png",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.tar.seep`",
+  "reuse": "tar pits, a boatyard's pitch ground, a derrick's spill",
+  "sha1": "139ec3c3a763ed9cb9a943276e65b655c58d39ac"
+ }
+}

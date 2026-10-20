@@ -197,7 +197,7 @@ const newStats=()=>({trunk:0,far:0,clumps:0,blooms:0,fruit:0,heroes:0,fars:0,bor
 RINGISLES.kitOf=Bo=>{const R=BIO.kits[Bo.kit];return R&&R.api?R.api:null;};
 function borrowGrow(Bo,x,y,z,lv,k,extra){const api=RINGISLES.kitOf(Bo);if(!api)return null;
  if(Bo._sp==null)Bo._sp=(api.SPECIES||[]).findIndex(S=>S.key===Bo.src);if(Bo._sp<0)return null;
- if(Bo.treeAt){if(!api.treeAt)return null;const T=api.treeAt(Bo.src,x,y,z,{scale:k,seed:ri(0,999999)});if(T)T.borrow=Bo.key;return T;}
+ if(Bo.treeAt){if(!api.treeAt)return null;const T=api.treeAt(Bo.src,x,y,z,{scale:k,seed:ri(0,999999),lv:extra&&extra.oneLevel?lv:null});if(T)T.borrow=Bo.key;return T;}
  if(!api.make||!api.grow)return null;
  const T=api.make(Bo._sp,x,y,z);T.H*=k;T.rb*=k;T.crownR*=Math.sqrt(k);if(extra)Object.assign(T,extra);T.borrow=Bo.key;
  const r=api.grow(T,lv);if(r===null&&lv===0)return null;return T;}

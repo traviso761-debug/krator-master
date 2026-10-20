@@ -8,8 +8,8 @@
 //   SVPAL, P(k)  the palette (sRGB hex; P picks one and jitters it)
 const KIT={id:'resources',title:'Resources Kit',pack:'resources',culture:'generic',faction:'none',band:'none',
  frag:'kits/resources',ground:0x8a8a6e,groundProc:0x7e7e62,fog:0xccd2d0,furnDetail:.6};
-const SV_LIB={stone:'stone',earth:'earth',sand:'sand',sulphur:'sulphur',wood:'wood',rope:'rope',iron:'iron'};   /* stone and earth are library sets (materials.json); the rest draw flat */
-const SV_TILE0={stone:2.6,earth:3,sand:4,sulphur:1.6,wood:1.6,rope:.3,iron:.8};
+const SV_LIB={stone:'stone',earth:'earth',sand:'sand',sulphur:'sulphur',coal:'coal',tar:'tar',efflor:'efflor',malachite:'malachite',quartz:'quartz',cassiterite:'cassiterite',galena:'galena',gossan:'gossan',pegmatite:'pegmatite',wood:'wood',rope:'rope',iron:'iron'};   /* stone and earth are library sets (materials.json); the rest draw flat */
+const SV_TILE0={stone:2.6,earth:3,sand:4,sulphur:1.6,coal:1.5,tar:3,efflor:2,malachite:1.5,quartz:1.5,cassiterite:1.5,galena:1.5,gossan:2,pegmatite:1.5,wood:1.6,rope:.3,iron:.8};
 const SV_CLOTH={flag:1};
 const SV_CUT={};
 const KIT_FALLBACK=[];

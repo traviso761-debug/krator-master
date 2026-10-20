@@ -16,7 +16,10 @@ FURN_CULTURE('iziz', { name: 'Iziz', pack: 'iziz', influences: 'science fantasy;
     timberSawn: 0x9a6a42, timberSawnDark: 0x7a4e30, timberSawnLight: 0xa87a4e, timberGreyPost: 0x8a7a66, ironSoot: 0x2e2a26,
     steelCorrugate: 0x9a9488, sackingTan: 0xb8a080, sackingDark: 0xa89070, sackingPale: 0xc8b898, ropeFlax: 0xb8a888,
     leafVine: 0x3f7a34, leafBright: 0x4f9a3a, leafMoss: 0x2f6a2a, leafSpring: 0x6aa04a,
-    clothApricot: 0xf2a24a, clothAmber: 0xd8893c, clothVermilion: 0xc9442a, clothSaffron: 0xe0a030, clothRust: 0xb8552a
+    clothApricot: 0xf2a24a, clothAmber: 0xd8893c, clothVermilion: 0xc9442a, clothSaffron: 0xe0a030, clothRust: 0xb8552a,
+    /* the court finishes (2026-10-19): a hair off their plain twins, so they split into the court texture families below */
+    courtMahogany: 0x6b2b1f, courtBrocade: 0x9b2c2c, courtClothGold: 0xd3ae36, courtClothTeal: 0x2e8e89, courtClothCream: 0xf2e1bf,
+    courtGilt: 0xd8b13b, courtMarble: 0xe9e5dd
   } });
 /* END PALETTE */
 const IZIZ_COMMON = {
@@ -31,9 +34,20 @@ const IZIZ_COMMON = {
   shelfFill: 'scrolls', rack: 'cloaks', art: 'sunplate', art2: 'mosaic', statue: 'figure', tapestry: 'sun',
   canopy: true, board: 'panel'
 };
+/* the court's finishes (the owner, 2026-10-19): the court tier draws its veneer, upholstery, gilding and hearth in palette keys
+   of their own, which split into texture families (FAMILY_SPLITS, krator-furniture-core.js). A page that packs the court sets
+   maps them (settlements/iziz/src/95i-iziz-interiors.js, COURT_TRI): marquetry, brocade, opus sectile in full colour, gold
+   leaf and velvet as detail. Elsewhere the split only separates the batch's buckets; the colours are unchanged. */
+FAMILY_SPLITS.push(
+  [/^courtMahogany$/, ['mahogany', 'wood'], 'courtMarquetry'],
+  [/^courtBrocade$/, ['cloth'], 'courtBrocade'],
+  [/^courtCloth/, ['cloth'], 'courtVelvet'],
+  [/^courtGilt$/, ['gold', 'metal'], 'courtGilt'],
+  [/^courtMarble$/, ['ceramic', 'stone'], 'courtOpus']);
 const IZIZ_COURT = Object.assign({}, IZIZ_COMMON, {
-  cloth: ['clothGold', 'clothCrimson', 'clothTeal', 'clothCream'],
-  accent: 'gilt', accentFam: 'gold', stone: 'marbleWhite', stoneFam: 'stone',
+  wood: 'courtMahogany', tile: 'courtMarble',
+  cloth: ['courtClothGold', 'courtBrocade', 'courtClothTeal', 'courtClothCream'],
+  accent: 'courtGilt', accentFam: 'gold', stone: 'marbleWhite', stoneFam: 'stone',
   motif: 'step', finial: 'disc', statue: 'figure', art: 'mosaic', art2: 'sunplate', lamp: 'glass'
 });
 FK.set({ culture: 'iziz', tier: 'common', S: IZIZ_COMMON, names: {
@@ -212,3 +226,79 @@ FURN({
 /* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed iziz_training_<role> */
 FK.set({ culture: 'iziz', tier: 'common', roles: 'training', prefix: 'iziz_training_', S: IZIZ_COMMON, names: {
   training_dummy: 'Mahogany drill post', archery_butt: 'Sandbag archery butt' } });
+
+/* trades and households (2026-10-16, for the Iziz Vernacular's trade interiors: kits/interiors/sets/iziz.js, settlements/iziz):
+   the FK.ROLES.trade pieces in Iziz's common style sheet, keyed iziz_trade_<role> (the training pair is the set above) */
+FK.set({ culture: 'iziz', tier: 'common', roles: 'trade', prefix: 'iziz_trade_', S: IZIZ_COMMON, skip: ['training_dummy', 'archery_butt'], names: {
+  forge: 'Brick forge with a salvage hood', anvil: 'Anvil on a mahogany block', trough: 'Quench trough', stall: 'Beast stall', hayrack: 'Fodder rack',
+  display: 'Wares table', armour_stand: 'Armour stand', weapon_rack: 'Weapon rack', vat: 'Dye vat', still: 'Copper still',
+  bin: 'Grain bin', larder: 'Larder', bunk: 'Hand\'s bunk', locker: 'Mahogany locker', lathe: 'Pole lathe', press: 'Screw press',
+  kiln: 'Glaze kiln', grindstone: 'Grindstone', altar: 'Household sun altar', barrel: 'Barrel rack' } });
+
+/* the trade rooms' own pieces (2026-10-16): a bakery's oven and a butcher's block, each in its own trade's room only (a
+   kitchen or workshop listed here put an oven in every living room and a block in every workroom) */
+FURN({
+  key: 'iziz_bread_oven', name: 'Brick bread oven', culture: 'iziz', tier: 'common', type: 'stove', role: 'oven', setting: 'indoor',
+  rooms: ['bakery'], anchor: 'wall', clearance: { front: 1.4 },
+  materials: ['stone', 'ceramic', 'metal', 'emissive', 'timber'],
+  w: 2.4, d: 1.8, h: 2.2, variants: 1,
+  build: function (F) {
+    const br = F.col('stoneGranite'), cl = F.col('ceramicCream'), soot = F.shade(br, -0.6), I = F.col('ironSoot');
+    F.box(0, 0, -0.1, 2.4, 0.85, 1.6, 0, F.shade(br, 0.05), 'stone');                      /* the hearth plinth */
+    F.frustum(0, 0.85, -0.05, 0.85, 0.58, 0.95, 0, cl, 'ceramic', 12);                     /* the dome, in Iziz cream clay */
+    F.ball(0, 1.68, -0.05, 0.46, F.shade(cl, -0.08), 'ceramic');
+    F.box(0, 0.9, 0.72, 0.84, 0.58, 0.16, 0, soot, 'stone');                               /* the mouth */
+    F.box(0, 0.95, 0.74, 0.64, 0.36, 0.1, 0, F.col('amber'), 'glow');
+    F.cyl(0.62, 1.4, -0.4, 0.09, 0.8, 0, I, 'metal');                                      /* a salvage-pipe flue */
+    F.box(-0.95, 0.85, 0.35, 0.46, 0.05, 0.85, 0, F.col('mahoganyLight'), 'wood');         /* the peel rest and a peel */
+    F.box(-0.95, 0.9, 0.2, 0.3, 0.03, 0.3, 0, F.col('mahoganyLight'), 'wood');
+    F.lamp(0, 0.95, 0.75, 0.6, 4);
+  }
+});
+FURN({
+  key: 'iziz_butcher_block', name: 'Butcher\'s block and hook rail', culture: 'iziz', tier: 'common', type: 'workstation', role: 'block', setting: 'indoor',
+  rooms: ['butcher'], anchor: 'floor', clearance: { front: 0.9 }, job: 'trading',
+  materials: ['timber', 'metal'],
+  w: 1.4, d: 0.9, h: 2.0, variants: 1,
+  build: function (F) {
+    const wd = F.col('mahoganyDark'), I = F.col('ironSoot');
+    F.cyl(0, 0, 0.02, 0.42, 0.82, 0, F.shade(wd, 0.15), 'wood');                          /* the end-grain block */
+    F.box(0, 0.82, 0.02, 0.5, 0.04, 0.3, 0, F.shade(wd, 0.3), 'wood');                    /* a cleaver board */
+    for (const s of [-1, 1]) F.cyl(s * 0.66, 0, -0.38, 0.04, 2.0, 0, I, 'metal');           /* the rail's posts */
+    F.beam(-0.66, 1.95, -0.38, 0.66, 1.95, -0.38, 0.04, 0.04, I, 'metal');                 /* the hook rail */
+    for (let i = 0; i < 4; i++) F.box(-0.45 + i * 0.3, 1.7, -0.38, 0.03, 0.24, 0.03, 0, I, 'metal');
+  }
+});
+
+/* ---------------- the court's books and pictures (the owner, 2026-10-19). Drawn here as plain blocks and a plain canvas;
+   a page that binds the court sets (core/materials/patterns/court: books-a, books-b, painting-1..8) lays the spines on
+   the shelves and a painting in the frame (settlements/iziz/src/95i-iziz-interiors.js, COURT_DECALS). */
+FURN({
+  key: 'iziz_court_library_shelves', name: 'Mahogany library shelves', culture: 'iziz', tier: 'court', type: 'shelf', setting: 'indoor',
+  rooms: ['library', 'study', 'hall', 'antechamber', 'bedroom'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'gold', 'cloth'],
+  w: 1.6, d: 0.42, h: 2.4, variants: 1,
+  build: function (F) {
+    const m = F.col('mahoganyRed'), d = F.col('mahoganyDark'), g = F.col('gilt');
+    F.box(0, 0, -0.18, 1.6, 2.3, 0.06, 0, d, 'wood');                                    /* the back */
+    for (const s of [-1, 1]) F.box(s * 0.77, 0, 0, 0.06, 2.3, 0.42, 0, m, 'wood');      /* the sides */
+    F.box(0, 0, 0, 1.6, 0.1, 0.42, 0, d, 'wood');                                        /* the plinth */
+    for (let k = 0; k < 5; k++) F.box(0, 0.1 + k * 0.52, 0, 1.48, 0.04, 0.4, 0, m, 'wood');   /* the shelves */
+    for (let k = 0; k < 4; k++) F.box(0, 0.14 + k * 0.52, -0.02, 1.46, 0.4, 0.3, 0, F.col('mahoganyLight'), 'cloth');   /* the books (spines laid on by the page) */
+    F.box(0, 2.24, 0, 1.6, 0.1, 0.42, 0, g, 'gold');                                     /* the gilt cornice */
+  }
+});
+
+FURN({
+  key: 'iziz_court_painting', name: 'Painting in a gilt frame', culture: 'iziz', tier: 'court', type: 'art', setting: 'indoor',
+  rooms: ['hall', 'living', 'study', 'antechamber', 'library', 'bedroom', 'shrine'], anchor: 'wall', clearance: { front: 0.4 },
+  materials: ['gold', 'cloth'],
+  w: 1.3, d: 0.1, h: 2.4, variants: 1,
+  build: function (F) {
+    const g = F.col('gilt');
+    F.box(0, 1.36, -0.03, 1.14, 0.88, 0.03, 0, F.col('clothCream'), 'cloth');             /* the canvas (painted by the page) */
+    F.box(0, 1.28, -0.02, 1.3, 0.08, 0.06, 0, g, 'gold'); F.box(0, 2.24, -0.02, 1.3, 0.08, 0.06, 0, g, 'gold');
+    for (const s of [-1, 1]) F.box(s * 0.61, 1.28, -0.02, 0.08, 1.04, 0.06, 0, g, 'gold');   /* the frame */
+  }
+});
+

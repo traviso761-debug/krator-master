@@ -198,4 +198,63 @@ NHL.buildFloor=function(R,q,box){
  BIO.grid(85,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)>1200)return 0;const Z=zones(x,z);return (Z.temperate*.75+Z.montane*.5+Z.oldwood*.4+Z.boreal*.2)*(1-Z.rip)*q;},(x,y,z)=>{const c=BIO.field('cold',x,z);for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,c))break;},{patch:0,pad:2,box});
  BIO.range=null;
  return{under:st};};
+
+// ---------------------------------------------------------------- the new flora (HANDOFF-FLORA.md)
+// Epiphytes on the hero trees, then the new floor plants: each block on its own seed, after the floor, so nothing above
+// moves and a later block never moves an earlier one
+const COLLARED=['greatspruce','cathedralcedar','shadowhemlock','silverfir','forestlime','bluebeech','mossmaple','mountainmaple'],STAGHORNED=['forestlime','bluebeech','mossmaple','mountainmaple'];
+// a straight bole's radius at height fraction u, as B.conifer and B.broad draw it (single-stemmed species only)
+function boleR(T,S,u){const f=S.form||{};return S.habit==='conifer'?T.rb*(1-.84*u)*(1+(f.buttress||0)*.45*Math.exp(-u*T.H/3)):T.rb*(1-.6*u)*(1+(f.roots?.6:.35)*Math.exp(-u*T.H/2.5));}
+// a CROWN FERN: a vase of eight to fourteen upright lady-fern fronds, one to two metres
+function crownFern(x,y,z,lv){const hc=vary(pick(PAL.fern),.03,.1,.06).lerp(C(0x7aa040),.2),n=lv===2?ri(7,11):5,a0=rr(0,TAU);
+ for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.2,.2),L=rr(1,2);BIO.put('lady',[x,y-.1,z],qEuler(rr(-.12,.12),-a,rr(.95,1.3)),[L,L*rr(.85,1.05),L*rr(1.1,1.4)],bright(hc,rr(1.4,1.7)));}}
+// the moss cushion's own lumps (50, G.cushion), to set a spore pin on a hummock's top cap where the facets are
+const lump=(x,y,z)=>1+.08*Math.sin(x*5.1+z*3.3)*Math.cos(y*4.7+x*1.9)+.05*Math.sin(z*7.3-y*5.2);
+function moundPt(cx,cy,cz,R,h,ry,lx,lz){const d=Math.hypot(lx,lz),uy=1-(1-.884)*Math.min(1,d/.468),k=lump(lx,uy,lz),sx=lx*k*R,sz=lz*k*R,c=Math.cos(ry),s=Math.sin(ry);
+ return[cx+sx*c+sz*s,cy+uy*k*h,cz-sx*s+sz*c];}
+NHL.buildNewFlora=function(R,q,box){q=q==null?1:q;R=R||3300;means();
+ const st={sleeves:0,staghorns:0,crownferns:0,fernsea:0,hummocks:0,wheels:0,lamps:0};
+ const HUM=NHL.HUMMOCKS=[];   // the near band's hummocks (the preset views find them)
+ const O=BIO.host.origin,nearest=(x,z)=>{let b=0,bd=1e18;for(let i=0;i<O.length;i++){const d=(x-O[i][0])**2+(z-O[i][1])**2;if(d<bd){bd=d;b=i;}}return b;};
+ // the floor's LOD bands (buildFloor): lv 2 near, lv 1 mid; each origin plants the cells nearest it
+ function bands(lvs,cell,w,fn){[[5.6,320,0],[13,900,320]].forEach((b,bi)=>{const lv=2-bi;if(lvs.indexOf(lv)<0)return;O.forEach((o,oi)=>{
+  BIO.grid(cell==null?b[0]:cell[bi],0,1e9,(x,z)=>{if(nearest(x,z)!==oi)return 0;const ld=Math.hypot(x-o[0],z-o[1]);if(ld>=b[1]||ld<b[2])return 0;const v=w(zones(x,z));return v>0?v*q:0;},
+   (x,y,z)=>{if(!okGround(x,z,.8))return;fn(x,y,z,lv,zones(x,z));},{patch:.7,patchScale:.014,pad:.6,center:[0,0],box:[o[0]-b[1],o[1]-b[1],o[0]+b[1],o[1]+b[1]]});});});}
+ // MOSS COLLARS AND STAGHORNS on the straight boles of the temperate hero trees (they belong to the trees: the tree's range)
+ reseed(610031);BIO.range=NHL.LOD.tree;
+ NHL.TREES.forEach(T=>{if(T.lv!==2)return;const S=NHL.SPECIES[T.sp];if(COLLARED.indexOf(S.key)<0||zones(T.x,T.z).temperate<=.5)return;
+  const top=S.habit==='conifer'?.35:Math.min(.35,S.form.hB*.8);BIO.owner=[T.x,T.z];
+  if(rng()<.55*T.wet)for(let c=0,m=ri(1,3);c<m;c++){const u=rr(.03,top),Rc=boleR(T,S,u)*rr(1.04,1.15);   /* hugging the bole: a fat collar, not a plate */
+   BIO.put('cushion',[T.x,T.y0+u*T.H,T.z],qEuler(0,rr(0,TAU),0),[Rc,rr(.8,1.4),Rc],bright(vary(pick(PAL.moss),.03,.08,.05),1));st.sleeves++;}
+  if(STAGHORNED.indexOf(S.key)>=0&&rng()<.18)for(let c=0,m=ri(1,3);c<m;c++){const h=Math.min(rr(2,9),T.H*top*.95),u=h/T.H,r=boleR(T,S,u)+.05,a=rr(0,TAU),ca=Math.cos(a),sa=Math.sin(a),x=T.x+ca*r,y=T.y0+h,z=T.z+sa*r,s=rr(.45,.8);
+   BIO.put('paddle',[x,y-s*.5,z],qEuler(rr(-.1,.1),Math.PI/2-a,0),[s,s,s],bright(vary(C(0xa8c070),.02,.05,.04),1.1),{n:[ca*.8,.4,sa*.8]});
+   for(let k=0,n=ri(5,9);k<n;k++){const L=rr(.5,1.1);BIO.put('staghorn',[x+ca*.06,y+rr(-.1,.1),z+sa*.06],qEuler(rr(-.3,.3),-(a+rr(-.75,.75)),rr(-.95,-.2)),NHL.LIB.staghorn?[L,L*rr(.85,1.05),L*.65*rr(.85,1.1)]:[L,L*rr(.85,1.05),L*rr(.8,1.1)],leafCol([0x7aa040,0x88ac48,0x6e9638],1.2,.02));}
+   st.staghorns++;}});
+ BIO.owner=null;BIO.range=NHL.LOD.floor;
+ // CROWN FERNS: upright vases in the gullies and on the banks
+ reseed(610032);
+ bands([2,1],null,Z=>(Z.rip*.5+Z.temperate*Z.mist*.25+Z.temperate*.06)*(1-Z.alpine),(x,y,z,lv)=>{crownFern(x,y,z,lv);st.crownferns++;});
+ // THE FERN SEA: a sword-fern carpet where the canopy closes low down. The triangle hog: near band only, and a 5 m cell
+ // (the 3 m of the plan held 9.8 M triangles of fronds) with big ferns, a second in two cells of five
+ reseed(610033);
+ bands([2],[5],Z=>Z.temperate*Z.low*(1-Z.glade)*(1-Z.rip)*smooth(.5,.8,Z.wet),(x,y,z,lv)=>{swordFern(x,y,z,lv,rr(1.1,1.4));if(rng()<.4)swordFern(x+rr(-1.6,1.6),y,z+rr(-1.6,1.6),lv,rr(.9,1.2));st.fernsea++;});
+ // MOSS HUMMOCKS: rolling mounds 1-4 m across in touching groups, a moss apron round each; SPORE LAMPS on about one in seven
+ // (the plan's two in five, ten to forty pins each, held 2.6 M triangles)
+ reseed(610034);
+ bands([2,1],[8,10],Z=>(Z.temperate*Z.low*Z.mist*.6+Z.oldwood*.3)*smooth(.55,.8,Z.wet)*(1-Z.rip)*.6,(x,y,z,lv)=>{let px=x,pz=z,pr=0;
+  for(let i=0,n=lv===2?ri(3,9):ri(1,3);i<n;i++){const Rm=rr(.5,2),a=rr(0,TAU);if(i){px+=Math.cos(a)*(pr+Rm)*.8;pz+=Math.sin(a)*(pr+Rm)*.8;}pr=Rm;
+   if(BIO.depth(px,pz)>-.1||!okGround(px,pz,Rm*.6))continue;
+   const hm=Math.min(rr(.4,1.5),Rm*.9),ry=rr(0,TAU),gy=Y(px,pz)-.1;
+   BIO.put('cushion',[px,gy,pz],qEuler(0,ry,0),[Rm,hm,Rm],bright(vary(pick(PAL.moss),.03,.08,.06),rr(.95,1.2)));st.hummocks++;
+   if(lv===2){mossMat(px,Y(px,pz),pz,Rm*1.4);const lamp=rng()<.15;HUM.push({x:px,y:gy+hm,z:pz,r:Rm,lamp});
+    if(lamp){BIO.range=Math.min(NHL.LOD.floor,NHL.LOD.glow);
+     for(let p=0,m=ri(8,22);p<m;p++){const la=rr(0,TAU),ld=.42*Math.sqrt(rng()),pt=moundPt(px,gy,pz,Rm,hm,ry,Math.cos(la)*ld,Math.sin(la)*ld),hp=rr(.02,.06);
+      BIO.put('sporepin',[pt[0],pt[1]-.01,pt[2]],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[hp*.8,hp,hp*.8],bright(vary(C(0xc8e060),.02,.06,.05),1.1));st.lamps++;}
+     BIO.range=NHL.LOD.floor;}}}});
+ // SUN-WHEELS: flat rosettes of perfect leaf wheels on the moss under the canopy (alien)
+ reseed(610035);
+ bands([2],null,Z=>Z.temperate*(1-Z.glade)*(1-Z.rip)*.04,(x,y,z)=>{for(let i=0,n=ri(1,4);i<n;i++){const a=rr(0,TAU),d=i?rr(.3,1.5):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
+  BIO.put('wheel',[px,Y(px,pz)+.02,pz],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),rr(.3,.8),leafCol([0xa8d048,0x9ac040,0xb4d850],1,.02));st.wheels++;}});
+ BIO.range=null;
+ return{newflora:st};};
 })();

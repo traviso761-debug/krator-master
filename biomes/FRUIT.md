@@ -11,6 +11,8 @@ home: a sawn round, a handful of seeds, a jar.
 
 Where a species has no fruit drawn yet, this note says so ("not drawn").
 
+> **New crops, fibres and dyes (2026-10-18):** proposals for every biome that lacked a native crop, fruit tree, fibre or dye, with where else each could grow and whether it needs irrigation, are in `kits/crops` (the Crops kit: `PLAN.md`, `FIBRE.md`, `DYES.md`). It is the home for crops that no one biome owns; this file stays the list of what each biome kit draws.
+
 ## To do: put the fruit in the biomes
 
 Done 2026-10-06 for all twelve biome kits: every species carries a harvest tag naming its catalog fruit (`<KIT>.HARVEST`, ebadlands'
@@ -89,6 +91,19 @@ chalk, mahogany nuts, silkpods and pandan keys from the catalog (`STALL_FRUIT`, 
 | Gatepod | `baobab` (orange velvet pods, also in `swbay`) | The pods hang 4 to 14 m and are sawn into rounds. The chalky cream pulp around the seeds dries into sweet-sour "gatepod chalk" blocks that keep for a year. | `generic_fruit_gatepod` |
 | Mahogany nut | `mahogany` (woody capsules in twos and threes) | A five-valved capsule that splits to release winged seeds. The seeds are oily and roasted, and eaten wing and all. | `generic_fruit_mahogany_nut` |
 | Silkpod | `kapok` (the burst silk pods) | Young green pods are cooked like beans. A ripe pod bursts into cream floss with black seeds, and the seeds are pressed for oil. | `generic_fruit_silkpod` |
+
+## North-eastern Canyons (necanyons)
+
+**Drawn in the kit (2026-10-19).** Every species and plant carries a harvest tag (`NECANYONS.HARVEST`, `NECANYONS.PLANTS`;
+the inspector shows it, the probe checks it, `biomes/necanyons/PLAN.md` section 3). The figs and plums are placed by a
+hash of the tree. Named in the tags, not catalogued: the fan palm's heart (a vegetable), sandpan fonio (a grain), the sun
+pitcher's nectar. The crops are records in `kits/crops` too: `stack-fig`, `ember-plum` (also `medicine`), `sandpan-fonio`,
+`fan-palm-heart`, `rimdew` (the first of the `medicine` bucket).
+
+| Fruit | Borne by | What it is | Catalog key |
+|---|---|---|---|
+| Stack figs | `stackfig` (clusters on the limbs and on the roots laced down the wall) | A rock fig's purple-red figs, eaten fresh or dried on strings: the canyons' fruit. | `generic_fruit_stack_fig` |
+| Ember plums | `emberplum` (green-gold plums under the big pale leaves) | The Kakadu plum's kin: very sour, dried and pounded to a powder against scurvy. | `generic_fruit_ember_plum` |
 
 ## North-west Bay
 
@@ -214,3 +229,24 @@ tagged, catalogued and drawn" check finds every fruit below on the stage. `settl
 
 The prickly pear's tunas and the lantern tree's fruit are listed above. The baneberry is poisonous
 and has no entry, and the Wollemi pine's cones are not food.
+
+## The Oidong Valley
+
+**Drawn in the kit (2026-10-19).** Every species and floor plant carries a harvest tag (`OIDONG.HARVEST`, `OIDONG.PLANTS` in
+`biomes/oidong/src/50-biome-oidong-species.js`), and the inspector shows it, with the `holy` mark on the monks' sacred
+plants. The giant lotus bears basin-sized seed heads on its flower stalks (item `giantpod`), the cherries hang in the blossom
+and the small purple figs under the sacred fig's leaves (two trees in three bearing, item `ball`), the bell-pod willow's bead
+strings are its fruit (item `beads`), and the ordinary lotus on the pools carries the green seed heads (item `lotuspod`, as
+Xanadu's). The probe's "fruit tagged, catalogued and drawn" check finds every item on the stage. Medicinal plants and reagents are
+common here (the owner): they are crop records in `kits/crops` (`22-crop-material.js`, home `oidong`) and in `MEDICINE-FUEL.md`.
+
+| Fruit | Borne by | What it is | Catalog key |
+|---|---|---|---|
+| Lotus seeds | `giantlotus` (a seed head the size of a basin on a flower stalk), the lotus floor plant | Shared with Xanadu: the fresh seeds are sweet; the giant's are dried for the winter, and the root is the valley's staple starch. | `generic_fruit_lotus_seed` |
+| Valley cherries | `cherry` (dark red among the blossom) | Cherries in early summer, eaten from the sprig or by the bowl; the stones are kept for the monks' counting strings. | `generic_fruit_cherry` |
+| Sacred figs | `bodhi` (small purple figs under the heart leaves) | Small figs served on one of the tree's own leaves, or halved; the tree is never felled. | `generic_fruit_bodhi_fig` |
+| Bell-pod beads | `bellpod` (strings of pale green beads, a coral bell at the end of each) | The beads are sweet, eaten fresh or dried like raisins; the dried bells are the monks' sleeping draught and a reagent of their stillness rites: never more than one. | `generic_fruit_bell_pod` |
+
+Named in the tags, not catalogued: bamboo shoots, the chalice cap's water, the lotus trumpet's fringe petals, the paper maple's
+syrup, the mist tea, the moon caps, the fiddleheads. The peyote buttons, the sky poppy, the snow lotus, the valley ginseng and
+the monk's sage are medicine and reagents, not food (`kits/crops`).

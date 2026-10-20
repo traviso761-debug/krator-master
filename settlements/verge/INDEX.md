@@ -26,10 +26,10 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `45-verge-stage.js` | 10 | the climate fields (34); the flora mask (reserve before you build) (89); the host binding (109) |
 | `46-verge-ground.js` | 11 |  |
 | `47-verge-water.js` | 12 | the cataracts (65) |
-| `70-verge-place.js` | 34 **big** | the kits' catalogue (24); a city's raster (30); streets (101); districts and what grows in them (130); the back lots (165); the trailheads: a plaza, the toll gate and palis (176); UPPER VERGE (194); the funicular's plan (the Ancients kit, kits/anc (195); LOWER VERGE (244); spill: houses beside the trail's first (or last) (283) |
+| `70-verge-place.js` | 33 **big** | the kits' catalogue (25); a city's raster (31); streets (102); districts and what grows in them (107); the streets and lots: core/city, one instance a  (120); the trailheads: a plaza, the toll gate and palis (199); UPPER VERGE (217); the funicular's plan (the Ancients kit, kits/anc (218); LOWER VERGE (254); spill: houses beside the trail's first (or last) (281) |
 | `71-verge-furnish.js` | 5 |  |
 | `72-verge-buildings.js` | 7 |  |
-| `74-verge-sim.js` | 45 **big** | factions and organisations (28); places, from what was placed (60); slots: one body each, reserved in time (79); NAV: one graph (117); A* over the graph (176); cross-country: a coarse grid per level (203); the timetable's groups (222); the citizens (rambling pedestrians) (329); a group member's pose: a FUNCTION OF TIME (358); the checks the probe runs (data only) (394) |
+| `74-verge-sim.js` | 46 **big** | factions and organisations (31); places, from what was placed (63); slots: one body each, reserved in time (82); NAV: one graph (120); A* over the graph (179); cross-country: a coarse grid per level (206); the timetable's groups (225); the citizens (rambling pedestrians) (332); a group member's pose: a FUNCTION OF TIME (361); the checks the probe runs (data only) (397) |
 | `77-verge-rigs.js` | 30 | colour (sRGB hex in, linear out, cached) (41); geometry: parts merged into one indexed geometry (46); the material: vertex colour x mix(A, B, tw) (115); matrices (reused; no allocation per frame) (122); the pool: InstancedMeshes sharing instance i (132) |
 | `78-verge-life.js` | 5 |  |
 | `80-verge-skyhost.js` | 6 | the baked horizon dome (layer 0 of the sky) (17); the sun's glare and the two small moons (81 adop (49) |
@@ -37,6 +37,6 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `82-verge-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `87-verge-views.js` | 4 |  |
 | `88-verge-build.js` | 1 |  |
-| `91-verge-probe.js` | 11 | the checks, each a pure function of its inputs (7); the export (for godot/: the verge case) (76) |
+| `91-verge-probe.js` | 12 | the checks, each a pure function of its inputs (7); the export (for godot/: the verge case) (90) |
 | `99-start.js` | 8 | the inspector's words where no record holds the  (23); the ticks, after the camera (as 90-verge-camera. (38); the sky and the light, on the one clock, after t (43); the page, handed to the host (53) |
 | `99-tail.html` | <1 |  |

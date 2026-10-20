@@ -38,7 +38,7 @@ function locfVetoed(r){
   return false;
 }
 var LOCF = KFURN.create(Object.assign(KFURN.flags(false), {
-  catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors,
+  catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors, walk: KWALK,
   tags: (KTAGS.page = KTAGS.page || KTAGS.create({ build:'locus' })),   /* every piece registered in core/tags (core/tags/README.md); the sites are already there (45-kit.js REGISTER) */
   seed: function(o, ctx, R, x, y, z, loc){ return (((ctx.frame.seed||1)*37+Math.round(loc[0]*11+loc[2]*17)+997)&0xffff); },
   onRecord: function(rec, ctx){

@@ -39,6 +39,8 @@ MAT.pkPave=new THREE.MeshStandardMaterial({map:TEX.pkPave,color:0xd2ccc2,roughne
 MAT.pkPaveR=new THREE.MeshStandardMaterial({map:TEX.pkPaveR,color:0xa89e90,roughness:1,metalness:0,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4});
 MAT.pkCont=new THREE.MeshStandardMaterial({map:TEX.pkRib,color:0xffffff,roughness:.62,metalness:.28});
 MAT.pkContR=new THREE.MeshStandardMaterial({map:TEX.pkRibR,color:0xffffff,roughness:.85,metalness:.2});
+/* pkContL: the library's weathered rust-red container wall (patterns/common/container-red), full colour, for a share of the rusty containers; the ribbed rust map stands in under ?mat=proc */
+MAT.pkContL=new THREE.MeshStandardMaterial({map:TEX.pkRibR,color:0xffffff,roughness:.85,metalness:.2});
 MAT.pkIron=new THREE.MeshStandardMaterial({color:0x2c2e32,roughness:.55,metalness:.45});
 MAT.pkRubber=new THREE.MeshStandardMaterial({color:0x1a1a1b,roughness:.9,metalness:0});
 MAT.pkPaint=new THREE.MeshStandardMaterial({color:0xe9e8e4,roughness:.42,metalness:.3});      // painted white steel
@@ -58,6 +60,7 @@ function pkBoxB(w,h,dp,tile){return boxUV(w,h,dp,tile).translate(0,h/2,0);}    /
 // ISO containers, length along local +x: 20 ft 6.06 x 2.59 x 2.44, 40 ft 12.19.
 kdef('pkCont20',pkBoxB(6.06,2.59,2.44,3),MAT.pkCont);kdef('pkCont40',pkBoxB(12.19,2.59,2.44,3),MAT.pkCont);
 kdef('pkCont20R',pkBoxB(6.06,2.59,2.44,3),MAT.pkContR);kdef('pkCont40R',pkBoxB(12.19,2.59,2.44,3),MAT.pkContR);
+kdef('pkCont20L',pkBoxB(6.06,2.59,2.44,3),MAT.pkContL);kdef('pkCont40L',pkBoxB(12.19,2.59,2.44,3),MAT.pkContL);
 // cast-iron mooring bollard, 0.8 m, mushroom head
 kdef('pkBollard',new THREE.LatheGeometry([[0,0],[.3,0],[.26,.08],[.2,.5],[.24,.58],[.36,.64],[.36,.74],[.2,.8],[0,.8]].map(p=>new THREE.Vector2(p[0],p[1])),10),MAT.pkIron);
 // cylindrical rubber fender, hangs from its top, 1 m per unit y

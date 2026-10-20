@@ -248,8 +248,17 @@ module is on the page) and without `core/edits` (no editor world yet): their cam
 from +z), so `src/92-camera.js` keeps only `ui`, `uiButton`, `setView` and the Labels button, and `src/99-start.js` is the take
 (`FRAME_HOOKS` as before, `f(dt, ms)`, in a tick subscriber; the showcase sky after the camera). Iziz's records are its full
 registry (`91t-iziz-tags.js`); Highlands adds its sites to the furniture's registry (`91h-hl-tags.js`). The vernacular sheet,
-the city and the Highlands rows match the old pages' scene census exactly; Roketstad within its own run-to-run noise. The
-builds that vendor that camera (Dalab, Xanadu, Reed Lake) keep the old one until step 5 (their `KNOWN_ISSUES.md`).
+the city and the Highlands rows match the old pages' scene census exactly; Roketstad within its own run-to-run noise. Of the
+builds that vendor that camera, Xanadu and Reed Lake keep the old one until their turn in step 5 (their `KNOWN_ISSUES.md`).
+
+**Dalab** (2026-10-15, step 5, the first of its list) takes the same set as Iziz (`FULL` without `core/space` and `core/edits`),
+both pages: the kit's set and the settlement. `src/92-camera.js` and `src/00-head.html` are re-vendored from Iziz, `src/99-start.js`
+is the take (`FRAME_HOOKS` in a tick subscriber; a preset's seventh element, its hour, set by `onView`), `src/91t-dalab-tags.js`
+reads its registry into core/tags (98 records on the set, 3,377 on the city; `dalab` is not a core/tags culture yet, so culture
+null and style `dalab`), and `94-dalab-light.js` no longer sets a walk speed (the host's 9 m/s is the one it had). Proof:
+`verify.py --assert` the same six invariants on both pages; the scene census at four views identical on the set and, with
+core/lod's time-budgeted proxy queue flushed, on the city (`settlements/dalab/KNOWN_ISSUES.md`). Its one tick (the salvage
+fire flicker) is not handed over, as the old camera never ran it either.
 
 **Fauna mode and the ground brushes** (2026-10-15, step 4), first on **Sedesert** (the one build with a `KFIELD`): 98 gains a
 *fauna* mode (palette items with `cls: 'life'`: Sedesert offers `kits/fauna`'s desert group, its own animals first; each put
@@ -262,6 +271,16 @@ ground; undo, a move or a removal of a stroke replays the strokes left from a sn
 commute). Proof on Sedesert: the scene census unchanged at four views; a deer placed, animated, re-seated by a stroke; a drag
 of twelve moves nine strokes and no orbit; every stroke undone, the field equals the baked heights bit for bit. Next: step 5
 (the rest), step 6 (Voth).
+
+**The Scyvoi engine and its seven kits** (2026-10-18, step 5's kit sheets, the first family) take `SHELL` plus
+`94-host-polytool.js`: `kits/scyvoi`, `islanders`, `lizardmen`, `resources`, `zeijani`, `desert-nomads` and `ash-nomads`. The
+engine's own camera and probe (`92-camera.js`, `91-probe.js`) are retired; `92-world.js` and `99-host-take.js` replace them
+(vendored by four kits, read in place by Resources, Zeijani's own with the walk registry). The engine's frame work (its
+`FRAME_HOOKS`, the sun and sky camera, core/atmos) runs in a `'view'` subscriber and its two-pass sky draw through `draw`. A
+take that lists the probe must sort after `95-host-probe.js`, which is why the take is `99-host-take.js`. Proof: every
+`verify.py --assert` unchanged, chrome-hidden shots identical to the old pages' (bar the night's flicker and Islanders'
+animated sea), the hash baseline moved for those seven pages only. What the engine had and the host lacks:
+`kits/scyvoi/KNOWN_ISSUES.md`, "Host port".
 
 **Voth's city plan** (2026-10-15 and 2026-10-16, steps 6a and 6b) takes the whole interface, its tools included: the
 cantons and the lot buildings in view in the cutaway, its own ray picks in the inspector (`o.inspectRay`), its painted

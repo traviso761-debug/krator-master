@@ -25,8 +25,9 @@ EXPORT.register(section, fn, {by})   -> unregister(). fn(ctx) returns the part, 
                                         Registering the same (section, by) again replaces it.
 EXPORT.world({box?, sections?, build?, ...opt}) -> the container. box [x0, z0, x1, z1] is a tile; sections the names to
                                         fill (an unknown name throws); everything else reaches each contributor as ctx.opt
-EXPORT.check(world, {uid?})          -> {ok, problems, joins}: every reference resolves (below); uid(cls, key, [x,y,z])
-                                        recomputes each instance's uid from its matrix
+EXPORT.check(world, {uid?, profile?}) -> {ok, problems, joins}: every reference resolves (below); uid(cls, key, [x,y,z])
+                                        recomputes each instance's uid from its matrix; profile: the sections the case
+                                        must fill ("Profiles" below); without one the statuses are not judged
 EXPORT.glb(world)                    -> {json, glb: Uint8Array, stats}: the meshes as binary glTF, the rest as JSON
 EXPORT.terrain(box, {h, water?, field?, step?, probes?}) -> a terrain section from a build's ground
 EXPORT.groundLayers(spec)            -> a ground's world-space layers as one material record and its maps ("Ground
@@ -67,6 +68,25 @@ uv as three holds them, sampled at `uv * repeat + offset`, `flipY` true putting 
 linear for instances, vertices and materials (three's working values as hex: do not convert), sRGB for texture images
 and the atmosphere; typed arrays `{type, n, b64}` (little-endian bytes); ids as core/tags makes them; the box rule
 (an instance by its origin, `x0 <= x < x1`; a bucket piece by its foot).
+
+#### LOD
+
+`convention.lod = {cell: 150, widen: 'half-diagonal', copies: 'none'}` is the one declared LOD policy (ROADMAP.md
+section 11 item 4; GODOT-PLAN.md finding 16).
+
+- **What a page exports.** No LOD render copies: `core/lod`'s `extras.lodCopy` meshes are skipped, so the glTF holds each
+  original once. A record that three draws in LOD chunks carries `lod: {chunk, range, minRange}` in the JSON form.
+- **What Godot does.** Visibility is measured from a node's point, three's from the chunk's box, so the importer splits
+  each LOD-chunked item (instances by position) and bucket (connected pieces by centroid) into `cell`-metre cells, one
+  node per cell at its centre, and widens `range` (and narrows `minRange`) by the cell's half-diagonal, `cell * 0.7071`
+  (106 m at 150). A 300 m tile then thins cell by cell instead of all at once. `krator/biome_import.gd` reads
+  `convention.lod.cell` (`KratorBiome.policy_cell`) and falls back to its `CELL` constant, 150, for an older export or
+  the krator-biome JSON route, whose convention has no `lod` entry. `world_import.gd` places whole chunks and keeps the
+  chunk's own widening.
+- **Changing it.** A case sets `lod.cell` in the convention (a smaller cell gives smoother thinning and more nodes: the
+  rift tile is 175 item nodes and 47 bucket nodes over 12 cells at 150, 607 and 119 over 28 at 75). A change to the
+  default is a change to `07-core-export.js`, so every page that lists it rebuilds. `godot/tests/export/world_test.gd`
+  asserts the entry on the sedesert case and the rift counts at both cells.
 
 ### The sections
 
@@ -172,14 +192,22 @@ grid points as the page interpolates its per-vertex weights.
 ### Stubs: the written contracts
 
 A contributor meets this shape (`EXPORT.CONTRACTS`). Since M5, Iziz fills `fixtures` and `furniture` and answers
-`interiors` (below, "Iziz"); for every other build they are still stubs:
+`interiors` (below, "Iziz"); since 2026-10-18 Yuni fills `fixtures` and `interiors` (below, "Yuni" and "Interiors":
+the first room graph through the container); for every other build they are still stubs:
 
 - **`fixtures`**: doors, windows, lights and signs as core/tags records, each with its placement on its host wall
   (Yuni's `KRATOR_EXPORT.fixtures` shape): `{format: 'krator-fixtures', records: [{id, uid, class: 'fixture', kind,
-  parent, at, ry, size, tags, host: {wall, side, sill}}]}`. First taker: Yuni, then Iziz for M5.
-- **`interiors`**: the room graph (`kits/interiors` `ROOM()`): `{format: 'krator-interiors', buildings: [{id (the
-  building's record), storeys: [{y, rooms: [{id, kind, poly, h, doors}]}], links: [{a, b, kind: 'door' | 'stair' |
-  'ladder', at}], walls: [{a, b, h, col: true}]}]}`.
+  parent, at, ry, size, tags, host: {wall, side, sill}}]}`. Filled by Iziz (M5) and by Yuni
+  (`settlements/yuni/src/77-export.js`: the records `51-fixtures.js` makes, with `host.wall` the shell wall of the
+  interior plan that holds the opening, where the building has a plan).
+- **`interiors`**: the room graph (`kits/interiors` `ROOM()`), building-local: `{format: 'krator-interiors',
+  buildings: [{id (the building's record), storeys: [{y, rooms: [{id, kind, poly, h, doors: [ids]}]}], links: [{id, a,
+  b, kind: 'door' | 'stair' | 'ladder', at, from, to}], walls: [{id, a, b, h, col: true}], yard?: {y, poly}}]}`. A
+  room's door id is a record of the `fixtures` section (an exterior door) or the id of one of its building's links (an
+  interior door); a link's `a` and `b` are room ids, or `outside` or `court` past an exterior door. `EXPORT.check`
+  joins both (`joins.interiorsDoorsResolved` of `interiorsDoorRefs`) and requires each building in the registry.
+  Filled by Yuni (below, "Interiors") and by a kit's sheet on Iziz's page (below, "The sheet's interiors"); Iziz's
+  city answers it empty (its buildings are shells).
 - **`furniture`**: GODOT-PLAN.md Phase 4's per-look scheme: `{format: 'krator-furniture', pieces: [{id:
   '<piece>/<variant>/<look>', entry: {tags, anchor, size, role, job, family per material}, lights, mesh (a glb node)}],
   placements: [{record (a core/tags furniture id), piece, at, ry}]}`. A placement's seed is reduced to one of K looks
@@ -188,10 +216,10 @@ A contributor meets this shape (`EXPORT.CONTRACTS`). Since M5, Iziz fills `fixtu
   the indexed furniture batch (`wip/furniture-indexed`).
 - **`sim`**: core/simulation's export (`krator-sim`: places, actors, schedules, routes, the clock). Verge and Dhelv
   write theirs through their verify (`godot/data/verge`, `godot/data/dhelv`) until they register here.
-- **`city`**: **owned by the Voth branch** (`core/city`, `settlements/voth`); this branch leaves only the
-  registration point. Expected: `{format: 'krator-city', plan (streets, blocks, lots as plain records keyed by stable
-  ids), edits (krator-edits/1 deltas by id)}`; its buildings and doors join the registry by id. `core/city` registers
-  with `EXPORT.register('city', fn, {by: 'city'})` when that branch pauses.
+- **`city`**: `core/city`'s; only the registration point is here. Expected: `{format: 'krator-city', plan (streets,
+  blocks, lots as plain records keyed by stable ids), edits (krator-edits/1 deltas by id)}`; its buildings and doors
+  join the registry by id. `core/city` registers with `EXPORT.register('city', fn, {by: 'city'})` for the isle demo's
+  two plans (M6, `ROADMAP.md` section 11).
 
 ## Files: JSON and glTF
 
@@ -220,7 +248,61 @@ loads the page headless (the shared harness's Chromium; `godot/tools/stage_hook.
 `window._ready` and for the library maps to decode, calls `EXPORT.world` and `EXPORT.check` (with `KTAGS.uid`), and writes
 `world.json`, `world.glb`, the library packs the textures name (`tex/`: `pack.json` and the files used) and
 `meta.json`. `--json` writes one `world.json` with the meshes inline; `--sections a,b` exports some; `--sky 0` leaves the
-panorama out. It exits 1 when the page is not ready or dirty, a section reported an error, or a join failed.
+panorama out; `--profile a,b,c` judges the statuses against a profile (below). It exits 1 when the page is not ready or
+dirty, a section reported an error, a join failed, or the profile is not met.
+
+## Profiles (ROADMAP.md section 11, item 1)
+
+A world file could pass `EXPORT.check` with no interiors, furniture or citizens: nothing said which sections a case
+must have. A **profile** is that list. `EXPORT.check(world, {profile: [...]})` takes section names, each optionally
+qualified: `terrain=field` requires the part's `source` to be `field` (a `krator-field`, not sampled heights);
+`interiors?` lets the section read `empty` (its contributors ran and had nothing). A required section that reads
+`stub`, `none`, `error` or `skipped` (or `empty` without the `?`) is a problem and `ok` is false; `joins.profile`
+counts `{required, met}`. An unknown name throws, as `register` does. Without a profile the statuses are not judged,
+as before 2026-10-18. `test-export.js` has the positive case and the negatives (a stub, empty, none, skipped, sampled
+terrain, an unknown name).
+
+Each must-pass case names its profile in its `verify.py` (`EXPORT_BOX`, `EXPORT_PROFILE`) and checks it under
+`--assert` through the shared `check_profile` (`tools/harness.py`: it waits for the library maps, with `inject=True`
+injects core/export the way `export` does into a page that does not embed it (the Throne), injects
+`44-core-stage.js` where the page lacks it, exports the box with a small sky and prints the statuses); the nightly
+(`tools/test_all.py --nightly`) runs those verifies. `--profile a,b,c` on a verify replaces the list for one run: add
+`sim` to any of them and the run fails on the stub, which is the proof the check bites.
+
+| Case | Box | Profile |
+|---|---|---|
+| sedesert's tile (M4) | `80,490,380,790` | `registry, items, buckets, materials, textures, terrain=field, stage, atmos, water` (its build takes `89-atmos-8-export.js` since 2026-10-18, so `atmos` fills: the clock, wind, presets and skylight) |
+| Iziz's district (M5) | `40,-225,280,15` (the triumphal plaza and its statues: the Godot case's box, `-120,292,120,532`, holds no registered furniture, the gap the profile catches; move the case to this box when it is re-exported) | `registry, items, buckets, materials, textures, terrain, stage, atmos, fixtures, furniture, interiors?` (its buildings are shells; its ground is sampled, ROADMAP.md section 11, item 3) |
+| Yuni (`settlements/yuni/verify.py`, the world page) | `140,-80,340,90` (the Foundry, `bld_00005`: the Godot spike's yuni case, and the street before it) | `registry, fixtures, interiors` (its buildings and fixtures are the core/tags records `51-fixtures.js` makes; `interiors` is the room graph of every planned building in the box, required since 2026-10-18: an empty one fails the run; it contributes no meshes: the page's geometry is not baked into item sets, ROADMAP.md section 11, item 3) |
+| the isle demo (M6; `settlements/isle-demo/PLAN.md` section 7; the city page `dist/isle-city.html`, Kautoa, since 2026-10-19) | `-700,-700,700,700` (Kautoa's ceremonial centre, in the town's frame) | **checked now:** `registry, materials, terrain` (sampled: `EXPORT.ground` on the plan's ground). **The target (`EXPORT_TARGET`, reported by every `--assert` run, `--profile target` to fail on it):** `registry, items, buckets, materials, textures, terrain=field` (the extracted heights, not `EXPORT.ground`'s samples), `city` (two `KCITY` plans, registered by core/city), `fixtures`, `interiors` (the kit's rooms), `furniture` (the catalog placements, by look), `sim` (places, actors, stocks per settlement, the canoe route and its books), `stage`, `atmos` (2 of 13 met on 2026-10-19; each joins the checked list as it lands, so the sim's export is written to it) |
+| crater-drylands (2026-10-18) | `600,-1200,900,-900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| eastabyss (2026-10-18) | `2100,-300,2400,0` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| ebadlands (2026-10-18) | `-300,0,0,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| ehighlands (2026-10-18) | `900,1200,1200,1500` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| geyser (2026-10-18) | `300,0,600,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| hyperjungle (2026-10-18) | `-600,-300,-300,0` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| nhighlands (2026-10-18) | `-1500,-1200,-1200,-900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| nwbay (2026-10-18) | `600,600,900,900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| nwlowlands (2026-10-18) | `-900,-1200,-600,-900` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| rift (2026-10-18) | `300,0,600,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| ringisles (2026-10-18) | `-300,-900,0,-600` | `registry, items, buckets, materials, textures, terrain, stage, water` (sampled terrain; atmos left out, its KNOWN_ISSUES.md) |
+| shighlands (2026-10-18) | `-1800,-900,-1500,-600` | `registry, items, buckets, materials, textures, terrain, stage, atmos` (sampled terrain; water left out, its KNOWN_ISSUES.md) |
+| swbay (2026-10-18) | `0,0,300,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| swlowlands (2026-10-18) | `600,0,900,300` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| xanadu (2026-10-18) | `-300,1800,0,2100` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; atmos, water left out, its KNOWN_ISSUES.md) |
+| the Throne, station 1 (`biomes/throne/dist/throne.html`; 2026-10-18; its eleven pages check through `check_profile(..., inject=True)`: the pages do not embed core/export, below, "Not done"; the table is `EXPORT_STATIONS` in its verify.py) | `-400,40,-100,340` | `registry, items, buckets, materials, textures, terrain, stage` (sampled terrain; water left out: no page is on core/water; atmos left out of every Throne row, `biomes/throne/KNOWN_ISSUES.md`, "Export profile") |
+| the Throne, the kipuka (`throne-kipuka.html`) | `-240,-700,60,-400` | `registry, items, buckets, materials, textures, terrain, stage` |
+| the Throne, the spice frontier (`throne-frontier.html`) | `-560,-400,-260,-100` | `registry, items, buckets, materials, textures, terrain, stage` |
+| the Throne, the geyser isle (`throne-isle.html`) | `-300,-300,0,0` | `registry, items, buckets, materials, textures, terrain, stage` |
+| the Throne, the cloud forest (`throne-cloud.html`) | `-1720,570,-1420,870` | `registry, items, buckets, materials, textures, terrain, stage`; exported with `--sections` of the same (its atmos section throws: the station lists the atmos host without `89-atmos-8-export.js`) |
+| the Throne, the savanna (`throne-savanna.html`) | `-1050,350,-750,650` | `registry, items, buckets, materials, textures, terrain, stage` |
+| the Throne, the ash desert (`throne-ash.html`) | `-350,50,-50,350` | `registry, items, buckets, materials, textures, terrain, stage`; `--sections` the same (atmos throws, as the cloud forest's) |
+| the Throne, vent country (`throne-vents.html`) | `-330,-430,-30,-130` | `registry, items, buckets, materials, textures, terrain, stage`; `--sections` the same (atmos throws) |
+| the Throne, the glacier (`throne-glacier.html`) | `-1800,-600,-1500,-300` | `registry, items, buckets, materials, textures, terrain, stage`; `--sections` the same (atmos throws) |
+| the Throne, the caldera rim (`throne-caldera.html`) | `0,-1500,300,-1200` | `registry, items, buckets?, materials, textures, terrain, stage`; `--sections` the same (atmos throws). No cell of its map holds a bucket: the kit's baked meshes are trees and the summit has none, so `buckets?` |
+| the Throne, the lava tube (`throne-tube.html`) | `-320,-320,-20,-20` | `registry, items, buckets, materials, textures, terrain, stage` (`HEAT.render` draws the shimmer after the scene; the stage's panorama and the terrain read ok, as the caldera's) |
+
+Every other build is preview-only until it names a profile and meets it.
 
 ## Godot
 
@@ -241,7 +323,7 @@ and the stage through `krator/stage.gd`. Node metadata as `biomes/GODOT.md` "Rec
 | | |
 |---|---|
 | the tile | 34 items, 7,280 instances, 3 buckets, 47,471 triangles, 35 materials, 25 textures (18 library maps by reference, 7 PNGs), 116 registry records (of 3,998 on the page): the same counts as the spike's `sedesert` case |
-| files | `world.json` 7.7 MB (the stage's sky and ground look 6.8 MB of it), `world.glb` 2.8 MB, `tex/` 2.0 MB; the legacy `biome.json` of the same tile is 19.7 MB. Compaction dropped 1.31 M, 0.63 M and 0.41 M unused vertices from the three buckets |
+| files | `world.json` 7.7 MB (the stage's sky and ground look 6.8 MB of it), `world.glb` 2.8 MB, `tex/` 2.0 MB; the legacy `biome.json` of the same tile is 19.7 MB. Compaction dropped 1.31 M, 0.63 M and 0.41 M unused vertices from the three buckets. **Since the re-export of 2026-10-18 `world.glb` is 10.2 MB:** the 7.3 MB more are the baked motion tracks (biomes/GODOT.md, "Motion", 2026-10-16: the first export of this case to carry them) on the five moving items, 108 instances (swift 77, deer 5, deer head 5, deer antler 1, deer leg 20), each 1,222 frames (10 Hz over the 120 s loop plus the 2 s fade) of 12 floats, 58.7 kB an instance, in `extras.krator_motion`'s accessors; the meshes and instance arrays are byte for byte the 2.8 MB they were (same 37 nodes, 269 accessors, 47,027 vertices, 142,413 indices, 7,280 TRS rows), `world.json` grew 6 kB (the `atmos` section, filled since the build took `89-atmos-8-export.js`). Not a defect: the glb is where the track travels, and the JSON form stays small because of it |
 | in the page | `EXPORT.check`: 34 of 34 sets resolve, 7,280 uids recomputed from the matrices, 0 differ; 60 of 60 bucket records resolve; 37 material and 27 texture references resolve; no section errors; TRS error 2.3e-7 |
 | in Godot | every one of 7,280 MultiMesh instances carries its uid; each recomputed in GDScript from `world.glb`'s TRANSLATION: 0 mismatches (a 20 cm shift and a one-row misalignment both fail, the negatives); every instance drawn at its record's position (0 m); 60 bucket records resolve, their uids recompute; 47,471 bucket triangles in Godot; every mesh has its material and every named map its image (18 library maps from `tex/` on 15 meshes) |
 | terrain | `KField.h` against the page's own `h` at 256 probes off the lattice: max 2.9e-12 m (tolerance 1e-4 m); rays onto the HeightMapShape3D at 200 lattice points: max 1.6e-4 m (tolerance 1e-2 m); between lattice points the shape's triangles and the field's bilinear cells differ by up to 0.92 m (0.45 m at the probes): the HeightMapShape3D's own triangulation, reported, not a defect of the export |
@@ -330,19 +412,89 @@ both. What differs: beyond the box, the page draws the jungle and the city where
 sprites, additive) and its floating labels are not exported; the gate's passage reads lighter in Godot (the page's deep
 shade there is its own darker interior, not matched by Godot's ambient); the light is a little flatter in Godot.
 
-## Not done
+## A kit's sheet on Iziz's page: Pylon (2026-10-19)
 
-- `sim` and `city` are contracts only; `fixtures`, `interiors` and `furniture` are filled by Iziz alone (no interiors:
-  its buildings are shells, so the section reads `empty`); Yuni's `KRATOR_EXPORT.fixtures` does not register yet.
-- The biome kits and Iziz contribute meshes; Girder's region still goes through `godot/tools/export_spike.py`'s glTF
-  route (its merged furniture batches name no record), and Voth (M6) is the Voth branch's.
-- The registry, atmos and KMAT adapters live here until their modules can be rebuilt with the Voth branch's agreement.
-- The Throne and its ten stations, Verge, little-demo and the settlements that read core/biome in place do not list
-  core/export; the harness injects it for an export.
-- No PNG or EXR height export, no carver floors (core/terrain's own "not yet"). The `water` section carries a page's
-  water only where the page names it to core/water (sedesert's pond, river, cataract and plunge pool since 2026-10-13, and
-  every core/water taker); the other biome hosts' water is still only the grid's `water` and the field's named surfaces.
-- Only sedesert describes its ground layers; the other biome hosts that draw the same layers (swbay, nwlowlands,
-  eastabyss and the rest of `hostGroundLib`'s users) each need one `EXPORT.groundLayers` call. The strata the hosts paint
-  on rock (`35-core-strata.js`) and the cave's occlusion are not described.
-- Fauna stand still in Godot (`anim`, `anim-phase`: the spike's gap, unchanged).
+A kit built on Iziz's page (`settlements/iziz/build.py --kit`, `settlements/iziz/API.md`) exports through the city's
+contributor read in place: `kits/pylon/kit.json` lists `settlements/iziz/targets/city/94-city-export.js` and
+`core/biome/44-core-stage.js` under `external` and `export` in its target's core. The contributor looks a bound material up
+in Iziz's pack first, then in every other pack the page binds (the kit's own, `KMAT.pack('pylon')`); a texture names its
+pack, its id `tex:iziz:<pack>:<family>:<slot>` outside Iziz's (Iziz's own ids, and its export, are unchanged: the district
+above exported before and after differs only in the clock and the sky picture taken at that moment). The harness copies
+each pack as `tex/<pack>.pack.json` with its files side by side, and fails when two packs name one file;
+`world_import.gd` reads a texture's own pack file.
+
+```
+python3 tools/harness.py export kits/pylon/dist/pylon.html --out godot/data/world-pylon --box=-62,964,32,1000
+godot --headless --path godot --script res://tests/export/iziz_test.gd -- --case=world-pylon --sheet
+```
+
+The box is the sheet's industry mixed street (the Vernacular's smithy and salvage yard beside Pylon's workshop and smelter;
+the workshop furnished): 88 items (34 of the kit, 54 furniture items: 21 pieces of 22 placements), 880 instances, no
+buckets (the box's only plain meshes were the furniture), 27 textures (24 of Iziz's pack, 3 of Pylon's), the interiors of
+2 buildings (4 rooms, 4 links); `world.glb` 1.6 MB. `--sheet` lets atmos be empty (a sheet has no weather) and buckets
+too where the case has interiors, checks that the ground is flat where the half-step negative would need relief, and
+checks the interiors (below). All checks pass in Godot 4.7.2, and the nightly runs it (`tools/test_all.py`,
+`GODOT_TESTS`: an entry may carry arguments).
+
+### The sheet's interiors (2026-10-19)
+
+Until 2026-10-19 the furnished rooms arrived as world-space buckets of the catalog's furniture (the batch 95i flushes:
+one merged mesh per render family). They are now the interiors section and pieces of the furniture section, filled by
+the same contributor (`94-city-export.js`) from what `settlements/iziz/src/95i-iziz-interiors.js` keeps: `IZIX.jobs` (per
+furnished building its record and the interiors kit's instantiated plans, in the world frame) and `IZIX.placed` (per
+piece its `ixf` record and the batch's arguments: key, variant, seed, wealth, span, pose, room, building). On a page
+without interiors (Iziz's city) nothing changes: the district above, exported before and after, differs only in the
+clock and the sky picture, and its `world.glb` is byte-identical.
+
+- **interiors** (Yuni's contract, building-local under the building record: its `at`, turned by `ry`): one building
+  per furnished building with a piece in the box or its record's `at` in it; `storeys` from the plans' levels with their
+  rooms (95i's, with the windows the builder drew), `links` for every planned door (an exterior door `b: 'outside'`,
+  `fixture` the 69f door record within 1 m; `from` 0.45 m inside its room, `to` past the wall on the yard, at the
+  building's base) and every stair or ladder (`from` its foot, `to` its top), `walls` (exterior and partition, `col`),
+  `yard` the plot. `units` names the 95i jobs.
+- **furniture**: each placement in the box (by its origin) as `{record, piece, at, ry, room, building}`, its piece
+  `<key>/<variant>/<look>` once per look. The look is found, not reduced: each placement is built again alone at its
+  heading and turned back into the piece's frame (the catalog's frame adds `ry` to a tilted part's Euler angles, so a
+  turned build is not the ry 0 build turned: up to 0.69 m apart on the sheet's paintings), and placements whose meshes
+  match (names, materials, index, every value within 1e-4) share it. A piece names its `items` (one per render family and
+  painted panel, unit geometry with vertex colours, an instance per placement in the order of the item's `placements`,
+  the material the scene's merged mesh of that family has), `entry` (catalog tags, size, type, anchor) and `lights`
+  (`KratorFurniture.lightsOf`, in its frame). The merged meshes are then left out of the buckets.
+
+In the page (the whole sheet, box -100, -50 to 100, 1100, checked on Chromium with SwiftShader): every one of the 910
+placements' instances (864,772 vertices) lies within 1.2e-4 m of the piece built at its pose (float32 at z 1,000), the
+drawn furniture triangles equal the page's (545,026), and `EXPORT.check` resolves every join (29 buildings, 117 rooms,
+173 door refs). Against the buckets route on that box: `world.glb` 42.9 MB to 27.8 MB, bucket triangles 600,585 to
+55,559, the furniture's stored triangles 545,026 to 332,190 (361 pieces for 910 placements: the pieces whose seed changes
+what they carry, shelves, bookcases, sacks, vats, stay one look each), but 1,067 glb nodes for 147 (a MultiMesh per
+piece look and family: GODOT-PLAN.md's per-look scheme with K looks per variant would need 95i to place with K seeds, so
+that the page and the export agree; not done).
+
+In Godot (`iziz_test.gd -- --case=world-pylon --sheet`, section 6): every building of the section is a building record
+with its `Interior_<id>` under its Building node and its rooms drawn there; every room's door ref resolves to a link or a
+fixture, every link ends in its rooms (or outside) and an exterior door's fixture is its building's; every furnished
+placement resolves to its record (class furniture, its building the parent, its room tag), its room in the section and
+its piece with items, and every piece instance stands at its placement's pose (54 instances, 2e-7). Negatives: a
+placement moved to another building's room, an unknown piece, an unknown record and a pose 20 cm off do not resolve.
+
+### Talia (2026-10-19)
+
+The same route: `kits/talia/kit.json` lists the contributor and the stage under `external` and `export` in its core.
+
+```
+python3 tools/harness.py export kits/talia/dist/talia.html --out godot/data/world-talia --box=-40,1064,16,1086
+godot --headless --path godot --script res://tests/export/iziz_test.gd -- --case=world-talia --sheet
+godot --path godot --script res://tests/export/court_shot.gd -- --case=world-talia --view=living --out=/abs/shot.png
+```
+
+The box is the rich mixed street's west half: Talia's palazzo and the Vernacular rich house between them, both furnished,
+chosen so the case holds the Iziz court furniture with its textures (95i): 280 items, 2,216 instances, no buckets, 62
+textures, 33 fixtures, the interiors of 2 buildings (14 rooms) and 127 furniture placements as 80 pieces; `world.glb`
+3.5 MB. The court overlays (paintings, gilt frames, vase glazes, book spines, carpets) are parts of their pieces
+(`furniture:court/<set>`, 95i `courtParts`), so a piece carries its picture; the court finishes (marquetry, brocade,
+opus sectile; gold leaf and velvet as detail) are materials with hook `triplanar` and a `triplanar` field {tile, detail,
+gain}, which `world_import.gd` hands to `library.gdshader` (`lib/triplanar.gdshaderinc`): projected in the piece's own
+frame where the page projects in the world. All checks pass in Godot 4.7.2, the court finishes' check among them (the
+test also logs `get_meta` lookups for 'krator' on nodes that carry none, which do not fail it); `court_shot.gd` renders a
+piece of the case with the walls hidden, for a picture beside the page. The nightly runs the test. Until 2026-10-19 the box
+was the middle mixed street (-35,868,13,886), which has no Iziz court pieces.

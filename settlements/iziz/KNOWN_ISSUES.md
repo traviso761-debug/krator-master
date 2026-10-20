@@ -5,12 +5,201 @@ saying what fixed it.
 
 ## Open, 2026-10-05
 
-- [ ] (2026-10-15) **The palace citadel's interior, for the Iziz rebuild:** the agreed programme is `settlements/iziz/palace/`
-      (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`): the whole precinct inside the 84 m curtain wall, an open
-      Roman-style imperial family in the tiered block, the general staff and the diplomatic corps in new flank buildings and
-      the base tier's secretariats, a mech depot and the Ancient core in the mesa, the lararium of the emperors off the Aula,
-      the tower. Nothing is built yet: the palace builder (`src/78-transplant.js`) has no interior. Do it with the rebuild,
-      not before (owner, 2026-10-15).
+- [ ] (2026-10-19) **The openings and civic round** (the owner: "remove all dark voids and make all windows, doors, and portals
+      actual doors or windows/portals that have transparency. then, i want to add interiors to all civic and ancient buildings
+      that are currently placed in the city; the palace is being worked on by another session so we can skip. The temple just
+      needs an interior at the very top with a stair down to 3 levels of priest offices"; doors "that can open/shut with a
+      keypress nearby or by npc"; "respect core/walk and core/furnish"). Done: every vernacular door is a leaf that opens
+      (69e5, 95j: E, or `IZDOOR.open`), every window glass (or a lit pane you can see through, or boards), the builders'
+      dark plates replaced (vnOpening, vnPlate); the port pieces, the Iziz originals and the Ancients kit upstream (kits/ancients
+      34-kitdefs: `MAT.dark` is a room's plaster, `archOpen` an alloy door, the window panes see-through) likewise; the city
+      hollow (339 buildings), the civic ones furnished; the school, hospital, barracks, alchemist, Farmers' and Beast Hunters'
+      halls hollowed; the temple's sanctum and three office levels, the arena's ring of bays, the embassy, the chapterhouse
+      (API.md, "Openings and doors" and "The Ancient civic interiors"). Left open:
+      - **The two Ancient guilds** (the Salvagers' Reliquary, the Mercenaries' Watch: the kit's laboratory and police station at
+        0.5 and 0.45) keep the kit's `civRooms` ring inside (floor discs and room shells behind the windows, plaster now, not
+        black). A planned, furnished interior means a hook in the vendored builders to leave the ring and the core out, as the
+        temple's (IZS_HOLLOW).
+      - **The bunkers** across the moat are ruins; their breach shows the kit's two floors of casemate rooms. **The
+        amphitheatre** is an open bowl: its acoustic shell has no room. Neither is planned.
+      - **The skyscrapers** (kit A-F, 24 standing in the city) have their interiors since the towers round below, and the
+        city's other Ancient buildings since the Ancient buildings round below (the apartments, houses D-F, the fuel kiosk,
+        the Ancients transplants). The Iziz-original transplants (solid blocks) have none.
+- [ ] (2026-10-19) **The roster round** (the owner, on the interiors sheet: "exile the ancient houses and terrace stack. bring
+      in fin, bridge house, undulant house; star lab; bridge house can use a rusty variant of the rehabilitated form. exile sky
+      c (except toppled and tripod market). pull in undulant flatiron but do quality pass, reduce plinth size and floating
+      objects. ... a version of the column cluster with larger, more intentionally designed-for-rooms columns. pull in and make
+      interior for cultural center and hotel"). The city (88-city-place, 90b KITCAT) now places: the undulant house (6) and
+      the bridge house (10; always its rehabilitated form, rusted in a ruined quarter) in the house quads; the fin apartments
+      in a reclaimed quarter's row (the honeycomb keeps a ruined quarter's: with this seed there is none, so the honeycomb is
+      out); Apartments C2 (new: kits/ancients 82-apartments buildAptsC2, four drums 30 m across from the ground) where the
+      terrace stack stood; the undulant flatiron (2 at most: some 450 000 triangles each) where sky A never fitted; sky C's
+      2x2 lots, but for the tripod market, to the cultural centre (compact) and the hotel; the star lab in the fourth quad.
+      The new types take turns (each pick still draws its rng), and the city's stream after them has moved (new builders).
+      Each has its interior (78w: sheets towers/floors/wave, bridge, fins, adlab, flat, hotel, cultural, aptsC2.png). Left open:
+      - **"The undulant flatiron" is taken to be the alternates' Undulant (8aj-alt-d-flat.js)**, not the kit's Flatiron
+        (66b-flatiron.js). Its quality pass is in the kit itself: the apron from 80-104 m to 58-66 m, no iron rails where the
+        ruin's floor edge has gone, no fallen chimney plates on the eaten roof, the prow heap within the apron.
+      - **The cultural centre is built compact** (IZS_HOLLOW.cultural: the great hall, the first ring of halls, the first
+        tier): whole it is 500 m across, a quarter of that at the scale a lot gives it. At 0.27 its halls are 4 m drums (two
+        rooms beside a slim stair, two storeys); its campaniles are too narrow for a stair and have none.
+      - **The hotel's storeys are two of its own** (it stands at 0.45): the slabs between are kept only as the court's
+        terraces. A decayed hotel's top storeys are dropped by the kit's dice, so the plan stops below the lowest (four
+        storeys of rooms in a ruin).
+      - **The reclaimed hotel and Apartments C2** (the owner: "the hotel and c2 need versions with more intact walls. where a
+        plate glass window existed in the original, it will be replaced with wood/metal sheets, usually but not always with a
+        window cut out"): at decay 3 with the interiors on, the hotel's slabs and C2's drums keep whole (C2's drum 1 is no
+        longer cut; its decay holes at 0.3 of the ruin's) and every glass bay (the hotel's front) and window (C2's) is filled by
+        `patchOpening` (69-mat-salvage.js): boards, corrugated sheet or rusted plate, a sixth boarded whole, the rest with a
+        window cut in, a dead pane in some. Built and checked on the test sheet only (--target ixtest); the city page wants a
+        rebuild.
+      - **The door pass on the roster** (towers/doorcheck.js, zcheck.js, walkcheck.js on the test sheet, 2026-10-19): the
+        star lab's lobby is at its foot (a street door cut on -z), its lobes level with the drum's storeys; street doors stand
+        in the shell (Apartments C, the star lab, the cultural centre; the hotel's on its glass line) with a walk strip back
+        to the lining, the cultural centre's on down across its platform to the street (the great hall's door at 105 degrees,
+        between two halls); every cell door sits in its partition's doorway (78w doorsToGaps); the flatiron's window boxes
+        no longer share the panes' planes. Left: 78w lists each such doorway in `S.openings` for izIxDraw to leave the
+        lining's walk blocks out there, which it does not yet (13 strips and some doors still read blocked); cell doors
+        beside the slim core (Apartments C), the bridge's stair hall and the transplants' quadrant rooms read blocked by the
+        stair's rails and landing blocks (izIxDraw's).
+      - **The bridge house's stair** climbs from the street through its glazed entrance box (the box's roof is left out)
+        into the tube; the tube is one tall storey of four rooms.
+      - **Rooms near the camera are furnished on drawn frames**: a hidden browser pane draws none, so its rooms stay bare.
+      - **Ys and the Screamers vendor 8ak-alt-a-houses, 8aj-alt-a-bole, 67-cultural and 75-hotel** and are now behind (the
+        hooks are inert there; the flatiron's quality pass is not vendored by them).
+      - `verify.py --assert` on the city: every check passes, draw calls 886 / 900; the CONTEXT_LOST console line as before.
+- [ ] (2026-10-19) **The Ancient buildings round** (the brief: the rest of the Ancient quarters' buildings on the skyscrapers'
+      pattern). The plan is 78w (`IZANC`, on 78s's engine), the sheets towers/floors/<type>.png (towers/BLUEPRINT.md, "The
+      other Ancient buildings"), drawn in the city by 78v (`izAncIx`, `izTransIx`). Built: Apartments A (2), B the honeycomb
+      (2) and C (6), houses D (8), E (2) and F (6), the Well's kiosk (1), and the eight Ancients transplants (setback,
+      setback2, pent x2, hept x2, wedge, barrel, midrise). Left open:
+      - **Not planned, because the city places none of them** with its seed: the offices (A, B, C), the government, campus
+        and factory, houses A-C. The offices look broken besides: `officeB` and `officeC` (90b KITCAT, kitSection x 140-245
+        and 262-420) select nothing since the kit moved Office B to x 105 and C to (95, -75) in its round 2, so `officeA`
+        (x -70 to 110) is A, B and a slice of C together. Their plans want writing when the city builds them.
+      - **The scales the city gives them are small.** Apartments A at 0.385: a tray is 2.1 m, so a storey is one tray (its one
+        window row), 1.9 m clear under the next tray's floor. Apartments C at 0.39: each drum is 5 m across inside, so a
+        storey is a slim switchback (1.6 x 4 m, steep: risers 0.2, treads to 0.27) and a room of about 4.6 m2 either side;
+        column 1's decayed stump holds only its lobby. House E at 0.54: the glass box is 1.7 m clear. House F at 0.7: a tray
+        is 1.8 m clear. The kiosk at 0.3 is a room 3 m across under a 2 m dome.
+      - **Apartments C's drums stand on stilts**: each first storey (a lobby) is reached by a straight flight of steps down to
+        the plaza from a doorway facing out of the cluster (6 to 7 m of steps). The setback transplant's body stands on struts
+        7 m up: a stair climbs to it in the open, under the body.
+      - **Houses D and F**, decayed, have open fronts: their street doors are steps only, no door leaf.
+      - **House F stands 0.3 m from where it did**: its door plate (dropped for the doorway) no longer counts in the footprint
+        measureKit takes, which centres the house on its lot. Nothing else in the city moves (the registry of a build with
+        `?interiors=0` is otherwise identical).
+      - **A transplant's rooms stop below the lowest the wreck's jagged cut comes over its footprint** (77z wreck now leaves its
+        cut, jag and cut meshes on `P.userData.wreck`), so a storey under a high part of the cut can stand empty. The dark
+        liners of setback2's glass bands, the kit's floor discs inside a body and the door plates at the foot are taken out
+        after the wreck (its rng untouched); a doorway is cut through the wrecked shell at the foot (+z), except the setback
+        (entered from below) and the barrel (its end arches).
+      - **The honeycomb's bite** (its upper storeys over the east third, in both decayed states) leaves those cells out; its
+        core stands at a third of its length, its seven pillars down the middle are left out (the corridor runs there).
+      - **Ys vendors 64-houses-def.js** and is now behind (the hook is inert there; Ys's other drift is other sessions').
+      - `verify.py --assert` on the city: every check passes, the draw calls 897 / 900 at its camera (943 before: the liners,
+        plates and room silhouettes left out); the console's one CONTEXT_LOST line is there without this work too.
+- [ ] (2026-10-19) **The towers round** (the owner: "work on skyscraper interiors; add slum quarters into the first 12 levels
+      of the skyscrapers, then the upper stories have junk and scrap and walls+room partitions are randomly broken per the
+      established ancient kit rules. make a blueprint of the floor plan of each skyscraper first. fallen buildings do not need
+      rooms"; then "sky c legs should maybe connect to a sky lobby leading to the inhabited levels. other skyscrapers should
+      all have a lobby on the first floor. also, the ruined/fallen skyscrapers should have rooms in the upright portions,
+      filled with scrap/junk/rubble"). The blueprint is towers/BLUEPRINT.md and towers/floors/*.png, drawn from the plan the
+      page builds (78s); 78v builds it on every standing tower (API.md). Left open:
+      - (Fixed 2026-10-19, the open-issues pass:) every storey keeps to its tower's window rhythm (78s `rows`: n rows a storey,
+        the floor in the spandrel between two rows; B's rows leave only 0.6 kit metres between them, so its plates still
+        touch the bottom of the window above by about 0.2 m); the ruined towers have rooms up to their break, the cells the
+        collapse scar opens left out (skyScarHole's predicate at its widest); steps come down from every street door to the
+        street. A lobby is at least 3 m to the first row above it; one over 5 m is a lobby and a gallery (D).
+      - The Sail's upper storeys are an open room at each end of its core (too narrow for cells); the Trays' highest storeys
+        are open floors round the core.
+      - Tower rooms are furnished only near the camera, so an export taken before a walk has none of their furniture.
+      - `verify.py --assert` on the city: every check passes, the draw calls 891 / 900 at its camera (the furniture, some 30
+        catalog families, is drawn only from within 60 m of the ground or from a floor; each near-camera batch folds into the
+        standing mesh of its material; the tower floors are single-sided plates in the transplants' bake).
+      - **The palace precinct** (the palace, its curtain wall and its two barracks blocks) is the palace session's; only the
+        curtain wall's gate arches were opened into real passages here, and the barracks' windows and door made glass and a leaf.
+      - **Houses in the city** are furnished near the camera (95i, IZIX.near: within 85 m, two a frame, one batch mesh per 100 m
+        cell) and stay furnished once done, so a long walk adds a mesh per cell visited. Their pieces join core/tags as they
+        load, so an export taken before a walk has only the civic furniture.
+      - The door leaves are their own item (vDoorLeaf), kept out of core/lod: on the shared vWood item a moved leaf stayed shut on
+        screen (core/lod's copy did not take the new matrix). The same holds for any future animated instance.
+      - **Other builds vendor the Ancients kit** (Dalab, Highlands, Jimjam, Reed Lake, Xanadu, Ys): each one's 34-kitdefs.js
+        was the old upstream exactly, so it is re-vendored (the rooms, doors and see-through panes reach them too) and they
+        are rebuilt. Ys's sky fragments are adapted on purpose and keep their own (the IZS_HOLLOW hooks are inert there).
+      - The temple's ramp is the kit's steep strut (52 degrees): core/walk has it as a strip, so the walker climbs it.
+      - Furniture keeps off the planned walls, but the temple's tier walls lean in (an office's outer wall is the squircle at its
+        ceiling, less 0.4 m), so near the floor there is a strip between a desk and the shell.
+      - `verify.py --assert` on the city: every check passes but the soft draw-call budget, 909 / 900 at its camera (the clear
+        glass and the furniture batch are new items, and core/lod splits every item into chunks across the city). The door
+        leaves, room cards and lit panes already ride on existing items (vWood, vPlaster, vWinLit) and the temple's and arena's
+        slabs on the transplants' bake. The console's one "context lost" line is the same before this round.
+
+- [ ] (2026-10-16) **The trades round** (the owner: "give me an Iziz Vernacular version of every trades and industry-related
+      building the Iziz Vernacular kit doesn't have yet. Build interiors for the Iziz residences and trade buildings, but skip
+      civic buildings for now"). 21 new buildings (src/71a-71c, 73b, 73c), the 8 dwellings and 7 trade buildings made hollow,
+      and every one furnished (API.md, "Interiors"). Left open:
+      - (Done 2026-10-19, the openings and civic round below: the civic buildings the city places are hollow and furnished,
+        and the city has interiors. The frontier set's civic buildings, which the city does not place, are still solid.)
+      - The stone manor's 5 m ground storey only takes a ladder (the planner's straight stair does not fit the rise); the townhouse's
+        and the tavern's upper rooms see out only through the deco shutter strips (dark slots, not openings).
+      - The planner puts a stair along the street wall when it can (its score likes the street door): the weaver's was steered by
+        its doors; elsewhere a stair foot can show through a front window. The tailor's shop and workroom come side by side.
+      - Loading doors drawn above a hoist (the provisioner, the mill) are openings the planner does not know; furniture may stand
+        in front of them. The fungus house is built at ground level (only its earth bank reads as sunk) and entered at its -x end.
+      - No animals in the byre or the pens; the boatyard's and the fish landing's water is at the plot's front edge for a city to
+        lay (the dugout sits 0.4 m inside it). The tinker's dish is a flat disc (no concave item).
+      - FURN_JOBS has no salvage or electrics job: the tinker is tagged carpentry, the salvage yard smithing.
+      - Surfaces with no good texture (core/materials/PROMPTS-NEEDED.md, "Gaps with no prompt yet"): dyed cloth, still water,
+        world-UV crag rock.
+- [ ] (2026-10-15; first pass 2026-10-19) **The palace citadel's interior:** the agreed programme is `settlements/iziz/palace/`
+      (`BLUEPRINT.md`, the sheets in `floors/`, `FURNITURE.md`). The owner asked to start it (2026-10-19: "start building the
+      Iziz palace according to the blueprints ... decorate extravagantly"), so it is built on its own page, `targets/palace`
+      (`dist/iziz-palace.html`; README.md, API.md "The palace citadel"): every sheet laid (227 rooms on 27 storeys of seven
+      buildings, every room reached), finished by decor level, furnished (about 6,400 pieces: the Iziz sets, Talia's in the envoys' rooms and the libraries, 47 new palace pieces; the court's paintings, book spines, glazes, carpets and finishes laid on), the
+      Depot and the Core in the mesa, the Mech Gate. `verify.py --assert` passes (`palace`); `node palace/test-palace.js`
+      passes. Left open:
+      - **Not in the city yet.** The fragments are the target's, so no other page changed; when the city is rebuilt they move
+        to `src/` and the city places `pal_citadel` on `HILL.palace` (the frame takes any hill and gate bearing: `IZPAL.frame`).
+        The city's own palace-hill dressing (87-city-layout's court paint, the crag band) is not on this page.
+      - **Not walkable.** The walk (F) stands on `terrainH` (the mesa), so the upper storeys, the Depot and the Core are seen,
+        not walked; there is no walk graph through the rooms and stairs yet (SKILL.md 5j, "Interiors belong on the
+        pedestrian graph"). No people.
+      - **The gates** (2026-10-19, the owner): the citadel gate (the city's `izCurtainWall`: a solid block with a dark arch on
+        its face, the rampart left open 13 m either side) is a passage on this page, with bronze leaves open in it and the
+        rampart run on to its piers; the Mech Gate's facade rises to the hill beside the cutting (it was sized from the
+        cutting's own floor, 4 m) and runs back into it, and the cutting's walls are one face each. The city's own gate is
+        unchanged until `izCurtainWall` is fixed there. The page guards `setPointerCapture` (95q): core/host's camera calls it
+        unguarded and the artifact viewer's frame made it throw into the error panel; the fix belongs in
+        `core/host/90-host-camera.js`, with every build that takes core/host rebuilt.
+      - **The terrace stairs** (2026-10-19, the owner: "steep and unclimbable"): the builder's eight 1.75 m blocks up each flank
+        are replaced by straight stairs of 77 risers of 18 cm with landings, balustrades and a bridge onto the second
+        terrace. The builder's garden terrace's west end (a planter, a hedge, a lamp) hung off the roof and is gone.
+      - **The barracks are laid** (2026-10-19, the owner: "barracks don't have rooms"): on the sheet's rects (I0 #4, #5), axis
+        true, so they stand a little off the city's `izBarracks` (turned with the hill's bearing); the drill yards are bare.
+      - **Z-fighting** (the owner's report, 2026-10-19): fixed for every pair of box instances the check found (API.md, "No two
+        faces on one plane"). The check is not in `verify.py` yet: a page-side scan of every box instance's faces, about a
+        minute under SwiftShader. Merged meshes (the furniture batch, the plants) are not scanned; the builder's own pieces
+        outside the masses (78-transplant 'palace': the grand entrance, the windows' surrounds) are the city's and unchanged.
+      - **The heights are assumed** (BLUEPRINT.md left them open; `78q` header): the mesa 40 m, the Depot at the city's level,
+        the Core 12 m under it, three storeys of 14/3 m per tier. The third storey of the base tier repeats sheet I1 as the
+        freedmen's lodgings with the Library of the Palace; the tower's stair is one shaft (u 22..28, v 6..13), not the
+        sheets' two places; the Mech Gate is at the tunnel's end (u 112), past the sheet's (u 70..80).
+      - **Two sheet rooms cannot fit**: the Great Door's 2 m sliver and the Imperial Guard of the Aula (u 22..24) lie between
+        the hall and the rear mass's liner; the great door is drawn as a portal instead. The sheets' Stair of the Hall is
+        2.9 m wide inside the flank's liner, as the flank is.
+      - **Windows and doors are real** (2026-10-19, the owner: "get rid of all dark voids and blank white windows/doors"):
+        openings through the shell and the liner (the precinct buildings' through their outer wall), glazed, with bronze
+        bars; the builder's rows straddled floors, so each window moved to the middle of the storey it falls in, and 20
+        with no room behind them (a void, a stair, a partition) are curtained glass on the face. Every door and doorway has
+        leaves; the outer doors stand closed. The glass is one transparent InstancedMesh: seen through several panes at
+        once its sorting can be off.
+      - **The furniture's marble** draws in the catalog's `stone` detail family (rough rock): a `marble` family is a
+        catalog-wide change (every build bundling the detail maps), not made here. The court's cloth, veneer and gilding take
+        the court sets (brocade, velvet, marquetry, gold leaf: 95i's `courtFinish`, 2026-10-19). The five surfaces the palace had no set for (the coffers, the bronze leaves, the crater map, the legions fresco, the hangar deck) were delivered and wired on 2026-10-19 (`core/materials/PROMPTS-NEEDED.md`, "Delivered 2026-10-19, the Iziz palace").
+      - **Heavy page**: about 4 M triangles with every room furnished (the furniture at half detail); furnishing takes ~5.5 s
+        in SwiftShader. Nothing is furnished lazily yet (Girder and Verge furnish near the camera first).
+      - No mechs stand in the bays or on the hall's lift (the Mechs kit, `KratorMechs`, could be bundled).
 - [x] (2026-10-15) Iziz on core/host (ROADMAP.md section 10, step 3; core/host/README.md): the camera, the controls, the walk (F),
       the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records, the full registry of
       91t-iziz-tags.js), marks (P, they replace the polygon tool) and the minimap (M) are core/host's; `src/92-camera.js` keeps only
@@ -341,3 +530,65 @@ maps, base64); it was already over the gallery's 16 MB a file.
       put the flora first and renumber every building id); no building has an interior, so `interiors` is empty; the box
       holds no REG furniture, so `furniture` reads empty there (it fills where a plaza, statue, fountain or drain stands);
       records with hook `glass` draw as the plain library surface in Godot (lib/glass is not wired into library.gdshader).
+
+## The interiors' quality pass (2026-10-19, the owner's test-sheet review; built into iziz-ixtest only)
+- **Stairs on core/walk.** `towers/walkcheck.js` (IZWALKCHECK) walks every strip in core/walk as the host's walker: 1302 of 1343
+  failed before, 0 of 1255 now. The causes, fixed: rail and wall walk blocks were 0.5 m squares (now as thick as what is drawn,
+  0.2 m apart), a front rail across the next flight's foot (temple, guild halls, towers), Sky A and B's shafts stopping short of
+  the first storey, C's leaning legs (each core now runs across the lean, its well widened by the shift), the slim drums' 0.7 m
+  flights (0.8 now), street steps ending short of the lobby floor, the bridge house's kit stair strips written [x,y,z].
+- **Kit changes in kits/ancients 52-sky-abc.js (re-vendored to Iziz), not yet rebuilt into the kit's page or the city:** C's podium
+  drops the columns in front of its legs' doors (skyIx only); a ruined or toppled A has no crown struts at its cut (rng draws
+  kept) and its pipes stop 20 m (kit) under it. 78v drops shell islands no kept path joins to a surface's foot (iziz, skyIx).
+- **The city is not rebuilt** with any of this (the owner: later). When it is, rebuild kits/ancients too and check the baseline.
+- **Second pass (the owner's arena, thresholds, z-fighting and reclaimed notes; test sheet only).**
+  - The arena's masts now stand on the stands: kits/ancients 77z, in every build. The arena's interior has four stone aisles up
+    the stands on the axes (78u; the tiers are opened over them when interiors are on), walk floors on every tier, and
+    passages from the gate halls under the stands to the floor. Each gate has a sill level with its hall.
+  - Door thresholds: `towers/doorcheck.js` (IZDOORCHECK). The Order's chapterhouse had two problems. Its 0.9 m whitewash band
+    ran across the door; bands round a hollow body are now drawn after the builder, open at its doors (69e vnBandsDraw). Its
+    porch arches' opening was a hole on the outline's foot, filled with a bar at the floor; it is now a notch (75
+    vpArchGeo; Dalab vendors this file, so its copy now drifts). Tower street steps begin after a 1.2 m landing. Corridors
+    are at least 1.1 m wide. A ring storey has no more cells than leave 1.8 m along each door's side. The slim core's head
+    strip is 1.2 m deep (SLIM core z1 2.3; towers/plans.json and the blueprint sheets predate these three).
+    Still open:
+    - the vernacular street doors sit 0.5 m over the ground with no registered step;
+    - Voth embassy's locked bridge door has no floor on either side;
+    - Sky F and the setback tower's top storeys have a few cell doors with a wall 0.5 m in front;
+    - the other session's buildings.
+  - Z-fighting: `towers/zcheck.js` (IZZCHECK). `src/89x-iziz-defight.js` runs before kbake when interiors are on. Of two
+    coplanar overlapping kit-box faces, it shrinks the box with the smaller face by 6 mm on that axis, and does the same to a
+    box top in a floor mesh's plane (469 boxes on the test sheet). Tower floor slabs sit 2.5 cm over the walk floor; guild
+    and temple floors stand 12 mm proud. Partition tops are 12 mm under the front walls. The test sheet went from about 9400
+    pairs to 97, most of which are hidden ceilings.
+  - Reclaimed transplants: no rubble ring in a world with interiors. A lived-in storey is walled in boards or sheet wherever
+    a ray out from its lining meets no shell. A canopy stands over each reclaimed door. Every kit item whose extent reaches
+    the doorway is cleared, so the midrise's window hung over the door and the pentagon block's are gone, and so is the
+    glass there.
+  - `towers/runcheck.py` runs the three checks (and walkcheck.js) headless and writes their whole output to a file.
+- **Tower room layouts (2026-10-20, the owner: "rework the tower room layouts so the remaining cell doors are clear").**
+  - A cell door's leaf takes its wall's facing: the angled-wall guard had kept the room-centre facing for quadrant rooms and
+    the slim drums' side rooms, so those leaves stood across their wall line.
+  - A ring cell's front follows its door side round a corner of the corridor, and the door goes in the straight run of the
+    front with the most room behind it.
+  - The lining's walk blocks are 0.24 m thick (they were 0.5), and they skip S.openings, as they skip the street door.
+  - Stair rails stop 0.6 m short of the flights' head where the stair goes on up, and 0.3 m short at the top.
+  - On a slim drum's top floor, the floor covers the last 0.9 m of the well over the flight below on +x, with the rail at that
+    edge (an L-shaped well).
+  - Test sheet: 0 of 1329 strips fail. 28 doors fail, none of them in the towers: the vernacular street doors 0.5 m over the
+    ground, Voth embassy's locked bridge door, and the guild halls' front doors at the street.
+- **The last doors (2026-10-20, the owner: "fix remaining doors").** Test sheet: 0 of 1219 doors fail, and 0 of 1354 strips.
+  - Every street door has a stoop (69e5 vnStoop): a landing level with the sill, 0.9 m out, then steps of at most 0.18 m to
+    the ground, all in core/walk. The interiors' entry ramp began at the sill. It covers doors drawn with step false and locked
+    doors on solid bodies. A stoop waits for its builder to return: a vnStairs flight in front stands in for it (vnStairs
+    flights and their heads now go into core/walk). It is shallower where another body is close ahead, and left off where a
+    body is right ahead (a door between two rooms).
+  - A door also cuts a second body's parallel wall within 1.2 m behind it (70 vnHole, 69e5 vnDoor). Anything else standing in a
+    leaf's own opening is taken out of core/walk (95j).
+  - Moved doors: the school's wing doors now open to the yard between the middle windows (they stood where the wing overlaps
+    the hall). The hospital's second front door is 0.9 m in from the pavilion's corner. The Farmers' Guild's back door clears
+    an interior partition. The plan's doors moved with them (kits/interiors/sets/iziz.js).
+  - The guild halls' front doors have a stoop and a floor through the shell's opening to the first room.
+  - The Voth embassy's flank stair is now 14 solid risers of 0.3 rising to its landing. It had 7 floating 0.6 m blocks rising
+    away from it. The landing door faces the landing.
+  - towers/doorcheck.js checks only the outside of a locked door.

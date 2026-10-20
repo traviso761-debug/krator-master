@@ -349,9 +349,105 @@ B.trumpet=function(T,st,lv){const S=SP[T.sp],H=T.H,frost=!!S.frost,ns=frost?1:(r
   if(lv===2&&!frost&&rng()<.4)mossOn(pts[1],st,pts[1].r*3);}
  T.spread=spread;if(lv===2||T.H>8)reg(S,T,spread);};
 
+// ---------------------------------------------------------------- the new habits (HANDOFF-FLORA.md)
+// a long limb cut short where it would pass through another tree (null if too little is left): the banyan's and the
+// table cedar's limbs are too long for limbOk's all-or-nothing in a closed forest
+// each segment is sampled every metre (the points alone are 4 m apart on a banyan's limb: a trunk between them was missed),
+// and `own` (the tree's limbs drawn so far: arrays of points) is a collision too, past `skip` metres from the axis
+function limbCut(pts,pad,min,own,T,skip){const hitOwn=(x,y,z,r)=>{if(!own||Math.hypot(x-T.x,z-T.z)<(skip||0))return false;
+  for(const L of own)for(const q of L)if(Math.hypot(x-q.x,y-q.y,z-q.z)<r+q.r+.3)return true;return false;};
+ for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],n=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z)));
+  for(let k=1;k<=n;k++){const t=k/n,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t,z=a.z+(b.z-a.z)*t,r=a.r+(b.r-a.r)*t;
+   if(!clear3(x,y,z,r+pad,r+pad)||hitOwn(x,y,z,r))return i>min?pts.slice(0,i):null;}}
+ return pts;}
+// SHAG: the shag maple. A short massive trunk splitting low into thick limbs that spread up and out, every limb in a
+// sleeve of moss much fatter than itself (the 'nmoss' bucket: its own symbiont, brighter than any Earth moss), curtains
+// of moss under the limbs, and little leaf: the moss is its crown
+B.shag=function(T,st,lv){const S=SP[T.sp],H=T.H,hc=vary(pick(S.leaf),.02,.06,.05),spots=[];
+ const rAt=u=>T.rb*(1-.45*u)*(1+.5*Math.exp(-u*H/2));
+ const hB=H*rr(.24,.3),top=bole(T,S,hB,rAt,{vs:4,buttress:.5,bh:1.4,nb:5,moss:1,seg:lv===2?10:7});
+ const mc=bright(vary(pick(PAL.moss),.03,.08,.05),1.05);
+ // the sleeve: fat at the limb's root, thinning along it, stopping short of the tip (the bare limb runs on past it),
+ // its end closed down to the limb so it never shows a cut disc
+ const sleeve=(pts,k0)=>{const n=pts.length,end=Math.max(2,n-(k0==null?2:k0));if(end<2)return;
+  const P=pts.slice(0,end).map((p,i)=>{const t=i/Math.max(1,end-1);return{x:p.x,y:p.y+p.r*.3,z:p.z,r:p.r*lerp(rr(2,2.4),1.25,t*t)+.05*(1-t)};});
+  const q=pts[end-1];P.push({x:q.x,y:q.y+q.r*.15,z:q.z,r:q.r*1.02});
+  st.limb+=BIO.tube('nmoss',P,mc,{seg:lv===2?7:4,cap:true});};
+ const nL=lv===2?ri(6,9):4,a0=rr(0,TAU),r0=clamp(rAt(hB/H)*.42,.22,.7),OWN=[];
+ for(let k=0;k<nL;k++){const a=a0+k*GOLD+rr(-.3,.3),L=T.crownR*rr(.9,1.25),y0=T.y0+hB*rr(.7,1),
+   ox=T.x+(top.x-T.x)*(y0-T.y0)/hB,oz=T.z+(top.z-T.z)*(y0-T.y0)/hB;
+  const pts=limbCut(treeGrow({x:ox,y:y0,z:oz},dirOf(a,rr(.35,.95)),L,r0*rr(.8,1.1),.05,7,-.03,.22),1,3,OWN,T,T.rb*1.6);if(!pts)continue;OWN.push(pts);
+  const n=pts.length-1;limb(S,pts,st,{seg:lv===2?6:4,col:mossy(S,T,k,.5)});sleeve(pts,2);
+  // two forks, each sleeved on its inner half, ending in twigs and leaf
+  [Math.min(n-1,3),Math.min(n-1,5)].forEach((fi,f)=>{if(fi<2||(lv<2&&f))return;const p=pts[fi],fk=limbCut(treeGrow({x:p.x,y:p.y,z:p.z},dirOf(a+(f?-1:1)*rr(.5,1.1),rr(.4,1.1)),L*rr(.4,.55),p.r*.72,.04,4,-.04,.25).slice(1),.8,1,OWN,T,T.rb*1.6);
+   if(!fk)return;fk.unshift(p);OWN.push(fk);limb(S,fk,st,{seg:4,col:mossy(S,T,k+f,.5)});if(lv===2)sleeve(fk,2);spots.push(fk[fk.length-1],fk[fk.length-2]);});
+  spots.push(pts[n],pts[Math.max(1,n-1)]);
+  if(lv===2){const tp=pts[n];for(let t=0,m=ri(2,4);t<m;t++){const d=dirOf(a+rr(-1,1),rr(.3,1));BIO.beam('rod',P3(tp),[tp.x+d[0]*rr(1,2.2),tp.y+d[1]*rr(1,2.2),tp.z+d[2]*rr(1,2.2)],.05,.02,rodCol(S,k));}
+   for(let c=0,m=ri(3,6);c<m;c++){const p=pts[ri(1,Math.max(1,n-2))];drape(p.x+rr(-.3,.3),p.y-p.r*1.8,p.z+rr(-.3,.3),rr(2,6),false);st.drapes++;}}}
+ // little leaf, but a crown: loose clumps at the tips, a few higher over the fork
+ spots.forEach(p=>{const m=lv===2?(rng()<.6?1:2):1;for(let c=0;c<m;c++){clumpAt(S.item,p.x+rr(-1,1),p.y+rr(0,1.2),p.z+rr(-1,1),rr(2.2,3.4),.58,hc,T.x,T.y0+H*.65,T.z,T.crownR,H*.3);st.clumps++;}});
+ T.spread=T.crownR;reg(S,T);};
+// SERPENT: the serpentwood. Two to five trunks from one foot in S-curves, braided (each wraps round the axis as it
+// rises), mossed all over, forking high into fine twisting limbs under a small high canopy
+B.serpent=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ns=ri(2,5),hc=vary(pick(S.leaf),.02,.06,.05),a0=rr(0,TAU),spots=[];
+ for(let s=0;s<ns;s++){const turn=rr(1.2,2.4),pts=[];
+  for(let i=0;i<=8;i++){const t=i/8,an=a0+s*TAU/ns+t*turn,off=rb*1.2*(1-.4*t),wv=Math.sin(t*Math.PI*2+s)*H*.08;
+   pts.push({x:T.x+Math.cos(an)*off-Math.sin(an)*wv,y:T.y0-.3+H*.75*t,z:T.z+Math.sin(an)*off+Math.cos(an)*wv,r:rb*(1-.5*t)});}
+  limb(S,pts,st,{seg:lv===2?8:5,flutes:3,fluteA:.1,twist:.8,col:mossy(S,T,s,1)});
+  if(lv===2)for(let i=1;i<8;i+=2)mossOn(pts[i],st,pts[i].r*rr(2.5,4));
+  const top=pts[8];
+  for(let k=0,nl=lv===2?ri(2,4):2;k<nl;k++){const a=rr(0,TAU),lp=treeGrow({x:top.x,y:top.y,z:top.z},dirOf(a,rr(.4,1)),T.crownR*rr(.5,.9),top.r*.7,.05,5,-.05,.5);if(!limbOk(lp,.8))continue;
+   if(lv===2){limb(S,lp,st,{seg:5,flutes:3,fluteA:.1,twist:1.1,col:mossy(S,T,k,.8)});if(rng()<.5)drape(lp[2].x,lp[2].y-lp[2].r,lp[2].z,rr(1,3),false);}
+   else BIO.beam('rod',P3(lp[0]),P3(lp[5]),lp[0].r,.05,rodCol(S,k));
+   for(let i=2;i<=5;i++)spots.push(lp[i]);}
+  spots.push(top);}
+ const cnt=lv===2?2:1,cy=T.y0+H*.85;
+ spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt(S.item,p.x+rr(-1,1),p.y+rr(-.2,1),p.z+rr(-1,1),rr(2,3.4),.55,hc,T.x,cy,T.z,T.crownR,H*.2);st.clumps++;}});
+ T.spread=T.crownR;reg(S,T);};
+// TABLE: the table cedar. A massive short trunk into a few heavy ascending limbs carrying flat tiers of dense needle
+// foliage stacked like plates, each a little darker underneath; one tree shades a 30-40 m disc
+B.table=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,hc=vary(pick(S.leaf),.015,.05,.04);
+ const rAt=u=>rb*(1-.55*u)*(1+.4*Math.exp(-u*H/2));
+ const top=bole(T,S,H*.3,rAt,{buttress:.4,bh:2,nb:5,moss:.4,vs:5,seg:lv===2?12:7});
+ const nL=ri(3,5),a0=rr(0,TAU);
+ for(let k=0;k<nL;k++){const a=a0+k/nL*TAU+rr(-.3,.3);
+  const pts=limbCut(treeGrow({x:top.x,y:top.y-rr(0,1),z:top.z},dirOf(a,rr(.7,1.1)),H*rr(.5,.62),rAt(.3)*.55,.12,5,-.04,.12),1.5,2);if(!pts)continue;
+  const n=pts.length-1;if(lv===2)limb(S,pts,st,{seg:6});else BIO.beam('rod',P3(pts[0]),P3(pts[n]),pts[0].r,.1,rodCol(S,k));
+  const nt=Math.min(n,lv===2?ri(3,5):2);
+  for(let t=0;t<nt;t++){const p=pts[Math.max(1,n-Math.round(t*(n-1)/Math.max(1,nt-1)))],Rp=T.crownR*rr(.35,.6)*(1-.25*t/Math.max(1,nt-1));
+   for(let c=0,m=lv===2?ri(6,14):5;c<m;c++){const an=rr(0,TAU),d=Rp*Math.sqrt(rng());clumpAt('needle',p.x+Math.cos(an)*d,p.y+rr(-.15,.15),p.z+Math.sin(an)*d,rr(3,4.5),.24,bright(hc,1.15),T.x,p.y,T.z,T.crownR,2);st.clumps++;}
+   if(lv===2)for(let c=0,m=ri(4,7);c<m;c++){const an=c/m*TAU+rr(-.3,.3),d=Rp*rr(.4,.8);clumpAt('needle',p.x+Math.cos(an)*d,p.y-.6,p.z+Math.sin(an)*d,rr(2.6,3.6),.24,shade(hc,-.12),T.x,p.y,T.z,T.crownR,2);st.clumps++;}}}
+ T.spread=T.crownR;reg(S,T);};
+// BANYAN: the veil banyan, rare and huge. A column of fused strands round a core, limbs reaching out almost level
+// 20-35 m (sagging, lifting at the end), prop roots dropping straight from them into pillars, hanging roots fringing
+// them, some ending in a glowing bell-bulb; a vast low dome of leaf
+B.banyan=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,hc=vary(pick(S.leaf),.02,.06,.05),hT=H*.45,spots=[];
+ const rAt=u=>rb*.55*(1-.3*u)*(1+.3*Math.exp(-u*H/2));
+ const top=bole(T,S,hT,rAt,{vs:4,buttress:.3,bh:2,nb:6,moss:.3,seg:lv===2?10:6});
+ for(let s=0,nS=lv===2?ri(8,14):5,tw=rr(.4,.9);s<nS;s++){const a=s/nS*TAU+rr(-.15,.15),pts=[];
+  for(let i=0;i<=5;i++){const t=i/5,an=a+t*tw,d=rb*(.85-.25*t)*(1+.25*Math.exp(-t*4));pts.push({x:T.x+Math.cos(an)*d,y:T.y0-.3+hT*t,z:T.z+Math.sin(an)*d,r:rb*.3*(1-.35*t)});}
+  limb(S,pts,st,{seg:lv===2?6:4,col:barkCol(S,s)});}
+ const nL=lv===2?ri(8,12):5,a0=rr(0,TAU),LIMBS=[];
+ for(let k=0;k<nL;k++){const a=a0+k/nL*TAU+rr(-.12,.12),raw=treeGrow({x:top.x,y:top.y-rr(.5,3),z:top.z},dirOf(a,rr(.05,.25)),T.crownR*rr(.7,1),rb*.32,.12,7,-.06,.15);
+  raw[6].y+=rr(.5,1.5);raw[7].y+=rr(1,3);const pts=limbCut(raw,1.2,3,LIMBS,T,rb*1.8);if(!pts)continue;LIMBS.push(pts);const n=pts.length-1;
+  if(lv===2)limb(S,pts,st,{seg:7,col:barkCol(S,k)});else BIO.beam('rod',P3(pts[0]),P3(pts[n]),pts[0].r,.12,rodCol(S,k));
+  // prop roots: straight down into pillars, thicker near the trunk
+  for(let r=0,m=ri(2,4);r<m;r++){const i=ri(2,n),p=pts[i];if(BIO.depth(p.x,p.z)>-.1)continue;const rr0=lerp(.45,.15,i/7)*rr(.85,1.1);
+   const gy=Y(p.x,p.z)-.3,rc=mossy(S,T,k+r,.35*T.wet).multiplyScalar(.8);   /* bark, mossed and darker than the limbs: pillars, not poles */
+   if(lv===2)st.limb+=BIO.tube(fam(S),[{x:p.x,y:p.y,z:p.z,r:rr0},{x:p.x+rr(-.2,.2),y:lerp(p.y,gy,.5),z:p.z+rr(-.2,.2),r:rr0*1.1},{x:p.x,y:gy,z:p.z,r:rr0*1.45}],rc,{seg:5,cap:false});
+   else BIO.beam('rod',[p.x,p.y,p.z],[p.x,gy,p.z],rr0,rr0*1.3,rc);}
+  for(let i=Math.max(1,Math.floor(n/2));i<=n;i++)spots.push(pts[i]);}
+ // hanging roots off the limbs, one in five ending in bell-bulbs
+ if(lv===2&&LIMBS.length)for(let h=0,m=ri(10,20);h<m;h++){const L=pick(LIMBS),p=L[ri(1,L.length-1)],len=Math.min(rr(2,8),p.y-p.r-Y(p.x,p.z)-.6);if(len<1)continue;
+  const x=p.x+rr(-.3,.3),z=p.z+rr(-.3,.3),y=p.y-p.r;BIO.beam('rod',[x,y,z],[x,y-len,z],rr(.02,.05),.02,shade(rodCol(S,h),-.25));if(rng()<.2)glowCluster(x,y-len,z,ri(2,4),st);}
+ const cnt=lv===2?2:1,cy=T.y0+H*.6;
+ spots.forEach(p=>{for(let c=0;c<cnt;c++){clumpAt(S.item,p.x+rr(-1.5,1.5),p.y+rr(0,1.5),p.z+rr(-1.5,1.5),rr(3.5,5),.58,hc,T.x,cy,T.z,T.crownR,H*.25);st.clumps++;}});
+ for(let c=0,m=lv===2?ri(5,8):3;c<m;c++){const an=rr(0,TAU),d=T.crownR*rr(0,.35);clumpAt(S.item,top.x+Math.cos(an)*d,top.y+rr(2,5),top.z+Math.sin(an)*d,rr(4,5.5),.58,hc,T.x,cy,T.z,T.crownR,H*.25);st.clumps++;}
+ T.spread=T.crownR;reg(S,T);};
+
 // ---------------------------------------------------------------- impostors (the far canopy)
 // Each tree past the spine: a trunk of a few quads and one to three blobs by its habit
-const HABIT=S=>S.habit==='conifer'?(S.form.crown==='spire'?'spire':S.form.crown==='dome'?'tall':'cone'):S.habit==='greattrumpet'?'cups':S.habit==='trumpet'?'cup':S.habit==='snag'?'snag':S.habit==='krumm'?'lump':S.habit==='pine'?'umbrella':S.habit==='gnarl'||S.habit==='yew'?'low':'dome';
+const HABIT=S=>S.farShape||(S.habit==='conifer'?(S.form.crown==='spire'?'spire':S.form.crown==='dome'?'tall':'cone'):S.habit==='greattrumpet'?'cups':S.habit==='trumpet'?'cup':S.habit==='snag'?'snag':S.habit==='krumm'?'lump':S.habit==='pine'?'umbrella':S.habit==='gnarl'||S.habit==='yew'?'low':'dome');   /* farShape: a new species' own blob (the new flora) */
 let ICO=null,ICO0=null;
 function buildFar(T,fi,st,lite){const K=BIO.bucket('nfar');if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}const ip=(lite||BIO.lodD(T.x,T.z)>700)?ICO0:ICO;
  const S=SP[T.sp],hb=HABIT(S);let tris=0;
@@ -381,7 +477,7 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('nfar');if(!ICO){ICO=new T3.I
  K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
 
 // ---------------------------------------------------------------- the pass
-NHL.buildTrees=function(R,q,box){
+NHL.buildTrees=function(R,q,box,opt){
  reseed(550031);q=q==null?1:q;R=R||3300;means();
  const st={trunk:0,limb:0,far:0,clumps:0,sprays:0,snow:0,moss:0,drapes:0,glow:0,fins:0,heroes:0,fars:0,colonies:0,byS:SP.map(()=>0)};
  const TREES=NHL.TREES;TREES.length=0;NHL.COLONIES.length=0;for(const k in HASH)delete HASH[k];
@@ -438,6 +534,16 @@ NHL.buildTrees=function(R,q,box){
  pass('greyalder',26,Z=>Z.rip*.55*(1-Z.alpine)+Z.temperate*Z.low*Z.mist*.12*(1-Z.oldwood),o(BIG,{pad:2.5,patch:.35}));
  pass('brookwillow',18,Z=>Z.rip*.45*(1-Z.alpine*.5),o(SMALL,{pad:1.6,patch:.4}));
  pass('rowan',48,Z=>(Z.temperate+Z.montane)*(.04+.25*Z.glade)+Z.boreal*Z.grove*.06,o(SMALL,{pad:2,patch:.5}));
+ // THE NEW FLORA (HANDOFF-FLORA.md), on its own stream after every other pass: nothing placed above moves. Only when the
+ // caller asks (opt.flora: NHL.build does), so a world that calls buildTrees itself (Roketstad) keeps its forest until
+ // it takes them on purpose
+ if(opt&&opt.flora){reseed(550091);
+  pass('ghostalder',16,Z=>(Z.temperate*Z.low*smooth(.55,.8,Z.wet)*(1-Z.oldwood)*.55+Z.rip*Z.low*.25)*.2,o(BIG,{pad:1.6,own:1,patch:.3,patchScale:.012}));
+  pass('fanleaf',60,Z=>(Z.temperate*(.05+.25*Z.glade)+Z.montane*.04)*(1-Z.rip),o(BIG,{pad:3,own:2,patch:.5}));
+  pass('serpentwood',24,Z=>(Z.temperate*Z.mist*.3+Z.oldwood*.2)*(1-Z.rip*.5),o(SMALL,{far:true,pad:2,own:1.5,patch:.45}));
+  pass('shagmaple',46,Z=>Z.temperate*(.12+.3*Z.mist+.2*Z.rip)*smooth(.5,.8,Z.wet)*(1-Z.oldwood*.5),o(BIG,{pad:4,own:4,patch:.4}));
+  pass('tablecedar',90,Z=>(Z.montane*.22+Z.temperate*.06)*(.3+.7*smooth(.2,.5,Z.rock))*(1-Z.rip)*(1-Z.alpine),o(BIG,{pad:7,own:7,patch:.3}));
+  pass('banyan',260,Z=>Z.temperate*Z.low*smooth(.5,.75,Z.wet)*(1-Z.oldwood)*(1-Z.rip)*.45,o(BIG,{hero:420,mid:820,pad:16,own:18,patch:0}));}
  // build
  // runtime LOD: a hero tree is drawn in full while the camera is within NHL.LOD.tree metres of its chunk
  // and as a stand-in impostor past that; a far tree is only ever its impostor. Each tree draws from its own

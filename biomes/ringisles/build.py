@@ -67,7 +67,7 @@ ROOT=os.path.normpath(os.path.join(HERE,'..','..'))
 OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "ringisles.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # the biome core from core/biome (core/README.md): one copy for every kit
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.join(ROOT,'core','biome')
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.join(ROOT,'core','space')

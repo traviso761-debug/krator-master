@@ -74,6 +74,8 @@ function buildRLVillage(G,o){reseed(25501+(o.v|0));
  hnRLBoat(G,-8,10,.9,4.6,1.1,{heads:1,folk:2});hnRLBoat(G,24,2,-.6,4.2,1.05,{heads:1,folk:1});hnRLBoat(G,-40,14,1.4,4.2,1.05,{heads:1,folk:1});hnRLBoat(G,20,-38,.3,8,2,{heads:2,cabin:true,folk:2});
  hnRLBoat(G,66,4,-1,4.4,1.1,{heads:1,folk:1});hnRLRaft(-4,38,.4,5,2.6);hnRLFolk(-4,RL.WATER+.5,38,1,.4);
  for(const [x,z] of[[-12,-40],[26,-30],[-52,-38],[62,-14],[22,42],[-38,44],[-4,50],[30,50],[-70,10],[70,32],[-8,-2]])hnRLReedClump(x,z,7,3);
+ /* the lily patches on the still channels (ground.lilypond), in the gaps between the islands, boats and pads */
+ for(const [x,z,r,a] of[[-24,-44,4.6,.3],[31,-31,3.8,1.4],[-56,-8,4.2,2.2],[66,-24,3.6,.9],[28,44,4.4,2.9],[-40,52,3.9,.2],[8,46,3.4,1.9],[-70,16,3.2,2.6]])kput('hRLLily',[x,RL.WATER+.3,z],qEuler(0,a,0),[r/4,1,r/4],new THREE.Color(.8,.85,.8));
  for(let k=0;k<6;k++)hnRLBeast(rr(-20,20),RL.WATER+.05,rr(38,48),rr(0,6),'duck');}
 
 RL.def({key:'rl_island_a',name:'Reed island — small',family:'Island platforms',tags:{type:['infrastructure'],wealth:'poor',lit:false},w:22,d:22,h:3,build:buildRLIslandA});

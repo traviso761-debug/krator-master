@@ -2,9 +2,9 @@
 // Greyscale procedural textures (the per-instance colour tints them), the library's maps where the page carries this
 // kit's pack (materials.json -> KMAT.pack('ringisles'); BIO.libSwap swaps a slot's map in place, so the random stream and
 // every plant's place are the same with or without it), the buckets and the instanced items.
-// PROCEDURAL STAND-INS (no library set yet; KNOWN_ISSUES.md lists each with its generation prompt): the seagrass blade, the
-// beach creeper's heart leaves, naupaka's succulent leaves, the sea grape's round leaves, the breadfruit's lobed leaf, the
-// taro and kava heart leaves, the coral heads' surface, the tamarisk's plume.
+// PROCEDURAL (kept as the no-pack fallback; the library's cards replace them in a page that carries the pack): the seagrass blade,
+// the beach creeper's heart leaves, naupaka's succulent leaves, the sea grape's round leaves, the breadfruit's lobed leaf, the
+// glossy lance, the taro and kava heart leaves, the coral heads' surface, the tamarisk's plume.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);RINGISLES.C=C;
 

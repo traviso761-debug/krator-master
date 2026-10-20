@@ -69,6 +69,7 @@ LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   
 FURNISH_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
 RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
+PORTS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'ports')   # PORT: each building's draw marked, for kits/beast-riders (core/ports/README.md)
 # the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Mav's has no TEX.def
 # painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
 RECORD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'materials', 'record')
@@ -81,7 +82,7 @@ OUT = os.path.join(HERE, 'mavs-refuge.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
-DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
+DETERMINISTIC = {'00-head.html', '44-core-ports.js', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '98-start.js', '99-tail.html'}
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
@@ -89,6 +90,7 @@ PALETTE_FILE = '05-palette.js'
 DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js'}   # core/materials/record and the pack (no rnd())
 DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, brfMaterial): no generation of its own
 DETERMINISTIC |= {'57a-interiors.js', '57c-interiors-draw.js'}   # the rooms inside (data; drawing near the camera): no rnd()
+DETERMINISTIC.add('65-mr-trades.js')   # the Voth census table (plain data, no rnd())
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
 # continues. A part opens inside the fragment's IIFE, after its reseed(N): the rules read it joined to the fragment it
@@ -253,7 +255,7 @@ def main():
     for f in RECORD_FILES:
         if f not in paths:
             paths[f] = os.path.join(RECORD_DIR, f)
-    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR):       # a src/ copy with the same name overrides
+    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, PORTS_DIR):       # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)

@@ -14,7 +14,8 @@ function buildRsSalvageTug(){reseed(71600);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
  const BLK=0x1e1f22,OX=0x6a2a1e,WHITE=0xd6d2c6,RUST=0x8a4a2a,TYRE=0x141414;
  const H=rsHull({L:24,B:8,fb:2.2,dr:2,sheerF:2.6,sheerA:.3,sp:1.7,pb:1.7,pa:1.5,q:.42,n:2.8,flare:.22,rakeF:1.4,rakeA:.3,transom:.3,keelEnd:.8,kp:3});
- rsHullMesh(B,H,'paint',(u,h,s)=>h<.46?OX:h<.5?0x0e0e10:h>.94?WHITE:(h3(Math.floor(u*30),Math.floor(h*12),s)>.9?RUST:BLK),72,14);rsFoam(B,H,1.2);
+ const HP=typeof RS_MATLIB_BOUND!=='undefined'&&!!RS_MATLIB_BOUND.hullpaint,hh=H.ys(.5)-H.yk(.5);   /* a bundle without the bind (settlements/voth/ringsea.py leaves 45y out) has no RS_MATLIB_BOUND */   /* the library's hull paint when it is packed: one sheet over the hull's height, running along its length; else the painted bands below */
+ rsHullMesh(B,H,HP?'hullpaint':'paint',HP?()=>0xffffff:(u,h,s)=>h<.46?OX:h<.5?0x0e0e10:h>.94?WHITE:(h3(Math.floor(u*30),Math.floor(h*12),s)>.9?RUST:BLK),72,14,HP?(u,v,p)=>[p[0]/(hh*2.1),1-Math.abs(v*2-1)]:null);rsFoam(B,H,1.2);
  const dY=rsDeck(B,H,{bw:.9,col:0x6a6258});rsWale(B,H,.94,.1,'metal',0x3a3a3c);rsSpine(B,H,.12,BLK);
  // rust bleeding from the hawse pipes and scuppers
  for(let i=0;i<12;i++){const u=rr(.15,.95),s=rng()<.5?-1:1,h=rr(.6,.9);const p=H.pt(u,s,h),N=H.nrm(u,s,h);const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),N);

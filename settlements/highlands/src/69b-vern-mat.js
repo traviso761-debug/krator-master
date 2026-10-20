@@ -103,12 +103,14 @@ MAT.plaster=new THREE.MeshStandardMaterial({map:TEX.plaster,color:0xffffff,rough
 MAT.thatch=new THREE.MeshStandardMaterial({map:TEX.thatch,color:0xffffff,roughness:1,metalness:0,side:DS});
 MAT.shingle=new THREE.MeshStandardMaterial({map:TEX.shingle,color:0xffffff,roughness:.95,metalness:0,side:DS});
 MAT.cloth=new THREE.MeshStandardMaterial({map:TEX.stripes,color:0xffffff,roughness:.9,metalness:0,side:DS});
+/* clothR: the library's red-striped canvas (patterns/canvas/stripe-red), full colour, for the awnings that take no colour of their own; the grey stripes stand in under ?mat=proc */
+MAT.clothR=new THREE.MeshStandardMaterial({map:TEX.stripes,color:0xffffff,roughness:.9,metalness:0,side:DS});
 MAT.iron=new THREE.MeshStandardMaterial({color:0x2e2a26,roughness:.62,metalness:.55});
 MAT.clay=new THREE.MeshStandardMaterial({color:0x9a5a38,roughness:.9,metalness:0});
 MAT.warmPane=new THREE.MeshBasicMaterial({color:0xffcf8a});          // an electrically lit window: rich + civic only
 MAT.bulb=new THREE.MeshBasicMaterial({color:0xfff3d6});
 MAT.dirt=new THREE.MeshStandardMaterial({map:TEX.dirt,roughness:1});
-vWorldUV(MAT.wood,.5);vWorldUV(MAT.woodV,.5);vWorldUV(MAT.stone,.25);vWorldUV(MAT.plaster,.5);vWorldUV(MAT.thatch,.5);vWorldUV(MAT.shingle,.5);vWorldUV(MAT.cloth,.5);
+vWorldUV(MAT.wood,.5);vWorldUV(MAT.woodV,.5);vWorldUV(MAT.stone,.25);vWorldUV(MAT.plaster,.5);vWorldUV(MAT.thatch,.5);vWorldUV(MAT.shingle,.5);vWorldUV(MAT.cloth,.5);vWorldUV(MAT.clothR,.5);
 vWorldUV(MAT.corrugate,.5);vWorldUV(MAT.tarp,.5);vWorldUV(MAT.timber,.5);vWorldUV(MAT.white,.125);vWorldUV(MAT.rust,.125);vWorldUV(MAT.verdigris,.25);vWorldUV(MAT.clay,.5);
 
 // ---------------------------------------------------------------- geometry
@@ -139,7 +141,7 @@ const VGABLE=vnWedgeGeo(1,.02), VPYR=vnWedgeGeo(.04,.04), VBATTER=vnWedgeGeo(.86
 // ---------------------------------------------------------------- kit items
 kdef('vWood',VBOX,MAT.wood);kdef('vStone',VBOX,MAT.stone);kdef('vPlaster',VBOX,MAT.plaster);kdef('vCorr',VBOX,MAT.corrugate);
 kdef('vIron',VBOX,MAT.iron);kdef('vThatchB',VBOX,MAT.thatch);kdef('vShingleB',VBOX,MAT.shingle);kdef('vCopperB',VBOX,MAT.verdigris);
-kdef('vPanelB',VBOX,MAT.white);kdef('vRustB',VBOX,MAT.rust);kdef('vClothB',VBOX,MAT.cloth);kdef('vTarpB',VBOX,MAT.tarp);kdef('vClayB',VBOX,MAT.clay);kdef('vDarkB',VBOX,MAT.void);
+kdef('vPanelB',VBOX,MAT.white);kdef('vRustB',VBOX,MAT.rust);kdef('vClothB',VBOX,MAT.cloth);kdef('vClothRB',VBOX,MAT.clothR);kdef('vTarpB',VBOX,MAT.tarp);kdef('vClayB',VBOX,MAT.clay);kdef('vDarkB',VBOX,MAT.void);
 kdef('vSheet',VPLANE,MAT.corrugate);kdef('vBoard',VPLANE,MAT.wood);kdef('vPlate',VPLANE,MAT.rust);kdef('vPlateW',VPLANE,MAT.white);kdef('vTarp',VPLANE,MAT.tarp);kdef('vCloth',VPLANE,MAT.cloth);
 kdef('vPost',VPOST,MAT.woodV);kdef('vPostB',VPOSTB,MAT.woodV);kdef('vPostS',VPOST,MAT.stone);kdef('vPipe',VPOST,MAT.iron);kdef('vPipeR',VPOST,MAT.rust);kdef('vPipeC',VPOST,MAT.verdigris);kdef('vClayPot',VPOSTB,MAT.clay);kdef('vBarrel',new THREE.CylinderGeometry(1,.9,1,10).translate(0,.5,0),MAT.woodV);kdef('vTank',VPOST,MAT.corrugate);kdef('vTankW',new THREE.CylinderGeometry(1,1,1,24).translate(0,.5,0),MAT.white);kdef('vTankR',new THREE.CylinderGeometry(1,1,1,24).translate(0,.5,0),MAT.rust);kdef('vStave',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);
 kdef('vDomeS',VDOME,MAT.stone);kdef('vDomeC',VDOME,MAT.verdigris);kdef('vDomeP',VDOME,MAT.plaster);kdef('vBall',VBALL,MAT.iron);kdef('vGourd',VBALL,MAT.clay);kdef('vSack',VBALL,MAT.tarp);kdef('vLeaf',VBALL,MAT.moss);

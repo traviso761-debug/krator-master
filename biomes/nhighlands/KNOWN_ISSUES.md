@@ -2,6 +2,18 @@
 
 ## Open
 
+- [ ] **The new flora (HANDOFF-FLORA.md, 2026-10-18): procedural, and what to look at again.** Everything new is painted
+      in code: the fan-leaf cards (the staghorn and the sun-wheel took the owner's `card.staghorn` and `card.sunwheel` on 2026-10-19), the moss sleeves (the moss cushion's skin as a bark), the
+      ghost alder (the birch bark tinted grey), the serpentwood's and the banyan's bark (the kit's furrowed and smooth
+      kinds). Textures wanted: `core/materials/PROMPTS-NEEDED.md` and `HANDOFF-FLORA-REPORT.md`. Cut from the plan to
+      hold the 32 M budget: the fern sea's cell is 5 m (the plan's 3 m held 9.8 M triangles of fronds), the ghost
+      alder's weight is a fifth of the plan's (12.8k trees), spore lamps sit on about one hummock in seven with 8-22
+      pins (the plan's two in five with 10-40 held 2.6 M), and the hummocks' weight is .6 of the plan's. Moss collars
+      are cushions round the bole: on a fluted or buttressed giant they can show a gap, and they read as rings from
+      far. The hummocks are the 49-triangle cushion scaled to 4 m: faceted close up. **Roketstad** reads these
+      fragments in place but calls `NHL.buildTrees` itself: it gets none of the new flora until its build passes
+      `{flora:true}` and calls `NHL.buildNewFlora` (the owner: when Roketstad goes into the open world).
+
 - [ ] **Density against the budget.** The map is 43 km² of old growth; the canopy is closed
       only near the LOD spine (the stream, the tower, the old wood, a boreal stand, the crest).
       Beyond ~600 m the stands thin (the passes' `lodK`) and the impostors are drawn larger to
@@ -79,3 +91,7 @@
 - [x] verify.py asserts the biome's invariants (species, stream, water, cliffs, trumpets,
       glow, tower).
 - [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.
+
+## Export profile: sections left out (2026-10-18)
+
+EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export: the section reads empty; sedesert fills it with 89-atmos-8-export.js); water (no core/water surface meets the box: the section reads empty). Add each back when the kit fills it.

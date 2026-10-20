@@ -12,7 +12,7 @@ any future build (a Voth catalog, a Yuni district, a Beast Rider village, a High
 |---|---|
 | `37-sockets.js` | `sock(type,x,y,z,ry,opts)`, `fillSockets()`, the `CULT` registry, `cultDef(pack)`, `PAINT()` (livery colour from the active culture) |
 | `38-symbols.js` | **the culture symbols**, pure 2D canvas: `SYMBOLS[name](g, cx, cy, R, ink, ink2)`, `drawTriskele`, and `SYMBOL_OF` (pack or culture key -> symbol). Shared with the furniture kit (vendored as `kits/catalog/krator-symbols.js`, `build.py --vendor-check` there), so a dressed building and the tapestries inside it carry one emblem |
-| `80-cultures.js` | the drawing kit (`cvMat`, `stripeTex`, `banDecal`, `SIGN_ICONS`, `signBoard`), the factory `mkCulture({...})`, and the packs: `generic iziz republic voth yuni beast-rider hykkousoi xanadu ringsea-islander screamer zeijani` (`beastriders` still resolves, as a hidden alias of `beast-rider`) |
+| `80-cultures.js` | the drawing kit (`cvMat`, `stripeTex`, `banDecal`, `SIGN_ICONS`, `signBoard`), the factory `mkCulture({...})`, and the packs: `generic iziz republic voth yuni beast-rider hykkousoi xanadu order ringsea-islander screamer zeijani` (`beastriders` still resolves, as a hidden alias of `beast-rider`) |
 | `example/` | a runnable sheet: the same demo wall in every pack. `python3 example/build.py` writes `example/sockets-example.html` |
 
 ## The five-minute version
@@ -55,14 +55,15 @@ mkCulture({key:'yuni', name:'Yuni',
   signBg:'#dcb42c', signFg:'#3a2c08', signFrame:0x5a4410, pole:0x5a4410, flagStyle:'rect'});
 ```
 A new symbol is one function in `SYMBOLS` (`38-symbols.js`): `(g, cx, cy, R, ink, ink2)` on a 2D canvas context, drawn inside a box of half-size R; re-copy the file to `kits/catalog/krator-symbols.js` afterwards. Shipped: `sun` (Iziz),
-`triskele` (Republic), `diamond` (Voth), `hyperboloid` (Yuni: a cooling-tower waist with its ruling lines), `claw` (Beast Riders: three talon slashes), `windwave` (Hykkousoi: three wind-curls over a breaking wave), `wheel` (Xanadu: the eight-spoked wheel), `moon` (Ring Sea Islanders: the white moon); and, added by the furniture sets for cultures that have no pack yet (a pack that arrives later takes its symbol from `SYMBOL_OF`): `serpent` (Lizardmen), `star` (East Abyss), `horns` (Eastern Nomads), `fir` (Rustic Highlanders), `raven` (Painted Men: a formline raven's head), `fish` (Reed Lake), `skull` (Screamers), `gear` (Post-Apoc salvage and scrap).
+`triskele` (Republic), `diamond` (Voth), `hyperboloid` (Yuni: a cooling-tower waist with its ruling lines), `claw` (Beast Riders: three talon slashes), `windwave` (Hykkousoi: three wind-curls over a breaking wave), `wheel` (the eight-spoked wheel; Xanadu's until 2026-10-20), `lotus` (Xanadu: the white lotus), `scroll` (the Order of Historians, the History Monks: a scroll with the wheel written on it), `moon` (Ring Sea Islanders: the white moon); and, added by the furniture sets for cultures that have no pack yet (a pack that arrives later takes its symbol from `SYMBOL_OF`): `serpent` (Lizardmen), `star` (East Abyss), `horns` (Eastern Nomads), `fir` (Rustic Highlanders), `raven` (Painted Men: a formline raven's head), `fish` (Reed Lake), `skull` (Screamers), `gear` (Post-Apoc salvage and scrap).
 For a fully custom pack skip the factory and call `cultDef({key,name,paint,fill:{awning,banner,flag,emblem,sign,paint}})` with your own drawing functions; any `fill`
 you omit falls back to the generic pack.
 
 Shipped palettes: **Iziz** orange and teal, striped awnings. **Republic** Voth's deep red with cream, ochre and the triskelion. **Voth** deep purple with an ash-white glyph, ragged cloth.
 **Yuni** yellow with the hyperboloid. **Beast Riders** green with the claw, ragged hide-and-cloth.
-**Hykkousoi** pale sea-linen and slate blue, with gold wind over a slate wave. **Xanadu** saffron bordered in maroon with the gold-hubbed wheel. **Ring Sea Islanders** bark-dyed cloth
-and pandanus with the white moon, pennant streamers. These three take their colours from the sails in `kits/ringsea`, so a culture's ships and buildings match.
+**Hykkousoi** pale sea-linen and slate blue, with gold wind over a slate wave. **Xanadu** rose bordered in wine, gold bands, the white lotus.
+**The Order of Historians** (`order`, the History Monks) the Order's deeper saffron bordered in maroon, gold bands, the scroll with the wheel written on it. **Ring Sea Islanders** bark-dyed cloth
+and pandanus with the white moon, pennant streamers. These three took their colours from the sails in `kits/ringsea`, so a culture's ships and buildings matched; Xanadu's rose and lotus (2026-10-20) are not on its ships' sails yet (`kits/ringsea` paints its own saffron and wheel).
 **Zeijani** alecap purple bordered in soot, ochre bands, a bone-white `spiralarch` (a spiral sinking into a stepped arch: the way in), felt and hide awnings, pennants; signs bone on soot.
 **Screamers** ochre daub on rag with black and bone white and the skull, ragged cloth, pennants (the Hexahedron's salvage homes wear it).
 

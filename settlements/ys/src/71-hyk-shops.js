@@ -224,7 +224,7 @@ function hykShopDressChandler(F){const dT=hykShopDoorTop(F);const bone=hC(hPick(
 function hykShopDressPearl(F){const dT=hykShopDoorTop(F);const nac=hC(hPick(HPAL.nacre)),teal=hC(hPick(HPAL.teal)),bone=hC(hPick(HPAL.bone));
  // the inlay band: a ribbon of mosaic lying on the shell between two heights, following its surface
  // (u runs with the pod's azimuth and v up, so the outward side is the flipped winding, as a pod's inner skin is)
- const y0=dT-.42,y1=dT-.02;hykPut('hkMosaic',hykSurf((u,v)=>{const q=F.at(u*TAU,y0+(y1-y0)*v,.04);return q.p;},56,2,{col:teal,uS:TAU*F.R/4,vS:.15,flip:true}));
+ const y0=dT-.42,y1=dT-.02;hykPut('hkBand',hykSurf((u,v)=>{const q=F.at(u*TAU,y0+(y1-y0)*v,.04);return q.p;},56,2,{col:hC(0xffffff),uS:TAU*F.R*.75,vS:.3,flip:true}));   // the banded trim: one whole sheet to every 0.4 m of the 0.4 m band (rep 3.33 sheets a tile)
  hykPut('hkMosaic',hykSurf((u,v)=>{const q=F.at(u*TAU,F.top-F.R*.47+(F.R*.17)*v,.04);return q.p;},56,2,{col:teal,uS:TAU*F.R/4,vS:.3,flip:true}));
  // the pearl on the crown
  kput('hkLipN',[F.cx,F.top-.12,F.cz],qEuler(Math.PI/2,0,0),[.62,.62,1.2],nac);kput('hkBall',[F.cx,F.top+.35,F.cz],null,[.5,.5,.5],nac);

@@ -11,11 +11,15 @@ Built output (never open it; edit `src/` and rebuild): `dist/scyvoi.html`
 Build: `cd kits/scyvoi && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 3 |  |
+| `00-head.html` | 1 |  |
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
 | `26k-kit.js` | 5 |  |
 | `27-mat.js` | 6 |  |
@@ -32,12 +36,13 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `58-cv-wheels.js` | 6 |  |
 | `58v-cv-vardo.js` | 10 |  |
 | `59-th-tether.js` | 2 |  |
+| `60-sy-trades.js` | 6 | = (2) |
 | `81-sky.js` | 10 |  |
 | `89-rows.js` | 1 |  |
 | `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
-| `91-probe.js` | 2 |  |
 | `91f-furnish.js` | 6 |  |
 | `91n-night.js` | 3 |  |
-| `92-camera.js` | 12 |  |
+| `92-world.js` | <1 |  |
 | `93-anim.js` | 3 |  |
+| `99-host-take.js` | 7 | the inspector's words: a click names what is und (11); the cut-away (C), night (N, in 91n-night.js), sh (28); the frame, around the host's: the sun and the sk (35); the probe's fields (verify.py --assert): what 91 (45); the page, handed to the host (62) |
 | `99-tail.html` | <1 |  |

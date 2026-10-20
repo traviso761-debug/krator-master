@@ -42,5 +42,6 @@ function zsBuilt(it,i){const t=zsTrade(it.key),dome=i%2===0;
    door(1.4,.2,3.2,0,1.0);
    FURNISH('zeijani_trade_display',-1.8,0,4.2,0,{setting:'outdoor'});if(ZS_OUT[t]&&ZS_OUT[t]!=='zeijani_trade_display')FURNISH(ZS_OUT[t],-3.0,0,4.4,0,{setting:'outdoor'});}});}
 
+/* the 24 keys (made from the items by zsCarved / zsBuilt; src/55-zj-trades.js names them): 'zj_shop_weapons_carved' 'zj_shop_weapons_built' 'zj_shop_armour_carved' 'zj_shop_armour_built' 'zj_shop_general_carved' 'zj_shop_general_built' 'zj_shop_food_carved' 'zj_shop_food_built' 'zj_shop_alchemist_carved' 'zj_shop_alchemist_built' 'zj_shop_lampwright_carved' 'zj_shop_lampwright_built' 'zj_shop_stonecutter_carved' 'zj_shop_stonecutter_built' 'zj_shop_dyer_carved' 'zj_shop_dyer_built' 'zj_shop_potter_carved' 'zj_shop_potter_built' 'zj_shop_leather_carved' 'zj_shop_leather_built' 'zj_shop_knapper_carved' 'zj_shop_knapper_built' 'zj_shop_rope_carved' 'zj_shop_rope_built' */
 ZS_ITEMS.filter(it=>/_carved$/.test(it.key)).forEach(zsCarved);
 ZS_ITEMS.filter(it=>/_built$/.test(it.key)).forEach(zsBuilt);

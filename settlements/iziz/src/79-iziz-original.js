@@ -68,14 +68,15 @@ function izCurtainWall(scene,rf,cx,cz,n,H,gates,towerEvery,barracksAngles){const
    kput('strip',[mx-Math.sin(ang)*s*3.75,base+H*.4,mz+Math.cos(ang)*s*3.75],q,[len*.9,1,1],CYAN);}
   if(i%towerEvery===0){const tx=a[0],tz=a[1],ty=terrainH(tx,tz)-3,TH=H+14;
    mesh(lathe({rFn:yy=>4.2*(1-.05*Math.pow(yy/TH,4))*(1+.12*Math.pow(.5+.5*Math.cos(yy*0),1)),H:TH,flutes:12,amp:.09,sharp:2.5,nu:36,nv:8}),MAT.izConcOrange,G,tx,ty,tz);
-   mesh(lathe({rFn:()=>4.6,H:2.6,nu:24,nv:1}),MAT.glass,G,tx,ty+TH-3.4,tz);mesh(lathe({rFn:()=>4.2,H:2.6,nu:20,nv:1}),MAT.dark,G,tx,ty+TH-3.4,tz);mullions(tx,ty+TH-3.4,tz,4.6,2.6,14,0);
+   mesh(lathe({rFn:()=>4.6,H:2.6,nu:24,nv:1}),MAT.glass,G,tx,ty+TH-3.4,tz);mesh(lathe({rFn:()=>4.2,H:2.6,nu:20,nv:1}),MAT.izRoom,G,tx,ty+TH-3.4,tz);mullions(tx,ty+TH-3.4,tz,4.6,2.6,14,0);
    kput('slab',[tx,ty+TH-.6,tz],null,[5.2,.6,5.2],vC(0xd8d4cc));stripRing(tx,ty+TH-.2,tz,4.9,0,16);kput('slab',[tx,ty+TH,tz],null,[4.6,.5,4.6],vC(0xd8d4cc));
    mesh(lathe({rFn:yy=>4.0*Math.sqrt(clamp(1-Math.pow(yy/3,2),0,1)),H:3,nu:20,nv:5}),MAT.white,G,tx,ty+TH+.4,tz);kput('finial',[tx,ty+TH+4,tz],null,[.8,1.4,.8],null);
    REG.push({name:'Palace sentry tower',x:tx,y:terrainH(tx,tz)-6,z:tz,r:6,h:TH+8,cls:'building',key:'iziz_curtain_tower',tags:{culture:'ancients',type:['military'],wealth:'civic',lit:true}});}}
  for(let i=0;i<20;i++){const t=i/20*TAU;if(gates.some(pg=>angDiff(t,pg)<.22))continue;REG.push({name:'Palace curtain wall (Ancient)',x:cx+rf(t)*Math.cos(t),y:terrainH(cx+rf(t)*Math.cos(t),cz+rf(t)*Math.sin(t))-6,z:cz+rf(t)*Math.sin(t),r:14,h:H+6,cls:'building',key:'iziz_curtain',tags:{culture:'ancients',type:['military'],wealth:'civic',lit:true}});}
  // gates: an arch through the rampart, strut portico, two lamp-crowned pylons
  for(const pg of gates){const R=rf(pg),gx=cx+R*Math.cos(pg),gz=cz+R*Math.sin(pg),gy=terrainH(gx,gz)-3;const q=qEuler(0,-pg,0);
-  kput('boxC',[gx,gy+H/2+2,gz],q,[13,H+4,16],IZ_CONC_TINT);kput('archOpen',[gx,gy+5.5,gz],qFacing([Math.cos(pg),0,Math.sin(pg)]),[1.4,1.2,15],null);
+  {const P=(lz,y0,y1,w)=>{const p=[gx-Math.sin(pg)*lz,gz+Math.cos(pg)*lz];kput('boxC',[p[0],gy+(y0+y1)/2,p[1]],q,[13,y1-y0,w],IZ_CONC_TINT);};   /* a real passage (69e5): two piers and the span over the road */
+  P(-6.1,-2,H+2,3.8);P(6.1,-2,H+2,3.8);P(0,12,H+2,8.4);for(const s of[-1,1]){const p=[gx-Math.sin(pg)*s*4.35,gz+Math.cos(pg)*s*4.35];kput('boxW',[p[0],gy+7.5,p[1]],q,[13.2,9,.3],IZ_CONC_TINT);}}
   for(const s of[-1,1]){const px=gx-Math.sin(pg)*s*9.5,pz=gz+Math.cos(pg)*s*9.5;kput('colW',[px,gy,pz],null,[1.6,H+9,1.6],null);kput('finial',[px,gy+H+9.6,pz],null,[.9,1.4,.9],null);
    for(let k=-1;k<=1;k++)kput('strip',[gx+Math.cos(pg)*k*3.4,gy+H+2.6,gz+Math.sin(pg)*k*3.4],q,[11,1,1],CYAN);}
   REG.push({name:'Palace gate',x:gx,y:terrainH(gx,gz)-4,z:gz,r:14,h:H+12,cls:'building',key:'iziz_palace_gate',tags:{culture:'ancients',type:['military','civic'],wealth:'civic',lit:true}});}
@@ -94,10 +95,10 @@ function izBarracks(x,z,a,idx){const ty=terrainH(x,z)-.2;const ry=Math.atan2(-Ma
  // windows: 6 bays per floor on the court face and the back, 2 on each end; lit panes with a dark reveal
  for(let f=0;f<NF;f++){const wy=f*FL+1.4;
   for(let i=0;i<6;i++){const lx=(i-2.5)*4.4;if(f===0&&(i===2||i===3))continue;                     // the door bay at ground
-   for(const s of[-1,1]){B('vDarkB',lx,wy,s*(D/2+.02),1.8,2.2,.3);B('vWinLit',lx,wy+.15,s*(D/2+.1),1.4,1.8,.2);}}
-  for(let i=0;i<2;i++)for(const s of[-1,1]){const lz=(i-.5)*5;B('vDarkB',s*(W/2+.02),wy,lz,.3,2.2,1.8);B('vWinLit',s*(W/2+.1),wy+.15,lz,.2,1.8,1.4);}}
+   for(const s of[-1,1]){B('vPlaster',lx,wy,s*(D/2+.02),1.8,2.2,.3,IZ_ROOMC);B('vWinLit',lx,wy+.15,s*(D/2+.1),1.4,1.8,.2);}}
+  for(let i=0;i<2;i++)for(const s of[-1,1]){const lz=(i-.5)*5;B('vPlaster',s*(W/2+.02),wy,lz,.3,2.2,1.8,IZ_ROOMC);B('vWinLit',s*(W/2+.1),wy+.15,lz,.2,1.8,1.4);}}
  // the door toward the court (+z in the local frame is -a: toward the hill centre), its canopy and steps
- B('vDarkB',0,0,D/2+.05,3.2,3.6,.4);B('izBoxW',0,3.8,D/2+1.2,5.6,.5,2.8);B('izBoxS',0,-1.2,D/2+1.6,5.6,1.2,2.4);B('izBoxS',0,-1.2,D/2+3.2,7,.6,1.4);
+ {const p=L(0,D/2+.05);IZDOOR.leaf(p[0],ty,p[1],ry,3.2,3.6,.4,vC(0x3a3632),{locked:true,key:'iziz_barracks'});}B('izBoxW',0,3.8,D/2+1.2,5.6,.5,2.8);B('izBoxS',0,-1.2,D/2+1.6,5.6,1.2,2.4);B('izBoxS',0,-1.2,D/2+3.2,7,.6,1.4);
  for(const s of[-1,1]){const p=L(s*4.2,D/2+2.4);kput('vPostS',[p[0],ty,p[1]],null,[.45,4.6,.45],vC(0xe2b676));kput('izGlow',[p[0],ty+4.9,p[1]],null,[.45,.45,.45],null);}
  // stair drum at one end, a floor above the roof, with its own strip
  {const p=L(-(W/2+2.2),-D/2+3.5);kput('izOct',[p[0],ty,p[1]],q,[5.2,H+4.6,5.2],null);kput('izBoxCap',[p[0],ty+H+4.7,p[1]],q,[5.6,.5,5.6],null);kput('strip',[p[0],ty+H+4.1,p[1]],q,[4,.4,1],CYAN);}
@@ -119,24 +120,24 @@ function izStatue(x,z,h,pose,facing,yBase){const y=yBase!==undefined?yBase:terra
 function izNeedle(scene,x,z,H){const y=terrainH(x,z);const G=new THREE.Group();G.position.set(x,y,z);scene.add(G);
  kput('izSteel',[x,y,z],null,[3.5,H,3.5],null);for(let k=0;k<3;k++){const t=k*TAU/3;kput('izSteel',[x+7*Math.cos(t),y,z+7*Math.sin(t)],qEuler(Math.sin(t)*.32,0,-Math.cos(t)*.32),[1.3,20,1.3],vC(0x6e6a62));}
  for(let k=1;k<8;k++)kput('ringR',[x,y+k*H/8,z],qEuler(Math.PI/2,0,0),[2.6+1.8*(1-k/8)+.1,2.6+1.8*(1-k/8)+.1,2],null);
- mesh(lathe({rFn:yy=>9+6*yy/3.5,H:3.5,nu:24,nv:2}),MAT.rust,G,0,H+.5,0);mesh(lathe({rFn:()=>15,H:3.6,nu:24,nv:1,hole:holeFn(1,31,null,3)}),MAT.winDead,G,0,H+4.5,0);
+ mesh(lathe({rFn:yy=>9+6*yy/3.5,H:3.5,nu:24,nv:2}),MAT.rust,G,0,H+.5,0);mesh(lathe({rFn:()=>15,H:3.6,nu:24,nv:1,hole:holeFn(1,31,null,3)}),MAT.izGlass,G,0,H+4.5,0);
  for(let k=0;k<24;k++){const t=k/24*TAU;kput('izSteelBox',[x+15.05*Math.cos(t),y+H+6.3,z+15.05*Math.sin(t)],qEuler(0,-t,0),[.35,3.6,.6],null);}
  mesh(lathe({rFn:yy=>15+1.5*yy/.8,H:.8,nu:24,nv:1}),MAT.rust,G,0,H+6.6,0);kput('ringR',[x,y+H+8.2,z],qEuler(Math.PI/2,0,0),[16.3,16.3,1.2],null);
  for(let k=0;k<32;k++){const t=k/32*TAU;if(rng()<.3)continue;kput('izSteelBox',[x+16.3*Math.cos(t),y+H+7.6,z+16.3*Math.sin(t)],null,[.15,1.2,.15],null);}
  mesh(lathe({rFn:yy=>9-3*yy/3,H:3,nu:16,nv:1}),MAT.rust,G,0,H+7,0);mesh(lathe({rFn:yy=>15.6*Math.sqrt(clamp(1-Math.pow(yy/5.2,2),0,1)),H:5.2,nu:28,nv:7}),MAT.rust,G,0,H+8.4,0);   // the roof dome, whole (Travis), rusted
  kput('izSteel',[x,y+H+14,z],qEuler(.12,0,.08),[.4,10,.4],null);
  for(const sx of[-1.5,1.5])kput('izSteelBox',[x+sx,y+(H+7)/2,z+5.2],null,[.3,H+7,.3],null);kput('izSteelBox',[x,y+H*.35,z+5.2],null,[2.6,3.2,2.4],vC(0x8a7a6a));   // the stalled cabin
- kput('izBoxS',[x,y+1.5,z+7.6],null,[4.6,3,2.4],null);kput('vDarkB',[x,y+1.3,z+8.9],null,[1.8,2.6,.3],null);
+ kput('izBoxS',[x,y+1.5,z+7.6],null,[4.6,3,2.4],null);IZDOOR.leaf(x,y,z+8.9,0,1.8,2.6,.3,vC(0x3a3632),{locked:true,key:'iziz_needle'});
  rubbleRing(x,y,z,6,16,26,1.6);vinesOnRing(x,y+H+4,z,15,14,H*.4);scatterMoss(x,y,z,3,14,16,1.2);
  REG.push({name:'Observation tower (ruined)',x,y:y-1,z,r:20,h:H+26,cls:'building',key:'iziz_needle',tags:{culture:'iziz-old',type:['civic'],wealth:'civic',lit:false,state:'ruined'}});}
 // ---- the spaceport, RUINED: bunker hub, six pads, fuel farm, control tower stump, broken perimeter, a wrecked freighter ----
 function izSpaceport(scene,SP,SPA,y0){const G=new THREE.Group();G.position.set(SP.x,y0,SP.z);scene.add(G);const x=SP.x,z=SP.z;reseed(7777);
  kput('izOctR',[x,y0,z],null,[44,7,44],null);kput('izOctR',[x,y0+7,z],null,[32,5,32],vC(0xb8b0a6));kput('izOctRust',[x,y0+12,z],null,[18,4,18],null);
  mesh(lathe({rFn:yy=>7*Math.sqrt(clamp(1-Math.pow(yy/4,2),0,1)),H:4,nu:20,nv:6,hole:holeFn(1.1,41,null,2.5)}),MAT.concreteR,G,0,16,0);
- for(let i=0;i<8;i++){const t=i/8*TAU+Math.PI/8;kput('vDarkB',[x+18.5*Math.cos(t),y0+2,z+18.5*Math.sin(t)],qEuler(0,-t,0),[4,3,1.2],null);if(rng()<.4)kput('strip',[x+13.6*Math.cos(t),y0+12.2,z+13.6*Math.sin(t)],qEuler(0,-t-Math.PI/2,0),[3,1,1],DEAD);}
- {const ex=-22*Math.cos(SPA),ez=-22*Math.sin(SPA);kput('vDarkB',[x+ex,y0+2.75,z+ez],qEuler(0,Math.PI/2-SPA,0),[10,5.5,3],null);}
+ for(let i=0;i<8;i++){const t=i/8*TAU+Math.PI/8;kput('vIron',[x+18.5*Math.cos(t),y0+2,z+18.5*Math.sin(t)],qEuler(0,-t,0),[4,3,1.2],vC(0x5a524a));if(rng()<.4)kput('strip',[x+13.6*Math.cos(t),y0+12.2,z+13.6*Math.sin(t)],qEuler(0,-t-Math.PI/2,0),[3,1,1],DEAD);}
+ {const ex=-22*Math.cos(SPA),ez=-22*Math.sin(SPA);kput('vPlaster',[x+ex,y0+2.75,z+ez],qEuler(0,Math.PI/2-SPA,0),[10,5.5,3],IZ_ROOMC);}
  kput('izOctRust',[x+9,y0+12,z-3],qEuler(0,0,.04),[6.5,18,6.5],null);                                          // the control tower, snapped off at 18 m
- kput('izOctRust',[x+28,y0+1.5,z-14],qEuler(Math.PI/2*.92,.4,.3),[6.5,9,6.5],null);kput('vDarkB',[x+28,y0+2.2,z-14],qEuler(Math.PI/2*.92,.4,.3),[6.2,2.4,6.2],null);   // its top, fallen
+ kput('izOctRust',[x+28,y0+1.5,z-14],qEuler(Math.PI/2*.92,.4,.3),[6.5,9,6.5],null);kput('vRustB',[x+28,y0+2.2,z-14],qEuler(Math.PI/2*.92,.4,.3),[6.2,2.4,6.2],vC(0x5a3a28));   // its top, fallen
  for(let i=0;i<6;i++){const t=i/6*TAU+Math.PI/4,px=x+46*Math.cos(t),pz=z+46*Math.sin(t);kput('slabCR',[px,y0+.3,pz],null,[12,.7,12],null);
   if(i%2===0)kput('ringR',[px,y0+.75,pz],qEuler(Math.PI/2,0,0),[11.4,11.4,2],null);for(let k=0;k<4;k++){const a=k/4*TAU+t;if(rng()<.5)kput('izSteelBox',[px+14.5*Math.cos(a),y0+.8,pz+14.5*Math.sin(a)],null,[.7,1.6,.7],null);}
   if(rng()<.5)scatterMoss(px,y0+.7,pz,2,10,12,1.1);

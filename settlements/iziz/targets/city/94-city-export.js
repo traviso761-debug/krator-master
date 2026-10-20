@@ -24,8 +24,17 @@
 //   stage      KSTAGE.capture: light, fog, sky panorama, the painted ground's look on the terrain grid
 //   fixtures   the doors, windows and lamps 69f noted and 91t registered (children of their buildings), with their host
 //   furniture  the kit slots: REG's furniture (plazas, statues, fountains, drains) as placements of their kit piece;
-//              pieces carry no mesh of their own (they are drawn in items and buckets)
-//   interiors  none: Iziz's buildings are shells (the contributor answers null, so the section reads 'empty')
+//              pieces carry no mesh of their own (they are drawn in items and buckets). On a page with interiors
+//              (95i: a kit's sheet, --kit) also the furnished rooms' pieces: each catalog piece once per look (its key,
+//              variant and a look: the placements whose piece, built at its heading and turned back into its own frame, gives
+//              the same geometry and colours share one), its
+//              mesh the items named `items` (one per render family, unit geometry in the piece's frame, an instance
+//              per placement), and a placement per ixf record (its room and building); those pieces are then not in
+//              the buckets
+//   interiors  the room graph of every furnished building in the box (95i's plans, IZIX.jobs), building-local: the
+//              krator-interiors contract Yuni fills (storeys and rooms, door / stair / ladder links with the walk
+//              graph's two ends, walls with col, the yard). Iziz's city has none (its buildings are shells): there the
+//              contributor answers null, so the section reads 'empty'
 // The registry (core/tags, cropped to the box by core/export's adapter), atmos (ATMOS.export) and the KMAT table come
 // from core/export's adapters. Owner rule: the registered volume (REG: x, z, r, from y to y + h, 1 m slack) holding the
 // point, the smallest when several do; REG's buildings, farms and furniture only (flora and life are not owners).
@@ -55,11 +64,13 @@ function owners(){
 // ---- materials and textures
 function library(m, key){   // the KMAT pack entry a bound material took, and its family (by its MAT key or alias, else by its set)
  if (!m.userData || !m.userData.lib || typeof KMAT === 'undefined') return null;
- const P = KMAT.packs.iziz || {};
+ // Iziz's pack first, then any other the page binds (a kit built on Iziz's page, --kit: its own pack, KMAT.pack('<kit>'))
  const fam = key == null ? null : typeof IZIZ_MATX !== 'undefined' && IZIZ_MATX[key] ? IZIZ_MATX[key].fam
   : typeof IZIZ_MATALIAS !== 'undefined' && IZIZ_MATALIAS[key] ? IZIZ_MATALIAS[key] : key;
- if (fam != null && P[fam] && P[fam].lib === m.userData.lib) return { fam, L: P[fam] };
- for (const f in P) if (P[f].lib === m.userData.lib) return { fam: f, L: P[f] };
+ const names = ['iziz'].concat(Object.keys(KMAT.packs).filter(n => n !== 'iziz').sort());
+ for (const pack of names) { const P = KMAT.packs[pack] || {};
+  if (fam != null && P[fam] && P[fam].lib === m.userData.lib) return { fam, L: P[fam], pack };
+  for (const f in P) if (P[f].lib === m.userData.lib) return { fam: f, L: P[f], pack }; }
  return null;
 }
 function collect(ctx){
@@ -81,10 +92,10 @@ function collect(ctx){
   if (!t) return null;
   const rep = wuv ? [1, 1] : [t.repeat.x, t.repeat.y], off = wuv ? [0, 0] : [t.offset.x, t.offset.y];
   const tag = (rep[0] !== 1 || rep[1] !== 1 || off[0] || off[1]) ? '@' + rep.map(v => +v.toFixed(4)).join('x') + (off[0] || off[1] ? '+' + off.map(v => +v.toFixed(4)).join(',') : '') : '';
-  const key = (lib ? 'lib:' + lib.fam + ':' + slot : 'tex:' + t.uuid) + tag;
+  const key = (lib ? 'lib:' + lib.pack + ':' + lib.fam + ':' + slot : 'tex:' + t.uuid) + tag;
   if (texBy.has(key)) return texBy.get(key).id;
-  const r = { id: 'tex:iziz:' + (lib ? lib.fam + ':' + slot : 'png' + texs.length) + tag, wrap: ['repeat', 'repeat'], repeat: rep, offset: off, flipY: t.flipY !== false };
-  if (lib) { r.from = 'library'; r.lib = lib.L.lib; r.pack = 'iziz'; r.family = lib.fam; r.slot = slot; }
+  const r = { id: 'tex:iziz:' + (lib ? (lib.pack === 'iziz' ? '' : lib.pack + ':') + lib.fam + ':' + slot : 'png' + texs.length) + tag, wrap: ['repeat', 'repeat'], repeat: rep, offset: off, flipY: t.flipY !== false };
+  if (lib) { r.from = 'library'; r.lib = lib.L.lib; r.pack = lib.pack; r.family = lib.fam; r.slot = slot; }
   else { const p = png(t); if (p) { r.from = 'png'; r.png = p.png; r.size = p.size; r.name = t.name || null; } else { r.from = 'none'; r.error = 'no drawable image'; } }
   texs.push(r); texBy.set(key, r); return r.id;
  };
@@ -92,10 +103,12 @@ function collect(ctx){
   if (Array.isArray(m)) { drop('multi-material'); m = m[0]; }
   const key = MK.get(m) || (src && MK.get(src)) || null;
   const s = [m.type, key, m.color ? m.color.getHex() : '', m.map ? m.map.uuid : '', m.roughness, m.metalness, m.emissive ? m.emissive.getHex() : '',
-   m.emissiveIntensity, m.transparent, m.opacity, m.alphaTest, m.side, m.userData && m.userData.uvK, m.userData && m.userData.lib, !!m.vertexColors].join('|');
+   m.emissiveIntensity, m.transparent, m.opacity, m.alphaTest, m.side, m.userData && m.userData.uvK, m.userData && m.userData.lib, !!m.vertexColors,
+   m.userData && m.userData.courtTri ? JSON.stringify(m.userData.courtTri) : ''].join('|');
   if (sig.has(s)) return sig.get(s);
   const lib = library(m, key), K = m.userData && m.userData.uvK || 0, shader = m.isShaderMaterial || m.isRawShaderMaterial;
-  const hook = []; if (K) hook.push('world-uv'); if (lib && lib.L.breakup) hook.push('breakup');
+  const tri = m.userData && m.userData.courtTri || null;   // a court finish (95i COURT_TRI): the set projected triplanar, no UVs
+  const hook = []; if (K) hook.push('world-uv'); if (lib && lib.L.breakup && !tri) hook.push('breakup'); if (tri) hook.push('triplanar');
   if (typeof MAT !== 'undefined' && MAT.glass && (m === MAT.glass || (src || m).onBeforeCompile === MAT.glass.onBeforeCompile)) hook.push('glass');
   let name = key || (m.name || m.type) + '~' + mats.length;
   if (matBy.has(name)) name += '~' + mats.length;
@@ -105,7 +118,8 @@ function collect(ctx){
    specular: lib && lib.L.specular != null ? lib.L.specular : .5,
    emissive: m.emissive && m.emissiveIntensity > 0 && m.emissive.getHex() ? hex(m.emissive) : null, emissiveIntensity: m.emissiveIntensity == null ? 0 : m.emissiveIntensity,
    doubleSided: m.side === THREE.DoubleSide, transparent: !!m.transparent, opacity: m.opacity == null ? 1 : m.opacity, alphaTest: m.alphaTest || 0,
-   vertexColours: !!m.vertexColors, tint: true, unlit: !!m.isMeshBasicMaterial, hook: hook.length ? hook.join('+') : null,
+   vertexColours: !!m.vertexColors, tint: !(tri && !tri.detail), unlit: !!m.isMeshBasicMaterial, hook: hook.length ? hook.join('+') : null,
+   triplanar: tri ? { tile: tri.tile, detail: tri.detail, gain: tri.gain, note: 'the map projected from three sides in the mesh\'s own frame, one tile per `tile` metres; detail: multiplied into the vertex colour times gain, else the map is the surface (95i COURT_TRI)' } : null,
    worldUV: K ? { K, note: 'an instance: uv * (the two instance-scale axes its face spans) * K; a plain mesh: uv as it is (vWorldUV, core/materials/opt/69a-world-uv.js)' } : null,
    scale: lib ? lib.L.scale.slice() : K ? [1 / K, 1 / K] : [1, 1], lib: lib ? lib.L.lib : null, breakup: lib && lib.L.breakup ? lib.L.breakup : null,
    normalScale: m.normalScale ? m.normalScale.x : 1,
@@ -128,6 +142,115 @@ function geo(g){   // a BufferGeometry as packed arrays (an interleaved attribut
  return out;
 }
 
+// ---- interiors (95i): which furnished buildings and pieces the box takes
+const ixOn = () => typeof IZIX !== 'undefined' && IZIX.on && Array.isArray(IZIX.jobs) && IZIX.jobs.length > 0;
+const r4 = v => Math.round(v * 1e4) / 1e4;
+// the box rule for the pieces (a placement by its origin); a building is in when a piece of it is, or its record's at
+function ixSel(ctx){ return ctx.memo('iziz-ix', () => {
+ const T = KTAGS.page, placed = IZIX.placed.filter(p => ctx.inBox(p.x, p.z)), want = new Set(placed.map(p => p.building)), byB = new Map();
+ for (const j of IZIX.jobs) { const r = j.parent ? T.get(j.parent) : null; if (!r) continue;
+  if (want.has(j.parent) || ctx.inBox(r.at[0], r.at[2])) (byB.get(j.parent) || byB.set(j.parent, []).get(j.parent)).push(j); }
+ const doors = new Map();   // a building's door fixtures (69f), to name the one an exterior door link is
+ for (const r of T.records) if (r['class'] === 'fixture' && r.kind === 'door' && !r.removed && byB.has(r.parent)) (doors.get(r.parent) || doors.set(r.parent, []).get(r.parent)).push(r);
+ return { placed, byB, doors }; }); }
+// world (x, z) and y into the frame of a building record: its base centre, turned by ry (local = R(-ry) (world - at))
+function frameOf(rec){ const at = rec.at || [0, 0, 0], c = Math.cos(rec.ry || 0), s = Math.sin(rec.ry || 0);
+ return { p: q => { const dx = q[0] - at[0], dz = q[1] - at[2]; return [r4(dx * c - dz * s), r4(dx * s + dz * c)]; }, y: y => r4(y - at[1]),
+  p3: q => { const dx = q[0] - at[0], dz = q[2] - at[2]; return [r4(dx * c - dz * s), r4(q[1] - at[1]), r4(dx * s + dz * c)]; } }; }
+const inPoly = (P, x, z) => { let i, j, c = false; for (i = 0, j = P.length - 1; i < P.length; j = i++)
+ if ((P[i][1] > z) !== (P[j][1] > z) && x < (P[j][0] - P[i][0]) * (z - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; };
+// a door's two walk ends: d metres either side of its wall (the room's wall nearest the door), `into` the side inside room R
+function sides(R, at, d){ const P = R.poly; let best = 1e9, n = [0, 1];
+ for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length], dx = b[0] - a[0], dz = b[1] - a[1], L2 = dx * dx + dz * dz || 1,
+   t = Math.max(0, Math.min(1, ((at[0] - a[0]) * dx + (at[1] - a[1]) * dz) / L2)), e = Math.hypot(at[0] - a[0] - dx * t, at[1] - a[1] - dz * t);
+  if (e < best) { best = e; const L = Math.sqrt(L2); n = [-dz / L, dx / L]; } }
+ if (!inPoly(P, at[0] + n[0] * d, at[1] + n[1] * d)) n = [-n[0], -n[1]];
+ return { into: [at[0] + n[0] * d, at[1] + n[1] * d], out: o => [at[0] - n[0] * o, at[1] - n[1] * o] }; }
+// one building's interior in the krator-interiors shape, from its jobs' plans (IX.sets.instantiate: planBuilding shells and
+// explicit rooms, in world metres; 95i's rooms carry the windows the builder drew)
+function ixBuilding(rec, jobs, fxDoors){
+ const F = frameOf(rec), rooms = new Map(), lv = new Map(), links = [], linkBy = new Map(), walls = [];
+ for (const j of jobs) { for (const R of j.inst.rooms) rooms.set(R.id, R);
+  for (const B of j.inst.buildings) for (const L of B.levels) if (!lv.has(L.k)) lv.set(L.k, { y: L.y, h: L.h }); }
+ const doorsOf = new Map(), addDoor = (rid, id) => { if (rooms.has(rid)) (doorsOf.get(rid) || doorsOf.set(rid, []).get(rid)).push(id); };
+ const fixture = at => { let best = null, bd = 1.0; for (const f of fxDoors || []) { const e = Math.hypot(f.at[0] - at[0], f.at[2] - at[1]); if (e < bd) { bd = e; best = f.id; } } return best; };
+ const door = (id, a, b, at, w, h) => { if (linkBy.has(id)) return; const A = rooms.get(a), Bq = rooms.get(b), y = A ? A.y : 0;
+  const S = A ? sides(A, at, .45) : null, ext = !Bq;
+  const from = S ? S.into : at, to = S ? (ext ? S.out(.45 + .6) : S.out(.45)) : at;
+  const l = { id, kind: 'door', a: A ? a : null, b: ext ? 'outside' : b, door: ext ? 'exterior' : 'interior', fixture: ext ? fixture(at) : null, w: w == null ? null : w, h: h == null ? null : h,
+   at: F.p3([at[0], y, at[1]]), from: F.p3([from[0], y, from[1]]), to: F.p3([to[0], ext ? rec.at[1] : (Bq ? Bq.y : y), to[1]]) };
+  links.push(l); linkBy.set(id, l); addDoor(a, id); if (!ext) addDoor(b, id); };
+ for (const j of jobs) {
+  for (const B of j.inst.buildings) {
+   for (const d of B.doors) door(d.id, d.rooms[0], d.rooms[1] === 'street' ? null : d.rooms[1], d.at, d.w, null);
+   for (const s of B.stairs) { const f = s.foot || s.centre || [0, 0], t = s.top || f, y = v => v.length > 2 ? v : [v[0], null, v[1]];
+    const fa = y(f), ta = y(t); fa[1] = fa[1] == null ? s.y0 : fa[1]; ta[1] = ta[1] == null ? s.y1 : ta[1];
+    const l = { id: s.id, kind: s.kind === 'ladder' ? 'ladder' : 'stair', a: s.rooms[0] || null, b: s.rooms[1] || null, at: F.p3(fa), from: F.p3(fa), to: F.p3(ta) };
+    links.push(l); linkBy.set(l.id, l); }
+   B.walls.forEach((w, i) => walls.push({ id: B.id + '.wall.' + i, kind: w.kind, a: F.p(w.a), b: F.p(w.b), y: F.y(w.y), h: w.h, thick: w.thick, col: true,
+    openings: (w.openings || []).map(o => ({ u: o.u, w: o.w, y0: o.y0, y1: o.y1, door: o.door || null, window: typeof o.window === 'string' ? o.window : o.window ? true : null })) }));
+  }
+  for (const R of j.inst.rooms) if (R.explicit) (R.doors || []).forEach((d, i) => {
+   const to = d.to && d.to !== 'street' && rooms.has(d.to) ? d.to : null;
+   door(d.id || (to && rooms.get(to).explicit ? [R.id, to].sort().join('~') : R.id + '.door.' + i), R.id, to, d.at, d.w, d.h); });
+ }
+ const byK = new Map(); for (const R of rooms.values()) { const k = R.level | 0; (byK.get(k) || byK.set(k, []).get(k)).push(R); }
+ const storeys = Array.from(byK.keys()).sort((a, b) => a - b).map(k => { const L = lv.get(k) || { y: byK.get(k)[0].y, h: byK.get(k)[0].h };
+  return { k, y: F.y(L.y), h: L.h, rooms: byK.get(k).map(R => ({ id: R.id, kind: R.kind, poly: R.poly.map(F.p), y: F.y(R.y), h: R.h, floor: null, doors: doorsOf.get(R.id) || [] })) }; });
+ const J = jobs[0].J, c = Math.cos(J.ry || 0), s = Math.sin(J.ry || 0), hw = J.w / 2, hd = J.d / 2;
+ const yard = { y: 0, poly: [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].map(q => F.p([J.x + q[0] * c + q[1] * s, J.z - q[0] * s + q[1] * c])) };
+ return { id: rec.id, units: jobs.map(j => j.id), storeys, links, walls, yard };
+}
+// the furnished rooms' pieces, once per look: each placement in the box is built again alone at the origin (the batch's
+// own build, its variant, seed, wealth and span), and placements whose build gives the same meshes share a look; a look's
+// meshes (one per render family, the painted panels baked into theirs) become items with an instance per placement. The
+// scene's merged material of a family (95i's flush) is the one the item names, so the materials are the buckets' were.
+function ixFurniture(ctx, C, own){
+ const KF = KratorFurniture, sel = ixSel(ctx), smat = new Map(), M = new THREE.Matrix4();
+ IZIX.group.traverse(m => { if (m.isMesh && m.name !== 'furniture:decal' && !smat.has(m.name)) smat.set(m.name, m.material); });
+ const looks = new Map(), pieces = new Map(), placements = [];
+ // two builds are one look when their meshes match: the same names, materials and index, every value within 1e-4 (a build
+ // turned back from its heading differs from the ry 0 one by float error, so a hash of the values would not match)
+ const shape = parts => parts.map(q => q.name + '|' + q.mat.id + '|' + ['position', 'normal', 'color', 'uv'].map(k => q.g.attributes[k] ? q.g.attributes[k].array.length : -1).join(',') + '|' + (q.g.index ? q.g.index.count : -1)).join(';');
+ const same = (A, B) => { for (let k = 0; k < A.length; k++) { const a = A[k].g, b = B[k].g;
+   if (a.index && b.index) { const x = a.index.array, y = b.index.array; for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return false; }
+   for (const n of ['position', 'normal', 'color', 'uv']) { if (!a.attributes[n]) continue; const x = a.attributes[n].array, y = b.attributes[n].array;
+    for (let i = 0; i < x.length; i++) if (Math.abs(x[i] - y[i]) > 1e-4) return false; } }
+  return true; };
+ for (const p of sel.placed) {
+  // built at its heading (the catalog's frame adds ry to a tilted part's Euler angles, so a turned build is not the ry 0
+  // build turned) and turned back into the piece's frame: the item's matrix, turned by ry, gives the page's triangles
+  const bt = KF.batch({ indexed: true }); bt.place(p.key, 0, 0, 0, p.ry, { variant: p.variant, seed: p.seed, wealth: p.wealth, span: p.span, setting: 'indoor' });
+  const g = bt.flush(null), parts = [], back = new THREE.Matrix4().makeRotationY(-p.ry);
+  g.children.forEach(m => { if (!m.isMesh) return; KFURN.linearColours(m.geometry); m.updateMatrix();
+   if (!m.matrix.equals(M.identity())) m.geometry.applyMatrix4(m.matrix);
+   if (p.ry) m.geometry.applyMatrix4(back);
+   parts.push({ name: m.name, g: m.geometry, mat: m.name === 'furniture:decal' ? m.material : smat.get(m.name) || m.material }); });
+  if (typeof courtParts === 'function') courtParts(p).forEach(q => parts.push(q));   // its court overlays (95i): the painting, frame, glaze or carpet ride with the piece
+  const kv = p.key + '/' + p.variant, h = shape(parts), L = looks.get(kv) || looks.set(kv, []).get(kv);
+  let look = L.find(o => o.h === h && same(o.parts, parts));
+  if (!look) { look = { h, id: kv + '/' + L.length, parts, n: [] }; L.push(look);
+   const E = KF.FURN_BY_KEY[p.key] || {}, dm = E.w ? KF.entryDims(E, p.variant) : null;
+   pieces.set(look.id, { id: look.id, entry: { tags: { culture: E.culture || null, tier: E.tier || null, type: E.type || null }, size: dm ? [dm.w, dm.d, dm.h] : null,
+    role: E.type || null, anchor: E.anchor || 'floor', key: p.key, variant: p.variant }, lights: KF.lightsOf(p.key, p.variant, p.seed, p.wealth), mesh: null, items: [] }); }
+  else parts.forEach(q => q.g.dispose());
+  look.n.push(p);
+  placements.push({ record: p.id, piece: look.id, at: [p.x, p.y, p.z], ry: p.ry, room: p.room, building: p.building });
+ }
+ const items = [];
+ for (const L of looks.values()) for (const look of L) {
+  const n = look.n.length, mats = new Float32Array(n * 16);
+  look.n.forEach((p, j) => { M.makeRotationY(p.ry).setPosition(p.x, p.y, p.z); for (let q = 0; q < 16; q++) mats[j * 16 + q] = M.elements[q]; });
+  look.parts.forEach((q, k) => { const gg = geo(q.g); if (q.g.attributes.color) gg.color = P(new Float32Array(q.g.attributes.color.array));
+   const id = 'iziz/furn:' + look.id + ':' + k;
+   items.push({ id, name: look.id + ':' + q.name.replace(/^furniture:/, ''), kit: 'catalog', label: look.id, material: C.matOf(q.mat, null), lod: null, count: n, dynamic: false, visible: true,
+    geometry: gg, matrices: P(mats), colours: null, extras: {}, piece: look.id, placements: look.n.map(p => p.id),
+    owners: look.n.map(p => own(p.x, p.y, p.z)) });
+   pieces.get(look.id).items.push(id); q.g.dispose(); });
+ }
+ return { items, pieces: Array.from(pieces.values()), placements };
+}
+
 function assemble(ctx){
  const C = collect(ctx), own = owners(), T = KTAGS.page, out = { items: [], buckets: [] };
  const box = ctx.box, inBox = ctx.inBox, M = new THREE.Matrix4(), W = new THREE.Matrix4(), v = new THREE.Vector3();
@@ -139,6 +262,7 @@ function assemble(ctx){
   const m0 = Array.isArray(o.material) ? o.material[0] : o.material;
   if (!m0 || m0.isShaderMaterial || m0.isRawShaderMaterial || m0.blending === THREE.AdditiveBlending) { C.drop(m0 && m0.blending === THREE.AdditiveBlending ? 'additive' : 'shader material'); continue; }
   if (!o.isInstancedMesh) continue;
+  if (o.userData && o.userData.courtOverlay && ixOn()) { C.drop('court overlays (exported with their pieces)'); continue; }
   const kit = C.KITOF.get(o), ident = o.matrixWorld.equals(new THREE.Matrix4()), A = o.instanceMatrix.array, keep = [];
   for (let i = 0; i < o.count; i++) {
    const x = ident ? A[i * 16 + 12] : (o.getMatrixAt(i, M), v.setFromMatrixPosition(W.multiplyMatrices(o.matrixWorld, M)).x);
@@ -161,11 +285,16 @@ function assemble(ctx){
   it.owners = keep.map((i, j) => own(mats[j * 16 + 12], mats[j * 16 + 13], mats[j * 16 + 14]));
   out.items.push(it); k++;
  }
+ // the furnished rooms' pieces as items (a page with interiors); their merged meshes then stay out of the buckets
+ const IXF = ixOn() ? ixFurniture(ctx, C, own) : null;
+ if (IXF) out.items.push(...IXF.items);
+ out.ixf = IXF;
  // buckets: plain meshes, one per material, triangles by centroid
  const groups = new Map(), a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), nm = new THREE.Matrix3(), nv = new THREE.Vector3();
  for (const o of meshes) {
   if (o.isInstancedMesh || lodCopy(o) || o.isSkinnedMesh) continue;
   if (o.userData && o.userData.isGround) { C.drop('the ground (terrain and stage)'); continue; }
+  if (IXF && o.userData && o.userData.interiors) { C.drop('the interiors\' furniture (exported as pieces)'); continue; }
   const m0 = Array.isArray(o.material) ? o.material[0] : o.material;
   if (!m0 || m0.isShaderMaterial || m0.isRawShaderMaterial || m0.blending === THREE.AdditiveBlending) continue;
   const g = o.geometry, Pp = g.attributes.position, I = g.index;
@@ -221,9 +350,18 @@ reg('furniture', ctx => { const T = KTAGS.page; if (!T) return null;
   const pid = (r.key || 'piece') + '/0/0';
   if (!pieces.has(pid)) pieces.set(pid, { id: pid, entry: { tags: rec.tags, size: rec.size || [2 * (rec.r || 0), 2 * (rec.r || 0), rec.h || 0], role: rec['class'], key: r.key }, lights: null, mesh: null });
   place.push({ record: rec.id, piece: pid, at: rec.at, ry: rec.ry }); }
- if (!place.length) return null;
- return { format: 'krator-furniture', version: 1, note: 'Iziz\'s kit slots: the registered furniture (plazas, statues, fountains, drains) as placements of their piece; a piece\'s mesh is not its own here (mesh: null): its geometry is in items and buckets, owned by the same record',
-  pieces: Array.from(pieces.values()), placements: place }; });
-reg('interiors', () => null);
+ const X = ixOn() ? B(ctx).ixf : null;
+ if (!place.length && !(X && X.placements.length)) return null;
+ const sec = { format: 'krator-furniture', version: 1, note: 'Iziz\'s kit slots: the registered furniture (plazas, statues, fountains, drains) as placements of their piece; a piece\'s mesh is not its own here (mesh: null): its geometry is in items and buckets, owned by the same record',
+  pieces: Array.from(pieces.values()), placements: place };
+ if (X) { sec.note += '. The furnished rooms (95i): a catalog piece per look (<key>/<variant>/<look>: placements whose build gives the same meshes share one), its meshes the items it names (`items`: unit geometry in the piece\'s frame, origin at the footprint centre on the floor, +z the front; an instance per placement, in the order of the item\'s `placements`), a placement per ixf record with its room (interiors) and building';
+  sec.pieces = sec.pieces.concat(X.pieces); sec.placements = sec.placements.concat(X.placements); }
+ return sec; });
+reg('interiors', ctx => { if (!ixOn()) return null; const T = KTAGS.page, S = ixSel(ctx), out = [];
+ for (const [bid, jobs] of S.byB) out.push(ixBuilding(T.get(bid), jobs, S.doors.get(bid)));
+ if (!out.length) return null;
+ return { format: 'krator-interiors', version: 1, frame: 'building-local (parent under the building record: at its base centre, turned by ry)',
+  note: 'The furnished buildings of a page with interiors (95i-iziz-interiors.js: the interiors kit\'s set planned in the world frame): storeys with their rooms (polygon, floor y, height, the ids of the door links that open into them), links (every planned door as a room-to-room or room-to-outside link, fixture the 69f door record an exterior door is, within 1 m; every stair and ladder between its two rooms: at the threshold or the foot, from and to the walk graph\'s ends), walls (exterior and partition, col) and the yard (the plot, where the exterior doors open). The furniture placements name their room (the furniture section)',
+  buildings: out }; });
 window.IZIZ_EXPORT = { collect: ctx => assemble(ctx || { box: null, inBox: () => true }) };
 })();

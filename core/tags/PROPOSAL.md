@@ -212,3 +212,17 @@ from `FURN_CULTURE_INFO`.
    item with per-instance ids only?
 6. **Labels:** keep free-text `label` as an override, or always generate it from the tags?
 7. **Class list:** is `life` (citizens, animals that walk) one class with `fauna`, or separate?
+
+## A hazard key (proposed 2026-10-19, Korona; not built)
+
+A placed thing that can hurt a walker has no tag of its own: Korona's and the necanyons' carnivorous plants carry it
+inside `trap.danger` (0 harmless, .7 a snare that holds a person, 1 a man-eater; `core/biome/37-core-traps.js`), the
+Throne's CO2 hollows and the natives' punji pits carry nothing, and a quest builder or the walker would have to know
+each kit's record to ask "is this spot dangerous". Proposed: one key, `hazard: 'object'`, beside `trap` in the vocabulary
+(`52-core-tags-vocab.js` `keys`), with the record `{kind, danger, reach}`: `kind` from a short list (`trap`, `gas`,
+`fall`, `heat`, `cold`, `thorn`, `pit`), `danger` 0..1 as the traps use it, `reach` in metres from the record's `at`.
+A trap plant writes it from its trap record (`danger: trap.danger, reach: trap.mouth`); a pit or a gas hollow writes
+it by hand. Queries: `KTAGS.query({hazard: true})` for everything dangerous, and a `hazardAt(x, z)` on the host (the
+max danger of the records whose reach covers the point) for the walker and the quest builder. Readers: Korona (every
+trap of danger .3 and over), necanyons, the Throne (station 4's hollows), the Pinnacle Rock town's defences. It is a
+core/tags change, so it lands with its test and a rebuild of every build that lists the vocabulary (35 on 2026-10-19).

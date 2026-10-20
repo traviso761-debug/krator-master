@@ -4,13 +4,13 @@
 #   godot --path godot -- --case=rift           start on a case
 #   godot --headless --path godot -- --check    load every case, print the reports, write spike-report.json, quit
 #   godot --path godot -- --case=girder --shot=shots/girder.png   render, save a screenshot, quit
-#     (--eye=x,y,z --at=x,y,z place the camera relative to the case's focus; --hour=h sets the clock)
+#     (--eye=x,y,z --at=x,y,z place the camera relative to the case's focus; --hour=h sets the clock; --clock=T pins the module clock, atm_time)
 #
 # Each case's report (counts and the gaps the importer met) is printed and shown on screen: that list is what
 # GODOT-PLAN.md asks the spike for. README.md and CHECKLIST.md say what to look at.
 extends Node3D
 
-const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert", "world-iziz", "world-sedesert-falls"]   # keys 1-9; world-iziz and world-sedesert-falls by name (tools/shot.sh world-iziz)
+const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni"]   # keys 1-9; world-iziz, world-sedesert-falls and world-yuni by name (tools/shot.sh world-iziz)
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
@@ -23,6 +23,7 @@ const ABOUT := {
 	"world-sedesert-falls": "krator-world (core/export): sedesert's notch, the river's last reach, the cataract and its plunge pool (core/water phases 3 and 4)",
 	"world-sedesert": "krator-world (core/export, M4): the same sedesert tile through the one container: world.json (records, materials, library maps by reference, the field, the stage) beside world.glb (EXT_mesh_gpu_instancing)",
 	"world-iziz": "krator-world (core/export, M5): a district of Iziz through the same container: the kit's instances with their item sets and owners, the plain meshes by material, the library and procedural maps, the sampled ground and its painted look, the buildings with their doors, windows and lamps (Records)",
+	"world-yuni": "krator-world (core/export): the Foundry's box of Yuni, records only: the buildings with their doors, windows and lights, and every planned interior (the interiors section: rooms, walls with -col, door links, a navmesh per storey and yard)",
 }
 
 var current := ""
@@ -37,6 +38,8 @@ var reports := {}
 var _shot := ""
 var _stage_base := {}   # the stage's sun, ambient and fog, which the clock and the weather scale
 var _shot_frames := 0
+var case_focus := Vector3.ZERO   # the loaded case's focus (the box centre on the ground): tests/perf/perf_capture.gd poses its camera from it
+var driven := false   # set by a driver before add_child (tests/perf/perf_capture.gd): _ready builds the stage and loads no case of its own
 
 
 func _ready() -> void:
@@ -44,6 +47,8 @@ func _ready() -> void:
 	var args := _args()
 	if args.has("check"):
 		_check_all.call_deferred()
+		return
+	if driven:
 		return
 	if args.has("shot"):
 		_shot = args["shot"]
@@ -127,7 +132,7 @@ func _load_case(name: String) -> Dictionary:
 		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
 	match name:
-		"world-sedesert", "world-iziz", "world-sedesert-falls":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district
+		"world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district, Yuni's records
 			var wv := KratorWorld.build(dir + "world.json")
 			world.add_child(wv)
 			report = wv.get_meta("report")
@@ -194,6 +199,7 @@ func _load_case(name: String) -> Dictionary:
 	ground = terrain
 	if terrain:
 		focus.y = KData.height_at(terrain, focus.x, focus.z)
+	case_focus = focus
 	_stage_base = {}
 	if stage is Dictionary and not _args().has("nostage"):   # --nostage: the spike's own stock light, to compare   # the page's light, fog, tonemapping and sky (krator/stage.gd)
 		_stage_base = load("res://krator/stage.gd").apply(stage, env, sun, world)
@@ -222,6 +228,9 @@ func _load_case(name: String) -> Dictionary:
 		hud.visible = false
 	if args.has("hour"):
 		Atmos.hour = float(args["hour"])
+	if args.has("clock"):   # --clock=T: the module clock (atm_time: sway, fauna paths, waves) pinned at T seconds, to match a page's
+		Atmos.t = float(args["clock"])
+		Atmos.paused = true
 	if args.has("weather"):   # --weather=rain|storm|fog|clear|auto
 		Atmos.set_weather(str(args["weather"]))
 		Atmos.W["rain"] = 1.0 if args["weather"] in ["rain", "storm"] else 0.0   # start at full strength, for a screenshot

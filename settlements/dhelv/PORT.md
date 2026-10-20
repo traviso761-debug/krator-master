@@ -22,14 +22,14 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/86-dhelv-extras.js` | 6.4 | [draw] | 5 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | section 13's extras the defs do not draw (the shafts, the sentinels, the buried well, the decoy, the mirrors' light); where they are is the layout's (41, data) |
 | `src/88-dhelv-fungi.js` | 3.5 | [web] | 1 | 0 | 0 | 0 | 2 | 0 | 0 | 1 | 0 | 0 | 0 | the fungi pass (a port plants its own along the layout's ways) |
 | `src/89-dhelv-hills.js` | 8.8 | [web] | 9 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | the hills' drawing, walk floors and flora pass (a port plants its own); the hills and their pads are the layout's (41, data) |
-| `src/90-dhelv-scene.js` | 58.6 | [web] | 56 | 0 | 1 | 0 | 10 | 21 | 3 | 5 | 0 | 0 | 0 |  |
+| `src/90-dhelv-scene.js` | 59.6 | [web] | 56 | 0 | 1 | 0 | 10 | 21 | 4 | 5 | 0 | 0 | 0 |  |
 | `src/91-dhelv-probe.js` | 18.4 | [web] | 3 | 0 | 0 | 0 | 3 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-dhelv-camera.js` | 2.6 | [web] | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world built, VIEWS, and the camera's names on core/host (the kit's 92-camera.js is left out) |
 | `src/92-dhelv-export.js` | 5.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the export to godot/data/dhelv (window._api): reads the data, holds none |
 | `src/93-dhelv-map.js` | 5.6 | [web] | 1 | 3 | 2 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/94-dhelv-light.js` | 8.4 | [web] | 14 | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/95-dhelv-life.js` | 8.7 | [web] | 12 | 0 | 2 | 2 | 1 | 3 | 0 | 2 | 2 | 0 | 0 | split: data inside host code |
-| `src/99-start.js` | 6.6 | [web] | 0 | 0 | 1 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the take: KHOST.take (core/host), the frame after the camera, the inspector's words |
+| `src/99-start.js` | 6.1 | [web] | 0 | 0 | 1 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the take: KHOST.take (core/host), the frame after the camera, the inspector's words |
 
 ## Notes
 

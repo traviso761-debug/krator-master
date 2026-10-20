@@ -381,16 +381,16 @@
    ],
    "size": 256,
    "source": {
-    "albedo": "672db24dd01106cf8d48f6d2d5f2845f3f53fdbb",
-    "normal": "7068af083a7123065f9c66de8d7521a453b513f4",
-    "roughness": "e6c9a8ffd4c66485f9c44499e13ee901caf78a80"
+    "albedo": "2d9d0cfd3ac1f8b8ccf9b7b7dd5a18e2ffbbbbcb",
+    "normal": "1cfa92d458dd91e0eaf48b423f250a67d702be9f",
+    "roughness": "f209301e658c59d56625d7d4d075c1c41108eef5"
    },
    "specular": 0.3,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.6,
-    "sourceMean": 0.5333
+    "sourceMean": 0.5601
    }
   }
  },

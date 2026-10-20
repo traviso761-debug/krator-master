@@ -480,6 +480,76 @@
    },
    "roughLift": 0.3,
    "specular": 0.15
+  },
+  "canvasB": {
+   "lib": "cloth.canvas.b",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.8,
+    "contrast": 1.0
+   },
+   "roughLift": 0.4,
+   "specular": 0.1
+  },
+  "linen": {
+   "lib": "cloth.fabric045",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.8,
+    "contrast": 1.0
+   },
+   "roughLift": 0.4,
+   "specular": 0.1
+  },
+  "denim": {
+   "lib": "cloth.denim_fabric_05",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.8,
+    "contrast": 1.0
+   },
+   "roughLift": 0.4,
+   "specular": 0.1
+  },
+  "weave027": {
+   "lib": "cloth.fabric027",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.8,
+    "contrast": 1.0
+   },
+   "roughLift": 0.4,
+   "specular": 0.1
+  },
+  "jacquard": {
+   "lib": "cloth.quatrefoil_jacquard_fabric",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.8,
+    "contrast": 1.0
+   },
+   "roughLift": 0.4,
+   "specular": 0.1
   }
  }
 }
