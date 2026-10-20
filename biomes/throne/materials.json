@@ -1444,6 +1444,153 @@
    },
    "roughLift": 0,
    "specular": 0.2
+  },
+  "card.kelp3": {
+   "lib": "card.kelp.0",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp4": {
+   "lib": "card.kelp.2",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp5": {
+   "lib": "card.kelp.3",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp6": {
+   "lib": "card.kelp.5",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp7": {
+   "lib": "card.kelp.6",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp8": {
+   "lib": "card.kelp.8",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.palm.coconut": {
+   "lib": "card.palm.coconut",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "bark.bracket": {
+   "lib": "organic.fungus.bracket",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.cratered": {
+   "lib": "bark.cratered",
+   "scale": [
+    1.4,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.shingle": {
+   "lib": "organic.chitin.shingle",
+   "scale": [
+    1.0,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.flesh": {
+   "lib": "bark.flesh.red",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.65
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

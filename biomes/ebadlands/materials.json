@@ -274,9 +274,9 @@
    "mapOnly": true
   },
   "bark.aspen": {
-   "lib": "bark.ghostwood",
+   "lib": "bark.birch.b",
    "scale": [
-    1.4,
+    1.5,
     2.4
    ],
    "tint": {

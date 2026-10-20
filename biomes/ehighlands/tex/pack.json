@@ -191,6 +191,38 @@
     "sourceMean": 0.3175
    }
   },
+  "lichen": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ],
+   "files": {
+    "map": "lichen.albedo.webp"
+   },
+   "lib": "card.lichen",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "8fe6bf0a8f2d90f20259a6c514a741ff747026bd"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.7,
+    "sourceMean": 0.5211
+   }
+  },
   "skin.cushion": {
    "breakup": null,
    "card": false,

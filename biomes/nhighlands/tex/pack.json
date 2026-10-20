@@ -95,32 +95,32 @@
    "breakup": null,
    "card": true,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.0,
+    0.0,
+    0.3333,
+    1.0
    ],
    "files": {
     "map": "bracken.albedo.webp"
    },
-   "lib": "card.fern",
+   "lib": "card.frond.needle",
    "metal": 0,
    "normalScale": 1.0,
-   "roughLift": 0.0,
+   "roughLift": 0,
    "scale": [
     1,
     1
    ],
    "size": 512,
    "source": {
-    "albedo": "433517bd3bf7363d5941537857aba8fded1bd8d5"
+    "albedo": "80ff981ef242a14ab55446c9889ceea8aee7a72f"
    },
-   "specular": 0.5,
+   "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.701,
-    "sourceMean": 0.4091
+    "sourceMean": 0.2732
    }
   },
   "broad": {

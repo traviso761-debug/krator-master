@@ -4,7 +4,7 @@
  "size": 512,
  "families": {
   "bk.ember": {
-   "lib": "bark.madrone",
+   "lib": "bark.amber",
    "scale": [
     4,
     6
@@ -17,7 +17,7 @@
    "roughLift": 0.3
   },
   "bk.lacquer": {
-   "lib": "bark.mangrove",
+   "lib": "bark.plates.glossy",
    "scale": [
     4,
     6
@@ -572,6 +572,91 @@
    },
    "metal": 0,
    "normalScale": 0.7
+  },
+  "under1": {
+   "lib": "card.jungle.clump.12",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.718
+   },
+   "size": 512,
+   "own": true
+  },
+  "under2": {
+   "lib": "card.jungle.clump.13",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.718
+   },
+   "size": 512,
+   "own": true
+  },
+  "hang1": {
+   "lib": "card.vine.hanging.5",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.718
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "own": true
+  },
+  "fungus": {
+   "lib": "organic.fungus.bracket",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "mapOnly": true,
+   "roughLift": 0.3,
+   "own": true
+  },
+  "bk.strip": {
+   "lib": "bark.mosaic",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": null
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bk.crack": {
+   "lib": "bark.tapestry",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.65
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
   }
  }
 }

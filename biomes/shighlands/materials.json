@@ -5,6 +5,8 @@
  "families": {
   "leaf.small": {"lib": "card.sage", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0, "specular": 0.2},
   "leaf.moss": {"lib": "card.moss", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0, "specular": 0.2},
+  "leaf.groundsel": {"lib": "card.groundsel", "scale": [1.0, 1.0], "tint": {"keep": 0.5, "mean": 0.85}, "roughLift": 0, "specular": 0.2},
+  "lichen": {"lib": "card.lichen", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.7}, "roughLift": 0, "specular": 0.2, "cell": [0.3333, 0.3333, 0.6667, 0.6667]},
   "bark.wrung": {"lib": "bark.wrung", "scale": [1.6, 1.6], "tint": {"keep": 0.55, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
   "bark.palm": {"lib": "bark.palm_tree_bark", "scale": [1.0, 1.4], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
   "bark.skirt": {"lib": "bark.skirt", "scale": [1.0, 1.2], "tint": {"keep": 0.35, "mean": 0.62}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},

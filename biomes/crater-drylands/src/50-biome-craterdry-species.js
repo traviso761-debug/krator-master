@@ -398,7 +398,7 @@ const CELL=(i,j)=>[i/3+.005,j/3+.005,(i+1)/3-.005,(j+1)/3-.005];   // a cell of 
  // four of the nine charred shrubs, so no two neighbours are the same bush (the middle one keeps a few scorched leaves)
  use('twigs',libCell('leaf.twigs',CELL(0,0),256,256));use('twigs1',libCell('leaf.twigs',CELL(2,1),256,256));
  use('twigs2',libCell('leaf.twigs',CELL(1,2),256,256));use('twigs3',libCell('leaf.twigs',CELL(1,1),256,256));
- use('bunch',libCell('leaf.bunch',CELL(1,1),256,256),.35);
+ use('bunch',libCell('leaf.bunch',CELL(1,1),256,256),.35);use('lichen',libCell('lichen',CELL(1,1),256,256),.3);
  use('spike',libCell('leaf.spike',CELL(1,0),256,256));          // fireweed
  use('lupine',libCell('leaf.spike',CELL(1,1),256,256));         // lupine
  use('plume',libCell('leaf.spike',CELL(1,2),256,256));          // the flame plume (celosia)

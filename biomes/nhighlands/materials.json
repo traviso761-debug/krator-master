@@ -166,7 +166,7 @@
    ]
   },
   "bracken": {
-   "lib": "card.fern",
+   "lib": "card.frond.needle",
    "scale": [
     1,
     1
@@ -175,13 +175,15 @@
     "keep": 0.0,
     "mean": 0.701
    },
-   "size": 512,
+   "roughLift": 0,
+   "specular": 0.2,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.0,
+    0.0,
+    0.3333,
+    1.0
+   ],
+   "size": 512
   },
   "blade": {
    "lib": "card.sword",
