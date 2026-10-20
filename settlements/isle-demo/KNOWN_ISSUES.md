@@ -91,6 +91,11 @@
       town's food within 2% over three weeks), but the households' stores shrink slowly as the warehouses settle.
 - [x] **The material meter pinned at 100 by day 14** (needs on, 2026-10-19): only replacements were bought. The treats
       (kava, mats, lamps, jewellery; Voth's `items.treat`) hold it near 33, happiness near 79.
+- [ ] **Valapo has no carver's workshop:** its stone and wooden tools and its jewellery come from Kautoa by the lakatoi
+      (PLAN.md 9b); a carver's workshop in the Islanders kit and on Valapo's plan is owed.
+- [ ] **Racks wear nothing:** the dockers' hooks and the soldiers' spears and shields are drawn from a rack (core's
+      `toolRack`), so no smith or dockyard makes or replaces them; the fishers' nets last 1,500 worked hours, so the
+      weavers' net places make almost nothing (the governor's floor, `minBy`).
 - [ ] **Core's treat is one item a wealth:** the last of `treat.items` whose least wealth a person has, so a class buys
       one treat; the isles spread each class's wealth a little a person (`items.wealthSpread`) so the middle splits
       between mats and lamps and the rich between lamps and jewellery. The poor drink kava and nothing else.

@@ -742,7 +742,12 @@ meals. A week-test check holds the tools and pots (at least 98% held or on an er
 `SIM.needs` is on (step 6: Voth's table on the isles' activities; README.md, the three weeks of needs), with the
 treats (kava at the kava houses, pandanus mats from the weavers, coconut-oil lamps from the potters, shell-and-bead
 jewellery from Kautoa's workshops) that hold the material meter near 33. A week-test check holds the
-watched town's mean happiness at 60 or more and no need but material above 70.
+watched town's mean happiness at 60 or more and no need but material above 70. **Steps 1, 2, 4 and 5 built too
+(2026-10-19):** tools by trade (stone, wood, nets, cooking pots; racks for the dockers and the soldiers), injuries and
+the healers' poultices, a war club for a quarter of the rich, sets by class, sarongs and sun hats (README.md); a
+week-test check holds the clothes (95% clad or buying) and the hurt (none past its healing days). Left: a carver's
+workshop for Valapo (its wooden and stone tools come by lakatoi), iron tools after the ingots, water vessels and the
+fishers' canoes.
 
 **The rules taken from Voth (and where the isles differ).**
 - **Clothes:** a set count by class (Voth: poor 2, middle 3, rich 4, the great houses 6), the worn set at a hashed wear,

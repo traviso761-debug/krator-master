@@ -192,6 +192,18 @@ declares both once they are planned, in one order whichever town it draws, and h
   meal at home counts as a better one (`fine`). The staples shops and the market stay open until 21:00: the farmhands,
   in from the far fields at 17:00, reached a shop as it closed, and from day 13 about 370 of Kautoa's meals a day were
   eaten from an empty store; now none.
+- **Tools by trade, injuries, arms, clothes by class** (the wear plan's steps 1, 2, 4 and 5; PLAN.md 9b; owner,
+  2026-10-19). Every worker of a tooled trade owns its tool: stone (the orchards' harvest knives, the smiths',
+  carpenters' and tanners' adzes and scrapers, the labourers' mauls; Kautoa's workshops, four stones each), wood (the
+  field hands' digging sticks, the herders' and grooms' goads, the weavers' shuttles, the potters' paddles, the officials'
+  styluses; Kautoa's dockyard, by lakatoi to Valapo), a net (the fishers; the weavers, two cotton each) or a cooking pot
+  (the bakers and innkeepers); the dockers and the soldiers draw theirs from the workplace's rack. A worked day carries
+  a 0.6% chance of a hurt, healed by a healer's poultice (the healers' herb gardens) or in three days. A quarter of the
+  rich adults keep a war club (the dockyard). Each person keeps its class's sets of clothes (poor 2, middle 3, rich 4),
+  half wear a sarong in place of the wrap, and the outdoor trades and two fifths of the rest a pandanus sun hat (the
+  weavers). Three weeks: 2,240 tooled, 446 on racks; 145 wooden tools, 103 stone, 40 cooking pots and 4 nets worn out
+  and replaced in work time; 404 hurt, 369 healed (265 by poultice), none past three days; 948 sarongs and 732 sun hats
+  bought; 105 clubs. The weavers' places take cloth three in eight, garments two, mats, hats and nets one each.
 - **Needs** (the owner, 2026-10-19): core/simulation's needs run in the isles (`ISLE.TUNE.sim.needs`, Voth's table on the
   isles' activities): seven meters (eat, drink, socialize, relax, contemplate, sleep, material), happiness, its band's
   efficiency at work, loyalty; in the free hours a person does what its meters ask among company, rest, idling and
@@ -234,10 +246,10 @@ declares both once they are planned, in one order whichever town it draws, and h
   | leather, sandals, armour | (imported) | -5, +9, 0 a day |
   | pots, stone, tools, salt | pots 5 made, 7 bought; tools 3 bought (by lakatoi), its stock drawn toward six days; salt 92 used (imported) | pots 19 made, 20 bought; stone 53 quarried, 45 into tools (+7); tools 11 made and used; salt 210 made, 132 used and 85 to Valapo (-7) |
   | treats (made, bought a day) | kava 42, 105 (drawing its opening stock down); mats 6, 17; lamps 17, 16; jewellery 7 by lakatoi, 6 | kava 310, 298; mats 23, 54; lamps 67, 47; jewellery 14, 10 |
-  | still piling up | cotton +122 a day | (nothing over +60 but the ships' cloves and cacao) |
+  | wear goods (made, used a day) | wood tools 2 (by lakatoi), nets 2, 0; poultices 5, 4; hats 2, 10 (drawing down) | wood tools 9, 6; stone tools 6, 4; poultices 10, 8; hats 8, 26 (drawing down) |
+  | still piling up | cotton +119 a day | (nothing over +60 but the ships' cloves and cacao) |
 
-  Nothing runs short after the second day (the towns open with lots of what the canoes bring them), but Kautoa's lamps
-  on days 12 and 14 (8 in all, while the potters' lamp places came up to their trade).
+  Nothing runs short after the second day (the towns open with lots of what the canoes bring them).
 - **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`, for each town; and on the page, the citizens
   drawn near the camera where their poses are, with a figure moved 50 m as the negative): every lot of a census trade is a place; every
   resident has a home and every worker a job in the town; after a world day run minute by minute, every food made and

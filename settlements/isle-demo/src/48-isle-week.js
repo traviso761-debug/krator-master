@@ -31,10 +31,14 @@ ISLE.weekSnap = function () {
     X.econ.foods.forEach(function (f) { T.food += E.made[f] || 0; });
     T.sold = Object.assign({}, (S.buyersSold || {})[s] || {});
     /* the tools and the household pots: who keeps one, who holds it, who is on an errand for it */
-    var Wr = { tooled: 0, held: 0, errand: 0, pots: 0, potHeld: 0, potErrand: 0 };
+    var Wr = { tooled: 0, held: 0, errand: 0, pots: 0, potHeld: 0, potErrand: 0, dressed: 0, clad: 0, hurt: 0, hurtOld: 0 }, today = Math.floor(out.minute / 1440), HL = (I.heal == null ? 3 : I.heal) + 1;
     SIM.all('actor').forEach(function (a) { if (a.driven || SIM.settlementOf(a) !== s) return;
       if (a.tool || a.toolNeed) { Wr.tooled++; if (a.tool) Wr.held++; else if (a.errand && a.errand.item === a.toolNeed) Wr.errand++; }
-      if ((a.wears || []).indexOf('pot') >= 0) { Wr.pots++; if (SIM.owns(a, 'pot')) Wr.potHeld++; else if (a.errand && a.errand.item === 'pot') Wr.potErrand++; } });
+      if ((a.wears || []).indexOf('pot') >= 0) { Wr.pots++; if (SIM.owns(a, 'pot')) Wr.potHeld++; else if (a.errand && a.errand.item === 'pot') Wr.potErrand++; }
+      /* the clothes kept: every kept kind held to its count, or an errand out for one; a hurt not healed past its days */
+      if (a.wears && a.wears.length) { Wr.dressed++; var ok = a.wears.every(function (k) { return k === 'pot' || SIM.owns(a, k) >= ((a.keep && a.keep[k]) || a.sets || 1); });
+        if (ok || (a.errand && a.wears.indexOf(a.errand.item) >= 0)) Wr.clad++; }
+      if (a.hurt != null) { Wr.hurt++; if (today - a.hurt > HL) Wr.hurtOld++; } });
     T.wear = Wr;
     /* the needs (77-sim-6-needs.js): each meter's mean, the mean happiness, as read now (SIM.needsPeek: nobody moved) */
     var NE = SIM.NEED; if (NE) { var nd = NE.list.map(function () { return 0; }), hp = 0, nn = 0, mm = out.minute;
@@ -154,6 +158,13 @@ ISLE.weekChecks = function (w1, w2, o) {
     gear.push({ w: W.watched, s: s, qt: qt, qp: qp, X: X }); }); });
   ok('the tooled trades hold their tools and the households their pots (at least ' + Math.round(100 * gr) + '%)', gear.length === 4 && gear.every(function (x) { return x.qt >= gr && x.qp >= gr; }),
     gear.map(function (x) { return x.w + ' watched, ' + x.s + ': tools ' + x.X.held + '+' + x.X.errand + ' of ' + x.X.tooled + ', pots ' + x.X.potHeld + '+' + x.X.potErrand + ' of ' + x.X.pots; }).join('; '));
+  /* the clothes and the hurt (PLAN.md 9b steps 2 and 5), in the watched town (the abstract one wears nothing): at least
+     `clad` of its people keep their sets of everything they wear or are buying what they lack, and nobody hurt is
+     still hurt past its healing days (a poultice bought, or healed) */
+  var cl = o.clad == null ? 0.95 : o.clad, dress = [];
+  weeks.forEach(function (W) { var X = W.b.towns[W.watched] && W.b.towns[W.watched].wear; if (X) dress.push({ w: W.watched, X: X, q: X.dressed ? X.clad / X.dressed : 0 }); });
+  ok('the watched town' + '\'' + 's people keep their clothes (at least ' + Math.round(100 * cl) + '%) and nobody stays hurt past its healing days', dress.length === 2 && dress.every(function (x) { return x.q >= cl && !x.X.hurtOld; }),
+    dress.map(function (x) { return x.w + ' watched: ' + x.X.clad + ' of ' + x.X.dressed + ' clad, ' + x.X.hurt + ' hurt, ' + x.X.hurtOld + ' past healing'; }).join('; '));
   /* the needs, in the watched town at each week's end (the abstract town's people do not decide: its meters stand
      still): its mean happiness at least `happy`, and no need's mean meter above `needHi` but material (nothing to buy
      yet but what wears out: KNOWN_ISSUES.md) */

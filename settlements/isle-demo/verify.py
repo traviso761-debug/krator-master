@@ -127,9 +127,10 @@ WEEK_JS = r"""(neg)=>{if(!window._week){const w1=ISLE.simWeek('Valapo',7*1440),w
  if(neg==='drift'){const b=cp(w2);b.days.forEach((x,j)=>{x.towns.valapo.gov.target=1000;x.towns.valapo.gov.pos+=j*3000;});return pick(ISLE.weekChecks(w1,b),/food supply line/);}
  if(neg==='gear'){const b=cp(w2);b.b.towns.kautoa.wear.held=Math.floor(b.b.towns.kautoa.wear.held/2);return pick(ISLE.weekChecks(w1,b),/hold their tools/);}
  if(neg==='needs'){const a=cp(w1);a.b.towns.valapo.needs.mean.eat=95;return pick(ISLE.weekChecks(a,w2),/content enough/);}
+ if(neg==='clad'){const a=cp(w1);a.b.towns.valapo.wear.hurtOld=4;return pick(ISLE.weekChecks(a,w2),/keep their clothes/);}
  if(neg==='ships'){const a=cp(w1),b=cp(w2);a.b.towns.kautoa.sold=Object.assign({},a.a.towns.kautoa.sold);b.b.towns.kautoa.sold=Object.assign({},b.a.towns.kautoa.sold);return pick(ISLE.weekChecks(a,b),/ships from beyond/);}
  return [];}"""
-WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided', 'ships', 'late', 'swing', 'drift', 'gear', 'needs')
+WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided', 'ships', 'late', 'swing', 'drift', 'gear', 'needs', 'clad')
 SIM_TOWNS = ('Kautoa', 'Valapo')
 SIM_NEGS = ('lot', 'home', 'job', 'age', 'social', 'map', 'haul', 'short', 'made')
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];

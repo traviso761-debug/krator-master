@@ -23,7 +23,8 @@ registers the export's `city` section for every instance on a page.
 ## Next, in order
 
 1. **P7b, P7c and P7d are done** (the canoe line, `47`, `61`; the levels and the week test, `48`; the economy governed
-   and spoiling, `49`, with its checks in the week test). Next, **P7e**, the `sim`
+   and spoiling, `49`, with its checks in the week test; the wear plan (PLAN.md 9b: tools by trade, pots, salt, injuries,
+   arms, clothes by class) and needs with treats, each with a week-test check). Next, **P7e**, the `sim`
    export section (PLAN.md section 9: places, actors, stocks per settlement, the route and its books; the isle profile
    fails on a stubbed `sim` and passes filled), then P8 in Godot. A sea route
    (`SIM.transport` between the landings, `SIM.trade({line})` on it) comes with the open world. Any core/simulation
