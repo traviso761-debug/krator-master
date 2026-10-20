@@ -93,6 +93,20 @@ turning windmills; the page alone (its packs and `kchar/` unchanged). The Xanadu
 the kit's new pack: Krator Worlds S–Z version 13 (`worlds/xanadu-kit.html`) and A–H version 89 (`worlds/erewhon.html`),
 bundled by `build_gallery.bundle()` alone (no full gallery rebuild), their indexes unchanged.
 
+## The Eternian kit: its own artifact (2026-10-20)
+
+The Eternian kit (`kits/eternian`) is published as its own artifact, https://claude.ai/artifact/VahvUzsCKyDZjtoZBu5Txu,
+and every part's index links it (a section after Longsong; `index.template.html` carries it). It is about 24 MB (the page
+and its two library packs), and Krator Worlds A–H, where it would sort, held about 232 MiB. `ELSEWHERE` keeps it out of
+the parts. To update: `python3 build.py` in the build, then publish `dist/eternian.html` to that URL with
+`eternian.tex.eternian.js` and `eternian.tex.eternian-2.js` beside it (one call). Published private: a gallery viewer
+opens it only once the owner shares it (the page's Share menu).
+Version 1 (2026-10-20, `main` at 75cc2b140). The same day the four parts' live indexes were edited in place for the link
+(A–H version 90, I–S 25, S–Z 14, Biomes and Objects 23) and their Ancients line now counts 63 pages. The Ancients and the
+Port went to version 5 (three calls, every page and both packs from `main` at 75cc2b140): the Sanctum (`arc-sanctum`) and
+Plymouth and Arcoindian I as the Eternal State keeps them (`arc-kept`) added under Arcologies, Plymouth's and Arcoindian
+I's quality pass, the shared pack with the Sanctum's sets (7.9 MB).
+
 ## The Throne: its own artifact (2026-10-07)
 
 The Throne's eleven stations (`biomes/throne`) are published as their own artifact, https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX ("The Throne

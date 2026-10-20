@@ -15,7 +15,8 @@
       tie the parade to its hour. The hands keep the sky's hour.
 - [ ] **The trade buildings share one generator** (`etTrade`): a street of them reads as one family; the trades' own
       features (the kilns, vats, racks, cranes) carry the difference. A second pass per trade could vary their massing.
-- [ ] **Not in the Krator Worlds gallery yet**: the owner's call once the branch is on `main`.
+- [x] **In the gallery (2026-10-20)**: its own artifact, https://claude.ai/artifact/VahvUzsCKyDZjtoZBu5Txu, linked from every
+      part's index; the Sanctum and the kept hosts in The Ancients and the Port (`gallery/README.md`).
 - [ ] **The catalog's `verify.py --assert` fails on two generic fruit pieces** (`generic_fruit_bell_pod`,
       `generic_fruit_cherry`: materials missing stone, timber). Not this kit's: it fails the same without the Eternian
       file (checked 2026-10-20).

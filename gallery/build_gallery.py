@@ -199,6 +199,10 @@ ENTRIES = [
      'Terraced slab layers cantilevered off a sandstone cliff.', 'new'),
     ('arcology', 'arc-wheel', 'kits/ancients/dist/wheel.html', 'The Wheel',
      'A raised ring of parkland on eight towers.', 'new'),
+    ('arcology', 'arc-sanctum', 'kits/ancients/dist/sanctum.html', 'The Sanctum',
+     "The Eternal State's capital arcology, a tapering drum 660 m high on a six-pointed star: three great arches and three small entrances, a staircase spiralling counterclockwise from arch to arch, thirty arches in all, veiled colossi and the True Heirs' faces.", 'new'),
+    ('arcology', 'arc-kept', 'kits/ancients/dist/kept.html', 'Plymouth and Arcoindian I, kept',
+     'The two Ancient bodies as the Eternal State keeps them: glazing turned to lit alabaster in bronze tracery, the shells cleaned white with cyan strips alive.', 'new'),
 
     # The Krator Ancient Port (settlements/port): every target, showcase first.
     ('port', 'port-showcase', 'settlements/port/dist/showcase.html', 'Showcase',
@@ -305,7 +309,10 @@ ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
              'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py',
              # Longsong: about 69 MB (its page, three packs and the dressed people's pieces, dist/kchar/), published as built
              # from settlements/longsong/dist (gallery/README.md, "Longsong: its own artifact")
-             'settlements/longsong': 'settlements/longsong/build.py'}
+             'settlements/longsong': 'settlements/longsong/build.py',
+             # the Eternian kit: about 24 MB (its page and two packs), published as built from kits/eternian/dist
+             # (gallery/README.md, "The Eternian kit: its own artifact")
+             'kits/eternian': 'kits/eternian/build.py'}
 # Pages a build's own build.py does not write: made by another command in the build's folder, before the page is
 # copied. Girder Hero is too big for the gallery as build_hero.py writes it (20.5 MB, over 16 MB a file), so the
 # gallery takes the --slim one, written outside the committed pages (hero/dist/ is not committed).
