@@ -99,6 +99,27 @@ lamps in the windows; `89x`).
   placeholder figures. The pieces are sidecars beside the page (`dist/kchar/`, 52 scripts, about 48 MB, in LFS), each
   loaded the first time a figure needs it; `build.py` remakes them from `core/charactermodels/dist/pieces/` when that is
   built. `people-kchar.json` (`tools/kchar_people.js`) is every record, for Godot.
+- **Every core module that fits the build** (2026-10-20, the owner: "make sure all core modules are present and
+  integrated"): core/walk (the stair walked), core/atmos's weather (auto: the dawn fog and the evening shower; the
+  selector beside the clock), hearth smoke, fireflies and culling (`89z`), core/biome's walker (the herds walk their
+  pastures, `85`) and its stage (KSTAGE: the export's light and sky), core/lod (the finished scene chunked and banded: `l` toggles it), core/sched (the
+  Procrastinator's burn as a timeline, `66`), core/sockets (the culture marks, `63s` and `65`: the Order's saffron
+  banners and scroll-and-wheel emblems on the Great Gate, the Lower Gate and the Order's works; Xanadu's rose and lotus
+  on the valley's lay buildings, their awnings and trade signs), core/hamlet (the valley's three lay villages outside
+  the wall: Shar and Nub by the east and west fields, Dzo-ling at the head of the yak pastures, `40h` and `85h`), and
+  core/export (`94`: the buildings, the depths and the villages as buckets; 'export site' writes the biome export over
+  the monastery's ground, sampled, with its stage). Checked in Godot 4.7.2 (2026-10-20: a 240 x 260 m box over the
+  palaces, the stair and the ward through `tools/harness.py export` and `krator/world_import.gd`): every record, uid
+  and bucket resolves, 174,764 triangles on both sides, every named map drawn with its image, the ground through every
+  sample. core/sockets are read in place but wrapped in a closure with the
+  host they expect (`sockets/head.js`, `tail.js`: the page's own `P`, `box` and `W` are other things). Not taken, and
+  why: core/mask (placement here reads no canvas), core/ports, core/furnish and core/materials (other building
+  lineages: Longsong furnishes on kits/interiors), core/terrain's field (KFIELD: the platforms, the terrace walls
+  and the Rock's cliffs are vertical steps a bilinear field cannot carry; at 3 m it missed the page's ground by up to
+  12.7 m, so the export samples terrainH as Iziz's does), core/terrain's carve, stacks and cavern (no overhangs; the
+  depths export as closed rooms), core/city (the ward: exempt while the export carries it, the owner), the host's polytool
+  (the marks tool, which supersedes it, is in), core/atmos's street, dress, sewer and cloud deck, core/biome's variants
+  and traps, core/simulation's debug fragment.
 - **The Great Stair, walked** (2026-10-20, the owner's notes): each flight is solid masonry from its front edge back
   into the base's battered face (the slots behind them are gone), its parapet one sloped wall standing on its edge, the
   landings' parapets on the landings; the base's windows are not cut where a ramp covers them. ARCH's wedge and slab wind

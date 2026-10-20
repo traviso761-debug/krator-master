@@ -241,7 +241,10 @@ const PROC=(function(){const P=LS.PROCRASTINATOR,y0=P.y0,R=P.hallR,H=P.hallH,cx=
  // the turning: the wheel at its pace; the glyphs' pulse; the sealed things at a ten-thousandth of it (their breathing
  // over a century: nothing a visitor will see move)
  const lights0=VLIGHTS.map(L=>L.c.slice());
- TICKS.push((dt,t)=>{wheel.rotation.y=t*P.turn;VU.uT.value=t;const pulse=.75+.25*Math.sin(t*.9)+.08*Math.sin(t*3.7);VU.uPulse.value=pulse;
+ // the glyphs' burn: a flare and a long ebb on core/sched's timeline (a pure function of t: a port replays it), a
+ // quick flicker over it
+ const BURN=KSCHED.timeline({period:7.2,segments:[{dur:2,from:.55,to:1.08,ease:'inOut',name:'flare'},{dur:5.2,from:1.08,to:.55,ease:'out',name:'ebb'}]});
+ TICKS.push((dt,t)=>{wheel.rotation.y=t*P.turn;VU.uT.value=t;const pulse=BURN.at(t).value+.08*Math.sin(t*3.7);VU.uPulse.value=pulse;
   WL.forEach(i=>{const c=lights0[i],o=(i*2+1)*4;VLT[o]=c[0]*pulse;VLT[o+1]=c[1]*pulse;VLT[o+2]=c[2]*pulse;});VLTEX.needsUpdate=true;
   SLOWED.forEach(S=>{const ts=t*P.slow;S.G.rotation.y=S.base+.02*Math.sin(ts);});});
  return {wheel,SLOWED,lights:VLIGHTS};})();

@@ -51,7 +51,7 @@ const LSNIGHT=(function(){const T=THREE,C=c=>new T.Color(c);
   sun.position.set(S.dir[0]*1300,Math.max(S.dir[1],.02)*1300,S.dir[2]*1300);
   sun.intensity=1.25*ss(-2,10,alt);sun.color.copy(SUN0).lerp(SUNDUSK,dusk);
   BIO.setSun(alt>0?S.dir:[giantDir.x,giantDir.y,giantDir.z]);
-  hemi.intensity=.035+.765*day;fill.intensity=.02+.2*day;giantLight.intensity=.11*(1-day);renderer.toneMappingExposure=.78+.26*day;
+  state.sun=sun.intensity;hemi.intensity=.035+.765*day;state.hemi=hemi.intensity;fill.intensity=.02+.2*day;   // (state: the weather scales these, 89z)giantLight.intensity=.11*(1-day);renderer.toneMappingExposure=.78+.26*day;
   scene.fog.color.copy(HAZE).lerp(HAZEN,1-day);if(dusk>0)scene.fog.color.lerp(SKYDUSK,dusk*.25);
   _c.copy(SKYNIGHT).lerp(SKYDAY,day);if(dusk>0)_c.lerp(SKYDUSK,dusk*.45);sky.material.color.copy(_c);
   giant.visible=giantRing.visible=true;

@@ -123,7 +123,8 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the monastery':{match:o=>!!(o.userData&&o.userData.arch)},
   'the ground (see the Vault)':{match:o=>!!(o.userData&&(o.userData.ground||o.userData.rockface))},'the far land':{match:o=>!!(o.userData&&o.userData.far)},
   'the people':{match:o=>!!(o.userData&&o.userData.people)},'sky':{objects:()=>[sky,giant,giantRing]}},
- exporters:{biome:()=>BIO.export(),plan:()=>({plan:{site:LS.SITE,rock:LS.ROCK,buildings:LS.BUILDINGS,vault:LS.VAULT,procrastinator:LS.PROCRASTINATOR,sealed:LS.SEALED,places:LS.PLACES},people:LS.PEOPLE.map(P=>({id:P.id,role:P.role,faction:P.faction,sub:P.sub,job:P.job,schedule:P.schedule}))})},
+ // site: the biome export over the monastery's ground, sampled (45), and the stage (core/biome KSTAGE)
+ exporters:{biome:()=>BIO.export(),site:()=>BIO.export({box:[-480,-480,480,480]}),plan:()=>({plan:{site:LS.SITE,rock:LS.ROCK,buildings:LS.BUILDINGS,vault:LS.VAULT,procrastinator:LS.PROCRASTINATOR,sealed:LS.SEALED,places:LS.PLACES},people:LS.PEOPLE.map(P=>({id:P.id,role:P.role,faction:P.faction,sub:P.sub,job:P.job,schedule:P.schedule}))})},
  minimap:{title:'Longsong'},
  // the cutaway (X; ] [ a storey up, down): the palaces opened storey by storey, their rooms drawn as the cut shows them (87)
  cutaway:{units:LSIXD.UNITS,show:(u,i)=>LSIXD.cut(u,i)},
@@ -134,6 +135,8 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
   at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),zone:LS.zoneAt(x,z).zone};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});
 // ?festival=1: the page opens on the festival of the register (the seventh day of the week: 89y, 40d)
 if(new URLSearchParams(location.search).get('festival')==='1'&&_hostH&&_hostH.clock)_hostH.clock.day=LS.FESTIVAL.day;
+// the weather's selector beside the clock (core/atmos 9: auto, clear, rain, storm, fog; 89z applies it)
+if(typeof ATMOS!=='undefined'&&ATMOS.weatherUI&&KHOST.ui)ATMOS.weatherUI(KHOST.ui);
 // the next festival (2026-10-20, the owner): a button after the hour slider jumps the clock to the next festival day at
 // eight in the morning (today's, before its thangka is taken down), the people re-placed from their festival schedule
 window.LSFEST_NEXT=function(){const c=_hostH&&_hostH.clock;if(!c)return null;let d=c.day||0;
