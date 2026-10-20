@@ -1,6 +1,66 @@
 {
  "build": "kits/motor-vehicles",
  "families": {
+  "bluePlate": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "bluePlate.albedo.webp",
+    "normalMap": "bluePlate.normal.webp",
+    "roughnessMap": "bluePlate.rough.webp"
+   },
+   "lib": "metal.blue_metal_plate",
+   "metal": 0.6,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "a7f1e3846118cff7bfe270affd597df3a57012d6",
+    "normal": "1fff3ad5d15253bb103729037920d25fc8cdea11",
+    "roughness": "01288afc3ee34f9d6c60a55e0c70fe1e43a04eaa"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.7,
+    "sourceMean": 0.2295
+   }
+  },
+  "brass": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "brass.albedo.webp",
+    "normalMap": "brass.normal.webp",
+    "roughnessMap": "brass.rough.webp"
+   },
+   "lib": "metal.metal042a",
+   "metal": 0.95,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    0.7,
+    0.7
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "878b0fcb8ea5d7f8f0cce045dc2e309acab7bc5d",
+    "normal": "7f554884ed0367adacdf38214552defec9da2ead",
+    "roughness": "5e1a9f353e7f83ba6deb588a3fc2083df4324981"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.75,
+    "sourceMean": 0.8432
+   }
+  },
   "canvas": {
    "breakup": null,
    "card": false,
@@ -59,6 +119,66 @@
     "keep": 0.15,
     "mean": 0.72,
     "sourceMean": 0.4659
+   }
+  },
+  "foil": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "foil.albedo.webp",
+    "normalMap": "foil.normal.webp",
+    "roughnessMap": "foil.rough.webp"
+   },
+   "lib": "metal.foil002",
+   "metal": 0.9,
+   "normalScale": 0.4,
+   "roughLift": 0.0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "badc36a9c725459fb0e588ba10b58d1543e0e462",
+    "normal": "e23d095de561f94dbdbd37113de6d3cda9ee4ad6",
+    "roughness": "02845b80fc0b397ea84831018eeea12e399c389d"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.75,
+    "sourceMean": 0.8474
+   }
+  },
+  "gilt": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "gilt.albedo.webp",
+    "normalMap": "gilt.normal.webp",
+    "roughnessMap": "gilt.rough.webp"
+   },
+   "lib": "metal.metal034",
+   "metal": 1.0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    0.7,
+    0.7
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "644968f36542bb29c3a4e4b85416863b11e313e3",
+    "normal": "0dd317d10cf60629b69c0bc442db0da84a7f4884",
+    "roughness": "a17c2393d304c4e0764cc3c4c82858de686acc5b"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.75,
+    "sourceMean": 0.6872
    }
   },
   "metal": {
@@ -121,6 +241,36 @@
     "sourceMean": 0.6063
    }
   },
+  "paintFlake": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "paintFlake.albedo.webp",
+    "normalMap": "paintFlake.normal.webp",
+    "roughnessMap": "paintFlake.rough.webp"
+   },
+   "lib": "metal.metal017",
+   "metal": 0.6,
+   "normalScale": 0.6,
+   "roughLift": 0.0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "9acc76f904636955cf5164b2ee6dd6ddb134c374",
+    "normal": "bded0de5c39d0b8a0667bb245f1d78f8f3c9fe07",
+    "roughness": "57889361d5e89b55d724e9f930233eeeeebd39fc"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 0.6,
+    "keep": 0.0,
+    "mean": 0.72,
+    "sourceMean": 0.4946
+   }
+  },
   "paintWorn": {
    "breakup": null,
    "card": false,
@@ -149,6 +299,36 @@
     "keep": 0.0,
     "mean": 0.72,
     "sourceMean": 0.7324
+   }
+  },
+  "plate": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "plate.albedo.webp",
+    "normalMap": "plate.normal.webp",
+    "roughnessMap": "plate.rough.webp"
+   },
+   "lib": "metal.metalplates001",
+   "metal": 0.7,
+   "normalScale": 0.6,
+   "roughLift": 0.0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "03f0d1252fa5e64705136b733a797187325c1ac7",
+    "normal": "c7523c16bb5990f7f15b3597957949667a1e82a5",
+    "roughness": "8df86937502d3bafdbe10a4604368df6e150db88"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.1,
+    "keep": 0.0,
+    "mean": 0.7,
+    "sourceMean": 0.5219
    }
   },
   "rubber": {
@@ -211,6 +391,66 @@
     "sourceMean": 0.2726
    }
   },
+  "rustB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rustB.albedo.webp",
+    "normalMap": "rustB.normal.webp",
+    "roughnessMap": "rustB.rough.webp"
+   },
+   "lib": "metal.metal053c",
+   "metal": 0.6,
+   "normalScale": 0.7,
+   "roughLift": 0.0,
+   "scale": [
+    1.3,
+    1.3
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "04882e880fde8d564ddd30fbc12a440c8262667b",
+    "normal": "50c41c38711a8838bc41afa9d99022a0c615e313",
+    "roughness": "6396e15b99348885d0e598d955c2f5a0f450a1f5"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 0.8,
+    "keep": 0.12,
+    "mean": 0.7,
+    "sourceMean": 0.5498
+   }
+  },
+  "rustC": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rustC.albedo.webp",
+    "normalMap": "rustC.normal.webp",
+    "roughnessMap": "rustC.rough.webp"
+   },
+   "lib": "metal.metal054c",
+   "metal": 0.6,
+   "normalScale": 0.7,
+   "roughLift": 0.0,
+   "scale": [
+    1.3,
+    1.3
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "eb841d6bfaeab741c15036e399f267235d341f4a",
+    "normal": "1e3822a9ffeae799fa07982b2f98219505e77fbd",
+    "roughness": "d6103c6d9cad1edc413ce73bdf8a9531cf1362d9"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 0.8,
+    "keep": 0.12,
+    "mean": 0.7,
+    "sourceMean": 0.4518
+   }
+  },
   "solar": {
    "breakup": null,
    "card": false,
@@ -269,6 +509,66 @@
     "keep": 0.0,
     "mean": 0.75,
     "sourceMean": 0.5336
+   }
+  },
+  "verdigris": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "verdigris.albedo.webp",
+    "normalMap": "verdigris.normal.webp",
+    "roughnessMap": "verdigris.rough.webp"
+   },
+   "lib": "metal.metal058c",
+   "metal": 0.7,
+   "normalScale": 0.6,
+   "roughLift": 0.0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "e6b29676e107224ff2097f59b461532727ba7921",
+    "normal": "fd34aff822ac53b5b9c652513665b96ed3fc5dc3",
+    "roughness": "e4459ec3adcfa7d53a1849c9a0db28ac5379a037"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.15,
+    "mean": 0.7,
+    "sourceMean": 0.6797
+   }
+  },
+  "whitePaint": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "whitePaint.albedo.webp",
+    "normalMap": "whitePaint.normal.webp",
+    "roughnessMap": "whitePaint.rough.webp"
+   },
+   "lib": "metal.metal049a",
+   "metal": 0.5,
+   "normalScale": 0.4,
+   "roughLift": 0.0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "483677b3439ec2e6de4629c3efc3c2496d4d6969",
+    "normal": "3536e0a1d4de8c5aa38297109f0807117db0ef64",
+    "roughness": "f2ba799bf886bdd11e4ffbdca84e1f2887a6a370"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 0.8,
+    "keep": 0.0,
+    "mean": 0.75,
+    "sourceMean": 0.9831
    }
   },
   "wood": {

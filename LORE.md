@@ -76,7 +76,7 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 | Southwestern lowlands | NW lowlands, S highlands | Dalab |
 | Crater drylands (two regions: N and W of the Throne; S of it) | SW bay, the savannah south of the hyperjungle | the Scyvoi |
 | East Rift Highlands / Vale of Xanadu | the Rift | the Sultanate of Xanadu (Erewhon) |
-| Northwestern lowlands | SW lowlands, N highlands, Korona | Jimjam (by the lake north of The Cut) |
+| Northwestern lowlands | SW lowlands, N highlands, Korona | Jimjam (by the lake north of The Cut); the Eternal State (§6.19), west of it to Farside |
 | Northern highlands | NW lowlands, hyperjungle, NW bay, Korona | Iron Republic, Rustic Clansmen, Painted Men |
 | *In progress / planned:* NW bay, E badlands, Korona, S highlands, E highlands; *possibly* S badlands | | ????, ghouls, bandits, ruffians; Korona's tepui tribes, human and therian (§6.18) |
 
@@ -418,7 +418,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 
 ### 6.14 Jimjam
 
-- **Where.** By the lake north of The Cut, in the northwestern lowlands: humid subtropical, about 50 m above the ocean, so the air is dense. Not snowy. Dilihan, the cut-off Izani loyalist city in The Cut (§6.2), is its neighbour to the south and leans on it for trade. Dalab is close on the map but out of reach: the Ancients' Valley lies between them (§4), and no trade goes through it. The Shining Kingdom (§6.17), a separate people, shares the NW lowlands. [the owner, Oct 2026]
+- **Where.** By the lake north of The Cut, in the northwestern lowlands: humid subtropical, about 50 m above the ocean, so the air is dense. Not snowy. Dilihan, the cut-off Izani loyalist city in The Cut (§6.2), is its neighbour to the south and leans on it for trade. Dalab is close on the map but out of reach: the Ancients' Valley lies between them (§4), and no trade goes through it. The Eternal State (§6.19; the "Shining Kingdom"), a separate people, shares the NW lowlands. [the owner, Oct 2026]
 - **The flood made the land.** The Ancients' west dam burst into the long-lake trough and the NW lowlands (§3.1, `biomes/WORLD.md`). The flood scoured every Ancient ruin away and laid down the silt Jimjam is built from. Jimjam is the one people on Krator that does not live in the Ancients' ruins, and its city has no scrap architecture. The broken dam arcologies upstream are its salvage frontier. [the owner, Oct 2026]
 - **Brick.** An exotic city of red and yellow brick with white marble trim, domes, staged spires and Tudor chimneys. The lake beds give both bricks: the iron-rich flood silt fires red and the lake's marl fires yellow. In the dense lowland air a kiln burns hot on little fuel, so over-fired near-black brick is common. White marble is a rich man's trim and is carried in; Korona, where volcanic heat would have cooked limestone, is the likely source.
 - Ruled by **the Raja**. A Raja must be crowned on a day of concordance; one crowned on a bad day is a story waiting to happen.
@@ -446,6 +446,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Rumored to have techniques to speed up and slow down time. Some say they can travel in time; authorially they cannot.
 - **Origins and history (owner, 2026-10-15).** Believed to have formed from a commune of scholars who secluded themselves before the Cataclysm; they, and they alone, might know exactly what happened, or once did. The Order of Historians emerged after the Cataclysm and shared preserved knowledge with the peoples of the crater, determined that the mistakes of the past not be repeated. Their original monastery, in the eastern highlands of the Inner Rim, was destroyed when the Lesser Throne erupted and formed a second volcano east of the Throne; many of the oldest archives and the rarest preserved and salvaged technology were lost with it. The Order then moved its headquarters to the Oidong Valley, farther from geopolitical and geological threats; that it put them closer to the Lizardmen, whose effect on the space-time continuum seemed increasingly worrisome, was a bonus. Chapterhouses across Krator; a secondary monastery and de facto operational command at **Keepwell** at Talia in the Izani Empire. Friendly with the Geomancers of Yuni; colder but cordial with the Genepriests of Dalab. Over time they embraced contemplative practice as the key to knowing when and how a Historian should act, hence "History Monks".
 - **Longsong at Oidong** is a training, research, archival and containment facility. Keepwell sends its most promising operatives, proven in the field, to learn the Order's more secretive techniques and relics. It holds the Order's archives and its most powerful technology, much of which it seeks out so it does not fall into the wrong hands, and some of which may not be safe for even the wisest to use. Built in the Xanadu style with the chapterhouses' own forms (drum halls under tile cones, the parabolic gate, the toron spire, the Order's blue) to the overall effect of the Potala: one complex of 400 x 400 m, a walled lower ward with farms and gardens at its foot, a main mass on the rock, the founders' tombs in its red upper palace, vaults for relics, a closed ward for people and a sealed library of forbidden records (the blueprint: `settlements/longsong/`).
+- **The forbidden depths and the Procrastinator (owner, 2026-10-19).** Longsong's decor is as if Buddhist monks ran the SCP Foundation: a register of what the Order holds (designation, class, procedure), seals and plaques on every sealed door. In the forbidden lower depths of the monastery lie many artifacts, among them one resembling a gigantic prayer wheel with glowing glyphs, **the Procrastinator**: the Monks are known to be able to speed up and slow down time, and this device keeps several malign entities and objects sealed by slowing their time down to a virtual standstill. Only the eldest monks know the full extent of what it protects them from. Other Monks, it is said, practise a Kung Fu that is fast as lightning... and there are rumours of more advanced techniques. (The build: `settlements/longsong`, on its own rock over the Longsong stream at px 954,1296; the register's seven named seals and its blank eighth are in `src/40-ls-plan.js`.)
 - **Language.** The Historians keep the most careful English in the crater, in a rounded book hand, with a little Xanadui from Oidong (*sar*, dental th) and Xanadu's evidence grammar as margin marks: seen, said, and (their own) inferred. They keep Coleridge's *Kubla Khan*, which the Sultanate's names come from. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.16 Hykkousoi
@@ -466,7 +467,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Scyvoi**: nomadic **human** riders of **theropod-like lizards**, in the crater drylands (`biomes/crater-drylands`). Enemies of the Hykkousoi; some tribes are subjects of Voth (§6.12). They do not overheat easily. They live on the granite kopjes the wildfires go round, come down to reap what blossoms after a burn, and the most daring use the flames to trap game. [the owner, Oct 2026]
   - **Language.** The Scyvoi call themselves the **Borunsa** (burn + plural *-sa*: the burn-folk; *Scyvoi* is the Hykkousoi's name) and speak **Boruntun**, "burn-tongue": English gone Turkish with a Jurchen edge (vowel harmony, endings stacked and verb last, no consonant clusters at the start: *sıtar* star; p- > f-, k- > h- before a back vowel, -ng > -n, th > s/d, w > v; *ç ş c ı* spelt Turkish-fashion). The tribes under Voth have Vothic loans for tribute and rank (*Sinsun*, *şif*, *vot-* "pay Voth"). They write nothing: each clan has a brand (a tamga) on its lizards and its granite. Their enemies are the *Haykossa*. `lore/tongues-of-krator.html` [the owner asked for a Turkish and Jurchen dialect, Oct 2026]
 - **Post-Apoc settlers**: a culture-neutral salvage society. Its kit has a "big man's" house, a shaman hut, prisoner cages and a **Thunderdome** arena. Shop signs are pictographs, not writing. Sign: the **gear**. [ed: this is a generic kit to flesh out settlements esp reclaimed arcologies]
-- **Shining Kingdom**: a separate people from Jimjam (§6.14), its neighbour in the Northwestern lowlands [the owner, Oct 2026]; populous, destination for trade routes over the inner Wall. Control a city on the NE ocean known as Farport: mysterious traders visit from time to time, but no one from Krator has ever crossed this sea. Kingdom is vaguely Chinese inspired [ed: or perhaps Assyrian? Very much in flux, I haven’t fleshed them out yet]
+- **Shining Kingdom**: the outsiders' name for **the Eternal State**, now §6.19 (a separate people from Jimjam, §6.14; populous; the destination of the trade routes over the Inner Wall; Farport on the north-western ocean, where mysterious traders visit and no one from Krator has ever crossed). The earlier note here said "NE ocean": the only ocean is north-west.
 - **The Zeijani and the ash nomads: language.** Brother tongues, cousins of Chichani: on the Throne, before records, the Chichani took to the sea, the Zeijani hid and the ash nomads wandered. Akkadian and Cappadocian in sound (emphatic ṣ ṭ q, θ > š, ð > z, case endings in vowel harmony); the nomads dropped the final *-m* (*ṣunum* / *sunu*). *Zeijanī* = the hidden ones; *Zey'danin* = *Ze-Ṭānin*, the town within (a Zeijani word); *Dhelv* = Vothic for *Delbum* (delve); the nomads are *Andarū*, wanderers. Latin letters chiselled into tuff until every stroke became a wedge. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.18 Korona: the tepui tribes and the Hum
@@ -477,6 +478,159 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Home tongues.** Every tribe keeps its own speech, and many have sounds only their own people can make: a beaked people's bill-clack, a throat-sac people's two pitches sung at once. Home speech is for kin; the Hum is for everyone. [the owner, Oct 2026]
 - **Contour carvings.** The Hum is carved on the tepui walls, not written in letters: one groove per syllable, above a guide line for the high register and below it for the low, level, rising or falling; dots give the vowel's colour, a hook a closing *m* or *n*, a notch ends a sentence. Consonants are never carved, so a carving records what a whistle carries, and any people who whistle the Hum can read it. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
+### 6.19 The Eternal State (Eternians; the "Shining Kingdom" of the north-west)
+
+The civilization of the north-western lowlands, between Jimjam's lake country and the Valley of the Ancients, and the
+polity that makes the trade routes over the Inner Wall worth the climb. Brainstormed with the owner 2026-10-19; everything
+marked *proposed* is this session's and waits on the owner. Its placeholder entry in §6.17 is replaced by this section.
+
+- **Names.** Its own name is **the Eternal State**; the adjective is **Eternian** [the owner, 2026-10-19]. Outsiders call it the
+  **Shining Kingdom**, for its rulers and, as far as most travellers know, for its glazed roofs (*proposed*: the roofs are the
+  reason a caravaneer who has never seen an Elder uses the name).
+- **The land.** The NW lowlands (`biomes/nwlowlands`): humid subtropical, about 1.5 to 1.6 atm, the dense air an unadapted
+  human sickens in (§2), so its people are pressure-adapted as the Voth lowlanders are. The land is the flood's: the Ancients'
+  two dam lakes north of Jimjam broke in the war that ended them (§3.1, `biomes/WORLD.md`) and scoured the lowlands, which is
+  why Jimjam has no ruins to live in (§6.14); west of Jimjam the scouring was shallower and Ancient ruins stand. Its
+  frontiers are the whole unexplored half of the Cataclysm: the **dry dam basins** to the north and north-east (the `dam` and
+  `dam 2` polygons; today semiarid floors with two residual lakes, px 272-647 by 56-231), **the Cut** on the south-east
+  (§6.2, Dilihan), **the Valley of the Ancients** on the south (§4; the Ancient's Valley polygon px 69-268 by 534-698), and
+  **Farside** on the north-west (the Farside polygons, px 3-230 by 2-314), the one true ocean shore of the crater, with the
+  **Yeti Valley** (px 53-225 by 75-261) on the Outer Wall's flank above it. The Iron Republic holds the highlands to the east
+  (§6.3; its polygon's western edge lies at px 226, beside the capital's candidate site: the border wants checking on the
+  model). Jimjam, a separate people, shares the lowlands (§6.14).
+- **The capital** stands round an arcology [the owner, 2026-10-19], near the placeholder **Centrum** (px 223,315); the owner
+  may swap its name with **Fulcrum** (px 339,266, on Jimjam's lake). From Centrum: Farport 407 km north-west, Roketstad 241
+  km east, Jimjam 537 km east-north-east, Dilihan 500 km east, Leng (ruined arcology, px 218,224) 182 km north, Henge
+  (arcology, px 185,405) 195 km south, Carcosa (ruin, px 123,482) 389 km south-west. *Proposed*: the arcology is **Plymouth**
+  (§4, "the one people actually live in by the hundred thousand"), not yet placed on the model, so the capital is the one
+  arcology on Krator that never emptied; its name, in the Eternians' own mouth, is to come.
+- **Farport** (px 27,260) is the kingdom's ocean port on the north-western sea [the owner, Oct 2026; §6.17 said "NE": the
+  only ocean is north-west]. **Mysterious traders visit from time to time, and no one from Krator has ever crossed this sea**
+  [the owner, Oct 2026]. *Proposed*: the State confines the visitors to one factory quarter of one port, as Canton and
+  Dejima did, and its bureaucracy exists in large part to manage that contact; the records of the visitors are kept and
+  never described.
+
+**The True Heirs** [the owner, 2026-10-19, unless marked]
+
+- The ruling caste: **descendants of the Ancients' highest caste**, marked by **metallic tones of skin and hair: gold,
+  silver, bronze, gunmetal**. The mark is descent and **genetic compatibility with Ancient systems**, not a device (not
+  cybernetic). It is perhaps not the only such lineage on Krator, and Dalab's genepriests (§6.1) would very much like to know.
+- **Few.** About **1,000 to 1,500** in the whole State. **Long-lived**; only a handful are alive who remember the Cataclysm,
+  and they are mostly in no condition to talk about it.
+- **Aloof** from ordinary humanity, the most cybernetically modified most of all. They call themselves **the True Heirs**,
+  and some delude themselves that they can still put things back together and recapture the Ancients' glory.
+- **What they are called.** By their friends among humans: **the Illustrious Elders**, **the Luminous Ones**. Neutrally: **the
+  Machine Talkers**, **the Elder Cousins**. By their foes, by culture: *Shiny Gits*, *cold-spirits*, *ghoul-whisperers*, and
+  least charitably *robot-fuckers*.
+- **The Call.** Some Ancient systems and robots still listen to the blood of their rulers; some listen and find their
+  understanding deranged. The Call is a two-way street: using it risks catching the contamination that drove the Ancients'
+  robots against their makers, or a psychic "radiation poisoning" from the **transdimensional taint** that has scarred the
+  Valley forever. It does not pacify the Valley and must not make relics common. (*Proposed* rule for the builds: an answer
+  is never a refusal; it is a door that opens on a room that has waited a thousand years to process someone, or a warden that
+  kneels and then courteously escorts the caller to the same end it gave everyone else.)
+- **The ghouls.** The Heirs know that **some, not all, of the Valley's ghouls were once their kin, perhaps even recently.**
+  *Proposed*: this is the State's true secret, and the architecture of seclusion below is built round it: sealed wings, elders
+  "in retreat", a house nobody names.
+- **Tzintzun** (§6.12): they probably do not know exactly what he is, but they have a better idea than the Order of Historians
+  does.
+- *Proposed, awaiting the owner*: three factions fall out of the name. The **Restorers**, who lead expeditions into the Valley
+  and use the Call freely, the most tainted and the most certain of recaptured glory; the **Wardens**, the quarantine party,
+  who built the bureaucracy precisely so that the knowledge would stop mattering; and the **Withdrawn**, the most modified and
+  longest-lived, who no longer address humans at all and whom the other two claim to speak for. A human who speaks for a
+  Withdrawn Elder wears a white closed-eyed mask of that Elder.
+- *Proposed*: Jimjam says a person who claims to have seen two Rounds is a living wonder or a liar (§6.14); the Heirs have
+  seen several, could confirm or destroy the Long Count by testimony, and decline to.
+
+**The State** (*proposed throughout*; the owner's brief was "a bureaucratic Chinese-style kingdom")
+
+- **A paper state under a thin caste**, on the Qing pattern: a small ruling caste of another origin over a vast examined human
+  bureaucracy, intermarriage forbidden, a caste quarter in every city, the ministries run in the subjects' tongue, the State
+  running for a decade without the Elders noticing. Nobody else on Krator governs by paper: the Eternal State keeps the
+  census, the land register, a legal code, standard weights and measures, and canals. It is the crater's only running record
+  of the present, as the Order of Historians' is of the past, and the two institutions want each other's archives.
+- **Script and paper.** The only **logographic script** on Krator, which any subject dialect can read, and the only paper and
+  block printing; Jimjam writes on palm leaf and the Historians in book hand (`lore/tongues-of-krator.html` does not carry
+  the Eternians yet). The spoken tongue is open; it should not be tonal (the Hum has the crater's tones, §6.18).
+- **The Valley frontier.** The State quarantines the Valley and licenses its salvage; the Heirs are the only people who can
+  reach the capital's relics, and pay for each one. Dalab guards the Valley from the south with Blade and Span (§6.1), the
+  State from the north, and the two never meet, because nothing crosses the Valley.
+- **The northern frontier: the Yeti Kingdom** [the owner's idea, 2026-10-19]. A very high-altitude, cold-adapted people on the
+  Outer Wall above Farside (the Yeti Valley), raiding the lowlands and the coast, in a tense relationship with every kingdom
+  round them. *Proposed*: an Ancient work caste for the airless rim; the State answers them the Song way, with a wall, a
+  frontier army it distrusts and "winter gifts" that everyone knows are tribute; they see every sail from over the sea first.
+  "Abominable Kingdom" is the lowlanders' name; their own is to come.
+- **The dam basins** [the owner's idea, 2026-10-19]: an arid domain of bandits camped in the remains of Ancient ships on the
+  floors of the drained lakes. *Proposed*: the Ancients ran shipping on the reservoirs; when the dams went every hull
+  grounded on a drying floor, an Aral Sea ship graveyard at a hundred times the scale, camps inside listing freighters on
+  salt flats, the Free Clans and the Republic to raid across to the south, Jimjam's salvage frontier (§6.14) upstream, and the
+  parts the cybernetics tribe needs. Boatmurder (outpost, px 494,74) stands in the east lobe.
+- **The cybernetics tribe** [the owner's idea, 2026-10-19]: a ruined-arcology people who retain cybernetics and computers
+  though they have lost most other advanced technology. *Proposed*: they are the Forgemasters to this State's mechs,
+  despised, indispensable and heretical by definition, because what they know contradicts the court's story of itself; the
+  Order courts them and Dalab wants their genomes too; Leng (px 218,224) or Henge (px 185,405) is their seat; the character
+  kit's cybernetic arm mods (`core/charactermodels`) are theirs.
+- **Trade** (why the caravans cross the Wall): goods from over the sea under State monopoly, the capital's relics by the
+  Valley rule, and a kiln country's wares beside Jimjam's brick: porcelain-grade ceramics, glazed tile, paper, a tea or lacquer
+  analogue from the lowlands' flora (§8). Contracts are dated by Jimjam's reckoning like everyone's (§6.14).
+
+**Look** (the owner's reference sets of 2026-10-19; the rules are *proposed*)
+
+- **Gothic remixed with Art Deco, Soviet monumental and the faceted cubist head.** Deco is what masons produce when they
+  copy a machine civilization by hand, so a court that has spent a thousand years imitating the Ancients' Cyclopean
+  Modernism (§4) in materials it can work arrives at it; Gothic supplies the pointed arch, the vertical pier, tracery and
+  the gallery; the Soviets the scale and the metal figure. Never Warhammer: no skulls, no buttress forests, no grime, no rust,
+  no weapons in the statues' hands; flat pale fields with the metal as the one accent.
+- **The master mass is the stepped pier bundle** (Grundtvig's Church, Hallgrímskirkja): piers stepping up in organ-pipe ranks
+  to a spire, the hand-built descendant of the Ancients' corn-cob and setback towers; the ministries' towers are copper-ribbed
+  setbacks (Bullocks Wilshire). **Openings:** bundled lancets and the **oculus**, a ring window over every door.
+- **Solid, not paper** [the owner]: in the court the bronze tracery holds thin **alabaster or onyx** lights, which glow when a
+  cyan strip is lit behind them; where a wall must breathe, a pierced bronze screen. **The tracery's origin:** nobody can make
+  the Ancients' blue glass, so where a glass wall went the Heirs filled the opening with a bronze grid of small panes, as
+  Earth's Gothic did.
+- **Seats of power are Ancient buildings kept, not patched** [the owner]: the only maintained Ancient buildings on Krator,
+  cyan strips alive where the Machine Talkers have woken a circuit. **The ministries build new in pale brick round Ancient parts
+  set in as structural relics** (a hull's prow as an apse, a turbine casing as a gate), and a revived Ancient **pneumatic-tube
+  network** carries the State's paper between them. **The Clock**: an Ancient automaton facade bridging a street (the Anker
+  clock), ancestor figures parading on the hour, running since before the Flood on the Ancients' hours: a second running count
+  beside Jimjam's Long Count, and they may not agree.
+- **Statuary everywhere** [the owner: the Elders have a strong proclivity to ancestor worship; giant statues, especially faces
+  and heads, are common ornamentation]. Rules: closed eyes are the dead, open eyes the living, and the city is mostly closed
+  eyes; a statue's metal is the ancestor's rank, gold, silver, bronze, gunmetal, stone for humans' ancestors; an Heir is
+  carved at withdrawal, not death; some heads in the galleries are veiled, and the Heirs know whose; faceted heads and standing
+  figures crown the pier tops in their niches; the ancestors' faces are carved where the water falls, at the two dam breaches
+  and in the Farside gorge, spillways through the mouths (the hydraulics and the cult in one structure); a civic door is held
+  up by an ancestor with arms spread; in the towns a terracotta or lead mask of the household's dead hangs over every door.
+- **The talking heads:** the Ancients' buildings had terminals with faces, and the Machine Talkers can wake some. A
+  petitioner does not see an Elder; they address a bronze face on a wall, and sometimes it answers, in a voice from elsewhere
+  in the complex, or in one not quite the Elder's. Some answer deranged.
+- **Roofs** of glazed **celadon tile** on steep roofs and ribbed domes (Lechner's Zsolnay green), fired in the same kiln country
+  as Jimjam's brick; on the court's own pavilions the tile becomes metal fish-scale shingle (Goff), gold, bronze or
+  gunmetal, so the Heirs' roofs are their skin.
+- **Brick fired pale**, buff and cream, used in vertical piers, so the State reads as Jimjam's sibling with a different
+  grammar: Jimjam's red and yellow brick, white marble trim, domes, staged spires and chimneys stay Jimjam's. A traveller knows
+  which side of the Cut they are on by whether the city points up or domes over.
+- **Tiers:** court: Ancient hosts kept, bronze tracery and alabaster, metal colossi, metal-scale roofs. Ministries and the
+  rich: pale brick and dark stone, Deco stepping and fluting, verdigris bands, figures in niches, celadon tile, bronze doors
+  with a face. Common: a **canal town** of white lime and grey tile with cast **pattern block** (Lloyd Wright's textile block:
+  geometric, never glyphic, or it reads Mesoamerican and walks into Voth), stepped parapets, shutters, a mask over every door.
+  Poor: silt brick and reed, a painted face where the mask would be. The dark mechanical-organic look of the owner's Shibuya
+  reference is the cybernetics tribe's, the same forms gone black and grown over.
+- **Hydraulics:** canals, reservoirs and spillways on the Khmer pattern for the ministries' works.
+- **Costume** (silhouette first, §5): the **halo** of small discs, each an ancestor's face in its metal, a portable shrine
+  that counts a lineage across a hall; the **white closed-eyed mask** worn by a human proxy; the **visor**, an Ancient device
+  worn to Call, which also hides the eyes, because the eyes are where the taint shows first, so a visor worn in company is a
+  quiet confession; the **circuit-maze brocade**, the Ancients' circuit board as textile, carrying rank as Mandarin squares
+  did (more turns, higher office); faces woven into the court's robes. Palette by caste: the Heirs in **celadon and teal with
+  bronze-orange embroidery**; the human ministers in the State's **black**, the maze in white or gold, the closed-eyed gold face as
+  the badge of office; the commons in undyed cloth and celadon; quilted white with silver in the north. No red (the
+  Republic's and Jimjam's) and no sun rays (Iziz's and Voth's): the disc halo instead.
+- **Sign and colours** [the owner, 2026-10-19]: **a gold face with its eyes closed, on black, with green highlights**; the
+  culture kit's colours are black, gold and green. Gold on black is also the Pirate Emperors' field (§6.2, the Hooked Sun);
+  the closed-eyed face and the green tell them apart at a distance. The bronze ring stays an architectural motif (the oculus,
+  the Ancients' building band), not the emblem.
+- **The rule it gives §7** [the owner, 2026-10-19]: every people on Krator that differs from the human baseline is an Ancient
+  lineage or was warped by the Cataclysm, and in the north-west the two can be hard to tell apart.
+
 ## 7. Peoples of Krator (species and kinds)
 
 - **Humans**, in most cultures.
@@ -485,7 +639,9 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - **Hykkousoi:** famed for rib-gills; water breathers
 - **Giants**: engineered at Dalab, some four-armed.
 - **Lizardmen.**
-- **Mutants, aka ghouls (Korona, Valley of the Ancients)**; in Korona, therian mutants live in tribes of their own and speak the Hum with their human neighbours (§6.18).
+- **Mutants, aka ghouls (Korona, Valley of the Ancients)**; in Korona, therian mutants live in tribes of their own and speak the Hum with their human neighbours (§6.18). Some of the Valley's ghouls were True Heirs (§6.19).
+- **The True Heirs** (§6.19): metallic skin and hair (gold, silver, bronze, gunmetal), long-lived, descended from the Ancients' highest caste and compatible with their systems. **Yetis** (planned, §6.19): cold-adapted, on the Outer Wall above Farside.
+- **The rule** [the owner, 2026-10-19]: every people on Krator that differs from the human baseline is an Ancient lineage, made for a place or a task, or was warped by the Cataclysm; the two can be hard to tell apart.
 
 ## 8. Ecology highlights (detail in each `biomes/*/NOTES.md` and `biomes/FRUIT.md`)
 
@@ -552,6 +708,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 | Reed Lake | fish, chakana | madder, ochre, black, undyed white |
 | Lizardmen | serpent | jade, turquoise |
 | Post-Apoc | gear | faded rust red, teal, mustard, olive |
+| The Eternal State (§6.19) | a gold face, eyes closed | black, gold, green highlights (the owner, 2026-10-19); buildings in celadon, pewter and pale brick |
 
 Rule: a building never names a culture. Its sockets (awning, banner, flag, emblem, sign) are dressed by whichever culture holds it.
 
@@ -569,6 +726,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Zey'danin:** every Ring Sea power in one city: Zeijani, Western Islanders, Iziz, the Hykkousoi of Ys, Voth (§6.12); Voth holds it, Temora is 80 km off, Hook 135 km.
 - **Pinnacle Rock and the Painted Men:** the Riders' northern roost town watches the raiders' trails off the Inner Wall (§6.6; proposed).
 - **Caravans:** Yuni and the desert nomads; the Eastern Nomads and the dune raiders.
+- **The Eternal State** (§6.19): shares the NW lowlands with Jimjam and dates its contracts by Jimjam's count; the Republic on its eastern highlands; Dilihan through the Cut; the Yeti Kingdom above Farport; the bandits of the dam basins; the Valley between it and Dalab, so the two Valley-wardens never meet; the only culture in contact with anyone from beyond the crater (Farport's visitors). The Order of Historians and Dalab's genepriests both want what the Heirs have.
 - **The Ring Sea:** a shared sea for the Hykkousoi, Voth, Xanadu, Iziz, Beast Riders and Islanders.
 
 ## 12. Contradictions and open questions
@@ -596,6 +754,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
 - Who lives in the NW bay, the badlands and the southern highlands? Which tribes, human and therian, live in Korona, and what are their home tongues?
+- The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), round which arcology (Plymouth is proposed) and what the Eternians call it; the Eternian tongue and its logographic script; the kingdom's population; who the visitors at Farport are and what they want; the Yeti Kingdom's own name; the cybernetics tribe's seat (Leng or Henge) and name; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively, laying the tuff of the Catch?
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
 - Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?

@@ -398,7 +398,7 @@ const CELL=(i,j)=>[i/3+.005,j/3+.005,(i+1)/3-.005,(j+1)/3-.005];   // a cell of 
  // four of the nine charred shrubs, so no two neighbours are the same bush (the middle one keeps a few scorched leaves)
  use('twigs',libCell('leaf.twigs',CELL(0,0),256,256));use('twigs1',libCell('leaf.twigs',CELL(2,1),256,256));
  use('twigs2',libCell('leaf.twigs',CELL(1,2),256,256));use('twigs3',libCell('leaf.twigs',CELL(1,1),256,256));
- use('bunch',libCell('leaf.bunch',CELL(1,1),256,256),.35);
+ use('bunch',libCell('leaf.bunch',CELL(1,1),256,256),.35);use('lichen',libCell('lichen',CELL(1,1),256,256),.3);
  use('spike',libCell('leaf.spike',CELL(1,0),256,256));          // fireweed
  use('lupine',libCell('leaf.spike',CELL(1,1),256,256));         // lupine
  use('plume',libCell('leaf.spike',CELL(1,2),256,256));          // the flame plume (celosia)
@@ -424,6 +424,8 @@ const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{
 {const L=libMap('wood.char','wood');if(L)M.wood.map=L.t;BIO.bucket('wood',M.wood,{label:'Dead and charred wood',uvScale:L?L.scale:[3,4]});}
 // the granite (stone.granite): the boulders and stones, and the kopjes' ground (84 reads CRATERDRY.GRANITE)
 {const L=libMap('stone.granite','rock');if(L){M.rock.map=L.t;const m=CRATERDRY.LIBMEAN.rock;CRATERDRY.GRANITE={map:L.t,mean:m>0?m:.7};}}
+/* the granite's second delivery (stone.granite.b: finer grain, more lichen): the kopjes' ground blends it with the first by a macro noise (84), so a tor's slopes are not one grain */
+{const L=libMap('stone.granite.b','rockB');if(L){CRATERDRY.GRANITE_B={map:L.t,mean:CRATERDRY.LIBMEAN.rockB>0?CRATERDRY.LIBMEAN.rockB:.7};}}
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items

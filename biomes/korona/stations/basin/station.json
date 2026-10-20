@@ -1,0 +1,13 @@
+{
+ "name": "The fertile basin (station 3): the Tiers' lake, its shore meadows of reagents, the rainforest behind, one bog corner",
+ "out": "korona-basin.html",
+ "kits": {
+  "49h1-nwlow-species.js": "../nwlowlands/src/50-biome-nwlowlands-species.js",
+  "49h2-nwlow-trees.js": "../nwlowlands/src/55-biome-nwlowlands-trees.js",
+  "49h3-nwlow-floor.js": "../nwlowlands/src/60-biome-nwlowlands-floor.js",
+  "49h4-nwlow-build.js": "../nwlowlands/src/70-biome-nwlowlands.js"
+ },
+ "packs": {
+  "nwlowlands": "../nwlowlands"
+ }
+}

@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.818,
+    5.853
+   ],
+   "seam_before": [
+    1.877,
+    6.01
+   ],
+   "source_size": [
+    437,
+    438
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.15,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.05,
+   "seam_axes": "none",
+   "size": 512
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "court/painting-19",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "court-painting-19.png",
+  "generator": "supplied by the owner (pasted in the session, 2026-10-19), from the prompts in core/materials/PROMPTS-NEEDED.md (the court's paintings: Iziz; the court furniture: Iziz); cut into cells by the session",
+  "licence": "generated for this project by its owner",
+  "prompt": "patterns/court/paintings-iziz-b: a legion on parade before the palace gate",
+  "reuse": "a canvas in any Izani court frame (iziz_court_painting)",
+  "sha1": "5567d5c0aa8eb403b2c64e41edf7860a0a750b8a"
+ }
+}

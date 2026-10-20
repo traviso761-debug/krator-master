@@ -8,8 +8,8 @@ file says what is different and what the kit exports.
 
 The Oidong Valley east of the Vale of Xanadu (LORE.md 6.15): the History Monks' country, Longsong's site, reached by a hard
 trek over the passes and, once reached, the safest ground on Krator. A chilly enclosed high valley at ~1600 m, ~1 atm, a
-chain of still pools on its floor, a cataract at its head. Koppen Cwb, Cfb, Dwb and ET (`OIDONG.KOPPEN`; an ESTIMATE, the
-scale model's rasters were not read: `KNOWN_ISSUES.md`). SERENE before anything else (the owner, 2026-10-19): nothing here
+chain of still pools on its floor, a cataract at its head. Koppen Cfb, Dfb, BSk, Csa and ET (`OIDONG.KOPPEN`; from the
+scale model's rasters, now read, give Cfb, BSk and Csa on the floor, D classes on the slopes, ET and EF above: `KNOWN_ISSUES.md`). SERENE before anything else (the owner, 2026-10-19): nothing here
 stings, hunts or burns; the palette is pastel (the probe measures it) with one iridescent streak.
 
 ## The fields it reads
@@ -50,23 +50,23 @@ number: the probe checks it) and are reported in `OIDONG.STONES` for the host's 
 
 | # | key | name | H (m) | holy | shared | alien | Koppen |
 |---|---|---|---|---|---|---|---|
-| 0 | giantlotus | Giant lotus | 5-11 | yes | | yes | Cwb Cfb |
-| 1 | bodhi | Sacred fig | 14-26 | yes | | | Cwb Cfb |
-| 2 | cherry | Cherry blossom | 6-12 | yes | | | Cwb Cfb Dwb |
-| 3 | marblebirch | Marble birch | 18-34 | | | yes | Cwb Cfb |
-| 4 | cloudpine | Cloud pine | 6-14 | | xanadu | | Cwb Cfb Dwb |
-| 5 | topiary | Cushion tree | 6-12 | | xanadu | | Cwb Cfb |
-| 6 | hazeblossom | Haze blossom | 7-13 | | xanadu | | Cwb Cfb |
-| 7 | lotustrumpet | Lotus trumpet | 10-18 | yes | xanadu | yes | Cwb Cfb |
-| 8 | wisteria | Wisteria tree | 6-11 | | xanadu | | Cwb Cfb |
-| 9 | chalice | Chalice tree | 16-30 | | | yes | Cwb Cfb |
-| 10 | bellpod | Bell-pod willow | 4-8 | | | yes | Cwb Cfb |
-| 11 | bamboo | Jade bamboo | 10-20 | | | | Cwb Cfb |
-| 12 | mossball | Moss-ball tree | 7-13 | | | yes | Cwb Cfb |
-| 13 | maple | Paper maple | 5-10 | | | | Cwb Cfb Dwb |
-| 14 | cedar | Temple cedar | 18-34 | | | | Cwb Cfb Dwb |
-| 15 | camphor | Camphor laurel | 12-22 | | | | Cwb Cfb |
-| 16 | pagodafir | Pagoda fir | 14-28 | | | yes | Cwb Cfb Dwb ET |
+| 0 | giantlotus | Giant lotus | 5-11 | yes | | yes | Cfb |
+| 1 | bodhi | Sacred fig | 14-26 | yes | | | Cfb |
+| 2 | cherry | Cherry blossom | 6-12 | yes | | | Cfb Dfb |
+| 3 | marblebirch | Marble birch | 18-34 | | | yes | Cfb |
+| 4 | cloudpine | Cloud pine | 6-14 | | xanadu | | Cfb Dfb BSk Csa |
+| 5 | topiary | Cushion tree | 6-12 | | xanadu | | Cfb Csa |
+| 6 | hazeblossom | Haze blossom | 7-13 | | xanadu | | Cfb Csa |
+| 7 | lotustrumpet | Lotus trumpet | 10-18 | yes | xanadu | yes | Cfb |
+| 8 | wisteria | Wisteria tree | 6-11 | | xanadu | | Cfb Csa |
+| 9 | chalice | Chalice tree | 16-30 | | | yes | Cfb |
+| 10 | bellpod | Bell-pod willow | 4-8 | | | yes | Cfb |
+| 11 | bamboo | Jade bamboo | 10-20 | | | | Cfb |
+| 12 | mossball | Moss-ball tree | 7-13 | | | yes | Cfb |
+| 13 | maple | Paper maple | 5-10 | | | | Cfb Dfb |
+| 14 | cedar | Temple cedar | 18-34 | | | | Cfb Dfb |
+| 15 | camphor | Camphor laurel | 12-22 | | | | Cfb |
+| 16 | pagodafir | Pagoda fir | 14-28 | | | yes | Cfb Dfb ET |
 
 Every species and floor plant carries `tags:{climate, aridity, abyssal, riparian, koppen, holy, shared, alien, harvest}`;
 `harvest` names the wood, the edible parts, whether it is medicinal and the catalog fruit (`biomes/FRUIT.md`). The floor

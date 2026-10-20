@@ -17,7 +17,7 @@ function buildTalPalazzo(G,o){reseed(9461+(o.v|0));const W=16,D=12,H1=4.4,H2=3.6
  // the ground storey: orange, round-arched lit windows in white bands with keystones, the door on the axis
  vnBody('vPlaster',0,Y0,Z0,W,H1,D,0,or,{t:.35});
  for(let j=0;j<5;j++){const x=(j-2)*BAY;if(j===2)continue;tanArch(x,Y0+.5,zf,0,1.5,3.0,{fill:'L',band:wh,bw:.16,key:gi,sill:wh});}
- vnDoor(0,Y0,zf,0,1.5,3.2,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.2,zf,0,.85,.2,.14,.08,wh,0,Math.PI);tanDiscAt('taDiscL',0,Y0+3.2,zf,0,.75,.03,.1,null);
+ tanDoor(0,Y0,zf,0,1.5,3.2,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.2,zf,0,.85,.2,.14,.08,wh,0,Math.PI);tanDiscAt('taDiscL',0,Y0+3.2,zf,0,.75,.03,.1,null);
  for(const s of[-1,1])for(const zz of[Z0-3,Z0+1])tanArch(s*W/2,Y0+.5,zz,s*Math.PI/2,1.4,2.9,{fill:'L',band:wh,bw:.16,key:gi,sill:wh});
  for(let j=0;j<6;j++){const x=(j-2.5)*BAY;tanPilaster(x,Y0,zf,0,.6,H1,wh,gi);}
  tanString(0,Y0+H1,Z0,W,D,0,wh,.22,.3);
@@ -48,7 +48,7 @@ function buildTalJharokhaHouse(G,o){reseed(9471+(o.v|0));const W=14,D=11,H=3.4,N
  vnReg('Jharokha house (rich, shared)',0,Z0,8.6,TOP+6.4,{style:'indic',type:['multi-family dwelling']});
  vB('taMarble',0,-.1,Z0,W+.6,Y0+.1,D+.6,0,mb);vnStairs(0,0,zf+.6,0,6,Y0,3,'taMarble',mb);
  for(let k=0;k<N;k++){const y=Y0+k*H;vnBody('vPlaster',0,y,Z0,W,H,D,0,wh,{t:.3});if(k>0)tanString(0,y-.06,Z0,W,D,0,or,.1,.12);
-  if(k===0){for(const x of[-4.2,4.2])tanArch(x,y,zf,0,2.4,3.0,{kind:'cusp',fill:'L',band:or,bw:.14,gilt:true,lobes:5});vnDoor(0,y,zf,0,1.4,2.8,'taMarble',wh,wal,false);
+  if(k===0){for(const x of[-4.2,4.2])tanArch(x,y,zf,0,2.4,3.0,{kind:'cusp',fill:'L',band:or,bw:.14,gilt:true,lobes:5});tanDoor(0,y,zf,0,1.4,2.8,'taMarble',wh,wal,false);
    tanArcBand(0,y+2.8,zf,0,.8,.14,.14,.08,or,0,Math.PI,8,'taGilt');tanDiscAt('taDiscL',0,y+2.8,zf,0,.7,.03,.1,null);}
   else for(const x of[-4.2,0,4.2])tanJharokha(x,y+.3,zf,0,2.6,H-.5,1.2,wh,or,{fill:'L',domeC:tile,finial:k===N-1?gi:null});
   for(const s of[-1,1])for(const zz of[Z0-3,Z0+.6])tanArch(s*W/2,y+.8,zz,s*Math.PI/2,1.1,2.0,{kind:k?'cusp':'round',fill:'L',band:or,bw:.12,sill:wh});
@@ -84,7 +84,7 @@ function buildTalPeristyleVilla(G,o){reseed(9481+(o.v|0));const CW=27,CD=23,WH=2
  vB('taMarble',0,-.1,HZ,HW+1,Y0+.1,HD+1,0,mb);vnStairs(0,0,HZ+HD/2+.6,0,4,Y0,3,'taMarble',mb);
  vnBody('vPlaster',0,Y0,HZ,HW,H1,HD,0,wh,{t:.35});const hf=HZ+HD/2;
  for(let j=0;j<5;j++){const x=(j-2)*3.4;if(j===2)continue;tanArch(x,Y0+.4,hf,0,1.6,3.2,{fill:'L',band:or,bw:.16,gilt:true,key:gi,sill:mb});}
- vnDoor(0,Y0,hf,0,1.5,3.0,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.0,hf,0,.85,.16,.14,.08,or,0,Math.PI,8,'taGilt');tanDiscAt('taDiscL',0,Y0+3.0,hf,0,.75,.03,.1,null);
+ tanDoor(0,Y0,hf,0,1.5,3.0,'taMarble',wh,wal,false);tanArcBand(0,Y0+3.0,hf,0,.85,.16,.14,.08,or,0,Math.PI,8,'taGilt');tanDiscAt('taDiscL',0,Y0+3.0,hf,0,.75,.03,.1,null);
  for(let j=0;j<6;j++)tanPilaster((j-2.5)*3.4,Y0,hf,0,.5,H1,wh,gi);
  tanString(0,Y0+H1,HZ,HW,HD,0,or,.2,.3);
  const Y1=Y0+H1+.3;vnBody('vPlaster',0,Y1,HZ,HW,H2,HD,0,wh,{t:.35});

@@ -183,11 +183,11 @@ waits for the temple) and the worn orange render (`taRenderW`: the tenement).
 | P0 | `kits/talia` scaffold on the shared IZV list (Pylon's P0 makes it): `build.py`, `verify.py`, the kit sheet, `materials.json`, `INDEX.md`, `PORT.md` | an empty sheet builds and passes |
 | P1 | materials and kit items (`ta*`), the helpers: arch frames (round, pointed, ogee, cusped, stepped), the column lathe by order, balusters (instanced), the drum-dome kit (hemisphere, egg, melon, onion, lotus), jharokha bay, entablature | a helper row on the sheet |
 | P2 | dwellings, all tiers, and the mixed-street row | eye-level views judged by the owner |
-| P3 | trade and the caravan buildings | |
-| P4 | the University and the civic set, the temple, memorials, the east gate | |
-| P5 | the governor's palace: blueprint sheets after the forks, then the building | |
-| P6 | the catalog culture file, interiors | |
-| P7 | the Godot export check, the gallery | `tools/test_all.py` passes |
+| P3 | trade and the caravan buildings | **done 2026-10-18** (ad31bcf3): nine trade buildings, `src/71t-tal-trade.js` |
+| P4 | the University and the civic set, the temple, memorials, the east gate | **done 2026-10-18** (eaf8db8c): 23 keys in `src/72t`, `72u`, `73t` |
+| P5 | the governor's palace: blueprint sheets after the forks, then the building | **built 2026-10-18**: `tal_governor_palace` (`src/74t-tal-palace.js`), the exterior on the blueprint's frame (x = -v, z = 1 - u); its rooms come with the interior set (P6) |
+| P6 | the catalog culture file, interiors | **done 2026-10-19** (e132db7a): 27 catalog pieces; `kits/interiors/sets/talia.js` furnishes 32 of 45 items, the room kinds `lecture` and `studio`; then no dark voids (2e576bba) |
+| P7 | the Godot export check, the gallery | `tools/test_all.py` passes. **2026-10-19**: the sheet exports through Iziz's city contributor read in place (kit.json `external`, core `export`); `godot/data/world-talia` (the middle mixed street's west half: the loggia house, a Vernacular townhouse, the dome house; 32 items, 1,347 instances, 9 furniture buckets, 31 textures, 6 of Talia's pack, 13 doors and windows as fixtures, `world.glb` 2.2 MB) passes `iziz_test.gd -- --case=world-talia --sheet` in Godot 4.7.2 and runs in the nightly. The gallery: the entry is in `build_gallery.py`; Krator Worlds S-Z (which already carries an older Talia page and `iziz.tex.talia.js`) carries the current page and card from version 8 |
 
 ## 9. The site
 

@@ -155,6 +155,63 @@ of schedule falls due over the hour's first minutes instead of all at :00 (the h
 stay consistent (nothing waits). A world may add an actor's own `lagBase` minutes (the Voth city's trades in two
 buckets, half of them a half-hour later).
 
+## Settlements and their economies (P7a, 2026-10-19)
+
+A page may hold several settlements, each with its own economy (`settlements/isle-demo/PLAN.md` section 9). It is
+**opt-in**: a page that never names one runs one economy as before, and its results do not move (Voth's stocks proof,
+`test-sim.js`).
+
+- `SIM.settlement({id, faction, name?})` makes the record (kind `settlement`, registered on first use).
+- A place belongs to one: `SIM.place({..., settlement: id})`. An actor belongs to its home's (`SIM.settlementOf(x)`
+  takes a place id, a place or an actor).
+- `SIM.economy(config, {settlement: id})` makes that settlement's own economy: warehouses, sites, recipes, carts,
+  in-flight loads and books. Once one is keyed, every economy on the page must be (an unkeyed one throws).
+- `SIM.store`, `recipe`, `produce` and `cart` route by the place or actor they are given. `SIM.supply(g, n, whole, s)`,
+  `stockOf(g, s)`, `economyMeal(s)`, `economyDays(g, s)` and `economyReport(s)` take the settlement last, or run inside
+  `SIM.withEcon(s, fn)`. A purchase draws on its shop's settlement, a meal out on its place's.
+- `SIM.economyStep` and `economyJump` step every economy in turn. Inside a turn `SIM.ECON` is that economy, so the
+  module's own code is unchanged.
+- `SIM.stocks(s)` is one settlement's stocks, `SIM.stocksBy()` all of them; each keeps its own daily snapshots.
+- **People.** A role may name its `settlement`: its actors live in that town's homes only, and every actor's work is
+  dealt among the places of its home's town. `SIM.populate({settlement, prefix})` deals one town's roles over its own
+  beds (call it once a town); its result counts `bySettlement`.
+- **The search.** The resolver looks for a place in the actor's own town first and anywhere only when its town has
+  none (`SIM.placesFor(..., {settlement})` filters by town); an errand's seller likewise.
+- **The items' books.** Each town's stocks count only its own households' food and its own people's things (by their
+  home), and its item flows (bought, eaten, worn, issued, broken, unmet) from the items module's books by town
+  (`SIM.ITEMS.statsBy[s]`).
+- **Trade between settlements** (`77-sim-6-trade.js`): `SIM.trade({id, stops:[{settlement, place}, ...], cap,
+  carriers?, minutes? | line?, mins?, goods?, keep?, want?, most?})`. A carrier goes round the stops on a timer
+  (`minutes` a passage, `mins` a stay) or as a `SIM.transport` line's vehicle. Leaving a landing it buys from that
+  town's warehouses what the next town wants (its use plus its unmet draws a day) and this one can spare (above `keep`
+  days of its own want), up to `want` days of the receiver's and `cap` in all; the sender books it **exported**. At sea
+  it is in neither town's stock: `SIM.tradeOutbound(g, s)` and `SIM.tradeInbound(g, s)` count it, a town's stocks rows
+  show it as `outbound` and `inbound`, and a town does not send for an import of what is already at sea toward it.
+  Landing, it goes into the landing's store (or the emptiest warehouse) and the receiver books it **imported**.
+  `SIM.trades(a, b)` gates it: one faction, or each faction's relation to the other not shut (`trade` false, `'none'`
+  or `'closed'`; without `trade`, a stance of wary or better). `SIM.tradeReport(id?)`: voyages, refused, what went
+  each way, landed, each carrier's load.
+
+## The three levels (the contract for a settlement nobody is watching; P7d builds it)
+
+A settlement runs at one of three levels, chosen by the player's window, never by what it holds:
+
+| Level | When | What runs | What is drawn |
+|---|---|---|---|
+| **record** | always | the records exist: places, actors, stores, routes, the books | nothing |
+| **abstract** | the settlement is loaded but away from the window | each place produces and consumes by the hour from its workers and recipes, as `SIM.economyStep` does; carts are counted, not walked (a load moves when its trip's minutes are past); trade routes tick; the books balance | nothing; no actor is posed |
+| **presented** | the settlement is in the window | everything: actors posed, carts walking, groups on the map | everything |
+
+**The rules between them.**
+- The books are the same at every level: made + imported - exported - consumed = the change of the stock, per good and
+  per settlement, over any span.
+- Raising a settlement to presented places each actor where its schedule says it is at that minute (the wake), and
+  each cart part-way along its trip (the lag). Lowering it keeps every record and drops only the poses.
+- A carrier between two settlements is a record while away: it leaves one settlement's books (exported) and lands in the
+  other's (imported) after its route's minutes; while at sea it is counted `in transit`.
+- The abstract-level week test (`settlements/isle-demo/PLAN.md` section 7) fast-forwards a week with one town in the
+  window, then the other, and checks the books, every load and the arrival after days away.
+
 ## Navigation layers
 
 `pedestrian` (people), `road` (wheels and caravans: routes ask `minW`), `water` (boats), `animal` (riders across

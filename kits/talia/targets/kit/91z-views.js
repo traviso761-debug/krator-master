@@ -9,3 +9,5 @@ const VIEWS={};
   if(n.startsWith('Mixed'))VIEWS[n+' — eye level']=[-half*.35,1.7,zs[i]+24,0,4,zs[i]];});
  for(const S of SITES){if(S.row.startsWith('Mixed'))continue;const D=VERN.defs[S.key];
   VIEWS[D.name+' — eye level']=TAL_EYE(S,Math.max(D.w,D.d)*.85+6,D.w*.22);}}
+// the walker on the floors: hand the walk registry to the host's camera (99-start.js's take names none)
+if(typeof KWALK!=='undefined'&&typeof KHOST!=='undefined'&&KHOST.take){const _take=KHOST.take;KHOST.take=function(o){if(o&&!o.walk)o.walk=KWALK;return _take.apply(this,arguments);};}

@@ -390,9 +390,14 @@ def draw_section():
     dr.text((X(-60), Y(-10)), 'barracks and the Praetorium / Hall of Embassies stand on the flanks (not in this plane)', font=fs, fill=(80, 80, 80))
     return img
 
-def main():
+def domus_passage():
+    """The family's corridor on the three Domus storeys (once: export_plan.py calls it too)."""
     for F in FLOORS:
-        if F['id'].startswith('I2'): F['rooms'].append(R(14, 'Passage of the Domus', 'passage', 24, 32, -9, 10, 3, 'between the stair and the nursery; the family\'s own corridor'))
+        if F['id'].startswith('I2') and not any(r['name'] == 'Passage of the Domus' for r in F['rooms']):
+            F['rooms'].append(R(14, 'Passage of the Domus', 'passage', 24, 32, -9, 10, 3, 'between the stair and the nursery; the family\'s own corridor'))
+
+def main():
+    domus_passage()
     B.KEYMAP.update(keymap()); B.EXTRA_PROGRAMS.update(iziz_programs()); B.NEW.update(IZIZ_NEW)
     for k in list(B.NEW):
         if k.startswith('voth_'): B.NEW.pop(k)

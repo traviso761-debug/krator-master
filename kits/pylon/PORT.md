@@ -6,14 +6,14 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 59 (58%) | 0 (0%) | 0 (0%) | 0 (0%) | 43 (42%) |
+| KB | 59 (57%) | 0 (0%) | 0 (0%) | 0 (0%) | 44 (43%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `src/69p-pyl-mat.js` | 5.7 | [draw] | 11 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/69q-pyl-helpers.js` | 10.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/69p-pyl-mat.js` | 6.1 | [draw] | 11 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/69q-pyl-helpers.js` | 10.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70p-pyl-dwellings.js` | 12.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70q-pyl-poor.js` | 8.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70r-pyl-rich.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

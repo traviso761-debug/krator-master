@@ -166,7 +166,7 @@
    ]
   },
   "bracken": {
-   "lib": "card.fern",
+   "lib": "card.frond.needle",
    "scale": [
     1,
     1
@@ -175,13 +175,15 @@
     "keep": 0.0,
     "mean": 0.701
    },
-   "size": 512,
+   "roughLift": 0,
+   "specular": 0.2,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+    0.0,
+    0.0,
+    0.3333,
+    1.0
+   ],
+   "size": 512
   },
   "blade": {
    "lib": "card.sword",
@@ -502,6 +504,34 @@
     "mean": 0.7
    },
    "size": 512
+  },
+  "ground.mulch": {
+   "lib": "ground.ground072",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.meadow": {
+   "lib": "ground.ground037",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

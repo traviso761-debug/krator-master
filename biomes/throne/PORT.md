@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 45 (17%) | 22 (8%) | 15 (5%) | 35 (13%) | 150 (56%) |
+| KB | 53 (18%) | 22 (7%) | 15 (5%) | 37 (12%) | 176 (58%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,15 +16,15 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/45-host-stage.js` | 8.3 | [web] | 7 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/46-biome-throne-flows.js` | 6.0 | [G data] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the flow model: pure maths over the host's baseH, writes typed arrays (the THREE count is a comment) |
 | `src/47-host-land.js` | 9.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | host binding: the showcase's flows, the cuts, the fields cache, BIO.init |
-| `src/50-biome-throne-species.js` | 78.7 | [draw] | 0 | 8 | 0 | 0 | 0 | 11 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/55-biome-throne-trees.js` | 71.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/60-biome-throne-floor.js` | 34.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/70-biome-throne.js` | 3.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/50-biome-throne-species.js` | 93.4 | [draw] | 0 | 9 | 0 | 0 | 0 | 13 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/55-biome-throne-trees.js` | 82.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 33 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/60-biome-throne-floor.js` | 43.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/70-biome-throne.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-host-sky.js` | 14.6 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/83-host-heat.js` | 4.5 | [G shader] | 8 | 0 | 0 | 0 | 0 | 1 | 6 | 0 | 0 | 0 | 0 |  |
 | `src/84-host-ground.js` | 17.2 | [G shader] | 17 | 4 | 0 | 0 | 0 | 3 | 16 | 0 | 0 | 0 | 0 | the ground's library layers and the night glow (onBeforeCompile), the water, the steam points |
 | `src/88-host-build.js` | 1.0 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/99-host-take.js` | 14.9 | [web] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
+| `src/99-host-take.js` | 16.6 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

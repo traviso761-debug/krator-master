@@ -136,3 +136,22 @@ saying what fixed it.
       set stacks three lizard bands where the procedural frieze had one. dRammed, dTurf and dTile stay procedural. ?mat=proc shows the old look.
 - [ ] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
       vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.
+
+## Voth census trades (2026-10-19)
+
+The table `DALAB_TRADES` in `src/77-dalab-trades.js` sets each of the Voth city's 44 census trades against this build's buildings (20 carried, 3 partly, 9 gaps, 12 na of 44). `tools/check_trades.py` and verify.py's `voth-trades` assert check it. Gaps to fill later:
+
+- [ ] bakers: a bake house (clay ovens) in the town types
+- [ ] butchers: a butcher's shop and slaughter yard
+- [ ] brewers: a brewhouse (the tavern pours, nothing brews)
+- [ ] tanners: a tannery pit shed
+- [ ] shipwrights and boatbuilders: a small river boatyard on the river bank
+- [ ] guild officers and clerks: a guild hall (the scribes' hall keeps the clerks, no trade guild has a house) (partly carried: dalab_scribes)
+- [ ] priests and undertakers: a funerary temple or burial court (the ceremonial mounds are not drawn as tombs) (partly carried: dalab_temple)
+- [ ] fishers: a river fishing dock with drying racks
+- [ ] miners: a mine head (the scrap smithy has no ore of its own)
+- [ ] quarrymen and masons: a stone quarry (the earth yard makes only blocks of earth) (partly carried: dalab_earthyard)
+- [ ] dairymen: a dairy
+- [ ] swineherds and duck keepers: a sty and a coop (the ranch keeps lizards only)
+
+The `na` rows (sea trades on a landlocked build, trades the lore does not hold) are in the table with their reasons.

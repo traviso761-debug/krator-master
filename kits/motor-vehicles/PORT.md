@@ -13,7 +13,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `krator-vehicles-eastabyss.js` | 13.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 57 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |
-| `krator-vehicles-geomancer.js` | 19.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 129 | 0 | 0 | 0 | 0 | 0 | split: each entry's `tags`, `data`, `variantData` and the palette are [G data] (a sim reads them with no drawing); `build`/`wheel` draw |
+| `krator-vehicles-geomancer.js` | 20.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 129 | 0 | 0 | 0 | 0 | 0 | split: each entry's `tags`, `data`, `variantData` and the palette are [G data] (a sim reads them with no drawing); `build`/`wheel` draw |
 | `krator-vehicles-iziz.js` | 11.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 47 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |
 | `krator-vehicles-post-apoc.js` | 16.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 79 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw; the bogie table `PA_BOGIES` is data too |
 | `krator-vehicles-republic.js` | 18.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 78 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |

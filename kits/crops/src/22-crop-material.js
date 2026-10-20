@@ -46,6 +46,8 @@ R('falu-red', 'Falu red', 'dye', [0, 3], [1, 3], {atm: [0, 2], homeOnly: true, n
 R('verdigris', 'Verdigris and malachite', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'copper', colour: 'teal', home: ['eastabyss', 'swlowlands'], note: 'green; azurite blue'});
 R('sulfur-yellow', 'Sulfur yellow', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'sulfur', colour: 'yellow', home: ['geyser', 'ebadlands', 'throne']});
 R('tar-black', 'Tar black', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'oil', colour: 'black', home: ['ringisles']});
+R('flametip-tanbark', 'Flametip tanbark', 'dye', [4, 4], [2, 3], {form: 'tree', colour: 'brown', home: ['necanyons'], src: 'necanyons', note: 'the benches\' scrub tree: tans hides, dyes brown'});
+R('slickrock-orchil', 'Slickrock orchil', 'dye', [4, 5], [0, 2], {homeOnly: true, colour: 'purple', home: ['necanyons'], note: 'the caps\' orange crust lichens, steeped in stale urine: a red-purple, as orchil is'});
 
 /* ---- utility: reagent and fuel (the Zeijani's dark farms) */
 R('glow-mushroom', 'Glow mushroom', 'reagent', [0, 5], [0, 4], {also: ['fuel'], form: 'fungus', grown: 'underground', water: 'bed', works: 'dark-beds', card: 'card.mushroom.glow', home: ['throne'], src: 'throne', note: 'the alchemist\'s culture and a light and heat source'});
@@ -56,6 +58,11 @@ R('pitch-vine', 'Pitch vine', 'fuel', [4, 4], [3, 4], {also: ['dye'], form: 'vin
 R('kapok-floss', 'Kapok floss', 'fuel', [4, 4], [2, 4], {form: 'tree', home: ['hyperjungle'], src: 'hyperjungle', note: 'tinder and lamp wick'});
 R('mahogany-capsule', 'Mahogany capsules', 'fuel', [4, 4], [3, 4], {form: 'tree', card: 'card.mahogany', home: ['hyperjungle'], src: 'hyperjungle', note: 'spent, hard and dry: the jungle charcoal'});
 R('prism-resin', 'Prism-gum torch resin', 'fuel', [4, 4], [3, 4], {form: 'tree', card: 'card.prismgum', home: ['hyperjungle'], src: 'hyperjungle'});
+R('stilt-lily', 'Stilt-lily fibre', 'fuel', [4, 5], [0, 2], {homeOnly: true, form: 'tree', home: ['necanyons'], src: 'necanyons', note: 'the resinous trunk fibre: torches that burn wet'});
+
+/* ---- utility: medicine (opened 2026-10-19 for necanyons: biomes/necanyons/PLAN.md section 5; the survey's other medicinal plants, MEDICINE-FUEL.md, can move in) */
+R('rimdew', 'Rimdew', 'medicine', [3, 4], [3, 4], {card: 'card.carnivore.sundew', src: 'necanyons', home: ['necanyons'], stores: ['fresh', 'dried'], note: 'a sundew: steeped in honey or spirit, a cough and chest syrup that eases cramps; grown in a wet, sunny, nutrient-poor bed'});
+R('rock-bottle', 'Rock-bottle sap', 'reagent', [4, 5], [0, 1], {homeOnly: true, form: 'shrub', hazard: 'poison', src: 'necanyons', home: ['necanyons'], note: 'a heart poison: arrows, and to stun fish'});
 R('coilbark-split', 'Coilbark splits', 'fuel', [1, 2], [3, 4], {form: 'tree', home: ['shighlands'], src: 'shighlands', note: 'the offcuts of turned work'});
 R('dried-reed', 'Dried warm reed', 'fuel', [4, 5], [3, 4], {water: 'aquatic', card: 'card.reed', home: ['geyser'], src: 'geyser'});
 

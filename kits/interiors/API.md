@@ -342,3 +342,10 @@ harvested pieces from the key (`ROLE_GUESS` in `adapters/catalog-adapter.js`). A
 per unit (`units`, default 1), a bed (a bunk counts as two), a food container and an item container
 over all its rooms. `verify.py --sets --assert` fails the sheet when one does not.
 
+## Walk records (`IX.walk`, `src/49b-walk.js`)
+
+`IX.walk.register(inst, W, opts)` writes a placed set item (`IX.sets.instantiate`) into a `KWALK` registry (core/walk): each storey's floor less its stairwell,
+the walls as 0.3 m blocks gapped at their door openings, each stair as a strip, an entry flight from the ground to every raised street door (the flight is kept
+only if a walker can climb it once the walls are in; bodies it cannot serve are listed in `elevated`). `instantiate(..., { walk: KWALK })` does it in the call.
+`opts.doorBlocks` fills every door opening with blocks (a SHUT door) and hands them to `opts.onBlock(recs, { door, wall, building, room, kind })`;
+`KWALK.setBlock(recs, false)` opens that doorway, `true` shuts it. Tested over every set item by `kits/interiors/tests/test-walk.js`.

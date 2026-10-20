@@ -35,10 +35,17 @@ MAT.xGoldDS=xStd({roughness:.36,metalness:.45});                              //
 MAT.xMosA=xStd({map:TEX.xMosA,roughness:.5});MAT.xMosB=xStd({map:TEX.xMosB,roughness:.5});MAT.xBand=xStd({map:TEX.xBand,roughness:.6});
 MAT.xJali=xStd({map:TEX.xJali,alphaTest:.5,roughness:.9});MAT.xValance=xStd({map:TEX.xValance,alphaTest:.5,roughness:.9});
 MAT.xSun=xStd({map:TEX.xSun,alphaTest:.5,roughness:.4,metalness:.3});
+/* the library's sun-and-moon emblem is a square sheet with the disc inside it: its corners are cut away on the radius (the procedural disc has its own alpha) */
+{const p=MAT.xSun.onBeforeCompile;MAT.xSun.onBeforeCompile=function(sh,r){if(p)p.call(this,sh,r);sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n#ifdef USE_MAP\nif(length(vUv-vec2(.5))>.497)discard;\n#endif');};}
+/* the library's scalloped valance (patterns/common/valance-scallop) is a grey sheet on black: the black is keyed out on the map's luminance, as the procedural valance's alpha was; the grey is tinted per instance */
+{const p=MAT.xValance.onBeforeCompile;MAT.xValance.onBeforeCompile=function(sh,r){if(p)p.call(this,sh,r);sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n#ifdef USE_MAP\ndiffuseColor.a*=smoothstep(.1,.22,dot(texture2D(map,vUv).rgb,vec3(.3333)));\n#endif');};}
+/* second takes of the mosaic panels and the frieze band from the library (star lapis, arabesque lapis, the maroon star frieze); the procedural maps stand in under ?mat=proc */
+MAT.xMosC=xStd({map:TEX.xMosA,roughness:.5});MAT.xMosD=xStd({map:TEX.xMosB,roughness:.5});MAT.xBandC=xStd({map:TEX.xBand,roughness:.6});
 MAT.xWater=xStd({roughness:.14,metalness:.25});                               // pools, channels, the mill race (tinted XPAL.water)
 MAT.xMeadow=new THREE.MeshStandardMaterial({map:TEX.xMeadow,roughness:1});
 vWorldUV(MAT.xEarth,.5);vWorldUV(MAT.xWash,.5);vWorldUV(MAT.xTiles,.5);vWorldUV(MAT.xPenbey,1);vWorldUV(MAT.xRubble,.25);vWorldUV(MAT.xRock,.125);
 vWorldUV(MAT.xMosA,.5);vWorldUV(MAT.xMosB,.5);                                 // mosaics tile every 2 m on boxes; planes keep their own 0..1
+vWorldUV(MAT.xMosC,.5);vWorldUV(MAT.xMosD,.5);vWorldUV(MAT.xBandC,1/1.5,1/.735);
 vWorldUV(MAT.xBand,.5,1.667);vWorldUV(MAT.xJali,1,1);vWorldUV(MAT.xValance,1,2);
 
 // ---------------------------------------------------------------- geometry
@@ -72,7 +79,7 @@ const XLEAF=new THREE.IcosahedronGeometry(1,0);
 
 // ---------------------------------------------------------------- kit items
 kdef('xEarthB',VBOX,MAT.xEarth);kdef('xWashB',VBOX,MAT.xWash);kdef('xTilesB',VBOX,MAT.xTiles);kdef('xBandB',VBOX,MAT.xPenbey);kdef('xRubB',VBOX,MAT.xRubble);kdef('xRockB',VBOX,MAT.xRock);
-kdef('xPaint',VBOX,MAT.xPaint);kdef('xGoldB',VBOX,MAT.xGoldDS);kdef('xMosAB',VBOX,MAT.xMosA);kdef('xMosBB',VBOX,MAT.xMosB);kdef('xFriezeB',VBOX,MAT.xBand);kdef('xWaterB',VBOX,MAT.xWater);
+kdef('xPaint',VBOX,MAT.xPaint);kdef('xGoldB',VBOX,MAT.xGoldDS);kdef('xMosAB',VBOX,MAT.xMosA);kdef('xMosBB',VBOX,MAT.xMosB);kdef('xFriezeB',VBOX,MAT.xBand);kdef('xFriezeC',VBOX,MAT.xBandC);kdef('xMosC',VPLANE,MAT.xMosC);kdef('xMosD',VPLANE,MAT.xMosD);kdef('xWaterB',VBOX,MAT.xWater);
 kdef('xMosA',VPLANE,MAT.xMosA);kdef('xMosB',VPLANE,MAT.xMosB);kdef('xJali',VPLANE,MAT.xJali);kdef('xValance',VPLANE,MAT.xValance);kdef('xPaintPl',VPLANE,MAT.xPaint);kdef('xSun',VPLANE,MAT.xSun);
 kdef('xGold',VBALL,MAT.xGold);kdef('xPaintBall',VBALL,MAT.xPaint);kdef('xLeaf',XLEAF,MAT.moss);kdef('xConeL',VCONE,MAT.moss);kdef('xBoulder',new THREE.IcosahedronGeometry(1,1),MAT.xRock);
 kdef('xDomeW',XDOME,MAT.xWash);kdef('xDomeT',XDOME,MAT.xTiles);kdef('xDomeG',XDOME,MAT.xGold);kdef('xDomeS',XDOME,MAT.stone);kdef('xDomeM',XDOME,MAT.xMosB);

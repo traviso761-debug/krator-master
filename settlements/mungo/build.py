@@ -52,6 +52,7 @@ if os.path.isfile(_cp) and '--no-checks' not in sys.argv and \
 
 # Locus's own world: Mungo replaces these (a file of the same name in src/) or does without them.
 LOCUS_SKIP = {
+    '67-lo-trades.js',          # Locus's census table LO_TRADES: Mungo's is 88d-mungo-trades.js
     '68c-locus-crossings.js',   # Locus's marsh-pool bridges: Mungo's town has no pools in its streets
     '71g-locus-grid.js',        # Locus's distribution line: Mungo's grid is 71g-mungo-grid.js (the Geomancer quarter only)
     '76-locus-anim.js',         # the pumpjacks' animation: no pumpjacks in Mungo
@@ -70,7 +71,7 @@ for _slot, _rel in (('69a1-bio-core-head.js', 'core/biome/10-core-head.js'), ('6
                     ('69c5-bio-eastabyss.js', 'biomes/eastabyss/src/70-biome-eastabyss.js')):
     BIO_CANON[_slot] = (os.path.join(ROOT, *_rel.split('/')), _rel.rsplit('/', 1)[0])
 # shared core modules, by folder; every digit-named .js in each (core/<m>/README.md says what each is)
-CORE_MODULES = ['lod', 'rand', 'mask', 'clock', 'sched', 'furnish', 'tags', 'atmos', 'minimap', 'simulation', 'water']
+CORE_MODULES = ['lod', 'rand', 'mask', 'clock', 'sched', 'furnish', 'tags', 'atmos', 'minimap', 'simulation', 'water', 'walk']
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
 CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
@@ -83,9 +84,9 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '85-probe.js', '86-inspect.js', '69z-locus-flora.js', '76-locus-anim.js', '69b-locus-biohost.js', '87-pathviz.js',
                  '88-underview.js', '89-sheetui.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html',
                  '66-locus-furnish.js', '01b-build-open.html', '86b-mungo-inspect.js', '87b-mungo-hud.js', '65r-reed-village.js', '05b-mungo-palette.js', '78b-mungo-world.js', '84-mungo-life.js',
-                 '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish, core/tags (no rnd())
+                 '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js', '20-core-walk.js',   # core/furnish, core/tags, core/walk (no rnd())
                  '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '25-core-mask.js', '26-core-mask-xform.js', '90-atmos-host.js',
-                 '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js', '88c-mungo-minimap.js'}
+                 '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js', '88c-mungo-minimap.js', '88d-mungo-trades.js'}
 DETERMINISTIC |= set(MATLIB_RECORD) | {'46-matlib-pack.js', '46r-reed-matlib-pack.js', '69a0-bio-matlib-pack.js'}
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'atmos')) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 DETERMINISTIC |= {'20-core-water.js', '50-core-water-draw.js', '90w-lake.js'}   # core/water and Locus's lake binding (no rnd())

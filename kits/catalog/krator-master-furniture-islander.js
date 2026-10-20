@@ -63,3 +63,10 @@ FURN({
 /* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed islander_training_<role> */
 FK.set({ culture: 'islander', tier: 'common', roles: 'training', prefix: 'islander_training_', S: ISL_COMMON, names: {
   training_dummy: 'Koa practice post', archery_butt: 'Woven-mat target' } });
+
+/* trades and households (FK.ROLES.trade, the 2026-10-19 trades audit) in this culture's style sheet, keyed islander_trade_<role> */
+FK.set({ culture: 'islander', tier: 'common', roles: 'trade', prefix: 'islander_trade_', S: ISL_COMMON, names: {
+  forge: 'Lava-stone forge', anvil: 'Basalt anvil on a stump', trough: 'Dugout trough', stall: 'Beast stall of lashed posts', hayrack: 'Fodder rack', display: 'Lashed display steps', armour_stand: 'Shell-and-wicker armour post', weapon_rack: 'Spear and club rack', vat: 'Dye vat', still: 'Coconut-toddy still', bin: 'Woven grain bins', larder: 'Hanging larder', bunk: 'Lashed bunk', locker: 'Woven locker', lathe: 'Pump-drill lathe', press: 'Coconut-oil press', kiln: 'Earth-oven kiln', grindstone: 'Coral grindstone', altar: 'Tiki shrine altar', barrel: 'Gourd and cask cradle' } });
+/* the works (FK.ROLES.works): baking, butchery, healing, scribing, shipwrighting, quarrying, customs and dairy pieces, keyed islander_works_<role> */
+FK.set({ culture: 'islander', tier: 'common', roles: 'works', prefix: 'islander_works_', S: ISL_COMMON, names: {
+  bread_oven: 'Earth oven (umu)', butcher_block: 'Butcher\'s block', meat_rack: 'Smoking rack', herb_bench: 'Healer\'s herb bench', sickbed: 'Healer\'s sleeping-mat frame', scribe_desk: 'Tally-stick desk', hull_stocks: 'Canoe hull on its stocks', quarry_block: 'Coral-cutter\'s bench', weigh_scale: 'Harbour weigh-beam', tally_board: 'Bark tally board', churn: 'Coconut-cream churn', cheese_press: 'Cheese press' } });

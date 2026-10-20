@@ -95,32 +95,32 @@
    "breakup": null,
    "card": true,
    "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+    0.0,
+    0.0,
+    0.3333,
+    1.0
    ],
    "files": {
     "map": "bracken.albedo.webp"
    },
-   "lib": "card.fern",
+   "lib": "card.frond.needle",
    "metal": 0,
    "normalScale": 1.0,
-   "roughLift": 0.0,
+   "roughLift": 0,
    "scale": [
     1,
     1
    ],
    "size": 512,
    "source": {
-    "albedo": "433517bd3bf7363d5941537857aba8fded1bd8d5"
+    "albedo": "80ff981ef242a14ab55446c9889ceea8aee7a72f"
    },
-   "specular": 0.5,
+   "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.701,
-    "sourceMean": 0.4091
+    "sourceMean": 0.2732
    }
   },
   "broad": {
@@ -237,6 +237,62 @@
     "keep": 0.0,
     "mean": 0.732,
     "sourceMean": 0.4091
+   }
+  },
+  "ground.meadow": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.meadow.albedo.webp"
+   },
+   "lib": "ground.ground037",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "b454ff6e1392a7682e0ff1a6171d927beec07699",
+    "normal": "5d2744d7c6c3556335c64681d1c05672182dbf7d",
+    "roughness": "1b4b2eb7d09a419ce33ce9d44c3cdd5360d86776"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5635026632929783,
+    "sourceMean": 0.5635
+   }
+  },
+  "ground.mulch": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.mulch.albedo.webp"
+   },
+   "lib": "ground.ground072",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "524ebaedc94943dac1c0dbc6be331434573fbd8b",
+    "normal": "fe0b92264484702e6c36149f9b0bb0a443fcb30f",
+    "roughness": "21be5579aaa2240ceb96ce606d275c19a7e2acfd"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.46562726859896786,
+    "sourceMean": 0.4656
    }
   },
   "groundDetail": {

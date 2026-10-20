@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1254,
+    1254
+   ],
+   "seam_after": [
+    0.917,
+    0.531
+   ],
+   "seam_before": [
+    1.698,
+    0.785
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.95,
+   "rough_var": 0.08,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "order/rug",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.95,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "order-rug.png",
+  "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/rug`",
+  "reuse": "a whole Tibetan khaden (border all round: one rug, not a tile): the cells' and the meditation halls' floors",
+  "sha1": "640a45a2c99f3f096bc1e3a4a16dd2a0b25cbd78"
+ }
+}

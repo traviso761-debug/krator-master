@@ -9,7 +9,8 @@ function portContColor(d){const c=PK_CONT_COL[(rng()*PK_CONT_COL.length)|0].clon
  if(d>0)c.lerp(PK_RUST,rr(.3,.6));return c;}
 // One container, bottom centre at (x,y,z), long axis along yaw (0 = along x).
 function portContainer(x,y,z,yaw,big,d,col,tilt){
- kput((big?'pkCont40':'pkCont20')+(d>0?'R':''),[x,y,z],tilt?qEuler(tilt[0]||0,yaw,tilt[1]||0):qEuler(0,yaw,0),1,col||portContColor(d));}
+ const cc=col||portContColor(d),liv=d>0&&!col&&((Math.round(x*.5)+Math.round(z*.5))&1);   // a weathered container with no colour given is, half the time by where it stands, the library's rust-red livery
+ kput((big?'pkCont40':'pkCont20')+(d>0?(liv?'L':'R'):''),[x,y,z],tilt?qEuler(tilt[0]||0,yaw,tilt[1]||0):qEuler(0,yaw,0),1,liv?new THREE.Color(1,1,1):cc);}
 // A block of containers: nRow side by side (across their length), up to
 // nTier high, ragged on top. Returns the tallest tier count used.
 function portContainerStack(x,y,z,yaw,nRow,nTier,d,o){o=o||{};const big=o.big!==undefined?o.big:rng()<.6;

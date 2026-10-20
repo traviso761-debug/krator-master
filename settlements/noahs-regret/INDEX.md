@@ -27,8 +27,8 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `10-core.js` | 3 | error panel (5); rng + noise (14) |
 | `12-nr-world.js` | 5 | THE GROUND (world y): the shore, the dune, the s (35) |
 | `14-nr-plan.js` | 25 |  |
-| `27-mat.js` | 8 |  |
-| `30-geo.js` | 22 |  |
+| `27-mat.js` | 9 |  |
+| `30-geo.js` | 23 |  |
 | `36-def.js` | 5 |  |
 | `40-nr-hull.js` | 22 | the hull shell (60); the rounded fronts: scalloped balconies, rounded (126); the sterns: rounded, stepping back in terraces (142); the bow: the forecastle, the stem, the anchors (183) |
 | `41-nr-piers.js` | 6 |  |
@@ -44,6 +44,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `58-nr-anc-office.js` | 4 |  |
 | `60-nr-anc-lab.js` | 9 |  |
 | `62-nr-pirates.js` | 7 |  |
+| `63-nr-trades.js` | 6 | = (2) |
 | `64-nr-flora.js` | 2 |  |
 | `70-nr-interiors.js` | 37 **big** | the CABINS (63); the SHIP'S ROOMS (89); the DECK BUILDINGS (129); the PUBLIC ROOMS: placed piece by piece, in the  (149); the pass (309) |
 | `81-sky.js` | 10 |  |

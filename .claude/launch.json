@@ -76,6 +76,18 @@
       ],
       "port": 8831,
       "autoPort": false
+    },
+    {
+      "name": "korona",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8813",
+        "--directory",
+        "biomes/korona/dist"
+      ],
+      "port": 8813
     }
   ]
 }

@@ -40,7 +40,8 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd
                'res://tests/water/falls_case_test.gd',
                'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd',
                # a test and its arguments (after Godot's --): Pylon's sheet on Iziz's page, through the city test (core/export/README.md)
-               ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet')]
+               ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet'),
+               ('res://tests/export/iziz_test.gd', '--case=world-talia', '--sheet')]
 # The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
 # passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
 COMPARE_CASES = ['world-sedesert', 'world-iziz']
@@ -56,6 +57,9 @@ EXPORT_ASSERT = False
 # A build that reads another build's output builds after it: kits/ancients-interiors loads kits/interiors'
 # dist/interiors-core.js in node (in CI that file is an LFS pointer until kits/interiors writes it).
 BUILD_FIRST = ['kits/interiors']
+# A node test that reads a build's output runs after the builds (in CI its input is an LFS pointer until the build
+# writes it); with --no-build it runs with the other node tests, on the committed output.
+NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js']   # dist/isle-city.plan.js
 
 
 def builds():
@@ -86,6 +90,7 @@ def node_tests():
     tests = sorted(glob.glob(os.path.join(ROOT, 'core', '**', 'test-*.js'), recursive=True))
     tests += sorted(glob.glob(os.path.join(ROOT, 'settlements', '*', 'tests', 'test-*.js')))
     tests += sorted(glob.glob(os.path.join(ROOT, 'kits', '*', 'tests', 'test-*.js')))
+    tests += [os.path.join(ROOT, 'tools', 'walk_audit', 'test_audit.js')]   # the geometry walk audit (tools/walk_audit/README.md)
     return [os.path.relpath(t, ROOT) for t in tests]
 
 
@@ -93,17 +98,22 @@ def steps(nightly, build):
     s = [('port lint (every build and core)', [PY, 'tools/check_port.py']),
          ('insulation (core never names host/)', [PY, 'tools/check_insulation.py']),
          ('build.py open() names its encoding', [PY, 'tools/check_encoding.py']),
+         ('Voth census tables (every build with a *_TRADES)', [PY, 'tools/check_trades.py', '--all']),
          ('godot vendored core in step', [PY, 'godot/tools/sync_core.py', '--check']),
          ('core/rand GDScript transliteration', [PY, 'core/rand/test_rand.py'])]
     for t in sorted(glob.glob(os.path.join(ROOT, 'tools', 'tests', 'test_*.py'))):
         s.append(('tools ' + os.path.relpath(t, ROOT).replace(os.sep, '/'), [PY, t]))
     n = node()
+    late = [t for t in node_tests() if build and t.replace(os.sep, '/') in NODE_AFTER_BUILD]
     for t in node_tests():
-        s.append(('node ' + t, [n, t] if n else None))
+        if t not in late:
+            s.append(('node ' + t, [n, t] if n else None))
     if build:
         for b in builds():
             s.append(('build ' + b, [PY, 'build.py'], b))
         s += extra_builds()
+        for t in late:
+            s.append(('node ' + t, [n, t] if n else None))
         s.append(('hash baseline (PORT-BASELINE.json)', [PY, 'tools/port_baseline.py']))
     if nightly:
         pw = importlib.util.find_spec('playwright') is not None

@@ -290,6 +290,34 @@
    "roughLift": 0.35,
    "specular": 0.2,
    "mapOnly": true
+  },
+  "ground.forest": {
+   "lib": "ground.ground106",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "stone.marblecliff": {
+   "lib": "rock.marble012",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

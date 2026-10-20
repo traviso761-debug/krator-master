@@ -64,6 +64,35 @@ ASSERT_JS = r"""()=>{const KF=KratorFauna,V=KF.VOCAB,Y=KF.YIELDS,R=[];const fail
  rep('deterministic',fails.det,'the same seed builds the same animal');
  rep('textures',KF.textures().pending?['still decoding '+KF.textures().pending]:[],'detail maps: '+KF.textures().families.join(', '));
  return R;}"""
+# The Beast Riders' mounts: every tribe LORE.md 6.6 names ("Known tribes") must have a row in README.md's table "The Beast
+# Riders' mounts", and every row a fauna key that is registered and rideable or draught. The negatives prove the check bites:
+# an unregistered key, a row marked MISSING and a tribe absent from the table must each fail it.
+HERE = os.path.dirname(os.path.abspath(__file__))
+RIDERS_JS = r"""(rows)=>{const KF=KratorFauna;const ok=r=>{const E=r[1]&&KF.entry(r[1]);return !!(E&&(E.traits.rideable||E.traits.draught));};
+ return {bad:rows.filter(r=>!ok(r)).map(r=>r[0]+': '+(r[1]||'MISSING')),neg:[['(negative)','no-such-mount'],['(negative)',null]].filter(ok).length};}"""
+def rider_audit():
+    """(the tribes of LORE.md 6.6, the rows [tribe, key or None] of README.md's audit table)"""
+    lore = open(os.path.join(HERE, '..', '..', 'LORE.md'), encoding='utf-8').read()
+    m = re.search(r'^- Known tribes:\n((?:  - .*\n)+)', lore, re.M)
+    tribes = [re.sub(r'\[[^\]]*\]|\([^)]*\)', '', l.strip()[2:]).strip() for l in (m.group(1).splitlines() if m else [])]
+    tribes = [t for t in tribes if t and not t.lower().startswith('more')]
+    readme = open(os.path.join(HERE, 'README.md'), encoding='utf-8').read()
+    sec = re.search(r"^## The Beast Riders' mounts\n(.*?)(?=^## |\Z)", readme, re.M | re.S)
+    rows, seen = [], False
+    for line in (sec.group(1).splitlines() if sec else []):   # the section's first table only
+        if not line.startswith('|'):
+            if seen: break
+            continue
+        seen = True
+        cells = [c.strip() for c in line.strip().strip('|').split('|')]
+        if len(cells) < 3 or set(cells[0]) <= set('-: ') or cells[0].lower().startswith('tribe'):
+            continue
+        k = re.search(r'`([a-z0-9-]+)`', cells[2])
+        rows.append([cells[0], k.group(1) if k else None])
+    return tribes, rows
+def rider_missing(tribes, rows):
+    named = {r[0] for r in rows}
+    return [t for t in tribes if t not in named]
 async def run(a):
     from playwright.async_api import async_playwright
     folder, name = os.path.split(os.path.abspath(a.html))
@@ -87,6 +116,16 @@ async def run(a):
         if a.assert_:
             for r in await pg.evaluate(ASSERT_JS):
                 print(('PASS ' if r['ok'] else 'FAIL ') + r['name'] + ' - ' + r['detail'][:700]); bad |= not r['ok']
+            tribes, rows = rider_audit()
+            rr = await pg.evaluate(RIDERS_JS, rows)
+            miss, neg = rider_missing(tribes, rows), rider_missing(tribes + ['(negative tribe)'], rows)
+            fails = (['no tribes read from LORE.md 6.6'] if not tribes else []) + (['no rows in README.md "The Beast Riders\' mounts"'] if not rows else []) + \
+                ['tribe without a row: ' + t for t in miss] + rr['bad'] + \
+                (['negative: %d bad key(s) passed' % rr['neg']] if rr['neg'] else []) + (['negative: an absent tribe passed'] if '(negative tribe)' not in neg else [])
+            print(('PASS ' if not fails else 'FAIL ') + 'rider-mounts - ' + (' | '.join(fails)[:700] if fails else
+                  'every Beast Rider tribe of LORE.md 6.6 (%d) has a mount in kits/fauna, registered and rideable or draught: %s; the negatives (an unregistered key, a MISSING row, an absent tribe) fail'
+                  % (len(tribes), ', '.join('%s %s' % (r[0], r[1]) for r in rows))))
+            bad |= bool(fails)
         if a.eval: print(json.dumps(await pg.evaluate(a.eval), indent=1)[:6000])
         if a.out:
             n = await pg.evaluate("_sheet.instances.length")

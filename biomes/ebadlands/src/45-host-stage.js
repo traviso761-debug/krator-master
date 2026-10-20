@@ -199,10 +199,15 @@ const TEX_CRACK=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect
 // ground is exactly the painted one. GL: [library set, metres per tile, keep, weight(x,z,F)] with F the cached fields.
 const GL=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;
  const P=n=>KMAT.packed('ebadlands','ground.'+n),hot=F=>smooth(.2,.02,F.cold),bed=F=>F.strata*(1-F.snow);
- const L=[['clay',F=>bed(F)*smooth(.8,.5,F.slope)],['sandstone',F=>bed(F)*smooth(.45,.8,F.slope)],
+ // two more strata surfaces (2026-10-19): the red layered sandstone (rock.sandstone.red) takes patches of the steep walls
+  // from the Navajo, and the cracked caprock (rock.sandstone_cracks) patches of the flat benches from the popcorn clay,
+  // each patch a macro noise ~300 m across (F.x, F.z are set by the ground loop)
+ const wallP=F=>smooth(.45,.62,fbm(F.x*.0034+7,F.z*.0034-2,431,2)),capP=F=>smooth(.5,.66,fbm(F.x*.0041-3,F.z*.0041+9,432,2));
+ const L=[['clay',F=>bed(F)*smooth(.8,.5,F.slope)*(1-capP(F))],['sandstone',F=>bed(F)*smooth(.45,.8,F.slope)*(1-wallP(F))],
   ['sulphur',F=>smooth(.12,.5,F.geo)*(1-F.pool)],['travertine',F=>F.pool],
   ['playa',F=>hot(F)*smooth(.3,.12,F.wet)*(1-F.geo)*(1-bed(F))],['steppe',F=>smooth(.03,.2,F.cold)*smooth(.72,.5,F.cold)*smooth(.45,.22,F.wet)*(1-bed(F))],
-  ['needles',F=>smooth(.25,.4,F.cold)*smooth(.92,.85,F.cold)*smooth(.15,.3,F.wet)*(1-F.rock)*(1-F.snow)],['tundra',F=>smooth(.84,.94,F.cold)*(1-F.snow)*(1-F.rock*.6)]];
+  ['needles',F=>smooth(.25,.4,F.cold)*smooth(.92,.85,F.cold)*smooth(.15,.3,F.wet)*(1-F.rock)*(1-F.snow)],['tundra',F=>smooth(.84,.94,F.cold)*(1-F.snow)*(1-F.rock*.6)],
+  ['redwall',F=>bed(F)*smooth(.45,.8,F.slope)*wallP(F)],['caprock',F=>bed(F)*smooth(.8,.5,F.slope)*capP(F)]];
  if(L.some(l=>!P(l[0])))return null;
  return L.map(l=>{const e=P(l[0]);return{name:l[0],w:l[1],tex:KMAT.textures(e,{aniso:8}).map,scale:e.scale[0],keep:e.tint,mean:e.mean};});})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
@@ -212,14 +217,14 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
   // a custom sampler is not decoded from sRGB for us (as the strata note says): pow 2.2 by hand; a keep-0 layer is its
   // relief, normalised by the pack's mean brightness so the painted colour keeps its level
   lay='{vec3 _b=diffuseColor.rgb,_a=vec3(0.0);float _s=0.0;vec2 _p=vGWP.xz;'+GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2).toFixed(4),
-    w='vGL'+(i<4?'0':'1')+'.'+'xyzw'[i%4];
+    w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
    return 'if('+w+'>0.003){vec3 t=pow(texture2D(uGL'+i+',_p*'+(1/l.scale).toFixed(4)+').rgb,vec3(2.2));_a+='+w+'*mix(_b*t/'+m+',t,'+l.keep.toFixed(2)+');_s+='+w+';}';}).join('')+
    'diffuseColor.rgb=mix(_b,_a/max(_s,0.001),clamp(_s,0.0,1.0));vGLs=_s;}';}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;varying float vCrack;varying float vRock;'+
-   (GL?'attribute vec4 aGL0,aGL1;varying vec4 vGL0,vGL1;':''))
-  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;'+(GL?'vGL0=aGL0;vGL1=aGL1;':''));
+   (GL?'attribute vec4 aGL0,aGL1,aGL2;varying vec4 vGL0,vGL1,vGL2;':''))
+  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;'+(GL?'vGL0=aGL0;vGL1=aGL1;vGL2=aGL2;':''));
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uCrack;varying vec3 vGWP;varying float vCrack;varying float vRock;'+
-   (GL?'varying vec4 vGL0,vGL1;'+GL.map((l,i)=>'uniform sampler2D uGL'+i+';').join(''):''))
+   (GL?'varying vec4 vGL0,vGL1,vGL2;'+GL.map((l,i)=>'uniform sampler2D uGL'+i+';').join(''):''))
   .replace('#include <map_fragment>','#include <map_fragment>\n{float vGLs=0.0;vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;vec3 ck=texture2D(uCrack,vGWP.xz*0.14).rgb;'+
   'vec3 bc=strataColor(vSWP,vSWN);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,bc*(0.85+0.3*dt.r),vRock*0.88);'+lay+
@@ -227,17 +232,17 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
   'diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85*(1.0-0.7*clamp(vGLs,0.0,1.0)))*mix(vec3(1.0),ck,vCrack*(1.0-clamp(vGLs,0.0,1.0)));}');};
 const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),ck=new Float32Array(nx*nx),rk=new Float32Array(nx*nx);
- const g0=GL?new Float32Array(nx*nx*4):null,g1=GL?new Float32Array(nx*nx*4):null,F={};
+ const g0=GL?new Float32Array(nx*nx*4):null,g1=GL?new Float32Array(nx*nx*4):null,g2=GL?new Float32Array(nx*nx*4):null,F={};
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   ck[k]=FC.at(FC.a.crack,x,z);rk[k]=FC.at(FC.a.strata,x,z)*(1-FC.at(FC.a.snow,x,z));
-  if(GL){FNAMES.forEach(n=>F[n]=FC.at(FC.a[n],x,z));F.pool=smooth(2.6,1.15,poolD(x,z)[0]);
+  if(GL){FNAMES.forEach(n=>F[n]=FC.at(FC.a[n],x,z));F.pool=smooth(2.6,1.15,poolD(x,z)[0]);F.x=x;F.z=z;
    let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1);s+=v;return v;}),k1=s>1?1/s:1;
-   for(let q=0;q<4;q++){g0[k*4+q]=w[q]*k1;g1[k*4+q]=w[q+4]*k1;}}}
+   for(let q=0;q<4;q++){g0[k*4+q]=w[q]*k1;g1[k*4+q]=w[q+4]*k1;g2[k*4+q]=(w[q+8]||0)*k1;}}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));
- if(GL){g.setAttribute('aGL0',new THREE.BufferAttribute(g0,4));g.setAttribute('aGL1',new THREE.BufferAttribute(g1,4));}
+ if(GL){g.setAttribute('aGL0',new THREE.BufferAttribute(g0,4));g.setAttribute('aGL1',new THREE.BufferAttribute(g1,4));g.setAttribute('aGL2',new THREE.BufferAttribute(g2,4));}
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The eastern badlands';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the water

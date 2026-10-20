@@ -13,7 +13,13 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
 ## src/
 
@@ -27,7 +33,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `65-biome-nhighlands-dress.js` | 7 |  |
 | `70-biome-nhighlands.js` | 2 |  |
 | `82-host-sky.js` | 34 **big** | the fog (16); the dome (26); the gas giant (187); the far country (273); light modes (371) |
-| `84-host-ground.js` | 17 | the water (99); the mist (133) |
+| `84-host-ground.js` | 19 | the water (104); the mist (138) |
 | `85-host-tower.js` | 5 |  |
 | `86-host-pillars.js` | 3 |  |
 | `88-host-build.js` | 2 |  |

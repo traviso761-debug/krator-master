@@ -51,6 +51,7 @@ TEX.rlThatch=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.da
   d[i]=v;d[i+1]=v*.87;d[i+2]=v*.6;d[i+3]=255;}
  g.putImageData(id,0,0);});
 // ISLAND TOP: the cut reed of the island surface — a dense mat of short pale straws lying every way, damp patches, green tufts.
+TEX.rlLily=canvasTex(64,64,(g,w,h)=>{g.fillStyle='#2f4a34';g.fillRect(0,0,w,h);g.fillStyle='#4f7a46';for(let k=0;k<10;k++){g.beginPath();g.arc((k*29)%w,(k*47)%h,7,0,TAU);g.fill();}});   /* the procedural stand-in (?mat=proc) */
 TEX.rlIsland=canvasTex(256,256,(g,w,h)=>{g.fillStyle='#b8a262';g.fillRect(0,0,w,h);
  for(let k=0;k<2600;k++){const x=h3(k,1,2)*w,y=h3(k,3,4)*h,a=h3(k,5,6)*Math.PI,L=6+h3(k,7,8)*16;const t=h3(k,9,1);
   g.strokeStyle=t<.15?'#8a7440':t<.5?'#d8c27e':t<.85?'#c4ac66':'#e6d494';g.lineWidth=1+h3(k,2,3);
@@ -135,11 +136,12 @@ MAT.rlLattice=hStd({map:TEX.rlLattice,alphaTest:.5,roughness:.9});vWorldUV(MAT.r
 MAT.rlThatch=hStd({map:TEX.rlThatch,roughness:1});vWorldUV(MAT.rlThatch,.5);
 MAT.rlIsland=hStd({map:TEX.rlIsland,roughness:1});
 MAT.rlLayer=hStd({map:TEX.rlLayer,roughness:1});
+MAT.rlLily=hStd({map:TEX.rlLily,roughness:.45,side:THREE.DoubleSide});                  /* lily-pad patches on the open water (ground.lilypond): own UVs, 3.5 m a tile */
 MAT.rlFringe=hStd({map:TEX.rlFringe,alphaTest:.4,roughness:1});vWorldUV(MAT.rlFringe,1);
 MAT.rlReed=hStd({map:TEX.rlReed,alphaTest:.45,roughness:1});
 MAT.rlNet=hStd({map:TEX.rlNet,alphaTest:.5,roughness:.9});vWorldUV(MAT.rlNet,1);
 MAT.rlCone=hStd({map:TEX.rlCone,roughness:.85});MAT.rlShield=hStd({map:TEX.rlShield,roughness:.75});MAT.rlHead=hStd({map:TEX.rlHead,roughness:.9});
-MAT.rlBand=hStd({map:TEX.rlBand,roughness:.9});MAT.rlCloth=hStd({map:TEX.rlCloth,roughness:.95});MAT.rlClothS=hStd({map:TEX.rlCloth,roughness:.95});MAT.rlChakana=hStd({map:TEX.rlChakana,alphaTest:.5,roughness:.8});
+MAT.rlBand=hStd({map:TEX.rlBand,roughness:.9});MAT.rlCloth=hStd({map:TEX.rlCloth,roughness:.95});MAT.rlClothS=hStd({map:TEX.rlCloth,roughness:.95});MAT.rlClothT=hStd({map:TEX.rlCloth,roughness:.95});   /* rlClothT: the terracotta take of the chakana weave (library), the striped awayo standing in under ?mat=proc */MAT.rlChakana=hStd({map:TEX.rlChakana,alphaTest:.5,roughness:.8});
 MAT.rlWater=new THREE.MeshStandardMaterial({map:TEX.rlWater,color:0xd8e0dc,roughness:.32,metalness:.12});
 MAT.rlHide=hStd({color:0x4a4038,roughness:.9});                                        // water buffalo
 
@@ -167,8 +169,12 @@ kdef('hRLSheaf',HRL_SHEAF,MAT.rlBundle);
 kdef('hRLMatB',VBOX,MAT.rlMat);kdef('hRLMatP',VPLANE,MAT.rlMat);kdef('hRLGableM',VGABLE,MAT.rlMat);kdef('hRLRoll',HRL_LOG,MAT.rlMat);
 kdef('hRLLattice',VPLANE,MAT.rlLattice);kdef('hRLFringe',VPLANE,MAT.rlFringe);kdef('hRLReed',hRLCardGeo(),MAT.rlReed);kdef('hRLNet',VPLANE,MAT.rlNet);
 kdef('hRLThatchB',VBOX,MAT.rlThatch);kdef('hRLGableT',VGABLE,MAT.rlThatch);kdef('hRLHipT',VHIP,MAT.rlThatch);kdef('hRLPyrT',VPYR,MAT.rlThatch);kdef('hRLConeT',VCONE,MAT.rlThatch);
-kdef('hRLMatCyl',hRLCylGeo(14,1,true,TAU),MAT.rlMat);kdef('hRLBandCyl',hRLCylGeo(14,1,true,TAU),MAT.rlBand);kdef('hRLBandP',VPLANE,MAT.rlBand);kdef('hRLCloth',VPLANE,MAT.rlCloth);kdef('hRLClothS',VPLANE,MAT.rlClothS);kdef('hRLChakana',VPLANE,MAT.rlChakana);kdef('hRLConeP',hRLCylGeo(10,.06,true,3),MAT.rlCone);
+kdef('hRLMatCyl',hRLCylGeo(14,1,true,TAU),MAT.rlMat);kdef('hRLBandCyl',hRLCylGeo(14,1,true,TAU),MAT.rlBand);kdef('hRLBandP',VPLANE,MAT.rlBand);kdef('hRLCloth',VPLANE,MAT.rlCloth);kdef('hRLClothS',VPLANE,MAT.rlClothS);kdef('hRLClothT',VPLANE,MAT.rlClothT);kdef('hRLChakana',VPLANE,MAT.rlChakana);kdef('hRLConeP',hRLCylGeo(10,.06,true,3),MAT.rlCone);
 kdef('hRLDisc',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);kdef('hRLShield',new THREE.CircleGeometry(1,16),MAT.rlShield);
 kdef('hRLHead',new THREE.SphereGeometry(1,10,8),MAT.rlHead);kdef('hRLHorn',HRL_HORN,MAT.paint);
 kdef('hRLFlame',VCONE,MAT.ember);kdef('hRLLeafB',VBOX,MAT.moss);kdef('hRLStalk',VPOST,MAT.moss);kdef('hRLHide',VBOX,MAT.rlHide);kdef('hRLHideBall',VBALL,MAT.rlHide);
+/* a lily patch: an irregular flat blob of unit radius (uv in tiles of 3.5 m at a scale of 4), lying on the water */
+function hRLLilyGeo(){const P=[0,0,0],N=[0,1,0],U=[0,0],I=[],n=28,K=4/3.5;for(let i=0;i<n;i++){const a=i/n*TAU,r=1+.16*Math.sin(3*a+.7)+.09*Math.sin(5*a+2.1)+.05*Math.sin(9*a);P.push(Math.cos(a)*r,0,Math.sin(a)*r);N.push(0,1,0);U.push(Math.cos(a)*r*K,Math.sin(a)*r*K);}
+ for(let i=0;i<n;i++)I.push(0,1+(i+1)%n,1+i);const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setIndex(I);return g;}
+kdef('hRLLily',hRLLilyGeo(),MAT.rlLily);
 kdef('hRLMud',VBOX,MAT.clay);kdef('hRLWaterB',VBOX,MAT.rlWater);

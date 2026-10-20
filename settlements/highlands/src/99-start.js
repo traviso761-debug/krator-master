@@ -8,7 +8,7 @@
 const HL_HOST=KHOST.take({
  build:window.CITY?'roketstad':'highlands',title:TITLE,
  hint:'I hovers the inspector, a click inspects, P marks, M the map, F walks at eye height',
- scene,camera,renderer,ground:terrainH,clear:1.2,minR:2,maxR:3000,views:VIEWS,
+ scene,camera,renderer,ground:terrainH,walk:KWALK,clear:1.2,minR:2,maxR:3000,views:VIEWS,
  inspect:(hit,hits,rec)=>{if(rec)return null;const o=hit.object,p=hit.point;
   return(o===groundM||(o.userData&&o.userData.isGround)?'ground':'unregistered '+(o.isInstancedMesh?'instance':'mesh'))+'\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1);},
  minimap:{title:TITLE},

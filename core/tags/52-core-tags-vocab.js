@@ -26,7 +26,9 @@
    'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading',
    // the Zeijani trades (kits/zeijani, 2026-10-07): the alecap and cave-fungus farms, the fungal alchemists, the dyers,
    // the stonecutters, the lampwrights, the obsidian knappers and the rope and caving outfitters
-   'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking'];
+   'fungiculture', 'alchemy', 'dyeing', 'masonry', 'lampmaking', 'knapping', 'ropemaking',
+   // the trades audit of 2026-10-19: FK.ROLES.works and the culture files' bespoke work pieces
+   'baking', 'butchery', 'healing', 'scribing', 'shipwrighting', 'quarrying', 'customs', 'worship', 'dairy'];
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
@@ -105,7 +107,10 @@
      // a kit's own trait on every species, free: crater-drylands' fire response (pyrophyte, seeder, resprouter...),
      // ehighlands' growth form, geyser's and the Throne's origin (earth, krator, native, dead), geyser's heat and the
      // Throne's plume (where it lives: against the springs; shoulder, seam, plume, vent), shighlands' spiral habit
-     fire: 'free', form: 'free', origin: 'free', heat: 'free', plume: 'free', spiral: 'free' },
+     fire: 'free', form: 'free', origin: 'free', heat: 'free', plume: 'free', spiral: 'free',
+     // necanyons (2026-10-19): where on the rock a plant lives (floor, foot, ledge, bench, cap, stack), and a carnivorous
+     // plant's trap record (core/biome/37-core-traps.js: kind, mouth, preyMax, cycle, lure, danger)
+     zone: 'free', trap: 'object' },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
      landmark: 'site', infrastructure: 'infra', feature: 'feat' },

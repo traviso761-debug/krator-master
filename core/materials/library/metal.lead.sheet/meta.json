@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.216,
+    1.207
+   ],
+   "seam_before": [
+    3.734,
+    2.236
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.lead.sheet",
+  "metal": 0.5,
+  "roughness": 0.7,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "metal.lead.sheet.png",
+  "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `metal.lead.sheet`",
+  "reuse": "the closed vault's and the quiet cells' doors at Longsong; any lead-sheeted door or roof",
+  "sha1": "826a69e2a2123f7ffe12231e61c45e412b9cbabd"
+ }
+}
