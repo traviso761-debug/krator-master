@@ -29,6 +29,7 @@ python3 tools/make_mpfb.py giant <the man's export dir>            # -> pieces/m
 python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
+python3 tools/shots.py <dir> tools/shots-clipping.json               # close-ups of the open clipping issues, the same every run
 node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after a change to 10-rig.js, data/ or the pieces
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 ```
@@ -467,7 +468,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `src/01-animlab.html` | the Animation Lab's shell and styles | [web] |
 | `src/10-rig.js` | `KCHAR`: records, morph weights and joints, strangers, pose (the Meshy kit's sliders), parts, hidden skin. No three.js, no DOM | [G data], twin `godot/krator/character/kchar.gd` (held to it by `tests/golden-mpfb.json`) |
 | `src/50-figure.js` | `KCharFigure`: bones from `skeleton.json`, pieces bound to them, CPU morphs, tint, clips | [draw], twin `kchar_figure.gd` (blend shapes from `<piece>.gshapes.bin`) |
-| `src/90-editor.js` | the Cosmetic Lab: stage, camera, panel, strangers in bulk; `window._kchar` for `verify.py` | [web] |
+| `src/90-editor.js` | the Cosmetic Lab: stage, camera, panel, strangers in bulk; `window._kchar` for `verify.py` and `tools/shots.py` (`_kchar.still` holds the figure) | [web] |
 | `src/92-animlab.js` | the Animation Lab: the cast of six, the clip ledger, playback, review marks; `window._lab` for `verify.py` | [web] |
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
 | `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |

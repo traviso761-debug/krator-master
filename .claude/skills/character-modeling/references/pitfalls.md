@@ -151,7 +151,9 @@ area you are about to change.
   bind shape by the Hips' frame from its root instead, and give the root all its weights.
 - **Finding which rule throws a point**: trace one chain's pushes per capsule (name, radius, before/after, rest) in
   Godot headless; switching collision, ring and layering off one at a time names the stage first.
-- **Page shots of a walk are not repeatable** (the phase varies run to run): compare clips with numbers, not two shots.
+- **Page shots of a walk were not repeatable** (the page's loop advanced the figure in real time between the script's
+  steps, and each clip faded in from the last shot's) → `tools/shots.py` holds the loop (`_kchar.still`), resets the
+  chains, starts the clip from a stop and steps it at 30 Hz: pixel-identical in any order. Use it for before/after.
 
 ## 6. Animation clips and per-frame passes
 
