@@ -34,7 +34,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88-host-build.js` | 2.4 | [web] | 3 | 0 | 0 | 0 | 2 | 1 | 0 | 2 | 0 | 0 | 0 | the build order; the probe's samples of the merged meshes |
 | `src/89w-ls-water.js` | 6.6 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the stream, the canal, the pond and the pools on core/water (records, one still mesh), the water's checks |
 | `src/89x-ls-night.js` | 8.2 | [web] | 0 | 2 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89y-ls-festival.js` | 6.7 | [draw] | 0 | 2 | 0 | 0 | 0 | 6 | 0 | 3 | 0 | 0 | 0 || the festival day shown: the thangka hung, the camp pitched (who comes is core/simulation's: 40, 40d) |
+| `src/89y-ls-festival.js` | 6.7 | [draw] | 0 | 2 | 0 | 0 | 0 | 6 | 0 | 3 | 0 | 0 | 0 | the festival day shown: the thangka hung, the camp pitched (who comes is core/simulation's: 40, 40d) |
 | `src/99-host-take.js` | 12.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the page handed to core/host: views, inspector words, checks |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
