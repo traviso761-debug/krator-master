@@ -383,7 +383,10 @@ them hangs, whatever the pelvis' tilt), its top point where its weights put it a
 to the hip joint (`rigidTargets`, `_rigid`; the chain's root joint is placed there each frame). Turned with the whole
 pelvis and carried whole from its top point, a court robe's back panel hanging 1 m from the chest sank into the
 buttocks in an idle (the chest leans 10 cm ahead of the hips, the pelvis tilts back), and the layering threw it out
-in front, through the body, wide as a wing (the court robes, the chief's apron: half a metre off rest). Held rigid by the chest, a mantle's back stayed where
+in front, through the body, wide as a wing (the court robes, the chief's apron: half a metre off rest). A loose chain wholly above the hips (stiffness 0.1 and under; a blend up to 0.3, past which a mantle lying on the
+shoulders follows the body as above) hangs too: its fitted shape from its top point, turned with the heading only.
+Followed point by point, the Chichani tilma's front tilted out 45 degrees with the idle's forward lean and stood off
+like a shelf (its fitted shape hangs within 5). Held rigid by the chest, a mantle's back stayed where
 it was fitted while the spine under it bent in the clip and the posture pass drew the shoulders back, and the tunic it
 covers came out through it over the whole upper back; followed point by point below the hips, a robe's skirt bunched
 at the legs and its cape went round to the front in a stride. In the A-pose (no clip, no posture) the chains rest as

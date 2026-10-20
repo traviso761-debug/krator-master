@@ -1203,6 +1203,16 @@ func _rigid(ch: Dictionary) -> Transform3D:
 		if tot > 0.0:
 			tw[k] = v / tot
 	var F := M
+	# a loose chain above the hips hangs: its fitted shape from its top point, turned with the hips' heading only, by how
+	# loose it is (rigidTargets in 50-figure.js: the Chichani tilma's front stood off like a shelf in the idle's lean)
+	var gw := clampf((0.3 - float(ch["stiff"])) / 0.2, 0.0, 1.0)
+	if ch["whole"] and gw > 0.0:
+		var hz: Vector3 = (_gp(skeleton.find_bone("Hips")) * (binds[skeleton.find_bone("Hips")] as Transform3D)).basis.z
+		var hb := Basis(Vector3.UP, atan2(hz.x, hz.z)).scaled(Vector3.ONE * hz.length())
+		var g: Vector3 = tw[0]
+		for k in range(1, tw.size()):
+			g += hb * ((ch["p"][k] as Vector3) - (ch["p"][k - 1] as Vector3))
+			tw[k] = (tw[k] as Vector3).lerp(g, gw)
 	if not ch["whole"]:
 		# the shape it was fitted in, turned with the hips, from its top point (turned with the spine joint it hangs
 		# from, which the clips pitch hard, a cape's hem swung 0.7 m off the body: the fold; rigidTargets in 50-figure.js)

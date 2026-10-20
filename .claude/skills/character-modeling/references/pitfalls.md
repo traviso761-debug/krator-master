@@ -174,6 +174,13 @@ area you are about to change.
   tilted pelvis), and the layering pass threw it out through the body. Place hanging cloth by the hips with their
   heading only, fading the top point's offset out to the hip joint. Shots alone misled: a variant that "looked" fixed
   in one frame was just a calmer moment.
+- **Hanging cloth must hang** → a chain's rest that rotates with the pelvis or the chest (rigid, or point by point by
+  body weights) tilts with the clip's lean: a back panel sank into the buttocks, a cloak's front stood out like a shelf.
+  Below the hips: placed by the hips, heading only. Above them, loose cloth: its fitted shape from its top point,
+  heading only; stiff mantles that lie on the body keep following it.
+- **A pauldron (an arc round the arm) on the wrong side of one arm** → a frame chosen from the arm's direction is not
+  mirror-symmetric; centre the arc on the side facing up.
+- **Painted round things in a stretched cell** (buttons in a 3 x 7 cm cell) come out oval: draw them round in metres.
 - **Page shots of a walk were not repeatable** (the page's loop advanced the figure in real time between the script's
   steps, and each clip faded in from the last shot's) → `tools/shots.py` holds the loop (`_kchar.still`), resets the
   chains, starts the clip from a stop and steps it at 30 Hz: pixel-identical in any order. Use it for before/after.

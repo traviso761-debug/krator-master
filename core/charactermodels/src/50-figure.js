@@ -599,6 +599,21 @@ function KCharFigure(body, sliders, load){
       if(tot > 0) t.divideScalar(tot); else t.copy(ch.rest[k]).applyMatrix4(cM);
     }
     var F = cM;
+    // a loose chain above the hips hangs: its fitted shape from its top point, turned with the hips' heading only, by
+    // how loose it is (stiffness 0.1 and under wholly, 0.3 and over not at all: a mantle that lies on the shoulders
+    // follows the body, or it tore at the shoulder blades). Followed point by point, the Chichani tilma's front tilted
+    // out 45 degrees with the idle's forward lean and stood off like a shelf (its fitted shape hangs within 5)
+    var GW = THREE.MathUtils.clamp((0.3 - ch.stiff) / 0.2, 0, 1);
+    if(ch.whole && GW > 0){
+      var He = rtH.multiplyMatrices(bones[byName.Hips].matrixWorld, inv[byName.Hips]).elements;
+      var hs = Math.hypot(He[8], He[9], He[10]), hh = Math.hypot(He[8], He[10]) || 1, hx = He[8] / hh * hs, hz = He[10] / hh * hs;
+      rtN.set(hz, 0, hx, 0, hs, 0, -hx, 0, hz);
+      rtX.copy(ch.tw[0]);
+      for(var k = 1; k < ch.p.length; k++){
+        rtX.add(rtW.subVectors(ch.p[k], ch.p[k - 1]).applyMatrix3(rtN));
+        ch.tw[k].lerp(rtX, GW);
+      }
+    }
     if(!ch.whole){
       F = rtH.multiplyMatrices(bones[byName.Hips].matrixWorld, inv[byName.Hips]);
       // placed by the hips, turned with their heading only (keeping their scale): cloth below them hangs, and turned
