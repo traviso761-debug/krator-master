@@ -269,8 +269,13 @@ variants. Korona, later, needs the same `bed` and `salt` response for its share 
    frozen 4.19 input); the extractor's overlay layer (`overlay.png`) and the old waters (`palaeo.png`, `region.json`
    `palaeo`: each dam lake, the flood lake at 834 m, the dams and floods); the north basin cut into
    `openworld/north-basin/data/` (its README).
-2. **`KBASIN` and `KSCOUR`** in `core/terrain`, `[G data]`, with node tests (a tile alone and in a full build give the
-   same records).
+2. **`KBASIN` and `KSCOUR`** in `core/terrain`, `[G data]`, with node tests. *Done 2026-10-20:*
+   `core/terrain/40-core-basin.js` and `41-core-scour.js` (`core/README.md`), each a function of the point and its
+   height with no state, its noise keyed on place and on a course's name. On the north basin's data: 140, 122 and 59
+   strandlines in the east, west and flood lakes; dry falls at km 92 and 118 of the east breach (88 and 110 m, by
+   Boatmurder) and km 205 of the west (110 m, where it meets the trough); ~6,300 km² scoured; 400,000 `land` calls in
+   ~0.25 s. Not yet: the wave-cut notch as an overhang (`core/terrain` carve patches), the hulks' and docks' placement
+   (step 4), a GDScript twin.
 3. **`biomes/nsemiarid`**, the kit and its showcase.
 4. **`biomes/dambasins`** and **`biomes/scablands`**, their stations reading the base kits in place.
 5. **`biomes/nwlowlands`**: the rock zone, the bed response, the pass table and variants.
