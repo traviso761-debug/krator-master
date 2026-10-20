@@ -758,6 +758,14 @@ def settle(gid, parts, slot):
                             D[i, j] = hu + GAP - hv
                 if not D.any():
                     continue
+                if p.cloth:
+                    if not p.closed:
+                        # a strip (a wrap's tail, a flap) moves a row at a time along the row's mean normal: vertex by
+                        # vertex along the skin's normals, a tail off the shoulder crumpled at its tip
+                        D = np.repeat(D.max(1, keepdims=True), C, 1)
+                        nr = Nn.mean(1)
+                        Nn = np.repeat((nr / np.maximum(1e-9, np.linalg.norm(nr, axis=1, keepdims=True)))[:, None], C, 1)
+                    D = np.maximum.accumulate(D, axis=0)     # cloth falls from a pushed row: no row under it comes back in
                 for _ in range(3):          # spread: each push at least 0.7 of its neighbours' mean
                     Pd = np.pad(D, ((1, 1), (0, 0)), mode='edge')
                     nb = (Pd[:-2] + Pd[2:] + (np.roll(D, 1, 1) + np.roll(D, -1, 1) if p.closed else
