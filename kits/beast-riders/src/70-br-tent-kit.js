@@ -50,6 +50,8 @@ const BRTN_SRGB = {
   bone: 0xe8e0cc, moss: 0x4e6a34, litter: 0x5e5636
 };
 const BRTN = {}; for (const k in BRTN_SRGB) BRTN[k] = brmLin(BRTN_SRGB[k]);
+/* the woven cloths (patterns/beast-riders cloth-1 to cloth-6, five colourways, full colour): a mast's banner takes one, by its own indices; the colour is then near white so the weave's own colours show */
+const BRT_CLOTHS = ['brClothA/cloth', 'brClothB/cloth', 'brClothC/cloth', 'brClothD/cloth', 'brClothE/cloth'];
 const BRT_HIDE = 'tenthide/hide', BRT_PELT = 'pelt/hide', BRT_CANVAS = 'canvas/cloth', BRT_LASH = 'lash/wood',
   BRT_THORN = 'bark', BRT_FRONT = Math.PI / 2;
 
@@ -271,11 +273,11 @@ function brtCrown(F, B, cx, cz, y, cR, o) {
     F.box(cx, yb - 0.33, cz + 0.035, bar * 0.92, 0.06, 0.03, 0, BRTN.poleDark, 'wood');
     if (o.mark) brtFlatClaw(B, cx, yb - 0.51, cz + 0.04, 0.32, BRTN.sigil);
   } else if (o.sign === 'banner') {
-    const bw = bar * 0.8, bh = o.bannerH == null ? 1.15 : o.bannerH, col = o.banner == null ? BRTN.ochre : o.banner;
-    F.box(cx, yb - bh - 0.02, cz, bw, bh, 0.04, 0, col, 'cloth');
+    const bw = bar * 0.8, bh = o.bannerH == null ? 1.15 : o.bannerH, fam = brtPick(F, BRT_CLOTHS, 61, Math.round(cx * 10), Math.round(cz * 10)), col = BRTN.silk;
+    F.box(cx, yb - bh - 0.02, cz, bw, bh, 0.04, 0, col, fam);
     /* the swallow-tail foot, and the gilt claw on it */
-    B.quad(col, 'cloth', [cx - bw / 2, yb - bh - 0.02, cz], [cx, yb - bh - 0.02, cz], [cx - bw / 2, yb - bh - 0.32, cz], [cx, yb - bh - 0.12, cz]);
-    B.quad(col, 'cloth', [cx, yb - bh - 0.02, cz], [cx + bw / 2, yb - bh - 0.02, cz], [cx, yb - bh - 0.12, cz], [cx + bw / 2, yb - bh - 0.32, cz]);
+    B.quad(col, fam, [cx - bw / 2, yb - bh - 0.02, cz], [cx, yb - bh - 0.02, cz], [cx - bw / 2, yb - bh - 0.32, cz], [cx, yb - bh - 0.12, cz]);
+    B.quad(col, fam, [cx, yb - bh - 0.02, cz], [cx + bw / 2, yb - bh - 0.02, cz], [cx, yb - bh - 0.12, cz], [cx + bw / 2, yb - bh - 0.32, cz]);
     brtFlatClaw(B, cx, yb - bh * 0.5, cz + 0.03, bh * 0.36, BRTN.gilt);
     brtFlatClaw(B, cx, yb - bh * 0.5, cz - 0.03, bh * 0.36, BRTN.gilt);
   }

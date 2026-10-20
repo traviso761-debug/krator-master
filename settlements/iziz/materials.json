@@ -1050,6 +1050,33 @@
    },
    "metal": 0,
    "normalScale": 0.5
+  },
+  "courtMosaicB": {
+   "lib": "patterns/iziz/mosaic-b",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.4
+  },
+  "clothR": {
+   "lib": "patterns/canvas/stripe-red",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.15
   }
  }
 }

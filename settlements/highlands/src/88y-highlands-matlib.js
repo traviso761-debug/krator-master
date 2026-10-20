@@ -14,7 +14,7 @@ const MATLIB_ALIAS={hMazeBand:'hMaze'};
 // The red and dark harlequins (2026-10-14) hold 8 x 6 and 6 x 5 diamond periods where the painter drew one; the frieze
 // (formF, world UVs at K .5 / Kv 2, a 2 m x 0.5 m tile) takes one 0.5 m formline panel each way: 4 across that tile, 1 up.
 const MATLIB_REPEAT={hTileD:[.8,.6],hTileS:[.8,.6],hTileT:[.8,.6],hTileW:[.8,.6],hHarlG:[.25,.25],hMazeBand:[1,1],
- hHarlR:[1/8,1/6],hHarlGt:[1/6,1/5],formF:[4,1]};
+ hHarlR:[1/8,1/6],hHarlGt:[1/6,1/5],formF:[4,1],hFrzA:[1,1],hFrzL:[1,1],hFrzT:[1,1],hFrzG:[1,1],hM_w_folkA:[1,.5],hM_w_folkB:[1,.5],hM_w_folkP:[1,.5]};
 const MATLIB_OLDREP={};for(const k in MATLIB_REPEAT)if(MAT[k]&&MAT[k].map)MATLIB_OLDREP[k]=MAT[k].map.repeat.clone();
 /* the showcase ground (meadow, a plane whose uv runs 0..1 over 3200 m) takes the set at its own 8 m tile: tile = the plane's width */
 const MATLIB_BOUND=KMAT.bindMat('highlands',MAT,{tile:Object.assign({meadow:3200},KMAT.ANCIENT_TILES),alias:MATLIB_ALIAS});

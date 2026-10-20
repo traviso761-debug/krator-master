@@ -75,6 +75,7 @@ hkMatPair('hkBarn',TEX.hkBarn,{rough:.88});
 hkMatPair('hkWet',TEX.hkBarn,{rough:.9});   // the Wet Cells' dark wet rock: the library's rock.wet.dark, else the barnacle map under its dark tint
 hkMatPair('hkBone',TEX.hkBone,{rough:.48,metal:.02});
 hkMatPair('hkMosaic',TEX.hkMosaic,{rough:.32,metal:.06});
+hkMatPair('hkBand',TEX.hkMosaic,{rough:.3,metal:.05});   // the nacre-banded trim (patterns/nacre/banded-trim) on a shop's inlay band; the mosaic stands in under ?mat=proc
 hkMatPair('hkCrust',TEX.hkCrust,{rough:.96});
 hkMatPair('hkWeed',TEX.hkWeed,{rough:.85,side:THREE.DoubleSide});
 // cloth (Oct 12 2026): the furniture's slings, cushions, covers and cords were drawn in the weed pair, whose map the kelp

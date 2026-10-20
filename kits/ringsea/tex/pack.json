@@ -171,6 +171,36 @@
     "sourceMean": 0.5712
    }
   },
+  "hullpaint": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "hullpaint.albedo.webp",
+    "normalMap": "hullpaint.normal.webp",
+    "roughnessMap": "hullpaint.rough.webp"
+   },
+   "lib": "patterns/common/hull-paint",
+   "metal": 0.2,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "730db8bca6b579de13fbc7b5963b3568dbcb15b3",
+    "normal": "62a4524b49ca2d6bf9aa0068507b57722d763953",
+    "roughness": "efdbf9aef797aec757eefdcd5d8f5f9eff7c47f0"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3156307292654,
+    "sourceMean": 0.3156
+   }
+  },
   "thatch": {
    "breakup": {
     "cell": 6,

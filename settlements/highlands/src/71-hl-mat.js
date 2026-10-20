@@ -46,7 +46,8 @@ MAT.rock=hStd({map:TEX.rock,roughness:1});
 /* paving, library-only looks (materials.json cobble: rock_wall_12 cobbles for the town square, ashlarP: rock_wall_11 coursed sandstone for the capital's forecourt); the rubble map stands in without the pack */
 MAT.cobble=hStd({map:TEX.rubble,roughness:.95});MAT.ashlarP=hStd({map:TEX.rubble,roughness:.9});vWorldUV(MAT.cobble,.33);vWorldUV(MAT.ashlarP,.33);                // cliff faces (plain mesh, UVs from the geometry)
 vWorldUV(MAT.logs,.5);vWorldUV(MAT.scale,.5);vWorldUV(MAT.rubbleW,.25);vWorldUV(MAT.turf,.5);vWorldUV(MAT.bamboo,.5);vWorldUV(MAT.bmat,.5);
-hWorldUV(MAT.formF,.5,2);          // frieze: 2 m x 0.5 m tile (boards 0.5 m tall show one band)
+hWorldUV(MAT.formF,.5,2);
+for(const k of['hFrzA','hFrzL','hFrzT','hFrzG']){MAT[k]=hStd({map:TEX.formF,roughness:.8});hWorldUV(MAT[k],1/2.25,2);kdef(k,VBOX,MAT[k]);}   // library friezes: 2.25 m x 0.5 m tile, set in 88y          // frieze: 2 m x 0.5 m tile (boards 0.5 m tall show one band)
 hWorldUV(MAT.laceV,.5,2);          // valance: 2 m x 0.5 m tile
 hWorldUV(MAT.laceB,1.25,1);        // balustrade: 0.8 m x 1 m tile (four 0.2 m boards)
 

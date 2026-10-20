@@ -1085,6 +1085,66 @@
     "sourceMean": 0.394
    }
   },
+  "medMoonFace": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "medMoonFace.albedo.webp",
+    "normalMap": "medMoonFace.normal.webp",
+    "roughnessMap": "medMoonFace.rough.webp"
+   },
+   "lib": "patterns/common/medallion-moonface",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3b6334284a5b046c50f48e1b14a18cf2ceda9ebd",
+    "normal": "40026558b1e4c4e344b9e6f801e9d342c5cdd1af",
+    "roughness": "ef106e8b225bbf1e08ac7f1443bdb3b1388d2fae"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.24693202159507602,
+    "sourceMean": 0.2469
+   }
+  },
+  "medMoonFaceB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "medMoonFaceB.albedo.webp",
+    "normalMap": "medMoonFaceB.normal.webp",
+    "roughnessMap": "medMoonFaceB.rough.webp"
+   },
+   "lib": "patterns/common/medallion-moonface.b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "07b4184fd5ae036eeecc4f4b1696f4a7b81968d8",
+    "normal": "2c87e2c0d051271b259246b3c38ad1abf2487e6f",
+    "roughness": "e30cc49b018888246175b9eeb3a67099fbfa0938"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.23559000298892752,
+    "sourceMean": 0.2356
+   }
+  },
   "palm": {
    "breakup": null,
    "card": false,

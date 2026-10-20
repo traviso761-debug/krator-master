@@ -118,7 +118,7 @@ xaGardenDef('xa_vault_pavilion','Painted-vault pavilion',function(G,o){reseed(32
  vB('xFinBorderB',0,-.06,2.2,3.6,.1,3.6,0,null);vB('xFinB',0,-.28,2.2,3,.2,3,0,null);vB('xWaterB',0,-.02,2.2,3,.18,3,0,xC(0x2ab0c0));vB('xWaterB',0,-.02,3.9,1.2,.16,.6,0,xC(XPAL.water));
  for(const s of[-1,1])for(const z of[-3.4,0]){vB('vPlaster',s*2.8,0,z,1.0,4.6,1.0,0,wash);}
  for(const s of[-1,1]){xnArch('xArchP',s*2.8,0,-1.7,s*Math.PI/2,3.4,4.6,1,wash,{open:true});}xnArch('xArchP',0,0,0,0,5.6,4.6,1,wash,{open:true});xnArch('xArchP',0,0,-3.4,Math.PI,5.6,4.6,1,wash,{open:true});
- vB('vPlaster',0,4.6,-1.7,6.6,.5,4.4,0,wash);kput('xMosA',[0,4.58,-1.7],qEuler(Math.PI/2,0,0),[5.2,3.2,1],null);vB('xFriezeB',0,5.1,-1.7,6.8,.5,4.6,0);
+ vB('vPlaster',0,4.6,-1.7,6.6,.5,4.4,0,wash);kput('xMosA',[0,4.58,-1.7],qEuler(Math.PI/2,0,0),[5.2,3.2,1],null);xvFr(0,5.1,-1.7,6.8,.5,4.6,0);
  for(const s of[-1,1])xnXPPot(s*2.6,0,4.2,.34,XGP.turq);vnFolk(0,-1.5,2,1);},{h:7});
 // 12 the bath pool: a five-metre hot pool with a checker floor, three wide steps down on one side, a colonnade of
 // pointed plaster arches on two sides, milky pale water, steam, a bench slab, a cobalt-and-white dashed rim

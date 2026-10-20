@@ -352,6 +352,76 @@
    "specular": 0.2,
    "mapOnly": true,
    "size": 256
+  },
+  "brClothA": {
+   "lib": "patterns/beast-riders/cloth-1",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "mapOnly": true,
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   }
+  },
+  "brClothB": {
+   "lib": "patterns/beast-riders/cloth-2",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "mapOnly": true,
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   }
+  },
+  "brClothC": {
+   "lib": "patterns/beast-riders/cloth-3",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "mapOnly": true,
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   }
+  },
+  "brClothD": {
+   "lib": "patterns/beast-riders/cloth-4",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "mapOnly": true,
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   }
+  },
+  "brClothE": {
+   "lib": "patterns/beast-riders/cloth-6",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "mapOnly": true,
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   }
   }
  }
 }

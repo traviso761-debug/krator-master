@@ -605,6 +605,32 @@
    },
    "roughLift": 0.4,
    "specular": 0.1
+  },
+  "patFretR": {
+   "lib": "patterns/ashnomad/fret-band",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "patNazcaR": {
+   "lib": "patterns/ashnomad/nazca-panel",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
   }
  }
 }

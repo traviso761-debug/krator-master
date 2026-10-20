@@ -998,6 +998,20 @@
    "roughLift": 0.0,
    "specular": 0.6,
    "metal": 0.9
+  },
+  "inlay_voth_b": {
+   "lib": "patterns/voth/inlay-b",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.5,
+    "contrast": 1.05
+   },
+   "roughLift": 0.4,
+   "specular": 0.25
   }
  }
 }

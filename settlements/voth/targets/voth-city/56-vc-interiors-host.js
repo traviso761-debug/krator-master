@@ -660,9 +660,11 @@ VC.intDecor = function (P, look, add, lamps) {
   });
   /* the dado band round every room and hall where the look has a dado sheet */
   if (look.dado) {
-    var dado = VC.intSheetMat(look.dado, { tile: 2 });
+    /* the Voth inlay has a second take (patterns/voth/inlay-b): a room takes one or the other by a parity of where it stands */
+    var dados = (look.dado === 'inlay_voth' ? [look.dado, 'inlay_voth_b'] : [look.dado]).map(function (s) { return VC.intSheetMat(s, { tile: 2 }); });
     P.rooms.concat(P.halls).forEach(function (r) {
       if (r.nowalls || r.nofloor) return;
+      var dado = dados[(Math.abs(Math.round(r.x0 * 3 + r.z0 * 5))) % dados.length];
       var si = r.storey == null ? 0 : r.storey, y = r.y + DC.dado;
       [[r.x0 + 0.1, r.z0 + 0.1, r.x1 - 0.1, r.z0 + 0.1, [1, 0]], [r.x0 + 0.1, r.z1 - 0.1, r.x1 - 0.1, r.z1 - 0.1, [1, 0]], [r.x0 + 0.1, r.z0 + 0.1, r.x0 + 0.1, r.z1 - 0.1, [0, 1]], [r.x1 - 0.1, r.z0 + 0.1, r.x1 - 0.1, r.z1 - 0.1, [0, 1]]].forEach(function (w) {
         var len = Math.hypot(w[2] - w[0], w[3] - w[1]); if (len < 1) return;
