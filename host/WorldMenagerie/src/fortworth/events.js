@@ -38,17 +38,25 @@ export function events(api){
       if(t*SP>total+80){scene.remove(grp);return false;}return true;});}
 
   // ---- a thunderstorm ----
-  function storm(){const F=scene.fog;if(!F||F.density===undefined)return;let t=0,next=2;const D=70;
+  function storm(){if(!api.fogEffect)return;let t=0,next=2;const D=70;
+    // the air through api.fogEffect (engine 01-scene): the engine eases the fog toward four kilometres' visibility and
+    // back to the city's own when the storm is done, greys the sky and dims the sun; the storm only says how far in it is
+    const W=api.fogEffect();W.visibility=4200;W.colour=0x59625e;
     const flash=new THREE.AmbientLight(0xdfe8ff,0);scene.add(flash);
+    // the rain: short slanted streaks in a box round the camera, falling and blown east
+    const N=5000,rp=new Float32Array(N*6),rg=new THREE.BufferGeometry(),seed=new Float32Array(N*3);for(let i=0;i<N*3;i++)seed[i]=R();
+    rg.setAttribute('position',new THREE.BufferAttribute(rp,3));const rain=new THREE.LineSegments(rg,new THREE.LineBasicMaterial({color:0xaab4b8,transparent:true,opacity:0,depthWrite:false}));rain.frustumCulled=false;tag(rain);scene.add(rain);
     const bolts=[];const bm=new THREE.LineBasicMaterial({color:0xf0f4ff,transparent:true,opacity:0});
     notice('A thunderstorm','off the plains from the west: the sky goes green-black, the lightning walks across the city, the rain comes down in a sheet, and in twenty minutes it is gone east.',
       ()=>{const [vx,vz]=P(K.stormView||[32.7535,-97.3316]);return [vx-400,140,vz+600,vx,60,vz];});
-    run((now,dt)=>{t+=dt;const f=t<10?t/10:t<D-10?1:Math.max(0,(D-t)/10);F.density*=1+f*1.6;F.color.lerp(new THREE.Color(0x5a6660),f*0.5);if(scene.background&&scene.background.isColor)scene.background.lerp(new THREE.Color(0x4a5652),f*0.55);
+    run((now,dt)=>{t+=dt;const f=t<10?t/10:t<D-10?1:Math.max(0,(D-t)/10);W.amount=f;W.dim=0.55;
+      {const c=api.camera.position;for(let i=0;i<N;i++){const x=c.x+(seed[i*3]-0.5)*140,z=c.z+(seed[i*3+1]-0.5)*140,y=c.y+50-((seed[i*3+2]*100+t*34)%100);rp.set([x,y,z,x+0.9,y-2.6,z+0.2],i*6);}
+        rg.attributes.position.needsUpdate=true;rain.material.opacity=0.42*f;}
       if(t>next&&f>0.5){next=t+1.5+R()*4;const c=api.camera.position,a=R()*6.28,d=1500+R()*3000,bx=c.x+Math.cos(a)*d,bz=c.z+Math.sin(a)*d,pts=[];let x=bx,y=1800,z=bz;const g0=groundH(bx,bz);
         while(y>g0){pts.push(new THREE.Vector3(x,y,z));x+=(R()-0.5)*90;z+=(R()-0.5)*90;y-=60+R()*90;pts.push(new THREE.Vector3(x,Math.max(y,g0),z));}
         const l=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),bm.clone());l.material.opacity=1;tag(l);scene.add(l);bolts.push({l,a:0});flash.intensity=2.2;}
       flash.intensity*=Math.pow(0.02,dt);for(let i=bolts.length-1;i>=0;i--){const b=bolts[i];b.a+=dt;b.l.material.opacity=Math.max(0,1-b.a*3)*(0.6+0.4*Math.sin(b.a*60));if(b.a>0.4){scene.remove(b.l);bolts.splice(i,1);}}
-      if(t>D){scene.remove(flash);return false;}return true;});}
+      if(t>D){scene.remove(flash);scene.remove(rain);W.done();return false;}return true;});}
 
   H=createHappenings(api,{events:{cattledrive:['The cattle drive',cattledrive],storm:['A thunderstorm',storm]},order:['cattledrive','storm'],first:K.first||40000,every:K.every||[70000,130000]});
 }

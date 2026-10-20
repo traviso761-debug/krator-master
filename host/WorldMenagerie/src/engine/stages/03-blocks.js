@@ -24,6 +24,10 @@ const roofM=new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSi
 const shopM=new THREE.MeshLambertMaterial({color:0x1c2630,emissive:0x000000,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
 const blankM=new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide});   // walls, armour plating and rubble carry no windows
 const bldMats={tower:towerM,low:lowM,blank:blankM};
+// the city's real surfaces (C.surfaces, 00-start: surface()): brick or the other set between a facade's windows, by the
+// wall's colour; gravel on the flat roofs and shingles on the pitched ones; a facade style's own by its index
+{const S=C.surfaces||{},W=S.walls?[S.walls.red,S.walls.other]:null;if(W)surface(lowM,'wall',W);if(S.towers)surface(towerM,'wall',[].concat(S.towers));
+  if(S.roofs)surface(roofM,'roof',[S.roofs.flat,S.roofs.pitched]);}
 // A city may dress its buildings in more than one way (C.facadeStyles: [{tex, when: {types, minH, maxH, share}, bay,
 // floor, colours, low}], the first that fits a building wins, the rest keep the two rhythms above). The textures:
 //   curtain  glass panels on thin mullions, a glint of specular (a tower's curtain wall)
@@ -76,6 +80,7 @@ function styleTex(kind,glow,seed){const N=256,cv=document.createElement('canvas'
 const STYLES=(C.facadeStyles||[]).map((st,i)=>{const tex=styleTex(st.tex,false,40+i*7),glow=styleTex(st.tex,true,41+i*7);
   const M=st.tex==='curtain'?new THREE.MeshPhongMaterial({vertexColors:true,map:tex,emissiveMap:glow,emissive:0x000000,specular:0x6a7a88,shininess:60,side:THREE.DoubleSide})
     :new THREE.MeshLambertMaterial({vertexColors:true,map:tex,emissiveMap:glow,emissive:0x000000,side:THREE.DoubleSide});
+  {const sf=((C.surfaces||{}).styles||{})[i];if(sf)surface(M,'wall',[].concat(sf));}
   const key='style'+i;bldMats[key]=M;const w=st.when||{};
   return {key,M,bay:st.bay||3.4,floor:st.floor||3.4,low:!!st.low,cols:(st.colours||[]).map(c=>new THREE.Color(c)),types:w.types?new Set(w.types):null,minH:w.minH||0,maxH:w.maxH||1e9,share:w.share===undefined?1:w.share,salt:i,
     where:w.where?w.where.map(([s,wl,n,e])=>{const [x0,z1]=P([s,wl]),[x1,z0]=P([n,e]);return [x0,z0,x1,z1];}):null};});

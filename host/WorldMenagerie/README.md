@@ -445,10 +445,27 @@ the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their m
   museums.
 - **Events** (`src/fortworth/events.js`): the cattle drive, longhorns and drovers down Exchange Avenue; a thunderstorm
   off the plains, lightning walking across the city.
+- **Weather and fog** (2026-10-20, every city on the engine): an event that thickens the air takes `api.fogEffect()`
+  (engine `01-scene.js`) and sets its `amount` (0..1), `visibility` (metres), `colour` and `dim` each frame, then
+  `done()`. The engine composes them over the city's own fog every frame, so an effect cannot compound and the air goes
+  back to what it was when the effect ends; the sky dome greys with it, the sun dims, and the colour follows the hour.
+  The storms of Fort Worth (rain, about 4 km visibility), Olympic and Yachats, Yachats' marine layer and Edinburgh's haar
+  (750 m) are on it. Before, each multiplied the fog's density every frame and never restored it: a whiteout that stayed.
 - **Views**: downtown from the Trinity (the default), Sundance Square, Main Street to the courthouse, the courthouse,
   the Water Gardens, the skyline, Exchange Avenue, the Stockyards, the Kimbell, the Modern, the Cultural District, the
   Will Rogers Center, the Near Southside, TCU, and the whole city.
-- **Not yet**: TEXRail and the TRE do not run (the engine finds no train lines on the mapped rail).
+- **Real surfaces** (2026-10-20; engine settings any city may take, a city without them draws as before): `surfaces`
+  lays texture sets from `data/textures/` by world position, used for their pattern so the map's colours stay: asphalt
+  on the streets, concrete panels on the sidewalks, grass, earth or concrete on the ground by its colour, brick between
+  the windows of a red wall and limestone on the rest, granite on the towers, gravel on the flat roofs and shingles on
+  the pitched ones, fading out with distance. Exchange Avenue takes the `pavers` set (photographed red brick) in
+  `stockyards.js`. `foliage` lays a sheet of small leaves on the tree crowns, triplanar by world position, cut out near
+  the eye so a crown breaks into leaves. `yardTrees` plants a tree or two in each house's yard (live oaks, pecans, cedar
+  elms, crape myrtles by their `yard` weight): about 38,000, the canopy over Fairmount and the old neighbourhoods. The
+  view **Fairmount: West Baltimore Avenue** stands in a street of bungalows.
+- **Not yet**: TEXRail and the TRE do not run (the engine finds no train lines on the mapped rail). The Stockyards' false
+  fronts and the landmarks' own models (the Kimbell's lawn and grove) keep their flat colours: they are instanced or
+  hand-built and the world-mapped surfaces do not follow them yet.
 
 **Antigua Guatemala** (`antigua.html`, `src/antigua/`, `data/cities/antigua.json`). The old capital of the Kingdom
 of Guatemala in the Panchoy valley at 1530 m, Ciudad Vieja, Jocotenango, San Juan Alotenango and the villages round
