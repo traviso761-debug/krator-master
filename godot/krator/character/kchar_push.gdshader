@@ -70,6 +70,9 @@ void vertex() {
 				float ol = length(o);
 				if (l < r && sh > 0.0 && ol > 1e-4) {
 					o /= ol;
+					if (dot(NORMAL, o) < 0.0) {
+						o = -o;          // the side the cloth faces (pushOut in 50-figure.js)
+					}
 					float s = dot(d, o);
 					if (s < 0.0) {
 						d -= 2.0 * s * o;

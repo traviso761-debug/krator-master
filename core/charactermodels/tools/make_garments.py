@@ -360,9 +360,11 @@ def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=N
         hs = hang_side if hang_side is not None else hang_from
         # at the back, a garment that reaches below the crotch hangs from just under the seat: falling from the
         # chest or the waist it would hang straight past the buttocks, and a pose that sets the hips back pushes them
-        # through it (capes and sheets over the arms hang from the shoulders as they are)
+        # through it (capes and sheets over the arms hang from the shoulders as they are; one over the arms that hangs
+        # from the waist, the grand boubou, as a robe does: from the waist its back fell inside the seat, and the
+        # tunic under it showed through)
         hb = hang_from
-        if arc is None and not over_arms and z1 < CROTCH and hang_from > CROTCH + 0.02:
+        if arc is None and (not over_arms or hang_from < CHEST) and z1 < CROTCH and hang_from > CROTCH + 0.02:
             hb = CROTCH + 0.02
         start = [near(hs) if abs(math.sin(a)) > 0.55 else near(hb) if math.cos(a) > 0 else near(hang_from) for a in angles]
         P = hang(P, axes, start, flare)
@@ -890,6 +892,10 @@ def build(gid, label, parts, slot='torso'):
         n = p.P.shape[0] * p.P.shape[1]
         if '_belt' in p.name or '_trophy' in p.name:
             hips.append([o - bisect.bisect_left(gone, o), o + n - bisect.bisect_left(gone, o)])
+        elif '_zen' in p.name or '_bandolier' in p.name:
+            # a band from the hip to the shoulder: below the waist only (the third number: that height over the hip
+            # joint); an elder's shawl in a run tore out at the back of the hips with the thigh
+            hips.append([o - bisect.bisect_left(gone, o), o + n - bisect.bisect_left(gone, o), round(float(WAIST - HIPS[2]), 4)])
         o += n
     json.dump({'garment': gid, 'verts': off - len(gone), 'parts': specs, 'arms': 4 if gid in FOUR else 2, 'gone': gone, 'lower': lower,
                'hips': hips},
@@ -1733,9 +1739,13 @@ for b, sex in (('male', 'm'), ('female', 'f')):
             cloth_ = P('mongolblue', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'saffron'), B('bottom', 0.03, 0.08, 'claw', 'bone', 'mongolblue', 0.08),
                                              B('top', 0.0, 0.02, 'solid', 'maroon')])
             for side, out in (('front', np.array([0, -1.0, 0])), ('back', np.array([0, 1.0, 0]))):
-                # 1.2 cm off the body at its top, under the shirt's 1.4 (at 3 cm it stood out through the shirt's skirt)
-                parts.append(flap('%s_%s' % (gid, side), _out(spine_at(WAIST - 0.04), out, 0.012), 0.2, WAIST - 0.04 - (KNEE + 0.02), out, cloth_,
-                                  group_below=CROTCH + 0.02, sway=0.03))
+                # over the shirt's skirt, hung from its belts (the owner, 2026-10-20: it hung behind the skirt): 5 cm off
+                # the body at its top, outside the shirt's two belts (2.8 and 3.6 cm), and layer 5, over the torso's
+                # skirts (3 + 1; the figure ranks legs items' cloth 0 to 2, the torso's 3 to 5)
+                f_ = flap('%s_%s' % (gid, side), _out(spine_at(WAIST - 0.03), out, 0.05), 0.2, WAIST - 0.03 - (KNEE + 0.02), out, cloth_,
+                          ease=0.05, group_below=CROTCH + 0.02, sway=0.03)
+                f_.cloth['layer'] = 5
+                parts.append(f_)
         return parts
     GARMENTS['beast_%s_peasant_trousers' % sex] = ('legs', b, 'Leggings and breechcloth', _btrou)
 

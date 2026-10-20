@@ -97,7 +97,7 @@ function KCharFigure(body, sliders, load){
       if(part.role === 'armour' && (part.slot === 'torso' || part.slot === 'legs')){
         var it0 = itemByKey[part.key] || {};
         var slot0 = it0.over || part.slot;      // pteruges push as the top they hang over does
-        m.userData.pad = pushOut(m.material, it0.loose && slot0 === 'torso' ? PAD_TOP : 0, !!it0.loose, slot0 === 'legs');
+        m.userData.pad = pushOut(m.material, it0.loose ? (slot0 === 'torso' ? PAD_TOP : PAD_SKIRT) : 0, !!it0.loose, slot0 === 'legs');
       } else if(part.role === 'armour' && part.slot === 'feet') pushOut(m.material, 0, false, false, true);   // boots: the squeeze only
       self.inner.add(m);
       live[id] = m;
@@ -878,7 +878,7 @@ function KCharFigure(body, sliders, load){
   var NCAP = 16, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
   var pushU = { kcA:{ value:capV() }, kcR:{ value:new Array(NCAP).fill(0) },
                 kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() },
-                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_OVER = 0.035,
+                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_SKIRT = 0.015, PAD_OVER = 0.035,
       SQUEEZE = 0.008, SQUEEZE_FEET = 0.014;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
@@ -928,8 +928,10 @@ function KCharFigure(body, sliders, load){
         '\t\tif(cl < cR && cl > 1e-5){\n' +
         '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); float col = length(co);\n' +
         // and the deeper it lies the more it goes straight out that side: near the bone the way out from it is noise, and a
-        // robe's front, left inside a raised thigh in a run, split left and right round the knee and showed it
-        '\t\t\tif(cl < cr && csh > 0.0 && col > 1e-4){ co /= col; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
+        // robe's front, left inside a raised thigh in a run, split left and right round the knee and showed it. The side
+        // is the one the cloth faces (objectNormal, skinned): a leg swung back has the body's axis in front of it, and
+        // a skirt's front, sent out the back, left the leg bare down its side
+        '\t\t\tif(cl < cr && csh > 0.0 && col > 1e-4){ co /= col; if(dot(objectNormal, co) < 0.0) co = -co; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
         '\t\t\t\tfloat cw = 1.0 - cl / cr; cw *= cw; cd = normalize(cd) * (1.0 - cw) + co * cw; }\n' +
         '\t\t\ttransformed = mix(transformed, cq + normalize(cd) * (cr - csh + cl * 2.0 * csh / cR), cup);\n\t\t}\n\t}\n' +
         '\tif(kcS > 0.0 && transformed.y < kcH.y){\n\t\tfloat sb = 1e9; vec3 sbq = vec3(0.0); float sbr = 0.0, sbt = 0.0; int sbi = 0;\n' +

@@ -708,33 +708,63 @@ def fit_four(item_path, flesh_path, ranges):
 
 def pin_hips(item_path, ranges):
     """the vertices in ranges (of _VIDX: belts round the hips and what hangs from them, the .cloth.json's 'hips')
-    weighted to the Hips joint alone, so a belt rides the pelvis instead of shearing with the thighs. Returns how many
-    vertices it moved"""
+    weighted to the Hips joint alone, so a belt rides the pelvis instead of shearing with the thighs. A range with a
+    third number (a band up to the shoulder) is pinned only below that height over the hip joint, fading in over 8 cm
+    under it. Returns how many vertices it moved"""
     j, b = glbio.read_glb(open(item_path, 'rb').read())
     b = bytearray(b)
     moved = 0
+    for node in j['nodes']:
+        if 'skin' not in node:
+            continue
+        sk = j['skins'][node['skin']]
+        names = [glbio.short(j['nodes'][k].get('name', '')) for k in sk['joints']]
+        if 'Hips' not in names or 'inverseBindMatrices' not in sk:
+            continue
+        ibm = glbio.accessor(j, bytes(b), sk['inverseBindMatrices']).reshape(-1, 4, 4)[names.index('Hips')]
+        hip_y = np.linalg.inv(ibm.T)[1, 3]                    # glTF matrices are column-major
+        break
+    else:
+        hip_y = None
     for names, at, P, V in _skinned(j, b):
         if V is None or 'Hips' not in names:
             continue
-        want = np.zeros(len(V), bool)
-        for lo, hi in ranges:
-            want |= (V >= lo) & (V < hi)
-        if not want.any():
+        f = np.zeros(len(V))
+        for r in ranges:
+            inr = (V >= r[0]) & (V < r[1])
+            if len(r) > 2 and hip_y is not None:
+                f = np.maximum(f, inr * np.clip((hip_y + r[2] - P[:, 1]) / 0.08, 0.0, 1.0))
+            else:
+                f = np.maximum(f, inr.astype(float))
+        if not (f > 0).any():
             continue
-        for key, val in (('JOINTS_0', names.index('Hips')), ('WEIGHTS_0', None)):
+        recs = []
+        for key in ('JOINTS_0', 'WEIGHTS_0'):
             a = j['accessors'][at[key]]
             v = j['bufferViews'][a['bufferView']]
             dt = glbio.CT[a['componentType']]
             off = v.get('byteOffset', 0) + a.get('byteOffset', 0)
             if v.get('byteStride') not in (None, np.dtype(dt).itemsize * 4):
                 raise SystemExit('mods.py: strided skin attributes')
-            A = np.frombuffer(bytes(b), dt, a['count'] * 4, off).reshape(-1, 4).copy()
-            if val is None:
-                val = np.iinfo(dt).max if a.get('normalized') else 1.0
-            A[want] = 0
-            A[want, 0] = val
-            b[off:off + A.nbytes] = A.tobytes()
-        moved += int(want.sum())
+            recs.append((a, dt, off, np.frombuffer(bytes(b), dt, a['count'] * 4, off).reshape(-1, 4).copy()))
+        (aj, dj, oj, JJ), (aw, dw, ow, WW) = recs
+        scale = np.iinfo(dw).max if aw.get('normalized') else 1.0
+        hips = names.index('Hips')
+        W = WW.astype(float) / scale
+        for v in np.nonzero(f > 0)[0]:
+            dense = {}
+            for jj, ww in zip(JJ[v], W[v]):
+                if ww > 0: dense[int(jj)] = dense.get(int(jj), 0.0) + ww * (1.0 - f[v])
+            dense[hips] = dense.get(hips, 0.0) + f[v]
+            top = sorted(dense.items(), key=lambda kw: -kw[1])[:4]
+            tot = sum(w for _, w in top) or 1.0
+            top += [(0, 0.0)] * (4 - len(top))
+            JJ[v] = [k for k, _ in top]
+            W[v] = [w / tot for _, w in top]
+        WW = np.round(W * scale).astype(dw) if scale != 1.0 else W.astype(dw)
+        b[oj:oj + JJ.nbytes] = JJ.astype(dj).tobytes()
+        b[ow:ow + WW.nbytes] = WW.tobytes()
+        moved += int((f > 0).sum())
     _write(item_path, j, bytes(b), {})
     return moved
 

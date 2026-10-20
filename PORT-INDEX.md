@@ -73,7 +73,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 6 | 36 | 18 | 0 | 0 | 17 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 198 | 21 | 0 | 0 | 96 | 81 | 0 |  |  | yes |
-| **all** | 2313 | 30693 | 6370 (21%) | 626 (2%) | 1100 (4%) | 3868 (13%) | 18729 (61%) | 275 | | | |
+| **all** | 2313 | 30694 | 6370 (21%) | 626 (2%) | 1100 (4%) | 3868 (13%) | 18730 (61%) | 275 | | | |
 
 ## Host-shell copies
 

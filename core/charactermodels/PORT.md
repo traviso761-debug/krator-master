@@ -15,7 +15,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 12.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/01-animlab.html` | 16.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/10-rig.js` | 21.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/50-figure.js` | 81.0 | [draw] | 72 | 0 | 0 | 1 | 0 | 4 | 10 | 0 | 0 | 0 | 0 |  |
+| `src/50-figure.js` | 81.3 | [draw] | 72 | 0 | 0 | 1 | 0 | 4 | 10 | 0 | 0 | 0 | 0 |  |
 | `src/90-editor.js` | 34.0 | [web] | 13 | 0 | 45 | 29 | 2 | 2 | 0 | 0 | 0 | 0 | 3 |  |
 | `src/92-animlab.js` | 31.9 | [web] | 14 | 0 | 31 | 33 | 2 | 2 | 0 | 0 | 0 | 5 | 2 |  |
 

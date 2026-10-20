@@ -62,7 +62,9 @@
   can still show one through another for a frame or two where the chains swing. In a run, a long robe (the Order's,
   the court robes, the kimono) has its back pierced by the shin as the trailing leg kicks up, and for a frame a patch at
   the back of that hip can show: the push skips the back of a thigh's top third (the seat covers it at rest), and the
-  seat capsules do not swing with the thigh.
+  seat capsules do not swing with the thigh. A narrow ankle-length skirt (the Order novice's wrap) cannot cover a thigh
+  raised as high as a run's: at the top of the stride the leading thigh comes out of its side, cloth or no cloth (its
+  fitted shape is a tube; the chains and the push move it, they do not make more of it).
   The headgear (a wrap, a quetzal headdress) is rigid: the headdress's fan swings, its band does not.
 - **The Izani clothing is generated too** (as the Voth, above): the hood is a stiff shell (no chains), the sun halo
   and the shoulder plate are rigid, pouches are simple solids, the boots are tubes (a toe shows a seam), and the hex
