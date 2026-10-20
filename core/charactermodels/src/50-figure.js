@@ -501,6 +501,7 @@ function KCharFigure(body, sliders, load){
      move them, so a stride still cannot open a skirt (with no clip playing they hang rigid) */
   this.cloth = true;
   this.clothState = function(){ return { items:clothItems, caps:caps }; };      // verify.py, the labs
+  this.pushState = function(){ return pushU; };                                  // tools: the push's capsules (w 0: off)
   var GRAV = 7.4, DRAG = 1.6, DAMP = 0.04, STEP = 1 / 60, PAD = 0.022;
   var clothItems = {}, itemByKey = {}, caps = [], groundY = 0, clothAcc = 0;
   (kit.items || []).forEach(function(it){ itemByKey[KCHAR.key(it.glb)] = it; });
@@ -870,6 +871,7 @@ function KCharFigure(body, sliders, load){
      the skin under them hidden, the court's legs read thin; a looser squeeze (2.5 cm) put them out through the robes'
      knees instead. Each vertex is drawn to its nearest capsule only: drawn to all six, a shin's was pulled into a ball
      round the knee (the thigh's end) and the inside of each leg toward the other, and the court's legs came out thin */
+  var KNEE = 0.04;      // how far a fully bent knee's corner stands out of its two capsules (kchar_push.gdshader)
   function pushOut(mat, pad, loose, legs, feet){
     var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0 }, looseU = { value:loose ? 1 : 0 };
     mat.onBeforeCompile = function(sh, r){
@@ -891,7 +893,13 @@ function KCharFigure(body, sliders, load){
         '\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
         '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.015;\n' +
         '\t\tfloat ct = dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8);\n\t\tif(ci < 2 && ct < 0.3 && (dot(transformed - ca, cbk) > 0.0 || kcA[14].w <= 0.0)) continue;\n\t\tct = clamp(ct, 0.0, 1.0);\n' +
-        '\t\tfloat cr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, ct) + (csh > 0.0 ? kcP : 0.0), cR = cr + csh;\n' +
+        '\t\tfloat cr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, ct) + (csh > 0.0 ? kcP : 0.0);\n' +
+        // a bent knee's corner, which the thigh's and the shin's capsules leave uncovered: the radius grows toward the knee
+        // by up to KNEE as the leg bends (an Order robe's front showed the whole knee in a run)
+        '\t\tif(ci < 4 && csh > 0.0){ int th = ci < 2 ? ci : ci - 2;\n' +
+        '\t\t\tfloat bend = clamp(1.0 - dot(normalize(kcB[th].xyz - kcA[th].xyz), normalize(kcB[th + 2].xyz - kcA[th + 2].xyz)), 0.0, 1.0);\n' +
+        '\t\t\tcr += ' + KNEE.toFixed(3) + ' * bend * (ci < 2 ? smoothstep(0.7, 1.0, ct) : 1.0 - smoothstep(0.0, 0.3, ct)); }\n' +
+        '\t\tfloat cR = cr + csh;\n' +
         '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
         '\t\tif(cl < cR && cl > 1e-5){\n' +
         '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); float col = length(co);\n' +

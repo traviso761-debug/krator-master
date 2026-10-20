@@ -1174,11 +1174,16 @@ def main():
     print(name, 'mods:', ', '.join(m['id'] for m in mod_items))
     for it in man['items']:
         cl = None
+        # where the legs' weights start to pool (skirt_weights): below the crotch; a garment of flaps from the waist
+        # down, from the hip joint (with its thighs' weights from there to the crotch, a loincloth's front flap swung
+        # forward with the thigh in a stride and stood off it like a plank), and the library's loose garments too (the
+        # kimono's two front panels followed one thigh each and parted at the midline in the idle's sway)
+        pool_from = c.jpos[c.J['Hips']][1] if it['id'] in FLAPS else crotch
         if it.get('cloth') and os.path.exists(os.path.join(src, it['cloth'])):
             cl = {'id': it['id'], 'spec': json.load(open(os.path.join(src, it['cloth'])))}
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
-                     skirt=crotch if hangs(it) else None, cloth=cl, body=contact if it['slot'] != 'legs' else None,
+                     skirt=pool_from if hangs(it) or it['id'] in LOOSE else None, cloth=cl, body=contact if it['slot'] != 'legs' else None,
                      head_above=c.jpos[c.J['Neck']][1] + 0.06 if it['slot'] == 'head' else None)
         roles.update(r)
         if it['id'] in DECIMATE:

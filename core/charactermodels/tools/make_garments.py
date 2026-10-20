@@ -497,8 +497,9 @@ def sheet_mask(style):
     return MASKS[style]
 
 
-def motif(style, w, h, fg, bg):
-    """one cell of a band, w x h pixels, as an RGB array"""
+def motif(style, w, h, fg, bg, aspect=1.0):
+    """one cell of a band, w x h pixels, as an RGB array; aspect: the cell's width over its height on the cloth (round
+    things are drawn round there)"""
     m = sheet_mask(style) if style in SHEETS else None
     if m is not None:
         sc = m.shape[1] / (w * SHEETS[style][1])           # sheet pixels a cell pixel: the cell is one motif across
@@ -609,10 +610,11 @@ def motif(style, w, h, fg, bg):
         m |= (x * x + y * y) < 0.06 ** 2
         img[m] = fg
     elif style == 'buttons':                     # a button down the middle of each cell
-        img[((u - 0.5) ** 2 + (v - 0.5) ** 2) < 0.2 ** 2] = fg
+        # (round on the cloth: drawn round in the cell, a 3 cm by 7 cm one, they were ovals twice as tall as wide)
+        img[(((u - 0.5) * aspect) ** 2 + (v - 0.5) ** 2) < 0.09 ** 2] = fg
     elif style == 'buttons2':                    # double-breasted: two buttons a row
         for cx in (0.2, 0.8):
-            img[((u - cx) ** 2 * 1.0 + (v - 0.5) ** 2) < 0.09 ** 2] = fg
+            img[(((u - cx) * aspect) ** 2 + (v - 0.5) ** 2) < 0.08 ** 2] = fg
     elif style == 'quilt':                       # diamond quilting: thin stitched seams in a lattice
         a1, a2 = ((u + v) * 1.0) % 1, ((u - v) * 1.0) % 1
         img[(np.abs(a1 - 0.5) < 0.035) | (np.abs(a2 - 0.5) < 0.035)] = fg
@@ -652,12 +654,15 @@ def paint_strip(spec, W, H, circ, length):
         img[r0:r1] = band * (1 + rng.normal(0, 0.02, (r1 - r0, W, 1)))
     # panels: a column of the strip from u0 to u1 (0 at the back of a tube, 0.5 at the front), its motif repeating
     # down every 'rep' metres (a tabard woven into a robe)
-    for u0, u1, style, fg, bg, rep in spec.get('panels', []):
+    # ('down': only so many metres from the top, a placket's buttons above the belt: on the skirt below, which hangs
+    # and swings, they stretched)
+    for u0, u1, style, fg, bg, rep, down in spec.get('panels', []):
         c0, c1 = int(u0 * W), int(u1 * W)
         n_rep = max(1, int(round(length / rep))) if rep else 1
         ch = max(2, H // n_rep)
-        cell = motif(style, c1 - c0, ch, np.array(fg), np.array(bg))
-        img[:, c0:c1] = np.tile(cell, (H // ch + 1, 1, 1))[:H] * (1 + rng.normal(0, 0.02, (H, c1 - c0, 1)))
+        cell = motif(style, c1 - c0, ch, np.array(fg), np.array(bg), aspect=(u1 - u0) * circ / (length / n_rep))
+        hh = H if down is None else min(H, int(round(down / length * H)))
+        img[:hh, c0:c1] = np.tile(cell, (H // ch + 1, 1, 1))[:hh] * (1 + rng.normal(0, 0.02, (hh, c1 - c0, 1)))
     if gr is not None:
         # the fabric's grain at its size on the cloth (the strip is circ metres across and length down), its depth
         # by the paint's weave (0.07 the usual cloth: about full strength)
@@ -901,7 +906,7 @@ def leathery(paint):
     return dict(paint, fabric='leather.polished')
 
 
-def PN(u0, u1, style, fg, bg, rep=0.25): return (u0, u1, style, C[fg], C[bg], rep)
+def PN(u0, u1, style, fg, bg, rep=0.25, down=None): return (u0, u1, style, C[fg], C[bg], rep, down)
 def B(where, a, b, style, fg, bg=None, rep=0.08): return (where, a, b, style, C[fg], C[bg] if bg else None, rep)
 
 L, R = 'Left', 'Right'
@@ -1159,8 +1164,12 @@ def blob(name, c, size, paint, n=12, rows=5, out=None):
 def pauldron(name, side, paint, reach=0.5, ease=0.028):
     """a plate over one shoulder and the top of the upper arm (its outer half)"""
     a, e = J(side + 'Arm'), J(side + 'ForeArm')
+    # its arc centred on the arm's upper side: frame()'s x is the top of the left arm but the underside of the right (the
+    # right plates lay round the armpit, hidden: the Republic guild's, the chief's)
+    x, y = frame(e - a)
+    c = math.atan2(y[2], x[2])
     return limb_tube(name, None, None, ease, paint, n=12, rows=6, ease_end=ease * 0.7, start_back=0.06,
-                     path=[a, a + (e - a) * reach], arc=(-1.7, 1.7), bvh=BVH_A, rmax=0.16)
+                     path=[a, a + (e - a) * reach], arc=(c - 1.7, c + 1.7), bvh=BVH_A, rmax=0.16)
 
 
 GARMENTS = {}
@@ -1843,9 +1852,11 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         gid = 'hykk_%s_peasant_exomis' % sex
         body = P('sealinen', 0.04, WAVE_HEM('sealinen', 'slateblue'))
         rope = P('olive', 0.05, [B('top', 0.0, 0.2, 'rays', 'sand', 'olive', 0.02)])
-        if sex == 'm':                       # from under the arms, held up by a strap over the left shoulder
+        if sex == 'm':
+            # from under the arms, and over the left shoulder the left half of the chest and back, as an exomis is
+            # worn (a 5 cm strap there left the chest bare and the cloth's top edge ragged against it)
             return [torso_tube(gid, CHEST - 0.02, CROTCH - 0.16, 0.016, body, hang_from=WAIST - 0.02, flare=0.2, group_below=CROTCH + 0.02, hull_from=CHEST + 0.05),
-                    band(gid + '_strap', CHEST - 0.06, SHOULDER + 0.035, 0.05, 0.012, P('sealinen', 0.04, [B('top', 0.0, 0.01, 'solid', 'slateblue')])),
+                    torso_tube(gid + '_left', TOP, CHEST - 0.035, 0.016, body, arc=(0.1, math.pi - 0.1), n=22),
                     torso_tube(gid + '_rope', WAIST + 0.02, WAIST - 0.02, 0.026, rope, rows=3, n=40, hull_from=WAIST + 0.1)]
         return [torso_tube(gid, TOP, KNEE - 0.02, 0.014, body, hang_from=CHEST - 0.03, hang_side=WAIST - 0.02, flare=0.14, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                 torso_tube(gid + '_rope', CHEST - 0.06, CHEST - 0.09, 0.02, rope, rows=3, n=40)] + \
@@ -2161,14 +2172,14 @@ for b, sex in (('male', 'm'), ('female', 'f')):
             gid = 'rep_m_peasant_tunic'
             tun = P('repgrey', 0.06, [B('top', 0.0, 0.03, 'solid', 'repgreyd'), B('top', 0.0, 0.006, 'solid', 'repred'),
                                       B('bottom', 0.0, 0.012, 'solid', 'repgreyd')],
-                    [PN(0.485, 0.515, 'buttons', 'brass', 'repgreyd', 0.07)])
+                    [PN(0.485, 0.515, 'buttons', 'brass', 'repgreyd', 0.07, down=TOP - WAIST - 0.02)])
             sl = P('repgrey', 0.06, [B('bottom', 0.0, 0.03, 'solid', 'repgreyd')])
             return [torso_tube(gid, TOP, CROTCH - 0.07, 0.018, tun, hang_from=WAIST - 0.03, flare=0.08, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                     _rep_belt(gid)] + sleeves(gid, 'wrist', 0.018, sl, ease_end=0.022, rows=9)
         # a plain dark wool dress to mid-calf, high collar, long sleeves, a belt; a plain apron for work
         gid = 'rep_f_peasant_dress'
         dress = P('repgreyd', 0.06, [B('top', 0.0, 0.025, 'solid', 'repblack'), B('top', 0.0, 0.005, 'solid', 'repred'),
-                                     B('bottom', 0.0, 0.015, 'solid', 'repblack')], [PN(0.485, 0.515, 'buttons', 'repblack', 'repgreyd', 0.06)])
+                                     B('bottom', 0.0, 0.015, 'solid', 'repblack')], [PN(0.485, 0.515, 'buttons', 'repblack', 'repgreyd', 0.06, down=TOP - WAIST - 0.02)])
         sl = P('repgreyd', 0.06, [B('bottom', 0.0, 0.03, 'solid', 'repblack')])
         return [torso_tube(gid, TOP, KNEE - 0.24, 0.014, dress, hang_from=CHEST - 0.04, hang_side=WAIST, flare=0.18, group_below=CROTCH + 0.02,
                            hull_from=CHEST + 0.02), _rep_belt(gid, 0.022),
@@ -2203,10 +2214,13 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         plate = P('iron', 0.03, [B('top', 0.0, 0.3, 'dots', 'ancient', 'iron', 0.04), B('bottom', 0.0, 0.01, 'solid', 'rust')])
         apron = P('leather', 0.06, [B('top', 0.0, 0.012, 'solid', 'brass'), B('bottom', 0.0, 0.015, 'solid', 'umber')])
         hem = CROTCH - 0.02 if sex == 'm' else CROTCH - 0.06
+        # the apron over the jacket's skirt (layer 2: at the flap's 1, the skirt's own, neither stayed outside the other)
+        ap = flap(gid + '_apron', _front(WAIST + 0.02, 0.05), 0.32 if sex == 'm' else 0.29, WAIST - KNEE + 0.08, np.array([0, -1.0, 0]), apron,
+                  group_below=CROTCH + 0.02, sway=0.01)
+        ap.cloth['layer'] = 2
         # the plates stand out past the jacket's shoulders (at 4.5 cm off the arm they were inside them, showing in patches)
         return [torso_tube(gid, TOP, hem, 0.026, quilt, hang_from=WAIST - 0.03, flare=0.08, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
-                flap(gid + '_apron', _front(WAIST + 0.02, 0.05), 0.32 if sex == 'm' else 0.29, WAIST - KNEE + 0.08, np.array([0, -1.0, 0]), apron,
-                     group_below=CROTCH + 0.02, sway=0.01),
+                ap,
                 pauldron(gid + '_plate_L', L, plate, reach=0.4, ease=0.068), pauldron(gid + '_plate_R', R, plate, reach=0.4, ease=0.068)] + \
             izani_belt(gid, P('leather', 0.05, [B('top', 0.0, 0.01, 'solid', 'brass'), B('bottom', 0.0, 0.01, 'solid', 'brass')]), P('umber', 0.06),
                        ease=0.06) + sleeves(gid, 'wrist', 0.026, sl, ease_end=0.03, rows=8)

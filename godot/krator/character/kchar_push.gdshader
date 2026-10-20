@@ -31,6 +31,8 @@ uniform float kcP = 0.0;
 uniform float kcL = 0.0;
 uniform float kcT = 0.0;
 uniform float kcS = 0.0;
+// how far a fully bent knee's corner stands out of its two capsules
+const float KNEE = 0.04;
 
 void vertex() {
 	if (kcL > 0.5) {
@@ -51,6 +53,12 @@ void vertex() {
 			}
 			t = clamp(t, 0.0, 1.0);
 			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + (sh > 0.0 ? kcP : 0.0);
+			if (i < 4 && sh > 0.0) {
+				// a bent knee's corner, which the thigh's and the shin's capsules leave uncovered (pushOut in 50-figure.js)
+				int th = i < 2 ? i : i - 2;
+				float bend = clamp(1.0 - dot(normalize(kcB[th].xyz - kcA[th].xyz), normalize(kcB[th + 2].xyz - kcA[th + 2].xyz)), 0.0, 1.0);
+				r += KNEE * bend * (i < 2 ? smoothstep(0.7, 1.0, t) : 1.0 - smoothstep(0.0, 0.3, t));
+			}
 			float R = r + sh;
 			vec3 q = a + ab * t;
 			vec3 d = VERTEX - q;
