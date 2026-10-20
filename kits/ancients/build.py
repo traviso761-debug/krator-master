@@ -111,7 +111,7 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'coil'}
+TAGS_TARGETS = {'sanctum'}
 TAGS_CORE = INTERIOR_CORE[:4]
 # the furniture an intact Ancient building takes: the harvested registry (the ancient pieces) and the goods
 INTERIOR_FURN = ['generic-goods']
@@ -187,7 +187,7 @@ TARGET_OUT = {
     'spaceport': 'spaceport.html',             # dev: the Iziz spaceport in every decay (8ao-iz-spaceport)
     'funicular': 'funicular.html',             # the broken Ancient funicular on an escarpment (8ap-funicular; Verge takes it)
     'hosts': 'hosts.html',                     # five types drawn as Hykkousoi hosts for Ys (src/8ap-host-*)
-    'coil': 'coil.html',                       # the spiral arcology and the Heirs' Sanctum (its fragments in targets/coil)
+    'sanctum': 'sanctum.html',                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -206,7 +206,7 @@ DETERMINISTIC = {
     '91-probe.js', '92-camera.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
-    '8aq0-coil-plan.js', '8aq1-coil-sanctum.js', '8aq2-coil-skins.js',   # targets/coil: KRAND-hashed records, no rng()
+    '8aq0-sanctum-plan.js', '8aq1-sanctum-kept.js', '8aq2-sanctum-skins.js',   # targets/sanctum: KRAND-hashed records, no rng()
 }
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
@@ -363,7 +363,7 @@ def build_one(target, do_checks, assert_origin):
     # (tools/textures/matlib_pack.py, SIDECAR PACKS): a page is then its code alone, not its code plus a copy of the
     # same maps. --inline-packs puts them back in every page (one self-contained file each, as before 2026-10-07).
     side = None if '--inline-packs' in sys.argv else {}
-    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'ancients', side=side)
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'ancients', side=side, own=True)   # own: the Sanctum target's families (materials.json `own`)
     order = sorted(order + [MATLIB_PACK])
     if target in INTERIOR_TARGETS:
         extra = [INTERIOR_BUNDLE]

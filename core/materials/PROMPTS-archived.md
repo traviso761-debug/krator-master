@@ -606,3 +606,82 @@ Second delivery 2026-10-18 (images 14 to 21; batch `crops-2026-10-18-cards2.json
 - `settlements/ys/KNOWN_ISSUES.md` says the Ancient towers' `MAT.white` has "no prompt": it binds to `metal.ancient.white`
   since 2026-10-06; the rust is section 2 above.
 - `feather.plumage` is delivered but `kits/fauna/materials.json` has no `feather` family yet (wiring, not an image).
+
+## The Eternian kit and the Sanctum (`kits/eternian`, `kits/ancients` target `sanctum`): delivered 2026-10-20
+
+The True Heirs' court (`LORE.md` §6.19, `kits/eternian/PLAN.md` §2 and §10): translucent stone in bronze tracery, the
+talking heads, the sign. The arcology draws all of these procedurally until they arrive. Reuse first, no prompt needed:
+`metal.bronze`, `metal.bronze.cast`, `metal.gold`, `metal.pewter` (the heads' metals by rank), `roof.scale.gilt` (the
+court's fish-scale roofs, tinted per metal), `metal.ancient.white` (the kept host), `glass.clear` (the surviving plate
+glass).
+
+#### `stone.onyx`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in library/stone.onyx; wired in kits/ancients (the Sanctum target, family `snOnyx`: the bays' onyx, glowing). For kits/eternian: its `materials.json` at P1.
+- Used by: the bays' and the court's lights behind the bronze tracery (lit from behind by the cyan strips). Reuse: any
+  palace, temple or bath that glazes in stone.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a thin polished slab of honey onyx cut across its layers: soft wavy parallel bands running mostly horizontally, cream (#efe4c8) through pale honey (#d9b884) to amber (#b7884a), a few fine milky-white veins (#f6f1e6) crossing the bands at a shallow angle, faint cloudy depth in the paler bands. Polished but shown matte: no reflections, not backlit. One tile covers 1 metre. Full colour: not tinted.
+```
+
+#### `stone.alabaster`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in library/stone.alabaster; wired in kits/ancients (`snAlab`: the Withdrawn's bays). For kits/eternian: its `materials.json` at P1.
+- Used by: the court's palest lights, the Withdrawn's blind bays, lamp shades. Reuse: any culture's translucent lamps.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished slab of white alabaster: a soft waxy near-white (#f1ece2) with large cloudy drifts of cream (#e4dccd) and pale grey (#d6d0c4), a few fine thread-like grey veins (#c2bbae) wandering across it, a faint granular depth. Shown matte: no reflections, not backlit. One tile covers 1 metre. Full colour: not tinted.
+```
+
+#### `metal.titanium`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in library/metal.titanium; wired in kits/ancients (`snTitan`: the colossus). For kits/eternian: its `materials.json` at P1.
+- Used by: the colossus on the Sanctum's crown and the Heirs' metal figures (the owner's Gagarin reference). Reuse:
+  any polished modern metal monument.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: brushed and lightly polished titanium plate: fine straight horizontal brushing in a cool mid grey (#9aa1a8), broad soft clouds of very faint straw and blue heat tint (#a8a08a, #8c9aae) drifting across it, a few flat panel seams (#6d737a) dividing it into large rectangles. No rivets, no rust, no scratches, no dents. One tile covers 4 metres. Full colour: not tinted.
+```
+
+#### `patterns/eternian/screen-pierced`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/screen-pierced and screen-pierced.b (a second take, an alternate per bay; cards.py, keyed); wired in kits/ancients (`snScreen`, `snScreenB`: the Sealed House). For kits/eternian: its `materials.json` at P1.
+- Used by: the pierced bronze screens where a wall must breathe, the sealed bays of the Withdrawn. A cut-out:
+  `cards.py` keys the magenta to alpha.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a pierced cast-bronze screen: a continuous geometric lattice of interlocking stepped squares and right-angle maze turns, like a circuit board drawn as Art Deco fretwork, the bars about one fortieth of the tile wide, every opening cut clean through to a solid flat bright magenta (#ff00ff) background. The bronze is a warm polished brown-gold (#9c7a3c) with slightly darker bevelled edges (#6e5428). No curves, no animals, no faces, no letters or glyphs. No magenta, pink or purple in the bronze, no grey or white background. The pattern repeats in both directions. Full colour: not tinted.
+```
+
+#### `patterns/eternian/talking-heads`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/talking-heads; wired in kits/ancients (`snFaces`: the terminals, one cell each, the deranged in the bottom row's middle). For kits/eternian: its `materials.json` at P1.
+- Used by: the Ancient terminal faces the Machine Talkers wake (the petition walls, the gates, the Regent's hall). A
+  sheet of nine; the build cuts the cells.
+
+```
+A sheet of nine separate screen panels in a 3x3 grid, square, 2048x2048, each panel filling its cell edge to edge, a thin black gap between the cells. Front-on, orthographic, flat even lighting, no reflections, no text, no watermark. Each panel: a dark glass display (#0b1215) showing a calm, serene face drawn in glowing cyan line art (#39d6e8), built from flat faceted planes like an Art Deco cubist sculpture: closed eyes as two downward-curved lids, a straight nose, a small closed mouth, a stepped geometric headdress, faint horizontal scan lines across the glass. Eight of the nine are calm and differ in face (long, broad, aged, young, male, female) and headdress. The ninth is subtly deranged: the same kind of face with one eye open, its lines doubled and slipping sideways, a few horizontal tear bands, still cyan only. No red, no skulls, no snarls, no sun rays, no letters. Full colour: not tinted.
+```
+
+#### `patterns/eternian/sign`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/sign; wired in kits/ancients (`snBanner`: the banners). For kits/eternian: its `materials.json` at P1.
+- Used by: the State's banners on the gates and walls (the sign, `LORE.md` §6.19: a gold face with its eyes closed on
+  black, green highlights). Not tiled.
+
+```
+A flat, front-on hanging banner, portrait, 1024x2048, filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette. No perspective, no text, no letters, no watermark. A matte black cloth field (#141416). In the upper middle, a large serene face in gold (#d8b24a) with its eyes closed, built from flat faceted planes in the Art Deco cubist manner, a stepped Deco headdress above it; green (#3f8a5a) highlights pick out the planes of the cheeks and brow and draw a thin line under the closed lids. Below the face a narrow vertical band of gold right-angle maze pattern, like a circuit board, runs down to the hem; a thin gold border just inside the edge. Faint woven and embroidered cloth texture. No sun rays or ray halo, no red, no skull, no weapons. Full colour: not tinted.
+```
+
+#### `patterns/eternian/circuit-maze`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/circuit-maze, .b and .c (two extra takes, alternates per bay); wired in kits/ancients (`snMaze`, `snMazeB`, `snMazeC`: the balconies' fascias, the crown rim). For kits/eternian: its `materials.json` at P1.
+- Used by: the circuit-maze brocade (rank by the number of turns), stone bands on the ministries, the banners' edges.
+  Tinted per use: gold on black for the court, white on black for the ministers. Reuse: the Ancients' own trim.
+
+```
+Seamless tileable texture, 2048x512, the pattern repeating horizontally. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Material: a woven brocade band of a right-angle maze pattern like an Ancient circuit board: continuous lines turning at right angles, small square pads and stepped corners, laid out as a running border between a straight rule above and below; the lines light (#e8e6e0) on a near-black ground (#1a1a1c), a faint woven texture. Geometric only: no glyphs, no letters, no faces. Near-colourless: greys only, so it can be tinted.
+```
+
+#### `patterns/eternian/face-frieze`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/face-frieze; wired in kits/ancients (`snFrieze`: the podium's frieze). For kits/eternian: its `materials.json` at P1.
+- Used by: the friezes of the podium, the gate pylons and the ministries (the Bayon done in Deco). Tinted pale stone
+  for the State, bronze for the court.
+
+```
+Seamless tileable texture, 2048x1024, the pattern repeating horizontally. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Material: a carved stone relief frieze: a row of three large serene faces with closed eyes, each built from flat faceted planes in the Art Deco cubist manner (a straight nose, flat cheek planes, a stepped geometric headdress), alternating with narrow fluted pilasters and stepped Deco chevrons; crisp shallow carving, pale stone (#ddd6c8) with soft grey in the recesses (#a9a296). Calm and serene: no snarls, no skulls, no weapons, no letters. Near-colourless: pale grey only, so it can be tinted.
+```

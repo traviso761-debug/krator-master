@@ -958,18 +958,20 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
 
-## The Coil (`--target coil`, `targets/coil`, 2026-10-20)
+## The Sanctum (`--target sanctum`, `targets/sanctum`, 2026-10-20)
 
 - **`culture:eternian` is not in the core/tags vocabulary.** The Sanctum's records (heads, terminals, banners, the
-  wall, the pavilions) carry it, so `KTAGS.coil.audit()` counts about 450 unknowns. It is the Eternian kit's P0
+  wall, the pavilions) carry it, so `KTAGS.sanctum.audit()` counts about 450 unknowns. It is the Eternian kit's P0
   (`kits/eternian/PLAN.md` §11): the culture goes into the catalog's `FURN_CULTURES` with a culture file and into
   `52-core-tags-vocab.js`, and every build that takes either is rebuilt. Until then, the one unknown is expected.
-- **Onyx, alabaster, titanium, the talking heads and the sign are procedural**, waiting on
-  `core/materials/PROMPTS-NEEDED.md` §8. The new materials (`MAT.co*`) are not in `materials.json`; the bronze, gold,
-  pewter and gilt-scale library sets are to be bound when the delivered sets are wired.
+- **The owner's Eternian sets are wired** (2026-10-20): onyx, alabaster, titanium, the pierced screens, the talking
+  heads, the sign, the circuit mazes and the face frieze, as `own` families (`sn*` in `materials.json`: the Sanctum's
+  alone, so a host vendoring the kit's pack keeps its bytes). The extra takes are alternates picked per bay. Still
+  procedural: the drum's wall, the pods' and bays' glazing, the plate glass; the heads' gold, silver, bronze and
+  gunmetal are flat metals (the library's `metal.*` sets want binding per instance colour).
 - **The faces read soft at a distance**: the faceted head is ten rings of eight points, flat-shaded; past ~300 m the
   planes merge and a head reads as an egg. The Eternian kit's head generator (its P2) replaces it.
-- **No ruined state, no interiors, no Godot export check yet.** The Coil is shown as built and as kept; the arches'
+- **No ruined state, no interiors, no Godot export check yet.** The Sanctum is shown as built and as kept; the arches'
   halls have terraces and a back wall, no rooms.
 - **Kit-wide, fixed on this page only:** the sky shader is black below the horizon (`pow(h,.55)` with h < 0 in
   `90-scene.js`), the dome is drawn after the ground with no depth write, and the far plane is 12 km, so a wide shot shows

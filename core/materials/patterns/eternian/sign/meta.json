@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.232,
+    3.319
+   ],
+   "seam_before": [
+    0.298,
+    3.233
+   ],
+   "source_size": [
+    887,
+    1774
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.1,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.02,
+   "mute": 0.0,
+   "normal_strength": 0.4,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.05,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "eternian/sign",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "eternian_sign.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/sign` (the gold closed-eyed face on black, green highlights)",
+  "reuse": "the Eternal State's banners on every gate and wall; the core/sockets eternian pack when it is made. A single panel, not tiled",
+  "sha1": "6e5f77edabd00eb534cee4829713db7ff2460ee9"
+ }
+}

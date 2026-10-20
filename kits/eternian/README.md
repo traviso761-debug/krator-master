@@ -2,7 +2,7 @@
 
 The building kit of **the Eternal State**, the civilization of the north-western lowlands (`LORE.md` §6.19). Catalog and
 core/tags culture **`eternian`** (registered 2026-10-20). The design is `PLAN.md`; the capital's arcology and the True
-Heirs' Sanctum are `kits/ancients/targets/coil` and `palace/BLUEPRINT.md`.
+Heirs' Sanctum are `kits/ancients/targets/sanctum` and `palace/BLUEPRINT.md`.
 
 ```
 cd kits/eternian && python3 build.py                 # dist/eternian.html, the kit sheet

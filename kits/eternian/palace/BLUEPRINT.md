@@ -17,10 +17,10 @@ electronic (the Ancients' terminals) and the sculptural, onyx screens and Gothic
 | File | What |
 |---|---|
 | this file | the study, the principles, the ladder by height, the gates' rites, the arches' program |
-| `kits/ancients/targets/coil/` | **built** (2026-10-20): `dist/coil.html`, the arcology as the Ancients built it (west) and as the Heirs keep it (east) |
-| `8aq0-coil-plan.js` | the host: the podium, the ridges and stairs, the six entrances, the three staircases and their arches and balconies, the crown, as records (`[G data]`, KRAND) |
-| `8aq1-coil-sanctum.js` | this blueprint's program as deltas by id: what each gate and arch is, the onyx, the tracery, the heads, the faces, the wall and moat, the colossus (`[G data]`) |
-| `test-coil.js` | the node test: determinism, ids, the volume against Plymouth's, thirty arches, the triangles, the flights' slopes, closed eyes |
+| `kits/ancients/targets/sanctum/` | **built** (2026-10-20): `dist/sanctum.html`, the arcology as the Ancients built it (west) and as the Heirs keep it (east) |
+| `8aq0-sanctum-plan.js` | the host: the podium, the ridges and stairs, the six entrances, the three staircases and their arches and balconies, the crown, as records (`[G data]`, KRAND) |
+| `8aq1-sanctum-kept.js` | this blueprint's program as deltas by id: what each gate and arch is, the onyx, the tracery, the heads, the faces, the wall and moat, the colossus (`[G data]`) |
+| `test-sanctum.js` | the node test: determinism, ids, the volume against Plymouth's, thirty arches, the triangles, the flights' slopes, closed eyes |
 
 Floor sheets (`floors/*.png` on `settlements/voth/palace/blueprint.py`) and a furniture manifest are the next step:
 they wait on the owner's reading of the ladder below.
@@ -82,6 +82,27 @@ Manchus over a Han bureaucracy, as the Heirs are over the Eternians. What it tea
 | levels 7-9 | nine arches: **the Palace of Tranquil Longevity**, the Withdrawn's: its gate, the Hall of the Withdrawn, their pavilions, the Sealed House (two arches blind behind pierced bronze), the Pavilion of the Last Light | the Palace of Tranquil Longevity; the house nobody names |
 | 660 | the crown: the lantern kept lit, and the **colossus**, a titanium face with its eyes closed, 44 m, looking south over the capital | (none: the Heirs' own) |
 
+## The suites of the Heirs (the owner, 2026-10-20)
+
+The Ancients built the drum for a hundred thousand: about **9 km² of floor** in 153 storeys of 4 m (45,000 m² a floor at
+400 m). The Heirs are 1,000 to 1,500, so most of that interior becomes **large suites of rooms, one to each Heir**, the
+private houses the arches and their courts front:
+
+- **A suite** is about 2,000 to 4,000 m² over two or three storeys of the Ancients' floors knocked through: an
+  antechamber where the proxies wait, an audience room behind an onyx screen, the Heir's own gallery of heads (the
+  lineage's dead and the Heir's own, carved at withdrawal), the visor room, a bedchamber, a bath, a library, a light court
+  cut down through the floors (the Ancients' atria, kept), and the rooms of the household that serves it (bondservants,
+  a clerk, a guard). 1,500 suites at about 3,000 m² take half the drum; the rest is the State's halls, the household,
+  the sealed Ancient floors and the stores.
+- **Where:** the lineage courts (levels 4-6) are each the front door of a cluster of suites of that metal, stacked in the
+  sector behind the arch's axis; the State's levels (1-3) hold the suites of the Heirs in office beside their halls; the
+  Withdrawn's (7-9) are sealed suites that open only inward, onto their own light courts. The great halls' staircases
+  are the court's streets between them; inside, the Ancients' lifts and the pneumatic tubes.
+- **On the plan:** the suites ring the drum's outer wall, where the windows are; the core is atria, lifts and the
+  Ancients' machinery. The floor sheets are the next step: one typical suite, the cluster behind a lineage arch, and a
+  Withdrawn suite, drawn on `settlements/voth/palace/blueprint.py` with the furniture manifest from the catalog's
+  Eternian court pieces (still to make: `kits/eternian/PLAN.md` §9).
+
 ## The six entrances and their rites
 
 The three great halls of the Forbidden City stand in a line on one terrace; here they stand in a triangle at the heads
@@ -130,7 +151,7 @@ circuit (a fifth of the balconies' runs), nothing replaced that could be kept.
 
 ## Open points
 
-- The arcology's name, the Ancients' and the Eternians' (the Coil is a working name), and the capital's site.
+- What the Ancients and the Eternians call the Sanctum (the owner's name for it, 2026-10-20), and the capital's site.
 - Floor sheets for the arches' halls and the podium's departments, and the furniture manifest (the catalog has no
   Eternian set yet: `kits/eternian/PLAN.md` §9).
 - `eternian` is not yet a culture in `core/tags` (the plan's P0): the Sanctum's records carry it and the audit counts

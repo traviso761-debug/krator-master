@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.268,
+    1.03
+   ],
+   "seam_before": [
+    3.751,
+    1.285
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.04,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.4,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.titanium",
+  "metal": 0.7,
+  "roughness": 0.35,
+  "scale": [
+   4,
+   4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "metal.titanium.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `metal.titanium` (brushed titanium plate, faint heat tint, large panel seams)",
+  "reuse": "the Sanctum's colossus and the Heirs' metal figures; any polished modern metal monument",
+  "sha1": "c3c30c3fd26c74cdf44fd18ae4d5866224f22597"
+ }
+}

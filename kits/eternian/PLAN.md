@@ -24,7 +24,7 @@ this kit follows (a culture kit forked from the Scyvoi engine, poor to court, ev
 | Page | `dist/eternian.html`: the kit sheet, every building in rows by tier, the statuary row, a mixed canal street, a court gallery over water, one Ancient host kept with its tracery infill |
 | Engine | *proposed*: the **Scyvoi engine, vendored** as `kits/islanders` and the nomad kits did (`python3 build.py --vendor-check` against `kits/scyvoi/src`), because it already carries tiers, trades, interiors, harbours and mines. The alternative is the catalog ASSET route `kits/beast-riders` took, right for a few buildings and wrong for fifty |
 | Registry | `ET.def` (one def per building, tags `culture:'eternian'`, `tier`, `style`, `role`, `job`); the statuary as defs too (`role:'statue'`), so the city builder places a head as it places a house |
-| The hosts | `kits/ancients` read in place, never copied: **the Coil** (`targets/coil`, the capital's arcology, built 2026-10-20 in place of Plymouth; its retrofit is `palace/BLUEPRINT.md`), the memorial set and the towers, in a new decay state **`kept`** (section 7) |
+| The hosts | `kits/ancients` read in place, never copied: **the Sanctum** (`targets/sanctum`, the capital's arcology, built 2026-10-20 in place of Plymouth; its retrofit is `palace/BLUEPRINT.md`), the memorial set and the towers, in a new decay state **`kept`** (section 7) |
 | Town | `core/city` on the site layer when the capital's page comes (section 8): the canal town on `alleys` and main streets, the ministries' quarter on `frontage-courts`, the court on the host |
 | Core | `core/rand`, `core/mask`, `core/tags` (the culture added to the vocab, `core/tags/52-core-tags-vocab.js`), `core/space`, `core/lod`, `core/host`, the shared sky; `core/furnish` with an `eternian` catalog set (section 9); `core/materials/record` through `materials.json` (section 10) |
 | Biome | `biomes/nwlowlands` read in place (Asian and Australian forms at 1.5x, sea pens, glow-willows) |
@@ -215,13 +215,13 @@ generator can make in a hundred variants where a smooth portrait is not.
   cyan strips alive on a fraction of runs (0.1 to 0.3, seeded), and **every lost glazed opening infilled with the bronze
   tracery module** holding alabaster. The state is implemented in this kit as a pass over an Ancients body's record (its
   opening list), not an edit to the Ancients kit.
-- **The capital's host is a new arcology, the Coil** (working name; the owner, 2026-10-20, in place of the proposed
+- **The capital's host is a new arcology, the Sanctum** (the owner's name, 2026-10-20, first called the Coil; in place of the proposed
   Plymouth): an Ancient live/work arcology of Plymouth's volume (45 Mm³) but 2.5 times its height, a tapering drum on a
   six-pointed podium, three great arches in a triangle at the heads of three of its six stairs and from each a
   staircase spiralling counterclockwise up to the next arch and balcony (thirty arches in all), small entrances at the
-  heads of the other three. Built in `kits/ancients/targets/coil` (`dist/coil.html`: as built, and as the Heirs
-  keep it). Its retrofit as the True Heirs' forbidden city, the Sanctum, is `palace/BLUEPRINT.md`: the Forbidden City
-  turned on end, height as rank. That retrofit is the first worked case of `kept`: `8aq1-coil-sanctum.js` is the Heirs'
+  heads of the other three. Built in `kits/ancients/targets/sanctum` (`dist/sanctum.html`: as built, and as the Heirs
+  keep it). Its retrofit as the True Heirs' forbidden city is `palace/BLUEPRINT.md`: the Forbidden City
+  turned on end, height as rank. That retrofit is the first worked case of `kept`: `8aq1-sanctum-kept.js` is the Heirs'
   deltas on the Ancients' records, and moves into this kit at P0. The ministries stand at its feet, the canal town
   spreads from it.
 - The memorial set and the towers appear as the kingdom's other seats in `kept` and as ruins in the countryside in the
@@ -236,7 +236,7 @@ polygon edge lies at px 226, which wants checking on the model. The capital's pa
 a name, on `core/city` and the site editor, on this kit's `ET.def`, with the hydraulics (canals as streets, the
 reservoir on the high side, the spillway faces) in the site layer. Its name in the Eternians' own mouth is open.
 
-What the page will need from the model before P5: the capital's point typed `city`, the Coil placed on it or an
+What the page will need from the model before P5: the capital's point typed `city`, the Sanctum placed on it or an
 arcology point beside it (its podium is 690 m across, its moat 790), the lake's shore and the river's course (the Farside river if the site is on Jimjam's lake), and
 the political polygon (the live model no longer has a Shining Kingdom polygon; the stale export's covered the whole
 quadrant).
@@ -271,7 +271,7 @@ written when the owner agrees the list.
 | P2 | the head generator (section 5): heads, figures, masks, the closed-eye count in the verify | a row of fifty seeded heads reads as fifty people and four metals |
 | P3 | dwellings, all tiers, and the mixed canal street | the owner's eye-level review of the street |
 | P4 | the State: ministries, registry, examination hall, gate, wall, the Clock, the tube station and pipe, the relic hall, the ancestor gallery, the talking head | the civic row reads; the Clock animates |
-| P5 | the hosts: the `kept` state and the tracery infill moved here from the Coil's Sanctum (built first, 2026-10-20: `palace/BLUEPRINT.md`) and put on two memorial bodies; the court pavilion and gallery over water | the host row reads at night with the cyan alive |
+| P5 | the hosts: the `kept` state and the tracery infill moved here from the Sanctum (built first, 2026-10-20: `palace/BLUEPRINT.md`) and put on two memorial bodies; the court pavilion and gallery over water | the host row reads at night with the cyan alive |
 | P6 | trade, hydraulics, harbour: the census trades, the kiln and tile works, canal, lock, bridge, spillway face, Farport's quays and factory quarter | `IS_TRADES` complete; the spillway face runs water |
 | P7 | the catalog culture file, the interiors set, the furnished cut-away; the Godot export check on the sheet (`core/export`); the gallery | the sheet exports and passes its Godot case; Krator Worlds carries the page |
 
@@ -281,7 +281,7 @@ theirs.
 **The first pass (the owner, 2026-10-20: "step 1 sounds good").** The kit ships in two passes. The first: the head
 generator and the closed-eye rule, the dwellings poor to court and the mixed canal street, the State (ministry,
 registry, gate and wall, the Clock, the ancestor gallery, the talking head), canal, lock and bridge, the kept host (the
-Coil's Sanctum, done first), and the trades that are Eternian (kiln, tile works, paper mill, printer, porcelain). The
+the Sanctum, done first), and the trades that are Eternian (kiln, tile works, paper mill, printer, porcelain). The
 second: the generic census trades, the reservoir and the dam faces (the capital's page places them), Farport's quays and
 factory quarter (with Farport's page), and the interiors and furniture. The neighbours: the **Yeti Kingdom** and the
 **cybernetics tribe** are kits of their own; the **dam-basin bandits** are a settlement on existing kits (Post-Apoc on
@@ -289,9 +289,11 @@ the port and Ring Sea kits' grounded hulls), not a culture.
 
 ## 12. Open questions for the owner
 
-1. **The engine:** the vendored Scyvoi engine (the Islanders precedent) or the catalog ASSET route? The draft assumes
-   the engine.
-2. **The capital's site and name:** Centrum or Fulcrum; the city's own name; the arcology's (the Coil is a working name).
+1. **The engine: settled** (the owner, 2026-10-20): the Islanders route, the Scyvoi engine vendored (P0 built on it),
+   because it ensures a complete set of trade buildings: like `IS_TRADES`, an `ET_TRADES` table lists every Voth census
+   trade and the defs that carry it (or `na` and why), and `verify.py --assert` `voth-trades` fails until each one has a
+   building. The table and the check go in with P1; the buildings fill it through P3 to P6.
+2. **The capital's site and name:** Centrum or Fulcrum; the city's own name; what the Eternians call the Sanctum.
 3. **`kept` as a new Ancients state** implemented in this kit as a pass over a body's record, or added to the Ancients
    kit itself for every build to use?
 4. **The closed-eye rule** (open-eyed heads under a tenth) and the ban on striding and armed statues: hold them as kit
