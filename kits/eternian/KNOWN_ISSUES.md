@@ -4,7 +4,15 @@
       closed-eyed face on black, green highlights) want an `eternian` pack and a closed-eyed-face symbol in
       `core/sockets/80-cultures.js` and `38-symbols.js` (the owner's sign, `patterns/eternian/sign`, is its banner cloth).
       A core change every build that takes core/sockets would rebuild for: with P4's banners.
-- [ ] **The mask over the door is the toolkit's few-plane stand-in** (`etMask`); the head generator (P2) replaces it.
+- [ ] **The Sanctum's kept page is over its per-type triangle guide** (`verify.py` `per-type-triangle-budget`: kept 417 k
+      against the 250 k "medium" guide, a warning; the run reads OK): the generator's heads are about 450 triangles to
+      the old stand-in's 190, some 85 k over the 322 heads. LOD culls them at a distance; a lower-detail head variant
+      for the far rings would win most of it back.
+- [ ] **The veils want a quality pass** (the owner, 2026-10-20): a veiled head is the head under a plain bronze cone
+      (`etHead` `veiled`; the Sanctum's `snVeil`, a half-sphere); a draped veil with folds falling to the plinth, the
+      face's planes faintly through it, would read as cloth over a person.
+- [ ] **A figure's hands are blocks**: `etFigureGeo`'s arms are square beams ending in a flat block, read at the
+      sheet's distance; a figure in a niche at eye level wants fingers or a sleeve's fold.
 - [ ] **The flutes are thin at a distance**: `etFlutes` draws half-round reeds of at most 0.16 m. The library's lime
       does not carry them either; a fluted-pier sheet would.
 - [ ] **The pier bundle's piers read faintly in brick at a distance**: the projection is 0.25 m and the brick set is fine;

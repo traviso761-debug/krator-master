@@ -19,12 +19,13 @@ const ET_STYLES={host:'host',court:'court',ministry:'ministry',common:'common',p
    are one key each with alternate takes: src/38-et-alt.js picks the take per placed instance */
 const SV_LIB={lime:'lime',block:'block',brick:'brick',stone:'stone',tile:'tile',celadon:'celadon',timber:'timber',planks:'planks',
  shutter:'shutter',paving:'paving',earth:'earth',reed:'reed',silt:'silt',iron:'iron',bronze:'bronze',verdigris:'verdigris',onyx:'onyx',
- gold:'gold',alabaster:'alabaster',screen:'screen',screenB:'screenB',maze:'maze',mazeB:'mazeB',mazeC:'mazeC',frieze:'frieze',sign:'sign'};
+ gold:'gold',alabaster:'alabaster',screen:'screen',screenB:'screenB',maze:'maze',mazeB:'mazeB',mazeC:'mazeC',frieze:'frieze',sign:'sign',
+ silver:'silver',gunmetal:'gunmetal',terracotta:'terracotta',lead:'lead',titanium:'titanium'};
 const SV_TILE0={lime:2.4,block:1.2,brick:1.2,stone:2.6,tile:1.2,celadon:1.2,timber:1.6,planks:2,shutter:1,paving:2,earth:3,reed:2,silt:1.6,
- iron:.8,bronze:.8,verdigris:1.2,onyx:1,gold:.8,alabaster:1,screen:2,screenB:2,maze:3,mazeB:3,mazeC:3,frieze:10,sign:1};
+ iron:.8,bronze:.8,verdigris:1.2,onyx:1,gold:.8,alabaster:1,screen:2,screenB:2,maze:3,mazeB:3,mazeC:3,frieze:10,sign:1,silver:.8,gunmetal:.8,terracotta:.6,lead:.6,titanium:4};
 const SV_CLOTH={flag:1,sign:1};
 const SV_CUT={lime:1,block:1,brick:1,stone:1,tile:1,celadon:1,timber:1,planks:1,shutter:1,reed:1,silt:1,iron:1,bronze:1,verdigris:1,onyx:1,
- gold:1,alabaster:1,screen:1,screenB:1,maze:1,mazeB:1,mazeC:1,frieze:1,sign:1,plain:1,brass:1,bone:1,glass:1,flag:1};
+ gold:1,alabaster:1,silver:1,gunmetal:1,terracotta:1,lead:1,titanium:1,screen:1,screenB:1,maze:1,mazeB:1,mazeC:1,frieze:1,sign:1,plain:1,brass:1,bone:1,glass:1,flag:1};
 const KIT_FALLBACK=[];
 /* is a sheet in the pack */
 const KIT_HAS=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);
@@ -36,6 +37,7 @@ const SVPAL={
  // the State's materials: pale brick, dark stone, celadon glaze, verdigris, pewter, bronze, gold (accent only), gunmetal
  brick:[0xd9cdb4,0xe8e0cc,0xd2c6ac],stoneD:[0x4a4a50,0x52525a,0x44444a],celadon:[0x8fb8a0,0x86b098,0x98c0a8],verdigris:[0x5e9c86,0x56947e],
  pewter:[0x8a8f96,0x82878e],bronze:[0x9c7a3c,0x94723a],gold:[0xd8b24a],gunmetal:[0x4a5058,0x444a52],alabaster:[0xefe7d6],
+ silver:[0xc9ccd2,0xc2c6cc],titanium:[0x9aa1a8],stoneH:[0xd8d0bf,0xccc4b2],
  // the kit colours (banners, awnings, flags): black, gold, green
  black:[0x141416],green:[0x3f8a5a,0x387e50],
  // timber, the poor's silt brick and reed, the masks' terracotta and lead

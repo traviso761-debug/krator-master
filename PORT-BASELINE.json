@@ -265,8 +265,8 @@
    "sha256": "47ce1e94455ddbb3c278d54a8df0ed360cafb6795cf1553f4d568666be17085b"
   },
   "kits/ancients/dist/sanctum.html": {
-   "bytes": 2598121,
-   "sha256": "f83c37069a02389b0ecd600dd0695896f7e194e9ef7ba6bfbac8cc75a80c1b39"
+   "bytes": 2607271,
+   "sha256": "7e68c85491a51cbc4796607f753faa7f922f85e61f7d3e8d1c3af317d8ef2977"
   },
   "kits/ancients/dist/skyi.html": {
    "bytes": 2487179,
@@ -337,8 +337,8 @@
    "sha256": "4e1983c2d0cac19e77829bf6022df019df76565d2ec7d42de26cef0091e07e03"
   },
   "kits/eternian/dist/eternian.html": {
-   "bytes": 841117,
-   "sha256": "9608f32a33fed22d1e0fe75458dfcf27203a614ba8f5196e0dce481091b824a1"
+   "bytes": 858493,
+   "sha256": "711fee2b3b1abf68e68ba12a91e6e6705ccc1278d6b688552c9721da03586e8d"
   },
   "kits/fauna/dist/fauna.html": {
    "bytes": 1191838,

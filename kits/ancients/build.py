@@ -113,6 +113,9 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
 TAGS_TARGETS = {'sanctum'}
 TAGS_CORE = INTERIOR_CORE[:4]
+# fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
+# (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
+TARGET_READS = {'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')]}
 # the furniture an intact Ancient building takes: the harvested registry (the ancient pieces) and the goods
 INTERIOR_FURN = ['generic-goods']
 
@@ -207,6 +210,7 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
     '8aq0-sanctum-plan.js', '8aq1-sanctum-kept.js', '8aq2-sanctum-skins.js',   # targets/sanctum: KRAND-hashed records, no rng()
+    '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
 }
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
@@ -375,7 +379,7 @@ def build_one(target, do_checks, assert_origin):
         order = sorted(order + extra)
     if target in TAGS_TARGETS:
         extra = []
-        for d, f in TAGS_CORE:
+        for d, f in TAGS_CORE + TARGET_READS.get(target, []):
             if f in bodies:
                 continue
             with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:

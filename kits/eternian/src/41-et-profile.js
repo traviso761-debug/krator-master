@@ -9,14 +9,14 @@
    n piers across a front w wide and d deep, stepping up toward the middle in organ-pipe ranks (Grundtvig's Church,
    Hallgrimskirkja): a pier `rank` places in from the ends stands h0 + rank*step; every other pier projects 0.25 m, so the
    bundle reads as piers and not as a stepped slab; each pier ends in two set-backs. o.niches cuts a dark niche under each
-   pier top for a figure (the head generator's, P2); o.spire puts a spire of that height on the middle, a pier-head base
+   pier top for a figure (the head generator's, P2: R.niches holds each niche's foot); o.spire puts a spire of that height on the middle, a pier-head base
    and a four-sided verdigris needle. Returns {top, spireTop, xs, tops} (the piers' centres and their tops). */
 function etPierBundle(o){o=o||{};const n=o.n||7,w=o.w||12,d=o.d||5,h0=o.h0==null?8:o.h0,st=o.step==null?1.6:o.step,mk=o.mk||'brick',col=o.col||P('brick');
- const pw=w/n,mid=(n-1)/2,R={xs:[],tops:[],top:0,spireTop:0};
+ const pw=w/n,mid=(n-1)/2,R={xs:[],tops:[],top:0,spireTop:0,niches:[],pw:pw};
  for(let i=0;i<n;i++){const rank=mid-Math.abs(i-mid),h=h0+rank*st,x=-w/2+pw*(i+.5),pj=i%2?.25:0,cap1=pw*.35,cap2=pw*.3;
   box(mk,x,0,pj/2,pw*.98,h,d+pj,col);
   box(mk,x,h,pj/2,pw*.8,cap1,d*.8+pj,col);box(mk,x,h+cap1,pj/2,pw*.55,cap2,d*.6+pj,col);
-  if(o.niches)box('stone',x,h-pw*1.5,(d+pj)/2+.005,pw*.52,pw*1.0,.04,P('stoneD'));
+  if(o.niches){box('stone',x,h-pw*1.5,(d+pj)/2+.005,pw*.52,pw*1.0,.04,P('stoneD'));R.niches.push([x,h-pw*1.5,(d+pj)/2]);}
   R.xs.push(x);R.tops.push(h+cap1+cap2);R.top=Math.max(R.top,h+cap1+cap2);}
  if(o.spire){const sb=pw*1.3,sh=o.spire;box(mk,0,R.top,0,sb,sh*.22,sb,col);
   cone(o.spireMk||'verdigris',0,R.top+sh*.22,0,sb*.66,sh*.78,o.spireCol||P('verdigris'),4);R.spireTop=R.top+sh;}

@@ -12,16 +12,7 @@ function etCutFloor(y){CUTC=[CUTC[0],CUTC[1],CUTC[2]+y,CUTC[3]];}
 /* the yaw that turns a piece at (x, z) to face (tx, tz) */
 function etFace(x,z,tx,tz){return Math.atan2((tx||0)-x,(tz||0)-z);}
 
-/* ---------------------------------------------------------------- the mask over the door
-   A face of a few planes, eyes closed (the household's dead: LORE.md 6.19), in terracotta or lead, s metres tall,
-   centred at (x, y, z) and facing +z. The court's heads are the head generator's (P2) */
-function etMask(x,y,z,s,col){const c=col||P('terracotta'),dk=new THREE.Color(c).multiplyScalar(.45);
- ellip('stone',x,y,z,s*.36,s*.5,s*.16,c,0,10);                                          /* the face */
- box('stone',x,y+s*.12,z+s*.1,s*.62,s*.09,s*.1,c);                                      /* the brow */
- box('stone',x,y-s*.16,z+s*.12,s*.12,s*.3,s*.12,c,0,-.25);                              /* the nose */
- for(const sx of [-1,1])box('plain',x+sx*s*.15,y+s*.02,z+s*.15,s*.18,s*.025,s*.02,dk);  /* the closed lids */
- box('plain',x,y-s*.3,z+s*.14,s*.2,s*.025,s*.02,dk);                                    /* the mouth */
- box('stone',x,y+s*.48,z-s*.02,s*.5,s*.08,s*.14,c);box('stone',x,y+s*.56,z-s*.02,s*.3,s*.07,s*.12,c);}   /* a stepped crown */
+/* the mask over the door is the statuary's (43-et-statue.js: etMask, from the head generator) */
 
 /* ---------------------------------------------------------------- the oculus: a ring window of radius r facing +z */
 function etOculus(x,y,z,r,o){o=o||{};ring(o.mk||'lime',x,y,z,r,r*.16,o.col||P('limeShade'));
@@ -35,7 +26,7 @@ function etStepHead(x,y,z,w,o){o=o||{};const c=o.col||P('limeShade'),n=o.steps==
 /* ---------------------------------------------------------------- a wall with openings
    L long, from y0 up h, mk/col its face, along x in the current frame, thickness ET_T about z=0 (its front at +ET_T/2).
    An opening {x, w, h, y (sill; a door's is 0), door, shut (shutters, default on a window), head ('step' | 'flat'),
-   mask (over a door), leaf (a door's colour)}. The surround is a raised band of lime; a window has its glass set back */
+   mask (over a door; maskMetal 'terracotta' or 'lead'), leaf (a door's colour)}. The surround is a raised band of lime; a window has its glass set back */
 function etWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||ET_T,fz=t/2;opens=(opens||[]).slice().sort((a,b)=>a.x-b.x);let x=-L/2;
  const seg=(a,b,ya,yb)=>{if(b-a>.01&&yb-ya>.01)box(mk,(a+b)/2,y0+ya,0,b-a,yb-ya,t,col);};
  const SY=q=>q.door?0:(q.y==null?.95:q.y),TOP=q=>Math.min(h,SY(q)+q.h);
@@ -56,7 +47,7 @@ function etWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||ET_T,fz=t/2;opens=(o
    for(let i=0;i<3;i++)box('timber',q.x,y0+.35+i*(top-.6)/3,.04,q.w-.3,.05,.03,new THREE.Color(q.leaf||P('timber')).multiplyScalar(.8));
    box('brass',q.x+q.w*.32,y0+1.0,.06,.05,.18,.04,P('bronze'));
    door(q.x,y0,fz,0,q.w);
-   if(q.mask!==false)etMask(q.x,y0+top+.62,fz+.12,.42,q.maskCol);}
+   if(q.mask!==false)etMask(q.x,y0+top+.62,fz+.1,.46,q.maskMetal);}
   else{/* the glass; a steel window's is dark and opaque, so its grid reads against it from the street */
    box(q.steel?'plain':'glass',q.x,y0+sy,-.04,q.w-.04,top-sy,.04,q.lit?P('glassLit'):q.steel?new THREE.Color(P('glass')).multiplyScalar(.8):P('glass'));
    if(q.steel){const ir=P('iron');                                                         /* Deco steel glazing: a fine grid */

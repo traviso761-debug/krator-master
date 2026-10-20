@@ -151,40 +151,22 @@ function snCellGeo(c){const g=new THREE.PlaneGeometry(1,1),uv=g.attributes.uv;
  for(let i=0;i<uv.count;i++)uv.setXY(i,(c%3+uv.getX(i))/3,(2-Math.floor(c/3)+uv.getY(i))/3);return g;}
 MAT.snFaceM=[];for(let c=0;c<9;c++)MAT.snFaceM.push(new THREE.MeshBasicMaterial({map:SN_FACE_SHEET||(c===SN_FACE_DERANGED?TEX.snFaceX:TEX.snFace[c%4]),side:DS}));
 
-// ---- the faceted head ----------------------------------------------------------------------------------------------
-// A face built from planes, the Deco-cubist head the brief chose because a generator can make a hundred of them:
-// ten rings from chin (y 0) to crown (y 1), fourteen points round, front at +z, the features pushed into the front
-// points (nose, brows, the CLOSED lids as flat planes, lips, chin), drawn flat-shaded so every plane reads. A stepped
-// Deco headdress (three blocks) sits on top. Scale [width, height, depth] in metres; the closed eyes are the default
-// and the rule (LORE.md §6.19: the city is mostly closed eyes).
-function snHeadGeo(){
- // rings: [y, half-width, half-depth]; points round at uneven angles so the face is a few broad planes: the front
- // ridge, the cheek plane, the side, the back corner, the back
- const R=[[0,.15,.17],[.1,.3,.30],[.22,.36,.36],[.34,.4,.4],[.46,.42,.41],[.56,.42,.42],[.68,.41,.41],[.82,.36,.37],[.93,.24,.27],[1,.05,.05]];
- const PH=[0,.5,1.25,2.1,Math.PI,2*Math.PI-2.1,2*Math.PI-1.25,2*Math.PI-.5],NP=PH.length,F={};
- const bump=(row,j,dz,dx)=>{const k=row+','+j;F[k]=F[k]||[0,0];F[k][0]+=dz;F[k][1]+=dx||0;};
- const both=(row,j,dz,dx)=>{bump(row,j,dz,dx);bump(row,NP-j,dz,dx);};
- bump(3,0,.2);bump(4,0,.12);bump(5,0,.05);                                       // the nose: a wedge, tip low
- bump(2,0,.02);both(2,1,-.04);bump(1,0,.06);                                      // the lips set back, the chin forward
- both(4,1,-.1);both(5,1,.06);both(6,1,.02);                                       // the closed lids: a deep flat plane under the brow
- both(3,1,.03,.04);both(3,2,0,.05);both(1,2,0,.04);                                // the cheekbones and the jaw's corner
- const P=[];for(let i=0;i<R.length;i++){const row=[];for(let j=0;j<NP;j++){const ph=PH[j],y=R[i][0],a=R[i][1],b=R[i][2]*(Math.cos(ph)<0?.92:1);
-  const f=F[i+','+j]||[0,0],sx=Math.sin(ph);row.push([(a+f[1])*sx,y,b*Math.cos(ph)+f[0]]);}P.push(row);}
- const pos=[];const tri=(a,b,c)=>pos.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]);
- for(let i=0;i<R.length-1;i++)for(let j=0;j<NP;j++){const a=P[i][j],b=P[i][(j+1)%NP],c=P[i+1][(j+1)%NP],e=P[i+1][j];tri(a,b,c);tri(a,c,e);}
- const bot=[0,0,0];for(let j=0;j<NP;j++)tri(bot,P[0][(j+1)%NP],P[0][j]);
- // the headdress: three stepped blocks behind the brow
- const box=(x0,x1,y0,y1,z0,z1)=>{const v=[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]];
-  for(const f of [[0,1,2,3],[5,4,7,6],[4,0,3,7],[1,5,6,2],[3,2,6,7],[4,5,1,0]]){tri(v[f[0]],v[f[1]],v[f[2]]);tri(v[f[0]],v[f[2]],v[f[3]]);}};
- box(-.34,.34,.86,.98,-.28,.2);box(-.24,.24,.98,1.1,-.22,.12);box(-.12,.12,1.1,1.2,-.16,.04);
- /* UVs projected from the front (x across, y up), so a library metal (the colossus's titanium) maps onto the planes */
- const uv=[];for(let i=0;i<pos.length;i+=3)uv.push(pos[i]+.5,pos[i+1]);
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
- g.computeVertexNormals();return g;}
+// ---- the faceted heads ----------------------------------------------------------------------------------------------
+// The Eternian kit's generator (kits/eternian/src/42-et-head.js, read in place by build.py: TARGET_READS): the Deco-
+// cubist head built from planes, the closed eyes the default and the rule (LORE.md 6.19: the city is mostly closed
+// eyes). SN_HEADS variants, each a seeded face with its own headdress (step, fan, ring, none in turn), instanced; a head
+// takes the variant its record's id hashes to (8aq3: snHeadKey). The neck's foot sits at y 0, the chin at .16, the crown
+// at 1.16 before the headdress. The colossus has its own (titanium, the stepped headdress); the ridges' face-stones are
+// mask shells (a flat back).
+const SN_HEADS=12,SN_HEAD_DRESS=['step','fan','ring','none'];
+function snGeoOf(G,lift){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(G.pos,3));
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(G.uv,2));if(lift)g.translate(0,lift,0);g.computeVertexNormals();return g;}
+function snHeadGeo(seed,o){return snGeoOf(etHeadGeo(etHeadParams(seed,o)),o&&o.mask?0:.16);}
 
 kdef('snBox',new THREE.BoxGeometry(1,1,1),MAT.snKit);
 kdef('snBar',new THREE.BoxGeometry(1,1,1),MAT.snMetal);
-kdef('snHead',snHeadGeo(),MAT.snMetal);
+for(let i=0;i<SN_HEADS;i++)kdef('snHead'+i,snHeadGeo(KRAND.hash(0x5a9c7,i),{headdress:SN_HEAD_DRESS[i%4]}),MAT.snMetal);
+kdef('snMask',snHeadGeo(KRAND.hash(0x5a9c7,99),{mask:true}),MAT.snMetal);
 kdef('snVeil',new THREE.SphereGeometry(1,10,6,0,TAU,0,Math.PI/2).scale(1,1,1),MAT.snMetal);
 kdef('snRoof4',new THREE.ConeGeometry(.7071,1,4,1).rotateY(Math.PI/4).translate(0,.5,0),MAT.snMetal);
 kdef('snDome',new THREE.SphereGeometry(1,20,8,0,TAU,0,Math.PI/2),MAT.snMetal);
@@ -193,4 +175,4 @@ kdef('snCyl',new THREE.CylinderGeometry(1,1,1,12).translate(0,.5,0),MAT.snKit);
 for(let c=0;c<9;c++)kdef('snFace'+c,SN_FACE_SHEET?snCellGeo(c):new THREE.PlaneGeometry(1,1),MAT.snFaceM[c]);
 kdef('snBanner',new THREE.PlaneGeometry(1,1).translate(0,-.5,0),MAT.snBanner);
 /* the colossus in titanium: its own head and shoulders, so the library metal maps once over 44 m */
-kdef('snHeadTi',snHeadGeo(),MAT.snTitan);kdef('snBoxTi',new THREE.BoxGeometry(1,1,1),MAT.snTitan);
+kdef('snHeadTi',snHeadGeo(KRAND.hash(0x5a9c7,44),{headdress:'step',long:.7,broad:.6}),MAT.snTitan);kdef('snBoxTi',new THREE.BoxGeometry(1,1,1),MAT.snTitan);

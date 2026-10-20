@@ -193,7 +193,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `monolith` | `89z-rows.js`, `91z-views.js` | 4 |
 | `plymouth` | `89z-rows.js`, `91z-views.js` | 6 |
 | `ring` | `89z-rows.js`, `91z-views.js` | 10 |
-| `sanctum` | `89z-rows.js`, `8aq0-sanctum-plan.js`, `8aq1-sanctum-kept.js`, `8aq2-sanctum-skins.js`, `8aq3-sanctum-draw.js`, `91z-views.js` | 77 |
+| `sanctum` | `89z-rows.js`, `8aq0-sanctum-plan.js`, `8aq1-sanctum-kept.js`, `8aq2-sanctum-skins.js`, `8aq3-sanctum-draw.js`, `91z-views.js` | 76 |
 | `skyi` | `89z-rows.js`, `91z-views.js` | 4 |
 | `skyj` | `89z-rows.js`, `91z-views.js` | 3 |
 | `skyk` | `89z-rows.js`, `91z-views.js` | 2 |

@@ -11,7 +11,9 @@ defBuilding({key:'et_sample_piers',name:'Profile: the stepped pier bundle',seed:
  build(o){const R=etPierBundle({n:9,w:14,d:5,h0:12,step:2,mk:'brick',col:P('brick'),spire:9,niches:true});
   etLancets(0,1.0,2.5+.27,{n:5,w:.9,h:6.2,step:.6,oculus:.7,light:'onyx',headCol:P('limeShade')});
   etMazeBand(0,10.2,2.5+.27,14,.7);
-  box('stone',0,0,0,15,.5,6.2,P('stoneD'));void R;}});
+  /* a faceted head in every niche, eyes closed, in the metals of rank across the bundle */
+  R.niches.forEach((q,i)=>etHead(q[0],q[1]+.04,q[2]-.25,R.pw*.62,{metal:['gunmetal','bronze','silver','gold'][Math.min(3,Math.min(i,R.niches.length-1-i))]}));
+  box('stone',0,0,0,15,.5,6.2,P('stoneD'));}});
 
 /* a ministry hall's wall: pale brick on a dark plinth, seven onyx lancets with their tracery grids, the face frieze under
    the cornice */
@@ -39,3 +41,29 @@ defBuilding({key:'et_sample_block',name:'Profile: cast pattern block',seed:7994,
  front:{x:0,z:.7,yaw:0},tags:{style:'common'},
  note:'a wall of cast pattern block, every other block pierced, on a stone footing under a lime coping',
  build(o){box('stone',0,0,0,6.6,.3,.6,P('stoneD'));etPatternBlock(6.4,2.4,.3,0,{s:.4});box('lime',0,2.72,0,6.6,.14,.5,P('limeShade'));}});
+
+/* the head generator (P2): fifty seeded heads on plinths, a row to each rank (gold, silver, bronze, gunmetal, and stone
+   for humans' ancestors); three with open eyes (the living: under a tenth) and three veiled. Fifty people, four metals */
+defBuilding({key:'et_sample_heads',name:'Statuary: fifty heads by rank',seed:7995,cls:'feature',kind:'sample',w:22,d:10,h:3.4,budget:120000,
+ front:{x:0,z:5,yaw:0},tags:{style:'court'},
+ note:'fifty faceted heads from the generator, ten to a rank (gold, silver, bronze, gunmetal, stone); three open-eyed, three veiled',
+ build(o){const M=['gold','silver','bronze','gunmetal','stone'],OPEN={7:1,23:1,41:1},VEIL={12:1,30:1,48:1};
+  box('stone',0,0,0,21.6,.15,9.6,P('paving'));
+  for(let r=0;r<5;r++)for(let c=0;c<10;c++){const i=r*10+c;
+   etHead(-9+c*2,.15,3.6-r*1.8,1.25,{metal:M[r],plinth:.9,eyes:OPEN[i]?'open':'closed',veiled:!!VEIL[i]});}}});
+
+/* the figures: the four poses (standing, seated, the ancestor holding up a door with arms spread, hands folded) in gold
+   and bronze; never striding, never armed */
+defBuilding({key:'et_sample_figures',name:'Statuary: figures in the four poses',seed:7996,cls:'feature',kind:'sample',w:18,d:3,h:4.4,budget:80000,
+ front:{x:0,z:1.5,yaw:0},tags:{style:'court'},
+ note:'eight faceted figures from the generator: standing, seated, holding a lintel, hands folded; gold and bronze',
+ build(o){const poses=['stand','seat','lintel','folded'];
+  for(let i=0;i<8;i++)etFigure(-7.7+i*2.2,0,0,3.2,{pose:poses[i%4],metal:i<4?'gold':'bronze',plinth:.6});
+  for(const lx of [-3.3,5.5])box('stone',lx,.6+3.2*1.18,0,3.2*.9,.28,.6,P('stoneD'));}});   /* the lintels the hands hold up (shY .8 + .38) */
+
+/* the masks over the canal town's doors: the household's dead in terracotta and in lead, eyes closed */
+defBuilding({key:'et_sample_masks',name:'Statuary: door masks',seed:7997,cls:'feature',kind:'sample',w:9,d:1.2,h:2.6,budget:40000,
+ front:{x:0,z:.6,yaw:0},tags:{style:'common'},
+ note:'eight door masks from the generator on a lime wall: terracotta and lead, eyes closed',
+ build(o){box('lime',0,0,0,8.6,2.4,.4,P('lime'));
+  for(let i=0;i<8;i++)etMask(-3.7+i*1.06,1.5,.3,.62,i%2?'lead':'terracotta');}});

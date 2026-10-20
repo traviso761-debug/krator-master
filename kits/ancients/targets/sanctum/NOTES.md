@@ -12,7 +12,7 @@ one seed: the same building.
 | `89z-rows.js` | [G data] | the site table: two rows, `sanctum` and `sanctum` |
 | `8aq0-sanctum-plan.js` | [G data] | `SANCTUM.plan()`: the podium, ridges, entrances, staircases, 27 arches and balconies, crown, as records with stable ids; `SANCTUM.dressIntact()`: the Ancients' gardens and people; `SANCTUM.apply()`: deltas by id |
 | `8aq1-sanctum-kept.js` | [G data] | `SANCTUM.sanctum()`: the Heirs' retrofit as deltas (the program of every gate and arch, onyx, tracery, heads, terminals, banners, wall, moat, pavilions, colossus). Moves to `kits/eternian` at its P0 |
-| `8aq2-sanctum-skins.js` | [draw] | procedural skins (KRAND), materials, the faceted head, kit items |
+| `8aq2-sanctum-skins.js` | [draw] | procedural skins (KRAND), materials, kit items; the faceted heads, twelve variants from the Eternian kit's generator (`kits/eternian/src/42-et-head.js`, read in place: `build.py` `TARGET_READS`) |
 | `8aq3-sanctum-draw.js` | [draw] | `buildSanctum`, `buildSanctumKept`: register every record in core/tags, then draw it |
 | `91z-views.js` | [G data] | the presets, derived from `SN_SITE` |
 | `test-sanctum.js` | | `node kits/ancients/targets/sanctum/test-sanctum.js` |
@@ -42,7 +42,9 @@ spandrels between the arch and that rectangle are filled by a fan.
   great three a triangle, every arch on the six axes, each level a triangle, 27 counterclockwise flights under 33
   degrees, every arch clearing the one above on its axis, deltas all landing on records, unique ids,
   finite positions, closed eyes, onyx in every hall of the State.
-- `python3 verify.py dist/sanctum.html --assert --views "The Sanctum"`: clean (2026-10-20), 31 draw calls, 0.25 M triangles.
+- `python3 verify.py dist/sanctum.html --assert --views "The Sanctum"`: OK (2026-10-20, with the Eternian heads), 54 draw
+  calls, 0.34 M triangles at the hero view; `kept/0` 417 k is OVER the 250 k per-type guide (a warning: the heads, about
+  450 triangles each, `kits/eternian/KNOWN_ISSUES.md`).
 - In the page: `window._sanctumSite.tags` is the core/tags audit. Its only unknown is `culture:eternian`, until the
   Eternian kit's P0 registers the culture.
 

@@ -45,4 +45,19 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
   Farport's page). `verify.py --assert` `voth-trades` and `tools/test_all.py` run the shared check; KNOWN_ISSUES.md lists
   the gaps; `node kits/eternian/tests/test-trades.js` checks each gap names its def and phase.
 
-Next: P2 (the head generator), P3 (the dwellings of every tier and the canal street). `PLAN.md` §11.
+## P2 (2026-10-20)
+
+- **The head generator** (`src/42-et-head.js`, [G data]): a faceted head from planes, its proportions (long, broad, aged,
+  soft), eyes (closed, the dead, by default; open, the living) and headdress (stepped, fan, ring, none) a pure function
+  of a KRAND seed; a mask mode (a face shell with a flat back); figures in four poses (standing, seated, holding a lintel,
+  hands folded), never striding, never armed. Plain arrays of numbers: a Godot importer reads the same.
+- **The statuary** (`src/43-et-statue.js`): `etHead`, `etFigure`, `etMask` draw from it in the metal of rank (gold,
+  silver, bronze, gunmetal; stone for humans' ancestors; terracotta or lead at the canal town's doors; titanium for a
+  colossus), each face seeded by a hash of where it stands, and noted on its building's record. The toolkit's stand-in
+  mask is gone; the pier bundle's niches carry heads.
+- **The sheet's statuary row:** fifty heads by rank (three open-eyed, three veiled), the figures in the four poses, the
+  door masks. `verify.py --assert` `closed-eyes`: open-eyed faces under a tenth (3 of 64).
+- **The Sanctum** (`kits/ancients/targets/sanctum`) reads the generator in place: twelve instanced variants, a head's
+  variant a hash of its record id, the colossus its own; the ridges' face-stones are mask shells.
+
+Next: P3 (the dwellings of every tier and the canal street). `PLAN.md` §11.

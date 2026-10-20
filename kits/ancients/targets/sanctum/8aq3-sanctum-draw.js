@@ -261,13 +261,15 @@ function snDraw(scene,gx,gz,P,K){KOFF=[gx,0,gz];
  const leafC=(u,f)=>new THREE.Color().setHSL(f?.30:.22+u*.1,f?.32:.38,f?.20:.26+u*.06);
  const SKIN=new THREE.Color(0xc9a17e),MASK=new THREE.Color(0xf2efe8);
  const H=(a)=>KRAND.unit(KRAND.hash(P.seed,401,a.id.length,a.at?Math.floor(a.at[0]*7+a.at[2]*13):0));
+ /* the head variant a record takes: a hash of its id (a pylon's head, which has none, of where it stands) */
+ const snHeadKey=a=>'snHead'+((a.id?KRAND.child(P.seed,a.id):KRAND.hash(P.seed,Math.round(a.at[0]),Math.round(a.at[2])))%SN_HEADS);
  const placeHead=a=>{const h=a.h,c=new THREE.Color(a.color),o=a.face;let y=a.at[1];
   if(a.plinth){kput('snBox',[a.at[0],y+a.plinth/2,a.at[2]],qFacing(o),[h*.62,a.plinth,h*.62],WHT);y+=a.plinth;}
   const ti=a.metal==='titanium';
   if(a.crown){kput(ti?'snBoxTi':'snBox',[a.at[0],y+h*.17,a.at[2]],qFacing(o),[h*1.25,h*.34,h*.6],ti?null:c);y+=h*.3;}
-  if(a.veiled){kput('snHead',[a.at[0],y,a.at[2]],qFacing(o),[h*.84,h,h*.92],c);
+  if(a.veiled){kput(snHeadKey(a),[a.at[0],y,a.at[2]],qFacing(o),[h*.84,h,h*.92],c);
    kput('snVeil',[a.at[0],y,a.at[2]],qFacing(o),[h*.48,h*1.16,h*.52],new THREE.Color(0x5e4a2c));return;}
-  kput(ti?'snHeadTi':'snHead',[a.at[0],y,a.at[2]],qFacing(o),[h*.84,h,h*.92*(a.relief||1)],ti?null:c);};
+  kput(ti?'snHeadTi':snHeadKey(a),[a.at[0],y,a.at[2]],qFacing(o),[h*.84,h,h*.92*(a.relief||1)],ti?null:c);};
  const B3=new THREE.Matrix4(),QQ=new THREE.Quaternion();
  for(const a of (P.add||[])){const k=a.kind;
   if(k==='head')placeHead(a);
@@ -282,7 +284,7 @@ function snDraw(scene,gx,gz,P,K){KOFF=[gx,0,gz];
   else if(k==='facestone'){const R=P.ridges[a.ridge],al=Math.atan2(R.yIn-R.yTip,(R.rTip-R.rIn)*(1-(R.sL||0))),u=SANCTUM.out(R.a);
    const n=new THREE.Vector3(Math.sin(al)*u[0],Math.cos(al),Math.sin(al)*u[2]),up=new THREE.Vector3(-Math.cos(al)*u[0],Math.sin(al),-Math.cos(al)*u[2]);
    const x=new THREE.Vector3().crossVectors(up,n);B3.makeBasis(x,up,n);QQ.setFromRotationMatrix(B3);
-   kput('snHead',[a.at[0]-up.x*a.h*.5,a.at[1]-up.y*a.h*.5,a.at[2]-up.z*a.h*.5],QQ.clone(),[a.w,a.h,a.w*.3],new THREE.Color(a.color));}
+   kput('snMask',[a.at[0]-up.x*a.h*.5,a.at[1]-up.y*a.h*.5,a.at[2]-up.z*a.h*.5],QQ.clone(),[a.w,a.h,a.w*.3],new THREE.Color(a.color));}
   else if(k==='pylons'){const R=P.ridges[a.ridge],u=SANCTUM.out(R.a),q=qFacing(u),hw=SANCTUM.ridgeHW(R,a.s)+5,c=new THREE.Color(a.metal==='gold'?SANCTUM.METAL.gold:SANCTUM.METAL.bronze);
    for(const sd of [-1,1]){const b=SANCTUM.ridgeAt(R,a.s,sd*hw,0);b[1]=0;
     kput('snBox',[b[0],a.h*.25,b[2]],q,[9,a.h*.5,9],WHT);kput('snBox',[b[0],a.h*.65,b[2]],q,[7,a.h*.3,7],WHT);

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 285 (11%) | 34 (1%) | 174 (6%) | 32 (1%) | 2158 (80%) |
+| KB | 285 (11%) | 34 (1%) | 174 (6%) | 32 (1%) | 2157 (80%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -213,8 +213,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/sanctum/89z-rows.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sanctum/8aq0-sanctum-plan.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sanctum/8aq1-sanctum-kept.js` | 14.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/sanctum/8aq2-sanctum-skins.js` | 16.7 | [draw] | 15 | 3 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/sanctum/8aq3-sanctum-draw.js` | 28.4 | [draw] | 19 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/sanctum/8aq2-sanctum-skins.js` | 15.0 | [draw] | 16 | 3 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/sanctum/8aq3-sanctum-draw.js` | 28.7 | [draw] | 19 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/sanctum/91z-views.js` | 2.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/sanctum/test-sanctum.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/skyi/89z-rows.js` | 0.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

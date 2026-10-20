@@ -14,9 +14,11 @@ Units are metres; x east, y up, z south. A def's local frame: origin on the grou
 | `37-wk-rec.js` | wk | walk records: every box a building draws is a core/walk floor or block (from `kits/islanders`) |
 | `28-et-mat.js` | | what the vendored `27-mat.js` does not know: the screens alpha-tested and two-sided, the onyx and alabaster glowing (their map as their emissive map) |
 | `38-et-alt.js` | | **alternates**: `ET_ALTS` (`screen`: screen, screenB; `maze`: maze, mazeB, mazeC), the take per placed instance (a KRAND hash of the def's seed, variant and place; it wraps `place` and `emit`, the engine untouched); `etAltOf(key, mk, x, z, v)` |
-| `40-et-kit.js` | et | the toolkit: `etWall(L, y0, h, mk, col, opens, o)`, `etWalls(w, d, y0, h, mk, col, {front, back, left, right})`, `etMask`, `etOculus`, `etStepHead`, `etFlutes`, `etParapet`, `etBlockScreen`, `etStair`, `etNoCut`, `etCutFloor`, `etFace`, `ET_T` |
+| `40-et-kit.js` | et | the toolkit: `etWall(L, y0, h, mk, col, opens, o)`, `etWalls(w, d, y0, h, mk, col, {front, back, left, right})`, `etOculus`, `etStepHead`, `etFlutes`, `etParapet`, `etBlockScreen`, `etStair`, `etNoCut`, `etCutFloor`, `etFace`, `ET_T` |
 | `41-et-profile.js` | et | the profile helpers: `etPierBundle({n, w, d, h0, step, mk, col, niches, spire})` -> `{top, spireTop, xs, tops}`; `etLancetPts`, `etLancetTop`, `etLancet(x, y, z, w, h, {light, tracery})`, `etLancets(x, y, z, {n, w, gap, h, step, oculus, light})`; `etTracery(x, y, z, w, h, {head: 'pointed' / 'stepped' / 'flat', mw, th})`; `etPatternBlock`; `etPoly` (an outline with UVs); `etBand(mk, x, y, z, L, h, col, aspect)`, `etMazeBand`, `etFrieze`, `etScreen`, `etBanner` |
-| `45-et-samples.js` | et | the P1 test row: `et_sample_piers`, `et_sample_lancets`, `et_sample_screens`, `et_sample_block` (class `feature`, kind `sample`) |
+| `42-et-head.js` | et | **the head generator** [G data]: `etHeadParams(seed, {long, broad, aged, soft, eyes, headdress, mask, neck})` (a KRAND seed; `eyes` 'closed' by default or 'open'; `headdress` 'step' / 'fan' / 'ring' / 'none'); `etHeadGeo(p)` -> `{pos, uv, eyes}` (a non-indexed triangle list: chin at y 0, a neck to -0.16 unless `neck: false`, crown at 1, face toward +z); `etFigureGeo({pose, seed, eyes, headdress})` (1 tall; pose 'stand' / 'seat' / 'lintel' / 'folded'); the triangle helpers `etTri`, `etQuad`, `etGBox`, `etGBeam`, `etGFrustum`. Read in place by `kits/ancients` (the Sanctum target) |
+| `43-et-statue.js` | et | **the statuary**: `etHead(x, y, z, h, {metal, eyes, headdress, veiled, seed, plinth, ry})` (neck's foot at y); `etFigure(x, y, z, h, {pose, metal, eyes, plinth, ry})`; `etMask(x, y, z, s, 'terracotta' / 'lead')` (centred, facing +z); `etSeedAt(x, y, z, salt)` (a KRAND hash of the world position); `etEmitGeo`; `etMetalCol`; `ET_METALS`. Each pushes `{kind, metal, eyes, veiled, pose}` onto the building record's `heads` (the `closed-eyes` assert) |
+| `45-et-samples.js` | et | the test rows: P1's `et_sample_piers` (a head in every niche), `et_sample_lancets`, `et_sample_screens`, `et_sample_block`; P2's `et_sample_heads` (fifty by rank), `et_sample_figures` (the four poses), `et_sample_masks` (class `feature`, kind `sample`) |
 | `50-et-dwell.js` | et | the dwellings: `et_canal_house` |
 | `68-et-trades.js` | et | `ET_TRADES` (the 44 Voth census trades in the repo's shape, `tools/check_trades.py`: `keys`, `gap` (here 'to build in Pn: et_key'), `na`; `voth` the Voth building), `etDims(DEFS, FAMILIES)` (a city layout's `kit.dims`). [G data] |
 | `89-rows.js` | | `FAMILIES`: the sheet's rows |
@@ -24,7 +26,7 @@ Units are metres; x east, y up, z south. A def's local frame: origin on the grou
 
 ## Openings (`etWall`)
 
-`{x, w, h, y, door, shut, steel, head, mask, maskCol, leaf, lit, gap}`: `y` the sill (a door's is 0); a door gets a
+`{x, w, h, y, door, shut, steel, head, mask, maskMetal, leaf, lit, gap}`: `y` the sill (a door's is 0); a door gets a
 timber leaf, a `door()` record and the household's mask over it (`mask: false` for none); a window gets a lime surround,
 a sill, a stepped Deco head (`head: 'flat'` for none), its glass and louvred shutters (`shut: false` for none, `steel`
 for Deco steel glazing: a dark pane behind an iron grid); `gap` is a plain opening (a bay opening off the room).
