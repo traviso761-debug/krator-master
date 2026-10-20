@@ -4,10 +4,10 @@
  "size": 512,
  "families": {
   "ground.litter": {
-   "lib": "leaf.forest_leaves_02",
+   "lib": "leaf.scatteredleaves008",
    "scale": [
-    3.0,
-    3.0
+    2.0,
+    2.0
    ],
    "tint": {
     "keep": 1.0,

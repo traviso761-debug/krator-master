@@ -521,6 +521,67 @@
     0.3333
    ],
    "size": 512
+  },
+  "hang1": {
+   "lib": "card.vine.hanging.8",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.694
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "own": true
+  },
+  "fungus": {
+   "lib": "organic.fungus.bracket",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "mapOnly": true,
+   "roughLift": 0.3,
+   "own": true
+  },
+  "lobeleaf": {
+   "lib": "card.leaf.wave",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512
+  },
+  "croton": {
+   "lib": "card.leaf.redvein",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "size": 512
   }
  }
 }

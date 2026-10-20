@@ -35,26 +35,26 @@
    "files": {
     "map": "bark.aspen.albedo.webp"
    },
-   "lib": "bark.ghostwood",
+   "lib": "bark.birch.b",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
    "scale": [
-    1.4,
+    1.5,
     2.4
    ],
    "size": 512,
    "source": {
-    "albedo": "961bf086ae4afede561aa9eed0378ca7505852bd",
-    "normal": "613c7d436b7d2d2db02872544a7f167806c96a3f",
-    "roughness": "6c511dd52b8de70763bf68e4e2727123f89b096f"
+    "albedo": "6f4ffeb9b934b9cf298b412a343b065619556788",
+    "normal": "e178b6a9b55d2312efec8d14c3000503d87f21e8",
+    "roughness": "e2319efd2bf2b115ef511c969e0ebc4274f86fb7"
    },
    "specular": 0.25,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.6,
-    "sourceMean": 0.7076
+    "sourceMean": 0.7353
    }
   },
   "bark.juniper": {

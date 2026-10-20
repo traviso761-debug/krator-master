@@ -355,26 +355,26 @@
    "files": {
     "map": "ground.litter.albedo.webp"
    },
-   "lib": "leaf.forest_leaves_02",
+   "lib": "leaf.scatteredleaves008",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.35,
    "scale": [
-    3.0,
-    3.0
+    2.0,
+    2.0
    ],
    "size": 512,
    "source": {
-    "albedo": "0acce2f3f5af8f620eae8e11be418a6478461d89",
-    "normal": "d9aa224fd2d9b70e90aad7bdca9aea47cc07235b",
-    "roughness": "f9a1aa86ef0302c6601cf8e2276a5a84a1bd62a8"
+    "albedo": "3552de99bd4e02e2741d3825946993cae1968767",
+    "normal": "e21e0ed0341960a6ecdcc2612f20bf5d68afc3d0",
+    "roughness": "8ec5301ab91d6842a46729272c236d09a350c565"
    },
    "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.44890897729911056,
-    "sourceMean": 0.4489
+    "mean": 0.4982587791801901,
+    "sourceMean": 0.4983
    }
   },
   "ground.sand": {
