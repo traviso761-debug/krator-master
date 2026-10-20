@@ -96,7 +96,8 @@ function KCharFigure(body, sliders, load){
       if(cl) cl.meshes.push(m);
       if(part.role === 'armour' && (part.slot === 'torso' || part.slot === 'legs')){
         var it0 = itemByKey[part.key] || {};
-        m.userData.pad = pushOut(m.material, it0.loose && part.slot === 'torso' ? PAD_TOP : 0, !!it0.loose, part.slot === 'legs');
+        var slot0 = it0.over || part.slot;      // pteruges push as the top they hang over does
+        m.userData.pad = pushOut(m.material, it0.loose && slot0 === 'torso' ? PAD_TOP : 0, !!it0.loose, slot0 === 'legs');
       } else if(part.role === 'armour' && part.slot === 'feet') pushOut(m.material, 0, false, false, true);   // boots: the squeeze only
       self.inner.add(m);
       live[id] = m;
@@ -524,7 +525,8 @@ function KCharFigure(body, sliders, load){
     });
     // a layer within its slot's: whatever hangs from the legs lies under whatever hangs from the torso, which lies under
     // the head's (a breechcloth under a shirt's skirt: both were layer 1, so neither stayed outside the other)
-    var rank = 3 * (SLOT_RANK[it.slot] || 0);
+    // (an item worn over a higher slot's under-layers ranks with it: kit item over, tools/layers.py OVER: pteruges)
+    var rank = 3 * (SLOT_RANK[it.over || it.slot] || 0);
     c.parts.forEach(function(pt){ pt.chains.forEach(function(g){ c.chains[g].stiff = pt.stiff; c.chains[g].layer = rank + (pt.layer || 0); }); });
     clothItems[part.key] = c;
     return c;

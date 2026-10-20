@@ -23,6 +23,7 @@ from bl_ext.user_default.mpfb.entities.meshcrossref import MeshCrossRef
 from bl_ext.user_default.mpfb.entities.objectproperties import GeneralObjectProperties
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import arms2                                          # where a second pair of arms hangs (tools/mods.py makes them)
+import layers                                         # what lies over what (the settle below, the kit, ease.py)
 
 ARGS = sys.argv[sys.argv.index('--') + 1:]
 BODY = ARGS[0]
@@ -699,8 +700,71 @@ def cloth_spec(p, offset, slot):
             'layer': p.cloth.get('layer', 1 if slot == 'torso' else 2 if slot == 'head' else 0), 'chains': chains}
 
 
+GAP = 0.006            # a garment stands at least this far outside what is worn under it (settle)
+REACH = 0.02           # over the same spot: body points this near
+
+
+def settle(gid, parts, slot):
+    """HANDOFF-CLOTHING.md 1.3, at build time: each of the garment's vertices out along the skin's normal to GAP past
+    the highest vertex of any lower layer worn with it in an outfit (layers.py: data/peoples.json, 3 x the slot's rank
+    plus the part's layer) over the same spot of the body. Garments built apart had their own eases, and a pair met:
+    trousers' seats at 1.6 cm over the hips, the tunic over them at 1.4 (tools/ease.py). The pushes are spread over
+    each part's grid so the cloth rises smoothly. Every garment leaves its vertices and layers (<gid>.layers.npz) for
+    the ones built over it, in this run or a later --only one"""
+    from mathutils.kdtree import KDTree
+    lay = lambda p: 3 * layers.rank(gid, slot) + (p.cloth.get('layer', layers.PART_LAYER[slot]) if p.cloth else layers.PART_LAYER[slot])
+    if slot in layers.RANK:
+        under = []
+        for other in layers.worn_with(gid, BODY):
+            fn = os.path.join(OUT, other, other + '.layers.npz')
+            if os.path.exists(fn):
+                z = np.load(fn)
+                under.append((z['P'], z['L']))
+        if under:
+            UP = np.concatenate([u[0] for u in under]); UL = np.concatenate([u[1] for u in under])
+            loc = np.zeros_like(UP); h = np.zeros(len(UP))
+            for k, q in enumerate(UP):
+                a, n = nearest(q)
+                loc[k] = a; h[k] = (q - a).dot(n)
+            kd = KDTree(len(UP))
+            for k in range(len(UP)):
+                if h[k] < 0.25:
+                    kd.insert(Vector(loc[k]), k)
+            kd.balance()
+            moved, dmax = 0, 0.0
+            for p in parts:
+                L = lay(p)
+                R, C = p.P.shape[:2]
+                D = np.zeros((R, C)); Nn = np.zeros((R, C, 3))
+                for i in range(R):
+                    for j in range(C):
+                        a, n = nearest(p.P[i, j])
+                        hv = (p.P[i, j] - a).dot(n)
+                        Nn[i, j] = n
+                        if hv > 0.25:
+                            continue
+                        hu = max([h[k] for _, k, _ in kd.find_range(Vector(a), REACH) if UL[k] < L], default=None)
+                        if hu is not None and hv < hu + GAP:
+                            D[i, j] = hu + GAP - hv
+                if not D.any():
+                    continue
+                for _ in range(3):          # spread: each push at least 0.7 of its neighbours' mean
+                    Pd = np.pad(D, ((1, 1), (0, 0)), mode='edge')
+                    nb = (Pd[:-2] + Pd[2:] + (np.roll(D, 1, 1) + np.roll(D, -1, 1) if p.closed else
+                                               np.pad(D, ((0, 0), (1, 1)), mode='edge')[:, :-2] + np.pad(D, ((0, 0), (1, 1)), mode='edge')[:, 2:])) / 4
+                    D = np.maximum(D, 0.7 * nb)
+                moved += int((D > 1e-4).sum()); dmax = max(dmax, float(D.max()))
+                p.P = p.P + Nn * D[..., None]
+            print('SETTLE', gid, 'over', len(under), 'items:', moved, 'vertices out, max %.1f cm' % (100 * dmax))
+    P = np.concatenate([p.P.reshape(-1, 3) for p in parts])
+    L = np.concatenate([np.full(p.P.shape[0] * p.P.shape[1], lay(p) if slot in layers.RANK else -1) for p in parts])
+    os.makedirs(os.path.join(OUT, gid), exist_ok=True)
+    np.savez(os.path.join(OUT, gid, gid + '.layers.npz'), P=P, L=L)
+
+
 def build(gid, label, parts, slot='torso'):
     """the parts as one mesh with UVs (one texture strip each), its texture and material, and the .mhclo"""
+    settle(gid, parts, slot)
     me = bpy.data.meshes.new(gid)
     bm = bmesh.new()
     uvl = bm.loops.layers.uv.new('UVMap')
@@ -1791,7 +1855,9 @@ for b, sex in (('male', 'm'), ('female', 'f')):
                  [B('top', 0.0, 0.02, 'solid', 'bronze'), B('bottom', 0.0, 0.02, 'solid', 'bronze')])
         plates = P('nacre', 0.02, [B('top', 0.02 + 0.04 * k, 0.035 + 0.04 * k, 'solid', 'ribgreen') for k in range(5)])
         cloak = P('deepsea', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'bronze'), B('bottom', 0.02, 0.07, 'wave', 'slateblue', 'deepsea', 0.08)])
-        return [torso_tube(gid + '_tunic', TOP, CROTCH - 0.12, 0.012, tunic, hang_from=WAIST - 0.03, flare=0.14, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+        # the tunic's skirt at layer 0: the pteruges (layers.OVER: worn over the torso, at 1) hang over it, the cloak (2) over both
+        return [torso_tube(gid + '_tunic', TOP, CROTCH - 0.12, 0.012, tunic, hang_from=WAIST - 0.03, flare=0.14, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02,
+                           layer=0),
                 torso_tube(gid, TOP - 0.01, WAIST - 0.05, 0.03, ribs, hull_from=CHEST + 0.02, rows=12),
                 pauldron(gid + '_plateL', L, plates, reach=0.5, ease=0.036), pauldron(gid + '_plateR', R, plates, reach=0.5, ease=0.036),
                 cape(gid + '_cloak', CROTCH - 0.05, cloak, flare=0.2, span=1.2, ease=0.04, top=TOP - 0.03)] + \
@@ -1802,7 +1868,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         p = P('leather', 0.03, [B('top', 0.0, 0.03, 'solid', 'bronze'), B('top', 0.03, 0.4, 'rays', 'bronze', 'leather', 0.05),
                                 B('bottom', 0.0, 0.02, 'solid', 'bronze')])
         return [torso_tube('hykk_%s_trade_pteruges' % sex, WAIST - 0.03, CROTCH - 0.16, 0.034, p, hang_from=CROTCH + 0.06, flare=0.2, group_below=CROTCH + 0.04,
-                           rows=12, hull_from=WAIST)]
+                           rows=12, hull_from=WAIST, layer=1)]
     GARMENTS['hykk_%s_trade_pteruges' % sex] = ('legs', b, 'Strip skirt', _hpter)
 
     def _hgreave(sex=sex):
@@ -2479,7 +2545,8 @@ if not os.path.exists(cache) or not os.listdir(cache):
     os.makedirs(cache, exist_ok=True)
     MeshCrossRef(base, after_modifiers=False, build_faces_by_group_reference=True, cache_dir=cache, write_cache=True, read_cache=False)
 made = {}
-for gid, (slot, body, label, fn) in GARMENTS.items():
+# under-layers first, so each garment settles over the ones built in this run (settle)
+for gid, (slot, body, label, fn) in sorted(GARMENTS.items(), key=lambda kv: layers.rank(kv[0], kv[1][0]) if kv[1][0] in layers.RANK else -1):
     if body != BODY or (ONLY and gid not in ONLY): continue
     o = build(gid, label, fn(), slot)
     if o: made[gid] = {'slot': slot, 'label': label}

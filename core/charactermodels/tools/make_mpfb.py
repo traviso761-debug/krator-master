@@ -23,6 +23,7 @@ from scipy.spatial import cKDTree
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import decimate
 import giant
+import layers
 import glbio
 import mods
 import make_pieces as mp
@@ -1168,6 +1169,8 @@ def main():
             entry['culture'] = culture_of(it['id']) if it['id'].startswith(giant.PREFIX) else 'giants'
         if it['id'] in COVERS_HAIR:
             entry['covers_hair'] = True
+        if it['id'] in layers.OVER:
+            entry['over'] = layers.OVER[it['id']]    # its cloth ranks with that slot's (SLOT_RANK in 50-figure.js)
         if it['slot'] == 'torso' and encloses(c, os.path.join(pieces, it['id'] + '.glb')):
             entry['tucks'] = True          # closed round the waist: a waistband under it is drawn in (KCHAR tuck)
         if (it['id'] in LOOSE or hangs(it)) and it['id'] not in FLAPS:

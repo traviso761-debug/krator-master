@@ -905,7 +905,8 @@ func _cloth_of(part: Dictionary) -> Dictionary:
 			rec["tip"] = tb
 		c["chains"].append(rec)
 	# a layer within its slot's: a legs item's chains under a torso item's, under a head item's (as clothOf in 50-figure.js)
-	var rank: int = 3 * int(SLOT_RANK.get(it.get("slot", ""), 0))
+	# (an item worn over a higher slot's under-layers ranks with it: kit item over, pteruges)
+	var rank: int = 3 * int(SLOT_RANK.get(it.get("over", it.get("slot", "")), 0))
 	for pt in c["parts"]:
 		for g in pt["chains"]:
 			c["chains"][int(g)]["stiff"] = float(pt["stiff"])
@@ -1413,11 +1414,15 @@ func _layered(c: Dictionary, items: Array) -> void:
 var _push_mats := []
 
 
-func _is_loose(part: Dictionary) -> bool:
+func _item_of(part: Dictionary) -> Dictionary:
 	for x in kit["items"]:
 		if "pieces/%s.glb" % part["key"] == x["glb"]:
-			return x.get("loose", false)
-	return false
+			return x
+	return {}
+
+
+func _is_loose(part: Dictionary) -> bool:
+	return _item_of(part).get("loose", false)
 
 
 # a top or trousers as kchar_push.gdshader: the imported material's look, and the push and tuck (pushOut in 50-figure.js)
@@ -1448,12 +1453,13 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	# a loose top pushes 2 cm further, so a robe's hem lies over the skirt it covers, and 3.5 cm more over trousers
 	# (PAD_TOP, PAD_OVER in 50-figure.js)
 	var pad := 0.0
-	if loose and part["slot"] == "torso":
+	var slot0: String = _item_of(part).get("over", part["slot"])     # pteruges push as the top they hang over does
+	if loose and slot0 == "torso":
 		pad = 0.02 + (0.035 if legs != null and not legs.get("loose", false) else 0.0)
 	pm.set_shader_parameter("kcP", pad)
-	pm.set_shader_parameter("kcT", TUCK if part["slot"] == "legs" and top != null and top.get("tucks", false) else 0.0)
+	pm.set_shader_parameter("kcT", TUCK if slot0 == "legs" and top != null and top.get("tucks", false) else 0.0)
 	# trousers under a loose top that reaches below the knees are drawn in to the legs (SQUEEZE in 50-figure.js)
-	var squeeze: bool = part["slot"] == "legs" and top != null and top.get("loose", false) and top.get("long", false) \
+	var squeeze: bool = slot0 == "legs" and top != null and top.get("loose", false) and top.get("long", false) \
 		and legs != null and not legs.get("loose", false)
 	# boots under one, whatever the legs wear (SQUEEZE_FEET)
 	var long_top: bool = top != null and top.get("loose", false) and top.get("long", false)
