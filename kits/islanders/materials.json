@@ -796,6 +796,104 @@
    },
    "roughLift": 0.35,
    "specular": 0.15
+  },
+  "shingle": {
+   "lib": "roof.shingle",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.74,
+    "contrast": 1.0
+   },
+   "roughLift": 0.4,
+   "specular": 0.12
+  },
+  "ceramic": {
+   "lib": "roof.ceramic_roof_01",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.74,
+    "contrast": 1.0
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "ropeT": {
+   "lib": "fibre.rope.twist",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.78,
+    "contrast": 1.0
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "tarredB": {
+   "lib": "wood.tarred.b",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.78,
+    "contrast": 1.0
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "softwood": {
+   "lib": "wood.softwood",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.78,
+    "contrast": 1.0
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "rattan": {
+   "lib": "fibre.rattan",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.78,
+    "contrast": 1.0
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
+  },
+  "clayBlock": {
+   "lib": "plaster.clay_block_wall",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.78,
+    "contrast": 1.0
+   },
+   "roughLift": 0.35,
+   "specular": 0.15
   }
  }
 }

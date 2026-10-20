@@ -687,7 +687,7 @@ VC.intDecor = function (P, look, add, lamps) {
      from the ceiling (the banquet hall), ornamental screens, candle nooks; torches round every state room */
   var SU = P.suite;
   if (SU && VC.SUITES[cn]) {
-    var statueM = VC.intSetMat(look.statueSet || 'int_stone', look.statueSet === 'int_gilt' ? { metal: 0.85, rough: 0.32 } : {}), cStatue = col(look.statue || 0xcfc3ad), stoneM = VC.intSetMat('int_stone'), cStone = col(0xa89a84), gilt = VC.intSetMat('int_gilt', { metal: 0.85, rough: 0.3 }), cGilt = col(look.gilt || 0xc9a227);
+    var statueM = VC.intSetMat(look.statueSet === 'int_gilt' ? 'int_scale' : look.statueSet || 'int_stone', look.statueSet === 'int_gilt' ? { metal: 0.85, rough: 0.32 } : {}), cStatue = col(look.statue || 0xcfc3ad), stoneM = VC.intSetMat('int_stone'), cStone = col(0xa89a84), gilt = VC.intSetMat('int_gilt', { metal: 0.85, rough: 0.3 }), cGilt = col(look.gilt || 0xc9a227);
     var wallM2 = VC.intSetMat(look.wallSet), cWall = col(look.wall), ceilM2 = VC.intSetMat(look.ceilSet, { emissive: 0x3a2e20 }), cCeil = col(look.ceil), floorM2 = VC.intSetMat(look.floorSet), cStep = col(look.step), silk = VC.intSheetMat(look.screen || 'screen_lattice'), cSilk = col(0xf2e8d2), rugM = VC.intSheetMat('int_rug'), cRug = col(look.rug);
     var X = new THREE.Vector3(1, 0, 0), qy = new THREE.Quaternion(), qx = new THREE.Quaternion();
     var doorsNear = function (x, z, r) { return (SU.doors || []).some(function (d) { return Math.hypot(d.x - x, d.z - z) < r; }) || (SU.exits || []).some(function (d) { return Math.hypot(d.x - x, d.z - z) < r + 5; }) || P.rooms.some(function (q) { return q.door && Math.hypot(q.door.x - x, q.door.z - z) < r; }); };

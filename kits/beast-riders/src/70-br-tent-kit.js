@@ -321,7 +321,10 @@ function brtDrumSurf(cx, cz, r) {
         door { w, h (to the arch's spring), rise }, awnings [{ a (angle from the front), w, d }], pennants (true),
         ladders [angles from the front], guys (true), mast (metres over the roof, 0 none), floor (colour),
         centre (true: a centre pole inside) }  */
+/* the pavilions' canvas: one of the library's cloths per asset, by a core/rand draw of its seed and variant (materials.json: canvas, canvasB, linen, denim) */
+function brtCanvasOf(F) { return brtPick(F, ['canvas/cloth', 'canvas/cloth', 'canvasB/cloth', 'linen/cloth', 'denim/cloth'], 0xca7); }
 function brtBarrel(F, B, o) {
+  const BRT_CANVAS = brtCanvasOf(F);
   const cx = (o.cx == null ? 0 : o.cx), cz = (o.cz == null ? 0 : o.cz), n = (o.n == null ? 12 : o.n), r1 = o.r1, h1 = o.h1, hs = o.hs == null ? 0.9 : o.hs, r2 = o.r2, h2 = o.h2 == null ? 1.4 : o.h2;
   const front = o.front == null ? BRT_FRONT : o.front, D = Math.PI * 2 / n, P = o.panels || [BRTN.orange[0], BRTN.orange[1]];
   const U = o.upper || [BRTN.orange[2], BRTN.orange[0]], band = o.band || {}, y2 = h1 + hs, yT = y2 + h2;
@@ -418,6 +421,7 @@ function brtBarrel(F, B, o) {
 /* a striped awning off a drum of radius r at angle a: its inner edge on the drum at height y, `d` out and 0.55 m lower,
    `w` wide, in red and cream stripes, a row of hanging diamonds along its edge, two poles with finials, two guys */
 function brtAwning(F, B, cx, cz, r, a, y, w, d, k) {
+  const BRT_CANVAS = brtPick(F, ['canvas/cloth', 'canvasB/cloth', 'linen/cloth', 'denim/cloth', 'jacquard/cloth'], 0xca8, k);   /* an awning may be the red jacquard hanging */
   const ca = Math.cos(a), sa = Math.sin(a), tx = -sa, tz = ca, yo = y - 0.55;
   const P = function (s, out, yy) { return [cx + ca * (r + 0.1 + out) + tx * s, yy, cz + sa * (r + 0.1 + out) + tz * s]; };
   const nS = Math.max(3, Math.round(w / 0.42));

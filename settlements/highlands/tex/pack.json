@@ -761,7 +761,7 @@
     "normalMap": "shingle.normal.webp",
     "roughnessMap": "shingle.rough.webp"
    },
-   "lib": "roof.shingle.neutral",
+   "lib": "roof.shingle",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -771,16 +771,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "2e4595107e0ed58e8929be54384dd77342a86ca7",
+    "albedo": "b18b990449c071e333df2411eb8e480acadcb439",
     "normal": "41d3aae75ede8f6b9f20f5f7655928fa322c8f5d",
     "roughness": "dd07121049f9cb4514a0f3e1f76dceabe2f8fc2e"
    },
    "specular": 0.3,
    "tint": {
     "contrast": 1.0,
-    "keep": 0.0,
+    "keep": 0.25,
     "mean": 0.6,
-    "sourceMean": 0.6493
+    "sourceMean": 0.3639
    }
   },
   "stone": {

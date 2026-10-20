@@ -41,7 +41,9 @@ let GSTAT={tris:0};
 /* core/sockets' needs: a canvas texture, and a decal (a plane of a canvas material, its UVs once across) */
 function canvasTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=TEXANISO;return t;}
 function decal(mk,x,y,z,w,h,ry,rx,rz){const m=TF(x,y,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,1));emit(mk,gplane(),m,null,{su:1,sv:1});}
-function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
+/* a building's other materials (materials.json: toron, clayBlock): MAT_ALT is a hash of its seed, variant and place (36-def.js); the key's list is indexed by it, the first entry the usual material (repeats weight it) */
+let MAT_ALT=0;const MAT_VAR={log:['log','log','toron'],plaster:['plaster','plaster','clayBlock']};
+function emit(mk,geo,lm,col,uvm){if(MAT_ALT&&MAT_VAR[mk]){const v=MAT_VAR[mk];mk=v[MAT_ALT%v.length];}_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
  if(!b.f&&ZJ_CLOTH[mk])b.f=[];if(!b.k&&ZJ_CUT[mk])b.k=[];if(!b.w&&mk==='glow')b.w=[];if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);

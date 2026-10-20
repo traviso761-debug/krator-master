@@ -155,6 +155,8 @@ var FAMMAT = {
   metal  : { tex:null, scale:[4.0,2.0] },     /* Ancient white metal panels */
   rust   : { tex:null, scale:[5.0,5.0] },
   concrete:{ tex:null, scale:[8.0,8.0] },
+  concreteB:{ tex:null, scale:[8.0,8.0] },   /* the power house's poured floors and its pedestals: the brushed and the wall-slab sets (materials.json), plain colour under ?mat=proc */
+  concreteW:{ tex:null, scale:[8.0,8.0] },
   glass  : { tex:null, scale:[3.0,3.0] },     /* opaque-blue stand-in for the Ancients' glass */
   rock   : { tex:null, scale:[9.0,9.0] },
   column : { tex:null, scale:[40.0,64.0] },   /* the butte's columnar jointing */

@@ -43,9 +43,10 @@ function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);r
  if(d.cut)CUTC=[org.x,org.z,org.y,1];
  const bb=sbBegin();const t0=GSTAT.tris;
  reseed(d.seed+(o.v|0)*7);
+ const keepMat=MAT_ALT;MAT_ALT=KMAT.mode==='lib'?(KRAND.hash(0x15a7,d.seed|0,o.v|0,Math.round(org.x*4),Math.round(org.z*4))>>>1)|1:0;
  try{d.build(o);}catch(err){reportErr('build '+key+': '+(err.stack||err));}
  fillSockets();   /* the zeijani pack (core/sockets) draws the signs, awnings and banners the builder declared */
- sbEnd();popM();const doors=DOORS_CUR;
+ sbEnd();popM();MAT_ALT=keepMat;const doors=DOORS_CUR;
  CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;CUTC=keep.cut;SOCKS=keep.socks;
  rec.bbox=bb;rec.tris=GSTAT.tris-t0;rec.front=zjFront(d,doors,org,wry);rec.doorCount=doors.length;rec.r=Math.hypot(d.w,d.d)/2;rec.h=d.h;
  /* a built def's floors and walls into core/walk, from its interiors item (37-zj-walk.js; a carved def's come from the cavern) */

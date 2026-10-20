@@ -57,6 +57,34 @@
     "sourceMean": 0.6346
    }
   },
+  "canvasB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "canvasB.albedo.webp"
+   },
+   "lib": "cloth.canvas.b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "92ad121c81f3017ea3fde9ee671f175e4c1aadb4",
+    "normal": "f7f6ee4e31ebe71e2666c2108cb8f81cbe83fe65",
+    "roughness": "441047aee34155769820a5c06cd35b10a9e4e925"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.2,
+    "mean": 0.6,
+    "sourceMean": 0.5455
+   }
+  },
   "cloth": {
    "breakup": null,
    "card": false,
@@ -83,6 +111,34 @@
     "keep": 0.2,
     "mean": 0.6,
     "sourceMean": 0.5102
+   }
+  },
+  "denim": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "denim.albedo.webp"
+   },
+   "lib": "cloth.denim_fabric_05",
+   "metal": 0.4,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "81049354522a07ae4879a3e220160ce54b3c4998",
+    "normal": "92daacfb31e6406e30963bd214f6150fe02988d9",
+    "roughness": "46e9a344e3bc5c7cc590a5bfcaf4c7a76de04ede"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.2,
+    "mean": 0.6,
+    "sourceMean": 0.3964
    }
   },
   "guano": {
@@ -141,6 +197,34 @@
     "sourceMean": 0.1189
    }
   },
+  "jacquard": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "jacquard.albedo.webp"
+   },
+   "lib": "cloth.quatrefoil_jacquard_fabric",
+   "metal": 0.19,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "f6ee09f7b230c7dd825c8534ade678860e4202a5",
+    "normal": "d2ad8ad63426827cb9867d1c844968f553cc4acc",
+    "roughness": "d70006f066f9b5265ebe1561399df80dda6a5dfb"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.2,
+    "mean": 0.6,
+    "sourceMean": 0.1401
+   }
+  },
   "lash": {
    "breakup": null,
    "card": false,
@@ -167,6 +251,62 @@
     "keep": 0.2,
     "mean": 0.5,
     "sourceMean": 0.4034
+   }
+  },
+  "linen": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "linen.albedo.webp"
+   },
+   "lib": "cloth.fabric045",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "5a42c0930afda69eeae4ee77d9a8e6a6d6178462",
+    "normal": "2d31ac595667da2684cd6f1fe16e38b0436637b6",
+    "roughness": "6d8be011f65be58fdcfc29d8bc8cab4fe0e1b39e"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.2,
+    "mean": 0.6,
+    "sourceMean": 0.7655
+   }
+  },
+  "navajo": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "navajo.albedo.webp"
+   },
+   "lib": "rock.sandstone.navajo",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "e2d65fc0cd3912b96334403de7075af6725ce5ee",
+    "normal": "aae01cc4c2a003fbf06a9b07559703bb7a8ba999",
+    "roughness": "9bfb01de68f01043a80c8cb98f63212ea005c0db"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.5,
+    "sourceMean": 0.5099
    }
   },
   "pelt": {
@@ -253,6 +393,34 @@
     "sourceMean": 0.471
    }
   },
+  "sandstone": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "sandstone.albedo.webp"
+   },
+   "lib": "rock.sandstone.bedded.red",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "b136fe26c44c3679539bad1c8f52a8d0a05e279c",
+    "normal": "8702c633612be23b7193b57c5b3d87e42a2067ed",
+    "roughness": "922d49de8fed86486ec20e74ce5463e4db506f43"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.5,
+    "sourceMean": 0.48
+   }
+  },
   "shingle": {
    "breakup": null,
    "card": false,
@@ -270,8 +438,8 @@
    "size": 256,
    "source": {
     "albedo": "2e4595107e0ed58e8929be54384dd77342a86ca7",
-    "normal": "a7e81e23c582d35d749bc531430bcfb85cd8eb81",
-    "roughness": "e9ffa7ebee5054fd2d0bf9650c361d59590d9f35"
+    "normal": "41d3aae75ede8f6b9f20f5f7655928fa322c8f5d",
+    "roughness": "dd07121049f9cb4514a0f3e1f76dceabe2f8fc2e"
    },
    "specular": 0.2,
    "tint": {
@@ -382,8 +550,8 @@
    "size": 256,
    "source": {
     "albedo": "50fa72f28676aa2622550cf3dcb65cc41c5f6067",
-    "normal": "d9217e6de70b298eaa83a6f5f75763c3d92723b2",
-    "roughness": "ed53a5bcc3cfa67ae22ac64bb8a0440207e12934"
+    "normal": "6336f84e237ba893260d215736b74126e83b2ab5",
+    "roughness": "2d40eab458010148d59f91e054cbb5874204dd76"
    },
    "specular": 0.2,
    "tint": {
@@ -475,62 +643,6 @@
     "keep": 0.25,
     "mean": 0.5,
     "sourceMean": 0.3694
-   }
-  },
-  "navajo": {
-   "breakup": null,
-   "card": false,
-   "files": {
-    "map": "navajo.albedo.webp"
-   },
-   "lib": "rock.sandstone.navajo",
-   "metal": 0,
-   "normalScale": 1.0,
-   "roughLift": 0.3,
-   "scale": [
-    4.0,
-    4.0
-   ],
-   "size": 256,
-   "source": {
-    "albedo": "e2d65fc0cd3912b96334403de7075af6725ce5ee",
-    "normal": "aae01cc4c2a003fbf06a9b07559703bb7a8ba999",
-    "roughness": "9bfb01de68f01043a80c8cb98f63212ea005c0db"
-   },
-   "specular": 0.2,
-   "tint": {
-    "contrast": 1.0,
-    "keep": 0.3,
-    "mean": 0.5,
-    "sourceMean": 0.5099
-   }
-  },
-  "sandstone": {
-   "breakup": null,
-   "card": false,
-   "files": {
-    "map": "sandstone.albedo.webp"
-   },
-   "lib": "rock.sandstone.bedded.red",
-   "metal": 0,
-   "normalScale": 1.0,
-   "roughLift": 0.3,
-   "scale": [
-    3.0,
-    3.0
-   ],
-   "size": 256,
-   "source": {
-    "albedo": "b136fe26c44c3679539bad1c8f52a8d0a05e279c",
-    "normal": "8702c633612be23b7193b57c5b3d87e42a2067ed",
-    "roughness": "922d49de8fed86486ec20e74ce5463e4db506f43"
-   },
-   "specular": 0.2,
-   "tint": {
-    "contrast": 1.0,
-    "keep": 0.3,
-    "mean": 0.5,
-    "sourceMean": 0.48
    }
   }
  },
