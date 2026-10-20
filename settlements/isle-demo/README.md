@@ -301,7 +301,15 @@ declares both once they are planned, in one order whichever town it draws, and h
   (`EXPORT_PROFILE`): `EXPORT.check` fails on a stubbed or empty section and passes filled (verify's Kautoa page, and
   on the Valapo page after the week; `node tests/test-isle-export.js`). `ISLE.simExportChecks`: every warehouse, site,
   home and workplace a place of its own settlement; each good's warehouse stock what the place records hold; every load
-  shipped landed or at sea; every stock and book a count; each with a negative. Godot reading the books after a
-  replayed week is P8.
+  shipped landed or at sea; every stock and book a count; each with a negative.
+- **P8, the books in Godot** (2026-10-20): `node tools/export-sim.js` runs a week (Valapo watched, Kautoa abstract) and
+  writes `godot/data/isle/sim.json` (the export at the week's end, about 3.2 MB) and `golden.json` (the books at the
+  start, the week, the page's own answers). `godot/tests/isle/isle_books_test.gd` reads them with
+  `godot/krator/isle_sim.gd` (`KratorIsleSim`) and derives every check again: every place of its own settlement,
+  warehouse stock equal to the place records, every load landed or at sea, each town's 31 goods balanced over the week
+  (change = made + imported - exported - (used - bought + eaten)), and every answer (the checks, each good's residual,
+  the counts) the page's; five negatives. It passes on Godot 4.7.2 and runs in `tools/test_all.py --nightly`. Rerun
+  the tool after a change to the economy (the files are the page's answers). Left of P8: both towns opened in Godot from
+  the canonical export with their citizens (the records, the uids), and a GDScript twin of the economy.
 
 See `KNOWN_ISSUES.md`.

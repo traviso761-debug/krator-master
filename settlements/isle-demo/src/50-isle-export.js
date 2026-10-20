@@ -7,7 +7,7 @@
                                 log), each actor with its settlement, and the isles' own:
                                   settlements: per town its level, people and workers, its warehouses, sites and carts by
                                     id, each good's stock (warehouses, sites, carts, all holdings) and books (made, used,
-                                    imported, exported, short) since the start, its producers (place, outputs, the
+                                    imported, exported, short; bought and eaten by the households) since the start, its producers (place, outputs, the
                                     governor's rate and the full rate), its meals, what spoiled and what was salted;
                                   routes: the canoe lines' stops, carriers (where, bound for, cargo) and books (shipped,
                                     landed, at sea, by leg and good);
@@ -25,13 +25,14 @@ ISLE.simExport = function () {
   doc.actors.forEach(function (a) { var A = SIM.R.actor[a.id]; a.settlement = A ? SIM.settlementOf(A) : null; });
   var I = SIM.ITEMS, n = function (x) { return x || 0; };
   doc.settlements = S.order.map(function (s) {
-    var E = SIM.econ(s), X = S.towns[s], St = SIM.stocks ? SIM.stocks(s) : null, goods = {};
+    var E = SIM.econ(s), X = S.towns[s], St = SIM.stocks ? SIM.stocks(s) : null, goods = {}, IB = (I && I.statsBy && I.statsBy[s]) || {};
     Object.keys(E.goods).forEach(function (g) {
       var w = 0, si = 0, c = 0;
       E.warehouses.forEach(function (P) { w += n(P.stock[g]); }); E.sites.forEach(function (P) { si += n(P.stock[g]); });
       E.carts.forEach(function (a) { var L = a.cart.load; if (L && L.good === g) c += L.n; });
       goods[g] = { warehouses: w, sites: si, carts: c, total: St && St.by[g] ? St.by[g].total : w + si + c,
-        made: n(E.made[g]), used: n(E.used[g]), imported: n(E.imported[g]), exported: n(E.exported[g]), short: n(E.short[g]) };
+        made: n(E.made[g]), used: n(E.used[g]), imported: n(E.imported[g]), exported: n(E.exported[g]), short: n(E.short[g]),
+        bought: n((IB.bought || {})[g]), eaten: n((IB.eaten || {})[g]) };   /* the households' purchases and meals: consumed = used - bought + eaten */
     });
     var G = S.govern || {}, B = (I && I.statsBy && I.statsBy[s]) || {};
     return { id: s, name: X.name || s, level: SIM.levelOf ? SIM.levelOf(s) : 'presented', people: X.pop.actors, workers: X.pop.workers,
@@ -75,7 +76,7 @@ ISLE.simExportChecks = function (doc) {
   /* every book a count */
   var nan = [];
   doc.settlements.forEach(function (T) { Object.keys(T.goods).forEach(function (g) { var B = T.goods[g];
-    ['warehouses', 'sites', 'carts', 'total', 'made', 'used', 'imported', 'exported', 'short'].forEach(function (k) { if (typeof B[k] !== 'number' || !(B[k] >= 0)) nan.push(T.id + ' ' + g + ' ' + k); }); }); });
+    ['warehouses', 'sites', 'carts', 'total', 'made', 'used', 'imported', 'exported', 'short', 'bought', 'eaten'].forEach(function (k) { if (typeof B[k] !== 'number' || !(B[k] >= 0)) nan.push(T.id + ' ' + g + ' ' + k); }); }); });
   ok('every stock and book is a count (none negative or missing)', !nan.length, nan.length ? nan.slice(0, 4).join('; ') : doc.settlements.map(function (T) { return T.id + ' ' + Object.keys(T.goods).length + ' goods'; }).join(', '));
   return out;
 };

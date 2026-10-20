@@ -27,7 +27,9 @@ registers the export's `city` section for every instance on a page.
    and spoiling, `49`, with its checks in the week test; the wear plan (PLAN.md 9b: tools by trade, pots, salt, injuries,
    arms, clothes by class) and needs with treats, each with a week-test check). **P7e is done** (2026-10-20, `50`): the
    `sim` export section, in the page's profile, failing stubbed and passing filled (`tests/test-isle-export.js`).
-   Next, **P8** in Godot: read the `krator-sim` books after a replayed week. A sea route
+   **P8's books are read in Godot** (2026-10-20): `tools/export-sim.js` writes `godot/data/isle`, and
+   `godot/tests/isle/isle_books_test.gd` (`KratorIsleSim`) derives the checks and agrees with the page. Next in P8:
+   both towns opened in Godot from the canonical export with their citizens, then the open world (M7). A sea route
    (`SIM.transport` between the landings, `SIM.trade({line})` on it) comes with the open world. Any core/simulation
    change: diff Voth's whole `verify.py --assert` output against `main`'s page with the timings stripped (the method
    P7a used); the core work goes through the isle-demo build session.
