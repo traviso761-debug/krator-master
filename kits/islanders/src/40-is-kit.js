@@ -90,7 +90,9 @@ function isFigure(x,y,z,ry,s,o){o=o||{};const mk=o.mk||'carvedR',c=o.col||P(mk==
 function isHorns(x,y,z,ry,s,o){o=o||{};W(x,y,z,ry,()=>{for(const k of [-1,1])tube('bone',t=>[k*(s*.06+t*s*.5),t*t*s*.32+Math.sin(t*PI)*s*.06,-t*s*.05],t=>{const r=s*.07*(1-t*.85);return [r,r];},8,6,o.col||P('bone'),{caps:true});
  ellip('carved',0,0,0,s*.1,s*.08,s*.1,P('woodD'),0,8);});}
 /* the white island moon on a disc (the Islanders' sign): an upright medallion facing ry, radius R */
-function isMoonDisc(x,y,z,ry,R){W(x,y,z,ry,()=>{WX(0,0,0,0,PI/2,0,()=>medallion('medMoon',0,0,0,R*2,{round:true}));cyl('wood',0,-R*1.05,-.04,.04,R*.2,P('woodD'),6);});}
+/* the island moon comes in three takes (the plain white moon, and the moon with a face in two); which one a disc gets is a hash of where it stands */
+const IS_MOONS=['medMoon','medMoonFace','medMoonFaceB'];
+function isMoonDisc(x,y,z,ry,R){const mm=IS_MOONS[Math.abs(Math.round(x*5)*7+Math.round(y*5)*13+Math.round(z*5)*3+Math.round(R*20))%3];W(x,y,z,ry,()=>{WX(0,0,0,0,PI/2,0,()=>medallion(mm,0,0,0,R*2,{round:true}));cyl('wood',0,-R*1.05,-.04,.04,R*.2,P('woodD'),6);});}
 /* a carved board along a polyline (a bargeboard on a gable edge): width along the edge's plane w2 (o.h), thickness t */
 function isBoard(pts,h,t,mk,col){for(let i=0;i<pts.length-1;i++)beam(mk,pts[i],pts[i+1],t,col,false,undefined,h);}
 /* ---------------------------------------------------------------- scrap */

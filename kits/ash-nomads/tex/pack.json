@@ -909,6 +909,36 @@
     "sourceMean": 0.3716
    }
   },
+  "patFretR": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patFretR.albedo.webp",
+    "normalMap": "patFretR.normal.webp",
+    "roughnessMap": "patFretR.rough.webp"
+   },
+   "lib": "patterns/ashnomad/fret-band",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "eed176bbb3ea0136f9f2c110818a6dd99bd9f1c3",
+    "normal": "1501bb112db7358fb8ad854aae6b72604d52ed26",
+    "roughness": "b48948abcd590de1cb848126ca3952cb4253416f"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.29646591927921073,
+    "sourceMean": 0.2965
+   }
+  },
   "patKilim": {
    "breakup": null,
    "card": false,
@@ -967,6 +997,36 @@
     "keep": 1.0,
     "mean": 0.24694217107735428,
     "sourceMean": 0.2469
+   }
+  },
+  "patNazcaR": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patNazcaR.albedo.webp",
+    "normalMap": "patNazcaR.normal.webp",
+    "roughnessMap": "patNazcaR.rough.webp"
+   },
+   "lib": "patterns/ashnomad/nazca-panel",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "5a70dca235aa1dc1031e7f77bb5eedd6a360bc6b",
+    "normal": "339df2eaba051e1fd35b76e4f1e92f2cd60335cf",
+    "roughness": "3f999f84c795adc4ceed325a889fa429a575fbe6"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.22301889168533623,
+    "sourceMean": 0.223
    }
   },
   "plates": {

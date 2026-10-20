@@ -33,11 +33,12 @@ function dnFirePit(x,y,z,s){for(let k=0;k<7;k++){const a=k/7*TAU;kput('vRock',[x
 
 // ---------------------------------------------------------------- relief, murals, banners, gates, steles
 // Carved band proud of a face; (x,z) ON the face, ry outward. dRelief tiles 1 m cells.
-function dnReliefBand(x,y,z,ry,w,h,c){const f=loc(x,z,0,.1,ry);vB('dRelief',f[0],y,f[1],w,h,.16,ry,c);}
+const dnPar=(x,z)=>(Math.round(x*2)+Math.round(z*2))&1;   /* a face's own parity: which of two takes a band or panel gets, the same on every run */
+function dnReliefBand(x,y,z,ry,w,h,c){const f=loc(x,z,0,.1,ry);vB(dnPar(f[0],f[1])?'dReliefCh':'dRelief',f[0],y,f[1],w,h,.16,ry,c);}
 // Painted frieze on a flat face (2 m tile of avatars and heroes).
-function dnMuralBand(x,y,z,ry,w,h,v){const f=loc(x,z,0,.04,ry);vB(DMURALBS[v==null?dRi(0,3):v],f[0],y,f[1],w,h,.06,ry);}
+function dnMuralBand(x,y,z,ry,w,h,v){const f=loc(x,z,0,.04,ry);vB(DMURALBS[v==null?dRi(0,7):v],f[0],y,f[1],w,h,.06,ry);}
 // The same frieze round a drum: flat facets tangent to the wall, one whole tile each.
-function dnMuralRing(x,y,z,r,h,c,v){const n=Math.max(8,Math.round(TAU*r/1.5));const it=DMURALS[v==null?dRi(0,3):v];for(let k=0;k<n;k++){const a=k/n*TAU;const p=dnOnRing(x,z,r+.035,a);vPl(it,p[0],y+h/2,p[1],TAU*(r+.035)/n+.02,h,a,c||null);}}
+function dnMuralRing(x,y,z,r,h,c,v){const n=Math.max(8,Math.round(TAU*r/1.5));const it=DMURALS[v==null?dRi(0,7):v];for(let k=0;k<n;k++){const a=k/n*TAU;const p=dnOnRing(x,z,r+.035,a);vPl(it,p[0],y+h/2,p[1],TAU*(r+.035)/n+.02,h,a,c||null);}}
 // A rammed-earth wall band painted in two colours (poor houses: no mural, just a red foot and a turquoise line).
 function dnPaintRing(x,y,z,r,h,c){dnDrum('dEarthDrum',x,y,z,r+.03,h,c);}
 // Banner hung from a crossbar at (x,y,z); the top is fixed, the foot free. ry = the direction it faces.
@@ -62,9 +63,9 @@ function dnAltar(x,y,z,ry,c){vB('vStone',x,y,z,2.2,1.0,1.2,ry,c);dnReliefBand(x,
 
 // ---------------------------------------------------------------- the sacred deco (round 4)
 // Fret band in colour (cream over turquoise inlay), proud of a face; (x,z) ON the face, ry outward.
-function dnFretBand(x,y,z,ry,w,h){const f=loc(x,z,0,.1,ry);vB('dReliefTq',f[0],y,f[1],w,h,.16,ry);}
+function dnFretBand(x,y,z,ry,w,h){const f=loc(x,z,0,.1,ry);vB(dnPar(f[0],f[1])?'dReliefRd':'dReliefTq',f[0],y,f[1],w,h,.16,ry);}
 // A tall deco panel of the avatar on a pier: turquoise field, cream figure, a cream frame; (x,z) ON the face.
-function dnDecoPanel(x,y,z,ry,w,h){const f=loc(x,z,0,.06,ry);kput('dDecoPanel',[f[0],y+h/2,f[1]],vQ(ry,0,0),[w,h,1],null);const tr=dCol(DPAL.trim);
+function dnDecoPanel(x,y,z,ry,w,h){const f=loc(x,z,0,.06,ry);kput(dnPar(f[0],f[1])?'dDecoPanelB':'dDecoPanel',[f[0],y+h/2,f[1]],vQ(ry,0,0),[w,h,1],null);const tr=dCol(DPAL.trim);
  for(const s of[-1,1]){const p=loc(x,z,s*(w/2+.07),.1,ry);vB('vStone',p[0],y-.1,p[1],.14,h+.2,.18,ry,tr);}const p=loc(x,z,0,.1,ry);vB('vStone',p[0],y+h,p[1],w+.28,.14,.2,ry,tr);vB('vStone',p[0],y-.14,p[1],w+.28,.14,.2,ry,tr);}
 // Stepped parapet crest (the ziggurat top of the reference facades): three cream-trimmed steps over a fret band,
 // centred on (x,z), width w, ry the facing.

@@ -60,7 +60,7 @@ function buildXaBath(G,o){reseed(31621+(o.v|0));const V=xV(o),W=24,D=16,H=5.6;
  xnIwan(0,.8,D/2,0,6.4,H+1.4,1.2,wash,{guldasta:true});xnFlight(0,0,D/2+1.2+1.6,0,5,.8,'vStone',stone);
  for(const s of[-1,1])for(const u of[5,9]){kput('xJali',[s*u,.8+3.2,D/2+.06],null,[2.2,1.6,1],xC(XPAL.white));vB('vStone',s*u,.8+2.3,D/2+.08,2.5,.14,.16,0,stone);vB('vStone',s*u,.8+4.0,D/2+.08,2.5,.14,.16,0,stone);}
  for(const s of[-1,1])for(const z of[-4,0,4]){kput('xJali',[s*(W/2+.06),.8+3.2,z],qEuler(0,s*Math.PI/2,0),[2,1.6,1],xC(XPAL.white));}
- vB('xFriezeB',0,.8+H-.7,0,W+.2,.7,D+.2,0);
+ xvFr(0,.8+H-.7,0,W+.2,.7,D+.2,0);
  const top=xnFlatRoof(0,.8+H,0,W,D,0,wash,{parapet:.5,corner:'gold'});
  // the domes: the great mosaic dome over the hot room on its lit drum, four lesser white domes with gold oculus bosses
  if(V===2){for(const x of[-7.5,0,7.5])xnDome(x,top-.5+.3,-1,3.6,'T',{drum:1.4,fin:1.2});}   // v2: three tiled domes in a row

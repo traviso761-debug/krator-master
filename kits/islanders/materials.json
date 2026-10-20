@@ -796,6 +796,32 @@
    },
    "roughLift": 0.35,
    "specular": 0.15
+  },
+  "medMoonFace": {
+   "lib": "patterns/common/medallion-moonface",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.2
+  },
+  "medMoonFaceB": {
+   "lib": "patterns/common/medallion-moonface.b",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.2
   }
  }
 }

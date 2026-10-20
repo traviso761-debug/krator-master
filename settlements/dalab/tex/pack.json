@@ -331,6 +331,36 @@
     "sourceMean": 0.504
    }
   },
+  "dDecoPanelB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "dDecoPanelB.albedo.webp",
+    "normalMap": "dDecoPanelB.normal.webp",
+    "roughnessMap": "dDecoPanelB.rough.webp"
+   },
+   "lib": "patterns/dalab/god-panel-b",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    0.8,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fab00ba4eb2cb8f22b2ae22529fc4c40ad6a6c03",
+    "normal": "85fe2cbe07c135fa53dcb26aee3ddad6b5dd239a",
+    "roughness": "4bed390952e0501b740c0553b10d80b92c3e5470"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4972626361413095,
+    "sourceMean": 0.4973
+   }
+  },
   "dMosaic": {
    "breakup": null,
    "card": false,
@@ -481,6 +511,126 @@
     "sourceMean": 0.6041
    }
   },
+  "dMural4": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "dMural4.albedo.webp",
+    "normalMap": "dMural4.normal.webp",
+    "roughnessMap": "dMural4.rough.webp"
+   },
+   "lib": "patterns/dalab/mural-giants",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    4,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "569506e78cd9256857886a283e20fab8e400d4df",
+    "normal": "64b6bb3233748eded9e65e6a54d432d180562850",
+    "roughness": "38535460f76a93323e631580cbdc6bcbb033ed16"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5404794913198433,
+    "sourceMean": 0.5405
+   }
+  },
+  "dMural5": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "dMural5.albedo.webp",
+    "normalMap": "dMural5.normal.webp",
+    "roughnessMap": "dMural5.rough.webp"
+   },
+   "lib": "patterns/dalab/mural-harvest",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    4,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0920e71eb8c86b445fff9d28ead70da904d5d2c9",
+    "normal": "7679bf3e1cdc96e42bd647b042d9b284aa33f27d",
+    "roughness": "d9fc21bab40816f8d802e6b3e4bc5ab1faa795ce"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5885548063420314,
+    "sourceMean": 0.5886
+   }
+  },
+  "dMural6": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "dMural6.albedo.webp",
+    "normalMap": "dMural6.normal.webp",
+    "roughnessMap": "dMural6.rough.webp"
+   },
+   "lib": "patterns/dalab/mural-priests",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    4,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "1c10cacbd51ed813af2c0508090cf536eb6b3b82",
+    "normal": "a93aeb84e69f917f5089863e1f85cd881ceb6eb0",
+    "roughness": "3c59dcf60f6db5d343df847642c7e057d81d66e1"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5605049142366296,
+    "sourceMean": 0.5605
+   }
+  },
+  "dMural7": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "dMural7.albedo.webp",
+    "normalMap": "dMural7.normal.webp",
+    "roughnessMap": "dMural7.rough.webp"
+   },
+   "lib": "patterns/dalab/mural-eye-god-b",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    4,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "a7e582302a0e82c1c6c420ac080c73b31353e115",
+    "normal": "3432a7fb05fca0e41437ca5c389a3270bb449597",
+    "roughness": "0ec94e8e5f31cc939ada24ca12906f329c216635"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5412287469452502,
+    "sourceMean": 0.5412
+   }
+  },
   "dRammed": {
    "breakup": {
     "cell": 6,
@@ -549,6 +699,71 @@
     "keep": 0.0,
     "mean": 0.61,
     "sourceMean": 0.5156
+   }
+  },
+  "dReliefCh": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "dReliefCh.albedo.webp",
+    "normalMap": "dReliefCh.normal.webp",
+    "roughnessMap": "dReliefCh.rough.webp"
+   },
+   "lib": "patterns/dalab/relief-chevron",
+   "metal": 0,
+   "normalScale": 0.8,
+   "roughLift": 0.0,
+   "scale": [
+    3,
+    3
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "53561f95ed46ca2b09fa0c615f99b91a5b0b1b53",
+    "normal": "b8017c93dc091483c972fb523c1d0efe028ef4d3",
+    "roughness": "ce061ec380d8d4eccedcc388293ad717b4afacc7"
+   },
+   "specular": 0.5,
+   "tint": {
+    "colour": "#a19b91",
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.61,
+    "sourceMean": 0.5203
+   }
+  },
+  "dReliefRd": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "dReliefRd.albedo.webp",
+    "normalMap": "dReliefRd.normal.webp",
+    "roughnessMap": "dReliefRd.rough.webp"
+   },
+   "lib": "patterns/dalab/relief-tile-red",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    4,
+    4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "cc7eaa75b6ce85023e76c7cf4c1d9751479dcfd8",
+    "normal": "4c2693dce37643d9fa1c0b2eb4f4ce39c1a3942b",
+    "roughness": "a1608b850f7459a2e9ff6ad4c323ca38236aabae"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4480927326217352,
+    "sourceMean": 0.4481
    }
   },
   "dReliefTq": {

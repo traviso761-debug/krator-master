@@ -64,7 +64,7 @@ function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const V=xV(o),GW=88,GD=8
  const HZ=-12,HW=22;xnWall(0,0,HZ,HW+3,1.2,HW+3,0,stone,'dressed');vB('vStone',0,1.06,HZ,HW+3.3,.14,HW+3.3,0,stone.clone().multiplyScalar(1.08));
  vB('xWashB',0,1.2,HZ,HW,9,HW,0,wash);
  for(let k=0;k<4;k++){const a=k*Math.PI/2;const p=loc(0,HZ,0,HW/2,a);xnArcade(p[0],1.2,p[1],a,HW-2,7.4,5,'xArchM',null,.8,{open:false});
-  const f=loc(0,HZ,0,HW/2+.9,a);vB('xFriezeB',f[0],1.2+7.6,f[1],HW-1.6,.8,.14,a);}
+  const f=loc(0,HZ,0,HW/2+.9,a);xvFr(f[0],1.2+7.6,f[1],HW-1.6,.8,.14,a);}
  xnFlight(0,0,HZ+HW/2+1.5+1.4,0,10,1.2,'vStone',stone);
  xnFlatRoof(0,10.2,HZ,HW,HW,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.6,corner:'gold'});
  const top=xnDome(0,10.5,HZ,9.2,['T','G','M'][V],{drum:4.2,drumItem:'xDrumM',drumC:null,c:V?null:tile,fin:3.2});

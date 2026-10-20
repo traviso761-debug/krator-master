@@ -584,6 +584,176 @@
    },
    "metal": 0,
    "normalScale": 0.5
+  },
+  "hLattG": {
+   "lib": "patterns/highlands/lattice-grid",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hLattF": {
+   "lib": "patterns/highlands/lattice-fret",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hLattL": {
+   "lib": "patterns/highlands/lattice-lantern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hLattT": {
+   "lib": "patterns/highlands/lattice-triskelion",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hFrzA": {
+   "lib": "patterns/highlands/frieze-asian-nw",
+   "scale": [
+    2.25,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hFrzL": {
+   "lib": "patterns/highlands/frieze-cloud-lotus",
+   "scale": [
+    2.25,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hFrzT": {
+   "lib": "patterns/highlands/frieze-nw-totemic",
+   "scale": [
+    2.25,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hFrzG": {
+   "lib": "patterns/highlands/frieze-teal-gold",
+   "scale": [
+    2.25,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hM_d_crane": {
+   "lib": "patterns/highlands/crane-floral",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hM_w_folkA": {
+   "lib": "patterns/republic/folk-formline-a",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hM_w_folkB": {
+   "lib": "patterns/republic/folk-formline-b",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "hM_w_folkP": {
+   "lib": "patterns/republic/folk-painted",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "clothR": {
+   "lib": "patterns/canvas/stripe-red",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.15
   }
  }
 }

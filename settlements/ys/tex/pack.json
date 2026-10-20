@@ -139,6 +139,36 @@
     "sourceMean": 0.6288
    }
   },
+  "clothR": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "clothR.albedo.webp",
+    "normalMap": "clothR.normal.webp",
+    "roughnessMap": "clothR.rough.webp"
+   },
+   "lib": "patterns/canvas/stripe-red",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "f81b2139953a84a2e36ef1e17064ac67fd45b7e4",
+    "normal": "206d93d27c0189f4842c5617e72fce2cbe5b91d1",
+    "roughness": "3979ad96d1eb95759523f19c0715b7f2a1aee6f6"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4568561544141583,
+    "sourceMean": 0.4569
+   }
+  },
   "concrete": {
    "breakup": {
     "cell": 6,
@@ -239,6 +269,36 @@
     "keep": 0.0,
     "mean": 0.527,
     "sourceMean": 0.3428
+   }
+  },
+  "hkBand": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "hkBand.albedo.webp",
+    "normalMap": "hkBand.normal.webp",
+    "roughnessMap": "hkBand.rough.webp"
+   },
+   "lib": "patterns/nacre/banded-trim",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "26706ac74053c153cc1f98728c4e00bcfd1a77f2",
+    "normal": "f28e401557a32b884c46d2f82eb5cb104f724ae1",
+    "roughness": "dfdb800650237b28995fcb2e6f3bf04bc4b27cf1"
+   },
+   "specular": 0.45,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.7602551537038765,
+    "sourceMean": 0.7603
    }
   },
   "hkBarn": {
