@@ -445,7 +445,13 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
     layer = [pt.get('layer', 0) for pt in spec['parts']]
     part = np.array([where.get(int(v), (-1,))[0] for v in V])
     arm = [any(s in n for s in ('Arm', 'Hand')) for n in names]
-    free = [gi for gi in np.nonzero(part == -1)[0]
+    # what does not hang: a part without chains, and a hanging part's rows above where its chains start (a tunic's
+    # body, which hangs below the waist only: counted as hanging whole, the trader's tunic kept the shoulders' weights
+    # under the mantle and came out through it at the shoulder blades as the posture drew them back)
+    top = {pi: min((ch['rows'][0] for ch in pt['chains']), default=1 << 30) for pi, pt in enumerate(spec['parts'])}
+    still = np.array([part[gi] == -1 or (layer[part[gi]] != 2 and where[int(V[gi])][1] < top[part[gi]])
+                      for gi in range(len(V))])
+    free = [gi for gi in np.nonzero(still)[0]
             if sum(w for jj, w in zip(JJ[gi], WW[gi]) if int(jj) < len(arm) and arm[int(jj)]) < 0.5]
     rad = np.hypot(P[:, 0], P[:, 2])
     for po in [q for q in range(len(layer)) if layer[q] == 2]:
