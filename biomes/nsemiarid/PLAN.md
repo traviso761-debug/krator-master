@@ -76,10 +76,13 @@ downwind, which the land does not have to show but a story can use.
 | the fast drain | 900 to 700 m | 1,050 to 850 m | none | in days to weeks | no strandlines; slumps and landslides (rapid drawdown fails wet slopes), gullied bare silt; the docks and moored ships stranded here |
 | the slow recession | under 700 m | under 850 m | 834 to 430 m | over centuries, by evaporation | a staircase of strandlines, salt rising downward, ships grounded one by one, the youngest beside today's water |
 
-Two places to note. **Boatmurder** (px 494,74) stands at 769 m in the west basin's fast-drain band, beside the mouth of
-the east breach: where the east lake's ships were dumped by the surge (LORE.md has it "in the east lobe": the pixel is
-in the west). **Jimjam**'s polygon (centroid px 501,178) has a median height of 869 m and 31% of it lay under the flood
-lake: the silt the flood "laid down" (LORE.md 6.14) is the flood lake's slackwater silt.
+Two places to note. **Boatmurder** (px 494,74), a bandit camp in a pile of boats (the owner: no more lore than that),
+stands at 769 m in the west basin's fast-drain band, beside the east breach's mouth, where the surge would have piled
+boats anyway. **Jimjam** needs no move for its red brick (the owner offered one): the city stands where LORE.md's
+distances put it (226 km north of Dilihan: px ~470,222), at the mouth of the river the model calls *Jimjam river 2*
+(110 m³/s) on the trough lake's east shore, in Cfa at ~1,240 mm. Its ground is the flood lake's slackwater silt (the
+flood lake reached 834 m there): fine, fresh-water laid, and washed off scoured basalt, so rich in iron, which is what
+fires red. LORE.md's "about 50 m above the ocean" is corrected to about 50 m above its lake (~480 m, ~1.5 atm).
 
 ## 3. The layers: biomes own ground, overlays own none
 
@@ -143,7 +146,7 @@ Old shorelines ~1,630 km (west) and ~1,530 km (east).
 - **Hulks**, from the port kit's vessels, in three populations by where the falling water left them:
   1. *moored*: grounded and heeled at the docks' foot, in the fast-drain band;
   2. *under way*: drawn by the outflow toward the breach and piled in the notch approach, the graveyard (Boatmurder's
-     at the east breach's mouth is one);
+     pile at the east breach's mouth is one);
   3. *trapped below the sill*: afloat on the shrinking lake and grounded one by one on the strandlines, so rust and
      burial grow with height above today's water (the Aral pattern).
   Heel from the slope, burial from `silt`, stripped more near camps; sockets (`core/sockets`) for the bandit camps,
@@ -275,8 +278,11 @@ variants. Korona, later, needs the same `bed` and `salt` response for its share 
 ## 10. Questions
 
 1. **The bathtub ring's depth** (the reservoirs' yearly drawdown): the model does not give it. Default 30 m.
-2. **The trough before the flood:** section 2 takes it at today's 430 m. Fuller, and the flood lake stood higher; over
-   850 m it backs up into the east basin.
-3. **Jimjam's height:** LORE.md has it "about 50 m above the ocean"; its polygon's median is 869 m.
-4. **Boatmurder:** LORE.md says the east lobe; px 494,74 is in the west basin, at the east breach's mouth.
-5. **The western lake at exactly 0 m** (px 325,120, 2,535 km²) looks like a default level, not a settled one.
+2. **The western lake at exactly 0 m** (px 325,120, 2,528 km²): a closed hollow of its own in the west bed (its floor
+   at -419 m), not joined to the west remnant at any level up to 200 m. It was one with the west lake until the
+   recession split the trapped water into pools; the model's `SETTLE` (`hydro.py`) levelled only the three named
+   lakes, so this one kept the drawn 0 m. The fix is to settle it the same way, which gives its own level (perhaps a
+   playa). Until then the overlay treats it as the west bed's second remnant lake.
+
+Settled 2026-10-20 (the owner): the trough stood at 430 m before the flood; Boatmurder is only a bandit camp in a pile of
+boats; Jimjam may move if its brick needs it (it does not: section 2).
