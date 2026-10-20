@@ -199,6 +199,26 @@ Every traveller's placement record carries its heading and trail, seeded by cell
 | the tropical lake margins (Af, Am, Aw) | ~7% | **golden poplar forest** (after the Euphrates poplar's riverside forests on dried terminal lakes): gold in its season, dead grey trunks standing out on the bed behind it, and cotton shed in drifts like snow; reeds |
 | highland spurs (over 2.5 km) | 12% | `nhighlands` and `ebadlands` read in place (as `necanyons` reads the hyperjungle), not a fifth flora |
 
+**Krator's own** (the owner, 2026-10-20: alien plants too, a dandelion frill and a helicopter trumpet, wind-blown). Each
+is a steppe branch of a lineage the other kits already grow, its dispersal turned over to the wind:
+
+- **The dandelion frill** (the frill-tree line: the Rift's, the drylands' fire-bursting one). The ribbed bottle column with
+  fins in rows up every rib, 12 to 20 m; here each fin is a seed on a plume. Green, the fins are the frill's
+  iridescent teal-to-violet (the owner's fractal frond, `card.frond.fractal`, as `biomes/README.md` asks of every frill);
+  ripe, they turn silk-white and the crown pod opens into a seed clock 4 to 6 m across. The wind strips it fin by fin,
+  downwind side first; a stripped tree stands with bare ribs pricked with sockets, and the new fins grow back from the
+  foot, so how high they reach says how long since it last shed. Stages as variants: green, ripe clock, half shed, bare.
+- **The helicopter trumpet** (the trumpet-tree line: the Rift's slim ribbed stalk flaring into a funnel). Its funnel
+  is fluted with angled vanes on a living ring joint at the stalk's top, so it turns in the wind like an anemometer,
+  faster as the wind rises (spin from `ATMOS.windAt`; in Godot from `atm_wind`), and flings its seeds out over the rim:
+  spiral-winged seeds ~40 cm long that autorotate down and away. A stand of them is the wind made visible, every
+  funnel turning, the slow ones in the lee. Dense air makes a rotor work: the same speed of wind turns it with 40% more
+  force.
+- **The drift lantern** (the bell-bulb line: nhighlands' bulbs that glow at night). Its bulbs fill with gas as they
+  ripen and lift away at dusk, glowing, each carrying a seed under it: on a calm evening a slow drift of lights crosses
+  the steppe downwind. Buoyancy against weight goes with the air's density alone, so a bulb lifts 40% more than it
+  would on Earth.
+
 **The small and weird** (the owner's reference board, 2026-10-20: an alien cactus garden and a table of alien-flora
 miniatures). Plants from 0.3 to 3 m in saturated accents (orange, coral pink, lime, cobalt, fire red) against the steppe's
 sage, ochre and rust. They gather in **dew gardens**: anything standing up (a boulder, an erratic, a hulk, a dock pile)
