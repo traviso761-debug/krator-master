@@ -111,6 +111,9 @@ area you are about to change.
   grand boubou's to the waist: no more of it is seen). Check the A-pose first: a fault there is the cut, not the motion.
 - **"Hang it from the waist as the monk's robe" is not for every robe** → it helped the skirts and the Yuni gown, but the
   Izani court robe's woven tabard tore across the hips; shoot each one.
+- **Tall bodies tear a robe the default one wears well** → measure before blaming the capsules: the skin's distance from
+  each capsule's axis (median and 90th percentile, by morph) against the push radius. Here they matched within
+  millimetres; the thigh was 29% longer, and the robe's cut had no cloth for its stride.
 - **A skirt split down the side of a leg swung back** → pushing out "away from the body's axis" sends a skirt's front
   out the back of a trailing leg; take the side the cloth faces (its skinned normal).
 - **Belts round the hips flaring into fins** → they took the thighs' skin weights from the body; weight them to the

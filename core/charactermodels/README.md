@@ -31,6 +31,7 @@ python3 tools/make_mpfb.py giant <the man's export dir>            # -> pieces/m
 blender -b --python tools/make_garments.py -- male --only <ids> [--render <dir>]
 blender -b --python tools/mpfb_build.py -- male <export dir> --only <ids>
 python3 tools/make_mpfb.py male <export dir> --merge                # -> pieces/mpfb_male/<id>.*, new entries in kit.json
+tools/rebuild.sh [--only <male ids> <female ids>]                  # all of the above in order, both bodies at once, then the pages
 python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
