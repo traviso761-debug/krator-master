@@ -20,6 +20,25 @@
   const SF = ['single-family dwelling'], MF = ['multi-family dwelling'];
   if (!IX.CULTURE_FAMILY.eternian) IX.CULTURE_FAMILY.eternian = ['generic'];
   const L = [];
+  /* the rooms of a hexagonal ring of ranges (the examination hall's cells, the kiln works' sheds): range k of six (k 1 the
+     front), n rooms to a range between its inner hexagon (circumradius RI) and its outer (RO), each with its door on the
+     court; the frame is etHexFaces's (kits/eternian src/46-et-civic-kit.js): a range's x runs along its face */
+  const ringRooms = function (RI, RO, y, h, n, kind, idp, skip) {
+    const out = [], api = RI * AP, apo = RO * AP;
+    for (let k = 0; k < 6; k++) {
+      const ph = Math.PI / 6 + k * Math.PI / 3, c = Math.cos(ph), s = Math.sin(ph);
+      const W = (x, r) => [+(r * c + x * s).toFixed(3), +(r * s - x * c).toFixed(3)];
+      for (let i = 0; i < n; i++) {
+        if (skip && skip(k, i)) continue;
+        const xi = t => -RI / 2 + t * RI / n, xo = t => -RO / 2 + t * RO / n;
+        let poly = [W(xi(i), api + 0.3), W(xi(i + 1), api + 0.3), W(xo(i + 1), apo - 0.3), W(xo(i), apo - 0.3)];
+        let a2 = 0; for (let j = 0; j < 4; j++) { const P = poly[j], Q = poly[(j + 1) % 4]; a2 += P[0] * Q[1] - Q[0] * P[1]; }
+        if (a2 < 0) poly = poly.reverse();   /* the winding rect() gives */
+        out.push({ id: idp + k + '_' + i, kind: kind, poly: poly, y: y, h: h, doors: [{ at: W((xi(i) + xi(i + 1)) / 2, api + 0.3), w: 0.8 }] });
+      }
+    }
+    return out;
+  };
   const add = function (it) { it.culture = it.culture || 'eternian'; L.push(it); return it; };
   const skip = (key, name, why, types) => add({ key: key, name: name, types: types || ['civic'], skip: why });
   /* an etTrade body: the rectangle w x d at (cx, cz), or the hexagon R; n storeys of sh on a plinth G; its door on the front */
@@ -74,11 +93,16 @@
     note: 'the house in its walled garden; the garden is open' });
 
   /* ---------------- THE STATE AND THE ANCESTORS */
-  skip('et_ministry', 'Ministry', 'the stepped pier bundle is drawn solid: its offices are a later pass');
+  add({ key: 'et_ministry', name: 'Ministry', wealth: CIVIC, types: ['civic'], lot: [27, 22],
+    bodies: [{ id: 'hall', poly: rect(20, 12, 0, -3), y: 1.2, levels: [{ h: 4.6 }, { h: 4.6 }, { h: 4.6 }], wall: 0.3, roof: 'hip',
+      doors: [{ at: [0, 3], w: 2.0 }], program: [['study', 'store'], ['hall', 'study'], ['study', 'shrine']] }],
+    note: 'the three floors of offices in the hall behind the pier bundle (the bundle is solid)' });
   add({ key: 'et_registry', name: 'Registry', wealth: CIVIC, types: ['civic'], lot: [30, 18],
     bodies: [{ id: 'hall', poly: rect(26, 10), y: 0.8, levels: [{ h: 8 }], wall: 0.3, roof: 'hip', doors: [{ at: [0, 5], w: 2.0 }], program: ['study', 'library', 'study'] }],
     note: 'the clerks’ hall and the registers; the vault is solid' });
-  skip('et_examination_hall', 'Examination hall', 'a hexagon of thirty cells round a court: the cells are a later pass');
+  add({ key: 'et_examination_hall', name: 'Examination hall', wealth: CIVIC, types: ['civic'], residence: false, lot: [26, 26],
+    rooms: ringRooms(7.4, 12.4, 0.4, 3.6, 5, 'study', 'cell', (k, i) => k === 1 && i === 2),
+    note: 'the examination cells, five to a range of the hexagon, each with its door on the court; the gate passes the front range’s middle; the tower is not planned' });
   add({ key: 'et_customs_house', name: 'Customs house', wealth: CIVIC, types: ['civic'], lot: [21, 13],
     bodies: [{ id: 'hall', poly: rect(19, 10), y: 0.4, levels: [{ h: 6.5 }], wall: 0.3, roof: 'hip', doors: [{ at: [0, 5], w: 3.0 }], program: ['hall', 'store', 'study'] }],
     note: 'the weighing hall behind the gate wall' });
@@ -122,7 +146,9 @@
   add({ key: 'et_granary', name: 'Granary', wealth: MID, types: ['farm'], lot: [15, 15], bodies: [tradeHex('granary', 5, 2, [['store'], ['store']], { G: 1.2, sh: 3.6 })] });
   add({ key: 'et_warehouse', name: 'Warehouse', wealth: MID, types: ['workshop'], lot: [20, 22], bodies: [tradeHex('store', 7.5, 3, [['store'], ['store'], ['store']], { sh: 3.6 })] });
   add({ key: 'et_mushroom_cellar', name: 'Mushroom cellar', wealth: POOR, types: ['farm'], lot: [11, 9], bodies: [tradeRect('cellar', 9, 7, 1, ['store'], { G: 0.1, sh: 3, roof: 'flat' })] });
-  skip('et_kiln', 'Kiln works', 'a hexagonal court of sheds round its kilns: the sheds are a later pass', ['workshop']);
+  add({ key: 'et_kiln', name: 'Kiln works', wealth: MID, types: ['workshop'], lot: [26, 26],
+    rooms: ringRooms(8, 12, 0.3, 3.4, 1, 'workshop', 'shed', (k) => k === 1),
+    note: 'the five sheds round the court of kilns, each open to it; the front range is the gate' });
   add({ key: 'et_tile_works', name: 'Tile works', wealth: MID, types: ['workshop'], lot: [24, 28], bodies: [tradeHex('hall', 5.2, 1, ['workshop'], { sh: 4 })] });
   add({ key: 'et_porcelain', name: 'Porcelain works', wealth: MID, types: ['workshop'], lot: [16, 10], bodies: [tradeRect('shed', 11, 7, 1, ['workshop'], { doorX: -2, sh: 3.6 })] });
   add({ key: 'et_paper_mill', name: 'Paper mill', wealth: MID, types: ['workshop'], lot: [16, 13], bodies: [tradeRect('mill', 12, 8, 2, [['workshop'], ['store']])] });

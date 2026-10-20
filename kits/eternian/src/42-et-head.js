@@ -95,6 +95,11 @@ function etHeadGeo(p){p=p||etHeadParams(0);const G={pos:[],uv:[],eyes:p.eyes};
  return G;}
 
 /* ---------------------------------------------------------------- the figure: 1 tall, the head on top (PLAN.md section 5) */
+/* a hand at the wrist w: a palm and four fingers along d (unit), spread along a (unit), a thumb off the side; s long */
+function etGHand(G,w,d,a,s){const at=(t,u)=>[w[0]+d[0]*t+a[0]*u,w[1]+d[1]*t+a[1]*u,w[2]+d[2]*t+a[2]*u];
+ etGBeam(G,w,at(s*.5,0),s*.4);
+ for(let f=0;f<4;f++){const u=(f-1.5)*s*.1;etGBeam(G,at(s*.48,u),at(s*(f===1||f===2?1:.88),u),s*.085);}
+ etGBeam(G,at(s*.12,s*.2),at(s*.48,s*.32),s*.09);}
 function etFigureGeo(p){p=p||{};const pose=p.pose||'stand',G={pos:[],uv:[],eyes:'closed'};
  const hp=etHeadParams(p.seed||0,{eyes:p.eyes,headdress:p.headdress||'step',neck:false}),seat=pose==='seat';
  const hH=.15,shY=seat?.62:.8,hipY=seat?.36:.45;
@@ -103,15 +108,31 @@ function etFigureGeo(p){p=p||{};const pose=p.pose||'stand',G={pos:[],uv:[],eyes:
  etGFrustum(G,0,0,seat?hipY:0,shY,seat?.17:.22,.15,8,.72);
  etGBox(G,-.21,shY-.05,-.08,.21,shY+.03,.08);                                        // the shoulders' bar
  // the arms by pose: folded across the chest, spread overhead holding a lintel, or down at the sides
- if(pose==='folded'){etGBox(G,-.19,shY-.32,-.05,-.13,shY-.02,.06);etGBox(G,.13,shY-.32,-.05,.19,shY-.02,.06);etGBox(G,-.18,shY-.3,.05,.18,shY-.22,.12);}
- else if(pose==='lintel'){for(const sx of [-1,1]){const sh=[sx*.19,shY-.01,0],el=[sx*.33,shY+.14,0],hd=[sx*.38,shY+.34,0];
-   etGBeam(G,sh,el,.065);etGBeam(G,el,hd,.055);etGBox(G,sx*.38-.045,shY+.34,-.045,sx*.38+.045,shY+.38,.045);}}   /* the hands flat under the lintel at shY + .38 */
+ if(pose==='folded'){etGBox(G,-.19,shY-.32,-.05,-.13,shY-.02,.06);etGBox(G,.13,shY-.32,-.05,.19,shY-.02,.06);etGBox(G,-.18,shY-.3,.05,.13,shY-.22,.12);
+  etGHand(G,[.13,shY-.26,.09],[-1,0,0],[0,1,0],.07);}   /* the right hand over the left forearm */
+ else if(pose==='lintel'){const sp=p.spread==null?.38:p.spread;   /* p.spread: the hands' reach from the axis (a gate's colossi hold closer) */
+  for(const sx of [-1,1]){const sh=[sx*.19,shY-.01,0],el=[sx*(.19+.14*sp/.38),shY+.14,0],hd=[sx*sp,shY+.34,0];
+   etGBeam(G,sh,el,.065);etGBeam(G,el,hd,.055);etGHand(G,hd,[0,1,0],[0,0,1],.045);}}   /* the hands under the lintel at shY + .38, fingers up */
  else{etGBox(G,-.22,shY-.42,-.05,-.16,shY-.02,.05);etGBox(G,.16,shY-.42,-.05,.22,shY-.02,.05);
-  if(seat){etGBox(G,-.2,hipY+.05,.05,-.14,hipY+.1,.26);etGBox(G,.14,hipY+.05,.05,.2,hipY+.1,.26);}}
+  if(seat){etGBox(G,-.2,hipY+.05,.05,-.14,hipY+.1,.26);etGBox(G,.14,hipY+.05,.05,.2,hipY+.1,.26);
+   for(const sx of [-1,1])etGHand(G,[sx*.17,hipY+.08,.26],[0,-.29,.96],[1,0,0],.08);}   /* the hands on the knees */
+  else for(const sx of [-1,1])etGHand(G,[sx*.19,shY-.42,0],[0,-1,0],[0,0,1],.08);}   /* the hands at the sides */
  etGBox(G,-.05,shY+.02,-.05,.05,shY+.06,.05);                                        // the neck
  // the head, scaled to hH and set on the neck
  const H=etHeadGeo(hp);G.eyes=H.eyes;const w=hH*.92;
  for(let i=0;i<H.pos.length;i+=3){G.pos.push(H.pos[i]*w,shY+.05+H.pos[i+1]*hH,H.pos[i+2]*w);}
  for(let i=0;i<H.uv.length;i+=2)G.uv.push(H.uv[i],H.uv[i+1]);
  return G;}
-globalThis.etHeadParams=etHeadParams;globalThis.etHeadGeo=etHeadGeo;globalThis.etFigureGeo=etFigureGeo;
+/* ---------------------------------------------------------------- the veil (the owner's quality pass, 2026-10-20): cloth
+   over a head of the generator's frame (chin at 0, crown at 1, the neck's foot at -0.16), hugging the crown and falling in
+   folds to the foot, the folds deepening as they fall, the brow and nose faintly through it at the front. p.seed turns
+   the folds. Returns {pos, uv} as etHeadGeo does */
+function etVeilGeo(p){p=p||{};const G={pos:[],uv:[]},ph0=KRAND.unit(KRAND.hash((p.seed|0)>>>0,0x7e11,1))*TAU,NF=11,NR=14,NC=33;
+ const Y=i=>1.14-(1.30)*i/(NR-1);
+ const R=y=>y>.62?.47*Math.sqrt(Math.max(0,1-Math.pow((y-.56)/.6,2)))+.02:.47+(.62-y)*.07;
+ const P=(i,j)=>{const y=Y(i),t=i/(NR-1),a=j/(NC-1)*TAU,fold=t*t*.11*Math.sin(NF*a+ph0)+t*.04*Math.sin(5*a+2*ph0);
+  const front=Math.max(0,Math.cos(a)),face=(y>.15&&y<.9?.25*Math.sin((y-.15)/.75*Math.PI):0)*Math.pow(front,2.5);   /* over the brow, nose and chin */
+  const r=R(y)*(1+fold)+face;return [r*Math.sin(a),y,r*Math.cos(a)*.98];};
+ for(let i=0;i<NR-1;i++)for(let j=0;j<NC-1;j++)etQuad(G,P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1));
+ return G;}
+globalThis.etHeadParams=etHeadParams;globalThis.etHeadGeo=etHeadGeo;globalThis.etFigureGeo=etFigureGeo;globalThis.etVeilGeo=etVeilGeo;

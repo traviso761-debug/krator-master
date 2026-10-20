@@ -1,8 +1,8 @@
 # The Eternian kit's sheet through core/export (kits/eternian P7; core/export/README.md, "Profiles"): a tile of the sheet
-# (the canal street) exported as a krator-world opens in Godot with its records, materials and ground. The kit is on the
-# Scyvoi engine, whose pages give the exporter records and materials but no meshes (the isle demo's route), so the case
-# is held to the profile registry, materials, terrain. The case is written by
-#   python3 tools/harness.py export kits/eternian/dist/eternian.html --out godot/data/world-eternian --box -45,-205,45,-145 --profile registry,materials,terrain
+# (part of the canal street) exported as a krator-world opens in Godot with its records, its meshes, materials and ground.
+# The kit is on the Scyvoi engine: its merged meshes go out as buckets (kits/eternian/src/93e-et-export.js), one per
+# material key, and it places no instanced items. The case is written by
+#   python3 tools/harness.py export kits/eternian/dist/eternian.html --out godot/data/world-eternian --box -30,-200,10,-165 --profile registry,buckets,materials,terrain
 # and imported by krator/world_import.gd. Each check that can have a negative has one.
 #   godot --headless --path godot --script res://tests/export/eternian_test.gd     exits 0 when every check passes
 # (a fresh checkout runs godot --headless --path godot --import once first, so the class names register)
@@ -35,12 +35,25 @@ func _initialize() -> void:
 		"world.json and world.glb load (%d ms)" % rep["counts"]["load_ms"])
 	ok((d["errors"] as Array).is_empty(), "the page reported no section errors")
 	var bad := []
-	for s in ["registry", "materials", "terrain"]:
+	for s in ["registry", "buckets", "materials", "terrain"]:
 		if rep["sections"].get(s) != "ok":
 			bad.append(s)
 	ok(bad.is_empty(), "the profile's sections filled: %s" % JSON.stringify(rep["sections"]))
-	ok(rep["sections"].get("items") != "ok" and rep["sections"].get("buckets") != "ok",
-		"negative: the Scyvoi engine gives no meshes, and the report does not claim any")
+	ok(rep["sections"].get("items") != "ok", "negative: the engine places no instanced items, and the report does not claim any")
+
+	# 0. the meshes: every bucket arrives as a mesh with its triangles and a material
+	var bnodes := w.get_node("Buckets").get_children()
+	var tris := 0
+	var nomat := 0
+	for b in bnodes:
+		var mesh: Mesh = (b as MeshInstance3D).mesh
+		for si in mesh.get_surface_count():
+			tris += mesh.surface_get_array_index_len(si) / 3
+			if mesh.surface_get_material(si) == null and (b as MeshInstance3D).get_surface_override_material(si) == null and (b as MeshInstance3D).material_override == null:
+				nomat += 1
+	ok(bnodes.size() == (d["buckets"] as Array).size() and bnodes.size() > 0, "%d bucket meshes (the page's: %d)" % [bnodes.size(), (d["buckets"] as Array).size()])
+	ok(tris == int(d["stats"]["triangles"]), "%d triangles drawn, the page's count %d" % [tris, int(d["stats"]["triangles"])])
+	ok(nomat == 0, "every mesh surface has its material (%d without)" % nomat)
 
 	# 1. the registry: every record resolves, its uid recomputed here from its class, key and position
 	var tags: Dictionary = w.get_meta("tags", {})
@@ -82,6 +95,14 @@ func _initialize() -> void:
 			lib += 1
 	ok(mats.size() > 0 and ids.size() == mats.size(), "%d materials, their ids unique" % mats.size())
 	ok(nofam == 0 and lib > mats.size() / 2, "every material names its family; %d of %d are the library's sets" % [lib, mats.size()])
+	var std := 0
+	var unlinked := 0
+	for m in mats:
+		if m.get("kind") == "standard":
+			std += 1
+			if not ids.has(str(m.get("kmat", ""))):
+				unlinked += 1
+	ok(std > 0 and unlinked == 0, "%d mesh materials, each linked to its KMAT record (%d not)" % [std, unlinked])
 
 	# 3. the ground: the sheet stands on flat ground, and the export's probes say so off the lattice
 	var g = w.get_meta("ground", null)

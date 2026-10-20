@@ -9,3 +9,6 @@ for(const k of ['screen','screenB']){const m=MAT[k];if(!m)continue;m.alphaTest=.
 for(const k of ['onyx','alabaster']){const m=MAT[k];if(!m||!m.map)continue;m.emissive.setHex(0xffffff);m.emissiveMap=m.map;m.emissiveIntensity=.22;}
 /* the talking heads' faces are screens: their sheet is their own light (the Ancients' terminals, woken by the Machine Talkers) */
 if(MAT.faces&&MAT.faces.map){MAT.faces.emissive.setHex(0xffffff);MAT.faces.emissiveMap=MAT.faces.map;MAT.faces.emissiveIntensity=.85;}
+/* the canals' water: the vendored material is a mirror (roughness .08) and read the sky pale at a low angle; rougher,
+   duller and nearly opaque it reads as deep water (the owner's review, 2026-10-20) */
+if(MAT.water){MAT.water.roughness=.3;MAT.water.metalness=0;MAT.water.opacity=.94;MAT.water.envMapIntensity=.45;MAT.water.needsUpdate=true;}

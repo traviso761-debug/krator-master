@@ -69,6 +69,18 @@ function etHip(w,d,y,h,o){o=o||{};const mk=o.mk||'celadon',col=o.col||etKeyCol(m
    for(const s of [-1,1])beam(mk,[s*X,Y(0),u],[s*(X-t*(X-rx)),Y(t),u],rw,rc);}}
  if(o.flare)for(const sx of [-1,1])for(const sz of [-1,1]){const c=E(sx,sz);beam(mk,c,[c[0]+sx*o.flare*.6,c[1]+o.flare,c[2]+sz*o.flare*.6],.12,cap);}}
 
+/* ---------------------------------------------------------------- the hexagonal hip: six slopes to a point over a hexagon
+   of circumradius R (corners at multiples of 60 degrees, etHex's), eaves at y overhanging o.ov, h to the apex; each slope's
+   UVs run along its eave and up its fall, so the tile's rolls run down every face (the owner: the plain cones read badly);
+   the hips and the eave's fascia in o.cap, the underside dropped clear (ET_SOFFIT) */
+function etHexHip(R,y,h,o){o=o||{};const mk=o.mk||'tile',col=o.col||etKeyCol(mk),ov=o.ov==null?.5:o.ov,un=o.under||P('timber');
+ const ap=R*Math.cos(PI/6),k=h/ap,ye=y-ov*k,Re=(ap+ov)/Math.cos(PI/6),A=[0,y+h,0],E=i=>[Re*Math.cos(i*PI/3),ye,Re*Math.sin(i*PI/3)];
+ const cap=o.cap||new THREE.Color(col).multiplyScalar(.8),ape=ap+ov;
+ for(let i=0;i<6;i++){const a=E(i+1),b=E(i),mx=(a[0]+b[0])/2,mz=(a[2]+b[2])/2,ml=Math.hypot(mx,mz),T=[(a[0]-b[0])/Re,(a[2]-b[2])/Re],n=[mx/ml,mz/ml];
+  const uv=p=>[(p[0]-mx)*T[0]+(p[2]-mz)*T[1],Math.hypot(ape-(p[0]*n[0]+p[2]*n[1]),p[1]-ye)];
+  const pts=[a,b,A];etPolyUV(mk,pts,pts.map(uv),col);etPoly(mk,pts.map(p=>[p[0],p[1]-ET_SOFFIT,p[2]]).reverse(),un);
+  beam(mk,b,A,.14,cap);beam(mk,[a[0],a[1]-.08,a[2]],[b[0],b[1]-.08,b[2]],.16,cap);}}
+
 /* ---------------------------------------------------------------- the pent (a lean-to): one slope from y1 at the back
    (z = -d/2) to y0 at the front, w x d, overhanging o.ov at the front and o.gov at the sides */
 function etPent(w,d,y0,y1,o){o=o||{};const mk=o.mk||'tile',col=o.col||etKeyCol(mk),ov=o.ov==null?.35:o.ov,gov=o.gov==null?.2:o.gov,th=o.th||.12;

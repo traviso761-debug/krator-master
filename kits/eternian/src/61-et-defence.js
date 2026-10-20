@@ -17,7 +17,7 @@ defBuilding({key:'et_gate',name:'City gate',seed:7110,w:26,d:10,h:30,budget:1800
    pushM(TF(-s*2.2,0,.02));etWall(2.6,1.2,3.4,'brick',br,[{x:0,w:1.1,h:2.4,door:true,maskMetal:'lead'}],{t:.04,frame:brD});popM();
    popM();
    const fx=s*5.6;for(let k=0;k<3;k++)box('stone',fx,k*PL/3,1.2,3.4-k*.5,PL/3,4-k*.5,sd);
-   etFigure(fx,PL,1.2,FH,{pose:'lintel',metal:'gold'});}
+   etFigure(fx,PL,1.2,FH,{pose:'lintel',metal:'gold',spread:.26});}   /* arms raised close, each over its own half */
   box('stone',0,LY,1.2,20.4,1.4,3.2,sd);for(let k=0;k<3;k++)box('brick',0,LY+1.4+k*.5,1.2,18-k*4,.5,2.6,brD);
   etFrieze(0,LY+.1,2.82,19.4,1.2);
   for(const s of [-1,1])box('bronze',s*1.25,0,-1.5,2.5,6.5,.16,P('bronze'));door(0,0,-1.2,0,5);

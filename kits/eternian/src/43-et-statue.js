@@ -30,16 +30,16 @@ function etNote(rec){if(CURREC&&!PLACE_DRY)(CURREC.heads=CURREC.heads||[]).push(
    ('closed' by default), o.headdress, o.veiled, o.seed (else the place's), o.plinth (a plinth that tall under it) */
 function etHead(x,y,z,h,o){o=o||{};const metal=ET_METALS[o.metal]||'bronze',col=etMetalCol(metal),ry=o.ry||0;
  if(o.plinth){box(o.plinthMk||'stone',x,y,z,h*.7,o.plinth,h*.7,o.plinthCol||P('stoneD'),ry);y+=o.plinth;}
- const p=etHeadParams(o.seed==null?etSeedAt(x,y,z,1):o.seed,{eyes:o.eyes,headdress:o.headdress});
+ const p=etHeadParams(o.seed==null?etSeedAt(x,y,z,1):o.seed,{eyes:o.eyes,headdress:o.veiled?'none':o.headdress});   /* bare under a veil */
  etEmitGeo(metal,etHeadGeo(p),x,y+h*.16,z,[h*.92,h,h*.92],ry,col);   /* the neck's foot at y */
- if(o.veiled){cone('bronze',x,y+h*.08,z,h*.46,h*1.12,new THREE.Color(P('bronze')).multiplyScalar(.6),8);}
+ if(o.veiled)etEmitGeo('bronze',etVeilGeo({seed:etSeedAt(x,y,z,4)}),x,y+h*.16,z,[h*.95,h,h*.95],ry,new THREE.Color(P('bronze')).multiplyScalar(.62));   /* the veil: cloth in folds over the head */
  etNote({kind:'head',metal:metal,eyes:o.veiled?'veiled':p.eyes,veiled:!!o.veiled});}
 
 /* a figure h tall standing at (x, y, z), facing ry: o.pose 'stand' | 'seat' | 'lintel' | 'folded', o.metal, o.eyes,
    o.plinth (a stepped plinth that tall under it) */
 function etFigure(x,y,z,h,o){o=o||{};const metal=ET_METALS[o.metal]||'bronze',col=etMetalCol(metal),ry=o.ry||0;
  if(o.plinth){const pl=o.plinth;box('stone',x,y,z,h*.62,pl*.6,h*.5,P('stoneD'),ry);box('stone',x,y+pl*.6,z,h*.5,pl*.4,h*.4,P('stoneD'),ry);y+=pl;}
- const G=etFigureGeo({pose:o.pose,seed:o.seed==null?etSeedAt(x,y,z,2):o.seed,eyes:o.eyes,headdress:o.headdress});
+ const G=etFigureGeo({pose:o.pose,seed:o.seed==null?etSeedAt(x,y,z,2):o.seed,eyes:o.eyes,headdress:o.headdress,spread:o.spread});
  etEmitGeo(metal,G,x,y,z,h,ry,col);
  etNote({kind:'figure',metal:metal,eyes:G.eyes,pose:o.pose||'stand',veiled:false});}
 

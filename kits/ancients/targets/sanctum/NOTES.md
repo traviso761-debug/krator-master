@@ -42,9 +42,8 @@ spandrels between the arch and that rectangle are filled by a fan.
   great three a triangle, every arch on the six axes, each level a triangle, 27 counterclockwise flights under 33
   degrees, every arch clearing the one above on its axis, deltas all landing on records, unique ids,
   finite positions, closed eyes, onyx in every hall of the State.
-- `python3 verify.py dist/sanctum.html --assert --views "The Sanctum"`: OK (2026-10-20, with the Eternian heads), 54 draw
-  calls, 0.34 M triangles at the hero view; `kept/0` 417 k is OVER the 250 k per-type guide (a warning: the heads, about
-  450 triangles each, `kits/eternian/KNOWN_ISSUES.md`).
+- `python3 verify.py dist/sanctum.html --assert --views "The Sanctum"`: OK (2026-10-20): its rows are classed 'mega' (`91z-views.js`,
+  as Plymouth is), heaviest `kept/0` 429 k of 700 k with the Eternian heads and draped veils.
 - In the page: `window._sanctumSite.tags` is the core/tags audit. Its only unknown is `culture:eternian`, until the
   Eternian kit's P0 registers the culture.
 

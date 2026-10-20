@@ -267,8 +267,8 @@ function snDraw(scene,gx,gz,P,K){KOFF=[gx,0,gz];
   if(a.plinth){kput('snBox',[a.at[0],y+a.plinth/2,a.at[2]],qFacing(o),[h*.62,a.plinth,h*.62],WHT);y+=a.plinth;}
   const ti=a.metal==='titanium';
   if(a.crown){kput(ti?'snBoxTi':'snBox',[a.at[0],y+h*.17,a.at[2]],qFacing(o),[h*1.25,h*.34,h*.6],ti?null:c);y+=h*.3;}
-  if(a.veiled){kput(snHeadKey(a),[a.at[0],y,a.at[2]],qFacing(o),[h*.84,h,h*.92],c);
-   kput('snVeil',[a.at[0],y,a.at[2]],qFacing(o),[h*.48,h*1.16,h*.52],new THREE.Color(0x5e4a2c));return;}
+  if(a.veiled){kput('snHead3',[a.at[0],y,a.at[2]],qFacing(o),[h*.84,h,h*.92],c);   /* a bare variant (SN_HEAD_DRESS[3] 'none') under the veil */
+   kput('snVeil',[a.at[0],y,a.at[2]],qFacing(o),[h*.88,h,h*.96],new THREE.Color(0x5e4a2c));return;}
   kput(ti?'snHeadTi':snHeadKey(a),[a.at[0],y,a.at[2]],qFacing(o),[h*.84,h,h*.92*(a.relief||1)],ti?null:c);};
  const B3=new THREE.Matrix4(),QQ=new THREE.Quaternion();
  for(const a of (P.add||[])){const k=a.kind;

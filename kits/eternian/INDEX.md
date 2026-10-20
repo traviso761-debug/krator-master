@@ -23,16 +23,16 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
 | `26k-kit.js` | 5 |  |
 | `27-mat.js` | 6 |  |
-| `28-et-mat.js` | 1 |  |
+| `28-et-mat.js` | 2 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 5 |  |
 | `37-wk-rec.js` | 2 |  |
 | `38-et-alt.js` | 2 |  |
 | `40-et-kit.js` | 9 |  |
 | `41-et-profile.js` | 8 |  |
-| `42-et-head.js` | 10 |  |
+| `42-et-head.js` | 12 |  |
 | `43-et-statue.js` | 5 |  |
-| `44-et-roof.js` | 9 |  |
+| `44-et-roof.js` | 10 |  |
 | `45-et-samples.js` | 6 |  |
 | `46-et-civic-kit.js` | 4 |  |
 | `50-et-dwell.js` | 12 | THE POOR (PLAN.md section 4): silt, reed and cas (68) |
@@ -40,7 +40,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `52-et-dwell-rich.js` | 9 |  |
 | `53-et-court.js` | 5 |  |
 | `54-et-dwell-hex.js` | 3 |  |
-| `60-et-state.js` | 10 |  |
+| `60-et-state.js` | 11 |  |
 | `61-et-defence.js` | 6 |  |
 | `62-et-machine.js` | 10 |  |
 | `63-et-faith.js` | 9 |  |
@@ -60,6 +60,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `91n-night.js` | 3 |  |
 | `92-world.js` | <1 |  |
 | `93-anim.js` | 3 |  |
-| `93e-et-export.js` | <1 |  |
+| `93e-et-export.js` | 4 |  |
 | `99-host-take.js` | 7 | the inspector's words: a click names what is und (11); the cut-away (C), night (N, in 91n-night.js), sh (28); the frame, around the host's: the sun and the sk (35); the probe's fields (verify.py --assert): what 91 (45); the page, handed to the host (62) |
 | `99-tail.html` | <1 |  |

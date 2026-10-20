@@ -167,7 +167,7 @@ kdef('snBox',new THREE.BoxGeometry(1,1,1),MAT.snKit);
 kdef('snBar',new THREE.BoxGeometry(1,1,1),MAT.snMetal);
 for(let i=0;i<SN_HEADS;i++)kdef('snHead'+i,snHeadGeo(KRAND.hash(0x5a9c7,i),{headdress:SN_HEAD_DRESS[i%4]}),MAT.snMetal);
 kdef('snMask',snHeadGeo(KRAND.hash(0x5a9c7,99),{mask:true}),MAT.snMetal);
-kdef('snVeil',new THREE.SphereGeometry(1,10,6,0,TAU,0,Math.PI/2).scale(1,1,1),MAT.snMetal);
+kdef('snVeil',snGeoOf(etVeilGeo({seed:KRAND.hash(0x5a9c7,77)}),.16),MAT.snMetal);   /* the generator's draped veil (kits/eternian 42-et-head.js) */
 kdef('snRoof4',new THREE.ConeGeometry(.7071,1,4,1).rotateY(Math.PI/4).translate(0,.5,0),MAT.snMetal);
 kdef('snDome',new THREE.SphereGeometry(1,20,8,0,TAU,0,Math.PI/2),MAT.snMetal);
 kdef('snDomeG',new THREE.SphereGeometry(1,20,8,0,TAU,0,Math.PI/2),MAT.snDomeG);

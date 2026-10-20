@@ -18,6 +18,9 @@ function etPierBundle(o){o=o||{};const n=o.n||7,w=o.w||12,d=o.d||5,h0=o.h0==null
   box(mk,x,h,pj/2,pw*.8,cap1,d*.8+pj,col);box(mk,x,h+cap1,pj/2,pw*.55,cap2,d*.6+pj,col);
   if(o.niches){box('stone',x,h-pw*1.5,(d+pj)/2+.005,pw*.52,pw*1.0,.04,P('stoneD'));R.niches.push([x,h-pw*1.5,(d+pj)/2]);}
   R.xs.push(x);R.tops.push(h+cap1+cap2);R.top=Math.max(R.top,h+cap1+cap2);}
+ /* the joints: a dark line down the front between neighbouring piers, so the bundle reads as piers at a distance */
+ const jc=new THREE.Color(P('stoneD')).multiplyScalar(.55);
+ for(let i=1;i<n;i++){const hA=h0+(mid-Math.abs(i-1-mid))*st,hB=h0+(mid-Math.abs(i-mid))*st;box('stone',-w/2+pw*i,0,d/2+.13,.07,Math.min(hA,hB),.26,jc);}
  if(o.spire){const sb=pw*1.3,sh=o.spire;box(mk,0,R.top,0,sb,sh*.22,sb,col);
   cone(o.spireMk||'verdigris',0,R.top+sh*.22,0,sb*.66,sh*.78,o.spireCol||P('verdigris'),4);R.spireTop=R.top+sh;}
  return R;}

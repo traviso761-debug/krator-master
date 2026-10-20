@@ -69,7 +69,7 @@ function etWalls(w,d,y0,h,mk,col,o){o=o||{};const t=o.t||ET_T;
  for(const [side,x,z,ry,L] of S){pushM(TF(x,0,z,ry));etWall(L,y0,h,mk,col,o[side]||[],o);popM();}}
 
 /* ---------------------------------------------------------------- flutes: n half-round reeds on a face at z, x0..x1, y0..y1 */
-function etFlutes(x0,x1,y0,y1,z,n,col){const r=Math.min(.16,(x1-x0)/(n*2.1));
+function etFlutes(x0,x1,y0,y1,z,n,col){const r=Math.min(.22,(x1-x0)/(n*1.9));   /* reeds up to 0.22 m, so they carry at a distance */
  for(let i=0;i<n;i++){const x=x0+(x1-x0)*(i+.5)/n;cyl('lime',x,y0,z,r,y1-y0,col||P('lime'),8);}}
 
 /* ---------------------------------------------------------------- the parapet: a band round a w x d roof at y, h tall, with a

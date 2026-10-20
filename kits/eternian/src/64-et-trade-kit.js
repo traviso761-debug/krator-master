@@ -26,7 +26,7 @@ function etTrade(o){const plan=o.plan||'rect',n=o.storeys||1,sh=o.sh||ET_SH,G=o.
   if(o.shop){box('timber',0,G,ap-.6,fw-1.2,1.0,.45,P('timber'));door(0,G,ap,0,1.4);}
   const rm=o.roofMk||'tile',ry=G+H;
   if(o.roof==='ogee')etOgee(R+.6,ry,R*.9,{mk:rm,seg:6,a0:0,col:etKeyCol(rm)});
-  else{lathe(rm,0,0,[[R+.6,ry-.15],[.05,ry+R*.62]],6,etKeyCol(rm),{a0:0,a1:TAU});lathe(rm,0,0,[[.05,ry+R*.62-ET_SOFFIT],[R+.6,ry-.15-ET_SOFFIT]],6,P('timber'),{a0:0,a1:TAU});
+  else{etHexHip(R,ry,R*.62,{mk:rm,ov:.6});
    cone('verdigris',0,ry+R*.6,0,.25,1.2,P('verdigris'),6);}
   for(const f of (o.furn||[])){const s=f[3]||0,ph=PI/6+f[1]*PI/3,r=ap-f[2];
    FURNISH(f[0],r*Math.cos(ph),G+s*sh,r*Math.sin(ph),Math.atan2(-Math.cos(ph),-Math.sin(ph)));}}

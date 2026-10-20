@@ -1,6 +1,8 @@
 // Presets, DERIVED: 89z-rows.js loads before 90-scene.js and this after it, so both builders have run and left their
 // gates, bays, ridges and crown in SN_SITE (8aq3). Local frame: x east, z south; the south ridge (the Imperial Way of
 // the Sanctum) is on th = TIP0 = 90 degrees, so a camera south of a site looks up the axis.
+// the per-type guide (91-probe.js BUDGET): the Sanctum is an arcology of Plymouth's volume, the 'mega' class Plymouth is
+BUDGET.type.built='mega';BUDGET.type.kept='mega';
 const SNA=SN_SITE.intact||{x:-1700,z:0,YT:660,TIP0:Math.PI/2,gates:[],bays:[],ridges:[]};
 const SNK=SN_SITE.kept||{x:1700,z:0,YT:660,TIP0:Math.PI/2,gates:[],bays:[],ridges:[]};
 const SNP=(S,r,th,y)=>[S.x+r*Math.cos(th),y,S.z+r*Math.sin(th)];

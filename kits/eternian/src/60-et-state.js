@@ -6,15 +6,30 @@
 
 /* the ministry: on a stone podium, the stepped pier bundle of nine piers (figures in the niches under their tops, a
    verdigris spire), a lancet bundle and an oculus over the civic door, the circuit-maze band, banners of the sign; the
-   hall behind under a steep celadon hip, lancets down its flanks; a tube head in a niche on its right flank */
-defBuilding({key:'et_ministry',name:'Ministry',seed:7101,w:27,d:22,h:46,budget:220000,
+   hall behind under a steep celadon hip, lancets down its flanks, three floors of offices in it (the clerks and the
+   archive, the council room, the minister's floor with the household's niche); a tube head in a niche on its right flank */
+defBuilding({key:'et_ministry',name:'Ministry',seed:7101,cut:true,w:27,d:22,h:46,budget:240000,
  tags:{types:['civic'],wealth:'rich',style:'ministry'},
  note:'the stepped pier bundle in pale brick, figures in its niches, a verdigris spire, a lancet bundle and oculus over a civic door held by two ancestors; the hall behind under celadon; a tube head in its flank',
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=1.2;
   box('stone',0,0,0,25,G,20,sd);for(let k=0;k<4;k++)box('stone',0,0,10.3+k*.32,9-k*.6,G-k*.3,.32,sd);
   // the hall behind
   pushM(TF(0,G,-3));
-   box('brick',0,0,0,20,14,12,br);
+   const bw=y=>[{x:-5,w:1.2,h:2.4,y:y,steel:true,shut:false},{x:5,w:1.2,h:2.4,y:y,steel:true,shut:false}];
+   etWalls(20,12,0,14,'brick',br,{back:bw(1.2).concat(bw(5.8),bw(10.4)),front:[{x:0,w:2.0,h:3.2,door:true,mask:false,leaf:P('bronze')}]},{frame:brD});
+   box('paving',0,-.02,0,19.4,.05,11.4,P('paving'));
+   for(const y of [4.6,9.2]){box('timber',1.15,y-.25,0,17.1,.25,11.4,P('timber'));box('timber',-8.55,y-.25,-2.2,2.3,.25,7,P('timber'));
+    etStair(-8.55,y-4.6,1.4,1.6,.23,.21,20,P('timberL'));}
+   /* the clerks and the archive; the council room; the minister's floor and the household's niche */
+   for(const x of [-4,0,4])FURNISH('eternian_common_register_desk',x,0,-1.8,0);
+   for(const x of [-7.5,-2.5,2.5,7.5])FURNISH('eternian_common_archive_shelf',x,0,-5.47,0);
+   FURNISH('eternian_common_tube_rack',9.45,0,2.2,-PI/2);FURNISH('eternian_common_bench',2,0,5.45,PI);
+   FURNISH('eternian_common_table',1,4.6,0,0);FURNISH('eternian_common_table',3.8,4.6,0,0);
+   for(const z of [-1.2,1.2])FURNISH('eternian_court_gallery_bench',2.4,4.6,z*1.6,z<0?0:PI);
+   FURNISH('eternian_court_alabaster_lamp',-5,4.6,-5.2,0);FURNISH('eternian_court_alabaster_lamp',8.5,4.6,-5.2,0);
+   FURNISH('eternian_court_ancestor_niche',0,9.2,-5.45,0);FURNISH('eternian_common_register_desk',4,9.2,-1,0);
+   FURNISH('eternian_court_gallery_bench',-3.5,9.2,-5.45,0);FURNISH('eternian_court_alabaster_lamp',-1.6,9.2,-5.2,0);FURNISH('eternian_court_alabaster_lamp',1.6,9.2,-5.2,0);
+   FURNISH('eternian_court_visor_case',9.47,9.2,-2,-PI/2);
    for(const s of [-1,1]){pushM(TF(s*10,0,0,s*PI/2));for(const x of [-3.2,3.2])etLancets(x,2.5,0,{n:3,w:.9,gap:.3,h:7.5,step:.6,light:'glass',headMk:'brick',headCol:brD});
     etMazeBand(0,12.2,.02,11,.7);popM();}
    box('stone',0,13.7,0,20.6,.4,12.6,sd);
