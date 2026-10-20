@@ -106,6 +106,9 @@ for f in ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'simulation', f))
 for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-2-lights.js', '89-atmos-8-export.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'atmos', f))
+# core/walk (KWALK), read in place: the walker's floors and blocks (64 registers the Great Stair's flights, landings and
+# the base's top as it draws them; 99 hands the registry to the camera: F walks up the stair)
+PATH.setdefault('20-core-walk.js', os.path.join(ROOT, 'core', 'walk', '20-core-walk.js'))
 # the open world's fields, read in place: the land round the site at 1:1
 PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'little-demo', 'src', '41-world-fields.js')
 # the host shell from core/host, the whole interface (core/host/README.md): the inspector, marks, pictures, the minimap,

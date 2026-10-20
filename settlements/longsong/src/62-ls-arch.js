@@ -18,6 +18,7 @@
 //   ARCH.dome(k,x,y,z,r,o)           a hemisphere (o.k: a bulb's height factor)
 //   ARCH.quad(k,a,b,c,d,col)         four corners (counter-clockwise seen from the front)
 //   ARCH.wedge(k,x0,x1,z0,z1,ya0,ya1,yb) a ramp: the top from ya0 at x0 to ya1 at x1, down to yb
+//   ARCH.slab(k,x0,x1,z0,z1,ya0,ya1,yb0,yb1) a sloped slab (a ramp's parapet); ARCH.face(k,p,q,r,s,out) a quad facing out
 //   ARCH.finish()                    the meshes (userData.arch), once
 //   ARCH.col(hex)                    a linear colour, cached
 const ARCH=(function(){
@@ -76,11 +77,15 @@ const ARCH=(function(){
   for(let j=0;j<m;j++){const p0=j/m*Math.PI/2,p1=(j+1)/m*Math.PI/2;
    for(let i=0;i<n;i++){const a=i/n*Math.PI*2,b=(i+1)/n*Math.PI*2;const P=(aa,pp)=>[x+Math.cos(aa)*Math.cos(pp)*r,y+Math.sin(pp)*r*kh,z+Math.sin(aa)*Math.cos(pp)*r];
     quad(k,P(b,p0),P(a,p0),P(a,p1),P(b,p1),C);}}}
- function wedge(k,x0,x1,z0,z1,ya0,ya1,yb,C){C=col(C==null?WHITE:C);
-  const a=[x0,ya0,z0],b=[x1,ya1,z0],c=[x1,ya1,z1],d=[x0,ya0,z1],a2=[x0,yb,z0],b2=[x1,yb,z0],c2=[x1,yb,z1],d2=[x0,yb,z1];
-  const fl=x1<x0;   // keep the faces outward when the ramp runs west
-  if(!fl){quad(k,a,d,c,b,C);quad(k,a2,b2,b,a,C);quad(k,c2,d2,d,c,C);quad(k,b2,c2,c,b,C);quad(k,d2,a2,a,d,C);}
-  else{quad(k,a,b,c,d,C);quad(k,b2,a2,a,b,C);quad(k,d2,c2,c,d,C);quad(k,c2,b2,b,c,C);quad(k,a2,d2,d,a,C);}}
+ // a quad wound to face `out` (the faces' winding decides what the material's FrontSide draws: 2026-10-20, the
+ // wedge's four sides were wound inward, so a ramp's front was culled and its inner back face showed through it)
+ function face(k,p,q,r,s,out,C){const ux=q[0]-p[0],uy=q[1]-p[1],uz=q[2]-p[2],vx=r[0]-p[0],vy=r[1]-p[1],vz=r[2]-p[2];
+  const d=(uy*vz-uz*vy)*out[0]+(uz*vx-ux*vz)*out[1]+(ux*vy-uy*vx)*out[2];if(d<0)quad(k,p,s,r,q,C);else quad(k,p,q,r,s,C);}
+ // a sloped slab: its top from (x0, ya0) to (x1, ya1), its bottom from (x0, yb0) to (x1, yb1), between z0 and z1 (z0 < z1)
+ function slab(k,x0,x1,z0,z1,ya0,ya1,yb0,yb1,C){C=col(C==null?WHITE:C);const sx=x1>=x0?1:-1;
+  const a=[x0,ya0,z0],b=[x1,ya1,z0],c=[x1,ya1,z1],d=[x0,ya0,z1],a2=[x0,yb0,z0],b2=[x1,yb1,z0],c2=[x1,yb1,z1],d2=[x0,yb0,z1];
+  face(k,a,b,c,d,[0,1,0],C);face(k,a2,b2,b,a,[0,0,-1],C);face(k,c2,d2,d,c,[0,0,1],C);face(k,b2,c2,c,b,[sx,0,0],C);face(k,d2,a2,a,d,[-sx,0,0],C);}
+ function wedge(k,x0,x1,z0,z1,ya0,ya1,yb,C){slab(k,x0,x1,z0,z1,ya0,ya1,yb,yb,C);}
  // ---------------------------------------------------------------- the materials
  const pk=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib')?KMAT.packed('longsong',n):null;
  function stdMat(fam,o){o=o||{};const L=pk(fam),T=L?KMAT.textures(L,{aniso:8}):{};
@@ -106,7 +111,7 @@ const ARCH=(function(){
    scene.add(m);done.push(m);S.p=S.n=S.u=S.c=null;}
   return done;}
  const has=f=>!!pk(f);
- return {has,box,cyl,ring,dome,quad,quadUV,bandRing,bandBox,bandLine,wedge,tri,finish,col,rot,A,MATS,stdMat};})();
+ return {has,box,cyl,ring,dome,quad,quadUV,bandRing,bandBox,bandLine,wedge,slab,face,tri,finish,col,rot,A,MATS,stdMat};})();
 
 // ---------------------------------------------------------------- the pieces (the vocabulary), in the kit's local terms
 // THE PALETTE (sRGB): the White Palace's lime white, the Red Palace's ochre red, the twig band's maroon, the Order's blue

@@ -99,7 +99,15 @@ lamps in the windows; `89x`).
   placeholder figures. The pieces are sidecars beside the page (`dist/kchar/`, 52 scripts, about 48 MB, in LFS), each
   loaded the first time a figure needs it; `build.py` remakes them from `core/charactermodels/dist/pieces/` when that is
   built. `people-kchar.json` (`tools/kchar_people.js`) is every record, for Godot.
-- **The festival of the register** (`89y-ls-festival.js`; `?festival=1` opens on it): every seventh day (core/simulation's
+- **The Great Stair, walked** (2026-10-20, the owner's notes): each flight is solid masonry from its front edge back
+  into the base's battered face (the slots behind them are gone), its parapet one sloped wall standing on its edge, the
+  landings' parapets on the landings; the base's windows are not cut where a ramp covers them. ARCH's wedge and slab wind
+  every face outward (the wedge's sides had been wound inward: a ramp's front was culled and its inner back face showed
+  through). Walking (F) takes the flights, the landings and the base's top as core/walk floors and their masonry as blocks
+  (`64`, `KWALK`, handed to the camera by `99`): F walks up the stair from the forecourt to the Lower Gate. Elsewhere the
+  walker keeps to the ground (the buildings are not blocks yet). The Red Palace's roof walk ends at its **stair house**
+  (`64`: the stair's head out of the top storey, its curtained door on the walk).
+- **The festival of the register** (`89y-ls-festival.js`; `?festival=1` opens on it, and the **next festival** button after the hour slider jumps to it: 99): every seventh day (core/simulation's
   week: each role carries its day's schedule and the festival's, `LS.FEST_SCHEDULES`). At dawn the great thangka (the
   wheel and its eight seals) is unrolled on the White Palace's base, on the blind wall under its windows, and the house
   gathers on the forecourt to see it; the elders hold the great debate, the procession walks the kora, the thangka is

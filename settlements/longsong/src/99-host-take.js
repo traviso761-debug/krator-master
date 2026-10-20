@@ -111,6 +111,10 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
  // depth: the near plane follows the camera's height (core/host 90-host-camera C.depth): with a fixed 0.5 m against 90 km
  // the courts' slabs and the ground fought a kilometre off (2026-10-19)
  scene,camera,renderer,ground:terrainH,clampCam,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,depth:true,
+ // walking (F): the Great Stair's flights and landings and the base's top are floors, their masonry blocks (64 registers
+ // them in core/walk as it draws them); elsewhere the walker keeps to the ground (2026-10-20, the owner: it walked through
+ // the ramps)
+ walk:KWALK,
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},
   // the world hour moves the sun, the light and the lamps (89x)
   hour:h=>LSNIGHT.apply(h),objects:()=>[sky,giant,giantRing]},
@@ -130,3 +134,13 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
   at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),zone:LS.zoneAt(x,z).zone};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});
 // ?festival=1: the page opens on the festival of the register (the seventh day of the week: 89y, 40d)
 if(new URLSearchParams(location.search).get('festival')==='1'&&_hostH&&_hostH.clock)_hostH.clock.day=LS.FESTIVAL.day;
+// the next festival (2026-10-20, the owner): a button after the hour slider jumps the clock to the next festival day at
+// eight in the morning (today's, before its thangka is taken down), the people re-placed from their festival schedule
+window.LSFEST_NEXT=function(){const c=_hostH&&_hostH.clock;if(!c)return null;let d=c.day||0;
+ if(!(LS.isFestival(d)&&c.hour<LS.FESTIVAL.hung[1]))do d++;while(!LS.isFestival(d));
+ const h=Math.max(8,LS.isFestival(c.day||0)&&d===(c.day||0)?c.hour:8);c.day=d;c.set(h);LSNIGHT.apply(h);if(typeof placePeople==='function')placePeople(h);
+ const hr=document.getElementById('clk-hour');if(hr)hr.value=h;return d;};
+{const at=document.getElementById('clk-hour')||document.getElementById('clk-speeds');
+ if(at){const b=document.createElement('button');b.id='clk-festival';b.textContent='next festival';
+  b.title='jump to the next festival of the register (every seventh day): the thangka hung, the camp pitched';
+  b.onclick=()=>LSFEST_NEXT();at.parentNode.insertBefore(b,at.nextSibling);}}

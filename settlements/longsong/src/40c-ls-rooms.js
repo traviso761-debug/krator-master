@@ -277,7 +277,9 @@ P.SHELLS={front:FR,outerW:OW,outerE:OE,innerW:IW,innerE:IE,gate:GT,base:BS,rpIn,
  c.doors.push({id:'lr.watch>stair',x:R2(ew.x-rw),z:ew.z,w:1.1,to:'the Watch\'s stair',out:true});
  const yT=P.topY(RP)+1.4+.84,i=rpIn(RP.floors-1)+1;
  const w=add(Object.assign({id:'lr.roof-walk',name:'The roof walk (the parapet, the conch and horn players\' stations)',building:'red-palace',storey:RP.floors,y:R2(yT),h:3,use:'roof walk',ix:'ls-roofwalk',tier:2,outdoor:true,
-  x0:RP.x-RP.w/2+i,x1:RP.x+RP.w/2-i,z0:RP.z-RP.d/2+i,z1:RP.z-RP.d/2+i+5,layout:'roofwalk'},o));
+  x0:RP.x-RP.w/2+i,x1:RP.x+RP.w/2-i-6,z0:RP.z-RP.d/2+i,z1:RP.z-RP.d/2+i+5,layout:'roofwalk'},o));
+ // its east end is the stair house's (64 draws it: 4.2 m of roofed stair head, its door on the walk; 2026-10-20, the owner:
+ // the walk had benches and no way up), the north-east victory banner past it on the corner
  out(w,'e',.5,'the stair house',1.2);
  // the gilded roofs: their bells and horns are the roofs' own (64); recorded so the sheet's rooms are all here
  ['gilt-chronicle','gilt-founders-w','gilt-founders-e'].forEach(id=>{const B=P.building(id);add(Object.assign({id:'lr.'+id,name:B.name,building:id,storey:0,y:P.baseY(B),h:B.storey,use:'gilded roof',ix:'none',tier:4,furnish:false,roof:true,

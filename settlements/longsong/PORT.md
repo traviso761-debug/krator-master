@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 115 (28%) | 0 (0%) | 0 (0%) | 76 (19%) | 217 (53%) |
+| KB | 115 (28%) | 0 (0%) | 0 (0%) | 77 (19%) | 221 (54%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,15 +15,15 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/40-ls-plan.js` | 46.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the plan as records and pure queries (LS): the site, the rock, the buildings, the Vault, the sealed things, the people and their schedules |
 | `src/40b-ls-farms.js` | 12.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the farms and gardens as records and pure queries (LS.FARMS): groups, cells, trees, walls, the herds, the provision |
-| `src/40c-ls-rooms.js` | 40.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the rooms as records (LS.ROOMS: 320, fitted in the drawn shells, doors on shared walls) and their pure checks |
+| `src/40c-ls-rooms.js` | 40.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the rooms as records (LS.ROOMS: 320, fitted in the drawn shells, doors on shared walls) and their pure checks |
 | `src/40d-ls-sim.js` | 12.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the people's world for core/simulation: the walk graph, the places, the roles; no three.js, no DOM |
 | `src/40e-ls-kchar.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | each person's core/charactermodels record (KCHAR.stranger on its seed, the tier by role); twin: the same call in kchar_rig.gd |
 | `src/42-ls-world.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | WORLD.init and the page's origin on the model; landH/worldWater wrappers |
 | `src/45-host-stage.js` | 18.6 | [web] | 7 | 0 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: the land's shaping (rock, terraces, pads, pond: data) sits with the renderer and BIO.init |
 | `src/57a-ls-interiors.js` | 32.4 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | the interiors’ data: programmes and layouts, furnishRoom over the catalog runtime adapter (it measures tops with THREE), the bake’s adoption, the checks; draws nothing |
-| `src/62-ls-arch.js` | 27.0 | [draw] | 10 | 0 | 0 | 0 | 0 | 45 | 1 | 0 | 0 | 0 | 0 | the architecture kit: merged per-material meshes; the vocabulary (lsBlock, lsWindows, lsGiltRoof, lsChorten...) |
+| `src/62-ls-arch.js` | 27.7 | [draw] | 10 | 0 | 0 | 0 | 0 | 48 | 1 | 0 | 0 | 0 | 0 | the architecture kit: merged per-material meshes; the vocabulary (lsBlock, lsWindows, lsGiltRoof, lsChorten...) |
 | `src/63-ls-signs.js` | 8.4 | [draw] | 6 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas pictures: the sigil, plaques, thangka, glyph band, seal, dial |
-| `src/64-ls-monastery.js` | 51.2 | [draw] | 15 | 2 | 0 | 0 | 0 | 88 | 5 | 4 | 0 | 0 | 0 | draws the plan's records; registers each building in core/tags first |
+| `src/64-ls-monastery.js` | 54.5 | [draw] | 15 | 2 | 0 | 0 | 0 | 92 | 5 | 4 | 0 | 0 | 0 | draws the plan's records; registers each building in core/tags first |
 | `src/66-ls-vault.js` | 38.1 | [draw] | 56 | 2 | 0 | 0 | 0 | 71 | 12 | 0 | 0 | 0 | 0 | the Vault and the Procrastinator; its own lights shader |
 | `src/68-ls-life.js` | 16.5 | [draw] | 18 | 0 | 0 | 0 | 0 | 7 | 3 | 1 | 0 | 0 | 0 | draws the people from SIM.pose (40d declares their world on core/simulation; the records in 40); the activities' poses are motion as a function of time |
 | `src/69-ls-figures.js` | 6.7 | [draw] | 2 | 0 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the nearest people as KCharFigures from their records, the pieces from sidecars; Godot: kchar_figure.gd |
@@ -35,7 +35,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89w-ls-water.js` | 6.6 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the stream, the canal, the pond and the pools on core/water (records, one still mesh), the water's checks |
 | `src/89x-ls-night.js` | 8.2 | [web] | 0 | 2 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89y-ls-festival.js` | 8.8 | [draw] | 0 | 2 | 0 | 0 | 0 | 7 | 0 | 3 | 0 | 0 | 0 | the festival day shown: the thangka hung, the camp pitched (who comes is core/simulation's: 40, 40d) |
-| `src/99-host-take.js` | 12.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the page handed to core/host: views, inspector words, checks |
+| `src/99-host-take.js` | 14.1 | [web] | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the page handed to core/host: views, inspector words, checks |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes
