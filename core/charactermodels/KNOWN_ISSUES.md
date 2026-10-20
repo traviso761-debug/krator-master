@@ -31,7 +31,10 @@
   holds the spear behind the back). Dig, Hammer at anvil, Thrust / stab and Spear thrust are procedural on one frame of
   the idle or the combat stance: the legs and hips hold still (no lunge, no step into the blow), the arms move by a
   two-bone solve (the elbows go where the solve puts them), and the beat is even. Dig swings a hoe overhead like a
-  pick, not chopped short. Spear advance is Meshy's walk with the arms re-posed frame by frame, so its shoulders and
+  pick, not chopped short, with both hands before the face at the top of the lift. Confused Scratch and Sleep are
+  Meshy's clips with a hand put where it gestures (`derive: hands`): the scratch's fingertips are placed on the skull
+  ball, the fingers keep the clip's curl (they do not move to scratch), and Sleep's palms lie still on the belly and
+  chest (the clip's breathing no longer moves them). Spear advance is Meshy's walk with the arms re-posed frame by frame, so its shoulders and
   spine still sway as the walk had them for the old grip. A crossbow shot still borrows the long-gun shot. Mixamo has
   most of these, but its clips can only be fetched by hand with an Adobe account.
 - **The Izani court robe's orange front panel** still pokes through the robe or flares out in a walk (the robe chains'
@@ -45,6 +48,17 @@
   spinal curve (far more on the man than the woman), is not fixed in the retarget itself.
 - **The man's left nipple shows through the plain T-shirt** in most idles (owner's review, 2026-10-20). It does so with
   the posture pass off too, so it is the shirt's fit, not posture; the man's 30 degree shoulder drop makes it worse.
+- **Limbs are kept apart by capsules, not by the skin** (`bodyFix`, README). A limb is a segment with one radius
+  (the upper arm's takes no account of the deltoid), so a forearm can still graze a thigh's side by a centimetre or
+  two, and two thighs, a thigh and the belly, or a hand and the head are not tested at all. A knee clears an upper
+  arm only by swinging out at the hip, by at most 20 degrees: where a clip drives the knee deep into the shoulder (the
+  climb up a ledge at 0.25 s on the tall man, the crouching throw near 5 s) the arm still meets the thigh, and the
+  swung leg reads wide from the front. The pushes move hands that rested where the clip put them: the hammer hand
+  at the anvil sits a little further out on the short, broad woman.
+- **The elbow limit is a fixed hinge.** `make_pieces.elbow_limit` reads the elbow's bend about an axis fixed in the
+  upper arm at rest; an upper arm turned far on its own axis (an overhead wind-up) reads as a bend backwards, so
+  readings past 45 degrees backwards are left alone, and the runtime passes (two-hand solve, `bodyFix`) can still
+  open an elbow a few degrees past straight.
 - **Props are simple, and the two-handed hold is solved, not animated.** Props are built from primitives, flat
   shaded. The left hand's grip on a two-handed prop comes from a two-bone solve over clips made for other weapons (or
   none): the arm reaches the handle, but the shoulder and torso stay where the clip has them, so a chop made for one

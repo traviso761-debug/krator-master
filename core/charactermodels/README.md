@@ -136,13 +136,23 @@ Neither library has hoeing, hammering, a pickaxe or a straight thrust, so some c
 two-bone solve per arm, the hand turned to hold its prop a given way). **Hammer at anvil**, on the standing idle: the
 spine leans into each blow, the right hand lifts the hammer over the shoulder and brings it down onto an anvil just
 below the hips in front (the handle forward and the face down as it lands), and the left hand rests on the work.
-**Dig (hoe, pickaxe)**, on the standing idle: both hands on the handle, lifted over the right shoulder with the head
-swung back and brought down in front as the spine bends into it (it was the one-handed heavy swing looped, its left
-arm across the chest). **Thrust / stab** (dagger, sword), from the combat stance: the hand drawn back to the ribs and
+**Dig (hoe, pickaxe)**, on the standing idle: both hands on the handle, lifted before and above the right shoulder
+and brought down in front as the spine bends into it (it was the one-handed heavy swing looped, its left arm across
+the chest; then the lift's top sat over the shoulder, and the left hand reached behind the head for the handle, its
+arm round the neck). **Thrust / stab** (dagger, sword), from the combat stance: the hand drawn back to the ribs and
 driven straight forward at chest height, the point leading, the right shoulder turned into it (Meshy's 'Thrust Slash'
 stabbed overhand, the point up). **Spear thrust**: the same underhand, the right hand at the hip on the butt end and the
 left forward on the shaft. **Spear advance** keeps Meshy's 'Spear Walk' legs and body (fetched as `spear_walk@src`, a
 source only) with the arms at the spear thrust's guard (it held the spear with the right hand behind the back).
+A clip whose hands only gesture at a place has them put there (`derive: {hands: {R|L: head | belly | chest}, from}`,
+`make_pieces.hands_clip`; the made clip takes its source's place in the list): **Confused Scratch** brings the right
+fingertips onto the upper back of the head wherever the clip lifts that hand near it (it scratched the air 10 cm over
+the crown), and **Sleep** lays the right palm on the belly and the left on the lower chest (both hands were held up
+in the air). The skull ball and the body's front come from the base mesh. Every retargeted clip also has its elbows
+kept from bending backwards (`elbow_limit`): the hinge is fixed in the upper arm, across it and the figure's forward
+at rest, and a forearm bent less than 3 degrees about it turns forward to 3 (idles 7 and 12 and the backward walk
+opened 13 to 17 degrees past straight; a reading past 45 degrees backwards is a deep bend with the upper arm turned
+on its axis, which the fixed hinge misreads, and is left alone).
 **Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 18 hand-held things built from
 primitives (sword, dagger, axe, mace, war hammer, spear, shield, bow, crossbow, rifle, pistol, pickaxe, hoe, hammer,
 bucket, cup, lantern, torch) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
@@ -479,8 +489,21 @@ out to the shoulders as long streamers); a hood's cowl and a headband's tails, l
 **The feet roll on their balls**: `toesFlat` (`_toes_flat`) turns each toe joint up after the clip until a point 6
 cm ahead of it (scaled with the figure) is no lower than the ground, so a clip that stands on the ball of a foot does
 not push the toes, and a sandal's sole with them, down into it.
-`bodyFix` turns an upper arm or forearm out when the clip puts an elbow or hand inside the pelvis, chest or its own
-thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
+`bodyFix` (`_body_fix`) keeps limbs out of each other after the clip (a heavy body in a clip made for a slight one,
+or a clip made for no body in particular). Each limb is a segment with its capsule's radius (`skeleton.json
+colliders`, the legs' tapered `ra` to `rb`), kept 8 mm clear. A leg in the top of an upper arm (a knee raised to the
+shoulder in a climb or a crouching throw, which no turn of the arm clears) swings out to its side at the hip, by at
+most 20 degrees (always out, so the push never jumps sides between frames); two thighs that overlap turn apart. Then
+each upper arm turns at the shoulder and each forearm, with the hand to the knuckles at the wrist's radius, at the
+elbow, out of the pelvis, the trunk and both legs' thighs and shins, the deepest point first, twice over (hands
+through the thighs in the sits, an arm into the knee in sit down). Above the pelvis the trunk is the chain through
+`skeleton.json trunk` (`make_mpfb.trunk`: per spine joint the body's cross-section, an ellipse of half width `w` and
+half depth `d` whose middle lies `f` forward of the joint, which is near the back; scaled as the chest capsule's
+radius under the morph): the round capsule on the spine left the man's chest 5 cm outside it, and an arm hanging in
+front of it went in (the injured walk). Against the trunk only the elbow's end of the upper arm counts, and not the
+top of the chest: the shoulder and deltoid sit against it, and an arm raised before the chest is held there. A knee
+in front of the belly is left be (a sprint's raised knee and a crouch's thighs meet the trunk's capsule without
+going through the body). The unused lower-arm joints of a two-armed body take no part.
 
 **Posture** (both runtimes, first after the clip): the clips, retargeted onto MakeHuman's curved spine, stand with
 the chest pushed forward and the upper body leaning back, so the spine is bent forward, the neck takes much of it back

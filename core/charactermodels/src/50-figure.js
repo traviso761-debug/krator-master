@@ -996,20 +996,44 @@ function KCharFigure(body, sliders, load){
     bones[byName.Hips].getWorldPosition(pushU.kcH.value).applyMatrix4(legInv);
   }
 
-  /* bodyFix: clips retargeted from slighter bodies can put a hand in a broad body's hip or a thigh through the
-     other: after the clip, an elbow or a hand inside the pelvis, chest or its own side's thigh turns its upper arm or
-     forearm out until it clears; two thighs that overlap each turn out by half */
-  var ARMS = [['LeftArm', 'LeftForeArm', 'LeftHand', 'LeftUpLeg'], ['RightArm', 'RightForeArm', 'RightHand', 'RightUpLeg'],
-              ['Left2Arm', 'Left2ForeArm', 'Left2Hand', 'LeftUpLeg', 'LeftArm'], ['Right2Arm', 'Right2ForeArm', 'Right2Hand', 'RightUpLeg', 'RightArm']].filter(function(a){ return byName[a[0]] !== undefined; }),
-      fV = new THREE.Vector3(), fW = new THREE.Vector3();
-  function depth(p, cp, out){
-    var a = bones[cp.a].getWorldPosition(fV), b = bones[cp.b].getWorldPosition(fW);
-    cV.subVectors(b, a);
-    var t = THREE.MathUtils.clamp(cV2.subVectors(p, a).dot(cV) / Math.max(1e-9, cV.lengthSq()), 0, 1);
-    out.copy(a).addScaledVector(cV, t);
-    var d = p.distanceTo(out);
-    out.subVectors(p, out).divideScalar(Math.max(d, 1e-6));    // the way out
-    return cp.r + 0.012 - d;
+  /* bodyFix: clips retargeted from slighter bodies (or made for none in particular) put limbs through the body. After
+     the clip, each limb is a segment with its capsule's radius (skeleton.json colliders: the body's tapered ra to rb,
+     an arm one radius) kept BF clear of the others':
+       legs  a leg in the top of an upper arm (a knee raised to the shoulder in a climb or a crouch, which no turn
+             of the arm clears) swings the thigh out to its side at the hip (LEGSWING at most: past it a clip's knee is
+             not merely grazing); two thighs that overlap each turn out by half. A knee before the belly is left be: a
+             sprint's raised knee and a crouch's thighs meet the trunk's capsule without going through the body
+       arms  the upper arm (against the trunk its elbow's end only, UPLOW on, and not the top of the chest: the
+             shoulder sits in it) turns at the shoulder,
+             then the forearm and the hand to the knuckles at the elbow, out of the trunk and both legs' thighs and
+             shins (a giant's lower arm out of its side's upper arm too), the deepest point each time, twice over */
+  var ARMS = [['LeftArm', 'LeftForeArm', 'LeftHand', 'LeftHandMiddle1'], ['RightArm', 'RightForeArm', 'RightHand', 'RightHandMiddle1'],
+              ['Left2Arm', 'Left2ForeArm', 'Left2Hand', 'Left2HandMiddle1', 'Left'], ['Right2Arm', 'Right2ForeArm', 'Right2Hand', 'Right2HandMiddle1', 'Right']].filter(function(a){ return byName[a[0]] !== undefined; }),
+      BF = 0.008, LEGSWING = 0.35, UPLOW = 0.7, fV = new THREE.Vector3(), fW = new THREE.Vector3(), fD1 = new THREE.Vector3(), fD2 = new THREE.Vector3(),
+      fR = new THREE.Vector3(), fC1 = new THREE.Vector3(), fC2 = new THREE.Vector3(), fQ = new THREE.Quaternion();
+  // the closest points of segments p1-q1 and p2-q2: fC1 at s along the first, fC2 at t along the second
+  var near = { s:0, t:0, d:0 };
+  function closest(p1, q1, p2, q2){
+    fD1.subVectors(q1, p1); fD2.subVectors(q2, p2); fR.subVectors(p1, p2);
+    var a = fD1.dot(fD1), e = fD2.dot(fD2), f = fD2.dot(fR), s = 0, t = 0;
+    if(a > 1e-12 && e > 1e-12){
+      var c = fD1.dot(fR), bb = fD1.dot(fD2), den = a * e - bb * bb;
+      s = den > 1e-12 ? THREE.MathUtils.clamp((bb * f - c * e) / den, 0, 1) : 0;
+      t = (bb * s + f) / e;
+      if(t < 0){ t = 0; s = THREE.MathUtils.clamp(-c / a, 0, 1); }
+      else if(t > 1){ t = 1; s = THREE.MathUtils.clamp((bb - c) / a, 0, 1); }
+    } else if(e > 1e-12) t = THREE.MathUtils.clamp(f / e, 0, 1);
+    else if(a > 1e-12) s = THREE.MathUtils.clamp(-fD1.dot(fR) / a, 0, 1);
+    fC1.copy(p1).addScaledVector(fD1, s); fC2.copy(p2).addScaledVector(fD2, t);
+    near.s = s; near.t = t; near.d = fC1.distanceTo(fC2);
+    return near;
+  }
+  // turn bone b about its origin so that its point p moves by d along way
+  function pushTurn(b, p, way, d){
+    var pivot = b.getWorldPosition(fV), from = fW.subVectors(p, pivot), L = from.length();
+    if(L < 1e-4) return;
+    var to = fR.copy(from).addScaledVector(way, d);
+    turnWorld(b, fQ.setFromUnitVectors(from.divideScalar(L), to.normalize()));
   }
   /* toesFlat: a clip that stands on the ball of a foot (the heel up) pitches the whole foot, toes and all, so the toes
      and a sandal's sole went down into the ground. After the clip each toe joint turns up until a point TOE ahead of it,
@@ -1043,33 +1067,113 @@ function KCharFigure(body, sliders, load){
   function bodyFix(){
     if(!caps.length || !self.action) return;
     self.group.updateMatrixWorld(true);
-    var sc = self.group.getWorldScale(cS).x, out = new THREE.Vector3(), q = new THREE.Quaternion();
-    var body = caps.filter(function(c){ return !c.pa && (c.a === byName.Hips || c.a === byName.Spine1); });   // the trunk, not the seat
-    ARMS.forEach(function(arm){
-      var s0 = bones[byName[arm[0]]], s1 = bones[byName[arm[1]]], s2 = bones[byName[arm[2]]];
-      // a giant's lower arm keeps out of the upper arm of its side too (its upper arm and forearm capsules)
-      var thigh = caps.filter(function(c){ return c.a === byName[arm[3]] || (arm[4] && (c.a === byName[arm[4]] || c.a === byName[arm[4].replace('Arm', 'ForeArm')])); });
-      [[s0, s1], [s1, s2]].forEach(function(pr){
-        var pivot = pr[0].getWorldPosition(new THREE.Vector3()), p = pr[1].getWorldPosition(new THREE.Vector3()), worst = 0, way = new THREE.Vector3();
-        body.concat(thigh).forEach(function(cp){ var dd = depth(p, { a:cp.a, b:cp.b, r:cp.r * sc }, out); if(dd > worst){ worst = dd; way.copy(out); } });
-        if(worst <= 0) return;
-        var to = p.clone().addScaledVector(way, worst);
-        q.setFromUnitVectors(p.clone().sub(pivot).normalize(), to.sub(pivot).normalize());
-        turnWorld(pr[0], q);
+    var sc = self.group.getWorldScale(cS).x, trunk = [], legs = [], chest = null, way = new THREE.Vector3(), p = new THREE.Vector3();
+    // a body without the mod carries the lower arms' joints unused (hidden, where no leg should meet them)
+    var arms = ARMS.filter(function(a){ return !a[4] || self.fourArms; });
+    function at(i){ return bones[i].getWorldPosition(new THREE.Vector3()); }
+    function ends(o){ o.A = at(o.c.a); o.B = at(o.c.b); return o; }
+    // a capsule's radius at t along it; a trunk section's (an ellipse, o.ell) the way the limb lies from its axis (the
+    // gap fC2 to fC1 that closest() just found)
+    function rad(o, t){
+      if(!o.ell) return o.ra + (o.rb - o.ra) * t;
+      var e = o.ell, a = e.w0 + (e.w1 - e.w0) * t, b = e.d0 + (e.d1 - e.d0) * t;
+      fR.subVectors(fC1, fC2);
+      var x = fR.dot(fD1.copy(e.S0).lerp(e.S1, t).normalize()), z = fR.dot(fD2.copy(e.F0).lerp(e.F1, t).normalize()), n = Math.hypot(x, z);
+      return n > 1e-9 ? a * b / Math.sqrt(b * b * x * x / (n * n) + a * a * z * z / (n * n)) : b;
+    }
+    function thighOf(o){ return bones[byName[o.n.replace(/^(Left|Right)(Up)?Leg$/, '$1UpLeg')]]; }
+    caps.forEach(function(c){
+      if(c.pa) return;                                       // the seat: the trunk's capsule stands for the pelvis here
+      var o = { c:c, ra:c.ra * sc, rb:c.rb * sc, n:bones[c.a].name };
+      if(c.a === byName.Hips || c.a === byName.Spine1){ trunk.push(o); if(c.a === byName.Spine1) chest = o; }
+      else if(/^(Left|Right)(UpLeg|Leg)$/.test(o.n)) legs.push(o);
+    });
+    // a leg clears by swinging out to its side at the hip (a knee goes beside a shoulder, not up into the face; always
+    // out, so the push never jumps from one side to the other between frames): its point (fC1, which is
+    // fC2 + gap) moves along the hips' side axis by the least k that makes the gap R long, and by no more than LEGSWING
+    var side = byName.LeftUpLeg !== undefined && byName.RightUpLeg !== undefined ? at(byName.LeftUpLeg).sub(at(byName.RightUpLeg)).normalize() : null;
+    function legOut(o, R){
+      if(!side) return;
+      way.copy(side).multiplyScalar(/^Left/.test(o.n) ? 1 : -1);
+      var gap = fR.subVectors(fC1, fC2), b = gap.dot(way), k = Math.sqrt(Math.max(0, b * b - gap.lengthSq() + R * R)) - b;
+      var thigh = thighOf(o);
+      k = Math.min(k, Math.tan(LEGSWING) * fC1.distanceTo(thigh.getWorldPosition(fV)));
+      if(k > 0){ p.copy(fC1); pushTurn(thigh, p, way, k); }
+    }
+    // the legs, out of the top of each upper arm
+    arms.forEach(function(arm){
+      var cu = caps.filter(function(c){ return c.a === byName[arm[0]]; })[0];
+      if(!cu) return;
+      legs.forEach(function(o){
+        ends(o);
+        var s0 = at(byName[arm[0]]), top = s0.clone().lerp(at(byName[arm[1]]), 0.3), hit = closest(o.A, o.B, s0, top);
+        var R = cu.r * sc + rad(o, hit.s) + BF;
+        if(R > hit.d) legOut(o, R);
       });
     });
-    // the thighs: closest points of the two segments
-    var tl = caps.filter(function(c){ return c.a === byName.LeftUpLeg; })[0], tr = caps.filter(function(c){ return c.a === byName.RightUpLeg; })[0];
-    if(!tl || !tr) return;
-    var hl = bones[tl.a].getWorldPosition(new THREE.Vector3()), kl = bones[tl.b].getWorldPosition(new THREE.Vector3());
-    var hr = bones[tr.a].getWorldPosition(new THREE.Vector3()), kr = bones[tr.b].getWorldPosition(new THREE.Vector3());
-    var need = (tl.r + tr.r) * sc + 0.004, gap = kl.distanceTo(kr);
-    if(gap >= need) return;
-    var sep = kl.clone().sub(kr); sep.y = 0;
-    if(sep.lengthSq() < 1e-8) sep.set(1, 0, 0);
-    sep.normalize().multiplyScalar((need - gap) / 2);
-    q.setFromUnitVectors(kl.clone().sub(hl).normalize(), kl.clone().add(sep).sub(hl).normalize()); turnWorld(bones[tl.a], q);
-    q.setFromUnitVectors(kr.clone().sub(hr).normalize(), kr.clone().sub(sep).sub(hr).normalize()); turnWorld(bones[tr.a], q);
+    // two thighs that overlap: closest points of the two segments
+    var tl = legs.filter(function(o){ return o.n === 'LeftUpLeg'; })[0], tr = legs.filter(function(o){ return o.n === 'RightUpLeg'; })[0];
+    if(tl && tr){
+      var hl = at(tl.c.a), kl = at(tl.c.b), hr = at(tr.c.a), kr = at(tr.c.b), q = new THREE.Quaternion();
+      var need = (tl.c.r + tr.c.r) * sc + 0.004, gap = kl.distanceTo(kr);
+      if(gap < need){
+        var sep = kl.clone().sub(kr); sep.y = 0;
+        if(sep.lengthSq() < 1e-8) sep.set(1, 0, 0);
+        sep.normalize().multiplyScalar((need - gap) / 2);
+        q.setFromUnitVectors(kl.clone().sub(hl).normalize(), kl.clone().add(sep).sub(hl).normalize()); turnWorld(bones[tl.c.a], q);
+        q.setFromUnitVectors(kr.clone().sub(hr).normalize(), kr.clone().sub(sep).sub(hr).normalize()); turnWorld(bones[tr.c.a], q);
+      }
+    }
+    // the arms, out of the trunk and the legs as these now stand. Above the pelvis the trunk is the chain through
+    // skeleton.json trunk (each spine joint's cross-section, an ellipse whose middle lies forward of the joint, which
+    // is near the back), scaled as the chest capsule's radius by the morph; the hand (wrist to knuckles) keeps the
+    // wrist's radius, so a palm can lie on the belly
+    trunk.forEach(ends); legs.forEach(ends);
+    if(chest && skel.trunk && skel.trunk.length > 1){
+      var base = (skel.colliders || []).filter(function(c){ return c.a === chest.c.a && c.b === chest.c.b; })[0], kk = base ? chest.c.r / base.r : 1;
+      var pts = skel.trunk.map(function(t){
+        var w = bones[t.j].getWorldQuaternion(new THREE.Quaternion()).multiply(qB.copy(pRest[t.j]).invert());
+        var F = new THREE.Vector3(0, 0, 1).applyQuaternion(w), S = new THREE.Vector3(1, 0, 0).applyQuaternion(w);
+        return { p:at(t.j).addScaledVector(F, t.f * kk * sc), F:F, S:S, w:t.w * kk * sc, d:t.d * kk * sc };
+      });
+      trunk = trunk.filter(function(o){ return o !== chest; });
+      for(var i = 1; i < pts.length; i++){
+        var u = pts[i - 1], v = pts[i];
+        trunk.push({ A:u.p, B:v.p, n:'', top:i === pts.length - 1, ell:{ w0:u.w, w1:v.w, d0:u.d, d1:v.d, F0:u.F, F1:v.F, S0:u.S, S1:v.S } });
+      }
+    }
+    arms.forEach(function(arm){
+      var cu = caps.filter(function(c){ return c.a === byName[arm[0]]; })[0], cf = caps.filter(function(c){ return c.a === byName[arm[1]]; })[0];
+      if(!cu || !cf) return;
+      var obs = trunk.concat(legs);
+      if(arm[4]) caps.forEach(function(c){                   // a giant's lower arm: its side's upper arm too
+        if(c.a === byName[arm[4] + 'Arm'] || c.a === byName[arm[4] + 'ForeArm']) obs.push(ends({ c:c, ra:c.r * sc, rb:c.r * sc, n:'' }));
+      });
+      for(var it = 0; it < 2; it++){
+        var sA = at(byName[arm[0]]), sB = at(byName[arm[1]]), low = sA.clone().lerp(sB, UPLOW), worst = 0;
+        obs.forEach(function(o){
+          // against the trunk only the elbow's end at its own (tapering) radius, and not the top of the chest: the
+          // shoulder and the deltoid sit against the chest, and an arm raised before it is held there
+          var tr = trunk.indexOf(o) >= 0;
+          if(tr && o.top) return;
+          var hit = closest(tr ? low : sA, sB, o.A, o.B);
+          var dep = (tr ? cu.ra + (cu.rb - cu.ra) * (UPLOW + (1 - UPLOW) * hit.s) : cu.r) * sc + rad(o, hit.t) + BF - hit.d;
+          if(dep > worst && hit.d > 1e-6){ worst = dep; p.copy(fC1); way.subVectors(fC1, fC2).divideScalar(hit.d); }
+        });
+        if(worst > 0) pushTurn(bones[byName[arm[0]]], p, way, worst);
+        var eA = at(byName[arm[1]]), eB = at(byName[arm[2]]), kn = byName[arm[3]] !== undefined ? at(byName[arm[3]]) : null;
+        worst = 0;
+        obs.forEach(function(o){
+          [eB, kn].forEach(function(q2, k){
+            if(!q2) return;
+            var hit = closest(k ? eB : eA, q2, o.A, o.B), dep = (k ? cf.rb : cf.r) * sc + rad(o, hit.t) + BF - hit.d;
+            if(dep > worst && hit.d > 1e-6){ worst = dep; p.copy(fC1); way.subVectors(fC1, fC2).divideScalar(hit.d); }
+          });
+        });
+        // a point at the elbow is the upper arm's to clear
+        if(worst > 0 && p.distanceTo(eA) > 0.05 * sc) pushTurn(bones[byName[arm[1]]], p, way, worst);
+      }
+    });
   }
 
   /* bowString: the string between the bow's limb tips (data/props.json string, in the bow's frame), drawn through
