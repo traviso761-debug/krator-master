@@ -188,6 +188,10 @@
    "bytes": 2484568,
    "sha256": "614381a425fe5f39fea501322f4bbae189ae3cffb99a82d1428eb322f7d84bbd"
   },
+  "kits/ancients/dist/coil.html": {
+   "bytes": 2591949,
+   "sha256": "d5aad91566b2e9dffb047722afa5e578eb9f87883958c6037f028efc8b7db74b"
+  },
   "kits/ancients/dist/crescent.html": {
    "bytes": 2488099,
    "sha256": "295b24bb734917540a559a293a2c0a463fddc8a6854a038a8e2b342d618352ef"

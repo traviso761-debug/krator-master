@@ -109,6 +109,10 @@ CORE_FURNISH = os.path.join(ROOT, 'core', 'furnish')
 INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'), (CORE_TAGS, '52-core-tags-vocab.js'),
                  (CORE_TAGS, '53-core-tags-host.js'), (CORE_FURNISH, '50-core-furnish.js'), (CORE_FURNISH, '52-core-furnish-draw.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
+# A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
+# registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
+TAGS_TARGETS = {'coil'}
+TAGS_CORE = INTERIOR_CORE[:4]
 # the furniture an intact Ancient building takes: the harvested registry (the ancient pieces) and the goods
 INTERIOR_FURN = ['generic-goods']
 
@@ -183,6 +187,7 @@ TARGET_OUT = {
     'spaceport': 'spaceport.html',             # dev: the Iziz spaceport in every decay (8ao-iz-spaceport)
     'funicular': 'funicular.html',             # the broken Ancient funicular on an escarpment (8ap-funicular; Verge takes it)
     'hosts': 'hosts.html',                     # five types drawn as Hykkousoi hosts for Ys (src/8ap-host-*)
+    'coil': 'coil.html',                       # the spiral arcology and the Heirs' Sanctum (its fragments in targets/coil)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -201,6 +206,7 @@ DETERMINISTIC = {
     '91-probe.js', '92-camera.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
+    '8aq0-coil-plan.js', '8aq1-coil-sanctum.js', '8aq2-coil-skins.js',   # targets/coil: KRAND-hashed records, no rng()
 }
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
@@ -363,6 +369,15 @@ def build_one(target, do_checks, assert_origin):
         extra = [INTERIOR_BUNDLE]
         bodies[INTERIOR_BUNDLE] = interior_bundle()
         for d, f in INTERIOR_CORE:
+            with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
+                bodies[f] = fh.read()
+            extra.append(f)
+        order = sorted(order + extra)
+    if target in TAGS_TARGETS:
+        extra = []
+        for d, f in TAGS_CORE:
+            if f in bodies:
+                continue
             with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
                 bodies[f] = fh.read()
             extra.append(f)

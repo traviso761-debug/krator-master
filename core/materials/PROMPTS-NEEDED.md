@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 6 prompts: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`), and 4 optional: the Beast Riders' `foliage.thorn.cut` and necanyons' `card.palm.fan`, `card.flametip`, `card.treelily` (each has a library fallback in use).** A short list at the end names gaps that have no prompt yet.
+**Count: 14 prompts: 1 redo (`patterns/tribal/formline`), 9 required (the Northern Highlands' `bark.alder.lichen`; the Eternian kit's eight, section 8), and 4 optional: the Beast Riders' `foliage.thorn.cut` and necanyons' `card.palm.fan`, `card.flametip`, `card.treelily` (each has a library fallback in use).** A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -102,6 +102,77 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
 ```
+## 8. The Eternian kit and the Sanctum (`kits/eternian`, `kits/ancients` target `coil`, 2026-10-20)
+
+The True Heirs' court (`LORE.md` §6.19, `kits/eternian/PLAN.md` §2 and §10): translucent stone in bronze tracery, the
+talking heads, the sign. The arcology draws all of these procedurally until they arrive. Reuse first, no prompt needed:
+`metal.bronze`, `metal.bronze.cast`, `metal.gold`, `metal.pewter` (the heads' metals by rank), `roof.scale.gilt` (the
+court's fish-scale roofs, tinted per metal), `metal.ancient.white` (the kept host), `glass.clear` (the surviving plate
+glass).
+
+#### `stone.onyx`
+- Used by: the bays' and the court's lights behind the bronze tracery (lit from behind by the cyan strips). Reuse: any
+  palace, temple or bath that glazes in stone.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a thin polished slab of honey onyx cut across its layers: soft wavy parallel bands running mostly horizontally, cream (#efe4c8) through pale honey (#d9b884) to amber (#b7884a), a few fine milky-white veins (#f6f1e6) crossing the bands at a shallow angle, faint cloudy depth in the paler bands. Polished but shown matte: no reflections, not backlit. One tile covers 1 metre. Full colour: not tinted.
+```
+
+#### `stone.alabaster`
+- Used by: the court's palest lights, the Withdrawn's blind bays, lamp shades. Reuse: any culture's translucent lamps.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished slab of white alabaster: a soft waxy near-white (#f1ece2) with large cloudy drifts of cream (#e4dccd) and pale grey (#d6d0c4), a few fine thread-like grey veins (#c2bbae) wandering across it, a faint granular depth. Shown matte: no reflections, not backlit. One tile covers 1 metre. Full colour: not tinted.
+```
+
+#### `metal.titanium`
+- Used by: the colossus on the Sanctum's crown and the Heirs' metal figures (the owner's Gagarin reference). Reuse:
+  any polished modern metal monument.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: brushed and lightly polished titanium plate: fine straight horizontal brushing in a cool mid grey (#9aa1a8), broad soft clouds of very faint straw and blue heat tint (#a8a08a, #8c9aae) drifting across it, a few flat panel seams (#6d737a) dividing it into large rectangles. No rivets, no rust, no scratches, no dents. One tile covers 4 metres. Full colour: not tinted.
+```
+
+#### `patterns/eternian/screen-pierced`
+- Used by: the pierced bronze screens where a wall must breathe, the sealed bays of the Withdrawn. A cut-out:
+  `cards.py` keys the magenta to alpha.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a pierced cast-bronze screen: a continuous geometric lattice of interlocking stepped squares and right-angle maze turns, like a circuit board drawn as Art Deco fretwork, the bars about one fortieth of the tile wide, every opening cut clean through to a solid flat bright magenta (#ff00ff) background. The bronze is a warm polished brown-gold (#9c7a3c) with slightly darker bevelled edges (#6e5428). No curves, no animals, no faces, no letters or glyphs. No magenta, pink or purple in the bronze, no grey or white background. The pattern repeats in both directions. Full colour: not tinted.
+```
+
+#### `patterns/eternian/talking-heads`
+- Used by: the Ancient terminal faces the Machine Talkers wake (the petition walls, the gates, the Regent's hall). A
+  sheet of nine; the build cuts the cells.
+
+```
+A sheet of nine separate screen panels in a 3x3 grid, square, 2048x2048, each panel filling its cell edge to edge, a thin black gap between the cells. Front-on, orthographic, flat even lighting, no reflections, no text, no watermark. Each panel: a dark glass display (#0b1215) showing a calm, serene face drawn in glowing cyan line art (#39d6e8), built from flat faceted planes like an Art Deco cubist sculpture: closed eyes as two downward-curved lids, a straight nose, a small closed mouth, a stepped geometric headdress, faint horizontal scan lines across the glass. Eight of the nine are calm and differ in face (long, broad, aged, young, male, female) and headdress. The ninth is subtly deranged: the same kind of face with one eye open, its lines doubled and slipping sideways, a few horizontal tear bands, still cyan only. No red, no skulls, no snarls, no sun rays, no letters. Full colour: not tinted.
+```
+
+#### `patterns/eternian/sign`
+- Used by: the State's banners on the gates and walls (the sign, `LORE.md` §6.19: a gold face with its eyes closed on
+  black, green highlights). Not tiled.
+
+```
+A flat, front-on hanging banner, portrait, 1024x2048, filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette. No perspective, no text, no letters, no watermark. A matte black cloth field (#141416). In the upper middle, a large serene face in gold (#d8b24a) with its eyes closed, built from flat faceted planes in the Art Deco cubist manner, a stepped Deco headdress above it; green (#3f8a5a) highlights pick out the planes of the cheeks and brow and draw a thin line under the closed lids. Below the face a narrow vertical band of gold right-angle maze pattern, like a circuit board, runs down to the hem; a thin gold border just inside the edge. Faint woven and embroidered cloth texture. No sun rays or ray halo, no red, no skull, no weapons. Full colour: not tinted.
+```
+
+#### `patterns/eternian/circuit-maze`
+- Used by: the circuit-maze brocade (rank by the number of turns), stone bands on the ministries, the banners' edges.
+  Tinted per use: gold on black for the court, white on black for the ministers. Reuse: the Ancients' own trim.
+
+```
+Seamless tileable texture, 2048x512, the pattern repeating horizontally. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Material: a woven brocade band of a right-angle maze pattern like an Ancient circuit board: continuous lines turning at right angles, small square pads and stepped corners, laid out as a running border between a straight rule above and below; the lines light (#e8e6e0) on a near-black ground (#1a1a1c), a faint woven texture. Geometric only: no glyphs, no letters, no faces. Near-colourless: greys only, so it can be tinted.
+```
+
+#### `patterns/eternian/face-frieze`
+- Used by: the friezes of the podium, the gate pylons and the ministries (the Bayon done in Deco). Tinted pale stone
+  for the State, bronze for the court.
+
+```
+Seamless tileable texture, 2048x1024, the pattern repeating horizontally. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Material: a carved stone relief frieze: a row of three large serene faces with closed eyes, each built from flat faceted planes in the Art Deco cubist manner (a straight nose, flat cheek planes, a stepped geometric headdress), alternating with narrow fluted pilasters and stepped Deco chevrons; crisp shallow carving, pale stone (#ddd6c8) with soft grey in the recesses (#a9a296). Calm and serene: no snarls, no skulls, no weapons, no letters. Near-colourless: pale grey only, so it can be tinted.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt needs work first; listed so they are not lost.
