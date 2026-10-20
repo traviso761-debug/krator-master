@@ -388,6 +388,7 @@ func apply(rec: Dictionary) -> void:
 		var mi := items.find(m)
 		if mi >= 0:
 			worn[mi] = true
+	var hide_parts := KChar.hidden_parts(rec, kit)
 	var roles: Dictionary = kit.get("tint", {}).get("roles", {})
 	var gain: Dictionary = kit.get("tint", {}).get("gain", {})
 	four_arms = KChar.arms(rec, kit) >= 4          # a mod's second pair (core/charactermodels/tools/mods.py)
@@ -406,6 +407,8 @@ func apply(rec: Dictionary) -> void:
 		var part: Dictionary = mi.get_meta("part")
 		for s in mi.mesh.get_surface_count():
 			var m := _tinted(mi.mesh.surface_get_material(s), roles.get(mi.mesh.surface_get_name(s), ""), part, rec, gain)
+			if part["role"] == "base" and hide_parts.has(mi.mesh.surface_get_name(s)):
+				m = _nothing()          # the nipples under a top (kit hide_parts)
 			if b["regions"][s]:
 				var nreg: int = maxi(1, b["cover"].size())
 				var hide := Image.create(nreg, 1, false, Image.FORMAT_R8)
@@ -1446,6 +1449,7 @@ func _is_loose(part: Dictionary) -> bool:
 
 # a top or trousers as kchar_push.gdshader: the imported material's look, and the push and tuck (pushOut in 50-figure.js)
 const TUCK := 0.025
+const TUCK_UP := "Spine1"
 const SQUEEZE := 0.008
 const SQUEEZE_FEET := 0.014
 func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMaterial:
@@ -1491,6 +1495,22 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	pm.set_shader_parameter("kcSH", float(top.get("hem", 0.0)) if squeeze and not long_top else 1000.0)
 	_push_mats.append(pm)
 	return pm
+
+
+# a surface left out: a part of the base drawn over the skin that a worn item covers (KChar.hidden_parts)
+static var _nothing_mat: ShaderMaterial = null
+
+
+static func _nothing() -> ShaderMaterial:
+	if _nothing_mat == null:
+		var sh := Shader.new()
+		sh.code = "shader_type spatial;
+render_mode unshaded;
+void fragment() { discard; }
+"
+		_nothing_mat = ShaderMaterial.new()
+		_nothing_mat.shader = sh
+	return _nothing_mat
 
 
 # the joined skin: the material's look (as _garment's) and, per region, whether a worn item hides it (a texel each)
@@ -1556,11 +1576,21 @@ func _leg_caps() -> void:
 		else:
 			A.append(Vector4(0, 0, 0, 0)); Bv.append(Vector4(0, 0, 0, 0)); R.append(0.0)
 	var hip := _gp(_hips).origin
+	# the trunk's up for the tuck (kcU, as legCaps in 50-figure.js): the way from the hips to TUCK_UP turned from its
+	# rest way, applied to +y; in a forward bend the band at the small of the back came out through a T-shirt
+	var up := Vector3.UP
+	var sp := skeleton.find_bone(TUCK_UP)
+	if sp >= 0:
+		var r0 := (skeleton.get_bone_global_rest(sp).origin - skeleton.get_bone_global_rest(_hips).origin).normalized()
+		var r1 := (_gp(sp).origin - hip).normalized()
+		if r0.dot(r1) < 0.99999:
+			up = Quaternion(r0, r1) * Vector3.UP
 	for pm in _push_mats:
 		pm.set_shader_parameter("kcA", A)
 		pm.set_shader_parameter("kcB", Bv)
 		pm.set_shader_parameter("kcR", R)
 		pm.set_shader_parameter("kcH", hip)
+		pm.set_shader_parameter("kcU", up)
 
 
 # an elbow or hand inside the pelvis, chest or its own thigh turns its upper arm or forearm out; two thighs that

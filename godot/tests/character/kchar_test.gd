@@ -88,6 +88,9 @@ func _init() -> void:
 			for x in hid:
 				n += x
 			ok(n == int(pl["hidden"]), "hidden %d vs %d" % [n, pl["hidden"]])
+			var hp := KChar.hidden_parts(pl["record"], kit).keys()
+			hp.sort()
+			ok(hp == pl.get("hidden_parts", []), "hidden parts %s vs %s" % [hp, pl.get("hidden_parts", [])])
 
 	# 4. a figure from the pieces
 	if not DirAccess.dir_exists_absolute(DIR + "/pieces/mpfb_male"):

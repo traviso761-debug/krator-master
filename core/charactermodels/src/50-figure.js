@@ -250,7 +250,7 @@ function KCharFigure(body, sliders, load){
           // a mod that grants a second pair of arms (tools/mods.py) brings their skin as a piece; the joints are there
           // on every body, and arms2() drives them only when it is worn
           self.fourArms = kit.style === 'mpfb' && KCHAR.arms(rec, kit) >= 4;
-          var hide = KCHAR.hidden(rec, kit), head = KCHAR.headOf(rec, kit);
+          var hide = KCHAR.hidden(rec, kit), hideParts = KCHAR.hiddenParts(rec, kit), head = KCHAR.headOf(rec, kit);
           var top = rec.armour && rec.armour.torso && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.torso; })[0];
           pushU.kcT.value = top && top.tucks ? TUCK : 0;
           // trousers (legs, not loose) under a loose top: the top's push clears them too (PAD_OVER more)
@@ -296,6 +296,7 @@ function KCharFigure(body, sliders, load){
               // a MakeHuman base: only its skin primitive is masked; brows, lashes and nails stay
               if(kit.style !== 'mpfb') filterBase(m, hide[part.slot]);
               else if(m.userData.srcMaterial === kit.base_material) filterBase(m, hide.base);
+              else if(hideParts[m.userData.srcMaterial]) m.visible = false;     // the nipples under a top (kit hide_parts)
             }
             if(role === 'skin') m.material.color.copy(tintOf(rec.skin || DEFAULT_SKIN, gain.skin));
             else if(role === 'hair') m.material.color.copy(tintOf(rec.hair_color || DEFAULT_HAIR, gain.hair));
@@ -880,7 +881,7 @@ function KCharFigure(body, sliders, load){
   var NCAP = 16, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
   var pushU = { kcA:{ value:capV() }, kcR:{ value:new Array(NCAP).fill(0) },
                 kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() },
-                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_SKIRT = 0.02, PAD_OVER = 0.035,
+                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 }, kcU:{ value:new THREE.Vector3(0, 1, 0) } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_SKIRT = 0.02, PAD_OVER = 0.035,
       SQUEEZE = 0.008, SQUEEZE_FEET = 0.014;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
@@ -898,7 +899,7 @@ function KCharFigure(body, sliders, load){
     var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0 }, looseU = { value:loose ? 1 : 0 };
     mat.onBeforeCompile = function(sh, r){
       if(prev) prev(sh, r);
-      sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcR = pushU.kcR; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcP = padU;
+      sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcR = pushU.kcR; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcU = pushU.kcU; sh.uniforms.kcP = padU;
       sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck; sh.uniforms.kcS = legs ? pushU.kcS : feet ? pushU.kcSF : noTuck; sh.uniforms.kcSH = feet ? { value:1e3 } : pushU.kcSH;
       // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
       // cloth behind the knee; an arm's capsule (kcB.w 1) is hard: only what is inside it moves, to its surface. The
@@ -910,7 +911,7 @@ function KCharFigure(body, sliders, load){
       // is a thin band (1.5 cm either side of the capsule's surface: d in [0, r + 1.5 cm] lands in [r - 1.5, r + 1.5]),
       // so cloth that already lies right barely moves; the 4 cm shell outside it moved everything within 4 cm of a
       // capsule out by up to 3 cm, and a loincloth's flaps, a kilt's seat and a robe's back crumpled at rest
-      sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform float kcR[' + NCAP + '];\nuniform vec3 kcH;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\nuniform float kcSH;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
+      sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform float kcR[' + NCAP + '];\nuniform vec3 kcH;\nuniform vec3 kcU;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\nuniform float kcSH;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
         '#include <skinning_vertex>\n\tvec3 cbk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH; cbk.y = 0.0; cbk *= kcA[14].w > 0.0 ? 1.0 / max(length(cbk), 1e-5) : 0.0;\n' +
         '\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
         '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.015;\n' +
@@ -948,9 +949,12 @@ function KCharFigure(body, sliders, load){
         '\t\tfloat sdd = sbi < 2 ? sbt * slt : sbi < 4 ? slt + sbt * sls : slt + sls + sbt * 0.1, shm = kcSH * (slt + sls);\n' +
         '\t\tfloat sf = 1.0 - smoothstep(shm - 0.02, shm + 0.02, sdd);\n' +
         '\t\tvec3 sd = transformed - sbq; float sl = length(sd);\n\t\tif(sb > 0.0 && sb < 0.15) transformed = mix(transformed, sbq + sd * (sbr / sl), sf);\n\t}\n' +
-        '\tif(kcT > 0.0){\n\t\tfloat tf = smoothstep(kcH.y - 0.02, kcH.y + 0.06, transformed.y);\n' +
-        '\t\tvec2 td = transformed.xz - kcH.xz; float tl = length(td);\n' +
-        '\t\tif(tf > 0.0 && tl > 1e-4) transformed.xz = kcH.xz + td * (max(tl - kcT * tf, 0.5 * tl) / tl);\n\t}');
+        // (the way in is the trunk's, kcU (legCaps), not the world's, and the height above the hips the greater of the two:
+        // in a forward bend, a heavy push or a swim, the band at the small of the back came out through a T-shirt, drawn
+        // in level; measured up the trunk alone, the back of the band sat low in a crouch and stood out of the hem)
+        '\tif(kcT > 0.0){\n\t\tvec3 tr = transformed - kcH; float th = dot(tr, kcU); vec3 tq = tr - th * kcU;\n' +
+        '\t\tfloat tf = smoothstep(-0.02, 0.06, max(th, tr.y)), tl = length(tq);\n' +
+        '\t\tif(tf > 0.0 && tl > 1e-4) transformed = kcH + th * kcU + tq * (max(tl - kcT * tf, 0.5 * tl) / tl);\n\t}');
       // a garment's back faces are drawn BACK_DEPTH further from the eye than they are: where the cloth folds over
       // itself (a stride's push, a chain's swing) its inside lay at the outside's depth and showed through it in
       // blue-grey patches (a shirt over the hips in a walk); an inside nothing covers (in a sleeve, under a hem) still
@@ -994,7 +998,17 @@ function KCharFigure(body, sliders, load){
       pushU.kcR.value[14 + q] = sp.r + 0.01;
     }
     bones[byName.Hips].getWorldPosition(pushU.kcH.value).applyMatrix4(legInv);
+    // the trunk's up (kcU, for the tuck): the way from the hips to TUCK_UP, turned from its rest way, applied to +y; so
+    // standing as at rest it is +y (the tuck as it was), and in a bend it leans with the small of the back
+    if(byName[TUCK_UP] !== undefined){
+      if(!tuckRest){ var f0 = KCHAR.fk(skel, J.map(function(j){ return j.t; })), a0 = f0.P[byName.Hips], b0 = f0.P[byName[TUCK_UP]];
+        tuckRest = new THREE.Vector3(b0[0] - a0[0], b0[1] - a0[1], b0[2] - a0[2]).normalize(); }
+      bones[byName[TUCK_UP]].getWorldPosition(tuckV).applyMatrix4(legInv);
+      tuckV.sub(pushU.kcH.value).normalize();
+      pushU.kcU.value.set(0, 1, 0).applyQuaternion(tuckQ.setFromUnitVectors(tuckRest, tuckV));
+    }
   }
+  var TUCK_UP = 'Spine1', tuckRest = null, tuckQ = new THREE.Quaternion(), tuckV = new THREE.Vector3();
 
   /* bodyFix: clips retargeted from slighter bodies can put a hand in a broad body's hip or a thigh through the
      other: after the clip, an elbow or a hand inside the pelvis, chest or its own side's thigh turns its upper arm or

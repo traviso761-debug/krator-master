@@ -36,7 +36,7 @@ if CHECKS and os.path.isfile(_cp) and subprocess.call([sys.executable, _cp, '--q
 
 
 def read(p, mode='r'):
-    with open(p, mode) as f:
+    with open(p, mode, **({} if 'b' in mode else {'encoding': 'utf-8'})) as f:    # (cp1252 on Windows: the pages came out in mojibake)
         return f.read()
 
 
@@ -97,7 +97,7 @@ def main():
                 name, k = (f[:-10], 1) if f.endswith('.morph.bin') else (f[:-4], 0)
                 lines.setdefault(name, ['', ''])[k] = base64.b64encode(gzip.compress(raw, 9, mtime=0)).decode()
         for name, (glb, morph) in lines.items():
-            with open(os.path.join(out_dir, name + '.txt'), 'w') as o:
+            with open(os.path.join(out_dir, name + '.txt'), 'w', encoding='utf-8', newline='\n') as o:
                 o.write(glb + ('\n' + morph if morph else ''))
     os.makedirs(DIST, exist_ok=True)
     for old in ('characters.html', 'characters.artifact.html'):              # the single page before the split
@@ -113,12 +113,12 @@ def main():
                 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + \
                 body + '</body>\n</html>\n'
         for name, text in ((page + '.html', whole), (page + '.artifact.html', body)):
-            with open(os.path.join(DIST, name), 'w', encoding='utf-8') as f:
+            with open(os.path.join(DIST, name), 'w', encoding='utf-8', newline='\n') as f:
                 f.write(text)
         wholes[page] = whole
         if CHECKS:
             script = os.path.join(DIST, '.check.js')
-            open(script, 'w').write('\n'.join(pjs))
+            open(script, 'w', encoding='utf-8').write('\n'.join(pjs))
             rc = subprocess.call(['node', '--check', script])
             os.remove(script)
             if rc:
@@ -131,14 +131,14 @@ def main():
     # the pieces this checkout does not have keep the hashes the last whole build wrote (they did not change here)
     old = os.path.join(HERE, 'build-manifest.json')
     if os.path.exists(old):
-        kept = {k: v for k, v in json.load(open(old)).items() if k.startswith('pieces/') and k not in man
-                and not os.path.exists(os.path.join(HERE, k)) and os.path.isfile(os.path.join(HERE, 'data', k.split('/')[1], 'kit.json'))}
+        kept = {k: v for k, v in json.load(open(old, encoding='utf-8')).items() if k.startswith('pieces/') and k not in man
+                and not os.path.exists(os.path.join(HERE, k)) and (k.split('/')[1] == 'props' or os.path.isfile(os.path.join(HERE, 'data', k.split('/')[1], 'kit.json')))}
         man.update(kept)
         if kept:
             print('build.py: %d pieces not here keep their last hashes' % len(kept))
     for page, whole in wholes.items():
         man['dist/%s.html' % page] = hashlib.sha1(whole.encode()).hexdigest()
-    json.dump(man, open(os.path.join(HERE, 'build-manifest.json'), 'w'), indent=1, sort_keys=True)
+    json.dump(man, open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n'), indent=1, sort_keys=True)
     print('%s  pieces %.1f MB' % ('  '.join('dist/%s.html %.2f MB' % (p, len(w) / 1e6) for p, w in sorted(wholes.items())), sum(
         os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(os.path.join(DIST, 'pieces')) for f in fs) / 1e6))
 

@@ -113,7 +113,20 @@
 - **Skin shows through where an item's cover is approximate.** Items with no MakeHuman delete group (polo, fisherman
   sweater, cargo trousers, tiered skirt, flats) hide skin by a ray test; a skirt's cover is deliberately small, so
   the thighs under it show from below, and arms raised high pull a sweater's front off bare skin. The waistband tuck
-  works above the hips only: a short tee over jeans in a deep crouch can still show denim at its hem.
+  works above the hips only: a short tee over jeans in a deep crouch can still show denim at its hem. The cargo
+  trousers' cover was widened on 2026-10-20 (the knees, the crotch seam and the buttocks' cleft came through them in
+  the Animation Lab review: `make_mpfb.py TROUSERS_COVER`) and the nipples now hide under a top that covers them
+  (`hide_parts`); the generated trousers keep the default reach (nobody flagged them; they are settled to the body by
+  `make_garments.py`), and so may still show a knee in a deep crouch: shoot them before widening theirs.
+- **The plain tee's hem and the trousers' band cross** in a deep hip bend (the Animation Lab's ladder climb at 1.2 s,
+  worse on the man): the tee's hem and the cargo trousers' tucked band pass through each other in a jagged line. The
+  owner saw a see-through gap there; shot on a magenta background (Cosmetic Lab and Animation Lab, every body, front,
+  side, back) no gap showed through to the background, only the jagged crossing, which the trunk-frame tuck
+  (README, Clipping) made smaller but did not remove. If the gap is still seen, note the body, view and zoom.
+- **Godot's skin regions are behind the page's hides** for the cargo trousers (widened 2026-10-20 by `make_mpfb.py
+  hides`, which rewrites kit.json only): the twin draws the skin by `base.gshapes.bin`'s cover regions, which the
+  next whole build (`mpfb_build.py`, `make_mpfb.py`) remakes from the new hides. The nipples' `hide_parts` and the tuck's
+  trunk frame are in the twin already.
 - **Download size.** Pieces are served gzipped as base64 text (the page unzips them with the browser's
   DecompressionStream), one file per item (its GLB and its morph deltas), fetched per item as needed. A published
   artifact holds at most 512 files: both bodies' items now take about 230 of them, so there is room for the remaining
