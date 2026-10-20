@@ -31,7 +31,7 @@ defBuilding({key:'et_tile_works',name:'Tile works',seed:7402,cut:true,w:24,d:28,
  build(o){etTrade({plan:'hex',R:5.2,storeys:1,sh:4,mk:'brick',roof:'ogee',roofMk:'celadon',steel:true,
    furn:[['eternian_common_table',4,.6],['eternian_common_chest',3,.5],['eternian_common_bench',5,.45],['generic_storage_jar',2,.6],['generic_crate',0,.6]],
    extra:F=>{for(let i=0;i<6;i++){const a=i*PI/3+PI/6,r=9.2;pushM(TF(Math.cos(a)*r,0,Math.sin(a)*r,PI/2-a));etDryRack(0,0,3.6,'celadon',etKeyCol('celadon'));popM();}
-    for(const s of [-1,1])cyl('stone',s*2.2,0,7.2,.7,.9,P('stoneD'),12),cyl('water',s*2.2,.2,7.2,.6,.7,new THREE.Color(0x6a9a82),12);
+    for(const s of [-1,1])lathe('stone',s*2.2,7.2,[[.7,0],[.7,.9],[.6,.9],[.6,.3]],12,P('stoneD')),cyl('water',s*2.2,.3,7.2,.58,.5,new THREE.Color(0x6a9a82),12);   /* a hollow vat: the glaze 10 cm under the rim, clear of the inner wall */
     etBottleKiln(0,-9.5,1.6,9);}});}});
 
 /* the porcelain works: a long brick shed with the wheels, a muffle kiln and the finished ware on its shelves */

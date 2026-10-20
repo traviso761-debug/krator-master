@@ -94,7 +94,7 @@ defBuilding({key:'et_relic_hall',name:'Relic hall',seed:7124,w:22,d:27,h:18,budg
     etMazeBand(0,G+H-1.2,.42,W-.4,.7);
    popM();
    for(const s of [-1,1]){pushM(TF(s*W/2,0,0,s*PI/2));box('brick',0,G,0,D,H,.8,br);for(const x of [-4,0,4])etLancet(x,G+2.5,.42,1.0,5.5,{light:'glass'});popM();}
-   box('stone',0,G+H,0,W+.6,.4,D+.6,sd);etHip(W,D,G+H+.4,5.5,{mk:'celadon',ov:.7,flare:.5,under:P('timber'),cap:P('celadon')});
+   box('stone',0,G+H,0,W+.06,.4,D+.06,sd);etHip(W,D,G+H+.4,5.5,{mk:'celadon',ov:.7,flare:.5,under:P('timber'),cap:P('celadon')});
    // the apse: a half-drum of Ancient white panels at the back, live cyan bands
    const AB=G+H-3.6;   /* the apse's drum stops short of the hall's wall head, so its dome stays under the roof line */
    lathe('white',0,-D/2,[[5.4,G],[5.4,AB]],18,wh,{a0:PI,a1:TAU,uv:'arc'});

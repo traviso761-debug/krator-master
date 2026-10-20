@@ -26,7 +26,7 @@ defBuilding({key:'et_hex_villa',name:'Hexagonal villa',seed:7011,cut:true,w:24,d
   etHexFaces(ap,(k)=>{etWall(11,0,2.6,'brick',br,k===1?[{x:0,w:2,h:2.3,door:true,mask:false,leaf:P('bronze')}]:[],{t:.4});});
   for(const q of etHex(11))box('brick',q[0],0,q[1],.8,3.2,.8,new THREE.Color(br).multiplyScalar(.86));
   box('stone',0,.6,ap-.6,1,.1,.5,P('stoneD'));etHead(0,2.9,ap,.7,{metal:'gold'});
-  box('paving',0,0,5.6,2,.05,6,P('paving'));box('stone',5,0,4.2,3,.4,3,P('stoneD'));box('water',5,.05,4.2,2.6,.36,2.6,new THREE.Color(ET_WATER));
+  box('paving',0,0,5.6,2,.05,6,P('paving'));etBasin(5,0,4.2,3,3,.4);
   for(const [x,z] of [[-5.5,4],[-6,-4],[5.5,-4.5]]){cyl('glaze',x,0,z,.45,.6,etKeyCol('glaze'),12);cone('plain',x,1.1,z,.7,2.0,new THREE.Color(0x3e5e3a),8);}
   etTrade({plan:'hex',R:5,storeys:2,mk:'brick',upMk:'brick',roof:'ogee',roofMk:'celadon',steel:true,mask:false,
    furn:[['eternian_court_ancestor_niche',4,.3],['eternian_court_alabaster_lamp',3,.5],['eternian_common_table',0,1.6],['eternian_court_gallery_bench',5,.3],['eternian_court_canopy_bed',4,1.2,1],['eternian_court_visor_case',2,.3,1]],

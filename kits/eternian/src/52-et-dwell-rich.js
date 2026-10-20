@@ -17,12 +17,12 @@ defBuilding({key:'et_merchant_house',name:"Merchant's house",seed:7007,cut:true,
   etWalls(W,D,G,E-G,'brick',br,{front:[{x:0,w:1.5,h:2.9,door:true,mask:false,leaf:P('bronze')},{x:-3.2,w:1.1,h:1.8,y:.9,steel:true,shut:false},{x:3.2,w:1.1,h:1.8,y:.9,steel:true,shut:false}],
    back:st(1.0).concat(st(F1-G+1.0),st(F2-G+1.0)),left:st(F1-G+1.0).concat(st(F2-G+1.0)),right:[{x:-2.5,w:1.0,h:1.8,y:1.0,steel:true,shut:false}].concat(st(F2-G+1.0))},{frame:brD});
   // the front: piers between the bays, the lancet bundles, the tall lancet over the door, the gilt face on its corbel
-  for(const x of [-W/2+.27,-1.45,1.45,W/2-.27]){box('brick',x,G,D/2+.12,.55,E-G-.3,.3,brD);box('brick',x,E-.3,D/2+.12,.7,.3,.4,brD);}
+  for(const x of [-W/2+.27,-1.45,1.45,W/2-.27]){box('brick',x,G,D/2+.12,.55,E-G-.65,.3,brD);box('brick',x,E-.65,D/2+.12,.7,.3,.4,brD);   /* under the hip's eave */}
   for(const F of [F1,F2]){for(const s of [-1,1])etLancets(s*3.25,F+.55,D/2,{n:3,w:.6,gap:.2,h:2.5,step:.3,light:'glass',headMk:'brick',headCol:brD});
    box('brick',0,F-.14,0,W+.2,.22,D+.2,brD);}
   etLancet(0,F1+.4,D/2,.95,F2-F1+2.2,{light:'glass'});
   box('stone',0,G+2.98,D/2+.22,.75,.14,.44,sd);etHead(0,G+3.12,D/2+.24,.8,{metal:'gold'});
-  box('stone',0,E-.32,0,W+.5,.32,D+.5,sd);
+  box('stone',0,E-.32,0,W+.06,.32,D+.06,sd);   /* a cornice flush with the walls: wider, it came through the hip */
   etHip(W,D,E,5.2,{mk:'celadon',ov:.7,flare:.45,under:P('timber'),cap:P('celadon')});
   // the floors and the stair in the back right corner
   for(const F of [F1,F2]){box('timber',-.95,F-.2,0,7.5,.2,D-.6,P('timber'));box('timber',3.75,F-.2,1.6,1.9,.2,5.2,P('timber'));}
@@ -52,7 +52,7 @@ defBuilding({key:'et_official_villa',name:"Official's villa",seed:7008,cut:true,
   for(const [x,z,w,d] of [[-6.6,9.8,10.8,.6],[6.6,9.8,10.8,.6],[0,-9.8,24.4,.6],[-11.8,0,.6,19.2],[11.8,0,.6,19.2]])box('stone',x,2.8,z,w,.14,d,sd);
   // the garden court: the path, the basin, the trees
   box('paving',0,0,7.4,2.2,.09,4.6,P('paving'));box('paving',0,0,-.1,2.2,.09,4.0,P('paving'));   /* the paths stand 3 cm over the basin's paving they cross */
-  box('paving',0,0,3.5,8.4,.06,4.4,P('paving'));box('stone',0,0,3.5,7.4,.45,3.6,sd);box('water',0,.05,3.5,7.0,.38,3.2,new THREE.Color(ET_WATER));
+  box('paving',0,0,3.5,8.4,.06,4.4,P('paving'));etBasin(0,0,3.5,7.4,3.6,.45,sd);
   for(const x of [-3.9,3.9])for(const z of [.6,6.6]){cyl('glaze',x,0,z,.45,.6,etKeyCol('glaze'),12);box('timber',x,.6,z,.12,.6,.12,P('timber'));
    cone('plain',x,1.1,z,.75,2.1,new THREE.Color(0x3e5e3a),8);}
   // the hall on its podium
@@ -63,7 +63,7 @@ defBuilding({key:'et_official_villa',name:"Official's villa",seed:7008,cut:true,
    etWalls(HW,HD,G,HE-G,'brick',br,{front:[{x:0,w:1.6,h:3.0,door:true,mask:false,leaf:P('bronze')}],back:sw,left:[{x:0,w:1.0,h:2.0,y:1.2,steel:true,shut:false}],right:[{x:0,w:1.0,h:2.0,y:1.2,steel:true,shut:false}]},{frame:brD});
    for(const s of [-1,1])etLancets(s*3.9,G+.8,HD/2,{n:5,w:.6,gap:.2,h:3.6,step:.35,light:'glass',headMk:'brick',headCol:brD});
    box('stone',0,G+3.08,HD/2+.2,.7,.12,.4,sd);etHead(0,G+3.2,HD/2+.22,.75,{metal:'gold'});
-   box('stone',0,HE-.3,0,HW+.4,.3,HD+.4,sd);
+   box('stone',0,HE-.3,0,HW+.06,.3,HD+.06,sd);
    etHip(HW,HD,HE,4.4,{mk:'celadon',ov:.7,flare:.45,under:P('timber'),cap:P('celadon')});
   popM();
   // the register room on the left, its front to the court

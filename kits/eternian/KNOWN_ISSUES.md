@@ -21,3 +21,8 @@
       file (checked 2026-10-20).
 - [ ] **The palace and canton staffs** are the census's one trade the kit does not carry: the Sanctum
       (`kits/ancients/targets/sanctum`) houses them. Tabled: envoys and embassy staff (Farport's page).
+- [x] **Fixed 2026-10-20 (the owner's review):** the glaze vats' and basins' water was hidden in solid stone, or z-fought
+      its top (`etBasin`, hollow); the shutters z-fought the window surrounds (now 2 cm proud of them); wall heads and pier
+      caps showed through the roofs (every roof is lifted over the wall's outer edge by its own slope: `etRoofLift`;
+      cornices 3 cm out); the hexagonal roofs' tiles ran straight across the hexagon (`etOgee` is drawn face by face, each
+      face's courses along its own eave, as `etHexHip` and `etHip` already were).

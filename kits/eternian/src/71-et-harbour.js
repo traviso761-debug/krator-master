@@ -35,7 +35,7 @@ defBuilding({key:'et_spillway',name:'Spillway face',seed:7706,cls:'feature',kind
   box('water',0,0,-9.5,22,20.5,4,new THREE.Color(ET_WATER));
   etHead(0,1.2,-2.6,HF,{metal:'stone',headdress:'none'});
   box('plain',0,MY,3.1,2.6,.9,.6,new THREE.Color(0x08090a));                               /* the mouth's throat */
-  box('stone',0,0,4.5,16,1.0,7,sd);box('water',0,.2,4.5,15,.75,6.2,new THREE.Color(ET_WATER));
+  etBasin(0,0,4.5,16,7,1.0,sd,null,.4);
   if(CURREC&&!PLACE_DRY){const W=(x,y,z)=>{const v=new THREE.Vector3(x,y,z).applyMatrix4(CM);return [+v.x.toFixed(3),+v.y.toFixed(3),+v.z.toFixed(3)];};
    CURREC.spill={lip:W(0,MY,3.5),foot:W(0,.95,4.8),width:2.2};}}});
 

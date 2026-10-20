@@ -33,7 +33,11 @@ function etPoly2(mk,pts,col,col2){etPoly(mk,pts,col);etPoly(mk,pts.map(p=>[p[0],
    w x d under it; o.ov the eaves' overhang, o.gov the gables', o.th the sheet; o.ribs a tile course every o.ribs metres
    (the grey tile's and the celadon's rolls), o.gables false for no end walls, else the triangles in o.wallMk/o.wallCol;
    o.cap the ridge's colour */
-function etGable(w,d,y,h,o){o=o||{};const mk=o.mk||'tile',col=o.col||etKeyCol(mk),ov=o.ov==null?.4:o.ov,gov=o.gov==null?.3:o.gov,th=o.th||.14;
+/* the lift over the wall heads at slope k: a wall is ET_T thick about its line and a pier reaches further, so the slope
+   clears its outer edge by 5 cm (flush, the wall heads showed through the slopes: the owner, 2026-10-20) */
+const etRoofLift=k=>.05+k*.2;
+function etGable(w,d,y,h,o){o=o||{};const y0=y;y+=etRoofLift(h/(d/2));
+ const mk=o.mk||'tile',col=o.col||etKeyCol(mk),ov=o.ov==null?.4:o.ov,gov=o.gov==null?.3:o.gov,th=o.th||.14;
  const k=h/(d/2),ye=y-ov*k,ze=d/2+ov,W=w/2+gov;
  for(const s of [1,-1])etSheet(mk,[-W,ye,s*ze],[W,ye,s*ze],[-W,y+h,0],th,col);
  const cap=o.cap||new THREE.Color(col).multiplyScalar(.82);
@@ -42,12 +46,13 @@ function etGable(w,d,y,h,o){o=o||{};const mk=o.mk||'tile',col=o.col||etKeyCol(mk
   for(let i=0;i<n;i++){const x=-W+(i+.5)*2*W/n;
    for(const s of [1,-1])beam(mk,[x,ye+ny*lift,s*(ze+nz*lift)],[x,y+h+ny*lift,s*nz*lift],.08,rc);}}
  if(o.gables!==false){const wm=o.wallMk||'lime',wc=o.wallCol||P(wm);
-  etPoly(wm,[[w/2,y,d/2],[w/2,y,-d/2],[w/2,y+h,0]],wc);etPoly(wm,[[-w/2,y,-d/2],[-w/2,y,d/2],[-w/2,y+h,0]],wc);}}
+  etPoly(wm,[[w/2,y0,d/2],[w/2,y0,-d/2],[w/2,y,-d/2],[w/2,y+h,0],[w/2,y,d/2]],wc);etPoly(wm,[[-w/2,y0,-d/2],[-w/2,y0,d/2],[-w/2,y,d/2],[-w/2,y+h,0],[-w/2,y,-d/2]],wc);   /* from the wall head up under the lifted sheets */}}
 
 /* ---------------------------------------------------------------- the hip: four slopes to a ridge (or a point), h above
    the eaves at y, over w x d; o.ov the overhang, o.under the soffit's colour, o.cap the hips' and ridge's, o.flare lifts the
    eaves' corners (the celadon roofs' turned-up tips), o.ribs the tile rolls' spacing */
-function etHip(w,d,y,h,o){o=o||{};const mk=o.mk||'celadon',col=o.col||etKeyCol(mk),ov=o.ov==null?.5:o.ov;
+function etHip(w,d,y,h,o){o=o||{};y+=etRoofLift(h/(Math.min(w,d)/2));
+ const mk=o.mk||'celadon',col=o.col||etKeyCol(mk),ov=o.ov==null?.5:o.ov;
  const k=h/(Math.min(w,d)/2),ye=y-ov*k,X=w/2+ov,Z=d/2+ov,rx=Math.max(0,(w-d)/2),rz=Math.max(0,(d-w)/2),yr=y+h;
  const E=(sx,sz)=>[sx*X,ye,sz*Z],R=(sx,sz)=>[sx*rx,yr,sz*rz],un=o.under||P('timber');
  /* each slope's UVs run along its eave (u) and up the slope (v), so a sheet's tile rolls run down every face */
@@ -73,7 +78,7 @@ function etHip(w,d,y,h,o){o=o||{};const mk=o.mk||'celadon',col=o.col||etKeyCol(m
    of circumradius R (corners at multiples of 60 degrees, etHex's), eaves at y overhanging o.ov, h to the apex; each slope's
    UVs run along its eave and up its fall, so the tile's rolls run down every face (the owner: the plain cones read badly);
    the hips and the eave's fascia in o.cap, the underside dropped clear (ET_SOFFIT) */
-function etHexHip(R,y,h,o){o=o||{};const mk=o.mk||'tile',col=o.col||etKeyCol(mk),ov=o.ov==null?.5:o.ov,un=o.under||P('timber');
+function etHexHip(R,y,h,o){o=o||{};y+=etRoofLift(h/(R*Math.cos(PI/6)));const mk=o.mk||'tile',col=o.col||etKeyCol(mk),ov=o.ov==null?.5:o.ov,un=o.under||P('timber');
  const ap=R*Math.cos(PI/6),k=h/ap,ye=y-ov*k,Re=(ap+ov)/Math.cos(PI/6),A=[0,y+h,0],E=i=>[Re*Math.cos(i*PI/3),ye,Re*Math.sin(i*PI/3)];
  const cap=o.cap||new THREE.Color(col).multiplyScalar(.8),ape=ap+ov;
  for(let i=0;i<6;i++){const a=E(i+1),b=E(i),mx=(a[0]+b[0])/2,mz=(a[2]+b[2])/2,ml=Math.hypot(mx,mz),T=[(a[0]-b[0])/Re,(a[2]-b[2])/Re],n=[mx/ml,mz/ml];
@@ -99,8 +104,15 @@ function etPentFill(w,d,y0,y1,mk,col){col=col||P(mk);box(mk,0,y0-.02,-d/2+ET_T/2
 const ET_OCT0=Math.PI/8;
 function etOgee(R,y,h,o){o=o||{};const mk=o.mk||'scale',col=o.col||(mk==='gilt'?new THREE.Color(1,1,1):P('bronze')),seg=o.seg||8,A0=o.a0==null?ET_OCT0:o.a0;
  const prof=[[R,y],[R*.96,y+h*.08],[R*.86,y+h*.2],[R*.7,y+h*.36],[R*.5,y+h*.52],[R*.3,y+h*.68],[R*.16,y+h*.82],[R*.08,y+h*.94],[.06,y+h]];
- lathe(mk,0,0,prof,seg,col,{a0:A0,a1:A0+TAU});
- lathe(mk,0,0,prof.map(q=>[q[0]*.97,q[1]-ET_SOFFIT]).reverse(),seg,o.under||P('timber'),{a0:A0,a1:A0+TAU,inward:true});   /* the underside follows the curve, inside it */
+ /* face by face, so each face's tile runs down its own fall line (a lathe's cone mapping ran the courses across the
+    hexagon: the owner, 2026-10-20): u along the eave, v the slant distance down the face's middle */
+ const ca=Math.cos(PI/seg),sl=[0];for(let j=1;j<prof.length;j++)sl.push(sl[j-1]+Math.hypot((prof[j][0]-prof[j-1][0])*ca,prof[j][1]-prof[j-1][1]));
+ const L=sl[sl.length-1],un=o.under||P('timber');
+ for(let i=0;i<seg;i++){const a=A0+i*TAU/seg,b=A0+(i+1)*TAU/seg,T=[Math.cos(b)-Math.cos(a),Math.sin(b)-Math.sin(a)],tl=Math.hypot(T[0],T[1]),tx=T[0]/tl,tz=T[1]/tl;
+  const Pt=(j,an,sc,dy)=>[prof[j][0]*sc*Math.cos(an),prof[j][1]+dy,prof[j][0]*sc*Math.sin(an)];
+  for(let j=0;j<prof.length-1;j++){const pts=[Pt(j,b,1,0),Pt(j,a,1,0),Pt(j+1,a,1,0),Pt(j+1,b,1,0)],sv=[sl[j],sl[j],sl[j+1],sl[j+1]];
+   etPolyUV(mk,pts,pts.map((p,k)=>[p[0]*tx+p[2]*tz,L-sv[k]]),col);
+   etPoly(mk,[Pt(j,b,.97,-ET_SOFFIT),Pt(j,a,.97,-ET_SOFFIT),Pt(j+1,a,.97,-ET_SOFFIT),Pt(j+1,b,.97,-ET_SOFFIT)].reverse(),un);}}
  /* the eave's band, and the gold finial: a stepped base, a ball, a needle */
  const ec=o.band||P('bronze');for(let i=0;i<seg;i++){const a=A0+i*TAU/seg,b=A0+(i+1)*TAU/seg;beam('bronze',[R*Math.cos(a),y-.1,R*Math.sin(a)],[R*Math.cos(b),y-.1,R*Math.sin(b)],.2,ec);}
  const g=KIT_HAS('gold')?new THREE.Color(1,1,1):P('gold'),f=o.finial==null?Math.max(1,h*.3):o.finial;

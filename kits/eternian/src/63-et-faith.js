@@ -21,7 +21,7 @@ defBuilding({key:'et_ancestor_gallery',name:'Ancestor gallery',seed:7130,cut:tru
     const xw=s*(W/2-ET_T/2);box('stone',xw-s*.3,y-.12,0,.6,.12,D-2,sd);
     for(let i=0;i<13;i++){const z=-D/2+1.8+i*1.7,m=ms[(i+(s>0?1:0))%3];n++;
      box('stone',xw-s*.17,y,z,.04,1.5,1.0,dk);etHead(xw-s*.38,y,z,.78,{metal:m,ry:-s*PI/2,veiled:n%7===0});}}
-   box('stone',0,G+H,0,W+.5,.35,D+.5,sd);etHip(W,D,G+H+.35,4.6,{mk:'celadon',ov:.6,flare:.4,under:P('timber'),cap:P('celadon')});
+   box('stone',0,G+H,0,W+.06,.35,D+.06,sd);etHip(W,D,G+H+.35,4.6,{mk:'celadon',ov:.6,flare:.4,under:P('timber'),cap:P('celadon')});
   popM();
   // the front: a pier bundle with heads in its niches, the civic door
   pushM(TF(0,G,12));

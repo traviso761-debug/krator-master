@@ -51,7 +51,7 @@ function etWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||ET_T,fz=t/2;opens=(o
    door(q.x,y0,fz,0,q.w);
    if(q.mask!==false)etMask(q.x,y0+top+.62,fz+.1,.46,q.maskMetal);}
   else if(q.dark){box('plain',q.x,y0+sy,-.06,q.w-.04,top-sy,.04,new THREE.Color(P('stoneD')).multiplyScalar(.45));   /* unglazed: the poor's */
-   if(q.shut!==false)for(const s of [-1,1])box('shutter',q.x+s*(q.w*.75+.06),y0+sy,fz+.05,q.w/2,top-sy,.04,o.shutCol||P('timberL'));}
+   if(q.shut!==false)for(const s of [-1,1])box('shutter',q.x+s*(q.w*.75+.06),y0+sy,fz+.09,q.w/2,top-sy,.04,o.shutCol||P('timberL'));}
   else{/* the glass; a steel window's is dark and opaque, so its grid reads against it from the street */
    box(q.steel?'plain':'glass',q.x,y0+sy,-.04,q.w-.04,top-sy,.04,q.lit?P('glassLit'):q.steel?new THREE.Color(P('glass')).multiplyScalar(.8):P('glass'));
    if(q.steel){const ir=P('iron');                                                         /* Deco steel glazing: a fine grid */
@@ -59,8 +59,8 @@ function etWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||ET_T,fz=t/2;opens=(o
     for(let k=1;k<Math.round((top-sy)/.42);k++)box('iron',q.x,y0+sy+k*(top-sy)/Math.round((top-sy)/.42),.0,q.w,.05,.06,ir);}
    else box('timber',q.x,y0+sy,-.02,.05,top-sy,.06,P('timber'));                         /* the mullion */
    if(q.shut!==false){const sk=o.shutKey||'shutter';                                     /* louvred shutters, folded open */
-    for(const s of [-1,1]){const sx=q.x+s*(q.w*.75+.06);box('shutter',sx,y0+sy,fz+.05,q.w/2,top-sy,.04,o.shutCol||P(sk));
-     for(let k=1;k<Math.floor((top-sy)/.22);k++)box('shutter',sx,y0+sy+k*.22,fz+.08,q.w/2-.06,.025,.02,new THREE.Color(o.shutCol||P(sk)).multiplyScalar(.82));}}}}
+    for(const s of [-1,1]){const sx=q.x+s*(q.w*.75+.06);box('shutter',sx,y0+sy,fz+.09,q.w/2,top-sy,.04,o.shutCol||P(sk));   /* clear of the surround's face (fz+.07) */
+     for(let k=1;k<Math.floor((top-sy)/.22);k++)box('shutter',sx,y0+sy+k*.22,fz+.12,q.w/2-.06,.025,.02,new THREE.Color(o.shutCol||P(sk)).multiplyScalar(.82));}}}}
  seg(x,L/2,0,h);}
 /* four walls round a w x d room from y0 up h; o.front/back/left/right: openings per side (etWall). The front faces +z;
    the side walls run between the front and the back */
@@ -69,6 +69,11 @@ function etWalls(w,d,y0,h,mk,col,o){o=o||{};const t=o.t||ET_T;
  for(const [side,x,z,ry,L] of S){pushM(TF(x,0,z,ry));etWall(L,y0,h,mk,col,o[side]||[],o);popM();}}
 
 /* ---------------------------------------------------------------- flutes: n half-round reeds on a face at z, x0..x1, y0..y1 */
+/* a basin w x d, h high at (x, y, z): a floor and four rim walls t thick, the water 6 cm under the rim and clear of the walls
+   (a solid block of stone hid its water, or z-fought it at the top: the owner, 2026-10-20) */
+function etBasin(x,y,z,w,d,h,col,wc,t){t=t==null?.2:t;col=col||P('stoneD');box('stone',x,y,z,w,.1,d,col);
+ for(const s of [-1,1]){box('stone',x,y,z+s*(d-t)/2,w,h,t,col);box('stone',x+s*(w-t)/2,y,z,t,h,d-2*t,col);}
+ box('water',x,y+.1,z,w-2*t-.02,h-.16,d-2*t-.02,new THREE.Color(wc==null?ET_WATER:wc));}
 function etFlutes(x0,x1,y0,y1,z,n,col){const r=Math.min(.22,(x1-x0)/(n*1.9));   /* reeds up to 0.22 m, so they carry at a distance */
  for(let i=0;i<n;i++){const x=x0+(x1-x0)*(i+.5)/n;cyl('lime',x,y0,z,r,y1-y0,col||P('lime'),8);}}
 

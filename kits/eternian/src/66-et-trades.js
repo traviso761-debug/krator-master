@@ -45,7 +45,7 @@ defBuilding({key:'et_tannery',name:'Tannery',seed:7414,w:14,d:12,h:6,budget:5000
  tags:{types:['industry'],wealth:'poor',style:'poor',job:'tanning'},
  note:'an open shed on posts over six pits, hides stretched on frames, a block store',
  build(o){box('earth',0,0,0,13,.1,11,P('earth'));
-  for(let i=0;i<6;i++){const x=-4.5+(i%3)*4.5,z=(i<3?-2:2);box('stone',x,0,z,2.6,.4,2.6,P('stoneD'));box('water',x,.05,z,2.2,.3,2.2,new THREE.Color(i%2?0x5a4a2a:0x3a3a2a));}
+  for(let i=0;i<6;i++){const x=-4.5+(i%3)*4.5,z=(i<3?-2:2);etBasin(x,0,z,2.6,2.6,.4,null,i%2?0x5a4a2a:0x3a3a2a);}
   for(const x of [-6,0,6])for(const z of [-4,4])box('timber',x,0,z,.2,3.2,.2,P('timber'));
   pushM(TF(0,0,0));etPent(12.4,8.4,3.2,3.9,{mk:'reed',col:P('reed'),ov:.4});popM();
   for(let i=0;i<3;i++){const x=-4+i*4;box('timber',x,0,5.2,.1,2.2,.1,P('timber'));box('timber',x+1.4,0,5.2,.1,2.2,.1,P('timber'));box('lime',x+.7,.6,5.2,1.2,1.4,.04,new THREE.Color(0x9a7a5a));}

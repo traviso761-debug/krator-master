@@ -29,7 +29,7 @@ defBuilding({key:'et_court_house',name:'Court house',seed:7005,cut:true,w:14.4,d
    etPent(6,3,G+2.65,G+3.35,{mk:'tile',ribs:.3,ov:.55});etPentFill(6,3,G+2.6,G+3.35,'lime',lime);
    popM();}
   // the basin, and the household shrine by the hall door: a stone niche, three heads on its shelf, the eyes closed
-  box('stone',0,0,2.6,1.9,.42,1.9,P('stoneD'));box('water',0,.08,2.6,1.5,.32,1.5,new THREE.Color(ET_WATER));
+  etBasin(0,0,2.6,1.9,1.9,.42);
   pushM(TF(-3.2,0,-2.05));
    box('stone',0,0,0,1.3,.9,.6,P('stoneD'));box('stone',0,.9,-.24,1.3,1.3,.12,P('stoneD'));
    for(const sx of [-1,1])box('stone',sx*.6,.9,0,.1,1.3,.6,P('stoneD'));

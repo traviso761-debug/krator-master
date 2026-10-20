@@ -32,7 +32,7 @@ defBuilding({key:'et_ministry',name:'Ministry',seed:7101,cut:true,w:27,d:22,h:46
    FURNISH('eternian_court_visor_case',9.47,9.2,-2,-PI/2);
    for(const s of [-1,1]){pushM(TF(s*10,0,0,s*PI/2));for(const x of [-3.2,3.2])etLancets(x,2.5,0,{n:3,w:.9,gap:.3,h:7.5,step:.6,light:'glass',headMk:'brick',headCol:brD});
     etMazeBand(0,12.2,.02,11,.7);popM();}
-   box('stone',0,13.7,0,20.6,.4,12.6,sd);
+   box('stone',0,13.7,0,20.06,.4,12.06,sd);
    etHip(20,12,14.1,7,{mk:'celadon',ov:.8,flare:.6,under:P('timber'),cap:P('celadon')});
    pushM(TF(10,0,2.2,PI/2));etTubeHead(0,.02,3.0);popM();
   popM();
@@ -62,7 +62,7 @@ defBuilding({key:'et_registry',name:'Registry',seed:7102,cut:true,w:30,d:18,h:17
   for(let i=0;i<7;i++){const x=-W/2+.4+(i+.5)*(W-.8)/7;if(i!==3)etLancet(x,G+1.6,D/2+.15,1.3,5.6,{light:'glass'});}
   etFrieze(0,G+H-1.6,D/2+.32,W-1,1.2);
   pushM(TF(0,G,0));etCivicDoor(0,D/2+.15,2.0,3.9,{metal:'bronze'});popM();
-  box('stone',0,G+H,0,W+.6,.35,D+.6,sd);
+  box('stone',0,G+H,0,W+.06,.35,D+.06,sd);
   etHip(W,D,G+H+.35,5.2,{mk:'celadon',ov:.7,flare:.5,under:P('timber'),cap:P('celadon')});
   // the vault
   box('stone',W/2-3,0,-D/2-2.6,5.5,4.6,4.8,sd);for(let k=0;k<3;k++)box('stone',W/2-3,4.6+k*.35,-D/2-2.6,5-k*1.2,.35,4.3-k*1.0,new THREE.Color(sd).multiplyScalar(1.1));
@@ -121,7 +121,7 @@ defBuilding({key:'et_customs_house',name:'Customs house',seed:7104,cut:true,w:21
    box('bronze',0,0,.2,3.0,4.6,.08,P('bronze'));door(0,0,.4,0,3.0);
    etMazeBand(0,10.2,.37,11,.6);
   popM();
-  box('stone',0,G+H,0,W+.5,.3,D+.5,sd);etHip(W,D,G+H+.3,4.2,{mk:'celadon',ov:.6,flare:.4,under:P('timber'),cap:P('celadon')});
+  box('stone',0,G+H,0,W+.06,.3,D+.06,sd);etHip(W,D,G+H+.3,4.2,{mk:'celadon',ov:.6,flare:.4,under:P('timber'),cap:P('celadon')});
   FURNISH('eternian_common_weighing_scale',-3,G,0,0);FURNISH('eternian_common_weighing_scale',3,G,0,0);
   FURNISH('eternian_common_register_desk',-7,G,-4.1,0);FURNISH('eternian_common_register_desk',7,G,-4.1,0);
   FURNISH('job_bales',-7.5,G,2.6,0);FURNISH('generic_crate',7.6,G,2.8,0);FURNISH('generic_sack',6.6,G,3.4,0);FURNISH('generic_strongbox',-4.6,G,-4.0,0);}});
