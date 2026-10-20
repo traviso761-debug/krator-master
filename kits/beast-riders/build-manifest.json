@@ -1,5 +1,5 @@
 {
- "KF_TEX (GENERATED)": "dd1f834c71f7",
+ "KF_TEX (GENERATED)": "6315ac977eac",
  "TOWNS: Girder and Mav's Refuge sealed (GENERATED: towns.py)": "bd66c63b5d71",
  "core/rand/08-core-rand.js": "4a3aa47f25da",
  "kits/catalog/inspector.js": "b2c275da7b7d",
@@ -23,7 +23,7 @@
  "src/55-br-rockcut.js": "372424d45169",
  "src/56-br-rockcut-b.js": "6c6b3562ab6d",
  "src/60-br-ports.js": "d0a9842e605b",
- "src/70-br-tent-kit.js": "5f8e4bb636b5",
+ "src/70-br-tent-kit.js": "31c5df579de1",
  "src/71-br-tents-dwell.js": "3e7916159fd3",
  "src/72-br-tents-trade.js": "10aebae78902",
  "src/73-br-tents-pens.js": "8a988ab0febd",
