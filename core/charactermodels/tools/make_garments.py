@@ -1633,7 +1633,8 @@ for b, sex in (('male', 'm'), ('female', 'f')):
             cloth_ = P('mongolblue', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'saffron'), B('bottom', 0.03, 0.08, 'claw', 'bone', 'mongolblue', 0.08),
                                              B('top', 0.0, 0.02, 'solid', 'maroon')])
             for side, out in (('front', np.array([0, -1.0, 0])), ('back', np.array([0, 1.0, 0]))):
-                parts.append(flap('%s_%s' % (gid, side), _out(spine_at(WAIST - 0.04), out, 0.03), 0.2, WAIST - 0.04 - (KNEE + 0.02), out, cloth_,
+                # 1.2 cm off the body at its top, under the shirt's 1.4 (at 3 cm it stood out through the shirt's skirt)
+                parts.append(flap('%s_%s' % (gid, side), _out(spine_at(WAIST - 0.04), out, 0.012), 0.2, WAIST - 0.04 - (KNEE + 0.02), out, cloth_,
                                   group_below=CROTCH + 0.02, sway=0.03))
         return parts
     GARMENTS['beast_%s_peasant_trousers' % sex] = ('legs', b, 'Leggings and breechcloth', _btrou)

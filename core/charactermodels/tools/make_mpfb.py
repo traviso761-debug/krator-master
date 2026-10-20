@@ -1055,6 +1055,9 @@ def hangs(it):
     return culture_of(it['id']) is not None and it['slot'] in ('torso', 'legs') \
         and not any(w in it['id'] for w in ('trousers', 'breeches', 'braccae'))   # all three are legged
 LOOSE = {'mindfront_kimono', 'toigo_long_full_skirt', 'toigo_tiered_mini_skirt'}
+# a band and flaps only (a loincloth): no push out of the legs, the chains alone keep its flaps out of them. Pushed, a
+# flap between the thighs in a stride went out of each sideways, its corners stood out like wings
+FLAPS = {'voth_m_peasant_maxtlatl'}
 GRIP_STYLES = {'fist': _FIST,
                # a bow drawn with three fingers on the string, the thumb and little finger tucked
                'draw': (('Index', (30, 40, 25)), ('Middle', (32, 42, 25)), ('Ring', (40, 50, 30)), ('Pinky', (75, 85, 50)),
@@ -1134,7 +1137,7 @@ def main():
             entry['covers_hair'] = True
         if it['slot'] == 'torso' and encloses(c, os.path.join(pieces, it['id'] + '.glb')):
             entry['tucks'] = True          # closed round the waist: a waistband under it is drawn in (KCHAR tuck)
-        if it['id'] in LOOSE or hangs(it):
+        if (it['id'] in LOOSE or hangs(it)) and it['id'] not in FLAPS:
             entry['loose'] = True          # the figure pushes its vertices out of the legs (50-figure.js clothPush)
             if it['slot'] == 'torso' and all_triangles(os.path.join(pieces, it['id'] + '.glb'))[0][:, 1].min() < c.jpos[c.J['LeftLeg']][1]:
                 entry['long'] = True       # below the knees: trousers under it are drawn in to the legs (KCHAR squeeze)

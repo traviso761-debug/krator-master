@@ -4,7 +4,7 @@
 // - kcL 1 (kit item 'loose'): every vertex pushed out of the thighs, shins and feet, so no knee comes through between
 //   two cloth chains. A thin band: d from the bone within r + 0.015 lands at r - 0.015 + d * 0.03 / (r + 0.015), so
 //   two tiers of one skirt keep their order and cloth that lies right barely moves (a 4 cm shell outside r crumpled
-//   flaps and a robe's back at rest); a thigh's top third pushes nothing; inside a leg a vertex leaves on the side
+//   flaps and a robe's back at rest); a thigh's top third pushes nothing behind it (the buttock: the seat covers it); inside a leg a vertex leaves on the side
 //   away from the body's axis (kcH), never behind the knee. kcS draws each vertex to its nearest capsule only. The arms' capsules (kcB.w 1) are hard: only what is inside moves, so a raised arm lifts a
 //   mantle's hem (and a giant's lower arms, 10-13; the seat, 14-15). kcA / kcB: the capsules' ends in the skeleton's space, kcA.w the radius (_leg_caps).
 // - kcT > 0 (trousers or a skirt under a top that closes round the waist, kit item 'tucks'): the band above the hips
@@ -34,6 +34,10 @@ uniform float kcS = 0.0;
 
 void vertex() {
 	if (kcL > 0.5) {
+		// behind the hips: the seat's capsules (14, 15) lie behind them
+		vec3 bk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH;
+		bk.y = 0.0;
+		bk *= kcA[14].w > 0.0 ? 1.0 / max(length(bk), 1e-5) : 0.0;
 		for (int i = 0; i < 16; i++) {
 			if (kcA[i].w <= 0.0) {
 				continue;
@@ -42,8 +46,8 @@ void vertex() {
 			vec3 ab = kcB[i].xyz - a;
 			float sh = kcB[i].w > 0.5 ? 0.0 : 0.015;
 			float t = dot(VERTEX - a, ab) / max(dot(ab, ab), 1e-8);
-			if (i < 2 && t < 0.3) {
-				continue;                // a thigh's top third: its capsule took in the buttock and the crotch
+			if (i < 2 && t < 0.3 && (dot(VERTEX - a, bk) > 0.0 || kcA[14].w <= 0.0)) {
+				continue;                // a thigh's top third, behind: its capsule took in the buttock
 			}
 			t = clamp(t, 0.0, 1.0);
 			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + (sh > 0.0 ? kcP : 0.0);

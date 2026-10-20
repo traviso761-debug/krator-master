@@ -758,16 +758,18 @@ function KCharFigure(body, sliders, load){
       // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
       // cloth behind the knee; an arm's capsule (kcB.w 1) is hard: only what is inside it moves, to its surface. The
       // radius runs from kcA.w at a to kcR at b (a limb tapers: make_mpfb.py colliders ra, rb). A thigh pushes nothing
-      // in its top third: its capsule runs down the femur, toward the outside of the thigh, and at the radius that
-      // covers the flesh within (12 cm) it took in the buttock and the crotch and pushed a loincloth's back flap and a
-      // kilt's seat out into wings; cloth comes through at the knees, and the seat covers the buttocks. The soft push
+      // behind it in its top third: its capsule runs down the femur, toward the outside of the thigh, and at the radius
+      // that covers the flesh within (12 cm) it took in the buttock and pushed a loincloth's back flap, a kilt's seat
+      // and a robe's back out into wings (the seat covers the buttocks); in front it still pushes, or a kimono showed
+      // wide harem pants at the hips. The soft push
       // is a thin band (1.5 cm either side of the capsule's surface: d in [0, r + 1.5 cm] lands in [r - 1.5, r + 1.5]),
       // so cloth that already lies right barely moves; the 4 cm shell outside it moved everything within 4 cm of a
       // capsule out by up to 3 cm, and a loincloth's flaps, a kilt's seat and a robe's back crumpled at rest
       sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform float kcR[' + NCAP + '];\nuniform vec3 kcH;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
-        '#include <skinning_vertex>\n\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
+        '#include <skinning_vertex>\n\tvec3 cbk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH; cbk.y = 0.0; cbk *= kcA[14].w > 0.0 ? 1.0 / max(length(cbk), 1e-5) : 0.0;\n' +
+        '\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
         '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.015;\n' +
-        '\t\tfloat ct = dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8);\n\t\tif(ci < 2 && ct < 0.3) continue;\n\t\tct = clamp(ct, 0.0, 1.0);\n' +
+        '\t\tfloat ct = dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8);\n\t\tif(ci < 2 && ct < 0.3 && (dot(transformed - ca, cbk) > 0.0 || kcA[14].w <= 0.0)) continue;\n\t\tct = clamp(ct, 0.0, 1.0);\n' +
         '\t\tfloat cr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, ct) + (csh > 0.0 ? kcP : 0.0), cR = cr + csh;\n' +
         '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
         '\t\tif(cl < cR && cl > 1e-5){\n' +
