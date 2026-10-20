@@ -77,8 +77,10 @@ lamps in the windows; `89x`).
   upper orchards. `LS.FARMS.provision()`: the house's own fields grow about a quarter of its grain; the valley's tithe
   the rest. The herds are the Fauna kit's yak and highland cow (`kits/fauna`, its farm group bundled; each kind baked in
   its pose and drawn instanced).
-- **The people** (`68-ls-life.js`): 162 records (monks, novices, operatives from Keepwell, masters of arms, keepers,
-  wardens, lay servants, pilgrims) on their schedules; at noon the operatives drill at lightning speed in the ward
+- **The people** (`68-ls-life.js`): 1,344 records (the owner, 2026-10-19: a house of a thousand of the Order: 600
+  monks, 160 novices, 40 elders, 80 operatives from Keepwell, 8 masters of arms, 12 keepers, 100 wardens; its town in
+  the ward: 120 lay servants, 50 lay scholars, 80 artisans, 20 market keepers; a caravan of 24 from Xanadu; 50
+  pilgrims) on their schedules (the monks on three variants, so the courts are not all asked for at once); at noon the operatives drill at lightning speed in the ward
   (every strike leaves three afterimages), the master of arms stands in the drill ground's middle and every few seconds
   is simply somewhere else, and the petals falling round him stop in the air within his reach; monks debate in the
   court, pilgrims walk the kora clockwise, the keepers walk the wheel. They live on `core/simulation` (`40d-ls-sim.js`:
@@ -86,8 +88,13 @@ lamps in the windows; `89x`).
   rooms' doors; the places from `LS.PLACES`; a role per `LS.ROLES`): SIM steps a world minute at a time as the clock
   runs, each person walks between places on the graph (out of sight through the rooms), and the hour slider jumps them
   (`SIM.jump`). `node tests/test-sim.js` runs a whole day headless (every route found, the stair climbed, no one stood
-  in a wall; a cut stair must fail). Drawn as placeholder figures; their `core/charactermodels` records are made
-  (`people-kchar.json`, `tools/kchar_people.js`) but not drawn yet (`KNOWN_ISSUES.md`).
+  in a wall; a cut stair must fail). The nearest 24 to the eye are drawn dressed (`69-ls-figures.js`; `?dressed=N`):
+  `core/charactermodels` figures (KCharFigure, read in place) in their own records (`40e-ls-kchar.js`: KCHAR.stranger
+  on each one's seed, so each has a face, a build and an ancestry of its own; the Order in its standing's set, the town
+  in Xanadu's dress, a fifth of the visitors wealthy and turbaned), playing the clip their activity wants; the rest are
+  placeholder figures. The pieces are sidecars beside the page (`dist/kchar/`, 52 scripts, about 48 MB, in LFS), each
+  loaded the first time a figure needs it; `build.py` remakes them from `core/charactermodels/dist/pieces/` when that is
+  built. `people-kchar.json` (`tools/kchar_people.js`) is every record, for Godot.
 - **The plants**: the Oidong kit (`biomes/oidong`, read in place) on the model's land, its fields bound here
   (`45-host-stage.js`: wet from the rain and the water, flow on the stream's banks, upland and cold over the floor,
   rock on the steeps and Longsong's rock, three raked gravel fans the stream left, a little mist over the stream);

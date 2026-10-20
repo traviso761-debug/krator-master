@@ -27,6 +27,7 @@ function day(W) {
     if (m % 10) continue;
     SIM.all('actor').forEach(function (a) {
       var s = SIM.pose(a, C.t); if (s.hidden) return; out++;
+      if (s.leg >= 0 && LSS.hidden(s.x, s.y, s.z)) return;   // walking through a room or the rock: unseen (68 hides it)
       if (s.moving) { moving++; if (s.y > 2 && s.y < 39) stair++; }
       else if (LSS.hidden(s.x, s.y, s.z) && a.activity !== 'KEEP' && a.activity !== 'TURN_WHEEL' && hiddenStill.length < 5) hiddenStill.push(a.id + ' ' + a.activity + ' at ' + [s.x, s.y, s.z].map(function (v) { return v.toFixed(0); }).join(','));
       acts[a.activity] = (acts[a.activity] || 0) + 1; seen[a.id] = 1;

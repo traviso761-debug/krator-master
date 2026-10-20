@@ -46,7 +46,8 @@ const PEOPLE_DRAWN=(function(){
  function place(h){if(!SIMS.on)return;SIM.jump();SIMS.last=SIM.minute();S.forEach(s=>{s.korT=null;});}
  function simFrame(t){let n=0;while(SIMS.last<SIM.minute()&&n++<30){SIMS.last++;SIM.step();}if(SIMS.last<SIM.minute())SIMS.last=SIM.minute();
   let shown=0;for(let i=0;i<N;i++){const a=SIMS.actors[i],s=S[i];if(!a){s.shown=false;continue;}const q=SIM.pose(a,t);
-   s.shown=!q.hidden&&!(q.moving&&LSS.hidden(q.x,q.y,q.z));
+   // on a leg (leg >= 0: walking, or at its very start) and inside a room or the rock: out of sight
+   s.shown=!q.hidden&&!(q.leg>=0&&LSS.hidden(q.x,q.y,q.z));
    const act=q.moving?'MOVE':a.activity;if(act!==s.act)s.korT=null;s.act=act;s.place=a.place?PLACE.get(a.place)||null:null;
    if(!s.shown)continue;shown++;s.x=q.x;s.z=q.z;
    // on the ward's terraces the drawn ground (the stage's relief) rather than the terrace's datum
@@ -55,7 +56,8 @@ const PEOPLE_DRAWN=(function(){
    const pl=s.place;s.ry=q.moving||!pl||pl.x==null?q.h:Math.atan2(pl.x-q.x,pl.z-q.z);
    if(act==='KORA'&&s.korT==null)s.korT=t;}
   out.shown=shown;}
- const out={shown:0,place,S,sim:SIMS};
+ const POS=new Float32Array(N*4);
+ const out={shown:0,place,S,sim:SIMS,POS,dressed:new Set()};
  // the master of arms (the first master) stands in the drill ground's middle
  const MASTER=LS.PEOPLE.findIndex(P=>P.role==='master');
  const M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler(),V=new THREE.Vector3(),SC=new THREE.Vector3(1,1,1),HIDE=new THREE.Matrix4().makeScale(0,0,0);
@@ -86,6 +88,9 @@ const PEOPLE_DRAWN=(function(){
    pose(i,t,s,o);
    if(i===MASTER&&s.act==='DRILL'){if(t>MS.next){MS.from={x:o.x+MS.x,z:o.z+MS.z,t};const S2=KRAND.stream(KRAND.hash(211,Math.floor(t)));MS.x=S2.range(-9,9);MS.z=S2.range(-6,6);MS.at=t;MS.next=t+S2.range(5,7);}
     o.x+=MS.x;o.z+=MS.z;o.y=terrainH(o.x,o.z);MASTER_AT.set(o.x,o.y,o.z);}
+   // where the pose put them (69 stands a dressed figure there); a dressed one's placeholder is not drawn
+   POS[i*4]=o.x;POS[i*4+1]=o.y;POS[i*4+2]=o.z;POS[i*4+3]=o.ry;
+   if(out.dressed.has(i)){robe.setMatrixAt(i,HIDE);head.setMatrixAt(i,HIDE);sash.setMatrixAt(i,HIDE);staff.setMatrixAt(i,HIDE);arm.setMatrixAt(2*i,HIDE);arm.setMatrixAt(2*i+1,HIDE);continue;}
    setM(robe,i,o.x,o.y,o.z,o.ry,0,0,o.sy);setM(sash,i,o.x,o.y,o.z,o.ry,0,0,o.sy);setM(head,i,o.x,o.y+(o.sy-1)*1.42,o.z,o.ry);
    const sx=Math.cos(o.ry),sz=-Math.sin(o.ry),hy=o.y+1.36*o.sy;
    setM(arm,2*i,o.x+sx*.22,hy,o.z+sz*.22,o.ry,o.a0,o.r0);setM(arm,2*i+1,o.x-sx*.22,hy,o.z-sz*.22,o.ry,o.a1,o.r1);
@@ -119,7 +124,8 @@ const PEOPLE_DRAWN=(function(){
  const T=BIO.tagReg&&BIO.tagReg();out.set=null;
  if(T){const A=robe.instanceMatrix.array;try{out.set=T.addSet({'class':'life',kind:'person',key:'longsong_people',name:'The people of Longsong',at:[0,0,0],tags:{culture:'order'}},
    {get n(){return N;},pos(i,o){o=o||[];o[0]=A[i*16+12];o[1]=A[i*16+13];o[2]=A[i*16+14];return o;},ry(i){return S[i].ry;}});}catch(e){reportErr('people: '+e.message);}}
- out.ROLE={monk:'A monk of the Order',novice:'A novice',operative:'An operative from Keepwell, in training',master:'A master of arms',keeper:'A keeper of the Vault',warden:'A warden',servant:'A lay servant',pilgrim:'A pilgrim'};
+ out.ROLE={monk:'A monk of the Order',novice:'A novice',elder:'An elder of the Order',operative:'An operative from Keepwell, in training',master:'A master of arms',keeper:'A keeper of the Vault',warden:'A warden',
+  servant:'A lay servant',scholar:'A lay scholar',artisan:'An artisan of the ward',trader:'A keeper of the market',caravan:'A caravaneer from Xanadu',pilgrim:'A pilgrim'};
  // which person a picked instance is: the robe, head, sash and staff by their index, the arms by half theirs, a ghost by the operatives' list
  out.personOf=(o,id)=>{if(id==null)return null;if(o===robe||o===head||o===sash||o===staff)return LS.PEOPLE[id];if(o===arm)return LS.PEOPLE[id>>1];
   if(gRobe.indexOf(o)>=0)return LS.PEOPLE[OPS[id]];if(gArm.indexOf(o)>=0)return LS.PEOPLE[OPS[id>>1]];return null;};

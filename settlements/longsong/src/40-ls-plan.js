@@ -293,51 +293,72 @@ P.RELICS=['LS-011 a clock that runs at its owner\'s pace','LS-014 the abacus tha
 // a coordinate: a person goes to a place of that activity (the README's rule). Who is where at an hour is plain data
 // (P.whereAt): the host only draws it.
 P.PLACES=[
- {id:'debate',activity:'DEBATE',x:0,z:51,y:'rock',r:26,cap:60,name:'The Debate Court'},
- {id:'drill',activity:'DRILL',x:P.DRILL.x,z:P.DRILL.z,y:'ward',r:16,cap:30,name:P.DRILL.name},
- {id:'kora',activity:'KORA',ring:P.KORA,cap:80,name:P.KORA.name},
- {id:'market',activity:'TRADE',x:86,z:-80,y:'ward',r:14,cap:30,name:'The market'},
- {id:'square',activity:'PILGRIM',x:0,z:-176,y:'ward',r:30,cap:60,name:"The pilgrims' square"},
- {id:'avenue',activity:'WALK',line:[[0,-160],[0,-10]],y:'ward',r:5,cap:40,name:'The avenue'},
- {id:'gardens',activity:'FARM',x:150,z:-20,y:'ward',r:28,cap:20,name:'The kitchen gardens'},
- {id:'orchard',activity:'FARM',x:-150,z:-20,y:'ward',r:28,cap:20,name:"The ward's orchard"},
- {id:'gate',activity:'GUARD',x:0,z:-188,y:'ward',r:9,cap:8,name:'The Great Gate'},
- {id:'stair-guard',activity:'GUARD',x:-30,z:14,y:'rock',r:4,cap:4,name:'The Lower Gate'},   // before it, at the stair's head
- {id:'roof',activity:'STUDY',x:-58,z:60,y:40+5*4.5,r:14,cap:20,name:'The White Palace\'s roof terraces (reading in the sun)'},
- {id:'wheel',activity:'TURN_WHEEL',x:0,z:160,y:-62,r:11,cap:3,name:'The Procrastinator (the keepers at the wheel)'},
- {id:'vault',activity:'KEEP',x:-16,z:88,y:-14,r:12,cap:6,name:'The open vault'},
- {id:'assembly',activity:'PRAY',x:0,z:82,y:'rock',r:15,cap:300,indoor:true,name:'The Great Assembly Hall'},
- {id:'cells',activity:'SLEEP',x:-60,z:58,y:'rock',r:30,cap:300,indoor:true,name:'The cells'},
- {id:'library',activity:'STUDY_IN',x:60,z:58,y:'rock',r:20,cap:80,indoor:true,name:'The library and the scriptorium'},
- {id:'refectory',activity:'EAT',x:40,z:40,y:'rock',r:20,cap:300,indoor:true,name:'The refectory'},
- {id:'workshops',activity:'WORK',x:-150,z:-100,y:'ward',r:30,cap:60,indoor:true,name:'The workshops'},
- {id:'hostel',activity:'REST',x:82,z:-178,y:'ward',r:15,cap:60,indoor:true,name:"The pilgrims' hostel"},
- {id:'barracks',activity:'REST_W',x:-90,z:-110,y:'ward',r:15,cap:60,indoor:true,name:"The wardens' barracks"}];
-// the schedules by role: 24 entries, hour 0..23
+ {id:'debate',activity:'DEBATE',x:0,z:51,y:'rock',r:26,cap:400,name:'The Debate Court'},
+ {id:'drill',activity:'DRILL',x:P.DRILL.x,z:P.DRILL.z,y:'ward',r:16,cap:100,name:P.DRILL.name},
+ {id:'kora',activity:'KORA',ring:P.KORA,cap:700,name:P.KORA.name},
+ {id:'market',activity:'TRADE',x:86,z:-80,y:'ward',r:14,cap:200,name:'The market'},
+ {id:'square',activity:'PILGRIM',x:0,z:-176,y:'ward',r:30,cap:120,name:"The pilgrims' square"},
+ {id:'avenue',activity:'WALK',line:[[0,-160],[0,-10]],y:'ward',r:5,cap:120,name:'The avenue'},
+ {id:'gardens',activity:'FARM',x:150,z:-20,y:'ward',r:28,cap:120,name:'The kitchen gardens'},
+ {id:'orchard',activity:'FARM',x:-150,z:-20,y:'ward',r:28,cap:120,name:"The ward's orchard"},
+ {id:'gate',activity:'GUARD',x:0,z:-188,y:'ward',r:9,cap:30,name:'The Great Gate'},
+ {id:'stair-guard',activity:'GUARD',x:-30,z:14,y:'rock',r:4,cap:12,name:'The Lower Gate'},   // before it, at the stair's head
+ {id:'roof',activity:'STUDY',x:-58,z:60,y:40+5*4.5,r:14,cap:150,name:'The White Palace\'s roof terraces (reading in the sun)'},
+ {id:'wheel',activity:'TURN_WHEEL',x:0,z:160,y:-62,r:11,cap:6,name:'The Procrastinator (the keepers at the wheel)'},
+ {id:'vault',activity:'KEEP',x:-16,z:88,y:-14,r:12,cap:12,name:'The open vault'},
+ {id:'assembly',activity:'PRAY',x:0,z:82,y:'rock',r:15,cap:1100,indoor:true,name:'The Great Assembly Hall'},
+ {id:'cells',activity:'SLEEP',x:-60,z:58,y:'rock',r:30,cap:1000,indoor:true,name:'The cells'},
+ {id:'library',activity:'STUDY_IN',x:60,z:58,y:'rock',r:20,cap:700,indoor:true,name:'The library and the scriptorium'},
+ {id:'refectory',activity:'EAT',x:40,z:40,y:'rock',r:20,cap:1000,indoor:true,name:'The refectory'},
+ {id:'workshops',activity:'WORK',x:-150,z:-100,y:'ward',r:30,cap:200,indoor:true,name:'The workshops'},
+ {id:'hostel',activity:'LODGE',x:82,z:-178,y:'ward',r:15,cap:80,indoor:true,name:"The pilgrims' hostel"},
+ // the town in the ward: the lay servants', the artisans' and the lay scholars' houses, the tea houses, the caravanserai
+ {id:'lay-houses',activity:'REST',x:82,z:-128,y:'ward',r:12,cap:320,indoor:true,name:"The lay servants' houses"},
+ {id:'tea',activity:'TEA',x:86,z:-96,y:'ward',r:12,cap:220,indoor:true,name:'The market hall and the tea houses'},
+ {id:'caravanserai',activity:'REST_C',x:150,z:-170,y:'ward',r:20,cap:60,indoor:true,name:'The caravanserai'},
+ {id:'barracks',activity:'REST_W',x:-90,z:-110,y:'ward',r:15,cap:120,indoor:true,name:"The wardens' barracks"}];
+// the schedules by role: 24 entries, hour 0..23. A role may carry VARIANTS (a list of schedules, dealt to its people in
+// turn): the monks keep three, so a third of them debate, a third read and a third walk the kora at any hour of study
 const S=(spec)=>{const a=new Array(24);let cur=null;for(let h=0;h<24;h++){if(spec[h]!=null)cur=spec[h];a[h]=cur;}return a;};
 P.SCHEDULES={
- monk:S({0:'SLEEP',4:'PRAY',6:'EAT',7:'STUDY_IN',10:'DEBATE',13:'EAT',14:'STUDY',16:'KORA',17:'PRAY',19:'EAT',20:'STUDY_IN',22:'SLEEP'}),
- novice:S({0:'SLEEP',4:'PRAY',6:'EAT',7:'DEBATE',12:'EAT',13:'FARM',16:'PRAY',18:'EAT',19:'STUDY_IN',21:'SLEEP'}),
+ monk:[S({0:'SLEEP',4:'PRAY',6:'EAT',7:'STUDY_IN',10:'DEBATE',13:'EAT',14:'STUDY',16:'KORA',17:'PRAY',19:'EAT',20:'STUDY_IN',22:'SLEEP'}),
+  S({0:'SLEEP',4:'PRAY',6:'EAT',7:'KORA',9:'STUDY_IN',13:'EAT',14:'DEBATE',17:'PRAY',19:'EAT',20:'STUDY_IN',22:'SLEEP'}),
+  S({0:'SLEEP',4:'PRAY',6:'EAT',7:'STUDY',10:'STUDY_IN',13:'EAT',14:'KORA',16:'STUDY_IN',17:'PRAY',19:'EAT',20:'DEBATE',21:'SLEEP'})],
+ novice:S({0:'SLEEP',4:'PRAY',6:'EAT',7:'DEBATE',10:'STUDY_IN',12:'EAT',13:'FARM',16:'PRAY',18:'EAT',19:'STUDY_IN',21:'SLEEP'}),
+ // the elders (the lamas who teach and judge): the morning's debate, the afternoon with their books and their pupils
+ elder:S({0:'SLEEP',4:'PRAY',6:'EAT',7:'STUDY_IN',10:'DEBATE',13:'EAT',14:'STUDY_IN',17:'PRAY',19:'EAT',20:'STUDY',21:'SLEEP'}),
  operative:S({0:'SLEEP',4:'DRILL',7:'EAT',8:'STUDY_IN',11:'DRILL',14:'EAT',15:'DRILL',18:'PRAY',19:'EAT',20:'SLEEP'}),
  master:S({0:'SLEEP',3:'PRAY',6:'DRILL',13:'STUDY',16:'DRILL',19:'PRAY',21:'SLEEP'}),
  keeper:S({0:'TURN_WHEEL',3:'KEEP',6:'SLEEP',12:'TURN_WHEEL',15:'KEEP',18:'PRAY',20:'TURN_WHEEL'}),
  warden:S({0:'GUARD',6:'REST_W',12:'GUARD',18:'EAT',19:'REST_W',22:'GUARD'}),
- servant:S({0:'REST',5:'WORK',8:'FARM',11:'TRADE',14:'WORK',18:'EAT',19:'REST'}),
- pilgrim:S({0:'REST',6:'KORA',9:'PILGRIM',11:'KORA',13:'PILGRIM',15:'WALK',17:'KORA',19:'REST'})};
-// the roll: who lives here (BLUEPRINT.md's numbers, a fifth of each drawn: the rest are in the books)
+ servant:[S({0:'REST',5:'WORK',8:'FARM',11:'TRADE',14:'WORK',18:'TEA',19:'REST'}),S({0:'REST',5:'FARM',11:'WORK',14:'FARM',17:'TRADE',18:'TEA',19:'REST'})],
+ // the town: lay scholars in the library, the artisans of the presses, smithies and mill, the market's keepers
+ scholar:S({0:'REST',7:'TEA',8:'STUDY_IN',12:'TEA',13:'STUDY_IN',18:'TEA',20:'REST'}),
+ artisan:S({0:'REST',6:'TEA',7:'WORK',12:'TEA',13:'WORK',18:'TRADE',20:'REST'}),
+ trader:S({0:'REST',6:'TRADE',12:'TEA',13:'TRADE',19:'TEA',21:'REST'}),
+ // the caravan from Xanadu at the caravanserai: its goods to the market, its evenings in the tea houses
+ caravan:S({0:'REST_C',7:'TRADE',12:'TEA',13:'TRADE',18:'TEA',20:'REST_C'}),
+ pilgrim:S({0:'LODGE',6:'KORA',9:'PILGRIM',11:'KORA',13:'PILGRIM',15:'WALK',17:'KORA',19:'LODGE'})};
+// the roll: who lives here, every one of them (the owner, 2026-10-19: a house of a thousand of the Order, its town in
+// the ward and a caravan; BLUEPRINT.md's numbers were a quarter of it)
 P.ROLES=[
- {role:'monk',n:48,faction:'The Order of Historians',sub:'Longsong',job:'scholar',dress:'monk'},
- {role:'novice',n:20,faction:'The Order of Historians',sub:'Longsong novices',job:'student',dress:'novice'},
- {role:'operative',n:24,faction:'The Order of Historians',sub:'Keepwell operatives (in training)',job:'operative',dress:'operative'},
- {role:'master',n:4,faction:'The Order of Historians',sub:'The masters of arms',job:'master of arms',dress:'master'},
- {role:'keeper',n:6,faction:'The Order of Historians',sub:'The keepers of the Vault',job:'keeper',dress:'keeper'},
- {role:'warden',n:20,faction:'The Order of Historians',sub:'The Wardens',job:'warden',dress:'warden'},
- {role:'servant',n:24,faction:'Oidong',sub:'The lay servants of Longsong',job:'servant',dress:'servant'},
- {role:'pilgrim',n:16,faction:'Xanadu Sultanate',sub:'Pilgrims',job:'pilgrim',dress:'pilgrim'}];
+ {role:'monk',n:600,faction:'The Order of Historians',sub:'Longsong',job:'scholar',dress:'monk'},
+ {role:'novice',n:160,faction:'The Order of Historians',sub:'Longsong novices',job:'student',dress:'novice'},
+ {role:'elder',n:40,faction:'The Order of Historians',sub:'The elders (the lamas who teach and judge)',job:'elder',dress:'master'},
+ {role:'operative',n:80,faction:'The Order of Historians',sub:'Keepwell operatives (in training)',job:'operative',dress:'operative'},
+ {role:'master',n:8,faction:'The Order of Historians',sub:'The masters of arms',job:'master of arms',dress:'master'},
+ {role:'keeper',n:12,faction:'The Order of Historians',sub:'The keepers of the Vault',job:'keeper',dress:'keeper'},
+ {role:'warden',n:100,faction:'The Order of Historians',sub:'The Wardens',job:'warden',dress:'warden'},
+ {role:'servant',n:120,faction:'Oidong',sub:'The lay servants of Longsong',job:'servant',dress:'servant'},
+ {role:'scholar',n:50,faction:'Oidong',sub:'The lay scholars',job:'scholar',dress:'servant'},
+ {role:'artisan',n:80,faction:'Oidong',sub:'The ward\'s artisans (the presses, the smiths, the mill, the dairy)',job:'artisan',dress:'servant'},
+ {role:'trader',n:20,faction:'Oidong',sub:'The market\'s keepers',job:'trader',dress:'servant'},
+ {role:'caravan',n:24,faction:'Xanadu Sultanate',sub:'A caravan from Xanadu',job:'caravaneer',dress:'pilgrim'},
+ {role:'pilgrim',n:50,faction:'Xanadu Sultanate',sub:'Pilgrims',job:'pilgrim',dress:'pilgrim'}];
 P.PEOPLE=(function(){const out=[];let k=0;
  P.ROLES.forEach(R=>{for(let i=0;i<R.n;i++){const seed=KRAND.hash(7401,k,i);
   out.push({id:'ls-'+R.role+'-'+String(i).padStart(2,'0'),role:R.role,faction:R.faction,sub:R.sub,job:R.job,dress:R.dress,seed,
-   schedule:P.SCHEDULES[R.role]});k++;}});
+   schedule:Array.isArray(P.SCHEDULES[R.role][0])?P.SCHEDULES[R.role][i%P.SCHEDULES[R.role].length]:P.SCHEDULES[R.role]});k++;}});
  return out;})();
 P.placeOf=function(activity,seed){const L=P.PLACES.filter(p=>p.activity===activity);return L.length?L[seed%L.length]:null;};
 // where a person is at an hour: the place and a spot in it (a stable offset by the person's seed), or null indoors

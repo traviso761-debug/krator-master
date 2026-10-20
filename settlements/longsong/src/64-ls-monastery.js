@@ -473,6 +473,7 @@ function monasteryChecks(add){add('every building a core/tags record of the Orde
  if(typeof interiorChecks==='function')interiorChecks(add);
  if(typeof nightChecks==='function')nightChecks(add);
  if(typeof peopleChecks==='function')peopleChecks(add);
+ if(typeof figureChecks==='function')figureChecks(add);
  if(typeof vaultChecks==='function')vaultChecks(add);}
 function monasteryNegatives(add){add('a building recorded as an Ancients one',MCHK.records(LS.BUILDINGS.concat([{id:'not-recorded'}])));
  add('a rammed-earth granary',MCHK.noEarth([{id:'x',name:'a rammed-earth granary'}],['wall']));
@@ -482,5 +483,6 @@ function monasteryNegatives(add){add('a building recorded as an Ancients one',MC
  if(typeof interiorNegatives==='function')interiorNegatives(add);
  if(typeof nightNegatives==='function')nightNegatives(add);
  if(typeof peopleNegatives==='function')peopleNegatives(add);
+ if(typeof figureNegatives==='function')figureNegatives(add);
  if(typeof vaultNegatives==='function')vaultNegatives(add);}
 _mark('monastery');

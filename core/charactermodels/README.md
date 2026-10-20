@@ -56,7 +56,9 @@ builds the page with whatever pieces this checkout has (`pieces/` is gitignored)
 This was `kits/characters` until 2026-10-16. It moved to `core/` because it is meant to be shared: the bodies, the
 records, the peoples and the clips are what every settlement's citizens will be drawn from. It is still a build of its
 own (`build.py`, `src/`, `dist/`: the two labs), which `tools/make_index.py` and `tools/audit_port.py` list through
-`CORE_BUILDS`; no settlement includes its fragments yet.
+`CORE_BUILDS`. The first settlement to take it is Longsong (2026-10-19: `settlements/longsong/build.py` reads `10-rig.js`
+and `50-figure.js` in place, a kit cut to its two peoples, and the pieces as sidecars; its `69-ls-figures.js` draws the
+nearest people as figures in their own records).
 
 **Lessons learned** are kept in the `character-modeling` skill (`.claude/skills/character-modeling/`, zipped as
 `character-modeling.skill` at the repo root): read it before working here, and add to it when a fix teaches something
