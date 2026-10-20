@@ -87,9 +87,12 @@ area you are about to change.
 - **Change one variable per shot, and shoot the A-pose too** → toggling the push, the cloth sim (rigid) and the posture
   pass one at a time, A-pose against idle, told push, weights, chains and posture apart in a few shots; tuning blind
   cost whole pipeline runs.
-- **A mantle torn at the shoulder blades** → the posture pass draws the shoulders back after every clip; the tunic
-  follows the shoulder joints, the mantle's chains the spine. Weight tricks (contact, copied weights, chains on the
-  collarbones) only moved the tear; it is still open.
+- **A mantle torn at the shoulder blades** → colour the parts (vertex colours by `_vidx` range) before theorising:
+  the trader's mantle back had sunk into the body over the whole upper back, held rigid by the chest while the spine
+  bent in the clip and the posture. Weight tricks (contact, copied weights, chains on the collarbones) and reading the
+  chain rest in the postured bind pose alone did not close it. What did: a chain's rest follows the garment's own body
+  weights in the current pose (kit `bw`), whole for chains above the hip joint, by the top point for chains below
+  (point by point there a robe's skirt followed the thighs), never the legs' weights.
 - **Removing hidden triangles from a garment breaks Godot** → its glTF importer drops vertices no triangle uses, and the
   morph data no longer lines up. Keep every vertex referenced.
 - **A cape's edge as a long spike at the idle** → a chain colliding with the arm (an elbow hangs at the waist) moves one

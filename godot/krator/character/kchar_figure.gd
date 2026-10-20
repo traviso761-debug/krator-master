@@ -944,6 +944,14 @@ func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
 						if m.skin.get_bind_bone(q) == bones[k]:
 							m.skin.set_bind_pose(q, Transform3D(Basis(), -P[k]))
 			ch["pbind"] = pbind[ch["parent"]]
+			ch["binds"] = pbind
+		# a chain wholly above the hip joint follows the body point by point; one reaching below it, by its top point
+		var hip_y: float = (pbind[skeleton.find_bone("Hips")] as Transform3D).affine_inverse().origin.y
+		for ch in c["chains"]:
+			ch["whole"] = true
+			for q in ch["p"]:
+				if (q as Vector3).y <= hip_y:
+					ch["whole"] = false
 		_posed_rests(c, pbind)
 		c["posed"] = null
 		_place_chains(c, player != null and player.is_playing())
@@ -1022,12 +1030,44 @@ func _place_chains(c: Dictionary, posed: bool) -> void:
 	c["reset"] = true
 
 
+const LEGJ := ["UpLeg", "Leg", "Foot", "Toe"]
+
+
+# twin of rigidTargets in 50-figure.js: riding the parent joint; while a clip plays, a chain's rest is where the
+# garment's own body weights (kit bw, not the legs') put its points in this pose (a chain wholly above the hip joint),
+# or its top point (one reaching below: the rest keeps the shape it hangs in from its parent and moves with that point)
 func _rigid(ch: Dictionary) -> Transform3D:
 	var M: Transform3D = _gp(ch["parent"]) * (ch["pbind"] as Transform3D)
 	var tw := []
 	for p in ch["rest"]:
 		tw.append(M * (p as Vector3))
+	if ch.get("bw") == null or player == null or not player.is_playing():
+		ch["tw"] = tw
+		return M
+	var binds: Dictionary = ch["binds"]
+	var n: int = ch["p"].size() if ch["whole"] else 1
+	for k in n:
+		var v := Vector3.ZERO
+		var tot := 0.0
+		for nw in ch["bw"][k]:
+			var nm := String(nw[0])
+			var leg := false
+			for l in LEGJ:
+				leg = leg or nm.contains(l)
+			var j := skeleton.find_bone(nm)
+			if leg or j < 0 or not binds.has(j):
+				continue
+			v += float(nw[1]) * ((_gp(j) * (binds[j] as Transform3D)) * (ch["p"][k] as Vector3))
+			tot += float(nw[1])
+		if tot > 0.0:
+			tw[k] = v / tot
+	if not ch["whole"]:
+		var d: Vector3 = tw[0] - M * (ch["rest"][0] as Vector3)
+		for k in range(1, tw.size()):
+			tw[k] += d
 	ch["tw"] = tw
+	# the root joint where its point is
+	skeleton.set_bone_pose_position(ch["bones"][0], _gp(ch["parent"]).affine_inverse() * (tw[0] as Vector3))
 	return M
 
 

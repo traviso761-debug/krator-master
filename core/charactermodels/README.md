@@ -342,8 +342,17 @@ per chain its parent joint and anchor vertices, and `skeleton.json colliders` th
 pelvis, chest, arms: a base radius and its change per morph target, `KCHAR.colliders`; for the push a radius at each
 end, `ra` and `rb`, since a limb tapers; and the seat, a pair of upright capsules behind the hip joints that cover the
 buttocks, whose ends are rest points carried by the Hips joint, `pa` and `pb`). The figure (`50-figure.js`
-cloth section; `kchar_figure.gd _cloth_*`) reads each chain's rest off the morphed garment, so a broad or tall body's
-skirt hangs from its own hips, then runs every chain point as a Verlet particle at 60 Hz: pulled to its rigid rest
+cloth section; `kchar_figure.gd _cloth_*`) reads each chain's rest off the morphed garment. **The rest follows the
+body, not the A-pose** (`HANDOFF-CLOTHING.md`, 1): `kit.json` keeps per chain point the garment's own body weights
+from before the chains took the cloth (`bw`, `make_mpfb.py cloth_bones`), and while a clip plays a chain wholly above
+the hip joint rests where those weights (not the legs') put each of its points in the current pose, and one reaching
+below the hips keeps the shape it hangs in from its parent joint and moves with its top point (`rigidTargets`,
+`_rigid`; the chain's root joint is placed there each frame). Held rigid by the chest, a mantle's back stayed where
+it was fitted while the spine under it bent in the clip and the posture pass drew the shoulders back, and the tunic it
+covers came out through it over the whole upper back; followed point by point below the hips, a robe's skirt bunched
+at the legs and its cape went round to the front in a stride. In the A-pose (no clip, no posture) the chains rest as
+fitted (`posedRests` also reads the postured bind rest, `placeChains`). So a broad or tall body's
+skirt hangs from its own hips, then runs every chain point as a Verlet particle at 60 Hz: pulled to its rest
 by the part's stiffness (mantles stiff, capes loose), under Krator's gravity (7.4 m/s²) and the drag of Voth's dense
 air, with the wind of a walk or run played in place (its `root_speed`), kept to its length, near its neighbours round
 a skirt, out of the capsules (not the arms': an elbow hanging at the waist pushed one chain of a cape's edge out and

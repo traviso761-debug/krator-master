@@ -546,6 +546,8 @@ function KCharFigure(body, sliders, load){
           c.meshes.forEach(function(mm){ mm.skeleton.boneInverses[base + bi].makeTranslation(-ch.p[k].x, -ch.p[k].y, -ch.p[k].z); });
         });
       });
+      var hipY = new THREE.Vector3().setFromMatrixPosition(prS.copy(m.skeleton.boneInverses[byName.Hips]).invert()).y;
+      c.chains.forEach(function(ch){ ch.whole = ch.p.every(function(q){ return q.y > hipY; }); });
       posedRests(c, m);
       c.posed = null;
       placeChains(c, !!self.action);         // and the ring's rest distances (neighbours round each part)
@@ -563,10 +565,40 @@ function KCharFigure(body, sliders, load){
     for(var k in live) if(live[k].userData.part && live[k].userData.part.role === 'base') return live[k];
     return null;
   }
+  var rtS = new THREE.Matrix4(), rtV = new THREE.Vector3(), rtM = new THREE.Matrix4(), LEGJ = /UpLeg|Leg$|LegTwist|Foot|Toe/;
   function rigidTargets(c, ch){
-    var pb = bones[ch.parent];
-    cM.multiplyMatrices(pb.matrixWorld, c.meshes[0].skeleton.boneInverses[ch.parent]);   // model -> world, riding the joint
-    for(var k = 0; k < ch.rest.length; k++) (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).copy(ch.rest[k]).applyMatrix4(cM);
+    var pb = bones[ch.parent], inv = c.meshes[0].skeleton.boneInverses;
+    cM.multiplyMatrices(pb.matrixWorld, inv[ch.parent]);   // model -> world, riding the joint
+    if(!(ch.bw && self.action)){
+      for(var k = 0; k < ch.rest.length; k++) (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).copy(ch.rest[k]).applyMatrix4(cM);
+      return cM;
+    }
+    /* while a clip plays, a chain's rest is where the garment's own body weights put each point in this pose (kit bw):
+       held rigid by its parent joint, a mantle's back hanging from the chest stayed while the spine under it bent in
+       the clip and the posture, and sank into the body under the tunic it covers. The chains add the motion only. Not
+       the legs' weights (LEGJ): below the hips they are what a skirt's are, and a robe's skirt and cape followed the
+       thighs round the front in a stride; what is left there is the hips'. A chain that reaches below the hip joint
+       (a robe's skirt, a long cape) keeps the shape it hangs in from its parent joint and moves with its top point
+       only (whole false): followed point by point, a robe's back bunched at the legs */
+    // a chain that hangs below the hips keeps its rigid shape and moves with its top point only (ch.whole false)
+    var n = ch.whole ? ch.p.length : 1;
+    for(var k = 0; k < n; k++){
+      var t = ch.tw[k] = ch.tw[k] || new THREE.Vector3(), tot = 0;
+      t.set(0, 0, 0);
+      (ch.bw[k] || []).forEach(function(nw){
+        var j = byName[nw[0]]; if(j === undefined || LEGJ.test(nw[0])) return;
+        t.addScaledVector(rtV.copy(ch.p[k]).applyMatrix4(rtS.multiplyMatrices(bones[j].matrixWorld, inv[j])), nw[1]); tot += nw[1];
+      });
+      if(tot > 0) t.divideScalar(tot); else t.copy(ch.rest[k]).applyMatrix4(cM);
+    }
+    if(!ch.whole){
+      rtV.copy(ch.tw[0]).sub(cV3.copy(ch.rest[0]).applyMatrix4(cM));
+      for(var k = 1; k < ch.rest.length; k++) (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).copy(ch.rest[k]).applyMatrix4(cM).add(rtV);
+    }
+    // the root joint where its point is (a child of the parent joint: placed in its frame)
+    var b0 = ch.bones[0];
+    b0.position.copy(ch.tw[0]).applyMatrix4(rtM.copy(pb.matrixWorld).invert());
+    b0.updateMatrixWorld(true);
     return cM;
   }
   /* the chains' rest in the postured pose (HANDOFF-CLOTHING.md, 1): posture() turns the spine and draws the shoulders
