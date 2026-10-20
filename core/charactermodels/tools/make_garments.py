@@ -1853,10 +1853,16 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         body = P('sealinen', 0.04, WAVE_HEM('sealinen', 'slateblue'))
         rope = P('olive', 0.05, [B('top', 0.0, 0.2, 'rays', 'sand', 'olive', 0.02)])
         if sex == 'm':
-            # from under the arms, and over the left shoulder the left half of the chest and back, as an exomis is
-            # worn (a 5 cm strap there left the chest bare and the cloth's top edge ragged against it)
+            # from under the arms, and over the left shoulder, cut diagonally across the chest and back from there to
+            # under the right arm, as an exomis is worn (a 5 cm strap left the chest bare; a left half ending at the
+            # breastbone stopped at the left nipple): a full ring from the neck, less what lies within a sphere over
+            # the right shoulder whose surface passes the breastbone at nipple height
+            upper = torso_tube(gid + '_left', TOP, CHEST - 0.035, 0.016, P('sealinen', 0.04, [B('top', 0.0, 0.01, 'solid', 'slateblue')]),
+                               n=96, rows=18)       # fine, so the cut's edge steps by a centimetre, not four
+            hc = J(R + 'Arm') + np.array([-0.06, 0.0, 0.12])
+            upper.holes = [(hc, float(np.linalg.norm(hc - _front(CHEST + 0.02, 0.0))))]
             return [torso_tube(gid, CHEST - 0.02, CROTCH - 0.16, 0.016, body, hang_from=WAIST - 0.02, flare=0.2, group_below=CROTCH + 0.02, hull_from=CHEST + 0.05),
-                    torso_tube(gid + '_left', TOP, CHEST - 0.035, 0.016, body, arc=(0.1, math.pi - 0.1), n=22),
+                    upper,
                     torso_tube(gid + '_rope', WAIST + 0.02, WAIST - 0.02, 0.026, rope, rows=3, n=40, hull_from=WAIST + 0.1)]
         return [torso_tube(gid, TOP, KNEE - 0.02, 0.014, body, hang_from=CHEST - 0.03, hang_side=WAIST - 0.02, flare=0.14, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                 torso_tube(gid + '_rope', CHEST - 0.06, CHEST - 0.09, 0.02, rope, rows=3, n=40)] + \
