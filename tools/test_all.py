@@ -41,7 +41,9 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/tags/ktags_test.gd
                'res://tests/shaders/library_test.gd', 'res://tests/anim/anim_test.gd', 'res://tests/motion/motion_test.gd',
                # a test and its arguments (after Godot's --): Pylon's sheet on Iziz's page, through the city test (core/export/README.md)
                ('res://tests/export/iziz_test.gd', '--case=world-pylon', '--sheet'),
-               ('res://tests/export/iziz_test.gd', '--case=world-talia', '--sheet')]
+               ('res://tests/export/iziz_test.gd', '--case=world-talia', '--sheet'),
+               # the Eternian kit's sheet (records, materials, ground: the Scyvoi engine's profile; kits/eternian P7)
+               'res://tests/export/eternian_test.gd']
 # The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
 # passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
 COMPARE_CASES = ['world-sedesert', 'world-iziz']

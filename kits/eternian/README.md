@@ -127,4 +127,18 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
 - **`etTrade`** (`src/64-et-trade-kit.js`): one generator for a trade building in either plan, storeys, shop opening,
   roof by tier, chimney, furniture and the trade's own features.
 
-Next: P7 (the interiors set, the furnished cut-away, the Godot export check). `PLAN.md` §11.
+## P7 (2026-10-20)
+
+- **The interiors set** (`kits/interiors/sets/eternian.js`): every closed body planned into rooms and furnished from the
+  catalog (`eternian`, chained to `generic`): 75 items, 127 rooms, every household meeting the residence rule; the open
+  and solid pieces skipped with their reasons. `python3 build.py --sets-page eternian` in `kits/interiors` is its working
+  page; the sets sheet carries it.
+- **The export** through core/export: `src/93e-et-export.js` gives the ground as sampled terrain beside the registry and
+  the materials (the Scyvoi engine's profile, as the isle demo's): `python3 tools/harness.py export
+  kits/eternian/dist/eternian.html --out godot/data/world-eternian --box -45,-205,45,-145 --profile
+  registry,materials,terrain`. The Godot case `godot/tests/export/eternian_test.gd` passes on Godot 4.7.2 (every
+  record's uid recomputed in GDScript, the cultures, the parents, the materials, the ground) and is in the nightly list.
+- **Not done:** the Krator Worlds gallery. A brand new kit goes to the gallery when it reaches `main` (CLAUDE.md,
+  "Publishing"), and this branch is not pushed: the owner's call.
+
+Next: the capital's page (PLAN.md section 8) as its own plan; the second pass (KNOWN_ISSUES.md).

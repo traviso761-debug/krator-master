@@ -341,20 +341,20 @@
    "sha256": "4e1983c2d0cac19e77829bf6022df019df76565d2ec7d42de26cef0091e07e03"
   },
   "kits/eternian/dist/eternian.html": {
-   "bytes": 1013820,
-   "sha256": "f6d33b0ef100735bfb91a18686204704d078ff416176980fff74506e7527fbd1"
+   "bytes": 1014663,
+   "sha256": "f4565d75634c97fc741dd2ac928c38a71242d2e5f8a490674d414c59d829726a"
   },
   "kits/fauna/dist/fauna.html": {
    "bytes": 1191838,
    "sha256": "d89b375b56b6c46c764588956625d1395433ca8604ded3b54ee5edfac08758ed"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 692592,
-   "sha256": "6250f920a4822c892426714ba5d0dbf903ff14f5db69b7410625e4585d608776"
+   "bytes": 710569,
+   "sha256": "6849ec00040113317b509a2ab292fbc5b298be3eafa0708adb67832676997115"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 9933050,
-   "sha256": "8533d3be5a06c6f7e1dce21fbeeecd073a91e61e1ac6dcdf907ada395dd8ce95"
+   "bytes": 9967991,
+   "sha256": "1af8af6cffd4000901ff77e4ae57697317302890c9a2b7e6481f0976a5af73df"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 258992,

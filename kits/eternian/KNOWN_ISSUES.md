@@ -31,6 +31,12 @@
       features (the kilns, vats, racks, cranes) carry the difference. A second pass per trade could vary their massing.
 - [ ] **The hexagonal roofs are plain cones** of tile, reed or celadon (`etTrade` 'pyramid'): a hip with tile rolls per
       face, as the rectangular roofs have, would read better close to.
+- [ ] **Interiors still to plan** (`kits/interiors/sets/eternian.js` skips them with reasons): the ministry's offices
+      inside its pier bundle, the examination hall's thirty cells, the kiln works' sheds round their court.
+- [ ] **The export carries no meshes**: the Scyvoi engine registers records and materials with core/export, not its
+      merged buckets, so the Godot case is records, materials and ground (the isle demo's profile). A buckets contributor
+      for the engine would let a case draw the buildings.
+- [ ] **Not in the Krator Worlds gallery yet**: the owner's call once the branch is on `main`.
 - [ ] **The flutes are thin at a distance**: `etFlutes` draws half-round reeds of at most 0.16 m. The library's lime
       does not carry them either; a fluted-pier sheet would.
 - [ ] **The pier bundle's piers read faintly in brick at a distance**: the projection is 0.25 m and the brick set is fine;
