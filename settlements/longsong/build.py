@@ -34,7 +34,7 @@ Valley, built in situ on the scale model's land (PLAN.md, README.md; the program
 The kit never references a host global except through BIO.host (BIOME-API.md); build.py greps its fragments for the
 forbidden names.
 """
-import os, re, subprocess, sys
+import json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -132,7 +132,7 @@ for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-pl
     if f not in PATH:
         sys.exit('NO BIOME CORE: ' + f)
 # the material library (core/materials/record): the record and its browser half; the packs as sidecars beside the page
-for f in ('23-mat-record.js', '25-matlib-host.js'):
+for f in ('23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js'):   # 26: KMAT.bindMat, for the Xanadu kit's MAT (85h)
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'materials', 'record', f))
 sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
 import matlib_pack as _mp
@@ -218,6 +218,21 @@ def _kchar():
         sys.exit('KCHAR PIECES MISSING (build core/charactermodels, or fetch them from its published lab): ' + ', '.join(missing))
     data = {'sliders': J('sliders.json'), 'posture': J('posture.json'), 'peoples': peoples, 'bodies': bodies}
     return 'var LS_KCHAR=%s;\nLS_KCHAR.pieces=%s;\n' % (json.dumps(data, separators=(',', ':')), json.dumps(need))
+# the Xanadu kit (settlements/xanadu/kit_bundle.py) and the isle demo's kit-piece flattener (isleFlatten, read in place)
+XA = os.path.join(ROOT, 'settlements', 'xanadu')
+XA_FAMS = ('cloth', 'clothR', 'corrugate', 'plaster', 'stone', 'tarp', 'thatch', 'white', 'wood', 'woodV', 'xBandC', 'xEarth', 'xMosC',
+           'xMosD', 'xPenbey', 'xRubble', 'xSun', 'xTiles', 'xValance', 'xWash')   # the MAT keys the village buildings use (2026-10-20)
+def _xa_skip():
+    with open(os.path.join(XA, 'tex', 'pack.json'), encoding='utf-8') as f:
+        return tuple(k for k in json.load(f)['families'] if k not in XA_FAMS)
+def _xak():   # by path: kits/interiors/kit_bundle.py is already imported as kit_bundle
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('xanadu_kit_bundle', os.path.join(XA, 'kit_bundle.py'))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    js, _ = mod.bundle('XAK')
+    return js
+PATH.setdefault('58-isle-protos.js', os.path.join(ROOT, 'settlements', 'isle-demo', 'src', '58-isle-protos.js'))
 # the world data: Pinnacle Rock's decoder, read in place (its tools/world_data.py), with this page's kit line
 sys.path.insert(0, os.path.join(ROOT, 'settlements', 'pinnacle-rock', 'tools'))
 import world_data as _wd
@@ -236,6 +251,10 @@ VIRTUAL = {'39-ls-world-data.js': _wd.fragment(os.path.join(HERE, 'region'),
                os.path.join(HERE, 'sockets', 'head.js'), os.path.join(ROOT, 'core', 'sockets', '37-sockets.js'),
                os.path.join(ROOT, 'core', 'sockets', '38-symbols.js'), os.path.join(ROOT, 'core', 'sockets', '80-cultures.js'),
                os.path.join(HERE, 'sockets', 'tail.js'))),
+           # the Xanadu building kit for the valley's villages (85h): sealed as XAK (settlements/xanadu/kit_bundle.py, read in
+           # place), its library pack beside the page with only the families the village buildings draw (XA_FAMS)
+           '84x-ls-xanadu-kit.js': _xak(),
+           '44c-host-matlib-pack-xanadu.js': _mp.fragment(XA, 'xanadu', exclude=_xa_skip(), side=SIDE),
            khost.EDITS_JS: khost.edits_js(HERE, 'longsong')}
 for f in VIRTUAL:
     PATH[f] = None

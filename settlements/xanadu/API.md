@@ -39,6 +39,17 @@ building `<name> — eye level`.
 | `targets/xanadu/89z-rows.js` | `TITLE`, `XA_EXTRA`, `SITES=[]` |
 | `targets/xanadu/91z-views.js` | `const VIEWS=xaAutoViews()` |
 
+## The kit on another world's page (`kit_bundle.py`)
+
+`kit_bundle.bundle('XAK')` seals the kit (its Ancients core, the Vernacular helpers, the vocabulary and every builder,
+read in place; not the showcase, the sky or the vendored Vale biome) in one closure, as `settlements/isle-demo/bundles.py`
+seals the Iziz Vernacular, so its globals meet nothing of the host's. `XAK.proto(key, v, {drop, footC})` builds one def at
+the origin on flat ground (a slope footing `drop` deep under its `fw x fd`) into a group of InstancedMeshes, one shared
+material per kit item (`userData.kdef`), ready for `isleFlatten` (`settlements/isle-demo/src/58-isle-protos.js`);
+`XAK.dims()` gives every def's box; `XAK.bind(KMAT)` binds the library maps from the page's KMAT where the page carries the
+`xanadu` pack (`tools/textures/matlib_pack.fragment(settlements/xanadu, 'xanadu', exclude=...)`). Longsong's valley villages
+are the first taker (`settlements/longsong/src/85h-ls-hamlets.js`, on core/hamlet's `xanadu` row).
+
 ## Registry
 
 ```js

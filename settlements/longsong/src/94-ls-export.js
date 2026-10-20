@@ -3,10 +3,10 @@
 // meshes in the krator-world container, beside the biome core's flora (items), its ground (terrain: sampled from the
 // page's terrainH, 45) and stage (KSTAGE), and the registry (core/tags, every REGISTER). Runs at export time
 // only (EXPORT.world): nothing is drawn or changed; it reads the three.js scene.
-//   buckets    the plain meshes (ARCH's merged meshes: the palaces, the ward, the stair, the depths, the villages, the
-//              culture marks; the interiors' floors when they are built), one bucket per material: the triangles whose
-//              centroid lies in the box, in world space; `recordIds` the registered volumes their centroids stand in
-//              (compacted as EXPORT.compact does: only the vertices the kept triangles use; `compacted` counts them)
+//   buckets    the plain meshes (ARCH's merged meshes: the palaces, the ward, the stair, the depths, the culture marks; the
+//              villages' Xanadu kit buildings merged by material, 85h; the interiors' floors when they are built), one
+//              bucket per material: the triangles whose centroid lies in the box, in world space; `recordIds` the
+//              registered volumes their centroids stand in (compacted as EXPORT.compact does: only the vertices the kept triangles use; `compacted` counts them)
 //   materials  one per material: colour, roughness, metal, the library family it draws (Longsong's pack: tex/pack.json,
 //              its maps by reference), vertex colours; the depths' own shader (lit by their lamps alone, 66) is exported
 //              plain with its family and a note (Godot has no twin of it yet: KNOWN_ISSUES.md)
@@ -57,7 +57,7 @@ function assemble(ctx){const C=collect(),own=owners(),T=KTAGS.page,box=ctx.box,i
  scene.updateMatrixWorld(true);const meshes=[];scene.traverse(o=>{if(o.isMesh&&o.geometry&&o.geometry.attributes.position)meshes.push(o);});
  const groups=new Map(),a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),nm=new THREE.Matrix3(),nv=new THREE.Vector3();
  for(const o of meshes){const u=o.userData||{};
-  if(!(u.arch||u.vault||u.interiors)||o.isInstancedMesh||lodCopy(o)||o.isSkinnedMesh)continue;
+  if(!(u.arch||u.vault||u.interiors||u.hamlet)||o.isInstancedMesh||lodCopy(o)||o.isSkinnedMesh)continue;
   if(u.interiors&&!o.visible){C.drop('an interiors floor not shown');continue;}
   const m0=Array.isArray(o.material)?o.material[0]:o.material;if(!m0||m0.blending===THREE.AdditiveBlending){C.drop('additive');continue;}
   const g=o.geometry,Pp=g.attributes.position,I=g.index;if(!g.boundingBox)g.computeBoundingBox();

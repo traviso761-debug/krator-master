@@ -38,9 +38,10 @@
 - [ ] **The herds glide**: the yaks and the dzo walk their pastures on core/biome's walker (2026-10-20: each a slow loop
       of its own, its place a pure function of the BIO clock), but each kind is still baked in one pose, so they move
       without their legs moving (core/biome's 35-core-anim or the Fauna kit's `animate` per instance would give the gait).
-- [ ] **The valley's villages are drawn, not lived in** (core/hamlet, 40h and 85h): their 576 people are a census, not
-      core/simulation actors; their houses are the page's own box types (the `xanadu_vale` culture row lives in 40h until a
-      Xanadu building kit exists: then it moves to core/hamlet/20-hamlet-cultures.js with the kit's keys); no interiors.
+- [ ] **The valley's villages are drawn, not lived in** (core/hamlet, 40h and 85h): their 585 people are a census, not
+      core/simulation actors; no interiors. Their buildings are the Xanadu kit's (2026-10-20), but the kit has no pens,
+      corral or dairy yet (core/hamlet's `xanadu` row lists them pending: the page draws its own rings and a white house);
+      the windmills' sails stand still (the kit's ticks are not run here); a village's merged meshes carry no night glow.
 - [ ] **The export to Godot** (94-ls-export.js on core/export): the buildings, the depths and the villages go as buckets
       (ARCH's meshes by material, with the volumes they stand in), the flora as items, the ground sampled (no field: 45); the
       depths' own shader (lit by their lamps alone) goes plain, its lamps not yet as lights; the interiors' rooms and the

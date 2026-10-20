@@ -106,7 +106,10 @@ lamps in the windows; `89x`).
   Procrastinator's burn as a timeline, `66`), core/sockets (the culture marks, `63s` and `65`: the Order's saffron
   banners and scroll-and-wheel emblems on the Great Gate, the Lower Gate and the Order's works; Xanadu's rose and lotus
   on the valley's lay buildings, their awnings and trade signs), core/hamlet (the valley's three lay villages outside
-  the wall: Shar and Nub by the east and west fields, Dzo-ling at the head of the yak pastures, `40h` and `85h`), and
+  the wall: Shar and Nub by the east and west fields, Dzo-ling at the head of the yak pastures, `40h` and `85h`, on
+  core/hamlet's `xanadu` row: the Xanadu building kit's houses, temple, guild hall, bazaar row, teahouse, granaries,
+  farmsteads and windmills, sealed as XAK by `settlements/xanadu/kit_bundle.py` with the 20 library sets they draw, each
+  village merged by material), and
   core/export (`94`: the buildings, the depths and the villages as buckets; 'export site' writes the biome export over
   the monastery's ground, sampled, with its stage). Checked in Godot 4.7.2 (2026-10-20: a 240 x 260 m box over the
   palaces, the stair and the ward through `tools/harness.py export` and `krator/world_import.gd`): every record, uid

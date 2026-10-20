@@ -23,7 +23,7 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `40c-ls-rooms.js` | 41 **big** | the shells (64-ls-monastery.js draws them; the r (58); L1: the base (two storeys under the rock top) an (70); L2: the School (storey 0, round the Debate Court (105); L3: the White Palace, lower (storey 1) (151); L4: the White Palace, upper (storey 2), the logg (178); R1: the Red Palace's first level (storeys 0-1) (203); R2: the Great Archive (storey 2) and the wings (230); R3: the Hall of Stillness, the Abbot, the Counci (244); LR: the roof: the Hall of Hours, the Observatory (264); LV: the forbidden depths (66-ls-vault.js's rooms (288) |
 | `40d-ls-sim.js` | 12 |  |
 | `40e-ls-kchar.js` | 2 |  |
-| `40h-ls-hamlets.js` | 5 |  |
+| `40h-ls-hamlets.js` | 3 |  |
 | `42-ls-world.js` | 1 |  |
 | `45-host-stage.js` | 19 | the land, cached (33); the plan's shapes on the land (51); the stream as a line (page metres), on a level t (71); the fields the Oidong kit reads (BIOME-API.md) (163); the host binding (189) |
 | `57a-ls-interiors.js` | 32 **big** | the room kinds: the catalog kinds each may draw  (31); the layouts: what the Order arranges itself (wor (92); one room: its layout, then the placer (202); the checks (verify.py --assert, through 64's mon (256) |
@@ -36,7 +36,7 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `69-ls-figures.js` | 7 |  |
 | `84-ls-ground.js` | 8 | the water's records (core/water draws it: 89w-ls (78) |
 | `85-ls-farms.js` | 30 **big** | the farms' checks (verify.py --assert; 64's mona (232) |
-| `85h-ls-hamlets.js` | 6 |  |
+| `85h-ls-hamlets.js` | 9 |  |
 | `86-ls-far.js` | 2 |  |
 | `87-ls-interiors.js` | 15 |  |
 | `88-host-build.js` | 2 |  |

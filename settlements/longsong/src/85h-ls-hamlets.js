@@ -1,52 +1,90 @@
 // ================================================================= LONGSONG — the valley's lay villages (the drawing)
-// [draw] core/hamlet's villages (40h: LS.HAMLETS.make, here on the page's terrainH and waterH), drawn from their records:
-// each building registered in core/tags first, then built in the Oidong Valley's way: whitewashed stone under a flat
-// roof, a maroon band under the parapet, a dark-framed door and windows on its front (its front faces the lane: the
-// record's ry); the granaries on a stone footing, the byres long and low, the pens and the corral drystone rings, the
-// shrine a chorten in its walled yard; the lanes laid as packed earth. The hall flies Xanadu's banner, the trader and the
-// tea house hang their signs (core/sockets, LSSOCK). The walker cannot walk through them (core/walk blocks).
-const LSHAMLETS=(function(){const O={villages:[],buildings:0,people:0,errors:[]};if(!LS.HAMLETS||typeof KHAMLET==='undefined')return O;
- const H=LS.HAMLETS.make(terrainH,waterH),BOX=LS.HAMLETS.BOX;
- const WHITE=0xf0ebe0,BAND=LSP.maroon,STONE=0xb8b0a0,EARTH=0x9a8a6c;
- const footY=r=>{const c=Math.cos(r.ry),s=Math.sin(r.ry);let m=1e9;for(const [u,v] of [[-1,-1],[1,-1],[1,1],[-1,1],[0,0]]){const x=r.x+u*r.w/2*c+v*r.d/2*s,z=r.z-u*r.w/2*s+v*r.d/2*c;m=Math.min(m,terrainH(x,z));}return m;};
- // a point on the record's front face (u along it, v up from y), and the front's normal
+// [draw] core/hamlet's villages (40h: LS.HAMLETS.make, here on the page's terrainH and waterH and the Xanadu kit's boxes),
+// drawn from their records: each building registered in core/tags first, then drawn as the Xanadu building kit's own
+// (settlements/xanadu, sealed as XAK by settlements/xanadu/kit_bundle.py, its library maps bound from the pack the page
+// carries: 44c): each def built once per variant and footing depth at the origin (XAK.proto), flattened to one geometry
+// per material (isleFlatten, settlements/isle-demo/src/58-isle-protos.js, read in place), and every copy in a village
+// merged by material into one mesh, so a village is a few dozen draws. A building stands on the highest ground under its
+// footprint (the kit's fw x fd: the house, not its yard) over a stone footing as deep as the slope falls, as the kit page
+// sites one on a hill. The kit's pending keys (core/hamlet's `xanadu` row: the pens, the corral, the dairy) are this
+// page's: the pens and the corral drystone rings, the dairy a whitewashed house. The lanes are packed earth. The walker
+// cannot walk through the buildings (core/walk blocks), and the flora roots off the plots and lanes (BIO's obstacles).
+const LSHAMLETS=(function(){const O={villages:[],buildings:0,people:0,errors:[],protos:0,meshes:0,tris:0,pending:0,bound:0};
+ if(!LS.HAMLETS||typeof KHAMLET==='undefined'||typeof XAK==='undefined'||typeof isleFlatten==='undefined')return O;
+ const KD=XAK.dims(),dims=k=>{const d=KD[k];return d?{w:d.w,d:d.d,h:d.h}:null;};
+ try{const b=XAK.bind(typeof KMAT!=='undefined'?KMAT:null);O.bound=b?Object.keys(b).filter(k=>b[k]).length:0;}catch(e){O.errors.push('the kit\'s library maps: '+e.message);}
+ const H=LS.HAMLETS.make(terrainH,waterH,dims);
+ const WHITE=0xf0ebe0,BAND=LSP.maroon,STONE=0xb8b0a0,EARTH=0x9a8a6c,FOOT=0x8f8676;
+ // the footprint's corners and centre: [x, z] in the world for the record r turned by ry, w x d about its centre
+ const pts=(r,w,d)=>{const c=Math.cos(r.ry),s=Math.sin(r.ry);return [[-1,-1],[1,-1],[1,1],[-1,1],[0,0]].map(([u,v])=>[r.x+u*w/2*c+v*d/2*s,r.z-u*w/2*s+v*d/2*c]);};
  const front=(r,u)=>{const c=Math.cos(r.ry),s=Math.sin(r.ry);return [r.x+u*c+s*(r.d/2+.04),r.z-u*s+c*(r.d/2+.04)];};
+ const hash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;};
+ // ---------------------------------------------------------------- the kit's buildings: protos, flattened once each
+ const PROTOS={};
+ function proto(key,v,drop){const id=key+'#'+v+'@'+drop;if(id in PROTOS)return PROTOS[id];
+  const G=XAK.proto(key,v,{drop,footC:FOOT});let parts=null;
+  if(G){parts=isleFlatten(G);O.protos++;}else O.errors.push('the kit could not build '+key+' (variant '+v+')');
+  return (PROTOS[id]=parts);}
+ // ---------------------------------------------------------------- the page's own: the pending keys
  function house(r,y,o){o=o||{};const h=r.h,ry=r.ry,s=Math.sin(ry),c=Math.cos(ry);
-  ARCH.box('ashlar',r.x,y-1.2,r.z,r.w+.4,1.2+(o.foot||.35),r.d+.4,{ry,col:STONE,top:false});
-  const yb=y+(o.foot||.35);ARCH.box('wall',r.x,yb,r.z,r.w,h-(o.foot||.35),r.d,{ry,col:WHITE,batter:.25,topCol:0x8a8070});
-  ARCH.box('twig',r.x,yb+h-(o.foot||.35)-.75,r.z,r.w+.06,.5,r.d+.06,{ry,col:BAND,top:false,bottom:false});
-  const [dx,dz]=front(r,0);lsDoor(dx,yb,dz,s,c,o.door||1.2,2.1,{curtain:o.curtain||LSP.saffron});
-  for(const u of [-r.w/4-.4,r.w/4+.4]){if(r.w<8&&u<0)continue;const [wx,wz]=front(r,u);ARCH.box('dark',wx,yb+Math.min(2.6,h*.42),wz,.9,1.1,.12,{ry,col:0x1e1a18});}}
- function ring(r,y,hgt){const c=Math.cos(r.ry),s=Math.sin(r.ry),P=(u,v)=>[r.x+u*c+v*s,r.z-u*s+v*c];
+  ARCH.box('ashlar',r.x,y-1.2,r.z,r.w+.4,1.2+.35,r.d+.4,{ry,col:STONE,top:false});
+  const yb=y+.35;ARCH.box('wall',r.x,yb,r.z,r.w,h-.35,r.d,{ry,col:WHITE,batter:.25,topCol:0x8a8070});
+  ARCH.box('twig',r.x,yb+h-.35-.75,r.z,r.w+.06,.5,r.d+.06,{ry,col:BAND,top:false,bottom:false});
+  const [dx,dz]=front(r,0);lsDoor(dx,yb,dz,s,c,1.2,2.1,{curtain:o.curtain||LSP.saffron});}
+ function ring(r,hgt){const c=Math.cos(r.ry),s=Math.sin(r.ry),P=(u,v)=>[r.x+u*c+v*s,r.z-u*s+v*c];
   for(const [u0,v0,u1,v1] of [[-1,-1,1,-1],[1,-1,1,1],[1,1,-1,1],[-1,1,-1,-1]]){const n=Math.max(1,Math.round(Math.hypot((u1-u0)*r.w/2,(v1-v0)*r.d/2)/4));
    for(let k=0;k<n;k++){const a=P((u0+(u1-u0)*(k+.5)/n)*r.w/2,(v0+(v1-v0)*(k+.5)/n)*r.d/2),len=Math.hypot((u1-u0)*r.w/2,(v1-v0)*r.d/2)/n,along=u0!==u1;
     if(k===Math.floor(n/2)&&v0===1&&v1===1)continue;   // the gate in its front
     ARCH.box('drystone',a[0],terrainH(a[0],a[1])-.3,a[1],along?len+.1:.6,hgt+.3,along?.6:len+.1,{ry:r.ry,col:0xd2cdbf,topCol:0x6a5a44});}}}
- H.forEach(({spec,v})=>{if(v.error){O.errors.push(spec.id+': '+v.error);return;}const V={id:spec.id,name:spec.name,focus:spec.focus,pop:v.census.pop,buildings:v.records.length,site:v.site};
+ // ---------------------------------------------------------------- a village's copies merged by material
+ function merge(list,name){const byMat=new Map();
+  for(const {parts,m} of list)for(const p of parts){const names=Object.keys(p.geo.attributes).sort(),k=p.mat.uuid+'|'+names.join(',');
+   (byMat.get(k)||byMat.set(k,{mat:p.mat,names,items:[]}).get(k)).items.push({g:p.geo,m});}
+  const grp=new THREE.Group();grp.name='longsong:hamlet '+name;grp.userData.hamlet=true;
+  const v3=new THREE.Vector3(),n3=new THREE.Matrix3();
+  for(const Q of byMat.values()){let nv=0,ni=0;for(const it of Q.items){nv+=it.g.attributes.position.count;ni+=it.g.index.count;}
+   const A={};for(const nm of Q.names)A[nm]=new Float32Array(nv*Q.items[0].g.attributes[nm].itemSize);
+   const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);let vo=0,io=0;
+   for(const it of Q.items){const g=it.g,cnt=g.attributes.position.count;n3.getNormalMatrix(it.m);
+    for(const nm of Q.names){const src=g.attributes[nm],sz=src.itemSize,dst=A[nm],a=src.array;
+     if(nm==='position')for(let i=0;i<cnt;i++){v3.set(a[i*3],a[i*3+1],a[i*3+2]).applyMatrix4(it.m);dst[(vo+i)*3]=v3.x;dst[(vo+i)*3+1]=v3.y;dst[(vo+i)*3+2]=v3.z;}
+     else if(nm==='normal')for(let i=0;i<cnt;i++){v3.set(a[i*3],a[i*3+1],a[i*3+2]).applyMatrix3(n3).normalize();dst[(vo+i)*3]=v3.x;dst[(vo+i)*3+1]=v3.y;dst[(vo+i)*3+2]=v3.z;}
+     else dst.set(a.subarray(0,cnt*sz),vo*sz);}
+    const ia=g.index.array;for(let k=0;k<ia.length;k++)I[io+k]=ia[k]+vo;io+=ia.length;vo+=cnt;}
+   const geo=new THREE.BufferGeometry();for(const nm of Q.names)geo.setAttribute(nm,new THREE.BufferAttribute(A[nm],Q.items[0].g.attributes[nm].itemSize));
+   geo.setIndex(new THREE.BufferAttribute(I,1));geo.computeBoundingSphere();
+   const mesh=new THREE.Mesh(geo,Q.mat);mesh.name='longsong:xak-'+(Q.mat.userData.kdef||'piece');mesh.userData.hamlet=true;mesh.matrixAutoUpdate=false;
+   grp.add(mesh);O.meshes++;O.tris+=ni/3;}
+  scene.add(grp);return grp;}
+ // ---------------------------------------------------------------- the villages
+ H.forEach(({spec,v})=>{if(v.error){O.errors.push(spec.id+': '+v.error);return;}const V={id:spec.id,name:spec.name,focus:spec.focus,pop:v.census.pop,buildings:v.records.length,site:v.site,kit:0,pending:0};
   O.villages.push(V);O.people+=v.census.pop;
   // the lanes: packed earth along each lane's points, laid on the ground
   v.lanes.forEach(L=>{for(let i=1;i<L.pts.length;i++){const a=L.pts[i-1],b=L.pts[i],len=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.ceil(len/4)),tx=(b[0]-a[0])/len,tz=(b[1]-a[1])/len,hw=L.w/2;
     for(let k=0;k<n;k++){const p=[a[0]+tx*len*k/n,a[1]+tz*len*k/n],q=[a[0]+tx*len*(k+1)/n,a[1]+tz*len*(k+1)/n];
      const A=[p[0]-tz*hw,p[1]+tx*hw],B=[p[0]+tz*hw,p[1]-tx*hw],C=[q[0]+tz*hw,q[1]-tx*hw],D=[q[0]-tz*hw,q[1]+tx*hw],Y=(x,z)=>terrainH(x,z)+.07;
-     ARCH.face('paving',[A[0],Y(A[0],A[1]),A[1]],[B[0],Y(B[0],B[1]),B[1]],[C[0],Y(C[0],C[1]),C[1]],[D[0],Y(D[0],D[1]),D[1]],[0,1,0],EARTH);}}});
-  v.records.forEach(r=>{const y=footY(r),B=BOX[r.key]||{},nm=(B.what||r.key)+' ('+spec.name.split(',')[0]+')';
-   REGISTER({name:nm,cls:'building',kind:r.key,key:'longsong_'+r.id,x:r.x,z:r.z,y:y-.5,r:Math.max(r.w,r.d)/2,h:r.h+1,tags:{culture:'xanadu',types:[r.role==='house'?'dwelling-single':r.role==='works'?(spec.focus==='ranch'?'farm':'farm'):r.role]},
-    note:'core/hamlet ('+spec.id+')'});
-   O.buildings++;const k=r.key;
-   if(k==='xv-shrine'){ring(r,y,1.1);lsChorten(r.x,y,r.z,.32);}
-   else if(k==='xv-pens'||k==='xv-corral')ring(r,y,k==='xv-corral'?1.3:1.5);
-   else if(k==='xv-granary')house(r,y,{foot:1.2,door:1});
-   else if(k==='xv-byre'){house(r,y,{foot:.2,door:2.2,curtain:0x4a3a2a});}
-   else house(r,y,{door:k==='xv-hall'?1.8:1.2,curtain:k==='xv-house-poor'?0x7a5a3a:LSP.saffron});
-   // the marks (core/sockets, Xanadu's pack): the hall's banner, the trader's and the tea house's signs
-   const [fx,fz]=front(r,0),F={x:fx,y:y+.35,z:fz,ry:r.ry};
-   if(k==='xv-hall')LSSOCK.mark('xanadu',F,[['banner',-2.4,4.6,0,0,{w:1.1,h:3}],['banner',2.4,4.6,0,0,{w:1.1,h:3}]],r.id);
-   if(k==='xv-trader')LSSOCK.mark('xanadu',F,[['sign',1.9,2,0,0,{w:1.5,h:.55,trade:'GENERAL'}]],r.id);
-   if(k==='xv-tea')LSSOCK.mark('xanadu',F,[['awning',0,2.9,0,0,{w:3.6,d:1.2,drop:.3,h:2.5}],['sign',2.6,2,0,0,{w:1.5,h:.55,trade:'TAVERN'}]],r.id);
-   // the walker goes round them (the footprint's box, turned)
-   if(k!=='xv-pens'&&k!=='xv-corral'){const c=Math.abs(Math.cos(r.ry)),s=Math.abs(Math.sin(r.ry)),hx=(r.w*c+r.d*s)/2,hz=(r.w*s+r.d*c)/2;KWALK.block([r.x-hx,r.x+hx,r.z-hz,r.z+hz,y-1,y+r.h],'house');}});
+     ARCH.face('paving',[A[0],Y(A[0],A[1]),A[1]],[B[0],Y(B[0],B[1]),B[1]],[C[0],Y(C[0],C[1]),C[1]],[D[0],Y(D[0],D[1]),D[1]],[0,1,0],EARTH);}
+    for(let t=0;t<=len;t+=5)OBSTACLES.push({x:a[0]+tx*t,z:a[1]+tz*t,r:hw+1.5});}});
+  const copies=[];
+  v.records.forEach(r=>{const K=KD[r.key],kit=!!K&&!r.pending,fw=kit?K.fw:r.w,fd=kit?K.fd:r.d;
+   const hs=pts(r,fw,fd).map(([x,z])=>terrainH(x,z)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);
+   const y=kit?top:low,nm=(kit?K.name:(KHAMLET.CULTURES.xanadu.pending[r.key]||{}).what||r.key)+' ('+spec.name.split(',')[0]+')';
+   REGISTER({name:nm,cls:'building',kind:r.key,key:'longsong_'+r.id,x:r.x,z:r.z,y:low-.5,r:Math.max(r.w,r.d)/2,h:r.h+(top-low)+1,
+    tags:{culture:'xanadu',kit:kit?'xanadu':'longsong',types:kit?K.types:[r.role==='house'?'dwelling-single':'farm']},note:'core/hamlet ('+spec.id+')'+(kit?'':': the kit has no '+r.key+' yet')});
+   O.buildings++;OBSTACLES.push({x:r.x,z:r.z,r:Math.hypot(r.w,r.d)/2+1.5});   // the flora (planted after) keeps off the plot
+   if(kit){const nv=Math.max(1,Math.min(3,K.variants|0)),vv=hash(r.id)%nv,drop=Math.max(1,Math.ceil(top-low+.4));
+    const parts=proto(r.key,vv,drop);if(parts){const m=new THREE.Matrix4().compose(new THREE.Vector3(r.x,y,r.z),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),r.ry),new THREE.Vector3(1,1,1));
+     copies.push({parts,m});V.kit++;}}
+   else{O.pending++;V.pending++;
+    if(r.key==='xa_pens'||r.key==='xa_corral')ring(r,r.key==='xa_corral'?1.3:1.5);
+    else house(r,low,{curtain:0x4a3a2a});}
+   // the walker goes round them (the house's footprint, turned)
+   if(r.key!=='xa_pens'&&r.key!=='xa_corral'){const c=Math.abs(Math.cos(r.ry)),s=Math.abs(Math.sin(r.ry)),hx=(fw*c+fd*s)/2,hz=(fw*s+fd*c)/2;KWALK.block([r.x-hx,r.x+hx,r.z-hz,r.z+hz,low-1,y+r.h],'house');}});
+  if(copies.length)merge(copies,spec.id);
   REGISTER({name:spec.name,cls:'settlement',kind:'village',key:'longsong_'+spec.id,x:v.site.x,z:v.site.z,y:terrainH(v.site.x,v.site.z)-2,r:120,h:14,
    tags:{culture:'xanadu',types:['dwelling-multi','farm']},note:'core/hamlet: '+v.census.pop+' people, '+v.census.households+' households'});});
- window._hamlets={get villages(){return O.villages.map(V=>Object.assign({},V));},get errors(){return O.errors.slice();},buildings:O.buildings,people:O.people};
+ O.kitErrors=XAK.errors;
+ window._hamlets={get villages(){return O.villages.map(V=>Object.assign({},V));},get errors(){return O.errors.concat(XAK.errors);},buildings:O.buildings,people:O.people,
+  protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),pending:O.pending,bound:O.bound};
  return O;})();
 _mark('hamlets');
