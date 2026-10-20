@@ -168,9 +168,11 @@ SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town]
 # The export profile (P6b; PLAN.md section 7; core/export/README.md, "Profiles"). The case is Kautoa's ceremonial centre (the
 # palace, the square, the envoys' houses, the park and the streets round it: 89 lots), in the town's frame; godot/data/
 # world-isle-kautoa is this box (tools/harness.py export ... --query "?town=Kautoa&simAt=362"; godot/tests/export/isle_test.gd). EXPORT_TARGET is M6's
-# whole list; EXPORT_PROFILE is what the page must fill now (verify --assert fails without it), the rest of the target
-# is reported section by section until each lands. --profile a,b,c checks a list for one run; --profile target checks
-# the whole target and fails on every section not yet filled (the proof the check bites).
+# whole list; EXPORT_PROFILE is what a page must fill now. Since M7 (2026-10-20) the profile is the open world's to keep
+# (openworld/isle-demo/verify.py --assert fails without it; the towns are planned there as here, and its case equals
+# this page's): here it is reported, not failed, unless --profile names a list for the run. --profile a,b,c checks a
+# list and fails on it; --profile target checks the whole target and fails on every section not yet filled (the proof
+# the check bites).
 EXPORT_BOX = [320, 780, 820, 1220]   # the ceremonial centre (P8, 2026-10-20; until then -700..700, which held 108 lots and none of the centre)
 EXPORT_TARGET = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain=field', 'city', 'fixtures', 'interiors',
                  'furniture', 'sim', 'stage', 'atmos']
@@ -273,9 +275,9 @@ async def run_city(a):
                     if town == 'Kautoa':
                         prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
                         pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)
-                        print(('  PASS  ' if pok else '  FAIL  ') + 'export-profile : box %s, %s' % (EXPORT_BOX, ', '.join(prof)))
+                        print(('  PASS  ' if pok else ('  FAIL  ' if a.profile else '  INFO  ')) + 'export-profile : box %s, %s%s' % (EXPORT_BOX, ', '.join(prof), '' if a.profile else ' (reported: the open world keeps the profile, M7)'))
                         for ln in lines: print('        ' + ln)
-                        if not pok: fails.append('export-profile')
+                        if not pok and a.profile: fails.append('export-profile')
                         if not a.profile:   # the rest of M6's target, reported (not failed) until each section lands
                             tok, tl = await harness.check_profile(pg, EXPORT_BOX, EXPORT_TARGET)
                             print('  INFO  export target (M6) : ' + next((ln for ln in tl if ln.startswith('profile ')), '').split(': ', 1)[-1].split(';')[0] + ' met')

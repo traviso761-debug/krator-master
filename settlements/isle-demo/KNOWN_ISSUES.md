@@ -1,5 +1,10 @@
 # settlements/isle-demo: known issues (the site planner)
 
+- [x] **`IZV.proto` carried every Vernacular piece built before it** (fixed 2026-10-20, found by M7's comparison of the
+      two pages' exports): the Iziz kit's `kbake` (settlements/iziz/src/30-kit.js) bakes every item put so far and keeps
+      them, so each piece grew by all the earlier ones and a piece depended on the order the page built them in.
+      `bundles.py` empties the kit's items before and after each piece; Kautoa's case was cut again (285 items, 1,461
+      instances; it was 359 and 1,535).
 - [x] **Ridertown took two of the catalog's hand-made copies** (2026-10-18; switched the same day):
       `br_bldg_nature_shrine` (class `shrine`) and `br_bldg_roost_gallery` (class `rookery`). Now the Beast Riders kit's
       ports of Mav's Refuge's own buildings, drawn by the town's own builders: `shrine: br_port_mavs_shrine`, `rookery:

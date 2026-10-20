@@ -33,12 +33,14 @@ registers the export's `city` section for every instance on a page.
    (buildings, records, sim joins, citizens replayed, canoes); core/export's scene reader (lifted from Iziz) and
    `SIM.exportMotion` (lifted from Dhelv) carry it; the stage, the doors (fixtures) and **Valapo's case**
    (`godot/data/world-isle-valapo`) followed, then the Islanders kit's own doors, windows and lamps (recorded while it
-   builds). Next: the lakatoi and bodies in Godot, then the open world (M7). A sea route
+   builds). **M7 started (2026-10-20):** both towns planned and drawn on the open world's page, the export profile moved
+   to `openworld/isle-demo/verify.py` (the world's case equals this page's). Next: the sim on the world's clock with its
+   citizens and canoes there, the lakatoi and bodies in Godot. A sea route
    (`SIM.transport` between the landings, `SIM.trade({line})` on it) comes with the open world. Any core/simulation
    change: diff Voth's whole `verify.py --assert` output against `main`'s page with the timings stripped (the method
    P7a used); the core work goes through the isle-demo build session.
-2. **Move the towns into the open world** (their `KCITY` plans run live there, as the hamlets do), then move the export
-   profile to `openworld/isle-demo/verify.py` and grow it.
+2. **The towns in the open world** (started 2026-10-20: planned live and drawn there, the profile moved there): run the
+   sim on the world's clock, draw its citizens and canoes there, one region registry; then grow the profile.
 3. **The compliance items** in PLAN.md section 10: the city page onto `core/host`, its sky and sea, `terrain=field`, and
    little-demo's shared fragments (ask: both worlds' hashes move).
 4. **Hamlets:** the `gather` tag on the other biome kits (only ringisles has it); fishing and farming villages (H6); the

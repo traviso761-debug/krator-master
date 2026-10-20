@@ -29,6 +29,30 @@ north (`core/hamlet/PLAN.md` section 4).
   `?time=run`). The lumber village's felling reads it: stumps, saplings and grown trees by the day.
 - **`window._hamlets`** holds the villages, resources, counts and the tag audit. `verify.py` checks them, with a negative.
 
+## The towns (M7, 2026-10-20)
+
+Kautoa and Valapo are planned on this page at load, exactly as the city page plans them (`src/48t-world-towns.js`,
+`[G data]`: `settlements/isle-demo/src` 15-50 read in place, the same site file and kits' boxes, the same ground; their
+lots and records hash the same as the city page's), then the world's land takes each town's ground inside its square
+(`WORLD.landHook`, easing back over 150 m) and both towns are declared on core/simulation. `src/88t-world-towns.js`
+(`[web]`) draws them with the city page's own drawing (`60-isle-draw.js`, read in place as a factory over each town's
+group, at the town's frame): every lot as massing out to 30 km, the lots near the camera in full once it is over a
+town's square, the streets, orchards, footings, compound walls and vessels; the flora and floor keep off the lots,
+streets, fields and paved squares (`WORLD.clearHook`, after the hamlets'). The town under the camera runs presented,
+the other abstract (`ISLE.simWatch`); the sim is declared and held, not yet run on the world's clock.
+
+- **The export profile is kept here now** (moved from the city page): `verify.py --assert` checks Kautoa's ceremonial
+  centre (box 320,780,820,1220 in the town's frame) under the isle profile. The export is one town at a time, in that
+  town's frame: `?town=Kautoa` (the default) or `Valapo` picks it and starts the camera over it, `?simAt=minute` runs the
+  sim first. The city page's contributors (`62-isle-export-scene.js`, read in place as a factory) read the town's group
+  moved to the origin; the city section is that town's plan alone; the stage is the world's (its ground's look moved
+  into the town's frame). At minute 362 the case equals the city page's section by section (registry, fixtures,
+  terrain, the plan, every sim key; items and buckets but for the Islanders' UV scale: `KNOWN_ISSUES.md`), so
+  `godot/data/world-isle-kautoa` stays valid.
+- **`window._isleTowns`** holds the towns' census, plan checks, draw counts and errors; `exportTown(name)` switches the
+  export. `verify.py` checks the plans, the ground and the keep-clear, each with a negative.
+- Load: planning adds about 7 s (Kautoa 4.7, Valapo 2.0) and the sim's declare 2.3 s.
+
 ## How it is made
 
 The world is **openworld/little-demo's, read in place** (its `src/`, not copied): the fields, terrain, water, sky,

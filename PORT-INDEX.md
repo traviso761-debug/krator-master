@@ -69,7 +69,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 12 | 201 | 1 | 0 | 13 | 32 | 155 | 5 | biome | yes | yes |
 | [`biomes/throne`](biomes/throne/PORT.md) | 14 | 301 | 53 | 22 | 15 | 37 | 175 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 14 | 213 | 1 | 0 | 12 | 31 | 169 | 5 | biome | yes | yes |
-| [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 6 | 36 | 18 | 0 | 0 | 17 | 0 | 0 |  |  | yes |
+| [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 8 | 47 | 22 | 0 | 0 | 25 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 55 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 178 | 21 | 0 | 0 | 96 | 61 | 0 |  |  | yes |
 | **all** | 2201 | 29060 | 5842 (20%) | 619 (2%) | 1103 (4%) | 3693 (13%) | 17803 (61%) | 273 | | | |

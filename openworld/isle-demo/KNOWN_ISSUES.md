@@ -1,5 +1,17 @@
 # openworld/isle-demo: known issues
 
+- [ ] **The Islanders' pieces tile their textures 1.5x denser here than on the city page** (2026-10-20, found by M7's
+      export comparison): `ISK.proto` gives the same pieces the same positions, normals and indices on both pages, but on
+      15 of Kautoa's case's 285 items the UVs are exactly 1.5x the city page's. The kit is stable within a page, so it is
+      the page's texture set-up the kit reads at load (its `TILE` from `KMAT.packed(KIT.pack, ...)` or its fallback; the
+      two pages register different `KMAT.packs`). It predates M7 (the hamlets draw the same pieces). Find which scale is
+      the kit's own and make both pages read it; until then the Godot cases stay cut from the city page.
+- [ ] **The towns are drawn, not lived in yet** (M7, 2026-10-20): the sim is declared and held on this page; running it
+      on the world's clock (`HOST.clock`), the citizens near the camera and the canoe line's vessels (the city page's 57,
+      59, 61) are next. The world's frame rate over Kautoa is low with the full flora and the near pieces together.
+- [ ] **One registry per town** (M7): each town keeps its city-page registry in its own frame (so ids and the export
+      match the city page); the hamlets keep theirs. A region registry in world coordinates is still to do.
+
 - [ ] **The world's light ignores the clock** (2026-10-19). `core/clock` runs here now (the hamlets' felling reads it), but
       the sun (`HOST.SUN_DIR`) and the atmosphere (`ATMOS.init`'s `hour: () => 11.5`, little-demo's `83-world-water.js`)
       are still pinned at 11:30. Moving them onto `HOST.clock.hour` is little-demo's change, for both worlds.

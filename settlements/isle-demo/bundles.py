@@ -169,12 +169,16 @@ var scene = new THREE.Group(), renderer = { capabilities: { getMaxAnisotropy: fu
 IZV_TAIL = r'''
 reportErr = function (m) { IZV_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('IZV: ' + m); };
 if (typeof KMAT !== 'undefined' && KMAT.bindMat) KMAT.bindMat('iziz', MAT, { tile: KMAT.ANCIENT_TILES });
-/* IZV.proto(key, v, w): the def built once at the origin on flat ground into a new group, its kit items baked */
+/* IZV.proto(key, v, w): the def built once at the origin on flat ground into a new group, its kit items baked. The kit's
+   items are emptied before and after (30-kit.js kbake bakes every item put so far and keeps them: without this each piece
+   carried every piece built before it, so a piece depended on the order the page built them in; fixed 2026-10-20) */
+function izvKitClear() { KIT.order.forEach(function (n) { KIT.items[n].length = 0; }); }
 function izvProto(key, v, w) {
   var D = VERN.defs[key]; if (!D) return null;
   var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length;
+  izvKitClear();
   withFlatGround(function () { VERN.place(G, key, 0, 0, 0, { y: 0, v: v | 0, w: w == null ? 1 : w }); });
-  kbake(G); REG.length = r0;
+  kbake(G); izvKitClear(); REG.length = r0;
   G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h };
   return G;
 }

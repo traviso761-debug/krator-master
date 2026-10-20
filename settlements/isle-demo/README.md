@@ -332,6 +332,12 @@ declares both once they are planned, in one order whichever town it draws, and h
   Vernacular's buildings, which record none), Valapo's 398 (134, 249, 15); every one within its building's footprint
   and its uid recomputed in Godot, every building with a door, the door nearest the sim's entry carrying it. Left of P8:
   the Vernacular's and the Beast Riders' openings, the Ring Sea kit's lakatoi and real bodies in Godot, a GDScript twin
-  of the economy; then M7.
+  of the economy.
+- **M7 started** (2026-10-20): both towns are planned and drawn on the open world's page (`openworld/isle-demo` 48t,
+  88t: this page's 15-50 and 60 read in place there), and the export profile moved there
+  (`openworld/isle-demo/verify.py --assert`; this page's verify reports it). On the way: `IZV.proto` carried every
+  Vernacular piece built before it (the kit's `kbake` never empties its items), so a piece depended on the order the
+  page built them in; `bundles.py` now empties them round each piece. Kautoa's case lost the duplicates (285 items,
+  1,461 instances, was 359 and 1,535); both Godot cases were cut again and pass.
 
 See `KNOWN_ISSUES.md`.

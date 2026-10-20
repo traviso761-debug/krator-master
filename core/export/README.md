@@ -534,4 +534,6 @@ stage (`KSTAGE`, core/biome 44, which the isle build takes standalone), a door f
 case (`godot/data/world-isle-valapo`, box 106,-2075,506,-1675, `?town=Valapo&simAt=362`), the same test with
 `-- --case=world-isle-valapo --town=valapo`. The fixtures are the Islanders kit's own doors, windows and lamps since (kits/islanders records them while it builds;
 `ISK.proto` hands them over in the piece's frame): Kautoa's case 363, Valapo's 398, every one within its building's
-footprint and its uid recomputed in Godot.
+footprint and its uid recomputed in Godot. Since M7 (2026-10-20) the isle profile is kept by the open world's page (`openworld/isle-demo/verify.py --assert`):
+the towns are planned there as on the city page, and its Kautoa case at minute 362 equals the city page's section by
+section (the Islanders' UV scale aside: `openworld/isle-demo/KNOWN_ISSUES.md`); the city page's verify reports it.
