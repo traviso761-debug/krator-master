@@ -882,24 +882,52 @@ function KCharFigure(body, sliders, load){
      MakeHuman's curved spine, stand with the chest pushed forward and the upper body leaning back ---- */
   // data/posture.json for this body (KCharFigure.posture: the page fills it; a body without an entry takes the man's),
   // copied, so a panel can change one figure's live
-  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PD = KCharFigure.posture || {};
-  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0 }, PD[kit.body] || PD.mpfb_male || {});
-  var pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
+  var PJ = ['Spine', 'Spine1', 'Spine2', 'Neck', 'Head'], PK = PJ.concat(['drop', 'back']), PD = KCharFigure.posture || {};
+  var PB = PD[kit.body] ? kit.body : 'mpfb_male';
+  var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0 }, PD[PB] || {});
+  // a clip's own change on top (data/posture.json 'clips': degrees added, under the body whose values this one takes),
+  // copied by clip name, so a panel can change one figure's live; blended by the playing clips' weights, so a
+  // cross-fade carries it over too
+  var PC = KCharFigure.postureClips || {}, CLIPP = {}, PF = KCharFigure.postureFrame || 'figure';
+  Object.keys(PC).forEach(function(c){ var o = PC[c][PB]; if(o) CLIPP[c] = Object.assign({}, o); });
+  var pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()], pS = {};
+  // per joint, the inverse of its parent's rest orientation in the figure (the rest locals down from the hips)
+  var pRest = J.map(function(){ return Q(); });
+  J.forEach(function(j, i){ pRest[i].fromArray(j.r); if(j.parent >= 0) pRest[i].premultiply(pRest[j.parent]); });
+  var pR = J.map(function(j){ return j.parent >= 0 ? pRest[j.parent].clone().invert() : Q(); });
   var pArms = ['LeftArm', 'RightArm'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; });
+  function postureNow(){
+    var sum = 0;
+    PK.forEach(function(k){ pS[k] = 0; });
+    acts.forEach(function(a){
+      var w = a.isScheduled() ? a.getEffectiveWeight() : 0; if(!(w > 0)) return;
+      var o = CLIPP[a.getClip().name] || {}; sum += w;
+      PK.forEach(function(k){ pS[k] += w * (+o[k] || 0); });
+    });
+    PK.forEach(function(k){ pS[k] = (+POSTURE[k] || 0) + (sum > 0 ? pS[k] / sum : 0); });
+    return pS;
+  }
   function posture(){
     if(!self.action) return;             // the rest pose (the A-pose clothes are fitted in) stays as it is
+    var P = postureNow();
     self.group.getWorldQuaternion(pG);
     // the upper arms keep the way the clip points them: the torso straightens under them, and a thrust or a held
     // spear aims where the clip aims it
     pArms.forEach(function(k, i){ if(k >= 0) bones[k].getWorldQuaternion(pW[i]); });
     PJ.forEach(function(n){
-      var b = byName[n] !== undefined && bones[byName[n]], a = +POSTURE[n] || 0; if(!b || !a) return;
-      turnWorld(b, pQ.setFromAxisAngle(pAx.set(1, 0, 0).applyQuaternion(pG), -a * Math.PI / 180));
+      var b = byName[n] !== undefined && bones[byName[n]], a = P[n]; if(!b || !a) return;
+      if(PF === 'joint'){
+        // the side axis as the clip has turned the parent joint from its rest: a twisted or leaning torso bends
+        // forward along its own facing, not about the figure's
+        b.parent.getWorldQuaternion(qB);
+        pAx.set(1, 0, 0).applyQuaternion(pR[byName[n]]).applyQuaternion(qB);
+      } else pAx.set(1, 0, 0).applyQuaternion(pG);
+      turnWorld(b, pQ.setFromAxisAngle(pAx, -a * Math.PI / 180));
     });
     [['LeftShoulder', 1], ['RightShoulder', -1]].forEach(function(sh){
       var b = byName[sh[0]] !== undefined && bones[byName[sh[0]]]; if(!b) return;
-      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 0, 1).applyQuaternion(pG), -sh[1] * (+POSTURE.drop || 0) * Math.PI / 180));
-      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 1, 0).applyQuaternion(pG), sh[1] * (+POSTURE.back || 0) * Math.PI / 180));
+      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 0, 1).applyQuaternion(pG), -sh[1] * P.drop * Math.PI / 180));
+      turnWorld(b, pQ.setFromAxisAngle(pAx.set(0, 1, 0).applyQuaternion(pG), sh[1] * P.back * Math.PI / 180));
     });
     pArms.forEach(function(k, i){
       if(k < 0) return;
@@ -909,6 +937,7 @@ function KCharFigure(body, sliders, load){
     });
   }
   this.posture = POSTURE;
+  this.postureClips = CLIPP;
 
   function afterClip(dt){ posture(); arms2(dt); bodyFix(); grip(); twoHands(dt); clothStep(dt); legCaps(); bowString(); }
 
@@ -1047,3 +1076,5 @@ function KCharFigure(body, sliders, load){
 }
 KCharFigure.props = {};      // data/props.json by id (the page fills it)
 KCharFigure.posture = {};    // data/posture.json bodies (the page fills it)
+KCharFigure.postureClips = {};   // data/posture.json clips: per clip, per body, degrees added (the page fills it)
+KCharFigure.postureFrame = 'figure';   // data/posture.json frame: 'joint' pitches about each joint's parent's side axis

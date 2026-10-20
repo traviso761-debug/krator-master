@@ -94,6 +94,11 @@ select { font: 500 13px/1 var(--body); color: var(--ink); background: var(--chip
 .pose-row { display: grid; grid-template-columns: 124px minmax(0, 1fr) 54px; white-space: nowrap; gap: 8px; align-items: center; font-size: 13px; }
 .pose-row input[type=range] { width: 100%; accent-color: var(--accent); }
 .pose-row input[type=number] { width: 100%; box-sizing: border-box; font: 12px var(--mono); color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 5px; padding: 3px 4px; }
+.pose-scope { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+.pose-scope button { border: 1px solid var(--line); background: var(--chip); font-size: 12px; padding: 5px 9px; }
+.pose-scope button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+#pose-which { color: var(--muted); }
+.pose-row.tuned label { color: var(--accent); font-weight: 600; }
 .pose-btns { display: flex; gap: 5px; flex-wrap: wrap; }
 .pose-btns button { border: 1px solid var(--line); background: var(--chip); font-size: 12px; padding: 6px 9px; }
 #pose-json { width: 100%; box-sizing: border-box; font: 11px/1.35 var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; resize: vertical; }
@@ -209,10 +214,11 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 3px;
     <details id="pose-box">
       <summary>Posture</summary>
       <div class="pose">
-        <p class="pose-note">Pitch per joint after every clip, in degrees: negative bends forward. Shoulders: drop lowers them, back draws them back (negative hunches). Live on every figure of the body chosen.</p>
+        <p class="pose-note">Pitch per joint after every clip, in degrees: negative bends forward. Shoulders: drop lowers them, back draws them back (negative hunches). Live on every figure of the body chosen. <b>This clip</b> tunes the clip playing on top of the body's values (the sliders show the sum; the file keeps the difference).</p>
         <label class="pose-body">Body <select id="pose-body"><option value="mpfb_male">Man and giant</option><option value="mpfb_female">Woman</option></select></label>
+        <div class="pose-scope" role="group" aria-label="What the sliders change"><button id="pose-all" aria-pressed="true">Every clip</button><button id="pose-clip" aria-pressed="false">This clip</button><span id="pose-which"></span></div>
         <div id="pose-rows"></div>
-        <div class="pose-btns"><button id="pose-copy">Copy JSON</button><button id="pose-apply">Apply JSON</button><button id="pose-reset">Reset</button></div>
+        <div class="pose-btns"><button id="pose-copy">Copy JSON</button><button id="pose-apply">Apply JSON</button><button id="pose-clear" hidden>Clear this clip</button><button id="pose-reset">Reset</button></div>
         <label class="sr" for="pose-json">Posture JSON</label>
         <textarea id="pose-json" spellcheck="false" rows="7"></textarea>
         <div id="pose-status" role="status"></div>

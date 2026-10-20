@@ -1,14 +1,15 @@
 {
- "about": "The posture pass after every clip (50-figure.js posture, kchar_figure.gd _posture), per body: Spine, Spine1, Spine2, Neck and Head pitched by these degrees in the figure's frame (negative forward, positive back), then the shoulders dropped (drop) and drawn back (back, negative rolls them forward). The upper arms keep the way the clip points them. A body without an entry takes mpfb_male's (the giant). The Animation Lab's Posture panel edits these live and copies them as this 'bodies' object.",
+ "about": "The posture pass after every clip (50-figure.js posture, kchar_figure.gd _posture), per body: Spine, Spine1, Spine2, Neck and Head pitched by these degrees in the figure's frame (negative forward, positive back), then the shoulders dropped (drop) and drawn back (back, negative rolls them forward). 'frame': 'joint' takes each spine joint's side axis as the clip has turned its parent from rest (a twisted or side-leaning torso bends forward along its own facing; it is the figure's axis on an upright one), 'figure' the figure's own side axis (before 2026-10-20: the man's ribs kinked sideways in twisted idles); the shoulders always turn in the figure's frame. The upper arms keep the way the clip points them. A body without an entry takes mpfb_male's (the giant). 'clips': per clip key, per body, degrees added to the body's values while that clip plays (blended through a cross-fade); kept under the body whose values a body takes (the giant: mpfb_male). The Animation Lab's Posture panel edits both live ('Every clip' and 'This clip') and copies them as this object.",
+ "frame": "joint",
  "bodies": {
   "mpfb_male": {
-   "Spine": -6,
-   "Spine1": -12,
-   "Spine2": -12,
-   "Neck": 15,
-   "Head": 0,
-   "drop": 9,
-   "back": 10
+   "Spine": 21.5,
+   "Spine1": -40,
+   "Spine2": -21.5,
+   "Neck": 40,
+   "Head": 1.5,
+   "drop": 30,
+   "back": 8.5
   },
   "mpfb_female": {
    "Spine": -6,
@@ -18,6 +19,48 @@
    "Head": 0,
    "drop": 9,
    "back": 10
+  }
+ },
+ "clips": {
+  "crouch_walk": {
+   "mpfb_male": {
+    "Spine": -12,
+    "Spine1": -6,
+    "Neck": 8
+   }
+  },
+  "run": {
+   "mpfb_female": {
+    "Neck": -6,
+    "Head": -3
+   },
+   "mpfb_male": {
+    "Neck": -16,
+    "Head": -6
+   }
+  },
+  "sprint": {
+   "mpfb_male": {
+    "Spine1": 15,
+    "Neck": -10
+   }
+  },
+  "ual_crouch": {
+   "mpfb_male": {
+    "Spine1": 10,
+    "Spine2": 8,
+    "Neck": -8
+   }
+  },
+  "walk": {
+   "mpfb_female": {
+    "Neck": -6,
+    "Head": -3
+   },
+   "mpfb_male": {
+    "Neck": -16,
+    "Head": -6
+   }
   }
  }
 }

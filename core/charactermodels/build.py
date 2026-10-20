@@ -14,6 +14,8 @@ The pages need a web server (they fetch their pieces):  python3 -m http.server -
                                # morph deltas as a second line, gzipped, as base64), published beside them, to stay under the host's 16 MB a page
   python3 build.py --no-checks # skip the port lint and the node test
   python3 build.py --meshy     # also pack the earlier Meshy-donor bodies (data/male, data/female)
+  python3 build.py --pages-only  # the pages alone, on a machine without pieces/ (gitignored, made in Blender): dist/pieces
+                               # and the thumbs are left as they are, and the manifest keeps the pieces' last hashes
 
 The pieces are made beforehand by tools/make_pieces.py (pieces/*.glb, data/*.json); this only packs them. The page is
 its head fragment (PAGES), then one inline script: core/rand (KRAND), the data (KCHAR_DATA), then the shared
@@ -28,6 +30,7 @@ SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 RAND = os.path.join(ROOT, 'core', 'rand', '08-core-rand.js')
 CHECKS = '--no-checks' not in sys.argv
+PAGES_ONLY = '--pages-only' in sys.argv
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 _cp = os.path.join(ROOT, 'tools', 'check_port.py')
@@ -36,8 +39,14 @@ if CHECKS and os.path.isfile(_cp) and subprocess.call([sys.executable, _cp, '--q
 
 
 def read(p, mode='r'):
+    # text as UTF-8 with '\n' line ends, and a text file read as bytes with its '\r\n' made '\n' too: a Windows
+    # checkout (core.autocrlf) hashes and builds the same as a Linux one
+    if 'b' not in mode:
+        with open(p, mode, encoding='utf-8') as f:
+            return f.read()
     with open(p, mode) as f:
-        return f.read()
+        raw = f.read()
+    return raw if p.endswith(('.glb', '.bin')) else raw.replace(b'\r\n', b'\n')
 
 
 # the MakeHuman bodies (tools/make_mpfb.py); the earlier Meshy-donor kits (tools/make_kit.py) only with --meshy
@@ -72,12 +81,15 @@ def main():
         js.append('/* src/%s */\n%s' % (f, t))
     # the pieces go beside the page as base64 text (the artifact host serves no binary type a GLB fits), fetched
     # when a record needs them: dist/pieces/<body>/<name>.txt
-    if os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built
+    if PAGES_ONLY:
+        last = json.loads(read(os.path.join(HERE, 'build-manifest.json')))
+        inputs.update({k: None for k in last if k.startswith('pieces/')})
+    elif os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built
         for b in os.listdir(os.path.join(DIST, 'pieces')):
             if b not in data['bodies'] and b != 'props':
                 q = os.path.join(DIST, 'pieces', b)
                 shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
-    for b in list(data['bodies']) + ['props']:          # each body's pieces, and the hand-held props they share
+    for b in [] if PAGES_ONLY else list(data['bodies']) + ['props']:     # each body's pieces, and the props they share
         src_dir, out_dir = os.path.join(HERE, 'pieces', b), os.path.join(DIST, 'pieces', b)
         os.makedirs(out_dir, exist_ok=True)
         for f in os.listdir(out_dir):
@@ -92,7 +104,7 @@ def main():
                 name, k = (f[:-10], 1) if f.endswith('.morph.bin') else (f[:-4], 0)
                 lines.setdefault(name, ['', ''])[k] = base64.b64encode(gzip.compress(raw, 9, mtime=0)).decode()
         for name, (glb, morph) in lines.items():
-            with open(os.path.join(out_dir, name + '.txt'), 'w') as o:
+            with open(os.path.join(out_dir, name + '.txt'), 'w', encoding='utf-8', newline='\n') as o:
                 o.write(glb + ('\n' + morph if morph else ''))
     os.makedirs(DIST, exist_ok=True)
     for old in ('characters.html', 'characters.artifact.html'):              # the single page before the split
@@ -108,24 +120,28 @@ def main():
                 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + \
                 body + '</body>\n</html>\n'
         for name, text in ((page + '.html', whole), (page + '.artifact.html', body)):
-            with open(os.path.join(DIST, name), 'w', encoding='utf-8') as f:
+            with open(os.path.join(DIST, name), 'w', encoding='utf-8', newline='\n') as f:
                 f.write(text)
         wholes[page] = whole
         if CHECKS:
             script = os.path.join(DIST, '.check.js')
-            open(script, 'w').write('\n'.join(pjs))
+            with open(script, 'w', encoding='utf-8', newline='\n') as f:
+                f.write('\n'.join(pjs))
             rc = subprocess.call(['node', '--check', script])
             os.remove(script)
             if rc:
                 sys.exit('build.py: %s: the inline script does not parse' % page)
-    if '--thumbs' in sys.argv or not os.path.isdir(os.path.join(DIST, 'thumbs')):
+    if PAGES_ONLY:
+        pass
+    elif '--thumbs' in sys.argv or not os.path.isdir(os.path.join(DIST, 'thumbs')):
         if subprocess.call(['node', os.path.join(HERE, 'tools', 'thumbs.mjs'), HERE]) != 0:
             print('build.py: thumbs.mjs failed; the chips show names only')
     pack_thumbs()
-    man = {k: hashlib.sha1(v).hexdigest() for k, v in sorted(inputs.items())}
+    man = {k: last[k] if v is None else hashlib.sha1(v).hexdigest() for k, v in sorted(inputs.items())}
     for page, whole in wholes.items():
         man['dist/%s.html' % page] = hashlib.sha1(whole.encode()).hexdigest()
-    json.dump(man, open(os.path.join(HERE, 'build-manifest.json'), 'w'), indent=1, sort_keys=True)
+    with open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(man, f, indent=1, sort_keys=True)
     print('%s  pieces %.1f MB' % ('  '.join('dist/%s.html %.2f MB' % (p, len(w) / 1e6) for p, w in sorted(wholes.items())), sum(
         os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(os.path.join(DIST, 'pieces')) for f in fs) / 1e6))
 
@@ -147,7 +163,7 @@ def pack_thumbs(size=128, cols=16):
             im = Image.open(os.path.join(root, body, n + '.png')).convert('RGBA').resize((size, size), Image.LANCZOS)
             atlas.paste(im, ((i % cols) * size, (i // cols) * size))
         atlas.save(os.path.join(root, body + '.png'), optimize=True)
-        json.dump({'cols': cols, 'rows': rows, 'keys': {n: i for i, n in enumerate(names)}}, open(os.path.join(root, body + '.json'), 'w'),
+        json.dump({'cols': cols, 'rows': rows, 'keys': {n: i for i, n in enumerate(names)}}, open(os.path.join(root, body + '.json'), 'w', encoding='utf-8', newline='\n'),
                   separators=(',', ':'))
 
 

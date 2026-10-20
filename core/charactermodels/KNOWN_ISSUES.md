@@ -25,10 +25,13 @@
   rest against the link above (26 of them on the man), and with cloth off the chains still jitter about 0.19 rad a frame
   (0.28 with it on): the page's chains do not. `kchar_test.gd` measures the swing frame to frame, which still tells the
   two apart; the folding itself is not fixed.
-- **The posture fix is one rule for every clip.** The spine is bent forward and the shoulders dropped and drawn back
-  by fixed angles (`data/posture.json`, set by hand in the Animation Lab's Posture panel) after each clip (README, Posture), the upper arms keeping the clip's direction: a clip that already
-  stoops (the standing idle, the combat stance) stoops further. The cause, the retarget straightening MakeHuman's
-  spinal curve, is not fixed in the retarget itself.
+- **The posture fix is set by hand.** The spine is bent forward and the shoulders dropped and drawn back by angles per
+  body, with changes per clip where one needs it (`data/posture.json`, set in the Animation Lab's Posture panel; README,
+  Posture), the upper arms keeping the clip's direction. A clip with no change of its own takes the body's angles, so a
+  clip that already stoops stoops further until it is given one. The cause, the retarget straightening MakeHuman's
+  spinal curve (far more on the man than the woman), is not fixed in the retarget itself.
+- **The man's left nipple shows through the plain T-shirt** in most idles (owner's review, 2026-10-20). It does so with
+  the posture pass off too, so it is the shirt's fit, not posture; the man's 30 degree shoulder drop makes it worse.
 - **Props are simple, and the two-handed hold is solved, not animated.** Props are built from primitives, flat
   shaded. The left hand's grip on a two-handed prop comes from a two-bone solve over clips made for other weapons (or
   none): the arm reaches the handle, but the shoulder and torso stay where the clip has them, so a chop made for one

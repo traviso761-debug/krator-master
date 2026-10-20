@@ -86,8 +86,15 @@ func load_body(data_dir: String, body_id: String) -> void:
 		for p in JSON.parse_string(FileAccess.get_file_as_string(dir + "/props.json"))["props"]:
 			props[p["id"]] = p
 	if FileAccess.file_exists(dir + "/posture.json"):
-		var pb: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(dir + "/posture.json"))["bodies"]
-		posture = pb.get(kit.get("body", ""), pb.get("mpfb_male", {}))
+		var pj: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(dir + "/posture.json"))
+		var pb: Dictionary = pj["bodies"]
+		var pk: String = kit.get("body", "") if pb.has(kit.get("body", "")) else "mpfb_male"
+		posture = pb.get(pk, {})
+		posture_joint = pj.get("frame", "figure") == "joint"
+		var pc: Dictionary = pj.get("clips", {})
+		for c in pc:
+			if pc[c].has(pk):
+				posture_clips[c] = pc[c][pk]
 
 
 static func _scene(path: String) -> Node:
@@ -535,14 +542,34 @@ func hold(want: Dictionary) -> void:
 
 # posture (50-figure.js posture): after each clip Spine, Spine1, Spine2, Neck and Head are pitched (degrees in the
 # skeleton's frame, negative forward) and the shoulders dropped and drawn back, by data/posture.json's entry for this
-# body (the man's when it has none). The upper arms keep the way the clip points them
+# body (the man's when it has none), plus the playing clip's own change ('clips', under the same body), eased in over
+# the 0.25 s cross-fade as the page's mixer weights blend it. The upper arms keep the way the clip points them
 const POSTURE_JOINTS := ["Spine", "Spine1", "Spine2", "Neck", "Head"]
+const POSTURE_KEYS := ["Spine", "Spine1", "Spine2", "Neck", "Head", "drop", "back"]
+const POSTURE_FADE := 0.25
 var posture := {}
+var posture_joint := false              # 'frame': 'joint' (the side axis as the clip turned the parent from rest)
+var posture_clips := {}                 # clip -> degrees added while it plays
+var _pose_from := {}                    # the clip change when the last play() began
+var _pose_fade := POSTURE_FADE          # clip seconds since then
+
+
+func _pose_change() -> Dictionary:
+	var t := clampf(_pose_fade / POSTURE_FADE, 0.0, 1.0)
+	var to: Dictionary = posture_clips.get(_clip, {})
+	var out := {}
+	for k in POSTURE_KEYS:
+		out[k] = lerpf(float(_pose_from.get(k, 0.0)), float(to.get(k, 0.0)), t)
+	return out
 
 
 func _posture() -> void:
 	if player == null or not player.is_playing() or posture.is_empty():
 		return                              # the rest pose (the A-pose clothes are fitted in) stays as it is
+	var ch := _pose_change()
+	var p := {}
+	for k in POSTURE_KEYS:
+		p[k] = float(posture.get(k, 0.0)) + float(ch[k])
 	var arms := {}
 	for n in ["LeftArm", "RightArm"]:
 		var ai := skeleton.find_bone(n)
@@ -550,15 +577,19 @@ func _posture() -> void:
 			arms[ai] = _gp(ai).basis.get_rotation_quaternion()
 	for n in POSTURE_JOINTS:
 		var b := skeleton.find_bone(n)
-		var a := deg_to_rad(float(posture.get(n, 0.0)))
+		var a := deg_to_rad(float(p[n]))
 		if b >= 0 and a != 0.0:
-			_turn(b, Quaternion(Vector3(1, 0, 0), -a))
+			var ax := Vector3(1, 0, 0)
+			var par := skeleton.get_bone_parent(b)
+			if posture_joint and par >= 0:
+				ax = (_gp(par).basis.get_rotation_quaternion() * skeleton.get_bone_global_rest(par).basis.get_rotation_quaternion().inverse()) * ax
+			_turn(b, Quaternion(ax.normalized(), -a))
 	for sh in [["LeftShoulder", 1.0], ["RightShoulder", -1.0]]:
 		var b := skeleton.find_bone(sh[0])
 		if b < 0:
 			continue
-		_turn(b, Quaternion(Vector3(0, 0, 1), -sh[1] * deg_to_rad(float(posture.get("drop", 0.0)))))
-		_turn(b, Quaternion(Vector3(0, 1, 0), sh[1] * deg_to_rad(float(posture.get("back", 0.0)))))
+		_turn(b, Quaternion(Vector3(0, 0, 1), -sh[1] * deg_to_rad(float(p["drop"]))))
+		_turn(b, Quaternion(Vector3(0, 1, 0), sh[1] * deg_to_rad(float(p["back"]))))
 	for ai in arms:
 		var par := skeleton.get_bone_parent(ai)
 		skeleton.set_bone_pose_rotation(ai, (_gp(par).basis.get_rotation_quaternion().inverse() * arms[ai]).normalized())
@@ -1342,6 +1373,8 @@ func _arms2(dt: float) -> void:
 
 
 func play(clip: String) -> void:
+	_pose_from = _pose_change() if _clip != "" else posture_clips.get(clip, {})
+	_pose_fade = 0.0
 	_clip = clip
 	if clip == "" or not player.has_animation(clip):
 		_clip = ""
@@ -1366,6 +1399,7 @@ func _process(dt: float) -> void:
 	# morph delta below is added once, not once a frame
 	skeleton.set_bone_pose_position(_hips, KChar._v(skel["joints"][_hips]["t"]))
 	player.advance(dt * cadence)
+	_pose_fade += dt * cadence
 	if not player.is_playing() and _clip != looping:
 		play(looping)
 		return
