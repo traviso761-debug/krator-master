@@ -1,8 +1,8 @@
 {
  "pages": {
   "biomes/crater-drylands/dist/crater-drylands.html": {
-   "sha256": "13bb5d118a000ac47f9500b75cfa7dae9ef7f9a7440e9ccf3c29431b187157f9",
-   "bytes": 3799725
+   "sha256": "636a66a492799edf47e44cb203c3f644e482df0025151df1ed860ab37d886bf4",
+   "bytes": 3799778
   },
   "biomes/eastabyss/dist/eastabyss.html": {
    "sha256": "c7a360f4a17a94edacacbe9847f304f20e9cd3df46a7bd40a5e2f26b625642d1",
@@ -13,8 +13,8 @@
    "bytes": 4278291
   },
   "biomes/ehighlands/dist/ehighlands.html": {
-   "sha256": "309aa7fb518a96c9ed02d937055eeefa6f438811fa5a47e042a977d782301714",
-   "bytes": 1904906
+   "sha256": "1febd9fc16f808dcda6b08b8ffcd0c86f1569c2b03ad2752946ddfef98e519f1",
+   "bytes": 1904959
   },
   "biomes/geyser/dist/geyser.html": {
    "bytes": 637226,
@@ -81,8 +81,8 @@
    "sha256": "15f8a6c0616438b1f90d35400fe24e23dd02227c262f89901fae19a44661fa72"
   },
   "biomes/shighlands/dist/shighlands.html": {
-   "sha256": "0bff2891715746f0307791ba8b55a16252aff3fd9d27fbed29d605853320f830",
-   "bytes": 1856454
+   "sha256": "12207e49479ebbba729803797c3a54c43502a9397d19a33ecab7527132aa3ca0",
+   "bytes": 1932693
   },
   "biomes/swbay/dist/swbay.html": {
    "sha256": "75ffa48b02af97dc729e81a75bf8f462f31c31c169a5ac0cf5323dcecdf43f04",
