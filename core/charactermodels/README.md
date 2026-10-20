@@ -30,6 +30,7 @@ python3 build.py [--thumbs]                                        # dist/cosmet
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
 python3 tools/shots.py <dir> tools/shots-clipping.json               # close-ups of the open clipping issues, the same every run
+python3 tools/ease.py /path/to/export male                           # under-items outside the item over them, per outfit
 node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after a change to 10-rig.js, data/ or the pieces
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 ```
@@ -41,6 +42,19 @@ without sending its piece's `.txt` again in the same publish: the piece would lo
 the neutral one would show it at the neutral size (hair off the head, shirts off the torso, holes at the joints).
 A version holds at most 511 files, so send the changed pieces (compare `build-manifest.json` with the last published
 commit's) rather than all of them.
+
+**Clothing fit.** Measured on the exports (2026-10-20), before acting on HANDOFF-CLOTHING.md 1.2 and 1.3:
+- *Across slider ends* MPFB's refit already keeps every garment where the rest has it: over all 85 ends, a few dozen
+  vertices per item go 0.3 to 2 cm deeper into the body than at rest (boot soles at full height, hat rims at the pointed
+  ears), and the generated garments almost none. So 1.2 (a settle per slider end) is not built.
+- *At rest* garments lie outside the skin but for soles (by design), the four-armed giant tunics' armpits (up to 5 cm)
+  and two to eight vertices of a robe or tunic.
+- *Across items worn together* is where the fit fails: `python3 tools/ease.py <export dir> male|female` lists, for every
+  outfit in `data/peoples.json`, the under-items standing outside the item over them. 16 of 58 pairs on the man and
+  15 of 52 on the woman; the worst are the Hykkousoi pteruges outside the lorica (most of their vertices, 7 to 9 cm),
+  the Izani commoner's trousers outside the tunic (about 700 vertices, 1 to 1.5 cm), the Chichani noble's skirt outside
+  the robe (up to 5 cm) and trader's xicolli outside the head wrap (7 cm). These are the open clipping issues' causes,
+  to fix in `make_garments.py` (the ease of the over-item) and check with this table.
 
 ## A core module: where it goes next
 
