@@ -266,7 +266,7 @@ written when the owner agrees the list.
 
 | Phase | What | Done when |
 |---|---|---|
-| P0 | `kits/eternian` scaffold: the engine vendored, `build.py` (the port lint), `verify.py` on `tools/harness.py`, the sheet target, `INDEX.md`, `PORT.md`; `eternian` in the tags vocab | the sheet builds with the first building (`et_canal_house`) and `--assert` passes |
+| P0 | `kits/eternian` scaffold: the engine vendored, `build.py` (the port lint), `verify.py` on `tools/harness.py`, the sheet target, `INDEX.md`, `PORT.md`; `eternian` in the tags vocab | the sheet builds with the first building (`et_canal_house`) and `--assert` passes. **Done 2026-10-20** on the Scyvoi engine (question 1 below taken as the draft assumed): the canal house, the toolkit's first pieces, the catalog's Eternian common tier, the culture registered; textures and the socket pack wait for P1 (`KNOWN_ISSUES.md`) |
 | P1 | materials and kit items (`et*`), the profile helpers: the pier bundle, the lancet bundle, the oculus, the stepped head, the tracery grid, the pattern block; `materials.json` on the library | the helpers render on a test row; the texture gaps are listed |
 | P2 | the head generator (section 5): heads, figures, masks, the closed-eye count in the verify | a row of fifty seeded heads reads as fifty people and four metals |
 | P3 | dwellings, all tiers, and the mixed canal street | the owner's eye-level review of the street |

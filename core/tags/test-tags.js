@@ -30,7 +30,7 @@ for (const m of core.matchAll(/'([a-z-]+)': \{ name: '([^']+)'/g)) srcNames[m[1]
 for (const f of fs.readdirSync(CAT).filter(f => /^krator-master-furniture-.*\.js$/.test(f)))
   for (const m of fs.readFileSync(path.join(CAT, f), 'utf8').matchAll(/FURN_CULTURE\('([a-z-]+)', \{ name: '([^']+)'/g)) srcNames[m[1]] = m[2];
 const nameBad = V.cultures.filter(c => V.cultureNames[c] !== srcNames[c === 'yuni' ? 'yuni-common' : c]);
-ok(V.cultures.length === 21 && !nameBad.length, '21 cultures, display names from FURN_CULTURE_INFO' + (nameBad.length ? ' (differ: ' + nameBad + ')' : ''));
+ok(V.cultures.length === 22 && !nameBad.length, '22 cultures, display names from FURN_CULTURE_INFO' + (nameBad.length ? ' (differ: ' + nameBad + ')' : ''));
 const covered = new Set(V.catalog.cultures.map(c => V.cultureAlias[c] ? V.cultureAlias[c].culture : c).filter(c => c));
 ok(covered.size === V.cultures.length && V.cultures.every(c => covered.has(c)), 'every catalog culture is a culture or an alias of one, and nothing else is');
 ok(!V.catalog.cultures.concat(['elves']).every(c => V.cultureAlias[c] || V.cultures.indexOf(c) >= 0), 'negative: a catalog culture with no culture or alias is caught');
@@ -199,10 +199,10 @@ ok(exs.records[0].count === 3 && exs.records[0].table === undefined && exi.recor
 
 // the export, and its digest
 const ex = T.export();
-ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 21, 'export shape');
+ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 22, 'export shape');
 const s = JSON.stringify(ex);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-const DIGEST = '5b0bffbf';   /* 2026-10-19: nine jobs added to FURN_JOBS (baking butchery healing scribing shipwrighting quarrying customs worship dairy) merged over */ // necanyons' zone and trap keys; before it, 803f4891 (2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd)))
+const DIGEST = 'ec5ff246';   /* 2026-10-20: the Eternians (kits/eternian) added to the cultures; before it, 5b0bffbf, 2026-10-19: nine jobs added to FURN_JOBS (baking butchery healing scribing shipwrighting quarrying customs worship dairy) merged over */ // necanyons' zone and trap keys; before it, 803f4891 (2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd)))
 ok(h.toString(16) === DIGEST, 'export digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);
