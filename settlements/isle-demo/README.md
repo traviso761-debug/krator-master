@@ -192,6 +192,30 @@ declares both once they are planned, in one order whichever town it draws, and h
   meal at home counts as a better one (`fine`). The staples shops and the market stay open until 21:00: the farmhands,
   in from the far fields at 17:00, reached a shop as it closed, and from day 13 about 370 of Kautoa's meals a day were
   eaten from an empty store; now none.
+- **Needs** (the owner, 2026-10-19): core/simulation's needs run in the isles (`ISLE.TUNE.sim.needs`, Voth's table on the
+  isles' activities): seven meters (eat, drink, socialize, relax, contemplate, sleep, material), happiness, its band's
+  efficiency at work, loyalty; in the free hours a person does what its meters ask among company, rest, idling and
+  worship. With no wells, drink comes with meals, rest, company and a water gourd at work. Clothes and pots bought fill
+  the material meter (8 and 20), a set of clothes short raises it 4 a day. Three weeks, the mean meter at the day's end
+  (both towns alike within two points):
+
+  | | day 1 | day 7 | day 14 | day 21 |
+  |---|---|---|---|---|
+  | eat | 29 | 28 | 27 | 27 |
+  | drink | 5 | 1 | 1 | 1 |
+  | socialize | 27 | 32 | 33 | 33-34 |
+  | relax | 24 | 33-35 | 34-37 | 35-37 |
+  | contemplate | 12 | 48-50 | 59-61 | 60-61 |
+  | sleep | 22 | 23 | 23-24 | 23-24 |
+  | material | 22 | 64 | 99 | 100 |
+  | happiness (content / uneasy / unhappy) | 89 (98% / 2% / 0) | 77-78 (71-73% / 23-24% / 4-5%) | 70 (58-60% / 28-30% / 12%) | 70 (57-59% / 28-29% / 12-13%) |
+  | efficiency at work | 1.00 | 0.97 | 0.95 | 0.95 |
+
+  Food, sleep, drink and company hold; contemplation settles near 60 (few choose worship in their free hours); material
+  climbs 7 a day and pins at 100 by day 14, since nothing is bought but what wears out: it alone takes happiness from 89
+  to 70. The seasoning lowers the eat meter by about one point (27.9 to 26.6 in Valapo; happiness +0.5); the pots and
+  the clothes' material change it by under half a point (a pot or a garment is bought every few weeks a person against
+  7 a day). The economy holds at 95% efficiency (the governor makes up the difference; nothing short).
 - **Three weeks' books** (the daily average over days 12-21, three whole restocking rounds; the gain at 0.3):
 
   | | Valapo | Kautoa |

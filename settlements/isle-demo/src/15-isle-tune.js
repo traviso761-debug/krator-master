@@ -113,6 +113,33 @@ ISLE.TUNE.sim = {
     elder: [[0, 'SLEEP'], [6, 'EAT'], [7, 'HOUSEWORK'], [10, 'SOCIALIZE'], [12, 'REST'], [15, 'HOUSEWORK'], [17, 'SOCIALIZE'], [18, 'EAT'], [19, 'REST'], [21, 'SLEEP']],
     free: ['SOCIALIZE', 'IDLE', 'REST']
   },
+  /* needs, happiness, efficiency, loyalty (core/simulation 77-sim-6-needs.js; owner, 2026-10-19): Voth's table
+     (settlements/voth/targets/voth-city/15-vc-tune.js TUNE.sim.needs) ported to the isles' activities. A meter per need,
+     0 met to 100 desperate, rises at `rate` an hour (times the role's `byTrade`), more at work by `work` times the
+     trade's `labour`, and falls by the activity's `fill` (a meal's by its worth: two foods, seasoned). The isles have no
+     wells, taverns for drink or chairs to relax in: drink comes with meals, rest, company (kava, coconuts) and a water
+     gourd at work; relax with rest and company; contemplation at the temples, shrines and squares (WORSHIP) and a little
+     at school. Material rises slowly and falls with what is bought (`items`' `material`) and by `items.lack` a day for a
+     set of clothes short. In the hours the schedule gives to one of `free`, a person does what its meters ask among
+     them, at an open place within reach. Happiness, its band's efficiency at work, loyalty: as Voth's */
+  needs: {
+    list: ['eat', 'drink', 'socialize', 'relax', 'contemplate', 'sleep', 'material'],
+    rate: { eat: 4, drink: 3, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0.3 },
+    fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 6 }, HAUL: { drink: 6 }, REST: { sleep: 6, relax: 10, drink: 8 },
+      EAT: { eat: 24, drink: 12, socialize: 1, relax: 1 }, SOCIALIZE: { socialize: 24, relax: 4, drink: 6 }, IDLE: { relax: 7, drink: 8 },
+      WORSHIP: { contemplate: 45, socialize: 5 }, STUDY: { contemplate: 10, socialize: 4, drink: 4 }, HOUSEWORK: { drink: 6, socialize: 2, relax: 2 },
+      BUY: { socialize: 4, relax: 2 } },
+    work: { drink: 4, eat: 1.5, relax: 1 },
+    labour: { farmhand: 1, labourer: 1, docker: 1, fisher: 0.8, craftsman: 0.6, groom: 0.6, soldier: 0.6, baker: 0.5, keeper: 0.4, trader: 0.3, official: 0.2 },
+    byTrade: { soldier: { material: 0.5 }, official: { contemplate: 1.3 } },
+    weight: { eat: 1.5, drink: 1.5, sleep: 1.3, socialize: 1, relax: 1, contemplate: 0.8, material: 1 },
+    traits: { chatty: { socialize: 1.33 }, loner: { socialize: 0.67 }, pious: { contemplate: 1.33 }, worldly: { contemplate: 0.67 }, glutton: { eat: 1.33 },
+      ascetic: { eat: 0.67, material: 0.67 }, restless: { relax: 1.33 }, steady: { relax: 0.67 } },
+    free: ['SOCIALIZE', 'REST', 'IDLE', 'WORSHIP'], dwell: 60, jitter: 30, keep: 1.25, done: 12,
+    bands: [{ label: 'content', min: 70, eff: 1 }, { label: 'uneasy', min: 50, eff: 0.92 }, { label: 'unhappy', min: 30, eff: 0.8 }, { label: 'restless', min: 0, eff: 0.65 }],
+    loyalty: { tau: 4320, bands: [{ label: 'loyal', min: 60 }, { label: 'wavering', min: 40 }, { label: 'disloyal', min: 0 }] },
+    pain: 1.5, init: { material: [5, 30], eat: [10, 40], drink: [10, 40], socialize: [10, 40], relax: [10, 40], contemplate: [0, 15], sleep: [0, 20] }
+  },
   items: {
     /* every food on the isles; a town sells and stores only those it makes (44: ISLE.simFoods) */
     foods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread'],
@@ -124,12 +151,13 @@ ISLE.TUNE.sim = {
     /* what everyone wears (2026-10-19): a shirt, a wrap and a pair of sandals (the item `sandal`; the good `sandals`), `sets` of each (one worn, the rest at home), each worn
        out in `life` days and bought again from the town's warehouses; the soldiers a leather cuirass besides (one kept);
        who sells them, by place kind */
-    worn: { shirt: { cat: 'clothes', slot: 'torso', life: 90, good: 'garments' }, wrap: { cat: 'clothes', slot: 'legs', life: 90, good: 'garments' },
-      sandal: { cat: 'clothes', slot: 'feet', life: 120, good: 'sandals' }, cuirass: { cat: 'armour', slot: 'torso', layer: 'armour', life: 180, good: 'armour' } },
+    worn: { shirt: { cat: 'clothes', slot: 'torso', life: 90, good: 'garments', material: 8 }, wrap: { cat: 'clothes', slot: 'legs', life: 90, good: 'garments', material: 8 },
+      sandal: { cat: 'clothes', slot: 'feet', life: 120, good: 'sandals', material: 8 }, cuirass: { cat: 'armour', slot: 'torso', layer: 'armour', life: 180, good: 'armour', material: 10 } },
+    lack: 4,   /* the material meter a day for each set of clothes short (77-sim-6-items.js) */
     sets: 2, armed: ['soldier'],
     /* the household's cooking pot (owner, 2026-10-19): one a home with a store, kept by its houseworker (an elder or a
        child at home) else its first resident, cracked in `life` days and bought again from the town's pots */
-    household: { pot: { cat: 'household', slot: 'lhand', life: 60, good: 'pots' } },
+    household: { pot: { cat: 'household', slot: 'lhand', life: 60, good: 'pots', material: 20 } },
     /* the tools (PLAN.md 9b), owned and worn by the worked hour (`workLife`), replaced at once in work time, a worker
        without one at half its pace: the stone tools (adze, harvest knife, maul, scraper) of the farmhands, craftsmen and
        labourers, made in Kautoa's workshops from stone (owner, 2026-10-19: an inefficient use of it, four stones a tool);

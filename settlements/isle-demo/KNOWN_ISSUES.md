@@ -89,9 +89,11 @@
 - [ ] **Demand follows supply in the households:** a household buys each food in proportion to the warehouses' stock,
       so the more a town holds of a food the more of it is eaten; the governor's demand chases that. It holds (each
       town's food within 2% over three weeks), but the households' stores shrink slowly as the warehouses settle.
-- [ ] **No need meters run in the isles** (`SIM.needs` is off): hunger, rest and the material meter do not exist, so a
-      seasoned meal, a missing pot or a set of clothes short changes nothing anyone feels. The meal tally (a full meal,
-      a single food, none, seasoned) is the only measure. Turning `SIM.needs` on is the wear plan's step 6 (PLAN.md 9b).
+- [ ] **The material meter pins at 100 by day 14** (needs on, 2026-10-19): it rises 7 a day and only replacements are
+      bought (a garment 8, a pot 20, every few weeks a person), so material alone takes happiness from 89 to 70 and
+      work to 95% efficiency. The isles want treats (Voth's `items.treat`): pandanus mats, coconut-oil lamps, shell and
+      bead jewellery, kava, as goods with makers (PLAN.md 9b, household goods). Contemplation settles near 60: few
+      choose worship in their free hours.
 - [ ] **A pot does not feed the cooking:** a household without its pot still cooks (core's meal does not look for one),
       and a cook without a cooking pot works at half pace like any tool. Once needs run, a pot-less kitchen should cook
       worse meals.

@@ -27,6 +27,9 @@ ISLE.simInit = function (clock) {
   T.activities.forEach(function (a) { if (!SIM.R.activity[a]) SIM.activity({ id: a, indoor: T.indoor.indexOf(a) >= 0 }); });
   if (!SIM.R.faction.islanders) SIM.faction({ id: 'islanders', name: 'The Ring Sea Islanders' });
   ISLE.simItemsInit();
+  var NE = T.needs;   /* needs, happiness, efficiency, loyalty (42 deals each person's trait and meters) */
+  if (NE && SIM.needs && !SIM.NEED) SIM.needs({ list: NE.list, rate: NE.rate, fill: NE.fill, work: NE.work, weight: NE.weight, traits: NE.traits, free: NE.free, dwell: NE.dwell,
+    jitter: NE.jitter, keep: NE.keep, done: NE.done, bands: NE.bands, loyalty: NE.loyalty, pain: NE.pain, secPerMinute: T.clock.secPerMinute });
   return S;
 };
 /* the census trade a key carries (the first IS_TRADES row naming it), or null */

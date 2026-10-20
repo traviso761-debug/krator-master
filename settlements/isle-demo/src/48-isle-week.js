@@ -36,6 +36,11 @@ ISLE.weekSnap = function () {
       if (a.tool || a.toolNeed) { Wr.tooled++; if (a.tool) Wr.held++; else if (a.errand && a.errand.item === a.toolNeed) Wr.errand++; }
       if ((a.wears || []).indexOf('pot') >= 0) { Wr.pots++; if (SIM.owns(a, 'pot')) Wr.potHeld++; else if (a.errand && a.errand.item === 'pot') Wr.potErrand++; } });
     T.wear = Wr;
+    /* the needs (77-sim-6-needs.js): each meter's mean, the mean happiness, as read now (SIM.needsPeek: nobody moved) */
+    var NE = SIM.NEED; if (NE) { var nd = NE.list.map(function () { return 0; }), hp = 0, nn = 0, mm = out.minute;
+      SIM.all('actor').forEach(function (a) { if (a.driven || !a.nd || SIM.settlementOf(a) !== s) return; var v = SIM.needsPeek(a, mm); if (!v) return;
+        v.forEach(function (x, i) { nd[i] += x; }); hp += SIM.happiness(a, v); nn++; });
+      T.needs = { n: nn, happy: nn ? hp / nn : 0, mean: {} }; NE.list.forEach(function (k, i) { T.needs.mean[k] = nn ? nd[i] / nn : 0; }); }
     /* the governor's view of the town's food: its supply line and its target (cover days of demand) */
     var GV = S.govern && S.govern.view, GC = ISLE.TUNE.sim.economy.govern; T.gov = { pos: 0, target: 0 };
     if (GV) X.econ.foods.forEach(function (f) { var v = GV[s + ':' + f]; if (v) { T.gov.pos += v.pos; T.gov.target += GC.cover * v.use; } });
@@ -149,6 +154,15 @@ ISLE.weekChecks = function (w1, w2, o) {
     gear.push({ w: W.watched, s: s, qt: qt, qp: qp, X: X }); }); });
   ok('the tooled trades hold their tools and the households their pots (at least ' + Math.round(100 * gr) + '%)', gear.length === 4 && gear.every(function (x) { return x.qt >= gr && x.qp >= gr; }),
     gear.map(function (x) { return x.w + ' watched, ' + x.s + ': tools ' + x.X.held + '+' + x.X.errand + ' of ' + x.X.tooled + ', pots ' + x.X.potHeld + '+' + x.X.potErrand + ' of ' + x.X.pots; }).join('; '));
+  /* the needs, in the watched town at each week's end (the abstract town's people do not decide: its meters stand
+     still): its mean happiness at least `happy`, and no need's mean meter above `needHi` but material (nothing to buy
+     yet but what wears out: KNOWN_ISSUES.md) */
+  var hpMin = o.happy == null ? 60 : o.happy, nHi = o.needHi == null ? 70 : o.needHi, nd = [];
+  weeks.forEach(function (W) { var X = W.b.towns[W.watched] && W.b.towns[W.watched].needs; if (!X) return;
+    var hi = Object.keys(X.mean).filter(function (k) { return k !== 'material' && X.mean[k] > nHi; });
+    nd.push({ w: W.watched, X: X, hi: hi }); });
+  ok('the watched town' + '\'' + 's people content enough (mean happiness at least ' + hpMin + ', no need but material above ' + nHi + ' on the mean)', nd.length === 2 && nd.every(function (x) { return x.X.happy >= hpMin && !x.hi.length; }),
+    nd.map(function (x) { return x.w + ' watched: happiness ' + x.X.happy.toFixed(1) + '; ' + Object.keys(x.X.mean).map(function (k) { return k + ' ' + x.X.mean[k].toFixed(0); }).join(', ') + (x.hi.length ? ' (HIGH: ' + x.hi.join(', ') + ')' : ''); }).join('; '));
   /* nobody in the abstract town decided; the watched town's people did */
   ok('nobody in the abstract town decided (the watched town\'s people did)', weeks.every(function (W) { return W.decided === 0 && W.moved > 0; }),
     weeks.map(function (W) { return W.abstract + ' abstract (' + W.people + ' people): ' + W.decided + ' decisions; ' + W.watched + ' watched: ' + W.moved + ' decisions'; }).join('; '));

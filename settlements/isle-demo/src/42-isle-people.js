@@ -21,7 +21,8 @@ ISLE.simPeople = function (TS, places) {
   var T = ISLE.TUNE.sim, A = T.ages, s = TS.id, org = s + '.folk', posts = {}, study = 0, beds = 0, out;
   places.forEach(function (P) { if (P.activities.WORK) posts[P.kind] = (posts[P.kind] || 0) + P.activities.WORK; study += P.activities.STUDY || 0; beds += P.activities.SLEEP || 0; });
   var prefers = function () { return { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, REST: { pin: 'home' }, IDLE: { pin: 'home' }, HOUSEWORK: { pin: 'home' }, WORK: { pin: 'work' }, STUDY: { pin: 'work' } }; };
-  var counts = {}, role = function (o) { SIM.role(Object.assign({ org: org, settlement: s, homes: ['home'], prefers: prefers() }, o)); };
+  var NE = T.needs, needsOf = function (job) { return NE ? { labour: NE.labour[job] || 0, rate: NE.byTrade[job] || undefined } : undefined; };   /* a trade's labour and rates */
+  var counts = {}, role = function (o) { SIM.role(Object.assign({ org: org, settlement: s, homes: ['home'], prefers: prefers(), needs: needsOf(o.name) }, o)); };
   Object.keys(T.jobs).forEach(function (j) {
     var J = T.jobs[j], n = J.kinds.reduce(function (a, k) { return a + (posts[k] || 0); }, 0); if (!n) return;
     counts[j] = n;
@@ -42,6 +43,10 @@ ISLE.simPeople = function (TS, places) {
     a.status = R.work && R.work.act === 'WORK' ? 'employed' : nm === 'pupil' ? 'pupil' : nm === 'child' || nm === 'elder' ? 'housework' : 'home';
   });
   out.mixed = ISLE.simMixHouseholds(s, mine);
+  /* a person's trait and starting meters, by a hash of the person (core/rand) */
+  if (NE && SIM.NEED) { var TR = Object.keys(NE.traits);
+    mine.forEach(function (a) { a.trait = TR[KRAND.hash(T.seed, 67, a.k) % TR.length];
+      a.nd = NE.list.map(function (n, i) { var r = NE.init[n]; return NE.rate[n] && r ? r[0] + (r[1] - r[0]) * KRAND.unit(KRAND.hash(T.seed, 68, a.k, i)) : 0; }); }); }
   var W = T.items.wealth, trades = {}, workers = 0;
   mine.forEach(function (a) {
     var H = SIM.R.place[a.home]; a.cls = H.cls || 'middle'; a.wealth = W[a.cls] == null ? 0.5 : W[a.cls];

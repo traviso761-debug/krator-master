@@ -12,7 +12,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/girder`](settlements/girder/PORT.md) | 36 | 614 | 127 | 7 | 89 | 46 | 345 | 14 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 68 | 935 | 196 | 6 | 13 | 70 | 649 | 5 |  | yes | yes |
 | [`settlements/hook`](settlements/hook/PORT.md) | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
-| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 24 | 256 | 205 | 0 | 0 | 42 | 9 | 1 |  |  | yes |
+| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 24 | 262 | 211 | 0 | 0 | 42 | 9 | 1 |  |  | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 95 | 1111 | 345 | 24 | 52 | 88 | 601 | 7 | fixtures, atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 36 | 423 | 9 | 23 | 10 | 26 | 355 | 5 |  | yes | yes |
 | [`settlements/locus`](settlements/locus/PORT.md) | 65 | 965 | 94 | 5 | 16 | 165 | 685 | 9 | atmos | yes | yes |
