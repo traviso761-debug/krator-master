@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 229 (80%) | 0 (0%) | 0 (0%) | 46 (16%) | 9 (3%) |
+| KB | 229 (80%) | 0 (0%) | 0 (0%) | 49 (17%) | 9 (3%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -35,7 +35,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/59-isle-citizens.js` | 6.3 | [draw] | 8 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | the citizens near the camera as instanced stand-ins, posed from SIM.pose (the choice and the check read SIM only) |
 | `src/60-isle-draw.js` | 15.4 | [web] | 33 | 0 | 1 | 1 | 2 | 8 | 0 | 8 | 0 | 0 | 0 |  |
 | `src/61-isle-canoes.js` | 2.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the canoe line's vessels at their berths, shown while docked (reads SIM.tradeReport; RINGSEA meshes) |
-| `src/62-isle-export-scene.js` | 4.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the drawn town's core/export contributor (items, buckets, materials, textures) through core/export's scene reader; redraws the near set over the box at export time, draws nothing new |
+| `src/62-isle-export-scene.js` | 7.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the drawn town's core/export contributor (items, buckets, materials, textures) through core/export's scene reader; redraws the near set over the box at export time, draws nothing new |
 | `src/98-isle-city-start.js` | 9.5 | [web] | 0 | 0 | 6 | 7 | 6 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/98-isle-start.js` | 4.5 | [web] | 1 | 4 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 1 | decode the region, raise the town |
 

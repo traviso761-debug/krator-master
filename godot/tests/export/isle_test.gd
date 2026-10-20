@@ -1,13 +1,14 @@
-# P8 (settlements/isle-demo/PLAN.md sections 7 and 9): Kautoa's ceremonial centre exported through core/export opens in
+# P8 (settlements/isle-demo/PLAN.md sections 7 and 9): a town's centre exported through core/export opens in
 # Godot with its buildings, its registry, its citizens walking and its canoes. The case is written by
-#   python3 tools/harness.py export settlements/isle-demo/dist/isle-city.html --query "?town=Kautoa&simAt=355" --out godot/data/world-isle-kautoa --box=320,780,820,1220
+#   python3 tools/harness.py export settlements/isle-demo/dist/isle-city.html --query "?town=Kautoa&simAt=362" --out godot/data/world-isle-kautoa --box=320,780,820,1220
 # (the sim run to 05:55, people on their way to work) and imported by krator/world_import.gd, the citizens and canoes by
 # krator/isle_sim.gd (KratorIsleSim). Each check has a negative.
 #   godot --headless --path godot --script res://tests/export/isle_test.gd     exits 0 when every check passes
 extends SceneTree
 
 const KTags := preload("res://tests/tags/ktags.gd")
-const CASE := "res://data/world-isle-kautoa/"
+var CASE := "res://data/world-isle-kautoa/"   # -- --case=world-isle-valapo --town=valapo: Valapo's case
+var TOWN := "kautoa"
 const POS_TOL := 1e-4    # metres: a drawn instance against world.glb's translation
 const AT_TOL := 0.02     # metres: a piece against its lot's record, a sim place against its record (the page rounds to 1 cm)
 const POSE_TOL := 0.002  # metres: KSim.pose against the page's SIM.pose
@@ -23,8 +24,14 @@ func ok(c: bool, m: String) -> void:
 
 
 func _initialize() -> void:
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--case="):
+			CASE = "res://data/%s/" % a.trim_prefix("--case=")
+		if a.begins_with("--town="):
+			TOWN = a.trim_prefix("--town=")
+	print("case %s, town %s" % [CASE, TOWN])
 	if not FileAccess.file_exists(CASE + "world.json"):
-		print("FAIL no case: run python3 tools/harness.py export settlements/isle-demo/dist/isle-city.html --query \"?town=Kautoa&simAt=355\" --out godot/data/world-isle-kautoa --box=320,780,820,1220")
+		print("FAIL no case: run python3 tools/harness.py export settlements/isle-demo/dist/isle-city.html --query \"?town=Kautoa&simAt=362\" --out godot/data/world-isle-kautoa --box=320,780,820,1220")
 		quit(1)
 		return
 	var d: Dictionary = KData.read_json(CASE + "world.json")
@@ -34,10 +41,14 @@ func _initialize() -> void:
 	ok(d["format"] == "krator-world" and not rep["gaps"].has("load"), "world.json and world.glb load (%d ms)" % rep["counts"]["load_ms"])
 	ok((d["errors"] as Array).is_empty(), "the page reported no section errors")
 	var bad_sec := []
-	for s in ["items", "buckets", "materials", "textures", "registry", "terrain", "sim", "city"]:
+	for s in ["items", "buckets", "materials", "textures", "registry", "terrain", "sim", "city", "fixtures", "stage"]:
 		if d["sections"][s]["status"] != "ok":
 			bad_sec.append(s)
-	ok(bad_sec.is_empty(), "sections filled: items, buckets, materials, textures, registry, terrain, sim, city%s" % ("" if bad_sec.is_empty() else " (NOT: %s)" % ", ".join(bad_sec)))
+	ok(bad_sec.is_empty(), "sections filled: items, buckets, materials, textures, registry, terrain, sim, city, fixtures, stage%s" % ("" if bad_sec.is_empty() else " (NOT: %s)" % ", ".join(bad_sec)))
+	ok(d["sections"]["interiors"]["status"] == "empty" and d["sections"]["furniture"]["status"] == "empty",
+		"interiors and furniture answered empty (the city page draws the kit's buildings as shells, unfurnished)")
+	ok(w.has_meta("stage") and (w.get_meta("stage") as Dictionary).get("format") == "krator-stage" and (d["stage"].get("sky") is Dictionary),
+		"the stage (light, fog, the sky panorama, the ground's look) is there")
 	var tags: Dictionary = w.get_meta("tags", {})
 
 	# 1. the buildings: every MultiMesh and instance Godot draws stands where world.glb says; every kit piece's instance is
@@ -95,16 +106,55 @@ func _initialize() -> void:
 	var r0: Dictionary = tags.values()[0]
 	ok(KTags.uid(r0["class"], r0["key"], [float(r0["at"][0]) + 0.2, r0["at"][1], r0["at"][2]]) != r0["uid"], "negative: a record moved 20 cm has another uid")
 
-	# 3. the sim joins the registry: every Kautoa place whose record is in the case is that record, at it (the town's frame)
+	# 2b. the doors: one for every building and landmark in the case, at its front face (local +z) at the ground, its uid
+	#     recomputed, a building's under its Building node; most within reach of the walking graph's entry the sim uses
+	var recs: Dictionary = rep.get("records", {})
+	var FX: Array = d["fixtures"]["records"]
+	var hosts := 0
+	var bld := 0
+	for id in tags:
+		var hr: Dictionary = tags[id]
+		if (hr["class"] == "building" or hr["class"] == "landmark") and hr.get("size") is Array:
+			hosts += 1
+			if hr["class"] == "building":
+				bld += 1
+	var fx_bad: Array = []
+	var fuid := 0
+	var near := 0
+	for fr in FX:
+		var pr: Dictionary = tags.get(fr["parent"], {})
+		if pr.is_empty():
+			fx_bad.append(str(fr["id"]))
+			continue
+		var dx := float(fr["at"][0]) - float(pr["at"][0])
+		var dz := float(fr["at"][2]) - float(pr["at"][2])
+		var c := cos(float(pr.get("ry", 0.0)))
+		var sn := sin(float(pr.get("ry", 0.0)))
+		if absf(dx * c - dz * sn) > 0.01 or absf(dx * sn + dz * c - float(pr["size"][1]) / 2.0) > 0.01:
+			fx_bad.append(str(fr["id"]))
+		if KTags.uid("fixture", fr["key"], fr["at"]) == fr["uid"]:
+			fuid += 1
+		var e = fr.get("entry")
+		if e is Dictionary and Vector2(float(e["x"]) - float(fr["at"][0]), float(e["z"]) - float(fr["at"][2])).length() < 25.0:
+			near += 1
+	ok(FX.size() == hosts and fx_bad.is_empty(), "a door for each of the %d buildings and landmarks, at its front face%s" % [hosts, ("; OFF: " + ", ".join(fx_bad.slice(0, 3))) if not fx_bad.is_empty() else ""])
+	ok(fuid == FX.size(), "every door's uid recomputed: %d of %d" % [fuid, FX.size()])
+	ok(int(recs.get("fixtures_parented", 0)) == bld, "every building's door is a child of its Building node: %d of %d" % [int(recs.get("fixtures_parented", 0)), bld])
+	ok(near * 5 >= FX.size() * 4, "most doors are within 25 m of the walking graph's entry the sim's people use: %d of %d" % [near, FX.size()])
+	var fk: Dictionary = (FX[0] as Dictionary).duplicate(true)
+	fk["at"] = [float(fk["at"][0]) + 0.2, fk["at"][1], fk["at"][2]]
+	ok(KTags.uid("fixture", fk["key"], fk["at"]) != fk["uid"], "negative: a door moved 20 cm has another uid")
+
+	# 3. the sim joins the registry: every place of the town whose record is in the case is that record, at it (the town's frame)
 	var S: Dictionary = d["sim"]
 	var F: Dictionary = {}
 	for T2 in S["settlements"]:
-		if T2["id"] == "kautoa":
+		if T2["id"] == TOWN:
 			F = T2["frame"]
 	var joined := 0
 	var jbad: Array = []
 	for p in S["places"]:
-		if p.get("settlement") != "kautoa" or not (p.get("tags") is Dictionary) or not tags.has(p["tags"].get("tag")):
+		if p.get("settlement") != TOWN or not (p.get("tags") is Dictionary) or not tags.has(p["tags"].get("tag")):
 			continue
 		var r: Dictionary = tags[p["tags"]["tag"]]
 		if r["key"] != p["tags"].get("key") or absf(float(p["x"]) - float(F["x"]) - float(r["at"][0])) > AT_TOL or absf(float(p["z"]) - float(F["z"]) - float(r["at"][2])) > AT_TOL:
@@ -187,20 +237,20 @@ func _initialize() -> void:
 			for g in R["sea"][k]:
 				route_sea += int(R["sea"][k][g])
 	ok(cs.size() > 0 and cbad.is_empty() and sea_cargo == route_sea, "the canoes: %d carriers, %d docked at their canoe stop, %d at sea carrying %d (the routes say %d)%s" % [cs.size(), docked, sea, sea_cargo, route_sea, ("; " + ", ".join(cbad)) if not cbad.is_empty() else ""])
-	var hulls := KratorIsleSim.build_canoes(S, w, "kautoa")
-	var kd := cs.filter(func(c): return c["state"] == "docked" and c["settlement"] == "kautoa").size()
-	ok(hulls.size() == kd, "the canoes docked at Kautoa drawn at its canoe stop: %d (the export's moment)" % hulls.size())
+	var hulls := KratorIsleSim.build_canoes(S, w, TOWN)
+	var kd := cs.filter(func(c): return c["state"] == "docked" and c["settlement"] == TOWN).size()
+	ok(hulls.size() == kd, "the canoes docked at %s drawn at its canoe stop: %d (the export's moment)" % [TOWN, hulls.size()])
 	# a carrier docked at Kautoa (the moment holds none: all three at sea at 06:02) draws one hull at Kautoa's canoe stop
 	var Sd: Dictionary = S.duplicate(true)
-	Sd["routes"][0]["carriers"][0]["at"] = "kautoa"
-	var hd := KratorIsleSim.build_canoes(Sd, w, "kautoa")
+	Sd["routes"][0]["carriers"][0]["at"] = TOWN
+	var hd := KratorIsleSim.build_canoes(Sd, w, TOWN)
 	var stop_p: Dictionary = {}
 	for p in S["places"]:
-		if p.get("kind") == "canoe stop" and p.get("settlement") == "kautoa":
+		if p.get("kind") == "canoe stop" and p.get("settlement") == TOWN:
 			stop_p = p
 	var want := Vector3(float(stop_p.get("x", 0)) - float(F["x"]), 0.75, float(stop_p.get("z", 0)) - float(F["z"]))
 	ok(not stop_p.is_empty() and hd.size() == kd + 1 and hd.any(func(h): return (h.position - want).length() < 1e-3),
-		"a canoe docked at Kautoa is drawn at its canoe stop (%.1f, %.1f in the town's frame)" % [want.x, want.z])
+		"a canoe docked at %s is drawn at its canoe stop (%.1f, %.1f in the town's frame)" % [TOWN, want.x, want.z])
 	var S2: Dictionary = S.duplicate(true)
 	S2["routes"][0]["carriers"][0]["cargo"].append({"good": "salt", "n": 5})
 	S2["routes"][0]["carriers"][0]["at"] = null

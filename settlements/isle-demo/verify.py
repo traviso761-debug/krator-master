@@ -176,7 +176,7 @@ EXPORT_TARGET = ['registry', 'items', 'buckets', 'materials', 'textures', 'terra
                  'furniture', 'sim', 'stage', 'atmos']
 # met on 2026-10-19 (P6b): the registry (core/tags, the drawn town's), the KMAT materials, the terrain (sampled:
 # EXPORT.ground on the plan's ground; terrain=field waits for a KFIELD from the extracted heights, PLAN.md section 10)
-EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'buckets', 'textures']   # city: core/city's contributor, 2026-10-19; sim: src/50 (P7e, 2026-10-20)
+EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'buckets', 'textures', 'fixtures', 'stage', 'interiors?', 'furniture?']   # city: core/city's contributor, 2026-10-19; sim: src/50 (P7e, 2026-10-20)
 
 
 async def run_city(a):

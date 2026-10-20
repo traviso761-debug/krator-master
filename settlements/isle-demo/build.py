@@ -282,7 +282,7 @@ CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
                                           os.path.join(WORLD, 'src', '43-world-isles.js')]
 CITY_MAT = [os.path.join(ROOT, 'core', 'materials', 'record', f) for f in ('23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js')]
 # core/export (P6b, PLAN.md section 7): the container and its adapters, so the page exports and verify.py checks its profile
-CITY_EXPORT = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js', '10-core-export-scene.js')]
+CITY_EXPORT = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js', '10-core-export-scene.js')] + [os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')]   # KSTAGE: the stage section (light, fog, sky, the ground's look; standalone, needs only THREE)
 # core/simulation (P7b, PLAN.md section 9): every fragment, as Dhelv and Shade take it; the isle host is src/15 and 40-49
 CITY_SIM = [os.path.join(ROOT, 'core', 'simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
 CITY_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '34-isle-census.js',

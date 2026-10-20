@@ -528,5 +528,8 @@ frame to subtract). 359 items (1,535 instances), the streets (one bucket), 56 ma
 world.json 6.9 MB, world.glb 37.1 MB (the Islanders' pieces are detailed). In Godot 4.7.2 every check passes: every
 instance where world.glb says, every kit piece owned by its lot's record at the piece, every record's uid recomputed,
 every sim place in the box joined to its record, 4,644 pose rows of 774 people (425 moving) replayed by `KSim.pose` with
-none differing, the citizens drawn as stand-ins, the canoes placed from the routes; each with a negative. Stage, fixtures,
-interiors and furniture are not filled yet.
+none differing, the citizens drawn as stand-ins, the canoes placed from the routes; each with a negative. Since: the
+stage (`KSTAGE`, core/biome 44, which the isle build takes standalone), a door fixture for every building and landmark
+(its front face; a building's under its Building node in Godot), interiors and furniture answered empty; and Valapo's
+case (`godot/data/world-isle-valapo`, box 106,-2075,506,-1675, `?town=Valapo&simAt=362`), the same test with
+`-- --case=world-isle-valapo --town=valapo`.

@@ -9,7 +9,7 @@ status at the top, then sections 7 to 10. `core/hamlet/PLAN.md` holds the hinter
 |---|---|---|
 | P1-P5 | done: the Islanders kit, the ringisles biome, the open world, the site planner, the owner's drawn towns | `kits/islanders`, `biomes/ringisles`, `openworld/isle-demo`, `site/isle-site.json` |
 | P6 | done: both towns on `core/city` (`dist/isle-city.html`), Ridertown on the Beast Rider ports | `src/20-34`, `58`, `60`, `98` |
-| P6b | in place: the city page's `verify.py --assert` checks `registry, materials, terrain, city, sim` and reports the M6 target (4 of 13 met) | `verify.py` `EXPORT_PROFILE`, `EXPORT_TARGET` |
+| P6b | in place: the city page's `verify.py --assert` checks `registry, materials, terrain, city, sim, items, buckets, textures, fixtures, stage` (interiors and furniture may read empty) and reports the M6 target (9 of 13 met) | `verify.py` `EXPORT_PROFILE`, `EXPORT_TARGET` |
 | P7a | done: settlements, an economy, stocks and the items' books per settlement; the population dealt per town; the search scoped to one's own town; trade between settlements (`SIM.trade`, a timer or a transport line); the three levels in `SCHEMA.md`; 30 two-settlement checks | `core/simulation/77-sim-6-trade.js`, `77-sim-6-economy.js` (end), `77-sim-6-population.js`, `77-sim-7-stocks.js` (end), `test-sim.js`, `SCHEMA.md` |
 | P7e | Done (2026-10-20): the `sim` export section (`50`), in the profile, failing stubbed, passing filled | `src/50-isle-export.js`, `tests/test-isle-export.js`, `verify.py` `SIMX_JS` |
 | P7d | Done: the town in view presented, the other abstract (`ISLE.simWatch`); the week test (a week each way: books balance at either level, every load landed or at sea, loads to the abstract town booked there, abstract food a worker a day near the watched rate, no decisions in the abstract town), with negatives, in verify and `tests/test-isle-week.js` | `48-isle-week.js`, core/simulation `77-sim-7-lod.js` (the core branch `claude/isle-p7d`) |
@@ -31,7 +31,9 @@ registers the export's `city` section for every instance on a page.
    `godot/tests/isle/isle_books_test.gd` (`KratorIsleSim`) derives the checks and agrees with the page. **Kautoa's
    ceremonial centre opens in Godot** (2026-10-20): `godot/data/world-isle-kautoa`, `godot/tests/export/isle_test.gd`
    (buildings, records, sim joins, citizens replayed, canoes); core/export's scene reader (lifted from Iziz) and
-   `SIM.exportMotion` (lifted from Dhelv) carry it. Next: Valapo's case, stage and fixtures, then the open world (M7). A sea route
+   `SIM.exportMotion` (lifted from Dhelv) carry it; the stage, the doors (fixtures) and **Valapo's case**
+   (`godot/data/world-isle-valapo`) followed. Next: windows and lamps from the kit, the lakatoi and bodies in Godot,
+   then the open world (M7). A sea route
    (`SIM.transport` between the landings, `SIM.trade({line})` on it) comes with the open world. Any core/simulation
    change: diff Voth's whole `verify.py --assert` output against `main`'s page with the timings stripped (the method
    P7a used); the core work goes through the isle-demo build session.

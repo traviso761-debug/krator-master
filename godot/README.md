@@ -36,7 +36,8 @@ godot --headless --path godot --script res://tests/verge/verge_sim_test.gd   # V
 godot --headless --path godot --script res://tests/dhelv/dhelv_sim_test.gd   # Dhelv's ramblers: KSim.pose (core/simulation's twin) against the page's trace
 godot --headless --path godot --script res://tests/dhelv/dhelv_nav_test.gd   # Dhelv's walk floors baked to a navmesh: gate to temple, through the braid
 godot --headless --path godot --script res://tests/isle/isle_books_test.gd   # the isle demo's books after a week (KratorIsleSim) against the page's answers
-godot --headless --path godot --script res://tests/export/isle_test.gd   # Kautoa's ceremonial centre: buildings, records, the sim joined, citizens replayed, canoes
+godot --headless --path godot --script res://tests/export/isle_test.gd   # Kautoa's ceremonial centre: buildings, records, doors, stage, the sim joined, citizens replayed, canoes
+godot --headless --path godot --script res://tests/export/isle_test.gd -- --case=world-isle-valapo --town=valapo   # Valapo's village centre, the same checks
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
 godot --headless --path godot --script res://tests/character/kchar_test.gd   # core/charactermodels: records and morphs against the JS golden, a MakeHuman figure from the pieces
 godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz   # the perf table (PERF.md, perf-<case>.json): run it on the real GPU, below

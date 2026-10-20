@@ -8,7 +8,14 @@
    them), the ground (the terrain section), the sea and anything hidden (the canoe stop's vessels until docked).
      ISLE.exportScene(ctx)   -> {items, buckets, materials, textures, dropped} for ctx.box
      ISLE.EXPORT_KIT         a proto's bundle prefix -> the item's kit (isk: the Islanders, izv: the Iziz Vernacular,
-                             cat: the catalog's Beast Rider buildings) */
+                             cat: the catalog's Beast Rider buildings)
+     ISLE.exportDoors(ctx)   the fixtures section: a door for every building and landmark in the box, at its front face
+                             (local +z: where its lot meets its street; 77 of the ceremonial centre's 89 enter from that side),
+                             at the ground, its `entry` the walking graph's node the sim's people come in by (the town's frame).
+                             The kit's own door offsets, windows and lamps are drawn inside its pieces and not recorded on
+                             the city page (KNOWN_ISSUES.md)
+   And the stage (core/biome 44-core-stage.js KSTAGE: the lights, fog, sky panorama and the ground's look over the box);
+   interiors and furniture answered empty (the city page draws the kit's buildings as shells, unfurnished). */
 ISLE.EXPORT_KIT = { isk: 'islanders', izv: 'iziz-vernacular', cat: 'catalog' };
 ISLE.exportScene = function (ctx) {
   var box = ctx.box || [-1e6, -1e6, 1e6, 1e6], cx = (box[0] + box[2]) / 2, cz = (box[1] + box[3]) / 2;
@@ -38,6 +45,21 @@ ISLE.exportScene = function (ctx) {
     }).assemble(ctx);
   } finally { DRAW.nearR = keep.r; DRAW.nearMax = keep.n; DRAW.near(keep.at || [cx, cz], true); }
 };
+ISLE.exportDoors = function (ctx) {
+  var T = KTAGS.page; if (!T) return null;
+  var town = ISLE.cur && ISLE.cur.town, TS = town && ISLE.TUNE.sim.towns[town], S = ISLE.SIM, X = TS && S && S.towns[TS.id], F = X && X.frame, entry = {};
+  if (F) SIM.all('place').forEach(function (P) { if (P.settlement === TS.id && P.tags && P.tags.tag && P.door) entry[P.tags.tag] = { x: +(P.door.x - F.x).toFixed(2), y: +(P.door.y - F.sea).toFixed(2), z: +(P.door.z - F.z).toFixed(2), node: P.door.node || null }; });
+  var recs = [];
+  T.records.forEach(function (r) {
+    if ((r['class'] !== 'building' && r['class'] !== 'landmark') || r.removed || !r.at || !r.size || !ctx.inBox(r.at[0], r.at[2])) return;
+    var hd = r.size[1] / 2, c = Math.cos(r.ry || 0), s = Math.sin(r.ry || 0), at = [+(r.at[0] + hd * s).toFixed(3), r.at[1], +(r.at[2] + hd * c).toFixed(3)];   /* local (0, 0, d/2) turned by ry */
+    var key = 'door:' + r.key;
+    recs.push({ id: r.id + '/door', uid: KTAGS.uid ? KTAGS.uid('fixture', key, at) : null, 'class': 'fixture', kind: 'door', key: key, parent: r.id, at: at, ry: r.ry || 0,
+      size: [1.0, 1.9, 0.2], tags: {}, host: { wall: 'front', side: '+z', sill: 0 }, entry: entry[r.id] || null });
+  });
+  return { format: 'krator-fixtures', version: 1, build: T.build, records: recs,
+    note: "the isle demo's doors: one a building, at its front face (local +z, the street side) at the ground; entry: the walking graph's node the sim's people enter by (the town's frame). Windows and lamps are drawn inside the kit's pieces and not recorded on the city page" };
+};
 (function () {
   if (typeof EXPORT === 'undefined' || !EXPORT.sceneReader) return;
   var B = function (ctx) { return ctx.memo('isle-scene', function () { return ISLE.exportScene(ctx); }); }, by = { by: 'isle' };
@@ -45,4 +67,11 @@ ISLE.exportScene = function (ctx) {
   EXPORT.register('buckets', function (ctx) { return B(ctx).buckets; }, by);
   EXPORT.register('materials', function (ctx) { return B(ctx).materials; }, by);
   EXPORT.register('textures', function (ctx) { return B(ctx).textures; }, by);
+  EXPORT.register('fixtures', function (ctx) { return ISLE.exportDoors(ctx); }, by);
+  EXPORT.register('stage', function (ctx) {
+    if (typeof KSTAGE === 'undefined' || !ctx.box || !ISLE.cur) return null; var b = ctx.box, cx = (b[0] + b[2]) / 2, cz = (b[1] + b[3]) / 2, G = ISLE.cur.G;
+    return KSTAGE.capture({ at: [cx, G.h(cx, cz) + 40, cz], sky: ctx.opt.sky == null ? 1024 : ctx.opt.sky, skyNear: Math.min(b[2] - b[0], b[3] - b[1]) / 2,
+      box: b, step: ctx.opt.ground == null ? 4 : ctx.opt.ground, ground: function (x, z) { return G.h(x, z); } }); }, by);
+  EXPORT.register('interiors', function () { return null; }, by);   /* the city page draws the kit's buildings as shells */
+  EXPORT.register('furniture', function () { return null; }, by);   /* and furnishes none of them */
 })();

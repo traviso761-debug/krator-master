@@ -318,8 +318,15 @@ declares both once they are planned, in one order whichever town it draws, and h
   every kit piece owned by its lot's record at the piece, 89 uids recomputed, the sim's places joined to the records,
   4,644 pose rows of 774 people replayed by `KSim.pose` with none differing (425 walking), 115 stand-ins drawn, the
   three canoes placed from the routes (at sea at 06:02; a docked one is drawn at Kautoa's canoe stop); each with a
-  negative. The page's export box is now this one (it was -700..700, which held 108 lots and none of the centre), with
-  items, buckets and textures in the profile. Left of P8: Valapo's case, stage, fixtures and interiors, the Ring Sea
-  kit's lakatoi and real bodies in Godot, and a GDScript twin of the economy; then M7.
+  negative. The page's export box is now this one (it was -700..700, which held 108 lots and none of the centre).
+  **And (2026-10-20, later):** the stage (core/biome's `KSTAGE`: lights, fog, the sky panorama, the ground's look), a
+  door for every building and landmark (`ISLE.exportDoors`: at its front face, local +z, where its lot meets its street,
+  with the walking graph's entry node the sim's people use), interiors and furniture answered empty (the city page draws
+  the kit's buildings as shells); and **Valapo's case** (`godot/data/world-isle-valapo`: the village hall, the market,
+  the caravanserai and the harbour, box 106,-2075,506,-1675, 132 lots, 1,941 instances, 708 people with 418 moving rows),
+  the Godot test town-agnostic (`-- --case=world-isle-valapo --town=valapo`). The profile now asks for fixtures and
+  stage too (interiors and furniture may read empty). Left of P8: windows and lamps (drawn inside the kit's pieces, not
+  recorded on the city page), the Ring Sea kit's lakatoi and real bodies in Godot, a GDScript twin of the economy;
+  then M7.
 
 See `KNOWN_ISSUES.md`.
