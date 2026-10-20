@@ -247,6 +247,20 @@
     "macro": 0.1,
     "cell": 6
    }
+  },
+  "pkContL": {
+   "lib": "patterns/common/container-red",
+   "scale": [
+    2.4,
+    1.14
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0.1,
+   "roughLift": 0.2,
+   "specular": 0.2
   }
  }
 }

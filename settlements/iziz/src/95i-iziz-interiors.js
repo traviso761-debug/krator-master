@@ -33,7 +33,7 @@ const COURT_DECALS={
  iziz_common_rug:{floor:true,y:.032,w:2.2,h:1.5,tex:['courtCarpetB']},
  iziz_court_wall_rug:{panel:true,y:.83,z:-.02,w:1.96,h:1.46,tex:['courtCarpetA','courtCarpetB']},
  iziz_court_art:{panel:true,variant:0,y:.45,z:-.152,w:.86,h:.86,tex:['courtMosaic']},
- iziz_common_art:{panel:true,variant:1,y:.45,z:-.152,w:.86,h:.86,tex:['courtMosaic']}};
+ iziz_common_art:{panel:true,variant:1,y:.45,z:-.152,w:.86,h:.86,tex:['courtMosaicB']}};
 const COURT_TRI={courtMarquetry:{tile:.6},courtBrocade:{tile:.5},courtOpus:{tile:.5},courtGilt:{tile:.4,detail:true},courtVelvet:{tile:.3,detail:true}};
 function courtHash(p){return Math.abs(Math.round(p.x*7.3)*31+Math.round(p.z*5.1)*17+Math.round((p.y||0)*3.1)*7);}
 // a geometry per shape, its UVs its own: 'plane' (a unit quad facing +z), 'strip:<len>' (a frame bar, the moulding
@@ -61,7 +61,7 @@ function courtLocal(p,paints){const D=COURT_DECALS[p.key],out=[];if(!D||(D.varia
 const _cq=new THREE.Quaternion(),_ce=new THREE.Euler(),_cp=new THREE.Vector3(),_cs=new THREE.Vector3();
 function courtMatrix(o,m4){_cp.set(o.at[0],o.at[1],o.at[2]);_ce.set(o.rx,0,o.rz,'YXZ');_cq.setFromEuler(_ce);_cs.set(o.sx,o.sy,1);return m4.compose(_cp,_cq,_cs);}
 function courtDecals(S){if(!S.decals||!S.decals.length||typeof KMAT==='undefined'||!KMAT.bindMat)return;
- const keys=['courtBooksA','courtBooksB','courtFrame','courtVaseA','courtVaseB','courtCarpetA','courtCarpetB','courtMosaic'],M={};
+ const keys=['courtBooksA','courtBooksB','courtFrame','courtVaseA','courtVaseB','courtCarpetA','courtCarpetB','courtMosaic','courtMosaicB'],M={};
  for(let k=1;k<=24;k++)keys.push('courtPaint'+k);
  for(const k of keys)M[k]=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.8,metalness:0});
  const bound=KMAT.bindMat('iziz',M,{})||{};if(!Object.keys(bound).length)return;

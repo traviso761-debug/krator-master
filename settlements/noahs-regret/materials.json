@@ -373,6 +373,76 @@
    "roughLift": 0.3,
    "specular": 0.3,
    "size": 256
+  },
+  "tarredB": {
+   "lib": "wood.tarred.b",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.4,
+    "contrast": 1.0
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "paintFlake": {
+   "lib": "metal.metal017",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.7,
+    "contrast": 1.0
+   },
+   "roughLift": 0.2,
+   "specular": 0.35
+  },
+  "paintW": {
+   "lib": "metal.metal049a",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.7,
+    "contrast": 1.0
+   },
+   "roughLift": 0.2,
+   "specular": 0.35
+  },
+  "rustB": {
+   "lib": "metal.metal053c",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.5,
+    "contrast": 1.0
+   },
+   "roughLift": 0.15,
+   "specular": 0.35
+  },
+  "rustC": {
+   "lib": "metal.metal054c",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.5,
+    "contrast": 1.0
+   },
+   "roughLift": 0.15,
+   "specular": 0.35
   }
  }
 }

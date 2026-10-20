@@ -13,6 +13,9 @@ mkMat('sheet',TEX.sheet,{rough:.92,metal:.08,bump:1.2});
 mkMat('plank',TEX.plank,{rough:.92,bump:.35});
 mkMat('earth',TEX.earth,{rough:1,bump:.8});
 mkMat('conc',TEX.conc,{rough:.88,bump:.8});
+/* seeded variants of conc and sheet (materials.json: concB, concC, sheetP, sheetF; paVar in 30-geo.js): same procedural map and tile, another library set */
+mkMat('concB',TEX.conc,{rough:.88,bump:.8});mkMat('concC',TEX.conc,{rough:.88,bump:.8});TILE.concB=TILE.conc;TILE.concC=TILE.conc;
+mkMat('sheetP',TEX.sheet,{rough:.92,metal:.08,bump:1.2});mkMat('sheetF',TEX.sheet,{rough:.92,metal:.08,bump:1.2});TILE.sheetP=TILE.sheet;TILE.sheetF=TILE.sheet;
 mkMat('iron',TEX.iron,{rough:.88,metal:.1,bump:.35});
 mkMat('wood',TEX.wood,{rough:.92,bump:.5});
 mkMat('steel',TEX.steel,{rough:.75,metal:.1,bump:.12});   /* metalness stays low: with no environment map a strongly metallic surface renders black */

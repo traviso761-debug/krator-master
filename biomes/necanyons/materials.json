@@ -4,10 +4,10 @@
  "size": 512,
  "families": {
   "ground.litter": {
-   "lib": "leaf.forest_leaves_02",
+   "lib": "leaf.scatteredleaves008",
    "scale": [
-    3.0,
-    3.0
+    2.0,
+    2.0
    ],
    "tint": {
     "keep": 1.0,
@@ -32,7 +32,7 @@
    "mapOnly": true
   },
   "ground.sand": {
-   "lib": "ground.gravelly_sand",
+   "lib": "ground.ground080",
    "scale": [
     2.0,
     2.0
@@ -392,6 +392,45 @@
    "roughLift": 0.3,
    "specular": 0.25,
    "mapOnly": true
+  },
+  "rock.red": {
+   "lib": "rock.sandstone.red",
+   "scale": [
+    12.0,
+    12.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "rock.bed": {
+   "lib": "rock.sandstone.bedded.red",
+   "scale": [
+    20.0,
+    20.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "rock.cap": {
+   "lib": "rock.sandstone_cracks",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
   }
  }
 }

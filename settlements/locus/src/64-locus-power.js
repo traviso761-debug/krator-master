@@ -27,7 +27,7 @@ reseed(647001);
       F.box(-2, Y, -7.1, 20, H, 0.8, 0, wh, 'plaster');
       F.box(-11.6, Y, -1.9, 0.8, H, 11.2, 0, wh, 'plaster'); F.box(7.6, Y, -1.9, 0.8, H, 11.2, 0, wh, 'plaster');
       F.box(-2, Y+H-0.4, -1.5, 20, 0.4, 12, 0, wh2, 'plaster'); F.box(-2, Y+H-0.46, -1.5, 18.2, 0.06, 10.6, 0, inner, 'plaster');   /* the ceiling, a shade down */
-      F.box(-2, Y, -1.6, 18.4, 0.05, 10.8, 0, CONCRETEC[1], 'concrete');                                                       /* the engine-room floor */
+      F.box(-2, Y, -1.6, 18.4, 0.05, 10.8, 0, CONCRETEC[1], 'concreteB');                                                       /* the engine-room floor */
       F.archwall('plaster', -2, Y, 4.1, 0, 20, H, 0.8, 6.0, 6.4, wh, { pointed:2.4, colIn:inner, seg:16 });
       F.archband('mosaic', -2, Y, 4.53, 0, 6.0, 6.4, 0.5, 0.12, MOSBLUEC[0], { pointed:2.4 });
       F.archband('plaster', -2, Y, 4.58, 0, 6.9, 6.85, 0.22, 0.10, WHITEC[2], { pointed:2.4 });
@@ -52,7 +52,7 @@ reseed(647001);
         F.cyl(sx, Y+H+1.1, -5.6, 0.5, 8.2, 0, rust, 'rust'); F.cyl(sx, Y+H+9.2, -5.6, 0.62, 0.4, 0, STEELDC[3], 'rust'); F.cyl(sx, Y+H+5.4, -5.6, 0.58, 0.3, 0, STEELDC[3], 'rust');
         [[sx-3.2,-7.0],[sx+2.4,-3.0]].forEach(function(g){ F.rod(sx, Y+H+7.0, -5.6, g[0], Y+H+0.1, g[1], 0.025, PAL.people.hair[2], 'timber'); }); });
       /* ---- inside: the Ancient engine on its bed, seen through the arch ---- */
-      F.box(-2.5, Y, -2.2, 12.4, 0.55, 3.6, 0, CONCRETEC[2], 'concrete');
+      F.box(-2.5, Y, -2.2, 12.4, 0.55, 3.6, 0, CONCRETEC[2], 'concreteW');
       F.box(-3.0, Y+0.55, -2.2, 9.2, 2.1, 2.3, 0, TARNC[0], 'metal'); F.box(-3.0, Y+1.2, -2.2, 9.3, 0.25, 2.4, 0, MOSBLUEC[3], 'mosaic');
       for(var c=0;c<6;c++){ var cx=-6.8+c*1.5; F.box(cx, Y+2.65, -2.2, 1.1, 0.75, 1.7, 0, TARNC[2], 'metal'); F.cyl(cx, Y+3.4, -2.2, 0.16, 0.35, 0, BRASSC[0], 'metal'); }
       F.cyl(2.6, Y+0.55, -2.2, 1.25, 2.4, 0, TARNC[1], 'metal');                                                                /* the gear case at the drive end */
@@ -63,7 +63,7 @@ reseed(647001);
       /* electric bracket lamps either side of the arch */
       [-6.0, 2.0].forEach(function(lx){ F.rod(lx, Y+5.4, 4.5, lx, Y+5.4, 4.95, 0.04, BRASSC[0], 'metal'); coolLamp(F, lx, Y+5.25, 5.0, 1.1, 12); });
       /* ---- the dynamo annex on the +x side: an open parabolic arcade over the flywheel and the dynamo ---- */
-      F.box(11.8, Y, -2, 7.4, 0.05, 10.4, 0, CONCRETEC[1], 'concrete');
+      F.box(11.8, Y, -2, 7.4, 0.05, 10.4, 0, CONCRETEC[1], 'concreteB');
       F.arcade('plaster', 15.3, Y, -2, PI/2, 3, 3.4, 5.6, 0.7, wh, { pier:1.0, head:1.1, colIn:inner });
       F.archwall('plaster', 11.8, Y, 3.15, 0, 7.4, 5.6, 0.7, 4.8, 4.4, wh, { pointed:2.2, colIn:inner, seg:12 });
       F.box(11.8, Y+5.6, -2, 7.8, 0.4, 10.6, 0, wh2, 'plaster'); F.box(15.66, Y+4.9, -2, 0.08, 0.6, 10.2, 0, MOSBLUEC[0], 'mosaic'); F.box(11.8, Y+4.9, 3.53, 7.2, 0.6, 0.08, 0, MOSBLUEC[0], 'mosaic');
@@ -71,10 +71,10 @@ reseed(647001);
       /* the flywheel (static rim + hub; the spokes turn) and the dynamo on its bed */
       (function(){ var FX=10.2, FY=Y+2.0, FZ=-2, R=1.75, pts=[]; for(var k=0;k<=28;k++){ var a=k/28*TAU; pts.push({ x:FX, y:FY+Math.sin(a)*R, z:FZ+Math.cos(a)*R, r:0.17 }); }
         F.tube('rust', pts, STEELDC[1], { seg:6 }); F.rod(FX-0.25, FY, FZ, FX+0.25, FY, FZ, 0.34, STEELDC[2], 'rust');
-        F.box(FX, Y, FZ, 0.9, FY-Y-0.3, 0.8, 0, CONCRETEC[2], 'concrete');                                                    /* the bearing pedestal */
+        F.box(FX, Y, FZ, 0.9, FY-Y-0.3, 0.8, 0, CONCRETEC[2], 'concreteW');                                                    /* the bearing pedestal */
         F.box(FX, Y, FZ, 4.4, 0.06, 4.2, 0, VOIDC[1], 'dark');                                                                /* the wheel pit */
         LOCUS.anim(F, 'flywheel', { C:[FX, FY, FZ], R:R-0.1, n:6, speed:F.rr(2.6,3.4), phase:F.rr(0,TAU), col:STEELDC[2] }); })();
-      F.box(13.3, Y, -2, 3.0, 1.0, 1.9, 0, CONCRETEC[2], 'concrete');
+      F.box(13.3, Y, -2, 3.0, 1.0, 1.9, 0, CONCRETEC[2], 'concreteW');
       F.rod(11.9, Y+2.0, -2, 14.7, Y+2.0, -2, 0.95, TARNC[1], 'metal');
       [12.3, 13.3, 14.3].forEach(function(bx){ F.rod(bx-0.12, Y+2.0, -2, bx+0.12, Y+2.0, -2, 1.0, BRASSC[1], 'metal'); });
       F.rod(14.7, Y+2.0, -2, 15.1, Y+2.0, -2, 0.35, STEELDC[2], 'rust');

@@ -94,6 +94,126 @@
     "mean": 0.78,
     "sourceMean": 0.628
    }
+  },
+  "pyTileLB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "pyTileLB.albedo.webp",
+    "normalMap": "pyTileLB.normal.webp",
+    "roughnessMap": "pyTileLB.rough.webp"
+   },
+   "lib": "patterns/common/tile-lattice-blue",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "243cfa39aeb57797b398b16de7894edc694dcdbb",
+    "normal": "7186dc09b3d17ef008558728428e78fba0d0489f",
+    "roughness": "5557b2ff0b18590e8e0218153dce4a9d8b30a4f1"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.42234024002673576,
+    "sourceMean": 0.4223
+   }
+  },
+  "pyTileLC": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "pyTileLC.albedo.webp",
+    "normalMap": "pyTileLC.normal.webp",
+    "roughnessMap": "pyTileLC.rough.webp"
+   },
+   "lib": "patterns/common/tile-lotus-cross",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9e5cad126b2f514fbbedca0ce2c57b85cf29299a",
+    "normal": "57f617df6a7edd2338e5f91973abea8932177ec0",
+    "roughness": "bb1cc73ba90a851276dcfdc376703d8ab31e825c"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.45217097261615824,
+    "sourceMean": 0.4522
+   }
+  },
+  "pyTileLR": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "pyTileLR.albedo.webp",
+    "normalMap": "pyTileLR.normal.webp",
+    "roughnessMap": "pyTileLR.rough.webp"
+   },
+   "lib": "patterns/common/tile-lattice-red",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "5f5c63dbd850c7f150529e838a15cf8b24351090",
+    "normal": "d071b67abd3c869fd4702f9d68cacd116b14d7e8",
+    "roughness": "2177835403711bcff1193ee01aaf48223009e6f5"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4268209230699726,
+    "sourceMean": 0.4268
+   }
+  },
+  "pyTileLS": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "pyTileLS.albedo.webp",
+    "normalMap": "pyTileLS.normal.webp",
+    "roughnessMap": "pyTileLS.rough.webp"
+   },
+   "lib": "patterns/common/tile-lattice-saffron",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0b17a15d5adb18e84f4a395411931bf435f83515",
+    "normal": "1905dbdd674c6b7879eaf6cbc1c3b3968bdcc61d",
+    "roughness": "ba30b9061ad9bdc9ab3209d80977ef0d3729b201"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5388349241309072,
+    "sourceMean": 0.5388
+   }
   }
  },
  "size": 512,

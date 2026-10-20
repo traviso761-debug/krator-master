@@ -52,6 +52,62 @@
     "mean": null
    },
    "metal": 0.3
+  },
+  "pyTileLR": {
+   "lib": "patterns/common/tile-lattice-red",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "pyTileLS": {
+   "lib": "patterns/common/tile-lattice-saffron",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "pyTileLB": {
+   "lib": "patterns/common/tile-lattice-blue",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "pyTileLC": {
+   "lib": "patterns/common/tile-lotus-cross",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3
   }
  }
 }

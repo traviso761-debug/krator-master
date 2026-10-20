@@ -34,34 +34,36 @@ const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,a=fbm(x/40,y/40,7.3,3),b=fbm(x/13,y/13,7.4,2);d[i]=a*255;d[i+1]=b*255;d[i+2]=128;d[i+3]=255;}g.putImageData(id,0,0);});
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
 const GROUNDU={uNight:{value:0}};
-const GL_KEYS=['ash','ripples','mycelium','lava','rhyo','matfloor','shoulder','lichenrock'];
+const GL_KEYS=['ash','ripples','mycelium','lava','rhyo','matfloor','shoulder','lichenrock','mycgold','mycpale','toxic'];
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k of GL_KEYS){const P=KMAT.packed('throne','ground.'+k);if(!P)return null;o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:null,color:0xb0aaa4});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uNight=GROUNDU.uNight;
  if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};GL_KEYS.forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0,aL1;varying vec4 vL0,vL1;')
-  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;');
- const W={ash:'vL0.x',ripples:'vL0.y',mycelium:'vL0.z',lava:'vL0.w',rhyo:'vL1.x',matfloor:'vL1.y',shoulder:'vL1.z',lichenrock:'vL1.w'};
- let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying vec4 vL0,vL1;',body;
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
+  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;vL2=aL2;');
+ const W={ash:'vL0.x',ripples:'vL0.y',mycelium:'vL0.z',lava:'vL0.w',rhyo:'vL1.x',matfloor:'vL1.y',shoulder:'vL1.z',lichenrock:'vL1.w',mycgold:'vL2.x',mycpale:'vL2.y',toxic:'vL2.z'};
+ let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying vec4 vL0,vL1,vL2;',body;
  if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.GLSL_LAY;
-  body='{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
+  body='vec3 _E_mg=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
-   GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');').join('')+'}';}
- else body='{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=dt*dt2*1.12;}';
+   GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='mycgold'?'_E_mg=L;':'')).join('')+'}';}
+ else body='vec3 _E_mg=vec3(0.0);{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=dt*dt2*1.12;}';
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
   // at night the mat glows its pink and the mycelium a faint gold (the plume's own life)
-  .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance+=uNight*(vL1.y*vec3(0.55,0.08,0.3)+vL0.z*vec3(0.42,0.34,0.1)*0.6);');};
+  .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance+=uNight*(vL1.y*vec3(0.55,0.08,0.3)+vL0.z*vec3(0.42,0.34,0.1)*0.6+vL2.x*_E_mg*smoothstep(0.08,0.3,_E_mg.r-_E_mg.b)*0.5);');};
 const GROUND=(function(){const N=760,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
- const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4);
+ const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   const at=n=>FC.at(FC.a[n],x,z),dn=at('dune'),hl=at('hill'),hw=at('hollow'),th=FLOWS.thickAt(x,z),sc=smooth(.4,2,th)*(1-dn),ash=at('ash');
   L0[k*4]=(1-dn)*(1-hl)*(1-hw)*.8;L0[k*4+1]=dn*(1-hw)*.9;L0[k*4+2]=ash*(1-dn)*(1-hl)*(1-hw)*smooth(.55,.8,fbm(x*.008,z*.008,4722,2))*.6;L0[k*4+3]=sc*.85;
-  L1[k*4]=hl*.5;L1[k*4+1]=hw*.95;L1[k*4+2]=(1-dn)*(1-hl)*(1-hw)*smooth(.68,.84,fbm(x*.01,z*.01,4723,2))*.4;L1[k*4+3]=at('yard')*.75;}
+  L1[k*4]=hl*.5;L1[k*4+1]=hw*.95;L1[k*4+2]=(1-dn)*(1-hl)*(1-hw)*smooth(.68,.84,fbm(x*.01,z*.01,4723,2))*.4;L1[k*4+3]=at('yard')*.75;
+  /* the library's mycelia: the gold under the plume's ash (it glows faintly at night), the pale net and the toxic mushroom skin round the CO2 hollow's margin */
+  const mg=(1-dn)*(1-hl)*(1-hw);L2[k*4]=mg*ash*smooth(.6,.76,fbm(x*.009+3,z*.009-5,4737,2))*.55;L2[k*4+1]=mg*Math.max(hw*0+smooth(.35,.9,at('hollow')*(1-at('hollow'))*4),smooth(.74,.88,fbm(x*.011-2,z*.011+8,4738,2))*.35)*.7;L2[k*4+2]=mg*smooth(.76,.88,fbm(x*.013+6,z*.013-1,4739,2))*.5;}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));
+ g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The ash desert under the plume';scene.add(m);return m;})();
 REGISTER({name:HOLLOW.name,x:HOLLOW.x,z:HOLLOW.z,y:terrainH(HOLLOW.x,HOLLOW.z)-3,r:HOLLOW.r*1.3,h:HOLLOW.depth+8,hollow:true});
 _onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});

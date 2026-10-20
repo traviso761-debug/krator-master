@@ -38,7 +38,9 @@ function halosReset(){HALOS=[];HALOKEY=new Set();}
 let GSTAT={tris:0};
 /* emit a base geometry through matrix lm (local to CM). uvm: undefined = world box projection; {su,sv} = the geometry's own UVs
    scaled. A geometry with its own `color` attribute multiplies the tint per vertex (the salamanders' markings). */
-function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
+/* a building's other cloths (materials.json: canvasB, linen, denim, weave027, jacquard): MAT_ALT is a hash of its seed, variant and place (36-def.js); the key's list is indexed by it, the first entry the usual material (repeats weight it) */
+let MAT_ALT=0;const MAT_VAR={canvas:['canvas','canvas','canvasB','linen','denim','canvas'],rug:['rug','rug','weave027','jacquard']};
+function emit(mk,geo,lm,col,uvm){if(MAT_ALT&&MAT_VAR[mk]){const v=MAT_VAR[mk];mk=v[MAT_ALT%v.length];}_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
  if(!b.f&&SV_CLOTH[mk])b.f=[];if(!b.k&&SV_CUT[mk])b.k=[];if(!b.w&&mk==='glow')b.w=[];if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);

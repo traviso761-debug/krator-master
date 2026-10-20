@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1 (0%) | 0 (0%) | 16 (8%) | 27 (13%) | 164 (79%) |
+| KB | 2 (1%) | 0 (0%) | 16 (8%) | 27 (13%) | 164 (79%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,6 +15,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 17.7 | [web] | 26 | 3 | 3 | 1 | 0 | 2 | 9 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
 | `src/50-biome-rift-species.js` | 59.5 | [draw] | 0 | 5 | 0 | 0 | 0 | 10 | 7 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/52-biome-rift-library.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/55-biome-rift-trees.js` | 68.5 | [draw] | 0 | 1 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | placement pass: `RIFT.buildTrees` (line 536); `mk` (line 540) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 605) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar`/`buildFarSmall` for the far impostor. The two passes share one function but not one loop |
 | `src/60-biome-rift-floor.js` | 24.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-rift-dress.js` | 6.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |

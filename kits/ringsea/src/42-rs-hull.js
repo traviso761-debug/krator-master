@@ -30,9 +30,9 @@ function rsHull(o){const L=o.L,Bm=o.B,fb=o.fb,dr=o.dr,sp=o.sp||2.4,pb=o.pb||2.2,
  H.uAt=x=>clamp(x/L+.5,0,1);
  return H;}
 const z0h=H=>H.z0||0;
-function rsHullMesh(B,H,mk,col,nu,nv){nu=nu||72;nv=nv||14;const tile=H.o.tile||4;
+function rsHullMesh(B,H,mk,col,nu,nv,uvf){nu=nu||72;nv=nv||14;const tile=H.o.tile||4;
  const fn=(u,v)=>{const s=v<.5?-1:1,hF=1-Math.abs(v*2-1);return H.pt(u,s,hF);};
- const g=rsGrid(fn,nu,nv*2,(u,v,p)=>[p[0]/tile,(p[1]-H.yk(u)+Math.abs(p[2]))/tile]);
+ const g=rsGrid(fn,nu,nv*2,uvf||((u,v,p)=>[p[0]/tile,(p[1]-H.yk(u)+Math.abs(p[2]))/tile]));
  if(col)rsGridColors(g,nu,nv*2,(u,v)=>col(u,1-Math.abs(v*2-1),v<.5?-1:1));
  rsPut(B,mk||'wood',g,null,null,null,col?null:0xffffff);
  // transom: close the flat stern with a panel following the section at u=0

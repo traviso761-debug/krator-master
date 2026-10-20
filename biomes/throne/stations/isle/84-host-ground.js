@@ -51,16 +51,16 @@ const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
 const GROUNDU={uNight:{value:0}};
 // THE LIBRARY GROUND: eight layers, the later winning, each sampled twice (anti-tiling, as the other stations)
-const GL_KEYS=['litter','sandblack','sinter','rim','mud','lichenrock','packed','sulphur'];
+const GL_KEYS=['litter','sandblack','sinter','rim','mud','lichenrock','packed','sulphur','shingle'];
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k of GL_KEYS.concat(['wetmoss','canopy'])){const P=KMAT.packed('throne','ground.'+k);if(!P)return null;o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 function groundMat(map){const m=new THREE.MeshLambertMaterial({map,color:0xb0aaa4});
  m.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
   if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};GL_KEYS.concat(['wetmoss','canopy']).forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0,aL1;varying vec4 vL0,vL1;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;');
-  const W={litter:'vL0.x',sandblack:'vL0.y',sinter:'vL0.z',rim:'vL0.w',mud:'vL1.x',lichenrock:'vL1.y',packed:'vL1.z',sulphur:'vL1.w'};
-  let decl='uniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vL0,vL1;',body;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;vL2=aL2;');
+  const W={litter:'vL0.x',sandblack:'vL0.y',sinter:'vL0.z',rim:'vL0.w',mud:'vL1.x',lichenrock:'vL1.y',packed:'vL1.z',sulphur:'vL1.w',shingle:'vL2.x'};
+  let decl='uniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vL0,vL1,vL2;',body;
   if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.concat(['wetmoss','canopy']).map(k=>'uG_'+k).join(',')+';vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}';
    // the sinter, the rims and the sulphur keep the paint's colour (the mats' bands, the white): their texture is detail
    const keep={sinter:1,rim:1,sulphur:1};
@@ -73,14 +73,16 @@ function groundMat(map){const m=new THREE.MeshLambertMaterial({map,color:0xb0aaa
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body);};
  return m;}
 // a vertex's layer weights
-function layersAt(x,z,h,at,L0,L1,k){const ab=h-SEA,si=at('sinter'),dm=Math.hypot(x-MUD.x,z-MUD.z),dl=Math.hypot(x-LAGOON.x,z-LAGOON.z);
+function layersAt(x,z,h,at,L0,L1,k,L2){const ab=h-SEA,si=at('sinter'),dm=Math.hypot(x-MUD.x,z-MUD.z),dl=Math.hypot(x-LAGOON.x,z-LAGOON.z);
  // the springs' rims and the runoff only in and near the basin (the rest of the isle skips their maths)
  let rim=0;if(si>.01||basinE(x,z)<1.15){const M=matAt(x,z);for(const P of POOLS){const d=Math.hypot(x-P.x,z-P.z);rim=Math.max(rim,smooth(P.r*1.7,P.r*1.15,d)*smooth(P.r*.8,P.r*1.0,d));}
   rim=Math.max(rim,M.k*.7,smooth(28,10,segD(x,z,RUNOFF[0].pts))*si*.9);}
  L0[k*4]=Math.max(at('iwood'),at('grove')*.85)*.9;L0[k*4+1]=Math.max(at('sand'),at('beach')*.45,ab<0?smooth(0,-2,ab)*(1-smooth(LAGOON.r*1.2,LAGOON.r*.9,dl)):0)*.92;
  L0[k*4+2]=si*(1-rim*.8)*.85;L0[k*4+3]=rim*.85;
  L1[k*4]=Math.max(smooth(MUD.r*1.5,MUD.r*.8,dm),smooth(LAGOON.r*1.35,LAGOON.r*1.0,dl)*smooth(2.5,.5,ab))*.9;L1[k*4+1]=at('rock')*.85;
- L1[k*4+2]=Math.max(at('path'),at('camp')*.8);L1[k*4+3]=smooth(.4,.75,at('vent'))*si*.7;}
+ L1[k*4+2]=Math.max(at('path'),at('camp')*.8);L1[k*4+3]=smooth(.4,.75,at('vent'))*si*.7;
+ /* the library's shingle: the rounded gravel of the upper beach behind the sand and along the rocky shore, off the trail and the camp */
+ L2[k*4]=(at('beach')*smooth(.3,.65,fbm(x*.02+1,z*.02-7,4801,2))*.8+at('rock')*smooth(7,1.5,ab)*smooth(-1,.5,ab)*.5)*(1-at('path'))*(1-at('camp'))*(1-si);}
 
 // ---------------------------------------------------------------- the isle's mesh, with a hole for the basin's patch
 const GN=600,GS=TERR.R*2.2,GCS=GS/GN,GNX=GN+1,GX0=-GS/2;
@@ -88,20 +90,20 @@ const PATCH=(function(){const rad=470,i0=Math.floor((BASIN.x-rad-GX0)/GCS),i1=Ma
  return{i0,i1,j0,j1,sub:5,x0:GX0+i0*GCS,z0:GX0+j0*GCS,sx:(i1-i0)*GCS,sz:(j1-j0)*GCS};})();
 const GH=new Float32Array(GNX*GNX);
 const TEX_GROUND=paintTex(1536,GX0,GX0,GS,atFC);
-const GROUND=(function(){const pos=new Float32Array(GNX*GNX*3),uv=new Float32Array(GNX*GNX*2),L0=new Float32Array(GNX*GNX*4),L1=new Float32Array(GNX*GNX*4);
+const GROUND=(function(){const pos=new Float32Array(GNX*GNX*3),uv=new Float32Array(GNX*GNX*2),L0=new Float32Array(GNX*GNX*4),L1=new Float32Array(GNX*GNX*4),L2=new Float32Array(GNX*GNX*4);
  const at=(n,x,z)=>FC.at(FC.a[n],x,z);
  for(let j=0;j<GNX;j++)for(let i=0;i<GNX;i++){const k=j*GNX+i,x=GX0+i*GCS,z=GX0+j*GCS,y=terrainH(x,z);GH[k]=y;pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/GS+.5;uv[k*2+1]=.5-z/GS;
-  layersAt(x,z,y,n=>at(n,x,z),L0,L1,k);}
+  layersAt(x,z,y,n=>at(n,x,z),L0,L1,k,L2);}
  const idx=[];for(let j=0;j<GN;j++)for(let i=0;i<GN;i++){if(i>=PATCH.i0&&i<PATCH.i1&&j>=PATCH.j0&&j<PATCH.j1)continue;const a=j*GNX+i,b=a+GNX,c=b+1,d=a+1;idx.push(a,b,d,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));
+ g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
  g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,groundMat(TEX_GROUND));m.userData.probeSkip=true;m.userData.inspectLabel='The geyser isle';scene.add(m);return m;})();
 _mark('ground');
 // THE BASIN'S PATCH: sub x sub vertices a coarse cell; its painted texture its own (0.9 m a pixel), the fields computed
 // directly where they are fine-grained (the springs' rims, the mats), the cache elsewhere
 const TEX_PATCH=paintTex(1024,PATCH.x0,PATCH.z0,PATCH.sx,atFC);
 const GROUND_PATCH=(function(){const P=PATCH,nx=(P.i1-P.i0)*P.sub+1,nz=(P.j1-P.j0)*P.sub+1,cs=GCS/P.sub;
- const pos=new Float32Array(nx*nz*3),uv=new Float32Array(nx*nz*2),L0=new Float32Array(nx*nz*4),L1=new Float32Array(nx*nz*4);
+ const pos=new Float32Array(nx*nz*3),uv=new Float32Array(nx*nz*2),L0=new Float32Array(nx*nz*4),L1=new Float32Array(nx*nz*4),L2=new Float32Array(nx*nz*4);
  const at=(n,x,z)=>FC.at(FC.a[n],x,z);
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=P.x0+i*cs,z=P.z0+j*cs;let y;
   // on the border: the coarse edge's own line between its two vertices (no crack)
@@ -109,11 +111,11 @@ const GROUND_PATCH=(function(){const P=PATCH,nx=(P.i1-P.i0)*P.sub+1,nz=(P.j1-P.j
   if(bi||bj){const gi=P.i0+i/P.sub,gj=P.j0+j/P.sub,i0=Math.floor(gi),j0=Math.floor(gj),fi=gi-i0,fj=gj-j0;
    const H=(a,b)=>GH[Math.min(GN,b)*GNX+Math.min(GN,a)];y=bi&&bj?H(i0,j0):bi?mix(H(i0,j0),H(i0,j0+1),fj):mix(H(i0,j0),H(i0+1,j0),fi);}
   else y=terrainH(x,z);
-  pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=(x-P.x0)/P.sx;uv[k*2+1]=1-(z-P.z0)/P.sz;layersAt(x,z,y,n=>at(n,x,z),L0,L1,k);}
+  pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=(x-P.x0)/P.sx;uv[k*2+1]=1-(z-P.z0)/P.sz;layersAt(x,z,y,n=>at(n,x,z),L0,L1,k,L2);}
  const idx=new Uint32Array((nx-1)*(nz-1)*6);let t=0;
  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));
+ g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,groundMat(TEX_PATCH));m.userData.probeSkip=true;m.userData.inspectLabel='The geyser basin';scene.add(m);return m;})();
 _mark('patch');
 

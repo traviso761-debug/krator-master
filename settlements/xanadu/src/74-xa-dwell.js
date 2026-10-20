@@ -189,7 +189,7 @@ function buildXaRichB(G,o){reseed(30311+(o.v|0));const V=xV(o),T=3.2,lit=xLit()?
   const top=xnFlatRoof(X,T+10.2,Z,S.w,S.d,0,wash,{band:true,gold:true,eave:true,eaveC:tim,parapet:.7,corner:'gold'});
   const tx=X+M*(W/2*.93-2.4),tz=Z-D/2*.93+2.4;
   if(V===3)xnGiltRoof(X,top-.7,Z-1,7,4.8,0,{frame:2,over:1});
-  else{xnWall(tx,T+10.2,tz,4.6,3.4,4.6,0,wash,'wash');vB('xFriezeB',tx,T+13.2,tz,4.9,.55,4.9,0);xnDome(tx,T+13.8,tz,2.6,['T','M','G','T','M'][V],{drum:1.8,c:V%3?null:tile,fin:1.6});}
+  else{xnWall(tx,T+10.2,tz,4.6,3.4,4.6,0,wash,'wash');xvFr(tx,T+13.2,tz,4.9,.55,4.9,0);xnDome(tx,T+13.8,tz,2.6,['T','M','G','T','M'][V],{drum:1.8,c:V%3?null:tile,fin:1.6});}
   for(const u of[-4,0])xnFlagpole(X+M*u,top-.6,Z+S.d/2-1.1,3.6,xC(XPAL.red));}
  // the terraced garden beside the hall: cypresses along the terrace edge, a pool, a chhatri on the terrace corner
  xnPave(-M*7,6,10,8,0,stone,2);xnPool(-M*7,.02,6,4,3,0,stone);for(const x of[-12.5,-9,-5.5,-2])xnCypress(M*x,2.2,rr(5,7));

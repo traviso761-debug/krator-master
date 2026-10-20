@@ -47,7 +47,11 @@ let GSTAT={tris:0};
 /* only light-tinted glass is a window that can be lit; dark blue-black glass (solar panels, skylight wells) stays glass */
 function glassIsWindow(col){const c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);return .2126*c.r+.7152*c.g+.0722*c.b>.1;}
 let HALOS=[],HALOKEY=new Set();function halosReset(){HALOS=[];HALOKEY=new Set();}
-function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);let a1=0;
+/* a building keeps one variant of a material that has them: picked by a KRAND hash of its site's placement (the matrix CMS[1] a site enters), never by draw order; a scrap sheet (sheet) is mixed per piece, as scrap is. MAT[variant] is the key of materials.json */
+const PA_VARIANTS={conc:['conc','concB','concC'],sheet:['sheet','sheetP','sheetF']};
+function paVar(mk){const v=PA_VARIANTS[mk];if(!v||!MAT[v[1]])return mk;const e=CMS[Math.min(1,CMS.length-1)].elements;
+ return v[Math.floor(KRAND.unit(KRAND.hash(0x7a11,Math.round(e[12]*2),Math.round(e[14]*2),mk==='sheet'?Math.round(CM.elements[12]*4)+Math.round(CM.elements[14]*4)*7:1))*v.length)%v.length];}
+function emit(mk,geo,lm,col,uvm){mk=paVar(mk);_mm.copy(CM);if(lm)_mm.multiply(lm);let a1=0;
  if(mk==='glass'){a1=2;if(glassIsWindow(col)){const hx=Math.round(_mm.elements[12]*2)/2,hy=Math.round(_mm.elements[13]*2)/2,hz=Math.round(_mm.elements[14]*2)/2,hh=h3(hx,hy,hz);a1=h3(hx*.37+11.1,hy*.53+3.3,hz*.41+7.7);   /* a1: the pane's place in the evening schedule (ANIM hooks below) */
   if(hh<.5){mk='winlit';const f=.75+.6*hh;col=new THREE.Color().setRGB(.86*f,.55*f,.22*f);}}}
  else if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.2;   /* flicker share: flames 1, lamp bulbs .45, coals and tail lights .2 */

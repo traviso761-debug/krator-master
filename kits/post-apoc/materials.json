@@ -200,6 +200,82 @@
     "macro": 0.1,
     "cell": 6
    }
+  },
+  "concB": {
+   "lib": "concrete.brushed_concrete",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.844,
+    "contrast": 1.0
+   },
+   "normalScale": 0.8,
+   "metal": 0,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concC": {
+   "lib": "concrete.concrete_wall_009",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.844,
+    "contrast": 1.0
+   },
+   "normalScale": 0.8,
+   "metal": 0,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "sheetP": {
+   "lib": "metal.metalplates001",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.0
+   },
+   "normalScale": 0.8,
+   "metal": 0.08,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "sheetF": {
+   "lib": "metal.metal017",
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.0
+   },
+   "normalScale": 0.8,
+   "metal": 0.08,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
   }
  }
 }

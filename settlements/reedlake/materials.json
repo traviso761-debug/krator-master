@@ -94,13 +94,13 @@
    }
   },
   "shingle": {
-   "lib": "roof.shingle.neutral",
+   "lib": "roof.shingle",
    "scale": [
     2.0,
     2.0
    ],
    "tint": {
-    "keep": 0.0,
+    "keep": 0.25,
     "mean": 0.6
    },
    "roughLift": 0.3,
@@ -631,6 +631,46 @@
    },
    "metal": 0,
    "size": 1024
+  },
+  "rlLily": {
+   "lib": "ground.lilypond",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.6
+  },
+  "rlClothT": {
+   "lib": "patterns/reedlake/chakana-textile-terracotta",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "clothR": {
+   "lib": "patterns/canvas/stripe-red",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.15
   }
  }
 }

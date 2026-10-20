@@ -5,7 +5,7 @@
  ],
  "01-reedkit.html": [
   "virtual",
-  "e3c4c20f6922"
+  "ff6654f5c49d"
  ],
  "01b-build-open.html": [
   "mungo",
@@ -13,7 +13,7 @@
  ],
  "05-palette.js": [
   "locus",
-  "d8eb42e7be31"
+  "b8da4cef18ae"
  ],
  "05b-mungo-palette.js": [
   "mungo",
@@ -233,7 +233,7 @@
  ],
  "64-locus-power.js": [
   "locus",
-  "9b3638af3b70"
+  "594b17f6fb38"
  ],
  "65-abyss-00-core.js": [
   "locus",
@@ -281,11 +281,11 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "cc204933b9ec"
+  "e6b7831dc552"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "f9c9044eccc6"
+  "6277da977266"
  ],
  "66-locus-furnish.js": [
   "locus",

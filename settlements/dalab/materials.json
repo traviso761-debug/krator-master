@@ -667,6 +667,177 @@
     "macro": 0.1,
     "cell": 6
    }
+  },
+  "dRender": {
+   "lib": "stone.rendered",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.72
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "dRenderR": {
+   "lib": "stone.rendered.ruined",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.72
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "dBancoE": {
+   "lib": "earth.banco.eroded.b",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   },
+   "metal": 0,
+   "normalScale": 0.8
+  },
+  "dBlock": {
+   "lib": "rock.sandstone_blocks_04",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.72
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "dMural4": {
+   "lib": "patterns/dalab/mural-giants",
+   "scale": [
+    4,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "dMural5": {
+   "lib": "patterns/dalab/mural-harvest",
+   "scale": [
+    4,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "dMural6": {
+   "lib": "patterns/dalab/mural-priests",
+   "scale": [
+    4,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "dMural7": {
+   "lib": "patterns/dalab/mural-eye-god-b",
+   "scale": [
+    4,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "dDecoPanelB": {
+   "lib": "patterns/dalab/god-panel-b",
+   "scale": [
+    0.8,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "dReliefRd": {
+   "lib": "patterns/dalab/relief-tile-red",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "dReliefCh": {
+   "lib": "patterns/dalab/relief-chevron",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.61,
+    "colour": "#a19b91"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
   }
  }
 }

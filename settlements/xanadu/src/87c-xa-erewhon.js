@@ -164,7 +164,7 @@ function buildXaPleasureDomeBay(G,o){reseed(32941+(o.v|0));const V=xV(o),R=22,li
  for(const [r,y] of[[R+6,-.8],[R+4,0],[R+2,.8]])kput('xDiscS',[0,y,0],null,[r,.8,r],stone);kput('xDiscS',[0,1.6,0],null,[R+1,.4,R+1],stone);const y0=2.0;
  const NC=20,CR=R-1.2,CH=11;for(let i=0;i<NC;i++){const a=i/NC*TAU,x=Math.cos(a)*CR,z=Math.sin(a)*CR;xnCol(x,y0,z,CH,.36,-a,stone,gold);}
  for(let i=0;i<NC;i++){const a=(i+.5)/NC*TAU,x=Math.cos(a)*CR,z=Math.sin(a)*CR;xnArch('xArchP',x,y0+CH-3.6,z,Math.atan2(x,z),TAU*CR/NC-.4,4.2,.6,stone,{open:true});}
- kput('xDiscG',[0,y0+CH+.5,0],null,[CR+1.4,.4,CR+1.4],gold);vB('xFriezeB',0,y0+CH+.1,0,.1,.1,.1,0);   // the gilt architrave ring
+ kput('xDiscG',[0,y0+CH+.5,0],null,[CR+1.4,.4,CR+1.4],gold);xvFr(0,y0+CH+.1,0,.1,.1,.1,0);   // the gilt architrave ring
  const DR=R*.62,DH=8;kput('xDrumW',[0,y0,0],null,[DR,DH,DR],xC(xPick(XPAL.wash)));for(let i=0;i<12;i++){const a=i/12*TAU,x=Math.cos(a)*DR,z=Math.sin(a)*DR;xnXTArchWin(x,y0+1.4,z,Math.atan2(x,z),2.2,4.8,xC(XPAL.lapis),'xMosAB',lit);}
  vB('xBandB',0,y0+DH-.9,0,DR*2+.4,.7,DR*2+.4,0,xC(xPick(XPAL.maroon)));kput('xDiscS',[0,y0+DH,0],null,[DR+.6,.4,DR+.6],stone);
  xnDome(0,y0+DH+.4,0,DR-.6,'T',{c:turq,fin:2.6});for(let k=0;k<12;k++){const a=k/12*TAU;vB('xGoldB',Math.cos(a)*(DR-.4),y0+DH+.4,Math.sin(a)*(DR-.4),.5,.5,.5,-a,gold);}

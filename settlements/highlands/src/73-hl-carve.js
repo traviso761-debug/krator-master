@@ -28,7 +28,9 @@ function hnTotemPost(x,y,z,r,h,ry,painted){if(hlNonTribal())return hnPillar(x,y,
 function hnForm(item,x,y,z,ry,w,h){if(hlNonTribal()){const C=VERN.cur;(C.murals||(C.murals=[])).push({item:hnMotifPick(item),x,y,z,ry,w,h});return;}   // fitted after the building (hlFlush)
  const p=loc(x,z,0,.07,ry);kput(item,[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}
 // Frieze band (hFormF) along a face — eave boards, lintels, the belt between storeys.
-function hnFrieze(x,y,z,ry,w,h){const p=loc(x,z,0,.05,ry);vB('hFormF',p[0],y,p[1],w,h||.5,.1,ry);}
+/* the library's four painted friezes (a 2.25 m x 0.5 m sheet each) share the belt courses with the formline board: which one a face gets is a hash of its own position */
+const HFRIEZE=['hFormF','hFrzA','hFrzL','hFrzT','hFrzG'];
+function hnFrieze(x,y,z,ry,w,h){const p=loc(x,z,0,.05,ry);vB(HFRIEZE[(Math.abs(Math.round(p[0]*3)*7+Math.round(p[1]*3)*13+Math.round(y*5)*3))%HFRIEZE.length],p[0],y,p[1],w,h||.5,.1,ry);}
 
 // ---------------------------------------------------------------- round 2: branch rules, pillars, signs, emblem
 // Totems belong to the tribes only; the Republic and the Rustic villages carve PILLARS with the same stacked motifs.
