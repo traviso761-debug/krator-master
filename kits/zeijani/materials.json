@@ -710,6 +710,9 @@
    },
    "roughLift": 0.3,
    "specular": 0.2
-  }
+  },
+  "gate": {"lib": "wood.wooden_gate", "scale": [1.5, 1.5], "tint": {"keep": 0.3, "mean": 0.66, "contrast": 1.0}, "roughLift": 0.3, "specular": 0.2},
+  "toron": {"lib": "wood.toron", "scale": [1.5, 1.5], "tint": {"keep": 0.3, "mean": 0.66, "contrast": 1.0}, "roughLift": 0.3, "specular": 0.2},
+  "clayBlock": {"lib": "plaster.clay_block_wall", "scale": [2.0, 2.0], "tint": {"keep": 0.3, "mean": 0.7, "contrast": 1.0}, "roughLift": 0.3, "specular": 0.2}
  }
 }

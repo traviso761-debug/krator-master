@@ -22,7 +22,7 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
   m.map=T.map;if(T.normalMap){m.normalMap=T.normalMap;m.normalScale=new THREE.Vector2(L.normalScale||1,L.normalScale||1);}
   if(T.roughnessMap){m.roughnessMap=T.roughnessMap;m.roughness=1;}m.metalnessMap=null;m.metalness=L.metal||0;
   hook(m,fam,L);m.needsUpdate=true;m.userData.lib=L.lib;YS_MATLIB.bound[fam]=L.lib;};   /* userData.lib: KMAT.bindMat below skips it */
- for(const k of ['hkShell','hkFloor','hkIn','hkBarn','hkBone','hkMosaic','hkNacre','hkCrust','hkVerd','hkWet','hkCloth']){const L=P(k);if(!L)continue;bind(MAT[k],k,L,4);bind(MAT[k+'I'],k,L,4);}
+ for(const k of ['hkShell','hkFloor','hkIn','hkBarn','hkBone','hkMosaic','hkNacre','hkNacreB','hkNacreC','hkAbaloneC','hkAbaloneW','hkConchW','hkCrust','hkVerd','hkWet','hkCloth']){const L=P(k);if(!L)continue;bind(MAT[k],k,L,4);bind(MAT[k+'I'],k,L,4);}
  {const L=P('ground');if(L&&MAT.pkGround)bind(MAT.pkGround,'ground',L,18);}   /* no ground family yet: the karst wall's drips read as stripes on the flat (KNOWN_ISSUES) */
  {const L=P('sand'),R=P('sandR')||L;if(L&&typeof HAC_MAT!=='undefined'){bind(HAC_MAT.sand,'sand',L,null);bind(HAC_MAT.sandR,P('sandR')?'sandR':'sand',R,null);}}   /* the ruined arcade's sandstone is its own family (2026-10-19: rock.sandstone_blocks_04, weathered pale blocks) */
  {const L=P('trav');if(L&&typeof HBH_MAT!=='undefined'){bind(HBH_MAT.trav,'trav',L,null);bind(HBH_MAT.travR,'trav',L,null);}}

@@ -845,6 +845,23 @@ function furnCol(culture, key) {
    `materials` are unchanged. [key pattern, families it applies to, texture family]. A part splits only when every key
    of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split. */
 const FAMILY_SPLITS = [
+  /* the library's variants and extras (2026-10-19): candle and tallow wax, twisted rope, linen and patched canvas, red brick,
+     the second and olive scale skins, the second plumage, and the shell sets: abalone, soft abalone and the pearls on a nacre
+     part, conch on the shell family (a part on the shell family keeps the conch; its whites take the second nacre) */
+  [/^waxBone$/, ['food', 'cloth', 'plastic', 'plaster'], 'tallow'],
+  [/^wax(Honey|Red)$/, ['food', 'cloth', 'plastic', 'plaster'], 'wax'],
+  [/^rope(Hemp|Jute|Flax|Coir|Twine|Tan|Pale|Rush|Vine)$/, ['rope'], 'ropeTwist'],
+  [/^linen/, ['cloth'], 'linen'],
+  [/^canvas(Tan|Raw|Pale|Faded)$/, ['cloth'], 'canvasB'],
+  [/^brickRed$/, ['stone', 'plaster', 'ceramic', 'wood'], 'brick'],
+  [/^scaleBark/, ['skin'], 'scaleB'],
+  [/^scaleJade/, ['skin'], 'scaleOlive'],
+  [/^scaleTurquoise$/, ['skin'], 'scaleOliveB'],
+  [/^featherYellow$/, ['hide', 'plant', 'plastic'], 'featherB'],
+  [/^shellAbalone$/, ['nacre'], 'abalone'],
+  [/^nacreSea$/, ['nacre'], 'abaloneSoft'],
+  [/^(shellPearl|nacreRose)$/, ['nacre'], 'nacreB'],
+  [/^shell(White|Cream)$/, ['shell'], 'nacreC'],
   [/^feather/, ['hide', 'plant', 'plastic'], 'feather'],
   [/^tyre/, ['plastic', 'metal'], 'rubber'],
   [/^clay/, ['stone'], 'clay'],

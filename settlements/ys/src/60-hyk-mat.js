@@ -86,6 +86,9 @@ hkMatPair('hkCloth',TEX.hkCloth,{rough:.9,side:THREE.DoubleSide});
 hkMatPair('hkFloor',TEX.hkShell,{rough:.74});
 hkMatPair('hkIn',TEX.hkShell,{rough:.7});                        // interior skins (built facing inward)
 hkMatPair('hkNacre',TEX.hkShell,{rough:.22,metal:.18});
+/* the nacre's other sets (materials.json: hkNacreB, hkNacreC, hkAbaloneC, hkAbaloneW, hkConchW): the same pair and the same play of colour; hykPut gives a building one of them in place of hkNacre (HK_NACRE_VAR), by a hash of its place */
+const HK_NACRE_VAR=['hkNacre','hkNacre','hkNacreB','hkNacreC','hkAbaloneC','hkAbaloneW','hkConchW'];
+for(const k of HK_NACRE_VAR.slice(2))hkMatPair(k,TEX.hkShell,{rough:.22,metal:.18});
 hkMatPair('hkVerd',TEX.hkShell,{rough:.5,metal:.3});             // verdigris bronze (the Citadel's spires and dome): the library's metal.bronze.verdigris, else shell tinted sea green
 // THE NACRE HOOK: mother-of-pearl is a view-dependent play of colour. At grazing angles the diffuse colour is
 // mixed toward a cosine rainbow keyed on the view angle and the surface height, so a dome crown or a door
@@ -100,6 +103,7 @@ function hkNacreHook(sh){if(typeof portUWsh==='function')portUWsh(sh);
   '  diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*(0.74+0.40*_ir),0.10+0.46*_f); }'].join('\n'));}
 MAT.hkNacre.onBeforeCompile=hkNacreHook;MAT.hkNacre.customProgramCacheKey=()=>'hkNacre';
 MAT.hkNacreI.onBeforeCompile=hkNacreHook;MAT.hkNacreI.customProgramCacheKey=()=>'hkNacreI';
+for(const k of HK_NACRE_VAR.slice(2))for(const s of ['','I']){MAT[k+s].onBeforeCompile=hkNacreHook;MAT[k+s].customProgramCacheKey=()=>k+s;}
 MAT.hkGlow=new THREE.MeshBasicMaterial({color:0xffe6c0});                                     // pearl lamps: unlit, tinted per instance
 MAT.hkGlowCool=new THREE.MeshBasicMaterial({color:0x9ff4e4});
 MAT.hkLens=new THREE.MeshStandardMaterial({color:0x9fe0d8,transparent:true,opacity:.6,roughness:.08,metalness:.1,depthWrite:false});

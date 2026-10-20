@@ -983,6 +983,21 @@
    },
    "roughLift": 0.4,
    "specular": 0.25
+  },
+  "int_scale": {
+   "lib": "metal.scale",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5,
+    "contrast": 1.1
+   },
+   "roughLift": 0.0,
+   "specular": 0.6,
+   "metal": 0.9
   }
  }
 }

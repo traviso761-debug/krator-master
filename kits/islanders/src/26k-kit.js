@@ -25,15 +25,16 @@ const SV_LIB={thatch:'thatch',thatchR:'thatchR',palm:'palm',bamboo:'bamboo',latt
  stone:'stone',coral:'coral',earth:'earth',sand:'sand',rope:'rope',tarp:'tarp',tyre:'tyre',tapa:'tapa',iron:'iron',
  patGableW:'patGableW',patGableE:'patGableE',patBand:'patBand',patStory:'patStory',patWeave:'patWeave',medMoon:'medMoon',
  patGableW2:'patGableW2',patGableE2:'patGableE2',patHinggi:'patHinggi',patMat:'patMat',
- endgrain:'endgrain',logbark:'logbark',banco:'banco',turf:'turf',charcoal:'charcoal',ash:'ash',clay:'clay'};
+ endgrain:'endgrain',logbark:'logbark',banco:'banco',turf:'turf',charcoal:'charcoal',ash:'ash',clay:'clay',
+ shingle:'shingle',ceramic:'ceramic',ropeT:'ropeT',tarredB:'tarredB',softwood:'softwood',rattan:'rattan',clayBlock:'clayBlock'};
 const SV_TILE0={thatch:2,thatchR:2.2,palm:1.6,bamboo:1.4,lattice:.8,mat:1,corr:1.6,corrW:1.6,tin:1.4,carved:1.2,carvedR:1.2,lash:1.6,planks:2,
  reclaimed:2,wood:1.6,tarred:1.6,hull:1.8,floor:2,stone:2.6,coral:2.4,earth:3,sand:4,rope:.3,tarp:2,tyre:.8,tapa:1.6,iron:.8,
  patGableW:2.4,patGableE:2.2,patBand:1.2,patStory:3.2,patWeave:2.4,medMoon:1,patGableW2:2.4,patGableE2:2.2,patHinggi:2,patMat:1.6,
- endgrain:.6,logbark:1.2,banco:2.4,turf:2,charcoal:1,ash:2.4,clay:1.2};
+ endgrain:.6,logbark:1.2,banco:2.4,turf:2,charcoal:1,ash:2.4,clay:1.2,shingle:1.2,ceramic:1.2,ropeT:.3,tarredB:1.6,softwood:2,rattan:1,clayBlock:2.4};
 const SV_CLOTH={tarp:1,tapa:1,mat:1,flag:1,patHinggi:1,patMat:1};
 const SV_CUT={thatch:1,thatchR:1,palm:1,bamboo:1,lattice:1,mat:1,corr:1,corrW:1,tin:1,carved:1,carvedR:1,lash:1,planks:1,reclaimed:1,wood:1,tarred:1,
  tarp:1,tapa:1,rope:1,iron:1,coral:1,patGableW:1,patGableE:1,patBand:1,patStory:1,patWeave:1,patGableW2:1,patGableE2:1,patHinggi:1,patMat:1,flag:1,plain:1,brass:1,bone:1,glass:1,
- endgrain:1,logbark:1,banco:1,clay:1};
+ endgrain:1,logbark:1,banco:1,clay:1,shingle:1,ceramic:1,ropeT:1,tarredB:1,softwood:1,rattan:1,clayBlock:1};
 const KIT_FALLBACK=[];
 /* is a sheet in the pack (28-is-paint.js draws the canvas stand-in when it is not) */
 const KIT_HAS=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);

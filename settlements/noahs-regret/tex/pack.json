@@ -549,6 +549,66 @@
     "sourceMean": 0.5505
    }
   },
+  "paintFlake": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "paintFlake.albedo.webp",
+    "normalMap": "paintFlake.normal.webp",
+    "roughnessMap": "paintFlake.rough.webp"
+   },
+   "lib": "metal.metal017",
+   "metal": 0.6,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9acc76f904636955cf5164b2ee6dd6ddb134c374",
+    "normal": "bded0de5c39d0b8a0667bb245f1d78f8f3c9fe07",
+    "roughness": "57889361d5e89b55d724e9f930233eeeeebd39fc"
+   },
+   "specular": 0.35,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.15,
+    "mean": 0.7,
+    "sourceMean": 0.4946
+   }
+  },
+  "paintW": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "paintW.albedo.webp",
+    "normalMap": "paintW.normal.webp",
+    "roughnessMap": "paintW.rough.webp"
+   },
+   "lib": "metal.metal049a",
+   "metal": 0.5,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "483677b3439ec2e6de4629c3efc3c2496d4d6969",
+    "normal": "3536e0a1d4de8c5aa38297109f0807117db0ef64",
+    "roughness": "f2ba799bf886bdd11e4ffbdca84e1f2887a6a370"
+   },
+   "specular": 0.35,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.15,
+    "mean": 0.7,
+    "sourceMean": 0.9831
+   }
+  },
   "plaster": {
    "breakup": null,
    "card": false,
@@ -607,6 +667,66 @@
     "keep": 0.85,
     "mean": 0.5,
     "sourceMean": 0.2726
+   }
+  },
+  "rustB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rustB.albedo.webp",
+    "normalMap": "rustB.normal.webp",
+    "roughnessMap": "rustB.rough.webp"
+   },
+   "lib": "metal.metal053c",
+   "metal": 0.6,
+   "normalScale": 1.0,
+   "roughLift": 0.15,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "04882e880fde8d564ddd30fbc12a440c8262667b",
+    "normal": "50c41c38711a8838bc41afa9d99022a0c615e313",
+    "roughness": "6396e15b99348885d0e598d955c2f5a0f450a1f5"
+   },
+   "specular": 0.35,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.85,
+    "mean": 0.5,
+    "sourceMean": 0.5498
+   }
+  },
+  "rustC": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rustC.albedo.webp",
+    "normalMap": "rustC.normal.webp",
+    "roughnessMap": "rustC.rough.webp"
+   },
+   "lib": "metal.metal054c",
+   "metal": 0.6,
+   "normalScale": 1.0,
+   "roughLift": 0.15,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "eb841d6bfaeab741c15036e399f267235d341f4a",
+    "normal": "1e3822a9ffeae799fa07982b2f98219505e77fbd",
+    "roughness": "d6103c6d9cad1edc413ce73bdf8a9531cf1362d9"
+   },
+   "specular": 0.35,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.85,
+    "mean": 0.5,
+    "sourceMean": 0.4518
    }
   },
   "sail": {
@@ -701,6 +821,36 @@
     "keep": 0.8,
     "mean": 0.4,
     "sourceMean": 0.2421
+   }
+  },
+  "tarredB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "tarredB.albedo.webp",
+    "normalMap": "tarredB.normal.webp",
+    "roughnessMap": "tarredB.rough.webp"
+   },
+   "lib": "wood.tarred.b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.25,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "bbacf957a4c111d35724f8c9a17211542ec6955b",
+    "normal": "e4483fcb5483cef97fa76f4a8b00de89bad058e9",
+    "roughness": "8cf83ddb7bcf5bedcc83b5e2033dde0ab3531063"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.8,
+    "mean": 0.4,
+    "sourceMean": 0.2282
    }
   },
   "timber": {

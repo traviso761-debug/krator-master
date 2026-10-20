@@ -21,7 +21,7 @@ VEHICLE_CULTURE('geomancer', {
   lore: 'oil-drilling guild of the Eastern Abyss (Locus, Yuni); electricity, salvaged Ancient engines',
   /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
   detail: {
-    paintBrown: 'paintWorn', paintBrownDark: 'paintWorn', paintBlack: 'paintWorn', paintSand: 'paintWorn',
+    paintBrown: 'paintFlake', paintBrownDark: 'paintWorn', brass: 'brass', brassLight: 'brass', brassDark: 'brass', steel: 'plate', steelDark: 'plate', paintBlack: 'paintWorn', paintSand: 'paintWorn',
     jerryRed: 'paintWorn', jerryOlive: 'paintWorn', jerryBlack: 'paintWorn',
     canvas: 'canvas', canvasDark: 'canvas', canvasOlive: 'canvas', seat: 'canvas', pennantBrass: 'canvas', pennantBrown: 'canvas',
     wood: 'wood', leather: null, rope: null, hose: null, core: null, lensWarm: null

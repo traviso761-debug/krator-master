@@ -15,8 +15,8 @@ function matHook(m,key,fn){const H=m.userData.hooks||(m.userData.hooks=[]);if(H.
  m.onBeforeCompile=sh=>{for(const h of m.userData.hooks)h.fn(sh,m);};const ck=H.map(h=>h.key).join('|');m.customProgramCacheKey=()=>ck;m.needsUpdate=true;}
 /* the library families: MAT key -> pack family (materials.json). A key missing from the pack, or ?mat=proc, draws flat. */
 const NR_LIB={white:'white',conc:'conc',cracked:'cracked',rust:'rust',paint:'paint',deck:'deck',floor:'floor',marble:'marble',grate:'grate',
- plaster:'plaster',turf:'turf',timber:'timber',tarred:'tarred',barn:'barn',sail:'sail',corr:'corr',glyph:'glyph'};
-const NR_TILE0={white:4,conc:3,cracked:3.5,rust:2.5,paint:2,deck:2,floor:2.2,marble:2.4,grate:1.6,plaster:2.5,turf:3,timber:2,tarred:1.5,barn:1.2,sail:2.4,corr:2,glyph:2};
+ plaster:'plaster',turf:'turf',timber:'timber',tarred:'tarred',barn:'barn',sail:'sail',corr:'corr',glyph:'glyph',tarredB:'tarredB',paintFlake:'paintFlake',paintW:'paintW',rustB:'rustB',rustC:'rustC'};
+const NR_TILE0={white:4,conc:3,cracked:3.5,rust:2.5,paint:2,deck:2,floor:2.2,marble:2.4,grate:1.6,plaster:2.5,turf:3,timber:2,tarred:1.5,barn:1.2,sail:2.4,corr:2,glyph:2,tarredB:1.5,paintFlake:2,paintW:2,rustB:2.5,rustC:2.5};
 /* the vendored geometry engine reads these two tables: thin sheets that flutter (SV_CLOTH) and buckets that carry the tents'
    cut-away attribute (SV_CUT: none here; the arcology is cut by deck, below) */
 const SV_CLOTH={sail:1,flag:1};
