@@ -6,7 +6,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 115 | 1228 | 775 | 101 | 52 | 163 | 137 | 6 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 115 | 1230 | 776 | 101 | 52 | 163 | 137 | 6 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 63 | 735 | 159 | 40 | 10 | 30 | 496 | 9 |  | yes | yes |
 | [`settlements/dhelv`](settlements/dhelv/PORT.md) | 18 | 230 | 72 | 0 | 0 | 152 | 6 | 2 | atmos | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 38 | 611 | 133 | 7 | 82 | 46 | 343 | 14 | atmos | yes | yes |
@@ -55,6 +55,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 14 | 210 | 28 | 0 | 14 | 58 | 109 | 2 | biome | yes | yes |
 | [`biomes/ehighlands`](biomes/ehighlands/PORT.md) | 12 | 143 | 13 | 18 | 16 | 32 | 63 | 2 | biome | yes | yes |
 | [`biomes/geyser`](biomes/geyser/PORT.md) | 17 | 166 | 38 | 35 | 14 | 35 | 44 | 2 | biome, atmos | yes | yes |
+| [`biomes/guilin`](biomes/guilin/PORT.md) | 13 | 112 | 40 | 0 | 0 | 12 | 60 | 3 | biome, atmos | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 152 | 3 | 0 | 12 | 16 | 120 | 6 | biome | yes | yes |
 | [`biomes/korona`](biomes/korona/PORT.md) | 12 | 120 | 16 | 0 | 0 | 16 | 89 | 3 | biome, atmos | yes | yes |
 | [`biomes/necanyons`](biomes/necanyons/PORT.md) | 14 | 108 | 35 | 0 | 0 | 10 | 63 | 3 | biome, atmos | yes | yes |
@@ -73,7 +74,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 10 | 91 | 26 | 10 | 0 | 55 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 7 | 185 | 21 | 0 | 0 | 96 | 69 | 0 |  |  | yes |
-| **all** | 2336 | 30911 | 6531 (21%) | 636 (2%) | 1100 (4%) | 3925 (13%) | 18719 (61%) | 275 | | | |
+| **all** | 2355 | 31111 | 6598 (21%) | 636 (2%) | 1100 (4%) | 3956 (13%) | 18821 (60%) | 278 | | | |
 
 ## Host-shell copies
 
@@ -81,8 +82,8 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 
 | Family | Builds | Versions | KB total |
 |---|---|---|---|
-| `host-stage` | 23 | 23 | 427 |
-| `host-build` | 23 | 23 | 33 |
+| `host-stage` | 24 | 24 | 437 |
+| `host-build` | 24 | 24 | 34 |
 | `sky` | 22 | 5 | 436 |
 | `camera` | 19 | 15 | 133 |
 | `host-sky` | 19 | 17 | 268 |
