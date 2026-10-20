@@ -593,7 +593,9 @@ function KCharFigure(body, sliders, load){
       return;
     }
     // the body's capsules, in the world, this frame
-    var sc = self.group.getWorldScale(cS).x, W = caps.map(function(cp){
+    // not the arms: an elbow hanging at the waist pushed a single chain of a cape's edge out, and the cloth below it
+    // swung away alone as a long spike (the push in the shader keeps every vertex out of the arms instead)
+    var sc = self.group.getWorldScale(cS).x, W = caps.filter(function(cp){ return !/Arm/.test(bones[cp.a].name); }).map(function(cp){
       var A = new THREE.Vector3(), B = new THREE.Vector3();
       capEnds(cp, A, B);
       return { a:A, b:B, r:cp.r * sc + PAD };

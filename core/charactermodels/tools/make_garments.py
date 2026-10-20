@@ -1715,7 +1715,8 @@ for b, sex in (('male', 'm'), ('female', 'f')):
             animal_belts(gid, ['claw', 'tiger', 'snake', 'teeth'], ease0=0.034, z0=WAIST - 0.035, trophies=6) + \
             [band(gid + '_bandolier', WAIST + 0.0, SHOULDER + 0.03, 0.045, 0.034, BELTS['teeth']())]
         if sex == 'm':                        # bone plates over both shoulders, outsized
-            parts += [pauldron(gid + '_plateL', L, bonep, reach=0.6, ease=0.04), pauldron(gid + '_plateR', R, bonep, reach=0.6, ease=0.04)]
+            # over the mantle (at 4 cm off the arm, the mantle's 3.6 over the shoulders, they came through it)
+            parts += [pauldron(gid + '_plateL', L, bonep, reach=0.6, ease=0.065), pauldron(gid + '_plateR', R, bonep, reach=0.6, ease=0.065)]
         return parts
     GARMENTS['beast_%s_noble_deel' % sex] = ('torso', b, 'Chief\'s deel, mantle and belts', _bndeel)
 

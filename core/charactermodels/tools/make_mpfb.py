@@ -481,7 +481,8 @@ CONTACT = (0.04, 0.09)
 
 
 def hidden_under(j, b, prim, P, V, where, spec, chains, JJ, WW, names, body, blobs):
-    """under the fixed top of a mantle or a cape (layer 2: its rows above where its chains start), the garment's own
+    """under the fixed top of a mantle or a cape (layer 2: its rows above where its chains start; all of a stiff
+    mantle but its last 6 cm), the garment's own
     cloth is dropped: a triangle whose three vertices each have that top within 5 cm of them, outward of them (away
     from the skin). Weights could not keep them apart there: the tunic's shoulder blades follow the shoulders, which
     the clip and the posture pass draw back, and came out through the trader's mantle and the chief's cape. Cloth on
@@ -492,7 +493,15 @@ def hidden_under(j, b, prim, P, V, where, spec, chains, JJ, WW, names, body, blo
     start = {}
     for ch in chains:
         start[ch['part']] = min(start.get(ch['part'], 1 << 30), ch['rows'][0])
-    top = np.array([lay[gi] == 2 and where[int(V[gi])][1] < start.get(where[int(V[gi])][0], 1 << 30)
+    # and all of a stiff one (a mantle, stiff 0.3 and over: it hardly swings) but its last 6 cm: the trader's tunic
+    # came out through the mantle's hanging rows too
+    hem = {}
+    for gi in range(len(V)):
+        if lay[gi] == 2:
+            pi = where[int(V[gi])][0]
+            hem[pi] = min(hem.get(pi, 1e9), P[gi, 1])
+    top = np.array([lay[gi] == 2 and (where[int(V[gi])][1] < start.get(where[int(V[gi])][0], 1 << 30) or
+                    (spec['parts'][where[int(V[gi])][0]]['stiff'] >= 0.3 and P[gi, 1] > hem[where[int(V[gi])][0]] + 0.06))
                     for gi in range(len(V))])
     if not top.any():
         return

@@ -993,6 +993,8 @@ func _cloth_step(dt: float) -> void:
 		return
 	var W := []
 	for cp in _caps:
+		if "Arm" in String(skel["joints"][int(cp["a"])]["name"]):
+			continue                        # not the arms (an elbow at the waist pushed one chain of a cape out as a spike)
 		var ends := _cap_ends(cp)
 		W.append({"a": ends[0], "b": ends[1], "r": float(cp["r"]) + C_PAD / size})
 	var ground := 0.008 - skeleton.position.y
