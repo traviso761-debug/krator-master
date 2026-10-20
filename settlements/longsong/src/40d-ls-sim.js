@@ -18,8 +18,8 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
  // a building's footprint (x0, x1, z0, z1, the heights it fills): drums by their radius, the rest by their sides
  // (the Debate Court's galleries ring the court: its open floor is not inside them)
  const FOOT=B.filter(o=>o.kind!=='gallery').map(o=>{const hw=o.r!=null?o.r:o.w/2,hd=o.r!=null?o.r:o.d/2;return {id:o.id,x0:o.x-hw,x1:o.x+hw,z0:o.z-hd,z1:o.z+hd,y0:P.baseY(o)-1,y1:P.topY(o)-.5,court:o.court||null};});
- // the camp's tents (pitched on festival days): out of the walk graph, and no one stands in one
- const inTent=(x,z)=>P.CAMP.tents.some(t=>Math.abs(x-t.x)<t.w/2+1.4&&Math.abs(z-t.z)<t.d/2+1.4);
+ // the camp's tents (pitched on festival days) and its well: out of the walk graph, and no one stands in one
+ const inTent=(x,z)=>P.CAMP.tents.some(t=>Math.abs(x-t.x)<t.w/2+1.4&&Math.abs(z-t.z)<t.d/2+1.4)||P.WELLS.some(W=>!W.court&&Math.hypot(x-W.x,z-W.z)<2.4);
  const inFoot=(f,x,z,m)=>x>f.x0-m&&x<f.x1+m&&z>f.z0-m&&z<f.z1+m&&!(f.court&&x>f.court.x0&&x<f.court.x1&&z>f.court.z0&&z<f.court.z1);
  // ---------------------------------------------------------------- 2. the nav graph
  O.graph=function(){if(O._g)return O._g;const nodes=[],edges=[],byId={},C=O.CELL;

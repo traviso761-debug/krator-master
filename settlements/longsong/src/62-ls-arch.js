@@ -89,7 +89,7 @@ const ARCH=(function(){
   if(L){m.onBeforeCompile=sh=>KMAT.libHooks(sh,L);m.customProgramCacheKey=()=>'ls-'+fam+KMAT.libKey(L);}
   return m;}
  const MATS={brick:()=>stdMat('brick',{rough:.85}),terra:()=>stdMat('terra',{rough:.6}),glyph:()=>stdMat('glyph',{rough:.85,ns:1}),
-  mosaic:()=>stdMat('mosaic',{rough:.35}),valance:()=>stdMat('valance',{side:THREE.DoubleSide}),redwash:()=>stdMat('redwash'),mani:()=>stdMat('mani',{ns:1}),drystone:()=>stdMat('drystone',{ns:1}),slat:()=>stdMat('slat',{rough:.7}),
+  mosaic:()=>stdMat('mosaic',{rough:.35}),colpaint:()=>stdMat('colpaint',{rough:.55}),mural:()=>stdMat('mural',{rough:.85,ns:.4}),rug:()=>stdMat('rug',{rough:.95}),books:()=>stdMat('books',{rough:.8,ns:1}),valance:()=>stdMat('valance',{side:THREE.DoubleSide}),redwash:()=>stdMat('redwash'),mani:()=>stdMat('mani',{ns:1}),drystone:()=>stdMat('drystone',{ns:1}),slat:()=>stdMat('slat',{rough:.7}),
   wall:()=>stdMat('wall'),ashlar:()=>stdMat('ashlar'),slate:()=>stdMat('slate',{rough:.55}),gilt:()=>stdMat('gilt',{rough:.32,metal:.55}),
   twig:()=>stdMat('twig'),wood:()=>stdMat('wood',{rough:.6}),paving:()=>stdMat('paving'),bronze:()=>new THREE.MeshStandardMaterial({vertexColors:true,roughness:.42,metalness:.6}),
   dark:()=>new THREE.MeshLambertMaterial({vertexColors:true}),cloth:()=>new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide}),

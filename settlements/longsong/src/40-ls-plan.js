@@ -363,6 +363,12 @@ P.CAMP={x0:106,x1:192,z0:-88,z1:-75,name:"The pilgrims' camp ground (festival da
  // from the camp's own stream, not the order of drawing
  tents:(function(){const out=[];for(let row=0;row<2;row++)for(let i=0;i<10;i++){const u=KRAND.unit(KRAND.hash(5507,row,i)),v=KRAND.unit(KRAND.hash(5507,row,i,1));
    out.push({x:110+i*8.4+u*2,z:row?-79.5:-84.5,ry:(row?0:Math.PI)+(v-.5)*.3,w:3.2+u*.8,d:4+v,h:2.3+v*.4,fire:i%2===row});}return out;})()};
+// the wells (the catalog's xanadu_common_well, FURNITURE.md L0): in the middle of the courts that draw water (the
+// smiths' and the caravanserai's, in the ward; the Closed Ward's garden on the rock) instead of their chorten, and one at
+// the camp ground, between the tents' rows by the trough. `court` names the building whose court holds it (64 draws it there)
+P.WELLS=[{id:'smithy',court:'smithy',name:'The smiths\' well'},{id:'caravanserai',court:'caravanserai',name:'The caravanserai\'s well'},
+ {id:'closed-ward',court:'closed-ward',name:'The well of the Closed Ward\'s garden'},
+ {id:'camp',x:149,z:-80,ry:0,name:'The camp ground\'s well (by the trough)'}].map(W=>{if(W.court){const B=P.building(W.court);W.x=B.x;W.z=B.z;W.ry=0;}return W;});
 P.FEST_SCHEDULES={
  monk:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'WATCH',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',20:'STUDY_IN',22:'SLEEP'}),
  // the cham's dancers (P.CHAM.dancers of the monks): they dance where the house watches

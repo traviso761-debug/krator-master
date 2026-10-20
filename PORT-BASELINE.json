@@ -317,12 +317,12 @@
    "sha256": "8f2ec0633aa237a45e4703ab7d5e87731b4af5c4cce7b1cd409e4658220f476b"
   },
   "kits/beast-riders/dist/beast-riders.html": {
-   "bytes": 12796025,
-   "sha256": "f52c8102d43912adb125c9f0d1dc205503a03019831a291cf5b6d57efb98c03d"
+   "bytes": 12796044,
+   "sha256": "8450eb6fbd47ff30c032d14f4e029751e36c3c148596537ac457e986b95b62ec"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1848827,
-   "sha256": "0225af25d54eeb151d446c61d95cc6c8d5f484a34ff5db0387ef73dd154057bc"
+   "bytes": 1861954,
+   "sha256": "2321de72d39bbae02de604d69bf5f421536a8cfc5bacb6433f33e84fb26cb3be"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2554507,
@@ -421,12 +421,12 @@
    "sha256": "b920716f8ad5ea98e25734a4d4749a6490ac55e5310e3ce353cdfd941b09fed1"
   },
   "settlements/girder/girder-hero.html": {
-   "bytes": 9730858,
-   "sha256": "4fdfdc0ecf7bf28154949f1455acb761d362d687491dbc61166f42e54ca81ed1"
+   "bytes": 9730877,
+   "sha256": "edd0b73d4dd3053166edf848640804b9a9febe1e09ccaec0ca0afc1026439c95"
   },
   "settlements/girder/girder.html": {
-   "bytes": 1672665,
-   "sha256": "57a62909212c68dc3987318f8ac6069b74010bfe7fd516cef4f12287aef18916"
+   "bytes": 1672684,
+   "sha256": "075b5cf06ad603e9f42f540d061572f87c97c18241bfddb6784b7da3b62350db"
   },
   "settlements/highlands/dist/highlands.html": {
    "bytes": 1816868,
@@ -493,8 +493,8 @@
    "sha256": "4e01c6dc6589c9b6b4c817c43c53c0767908c888bb11c88e30fdd9024a068a5e"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 3234989,
-   "sha256": "4848be946e8aeb43da37bd06bfc11612e0186a9be09214bed29ae71b55956e52"
+   "bytes": 3263286,
+   "sha256": "921c4029e24f6c76713e792cf12f9a7318d21f03b02cd255a88b43d1e4f80f85"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9047879,

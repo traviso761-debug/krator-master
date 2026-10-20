@@ -7,7 +7,7 @@ every room and outbuilding before the interiors, and the exterior's revision tow
 build reads it (the site, the decisions of 2026-10-19, the order of work); `KNOWN_ISSUES.md` is what is open.
 
 ```
-python3 build.py                                   # dist/longsong.html (+ its two texture sidecars)
+python3 build.py                                   # dist/longsong.html (+ its three texture sidecars: the library pack splits at its size cap)
 python3 verify.py dist/longsong.html --assert [--views "Longsong from across the stream (north),The Procrastinator"] [--out shots]
 ```
 
@@ -126,13 +126,20 @@ lamps in the windows; `89x`).
   layouts come first (the Assembly's ring of twelve skylight columns and its cushion rows for 300 facing the throne, the
   founders' nine chortens and the altar, the archive's ranks of scroll racks, the catalogue's card cabinets, the pupils'
   desks before the board, the council's round table with its empty place, the Chronicle on its stand before 108 desks,
-  the clocks, the armillary, the Watch's three instruments). The NEW pieces FURNITURE.md listed are in the catalog
-  (`kits/catalog/krator-master-furniture-xanadu.js`, 2026-10-19). The records are baked headless (`bake_interiors.py` ->
+  the clocks, the armillary, the Watch's three instruments; 2026-10-20: the bath house's sunken pool, wall fountain and
+  basins, the laundry's and its drying room's racks of robes, the bindery's woodblock presses, its paper store's vats and
+  racks of sheets). The NEW pieces FURNITURE.md listed are in the catalog (`kits/catalog/krator-master-furniture-xanadu.js`,
+  2026-10-19 and 2026-10-20); the depths' (the closed vault's sealed crates, the quiet cells' lead cases, the unmaking
+  furnace) stand in `66` on the depths' shader, and the wells (`LS.WELLS`) in the courts that draw water and at the camp. The records are baked headless (`bake_interiors.py` ->
   `interiors-bake.json`, inlined by build.py with the kit hash and each room's fingerprint; README "Furniture that is not
   always drawn is data first"). **The drawing** (`87-ls-interiors.js`) is a floor of one building at a time: the cutaway
   (X; ] [ a storey up, down: core/host's, over the White Palace, the Red Palace and the Eastern Watch) or the eye in a
   room shows that floor's rooms (their walls' inner faces with framed doorways, floors, ceilings, the Hall of Pillars'
-  forty columns, the stairs' flights) and its pieces in one catalog batch. Views: 'Inside the Great Assembly Hall', 'The
+  forty columns, the stairs' flights) and its pieces in one catalog batch. The library's pictures are on them (2026-10-20):
+  the columns painted from `column-paint` (the shaft and the wheel bracket each from its part of the picture), the
+  Cataclysm's chronology (`mural-cataclysm`) along its lecture hall's wall, and two kinds of piece drawn by `87` itself from
+  their records rather than the batch: the rugs and carpets (`rug`, the whole rug to its edge) and the bookcases (their
+  carcass and the `book-spines` picture laid to their shelves, in place of the catalog's hundreds of little books). Views: 'Inside the Great Assembly Hall', 'The
   Hall of the Founders', 'Archive Stacks I', 'The Chronicle Hall' and the rest. The rooms corrected the shells they sit in: the
   White Palace's back range is two wings either side of the Assembly drum (one block had filled the drum's hall), the
   Red Palace's wings two blocks outside its walls (one block ran its face through the palace's rooms), the Assembly drum

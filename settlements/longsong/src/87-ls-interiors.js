@@ -28,18 +28,26 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
  const MAT={};const mat=f=>MAT[f]||(MAT[f]=(ARCH.MATS[f]||ARCH.MATS.wall)());
  const cl=h=>{const c=new THREE.Color(h).convertSRGBToLinear();return [c.r,c.g,c.b];};
  function bucket(B,f){return B[f]||(B[f]={p:[],n:[],u:[],c:[]});}
- // a triangle facing N (its winding turned to match), UVs from the world (2 m to a tile), colour C; a quad is two
- function tri(B,f,a,b,c,N,C){const S=bucket(B,f),ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
-  if((uy*vz-uz*vy)*N[0]+(uz*vx-ux*vz)*N[1]+(ux*vy-uy*vx)*N[2]<0){const t=b;b=c;c=t;}
+ // a triangle facing N (its winding turned to match), UVs from the world (2 m to a tile) or given (uv: one a corner),
+ // colour C; a quad is two
+ function tri(B,f,a,b,c,N,C,uv){const S=bucket(B,f),ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+  if((uy*vz-uz*vy)*N[0]+(uz*vx-ux*vz)*N[1]+(ux*vy-uy*vx)*N[2]<0){const t=b;b=c;c=t;if(uv)uv=[uv[0],uv[2],uv[1]];}
   const U=p=>Math.abs(N[1])>.7?[p[0]/2,p[2]/2]:Math.abs(N[0])>.7?[p[2]/2,p[1]/2]:[p[0]/2,p[1]/2];
-  for(const p of [a,b,c]){S.p.push(p[0],p[1],p[2]);S.n.push(N[0],N[1],N[2]);S.u.push(...U(p));S.c.push(C[0],C[1],C[2]);}}
- function quad(B,f,a,b,c,d,N,C){tri(B,f,a,b,c,N,C);tri(B,f,a,c,d,N,C);}
+  [a,b,c].forEach((p,i)=>{S.p.push(p[0],p[1],p[2]);S.n.push(N[0],N[1],N[2]);S.u.push(...(uv?uv[i]:U(p)));S.c.push(C[0],C[1],C[2]);});}
+ function quad(B,f,a,b,c,d,N,C,uv){tri(B,f,a,b,c,N,C,uv&&[uv[0],uv[1],uv[2]]);tri(B,f,a,c,d,N,C,uv&&[uv[0],uv[2],uv[3]]);}
+ // a box turned ry about (x, y, z) from local bounds; uvs: per face ('+z' front, '-z', '+x', '-x', 'top') [u0, u1, v0, v1]
+ // (u left to right as the face is seen, v up) or its four corners' [u, v], the rest from the world
+ function obox(B,f,x,y,z,ry,lx0,lx1,ly0,ly1,lz0,lz1,C,uvs){const cs=Math.cos(ry),sn=Math.sin(ry),T=(a,b,c)=>[x+a*cs+c*sn,y+b,z-a*sn+c*cs],R=(a,c)=>[a*cs+c*sn,0,-a*sn+c*cs];
+  const F=(k,p,N)=>{const q=uvs&&uvs[k];quad(B,f,p[0],p[1],p[2],p[3],N,C,q&&(Array.isArray(q[0])?q:[[q[0],q[2]],[q[1],q[2]],[q[1],q[3]],[q[0],q[3]]]));};
+  F('+z',[T(lx0,ly0,lz1),T(lx1,ly0,lz1),T(lx1,ly1,lz1),T(lx0,ly1,lz1)],R(0,1));F('-z',[T(lx1,ly0,lz0),T(lx0,ly0,lz0),T(lx0,ly1,lz0),T(lx1,ly1,lz0)],R(0,-1));
+  F('+x',[T(lx1,ly0,lz1),T(lx1,ly0,lz0),T(lx1,ly1,lz0),T(lx1,ly1,lz1)],R(1,0));F('-x',[T(lx0,ly0,lz0),T(lx0,ly0,lz1),T(lx0,ly1,lz1),T(lx0,ly1,lz0)],R(-1,0));
+  F('top',[T(lx0,ly1,lz1),T(lx1,ly1,lz1),T(lx1,ly1,lz0),T(lx0,ly1,lz0)],[0,1,0]);}
  function box(B,f,x0,x1,y0,y1,z0,z1,C){
   quad(B,f,[x0,y1,z0],[x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[0,1,0],C);
   quad(B,f,[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],C);quad(B,f,[x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[0,0,-1],C);
   quad(B,f,[x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[1,0,0],C);quad(B,f,[x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[-1,0,0],C);}
  // the colours: lime white for the plain rooms, red ochre for the Red Palace's sacred ones, the floors' boards and flags
- const WHITE=cl(0xece6da),RED=cl(0x9a3a2c),OCHRE=cl(0xd8b070),FLAG=cl(0x9a948a),BOARD=cl(0x8a6a4a),CEIL=cl(0x6a4a34),DARK=cl(0x2a1e18),LAC=cl(0x8e2a1e),BLUE=cl(0x2e5a9c);
+ const PAINT=[1,1,1],CASE=cl(0x5e3420),WHITE=cl(0xece6da),RED=cl(0x9a3a2c),OCHRE=cl(0xd8b070),FLAG=cl(0x9a948a),BOARD=cl(0x8a6a4a),CEIL=cl(0x6a4a34),DARK=cl(0x2a1e18),LAC=cl(0x8e2a1e),BLUE=cl(0x2e5a9c);
  function roomShell(B,r){const y0=r.y,y1=r.y+r.h,sacred=r.tier>=4||r.building==='red-palace'&&r.tier>=3,wc=sacred?RED:r.tier>=3?OCHRE:WHITE;
   const P=r.poly,n=P.length,cx=P.reduce((s,p)=>s+p[0],0)/n,cz=P.reduce((s,p)=>s+p[1],0)/n;
   // the floor (boards in the fine rooms, flags in the rest) and the ceiling (painted timber), as fans round the middle
@@ -65,27 +73,49 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
    W(u,L,y0,y1);
    // the painted band under the ceiling (the Order's blue in the sacred rooms, the maroon twig colour elsewhere)
    quad(B,'wall',[a[0]+nx*.01,y1-.5,a[1]+nz*.01],[b[0]+nx*.01,y1-.5,b[1]+nz*.01],[b[0]+nx*.01,y1-.2,b[1]+nz*.01],[a[0]+nx*.01,y1-.2,a[1]+nz*.01],N,sacred?BLUE:LAC);}
-  // the Hall of Pillars' forty columns: red lacquer on a stone foot under a painted bracket
-  (r.columns||[]).forEach(c=>{const x=c[0],z=c[1];box(B,'ashlar',x-.42,x+.42,y0,y0+.3,z-.42,z+.42,FLAG);box(B,'wood',x-.26,x+.26,y0+.3,y1-.55,z-.26,z+.26,LAC);
-   box(B,'wood',x-.55,x+.55,y1-.55,y1,z-.3,z+.3,BLUE);});
+  // the Hall of Pillars' forty columns on a stone foot, painted (the library's column-paint: each face of the shaft its
+  // middle column, the lotus bands and the red lacquer; the bracket the picture's wheel capital)
+  const SH=[.43,.6,0,.67],BR=[.33,.69,.67,1],BRs=[.42,.61,.67,1];
+  (r.columns||[]).forEach(c=>{const x=c[0],z=c[1];box(B,'ashlar',x-.42,x+.42,y0,y0+.3,z-.42,z+.42,FLAG);
+   obox(B,'colpaint',x,y0+.3,z,0,-.26,.26,0,y1-.55-y0-.3,-.26,.26,PAINT,{'+z':SH,'-z':SH,'+x':SH,'-x':SH});
+   obox(B,'colpaint',x,y1-.55,z,0,-.55,.55,0,.55,-.3,.3,PAINT,{'+z':BR,'-z':BR,'+x':BRs,'-x':BRs});});
+  // the Cataclysm's chronology (its lecture hall, ROOMS.md: the library's mural-cataclysm), along its longest wall
+  // without a door (not the writing board's, at the north), a metre over the floor, 3:1 as painted
+  if(r.subject==='cataclysm'){let best=null;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n],L=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    if(Math.abs(a[1]-r.z0)<.01&&Math.abs(b[1]-r.z0)<.01)continue;const door=r.doors.some(d=>Math.abs((b[0]-a[0])*(d.z-a[1])-(b[1]-a[1])*(d.x-a[0]))/L<.7);if(!door&&(!best||L>best.L))best={a,b,L};}
+   if(best){const {a,b,L}=best,tx=(b[0]-a[0])/L,tz=(b[1]-a[1])/L;let nx=-tz,nz=tx;if(((a[0]+b[0])/2-cx)*nx+((a[1]+b[1])/2-cz)*nz>0){nx=-nx;nz=-nz;}
+    const H=Math.min((L-2)/3,r.h-1.5),W=3*H,u0=(L-W)/2,yb=y0+1,Q=(u,yy)=>[a[0]+tx*u+nx*.03,yy,a[1]+tz*u+nz*.03];
+    // seen from inside, the picture's left is at the end the inward normal turned left points to
+    const flip=tx*nz-tz*nx<0;quad(B,'mural',Q(u0,yb),Q(u0+W,yb),Q(u0+W,yb+H),Q(u0,yb+H),[nx,0,nz],PAINT,flip?[[1,0],[0,0],[0,1],[1,1]]:[[0,0],[1,0],[1,1],[0,1]]);}}
   // a stair room's flight: steps up its long axis (a drawing of the way on: the storeys are not joined by it)
   if(r.stair&&!r.deep){const alongZ=r.z1-r.z0>r.x1-r.x0,len=alongZ?r.z1-r.z0:r.x1-r.x0,n2=Math.max(8,Math.floor(Math.min(len-2,r.h/.17*.3)/.3)),w=Math.min(2.4,(alongZ?r.x1-r.x0:r.z1-r.z0)-.6);
    for(let k=0;k<n2;k++){const s0=1+k*.3,yy=y0+(k+1)*.17;if(yy>y1-.4)break;
     if(alongZ)box(B,'paving',r.x1-w-.3,r.x1-.3,y0,yy,r.z0+s0,r.z0+s0+.3,FLAG);else box(B,'paving',r.x0+s0,r.x0+s0+.3,y0,yy,r.z1-w-.3,r.z1-.3,FLAG);}}}
  // ---------------------------------------------------------------- a floor: its rooms' shells and their pieces
+ // the rugs and the bookcases are drawn here, from their records, in the library's pictures: a rug the whole rug (its
+ // border to its edge, the second colours turned a quarter), a bookcase its carcass and the book spines behind its front
+ // (four shelves to a tile, laid to the case's own shelf pitch); the rest of the pieces go through the catalog's batch
+ const RUGS={xanadu_common_rug:1,xanadu_court_carpet:1},CASES={xanadu_common_bookcase:1,xanadu_court_bookcase:1};
+ function ownPiece(B,p){const D=LSIX.adapter.dims(p.key,p.v),w=D.w,d=D.d,h=D.h;
+  if(RUGS[p.key]){const q=p.v%2?[[0,1],[0,0],[1,0],[1,1]]:[[0,0],[1,0],[1,1],[0,1]];obox(B,'rug',p.x,p.y,p.z,p.ry,-w/2,w/2,.02,.04,-d/2,d/2,PAINT,{top:q});return;}   // over the floor (drawn 2 cm up)
+  const n=Math.max(2,Math.round((h-.2)/.42)),gap=(h-.14)/n,tw=4*gap;
+  obox(B,'wood',p.x,p.y,p.z,p.ry,-w/2,w/2,0,h,-d/2,-d/2+.03,CASE);
+  for(const s of [-1,1])obox(B,'wood',p.x,p.y,p.z,p.ry,s*w/2-.03,s*w/2+.03,0,h,-d/2,d/2,CASE);
+  obox(B,'wood',p.x,p.y,p.z,p.ry,-w/2,w/2,h-.08,h,-d/2,d/2,CASE);obox(B,'wood',p.x,p.y,p.z,p.ry,-w/2+.03,w/2-.03,0,.06,-d/2,d/2,CASE);
+  obox(B,'books',p.x,p.y,p.z,p.ry,-w/2+.03,w/2-.03,.06,h-.08,-d/2,d/2-.05,PAINT,{'+z':[0,(w-.06)/tw,0,(h-.14)/tw]});}
  function build(key){const [uid,ys]=key.split('@'),y=+ys,t0=performance.now(),open=key===OPEN;
   const rooms=RM.list.filter(r=>drawn(r)&&(open?r.outdoor:!r.outdoor&&UNIT_OF[r.building]===uid&&Math.abs(r.y-y)<.05));
   const grp=new THREE.Group();grp.name='interiors:'+key;grp.userData.interiors=true;
   const B={};if(!open)rooms.forEach(r=>{if(r.layout==='pillars'&&!r.columns)LSIX.record(r.id);roomShell(B,r);});
+  let pieces=0;
+  if(LSIX.on){const bt=KratorFurniture.batch({indexed:true});
+   rooms.forEach(r=>{const R=LSIX.record(r.id);if(!R)return;R.pieces.forEach(p=>{pieces++;if(RUGS[p.key]||CASES[p.key]){ownPiece(B,p);return;}
+    bt.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.v,seed:p.seed,wealth:r.wealth,building:r.building,room:r.id,setting:'indoor'});});});
+   const fg=bt.flush(grp);if(fg)fg.traverse(o=>{if(o.isMesh){o.userData.interiors=true;o.userData.inspectLabel=o.userData.inspectLabel||'The rooms\' furniture (kits/catalog)';}});}
   for(const f in B){const S=B[f],g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(S.p,3));
    g.setAttribute('normal',new THREE.Float32BufferAttribute(S.n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(S.u,2));
    g.setAttribute('color',new THREE.Float32BufferAttribute(S.c,3));g.computeBoundingSphere();
-   const m=new THREE.Mesh(g,mat(f));m.userData.inspectLabel='The rooms\' walls, floors and ceilings ('+key+')';m.userData.interiors=true;grp.add(m);}
-  let pieces=0;
-  if(LSIX.on){const bt=KratorFurniture.batch({indexed:true});
-   rooms.forEach(r=>{const R=LSIX.record(r.id);if(!R)return;R.pieces.forEach(p=>{pieces++;
-    bt.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.v,seed:p.seed,wealth:r.wealth,building:r.building,room:r.id,setting:'indoor'});});});
-   const fg=bt.flush(grp);if(fg)fg.traverse(o=>{if(o.isMesh){o.userData.interiors=true;o.userData.inspectLabel=o.userData.inspectLabel||'The rooms\' furniture (kits/catalog)';}});}
+   const m=new THREE.Mesh(g,mat(f));m.name='interiors:'+f;m.userData.inspectLabel='The rooms\' walls, floors and ceilings ('+key+')';m.userData.interiors=true;grp.add(m);}
   let tris=0;grp.traverse(o=>{if(o.isMesh&&o.geometry){const g=o.geometry;tris+=(g.index?g.index.count:g.attributes.position.count)/3;}});
   grp.visible=false;scene.add(grp);
   return G[key]={grp,rooms:rooms.length,pieces,tris:tris|0,ms:Math.round(performance.now()-t0)};}

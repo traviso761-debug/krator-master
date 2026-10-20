@@ -19,7 +19,9 @@ FURN_CULTURE('xanadu', { name: 'Xanadu', pack: 'xanadu', influences: 'Mughal; Yu
        lime, the glass of the relic cases, the archive's paper and ink, the map table's crater, the planters, the lead */
     columnRed: 0x9a2a1e, columnBlue: 0x2e5a9c, limeWhite: 0xf0ece0, glassClear: 0xc8dce0, paper: 0xe8dcb8, ink: 0x22201c,
     mapWater: 0x3e6e80, mapLand: 0x6a8a5a, mapOchre: 0xa08050, leaf: 0x4a7a3a, leafDark: 0x2e5a2a, soil: 0x4a3a2a,
-    butter: 0xffd890, lead: 0x6a6e72, granite: 0x8a8680, specimen: 0xd8d0b0, bronzeOld: 0x7a6a3a
+    butter: 0xffd890, lead: 0x6a6e72, granite: 0x8a8680, specimen: 0xd8d0b0, bronzeOld: 0x7a6a3a,
+    /* the grounds' and the depths' pieces (2026-10-20): the bath's and the fountain's water, the furnace's brick and soot, the seals' wax */
+    water: 0x3a6672, brick: 0x8a4a36, soot: 0x2a2624, wax: 0x9a1a1a
   } });
 /* END PALETTE */
 const XAN_COMMON = {
@@ -433,5 +435,196 @@ FURN({
     F.cyl(0, 0.78, 0, 0.5, 0.01, 0, F.col('gold'), 'gold');
     for (let k = 0; k < 8; k++) { const a = k * F.TAU / 8; F.beam(Math.cos(a) * 0.5, 0.785, Math.sin(a) * 0.5, Math.cos(a) * 1.3, 0.785, Math.sin(a) * 1.3, 0.04, 0.008, F.col('gold'), 'gold'); }
     for (let k = 0; k < 11; k++) { const a = k * F.TAU / 12; F.box(Math.cos(a) * 1.9, 0.78, Math.sin(a) * 1.9, 0.36, 0.01, 0.24, -a, F.col('goldDark'), 'gold'); }
+  }
+});
+/* ======================================================================
+   The Order's house at Longsong: the grounds' and the depths' pieces (settlements/longsong FURNITURE.md, "Pieces the
+   catalog lacks"; 2026-10-20). The printing house's press and the paper mill's vats and racks, the courtyards' well,
+   the quiet cells' lead cases, the unmaking furnace, the bath's pool and basin, the wall fountain, the closed vault's
+   sealed crates.
+   ====================================================================== */
+FURN({
+  key: 'xanadu_common_press', name: 'Printing press and woodblock table', culture: 'xanadu', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['printing', 'press', 'bindery'], anchor: 'floor', clearance: { front: 1.0, back: 0.6 },
+  materials: ['timber', 'cloth'],
+  w: 2.4, d: 1.2, h: 1.1, variants: 2, variantDims: [{ w: 2.4, d: 1.2, h: 1.1 }, { w: 2.4, d: 1.6, h: 1.1 }],
+  build: function (F) {
+    /* the Tibetan woodblock press: a long low table, the carved block clamped on it (inked black), the printer's roller
+       and the dauber, a stack of printed leaves; variant 1 adds the block rack behind (the carved boards on edge) */
+    const wood = F.col('timberRose'), dark = F.shade(wood, -0.2), oz = F.variant === 1 ? 0.25 : 0;
+    F.box(0, 0.62, oz, 2.4, 0.08, 1.0, 0, wood, 'wood');
+    for (const x of [-1.1, 1.1]) for (const z of [-0.42, 0.42]) F.box(x, 0, z + oz, 0.1, 0.62, 0.1, 0, dark, 'wood');
+    F.box(-0.3, 0.7, oz, 0.9, 0.08, 0.36, 0, dark, 'wood');
+    F.box(-0.3, 0.78, oz, 0.86, 0.006, 0.32, 0, F.col('ink'), 'wood');
+    F.rod(0.4, 0.78, oz - 0.2, 0.4, 0.78, oz + 0.2, 0.05, F.shade(wood, 0.1), 'wood');
+    F.ball(0.62, 0.78, oz + 0.3, 0.07, F.col('ink'), 'cloth');
+    for (let i = 0; i < 6; i++) F.box(0.85, 0.7 + i * 0.012, oz - 0.15, 0.6, 0.008, 0.26, (i % 2) * 0.03, F.col('paper'), 'cloth');
+    if (F.variant === 1) {
+      F.box(0, 0, -0.62, 2.2, 1.1, 0.3, 0, dark, 'wood');
+      for (let i = 0; i < 9; i++) F.box(-0.95 + i * 0.24, 0.12, -0.62, 0.05, 0.9, 0.26, 0, F.shade(wood, 0.05 - (i % 3) * 0.05), 'wood');
+    }
+  }
+});
+FURN({
+  key: 'xanadu_common_paper_vat', name: 'Paper vat and moulds', culture: 'xanadu', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['paper', 'mill', 'bindery'], anchor: 'floor', clearance: { front: 0.9 },
+  materials: ['timber', 'stone', 'glass', 'cloth'],
+  w: 2.3, d: 1.1, h: 1.1, variants: 1,
+  build: function (F) {
+    /* a stone-lined tub of pulp (the daphne bark beaten white), the floating mould on its edge, two more leaning, the
+       couching board with a sheet on it */
+    const stone = F.col('stoneSlate');
+    F.box(0, 0, 0, 1.3, 0.8, 0.9, 0, stone, 'stone');
+    F.box(0, 0.8, 0, 1.3, 0.06, 0.9, 0, F.shade(stone, 0.12), 'stone');
+    F.box(0, 0.72, 0, 1.12, 0.06, 0.72, 0, F.col('marbleWhite'), 'glass');
+    F.box(0.3, 0.86, 0.1, 0.5, 0.04, 0.36, 0.2, F.col('timberRoseLight'), 'wood');
+    F.box(0.3, 0.9, 0.1, 0.42, 0.005, 0.3, 0.2, F.col('paper'), 'cloth');
+    for (const x of [-0.95, -1.03]) F.box(x, 0, 0.3, 0.04, 0.95, 0.5, 0.25, F.col('timberRose'), 'wood');
+    F.box(0.92, 0, -0.2, 0.5, 0.45, 0.5, 0, F.col('timberRoseDark'), 'wood');
+    F.box(0.92, 0.45, -0.2, 0.42, 0.01, 0.42, 0, F.col('paper'), 'cloth');
+  }
+});
+FURN({
+  key: 'xanadu_common_drying_rack', name: 'Drying rack', culture: 'xanadu', tier: 'common', type: 'rack', setting: 'indoor',
+  rooms: ['paper', 'printing', 'laundry', 'drying'], anchor: 'floor', clearance: { front: 0.6, back: 0.6 },
+  materials: ['timber', 'cloth', 'rope', 'foliage'],
+  w: 2.0, d: 0.6, h: 1.9, variants: 3,
+  build: function (F) {
+    /* two A-legs and three rails; variant 0 sheets of paper pegged along them, 1 cloths drying (the robes' saffron and
+       maroon, a white), 2 bundles of herbs hung head down */
+    const wood = F.col('timberRose');
+    for (const x of [-0.95, 0.95]) { F.beam(x, 0, -0.28, x, 1.85, 0, 0.06, 0.06, wood, 'wood'); F.beam(x, 0, 0.28, x, 1.85, 0, 0.06, 0.06, wood, 'wood'); }
+    const ys = [0.75, 1.25, 1.75];
+    for (const y of ys) F.rod(-0.95, y, 0, 0.95, y, 0, 0.022, F.shade(wood, 0.08), 'wood');
+    if (F.variant === 0) for (const y of ys) for (let i = 0; i < 6; i++) F.box(-0.75 + i * 0.3, y - 0.36, 0, 0.26, 0.34, 0.006, 0, F.shade(F.col('paper'), (i % 3) * 0.03), 'cloth');
+    if (F.variant === 1) { const c = F.cols(['clothSaffron', 'clothMaroon', 'clothIvory']);
+      for (let r = 0; r < 3; r++) for (let i = 0; i < 2; i++) F.box(-0.45 + i * 0.9, ys[r] - 0.55, 0, 0.82, 0.54, 0.01, 0, c[(r + i) % 3], 'cloth'); }
+    if (F.variant === 2) for (const y of ys) for (let i = 0; i < 7; i++) { const x = -0.78 + i * 0.26; F.rod(x, y, 0, x, y - 0.12, 0, 0.008, F.col('clothGoldBand'), 'rope');
+      F.cone(x, y - 0.42, 0, 0.07, 0.3, 0, F.shade(F.col('leaf'), (i % 3) * 0.06 - 0.06), 'plant'); }
+  }
+});
+FURN({
+  key: 'xanadu_common_well', name: 'Courtyard well', culture: 'xanadu', tier: 'common', type: 'well', setting: 'outdoor',
+  rooms: ['court', 'garden', 'yard', 'street'], anchor: 'floor', clearance: { front: 1.0, back: 1.0, left: 0.8, right: 0.8 },
+  materials: ['stone', 'glass', 'timber', 'lacquer', 'roofTile', 'rope', 'metal', 'cloth'],
+  w: 2.0, d: 1.8, h: 2.6, variants: 1,
+  build: function (F) {
+    /* a whitewashed stone ring with a granite coping, two posts and a roofed crossbeam (a prayer flag tied to it), the
+       windlass and its bucket */
+    F.cyl(0, 0, 0, 0.8, 0.75, 0, F.col('limeWhite'), 'stone');
+    F.cyl(0, 0.75, 0, 0.86, 0.1, 0, F.col('granite'), 'stone');
+    F.cyl(0, 0.7, 0, 0.6, 0.06, 0, F.col('water'), 'glass');
+    const wood = F.col('timberRoseDark');
+    for (const x of [-0.85, 0.85]) F.box(x, 0, 0, 0.14, 2.2, 0.14, 0, wood, 'wood');
+    F.rod(-0.85, 1.55, 0, 0.85, 1.55, 0, 0.06, F.col('timberRose'), 'wood');
+    F.box(0, 2.2, 0, 2.0, 0.08, 0.7, 0, F.col('lacquerRed'), 'lacquer');
+    F.pyrRoof(0, 2.28, 0, 2.1, 0.32, 0.8, 0, F.col('goldDark'), 'roof');
+    F.rod(0, 1.55, 0, 0, 1.0, 0, 0.01, F.col('clothGoldBand'), 'rope');
+    F.frustum(0, 0.82, 0, 0.12, 0.15, 0.22, 0, F.col('brass'), 'metal');
+    F.box(0, 1.9, 0.38, 1.4, 0.18, 0.004, 0, F.col('clothSaffron'), 'cloth');
+  }
+});
+FURN({
+  key: 'xanadu_common_lead_case', name: 'Lead-lined case on its stone, with its bell', culture: 'xanadu', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['quiet cell', 'vault'], anchor: 'floor', clearance: { front: 0.9 },
+  materials: ['stone', 'metal', 'bronze', 'cloth'],
+  w: 1.0, d: 0.8, h: 1.6, variants: 1,
+  build: function (F) {
+    /* a granite block, the grey lead case on it, its lid strapped shut with three bands and sealed in red wax with the
+       Order's tag, a small bronze bell on an iron bracket that rings if the lid is lifted */
+    F.box(0, 0, 0, 0.95, 0.75, 0.75, 0, F.col('granite'), 'stone');
+    F.box(0, 0.75, 0, 0.7, 0.42, 0.52, 0, F.col('lead'), 'metal');
+    F.box(0, 1.17, 0, 0.74, 0.06, 0.56, 0, F.shade(F.col('lead'), 0.1), 'metal');
+    for (const x of [-0.25, 0, 0.25]) F.box(x, 0.74, 0, 0.05, 0.5, 0.58, 0, F.col('iron'), 'metal');
+    F.cyl(0, 0.92, 0.27, 0.05, 0.012, 0, F.col('wax'), 'cloth');
+    F.box(0, 0.82, 0.275, 0.12, 0.08, 0.005, 0, F.col('paper'), 'cloth');
+    F.beam(0.38, 1.23, 0, 0.38, 1.55, 0, 0.03, 0.03, F.col('iron'), 'metal');
+    F.beam(0.38, 1.55, 0, 0.2, 1.55, 0, 0.03, 0.03, F.col('iron'), 'metal');
+    F.dome(0.2, 1.38, 0, 0.08, 0.14, 0, F.col('bronzeOld'), 'bronze');
+  }
+});
+FURN({
+  key: 'xanadu_common_furnace', name: 'The unmaking furnace and its acid vats', culture: 'xanadu', tier: 'common', type: 'stove', setting: 'indoor',
+  rooms: ['unmaking', 'vault'], anchor: 'wall', clearance: { front: 1.4 },
+  materials: ['stone', 'metal', 'ceramic', 'emissive'],
+  w: 2.6, d: 1.5, h: 2.6, variants: 1,
+  build: function (F) {
+    /* a brick kiln with a soot-black mouth and an iron door ajar on the glow, its flue rising to the wall; beside it two
+       glazed acid vats with lids and a long iron rake */
+    F.box(-0.3, 0, -0.05, 1.8, 1.6, 1.3, 0, F.col('brick'), 'stone');
+    F.box(-0.3, 1.6, -0.15, 1.5, 0.3, 1.1, 0, F.shade(F.col('brick'), -0.12), 'stone');
+    F.frustum(-0.3, 1.9, -0.3, 0.32, 0.22, 0.7, 0, F.col('soot'), 'stone', 8);
+    F.box(-0.3, 0.35, 0.61, 0.7, 0.6, 0.02, 0, F.col('soot'), 'stone');
+    F.box(-0.3, 0.4, 0.615, 0.56, 0.48, 0.02, 0, F.col('ember'), 'glow');
+    F.box(0.22, 0.38, 0.65, 0.4, 0.52, 0.03, -0.35, F.col('iron'), 'metal');
+    for (const z of [-0.3, 0.3]) { F.frustum(0.95, 0, z, 0.24, 0.3, 0.75, 0, F.col('clayCeladon'), 'ceramic', 12); F.cyl(0.95, 0.75, z, 0.31, 0.04, 0, F.shade(F.col('clayCeladon'), -0.15), 'ceramic'); }
+    F.rod(0.5, 0.05, 0.62, 0.2, 1.4, 0.62, 0.02, F.col('iron'), 'metal');
+    F.lamp(-0.3, 0.7, 0.95, 0.8, 6);
+  }
+});
+FURN({
+  key: 'xanadu_court_bath_pool', name: 'Sunken tiled pool', culture: 'xanadu', tier: 'court', type: 'fountain', setting: 'indoor',
+  rooms: ['bath'], anchor: 'floor', clearance: { front: 1.2, back: 1.2, left: 1.2, right: 1.2 },
+  materials: ['ceramic', 'stone', 'glass', 'gold'],
+  w: 6.0, d: 4.0, h: 0.65, variants: 1,
+  build: function (F) {
+    /* the pool under the bath's dome: a turquoise-tiled rim at the floor, the water a hand below it, a step across one
+       end, a gilt lotus spout at the other */
+    const tile = F.col('turquoiseStone');
+    for (const z of [-1.85, 1.85]) F.box(0, 0, z, 6.0, 0.3, 0.3, 0, tile, 'tile');
+    for (const x of [-2.85, 2.85]) F.box(x, 0, 0, 0.3, 0.3, 3.4, 0, tile, 'tile');
+    F.box(0, 0.22, 0, 5.4, 0.02, 3.4, 0, F.col('water'), 'glass');
+    F.box(-2.45, 0.1, 0, 0.5, 0.12, 3.4, 0, F.col('marbleWhite'), 'stone');
+    F.cone(2.85, 0.3, 0, 0.16, 0.22, 0, F.col('gold'), 'gold');
+    F.ball(2.85, 0.56, 0, 0.09, F.col('gold'), 'gold');
+  }
+});
+FURN({
+  key: 'xanadu_common_bath_basin', name: 'Stone basin', culture: 'xanadu', tier: 'common', type: 'fountain', setting: 'indoor',
+  rooms: ['bath', 'laundry', 'court', 'kitchen'], anchor: 'floor', clearance: { front: 0.7 },
+  materials: ['stone', 'glass', 'metal'],
+  w: 0.8, d: 0.8, h: 0.9, variants: 1,
+  build: function (F) {
+    /* a granite bowl on a squat pedestal, water in it, a brass dipper on its rim */
+    F.frustum(0, 0, 0, 0.26, 0.2, 0.55, 0, F.col('granite'), 'stone', 10);
+    F.frustum(0, 0.55, 0, 0.28, 0.4, 0.3, 0, F.col('granite'), 'stone', 14);
+    F.cyl(0, 0.78, 0, 0.34, 0.02, 0, F.col('water'), 'glass');
+    F.rod(0.2, 0.84, 0.1, 0.38, 0.88, 0.2, 0.012, F.col('brass'), 'metal');
+    F.ball(0.2, 0.8, 0.1, 0.05, F.col('brass'), 'metal');
+  }
+});
+FURN({
+  key: 'xanadu_court_wall_fountain', name: 'Tiled wall fountain', culture: 'xanadu', tier: 'court', type: 'fountain', setting: 'indoor',
+  rooms: ['bath', 'court', 'garden', 'hall'], anchor: 'wall', clearance: { front: 0.9 },
+  materials: ['ceramic', 'stone', 'gold', 'glass'],
+  w: 1.4, d: 0.6, h: 2.0, variants: 1,
+  build: function (F) {
+    /* a turquoise-tiled back under an ogee arch of white marble, a gilt spout, the thin fall of water into a half-round
+       basin */
+    F.box(0, 0, -0.25, 1.4, 1.8, 0.1, 0, F.col('turquoiseStone'), 'tile');
+    F.box(0, 1.8, -0.25, 1.4, 0.2, 0.12, 0, F.col('marbleWhite'), 'stone');
+    for (const x of [-0.62, 0.62]) F.box(x, 0, -0.18, 0.16, 1.8, 0.06, 0, F.col('marbleWhite'), 'stone');
+    F.cone(0, 1.25, -0.12, 0.06, 0.18, 0, F.col('gold'), 'gold');
+    F.beam(0, 1.22, -0.06, 0, 0.5, -0.02, 0.03, 0.01, F.col('water'), 'glass');
+    F.frustum(0, 0, 0, 0.24, 0.3, 0.5, 0, F.col('marbleWhite'), 'stone', 16);
+    F.cyl(0, 0.46, 0, 0.27, 0.02, 0, F.col('water'), 'glass');
+  }
+});
+FURN({
+  key: 'xanadu_common_relic_crate', name: 'Sealed relic crate', culture: 'xanadu', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['vault', 'archive'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['timber', 'metal', 'cloth'],
+  w: 1.2, d: 0.8, h: 0.8, variants: 3, variantDims: [{ w: 1.2, d: 0.8, h: 0.8 }, { w: 0.8, d: 0.6, h: 0.6 }, { w: 1.8, d: 0.9, h: 0.9 }],
+  build: function (F) {
+    /* a plank crate banded in iron, its lid nailed down and sealed in red wax across the seam, the register's tag (the
+       designation) stencilled on its face; three sizes */
+    const D = [{ w: 1.2, d: 0.8, h: 0.8 }, { w: 0.8, d: 0.6, h: 0.6 }, { w: 1.8, d: 0.9, h: 0.9 }][F.variant] || { w: 1.2, d: 0.8, h: 0.8 };
+    const wood = F.shade(F.col('timberRose'), 0.08);
+    F.box(0, 0, 0, D.w, D.h, D.d, 0, wood, 'wood');
+    for (const k of [-0.36, 0.36]) F.box(k * D.w, 0, 0, 0.06, D.h + 0.01, D.d + 0.02, 0, F.col('iron'), 'metal');
+    F.box(0, D.h * 0.45, 0, D.w + 0.02, 0.06, D.d + 0.02, 0, F.col('iron'), 'metal');
+    F.cyl(0, D.h, D.d / 2 - 0.02, 0.06, 0.015, 0, F.col('wax'), 'cloth');
+    F.box(0, D.h * 0.62, D.d / 2 + 0.006, D.w * 0.36, D.h * 0.16, 0.004, 0, F.col('paper'), 'cloth');
+    F.box(0, D.h * 0.66, D.d / 2 + 0.009, D.w * 0.26, D.h * 0.05, 0.002, 0, F.col('ink'), 'cloth');
   }
 });

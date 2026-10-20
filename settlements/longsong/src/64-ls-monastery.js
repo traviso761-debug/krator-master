@@ -6,6 +6,7 @@
 // Watch; the Closed Ward; the hermits' cells; the chortens, the prayer-wheel rows, the lamps, the flags.
 const gY=(x,z)=>terrainH(x,z);
 const minG=(x,z,w,d)=>{let m=1e9;for(const a of [-.5,0,.5])for(const b of [-.5,0,.5])m=Math.min(m,gY(x+a*w,z+b*d));return m;};
+const WELL_Y={};   // a court's paving height, for its well (LS.WELLS)
 const BREC={};   // id -> the building's registered volume
 LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)/2,yg=Math.min(y,minG(B.x,B.z,B.w||2*B.r,B.d||2*B.r));
  const top=LS.topY(B)+(B.cone||0)+(B.kind==='louvre'?20:B.kind==='roofhall'?8:B.kind==='drum'?9:B.kind==='archive'?7:B.kind==='school'?5:3);
@@ -87,7 +88,7 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
    ARCH.box('paving',B.x,y-.4,B.z,B.w-2*dp,.52,B.d-2*dp,{col:LSP.granite,sides:''});
    const ix=B.w/2-dp-1.6,iz=B.d/2-dp-1.6;for(let a=-ix;a<=ix+.01;a+=3.2)for(const s of [-1,1])ARCH.cyl('wood',B.x+a,y,B.z+s*iz,.18,.16,B.storey,{seg:6,col:LSP.wood});
    ARCH.box('wood',B.x,y+B.storey,B.z,2*ix+1,.3,2*iz+1,{col:LSP.woodDark,top:false});
-   lsChorten(B.x,y,B.z,.35);
+   if(LS.WELLS.some(W=>W.court===B.id))WELL_Y[B.id]=y+.12;else lsChorten(B.x,y,B.z,.35);   // a well (drawn below) or a chorten
    lsDoor(B.x+nx*(B.w/2+.05),y,B.z,nx,0,3,3.6,{curtain:LSP.saffron});}});
  // the Geomancers' lodge carries Yuni's colours on its door (the Order's friends)
  {const B=LS.building('geomancers');lsDecal(SIGNS.sign('The Geomancers\' Lodge','Guests of the Order, from Yuni. Knock; wait.'),B.x-B.w/2-.2,LS.baseY(B)+4.4,B.z+3.4,2.4,1.2,-1,0,{label:'The Geomancers\' lodge\'s sign'});}
@@ -244,7 +245,7 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
   if(B.kind==='court'){const dp=9,R=[[B.x,B.z-B.d/2+dp/2,B.w,dp],[B.x,B.z+B.d/2-dp/2,B.w,dp],[B.x-B.w/2+dp/2,B.z,dp,B.d-2*dp],[B.x+B.w/2-dp/2,B.z,dp,B.d-2*dp]];
    R.forEach(([x,z,w,d])=>lsBlock(x,z,w,d,T-.5,y,B.floors,B.storey,{win:{spacing:5}}));
    ARCH.box('paving',B.x,y-.3,B.z,B.w-2*dp,.45,B.d-2*dp,{col:0x8aa070,sides:''});   // the garden open to the sky (15 cm over the rock)
-   lsChorten(B.x,y,B.z,.3);}
+   if(LS.WELLS.some(W=>W.court===B.id))WELL_Y[B.id]=y+.15;else lsChorten(B.x,y,B.z,.3);}
   else lsBlock(B.x,B.z,B.w,B.d,T-.5,y,B.floors,B.storey,{rich:B.id==='rear-shrine',roundels:B.id==='rear-shrine'});
   if(B.contain){// the containment's marks: a seal strip on each side of the one door, the register's plaque, the blue sigil
    const nz=-1,zf=B.z-B.d/2-.06;lsDoor(B.x,y,zf+.05,0,nz,2,3,{col:0x2a2a3a});
@@ -252,6 +253,13 @@ LS.BUILDINGS.filter(B=>B.kind==='drum').forEach(B=>{const y=LS.baseY(B),R=B.r,H=
    lsDecal(B.contain==='LS-P'?SIGNS.sign('The Closed Ward · '+B.contain,'One door, one warden. Those held here are guests of the Order and are treated so.'):SIGNS.sign('The specimen hall · '+B.contain,'What is kept here is catalogued in the register. Touch nothing unlisted.'),
     B.x+4.4,y+2.6,zf-.12,3.4,1.7,0,-1,{label:B.name+' (its plaque)'});
    lsDecal(SIGNS.SIGIL,B.x,y+B.floors*B.storey-1.6,zf-.12,2.2,2.2,0,-1,{label:'The Order\'s sigil: under containment'});}});
+ // the wells (LS.WELLS: the catalog's courtyard well): on their court's paving, or on the ground at its lowest under the
+ // well's foot; registered, then drawn through one catalog batch
+ if(typeof KratorFurniture!=='undefined'){const bt=KratorFurniture.batch({indexed:true});
+  LS.WELLS.forEach(W=>{const y=W.court?WELL_Y[W.court]:minG(W.x,W.z,2,1.8)-.04;if(y==null)return;
+   REGISTER({name:W.name,cls:'prop',kind:'well',key:'longsong_well_'+W.id,x:W.x,z:W.z,y,r:1.4,h:2.6,tags:{culture:'order',setting:'outdoor'},note:'xanadu_common_well (kits/catalog)'});
+   bt.place('xanadu_common_well',W.x,y,W.z,W.ry,{variant:0,seed:KRAND.hash(7121,W.id.length,Math.round(W.x)),wealth:.5,setting:'outdoor'});});
+  const g=bt.flush(scene);g.name='longsong-wells';g.traverse(o=>{if(o.isMesh){o.userData.host=true;o.userData.arch=true;o.userData.inspectLabel='A courtyard well (kits/catalog)';}});}
  // the hermits' cells on the east cliff, their ladders down to the kora. Each stands where the cliff's face is at its
  // floor's height (found along its row, not assumed), its back built 1.2 m into the rock on a stone ledge corbelled out
  // of the face, its ladder from its door straight down to the ground under the ladder (2026-10-19: they floated)
