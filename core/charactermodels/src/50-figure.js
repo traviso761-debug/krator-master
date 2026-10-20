@@ -1388,6 +1388,15 @@ function KCharFigure(body, sliders, load){
   var LIMB = [0.3, 0.5, 0.72], CANTS = [0], LEAN = 15 * Math.PI / 180, cM3 = new THREE.Matrix4(), cQ4 = new THREE.Quaternion(),
       cW = new THREE.Vector3(), cO = new THREE.Vector3(), cA = new THREE.Vector3(), cB = new THREE.Vector3();
   for(var ci = 10; ci <= 80; ci += 10) CANTS.push(ci, -ci);
+  // how far p is inside a bone capsule (kchar_figure.gd _cap_depth): its own copy, as bodyFix's depth() went with the
+  // segment tests
+  var dA = new THREE.Vector3(), dB = new THREE.Vector3(), dP = new THREE.Vector3();
+  function depth(p, cp){
+    bones[cp.a].getWorldPosition(dA); bones[cp.b].getWorldPosition(dB);
+    dB.sub(dA);
+    var t = THREE.MathUtils.clamp(dP.subVectors(p, dA).dot(dB) / Math.max(1e-9, dB.lengthSq()), 0, 1);
+    return cp.r + 0.012 - p.distanceTo(dP.copy(dA).addScaledVector(dB, t));
+  }
   function upright(ax){
     bow.pivot.getWorldQuaternion(cQ4);
     cB.set(0, 1, 0).applyQuaternion(cQ4.invert());               // world up in the turned bow's frame
@@ -1409,7 +1418,7 @@ function KCharFigure(body, sliders, load){
       cM3.makeRotationFromQuaternion(cQ4.setFromAxisAngle(ax, a)).premultiply(bow.pivot.matrixWorld);
       LIMB.forEach(function(y){ [1, -1].forEach(function(sg){
         cW.set(0, sg * y, -0.09 * (y / 0.72) * (y / 0.72)).applyMatrix4(cM3);
-        legs.forEach(function(cp){ sum += Math.max(0, depth(cW, { a:cp.a, b:cp.b, r:cp.r * sc }, cO)); });
+        legs.forEach(function(cp){ sum += Math.max(0, depth(cW, { a:cp.a, b:cp.b, r:cp.r * sc })); });
       }); });
       if(sum <= 0){ bow.inLegs = 0; return a; }
       if(sum < least - 1e-6){ least = sum; best = a; }
