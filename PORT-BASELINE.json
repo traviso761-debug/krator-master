@@ -20,6 +20,10 @@
    "bytes": 637226,
    "sha256": "31ea3583728a36ccbe6db11d7e95eba8c61494d1e2d5b70e1f2db6d57b142af6"
   },
+  "biomes/guilin/dist/guilin.html": {
+   "bytes": 648108,
+   "sha256": "dd413e5e970cc851de4f0e1d1adb1a589de70a457a95e1954bd905123ff42ec6"
+  },
   "biomes/hyperjungle/dist/hyperjungle.html": {
    "bytes": 4622381,
    "sha256": "81d44333823bf26d8839106a7e87bd286ec663f86acff1fad392b55cdc5a7b97"

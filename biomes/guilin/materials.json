@@ -1,0 +1,277 @@
+{
+ "build": "guilin",
+ "note": "The guilin kit's adapter onto the material library (core/materials/PLAN.md). The host's layers (47-host-land.js): ground.grass (the plain: ground.leafy_grass, greened in the ground's shader), ground.litter (the towers' feet), ground.sand (the river's bars), ground.mud (the paddies, the pond's edge), rock.wall (the towers: rock.limestone.karst, grey with black rain streaks and ochre iron stains), rock.blade (the stone forest's blades: the same stone greyed, keep 0, its grey from the vertex colour: Shilin's rock is grey, not Guilin's ochre), rock.top (a tower's cap under the scrub). The kit's slots (BIO.libSwap, 50-biome-guilin-species.js): the karst cards Ys commissioned (card.jungle.clump.0 for the cliff scrub, card.vine.hanging.0 for the creepers: full colour), the broadleaf, orchard and pine cards (tinted grey, keep 0) and the barks. Procedural still (no fitting card): the bamboo's narrow leaves, rice and silvergrass, ferns, moss, the lotus, the stone orchid. Run python3 tools/textures/pack.py biomes/guilin after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "ground.grass": {
+   "lib": "ground.leafy_grass",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.litter": {
+   "lib": "leaf.forest_leaves_02",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.sand": {
+   "lib": "ground.coast_sand_rocks_02",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.mud": {
+   "lib": "ground.brown_mud_02",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "rock.wall": {
+   "lib": "rock.limestone.karst",
+   "scale": [
+    24.0,
+    24.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "rock.blade": {
+   "lib": "rock.limestone.karst",
+   "scale": [
+    9.0,
+    9.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "rock.top": {
+   "lib": "ground.moss002",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "scrub": {
+   "lib": "card.jungle.clump.0",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "vine": {
+   "lib": "card.vine.hanging.0",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "oakleaf": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "camphorleaf": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "figleaf": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "osmleaf": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "pomeloleaf": {
+   "lib": "card.orchard.broad",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "pineleaf": {
+   "lib": "card.pine",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0,
+   "specular": 0.25
+  },
+  "bark.bamboo": {
+   "lib": "bark.bamboo.jade",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.fig": {
+   "lib": "bark.strangler",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.pine": {
+   "lib": "bark.pine.scale",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.camphor": {
+   "lib": "bark.bark_brown_01",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.wood": {
+   "lib": "bark.smooth",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  }
+ }
+}
