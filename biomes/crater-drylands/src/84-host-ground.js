@@ -67,7 +67,11 @@ TEX_CARPET.wrapS=TEX_CARPET.wrapT=THREE.RepeatWrapping;TEX_CARPET.encoding=THREE
 // the pack (?mat=proc, or an open world) the ground is exactly the painted one.
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('craterdry',n);
  const b=P('ground.burn'),s=P('ground.redsoil');if(!b||!s)return null;
- return{burn:KMAT.textures(b,{aniso:8}).map,burnK:1/b.scale[0],soil:KMAT.textures(s,{aniso:8}).map,soilK:1/s.scale[0]};})();
+ // three more (2026-10-19): the washes' pale sand (ground.wash), the grit of the kopjes' aprons (ground.grit: red-pink
+ // granite grit) and the seep's mossy red soil (ground.seep); each optional, so a pack without them keeps the old look
+ const w=P('ground.wash'),g=P('ground.grit'),e=P('ground.seep'),T=x=>x?KMAT.textures(x,{aniso:8}).map:null;
+ return{burn:KMAT.textures(b,{aniso:8}).map,burnK:1/b.scale[0],soil:KMAT.textures(s,{aniso:8}).map,soilK:1/s.scale[0],
+  wash:T(w),washK:w?1/w.scale[0]:0,grit:T(g),gritK:g?1/g.scale[0]:0,seep:T(e),seepK:e?1/e.scale[0]:0};})();
 // THE LIVE FIRE's uniforms and shader text (89-host-fire.js lights the fire and drives them; the ground here and every
 // plant material 89 patches share them): the arrival-time map (R the arrival in seconds, G the ground's height: a
 // half-float texture, so it filters), the fire's clock (seconds since it was lit), on/off, the grid (x0, z0, cell, N).
@@ -79,13 +83,16 @@ const FIRE_GLSL='uniform sampler2D uFireTex;uniform float uFireT,uFireOn,uFireRT
  'g.x+=5.0*sin(xz.x*0.19+2.0*sin(xz.y*0.13))+4.0*sin(xz.y*0.23+1.7*sin(xz.x*0.11));return vec2(uFireOn>0.5?uFireT-g.x:-1e5,g.y);}'+
  'float fireHash(vec3 p){return fract(sin(dot(floor(p),vec3(12.9898,78.233,37.719)))*43758.5453);}\n';
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uGran={value:CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX};sh.uniforms.uCarpet={value:TEX_CARPET};if(GLAY){sh.uniforms.uGBurn={value:GLAY.burn};sh.uniforms.uGSoil={value:GLAY.soil};}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aBloom,aOld;attribute vec3 aDrift;varying float vBloom,vOld;varying vec3 vDrift;attribute vec2 aGL;varying vec2 vGL;')
-  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vBloom=aBloom;vOld=aOld;vDrift=aDrift;vGL=aGL;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uCarpet;varying vec3 vGWP;varying float vRock;varying float vBloom,vOld;varying vec3 vDrift;varying vec2 vGL;'+(GLAY?'uniform sampler2D uGBurn,uGSoil;':'')+FIRE_GLSL)
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uGran={value:CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX};sh.uniforms.uCarpet={value:TEX_CARPET};sh.uniforms.uGranB={value:CRATERDRY.GRANITE_B?CRATERDRY.GRANITE_B.map:(CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX)};if(GLAY){sh.uniforms.uGBurn={value:GLAY.burn};sh.uniforms.uGSoil={value:GLAY.soil};if(GLAY.wash)sh.uniforms.uGWash={value:GLAY.wash};if(GLAY.grit)sh.uniforms.uGGrit={value:GLAY.grit};if(GLAY.seep)sh.uniforms.uGSeep={value:GLAY.seep};}
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aBloom,aOld;attribute vec3 aDrift;varying float vBloom,vOld;varying vec3 vDrift;attribute vec4 aGL;varying vec4 vGL;attribute float aSeep;varying float vSeep;')
+  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vBloom=aBloom;vOld=aOld;vDrift=aDrift;vGL=aGL;vSeep=aSeep;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uGranB,uCarpet;varying vec3 vGWP;varying float vRock;varying float vBloom,vOld;varying vec3 vDrift;varying vec4 vGL;varying float vSeep;'+(GLAY?'uniform sampler2D uGBurn,uGSoil;'+(GLAY.wash?'uniform sampler2D uGWash;':'')+(GLAY.grit?'uniform sampler2D uGGrit;':'')+(GLAY.seep?'uniform sampler2D uGSeep;':''):'')+FIRE_GLSL)
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'+
   // the granite's speckle on the kopjes (a custom sampler is not decoded from sRGB: pow 2.2 by hand)
   'vec3 gr=pow(texture2D(uGran,vGWP.xz*0.11+vGWP.y*0.03).rgb,vec3(2.2));'+
+  // the second granite (stone.granite.b) in patches ~60 m across: the same brightness, a finer grain and more lichen
+  'vec3 grb=pow(texture2D(uGranB,vGWP.xz*0.13+vGWP.y*0.03+vec2(0.41,0.23)).rgb,vec3(2.2));'+
+  'gr=mix(gr,grb*'+(CRATERDRY.GRANITE&&CRATERDRY.GRANITE_B?(Math.pow(CRATERDRY.GRANITE.mean/CRATERDRY.GRANITE_B.mean,2.2)).toFixed(3):'1.0')+',smoothstep(0.35,0.65,texture2D(uCarpet,vGWP.xz*0.0173+vec2(0.13,0.71)).b));'+
   'vec3 _pd=diffuseColor.rgb;'+
   'diffuseColor.rgb*=mix(dt*dt2*1.12,gr*'+(CRATERDRY.GRANITE?(.7/Math.pow(CRATERDRY.GRANITE.mean,2.2)).toFixed(3):'2.6')+',vRock*0.7);'+
   // the library ground: a custom sampler is not decoded from sRGB, so pow 2.2 by hand; the layers take the painted
@@ -99,7 +106,11 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
    'vec3 tb=mix(pow(texture2D(uGBurn,p*'+GLAY.burnK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGBurn,q*'+(GLAY.burnK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);'+
    'tb=mix(tb,vec3(dot(tb,vec3(0.2126,0.7152,0.0722))),0.35);tb*=mix(0.5,1.25,smoothstep(0.2,0.8,m2));'+
    'tb=mix(tb,vec3(0.36,0.35,0.33),smoothstep(0.62,0.85,m1*0.6+m2*0.5)*0.55);'+
-   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*ts*1.25,0.55),vGL.y);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*tb*1.15,vGL.x);}':'')+
+   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*ts*1.25,0.55),vGL.y);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*tb*1.15,vGL.x);'+
+   // the washes' pale sand, the granite grit round the kopjes, the seep's mossy soil (each its own tile and a turned one, as above)
+   (GLAY.wash?'vec3 tw=mix(pow(texture2D(uGWash,p*'+GLAY.washK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGWash,q*'+(GLAY.washK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tw*1.3,0.7),vGL.z);':'')+
+   (GLAY.grit?'vec3 tg=mix(pow(texture2D(uGGrit,p*'+GLAY.gritK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGGrit,q*'+(GLAY.gritK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tg*1.3,0.7),vGL.w*(1.0-vRock));':'')+
+   (GLAY.seep?'vec3 te=mix(pow(texture2D(uGSeep,p*'+GLAY.seepK.toFixed(4)+').rgb,vec3(2.2)),pow(texture2D(uGSeep,q*'+(GLAY.seepK*.47).toFixed(4)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt);diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*te*1.3,0.7),vSeep);':'')+'}':'')+
   // the carpet: two scales of the fleck map, so the tiling does not show; colours are linear, times the material's own
   'vec3 c1=texture2D(uCarpet,vGWP.xz*0.41).rgb,c2=texture2D(uCarpet,vGWP.xz*0.157+vec2(0.37,0.61)).rgb;'+
   'float fl=max(c1.r,c2.r*0.85),gb=max(c1.g,c2.g*0.8);'+
@@ -118,19 +129,20 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('ground
  Object.assign(sh.uniforms,FIREU);};
 const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),bl=new Float32Array(nx*nx),old=new Float32Array(nx*nx),dr=new Float32Array(nx*nx*3);
- const gl=new Float32Array(nx*nx*2);
+ const gl=new Float32Array(nx*nx*4),se=new Float32Array(nx*nx);
  const DR=CRATERDRY.BLOOM_SETS.map(b=>{const c=new THREE.Color(b[1][0]).convertSRGBToLinear();return[Math.min(1,c.r*2.3),Math.min(1,c.g*2.3),Math.min(1,c.b*2.3)];});
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   rk[k]=smooth(.3,.65,FC.at(FC.a.rock,x,z));
   const age=FIRE.ageAt(x,z),S4=CRATERDRY.stages(age),open=(1-rk[k])*(1-smooth(.3,.7,FC.at(FC.a.flow,x,z))*.7);
   bl[k]=S4.bloom*open*smooth(2.2,.9,Math.abs(age-1.3))*(.55+.45*smooth(.3,.7,fbm(x*.02,z*.02,4351,2)));old[k]=S4.mature*open;
   const gr=(1-rk[k])*(1-smooth(.3,.7,FC.at(FC.a.flow,x,z))*.85)*(1-smooth(.2,.6,FC.at(FC.a.oasis,x,z)));
-  gl[k*2]=gr*Math.min(1,S4.char+.5*S4.bloom*smooth(1.2,.45,age));gl[k*2+1]=gr*(.5*S4.regrow+.6*S4.bloom+.45*S4.mature);
+  gl[k*4]=gr*Math.min(1,S4.char+.5*S4.bloom*smooth(1.2,.45,age));gl[k*4+1]=gr*(.5*S4.regrow+.6*S4.bloom+.45*S4.mature);
+  {const rf=FC.at(FC.a.rock,x,z),fl=FC.at(FC.a.flow,x,z),oa=FC.at(FC.a.oasis,x,z);gl[k*4+2]=smooth(.3,.7,fl)*(1-oa);gl[k*4+3]=smooth(.06,.3,rf)*smooth(.7,.45,rf)*(1-smooth(.3,.7,fl));se[k]=smooth(.2,.6,oa);}
   const D=DR[CRATERDRY.driftOf(x,z)];dr[k*3]=D[0];dr[k*3+1]=D[1];dr[k*3+2]=D[2];}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aBloom',new THREE.BufferAttribute(bl,1));g.setAttribute('aOld',new THREE.BufferAttribute(old,1));g.setAttribute('aDrift',new THREE.BufferAttribute(dr,3));g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));
+ g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aBloom',new THREE.BufferAttribute(bl,1));g.setAttribute('aOld',new THREE.BufferAttribute(old,1));g.setAttribute('aDrift',new THREE.BufferAttribute(dr,3));g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));g.setAttribute('aSeep',new THREE.BufferAttribute(se,1));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The crater drylands';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the water (the seep)

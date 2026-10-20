@@ -345,6 +345,20 @@
    },
    "mapOnly": true,
    "roughLift": 0.3
+  },
+  "ground.litter": {
+   "lib": "ground.moss001",
+   "scale": [
+    2.8,
+    2.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

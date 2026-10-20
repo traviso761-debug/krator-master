@@ -331,6 +331,34 @@
     "sourceMean": 0.4091
    }
   },
+  "ground.litter": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.litter.albedo.webp"
+   },
+   "lib": "ground.moss001",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    2.8,
+    2.8
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "bd5eb8562f22b452bbd690265f5371664494bd06",
+    "normal": "38fc931d6fd4e81d5663bde68285c1b3638cf22d",
+    "roughness": "8726ed8ad1d55935a660504a22801c5b9059d9d2"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5000978801413143,
+    "sourceMean": 0.5001
+   }
+  },
   "hang": {
    "breakup": null,
    "card": true,

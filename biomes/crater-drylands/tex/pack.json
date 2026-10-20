@@ -141,6 +141,34 @@
     "sourceMean": 0.3146
    }
   },
+  "ground.grit": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.grit.albedo.webp"
+   },
+   "lib": "rock.ground111",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "b3320a5f7dc205ca1b483d4c3dba40a1c5d87d0d",
+    "normal": "4b9fabe600c79578f6b85bd1887bf4e5c6076d4f",
+    "roughness": "a38067f22769f0b7c6ffe51ea1f651ecaee910d4"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.48614039426915784,
+    "sourceMean": 0.4861
+   }
+  },
   "ground.redsoil": {
    "breakup": null,
    "card": false,
@@ -167,6 +195,62 @@
     "keep": 1.0,
     "mean": 0.4164468683699065,
     "sourceMean": 0.4164
+   }
+  },
+  "ground.seep": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.seep.albedo.webp"
+   },
+   "lib": "ground.ground068",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d211981922d8ae279984b711032d717961e498c6",
+    "normal": "7e781c20f9a8b99eb9dcc851b5b6465a7e93f9ea",
+    "roughness": "4ff6e59c674972283f472ac0a5310f2f208eb1a7"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3607817140796138,
+    "sourceMean": 0.3608
+   }
+  },
+  "ground.wash": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.wash.albedo.webp"
+   },
+   "lib": "ground.ground093c",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2f29246fa99b1bb36794aedd19899604152fb598",
+    "normal": "321299e16017d70b1c8410dfd526c36e3f9e9ddd",
+    "roughness": "9e17496c203148756dd2fb7e68cdcb5070bdd121"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.7273635995303882,
+    "sourceMean": 0.7274
    }
   },
   "groundDetail": {
@@ -561,6 +645,34 @@
     "keep": 0.5,
     "mean": 0.7,
     "sourceMean": 0.5775
+   }
+  },
+  "stone.granite.b": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "stone.granite.b.albedo.webp"
+   },
+   "lib": "rock.granite.tor.b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9c35f0e40f7b965aa92cecb466b90916f508f363",
+    "normal": "1e7dadee86821c911f63e7441094502dcb15a360",
+    "roughness": "2245501518aaf46d16e5b496ad162876e83e1739"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.5,
+    "mean": 0.7,
+    "sourceMean": 0.5398
    }
   },
   "wood.char": {

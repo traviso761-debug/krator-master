@@ -52,7 +52,7 @@ function hnRCLoggia(x,y,z,L,LH,ry,wood,o){o=o||{};vB('vWood',x,y,z,L+.1,.22,L+.1
 function hnRCFlight(x,y,z,ry,w,rise,item,c){const n=Math.max(2,Math.round(rise/.16)),tr=.34;for(let k=0;k<n;k++){const p=loc(x,z,0,-(k+.5)*tr,ry);vB(item||'vStone',p[0],y,p[1],w,rise*(k+1)/n,tr+.01,ry,c);}return n*tr;}
 // Grid paving: flags with joints (no overlapping slabs, so no z-fighting), on a darker bed.
 function hnRCPave(x,z,w,d,ry,c,cell){cell=cell||2.2;const nx=Math.max(1,Math.round(w/cell)),nz=Math.max(1,Math.round(d/cell));vB('vStone',x,0,z,w,.14,d,ry,c.clone().multiplyScalar(.6));   // round 10: a 14 cm bed, clear of levelled terrain
- for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const p=loc(x,z,-w/2+(i+.5)*w/nx,-d/2+(j+.5)*d/nz,ry);vB('vFlag',p[0],.14,p[1],w/nx-.08,.04+rng()*.012,d/nz-.08,ry,c.clone().multiplyScalar(rr(.9,1.06)));}}
+ for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){const p=loc(x,z,-w/2+(i+.5)*w/nx,-d/2+(j+.5)*d/nz,ry);vB('hAshlarP',p[0],.14,p[1],w/nx-.08,.04+rng()*.012,d/nz-.08,ry,c.clone().multiplyScalar(rr(.9,1.06)));}}
 // Low ashlar balustrade from a to b (local [x,z]) at base y: a parapet with a coping and posts every ~3.5 m.
 function hnRCBalus(a,b,y,c,h){h=h||.95;const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ry=Math.atan2(dx,dz)-Math.PI/2,m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
  vB('vStone',m[0],y,m[1],L,h-.14,.32,ry,c);vB('vStone',m[0],y+h-.14,m[1],L+.1,.14,.44,ry,c.clone().multiplyScalar(1.05));

@@ -665,6 +665,62 @@
     "sourceMean": 0.5178
    }
   },
+  "ground.bayoumud": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.bayoumud.albedo.webp"
+   },
+   "lib": "ground.ground095b",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "20deb98b061f2def0289ee9b8085eb6ac4871ca5",
+    "normal": "7d61ff82c183e6bc1e1eed476062a783cca809df",
+    "roughness": "77246d9e5ba354b30d3f8f2666b145004b91c795"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4399539026507209,
+    "sourceMean": 0.44
+   }
+  },
+  "ground.oaklitter": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.oaklitter.albedo.webp"
+   },
+   "lib": "ground.ground020",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3b027a937b559c750b56e6c8483cb9d3aeb0933d",
+    "normal": "b484e8a77ad2a1c41222054303abfa5636072aac",
+    "roughness": "43bab479712e7b6d9b3af260a7c171abb7ff425d"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.45938080188526825,
+    "sourceMean": 0.4594
+   }
+  },
   "groundDetail": {
    "breakup": null,
    "card": false,

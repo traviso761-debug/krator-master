@@ -502,6 +502,34 @@
     "mean": 0.7
    },
    "size": 512
+  },
+  "ground.mulch": {
+   "lib": "ground.ground072",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.meadow": {
+   "lib": "ground.ground037",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

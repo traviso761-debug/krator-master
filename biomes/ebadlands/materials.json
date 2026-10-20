@@ -391,6 +391,34 @@
     "mean": 0.559
    },
    "mapOnly": true
+  },
+  "ground.redwall": {
+   "lib": "rock.sandstone.red",
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.74
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.caprock": {
+   "lib": "rock.sandstone_cracks",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.76
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

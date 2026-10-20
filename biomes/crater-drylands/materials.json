@@ -299,6 +299,62 @@
    "metal": 0,
    "normalScale": 1.0,
    "mapOnly": true
+  },
+  "stone.granite.b": {
+   "lib": "rock.granite.tor.b",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.wash": {
+   "lib": "ground.ground093c",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.grit": {
+   "lib": "rock.ground111",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.seep": {
+   "lib": "ground.ground068",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

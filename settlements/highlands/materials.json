@@ -584,6 +584,62 @@
    },
    "metal": 0,
    "normalScale": 0.5
+  },
+  "meadow": {
+   "lib": "ground.ground013",
+   "scale": [
+    8.0,
+    8.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.42
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "rbDirt": {
+   "lib": "ground.ground108",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "cobble": {
+   "lib": "rock.rock_wall_12",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ashlarP": {
+   "lib": "rock.rock_wall_11",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

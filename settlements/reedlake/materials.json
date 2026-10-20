@@ -631,6 +631,19 @@
    },
    "metal": 0,
    "size": 1024
+  },
+  "rlLily": {
+   "lib": "ground.lilypond",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.6
   }
  }
 }
