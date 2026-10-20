@@ -36,6 +36,7 @@ python3 build.py [--thumbs]                                        # dist/cosmet
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
 python3 tools/shots.py <dir> tools/shots-clipping.json               # close-ups of the open clipping issues, the same every run
+python3 tools/lab_shots.py <dir> <spec.json> --page <lab copy> --gpu   # Animation Lab clips per body, side by side (pieces beside the page)
 python3 tools/ease.py /path/to/export male                           # under-items outside the item over them, per outfit
 node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after a change to 10-rig.js, data/ or the pieces
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
@@ -143,9 +144,9 @@ driven straight forward at chest height, the point leading, the right shoulder t
 stabbed overhand, the point up). **Spear thrust**: the same underhand, the right hand at the hip on the butt end and the
 left forward on the shaft. **Spear advance** keeps Meshy's 'Spear Walk' legs and body (fetched as `spear_walk@src`, a
 source only) with the arms at the spear thrust's guard (it held the spear with the right hand behind the back).
-**Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 18 hand-held things built from
+**Props** (`tools/make_props.py` -> `pieces/props/*.glb`, `data/props.json`): 20 hand-held things built from
 primitives (sword, dagger, axe, mace, war hammer, spear, shield, bow, crossbow, rifle, pistol, pickaxe, hoe, hammer,
-bucket, cup, lantern, torch) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
+bucket, cup, lantern, torch, bowl, bread) and an arrow, each modelled in the grip frame: +Y along the handle out past the index
 finger, +Z the way the fingers point, +X out of the palm. `make_mpfb.py hands()` measures that frame on each body's rest
 hand (skeleton.json `hands`: the grip in the hand bone's space, the arm's three bones, and per grip style, per finger
 joint, the rotation that closes the hand: `fist` round a handle, `trigger` with the index finger along a gun, `wide`
@@ -154,6 +155,27 @@ default first; `fig.hold({R, L, both})` hangs the GLBs under the hand bones and 
 of the clip; the Animation Lab's Holding picker swaps the right hand's prop among the clip's choices. The shield is
 held by its centre grip with the board out past the back of the hand (made the other way, every clip faced its boss
 into the body); in a lower hand a prop with `low_turn` turns about its handle so the shield stands up, board out.
+A prop with `hang` (its axis that points down) turns about the grip so that axis points down whatever the hand's turn:
+the bucket and the lantern hang plumb from their bails (they followed the forearm), the bowl stands level on the palm.
+A weapon's `blade` (its striking part along the handle) keeps out of the head, the neck and the trunk (`bladeClear`,
+`_blade_clear`): the wrist turns until the blade passes the skull's sphere (with the hair), a taper down to the neck
+joint and the trunk's capsules, each widened by half a blade's width; the turn carries over from frame to frame and
+eases back to the clip's over 0.3 s, so the blade stays on the side it went round (starting afresh each frame flipped
+it across the head in Block 2). `fig.bladeNeed` (`blade_need`) says how deep it still was.
+
+*To the face.* A clip's `face` in `data/clips.json` brings a hand to the face (`toFace`, `_to_face`): the hand's point
+(`point`, in its grip frame: a cup's rim, a bite of bread, the bow string's place in the hand) goes onto one of the
+face's points by the arm's two-bone solve, the hand keeping its turn. The points (`data/clips.json faces`, per body,
+metres from the head joint in the figure's frame at rest, turned with the head; a giant's are the man's times its
+scale): `mouth`, `sip` (a cup's or a bite's middle at the lips), `anchor` (a drawn bow's string hand, under the side of
+the jaw) and `head` (the skull's middle and radius, for `blade`). With `when` (spans of clip seconds) it does so in
+those spans, easing in over `ease` and out over it after a span's end (a span at a loop's start or end runs on round
+the loop); without, as near as the clip brings the hand (full within `near[0]`, none beyond `near[1]`). Drink holds the
+cup in the left hand (the clip drinks with it) and brings its rim to the lips from 2.4 to 5.2 s; Eat (`ual_consume`:
+the library's clip only reaches out at face height) holds bread in the left hand and a bowl in the right and puts the
+bread to the mouth from 0.3 to 1.1 s; the four bow clips draw to the anchor in their full-draw spans, with `level`:
+the arrow, string hand to bow hand, points up at most 6 degrees (the bow arm comes down to it). `fig.faceW`
+(`face_w`) is how far it went.
 
 *Two hands.* A clip's `two_hands` names the props the left hand also holds in it (the spear, the rifle and crossbow,
 the hoe, the axe, the war hammer and the mace in the clips made for them, and the two-handed parry). A prop's
@@ -162,10 +184,22 @@ hand (within the arm's reach, a hand's width from the right hand), turned round 
 from the shoulder, and a two-bone solve (upper arm, forearm; the elbow kept on the side the clip bends it) brings the
 arm there. When the left arm cannot reach, the right brings the prop toward the left shoulder by the shortfall (up to
 45 cm) and both reach; if the hands are still too far apart the arms ease back to the clip's own pose
-(`fig.reach` says how far short the hand fell).
+(`fig.reach` says how far short the hand fell). The pistol's support is one point, so in Pistol stance and Pistol
+aim the left hand cups the right hand's fingers. A clip with `lead_left` (Two-handed parry: its left hand is above the
+right, toward the blade) takes a prop with a one-point support the other way round: the prop slides half the support's
+offset up through the right hand and the left holds above it, so the forearms do not cross (they went through each
+other).
 *The bow* has no modelled string: the figure draws it between the limb tips (`string`), through the right hand while
-that hand is behind the bow and near its middle, turns the bow about its handle to face the drawing hand, and nocks
-the arrow once the string is pulled (`fig.drawn`).
+that hand is behind the bow, turns the bow about its handle to face the drawing hand, and lays the arrow from the
+string hand to the bow hand (`fig.drawn`). When the arrow is on the string comes from the clip: `nock` in
+`data/clips.json`, spans of clip seconds from nocking to the loose, so every body looses together (the hand leaving a
+zone round the bow loosed the long-armed bodies early) and a hand passing behind the bow later draws nothing (the arrow
+came back at 7.69 s in Draw from quiver). A bow clip without spans guesses from the hand's place (behind the bow and
+near its middle; the arrow once the string is pulled 20 cm). The bow is canted about the arrow's line (so the string
+stays in the hand): at full draw (`faceW`) toward upright but for 15 degrees of the clip's lean (Draw from quiver held it
+40 degrees over, a limb at the hip), and then by the least of 10-degree steps that keeps its limbs out of the legs'
+capsules (Bow aim and scan put the lower limb through the left leg); `fig.bowState()` (`bow_state()`) gives the turn,
+the cant, how deep the limbs still are in the legs, and whether the arrow shows.
 
 **Voth clothing** (`tools/make_garments.py`, Blender + MPFB): the Chichani's own clothes in three classes per body,
 made here as MakeHuman clothes (so MPFB fits, weights and morphs them like the library's): peasants in undyed maguey
@@ -556,6 +590,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |
 | `tools/ease.py` | under-items standing outside the item over them, per outfit (`--objs`: from the generator's output) | |
 | `tools/shots.py` | close-ups of the Cosmetic Lab, the same every run (`tools/shots-clipping.json`: the open clipping issues) | |
+| `tools/lab_shots.py` | shots of the Animation Lab: a clip at a time on each body framed close and put side by side, the same every run (`--gpu`: the machine's GPU, not SwiftShader) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |

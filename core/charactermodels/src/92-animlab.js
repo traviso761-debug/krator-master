@@ -103,6 +103,8 @@
   KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
   KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
   ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
+  KCharFigure.clipData = INFO;
+  KCharFigure.faces = (D.clips && D.clips.faces) || {};
   var lead = D.bodies[CAST[0].body].skeleton.clips;
   lead.forEach(function(c){ META[c.name] = c; });
   var GROUPS = [{ id:'idle', label:'Idle' }].concat((D.clips && D.clips.groups) || []);

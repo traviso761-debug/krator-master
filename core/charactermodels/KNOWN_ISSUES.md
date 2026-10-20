@@ -51,7 +51,28 @@
   hand can look cramped, and when the left arm falls short the right hand is pulled in (up to 45 cm), which narrows
   the clip's swing. The elbow keeps the clip's side, which is not always the natural one. The bow turns about its handle to
   face the drawing hand rather than the bow hand turning; the drawing hand's pinch is one fixed pose, and the arrow
-  only shows while the string is pulled (there is no nocking motion). The supporting hand always closes in a fist.
+  shows from nocking to the loose with no nocking motion. The supporting hand always closes in a fist.
+- **The hand-prop fixes of the owner's review (2026-10-20) are passes over clips made for something else** (README,
+  Props, To the face, The bow). What each leaves:
+  - *Hanging props hang still.* The bucket and the lantern point plumb from the grip every frame; they do not swing
+    with the walk, and nothing keeps a bucket out of the thigh. *Water plants* was made for a watering can: the bucket
+    hangs from the reaching hand and nothing pours.
+  - *The bow's spans are set by hand* (`nock` and the face spans in data/clips.json, read off the clips): a new bow clip
+    needs its own, or it falls back on guessing from the hand's place. The string runs through the closed hand's middle,
+    so at the anchor it passes a few centimetres beside the jaw rather than touching the chin. Bow shot's whole draw is
+    above the head in the clip: the string hand is brought down 15 cm to the jaw and the bow arm lowered until the arrow
+    points up at most 6 degrees, so the shot aims a little upward. At full draw the bow is turned upright but for 15
+    degrees of the clip's lean.
+  - *Block 2's sword* is kept out of the head, neck and trunk by turning the wrist (the shoulders and arms are not in
+    the keep-out), so on the men it ends hanging back past the right shoulder and on the women held level over the
+    head: clear, but not the block a fencer would make. A clip that needs it would be better re-made.
+  - *Eat* (the library's `Consume`) only reaches forward at face height: the bread is pulled to the mouth by a two-bone
+    solve between 0.3 and 1.1 s, so the elbow goes where the solve puts it, and the bowl stands on the palm's grip point.
+    *Drink* lifts the hand above the head at 4 to 5 s; the cup's rim is held at the lips through it and the cup tips as
+    the hand does.
+  - *The Godot twin of these passes* matches the page to the millimetre on the neutral man (both hands' grips, the head,
+    the bow's turn and cant, the face weight, the blade's residue, at fourteen clip times), checked with a scratch data
+    folder without clothes; the checks added to `kchar_test.gd` were not run on this machine (no Godot pieces here).
 - **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
   script (`tools/make_garments.py`): no folds beyond the hang and flare, strips of texture with the library's fabric
   grain multiplied in (colour only: no normal or roughness map, so a weave does not catch the light), and the
