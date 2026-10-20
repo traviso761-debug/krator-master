@@ -31,11 +31,13 @@ function etLancetPts(x,y,w,h,z,seg){seg=seg||6;const ys=y+Math.max(0,h-w*.866),p
  pts.push([x-w/2,ys,z]);return pts;}
 /* the height of the pointed head over xx (for clipping the tracery's mullions into it) */
 function etLancetTop(x,y,w,h,xx){const ys=y+Math.max(0,h-w*.866),c=xx>=x?x-w/2:x+w/2;return ys+Math.sqrt(Math.max(0,w*w-(xx-c)*(xx-c)));}
-/* a flat outline (a fan from its first point) with UVs in the wall's metres over the key's tile, so a library sheet maps
-   onto it (poly() writes no UVs) */
+/* a flat outline (a fan from its first point) with UVs in metres over the key's tile, projected on the plane its normal
+   faces most (a wall's x and y, a gable end's z and y, a slope's x and z), so a library sheet maps onto it (poly() writes
+   no UVs) */
 function etPoly(mk,pts,col){const tl=TILE[mk]||1,pos=[],nor=[],uv=[],idx=[];const a=pts[0],b=pts[1],c=pts[2];
  const n=new THREE.Vector3().crossVectors(new THREE.Vector3(b[0]-a[0],b[1]-a[1],b[2]-a[2]),new THREE.Vector3(c[0]-a[0],c[1]-a[1],c[2]-a[2])).normalize();
- for(const p of pts){pos.push(p[0],p[1],p[2]);nor.push(n.x,n.y,n.z);uv.push(p[0]/tl,p[1]/tl);}for(let i=1;i<pts.length-1;i++)idx.push(0,i,i+1);
+ const ax=Math.abs(n.x),ay=Math.abs(n.y),az=Math.abs(n.z),U=ax>=ay&&ax>=az?p=>[p[2],p[1]]:ay>=az?p=>[p[0],p[2]]:p=>[p[0],p[1]];
+ for(const p of pts){const t=U(p);pos.push(p[0],p[1],p[2]);nor.push(n.x,n.y,n.z);uv.push(t[0]/tl,t[1]/tl);}for(let i=1;i<pts.length-1;i++)idx.push(0,i,i+1);
  emit(mk,fixWind(mkGeo(pos,nor,uv,idx)),null,col);}
 /* one lancet set in a wall face at z: the dark reveal, the light (o.light: 'onyx', 'alabaster' or 'glass'), the tracery */
 function etLancet(x,y,z,w,h,o){o=o||{};

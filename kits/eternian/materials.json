@@ -486,6 +486,30 @@
     "mean": null
    },
    "metal": 0.25
+  },
+  "scale": {
+   "lib": "metal.scale",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0.45
+  },
+  "gilt": {
+   "lib": "roof.scale.gilt",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.4
   }
  }
 }

@@ -24,7 +24,7 @@ const ET_TRADES=[
  {trade:'porters and warehousemen',voth:'voth_warehouse_b',keys:[],gap:'to build in P6: et_warehouse'},
  {trade:'industrial workers',voth:'industrial lot',keys:[],gap:'to build in P6: et_kiln',note:'the kilns, the tile works, the paper mill, the porcelain works'},
  {trade:'power-house stokers and engineers',voth:'voth_generator',keys:[],gap:'to build in P4: et_tube_station',note:'no generators: the engineers keep the revived Ancient pneumatic tubes'},
- {trade:'household service',voth:'rich house, manor, clan compound',keys:[],gap:'to build in P3: et_official_villa'},
+ {trade:'household service',voth:'rich house, manor, clan compound',keys:['et_official_villa']},
  {trade:'soldiers',voth:'voth_barracks',keys:[],gap:'to build in P4: et_barracks'},
  {trade:'teachers and scholars',voth:'voth_school',keys:[],gap:'to build in P4: et_examination_hall'},
  {trade:'guild officers and clerks',voth:'voth_bldg_guild_hall',keys:[],gap:'to build in P4: et_registry',note:'the paper state: the registry and the ministries'},

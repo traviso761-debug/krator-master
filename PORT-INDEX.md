@@ -34,10 +34,10 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 11 | 110 | 98 | 0 | 0 | 12 | 0 | 0 |  |  | yes |
 | [`kits/ash-nomads`](kits/ash-nomads/PORT.md) | 24 | 164 | 27 | 6 | 10 | 24 | 96 | 2 | atmos | yes | yes |
 | [`kits/beast-riders`](kits/beast-riders/PORT.md) | 18 | 443 | 15 | 0 | 0 | 11 | 417 | 3 |  |  | yes |
-| [`kits/catalog`](kits/catalog/PORT.md) | 46 | 2135 | 42 | 0 | 10 | 59 | 2024 | 3 |  |  | yes |
+| [`kits/catalog`](kits/catalog/PORT.md) | 47 | 2155 | 42 | 0 | 10 | 59 | 2043 | 3 |  |  | yes |
 | [`kits/crops`](kits/crops/PORT.md) | 7 | 47 | 41 | 0 | 0 | 7 | 0 | 0 |  | yes | yes |
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 25 | 159 | 30 | 6 | 10 | 24 | 88 | 2 | atmos | yes | yes |
-| [`kits/eternian`](kits/eternian/PORT.md) | 25 | 131 | 24 | 6 | 10 | 24 | 67 | 3 | atmos | yes | yes |
+| [`kits/eternian`](kits/eternian/PORT.md) | 30 | 173 | 24 | 6 | 10 | 24 | 108 | 3 | atmos | yes | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 24 | 246 | 122 | 0 | 10 | 77 | 37 | 1 |  |  | yes |
 | [`kits/islanders`](kits/islanders/PORT.md) | 39 | 414 | 27 | 6 | 10 | 24 | 346 | 3 | atmos | yes | yes |

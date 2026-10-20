@@ -6,6 +6,7 @@
 // cast pattern block where a wall must breathe (geometric, never glyphic). The pier bundle, the lancet bundle and the
 // tracery grid are P1's.
 const ET_T=.3;   /* a wall's thickness */
+const ET_WATER=0x18302f;   /* the canals', pools' and basins' water: dark, so the sky's reflection reads on it */
 /* the cut-away: geometry drawn inside fn stays whole when the building opens; etCutFloor raises the cut's floor */
 function etNoCut(fn){const keep=CUTC;CUTC=[keep[0],keep[1],keep[2],0];try{fn();}finally{CUTC=keep;}}
 function etCutFloor(y){CUTC=[CUTC[0],CUTC[1],CUTC[2]+y,CUTC[3]];}
@@ -26,7 +27,8 @@ function etStepHead(x,y,z,w,o){o=o||{};const c=o.col||P('limeShade'),n=o.steps==
 /* ---------------------------------------------------------------- a wall with openings
    L long, from y0 up h, mk/col its face, along x in the current frame, thickness ET_T about z=0 (its front at +ET_T/2).
    An opening {x, w, h, y (sill; a door's is 0), door, shut (shutters, default on a window), head ('step' | 'flat'),
-   mask (over a door; maskMetal 'terracotta' or 'lead'), leaf (a door's colour)}. The surround is a raised band of lime; a window has its glass set back */
+   mask (over a door; maskMetal 'terracotta' or 'lead'), leaf (a door's colour), dark (unglazed: a dark reveal, plank
+   shutters: the poor's)}. The surround is a raised band of lime; a window has its glass set back */
 function etWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||ET_T,fz=t/2;opens=(opens||[]).slice().sort((a,b)=>a.x-b.x);let x=-L/2;
  const seg=(a,b,ya,yb)=>{if(b-a>.01&&yb-ya>.01)box(mk,(a+b)/2,y0+ya,0,b-a,yb-ya,t,col);};
  const SY=q=>q.door?0:(q.y==null?.95:q.y),TOP=q=>Math.min(h,SY(q)+q.h);
@@ -48,6 +50,8 @@ function etWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||ET_T,fz=t/2;opens=(o
    box('brass',q.x+q.w*.32,y0+1.0,.06,.05,.18,.04,P('bronze'));
    door(q.x,y0,fz,0,q.w);
    if(q.mask!==false)etMask(q.x,y0+top+.62,fz+.1,.46,q.maskMetal);}
+  else if(q.dark){box('plain',q.x,y0+sy,-.06,q.w-.04,top-sy,.04,new THREE.Color(P('stoneD')).multiplyScalar(.45));   /* unglazed: the poor's */
+   if(q.shut!==false)for(const s of [-1,1])box('shutter',q.x+s*(q.w*.75+.06),y0+sy,fz+.05,q.w/2,top-sy,.04,o.shutCol||P('timberL'));}
   else{/* the glass; a steel window's is dark and opaque, so its grid reads against it from the street */
    box(q.steel?'plain':'glass',q.x,y0+sy,-.04,q.w-.04,top-sy,.04,q.lit?P('glassLit'):q.steel?new THREE.Color(P('glass')).multiplyScalar(.8):P('glass'));
    if(q.steel){const ir=P('iron');                                                         /* Deco steel glazing: a fine grid */

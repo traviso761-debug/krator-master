@@ -41,7 +41,7 @@ function etGBeam(G,a,b,w){const d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],L=Math.hypot(d
  for(let k=0;k<4;k++){const c0=c[k],c1=c[(k+1)%4];etQuad(G,P(a,c0[0],c0[1]),P(a,c1[0],c1[1]),P(b,c1[0],c1[1]),P(b,c0[0],c0[1]));}
  etQuad(G,P(b,-1,-1),P(b,1,-1),P(b,1,1),P(b,-1,1));etQuad(G,P(a,-1,1),P(a,1,1),P(a,1,-1),P(a,-1,-1));}
 /* an n-sided frustum (a robe, a plinth) from radius r0 at y0 to r1 at y1, its depth squashed by sz */
-function etGFrustum(G,cx,cz,y0,y1,r0,r1,n,sz){sz=sz||1;const P=(r,y,i)=>{const a=i/n*Math.PI*2+Math.PI/n;return [cx+r*Math.sin(a),y,cz+r*Math.cos(a)*sz];};
+function etGFrustum(G,cx,cz,y0,y1,r0,r1,n,sz){sz=sz==null?1:sz;const P=(r,y,i)=>{const a=i/n*Math.PI*2+Math.PI/n;return [cx+r*Math.sin(a),y,cz+r*Math.cos(a)*sz];};
  for(let i=0;i<n;i++){etQuad(G,P(r0,y0,i),P(r0,y0,i+1),P(r1,y1,i+1),P(r1,y1,i));etTri(G,[cx,y1,cz],P(r1,y1,i),P(r1,y1,i+1));}}
 
 /* ---------------------------------------------------------------- the head */

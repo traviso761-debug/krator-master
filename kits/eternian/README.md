@@ -18,7 +18,8 @@ from `kits/scyvoi/src` (`10-core 27-mat 30-geo 36-def 90-scene 91f-furnish 91n-n
 place: `core/rand`, `core/materials/record`, `core/tags`, `core/furnish`, `core/walk`, `core/atmos`, `core/host`, and the
 catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture as one bundle. What is the kit's own:
 `26k-kit.js` (identity, library families, palette), `37-wk-rec.js` (walk records, from the Islanders kit), `40-et-kit.js`
-(the toolkit), `50-et-dwell.js` (the dwellings), `89-rows.js` (the sheet's rows).
+(the toolkit), `44-et-roof.js` (the roofs), `50`-`53` (the dwellings and the court), `70-et-canal.js` (the canal street),
+`89-rows.js` (the sheet's rows).
 
 ## Where it stands (P0, 2026-10-20)
 
@@ -60,4 +61,26 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
 - **The Sanctum** (`kits/ancients/targets/sanctum`) reads the generator in place: twelve instanced variants, a head's
   variant a hash of its record id, the colossus its own; the ridges' face-stones are mask shells.
 
-Next: P3 (the dwellings of every tier and the canal street). `PLAN.md` §11.
+## P3 (2026-10-20)
+
+- **Every tier of dwelling:** the poor (`et_reed_house`: silt and reed, a painted face over the door; `et_block_hut`:
+  cast block and a reed lean-to; `et_canal_row`: three block houses, a flat on each floor, a shared stair and gallery),
+  the middle (`et_canal_house`; `et_court_house`: a court behind pierced block, the household shrine with the family's
+  heads; `et_corner_turret`: a shop and two flats, a verdigris-capped turret and a lantern), the rich
+  (`et_merchant_house`: pale brick piers, lancet bundles, a celadon hip, a gilt face over a bronze door;
+  `et_official_villa`: a walled compound, hall, register room, servants' quarters, a covered gallery of the family's
+  heads, a reflecting basin: the census's household service) and the court over water (`et_heir_pavilion`: an octagon of
+  bronze tracery and alabaster, a fish-scale ogee roof in gilt, bronze or gunmetal by variant; `et_heir_gallery`: a
+  segment of covered walk with a head in a niche every bay).
+- **The canal street** (`et_canal_street`): a canal (`et_canal`) sunk between quays of made ground, a pointed-arch bridge
+  (`et_bridge`) with a bronze head on each keystone, verdigris lamps, and ten dwellings of every tier facing the water
+  as nested records.
+- **The roofs** (`src/44-et-roof.js`): gable, hip (with tile rolls and turned-up tips), pent and the octagonal ogee, the
+  library sheets mapped in metres. New library families `scale` (`metal.scale`, tinted) and `gilt` (`roof.scale.gilt`).
+- **The catalog's poor and court pieces** (`kits/catalog/krator-master-furniture-eternian.js`): the reed mat, the
+  cast-block bench, the clay hearth, the clay mask board; the alabaster lamp, the bronze gallery bench, the ancestor
+  niche, the canopy bed, the visor case.
+- **Textures asked for:** six prompts for the furniture and the common walls (`core/materials/PROMPTS-NEEDED.md` §8).
+
+Next: P4 (the State: ministries, registry, examination hall, gate, wall, the Clock, the tube station, the relic hall, the
+ancestor gallery, the talking head). `PLAN.md` §11.
