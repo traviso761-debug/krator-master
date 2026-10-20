@@ -6,7 +6,7 @@ Characters: MakeHuman (MPFB2) bodies with morphing face, build and ancestry; lib
 
 Docs: `CREDITS.md`, `HANDOFF-CLOTHING.md`, `KNOWN_ISSUES.md`, `PORT.md`, `README.md`, `prompt-clothes.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/animation-lab.html`, `dist/cosmetic-lab.html`
+Built output (never open it; edit `src/` and rebuild): `dist/animation-lab.artifact.html`, `dist/animation-lab.html`, `dist/cosmetic-lab.artifact.html`, `dist/cosmetic-lab.html`
 
 Build: `cd core/charactermodels && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
