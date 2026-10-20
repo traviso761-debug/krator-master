@@ -6,7 +6,7 @@
 // go that day is core/simulation's (40-ls-plan FEST_SCHEDULES, 40d); this fragment only shows the day, and that night the
 // butter-lamp offering (the lamps along the base's foot and round the Debate Court).
 // ?festival=1 opens the page on the festival day (99).
-const LSFEST=(function(){const T=THREE,C=LS.CAMP,F=LS.FESTIVAL,y0=LS.wardY((C.z0+C.z1)/2),grp=new T.Group();grp.visible=false;scene.add(grp);
+const LSFEST=(function(){const T=THREE,C=LS.CAMP,F=LS.FESTIVAL,y0=LS.wardY((C.z0+C.z1)/2),grp=new T.Group();grp.visible=false;grp.userData.festival=true;scene.add(grp);
  REGISTER({name:C.name,cls:'fixture',kind:'camp',key:'longsong_pilgrims_camp',x:(C.x0+C.x1)/2,z:(C.z0+C.z1)/2,y:y0,r:(C.x1-C.x0)/2,h:3,
   tags:{culture:'order',types:['religious','dwelling-single'],festival:true}});
  // the tent: a ridge tent (a triangular prism over its floor), the blue band round its foot, a dark door at its front

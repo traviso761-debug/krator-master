@@ -6,17 +6,17 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 113 | 1200 | 762 | 101 | 52 | 148 | 137 | 6 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 115 | 1230 | 776 | 101 | 52 | 163 | 137 | 6 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 63 | 735 | 159 | 40 | 10 | 30 | 496 | 9 |  | yes | yes |
-| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 18 | 231 | 72 | 0 | 0 | 152 | 6 | 2 | atmos | yes | yes |
-| [`settlements/girder`](settlements/girder/PORT.md) | 37 | 613 | 133 | 7 | 82 | 46 | 345 | 14 | atmos | yes | yes |
+| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 18 | 230 | 72 | 0 | 0 | 152 | 6 | 2 | atmos | yes | yes |
+| [`settlements/girder`](settlements/girder/PORT.md) | 38 | 611 | 133 | 7 | 82 | 46 | 343 | 14 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 69 | 946 | 202 | 6 | 13 | 70 | 655 | 5 |  | yes | yes |
 | [`settlements/hook`](settlements/hook/PORT.md) | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
-| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 10 | 132 | 88 | 0 | 0 | 43 | 0 | 1 |  |  | yes |
-| [`settlements/iziz`](settlements/iziz/PORT.md) | 123 | 1593 | 485 | 24 | 54 | 140 | 890 | 8 | fixtures, atmos | yes | yes |
+| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 26 | 298 | 229 | 0 | 0 | 60 | 9 | 1 |  |  | yes |
+| [`settlements/iziz`](settlements/iziz/PORT.md) | 123 | 1582 | 485 | 24 | 54 | 129 | 890 | 8 | fixtures, atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 37 | 429 | 14 | 23 | 10 | 26 | 356 | 5 |  | yes | yes |
 | [`settlements/locus`](settlements/locus/PORT.md) | 66 | 972 | 101 | 5 | 16 | 165 | 685 | 9 | atmos | yes | yes |
-| [`settlements/longsong`](settlements/longsong/PORT.md) | 25 | 408 | 115 | 0 | 0 | 76 | 217 | 1 | biome, atmos | yes | yes |
+| [`settlements/longsong`](settlements/longsong/PORT.md) | 30 | 487 | 141 | 0 | 0 | 94 | 252 | 1 | biome, atmos | yes | yes |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 36 | 721 | 62 | 0 | 15 | 325 | 319 | 2 |  | yes | yes |
 | [`settlements/mungo`](settlements/mungo/PORT.md) | 21 | 217 | 117 | 0 | 5 | 60 | 35 | 4 | atmos | yes | yes |
 | [`settlements/noahs-regret`](settlements/noahs-regret/PORT.md) | 35 | 281 | 36 | 13 | 10 | 66 | 157 | 4 | atmos | yes | yes |
@@ -39,14 +39,14 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 26 | 165 | 36 | 6 | 10 | 24 | 89 | 2 | atmos | yes | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 24 | 246 | 122 | 0 | 10 | 77 | 37 | 1 |  |  | yes |
-| [`kits/islanders`](kits/islanders/PORT.md) | 39 | 415 | 28 | 6 | 10 | 24 | 347 | 3 | atmos | yes | yes |
-| [`kits/lizardmen`](kits/lizardmen/PORT.md) | 29 | 211 | 16 | 6 | 10 | 24 | 155 | 3 | atmos | yes | yes |
+| [`kits/islanders`](kits/islanders/PORT.md) | 39 | 416 | 28 | 6 | 10 | 24 | 348 | 3 | atmos | yes | yes |
+| [`kits/lizardmen`](kits/lizardmen/PORT.md) | 29 | 212 | 16 | 6 | 10 | 24 | 155 | 3 | atmos | yes | yes |
 | [`kits/mechs`](kits/mechs/PORT.md) | 7 | 38 | 0 | 0 | 10 | 28 | 0 | 0 |  |  | yes |
 | [`kits/motor-vehicles`](kits/motor-vehicles/PORT.md) | 15 | 156 | 0 | 10 | 10 | 20 | 116 | 6 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 27 | 392 | 2 | 8 | 0 | 48 | 334 | 1 |  | yes | yes |
 | [`kits/pylon`](kits/pylon/PORT.md) | 12 | 103 | 59 | 0 | 0 | 0 | 44 | 0 |  |  | yes |
 | [`kits/resources`](kits/resources/PORT.md) | 7 | 27 | 12 | 0 | 0 | 1 | 14 | 0 | atmos |  | yes |
-| [`kits/ringsea`](kits/ringsea/PORT.md) | 48 | 282 | 1 | 6 | 0 | 48 | 226 | 1 | atmos | yes | yes |
+| [`kits/ringsea`](kits/ringsea/PORT.md) | 48 | 283 | 1 | 6 | 0 | 48 | 227 | 1 | atmos | yes | yes |
 | [`kits/scyvoi`](kits/scyvoi/PORT.md) | 27 | 188 | 11 | 6 | 10 | 24 | 137 | 2 | atmos | yes | yes |
 | [`kits/talia`](kits/talia/PORT.md) | 12 | 206 | 196 | 0 | 0 | 0 | 10 | 0 |  |  | yes |
 | [`kits/zeijani`](kits/zeijani/PORT.md) | 32 | 264 | 10 | 33 | 10 | 62 | 149 | 3 | atmos | yes | yes |
@@ -55,6 +55,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 14 | 210 | 28 | 0 | 14 | 58 | 109 | 2 | biome | yes | yes |
 | [`biomes/ehighlands`](biomes/ehighlands/PORT.md) | 12 | 143 | 13 | 18 | 16 | 32 | 63 | 2 | biome | yes | yes |
 | [`biomes/geyser`](biomes/geyser/PORT.md) | 17 | 166 | 38 | 35 | 14 | 35 | 44 | 2 | biome, atmos | yes | yes |
+| [`biomes/guilin`](biomes/guilin/PORT.md) | 13 | 112 | 40 | 0 | 0 | 12 | 60 | 3 | biome, atmos | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 152 | 3 | 0 | 12 | 16 | 120 | 6 | biome | yes | yes |
 | [`biomes/korona`](biomes/korona/PORT.md) | 12 | 120 | 16 | 0 | 0 | 16 | 89 | 3 | biome, atmos | yes | yes |
 | [`biomes/necanyons`](biomes/necanyons/PORT.md) | 14 | 108 | 35 | 0 | 0 | 10 | 63 | 3 | biome, atmos | yes | yes |
@@ -70,10 +71,10 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 204 | 2 | 0 | 13 | 34 | 155 | 5 | biome | yes | yes |
 | [`biomes/throne`](biomes/throne/PORT.md) | 14 | 302 | 53 | 22 | 15 | 37 | 176 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 218 | 2 | 0 | 12 | 31 | 172 | 5 | biome | yes | yes |
-| [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 6 | 36 | 18 | 0 | 0 | 17 | 0 | 0 |  |  | yes |
+| [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 10 | 91 | 26 | 10 | 0 | 55 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
-| [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 198 | 21 | 0 | 0 | 96 | 81 | 0 |  |  | yes |
-| **all** | 2313 | 30694 | 6370 (21%) | 626 (2%) | 1100 (4%) | 3868 (13%) | 18730 (61%) | 275 | | | |
+| [`core/charactermodels`](core/charactermodels/PORT.md) | 7 | 206 | 21 | 0 | 0 | 96 | 89 | 0 |  |  | yes |
+| **all** | 2355 | 31132 | 6598 (21%) | 636 (2%) | 1100 (4%) | 3956 (13%) | 18841 (61%) | 278 | | | |
 
 ## Host-shell copies
 
@@ -81,8 +82,8 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 
 | Family | Builds | Versions | KB total |
 |---|---|---|---|
-| `host-stage` | 23 | 23 | 427 |
-| `host-build` | 23 | 23 | 33 |
+| `host-stage` | 24 | 24 | 437 |
+| `host-build` | 24 | 24 | 34 |
 | `sky` | 22 | 5 | 436 |
 | `camera` | 19 | 15 | 133 |
 | `host-sky` | 19 | 17 | 268 |

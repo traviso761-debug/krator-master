@@ -198,8 +198,10 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  // the herds: the Fauna kit's yak (its black, brown and dun) and its highland cow standing for the dzo (kits/fauna, read
  // in place as a bundle: 58-fauna-bundle.js). Each kind is built once, posed (grazing or standing), and baked into one
  // vertex-coloured geometry (its parts' transforms applied), then drawn instanced: a handful of draw calls for every
- // beast on the pastures. They stand still (a baked pose): the herd's animals are data (LS.FARMS.HERDS), each of them
- // ready for the kit's animate() when the life layer runs them (core/simulation, PLAN.md P5).
+ // beast on the pastures. They walk (2026-10-20, core/biome's walker, BIO.walker): each beast a slow loop of its own
+ // on its herd's pasture, clear of the water, its place and heading a pure function of the BIO clock (so the export pins
+ // it and a port replays it); the pose stays the baked one (no legs moving yet). The sets are dynamic: core/lod and the
+ // culling leave them alone.
  const BREEDS=[{key:'yak',variant:0,mode:'graze',t:.3},{key:'yak',variant:1,mode:'graze',t:1.1},{key:'yak',variant:2,mode:'idle',t:.6},
   {key:'yak',variant:0,mode:'idle',t:2.2},{key:'cattle',variant:3,mode:'graze',t:.8,dzo:true}];
  const bake=b=>{const g=KratorFauna.build(b.key,{variant:b.variant,seed:b.variant+7});KratorFauna.animate(g,b.t,b.mode);g.updateMatrixWorld(true);
@@ -210,13 +212,21 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(P,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
   geo.setAttribute('color',new THREE.Float32BufferAttribute(C,3));geo.computeBoundingSphere();return {geo,name:g.userData.name+(b.dzo?' (a dzo: the highland cow stands for it)':' ('+g.userData.variantName+')')};};
  const HP=BREEDS.map(()=>[]);F.HERDS.forEach((Hd,hi)=>{for(let k=0;k<Hd.n;k++){const a=u(61,hi,k,1)*6.28,r=Math.sqrt(u(61,hi,k,2))*Hd.r,x=Hd.x+Math.cos(a)*r,z=Hd.z+Math.sin(a)*r;
-  const bi=u(61,hi,k,4)<.18?4:Math.floor(u(61,hi,k,5)*4);HP[bi].push([x,terrainH(x,z),z,u(61,hi,k,3)*6.28]);}});
- const herd=[],hm=new THREE.MeshLambertMaterial({vertexColors:true}),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler(),S=new THREE.Vector3(1,1,1),V=new THREE.Vector3();
+  const bi=u(61,hi,k,4)<.18?4:Math.floor(u(61,hi,k,5)*4);HP[bi].push([x,terrainH(x,z),z,u(61,hi,k,3)*6.28,hi,k]);}});
+ let walking=0;const herd=[],hm=new THREE.MeshLambertMaterial({vertexColors:true}),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler(),S=new THREE.Vector3(1,1,1),V=new THREE.Vector3();
  if(typeof KratorFauna!=='undefined')BREEDS.forEach((b,bi)=>{if(!HP[bi].length)return;const T=bake(b),im=new THREE.InstancedMesh(T.geo,hm,HP[bi].length);
   HP[bi].forEach((p,i)=>{E.set(0,p[3],0);Q.setFromEuler(E);V.set(p[0],p[1]-.03,p[2]);M.compose(V,Q,S);im.setMatrixAt(i,M);});
+  // each beast's loop (from its own stream: the herd, the beast), round where it stood, inside its herd's ground
+  const W=HP[bi].map(p=>{const Hd=F.HERDS[p[4]],R=KRAND.stream(KRAND.hash(6101,p[4],p[5]));
+   const ok=(x,z)=>Math.hypot(x-Hd.x,z-Hd.z)<Hd.r&&terrainH(x,z)-waterH(x,z)>.4;
+   const pts=BIO.walkLoop(p[0],p[2],5+R.range(0,9),ok,()=>R.range(0,1));return pts?BIO.walker(pts,[],.12+R.range(0,.1),0,R.range(0,900),1.2):null;});
+  if(W.some(w=>w)){im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);im.userData.herd=true;
+   const upd=t=>{for(let i=0;i<W.length;i++){if(!W[i])continue;const o=BIO.walkAt(W[i],t,0,6);E.set(0,o.hd,0);Q.setFromEuler(E);
+     V.set(o.x,terrainH(o.x,o.z)-.03,o.z);M.compose(V,Q,S);im.setMatrixAt(i,M);}im.instanceMatrix.needsUpdate=true;};
+   upd(BIO.WIND.t.value);BIO.host.ticks(()=>upd(BIO.WIND.t.value));walking+=W.filter(w=>w).length;}
   im.userData.host=true;im.userData.cls='life';im.userData.inspectLabel='The Order\'s herds: '+T.name;scene.add(im);herd.push(im);});
  F.HERDS.forEach(Hd=>REGISTER({name:'A herd of yak and dzo ('+Hd.n+')',cls:'life',kind:'herd',key:'longsong_'+Hd.id,x:Hd.x,z:Hd.z,y:terrainH(Hd.x,Hd.z)-3,r:Hd.r+3,h:12,tags:{culture:'order'}}));
- return {ground,cards:nCards,cardMesh,canes,herd,records:FREC,beasts:HP.reduce((t,a)=>t+a.length,0),wheels:WHEELDRAW};})();
+ return {ground,cards:nCards,cardMesh,canes,herd,records:FREC,beasts:HP.reduce((t,a)=>t+a.length,0),get walking(){return walking;},wheels:WHEELDRAW};})();
 _mark('farms');
 
 // ---------------------------------------------------------------- the farms' checks (verify.py --assert; 64's monasteryChecks calls them)

@@ -85,7 +85,14 @@ const KINDS={
  'ls-hours':     K(['study','hall'],[],[{types:['board'],max:2},{types:['shelf'],max:1},{types:['lamp'],max:1}],8),
  'ls-observatory':K(['study','library'],[],[{types:['desk'],max:1},{types:['chair'],max:1},{types:['shelf'],max:1},{types:['board'],max:1}],8),
  'ls-watch':     K(['study','workshop'],[],[{types:['desk'],max:1},{types:['chair'],max:1}],10),
- 'ls-roofwalk':  K(['court','yard'],[],[{types:['bench'],max:4},{types:['planter'],max:4}],20)};
+ 'ls-roofwalk':  K(['court','yard'],[],[{types:['bench'],max:4},{types:['planter'],max:4}],20),
+ // the depths (2026-10-20: placed by the placer, no longer by hand in 66): only the pieces made for them (the catalog's
+ // `rooms`: vault, quiet cell, unmaking), round what 66 builds into the rooms (40c hands it over as fixtures)
+ 'lv-closed':    K(['vault'],[{need:'sealed crates',types:['storage'],n:12}],[{types:['storage'],max:10}],2),
+ 'lv-open':      K(['vault','archive'],[],[{types:['storage'],max:8}],8),
+ 'lv-quiet':     K(['quiet cell'],[{need:'lead cases',types:['storage'],n:3}],[],6),
+ 'lv-unmaking':  K(['unmaking'],[{need:'the furnace',types:['stove'],n:1}],[],8),
+ 'lv-cistern':   K(['store','vault'],[{need:'jars',types:['storage','vessel'],n:2}],[{types:['storage','vessel'],max:4}],6)};
 for(const k in KINDS){IX.PROGRAMS[k]=KINDS[k].prog;IX.KIND_ALIAS[k]=KINDS[k].alias;}
 LSIX.KINDS=KINDS;
 
@@ -192,6 +199,12 @@ const LAYOUTS={
   return out.filter(p=>!r.doors.some(d=>Math.hypot(d.x-p.x,d.z-p.z)<3));},
  // the bindery's paper store: where the binders make their own paper for the repairs: two vats on the far wall, the
  // racks of sheets drying
+ // the ward's works (2026-10-20): the printing house's presses down both long walls of its hall and the racks of carved
+ // blocks in its store; the paper mill's vats along its vat room's walls; the drying lofts' racks of sheets
+ presshall(r){const L=(r.x1-r.x0)>=(r.z1-r.z0);return alongWalls(r,'xanadu_common_press',0,4.2,[L?'n':'w'],2,.75).concat(alongWalls(r,'xanadu_common_press',1,4.2,[L?'s':'e'],2,.95));},
+ woodblocks(r){const L=(r.x1-r.x0)>=(r.z1-r.z0);return alongWalls(r,'xanadu_common_scroll_rack',0,1.7,L?['n','s']:['w','e'],1,.35);},
+ vatroom(r){const L=(r.x1-r.x0)>=(r.z1-r.z0);return alongWalls(r,'xanadu_common_paper_vat',0,3.2,L?['n','s']:['w','e'],1.6,.75);},
+ paperloft(r){return racks(r,0);},
  paperstore(r){const far=r.doors.every(d=>Math.abs(d.x-r.x0)<.1),zc=(r.z0+r.z1)/2,xv=far?r.x1-.75:r.x0+.75,out=[];
   for(const dz of [-2.6,2.6])out.push(P('xanadu_common_paper_vat',0,xv,zc+dz,far?-PI/2:PI/2));
   return out.concat(racks(r,0,{x0:r.x0+2.5,x1:r.x1-3.2}));},
@@ -203,7 +216,7 @@ LSIX.LAYOUTS=LAYOUTS;
 const R2=v=>Math.round(v*100)/100,R3=v=>Math.round(v*1000)/1000;
 function hash(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193);}return('0000000'+(h>>>0).toString(16)).slice(-8);}
 // a room's fingerprint: what decides its plan
-LSIX.fingerprint=r=>hash(JSON.stringify([r.poly,r.y,r.h,r.doors.map(d=>[d.x,d.z,d.w,d.to]),r.ix,r.tier,r.culture,r.layout||'']));
+LSIX.fingerprint=r=>hash(JSON.stringify([r.poly,r.y,r.h,r.doors.map(d=>[d.x,d.z,d.w,d.to]),r.ix,r.tier,r.culture,r.layout||'',(r.fixtures||[]).map(f=>[f.x,f.z,f.w,f.d,f.ry])]));
 const AD=LSIX.adapter;
 function layoutOf(r){const f=r.layout&&LAYOUTS[r.layout];if(!f)return [];
  return f(r).filter(p=>{if(!KF.has(p.key)){LSIX.fails.push(r.id+': no piece '+p.key);return false;}return true;});}
@@ -226,6 +239,7 @@ function compute(r){const t0=performance.now(),seed=parseInt(hash(r.id),16)%1000
   const fixtures=pieces.filter(p=>p.y<r.y+2.4).map(p=>({id:p.id,kind:'piece',x:p.x,z:p.z,ry:p.ry,w:p.w,d:p.d,h:p.h,clearance:{front:p.key.indexOf('cushion')>=0?.35:.5}}));
   // the columns of a hall (the Hall of Pillars) stand before anything is placed
   (r.columns||[]).forEach((c,i)=>fixtures.push({id:r.id+'.col'+i,kind:'column',x:c[0],z:c[1],ry:0,w:.7,d:.7,h:r.h}));
+  (r.fixtures||[]).forEach(f=>fixtures.push(Object.assign({},f)));   // what the room's builder puts in it first (the depths': 40c)
   const doors=r.doors.map(d=>({id:d.id,at:[d.x,d.z],w:Math.min(d.w,1.6),to:d.to,swing:'none',leaf:false}));
   try{IX.clearRooms();
    const R=ROOM({building:r.building,kind:r.ix,poly:r.poly,y:r.y,h:r.h,doors,windows:[],culture:r.culture,wealth:r.wealth,id:r.id,seed,level:r.storey||0,fixtures});
@@ -239,7 +253,9 @@ function compute(r){const t0=performance.now(),seed=parseInt(hash(r.id),16)%1000
  LSIX.ms+=performance.now()-t0;LSIX.computed++;
  return{fp:LSIX.fingerprint(r),pieces,lights,report};}
 // the record of a room: the bake's when it holds the room unchanged, else computed now (and kept)
-LSIX.record=function(id){if(LSIX.rec[id])return LSIX.rec[id];const r=RM.byId[id];if(!r||r.furnish!==true)return null;
+// the rooms the placer furnishes: every furnished room, and the depths' that have a kind (66 draws those)
+const placed=r=>r.furnish===true||r.furnish==='vault'&&!!r.ix&&r.ix!=='none';LSIX.placed=placed;
+LSIX.record=function(id){if(LSIX.rec[id])return LSIX.rec[id];const r=RM.byId[id];if(!r||!placed(r))return null;
  if(r.layout==='pillars'&&!r.columns)LAYOUTS.pillars(r);
  const B=LSIX.bake&&LSIX.bake.rooms[id];
  if(B&&B.fp===LSIX.fingerprint(r)){LSIX.fromBake++;return LSIX.rec[id]={fp:B.fp,pieces:B.p.map((a,i)=>({id:id+'.'+i,key:a[0],v:a[1],seed:a[2],x:a[3],y:a[4],z:a[5],ry:a[6],need:a[7]||null,by:a[8]?'layout':'placer'})),
@@ -247,7 +263,7 @@ LSIX.record=function(id){if(LSIX.rec[id])return LSIX.rec[id];const r=RM.byId[id]
  return LSIX.rec[id]=compute(r);};
 // every furnished room, in the bake's compact form (bake_interiors.py calls it; build.py inlines what it writes)
 LSIX.bakeAll=function(){const out={kit:LSIX.kit,rooms:{}};LSIX.rec={};LSIX.bake=null;
- RM.list.forEach(r=>{if(r.furnish!==true)return;const R=LSIX.record(r.id);
+ RM.list.forEach(r=>{if(!placed(r))return;const R=LSIX.record(r.id);
   out.rooms[r.id]={fp:R.fp,p:R.pieces.map(p=>[p.key,p.v,p.seed,p.x,p.y,p.z,p.ry,p.need,p.by==='layout'?1:0]),l:R.lights,r:R.report};});
  return out;};
 LSIX.adoptBake=function(bake,kit){LSIX.kit=kit;if(!bake){LSIX.bakeState='none';return;}
@@ -261,17 +277,20 @@ const MUST={'wp.assembly':['xanadu_common_skylight_column','xanadu_common_medita
  'rp.k0.catalogue':['xanadu_court_card_cabinet'],'rp.k2.stacks-peoples':['xanadu_common_scroll_rack'],'rw.k2.map-room':['xanadu_court_map_table'],
  'rp.k5.council.council':['xanadu_court_council_table'],'rp.k7.chronicle':['yuni_order_lectern','xanadu_common_desk'],'lr.hours':['xanadu_common_water_clock','xanadu_common_ancient_clock'],
  'lr.observatory':['xanadu_court_armillary'],'lr.watch':['xanadu_common_anomaly_instrument'],'wp.court':['xanadu_common_debate_dais'],
- 'wp.k0.w.out.cataclysm':['yuni_order_pupil_desk','yuni_order_writing_board'],'wp.k2.library':['yuni_order_reading_table']};
+ 'wp.k0.w.out.cataclysm':['yuni_order_pupil_desk','yuni_order_writing_board'],'wp.k2.library':['yuni_order_reading_table'],
+ // the ward's works and the depths' (2026-10-20)
+ 'ward.printing-house.k0.press-hall':['xanadu_common_press'],'ward.paper-mill.k0.vats':['xanadu_common_paper_vat'],
+ 'lv.closed-vault':['xanadu_common_relic_crate'],'lv.quiet-cells':['xanadu_common_lead_case'],'lv.unmaking':['xanadu_common_furnace']};
 const IC={
- required(list){let n=0,miss=[];list.forEach(r=>{if(r.furnish!==true)return;const R=LSIX.record(r.id);n++;if(R.report&&R.report.missing.length)miss.push(r.id+' ('+R.report.missing.join(', ')+')');});
+ required(list){let n=0,miss=[];list.forEach(r=>{if(!placed(r))return;const R=LSIX.record(r.id);n++;if(R.report&&R.report.missing.length)miss.push(r.id+' ('+R.report.missing.join(', ')+')');});
   return{ok:n>0&&miss.length<=Math.floor(n*.02),detail:n+' rooms furnished; '+(miss.length?miss.length+' short of a required piece: '+miss.slice(0,5).join('; '):'every required piece placed')};},
  must(M){const bad=[];for(const id in M){const R=LSIX.record(id);const keys=new Set(R?R.pieces.map(p=>p.key):[]);M[id].forEach(k=>{if(!keys.has(k))bad.push(id+': '+k);});}
   return{ok:!bad.length,detail:bad.length?'missing: '+bad.join(', '):Object.keys(M).length+' rooms hold what ROOMS.md lists (the columns, the chortens, the card cabinets, the map table, the clocks ...)'};},
- inside(list){let n=0;const bad=[];list.forEach(r=>{if(r.furnish!==true)return;const R=LSIX.record(r.id);R.pieces.forEach(p=>{n++;
+ inside(list){let n=0;const bad=[];list.forEach(r=>{if(!placed(r))return;const R=LSIX.record(r.id);R.pieces.forEach(p=>{n++;
    const inn=r.circle?Math.hypot(p.x-r.circle.x,p.z-r.circle.z)<r.circle.r+.05:p.x>r.x0-.05&&p.x<r.x1+.05&&p.z>r.z0-.05&&p.z<r.z1+.05;
    if(!inn||p.y<r.y-.05||p.y>r.y+r.h)bad.push(p.id);});});
   return{ok:n>0&&!bad.length,detail:n+' pieces'+(bad.length?'; '+bad.length+' outside their rooms: '+bad.slice(0,5).join(', '):', each inside its room')};},
- bake(){const n=RM.list.filter(r=>r.furnish===true).length;return{ok:LSIX.bakeState==='adopted'&&LSIX.computed===0,detail:'the bake '+LSIX.bakeState+'; '+LSIX.fromBake+' of '+n+' rooms from it, '+LSIX.computed+' computed in the page'};}};
+ bake(){const n=RM.list.filter(placed).length;return{ok:LSIX.bakeState==='adopted'&&LSIX.computed===0,detail:'the bake '+LSIX.bakeState+'; '+LSIX.fromBake+' of '+n+' rooms from it, '+LSIX.computed+' computed in the page'};}};
 LSIX.check=IC;
 window.interiorChecks=function(add){RM.check.all(add);
  if(!LSIX.on)return;

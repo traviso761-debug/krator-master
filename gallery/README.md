@@ -79,11 +79,14 @@ The Ancients kit's pages (`kits/ancients/`, but not its arcologies) are the sect
 
 Longsong (`settlements/longsong`) is published as its own artifact, https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY,
 and every part's index links it (a section after the Animation Lab; `index.template.html` carries it). It is about 69 MB:
-the page, its three texture packs and the dressed people's pieces (`dist/kchar/`, 52 files, 47 MB), and Krator Worlds
+the page, its four texture packs (Longsong's two, the Oidong kit's, and since 2026-10-20 the Xanadu kit's for the valley's
+villages) and the dressed people's pieces (`dist/kchar/`, 52 files, 47 MB), and Krator Worlds
 I-S, where it would sort, was at 245 MiB (the owner chose its own artifact over a re-split into four parts). `ELSEWHERE`
 keeps it out of the parts. To update it: `python3 build.py` in the build, then publish `dist/longsong.html` to that
 URL with `longsong.tex.*.js` and `kchar/*` beside it (two calls: the female body's pieces with the page, the male's
 after). It was published private: a gallery viewer opens it only once the owner shares it (the page's Share menu).
+Version 3 (2026-10-20, `main` at 8f640f72): the interiors' second pass, the crowd, the villages on the Xanadu kit with
+their squares; the page and its four packs in one call (`kchar/` unchanged, kept from the last version).
 
 ## The Throne: its own artifact (2026-10-07)
 

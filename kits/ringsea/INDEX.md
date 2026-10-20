@@ -43,7 +43,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `73-rs-hyk-pearl.js` | 6 | vessel: Hykkousoi Pearl Baghlah (1) |
 | `74-rs-iziz-wheel.js` | 5 | vessel: Iziz Wheel Galley (1) |
 | `75-rs-beast-rookery.js` | 6 | vessel: Beast-Rider Rookery Raft (1) |
-| `76-rs-islander-lakatoi.js` | 4 | vessel: Islander Lakatoi (1) |
+| `76-rs-islander-lakatoi.js` | 5 | vessel: Islander Lakatoi (1) |
 | `77-rs-voth-hulk.js` | 4 | vessel: Voth Cargo Hulk (1) |
 | `78-rs-hyk-corbita.js` | 5 | vessel: Hykkousoi Amphora Corbita (1) |
 | `79-rs-xanadu-carrack.js` | 5 | vessel: Xanadu Bullion Carrack (1) |

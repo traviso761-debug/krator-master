@@ -54,6 +54,13 @@ front**, x its right. `ry` is three.js rotation.y: the front (+z) turns to (sin 
 - A def's `w d h` must contain everything it draws (the verifier allows 1.6 m), including roof horns, stairs, posts and piers.
 - Every building is `cls: 'building'` with `tags: {types: [...], wealth, style: 'west' | 'east', role?}`; `cut: true` when it has an
   interior, and then 4+ catalog pieces (`FURNISH`, `isFurnRoom`); a front door (`door()` through `isWall`, or `front:`).
+- **Openings and lights are recorded** (2026-10-20): `door(x, y, z, yaw, w, h)` and `windowAt(x, y, z, yaw, w, h, sill)`
+  (36-def.js) note a doorway and a window in the local frame (they draw nothing); `isWall` calls them for every opening
+  it cuts, so a wall built through `isWall`/`isWalls` needs nothing more. A building's record keeps them (`rec.doors`,
+  `rec.windows`, world positions, yaw the way out), and every lit point a builder marks with `haloAt` (lamps, hearths,
+  fires) is in `HALOS`. A doorway or window drawn without `isWall` is not recorded unless its builder calls `door()` or
+  `windowAt()` itself. The isle demo's `ISK.proto` hands them over in the piece's frame (`userData.fixtures`: doors,
+  windows, lamps), and its city page exports them as core/export fixtures (settlements/isle-demo 62).
 - Furniture is never drawn by the kit: catalog keys only (`islander_common_*`, `islander_court_*`, `generic_*`, `generic_poor_*`,
   `generic_trade_*`, `scrap_*`, `pa_*`, `job_*`; `node` can list them from the bundle). Outdoor pieces take `{setting:'outdoor'}`.
 - Plants are `fl-*` defs placed with `place()`, never drawn inside a building's builder.

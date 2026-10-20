@@ -210,7 +210,7 @@ DETERMINISTIC = {
     '69e-vern-hollow.js', '95i-iziz-interiors.js', '74z-vern-trades.js',   # the hollow bodies, the interiors, the trades table (no rnd())
     '69e5-iziz-openings.js', '95j-iziz-doors.js',   # the openings and the door registry (no rnd())
     '78s-iziz-towers-plan.js', '78v-iziz-towers-ix.js', '78w-iziz-ancients-plan.js',   # the skyscrapers' and the other Ancient buildings' plans and their drawing (hashes and the kit's noise, no rnd())
-    '07-core-export.js', '09-core-export-adapters.js', '94-city-export.js',   # core/export and the city's part of it (M5; runs at export time only)
+    '07-core-export.js', '09-core-export-adapters.js', '10-core-export-scene.js', '94-city-export.js',   # core/export and the city's part of it (M5; runs at export time only)
     '78p-palace-plan.js', '78q-palace-layout.js', '78r-palace-draw.js', '84-palace-geo.js', '95p-palace-furnish.js', '95q-palace-cutlabels.js',   # the palace page (no rnd())
     '69dp-palace-matlib-pack.js',         # generated: the palace's library pack
 }
@@ -233,7 +233,7 @@ SEED_COLLISION_EXCEPTIONS = {
 # fragments): their column-0 declarations live inside a closure, so the
 # shared-scope name checks do not apply. They keep their own PRNG too, so the
 # reseed rule does not apply either. Matched by filename prefix.
-SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '94-city-export', FURN_BUNDLE)   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
+SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '10-core-export', '94-city-export', FURN_BUNDLE)   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
 def scoped(f):
     return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 

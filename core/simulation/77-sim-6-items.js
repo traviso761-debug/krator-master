@@ -72,8 +72,13 @@
     return out; };
   function stat(o, k, n){ o[k]=(o[k]||0)+(n==null?1:n); }
   /* a counter the stocks read (77-sim-7-stocks.js CUM): on a page with settlements, booked to the actor's town as well (I.statsBy[key]) */
-  function cum(a, key, k, n){ var I=SIM.ITEMS; stat(I.stats[key], k, n); if(!SIM.ECONS) return; var t=SIM.settlementOf(a); if(t==null) return;
+  /* a meal's count (stats.meals: at home, single, bought, at a mess, out, none, fine), by town as well on a page with settlements */
+  function mealBook(t, k){ var I=SIM.ITEMS; I.stats.meals[k]=(I.stats.meals[k]||0)+1; if(!SIM.ECONS || t==null) return;
+    var B=I.statsBy||(I.statsBy={}), T=B[t]||(B[t]={}); var M=T.meals||(T.meals={ meal:0, single:0, none:0, bought:0, mess:0, out:0 }); M[k]=(M[k]||0)+1; }
+  function mealStat(a, k){ mealBook(SIM.ECONS ? SIM.settlementOf(a) : null, k); }
+  function book(t, key, k, n){ var I=SIM.ITEMS; stat(I.stats[key], k, n); if(!SIM.ECONS || t==null) return;
     var B=I.statsBy||(I.statsBy={}), T=B[t]||(B[t]={}); stat(T[key]||(T[key]={}), k, n); }
+  function cum(a, key, k, n){ book(SIM.ECONS ? SIM.settlementOf(a) : null, key, k, n); }
   function anchor(a){ var H=SIM.R.place[a.home]; return H ? [H.x, H.z] : (a.at || [0,0]); }
 
   /* ---------------------------------------------------------------- the day: wear, the clothes kept, a hurt */
@@ -200,19 +205,45 @@
   /* a meal out draws on the settlement of the place it is eaten at (P7a) */
   function meal(a, P){ return SIM.ECONS ? SIM.withEcon(SIM.settlementOf(P.id), function(){ return meal0(a, P); }) : meal0(a, P); }
   function meal0(a, P){
-    var I=SIM.ITEMS, M=I.meal, S=I.stats.meals;
+    var I=SIM.ITEMS, M=I.meal;
     var fine = 1 + (M.rich||0)*(a.wealth||0);                                     /* a richer table: more filling, more relaxing */
-    if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ S.out++; return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
-    if(P.id!==a.home){ S.bought++; stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
-    if(P.mess){ S.mess++; return M.mess; }
-    var st=P.store; if(!st || !I.foods.length){ S.none++; return M.none; }
+    if((P.id!==a.home || P.mess) && SIM.ECON && !SIM.economyMeal()){ mealStat(a, 'out'); return M.none; }   /* the kitchen draws on the settlement's store (77-sim-6-economy.js) */
+    if(P.id!==a.home){ mealStat(a, 'bought'); stat(I.stats.byShop[P.id]||(I.stats.byShop[P.id]={}), 'meal'); return M.mult*fine; }   /* a tavern, a stall: a meal bought */
+    if(P.mess){ mealStat(a, 'mess'); return M.mess; }
+    var st=P.store; if(!st || !I.foods.length){ mealStat(a, 'none'); return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
     var Q=function(f){ var K=I.kinds[f]; return K && K.quality!=null ? K.quality : 1; };   /* a better food (cheese) makes a better meal */
-    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); S.meal++; if(Q(have[0])>1 || Q(have[1])>1) S.fine=(S.fine||0)+1; return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
-    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); S.single++; return M.single*Q(have[0]); }
-    S.none++; return M.none;
+    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); mealStat(a, 'meal'); if(Q(have[0])>1 || Q(have[1])>1) mealStat(a, 'fine'); return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
+    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); mealStat(a, 'single'); return M.single*Q(have[0]); }
+    mealStat(a, 'none'); return M.none;
   }
   /* the items' share of a worker's efficiency: a broken tool, a hurt */
+  /* THE ABSTRACT LEVEL (77-sim-7-lod.js): `hrs` hours of a household's life in a town nobody watches, booked as the
+     presented town books them. Its `people` (else its residents) eat `meals` a day, each meal one serving of the two
+     foods its store holds most of (one: a single, none: none); a mess draws its meals on the warehouses. A store under
+     `low` days buys `days` days of the foods the town's sellers sell, in proportion to the warehouses' stock (one out:
+     more of the others). No meals out, no errands, no wear: those wait for the town to be watched again */
+  SIM.itemsAbstractHome = function(P, hrs, town, res){
+    var I=SIM.ITEMS; if(!I || !I.foods.length) return; var ppl=P.people || res || 0; if(!ppl) return;
+    var due=ppl*I.meals*hrs/24+(P.absMeal||0), n=Math.floor(due); P.absMeal=due-n;
+    var st=P.store||(P.store={});
+    for(var i=0;i<n;i++){
+      if(P.mess){ mealBook(town, SIM.ECON && !SIM.economyMeal() ? 'out' : 'mess'); continue; }
+      var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
+      if(have.length>=2){ st[have[0]]--; st[have[1]]--; book(town, 'eaten', have[0], 1); book(town, 'eaten', have[1], 1); mealBook(town, 'meal'); }
+      else if(have.length===1){ st[have[0]]--; book(town, 'eaten', have[0], 1); mealBook(town, 'single'); }
+      else mealBook(town, 'none'); }
+    if(P.mess || !SIM.ECON) return;
+    var tot=0; for(var f in st) tot+=st[f]; if(tot >= ppl*I.meals*I.perMeal*I.low) return;
+    var sold=I.townFoods && I.townFoods[town]; if(!sold){ var u={}; Object.keys(I.sells).forEach(function(id){ if(SIM.settlementOf(id)!==town) return; I.sells[id].forEach(function(k){ if(I.kinds[k] && I.kinds[k].food) u[k]=1; }); });
+      sold=(I.townFoods||(I.townFoods={}))[town]=I.foods.filter(function(f){ return u[f]; }); }
+    var foods=sold.length ? sold : I.foods, need=Math.ceil(ppl*I.meals*I.perMeal*I.days), lack=0;
+    var wt=foods.map(function(f){ return SIM.stockOf(f)+1; }), ws=wt.reduce(function(x, y){ return x+y; }, 0), cut=0;
+    var share=foods.map(function(f, i){ var k=Math.floor(need*wt[i]/ws); cut+=k; return k; }); share[0]+=need-cut;
+    var buy=function(f, k){ st[f]=(st[f]||0)+k; book(town, 'bought', f, k); };
+    foods.forEach(function(f, i){ var k=share[i], got=SIM.supply(f, k); if(got<k){ book(town, 'outOf', f, k-got); lack+=k-got; } if(got) buy(f, got); });
+    for(var fi=0; fi<foods.length && lack>0; fi++){ var more=SIM.supply(foods[fi], lack); if(more){ buy(foods[fi], more); lack-=more; } }
+  };
   SIM.itemsEff = function(a){ var I=SIM.ITEMS; if(!I) return 1; return (a.toolNeed ? 0.5 : 1) * (a.hurt!=null ? 0.7 : 1); };
   SIM.itemsJump = function(a, minute){ if(!SIM.ITEMS) return; if(a.itDay==null) a.itDay=Math.floor(minute/1440); a.wkT=null; };
 })(typeof window!=='undefined'?window:globalThis);

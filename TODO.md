@@ -38,6 +38,28 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).
   Copy it over, so the Order's furniture carries the scroll and Xanadu's the lotus; the packs in `core/sockets` already do.
 
+- **Real doors and glass across the kits** (the owner, 2026-10-20; for the next wide sweep over the building kits).
+  Iziz's `settlements/iziz/src/69e5-iziz-openings.js` (2026-10-19) wraps the Vernacular's `vnDoor`, `vnWin` and `vnStrip`:
+  a shut leaf registered in `IZDOOR` instead of a dark recess, see-through glass instead of an opaque plate, and the
+  `vnPlate`, `vnHole`, `vnOpening` and `IZ_ROOMC` the vernacular fragments now call. Where it stands:
+  - Iziz, Pylon and Talia build on Iziz's own fragment order (`--kit`), so they take 69e5 and `95j-iziz-doors.js`
+    (walk blocks for shut leaves, the E key in `99-start.js`). Talia's branch (`claude/vassal-kits`) predates 69e5:
+    rebuild and verify Talia when it merges main.
+  - Verge (`build.py` `izv_files`, 2026-10-20) and the isle demo (`bundles.py` `izv_files`, c135f802a) take 69e5 only:
+    their doors are drawn shut and never open, and a shut leaf blocks no walker. Ys vendors pre-69e5 copies of 70 and 71
+    and takes none of it.
+  - The kits' own doorway shapes cut a hole (`vnHole`) but hang no leaf: Pylon's `pylDoorway` (`69q-pyl-helpers.js`),
+    Talia's arches (`69u-tal-helpers.js`). Give them a leaf in `IZDOOR`.
+  - The other building kits (Ancients, Islanders, Lizardmen, the nomads, Scyvoi, Zeijani, Eternian ...) still draw
+    doorways as dark voids and windows as opaque plates. Take them onto the door module below, not onto 69e5's wrappers.
+
+- **Opening doors as a core module** (the owner, 2026-10-20). Door open/shut lives in Iziz's page: `IZDOOR` (69e5: the
+  leaf records, swing, `open` / `close` / `toggle` / `nearest`), `95j-iziz-doors.js` (each leaf's walk blocks in
+  `core/walk`, cleared doorways) and the key in `99-start.js`. Lift it into a core module every build takes (beside
+  `core/walk`): leaves as plain records keyed by stable ids (hinge, width, swing, state, locked), open and close as
+  plain functions an NPC, a quest or the player calls, their walk blocks in `KWALK`, and the drawing and the key on the
+  host side, so it runs in Godot too. Then Verge, the isle demo and the kits above take it in place of Iziz's copy.
+
 ## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
 
 The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md` (phases, rules, milestones),

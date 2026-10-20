@@ -226,6 +226,14 @@ area you are about to change.
 - **Spear held behind the back** in the library's spear walk → keep its legs and body (fetched as a source only) and
   put the arms at the made thrust's guard.
 - Check the whole clip in shots at several times, not one key frame: clipping usually lives mid-swing.
+- **Baking a crowd's still poses** (`src/60-crowd.js`, 2026-10-20). A figure's pieces are SkinnedMeshes on r128
+  materials with `skinning: true`, so they cannot simply be drawn as InstancedMeshes: bake each vertex through its
+  bones (`SkinnedMesh.boneTransform`, after `skeleton.update()`) into a plain geometry, and give it vertex colours (its
+  map sampled at the uv, times the material colour, which carries the skin tone, hair colour and dyes) so one Lambert
+  material draws every look. Three traps: `fig.play()` cross-fades 0.25 s from the clip before, so a bake taken right
+  after a play is a blend of two clips (stop the mixer and clear `fig.action` first); `traverseVisible` from a hidden
+  group visits nothing (keep the baking figure visible, just off the scene); and a figure's `update(dt)` advances the
+  clip by `dt * cadence`, so a frame at clip time t is `update(t / cadence)`.
 
 ## 7. Posture
 

@@ -12898,13 +12898,13 @@
      {
       "parent": "Hips",
       "pts": [
-       4195,
-       4476,
-       4858,
-       5275,
-       5861,
-       6615,
-       7395
+       4099,
+       4370,
+       4713,
+       5068,
+       5566,
+       6201,
+       6877
       ],
       "bw": [
        [
@@ -13022,13 +13022,13 @@
      {
       "parent": "Hips",
       "pts": [
-       4203,
-       4484,
-       4865,
-       5279,
-       5869,
-       6623,
-       7399
+       4107,
+       4378,
+       4720,
+       5072,
+       5574,
+       6209,
+       6881
       ],
       "bw": [
        [
@@ -13146,13 +13146,13 @@
      {
       "parent": "Spine",
       "pts": [
-       3143,
-       3460,
-       4073,
-       4873,
-       5502,
-       6388,
-       7405
+       3098,
+       3393,
+       3974,
+       4728,
+       5260,
+       6010,
+       6887
       ],
       "bw": [
        [
@@ -13266,51 +13266,47 @@
      {
       "parent": "Spine",
       "pts": [
-       3155,
-       3472,
-       4085,
-       4883,
-       5509,
-       6398,
-       7411
+       3106,
+       3401,
+       3982,
+       4734,
+       5265,
+       6017,
+       6891
       ],
       "bw": [
        [
         [
          "Spine",
-         0.6888
+         0.655
         ],
         [
          "Hips",
-         0.3024
+         0.3338
         ],
         [
          "LeftUpLeg",
-         0.0087
+         0.0113
         ]
        ],
        [
         [
          "Hips",
-         0.9256
+         0.9258
         ],
         [
          "LeftUpLeg",
-         0.0689
-        ],
-        [
-         "Spine",
-         0.0055
+         0.0742
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.717
+         0.6796
         ],
         [
          "Hips",
-         0.283
+         0.3204
         ]
        ],
        [
@@ -13330,7 +13326,7 @@
        [
         [
          "LeftUpLeg",
-         0.5431
+         0.5584
         ],
         [
          "RightUpLeg",
@@ -13342,7 +13338,7 @@
         ],
         [
          "LeftLeg",
-         0.0669
+         0.0516
         ]
        ],
        [
@@ -13386,55 +13382,51 @@
      {
       "parent": "Spine",
       "pts": [
-       3163,
-       3480,
-       4093,
-       4889,
-       5513,
-       6405,
-       7415
+       3114,
+       3409,
+       3990,
+       4741,
+       5269,
+       6024,
+       6895
       ],
       "bw": [
        [
         [
          "Spine",
-         0.6844
+         0.7029
         ],
         [
          "Hips",
-         0.3052
+         0.2893
         ],
         [
          "LeftUpLeg",
-         0.0079
-        ],
-        [
-         "Spine1",
-         0.0025
+         0.0078
         ]
        ],
        [
         [
          "Hips",
-         0.7654
+         0.8181
         ],
         [
          "Spine",
-         0.1638
+         0.1138
         ],
         [
          "LeftUpLeg",
-         0.0708
+         0.0681
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.7816
+         0.7921
         ],
         [
          "Hips",
-         0.2184
+         0.2079
         ]
        ],
        [
@@ -13454,7 +13446,7 @@
        [
         [
          "LeftUpLeg",
-         0.5415
+         0.5367
         ],
         [
          "RightUpLeg",
@@ -13466,7 +13458,7 @@
         ],
         [
          "LeftLeg",
-         0.0685
+         0.0733
         ]
        ],
        [
@@ -13510,13 +13502,13 @@
      {
       "parent": "Spine",
       "pts": [
-       3171,
-       3488,
-       4101,
-       4894,
-       5517,
-       6409,
-       7419
+       3126,
+       3421,
+       4002,
+       4749,
+       5275,
+       6031,
+       6901
       ],
       "bw": [
        [
@@ -13634,51 +13626,51 @@
      {
       "parent": "Spine",
       "pts": [
-       3183,
-       3498,
-       4112,
-       4901,
-       5523,
-       6420,
-       7425
+       3134,
+       3426,
+       4010,
+       4753,
+       5279,
+       6037,
+       6905
       ],
       "bw": [
        [
         [
          "Spine",
-         0.6037
+         0.6103
         ],
         [
          "Hips",
-         0.385
+         0.3793
         ],
         [
          "LeftUpLeg",
-         0.0113
+         0.0104
         ]
        ],
        [
         [
          "Hips",
-         0.9112
+         0.9098
         ],
         [
          "LeftUpLeg",
-         0.0565
+         0.0709
         ],
         [
          "Spine",
-         0.0322
+         0.0193
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.568
+         0.6187
         ],
         [
          "Hips",
-         0.432
+         0.3813
         ]
        ],
        [
@@ -13698,7 +13690,7 @@
        [
         [
          "LeftUpLeg",
-         0.5484
+         0.538
         ],
         [
          "RightUpLeg",
@@ -13710,43 +13702,43 @@
         ],
         [
          "LeftLeg",
-         0.0616
+         0.072
         ]
        ],
        [
         [
          "LeftLeg",
-         0.3439
+         0.35
         ],
         [
          "LeftUpLeg",
-         0.2624
+         0.26
         ],
         [
          "RightUpLeg",
-         0.2624
+         0.26
         ],
         [
          "Hips",
-         0.1312
+         0.13
         ]
        ],
        [
         [
          "LeftLeg",
-         0.3476
+         0.35
         ],
         [
          "LeftUpLeg",
-         0.261
+         0.26
         ],
         [
          "RightUpLeg",
-         0.261
+         0.26
         ],
         [
          "Hips",
-         0.1305
+         0.13
         ]
        ]
       ]
@@ -13754,57 +13746,61 @@
      {
       "parent": "Spine",
       "pts": [
-       3353,
-       3666,
-       4261,
-       4908,
-       5531,
-       6429,
-       7431
+       3141,
+       3433,
+       4018,
+       4757,
+       5283,
+       6043,
+       6908
       ],
       "bw": [
        [
         [
+         "Spine",
+         0.6283
+        ],
+        [
          "Hips",
-         0.6375
+         0.3615
+        ],
+        [
+         "LeftUpLeg",
+         0.0102
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.9364
+        ],
+        [
+         "LeftUpLeg",
+         0.0528
         ],
         [
          "Spine",
-         0.3547
-        ],
-        [
-         "LeftUpLeg",
-         0.0077
+         0.0108
         ]
        ],
        [
+        [
+         "LeftUpLeg",
+         0.5671
+        ],
         [
          "Hips",
-         0.9791
-        ],
-        [
-         "LeftUpLeg",
-         0.0209
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.6228
-        ],
-        [
-         "LeftUpLeg",
-         0.3772
+         0.4329
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.5208
+         0.61
         ],
         [
          "RightUpLeg",
-         0.3492
+         0.26
         ],
         [
          "Hips",
@@ -13814,117 +13810,131 @@
        [
         [
          "LeftUpLeg",
-         0.4721
+         0.5415
         ],
         [
          "RightUpLeg",
-         0.3518
+         0.2686
         ],
         [
          "Hips",
-         0.1327
+         0.1304
         ],
         [
          "LeftLeg",
-         0.0434
+         0.0596
         ]
        ],
        [
         [
+         "LeftLeg",
+         0.3379
+        ],
+        [
          "LeftUpLeg",
-         0.2929
+         0.2648
         ],
         [
          "RightUpLeg",
-         0.2929
-        ],
-        [
-         "LeftLeg",
-         0.2678
+         0.2648
         ],
         [
          "Hips",
-         0.1464
+         0.1324
         ]
        ],
        [
         [
+         "LeftLeg",
+         0.3408
+        ],
+        [
          "LeftUpLeg",
-         0.2929
+         0.2637
         ],
         [
          "RightUpLeg",
-         0.2929
-        ],
-        [
-         "LeftLeg",
-         0.2677
+         0.2637
         ],
         [
          "Hips",
-         0.1465
+         0.1318
         ]
        ]
       ]
      },
      {
-      "parent": "Spine",
+      "parent": "Spine1",
       "pts": [
-       3361,
-       3674,
-       4266,
-       4912,
-       5539,
-       6436,
-       7435
+       2310,
+       2717,
+       3440,
+       4307,
+       5028,
+       5957,
+       6913
       ],
       "bw": [
        [
         [
-         "Hips",
-         0.704
+         "Spine2",
+         0.5004
+        ],
+        [
+         "Spine1",
+         0.4996
+        ]
+       ],
+       [
+        [
+         "Spine1",
+         0.422
         ],
         [
          "Spine",
-         0.296
+         0.3594
+        ],
+        [
+         "Spine2",
+         0.2186
         ]
        ],
        [
         [
          "Hips",
-         0.993
+         0.7766
+        ],
+        [
+         "Spine",
+         0.214
         ],
         [
          "LeftUpLeg",
-         0.0035
-        ],
-        [
-         "RightUpLeg",
-         0.0035
+         0.0093
         ]
        ],
        [
+        [
+         "LeftUpLeg",
+         0.5802
+        ],
         [
          "Hips",
-         0.7811
+         0.2101
         ],
         [
          "RightUpLeg",
-         0.1193
-        ],
-        [
-         "LeftUpLeg",
-         0.0996
+         0.2097
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.4367
+         0.4901
         ],
         [
          "RightUpLeg",
-         0.4333
+         0.3799
         ],
         [
          "Hips",
@@ -13933,20 +13943,20 @@
        ],
        [
         [
-         "RightUpLeg",
-         0.4176
-        ],
-        [
          "LeftUpLeg",
-         0.4138
+         0.2989
         ],
         [
-         "Hips",
-         0.1343
+         "RightUpLeg",
+         0.2989
+        ],
+        [
+         "LeftLeg",
+         0.2517
         ],
         [
          "RightLeg",
-         0.0342
+         0.1506
         ]
        ],
        [
@@ -13960,87 +13970,87 @@
         ],
         [
          "LeftLeg",
-         0.2022
+         0.251
         ],
         [
          "RightLeg",
-         0.2001
-        ]
-       ],
-       [
-        [
-         "LeftUpLeg",
-         0.2989
-        ],
-        [
-         "RightUpLeg",
-         0.2989
-        ],
-        [
-         "LeftLeg",
-         0.2032
-        ],
-        [
-         "RightLeg",
-         0.1991
+         0.1513
         ]
        ]
       ]
      },
      {
-      "parent": "Spine",
+      "parent": "Spine1",
       "pts": [
-       3369,
-       3682,
-       4273,
-       4916,
-       5547,
-       6443,
-       7439
+       2314,
+       2721,
+       3442,
+       4309,
+       5030,
+       5960,
+       6916
       ],
       "bw": [
        [
         [
-         "Hips",
-         0.6628
+         "Spine2",
+         0.5456
+        ],
+        [
+         "Spine1",
+         0.4544
+        ]
+       ],
+       [
+        [
+         "Spine1",
+         0.4388
         ],
         [
          "Spine",
-         0.3301
+         0.3361
         ],
         [
-         "RightUpLeg",
-         0.0071
+         "Spine2",
+         0.2251
         ]
        ],
        [
         [
          "Hips",
-         0.9781
+         0.7697
+        ],
+        [
+         "Spine",
+         0.2206
         ],
         [
          "RightUpLeg",
-         0.0219
+         0.0097
         ]
        ],
        [
+        [
+         "RightUpLeg",
+         0.5957
+        ],
         [
          "Hips",
-         0.629
-        ],
-        [
-         "RightUpLeg",
-         0.371
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.5239
+         0.2099
         ],
         [
          "LeftUpLeg",
-         0.3461
+         0.1944
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.4944
+        ],
+        [
+         "LeftUpLeg",
+         0.3756
         ],
         [
          "Hips",
@@ -14049,56 +14059,38 @@
        ],
        [
         [
-         "RightUpLeg",
-         0.4744
-        ],
-        [
          "LeftUpLeg",
-         0.3487
+         0.2982
         ],
         [
-         "Hips",
-         0.1326
+         "RightUpLeg",
+         0.2982
         ],
         [
          "RightLeg",
-         0.0443
+         0.2546
+        ],
+        [
+         "Hips",
+         0.1491
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.2917
+         0.2984
         ],
         [
          "RightUpLeg",
-         0.2917
+         0.2984
         ],
         [
          "RightLeg",
-         0.2707
+         0.254
         ],
         [
          "Hips",
-         0.1459
-        ]
-       ],
-       [
-        [
-         "LeftUpLeg",
-         0.292
-        ],
-        [
-         "RightUpLeg",
-         0.292
-        ],
-        [
-         "RightLeg",
-         0.27
-        ],
-        [
-         "Hips",
-         0.146
+         0.1492
         ]
        ]
       ]
@@ -14106,51 +14098,51 @@
      {
       "parent": "Spine",
       "pts": [
-       3223,
-       3538,
-       4137,
-       4922,
-       5555,
-       6453,
-       7445
+       3164,
+       3448,
+       4035,
+       4769,
+       5295,
+       6057,
+       6922
       ],
       "bw": [
        [
         [
          "Spine",
-         0.5914
+         0.6401
         ],
         [
          "Hips",
-         0.3961
+         0.3495
         ],
         [
          "RightUpLeg",
-         0.0125
+         0.0105
         ]
        ],
        [
         [
          "Hips",
-         0.9159
+         0.9395
         ],
         [
          "RightUpLeg",
-         0.0549
+         0.0532
         ],
         [
          "Spine",
-         0.0292
+         0.0073
         ]
        ],
        [
         [
          "RightUpLeg",
-         0.5646
+         0.5697
         ],
         [
          "Hips",
-         0.4354
+         0.4303
         ]
        ],
        [
@@ -14170,7 +14162,127 @@
        [
         [
          "RightUpLeg",
-         0.5486
+         0.5435
+        ],
+        [
+         "LeftUpLeg",
+         0.2658
+        ],
+        [
+         "Hips",
+         0.1302
+        ],
+        [
+         "RightLeg",
+         0.0605
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.3401
+        ],
+        [
+         "LeftUpLeg",
+         0.264
+        ],
+        [
+         "RightUpLeg",
+         0.264
+        ],
+        [
+         "Hips",
+         0.132
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.3428
+        ],
+        [
+         "LeftUpLeg",
+         0.2629
+        ],
+        [
+         "RightUpLeg",
+         0.2629
+        ],
+        [
+         "Hips",
+         0.1314
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       3169,
+       3455,
+       4043,
+       4772,
+       5298,
+       6060,
+       6925
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.6145
+        ],
+        [
+         "Hips",
+         0.3725
+        ],
+        [
+         "RightUpLeg",
+         0.013
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.9142
+        ],
+        [
+         "RightUpLeg",
+         0.0668
+        ],
+        [
+         "Spine",
+         0.019
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.6678
+        ],
+        [
+         "Hips",
+         0.3322
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.61
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.5385
         ],
         [
          "LeftUpLeg",
@@ -14182,25 +14294,25 @@
         ],
         [
          "RightLeg",
-         0.0614
+         0.0715
         ]
        ],
        [
         [
          "RightLeg",
-         0.3459
+         0.35
         ],
         [
          "LeftUpLeg",
-         0.2616
+         0.26
         ],
         [
          "RightUpLeg",
-         0.2616
+         0.26
         ],
         [
          "Hips",
-         0.1308
+         0.13
         ]
        ],
        [
@@ -14226,13 +14338,13 @@
      {
       "parent": "Spine",
       "pts": [
-       3235,
-       3549,
-       4147,
-       4930,
-       5566,
-       6463,
-       7451
+       3177,
+       3462,
+       4051,
+       4776,
+       5304,
+       6064,
+       6929
       ],
       "bw": [
        [
@@ -14346,51 +14458,51 @@
      {
       "parent": "Spine",
       "pts": [
-       3243,
-       3555,
-       4155,
-       4934,
-       5570,
-       6467,
-       7455
+       3189,
+       3471,
+       4063,
+       4782,
+       5310,
+       6070,
+       6935
       ],
       "bw": [
        [
         [
          "Spine",
-         0.6906
+         0.694
         ],
         [
          "Hips",
-         0.299
+         0.2969
         ],
         [
          "RightUpLeg",
-         0.0105
+         0.0092
         ]
        ],
        [
         [
          "Hips",
-         0.7939
+         0.8328
         ],
         [
          "Spine",
-         0.142
+         0.1022
         ],
         [
          "RightUpLeg",
-         0.0641
+         0.0649
         ]
        ],
        [
         [
          "RightUpLeg",
-         0.8123
+         0.807
         ],
         [
          "Hips",
-         0.1877
+         0.193
         ]
        ],
        [
@@ -14410,7 +14522,7 @@
        [
         [
          "RightUpLeg",
-         0.5415
+         0.5369
         ],
         [
          "LeftUpLeg",
@@ -14422,7 +14534,7 @@
         ],
         [
          "RightLeg",
-         0.0685
+         0.0731
         ]
        ],
        [
@@ -14466,51 +14578,47 @@
      {
       "parent": "Spine",
       "pts": [
-       3251,
-       3562,
-       4163,
-       4938,
-       5574,
-       6472,
-       7459
+       3197,
+       3479,
+       4071,
+       4786,
+       5314,
+       6077,
+       6939
       ],
       "bw": [
        [
         [
          "Spine",
-         0.6809
+         0.6463
         ],
         [
          "Hips",
-         0.3096
+         0.3424
         ],
         [
          "RightUpLeg",
-         0.0094
+         0.0113
         ]
        ],
        [
         [
          "Hips",
-         0.9308
+         0.9289
         ],
         [
          "RightUpLeg",
-         0.0631
-        ],
-        [
-         "Spine",
-         0.0062
+         0.0711
         ]
        ],
        [
         [
          "RightUpLeg",
-         0.7176
+         0.6824
         ],
         [
          "Hips",
-         0.2824
+         0.3176
         ]
        ],
        [
@@ -14530,7 +14638,7 @@
        [
         [
          "RightUpLeg",
-         0.5424
+         0.5569
         ],
         [
          "LeftUpLeg",
@@ -14542,7 +14650,7 @@
         ],
         [
          "RightLeg",
-         0.0676
+         0.0531
         ]
        ],
        [
@@ -14586,13 +14694,13 @@
      {
       "parent": "Spine",
       "pts": [
-       3263,
-       3574,
-       4175,
-       4948,
-       5583,
-       6481,
-       7465
+       3205,
+       3487,
+       4079,
+       4794,
+       5321,
+       6082,
+       6943
       ],
       "bw": [
        [
@@ -14706,13 +14814,13 @@
      {
       "parent": "Hips",
       "pts": [
-       4329,
-       4608,
-       4958,
-       5369,
-       5993,
-       6729,
-       7471
+       4230,
+       4492,
+       4804,
+       5145,
+       5679,
+       6303,
+       6949
       ],
       "bw": [
        [
@@ -14830,13 +14938,13 @@
      {
       "parent": "Spine2",
       "pts": [
-       8955,
-       9133,
-       9485,
-       9896,
-       10241,
-       10563,
-       10889
+       8433,
+       8611,
+       8963,
+       9374,
+       9719,
+       10041,
+       10367
       ],
       "bw": [
        [
@@ -14950,13 +15058,13 @@
      {
       "parent": "Spine2",
       "pts": [
-       8973,
-       9151,
-       9503,
-       9914,
-       10250,
-       10572,
-       10898
+       8451,
+       8629,
+       8981,
+       9392,
+       9728,
+       10050,
+       10376
       ],
       "bw": [
        [
@@ -15062,13 +15170,13 @@
      {
       "parent": "Spine2",
       "pts": [
-       8988,
-       9167,
-       9519,
-       9930,
-       10258,
-       10580,
-       10906
+       8466,
+       8645,
+       8997,
+       9408,
+       9736,
+       10058,
+       10384
       ],
       "bw": [
        [
@@ -15174,13 +15282,13 @@
      {
       "parent": "Spine2",
       "pts": [
-       9004,
-       9185,
-       9534,
-       9947,
-       10268,
-       10590,
-       10916
+       8482,
+       8663,
+       9012,
+       9425,
+       9746,
+       10068,
+       10394
       ],
       "bw": [
        [
@@ -15290,13 +15398,13 @@
      {
       "parent": "Spine2",
       "pts": [
-       9019,
-       9201,
-       9549,
-       9963,
-       10276,
-       10598,
-       10924
+       8497,
+       8679,
+       9027,
+       9441,
+       9754,
+       10076,
+       10402
       ],
       "bw": [
        [
@@ -15410,13 +15518,13 @@
      {
       "parent": "Spine2",
       "pts": [
-       9039,
-       9221,
-       9569,
-       9983,
-       10286,
-       10608,
-       10934
+       8517,
+       8699,
+       9047,
+       9461,
+       9764,
+       10086,
+       10412
       ],
       "bw": [
        [
@@ -15530,9 +15638,9 @@
      {
       "parent": "Hips",
       "pts": [
-       12533,
-       12541,
-       12593
+       12011,
+       12019,
+       12071
       ],
       "bw": [
        [
@@ -15578,9 +15686,9 @@
      {
       "parent": "Hips",
       "pts": [
-       12536,
-       12547,
-       12598
+       12014,
+       12025,
+       12076
       ],
       "bw": [
        [
@@ -15643,7 +15751,8 @@
        12,
        13,
        14,
-       15
+       15,
+       16
       ],
       "stiff": 0.12,
       "layer": 1
@@ -15651,12 +15760,12 @@
      {
       "closed": false,
       "chains": [
-       16,
        17,
        18,
        19,
        20,
-       21
+       21,
+       22
       ],
       "stiff": 0.05,
       "layer": 2
@@ -15664,8 +15773,8 @@
      {
       "closed": false,
       "chains": [
-       22,
-       23
+       23,
+       24
       ],
       "stiff": 0.08,
       "layer": 2
@@ -15676,9 +15785,9 @@
    "tucks": true,
    "loose": true,
    "long": true,
-   "hem": 0.912,
-   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/zA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAwA8AMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/A/wP8A/wP8//z///////////wP8//8DAAACzP////////f////////////////////+//8//////8PPMwGEAAAAzA8DD+P/AzD8AwAAAAAAAAAAAAAAAAAAAPz//////////////////////////x8A/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwA8AAAAAAAAAAP8/AADADwAAAAAAAAAAAAD/PwAAAAAA///BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//88AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPD/P//8///////////////////////////////////////////////////////////////////////////v//8COwAwAAwAAAD8////////PwD/y///DzDAAAAA/////P//////vwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8Mz8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAD8AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/A/wP8B/wP8//////////////wP8//8DAAABzP////////7//////////////////9/////7////P/wgMwAMAADA/zDwMP8/AMM/AAAAAAAAAAAAAAAAAAAAwP///////////////////////////wLwDwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/AAAAAAAAAAA8P8DAAD8AAAAAAAAAAAAAPz/AgAAAAD8/y8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/PwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///PP////////////////////////////////////////////////////////////////////////8//////////f/jP///x/cAMAAMAAAAPD///8A8P////8PwOMf//////8DDDAADPz/A////////P////////8HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADw8w==",
-   "hides": 2996,
+   "hem": 0.914,
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/zA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAwA8AMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/A/wP8A/wP8//z///////////wP8//8DAAACzP////////f////////////////////+//8//////8PPMwGEAAAAzA8DD+P/AzD8AwAAAAAAAAAAAAAAAAAAAPz/////////////z83///P8/////x8A/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwA8AAAAAAAAAAP8/AADADwAAAAAAAAAAAAD/PwAAAAAA///BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//88AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPD/P//8///////////////////////////////////sDAwDwAADBDAD8AAAAAADMz/8/z8AzM/A8P/////v//8COwAwAAwAAAD8////////PwD/CwAAAAAAAAAA8P8DwP//////vwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8Mz8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAD8AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/A/wP8B/wP8//////////////wP8//8DAAABzP////////7//////////////////9/////7////P/wgMwAMAADA/zDwMP8/AMM/AAAAAAAAAAAAAAAAAAAAwP//////////////7Pz/P8///////wLwDwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/AAAAAAAAAAA8P8DAAD8AAAAAAAAAAAAAPz/AgAAAAD8/y8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/PwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///PP//////////////////////////////////9wMDAPAAAMCzAA8AAAAMDDzw///A8D8DAwPAPz8//////////f/jP///x/cAMAAMAAAAPD//wMA8P////8PwMMfAAAA/P8AAAAADPz/A/D//wAMMPz/////w/8HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw8A==",
+   "hides": 2585,
    "hide_by": "rays"
   },
   {
@@ -31654,49 +31763,63 @@
    "cloth": {
     "chains": [
      {
-      "parent": "Hips",
+      "parent": "Spine",
       "pts": [
-       5254,
-       5482,
-       5680,
-       6059,
-       6534,
-       6933,
-       7521
+       4204,
+       4574,
+       5215,
+       5593,
+       6144,
+       6710,
+       7397
       ],
       "bw": [
        [
         [
          "Hips",
-         0.5111
+         0.8355
+        ],
+        [
+         "Spine",
+         0.1485
         ],
         [
          "RightUpLeg",
-         0.4889
+         0.0096
+        ],
+        [
+         "LeftUpLeg",
+         0.0065
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.9415
+        ],
+        [
+         "RightUpLeg",
+         0.0585
         ]
        ],
        [
         [
          "RightUpLeg",
-         0.4576
-        ],
-        [
-         "LeftUpLeg",
-         0.4355
+         0.5068
         ],
         [
          "Hips",
-         0.1069
+         0.4932
         ]
        ],
        [
         [
          "RightUpLeg",
-         0.4458
+         0.4429
         ],
         [
          "LeftUpLeg",
-         0.4399
+         0.4429
         ],
         [
          "Hips",
@@ -31706,33 +31829,19 @@
        [
         [
          "RightUpLeg",
-         0.4379
+         0.4358
         ],
         [
          "LeftUpLeg",
-         0.4321
+         0.4311
         ],
         [
          "Hips",
-         0.13
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.3776
-        ],
-        [
-         "LeftUpLeg",
-         0.3744
-        ],
-        [
-         "Hips",
-         0.1434
+         0.1303
         ],
         [
          "RightLeg",
-         0.1046
+         0.0028
         ]
        ],
        [
@@ -31774,49 +31883,59 @@
       ]
      },
      {
-      "parent": "Hips",
+      "parent": "Spine",
       "pts": [
-       5262,
-       5490,
-       5684,
-       6063,
-       6542,
-       6936,
-       7524
+       4210,
+       4582,
+       5219,
+       5597,
+       6148,
+       6714,
+       7401
       ],
       "bw": [
        [
         [
-         "LeftUpLeg",
-         0.5405
+         "Hips",
+         0.8179
         ],
         [
+         "Spine",
+         0.161
+        ],
+        [
+         "LeftUpLeg",
+         0.0211
+        ]
+       ],
+       [
+        [
          "Hips",
-         0.4595
+         0.9112
+        ],
+        [
+         "LeftUpLeg",
+         0.0888
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.6345
-        ],
-        [
-         "RightUpLeg",
-         0.2597
+         0.5485
         ],
         [
          "Hips",
-         0.1058
+         0.4515
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.5441
+         0.5535
         ],
         [
          "RightUpLeg",
-         0.3417
+         0.3323
         ],
         [
          "Hips",
@@ -31826,69 +31945,55 @@
        [
         [
          "LeftUpLeg",
-         0.5002
+         0.4988
         ],
         [
          "RightUpLeg",
-         0.3698
+         0.3674
         ],
         [
          "Hips",
          0.13
+        ],
+        [
+         "LeftLeg",
+         0.0038
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.3995
+         0.2945
         ],
         [
          "RightUpLeg",
-         0.3303
-        ],
-        [
-         "Hips",
-         0.1392
+         0.2945
         ],
         [
          "LeftLeg",
-         0.131
+         0.2636
+        ],
+        [
+         "Hips",
+         0.1473
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.2961
+         0.2967
         ],
         [
          "RightUpLeg",
-         0.2961
+         0.2967
         ],
         [
          "LeftLeg",
-         0.2597
+         0.2583
         ],
         [
          "Hips",
-         0.1481
-        ]
-       ],
-       [
-        [
-         "LeftUpLeg",
-         0.2978
-        ],
-        [
-         "RightUpLeg",
-         0.2978
-        ],
-        [
-         "LeftLeg",
-         0.2554
-        ],
-        [
-         "Hips",
-         0.1489
+         0.1483
         ]
        ]
       ]
@@ -31899,10 +32004,10 @@
        2373,
        2938,
        3865,
-       4976,
-       5787,
-       6652,
-       7530
+       4964,
+       5695,
+       6531,
+       7407
       ],
       "bw": [
        [
@@ -31954,11 +32059,11 @@
        [
         [
          "Hips",
-         0.6913
+         0.6902
         ],
         [
          "LeftUpLeg",
-         0.3087
+         0.3098
         ]
        ],
        [
@@ -31978,37 +32083,37 @@
        [
         [
          "LeftLeg",
-         0.3052
+         0.305
         ],
         [
          "LeftUpLeg",
-         0.2993
+         0.2994
         ],
         [
          "RightUpLeg",
-         0.2641
+         0.2642
         ],
         [
          "Hips",
-         0.1314
+         0.1315
         ]
        ],
        [
         [
          "LeftLeg",
-         0.3278
+         0.3275
         ],
         [
          "LeftUpLeg",
-         0.2689
+         0.269
         ],
         [
          "RightUpLeg",
-         0.2689
+         0.269
         ],
         [
          "Hips",
-         0.1344
+         0.1345
         ]
        ]
       ]
@@ -32019,10 +32124,10 @@
        2381,
        2946,
        3871,
-       4984,
-       5792,
-       6655,
-       7533
+       4970,
+       5698,
+       6533,
+       7410
       ],
       "bw": [
        [
@@ -32139,10 +32244,10 @@
        2392,
        2958,
        3883,
-       4996,
-       5799,
-       6661,
-       7539
+       4982,
+       5705,
+       6539,
+       7416
       ],
       "bw": [
        [
@@ -32263,10 +32368,10 @@
        2400,
        2966,
        3891,
-       5004,
-       5803,
-       6665,
-       7543
+       4990,
+       5709,
+       6543,
+       7420
       ],
       "bw": [
        [
@@ -32359,10 +32464,10 @@
        2408,
        2974,
        3898,
-       5012,
-       5807,
-       6669,
-       7547
+       4998,
+       5713,
+       6547,
+       7424
       ],
       "bw": [
        [
@@ -32455,10 +32560,10 @@
        2420,
        2986,
        3909,
-       5024,
-       5813,
-       6675,
-       7553
+       5010,
+       5719,
+       6553,
+       7430
       ],
       "bw": [
        [
@@ -32583,10 +32688,10 @@
        2428,
        2994,
        3914,
-       5028,
-       5816,
-       6679,
-       7557
+       5014,
+       5722,
+       6557,
+       7434
       ],
       "bw": [
        [
@@ -32700,13 +32805,13 @@
      {
       "parent": "Spine",
       "pts": [
-       4290,
-       4664,
-       5309,
-       5725,
-       6290,
-       6883,
-       7563
+       4289,
+       4662,
+       5263,
+       5636,
+       6187,
+       6753,
+       7440
       ],
       "bw": [
        [
@@ -32816,13 +32921,13 @@
      {
       "parent": "Spine",
       "pts": [
-       4298,
-       4672,
-       5313,
-       5728,
-       6293,
-       6887,
-       7567
+       4297,
+       4670,
+       5267,
+       5639,
+       6190,
+       6757,
+       7444
       ],
       "bw": [
        [
@@ -32936,13 +33041,13 @@
      {
       "parent": "Spine",
       "pts": [
-       4306,
-       4679,
-       5317,
-       5732,
-       6297,
-       6891,
-       7571
+       4305,
+       4677,
+       5271,
+       5643,
+       6194,
+       6761,
+       7448
       ],
       "bw": [
        [
@@ -33055,10 +33160,10 @@
        2468,
        3034,
        3952,
-       5057,
-       5837,
-       6699,
-       7577
+       5043,
+       5743,
+       6577,
+       7454
       ],
       "bw": [
        [
@@ -33175,10 +33280,10 @@
        2476,
        3042,
        3957,
-       5062,
-       5840,
-       6703,
-       7581
+       5048,
+       5746,
+       6581,
+       7458
       ],
       "bw": [
        [
@@ -33291,10 +33396,10 @@
        2488,
        3054,
        3968,
-       5074,
-       5846,
-       6709,
-       7587
+       5060,
+       5752,
+       6587,
+       7464
       ],
       "bw": [
        [
@@ -33387,10 +33492,10 @@
        2496,
        3062,
        3976,
-       5082,
-       5850,
-       6713,
-       7591
+       5068,
+       5756,
+       6591,
+       7468
       ],
       "bw": [
        [
@@ -33487,10 +33592,10 @@
        2504,
        3070,
        3984,
-       5090,
-       5854,
-       6717,
-       7595
+       5076,
+       5760,
+       6595,
+       7472
       ],
       "bw": [
        [
@@ -33603,10 +33708,10 @@
        2515,
        3082,
        3996,
-       5102,
-       5860,
-       6723,
-       7601
+       5088,
+       5766,
+       6601,
+       7478
       ],
       "bw": [
        [
@@ -33723,10 +33828,10 @@
        2523,
        3090,
        4002,
-       5110,
-       5863,
-       6726,
-       7604
+       5096,
+       5769,
+       6604,
+       7481
       ],
       "bw": [
        [
@@ -33774,11 +33879,11 @@
        [
         [
          "Hips",
-         0.6924
+         0.6772
         ],
         [
          "RightUpLeg",
-         0.3076
+         0.3228
         ]
        ],
        [
@@ -33798,7 +33903,7 @@
        [
         [
          "RightLeg",
-         0.3074
+         0.3072
         ],
         [
          "RightUpLeg",
@@ -33806,7 +33911,7 @@
         ],
         [
          "LeftUpLeg",
-         0.2626
+         0.2628
         ],
         [
          "Hips",
@@ -33816,67 +33921,77 @@
        [
         [
          "RightLeg",
-         0.3303
+         0.33
         ],
         [
          "LeftUpLeg",
-         0.2679
+         0.268
         ],
         [
          "RightUpLeg",
-         0.2679
+         0.268
         ],
         [
          "Hips",
-         0.1339
+         0.134
         ]
        ]
       ]
      },
      {
-      "parent": "Hips",
+      "parent": "Spine",
       "pts": [
-       5360,
-       5577,
-       5771,
-       6148,
-       6630,
-       7022,
-       7610
+       4384,
+       4756,
+       5310,
+       5681,
+       6232,
+       6800,
+       7487
       ],
       "bw": [
        [
         [
          "Hips",
-         0.5257
+         0.8052
+        ],
+        [
+         "Spine",
+         0.174
         ],
         [
          "RightUpLeg",
-         0.4743
+         0.0208
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.9167
+        ],
+        [
+         "RightUpLeg",
+         0.0833
         ]
        ],
        [
         [
          "RightUpLeg",
-         0.648
-        ],
-        [
-         "LeftUpLeg",
-         0.2441
+         0.5338
         ],
         [
          "Hips",
-         0.1078
+         0.4662
         ]
        ],
        [
         [
          "RightUpLeg",
-         0.5529
+         0.5604
         ],
         [
          "LeftUpLeg",
-         0.3328
+         0.3253
         ],
         [
          "Hips",
@@ -33886,69 +34001,55 @@
        [
         [
          "RightUpLeg",
-         0.5053
+         0.5037
         ],
         [
          "LeftUpLeg",
-         0.3647
+         0.3625
         ],
         [
          "Hips",
          0.13
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.4027
-        ],
-        [
-         "LeftUpLeg",
-         0.3264
-        ],
-        [
-         "Hips",
-         0.139
         ],
         [
          "RightLeg",
-         0.1318
+         0.0039
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.2948
+         0.2933
         ],
         [
          "RightUpLeg",
-         0.2948
+         0.2933
         ],
         [
          "RightLeg",
-         0.263
+         0.2668
         ],
         [
          "Hips",
-         0.1474
+         0.1466
         ]
        ],
        [
         [
          "LeftUpLeg",
-         0.2967
+         0.2956
         ],
         [
          "RightUpLeg",
-         0.2967
+         0.2956
         ],
         [
          "RightLeg",
-         0.2582
+         0.261
         ],
         [
          "Hips",
-         0.1484
+         0.1478
         ]
        ]
       ]
@@ -33989,8 +34090,8 @@
    "loose": true,
    "long": true,
    "hem": 0.825,
-   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMD/zz8AAAMAAAAAAAAAAAAAAAAAAAAAAAAAADwAwD8APAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P////+/wP////////////////////8zz8L////////////////////////////////+/////////////////////////////////////////////////////////////////////////////////x8A/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA//////////////////////////////////////////////////////////88z/83AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8A8AAAAAAAAAAP//cP/DPwAAAAAAAAAAAAD//8//AwAA/////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//AwDwD/4fPP8AAAAAAAAAAAAAAAAAAPD/P//8///////////////////////////////////////////////////////////////////////////v//8CMAAwAAAAAAD8/////zsPAAD/wP///z8DADAA////zP//////LwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAD/P/8AAAwAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAP8A8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P////9/8P////////////////////8zz8H//////////////////////////////9///////////////////////////////////////////////////////////////////////////////////wLwDwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8/////////////////////////////////////////////////////////8/z/L8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAAA8P8P/z/8AwAAAAAAAAAAAPz/f/8PAAD8////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8PAMD/9P/y/AMAAAAAAAAAAAAAAAAAwP///PP////////////////////////////////////////////////////////////////////////8//////////f/jP///x/AAMAAAAAAAPD/////////zQMAwP8D////////zwAAPPz/A////////Pz///////8BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADw8w==",
-   "hides": 4571,
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMD/zz8AAAMAAAAAAAAAAAAAAAAAAAAAAAAAADwAwD8APAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P////+/wP////////////////////8zz8L////////////////////////////////+/////////////////////////////////////////////////////////////////////////////////x8A/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA//////////////////////////////////////////////////////////88z/83AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8A8AAAAAAAAAAP//cP/DPwAAAAAAAAAAAAD//8//AwAA/////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//AwDwD/4fPP8AAAAAAAAAAAAAAAAAAPD/P//8/////////////////////////////zz7/////////////////wMA8P8PAAD8/////wMAAPDzAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAwP////8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAD/P/8AAAwAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAP8A8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P////9/8P////////////////////8zz8H//////////////////////////////9///////////////////////////////////////////////////////////////////////////////////wLwDwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8/////////////////////////////////////////////////////////8/z/L8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/wAAAAAAAAAA8P8P/z/8AwAAAAAAAAAAAPz/f/8PAAD8////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8PAMD/9P/y/AMAAAAAAAAAAAAAAAAAwP///PP/////////////////////////////PPf/////////////////AAD//wAAwP////8/AAAAAAAAPz8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAPz///8/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADw8A==",
+   "hides": 3926,
    "hide_by": "rays"
   },
   {

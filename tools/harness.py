@@ -439,13 +439,24 @@ async def export_main(argv):
             with open(os.path.join(src, 'pack.json'), encoding='utf-8') as f:
                 pj = json.load(f)
             used = {t['family'] for t in w['textures'] if t.get('pack') == name}
+            rename = {}
             for fam in sorted(used):
                 for fn in sorted(set(pj['families'].get(fam, {}).get('files', {}).values())):
-                    if fn in copied and copied[fn] != name:   # several packs share tex/: a name two packs use would collide
-                        fails.append('library packs %s and %s both name %s' % (copied[fn], name, fn))
-                    copied[fn] = name
-                    shutil.copyfile(os.path.join(src, fn), os.path.join(dst, fn))
-            shutil.copyfile(os.path.join(src, 'pack.json'), os.path.join(dst, 'pack.json' if len(packs) == 1 else name + '.pack.json'))
+                    to = fn
+                    if fn in copied and copied[fn] != name:   # several packs share tex/: a name another pack took is
+                        to = rename[fn] = name + '.' + fn     # copied as <pack>.<name>, and this pack's pack.json says so
+                        if to in copied:
+                            fails.append('library packs %s and %s both name %s' % (copied[to], name, to))
+                    copied[to] = name
+                    shutil.copyfile(os.path.join(src, fn), os.path.join(dst, to))
+            pjo = os.path.join(dst, 'pack.json' if len(packs) == 1 else name + '.pack.json')
+            if rename:
+                for e in pj['families'].values():
+                    e['files'] = {k: rename.get(v, v) for k, v in e.get('files', {}).items()}
+                with open(pjo, 'w', encoding='utf-8', newline='\n') as f:
+                    json.dump(pj, f, indent=1, sort_keys=True)
+            else:
+                shutil.copyfile(os.path.join(src, 'pack.json'), pjo)
         files['tex/'] = sum(os.path.getsize(os.path.join(dst, f)) for f in os.listdir(dst))
     chk = res['check']
     meta = {'case': os.path.basename(out.rstrip('/\\')), 'page': os.path.relpath(os.path.abspath(a.html), ROOT).replace(os.sep, '/'),

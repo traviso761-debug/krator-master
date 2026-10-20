@@ -90,6 +90,21 @@ const PEOPLE_DRAWN=(function(){
   if(s.act==='GUARD'){o.a1=-.5;return o;}
   return o;}
  const o={},go={};
+ // keeping apart (2026-10-20, the owner: the people walked through one another): the drawn positions, not the sim's,
+ // pushed apart where two come within a shoulder's width (SEP) on one level; each one's push eased over a few frames
+ // and held to half a metre, so everyone keeps to the sim's paths. The ones near the eye only (SEPR); core/space's grid
+ // finds the neighbours. The cham's ring, the keepers at the wheel and the master of arms keep their places
+ const OFF=new Float32Array(N*2),SEP=.62,SEPR=140,GRID=typeof KSPACE!=='undefined'?KSPACE.create({cell:2}):null,NB=[],IN=[];
+ const apart=(i,s)=>s.act!=='CHAM'&&s.act!=='TURN_WHEEL'&&i!==MASTER;
+ function separate(){if(!GRID)return;const c=camera.position;GRID.clear();IN.length=0;
+  for(let i=0;i<N;i++){const s=S[i];if(s.shown&&apart(i,s)&&Math.abs(POS[i*4]-c.x)<SEPR&&Math.abs(POS[i*4+2]-c.z)<SEPR){GRID.insert(i,POS[i*4],POS[i*4+2],0);IN.push(i);}
+   else{OFF[i*2]=0;OFF[i*2+1]=0;}}
+  for(const i of IN){const px=POS[i*4],py=POS[i*4+1],pz=POS[i*4+2];let fx=0,fz=0;GRID.query(px,pz,SEP,NB);
+   for(const j of NB){if(j===i||Math.abs(POS[j*4+1]-py)>1.5)continue;let dx=px-POS[j*4],dz=pz-POS[j*4+2],d=Math.hypot(dx,dz);if(d>=SEP)continue;
+    if(d<1e-4){const a=KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,13))*6.283;dx=Math.cos(a);dz=Math.sin(a);d=1;}else{dx/=d;dz/=d;}
+    const push=(SEP-Math.min(d,SEP))*.5;fx+=dx*push;fz+=dz*push;}
+   let ox=OFF[i*2]*.96+fx*.4,oz=OFF[i*2+1]*.96+fz*.4;const m=Math.hypot(ox,oz);if(m>.5){ox*=.5/m;oz*=.5/m;}OFF[i*2]=ox;OFF[i*2+1]=oz;}}
+ out.apart=()=>({near:IN.length,pushed:IN.filter(i=>Math.hypot(OFF[i*2],OFF[i*2+1])>.05).length});
  // the master's step through time: every 5-7 s he is elsewhere within 9 m; the place he left keeps his afterimage 2 s
  const MS={x:0,z:0,from:null,at:-10,next:3};
  function tick(dt,t){
@@ -99,10 +114,11 @@ const PEOPLE_DRAWN=(function(){
    pose(i,t,s,o);
    if(i===MASTER&&s.act==='DRILL'){if(t>MS.next){MS.from={x:o.x+MS.x,z:o.z+MS.z,t};const S2=KRAND.stream(KRAND.hash(211,Math.floor(t)));MS.x=S2.range(-9,9);MS.z=S2.range(-6,6);MS.at=t;MS.next=t+S2.range(5,7);}
     o.x+=MS.x;o.z+=MS.z;o.y=terrainH(o.x,o.z);MASTER_AT.set(o.x,o.y,o.z);}
+   if(apart(i,s)){o.x+=OFF[i*2];o.z+=OFF[i*2+1];}   // kept apart (last frame's push)
    // where the pose put them (69 stands a dressed figure there); a dressed one's placeholder is not drawn
    POS[i*4]=o.x;POS[i*4+1]=o.y;POS[i*4+2]=o.z;POS[i*4+3]=o.ry;
    if(MASK.has(i)){const k=MASK.get(i);if(s.act==='CHAM')setM(masks,k,o.x,o.y+1.6*o.sy,o.z,o.ry);else masks.setMatrixAt(k,HIDE);}
-   if(out.dressed.has(i)){robe.setMatrixAt(i,HIDE);head.setMatrixAt(i,HIDE);sash.setMatrixAt(i,HIDE);staff.setMatrixAt(i,HIDE);arm.setMatrixAt(2*i,HIDE);arm.setMatrixAt(2*i+1,HIDE);continue;}
+   if(out.dressed.has(i)||out.crowd&&out.crowd.has(i)){robe.setMatrixAt(i,HIDE);head.setMatrixAt(i,HIDE);sash.setMatrixAt(i,HIDE);staff.setMatrixAt(i,HIDE);arm.setMatrixAt(2*i,HIDE);arm.setMatrixAt(2*i+1,HIDE);continue;}
    setM(robe,i,o.x,o.y,o.z,o.ry,0,0,o.sy);setM(sash,i,o.x,o.y,o.z,o.ry,0,0,o.sy);setM(head,i,o.x,o.y+(o.sy-1)*1.42,o.z,o.ry);
    const sx=Math.cos(o.ry),sz=-Math.sin(o.ry),hy=o.y+1.36*o.sy;
    setM(arm,2*i,o.x+sx*.22,hy,o.z+sz*.22,o.ry,o.a0,o.r0);setM(arm,2*i+1,o.x-sx*.22,hy,o.z-sz*.22,o.ry,o.a1,o.r1);
@@ -114,6 +130,7 @@ const PEOPLE_DRAWN=(function(){
     else{gRobe[k].setMatrixAt(j,HIDE);gArm[k].setMatrixAt(2*j,HIDE);gArm[k].setMatrixAt(2*j+1,HIDE);}continue;}
    pose(i,t-(k+1)*.035,s,go);setM(gRobe[k],j,go.x,go.y,go.z,go.ry,0,0,go.sy);const sx=Math.cos(go.ry),sz=-Math.sin(go.ry),hy=go.y+1.36*go.sy;
    setM(gArm[k],2*j,go.x+sx*.22,hy,go.z+sz*.22,go.ry,go.a0,go.r0);setM(gArm[k],2*j+1,go.x-sx*.22,hy,go.z-sz*.22,go.ry,go.a1,go.r1);}});
+  separate();
   [robe,head,arm,sash,staff,masks].concat(gRobe,gArm).forEach(m=>{m.instanceMatrix.needsUpdate=true;});
   PETALS.mat.uniforms.uT.value=t;PETALS.mat.uniforms.uM.value.copy(MASTER_AT);}
  const MASTER_AT=new THREE.Vector3(LS.DRILL.x,0,LS.DRILL.z);

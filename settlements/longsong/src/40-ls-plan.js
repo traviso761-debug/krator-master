@@ -231,7 +231,11 @@ P.VAULT=[
  {id:'spiral',name:'The Long Stair down to the Procrastinator (the eldest keepers only)',x0:-8,x1:8,z0:114,z1:130,y0:-62,h:55,shaft:true,cls:'bare'},
  // the two passages where rooms do not meet (2026-10-19)
  {id:'unmaking-passage',name:'The passage to the Unmaking Room',x0:48,x1:56,z0:100,z1:104,y0:-14,h:3.4,cls:'bare'},
- {id:'stair-foot',name:'The foot of the Long Stair (the last passage before the hall)',x0:-2.2,x1:2.2,z0:130,z1:134,y0:-62,h:4.6,cls:'bare'}];
+ {id:'stair-foot',name:'The foot of the Long Stair (the last passage before the hall)',x0:-2.2,x1:2.2,z0:130,z1:134,y0:-62,h:4.6,cls:'bare'},
+ // the Cistern of the rock (ROOMS.md section 4; 2026-10-20): the rock's water, gathered from its seams into a basin cut in
+ // the floor, a walk round it, the steps down to the water at its north end
+ {id:'cistern',name:'The Cistern of the rock (the rock\'s water, gathered from its seams)',x0:-60,x1:-32,z0:48,z1:74,y0:-14,h:8,cls:'plain',
+  cistern:{x0:-56.5,x1:-35.5,z0:51.5,z1:68,depth:3.4,water:-15.6}}];
 // THE DOORS between the rooms (2026-10-19: the rooms had been separate boxes): each in a wall two rooms share, on axis
 // 'x' (the wall at x = at, the opening from s0 to s1 along z) or 'z' (at z, from s0 to s1 along x), from the floor y0,
 // h high. The rooms all join, from the Deep Stair down to the Procrastinator's hall (VCHK.joined)
@@ -246,7 +250,8 @@ P.VAULT_DOORS=[
  {a:'unmaking-passage',b:'unmaking',axis:'x',at:56,s0:100.4,s1:103.6,y0:-14,h:3},
  {a:'closed-vault',b:'spiral',axis:'x',at:-8,s0:116,s1:119.6,y0:-14,h:3.2},
  {a:'spiral',b:'stair-foot',axis:'z',at:130,s0:-1.7,s1:1.7,y0:-62,h:4.2},
- {a:'stair-foot',b:'procrastinator-hall',axis:'z',at:134,s0:-1.7,s1:1.7,y0:-62,h:4.6}];
+ {a:'stair-foot',b:'procrastinator-hall',axis:'z',at:134,s0:-1.7,s1:1.7,y0:-62,h:4.6},
+ {a:'open-vault',b:'cistern',axis:'z',at:74,s0:-48,s1:-44.4,y0:-14,h:3}];
 // THE PROCRASTINATOR: a prayer wheel the size of a tower, turning on its axle in a drum-shaped hall cut far under the
 // rock. Its glyphs burn; the keepers turn it at every bell and it is never let stop. Its field slows time inside the
 // eight seals round the hall's wall to a near standstill (LORE.md 6.15: the Monks are said to speed time and slow it;

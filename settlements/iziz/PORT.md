@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 485 (30%) | 24 (2%) | 54 (3%) | 140 (9%) | 890 (56%) |
+| KB | 485 (31%) | 24 (2%) | 54 (3%) | 129 (8%) | 890 (56%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -114,7 +114,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/city/90c-city-atmos.js` | 10.5 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `targets/city/91z-views.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/93-city-ui.js` | 4.3 | [web] | 1 | 2 | 6 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/city/94-city-export.js` | 33.7 | [web] | 8 | 3 | 0 | 0 | 0 | 6 | 5 | 3 | 0 | 0 | 0 | M5: the city's core/export contributor; reads the three.js scene at export time (canvas 2D only for the PNG bakes of procedural maps), draws nothing. On a page with interiors (95i: a kit's sheet) also the interiors section and the furniture as pieces (each rebuilt alone through the catalog batch, never added to the scene) |
+| `targets/city/94-city-export.js` | 22.8 | [web] | 2 | 0 | 0 | 0 | 0 | 6 | 1 | 1 | 0 | 0 | 0 | M5: the city's core/export contributor; reads the three.js scene at export time (canvas 2D only for the PNG bakes of procedural maps), draws nothing. On a page with interiors (95i: a kit's sheet) also the interiors section and the furniture as pieces (each rebuilt alone through the catalog batch, never added to the scene) |
 | `targets/ixtest/89y-ix-wrappers.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/ixtest/89z-rows.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/ixtest/91z-views.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

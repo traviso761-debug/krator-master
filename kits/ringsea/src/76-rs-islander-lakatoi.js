@@ -18,8 +18,18 @@ function buildRsIslanderLakatoi(){reseed(72600);
  const yD=yT+.3;
  // thatched deckhouses fore and aft
  for(const x of[-4.6,4.6])rsCabin(B,{x,y:yD,w:2.6,d:7,h:1.5,mk:'thatch',wall:0xb89a64,roof:'gable',roofMk:'thatch',roofCol:0xc8b27c,rh:1.5,over:.35});
- // the pots, stacked in nets amidships
- for(let i=0;i<22;i++){const x=rr(-2.6,2.6),z=rr(-4.2,4.2),y=yD+(i%3)*.45;if(Math.abs(z)<.6&&Math.abs(x)<1)continue;rsSphere(B,'paint',.3,[x,y+.28,z],[1,.85,1],[0xb05a30,0x9a4a28,0xc06a3a][i%3],10,8);rsCyl(B,'paint',.12,.16,.16,[x,y+.58,z],null,0x8a3a20,8);}
+ // the pots, stacked in nets amidships: two bays either side of the walkway, clear of the masts; the bottom layer
+ // stands on the deck, the upper one sits in its hollows (sphere contact, squashed with the pot), lashed under rope
+ // nets tied down to the deck. Placed by grid, not by draws
+ const PR=.3,PS=.85,SP=.68,PC=[0xb05a30,0x9a4a28,0xc06a3a],yB=yD+PR*PS,yU=yB+Math.sqrt(4*PR*PR-SP*SP/2)*PS;
+ const pot=(x,y,z,k)=>{rsSphere(B,'paint',PR,[x,y,z],[1,PS,1],PC[k%3],10,8);rsCyl(B,'paint',.12,.16,.16,[x,y+.3,z],null,0x8a3a20,8);};
+ for(const sz of[-1,1]){const X=[0,1,2,3,4,5].map(i=>-2.4+i*SP),Z=[0,1,2,3].map(j=>sz*(1.3+j*SP));
+  X.forEach((x,i)=>Z.forEach((z,j)=>pot(x,yB,z,i+j)));
+  for(let i=0;i<X.length-1;i++)for(let j=0;j<Z.length-1;j++)pot(X[i]+SP/2,yU,(Z[j]+Z[j+1])/2,i+j+1);
+  const top=yU+PR*PS+.05,lo=yD+.04,x0=X[0]-PR,x1=X[X.length-1]+PR,z0=Math.min(Z[0],Z[3])-PR,z1=Math.max(Z[0],Z[3])+PR;
+  const net=(a,b)=>{rsRope(B,a,b,.02,0x4a3a26);};
+  for(let j=0;j<Z.length-1;j++){const z=(Z[j]+Z[j+1])/2;net([x0-.25,lo,z],[x0+SP/2,top,z]);net([x0+SP/2,top,z],[x1-SP/2,top,z]);net([x1-SP/2,top,z],[x1+.25,lo,z]);}
+  for(let i=0;i<X.length-1;i++){const x=X[i]+SP/2;net([x,lo,z0-.25],[x,top,z0+SP/2]);net([x,top,z0+SP/2],[x,top,z1-SP/2]);net([x,top,z1-SP/2],[x,lo,z1+.25]);}}
  // two crab-claw sails side by side, masts leaning aft
  for(const z of[-2.2,2.2]){const mx=2.4;rsLink(B,'wood',[mx,yD,z],[mx-.7,yD+8.5,z],.12,0x5a3a24,8,.08);
   rsRig(B,[[mx,yD,z],[mx-.7,yD+8.5,z]]);const S=rsSail(B,{key:'lakatoi-claw',O:[mx,yD+.3,z],U:[-1,0,0],V:[0,1,0],belly:.8*Math.sign(z),nu:24,nv:12,

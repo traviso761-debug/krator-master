@@ -11,8 +11,8 @@
  "data/posture.json": "9217c1e191679dd68206a7167fb2f08e4c02f76b",
  "data/props.json": "7325dd1aaea6684898eb2b122bbbb74ebbcd9b83",
  "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
- "dist/animation-lab.html": "f5787fdcabfb4282467b40e48b519836a4a431ff",
- "dist/cosmetic-lab.html": "44ab790b6c54a689565aedbe5cfa2d43df3cd1d9",
+ "dist/animation-lab.html": "28938e558ba8448e7401da0902cea692c5b6983b",
+ "dist/cosmetic-lab.html": "6b85f1a264ae27784626a71e26883a1ee84b6404",
  "pieces/mpfb_female/AfroPonytail.glb": "4651cd4f23689b842b5486aa125918d800be59aa",
  "pieces/mpfb_female/AfroPonytail.morph.bin": "33fe464644e615b0bfa8c5643d5453743dcfe519",
  "pieces/mpfb_female/Afro_Ponytail_-_Slick_Down.glb": "635664da7ec18048859db725bdf567e0bca34aec",
@@ -784,6 +784,7 @@
  "src/01-animlab.html": "47609201e63f1bc946f99150c7d2fc0529d2fe12",
  "src/10-rig.js": "7cef1beb401dd11fb74ce1d979845f672470004b",
  "src/50-figure.js": "64017864eda55d0b53c4607d2f9e4fcaa8f3e1e7",
+ "src/60-crowd.js": "6adbd21cff4c89b94fd196e2e76c5d2f31592d7d",
  "src/90-editor.js": "69d10f49d674a75a9f1daf5748b08a5a2d33fc97",
  "src/92-animlab.js": "170553ccb1d2db711be8665df57b157d64f5e3bf"
 }

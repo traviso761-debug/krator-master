@@ -108,3 +108,11 @@ save draw calls). The scene's eighth row holds them; nothing in the layout chang
 triangles; after: 223 calls, 0.70M. Overview before: 253 calls; after: 284, over the 260 showcase budget (KNOWN_ISSUES.md).
 All 20 checks pass.
 
+
+## The lakatoi's pots (2026-10-19)
+
+The owner: "it has floating jars all over it". The 22 pots had a random place and a random layer each, so most of
+the upper ones stood on nothing. Now two cargo bays either side of the walkway, clear of the masts and the crew: a
+bottom layer of 6 x 4 standing on the deck, an upper layer of 5 x 3 sitting in its hollows (sphere contact, squashed
+with the pot; the necks clear), lashed under rope nets tied down to the deck. Placed by grid, not by draws (so the crew
+figures after them draw differently from before). The lakatoi is the isle demo's merchant vessel (P7c).

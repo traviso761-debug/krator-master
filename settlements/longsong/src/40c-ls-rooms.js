@@ -261,6 +261,152 @@ P.SHELLS={front:FR,outerW:OW,outerE:OE,innerW:IW,innerE:IE,gate:GT,base:BS,rpIn,
  row('rp.k7.cells-w',a0,-28,b0,b1,'z',[['a','The Chroniclers\' cells (west, north)','office','ls-clerks',2,null],['b','The Chroniclers\' cells (west, south)','office','ls-clerks',2,null]],Object.assign({chain:true},o7)).forEach(r=>link(r,cr));
  row('rp.k7.cells-e',28,a1,b0,b1,'z',[['a','The Chroniclers\' cells (east, north)','office','ls-clerks',2,null],['b','The Chroniclers\' cells (east, south)','office','ls-clerks',2,null]],Object.assign({chain:true},o7)).forEach(r=>link(cr,r));}
 
+// ---------------------------------------------------------------- the upper storeys (2026-10-20, the owner: the interiors' empty
+// storeys): every storey the shells draw has its rooms. The White Palace's fourth storey (k 3) in every range and the inner
+// ranges' fifth (k 4); the service stairs up the back range; the Red Palace's second storey round the Founders' hall
+// (which rises through it), its fourth and fifth (the Archive's upper stacks, its reading hall, the illuminators); the
+// wings' storeys over and under the conservators and the map room, each with its own stair
+{const o3={sheet:'L4',building:'white-palace',storey:3};
+ const fr=row('wp.k3',FR.x0,FR.x1,FR.z0,FR.z1,'x',[
+  ['letters','The Correspondence Office (the letters to and from the chapterhouses)','office','ls-clerks',2,34],
+  ['copyists','The copyists\' hall (the copies for Yuni, Iziz, Dalab, Ys, Verge and Keepwell)','scriptorium','ls-scriptorium',2,52,{layout:'scriptorium'}],
+  ['records','The record room of the operatives (the case files of the field)','archive stacks','ls-stacks',2,null,{layout:'stacks',culture:'order'}],
+  ['secretary','The Secretary of the Order','master\'s room','ls-master',3,22]],o3);
+ out(fr[0],'w',.5,'the front range\'s west stair',1.4);out(fr[3],'e',.5,'the front range\'s east stair',1.4);
+ cells('wp.k3.cells-w',OW.x0,OW.x1,OW.z0,OW.z1,{name:'A senior monk\'s cell',use:'monk\'s cell',ix:'ls-cell',tier:2,ends:['the front range\'s west stair','the back stair'],extra:o3,corrName:'The senior monks\' west corridor'});
+ cells('wp.k3.cells-e',OE.x0,OE.x1,OE.z0,OE.z1,{name:'A senior monk\'s cell (east range)',use:'monk\'s cell',ix:'ls-cell',tier:2,ends:['the front range\'s east stair','the back stair'],extra:o3,corrName:'The senior monks\' east corridor'});
+ for(const [s,S] of [[-1,IW],[1,IE]]){const xm=(S.x0+S.x1)/2,side=s<0?'w':'e';
+  const C=add(Object.assign({id:'wp.k3.'+side+'.corridor',name:s<0?'The Restorers\' upper corridor':'The guests\' corridor',use:'corridor',ix:'corridor',tier:2,x0:xm-1.3,x1:xm+1.3,z0:S.z0,z1:S.z1},o3));
+  out(C,'n',.5,'the front range',2);out(C,'s',.5,'the back stair',1.6);
+  const A=s<0?[['drawings','The Restorers\' drawing office (the Ancient machines measured and drawn)','study','ls-study',2,32],['models','The Restorers\' model room','restoration hall','ls-restoration',2,null]]
+   :[['stacks-e','The library\'s closed stacks (east)','archive stacks','ls-stacks',2,null,{layout:'stacks',culture:'order'}]];
+  const B=s<0?[['stacks-w','The library\'s closed stacks (west)','archive stacks','ls-stacks',2,null,{layout:'stacks',culture:'order'}]]
+   :[['guests','The guest scholars\' rooms','guest rooms','ls-guests',3,30],['guest-store','The guests\' store','store','ls-store',0,null]];
+  row('wp.k3.'+side+'.out',S.x0,xm-1.3,S.z0,S.z1,'z',A,Object.assign({chain:false},o3)).forEach(r=>link(r,C));
+  row('wp.k3.'+side+'.in',xm+1.3,S.x1,S.z0,S.z1,'z',B,Object.assign({chain:false},o3)).forEach(r=>link(r,C));}
+ // the inner ranges' fifth storey: the masters' cells
+ const o4={sheet:'L4',building:'white-palace',storey:4};
+ cells('wp.k4.cells-iw',IW.x0,IW.x1,IW.z0,IW.z1,{name:'A master\'s cell',use:'monk\'s cell',ix:'ls-cell',tier:2,ends:['the west range\'s roof','the back stair'],extra:o4,corrName:'The masters\' west corridor'});
+ cells('wp.k4.cells-ie',IE.x0,IE.x1,IE.z0,IE.z1,{name:'A master\'s cell (east)',use:'monk\'s cell',ix:'ls-cell',tier:2,ends:['the east range\'s roof','the back stair'],extra:o4,corrName:'The masters\' east corridor'});
+ // the service stairs, up the back range to its top storey
+ for(let k=1;k<WP.ranges.back;k++)for(const [sg,nm] of [[-1,'West'],[1,'East']]){const r=add({id:'wp.k'+k+'.stair-'+nm.toLowerCase(),name:'The '+nm+' Service Stair (storey '+(k+1)+')',
+  sheet:k<2?'L3':'L4',building:'white-palace',storey:k,use:'stair',ix:'ls-stair',tier:1,x0:sg<0?-33.2:15.6,x1:sg<0?-15.6:33.2,z0:72.8,z1:94.2,stair:true});
+  out(r,'n',.5,'the Debate Court\'s upper gallery',2);}}
+// the Red Palace's second storey: round the Founders' hall (rising through it), the upper kora, the treasury and the seals
+{const k=1,i=rpIn(k+1),o={sheet:'R1',building:'red-palace',storey:k},x0=RP.x-RP.w/2+i,x1=RP.x+RP.w/2-i,z0=96,z1=RP.z+RP.d/2-i;
+ const fr=row('rp.k1.front',x0,x1,z0,104,'x',[
+  ['stair','The Red Palace\'s stair (storey 2)','stair','ls-stair',2,x0<-12?-12-x0:8,{stair:true}],
+  ['guardians','The guardians\' gallery (over the Red Vestibule)','gallery','ls-gallery',3,24],
+  ['dorm','The keepers\' dormitory (the watch on the Door, off duty)','guard room','ls-guard',2,null]],o);
+ const kn=add(Object.assign({id:'rp.k1.kora-n',name:'The upper kora (north: the thangka gallery)',use:'kora',ix:'ls-kora',tier:4,x0:-28,x1:28,z0:104,z1:108,layout:'kora'},o));
+ const ks=add(Object.assign({id:'rp.k1.kora-s',name:'The upper kora (south)',use:'kora',ix:'ls-kora',tier:4,x0:-28,x1:28,z0:140,z1:144,layout:'kora'},o));
+ const kw=add(Object.assign({id:'rp.k1.kora-w',name:'The upper kora (west)',use:'kora',ix:'ls-kora',tier:4,x0:-28,x1:-24,z0:108,z1:140,layout:'kora'},o));
+ const ke=add(Object.assign({id:'rp.k1.kora-e',name:'The upper kora (east)',use:'kora',ix:'ls-kora',tier:4,x0:24,x1:28,z0:108,z1:140,layout:'kora'},o));
+ out(fr[0],'s',.5,'the Red Palace\'s stair (down to the Vestibule, up to the Archive)',1.6);
+ link(fr[1],kn);link(kn,kw,.5,1.6);link(kn,ke,.5,1.6);link(kw,ks,.5,1.6);link(ke,ks,.5,1.6);
+ const W=row('rp.k1.w',x0,-28,104,z1,'z',[['treasury','The Treasury of offerings (the gilt, the silks, the turquoise)','store','ls-store',3,20],['butter','The butter store of the lamps','store','ls-store',1,null]],o);
+ const E=row('rp.k1.e',28,x1,104,z1,'z',[['seals','The seal makers (the lead, the wax, the register of every seal)','office','ls-clerks',3,20],['armoury','The keepers\' armoury','guard room','ls-guard',1,null]],o);
+ link(W[0],kw,.5);link(W[1],kw,.5);link(E[0],ke,.5);link(E[1],ke,.5);link(fr[0],W[0],.5);link(fr[2],E[0],.5);}
+// the Red Palace's fourth and fifth storeys: the Archive's upper floors (as the Great Archive below them: a lobby off the
+// stair, a hall in the middle, stacks either side)
+for(const [k,spec] of [[3,{hall:['reading','The reading hall of the Archive','reading room','ls-library',3,{layout:'reading',culture:'order'}],
+  w:['stacks-own','Archive Stacks III: the Order\'s own (the Chronicle\'s sources)','archive stacks','ls-stacks',3,{layout:'stacks',culture:'order'}],
+  e:['stacks-strange','Archive Stacks IV: the strange (the Lizardmen\'s, the relics\' cards)','archive stacks','ls-stacks',3,{layout:'stacks',culture:'order'}]}],
+ [4,{hall:['illuminators','The illuminators\' hall (the Chronicle\'s pictures)','scriptorium','ls-scriptorium',3,{layout:'scriptorium'}],
+  w:['repair','The Archive\'s repair bindery','bindery','ls-bindery',2,{layout:'bindery'}],
+  e:['cold','The Archive\'s cold store (the oldest leaves)','cold room','ls-cold',3,{}]}]]){
+ const i=rpIn(k+1),o={sheet:'R2',building:'red-palace',storey:k},x0=RP.x-RP.w/2+i,x1=RP.x+RP.w/2-i,z0=96,z1=RP.z+RP.d/2-i;
+ const lo=add(Object.assign({id:'rp.k'+k+'.lobby',name:'The Archive\'s lobby (storey '+(k+1)+')',use:'antechamber',ix:'ls-vestibule',tier:3,x0:-12,x1:12,z0,z1:106},o));
+ out(lo,'w',.5,'the Red Palace\'s stair',1.6);
+ const mk=(q,a,b)=>add(Object.assign({id:'rp.k'+k+'.'+q[0],name:q[1],use:q[2],ix:q[3],tier:q[4],x0:a,x1:b,z0:q===spec.hall?106:z0,z1},o,q[5]));
+ const h=mk(spec.hall,-12,12),w=mk(spec.w,x0,-12),e=mk(spec.e,12,x1);
+ link(lo,h);link(lo,w,.5,1.6);link(lo,e,.5,1.6);link(h,w,.5,1.6);link(h,e,.5,1.6);}
+// the wings: a room and its stair on every storey but the third (the conservators', the map room's: R2 above)
+{const WINGS={0:[['stores','The wing\'s stores (the silks, the gilt, the lamp butter)','store','ls-store',1],['mess','The keepers\' mess','servants\' hall','ls-servants',1]],
+  1:[['chroniclers','The chroniclers\' cells','cells'],['workshop','The conservators\' workshop (the glue pots, the frames, the presses)','restoration hall','ls-restoration',2]],
+  3:[['drawing','The map makers\' drawing room','map room','ls-maproom',3],['instruments','The instrument store of the Observatory','store','ls-store',2]],
+  4:[['scholars','The guest scholars\' rooms (the Red Palace\'s)','guest rooms','ls-guests',3],['translators','The translators\' room (the peoples\' tongues)','office','ls-clerks',2]],
+  5:[['horns','The horn players\' and the bell ringers\' room','guard room','ls-guard',1],['upper-store','The wing\'s upper store','store','ls-store',0]]};
+ for(const k in WINGS){const kk=+k,wi=rwIn(kk),o={sheet:'R2',building:'red-wings',storey:kk},wz0=RW.z-RW.d/2+wi,wz1=RW.z+RW.d/2-wi;
+  WINGS[k].forEach((q,j)=>{const xa=j?RP.x+RP.w/2+.6:RW.x-RW.w/2+wi,xb=j?RW.x+RW.w/2-wi:RP.x-RP.w/2-.6,base='rw.k'+kk+'.'+q[0];
+   const st=add(Object.assign({id:base+'-stair',name:'The '+(j?'east':'west')+' wing\'s stair (storey '+(kk+1)+')',use:'stair',ix:'ls-stair',tier:1,x0:xa,x1:xb,z0:wz1-7,z1:wz1,stair:true},o));
+   out(st,j?'e':'w',.5,'the '+(j?'east':'west')+' wing\'s stair',1.4);
+   if(q[2]==='cells'){const c=cells(base,xa,xb,wz0,wz1-7,{name:'A chronicler\'s cell',use:'monk\'s cell',ix:'ls-cell',tier:2,extra:o,corrName:'The chroniclers\' corridor'});link(c.corridor,st);}
+   else link(add(Object.assign({id:base,name:q[1],use:q[2],ix:q[3],tier:q[4],x0:xa,x1:xb,z0:wz0,z1:wz1-7},o)),st);});}}
+
+// ---------------------------------------------------------------- L0: the ward's buildings (ROOMS.md 2.2; 2026-10-20, the owner: the
+// ward and the Hall of Forms had no interiors). A house is one block (lsBlock: its walls battered 6% of its height), its
+// rooms a row down its long axis from the door on the avenue's end, a stair at the door end of every storey over one; a
+// court is four ranges round its paved court (each min(10, d x 0.3) deep), the gate in the middle of the range on the
+// avenue, the rooms opening on the court; the printing house's rooms are a box inside its ellipse, the Hall of Forms' the
+// school's undulating box. Spec rows as row(): [id, name, use, ix, tier, size or null, extra]
+{const SL=SLAB,inset=(B,k)=>IN+B.floors*B.storey*.06*(k+1)/B.floors,oW=B=>({sheet:'L0',building:B.id});
+ const S6=(k,B)=>['stair','The stair ('+(k?'storey '+(k+1):'and the door')+')','stair','ls-stair',1,6,{stair:true}];
+ // a house: progs[k] the rooms of storey k from the door inward (the stair room put first on every storey but a one-storey house)
+ function house(id,progs){const B=P.building(id),y0=P.baseY(B),east=B.x<0;   // the door on the end toward the avenue (x = 0)
+  progs.forEach((specs,k)=>{const i=inset(B,k),x0=B.x-B.w/2+i,x1=B.x+B.w/2-i,z0=B.z-B.d/2+i,z1=B.z+B.d/2-i,
+    o=Object.assign(oW(B),{storey:k,y:R2(y0+k*B.storey),h:R2(B.storey-SL)}),list=(B.floors>1?[S6(k,B)]:[]).concat(specs);
+   const rooms=row('ward.'+id+'.k'+k,x0,x1,z0,z1,'x',east?list.slice().reverse():list,o),door=east?rooms[rooms.length-1]:rooms[0];
+   if(k===0)out(door,east?'e':'w',.5,'the avenue',1.8);else out(door,'s',.5,'the stair down',1.2);});}
+ // a court: rng[k] = {n, s, w, e} the rooms of each range on storey k (the avenue's range first and last around its gate)
+ function court(id,rng){const B=P.building(id),y0=P.baseY(B),dp=Math.min(10,B.d*.3),east=B.x<0;
+  const box={n:[B.x-B.w/2,B.x+B.w/2,B.z-B.d/2,B.z-B.d/2+dp,'x','s'],s:[B.x-B.w/2,B.x+B.w/2,B.z+B.d/2-dp,B.z+B.d/2,'x','n'],
+   w:[B.x-B.w/2,B.x-B.w/2+dp,B.z-B.d/2+dp,B.z+B.d/2-dp,'z','e'],e:[B.x+B.w/2-dp,B.x+B.w/2,B.z-B.d/2+dp,B.z+B.d/2-dp,'z','w']};
+  rng.forEach((R,k)=>{const o=Object.assign(oW(B),{storey:k,y:R2(y0+k*B.storey),h:R2(B.storey-SL)});
+   for(const side in R){const [a0,a1,b0,b1,ax,inward]=box[side],i=inset(B,k),rooms=row('ward.'+id+'.k'+k+'.'+side,a0+i,a1-i,b0+i,b1-i,ax,R[side],o);
+    rooms.forEach(r=>out(r,inward,.5,'the court',1.4));
+    const av=east?'e':'w';if(side===av){const g=rooms.find(r=>/\.gate$/.test(r.id));if(g)out(g,av,.5,'the avenue',2.6);
+     if(k>0&&!g)out(rooms[0],inward,.2,'the stair down',1.2);}}});}
+ house('paper-mill',[[['vats','The vat room (the pulp beaten, the sheets lifted)','vat room','ls-workshop',1,24,{layout:'vatroom'}],['press','The paper press (the wet sheets pressed)','workshop','ls-workshop',1,12],
+   ['pulp','The pulp store (bamboo, chalice-rim grass, lotus silk)','store','ls-store',0,null]],
+  [['loft','The drying loft (the sheets on their racks)','drying loft','ls-store',0,null,{layout:'paperloft'}]]]);
+ house('granary-w',[[['measurer','The measurer\'s room (the tally boards, the measures)','office','ls-clerks',1,10],['bins','The grain bins (the tithe\'s barley)','granary','ls-store',0,null]],
+  [['oil-tea','The oil and tea store','stores','ls-store',0,null]],[['loft','The grain loft','granary','ls-store',0,null]]]);
+ house('carpenters',[[['joinery','The joinery','workshop','ls-workshop',1,null],['carvers','The woodblock carvers','workshop','ls-workshop',2,10],['timber','The timber store','store','ls-store',0,9]]]);
+ house('hostel',[[['kitchen','The hostel\'s kitchen','kitchen','ls-kitchen',1,12],['shrine','The pilgrims\' shrine room','shrine room','shrine',2,10],['wash','The washing house','bath house','ls-bath',1,null]],
+  [['dorm-a','The pilgrims\' dormitory (the men\'s)','dormitory','dormitory',1,null],['dorm-b','The pilgrims\' dormitory (the women\'s)','dormitory','dormitory',1,null]],
+  [['dorm-c','The pilgrims\' dormitory (the families\')','dormitory','dormitory',1,null],['keeper','The hostel keeper\'s room','bedroom','ls-cell',1,8]]]);
+ house('servants',[[['hall','The servants\' common hall','servants\' hall','ls-servants',1,10],['home-a','A lay servant family\'s house','home','cottage',1,null],['home-b','A lay servant family\'s house','home','cottage',1,null],['home-c','A lay servant family\'s house','home','cottage',1,null]],
+  [['beds-a','A family\'s upper room','bedroom','dormitory',1,null],['beds-b','A family\'s upper room','bedroom','dormitory',1,null],['beds-c','A family\'s upper room','bedroom','dormitory',1,null]]]);
+ house('market',[[['stalls','The market hall (the stalls)','market','shop',1,null],['tea','The tea house','tea house','tavern',1,12],['scribes','The scribes\' tables (letters written for the valley folk)','office','ls-clerks',1,10]]]);
+ house('infirmary',[[['physician','The physician','master\'s room','ls-master',2,10],['dispensary','The dispensary (the Oidong physic: sky poppy, snow lotus, ginseng, camphor)','dispensary','ls-store',1,12],['ward-a','The ward (the travellers\' beds)','infirmary','ls-infirmary',1,null]],
+  [['ward-b','The upper ward','infirmary','ls-infirmary',1,null],['nurses','The nurses\' room','bedroom','dormitory',1,10]]]);
+ house('dye-house',[[['vats','The vat room (the robes\' saffron, the Order\'s blue)','dye house','ls-laundry',0,null]]]);
+ house('dairy',[[['churning','The churning room','dairy','ls-kitchen',0,14],['cheese','The cheese store','store','ls-store',0,9],['byre','The byre','byre','stable',0,null]]]);
+ court('smithy',[{n:[['forge','The forge','smithy','smithy',1,30],['founders','The founders\' pit (the bells, the wheel\'s fittings)','workshop','ls-workshop',1,null]],
+   s:[['lens','The lens grinding room','workshop','ls-workshop',2,22],['glass','The glass furnace','workshop','smithy',1,20],['fitters','The instrument fitters','workshop','ls-workshop',2,null]],
+   w:[['iron','The smiths\' store (iron, charcoal)','store','ls-store',0,null]],e:[['gate','The smiths\' gate','gate passage','antechamber',1,null]]}]);
+ court('barracks',[{n:[['mess','The wardens\' mess','mess','ls-servants',1,24],['kitchen','The wardens\' kitchen','kitchen','ls-kitchen',1,null]],
+   s:[['armoury','The armoury (the staves, the Order\'s few rifles)','armoury','ls-guard',1,14],['duty','The duty room','guard room','ls-guard',1,12],['drill-master','The drill master','master\'s room','ls-master',2,null]],
+   w:[['dorm-w','The wardens\' dormitory (west)','dormitory','dormitory',1,null]],e:[['store','The wardens\' store','store','ls-store',0,null],['gate','The barracks\' gate','gate passage','antechamber',1,6],['stair','The barracks\' stair','stair','ls-stair',1,null,{stair:true}]]},
+  {n:[['dorm-n','The wardens\' dormitory (north)','dormitory','dormitory',1,null]],s:[['dorm-s','The wardens\' dormitory (south)','dormitory','dormitory',1,null]],
+   w:[['dorm-uw','The wardens\' upper dormitory (west)','dormitory','dormitory',1,null]],e:[['captain','The captain of the wardens','master\'s room','ls-master',2,null],['stair-up','The barracks\' stair (storey 2)','stair','ls-stair',1,10,{stair:true}]]}]);
+ court('caravanserai',[{n:[['stable-a','The stables','stable','stable',0,null],['stable-b','The stables (the yaks, the mules)','stable','stable',0,null]],
+   s:[['merchants','The merchants\' rooms','guest rooms','ls-guests',1,null],['store','The traders\' store','store','ls-store',0,20]],
+   w:[['kitchen','The caravanserai\'s kitchen','kitchen','ls-kitchen',1,null]],e:[['customs','The scales and the customs table','office','shop',1,null],['gate','The caravanserai\'s gate','gate passage','antechamber',1,6],['stair','The caravanserai\'s stair','stair','ls-stair',1,null,{stair:true}]]},
+  {n:[['rooms-n','The merchants\' upper rooms (north)','guest rooms','ls-guests',1,null]],s:[['rooms-s','The merchants\' upper rooms (south)','guest rooms','ls-guests',1,null]],
+   w:[['rooms-w','The merchants\' upper rooms (west)','guest rooms','ls-guests',1,null]],e:[['host','The host of the caravanserai','bedroom','ls-cell',1,null],['stair-up','The caravanserai\'s stair (storey 2)','stair','ls-stair',1,10,{stair:true}]]}]);
+ court('geomancers',[{n:[['shrine','The Geomancers\' shrine (Yuni\'s)','shrine room','shrine',3,20],['hall','The lodge\'s hall','hall','hall',3,null]],
+   s:[['bath','The lodge\'s bath','bath house','ls-bath',3,14],['kitchen','The lodge\'s kitchen','kitchen','ls-kitchen',2,null]],
+   w:[['store','The lodge\'s store','store','ls-store',1,null]],e:[['porter','The porter','guard room','ls-guard',2,null],['gate','The lodge\'s gate','gate passage','antechamber',3,6],['stair','The lodge\'s stair','stair','ls-stair',2,null,{stair:true}]]},
+  {n:[['rooms-n','The Geomancers\' rooms (north)','guest rooms','ls-guests',3,null]],s:[['rooms-s','The Geomancers\' rooms (south)','guest rooms','ls-guests',3,null]],
+   w:[['study','The Geomancers\' study (the earth\'s readings)','study','ls-study',3,null]],e:[['elder','The eldest Geomancer\'s room','bedroom','ls-abbot-bed',3,null],['stair-up','The lodge\'s stair (storey 2)','stair','ls-stair',2,10,{stair:true}]]}]);
+ // the printing house: a box inside its ellipse (the brick fins stand round it), the door at its east end
+ {const B=P.building('printing-house'),y0=P.baseY(B),ax=B.a*.8,bz=B.b*.52;
+  [[['dispatch','The dispatch room (crates addressed to Yuni, Iziz, Dalab, Ys, Verge, Keepwell)','store','ls-store',1,9],['composing','The composing room','workshop','ls-workshop',2,10],
+    ['press-hall','The press hall (the Order\'s presses under the wavy roof)','press hall','ls-workshop',2,null,{layout:'presshall'}],['blocks','The woodblock store (racks of carved blocks)','store','ls-store',1,10,{layout:'woodblocks'}]],
+   [['bindery','The bindery (the chapterhouses\' copies)','bindery','ls-bindery',2,16,{layout:'bindery'}],['loft','The drying loft','drying loft','ls-store',0,null,{layout:'paperloft'}],['stair','The printing house\'s stair','stair','ls-stair',1,7,{stair:true}]]].forEach((specs,k)=>{
+   const o=Object.assign(oW(B),{storey:k,y:R2(y0+k*B.storey),h:R2(B.storey-SL)}),list=k===0?[S6(0,B)].concat(specs):specs;
+   const rooms=row('ward.printing-house.k'+k,B.x-ax,B.x+ax,B.z-bz,B.z+bz,'x',list.slice().reverse(),o);
+   if(k===0)out(rooms[rooms.length-1],'e',.5,'the avenue (the printing house\'s door)',2.2);else out(rooms[rooms.length-1],'s',.5,'the stair down',1.2);});}
+ // the Hall of Forms: the drill hall under its conoid roof, the Room of Slow Water and the masters' room off its west end
+ {const B=P.building('hall-of-forms'),y0=P.baseY(B),i=IN+.6,x0=B.x-B.w/2+i,x1=B.x+B.w/2-i,z0=B.z-B.d/2+i,z1=B.z+B.d/2-i,
+   o=Object.assign(oW(B),{storey:0,y:R2(y0),h:R2(B.storey-SL),culture:'order'});
+  const rs=row('ward.hall-of-forms',x0,x1,z0,z1,'x',[['masters','The masters of arms\' room','master\'s room','ls-master',2,7],
+   ['slow-water','The Room of Slow Water (a basin whose falling water is held: where the advanced technique is taught)','slow water','ls-stillness',3,9,{feature:'slowwater'}],
+   ['hall','The drill hall of the operatives (the sprung floor, the weapons racks)','drill hall','ls-drill',2,null]],o);
+  out(rs[2],'n',.5,'the drill ground (the hall\'s north door)',2.4);out(rs[0],'w',.5,'the avenue (the hall\'s west door)',1.6);}}
+
 // ---------------------------------------------------------------- LR: the roof: the Hall of Hours, the Observatory, the Eastern Watch, the roof walk
 {const o={sheet:'LR'};
  const hh=P.building('hall-of-hours'),ob=P.building('observatory'),ew=P.building('eastern-watch');
@@ -277,15 +423,33 @@ P.SHELLS={front:FR,outerW:OW,outerE:OE,innerW:IW,innerE:IE,gate:GT,base:BS,rpIn,
  c.doors.push({id:'lr.watch>stair',x:R2(ew.x-rw),z:ew.z,w:1.1,to:'the Watch\'s stair',out:true});
  const yT=P.topY(RP)+1.4+.84,i=rpIn(RP.floors-1)+1;
  const w=add(Object.assign({id:'lr.roof-walk',name:'The roof walk (the parapet, the conch and horn players\' stations)',building:'red-palace',storey:RP.floors,y:R2(yT),h:3,use:'roof walk',ix:'ls-roofwalk',tier:2,outdoor:true,
-  x0:RP.x-RP.w/2+i,x1:RP.x+RP.w/2-i,z0:RP.z-RP.d/2+i,z1:RP.z-RP.d/2+i+5,layout:'roofwalk'},o));
+  x0:RP.x-RP.w/2+i,x1:RP.x+RP.w/2-i-6,z0:RP.z-RP.d/2+i,z1:RP.z-RP.d/2+i+5,layout:'roofwalk'},o));
+ // its east end is the stair house's (64 draws it: 4.2 m of roofed stair head, its door on the walk; 2026-10-20, the owner:
+ // the walk had benches and no way up), the north-east victory banner past it on the corner
  out(w,'e',.5,'the stair house',1.2);
  // the gilded roofs: their bells and horns are the roofs' own (64); recorded so the sheet's rooms are all here
  ['gilt-chronicle','gilt-founders-w','gilt-founders-e'].forEach(id=>{const B=P.building(id);add(Object.assign({id:'lr.'+id,name:B.name,building:id,storey:0,y:P.baseY(B),h:B.storey,use:'gilded roof',ix:'none',tier:4,furnish:false,roof:true,
   x0:B.x-B.w/2,x1:B.x+B.w/2,z0:B.z-B.d/2,z1:B.z+B.d/2},o));});}
 
 // ---------------------------------------------------------------- LV: the forbidden depths (66-ls-vault.js's rooms, by reference)
-P.VAULT.forEach(V=>add({id:'lv.'+V.id,name:V.name,sheet:'LV',building:'vault',storey:null,y:V.y0,h:V.h,x0:V.x0,x1:V.x1,z0:V.z0,z1:V.z1,use:'vault',ix:'none',
- tier:V.cls==='rich'?3:V.cls==='plain'?1:0,furnish:'vault',vault:V.id}));
+// the rooms the placer furnishes (57a's lv- kinds; 2026-10-20) and what 66 builds into them first, as the placer's fixtures
+// (a fixture: x, z the middle, w along its own x, d, h, ry turning its front to (sin ry, cos ry), the clearance before it):
+// the closed vault's eight lead doors, the open vault's shelves, the quiet cells' lead boxes. 66 draws them from the same
+// numbers
+const VIX={'closed-vault':'lv-closed','open-vault':'lv-open','quiet-cells':'lv-quiet','unmaking':'lv-unmaking','cistern':'lv-cistern'};
+function vaultFixtures(V){const f=[],fx=(id,x,z,w,d,h,ry,front)=>f.push({id:'lv.'+V.id+'.'+id,kind:'piece',x:R2(x),z:R2(z),ry:ry||0,w,d,h,clearance:{front:front==null?.5:front}});
+ if(V.cells)for(let i=0;i<V.cells;i++){const x=V.x0+5+(i>>1)*(V.x1-V.x0-10)/3,nz=i%2?-1:1;fx('door'+i,x,(i%2?V.z1:V.z0)+nz*.3,2.8,.6,4,nz<0?Math.PI:0,1.6);}
+ if(V.shelves)for(const [zw,ry] of [[V.z0+.9,0],[V.z1-.9,Math.PI]])fx('shelves-'+(ry?'s':'n'),(V.x0+V.x1)/2,zw,V.x1-V.x0-3.4,1.3,4.4,ry,.6);
+ if(V.quiet)for(let i=0;i<V.quiet;i++)fx('cell'+i,V.x0+.3,V.z0+6+i*(V.z1-V.z0-8)/2,2.2,.4,3.4,Math.PI/2,1.2);
+ return f;}
+// what no piece may stand on (the placer, handed these as fixtures, found no fit for the furnace or the jars: the
+// pieces go to the walls without them; 66's check holds that none lands here): the circle and its chains, the basin
+function vaultKeepOut(V){if(V.id==='unmaking'){const cx=(V.x0+V.x1)/2,cz=(V.z0+V.z1)/2;return [[cx-5,cx+5,cz-5,cz+5,'the black circle and its chains']];}
+ if(V.cistern){const C=V.cistern;return [[C.x0-.3,C.x1+.3,C.z0-.3,C.z1+.3,'the basin']];}return [];}
+P.VAULT_KEEPOUT=vaultKeepOut;
+P.VAULT_FIXTURES=vaultFixtures;
+P.VAULT.forEach(V=>add({id:'lv.'+V.id,name:V.name,sheet:'LV',building:'vault',storey:null,y:V.y0,h:V.h,x0:V.x0,x1:V.x1,z0:V.z0,z1:V.z1,use:'vault',ix:VIX[V.id]||'none',
+ tier:V.cls==='rich'?3:V.cls==='plain'?1:0,furnish:'vault',vault:V.id,fixtures:VIX[V.id]&&vaultFixtures(V).length?vaultFixtures(V):undefined}));
 {const Q=P.PROCRASTINATOR;add({id:'lv.procrastinator',name:'The Procrastinator\'s hall (the wheel, the eight seals, the keepers\' walk; the floor mandala)',sheet:'LV',building:'vault',storey:null,
  y:Q.y0,h:Q.hallH,circle:{x:Q.x,z:Q.z,r:Q.hallR,n:48},use:'vault',ix:'none',tier:4,furnish:'vault',vault:'procrastinator'});}
 
@@ -322,6 +486,7 @@ C.inside=function(list){const bad=[];list.forEach(r=>{if(r.outdoor||r.roof||r.bu
   else if(r.building==='white-palace'){if(k<0)S=[BS];else S=[FR,OW,OE,IW,IE,{x0:-33.2,x1:33.2,z0:72.8,z1:94.2}].filter((s,j)=>k<(j===0?WP.ranges.front:j<3?WP.ranges.outer:j<5?WP.ranges.inner:WP.ranges.back));}
   else if(r.building==='red-palace'){const i=rpIn(k+Math.round(r.h/ST)-1);S=[{x0:RP.x-RP.w/2+i,x1:RP.x+RP.w/2-i,z0:RP.z-RP.d/2+i,z1:RP.z+RP.d/2-i}];}
   else if(r.building==='red-wings'){const i=rwIn(k);S=[{x0:RW.x-RW.w/2+i,x1:RW.x+RW.w/2-i,z0:RW.z-RW.d/2+i,z1:RW.z+RW.d/2-i}];}
+  else{const B=P.building(r.building);if(B&&B.base==='ward'&&k>=0&&k<B.floors)S=[{x0:B.x-B.w/2+IN,x1:B.x+B.w/2-IN,z0:B.z-B.d/2+IN,z1:B.z+B.d/2-IN}];}   // the ward's: inside the building's walls
   if(!S||!S.some(s=>r.x0>=s.x0-.01&&r.x1<=s.x1+.01&&r.z0>=s.z0-.01&&r.z1<=s.z1+.01))bad.push(r.id);});
  return{ok:!bad.length,detail:bad.length?bad.length+' rooms outside their walls: '+bad.slice(0,8).join(', '):'every room of the palaces inside its range\'s walls at its storey'};};
 // no two rooms of one floor overlap

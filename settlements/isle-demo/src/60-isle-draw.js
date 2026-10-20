@@ -191,8 +191,9 @@ DRAW.near = function (at, force) {
   var tris = 0;
   for (var id in by) {
     var B = by[id], P = B.P;
-    P.parts.forEach(function (pt) {
+    P.parts.forEach(function (pt, k) {
       var im = new THREE.InstancedMesh(pt.geo, pt.mat, B.L.length);
+      im.userData.isleProto = id; im.userData.part = k; im.userData.lots = B.L.map(function (L) { return L.tag; });   /* the export's owners (62) */
       B.L.forEach(function (L, i) { var sx = L.cls === 'wall' && P.w ? L.w / P.w : 1; im.setMatrixAt(i, DRAW.matOf(L, [sx, 1, 1])); });
       im.instanceMatrix.needsUpdate = true; im.name = id; scene.add(im); DRAW.inst.push(im); tris += pt.tris * B.L.length;
     });

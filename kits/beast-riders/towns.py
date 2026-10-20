@@ -96,7 +96,10 @@ def _pack(T, img):
             refs[k] = h
         body = json.dumps(f, sort_keys=True)[:-1] + ''.join(', "%s": BR_TOWN_IMG["%s"]' % (k, refs[k]) for k in sorted(refs)) + '}'
         out.append(' %s: %s' % (json.dumps(fam), body))
-    return "KMAT.pack('%s', {\n%s\n});\n" % (T['pack'], ',\n'.join(out))
+    # the page's own KMAT (if it has one) learns the town's pack too, so its export finds the ports' library families
+    return ("KMAT.pack('%s', {\n%s\n});\n" % (T['pack'], ',\n'.join(out)) +
+            "if (typeof window !== 'undefined' && window.KMAT && window.KMAT !== KMAT && window.KMAT.pack) window.KMAT.pack('%s', KMAT.packs['%s']);\n"
+            % (T['pack'], T['pack']))
 
 
 def _closure(T, img):
@@ -121,6 +124,15 @@ def _closure(T, img):
                 if body.count(old) != 1:
                     sys.exit('kits/beast-riders/towns.py: 25-matlib-host.js no longer resets window._texPending as expected; update the seal')
                 body = body.replace(old, "if(typeof window !== 'undefined' && window._texPending == null) window._texPending = 0;")
+            for mod, var in (('23-mat-record.js', 'KMAT'), ('24-tex-def.js', 'TEX')):
+                if f.endswith(mod):
+                    # a sealed town's KMAT and TEX stay in its closure: the module's last line set window.KMAT (window.TEX),
+                    # so the town replaced the page's own, and every pack the page had registered before it was lost
+                    # (settlements/isle-demo: the Islanders' TILE fell back to the stand-ins' on the city page, 2026-10-20)
+                    old = "if(typeof window !== 'undefined') window.%s = %s;" % (var, var)
+                    if body.count(old) != 1:
+                        sys.exit('kits/beast-riders/towns.py: %s no longer sets window.%s as expected; update the seal' % (mod, var))
+                    body = body.replace(old, "/* sealed (kits/beast-riders/towns.py): window.%s is the page's, not this town's */" % var)
         if f not in ('PACK', 'BUNDLE'):
             files.append(name)
         parts.append('/* ---- %s ---- */\n%s\n;\n' % (name, body))

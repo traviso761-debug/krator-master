@@ -370,7 +370,7 @@ GDScript twin of the sim, can be checked against by hand. Voth stays the scale t
 | P6 | City plan: two `KCITY` instances on the Islanders kit | verify, exact footprint overlap, census |
 | P6b | The export profile (section 7): `EXPORT.check(world, {profile})`, this page's required sections, in `verify.py --assert` and the nightly | the check fails on a stubbed required section and passes once each is filled |
 | P7 | Simulation (section 9, P7a-P7e): two towns, the partition, the canoe trade route, stocks per town; the economy tuned here from now on; the three levels in `SCHEMA.md` | stocks balance per town; a load traced from one town's warehouse to the other's; the abstract-level week test (section 7) |
-| P8 | **M6:** both towns open in Godot from the canonical export with citizens and trade running; then bake the towns into the open world and stream the region (M7) | the export round trip under the profile; Godot's tests: uids, records, the books after a replayed week |
+| P8 | **M6:** both towns open in Godot from the canonical export with citizens and trade running; then bake the towns into the open world and stream the region (M7) | the export round trip under the profile; Godot's tests: uids, records, the books after a replayed week  **The books, 2026-10-20:** `godot/tests/isle/isle_books_test.gd` reads `godot/data/isle` (a week from `tools/export-sim.js`) and agrees with the page  **Kautoa's ceremonial centre, 2026-10-20:** `godot/tests/export/isle_test.gd` opens `godot/data/world-isle-kautoa` (buildings, records, uids, the sim joined, citizens replayed, canoes)  **Valapo's case and the stage and doors, 2026-10-20** (`godot/data/world-isle-valapo`)  **M7 started, 2026-10-20:** the towns planned and drawn on `openworld/isle-demo`, the export profile kept there |
 
 P1 and P2 can run in parallel (different folders). P3 waits for P2's kit. P4 waits for P3's ground (or the extract
 alone).
@@ -625,6 +625,82 @@ two-settlement checks in `test-sim.js`, each with a negative; every older check 
 - 23 new checks in `test-sim.js` (211 in all), each with a negative, among them the books balancing in both towns
   with a load at sea, every load shipped = landed + at sea, and rice conserved minute by minute on a line.
 
+**P7b, Valapo (2026-10-19).** Declared on the city page from its plan's records alone, keyed as the settlement
+`valapo`, in Dhelv's order (`src/15-isle-tune.js`, `40`-`45`; README.md, "The towns on core/simulation"):
+- places from the lots by `ISLE.TUNE.sim.kinds` (Dhelv's table shape, slots per 100 m2 of footprint; a dwelling's beds its
+  households at five a household, so the sim's people are the census's 2,155), the farm parcels by crop, each with the
+  census trade its key works (`IS_TRADES` read in place by build.py as `ISLE_TRADES`); in world metres;
+- the walking graph from the plan's ways (`41-isle-nav.js`, generic to any core/city plan: a candidate for core/city's
+  data side), every door a split of its street;
+- a role per kind of work, counted from the posts, and the kin to fill the beds, dealt by `SIM.populate({settlement:
+  'valapo', prefix: 'v'})`: 805 workers, every post filled;
+- the foods as items and goods, the shops and households, and Valapo's own economy (`SIM.economy(cfg, {settlement})`):
+  the 8c crops on the parcels, fish, meat, bread from sweet potato, sugar from cane, cloth from cotton, pots; 39
+  warehouses and granaries, 14 carts.
+- Proof: `verify.py dist/isle-city.html --assert` on the Valapo page and `node tests/test-isle-sim.js` (the same numbers in
+  node and Chromium): every census trade's lot a place, every resident housed and every worker employed in the town, and
+  after a world day the food made, hauled and eaten with nothing short and the food made covering what was eaten, each
+  with a negative. No core/simulation change.
+
+**P7b, Kautoa (2026-10-19, second pass).** Declared with Valapo in one `ISLE.simDeclare` (one walking layer, in world
+metres; the towns in one order whichever is drawn): rows in the kinds table for its palace, envoys' and chiefs' houses
+(residences), Ridertown, Izanitown, the works and the dairy; its farm ring (the programme's world record beyond the wall)
+as 40 holdings until core/hamlet's farming villages; its bread from taro; each town keeps only the foods it makes.
+6,235 people, 2,472 workers, 40 carts; a day's books pass the same checks as Valapo's, and five days run clean. The page's
+run loop (`57`, held at first) and the stocks id map (`46`, for core/host's panel). The core branch
+`claude/isle-p7a-rest` is merged: each town's meals booked by town, the nearest-job deal (every role takes it), the
+nearest-place search fixed for towns 120 km apart and the lag at minute 0; five days run clean in both towns. The
+citizens near the camera (`59`): up to 120 instanced stand-ins posed from `SIM.pose`, with a verify check and its
+negative. **P7b is done**; origin/main merged (2026-10-19).
+
+**P7c, the canoe line (2026-10-19; the owner's answers: two lakatoi a day, one each way; an oruwa for light, urgent goods;
+a canoe stop in each harbour).** Each trade landing has a canoe stop on the plan (a berth for each vessel) and in the sim
+(a place with a site store). The lakatoi line and the oruwa route are `SIM.trade` routes on the timer between the two
+stops (`47`); the want is each town's hourly use of the other's goods (8c: salt, rice, cloves and cacao to Valapo, sugar
+to Kautoa). The docked vessel is drawn at its berth (`61`). Proof (verify's Valapo page and the node test): loads traced
+both ways, each town's books showing the other's goods imported, what is at sea counted in transit, the books balancing
+in both towns, each check with a negative. Left: the imported foods on the shelves, coffee from Valapo's uplands, a sea
+route to draw the voyage (KNOWN_ISSUES.md).
+
+**P7d, the abstract level (2026-10-19).** The engine is core/simulation's `77-sim-7-lod.js` (the core branch
+`claude/isle-p7d`, merged). The page runs the town in view presented and the other abstract (`48`: `ISLE.simWatch`). The
+week test (verify's Valapo page, `tests/test-isle-week.js`): a week with Valapo watched, then a week with Kautoa
+watched: each town's books balance over each week at either level (change = made + imported - exported - consumed),
+every load shipped landed or is at sea, the loads that sailed to the abstract town landed and are booked there, each
+town's food a worker a day abstract within 0.6-1.6 of the same town watched (about 1.1 both ways), and no decision made
+in the abstract town; each with a negative. A week with Valapo watched took 12-16 s in node, with Kautoa watched
+28-33 s, both presented about 38 s.
+
+**The people by age and their company (owner, 2026-10-19).** Children (36%) at school as far as the STUDY places go, the
+rest at housework; elders (8%) at housework; the adults employed (every post) or at home; households mixed within each
+150 m square. More company: the plan's pocket parks, plazas, parks and beaches as places, and more room at the markets,
+taverns, hall and square. Checks: every child at school or at housework and every elder at housework, ages in their
+bands, no house of children alone; everyone wanting company at 10:30 placed; each with a negative (README.md, the
+breakdown).
+
+**The economy calibrated (owner, 2026-10-19).** Each town makes 0-100 servings of food a day more than it eats (a factor
+on its food producers); cloves, cacao and cane at a tenth; ships of Voth, the Izani, the Hykkousoi, the salvagers and the
+outer isles buy the towns' cloves, cacao, sugar and coffee on their own days; a clothes and armour chain (cotton, cloth,
+garments; leather, sandals, armour) worn by everyone and carried between the towns by the lakatoi. A week-test check
+holds the ships to buying at least three quarters of the cloves and cacao made (README.md, the two weeks' books).
+
+**The economy governed (owner, 2026-10-19).** The hand-set food factors gave way to a production governor and
+spoilage, after a forked session's research (an economy needs sinks for its sources and a negative feedback on
+production; spoilage bounds what gets through; an order-up-to rule must count its supply line, Sterman's Beer Game, and
+its demand-averaging, stock-adjustment and delivery times should be of comparable size, Towill's IOBPCS). `49` runs both
+as the page's step hooks: hourly, each producer's rate is its full rate times (demand + alpha (target - supply line) /
+Ti) over what the town makes at full, clamped to 0.3-1.5, with the target three days of demand (averaged over three
+whole days: the households restock on a three-day round, and a one-day window swung every producer between its floor and
+its ceiling), Ti a day and a half and alpha 0.3 (compared at 0.3, 0.5 and 1.0); at midnight the perishables lose their share of each warehouse's and
+site's stock. Three checks hold it in the week test, each with a negative: no good short after the second day, each
+good's stock steady (its mean day-to-day change at most 30% of its mean, where it holds 500 or more; not the goods the
+ships buy in lumps), each town's food supply line holding (its fitted trend at most 3% of what it eats a day), moving
+toward its target, or within 5% of it on the mean. The week test starts cold and changes level at day 7, so its towns
+fill from their opening stock and then draw down what the abstract level made (it makes about 30% more a worker, and the
+governor relearns its capacity over a day or two): a plain drift band failed on that; a pile above the target or a drain
+below it, more than 5% off, still fails. The steady state is the 21-day run (README.md, the three weeks). Both hooks are candidates for `core/simulation`'s economy as opt-in
+features (KNOWN_ISSUES.md).
+
 **Order of work.**
 
 | Step | What | Proof |
@@ -633,7 +709,7 @@ two-settlement checks in `test-sim.js`, each with a negative; every older check 
 | P7b | The isle host, one town at a time (Valapo first, it is smaller): `40`-`44`, `15-isle-tune.js`, the run loop, the stocks map, a few citizens drawn near the camera | `verify.py --assert`: every lot of a census trade is a place, every resident has a home and every worker a job in their own town; the food made, hauled and eaten in each town, with nothing short for a sim day (the Voth `econ_bad` checks, per town) |
 | P7c | The canoe line: a drua or oruwa on `SIM.transport` between the two trade landings (`ISLE.city` records them), the trade carrier riding it, the 8c goods in each direction | a load traced from Valapo's warehouse to Kautoa's (and back); each town's books show the other's goods imported; in transit counted while at sea |
 | P7d | The abstract level (`77-sim-7-lod.js`, item 7): the town away from the camera ticks books only; the week test (section 7) | a week fast-forwarded with one town watched, then the other: made + imported - exported - consumed = change in each town; every load accounted for; the arrival reconciles |
-| P7e | The `sim` export section (section 7's profile): places, actors, stocks per settlement, the route and its books | `EXPORT.check` under the isle profile fails on a stubbed `sim` and passes filled; Godot reads the books after a replayed week (P8) |
+| P7e | The `sim` export section (section 7's profile): places, actors, stocks per settlement, the route and its books | `EXPORT.check` under the isle profile fails on a stubbed `sim` and passes filled; Godot reads the books after a replayed week (P8)  **Done 2026-10-20** (`50`; `tests/test-isle-export.js`); Godot reading the books is P8 |
 
 **Things the owner decides before P7b:**
 - ~~the population to aim for in each town~~ **settled (owner, 2026-10-18): Kautoa about 6,300, Valapo about 2,150.**
@@ -647,6 +723,86 @@ two-settlement checks in `test-sim.js`, each with a negative; every older check 
 
 **Risk.** The economy keyed by settlement touches every function Voth's economy runs through. P7a must land as its
 own commit with Voth's proof re-read, so a regression is caught before any isle code depends on it.
+
+## 9b. Wear: clothes, tools, arms, injuries (plan, 2026-10-19; not built yet beyond the first clothes)
+
+The Voth brief's wear model (`settlements/voth/SIM-ROADMAP.md` 1.5 and part 2's phase D, built in Voth's
+`45-vc-sim-items.js` and `TUNE.sim.items`) mapped onto the isles. core/simulation already runs all of it
+(`77-sim-6-items.js`: worn slots and sets, tools by worked hour, errands in work time, injuries, poultices); the isle
+work is the tuning, the makers and the sellers. Each piece also gives a surplus a user (section 9's two weeks' books).
+
+**What is built (2026-10-19).** Everyone wears a shirt, a wrap and a pair of sandals, two sets of each, worn out in 90
+to 120 days and bought again; the soldiers keep a leather cuirass. Valapo's weavers make cloth and garments, Kautoa's
+Vernacular workshops sandals and its smithies the armour; the lakatoi carries garments to Kautoa and sandals and armour
+to Valapo (`15` `items.worn`, `43`). **And (owner, 2026-10-19):** each household keeps a cooking pot (60 days), the
+bakers and innkeepers cook with one (1,500 worked hours); the farmhands, craftsmen and labourers own a stone tool (1,000
+worked hours) from Kautoa's workshops, four stones a tool, carried to Valapo by the lakatoi (step 1 of the order below,
+one tool kind for the stone trades; step 3 done); salt keeps the fish and meat (section 9's spoilage) and seasons the
+meals. A week-test check holds the tools and pots (at least 98% held or on an errand for, each town, each week).
+`SIM.needs` is on (step 6: Voth's table on the isles' activities; README.md, the three weeks of needs), with the
+treats (kava at the kava houses, pandanus mats from the weavers, coconut-oil lamps from the potters, shell-and-bead
+jewellery from Kautoa's workshops) that hold the material meter near 33. A week-test check holds the
+watched town's mean happiness at 60 or more and no need but material above 70. **Steps 1, 2, 4 and 5 built too
+(2026-10-19):** tools by trade (stone, wood, nets, cooking pots; racks for the dockers and the soldiers), injuries and
+the healers' poultices, a war club for a quarter of the rich, sets by class, sarongs and sun hats (README.md); a
+week-test check holds the clothes (95% clad or buying) and the hurt (none past its healing days). Left: a carver's
+workshop for Valapo (its wooden and stone tools come by lakatoi), iron tools after the ingots, water vessels and the
+fishers' canoes.
+
+**The rules taken from Voth (and where the isles differ).**
+- **Clothes:** a set count by class (Voth: poor 2, middle 3, rich 4, the great houses 6), the worn set at a hashed wear,
+  the rest at home; a short set is bought on time off. Voth's owner rule (2026-10-13) is a year or more of wear for
+  clothes; the isles now wear out in 90-120 days, so the weavers have custom. **Owner's call:** keep the tropics' short
+  life, or Voth's year.
+- **Tools:** one per kind of work, owned, or drawn from a rack at the workplace (the soldiers' arms, the dock hooks);
+  worn by the worked hour (Voth: 3,000-5,000 hours, about a working year or more, owner 2026-10-13); worn out at work it
+  is replaced at once, in work time, at the nearest seller; a worker without a tool works at half efficiency
+  (`SIM.itemsEff`). The report lists any tool no shop sells.
+- **Injuries:** a small chance a worked day (Voth 0.6%); the hurt worker buys a poultice from a healer on time off, or
+  heals in 3 days; hurt, it works at 70%.
+- **Arms and armour:** the armed kinds of work own them (one of each kept); some of the rich carry a weapon (Voth 25%).
+- **Gear and household goods:** a water vessel for those who labour; a boat for those who work the water; household goods
+  and luxuries bought when the material meter is high (Voth's `treat`), which needs `SIM.needs` (not on in the isles yet).
+
+**The isle mapping.**
+
+| Kind of work (role) | Tool | Made by (input) | Sold at |
+|---|---|---|---|
+| farmhand (fields) | digging stick, later an iron hoe | workshop (wood); smithy (iron) | market, shops, workshops |
+| farmhand (orchards, the farm ring's trees) | harvest knife | workshop (stone, shell), later smithy | market, shops |
+| farmhand (pens, byre), groom | goad | workshop (wood) | market, shops |
+| fisher | net (kept on the boat: owned) | weaver (cotton cord) | weavers, fish docks |
+| docker (quays, warehouses, granaries, canoe stop) | hook (the rack at the quay) | smithy, later | (the rack) |
+| baker, keeper | peel, ladle | workshop (wood) | market, shops |
+| craftsman: weaver | shuttle | workshop (wood) | weavers |
+| craftsman: potter | paddle and anvil stone | workshop (wood, stone) | potters |
+| craftsman: smith, workshop, dockyard | hammer, adze | workshop (stone, until iron), smithy | smithies, workshops |
+| craftsman: tanner | scraper | workshop (stone, shell) | workshops |
+| labourer (quarry, saltworks) | maul, rake | workshop (stone, wood) | workshops |
+| official (hall, school, temple, residences, healer) | stylus (palm leaf), the healer a lancet | workshop | shops |
+| soldier | spear and shield (the rack); cuirass (owned, built) | workshop, dockyard (wood); smithy (leather, later iron) | (the rack); smithies |
+| pupil, housework, kin | none | | |
+
+- **Stone and wood before iron:** until Valapo's smelter has ore (the iron mine is a hinterland village, core/hamlet
+  H5), the tools are stone, shell and wood, made in the workshops (Kautoa's Vernacular workshops; Valapo has none: a
+  carver's workshop is owed, or its tools come by canoe). This gives **Kautoa's quarry stone** (piling at +59 a day) its
+  user. Iron tools follow the ingots: Valapo smelts, Kautoa works the iron (PLAN.md 8b).
+- **Poultices:** the healers make them from herbs (the owner's crop list has herbs in both towns: a herb garden at each
+  healer, or herb parcels); `ie-healer` sells them.
+- **Household goods:** the potters' pots (piling at +475 and +129 a day) bought by households as they break (a household
+  good with a life, a short set an errand), and pandanus mats and coconut-oil lamps later. Without `SIM.needs` this is a
+  set kept per household, not a treat.
+- **Water vessels and boats:** a coconut-shell water bottle for those who labour (a user for coconut shells: the
+  orchards' coconuts give food and shells); the fishers' outrigger canoes from the dockyard (Kautoa) and the canoe
+  shed (Valapo).
+- **Salt** (Kautoa +436 a day) is not a wear good: it wants a food use (salted fish and meat keep longer: section 9's
+  spoilage) and the ships' buying.
+
+**Order.** (1) Tools by trade, stone and wood, with the workshops as makers and a carver's workshop for Valapo; (2)
+injuries and poultices; (3) household pots; (4) arms on the soldiers' rack and the rich's clubs; (5) sets by class,
+sun hats and sarongs (Voth's hats and dress shares); (6) `SIM.needs`, the material meter and the treats. Each with a
+verify check and its negative: every worker of a tooled trade holds its tool or is on an errand for it, no tool no shop
+sells, the worn-out replaced within the work day, the two weeks' books balancing with the new goods.
 
 ## 10. Core-module compliance (audit, 2026-10-19)
 

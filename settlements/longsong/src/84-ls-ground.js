@@ -67,12 +67,22 @@ const GROUND=(function(){
    const a=j*n+i,b=a+n,cc=b+1,d=a+1;idx.push(a,b,d,b,cc,d);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
   g.setAttribute('aRP',new THREE.BufferAttribute(rp,2));g.setIndex(idx);g.computeVertexNormals();
-  const m=new THREE.Mesh(g,mat);m.userData.probeSkip=true;m.userData.ground=true;m.userData.inspectLabel='The ground';scene.add(m);return m;};
+  const m=new THREE.Mesh(g,mat);m.userData.probeSkip=true;m.userData.ground=true;m.userData.inspectLabel='The ground';scene.add(m);
+  m.userData.grid={x0,z0,st,nx,nz,H,hole};return m;};
+ // the height of the ground AS DRAWN at (x, z): the grid's own triangles (a cell split on its b-d diagonal, as idx above),
+ // the fine mesh where it is drawn, the coarse one elsewhere. What lies on the ground (the villages' lanes, 85h) is draped
+ // on this, not on terrainH: between a coarse mesh's vertices terrainH can fall below the drawn surface and bury it
+ const onGrid=(G,x,z)=>{const u=(x-G.x0)/G.st,v=(z-G.z0)/G.st;if(u<0||v<0||u>G.nx-1||v>G.nz-1)return null;
+  const i=Math.min(G.nx-2,Math.floor(u)),j=Math.min(G.nz-2,Math.floor(v)),fu=u-i,fv=v-j,H=G.H,n=G.nx;
+  const a=H[j*n+i],d=H[j*n+i+1],b=H[(j+1)*n+i],c2=H[(j+1)*n+i+1];
+  return fu+fv<=1?a+(d-a)*fu+(b-a)*fv:c2+(b-c2)*(1-fu)+(d-c2)*(1-fv);};
+ function drawnH(x,z){const Gi=inner.userData.grid,Go=outer.userData.grid;
+  if(Go.hole(x,z)){const h=onGrid(Gi,x,z);if(h!=null)return h;}const h=onGrid(Go,x,z);return h==null?terrainH(x,z):h;}
  // the inner mesh holds the rock whole (centred 60 m south of the origin); the outer leaves a hole a little smaller
  // (2026-10-19: the fine mesh reaches south over the terraces and the tea garden, whose treads a 10 m grid would smear)
  const inner=mesh(640,920,2,200,null,true);
  const outer=mesh(TERR.R*2,TERR.R*2,10,0,(x,z)=>Math.abs(x)<318&&z>-258&&z<658,false);
- return {inner,outer,mat};})();
+ return {inner,outer,mat,drawnH};})();
 _mark('ground');
 
 // ---------------------------------------------------------------- the water's records (core/water draws it: 89w-ls-water.js)

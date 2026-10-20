@@ -34,7 +34,7 @@ Valley, built in situ on the scale model's land (PLAN.md, README.md; the program
 The kit never references a host global except through BIO.host (BIOME-API.md); build.py greps its fragments for the
 forbidden names.
 """
-import os, re, subprocess, sys
+import json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -74,7 +74,8 @@ ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 OUT = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else 'longsong.html'
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BRIDGES', 'TOWERS', 'RIVER', 'PALISADE', 'KOFF']
 CORE_TERRAIN = ['38-core-relief.js']   # KRELIEF: the noise the open world's fields take
-CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js', '42-core-export.js', '43-core-export-host.js']
+CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js', '42-core-export.js', '43-core-export-host.js',
+              '36-core-walker.js', '44-core-stage.js']   # 36: the herds walk (BIO.walker); 44: KSTAGE, the export's light, air and sky
 PATH = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'terrain', f))
@@ -104,8 +105,22 @@ for f in ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim
           '77-sim-5r-routes.js', '77-sim-6-economy.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-6-population.js', '77-sim-6-trade.js',
           '77-sim-7-stocks.js', '77-sim-8-export.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'simulation', f))
-for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-2-lights.js', '89-atmos-8-export.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js'):
+for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-2-lights.js', '89-atmos-3-particles.js', '89-atmos-4-weather.js', '89-atmos-7-cull.js',
+          '89-atmos-8-export.js', '89-atmos-9-host.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js'):   # 3, 4, 7, 9: smoke, fireflies, the weather and its selector, culling (89z)
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'atmos', f))
+# core/walk (KWALK), read in place: the walker's floors and blocks (64 registers the Great Stair's flights, landings and
+# the base's top as it draws them; 99 hands the registry to the camera: F walks up the stair)
+PATH.setdefault('20-core-walk.js', os.path.join(ROOT, 'core', 'walk', '20-core-walk.js'))
+# core/sched (KSCHED): motion as pure functions of time (the Procrastinator's glyph pulse, 66); core/lod: the finished
+# scene's level of detail (97 takes the scene over before 99; window.LOD_OPTIONS from 89z)
+PATH.setdefault('20-core-sched.js', os.path.join(ROOT, 'core', 'sched', '20-core-sched.js'))
+# core/hamlet (KHAMLET, read in place) and the one core/city fragment it takes (33: KCITY.prim, standalone): the valley's
+# lay villages outside the wall (40h lays them out, 85h draws them)
+for f in ('10-hamlet-wood.js', '12-hamlet-gather.js', '20-hamlet-cultures.js', '30-hamlet-village.js', '40-hamlet-felling.js'):
+    PATH.setdefault(f, os.path.join(ROOT, 'core', 'hamlet', f))
+PATH.setdefault('33-city-strategies.js', os.path.join(ROOT, 'core', 'city', '33-city-strategies.js'))
+for f in ('09-lod.js', '97-lod-auto.js'):
+    PATH.setdefault(f, os.path.join(ROOT, 'core', 'lod', f))
 # the open world's fields, read in place: the land round the site at 1:1
 PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'little-demo', 'src', '41-world-fields.js')
 # the host shell from core/host, the whole interface (core/host/README.md): the inspector, marks, pictures, the minimap,
@@ -117,7 +132,7 @@ for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-pl
     if f not in PATH:
         sys.exit('NO BIOME CORE: ' + f)
 # the material library (core/materials/record): the record and its browser half; the packs as sidecars beside the page
-for f in ('23-mat-record.js', '25-matlib-host.js'):
+for f in ('23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js'):   # 26: KMAT.bindMat, for the Xanadu kit's MAT (85h)
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'materials', 'record', f))
 sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
 import matlib_pack as _mp
@@ -163,7 +178,8 @@ _IXB, _IXBAKE = _interiors()
 # pieces/ is not in Git), else the committed one stands.
 CM = os.path.join(ROOT, 'core', 'charactermodels')
 for f, src in (('47k-kchar-rig.js', os.path.join(CM, 'src', '10-rig.js')), ('47l-kchar-figure.js', os.path.join(CM, 'src', '50-figure.js')),
-               ('47j-kchar-gltf.js', os.path.join(CM, 'tools', 'vendor', 'GLTFLoader.r128.js'))):
+               ('47j-kchar-gltf.js', os.path.join(CM, 'tools', 'vendor', 'GLTFLoader.r128.js')),
+               ('47m-kchar-crowd.js', os.path.join(CM, 'src', '60-crowd.js'))):   # KCharCrowd: the crowd past the figures (69)
     PATH[f] = src
 KCHAR_PEOPLES = ('historians', 'xanadu')
 KCHAR_BEARDS = {'mpfb_male': ['grinsegold_full_beard', 'wdg_scruffy_beard', 'grinsegold_moustache', 'Goatee'], 'mpfb_female': []}
@@ -203,6 +219,21 @@ def _kchar():
         sys.exit('KCHAR PIECES MISSING (build core/charactermodels, or fetch them from its published lab): ' + ', '.join(missing))
     data = {'sliders': J('sliders.json'), 'posture': J('posture.json'), 'peoples': peoples, 'bodies': bodies}
     return 'var LS_KCHAR=%s;\nLS_KCHAR.pieces=%s;\n' % (json.dumps(data, separators=(',', ':')), json.dumps(need))
+# the Xanadu kit (settlements/xanadu/kit_bundle.py) and the isle demo's kit-piece flattener (isleFlatten, read in place)
+XA = os.path.join(ROOT, 'settlements', 'xanadu')
+XA_FAMS = ('cloth', 'clothR', 'corrugate', 'plaster', 'stone', 'tarp', 'thatch', 'white', 'wood', 'woodV', 'xBandC', 'xEarth', 'xMosC',
+           'xMosD', 'xPenbey', 'xRubble', 'xSun', 'xTiles', 'xValance', 'xWash')   # the MAT keys the village buildings use (2026-10-20)
+def _xa_skip():
+    with open(os.path.join(XA, 'tex', 'pack.json'), encoding='utf-8') as f:
+        return tuple(k for k in json.load(f)['families'] if k not in XA_FAMS)
+def _xak():   # by path: kits/interiors/kit_bundle.py is already imported as kit_bundle
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('xanadu_kit_bundle', os.path.join(XA, 'kit_bundle.py'))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    js, _ = mod.bundle('XAK')
+    return js
+PATH.setdefault('58-isle-protos.js', os.path.join(ROOT, 'settlements', 'isle-demo', 'src', '58-isle-protos.js'))
 # the world data: Pinnacle Rock's decoder, read in place (its tools/world_data.py), with this page's kit line
 sys.path.insert(0, os.path.join(ROOT, 'settlements', 'pinnacle-rock', 'tools'))
 import world_data as _wd
@@ -215,6 +246,16 @@ VIRTUAL = {'39-ls-world-data.js': _wd.fragment(os.path.join(HERE, 'region'),
            '52-ls-furniture-bundle.js': _IXB, '57b-ls-interiors-bake.js': _IXBAKE,
            '44b-host-matlib-pack-oidong.js': _mp.fragment(OD, 'oidong', side=SIDE),
            '47n-ls-kchar-data.js': _kchar(),
+           # core/sockets read in place, in a closure with the host it expects (sockets/head.js: the globals it takes, drawn
+           # through ARCH) and its API (sockets/tail.js: LSSOCK.mark); 65-ls-marks.js declares the buildings' sockets
+           '63s-ls-sockets.js': ''.join(open(f, encoding='utf-8').read() + '\n' for f in (
+               os.path.join(HERE, 'sockets', 'head.js'), os.path.join(ROOT, 'core', 'sockets', '37-sockets.js'),
+               os.path.join(ROOT, 'core', 'sockets', '38-symbols.js'), os.path.join(ROOT, 'core', 'sockets', '80-cultures.js'),
+               os.path.join(HERE, 'sockets', 'tail.js'))),
+           # the Xanadu building kit for the valley's villages (85h): sealed as XAK (settlements/xanadu/kit_bundle.py, read in
+           # place), its library pack beside the page with only the families the village buildings draw (XA_FAMS)
+           '84x-ls-xanadu-kit.js': _xak(),
+           '44c-host-matlib-pack-xanadu.js': _mp.fragment(XA, 'xanadu', exclude=_xa_skip(), side=SIDE),
            khost.EDITS_JS: khost.edits_js(HERE, 'longsong')}
 for f in VIRTUAL:
     PATH[f] = None

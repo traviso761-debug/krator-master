@@ -18,15 +18,7 @@ function dhxHeightfield(box,step){const nx=Math.floor((box[2]-box[0])/step)+1,nz
 function dhxBox(){let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(const s of SITES){x0=Math.min(x0,s.x);x1=Math.max(x1,s.x);z0=Math.min(z0,s.z);z1=Math.max(z1,s.z);}
  const m=120,q=v=>Math.round(v/4)*4;return[q(x0-m),q(z0-m),q(x1+m),q(z1+m)];}
 /* the snapshot: the actors' tasks and the trace at the same instant (a SIM.step between two calls would re-plan some) */
-function dhxSnap(){if(DHEX.snap)return DHEX.snap;const A=SIM.all('actor'),routes=[],rIdx=new Map(),t=SIM.time(),T=[0,7.5,45,300,1200,5000].map(d=>t+d);
- const rt=R=>{if(!rIdx.has(R)){rIdx.set(R,routes.length);routes.push({pts:R.pts.map(p=>[p[0],p[1],p[2]]),cum:R.cum.slice(),len:R.len});}return rIdx.get(R);};
- const actors=A.map((a,i)=>{const H=SIM.R.place[a.home],o={i,id:a.id,role:a.role,k:a.k||0,present:!!a.present,h0:a.h0||0,inVehicle:a.inVehicle||null,
-   pos:a.pos?{x:a.pos.x,y:a.pos.y||0,z:a.pos.z}:null,homeDoor:H&&H.door?{x:H.door.x,y:H.door.y||0,z:H.door.z}:null,at:a.at||null,task:null};
-  const K=a.task;if(K)o.task={t0:K.t0,spot:K.spot?{x:K.spot.x,y:K.spot.y||0,z:K.spot.z}:null,wander:K.wander||0,indoor:!!K.indoor,
-   legs:K.legs.map(L=>({route:rt(L.route),speed:L.speed,dur:L.dur,back:L.back||0,side:L.side||0,mode:L.mode||'walk'}))};
-  return o;});
- const rows=[];for(const tt of T)A.forEach((a,i)=>{const p=SIM.pose(a,tt);rows.push([tt,i,p.hidden?1:0,p.moving?1:0,p.x,p.y,p.z,p.h]);});
- DHEX.snap={t,times:T,actors,routes,rows};return DHEX.snap;}
+function dhxSnap(){if(DHEX.snap)return DHEX.snap;DHEX.snap=SIM.exportMotion({times:[0,7.5,45,300,1200,5000]});return DHEX.snap;}   /* core/simulation 77-sim-8 (lifted from here, 2026-10-20) */
 const DHEX_PARTS={
  terrain:()=>dhxHeightfield(dhxBox(),4),
  place:()=>({format:'krator-dhelv-place',version:1,convention:{units:'m',up:'+y',x:'east',z:'south',ry:'radians about +y'},box:dhxBox(),
