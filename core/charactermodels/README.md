@@ -54,7 +54,12 @@ commit's) rather than all of them.
   15 of 52 on the woman; the worst are the Hykkousoi pteruges outside the lorica (most of their vertices, 7 to 9 cm),
   the Izani commoner's trousers outside the tunic (about 700 vertices, 1 to 1.5 cm), the Chichani noble's skirt outside
   the robe (up to 5 cm) and trader's xicolli outside the head wrap (7 cm). These are the open clipping issues' causes,
-  to fix in `make_garments.py` (the ease of the over-item) and check with this table.
+  fixed at build time: `make_garments.py` settles each garment over what is worn under it (`settle`: out along the
+  skin's normal to 6 mm past any lower layer of an item worn with it in an outfit, `tools/layers.py`; under-layers are
+  built first, and each garment leaves `<gid>.layers.npz` for the ones over it). After it, 1 to 21 edge vertices per
+  pair (the Chichani noble's skirt the worst, 1.8 cm). `--objs <MPFB clothes dir>` reads the generator's own output,
+  so a garment change is checked in minutes. An item can lie over a higher slot's under-layers: the Hykkousoi pteruges
+  (`layers.OVER`, kit item `over: 'torso'`) hang over the lorica's tunic skirt (layer 0) and under its cloak (2).
 
 ## A core module: where it goes next
 
@@ -496,6 +501,9 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills), the lower-arm joints every body has, four-armed garments' weights | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
 | `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni, Iron Republic and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
+| `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |
+| `tools/ease.py` | under-items standing outside the item over them, per outfit (`--objs`: from the generator's output) | |
+| `tools/shots.py` | close-ups of the Cosmetic Lab, the same every run (`tools/shots-clipping.json`: the open clipping issues) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |

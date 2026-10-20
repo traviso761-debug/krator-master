@@ -154,6 +154,11 @@ area you are about to change.
 - **Measure before baking fit into the pack** → a settle per slider end (the handoff's 1.2) would have moved almost
   nothing: MPFB's refit already keeps garments at their rest depth across every end. The clipping was between items
   worn together; `tools/ease.py` (height above the skin, under-item against over-item at the same spot) names the pairs.
+- **Garments built apart meet where they are worn together** (a tunic at 1.4 cm over trousers' seat at 1.6) → settle at
+  build time: under-layers first, each garment pushed out to a gap past every lower layer worn with it over the same
+  skin spot, the push spread over the part's grid (`settle` in make_garments.py). Measured 16 failing pairs of 58 to
+  edge vertices only. An item that lies between another's parts (pteruges between a tunic skirt and a cloak) needs
+  part layers and the other built twice.
 - **Page shots of a walk were not repeatable** (the page's loop advanced the figure in real time between the script's
   steps, and each clip faded in from the last shot's) → `tools/shots.py` holds the loop (`_kchar.still`), resets the
   chains, starts the clip from a stop and steps it at 30 Hz: pixel-identical in any order. Use it for before/after.
