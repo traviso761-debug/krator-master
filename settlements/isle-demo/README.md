@@ -195,27 +195,30 @@ declares both once they are planned, in one order whichever town it draws, and h
 - **Needs** (the owner, 2026-10-19): core/simulation's needs run in the isles (`ISLE.TUNE.sim.needs`, Voth's table on the
   isles' activities): seven meters (eat, drink, socialize, relax, contemplate, sleep, material), happiness, its band's
   efficiency at work, loyalty; in the free hours a person does what its meters ask among company, rest, idling and
-  worship. With no wells, drink comes with meals, rest, company and a water gourd at work. Clothes and pots bought fill
-  the material meter (8 and 20), a set of clothes short raises it 4 a day. Three weeks, the mean meter at the day's end
-  (both towns alike within two points):
+  worship. With no wells, drink comes with meals, rest, company and a water gourd at work. Material rises 3.6 a day (not
+  in children); clothes and pots bought fill it (8 and 20), a set of clothes short raises it 4 a day, and at 55 a person
+  buys a **treat** on its time off (Voth's `items.treat`, by wealth, spread a little within each class): the poor a bowl
+  of kava (25) at the kava houses and taverns, the middle a pandanus mat (40, the weavers) or a coconut-oil lamp (45,
+  the potters, a coconut a lamp), the rich a lamp or shell-and-bead jewellery (70, Kautoa's workshops, a stone a piece,
+  by lakatoi to Valapo). Three weeks, the mean meter at the day's end (both towns alike within two points):
 
-  | | day 1 | day 7 | day 14 | day 21 |
-  |---|---|---|---|---|
-  | eat | 29 | 28 | 27 | 27 |
-  | drink | 5 | 1 | 1 | 1 |
-  | socialize | 27 | 32 | 33 | 33-34 |
-  | relax | 24 | 33-35 | 34-37 | 35-37 |
-  | contemplate | 12 | 48-50 | 59-61 | 60-61 |
-  | sleep | 22 | 23 | 23-24 | 23-24 |
-  | material | 22 | 64 | 99 | 100 |
-  | happiness (content / uneasy / unhappy) | 89 (98% / 2% / 0) | 77-78 (71-73% / 23-24% / 4-5%) | 70 (58-60% / 28-30% / 12%) | 70 (57-59% / 28-29% / 12-13%) |
-  | efficiency at work | 1.00 | 0.97 | 0.95 | 0.95 |
+  | | day 1 | day 7 | day 14 | day 21 | day 21 without treats |
+  |---|---|---|---|---|---|
+  | eat | 29 | 28 | 27 | 27 | 27 |
+  | drink | 5 | 1 | 1 | 1 | 1 |
+  | socialize | 27 | 32-33 | 33-35 | 34-35 | 33-34 |
+  | relax | 24 | 33-35 | 35-37 | 35-37 | 35-37 |
+  | contemplate | 12 | 49-50 | 59-61 | 60-62 | 60-61 |
+  | sleep | 22 | 23 | 24 | 24 | 23-24 |
+  | material | 19 | 32 | 31 | 33-34 | 100 |
+  | happiness | 89 | 81 | 79 | 79 (68-70% content, 25-27% uneasy, 5% unhappy) | 70 (57-59% content, 12-13% unhappy) |
+  | efficiency at work | 1.00 | 0.98 | 0.97 | 0.97 | 0.95 |
 
-  Food, sleep, drink and company hold; contemplation settles near 60 (few choose worship in their free hours); material
-  climbs 7 a day and pins at 100 by day 14, since nothing is bought but what wears out: it alone takes happiness from 89
-  to 70. The seasoning lowers the eat meter by about one point (27.9 to 26.6 in Valapo; happiness +0.5); the pots and
-  the clothes' material change it by under half a point (a pot or a garment is bought every few weeks a person against
-  7 a day). The economy holds at 95% efficiency (the governor makes up the difference; nothing short).
+  Food, sleep, drink and company hold; contemplation settles near 60 (few choose worship in their free hours). Without
+  treats material climbed and pinned at 100 by day 14, taking happiness to 70; with them it settles near 33. Treats
+  bought over three weeks: 5,076 bowls of kava, 1,159 lamps, 1,143 mats, 300 necklaces. The seasoning lowers the eat
+  meter about a point (happiness +0.5); the pots and the clothes' material under half a point (a pot or a garment every
+  few weeks a person). The economy holds at 97% efficiency (the governor makes up the difference).
 - **Three weeks' books** (the daily average over days 12-21, three whole restocking rounds; the gain at 0.3):
 
   | | Valapo | Kautoa |
@@ -230,9 +233,11 @@ declares both once they are planned, in one order whichever town it draws, and h
   | cotton, cloth, garments | +122, +34, -1 a day (134 garments to Kautoa) | garments -1 (136 imported, 137 worn out) |
   | leather, sandals, armour | (imported) | -5, +9, 0 a day |
   | pots, stone, tools, salt | pots 5 made, 7 bought; tools 3 bought (by lakatoi), its stock drawn toward six days; salt 92 used (imported) | pots 19 made, 20 bought; stone 53 quarried, 45 into tools (+7); tools 11 made and used; salt 210 made, 132 used and 85 to Valapo (-7) |
+  | treats (made, bought a day) | kava 42, 105 (drawing its opening stock down); mats 6, 17; lamps 17, 16; jewellery 7 by lakatoi, 6 | kava 310, 298; mats 23, 54; lamps 67, 47; jewellery 14, 10 |
   | still piling up | cotton +122 a day | (nothing over +60 but the ships' cloves and cacao) |
 
-  Nothing runs short after the second day (the towns open with lots of what the canoes bring them).
+  Nothing runs short after the second day (the towns open with lots of what the canoes bring them), but Kautoa's lamps
+  on days 12 and 14 (8 in all, while the potters' lamp places came up to their trade).
 - **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`, for each town; and on the page, the citizens
   drawn near the camera where their poses are, with a figure moved 50 m as the negative): every lot of a census trade is a place; every
   resident has a home and every worker a job in the town; after a world day run minute by minute, every food made and

@@ -46,7 +46,7 @@ ISLE.TUNE.sim = {
     'ie-trader': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }],
     'ie-butcher': ['butcher', { WORK: 2.5, BUY: 3 }, { open: [6, 18], shop: 'meat' }],
     'ie-bakehouse': ['bakehouse', { WORK: 2.5, BUY: 3 }, { open: [5, 18], shop: 'bread' }],
-    'ie-kava-house': ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16 }, { open: [10, 24], shop: 'meal' }],
+    'ie-kava-house': ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16, BUY: 6 }, { open: [10, 24], shop: 'meal' }],
     'ie-guesthouse': ['inn', { WORK: 2.5, EAT: 5, SOCIALIZE: 8 }, { open: [6, 23], shop: 'meal' }],
     'ie-weaver': ['weaver', { WORK: 2.5 }], 'ie-potter': ['potter', { WORK: 2.5 }], 'ie-smithy': ['smithy', { WORK: 2.5 }],
     'ie-fishdock': ['fishdock', { WORK: 2.5, BUY: 1 }, { out: true, wander: 6, shop: 'fish' }],
@@ -72,7 +72,7 @@ ISLE.TUNE.sim = {
     vern_house_mid_a: ['home', {}, { cls: 'middle' }], vern_house_mid_b: ['home', {}, { cls: 'middle' }], vern_house_mid_c: ['home', {}, { cls: 'middle' }],
     vern_house_rich_a: ['home', {}, { cls: 'rich' }], vern_house_rich_b: ['home', {}, { cls: 'rich' }],
     vern_governor_palace: ['residence', { WORK: 1 }, { cls: 'rich' }], vern_guard_tower: ['watchtower', { WORK: 1.5 }], vern_watch_house: ['watchtower', { WORK: 4 }],
-    vern_shops: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16 }, { open: [10, 24], shop: 'meal' }],
+    vern_shops: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16, BUY: 6 }, { open: [10, 24], shop: 'meal' }],
     vern_smithy: ['smithy', { WORK: 2.5 }], vern_workshop_a: ['workshop', { WORK: 2.5 }], vern_workshop_b: ['workshop', { WORK: 2.5 }]
   },
   /* the canoe stop (P7c): its dockers' posts per 100 m2 of the landing (the last number: its area, m2) */
@@ -120,18 +120,19 @@ ISLE.TUNE.sim = {
      wells, taverns for drink or chairs to relax in: drink comes with meals, rest, company (kava, coconuts) and a water
      gourd at work; relax with rest and company; contemplation at the temples, shrines and squares (WORSHIP) and a little
      at school. Material rises slowly and falls with what is bought (`items`' `material`) and by `items.lack` a day for a
-     set of clothes short. In the hours the schedule gives to one of `free`, a person does what its meters ask among
+     set of clothes short, rising at half Voth's pace (modest wants; the treats below fill it), not at all in the children.
+     In the hours the schedule gives to one of `free`, a person does what its meters ask among
      them, at an open place within reach. Happiness, its band's efficiency at work, loyalty: as Voth's */
   needs: {
     list: ['eat', 'drink', 'socialize', 'relax', 'contemplate', 'sleep', 'material'],
-    rate: { eat: 4, drink: 3, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0.3 },
+    rate: { eat: 4, drink: 3, socialize: 2, relax: 2, contemplate: 0.5, sleep: 4.2, material: 0.15 },
     fill: { SLEEP: { sleep: 14, relax: 2, eat: 2, drink: 3 }, WORK: { drink: 6 }, HAUL: { drink: 6 }, REST: { sleep: 6, relax: 10, drink: 8 },
       EAT: { eat: 24, drink: 12, socialize: 1, relax: 1 }, SOCIALIZE: { socialize: 24, relax: 4, drink: 6 }, IDLE: { relax: 7, drink: 8 },
       WORSHIP: { contemplate: 45, socialize: 5 }, STUDY: { contemplate: 10, socialize: 4, drink: 4 }, HOUSEWORK: { drink: 6, socialize: 2, relax: 2 },
       BUY: { socialize: 4, relax: 2 } },
     work: { drink: 4, eat: 1.5, relax: 1 },
     labour: { farmhand: 1, labourer: 1, docker: 1, fisher: 0.8, craftsman: 0.6, groom: 0.6, soldier: 0.6, baker: 0.5, keeper: 0.4, trader: 0.3, official: 0.2 },
-    byTrade: { soldier: { material: 0.5 }, official: { contemplate: 1.3 } },
+    byTrade: { soldier: { material: 0.5 }, official: { contemplate: 1.3 }, child: { material: 0 }, pupil: { material: 0 } },
     weight: { eat: 1.5, drink: 1.5, sleep: 1.3, socialize: 1, relax: 1, contemplate: 0.8, material: 1 },
     traits: { chatty: { socialize: 1.33 }, loner: { socialize: 0.67 }, pious: { contemplate: 1.33 }, worldly: { contemplate: 0.67 }, glutton: { eat: 1.33 },
       ascetic: { eat: 0.67, material: 0.67 }, restless: { relax: 1.33 }, steady: { relax: 0.67 } },
@@ -165,29 +166,39 @@ ISLE.TUNE.sim = {
        Voth's iron ones last three to five thousand) */
     tools: { 'stone tool': { cat: 'tool', workLife: 1000, good: 'tools', roles: ['farmhand', 'craftsman', 'labourer'] },
       cookpot: { cat: 'tool', workLife: 1500, good: 'pots', roles: ['baker', 'keeper'] } },
-    wares: { market: ['shirt', 'wrap', 'sandal', 'pot', 'stone tool'], shop: ['shirt', 'wrap', 'sandal', 'pot', 'stone tool'], weaver: ['shirt', 'wrap'],
-      workshop: ['sandal', 'stone tool'], smithy: ['cuirass'], potter: ['pot', 'cookpot'] },
+    /* the treats (owner, 2026-10-19; Voth's `treat`): when a person's material meter reaches `treat.at`, it buys on its
+       time off the last of `treat.items` its wealth reaches: the poor a bowl of kava at the kava house or tavern, the
+       middle a pandanus mat (the weavers) or a coconut-oil lamp (the potters), the rich a lamp or shell-and-bead
+       jewellery (Kautoa's workshops); each fills the meter by its `material`. A class's wealth is spread a little a
+       person (`wealthSpread`), so the middle and the rich split between two treats */
+    treats: { 'kava bowl': { cat: 'luxury', material: 25, good: 'kava' }, mat: { cat: 'household', material: 40, good: 'mats' },
+      lamp: { cat: 'household', material: 45, good: 'lamps' }, necklace: { cat: 'luxury', material: 70, good: 'jewellery' } },
+    treat: { at: 55, items: [[0, 'kava bowl'], [0.3, 'mat'], [0.5, 'lamp'], [0.85, 'necklace']] },
+    wealthSpread: { poor: [0, 0.2], middle: [0.35, 0.65], rich: [0.8, 1] },
+    wares: { market: ['shirt', 'wrap', 'sandal', 'pot', 'stone tool', 'mat', 'lamp', 'necklace'], shop: ['shirt', 'wrap', 'sandal', 'pot', 'stone tool', 'mat', 'lamp', 'necklace'],
+      weaver: ['shirt', 'wrap', 'mat'], workshop: ['sandal', 'stone tool', 'necklace'], smithy: ['cuirass'], potter: ['pot', 'cookpot', 'lamp'], tavern: ['kava bowl'] },
     meals: 2, perMeal: 2, low: 1, days: 3, mins: 15, cool: 120, storeDays: [1.5, 3], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
   },
   economy: {
     goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
-      'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools'],
+      'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools', 'kava', 'mats', 'lamps', 'jewellery'],
     /* each town's bread is its own (towns[town].inputs over these) */
-    inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 }, tools: { stone: 4 } },
+    inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 }, tools: { stone: 4 }, lamps: { coconut: 1 }, jewellery: { stone: 1 } },
     every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40 },
     /* a good's own load worth a cart's trip (the cart's minLoad otherwise): the oruwa's light, dear goods land a few dozen
        at a time, under the 40 a cart waits for, and sat at the canoe stop (2026-10-19) */
-    minLoad: { clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10 },
+    minLoad: { clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10, kava: 10, mats: 10, lamps: 10, jewellery: 5 },
     /* a crop's own rate, times the parcels' (the owner, 2026-10-19: the spice, cane and cacao cut tenfold); the governor
        below holds the rest to what is wanted */
     cropRate: { clove: 0.1, cacao: 0.1, 'sugar-cane': 0.1, cotton: 1 },
     /* the production governor (49), an order-up-to rule: a producer's rate is its full one times what is wanted of its
        good (demand, plus `alpha` of the gap to `cover` days of it, closed over `ti` days) over what it makes at full,
        clamped to [min, max], looked at every `every` minutes, its estimates smoothed over `smooth` days, its demand over the
-       last `window` whole days (the households' three-day restocking round). A producer kind
+       last `window` whole days (the households' three-day restocking round); `minBy` a lower floor for a good whose makers
+       far outstrip its trade (the weavers' mats, the taverns' kava, the pots). A producer kind
        with `alternate` makes one of its lists place by place in turn (the weavers: cloth, then garments), so each good is
        governed on its own */
-    govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3 },
+    govern: { every: 60, cover: 3, ti: 1.5, alpha: 0.3, min: 0.3, max: 1.5, smooth: 2, window: 3, minBy: { mats: 0.02, kava: 0.05, pots: 0.1 } },
     /* spoilage (49): the share of a perishable's stock in the warehouses and at the sites that rots each night (fish and
        meat about a month, bread a fortnight, fruit and roots slower, grain and spice slowest; cloth, pots, salt and
        metal never) */
@@ -199,19 +210,21 @@ ISLE.TUNE.sim = {
     /* servings (food) or lots a worker-hour, into the place's own store up to cap */
     producers: {
       field: { rate: 6, cap: 3000 }, orchard: { rate: 6, cap: 3000 }, fishdock: { out: ['fish'], rate: 7, cap: 3000 }, pens: { out: ['meat'], rate: 4, cap: 1500 },
-      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { alternate: [['cloth'], ['garments']], rate: 2, cap: 600 },
-      potter: { out: ['pots'], rate: 0.07, cap: 400 }, byre: { out: ['meat'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.3, cap: 400 },
+      bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { alternate: [['cloth'], ['garments'], ['mats']], rate: 2, cap: 600 },
+      potter: { alternate: [['pots'], ['lamps']], rate: 0.15, cap: 400 }, tavern: { out: ['kava'], rate: 1.5, cap: 600 }, byre: { out: ['meat'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.5, cap: 400 },
       saltworks: { out: ['salt'], rate: 2, cap: 1500 }, tannery: { out: ['leather'], rate: 0.5, cap: 400 },
       /* the clothes and the armour (2026-10-19): the weavers make cloth and garments from it (above), the Vernacular's
          workshops sandals from leather and stone tools, whichever the town has fewer days of, the smithies leather
-         armour (until the iron mine brings ore); the potters a pot in about fourteen worker-hours (the households' and the
-         cooks' pots) */
-      workshop: { out: ['sandals', 'tools'], rate: 0.45, cap: 400 }, smithy: { out: ['armour'], rate: 0.002, cap: 100 }
+         armour (until the iron mine brings ore), and shell-and-bead jewellery (a stone a piece); the potters pots and
+         coconut-oil lamps (a coconut a lamp), about seven worker-hours each, and the weavers cloth, garments and mats,
+         place by place in turn (a list of two picks the good the town has fewer days of, and core counts a good nobody
+         could buy as never running out); the kava houses and taverns brew kava */
+      workshop: { out: ['sandals', 'tools', 'jewellery'], rate: 0.6, cap: 400 }, smithy: { out: ['armour'], rate: 0.002, cap: 100 }
     },
     warehouses: ['warehouse', 'granary'],
     /* a town opens with `startDays` of its food, each food in its share of the town's making (its producers' posts times
        rate), and these lots of the other goods it makes (not of what it must import) */
-    startDays: 3, startLots: { cloth: 40, pots: 500, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40, tools: 60 },
+    startDays: 3, startLots: { cloth: 40, pots: 500, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40, tools: 60, kava: 300, mats: 200, lamps: 200, jewellery: 50 },
     /* salt (owner, 2026-10-19): a preserver, so `keep` of the fish and the meat that would spoil in a night is salted
        instead where the town's warehouses hold salt, a salt for `per` servings kept; and an improver of meals: while a
        town holds salt its people season their food (`uses`), and a meal at home counts `season` times its foods' quality */
@@ -240,7 +253,7 @@ ISLE.TUNE.sim = {
     uses: { valapo: { salt: 0.02, rice: 0.05, clove: 0.004, cacao: 0.008 }, kautoa: { sugar: 0.02, salt: 0.02 } },
     lines: [
       { id: 'lakatoi', vessel: 'islanderLakatoi', cap: 3000, carriers: 2, minutes: 1200, mins: 240, keep: 1, want: 6,
-        goods: { kautoa: ['salt', 'rice', 'sandals', 'armour', 'tools'], valapo: ['sugar', 'garments'] } },
+        goods: { kautoa: ['salt', 'rice', 'sandals', 'armour', 'tools', 'jewellery'], valapo: ['sugar', 'garments'] } },
       { id: 'oruwa', vessel: 'islanderOruwa', cap: 150, carriers: 1, minutes: 600, mins: 120, keep: 1, want: 2,
         goods: { kautoa: ['clove', 'cacao'], valapo: ['coffee'] } }
     ]

@@ -26,8 +26,9 @@ ISLE.simItemsInit = function () {
   Object.keys(I.worn || {}).forEach(function (k) { kinds[k] = Object.assign({ per: 1 }, I.worn[k]); });   /* the clothes and the armour */
   Object.keys(I.household || {}).forEach(function (k) { kinds[k] = Object.assign({ per: 1 }, I.household[k]); });   /* the household's pot */
   Object.keys(I.tools || {}).forEach(function (k) { var K = Object.assign({ per: 1 }, I.tools[k]); delete K.roles; kinds[k] = K; });   /* the tools */
+  Object.keys(I.treats || {}).forEach(function (k) { kinds[k] = Object.assign({ per: 1 }, I.treats[k]); });   /* the treats */
   var IT = SIM.items({ kinds: kinds, free: T.sched.free, secPerMinute: T.clock.secPerMinute, mins: I.mins, cool: I.cool, low: I.low, days: I.days,
-    meals: I.meals, perMeal: I.perMeal, eatOut: I.eatOut, hurt: 0, lack: I.lack || 0 });
+    meals: I.meals, perMeal: I.perMeal, eatOut: I.eatOut, hurt: 0, lack: I.lack || 0, treat: I.treat || null });
   /* the seasoning: on core's own kinds (SIM.items copies the config's) */
   var SA = T.economy.salt;
   if (SA && SA.season) I.foods.forEach(function (f) { Object.defineProperty(IT.kinds[f], 'quality', { enumerable: true, configurable: true,

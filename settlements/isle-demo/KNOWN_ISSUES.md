@@ -89,11 +89,17 @@
 - [ ] **Demand follows supply in the households:** a household buys each food in proportion to the warehouses' stock,
       so the more a town holds of a food the more of it is eaten; the governor's demand chases that. It holds (each
       town's food within 2% over three weeks), but the households' stores shrink slowly as the warehouses settle.
-- [ ] **The material meter pins at 100 by day 14** (needs on, 2026-10-19): it rises 7 a day and only replacements are
-      bought (a garment 8, a pot 20, every few weeks a person), so material alone takes happiness from 89 to 70 and
-      work to 95% efficiency. The isles want treats (Voth's `items.treat`): pandanus mats, coconut-oil lamps, shell and
-      bead jewellery, kava, as goods with makers (PLAN.md 9b, household goods). Contemplation settles near 60: few
-      choose worship in their free hours.
+- [x] **The material meter pinned at 100 by day 14** (needs on, 2026-10-19): only replacements were bought. The treats
+      (kava, mats, lamps, jewellery; Voth's `items.treat`) hold it near 33, happiness near 79.
+- [ ] **Core's treat is one item a wealth:** the last of `treat.items` whose least wealth a person has, so a class buys
+      one treat; the isles spread each class's wealth a little a person (`items.wealthSpread`) so the middle splits
+      between mats and lamps and the rich between lamps and jewellery. The poor drink kava and nothing else.
+- [ ] **Core counts a good nobody could buy as never running out:** a producer of several goods picks the one with fewest
+      days left, and a good whose buyers all failed has no use booked, so its days are infinite and it is never made
+      (Kautoa's potters made no lamps once the opening lamps were gone; Valapo's weavers no mats). The isles give such
+      goods places of their own (`alternate`); a core fix would count the unmet draws as use.
+- [ ] **Contemplation settles near 60:** few choose worship in their free hours (the temples, shrines and squares are
+      few and far for most).
 - [ ] **A pot does not feed the cooking:** a household without its pot still cooks (core's meal does not look for one),
       and a cook without a cooking pot works at half pace like any tool. Once needs run, a pot-less kitchen should cook
       worse meals.

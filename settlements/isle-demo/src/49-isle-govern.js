@@ -71,7 +71,8 @@ ISLE.simPosition = function (E, g) {
 };
 /* the order-up-to rule: a good's wanted output a day is its demand plus `alpha` of the gap between its target (`cover`
    days of demand) and its supply line, closed over `ti` days; over what the town makes of it at the full rate (made a
-   day over the multiplier it was made at, both smoothed over `smooth` days), clamped to [min, max] */
+   day over the multiplier it was made at, both smoothed over `smooth` days), clamped to [min, max]
+   (`minBy[good]` in place of min) */
 ISLE.simGovern = function (minute) {
   var G = ISLE.TUNE.sim.economy.govern, S = ISLE.SIM, M = S.govern; if (minute % G.every) return;
   var a = G.every / (1440 * (G.smooth == null ? 2 : G.smooth)), first = minute < 1440;
@@ -85,7 +86,7 @@ ISLE.simGovern = function (minute) {
       st.made += a * (dm - st.made); st.k += a * (k0 - st.k);
       var use = ISLE.simDemand(E, g, minute, memo), pos = ISLE.simPosition(E, g), cap = st.k > 0 ? st.made / st.k : 0;
       var out = use + G.alpha * (G.cover * use - pos) / G.ti;
-      var m = cap > 0 ? out / cap : G.max; want[g] = Math.max(G.min, Math.min(G.max, m));
+      var lo = G.minBy && G.minBy[g] != null ? G.minBy[g] : G.min, m = cap > 0 ? out / cap : G.max; want[g] = Math.max(lo, Math.min(G.max, m));
       M.view[key] = { use: use, pos: pos, cap: cap, mult: want[g] };
     });
     Object.keys(E.recipes).forEach(function (id) {

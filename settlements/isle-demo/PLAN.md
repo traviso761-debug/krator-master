@@ -739,8 +739,9 @@ bakers and innkeepers cook with one (1,500 worked hours); the farmhands, craftsm
 worked hours) from Kautoa's workshops, four stones a tool, carried to Valapo by the lakatoi (step 1 of the order below,
 one tool kind for the stone trades; step 3 done); salt keeps the fish and meat (section 9's spoilage) and seasons the
 meals. A week-test check holds the tools and pots (at least 98% held or on an errand for, each town, each week).
-`SIM.needs` is on (step 6 in part: Voth's table on the isles' activities; README.md, the three weeks of needs); the
-material meter pins at 100 without treats, which are owed (mats, lamps, jewellery, kava). A week-test check holds the
+`SIM.needs` is on (step 6: Voth's table on the isles' activities; README.md, the three weeks of needs), with the
+treats (kava at the kava houses, pandanus mats from the weavers, coconut-oil lamps from the potters, shell-and-bead
+jewellery from Kautoa's workshops) that hold the material meter near 33. A week-test check holds the
 watched town's mean happiness at 60 or more and no need but material above 70.
 
 **The rules taken from Voth (and where the isles differ).**

@@ -49,7 +49,8 @@ ISLE.simPeople = function (TS, places) {
       a.nd = NE.list.map(function (n, i) { var r = NE.init[n]; return NE.rate[n] && r ? r[0] + (r[1] - r[0]) * KRAND.unit(KRAND.hash(T.seed, 68, a.k, i)) : 0; }); }); }
   var W = T.items.wealth, trades = {}, workers = 0;
   mine.forEach(function (a) {
-    var H = SIM.R.place[a.home]; a.cls = H.cls || 'middle'; a.wealth = W[a.cls] == null ? 0.5 : W[a.cls];
+    var H = SIM.R.place[a.home], WS = T.items.wealthSpread && T.items.wealthSpread[H.cls || 'middle']; a.cls = H.cls || 'middle';
+    a.wealth = WS ? WS[0] + (WS[1] - WS[0]) * KRAND.unit(KRAND.hash(T.seed, 69, a.k)) : W[a.cls] == null ? 0.5 : W[a.cls];   /* spread a little in its class */
     var P = a.work ? SIM.R.place[a.work] : null; a.job = P ? P.tags.trade || P.kind : null;
     if (a.status === 'employed') { workers++; trades[a.job] = (trades[a.job] || 0) + 1; }
   });
