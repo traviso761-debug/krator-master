@@ -420,8 +420,9 @@ contributor read in place: `kits/pylon/kit.json` lists `settlements/iziz/targets
 in Iziz's pack first, then in every other pack the page binds (the kit's own, `KMAT.pack('pylon')`); a texture names its
 pack, its id `tex:iziz:<pack>:<family>:<slot>` outside Iziz's (Iziz's own ids, and its export, are unchanged: the district
 above exported before and after differs only in the clock and the sky picture taken at that moment). The harness copies
-each pack as `tex/<pack>.pack.json` with its files side by side, and fails when two packs name one file;
-`world_import.gd` reads a texture's own pack file.
+each pack as `tex/<pack>.pack.json` with its files side by side; a file name another pack took first is copied as
+`<pack>.<name>` and that pack's copied `pack.json` names it so (the isle demo's Islanders and Iziz packs both have `stone`,
+`tarp` and `wood`, 2026-10-20). `world_import.gd` reads a texture's own pack file.
 
 ```
 python3 tools/harness.py export kits/pylon/dist/pylon.html --out godot/data/world-pylon --box=-62,964,32,1000
