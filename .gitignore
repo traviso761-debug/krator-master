@@ -62,3 +62,6 @@ kits/scyvoi/three.min.js
 
 kits/fauna/scratch/
 kits/fauna/three.min.js
+
+# the SpringBoneSimulator3D spike (godot/krator/character/REPORT.md): pieces decoded from the published Cosmetic Lab
+godot/data/spike/
