@@ -26,33 +26,61 @@ HOOK_DRAW.material=function(M){const t=x=>x?x.uuid:'',c=x=>x?x.getHexString():''
   M.customProgramCacheKey?String(M.customProgramCacheKey()):'',U.family||'',U.set||'',U.fam||'',M.name||''].join('|');
  return HOOK_DRAW.canon[fp]||(HOOK_DRAW.canon[fp]=M);};
 /* one geometry per material from a built group (meshes and instanced meshes alike), in the group's frame */
-HOOK_DRAW.flatten=function(G){G.updateMatrixWorld(true);const groups={},IM=new THREE.Matrix4();
+/* A kit's instanced detail carries a colour PER INSTANCE (the kit's kput colour: the Islanders' patterned walls, the
+   thatch, the Vernacular's timber): a flatten that copied only the geometry and the matrix drew every such piece in
+   its material's base colour, white, which is why the town read pale (the owner, 2026-10-19; the isle demo's drawing
+   has the same omission). Every flattened part therefore gets a vertex-colour attribute: the source's, times the
+   instance's colour, white where it has neither; and every canonical material reads vertex colours. */
+HOOK_DRAW.flatten=function(G){G.updateMatrixWorld(true);const groups={},IM=new THREE.Matrix4(),IC=new THREE.Color();
  G.traverse(o=>{if(!o.isMesh||!o.geometry||!o.geometry.attributes.position)return;const mat=Array.isArray(o.material)?null:HOOK_DRAW.material(o.material);if(!mat)return;
-  const g=o.geometry,sig=mat.uuid+'|'+Object.keys(g.attributes).sort().join(','),list=groups[sig]||(groups[sig]={mat,parts:[]});
-  if(o.isInstancedMesh)for(let i=0;i<o.count;i++){o.getMatrixAt(i,IM);list.parts.push({g,m:new THREE.Matrix4().multiplyMatrices(o.matrixWorld,IM)});}
-  else list.parts.push({g,m:o.matrixWorld.clone()});});
+  const g=o.geometry,sig=mat.uuid+'|'+Object.keys(g.attributes).filter(n=>n!=='color').sort().join(','),list=groups[sig]||(groups[sig]={mat,parts:[]});
+  if(o.isInstancedMesh)for(let i=0;i<o.count;i++){o.getMatrixAt(i,IM);let ic=null;if(o.instanceColor){o.getColorAt(i,IC);ic=[IC.r,IC.g,IC.b];}
+   list.parts.push({g,m:new THREE.Matrix4().multiplyMatrices(o.matrixWorld,IM),ic});}
+  else list.parts.push({g,m:o.matrixWorld.clone(),ic:null});});
  const out=[];
- for(const s in groups){const Q=groups[s],names=Object.keys(Q.parts[0].g.attributes);let total=0,itotal=0;
+ for(const s in groups){const Q=groups[s],g0=Q.parts[0].g,names=Object.keys(g0.attributes).filter(n=>n!=='color').concat(['color']);let total=0,itotal=0;
   Q.parts.forEach(p=>{total+=p.g.attributes.position.count;itotal+=p.g.index?p.g.index.count:p.g.attributes.position.count;});
-  const A={};names.forEach(nm=>{A[nm]=new Float32Array(total*Q.parts[0].g.attributes[nm].itemSize);});
+  const size=nm=>nm==='color'?3:g0.attributes[nm].itemSize;
+  const A={};names.forEach(nm=>{A[nm]=new Float32Array(total*size(nm));});
   const I=total>65535?new Uint32Array(itotal):new Uint16Array(itotal),v3=new THREE.Vector3(),nm3=new THREE.Matrix3();let vo=0,io=0;
-  Q.parts.forEach(p=>{const g=p.g,cnt=g.attributes.position.count;nm3.getNormalMatrix(p.m);
-   names.forEach(nm=>{const src=g.attributes[nm],sz=src.itemSize,dst=A[nm],sc=HOOK_DRAW.denorm(src);if(!src)return;
+  Q.parts.forEach(p=>{const g=p.g,cnt=g.attributes.position.count;nm3.getNormalMatrix(p.m);const ic=p.ic||[1,1,1];
+   names.forEach(nm=>{const src=g.attributes[nm],dst=A[nm];
+    if(nm==='color'){const sc=src?HOOK_DRAW.denorm(src):1;for(let i=0;i<cnt;i++)for(let c=0;c<3;c++)dst[(vo+i)*3+c]=(src?src.array[i*src.itemSize+c]*sc:1)*ic[c];return;}
+    if(!src)return;const sz=src.itemSize,sc=HOOK_DRAW.denorm(src);
     for(let i=0;i<cnt;i++){
      if(nm==='position'){v3.fromBufferAttribute(src,i).applyMatrix4(p.m);dst[(vo+i)*3]=v3.x;dst[(vo+i)*3+1]=v3.y;dst[(vo+i)*3+2]=v3.z;}
      else if(nm==='normal'){v3.fromBufferAttribute(src,i).applyMatrix3(nm3).normalize();dst[(vo+i)*3]=v3.x;dst[(vo+i)*3+1]=v3.y;dst[(vo+i)*3+2]=v3.z;}
      else for(let c=0;c<sz;c++)dst[(vo+i)*sz+c]=src.array[i*sz+c]*sc;}});
    if(g.index)for(let k=0;k<g.index.count;k++)I[io+k]=g.index.array[k]+vo;else for(let k=0;k<cnt;k++)I[io+k]=vo+k;
    io+=g.index?g.index.count:cnt;vo+=cnt;});
-  const geo=new THREE.BufferGeometry();names.forEach(nm=>{geo.setAttribute(nm,new THREE.BufferAttribute(A[nm],Q.parts[0].g.attributes[nm].itemSize));});
-  geo.setIndex(new THREE.BufferAttribute(I,1));geo.computeBoundingSphere();out.push({geo,mat:Q.mat,tris:itotal/3});}
+  const geo=new THREE.BufferGeometry();names.forEach(nm=>{geo.setAttribute(nm,new THREE.BufferAttribute(A[nm],size(nm)));});
+  geo.setIndex(new THREE.BufferAttribute(I,1));geo.computeBoundingSphere();
+  if(!Q.mat.vertexColors){Q.mat.vertexColors=true;Q.mat.needsUpdate=true;}
+  out.push({geo,mat:Q.mat,tris:itotal/3});}
  return out;};
+/* a piece's own tones for its massing: the mean colour of its walls (the lower two thirds) and of its top third, from
+   the parts' material colours and vertex colours, weighted by triangles; a white material with a map is read as its
+   map's family tone (plaster), not white */
+HOOK_DRAW.tones=function(parts,h){const acc=[[0,0,0,0],[0,0,0,0]],c=new THREE.Color(),v=new THREE.Vector3();
+ for(const pt of parts){const g=pt.geo,M=pt.mat,col=g.attributes.color,pos=g.attributes.position,n=pos.count;if(!n)continue;
+  const mc=M.color?M.color.clone():new THREE.Color(0xffffff);if(M.map&&mc.r>.95&&mc.g>.95&&mc.b>.95)mc.setHex(0xcfc4b0);
+  const step=Math.max(1,Math.floor(n/400));
+  for(let i=0;i<n;i+=step){v.fromBufferAttribute(pos,i);const top=v.y>h*.66?1:0;c.copy(mc);if(col){c.multiply(new THREE.Color(col.getX(i),col.getY(i),col.getZ(i)));}
+   const w=pt.tris/n*step;const a=acc[top];a[0]+=c.r*w;a[1]+=c.g*w;a[2]+=c.b*w;a[3]+=w;}}
+ return acc.map(a=>a[3]?new THREE.Color(a[0]/a[3],a[1]/a[3],a[2]/a[3]):null);};
 HOOK_DRAW.proto=function(L){const id=L.kit==='hykpod'?'hykpod:'+L.id:L.kit+':'+L.key+'#'+(L.v|0);if(HOOK_DRAW.protos[id]!==undefined)return HOOK_DRAW.protos[id];
  let G=null;const t0=performance.now(),mk=HOOK_DRAW.kits[L.kit];
  try{G=mk?mk(L.key,L.v|0,L):null;}catch(e){HOOK_DRAW.failed[id]=String(e&&e.message||e);}
  if(!G){HOOK_DRAW.failed[id]=HOOK_DRAW.failed[id]||'no build';return (HOOK_DRAW.protos[id]=null);}
  const parts=HOOK_DRAW.flatten(G),tris=parts.reduce((a,p)=>a+p.tris,0);HOOK_DRAW.built++;
- return (HOOK_DRAW.protos[id]={id,parts,tris,ms:Math.round(performance.now()-t0),w:G.userData.w,d:G.userData.d,h:G.userData.h});};
+ const tones=HOOK_DRAW.tones(parts,G.userData.h||8);
+ return (HOOK_DRAW.protos[id]={id,parts,tris,tones,ms:Math.round(performance.now()-t0),w:G.userData.w,d:G.userData.d,h:G.userData.h});};
+/* the massing's tints: a key's tones once its prototype exists, else the kit's defaults; set on every lot of that key */
+HOOK_DRAW.tint=function(){const all=HOOK_DRAW.recs,mB=HOOK_DRAW.massB,mR=HOOK_DRAW.massR;if(!all||!mB)return;
+ const KC={isk:[0x9a7a52,0xb08a4a],izv:[0xd8ccb6,0xb8683a],hyk:[0xb9c4c2,0x5f8a98],vcat:[0xb9a88a,0x5a4a6a],apoc:[0x7a7268,0x6a4a30]};let n=0;
+ all.forEach((L,i)=>{if(L.rubble)return;const id=L.kit==='hykpod'?'hykpod:'+L.id:L.kit+':'+L.key+'#'+(L.v|0),P=HOOK_DRAW.protos[id];
+  if(P&&P.tones&&!L._tinted){const k=KC[L.kit]||KC.isk;mB.setColorAt(i,P.tones[0]||new THREE.Color(k[0]));mR.setColorAt(i,P.tones[1]||P.tones[0]||new THREE.Color(k[1]));L._tinted=true;n++;}});
+ if(n){mB.instanceColor.needsUpdate=true;mR.instanceColor.needsUpdate=true;}};
 HOOK_DRAW.matOf=function(L,s){const q=new THREE.Quaternion().setFromEuler(new THREE.Euler(0,L.ry,0));
  return new THREE.Matrix4().compose(new THREE.Vector3(L.x,L.y,L.z),q,new THREE.Vector3(s[0],s[1],s[2]));};
 /* the massing (every lot), the footings, then the first near set */
@@ -60,7 +88,7 @@ HOOK_DRAW.records=function(recs,group){const all=HOOK_DRAW.recs=recs;
  const body=new THREE.BoxGeometry(1,1,1);body.translate(0,.5,0);const roof=new THREE.ConeGeometry(.72,1,4,1);roof.rotateY(Math.PI/4);roof.translate(0,.5,0);
  const mB=new THREE.InstancedMesh(body,new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,all.length)),mR=new THREE.InstancedMesh(roof,new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,all.length));
  mB.name='massing bodies';mR.name='massing roofs';mB.userData.probeSkip=mR.userData.probeSkip=true;
- const KC={isk:[0xb39a74,0xc9ac6e],izv:[0xe4dccb,0xc0703c],hyk:[0xcfd8d6,0x6f9aa8],vcat:[0xd9cbb0,0x6a4a8a],apoc:[0x8a8378,0x7a4a2e]},c=new THREE.Color();
+ const KC={isk:[0x9a7a52,0xb08a4a],izv:[0xd8ccb6,0xb8683a],hyk:[0xb9c4c2,0x5f8a98],vcat:[0xb9a88a,0x5a4a6a],apoc:[0x7a7268,0x6a4a30]},c=new THREE.Color();
  all.forEach((L,i)=>{const k=KC[L.kit]||KC.isk;mB.setColorAt(i,c.setHex(k[0]));mR.setColorAt(i,c.setHex(k[1]));});
  HOOK_DRAW.massB=mB;HOOK_DRAW.massR=mR;group.add(mB);group.add(mR);
  /* the reconquest's rubble: a burned-out lot is a dark heap over its footprint, not its building */
@@ -102,7 +130,8 @@ HOOK_DRAW.near=function(at,force){at=at||[-290,-135];
   const r=HOOK_DRAW.matOf(L,[L.w*1.02,rh,L.d*1.02]);r.elements[13]+=wh;HOOK_DRAW.massR.setMatrixAt(i,r);nb++;});
  HOOK_DRAW.massB.instanceMatrix.needsUpdate=HOOK_DRAW.massR.instanceMatrix.needsUpdate=true;
  if(HOOK_DRAW.massB.instanceColor)HOOK_DRAW.massB.instanceColor.needsUpdate=true;if(HOOK_DRAW.massR.instanceColor)HOOK_DRAW.massR.instanceColor.needsUpdate=true;
- Object.assign(HOOK_DRAW.stats,{near:Object.keys(full).length,massing:nb,nearTris:Math.round(tris),protos:HOOK_DRAW.built,failed:Object.keys(HOOK_DRAW.failed).length,nearMs:Math.round(performance.now()-t0)});};
+ Object.assign(HOOK_DRAW.stats,{near:Object.keys(full).length,massing:nb,nearTris:Math.round(tris),protos:HOOK_DRAW.built,failed:Object.keys(HOOK_DRAW.failed).length,nearMs:Math.round(performance.now()-t0)});
+ HOOK_DRAW.tint();};
 (()=>{const C=HOOK_CITY,P=C.P,HOST=KCITY.lib.HOST;
  window._city={ready:!!P,log:C.log,ways:P?P.ways.length:0,districts:P?P.districts.length:0,landmarks:P?P.landmarks.length:0,
   hosts:P?P.landmarks.filter(L=>L.ancient).length:0,lots:C.recs.length,recs:C.recs,civics:C.landmarks,pods:C.pods,plan:P?C.K.export():null,draw:HOOK_DRAW.stats,failed:HOOK_DRAW.failed,
@@ -127,6 +156,9 @@ HOOK_DRAW.near=function(at,force){at=at||[-290,-135];
  overlay.visible=false;   /* the site overlay is off by default on the town's page; `z` shows it */
  addEventListener('keydown',e=>{if(e.key==='z'&&!e.ctrlKey&&!e.metaKey)overlay.visible=!overlay.visible;});
  /* the town: the kits' pieces at their lots, near in full and far as massing, following the camera's target */
+ /* the Port kit's haze (90-scene.js FogExp2 .00016) is tuned for one run of coast; a town 1.3 km across washes to beige
+    in it. Thinner here: the far town keeps its tones, the horizon still hazes */
+ if(scene.fog&&scene.fog.isFogExp2)scene.fog.density=.00009;
  const town=new THREE.Group();town.name='hook-town';scene.add(town);
  /* the pods are records of the town too (near set and massing as the rest); their frame is their host's */
  try{HOOK_DRAW.records(C.recs.concat(C.pods.map(p=>Object.assign({w:6,d:6,h:5,drop:0,kit:'hykpod'},p))),town);}catch(e){reportErr('town '+e.stack);}

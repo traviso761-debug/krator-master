@@ -126,6 +126,16 @@ from a Hook task.
       (its floor at its highest corner, a stone footing down to the lowest: `stance: 'high'`, `maxDrop` 7); a
       terrace per block (the plan's streets stepped by `core/city`) is the 10 % slope's proper answer (the P1 item
       above).
+- [x] **The town read pale** (the owner, 2026-10-19: "did all our textures and colours come through?"). The textures
+      did (every kit's maps bound, sRGB, 512 px); the colours did not: a kit draws its detail as instanced meshes with
+      a colour PER INSTANCE (the Islanders' patterned walls and thatch, the Vernacular's timber), and the flatten
+      copied geometry and matrix but not the instance colour, so every tinted piece came out in its material's base
+      white. `HOOK_DRAW.flatten` now bakes the instance colour into a vertex-colour attribute on every part and every
+      canonical material reads vertex colours. **The isle demo's drawing (`settlements/isle-demo/src/60-isle-draw.js`
+      `DRAW.flatten`) has the same omission**: its towns are pale for the same reason; one shared copy of the drawing
+      would carry the fix. Two smaller causes on the way: the massing beyond the near radius was tinted in pale flat
+      colours (now each key's own tones, read off its prototype) and the Port kit's warm haze was tuned for one run of
+      coast (thinned on the town's page, `scene.fog.density`).
 - [ ] **The far town is massing.** Beyond `HOOK_DRAW.nearR` (400 m) of the camera's target a lot is a body and a
       roof in its kit's tone; within it the piece is built once per key and variant by its kit's closure and drawn
       merged, one mesh per material (the kits make a fresh material per build, so materials are canonicalised by

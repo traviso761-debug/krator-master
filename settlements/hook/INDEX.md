@@ -22,7 +22,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `79-hook-ancient.js` | 6 | HOOK: THE ANCIENT TOWN'S RUIN HOSTS (1) |
 | `88-hook-programme.js` | 8 | HOOK: THE TOWN'S PROGRAMME ([G data]) (1) |
 | `90a-hook-city.js` | 11 | HOOK: THE TOWN ON core/city, STEPS 0-12 ([G data (1) |
-| `90b-hook-city-draw.js` | 14 | HOOK: DRAWING THE TOWN ([web]) (1) |
+| `90b-hook-city-draw.js` | 17 | HOOK: DRAWING THE TOWN ([web]) (1) |
 
 ## targets/
 
