@@ -584,6 +584,30 @@
     "mean": 0.7
    },
    "metal": 0
+  },
+  "faces": {
+   "lib": "patterns/eternian/talking-heads",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0
+  },
+  "white": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.2
   }
  }
 }

@@ -20,12 +20,18 @@ Units are metres; x east, y up, z south. A def's local frame: origin on the grou
 | `43-et-statue.js` | et | **the statuary**: `etHead(x, y, z, h, {metal, eyes, headdress, veiled, seed, plinth, ry})` (neck's foot at y); `etFigure(x, y, z, h, {pose, metal, eyes, plinth, ry})`; `etMask(x, y, z, s, 'terracotta' / 'lead')` (centred, facing +z); `etSeedAt(x, y, z, salt)` (a KRAND hash of the world position); `etEmitGeo`; `etMetalCol`; `ET_METALS`. Each pushes `{kind, metal, eyes, veiled, pose}` onto the building record's `heads` (the `closed-eyes` assert) |
 | `45-et-samples.js` | et | the test rows: P1's `et_sample_piers` (a head in every niche), `et_sample_lancets`, `et_sample_screens`, `et_sample_block`; P2's `et_sample_heads` (fifty by rank), `et_sample_figures` (the four poses), `et_sample_masks` (class `feature`, kind `sample`) |
 | `44-et-roof.js` | et | **the roofs**: `etSheet(mk, p0, p1, p2, th, col)` (a slab with metre UVs), `etPoly2`; `etGable(w, d, y, h, {mk, col, ov, gov, th, ribs, gables, wallMk, wallCol, cap})` (ridge along x); `etHip(w, d, y, h, {mk, col, ov, under, cap, flare, ribs})`; `etPent(w, d, y0, y1, {mk, col, ov, gov, ribs})` (high at the back) and `etPentFill`; `etOgee(R, y, h, {mk: 'gilt' / 'scale', col, finial})` (octagonal fish-scale, flat faces to the axes: `ET_OCT0`) |
+| `46-et-civic-kit.js` | et | **the civic toolkit**: `etHex(R)` (corners at multiples of 60 degrees, a face toward +z), `ET_HEX_AP`, `etHexFaces(ap, fn(k, ph))` (a frame per face, +z outward, face 1 the front); `etCivicDoor(x, z, w, h, {metal})` (bronze leaves, two ancestors in the lintel pose, the lintel); `etTubeHead(x, z, h, {top})`; `etPipeRun(a, b, {r, posts})`; `etFaceScreen(x, y, z, w, h, cell)` and `ET_FACE_CALM` (the terminal sheet's cells, the deranged one left out) |
 | `50-et-dwell.js` | et | the canal house and the poor: `et_canal_house`, `et_reed_house`, `et_block_hut`, `et_canal_row` |
 | `51-et-dwell-mid.js` | et | the middle tier: `et_court_house`, `et_corner_turret` |
 | `52-et-dwell-rich.js` | et | the rich: `et_merchant_house`, `et_official_villa` (household service) |
 | `53-et-court.js` | et | the court over water: `et_heir_pavilion` (v: 0 gilt, 1 bronze, 2 gunmetal roof), `et_heir_gallery`; `etOct(R)`, `ET_ROOF_TAKES` |
 | `70-et-canal.js` | et | the canal street: `et_canal`, `et_bridge`, `et_canal_street` (`ET_STREET`: its two rows of dwellings, placed as nested records at `ET_QUAY`); `ET_CANAL_W` |
 | `68-et-trades.js` | et | `ET_TRADES` (the 44 Voth census trades in the repo's shape, `tools/check_trades.py`: `keys`, `gap` (here 'to build in Pn: et_key'), `na`; `voth` the Voth building), `etDims(DEFS, FAMILIES)` (a city layout's `kit.dims`). [G data] |
+| `60-et-state.js` | et | the State: `et_ministry`, `et_registry`, `et_examination_hall` (hexagonal), `et_customs_house` |
+| `61-et-defence.js` | et | the wall: `et_gate`, `et_wall`, `et_wall_tower` (v 1: the frontier's, blind), `et_barracks` |
+| `62-et-machine.js` | et | the machine layer: `et_clock` (record `clock`: `{dial, normal, radius, track, figureH, period, figures: [{metal, seed}]}` in world coordinates), `et_tube_station` (hexagonal; `etHexPut`), `et_tube_pipe`, `et_talking_head` (record `voice: {face, deranged}`), `et_relic_hall` |
+| `63-et-faith.js` | et | the ancestors: `et_ancestor_gallery`, `et_shrine_niche`, `et_withdrawal_house`, `et_mask_house`, `et_historians_house` |
+| `91c-et-clock.js` | | the host side of the Clock: draws each `clock` record's figures and hands and runs them (`ET_CLOCKS`); browser only |
 | `89-rows.js` | | `FAMILIES`: the sheet's rows |
 | the rest | | VENDORED from `kits/scyvoi/src` (the sky from `settlements/iziz`) |
 

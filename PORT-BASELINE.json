@@ -325,8 +325,8 @@
    "sha256": "232bf2c0c09d1abba7e2dcdd23940eb2e8177c367f35d55fdeea8d0e38d4fd75"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1894369,
-   "sha256": "1b618e7e389676a0d70508003dff536152740600f8dce3eff98a23ed808441f2"
+   "bytes": 1900954,
+   "sha256": "76571910a15bc53aa05f983a27fb979886e4c92db029280306ac9938537e2979"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2554507,
@@ -337,8 +337,8 @@
    "sha256": "4e1983c2d0cac19e77829bf6022df019df76565d2ec7d42de26cef0091e07e03"
   },
   "kits/eternian/dist/eternian.html": {
-   "bytes": 913324,
-   "sha256": "80d50897dad280d372227df17b18cbcf78e86b6dd82d73e2586ecdb60a456cb5"
+   "bytes": 962567,
+   "sha256": "5d77138cd9d0a2e63ee24c85606f7cdc143f1e0cfd245a05da6da9eb826723ae"
   },
   "kits/fauna/dist/fauna.html": {
    "bytes": 1191838,

@@ -16,7 +16,7 @@ function etFace(x,z,tx,tz){return Math.atan2((tx||0)-x,(tz||0)-z);}
 /* the mask over the door is the statuary's (43-et-statue.js: etMask, from the head generator) */
 
 /* ---------------------------------------------------------------- the oculus: a ring window of radius r facing +z */
-function etOculus(x,y,z,r,o){o=o||{};ring(o.mk||'lime',x,y,z,r,r*.16,o.col||P('limeShade'));
+function etOculus(x,y,z,r,o){o=o||{};ring(o.mk||'lime',x,y,z,r,r*.16,o.col||P('limeShade'),0,PI/2);   /* ring() lies flat: stood up to face +z */
  ellip('glass',x,y,z-.02,r*.86,r*.86,.04,o.lit?P('glassLit'):P('glass'),0,16);
  if(o.cross!==false){box('iron',x,y-r*.84,z+.02,.05,r*1.68,.04,P('iron'));box('iron',x,y-.025,z+.02,r*1.68,.05,.04,P('iron'));}}
 

@@ -84,5 +84,22 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
   block in five relief takes, one per instance (`ET_ALTS.block`); the celadon barrel tile on the rich roofs; crackle
   glaze; woven reed for the mats; maze damask for the cloth; brass stringing for the court's lacquer.
 
-Next: P4 (the State: ministries, registry, examination hall, gate, wall, the Clock, the tube station, the relic hall, the
-ancestor gallery, the talking head). `PLAN.md` §11.
+## P4 (2026-10-20)
+
+- **The State** (`src/60-et-state.js`): the ministry (the stepped pier bundle, figures in its niches, a civic door held up
+  by two ancestors), the registry (a long hall of lancets, its vault, the clerks and registers), the examination hall (a
+  hexagon of cells round a court under a hexagonal tower: the Sanctum's six-fold plan, the owner), the customs house (an
+  oculus wall over its gate, the weighing hall).
+- **The wall** (`src/61-et-defence.js`): the city gate (two gold colossi holding up its lintel), the wall segment, the
+  wall tower (the frontier's taller and blind: v 1), the barracks outside the wall.
+- **The machine layer** (`src/62-et-machine.js`): the Clock (a dial in gold and verdigris over a balcony where six
+  ancestors parade; the parade is data on its record, `clock`, which `src/91c-et-clock.js` draws and runs), the tube
+  station (hexagonal) and pipe, the talking head (a cell of the owner's terminal sheet in a stepped bronze surround, the
+  petition stand; its record carries `voice`), the relic hall (a turbine casing for a gate, an apse of Ancient white).
+- **The ancestors** (`src/63-et-faith.js`): the ancestor gallery (the city's temple: rows of heads by rank, the veiled
+  among them), the street shrine, the house of the Withdrawn, the mask house, the Historians' chapter house.
+- **The civic toolkit** (`src/46-et-civic-kit.js`): `etHex`, `etHexFaces`, `etCivicDoor`, `etTubeHead`, `etPipeRun`,
+  `etFaceScreen`. Six catalog pieces (archive shelf, examination desk, capsule rack, mask bench, weighing scale, petition
+  stand). Ten more census trades carried (eleven of 44; 30 gaps, by phase in KNOWN_ISSUES.md).
+
+Next: P5 (the court and the hosts). `PLAN.md` §11.

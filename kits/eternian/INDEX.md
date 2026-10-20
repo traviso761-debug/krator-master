@@ -23,7 +23,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
 | `26k-kit.js` | 5 |  |
 | `27-mat.js` | 6 |  |
-| `28-et-mat.js` | <1 |  |
+| `28-et-mat.js` | 1 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 5 |  |
 | `37-wk-rec.js` | 2 |  |
@@ -32,17 +32,23 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `41-et-profile.js` | 8 |  |
 | `42-et-head.js` | 10 |  |
 | `43-et-statue.js` | 5 |  |
-| `44-et-roof.js` | 8 |  |
+| `44-et-roof.js` | 9 |  |
 | `45-et-samples.js` | 6 |  |
+| `46-et-civic-kit.js` | 4 |  |
 | `50-et-dwell.js` | 12 | THE POOR (PLAN.md section 4): silt, reed and cas (68) |
 | `51-et-dwell-mid.js` | 7 |  |
 | `52-et-dwell-rich.js` | 9 |  |
 | `53-et-court.js` | 5 |  |
-| `68-et-trades.js` | 7 |  |
+| `60-et-state.js` | 10 |  |
+| `61-et-defence.js` | 6 |  |
+| `62-et-machine.js` | 10 |  |
+| `63-et-faith.js` | 9 |  |
+| `68-et-trades.js` | 6 |  |
 | `70-et-canal.js` | 6 |  |
 | `81-sky.js` | 10 |  |
-| `89-rows.js` | 1 |  |
+| `89-rows.js` | 2 |  |
 | `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
+| `91c-et-clock.js` | 3 |  |
 | `91f-furnish.js` | 6 |  |
 | `91n-night.js` | 3 |  |
 | `92-world.js` | <1 |  |

@@ -7,7 +7,9 @@
    poor: a reed mat, a cast-block bench, a clay hearth and a clay mask board.
    The court: the alabaster lamp, the bronze gallery bench, the ancestor niche,
    the canopy bed, the visor case (the petition stand comes with the talking
-   head, P4). The goods come from the generic sets.
+   head, P4). P4: the paper state's offices (the archive shelf, the examination desk, the
+   tube clerk's rack, the mask maker's bench, the customs scale) and the petition stand.
+   The goods come from the generic sets.
    ====================================================================== */
 /* PALETTE */
 FURN_CULTURE('eternian', { name: 'Eternians', pack: null, influences: 'Art Deco, Gothic, the Qing paper state; the Ancients copied by hand',
@@ -285,5 +287,105 @@ FURN({
     F.box(0, 1.1, 0.02, 0.34, 0.26, 0.2, 0, F.col('silver'), 'metal');                  /* the visor: a silver face shield, the eyes a slit */
     F.box(0, 1.24, 0.12, 0.3, 0.02, 0.01, 0, F.col('black'), 'metal');
     F.box(0, 1.36, 0.02, 0.28, 0.06, 0.18, 0, F.col('gold'), 'gold');                     /* its gold brow */
+  }
+});
+
+/* ---------------------------------------------------------------- the State's offices (P4): the paper state's furniture */
+FURN({
+  key: 'eternian_common_archive_shelf', name: 'Register archive shelf', culture: 'eternian', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['archive', 'office', 'study', 'library'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'cloth', 'metal'],
+  w: 1.6, d: 0.45, h: 2.4, variants: 1,
+  build: function (F) {
+    const tim = F.col('timber');
+    for (const sx of [-1, 1]) F.box(sx * 0.77, 0, 0, 0.06, 2.4, 0.45, 0, F.shade(tim, -0.08), 'wood');   /* the uprights */
+    F.box(0, 0, -0.2, 1.6, 2.4, 0.04, 0, F.shade(tim, -0.12), 'wood');                  /* the back */
+    for (let i = 0; i < 6; i++) {
+      F.box(0, 0.05 + i * 0.4, 0, 1.5, 0.04, 0.42, 0, tim, 'wood');                      /* the shelves */
+      for (let k = 0; k < 7; k++) F.box(-0.6 + k * 0.2, 0.09 + i * 0.4, 0.02, 0.16, 0.26, 0.3, 0, F.col(k % 3 ? 'paper' : 'linen'), 'cloth');   /* the bound registers */
+    }
+    for (let i = 0; i < 6; i++) F.box(0, 0.33 + i * 0.4, 0.21, 0.12, 0.04, 0.01, 0, F.col('bronze'), 'metal');   /* the bronze labels */
+  }
+});
+
+FURN({
+  key: 'eternian_common_exam_desk', name: 'Examination cell desk', culture: 'eternian', tier: 'common', type: 'desk', setting: 'indoor',
+  rooms: ['school', 'study', 'cell'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'cloth', 'metal'],
+  w: 1.0, d: 0.6, h: 0.9, variants: 1,
+  build: function (F) {
+    const tim = F.col('timberLight');
+    F.box(0, 0.68, 0, 1.0, 0.04, 0.6, 0, tim, 'wood');                                    /* the board */
+    for (const sx of [-1, 1]) F.box(sx * 0.44, 0, 0, 0.08, 0.68, 0.56, 0, F.shade(tim, -0.1), 'wood');
+    F.box(0, 0.72, -0.05, 0.42, 0.01, 0.3, 0, F.col('paper'), 'cloth');                  /* the paper */
+    F.box(0.32, 0.72, 0.1, 0.06, 0.04, 0.06, 0, F.col('black'), 'metal');                 /* the ink stone */
+  }
+});
+
+FURN({
+  key: 'eternian_common_tube_rack', name: "Tube clerk's capsule rack", culture: 'eternian', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['office', 'hall'], anchor: 'wall', clearance: { front: 0.8 },
+  materials: ['timber', 'bronze', 'metal'],
+  w: 1.4, d: 0.4, h: 1.8, variants: 1,
+  build: function (F) {
+    const tim = F.col('timber'), br = F.col('bronze');
+    F.box(0, 0, 0, 1.4, 0.8, 0.4, 0, tim, 'wood');                                        /* the cabinet */
+    F.box(0, 0.8, -0.15, 1.4, 1.0, 0.1, 0, F.shade(tim, -0.1), 'wood');                  /* the rack's back */
+    for (let r = 0; r < 4; r++) for (let k = 0; k < 6; k++)                               /* the bronze capsules, lying in their cradles */
+      F.cyl(-0.55 + k * 0.22, 0.9 + r * 0.22, -0.04, 0.05, 0.16, 0, F.shade(br, (k + r) % 2 ? -0.1 : 0.05), 'bronze', 8);
+    F.box(0, 0.8, 0.05, 1.3, 0.03, 0.3, 0, br, 'bronze');
+  }
+});
+
+FURN({
+  key: 'eternian_common_mask_bench', name: "Mask maker's bench", culture: 'eternian', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['workshop'], anchor: 'wall', clearance: { front: 0.9 },
+  materials: ['timber', 'ceramic', 'metal'],
+  w: 1.8, d: 0.7, h: 1.6, variants: 1,
+  build: function (F) {
+    const tim = F.col('timberLight'), tc = F.col('terracotta');
+    F.box(0, 0.78, 0, 1.8, 0.06, 0.7, 0, tim, 'wood');                                    /* the bench */
+    for (const sx of [-1, 1]) F.box(sx * 0.82, 0, 0, 0.1, 0.78, 0.62, 0, F.shade(tim, -0.1), 'wood');
+    F.box(0, 0.84, -0.3, 1.8, 0.7, 0.04, 0, F.shade(tim, -0.08), 'wood');                /* the board of moulds */
+    for (const sx of [-0.55, 0, 0.55]) {                                                  /* the moulds and a face being cast: the eyes closed */
+      F.blob(sx, 1.18, -0.24, 0.13, 0.05, 0, F.shade(tc, sx ? -0.12 : 0), 'ceramic');
+      F.box(sx, 1.21, -0.18, 0.12, 0.008, 0.01, 0, F.shade(tc, -0.45), 'ceramic');
+    }
+    F.blob(-0.35, 0.86, 0.1, 0.14, 0.06, 0, tc, 'ceramic');                               /* the clay on the bench */
+    F.box(0.45, 0.84, 0.12, 0.2, 0.03, 0.08, 0, F.col('black'), 'metal');                 /* the tools */
+  }
+});
+
+FURN({
+  key: 'eternian_common_weighing_scale', name: 'Customs weighing scale', culture: 'eternian', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['store', 'hall', 'office'], anchor: 'floor', clearance: { front: 1.0, back: 0.6 },
+  materials: ['timber', 'bronze', 'metal'],
+  w: 1.9, d: 0.8, h: 2.0, variants: 1,
+  build: function (F) {
+    const br = F.col('bronze');
+    F.box(0, 0, 0, 1.6, 0.12, 0.8, 0, F.col('timber'), 'wood');                          /* the base */
+    F.box(0, 0.12, 0, 0.1, 1.7, 0.1, 0, br, 'bronze');                                   /* the post */
+    F.box(0, 1.8, 0, 1.4, 0.06, 0.08, 0, br, 'bronze');                                  /* the beam */
+    for (const sx of [-1, 1]) {                                                           /* the pans on their chains */
+      F.box(sx * 0.66, 1.05, 0, 0.01, 0.75, 0.01, 0, F.col('black'), 'metal');
+      F.cyl(sx * 0.66, 1.0, 0, 0.26, 0.05, 0, br, 'bronze', 12);
+    }
+    for (let i = 0; i < 3; i++) F.box(-0.66, 1.05 + i * 0.06, 0, 0.1 - i * 0.02, 0.06, 0.1 - i * 0.02, 0, F.col('gunmetal'), 'metal');   /* the weights */
+  }
+});
+
+/* ---------------------------------------------------------------- the court's (P4): the petition stand before a talking head */
+FURN({
+  key: 'eternian_court_petition_stand', name: 'Petition stand', culture: 'eternian', tier: 'court', type: 'desk', setting: 'both',
+  rooms: ['hall', 'court', 'antechamber'], anchor: 'floor', clearance: { front: 1.0 },
+  materials: ['bronze', 'stone', 'cloth'],
+  w: 0.9, d: 1.05, h: 1.25, variants: 1,
+  build: function (F) {
+    const br = F.col('bronze');
+    F.box(0, 0, 0, 0.7, 0.08, 0.5, 0, F.col('onyx'), 'stone');                            /* the foot */
+    for (let i = 0; i < 3; i++) F.box(0, 0.08 + i * 0.32, 0, 0.24 - i * 0.04, 0.32, 0.24 - i * 0.04, 0, br, 'bronze');   /* the stepped column */
+    F.box(0, 1.04, 0, 0.9, 0.05, 0.56, 0, br, 'bronze');                                  /* the board */
+    F.box(0, 1.09, 0.02, 0.5, 0.01, 0.34, 0, F.col('paper'), 'cloth');                /* the petition */
+    F.box(0, 0.08, 0.36, 0.7, 0.12, 0.3, 0, F.col('onyx'), 'stone');                      /* the kneeling step */
   }
 });

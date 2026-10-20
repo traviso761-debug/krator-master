@@ -20,12 +20,12 @@ const ET_STYLES={host:'host',court:'court',ministry:'ministry',common:'common',p
 const SV_LIB={lime:'lime',block:'block',brick:'brick',stone:'stone',tile:'tile',celadon:'celadon',timber:'timber',planks:'planks',
  shutter:'shutter',paving:'paving',earth:'earth',reed:'reed',silt:'silt',iron:'iron',bronze:'bronze',verdigris:'verdigris',onyx:'onyx',
  gold:'gold',alabaster:'alabaster',screen:'screen',screenB:'screenB',maze:'maze',mazeB:'mazeB',mazeC:'mazeC',frieze:'frieze',sign:'sign',
- silver:'silver',gunmetal:'gunmetal',terracotta:'terracotta',lead:'lead',titanium:'titanium',scale:'scale',gilt:'gilt',blockB:'blockB',blockC:'blockC',blockD:'blockD',blockE:'blockE',glaze:'glaze'};
+ silver:'silver',gunmetal:'gunmetal',terracotta:'terracotta',lead:'lead',titanium:'titanium',scale:'scale',gilt:'gilt',blockB:'blockB',blockC:'blockC',blockD:'blockD',blockE:'blockE',glaze:'glaze',faces:'faces',white:'white'};
 const SV_TILE0={lime:2.4,block:1.6,brick:1.2,stone:2.6,tile:1.2,celadon:2.4,timber:1.6,planks:2,shutter:1,paving:2,earth:3,reed:2,silt:1.6,
- iron:.8,bronze:.8,verdigris:1.2,onyx:1,gold:.8,alabaster:1,screen:2,screenB:2,maze:3,mazeB:3,mazeC:3,frieze:10,sign:1,silver:.8,gunmetal:.8,terracotta:.6,lead:.6,titanium:4,scale:1.2,gilt:1.2,blockB:1.6,blockC:1.6,blockD:1.6,blockE:1.6,glaze:.5};
+ iron:.8,bronze:.8,verdigris:1.2,onyx:1,gold:.8,alabaster:1,screen:2,screenB:2,maze:3,mazeB:3,mazeC:3,frieze:10,sign:1,silver:.8,gunmetal:.8,terracotta:.6,lead:.6,titanium:4,scale:1.2,gilt:1.2,blockB:1.6,blockC:1.6,blockD:1.6,blockE:1.6,glaze:.5,faces:1,white:2};
 const SV_CLOTH={flag:1,sign:1};
 const SV_CUT={lime:1,block:1,brick:1,stone:1,tile:1,celadon:1,timber:1,planks:1,shutter:1,reed:1,silt:1,iron:1,bronze:1,verdigris:1,onyx:1,
- gold:1,alabaster:1,silver:1,gunmetal:1,terracotta:1,lead:1,titanium:1,scale:1,gilt:1,blockB:1,blockC:1,blockD:1,blockE:1,glaze:1,screen:1,screenB:1,maze:1,mazeB:1,mazeC:1,frieze:1,sign:1,plain:1,brass:1,bone:1,glass:1,flag:1};
+ gold:1,alabaster:1,silver:1,gunmetal:1,terracotta:1,lead:1,titanium:1,scale:1,gilt:1,blockB:1,blockC:1,blockD:1,blockE:1,glaze:1,faces:1,white:1,screen:1,screenB:1,maze:1,mazeB:1,mazeC:1,frieze:1,sign:1,plain:1,brass:1,bone:1,glass:1,flag:1};
 const KIT_FALLBACK=[];
 /* is a sheet in the pack */
 const KIT_HAS=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);

@@ -7,3 +7,5 @@
 //   from behind (91n-night.js turns the emissive up at night like every lit material).
 for(const k of ['screen','screenB']){const m=MAT[k];if(!m)continue;m.alphaTest=.5;m.side=THREE.DoubleSide;m.transparent=false;}
 for(const k of ['onyx','alabaster']){const m=MAT[k];if(!m||!m.map)continue;m.emissive.setHex(0xffffff);m.emissiveMap=m.map;m.emissiveIntensity=.22;}
+/* the talking heads' faces are screens: their sheet is their own light (the Ancients' terminals, woken by the Machine Talkers) */
+if(MAT.faces&&MAT.faces.map){MAT.faces.emissive.setHex(0xffffff);MAT.faces.emissiveMap=MAT.faces.map;MAT.faces.emissiveIntensity=.85;}
