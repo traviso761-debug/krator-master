@@ -7,7 +7,7 @@
 //                          STILL water: one record each (WATER.still), drawn together as one mesh on WATER.stillMaterial
 // core/atmos is bound for its clock, its wave chunk and the sky's light, which only the water takes (as sedesert's page:
 // the page's own materials keep their lighting). The CPU twins (WATER.heightAt, WATER.flowAt) and core/export carry it.
-ATMOS.init({THREE,scene,camera,hour:()=>12,onFrame:fn=>TICKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:5153,
+ATMOS.init({THREE,scene,camera,hour:()=>LS_CLOCK.hour,onFrame:fn=>TICKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:5153,
  err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
 {const env=new THREE.Scene();env.add(new THREE.Mesh(sky.geometry,sky.material));
  ATMOS.skylight({renderer,sky:env,scene:{environment:null},ground:()=>new THREE.Color(0x6a7050)});}

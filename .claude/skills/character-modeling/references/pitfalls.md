@@ -72,6 +72,16 @@ area you are about to change.
 - **Garment holes leave loose vertices** → delete loose vertices after cutting and record what was removed.
 - **More than 64 items overflowed a 64-bit hide mask** → name skin regions by the list of items that cover them.
 - **A random NPC wearing another culture's clothes** → tag every item with its culture and filter the wardrobe.
+- **A hat across the eyes** → the head bone runs from the neck to the crown, so fraction 0.5 is eye level: a brow band or a
+  turban's first row sits at about 0.62.
+- **A paint band painting a whole narrow part** → `B(where, a, b, ...)` takes metres, not fractions: a 0.15 band on a
+  ribbon a few centimetres wide covers all of it.
+- **Colours reading pale in the renders, and lemon in a world** → `make_garments.py`'s palette is LINEAR, written into
+  an sRGB texture: (0.80, 0.32, 0.03) shows as a pale orange (0.91, 0.60, 0.19), and a world's ACES tone mapping lifts
+  a bright orange further to yellow. Pick the colour on screen and convert it (sRGB^2.2): the Order's saffron is
+  (0.60, 0.12, 0.005), its maroon (0.18, 0.025, 0.03). Deepening by eye in the palette's numbers barely moves it.
+- **A people's strangers in another people's hair** → `styles` are only preferred (three in four); `style_share: 1` in
+  peoples.json keeps them to their styles (the Order: cropped men, women to a bob).
 
 ## 4. Materials, alpha and textures
 
@@ -117,6 +127,14 @@ area you are about to change.
 - **Spear held behind the back** in the library's spear walk → keep its legs and body (fetched as a source only) and
   put the arms at the made thrust's guard.
 - Check the whole clip in shots at several times, not one key frame: clipping usually lives mid-swing.
+- **Baking a crowd's still poses** (`src/60-crowd.js`, 2026-10-20). A figure's pieces are SkinnedMeshes on r128
+  materials with `skinning: true`, so they cannot simply be drawn as InstancedMeshes: bake each vertex through its
+  bones (`SkinnedMesh.boneTransform`, after `skeleton.update()`) into a plain geometry, and give it vertex colours (its
+  map sampled at the uv, times the material colour, which carries the skin tone, hair colour and dyes) so one Lambert
+  material draws every look. Three traps: `fig.play()` cross-fades 0.25 s from the clip before, so a bake taken right
+  after a play is a blend of two clips (stop the mixer and clear `fig.action` first); `traverseVisible` from a hidden
+  group visits nothing (keep the baking figure visible, just off the scene); and a figure's `update(dt)` advances the
+  clip by `dt * cadence`, so a frame at clip time t is `update(t / cadence)`.
 
 ## 7. Posture
 
@@ -172,6 +190,16 @@ area you are about to change.
 - Publish in batches under about 55 MB; diff the build manifest against the last published commit to send only
   changed pieces.
 - A page-only change republishes just the page.
+- **A version holds at most 256 MiB** (the Cosmetic Lab hit it at about 245 MB, 2026-10-19). New clothes then go in a lab
+  of their own: the built page with `KCHAR_DATA`'s kit cut to the new peoples' items and the hair and beards they draw,
+  the bodies, clips and props copied on the server from the main lab (`files: {path: {artifact, path}}`), the new
+  pieces sent. Plan the split by people or body before that.
+- **A fresh machine has none of the pieces** (gitignored), so a few new garments go through the partial path:
+  `make_garments.py --only`, `mpfb_build.py --only`, `make_mpfb.py --merge` (the kit's other entries stay; the Godot
+  base cover regions are not remade). The published thumbnail atlases can be cut back into cells, the new ones drawn
+  (`thumbs.mjs` draws only what is here) and the atlas repacked. A local test of the page needs `base`, `anims` and
+  the hair it draws fetched from the published lab; the default figure's other pieces 404 and the page carries on, but
+  `window._kchar.ready` then never settles, so wait on `window._kchar` and a fixed time instead.
 
 ## 12. Tooling and the shell
 

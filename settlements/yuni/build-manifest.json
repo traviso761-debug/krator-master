@@ -5,6 +5,7 @@
  "08-core-rand.js": "4a3aa47f25da",
  "09-core-export-adapters.js": "ada2edeec24e",
  "09-lod.js": "e1f7db612b83",
+ "10-core-export-scene.js": "c48082ca6368",
  "10-core.js": "938b27ad2ab3",
  "20-core-clock.js": "5616fb106090",
  "20-core-sched.js": "932d088efbab",

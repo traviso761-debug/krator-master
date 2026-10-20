@@ -5,7 +5,7 @@
  ],
  "01-reedkit.html": [
   "virtual",
-  "ff6654f5c49d"
+  "634dbfe625a3"
  ],
  "01b-build-open.html": [
   "mungo",
@@ -373,11 +373,11 @@
  ],
  "77-sim-2-places.js": [
   "core/simulation",
-  "cc494265ae0d"
+  "0acdf2b487c1"
  ],
  "77-sim-3-actors.js": [
   "core/simulation",
-  "c3fa8beba5ba"
+  "e04abbe2996e"
  ],
  "77-sim-4-nav.js": [
   "core/simulation",
@@ -393,11 +393,11 @@
  ],
  "77-sim-6-economy.js": [
   "core/simulation",
-  "f72944508353"
+  "8ef9b0253f9e"
  ],
  "77-sim-6-items.js": [
   "core/simulation",
-  "c2856052ba76"
+  "eeb6c057732e"
  ],
  "77-sim-6-needs.js": [
   "core/simulation",
@@ -405,11 +405,15 @@
  ],
  "77-sim-6-population.js": [
   "core/simulation",
-  "4c8c19c3e7b2"
+  "d93273d8e954"
  ],
  "77-sim-6-trade.js": [
   "core/simulation",
   "00ea4cdabf57"
+ ],
+ "77-sim-7-lod.js": [
+  "core/simulation",
+  "f90a4ab966ae"
  ],
  "77-sim-7-stocks.js": [
   "core/simulation",
@@ -417,7 +421,7 @@
  ],
  "77-sim-8-export.js": [
   "core/simulation",
-  "e03f1b6f1213"
+  "b19086356073"
  ],
  "77-sim-9-debug.js": [
   "core/simulation",

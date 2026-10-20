@@ -29,6 +29,67 @@ north (`core/hamlet/PLAN.md` section 4).
   `?time=run`). The lumber village's felling reads it: stumps, saplings and grown trees by the day.
 - **`window._hamlets`** holds the villages, resources, counts and the tag audit. `verify.py` checks them, with a negative.
 
+## The towns (M7, 2026-10-20)
+
+Kautoa and Valapo are planned on this page at load, exactly as the city page plans them (`src/48t-world-towns.js`,
+`[G data]`: `settlements/isle-demo/src` 15-50 read in place, the same site file and kits' boxes, the same ground; their
+lots and records hash the same as the city page's), then the world's land takes each town's ground inside its square
+(`WORLD.landHook`, easing back over 150 m) and both towns are declared on core/simulation. `src/88t-world-towns.js`
+(`[web]`) draws them with the city page's own drawing (`60-isle-draw.js`, read in place as a factory over each town's
+group, at the town's frame): every lot as massing out to 30 km, the lots near the camera in full once it is over a
+town's square, the streets, orchards, footings, compound walls and vessels; the flora and floor keep off the town's
+built area (its zone) and the lots, streets and fields beyond it (`WORLD.clearHook`, after the hamlets'); the terrain
+takes the town's ground colours as the city page paints them (paved markets, lawn parks, sand beaches, crop tones:
+`WORLD.ground`, wrapped). `?town=` starts the camera looking at that town. The town under the camera runs presented,
+the other abstract (`ISLE.simWatch`).
+
+**The towns' HLOD** (2026-10-20, `88t`, after Godot's visibility ranges, mesh LOD and merged meshes): round the ground
+point the camera looks at, the lots within 150 m are drawn in full (the city page's pieces, one instanced mesh a
+material); out to 800 m each piece is drawn BAKED: its parts merged into one geometry in one vertex-coloured material (a
+part's colour from its material's colour, its map's mean and its vertex colours) and simplified by vertex clustering, a
+grid of 1/40 of the piece's size to 350 m and 1/12 beyond, one instanced mesh a piece and level for the whole ring;
+beyond, the massing. The moored vessels are in full within 250 m and baked and instanced by kind beyond. A piece is
+baked the first time the ring wants it, within 8 ms a frame (about 90 pieces in 2-3 s over Kautoa). Every instanced
+mesh now has bounds round its own instances (a geometry sharing the piece's buffers), so the frustum culls the town
+again. Measured over Kautoa (the same views, whole frame): from 120 m up, 1,016 draw calls and 8.3M triangles before,
+380 and 3.1M after; the start view, 651 and 6.2M before, 330 and 3.2M after, with about 1,000 lots drawn as buildings
+where 657 were. The export is unchanged (it draws the full pieces itself and sees no proxy).
+
+**Texture arrays for the full ring** (2026-10-20, `src/88a-world-atlas.js`, as Godot's Texture2DArray): three.js r128
+draws one material a call, and a piece is many (the Vernacular's houses 40-58). Every colour, normal and roughness map
+the pieces use is copied once into a WebGL2 texture array of its kind (512 px a layer, the maps' own size), and a
+piece's opaque parts are merged into one geometry a side whose vertices name their layers and carry the part's
+roughness, metalness and normal strength; one standard material a side samples the arrays. Parts that cannot share it
+(transparent, alpha-tested, emissive, MeshBasic lamps and fires, the cloth flutter and the flame flicker) stay as they
+were. Over Kautoa the full ring went from about 220 draw calls to 32, and the whole frame from 380 to 172 (from 120 m
+up; 1,016 before any of this). Kautoa's town uses about 33 colour, 30 normal and 32 roughness layers. Without WebGL2
+the full ring is drawn part by part, as before. The merged material keeps each part's library specular (a fourth value
+a vertex) and a world-unit material's tiling (its uvs times K, as the hook does; 58 bakes the instance's scale into them).
+
+**The towns lived in** (2026-10-20, `src/88c-world-life.js`): the sim runs on the world's clock (`HOST.clock`, the
+72-minute day; held unless `?time=run` or the panel's "run time", whose speed button sets the clock's scale). Each frame
+it steps whole minutes up to the clock's minute within a few milliseconds, so on load (the clock at 11:30, the sim at
+midnight) the towns' morning plays out over some seconds (about 5 ms a minute: 3.7 s for the 690 minutes) and a clock
+set back holds the sim. `?simAt=` sets the clock to the sim's minute instead. The citizens of the town the camera looks
+at are drawn round the point it looks at (the city page's stand-ins, up to 200, posed between minutes at the motion
+time plus the minute's fraction). The canoe line's three carriers are drawn at their berths, or under way along the
+sea route between the two canoe stops (`ISLE_TOWNS_W.seaPath`: A* over 500 m water cells round both towns, pulled
+taut; 117.3 km against 116.6 km straight, the straight line being 14% land) at the fraction of the passage the clock
+has run. The panel (bottom left) reads the clock, the towns' minute while they catch up, the people drawn and the
+boats at sea.
+
+- **The export profile is kept here now** (moved from the city page): `verify.py --assert` checks Kautoa's ceremonial
+  centre (box 320,780,820,1220 in the town's frame) under the isle profile. The export is one town at a time, in that
+  town's frame: `?town=Kautoa` (the default) or `Valapo` picks it and starts the camera over it, `?simAt=minute` runs the
+  sim first. The city page's contributors (`62-isle-export-scene.js`, read in place as a factory) read the town's group
+  moved to the origin; the city section is that town's plan alone; the stage is the world's (its ground's look moved
+  into the town's frame). At minute 362 the case equals the city page's section by section (registry, fixtures,
+  terrain, the plan, every sim key; items and buckets but for the Islanders' UV scale: `KNOWN_ISSUES.md`), so
+  `godot/data/world-isle-kautoa` stays valid.
+- **`window._isleTowns`** holds the towns' census, plan checks, draw counts and errors; `exportTown(name)` switches the
+  export. `verify.py` checks the plans, the ground and the keep-clear, each with a negative.
+- Load: planning adds about 7 s (Kautoa 4.7, Valapo 2.0) and the sim's declare 2.3 s.
+
 ## How it is made
 
 The world is **openworld/little-demo's, read in place** (its `src/`, not copied): the fields, terrain, water, sky,

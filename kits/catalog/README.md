@@ -477,6 +477,22 @@ is covered.
 
 Verified: `tests/test-segments.js`; `verify.py dist/catalog.html --sheet furniture --query cultures=iziz --assert`.
 
+### Longsong's pieces (2026-10-19, 2026-10-20)
+
+In the Xanadu file (`krator-master-furniture-xanadu.js`, culture `xanadu`): the pieces the History Monks' monastery
+(`settlements/longsong/FURNITURE.md`, "Pieces the catalog lacks") needed. 2026-10-19: the skylight column, the meditation
+cushions, the relic case, the scroll rack, the card cabinet, the chorten, the altar, the water clock, the armillary, the
+map table, the debating dais, the tea copper, the specimen jar, the planter, the Ancient clock, the anomaly instruments,
+the wall of names, the strongbox, the rack of butter lamps, the Council's round table. 2026-10-20, the grounds' and the
+depths': the woodblock press (variant 1 with its rack of carved blocks: `variantDims`), the paper vat, the drying rack
+(paper, robes, herbs), the courtyard well (outdoor), the lead-lined case with its bell, the unmaking furnace with its acid
+vats (wall), the bath's sunken pool (court) and stone basin, the tiled wall fountain (court, wall), the sealed relic crate
+(three sizes). Their `rooms` are narrow on purpose (the press `printing`/`press`/`bindery`, the crate `vault`/`archive`,
+the lead case `quiet cell`/`vault`, the furnace `unmaking`/`vault`): a broader list let the placer set crates and lead
+cases in Longsong's servants' quarters and tea room.
+
+Verified: `verify.py dist/catalog.html --assert`.
+
 ### Pieces added in the 2026-10 interiors pass
 
 | Culture | Pieces (anchor) |

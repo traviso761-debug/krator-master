@@ -1,4 +1,5 @@
 // ================================================================= FUEL STATION — "the Well"
+// IZS_HOLLOW.fuel (settlements/iziz 78w/78x; 2026-10-19): the kiosk's arch is cut through its dome (-x) for a real doorway
 function buildFuelStation(scene,gx,gz,d){reseed(9970+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  REGISTER({name:'Fuel station — the Well ('+STATE(d)+')',x:0,z:0,r:60,h:30});
  // forecourt 52 -> 48 m (round 2, "shrink podiums for density"): it only has to carry
@@ -36,8 +37,8 @@ function buildFuelStation(scene,gx,gz,d){reseed(9970+d);KOFF=[gx,0,gz];const G=n
   kput(d>0?'pipeR':'pipe',[x,1.2,z+22],qEuler(Math.PI/2,0,0),[.5,44,.5],null);}
  kput(d>0?'pipeR':'pipe',[-26,1.2,-44],qEuler(0,0,Math.PI/2),[.6,34,.6],null);
  // kiosk
- mesh(lathe({rFn:y=>5*Math.pow(clamp(1-Math.pow(y/7,2),0,1),.5),H:7,flutes:8,amp:.1,nu:32,nv:8,hole:holeFn(d*.6,920,null,2.5)}),skin,G,34,0,-20);
- kput('archOpen',[29.5,2,-20],qFacing([-1,0,0]),[.3,.35,1],null);stripRing(34,4,-20,3.5,d,10);
+ mesh(lathe({rFn:y=>5*Math.pow(clamp(1-Math.pow(y/7,2),0,1),.5),H:7,flutes:8,amp:.1,nu:32,nv:8,hole:typeof IZS_HOLLOW!=='undefined'&&IZS_HOLLOW.fuel?(u,y)=>(holeFn(d*.6,920,null,2.5)||(()=>false))(u,y)||Math.abs(u-.5)<.05&&y<4.6:holeFn(d*.6,920,null,2.5)}),skin,G,34,0,-20);
+ if(!(typeof IZS_HOLLOW!=='undefined'&&IZS_HOLLOW.fuel))kput('archOpen',[29.5,2,-20],qFacing([-1,0,0]),[.3,.35,1],null);stripRing(34,4,-20,3.5,d,10);
  if(d>0){scatterMoss(0,.6,0,0,46,50,1.6);rubbleRing(-42,0,-44,4,20,20,1.5);trees(0,0,60,100,8);}
  figures(0,30,3,4);KOFF=[0,0,0];return G;}
 

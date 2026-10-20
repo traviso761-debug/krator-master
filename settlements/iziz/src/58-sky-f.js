@@ -32,7 +32,9 @@ function buildSkyF(scene,gx,gz,d,gy,noPlinth,hcut,slim){reseed(9150+d);gy=gy||0;
  if(!noPlinth)skyPlinth(G,dd,PR);
  const RT=y=>(28*(1-.2*clamp(y/H,0,1))+6*Math.sin(Math.PI*clamp(y/H,0,1)))*PS;
  const build=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&(d===1||(d===3&&hcut))?H*(hcut||.8):null);const L=(cut!=null?cut:H)-y0;
-  mesh(lathe({rFn:()=>11*PS,H:L,nu:32,nv:4,hole:holeFn(dx*.6,67,null,2)}),CONC(dx),P);if(dx>0)mesh(lathe({rFn:()=>9.5*PS,H:L,nu:16,nv:1}),MAT.guts,P);
+  // IZS_HOLLOW.sky: a door through the core (+z) on every storey, a tray top up to the stair core's door head (52-sky-abc.js)
+  const coreDoor=h=>skyIx()?(u,y)=>(h&&h(u,y))||Math.abs(u-.25)<.035&&(y%TS+TS)%TS<7&&y>=TS-1:h;   /* local y 12, 24 ... are the tray tops (abs 22, 34 ...) */
+  mesh(lathe({rFn:()=>11*PS,H:L,nu:32,nv:skyIx()?Math.max(4,Math.round(L/2)):4,hole:coreDoor(holeFn(dx*.6,67,null,2))}),CONC(dx),P);if(dx>0)mesh(lathe({rFn:()=>9.5*PS,H:L,nu:16,nv:skyIx()?Math.max(1,Math.round(L/2)):1,hole:coreDoor(null)}),MAT.guts,P);
   const trays=[],darks=[];   // one mesh for the whole stack, not three per tray
   let k0=Math.round(y0/TS);for(let y=0;y+2<L;y+=TS){const k=k0+((y/TS)|0);const yy=y+y0;const R=RT(yy);const ang=k*.14;const fallen=dx>0&&(k%7===3);
    const trayR=th=>R*(1+.22*Math.cos(3*(th-ang)));
@@ -41,7 +43,7 @@ function buildSkyF(scene,gx,gz,d,gy,noPlinth,hcut,slim){reseed(9150+d);gy=gy||0;
     trays.push(gridSurface((u,v)=>{const th=u*TAU;const r=trayR(th);return[r*Math.cos(th),y+TS-2.6+v*2.6,r*Math.sin(th)];},96,1,{uS:16}));
     trays.push(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(11*PS,trayR(th),v);return[r*Math.cos(th),y+TS,r*Math.sin(th)];},96,2,{}));
     if(dx===0)mesh(gridSurface((u,v)=>{const th=u*TAU;const r=trayR(th)*.82;return[r*Math.cos(th),y+.2+v*(TS-2.9),r*Math.sin(th)];},96,1,{}),MAT.glass,P);
-    else darks.push(gridSurface((u,v)=>{const th=u*TAU;const r=trayR(th)*.72;return[r*Math.cos(th),y+.2+v*(TS-2.9),r*Math.sin(th)];},64,1,{hole:(u,v)=>fbm(u*6,k,69,2)<.3}));
+    else darks.push(gridSurface((u,v)=>{const th=u*TAU;const r=trayR(th)*.72;return[r*Math.cos(th),y+.2+v*(TS-2.9),r*Math.sin(th)];},64,skyIx()?4:1,{hole:(u,v)=>fbm(u*6,k,69,2)<.3||skyIx()&&yy===22&&Math.abs(u-.25)<.03&&v<.75}));   // the lobby's street door (IZS_HOLLOW.sky)
     for(let j=0;j<18;j++){const th=j/18*TAU;const r=trayR(th)*.82;kput(dx>0?'mullR':'mullW',[r*Math.cos(th),y+TS/2-1.3,r*Math.sin(th)],qEuler(0,-th,0),[.8*PS,TS-2.9,.8*PS],null);}
     stripRing(0,y+TS-3.3,0,R*.7,dx,20);}
    else{const fm=mesh(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(11*PS,trayR(th),v);return[r*Math.cos(th),0,r*Math.sin(th)];},64,3,{uS:16,vS:2,hole:holeFn(1,68+k,null,1.5)}),MAT.concreteR,P,6,y+TS-6,4);fm.rotation.set(.35,0,.25);}}

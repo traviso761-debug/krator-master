@@ -155,3 +155,9 @@ The table `DALAB_TRADES` in `src/77-dalab-trades.js` sets each of the Voth city'
 - [ ] swineherds and duck keepers: a sty and a coop (the ranch keeps lizards only)
 
 The `na` rows (sea trades on a landlocked build, trades the lore does not hold) are in the table with their reasons.
+
+## Vendored port pieces behind Iziz (2026-10-20)
+- `src/75-port-embassy.js` and `src/76-port-chapterhouse.js` drift from `settlements/iziz/src` on purpose. Iziz's copies now
+  call `vnStoop` (its 69e5, which Dalab does not take) for the doors' stoops, and turn the embassy's flank stair. One fix
+  is worth porting by hand: Iziz's `vpArchGeo` draws the porch arches' opening as a notch in the outline. Dalab's still
+  draws it as a hole on the outline's foot, which the triangulator fills with a bar across the doorway.

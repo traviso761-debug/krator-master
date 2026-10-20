@@ -31,8 +31,8 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `55-biome-oidong-trees.js` | 43 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (48); polyline helpers (Xanadu's) (67); keep-clear between trees (93); foliage helpers (100); the builders (116); impostors (the far canopy) (392); the pass (415); the passes (data: species, cell, acceptance from (444); one tree alone (biomes/WORLD.md: trees as varian (467) |
 | `60-biome-oidong-floor.js` | 16 | small plants (22); the zone planters (82); the pass (136) |
 | `70-biome-oidong.js` | <1 |  |
-| `82-host-sky.js` | 11 |  |
-| `84-host-ground.js` | 16 | the ground (13); the water (the pools) (100); the cataract and the mist (122) |
+| `82-host-sky.js` | 12 |  |
+| `84-host-ground.js` | 17 | the ground (13); the water (the pools) (103); the cataract and the mist (125) |
 | `88-host-build.js` | 1 |  |
 | `99-host-take.js` | 14 | the inspector's words (42); the probe's budgets and the kit's own checks (ve (56); the page, handed to the host (129) |
 | `99-tail.html` | <1 |  |

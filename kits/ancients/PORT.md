@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 288 (11%) | 38 (1%) | 174 (6%) | 32 (1%) | 2161 (80%) |
+| KB | 288 (11%) | 39 (1%) | 176 (6%) | 32 (1%) | 2180 (80%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -17,7 +17,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/12-stats.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/30-kit.js` | 3.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 2 | 2 | 5 | 0 | 0 | 0 |  |
 | `src/32-surfaces.js` | 7.7 | [draw] | 16 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/34-kitdefs.js` | 9.0 | [draw] | 24 | 2 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/34-kitdefs.js` | 10.1 | [draw] | 25 | 2 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/36-decor.js` | 13.2 | [draw] | 12 | 0 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/38-helpers2.js` | 7.8 | [draw] | 14 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-factory-extras.js` | 4.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
@@ -26,23 +26,23 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/46-bunker.js` | 4.7 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/48-library.js` | 3.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-registry.js` | 0.6 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/52-sky-abc.js` | 28.9 | [G native] | 19 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/52-sky-abc.js` | 30.1 | [G native] | 19 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/54-mat-concrete.js` | 4.2 | [draw] | 8 | 2 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-sky-d.js` | 5.8 | [G native] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/57-sky-e.js` | 3.4 | [G native] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/58-sky-f.js` | 4.7 | [G native] | 1 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/57-sky-e.js` | 3.5 | [G native] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/58-sky-f.js` | 5.2 | [G native] | 1 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-gate.js` | 7.2 | [draw] | 12 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/61-spire.js` | 29.8 | [draw] | 42 | 3 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-robotics.js` | 8.3 | [draw] | 7 | 0 | 0 | 0 | 0 | 7 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/63-canyon.js` | 18.2 | [draw] | 12 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/64-dalab.js` | 11.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/64-houses-def.js` | 8.8 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/64-houses-def.js` | 9.3 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/65-veladiga.js` | 15.8 | [draw] | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/66-office-c.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/66b-flatiron.js` | 7.8 | [draw] | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/67-cultural.js` | 6.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/67-cultural.js` | 7.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/68-hexahedron.js` | 39.4 | [draw] | 10 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69-mat-salvage.js` | 15.6 | [G shader] | 32 | 5 | 0 | 0 | 0 | 14 | 5 | 1 | 0 | 0 | 0 |  |
+| `src/69-mat-salvage.js` | 16.7 | [G shader] | 34 | 5 | 0 | 0 | 0 | 14 | 5 | 1 | 0 | 0 | 0 |  |
 | `src/69w-worn.js` | 12.3 | [draw] | 8 | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/70-hypertree.js` | 12.2 | [draw] | 11 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-sky-g.js` | 8.1 | [G native] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
@@ -51,14 +51,14 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/71b-forest.js` | 48.6 | [draw] | 23 | 1 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/71c-ring.js` | 73.4 | [draw] | 30 | 1 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/72-datacenter.js` | 7.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/73-police.js` | 4.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/73-police.js` | 8.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74-hospital.js` | 5.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-biome-10-core-head.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-biome-20-core-kit.js` | 13.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 5 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/75-biome-30-core-foliage.js` | 13.3 | [G shader] | 0 | 3 | 0 | 0 | 0 | 5 | 10 | 0 | 0 | 0 | 0 |  |
 | `src/75-biome-40-core-place.js` | 6.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-biome-45-bind.js` | 2.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/75-hotel.js` | 14.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/75-hotel.js` | 15.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76-50-biome-hyperjungle-species.js` | 13.7 | [draw] | 2 | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/76-55-biome-hyperjungle-trees.js` | 24.2 | [draw] | 2 | 1 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76-60-biome-hyperjungle-floor.js` | 27.1 | [draw] | 1 | 1 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
@@ -66,14 +66,14 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/76-70-biome-hyperjungle.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/76-campus.js` | 10.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/77-dam.js` | 12.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/77z-iziz-style.js` | 52.7 | [draw] | 37 | 1 | 0 | 0 | 0 | 32 | 3 | 0 | 0 | 0 | 0 |  |
+| `src/77z-iziz-style.js` | 54.7 | [draw] | 37 | 1 | 0 | 0 | 0 | 32 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/78-factory-silo.js` | 2.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/79-government.js` | 7.7 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/80-aa-battery.js` | 1.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-houses-abc.js` | 6.3 | [draw] | 9 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/82-apartments.js` | 8.0 | [draw] | 6 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/82-apartments.js` | 12.8 | [draw] | 9 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/83-amphitheater.js` | 8.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/84-fuel.js` | 4.0 | [draw] | 3 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/84-fuel.js` | 4.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/85-radar.js` | 2.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/86-dish.js` | 3.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/86b-darco.js` | 26.7 | [draw] | 15 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
@@ -83,7 +83,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88-plymouth.js` | 60.8 | [draw] | 44 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88y-ancients-matlib.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89-arcbeam.js` | 59.3 | [draw] | 37 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89-lab.js` | 6.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-lab.js` | 9.5 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89b-arcoindian.js` | 26.0 | [draw] | 26 | 3 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89b1-arcoindian-cut.js` | 28.5 | [draw] | 18 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89b2-arcoindian-plinth.js` | 28.8 | [draw] | 15 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
@@ -112,12 +112,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/8aj-alt-a-bole.js` | 15.2 | [draw] | 14 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-b-stack.js` | 9.3 | [draw] | 6 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-c-hotel.js` | 7.1 | [draw] | 3 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/8aj-alt-d-flat.js` | 8.7 | [draw] | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8aj-alt-d-flat.js` | 9.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-e-perch.js` | 12.3 | [draw] | 4 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-f-cult.js` | 9.2 | [draw] | 7 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/8ak-alt-a-houses.js` | 24.6 | [draw] | 28 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8ak-alt-a-houses.js` | 25.1 | [draw] | 28 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8ak-alt-b-civic.js` | 27.2 | [draw] | 22 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/8ak-alt-c-works.js` | 20.0 | [draw] | 19 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8ak-alt-c-works.js` | 20.6 | [draw] | 19 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8al-alt-00-lib.js` | 10.0 | [draw] | 11 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8al-alt-01-office-terrace.js` | 5.8 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8al-alt-02-office-stack.js` | 5.4 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

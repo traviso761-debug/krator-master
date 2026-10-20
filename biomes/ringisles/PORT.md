@@ -25,7 +25,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/66-biome-ringisles-world.js` | 5.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-ringisles.js` | 2.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-host-sky.js` | 14.4 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
-| `src/84-host-ground.js` | 14.1 | [G shader] | 14 | 2 | 0 | 0 | 0 | 2 | 5 | 0 | 0 | 0 | 0 |  |
+| `src/84-host-ground.js` | 14.3 | [G shader] | 14 | 2 | 0 | 0 | 0 | 2 | 5 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 1.6 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89f-host-fauna.js` | 4.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the host places kits/fauna presets (THREE groups) by the island's fields; a world places its own fauna |
 | `src/89w-host-sea.js` | 2.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

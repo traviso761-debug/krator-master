@@ -3,6 +3,27 @@
 `- [ ]` items are printed by `build.py` on every build. Close one by fixing it
 and ticking it, not by deleting it.
 
+## No dark voids (2026-10-19, the Iziz openings round)
+
+The owner: "remove all dark voids and make all windows, doors, and portals actual doors or windows/portals that have
+transparency". In `src/34-kitdefs.js` (kit-local, as the old `MAT.dark` recolour was; core/materials is untouched):
+`MAT.dark` is a room's warm plaster (the core behind a glass band, a room silhouette behind a window, a ruin's insides),
+`archOpen` is a shut door in `MAT.ancDoor` (the Ancients' grey alloy), and `MAT.winIntact` / `MAT.winDead` are see-through
+panes (a clear blue, a dusty grey). `77z-iziz-style.js`'s `MAT.izsGlass` is see-through too. What shows behind a pane is
+whatever the builder drew there: a room where it drew one, the wall where it did not (no tower has rooms yet).
+`77z`'s temple and arena read `IZS_HOLLOW` (`{temple, arena}`): a world that builds their interiors (settlements/iziz 78t,
+78u) gets the temple without the core behind its upper glass band and with a doorway in its crown, and the arena with its
+four portals cut through the shell. Without it they build as before. `IZS_HOLLOW.sky` does the same for the skyscrapers A-F
+(`52-sky-abc.js` skyIx, skyDoor): their floor plates, soffits and skyRooms are left out (every rng draw kept) and a street
+door is cut at each one's foot (and a core door on every storey of F), for a world that builds their storeys itself. The builds that vendor these two fragments (Dalab,
+Highlands, Jimjam, Reed Lake, Xanadu, Ys) are behind until re-vendored; Iziz is re-vendored.
+`73-police.js` and `89-lab.js` read `IZS_HOLLOW.police` and `IZS_HOLLOW.lab` the same way (settlements/iziz 78v, the two
+guilds' interiors; Iziz sets them for the guild's call only): the station's hex block and the lab's six storeys are drawn on
+lines through their windows (`gridAt`, `policeShell`, `labSkin`), the windows and the front door cut through, the windows
+clear, the lab's arcade glazed, no core and no rings of rooms inside. Without it they build as before (the same stream:
+the lab's light rings are drawn and dropped, not skipped). Ys and Screamers vendor both fragments and are behind until
+re-vendored; Iziz is re-vendored.
+
 ## Found by the split (pre-existing in the single-file kit)
 
 - [x] **Seed collision: Library and Campus.** FIXED (civic QA, 2026-09-29): `buildCampus` is `reseed(9810+d)`; the build.py exception is gone.

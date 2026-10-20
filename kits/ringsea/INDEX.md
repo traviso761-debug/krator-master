@@ -22,7 +22,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `40-rs-core.js` | 14 | ring sea: units, compass, the vessel frame (1); registry (9); materials (16); merge buckets (25); primitives (vessel frame, into a bucket) (92); the swell, riding: core/water (133) |
-| `41-rs-tex.js` | 12 | ring sea textures (surfaces) (1); ring sea materials (36); sail textures (51); culture symbols and liveries (74) |
+| `41-rs-tex.js` | 12 | ring sea textures (surfaces) (1); ring sea materials (36); sail textures (52); culture symbols and liveries (75) |
 | `42-rs-hull.js` | 6 | ring sea hull (1) |
 | `43-rs-rig.js` | 11 | ring sea rig: oars and paddles (1); sails (25); spars, rigging, flags (79) |
 | `44-rs-parts.js` | 5 | ring sea parts (shared by several vessels) (1) |
@@ -43,7 +43,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `73-rs-hyk-pearl.js` | 6 | vessel: Hykkousoi Pearl Baghlah (1) |
 | `74-rs-iziz-wheel.js` | 5 | vessel: Iziz Wheel Galley (1) |
 | `75-rs-beast-rookery.js` | 6 | vessel: Beast-Rider Rookery Raft (1) |
-| `76-rs-islander-lakatoi.js` | 4 | vessel: Islander Lakatoi (1) |
+| `76-rs-islander-lakatoi.js` | 5 | vessel: Islander Lakatoi (1) |
 | `77-rs-voth-hulk.js` | 4 | vessel: Voth Cargo Hulk (1) |
 | `78-rs-hyk-corbita.js` | 5 | vessel: Hykkousoi Amphora Corbita (1) |
 | `79-rs-xanadu-carrack.js` | 5 | vessel: Xanadu Bullion Carrack (1) |

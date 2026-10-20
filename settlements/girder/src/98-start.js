@@ -86,9 +86,6 @@ KHOST.on(function girderFrame(dtm, clock){
   skyAdvance(dt); updateSky(); updateDayNight();
   var hour = skyHour(), nk = DAYNIGHT_NIGHT_K;
   CLOTH_TIME.value += dt;
-  waterUni.uTime.value += dt; waterUni.uCam.value.copy(camera.position);
-  waterUni.uSun.value.copy(SKY_STATE.keyDir); waterUni.uFogCol.value.copy(scene.fog.color); waterUni.uFogDen.value = scene.fog.density;
-  waterUni.uDay.value = clamp(SKY_STATE.dayK, 0.12, 1);
   updateGlow(dt, hour, nk);
   for(var i=0;i<TICKS.length;i++){ try{ TICKS[i](dt, hour, nk); }catch(err){ if(!TICKS[i]._err){ TICKS[i]._err = 1; ERR('tick '+i+': '+(err&&err.stack||err)); } } }
   sun.position.copy(SKY_STATE.keyDir).multiplyScalar(2200).add(gTmp.set(ctl.tx, ctl.ty, ctl.tz));

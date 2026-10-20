@@ -65,10 +65,25 @@ Object.assign(SYMBOLS, {
   const ow=R*.42,oy=cy-R*.12;g.fillStyle=c2;g.beginPath();g.moveTo(cx-ow,cy+R*.95);g.lineTo(cx-ow,oy);g.arc(cx,oy,ow,SYM_PI,0);g.lineTo(cx+ow,cy+R*.95);g.closePath();g.fill();
   g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.08);g.beginPath();const sx=cx,sy=cy+R*.3;for(let i=0;i<=60;i++){const t=i/60,a=-SYM_PI/2+t*SYM_TAU*2.1,r=R*.34*(1-t*.92);const x=sx+Math.cos(a)*r,y=sy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
   g.fillStyle=c1;g.beginPath();g.arc(sx,sy,R*.05,0,SYM_TAU);g.fill();},
+ // a scroll unrolled, the wheel of eight spokes written on it between lines of the record (the Order of Historians, the
+ // History Monks; the owner, 2026-10-20): c1 the ink, the rollers and their knobs; c2 the paper (parchment when absent)
+ scroll:(g,cx,cy,R,c1,c2)=>{const pw=R*.85,ph=R*.58,wr=R*.36;g.fillStyle=c2||'#f0e4c4';g.fillRect(cx-pw,cy-ph,pw*2,ph*2);
+  g.fillStyle=c1;for(const s of [-1,1]){const x=cx+s*pw;g.fillRect(x-R*.11,cy-ph-R*.12,R*.22,ph*2+R*.24);
+   g.beginPath();g.arc(x,cy-ph-R*.17,R*.075,0,SYM_TAU);g.fill();g.beginPath();g.arc(x,cy+ph+R*.17,R*.075,0,SYM_TAU);g.fill();}
+  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(1.5,R*.065);g.beginPath();g.arc(cx,cy,wr,0,SYM_TAU);g.stroke();
+  g.lineWidth=Math.max(1,R*.04);g.beginPath();for(let k=0;k<8;k++){const a=k*SYM_TAU/8;g.moveTo(cx+Math.cos(a)*wr*.25,cy+Math.sin(a)*wr*.25);g.lineTo(cx+Math.cos(a)*wr,cy+Math.sin(a)*wr);}g.stroke();
+  g.beginPath();g.arc(cx,cy,wr*.2,0,SYM_TAU);g.fill();
+  g.lineWidth=Math.max(1,R*.028);g.beginPath();for(const s of [-1,1])for(let k=0;k<4;k++){const y=cy-ph*.66+k*ph*.44;g.moveTo(cx+s*wr*1.22,y);g.lineTo(cx+s*(pw-R*.18),y);}g.stroke();},
+ // the white lotus (Xanadu; the owner, 2026-10-20): petals in three rows rising from a pad, c1 the petals, c2 their outline
+ lotus:(g,cx,cy,R,c1,c2)=>{const by=cy+R*.45,pet=(a,len,wid)=>{g.save();g.translate(cx,by);g.rotate(a);g.beginPath();g.moveTo(0,0);
+   g.quadraticCurveTo(-wid,-len*.55,0,-len);g.quadraticCurveTo(wid,-len*.55,0,0);g.closePath();g.fill();g.stroke();g.restore();};
+  g.fillStyle=c1;g.strokeStyle=c2||'#6e1a32';g.lineWidth=Math.max(1,R*.035);g.lineJoin='round';
+  for(const a of [-1.15,1.15])pet(a,R*.95,R*.32);for(const a of [-.68,.68])pet(a,R*1.1,R*.34);for(const a of [-.3,.3])pet(a,R*1.2,R*.34);pet(0,R*1.3,R*.36);
+  g.beginPath();g.ellipse(cx,cy+R*.52,R*.72,R*.12,0,0,SYM_TAU);g.fill();g.stroke();},
  // a toothed gear (post-apoc salvage and scrap)
  gear:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();for(let k=0;k<32;k++){const a=k*SYM_TAU/32,r=(k%4<2)?R*.95:R*.75;g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.45,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
 });
 // the symbol each culture pack draws (mkCulture's `sym`), for code that has a culture key and no pack
-const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'windwave', xanadu:'wheel',
+const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'windwave', xanadu:'lotus',
  'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear',
- zeijani:'spiralarch' };
+ zeijani:'spiralarch', order:'scroll' };

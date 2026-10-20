@@ -12,7 +12,7 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 window._t={t0:performance.now()};const _mark=k=>{window._t[k]=Math.round(performance.now()-window._t.t0);};
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
-const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}   // BIO.record: the volume as a core/tags record too
+const REG=[],REG_ID=new Map();function REGISTER(o){REG.push(o);const r=BIO.record(o);if(r&&r.id)REG_ID.set(o,r.id);}   // BIO.record: the volume as a core/tags record too (REG_ID: its id, for the export's owners: 94)
 
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;document.body.appendChild(renderer.domElement);
@@ -21,7 +21,11 @@ renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmic
 // the valley's walls and the snow ranges 20-40 km off
 const scene=new THREE.Scene();const HAZE=new THREE.Color(0xd4d9e4);scene.fog=new THREE.FogExp2(HAZE.getHex(),.000085);
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.5,90000);
-scene.add(new THREE.HemisphereLight(0xcfdcea,0xa8b0a0,.8));
+const hemi=new THREE.HemisphereLight(0xcfdcea,0xa8b0a0,.8);scene.add(hemi);
+// the world hour (the host's clock writes it: 99's sky.hour and clock.onSet; ?hour= opens at another): what the night reads
+var LS_CLOCK={hour:12};
+// the daylight, 1 at noon to about .1 at midnight (89x sets it): the unlit things that should still darken (the petals)
+var LS_LIGHT={value:1};
 const SUN_POS=[-1000,900,-700];
 const sun=new THREE.DirectionalLight(0xfff4e4,1.25);sun.position.set(...SUN_POS);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xe4e0f0,.22);fill.position.set(700,300,900);scene.add(fill);
@@ -190,6 +194,9 @@ const OBSTACLES=[];
 const SPINE=[[0,0],[0,-150],[0,100],[-150,60],[150,60],[0,230],[LS.POND.x,LS.POND.z],[0,BRIDGE.z]];
 FANS.forEach(F=>SPINE.push([F.x,F.z]));for(let a=0;a<8;a++)SPINE.push([Math.cos(a/8*TAU)*420,Math.sin(a/8*TAU)*420+60]);
 const WBOX=[-TERR.R,-TERR.R,TERR.R,TERR.R];
+// the ground goes to Godot sampled (core/export's terrain section, source "sampled", as Iziz's): the page reads
+// terrainH, whose platforms, terrace walls and the Rock's cliffs are vertical steps no bilinear field carries (a 3 m
+// core/terrain KFIELD missed the page's own h by up to 12.7 m at the platforms' edges, 2026-10-20: KNOWN_ISSUES.md)
 BIO.init({tags:'longsong',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:rootMask,
  obstacles:OBSTACLES,ticks:tick,seed:23,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:260,mid:620,far:2200,floor:[200,480]},

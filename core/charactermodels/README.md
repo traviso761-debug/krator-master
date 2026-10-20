@@ -26,6 +26,11 @@ blender -b --python tools/make_garments.py -- male [--render <dir>] # the Voth c
 blender -b --python tools/mpfb_build.py -- male <export dir>      # Blender 4.5 + MPFB2 + the asset packs (below)
 python3 tools/make_mpfb.py male <export dir>                       # -> pieces/mpfb_male/, data/mpfb_male/
 python3 tools/make_mpfb.py giant <the man's export dir>            # -> pieces/mpfb_giant/, data/mpfb_giant/ (tools/giant.py)
+# a few new garments without the whole library (a fresh machine, or the clothes alone): make them, export the base and
+# them alone, and add them to the kit as it stands (base, skeleton, mods and the other items untouched)
+blender -b --python tools/make_garments.py -- male --only <ids> [--render <dir>]
+blender -b --python tools/mpfb_build.py -- male <export dir> --only <ids>
+python3 tools/make_mpfb.py male <export dir> --merge                # -> pieces/mpfb_male/<id>.*, new entries in kit.json
 python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
@@ -39,14 +44,21 @@ piece's morph deltas. A piece published before the two lines were one file still
 without sending its piece's `.txt` again in the same publish: the piece would lose its morphs, and every body but
 the neutral one would show it at the neutral size (hair off the head, shirts off the torso, holes at the joints).
 A version holds at most 511 files, so send the changed pieces (compare `build-manifest.json` with the last published
-commit's) rather than all of them.
+commit's) rather than all of them. A version also holds at most 256 MiB, and the Cosmetic Lab is at about 245: the Order of Historians' and Xanadu's
+clothes (2026-10-19, 14 MB) are published in a lab of their own, "Cosmetic Lab: the Order and Xanadu"
+(https://claude.ai/artifact/8nSqU3MxD2GCCyzJTHT2t7: the page with the kit cut to those two peoples, the bodies, clips,
+hair and beards copied from the main lab on the server), until the main lab is split (KNOWN_ISSUES.md). `build.py`
+builds the page with whatever pieces this checkout has (`pieces/` is gitignored) and keeps the other pieces' hashes in
+`build-manifest.json`.
 
 ## A core module: where it goes next
 
 This was `kits/characters` until 2026-10-16. It moved to `core/` because it is meant to be shared: the bodies, the
 records, the peoples and the clips are what every settlement's citizens will be drawn from. It is still a build of its
 own (`build.py`, `src/`, `dist/`: the two labs), which `tools/make_index.py` and `tools/audit_port.py` list through
-`CORE_BUILDS`; no settlement includes its fragments yet.
+`CORE_BUILDS`. The first settlement to take it is Longsong (2026-10-19: `settlements/longsong/build.py` reads `10-rig.js`
+and `50-figure.js` in place, a kit cut to its two peoples, and the pieces as sidecars; its `69-ls-figures.js` draws the
+nearest people as figures in their own records).
 
 **Lessons learned** are kept in the `character-modeling` skill (`.claude/skills/character-modeling/`, zipped as
 `character-modeling.skill` at the repo root): read it before working here, and add to it when a fix teaches something
@@ -59,7 +71,12 @@ own (`build.py`, `src/`, `dist/`: the two labs), which `tools/make_index.py` and
    by class (peasant, trade, court) from `data/peoples.json`. The figure (`50-figure.js`) and its pieces replace the
    stand-in mesh; the simulation keeps deciding where a citizen is and what it does (`core/simulation`), the figure
    only shows it. Crowds need a cost plan first: instancing or impostors past a few dozen figures, LOD (a lighter
-   body and fewer cloth chains far off), and the pieces' download budget.
+   body and fewer cloth chains far off), and the pieces' download budget. The first of it is in (2026-10-20,
+   `src/60-crowd.js`, `KCharCrowd`): a figure baked still at a clip's frame into one vertex-coloured mesh (its pieces
+   skinned through their bones, each vertex its texture's colour times its tint) and drawn instanced, so a page draws
+   the nearest few dozen as figures and a crowd past them in a handful of looks and poses, one draw each (Longsong's
+   `69-ls-figures.js`: 16 looks, standing, two strides, sitting). Not yet: faces of their own at that range, the cloth
+   chains' sway, a Godot twin.
 2. **Line up the work tasks with clips.** Map each activity (`core/simulation/ROADMAP.md` §26, the portable
    primitives, plus a build's own: FETCH_WATER, HERD, SMITH, TRADE, SLEEP...) to a clip, a prop and a loop or one-shot
    in a table beside `data/clips.json`, and list the activities with no clip. Fill the gaps from the libraries
@@ -79,6 +96,7 @@ own (`build.py`, `src/`, `dist/`: the two labs), which `tools/make_index.py` and
 | 2. Pack | `tools/make_mpfb.py` | Per GLB: shrinks the textures, makes the skin, hair and iris textures neutral (the page multiplies the colours in: `kit.tint`; the irises' mask rides in the eye texture's alpha), drops alpha channels that hold nothing, stores hair as grey + alpha, sets cut-out or opaque alpha (Blender's exporter marks everything BLEND), drops normal maps that are colour images; the few items far denser than they look (`DECIMATE`: the flats and the pirate boots, twice the body's triangles a pair) keep a tenth of their triangles (`tools/decimate.py`: quadric collapse onto their own vertices, so UVs, weights and the morph deltas still match; borders and seams held). Delete groups become a bitset over the skin's triangles; an item with none gets one from rays cast out and in from the skin (`covered()`), and a top with one gets those rays' triangles too (its delete group stops short of the shoulders and chest in places, where the skin came through). Hair and beard textures are made neutral with their clear texels filled at the mean grey (left black, they darkened the mips and the thin beards drew darker than the hair). For the Godot twin it also writes `<id>.gshapes.bin` (GSH1: per surface and target the shape whole as float32, its positions and its normals turned as the target turns the faces, which Godot blends NORMALIZED, the linear blend the page gets by re-summing normals; the skin's cover regions, by the items that cover each, which Godot joins into one surface and hides by region; the ground). The deltas become one `KMR1` file per GLB (`<id>.morph.bin`: per mesh, per target, the vertices that move, int16 at 0.1 mm); the joint deltas, sliders and ancestry go into `data/mpfb_<body>/kit.json`. Clips are retargeted onto the rig (`make_pieces.write_anims`). |
 | 3. Record | `src/10-rig.js` | `KCHAR.morphWeights(record)`: one weight per target (a slider at v < 0 weighs its minus end by -v, at v > 0 its plus end by v, times its reach; ancestry weighs each race by its share minus the base's). `KCHAR.morphJoints`: each joint's rest moves by the weighted sum of its deltas. `KCHAR.stranger(seed, kit, people)`: a record drawn from a people's ranges with `KRAND`. |
 | 4. Figure | `src/50-figure.js` | Blends each live mesh's deltas on the CPU (`_vidx` maps a glTF vertex to its Blender vertex; a seam's halves move together), re-sums normals over source vertices, moves each bone's rest and its inverse bind by the joint delta (`IBM * T(-d)`, so the skinned rest is exactly the morphed mesh), keeps the feet on the ground, hides the skin under worn items, and tints skin, brows, hair and beard. |
+| 4b. Crowd | `src/60-crowd.js` | `KCharCrowd.bake(fig, clip, t)`: a dressed figure at a clip's frame baked into one still mesh (every visible piece through its bones, vertex colours from its map at each uv times its material colour); `KCharCrowd.set(geo, n)`: an InstancedMesh of it to place a crowd with, one draw per look and pose |
 | 5. Pages | `src/90-editor.js`, `src/92-animlab.js` | The Cosmetic Lab: Gear (clothes, dye), Head (people, skin tone, hair, hair colour, beard, eye colour), Body (ancestry, build), Face (35 sliders), Record (the record as text, roll a stranger, strangers in bulk). The Animation Lab: six figures, the clips, review marks. |
 
 **The record**: `{ body:'mpfb_male', armour:{head, torso, legs, feet}, hair, beard, skin:'#rrggbb', hair_color:'#rrggbb', eye_color:'#rrggbb',

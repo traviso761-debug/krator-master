@@ -31,9 +31,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
 | `71-port-terrain.js` | 20 | the natural coast (7); stamps (23); materials (101); the terrain grid (196) |
 | `71w-port-sea.js` | 4 |  |
-| `72-port-kit.js` | 9 | materials (11); geometry (56) |
+| `72-port-kit.js` | 10 | materials (11); geometry (58) |
 | `73-port-edges.js` | 17 | paving (11); the quay wall (27); revetment (92); side closure (115); deck on columns (151); land blocks and sea platforms (190) |
-| `74-port-dress.js` | 12 | the stacked-container house (23); lamps, rails, boats (60); the shed (118) |
+| `74-port-dress.js` | 12 | the stacked-container house (24); lamps, rails, boats (61); the shed (119) |
 | `80-pq-quay.js` | 4 |  |
 | `81-pp-pier.js` | 11 |  |
 | `82-dd-dock.js` | 27 | small helpers (41); the stepped pit (59); the hull (84); the travelling gantry (148); sides of a segment that stands out to sea (189) |
@@ -62,7 +62,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89a-ch-stack.js` | 32 **big** | materials and kit (28); small helpers (51); the container dwelling (94); the stacked tower (120); the block: ground, footways, sides (254); chStack: tall stacked towers (306) |
 | `89b-ch-court.js` | 13 | yard props (16); the compound (50); chCourt (125) |
 | `89c-ch-tank.js` | 16 |  |
-| `89x-port-trades.js` | 5 |  |
+| `89x-port-trades.js` | 5 | = (1) |
 | `89y-sp-1-yard.js` | 34 **big** | sides (47); stamps (89); small geometry (106); edges (116); containers (203); the warehouse (226); the yard office (273); the gantry (297); the reach stacker (328); floating things (d=3) (350) |
 | `90-scene.js` | 8 | scene (1); THE PORT (36) |
 | `91-probe.js` | 6 | probe (window._api) (1) |

@@ -98,7 +98,7 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags', 'wal
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
-TARGET_CORE = {'city': ['atmos', 'mask', 'export'], 'vernacular': ['furnish'], 'palace': ['furnish']}   # furnish: core/furnish's colour step for the interiors' furniture (95i)   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
+TARGET_CORE = {'city': ['atmos', 'mask', 'export', 'furnish'], 'vernacular': ['furnish'], 'palace': ['furnish'], 'ixtest': ['furnish']}   # furnish: core/furnish's colour step for the interiors' furniture (95i)   # export: core/export (M5: targets/city/94-city-export.js fills it); the clock comes with core/host
 # core/host (core/host/README.md; ROADMAP.md section 10, step 3): the camera, loop, panel, probe, inspector, marks, pictures,
 # minimap, editor and cutaway, with core/clock and core/minimap. Not core/space: the hyperjungle's scatter takes another path
 # when it is on the page (KNOWN_ISSUES.md, 2026-10-13), so the inspector scans the records instead. Not core/edits: Iziz has
@@ -117,9 +117,9 @@ MATLIB_PACK = '69d-matlib-pack.js'
 # set (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). Both are closures, so the build rules do not
 # apply to them. The cultures: iziz, the generic and scrap sets its poor tier falls back to, and the jobs' work pieces.
 FURN_BUNDLE = '88z-iziz-furniture-bundle.js'
-INTERIOR_TARGETS = {'vernacular', 'palace'}
+INTERIOR_TARGETS = {'vernacular', 'palace', 'city', 'ixtest'}   # the city since 2026-10-19: every building hollow, the civic and Ancient ones furnished (95i)
 FURN_CULTURES = ['iziz', 'generic', 'generic-goods', 'scrap', 'jobs']   # not generic-fruit: it laid figs on a scribe's counter
-INTERIOR_SETS = ['iziz']
+INTERIOR_SETS = ['iziz', 'iziz-ancient']   # iziz-ancient: the city's Ancient civic buildings (the temple, the arena...)
 # the palace page (targets/palace, 2026-10-19): Talia's (the vassal university city's: its envoys' rooms, the libraries and
 # the schoolroom), and the palace's own pieces besides (kits/catalog -izpalace.js, the court's;
 # -izpalace-depot.js, the Depot's, the Core's and the service rooms'; both list only the palace's room kinds, so no other
@@ -145,6 +145,7 @@ def srcpath(f, base=None):
 # in every target that shows it and the two cannot drift.
 TARGET_OUT = {
     'vernacular': 'iziz-vernacular.html',      # the Iziz Vernacular set showcase
+    'ixtest': 'iziz-ixtest.html',              # the interiors test sheet: every building given an interior on 2026-10-19
     'palace': 'iziz-palace.html',              # the palace citadel on its hill, its blueprint laid and furnished (targets/palace)
     'city': 'iziz.html',                        # the city
     'wA': 'w-a.html', 'wB': 'w-b.html', 'wC': 'w-c.html',   # per-agent work sheets (round 2)
@@ -190,6 +191,7 @@ if '--kit' in sys.argv:
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
+    '89x-iziz-defight.js',                             # the z-fighting pass: shrinks boxes, no draws
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '20-core-clock.js',                                # core/clock: the world clock (no randomness)
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
@@ -206,7 +208,9 @@ DETERMINISTIC = {
     '91t-iziz-tags.js',                   # REG into core/tags (reads only)
     '69f-iziz-fixtures.js',               # the vernacular's doors, windows and lamps noted for core/tags (reads only)
     '69e-vern-hollow.js', '95i-iziz-interiors.js', '74z-vern-trades.js',   # the hollow bodies, the interiors, the trades table (no rnd())
-    '07-core-export.js', '09-core-export-adapters.js', '94-city-export.js',   # core/export and the city's part of it (M5; runs at export time only)
+    '69e5-iziz-openings.js', '95j-iziz-doors.js',   # the openings and the door registry (no rnd())
+    '78s-iziz-towers-plan.js', '78v-iziz-towers-ix.js', '78w-iziz-ancients-plan.js',   # the skyscrapers' and the other Ancient buildings' plans and their drawing (hashes and the kit's noise, no rnd())
+    '07-core-export.js', '09-core-export-adapters.js', '10-core-export-scene.js', '94-city-export.js',   # core/export and the city's part of it (M5; runs at export time only)
     '78p-palace-plan.js', '78q-palace-layout.js', '78r-palace-draw.js', '84-palace-geo.js', '95p-palace-furnish.js', '95q-palace-cutlabels.js',   # the palace page (no rnd())
     '69dp-palace-matlib-pack.js',         # generated: the palace's library pack
 }
@@ -229,7 +233,7 @@ SEED_COLLISION_EXCEPTIONS = {
 # fragments): their column-0 declarations live inside a closure, so the
 # shared-scope name checks do not apply. They keep their own PRNG too, so the
 # reseed rule does not apply either. Matched by filename prefix.
-SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '94-city-export', FURN_BUNDLE)   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
+SCOPED_PREFIXES = ('86-bio-', '89-atmos-', '07-core-export', '09-core-export', '10-core-export', '94-city-export', FURN_BUNDLE)   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG); core/export and the city's part of it (one global, EXPORT; IZIZ_EXPORT)
 def scoped(f):
     return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
@@ -491,7 +495,12 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '76-campus.js', '78-factory-silo.js', '79-government.js', '80-aa-battery.js', '81-houses-abc.js',
             '82-apartments.js', '83-amphitheater.js', '84-fuel.js', '88-factory.js', '89-lab.js',
             # the Ancient Iziz Style: transplant families, wreck(), and the Iziz variants of the kit
-            '77z-iziz-style.js']
+            '77z-iziz-style.js',
+            # the Ancient buildings the owner brought in on 2026-10-19 (the interiors sheet): the alternates' undulant house,
+            # bridge house, fin apartments, star laboratory and undulant flatiron (with their helper fragments), the cultural
+            # centre and the hotel
+            '8aj-alt-a-bole.js', '8aj-alt-d-flat.js', '8ak-alt-a-houses.js', '8ak-alt-b-civic.js', '8ak-alt-c-works.js',
+            '67-cultural.js', '75-hotel.js']
 
 
 BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '35-core-anim', '40-core-place',

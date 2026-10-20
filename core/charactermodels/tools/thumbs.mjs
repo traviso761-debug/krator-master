@@ -32,6 +32,10 @@ for (const body of fs.readdirSync(path.join(HERE, 'data'))) {
     jobs.push({ parts: [[glb(head.glb), 'head'], [glb(h.glb), h.kind]], frame: 'head', out: out(h.glb, h.kind) });
   }
 }
+// a checkout with only some of the pieces (pieces/ is not in Git; make_mpfb.py --merge adds a few): draw those it has
+const todo = jobs.filter(j => j.parts.every(([g]) => fs.existsSync(g)));
+if (todo.length < jobs.length) console.log('thumbs: ' + todo.length + ' of ' + jobs.length + ' pieces here');
+jobs.splice(0, jobs.length, ...todo);
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await b.newPage({ viewport: { width: 160, height: 160 } });
 await page.setContent('<body style="margin:0"></body>');

@@ -278,7 +278,7 @@ static func stranger(sd: int, kit: Dictionary, people = null, spread := 0.45) ->
 			for it in have:
 				if styles.has(it["id"]):
 					pref.append(it)
-			if pref.size() and r.next() < 0.75:
+			if pref.size() and r.next() < float(P.get("style_share", 0.75)):   # the people's share of its own styles (10-rig.js)
 				have = pref
 		var odds: float = float(P.get("beard", 0.4)) if slot == "beard" else (0.92 if slot == "hair" else 0.9)
 		var id = null

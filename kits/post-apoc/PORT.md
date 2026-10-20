@@ -15,9 +15,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 3.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/10-core.js` | 2.5 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/20-tex.js` | 10.9 | [draw] | 2 | 17 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/22-mat.js` | 7.6 | [G shader] | 10 | 0 | 0 | 0 | 0 | 17 | 8 | 0 | 0 | 0 | 0 |  |
+| `src/22-mat.js` | 8.1 | [G shader] | 10 | 0 | 0 | 0 | 0 | 19 | 8 | 0 | 0 | 0 | 0 |  |
 | `src/29y-pa-matlib.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/30-geo.js` | 18.9 | [draw] | 47 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/30-geo.js` | 19.5 | [draw] | 47 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/32-cores.js` | 11.5 | [draw] | 2 | 0 | 0 | 0 | 0 | 48 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/34-adds.js` | 23.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/36-def.js` | 21.6 | [draw] | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

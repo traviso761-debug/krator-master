@@ -1,11 +1,32 @@
 // ================================================================= 3. LABORATORY — "the Reliquary"
+// IZS_HOLLOW.lab (a world that builds the Reliquary's interior: settlements/iziz 78v) wants the tower as a shell. Each storey's
+// skin is then drawn on lines through every window's edges (gridAt, 73-police.js), each window cut as a rectangle to its
+// springing and two narrower steps into its arch, all inside the glass; it runs down to the storey's foot (the 0.3 gap under
+// it was hidden by the liner) and a ring closes the step to the storey below, whose wave is out of phase. The ground arcade's
+// arches are glazed instead of plated and cut through (LAB_ARCH, into the storey above too); the arch LAB_DOOR, the one
+// facing the front, is cut to the ground and left empty for the world's door. The dark liner is left out, the upper windows
+// are clear, and the ring of light strips at mid-height of every second storey (inside a room once the world puts floors in
+// at every second storey) is drawn and dropped, so the stream is unchanged.
+const LAB_WIN=[[.6,2.6,1.4],[2.6,3.5,1.15],[3.5,3.95,.55]],LAB_ARCH=[[1.55,5.65,2.0],[5.65,6.85,1.5],[6.85,7.5,.8]],LAB_DOOR=3;
+function labSkin(s,y0,SH,rW,skip){const N=112,wins=[];
+ // [u centre, kit radius, [[y from, y to, half-width]...]] (y absolute); `skip` drops the storey's own windows its decay ate
+ if(s<=1)for(let k=0;k<14;k++){const u=(k+.3)/14;wins.push([u,rW(u*TAU,0)+.1,LAB_ARCH.map((p,i)=>[i||k!==LAB_DOOR?p[0]:-1,p[1],p[2]])]);}
+ if(s>=1)for(let k=0;k<21;k++){const u=(k+.3)/21;if(skip&&skip(u))continue;wins.push([u,rW(u*TAU,s)+.1,LAB_WIN.map(p=>[y0+p[0],y0+p[1],p[2]])]);}
+ const us=new Set();for(let i=0;i<=N;i++)us.add(i/N);for(const w of wins)for(const p of w[2]){const du=p[2]/(w[1]*TAU);us.add(w[0]-du);us.add(w[0]+du);}
+ const U=[...us].sort((a,b)=>a-b),ys=new Set();for(let j=0;j<=6;j++)ys.add(y0+SH*j/6);
+ for(const w of wins)for(const p of w[2])for(const y of[p[0],p[1]])if(y>y0&&y<y0+SH)ys.add(y);const V=[...ys].sort((a,b)=>a-b);
+ return gridAt(U.length,V.length,(i,j)=>{const th=U[i]*TAU,r=rW(th,s);return[r*Math.cos(th),V[j],r*Math.sin(th)];},(i,j)=>[U[i]*28,(V[j]-y0)/SH*.6],
+  (i,j)=>{const um=(U[i]+U[i+1])/2,ym=(V[j]+V[j+1])/2;return wins.some(w=>w[2].some(p=>ym>p[0]&&ym<p[1]&&Math.abs(um-w[0])*w[1]*TAU<p[2]));});}
 function buildLab(scene,gx,gz,d){reseed(d>0?9301:9300);KOFF=[gx,0,gz];REGISTER({name:'Laboratory — the Reliquary ('+STATE(d)+')',x:0,z:0,r:40,h:125});REGISTER({name:'Laboratory — reactor hut',x:104,z:0,r:12,h:17});const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
+ const HOLLOW=typeof IZS_HOLLOW!=='undefined'&&!!IZS_HOLLOW.lab;
  const SH=4.4,NS=6;const phase=s=>s*.55;
  const rW=(th,s)=>30+2.6*Math.sin(7*th+phase(s))+1.1*Math.sin(3*th-phase(s)*.7);
  const lSkin=[],lGuts=[];   // the six storeys become one mesh, not three or four each
  for(let s=0;s<NS;s++){const y0=s*SH;const hole=holeFn(d*(s>=4?1:.35),61+s,null,2);
-  lSkin.push(gridSurface((u,v)=>{const th=u*TAU,r=rW(th,s);return[r*Math.cos(th),y0+.3+v*(SH-.3),r*Math.sin(th)];},112,6,{uS:28,vS:.6,hole:hole?(u,v)=>hole(u,y0+v*SH+s*40):null}));
-  if(d>0)lGuts.push(gridSurface((u,v)=>{const th=u*TAU,r=rW(th,s)*.9;return[r*Math.cos(th),y0+.3+v*(SH-.3),r*Math.sin(th)];},64,2,{}));
+  if(HOLLOW){lSkin.push(labSkin(s,y0,SH,rW,hole?u=>hole(u,y0+2+s*40):null));
+   if(s)lSkin.push(gridSurface((u,v)=>{const th=u*TAU,a=rW(th,s-1),b=rW(th,s),r=lerp(Math.min(a,b)-.3,Math.max(a,b)+.05,v);return[r*Math.cos(th),y0,r*Math.sin(th)];},112,1,{}));}
+  else lSkin.push(gridSurface((u,v)=>{const th=u*TAU,r=rW(th,s);return[r*Math.cos(th),y0+.3+v*(SH-.3),r*Math.sin(th)];},112,6,{uS:28,vS:.6,hole:hole?(u,v)=>hole(u,y0+v*SH+s*40):null}));
+  if(d>0&&!HOLLOW)lGuts.push(gridSurface((u,v)=>{const th=u*TAU,r=rW(th,s)*.9;return[r*Math.cos(th),y0+.3+v*(SH-.3),r*Math.sin(th)];},64,2,{}));
   // undulating balcony: floor annulus + fascia band
   const rB=th=>rW(th,s)+2.4+.9*Math.sin(7*th+phase(s)+1.2);
   const bHole=d>0?(u,v)=>fbm(u*9+s,3,61+s)<.22*d:null;
@@ -13,9 +34,9 @@ function buildLab(scene,gx,gz,d){reseed(d>0?9301:9300);KOFF=[gx,0,gz];REGISTER({
   lSkin.push(gridSurface((u,v)=>{const th=u*TAU,r=rB(th);return[r*Math.cos(th),y0+.3-.5+v*1.6,r*Math.sin(th)];},112,2,{uS:28,hole:bHole}));
   // windows / ground-floor arcade
   const n=s===0?14:21;for(let k=0;k<n;k++){const th=(k+.3)/n*TAU;const u=th/TAU;if(hole&&hole(u,y0+2+s*40))continue;const r=rW(th,s)+.1;
-   if(s===0)kput('archOpen',[r*Math.cos(th),4.6,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.7,.7,1],null);
-   else civWin(d>0?'winBigD':'winBigI',[r*Math.cos(th),y0+2.3,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),1,null);}
-  if(s>0)stripRing(0,y0+3.9,0,rW(0,s)*.88,d,28);
+   if(s===0){if(!HOLLOW)kput('archOpen',[r*Math.cos(th),4.6,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.7,.7,1],null);else if(k!==LAB_DOOR)kput('winBigI',[r*Math.cos(th),4.6,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.4,1.75,1],null);}
+   else civWin(d>0&&!HOLLOW?'winBigD':'winBigI',[r*Math.cos(th),y0+2.3,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),1,null);}
+  if(s>0){const m={strip:KIT.items.strip.length};stripRing(0,y0+3.9,0,rW(0,s)*.88,d,28);if(HOLLOW&&s%2===0)civCull(m,()=>true);}
   // ROOMS behind the holes (round 2): a floor plate in the band between the
   // skin and the dark liner, and furnishing wherever the skin is eaten through,
   // so a hole shows a room rather than a flat dark wall 3 m back.

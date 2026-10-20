@@ -85,6 +85,10 @@ function adTarp(a,b,w){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot
 // plant them inside the building.
 function adTreesBox(x0,x1,z0,z1,n){n=biomeN(n);for(let i=0;i<n;i++){const x=rr(x0,x1),z=rr(z0,z1);VEG.tree(x,terrainH(x+KOFF[0],z+KOFF[2]),z,i%3,rr(6,14));}}
 const AD_STATE=['intact','ruined','reclaimed','rehabilitated'];
+// IZS_HOLLOW.alt (a world that builds these buildings' interiors itself, settlements/iziz 78w; 2026-10-19): the floor
+// plates, the dark recesses and liners, the bridge house's floor plate and the door plates are left out, so its rooms
+// (and their stairs) are the world's.
+function adIx(){return typeof IZS_HOLLOW!=='undefined'&&!!IZS_HOLLOW.alt;}
 
 // ================================================================= THE UNDULANT HOUSE (adWave)
 // A villa of three storeys and an attic on a lobed plan 34 x 23 m. The stone
@@ -113,8 +117,8 @@ function buildAltWaveHouse(scene,gx,gz,d){reseed(9850+d);KOFF=[gx,0,gz];
  skin.push(gridSurface((u,v)=>{const th=u*TAU,y=v*topAt(th),p=plan(th,bulge(th,y));return[p[0],y,p[1]];},NW*6,52,
   {uS:12,vS:H/8,hole:(u,v)=>{const y=v*topAt(u*TAU);return winAt(u,y)||(hold&&hold(u,y));}}));
  // the recess behind the windows, and the floors (holed where the east end fell)
- dark.push(gridSurface((u,v)=>{const th=u*TAU,p=plan(th,-1.5);return[p[0],v*Math.min(topAt(th),H-.4),p[1]];},64,2));
- for(let f=1;f<=NF;f++)skin.push(gridSurface((u,v)=>{const th=u*TAU,p=plan(th,-.2);return[p[0]*v,f*FH-.05,p[1]*v];},48,3,
+ if(!adIx())dark.push(gridSurface((u,v)=>{const th=u*TAU,p=plan(th,-1.5);return[p[0],v*Math.min(topAt(th),H-.4),p[1]];},64,2));
+ for(let f=1;f<=NF;f++)if(!adIx())skin.push(gridSurface((u,v)=>{const th=u*TAU,p=plan(th,-.2);return[p[0]*v,f*FH-.05,p[1]*v];},48,3,
   {hole:(u,v)=>topAt(u*TAU)<f*FH+.6&&v>.18}));
  // ATTIC AND ROOF: the skin's top rolls inward and up to a crown; gone over the fall
  const roofP=(th,v)=>{const p=plan(th,.35*(1-v));const k=1-.55*Math.pow(v,.8)-.45*Math.pow(v,3);
@@ -144,7 +148,7 @@ function buildAltWaveHouse(scene,gx,gz,d){reseed(9850+d);KOFF=[gx,0,gz];
    beam('strutR',[a[0],yr,a[1]],[b[0],yr,b[1]],.07,.07,new THREE.Color(0x3a3634));
    beam('strutR',[a[0],yr-.6,a[1]],[b[0],yr-.6,b[1]],.05,.05,new THREE.Color(0x3a3634));}}
  // the door: a great arch on the south front
- {const p=plan(Math.PI/2,.2);kput('archOpen',[p[0],1.9,p[1]+.2],qFacing([0,0,1]),[.55,.42,1],null);}
+ if(!adIx()){const p=plan(Math.PI/2,.2);kput('archOpen',[p[0],1.9,p[1]+.2],qFacing([0,0,1]),[.55,.42,1],null);}
  if(brk){adRubbleArc(0,0,-1.25,.75,th=>Math.hypot(...plan(th,0)),9,70,1.5);
   // the top floor's slab, broken and hinged down into the bitten end
   kput('slabCR',[A*.62,4.6,-1],qEuler(.05,.3,-.42),[6.5,.35,5],null);}
@@ -185,14 +189,14 @@ function buildAltBridgeHouse(scene,gx,gz,d){reseed(9855+d);KOFF=[gx,0,gz];
  const ring=x0=>{const sh=adShape(SEC.map(p=>[-p[0],p[1]]));sh.holes.push(adShape(SEC.map(p=>[-p[0]*.88,p[1]*.88+.38])));
   const g=new THREE.ExtrudeGeometry(sh,{depth:.8,bevelEnabled:false});g.rotateY(Math.PI/2);g.translate(x0,0,0);return adUV(g);};
  shell.push(ring(tx(0)),ring(tx(1)-.8));
- meshMerged(shell,conc,P);meshMerged(inner,MAT.dark,P);
+ meshMerged(shell,conc,P);if(!adIx())meshMerged(inner,MAT.dark,P);
  useGroupXF(P);
  for(const s of[-1,1]){const x0=tx(s<0?0:1)-s*.5;
   if(d===0||(d===3&&s<0)){const sh=new THREE.ShapeGeometry(adShape(SEC.map(p=>[-p[0]*.87,p[1]*.87+.4])));sh.rotateY(Math.PI/2);mesh(sh,MAT.glass,P,x0,0,0);}
   if(!(brk&&s>0))for(let k=-3;k<=3;k++)kput(dd?'strutR':'strutW',[x0,3.3,k*1.4],null,[.14,5.6,.14],null);}
  if(d===0)mesh(gridSurface((u,v)=>[tx(.06+u*.88),lerp(3.1,6.0,v),lerp(6.4,4.9,v)],1,1),MAT.glass,P);
  // the floor plate inside, and lit (or dead) cells along the ribbon
- kput(dd?'boxCR':'boxC',[tx(.5),.7,0],null,[L-1.6,.3,9.6],null);
+ if(!adIx())kput(dd?'boxCR':'boxC',[tx(.5),.7,0],null,[L-1.6,.3,9.6],null);
  for(let i=1;i<10;i++){if(brk&&i>8)continue;kput(d===0?'cell':'cellD',[tx(i/10),4.3,4.6],qFacing([0,.4,1]),[2.2,1.4,1],d===0&&i%3?WARM:DEAD);}
  endGroupXF();
  // LEGS: trapezoid walls splayed outward to the ground; the east one burst in the ruin
@@ -212,7 +216,7 @@ function buildAltBridgeHouse(scene,gx,gz,d){reseed(9855+d);KOFF=[gx,0,gz];
  // the glazed entrance box under the belly (a dark box with a broken face in the ruin)
  if(!brk){for(const[x,z,ry,w]of[[0,1.6,0,6],[0,-1.6,0,6],[-3,0,Math.PI/2,3.2],[3,0,Math.PI/2,3.2]])
   kput(d===0?'pane':'paneD',[x,1.6,z],qEuler(0,ry,0),[w,3.2,1],null);
-  kput(dd?'boxCR':'boxC',[0,3.4,0],null,[6.4,.3,3.6],null);}
+  if(!adIx())kput(dd?'boxCR':'boxC',[0,3.4,0],null,[6.4,.3,3.6],null);}   /* the world's stair climbs through the box (IZS_HOLLOW.alt) */
  else kput('boxD',[0,1.2,0],qEuler(0,.1,.06),[6,2.4,3.2],null);
  kput(dd?'boxCR':'boxC',[-1,.12,-3],null,[36,.24,26],null);
  if(brk){adRubbleLine([9,-4],[15,4],1,.2,6,40,1.4);adRubbleLine([12,4],[16,-3],0,1,5,20,1.1);}
@@ -261,7 +265,7 @@ function buildAltFinApartments(scene,gx,gz,d){reseed(9860+d);KOFF=[gx,0,gz];
  // the two end walls, the roof (with a parapet), and a plate at every storey
  for(const ph of[-PHI,PHI])body.push(gridSurface((u,v)=>{const p=P(ph,Rc+u*DP);return[p[0],v*(H+1.2),p[1]];},6,NS*2,
   {uS:DP/8,vS:H/8,hole:(u,v)=>v*(H+1.2)>topY(ph)||(hold&&hold(u*.3+ph,v*H))}));
- for(let f=1;f<=NS;f++)body.push(gridSurface((u,v)=>{const p=P(phU(u),Rc+.2+v*(DP-.4));return[p[0],f*FH-.05,p[1]];},NB*3,1,
+ for(let f=1;f<=NS;f++)if(!adIx())body.push(gridSurface((u,v)=>{const p=P(phU(u),Rc+.2+v*(DP-.4));return[p[0],f*FH-.05,p[1]];},NB*3,1,
   {hole:(u,v)=>f*FH>topY(phU(u))+.6}));
  // ground-floor lobby recess and plinth
  kput(dd?'boxCR':'boxC',[0,.25,6],qEuler(0,0,0),[2*Rc*Math.sin(PHI)+12,.5,40],null);

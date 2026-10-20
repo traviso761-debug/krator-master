@@ -24,7 +24,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `55-br-rockcut.js` | 76 **big** | = (2); frames (75); the carving vocabulary (136); the beasts in relief (283); 1. the gate-tree carvings in sandstone (452); 2. door surrounds with beast heads (580); 3. window slots (648); 4. a balcony ledge cut from the face (gtBalcony) (690); 5. a stair cut into the face (741); 6. rock-cut room fronts (Mav's room fronts re-cu (784) |
 | `56-br-rockcut-b.js` | 43 **big** | = (2); 1. the carved face round the cavern's door (59); 2. a tribe's offering niche (one variant a tribe (151); 3. the five shrines' lamp niches (one each) (240); 4. a ledge of offerings (322); 5. the altar stone left standing (375); BR_ROCK: the rock-cut pieces for any world (433) |
 | `60-br-ports.js` | 4 | = (1) |
-| `70-br-tent-kit.js` | 44 **big** | = (2); THE HIDE DOME (123); THE BARREL PAVILION (313); FRAMES, FENCES, HEDGES (463) |
+| `70-br-tent-kit.js` | 45 **big** | = (2); THE HIDE DOME (125); THE BARREL PAVILION (315); FRAMES, FENCES, HEDGES (469) |
 | `71-br-tents-dwell.js` | 14 | = (2) |
 | `72-br-tents-trade.js` | 15 | = (2) |
 | `73-br-tents-pens.js` | 24 | = (2) |

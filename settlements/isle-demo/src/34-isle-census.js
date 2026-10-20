@@ -23,6 +23,12 @@ ISLE.EXPECT = {
     wall: null, landing: 1, citizens: [1700, 2300], fields: 0
   }
 };
+/* a dwelling's households by its declared types: a multi-family house three, a single house one, else none (the sim's
+   homes take five people a household from here: 40-isle-sim.js) */
+ISLE.households = function (key) {
+  var D = ISLE_DIMS[key] || {}, types = D.types || [];
+  return types.indexOf('dwelling-multi') >= 0 ? 3 : (types.indexOf('dwelling-single') >= 0 || D.family === 'dwelling') ? 1 : 0;
+};
 ISLE.census = function (R) {
   var C = { town: R.town, buildings: R.lots.length, byKit: {}, byCls: {}, byDistrict: {}, byRole: {}, trades: {}, dwellings: 0, households: 0, citizens: 0,
     landmarks: 0, wall: { pieces: R.wall.length, gates: R.wall.filter(function (w) { return w.key === 'ie-gate'; }).map(function (w) { return w.role; }) },
@@ -33,7 +39,7 @@ ISLE.census = function (R) {
     inc(C.byKit, L.kit || '?'); inc(C.byCls, L.cls); inc(C.byDistrict, L.district);
     if (L.cls === 'landmark') { C.landmarks++; inc(C.byRole, L.role); }
     var trade = D.job || D.role; if (trade) inc(C.trades, trade);
-    var hh = types.indexOf('dwelling-multi') >= 0 ? 3 : (types.indexOf('dwelling-single') >= 0 || D.family === 'dwelling') ? 1 : 0;
+    var hh = ISLE.households(L.key);
     if (hh) { C.dwellings++; C.households += hh; }
   });
   C.citizens = C.households * 5;

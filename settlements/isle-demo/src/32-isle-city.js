@@ -446,6 +446,34 @@ ISLE.city = function (town, o) {
       LOG.wall = Wr.gates.length + ' gates (' + Wr.gates.filter(function (g) { return g.named; }).length + ' named), ' + Wr.nodes.filter(function (n) { return n.kind === 'tower' && !n.skip; }).length + ' towers, ' + Wr.segs.length + ' runs';
     } }
   ];
+  /* the canoe stop (P7c; the owner, 2026-10-19: "add one in each city's harbor"): at each trade landing, a berth for each
+     of the canoe line's vessels (PR.canoes: the lakatoi, the towns' bulk carrier, and the oruwa for light goods), the
+     nearest water to the landing deep enough for the hull, its round clear of the ground, of the moored vessels and of the
+     other berth, its heading along the shore as a mooring's; registered in core/tags last, so no earlier record's tag
+     moves. The vessel is drawn there while the simulation has it docked (61-isle-canoes.js) */
+  var canoeStops = function () {
+    var keys = PR.canoes || ['islanderLakatoi', 'islanderOruwa'];
+    OUT.landings.forEach(function (Ld) {
+      Ld.berths = [];
+      keys.forEach(function (key) {
+        var Dm = o.vdims(key); if (!Dm) { OUT.missing[key] = (OUT.missing[key] || 0) + 1; return; }
+        var r = Dm.L / 2 + 4, best = null;
+        for (var z = Ld.z - 160; z <= Ld.z + 160; z += 4) for (var x = Ld.x - 160; x <= Ld.x + 160; x += 4) {
+          var d = Math.hypot(x - Ld.x, z - Ld.z); if (d > 160 || (best && d >= best.d) || SL.R.idx(x, z) < 0 || h(x, z) > -2.5) continue;
+          var ok = true;
+          for (var a = 0; a < 12 && ok; a++) { var an = a / 12 * Math.PI * 2; ok = h(x + Math.cos(an) * r, z + Math.sin(an) * r) < -1; }
+          if (!ok) continue;
+          if (OUT.vessels.concat(Ld.berths).some(function (Q) { return Math.hypot(Q.x - x, Q.z - z) < (Q.L + Dm.L) / 2 + 6; })) continue;
+          best = { x: x, z: z, d: d };
+        }
+        if (!best) { OUT.failed.push({ key: key, role: 'canoe berth', why: 'no water near the landing', harbour: Ld.id }); return; }
+        var g = [h(best.x + 8, best.z) - h(best.x - 8, best.z), h(best.x, best.z + 8) - h(best.x, best.z - 8)], heading = Math.atan2(-g[1], g[0]);
+        var B = { id: Ld.id + '.' + key, key: key, x: best.x, z: best.z, heading: +heading.toFixed(4), L: Dm.L, B: Dm.B, H: Dm.H, tag: null };
+        if (tags) { var T = tags.add({ 'class': 'prop', kind: 'berth', key: key, at: [B.x, 0, B.z], ry: heading - Math.PI / 2, size: [Dm.L, Dm.B, Dm.H], note: 'the canoe stop', src: 'isle-demo' }); if (T) B.tag = T.id; }
+        Ld.berths.push(B);
+      });
+    });
+  };
   /* the farmland: the zone's open ground left after the plan, in parcels of PR.farm.cell metres (every sample of a parcel
      free ground, clear of the streets, dry), each a paddy, an orchard or a field of the crop its block (three parcels a
      side) draws from the town's list for its ground (PLAN 8c) */
@@ -491,7 +519,7 @@ ISLE.city = function (town, o) {
       groundOk: KCITY.reliefOk({ dry: 0.8, maxRelief: PR.maxDrop == null ? 6 : PR.maxDrop }) },
     /* a village takes no alleys and no infill of its blocks (steps 6-11: PR.village) */
     steps: world.concat(KCITY.defaultSteps().slice(6, PR.village ? 12 : 13)),
-    finish: [function () { (PR.harbours || []).forEach(moor); }, function () { fields(); }]
+    finish: [function () { (PR.harbours || []).forEach(moor); }, function () { fields(); }, function () { canoeStops(); }]
   });
   var t0 = Date.now(), P = K.run(); LOG.ms = Date.now() - t0; LOG.stepMs = P.stats.ms;
   /* how built the build area is (owner, 2026-10-18: at least two thirds buildings and streets, not farms, orchards or empty

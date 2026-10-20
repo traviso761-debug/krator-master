@@ -145,7 +145,7 @@ const TRANS_EXCLUDE={pueblo:1};
 const TREFHALF={box:[3.4,3.4],tier:[3.6,3.6],domed:[3.4,3.4],barrel:[3.6,4.8],tent:[4.8,4.6],pyr:[3.75,3.75],setback:[7,7],setback2:[3.7,3.7],tyrell:[7,7],wedge:[5,7],pent:[6.6,6.6],hept:[6.6,6.6],hall:[9,7.5],stave:[7.5,7.5],compound:[10.2,10.2],midrise:[5.5,5.5],stall:[3,2.4],fountain:[5.4,5.4],temple:[42,52],palace:[52,46],arena:[56,48]};
 const TKINDS={dwelling:['box','tier','domed','barrel','tent','pyr'],tall:['setback','setback2','tyrell','wedge','pent','hept','midrise'],hall:['hall','stave','compound']};
 // ---- placement -----------------------------------------------------------------------------------------------------
-MAT.tGlassO=new THREE.MeshStandardMaterial({color:0x2a4a66,metalness:.55,roughness:.18,emissive:0x0a1a2a,emissiveIntensity:.5,side:DS});
+MAT.tGlassO=new THREE.MeshStandardMaterial({color:0x2a4a66,metalness:.55,roughness:.18,emissive:0x0a1a2a,emissiveIntensity:.5,side:DS,transparent:true,opacity:.5,depthWrite:false});   // see-through (no dark voids, 2026-10-19)
 const TRANS={groups:[],root:null,
  place(scene,kind,mode,x,z,ry,scale,seed,extraTags,y){y=y||0;const p=TBY[kind];if(!p||TRANS_EXCLUDE[kind]){reportErr('TRANS.place: '+kind+' not placeable');return null;}
   if(!TRANS.root){TRANS.root=new THREE.Group();scene.add(TRANS.root);}

@@ -6,10 +6,10 @@
 // the pass toward Xanadu, lower, in haze, and the Throne stands far off beyond it (azimuth 285).
 // u = ((270-az)/360) mod 1.
 // A host that stands elsewhere in the valley says where things are (OIDONG_SKY, optional, set before this fragment):
-// {head: the head wall's azimuth (90), pass: the pass's (270), throne: the Throne's (285), cataract: false for none}; the
-// side walls stand at head +-90. Without it the showcase's valley is drawn as it always was.
+// {head: the head wall's azimuth (90), pass: the pass's (270), throne: the Throne's (285), cataract: false for none, sun: false
+// to leave the sun unpainted (a host with a clock draws it where the hour puts it)}; the side walls stand at head +-90. Without it the showcase's valley is drawn as it always was.
 const OSKY=(function(){const o=(typeof OIDONG_SKY!=='undefined'&&OIDONG_SKY)||{};
- return {head:o.head==null?90:o.head,pass:o.pass==null?270:o.pass,throne:o.throne==null?285:o.throne,cataract:o.cataract==null?true:o.cataract};})();
+ return {head:o.head==null?90:o.head,pass:o.pass==null?270:o.pass,throne:o.throne==null?285:o.throne,cataract:o.cataract==null?true:o.cataract,sun:o.sun==null?true:o.sun};})();
 const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
  const HZ=h*.5,DEG=h/180,U=az=>(((270-az)/360)%1+1)%1;
  const facing=(u,az0,p)=>{const az=((270-u*360)%360+360)%360,d=Math.abs(((az-az0)%360+540)%360-180);return Math.pow(Math.max(0,Math.cos(d*Math.PI/180)),p);};
@@ -24,7 +24,7 @@ const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
  const wrapE=(x,y,rx,ry,f)=>{g.fillStyle=f;for(let k=-1;k<=1;k++){g.beginPath();g.ellipse(x+k*w,y,rx,ry,0,0,TAU);g.fill();}};
  // --- THE SUN, at the azimuth the directional light uses: (-1000,900,-700) is azimuth 305.0, altitude 36.4 ---
  const sx=w*U(305.0),sy=HZ-36.4*DEG;
- {const gl=g.createRadialGradient(sx,sy,0,sx,sy,520);
+ if(OSKY.sun){const gl=g.createRadialGradient(sx,sy,0,sx,sy,520);
   gl.addColorStop(0,'rgba(255,253,244,.95)');gl.addColorStop(.06,'rgba(255,250,232,.5)');
   gl.addColorStop(.24,'rgba(255,246,228,.14)');gl.addColorStop(1,'rgba(255,242,224,0)');
   g.fillStyle=gl;for(let k=-1;k<=1;k++)g.fillRect(sx-520+k*w,sy-520,1040,1040);

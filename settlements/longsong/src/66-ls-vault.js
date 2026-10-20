@@ -35,7 +35,9 @@ const vlight=(x,y,z,hex,k,r)=>{const c=new THREE.Color(hex).convertSRGBToLinear(
 // a room: its floor, walls and ceiling facing in; beams under the ceiling; o.cls the finish
 const VAULT_ROOMS=[];
 function vRoom(R){const x0=R.x0,x1=R.x1,z0=R.z0,z1=R.z1,y0=R.y0,y1=R.y0+R.h,W=0x8a8478,F=0x6e6a62;
- ARCH.quad('v-paving',[x0,y0,z1],[x1,y0,z1],[x1,y0,z0],[x0,y0,z0],F);
+ // the floor (round the cistern's basin, where it has one)
+ const C=R.cistern;if(!C)ARCH.quad('v-paving',[x0,y0,z1],[x1,y0,z1],[x1,y0,z0],[x0,y0,z0],F);
+ else for(const [a0,a1,b0,b1] of [[x0,x1,z0,C.z0],[x0,x1,C.z1,z1],[x0,C.x0,C.z0,C.z1],[C.x1,x1,C.z0,C.z1]])ARCH.quad('v-paving',[a0,y0,b1],[a1,y0,b1],[a1,y0,b0],[a0,y0,b0],F);
  ARCH.quad('v-stone',[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1],0x5a564e);
  // the four walls, each with its doorways cut (LS.VAULT_DOORS: a doorway in a wall this room shares), a lacquered frame
  const doorsOn=(axis,at)=>LS.VAULT_DOORS.filter(D=>(D.a===R.id||D.b===R.id)&&D.axis===axis&&Math.abs(D.at-at)<.01);
@@ -96,7 +98,7 @@ function vSeal(x,y,z,nx,nz,label){lsDecal(SIGNS.SEAL,x+nx*.04,y,z+nz*.04,.42,1.7
  {const R=LS.VAULT[4],y=R.y0;for(let i=0;i<3;i++){const z=R.z0+6+i*(R.z1-R.z0-8)/2;ARCH.box('v-lead',R.x0+.3,y,z,.4,3.4,2.2,{col:0x60606a});
    ARCH.cyl('v-bronze',R.x0+.6,y+3.1,z+1.4,.16,.08,.26,{seg:8,col:0x9a7a40});vSeal(R.x0+.52,y+1.7,z,1,0,'A seal on a quiet cell (a time relic inside: do not knock)');}
   vLamp(R.x1-.6,y+1.2,(R.z0+R.z1)/2,.7);}
- // ---------------------------------------------------------------- the Unmaking Room: a black circle in the floor, the chains, nothing else
+ // ---------------------------------------------------------------- the Unmaking Room: a black circle in the floor, the chains (the furnace: below)
  {const R=LS.VAULT[5],y=R.y0,cx=(R.x0+R.x1)/2,cz=(R.z0+R.z1)/2;ARCH.cyl('v-dark',cx,y+.02,cz,3.2,3.2,.01,{seg:36,col:0x020204});
   ARCH.ring('v-bronze',cx,y,cz,3.2,.12,.1,{seg:36,col:0x6a5a40});for(let i=0;i<4;i++){const a=i*Math.PI/2+.4;ARCH.box('v-bronze',cx+Math.cos(a)*4.6,y,cz+Math.sin(a)*4.6,.25,.6,.25,{col:0x5a4a30});}
   vLamp(R.x0+.6,y+1.5,cz,.5);}
@@ -109,11 +111,41 @@ function vSeal(x,y,z,nx,nz,label){lsDecal(SIGNS.SEAL,x+nx*.04,y,z+nz*.04,.42,1.7
   const dx=R.x1-3.4,dz=R.z1-5;ARCH.box('v-wood',dx,y,dz,2.2,.85,1.2,{col:0x5a2a1a});ARCH.box('v-cloth',dx,y+.85,dz,.8,.04,.6,{col:0xe8dcc0});ARCH.box('v-wood',dx,y,dz+1.3,.6,.5,.6,{col:0x4a2418});
   vLamp(dx+.7,y+.85,dz-.3,1.4);vlight((R.x0+R.x1)/2,y+R.h-1,(R.z0+R.z1)/2,0xc0c8d8,.5,18);
   vSeal(R.x0+.08,y+1.7,dz,1,0,'The Sealed Library\'s seal (the quarantine of knowledge: one reading room, one desk)');}
+ // ---------------------------------------------------------------- the Cistern of the rock: the basin cut in the floor, its stone
+ // lip, the water, the steps down at its north end, the seams' gutter along the west wall, two lamps on the walk
+ {const R=LS.VAULT.find(V=>V.id==='cistern'),C=R.cistern,y=R.y0,yb=y-C.depth,W=0x6e6a62;
+  const wall=(ax,az,bx,bz)=>ARCH.quad('v-stone',[ax,yb,az],[bx,yb,bz],[bx,y,bz],[ax,y,az],W);
+  wall(C.x0,C.z1,C.x0,C.z0);wall(C.x1,C.z0,C.x1,C.z1);wall(C.x1,C.z1,C.x0,C.z1);wall(C.x0,C.z0,C.x1,C.z0);   // facing into the basin
+  ARCH.quad('v-stone',[C.x0,yb,C.z0],[C.x1,yb,C.z0],[C.x1,yb,C.z1],[C.x0,yb,C.z1],0x4a4640);
+  for(const [a,b,c,d] of [[C.x0-.3,C.x1+.3,C.z0-.3,C.z0],[C.x0-.3,C.x1+.3,C.z1,C.z1+.3],[C.x0-.3,C.x0,C.z0,C.z1],[C.x1,C.x1+.3,C.z0,C.z1]])
+   ARCH.box('v-stone',(a+b)/2,y,(c+d)/2,b-a,.18,d-c,{col:0x8a8478});   // the lip
+  ARCH.quad('v-lead',[C.x0,C.water,C.z1],[C.x1,C.water,C.z1],[C.x1,C.water,C.z0],[C.x0,C.water,C.z0],0x16242a);   // the still water
+  const n=Math.round(C.depth/.24);for(let k=0;k<n;k++)ARCH.box('v-stone',(C.x0+C.x1)/2,y-(k+1)*C.depth/n,C.z0+.25+k*.32,3,C.depth/n,.34,{col:0x7a766c});
+  ARCH.box('v-stone',R.x0+.35,y,(R.z0+R.z1)/2,.3,.12,R.z1-R.z0-1,{col:0x3e3a34});   // the gutter from the seams
+  vLamp(C.x0-1.1,y+1.3,C.z0-1.2,.9);vLamp(C.x1+1.1,y+1.3,C.z1+1.2,.9);
+  REGISTER({name:'The Cistern\'s water',cls:'feature',kind:'water',key:'longsong_vault_cistern_water',x:(C.x0+C.x1)/2,z:(C.z0+C.z1)/2,y:yb,r:Math.hypot(C.x1-C.x0,C.z1-C.z0)/2,h:C.depth,tags:{culture:'order'}});}
  // ---------------------------------------------------------------- the Long Stair down to the Procrastinator: a spiral round a newel
  {const R=LS.VAULT[8],cx=(R.x0+R.x1)/2,cz=(R.z0+R.z1)/2,n=Math.floor(R.h/.22);
   ARCH.cyl('v-stone',cx,R.y0,cz,.7,.7,R.h,{seg:12,col:0x7a766c});
   for(let k=0;k<n;k++){const a=k*.38,y=R.y0+R.h-(k+1)*.22;ARCH.box('v-stone',cx+Math.cos(a)*3.6,y,cz+Math.sin(a)*3.6,5.2,.22,1.2,{col:0x8a8478,ry:-a});}
   for(let y=R.y0+4;y<R.y0+R.h;y+=11)vLamp(R.x0+.4,y,cz,.7);}
+ // ---------------------------------------------------------------- the depths' catalog pieces (FURNITURE.md LV; kits/catalog)
+ // furnished by the placer (57a's lv- kinds, 2026-10-20: no longer placed by hand here) round what this fragment built
+ // into the rooms (40c hands it over as fixtures): the closed vault's sealed crates clear of its lead doors, the lead
+ // cases by the quiet cells, the unmaking furnace, the open vault's crates waiting for their cards, the cistern's jars.
+ // One catalog batch, its meshes put on the depths' shader (lit by their lamps alone, like everything down here); the
+ // furnace's fire is one of the depths' lights
+ if(typeof KratorFurniture!=='undefined'&&typeof LSIX!=='undefined'&&LSIX.on){const bt=KratorFurniture.batch({indexed:true});let n=0;
+  LS.ROOMS.list.forEach(r=>{if(r.furnish!=='vault'||!LSIX.placed(r))return;const R=LSIX.record(r.id);if(!R)return;
+   R.pieces.forEach(p=>{const D=LSIX.adapter.dims(p.key,p.v);
+    REGISTER({name:(KratorFurniture.get&&KratorFurniture.get(p.key)||{}).name||p.key,cls:'prop',kind:'furniture',key:'longsong_vault_piece_'+(n++),x:p.x,z:p.z,y:p.y,r:Math.max(D.w,D.d)/2,h:D.h,
+     tags:{culture:'order',setting:'room'},note:p.key+' (kits/catalog), placed in '+r.name});
+    bt.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.v,seed:p.seed,wealth:r.wealth,setting:'indoor'});});
+   if(R.lights.length){const l=R.lights[0];vlight(l[0],l[1],l[2],0xff7a30,1.6,10);}});
+  const g=bt.flush(scene);g.name='vault-pieces';
+  g.traverse(o=>{if(!o.isMesh)return;const f=o.material.userData&&o.material.userData.family;
+   o.material=f==='glow'?vaultMat(null,{emis:1}):vaultMat(null,{spec:/metal|gold|bronze|brass/.test(f||'')?.8:.15});
+   o.userData.vault=true;o.userData.host=true;o.userData.inspectLabel='The depths\' pieces (kits/catalog)';});}
  _mark('vault-rooms');})();
 
 // ---------------------------------------------------------------- THE PROCRASTINATOR
@@ -222,7 +254,10 @@ const PROC=(function(){const P=LS.PROCRASTINATOR,y0=P.y0,R=P.hallR,H=P.hallH,cx=
  // the turning: the wheel at its pace; the glyphs' pulse; the sealed things at a ten-thousandth of it (their breathing
  // over a century: nothing a visitor will see move)
  const lights0=VLIGHTS.map(L=>L.c.slice());
- TICKS.push((dt,t)=>{wheel.rotation.y=t*P.turn;VU.uT.value=t;const pulse=.75+.25*Math.sin(t*.9)+.08*Math.sin(t*3.7);VU.uPulse.value=pulse;
+ // the glyphs' burn: a flare and a long ebb on core/sched's timeline (a pure function of t: a port replays it), a
+ // quick flicker over it
+ const BURN=KSCHED.timeline({period:7.2,segments:[{dur:2,from:.55,to:1.08,ease:'inOut',name:'flare'},{dur:5.2,from:1.08,to:.55,ease:'out',name:'ebb'}]});
+ TICKS.push((dt,t)=>{wheel.rotation.y=t*P.turn;VU.uT.value=t;const pulse=BURN.at(t).value+.08*Math.sin(t*3.7);VU.uPulse.value=pulse;
   WL.forEach(i=>{const c=lights0[i],o=(i*2+1)*4;VLT[o]=c[0]*pulse;VLT[o+1]=c[1]*pulse;VLT[o+2]=c[2]*pulse;});VLTEX.needsUpdate=true;
   SLOWED.forEach(S=>{const ts=t*P.slow;S.G.rotation.y=S.base+.02*Math.sin(ts);});});
  return {wheel,SLOWED,lights:VLIGHTS};})();
@@ -294,12 +329,19 @@ VCHK.lit=(n,cap,shown)=>({ok:n>0&&n<=cap&&shown===n,detail:n+' lamps in the dept
 VCHK.joined=(rooms,doors)=>{const ids=rooms.map(R=>R.id),seen=new Set(['deep-stair']),q=['deep-stair'];
  while(q.length){const r=q.pop();for(const D of doors){const o=D.a===r?D.b:D.b===r?D.a:null;if(o&&!seen.has(o)){seen.add(o);q.push(o);}}}
  const miss=ids.filter(i=>!seen.has(i));return{ok:!miss.length&&ids.length>8,detail:ids.length+' rooms, '+doors.length+' doors'+(miss.length?'; not reached: '+miss.join(', '):'; every room reached from the Deep Stair')};};
+// the placer's pieces keep off what the rooms are for: none on the black circle and its chains, none in the cistern's basin
+// (40c: LS.VAULT_KEEPOUT; the placer got no fixture for them), every room the depths' kinds furnish holding its pieces
+VCHK.keepOut=pieces=>{const bad=[];let n=0;pieces.forEach(([V,p])=>{n++;LS.VAULT_KEEPOUT(V).forEach(K=>{if(p.x>K[0]&&p.x<K[1]&&p.z>K[2]&&p.z<K[3])bad.push(p.key+' on '+K[4]);});});
+ return{ok:n>0&&!bad.length,detail:n+' pieces in the depths\' furnished rooms'+(bad.length?'; '+bad.slice(0,4).join('; '):', none on the circle or in the basin')};};
+const vaultPieces=()=>LS.VAULT.filter(V=>LSIX.placed(LS.ROOMS.byId['lv.'+V.id])).flatMap(V=>LSIX.record('lv.'+V.id).pieces.map(p=>[V,p]));
 function vaultChecks(add){add('the Vault is under the rock, the Procrastinator deepest',VCHK.under(VAULT_ROOMS));
+ if(typeof LSIX!=='undefined'&&LSIX.on)add('the depths\' pieces keep off the circle and the basin',VCHK.keepOut(vaultPieces()));
  add('every lamp of the depths lights them',VCHK.lit(VLIGHTS.length,VNL,VU.uLN.value));
  add('the rooms of the depths all join (their doors)',VCHK.joined(VAULT_ROOMS,LS.VAULT_DOORS));
  add('the Procrastinator turns; its seals are slowed',VCHK.turning(LS.PROCRASTINATOR,LS.SEALED));
  add('one stair down',VCHK.oneWay(LS.VAULT));}
 function vaultNegatives(add){add('a lamp past the shader\'s ceiling',VCHK.lit(VNL+1,VNL,VNL));
+ {const V=LS.VAULT.find(v=>v.id==='cistern'),C=V.cistern;add('a jar set in the cistern\'s basin',VCHK.keepOut([[V,{key:'xanadu_common_store',x:(C.x0+C.x1)/2,z:(C.z0+C.z1)/2}]]));}
  add('the closed vault\'s door bricked up',VCHK.joined(VAULT_ROOMS,LS.VAULT_DOORS.filter(D=>D.b!=='closed-vault')));
  add('a vault room above ground',VCHK.under(VAULT_ROOMS.concat([{id:'up',x0:-200,x1:-190,z0:-150,z1:-140,y0:0,h:4}])));
  add('a wheel that does not slow its seals',VCHK.turning(Object.assign({},LS.PROCRASTINATOR,{slow:1}),LS.SEALED));

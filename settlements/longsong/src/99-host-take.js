@@ -6,8 +6,10 @@ const VIEWS=(function(){const V={},PR=LS.PROCRASTINATOR,T=LS.ROCK.top;
  V['Longsong from across the stream (north)']=[-160,62,-640,0,52,40];
  V['The White Palace from the avenue']=[0,gh(0,-120,1.7),-120,0,46,40];
  V['The Great Gate and the bridge']=[70,gh(70,-330,12),-330,0,gh(0,-200,8),-200];
- V['Over the ward from the Eastern Watch']=[96,T+9*4.5+3,118,-40,-4,-120];
- V['The Debate Court']=[24,T+14,26,-6,T+3,58];
+ V['Over the ward from the Eastern Watch']=[96,T+11*4.5+5,112,-40,-4,-120];   // over its top (11 storeys), not inside its louvres
+ V['The festival: the great thangka from the forecourt']=[104,2,-44,78,14,10];   // ?festival=1 (east of the stair's landing, which hides it from the west)
+ V['The pilgrims\' camp (festival days)']=[110,-1.2,-69,150,-4.2,-82];   // between the dairy and the infirmary
+ V['The Debate Court']=[16,T+32,34,-4,T+1,54];   // high over the court's south-east corner, clear of the ranges' roofs
  V['The roof: the gilded roofs and the Hall of Hours']=[-90,T+7*4.5+14,62,10,T+7*4.5+6,120];
  V['The drill ground (lightning hands)']=[LS.DRILL.x+26,gh(LS.DRILL.x,LS.DRILL.z,6),LS.DRILL.z-28,LS.DRILL.x,gh(LS.DRILL.x,LS.DRILL.z,1),LS.DRILL.z];
  V['The hermits\' cliff (east face)']=[290,30,60,150,20,90];
@@ -60,7 +62,9 @@ function describe(hit){const p=hit.point,o=hit.object;
  let words=head+'\n'+cls+(best&&best.tags&&best.tags.culture?' · '+KTAGS.VOCAB.cultureNames[best.tags.culture]:'')+(best&&best.tags&&best.tags.types?' · '+best.tags.types.join(', '):'');
  if(best&&best.sealed){const E=best.sealed;words+='\n'+E.id+' · class '+E.cls+'\n'+E.what+'\nProcedure: '+E.proc;}
  const Pn=o.userData.people?PEOPLE_DRAWN.personOf(o,hit.instanceId):null;
- if(Pn){const w=LS.whereAt(Pn,KHOST_CLOCK_H());words=PEOPLE_DRAWN.ROLE[Pn.role]+' ('+Pn.id+')\nlife · '+Pn.faction+' · '+Pn.sub+' · '+Pn.job+'\nnow: '+w.activity+(w.place?' ('+w.place.name+')':'')+'\nthe day: '+Pn.schedule.filter((a,h)=>h%3===0).map((a,k)=>(k*3)+'h '+a).join(', ');}
+ if(Pn){const w=LS.whereAt(Pn,KHOST_CLOCK_H()),A=PEOPLE_DRAWN.sim.on?SIM.get('actor',Pn.id):null,Pl=A&&A.place?SIM.get('place',A.place):null;   // SIM's answer once it runs
+  const now=A?(A.task&&SIM.pose(A,SIM.time()).moving?'walking to '+A.activity:A.activity)+(Pl?' ('+Pl.name+')':''):w.activity+(w.place?' ('+w.place.name+')':'');
+  words=PEOPLE_DRAWN.ROLE[Pn.role]+' ('+Pn.id+')\nlife · '+Pn.faction+' · '+Pn.sub+' · '+Pn.job+'\nnow: '+now+'\nthe day: '+Pn.schedule.filter((a,h)=>h%3===0).map((a,k)=>(k*3)+'h '+a).join(', ');}
  if(best&&best.note)words+='\n'+best.note;
  if(tg&&tg.harvest)words+='\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'');
  return words+'\n'+Z.name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
@@ -107,13 +111,20 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
  // depth: the near plane follows the camera's height (core/host 90-host-camera C.depth): with a fixed 0.5 m against 90 km
  // the courts' slabs and the ground fought a kilometre off (2026-10-19)
  scene,camera,renderer,ground:terrainH,clampCam,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,depth:true,
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
- clock:{hour:12,running:false,scale:1,speeds:[0,1,2,4,8],onSet:h=>{if(typeof placePeople==='function')placePeople(h);}},
+ // walking (F): the Great Stair's flights and landings and the base's top are floors, their masonry blocks (64 registers
+ // them in core/walk as it draws them); elsewhere the walker keeps to the ground (2026-10-20, the owner: it walked through
+ // the ramps)
+ walk:KWALK,
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},
+  // the world hour moves the sun, the light and the lamps (89x)
+  hour:h=>LSNIGHT.apply(h),objects:()=>[sky,giant,giantRing]},
+ clock:{hour:12,running:false,scale:1,speeds:[0,1,2,4,8],onSet:h=>{LSNIGHT.apply(h);if(typeof placePeople==='function')placePeople(h);}},
  inspect:describe,stats:()=>'inst '+window._instances+(typeof PEOPLE_DRAWN!=='undefined'?' · people '+PEOPLE_DRAWN.shown:''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the monastery':{match:o=>!!(o.userData&&o.userData.arch)},
   'the ground (see the Vault)':{match:o=>!!(o.userData&&(o.userData.ground||o.userData.rockface))},'the far land':{match:o=>!!(o.userData&&o.userData.far)},
   'the people':{match:o=>!!(o.userData&&o.userData.people)},'sky':{objects:()=>[sky,giant,giantRing]}},
- exporters:{biome:()=>BIO.export(),plan:()=>({plan:{site:LS.SITE,rock:LS.ROCK,buildings:LS.BUILDINGS,vault:LS.VAULT,procrastinator:LS.PROCRASTINATOR,sealed:LS.SEALED,places:LS.PLACES},people:LS.PEOPLE.map(P=>({id:P.id,role:P.role,faction:P.faction,sub:P.sub,job:P.job,schedule:P.schedule}))})},
+ // site: the biome export over the monastery's ground, sampled (45), and the stage (core/biome KSTAGE)
+ exporters:{biome:()=>BIO.export(),site:()=>BIO.export({box:[-480,-480,480,480]}),plan:()=>({plan:{site:LS.SITE,rock:LS.ROCK,buildings:LS.BUILDINGS,vault:LS.VAULT,procrastinator:LS.PROCRASTINATOR,sealed:LS.SEALED,places:LS.PLACES},people:LS.PEOPLE.map(P=>({id:P.id,role:P.role,faction:P.faction,sub:P.sub,job:P.job,schedule:P.schedule}))})},
  minimap:{title:'Longsong'},
  // the cutaway (X; ] [ a storey up, down): the palaces opened storey by storey, their rooms drawn as the cut shows them (87)
  cutaway:{units:LSIXD.UNITS,show:(u,i)=>LSIXD.cut(u,i)},
@@ -122,3 +133,17 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
   biome:()=>window._biome,far:()=>({rings:FAR.rings,around:FAR.around,water:FAR.water}),bridge:()=>BRIDGE,
   at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),zone:LS.zoneAt(x,z).zone};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});
+// ?festival=1: the page opens on the festival of the register (the seventh day of the week: 89y, 40d)
+if(new URLSearchParams(location.search).get('festival')==='1'&&_hostH&&_hostH.clock)_hostH.clock.day=LS.FESTIVAL.day;
+// the weather's selector beside the clock (core/atmos 9: auto, clear, rain, storm, fog; 89z applies it)
+if(typeof ATMOS!=='undefined'&&ATMOS.weatherUI&&KHOST.ui)ATMOS.weatherUI(KHOST.ui);
+// the next festival (2026-10-20, the owner): a button after the hour slider jumps the clock to the next festival day at
+// eight in the morning (today's, before its thangka is taken down), the people re-placed from their festival schedule
+window.LSFEST_NEXT=function(){const c=_hostH&&_hostH.clock;if(!c)return null;let d=c.day||0;
+ if(!(LS.isFestival(d)&&c.hour<LS.FESTIVAL.hung[1]))do d++;while(!LS.isFestival(d));
+ const h=Math.max(8,LS.isFestival(c.day||0)&&d===(c.day||0)?c.hour:8);c.day=d;c.set(h);LSNIGHT.apply(h);if(typeof placePeople==='function')placePeople(h);
+ const hr=document.getElementById('clk-hour');if(hr)hr.value=h;return d;};
+{const at=document.getElementById('clk-hour')||document.getElementById('clk-speeds');
+ if(at){const b=document.createElement('button');b.id='clk-festival';b.textContent='next festival';
+  b.title='jump to the next festival of the register (every seventh day): the thangka hung, the camp pitched';
+  b.onclick=()=>LSFEST_NEXT();at.parentNode.insertBefore(b,at.nextSibling);}}

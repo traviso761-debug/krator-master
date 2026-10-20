@@ -877,10 +877,10 @@ COVERS_HAIR = {'voth_m_trade_wrap', 'voth_f_trade_wrap', 'iziz_m_peasant_hood', 
                'yuni_m_trade_kufi', 'yuni_f_trade_gele', 'yuni_m_noble_hyperboloid', 'yuni_f_noble_hyperboloid',
                'rep_m_peasant_cap', 'rep_f_peasant_platok', 'rep_m_trade_ushanka', 'rep_f_trade_ushanka', 'rep_m_noble_papakha',
                'rep_f_noble_papakha', 'rep_m_fest_peasant_cap', 'rep_f_fest_peasant_platok', 'rep_m_fest_trade_ushanka',
-               'rep_m_fest_noble_papakha'}
+               'rep_m_fest_noble_papakha', 'order_m_elder_hat', 'order_f_elder_hat', 'xan_m_town_cap', 'xan_m_rich_turban', 'xan_f_rich_turban'}
 # the clothing tools/make_garments.py makes, by prefix: the people whose strangers draw it
 CULTURE = {'giant_dalab_': 'giants', 'giant_free_': 'free_giants', 'rep_': 'iron_republic', 'voth_': 'chichani', 'iziz_': 'izani', 'beast_': 'beast_riders', 'hykk_': 'hykkousoi', 'dalab_': 'dalabites',
-           'yuni_': 'yuni'}
+           'yuni_': 'yuni', 'order_': 'historians', 'xan_': 'xanadu'}
 
 
 def culture_of(iid):
@@ -906,12 +906,47 @@ def rot_axis(a, t):
     return np.eye(3) + math.sin(t) * K + (1 - math.cos(t)) * K @ K
 
 
+def merge_kit(body, src, pieces, data, items, roles, mat, ntris):
+    """main()'s --merge: the partial export's items, their morph deltas packed, into data/<body>/kit.json, and their pieces
+    into pieces/<body>/ beside the rest. The Godot twin's base cover regions (base.gshapes.bin) are not remade: a merged
+    item does not hide the skin under it there until the next whole build (KNOWN_ISSUES.md)"""
+    name = 'mpfb_' + body
+    kit = json.load(open(os.path.join(data, 'kit.json')))
+    assert kit['base_tris'] == ntris and kit['base_material'] == mat, 'the partial export\'s base is not the kit\'s'
+    npz_path = os.path.join(src, 'morphs.npz')
+    if os.path.exists(npz_path):
+        npz = np.load(npz_path)
+        for it in items:
+            g = os.path.join(pieces, it['id'] + '.glb')
+            open(os.path.join(pieces, it['id'] + '.morph.bin'), 'wb').write(pack_morphs(mesh_entries(g, lambda n: it['id']), npz))
+            open(os.path.join(pieces, it['id'] + '.gshapes.bin'), 'wb').write(godot_shapes(g, lambda n: it['id'], npz))
+    have = {e['id']: i for i, e in enumerate(kit['items'])}
+    for e in items:
+        if e['id'] in have:
+            kit['items'][have[e['id']]] = e
+        else:
+            kit['items'].append(e)
+    kit['tint']['roles'].update({k: v for k, v in roles.items() if k not in kit['tint']['roles']})
+    out = os.path.join(HERE, 'pieces', name)
+    os.makedirs(out, exist_ok=True)
+    for f in os.listdir(pieces):
+        if f.split('.')[0] in {e['id'] for e in items}:
+            shutil.copy(os.path.join(pieces, f), os.path.join(out, f))
+    json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)
+    print(name, 'merged', len(items), 'items:', len(kit['items']), 'in the kit')
+
+
 def main():
     body, src = sys.argv[1], sys.argv[2]
+    # --merge: src is a partial export (mpfb_build.py --only): its items are packed and added to the kit as it stands
+    # (replaced by id, new ones after the rest); the base, the skeleton, the mods and the other pieces are left alone
+    merge = '--merge' in sys.argv
     name = 'mpfb_' + body
     big = body == 'giant'              # giant.py: the man's export, made big
     pieces = os.path.join(HERE, 'pieces', name)
     data = os.path.join(HERE, 'data', name)
+    if merge:
+        pieces = os.path.join(src, 'pieces')
     if os.path.isdir(pieces):          # nothing left over from items no longer in the export
         shutil.rmtree(pieces)
     os.makedirs(pieces, exist_ok=True)
@@ -933,7 +968,7 @@ def main():
         man['items'] = [it for it in man['items'] if giant.wears(it['id'])]
     crotch = c.jpos[c.J['LeftUpLeg']][1] - 0.06
     # the mods (mods.py: a second pair of arms, flesh or cybernetic; rib gills), worn like items in slot 'mods'
-    mod_items, mod_roles = mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name)
+    mod_items, mod_roles = ([], {}) if merge else mods.make_all(os.path.join(pieces, 'base.glb'), pieces, name)
     roles.update(mod_roles)
     print(name, 'mods:', ', '.join(m['id'] for m in mod_items))
     for it in man['items']:
@@ -1006,6 +1041,8 @@ def main():
         items.append(entry)
         print('%-8s %-6s %-34s hides %5d' % (name, it['slot'], it['id'], entry.get('hides', 0)))
     items += mod_items
+    if merge:
+        return merge_kit(body, src, pieces, data, items, roles, mat, len(BT))
     npz_path = os.path.join(src, 'morphs.npz')
     morph = {}
     if os.path.exists(npz_path):

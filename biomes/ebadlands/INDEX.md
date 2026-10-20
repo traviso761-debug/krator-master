@@ -21,7 +21,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `35-core-strata.js` | 9 |  |
-| `45-host-stage.js` | 26 | the land (43); the climate fields (cached below; these are the  (99); the host binding (132); the ground (144); the water (243) |
+| `45-host-stage.js` | 27 | the land (43); the climate fields (cached below; these are the  (99); the host binding (132); the ground (144); the water (248) |
 | `50-biome-ebadlands-species.js` | 52 **big** | palettes (22); the tree species (58); harvest (biomes/FRUIT.md) (103); the small plants (the floor and the dressing), t (128); leaf textures (154); bark, rock, wood textures (261); geometries local to this biome (303); the library cards (core/materials/PLAN.md, Easte (427); materials (446); instanced items (498) |
 | `55-biome-ebadlands-trees.js` | 43 **big** | zones from the fields (14); colour (the maths is the core's, BIO.col) (55); polyline helpers (Girder's) (70); keep-clear between trees (81); foliage helpers (88); the builders (116); impostors (the far canopy) (334); the pass (370); the passes (data: species, cell, acceptance from (404); one tree alone (biomes/WORLD.md: trees as varian (437) |
 | `60-biome-ebadlands-floor.js` | 21 | fields local to the floor (30); small plants (35); the zone planters (115); the pass (201) |

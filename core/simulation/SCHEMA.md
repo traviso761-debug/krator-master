@@ -175,11 +175,12 @@ A page may hold several settlements, each with its own economy (`settlements/isl
 - **People.** A role may name its `settlement`: its actors live in that town's homes only, and every actor's work is
   dealt among the places of its home's town. `SIM.populate({settlement, prefix})` deals one town's roles over its own
   beds (call it once a town); its result counts `bySettlement`.
+  A role's `work.near: true` (opt-in, any page) deals each actor the nearest place of its kinds with a post free.
 - **The search.** The resolver looks for a place in the actor's own town first and anywhere only when its town has
   none (`SIM.placesFor(..., {settlement})` filters by town); an errand's seller likewise.
 - **The items' books.** Each town's stocks count only its own households' food and its own people's things (by their
   home), and its item flows (bought, eaten, worn, issued, broken, unmet) from the items module's books by town
-  (`SIM.ITEMS.statsBy[s]`).
+  (`SIM.ITEMS.statsBy[s]`), which also count its meals (`statsBy[s].meals`, the shape of `stats.meals`).
 - **Trade between settlements** (`77-sim-6-trade.js`): `SIM.trade({id, stops:[{settlement, place}, ...], cap,
   carriers?, minutes? | line?, mins?, goods?, keep?, want?, most?})`. A carrier goes round the stops on a timer
   (`minutes` a passage, `mins` a stay) or as a `SIM.transport` line's vehicle. Leaving a landing it buys from that
@@ -209,6 +210,13 @@ A settlement runs at one of three levels, chosen by the player's window, never b
   each cart part-way along its trip (the lag). Lowering it keeps every record and drops only the poses.
 - A carrier between two settlements is a record while away: it leaves one settlement's books (exported) and lands in the
   other's (imported) after its route's minutes; while at sea it is counted `in transit`.
+- **In code** (`77-sim-7-lod.js`, P7d): `SIM.level(s, 'abstract' | 'presented')`, `SIM.levelOf(s)`. Abstract: `SIM.step`
+  and `SIM.jump` skip the town's actors; a producer makes by the workers whose schedule says WORK at their job and its
+  animals at home, at the efficiency they had when lowered; a cart's trip is the straight line times
+  `SIM.ABSTRACT_DETOUR` at its speed, with no route; households eat from their stores (a mess from the warehouses) and
+  restock when low (`SIM.itemsAbstractHome`), booked as a watched town books them. Meals out, errands and wear wait.
+  Raised: every actor decided afresh (SIM.jump's rule), and a cart on a trip given its route, arriving at the same
+  minute.
 - The abstract-level week test (`settlements/isle-demo/PLAN.md` section 7) fast-forwards a week with one town in the
   window, then the other, and checks the books, every load and the arrival after days away.
 
@@ -226,6 +234,12 @@ with its cost from the nearest and which one (`{d, src}`): Voth's city deals 22,
 `SIM.export()` -> `{format:'krator-sim', version:1, convention, clock, activities, factions, orgs, relations, presence,
 places, roles, actors, groups, events, ports, transports, nav, log}` in these record shapes. The convention block is the atmos and
 biome exports' (metres, +Y up, x east, z south, radians about +Y).
+
+`SIM.exportMotion({times, actors})` -> `{t, times, actors, routes, rows}`: the motion a port replays (`ksim.gd`, `KSim.pose`):
+each actor's baked task (legs by route index, speed, duration, back, side, mode; the spot, the wander) and pose fields, the
+routes once each, and the trace `rows` (`SIM.pose` at `times` motion seconds after now: [t, actor index, hidden, moving, x,
+y, z, h]). Lifted from Dhelv's export on 2026-10-20 (the isle demo's P8); Dhelv's builder and this one give the same bytes at
+the same instant (651 actors, 3,906 rows).
 
 ## Audits (`window._sim`)
 
