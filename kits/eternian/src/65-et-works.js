@@ -10,7 +10,7 @@ defBuilding({key:'et_kiln',name:'Kiln works',seed:7401,cut:true,w:26,d:26,h:14,b
  tags:{types:['industry'],wealth:'middle',style:'common',job:'pottery'},
  note:'a hexagonal court of brick sheds round three bottle kilns, clay heaps and stacks of fired brick, a gate through the front shed',
  build(o){const br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),RO=12,RI=8,G=.3,H=3.4,api=RI*ET_HEX_AP,apo=RO*ET_HEX_AP,dep=apo-api;
-  prism('stone',etHex(RO+.3),0,G,P('stoneD'));prism('earth',etHex(RI),G-.05,G,P('earth'));
+  prism('stone',etHex(RO+.3),0,G,P('stoneD'));prism('earth',etHex(RI),G-.02,G+.03,P('earth'));
   etHexFaces((api+apo)/2,(k)=>{const front=k===1,zi=-dep/2+ET_T/2,zo=dep/2-ET_T/2;
    pushM(TF(0,0,zi,PI));etWall(RI,G,H,'brick',br,front?[{x:0,w:2.4,h:2.8,gap:true}]:[{x:-1.5,w:2.4,h:2.6,gap:true},{x:1.8,w:1.0,h:1.2,y:1.0,dark:true,head:'flat'}],{frame:brD});popM();
    pushM(TF(0,0,zo));etWall(RO,G,H,'brick',br,front?[{x:0,w:2.4,h:2.8,gap:true}]:[{x:-2,w:.8,h:.9,y:1.6,dark:true,head:'flat',shut:false},{x:2,w:.8,h:.9,y:1.6,dark:true,head:'flat',shut:false}],{frame:brD});popM();

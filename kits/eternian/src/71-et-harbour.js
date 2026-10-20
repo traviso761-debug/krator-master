@@ -44,7 +44,7 @@ defBuilding({key:'et_spillway',name:'Spillway face',seed:7706,cls:'feature',kind
 defBuilding({key:'et_canal_landing',name:'Canal landing',seed:7707,w:12,d:12,h:5,budget:20000,front:{x:0,z:6,yaw:0},
  tags:{types:['infrastructure'],wealth:'poor',style:'common',job:'trading'},
  note:'steps down the quay to the water, mooring posts, a kiosk for the bargemen and a moored barge',
- build(o){const sd=P('stoneD');box('stone',0,0,-3,12,ET_QUAY,6,sd);box('paving',0,ET_QUAY-.03,-3,12,.04,6,P('paving'));
+ build(o){const sd=P('stoneD');box('stone',0,0,-3,12,ET_QUAY,6,sd);box('paving',0,ET_QUAY-.02,-3,12,.05,6,P('paving'));
   box('water',0,0,3,12,.55,6,new THREE.Color(ET_WATER));for(let k=0;k<4;k++)box('stone',-3,0,.3+k*.35,3,ET_QUAY-.25*(k+1),.35,sd);
   for(const x of [1,4])cyl('bronze',x,ET_QUAY,-.4,.1,.5,P('bronze'),8);
   pushM(TF(3,ET_QUAY,-4));etTrade({w:3,d:2.4,G:.1,roof:'pent',mask:'lead'});popM();
@@ -73,7 +73,7 @@ defBuilding({key:'et_fish_landing',name:'Fish landing',seed:7709,w:14,d:16,h:4,b
 defBuilding({key:'et_quay',name:'Quay',seed:7710,w:32,d:14,h:12,budget:40000,front:{x:0,z:7,yaw:0},
  tags:{types:['infrastructure'],wealth:'middle',style:'ministry',job:'trading'},
  note:"Farport's stone quay: bollards, a crane over the berth, the coast guard's watch kiosk, cargo on the stones",
- build(o){const sd=P('stoneD');box('stone',0,0,-2,32,2.2,10,sd);box('paving',0,2.17,-2,32,.05,10,P('paving'));box('water',0,0,5.2,32,1.2,4.4,new THREE.Color(ET_WATER));
+ build(o){const sd=P('stoneD');box('stone',0,0,-2,32,2.2,10,sd);box('paving',0,2.18,-2,32,.07,10,P('paving'));box('water',0,0,5.2,32,1.2,4.4,new THREE.Color(ET_WATER));
   for(let x=-14;x<=14;x+=4)cyl('bronze',x,2.2,2.6,.16,.6,P('bronze'),8);
   pushM(TF(8,2.2,-1));box('timber',0,0,0,.6,9,.6,P('timber'));beam('timber',[0,8.6,0],[0,7.4,5.2],.4,P('timber'));box('iron',0,5.4,5,.04,2,.04,P('iron'));popM();
   pushM(TF(-11,2.2,-4));etTrade({plan:'hex',R:2.2,G:.15,mk:'brick',roof:'pyramid',mask:'lead',steel:true});popM();

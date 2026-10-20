@@ -88,7 +88,7 @@ defBuilding({key:'et_inn',name:'Caravan inn',seed:7418,cut:true,w:22,d:20,h:15,b
    for(let i=0;i<6;i++){const a=i*PI/3+PI/6;if(i===1)continue;pushM(TF(Math.cos(a)*9,0,Math.sin(a)*9,PI/2-a));box('timber',0,0,0,4.5,.05,2.4,P('earth'));etPent(4.6,2.4,2.6,3.0,{mk:'reed',col:P('reed'),ov:.2});for(const x of [-2.2,2.2])box('timber',x,0,1.1,.15,2.6,.15,P('timber'));popM();}}
   else{pushM(TF(0,0,-5.5));etTrade({w:16,d:7,storeys:2,roof:'gable',roofMk:'tile',furn:[['eternian_common_table',-3,0,0],['eternian_common_table',2,0,0],['eternian_common_bench',-3,1.2,PI],['generic_ale',6,-2.7,0],['eternian_common_bed',-5,-2.3,0,1],['eternian_common_bed',3,-2.3,0,1],['eternian_poor_hearth',6,-2.9,0]]});popM();
    for(const s of [-1,1]){pushM(TF(s*9,0,3,s*PI/2));box('earth',0,0,0,12,.05,3.4,P('earth'));etPent(12,3.4,2.8,3.3,{mk:'reed',col:P('reed'),ov:.2});for(let i=0;i<4;i++)box('timber',-4.5+i*3,0,1.6,.15,2.8,.15,P('timber'));popM();}
-   box('block',0,0,9.6,20,2.4,.4,P('block'));box('earth',0,.02,3,16,.04,12,P('earth'));
+   box('block',0,0,9.6,20,2.4,.4,P('block'));box('earth',0,0,3,16,.03,12,P('earth'));
    cyl('stone',3,0,3,.9,.8,P('stoneD'),12);box('stone',-3,0,3,2.4,.6,.8,P('stoneD'));}}});
 
 /* the healer: a hexagonal house of healing round its herb court, the beds in the wards (healers and nurses) */

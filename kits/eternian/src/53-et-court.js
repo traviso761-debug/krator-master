@@ -19,7 +19,7 @@ defBuilding({key:'et_heir_pavilion',name:"Heir's pavilion",seed:7301,cut:true,w:
   // the pool, its kerb, the podium and the causeway
   box('stone',0,0,0,S-.8,.03,S-.8,new THREE.Color(sd).multiplyScalar(.6));box('water',0,.03,0,S-.8,.4,S-.8,wc);
   for(const [x,z,w,d] of [[0,S/2-.2,S,.4],[0,-S/2+.2,S,.4],[S/2-.2,0,.4,S-.8],[-S/2+.2,0,.4,S-.8]])box('stone',x,0,z,w,.55,d,sd);
-  prism('stone',etOct(5.2),0,Y-.06,sd);prism('paving',etOct(5.0),Y-.06,Y,P('paving'));
+  prism('stone',etOct(5.2),0,Y-.06,sd);prism('paving',etOct(5.0),Y-.03,Y+.03,P('paving'));
   box('stone',0,0,6.05,2.6,Y,2.6,sd);for(let k=0;k<3;k++)box('stone',0,0,7.55+k*.3,2.6,Y-.3-k*.3,.3,sd);
   // the piers at the corners; the faces between them
   for(const q of etOct(R))box('bronze',q[0],Y,q[1],.3,HP,.3,P('bronze'));
@@ -44,7 +44,7 @@ defBuilding({key:'et_heir_gallery',name:"Heirs' gallery",seed:7302,w:16.4,d:7.4,
  build(o){const L=16,Y=1.4,H=4.2,sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(P('brick')).multiplyScalar(.86);
   box('stone',0,0,0,L,.03,7,new THREE.Color(sd).multiplyScalar(.6));box('water',0,.03,0,L,.4,7,new THREE.Color(ET_WATER));
   for(let i=0;i<5;i++)box('stone',-L/2+i*4,0,0,.9,Y-.4,4.4,sd);
-  box('stone',0,Y-.4,0,L,.4,4.4,sd);box('paving',0,Y-.04,0,L,.05,4.0,P('paving'));
+  box('stone',0,Y-.4,0,L,.4,4.4,sd);box('paving',0,Y-.02,0,L,.05,4.0,P('paving'));
   // the wall behind, a niche and a head every bay
   box('brick',0,Y,-2.0,L,H,.4,br);
   ['gold','silver','bronze','gunmetal'].forEach((m,i)=>{const x=-6+i*4;

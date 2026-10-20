@@ -13,7 +13,7 @@ defBuilding({key:'et_ancestor_gallery',name:'Ancestor gallery',seed:7130,cut:tru
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=.8,W=11,D=24,H=9,dk=new THREE.Color(sd).multiplyScalar(.45);
   box('stone',0,0,0,W+1,G,28,sd);
   pushM(TF(0,0,-1.5));
-   box('paving',0,G-.04,0,W-.6,.05,D-.6,P('paving'));
+   box('paving',0,G-.02,0,W-.6,.05,D-.6,P('paving'));
    etWalls(W,D,G,H,'brick',br,{back:[{x:0,w:1.0,h:2.2,y:4.5,steel:true,shut:false}]},{frame:brD});
    for(const s of [-1,1]){pushM(TF(s*W/2,0,0,s*PI/2));for(let i=0;i<5;i++)etLancet(-9.6+i*4.8,G+5.2,.01,.9,3.2,{light:'glass'});popM();}
    // the rows of heads, facing the aisle
@@ -70,7 +70,7 @@ defBuilding({key:'et_mask_house',name:'Mask house',seed:7133,cut:true,w:15,d:11,
  note:'a lime workshop and mortuary, a bottle kiln in the yard, racks of masks drying with their eyes closed',
  build(o){const lime=P('lime'),ls=P('limeShade'),G=.3,W=9,D=7;
   pushM(TF(-2.5,0,0));
-   box('stone',0,0,0,W+.3,G,D+.3,P('stoneD'));box('paving',0,G-.04,0,W-.5,.05,D-.5,P('paving'));
+   box('stone',0,0,0,W+.3,G,D+.3,P('stoneD'));box('paving',0,G-.02,0,W-.5,.05,D-.5,P('paving'));
    etWalls(W,D,G,3.4,'lime',lime,{front:[{x:-2.4,w:1.2,h:2.4,door:true,maskMetal:'terracotta'},{x:1.4,w:1.2,h:1.4,y:.9},{x:3.3,w:.9,h:1.4,y:.9}],
     right:[{x:1.6,w:1.0,h:2.2,door:true,mask:false}],back:[{x:-2,w:.8,h:.9,y:1.4}]});
    box('lime',.6,G,-1.0,W-1.2,3.4,.2,lime);                                              /* the mortuary behind its wall */
@@ -95,7 +95,7 @@ defBuilding({key:'et_historians_house',name:"Historians' chapter house",seed:713
  note:'a brick chapter hall with lancets under grey tile, an archive tower of three stepped piers with a verdigris needle; shelves of registers inside',
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=.5,W=12,D=8,H=6;
   pushM(TF(2,0,0));
-   box('stone',0,0,0,W+.4,G,D+.4,sd);box('paving',0,G-.04,0,W-.5,.05,D-.5,P('paving'));
+   box('stone',0,0,0,W+.4,G,D+.4,sd);box('paving',0,G-.02,0,W-.5,.05,D-.5,P('paving'));
    etWalls(W,D,G,H,'brick',br,{front:[{x:0,w:1.3,h:2.6,door:true,maskMetal:'lead',leaf:P('timber')}],back:[{x:-3,w:1.0,h:2.0,y:2.4,steel:true,shut:false},{x:3,w:1.0,h:2.0,y:2.4,steel:true,shut:false}]},{frame:brD});
    for(const x of [-4,-2,2,4])etLancet(x,G+1.4,D/2+.01,.9,3.6,{light:'glass'});
    etGable(W,D,G+H,3.0,{mk:'tile',ribs:.3,ov:.45,wallMk:'brick',wallCol:br});

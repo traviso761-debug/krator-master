@@ -106,6 +106,6 @@ defBuilding({key:'et_relic_hall',name:'Relic hall',seed:7124,w:22,d:27,h:18,budg
     box('white',0,AB-.2,-D/2,11.4,.5,.5,wh);}
    /* the hall's back wall, an arch into the apse; the apse's floor */
    box('brick',-5.5,G,-D/2,5,H,.8,br);box('brick',5.5,G,-D/2,5,H,.8,br);box('brick',0,G+6.4,-D/2,6,H-6.4,.8,br);
-   box('stone',0,G+6.0,-D/2,6.4,.4,1.0,sd);box('paving',0,G-.04,-D/2-2.7,10.6,.05,5.3,P('paving'));
+   box('stone',0,G+6.0,-D/2,6.4,.4,1.0,sd);box('paving',0,G-.02,-D/2-2.7,10.6,.05,5.3,P('paving'));
    for(const y of [G+1.6,G+3.6,G+5.6])lathe('glow',0,-D/2,[[5.45,y],[5.45,y+.08]],18,cy,{a0:PI,a1:TAU,uv:'arc'});
   popM();}});

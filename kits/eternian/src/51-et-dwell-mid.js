@@ -17,7 +17,7 @@ defBuilding({key:'et_court_house',name:'Court house',seed:7005,cut:true,w:14.4,d
    box('block',s*6.85,0,5.2,.3,2.4,3.3,bl);box('lime',s*6.85,2.4,5.2,.4,.12,3.3,ls);}
   // the hall across the back
   pushM(TF(0,0,-4.7));
-   box('stone',0,0,0,14.2,G,4.8,P('stoneD'));box('paving',0,G-.04,0,13.4,.05,4.0,P('paving'));
+   box('stone',0,0,0,14.2,G,4.8,P('stoneD'));box('paving',0,G-.02,0,13.4,.05,4.0,P('paving'));
    etWalls(14,4.6,G,3.0,'lime',lime,{front:[{x:0,w:1.2,h:2.3,door:true,maskMetal:'terracotta'},{x:-1.9,w:1.0,h:1.4,y:.9},{x:1.9,w:1.0,h:1.4,y:.9}],
     back:[{x:-3,w:1.0,h:1.3,y:1.0},{x:3,w:1.0,h:1.3,y:1.0}],left:[{x:0,w:.9,h:1.2,y:1.0}],right:[{x:0,w:.9,h:1.2,y:1.0}]});
    etGable(14,4.6,G+3.0,2.2,{mk:'tile',ribs:.3,ov:.45,wallMk:'lime',wallCol:lime});
@@ -50,7 +50,7 @@ defBuilding({key:'et_corner_turret',name:'Corner turret',seed:7006,cut:true,w:11
  note:'three storeys on a canal corner: a shop below, two flats above, a round turret on the corner under a verdigris cap, a lantern on an iron bracket',
  build(o){const W=9,G0=.4,F1=3.6,F2=6.8,R0=10.0,lime=P('lime'),ls=P('limeShade'),bl=P('block'),TX=W/2,TR=1.5;
   pushM(TF(-.75,0,-.75));
-  box('stone',0,0,0,W+.3,G0,W+.3,P('stoneD'));box('paving',0,G0-.04,0,W-.5,.05,W-.5,P('paving'));
+  box('stone',0,0,0,W+.3,G0,W+.3,P('stoneD'));box('paving',0,G0-.02,0,W-.5,.05,W-.5,P('paving'));
   const win=y=>[{x:-2.8,w:1.0,h:1.5,y:y},{x:-.4,w:1.0,h:1.5,y:y}],side=y=>[{x:.2,w:1.0,h:1.5,y:y},{x:2.4,w:1.0,h:1.5,y:y}];
   etWalls(W,W,G0,F1-G0,'block',bl,{front:[{x:-2.5,w:3.0,h:2.6,y:.1,gap:true},{x:1.4,w:1.1,h:2.3,door:true,maskMetal:'terracotta'}],
    right:side(1.0),back:[{x:2.2,w:1.0,h:2.2,door:true,mask:false},{x:-1.5,w:1.0,h:1.3,y:1.0}],left:[{x:0,w:1.0,h:1.3,y:1.0}]},{frame:new THREE.Color(bl).multiplyScalar(.92)});

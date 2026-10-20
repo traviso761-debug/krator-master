@@ -13,7 +13,7 @@ defBuilding({key:'et_canal_house',name:'Canal house',seed:7001,cut:true,w:10,d:1
  build(o){const W=9,D=8,G0=.4,G1=3.6,U1=7.0,lime=P('lime'),ls=P('limeShade'),BX0=.6,BX1=3.8,BC=(BX0+BX1)/2,BW=BX1-BX0;
   pushM(TF(0,0,1));   /* the block stands 1 m forward of the def's centre so the kitchen and yard fit behind it */
   box('stone',0,0,0,W+.3,G0,D+.3,P('stoneD'));                                            /* the plinth */
-  box('paving',0,G0-.06,0,W-.5,.06,D-.5,P('paving'));                                    /* the ground floor */
+  box('paving',0,G0-.03,0,W-.5,.06,D-.5,P('paving'));                                    /* the ground floor */
   // the ground storey: the door on the left, the bay's opening on the right, windows all round
   etWalls(W,D,G0,G1-G0,'lime',lime,{
    front:[{x:-2.6,w:1.15,h:2.35,door:true,maskMetal:'terracotta'},{x:BC,w:BW-.6,h:2.8,y:.1,gap:true}],
@@ -45,7 +45,7 @@ defBuilding({key:'et_canal_house',name:'Canal house',seed:7001,cut:true,w:10,d:1
   box('lime',BC,U1+.6,D/2+.5,BW+.2,.2,1.25,ls);box('lime',BC,U1+.8,D/2+.55,BW-.6,.25,1.05,lime);box('lime',BC,U1+1.05,D/2+.6,BW-1.4,.3,.85,ls);
   // the kitchen behind, under a grey-tiled pent roof
   pushM(TF(-2.0,0,-D/2-1.5));
-   box('stone',0,0,0,4.6,G0,3.2,P('stoneD'));box('paving',0,G0-.06,0,4.1,.06,2.7,P('paving'));
+   box('stone',0,0,0,4.6,G0,3.2,P('stoneD'));box('paving',0,G0-.03,0,4.1,.06,2.7,P('paving'));
    etWalls(4.4,3,G0,2.6,'lime',lime,{back:[{x:.6,w:.95,h:2.1,door:true,maskMetal:'lead'}],left:[{x:0,w:.9,h:1.0,y:1.1}],front:[{x:0,w:1.0,h:2.2,gap:true}]});
    box('tile',0,G0+2.75,-.1,4.9,.14,3.6,P('tile'),0,-.13);
    for(let i=0;i<7;i++)box('tile',-2.1+i*.7,G0+2.82,-.1,.08,.08,3.5,new THREE.Color(P('tile')).multiplyScalar(.8),0,-.13);

@@ -25,7 +25,9 @@ function etSheet(mk,p0,p1,p2,th,col){const T=TILE[mk]||1;
  const mid=new THREE.Vector3(p0[0],p0[1],p0[2]).addScaledVector(e1,.5).addScaledVector(e2,.5);
  emit(mk,gbox(),new THREE.Matrix4().compose(mid,q,new THREE.Vector3(L1,th,L2)),col,{su:L1/T,sv:L2/T});}
 /* a flat outline drawn both ways: the top in mk, the underside (a soffit, seen from inside a cut-away) in col2 */
-function etPoly2(mk,pts,col,col2){etPoly(mk,pts,col);etPoly(mk,pts.slice().reverse(),col2||col);}
+/* the underside is dropped 0.12 m: drawn in the top's own plane it z-fought it from afar (the owner, 2026-10-20) */
+const ET_SOFFIT=.12;
+function etPoly2(mk,pts,col,col2){etPoly(mk,pts,col);etPoly(mk,pts.map(p=>[p[0],p[1]-ET_SOFFIT,p[2]]).reverse(),col2||col);}
 
 /* ---------------------------------------------------------------- the gable: the ridge along x, h above the eaves at y,
    w x d under it; o.ov the eaves' overhang, o.gov the gables', o.th the sheet; o.ribs a tile course every o.ribs metres
@@ -50,7 +52,7 @@ function etHip(w,d,y,h,o){o=o||{};const mk=o.mk||'celadon',col=o.col||etKeyCol(m
  const E=(sx,sz)=>[sx*X,ye,sz*Z],R=(sx,sz)=>[sx*rx,yr,sz*rz],un=o.under||P('timber');
  /* each slope's UVs run along its eave (u) and up the slope (v), so a sheet's tile rolls run down every face */
  const face=(pts,ax)=>{const uv=pts.map(p=>ax?[p[2],Math.hypot(X-Math.abs(p[0]),p[1]-ye)]:[p[0],Math.hypot(Z-Math.abs(p[2]),p[1]-ye)]);
-  etPolyUV(mk,pts,uv,col);etPoly(mk,pts.slice().reverse(),un);};
+  etPolyUV(mk,pts,uv,col);etPoly(mk,pts.map(p=>[p[0],p[1]-ET_SOFFIT,p[2]]).reverse(),un);};
  face([E(-1,1),E(1,1),R(1,1),R(-1,1)],0);face([E(1,-1),E(-1,-1),R(-1,-1),R(1,-1)],0);
  face([E(1,1),E(1,-1),R(1,-1),R(1,1)],1);face([E(-1,-1),E(-1,1),R(-1,1),R(-1,-1)],1);
  const cap=o.cap||new THREE.Color(col).multiplyScalar(.8);
@@ -86,7 +88,7 @@ const ET_OCT0=Math.PI/8;
 function etOgee(R,y,h,o){o=o||{};const mk=o.mk||'scale',col=o.col||(mk==='gilt'?new THREE.Color(1,1,1):P('bronze')),seg=o.seg||8,A0=o.a0==null?ET_OCT0:o.a0;
  const prof=[[R,y],[R*.96,y+h*.08],[R*.86,y+h*.2],[R*.7,y+h*.36],[R*.5,y+h*.52],[R*.3,y+h*.68],[R*.16,y+h*.82],[R*.08,y+h*.94],[.06,y+h]];
  lathe(mk,0,0,prof,seg,col,{a0:A0,a1:A0+TAU});
- lathe(mk,0,0,[[R*.05,y+h*.995],[R,y+.02]],seg,o.under||P('timber'),{a0:A0,a1:A0+TAU,inward:true});
+ lathe(mk,0,0,prof.map(q=>[q[0]*.97,q[1]-ET_SOFFIT]).reverse(),seg,o.under||P('timber'),{a0:A0,a1:A0+TAU,inward:true});   /* the underside follows the curve, inside it */
  /* the eave's band, and the gold finial: a stepped base, a ball, a needle */
  const ec=o.band||P('bronze');for(let i=0;i<seg;i++){const a=A0+i*TAU/seg,b=A0+(i+1)*TAU/seg;beam('bronze',[R*Math.cos(a),y-.1,R*Math.sin(a)],[R*Math.cos(b),y-.1,R*Math.sin(b)],.2,ec);}
  const g=KIT_HAS('gold')?new THREE.Color(1,1,1):P('gold'),f=o.finial==null?Math.max(1,h*.3):o.finial;

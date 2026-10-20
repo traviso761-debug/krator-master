@@ -40,7 +40,7 @@ defBuilding({key:'et_registry',name:'Registry',seed:7102,cut:true,w:30,d:18,h:17
  note:'a long hall of pale brick, seven lancets between pilasters, a civic door held by two ancestors, a celadon hip; a stone vault behind; the clerks and the registers inside',
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=.8,W=26,D=10,H=8;
   box('stone',0,0,0,W+1,G,D+1,sd);for(let k=0;k<3;k++)box('stone',0,0,D/2+.8+k*.3,6-k*.5,G-k*.25,.3,sd);
-  box('paving',0,G-.04,0,W-.6,.05,D-.6,P('paving'));
+  box('paving',0,G-.02,0,W-.6,.05,D-.6,P('paving'));
   etWalls(W,D,G,H,'brick',br,{back:[{x:-8,w:1.2,h:2.2,y:4,steel:true,shut:false},{x:8,w:1.2,h:2.2,y:4,steel:true,shut:false}],
    left:[{x:0,w:1.2,h:2.2,y:4,steel:true,shut:false}],right:[{x:0,w:1.2,h:2.2,y:4,steel:true,shut:false}]},{frame:brD});
   for(let i=0;i<8;i++){const x=-W/2+.4+i*(W-.8)/7;box('brick',x,G,D/2+.15,.6,H,.3,brD);}
@@ -95,7 +95,7 @@ defBuilding({key:'et_customs_house',name:'Customs house',seed:7104,cut:true,w:21
  tags:{types:['civic'],wealth:'middle',style:'ministry'},
  note:'the weighing hall under celadon behind a raised brick gate wall with a great oculus over the gate; scales, clerks and goods inside',
  build(o){const sd=P('stoneD'),br=P('brick'),brD=new THREE.Color(br).multiplyScalar(.86),G=.4,W=19,D=10,H=6.5;
-  box('stone',0,0,0,W+.6,G,D+.6,sd);box('paving',0,G-.04,0,W-.6,.05,D-.6,P('paving'));
+  box('stone',0,0,0,W+.6,G,D+.6,sd);box('paving',0,G-.02,0,W-.6,.05,D-.6,P('paving'));
   etWalls(W,D,G,H,'brick',br,{front:[{x:-6,w:1.1,h:2.0,y:1.2,steel:true,shut:false},{x:6,w:1.1,h:2.0,y:1.2,steel:true,shut:false}],
    back:[{x:0,w:3.6,h:3.8,gap:true}],left:[{x:0,w:1.1,h:2.0,y:1.2,steel:true,shut:false}],right:[{x:0,w:1.1,h:2.0,y:1.2,steel:true,shut:false}]},{frame:brD});
   // the gate wall raised over the road, the gate through it, the oculus over the gate

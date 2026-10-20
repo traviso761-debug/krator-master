@@ -11,7 +11,7 @@ defBuilding({key:'et_merchant_house',name:"Merchant's house",seed:7007,cut:true,
  tags:{types:['dwelling-single'],wealth:'rich',style:'ministry'},
  note:'three storeys of pale brick between piers, lancet bundles glazed behind bronze, a bronze door under a gilt face, a steep celadon hip roof with turned-up tips',
  build(o){const W=10,D=9,G=.5,F1=4.4,F2=8.2,E=11.9,br=P('brick'),brD=new THREE.Color(P('brick')).multiplyScalar(.86),sd=P('stoneD');
-  box('stone',0,0,0,W+.4,G,D+.4,sd);box('paving',0,G-.04,0,W-.5,.05,D-.5,P('paving'));
+  box('stone',0,0,0,W+.4,G,D+.4,sd);box('paving',0,G-.02,0,W-.5,.05,D-.5,P('paving'));
   for(let k=0;k<3;k++)box('stone',0,0,D/2+.3+k*.32,2.4-k*.2,G-k*.16,.32,sd);              /* the steps */
   const st=y=>[{x:-2.5,w:1.0,h:1.8,y:y,steel:true,shut:false},{x:2.5,w:1.0,h:1.8,y:y,steel:true,shut:false}];
   etWalls(W,D,G,E-G,'brick',br,{front:[{x:0,w:1.5,h:2.9,door:true,mask:false,leaf:P('bronze')},{x:-3.2,w:1.1,h:1.8,y:.9,steel:true,shut:false},{x:3.2,w:1.1,h:1.8,y:.9,steel:true,shut:false}],
@@ -51,14 +51,14 @@ defBuilding({key:'et_official_villa',name:"Official's villa",seed:7008,cut:true,
   box('brick',0,0,-9.8,24,2.8,.4,br);for(const s of [-1,1])box('brick',s*11.8,0,0,.4,2.8,19.2,br);
   for(const [x,z,w,d] of [[-6.6,9.8,10.8,.6],[6.6,9.8,10.8,.6],[0,-9.8,24.4,.6],[-11.8,0,.6,19.2],[11.8,0,.6,19.2]])box('stone',x,2.8,z,w,.14,d,sd);
   // the garden court: the path, the basin, the trees
-  box('paving',0,0,7.4,2.2,.06,4.6,P('paving'));box('paving',0,0,-.1,2.2,.06,4.0,P('paving'));
+  box('paving',0,0,7.4,2.2,.09,4.6,P('paving'));box('paving',0,0,-.1,2.2,.09,4.0,P('paving'));   /* the paths stand 3 cm over the basin's paving they cross */
   box('paving',0,0,3.5,8.4,.06,4.4,P('paving'));box('stone',0,0,3.5,7.4,.45,3.6,sd);box('water',0,.05,3.5,7.0,.38,3.2,new THREE.Color(ET_WATER));
   for(const x of [-3.9,3.9])for(const z of [.6,6.6]){cyl('glaze',x,0,z,.45,.6,etKeyCol('glaze'),12);box('timber',x,.6,z,.12,.6,.12,P('timber'));
    cone('plain',x,1.1,z,.75,2.1,new THREE.Color(0x3e5e3a),8);}
   // the hall on its podium
   pushM(TF(0,0,-5.6));const G=.6,HW=14,HD=7,HE=6.0;
    box('stone',0,0,0,HW+.6,G,HD+.6,sd);for(let k=0;k<3;k++)box('stone',0,0,HD/2+.45+k*.3,3.2-k*.3,G-k*.2,.3,sd);
-   box('paving',0,G-.04,0,HW-.5,.05,HD-.5,P('paving'));
+   box('paving',0,G-.02,0,HW-.5,.05,HD-.5,P('paving'));
    const sw=[{x:-4,w:1.0,h:2.0,y:1.2,steel:true,shut:false},{x:4,w:1.0,h:2.0,y:1.2,steel:true,shut:false}];
    etWalls(HW,HD,G,HE-G,'brick',br,{front:[{x:0,w:1.6,h:3.0,door:true,mask:false,leaf:P('bronze')}],back:sw,left:[{x:0,w:1.0,h:2.0,y:1.2,steel:true,shut:false}],right:[{x:0,w:1.0,h:2.0,y:1.2,steel:true,shut:false}]},{frame:brD});
    for(const s of [-1,1])etLancets(s*3.9,G+.8,HD/2,{n:5,w:.6,gap:.2,h:3.6,step:.35,light:'glass',headMk:'brick',headCol:brD});

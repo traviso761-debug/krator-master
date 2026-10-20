@@ -15,7 +15,7 @@ function etTrade(o){const plan=o.plan||'rect',n=o.storeys||1,sh=o.sh||ET_SH,G=o.
  const H=n*sh,F={G:G,H:H,top:G+H,w:o.w,d:o.d,R:o.R,sh:sh};
  const mask=o.mask===false?false:(o.mask||'terracotta');
  if(plan==='hex'){const R=o.R,ap=R*ET_HEX_AP,fw=R;F.ap=ap;
-  prism('stone',etHex(R+.3),0,G,P('stoneD'));prism('paving',etHex(R-.1),G-.04,G,P('paving'));
+  prism('stone',etHex(R+.3),0,G,P('stoneD'));prism('paving',etHex(R-.1),G-.02,G+.03,P('paving'));
   for(let s=0;s<n;s++){const y=G+s*sh,m=s?upMk:mk;
    etHexFaces(ap,(k)=>{const op=[];
     if(s===0&&k===1){if(o.shop)op.push({x:0,w:fw-1.0,h:2.6,y:.1,gap:true});else op.push({x:0,w:1.2,h:2.3,door:true,maskMetal:mask||'terracotta',mask:mask!==false});}
@@ -26,12 +26,12 @@ function etTrade(o){const plan=o.plan||'rect',n=o.storeys||1,sh=o.sh||ET_SH,G=o.
   if(o.shop){box('timber',0,G,ap-.6,fw-1.2,1.0,.45,P('timber'));door(0,G,ap,0,1.4);}
   const rm=o.roofMk||'tile',ry=G+H;
   if(o.roof==='ogee')etOgee(R+.6,ry,R*.9,{mk:rm,seg:6,a0:0,col:etKeyCol(rm)});
-  else{lathe(rm,0,0,[[R+.6,ry-.15],[.05,ry+R*.62]],6,etKeyCol(rm),{a0:0,a1:TAU});lathe(rm,0,0,[[.05,ry+R*.6],[R+.6,ry-.18]],6,P('timber'),{a0:0,a1:TAU});
+  else{lathe(rm,0,0,[[R+.6,ry-.15],[.05,ry+R*.62]],6,etKeyCol(rm),{a0:0,a1:TAU});lathe(rm,0,0,[[.05,ry+R*.62-ET_SOFFIT],[R+.6,ry-.15-ET_SOFFIT]],6,P('timber'),{a0:0,a1:TAU});
    cone('verdigris',0,ry+R*.6,0,.25,1.2,P('verdigris'),6);}
   for(const f of (o.furn||[])){const s=f[3]||0,ph=PI/6+f[1]*PI/3,r=ap-f[2];
    FURNISH(f[0],r*Math.cos(ph),G+s*sh,r*Math.sin(ph),Math.atan2(-Math.cos(ph),-Math.sin(ph)));}}
  else{const W=o.w,D=o.d;
-  box('stone',0,0,0,W+.3,G,D+.3,P('stoneD'));box('paving',0,G-.04,0,W-.5,.05,D-.5,P('paving'));
+  box('stone',0,0,0,W+.3,G,D+.3,P('stoneD'));box('paving',0,G-.02,0,W-.5,.05,D-.5,P('paving'));
   for(let s=0;s<n;s++){const y=G+s*sh,m=s?upMk:mk,front=[],back=[],side=[];
    const nw=Math.max(1,Math.floor((W-1)/2.6));
    if(s===0){if(o.shop)front.push({x:-W*.12,w:Math.min(3.6,W*.45),h:2.6,y:.1,gap:true},{x:W/2-1.1,w:1.1,h:2.3,door:true,maskMetal:mask||'terracotta',mask:mask!==false});

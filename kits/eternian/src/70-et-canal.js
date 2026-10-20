@@ -47,7 +47,7 @@ defBuilding({key:'et_canal_street',name:'The canal street',seed:7703,cls:'featur
  front:{x:0,z:25,yaw:0},tags:{types:['infrastructure']},
  note:'a canal between quays of made ground, a bridge at the middle, lamps along the quays, and every tier of dwelling facing the water',
  build(o){const L=ET_STREET.L,Q=ET_QUAY,hw=ET_CANAL_W/2,sd=P('stoneD'),FZ=hw+.6+4;
-  for(const s of [-1,1]){box('stone',0,0,s*(hw+.6+10),L,Q,20,sd);box('paving',0,Q-.03,s*(hw+.6+10),L,.04,20,P('paving'));
+  for(const s of [-1,1]){box('stone',0,0,s*(hw+.6+10),L,Q,20,sd);box('paving',0,Q-.02,s*(hw+.6+10),L,.05,20,P('paving'));
    for(const ex of [-1,1])for(let k=0;k<5;k++)box('stone',ex*(L/2+.175+k*.35),0,s*(hw+2.6),.35,Q-.2*(k+1),4,sd);   /* the steps down at the ends */
    box('stone',s*(L/2+.2),0,0,.4,Q+.15,ET_CANAL_W,sd);}                                     /* the canal's end walls */
   for(const x of [-20,0,20])place('et_canal',x,0,0,{y:0});
