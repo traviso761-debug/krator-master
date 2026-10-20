@@ -1,5 +1,11 @@
 # settlements/isle-demo: known issues (the site planner)
 
+- [x] **The pieces read washed out next to their kits** (the owner, 2026-10-20, the Governor's House): `isleFlatten`
+      (58) dropped each instance's colour (the fix from origin/main c31288c2f, taken here alone: the rest of that commit
+      fixed the towns' KMAT swap another way, which this branch fixed in towns.py) and lost the Iziz Vernacular's
+      world-unit tiling (core/materials/opt/69a-world-uv.js scales an instance's uvs by its own size; the flatten baked
+      the size into the positions, so a 20 m wall tiled like a 0.2 m beam). The instance's face scale is now baked into
+      the uvs (a plain mesh's divided by K), so the hook's * K gives the kit's tiling. Both Godot cases cut again.
 - [x] **The city page drew the Islanders and the Vernacular without their library packs** (fixed 2026-10-20, found by
       M7's comparison of the two pages' exports: the Islanders' UVs were 1.5x apart). The Beast Riders towns sealed in
       `CAT` set `window.KMAT` to their own, so the `islanders` and `iziz` packs registered before CAT were lost: `ISK`

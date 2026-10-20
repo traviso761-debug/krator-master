@@ -34,10 +34,10 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `50-isle-export.js` | 10 | 7k. THE SIM EXPORT SECTION (P7e, 2026-10-20) (1) |
 | `56-isle-tools.js` | 5 | 3b. THE ISLE'S TOOLS: TOWNS, SAVING, VIEWS (1) |
 | `57-isle-run.js` | 2 | 6b. THE SIM'S RUN LOOP ON THE CITY PAGE (P7b) (1) |
-| `58-isle-protos.js` | 6 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
+| `58-isle-protos.js` | 9 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
 | `59-isle-citizens.js` | 6 | 5c. A FEW CITIZENS DRAWN NEAR THE CAMERA (P7b) (1) |
 | `60-isle-draw.js` | 15 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
 | `61-isle-canoes.js` | 3 | 5d. THE CANOE LINE'S VESSELS AT THE STOP (P7c) (1) |
-| `62-isle-export-scene.js` | 9 | 5e. THE DRAWN TOWN IN THE EXPORT (P8, 2026-10-20 (1) |
+| `62-isle-export-scene.js` | 10 | 5e. THE DRAWN TOWN IN THE EXPORT (P8, 2026-10-20 (1) |
 | `98-isle-city-start.js` | 9 | 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK (1) |
 | `98-isle-start.js` | 5 | 4. START (1) |

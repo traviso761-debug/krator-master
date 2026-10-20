@@ -55,6 +55,17 @@ again. Measured over Kautoa (the same views, whole frame): from 120 m up, 1,016 
 380 and 3.1M after; the start view, 651 and 6.2M before, 330 and 3.2M after, with about 1,000 lots drawn as buildings
 where 657 were. The export is unchanged (it draws the full pieces itself and sees no proxy).
 
+**Texture arrays for the full ring** (2026-10-20, `src/88a-world-atlas.js`, as Godot's Texture2DArray): three.js r128
+draws one material a call, and a piece is many (the Vernacular's houses 40-58). Every colour, normal and roughness map
+the pieces use is copied once into a WebGL2 texture array of its kind (512 px a layer, the maps' own size), and a
+piece's opaque parts are merged into one geometry a side whose vertices name their layers and carry the part's
+roughness, metalness and normal strength; one standard material a side samples the arrays. Parts that cannot share it
+(transparent, alpha-tested, emissive, MeshBasic lamps and fires, the cloth flutter and the flame flicker) stay as they
+were. Over Kautoa the full ring went from about 220 draw calls to 32, and the whole frame from 380 to 172 (from 120 m
+up; 1,016 before any of this). Kautoa's town uses about 33 colour, 30 normal and 32 roughness layers. Without WebGL2
+the full ring is drawn part by part, as before. The merged material keeps each part's library specular (a fourth value
+a vertex) and a world-unit material's tiling (its uvs times K, as the hook does; 58 bakes the instance's scale into them).
+
 **The towns lived in** (2026-10-20, `src/88c-world-life.js`): the sim runs on the world's clock (`HOST.clock`, the
 72-minute day; held unless `?time=run` or the panel's "run time", whose speed button sets the clock's scale). Each frame
 it steps whole minutes up to the clock's minute within a few milliseconds, so on load (the clock at 11:30, the sim at

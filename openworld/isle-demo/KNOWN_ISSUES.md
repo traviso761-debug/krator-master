@@ -1,5 +1,13 @@
 # openworld/isle-demo: known issues
 
+- [x] **The towns' buildings read washed out next to their kits** (the owner, 2026-10-20, on the Governor's House). Two
+      losses, both in the flatten every town piece goes through (settlements/isle-demo 58), so the city page had them
+      too: the kits' per-instance colours were dropped (the fix from origin/main c31288c2f, taken here: every part
+      carries them as vertex colours), and the Vernacular's world-unit tiling was lost (the hook tiles by the instance's
+      scale, which the flatten baked away; now baked into the uvs). Both Godot cases cut again.
+- [ ] **Over Kautoa the world's flora now outweighs the town** in some views (2026-10-20): from 260 m over the
+      ceremonial centre, 4.9M of 7.6M triangles were the world without the town, once enough flora tiles had streamed.
+
 - [x] **The Islanders' pieces tiled their textures 1.5x denser here than on the city page** (2026-10-20, found by M7's
       export comparison; fixed the same day). The scale here was the kit's own: `kits/islanders/materials.json`, which the
       kit's page reads (`TILE[k]` from `KMAT.packed('islanders', k).scale`, e.g. patWeave 1.6 m). The city page drew the
@@ -20,10 +28,16 @@
       (below).
 - [x] **The frame rate over Kautoa** (2026-10-20): the town was 900 of the 1,016 draw calls and 7.4M of the 8.3M
       triangles (full pieces out to 520 m, 55 moored vessels of many meshes each, every town mesh unculled). Now an HLOD
-      (README, "The towns' HLOD"): 380 calls and 3.1M triangles in the same view. Left: the full ring is still about 220
-      calls (the Vernacular's pieces have 40-58 materials each: a texture atlas, or r128's lack of multi-draw, is the
-      limit), the baked colours are means (a textured wall reads flat at a distance), and each ring rebuild leaves its
-      small bounds geometries to the collector (they share the pieces' buffers, so they are never disposed).
+      (README, "The towns' HLOD"): 380 calls and 3.1M triangles in the same view; then texture arrays for the full ring
+      (README, "Texture arrays"): 172 calls. Left: the merged material leaves out the library's break-up noise (it keeps
+      the specular), the baked colours are means (a textured wall reads flat
+      at a distance), the arrays keep a CPU copy so they can grow (about 1 MB a layer and kind: some 85 MB for Kautoa),
+      and each ring rebuild leaves its small bounds geometries to the collector (they share the pieces' buffers, so they
+      are never disposed).
+- [ ] **The export can miss a painted texture if it runs too soon after load** (2026-10-20, seen comparing exports):
+      one of the Islanders' painted sheets (`tex:isle:png48` in Kautoa's case) has no drawable image in a fresh page and
+      is written as `no drawable image`; a minute later it is there. `_texPending` does not count it; the export (and
+      `harness.py export`) should wait for every map's image, not only the library's.
 - [ ] **The towns' streets and massing read pale** under the world's light (the city page's colours, drawn under a
       brighter sun and another exposure): a tone pass on 60's colours for the world, or the world's light, is owed.
 - [ ] **Catching up costs a few seconds of slow frames** after load (the sim from midnight to the clock's 11:30, at

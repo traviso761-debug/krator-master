@@ -103,7 +103,12 @@ const seen=new Proxy({},{get:(o,n)=>o[n]||(o[n]={})});   /* per cell: the source
 const sizeOf=g=>{if(!g.boundingBox)g.computeBoundingBox();const b=g.boundingBox;return Math.max(b.max.x-b.min.x,b.max.y-b.min.y,b.max.z-b.min.z);};
 const baked=new Map(),wantBake=new Map();   /* key -> {geo, tris, from} | null; key -> a job () => parts */
 function bakedOf(key,job,div){if(baked.has(key))return baked.get(key);if(!wantBake.has(key))wantBake.set(key,{job,div:div==null?DIV[0]:div});return undefined;}
-function pumpBakes(){if(!wantBake.size)return false;const t0=performance.now();let any=false;
+const ATL=typeof ISLE_ATLAS!=='undefined'&&ISLE_ATLAS.ok,atl=new Map(),wantAtl=new Map();   /* id -> {meshes, rest} | null (88a-world-atlas.js) */
+function atlasOf(id,job){if(atl.has(id))return atl.get(id);if(!wantAtl.has(id))wantAtl.set(id,job);return undefined;}
+function pumpBakes(){if(!wantBake.size&&!wantAtl.size)return false;const t0=performance.now();let any=false;
+ for(const [id,job] of wantAtl){wantAtl.delete(id);let r=null;
+  try{const parts=job();if(parts){const M=ISLE_ATLAS.merge(parts);if(M.retry){wantAtl.set(id,job);break;}r=M;HL.atlases=(HL.atlases||0)+1;}}catch(e){if(S.errors.length<8)S.errors.push('atlas '+id+': '+e.message);}
+  atl.set(id,r);any=true;if(performance.now()-t0>BAKE_MS)return any;}
  for(const [key,W0] of wantBake){wantBake.delete(key);let r=null;
   try{const parts=W0.job();if(parts&&parts.length){let s=0;parts.forEach(p=>{s=Math.max(s,sizeOf(p.geo));});for(const k in seen)delete seen[k];r=bake(parts,Math.max(.3,s/W0.div));HL.bakes++;}}catch(e){if(S.errors.length<8)S.errors.push('bake '+key+': '+e.message);}
   baked.set(key,r);any=true;if(performance.now()-t0>BAKE_MS)break;}
@@ -117,7 +122,7 @@ function bounded(im){const g0=im.geometry;if(!g0.boundingSphere)g0.computeBoundi
  for(let i=0;i<n;i++){im.getMatrixAt(i,_m);_v.setFromMatrixPosition(_m);r=Math.max(r,Math.hypot(_v.x-cx,_v.y-cy,_v.z-cz));}
  const gs=g0.boundingSphere;g.boundingSphere=new THREE.Sphere(new THREE.Vector3(cx+gs.center.x,cy+gs.center.y,cz+gs.center.z),r+gs.radius*sc);im.geometry=g;im.frustumCulled=true;return im;}
 /* the vessels: their groups (60 DRAW.vessels draws them into the town's group, named by their record) */
-for(const X of T){X.ves=X.P.R.vessels.map(V=>({V,g:X.g.getObjectByName(V.id)})).filter(v=>v.g);X.mid=[];X.vprox=[];X.hlodAt=null;X.dirty=true;
+for(const X of T){X.ves=X.P.R.vessels.map(V=>({V,g:X.g.getObjectByName(V.id)})).filter(v=>v.g);X.mid=[];X.vprox=[];X.fullM=[];X.hlodAt=null;X.dirty=true;
  X.D.nearR=0;X.massZero=new THREE.Matrix4().makeScale(0,0,0);
  X.g.children.forEach(m=>{if(m.isInstancedMesh&&m!==X.D.massB&&m!==X.D.massR&&X.D.inst.indexOf(m)<0)bounded(m);});}   /* footings, compound walls, orchards: bounded once */
 const partsOfGroup=G=>{const out=[],inv=new THREE.Matrix4().copy(G.matrixWorld).invert();G.updateMatrixWorld(true);inv.copy(G.matrixWorld).invert();
@@ -125,13 +130,20 @@ const partsOfGroup=G=>{const out=[],inv=new THREE.Matrix4().copy(G.matrixWorld).
   else if(m.isInstancedMesh)for(let i=0;i<m.count;i++){m.getMatrixAt(i,_m);out.push({geo:m.geometry,mat:m.material,M:new THREE.Matrix4().multiplyMatrices(inv,m.matrixWorld).multiply(_m)});}});return out;};
 function drop(list,g){list.forEach(m=>g.remove(m));list.length=0;}
 /* the rings round `at` (the town's frame): full (60's near), baked to MID_R, massing beyond; vessels full within VES_R */
-function hlod(X,at,on){const D=X.D;drop(X.mid,X.g);drop(X.vprox,X.g);X.hlodAt=at?at.slice():null;X.dirty=false;HL.lastRebuild=performance.now();
+function hlod(X,at,on){const D=X.D;drop(X.mid,X.g);drop(X.vprox,X.g);drop(X.fullM,X.g);X.hlodAt=at?at.slice():null;X.dirty=false;HL.lastRebuild=performance.now();
  if(!on){X.ves.forEach(v=>{v.g.visible=true;});return;}
- const by={},n0=D.recs.length;let mid=0;
+ const by={},fb={},n0=D.recs.length;let mid=0,full=0;
  D.recs.forEach((L,i)=>{const d=Math.hypot(L.x-at[0],L.z-at[1]);if(d<D.nearR||d>=MID_R)return;
+  /* the full ring, merged on the texture arrays: a piece in one or two draw calls (and its parts that cannot merge) */
+  if(ATL&&d<FULL_R){const id0=L.kit+':'+L.key+'#'+(L.v|0),A=atlasOf(id0,()=>{const Q=D.proto(L.kit,L.key,L.v);return Q?Q.parts:null;});
+   if(A){(fb[id0]||(fb[id0]={A,P:D.protos[id0],L:[],i:[]})).L.push(L);fb[id0].i.push(i);return;}}
   const id=L.kit+':'+L.key+'#'+(L.v|0),P=D.protos[id],lv=d<MID1?0:1,key=id+'|'+lv;
   if(P===undefined){bakedOf(key,()=>{const Q=D.proto(L.kit,L.key,L.v);return Q?Q.parts.map(p=>({geo:p.geo,mat:p.mat,M:null})):null;},DIV[lv]);return;}   /* the piece built first, then baked */
   if(!P)return;const B=bakedOf(key,()=>P.parts.map(p=>({geo:p.geo,mat:p.mat,M:null})),DIV[lv]);if(!B)return;(by[key]||(by[key]={B,P,L:[],i:[]})).L.push(L);by[key].i.push(i);});
+ for(const id in fb){const E=fb[id],mk=(geo,mat,nm)=>{const im=new THREE.InstancedMesh(geo,mat,E.L.length);
+   E.L.forEach((L,j)=>{const sx=L.cls==='wall'&&E.P&&E.P.w?L.w/E.P.w:1;im.setMatrixAt(j,D.matOf(L,[sx,1,1]));});im.name=nm;im.userData.isleFull=true;im.userData.lots=E.L.map(L=>L.tag);X.g.add(bounded(im));X.fullM.push(im);};
+  E.A.meshes.forEach((m,k)=>mk(m.geo,m.mat,'atlas '+id+' '+k));E.A.rest.forEach((p,k)=>mk(p.geo,p.mat,'part '+id+' '+k));
+  E.i.forEach(i=>{D.massB.setMatrixAt(i,X.massZero);D.massR.setMatrixAt(i,X.massZero);});full+=E.L.length;}
  for(const id in by){const E=by[id],im=new THREE.InstancedMesh(E.B.geo,bakeMat,E.L.length);
   E.L.forEach((L,j)=>{const sx=L.cls==='wall'&&E.P.w?L.w/E.P.w:1;im.setMatrixAt(j,D.matOf(L,[sx,1,1]));D.massB.setMatrixAt(E.i[j],X.massZero);D.massR.setMatrixAt(E.i[j],X.massZero);});
   im.name='baked '+id;im.userData.hlod=true;im.userData.lots=E.L.map(L=>L.tag);X.g.add(bounded(im));X.mid.push(im);mid+=E.L.length;}
@@ -142,25 +154,24 @@ function hlod(X,at,on){const D=X.D;drop(X.mid,X.g);drop(X.vprox,X.g);X.hlodAt=at
   const B=bakedOf('vessel:'+v.V.key,()=>partsOfGroup(v.g));if(!B){v.g.visible=true;return;}v.g.visible=false;(vb[v.V.key]||(vb[v.V.key]={B,L:[]})).L.push(v);});
  for(const k in vb){const E=vb[k],im=new THREE.InstancedMesh(E.B.geo,bakeMat,E.L.length);E.L.forEach((v,j)=>{v.g.updateMatrix();im.setMatrixAt(j,v.g.matrix);});
   im.name='baked vessels '+k;im.userData.hlod=true;X.g.add(bounded(im));X.vprox.push(im);}
- X.stats={full:D.stats.near,mid,massing:n0-D.stats.near-mid,vesselsBaked:X.vprox.reduce((a,m)=>a+m.count,0)};}
+ X.stats={full:D.stats.near+full,mid,massing:n0-D.stats.near-full-mid,vesselsBaked:X.vprox.reduce((a,m)=>a+m.count,0),calls:{full:X.fullM.length+D.inst.length,mid:X.mid.length,vessels:X.vprox.length}};}
 /* ---------------------------------------------------------------- each frame: the rings follow the camera */
 /* the rings' centre: the ground point the camera looks at, at most LOOK m ahead (straight below when it looks up) */
 const LOOK=600,_d=new THREE.Vector3();
 function lookPoint(){const P=camera.position,d=camera.getWorldDirection(_d),agl=P.y-WORLD.H(P.x,P.z),t=d.y<-.02?Math.min(LOOK,agl/-d.y):0;return[P.x+d.x*t,P.z+d.z*t];}
-function update(){const C=camera.position;let nf=null;const fresh=pumpBakes(),lp=lookPoint();
+function update(){const C=camera.position;let nf=null;const fresh=pumpBakes(),lp=lookPoint();if(ATL)ISLE_ATLAS.flush();
  for(const X of T){const lx=C.x-X.F.x,lz=C.z-X.F.z,half=X.P.G.half,d=Math.max(Math.abs(lx),Math.abs(lz))-half;
   X.g.visible=d<FAR;
   const over=d<300&&C.y-X.F.sea<2500;
-  if(over){const before=X.D.at;X.D.nearR=FULL_R;X.D.near([lp[0]-X.F.x,lp[1]-X.F.z]);
+  if(over){const before=X.D.at;X.D.nearR=ATL?0:FULL_R;X.D.near([lp[0]-X.F.x,lp[1]-X.F.z]);
    if(X.D.at!==before||!X.full||(fresh&&performance.now()-HL.lastRebuild>400))hlod(X,X.D.at,true);X.full=true;nf=X.P.town;}
   else if(X.full){X.D.nearR=0;X.D.near([lx,lz],true);hlod(X,null,false);X.full=false;}}
  S.full=nf;if(nf&&ISLE.SIM&&ISLE.SIM.watched!==nf)ISLE.simWatch(nf);}   /* the town under the camera presented, the other abstract (P7d) */
 /* verify.py's: every lot drawn exactly once (full, baked or massing) round the rings' centre; o.twice draws one twice (the negative) */
 function hlodCheck(o){o=o||{};const X=T.find(x=>x.full);if(!X)return{ok:false,detail:'no town in full'};const D=X.D,seen=new Map();
  const add=(tag,how)=>{seen.set(tag,(seen.get(tag)||[]).concat(how));};
- D.inst.forEach(m=>(m.userData.lots||[]).forEach(t=>add(t,'full')));X.mid.forEach(m=>(m.userData.lots||[]).forEach(t=>add(t,'baked')));
+ D.inst.concat(X.fullM).forEach(m=>(m.userData.lots||[]).forEach(t=>add(t,'full')));X.mid.forEach(m=>(m.userData.lots||[]).forEach(t=>add(t,'baked')));
  if(o.twice&&X.mid.length)add(X.mid[0].userData.lots[0],'baked');
- const fullIds=new Set();D.inst.forEach(m=>(m.userData.lots||[]).forEach(t=>fullIds.add(t)));
  D.recs.forEach((L,i)=>{D.massB.getMatrixAt(i,_m);if(_m.elements[0]!==0||_m.elements[5]!==0)add(L.tag,'massing');});
  let twice=0,none=0;const missing=[];D.recs.forEach(L=>{const s=seen.get(L.tag)||[];const u=[...new Set(s)];if(s.length>1&&!(u.length===1&&u[0]==='full'))twice++;if(!s.length){none++;missing.push(L.key);}});
  const st=X.stats||{};return{ok:!twice&&!none&&X.mid.length>0,detail:X.P.town+': '+D.recs.length+' lots, '+(st.full||0)+' full, '+(st.mid||0)+' baked, '+(st.massing||0)+' massing; vessels baked '+(st.vesselsBaked||0)+
@@ -172,7 +183,7 @@ function exportTown(town){const P=W.select(town);if(!P)return null;const X=T.fin
  if(typeof EXPORT==='undefined')return P;
  ISLE_EXPORT_FACTORY(X.g,X.D);   /* the city page's contributors (src/62), over this town's group and DRAW */
  const inner=ISLE.exportScene,F=X.F;
- ISLE.exportScene=ctx=>{X.g.position.set(0,0,0);X.g.updateMatrixWorld(true);X.mid.concat(X.vprox).forEach(m=>{m.visible=false;});X.ves.forEach(v=>{v.g.visible=true;});   /* the full pieces only: no proxy */
+ ISLE.exportScene=ctx=>{X.g.position.set(0,0,0);X.g.updateMatrixWorld(true);X.mid.concat(X.vprox,X.fullM).forEach(m=>{m.visible=false;});X.ves.forEach(v=>{v.g.visible=true;});   /* the full pieces only: no proxy */
   try{return inner(ctx);}finally{X.g.position.set(F.x,F.sea,F.z);X.g.updateMatrixWorld(true);hlod(X,X.D.at,X.full);}};
  exportOff.forEach(f=>f());exportOff=[];
  EXPORT.ground({terrainH:(x,z)=>ISLE.cur.G.h(x,z),step:4});

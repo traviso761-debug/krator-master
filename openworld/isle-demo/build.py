@@ -120,7 +120,7 @@ ORDER = (
     + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48t-world-towns.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
-    + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88t-world-towns.js'),
+    + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88a-world-atlas.js'), ('src', '88t-world-towns.js'),
        ('settlements/isle-demo/src', '59-isle-citizens.js'), ('src', '88c-world-life.js'), ('src', '89-world-geysers.js')]
     + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
