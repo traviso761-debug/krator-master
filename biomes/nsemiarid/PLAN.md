@@ -133,7 +133,7 @@ The west bed (41,408 km², all in n semiarid) and the east bed (47,792 km²: 23,
 Old shorelines ~1,630 km (west) and ~1,530 km (east).
 
 - **The full-pool line:** a wave-cut notch and a beach ridge at 900 / 1,050 m; under them the bathtub ring, a band of
-  bleached calcite stain as deep as the reservoir's yearly drawdown (default 30 m).
+  bleached calcite stain as deep as the reservoir's yearly drawdown: 30 m (the owner).
 - **The fast-drain band:** slumped and gullied silt slopes, landslide scars, no strandlines.
 - **The slow recession:** strandlines in a staircase (spacing seeded, closer near today's water), shell banks,
   salt crusts and pans growing downward, mud cracks; yardangs (wind-cut ridges in the lake silt) aligned on the wind,
@@ -277,12 +277,11 @@ variants. Korona, later, needs the same `bed` and `salt` response for its share 
 
 ## 10. Questions
 
-1. **The bathtub ring's depth** (the reservoirs' yearly drawdown): the model does not give it. Default 30 m.
-2. **The western lake at exactly 0 m** (px 325,120, 2,528 km²): a closed hollow of its own in the west bed (its floor
+1. **The western lake at exactly 0 m** (px 325,120, 2,528 km²): a closed hollow of its own in the west bed (its floor
    at -419 m), not joined to the west remnant at any level up to 200 m. It was one with the west lake until the
    recession split the trapped water into pools; the model's `SETTLE` (`hydro.py`) levelled only the three named
    lakes, so this one kept the drawn 0 m. The fix is to settle it the same way, which gives its own level (perhaps a
    playa). Until then the overlay treats it as the west bed's second remnant lake.
 
 Settled 2026-10-20 (the owner): the trough stood at 430 m before the flood; Boatmurder is only a bandit camp in a pile of
-boats; Jimjam may move if its brick needs it (it does not: section 2).
+boats; Jimjam may move if its brick needs it (it does not: section 2); the bathtub ring is 30 m deep.
