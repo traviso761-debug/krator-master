@@ -123,6 +123,30 @@ lamps in the windows; `89x`).
   depths export as closed rooms), core/city (the ward: exempt while the export carries it, the owner), the host's polytool
   (the marks tool, which supersedes it, is in), core/atmos's street, dress, sewer and cloud deck, core/biome's variants
   and traps, core/simulation's debug fragment.
+- **The interiors, a second pass** (2026-10-20, the owner: "work on interiors"): every storey the shells draw has its
+  rooms (`40c`: 653 records, from 320): the White Palace's fourth storey in every range (the Correspondence Office, the
+  copyists' hall, the operatives' record room, the Secretary; the senior monks' cells; the Restorers' drawing office,
+  the library's closed stacks, the guest scholars) and the inner ranges' fifth (the masters' cells), the service stairs
+  up the back range; the Red Palace's second storey round the Founders' hall (the upper kora, the Treasury of offerings,
+  the seal makers), its fourth and fifth (the Archive's reading hall, stacks III and IV, the illuminators, the repair
+  bindery, the cold store); the wings on every storey, each with its stair. The ward's buildings have interiors too
+  (ROOMS.md 2.2: the printing house's press hall, composing room, woodblock store, bindery and drying loft; the paper
+  mill's vat room, press and loft; the forge, the founders' pit, the lens grinders and the glass furnace round the
+  smithy's court; the barracks, the caravanserai and the Geomancers' lodge round theirs; the hostel, the infirmary, the
+  granaries, the market, the servants' houses, the carpenters, the dye house, the dairy), each a unit of the cutaway; the
+  Hall of Forms has its drill hall, the masters' room and **the Room of Slow Water** (a basin, and its falling water held
+  in the air, `87`). A room behind a facade has its **windows** (`87`: every window ARCH draws, `LS_WINS`, cut through
+  its inner wall, the reveal to the face, a lattice, and the hour's sky in the pane; `89x`: by day the light comes in at
+  the nearest windows, and indoors the walls shut out the sun and most of the sky). The depths: **the Cistern of the
+  rock** (its basin cut in the floor, the steps down, the seams' gutter), and the depths' pieces are the placer's
+  (`57a`: the `lv-` room kinds, the catalog's vault, quiet-cell and unmaking pieces, round what `66` builds into the
+  rooms, handed over as fixtures). `bake_interiors.py`: 642 furnished rooms, 8,594 pieces, every required piece placed.
+- **The crowd** (2026-10-20, the owner: "the crowd detail issues"): past the 24 nearest people (figures), everyone out to
+  170 m is drawn in one of the 16 commonest outfits, a figure baked still standing, at two strides and sitting
+  (`69`, on core/charactermodels' new `KCharCrowd`) and drawn instanced, one draw a look and pose; people are kept
+  apart where they are drawn (`68`: a shoulder's width, on core/space's grid); each activity plays the library's nearest
+  clip (prayer, study and the camp cross-legged, tea sitting, the wardens with their arms folded, the keepers with a
+  lantern, work at a bench, trade talking).
 - **The Great Stair, walked** (2026-10-20, the owner's notes): each flight is solid masonry from its front edge back
   into the base's battered face (the slots behind them are gone), its parapet one sloped wall standing on its edge, the
   landings' parapets on the landings; the base's windows are not cut where a ramp covers them. ARCH's wedge and slab wind

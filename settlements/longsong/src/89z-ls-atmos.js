@@ -8,8 +8,9 @@
 const LSAIR=(function(){const O={},N=LSNIGHT.state,FOG0=scene.fog.density;
  // ---------------------------------------------------------------- the weather
  O.W=ATMOS.weather({mode:'auto',apply:W=>{scene.fog.density=FOG0*(1+30*W.fog+10*W.rain);
-  if(N.sun!=null)sun.intensity=N.sun*(1-.55*W.rain-.35*W.fog);
-  if(N.hemi!=null)hemi.intensity=N.hemi*(1-.2*W.rain)+W.flash*1.2;}});
+  const k=typeof LS_INDOOR!=='undefined'?LS_INDOOR.k:0;   // indoors the walls shut out most of the sun and the sky (89x)
+  if(N.sun!=null)sun.intensity=N.sun*(1-.55*W.rain-.35*W.fog)*(1-.92*k);
+  if(N.hemi!=null)hemi.intensity=(N.hemi*(1-.2*W.rain)+W.flash*1.2)*(1-.7*k);}});
  // ---------------------------------------------------------------- the hearths' smoke: one plume over each lay house of the ward,
  // and the caravanserai's kitchen (kind 0: a chimney)
  const smoke=LS.BUILDINGS.filter(B=>B.base==='ward'&&(B.kind==='house'||B.id==='caravanserai')).map(B=>[B.x+(B.kind==='house'?B.w*.25:0),LS.topY(B)+.6,B.z,0]);

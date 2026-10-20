@@ -6,24 +6,27 @@
       and a turning pose: no dance clip in core/charactermodels yet, and the masks are plain shapes, not the deer, the
       skull and the black hat. The butter lamps are glows, not lamps in their bowls. (2026-10-20: the crowd now stands
       before the thangka, the tents are out of the walk graph.)
-- [ ] **Only the nearest 24 people are dressed** (`69`: core/charactermodels figures, each morphed on the CPU); the
-      rest are placeholder figures (a robe, a head, two arms, a sash; instanced). core/charactermodels has no level of
-      detail or instanced crowd yet, so a whole court cannot be drawn dressed; the figures pass through one another, and
-      their clips are the nearest the library has (the wheel's keepers push, the debaters talk or sit on the floor, the
-      drill punches). The people run on `core/simulation` since 2026-10-19. Their walk graph is the ward's
-      cells round the buildings, the stair and the court: inside, they walk unseen along door edges, not through the
-      rooms' own floors (`40c`); a stair room's storeys are not joined for them. The world day is 72 real minutes, so a
-      walk across the ward takes most of a world hour.
-- [ ] **The interiors are a first pass** (PLAN.md P4, 2026-10-19). Every room ROOMS.md sections 3-4 names is a record and
-      furnished (`40c`, `57a`, the bake), but: the rooms' walls are solid inside (the palaces' windows are painted on the
-      outside; no light comes through them); by night a room is lit by the nearest six of its furniture's lamps
-      (`89x`: a pool of point lights round the eye), by day still by the sky and sun through solid walls; a stair room draws a flight but the storeys are not joined for a walker;
-      some storeys have no programme yet and stay empty (the White Palace's front range above L4, the inner ranges' fourth
-      and fifth storeys, the back range over the service stairs; the Red Palace's second, fourth, fifth (wings) and
-      seventh storeys; the wings' lower floors); the Cistern of the rock (section 4) is not built; the Hall of Forms and
-      the ward's buildings (section 2) have no interiors, so the paper mill's and the printing house's presses, vats and
-      racks stand only in the bindery and the laundry for now. The depths are the Vault's own (66), not on kits/interiors:
-      their catalog pieces (the crates, the lead cases, the furnace) are placed there by hand, not by the placer.
+- [ ] **The people indoors are a census, not walkers** (`40d`, `68`, `69`): the nearest 24 are figures, everyone else out
+      to 170 m one of the 16 commonest outfits baked still and drawn instanced (core/charactermodels `KCharCrowd`,
+      2026-10-20: standing, two strides of the walk, sitting cross-legged; a person whose outfit is not among the 16
+      wears the commonest of their body and side), past that the placeholders. The baked looks have no faces of their
+      own and do not sway; the strides alternate rather than play. People are kept apart where they are drawn (68: a
+      shoulder's width, eased, half a metre at most), not by the sim, so two on one path still queue through each other's
+      place in it. Their clips are the library's nearest (the cham on the walk, no dance clip; the masks plain shapes).
+      Indoors they are not drawn at all: the sim's indoor places are abstract (whoever is at one is hidden) and its indoor
+      legs are door edges, so no one walks the rooms' floors or the stairs, and a stair room's storeys are not joined for
+      them. A walk graph of the rooms (40c's doors, the stair rooms stacked) and indoor places that are rooms is the next
+      step. The world day is 72 real minutes, so a walk across the ward takes most of a world hour.
+- [ ] **The interiors** (PLAN.md P4; 2026-10-20 a second pass): every storey the shells draw has its rooms (653: the
+      White Palace's fourth and fifth storeys, the Red Palace's second, fourth and fifth, the wings' every storey; the
+      ward's buildings and the Hall of Forms with the Room of Slow Water), the depths' pieces are the placer's (57a's
+      `lv-` kinds), the Cistern of the rock is built, and a room's windows are cut through its inner walls to the facade,
+      the day behind their panes (89x: daylight at the nearest windows, the sun and the sky shut out indoors). Still: a
+      window lets the hour's colour in, not a view (the facade's opening is painted dark from outside); the courts' upper
+      storeys open on the court by a door each, with no gallery drawn; the depths' Cistern and Unmaking Room get no
+      fixtures (the placer found no fit round the basin and the circle: 66 checks that nothing stands on them instead);
+      the Oath Room's, the Sealed Library's and the Warden's gate's pieces are still drawn by hand (they are the rooms'
+      architecture: the lectern, the stacks, the gate); a stair room draws a flight, not a way up for a walker.
 - [ ] **The ward is not on core/city**: its rows are the blueprint's rectangles drawn by the kit. Porting it (lanes,
       lots, infill) is PLAN.md P6; no occupancy grid of its own was written.
 - [ ] **The valley road** is a track drawn on the ground from the page's west edge to the bridge: the open world has

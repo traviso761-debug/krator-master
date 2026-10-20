@@ -6,7 +6,7 @@ Characters: MakeHuman (MPFB2) bodies with morphing face, build and ancestry; lib
 
 Docs: `CREDITS.md`, `KNOWN_ISSUES.md`, `PORT.md`, `README.md`, `prompt-clothes.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/animation-lab.html`, `dist/cosmetic-lab.html`
+Built output (never open it; edit `src/` and rebuild): `dist/animation-lab.artifact.html`, `dist/animation-lab.html`, `dist/cosmetic-lab.artifact.html`, `dist/cosmetic-lab.html`
 
 Build: `cd core/charactermodels && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -19,5 +19,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `01-animlab.html` | 17 |  |
 | `10-rig.js` | 21 | KCHAR: the character record and its pose. [G dat (1) |
 | `50-figure.js` | 61 **big** | KCharFigure: one body's character, drawn from ki (1) |
+| `60-crowd.js` | 7 | KCharCrowd: figures baked into still, instanced  (1) |
 | `90-editor.js` | 34 **big** | the Cosmetic Lab: stage, camera, panel. [web] (h (1) |
 | `92-animlab.js` | 32 **big** | the Animation Lab: six figures, one clip on all  (1) |

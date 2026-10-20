@@ -121,15 +121,17 @@ const LSP={white:0xf2efe6,white2:0xe8e2d4,red:0x8e2f24,red2:0x7a271f,maroon:0x4a
 // a wall face's windows: along the edge (ax,az)->(bx,bz) whose outward normal is (nx,nz), storey by storey; Tibetan:
 // a black trapezoid (wider at the sill) round a dark opening with a lacquered frame, a corbelled lintel over it and, on
 // a rich house, a pleated valance; the Order's round relief-ringed windows on the archive's storeys (o.round)
-// LS_WINLIT: every lit pane drawn ([x, y, z, nx, nz, half-width, height]): 89x lights them at night
-var LS_WINLIT=[];
+// LS_WINLIT: every lit pane drawn ([x, y, z, nx, nz, half-width, height]): 89x lights them at night. LS_WINS: every window
+// drawn, the same shape (the opening's sill middle on the face, its outward normal, half its width, its height): the rooms
+// behind open their inner walls on them (87) and take the day's light through them (89x)
+var LS_WINLIT=[],LS_WINS=[];
 function lsWindows(ax,az,bx,bz,nx,nz,y0,floors,storey,o){o=o||{};const L=Math.hypot(bx-ax,bz-az),tx=(bx-ax)/L,tz=(bz-az)/L,sp=o.spacing||4.2;
  const n=Math.max(1,Math.floor((L-2)/sp)),bt=o.batter||0,H=floors*storey;
  for(let f=(o.from||0);f<floors;f++){const yb=y0+f*storey+storey*.32,ww=(o.w||1.3)*(f===floors-1&&o.topWide?1.4:1),wh=storey*.42;
   for(let i=0;i<n;i++){const s=(i+.5)*L/n;if(o.skip&&o.skip(s,f))continue;
    const lean=bt*((yb+wh/2-y0)/H),off=.06-lean,cx=ax+tx*s+nx*off,cz=az+tz*s+nz*off;
    const P=(u,v,d)=>[cx+tx*u+nx*(d||0),v,cz+tz*u+nz*(d||0)];
-   if(o.round&&f>=(o.roundFrom||0)){const r=wh*.55,yc=yb+wh*.5,N=14;
+   if(o.round&&f>=(o.roundFrom||0)){const r=wh*.55,yc=yb+wh*.5,N=14;LS_WINS.push([cx,yc-r*.75,cz,nx,nz,r*.75,r*1.5]);
     for(let k=0;k<N;k++){const a=k/N*Math.PI*2,b=(k+1)/N*Math.PI*2;
      ARCH.quad('ashlar',P(Math.cos(a)*r*1.35,yc+Math.sin(a)*r*1.35,.04),P(Math.cos(a)*r,yc+Math.sin(a)*r,.12),P(Math.cos(b)*r,yc+Math.sin(b)*r,.12),P(Math.cos(b)*r*1.35,yc+Math.sin(b)*r*1.35,.04),LSP.granite);
      ARCH.tri('dark',P(0,yc,-.02),P(Math.cos(b)*r,yc+Math.sin(b)*r,.12),P(Math.cos(a)*r,yc+Math.sin(a)*r,.12),ARCH.col(LSP.black));}
@@ -139,6 +141,7 @@ function lsWindows(ax,az,bx,bz,nx,nz,y0,floors,storey,o){o=o||{};const L=Math.hy
    // the opening and its frame
    ARCH.quad('dark',P(-ww*.42,yb,.02),P(ww*.42,yb,.02),P(ww*.42,yb+wh,.02),P(-ww*.42,yb+wh,.02),o.lit&&((i+f)%3===0)?0xd8a050:0x3a3028);
    if(o.lit&&((i+f)%3===0)){const c=P(0,yb,.05);LS_WINLIT.push([c[0],yb,c[2],nx,nz,ww*.42,wh]);}
+   LS_WINS.push([cx,yb,cz,nx,nz,ww*.42,wh]);
    ARCH.box('wood',cx+nx*.05,yb+wh*.5-.04,cz+nz*.05,.08,.08,.08,{});
    ARCH.quad('wood',P(-ww*.5,yb+wh,.03),P(ww*.5,yb+wh,.03),P(ww*.5,yb+wh+.12,.03),P(-ww*.5,yb+wh+.12,.03),LSP.wood);
    // the corbelled lintel: two courses of short joists, standing out

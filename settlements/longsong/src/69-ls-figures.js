@@ -4,6 +4,8 @@
 // build and an ancestry of their own); everyone further off stays the placeholder (68). A figure stands where 68's pose
 // put its person (POS) and plays the clip its activity wants. The pieces come from the sidecars beside the page
 // (dist/kchar/<body>__<piece>.js), each loaded the first time a figure needs it. ?dressed=N sets how many (0: none).
+// Past them, out to 170 m, the crowd: each person in one of the commonest outfits baked still and drawn instanced
+// (core/charactermodels KCharCrowd: below).
 const LSFIG=(function(){const O={on:false,ready:0,want:0,err:null,slots:[],loads:0};
  if(typeof KCharFigure==='undefined'||typeof LS_KCHAR==='undefined'||!THREE.GLTFLoader)return O;
  const D=LS_KCHAR,Q=new URLSearchParams(location.search),MAX=Q.has('dressed')?Math.max(0,+Q.get('dressed')||0):24,R=48;
@@ -28,10 +30,19 @@ const LSFIG=(function(){const O={on:false,ready:0,want:0,err:null,slots:[],loads
  // ---------------------------------------------------------------- the records (40e), made when first wanted
  const REC=new Array(LS.PEOPLE.length);
  const recOf=i=>REC[i]||(REC[i]=LSK.record(LS.PEOPLE[i],D));
- // the clip each activity wants (data/clips.json's names: the body's anims.glb)
+ // the clip each activity wants (data/clips.json's names: the body's anims.glb; 2026-10-20: the library's own for each,
+ // no longer idle for most): the walkers walk; the forms, the debate, the wheel as before; prayer, study and the camp sit
+ // cross-legged, tea is drunk sitting, a meal eaten; the wardens stand with their arms folded, the keepers and the
+ // watch hold a lantern; work is at a bench, trade is talk; at rest or on the festival's forecourt each person keeps
+ // one of three (arms folded, talking, sitting), by their seed
+ const pick=(i,salt,L)=>L[Math.floor(KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,salt))*L.length)];
  const CLIP=(i,act)=>act==='MOVE'||act==='KORA'||act==='WALK'||act==='CHAM'?'walk':act==='DRILL'?(LS.PEOPLE[i].role==='master'?'combat_idle':'ual_punch'):
-  act==='DEBATE'?(KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,7))<.5?'ual_talk':'sit_floor'):act==='GUARD'?'combat_idle':act==='FARM'?'ual_harvest':
-  act==='TURN_WHEEL'?'ual_push':'idle';
+  act==='DEBATE'?(KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,7))<.5?'ual_talk':'sit_floor'):act==='TURN_WHEEL'?'ual_push':
+  act==='GUARD'?(LS.PEOPLE[i].role==='operative'?'combat_idle':'ual_arms_folded'):act==='FARM'?pick(i,17,['ual_harvest','ual_harvest','ual_water','ual_plant']):
+  act==='PRAY'||act==='STUDY'||act==='STUDY_IN'||act==='CAMP'||act==='LODGE'?'sit_floor':act==='TEA'?'sit_drink':act==='EAT'?'ual_consume':
+  act==='WATCH'||act==='KEEP'?'ual_lantern':act==='WORK'?'ual_interact':act==='TRADE'||act==='PILGRIM'?'ual_talk':
+  /^REST/.test(act||'')||act==='FESTIVAL'?pick(i,19,['ual_arms_folded','ual_talk','sit_floor']):'idle';
+ const SITS={sit_floor:1,sit_drink:1,ual_sit_talk:1};O.CLIP=CLIP;
  // ---------------------------------------------------------------- the slots: a figure each, given to the nearest people
  function slot(body){const fig=new KCharFigure(D.bodies[body],D.sliders,load);fig.group.visible=false;fig.group.userData.probeSkip=true;
   fig.group.traverse(m=>{m.userData.inspectLabel='A person of Longsong';m.frustumCulled=false;});scene.add(fig.group);
@@ -53,6 +64,39 @@ const LSFIG=(function(){const O={on:false,ready:0,want:0,err:null,slots:[],loads
   for(const s of O.slots){if(!s.ready||s.who<0)continue;const i=s.who;if(!S[i].shown){s.fig.group.visible=false;continue;}s.fig.group.visible=true;
    s.fig.group.position.set(P[i*4],P[i*4+1],P[i*4+2]);s.fig.group.rotation.y=P[i*4+3];
    const c=CLIP(i,S[i].act);if(c!==s.clip){s.clip=c;s.fig.play(c);}s.fig.update(dt);}});
+ // ---------------------------------------------------------------- the crowd past them (core/charactermodels KCharCrowd, 2026-10-20)
+ // Everyone not dressed as a figure, out to FAR, is drawn in a LOOK: the commonest outfits (body, robe, legs) each worn
+ // by the first person who wears it, that figure baked still (standing, at two strides of the walk, sitting) and drawn
+ // instanced; a person whose outfit is not among them takes the commonest look of their body and their side (the Order
+ // or the valley). The looks are baked one at a time after the page is up, on one figure per body kept off the scene;
+ // till a person's look is ready they stay the placeholder (68). ?crowd=N sets FAR (0: none), ?looks=N how many.
+ const FAR=Q.has('crowd')?Math.max(0,+Q.get('crowd')||0):170,NL=Q.has('looks')?Math.max(1,+Q.get('looks')||1):16,N=LS.PEOPLE.length;
+ const CR=O.crowd={looks:[],of:new Int16Array(N).fill(-1),ready:0,shown:0,err:null,tris:0};PD.crowd=new Set();
+ if(FAR>0&&typeof KCharCrowd!=='undefined'){
+  const side=r=>(r.armour.torso||'').indexOf('order_')===0?'order':'valley',key=r=>r.body+'|'+(r.armour.torso||'')+'|'+(r.armour.legs||'');
+  const count=new Map(),first=new Map();for(let i=0;i<N;i++){const k=key(recOf(i));count.set(k,(count.get(k)||0)+1);if(!first.has(k))first.set(k,i);}
+  const top=[...count.keys()].sort((a,b)=>count.get(b)-count.get(a)||(a<b?-1:1)).slice(0,NL);
+  top.forEach(k=>{const i=first.get(k),r=recOf(i);CR.looks.push({key:k,who:i,body:r.body,side:side(r),n:0,sets:null});});
+  for(let i=0;i<N;i++){const r=recOf(i);let L=CR.looks.findIndex(l=>l.key===key(r));
+   if(L<0)L=CR.looks.findIndex(l=>l.body===r.body&&l.side===side(r));if(L<0)L=CR.looks.findIndex(l=>l.body===r.body);
+   CR.of[i]=L;if(L>=0)CR.looks[L].n++;}
+  const FIG={},figFor=b=>FIG[b]||(FIG[b]=new KCharFigure(D.bodies[b],D.sliders,load));
+  const bakeLook=L=>{const f=figFor(L.body);return f.apply(recOf(L.who)).then(()=>KCharCrowd.bake(f,'idle',.5)).then(a=>{
+    const w=f.clips.walk?f.clips.walk.duration:1;return KCharCrowd.bake(f,'walk',w*.25).then(b=>KCharCrowd.bake(f,'walk',w*.75).then(c=>[a,b,c]));})
+   .then(G=>KCharCrowd.bake(figFor(L.body),'sit_floor',.6).then(d=>G.concat([d])))
+   .then(G=>{L.sets=G.map(g=>{const im=KCharCrowd.set(g.geo,L.n);im.userData.people=true;im.userData.probeSkip=true;im.userData.inspectLabel='A person of Longsong';scene.add(im);CR.tris+=g.tris;CR.from=(CR.from||0)+g.from;return im;});CR.ready++;});};
+  let chain=Promise.resolve();
+  const startBake=()=>{CR.looks.forEach(L=>{chain=chain.then(()=>bakeLook(L)).catch(e=>{CR.err=String(e&&e.message||e);});});};
+  // after the page is up (the figures' own loads first)
+  setTimeout(startBake,1500);
+  const STRIDE=(i,t)=>((t*1.7+KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,11)))%1)<.5?1:2;
+  TICKS.push(function(dt){const P=PD.POS,S=PD.S,t=performance.now()/1000,use=CR.looks.map(()=>[0,0,0,0]);PD.crowd.clear();let shown=0;
+   for(let i=0;i<N;i++){const L=CR.looks[CR.of[i]];if(!L||!L.sets||!S[i].shown||PD.dressed.has(i))continue;
+    const d=Math.hypot(P[i*4]-cam.x,P[i*4+1]-cam.y,P[i*4+2]-cam.z);if(d>FAR)continue;
+    const a=S[i].act,k=a==='MOVE'||a==='KORA'||a==='CHAM'||a==='WALK'?STRIDE(i,t):SITS[CLIP(i,a)]?3:0,j=use[CR.of[i]][k]++;
+    L.sets[k].put(j,P[i*4],P[i*4+1],P[i*4+2],P[i*4+3]);PD.crowd.add(i);shown++;}
+   CR.looks.forEach((L,l)=>{if(!L.sets)return;for(let k=0;k<4;k++)L.sets[k].flush(use[l][k]);});
+   CR.shown=shown;});}
  O.recOf=recOf;O.load=load;O.max=MAX;
  return O;})();
 // the checks (64): every person's record dresses them from the page's kit, the Order in its clothes and the rest in

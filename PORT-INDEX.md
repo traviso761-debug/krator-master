@@ -16,7 +16,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 104 | 1275 | 400 | 24 | 52 | 131 | 668 | 8 | fixtures, atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 36 | 423 | 9 | 23 | 10 | 26 | 355 | 5 |  | yes | yes |
 | [`settlements/locus`](settlements/locus/PORT.md) | 65 | 965 | 94 | 5 | 16 | 165 | 685 | 9 | atmos | yes | yes |
-| [`settlements/longsong`](settlements/longsong/PORT.md) | 30 | 443 | 118 | 0 | 0 | 90 | 235 | 1 | biome, atmos | yes | yes |
+| [`settlements/longsong`](settlements/longsong/PORT.md) | 30 | 487 | 141 | 0 | 0 | 94 | 252 | 1 | biome, atmos | yes | yes |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 35 | 715 | 56 | 0 | 15 | 325 | 319 | 2 |  | yes | yes |
 | [`settlements/mungo`](settlements/mungo/PORT.md) | 20 | 210 | 110 | 0 | 5 | 60 | 35 | 4 | atmos | yes | yes |
 | [`settlements/noahs-regret`](settlements/noahs-regret/PORT.md) | 34 | 274 | 30 | 13 | 10 | 66 | 156 | 4 | atmos | yes | yes |
@@ -72,7 +72,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 14 | 213 | 1 | 0 | 12 | 31 | 169 | 5 | biome | yes | yes |
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 6 | 36 | 18 | 0 | 0 | 17 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
-| [`core/charactermodels`](core/charactermodels/PORT.md) | 6 | 178 | 21 | 0 | 0 | 96 | 61 | 0 |  |  | yes |
+| [`core/charactermodels`](core/charactermodels/PORT.md) | 7 | 185 | 21 | 0 | 0 | 96 | 69 | 0 |  |  | yes |
 | **all** | 2237 | 29768 | 5993 (20%) | 619 (2%) | 1097 (4%) | 3819 (13%) | 18240 (61%) | 275 | | | |
 
 ## Host-shell copies

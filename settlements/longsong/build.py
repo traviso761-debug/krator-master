@@ -178,7 +178,8 @@ _IXB, _IXBAKE = _interiors()
 # pieces/ is not in Git), else the committed one stands.
 CM = os.path.join(ROOT, 'core', 'charactermodels')
 for f, src in (('47k-kchar-rig.js', os.path.join(CM, 'src', '10-rig.js')), ('47l-kchar-figure.js', os.path.join(CM, 'src', '50-figure.js')),
-               ('47j-kchar-gltf.js', os.path.join(CM, 'tools', 'vendor', 'GLTFLoader.r128.js'))):
+               ('47j-kchar-gltf.js', os.path.join(CM, 'tools', 'vendor', 'GLTFLoader.r128.js')),
+               ('47m-kchar-crowd.js', os.path.join(CM, 'src', '60-crowd.js'))):   # KCharCrowd: the crowd past the figures (69)
     PATH[f] = src
 KCHAR_PEOPLES = ('historians', 'xanadu')
 KCHAR_BEARDS = {'mpfb_male': ['grinsegold_full_beard', 'wdg_scruffy_beard', 'grinsegold_moustache', 'Goatee'], 'mpfb_female': []}
