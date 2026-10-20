@@ -30,7 +30,7 @@ THREE = os.path.join(ROOT, 'settlements', 'ys', 'three.min.js')
 LOADER = os.path.join(HERE, 'tools', 'vendor', 'GLTFLoader.r128.js')
 
 CHECKS = r'''async () => {
-  const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [], props: [] };
+  const K = window._kchar, D = KCHAR_DATA, out = { pieces: [], rest: { worst: 0, at: '' }, feet: [], morph: [], clips: 0, random: true, ranges: [], hide: [], props: [], fold: {} };
   const hex = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
   for (const body of Object.keys(D.bodies)) {
     await K.body(body);
@@ -126,6 +126,33 @@ CHECKS = r'''async () => {
       }
       if (bad || moved < 0.01) out.props.push(body + ' cloth: ' + bad + ' non-finite points, largest swing ' + moved.toFixed(3) + ' m');
       if (deep) out.props.push(body + ' cloth: ' + deep + ' chain points inside a thigh');
+      await window._kchar.set(r0);
+    }
+    // the fold: a court robe and skirt in a walk, every chain segment within 1.5 rad of its rest (the Verlet threw chain
+    // tops sideways and Z-folded them: 60 to 90 segments past it; kchar_test.gd measures the same in Godot)
+    const rb = kit.items.find(it => it.id.indexOf('noble_robe') >= 0 && it.cloth);
+    if (rb && sk) {
+      const r0 = JSON.parse(JSON.stringify(window._kchar.record()));
+      const r4 = JSON.parse(JSON.stringify(r0)); r4.armour.torso = rb.id; r4.armour.legs = sk.id;
+      await window._kchar.set(r4);
+      const fold = {};
+      for (const clip of ['idle', 'walk']) {
+        await fig.play(clip);
+        let n = 0;
+        for (let k = 0; k < 60; k++) {
+          fig.update(1 / 30);
+          if (k < 20) continue;                     // after the fade from the last clip
+          Object.values(fig.clothState().items).forEach(c => c.on && c.chains.forEach(ch => {
+            for (let i = 0; i + 1 < ch.x.length; i++) {
+              const a = ch.x[i + 1].clone().sub(ch.x[i]), b = ch.tw[i + 1].clone().sub(ch.tw[i]);
+              if (a.lengthSq() > 1e-12 && b.lengthSq() > 1e-12 && a.angleTo(b) > 1.5) n++;
+            }
+          }));
+        }
+        fold[clip] = n;
+        if (n > 8) out.props.push(body + ' cloth: court robe in ' + clip + ', ' + n + ' segment-frames past 1.5 rad of rest (the fold)');
+      }
+      out.fold[body] = fold;
       await window._kchar.set(r0);
     }
     // a heavy body: after the clip, no elbow or hand sits inside the pelvis, chest or its own thigh (bodyFix)

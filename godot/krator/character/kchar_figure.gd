@@ -1193,7 +1193,7 @@ func _rigid(ch: Dictionary) -> Transform3D:
 			var nm := String(nw[0])
 			var leg := false
 			for l in LEGJ:
-				leg = leg or nm.contains(l)
+				leg = leg or (k > 0 and nm.contains(l))   # the top point with all its weights: it is the cloth's own vertex
 			var j := skeleton.find_bone(nm)
 			if leg or j < 0 or not binds.has(j):
 				continue
@@ -1201,14 +1201,18 @@ func _rigid(ch: Dictionary) -> Transform3D:
 			tot += float(nw[1])
 		if tot > 0.0:
 			tw[k] = v / tot
+	var F := M
 	if not ch["whole"]:
-		var d: Vector3 = tw[0] - M * (ch["rest"][0] as Vector3)
+		# the shape it was fitted in, turned with the hips, from its top point (turned with the spine joint it hangs
+		# from, which the clips pitch hard, a cape's hem swung 0.7 m off the body: the fold; rigidTargets in 50-figure.js)
+		var hi := skeleton.find_bone("Hips")
+		F = _gp(hi) * (binds[hi] as Transform3D)
 		for k in range(1, tw.size()):
-			tw[k] += d
+			tw[k] = (tw[0] as Vector3) + F.basis * ((ch["p"][k] as Vector3) - (ch["p"][0] as Vector3))
 	ch["tw"] = tw
 	# the root joint where its point is
 	skeleton.set_bone_pose_position(ch["bones"][0], _gp(ch["parent"]).affine_inverse() * (tw[0] as Vector3))
-	return M
+	return F
 
 
 func _cloth_step(dt: float) -> void:
@@ -1237,7 +1241,15 @@ func _cloth_step(dt: float) -> void:
 		if "Arm" in String(skel["joints"][int(cp["a"])]["name"]):
 			continue                        # not the arms (an elbow at the waist pushed one chain of a cape out as a spike)
 		var ends := _cap_ends(cp)
-		W.append({"a": ends[0], "b": ends[1], "r": float(cp["r"]) + C_PAD / size})
+		var nm := skeleton.get_bone_name(cp["a"])
+		W.append({"a": ends[0], "b": ends[1], "r": float(cp["r"]) + C_PAD / size, "r0": float(cp["r"]),
+			"leg": nm.contains("Leg") or nm.contains("Foot") or nm.contains("Toe"), "seat": cp.get("pa") != null})
+	# the seat's two upright capsules as one across the buttocks, for the chains (a skirt's point at the back between them
+	# went out of one toward the other, sideways: the fold; clothStep in 50-figure.js)
+	var seats := W.filter(func(e): return e.get("seat", false))
+	if seats.size() == 2:
+		W = W.filter(func(e): return not e.get("seat", false))
+		W.append({"a": (seats[0]["a"] + seats[0]["b"]) * 0.5, "b": (seats[1]["a"] + seats[1]["b"]) * 0.5, "r": seats[0]["r"], "leg": false})
 	var ground := 0.008 - skeleton.position.y
 	var wind := Vector3.ZERO
 	for cm in skel.get("clips", []):
@@ -1313,15 +1325,27 @@ func _cloth_step(dt: float) -> void:
 func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 	var x: Array = ch["x"]
 	var hip := _gp(_hips).origin
+	# across the hips, level: the side a leg's capsule lies on
+	var lat := _gp(skeleton.find_bone("LeftUpLeg")).origin - _gp(skeleton.find_bone("RightUpLeg")).origin
+	lat.y = 0.0
+	lat = lat.normalized()
 	for k in range(1, x.size()):
 		var p: Vector3 = x[k]
 		var up: Vector3 = x[k - 1]
+		var rw: Vector3 = ch["tw"][k]
 		for cp in W:
 			var ab: Vector3 = cp["b"] - cp["a"]
-			var t := clampf((p - cp["a"]).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
+			var lsq := maxf(1e-9, ab.length_squared())
+			# no further out than the point's own rest lies (a chain's root inside the trunk threw the point below it out
+			# sideways: the fold; collide() in 50-figure.js)
+			var rq: Vector3 = cp["a"] + ab * clampf((rw - cp["a"]).dot(ab) / lsq, 0.0, 1.0)
+			# (on a leg, no less than the bare limb: a skirt's rest follows the hips, and a thigh swung forward over it
+			# would take the cloth in)
+			var r := minf(float(cp["r"]), maxf(rw.distance_to(rq), float(cp.get("r0", 0.0)) if cp.get("leg", false) else 0.0))
+			var t := clampf((p - cp["a"]).dot(ab) / lsq, 0.0, 1.0)
 			var q: Vector3 = cp["a"] + ab * t
 			var dd := p.distance_to(q)
-			if dd < cp["r"] and dd > 1e-6:
+			if dd < r and dd > 1e-6:
 				# across a limb nearer level than upright (a seated thigh, a raised arm), out on the side of the point
 				# above, so the chain drapes over it; along an upright one, out the side away from the body's axis
 				# (collide() in 50-figure.js)
@@ -1330,13 +1354,18 @@ func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 				var o := (up - q) - ax * (up - q).dot(ax)
 				if absf(ax.y) < 0.7 and o.length() > 1e-4:
 					o = o.normalized()
-				else:
+				elif cp.get("leg", false) and (rw - q).dot(lat) * signf((q - hip).dot(lat)) > -0.5 * float(cp["r"]):
+					# the legs only (on the trunk's, the chest leaning forward of the hips, it threw a mantle's points at
+					# the back of the neck through the body to the front), and not for a point whose rest lies on the
+					# thigh's inner side, between the legs (a skirt's back centre, thrown out through the thigh: the fold)
 					o = Vector3(q.x - hip.x, 0.0, q.z - hip.z)
-					o = o.normalized() if o.length_squared() > 1e-8 else Vector3.ZERO
+					o = o.normalized() if o.length_squared() > 9e-4 else Vector3.ZERO
+				else:
+					o = Vector3.ZERO
 				var sd := d.dot(o)
 				if sd < 0.0:
 					d -= 2.0 * sd * o
-				p = q + d.normalized() * float(cp["r"])
+				p = q + d.normalized() * r
 		if p.y < ground:
 			p.y = ground
 		x[k] = p

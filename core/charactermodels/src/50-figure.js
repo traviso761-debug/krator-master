@@ -565,7 +565,7 @@ function KCharFigure(body, sliders, load){
     for(var k in live) if(live[k].userData.part && live[k].userData.part.role === 'base') return live[k];
     return null;
   }
-  var rtS = new THREE.Matrix4(), rtV = new THREE.Vector3(), rtM = new THREE.Matrix4(), LEGJ = /UpLeg|Leg$|LegTwist|Foot|Toe/;
+  var rtS = new THREE.Matrix4(), rtV = new THREE.Vector3(), rtM = new THREE.Matrix4(), rtH = new THREE.Matrix4(), rtN = new THREE.Matrix3(), LEGJ = /UpLeg|Leg$|LegTwist|Foot|Toe/;
   function rigidTargets(c, ch){
     var pb = bones[ch.parent], inv = c.meshes[0].skeleton.boneInverses;
     cM.multiplyMatrices(pb.matrixWorld, inv[ch.parent]);   // model -> world, riding the joint
@@ -578,28 +578,35 @@ function KCharFigure(body, sliders, load){
        the clip and the posture, and sank into the body under the tunic it covers. The chains add the motion only. Not
        the legs' weights (LEGJ): below the hips they are what a skirt's are, and a robe's skirt and cape followed the
        thighs round the front in a stride; what is left there is the hips'. A chain that reaches below the hip joint
-       (a robe's skirt, a long cape) keeps the shape it hangs in from its parent joint and moves with its top point
-       only (whole false): followed point by point, a robe's back bunched at the legs */
-    // a chain that hangs below the hips keeps its rigid shape and moves with its top point only (ch.whole false)
+       (a robe's skirt, a long cape) moves with its top point only and keeps the shape it was fitted in, turned with
+       the hips (whole false): followed point by point, a robe's back bunched at the legs; turned with the spine joint
+       it hangs from, which the retargeted clips pitch hard while the pelvis makes up for it, a cape's hem swung 0.7 m
+       off the body and every bone of it measured as folded (the fold: 60 to 90 bones past 1.5 rad on the court robe).
+       The frame returned is the one the bones turn in (clothStep), so the mesh keeps to the rest */
     var n = ch.whole ? ch.p.length : 1;
     for(var k = 0; k < n; k++){
       var t = ch.tw[k] = ch.tw[k] || new THREE.Vector3(), tot = 0;
       t.set(0, 0, 0);
       (ch.bw[k] || []).forEach(function(nw){
-        var j = byName[nw[0]]; if(j === undefined || LEGJ.test(nw[0])) return;
+        // (the top point with all its weights: it is the body-weighted cloth's own vertex, and placed by the hips alone a
+        // skirt's root at the back sank 10 cm between the thighs, which threw the point below it out sideways)
+        var j = byName[nw[0]]; if(j === undefined || (k > 0 && LEGJ.test(nw[0]))) return;
         t.addScaledVector(rtV.copy(ch.p[k]).applyMatrix4(rtS.multiplyMatrices(bones[j].matrixWorld, inv[j])), nw[1]); tot += nw[1];
       });
       if(tot > 0) t.divideScalar(tot); else t.copy(ch.rest[k]).applyMatrix4(cM);
     }
+    var F = cM;
     if(!ch.whole){
-      rtV.copy(ch.tw[0]).sub(cV3.copy(ch.rest[0]).applyMatrix4(cM));
-      for(var k = 1; k < ch.rest.length; k++) (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).copy(ch.rest[k]).applyMatrix4(cM).add(rtV);
+      F = rtH.multiplyMatrices(bones[byName.Hips].matrixWorld, inv[byName.Hips]);
+      rtN.setFromMatrix4(F);
+      for(var k = 1; k < ch.p.length; k++)
+        (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).subVectors(ch.p[k], ch.p[0]).applyMatrix3(rtN).add(ch.tw[0]);
     }
     // the root joint where its point is (a child of the parent joint: placed in its frame)
     var b0 = ch.bones[0];
     b0.position.copy(ch.tw[0]).applyMatrix4(rtM.copy(pb.matrixWorld).invert());
     b0.updateMatrixWorld(true);
-    return cM;
+    return F;
   }
   /* the chains' rest in the postured pose (HANDOFF-CLOTHING.md, 1): posture() turns the spine and draws the shoulders
      back after every clip, so a garment's true rest is the postured one. The skeleton is put in its bind pose and
@@ -672,8 +679,16 @@ function KCharFigure(body, sliders, load){
     var sc = self.group.getWorldScale(cS).x, W = caps.filter(function(cp){ return !/Arm/.test(bones[cp.a].name); }).map(function(cp){
       var A = new THREE.Vector3(), B = new THREE.Vector3();
       capEnds(cp, A, B);
-      return { a:A, b:B, r:cp.r * sc + PAD };
+      return { a:A, b:B, r:cp.r * sc + PAD, r0:cp.r * sc, leg:LEGJ.test(bones[cp.a].name), seat:!!cp.pa };
     });
+    // the seat's two upright capsules as one across the buttocks, for the chains: a skirt's point at the back between
+    // them went out of one toward the other and out of that, sideways, and its chain kinked at the top (the fold)
+    var seats = W.filter(function(w){ return w.seat; });
+    if(seats.length === 2){
+      W = W.filter(function(w){ return !w.seat; });
+      W.push({ a:seats[0].a.clone().add(seats[0].b).multiplyScalar(0.5), b:seats[1].a.clone().add(seats[1].b).multiplyScalar(0.5),
+               r:seats[0].r, leg:false });
+    }
     groundY = self.group.getWorldPosition(cV3).y + 0.008;
     // the air: still, or the wind of walking in place
     var meta0 = self.action && meta[self.action.getClip().name], wind = new THREE.Vector3();
@@ -739,18 +754,30 @@ function KCharFigure(body, sliders, load){
     });
   }
   // out of the capsules and above the floor (last: a point may stretch its bone a little rather than sink in)
-  var hipW = new THREE.Vector3(), cO = new THREE.Vector3(), cAx = new THREE.Vector3();
+  var hipW = new THREE.Vector3(), cO = new THREE.Vector3(), cAx = new THREE.Vector3(), cLat = new THREE.Vector3();
   function collide(ch, W){
     bones[byName.Hips].getWorldPosition(hipW);
+    // across the hips, level: the side a leg's capsule lies on
+    bones[byName.LeftUpLeg].getWorldPosition(cLat); bones[byName.RightUpLeg].getWorldPosition(cO);
+    cLat.sub(cO).setY(0).normalize();
     for(var k = 1; k < ch.x.length; k++){
-      var x = ch.x[k], up = ch.x[k - 1];
+      var x = ch.x[k], up = ch.x[k - 1], rw = ch.tw[k];
       W.forEach(function(cp){
         cV.subVectors(cp.b, cp.a);
-        var t = THREE.MathUtils.clamp(cV2.subVectors(x, cp.a).dot(cV) / Math.max(1e-9, cV.lengthSq()), 0, 1);
+        var lsq = Math.max(1e-9, cV.lengthSq());
+        // no further out than the point's own rest lies: a robe's chain roots sit inside the trunk's and hips' capsules
+        // (the cloth there lies on the body), and the point below each was thrown out sideways to the capsule's
+        // surface, a Z at every chain's top (the fold: 60 to 90 bones past 1.5 rad on the court robe)
+        var rt = cV3.subVectors(rw, cp.a).dot(cV) / lsq;
+        cV3.copy(cp.a).addScaledVector(cV, THREE.MathUtils.clamp(rt, 0, 1));
+        // (on a leg, no less than the bare limb: a skirt's rest follows the hips, and the thigh swung forward in a stride
+        // over it would take the cloth in)
+        var r = Math.min(cp.r, Math.max(rw.distanceTo(cV3), cp.leg ? cp.r0 : 0));
+        var t = THREE.MathUtils.clamp(cV2.subVectors(x, cp.a).dot(cV) / lsq, 0, 1);
         cAx.copy(cV).normalize();
         cV2.copy(cp.a).addScaledVector(cV, t);
         var d = x.distanceTo(cV2);
-        if(d < cp.r && d > 1e-6){
+        if(d < r && d > 1e-6){
           // across a limb that lies across the cloth's fall (a seated thigh, a raised arm: nearer level than upright),
           // out on the side of the point above, so the chain drapes over it rather than passing under; along an
           // upright limb, out the side away from the body's axis, so cloth never ends up behind a leg in a stride
@@ -758,11 +785,14 @@ function KCharFigure(body, sliders, load){
           cO.subVectors(up, cV2); cO.addScaledVector(cAx, -cO.dot(cAx));
           var ol = Math.abs(cAx.y) < 0.7 ? cO.length() : 0, cs = 0;
           if(ol > 1e-4){ cO.divideScalar(ol); cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
-          if(ol <= 1e-4){
+          if(ol <= 1e-4 && cp.leg && cO.subVectors(rw, cV2).dot(cLat) * Math.sign((cV2.x - hipW.x) * cLat.x + (cV2.z - hipW.z) * cLat.z) > -0.5 * cp.r){
+            // (the legs only: on the trunk's capsules, the chest leaning forward of the hips in a clip, it threw a
+            // mantle's points at the back of the neck through the body to the front; and not for a point whose rest
+            // lies on the thigh's inner side, between the legs: a skirt's back centre, thrown out through the thigh)
             cO.set(cV2.x - hipW.x, 0, cV2.z - hipW.z);
-            if(cO.lengthSq() > 1e-8){ cO.normalize(); cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
+            if(cO.lengthSq() > 9e-4){ cO.normalize(); cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
           }
-          x.copy(cV2).addScaledVector(cV.normalize(), cp.r);
+          x.copy(cV2).addScaledVector(cV.normalize(), r);
         }
       });
       if(x.y < groundY) x.y = groundY;

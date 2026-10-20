@@ -21,10 +21,11 @@
   pick, not chopped short. Spear advance is Meshy's walk with the arms re-posed frame by frame, so its shoulders and
   spine still sway as the walk had them for the old grip. A crossbow shot still borrows the long-gun shot. Mixamo has
   most of these, but its clips can only be fetched by hand with an Adobe account.
-- **The Godot twin's robe chains fold.** In a walk some of the court robe's chain bones turn 1.6 to 2.5 rad from their
-  rest against the link above (26 of them on the man), and with cloth off the chains still jitter about 0.19 rad a frame
-  (0.28 with it on): the page's chains do not. `kchar_test.gd` measures the swing frame to frame, which still tells the
-  two apart; the folding itself is not fixed.
+- **The Godot twin's robe chains fold (mostly fixed).** The court robe and skirt's chains Z-folded at their tops in a
+  walk (67 bones past 1.5 rad on the man); the collision's push is now limited by the point's rest and the chains' rest
+  follows the body (README, "Cloth"). The page reads 0 segments past 1.5 rad; Godot's test still finds 4 bones of the
+  robe's loose front panel (chains 32 to 35) bending past it over a thigh in a stride, after the test's earlier clips
+  (a fresh figure: 0 or 1). The Izani court robe's orange front panel still pokes through or flares out in a walk.
 - **The posture fix is one rule for every clip.** The spine is bent forward and the shoulders dropped and drawn back
   by fixed angles (`data/posture.json`, set by hand in the Animation Lab's Posture panel) after each clip (README, Posture), the upper arms keeping the clip's direction: a clip that already
   stoops (the standing idle, the combat stance) stoops further. The cause, the retarget straightening MakeHuman's

@@ -358,8 +358,15 @@ air, with the wind of a walk or run played in place (its `root_speed`), kept to 
 a skirt, out of the capsules (not the arms': an elbow hanging at the waist pushed one chain of a cape's edge out and
 the cloth below it swung away alone as a spike; the push keeps vertices out of the arms) and above the floor; each bone then turns to the next point. A point inside a limb
 that lies across the cloth's fall (a seated thigh, a raised arm) leaves on the side of the point above it, so the
-chain drapes over the limb; along an upright limb it leaves on the side away from the body's axis, so cloth never
-ends up behind a leg in a stride. `fig.cloth = false` hangs
+chain drapes over the limb; along an upright leg it leaves on the side away from the body's axis, so cloth never
+ends up behind a leg in a stride (the legs only: on the trunk, the chest leaning forward in a clip, that threw a mantle's
+points through the body; and not for a point whose rest lies on the thigh's inner side, between the legs, which it threw
+out through the thigh). A point is pushed no further out of a capsule than its own rest lies (a robe's chain roots sit
+inside the trunk's capsules, and a full push threw the point below each sideways: a Z at every chain's top, the fold),
+but out of a leg at least to the bare limb (a skirt's rest follows the hips, and a thigh swung forward over it would take
+the cloth in). The seat's two capsules count as one across the buttocks for the chains. `verify.py` measures the fold
+on the court robe and skirt (chain segments past 1.5 rad of their rest, idle and walk: 0) and `kchar_test.gd` the same
+in Godot. `fig.cloth = false` hangs
 them rigid (the Animation Lab's Cloth button). Each part has a `layer` (0 a skirt, 1 a robe's hem, a flap or a
 skirt's over-tier, 2 a cape, a mantle or headgear), within its item's slot (legs under torso under head: the figure
 adds 3 x the slot's rank, so a breechcloth's flap stays under a shirt's skirt): a chain point stays 3 cm outside the

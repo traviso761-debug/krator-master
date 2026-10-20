@@ -141,7 +141,17 @@ area you are about to change.
 - **Robes crumpled onto the lap by a capsule lever** → reverted; simple capsules.
 - **A parent-side rule flipped a chain 137° in Godot's walk** → limit it to near-level limbs.
 - **Measuring swing in a test**: an angle metric saturates near π; measure frame-to-frame motion instead.
-- Robe chains in Godot still fold in a walk; recorded as a known issue rather than hidden.
+- **Robe chains Z-fold at their tops (bones past 1.5 rad)** → chain roots lie inside the body's capsules, and a push
+  out to the full radius throws the next point sideways. Push no further out than the point's own rest lies from the
+  capsule; on legs, floor that at the bare limb radius (a hips-following rest goes inside a thigh swung forward).
+- **"Away from the body's axis" flips are for legs only** → on trunk capsules a forward-leaning chest sends a mantle's
+  neck points through the body; on a leg, skip it for a point whose rest is on the thigh's inner side (a skirt's back
+  centre goes out through the thigh).
+- **Long chains rigid on spine joints** → clips pitch the spine hard and the hem's rest lands 0.7 m off; turn the chain's
+  bind shape by the Hips' frame from its root instead, and give the root all its weights.
+- **Finding which rule throws a point**: trace one chain's pushes per capsule (name, radius, before/after, rest) in
+  Godot headless; switching collision, ring and layering off one at a time names the stage first.
+- **Page shots of a walk are not repeatable** (the phase varies run to run): compare clips with numbers, not two shots.
 
 ## 6. Animation clips and per-frame passes
 
