@@ -3,6 +3,8 @@
 
   blender -b --python tools/mpfb_build.py -- <male|female> <export dir>    # the Blender half (needs MPFB2 + asset packs)
   python3 tools/make_mpfb.py <male|female> <export dir>                      # this half
+  python3 tools/make_mpfb.py hides <male|female|giant> <dir of GLBs>        # rederive what the GLBs alone decide
+                                                                             # (refresh_hides), with no Blender
 
 The Blender half builds an MPFB human on the Mixamo rig with a skin, loads library clothes, hair, brows and lashes
 (MPFB fits them to the body and interpolates their weights from it), and exports the base and each item as its own
@@ -818,10 +820,12 @@ def seat(c, J, P, V, npz, tgts, bones):
     return out
 
 
-def covered(BP, BT, path, out=0.025, inward=0.02):
+def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0):
     """the base triangles an item covers when it has no delete group: each base vertex casts a ray out along its normal
     (the garment lies over it) and one in (the skin already pokes through it); a triangle whose three vertices both
-    find the garment close is hidden"""
+    find the garment close is hidden. enclose > 0 also takes a vertex the garment closes round front and back (rays
+    along +z and -z both meet it within enclose): the crotch and the cleft of the buttocks, whose normals point between
+    the legs, where a trouser seam bridges them"""
     from make_kit import ray_hits
     N = np.zeros_like(BP)
     fn = np.cross(BP[BT[:, 1]] - BP[BT[:, 0]], BP[BT[:, 2]] - BP[BT[:, 0]])
@@ -832,7 +836,75 @@ def covered(BP, BT, path, out=0.025, inward=0.02):
     t_out, _ = ray_hits(BP, N, AP, AT, out, step=0.01)
     t_in, _ = ray_hits(BP, -N, AP, AT, inward, step=0.01)
     hit = np.isfinite(t_out) | np.isfinite(t_in)
+    if enclose > 0:
+        Z = np.tile([0.0, 0.0, 1.0], (len(BP), 1))
+        hit |= np.isfinite(ray_hits(BP, Z, AP, AT, enclose, step=0.01)[0]) & np.isfinite(ray_hits(BP, -Z, AP, AT, enclose, step=0.01)[0])
     return np.nonzero(hit[BT].all(1))[0]
+
+
+# library trousers with no delete group (the cargo trousers) stand off the knee up to 3.3 cm and bridge the crotch, so at
+# the default reach the skin of the knees, the crotch and the cleft of the buttocks was left drawn under them and came
+# through in a crouch, a lunge or a roll (the owner's Animation Lab review, 2026-10-20): out 5 cm, in 3 cm, and closed
+# round front and back within 35 cm (a ray from the cleft crosses the pelvis to the fly)
+TROUSERS_COVER = {'out': 0.05, 'inward': 0.03, 'enclose': 0.35}
+
+
+def library_trousers(it):
+    return it['slot'] == 'legs' and culture_of(it['id']) is None and it['id'] not in LOOSE and it['id'] not in FLAPS
+
+
+def parts_under(path, BP, BT):
+    """per small skin primitive of the base (the nipples: 'Human.nipple'), the triangles of the skin under it (those
+    holding the skin vertex nearest each of its vertices). A part is drawn on top of the skin, not cut from it, so an
+    item's hide never reached it, and the man's nipple showed through a T-shirt in the idles; an item that hides all
+    the skin under a part hides the part too (kit item hide_parts)"""
+    j, b = glbio.read_glb(open(path, 'rb').read())
+    tree, out = cKDTree(BP), {}
+    for m in j['meshes']:
+        for p in m['primitives']:
+            mat = j['materials'][p['material']]['name'] if 'material' in p else ''
+            if mat.split('.')[-1] not in HIDE_PARTS:
+                continue
+            _, k = tree.query(glbio.accessor(j, b, p['attributes']['POSITION']).astype(float))
+            out[mat] = np.nonzero(np.isin(BT, np.unique(k)).any(1))[0]
+    return out
+
+
+HIDE_PARTS = ('nipple',)     # the base's parts an item can hide (lips, ears and nails show at the edge of what covers them)
+
+
+def hide_parts(entry, under, ntris):
+    """the parts (parts_under) whose skin an item's hide covers whole"""
+    if 'hide' not in entry:
+        return []
+    h = np.unpackbits(np.frombuffer(base64.b64decode(entry['hide']), np.uint8), bitorder='little')[:ntris].astype(bool)
+    return sorted(m for m, tris in under.items() if len(tris) and h[tris].all())
+
+
+def refresh_hides(body, pieces):
+    """python3 tools/make_mpfb.py hides <male|female|giant> <dir of GLBs>: with no Blender and no export, rederive from
+    the pieces' GLBs (a dir of <id>.glb and base.glb) what the pack derives from them alone: the rays' hide of the
+    library trousers (TROUSERS_COVER) and every item's hide_parts. data/mpfb_<body>/kit.json is rewritten in place;
+    the Godot twin's skin regions (base.gshapes.bin) follow at the next whole build"""
+    path = os.path.join(HERE, 'data', 'mpfb_' + body, 'kit.json')
+    kit = json.load(open(path, encoding='utf-8'))
+    mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))
+    assert len(BT) == kit['base_tris'], 'make_mpfb.py hides: %s is not this kit\'s base' % pieces
+    under = parts_under(os.path.join(pieces, 'base.glb'), BP, BT)
+    for e in kit['items']:
+        g = os.path.join(pieces, e['id'] + '.glb')
+        if e.get('hide_by') == 'rays' and library_trousers(e) and os.path.exists(g):
+            tris = covered(BP, BT, g, **TROUSERS_COVER)
+            print('%-8s %-34s hides %5d (was %d)' % (body, e['id'], len(tris), e.get('hides', 0)))
+            e['hide'], e['hides'] = bits(len(BT), tris), int(len(tris))
+        hp = hide_parts(e, under, len(BT))
+        if hp:
+            e['hide_parts'] = hp
+        else:
+            e.pop('hide_parts', None)
+    print(body, 'items hiding parts:', ', '.join(e['id'] for e in kit['items'] if e.get('hide_parts')))
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(kit, f, indent=1)
 
 
 def hem_depth(c, path, n=16):
@@ -1213,6 +1285,7 @@ def main():
     c.J = {n: i for i, n in enumerate(c.joints)}
     mat, BP, BT = body_primitive(os.path.join(pieces, 'base.glb'))
     tree = cKDTree(BP)
+    under = parts_under(os.path.join(pieces, 'base.glb'), BP, BT)
     contact = body_contact(os.path.join(pieces, 'base.glb'))
     items = []
     man['items'] = [it for it in man['items'] if it['id'] not in SKIP.get(body, ())]
@@ -1293,7 +1366,7 @@ def main():
             entry['hide'] = bits(len(BT), tris)
             entry['hides'] = int(len(tris))
         elif it['slot'] in ('torso', 'legs', 'feet'):
-            tris = covered(BP, BT, os.path.join(pieces, it['id'] + '.glb'))
+            tris = covered(BP, BT, os.path.join(pieces, it['id'] + '.glb'), **(TROUSERS_COVER if library_trousers(it) else {}))
             if hangs(it):
                 # made clothing (make_garments.py) that hangs loose below the hips: a flap or a skirt that lies over a
                 # thigh at rest leaves it as the leg swings, so it hides no skin below half the body's height
@@ -1302,6 +1375,8 @@ def main():
             entry['hide'] = bits(len(BT), tris)
             entry['hides'] = int(len(tris))
             entry['hide_by'] = 'rays'          # no delete group in the asset: covered() found it
+        if hide_parts(entry, under, len(BT)):
+            entry['hide_parts'] = hide_parts(entry, under, len(BT))
         items.append(entry)
         print('%-8s %-6s %-34s hides %5d' % (name, it['slot'], it['id'], entry.get('hides', 0)))
     items += mod_items
@@ -1366,4 +1441,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if sys.argv[1] == 'hides':
+        refresh_hides(sys.argv[2], sys.argv[3])
+    else:
+        main()

@@ -51,6 +51,18 @@ area you are about to change.
 
 - **Skin through a garment that has no delete group** → cast rays out and in from the skin (`covered()`) to derive
   one; for tops with a partial group, union the ray result in (shoulders and chest came through T-shirts).
+- **Knees and the crotch seam through loose library trousers** (cargo trousers in a crouch, a lunge, a roll) → tint the
+  skin red and shoot: red is skin left drawn, not torn cloth. The legs stood off the knee up to 3.3 cm and the rays reach
+  2.5, and rays along the normal from the crotch and the buttocks' cleft go between the legs. Longer rays (5 cm) plus a
+  closure test (rays along +z and -z both meet the garment) hide them; `make_mpfb.py hides` redoes it from the GLBs.
+- **A nipple through a T-shirt** (the man's, in the idles) → the base's nipples are a primitive of their own
+  (`Human.nipple`), drawn over the skin: no hide reaches them. Hide such a part when an item hides all the skin under it
+  (`hide_parts`). Draw the garments hidden and the hide on (A-pose, front and back) to see every such leftover at once.
+- **A waistband through a T-shirt's back in a forward bend** (a heavy push, a swim) → the tuck drew the band in level
+  toward a vertical axis; measure the way in from the trunk's axis (hips to Spine1) and the height as the greater of the
+  trunk's and the world's (the trunk's alone untucked the back of the band in a crouch). Give a new per-frame pass its
+  own scratch vectors: borrowing 50-figure.js's shared `cV` in `legCaps` put a skirt chain point inside a thigh in
+  verify.py's walk (another pass reads it across frames).
 - **Skin through a garment at one body size only** → test every body; seat ease and hem width that suit the neutral
   body under-fit the heavy one.
 - **Trousers through tunics** (patches at the hip) → the under-layer's ease must be smaller than the outer's, widening

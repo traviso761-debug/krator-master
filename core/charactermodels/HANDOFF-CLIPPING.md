@@ -53,6 +53,15 @@ near it. The Animation Lab refuses a publish that touches files you have not lis
 - The boubou falls from the waist; the grand boubou's under-tunic stops at the waist; the breechcloth hangs over the
   shirt; the exomis crosses the chest diagonally.
 
+## The plain clothes (the Animation Lab review, 2026-10-20)
+
+The cast's cargo trousers and plain tee: knees, the crotch seam and the buttocks' cleft were skin left drawn under the
+trousers (the pack's ray cover, now `TROUSERS_COVER`); the man's nipple was the base's `Human.nipple` part, which no
+hide reached (now `hide_parts`); the trousers' band came through the tee's back in the push and the swim (the tuck,
+now in the trunk's frame). `python3 tools/make_mpfb.py hides <body> <dir of GLBs>` refreshes kit.json's hides without
+Blender (decode the published pieces' first line: base64 of a gzipped GLB). The ladder's "gap" is open (KNOWN_ISSUES).
+Godot's skin regions for the trousers wait for the next whole build.
+
 ## Open, by priority
 
 1. **Tall bodies (height above about +0.7) tear long robes in a run**, and at +1 open small tears in the walk and idle

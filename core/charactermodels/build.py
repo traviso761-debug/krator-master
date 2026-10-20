@@ -139,7 +139,7 @@ def main():
     old = os.path.join(HERE, 'build-manifest.json')
     if os.path.exists(old):
         kept = {k: v for k, v in json.loads(read(old)).items() if k.startswith('pieces/') and k not in man
-                and not os.path.exists(os.path.join(HERE, k)) and os.path.isfile(os.path.join(HERE, 'data', k.split('/')[1], 'kit.json'))}
+                and not os.path.exists(os.path.join(HERE, k)) and (k.split('/')[1] == 'props' or os.path.isfile(os.path.join(HERE, 'data', k.split('/')[1], 'kit.json')))}
         man.update(kept)
         if kept:
             print('build.py: %d pieces not here keep their last hashes' % len(kept))

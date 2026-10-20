@@ -131,6 +131,18 @@ static func hidden(rec: Dictionary, kit: Dictionary) -> PackedByteArray:
 	return o
 
 
+# the base's small parts drawn over the skin (the nipples: "Human.nipple") that a worn item covers whole (kit item
+# hide_parts), as { material name: true }: never in a hide, they are left out as a surface (KCHAR.hiddenParts)
+static func hidden_parts(rec: Dictionary, kit: Dictionary) -> Dictionary:
+	var out := {}
+	for slot in SLOTS:
+		var it = item(rec, kit, slot)
+		if it != null:
+			for m in it.get("hide_parts", []):
+				out[m] = true
+	return out
+
+
 static func blank(kit: Dictionary) -> Dictionary:
 	return {"body": kit["body"], "hair": null, "beard": null, "armour": {"torso": null, "legs": null, "feet": null, "head": null},
 		"sliders": {}, "morph": {}, "ancestry": null, "skin": null, "hair_color": null, "eye_color": null, "people": null, "dye": {}}

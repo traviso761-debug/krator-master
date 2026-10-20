@@ -30,7 +30,8 @@ var golden = { bodies:{} };
   g.strangers.slice(0, 6).forEach(function(s){
     var hid = KCHAR.hidden(s.record, kit).base, n = 0;
     for(var i=0;i<hid.length;i++) n += hid[i];
-    g.parts.push({ record:s.record, parts:KCHAR.parts(s.record, kit).map(function(p){ return p.key + ':' + p.role + ':' + p.slot; }), hidden:n });
+    g.parts.push({ record:s.record, parts:KCHAR.parts(s.record, kit).map(function(p){ return p.key + ':' + p.role + ':' + p.slot; }), hidden:n,
+                  hidden_parts:Object.keys(KCHAR.hiddenParts(s.record, kit)).sort() });
   });
 });
 fs.writeFileSync(path.join(__dirname, 'golden-mpfb.json'), JSON.stringify(golden));

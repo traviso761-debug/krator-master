@@ -15,6 +15,8 @@
    turned into offsets from Head here, since each head was made with its own face.
    KCHAR.parts(record, kit) the meshes to draw: the base body's regions, the head, hair and beard, the armour.
    KCHAR.hidden(record, kit) per base region, which triangles the worn armour covers (the renderer leaves them out).
+   KCHAR.hiddenParts(record, kit) the base's small parts drawn over the skin (the nipples: 'Human.nipple') that a worn
+   item covers whole (kit item hide_parts), as { material name: true }: the renderer leaves them out too.
    KCHAR.random(seed, sliders, kit) a record drawn from KRAND (core/rand).
 */
 var KCHAR = (function(){
@@ -199,6 +201,19 @@ var KCHAR = (function(){
     return out;
   }
 
+  /* a part of the base drawn over the skin, not cut from it (the nipples), is never in a hide: an item that hides all the
+     skin under it says so (kit item hide_parts, make_mpfb.py parts_under), and the man's nipple no longer shows through
+     a T-shirt where the chest bends */
+  function hiddenParts(rec, kit){
+    var out = {};
+    if(kit.style !== 'mpfb') return out;
+    MPFB_SLOTS.forEach(function(slot){
+      var it = mpfbItem(rec, kit, slot);
+      ((it && it.hide_parts) || []).forEach(function(m){ out[m] = true; });
+    });
+    return out;
+  }
+
   function blank(kit){
     if(kit.style === 'mpfb') return { body:kit.body, hair:null, beard:null, armour:{ torso:null, legs:null, feet:null, head:null }, sliders:{},
                                       morph:{}, ancestry:null, skin:null, hair_color:null, eye_color:null, people:null, dye:{} };
@@ -359,7 +374,7 @@ var KCHAR = (function(){
     return out;
   }
 
-  return { pose:pose, parts:parts, hidden:hidden, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
+  return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
            along:along, crowd:crowd, colliders:colliders };
 })();

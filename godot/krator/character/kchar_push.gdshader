@@ -8,7 +8,7 @@
 //   away from the body's axis (kcH), never behind the knee. kcS draws each vertex to its nearest capsule only. The arms' capsules (kcB.w 1) are hard: only what is inside moves, so a raised arm lifts a
 //   mantle's hem (and a giant's lower arms, 10-13; the seat, 14-15). kcA / kcB: the capsules' ends in the skeleton's space, kcA.w the radius (_leg_caps).
 // - kcT > 0 (trousers or a skirt under a top that closes round the waist, kit item 'tucks'): the band above the hips
-//   drawn in toward the body's axis by up to kcT, so a waistband stays under the top in any pose.
+//   drawn in toward the trunk's axis (kcH up kcU) by up to kcT, so a waistband stays under the top in any pose.
 // - kcS > 0 (trousers under a loose top; to its hem, kcSH, unless it reaches below the knees, kit item 'long'): below the hips drawn in to
 //   within kcS of the legs' capsules (the first six: thighs, shins, feet), so wide ones stay under the robe.
 shader_type spatial;
@@ -26,6 +26,8 @@ uniform vec4 kcB[16];
 // the radius at b (kcA.w is at a): a limb tapers (make_mpfb.py colliders ra, rb)
 uniform float kcR[16];
 uniform vec3 kcH;
+// the trunk's up (the hips to Spine1, turned from its rest way, applied to +y): +y standing as at rest
+uniform vec3 kcU = vec3(0.0, 1.0, 0.0);
 // 2 cm more for a loose top (a robe's hem lies over the skirt it covers), 5.5 cm over trousers
 uniform float kcP = 0.0;
 uniform float kcL = 0.0;
@@ -123,11 +125,14 @@ void vertex() {
 		}
 	}
 	if (kcT > 0.0) {
-		float tf = smoothstep(kcH.y - 0.02, kcH.y + 0.06, VERTEX.y);
-		vec2 td = VERTEX.xz - kcH.xz;
-		float tl = length(td);
+		// the way in is the trunk's (kcU), the height above the hips the greater of the trunk's and the world's
+		vec3 tr = VERTEX - kcH;
+		float th = dot(tr, kcU);
+		vec3 tq = tr - th * kcU;
+		float tf = smoothstep(-0.02, 0.06, max(th, tr.y));
+		float tl = length(tq);
 		if (tf > 0.0 && tl > 1e-4) {
-			VERTEX.xz = kcH.xz + td * (max(tl - kcT * tf, 0.5 * tl) / tl);
+			VERTEX = kcH + th * kcU + tq * (max(tl - kcT * tf, 0.5 * tl) / tl);
 		}
 	}
 }
