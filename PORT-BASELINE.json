@@ -393,12 +393,12 @@
    "sha256": "1f0d9542ca70622993adb29fa07f58e3cee5fe2fc32703aa9d35ea27a3bb4e3e"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 5896755,
-   "sha256": "87f004c3d149781651850aa1d077c9ddfd3ac4c0d6b20aa96b8d92cfa3ce2e7f"
+   "bytes": 5909625,
+   "sha256": "c09dcdb4b862ae1e4ca5089b34515c71af2dc75c42f503fd795c29e16747bb8a"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 5897013,
-   "sha256": "0809ac332f46a7eb1a471f485325cc506227f4a42cf89cd1fa10c125b8752f58"
+   "bytes": 5909883,
+   "sha256": "4add7e20605793b6ea7f0b2294464f2a8b8c3d856db2ccaafcdda8a592f1d0a0"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5087945,

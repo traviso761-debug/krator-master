@@ -43,6 +43,18 @@ takes the town's ground colours as the city page paints them (paved markets, law
 `WORLD.ground`, wrapped). `?town=` starts the camera looking at that town. The town under the camera runs presented,
 the other abstract (`ISLE.simWatch`).
 
+**The towns' HLOD** (2026-10-20, `88t`, after Godot's visibility ranges, mesh LOD and merged meshes): round the ground
+point the camera looks at, the lots within 150 m are drawn in full (the city page's pieces, one instanced mesh a
+material); out to 800 m each piece is drawn BAKED: its parts merged into one geometry in one vertex-coloured material (a
+part's colour from its material's colour, its map's mean and its vertex colours) and simplified by vertex clustering, a
+grid of 1/40 of the piece's size to 350 m and 1/12 beyond, one instanced mesh a piece and level for the whole ring;
+beyond, the massing. The moored vessels are in full within 250 m and baked and instanced by kind beyond. A piece is
+baked the first time the ring wants it, within 8 ms a frame (about 90 pieces in 2-3 s over Kautoa). Every instanced
+mesh now has bounds round its own instances (a geometry sharing the piece's buffers), so the frustum culls the town
+again. Measured over Kautoa (the same views, whole frame): from 120 m up, 1,016 draw calls and 8.3M triangles before,
+380 and 3.1M after; the start view, 651 and 6.2M before, 330 and 3.2M after, with about 1,000 lots drawn as buildings
+where 657 were. The export is unchanged (it draws the full pieces itself and sees no proxy).
+
 **The towns lived in** (2026-10-20, `src/88c-world-life.js`): the sim runs on the world's clock (`HOST.clock`, the
 72-minute day; held unless `?time=run` or the panel's "run time", whose speed button sets the clock's scale). Each frame
 it steps whole minutes up to the clock's minute within a few milliseconds, so on load (the clock at 11:30, the sim at

@@ -8,7 +8,13 @@
       the kit's own and make both pages read it; until then the Godot cases stay cut from the city page.
 - [x] **The towns lived in** (2026-10-20, `88c-world-life.js`): the sim on the world's clock, the citizens near the
       camera, the canoe line at its berths and under way on a sea route. Left: the world's light still ignores the clock
-      (below), and the frame rate over Kautoa is low with the full flora, the near pieces and the citizens together.
+      (below).
+- [x] **The frame rate over Kautoa** (2026-10-20): the town was 900 of the 1,016 draw calls and 7.4M of the 8.3M
+      triangles (full pieces out to 520 m, 55 moored vessels of many meshes each, every town mesh unculled). Now an HLOD
+      (README, "The towns' HLOD"): 380 calls and 3.1M triangles in the same view. Left: the full ring is still about 220
+      calls (the Vernacular's pieces have 40-58 materials each: a texture atlas, or r128's lack of multi-draw, is the
+      limit), the baked colours are means (a textured wall reads flat at a distance), and each ring rebuild leaves its
+      small bounds geometries to the collector (they share the pieces' buffers, so they are never disposed).
 - [ ] **The towns' streets and massing read pale** under the world's light (the city page's colours, drawn under a
       brighter sun and another exposure): a tone pass on 60's colours for the world, or the world's light, is owed.
 - [ ] **Catching up costs a few seconds of slow frames** after load (the sim from midnight to the clock's 11:30, at

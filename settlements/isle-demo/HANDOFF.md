@@ -35,7 +35,8 @@ registers the export's `city` section for every instance on a page.
    (`godot/data/world-isle-valapo`) followed, then the Islanders kit's own doors, windows and lamps (recorded while it
    builds). **M7 started (2026-10-20):** both towns planned and drawn on the open world's page, the export profile moved
    to `openworld/isle-demo/verify.py` (the world's case equals this page's); then the sim on the world's clock with its
-   citizens and the canoe line under way on a sea route there (`openworld/isle-demo` 88c). Next: one region registry,
+   citizens and the canoe line under way on a sea route there (`openworld/isle-demo` 88c), and an HLOD for the towns there
+   (full near, baked proxies in two levels, massing far; 1,016 draw calls and 8.3M triangles to 380 and 3.1M). Next: one region registry,
    the lakatoi and bodies in Godot. A sea route
    (`SIM.transport` between the landings, `SIM.trade({line})` on it) comes with the open world. Any core/simulation
    change: diff Voth's whole `verify.py --assert` output against `main`'s page with the timings stripped (the method

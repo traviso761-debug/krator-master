@@ -20,6 +20,8 @@ highway, no town tile). The isle's own checks:
     15 minutes, the towns with it), the canoe line's sea route on water all the way (no longer than 1.8 times the
     straight line), each carrier's vessel at its berth or on its route where its passage puts it, the citizens near the
     camera where the sim poses them;
+  - the towns' HLOD (88t): every lot drawn exactly once round the camera, in full, baked or as massing (the negative
+    draws one twice);
   - the export profile (moved here from the city page, M7): Kautoa's ceremonial centre (EXPORT_BOX, the town's frame) under
     EXPORT_PROFILE, as godot/data/world-isle-kautoa is cut (the same records, ids and sim as the city page's case).
 Each check has a negative: the weights summed with a class removed, a town moved out to sea, a vent moved 5 km, the
@@ -144,12 +146,20 @@ async def run(a):
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)
                 # the export: the camera over the box first, so the stage reads the terrain there
-                await pg.evaluate("(()=>{const F=ISLE.cur.G.frame;CAM.setView(F.x+570-450,F.z+1000-550,260,0,-.3);})()")
+                await pg.evaluate("(()=>{const F=ISLE.cur.G.frame;CAM.setView(F.x+570-450,F.z+1000-550,260,0,-.3);CAM.lookAt(F.x+570,WORLD.H(F.x+570,F.z+1000),F.z+1000);})()")
                 await pg.evaluate('_api.settle(240000)')
                 pok, lines = await harness.check_profile(pg, EXPORT_BOX, EXPORT_PROFILE)
                 print(('  PASS  ' if pok else '  FAIL  ') + 'export-profile : %s, box %s, %s' % (await pg.evaluate('ISLE.cur.town'), EXPORT_BOX, ', '.join(EXPORT_PROFILE)))
                 for ln in lines: print('        ' + ln)
                 if not pok: fails.append('export-profile')
+                # the towns' HLOD (88t): the camera's rings rebuilt and every piece baked first
+                await pg.evaluate("(()=>{let last=-1,same=0,n=0;while(same<4&&n<4000){for(const f of HOST.TICKS)f(.016,performance.now()/1000);n++;const b=_isleTowns.hlod.bakes;if(b===last)same++;else same=0;last=b;}})()")
+                r = await pg.evaluate('_isleTowns.hlodCheck()')
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + 'the towns drawn once each, full, baked or massing : ' + r['detail'])
+                if not r['ok']: fails.append('hlod')
+                rn = await pg.evaluate('_isleTowns.hlodCheck({twice:true})')
+                print(('  PASS  ' if not rn['ok'] else '  MISSED') + ' negative (hlod) : ' + rn['detail'])
+                if rn['ok']: fails.append('negative hlod')
                 # the towns lived in (88c): the sim caught up first, the citizens chosen round the camera set above
                 print('--- the towns lived in (M7) ---')
                 await pg.evaluate('_isleLife.follow(Infinity)')
