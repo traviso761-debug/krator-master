@@ -35,7 +35,12 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
    tags:{culture:'order',types:kind==='garden'||kind==='orchard'?['farm','park']:['farm']},note:o.who?'worked by '+o.who:null};
   REGISTER(rec);FREC[o.id]=rec;});
  // ---------------------------------------------------------------- the fields' ground: one mesh
- const pos=[],col=[],uv=[],row=[],idx=[];const tc=new THREE.Color();
+ // the year (40b F.stage): each annual crop its calendar slot (0: what stands all year), its stage set each frame as uniforms
+ const CAL=['(standing)'];F.GROUPS.forEach(o=>{if(o.kind==='strips'||o.kind==='terraces'||o.kind==='pools'||o.kind==='beds')F.strips(o).forEach(s=>{
+  if(s.crop&&!F.PERENNIAL.has(s.crop)&&CAL.indexOf(s.crop)<0)CAL.push(s.crop);});});
+ const calOf=c=>Math.max(0,CAL.indexOf(c)),NCAL=32,U={uH:{value:new Array(NCAL).fill(1)},uRipe:{value:new Array(NCAL).fill(0)},uSoil:{value:new Array(NCAL).fill(0)}};
+ let CURC=0;
+ const pos=[],col=[],uv=[],row=[],idx=[],gcal=[];const tc=new THREE.Color();const padG=()=>{while(gcal.length<pos.length/3)gcal.push(CURC);};
  const sheet=(x0,x1,z0,z1,step,hAt,tone,rowOf,wet)=>{const nx=Math.max(1,Math.ceil((x1-x0)/step)),nz=Math.max(1,Math.ceil((z1-z0)/step)),o=pos.length/3;
   for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=lerp(x0,x1,i/nx),z=lerp(z0,z1,j/nz),n=fbm(x*.05,z*.05,77,2)-.5;
    pos.push(x,hAt(x,z),z);tc.set(tone).convertSRGBToLinear().multiplyScalar(.9+n*.5);col.push(tc.r,tc.g,tc.b);uv.push(x/4,z/4);row.push(wet?-1:rowOf(x,z));}
@@ -49,40 +54,46 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
   F.strips(o).forEach(s=>{const tone=TONE[s.crop]==null?0x7a6a4a:TONE[s.crop],st=Math.min(3,(s.x1-s.x0)/2,(s.z1-s.z0)/2);
    if(o.kind==='pools')return;   // its water is core/water's (89w), in the basin the stage cuts (45: poolCut)
    const ns=o.run!=='ew'&&o.kind!=='terraces';
-   if(o.kind==='beds'){const L=bedLevel(s);if(L)sheet(s.x0,s.x1,s.z0,s.z1,st,()=>L.y,tone,x=>x,false);return;}
-   sheet(s.x0,s.x1,s.z0,s.z1,st,(x,z)=>terrainH(x,z)+lift,tone,ns?(x=>x):((x,z)=>z),false);});});
+   CURC=calOf(s.crop);
+   if(o.kind==='beds'){const L=bedLevel(s);if(L)sheet(s.x0,s.x1,s.z0,s.z1,st,()=>L.y,tone,x=>x,false);padG();return;}
+   sheet(s.x0,s.x1,s.z0,s.z1,st,(x,z)=>terrainH(x,z)+lift,tone,ns?(x=>x):((x,z)=>z),false);padG();});});
+ CURC=0;padG();
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
- g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('aRow',new THREE.Float32BufferAttribute(row,1));g.setIndex(idx);g.computeVertexNormals();
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setAttribute('aRow',new THREE.Float32BufferAttribute(row,1));g.setAttribute('aCal',new THREE.Float32BufferAttribute(gcal,1));g.setIndex(idx);g.computeVertexNormals();
  const TL=(typeof KMAT!=='undefined'&&KMAT.mode==='lib')?KMAT.packed('longsong','tilled'):null,TT=TL?KMAT.textures(TL,{aniso:8}):null;
  const gm=new THREE.MeshLambertMaterial({vertexColors:true,map:TT?TT.map:null,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
  // the furrows: across the rows (aRow is the coordinate across them), every 0.8 m; a pool's water (aRow -1) is left smooth
- gm.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aRow;varying float vRow;varying float vDist;').replace('#include <begin_vertex>','#include <begin_vertex>\nvRow=aRow;')
+ // the year: a strip's earth showing as its crop is ploughed in and sown (uSoil), its straw as it ripens and is cut (uRipe)
+ gm.onBeforeCompile=sh=>{sh.uniforms.uRipe=U.uRipe;sh.uniforms.uSoil=U.uSoil;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aRow;attribute float aCal;varying float vRow;varying float vDist;varying float vRipeG;varying float vSoil;uniform float uRipe['+NCAL+'];uniform float uSoil['+NCAL+'];')
+   .replace('#include <begin_vertex>','#include <begin_vertex>\nvRow=aRow;{int ci=int(aCal+.5);vRipeG=uRipe[ci];vSoil=uSoil[ci];}')
    .replace('#include <project_vertex>','#include <project_vertex>\nvDist=-mvPosition.z;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vRow;varying float vDist;')
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vRow;varying float vDist;varying float vRipeG;varying float vSoil;')
    .replace('#include <map_fragment>',TT?'#include <map_fragment>\ndiffuseColor.rgb*=1.9;':'#include <map_fragment>')
-   .replace('#include <color_fragment>','#include <color_fragment>\nif(vRow>-.5){float f=abs(fract(vRow/0.8)-.5)*2.;float k=1.-smoothstep(40.,160.,vDist);diffuseColor.rgb*=mix(1.,mix(.72,1.06,smoothstep(.15,.6,f)),k);}');};
- gm.customProgramCacheKey=()=>'ls-fields'+(TT?'t':'');
+   .replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb=mix(diffuseColor.rgb,vec3(.62,.5,.24),vRipeG*.55);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.2,.13,.08),vSoil*.8);\nif(vRow>-.5){float f=abs(fract(vRow/0.8)-.5)*2.;float k=1.-smoothstep(40.,160.,vDist);diffuseColor.rgb*=mix(1.,mix(.72,1.06,smoothstep(.15,.6,f)),k);}');};
+ gm.customProgramCacheKey=()=>'ls-fields-y'+(TT?'t':'');
  const ground=new THREE.Mesh(g,gm);ground.userData.host=true;ground.userData.arch=true;ground.userData.cls='feature';ground.userData.inspectLabel='The fields (the Order\'s and its tenants\')';scene.add(ground);
 
  // ---------------------------------------------------------------- the crops and the trees: the cards
- const cards={pos:[],nor:[],uv:[],col:[]};let nCards=0;
+ const cards={pos:[],nor:[],uv:[],col:[],cal:[]};let nCards=0;
  const CW=512,cv=document.createElement('canvas');cv.width=CW*4;cv.height=CW*4;const g2=cv.getContext('2d');
  const atlas=new THREE.CanvasTexture(cv);atlas.encoding=THREE.sRGBEncoding;atlas.anisotropy=4;
  CELLS.forEach((f,i)=>{const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib')?KMAT.packed('longsong',f):null;if(!L)return;
   KMAT.image(L,img=>{g2.drawImage(img,(i%4)*CW,Math.floor(i/4)*CW,CW,CW);atlas.needsUpdate=true;});});
  const cellUV=i=>{const cx=i%4,cy=Math.floor(i/4),e=3/(CW*4);return [cx/4+e,1-(cy+1)/4+e,(cx+1)/4-e,1-cy/4-e];};
  const quadC=(P,n,cell,k)=>{const U=cellUV(cell),T=[[U[0],U[1]],[U[2],U[1]],[U[2],U[3]],[U[0],U[3]]];
-  for(const j of [0,1,2,0,2,3]){cards.pos.push(P[j][0],P[j][1],P[j][2]);cards.nor.push(n[0],n[1],n[2]);cards.uv.push(T[j][0],T[j][1]);cards.col.push(k,k,k);}};
+  for(const j of [0,1,2,0,2,3]){cards.pos.push(P[j][0],P[j][1],P[j][2]);cards.nor.push(n[0],n[1],n[2]);cards.uv.push(T[j][0],T[j][1]);cards.col.push(k,k,k);cards.cal.push(CURC,P[0][1]);}};
  // a plant as crossed upright cards (n of them), base x,y,z, width w, height h, yaw a
  const cross=(x,y,z,w,h,a,cell,k,n)=>{n=n==null?2:n;nCards++;for(let q=0;q<n;q++){const b=a+q*Math.PI/n,ux=Math.cos(b)*w/2,uz=Math.sin(b)*w/2;
   quadC([[x-ux,y,z-uz],[x+ux,y,z+uz],[x+ux,y+h,z+uz],[x-ux,y+h,z-uz]],[-Math.sin(b),0,Math.cos(b)],cell,k);}};
  F.GROUPS.forEach((o,gi)=>{if(!(o.kind==='strips'||o.kind==='terraces'||o.kind==='pools'||o.kind==='beds'))return;const step=STEP(o);
-  F.strips(o).forEach(s=>{if(s.crop==='fallow')return;const cell=cellOf(s.crop);if(cell<0)return;const h=HT[s.crop]==null?.8:HT[s.crop],base=o.kind==='pools'?.12:lift;
+  F.strips(o).forEach(s=>{if(s.crop==='fallow')return;const cell=cellOf(s.crop);if(cell<0)return;CURC=calOf(s.crop);const h=HT[s.crop]==null?.8:HT[s.crop],base=o.kind==='pools'?.12:lift;
    const BL=o.kind==='beds'?bedLevel(s):null;if(o.kind==='beds'&&!BL)return;
    const nx=Math.max(1,Math.floor((s.x1-s.x0)/step)),nz=Math.max(1,Math.floor((s.z1-s.z0)/(o.id==='tea-garden'?o.rows:step)));
    for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=s.x0+(i+.5+(u(gi,s.i,k,1)-.5)*.6)*(s.x1-s.x0)/nx,z=s.z0+(j+.5+(u(gi,s.i,k,2)-.5)*.6)*(s.z1-s.z0)/nz;
     const y=BL?BL.y:o.kind==='pools'?poolLevel(s)-.05:terrainH(x,z)+base;
     cross(x,y-.05,z,h*1.2*(.85+.3*u(gi,s.i,k,3)),h*(.85+.3*u(gi,s.i,k,4)),u(gi,s.i,k,5)*Math.PI,cell,.82+.18*u(gi,s.i,k,6));}});});
+ CURC=0;
  // the trees: orchards and groves (bamboo is drawn as canes below)
  const TREES=[];
  F.GROUPS.forEach(o=>{if(o.kind!=='orchard'&&o.kind!=='grove')return;F.trees(o).forEach((t,k)=>{if(t.crop==='bamboo'){TREES.push(t);return;}const cell=cellOf(t.crop);if(cell<0)return;
@@ -109,7 +120,15 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  let cardMesh=null;
  if(cards.pos.length){const cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(cards.pos,3));cg.setAttribute('normal',new THREE.Float32BufferAttribute(cards.nor,3));
   cg.setAttribute('uv',new THREE.Float32BufferAttribute(cards.uv,2));cg.setAttribute('color',new THREE.Float32BufferAttribute(cards.col,3));
+  cg.setAttribute('aCal',new THREE.Float32BufferAttribute(cards.cal,2));
   const cm=new THREE.MeshLambertMaterial({map:atlas,vertexColors:true,alphaTest:.42,side:THREE.DoubleSide});
+  // the year: a crop's cards drawn to its height (from their foot, aCal.y) and turned to straw as it ripens
+  cm.onBeforeCompile=sh=>{sh.uniforms.uH=U.uH;sh.uniforms.uRipe=U.uRipe;
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec2 aCal;uniform float uH['+NCAL+'];uniform float uRipe['+NCAL+'];varying float vRipeC;')
+    .replace('#include <begin_vertex>','#include <begin_vertex>\n{int ci=int(aCal.x+.5);transformed.y=aCal.y+(transformed.y-aCal.y)*uH[ci];vRipeC=uRipe[ci];}');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vRipeC;')
+    .replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(1.35,1.1,.45)+vec3(.1,.07,0.),vRipeC*.85);');};
+  cm.customProgramCacheKey=()=>'ls-crops-y';
   cardMesh=new THREE.Mesh(cg,cm);cardMesh.userData.host=true;cardMesh.userData.arch=true;cardMesh.userData.cls='flora';cardMesh.userData.inspectLabel='The crops and the orchards (the library\'s cards)';scene.add(cardMesh);}
 
  // ---------------------------------------------------------------- the walls: dry stone round the groups, between the strips, the terraces' risers
@@ -200,11 +219,13 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
  // vertex-coloured geometry (its parts' transforms applied), then drawn instanced: a handful of draw calls for every
  // beast on the pastures. They walk (2026-10-20, core/biome's walker, BIO.walker): each beast a slow loop of its own
  // on its herd's pasture, clear of the water, its place and heading a pure function of the BIO clock (so the export pins
- // it and a port replays it); the pose stays the baked one (no legs moving yet). The sets are dynamic: core/lod and the
- // culling leave them alone.
+ // it and a port replays it). A walker's legs move (2026-10-20): its kind is also baked at GAIT phases of the Fauna kit's
+ // walk (KratorFauna.animate 'walk'), and each frame a walking beast is drawn from the phase its distance walked puts it
+ // in (a cycle every walk speed / gait freq metres: the feet keep their ground, at a walk as slow as theirs); one standing
+ // still keeps its grazing or standing pose. The sets are dynamic: core/lod and the culling leave them alone.
  const BREEDS=[{key:'yak',variant:0,mode:'graze',t:.3},{key:'yak',variant:1,mode:'graze',t:1.1},{key:'yak',variant:2,mode:'idle',t:.6},
   {key:'yak',variant:0,mode:'idle',t:2.2},{key:'cattle',variant:3,mode:'graze',t:.8,dzo:true}];
- const bake=b=>{const g=KratorFauna.build(b.key,{variant:b.variant,seed:b.variant+7});KratorFauna.animate(g,b.t,b.mode);g.updateMatrixWorld(true);
+ const GAIT=6,bake=(b,walkT)=>{const g=KratorFauna.build(b.key,{variant:b.variant,seed:b.variant+7});KratorFauna.animate(g,walkT==null?b.t:walkT,walkT==null?b.mode:'walk');g.updateMatrixWorld(true);
   const P=[],N=[],C=[],v=new THREE.Vector3(),n=new THREE.Vector3(),nm=new THREE.Matrix3();
   g.traverse(o=>{if(!o.isMesh)return;const G=o.geometry.index?o.geometry.toNonIndexed():o.geometry,pa=G.attributes.position,na=G.attributes.normal,ca=G.attributes.color,mc=o.material.color||new THREE.Color(1,1,1);
    nm.getNormalMatrix(o.matrixWorld);for(let i=0;i<pa.count;i++){v.fromBufferAttribute(pa,i).applyMatrix4(o.matrixWorld);n.fromBufferAttribute(na,i).applyMatrix3(nm).normalize();
@@ -221,12 +242,26 @@ const FARMDRAW=(function(){const F=LS.FARMS,SEED=KRAND.child(5150,'longsong-farm
    const ok=(x,z)=>Math.hypot(x-Hd.x,z-Hd.z)<Hd.r&&terrainH(x,z)-waterH(x,z)>.4;
    const pts=BIO.walkLoop(p[0],p[2],5+R.range(0,9),ok,()=>R.range(0,1));return pts?BIO.walker(pts,[],.12+R.range(0,.1),0,R.range(0,900),1.2):null;});
   if(W.some(w=>w)){im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);im.userData.herd=true;
-   const upd=t=>{for(let i=0;i<W.length;i++){if(!W[i])continue;const o=BIO.walkAt(W[i],t,0,6);E.set(0,o.hd,0);Q.setFromEuler(E);
-     V.set(o.x,terrainH(o.x,o.z)-.03,o.z);M.compose(V,Q,S);im.setMatrixAt(i,M);}im.instanceMatrix.needsUpdate=true;};
+   // the walk's phases: one set each, as many places as the kind has beasts (the first k drawn: count)
+   const En=KratorFauna.entry(b.key),gd=En&&En.data&&En.data.gait||{freq:1},sp=En&&En.data&&En.data.speed&&En.data.speed.walk||1.2,cyc=sp/(gd.freq||1);
+   const PH=[];for(let k=0;k<GAIT;k++){const T2=bake(b,k/(GAIT*(gd.freq||1))),pm=new THREE.InstancedMesh(T2.geo,hm,HP[bi].length);pm.count=0;
+    pm.instanceMatrix.setUsage(THREE.DynamicDrawUsage);pm.frustumCulled=false;pm.userData.herd=true;pm.userData.host=true;pm.userData.cls='life';pm.userData.inspectLabel='The Order\'s herds: '+T.name+' (walking)';
+    scene.add(pm);herd.push(pm);PH.push(pm);}
+   const NONE=new THREE.Matrix4().makeScale(0,0,0),cnt=new Array(GAIT).fill(0);
+   const upd=t=>{cnt.fill(0);for(let i=0;i<W.length;i++){if(!W[i])continue;const o=BIO.walkAt(W[i],t,0,6);E.set(0,o.hd,0);Q.setFromEuler(E);
+     V.set(o.x,terrainH(o.x,o.z)-.03,o.z);M.compose(V,Q,S);
+     if(o.vf>.05){const f=o.d/cyc,k=Math.floor((f-Math.floor(f))*GAIT)%GAIT;PH[k].setMatrixAt(cnt[k]++,M);im.setMatrixAt(i,NONE);}else im.setMatrixAt(i,M);}
+    im.instanceMatrix.needsUpdate=true;PH.forEach((pm,k)=>{pm.count=cnt[k];pm.instanceMatrix.needsUpdate=true;});};
    upd(BIO.WIND.t.value);BIO.host.ticks(()=>upd(BIO.WIND.t.value));walking+=W.filter(w=>w).length;}
   im.userData.host=true;im.userData.cls='life';im.userData.inspectLabel='The Order\'s herds: '+T.name;scene.add(im);herd.push(im);});
  F.HERDS.forEach(Hd=>REGISTER({name:'A herd of yak and dzo ('+Hd.n+')',cls:'life',kind:'herd',key:'longsong_'+Hd.id,x:Hd.x,z:Hd.z,y:terrainH(Hd.x,Hd.z)-3,r:Hd.r+3,h:12,tags:{culture:'order'}}));
- return {ground,cards:nCards,cardMesh,canes,herd,records:FREC,beasts:HP.reduce((t,a)=>t+a.length,0),get walking(){return walking;},wheels:WHEELDRAW};})();
+ // the year's stage of every crop, each frame (the world clock's day and hour)
+ const YR={day:null,stages:{}};
+ function year(day){if(YR.day!=null&&Math.abs(day-YR.day)<.01)return;YR.day=day;
+  CAL.forEach((c,i)=>{if(!i)return;const S=F.stage(c,day);U.uH.value[i]=S.h;U.uRipe.value[i]=S.ripe;U.uSoil.value[i]=S.soil;YR.stages[c]=S.name;});YR.season=F.season(day);}
+ const dayNow=()=>{const c=typeof _hostH!=='undefined'&&_hostH&&_hostH.clock;return c?(c.day||0)+(c.hour||0)/24:0;};
+ TICKS.push(()=>year(dayNow()));year(0);
+ return {ground,cards:nCards,cardMesh,canes,herd,records:FREC,year:YR,setYear:year,CAL,uniforms:U,beasts:HP.reduce((t,a)=>t+a.length,0),get walking(){return walking;},wheels:WHEELDRAW};})();
 _mark('farms');
 
 // ---------------------------------------------------------------- the farms' checks (verify.py --assert; 64's monasteryChecks calls them)
@@ -244,10 +279,22 @@ const FCHK={
     if(!o.inside&&LS.trackD(x,z)<6)bad.push(o.id+' (on the track)');});});
   const u=[...new Set(bad)];return{ok:!u.length,detail:u.length?u.slice(0,4).join(', '):G.length+' groups: the fields dry and clear of the wall, the track and the pond; the gardens inside'};},
  // the house's own grain is a real share of its need, and the rest is said to come from somewhere (the estate's tithe)
+ // the fields go through the year: across its seasons every annual crop is ploughed, sown, grown, ripe and cut, and the
+ // page draws what the day says (the crops' heights its uniforms hold for that day)
+ year(stage,annual,drawn){const Y=LS.FARMS.YEAR,bad=[],names=new Set();
+  annual.forEach(c=>{const seen=new Set();for(let d=0;d<Y.days;d+=2){const S=stage(c,d);seen.add(S.name);names.add(S.name);}
+   ['ploughed','sown','growing','ripe','harvested'].forEach(n=>{if(!seen.has(n))bad.push(c+' never '+n);});});
+  if(drawn&&!drawn.ok)bad.push(drawn.detail);
+  return{ok:annual.length>5&&!bad.length,detail:annual.length+' annual crops through '+Y.days+' days ('+Y.seasons.join(', ')+'): '+[...names].join(', ')+(drawn?'; '+drawn.detail:'')+(bad.length?'; '+bad.slice(0,3).join('; '):'')};},
  provision(P){return{ok:P.share>.1&&P.share<.8&&!!P.tithe,detail:'own grain '+P.ownT.toFixed(1)+' t of '+P.needT.toFixed(0)+' t needed ('+(P.share*100).toFixed(0)+' %); the rest: '+P.tithe};}};
 function farmChecks(add){const F=LS.FARMS;add('the farms sow only what the Oidong Valley can grow (the Crops kit)',FCHK.crops(F.sown()));
  add('the fields dry, outside the wall, off the track; the gardens inside',FCHK.clear(F.GROUPS));
- add('the house\'s own fields feed a share of it; the estate the rest',FCHK.provision(F.provision()));}
+ add('the house\'s own fields feed a share of it; the estate the rest',FCHK.provision(F.provision()));
+ // drawn: the uniforms at a harvest day against high summer's (then back to the clock's day)
+ const D=FARMDRAW,k0=D.year.day;
+ const hOf=d=>{D.setYear(d);return D.uniforms.uH.value.slice(1,D.CAL.length);};const a=hOf(0),b=hOf(20);D.setYear(k0==null?0:k0);
+ add('the fields go through the year (ploughed, sown, grown, ripe, cut)',FCHK.year(F.stage,D.CAL.slice(1),{ok:a.some((v,i)=>Math.abs(v-b[i])>.3),detail:'high summer\'s crops '+a.map(v=>v.toFixed(1)).slice(0,4).join('/')+', autumn\'s '+b.map(v=>v.toFixed(1)).slice(0,4).join('/')}));}
 function farmNegatives(add){add('a field of cotton (not the valley\'s)',FCHK.crops(Object.assign({cotton:['x']},LS.FARMS.sown())));
  add('a field laid across the stream',FCHK.clear([{id:'wet',kind:'strips',x0:-40,x1:40,z0:-300,z1:-280,run:'ns',w:14,off:0,rot:['frostoat'],wallEvery:4}]));
+ add('fields that stand the same all year',FCHK.year(()=>({h:1,ripe:0,soil:0,name:'standing'}),LS.FARMS?FARMDRAW.CAL.slice(1):[],null));
  add('a house that grows all its grain and names no other source',FCHK.provision({share:1,ownT:100,needT:100,tithe:''}));}

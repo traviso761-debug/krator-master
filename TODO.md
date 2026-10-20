@@ -33,6 +33,11 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   core/host. The Iziz palace page carries a page-only guard until then (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`,
   its first lines): take that out in the same change.
 
+- **core/hamlet: the `xanadu` row's comment** (2026-10-20). `core/hamlet/20-hamlet-cultures.js` says the Xanadu kit has no
+  pens, corral or dairy yet; it has them now (`xa_pens`, `xa_corral`, `xa_dairy`, `settlements/xanadu/src/76-xa-farm.js`).
+  Keep the row's `pending` boxes (a host without the kit's boxes still places them) and reword the comment to say so. Two
+  builds take core/hamlet (Longsong, `openworld/isle-demo`): a comment change was not worth an isle-demo rebuild alone.
+
 - **kits/catalog: re-vendor the culture symbols** (2026-10-20). `core/sockets/38-symbols.js` gained `lotus` (Xanadu's, in place of the wheel) and `scroll` (the Order of
   Historians' symbol, `SYMBOL_OF.order`); the catalog's copy `kits/catalog/krator-symbols.js` was left as it was, because it
   is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).

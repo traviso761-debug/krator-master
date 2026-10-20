@@ -133,10 +133,11 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
    quad(B,'still',[xm-bw/2+.25,y0+.42,zm+bd/2-.25],[xm+bw/2-.25,y0+.42,zm+bd/2-.25],[xm+bw/2-.25,y0+.42,zm-bd/2+.25],[xm-bw/2+.25,y0+.42,zm-bd/2+.25],[0,1,0],PAINT);
    box(B,'ashlar',xm-.15,xm+.15,y0,y0+3.1,zm+bd/2+.05,zm+bd/2+.35,FLAG);box(B,'bronze',xm-.06,xm+.06,y0+2.8,y0+2.92,zm,zm+bd/2+.1,OCHRE);
    for(let k=0;k<11;k++){const yy=y0+.6+k*.21,ww=.035+.012*(k%3);box(B,'still',xm-ww,xm+ww,yy,yy+.13,zm-ww,zm+ww,PAINT);}}
-  // a stair room's flight: steps up its long axis (a drawing of the way on: the storeys are not joined by it)
-  if(r.stair&&!r.deep){const alongZ=r.z1-r.z0>r.x1-r.x0,len=alongZ?r.z1-r.z0:r.x1-r.x0,n2=Math.max(8,Math.floor(Math.min(len-2,r.h/.17*.3)/.3)),w=Math.min(2.4,(alongZ?r.x1-r.x0:r.z1-r.z0)-.6);
-   for(let k=0;k<n2;k++){const s0=1+k*.3,yy=y0+(k+1)*.17;if(yy>y1-.4)break;
-    if(alongZ)box(B,'paving',r.x1-w-.3,r.x1-.3,y0,yy,r.z0+s0,r.z0+s0+.3,FLAG);else box(B,'paving',r.x0+s0,r.x0+s0+.3,y0,yy,r.z1-w-.3,r.z1-.3,FLAG);}}}
+  // a stair room's flight (40c's r.flight: the one 40d's walkers climb), step for step from its foot to the floor over
+  // it; drawn up to this floor's ceiling (the rest of it rises through to the storey over it)
+  if(r.flight){const F=r.flight,dx=(F.b[0]-F.a[0])/F.n,dz=(F.b[1]-F.a[1])/F.n,hw=F.w/2,alongZ=Math.abs(dz)>Math.abs(dx);
+   for(let k=0;k<F.n;k++){const yy=y0+(k+1)*F.rise/F.n;if(yy>y1-.05)break;const x=F.a[0]+dx*k,z=F.a[1]+dz*k;
+    if(alongZ)box(B,'paving',x-hw,x+hw,y0,yy,z,z+dz,FLAG);else box(B,'paving',x,x+dx,y0,yy,z-hw,z+hw,FLAG);}}}
  // ---------------------------------------------------------------- a floor: its rooms' shells and their pieces
  // the rugs and the bookcases are drawn here, from their records, in the library's pictures: a rug the whole rug (its
  // border to its edge, the second colours turned a quarter), a bookcase its carcass and the book spines behind its front
@@ -183,5 +184,9 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   units:UNITS.map(u=>({id:u.id,levels:u.levels.map(l=>l.y)})),windows:id=>windowsOf(RM.byId[id]||{}).length,bake:()=>({state:LSIX.bakeState,fromBake:LSIX.fromBake,computed:LSIX.computed,ms:Math.round(LSIX.ms)}),
   show,cut,build:k=>{const E=G[k]||build(k);return{rooms:E.rooms,pieces:E.pieces,tris:E.tris,ms:E.ms};}};
  show([]);
- return {UNITS,cut,show,G,windowsOf,PANE};})();
+ // a person at (x, y, z) (y: the floor they stand on) is in a room whose floor is drawn now (the cutaway's or the eye's):
+ // 68 shows the walkers and the people at indoor places there (taken at the waist: a floor's y is also the top of the
+ // room under it)
+ function drawnAt(x,y,z){const r=RM.at(x,y+.8,z);if(!r||!drawn(r)||r.outdoor)return false;const E=G[UNIT_OF[r.building]+'@'+(Math.round(r.y*100)/100)];return !!(E&&E.grp.visible);}
+ return {UNITS,cut,show,G,windowsOf,PANE,drawnAt};})();
 _mark('interiors');

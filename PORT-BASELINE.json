@@ -501,8 +501,8 @@
    "sha256": "8d266a1eb4578c34ce1bee4a5e7117bc1d9478e609b6ae04cce31f45c474e914"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 4385229,
-   "sha256": "1730da5f3006e747871a0eab51e3ca8c568a8f9c71bb4a60fdd197b9ec3a8996"
+   "bytes": 4660686,
+   "sha256": "1a482e52f1345466516a17df60c36309837c110f3904977dd705b83986d3d015"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9075028,
@@ -681,12 +681,12 @@
    "sha256": "08c3ae64437d6db2700f9234c93fde53878cdc14689cdbbaeef330163f41c693"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 6475195,
-   "sha256": "1485426e09a613ceac25230d1bea6fe2f522536f2d7e059d57479edc7c21d9ab"
+   "bytes": 6479221,
+   "sha256": "0eb3c2174cfb2dc47412cb24644ccf379a6a0e234281e3d874abffb00c6a0bc5"
   },
   "settlements/xanadu/dist/xanadu.html": {
-   "bytes": 6257971,
-   "sha256": "120b372d2aa80264465077ed47aa670b57f811fabec9126ce13accd1f651a832"
+   "bytes": 6261997,
+   "sha256": "43cdabe2b760cc6990a02195e5b3352ac78786ba5a50383f21e4041d3d993d01"
   },
   "settlements/ys/dist/kit.html": {
    "bytes": 1585064,

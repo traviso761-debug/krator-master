@@ -79,7 +79,10 @@ lamps in the windows; `89x`).
   kitchen gardens, the dye garden (saffron, woad for the Order's blue, broom) and its dye house, the physic terraces, the
   upper orchards. `LS.FARMS.provision()`: the house's own fields grow about a quarter of its grain; the valley's tithe
   the rest. The herds are the Fauna kit's yak and highland cow (`kits/fauna`, its farm group bundled; each kind baked in
-  its pose and drawn instanced).
+  its pose, and at six phases of its walk for a walker's legs, and drawn instanced). **The year** (`LS.FARMS.YEAR`: 84
+  days, three weeks a season; `F.stage`): each annual crop is ploughed, sown, grows, ripens, is cut and lies in stubble
+  over the winter, a few days from the next crop; `85` draws the day's stage (the cards' height and straw, the earth
+  showing), and the clock panel's season button jumps to the next quarter.
 - **The people** (`68-ls-life.js`): 1,344 records (the owner, 2026-10-19: a house of a thousand of the Order: 600
   monks, 160 novices, 40 elders, 80 operatives from Keepwell, 8 masters of arms, 12 keepers, 100 wardens; its town in
   the ward: 120 lay servants, 50 lay scholars, 80 artisans, 20 market keepers; a caravan of 24 from Xanadu; 50
@@ -89,10 +92,13 @@ lamps in the windows; `89x`).
   is simply somewhere else, and the petals falling round him stop in the air within his reach; monks debate in the
   court, pilgrims walk the kora clockwise, the keepers walk the wheel. They live on `core/simulation` (`40d-ls-sim.js`:
   the walk graph, the ward's cells round the buildings, the Great Stair's flights, the Debate Court's floor and the
-  rooms' doors; the places from `LS.PLACES`; a role per `LS.ROLES`): SIM steps a world minute at a time as the clock
-  runs, each person walks between places on the graph (out of sight through the rooms), and the hour slider jumps them
+  rooms: every room of the palaces and the ward a node, joined by the doors `40c` records, its stair rooms stacked; the
+  places from `LS.PLACES`, the indoor ones rooms with spots on their floors; a role per `LS.ROLES`): SIM steps a world
+  minute at a time as the clock runs, each person walks between places on the graph (through the rooms and up their
+  stairs, seen where the rooms' floor is drawn: the cutaway's, the eye's), and the hour slider jumps them
   (`SIM.jump`). `node tests/test-sim.js` runs a whole day headless (every route found, the stair climbed, no one stood
-  in a wall; a cut stair must fail). The nearest 24 to the eye are drawn dressed (`69-ls-figures.js`; `?dressed=N`):
+  in a wall, every room reached from the gate and the rooms and their stairs walked; a cut stair, a graph without its
+  rooms must fail). The nearest 24 to the eye are drawn dressed (`69-ls-figures.js`; `?dressed=N`):
   `core/charactermodels` figures (KCharFigure, read in place) in their own records (`40e-ls-kchar.js`: KCHAR.stranger
   on each one's seed, so each has a face, a build and an ancestry of its own; the Order in its standing's set, the town
   in Xanadu's dress, a fifth of the visitors wealthy and turbaned), playing the clip their activity wants; the rest are
@@ -108,8 +114,9 @@ lamps in the windows; `89x`).
   on the valley's lay buildings, their awnings and trade signs), core/hamlet (the valley's three lay villages outside
   the wall: Shar and Nub by the east and west fields, Dzo-ling at the head of the yak pastures, `40h` and `85h`, on
   core/hamlet's `xanadu` row: the Xanadu building kit's houses, temple, guild hall, bazaar row, teahouse, granaries,
-  farmsteads and windmills, sealed as XAK by `settlements/xanadu/kit_bundle.py` with the 20 library sets they draw, each
-  village merged by material), and
+  farmsteads, windmills, pens, corrals and dairies, sealed as XAK by `settlements/xanadu/kit_bundle.py` with the 20
+  library sets they draw, each village merged by material; the windmills' rotors drawn turning, `XAK.rotors`, and a lamp
+  at each house's door after dusk), and
   core/export (`94`: the buildings, the depths and the villages as buckets; 'export site' writes the biome export over
   the monastery's ground, sampled, with its stage). Checked in Godot 4.7.2 (2026-10-20: a 240 x 260 m box over the
   palaces, the stair and the ward through `tools/harness.py export` and `krator/world_import.gd`): every record, uid
@@ -140,9 +147,12 @@ lamps in the windows; `89x`).
   the nearest windows, and indoors the walls shut out the sun and most of the sky). The depths: **the Cistern of the
   rock** (its basin cut in the floor, the steps down, the seams' gutter), and the depths' pieces are the placer's
   (`57a`: the `lv-` room kinds, the catalog's vault, quiet-cell and unmaking pieces, round what `66` builds into the
-  rooms, handed over as fixtures). `bake_interiors.py`: 642 furnished rooms, 8,594 pieces, every required piece placed.
+  rooms, handed over as fixtures). `bake_interiors.py`: 642 furnished rooms, 8,599 pieces, every required piece placed, and each room's walks on the
+  placer's free cells (a hub, a path from each door round the furniture, standing spots: the walk graph's, `40d`). The
+  ward's courts have a gallery round each upper storey and a stair down to the yard (`40c` records them, `64` draws them),
+  and a stair room's flight (`r.flight`) is the one its walkers climb.
 - **The crowd** (2026-10-20, the owner: "the crowd detail issues"): past the 24 nearest people (figures), everyone out to
-  170 m is drawn in one of the 16 commonest outfits, a figure baked still standing, at two strides and sitting
+  170 m is drawn in one of the 16 commonest outfits, a figure baked still standing, at four frames of the walk and sitting
   (`69`, on core/charactermodels' new `KCharCrowd`) and drawn instanced, one draw a look and pose; people are kept
   apart where they are drawn (`68`: a shoulder's width, on core/space's grid); each activity plays the library's nearest
   clip (prayer, study and the camp cross-legged, tea sitting, the wardens with their arms folded, the keepers with a
@@ -156,11 +166,15 @@ lamps in the windows; `89x`).
   walker keeps to the ground (the buildings are not blocks yet). The Red Palace's roof walk ends at its **stair house**
   (`64`: the stair's head out of the top storey, its curtained door on the walk).
 - **The festival of the register** (`89y-ls-festival.js`; `?festival=1` opens on it, and the **next festival** button after the hour slider jumps to it: 99): every seventh day (core/simulation's
-  week: each role carries its day's schedule and the festival's, `LS.FEST_SCHEDULES`). At dawn the great thangka (the
+  week is the festival's four-week cycle: each role carries its day's schedule and each week's festival programme,
+  `LS.FEST_SCHEDULES` turned by `LS.festVariant`: the cham, the procession first, the great debate, the valley's day;
+  the valley comes in by each one's turnout and the camp is pitched to match, `LS.CAMP.pitched`). At dawn the great thangka (the
   wheel and its eight seals) is unrolled on the White Palace's base, on the blind wall under its windows, and the house
   gathers on the forecourt to see it; the elders hold the great debate, the procession walks the kora, the thangka is
   rolled up at dusk. The valley comes in at five (from the Great Gate) and the pilgrims' camp is pitched in the ward
-  between the Geomancers' lodge and the infirmary: twenty white tents with blue knots, ten cook fires, the trough.
+  between the Geomancers' lodge and the infirmary: up to twenty white tents with blue knots, their cook fires, the
+  trough. The cham's dancers wear the dance's three masks (the black hat, the deer, the skull) and the butter lamps that
+  night burn in brass bowls.
 - **The plants**: the Oidong kit (`biomes/oidong`, read in place) on the model's land, its fields bound here
   (`45-host-stage.js`: wet from the rain and the water, flow on the stream's banks, upland and cold over the floor,
   rock on the steeps and Longsong's rock, three raked gravel fans the stream left, a little mist over the stream);
