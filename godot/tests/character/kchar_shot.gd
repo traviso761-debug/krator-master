@@ -95,6 +95,11 @@ func _stage(eye: Vector3, at: Vector3) -> void:
 
 func _process(dt: float) -> bool:
 	frames += 1
+	if frames == 1:
+		# a figure added inside _init gets _ready (which turns its _process on) after _init, so the engine would step
+		# the walkers as well as this script: every frame-driven look was twice as fast (the spring-bone spike's find)
+		for w in walkers:
+			w.set_process(false)
 	for w in walkers:
 		w._process(1.0 / 30.0)
 	if frames == 24:

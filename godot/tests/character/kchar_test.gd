@@ -222,6 +222,43 @@ func _init() -> void:
 				return tot / maxi(n, 1)
 			var moved: float = motion.call(40)
 			ok(finite and moved > 0.01, "cloth swings in a walk (%.3f rad a frame, finite %s)" % [moved, finite])
+			# the drape, which the swing misses (a mantle lifted whole turns a few root bones only): each chain's last
+			# point from its rest, and the bones that pass 1.5 rad from their rest pose (the fold, KNOWN_ISSUES); with
+			# the chains' rest following the body (kit bw) and, for comparison, held rigid by their parent joints
+			var drape := func(frames: int) -> Array:
+				var tot := 0.0
+				var mx := 0.0
+				var n := 0
+				var folded := {}
+				for k in frames:
+					fig._process(1.0 / 30.0)
+					for key in fig._cloth:
+						var c: Dictionary = fig._cloth[key]
+						if not c["on"]:
+							continue
+						for ch in c["chains"]:
+							if ch["x"].size() and ch["tw"].size():
+								var d: float = ((ch["x"][-1] as Vector3) - (ch["tw"][-1] as Vector3)).length()
+								tot += d
+								mx = maxf(mx, d)
+								n += 1
+					for i in fig.skeleton.get_bone_count():
+						if fig.skeleton.get_bone_name(i).begins_with("cloth_"):
+							var r := fig.skeleton.get_bone_rest(i).basis.get_rotation_quaternion()
+							if fig.skeleton.get_bone_pose_rotation(i).angle_to(r) > 1.5:
+								folded[i] = true
+				return [tot / maxi(n, 1), mx, folded.size()]
+			var dr: Array = drape.call(40)
+			var saved_bw := []
+			for key in fig._cloth:
+				for ch in fig._cloth[key]["chains"]:
+					saved_bw.append([ch, ch.get("bw")])
+					ch["bw"] = null
+			var dr0: Array = drape.call(40)
+			for pair in saved_bw:
+				pair[0]["bw"] = pair[1]
+			print("kchar_test: court robe in a walk, last point off rest mean %.3f max %.3f m, %d bones past 1.5 rad; rigid rests %.3f / %.3f m, %d bones" % [dr[0], dr[1], dr[2], dr0[0], dr0[1], dr0[2]])
+			ok(dr[0] < 0.25, "cloth drapes near its rest in a walk (last point %.3f m off on average)" % dr[0])
 			# cloth off: no swing, only the legs' push; with no clip the chains hang at rest
 			fig.cloth = false
 			var off: float = motion.call(30)
