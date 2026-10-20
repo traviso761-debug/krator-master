@@ -317,8 +317,8 @@
    "sha256": "3ff58d2b59b89ee1247f1ebcbe545105c367c941f1fcc6353aa919938d74cd16"
   },
   "kits/beast-riders/dist/beast-riders.html": {
-   "bytes": 12770979,
-   "sha256": "cd0bd6263cc72f51536fc129a05ce6600b6272b60ba15c33be5ad1d4d12b2714"
+   "bytes": 12771360,
+   "sha256": "149248cd69b0c3de1c96623f2a913e0d06f33e465e847651348d35a53e17ffa1"
   },
   "kits/catalog/dist/catalog.html": {
    "bytes": 1825392,
@@ -393,12 +393,12 @@
    "sha256": "1f0d9542ca70622993adb29fa07f58e3cee5fe2fc32703aa9d35ea27a3bb4e3e"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 5909625,
-   "sha256": "c09dcdb4b862ae1e4ca5089b34515c71af2dc75c42f503fd795c29e16747bb8a"
+   "bytes": 5911717,
+   "sha256": "b7ad4a09e5f4a9fcb48a5eed075e3d99ff7da818b534e2b2459a10cce2669a3c"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 5909883,
-   "sha256": "4add7e20605793b6ea7f0b2294464f2a8b8c3d856db2ccaafcdda8a592f1d0a0"
+   "bytes": 5911975,
+   "sha256": "ef390c7e019a47aa367d7e542b9bbac20ee8c043f84452f75cffd4b3f17eb7f4"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5087945,
@@ -441,8 +441,8 @@
    "sha256": "4bff490b3ba3005f149a0525a74acdb2201855e2bcf918fb7627098043afaf5a"
   },
   "settlements/isle-demo/dist/isle-city.html": {
-   "bytes": 5540589,
-   "sha256": "d4895db95edd8d7cb00796fa73bf0710872eda97a570dc48ef0578489848750f"
+   "bytes": 5542681,
+   "sha256": "308874ee6650aac3bf4735eb4720e10ad8d936d7d406d6ff50fbc7d797218496"
   },
   "settlements/isle-demo/dist/isle-site.html": {
    "bytes": 1258200,

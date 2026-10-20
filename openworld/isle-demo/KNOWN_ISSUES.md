@@ -1,11 +1,20 @@
 # openworld/isle-demo: known issues
 
-- [ ] **The Islanders' pieces tile their textures 1.5x denser here than on the city page** (2026-10-20, found by M7's
-      export comparison): `ISK.proto` gives the same pieces the same positions, normals and indices on both pages, but on
-      15 of Kautoa's case's 285 items the UVs are exactly 1.5x the city page's. The kit is stable within a page, so it is
-      the page's texture set-up the kit reads at load (its `TILE` from `KMAT.packed(KIT.pack, ...)` or its fallback; the
-      two pages register different `KMAT.packs`). It predates M7 (the hamlets draw the same pieces). Find which scale is
-      the kit's own and make both pages read it; until then the Godot cases stay cut from the city page.
+- [x] **The Islanders' pieces tiled their textures 1.5x denser here than on the city page** (2026-10-20, found by M7's
+      export comparison; fixed the same day). The scale here was the kit's own: `kits/islanders/materials.json`, which the
+      kit's page reads (`TILE[k]` from `KMAT.packed('islanders', k).scale`, e.g. patWeave 1.6 m). The city page drew the
+      kit without its pack: each Beast Riders town sealed in the CAT bundle (`kits/beast-riders/towns.py`) carried its own
+      `core/materials/record`, whose last line set `window.KMAT`, so CAT replaced the page's KMAT and every pack
+      registered before it. The city page loads ISK after CAT, so the kit fell back to its untextured keys and its
+      painted sheets' canvas stand-ins (`28-is-paint.js`, patWeave 2.4 m); this page loads ISK before CAT, but lost the
+      biome kits' packs and the Islanders' to the same swap (the export saw only `mavs` and `iziz`). The seal now keeps a
+      town's KMAT and TEX in its closure and hands its pack to the page's KMAT. With every pack on the page, the export
+      finds each material in its own kit's pack (`settlements/isle-demo/src/62` `ISLE.libraryOf`, from the pack `58`
+      notes on each piece's materials), so the Islanders' maps go to Godot by reference, not as PNGs. Kautoa's export at
+      `?town=Kautoa&simAt=362` (box 320,780,820,1220) now hashes the same on both pages in items, materials, buckets and
+      textures (seen in the browser pane: items `5a5a30aa9dbc18b1`). Its city section still differs: this page exports one
+      town's plan (the city page exports both), and the plans carry their timings (`stats.ms`). Stage, atmosphere and
+      water are the world's own. Both Godot cases were cut again from the city page and pass `isle_test.gd`.
 - [x] **The towns lived in** (2026-10-20, `88c-world-life.js`): the sim on the world's clock, the citizens near the
       camera, the canoe line at its berths and under way on a sea route. Left: the world's light still ignores the clock
       (below).

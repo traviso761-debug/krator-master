@@ -67,12 +67,21 @@ function islePortMats(G) {
     m.needsUpdate = true;
   });
 }
+/* the KMAT pack a piece's materials draw from (its kit's: ISK the Islanders', IZV Iziz's, a port its town's), noted on
+   each material for the export (62 ISLE.libraryOf): several packs on the page name the same library set, so a set's
+   name alone does not say whose family it is */
+var ISLE_PORT_PACK = { girder: 'girder', 'mavs-refuge': 'mavs' };
+function isleMatPack(G, pack) {
+  if (!pack) return;
+  G.traverse(function (o) { var m = o.isMesh && o.material; if (m && !Array.isArray(m) && m.userData.islePack == null) m.userData.islePack = pack; });
+}
 function isleProto(kit, key, v, C) {
   var id = kit + ':' + key + '#' + (v | 0); if (C.protos[id] !== undefined) return C.protos[id];
   var G = null, t0 = performance.now();
   try { G = kit === 'isk' ? ISK.proto(key, v) : kit === 'izv' ? IZV.proto(key, v, 1) : kit === 'cat' ? CAT.proto(key, v) : null; } catch (e) { C.failed[id] = String(e && e.message || e); }
   if (!G) { C.failed[id] = C.failed[id] || 'no build'; return (C.protos[id] = null); }
   if (G.userData.port) islePortMats(G);
+  isleMatPack(G, kit === 'isk' ? 'islanders' : kit === 'izv' ? 'iziz' : G.userData.port ? ISLE_PORT_PACK[G.userData.port.town] || null : null);
   var parts = isleFlatten(G), tris = parts.reduce(function (a, p) { return a + p.tris; }, 0);
   C.built++;
   return (C.protos[id] = { id: id, parts: parts, tris: tris, ms: Math.round(performance.now() - t0), w: G.userData.w, d: G.userData.d, h: G.userData.h,

@@ -1,5 +1,17 @@
 # settlements/isle-demo: known issues (the site planner)
 
+- [x] **The city page drew the Islanders and the Vernacular without their library packs** (fixed 2026-10-20, found by
+      M7's comparison of the two pages' exports: the Islanders' UVs were 1.5x apart). The Beast Riders towns sealed in
+      `CAT` set `window.KMAT` to their own, so the `islanders` and `iziz` packs registered before CAT were lost: `ISK`
+      fell back to untextured keys and its painted sheets' canvas stand-ins (patWeave 2.4 m a tile, the kit's own 1.6 m),
+      and `IZV.bindMat('iziz')` found no pack. `kits/beast-riders/towns.py` now keeps a town's KMAT and TEX in its closure
+      and hands its pack to the page's; the export finds each material in its own kit's pack (`62` `ISLE.libraryOf`,
+      `58` `isleMatPack`), since the Islanders' and Iziz's packs name some of the same sets. Kautoa's case and Valapo's
+      were cut again (the Islanders' maps now by reference in `tex/`; `tools/harness.py` copies a file name two packs
+      share as `<pack>.<name>`); Kautoa's items hash as the open world page's (`openworld/isle-demo/KNOWN_ISSUES.md`).
+- [ ] **Four of Valapo's case's textures have no image** (`from: 'none'`, `tex:isle:png82`-`85`, materials 36-39 with
+      no library set): they were in the case before the 2026-10-20 cut too. Godot draws those materials from their colour.
+
 - [x] **`IZV.proto` carried every Vernacular piece built before it** (fixed 2026-10-20, found by M7's comparison of the
       two pages' exports): the Iziz kit's `kbake` (settlements/iziz/src/30-kit.js) bakes every item put so far and keeps
       them, so each piece grew by all the earlier ones and a piece depended on the order the page built them in.

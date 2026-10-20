@@ -17,6 +17,18 @@
    And the stage (core/biome 44-core-stage.js KSTAGE: the lights, fog, sky panorama and the ground's look over the box);
    interiors and furniture answered empty (the city page draws the kit's buildings as shells, unfurnished). */
 ISLE.EXPORT_KIT = { isk: 'islanders', izv: 'iziz-vernacular', cat: 'catalog' };
+/* a material's library family {fam, L, pack} for the scene reader. The Islanders kit keeps its pack entry itself in
+   userData.lib (27-mat.js svLibMat), found here by identity; the others keep the set's name, looked up in the pack its
+   piece was built from first (58 isleMatPack: islePack), then in every pack: the page carries several packs (the
+   Islanders', Iziz's, the towns'), and several of them name the same set under different families and scales */
+ISLE.libraryOf = function (m) {
+  var u = m.userData && m.userData.lib; if (!u || typeof KMAT === 'undefined') return null;
+  var names = Object.keys(KMAT.packs).sort(), own = m.userData.islePack;
+  if (own && KMAT.packs[own]) names = [own].concat(names.filter(function (n) { return n !== own; }));
+  for (var i = 0; i < names.length; i++) { var P = KMAT.packs[names[i]] || {};
+    for (var f in P) if (typeof u === 'object' ? P[f] === u : P[f].lib === u) return { fam: f, L: P[f], pack: names[i] }; }
+  return null;
+};
 ISLE.exportScene = function (ctx) {
   var box = ctx.box || [-1e6, -1e6, 1e6, 1e6], cx = (box[0] + box[2]) / 2, cz = (box[1] + box[3]) / 2;
   var keep = { r: DRAW.nearR, n: DRAW.nearMax, at: DRAW.at ? DRAW.at.slice() : null };
@@ -36,7 +48,7 @@ ISLE.exportScene = function (ctx) {
   DRAW.nearR = Math.hypot(box[2] - box[0], box[3] - box[1]) / 2 + 60; DRAW.nearMax = Infinity;
   DRAW.near([cx, cz], true);
   try {
-    return EXPORT.sceneReader({ name: 'isle', source: 'isle-demo', scene: scene, tags: T, owner: owner,
+    return EXPORT.sceneReader({ name: 'isle', source: 'isle-demo', scene: scene, tags: T, owner: owner, library: ISLE.libraryOf,
       kitOf: function (m) { return m.userData && m.userData.isleProto ? m.userData.isleProto + '/' + m.userData.part : null; },
       itemKit: function (kit) { return kit ? ISLE.EXPORT_KIT[kit.split(':')[0]] || 'isle' : 'isle'; },
       ownerOf: function (m, i) { var L = m.userData && m.userData.lots; return L ? L[i] || null : null; },
