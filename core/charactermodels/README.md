@@ -334,7 +334,10 @@ buttock's weights and pinched to a strip as the legs stood). A mantle or a cape 
 layers under it as on the skin (over a tunic's shoulders or a bone plate it stood more than 4 cm off the skin, went to
 chains held by the spine, and the shoulders came out through it as the arms came down from the A-pose), and where it
 hangs clear of both it takes none of the arm's weight, the collarbone's instead (a cape's side edge took the A-posed
-upper arm's and swung out as the arm came down). `kit.json` keeps
+upper arm's and swung out as the arm came down); within 1 cm of that cloth it takes its weights outright, fading out by
+5 cm, so the two move as one. Only cloth that does not hang counts (a tunic above its chains, a plate, a collar): a cape
+counted as lying on a robe's swinging back took the hips' and thighs' weights and the robe swung through it; nor does
+the skin of an arm (a cape's flared side near the A-posed forearm took its weights). `kit.json` keeps
 per chain its parent joint and anchor vertices, and `skeleton.json colliders` the body's capsules (thighs, shins,
 pelvis, chest, arms: a base radius and its change per morph target, `KCHAR.colliders`; for the push a radius at each
 end, `ra` and `rb`, since a limb tapers; and the seat, a pair of upright capsules behind the hip joints that cover the
@@ -343,7 +346,8 @@ cloth section; `kchar_figure.gd _cloth_*`) reads each chain's rest off the morph
 skirt hangs from its own hips, then runs every chain point as a Verlet particle at 60 Hz: pulled to its rigid rest
 by the part's stiffness (mantles stiff, capes loose), under Krator's gravity (7.4 m/s²) and the drag of Voth's dense
 air, with the wind of a walk or run played in place (its `root_speed`), kept to its length, near its neighbours round
-a skirt, out of the capsules and above the floor; each bone then turns to the next point. A point inside a limb
+a skirt, out of the capsules (not the arms': an elbow hanging at the waist pushed one chain of a cape's edge out and
+the cloth below it swung away alone as a spike; the push keeps vertices out of the arms) and above the floor; each bone then turns to the next point. A point inside a limb
 that lies across the cloth's fall (a seated thigh, a raised arm) leaves on the side of the point above it, so the
 chain drapes over the limb; along an upright limb it leaves on the side away from the body's axis, so cloth never
 ends up behind a leg in a stride. `fig.cloth = false` hangs
@@ -371,8 +375,11 @@ capsules in the same pass (only what is inside them moves), so a raised arm lift
 band, not a projection (a vertex d from the bone within r + 1.5 cm lands at r - 1.5 cm + d x 3 cm / (r + 1.5 cm)), so
 two tiers keep their order and cloth that already lies right barely moves (a 4 cm shell outside r moved everything
 within 4 cm of a capsule out by up to 3 cm, and a loincloth's flaps, a kilt's seat and a robe's back crumpled at
-rest); a thigh pushes nothing in its top third (its capsule runs down the femur, toward the outside of the thigh, and
-at the radius that covers the flesh within it took in the buttock and the crotch: the seat covers those); a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
+rest); a thigh pushes nothing behind it in its top third (its capsule runs down the femur, toward the outside of the thigh,
+and at the radius that covers the flesh within it took in the buttock: the seat covers that), though in front it
+does (else a kimono showed wide harem pants at the hips); a garment of a band and flaps alone (`make_mpfb.py FLAPS`:
+the loincloth) is not pushed at all, its chains keep it off the legs (pushed, a flap between the thighs in a stride
+went out of each sideways and its corners stood out like wings); a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
 torso garment's shell is 2 cm wider (at 1.2 cm a bent knee's thigh came through a gown's front), so a robe's hem
 lies over the skirt under it, and 3.5 cm wider again over
 trousers (at 2 cm a stride's knee came through a deel's front; trousers stand further out of the capsules than a skirt's chains). The chains collide the same way,

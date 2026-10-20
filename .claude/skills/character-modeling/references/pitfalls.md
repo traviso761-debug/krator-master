@@ -84,6 +84,20 @@ area you are about to change.
 - **Breeches swinging as a sheet** → a name test for legged garments ("trousers") missed breeches and braccae; they
   were marked loose and their weights pooled below the crotch like a skirt's.
 - **Boot cuffs through a long robe's hem** → squeeze the feet too under a loose long top, whatever the legs wear.
+- **Change one variable per shot, and shoot the A-pose too** → toggling the push, the cloth sim (rigid) and the posture
+  pass one at a time, A-pose against idle, told push, weights, chains and posture apart in a few shots; tuning blind
+  cost whole pipeline runs.
+- **A mantle torn at the shoulder blades** → the posture pass draws the shoulders back after every clip; the tunic
+  follows the shoulder joints, the mantle's chains the spine. Weight tricks (contact, copied weights, chains on the
+  collarbones) only moved the tear; it is still open.
+- **Removing hidden triangles from a garment breaks Godot** → its glTF importer drops vertices no triangle uses, and the
+  morph data no longer lines up. Keep every vertex referenced.
+- **A cape's edge as a long spike at the idle** → a chain colliding with the arm (an elbow hangs at the waist) moves one
+  column alone; chains do not collide with arms, the per-vertex push keeps cloth out of them.
+- **A flap that poofs out in a stride** → the per-vertex push sends cloth between the thighs out sideways; a garment of
+  flaps only is not pushed, its chains keep it off the legs.
+- **Fitting order between items** → each garment is fitted alone, so an under-item's flap 3 cm off the body stood
+  outside a shirt at 1.4 cm; check eases across items that are worn together.
 - **Long thin streamers from a hat** → part of a head item hung below the "above the neck → Head joint" cut and took
   the shoulders' weights; give whole pieces (welded by position) that end above the neck joint to the Head.
 
