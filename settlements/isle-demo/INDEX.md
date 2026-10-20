@@ -31,6 +31,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `47-isle-trade.js` | 13 | 7h. THE CANOE LINE BETWEEN THE TOWNS (P7c) (1) |
 | `48-isle-week.js` | 19 | 7i. THE LEVELS AND THE WEEK TEST (P7d) (1) |
 | `49-isle-govern.js` | 9 | 7j. THE PRODUCTION GOVERNOR AND SPOILAGE (2026-1 (1) |
+| `50-isle-export.js` | 8 | 7k. THE SIM EXPORT SECTION (P7e, 2026-10-20) (1) |
 | `56-isle-tools.js` | 5 | 3b. THE ISLE'S TOOLS: TOWNS, SAVING, VIEWS (1) |
 | `57-isle-run.js` | 2 | 6b. THE SIM'S RUN LOOP ON THE CITY PAGE (P7b) (1) |
 | `58-isle-protos.js` | 6 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |

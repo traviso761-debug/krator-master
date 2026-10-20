@@ -91,6 +91,10 @@
       town's food within 2% over three weeks), but the households' stores shrink slowly as the warehouses settle.
 - [x] **The material meter pinned at 100 by day 14** (needs on, 2026-10-19): only replacements were bought. The treats
       (kava, mats, lamps, jewellery; Voth's `items.treat`) hold it near 33, happiness near 79.
+- [ ] **The page registers the `sim` export section** (`50`, `by: 'isle-sim'`): core/simulation should register it
+      itself for every page that declares settlements, as core/city registers `city`, with the settlements, routes and
+      books the isle page adds to `SIM.export()` (a core change: through the core session). The export is about 3.1 MB
+      (8,450 actors, 2,839 places with their stores); the nav graph is left out.
 - [ ] **Valapo has no carver's workshop:** its stone and wooden tools and its jewellery come from Kautoa by the lakatoi
       (PLAN.md 9b); a carver's workshop in the Islanders kit and on Valapo's plan is owed.
 - [ ] **Racks wear nothing:** the dockers' hooks and the soldiers' spears and shields are drawn from a rack (core's

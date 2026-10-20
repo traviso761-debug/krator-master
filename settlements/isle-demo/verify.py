@@ -61,7 +61,7 @@ opened (?town=) and, once both towns are planned (window._city.both):
   - negative controls: a building pushed onto its neighbour, one pushed into the sea, the palace (or Valapo's hall) taken
     away: each must fail its check
   - on the Valapo page, both towns on core/simulation (SIM_JS below), the citizens drawn near the camera (CIT_JS), the
-    canoe line (CANOE_JS, TRADE_JS), the week test at the two levels (WEEK_JS)"""
+    canoe line (CANOE_JS, TRADE_JS), the week test at the two levels (WEEK_JS), the sim export section (SIMX_JS)"""
 CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.G;
  if(!neg){
   for(const t in C.checks)C.checks[t].forEach(c=>out.push(c));
@@ -131,6 +131,18 @@ WEEK_JS = r"""(neg)=>{if(!window._week){const w1=ISLE.simWeek('Valapo',7*1440),w
  if(neg==='ships'){const a=cp(w1),b=cp(w2);a.b.towns.kautoa.sold=Object.assign({},a.a.towns.kautoa.sold);b.b.towns.kautoa.sold=Object.assign({},b.a.towns.kautoa.sold);return pick(ISLE.weekChecks(a,b),/ships from beyond/);}
  return [];}"""
 WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided', 'ships', 'late', 'swing', 'drift', 'gear', 'needs', 'clad')
+# P7e: the `sim` export section (src/50) after the week: src/50's checks on ISLE.simExport(), each with a negative, and
+# EXPORT.check under the profile ['sim'] failing on a stubbed section and passing filled
+SIMX_JS = r"""(neg)=>{const doc=JSON.parse(JSON.stringify(ISLE.simExport())),pick=(rs,re)=>rs.filter(c=>re.test(c.name));
+ const prof=()=>{const w=EXPORT.world({sections:['sim']}),c=EXPORT.check(w,{profile:['sim']});return {st:w.sections.sim.status,ok:c.ok};};
+ if(!neg){const out=ISLE.simExportChecks(doc),f=prof(),off=EXPORT.register('sim',()=>null,{by:'isle-sim'});off();const s=prof();ISLE.simExportRegister();const r=prof();
+  out.push({name:'the sim export: EXPORT.check under the profile [sim] fails on a stubbed section and passes filled',ok:f.ok&&f.st==='ok'&&!s.ok&&s.st==='stub'&&r.ok,detail:'filled '+f.st+', stubbed '+s.st+', registered again '+r.st+'; '+(JSON.stringify(doc).length/1024|0)+' KB'});return out;}
+ if(neg==='home'){const a=doc.actors.find(a=>a.settlement==='valapo'&&a.home);a.home=doc.actors.find(b=>b.settlement==='kautoa'&&b.home).home;return pick(ISLE.simExportChecks(doc),/own settlement/);}
+ if(neg==='stock'){const T=doc.settlements[0];T.goods[Object.keys(T.goods)[0]].warehouses+=7;return pick(ISLE.simExportChecks(doc),/place records hold/);}
+ if(neg==='sea'){const R=doc.routes[0],k=Object.keys(R.shipped)[0];R.shipped[k][Object.keys(R.shipped[k])[0]]+=5;return pick(ISLE.simExportChecks(doc),/landed or is at sea/);}
+ if(neg==='count'){const T=doc.settlements[1];T.goods[Object.keys(T.goods)[0]].made=-1;return pick(ISLE.simExportChecks(doc),/is a count/);}
+ return [];}"""
+SIMX_NEGS = ('home', 'stock', 'sea', 'count')
 SIM_TOWNS = ('Kautoa', 'Valapo')
 SIM_NEGS = ('lot', 'home', 'job', 'age', 'social', 'map', 'haul', 'short', 'made')
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];
@@ -163,7 +175,7 @@ EXPORT_TARGET = ['registry', 'items', 'buckets', 'materials', 'textures', 'terra
                  'furniture', 'sim', 'stage', 'atmos']
 # met on 2026-10-19 (P6b): the registry (core/tags, the drawn town's), the KMAT materials, the terrain (sampled:
 # EXPORT.ground on the plan's ground; terrain=field waits for a KFIELD from the extracted heights, PLAN.md section 10)
-EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city']   # city: core/city's contributor, 2026-10-19
+EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim']   # city: core/city's contributor, 2026-10-19; sim: src/50 (P7e, 2026-10-20)
 
 
 async def run_city(a):
@@ -249,6 +261,14 @@ async def run_city(a):
                                 caught = bool(rs) and not any(r['ok'] for r in rs)
                                 print(('  PASS  ' if caught else '  MISSED') + ' negative (week %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
                                 if not caught: fails.append('negative week ' + neg)
+                            for r in await pg.evaluate(SIMX_JS, None):
+                                print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
+                                if not r['ok']: fails.append(r['name'])
+                            for neg in SIMX_NEGS:
+                                rs = await pg.evaluate(SIMX_JS, neg)
+                                caught = bool(rs) and not any(r['ok'] for r in rs)
+                                print(('  PASS  ' if caught else '  MISSED') + ' negative (sim export %s) : ' % neg + '; '.join(str(r['detail']) for r in rs))
+                                if not caught: fails.append('negative sim export ' + neg)
                     if town == 'Kautoa':
                         prof = EXPORT_TARGET if a.profile == 'target' else [s.strip() for s in a.profile.split(',') if s.strip()] if a.profile else EXPORT_PROFILE
                         pok, lines = await harness.check_profile(pg, EXPORT_BOX, prof)

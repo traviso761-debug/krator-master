@@ -290,6 +290,18 @@ declares both once they are planned, in one order whichever town it draws, and h
   within 0.6-1.6 of the same town watched (about 1.1), and nobody in the abstract town decided (0 decisions against
   about 110,000 and 320,000 in the watched town). Each has a negative. A week with Valapo watched takes about 12-16 s
   in node (12.2 s in Chromium), with Kautoa watched 28-33 s (23.5 s); both presented about 38 s (the same run, a loaded machine).
-- **Not yet:** the `sim` export section (P7e). See `HANDOFF.md`.
+- **P7e, the `sim` export section** (2026-10-20; `50`): the page registers core/export's `sim` section (`by: 'isle-sim'`,
+  queued when core/export loads later, as in node) until core/simulation registers it itself, as core/city does `city`.
+  `ISLE.simExport()` is a `krator-sim` object: core/simulation's records (`SIM.export`: the clock, activities, factions,
+  orgs, 2,839 places, roles, 8,450 actors each with its settlement, events, ports, transports; no nav, no log) and the
+  isles' own: per settlement its level, people, warehouses, sites and carts by id, each good's stock (warehouses, sites,
+  carts, all holdings) and books (made, used, imported, exported, short), its producers (place, outputs, the governor's
+  rate and the full rate), meals, spoilage and salting; the canoe routes (stops, carriers and cargo, shipped, landed and
+  at sea by leg and good); what the ships bought. About 3.1 MB as JSON. `sim` is now in the page's profile
+  (`EXPORT_PROFILE`): `EXPORT.check` fails on a stubbed or empty section and passes filled (verify's Kautoa page, and
+  on the Valapo page after the week; `node tests/test-isle-export.js`). `ISLE.simExportChecks`: every warehouse, site,
+  home and workplace a place of its own settlement; each good's warehouse stock what the place records hold; every load
+  shipped landed or at sea; every stock and book a count; each with a negative. Godot reading the books after a
+  replayed week is P8.
 
 See `KNOWN_ISSUES.md`.
