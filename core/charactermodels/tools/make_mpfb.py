@@ -739,6 +739,42 @@ def colliders(c, J, base_glb, npz):
     return out
 
 
+TRUNK = ('Hips', 'Spine', 'Spine1', 'Spine2', 'Neck')
+
+
+def trunk(c, J, base_glb):
+    """the trunk as the arms meet it: per spine joint (TRUNK) the middle of the body's cross-section at its height,
+    forward of the joint (f, metres along the figure's forward at rest), and the section's half width (w, across) and
+    half depth (d, front to back): an ellipse. The trunk's capsules run along the spine joints, which lie near the
+    back, and are round: the man's chest stood 5 cm out of them, and an arm hanging before it (the injured walk) went
+    in. 50-figure.js bodyFix keeps the arms out of the chain through these sections (scaled with the trunk capsules'
+    radii under the morph)"""
+    jj, bb = glbio.read_glb(open(base_glb, 'rb').read())
+    prim = next(p for m in jj['meshes'] for p in m['primitives']
+                if 'material' in p and jj['materials'][p['material']]['name'].endswith('.body'))
+    P = glbio.accessor(jj, bb, prim['attributes']['POSITION']).astype(float)
+    A = np.array([c.jpos[c.J[a]] for a, _ in CAPSULES]); B = np.array([c.jpos[c.J[b]] for _, b in CAPSULES])
+
+    def seg(a, bq):
+        d = bq - a
+        t = np.clip(((P - a) @ d) / (d @ d), 0, 1)
+        return np.linalg.norm(P - (a + np.outer(t, d)), axis=1)
+    own = np.stack([seg(A[k], B[k]) for k in range(len(CAPSULES))], 1).argmin(1)
+    mine = np.isin(own, [k for k, (a, _) in enumerate(CAPSULES) if a in ('Hips', 'Spine1')])
+    out = []
+    for n in TRUNK:
+        if n not in c.J or n not in J:
+            continue
+        p = c.jpos[c.J[n]]
+        q = P[mine & (np.abs(P[:, 1] - p[1]) < 0.015)]
+        if len(q) < 20:
+            continue
+        zf, zb = float(q[:, 2].max()), float(q[:, 2].min())
+        out.append({'j': J[n], 'f': round((zf + zb) / 2 - float(p[2]), 4), 'w': round(float(np.abs(q[:, 0] - p[0]).max()), 4),
+                    'd': round((zf - zb) / 2, 4)})
+    return out
+
+
 def seat(c, J, P, V, npz, tgts, bones):
     """the buttocks, which neither a thigh's capsule (down the femur) nor the trunk's (up the spine) covers: per side
     an upright capsule behind the hip joint, from just above it to most of the way down to the fold under the buttock
@@ -1317,7 +1353,8 @@ def main():
                           for i, n in enumerate(jnodes)], 'clips': clips,
                'hands': hands(c, {n['name']: i for i, n in enumerate(jnodes)}),
                'colliders': colliders(c, {n['name']: i for i, n in enumerate(jnodes)}, os.path.join(pieces, 'base.glb'),
-                                      npz if morph else None)},
+                                      npz if morph else None),
+               'trunk': trunk(c, {n['name']: i for i, n in enumerate(jnodes)}, os.path.join(pieces, 'base.glb'))},
               open(os.path.join(data, 'skeleton.json'), 'w'), indent=1)
     kit = {'body': name, 'style': 'mpfb', 'label': 'MakeHuman ' + body, 'base_glb': 'pieces/%s/base.glb' % name,
            'base_material': mat, 'base_tris': int(len(BT)), 'items': items, 'morph': morph,

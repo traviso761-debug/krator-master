@@ -1892,71 +1892,242 @@ func _leg_caps() -> void:
 		pm.set_shader_parameter("kcH", hip)
 
 
-# an elbow or hand inside the pelvis, chest or its own thigh turns its upper arm or forearm out; two thighs that
-# overlap each turn out by half (as bodyFix() in 50-figure.js)
+# twin of bodyFix in 50-figure.js: each limb a segment with its capsule's radius (the body's tapered ra to rb, an arm
+# one radius) kept BF clear of the others'. A leg in the top of an upper arm swings the thigh out to its side at the
+# hip (LEGSWING at most; a knee before the belly is left be); two thighs that overlap each turn out by half; then each
+# upper arm turns at the shoulder (against the trunk its elbow's end only, UPLOW on, and not the top of the chest),
+# and the forearm and hand to the knuckles at the elbow, out of the trunk (above the pelvis the chain through
+# skel.trunk) and both legs (a giant's lower arm out of its side's upper arm too), twice over
+const BF := 0.008
+const LEGSWING := 0.35
+const UPLOW := 0.7
+var _near := {"s": 0.0, "t": 0.0, "d": 0.0, "c1": Vector3.ZERO, "c2": Vector3.ZERO}
+
+
+# the closest points of segments p1-q1 and p2-q2 (c1 at s along the first, c2 at t along the second)
+func _closest(p1: Vector3, q1: Vector3, p2: Vector3, q2: Vector3) -> Dictionary:
+	var d1 := q1 - p1
+	var d2 := q2 - p2
+	var r := p1 - p2
+	var a := d1.dot(d1)
+	var e := d2.dot(d2)
+	var f := d2.dot(r)
+	var s := 0.0
+	var t := 0.0
+	if a > 1e-12 and e > 1e-12:
+		var c := d1.dot(r)
+		var bb := d1.dot(d2)
+		var den := a * e - bb * bb
+		s = clampf((bb * f - c * e) / den, 0.0, 1.0) if den > 1e-12 else 0.0
+		t = (bb * s + f) / e
+		if t < 0.0:
+			t = 0.0
+			s = clampf(-c / a, 0.0, 1.0)
+		elif t > 1.0:
+			t = 1.0
+			s = clampf((bb - c) / a, 0.0, 1.0)
+	elif e > 1e-12:
+		t = clampf(f / e, 0.0, 1.0)
+	elif a > 1e-12:
+		s = clampf(-d1.dot(r) / a, 0.0, 1.0)
+	_near["c1"] = p1 + d1 * s
+	_near["c2"] = p2 + d2 * t
+	_near["s"] = s
+	_near["t"] = t
+	_near["d"] = (_near["c1"] as Vector3).distance_to(_near["c2"])
+	return _near
+
+
+# turn bone b about its origin so that its point p moves by d along way
+func _push_turn(b: int, p: Vector3, way: Vector3, d: float) -> void:
+	var from := p - _gp(b).origin
+	if from.length() < 1e-4:
+		return
+	_turn(b, Quaternion(from.normalized(), (from + way * d).normalized()))
+
+
+# a capsule's radius at t along it; a trunk section's (an ellipse, o.ell) the way the limb lies from its axis (the gap
+# c2 to c1 that _closest just found)
+func _rad(o: Dictionary, t: float) -> float:
+	if not o.has("ell"):
+		return float(o["ra"]) + (float(o["rb"]) - float(o["ra"])) * t
+	var e: Dictionary = o["ell"]
+	var a := lerpf(e["w0"], e["w1"], t)
+	var b := lerpf(e["d0"], e["d1"], t)
+	var g: Vector3 = _near["c1"] - _near["c2"]
+	var x := g.dot((e["S0"] as Vector3).lerp(e["S1"], t).normalized())
+	var z := g.dot((e["F0"] as Vector3).lerp(e["F1"], t).normalized())
+	var n := sqrt(x * x + z * z)
+	return a * b / sqrt(b * b * x * x / (n * n) + a * a * z * z / (n * n)) if n > 1e-9 else b
+
+
+func _ends(o: Dictionary) -> Dictionary:
+	o["A"] = _gp(o["a"]).origin
+	o["B"] = _gp(o["b"]).origin
+	return o
+
+
+func _cap_of(bone: String) -> Dictionary:
+	var i := skeleton.find_bone(bone)
+	for cp in _caps:
+		if cp.get("pa") == null and int(cp["a"]) == i:
+			return cp
+	return {}
+
+
+# a leg's point (c1 = c2 + gap) swings out to its side along the hips' side axis (always out: the push never jumps
+# from one side to the other between frames) by the least k that makes the gap R long, and by no more than LEGSWING
+func _leg_out(o: Dictionary, R: float, side: Vector3) -> void:
+	var way := side * (1.0 if String(o["n"]).begins_with("Left") else -1.0)
+	var gap: Vector3 = _near["c1"] - _near["c2"]
+	var b := gap.dot(way)
+	var c1: Vector3 = _near["c1"]
+	var thigh := skeleton.find_bone(String(o["n"]).trim_suffix("UpLeg").trim_suffix("Leg") + "UpLeg")
+	var k := minf(sqrt(maxf(0.0, b * b - gap.length_squared() + R * R)) - b, tan(LEGSWING) * c1.distance_to(_gp(thigh).origin))
+	if k > 0.0:
+		_push_turn(thigh, c1, way, k)
+
+
 func _body_fix() -> void:
 	if _caps.is_empty() or _clip == "":
 		return
+	var trunk := []
+	var legs := []
+	var chest = null
 	var hips_i := skeleton.find_bone("Hips")
 	var sp1 := skeleton.find_bone("Spine1")
-	for arm in [["LeftArm", "LeftForeArm", "LeftHand", "LeftUpLeg", ""], ["RightArm", "RightForeArm", "RightHand", "RightUpLeg", ""],
-			["Left2Arm", "Left2ForeArm", "Left2Hand", "LeftUpLeg", "Left"], ["Right2Arm", "Right2ForeArm", "Right2Hand", "RightUpLeg", "Right"]]:
+	for cp in _caps:
+		if cp.get("pa") != null:            # the seat: the trunk's capsule stands for the pelvis here
+			continue
+		var n := skeleton.get_bone_name(int(cp["a"]))
+		var o := {"a": int(cp["a"]), "b": int(cp["b"]), "ra": float(cp["ra"]), "rb": float(cp["rb"]), "r": float(cp["r"]), "n": n}
+		if o["a"] == hips_i or o["a"] == sp1:
+			trunk.append(o)
+			if o["a"] == sp1:
+				chest = o
+		elif n in ["LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"]:
+			legs.append(o)
+	var lu := skeleton.find_bone("LeftUpLeg")
+	var ru := skeleton.find_bone("RightUpLeg")
+	var side := (_gp(lu).origin - _gp(ru).origin).normalized() if lu >= 0 and ru >= 0 else Vector3.ZERO
+	var arms := [["LeftArm", "LeftForeArm", "LeftHand", "LeftHandMiddle1", ""], ["RightArm", "RightForeArm", "RightHand", "RightHandMiddle1", ""],
+			["Left2Arm", "Left2ForeArm", "Left2Hand", "Left2HandMiddle1", "Left"], ["Right2Arm", "Right2ForeArm", "Right2Hand", "Right2HandMiddle1", "Right"]]
+	if not four_arms:                         # a body without the mod carries the lower arms' joints unused
+		arms.resize(2)
+	# the legs, out of the top of each upper arm
+	if side != Vector3.ZERO:
+		for arm in arms:
+			var cu := _cap_of(arm[0])
+			if cu.is_empty():
+				continue
+			for o in legs:
+				_ends(o)
+				var s0 := _gp(skeleton.find_bone(arm[0])).origin
+				var top := s0.lerp(_gp(skeleton.find_bone(arm[1])).origin, 0.3)
+				var hit := _closest(o["A"], o["B"], s0, top)
+				var R := float(cu["r"]) + _rad(o, hit["s"]) + BF
+				if R > float(hit["d"]):
+					_leg_out(o, R, side)
+	# two thighs that overlap: closest points of the two segments
+	var tl = null
+	var tr = null
+	for o in legs:
+		if o["n"] == "LeftUpLeg":
+			tl = o
+		if o["n"] == "RightUpLeg":
+			tr = o
+	if tl != null and tr != null:
+		var hl := _gp(tl["a"]).origin
+		var kl := _gp(tl["b"]).origin
+		var hr := _gp(tr["a"]).origin
+		var kr := _gp(tr["b"]).origin
+		var need := float(tl["r"]) + float(tr["r"]) + 0.004
+		var gap := kl.distance_to(kr)
+		if gap < need:
+			var sep := kl - kr
+			sep.y = 0.0
+			if sep.length_squared() < 1e-8:
+				sep = Vector3(1, 0, 0)
+			sep = sep.normalized() * ((need - gap) / 2.0)
+			_turn(tl["a"], Quaternion((kl - hl).normalized(), (kl + sep - hl).normalized()))
+			_turn(tr["a"], Quaternion((kr - hr).normalized(), (kr - sep - hr).normalized()))
+	# the arms, out of the trunk and the legs as these now stand. Above the pelvis the trunk is the chain through
+	# skel.trunk (each spine joint's cross-section, an ellipse whose middle lies forward of the joint), scaled as the
+	# chest capsule's radius by the morph; the hand keeps the wrist's radius
+	for o in trunk:
+		_ends(o)
+	for o in legs:
+		_ends(o)
+	var tr_pts: Array = skel.get("trunk", [])
+	if chest != null and tr_pts.size() > 1:
+		var kk := 1.0
+		for c in skel.get("colliders", []):
+			if int(c["a"]) == int(chest["a"]) and int(c["b"]) == int(chest["b"]) and not c.has("pa"):
+				kk = float(chest["r"]) / float(c["r"])
+		var pts := []
+		for t in tr_pts:
+			var j := int(t["j"])
+			var g := _gp(j)
+			var w := g.basis.get_rotation_quaternion() * skeleton.get_bone_global_rest(j).basis.get_rotation_quaternion().inverse()
+			var F := w * Vector3(0, 0, 1)
+			pts.append({"p": g.origin + F * (float(t["f"]) * kk), "F": F, "S": w * Vector3(1, 0, 0), "w": float(t["w"]) * kk, "d": float(t["d"]) * kk})
+		trunk.erase(chest)
+		for i in range(1, pts.size()):
+			var u: Dictionary = pts[i - 1]
+			var v: Dictionary = pts[i]
+			trunk.append({"A": u["p"], "B": v["p"], "n": "", "top": i == pts.size() - 1,
+				"ell": {"w0": u["w"], "w1": v["w"], "d0": u["d"], "d1": v["d"], "F0": u["F"], "F1": v["F"], "S0": u["S"], "S1": v["S"]}})
+	for arm in arms:
 		var b0 := skeleton.find_bone(arm[0])
 		var b1 := skeleton.find_bone(arm[1])
 		var b2 := skeleton.find_bone(arm[2])
-		var th := skeleton.find_bone(arm[3])
-		if b0 < 0:
+		var b3 := skeleton.find_bone(arm[3])
+		var cu := _cap_of(arm[0])
+		var cf := _cap_of(arm[1])
+		if b0 < 0 or cu.is_empty() or cf.is_empty():
 			continue
-		# a giant's lower arm keeps out of its side's upper arm and forearm too
-		var ua := skeleton.find_bone(arm[4] + "Arm") if arm[4] != "" else -2
-		var uf := skeleton.find_bone(arm[4] + "ForeArm") if arm[4] != "" else -2
-		for pr in [[b0, b1], [b1, b2]]:
-			var pivot := _gp(pr[0]).origin
-			var p := _gp(pr[1]).origin
-			var worst := 0.0
-			var way := Vector3.ZERO
+		var obs := trunk + legs
+		if arm[4] != "":                      # a giant's lower arm: its side's upper arm too
 			for cp in _caps:
-				if cp["a"] != hips_i and cp["a"] != sp1 and cp["a"] != th and cp["a"] != ua and cp["a"] != uf:
+				if cp.get("pa") == null and (int(cp["a"]) == skeleton.find_bone(arm[4] + "Arm") or int(cp["a"]) == skeleton.find_bone(arm[4] + "ForeArm")):
+					obs.append(_ends({"a": int(cp["a"]), "b": int(cp["b"]), "ra": float(cp["r"]), "rb": float(cp["r"]), "r": float(cp["r"]), "n": ""}))
+		for it in 2:
+			var sA := _gp(b0).origin
+			var sB := _gp(b1).origin
+			var low := sA.lerp(sB, UPLOW)
+			var worst := 0.0
+			var p := Vector3.ZERO
+			var way := Vector3.ZERO
+			for o in obs:
+				# against the trunk only the elbow's end at its own (tapering) radius, and not the top of the chest
+				var on_trunk: bool = trunk.has(o)
+				if on_trunk and o.get("top", false):
 					continue
-				if cp.get("pa") != null:            # the seat: the trunk's capsule is the pelvis here
-					continue
-				var a := _gp(cp["a"]).origin
-				var ab := _gp(cp["b"]).origin - a
-				var t := clampf((p - a).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
-				var q := a + ab * t
-				var d := p.distance_to(q)
-				var dd := float(cp["r"]) + 0.012 - d
-				if dd > worst:
-					worst = dd
-					way = (p - q) / maxf(d, 1e-6)
-			if worst <= 0.0:
-				continue
-			var to := p + way * worst
-			_turn(pr[0], Quaternion((p - pivot).normalized(), (to - pivot).normalized()))
-	var tl = null
-	var tr = null
-	for cp in _caps:
-		if cp["a"] == skeleton.find_bone("LeftUpLeg"):
-			tl = cp
-		if cp["a"] == skeleton.find_bone("RightUpLeg"):
-			tr = cp
-	if tl == null or tr == null:
-		return
-	var hl := _gp(tl["a"]).origin
-	var kl := _gp(tl["b"]).origin
-	var hr := _gp(tr["a"]).origin
-	var kr := _gp(tr["b"]).origin
-	var need := float(tl["r"]) + float(tr["r"]) + 0.004
-	var gap := kl.distance_to(kr)
-	if gap >= need:
-		return
-	var sep := kl - kr
-	sep.y = 0.0
-	if sep.length_squared() < 1e-8:
-		sep = Vector3(1, 0, 0)
-	sep = sep.normalized() * ((need - gap) / 2.0)
-	_turn(tl["a"], Quaternion((kl - hl).normalized(), (kl + sep - hl).normalized()))
-	_turn(tr["a"], Quaternion((kr - hr).normalized(), (kr - sep - hr).normalized()))
+				var hit := _closest(low if on_trunk else sA, sB, o["A"], o["B"])
+				var r_up := float(cu["ra"]) + (float(cu["rb"]) - float(cu["ra"])) * (UPLOW + (1.0 - UPLOW) * float(hit["s"])) if on_trunk else float(cu["r"])
+				var dep := r_up + _rad(o, hit["t"]) + BF - float(hit["d"])
+				if dep > worst and float(hit["d"]) > 1e-6:
+					worst = dep
+					p = hit["c1"]
+					way = ((hit["c1"] as Vector3) - (hit["c2"] as Vector3)) / float(hit["d"])
+			if worst > 0.0:
+				_push_turn(b0, p, way, worst)
+			var eA := _gp(b1).origin
+			var eB := _gp(b2).origin
+			worst = 0.0
+			for o in obs:
+				for k in 2:
+					if k == 1 and b3 < 0:
+						continue
+					var hit := _closest(eB if k == 1 else eA, _gp(b3).origin if k == 1 else eB, o["A"], o["B"])
+					var dep := float(cf["rb"] if k == 1 else cf["r"]) + _rad(o, hit["t"]) + BF - float(hit["d"])
+					if dep > worst and float(hit["d"]) > 1e-6:
+						worst = dep
+						p = hit["c1"]
+						way = ((hit["c1"] as Vector3) - (hit["c2"] as Vector3)) / float(hit["d"])
+			# a point at the elbow is the upper arm's to clear
+			if worst > 0.0 and p.distance_to(eA) > 0.05:
+				_push_turn(b1, p, way, worst)
 
 
 func _keep_len(ch: Dictionary) -> void:

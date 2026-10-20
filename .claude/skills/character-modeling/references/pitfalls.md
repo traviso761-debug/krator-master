@@ -226,6 +226,27 @@ area you are about to change.
 - **Spear held behind the back** in the library's spear walk → keep its legs and body (fetched as a source only) and
   put the arms at the made thrust's guard.
 - Check the whole clip in shots at several times, not one key frame: clipping usually lives mid-swing.
+- **Elbows bent backwards** after the retarget (a source rig's arm rest maps the forearm past straight) → limit the
+  bend at bake time about a hinge fixed in the upper arm (across it and the figure's forward at rest), and leave
+  readings far past straight alone: an upper arm turned on its own axis (overhead) makes a fixed hinge misread a deep
+  bend as a backward one, and "fixing" it swings the forearm 120 degrees.
+- **A hand that only gestures** (scratching the air over the head, a sleeper's hands up) → re-pose the arm at bake
+  time onto a target measured from the base mesh (a skull ball, the body's front at a spine joint), weighted by how
+  near the clip brings the hand, so the rest of the clip is untouched.
+- **Limbs through limbs**: test segments with radii (closest points of two segments), not joint points: the old pass
+  tested the wrist and elbow points with no limb radius, so a hand sank 3 cm into a thigh before it moved. Test the
+  hand to the knuckles too. A knee in a shoulder cannot be cleared by the arm (the shoulder is fixed): swing the
+  thigh out, always the same way (a min-of-two-sides choice flips between frames and between runtimes), and cap it.
+- **Round trunk capsules on the spine joints miss the chest**: the spine lies near the back, the man's pecs stood 5 cm
+  outside. Use per-joint elliptical sections offset forward (measured from the base mesh). Exempt the shoulder's
+  end of the upper arm from the trunk test, or every arm raised in front of the chest gets shoved (a hand at the
+  forehead lifted off it, a two-handed pistol grip spread apart).
+- **Do not turn knees out of the belly**: a sprint's raised knee and a crouch's thighs overlap a trunk capsule while
+  the body is fine; only the owner's actual cases (knee in shoulder) warranted the leg push.
+- **Joints a body carries unused** (the lower arms on a two-armed body) must be skipped by every pass that moves
+  other limbs: here they pushed legs aside, and only the JS-to-Godot joint comparison showed it.
+- Measure a pass's reach before calling it done: the joints of every clip at a few times on all six bodies, before and
+  after (regressions showed in clips nobody flagged: idle 2, the pistol stances).
 - **Baking a crowd's still poses** (`src/60-crowd.js`, 2026-10-20). A figure's pieces are SkinnedMeshes on r128
   materials with `skinning: true`, so they cannot simply be drawn as InstancedMeshes: bake each vertex through its
   bones (`SkinnedMesh.boneTransform`, after `skeleton.update()`) into a plain geometry, and give it vertex colours (its
@@ -320,6 +341,12 @@ area you are about to change.
 - `get_shader_rid` is not exposed to scripts → write the garment shader as a resource.
 - Tests that read the pose must step frames after changing a prop (arms settle over a few steps).
 - **Port every runtime change to Godot the same day** and run its test; drift accumulates fast.
+- **Compare the twins joint by joint**: a SceneTree script can `load_body` a figure from a data folder holding only
+  the skeleton, kit and `pieces/<body>/anims.glb` (no meshes), set `_caps = KChar.colliders(...)`, step `_process`
+  at 30 Hz, and write the joints relative to the hips; the page does the same with `f.update(1/30)` on a hidden
+  figure. Within 0.2 mm on 28 clip/body cases is what a faithful port gives; anything larger is a real difference.
+- **A variable name already used earlier in a GDScript function** (`tr`, `ru`) is a parse error that makes the whole
+  class unresolvable ("Could not resolve class"), so every script using it fails: load the script alone to see why.
 
 ## 11. Publishing the pages
 
