@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.229,
+    1.359
+   ],
+   "seam_before": [
+    2.129,
+    1.612
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.35,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.06,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": false,
+   "rough": 0.3,
+   "rough_var": 0.08,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.onyx",
+  "metal": 0,
+  "roughness": 0.3,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "stone.onyx.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `stone.onyx` (honey onyx cut across its layers)",
+  "reuse": "translucent stone lights in bronze tracery (the Eternians' court, the Sanctum's bays); any palace, temple or bath glazed in stone",
+  "sha1": "31c290b6d77a18e0e99be589fdac30b0efc1303c"
+ }
+}

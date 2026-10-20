@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.102,
+    0.989
+   ],
+   "seam_before": [
+    1.305,
+    0.568
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.04,
+   "mute": 0.4,
+   "normal_strength": 0.4,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.12,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.damask.maze",
+  "metal": 0,
+  "pattern": false,
+  "roughness": 0.6,
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "cloth.damask.maze.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `cloth.damask.maze` (tone-on-tone silk damask with a circuit-maze figure)",
+  "reuse": "the Eternians' coverlets, cushions and court cloth; any damask or brocade",
+  "sha1": "e3382015f7fc236d72db5a134df780f6ac83d5ee"
+ }
+}

@@ -27,8 +27,8 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `girder.tex.girder-2.js` | <1 |  |
-| `girder.tex.girder.js` | <1 |  |
+| `girder.tex.girder-2.js` | 1229 **big** |  |
+| `girder.tex.girder.js` | 14510 **big** |  |
 
 ## src/
 

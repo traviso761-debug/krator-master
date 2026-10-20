@@ -1,0 +1,319 @@
+[
+ {
+  "src": "concrete.block.relief.webp",
+  "out": "core/materials/library/concrete.block.relief",
+  "record": {
+   "id": "concrete.block.relief",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `concrete.block.relief` (the cast textile block: stepped squares crossed by bars; the owner's take 1)",
+    "reuse": "the Eternians' cast pattern block (alternate takes per instance); any textile-block wall (Highlands' Deco, Pylon's render)"
+   }
+  },
+  "options": {
+   "delight": 0.5,
+   "lift": 0.08,
+   "mute": 0.6,
+   "normal_strength": 1.4,
+   "rough": 0.9,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "concrete.block.relief.b.webp",
+  "out": "core/materials/library/concrete.block.relief.b",
+  "record": {
+   "id": "concrete.block.relief.b",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `concrete.block.relief.b` (the cast textile block: squares and parallel bars; the owner's take 2)",
+    "reuse": "the Eternians' cast pattern block (alternate takes per instance); any textile-block wall (Highlands' Deco, Pylon's render)"
+   }
+  },
+  "options": {
+   "delight": 0.5,
+   "lift": 0.08,
+   "mute": 0.6,
+   "normal_strength": 1.4,
+   "rough": 0.9,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "concrete.block.relief.c.webp",
+  "out": "core/materials/library/concrete.block.relief.c",
+  "record": {
+   "id": "concrete.block.relief.c",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `concrete.block.relief.c` (the cast textile block: a cross of bars round a square; the owner's take 3)",
+    "reuse": "the Eternians' cast pattern block (alternate takes per instance); any textile-block wall (Highlands' Deco, Pylon's render)"
+   }
+  },
+  "options": {
+   "delight": 0.5,
+   "lift": 0.08,
+   "mute": 0.6,
+   "normal_strength": 1.4,
+   "rough": 0.9,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "concrete.block.relief.d.webp",
+  "out": "core/materials/library/concrete.block.relief.d",
+  "record": {
+   "id": "concrete.block.relief.d",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `concrete.block.relief.d` (the cast textile block: a circuit of stepped lines round a square; the owner's take 4)",
+    "reuse": "the Eternians' cast pattern block (alternate takes per instance); any textile-block wall (Highlands' Deco, Pylon's render)"
+   }
+  },
+  "options": {
+   "delight": 0.5,
+   "lift": 0.08,
+   "mute": 0.6,
+   "normal_strength": 1.4,
+   "rough": 0.9,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "concrete.block.relief.e.webp",
+  "out": "core/materials/library/concrete.block.relief.e",
+  "record": {
+   "id": "concrete.block.relief.e",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `concrete.block.relief.e` (the cast textile block: a hexagonal interlace; the owner's take 5)",
+    "reuse": "the Eternians' cast pattern block (alternate takes per instance); any textile-block wall (Highlands' Deco, Pylon's render)"
+   }
+  },
+  "options": {
+   "delight": 0.5,
+   "lift": 0.08,
+   "mute": 0.6,
+   "normal_strength": 1.4,
+   "rough": 0.9,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "roof.tile.celadon.webp",
+  "out": "core/materials/library/roof.tile.celadon",
+  "record": {
+   "id": "roof.tile.celadon",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `roof.tile.celadon` (glazed celadon barrel tiles, eight rolls across)",
+    "reuse": "the Eternians' rich roofs and ministries; any glazed green roof"
+   }
+  },
+  "options": {
+   "delight": 0.35,
+   "lift": 0.05,
+   "normal_strength": 1.2,
+   "rough": 0.3,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "ceramic.celadon.crackle.webp",
+  "out": "core/materials/library/ceramic.celadon.crackle",
+  "record": {
+   "id": "ceramic.celadon.crackle",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": false,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `ceramic.celadon.crackle` (celadon stoneware with a fine crackle)",
+    "reuse": "the Eternians' stoves and planters; any celadon ware"
+   }
+  },
+  "options": {
+   "delight": 0.2,
+   "lift": 0.03,
+   "normal_strength": 0.35,
+   "rough": 0.25,
+   "rough_var": 0.06,
+   "size": 1024
+  }
+ },
+ {
+  "src": "reed.mat.woven.webp",
+  "out": "core/materials/library/reed.mat.woven",
+  "record": {
+   "id": "reed.mat.woven",
+   "family": "reed",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `reed.mat.woven` (split reed strips in a herringbone twill)",
+    "reuse": "floor mats and reed screens (the Eternians' poor, the Islanders, Reedlake)"
+   }
+  },
+  "options": {
+   "delight": 0.4,
+   "lift": 0.06,
+   "mute": 0.5,
+   "normal_strength": 0.9,
+   "rough": 0.75,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "cloth.damask.maze.webp",
+  "out": "core/materials/library/cloth.damask.maze",
+  "record": {
+   "id": "cloth.damask.maze",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `cloth.damask.maze` (tone-on-tone silk damask with a circuit-maze figure)",
+    "reuse": "the Eternians' coverlets, cushions and court cloth; any damask or brocade"
+   }
+  },
+  "options": {
+   "delight": 0.3,
+   "lift": 0.04,
+   "mute": 0.4,
+   "normal_strength": 0.4,
+   "rough": 0.6,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "wood.timber.stringing.webp",
+  "out": "core/materials/library/wood.timber.stringing",
+  "record": {
+   "id": "wood.timber.stringing",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `wood.timber.stringing` (dark veneer in panels of brass stringing with stepped corners)",
+    "reuse": "the Eternians' court cabinetwork; any Deco cabinetwork"
+   }
+  },
+  "options": {
+   "delight": 0.3,
+   "lift": 0.04,
+   "normal_strength": 0.5,
+   "rough": 0.45,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ }
+]

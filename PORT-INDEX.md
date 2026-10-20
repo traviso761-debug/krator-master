@@ -30,13 +30,14 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 69 | 955 | 474 | 19 | 10 | 62 | 391 | 6 | atmos | yes | yes |
 | [`settlements/ys`](settlements/ys/PORT.md) | 145 | 2035 | 361 | 59 | 105 | 110 | 1400 | 8 | atmos | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 62 | 1073 | 129 | 13 | 16 | 157 | 758 | 11 | fixtures | yes | yes |
-| [`kits/ancients`](kits/ancients/PORT.md) | 222 | 2625 | 250 | 35 | 176 | 32 | 2131 | 12 |  | yes | yes |
+| [`kits/ancients`](kits/ancients/PORT.md) | 232 | 2715 | 288 | 39 | 176 | 32 | 2180 | 12 |  | yes | yes |
 | [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 11 | 110 | 98 | 0 | 0 | 12 | 0 | 0 |  |  | yes |
 | [`kits/ash-nomads`](kits/ash-nomads/PORT.md) | 25 | 171 | 33 | 6 | 10 | 24 | 97 | 2 | atmos | yes | yes |
 | [`kits/beast-riders`](kits/beast-riders/PORT.md) | 18 | 444 | 15 | 0 | 0 | 11 | 418 | 3 |  |  | yes |
-| [`kits/catalog`](kits/catalog/PORT.md) | 46 | 2149 | 42 | 0 | 10 | 59 | 2038 | 3 |  |  | yes |
+| [`kits/catalog`](kits/catalog/PORT.md) | 47 | 2174 | 42 | 0 | 10 | 59 | 2062 | 3 |  |  | yes |
 | [`kits/crops`](kits/crops/PORT.md) | 7 | 47 | 41 | 0 | 0 | 7 | 0 | 0 |  | yes | yes |
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 26 | 165 | 36 | 6 | 10 | 24 | 89 | 2 | atmos | yes | yes |
+| [`kits/eternian`](kits/eternian/PORT.md) | 44 | 277 | 31 | 6 | 10 | 24 | 206 | 4 | atmos | yes | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 24 | 246 | 122 | 0 | 10 | 77 | 37 | 1 |  |  | yes |
 | [`kits/islanders`](kits/islanders/PORT.md) | 39 | 416 | 28 | 6 | 10 | 24 | 348 | 3 | atmos | yes | yes |
@@ -74,7 +75,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 10 | 91 | 26 | 10 | 0 | 55 | 0 | 0 |  |  | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 19 | 167 | 56 | 0 | 9 | 96 | 6 | 2 |  | yes | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 7 | 236 | 22 | 0 | 0 | 101 | 113 | 0 |  |  | yes |
-| **all** | 2355 | 31145 | 6598 (21%) | 636 (2%) | 1100 (4%) | 3960 (13%) | 18850 (61%) | 278 | | | |
+| **all** | 2410 | 31568 | 6693 (21%) | 646 (2%) | 1110 (4%) | 3983 (13%) | 19136 (61%) | 282 | | | |
 
 ## Host-shell copies
 
@@ -84,7 +85,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 |---|---|---|---|
 | `host-stage` | 24 | 24 | 437 |
 | `host-build` | 24 | 24 | 34 |
-| `sky` | 22 | 5 | 436 |
+| `sky` | 23 | 5 | 445 |
 | `camera` | 19 | 15 | 133 |
 | `host-sky` | 19 | 17 | 268 |
 | `probe` | 18 | 16 | 80 |

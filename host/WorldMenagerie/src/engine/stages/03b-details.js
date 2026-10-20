@@ -52,6 +52,26 @@ function treeSpeciesKit(){
   const mat=new THREE.MeshLambertMaterial({vertexColors:true});
   mat.onBeforeCompile=sh=>{sh.vertexShader='attribute float crownF;\n'+sh.vertexShader.replace('#include <color_vertex>',
     '#if defined(USE_COLOR)||defined(USE_INSTANCING_COLOR)\nvColor=vec3(1.0);\n#endif\n#ifdef USE_COLOR\nvColor*=color;\n#endif\n#ifdef USE_INSTANCING_COLOR\nvColor.xyz*=mix(vec3(1.0),instanceColor.xyz,crownF);\n#endif');};
+  // C.foliage (opt-in: {map, mean, metres, keep, strength, cut, fade:[near,far]}): leaves on the crowns. The crowns have
+  // no texture coordinates, so a tileable sheet of leaf clusters is laid on them by world position from three sides
+  // (triplanar), tinted by the species' colour (the sheet's own mean divided out), and its gaps are cut out near the
+  // eye (the crown's edge breaks into leaves, its facets go) and filled in with distance, where a cut-out crown would
+  // only flicker. The crown is drawn from both sides, so a gap shows the crown's far side, not the sky.
+  const FOL=C.foliage;
+  if(FOL&&FOL.map){const tex=new THREE.TextureLoader().load((FOL.dir||'data/textures/')+FOL.map);tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=8;
+    const m0=FOL.mean||[0.3,0.5,0.2],fd=FOL.fade||[60,320],U={folT:{value:tex},folS:{value:1/(FOL.metres||2.2)},folMean:{value:new THREE.Vector3(m0[0],m0[1],m0[2])},
+      folP:{value:new THREE.Vector4(FOL.keep===undefined?0.2:FOL.keep,FOL.strength===undefined?1:FOL.strength,FOL.cut===undefined?0.5:FOL.cut,0)},folFade:{value:new THREE.Vector2(fd[0],fd[1])}};
+    const base=mat.onBeforeCompile;mat.side=THREE.DoubleSide;
+    mat.onBeforeCompile=sh=>{base(sh);Object.assign(sh.uniforms,U);
+      sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFolW;varying vec3 vFolN;varying float vFolC;varying float vFolD;')
+        .replace('#include <project_vertex>','#include <project_vertex>\nvFolD=length(mvPosition.xyz);')   // the eye's distance (cameraPosition is not set on a Lambert material)
+        .replace('#include <begin_vertex>','#include <begin_vertex>\n{vec4 fw=vec4(transformed,1.0);vec3 fn=objectNormal;\n#ifdef USE_INSTANCING\nfw=instanceMatrix*fw;fn=mat3(instanceMatrix)*fn;\n#endif\nvFolW=(modelMatrix*fw).xyz;vFolN=mat3(modelMatrix)*fn;vFolC=crownF;}');
+      sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vFolW;varying vec3 vFolN;varying float vFolC;varying float vFolD;uniform sampler2D folT;uniform float folS;uniform vec3 folMean;uniform vec4 folP;uniform vec2 folFade;')
+        .replace('#include <color_fragment>','#include <color_fragment>\nif(vFolC>0.5){vec3 w=pow(abs(normalize(vFolN)),vec3(4.0));w/=(w.x+w.y+w.z);'+
+          'vec4 t=texture2D(folT,vFolW.zy*folS)*w.x+texture2D(folT,vFolW.xz*folS)*w.y+texture2D(folT,vFolW.xy*folS)*w.z;'+
+          'float f=1.0-smoothstep(folFade.x,folFade.y,vFolD);if(t.a<folP.z*f)discard;'+
+          'vec3 p=mix(vec3(0.72),t.rgb/max(folMean,vec3(0.05)),smoothstep(0.15,0.6,t.a));p=mix(vec3(dot(p,vec3(0.299,0.587,0.114))),p,folP.x);diffuseColor.rgb*=mix(vec3(1.0),p,f*folP.y);}');};
+    mat.customProgramCacheKey=()=>'trees-foliage';}
   return {build,mat};}
 section('trees',()=>{
   // one tree = a trunk and a crown in a single low-poly geometry
@@ -81,12 +101,28 @@ const T=tiledInstances(treeG,treeM,(C.treeFar||2600)*WORLD,true),   // C.treeFar
   for(let i=0;i+1<mapped.length;i+=2){const x=mapped[i]/10,z=mapped[i+1]/10;if(!inMap(x,z,5)||inWater(x,z)||kept(x,z))continue;const hs=hash3(x,z,21),h=7+hs*9;if(plant)plant('street',x,groundH(x,z),z,hs,hash3(x,z,22));else T.add(x,groundH(x,z),z,hs*6,h,h,h,greens[Math.floor(hs*greens.length)]);have.add(Math.floor(x/20)+','+Math.floor(z/20));}
   // parkway trees: both sides of residential streets every 14 m where there is room and no mapped tree nearby.
   // A city with few street trees (Vashrin) sets streetTrees to a fraction, or 0 for none.
-  let parkway=0;const R=mkRng(606),STREET_TREES=C.streetTrees===undefined?1:C.streetTrees;
+  let parkway=0;const R=mkRng(606),STREET_TREES=C.streetTrees===undefined?1:C.streetTrees,TREE6=new Set(),cell6=(x,z)=>Math.floor(x/6)+','+Math.floor(z/6);   // TREE6: where the parkway trees stand, for the yard trees
   for(const r of ROADS){if(!STREET_TREES||(r.c!=='residential'&&r.c!=='tertiary'))continue;let carry=7;
     for(let i=0;i+1<r.pts.length;i++){const [ax,az]=r.pts[i],[bx,bz]=r.pts[i+1],L=Math.hypot(bx-ax,bz-az);if(L<0.1)continue;const dx=(bx-ax)/L,dz=(bz-az)/L;
       const TSTEP=14*WORLD;for(let u=carry;u<L;u+=TSTEP){if((u<10&&i===0)||(i===r.pts.length-2&&L-u<10))continue;for(const sd of [-1,1]){if(R()<1-0.7*STREET_TREES)continue;const off=r.w/2+2.3,x=ax+dx*u-dz*sd*off,z=az+dz*u+dx*sd*off;
-          if(!inMap(x,z,5)||kept(x,z)||have.has(Math.floor(x/20)+','+Math.floor(z/20))||!clearAt(x,z,1.5))continue;const hs=R(),h=8+hs*8;if(plant)plant('street',x,groundH(x,z),z,hs,R());else T.add(x,groundH(x,z),z,hs*6,h,h,h,greens[Math.floor(hs*greens.length)]);parkway++;}}
+          if(!inMap(x,z,5)||kept(x,z)||have.has(Math.floor(x/20)+','+Math.floor(z/20))||!clearAt(x,z,1.5))continue;const hs=R(),h=8+hs*8;if(plant)plant('street',x,groundH(x,z),z,hs,R());else T.add(x,groundH(x,z),z,hs*6,h,h,h,greens[Math.floor(hs*greens.length)]);parkway++;TREE6.add(cell6(x,z));}}
       carry=Math.max(0,TSTEP-((L-carry)%TSTEP));}}
+  // yard trees (C.yardTrees, opt-in: {types, share, per: [lo, hi], reach: [lo, hi] m, maxArea: m2 (a house's footprint, so an
+  // untagged 'yes' counts only when it is house-sized), where: [[s, w, n, e], ...]}): a tree
+  // or two in the yard round each house, off it and its neighbours, the street and the other trees, the species drawn by
+  // their `yard` weight. An old neighbourhood's canopy: the parkway trees alone leave a lawn under a row of sticks. Each
+  // house's trees come from a hash of its footprint, so a house always has the same ones.
+  let yard=0;const YT=C.yardTrees;
+  if(YT&&plant){const types=new Set(YT.types||['house','detached','residential','bungalow']),per=YT.per||[1,2],reach=YT.reach||[3,9],share=YT.share===undefined?0.8:YT.share,
+      where=(YT.where||[]).map(([s,w,n,e])=>{const [x0,z1]=P([s,w]),[x1,z0]=P([n,e]);return [x0,z0,x1,z1];}),
+      near=(x,z)=>{const i=Math.floor(x/6),j=Math.floor(z/6);for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)if(TREE6.has((i+a)+','+(j+b)))return true;return false;};
+    for(const b of OSM.buildings){if(!types.has(b.t||'yes'))continue;const p=b.p,n=p.length/2;let cx=0,cz=0,x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
+      for(let i=0;i+1<p.length;i+=2){const x=p[i]/10,z=p[i+1]/10;cx+=x;cz+=z;if(x<x0)x0=x;if(x>x1)x1=x;if(z<z0)z0=z;if(z>z1)z1=z;}cx/=n;cz/=n;
+      if(where.length&&!where.some(([a0,b0,a1,b1])=>cx>=a0&&cx<=a1&&cz>=b0&&cz<=b1))continue;
+      if((x1-x0)*(z1-z0)>(YT.maxArea||600)*WORLD*WORLD||hash3(cx,cz,41)>share)continue;const half=Math.max(x1-x0,z1-z0)/2,k=per[0]+Math.floor(hash3(cx,cz,42)*(per[1]-per[0]+0.999));
+      for(let q=0;q<k;q++)for(let tr=0;tr<4;tr++){const a=hash3(cx,cz,43+q*7+tr)*6.2832,d=half+reach[0]+hash3(cx,cz,44+q*7+tr)*(reach[1]-reach[0]),x=cx+Math.cos(a)*d,z=cz+Math.sin(a)*d;
+        if(!inMap(x,z,5)||kept(x,z)||near(x,z)||!clearAt(x,z,1.5))continue;
+        plant('yard',x,groundH(x,z),z,hash3(x,z,45),hash3(x,z,46));TREE6.add(cell6(x,z));yard++;break;}}}
   // woodland: Forest Park and the other wooded slopes carry their own trees, and parks get a scattering
   // a city may space them its own way (C.treeCells: {kind: metres, 0 for none}) and leave small areas bare
   // (C.treeMinArea: {kind: square metres}: Edinburgh maps every back green as a garden)
@@ -102,7 +138,7 @@ const T=tiledInstances(treeG,treeM,(C.treeFar||2600)*WORLD,true),   // C.treeFar
       if(buildingsAt(px,pz,2).some(b=>inPoly(px,pz,b.ring))||roadsNear(px,pz,1,r=>r.c!=='trail').length)continue;
       const hs=hash3(px,pz,34),h=dense?14+hs*16:8+hs*8;   // conifers on the wooded slopes are tall
       if(plant)plant(dense?'wood':'park',px,groundH(px,pz),pz,hs,hash3(px,pz,35));else T.add(px,groundH(px,pz),pz,hs*6,h*(dense?0.72:1),h,h*(dense?0.72:1),greens[Math.floor(hs*greens.length)]);forest++;}}
-  T.build();if(plant)plant.build();ctx.details=Object.assign(ctx.details||{},{mappedTrees:mapped.length/2,parkwayTrees:parkway,woodlandTrees:forest},plant?{treeSpecies:SPC}:{});
+  T.build();if(plant)plant.build();ctx.details=Object.assign(ctx.details||{},{mappedTrees:mapped.length/2,parkwayTrees:parkway,yardTrees:yard,woodlandTrees:forest},plant?{treeSpecies:SPC}:{});
 });
 section('rooftops',()=>{if(C.rooftops===false)return;   // a city of tiled roofs has none of this kit: no tanks, no units, no parapets
   const hvacM=new THREE.MeshLambertMaterial({color:0xb8b6b0}),tankM=new THREE.MeshLambertMaterial({color:0x6a4a34}),roofTankM=new THREE.MeshLambertMaterial({color:0x3a3430});

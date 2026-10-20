@@ -24,7 +24,7 @@ this kit follows (a culture kit forked from the Scyvoi engine, poor to court, ev
 | Page | `dist/eternian.html`: the kit sheet, every building in rows by tier, the statuary row, a mixed canal street, a court gallery over water, one Ancient host kept with its tracery infill |
 | Engine | *proposed*: the **Scyvoi engine, vendored** as `kits/islanders` and the nomad kits did (`python3 build.py --vendor-check` against `kits/scyvoi/src`), because it already carries tiers, trades, interiors, harbours and mines. The alternative is the catalog ASSET route `kits/beast-riders` took, right for a few buildings and wrong for fifty |
 | Registry | `ET.def` (one def per building, tags `culture:'eternian'`, `tier`, `style`, `role`, `job`); the statuary as defs too (`role:'statue'`), so the city builder places a head as it places a house |
-| The hosts | `kits/ancients` read in place, never copied: **Plymouth** (`88-plymouth.js`, *proposed* as the capital's arcology, §6.19), the memorial set and the towers, in a new decay state **`kept`** (section 7) |
+| The hosts | `kits/ancients` read in place, never copied: **the Sanctum** (`targets/sanctum`, the capital's arcology, built 2026-10-20 in place of Plymouth; its retrofit is `palace/BLUEPRINT.md`), the memorial set and the towers, in a new decay state **`kept`** (section 7) |
 | Town | `core/city` on the site layer when the capital's page comes (section 8): the canal town on `alleys` and main streets, the ministries' quarter on `frontage-courts`, the court on the host |
 | Core | `core/rand`, `core/mask`, `core/tags` (the culture added to the vocab, `core/tags/52-core-tags-vocab.js`), `core/space`, `core/lod`, `core/host`, the shared sky; `core/furnish` with an `eternian` catalog set (section 9); `core/materials/record` through `materials.json` (section 10) |
 | Biome | `biomes/nwlowlands` read in place (Asian and Australian forms at 1.5x, sea pens, glow-willows) |
@@ -215,9 +215,15 @@ generator can make in a hundred variants where a smooth portrait is not.
   cyan strips alive on a fraction of runs (0.1 to 0.3, seeded), and **every lost glazed opening infilled with the bronze
   tracery module** holding alabaster. The state is implemented in this kit as a pass over an Ancients body's record (its
   opening list), not an edit to the Ancients kit.
-- **Plymouth** (`88-plymouth.js`) is the proposed capital host: the one arcology the Ancients built to be lived in by the
-  hundred thousand (`LORE.md` §4), kept whole, the court in its upper tiers, the ministries at its feet, the canal town
-  spreading from it. The sheet shows one tier of it kept; the page shows the whole.
+- **The capital's host is a new arcology, the Sanctum** (the owner's name, 2026-10-20, first called the Coil; in place of the proposed
+  Plymouth): an Ancient live/work arcology of Plymouth's volume (45 Mm³) but 2.5 times its height, a tapering drum on a
+  six-pointed podium, three great arches in a triangle at the heads of three of its six stairs and from each a
+  staircase spiralling counterclockwise up to the next arch and balcony (thirty arches in all), small entrances at the
+  heads of the other three. Built in `kits/ancients/targets/sanctum` (`dist/sanctum.html`: as built, and as the Heirs
+  keep it). Its retrofit as the True Heirs' forbidden city is `palace/BLUEPRINT.md`: the Forbidden City
+  turned on end, height as rank. That retrofit is the first worked case of `kept`: `8aq1-sanctum-kept.js` is the Heirs'
+  deltas on the Ancients' records, and moves into this kit at P0. The ministries stand at its feet, the canal town
+  spreads from it.
 - The memorial set and the towers appear as the kingdom's other seats in `kept` and as ruins in the countryside in the
   Ancients kit's own states.
 
@@ -230,8 +236,8 @@ polygon edge lies at px 226, which wants checking on the model. The capital's pa
 a name, on `core/city` and the site editor, on this kit's `ET.def`, with the hydraulics (canals as streets, the
 reservoir on the high side, the spillway faces) in the site layer. Its name in the Eternians' own mouth is open.
 
-What the page will need from the model before P5: the capital's point typed `city`, Plymouth placed on it or an
-arcology point beside it, the lake's shore and the river's course (the Farside river if the site is on Jimjam's lake), and
+What the page will need from the model before P5: the capital's point typed `city`, the Sanctum placed on it or an
+arcology point beside it (its podium is 690 m across, its moat 790), the lake's shore and the river's course (the Farside river if the site is on Jimjam's lake), and
 the political polygon (the live model no longer has a Shining Kingdom polygon; the stale export's covered the whole
 quadrant).
 
@@ -260,23 +266,34 @@ written when the owner agrees the list.
 
 | Phase | What | Done when |
 |---|---|---|
-| P0 | `kits/eternian` scaffold: the engine vendored, `build.py` (the port lint), `verify.py` on `tools/harness.py`, the sheet target, `INDEX.md`, `PORT.md`; `eternian` in the tags vocab | the sheet builds with the first building (`et_canal_house`) and `--assert` passes |
-| P1 | materials and kit items (`et*`), the profile helpers: the pier bundle, the lancet bundle, the oculus, the stepped head, the tracery grid, the pattern block; `materials.json` on the library | the helpers render on a test row; the texture gaps are listed |
-| P2 | the head generator (section 5): heads, figures, masks, the closed-eye count in the verify | a row of fifty seeded heads reads as fifty people and four metals |
-| P3 | dwellings, all tiers, and the mixed canal street | the owner's eye-level review of the street |
-| P4 | the State: ministries, registry, examination hall, gate, wall, the Clock, the tube station and pipe, the relic hall, the ancestor gallery, the talking head | the civic row reads; the Clock animates |
-| P5 | the hosts: the `kept` state and the tracery infill on Plymouth's tier and on two memorial bodies; the court pavilion and gallery over water | the host row reads at night with the cyan alive |
-| P6 | trade, hydraulics, harbour: the census trades, the kiln and tile works, canal, lock, bridge, spillway face, Farport's quays and factory quarter | `IS_TRADES` complete; the spillway face runs water |
-| P7 | the catalog culture file, the interiors set, the furnished cut-away; the Godot export check on the sheet (`core/export`); the gallery | the sheet exports and passes its Godot case; Krator Worlds carries the page |
+| P0 | `kits/eternian` scaffold: the engine vendored, `build.py` (the port lint), `verify.py` on `tools/harness.py`, the sheet target, `INDEX.md`, `PORT.md`; `eternian` in the tags vocab | the sheet builds with the first building (`et_canal_house`) and `--assert` passes. **Done 2026-10-20** on the Scyvoi engine (question 1 below taken as the draft assumed): the canal house, the toolkit's first pieces, the catalog's Eternian common tier, the culture registered; textures and the socket pack wait for P1 (`KNOWN_ISSUES.md`) |
+| P1 | materials and kit items (`et*`), the profile helpers: the pier bundle, the lancet bundle, the oculus, the stepped head, the tracery grid, the pattern block; `materials.json` on the library | the helpers render on a test row; the texture gaps are listed. **Done 2026-10-20**: `materials.json` (26 keys on the library and the owner's sets, alternates per instance), the helpers and their test row, `ET_TRADES` in the repo's shape with the shared `voth-trades` check (`tools/check_trades.py`; the owner's Islanders route): 41 gaps, each naming its def and phase; the core/sockets pack moves to P4 |
+| P2 | the head generator (section 5): heads, figures, masks, the closed-eye count in the verify | a row of fifty seeded heads reads as fifty people and four metals. **Done 2026-10-20**: `src/42-et-head.js` ([G data]) and `src/43-et-statue.js`; heads, figures in four poses, masks in gold, silver, bronze, gunmetal, stone, terracotta, lead and titanium; `etMask`'s stand-in replaced; `closed-eyes` in `verify.py --assert`; the Sanctum reads the generator in place (twelve variants by record id, the colossus its own, the face-stones mask shells) |
+| P3 | dwellings, all tiers, and the mixed canal street | the owner's eye-level review of the street. **Done 2026-10-20** (awaiting that review): the reed house, the block hut, the canal row; the court house, the corner turret; the merchant's house, the official's villa (household service); the Heir's pavilion (three roof metals) and the Heirs' gallery; `et_canal`, `et_bridge` and `et_canal_street` (every tier on the quays); the roofs (`44-et-roof.js`); the catalog's poor and court pieces; the owner's furniture and wall sets (ten, delivered and wired 2026-10-20) |
+| P4 | the State: ministries, registry, examination hall, gate, wall, the Clock, the tube station and pipe, the relic hall, the ancestor gallery, the talking head | the civic row reads; the Clock animates. **Done 2026-10-20**: `et_ministry`, `et_registry`, `et_examination_hall` (hexagonal: the owner), `et_customs_house`; `et_gate`, `et_wall`, `et_wall_tower` (frontier variant), `et_barracks`; `et_clock` (its parade as data on its record, run by `91c-et-clock.js`), `et_tube_station` (hexagonal), `et_tube_pipe`, `et_talking_head`, `et_relic_hall`; `et_ancestor_gallery`, `et_shrine_niche`, `et_withdrawal_house`, `et_mask_house`, `et_historians_house`; ten more census trades carried; six catalog pieces |
+| P5 | the hosts: the `kept` state and the tracery infill moved here from the Sanctum (built first, 2026-10-20: `palace/BLUEPRINT.md`) and put on two memorial bodies; the court pavilion and gallery over water | the host row reads at night with the cyan alive. **Done 2026-10-20**: `kits/ancients/targets/kept` (`dist/kept.html`): Plymouth and Arcoindian I (the owner's choice) intact and kept by a material pass (`8aq5-kept-pass.js`: alabaster in a bronze tracery grid for the glazing, the shell cleaned, cyan strips alive on a fifth of the runs, nothing patched); a quality pass on both bodies' builders (Plymouth's liner and light court, both buildings' stairs with landings, Arcoindian's towers under the vault); the court pavilion and gallery came in P3 |
+| P6 | trade, hydraulics, harbour: the census trades, the kiln and tile works, canal, lock, bridge, spillway face, Farport's quays and factory quarter | `IS_TRADES` complete; the spillway face runs water. **Done 2026-10-20**: every census trade carried but the palace staffs (the Sanctum's): the works (the hexagonal kiln and tile works, porcelain, paper mill, printer), the shop trades in two plans (the street's and the hexagon, v 1), the hexagonal market hall, granary, warehouse, healer and tea house, the inn, the land (a hexagonal farmstead, paddies, tea garden, mine, quarry, stock pens), the lock, the reservoir wall, the spillway face whose water runs (`91d-et-water.js`), the landings, Farport's quay, dockyard, hexagonal lighthouse and factory quarter; hexagonal houses at every tier (the owner); `etTrade` (`64-et-trade-kit.js`) |
+| P7 | the catalog culture file, the interiors set, the furnished cut-away; the Godot export check on the sheet (`core/export`); the gallery | the sheet exports and passes its Godot case; Krator Worlds carries the page. **Done 2026-10-20** but for the gallery: the catalog culture file (common, poor, court and the State's pieces), the interiors set (`kits/interiors/sets/eternian.js`: 75 items, 127 rooms, the residence rule met), the furnished cut-aways, the export through core/export (`93e-et-export.js`; case `godot/data/world-eternian`, profile registry, materials, terrain) and its Godot case (`godot/tests/export/eternian_test.gd`, in the nightly list); Krator Worlds is the owner's call once the branch is on `main` |
 
 After P7: the capital's page (section 8) as its own plan, and the Yeti, cybernetics-tribe and bandit-camp pieces as
 theirs.
 
+**The first pass (the owner, 2026-10-20: "step 1 sounds good").** The kit ships in two passes. The first: the head
+generator and the closed-eye rule, the dwellings poor to court and the mixed canal street, the State (ministry,
+registry, gate and wall, the Clock, the ancestor gallery, the talking head), canal, lock and bridge, the kept host (the
+the Sanctum, done first), and the trades that are Eternian (kiln, tile works, paper mill, printer, porcelain). The
+second: the generic census trades, the reservoir and the dam faces (the capital's page places them), Farport's quays and
+factory quarter (with Farport's page), and the interiors and furniture. The neighbours: the **Yeti Kingdom** and the
+**cybernetics tribe** are kits of their own; the **dam-basin bandits** are a settlement on existing kits (Post-Apoc on
+the port and Ring Sea kits' grounded hulls), not a culture.
+
 ## 12. Open questions for the owner
 
-1. **The engine:** the vendored Scyvoi engine (the Islanders precedent) or the catalog ASSET route? The draft assumes
-   the engine.
-2. **The capital's site and name:** Centrum or Fulcrum; the arcology (Plymouth is proposed); the city's own name.
+1. **The engine: settled** (the owner, 2026-10-20): the Islanders route, the Scyvoi engine vendored (P0 built on it),
+   because it ensures a complete set of trade buildings: `ET_TRADES` (P1) lists every Voth census trade in the repo's
+   shape (`tools/check_trades.py`), each carried, a gap naming the def and phase that will carry it, or na; the
+   buildings fill the gaps through P3 to P6, and KNOWN_ISSUES.md lists those still open.
+2. **The capital's site and name:** Centrum or Fulcrum; the city's own name; what the Eternians call the Sanctum.
 3. **`kept` as a new Ancients state** implemented in this kit as a pass over a body's record, or added to the Ancients
    kit itself for every build to use?
 4. **The closed-eye rule** (open-eyed heads under a tenth) and the ban on striding and armed statues: hold them as kit

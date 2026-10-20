@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1993,
+    667
+   ],
+   "seam_after": [
+    0.405,
+    0.203
+   ],
+   "seam_before": [
+    2.406,
+    0.344
+   ],
+   "source_size": [
+    2000,
+    667
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.04,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.1,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "eternian/circuit-maze",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   3,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "eternian_circuit-maze.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/circuit-maze` (a right-angle maze brocade band, light on near-black)",
+  "reuse": "the circuit-maze brocade, stone bands, banner edges; tinted gold on black for the court, white on black for the ministers. Take A of three (.b, .c are alternates)",
+  "sha1": "ac72a545c9be9f1fea814cce1e0285ba3582bfc4"
+ }
+}

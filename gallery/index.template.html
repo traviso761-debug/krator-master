@@ -91,13 +91,6 @@ footer code{font:12px var(--mono)}
     to write in it, a shared phrasebook, and the words the peoples took from one another.
     <a href="https://claude.ai/artifact/FFEn2MEBPxMgqPJkcV6sNt" target="_blank" rel="noopener">Open the tongues &rarr;</a></p>
   </section>
-  <section class="scale" aria-labelledby="throne-h">
-    <h2 id="throne-h">The Throne</h2>
-    <p>Eleven stations on the volcano at the heart of Krator, each a 6 km piece of one biome kit: rain forest and
-    kipuka, a spice frontier, a geyser isle, cloud forest, savanna, ash desert, vent country, a glacier, the caldera
-    rim and a lava tube. They have a gallery of their own.
-    <a href="https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX" target="_blank" rel="noopener">Open the Throne &rarr;</a></p>
-  </section>
   <section class="scale" aria-labelledby="cosmetic-h">
     <h2 id="cosmetic-h">Cosmetic Lab</h2>
     <p>The people of Krator: MakeHuman bodies with face, build and ancestry sliders, skin, hair and eyes, the peoples'
@@ -112,18 +105,10 @@ footer code{font:12px var(--mono)}
     and what breaks.
     <a href="https://claude.ai/artifact/WStXx16aNHT63stCoz331x" target="_blank" rel="noopener">Open the Animation Lab &rarr;</a></p>
   </section>
-  <section class="scale" aria-labelledby="longsong-h">
-    <h2 id="longsong-h">Longsong</h2>
-    <p>The History Monks' monastery on its rock in the Oidong Valley: the White and Red Palaces furnished room by room,
-    the ward, the farms, the forbidden depths and the Procrastinator turning under them; 1,494 people on their day (the
-    nearest dressed and walking), day and night, and the festival with its great thangka. Its own artifact (its people's
-    clothes and bodies need the room).
-    <a href="https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY" target="_blank" rel="noopener">Open Longsong &rarr;</a></p>
-  </section>
   <section class="scale" aria-labelledby="ancients-h">
     <h2 id="ancients-h">The Ancients and the Port</h2>
     <p>The Ancients' megastructures type by type, the arcologies (whole cities in one structure) and the modular Ancient
-    Port, each intact, ruined and reclaimed: 61 pages in a gallery of their own.
+    Port, each intact, ruined and reclaimed: 63 pages in a gallery of their own.
     <a href="https://claude.ai/artifact/As2ZG7F8ee3Dx4Dr87FkR1" target="_blank" rel="noopener">Open the Ancients &rarr;</a></p>
   </section>
   <main id="registers"></main>
@@ -135,6 +120,8 @@ const ENTRIES = /*ENTRIES*/[];
 const SECTIONS = [
   {key:'world', id:'worlds', title:'Settlements', note:'Whole worlds: terrain, buildings, flora and, in several, people moving through them.'},
   {key:'biome', id:'biomes', title:'Biomes', note:'Flora and fauna of each region, independent of any settlement.'},
+  {key:'throne', id:'throne', title:'The Throne', note:'Eleven stations on the volcano at the heart of Krator, each a 6 km piece of one biome kit, from the edge of the plume round the windward flank, the isles and the summit down into a lava tube. They are a gallery of their own: each card opens it.'},
+  {key:'korona', id:'korona', title:'Korona', note:'The north-east under the gas giant: a corona of ring ridges round a trench country, each ring wet on its windward face and desert on its lee, built as stations like the Throne.'},
   {key:'kit', id:'kits', title:'Building kits', note:'Sheets that lay out every building of a culture side by side.'},
   {key:'ancients', id:'ancients', title:'Ancient city kits', note:'The ruined megastructures of the Ancients, type by type, at every level of decay: the full kit, its worn twins, the alternates, the engines, the spaceport and the Lighthouse.'},
   {key:'objects', id:'objects', title:'Objects', note:'Things placed into a world rather than built in it: furniture, plants and watercraft, each tagged by culture.'},
@@ -159,7 +146,8 @@ for (const s of SECTIONS) {
   sec.querySelector('p').textContent = s.note;
   const grid = sec.querySelector('.grid');
   for (const e of items) {
-    const c = document.createElement('a'); c.className = 'card'; c.href = 'worlds/' + e.slug + '.html';
+    const c = document.createElement('a'); c.className = 'card'; c.href = e.href || 'worlds/' + e.slug + '.html';
+    if (e.href) { c.target = '_blank'; c.rel = 'noopener'; }   // a build in its own artifact (build_gallery.py, LINKED)
     c.innerHTML = `<h3></h3><p></p><div class="meta"><span class="src"></span><span class="go">Open · <span class="mb"></span> MB</span></div>`;
     c.querySelector('h3').textContent = e.name;
     if (e.tag) { const t = document.createElement('span'); t.className = 'tag' + (e.tag === 'new' ? ' new' : ''); t.textContent = e.tag === 'new' ? 'New this month' : 'Earlier'; c.querySelector('h3').append(' ', t); }

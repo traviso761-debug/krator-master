@@ -501,9 +501,12 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
 - **The capital** stands round an arcology [the owner, 2026-10-19], near the placeholder **Centrum** (px 223,315); the owner
   may swap its name with **Fulcrum** (px 339,266, on Jimjam's lake). From Centrum: Farport 407 km north-west, Roketstad 241
   km east, Jimjam 537 km east-north-east, Dilihan 500 km east, Leng (ruined arcology, px 218,224) 182 km north, Henge
-  (arcology, px 185,405) 195 km south, Carcosa (ruin, px 123,482) 389 km south-west. *Proposed*: the arcology is **Plymouth**
-  (§4, "the one people actually live in by the hundred thousand"), not yet placed on the model, so the capital is the one
-  arcology on Krator that never emptied; its name, in the Eternians' own mouth, is to come.
+  (arcology, px 185,405) 195 km south, Carcosa (ruin, px 123,482) 389 km south-west. The arcology is its own [the owner,
+  2026-10-20, in place of the proposed Plymouth]: an Ancient live/work arcology of Plymouth's volume, a tapering drum 660 m
+  tall on a six-pointed podium, a grand stair up each point: three to great arches in a triangle, from each of which a
+  staircase spirals up the drum arch to arch (thirty arches), three to small entrances, each entrance kept for one rite (`kits/ancients/targets/sanctum`: **the Sanctum**, the owner's name). The Heirs
+  have made it a forbidden city, their inner sanctum, height for rank (`kits/eternian/palace/BLUEPRINT.md`). Not yet
+  placed on the model; its name, in the Eternians' own mouth, is to come.
 - **Farport** (px 27,260) is the kingdom's ocean port on the north-western sea [the owner, Oct 2026; §6.17 said "NE": the
   only ocean is north-west]. **Mysterious traders visit from time to time, and no one from Krator has ever crossed this sea**
   [the owner, Oct 2026]. *Proposed*: the State confines the visitors to one factory quarter of one port, as Canton and
@@ -754,7 +757,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
 - Who lives in the NW bay, the badlands and the southern highlands? Which tribes, human and therian, live in Korona, and what are their home tongues?
-- The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), round which arcology (Plymouth is proposed) and what the Eternians call it; the Eternian tongue and its logographic script; the kingdom's population; who the visitors at Farport are and what they want; the Yeti Kingdom's own name; the cybernetics tribe's seat (Leng or Henge) and name; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
+- The Eternal State (§6.19): where exactly the capital stands (near Centrum, px 223,315, or its name swapped with Fulcrum, 339,266: the owner's call), what the Eternians call it and its arcology (the owner calls the arcology the Sanctum); the Eternian tongue and its logographic script; the kingdom's population; who the visitors at Farport are and what they want; the Yeti Kingdom's own name; the cybernetics tribe's seat (Leng or Henge) and name; whether the Republic's polygon really reaches px 226; and what the Heirs' Clock says against Jimjam's Long Count.
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively, laying the tuff of the Catch?
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
 - Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?

@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 120,
+   "key_lo": 45,
+   "pad": 0.03,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "eternian/screen-pierced.b",
+  "kind": "card",
+  "metal": 0.5,
+  "roughness": 0.4,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "eternian_screen-pierced.b.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/screen-pierced`, take B",
+  "reuse": "an alternate of eternian/screen-pierced, picked per instance for variety",
+  "sha1": "d38b87b7f75ce07de4332b274725cc68859e68aa"
+ }
+}

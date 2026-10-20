@@ -78,6 +78,9 @@ def main():
         if '.tex.' in f:
             canon.setdefault(body_key(os.path.join(W, f)), f)
     for e in entries:
+        if e.get('href'):   # a card for another artifact (build_gallery.py, LINKED): no page here, no weight
+            side[e['slug']] = []
+            continue
         page = open(os.path.join(W, e['slug'] + '.html'), encoding='utf-8').read()
         side[e['slug']] = re.findall(r'<script src="([^"]+\.tex\.[\w-]+\.js)"></script>', page)
     alone = arg('--alone')
@@ -103,7 +106,7 @@ def main():
         groups.setdefault(find(e['slug']), []).append(e)
     def size(g):
         files = {canon[body_key(os.path.join(W, f))] for e in g for f in side[e['slug']]}
-        return sum(os.path.getsize(os.path.join(W, e['slug'] + '.html')) for e in g) + \
+        return sum(os.path.getsize(os.path.join(W, e['slug'] + '.html')) for e in g if not e.get('href')) + \
             sum(os.path.getsize(os.path.join(W, f)) for f in files)
     if '--alpha' in sys.argv:
         bins, titles = alpha_parts(entries, size, cap)
@@ -132,6 +135,8 @@ def main():
         for f in keep:
             shutil.copy(os.path.join(W, f), os.path.join(out, 'worlds', f))
         for e in b:
+            if e.get('href'):
+                continue
             page = open(os.path.join(W, e['slug'] + '.html'), encoding='utf-8').read()
             page = re.sub(r'<script src="([^"]+\.tex\.[\w-]+\.js)"></script>',
                           lambda mm: '<script src="%s"></script>' % canon[body_key(os.path.join(W, mm.group(1)))], page)

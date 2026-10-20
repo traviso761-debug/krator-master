@@ -318,6 +318,28 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
  // ============================================================ THE TERRACED MASS
  for(let k=0;k<NL;k++){const O=LV[k],O1=LV[k+1],y0=YS[k],y1=YS[k+1];
   const nu=Math.max(28,Math.round(O.per/11));
+  // THE STAIRS of this riser (the owner's quality pass, 2026-10-20): every ~20 bays a run up from the terrace below
+  // to the deck above, in two flights along the wall with a half landing, a landing at the foot, and a landing at the
+  // head that crosses the rim onto the deck through a gap in its parapet. Laid along the run's own tangent and never
+  // across a chamfer; chosen without a draw, so the parapet can leave its gap before the homes are placed.
+  const stairs=[];
+  if(k>0){const nb0=Math.max(20,Math.round(O.per/BW));
+   for(let j=9;j<nb0;j+=20){const u=(j+.5)/nb0,P=plymPt(O,u),N=plymNrm(O,u);
+    if(slotWall(P[0],P[1],k)||goneAt(P[0],P[1],k)||inBite(k,u)||rot(u*O.per,y0+LH*.5))continue;
+    if(d>0&&((j*13+k*7)%10)>=6)continue;
+    const T=[-N[1],N[0]],Na=plymNrm(O,(u-18/O.per+1)%1),Nb=plymNrm(O,(u+18/O.per)%1);
+    if(Na[0]*N[0]+Na[1]*N[1]<.995||Nb[0]*N[0]+Nb[1]*N[1]<.995)continue;
+    const P1=plymPt(O,(u+1/O.per)%1),sg=Math.sign((P1[0]-P[0])*T[0]+(P1[1]-P[1])*T[1])||1,D=[T[0]*sg,T[1]*sg];
+    const cx=P[0]+N[0]*5.2,cz=P[1]+N[1]*5.2,hx=P[0]-N[0]*2+D[0]*16,hz=P[1]-N[1]*2+D[1]*16;
+    if(slotDeck(cx,cz,k)||goneAt(cx,cz,k-1)||slotDeck(hx,hz,k+1)||goneAt(hx,hz,k))continue;
+    stairs.push({j:j,u:u,P:P,N:N,D:D,uTop:(u+sg*16.1/O.per+1)%1});}}
+  const flight=S=>{const q=qFacing([S.D[0],0,S.D[1]]),c=[S.P[0]+S.N[0]*5.2,S.P[1]+S.N[1]*5.2],at=(t,n)=>[c[0]+S.D[0]*t+S.N[0]*n,c[1]+S.D[1]*t+S.N[1]*n],h=LH/2;
+   let a=at(-14.5,0);kput('plyStair',[a[0],y0,a[1]],q,[5,h,13],stoneC());
+   a=at(0,0);kput('plyBox',[a[0],y0+h-.4,a[1]],q,[5,.8,3],stoneC());
+   a=at(1.5,0);kput('plyStair',[a[0],y0+h,a[1]],q,[5,h,13],stoneC());
+   a=at(16.1,-2.65);kput('plyBox',[a[0],y1-.4,a[1]],q,[9.9,.8,3.2],stoneC());
+   a=at(-15.7,0);kput('plyBox',[a[0],y0+.1,a[1]],q,[5,.2,2.4],stoneC());};
+  const stairGap=u=>stairs.some(S=>{let du=Math.abs(u-S.uTop);du=Math.min(du,1-du);return du*O.per<6;});
   SH.push(gridSurface((u,v)=>{const P=plymPt(O,u),N=plymNrm(O,u),o=bandAt(y0+v*LH);
     return[P[0]+N[0]*o,y0+v*LH,P[1]+N[1]*o];},nu,NST*2,
    {uS:O.per/8,vS:LH/8,hole:(u,v)=>{const P=plymPt(O,u),yy=y0+v*LH;
@@ -332,16 +354,18 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
   SH.push(gridSurface((u,v)=>{const P=plymPt(O,u),N=plymNrm(O,u),o=v<.5?.45:-1.2;
     return[P[0]+N[0]*o,y1+(v<.5?v*2*3.2:3.2),P[1]+N[1]*o];},nu,2,
    {uS:O.per/8,vS:.5,hole:u=>{const P=plymPt(O,u);
-     return slotDeck(P[0],P[1],k+1)||goneAt(P[0],P[1],k)||inBite(k,u)||(d>0&&rng()<.14);}}));
-  // the ruin's liner: the inside of the shell, so every eaten panel and every
-  // missing window opens onto a dark interior instead of onto the far wall
+     return slotDeck(P[0],P[1],k+1)||goneAt(P[0],P[1],k)||inBite(k,u)||stairGap(u)||(d>0&&rng()<.14);}}));
+  // the liner: the inside of the shell, so every eaten panel and every missing
+  // window opens onto a dark interior instead of onto the far wall. The intact
+  // mountain takes it too (2026-10-20): its street walls and slot cuts leave
+  // openings in the shell, and without it they looked through to the sky
   // Its top stops 1.2 m short of the deck above: run it to y1 and its edge is
   // COPLANAR with the terrace deck, which z-fights into a dark band along every
   // terrace in the ruin and reads as a shadow nothing is casting.
-  if(d>0)VD.push(gridSurface((u,v)=>{const P=plymPt(O,u),N=plymNrm(O,u);
+  VD.push(gridSurface((u,v)=>{const P=plymPt(O,u),N=plymNrm(O,u);
     return[P[0]-N[0]*6,y0+v*(LH-1.2),P[1]-N[1]*6];},Math.round(nu*.55),NST,
-   {uS:O.per/10,vS:LH/10,hole:u=>{const P=plymPt(O,u),N=plymNrm(O,u);
-     return goneAt(P[0]-N[0]*6,P[1]-N[1]*6,k);}}));
+   {uS:O.per/10,vS:LH/10,hole:u=>{const P=plymPt(O,u),N=plymNrm(O,u),x=P[0]-N[0]*6,z=P[1]-N[1]*6;
+     return goneAt(x,z,k)||slotWall(x,z,k)||slotWall(P[0],P[1],k);}}));   /* never across the street, plaza or court */
 
   // ---- the homes on this riser ----------------------------------------------
   const nb=Math.max(20,Math.round(O.per/BW));
@@ -365,9 +389,8 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
       tq,[1.5,.6,.9],soilC);}
     else if(rng()<(d>0?.10:.26))
      kput('plyAwn',[px+N[0]*(off+.3),yy+SY*.84,pz+N[1]*(off+.3)],tq,[3.8,1.5,1.7],tinC());}
-   // a stair run laid ALONG the terrace below, every ~20 bays
-   if(j%20===9&&k>0&&rng()<(d>0?.55:.8))
-    kput('plyStair',[px+N[0]*4.2,y0,pz+N[1]*4.2],TAN(N),[6,LH,30],stoneC());
+   // the stair run up from the terrace below (the stairs, above)
+   {const S=stairs.find(S=>S.j===j);if(S)flight(S);}
    if(d===0&&k%3===1&&j%3===0)
     kput('strip',[px+N[0]*1.5,y0+LH-2.4,pz+N[1]*1.5],tq,[BW*2.6,1.1,1.1],CYAN);
    // water off the deck above. stainsFromLedge() aims its streaks radially,
@@ -502,24 +525,27 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
              [PLX,-PLZ,PLX,-SPW,1,0,SPY1],[PLX,PLZ,PLX,SPW,1,0,SPY1],
              [CTX0,-CTZ,CTX1,-CTZ,0,-1,CTY],[CTX0,CTZ,CTX1,CTZ,0,1,CTY],
              [CTX0,-CTZ,CTX0,-SPW,-1,0,CTY],[CTX0,SPW,CTX0,CTZ,-1,0,CTY],
-             [CTX1,-CTZ,CTX1,-SPW,1,0,CTY],[CTX1,SPW,CTX1,CTZ,1,0,CTY]];
- for(let w=0;w<WSEG.length;w++){const S=WSEG[w],N=[S[4],S[5]];
-  const SPH=S[6]-SPY0, NSTO=Math.round(SPH/SY);
+             [CTX1,-CTZ,CTX1,-SPW,1,0,CTY],[CTX1,SPW,CTX1,CTZ,1,0,CTY],
+             // over the channel's mouths into the court: from the vault's crown to the court's top (an 8th
+             // column, where the run starts). Without them the court looked into the hollow over the vault
+             [CTX0,-SPW,CTX0,SPW,-1,0,CTY,SPY1-1.2],[CTX1,-SPW,CTX1,SPW,1,0,CTY,SPY1-1.2]];
+ for(let w=0;w<WSEG.length;w++){const S=WSEG[w],N=[S[4],S[5]],WY0=S[7]==null?SPY0:S[7];
+  const SPH=S[6]-WY0, NSTO=Math.round(SPH/SY);
   const L=Math.hypot(S[2]-S[0],S[3]-S[1]),nuu=Math.max(4,Math.round(L/10));
   SH.push(gridSurface((u,v)=>{const x=lerp(S[0],S[2],u),z=lerp(S[1],S[3],u);
-    const yy=SPY0+v*SPH,o=-bandAt(yy);
+    const yy=WY0+v*SPH,o=-bandAt(yy);
     return[x+N[0]*o,yy,z+N[1]*o];},nuu,NSTO*2,
-   {uS:L/8,vS:SPH/8,hole:(u,v)=>{const x=lerp(S[0],S[2],u),z=lerp(S[1],S[3],u),yy=SPY0+v*SPH;
+   {uS:L/8,vS:SPH/8,hole:(u,v)=>{const x=lerp(S[0],S[2],u),z=lerp(S[1],S[3],u),yy=WY0+v*SPH;
      return !inMassAt(x,z,yy)||goneAt(x,z,levAt(yy))||rot(u*L,yy);}}));
   const nb=Math.max(3,Math.round(L/BW));
   const tq=qFacing([-N[0],0,-N[1]]);
   for(let j=0;j<nb;j++){const t=(j+.5)/nb;
    const x=lerp(S[0],S[2],t),z=lerp(S[1],S[3],t);
-   if(!inMassAt(x,z,SPY0+4))continue;
-   for(let s=0;s<NSTO;s++){const yy=SPY0+s*SY;
+   if(!inMassAt(x,z,WY0+4))continue;
+   for(let s=0;s<NSTO;s++){const yy=WY0+s*SY;
     if(!inMassAt(x,z,yy+SY*.5)||goneAt(x,z,levAt(yy)))continue;
     const off=-bandAt(yy+SY*.5);
-    if(s<2){                                    // the arcade: shops on two levels
+    if(s<2&&WY0===SPY0){                        // the arcade: shops on two levels
      if(s===0&&j%2===0){
       kput('plyArch',[x-N[0]*(off+.4),yy+5.9,z-N[1]*(off+.4)],tq,[1.5,1.3,1.3],null);
       if(rng()<(d>0?.10:.70))
@@ -535,9 +561,9 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
      if(rng()<.5)kput('plyWash',[x-N[0]*(off+2.3),yy+1.6,z-N[1]*(off+2.3)],tq,[3.8,1.9,1],clothC());}
     else if(rng()<.22)kput('plyAwn',[x-N[0]*(off+.3),yy+SY*.84,z-N[1]*(off+.3)],tq,[3.8,1.5,1.8],
      rng()<.35?clothC():tinC());}
-   if(j%2===1&&!(d>0&&rng()<.26))
+   if(WY0===SPY0&&j%2===1&&!(d>0&&rng()<.26))
     kput('plyBrk',[x-N[0]*5.4,SPY0+6.4,z-N[1]*5.4],tq,[2.3,12.8,2.3],stoneC());
-   if(d===0&&j%3===0)kput('strip',[x-N[0]*5.4,SPY0+13.6,z-N[1]*5.4],tq,[BW*2.8,1.3,1.3],CYAN);}}
+   if(WY0===SPY0&&d===0&&j%3===0)kput('strip',[x-N[0]*5.4,SPY0+13.6,z-N[1]*5.4],tq,[BW*2.8,1.3,1.3],CYAN);}}
 
  // The ceiling: a shallow barrel vault over the channel, and a flat soffit over
  // whatever part of the plaza still has mountain standing on it. Without the

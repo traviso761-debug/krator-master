@@ -156,6 +156,81 @@ and interiors"). The register's plaques, boards and the dial stay painted in cod
 English legible.
 
 
+## Delivered 2026-10-20, the Eternian kit's furniture and common walls (pasted into the chat as WebP, 1254 px; batch `eternian-2026-10b-furniture.json`)
+
+The six prompts of `PROMPTS-NEEDED.md` section 8 (written at the kit's P3), ten images: the cast block came in five
+takes. Processed by `tools/textures/process.py`, wired in `kits/eternian/materials.json` and packed:
+
+| Set | Family | Where |
+|---|---|---|
+| `concrete.block.relief`, `.b`, `.c`, `.d`, `.e` | `block`, `blockB`-`blockE` | the cast pattern block, one take per placed instance (`src/38-et-alt.js` `ET_ALTS.block`): the block hut, the canal row's ground floor, the court house's screens, the corner turret's ground floor; 1.6 m to the tile (four 40 cm blocks). Take `.e` is a hexagonal interlace, for the civic buildings with hexagonal symmetry (the owner, 2026-10-20) |
+| `roof.tile.celadon` | `celadon` | the rich roofs (`etHip` maps each slope along its eave and up its fall; the drawn tile rolls came off), roughness lifted .45; 2.4 m to the tile |
+| `ceramic.celadon.crackle` | `glaze`, `f_ceramic` | the villa's planters (full colour); the furniture's ceramic (tinted: the stove's celadon, the masks' terracotta) |
+| `reed.mat.woven` | `f_thatch` (new) | the furniture's `thatch` surfaces: the poor's reed mats |
+| `cloth.damask.maze` | `f_cloth` | the furniture's cloth on the Eternian page (coverlets, cushions, linen), tinted |
+| `wood.timber.stringing` | `f_lacquer` | the court's lacquered pieces (the canopy bed), tinted |
+
+The prompts as written:
+
+### The Eternian kit (`kits/eternian`, P3, 2026-10-20)
+
+The furniture and the common town's walls (the owner: "don't be afraid to ask for textures to punch up the furniture").
+The kit's pieces draw on generic tinted detail maps today (`f_cloth` twill, `f_wood`, `f_lacquer`, `f_ceramic` plain
+glaze), and its cast block is plain cut stone, so up close the Eternian pieces read as painted boxes. Each lands as a
+family in `kits/eternian/materials.json` (no catalog core change), then `python3 tools/textures/pack.py kits/eternian`
+and a rebuild. `kits/eternian/KNOWN_ISSUES.md`, "Surfaces waiting on textures", names what each replaces.
+
+##### `concrete.block.relief`
+- Kind: surface, tintable. Replaces `block`'s `stone.cut`: the block hut, the canal row's ground floor, the court
+  house's screens and walls, the corner turret's ground floor, the cast-block bench. Reuse: any textile-block wall
+  (Highlands' Deco, Pylon's render). The biggest win for the poor and common tiers.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall of cast concrete blocks in the manner of Frank Lloyd Wright's textile blocks: a grid of exactly 4 x 4 square blocks with thin recessed mortar joints, every block cast with the same stepped geometric relief, concentric stepped squares crossed by short raised bars, sharp-edged and deep enough to read; purely geometric, no glyphs, no faces, no lettering. Fine sandy aggregate in the faces, a few small casting pores, the odd chipped arris. Near-colourless: pale grey-beige only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 1.6 metres (four 40 cm blocks).
+```
+
+##### `roof.tile.celadon`
+- Kind: surface, full colour. Replaces `celadon`'s `ceramic.glaze` on the roofs (the merchant's house, the villa's hall,
+  the ministries in P4); `etHip`'s drawn tile rolls (`o.ribs`) come off when it lands. Reuse: any glazed green roof.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a roof of glazed celadon barrel tiles seen from directly above, eight parallel rows of half-round tiles running top to bottom, laid in courses with each tile lapping the one below; the glaze a pale jade green #8fb8a0, pooling darker #6a9a82 in the channels between the rolls and thinning to #b4d0bc on their crowns, a fine crackle in the glaze, a few tiles a shade greener or greyer than their neighbours. Glossy glaze. One tile covers 2.4 metres.
+```
+
+##### `ceramic.celadon.crackle`
+- Kind: surface, full colour. Replaces `f_ceramic` (the celadon-tiled stove, the poor's clay pots keep terracotta) and
+  the garden's celadon planters. Reuse: any celadon ware.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: celadon-glazed stoneware, a thick smooth glaze in pale jade green #8fb8a0 drifting softly to #9cc4ac and #7fae96, crossed by a fine irregular crackle network of thin darker lines #5e8a76, a few tiny pinholes, the glaze pooling a little darker in faint ripples. Glossy. One tile covers 0.5 metres.
+```
+
+##### `reed.mat.woven`
+- Kind: surface, tintable. Lands as a new family `f_thatch` (the furniture's `thatch` surfaces: the poor's reed mat and
+  its bolster). Reuse: any woven floor mat or reed screen (the Islanders, Reedlake).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a floor mat woven of flat split reed strips about 2 cm wide in a herringbone twill, each strip with fine lengthwise fibres and a slightly glossy skin, a few broken strip ends and a few darker bruised strips. Near-colourless: pale straw only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.8 metres.
+```
+
+##### `cloth.damask.maze`
+- Kind: surface, tintable. Replaces `f_cloth`'s twill on the Eternian page (coverlets, cushions, the bed's panel, the
+  court's linen). Reuse: any brocade or damask; with the costume's circuit-maze brocade (LORE.md 6.19) for the
+  character kit.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: heavy silk damask, tone on tone: a satin ground woven with a circuit-maze figure, thin right-angled lines that turn, branch and end in small squares like a printed circuit or a key-fret maze, evenly spaced over the whole cloth, never letters or glyphs; the figure shows only by the change of sheen between satin and twill weave, the fine weave visible throughout. Near-colourless: pale grey-white only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.6 metres.
+```
+
+##### `wood.timber.stringing`
+- Kind: surface, full colour. Replaces `f_lacquer` (the court's pieces: the canopy bed, and the cabinets P4 adds).
+  Reuse: any Deco cabinetwork (Highlands' Republic, Pylon's offices).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: dark stained hardwood veneer #4a3426 with a close straight grain running top to bottom under a thin satin lacquer, inlaid with thin straight brass stringing lines #b89a58 about 3 mm wide that divide the surface into tall rectangular panels, two across and three down, each panel's corners stepped inward in two small Art Deco steps; straight lines only, no curves, no figures. One tile covers 1 metre.
+```
+
+
 ## Delivered 2026-10-19, the Iziz palace (pasted into the chat as WebP, 1254 px, 1774 x 887 and 793 x 1983; batch `izpalace-2026-10-19.json`)
 
 The five the palace page had no set for, processed by `tools/textures/process.py` and packed into the palace's own pack
@@ -606,3 +681,82 @@ Second delivery 2026-10-18 (images 14 to 21; batch `crops-2026-10-18-cards2.json
 - `settlements/ys/KNOWN_ISSUES.md` says the Ancient towers' `MAT.white` has "no prompt": it binds to `metal.ancient.white`
   since 2026-10-06; the rust is section 2 above.
 - `feather.plumage` is delivered but `kits/fauna/materials.json` has no `feather` family yet (wiring, not an image).
+
+## The Eternian kit and the Sanctum (`kits/eternian`, `kits/ancients` target `sanctum`): delivered 2026-10-20
+
+The True Heirs' court (`LORE.md` §6.19, `kits/eternian/PLAN.md` §2 and §10): translucent stone in bronze tracery, the
+talking heads, the sign. The arcology draws all of these procedurally until they arrive. Reuse first, no prompt needed:
+`metal.bronze`, `metal.bronze.cast`, `metal.gold`, `metal.pewter` (the heads' metals by rank), `roof.scale.gilt` (the
+court's fish-scale roofs, tinted per metal), `metal.ancient.white` (the kept host), `glass.clear` (the surviving plate
+glass).
+
+#### `stone.onyx`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in library/stone.onyx; wired in kits/ancients (the Sanctum target, family `snOnyx`: the bays' onyx, glowing). For kits/eternian: its `materials.json` at P1.
+- Used by: the bays' and the court's lights behind the bronze tracery (lit from behind by the cyan strips). Reuse: any
+  palace, temple or bath that glazes in stone.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a thin polished slab of honey onyx cut across its layers: soft wavy parallel bands running mostly horizontally, cream (#efe4c8) through pale honey (#d9b884) to amber (#b7884a), a few fine milky-white veins (#f6f1e6) crossing the bands at a shallow angle, faint cloudy depth in the paler bands. Polished but shown matte: no reflections, not backlit. One tile covers 1 metre. Full colour: not tinted.
+```
+
+#### `stone.alabaster`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in library/stone.alabaster; wired in kits/ancients (`snAlab`: the Withdrawn's bays). For kits/eternian: its `materials.json` at P1.
+- Used by: the court's palest lights, the Withdrawn's blind bays, lamp shades. Reuse: any culture's translucent lamps.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished slab of white alabaster: a soft waxy near-white (#f1ece2) with large cloudy drifts of cream (#e4dccd) and pale grey (#d6d0c4), a few fine thread-like grey veins (#c2bbae) wandering across it, a faint granular depth. Shown matte: no reflections, not backlit. One tile covers 1 metre. Full colour: not tinted.
+```
+
+#### `metal.titanium`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in library/metal.titanium; wired in kits/ancients (`snTitan`: the colossus). For kits/eternian: its `materials.json` at P1.
+- Used by: the colossus on the Sanctum's crown and the Heirs' metal figures (the owner's Gagarin reference). Reuse:
+  any polished modern metal monument.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: brushed and lightly polished titanium plate: fine straight horizontal brushing in a cool mid grey (#9aa1a8), broad soft clouds of very faint straw and blue heat tint (#a8a08a, #8c9aae) drifting across it, a few flat panel seams (#6d737a) dividing it into large rectangles. No rivets, no rust, no scratches, no dents. One tile covers 4 metres. Full colour: not tinted.
+```
+
+#### `patterns/eternian/screen-pierced`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/screen-pierced and screen-pierced.b (a second take, an alternate per bay; cards.py, keyed); wired in kits/ancients (`snScreen`, `snScreenB`: the Sealed House). For kits/eternian: its `materials.json` at P1.
+- Used by: the pierced bronze screens where a wall must breathe, the sealed bays of the Withdrawn. A cut-out:
+  `cards.py` keys the magenta to alpha.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a pierced cast-bronze screen: a continuous geometric lattice of interlocking stepped squares and right-angle maze turns, like a circuit board drawn as Art Deco fretwork, the bars about one fortieth of the tile wide, every opening cut clean through to a solid flat bright magenta (#ff00ff) background. The bronze is a warm polished brown-gold (#9c7a3c) with slightly darker bevelled edges (#6e5428). No curves, no animals, no faces, no letters or glyphs. No magenta, pink or purple in the bronze, no grey or white background. The pattern repeats in both directions. Full colour: not tinted.
+```
+
+#### `patterns/eternian/talking-heads`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/talking-heads; wired in kits/ancients (`snFaces`: the terminals, one cell each, the deranged in the bottom row's middle). For kits/eternian: its `materials.json` at P1.
+- Used by: the Ancient terminal faces the Machine Talkers wake (the petition walls, the gates, the Regent's hall). A
+  sheet of nine; the build cuts the cells.
+
+```
+A sheet of nine separate screen panels in a 3x3 grid, square, 2048x2048, each panel filling its cell edge to edge, a thin black gap between the cells. Front-on, orthographic, flat even lighting, no reflections, no text, no watermark. Each panel: a dark glass display (#0b1215) showing a calm, serene face drawn in glowing cyan line art (#39d6e8), built from flat faceted planes like an Art Deco cubist sculpture: closed eyes as two downward-curved lids, a straight nose, a small closed mouth, a stepped geometric headdress, faint horizontal scan lines across the glass. Eight of the nine are calm and differ in face (long, broad, aged, young, male, female) and headdress. The ninth is subtly deranged: the same kind of face with one eye open, its lines doubled and slipping sideways, a few horizontal tear bands, still cyan only. No red, no skulls, no snarls, no sun rays, no letters. Full colour: not tinted.
+```
+
+#### `patterns/eternian/sign`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/sign; wired in kits/ancients (`snBanner`: the banners). For kits/eternian: its `materials.json` at P1.
+- Used by: the State's banners on the gates and walls (the sign, `LORE.md` §6.19: a gold face with its eyes closed on
+  black, green highlights). Not tiled.
+
+```
+A flat, front-on hanging banner, portrait, 1024x2048, filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette. No perspective, no text, no letters, no watermark. A matte black cloth field (#141416). In the upper middle, a large serene face in gold (#d8b24a) with its eyes closed, built from flat faceted planes in the Art Deco cubist manner, a stepped Deco headdress above it; green (#3f8a5a) highlights pick out the planes of the cheeks and brow and draw a thin line under the closed lids. Below the face a narrow vertical band of gold right-angle maze pattern, like a circuit board, runs down to the hem; a thin gold border just inside the edge. Faint woven and embroidered cloth texture. No sun rays or ray halo, no red, no skull, no weapons. Full colour: not tinted.
+```
+
+#### `patterns/eternian/circuit-maze`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/circuit-maze, .b and .c (two extra takes, alternates per bay); wired in kits/ancients (`snMaze`, `snMazeB`, `snMazeC`: the balconies' fascias, the crown rim). For kits/eternian: its `materials.json` at P1.
+- Used by: the circuit-maze brocade (rank by the number of turns), stone bands on the ministries, the banners' edges.
+  Tinted per use: gold on black for the court, white on black for the ministers. Reuse: the Ancients' own trim.
+
+```
+Seamless tileable texture, 2048x512, the pattern repeating horizontally. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Material: a woven brocade band of a right-angle maze pattern like an Ancient circuit board: continuous lines turning at right angles, small square pads and stepped corners, laid out as a running border between a straight rule above and below; the lines light (#e8e6e0) on a near-black ground (#1a1a1c), a faint woven texture. Geometric only: no glyphs, no letters, no faces. Near-colourless: greys only, so it can be tinted.
+```
+
+#### `patterns/eternian/face-frieze`
+- **Delivered 2026-10-20** (pasted; batches `eternian-2026-10.json`, `eternian-cards-2026-10.json`): in patterns/eternian/face-frieze; wired in kits/ancients (`snFrieze`: the podium's frieze). For kits/eternian: its `materials.json` at P1.
+- Used by: the friezes of the podium, the gate pylons and the ministries (the Bayon done in Deco). Tinted pale stone
+  for the State, bronze for the court.
+
+```
+Seamless tileable texture, 2048x1024, the pattern repeating horizontally. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Material: a carved stone relief frieze: a row of three large serene faces with closed eyes, each built from flat faceted planes in the Art Deco cubist manner (a straight nose, flat cheek planes, a stepped geometric headdress), alternating with narrow fluted pilasters and stepped Deco chevrons; crisp shallow carving, pale stone (#ddd6c8) with soft grey in the recesses (#a9a296). Calm and serene: no snarls, no skulls, no weapons, no letters. Near-colourless: pale grey only, so it can be tinted.
+```

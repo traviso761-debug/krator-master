@@ -1,0 +1,613 @@
+{
+ "build": "eternian",
+ "note": "The Eternian kit's library families (core/materials/PLAN.md; kits/eternian/PLAN.md section 10). Each key is a MAT key of src/26k-kit.js SV_LIB; the vertex colour (SVPAL) tints the sets with tint.keep 0. The owner's Eternian sets (2026-10-20): onyx, alabaster, the pierced screens, the circuit mazes, the face frieze and the sign; their extra takes are families of their own (screenB, mazeB, mazeC) that src/38-et-alt.js picks per placed instance. Run python3 tools/textures/pack.py kits/eternian after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "lime": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.86
+   },
+   "metal": 0
+  },
+  "block": {
+   "lib": "concrete.block.relief",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "brick": {
+   "lib": "brick",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "stone": {
+   "lib": "stone.cut.b",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0
+  },
+  "tile": {
+   "lib": "roof.tile",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0
+  },
+  "celadon": {
+   "lib": "roof.tile.celadon",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.45
+  },
+  "timber": {
+   "lib": "wood.timber",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0
+  },
+  "planks": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.55
+   },
+   "metal": 0
+  },
+  "shutter": {
+   "lib": "wood.painted",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.7
+   },
+   "metal": 0
+  },
+  "paving": {
+   "lib": "paving.flagstone",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.72
+   },
+   "metal": 0
+  },
+  "earth": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.55
+   },
+   "metal": 0
+  },
+  "reed": {
+   "lib": "reed.layers",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.7
+   },
+   "metal": 0
+  },
+  "silt": {
+   "lib": "earth.adobe.pale",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.65
+   },
+   "metal": 0
+  },
+  "iron": {
+   "lib": "metal.iron",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.3
+   },
+   "metal": 0.4
+  },
+  "bronze": {
+   "lib": "metal.bronze.cast",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.45
+  },
+  "verdigris": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.45
+   },
+   "metal": 0.25
+  },
+  "gold": {
+   "lib": "metal.gold",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.5
+  },
+  "onyx": {
+   "lib": "stone.onyx",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0
+  },
+  "alabaster": {
+   "lib": "stone.alabaster",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0
+  },
+  "screen": {
+   "lib": "patterns/eternian/screen-pierced",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.45
+  },
+  "screenB": {
+   "lib": "patterns/eternian/screen-pierced.b",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.45
+  },
+  "maze": {
+   "lib": "patterns/eternian/circuit-maze",
+   "scale": [
+    3,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0
+  },
+  "mazeB": {
+   "lib": "patterns/eternian/circuit-maze.b",
+   "scale": [
+    3,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0
+  },
+  "mazeC": {
+   "lib": "patterns/eternian/circuit-maze.c",
+   "scale": [
+    3,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0
+  },
+  "frieze": {
+   "lib": "patterns/eternian/face-frieze",
+   "scale": [
+    10,
+    5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.78
+   },
+   "metal": 0
+  },
+  "sign": {
+   "lib": "patterns/eternian/sign",
+   "scale": [
+    1,
+    2
+   ],
+   "size": [
+    512,
+    1024
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0
+  },
+  "ground": {
+   "lib": "ground.leafy_grass",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.5
+   },
+   "metal": 0
+  },
+  "f_cloth": {
+   "lib": "cloth.damask.maze",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0
+  },
+  "f_wood": {
+   "lib": "wood.timber",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0
+  },
+  "f_lacquer": {
+   "lib": "wood.timber.stringing",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.45
+   },
+   "metal": 0
+  },
+  "f_stone": {
+   "lib": "stone.cut",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0
+  },
+  "f_metal": {
+   "lib": "metal.iron",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.4
+   },
+   "metal": 0.4
+  },
+  "f_bronze": {
+   "lib": "metal.bronze",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5
+   },
+   "metal": 0.45
+  },
+  "f_gold": {
+   "lib": "metal.gold",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0.5
+  },
+  "f_ceramic": {
+   "lib": "ceramic.celadon.crackle",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.7
+   },
+   "metal": 0
+  },
+  "silver": {
+   "lib": "metal.steel.brushed",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.78
+   },
+   "metal": 0.45
+  },
+  "gunmetal": {
+   "lib": "metal.pewter",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.36
+   },
+   "metal": 0.4
+  },
+  "terracotta": {
+   "lib": "ceramic.terracotta",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0
+  },
+  "lead": {
+   "lib": "metal.lead.sheet",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.45
+   },
+   "metal": 0.2
+  },
+  "titanium": {
+   "lib": "metal.titanium",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.25
+  },
+  "scale": {
+   "lib": "metal.scale",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0.45
+  },
+  "gilt": {
+   "lib": "roof.scale.gilt",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.4
+  },
+  "blockB": {
+   "lib": "concrete.block.relief.b",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "blockC": {
+   "lib": "concrete.block.relief.c",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "blockD": {
+   "lib": "concrete.block.relief.d",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "blockE": {
+   "lib": "concrete.block.relief.e",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "glaze": {
+   "lib": "ceramic.celadon.crackle",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.3
+  },
+  "f_thatch": {
+   "lib": "reed.mat.woven",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.7
+   },
+   "metal": 0
+  },
+  "faces": {
+   "lib": "patterns/eternian/talking-heads",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0
+  },
+  "white": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.2
+  }
+ }
+}

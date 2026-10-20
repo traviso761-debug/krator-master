@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/funicular.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/hosts.html`, `dist/interiors.html`, `dist/iziz-style.html`, `dist/iziz-variants.html`, `dist/kept.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/sanctum.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spaceport.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`, `dist/yuni-variants.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -85,13 +85,13 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `87-launch.js` | 73 **big** |  |
 | `87-mega.js` | 10 |  |
 | `88-factory.js` | 9 |  |
-| `88-plymouth.js` | 58 **big** |  |
+| `88-plymouth.js` | 61 **big** |  |
 | `88y-ancients-matlib.js` | 1 |  |
 | `89-arcbeam.js` | 59 **big** |  |
 | `89-lab.js` | 9 |  |
 | `89b-arcoindian.js` | 26 |  |
 | `89b1-arcoindian-cut.js` | 28 |  |
-| `89b2-arcoindian-plinth.js` | 27 |  |
+| `89b2-arcoindian-plinth.js` | 29 |  |
 | `89c-arcoindian2.js` | 28 |  |
 | `89c1-arcoindian2-lens.js` | 27 |  |
 | `89c2-arcoindian2-stalk.js` | 27 |  |
@@ -186,6 +186,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `interiors` | `89z-rows.js`, `91z-views.js` | 3 |
 | `iziz-style` | `89z-rows.js`, `91z-views.js` | 6 |
 | `iziz-variants` | `89z-rows.js`, `91z-views.js` | 3 |
+| `kept` | `89z-rows.js`, `8aq5-kept-pass.js`, `91z-views.js` | 6 |
 | `kit` | `89z-rows.js`, `91z-views.js` | 25 |
 | `launch` | `89z-rows.js`, `91z-views.js` | 13 |
 | `ledge` | `89z-rows.js`, `91z-views.js` | 5 |
@@ -193,6 +194,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `monolith` | `89z-rows.js`, `91z-views.js` | 4 |
 | `plymouth` | `89z-rows.js`, `91z-views.js` | 6 |
 | `ring` | `89z-rows.js`, `91z-views.js` | 10 |
+| `sanctum` | `89z-rows.js`, `8aq0-sanctum-plan.js`, `8aq1-sanctum-kept.js`, `8aq2-sanctum-skins.js`, `8aq3-sanctum-draw.js`, `91z-views.js` | 76 |
 | `skyi` | `89z-rows.js`, `91z-views.js` | 4 |
 | `skyj` | `89z-rows.js`, `91z-views.js` | 3 |
 | `skyk` | `89z-rows.js`, `91z-views.js` | 2 |

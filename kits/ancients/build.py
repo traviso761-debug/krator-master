@@ -109,6 +109,13 @@ CORE_FURNISH = os.path.join(ROOT, 'core', 'furnish')
 INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'), (CORE_TAGS, '52-core-tags-vocab.js'),
                  (CORE_TAGS, '53-core-tags-host.js'), (CORE_FURNISH, '50-core-furnish.js'), (CORE_FURNISH, '52-core-furnish-draw.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
+# A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
+# registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
+TAGS_TARGETS = {'sanctum'}
+TAGS_CORE = INTERIOR_CORE[:4]
+# fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
+# (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
+TARGET_READS = {'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')]}
 # the furniture an intact Ancient building takes: the harvested registry (the ancient pieces) and the goods
 INTERIOR_FURN = ['generic-goods']
 
@@ -183,6 +190,8 @@ TARGET_OUT = {
     'spaceport': 'spaceport.html',             # dev: the Iziz spaceport in every decay (8ao-iz-spaceport)
     'funicular': 'funicular.html',             # the broken Ancient funicular on an escarpment (8ap-funicular; Verge takes it)
     'hosts': 'hosts.html',                     # five types drawn as Hykkousoi hosts for Ys (src/8ap-host-*)
+    'sanctum': 'sanctum.html',
+    'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -201,6 +210,9 @@ DETERMINISTIC = {
     '91-probe.js', '92-camera.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
+    '8aq0-sanctum-plan.js', '8aq1-sanctum-kept.js', '8aq2-sanctum-skins.js',   # targets/sanctum: KRAND-hashed records, no rng()
+    '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
+    '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
 }
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
@@ -357,12 +369,21 @@ def build_one(target, do_checks, assert_origin):
     # (tools/textures/matlib_pack.py, SIDECAR PACKS): a page is then its code alone, not its code plus a copy of the
     # same maps. --inline-packs puts them back in every page (one self-contained file each, as before 2026-10-07).
     side = None if '--inline-packs' in sys.argv else {}
-    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'ancients', side=side)
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'ancients', side=side, own=True)   # own: the Sanctum target's families (materials.json `own`)
     order = sorted(order + [MATLIB_PACK])
     if target in INTERIOR_TARGETS:
         extra = [INTERIOR_BUNDLE]
         bodies[INTERIOR_BUNDLE] = interior_bundle()
         for d, f in INTERIOR_CORE:
+            with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
+                bodies[f] = fh.read()
+            extra.append(f)
+        order = sorted(order + extra)
+    if target in TAGS_TARGETS:
+        extra = []
+        for d, f in TAGS_CORE + TARGET_READS.get(target, []):
+            if f in bodies:
+                continue
             with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
                 bodies[f] = fh.read()
             extra.append(f)

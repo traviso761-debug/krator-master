@@ -4,6 +4,18 @@ The shareable gallery of every built world, in four parts (below); it starts at 
 
 It is shared as anyone-with-the-link.
 
+## Cards for builds in their own artifacts (2026-10-20)
+
+The owner (2026-10-20): a build published as its own artifact gets a card in the parts like any other, under its letter in
+its section, that opens its artifact (a new tab), not a link in the list at the top. `LINKED` in `build_gallery.py`
+names them (the Eternian kit under Building kits, in A–H; Longsong under Settlements, in I–S), and the Throne's eleven
+stations are a section of their own, **The Throne**, a card each in station order ("Throne 1 · the plume's edge"), every
+one opening the Throne Stations artifact. **Korona**'s six stations are a section of their own too (section key
+`korona` in their `ENTRIES` lines). A card for another artifact carries `href` and weighs nothing in `split_site.py`;
+both new sections go to Krator Biomes and Objects with `--alone`. The top list keeps the scale model, the tongues, the
+two labs, the Ancients and the other parts. Published the same day by editing the live indexes in place: A–H version 91,
+I–S 26, S–Z 15, Biomes and Objects 24.
+
 ## Four artifacts, the worlds by the alphabet (2026-10-16)
 
 The owner (2026-10-16): the world parts are split alphabetically and titled by their range. Today:
@@ -17,7 +29,7 @@ One artifact version holds 256 MiB and no file over 16 MiB (build.py writes no f
 `tools/textures/matlib_pack.py` PART_LIMIT). After `build_gallery.py`:
 
 ```
-python3 gallery/split_site.py --alpha --alone "biome,objects=Krator Biomes and Objects"   --urls "https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z,https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM"   --link "Krator Biomes and Objects=https://claude.ai/artifact/CaKSU16sowMsexa3djES5g"
+python3 gallery/split_site.py --alpha --alone "biome,throne,korona,objects=Krator Biomes and Objects"   --urls "https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z,https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM"   --link "Krator Biomes and Objects=https://claude.ai/artifact/CaKSU16sowMsexa3djES5g"
 ```
 
 `--alpha` sorts the world and kit pages by name (a leading "The" or "A" ignored), fills as few parts as fit under 250 MB,
@@ -78,7 +90,7 @@ The Ancients kit's pages (`kits/ancients/`, but not its arcologies) are the sect
 ## Longsong: its own artifact (2026-10-20)
 
 Longsong (`settlements/longsong`) is published as its own artifact, https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY,
-and every part's index links it (a section after the Animation Lab; `index.template.html` carries it). It is about 69 MB:
+and Krator Worlds I–S lists it under Settlements as a card that opens it (`LINKED`, 2026-10-20; it was a link at the top). It is about 69 MB:
 the page, its four texture packs (Longsong's two, the Oidong kit's, and since 2026-10-20 the Xanadu kit's for the valley's
 villages) and the dressed people's pieces (`dist/kchar/`, 52 files, 47 MB), and Krator Worlds
 I-S, where it would sort, was at 245 MiB (the owner chose its own artifact over a re-split into four parts). `ELSEWHERE`
@@ -92,6 +104,20 @@ galleries, the festival's four-week cycle, the farm year, the herds' gait, the v
 turning windmills; the page alone (its packs and `kchar/` unchanged). The Xanadu kit's two pages went with it, each with
 the kit's new pack: Krator Worlds S–Z version 13 (`worlds/xanadu-kit.html`) and A–H version 89 (`worlds/erewhon.html`),
 bundled by `build_gallery.bundle()` alone (no full gallery rebuild), their indexes unchanged.
+
+## The Eternian kit: its own artifact (2026-10-20)
+
+The Eternian kit (`kits/eternian`) is published as its own artifact, https://claude.ai/artifact/VahvUzsCKyDZjtoZBu5Txu,
+and Krator Worlds A–H lists it under Building kits as a card that opens it (`LINKED`, 2026-10-20; it was briefly a link at the top). It is about 24 MB (the page
+and its two library packs), and Krator Worlds A–H, where it would sort, held about 232 MiB. `ELSEWHERE` keeps it out of
+the parts. To update: `python3 build.py` in the build, then publish `dist/eternian.html` to that URL with
+`eternian.tex.eternian.js` and `eternian.tex.eternian-2.js` beside it (one call). Published private: a gallery viewer
+opens it only once the owner shares it (the page's Share menu).
+Version 1 (2026-10-20, `main` at 75cc2b140). The same day the four parts' live indexes were edited in place for the link
+(A–H version 90, I–S 25, S–Z 14, Biomes and Objects 23) and their Ancients line now counts 63 pages. The Ancients and the
+Port went to version 5 (three calls, every page and both packs from `main` at 75cc2b140): the Sanctum (`arc-sanctum`) and
+Plymouth and Arcoindian I as the Eternal State keeps them (`arc-kept`) added under Arcologies, Plymouth's and Arcoindian
+I's quality pass, the shared pack with the Sanctum's sets (7.9 MB).
 
 ## The Throne: its own artifact (2026-10-07)
 

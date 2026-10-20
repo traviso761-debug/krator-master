@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1767,
+    887
+   ],
+   "seam_after": [
+    1.406,
+    0.921
+   ],
+   "seam_before": [
+    0.734,
+    1.589
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.2,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.12,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "eternian/face-frieze",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   10,
+   5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "eternian_face-frieze.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `patterns/eternian/face-frieze` (a carved Deco relief of closed-eyed faceted faces)",
+  "reuse": "friezes of the Sanctum's podium, the gate pylons and the ministries; tinted pale stone for the State, bronze for the court",
+  "sha1": "ce4dbed9f187fe66ca1367d757c09e8ceeb3681d"
+ }
+}

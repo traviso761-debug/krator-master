@@ -28,7 +28,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `yuni.tex.yuni.js` | <1 |  |
+| `yuni.tex.yuni.js` | 12087 **big** |  |
 
 ## src/
 
