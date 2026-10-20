@@ -2550,6 +2550,14 @@ for gid, (slot, body, label, fn) in sorted(GARMENTS.items(), key=lambda kv: laye
     if body != BODY or (ONLY and gid not in ONLY): continue
     o = build(gid, label, fn(), slot)
     if o: made[gid] = {'slot': slot, 'label': label}
+# a garment of the same rank as an item worn over its under-layers (layers.OVER) was built before it: built again, so
+# its higher parts settle over that item too (the lorica's cloak over the pteruges, which lie over its tunic's skirt)
+for gid in list(made):
+    slot, body, label, fn = GARMENTS[gid]
+    if gid not in layers.OVER and any(o in layers.OVER and o in made and layers.rank(o, s) == layers.rank(gid, slot)
+                                      for o, s in layers.worn_with(gid, BODY).items()):
+        if bpy.data.objects.get(gid): bpy.data.objects.remove(bpy.data.objects[gid])
+        build(gid, label, fn(), slot)
 print('MADE', json.dumps(made))
 
 if RENDER:
