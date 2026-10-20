@@ -9,7 +9,7 @@
 //   mantle's hem (and a giant's lower arms, 10-13; the seat, 14-15). kcA / kcB: the capsules' ends in the skeleton's space, kcA.w the radius (_leg_caps).
 // - kcT > 0 (trousers or a skirt under a top that closes round the waist, kit item 'tucks'): the band above the hips
 //   drawn in toward the body's axis by up to kcT, so a waistband stays under the top in any pose.
-// - kcS > 0 (trousers under a loose top that reaches below the knees, kit item 'long'): below the hips drawn in to
+// - kcS > 0 (trousers under a loose top; to its hem, kcSH, unless it reaches below the knees, kit item 'long'): below the hips drawn in to
 //   within kcS of the legs' capsules (the first six: thighs, shins, feet), so wide ones stay under the robe.
 shader_type spatial;
 render_mode cull_disabled;
@@ -30,7 +30,9 @@ uniform vec3 kcH;
 uniform float kcP = 0.0;
 uniform float kcL = 0.0;
 uniform float kcT = 0.0;
+const float BACK_DEPTH = 0.01;
 uniform float kcS = 0.0;
+uniform float kcSH = 1000.0;   // the top's hem, of the hip-to-ankle length: the squeeze stops there (1000: all the way)
 // how far a fully bent knee's corner stands out of its two capsules
 const float KNEE = 0.04;
 
@@ -85,6 +87,8 @@ void vertex() {
 		float best = 1e9;
 		vec3 bq = vec3(0.0);
 		float br = 0.0;
+		float bt = 0.0;
+		int bi = 0;
 		for (int i = 0; i < 6; i++) {
 			if (kcA[i].w <= 0.0) {
 				continue;
@@ -99,11 +103,20 @@ void vertex() {
 				best = l - r;
 				bq = q;
 				br = r;
+				bt = st;
+				bi = i;
 			}
 		}
+		// how far down the leg (thigh, then shin, then foot), against the top's hem (pushOut in 50-figure.js)
+		int di = bi < 2 ? bi : bi < 4 ? bi - 2 : bi - 4;
+		float lt = length(kcB[di].xyz - kcA[di].xyz);
+		float ls = length(kcB[di + 2].xyz - kcA[di + 2].xyz);
+		float dd = bi < 2 ? bt * lt : bi < 4 ? lt + bt * ls : lt + ls + bt * 0.1;
+		float hm = kcSH * (lt + ls);
+		float f = 1.0 - smoothstep(hm - 0.02, hm + 0.02, dd);
 		if (best > 0.0 && best < 0.15) {
 			vec3 d = VERTEX - bq;
-			VERTEX = bq + d * (br / length(d));
+			VERTEX = mix(VERTEX, bq + d * (br / length(d)), f);
 		}
 	}
 	if (kcT > 0.0) {
@@ -125,4 +138,8 @@ void fragment() {
 	NORMAL_MAP_DEPTH = nscale;
 	ROUGHNESS = rough;
 	METALLIC = metal;
+	// a back face drawn BACK_DEPTH further from the eye: where the cloth folds over itself its inside lay at the
+	// outside's depth and showed through it in patches (BACK_DEPTH in 50-figure.js); an inside nothing covers still shows
+	vec4 bc = PROJECTION_MATRIX * vec4(VERTEX.xy, VERTEX.z - BACK_DEPTH, 1.0);
+	DEPTH = FRONT_FACING ? FRAGCOORD.z : bc.z / bc.w;
 }

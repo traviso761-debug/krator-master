@@ -5,10 +5,10 @@
   labs); since 2026-10-20 the main lab carries them too (its stale `.morph.txt` files removed), and the Order's own lab
   keeps the older page. The fix is to split the lab by people or by body (one page per body, sharing the code) before more clothes come.
 - **Trousers under a mid-calf hem look thin.** Under a loose top that reaches below the knees (kit item `long`) the
-  figure draws trousers in to 6 mm outside the legs' collision capsules (`50-figure.js` SQUEEZE, and the twin's shader),
+  figure draws trousers in to 8 mm outside the legs' collision capsules (`50-figure.js` SQUEEZE, and the twin's shader),
   which are slimmer than the calves; under an ankle-length robe that is hidden, but below a hem at mid-calf the shins
-  show thin (the owner, 2026-10-19, on Xanadu's jama, now cut to the ankle). A long top with a shorter hem needs the
-  squeeze limited to what the hem covers, or the skin's own radius.
+  show thin (the owner, 2026-10-19, on Xanadu's jama, now cut to the ankle). A shorter top's squeeze already stops at
+  its hem (kit item `hem`); a long one's could too, if the boots' squeeze (`kcSF`) followed it.
 - **Merged garments hide no skin in Godot yet.** `make_mpfb.py --merge` (the Order's and Xanadu's clothes) packs the new
   items' own blend shapes but does not remake the base's cover regions (`base.gshapes.bin`): in the Godot twin the skin
   under them is still drawn (it is hidden on the page, which reads `hide` from kit.json). The next whole build

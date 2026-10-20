@@ -799,6 +799,21 @@ def covered(BP, BT, path, out=0.025, inward=0.02):
     return np.nonzero(hit[BT].all(1))[0]
 
 
+def hem_depth(c, path, n=16):
+    """How far down the legs a top's hem reaches: from the hip joint, as a fraction of the hip-to-ankle length (0 at
+    the hip joint, 1 at the ankle). The median over n sectors round the hips of the lowest point in each, so a slit or a
+    longer back panel does not decide it. Under a loose top the figure draws trousers in to the legs down to a little
+    above it (50-figure.js kcSH), where it hides them: the festive shirt's hem showed wide trousers through it"""
+    v = all_triangles(path)[0]
+    hip, ank = c.jpos[c.J['LeftUpLeg']], c.jpos[c.J['LeftFoot']]
+    v = v[(np.abs(v[:, 0]) < 0.22) & (v[:, 1] < hip[1])]
+    if not len(v):
+        return 0.0
+    a = np.floor((np.arctan2(v[:, 2] - hip[2], v[:, 0]) + np.pi) / (2 * np.pi) * n).astype(int) % n
+    lows = [v[a == k, 1].min() for k in range(n) if (a == k).any()]
+    return round(float(np.clip((hip[1] - np.median(lows)) / (hip[1] - ank[1]), 0.0, 1.2)), 3)
+
+
 def encloses(c, path, rise=(0.02, 0.08), n=24):
     """whether a top closes all round the body just above the hips (rays out from the hips' vertical axis at two
     heights, all but one of each ring meeting it), so trousers or a skirt worn under it can be tucked in: an open
@@ -1199,6 +1214,8 @@ def main():
             if mods.split_lower(os.path.join(pieces, it['id'] + '.glb'), os.path.join(pieces, it['id'] + '.sleeves2.glb'),
                                 cl['spec'].get('lower', [])):
                 entry['sleeves2'] = 'pieces/%s/%s.sleeves2.glb' % (name, it['id'])
+        if cl and cl['spec'].get('hips'):
+            print('%-8s %s: %d vertices pinned to the hips' % (name, it['id'], mods.pin_hips(os.path.join(pieces, it['id'] + '.glb'), cl['spec']['hips'])))
         if cl and cl.get('out'):
             entry['cloth'] = cl['out']
         if culture_of(it['id']):
@@ -1217,6 +1234,8 @@ def main():
             entry['loose'] = True          # the figure pushes its vertices out of the legs (50-figure.js clothPush)
             if it['slot'] == 'torso' and all_triangles(os.path.join(pieces, it['id'] + '.glb'))[0][:, 1].min() < c.jpos[c.J['LeftLeg']][1]:
                 entry['long'] = True       # below the knees: trousers under it are drawn in to the legs (KCHAR squeeze)
+            if it['slot'] == 'torso':
+                entry['hem'] = hem_depth(c, os.path.join(pieces, it['id'] + '.glb'))
         pts = np.array(dg.get(it['id'], []), float)
         if len(pts):
             # Blender world (Z up) -> glTF (Y up: x, z, -y) -> half a turn

@@ -443,8 +443,10 @@ trousers (at 2 cm a stride's knee came through a deel's front; trousers stand fu
 and still do with cloth off (no swing then: each frame starts from the rigid rest). A top that closes round the waist
 (kit item `tucks`, `make_mpfb.py encloses()`: rays out from the hips meet it all round; an open cloak or a cropped top
 does not) has the trousers or skirt under it tucked: their band above the hips drawn in toward the body's axis by up
-to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top that reaches below the knees (kit item
-`long`: a robe, the kimono) trousers below the hips are drawn in to within 8 mm of the legs' capsules (their
+to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top trousers below the hips are drawn in
+to within 8 mm of the legs' capsules, all the way down under one that reaches below the knees (kit item `long`: a robe,
+the kimono), else down to its hem (kit item `hem`, `make_mpfb.py hem_depth`: a fraction of the hip-to-ankle length,
+measured down the leg, so a raised thigh keeps it; `kcSH`), below which they are as wide as they are (their
 tapered radii; each vertex to its nearest capsule only: drawn to all six, a shin's was pulled into a ball round the
 knee and the inside of each leg toward the other, and the court's legs came out thin), so wide ones (harem pants)
 stay under it (`kcS`): at one radius per capsule they sank into the calves
@@ -453,6 +455,12 @@ top are drawn in to within 1.4 cm (`kcSF`; Godot sets `kcS` on the feet part), w
 cuffs came through the kimono's hem at the shins. Breeches and braccae have legs, so like trousers they are not
 `loose` and their weights do not pool below the crotch (`make_mpfb.py hangs`): marked as skirts, the Republic's
 breeches and the giants' braccae were pushed off the thighs and swung as one sheet.
+**A garment's back faces** are drawn 1 cm further from the eye than they are (`BACK_DEPTH`, the fragment's depth; the
+twin's shader too): where the push or a chain folds the cloth over itself its inside lay at the outside's depth and
+showed through it in blue-grey patches (a shirt over the hips in a walk, the court robe's back); an inside nothing
+covers (in a sleeve, under a hem) still shows. **Belts round the hips** and what hangs from them (`make_garments.py`
+parts named `_belt`, `_trophy`; the `.cloth.json`'s `hips`) are weighted to the hips alone (`mods.pin_hips`): from
+the body they took the thighs' weights, and the chief's stack of four sheared into fins in a stride.
 **Headgear** moves with the head: `make_mpfb.py head_weights` gives every vertex of a head item above the neck the
 Head joint's weight alone (MakeHuman weights a garment from the skin nearest it, so a broad brim, a wing or an ear
 flap took the shoulders' and arms' weights and bent as they moved), and so does every piece of it that reaches no

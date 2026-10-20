@@ -1477,12 +1477,14 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 		pad = 0.02 + (0.035 if legs != null and not legs.get("loose", false) else 0.0)
 	pm.set_shader_parameter("kcP", pad)
 	pm.set_shader_parameter("kcT", TUCK if slot0 == "legs" and top != null and top.get("tucks", false) else 0.0)
-	# trousers under a loose top that reaches below the knees are drawn in to the legs (SQUEEZE in 50-figure.js)
-	var squeeze: bool = slot0 == "legs" and top != null and top.get("loose", false) and top.get("long", false) \
+	# trousers under a loose top are drawn in to the legs (SQUEEZE in 50-figure.js): all the way under one that reaches
+	# below the knees, else down to its hem (kit item hem)
+	var squeeze: bool = slot0 == "legs" and top != null and top.get("loose", false) \
 		and legs != null and not legs.get("loose", false)
 	# boots under one, whatever the legs wear (SQUEEZE_FEET)
 	var long_top: bool = top != null and top.get("loose", false) and top.get("long", false)
 	pm.set_shader_parameter("kcS", SQUEEZE if squeeze else SQUEEZE_FEET if part["slot"] == "feet" and long_top else 0.0)
+	pm.set_shader_parameter("kcSH", float(top.get("hem", 0.0)) if squeeze and not long_top else 1000.0)
 	_push_mats.append(pm)
 	return pm
 

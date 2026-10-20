@@ -706,6 +706,39 @@ def fit_four(item_path, flesh_path, ranges):
     return moved
 
 
+def pin_hips(item_path, ranges):
+    """the vertices in ranges (of _VIDX: belts round the hips and what hangs from them, the .cloth.json's 'hips')
+    weighted to the Hips joint alone, so a belt rides the pelvis instead of shearing with the thighs. Returns how many
+    vertices it moved"""
+    j, b = glbio.read_glb(open(item_path, 'rb').read())
+    b = bytearray(b)
+    moved = 0
+    for names, at, P, V in _skinned(j, b):
+        if V is None or 'Hips' not in names:
+            continue
+        want = np.zeros(len(V), bool)
+        for lo, hi in ranges:
+            want |= (V >= lo) & (V < hi)
+        if not want.any():
+            continue
+        for key, val in (('JOINTS_0', names.index('Hips')), ('WEIGHTS_0', None)):
+            a = j['accessors'][at[key]]
+            v = j['bufferViews'][a['bufferView']]
+            dt = glbio.CT[a['componentType']]
+            off = v.get('byteOffset', 0) + a.get('byteOffset', 0)
+            if v.get('byteStride') not in (None, np.dtype(dt).itemsize * 4):
+                raise SystemExit('mods.py: strided skin attributes')
+            A = np.frombuffer(bytes(b), dt, a['count'] * 4, off).reshape(-1, 4).copy()
+            if val is None:
+                val = np.iinfo(dt).max if a.get('normalized') else 1.0
+            A[want] = 0
+            A[want, 0] = val
+            b[off:off + A.nbytes] = A.tobytes()
+        moved += int(want.sum())
+    _write(item_path, j, bytes(b), {})
+    return moved
+
+
 def split_lower(item_path, sleeve_path, ranges):
     """a four-armed top's lower sleeves and armbands (ranges of _VIDX) as a piece of their own: sleeve_path gets the
     GLB with only their triangles, item_path keeps the rest. A cybernetic pair wears the top without them (kit item

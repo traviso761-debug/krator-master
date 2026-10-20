@@ -102,6 +102,12 @@ area you are about to change.
   out left and right and the cloth split open round the knee. Blend the way out toward the leg's outward side the deeper
   the vertex lies (`(1 - d/r)^2`). Find this kind of fault with a CPU replay of the shader on `boneTransform` positions
   and a ray from each skin vertex out of its limb; pushing along the cloth's own normal measured worse.
+- **Blue-grey patches on a shirt or robe in a stride, trousers seeming to show through** → the cloth folded over itself
+  and its back faces lay at the front faces' depth (DoubleSide). Check by drawing the material FrontSide: clean means
+  it is this. Draw back faces a centimetre further from the eye (fragment depth from the view position); widening the
+  push or squeezing the trousers changed nothing.
+- **Belts round the hips flaring into fins** → they took the thighs' skin weights from the body; weight them to the
+  hips alone (`.cloth.json` `hips`, `mods.pin_hips`).
 - **A flap that poofs out in a stride** → the per-vertex push sends cloth between the thighs out sideways; a garment of
   flaps only is not pushed, its chains keep it off the legs.
 - **Fitting order between items** → each garment is fitted alone, so an under-item's flap 3 cm off the body stood

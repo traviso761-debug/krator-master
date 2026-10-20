@@ -883,7 +883,16 @@ def build(gid, label, parts, slot='torso'):
         if '_sleeve2_' in p.name or '_armband2_' in p.name:
             lower.append([o - bisect.bisect_left(gone, o), o + n - bisect.bisect_left(gone, o)])
         o += n
-    json.dump({'garment': gid, 'verts': off - len(gone), 'parts': specs, 'arms': 4 if gid in FOUR else 2, 'gone': gone, 'lower': lower},
+    # the belts round the hips and what hangs from them, as ranges too: make_mpfb.py weights them to the hips alone
+    # (from the body they took the thighs' weights, and in a stride each ring sheared into a fin: the chief's stack)
+    hips, o = [], 0
+    for p in parts:
+        n = p.P.shape[0] * p.P.shape[1]
+        if '_belt' in p.name or '_trophy' in p.name:
+            hips.append([o - bisect.bisect_left(gone, o), o + n - bisect.bisect_left(gone, o)])
+        o += n
+    json.dump({'garment': gid, 'verts': off - len(gone), 'parts': specs, 'arms': 4 if gid in FOUR else 2, 'gone': gone, 'lower': lower,
+               'hips': hips},
               open(os.path.join(d, gid + '.cloth.json'), 'w'), indent=1)
     print('GARMENT', gid, len(me.vertices), 'verts', len(me.polygons), 'quads,', sum(len(c['chains']) for c in specs), 'chains ->', d)
     return obj
@@ -2063,7 +2072,8 @@ for b, sex in (('male', 'm'), ('female', 'f')):
     def _ytun(sex=sex):
         gid = 'yuni_%s_peasant_boubou' % sex
         hem = CROTCH - 0.16 if sex == 'm' else HIPS[2] - 0.06
-        return [torso_tube(gid, TOP, hem, 0.016, MUDCLOTH(), hang_from=CHEST - 0.04, hang_side=WAIST, flare=0.2, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)] + \
+        # it falls from the waist and flares a little (from the chest, at 0.2, it stood out before the belly like a bell)
+        return [torso_tube(gid, TOP, hem, 0.016, MUDCLOTH(), hang_from=WAIST, hang_side=WAIST, flare=0.1, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)] + \
             sleeves(gid, 'elbow', 0.024, P('mud', 0.06, [B('bottom', 0.0, 0.03, 'bogolan', 'sahel', 'mud', 0.04)]), ease_end=0.05, rows=6)
     GARMENTS['yuni_%s_peasant_boubou' % sex] = ('torso', b, 'Mud-cloth boubou' if sex == 'm' else 'Mud-cloth blouse', _ytun)
 
