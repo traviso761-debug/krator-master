@@ -452,6 +452,8 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 		var dye0 = rec.get("dye", {}).get(part["slot"])
 		m2.albedo_color = Color(dye0) if dye0 != null else Color.WHITE
 		return _garment(m2, part, rec)
+	if part["role"] == "armour" and part["slot"] == "feet":
+		return _garment(m2, part, rec)                  # boots: the squeeze under a long robe, no push
 	if role == "skin":
 		m2.albedo_color = _lin(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", float(gain.get("skin", 1.0)))
 	elif role == "hair":
@@ -1148,6 +1150,7 @@ func _is_loose(part: Dictionary) -> bool:
 # a top or trousers as kchar_push.gdshader: the imported material's look, and the push and tuck (pushOut in 50-figure.js)
 const TUCK := 0.025
 const SQUEEZE := 0.008
+const SQUEEZE_FEET := 0.014
 func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMaterial:
 	var pm := ShaderMaterial.new()
 	pm.shader = PUSH_SHADER
@@ -1169,17 +1172,19 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 			top = x
 		if x["id"] == rec.get("armour", {}).get("legs"):
 			legs = x
-	# a loose top pushes 2 cm further, so a robe's hem lies over the skirt it covers, and 2 cm more over trousers
+	# a loose top pushes 2 cm further, so a robe's hem lies over the skirt it covers, and 3.5 cm more over trousers
 	# (PAD_TOP, PAD_OVER in 50-figure.js)
 	var pad := 0.0
 	if loose and part["slot"] == "torso":
-		pad = 0.02 + (0.02 if legs != null and not legs.get("loose", false) else 0.0)
+		pad = 0.02 + (0.035 if legs != null and not legs.get("loose", false) else 0.0)
 	pm.set_shader_parameter("kcP", pad)
 	pm.set_shader_parameter("kcT", TUCK if part["slot"] == "legs" and top != null and top.get("tucks", false) else 0.0)
 	# trousers under a loose top that reaches below the knees are drawn in to the legs (SQUEEZE in 50-figure.js)
 	var squeeze: bool = part["slot"] == "legs" and top != null and top.get("loose", false) and top.get("long", false) \
 		and legs != null and not legs.get("loose", false)
-	pm.set_shader_parameter("kcS", SQUEEZE if squeeze else 0.0)
+	# boots under one, whatever the legs wear (SQUEEZE_FEET)
+	var long_top: bool = top != null and top.get("loose", false) and top.get("long", false)
+	pm.set_shader_parameter("kcS", SQUEEZE if squeeze else SQUEEZE_FEET if part["slot"] == "feet" and long_top else 0.0)
 	_push_mats.append(pm)
 	return pm
 
@@ -1219,9 +1224,10 @@ func _leg_caps() -> void:
 		var re := 0.0
 		for cp in _caps:
 			if cp["a"] == ca and cp["b"] == cb:
-				# the radius at each end (a foot takes its shin's at the ankle, all along)
-				r = float(cp["rb"] if foot else cp["ra"]) + 0.01
-				re = float(cp["rb"]) + 0.01
+				# the radius at each end (a foot takes its shin's at the ankle, all along); an arm keeps one radius
+				# (its taper measured the deltoid, and the hard push crushed a tunic and its mantle together)
+				r = float(cp["r"] if i >= 6 else cp["rb"] if foot else cp["ra"]) + 0.01
+				re = float(cp["r"] if i >= 6 else cp["rb"]) + 0.01
 		if b < 0 or a < 0 or (i >= 10 and not four_arms):        # no such joints, or a two-armed giant's lower pair
 			r = 0.0
 			re = 0.0

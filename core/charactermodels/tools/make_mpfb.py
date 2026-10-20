@@ -1010,7 +1010,8 @@ def culture_of(iid):
 def hangs(it):
     """a made garment that hangs from the waist or shoulders (a tunic, coat, robe or skirt, not trousers): its legs'
     weights pool below the crotch, it is pushed out of the legs, and it hides no skin below half the body's height"""
-    return culture_of(it['id']) is not None and it['slot'] in ('torso', 'legs') and 'trousers' not in it['id']
+    return culture_of(it['id']) is not None and it['slot'] in ('torso', 'legs') \
+        and not any(w in it['id'] for w in ('trousers', 'breeches', 'braccae'))   # all three are legged
 LOOSE = {'mindfront_kimono', 'toigo_long_full_skirt', 'toigo_tiered_mini_skirt'}
 GRIP_STYLES = {'fist': _FIST,
                # a bow drawn with three fingers on the string, the thumb and little finger tucked

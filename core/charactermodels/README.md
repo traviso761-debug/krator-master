@@ -360,20 +360,25 @@ skinning (`pushOut` / `kchar_push.gdshader`, which in Godot also carries the gar
 cutoff, normal map), so a knee cannot come through between two chains, and out of the seat, so a robe's back covers
 the buttocks. Each capsule's radius runs from `ra` to `rb` along it (the thigh from about 12 cm at the hip to 8 cm
 at the knee, the shin from 8.6 cm at the calf to 5.3 at the ankle on the man): at one radius the calves and the tops
-of the thighs came through the robes. The upper arms and forearms are hard
+of the thighs came through the robes. The upper arms and forearms keep one radius (tapered, they drew a tunic's
+sleeve and the mantle over it into the same shell, and the mantle broke up jagged). They are hard
 capsules in the same pass (only what is inside them moves), so a raised arm lifts a mantle's or a cape's hem. The push is a soft
 shell, not a projection (a vertex d from the bone within r + 4 cm lands at r + d x 4 cm / (r + 4 cm)), so two tiers
 keep their order; a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
 torso garment's shell is 2 cm wider (at 1.2 cm a bent knee's thigh came through a gown's front), so a robe's hem
-lies over the skirt under it, and 2 cm wider again over
-trousers (which stand further out of the capsules than a skirt's chains). The chains collide the same way,
+lies over the skirt under it, and 3.5 cm wider again over
+trousers (at 2 cm a stride's knee came through a deel's front; trousers stand further out of the capsules than a skirt's chains). The chains collide the same way,
 and still do with cloth off (no swing then: each frame starts from the rigid rest). A top that closes round the waist
 (kit item `tucks`, `make_mpfb.py encloses()`: rays out from the hips meet it all round; an open cloak or a cropped top
 does not) has the trousers or skirt under it tucked: their band above the hips drawn in toward the body's axis by up
 to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top that reaches below the knees (kit item
 `long`: a robe, the kimono) trousers below the hips are drawn in to within 8 mm of the legs' capsules (their
 tapered radii), so wide ones (harem pants) stay under it (`kcS`): at one radius per capsule they sank into the calves
-and the court's legs read thin, and drawn in less (2.5 cm) they came out through the robes' knees.
+and the court's legs read thin, and drawn in less (2.5 cm) they came out through the robes' knees. Boots under such a
+top are drawn in to within 1.4 cm (`kcSF`; Godot sets `kcS` on the feet part), whatever the legs wear: the hero boots'
+cuffs came through the kimono's hem at the shins. Breeches and braccae have legs, so like trousers they are not
+`loose` and their weights do not pool below the crotch (`make_mpfb.py hangs`): marked as skirts, the Republic's
+breeches and the giants' braccae were pushed off the thighs and swung as one sheet.
 **Headgear** moves with the head: `make_mpfb.py head_weights` gives every vertex of a head item above the neck the
 Head joint's weight alone (MakeHuman weights a garment from the skin nearest it, so a broad brim, a wing or an ear
 flap took the shoulders' and arms' weights and bent as they moved); a hood's cowl, below, keeps following the neck.

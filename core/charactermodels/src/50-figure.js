@@ -97,7 +97,7 @@ function KCharFigure(body, sliders, load){
       if(part.role === 'armour' && (part.slot === 'torso' || part.slot === 'legs')){
         var it0 = itemByKey[part.key] || {};
         m.userData.pad = pushOut(m.material, it0.loose && part.slot === 'torso' ? PAD_TOP : 0, !!it0.loose, part.slot === 'legs');
-      }
+      } else if(part.role === 'armour' && part.slot === 'feet') pushOut(m.material, 0, false, false, true);   // boots: the squeeze only
       self.inner.add(m);
       live[id] = m;
       return m;
@@ -257,6 +257,8 @@ function KCharFigure(body, sliders, load){
           // and under a loose top that reaches below the knees (kit item long: a robe, the kimono) they are drawn in to
           // the legs, so wide ones (harem pants) stay under it
           pushU.kcS.value = top && top.loose && top.long && legs && !legs.loose ? SQUEEZE : 0;
+          // and boots under one, whatever the legs wear: their cuffs came through a kimono's hem at the shins
+          pushU.kcSF.value = top && top.loose && top.long ? SQUEEZE_FEET : 0;
           Object.keys(want).forEach(function(k){ var u = want[k].userData.pad; if(u && u.base) u.value = u.base + (legs && !legs.loose ? PAD_OVER : 0); });
           var p = self.pose = KCHAR.pose(skel, sliders, kit.style === 'mpfb' ? {} : rec.sliders, head && head.face), mj = null;
           if(mpfb){
@@ -735,7 +737,8 @@ function KCharFigure(body, sliders, load){
   var NCAP = 16, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
   var pushU = { kcA:{ value:capV() }, kcR:{ value:new Array(NCAP).fill(0) },
                 kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() },
-                kcT:{ value:0 }, kcS:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_OVER = 0.02, SQUEEZE = 0.008;
+                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_OVER = 0.035,
+      SQUEEZE = 0.008, SQUEEZE_FEET = 0.014;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
      toward the body's axis by up to TUCK (kcT), so a waistband stays under the top in any pose; under a loose top that
@@ -744,12 +747,12 @@ function KCharFigure(body, sliders, load){
      one (ra to rb): at one radius per capsule (a median of the leg's surface) the trousers sank into the calves and,
      the skin under them hidden, the court's legs read thin; a looser squeeze (2.5 cm) put them out through the robes'
      knees instead */
-  function pushOut(mat, pad, loose, legs){
+  function pushOut(mat, pad, loose, legs, feet){
     var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0 }, looseU = { value:loose ? 1 : 0 };
     mat.onBeforeCompile = function(sh, r){
       if(prev) prev(sh, r);
       sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcR = pushU.kcR; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcP = padU;
-      sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck; sh.uniforms.kcS = legs ? pushU.kcS : noTuck;
+      sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck; sh.uniforms.kcS = legs ? pushU.kcS : feet ? pushU.kcSF : noTuck;
       // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
       // cloth behind the knee; an arm's capsule (kcB.w 1) is hard: only what is inside it moves, to its surface. The
       // radius runs from kcA.w at a to kcR at b (a limb tapers: make_mpfb.py colliders ra, rb)
@@ -790,8 +793,9 @@ function KCharFigure(body, sliders, load){
       var cp = caps.filter(function(c){ return c.a === sh && c.b === (foot ? a : b); })[0];
       if(!cp || b === undefined || (i >= 10 && !self.fourArms)){ pushU.kcA.value[i].w = 0; return; }
       bones[a].getWorldPosition(cV).applyMatrix4(legInv); bones[b].getWorldPosition(cV2).applyMatrix4(legInv);
-      // the radius at each end (a foot takes its shin's at the ankle, all along)
-      var ra = foot ? cp.rb : cp.ra, rb = cp.rb;
+      // the radius at each end (a foot takes its shin's at the ankle, all along); an arm keeps one radius: its taper
+      // measured the deltoid into the upper arm's, and the hard push crushed a tunic and the mantle over it together
+      var ra = i >= 6 ? cp.r : foot ? cp.rb : cp.ra, rb = i >= 6 ? cp.r : cp.rb;
       pushU.kcA.value[i].set(cV.x, cV.y, cV.z, ra + 0.01); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, i >= 6 ? 1 : 0);
       pushU.kcR.value[i] = rb + 0.01;
     });
