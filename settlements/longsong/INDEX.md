@@ -21,7 +21,7 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `40-ls-plan.js` | 47 **big** | the site (PLAN.md section 1) (19); the rock: Longsong's hill (49); the ward and the grounds (71); the ways (85); the buildings (BLUEPRINT.md L0, L1-L4, R1-R3, LR (121); the sacred furniture of the grounds (187); the planted ground (the kit grows only here insi (205); the Vault (BLUEPRINT.md LV; LORE.md 6.15) (218); the people (the life layer's scaffold; README.md (296); zones (the inspector's words, the kit's mask) (430) |
 | `40b-ls-farms.js` | 13 | what the house needs (BLUEPRINT.md's numbers) (20); the fields outside the wall (ROOMS.md 5.1) (28); the gardens inside the wall (ROOMS.md 5.2) (42); the farm's works and marks (57); the cells: which strip, terrace, pool, bed or tr (79) |
 | `40c-ls-rooms.js` | 63 **big** | the shells (64-ls-monastery.js draws them; the r (58); L1: the base (two storeys under the rock top) an (70); L2: the School (storey 0, round the Debate Court (105); L3: the White Palace, lower (storey 1) (151); L4: the White Palace, upper (storey 2), the logg (178); R1: the Red Palace's first level (storeys 0-1) (203); R2: the Great Archive (storey 2) and the wings (230); R3: the Hall of Stillness, the Abbot, the Counci (244); the upper storeys (2026-10-20, the owner: the in (264); L0: the ward's buildings (ROOMS.md 2.2; 2026-10- (337) |
-| `40d-ls-sim.js` | 12 |  |
+| `40d-ls-sim.js` | 22 |  |
 | `40e-ls-kchar.js` | 2 |  |
 | `40h-ls-hamlets.js` | 3 |  |
 | `42-ls-world.js` | 1 |  |
@@ -32,13 +32,13 @@ From `core/terrain/` (shared; see `core/README.md`): `38-core-relief.js`
 | `64-ls-monastery.js` | 54 **big** | the outer wall, its towers and gates (18); the Great Gate: the parabolic arch between two p (39); the ward: the terraces' retaining walls, the ave (74); the Great Stair and the White Palace's base (L1) (106); the White Palace round the Debate Court (L2-L4) (162); the drum halls: the Assembly, the Hall of Hours, (200); the Red Palace (R1-R3) and its wings; the gilded (212); the Eastern Watch: the Archive's louvre tower (241); the Lower Gate and its paired drums (L1) (265); the rock top's other houses: the Closed Ward, th (274) |
 | `65-ls-marks.js` | 3 |  |
 | `66-ls-vault.js` | 41 **big** | THE PROCRASTINATOR (151); the lights' arrays for the shader (fixed after t (310); the Vault's checks (verify.py --assert) (315) |
-| `68-ls-life.js` | 18 |  |
+| `68-ls-life.js` | 19 |  |
 | `69-ls-figures.js` | 11 |  |
 | `84-ls-ground.js` | 9 | the water's records (core/water draws it: 89w-ls (88) |
 | `85-ls-farms.js` | 30 **big** | the farms' checks (verify.py --assert; 64's mona (232) |
 | `85h-ls-hamlets.js` | 11 |  |
 | `86-ls-far.js` | 2 |  |
-| `87-ls-interiors.js` | 20 |  |
+| `87-ls-interiors.js` | 21 |  |
 | `88-host-build.js` | 2 |  |
 | `89w-ls-water.js` | 7 | the water's checks (verify.py --assert; 64's mon (42) |
 | `89x-ls-night.js` | 10 |  |

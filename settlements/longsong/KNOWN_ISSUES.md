@@ -6,17 +6,21 @@
       and a turning pose: no dance clip in core/charactermodels yet, and the masks are plain shapes, not the deer, the
       skull and the black hat. The butter lamps are glows, not lamps in their bowls. (2026-10-20: the crowd now stands
       before the thangka, the tents are out of the walk graph.)
-- [ ] **The people indoors are a census, not walkers** (`40d`, `68`, `69`): the nearest 24 are figures, everyone else out
+- [ ] **The crowd's detail** (`40d`, `68`, `69`): the nearest 24 are figures, everyone else out
       to 170 m one of the 16 commonest outfits baked still and drawn instanced (core/charactermodels `KCharCrowd`,
       2026-10-20: standing, two strides of the walk, sitting cross-legged; a person whose outfit is not among the 16
       wears the commonest of their body and side), past that the placeholders. The baked looks have no faces of their
       own and do not sway; the strides alternate rather than play. People are kept apart where they are drawn (68: a
       shoulder's width, eased, half a metre at most), not by the sim, so two on one path still queue through each other's
       place in it. Their clips are the library's nearest (the cham on the walk, no dance clip; the masks plain shapes).
-      Indoors they are not drawn at all: the sim's indoor places are abstract (whoever is at one is hidden) and its indoor
-      legs are door edges, so no one walks the rooms' floors or the stairs, and a stair room's storeys are not joined for
-      them. A walk graph of the rooms (40c's doors, the stair rooms stacked) and indoor places that are rooms is the next
-      step. The world day is 72 real minutes, so a walk across the ward takes most of a world hour.
+      Indoors (2026-10-20) they walk the rooms: the walk graph holds every room of the palaces and the ward (40c's doors,
+      the stair rooms stacked, a building's stair landings), the indoor places are rooms with spots on their floors, and
+      a room's people are drawn when its floor is (the cutaway's, the eye's: `LSIXD.drawnAt`). Still: the rooms' paths
+      run centre to door to centre, not round the furniture, so a walker crosses a table; 5 parts of the palaces the
+      records leave unjoined (the loggia, the hours and observatory rooms, the eastern watch's stair, a stair house of the
+      Red Palace) are joined by a patch to the nearest room of their building (`LSS.patched`), not by a door the records
+      name; and the vault's rooms stay one node each. The world day is 72 real minutes, so a walk across the ward takes
+      most of a world hour.
 - [ ] **The interiors** (PLAN.md P4; 2026-10-20 a second pass): every storey the shells draw has its rooms (653: the
       White Palace's fourth and fifth storeys, the Red Palace's second, fourth and fifth, the wings' every storey; the
       ward's buildings and the Hall of Forms with the Room of Slow Water), the depths' pieces are the placer's (57a's

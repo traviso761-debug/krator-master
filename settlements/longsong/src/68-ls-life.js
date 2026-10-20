@@ -3,7 +3,8 @@
 // actor of core/simulation (40d-ls-sim.js declares the world: the walk graph, the places, the roles). Where each one is,
 // and whether walking or arrived, is SIM's answer (SIM.pose, a pure function of the clock's motion time), never decided
 // here: SIM steps once a world minute and jumps when the hour slider moves. Out of sight while walking through a room or
-// under the rock (LSS.hidden), and at an indoor place. This fragment draws them as robed figures (placeholders until the
+// under the rock (LSS.hidden), and at an indoor place, unless that room's floor is drawn (LSIXD.drawnAt: the cutaway's
+// floor or the one the eye stands on), where they walk its rooms and stairs (40d's interior graph) and stand at its spots. This fragment draws them as robed figures (placeholders until the
 // page draws their core/charactermodels records: KNOWN_ISSUES.md) and animates what each activity looks like:
 //   DRILL     the operatives' forms at lightning speed, each strike leaving its afterimages (three ghosts, fading)
 //   the master of arms in the drill ground's middle: still, and every few seconds he is simply somewhere else (an
@@ -41,6 +42,8 @@ const PEOPLE_DRAWN=(function(){
  // SIM: declared on the first frame (core/simulation loads after this fragment), then stepped a world minute at a time
  const SIMS={on:false,last:0,actors:null,err:null},PLACE=new Map(LS.PLACES.map(p=>[p.id,p]));
  const clk=()=>typeof _hostH!=='undefined'&&_hostH&&_hostH.clock;
+ // the interiors' drawing (87 loads after this fragment: read on a frame, never before its declaration has run)
+ const IXD=()=>{try{return LSIXD;}catch(e){return null;}};
  function simStart(){if(SIMS.on||SIMS.err)return SIMS.on;const C=clk();if(!C||typeof SIM==='undefined')return false;
   try{LSS.init(C);SIM.jump();SIMS.last=SIM.minute();SIMS.actors=LS.PEOPLE.map(P=>SIM.get('actor',P.id));SIMS.on=true;}
   catch(e){SIMS.err=e;reportErr('people: core/simulation: '+(e.stack||e));}return SIMS.on;}
@@ -49,11 +52,13 @@ const PEOPLE_DRAWN=(function(){
  function simFrame(t){let n=0;while(SIMS.last<SIM.minute()&&n++<30){SIMS.last++;SIM.step();}if(SIMS.last<SIM.minute())SIMS.last=SIM.minute();
   let shown=0;for(let i=0;i<N;i++){const a=SIMS.actors[i],s=S[i];if(!a){s.shown=false;continue;}const q=SIM.pose(a,t);
    // on a leg (leg >= 0: walking, or at its very start) and inside a room or the rock: out of sight
-   s.shown=!q.hidden&&!(q.leg>=0&&LSS.hidden(q.x,q.y,q.z));
+   // and in a room whose floor is drawn (the cutaway's, the eye's: LSIXD.drawnAt): in sight again, on the room's floor
+   const out_=q.hidden||(q.leg>=0&&LSS.hidden(q.x,q.y,q.z)),inD=out_&&IXD()&&IXD().drawnAt(q.x,q.y,q.z);
+   s.shown=!out_||inD;
    const act=q.moving?'MOVE':a.activity;if(act!==s.act)s.korT=null;s.act=act;s.place=a.place?PLACE.get(a.place)||null:null;
    if(!s.shown)continue;shown++;s.x=q.x;s.z=q.z;
    // on the ward's terraces the drawn ground (the stage's relief) rather than the terrace's datum
-   s.y=LS.inWard(q.x,q.z)&&Math.abs(q.y-LS.wardY(q.z))<.6?terrainH(q.x,q.z):q.y;
+   s.y=!inD&&LS.inWard(q.x,q.z)&&Math.abs(q.y-LS.wardY(q.z))<.6?terrainH(q.x,q.z):q.y;
    // facing: walking, the way; arrived, the place's middle (the drill faces the master; debaters their partner)
    const pl=s.place,fc=pl&&(pl.face||(pl.x!=null?[pl.x,pl.z]:null));s.ry=q.moving||!fc?q.h:Math.atan2(fc[0]-q.x,fc[1]-q.z);   // a place may name what it faces (the forecourt: the thangka)
    if(act==='KORA'&&s.korT==null)s.korT=t;}

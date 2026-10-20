@@ -4,11 +4,15 @@
 //   1. the host binding: the page's world clock (core/clock) gives SIM its hour, day and motion time
 //   2. the NAVIGATION LAYER 'pedestrian' (LSS.graph): the ward a grid of 4 m cells on its three terraces, the buildings'
 //      footprints, the court's carved walls and its pools taken out, the terraces crossed only on the avenue; the Great
-//      Stair's three flights and their landings; the Debate Court's open floor on the rock; and 'door' edges into the
-//      rooms (the palaces' ranges, the Assembly Hall, the deep stair down to the open vault and the Procrastinator), walked
-//      out of sight (LSS.hidden)
+//      Stair's three flights and their landings; the Debate Court's open floor on the rock; the deep stair down to the open
+//      vault and the Procrastinator; and the INTERIOR (O.interior): every room of the palaces and the ward a node
+//      ('R:'+id) at its floor, joined by the doors 40c records (a shared door a node of its own), a stair room to the one
+//      over it, a door out to the node past its threshold (a room, the street, or the stair landings 'L:' a building's
+//      doors to one stair share, storey over storey); a part the records leave cut off is joined to its building's
+//      nearest room (O.patched). Walked out of sight (LSS.hidden) unless the room's floor is drawn (68, LSIXD.drawnAt)
 //   3. the PLACES, from the plan's (LS.PLACES): each activity's place, its door the nearest node, its spots the free nodes
-//      within its reach (no one is stood in a wall)
+//      within its reach (no one is stood in a wall); an indoor place is its rooms (ROOMS_OF), its door the first room's
+//      node and its spots on their floors (roomSpots)
 //   4. the records (activities, factions, orgs, roles from LS.ROLES and LS.SCHEDULES), through SIM.load
 //   5. the PEOPLE: one actor per LS.PEOPLE record, by its id, at home where its role sleeps.
 // No rule lives in the drawing: 68-ls-life.js reads SIM.pose and draws. Declared once, on the first frame (LSS.init):
@@ -58,32 +62,120 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
   edge('gate-in',near(LG.x,LG.z+LG.d/2+2,ROCKY,'court').id,'door',2);
   // the rooms: door edges from the court's edge into the ranges and the halls, and the deep stair down (walked unseen)
   const room=(id,x,y,z,from)=>{node(id,x,y,z,'door');edge(typeof from==='string'?from:near(from[0],from[1],ROCKY,'court').id,id,'door',2);};
-  room('in-front',0,ROCKY,K.z0-4,[0,K.z0+2]);room('in-west',K.x0-6,ROCKY,51,[K.x0+2,51]);room('in-east',K.x1+6,ROCKY,51,[K.x1-2,51]);
-  room('in-back',0,ROCKY,K.z1+5,[0,K.z1-2]);
-  const AS=P.building('assembly');room('in-assembly',AS.x,ROCKY,AS.z,'in-back');
-  room('in-roof',-58,P.topY(WP),60,'in-west');
+  // (2026-10-20) the palaces and the ward's buildings are walked room by room: O.interior below. The depths keep their
+  // abstract stair (the deep stair's foot, the open vault, the wheel), reached from the Deep Stair's head in the Red Palace
   const VD=P.PLACES.find(q=>q.id==='vault'),WH=P.PLACES.find(q=>q.id==='wheel');
-  room('deep-stair',0,ROCKY-20,K.z1+8,'in-back');room('in-vault',VD.x,VD.y,VD.z,'deep-stair');room('in-wheel',WH.x,WH.y,WH.z-WH.r-4,'in-vault');
+  node('deep-stair',0,ROCKY-20,K.z1+8,'door');room('in-vault',VD.x,VD.y,VD.z,'deep-stair');room('in-wheel',WH.x,WH.y,WH.z-WH.r-4,'in-vault');
+  node('in-roof',-58,P.topY(WP),60,'door');
+  O.interior(nodes,edges,byId,node,edge);
   O._g={nodes,edges,byId,near};return O._g;};
+ // ---------------------------------------------------------------- the interiors in the walk graph (2026-10-20, the owner:
+ // "make walk graph record interior"). Every room of 40c (LS.ROOMS: the palaces', the ward's; not the depths', the roofs'
+ // or the open courts') a node at its middle on its floor (tag 'room'); every door between two rooms a node on its
+ // threshold (tag 'idoor') joined to both; a stair room joined to the next stair room up in its building whose box meets
+ // its own (the service stairs, the houses' stairs, the wings'). A door out of a building joins the nearest outside node
+ // on its level (the ward's cells, the court's floor, the base's top). A door out to a named stair, gallery or roof (the
+ // front range's west stair, the back stair, the Red Palace's stair...) joins that stair's landing on its storey (tag
+ // 'landing', at the middle of the doors that open on it); one stair's landings are joined storey to storey and its lowest
+ // to the nearest outside node. The Deep Stair's head joins the depths' stair; the west range's roof the roof terraces.
+ // What is still cut off after that (a gallery the plan names on one storey only) is joined to the nearest reached room
+ // or landing of its building, and counted: O.patched.
+ O.interior=function(nodes,edges,byId,node,edge){if(!P.ROOMS){O.patched=[];return;}
+  const R=P.ROOMS,outside=nodes.filter(q=>q.tag!=='door'),bld={};
+  const rooms=R.list.filter(r=>r.furnish!=='vault'&&!r.roof&&r.building!=='vault'&&r.id!=='wp.court');   // (the court: its own floor's nodes)
+  const rid=r=>'R:'+r.id,cx=r=>r.circle?r.circle.x:(r.x0+r.x1)/2,cz=r=>r.circle?r.circle.z:(r.z0+r.z1)/2;
+  const mk=(id,x,y,z,tag,b)=>{if(!byId[id])node(id,x,y,z,tag);bld[id]=b;return id;};
+  rooms.forEach(r=>mk(rid(r),cx(r),r.y,cz(r),'room',r.building));
+  // the doors between rooms (a shared door is one node, on both rooms' lists)
+  rooms.forEach(r=>r.doors.forEach(d=>{if(d.out)return;const q=R.byId[d.to];if(!q||!byId[rid(q)])return;
+   edge(rid(r),mk('D:'+d.id,d.x,r.y,d.z,'idoor',r.building),'door',2);}));
+  // the stairs: each stair room to the stair room over it in its building (their boxes meet), or, on a storey with none
+  // there, to the room the flight comes up into (the wings' third storey, the conservators' and the map room's), and
+  // the same down
+  const stairs=rooms.filter(r=>r.stair&&!r.circle),meets=(a,b)=>!b.circle&&Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0)>.5&&Math.min(a.z1,b.z1)-Math.max(a.z0,b.z0)>.5;
+  stairs.forEach(a=>{for(const dk of [1,-1]){const k=a.storey+dk,on=rooms.filter(b=>b.building===a.building&&b.storey===k&&meets(a,b));
+    const b=on.find(q=>q.stair)||(dk<0&&stairs.some(q=>q.building===a.building&&q.storey===k)?null:on[0]);if(b)edge(rid(a),rid(b),'stair',2);}});
+  // the room a door opens into from outside its own: the room a metre past its threshold, on the side the door is on
+  const roomAt=(x,y,z,not)=>{for(const q of rooms){if(q===not||Math.abs(q.y-y)>1.2)continue;
+   if(q.circle?Math.hypot(x-q.circle.x,z-q.circle.z)<q.circle.r:x>q.x0&&x<q.x1&&z>q.z0&&z<q.z1)return q;}return null;};
+  const beyond=(r,d)=>{let nx,nz;if(r.circle){nx=d.x-r.circle.x;nz=d.z-r.circle.z;const L=Math.hypot(nx,nz)||1;nx/=L;nz/=L;}
+   else{const s=[[Math.abs(d.x-r.x0),-1,0],[Math.abs(d.x-r.x1),1,0],[Math.abs(d.z-r.z0),0,-1],[Math.abs(d.z-r.z1),0,1]].sort((a,b)=>a[0]-b[0])[0];nx=s[1];nz=s[2];}
+   for(const k of [1.2,2.4,3.6])for(const q of [roomAt(d.x+nx*k,r.y,d.z+nz*k,r)])if(q)return q;return null;};
+  const nearOut=(x,y,z,max,dyMax)=>{let bn=null,bd=max;for(const q of outside){if(Math.abs(q.y-y)>dyMax)continue;const d=Math.hypot(q.x-x,q.z-z);if(d<bd){bd=d;bn=q;}}return bn;};
+  // the doors out: to the ground outside, the depths, the roof, or a named stair's landing
+  const CORE=new Map(),norm=s=>s.replace(/\s*\([^)]*\)/g,'').replace(/^the /i,'').trim();
+  rooms.forEach(r=>r.doors.forEach((d,j)=>{if(!d.out)return;const id=mk('O:'+r.id+'#'+j,d.x,r.y,d.z,'idoor',r.building);edge(rid(r),id,'door',2);
+   if(/Deep Stair/.test(d.to)){edge(id,'deep-stair','stair',2);return;}
+   if(/roof/.test(d.to)&&r.building==='white-palace'){edge(id,'in-roof','stair',2);return;}
+   // a door naming a room of its building (the stair hall of the upper palace): to that room
+   const named=rooms.find(q=>q!==r&&q.building===r.building&&norm(q.name).toLowerCase()===norm(d.to).toLowerCase());
+   if(named){edge(id,rid(named),Math.abs(named.y-r.y)>1?'stair':'door',2);return;}
+   const k=r.building+'|'+norm(d.to),stairs=/stair|landing/i.test(d.to);
+   // a named stair carries the storeys whatever the door also opens on: its landing, as well
+   if(stairs)(CORE.get(k)||CORE.set(k,[]).get(k)).push({id,r,d});
+   const q=beyond(r,d);if(q){edge(id,rid(q),'door',2);return;}
+   const o=nearOut(d.x,r.y,d.z,9,2.5);if(o){edge(id,o.id,'door',2);return;}
+   if(!stairs)(CORE.get(k)||CORE.set(k,[]).get(k)).push({id,r,d});}));
+  CORE.forEach((L,k)=>{const by=new Map();L.forEach(e=>{(by.get(e.r.storey)||by.set(e.r.storey,[]).get(e.r.storey)).push(e);});
+   const ks=[...by.keys()].sort((a,b)=>a-b);let prev=null;
+   ks.forEach(st=>{const E=by.get(st),lid=mk('L:'+k+'#'+st,E.reduce((t,e)=>t+e.d.x,0)/E.length,E[0].r.y,E.reduce((t,e)=>t+e.d.z,0)/E.length,'landing',E[0].r.building);
+    E.forEach(e=>edge(e.id,lid,'floor',2));if(prev)edge(prev,lid,'stair',2);prev=lid;
+    // a landing opens on the rooms of its storey beside it (a corner stair between two ranges): those within 2.5 m
+    const Lq=byId[lid],own=new Set(E.map(e=>e.r));for(const q of rooms){if(own.has(q)||q.building!==E[0].r.building||Math.abs(q.y-Lq.y)>1.2||q.circle)continue;
+     const dx=Math.max(q.x0-Lq.x,0,Lq.x-q.x1),dz=Math.max(q.z0-Lq.z,0,Lq.z-q.z1);if(Math.hypot(dx,dz)<2.5)edge(lid,rid(q),'floor',2);}});
+   const lo=byId['L:'+k+'#'+ks[0]],o=nearOut(lo.x,lo.y,lo.z,16,3);if(o)edge(lo.id,o.id,'door',2);});
+  // what is still cut off: joined to the nearest reached room or landing of its building (counted)
+  const adj=new Map();edges.forEach(e=>{(adj.get(e.a)||adj.set(e.a,[]).get(e.a)).push(e.b);(adj.get(e.b)||adj.set(e.b,[]).get(e.b)).push(e.a);});
+  const seen=new Set(['gate-in']),reach=s0=>{const q=[s0];while(q.length){const n=q.pop();for(const m of adj.get(n)||[])if(!seen.has(m)){seen.add(m);q.push(m);}}};
+  reach('gate-in');O.patched=[];
+  for(const r of rooms){if(seen.has(rid(r)))continue;
+   // its component, and the nearest reached node of its building to any node of it
+   const comp=[],q=[rid(r)],cs=new Set(q);while(q.length){const n=q.pop();comp.push(n);for(const m of adj.get(n)||[])if(!cs.has(m)){cs.add(m);q.push(m);}}
+   // its building's first; else any building's (a building whose every door the plan names to something it does not hold)
+   let best=null;for(const same of [true,false]){let bd=1e9;for(const a of comp){if(!/^[RL]:/.test(a))continue;const A=byId[a];for(const id of seen){if((same&&bld[id]!==r.building)||!/^[RL]:/.test(id))continue;const Bn=byId[id];
+     const d=Math.hypot(A.x-Bn.x,A.z-Bn.z)+Math.abs(A.y-Bn.y)*2;if(d<bd){bd=d;best=[a,id];}}}if(best)break;}
+   if(!best){O.patched.push(r.id+': nothing reached to join it to');continue;}
+   edge(best[0],best[1],Math.abs(byId[best[0]].y-byId[best[1]].y)>1?'stair':'floor',2);O.patched.push(best[0]+' - '+best[1]);
+   (adj.get(best[0])||adj.set(best[0],[]).get(best[0])).push(best[1]);(adj.get(best[1])||adj.set(best[1],[]).get(best[1])).push(best[0]);
+   comp.forEach(n=>seen.add(n));}
+  O.rooms={n:rooms.length,reached:rooms.filter(r=>seen.has(rid(r))).length};};
  // a walker out of sight: inside a building's footprint (between its floor and its roof), or under the rock
  O.hidden=function(x,y,z){for(const f of FOOT)if(y>f.y0&&y<f.y1&&inFoot(f,x,z,-.3))return true;const ry=P.rockY(x,z);return ry>-1e8&&y<ry-1.5;};
  // ---------------------------------------------------------------- 3. the places
  const yOf=pl=>pl.y==='rock'?ROCKY:pl.y==='ward'?P.wardY(pl.z==null?-100:pl.z):typeof pl.y==='number'?pl.y:P.wardY(pl.z);
  // which plan places sit inside (their walkers reach them by the rooms' doors, not the courts')
- const DOOR={assembly:'in-assembly',cells:'in-west',library:'in-east',refectory:'in-front',roof:'in-roof',vault:'in-vault',wheel:'in-wheel'};
+ const DOOR={roof:'in-roof',vault:'in-vault',wheel:'in-wheel'};
+ // the indoor places that are rooms (2026-10-20): their people go to spots in those rooms, walking the rooms' graph
+ // (O.interior) to them: a cell each in the ranges, places at the tables and desks on a grid, the Assembly Hall's
+ // floor in rings. A room's spots keep a metre from its walls; a stair, a corridor or a gate passage is no one's place
+ const IX_OF=(...k)=>r=>k.indexOf(r.ix)>=0,USE_OF=(...u)=>r=>u.indexOf(r.use)>=0,IN_B=(...b)=>r=>b.indexOf(r.building)>=0&&!r.stair&&r.use!=='corridor'&&r.use!=='gate passage';
+ const ROOMS_OF={assembly:r=>r.id==='wp.assembly',cells:USE_OF('monk\'s cell','trainee\'s cell','keeper\'s cell'),
+  library:r=>(r.building==='white-palace'||r.building==='red-palace'||r.building==='red-wings')&&IX_OF('ls-library','ls-study','ls-scriptorium','ls-stacks','ls-catalogue','ls-clerks')(r),
+  refectory:r=>r.id==='wp.k1.refectory',workshops:r=>B.find(b=>b.id===r.building&&b.base==='ward')&&IX_OF('ls-workshop','smithy','ls-bindery','ls-laundry')(r),
+  hostel:IN_B('hostel'),'lay-houses':IN_B('servants'),tea:IN_B('market'),caravanserai:IN_B('caravanserai'),barracks:IN_B('barracks')};
+ function roomSpots(id){const f=ROOMS_OF[id];if(!f||!P.ROOMS)return null;const out=[];
+  for(const r of P.ROOMS.list){if(!f(r)||r.outdoor)continue;
+   if(r.circle){const C=r.circle;for(let rr=3;rr<C.r-1.2;rr+=1.8){const n=Math.floor(2*Math.PI*rr/1.6);for(let k=0;k<n;k++){const a=k/n*Math.PI*2;out.push([C.x+Math.cos(a)*rr,C.z+Math.sin(a)*rr,r.y,r.id]);}}continue;}
+   if(r.cell||(r.x1-r.x0)*(r.z1-r.z0)<16){out.push([(r.x0+r.x1)/2,(r.z0+r.z1)/2,r.y,r.id]);continue;}
+   const st=id==='refectory'?2:2.6;for(let x=r.x0+1;x<=r.x1-1;x+=st)for(let z=r.z0+1;z<=r.z1-1;z+=st)out.push([x,z,r.y,r.id]);}
+  // in an order of their own (a hash of the spot), so the first comers spread over the rooms
+  out.sort((a,b)=>KRAND.hash(7,Math.round(a[0]*10),Math.round(a[1]*10))-KRAND.hash(7,Math.round(b[0]*10),Math.round(b[1]*10)));
+  return out.length?out:null;}
+ O.roomSpots=roomSpots;
  // the activities whose people stand still at their spot (the life layer animates them: 68)
  const STILL={DRILL:1,DEBATE:1,GUARD:1,TURN_WHEEL:1,KEEP:1,CHAM:1,WATCH:1,FESTIVAL:1};
  O.placeRecs=function(){const G=O.graph(),out=[];
   for(const pl of P.PLACES){const y=yOf(pl);let x=pl.x,z=pl.z,door,spots=[];
    if(pl.ring){const R=pl.ring;x=R.cx;z=R.cz-R.b;}                 // the kora: joined at its north point (the avenue)
    else if(pl.line){x=(pl.line[0][0]+pl.line[1][0])/2;z=(pl.line[0][1]+pl.line[1][1])/2;}
-   if(DOOR[pl.id])door=G.byId[DOOR[pl.id]];else door=G.near(x,z,y);
+   const RS=pl.indoor?roomSpots(pl.id):null;
+   if(DOOR[pl.id])door=G.byId[DOOR[pl.id]];else if(RS)door=G.byId['R:'+RS[0][3]];else door=G.near(x,z,y);
    if(!DOOR[pl.id]&&!pl.ring&&!pl.indoor){const inR=pl.line?(q=>Math.abs(q.x-x)<pl.r&&q.z>pl.line[0][1]&&q.z<pl.line[1][1]):(q=>Math.hypot(q.x-x,q.z-z)<pl.r);
     spots=[];for(const q of G.nodes)if(q.tag!=='door'&&q.tag!=='stair'&&Math.abs(q.y-y)<2&&inR(q)&&!(pl.hole&&Math.hypot(q.x-x,q.z-z)<pl.hole))for(const [ox,oz] of [[-1,-1],[1,-1],[-1,1],[1,1]]){const sx=q.x+ox,sz=q.z+oz;
      if(!FOOT.some(f=>q.y+.5>f.y0&&q.y+.5<f.y1&&inFoot(f,sx,sz,1.6))&&!(pl.id==='camp'&&inTent(sx,sz)))spots.push([sx,sz,q.y]);}   // clear of the walls (and the tents) by more than the wander
     // the spots in an order of their own (a hash of the place and the node), so the first comers spread over the place
     spots.sort((a,b)=>KRAND.hash(pl.id.length,Math.round(a[0]*7),Math.round(a[1]*7))-KRAND.hash(pl.id.length,Math.round(b[0]*7),Math.round(b[1]*7)));}
-   const indoor=!!pl.indoor;
+   const indoor=!!pl.indoor;if(RS)spots=RS.map(q=>[q[0],q[1],q[2]]);
    out.push({id:pl.id,name:pl.name,kind:pl.id,x:door?door.x:x,y:door?door.y:y,z:door?door.z:z,door:{x:door.x,y:door.y,z:door.z,node:door.id},
     activities:{[pl.activity]:pl.cap},indoor:indoor?true:{},spots:spots.length?spots:undefined,cap:pl.cap,r:DOOR[pl.id]&&!indoor?Math.min(pl.r,6):undefined,
     wander:indoor||STILL[pl.activity]?0:1.2,tags:{plan:pl.id}});}

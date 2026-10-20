@@ -183,5 +183,9 @@ const LSIXD=(function(){const RM=LS.ROOMS,G={},ORDER=[],KEEP=6;
   units:UNITS.map(u=>({id:u.id,levels:u.levels.map(l=>l.y)})),windows:id=>windowsOf(RM.byId[id]||{}).length,bake:()=>({state:LSIX.bakeState,fromBake:LSIX.fromBake,computed:LSIX.computed,ms:Math.round(LSIX.ms)}),
   show,cut,build:k=>{const E=G[k]||build(k);return{rooms:E.rooms,pieces:E.pieces,tris:E.tris,ms:E.ms};}};
  show([]);
- return {UNITS,cut,show,G,windowsOf,PANE};})();
+ // a person at (x, y, z) (y: the floor they stand on) is in a room whose floor is drawn now (the cutaway's or the eye's):
+ // 68 shows the walkers and the people at indoor places there (taken at the waist: a floor's y is also the top of the
+ // room under it)
+ function drawnAt(x,y,z){const r=RM.at(x,y+.8,z);if(!r||!drawn(r)||r.outdoor)return false;const E=G[UNIT_OF[r.building]+'@'+(Math.round(r.y*100)/100)];return !!(E&&E.grp.visible);}
+ return {UNITS,cut,show,G,windowsOf,PANE,drawnAt};})();
 _mark('interiors');

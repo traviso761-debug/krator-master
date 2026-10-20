@@ -89,10 +89,13 @@ lamps in the windows; `89x`).
   is simply somewhere else, and the petals falling round him stop in the air within his reach; monks debate in the
   court, pilgrims walk the kora clockwise, the keepers walk the wheel. They live on `core/simulation` (`40d-ls-sim.js`:
   the walk graph, the ward's cells round the buildings, the Great Stair's flights, the Debate Court's floor and the
-  rooms' doors; the places from `LS.PLACES`; a role per `LS.ROLES`): SIM steps a world minute at a time as the clock
-  runs, each person walks between places on the graph (out of sight through the rooms), and the hour slider jumps them
+  rooms: every room of the palaces and the ward a node, joined by the doors `40c` records, its stair rooms stacked; the
+  places from `LS.PLACES`, the indoor ones rooms with spots on their floors; a role per `LS.ROLES`): SIM steps a world
+  minute at a time as the clock runs, each person walks between places on the graph (through the rooms and up their
+  stairs, seen where the rooms' floor is drawn: the cutaway's, the eye's), and the hour slider jumps them
   (`SIM.jump`). `node tests/test-sim.js` runs a whole day headless (every route found, the stair climbed, no one stood
-  in a wall; a cut stair must fail). The nearest 24 to the eye are drawn dressed (`69-ls-figures.js`; `?dressed=N`):
+  in a wall, every room reached from the gate and the rooms and their stairs walked; a cut stair, a graph without its
+  rooms must fail). The nearest 24 to the eye are drawn dressed (`69-ls-figures.js`; `?dressed=N`):
   `core/charactermodels` figures (KCharFigure, read in place) in their own records (`40e-ls-kchar.js`: KCHAR.stranger
   on each one's seed, so each has a face, a build and an ancestry of its own; the Order in its standing's set, the town
   in Xanadu's dress, a fifth of the visitors wealthy and turbaned), playing the clip their activity wants; the rest are

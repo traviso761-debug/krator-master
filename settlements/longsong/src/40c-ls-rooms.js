@@ -350,6 +350,9 @@ for(const [k,spec] of [[3,{hall:['reading','The reading hall of the Archive','re
    if(k===0)out(door,east?'e':'w',.5,'the avenue',1.8);else out(door,'s',.5,'the stair down',1.2);});}
  // a court: rng[k] = {n, s, w, e} the rooms of each range on storey k (the avenue's range first and last around its gate)
  function court(id,rng){const B=P.building(id),y0=P.baseY(B),dp=Math.min(10,B.d*.3),east=B.x<0;
+  // the gate's range is the one on the avenue: the specs' `e` is that range, east of the court for a court west of the
+  // avenue, west of it for one east of the avenue (2026-10-20: the caravanserai and the lodge had their gate on their back)
+  if(!east)rng=rng.map(R=>Object.assign({},R,{e:R.w,w:R.e}));
   const box={n:[B.x-B.w/2,B.x+B.w/2,B.z-B.d/2,B.z-B.d/2+dp,'x','s'],s:[B.x-B.w/2,B.x+B.w/2,B.z+B.d/2-dp,B.z+B.d/2,'x','n'],
    w:[B.x-B.w/2,B.x-B.w/2+dp,B.z-B.d/2+dp,B.z+B.d/2-dp,'z','e'],e:[B.x+B.w/2-dp,B.x+B.w/2,B.z-B.d/2+dp,B.z+B.d/2-dp,'z','w']};
   rng.forEach((R,k)=>{const o=Object.assign(oW(B),{storey:k,y:R2(y0+k*B.storey),h:R2(B.storey-SL)});
