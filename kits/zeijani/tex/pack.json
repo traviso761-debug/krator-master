@@ -261,6 +261,36 @@
     "sourceMean": 0.2659
    }
   },
+  "clayBlock": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "clayBlock.albedo.webp",
+    "normalMap": "clayBlock.normal.webp",
+    "roughnessMap": "clayBlock.rough.webp"
+   },
+   "lib": "plaster.clay_block_wall",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "4ef5420755bfafe275fbe571b4645ee57aab15ea",
+    "normal": "d5d2b842bcd647e7e12bc676ee7d3d43a7d96b85",
+    "roughness": "0b6c4193e2e40008752ff96699bd510153ad01bd"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.7,
+    "sourceMean": 0.4144
+   }
+  },
   "earth": {
    "breakup": null,
    "card": false,
@@ -709,6 +739,36 @@
     "keep": 0.1,
     "mean": 0.8,
     "sourceMean": 0.5144
+   }
+  },
+  "gate": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "gate.albedo.webp",
+    "normalMap": "gate.normal.webp",
+    "roughnessMap": "gate.rough.webp"
+   },
+   "lib": "wood.wooden_gate",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "d0eaae1d1fc57be9957efa9e4125a5608fc5860e",
+    "normal": "be0b3123f05b0e2cc3cd64e47f7467e5eff965b5",
+    "roughness": "081ac5e253f5ac64d31f9af9e3ad6b10e88f10e1"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.66,
+    "sourceMean": 0.1752
    }
   },
   "glaze": {
@@ -1455,6 +1515,36 @@
     "keep": 0.4,
     "mean": 0.66,
     "sourceMean": 0.4643
+   }
+  },
+  "toron": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "toron.albedo.webp",
+    "normalMap": "toron.normal.webp",
+    "roughnessMap": "toron.rough.webp"
+   },
+   "lib": "wood.toron",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "4d3e970c396db292ab4bae9dccc1b83d83bf96d9",
+    "normal": "1c216026c9c0ca29ed99aa5ce1fa53ab1ca92a17",
+    "roughness": "681be938c5c2ec7433162a2cb9b7c09e20957363"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.66,
+    "sourceMean": 0.4275
    }
   },
   "tuff": {

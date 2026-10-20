@@ -70,6 +70,8 @@ def audit(b):
     host = any(s in open(os.path.join(ROOT, b, 'build.py'), encoding='utf-8').read() +
                ''.join(open(f, encoding='utf-8').read() for f in glob.glob(os.path.join(ROOT, b, '*_bundle.py')))
                for s in ('materials.json', "'tex'", 'tex/', 'record/'))
+    if not host and b.replace(os.sep, '/') in ('kits/pylon', 'kits/talia'):
+        host = True   # built through settlements/iziz/build.py --kit, which reads the kit's tex/ (src/88yp, 88yt)
     if not host:
         errors.append('%s: neither build.py nor a bundle reads tex/ or materials.json' % b)
     miss = unused = 0
