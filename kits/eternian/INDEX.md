@@ -39,16 +39,23 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `51-et-dwell-mid.js` | 7 |  |
 | `52-et-dwell-rich.js` | 9 |  |
 | `53-et-court.js` | 5 |  |
+| `54-et-dwell-hex.js` | 3 |  |
 | `60-et-state.js` | 10 |  |
 | `61-et-defence.js` | 6 |  |
 | `62-et-machine.js` | 10 |  |
 | `63-et-faith.js` | 9 |  |
+| `64-et-trade-kit.js` | 6 |  |
+| `65-et-works.js` | 6 |  |
+| `66-et-trades.js` | 14 |  |
+| `67-et-land.js` | 7 |  |
 | `68-et-trades.js` | 6 |  |
 | `70-et-canal.js` | 6 |  |
+| `71-et-harbour.js` | 11 |  |
 | `81-sky.js` | 10 |  |
-| `89-rows.js` | 2 |  |
+| `89-rows.js` | 3 |  |
 | `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
 | `91c-et-clock.js` | 3 |  |
+| `91d-et-water.js` | 2 |  |
 | `91f-furnish.js` | 6 |  |
 | `91n-night.js` | 3 |  |
 | `92-world.js` | <1 |  |

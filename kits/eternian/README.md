@@ -112,4 +112,19 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
   over the channel), both buildings' exterior stairs rebuilt as two flights with landings onto the deck above,
   Arcoindian's towers kept under the vault.
 
-Next: P6 (trade, hydraulics and harbour). `PLAN.md` §11.
+## P6 (2026-10-20)
+
+- **Every census trade** in `ET_TRADES` is carried (40 of 44; the palace and canton staffs are the Sanctum's, outside the
+  kit; three na). The owner asked for the hexagon to make the set distinct: the kiln works and the tile works are
+  hexagonal courts round their kilns; the market hall, the granary, the warehouse (round windows, arch-34), the healer,
+  the tea house, the farmstead and Farport's lighthouse are hexagonal; the shop trades (bakehouse, weaver, brewhouse,
+  smithy, shophouse) and the inn come in the street's rectangle (v 0) and the hexagon (v 1).
+- **Hexagonal houses** at every tier (`src/54-et-dwell-hex.js`): the poor's hut, the common town's two-storey house,
+  the rich man's villa in its walled garden.
+- **Hydraulics and harbour** (`src/71-et-harbour.js`): the lock and its bronze gear, the stepped reservoir wall, the
+  spillway face (its water runs: the record's `spill`, drawn by `src/91d-et-water.js`), the canal, ferry and fish
+  landings, Farport's quay, dockyard and walled factory quarter.
+- **`etTrade`** (`src/64-et-trade-kit.js`): one generator for a trade building in either plan, storeys, shop opening,
+  roof by tier, chimney, furniture and the trade's own features.
+
+Next: P7 (the interiors set, the furnished cut-away, the Godot export check). `PLAN.md` §11.

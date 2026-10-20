@@ -27,6 +27,10 @@
 - [ ] **The gate's colossi use the figures' lintel pose**, whose arms spread wide; they hold the lintel at its quarter
       points, each over its own half of the road. A pose with the hands closer, or one colossus over the arch, would read
       more like arch-18.
+- [ ] **The trade buildings share one generator** (`etTrade`): a street of them reads as one family; the trades' own
+      features (the kilns, vats, racks, cranes) carry the difference. A second pass per trade could vary their massing.
+- [ ] **The hexagonal roofs are plain cones** of tile, reed or celadon (`etTrade` 'pyramid'): a hip with tile rolls per
+      face, as the rectangular roofs have, would read better close to.
 - [ ] **The flutes are thin at a distance**: `etFlutes` draws half-round reeds of at most 0.16 m. The library's lime
       does not carry them either; a fluted-pier sheet would.
 - [ ] **The pier bundle's piers read faintly in brick at a distance**: the projection is 0.25 m and the brick set is fine;
@@ -34,8 +38,5 @@
 - [ ] **The catalog's `verify.py --assert` fails on two generic fruit pieces** (`generic_fruit_bell_pod`,
       `generic_fruit_cherry`: materials missing stone, timber). Not this kit's: it fails the same without the Eternian
       file (checked 2026-10-20).
-- [ ] **The census trades not built yet** (`ET_TRADES`, `tools/check_trades.py`: 30 gaps; the owner's Islanders route
-      means every one gets a building). By phase:
-      P6: bakers (`et_bakehouse`), butchers (`et_butcher`), weavers and dyers (`et_weaver`), brewers (`et_brewhouse`), tanners (`et_tannery`), shipwrights and boatbuilders (`et_dock`), innkeepers and grooms (`et_inn`), coast guard (`et_quay`), shopkeepers and assistants (`et_shophouse`), smiths and craftsmen (`et_smithy`), innkeepers and servers (`et_tea_house`), porters and warehousemen (`et_warehouse`), industrial workers (`et_kiln`), healers and nurses (`et_healer`), lighthouse keepers (`et_lighthouse`), dockers and stevedores (`et_quay`), river bargemen and quay hands (`et_canal_landing`), fishers (`et_fish_landing`), market traders (`et_market_hall`), farmhands and ploughmen (`et_farmstead`), chinampa growers (`et_paddy`), orchardmen (`et_tea_garden`), miners (`et_mine`), quarrymen and masons (`et_quarry`), granary keepers and millers (`et_granary`), dairymen (`et_stock_pens`), swineherds and duck keepers (`et_stock_pens`), mushroom growers (`et_mushroom_cellar`), ferrymen (`et_ferry_landing`).
-      And palace and canton staffs: the Sanctum (`kits/ancients/targets/sanctum`) houses them outside the kit; the
-      kit's court defs come in P5. Tabled: envoys and embassy staff (Farport's page). Not here: beetles, elephant bugs.
+- [ ] **The palace and canton staffs** are the census's one trade the kit does not carry: the Sanctum
+      (`kits/ancients/targets/sanctum`) houses them. Tabled: envoys and embassy staff (Farport's page).
