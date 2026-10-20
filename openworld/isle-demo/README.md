@@ -37,9 +37,23 @@ lots and records hash the same as the city page's), then the world's land takes 
 (`WORLD.landHook`, easing back over 150 m) and both towns are declared on core/simulation. `src/88t-world-towns.js`
 (`[web]`) draws them with the city page's own drawing (`60-isle-draw.js`, read in place as a factory over each town's
 group, at the town's frame): every lot as massing out to 30 km, the lots near the camera in full once it is over a
-town's square, the streets, orchards, footings, compound walls and vessels; the flora and floor keep off the lots,
-streets, fields and paved squares (`WORLD.clearHook`, after the hamlets'). The town under the camera runs presented,
-the other abstract (`ISLE.simWatch`); the sim is declared and held, not yet run on the world's clock.
+town's square, the streets, orchards, footings, compound walls and vessels; the flora and floor keep off the town's
+built area (its zone) and the lots, streets and fields beyond it (`WORLD.clearHook`, after the hamlets'); the terrain
+takes the town's ground colours as the city page paints them (paved markets, lawn parks, sand beaches, crop tones:
+`WORLD.ground`, wrapped). `?town=` starts the camera looking at that town. The town under the camera runs presented,
+the other abstract (`ISLE.simWatch`).
+
+**The towns lived in** (2026-10-20, `src/88c-world-life.js`): the sim runs on the world's clock (`HOST.clock`, the
+72-minute day; held unless `?time=run` or the panel's "run time", whose speed button sets the clock's scale). Each frame
+it steps whole minutes up to the clock's minute within a few milliseconds, so on load (the clock at 11:30, the sim at
+midnight) the towns' morning plays out over some seconds (about 5 ms a minute: 3.7 s for the 690 minutes) and a clock
+set back holds the sim. `?simAt=` sets the clock to the sim's minute instead. The citizens of the town the camera looks
+at are drawn round the point it looks at (the city page's stand-ins, up to 200, posed between minutes at the motion
+time plus the minute's fraction). The canoe line's three carriers are drawn at their berths, or under way along the
+sea route between the two canoe stops (`ISLE_TOWNS_W.seaPath`: A* over 500 m water cells round both towns, pulled
+taut; 117.3 km against 116.6 km straight, the straight line being 14% land) at the fraction of the passage the clock
+has run. The panel (bottom left) reads the clock, the towns' minute while they catch up, the people drawn and the
+boats at sea.
 
 - **The export profile is kept here now** (moved from the city page): `verify.py --assert` checks Kautoa's ceremonial
   centre (box 320,780,820,1220 in the town's frame) under the isle profile. The export is one town at a time, in that

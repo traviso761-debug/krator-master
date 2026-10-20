@@ -112,6 +112,7 @@ ORDER = (
     # the Ring Sea vessels, core/simulation, core/export (+ core/biome's stage), the city page's [G data] half (src/15-50),
     # then this world's towns (48t: planned on the world's ground, a registry each in its frame, the ground hook);
     # 88t draws them with the city page's 60 and exports one town with its 62 (both read in place as factories)
+    # 88c runs the sim on the world's clock and draws its citizens (the city page's 59 for their colours) and the canoe line
     + [('isle', 'data'), ('izpack', 'iziz'), ('bundle', 'kcity'), ('bundle', 'izv'), ('bundle', 'ringsea')]
     + [('core/simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
     + [('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js'),
@@ -119,7 +120,8 @@ ORDER = (
     + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48t-world-towns.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
-    + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88t-world-towns.js'), ('src', '89-world-geysers.js')]
+    + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88t-world-towns.js'),
+       ('settlements/isle-demo/src', '59-isle-citizens.js'), ('src', '88c-world-life.js'), ('src', '89-world-geysers.js')]
     + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
 # the page's own words in little-demo's head (its title and caption), replaced: each must be found exactly once

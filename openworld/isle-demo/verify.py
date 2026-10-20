@@ -16,10 +16,15 @@ highway, no town tile). The isle's own checks:
   - the towns (M7, 48t/88t-world-towns.js): Kautoa and Valapo planned here as the city page plans them (no error, their
     census, every one of the city page's own plan checks, the sim declared); the world's land is each town's ground
     inside its square (24 samples a town, to 5 cm); the flora and floor keep off every lot (WORLD.townW at each lot);
+  - the towns lived in (M7, 88c-world-life.js): the sim caught up to the world's clock and following it (the clock moved
+    15 minutes, the towns with it), the canoe line's sea route on water all the way (no longer than 1.8 times the
+    straight line), each carrier's vessel at its berth or on its route where its passage puts it, the citizens near the
+    camera where the sim poses them;
   - the export profile (moved here from the city page, M7): Kautoa's ceremonial centre (EXPORT_BOX, the town's frame) under
     EXPORT_PROFILE, as godot/data/world-isle-kautoa is cut (the same records, ids and sim as the city page's case).
 Each check has a negative: the weights summed with a class removed, a town moved out to sea, a vent moved 5 km, the
-coast hook switched off, a town's plan dropped, a town's ground read 50 m off, the keep-clear hook switched off.
+coast hook switched off, a town's plan dropped, a town's ground read 50 m off, the keep-clear hook switched off, the
+straight line taken as the route, a vessel moved 500 m, a citizen moved 50 m, the clock read an hour off.
 Uses tools/harness.py (the Chromium launcher, the pinned three.js). On a machine whose headless SwiftShader cannot compile
 the sky's capture (ATMOS.skylight: "null ... reading 'trim'"), the page stops at start: little-demo's own page does the
 same there (KNOWN_ISSUES.md); run it in the browser pane, or where little-demo's verify passes.
@@ -145,6 +150,19 @@ async def run(a):
                 print(('  PASS  ' if pok else '  FAIL  ') + 'export-profile : %s, box %s, %s' % (await pg.evaluate('ISLE.cur.town'), EXPORT_BOX, ', '.join(EXPORT_PROFILE)))
                 for ln in lines: print('        ' + ln)
                 if not pok: fails.append('export-profile')
+                # the towns lived in (88c): the sim caught up first, the citizens chosen round the camera set above
+                print('--- the towns lived in (M7) ---')
+                await pg.evaluate('_isleLife.follow(Infinity)')
+                for key, nm, neg in (('route', "the canoe line's sea route is on water", '{straight:true}'),
+                                     ('canoes', 'each carrier drawn at its berth or on its route', '{shift:true}'),
+                                     ('citizens', 'the citizens drawn where the sim poses them', '{shift:true}'),
+                                     ('clock', "the towns follow the world's clock", '{off:true}')):
+                    r = await pg.evaluate('_isleLife.checks.%s()' % key)
+                    print(('  PASS  ' if r['ok'] else '  FAIL  ') + nm + ' : ' + r['detail'])
+                    if not r['ok']: fails.append(nm)
+                    rn = await pg.evaluate('_isleLife.checks.%s(%s)' % (key, neg))
+                    print(('  PASS  ' if not rn['ok'] else '  MISSED') + ' negative (%s) : ' % key + rn['detail'])
+                    if rn['ok']: fails.append('negative ' + key)
             for v in [int(t) for t in a.views.split(',') if t.strip()]:
                 await pg.evaluate('_api.go(%d)' % v)
                 s = await pg.evaluate('_api.settle(240000)')

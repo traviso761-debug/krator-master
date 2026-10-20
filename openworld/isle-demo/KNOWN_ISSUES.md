@@ -6,9 +6,13 @@
       the page's texture set-up the kit reads at load (its `TILE` from `KMAT.packed(KIT.pack, ...)` or its fallback; the
       two pages register different `KMAT.packs`). It predates M7 (the hamlets draw the same pieces). Find which scale is
       the kit's own and make both pages read it; until then the Godot cases stay cut from the city page.
-- [ ] **The towns are drawn, not lived in yet** (M7, 2026-10-20): the sim is declared and held on this page; running it
-      on the world's clock (`HOST.clock`), the citizens near the camera and the canoe line's vessels (the city page's 57,
-      59, 61) are next. The world's frame rate over Kautoa is low with the full flora and the near pieces together.
+- [x] **The towns lived in** (2026-10-20, `88c-world-life.js`): the sim on the world's clock, the citizens near the
+      camera, the canoe line at its berths and under way on a sea route. Left: the world's light still ignores the clock
+      (below), and the frame rate over Kautoa is low with the full flora, the near pieces and the citizens together.
+- [ ] **The towns' streets and massing read pale** under the world's light (the city page's colours, drawn under a
+      brighter sun and another exposure): a tone pass on 60's colours for the world, or the world's light, is owed.
+- [ ] **Catching up costs a few seconds of slow frames** after load (the sim from midnight to the clock's 11:30, at
+      most 14 ms a frame while more than an hour behind). A saved day (the sim's state at a minute) would remove it.
 - [ ] **One registry per town** (M7): each town keeps its city-page registry in its own frame (so ids and the export
       match the city page); the hamlets keep theirs. A region registry in world coordinates is still to do.
 
