@@ -100,6 +100,12 @@ function alongWalls(r,key,v,step,sides,gap,d){const out=[],dm=d==null?.25:d,g=ga
    if(s==='n'){x=u;z=r.z0+dm;ry=0;}else if(s==='s'){x=u;z=r.z1-dm;ry=PI;}else if(s==='w'){x=r.x0+dm;z=u;ry=PI/2;}else{x=r.x1-dm;z=u;ry=-PI/2;}
    if(clear(x,z))out.push(P(key,v,x,z,ry));}}
  return out;}
+// drying racks (variant v) in ranks: columns 6 m apart across the room, a rack every 3.6 m down it (its long side along
+// z), clear of the doors' aisles by 3 m and of the walls by 1.6 m; `o` narrows the band (x0, x1, z0, z1)
+function racks(r,v,o){o=o||{};const x0=o.x0==null?r.x0:o.x0,x1=o.x1==null?r.x1:o.x1,z0=o.z0==null?r.z0:o.z0,z1=o.z1==null?r.z1:o.z1,out=[],nc=Math.max(1,Math.floor((x1-x0-3.2)/6)+1);
+ for(let c=0;c<nc;c++){const x=nc===1?(x0+x1)/2:x0+1.6+c*(x1-x0-3.2)/(nc-1);
+  for(let z=z0+2.6;z<=z1-2.6;z+=3.6)out.push(P('xanadu_common_drying_rack',v,x,z,PI/2));}
+ return out.filter(p=>!r.doors.some(d=>Math.abs(d.x-p.x)<3.4&&Math.abs(d.z-p.z)<3.4||(Math.abs(d.x-r.x0)<.1||Math.abs(d.x-r.x1)<.1?Math.abs(d.z-p.z)<1.8:Math.abs(d.x-p.x)<1.8)));}
 const LAYOUTS={
  // the forty painted columns of the Hall of Pillars: two rows of twenty (drawn by 87 as the room's own columns)
  pillars(r){r.columns=[];for(const z of [r.z0+2,r.z1-2])for(let i=0;i<20;i++)r.columns.push([-41.8+i*4.4,z]);return [];},
@@ -169,6 +175,26 @@ const LAYOUTS={
  observatory(r){const C=r.circle;return [P('xanadu_court_armillary',0,C.x,C.z+.8,PI)];},
  // the Eastern Watch: the needle, the chime and the slow pendulum, round the room, facing in
  watch(r){const C=r.circle;return [0,1,2].map(i=>{const a=PI/2+i*PI*2/3,x=C.x+Math.cos(a)*(C.r-1.1),z=C.z+Math.sin(a)*(C.r-1.1);return P('xanadu_common_anomaly_instrument',i,x,z,Math.atan2(C.x-x,C.z-z));});},
+ // the bath house: the sunken pool off the line between its doors, the tiled wall fountain on the far wall with a stone
+ // basin either side of it (FURNITURE.md L2 15; the copper and the benches come from the placer)
+ bath(r){const xd=r.doors.length?r.doors[0].x:(r.x0+r.x1)/2,w=r.x1-r.x0,zc=(r.z0+r.z1)/2,west=xd-r.x0>r.x1-xd,wx=west?r.x0:r.x1,s=west?1:-1,out=[];
+  out.push(P('xanadu_court_bath_pool',0,wx+s*(.4+2+1.2),zc,PI/2));
+  const fx=west?r.x1:r.x0,fs=-s;out.push(P('xanadu_court_wall_fountain',0,fx+fs*.3,zc,fs<0?-PI/2:PI/2));
+  for(const dz of [-3.6,3.6])out.push(P('xanadu_common_bath_basin',0,fx+fs*.5,zc+dz,fs<0?-PI/2:PI/2));
+  return w>=9?out:[];},
+ // the laundry and its drying room: the racks (the robes drying: saffron, maroon, white) in ranks down the room, long side
+ // along z, an aisle from each door kept clear, the far end left to the copper (FURNITURE.md L2 16)
+ laundry(r){return racks(r,1,{z1:r.z1-4});},
+ drying(r){return racks(r,1,{x0:r.x0+4,x1:r.x1-4});},
+ // the bindery: the woodblock presses along its back wall, one with its rack of carved blocks behind it
+ bindery(r){const out=[],far=r.doors.every(d=>Math.abs(d.x-r.x0)<.1);for(let i=0,z=r.z0+3;z<r.z1-2.4;z+=4.2,i++){const v=i%2;
+   out.push(P('xanadu_common_press',v,far?r.x1-(v?.8:.6)-.15:r.x0+(v?.8:.6)+.15,z,far?-PI/2:PI/2));}
+  return out.filter(p=>!r.doors.some(d=>Math.hypot(d.x-p.x,d.z-p.z)<3));},
+ // the bindery's paper store: where the binders make their own paper for the repairs: two vats on the far wall, the
+ // racks of sheets drying
+ paperstore(r){const far=r.doors.every(d=>Math.abs(d.x-r.x0)<.1),zc=(r.z0+r.z1)/2,xv=far?r.x1-.75:r.x0+.75,out=[];
+  for(const dz of [-2.6,2.6])out.push(P('xanadu_common_paper_vat',0,xv,zc+dz,far?-PI/2:PI/2));
+  return out.concat(racks(r,0,{x0:r.x0+2.5,x1:r.x1-3.2}));},
  // the roof walk: the conch and horn players' stations (benches), planters along the parapet
  roofwalk(r){const out=[];for(let x=r.x0+6;x<r.x1-5;x+=12)out.push(P('xanadu_common_bench',0,x,r.z0+.6,0),P('xanadu_common_planter',x%2?1:0,x+3,r.z0+.6,0));return out;}};
 LSIX.LAYOUTS=LAYOUTS;

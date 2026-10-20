@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 42 (2%) | 0 (0%) | 10 (0%) | 59 (3%) | 2025 (95%) |
+| KB | 42 (2%) | 0 (0%) | 10 (0%) | 59 (3%) | 2038 (95%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -45,7 +45,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-master-furniture-scyvoi.js` | 104.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 612 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-talia.js` | 23.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 134 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-voth.js` | 18.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 95 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-master-furniture-xanadu.js` | 30.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 161 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture-xanadu.js` | 43.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 243 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-yuni-common.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `krator-master-furniture-zeijani.js` | 49.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 251 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture.js` | 280.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 2249 | 0 | 0 | 0 | 0 | 0 |  |

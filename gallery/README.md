@@ -75,6 +75,16 @@ a page listed are never extended, so pages left out of a listed build (Iziz's `w
 Each section is in alphabetical order by name, a leading "The" or "A" ignored, whatever the order of `ENTRIES`.
 The Ancients kit's pages (`kits/ancients/`, but not its arcologies) are the section `ancients`, "Ancient city kits".
 
+## Longsong: its own artifact (2026-10-20)
+
+Longsong (`settlements/longsong`) is published as its own artifact, https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY,
+and every part's index links it (a section after the Animation Lab; `index.template.html` carries it). It is about 69 MB:
+the page, its three texture packs and the dressed people's pieces (`dist/kchar/`, 52 files, 47 MB), and Krator Worlds
+I-S, where it would sort, was at 245 MiB (the owner chose its own artifact over a re-split into four parts). `ELSEWHERE`
+keeps it out of the parts. To update it: `python3 build.py` in the build, then publish `dist/longsong.html` to that
+URL with `longsong.tex.*.js` and `kchar/*` beside it (two calls: the female body's pieces with the page, the male's
+after). It was published private: a gallery viewer opens it only once the owner shares it (the page's Share menu).
+
 ## The Throne: its own artifact (2026-10-07)
 
 The Throne's eleven stations (`biomes/throne`) are published as their own artifact, https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX ("The Throne

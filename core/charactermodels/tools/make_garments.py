@@ -51,7 +51,8 @@ FABRIC_OF = {'maguey': 'cloth.weave.burlap', 'cotton': 'cloth.cotton.coarse', 's
              'yuniyellow': 'cloth.bazin', 'drab': 'cloth.quilted', 'repgrey': 'cloth.wool', 'repgreyd': 'cloth.wool',
              'repblack': 'cloth.wool', 'repred': 'cloth.wool', 'repochre': 'cloth.wool', 'repcream': 'cloth.plain',
              'nacre': 'shell.nacre', 'gold': 'metal.gold', 'bronze': 'metal.bronze', 'copper': 'metal.bronze', 'brass': 'metal.bronze',
-             'iron': 'metal.iron'}
+             'iron': 'metal.iron', 'silver': 'metal.iron', 'pomegranate': 'cloth.silk', 'kesar': 'cloth.silk', 'peacock': 'cloth.silk',
+             'lacrose': 'cloth.silk', 'yakbrown': 'cloth.wool', 'osaffron': 'cloth.cotton.coarse', 'omaroon': 'cloth.wool'}
 GRAIN = {}
 
 
@@ -101,6 +102,15 @@ C = {'maguey': (0.70, 0.64, 0.52), 'cotton': (0.86, 0.82, 0.72), 'earth': (0.42,
      # Yuni: the yellow of the hyperboloid, indigo and mud-cloth for the many, Gaudi's mosaic for the families
      'yuniyellow': (0.96, 0.78, 0.18), 'mud': (0.40, 0.28, 0.18), 'sahel': (0.93, 0.91, 0.84), 'orderblue': (0.20, 0.36, 0.70),
      'tileblue': (0.16, 0.50, 0.72), 'tilegreen': (0.34, 0.62, 0.36), 'coral': (0.92, 0.46, 0.36), 'violet': (0.42, 0.26, 0.56),
+     # the Order of Historians (Longsong) and Xanadu: the Order's saffron and maroon are the Beast Riders' above; Xanadu's
+     # Persian, Indian and Tibetan dyes: pomegranate, kesar, peacock teal, lac rose, silver for the rich
+     'silver': (0.78, 0.78, 0.80), 'pomegranate': (0.62, 0.12, 0.16), 'kesar': (0.70, 0.19, 0.01), 'peacock': (0.06, 0.42, 0.44),
+     'lacrose': (0.78, 0.30, 0.42), 'yakbrown': (0.34, 0.24, 0.16),
+     # the Order's own: deeper than the Beast Riders' saffron and maroon (a robe dyed in turmeric and madder, worn dark)
+     # (2026-10-20, the owner: deeper; under a world's ACES tone mapping the brighter saffron and kesar read lemon-yellow.
+     # These are LINEAR values, as the whole palette is: the texture is sRGB, so (0.80, 0.32, 0.03) showed as a pale
+     # orange (0.91, 0.60, 0.19). A deep saffron is about (0.80, 0.38, 0.05) on screen; a maroon (0.45, 0.16, 0.18))
+     'osaffron': (0.60, 0.12, 0.005), 'omaroon': (0.18, 0.025, 0.03),
      # the Free Giants: Gaulish wool in woad, weld and madder, heather and loden; bronze and iron
      'woad': (0.20, 0.30, 0.48), 'weld': (0.80, 0.70, 0.30), 'heather': (0.46, 0.34, 0.44), 'loden': (0.28, 0.33, 0.20),
      'iron': (0.30, 0.31, 0.33),
@@ -2460,6 +2470,209 @@ def _():
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# The Order of Historians (settlements/longsong; the owner, 2026-10-19): the History Monks' dress, Tibetan in cut, in the
+# Order's saffron and maroon, the field agents in the Order's blue. Four sets by standing, the tiers of the people
+# 'historians' (data/peoples.json):
+#   NOVICE   a saffron shirt with elbow sleeves over a maroon wrap skirt (the shemdap), sandals
+#   MONK     the plain saffron robe to the ankle, a maroon sash, sandals
+#   ELDER    a maroon robe, the saffron shawl (the zen) over the left shoulder edged in gold, a crested saffron hat
+#   AGENT    a knee-length quilted coat in the Order's blue with a maroon sash, dark trousers, boots: for the road
+# Plain cotton and wool, not silk: the Order is not rich in its dress.
+COTTON, WOOL = 'cloth.cotton.coarse', 'cloth.wool'
+
+
+def turban(gid, base_paint, wrap_paint, jewel_paint, size=1.0, ribbons=4):
+    """a great wrapped turban (rich Xanadui; the owner's references, at about a third to a half of their size): a dome
+    of cloth rising from the brow and swelling past the head's width, its folds crossed by ribbons of a second colour
+    and a band at the brow, a silver brooch with a crescent standing over it at the front"""
+    a, b, up, bk, left = head_frame()
+    H = np.linalg.norm(b - a)
+    angles = np.linspace(0, 2 * math.pi, 44, endpoint=False)
+    hug = ring_points(a + (b - a) * 0.62, left, bk, angles, 0.016, rmin=0.04, rmax=0.2)
+    c0 = a + (b - a) * 0.62
+    r0 = float(np.mean(np.linalg.norm(hug - c0, axis=1)))
+    R = r0 + 0.055 * size                      # the widest: about a head and a half across
+    f0, f1 = 0.62, 1.05 + 0.85 * size          # from the brow to about a head's height over the crown
+    rows = 18
+
+    def rad(f):
+        t = (f - f0) / (f1 - f0)
+        if t < 0.3: return r0 + (R - r0) * (0.5 - 0.5 * math.cos(math.pi * t / 0.3))
+        u = (t - 0.3) / 0.7                            # then drawn in to a rounded crown, a little peaked
+        return R * (1 - u ** 1.6) ** 0.55 * (1 - 0.25 * u) + 0.004
+
+    def at(f, an, extra=0.0):
+        c = a + up * H * f + bk * 0.012 * (f - f0)          # leaning a little back, as a wound turban sits
+        return c + (left * math.cos(an) * 1.0 + bk * math.sin(an) * 1.06) * (rad(f) + extra)
+    fs = np.linspace(f0, f1, rows)
+    P = np.array([[at(f, an) for an in angles] for f in fs])
+    P[0] = hug                                       # the first row hugs the brow
+    P[1] = hug + (P[1] - hug) * 0.6
+    P[-1] = P[-1].mean(0)                            # closed over the top
+    P = smooth_push(P, True, 0.016, iters=2)
+    parts = [Part(gid, P, True, ['body'] * rows, base_paint)]
+    # the ribbons: bands wound round the dome on tilted courses, each crossing the others, standing just off the cloth
+    for k in range(ribbons):
+        ph, amp, fm = k * math.pi / ribbons * 2 + 0.4, 0.2 * size, f0 + (f1 - f0) * (0.3 + 0.08 * (k % 2))
+        Q = []
+        for w in (-0.04, 0.04):
+            Q.append([at(fm + amp * math.sin(an + ph) + w * (1 + 0.3 * math.cos(an)), an, 0.008) for an in angles])
+        parts.append(Part('%s_wrap%d' % (gid, k), np.array(Q), True, ['body'] * 2, wrap_paint))
+    # the brow band
+    Q = [hug + (hug - c0) / np.linalg.norm(hug - c0, axis=1)[:, None] * e + up * dz for e, dz in ((0.012, -0.012), (0.02, 0.03))]
+    parts.append(Part(gid + '_brow', np.array(Q), True, ['body'] * 2, wrap_paint))
+    # the brooch at the front (the front is -bk) and the crescent standing on it
+    fb = f0 + (f1 - f0) * 0.3
+    front = at(fb, -math.pi / 2, 0.02)
+    parts.append(blob(gid + '_brooch', front, (0.07 * size, 0.024, 0.08 * size), jewel_paint, out=-bk))
+    tip = front + up * 0.11 * size
+    parts.append(horn(gid + '_crescentL', [front + up * 0.03, front + up * 0.06 + left * 0.035, tip + left * 0.03 - bk * 0.005], 0.011, 0.003, jewel_paint, n=8, rows=8))
+    parts.append(horn(gid + '_crescentR', [front + up * 0.03, front + up * 0.06 - left * 0.035, tip - left * 0.03 - bk * 0.005], 0.011, 0.003, jewel_paint, n=8, rows=8))
+    return parts
+
+
+for b, sex in (('male', 'm'), ('female', 'f')):
+    # ---- the novice
+    def _onshirt(sex=sex):
+        gid = 'order_%s_novice_shirt' % sex
+        p = P('osaffron', 0.05, [B('top', 0.0, 0.015, 'solid', 'omaroon'), B('bottom', 0.0, 0.02, 'solid', 'omaroon')], fabric=COTTON)
+        return [torso_tube(gid, TOP, WAIST - 0.07, 0.012, p, hull_from=CHEST + 0.02)] + \
+            sleeves(gid, 'elbow', 0.018, P('osaffron', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'omaroon')], fabric=COTTON), ease_end=0.04, rows=6)
+    GARMENTS['order_%s_novice_shirt' % sex] = ('torso', b, 'Novice\'s shirt', _onshirt)
+
+    def _onskirt(sex=sex):
+        p = P('omaroon', 0.05, [B('top', 0.0, 0.03, 'solid', 'yakbrown'), B('bottom', 0.0, 0.02, 'solid', 'osaffron')], fabric=WOOL)
+        return [torso_tube('order_%s_novice_skirt' % sex, WAIST + 0.01, ANKLE + 0.08, 0.009, p, hang_from=CROTCH + 0.06, flare=0.18,
+                           group_below=CROTCH + 0.04, rows=20, hull_from=WAIST)]
+    GARMENTS['order_%s_novice_skirt' % sex] = ('legs', b, 'Novice\'s wrap skirt (shemdap)', _onskirt)
+
+    def _osand(sex=sex):
+        return sandal('order_%s_sandals' % sex, P('earth', 0.08), P('omaroon', 0.05))
+    GARMENTS['order_%s_sandals' % sex] = ('feet', b, 'The Order\'s sandals', _osand)
+
+    # ---- the monk: the plain saffron robe
+    def _orobe(sex=sex):
+        gid = 'order_%s_monk_robe' % sex
+        robe = P('osaffron', 0.04, [B('top', 0.0, 0.015, 'solid', 'omaroon'), B('bottom', 0.0, 0.02, 'solid', 'omaroon')], fabric=COTTON)
+        sl = P('osaffron', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'omaroon')], fabric=COTTON)
+        return [torso_tube(gid, TOP, ANKLE + 0.05, 0.012, robe, hang_from=WAIST - 0.03, flare=0.16, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                torso_tube(gid + '_sash', WAIST + 0.035, WAIST - 0.03, 0.024, P('omaroon', 0.03, fabric=WOOL), rows=3, n=40, hull_from=WAIST + 0.1)] + \
+            sleeves(gid, 'wrist', 0.016, sl, ease_end=0.07, rows=9)
+    GARMENTS['order_%s_monk_robe' % sex] = ('torso', b, 'Monk\'s saffron robe', _orobe)
+
+    # ---- the elder: maroon robe, saffron shawl over the left shoulder, the crested hat
+    def _oelder(sex=sex):
+        gid = 'order_%s_elder_robe' % sex
+        robe = P('omaroon', 0.04, [B('top', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.0, 0.025, 'solid', 'osaffron')], fabric=WOOL)
+        zen = P('osaffron', 0.04, [B('top', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.0, 0.02, 'solid', 'gold')], fabric=COTTON)
+        sl = P('omaroon', 0.04, [B('bottom', 0.0, 0.025, 'solid', 'osaffron')], fabric=WOOL)
+        return [torso_tube(gid, TOP, ANKLE + 0.04, 0.012, robe, hang_from=WAIST - 0.03, flare=0.18, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                band(gid + '_zen', CROTCH + 0.02, SHOULDER + 0.05, 0.16, 0.03, zen, high=math.pi / 2, rows=5),
+                torso_tube(gid + '_sash', WAIST + 0.035, WAIST - 0.03, 0.026, P('osaffron', 0.03, fabric=COTTON), rows=3, n=40, hull_from=WAIST + 0.1)] + \
+            sleeves(gid, 'wrist', 0.018, sl, ease_end=0.08, rows=9)
+    GARMENTS['order_%s_elder_robe' % sex] = ('torso', b, 'Elder\'s robe and shawl', _oelder)
+
+    def _ohat(sex=sex):
+        gid = 'order_%s_elder_hat' % sex
+        a_, b_, up, bk, left = head_frame()
+        c = a_ + (b_ - a_) * 1.0
+        cap = P('osaffron', 0.04, [B('bottom', 0.0, 0.04, 'solid', 'omaroon')], fabric=WOOL)
+        # the crest: a curved ridge of fringe from the brow over the crown to the back (the pandit's hat)
+        crest = horn(gid + '_crest', [c - bk * 0.1 + up * 0.0, c - bk * 0.05 + up * 0.07, c + bk * 0.03 + up * 0.1, c + bk * 0.1 + up * 0.06,
+                                      c + bk * 0.14 + up * 0.0], 0.035, 0.012, P('osaffron', 0.06, [B('top', 0.0, 0.5, 'stripes', 'kesar', 'osaffron', 0.01)], fabric=WOOL),
+                     n=12, rows=14)
+        return [head_rings(gid, 0.5, 1.0, 0.03, cap, n=34, rows=7, apex=True), crest]
+    GARMENTS['order_%s_elder_hat' % sex] = ('head', b, 'Elder\'s crested hat', _ohat)
+
+    # ---- the field agent: the Order's blue, for the road
+    def _oagent(sex=sex):
+        gid = 'order_%s_agent_coat' % sex
+        coat = P('orderblue', 0.05, [B('top', 0.0, 0.02, 'solid', 'omaroon'), B('bottom', 0.0, 0.025, 'solid', 'omaroon')],
+                 [PN(0.0, 1.0, 'quilt', 'indigo', 'orderblue', 0.12)], fabric=WOOL)
+        sl = P('orderblue', 0.05, [B('bottom', 0.0, 0.03, 'solid', 'omaroon')], [PN(0.0, 1.0, 'quilt', 'indigo', 'orderblue', 0.1)], fabric=WOOL)
+        return [torso_tube(gid, TOP, KNEE + 0.02, 0.016, coat, hang_from=WAIST - 0.03, flare=0.12, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                torso_tube(gid + '_collar', TOP + 0.05, TOP, 0.02, P('omaroon', 0.03, fabric=WOOL), n=32, rows=3, ease_bottom=0.03),
+                torso_tube(gid + '_sash', WAIST + 0.04, WAIST - 0.03, 0.03, P('omaroon', 0.03, [B('top', 0.0, 0.01, 'solid', 'osaffron')], fabric=WOOL),
+                           rows=3, n=40, hull_from=WAIST + 0.1)] + sleeves(gid, 'wrist', 0.02, sl, ease_end=0.03, rows=9)
+    GARMENTS['order_%s_agent_coat' % sex] = ('torso', b, 'Field agent\'s quilted coat', _oagent)
+
+    def _otrou(sex=sex):
+        return trousers('order_%s_agent_trousers' % sex, P('yakbrown', 0.06, fabric=WOOL), ease=0.012, ease_end=0.018)
+    GARMENTS['order_%s_agent_trousers' % sex] = ('legs', b, 'Field agent\'s trousers', _otrou)
+
+    def _oboots(sex=sex):
+        return boots('order_%s_agent_boots' % sex, P('earth', 0.1), P('leather', 0.06, [B('top', 0.0, 0.03, 'solid', 'omaroon')]), top=0.5, ease_top=0.04)
+    GARMENTS['order_%s_agent_boots' % sex] = ('feet', b, 'Field agent\'s boots', _oboots)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Xanadu (the Sultanate; the owner, 2026-10-19): Persian, Indian and Tibetan dress mixed. Two sets, the tiers of the people
+# 'xanadu' (data/peoples.json):
+#   TOWNIE   a man's knee-length kurta, a woman's Tibetan chuba with the striped apron (pangden); loose trousers gathered
+#            at the ankle; Tibetan felt boots in colour; a man's round cap
+#   RICH     the Persian jama: a long coat flaring from a high waist, in silk, bands of gold, a kesar sash; silk trousers;
+#            gilded slippers; and the great wrapped turban (the owner's references, about a third of their size)
+for b, sex in (('male', 'm'), ('female', 'f')):
+    def _xtop(sex=sex):
+        gid = 'xan_%s_town_tunic' % sex
+        if sex == 'm':
+            p = P('kesar', 0.05, [B('top', 0.0, 0.02, 'solid', 'peacock'), B('bottom', 0.0, 0.02, 'solid', 'peacock'),
+                                 B('bottom', 0.025, 0.06, 'diamonds', 'peacock', 'kesar', 0.05)], fabric=COTTON)
+            sl = P('kesar', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'peacock')], fabric=COTTON)
+            return [torso_tube(gid, TOP, KNEE + 0.06, 0.013, p, hang_from=WAIST - 0.03, flare=0.12, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)] + \
+                sleeves(gid, 'wrist', 0.015, sl, ease_end=0.03, rows=9)
+        p = P('yakbrown', 0.05, [B('top', 0.0, 0.02, 'solid', 'lacrose'), B('bottom', 0.0, 0.03, 'solid', 'lacrose')],
+              [PN(0.40, 0.60, 'stripes', 'lacrose', 'peacock', 0.03)], fabric=WOOL)
+        sl = P('cream', 0.04, [B('bottom', 0.0, 0.03, 'solid', 'lacrose')], fabric=COTTON)
+        return [torso_tube(gid, TOP, ANKLE + 0.06, 0.012, p, hang_from=WAIST - 0.03, flare=0.14, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                torso_tube(gid + '_sash', WAIST + 0.03, WAIST - 0.03, 0.024, P('lacrose', 0.03, fabric=WOOL), rows=3, n=40, hull_from=WAIST + 0.1)] + \
+            sleeves(gid, 'wrist', 0.016, sl, ease_end=0.04, rows=9)
+    GARMENTS['xan_%s_town_tunic' % sex] = ('torso', b, 'Xanadui kurta' if sex == 'm' else 'Xanadui chuba and apron', _xtop)
+
+    def _xtrou(sex=sex):
+        return trousers('xan_%s_town_trousers' % sex, P('cream', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'peacock')], fabric=COTTON), ease=0.009, ease_end=0.012)
+    GARMENTS['xan_%s_town_trousers' % sex] = ('legs', b, 'Loose trousers', _xtrou)
+
+    def _xboots(sex=sex):
+        return boots('xan_%s_town_boots' % sex, P('earth', 0.1), P('pomegranate', 0.05, [B('top', 0.0, 0.05, 'stripes', 'peacock', 'kesar', 0.012)]),
+                     top=0.55, ease_top=0.035)
+    GARMENTS['xan_%s_town_boots' % sex] = ('feet', b, 'Felt boots', _xboots)
+
+    if sex == 'm':
+        def _xcap(sex=sex):
+            return [head_rings('xan_m_town_cap', 0.62, 1.0, 0.013, P('peacock', 0.04, [B('bottom', 0.0, 0.03, 'diamonds', 'gold', 'peacock', 0.04)], fabric=WOOL),
+                               n=32, rows=5, apex=True)]
+        GARMENTS['xan_m_town_cap'] = ('head', b, 'Round cap', _xcap)
+
+    def _xjama(sex=sex):
+        gid = 'xan_%s_rich_jama' % sex
+        p = P('violet', 0.03, [B('top', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.0, 0.02, 'solid', 'gold'),
+                               B('bottom', 0.025, 0.08, 'diamonds', 'gold', 'violet', 0.06), B('bottom', 0.085, 0.095, 'solid', 'gold')])
+        sl = P('violet', 0.03, [B('bottom', 0.0, 0.03, 'solid', 'gold')])
+        # to the ankle: a hem at mid-calf showed the trousers under it drawn in to the legs (50-figure.js SQUEEZE)
+        return [torso_tube(gid, TOP, ANKLE + 0.05, 0.012, p, hang_from=WAIST + 0.02, flare=0.24, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+                torso_tube(gid + '_sash', WAIST + 0.04, WAIST - 0.035, 0.026, P('kesar', 0.03, [B('top', 0.0, 0.012, 'solid', 'gold'), B('bottom', 0.0, 0.012, 'solid', 'gold')]),
+                           rows=3, n=40, hull_from=WAIST + 0.1),
+                collar_disc(gid + '_collar', 0.05, P('gold', 0.02, [B('top', 0.0, 0.5, 'beads', 'pomegranate', 'gold', 0.02)]), drop=0.02, scallop=0.0, rows=2)] + \
+            sleeves(gid, 'wrist', 0.015, sl, ease_end=0.03, rows=9)
+    GARMENTS['xan_%s_rich_jama' % sex] = ('torso', b, 'Silk jama and sash', _xjama)
+
+    def _xstrou(sex=sex):
+        return trousers('xan_%s_rich_trousers' % sex, P('peacock', 0.03, [B('bottom', 0.0, 0.02, 'solid', 'gold')]), ease=0.01, ease_end=0.012)
+    GARMENTS['xan_%s_rich_trousers' % sex] = ('legs', b, 'Silk trousers', _xstrou)
+
+    def _xslip(sex=sex):
+        return boots('xan_%s_rich_slippers' % sex, P('earth', 0.08), P('gold', 0.03, [B('top', 0.0, 0.3, 'diamonds', 'pomegranate', 'gold', 0.02)]),
+                     top=0.14, ease_top=0.02)
+    GARMENTS['xan_%s_rich_slippers' % sex] = ('feet', b, 'Gilded slippers', _xslip)
+
+    def _xturban(sex=sex):
+        return turban('xan_%s_rich_turban' % sex, P('kesar', 0.06, [B('bottom', 0.0, 0.5, 'stripes', 'saffron', 'kesar', 0.02)]),
+                      P('violet' if sex == 'm' else 'mongolblue', 0.04), P('silver', 0.02), size=1.0 if sex == 'm' else 0.85)
+    GARMENTS['xan_%s_rich_turban' % sex] = ('head', b, 'Great turban', _xturban)
+
+
+# ---------------------------------------------------------------------------------------------------------------
 # the xref cache MPFB's matching reads (made once per machine)
 cache = LocationService.get_user_cache('basemesh_xref')
 if not os.path.exists(cache) or not os.listdir(cache):
@@ -2490,7 +2703,8 @@ if RENDER:
     cam = bpy.data.objects.new('cam', bpy.data.cameras.new('cam')); sc.collection.objects.link(cam); sc.camera = cam
     cam.data.lens = 85
     os.makedirs(RENDER, exist_ok=True)
-    tier = lambda g: g.split('_')[0] + '_' + ('noble' if 'noble' in g else 'trade' if 'trade' in g else 'peasant')
+    TIERS = ('noble', 'trade', 'novice', 'monk', 'elder', 'agent', 'town', 'rich')
+    tier = lambda g: g.split('_')[0] + '_' + next((t for t in TIERS if '_' + t + '_' in g or g.endswith('_' + t)), 'peasant')
     for t in sorted({tier(g) for g in made}):
         objs = []
         for gid in made:

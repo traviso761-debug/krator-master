@@ -119,8 +119,8 @@ P.SHELLS={front:FR,outerW:OW,outerE:OE,innerW:IW,innerE:IE,gate:GT,base:BS,rpIn,
  cells('wp.k0.trainees',OW.x0,OW.x1,OW.z0,OW.z1,Object.assign({name:'A trainee\'s cell',use:'trainee\'s cell',ix:'ls-cell',tier:1,ends:['the front range\'s west stair','the back stair'],extra:o},{corrName:'The trainees\' corridor'}));
  const oe=row('wp.k0.oe',OE.x0,OE.x1,OE.z0,OE.z1,'z',[
   ['infirmary','The infirmary of the monks (beds, the dispensary)','infirmary','ls-infirmary',1,30],
-  ['bath','The bath house','bath house','ls-bath',1,16],
-  ['laundry','The laundry and the latrines','laundry','ls-laundry',0,null]],o);
+  ['bath','The bath house','bath house','ls-bath',1,16,{layout:'bath'}],
+  ['laundry','The laundry and the latrines','laundry','ls-laundry',0,null,{layout:'laundry'}]],o);
  out(oe[0],'n',.5,'the front range\'s east stair',1.4);
  // the inner ranges: the four lecture halls (the Cataclysm, the Peoples west; the Machines, the Discipline of Acting
  // east), each off a corridor down the range; the masters' and servants' rooms behind
@@ -132,7 +132,7 @@ P.SHELLS={front:FR,outerW:OW,outerE:OE,innerW:IW,innerE:IE,gate:GT,base:BS,rpIn,
   row('wp.k0.'+side+'.out',S.x0,xm-1.3,S.z0,S.z1,'z',[[subj[0][0],subj[0][1],'lecture hall','ls-lecture',2,21,{layout:'lecture',subject:subj[0][0]}],[subj[1][0],subj[1][1],'lecture hall','ls-lecture',2,21,{layout:'lecture',subject:subj[1][0]}],
    [s<0?'store':'servants-quarters',s<0?'The School\'s store (the slates, the mats, the staves)':'The lay servants\' quarters','store','ls-store',s<0?0:1,null]],Object.assign({chain:false},o)).forEach(r=>link(r,C));
   row('wp.k0.'+side+'.in',xm+1.3,S.x1,S.z0,S.z1,'z',s<0?[['readers','The readers\' room of the School (the trainees\' tablets)','study','ls-study',2,24],['masters','The masters\' common room','master\'s room','ls-master',2,null]]
-   :[['dispensary','The dispensary of the infirmary','dispensary','ls-store',1,20],['copper','The laundry\'s copper and the drying room','laundry','ls-laundry',0,null]],Object.assign({chain:false},o)).forEach(r=>link(r,C));}
+   :[['dispensary','The dispensary of the infirmary','dispensary','ls-store',1,20],['copper','The laundry\'s copper and the drying room','laundry','ls-laundry',0,null,{layout:'drying'}]],Object.assign({chain:false},o)).forEach(r=>link(r,C));}
  // the back range either side of the Assembly drum: the service stairs
  for(const [s,nm] of [[-1,'West'],[1,'East']]){const r=add(Object.assign({id:'wp.k0.stair-'+nm.toLowerCase(),name:'The '+nm+' Service Stair',use:'stair',ix:'ls-stair',tier:1,
   x0:s<0?-33.2:15.6,x1:s<0?-15.6:33.2,z0:72.8,z1:94.2,stair:true},o));out(r,'n',.5,'the Debate Court',2);}
@@ -191,7 +191,7 @@ P.SHELLS={front:FR,outerW:OW,outerE:OE,innerW:IW,innerE:IE,gate:GT,base:BS,rpIn,
   const A=s<0?[['instruments','The Restoration Hall: Instruments (benches under the generator\'s lights)','restoration hall','ls-restoration',2,32],['machines','The Restoration Hall: Machines (the salvaged devices in their cradles)','restoration hall','ls-restoration',2,null]]
    :[['library-2','The Library\'s second reading room','reading room','ls-library',3,null,{culture:'order',layout:'reading'}]];
   const B=s<0?[['cold','The Cold Room of the Ancients (the insulated chests)','cold room','ls-cold',2,26],['salvage','The Restorers\' store of salvage','store','ls-store',1,null]]
-   :[['bindery','The bindery (the presses)','bindery','ls-bindery',1,32],['paper','The bindery\'s paper store','store','ls-store',0,null]];
+   :[['bindery','The bindery (the presses)','bindery','ls-bindery',1,32,{layout:'bindery'}],['paper','The bindery\'s paper store','store','ls-store',0,null,{layout:'paperstore'}]];
   row('wp.k2.'+side+'.out',S.x0,xm-1.3,S.z0,S.z1,'z',A,Object.assign({chain:false},o)).forEach(r=>link(r,C));
   row('wp.k2.'+side+'.in',xm+1.3,S.x1,S.z0,S.z1,'z',B,Object.assign({chain:false},o)).forEach(r=>link(r,C));}
  cells('wp.k2.cells-w',OW.x0,OW.x1,OW.z0,OW.z1,{name:'A monk\'s cell',use:'monk\'s cell',ix:'ls-cell',tier:1,ends:['the front range\'s west stair','the back stair'],extra:o,corrName:'The monks\' west corridor (L4)'});

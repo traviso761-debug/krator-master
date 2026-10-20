@@ -19,6 +19,7 @@ biomes/*/dist/*.html filter=lfs diff=lfs merge=lfs -text
 openworld/*/dist/*.html filter=lfs diff=lfs merge=lfs -text
 core/charactermodels/dist/*.html filter=lfs diff=lfs merge=lfs -text
 settlements/*/dist/*.js filter=lfs diff=lfs merge=lfs -text
+settlements/*/dist/kchar/*.js filter=lfs diff=lfs merge=lfs -text
 kits/*/dist/*.js filter=lfs diff=lfs merge=lfs -text
 biomes/*/dist/*.js filter=lfs diff=lfs merge=lfs -text
 openworld/*/dist/*.js filter=lfs diff=lfs merge=lfs -text

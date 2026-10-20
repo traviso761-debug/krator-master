@@ -99,7 +99,12 @@ for f in ('10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '40-cr
 # chunk and sky light (8-export: ATMOS.export, so the export's atmos section fills)
 for f in ('20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'water', f))
-for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-8-export.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js'):
+# core/simulation (SIM), read in place: the people's world (40d-ls-sim.js declares it; 68-ls-life.js draws SIM.pose)
+for f in ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js', '77-sim-4-nav.js', '77-sim-5-motion.js',
+          '77-sim-5r-routes.js', '77-sim-6-economy.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-6-population.js', '77-sim-6-trade.js',
+          '77-sim-7-stocks.js', '77-sim-8-export.js'):
+    PATH.setdefault(f, os.path.join(ROOT, 'core', 'simulation', f))
+for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-2-lights.js', '89-atmos-8-export.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'atmos', f))
 # the open world's fields, read in place: the land round the site at 1:1
 PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'little-demo', 'src', '41-world-fields.js')
@@ -150,6 +155,54 @@ def _interiors():
             'LSIX.adoptBake(%s, %s);\n' % (json.dumps(bake, separators=(',', ':')) if bake else 'null', json.dumps(kit)))
     return bundle + '\n', body
 _IXB, _IXBAKE = _interiors()
+# the people dressed (PLAN.md P5b): core/charactermodels read in place (KCHAR: the records and KCHAR.stranger; KCharFigure:
+# the drawing; the r128 GLTFLoader it parses pieces with), its data cut to the two peoples Longsong draws (the Order of
+# Historians, Xanadu: their clothes, the hair their styles name, a few beards), and their pieces as SIDECARS beside the
+# page (dist/kchar/<body>__<piece>.js, one script each, loaded only when a dressed figure first needs it; in LFS). A
+# sidecar is remade from core/charactermodels/dist/pieces/<body>/<piece>.txt when that is here (its build.py writes them;
+# pieces/ is not in Git), else the committed one stands.
+CM = os.path.join(ROOT, 'core', 'charactermodels')
+for f, src in (('47k-kchar-rig.js', os.path.join(CM, 'src', '10-rig.js')), ('47l-kchar-figure.js', os.path.join(CM, 'src', '50-figure.js')),
+               ('47j-kchar-gltf.js', os.path.join(CM, 'tools', 'vendor', 'GLTFLoader.r128.js'))):
+    PATH[f] = src
+KCHAR_PEOPLES = ('historians', 'xanadu')
+KCHAR_BEARDS = {'mpfb_male': ['grinsegold_full_beard', 'wdg_scruffy_beard', 'grinsegold_moustache', 'Goatee'], 'mpfb_female': []}
+def _kchar():
+    import json
+    J = lambda *p: json.load(open(os.path.join(CM, 'data', *p), encoding='utf-8'))
+    peoples = [p for p in J('peoples.json')['peoples'] if p['id'] in KCHAR_PEOPLES]
+    bodies, need = {}, []
+    for b in ('mpfb_male', 'mpfb_female'):
+        kit = J(b, 'kit.json')
+        sty = {x for p in peoples for x in p['styles'][b[5:]]}
+        kit['items'] = [it for it in kit['items'] if it.get('culture') in KCHAR_PEOPLES or (it['slot'] == 'hair' and it['id'] in sty)
+                        or (it['slot'] == 'beard' and it['id'] in KCHAR_BEARDS[b])]
+        bodies[b] = {'skeleton': J(b, 'skeleton.json'), 'kit': kit}
+        need += [b + '/base', b + '/anims'] + [it['glb'][len('pieces/'):-len('.glb')] for it in kit['items']]
+    kd = os.path.join(DIST, 'kchar')
+    os.makedirs(kd, exist_ok=True)
+    keep, missing = set(), []
+    for k in need:
+        src, out = os.path.join(CM, 'dist', 'pieces', k + '.txt'), os.path.join(kd, k.replace('/', '__') + '.js')
+        keep.add(os.path.basename(out))
+        if os.path.exists(src):
+            t = open(src, encoding='utf-8').read().strip('\n')
+            mo = os.path.join(CM, 'dist', 'pieces', k + '.morph.txt')
+            if '\n' not in t and os.path.exists(mo):          # a piece whose deltas were published in a file of their own
+                t += '\n' + open(mo, encoding='utf-8').read().strip('\n')
+            body = 'KCHAR_SIDE(%s,%s);\n' % (json.dumps(k), json.dumps(t))
+            if not os.path.exists(out) or open(out, encoding='utf-8').read() != body:
+                with open(out, 'w', encoding='utf-8', newline='\n') as fh:
+                    fh.write(body)
+        elif not os.path.exists(out):
+            missing.append(k)
+    for f in os.listdir(kd):
+        if f not in keep:
+            os.remove(os.path.join(kd, f))
+    if missing:
+        sys.exit('KCHAR PIECES MISSING (build core/charactermodels, or fetch them from its published lab): ' + ', '.join(missing))
+    data = {'sliders': J('sliders.json'), 'posture': J('posture.json'), 'peoples': peoples, 'bodies': bodies}
+    return 'var LS_KCHAR=%s;\nLS_KCHAR.pieces=%s;\n' % (json.dumps(data, separators=(',', ':')), json.dumps(need))
 # the world data: Pinnacle Rock's decoder, read in place (its tools/world_data.py), with this page's kit line
 sys.path.insert(0, os.path.join(ROOT, 'settlements', 'pinnacle-rock', 'tools'))
 import world_data as _wd
@@ -161,6 +214,7 @@ VIRTUAL = {'39-ls-world-data.js': _wd.fragment(os.path.join(HERE, 'region'),
            '58-fauna-bundle.js': _fauna_bundle(),
            '52-ls-furniture-bundle.js': _IXB, '57b-ls-interiors-bake.js': _IXBAKE,
            '44b-host-matlib-pack-oidong.js': _mp.fragment(OD, 'oidong', side=SIDE),
+           '47n-ls-kchar-data.js': _kchar(),
            khost.EDITS_JS: khost.edits_js(HERE, 'longsong')}
 for f in VIRTUAL:
     PATH[f] = None

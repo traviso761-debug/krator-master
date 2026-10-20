@@ -301,7 +301,10 @@ UNLISTED = {'settlements/isle-demo'}   # build folders ('kits/furniture') never 
 # (the LAN host's), where size does not matter. The Throne's eleven stations are about 25 MB with their shared maps.
 ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
              # the Ancients kit (city kits and arcologies) and the Ancient Port: about 105 MB with their shared packs
-             'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py'}
+             'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py',
+             # Longsong: about 69 MB (its page, three packs and the dressed people's pieces, dist/kchar/), published as built
+             # from settlements/longsong/dist (gallery/README.md, "Longsong: its own artifact")
+             'settlements/longsong': 'settlements/longsong/build.py'}
 # Pages a build's own build.py does not write: made by another command in the build's folder, before the page is
 # copied. Girder Hero is too big for the gallery as build_hero.py writes it (20.5 MB, over 16 MB a file), so the
 # gallery takes the --slim one, written outside the committed pages (hero/dist/ is not committed).

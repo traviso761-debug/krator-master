@@ -21,7 +21,11 @@ renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmic
 // the valley's walls and the snow ranges 20-40 km off
 const scene=new THREE.Scene();const HAZE=new THREE.Color(0xd4d9e4);scene.fog=new THREE.FogExp2(HAZE.getHex(),.000085);
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.5,90000);
-scene.add(new THREE.HemisphereLight(0xcfdcea,0xa8b0a0,.8));
+const hemi=new THREE.HemisphereLight(0xcfdcea,0xa8b0a0,.8);scene.add(hemi);
+// the world hour (the host's clock writes it: 99's sky.hour and clock.onSet; ?hour= opens at another): what the night reads
+var LS_CLOCK={hour:12};
+// the daylight, 1 at noon to about .1 at midnight (89x sets it): the unlit things that should still darken (the petals)
+var LS_LIGHT={value:1};
 const SUN_POS=[-1000,900,-700];
 const sun=new THREE.DirectionalLight(0xfff4e4,1.25);sun.position.set(...SUN_POS);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xe4e0f0,.22);fill.position.set(700,300,900);scene.add(fill);

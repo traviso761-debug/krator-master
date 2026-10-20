@@ -96,7 +96,7 @@ function vSeal(x,y,z,nx,nz,label){lsDecal(SIGNS.SEAL,x+nx*.04,y,z+nz*.04,.42,1.7
  {const R=LS.VAULT[4],y=R.y0;for(let i=0;i<3;i++){const z=R.z0+6+i*(R.z1-R.z0-8)/2;ARCH.box('v-lead',R.x0+.3,y,z,.4,3.4,2.2,{col:0x60606a});
    ARCH.cyl('v-bronze',R.x0+.6,y+3.1,z+1.4,.16,.08,.26,{seg:8,col:0x9a7a40});vSeal(R.x0+.52,y+1.7,z,1,0,'A seal on a quiet cell (a time relic inside: do not knock)');}
   vLamp(R.x1-.6,y+1.2,(R.z0+R.z1)/2,.7);}
- // ---------------------------------------------------------------- the Unmaking Room: a black circle in the floor, the chains, nothing else
+ // ---------------------------------------------------------------- the Unmaking Room: a black circle in the floor, the chains (the furnace: below)
  {const R=LS.VAULT[5],y=R.y0,cx=(R.x0+R.x1)/2,cz=(R.z0+R.z1)/2;ARCH.cyl('v-dark',cx,y+.02,cz,3.2,3.2,.01,{seg:36,col:0x020204});
   ARCH.ring('v-bronze',cx,y,cz,3.2,.12,.1,{seg:36,col:0x6a5a40});for(let i=0;i<4;i++){const a=i*Math.PI/2+.4;ARCH.box('v-bronze',cx+Math.cos(a)*4.6,y,cz+Math.sin(a)*4.6,.25,.6,.25,{col:0x5a4a30});}
   vLamp(R.x0+.6,y+1.5,cz,.5);}
@@ -114,6 +114,25 @@ function vSeal(x,y,z,nx,nz,label){lsDecal(SIGNS.SEAL,x+nx*.04,y,z+nz*.04,.42,1.7
   ARCH.cyl('v-stone',cx,R.y0,cz,.7,.7,R.h,{seg:12,col:0x7a766c});
   for(let k=0;k<n;k++){const a=k*.38,y=R.y0+R.h-(k+1)*.22;ARCH.box('v-stone',cx+Math.cos(a)*3.6,y,cz+Math.sin(a)*3.6,5.2,.22,1.2,{col:0x8a8478,ry:-a});}
   for(let y=R.y0+4;y<R.y0+R.h;y+=11)vLamp(R.x0+.4,y,cz,.7);}
+ // ---------------------------------------------------------------- the depths' catalog pieces (FURNITURE.md LV; kits/catalog)
+ // the closed vault's sealed crates in two ranks down its hall (an aisle to each lead door kept clear, a smaller crate on
+ // some), a lead case on its stone beside each quiet cell's door, the unmaking furnace on the Unmaking Room's far wall.
+ // One catalog batch, its meshes put on the depths' shader (lit by their lamps alone, like everything down here)
+ if(typeof KratorFurniture!=='undefined'){const bt=KratorFurniture.batch({indexed:true});let n=0;
+  const put=(key,v,x,y,z,ry,label)=>{REGISTER({name:label,cls:'prop',kind:'furniture',key:'longsong_vault_piece_'+(n++),x,z,y,r:1,h:LSIX.adapter.dims(key,v).h,tags:{culture:'order',setting:'room'},note:key+' (kits/catalog)'});
+   bt.place(key,x,y,z,ry,{variant:v,seed:KRAND.hash(1931,n),wealth:.3,setting:'indoor'});};
+  {const R=LS.VAULT[3],y=R.y0,doors=[0,1,2,3].map(k=>R.x0+5+k*(R.x1-R.x0-10)/3),H=[.8,.6,.9];
+   for(const [zr,ry] of [[R.z0+6,0],[R.z1-6,Math.PI]])for(let x=R.x0+2.5;x<R.x1-2;x+=2.1){if(doors.some(d=>Math.abs(d-x)<1.9))continue;
+    const S=KRAND.stream(KRAND.hash(1933,Math.round(x*10),Math.round(zr))),v=S.int(0,2);
+    put('xanadu_common_relic_crate',v===1?0:v,x,y,zr,ry,'A sealed relic crate of the closed vault');
+    if(S.chance(.45))put('xanadu_common_relic_crate',1,x+S.range(-.15,.15),y+H[v===1?0:v],zr,ry+S.range(-.1,.1),'A sealed relic crate of the closed vault');}}
+  {const R=LS.VAULT[4];for(let i=0;i<3;i++){const z=R.z0+6+i*(R.z1-R.z0-8)/2;put('xanadu_common_lead_case',0,R.x0+.5,R.y0,z-2.6,Math.PI/2,'A lead-lined case beside a quiet cell (a time relic\'s, empty while it is inside)');}}
+  {const R=LS.VAULT[5],y=R.y0,cz=(R.z0+R.z1)/2;put('xanadu_common_furnace',0,R.x1-.78,y,cz,-Math.PI/2,'The unmaking furnace (what cannot be kept is burnt, and the ash sealed)');
+   vlight(R.x1-1.8,y+.8,cz,0xff7a30,1.6,10);}
+  const g=bt.flush(scene);g.name='vault-pieces';
+  g.traverse(o=>{if(!o.isMesh)return;const f=o.material.userData&&o.material.userData.family;
+   o.material=f==='glow'?vaultMat(null,{emis:1}):vaultMat(null,{spec:/metal|gold|bronze|brass/.test(f||'')?.8:.15});
+   o.userData.vault=true;o.userData.host=true;o.userData.inspectLabel='The depths\' pieces (kits/catalog)';});}
  _mark('vault-rooms');})();
 
 // ---------------------------------------------------------------- THE PROCRASTINATOR

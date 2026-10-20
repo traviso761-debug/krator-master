@@ -71,6 +71,7 @@ const SIGNS=(function(){
  return {SIGIL,THANGKA:lib('thangka')||THANGKA,BAND:lib('glyphband')||BAND,SEAL,DIAL,plaque,sign,glyph,sigil};})();
 // a picture hung or fixed on a face: a quad w x h centred at (x,y,z), facing (nx,nz); its own mesh (a few on the page)
 const DECALS=[];
+var LS_THANGKA=null;   // the great thangka of the register (64 hangs it; 89y shows it on the festival day)
 function lsDecal(map,x,y,z,w,h,nx,nz,o){o=o||{};const g=new THREE.PlaneGeometry(w,h);
  // o.basic: lit by nothing (a sign in the Vault, which the sun never reaches): its own dim tone
  const mat=o.basic?new THREE.MeshBasicMaterial({map,color:o.tone||0x8a8478,transparent:!!o.transparent,side:THREE.DoubleSide})

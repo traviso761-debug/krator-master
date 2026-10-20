@@ -6,13 +6,17 @@ archival and containment house, built **in situ** on the scale model's land, on 
 every room and outbuilding before the interiors, and the exterior's revision toward the chapterhouses; `PLAN.md` is how the
 build reads it (the site, the decisions of 2026-10-19, the order of work); `KNOWN_ISSUES.md` is what is open.
 
+Published as its own artifact (2026-10-20), linked from every part of the Krator Worlds gallery:
+https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY (`gallery/README.md`, "Longsong: its own artifact", says how to update it).
+
 ```
-python3 build.py                                   # dist/longsong.html (+ its two texture sidecars)
+python3 build.py                                   # dist/longsong.html (+ its three texture sidecars: the library pack splits at its size cap)
 python3 verify.py dist/longsong.html --assert [--views "Longsong from across the stream (north),The Procrastinator"] [--out shots]
 ```
 
 Query switches: `?noflora=1` (no Oidong kit: a quick look at the architecture, ~50 s headless), `?q=0.5` (the kit at
-half quality), `?mat=proc` (the procedural maps instead of the library's), `?hour=6` (the people at another hour).
+half quality), `?mat=proc` (the procedural maps instead of the library's), `?hour=6` (another hour: the people, the sun on its arc, and by night the stars, the generator's bulbs and the butter
+lamps in the windows; `89x`).
 
 ## What the page is
 
@@ -76,12 +80,31 @@ half quality), `?mat=proc` (the procedural maps instead of the library's), `?hou
   upper orchards. `LS.FARMS.provision()`: the house's own fields grow about a quarter of its grain; the valley's tithe
   the rest. The herds are the Fauna kit's yak and highland cow (`kits/fauna`, its farm group bundled; each kind baked in
   its pose and drawn instanced).
-- **The people** (`68-ls-life.js`): 162 records (monks, novices, operatives from Keepwell, masters of arms, keepers,
-  wardens, lay servants, pilgrims) on their schedules; at noon the operatives drill at lightning speed in the ward
+- **The people** (`68-ls-life.js`): 1,344 records (the owner, 2026-10-19: a house of a thousand of the Order: 600
+  monks, 160 novices, 40 elders, 80 operatives from Keepwell, 8 masters of arms, 12 keepers, 100 wardens; its town in
+  the ward: 120 lay servants, 50 lay scholars, 80 artisans, 20 market keepers; a caravan of 24 from Xanadu; 50
+  pilgrims; and 150 of the valley's folk, who come only on the festival day) on their schedules (the monks on three
+  variants, so the courts are not all asked for at once); at noon the operatives drill at lightning speed in the ward
   (every strike leaves three afterimages), the master of arms stands in the drill ground's middle and every few seconds
   is simply somewhere else, and the petals falling round him stop in the air within his reach; monks debate in the
-  court, pilgrims walk the kora clockwise, the keepers walk the wheel. The hour slider moves everyone (`LS.whereAt`).
-  Drawn as placeholder figures (`KNOWN_ISSUES.md`).
+  court, pilgrims walk the kora clockwise, the keepers walk the wheel. They live on `core/simulation` (`40d-ls-sim.js`:
+  the walk graph, the ward's cells round the buildings, the Great Stair's flights, the Debate Court's floor and the
+  rooms' doors; the places from `LS.PLACES`; a role per `LS.ROLES`): SIM steps a world minute at a time as the clock
+  runs, each person walks between places on the graph (out of sight through the rooms), and the hour slider jumps them
+  (`SIM.jump`). `node tests/test-sim.js` runs a whole day headless (every route found, the stair climbed, no one stood
+  in a wall; a cut stair must fail). The nearest 24 to the eye are drawn dressed (`69-ls-figures.js`; `?dressed=N`):
+  `core/charactermodels` figures (KCharFigure, read in place) in their own records (`40e-ls-kchar.js`: KCHAR.stranger
+  on each one's seed, so each has a face, a build and an ancestry of its own; the Order in its standing's set, the town
+  in Xanadu's dress, a fifth of the visitors wealthy and turbaned), playing the clip their activity wants; the rest are
+  placeholder figures. The pieces are sidecars beside the page (`dist/kchar/`, 52 scripts, about 48 MB, in LFS), each
+  loaded the first time a figure needs it; `build.py` remakes them from `core/charactermodels/dist/pieces/` when that is
+  built. `people-kchar.json` (`tools/kchar_people.js`) is every record, for Godot.
+- **The festival of the register** (`89y-ls-festival.js`; `?festival=1` opens on it): every seventh day (core/simulation's
+  week: each role carries its day's schedule and the festival's, `LS.FEST_SCHEDULES`). At dawn the great thangka (the
+  wheel and its eight seals) is unrolled on the White Palace's base, on the blind wall under its windows, and the house
+  gathers on the forecourt to see it; the elders hold the great debate, the procession walks the kora, the thangka is
+  rolled up at dusk. The valley comes in at five (from the Great Gate) and the pilgrims' camp is pitched in the ward
+  between the Geomancers' lodge and the infirmary: twenty white tents with blue knots, ten cook fires, the trough.
 - **The plants**: the Oidong kit (`biomes/oidong`, read in place) on the model's land, its fields bound here
   (`45-host-stage.js`: wet from the rain and the water, flow on the stream's banks, upland and cold over the floor,
   rock on the steeps and Longsong's rock, three raked gravel fans the stream left, a little mist over the stream);
@@ -106,13 +129,20 @@ half quality), `?mat=proc` (the procedural maps instead of the library's), `?hou
   layouts come first (the Assembly's ring of twelve skylight columns and its cushion rows for 300 facing the throne, the
   founders' nine chortens and the altar, the archive's ranks of scroll racks, the catalogue's card cabinets, the pupils'
   desks before the board, the council's round table with its empty place, the Chronicle on its stand before 108 desks,
-  the clocks, the armillary, the Watch's three instruments). The NEW pieces FURNITURE.md listed are in the catalog
-  (`kits/catalog/krator-master-furniture-xanadu.js`, 2026-10-19). The records are baked headless (`bake_interiors.py` ->
+  the clocks, the armillary, the Watch's three instruments; 2026-10-20: the bath house's sunken pool, wall fountain and
+  basins, the laundry's and its drying room's racks of robes, the bindery's woodblock presses, its paper store's vats and
+  racks of sheets). The NEW pieces FURNITURE.md listed are in the catalog (`kits/catalog/krator-master-furniture-xanadu.js`,
+  2026-10-19 and 2026-10-20); the depths' (the closed vault's sealed crates, the quiet cells' lead cases, the unmaking
+  furnace) stand in `66` on the depths' shader, and the wells (`LS.WELLS`) in the courts that draw water and at the camp. The records are baked headless (`bake_interiors.py` ->
   `interiors-bake.json`, inlined by build.py with the kit hash and each room's fingerprint; README "Furniture that is not
   always drawn is data first"). **The drawing** (`87-ls-interiors.js`) is a floor of one building at a time: the cutaway
   (X; ] [ a storey up, down: core/host's, over the White Palace, the Red Palace and the Eastern Watch) or the eye in a
   room shows that floor's rooms (their walls' inner faces with framed doorways, floors, ceilings, the Hall of Pillars'
-  forty columns, the stairs' flights) and its pieces in one catalog batch. Views: 'Inside the Great Assembly Hall', 'The
+  forty columns, the stairs' flights) and its pieces in one catalog batch. The library's pictures are on them (2026-10-20):
+  the columns painted from `column-paint` (the shaft and the wheel bracket each from its part of the picture), the
+  Cataclysm's chronology (`mural-cataclysm`) along its lecture hall's wall, and two kinds of piece drawn by `87` itself from
+  their records rather than the batch: the rugs and carpets (`rug`, the whole rug to its edge) and the bookcases (their
+  carcass and the `book-spines` picture laid to their shelves, in place of the catalog's hundreds of little books). Views: 'Inside the Great Assembly Hall', 'The
   Hall of the Founders', 'Archive Stacks I', 'The Chronicle Hall' and the rest. The rooms corrected the shells they sit in: the
   White Palace's back range is two wings either side of the Assembly drum (one block had filled the drum's hall), the
   Red Palace's wings two blocks outside its walls (one block ran its face through the palace's rooms), the Assembly drum
