@@ -41,9 +41,9 @@ ISLE.TUNE.sim = {
     'ie-hut-garden': ['home', {}, { cls: 'poor' }], 'ie-hut-scrap': ['home', {}, { cls: 'poor' }],
     'ie-house-uma': ['home', {}, { cls: 'middle' }], 'ie-house-cross': ['home', {}, { cls: 'middle' }], 'ie-house-wealthy': ['home', {}, { cls: 'rich' }],
     'ie-barracks': ['barracks', { WORK: 0 }, { mess: true, posts: 'beds' }], 'ie-watchtower': ['watchtower', { WORK: 3 }],
-    'ie-market': ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 19], out: true, wander: 4, shop: 'market' }],
-    'ie-chandler': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }],
-    'ie-trader': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }],
+    'ie-market': ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 21], out: true, wander: 4, shop: 'market' }],
+    'ie-chandler': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }],
+    'ie-trader': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }],
     'ie-butcher': ['butcher', { WORK: 2.5, BUY: 3 }, { open: [6, 18], shop: 'meat' }],
     'ie-bakehouse': ['bakehouse', { WORK: 2.5, BUY: 3 }, { open: [5, 18], shop: 'bread' }],
     'ie-kava-house': ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16 }, { open: [10, 24], shop: 'meal' }],
@@ -72,7 +72,7 @@ ISLE.TUNE.sim = {
     vern_house_mid_a: ['home', {}, { cls: 'middle' }], vern_house_mid_b: ['home', {}, { cls: 'middle' }], vern_house_mid_c: ['home', {}, { cls: 'middle' }],
     vern_house_rich_a: ['home', {}, { cls: 'rich' }], vern_house_rich_b: ['home', {}, { cls: 'rich' }],
     vern_governor_palace: ['residence', { WORK: 1 }, { cls: 'rich' }], vern_guard_tower: ['watchtower', { WORK: 1.5 }], vern_watch_house: ['watchtower', { WORK: 4 }],
-    vern_shops: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 19], shop: 'staples' }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16 }, { open: [10, 24], shop: 'meal' }],
+    vern_shops: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16 }, { open: [10, 24], shop: 'meal' }],
     vern_smithy: ['smithy', { WORK: 2.5 }], vern_workshop_a: ['workshop', { WORK: 2.5 }], vern_workshop_b: ['workshop', { WORK: 2.5 }]
   },
   /* the canoe stop (P7c): its dockers' posts per 100 m2 of the landing (the last number: its area, m2) */
@@ -127,18 +127,29 @@ ISLE.TUNE.sim = {
     worn: { shirt: { cat: 'clothes', slot: 'torso', life: 90, good: 'garments' }, wrap: { cat: 'clothes', slot: 'legs', life: 90, good: 'garments' },
       sandal: { cat: 'clothes', slot: 'feet', life: 120, good: 'sandals' }, cuirass: { cat: 'armour', slot: 'torso', layer: 'armour', life: 180, good: 'armour' } },
     sets: 2, armed: ['soldier'],
-    wares: { market: ['shirt', 'wrap', 'sandal'], shop: ['shirt', 'wrap', 'sandal'], weaver: ['shirt', 'wrap'], workshop: ['sandal'], smithy: ['cuirass'] },
+    /* the household's cooking pot (owner, 2026-10-19): one a home with a store, kept by its houseworker (an elder or a
+       child at home) else its first resident, cracked in `life` days and bought again from the town's pots */
+    household: { pot: { cat: 'household', slot: 'lhand', life: 60, good: 'pots' } },
+    /* the tools (PLAN.md 9b), owned and worn by the worked hour (`workLife`), replaced at once in work time, a worker
+       without one at half its pace: the stone tools (adze, harvest knife, maul, scraper) of the farmhands, craftsmen and
+       labourers, made in Kautoa's workshops from stone (owner, 2026-10-19: an inefficient use of it, four stones a tool);
+       the cooks' pots (the bakers', the innkeepers'). A stone tool blunts in a thousand worked hours (about three months;
+       Voth's iron ones last three to five thousand) */
+    tools: { 'stone tool': { cat: 'tool', workLife: 1000, good: 'tools', roles: ['farmhand', 'craftsman', 'labourer'] },
+      cookpot: { cat: 'tool', workLife: 1500, good: 'pots', roles: ['baker', 'keeper'] } },
+    wares: { market: ['shirt', 'wrap', 'sandal', 'pot', 'stone tool'], shop: ['shirt', 'wrap', 'sandal', 'pot', 'stone tool'], weaver: ['shirt', 'wrap'],
+      workshop: ['sandal', 'stone tool'], smithy: ['cuirass'], potter: ['pot', 'cookpot'] },
     meals: 2, perMeal: 2, low: 1, days: 3, mins: 15, cool: 120, storeDays: [1.5, 3], eatOut: { base: 0.04, wealth: 0.08 }, wealth: { poor: 0, middle: 0.5, rich: 1 }
   },
   economy: {
     goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
-      'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour'],
+      'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools'],
     /* each town's bread is its own (towns[town].inputs over these) */
-    inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 } },
+    inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 }, tools: { stone: 4 } },
     every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40 },
     /* a good's own load worth a cart's trip (the cart's minLoad otherwise): the oruwa's light, dear goods land a few dozen
        at a time, under the 40 a cart waits for, and sat at the canoe stop (2026-10-19) */
-    minLoad: { clove: 5, cacao: 5, coffee: 5, armour: 5 },
+    minLoad: { clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10 },
     /* a crop's own rate, times the parcels' (the owner, 2026-10-19: the spice, cane and cacao cut tenfold); the governor
        below holds the rest to what is wanted */
     cropRate: { clove: 0.1, cacao: 0.1, 'sugar-cane': 0.1, cotton: 1 },
@@ -161,20 +172,27 @@ ISLE.TUNE.sim = {
     producers: {
       field: { rate: 6, cap: 3000 }, orchard: { rate: 6, cap: 3000 }, fishdock: { out: ['fish'], rate: 7, cap: 3000 }, pens: { out: ['meat'], rate: 4, cap: 1500 },
       bakehouse: { out: ['bread'], rate: 6, cap: 1500 }, mill: { out: ['sugar'], rate: 4, cap: 1500 }, weaver: { alternate: [['cloth'], ['garments']], rate: 2, cap: 600 },
-      potter: { out: ['pots'], rate: 0.5, cap: 400 }, byre: { out: ['meat'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.5, cap: 400 },
+      potter: { out: ['pots'], rate: 0.07, cap: 400 }, byre: { out: ['meat'], rate: 6, cap: 1500 }, quarry: { out: ['stone'], rate: 0.3, cap: 400 },
       saltworks: { out: ['salt'], rate: 2, cap: 1500 }, tannery: { out: ['leather'], rate: 0.5, cap: 400 },
       /* the clothes and the armour (2026-10-19): the weavers make cloth and garments from it (above), the Vernacular's
-         workshops sandals from leather, the smithies leather armour (until the iron mine brings ore) */
-      workshop: { out: ['sandals'], rate: 0.45, cap: 400 }, smithy: { out: ['armour'], rate: 0.002, cap: 100 }
+         workshops sandals from leather and stone tools, whichever the town has fewer days of, the smithies leather
+         armour (until the iron mine brings ore); the potters a pot in about fourteen worker-hours (the households' and the
+         cooks' pots) */
+      workshop: { out: ['sandals', 'tools'], rate: 0.45, cap: 400 }, smithy: { out: ['armour'], rate: 0.002, cap: 100 }
     },
     warehouses: ['warehouse', 'granary'],
     /* a town opens with `startDays` of its food, each food in its share of the town's making (its producers' posts times
        rate), and these lots of the other goods it makes (not of what it must import) */
-    startDays: 3, startLots: { cloth: 40, pots: 40, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40 }
+    startDays: 3, startLots: { cloth: 40, pots: 500, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40, tools: 60 },
+    /* salt (owner, 2026-10-19): a preserver, so `keep` of the fish and the meat that would spoil in a night is salted
+       instead where the town's warehouses hold salt, a salt for `per` servings kept; and an improver of meals: while a
+       town holds salt its people season their food (`uses`), and a meal at home counts `season` times its foods' quality */
+    salt: { keeps: ['fish', 'meat'], keep: 0.75, per: 4, season: 1.15 }
   },
   /* P7c, the canoe line between the two trade landings (owner, 2026-10-19), on core/simulation's SIM.trade (47):
      uses     what each town uses a day, a person, of what the other makes (8c: Kautoa's salt, rice, cloves and cacao in
-              Valapo's kitchens; Valapo's sugar in Kautoa's), drawn on its warehouses every hour: the want the line serves
+              Valapo's kitchens; Valapo's sugar in Kautoa's; and Kautoa's own salt, seasoning its food), drawn on its
+              warehouses every hour: the want the line serves
      lines    the lakatoi, the towns' bulk carrier: two a day, one each way (the two start at opposite landings; a passage
               of 20 hours and a stay of 4 make a day), carrying the bulk goods; the oruwa, for the light and dear goods,
               one canoe round in a day, filling only what the receiver is low on (want, keep). goods: what each town may send */
@@ -191,10 +209,10 @@ ISLE.TUNE.sim = {
         { id: 'salvagers', name: 'Ancient salvagers', vessel: 'salvageTug', every: 6, phase: 3, calls: ['kautoa'], buys: { cacao: 300, clove: 300 } },
         { id: 'outer', name: 'Islanders of the outer isles', vessel: 'islanderLakatoi', every: 2, phase: 1, calls: ['valapo', 'kautoa'], buys: { sugar: 100, coffee: 100, clove: 200, cacao: 200 } }
       ] },
-    uses: { valapo: { salt: 0.02, rice: 0.05, clove: 0.004, cacao: 0.008 }, kautoa: { sugar: 0.02 } },
+    uses: { valapo: { salt: 0.02, rice: 0.05, clove: 0.004, cacao: 0.008 }, kautoa: { sugar: 0.02, salt: 0.02 } },
     lines: [
       { id: 'lakatoi', vessel: 'islanderLakatoi', cap: 3000, carriers: 2, minutes: 1200, mins: 240, keep: 1, want: 6,
-        goods: { kautoa: ['salt', 'rice', 'sandals', 'armour'], valapo: ['sugar', 'garments'] } },
+        goods: { kautoa: ['salt', 'rice', 'sandals', 'armour', 'tools'], valapo: ['sugar', 'garments'] } },
       { id: 'oruwa', vessel: 'islanderOruwa', cap: 150, carriers: 1, minutes: 600, mins: 120, keep: 1, want: 2,
         goods: { kautoa: ['clove', 'cacao'], valapo: ['coffee'] } }
     ]

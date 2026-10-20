@@ -32,7 +32,8 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 { const a = cp(w1), b = cp(w2); a.b.towns.kautoa.sold = Object.assign({}, a.a.towns.kautoa.sold); b.b.towns.kautoa.sold = Object.assign({}, b.a.towns.kautoa.sold); caught('ships that bought nothing', ISLE.weekChecks(a, b), /ships from beyond/); }
 { const a = cp(w1); a.days[4].towns.valapo.goods.fish.short += 5; caught('5 fish short on the fifth day', ISLE.weekChecks(a, w2), /short after the second day/); }
 { const a = cp(w1); a.days.forEach((x, j) => { if (j % 2) x.towns.kautoa.goods.rice.total *= 1.6; }); caught('a rice stock swinging by three fifths', ISLE.weekChecks(a, w2), /stock steady/); }
-{ const b = cp(w2); b.days.forEach((x, j) => { x.towns.valapo.gov.target = 0; x.towns.valapo.gov.pos += j * 3000; }); caught('a supply line piling 3000 a day above its target', ISLE.weekChecks(w1, b), /food supply line/); }
+{ const b = cp(w2); b.days.forEach((x, j) => { x.towns.valapo.gov.target = 1000; x.towns.valapo.gov.pos += j * 3000; }); caught('a supply line piling 3000 a day above its target', ISLE.weekChecks(w1, b), /food supply line/); }
+{ const b = cp(w2); b.b.towns.kautoa.wear.held = Math.floor(b.b.towns.kautoa.wear.held / 2); caught('half the tools of Kautoa gone', ISLE.weekChecks(w1, b), /hold their tools/); }
 { const a = cp(w1); a.decided = 3; caught('three of the abstract town deciding', ISLE.weekChecks(a, w2), /decided/); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

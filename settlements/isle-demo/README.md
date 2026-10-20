@@ -180,18 +180,33 @@ declares both once they are planned, in one order whichever town it draws, and h
   lakatoi carries garments to Kautoa and sandals and armour to Valapo. The governor's gain was compared at 0.3, 0.5 and
   1.0 over 21 days (after 0.2 to 1.0 on a one-day demand window, which swung with the restocking round): 0.3 holds each
   town's food closest, with the same stock swing and no shortfall; 1.0 drifts most.
+- **Pots, tools and salt; the evening market** (the owner, 2026-10-19). Each home with a store keeps a cooking pot (its
+  houseworker, else its first resident: `items.household`), cracked in 60 days and bought again from the potters, the
+  market or the shops; the bakers and the innkeepers cook with a pot that wears by the worked hour (1,500 hours). The
+  farmhands, craftsmen and labourers own a stone tool (adze, harvest knife, maul, scraper; 1,000 worked hours), made in
+  Kautoa's workshops from four stones (an inefficient use of the quarry, as the owner asked), whichever of sandals and
+  tools the town has fewer days of, and carried to Valapo by the lakatoi; worn through at work it is bought at once in
+  work time, and without one a worker works at half pace (the page asks again each hour of work if the town was out:
+  `ISLE.simToolRetry`). **Salt** keeps three quarters of the fish and meat that would spoil in the warehouses (a salt for
+  four servings), and while a town holds salt its households season their food (Kautoa's own salt now used too), so every
+  meal at home counts as a better one (`fine`). The staples shops and the market stay open until 21:00: the farmhands,
+  in from the far fields at 17:00, reached a shop as it closed, and from day 13 about 370 of Kautoa's meals a day were
+  eaten from an empty store; now none.
 - **Three weeks' books** (the daily average over days 12-21, three whole restocking rounds; the gain at 0.3):
 
   | | Valapo | Kautoa |
   |---|---|---|
-  | food made over eaten (and spoiled) | +24 a day (of 10,500) | -363 a day (of 28,000) |
+  | food made over eaten (and spoiled) | +25 a day (of 10,300) | -347 a day (of 28,600) |
   | food supply line | within 15% of its target (three days of demand), up and down with the restocking round | the same |
-  | spoiled a day | fish 249, bananas 232, bread 186, sweet potato 142 | bread 447, taro 343, bananas 199, fish 115 |
-  | cloves, cacao | (imported by the oruwa) | made 627 and 463 a day, 575 and 406 bought by the ships; stocks +51, +57 |
+  | spoiled a day | bananas 244, bread 176, sweet potato 147, fish 62 | bread 429, taro 341, bananas 197, fish 66 |
+  | salted instead a day (salt drawn) | fish and meat 157 (50 salt) | fish and meat 34 (14 salt) |
+  | meals at home | 4,071 a day, all seasoned; none from an empty store | 11,820, all seasoned; none from an empty store |
+  | cloves, cacao | (imported by the oruwa) | made 628 and 462 a day, 575 and 406 bought by the ships; stocks +53, +56 |
   | sugar, cane | sugar 195 a day, 182 to Kautoa; cane +38 | sugar 125 imported and used |
-  | cotton, cloth, garments | +120, +33, -2 a day (132 garments to Kautoa) | garments -1 (134 imported, 135 worn out) |
-  | leather, sandals, armour | (imported) | +2, -5, 0 a day |
-  | still piling up (at the governor's floor) | pots +39 a day | pots +143, salt +100, stone +18 a day |
+  | cotton, cloth, garments | +122, +34, -1 a day (134 garments to Kautoa) | garments -1 (136 imported, 137 worn out) |
+  | leather, sandals, armour | (imported) | -5, +9, 0 a day |
+  | pots, stone, tools, salt | pots 5 made, 7 bought; tools 3 bought (by lakatoi), its stock drawn toward six days; salt 92 used (imported) | pots 19 made, 20 bought; stone 53 quarried, 45 into tools (+7); tools 11 made and used; salt 210 made, 132 used and 85 to Valapo (-7) |
+  | still piling up | cotton +122 a day | (nothing over +60 but the ships' cloves and cacao) |
 
   Nothing runs short after the second day (the towns open with lots of what the canoes bring them).
 - **Checks** (`45`, verify's Valapo page and `tests/test-isle-sim.js`, for each town; and on the page, the citizens

@@ -694,10 +694,11 @@ whole days: the households restock on a three-day round, and a one-day window sw
 its ceiling), Ti a day and a half and alpha 0.3 (compared at 0.3, 0.5 and 1.0); at midnight the perishables lose their share of each warehouse's and
 site's stock. Three checks hold it in the week test, each with a negative: no good short after the second day, each
 good's stock steady (its mean day-to-day change at most 30% of its mean, where it holds 500 or more; not the goods the
-ships buy in lumps), each town's food supply line holding (its fitted trend at most 3% of what it eats a day) or moving
-toward its target. The week test starts cold and changes level at day 7, so its towns fill from their opening stock and
-then draw down what the abstract level made (it makes about 30% more a worker): a plain drift band failed on that; a
-pile above the target or a drain below it still fails. The steady state is the 21-day run (README.md, the three weeks). Both hooks are candidates for `core/simulation`'s economy as opt-in
+ships buy in lumps), each town's food supply line holding (its fitted trend at most 3% of what it eats a day), moving
+toward its target, or within 5% of it on the mean. The week test starts cold and changes level at day 7, so its towns
+fill from their opening stock and then draw down what the abstract level made (it makes about 30% more a worker, and the
+governor relearns its capacity over a day or two): a plain drift band failed on that; a pile above the target or a drain
+below it, more than 5% off, still fails. The steady state is the 21-day run (README.md, the three weeks). Both hooks are candidates for `core/simulation`'s economy as opt-in
 features (KNOWN_ISSUES.md).
 
 **Order of work.**
@@ -733,7 +734,11 @@ work is the tuning, the makers and the sellers. Each piece also gives a surplus 
 **What is built (2026-10-19).** Everyone wears a shirt, a wrap and a pair of sandals, two sets of each, worn out in 90
 to 120 days and bought again; the soldiers keep a leather cuirass. Valapo's weavers make cloth and garments, Kautoa's
 Vernacular workshops sandals and its smithies the armour; the lakatoi carries garments to Kautoa and sandals and armour
-to Valapo (`15` `items.worn`, `43`).
+to Valapo (`15` `items.worn`, `43`). **And (owner, 2026-10-19):** each household keeps a cooking pot (60 days), the
+bakers and innkeepers cook with one (1,500 worked hours); the farmhands, craftsmen and labourers own a stone tool (1,000
+worked hours) from Kautoa's workshops, four stones a tool, carried to Valapo by the lakatoi (step 1 of the order below,
+one tool kind for the stone trades; step 3 done); salt keeps the fish and meat (section 9's spoilage) and seasons the
+meals. A week-test check holds the tools and pots (at least 98% held or on an errand for, each town, each week).
 
 **The rules taken from Voth (and where the isles differ).**
 - **Clothes:** a set count by class (Voth: poor 2, middle 3, rich 4, the great houses 6), the worn set at a hashed wear,

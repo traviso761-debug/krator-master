@@ -80,16 +80,30 @@
       town's whole list. The oruwa landed its cloves and cacao a few dozen at a time, under the 40 a cart waits for, so
       they sat at Valapo's canoe stop: they now take a load of 5 (`ISLE.TUNE.sim.economy.minLoad`). The land animals'
       food is now one good, meat (owner), and a town opens with each food in its share of what the town makes.
-- [ ] **Still piling up** (with the governor, 2026-10-19): pots (Kautoa +147 a day, Valapo +39), Kautoa's salt (+100)
-      and stone (+18), Valapo's cotton (+133). The governor's floor (0.3 of the full rate) keeps a producer working with
-      no use for what it makes: nothing uses pots or stone yet, and only Valapo uses salt. The ships could buy salt; the
-      potters and the quarry want their own users (households' pots, building: PLAN.md section 9b).
+- [ ] **Still piling up** (2026-10-19, after the pots, the stone tools and the salt): Valapo's cotton (+122 a day) and
+      cloth (+34), and a little stone (+7). The governor's floor (0.3 of the full rate) keeps a producer working with
+      little use for what it makes; the potters' and the quarry's rates were cut to their custom. Stone wants building.
 - [ ] **The governor and spoilage are the page's hooks** (`49`, on `SIM.stepHooks`): an order-up-to rule that sets
       `E.recipes[id].rate` hourly and the perishables' midnight loss. Both belong in `core/simulation`'s economy as
       opt-in features (`SIM.economy({govern, spoil})`) once proved here; until then a second settlement would copy them.
 - [ ] **Demand follows supply in the households:** a household buys each food in proportion to the warehouses' stock,
       so the more a town holds of a food the more of it is eaten; the governor's demand chases that. It holds (each
       town's food within 2% over three weeks), but the households' stores shrink slowly as the warehouses settle.
+- [ ] **No need meters run in the isles** (`SIM.needs` is off): hunger, rest and the material meter do not exist, so a
+      seasoned meal, a missing pot or a set of clothes short changes nothing anyone feels. The meal tally (a full meal,
+      a single food, none, seasoned) is the only measure. Turning `SIM.needs` on is the wear plan's step 6 (PLAN.md 9b).
+- [ ] **A pot does not feed the cooking:** a household without its pot still cooks (core's meal does not look for one),
+      and a cook without a cooking pot works at half pace like any tool. Once needs run, a pot-less kitchen should cook
+      worse meals.
+- [ ] **Core asks for a tool only when it breaks:** an errand that fails (the town out of tools) is never tried again,
+      and the worker stays at half pace. The page asks again each hour of work (`ISLE.simToolRetry`, 43); a core rule
+      later.
+- [ ] **The seasoning is a getter** on the food kinds' `quality` (43), read in the town's turn while its warehouses hold
+      salt (`ISLE.SIM.seasoned`, 49); core could take a per-settlement seasoning rule instead.
+- [x] **Kautoa's farm ring went hungry** (2026-10-19): the farmhands work in the fields till 17:00, far from home; the
+      first free hour's walk reached a shop after it closed, the errand went stale, and from day 13 about 370 meals a day
+      were eaten from empty stores (the no-shortfall check missed it: the warehouses had the food). The staples shops and
+      the market now stay open till 21:00; none since.
 - [ ] **The households restock on a three-day round,** in step, so the warehouses swing about 15% around their target
       and the governor reads its demand over three whole days. Staggered restocking would smooth both.
 - [ ] **The ships are timers, not vessels:** they buy on their days at the landing; the moored foreign vessels are drawn
