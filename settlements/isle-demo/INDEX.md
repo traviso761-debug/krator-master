@@ -21,7 +21,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `32-isle-city.js` | 46 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
 | `34-isle-census.js` | 11 | 4. THE CENSUS AND THE CHECKS, PER TOWN (1) |
 | `56-isle-tools.js` | 5 | 3b. THE ISLE'S TOOLS: TOWNS, SAVING, VIEWS (1) |
-| `58-isle-protos.js` | 6 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
+| `58-isle-protos.js` | 7 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
 | `60-isle-draw.js` | 15 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
 | `98-isle-city-start.js` | 8 | 6. THE CITY PAGE'S START: PLAN, DRAW, LOOK (1) |
 | `98-isle-start.js` | 5 | 4. START (1) |
