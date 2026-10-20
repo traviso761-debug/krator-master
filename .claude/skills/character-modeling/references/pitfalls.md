@@ -106,9 +106,11 @@ area you are about to change.
   and its back faces lay at the front faces' depth (DoubleSide). Check by drawing the material FrontSide: clean means
   it is this. Draw back faces a centimetre further from the eye (fragment depth from the view position); widening the
   push or squeezing the trousers changed nothing.
-- **A sheet over the arms hung from the waist shows the tunic under it at the back** → hung from the waist, its back fell
-  inside the seat; hang it from under the seat at the back as robes are (`torso_tube`, `hb`). Check the A-pose first: a
-  fault there is the cut, not the motion.
+- **A sheet over the arms hung from the waist shows the tunic under it at the back** → its back falls inside the seat.
+  Hung from under the seat as robes are, it showed the tunic all over its back; cut the under-layer short instead (the
+  grand boubou's to the waist: no more of it is seen). Check the A-pose first: a fault there is the cut, not the motion.
+- **"Hang it from the waist as the monk's robe" is not for every robe** → it helped the skirts and the Yuni gown, but the
+  Izani court robe's woven tabard tore across the hips; shoot each one.
 - **A skirt split down the side of a leg swung back** → pushing out "away from the body's axis" sends a skirt's front
   out the back of a trailing leg; take the side the cloth faces (its skinned normal).
 - **Belts round the hips flaring into fins** → they took the thighs' skin weights from the body; weight them to the

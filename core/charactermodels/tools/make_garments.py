@@ -360,11 +360,10 @@ def torso_tube(name, z0, z1, ease, paint, n=40, hang_from=None, flare=0.0, arc=N
         hs = hang_side if hang_side is not None else hang_from
         # at the back, a garment that reaches below the crotch hangs from just under the seat: falling from the
         # chest or the waist it would hang straight past the buttocks, and a pose that sets the hips back pushes them
-        # through it (capes and sheets over the arms hang from the shoulders as they are; one over the arms that hangs
-        # from the waist, the grand boubou, as a robe does: from the waist its back fell inside the seat, and the
-        # tunic under it showed through)
+        # through it (capes and sheets over the arms hang from the shoulders as they are: the grand boubou's, hung from
+        # under the seat at the back, showed its under-tunic all over its back)
         hb = hang_from
-        if arc is None and (not over_arms or hang_from < CHEST) and z1 < CROTCH and hang_from > CROTCH + 0.02:
+        if arc is None and not over_arms and z1 < CROTCH and hang_from > CROTCH + 0.02:
             hb = CROTCH + 0.02
         start = [near(hs) if abs(math.sin(a)) > 0.55 else near(hb) if math.cos(a) > 0 else near(hang_from) for a in angles]
         P = hang(P, axes, start, flare)
@@ -1657,8 +1656,8 @@ def _():
     cloak = P('sunorange', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'copper'), B('top', 0.0, 0.02, 'solid', 'copper')])
     # the tabard is woven in: a cream panel down the front (u 0.5), the sun repeating down it
     tabard = [PN(0.455, 0.545, 'sun', 'gold', 'cream', 0.2), PN(0.442, 0.455, 'solid', 'copper', 'copper'), PN(0.545, 0.558, 'solid', 'copper', 'copper')]
-    # from the waist as the monk's robe (from the chest it stood off the belly, and a run's thigh came out of its side)
-    return [torso_tube(gid, TOP - 0.01, ANKLE + 0.07, 0.012, _sun_robe('verdigris', 'copper', tabard), hang_from=WAIST - 0.03, hang_side=WAIST, flare=0.12,
+    # from the chest (hung from the waist as the monk's robe is, its woven tabard tore across the hips in a walk)
+    return [torso_tube(gid, TOP - 0.01, ANKLE + 0.07, 0.012, _sun_robe('verdigris', 'copper', tabard), hang_from=CHEST - 0.06, hang_side=WAIST, flare=0.12,
                        group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
             izani_collar(gid, P('copper', 0.03, [B('top', 0.0, 0.01, 'solid', 'gold'), B('bottom', 0.0, 0.01, 'solid', 'gold')]), high=0.08),
             cape(gid + '_cape', KNEE - 0.12, cloak, flare=0.2, span=1.25, ease=0.034, top=TOP - 0.03)] + \
@@ -2123,7 +2122,9 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         # from the chest would pass through a seated lap rather than lie on it
         return [torso_tube(gid, TOP + 0.005, ANKLE + 0.14, 0.03, bou, n=48, hang_from=WAIST - 0.03, hang_side=SHOULDER - 0.04, flare=0.14, group_below=CROTCH + 0.02,
                            over_arms=True, stiff=0.2, layer=2),
-                torso_tube(gid + '_under', TOP, HIPS[2] - 0.1, 0.012, P('sahel', 0.04), hull_from=CHEST + 0.02)] + \
+                # the under-tunic to the waist only: no more of it is ever seen, and over the seat it showed through the
+                # sheet's back, which falls past the buttocks from the waist
+                torso_tube(gid + '_under', TOP, WAIST - 0.02, 0.012, P('sahel', 0.04), hull_from=CHEST + 0.02)] + \
             sleeves(gid, 'wrist', 0.014, P('sahel', 0.04, [B('bottom', 0.0, 0.02, 'solid', base_)]), ease_end=0.02, rows=8)
     GARMENTS['yuni_%s_trade_boubou' % sex] = ('torso', b, 'Grand boubou', _ygrand)
 
