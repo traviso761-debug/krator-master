@@ -1208,8 +1208,18 @@ func _rigid(ch: Dictionary) -> Transform3D:
 		# from, which the clips pitch hard, a cape's hem swung 0.7 m off the body: the fold; rigidTargets in 50-figure.js)
 		var hi := skeleton.find_bone("Hips")
 		F = _gp(hi) * (binds[hi] as Transform3D)
+		# placed by the hips, turned with their heading only; the top point's own offset (the chest leans ahead of the
+		# hips) fades out down to the hip joint (rigidTargets in 50-figure.js: a back panel sank into the buttocks and the
+		# layering threw it out in front, through the body)
+		var fz: Vector3 = F.basis.z
+		var hb := Basis(Vector3.UP, atan2(fz.x, fz.z)).scaled(Vector3.ONE * fz.length())
+		var hm: Vector3 = (binds[hi] as Transform3D).affine_inverse().origin
+		F = Transform3D(hb, _gp(hi).origin - hb * hm)
+		var off: Vector3 = (tw[0] as Vector3) - F * (ch["p"][0] as Vector3)
+		var y0: float = (ch["p"][0] as Vector3).y
 		for k in range(1, tw.size()):
-			tw[k] = (tw[0] as Vector3) + F.basis * ((ch["p"][k] as Vector3) - (ch["p"][0] as Vector3))
+			var fk := clampf(((ch["p"][k] as Vector3).y - hm.y) / maxf(1e-4, y0 - hm.y), 0.0, 1.0)
+			tw[k] = F * (ch["p"][k] as Vector3) + off * fk
 	ch["tw"] = tw
 	# the root joint where its point is
 	skeleton.set_bone_pose_position(ch["bones"][0], _gp(ch["parent"]).affine_inverse() * (tw[0] as Vector3))
@@ -1338,10 +1348,9 @@ func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 			var ab: Vector3 = cp["b"] - cp["a"]
 			var lsq := maxf(1e-9, ab.length_squared())
 			# no further out than the point's own rest lies (a chain's root inside the trunk threw the point below it out
-			# sideways: the fold; collide() in 50-figure.js)
+			# sideways: the fold; collide() in 50-figure.js), but out of a leg at least to the bare limb (a skirt's rest
+			# follows the hips, and a thigh swung forward over it would take the cloth in)
 			var rq: Vector3 = cp["a"] + ab * clampf((rw - cp["a"]).dot(ab) / lsq, 0.0, 1.0)
-			# (on a leg, no less than the bare limb: a skirt's rest follows the hips, and a thigh swung forward over it
-			# would take the cloth in)
 			var r := minf(float(cp["r"]), maxf(rw.distance_to(rq), float(cp.get("r0", 0.0)) if cp.get("leg", false) else 0.0))
 			var t := clampf((p - cp["a"]).dot(ab) / lsq, 0.0, 1.0)
 			var q: Vector3 = cp["a"] + ab * t

@@ -378,8 +378,12 @@ cloth section; `kchar_figure.gd _cloth_*`) reads each chain's rest off the morph
 body, not the A-pose** (`HANDOFF-CLOTHING.md`, 1): `kit.json` keeps per chain point the garment's own body weights
 from before the chains took the cloth (`bw`, `make_mpfb.py cloth_bones`), and while a clip plays a chain wholly above
 the hip joint rests where those weights (not the legs') put each of its points in the current pose, and one reaching
-below the hips keeps the shape it hangs in from its parent joint and moves with its top point (`rigidTargets`,
-`_rigid`; the chain's root joint is placed there each frame). Held rigid by the chest, a mantle's back stayed where
+below the hips keeps the shape it was fitted in, placed by the hips and turned with their heading only (cloth below
+them hangs, whatever the pelvis' tilt), its top point where its weights put it and that point's offset fading out down
+to the hip joint (`rigidTargets`, `_rigid`; the chain's root joint is placed there each frame). Turned with the whole
+pelvis and carried whole from its top point, a court robe's back panel hanging 1 m from the chest sank into the
+buttocks in an idle (the chest leans 10 cm ahead of the hips, the pelvis tilts back), and the layering threw it out
+in front, through the body, wide as a wing (the court robes, the chief's apron: half a metre off rest). Held rigid by the chest, a mantle's back stayed where
 it was fitted while the spine under it bent in the clip and the posture pass drew the shoulders back, and the tunic it
 covers came out through it over the whole upper back; followed point by point below the hips, a robe's skirt bunched
 at the legs and its cape went round to the front in a stride. In the A-pose (no clip, no posture) the chains rest as

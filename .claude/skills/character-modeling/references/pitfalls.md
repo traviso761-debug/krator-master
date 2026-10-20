@@ -169,6 +169,11 @@ area you are about to change.
   skin spot, the push spread over the part's grid (`settle` in make_garments.py). Measured 16 failing pairs of 58 to
   edge vertices only. An item that lies between another's parts (pteruges between a tunic skirt and a cloak) needs
   part layers and the other built twice.
+- **Robe panels flung out like wings at idle** → measure before toggling: per-chain drift from rest named a back panel
+  whose rest sat inside the buttocks (its shape carried whole from a chest root leaning 10 cm ahead, turned with the
+  tilted pelvis), and the layering pass threw it out through the body. Place hanging cloth by the hips with their
+  heading only, fading the top point's offset out to the hip joint. Shots alone misled: a variant that "looked" fixed
+  in one frame was just a calmer moment.
 - **Page shots of a walk were not repeatable** (the page's loop advanced the figure in real time between the script's
   steps, and each clip faded in from the last shot's) → `tools/shots.py` holds the loop (`_kchar.still`), resets the
   chains, starts the clip from a stop and steps it at 30 Hz: pixel-identical in any order. Use it for before/after.

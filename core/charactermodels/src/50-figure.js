@@ -567,7 +567,7 @@ function KCharFigure(body, sliders, load){
     for(var k in live) if(live[k].userData.part && live[k].userData.part.role === 'base') return live[k];
     return null;
   }
-  var rtS = new THREE.Matrix4(), rtV = new THREE.Vector3(), rtM = new THREE.Matrix4(), rtH = new THREE.Matrix4(), rtN = new THREE.Matrix3(), LEGJ = /UpLeg|Leg$|LegTwist|Foot|Toe/;
+  var rtS = new THREE.Matrix4(), rtV = new THREE.Vector3(), rtM = new THREE.Matrix4(), rtH = new THREE.Matrix4(), rtN = new THREE.Matrix3(), rtW = new THREE.Vector3(), rtU = new THREE.Vector3(), rtX = new THREE.Vector3(), LEGJ = /UpLeg|Leg$|LegTwist|Foot|Toe/;
   function rigidTargets(c, ch){
     var pb = bones[ch.parent], inv = c.meshes[0].skeleton.boneInverses;
     cM.multiplyMatrices(pb.matrixWorld, inv[ch.parent]);   // model -> world, riding the joint
@@ -600,9 +600,21 @@ function KCharFigure(body, sliders, load){
     var F = cM;
     if(!ch.whole){
       F = rtH.multiplyMatrices(bones[byName.Hips].matrixWorld, inv[byName.Hips]);
-      rtN.setFromMatrix4(F);
-      for(var k = 1; k < ch.p.length; k++)
-        (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).subVectors(ch.p[k], ch.p[0]).applyMatrix3(rtN).add(ch.tw[0]);
+      // placed by the hips, turned with their heading only (keeping their scale): cloth below them hangs, and turned
+      // with the whole pelvis, the idle's tilt of it swung a panel hanging 1 m from the chest into the legs. The top
+      // point's own offset (the chest leans 10 cm ahead of the hips in an idle) fades out down to the hip joint: carried
+      // whole, a back panel's lower points sank into the buttocks and the layering threw them out in front, through
+      // the body, wide as a wing (the court robes, the chief's apron)
+      var fe = F.elements, fs = Math.hypot(fe[8], fe[9], fe[10]), fh = Math.hypot(fe[8], fe[10]) || 1;
+      var fx = fe[8] / fh * fs, fz = fe[10] / fh * fs;
+      var Hm = rtW.setFromMatrixPosition(rtS.copy(inv[byName.Hips]).invert()), Hw = rtU.setFromMatrixPosition(bones[byName.Hips].matrixWorld);
+      F.set(fz, 0, fx, 0, 0, fs, 0, 0, -fx, 0, fz, 0, 0, 0, 0, 1);
+      rtX.copy(Hm).applyMatrix4(F); F.setPosition(Hw.x - rtX.x, Hw.y - rtX.y, Hw.z - rtX.z);
+      var off = rtX.copy(ch.p[0]).applyMatrix4(F).negate().add(ch.tw[0]), y0 = ch.p[0].y, hy = Hm.y;
+      for(var k = 1; k < ch.p.length; k++){
+        var fk = THREE.MathUtils.clamp((ch.p[k].y - hy) / Math.max(1e-4, y0 - hy), 0, 1);
+        (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).copy(ch.p[k]).applyMatrix4(F).addScaledVector(off, fk);
+      }
     }
     // the root joint where its point is (a child of the parent joint: placed in its frame)
     var b0 = ch.bones[0];
