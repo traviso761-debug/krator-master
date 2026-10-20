@@ -102,4 +102,14 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
   `etFaceScreen`. Six catalog pieces (archive shelf, examination desk, capsule rack, mask bench, weighing scale, petition
   stand). Ten more census trades carried (eleven of 44; 30 gaps, by phase in KNOWN_ISSUES.md).
 
-Next: P5 (the court and the hosts). `PLAN.md` §11.
+## P5 (2026-10-20)
+
+- **The kept state** on two Ancient bodies, Plymouth and Arcoindian I (the owner's choice): `kits/ancients/targets/kept`
+  (`dist/kept.html`), a pass over the bodies' materials, so the Ancients kit's builders are not forked: every glazed
+  opening alabaster in a bronze tracery grid, the shell cleaned toward the Ancient white, cyan strips alive on a fifth of
+  their runs, nothing patched. The target's `NOTES.md` has the detail.
+- **A quality pass on both bodies** (the owner): Plymouth's see-through voids closed (its liner, its light court's walls
+  over the channel), both buildings' exterior stairs rebuilt as two flights with landings onto the deck above,
+  Arcoindian's towers kept under the vault.
+
+Next: P6 (trade, hydraulics and harbour). `PLAN.md` §11.

@@ -169,8 +169,8 @@
    "sha256": "d3825452e69211f36b16e717d231519f5b3ea4175a504e5780f9c1ddf7469583"
   },
   "kits/ancients/dist/arcoindian.html": {
-   "bytes": 2494543,
-   "sha256": "18a22346a54b1809ba3485228e5e562b109059ce798276b2ffe11fc3eec40c07"
+   "bytes": 2499104,
+   "sha256": "e3f66b7791cad703874a63096a28a2dabb78385b774ac41bfd71078f1ddd14bc"
   },
   "kits/ancients/dist/arcoindian2.html": {
    "bytes": 2495201,
@@ -240,6 +240,10 @@
    "bytes": 2486136,
    "sha256": "e36449d06595b722ee6dc69da6f29ebd481b2899763bbf6550874e39827f3e2d"
   },
+  "kits/ancients/dist/kept.html": {
+   "bytes": 2494402,
+   "sha256": "e5ef745188fa0cfa7f85dd77238764bfd8d5a2c7cae302ae74aca278faa19ff4"
+  },
   "kits/ancients/dist/launch.html": {
    "bytes": 2496417,
    "sha256": "c24b45bada1ed76de66c74b1a2364eb6b6f829e15e5b6cc1f363578fff876f1f"
@@ -257,8 +261,8 @@
    "sha256": "8c820c516c3473dcc00f7ecf8aeca3dcc64bb4819a14545b4bc6b1c46120632f"
   },
   "kits/ancients/dist/plymouth.html": {
-   "bytes": 2489956,
-   "sha256": "62cf5b208cce5f985e0f4bf093989e03efbbaffd4e37d113f88bbbb19ce03a47"
+   "bytes": 2494517,
+   "sha256": "a2025b9786e5b85be1fa1d2f4981eaeb8086c75d2bb0cb402d338147951944dd"
   },
   "kits/ancients/dist/ring.html": {
    "bytes": 2493238,

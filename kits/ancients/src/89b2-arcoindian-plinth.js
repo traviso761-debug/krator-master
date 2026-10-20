@@ -43,7 +43,9 @@
  TWR.forEach((T,ti)=>{
   const rad=Math.min(64,Rplinth(T.a)-T.r-10);
   const tx=PX2(T.a,rad),tz=PZ2(T.a,rad);
-  const h=T.h,rFn=y2=>T.r*(1-.11*(y2/h)+.05*Math.sin(Math.PI*y2/h));
+  /* the tower, its crown and its finial (26 m over its top) stay 4 m under the rock roof over them (the owner's quality
+     pass, 2026-10-20: the residential tower at the back went through the vault) */
+  const roof=roofY(tx,tz),h=roof>0?Math.max(40,Math.min(T.h,roof-PY-30)):T.h,rFn=y2=>T.r*(1-.11*(y2/h)+.05*Math.sin(Math.PI*y2/h));
   TW.push({x:tx,z:tz,r:T.r,h:h,k:T.k,n:T.n,y0:PY});
   const brk=dd&&ti===1?h*.62:null;                       // the cultural centre has lost its top
   const cutH=brk||h;
@@ -105,7 +107,28 @@
  // the pinching: at the flanks the nine risers collapse onto the plinth's own
  // wall, so the stack closes itself instead of showing nine cut ends.
  const CWX=6.4;
- for(let k=1;k<=NT;k++){const y0=TY(k),y1=TY(k-1);
+ /* THE STAIRS (the owner's quality pass, 2026-10-20). Terrace k's runs climb from its deck to terrace k-1's, every 17
+    bays: two flights along the riser on its true tangent (the lobed plan is not a circle, so the radial bearing is not
+    the wall's normal), a half landing, a landing at the foot and one at the head that crosses the riser's top onto the
+    deck above through a gap in that deck's parapet. Chosen without a draw, so the terrace above can leave its gap. */
+ const aiStairs=k2=>{if(k2<1||k2>NT)return [];const nb2=Math.max(24,Math.round(TAU*RT(k2-1,0)/CWX)),out=[];
+  for(let i=5;i<nb2;i+=17){const th=(i+.5)/nb2*TAU,e=12/RT(k2-1,th);
+   if(tf(th)<.4||tf(th-e*1.2)<.4||tf(th+e*1.2)<.4)continue;
+   if(dd&&((i*13+k2*7)%10)>=5)continue;
+   const r=RT(k2-1,th),pa=[PX2(th-.002,RT(k2-1,th-.002)),PZ2(th-.002,RT(k2-1,th-.002))],pb=[PX2(th+.002,RT(k2-1,th+.002)),PZ2(th+.002,RT(k2-1,th+.002))];
+   const tl=Math.hypot(pb[0]-pa[0],pb[1]-pa[1]),t=[(pb[0]-pa[0])/tl,(pb[1]-pa[1])/tl];let n=[t[1],-t[0]];
+   if(n[0]*Math.cos(th)+n[1]*Math.sin(th)<0)n=[-n[0],-n[1]];
+   const p=[PX2(th,r),PZ2(th,r)];
+   if(IMP&&Math.hypot(p[0]-IMP.x,p[1]-IMP.z)<IMP.r)continue;
+   out.push({i:i,th:th,p:p,t:t,n:n,top:[p[0]+t[0]*11.6-n[0]*1.0,p[1]+t[1]*11.6-n[1]*1.0]});}
+  return out;};
+ const aiFlight=(S,y0)=>{const q=qFacing([S.t[0],0,S.t[1]]),at=(a,b)=>[S.p[0]+S.n[0]*(4.8+b)+S.t[0]*a,S.p[1]+S.n[1]*(4.8+b)+S.t[1]*a],h=TST/2;
+  let a=at(-10,0);kput('aiStair',[a[0],y0,a[1]],q,[4.5,h,9],stoneC());
+  a=at(0,0);kput(BX,[a[0],y0+h-.35,a[1]],q,[4.5,.7,2.2],stoneC());
+  a=at(1,0);kput('aiStair',[a[0],y0+h,a[1]],q,[4.5,h,9],stoneC());
+  a=at(11.6,-2.38);kput(BX,[a[0],y0+TST-.35,a[1]],q,[9.25,.7,3.2],stoneC());
+  a=at(-11.2,0);kput(BX,[a[0],y0+.1,a[1]],q,[4.5,.2,2.4],stoneC());};
+ for(let k=1;k<=NT;k++){const y0=TY(k),y1=TY(k-1),stK=aiStairs(k),gaps=aiStairs(k+1).map(S=>S.top);
   GRD.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(RT(k-1,th),RT(k,th),v);
     return[PX2(th,r),y0,PZ2(th,r)];},128,3,{uS:60,vS:4,
     hole:(u,v)=>{const th=u*TAU;if(tf(th)<.05)return true;
@@ -136,11 +159,10 @@
    if(rng()<(dd?.08:.17))kput('aiBalc',[px3+N[0]*.2,y0+5.2,pz3+N[1]*.2],q,[5.0,2.4,3.2],stoneC());
    if(!dd&&i%9===3)kput('strip',[px3+N[0]*1.1,y1-1.6,pz3+N[1]*1.1],q,[CWX*2.4,1.1,1.1],CYAN);
    // parapet on the deck in front
-   if(i%2===0&&!(dd&&rng()<.3)){const r2=RT(k,th);
+   if(i%2===0&&!gaps.some(g=>Math.hypot(g[0]-PX2(th,RT(k,th)-1.2),g[1]-PZ2(th,RT(k,th)-1.2))<per/nb*1.05+3)&&!(dd&&rng()<.3)){const r2=RT(k,th);
     kput(BX,[PX2(th,r2-1.2),y0+1.5,PZ2(th,r2-1.2)],qEuler(0,-th,0),[per/nb*2.1,3,2.2],stoneC());}
-   // a stair run laid ALONG the terrace every so often
-   if(i%17===5&&!(dd&&rng()<.5))
-    kput('aiStair',[PX2(th,r+5),y0,PZ2(th,r+5)],qFacing([-N[1],0,N[0]]),[5.5,TST,19],stoneC());}
+   // the stair run up to the terrace above (aiStairs)
+   {const S=stK.find(S=>S.i===i);if(S)aiFlight(S,y0);}}
   // maisonettes, planting and people out on the deck
   const nd=26+k*2;
   for(let i=0;i<nd;i++){const th=rng()*TAU;

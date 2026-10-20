@@ -190,7 +190,8 @@ TARGET_OUT = {
     'spaceport': 'spaceport.html',             # dev: the Iziz spaceport in every decay (8ao-iz-spaceport)
     'funicular': 'funicular.html',             # the broken Ancient funicular on an escarpment (8ap-funicular; Verge takes it)
     'hosts': 'hosts.html',                     # five types drawn as Hykkousoi hosts for Ys (src/8ap-host-*)
-    'sanctum': 'sanctum.html',                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
+    'sanctum': 'sanctum.html',
+    'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -211,6 +212,7 @@ DETERMINISTIC = {
     '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
     '8aq0-sanctum-plan.js', '8aq1-sanctum-kept.js', '8aq2-sanctum-skins.js',   # targets/sanctum: KRAND-hashed records, no rng()
     '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
+    '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
 }
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
