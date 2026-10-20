@@ -141,8 +141,8 @@
    "sha256": "24f147e450d3e9cd8d302c3d9ebb746bbb0350b5d601e6e59d3d0fcd9d5b21da"
   },
   "core/sockets/example/sockets-example.html": {
-   "bytes": 179514,
-   "sha256": "ad80275f91632a8067751453c108c915916e8b5ae4907e924f0f26475590f491"
+   "bytes": 183248,
+   "sha256": "eb7faf6b376cfe322e3c2e88a3484a1f545c44e08ab529b2938f055ce928f079"
   },
   "kits/ancients-interiors/dist/ancients-interiors.html": {
    "bytes": 305666,
@@ -365,8 +365,8 @@
    "sha256": "a05cb8150608a72492eae568f93eefb8abf3af2c68ee19200f2d97762cca869f"
   },
   "kits/post-apoc/dist/post-apoc.html": {
-   "bytes": 7062514,
-   "sha256": "df3a156acc8f60c2c7b5a7ca92e2ef780536a2fe2939ce4b823e3de1a6e82734"
+   "bytes": 7065285,
+   "sha256": "e29ff6c6c2830ba6956f4f89816304bb0dc5878bc747520f87507e309d4cab49"
   },
   "kits/pylon/dist/pylon.html": {
    "bytes": 2171390,
@@ -389,8 +389,8 @@
    "sha256": "640e17b3b7cc323745027d17f5b1dbd2180df2e6db27dced0732175276d61567"
   },
   "kits/zeijani/dist/zeijani.html": {
-   "bytes": 1340226,
-   "sha256": "c133725c7e4f787077196606a5616d04f039ba09cf82bf086cd797a1045e516d"
+   "bytes": 1342997,
+   "sha256": "5a9161dbacfeb70d8409380c5dc530d01273cfc8a39d9e975db8eb5cf0dda281"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
    "bytes": 4565781,
@@ -493,8 +493,8 @@
    "sha256": "4e01c6dc6589c9b6b4c817c43c53c0767908c888bb11c88e30fdd9024a068a5e"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 3230360,
-   "sha256": "6df227ca181d9149ed45ca0a2f5614be72fe70fa42c6a2d6f127011ba1d922a9"
+   "bytes": 3234989,
+   "sha256": "4848be946e8aeb43da37bd06bfc11612e0186a9be09214bed29ae71b55956e52"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9047879,

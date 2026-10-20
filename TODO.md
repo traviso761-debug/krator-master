@@ -33,6 +33,11 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   core/host. The Iziz palace page carries a page-only guard until then (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`,
   its first lines): take that out in the same change.
 
+- **kits/catalog: re-vendor the culture symbols** (2026-10-20). `core/sockets/38-symbols.js` gained `lotus` (Xanadu's, in place of the wheel) and `scroll` (the Order of
+  Historians' symbol, `SYMBOL_OF.order`); the catalog's copy `kits/catalog/krator-symbols.js` was left as it was, because it
+  is in the furniture bundle that about 27 builds take (Iziz among them, whose textures this checkout could not fetch).
+  Copy it over, so the Order's furniture carries the scroll and Xanadu's the lotus; the packs in `core/sockets` already do.
+
 ## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
 
 The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md` (phases, rules, milestones),

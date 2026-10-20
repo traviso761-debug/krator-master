@@ -3,7 +3,8 @@
 // White Palace's base: LS_THANGKA) is unrolled from dawn to dusk, and the pilgrims' camp ground in the ward (LS.CAMP) is
 // pitched for the day and its night: the valley's white cotton tents with their blue appliqué, a cook fire at every
 // second one, the trough. The rest of the week the thangka is rolled away and the ground is bare. Who comes and where they
-// go that day is core/simulation's (40-ls-plan FEST_SCHEDULES, 40d); this fragment only shows the day.
+// go that day is core/simulation's (40-ls-plan FEST_SCHEDULES, 40d); this fragment only shows the day, and that night the
+// butter-lamp offering (the lamps along the base's foot and round the Debate Court).
 // ?festival=1 opens the page on the festival day (99).
 const LSFEST=(function(){const T=THREE,C=LS.CAMP,F=LS.FESTIVAL,y0=LS.wardY((C.z0+C.z1)/2),grp=new T.Group();grp.visible=false;scene.add(grp);
  REGISTER({name:C.name,cls:'fixture',kind:'camp',key:'longsong_pilgrims_camp',x:(C.x0+C.x1)/2,z:(C.z0+C.z1)/2,y:y0,r:(C.x1-C.x0)/2,h:3,
@@ -37,26 +38,41 @@ const LSFEST=(function(){const T=THREE,C=LS.CAMP,F=LS.FESTIVAL,y0=LS.wardY((C.z0
  {const t=C.trough,y=terrainH(t.x,t.z);const box=new T.Mesh(new T.BoxGeometry(t.w,.6,t.d),new T.MeshLambertMaterial({color:0x6a4a2c}));box.position.set(t.x,y+.3,t.z);
   const w=new T.Mesh(new T.PlaneGeometry(t.w-.2,t.d-.2),new T.MeshLambertMaterial({color:0x3a5a5a}));w.rotation.x=-Math.PI/2;w.position.set(t.x,y+.55,t.z);
   box.userData.inspectLabel=w.userData.inspectLabel='The camp\'s water trough';grp.add(box,w);}
+ // ---------------------------------------------------------------- the butter-lamp offering (the festival night)
+ // a row along the forecourt at the base's foot, two before the thangka (east of the stair's landing), and a ring round
+ // the Debate Court's floor; each a small flame's glow (additive points), lit at dusk and burning down by dawn
+ const LP=[],WP=LS.building('white-palace'),K=WP.court,TOP=LS.ROCK.top,fy=-1.6;
+ for(let x=-90;x<=94;x+=1.6)LP.push([x,terrainH(x,-11)+.25,-11]);   // on the ground (the forecourt stands above the ward's datum)
+ for(const z of [-5,-7])for(let x=74;x<=94;x+=1.2)LP.push([x,Math.max(terrainH(x,z),fy)+.25,z]);
+ for(let x=K.x0+2;x<=K.x1-2;x+=1.5){LP.push([x,TOP+.25,K.z0+2]);LP.push([x,TOP+.25,K.z1-2]);}
+ for(let z=K.z0+3.5;z<=K.z1-3.5;z+=1.5){LP.push([K.x0+2,TOP+.25,z]);LP.push([K.x1-2,TOP+.25,z]);}
+ const lpG=new T.BufferGeometry();lpG.setAttribute('position',new T.Float32BufferAttribute(LP.flat(),3));
+ // each lamp a glow (2.2 m, soft) and its flame (a hard bright core that stays a few pixels however far off)
+ const lamps=new T.Group(),lampM=o=>new T.PointsMaterial(Object.assign({map:glowM.map,transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false},o));
+ lamps.add(new T.Points(lpG,lampM({size:2.2,sizeAttenuation:true,color:0xffb060,opacity:.85})),new T.Points(lpG,lampM({size:5,sizeAttenuation:false,color:0xfff0c0})));
+ lamps.visible=false;lamps.traverse(m=>{m.userData.probeSkip=true;m.userData.inspectLabel='The butter-lamp offering (the festival night)';m.frustumCulled=false;});scene.add(lamps);
+ const litAt=(day,hour)=>{const L=F.lamps;return (LS.isFestival(day)&&hour>=L[0])||(LS.isFestival(day-1)&&hour+24<L[1]);};
  // ---------------------------------------------------------------- the day
  const state={festival:false,hung:false,day:-1,hour:-1};
  function apply(day,hour){const fest=LS.isFestival(day),hung=fest&&hour>=F.hung[0]&&hour<F.hung[1];
-  state.festival=fest;state.hung=hung;state.day=day;state.hour=hour;grp.visible=fest;if(typeof LS_THANGKA!=='undefined'&&LS_THANGKA)LS_THANGKA.visible=hung;
+  state.festival=fest;state.hung=hung;state.day=day;state.hour=hour;grp.visible=fest;state.lamps=lamps.visible=litAt(day,hour);if(typeof LS_THANGKA!=='undefined'&&LS_THANGKA)LS_THANGKA.visible=hung;
   glowM.opacity=.25+.6*(typeof LSNIGHT!=='undefined'?1-LSNIGHT.state.day:0);}
  TICKS.push(()=>{const c=typeof _hostH!=='undefined'&&_hostH&&_hostH.clock;if(!c)return;if(c.day!==state.day||Math.abs(c.hour-state.hour)>.02)apply(c.day,c.hour);});
  apply(0,12);
  // ---------------------------------------------------------------- the checks (64)
  const FECHK={
   // the thangka is up only on the festival day, dawn to dusk; a week has one festival
-  calendar(isF,hungAt){let days=0,bad=[];for(let d=0;d<14;d++){if(isF(d))days++;for(const h of [3,12,21]){const want=isF(d)&&h>=F.hung[0]&&h<F.hung[1];if(hungAt(d,h)!==want)bad.push('day '+(d+1)+' '+h+'h');}}
-   return{ok:days===2&&!bad.length,detail:days+' festival days in 14; the thangka '+(bad.length?'wrong at '+bad.slice(0,3).join(', '):'up only on them, '+F.hung[0]+'h to '+F.hung[1]+'h')};},
+  calendar(isF,hungAt,lampAt){let days=0,bad=[];for(let d=0;d<14;d++){if(isF(d))days++;for(const h of [3,12,21]){const want=isF(d)&&h>=F.hung[0]&&h<F.hung[1];if(hungAt(d,h)!==want)bad.push('day '+(d+1)+' '+h+'h');
+    const lit=(isF(d)&&h>=F.lamps[0])||(isF(d-1)&&h+24<F.lamps[1]);if(lampAt&&lampAt(d,h)!==lit)bad.push('the lamps day '+(d+1)+' '+h+'h');}}
+   return{ok:days===2&&!bad.length,detail:days+' festival days in 14; the thangka '+(bad.length?'wrong at '+bad.slice(0,3).join(', '):'up only on them, '+F.hung[0]+'h to '+F.hung[1]+'h, and the '+LP.length+' butter lamps lit only that night')};},
   // the camp's tents stand in the camp ground, clear of the buildings and of one another
   camp(tents){const B=LS.BUILDINGS.filter(o=>o.base==='ward'),bad=[];
    tents.forEach((t,i)=>{if(t.x<C.x0||t.x>C.x1||t.z<C.z0||t.z>C.z1)bad.push(i+' outside');
     if(B.some(o=>Math.abs(t.x-o.x)<o.w/2+t.w/2&&Math.abs(t.z-o.z)<o.d/2+t.d/2))bad.push(i+' in a building');
     tents.forEach((u,j)=>{if(j>i&&Math.abs(t.x-u.x)<(t.w+u.w)/2&&Math.abs(t.z-u.z)<(t.d+u.d)/2)bad.push(i+' on '+j);});});
    return{ok:!bad.length,detail:tents.length+' tents, '+fires.length+' cook fires; '+(bad.length?bad.slice(0,3).join('; '):'all in the ground, clear')};}};
- const hungAt=(d,h)=>{apply(d,h);return state.hung;};
- window.festivalChecks=function(add){const s0=[state.day,state.hour];add('the great thangka hangs only on the festival day',FECHK.calendar(LS.isFestival,hungAt));apply(s0[0],s0[1]);
+ const hungAt=(d,h)=>{apply(d,h);return state.hung;},lampAt=(d,h)=>{apply(d,h);return state.lamps;};
+ window.festivalChecks=function(add){const s0=[state.day,state.hour];add('the great thangka hangs only on the festival day',FECHK.calendar(LS.isFestival,hungAt,lampAt));apply(s0[0],s0[1]);
   add('the pilgrims\' camp stands in its ground',FECHK.camp(C.tents));};
  window.festivalNegatives=function(add){add('a thangka hung every day',FECHK.calendar(()=>true,()=>true));
   add('a tent pitched in the market hall',FECHK.camp(C.tents.concat([{x:86,z:-96,w:4,d:4}])));};

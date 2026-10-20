@@ -29,7 +29,7 @@ const LSFIG=(function(){const O={on:false,ready:0,want:0,err:null,slots:[],loads
  const REC=new Array(LS.PEOPLE.length);
  const recOf=i=>REC[i]||(REC[i]=LSK.record(LS.PEOPLE[i],D));
  // the clip each activity wants (data/clips.json's names: the body's anims.glb)
- const CLIP=(i,act)=>act==='MOVE'||act==='KORA'||act==='WALK'?'walk':act==='DRILL'?(LS.PEOPLE[i].role==='master'?'combat_idle':'ual_punch'):
+ const CLIP=(i,act)=>act==='MOVE'||act==='KORA'||act==='WALK'||act==='CHAM'?'walk':act==='DRILL'?(LS.PEOPLE[i].role==='master'?'combat_idle':'ual_punch'):
   act==='DEBATE'?(KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,7))<.5?'ual_talk':'sit_floor'):act==='GUARD'?'combat_idle':act==='FARM'?'ual_harvest':
   act==='TURN_WHEEL'?'ual_push':'idle';
  // ---------------------------------------------------------------- the slots: a figure each, given to the nearest people

@@ -2,8 +2,10 @@
 
 - [ ] **The festival is the same every week** (`89y`): one festival schedule a role, the same tents in the same places;
       the valley's folk walk in at five and out again at midnight (they are `AWAY`, out by the gate, the rest of the
-      week); the walk graph does not know the tents, so a walker may pass through one; the crowd on the forecourt faces
-      the thangka from the avenue's head, 80 m to its west. No cham dance yet, and no butter-lamp offering at night.
+      week). The cham's dancers (24 of the monks, masked) turn in a ring in the Debate Court on the library's walk clip
+      and a turning pose: no dance clip in core/charactermodels yet, and the masks are plain shapes, not the deer, the
+      skull and the black hat. The butter lamps are glows, not lamps in their bowls. (2026-10-20: the crowd now stands
+      before the thangka, the tents are out of the walk graph.)
 - [ ] **Only the nearest 24 people are dressed** (`69`: core/charactermodels figures, each morphed on the CPU); the
       rest are placeholder figures (a robe, a head, two arms, a sash; instanced). core/charactermodels has no level of
       detail or instanced crowd yet, so a whole court cannot be drawn dressed; the figures pass through one another, and

@@ -318,7 +318,11 @@ P.PLACES=[
  {id:'caravanserai',activity:'REST_C',x:150,z:-170,y:'ward',r:20,cap:60,indoor:true,name:'The caravanserai'},
  // the festival of the register (P.FESTIVAL): the forecourt at the stair's foot, where the house sees the great
  // thangka unveiled (facing it); the pilgrims' camp ground; and the valley, where the festival's visitors are the rest of the week
- {id:'forecourt',activity:'FESTIVAL',x:0,z:-34,y:'ward',r:40,cap:1600,face:[81,10],name:'The forecourt (the thangka unveiled)'},
+ {id:'forecourt',activity:'FESTIVAL',x:62,z:-32,y:'ward',r:34,cap:1600,face:[81,10],name:'The forecourt before the thangka (the thangka unveiled)'},   // (2026-10-20: before it, not 80 m west at the avenue's head)
+ // the cham (the masked dance) in the Debate Court on the festival morning: the dancers' ring in its middle, the house
+ // round it (the court's edge, the ring left clear)
+ {id:'cham',activity:'CHAM',x:0,z:51,y:'rock',r:8,cap:30,name:'The cham (the masked dance of the register)'},
+ {id:'cham-watch',activity:'WATCH',x:0,z:51,y:'rock',r:30,hole:11,cap:1200,face:[0,51],name:'The Debate Court (watching the cham)'},
  {id:'camp',activity:'CAMP',x:148,z:-81,y:'ward',r:44,cap:260,name:"The pilgrims' camp ground"},
  {id:'away',activity:'AWAY',x:0,z:-190,y:'ward',r:3,cap:400,indoor:true,name:'Home in the valley (out by the Great Gate)'},
  {id:'barracks',activity:'REST_W',x:-90,z:-110,y:'ward',r:15,cap:120,indoor:true,name:"The wardens' barracks"}];
@@ -350,7 +354,9 @@ P.SCHEDULES={
 // gathers on the forecourt to see it; the elders hold the great debate; the procession walks the kora; it is rolled up
 // at dusk. The valley comes in for the day, and the pilgrims camp in the ward that night (the camp ground: its tents,
 // cook fires and trough are pitched only then). A role's festival schedule (FEST_SCHEDULES) replaces its day's.
-P.FESTIVAL={name:'The festival of the register',week:7,day:6,hung:[6,18.5]};
+P.FESTIVAL={name:'The festival of the register',week:7,day:6,hung:[6,18.5],
+ // the butter-lamp offering that night: rows of lamps at the foot of the base under the thangka and round the Debate Court
+ lamps:[18.6,30],cham:{dancers:24,masks:[0xf2ede0,0xb02818,0x1e3c8c,0x2a6a3a,0xd8a020,0x2a2a2a]}};
 P.isFestival=day=>((day%P.FESTIVAL.week)+P.FESTIVAL.week)%P.FESTIVAL.week===P.FESTIVAL.day;
 P.CAMP={x0:106,x1:192,z0:-88,z1:-75,name:"The pilgrims' camp ground (festival days)",trough:{x:149,z:-76.5,w:6,d:1.2},
  // the tents: two rows of the valley's white cotton tents (a ridge, blue appliqué knots), each with its cook fire; placed
@@ -358,15 +364,17 @@ P.CAMP={x0:106,x1:192,z0:-88,z1:-75,name:"The pilgrims' camp ground (festival da
  tents:(function(){const out=[];for(let row=0;row<2;row++)for(let i=0;i<10;i++){const u=KRAND.unit(KRAND.hash(5507,row,i)),v=KRAND.unit(KRAND.hash(5507,row,i,1));
    out.push({x:110+i*8.4+u*2,z:row?-79.5:-84.5,ry:(row?0:Math.PI)+(v-.5)*.3,w:3.2+u*.8,d:4+v,h:2.3+v*.4,fire:i%2===row});}return out;})()};
 P.FEST_SCHEDULES={
- monk:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'DEBATE',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',20:'STUDY_IN',22:'SLEEP'}),
- novice:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'DEBATE',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',21:'SLEEP'}),
- elder:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'DEBATE',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',21:'SLEEP'}),
+ monk:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'WATCH',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',20:'STUDY_IN',22:'SLEEP'}),
+ // the cham's dancers (P.CHAM.dancers of the monks): they dance where the house watches
+ cham:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'CHAM',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',20:'STUDY_IN',22:'SLEEP'}),
+ novice:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'WATCH',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',21:'SLEEP'}),
+ elder:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'WATCH',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',21:'SLEEP'}),
  operative:S({0:'SLEEP',4:'DRILL',6:'FESTIVAL',9:'EAT',10:'DRILL',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',20:'SLEEP'}),
  master:S({0:'SLEEP',3:'PRAY',6:'FESTIVAL',9:'DRILL',13:'STUDY',16:'DRILL',19:'PRAY',21:'SLEEP'}),
  keeper:S({0:'TURN_WHEEL',3:'KEEP',6:'SLEEP',12:'TURN_WHEEL',15:'KEEP',18:'PRAY',20:'TURN_WHEEL'}),   // the wheel does not stop for a festival
  warden:S({0:'GUARD',6:'FESTIVAL',9:'GUARD',18:'EAT',19:'REST_W',22:'GUARD'}),
  servant:S({0:'REST',5:'WORK',6:'FESTIVAL',9:'WORK',14:'TRADE',18:'TEA',20:'REST'}),
- scholar:S({0:'REST',6:'FESTIVAL',9:'TEA',10:'DEBATE',13:'TEA',14:'KORA',18:'TEA',20:'REST'}),
+ scholar:S({0:'REST',6:'FESTIVAL',9:'TEA',10:'WATCH',13:'TEA',14:'KORA',18:'TEA',20:'REST'}),
  artisan:S({0:'REST',6:'FESTIVAL',9:'TRADE',13:'TEA',14:'KORA',17:'TRADE',20:'REST'}),
  trader:S({0:'REST',5:'TRADE',22:'REST'}),
  caravan:S({0:'REST_C',6:'FESTIVAL',9:'TRADE',13:'TEA',14:'TRADE',20:'TEA',22:'REST_C'}),
@@ -393,7 +401,8 @@ P.ROLES=[
 P.PEOPLE=(function(){const out=[];let k=0;
  P.ROLES.forEach(R=>{for(let i=0;i<R.n;i++){const seed=KRAND.hash(7401,k,i);
   out.push({id:'ls-'+R.role+'-'+String(i).padStart(2,'0'),role:R.role,faction:R.faction,sub:R.sub,job:R.job,dress:R.dress,seed,
-   variant:Array.isArray(P.SCHEDULES[R.role][0])?i%P.SCHEDULES[R.role].length:0,fest:P.FEST_SCHEDULES[R.role],
+   variant:Array.isArray(P.SCHEDULES[R.role][0])?i%P.SCHEDULES[R.role].length:0,cham:R.role==='monk'&&i<P.FESTIVAL.cham.dancers,
+   fest:R.role==='monk'&&i<P.FESTIVAL.cham.dancers?P.FEST_SCHEDULES.cham:P.FEST_SCHEDULES[R.role],
    schedule:Array.isArray(P.SCHEDULES[R.role][0])?P.SCHEDULES[R.role][i%P.SCHEDULES[R.role].length]:P.SCHEDULES[R.role]});k++;}});
  return out;})();
 P.placeOf=function(activity,seed){const L=P.PLACES.filter(p=>p.activity===activity);return L.length?L[seed%L.length]:null;};

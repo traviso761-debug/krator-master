@@ -59,6 +59,11 @@ const PEOPLE_DRAWN=(function(){
    if(act==='KORA'&&s.korT==null)s.korT=t;}
   out.shown=shown;}
  const POS=new Float32Array(N*4);
+ // the cham's masks (the dancers: LS.PEOPLE's cham; their colours LS.FESTIVAL.cham.masks): drawn only while they dance
+ const DANCERS=LS.PEOPLE.map((P,i)=>P.cham?i:-1).filter(i=>i>=0),maskG=new THREE.SphereGeometry(.2,12,9);maskG.scale(1,1.25,.8);
+ const masks=mk(maskG,Math.max(1,DANCERS.length),new THREE.MeshLambertMaterial({color:0xffffff}));masks.userData.inspectLabel='A cham mask';
+ DANCERS.forEach((i,k)=>{masks.setColorAt(k,new THREE.Color(LS.FESTIVAL.cham.masks[k%LS.FESTIVAL.cham.masks.length]).convertSRGBToLinear());});
+ if(masks.instanceColor)masks.instanceColor.needsUpdate=true;const MASK=new Map(DANCERS.map((i,k)=>[i,k]));
  const out={shown:0,place,S,sim:SIMS,POS,dressed:new Set()};
  // the master of arms (the first master) stands in the drill ground's middle
  const MASTER=LS.PEOPLE.findIndex(P=>P.role==='master');
@@ -73,6 +78,10 @@ const PEOPLE_DRAWN=(function(){
    o.x=s.x+Math.sin(o.ry)*.35*strike;o.z=s.z+Math.cos(o.ry)*.35*strike;
    if(side){o.a0=-1.55*strike;o.a1=-.4;}else{o.a1=-1.55*strike;o.a0=-.4;}o.r0=.12+.5*(k%3===2?strike:0);return o;}
   if(s.act==='DEBATE'){const q=KRAND.unit(KRAND.hash(P.seed,7))<.5;if(q){const c=Math.max(0,Math.sin(t*1.3+ph));o.a0=-1.2*c-.2;o.a1=-1.1*c-.2;o.r0=.4*c;o.r1=-.4*c;}else{o.sy=.55;o.y=s.y;}return o;}
+  // the cham: the masked dancers turning round the Debate Court's middle, each spinning slowly, arms out, a step and a bob
+  if(s.act==='CHAM'&&s.place){const cx=s.place.x,cz=s.place.z,r0=Math.hypot(s.x-cx,s.z-cz),a=Math.atan2(s.z-cz,s.x-cx)-t*.11;
+   o.x=cx+Math.cos(a)*r0;o.z=cz+Math.sin(a)*r0;o.ry=t*.8+ph;const st=Math.sin(t*2.1+ph);o.y=s.y+.08*Math.abs(st);
+   o.a0=-.5-.3*st;o.a1=-.5+.3*st;o.r0=1.1+.2*st;o.r1=-1.1+.2*st;return o;}
   if(s.act==='MOVE'){const st=Math.sin(t*5.5+ph);o.a0=.35*st;o.a1=-.35*st;o.y=s.y+.03*Math.abs(st);return o;}
   if(s.act==='KORA'){const K=LS.KORA,sp=1.1/Math.max(K.a,K.b),a0=Math.atan2((s.z-K.cz)/K.b,(s.x-K.cx)/K.a),a=a0-(t-(s.korT==null?t:s.korT))*sp;   // clockwise seen from above, from where one joined it
    o.x=K.cx+Math.cos(a)*K.a;o.z=K.cz+Math.sin(a)*K.b;o.y=terrainH(o.x,o.z);o.ry=Math.atan2(Math.sin(a)*K.a,-Math.cos(a)*K.b);const st=Math.sin(t*5+ph);o.a0=.3*st;o.a1=-.3*st;return o;}
@@ -86,12 +95,13 @@ const PEOPLE_DRAWN=(function(){
  function tick(dt,t){
   if(simStart())simFrame(t);
   for(let i=0;i<N;i++){const s=S[i];
-   if(!s.shown){robe.setMatrixAt(i,HIDE);head.setMatrixAt(i,HIDE);sash.setMatrixAt(i,HIDE);staff.setMatrixAt(i,HIDE);arm.setMatrixAt(2*i,HIDE);arm.setMatrixAt(2*i+1,HIDE);continue;}
+   if(!s.shown){robe.setMatrixAt(i,HIDE);head.setMatrixAt(i,HIDE);sash.setMatrixAt(i,HIDE);staff.setMatrixAt(i,HIDE);arm.setMatrixAt(2*i,HIDE);arm.setMatrixAt(2*i+1,HIDE);if(MASK.has(i))masks.setMatrixAt(MASK.get(i),HIDE);continue;}
    pose(i,t,s,o);
    if(i===MASTER&&s.act==='DRILL'){if(t>MS.next){MS.from={x:o.x+MS.x,z:o.z+MS.z,t};const S2=KRAND.stream(KRAND.hash(211,Math.floor(t)));MS.x=S2.range(-9,9);MS.z=S2.range(-6,6);MS.at=t;MS.next=t+S2.range(5,7);}
     o.x+=MS.x;o.z+=MS.z;o.y=terrainH(o.x,o.z);MASTER_AT.set(o.x,o.y,o.z);}
    // where the pose put them (69 stands a dressed figure there); a dressed one's placeholder is not drawn
    POS[i*4]=o.x;POS[i*4+1]=o.y;POS[i*4+2]=o.z;POS[i*4+3]=o.ry;
+   if(MASK.has(i)){const k=MASK.get(i);if(s.act==='CHAM')setM(masks,k,o.x,o.y+1.6*o.sy,o.z,o.ry);else masks.setMatrixAt(k,HIDE);}
    if(out.dressed.has(i)){robe.setMatrixAt(i,HIDE);head.setMatrixAt(i,HIDE);sash.setMatrixAt(i,HIDE);staff.setMatrixAt(i,HIDE);arm.setMatrixAt(2*i,HIDE);arm.setMatrixAt(2*i+1,HIDE);continue;}
    setM(robe,i,o.x,o.y,o.z,o.ry,0,0,o.sy);setM(sash,i,o.x,o.y,o.z,o.ry,0,0,o.sy);setM(head,i,o.x,o.y+(o.sy-1)*1.42,o.z,o.ry);
    const sx=Math.cos(o.ry),sz=-Math.sin(o.ry),hy=o.y+1.36*o.sy;
@@ -104,7 +114,7 @@ const PEOPLE_DRAWN=(function(){
     else{gRobe[k].setMatrixAt(j,HIDE);gArm[k].setMatrixAt(2*j,HIDE);gArm[k].setMatrixAt(2*j+1,HIDE);}continue;}
    pose(i,t-(k+1)*.035,s,go);setM(gRobe[k],j,go.x,go.y,go.z,go.ry,0,0,go.sy);const sx=Math.cos(go.ry),sz=-Math.sin(go.ry),hy=go.y+1.36*go.sy;
    setM(gArm[k],2*j,go.x+sx*.22,hy,go.z+sz*.22,go.ry,go.a0,go.r0);setM(gArm[k],2*j+1,go.x-sx*.22,hy,go.z-sz*.22,go.ry,go.a1,go.r1);}});
-  [robe,head,arm,sash,staff].concat(gRobe,gArm).forEach(m=>{m.instanceMatrix.needsUpdate=true;});
+  [robe,head,arm,sash,staff,masks].concat(gRobe,gArm).forEach(m=>{m.instanceMatrix.needsUpdate=true;});
   PETALS.mat.uniforms.uT.value=t;PETALS.mat.uniforms.uM.value.copy(MASTER_AT);}
  const MASTER_AT=new THREE.Vector3(LS.DRILL.x,0,LS.DRILL.z);
  // the petals over the drill ground: falling and drifting, except within the master's reach, where they hang

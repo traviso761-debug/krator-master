@@ -18,6 +18,8 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
  // a building's footprint (x0, x1, z0, z1, the heights it fills): drums by their radius, the rest by their sides
  // (the Debate Court's galleries ring the court: its open floor is not inside them)
  const FOOT=B.filter(o=>o.kind!=='gallery').map(o=>{const hw=o.r!=null?o.r:o.w/2,hd=o.r!=null?o.r:o.d/2;return {id:o.id,x0:o.x-hw,x1:o.x+hw,z0:o.z-hd,z1:o.z+hd,y0:P.baseY(o)-1,y1:P.topY(o)-.5,court:o.court||null};});
+ // the camp's tents (pitched on festival days): out of the walk graph, and no one stands in one
+ const inTent=(x,z)=>P.CAMP.tents.some(t=>Math.abs(x-t.x)<t.w/2+1.4&&Math.abs(z-t.z)<t.d/2+1.4);
  const inFoot=(f,x,z,m)=>x>f.x0-m&&x<f.x1+m&&z>f.z0-m&&z<f.z1+m&&!(f.court&&x>f.court.x0&&x<f.court.x1&&z>f.court.z0&&z<f.court.z1);
  // ---------------------------------------------------------------- 2. the nav graph
  O.graph=function(){if(O._g)return O._g;const nodes=[],edges=[],byId={},C=O.CELL;
@@ -27,7 +29,7 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
   const Ct=P.COURT,W=P.WARD,wardB=FOOT.filter((f,i)=>B[i].base==='ward');
   const arcWall=(x,z)=>{const dx=x-Ct.x,dz=z-Ct.z,r=Math.hypot(dx,dz);if(Math.abs(r-Ct.r)>1.6)return false;const a=Math.atan2(dz,dx);
    return Ct.arcs.some(([a0,a1])=>{let u=a;while(u<a0)u+=Math.PI*2;while(u>a0+Math.PI*2)u-=Math.PI*2;return u<=a1;});};
-  const free=(x,z)=>!wardB.some(f=>inFoot(f,x,z,1))&&!Ct.pools.some(q=>Math.hypot(x-q.x,z-q.z)<q.r+.8)&&!arcWall(x,z);
+  const free=(x,z)=>!wardB.some(f=>inFoot(f,x,z,1))&&!inTent(x,z)&&!Ct.pools.some(q=>Math.hypot(x-q.x,z-q.z)<q.r+.8)&&!arcWall(x,z);
   const I=Math.floor((W.x1-W.x0-8)/C),J=Math.floor((-12-(W.z0+6))/C),wid=(i,j)=>'w'+i+'_'+j,X=i=>W.x0+4+i*C,Z=j=>W.z0+6+j*C;
   for(let i=0;i<=I;i++)for(let j=0;j<=J;j++){const x=X(i),z=Z(j);if(free(x,z))node(wid(i,j),x,P.wardY(z),z,'ward');}
   const avenue=x=>x>P.AVENUE.x0&&x<P.AVENUE.x1;
@@ -70,14 +72,14 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
  // which plan places sit inside (their walkers reach them by the rooms' doors, not the courts')
  const DOOR={assembly:'in-assembly',cells:'in-west',library:'in-east',refectory:'in-front',roof:'in-roof',vault:'in-vault',wheel:'in-wheel'};
  // the activities whose people stand still at their spot (the life layer animates them: 68)
- const STILL={DRILL:1,DEBATE:1,GUARD:1,TURN_WHEEL:1,KEEP:1};
+ const STILL={DRILL:1,DEBATE:1,GUARD:1,TURN_WHEEL:1,KEEP:1,CHAM:1,WATCH:1,FESTIVAL:1};
  O.placeRecs=function(){const G=O.graph(),out=[];
   for(const pl of P.PLACES){const y=yOf(pl);let x=pl.x,z=pl.z,door,spots=[];
    if(pl.ring){const R=pl.ring;x=R.cx;z=R.cz-R.b;}                 // the kora: joined at its north point (the avenue)
    else if(pl.line){x=(pl.line[0][0]+pl.line[1][0])/2;z=(pl.line[0][1]+pl.line[1][1])/2;}
    if(DOOR[pl.id])door=G.byId[DOOR[pl.id]];else door=G.near(x,z,y);
    if(!DOOR[pl.id]&&!pl.ring&&!pl.indoor){const inR=pl.line?(q=>Math.abs(q.x-x)<pl.r&&q.z>pl.line[0][1]&&q.z<pl.line[1][1]):(q=>Math.hypot(q.x-x,q.z-z)<pl.r);
-    spots=[];for(const q of G.nodes)if(q.tag!=='door'&&q.tag!=='stair'&&Math.abs(q.y-y)<2&&inR(q))for(const [ox,oz] of [[-1,-1],[1,-1],[-1,1],[1,1]]){const sx=q.x+ox,sz=q.z+oz;
+    spots=[];for(const q of G.nodes)if(q.tag!=='door'&&q.tag!=='stair'&&Math.abs(q.y-y)<2&&inR(q)&&!(pl.hole&&Math.hypot(q.x-x,q.z-z)<pl.hole))for(const [ox,oz] of [[-1,-1],[1,-1],[-1,1],[1,1]]){const sx=q.x+ox,sz=q.z+oz;
      if(!FOOT.some(f=>q.y+.5>f.y0&&q.y+.5<f.y1&&inFoot(f,sx,sz,1.6))&&!(pl.id==='camp'&&inTent(sx,sz)))spots.push([sx,sz,q.y]);}   // clear of the walls (and the tents) by more than the wander
     // the spots in an order of their own (a hash of the place and the node), so the first comers spread over the place
     spots.sort((a,b)=>KRAND.hash(pl.id.length,Math.round(a[0]*7),Math.round(a[1]*7))-KRAND.hash(pl.id.length,Math.round(b[0]*7),Math.round(b[1]*7)));}
@@ -86,8 +88,6 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
     activities:{[pl.activity]:pl.cap},indoor:indoor?true:{},spots:spots.length?spots:undefined,cap:pl.cap,r:DOOR[pl.id]&&!indoor?Math.min(pl.r,6):undefined,
     wander:indoor||STILL[pl.activity]?0:1.2,tags:{plan:pl.id}});}
   return out;};
- // the camp's tents (pitched on festival days): no one stands in one
- const inTent=(x,z)=>P.CAMP.tents.some(t=>Math.abs(x-t.x)<t.w/2+1.4&&Math.abs(z-t.z)<t.d/2+1.4);
  // ---------------------------------------------------------------- 4. the records
  O.HOME={monk:'cells',novice:'cells',elder:'cells',operative:'cells',master:'cells',keeper:'cells',warden:'barracks',
   servant:'lay-houses',scholar:'lay-houses',artisan:'lay-houses',trader:'lay-houses',caravan:'caravanserai',pilgrim:'hostel',festgoer:'away'};
@@ -102,7 +102,7 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
     return {id,org:R.role==='caravan'?'caravans':ORG[R.faction],name:R.sub,scheds:{day:Pn.schedule,fest:Pn.fest||Pn.schedule},
      week:Array.from({length:F.week},(u,d)=>d===F.day?'fest':'day'),speed:R.role==='pilgrim'||R.role==='festgoer'?.95:R.role==='operative'?1.3:1.1,
      prefers:{SLEEP:{pin:'home'},REST:{pin:'home'},REST_W:{pin:'home'},REST_C:{pin:'home'},LODGE:{pin:'home'},AWAY:{pin:'home'}}};})};};
- O.roleOf=Pn=>Pn.role+'.'+(Pn.variant||0);
+ O.roleOf=Pn=>Pn.role+'.'+(Pn.variant||0)+(Pn.cham?'.cham':'');   // the cham's dancers: their own festival schedule
  // ---------------------------------------------------------------- the declaration (once; the host's clock)
  O.init=function(clock,o){if(O.inited)return O;O.inited=true;o=o||{};const t0=Date.now(),G=O.graph();
   if(SIM.WEEK!==P.FESTIVAL.week)throw new Error('LSS: the festival is every '+P.FESTIVAL.week+' days; SIM.WEEK is '+SIM.WEEK);
