@@ -31,17 +31,17 @@ export function events(api){
       if(s>seg[0]+seg[1]){scene.remove(ship);return false;}return true;});}
 
   // ---- a storm off the Pacific ----
-  function storm(){const F=scene.fog;if(!F||F.density===undefined)return;let t=0;const D=80;
+  function storm(){if(!api.fogEffect)return;let t=0;const D=80;const W=api.fogEffect();W.visibility=2600;W.colour=0x8a949a;   // the air: engine 01-scene, api.fogEffect
     const N=6000,pos=new Float32Array(N*3),g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
     const rain=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:0xb8c4cc,transparent:true,opacity:0}));rain.frustumCulled=false;tag(rain);scene.add(rain);
     const seed=new Float32Array(N*3);for(let i=0;i<N*3;i++)seed[i]=R();
     // rain is lines: N/2 drops, each a short slanted segment, in a box round the camera
     notice('A storm','off the Pacific: the cloud comes down onto the ridges, the rain comes in sideways from the west, and the coast goes grey. It clears from the west.',
       ()=>{const [vx,vz]=P(K.stormView||[47.9200,-124.6300]);return [vx,60,vz,vx-4000,40,vz];});
-    run((now,dt)=>{t+=dt;const f=t<15?t/15:t<D-15?1:Math.max(0,(D-t)/15);F.density*=1+f*9;F.color.lerp(new THREE.Color(0x8a949a),f*0.8);if(scene.background&&scene.background.isColor)scene.background.lerp(new THREE.Color(0x8a949a),f*0.8);
+    run((now,dt)=>{t+=dt;const f=t<15?t/15:t<D-15?1:Math.max(0,(D-t)/15);W.amount=f;W.dim=0.45;
       const c=api.camera.position;for(let i=0;i<N/2;i++){const x=c.x+(seed[i*3]-0.5)*160,z=c.z+(seed[i*3+1]-0.5)*160,y=c.y+60-((seed[i*3+2]*120+t*40)%120);
         pos.set([x,y,z,x+1.6,y-3,z+0.3],i*6);}
-      g.attributes.position.needsUpdate=true;rain.material.opacity=0.5*f;if(t>D){scene.remove(rain);return false;}return true;});}
+      g.attributes.position.needsUpdate=true;rain.material.opacity=0.5*f;if(t>D){scene.remove(rain);W.done();return false;}return true;});}
 
   // ---- elk in the Hoh ----
   function elk(){const [hx,hz]=P(K.elkAt||[47.8590,-123.9520]),grp=new THREE.Group(),herd=[];const coat=M(0x6a4a30),mane=M(0x3a2618),legs=M(0x2a1c12);

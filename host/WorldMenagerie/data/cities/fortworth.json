@@ -296,6 +296,177 @@
  ],
  "rooftops": true,
  "groundMottle": 0.12,
+ "surfaces": {
+  "_": "the engine's real surfaces (00-start: surface()): texture sets from Krator's material library (data/textures/README.md), laid by world position and used for their pattern, the colours staying the map's",
+  "dir": "data/textures/",
+  "sets": {
+   "brick": {
+    "map": "brick.webp",
+    "mean": [
+     0.6084,
+     0.6084,
+     0.6083
+    ],
+    "metres": 1.1,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "limestone": {
+    "map": "limestone.webp",
+    "mean": [
+     0.7887,
+     0.7347,
+     0.6632
+    ],
+    "metres": 2.4,
+    "keep": 0.4,
+    "strength": 0.8
+   },
+   "granite": {
+    "map": "granite.webp",
+    "mean": [
+     0.6319,
+     0.6319,
+     0.63
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.75
+   },
+   "concrete": {
+    "map": "concrete.webp",
+    "mean": [
+     0.4171,
+     0.3877,
+     0.3446
+    ],
+    "metres": 4.0,
+    "keep": 0.2,
+    "strength": 0.7
+   },
+   "sidewalk": {
+    "map": "sidewalk.webp",
+    "mean": [
+     0.6411,
+     0.6411,
+     0.6362
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.8
+   },
+   "asphalt": {
+    "map": "asphalt.webp",
+    "mean": [
+     0.3694,
+     0.3503,
+     0.3276
+    ],
+    "metres": 5.0,
+    "keep": 0.2,
+    "strength": 0.45
+   },
+   "grass": {
+    "map": "grass.webp",
+    "mean": [
+     0.5926,
+     0.5151,
+     0.349
+    ],
+    "metres": 3.0,
+    "keep": 0.6,
+    "strength": 1.0
+   },
+   "dirt": {
+    "map": "dirt.webp",
+    "mean": [
+     0.3879,
+     0.3216,
+     0.243
+    ],
+    "metres": 4.0,
+    "keep": 0.4,
+    "strength": 0.9
+   },
+   "shingle": {
+    "map": "shingle.webp",
+    "mean": [
+     0.6529,
+     0.649,
+     0.6409
+    ],
+    "metres": 1.4,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "gravel": {
+    "map": "gravel.webp",
+    "mean": [
+     0.507,
+     0.4788,
+     0.4252
+    ],
+    "metres": 1.6,
+    "keep": 0.3,
+    "strength": 0.8
+   },
+   "pavers": {
+    "map": "pavers.webp",
+    "mean": [
+     0.5577,
+     0.4027,
+     0.3145
+    ],
+    "metres": 1.3,
+    "keep": 1,
+    "strength": 1
+   }
+  },
+  "fade": [
+   150,
+   800
+  ],
+  "ground": {
+   "green": "grass",
+   "tan": "dirt",
+   "grey": "concrete"
+  },
+  "streets": "asphalt",
+  "sidewalks": "sidewalk",
+  "walls": {
+   "red": "brick",
+   "other": "limestone"
+  },
+  "towers": "granite",
+  "styles": {
+   "1": "concrete",
+   "2": [
+    "brick",
+    "granite"
+   ]
+  },
+  "roofs": {
+   "flat": "gravel",
+   "pitched": "shingle"
+  }
+ },
+ "foliage": {
+  "_": "leaves on the crowns (03b-details: treeSpeciesKit): data/textures/foliage.webp, small leaves in clusters with gaps, drawn for the live oaks and pecans",
+  "map": "foliage.webp",
+  "mean": [
+   0.3135,
+   0.5091,
+   0.2117
+  ],
+  "metres": 2.4,
+  "keep": 0.2,
+  "strength": 0.9,
+  "cut": 0.5,
+  "fade": [
+   60,
+   320
+  ]
+ },
  "instanceCulling": true,
  "paving": {
   "classes": [
@@ -355,7 +526,8 @@
    "weight": {
     "street": 40,
     "park": 35,
-    "wood": 20
+    "wood": 20,
+    "yard": 30
    }
   },
   {
@@ -374,7 +546,8 @@
    "weight": {
     "street": 15,
     "park": 20,
-    "wood": 35
+    "wood": 35,
+    "yard": 16
    }
   },
   {
@@ -392,7 +565,8 @@
    "weight": {
     "street": 20,
     "park": 15,
-    "wood": 30
+    "wood": 30,
+    "yard": 14
    }
   },
   {
@@ -412,7 +586,8 @@
    "weight": {
     "street": 18,
     "park": 8,
-    "wood": 0
+    "wood": 0,
+    "yard": 32
    }
   },
   {
@@ -430,16 +605,38 @@
    "weight": {
     "street": 3,
     "park": 12,
-    "wood": 10
+    "wood": 10,
+    "yard": 0
    }
   }
  ],
  "_treeSpecies": "North Texas: live oaks over the streets of the old neighbourhoods, pecans and cedar elms along the Trinity, crape myrtle in every yard, bald cypress at the Water Gardens",
  "streetTrees": 0.75,
+ "yardTrees": {
+  "_": "03b-details: a tree or two in each house's yard (live oaks, pecans, cedar elms and the crape myrtles every Texas yard has): the canopy over Fairmount, Arlington Heights and the other old neighbourhoods",
+  "types": [
+   "house",
+   "detached",
+   "residential",
+   "bungalow",
+   "yes"
+  ],
+  "share": 0.75,
+  "per": [
+   1,
+   2
+  ],
+  "reach": [
+   3,
+   9
+  ],
+  "maxArea": 600
+ },
  "treeFar": 2400,
  "treeCells": {
   "park": 24,
-  "garden": 26
+  "garden": 26,
+  "residential": 22
  },
  "litWindows": 0.55,
  "parkedCars": 0.6,
@@ -1186,6 +1383,18 @@
     -97.34,
     15.3
    ]
+  ],
+  "Fairmount: West Baltimore Avenue": [
+   [
+    32.72292,
+    -97.33343,
+    45.6
+   ],
+   [
+    32.72292,
+    -97.33409,
+    45.0
+   ]
   ]
  },
  "defaultView": "Downtown from the Trinity",
@@ -1243,5 +1452,6 @@
    60
   ]
  ],
- "_treeKeepOut": "no park trees in the Water Gardens' pools or on the Kimbell's vaults (each model brings its own planting)"
+ "_treeKeepOut": "no park trees in the Water Gardens' pools or on the Kimbell's vaults (each model brings its own planting)",
+ "_treeCells": "the old neighbourhoods' yards under their canopy: a tree every ~22 m of residential land, off the houses and the streets"
 }

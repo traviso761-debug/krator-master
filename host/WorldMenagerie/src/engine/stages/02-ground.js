@@ -72,6 +72,9 @@ function worldMapped(mat,tex,metres){mat.onBeforeCompile=sh=>{sh.uniforms.pavTex
     sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec2 vPavXZ;').replace('#include <begin_vertex>','#include <begin_vertex>\nvPavXZ=(modelMatrix*vec4(transformed,1.0)).xz;');
     sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D pavTex;uniform float pavScale;varying vec2 vPavXZ;').replace('#include <map_fragment>','#include <map_fragment>\ndiffuseColor.rgb*=texture2D(pavTex,vPavXZ*pavScale).rgb*1.35;');};
   mat.customProgramCacheKey=()=>'paved';return mat;}
+// the city's real surfaces (C.surfaces, 00-start: surface()): the ground's three by its colour, the streets', the sidewalks'
+const SFC=C.surfaces||{},SF_GROUND=SFC.ground?[SFC.ground.green,SFC.ground.tan,SFC.ground.grey]:null;
+const sfGround=m=>SF_GROUND?surface(m,'ground',SF_GROUND):m;
 const PAVE_TEX=PAVE?settTex():null,PAVE_CLASSES=new Set(PAVE?PAVE.classes||[]:[]);
 const paveMat=off=>worldMapped(groundMat(off),PAVE_TEX,PAVE.metres||3.2);
 const stoneM=new THREE.MeshLambertMaterial({color:0xbdb5a6}),steelM=new THREE.MeshLambertMaterial({color:0x6b6f75});
@@ -128,7 +131,7 @@ section('ground',()=>{
     // over kilometre samples is a tenth of what it is over metres.
     const H_AT=Math.max(120,TER_RELIEF*0.35),SLOPE_K=1.2*Math.max(1,WORLD*0.3);
     const HOLE=C.groundHole?[C.groundHole.at[0],C.groundHole.at[1],C.groundHole.r]:null;   // [x, z, radius]: ground that is not there
-    const TC=C.terrainColours||{},terM=new THREE.MeshLambertMaterial({vertexColors:true}),CH=48,   // a city may set its own earth colours
+    const TC=C.terrainColours||{},terM=sfGround(new THREE.MeshLambertMaterial({vertexColors:true})),CH=48,   // a city may set its own earth colours
       low=col(TC.low||'#5c5a53'),high=col(TC.high||'#4a5a42'),steepC=col(TC.steep||'#6a6052'),cc=new THREE.Color(),
       SNOW=typeof C.snow==='number'?C.snow:0,snowC=col(TC.snow||'#eef1f4'),
       // tints: a colour worked into the rock of one place, strongest on the steep faces - Caradhras is the Redhorn
@@ -187,7 +190,7 @@ section('ground',()=>{
   const AREA_COL=Object.assign({},{residential:'#5b664e',commercial:'#6c6962',industrial:'#615d56',construction:'#7a6e5a',campus:'#66755a',parking:'#4a4b4f',park:'#5f8a48',golf:'#6a9a50',cemetery:'#5a7a48',railyard:'#6a645a',reserve:'#557a44',wood:'#3f6a38',grass:'#6a9a52',zoo:'#648a4a',garden:'#5a9048',sand:'#dccda4',plaza:'#b8b0a2',pitch:'#4f8a3e',track:'#9a4a36',play:'#b89a6a',stadium:'#707070'},C.areaColours||{});
   const WOODY=new Set(['wood','reserve','scrub']);   // what stops at the tree line (bareAt, 00-start)
   const BIG=new Set(['park','golf','cemetery','railyard','reserve','wood','grass','zoo']),USE=new Set(['residential','commercial','industrial','construction','campus']);
-  const use=tiledBuffer(groundMat(0.5)),land=tiledBuffer(groundMat(1)),detail=tiledBuffer(groundMat(2),{tile:1000,far:4000*WORLD}),paved=PAVE&&PAVE.plazas?tiledBuffer(paveMat(2),{tile:1000}):null;
+  const use=tiledBuffer(sfGround(groundMat(0.5))),land=tiledBuffer(sfGround(groundMat(1))),detail=tiledBuffer(sfGround(groundMat(2)),{tile:1000,far:4000*WORLD}),paved=PAVE&&PAVE.plazas?tiledBuffer(paveMat(2),{tile:1000}):null;
   // residential blocks get a little variety in their yards so a neighbourhood does not read as one flat sheet
   for(const a of AREAS){let c=col(AREA_COL[a.kind]||'#6a9a52');if(a.kind==='residential'){const h=hash3(a.bb.x0,a.bb.z0,11);c=c.clone().offsetHSL(0,(h-0.5)*0.06,(h-0.5)*0.05);}
     const buf=paved&&a.kind==='plaza'?paved:USE.has(a.kind)?use:BIG.has(a.kind)?land:detail,big=(a.bb.x1-a.bb.x0)*(a.bb.z1-a.bb.z0);
@@ -262,7 +265,7 @@ const BRIDGES=[],PIERS_AT=[];
 function resample(pts,step){const out=[];for(let i=0;i+1<pts.length;i++){const [ax,az]=pts[i],[bx,bz]=pts[i+1],L=Math.hypot(bx-ax,bz-az),n=Math.max(1,Math.ceil(L/step));for(let k=0;k<n;k++){const u=k/n;out.push([ax+(bx-ax)*u,az+(bz-az)*u]);}}out.push(pts[pts.length-1]);return out;}
 section('streets',()=>{
   const pavedRoad=PAVE?tiledBuffer(paveMat(5)):null,marks=C.laneMarkings?tiledBuffer(groundMat(6),{tile:1000,far:2500*WORLD}):null,LANE=new Set(C.laneMarkings?C.laneMarkings.classes||['primary','secondary','trunk']:[]),markC=col((C.laneMarkings||{}).colour||'#e6e2d8');
-  const walk=tiledBuffer(groundMat(4),{tile:1000,far:3000*WORLD}),road=tiledBuffer(groundMat(5)),trail=tiledBuffer(groundMat(6),{tile:1000,far:5000*WORLD}),deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true});
+  const walk=tiledBuffer(SFC.sidewalks?surface(groundMat(4),'flat',[SFC.sidewalks]):groundMat(4),{tile:1000,far:3000*WORLD}),road=tiledBuffer(SFC.streets?surface(groundMat(5),'flat',[SFC.streets]):groundMat(5)),trail=tiledBuffer(groundMat(6),{tile:1000,far:5000*WORLD}),deck=tiledBuffer(new THREE.MeshLambertMaterial({vertexColors:true}),{cast:true});
   const walkC=col('#a39f95'),namedTrail=col('#7f8a8c'),TRAIL_PALE=nameRe(C.trails);   // the city's named trails are paler
   for(const r of ROADS){const y=deckY(r),c=col(ROAD_COL[r.c]||'#48494d');
     if(y>0){// resample every 8 m so the ramps are smooth, then the deck with a parapet-deep side, and piers every 45 m
