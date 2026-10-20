@@ -105,7 +105,9 @@ setTimeout(function () {
           ISLE.runUI(ui); lap('sim');
         } catch (e2) { window._city.simError = String(e2 && e2.stack || e2); }
       } catch (e) { window._city.otherError = String(e && e.stack || e); }
-      window._city.both = true;
+      /* ?simAt=minute: the sim run to that minute first (the export's case: 355, people on their way to work) */
+      var sa = /[?&]simAt=(\d+)/.exec(location.search); if (sa && ISLE.SIM && +sa[1] > ISLE.SIM.clock.m) ISLE.simRun(+sa[1] - ISLE.SIM.clock.m);
+      window._city.both = true; window._ready = true;   /* tools/harness.py (export, smoke) waits for it */
     }, 30);
   } catch (e) { fail(e); }
 }, 50);

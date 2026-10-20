@@ -235,6 +235,12 @@ with its cost from the nearest and which one (`{d, src}`): Voth's city deals 22,
 places, roles, actors, groups, events, ports, transports, nav, log}` in these record shapes. The convention block is the atmos and
 biome exports' (metres, +Y up, x east, z south, radians about +Y).
 
+`SIM.exportMotion({times, actors})` -> `{t, times, actors, routes, rows}`: the motion a port replays (`ksim.gd`, `KSim.pose`):
+each actor's baked task (legs by route index, speed, duration, back, side, mode; the spot, the wander) and pose fields, the
+routes once each, and the trace `rows` (`SIM.pose` at `times` motion seconds after now: [t, actor index, hidden, moving, x,
+y, z, h]). Lifted from Dhelv's export on 2026-10-20 (the isle demo's P8); Dhelv's builder and this one give the same bytes at
+the same instant (651 actors, 3,906 rows).
+
 ## Audits (`window._sim`)
 
 `audit()`: residents, places, roles, `unknownActivities` (a schedule asking for something nowhere offers), `capacity`

@@ -95,6 +95,10 @@
       itself for every page that declares settlements, as core/city registers `city`, with the settlements, routes and
       books the isle page adds to `SIM.export()` (a core change: through the core session). The export is about 3.1 MB
       (8,450 actors, 2,839 places with their stores); the nav graph is left out.
+- [ ] **The Kautoa case's world.glb is 37 MB** (godot/data/world-isle-kautoa): the Islanders' pieces are detailed and
+      each part is its own item (359). A level of detail in Godot, or the kits' simpler pieces for the export, would cut it.
+      Stage (no core/host on the city page), fixtures, interiors and furniture are not filled; the canoes are stand-in
+      hulls and the citizens capsules in Godot (the Ring Sea kit's lakatoi and charactermodels' bodies are not exported).
 - [ ] **Valapo has no carver's workshop:** its stone and wooden tools and its jewellery come from Kautoa by the lakatoi
       (PLAN.md 9b); a carver's workshop in the Islanders kit and on Valapo's plan is owed.
 - [ ] **Racks wear nothing:** the dockers' hooks and the soldiers' spears and shields are drawn from a rack (core's

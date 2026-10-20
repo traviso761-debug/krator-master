@@ -6,14 +6,14 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 111 | 1186 | 756 | 101 | 52 | 142 | 135 | 6 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 113 | 1214 | 769 | 101 | 52 | 157 | 135 | 6 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 62 | 725 | 154 | 40 | 10 | 30 | 492 | 9 |  | yes | yes |
-| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 18 | 230 | 72 | 0 | 0 | 151 | 6 | 2 | atmos | yes | yes |
+| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 18 | 229 | 72 | 0 | 0 | 151 | 6 | 2 | atmos | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 36 | 614 | 127 | 7 | 89 | 46 | 345 | 14 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 68 | 935 | 196 | 6 | 13 | 70 | 649 | 5 |  | yes | yes |
 | [`settlements/hook`](settlements/hook/PORT.md) | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
-| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 25 | 278 | 227 | 0 | 0 | 42 | 9 | 1 |  |  | yes |
-| [`settlements/iziz`](settlements/iziz/PORT.md) | 95 | 1111 | 345 | 24 | 52 | 88 | 601 | 7 | fixtures, atmos | yes | yes |
+| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 26 | 285 | 229 | 0 | 0 | 46 | 9 | 1 |  |  | yes |
+| [`settlements/iziz`](settlements/iziz/PORT.md) | 104 | 1264 | 400 | 24 | 52 | 120 | 668 | 8 | fixtures, atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 36 | 423 | 9 | 23 | 10 | 26 | 355 | 5 |  | yes | yes |
 | [`settlements/locus`](settlements/locus/PORT.md) | 65 | 965 | 94 | 5 | 16 | 165 | 685 | 9 | atmos | yes | yes |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 35 | 715 | 56 | 0 | 15 | 325 | 319 | 2 |  | yes | yes |

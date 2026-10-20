@@ -128,3 +128,85 @@ static func checks(doc: Dictionary, golden: Dictionary) -> Array:
 	out.append(_r("Godot's answers are the page's (the checks, each good's balance, the counts)", differ.is_empty(),
 		"%d balances, %d checks%s" % [n, page["checks"].size(), ("; DIFFER: " + ", ".join(differ.slice(0, 3))) if not differ.is_empty() else ""]))
 	return out
+
+
+# ---- the case's citizens and canoes (P8, 2026-10-20): from the sim section of a world export (godot/data/world-isle-kautoa)
+
+# the motion block's people at motion time t, in the drawn town's frame (world metres less the frame): KSim.pose, the
+# twin of core/simulation's SIM.pose. -> [{id, x, y, z, h, moving, hidden}]
+static func citizens(doc: Dictionary, t: float) -> Array:
+	var M: Dictionary = doc["motion"]
+	var F: Dictionary = M["frame"]
+	var out: Array = []
+	for a in M["actors"]:
+		var o := KSim.pose(M, a, t)
+		out.append({"id": a["id"], "x": o["x"] - float(F["x"]), "y": o["y"] - float(F["sea"]), "z": o["z"] - float(F["z"]),
+			"h": o["h"], "moving": o["moving"], "hidden": o["hidden"]})
+	return out
+
+
+# a MultiMesh of stand-in bodies (a capsule each: the page draws stand-ins too, src/59-isle-citizens.js) for the people
+# not hidden at time t, under `parent`
+static func build_citizens(doc: Dictionary, parent: Node, t: float) -> MultiMeshInstance3D:
+	var shown := citizens(doc, t).filter(func(c): return not c["hidden"])
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	var cap := CapsuleMesh.new()
+	cap.radius = 0.22
+	cap.height = 1.65
+	mm.mesh = cap
+	mm.instance_count = shown.size()
+	for i in shown.size():
+		var c: Dictionary = shown[i]
+		mm.set_instance_transform(i, Transform3D(Basis(Vector3.UP, float(c["h"])), Vector3(c["x"], float(c["y"]) + 0.825, c["z"])))
+	var n := MultiMeshInstance3D.new()
+	n.name = "Citizens"
+	n.multimesh = mm
+	n.set_meta("krator_citizens", shown.map(func(c): return c["id"]))
+	parent.add_child(n)
+	return n
+
+
+# every canoe line's carriers: docked at a stop (the canoe stop place of that settlement, in world metres) or at sea,
+# with its cargo. -> [{id, route, state, settlement, to, cargo, place, x, z}]
+static func canoes(doc: Dictionary) -> Array:
+	var stop := {}
+	for p in doc["places"]:
+		if p.get("kind") == "canoe stop":
+			stop[p["settlement"]] = p
+	var out: Array = []
+	for R in doc["routes"]:
+		for ci in R["carriers"].size():
+			var C: Dictionary = R["carriers"][ci]
+			var n := 0
+			for q in C["cargo"]:
+				n += int(q["n"])
+			var docked = C.get("at") != null
+			var s = C["at"] if docked else null
+			var P: Dictionary = stop.get(s, {}) if docked else {}
+			out.append({"id": C.get("id", "%s#%d" % [R["id"], ci]), "route": R["id"], "state": "docked" if docked else "sea", "settlement": s, "to": C.get("to"),
+				"cargo": n, "place": P.get("id"), "x": P.get("x"), "z": P.get("z")})
+	return out
+
+
+# the carriers docked at `town`, each a node at its canoe stop in the town's frame (a stand-in hull: the Ring Sea kit's
+# lakatoi is not in the export yet), under `parent`. -> the nodes
+static func build_canoes(doc: Dictionary, parent: Node, town: String) -> Array:
+	var F: Dictionary = {}
+	for T in doc["settlements"]:
+		if T["id"] == town:
+			F = T["frame"]
+	var nodes: Array = []
+	for c in canoes(doc):
+		if c["state"] != "docked" or c["settlement"] != town or c["x"] == null:
+			continue
+		var hull := MeshInstance3D.new()
+		var b := BoxMesh.new()
+		b.size = Vector3(4.0, 1.5, 18.0)
+		hull.mesh = b
+		hull.name = "Canoe_%s" % str(c["id"])
+		hull.position = Vector3(float(c["x"]) - float(F["x"]), 0.75, float(c["z"]) - float(F["z"]))
+		hull.set_meta("krator_canoe", c)
+		parent.add_child(hull)
+		nodes.append(hull)
+	return nodes

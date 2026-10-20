@@ -28,8 +28,10 @@ registers the export's `city` section for every instance on a page.
    arms, clothes by class) and needs with treats, each with a week-test check). **P7e is done** (2026-10-20, `50`): the
    `sim` export section, in the page's profile, failing stubbed and passing filled (`tests/test-isle-export.js`).
    **P8's books are read in Godot** (2026-10-20): `tools/export-sim.js` writes `godot/data/isle`, and
-   `godot/tests/isle/isle_books_test.gd` (`KratorIsleSim`) derives the checks and agrees with the page. Next in P8:
-   both towns opened in Godot from the canonical export with their citizens, then the open world (M7). A sea route
+   `godot/tests/isle/isle_books_test.gd` (`KratorIsleSim`) derives the checks and agrees with the page. **Kautoa's
+   ceremonial centre opens in Godot** (2026-10-20): `godot/data/world-isle-kautoa`, `godot/tests/export/isle_test.gd`
+   (buildings, records, sim joins, citizens replayed, canoes); core/export's scene reader (lifted from Iziz) and
+   `SIM.exportMotion` (lifted from Dhelv) carry it. Next: Valapo's case, stage and fixtures, then the open world (M7). A sea route
    (`SIM.transport` between the landings, `SIM.trade({line})` on it) comes with the open world. Any core/simulation
    change: diff Voth's whole `verify.py --assert` output against `main`'s page with the timings stripped (the method
    P7a used); the core work goes through the isle-demo build session.

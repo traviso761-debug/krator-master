@@ -36,6 +36,7 @@ godot --headless --path godot --script res://tests/verge/verge_sim_test.gd   # V
 godot --headless --path godot --script res://tests/dhelv/dhelv_sim_test.gd   # Dhelv's ramblers: KSim.pose (core/simulation's twin) against the page's trace
 godot --headless --path godot --script res://tests/dhelv/dhelv_nav_test.gd   # Dhelv's walk floors baked to a navmesh: gate to temple, through the braid
 godot --headless --path godot --script res://tests/isle/isle_books_test.gd   # the isle demo's books after a week (KratorIsleSim) against the page's answers
+godot --headless --path godot --script res://tests/export/isle_test.gd   # Kautoa's ceremonial centre: buildings, records, the sim joined, citizens replayed, canoes
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/atmos/waves_gpu_check.gd   # the wave include on a GPU
 godot --headless --path godot --script res://tests/character/kchar_test.gd   # core/charactermodels: records and morphs against the JS golden, a MakeHuman figure from the pieces
 godot --path godot --script res://tests/perf/perf_capture.gd -- --cases=world-sedesert,world-iziz   # the perf table (PERF.md, perf-<case>.json): run it on the real GPU, below
@@ -263,6 +264,7 @@ Verge and Dhelv write their own data through their verify (their pages expose `_
 ```
 cd settlements/verge && python3 verify.py dist/verge.html --export ../../godot/data/verge
 cd settlements/dhelv && python3 verify.py dist/dhelv.html --export ../../godot/data/dhelv   # 92-dhelv-export.js: nine parts, about 10 MB
+python3 tools/harness.py export settlements/isle-demo/dist/isle-city.html --query "?town=Kautoa&simAt=362" --out godot/data/world-isle-kautoa --box=320,780,820,1220
 node settlements/isle-demo/tools/export-sim.js   # godot/data/isle: sim.json (the week's end, about 3 MB) and golden.json (the start's books, the page's answers)
 ```
 

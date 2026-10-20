@@ -25,7 +25,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/90-dhelv-scene.js` | 58.6 | [web] | 56 | 0 | 1 | 0 | 10 | 21 | 3 | 5 | 0 | 0 | 0 |  |
 | `src/91-dhelv-probe.js` | 18.4 | [web] | 3 | 0 | 0 | 0 | 3 | 1 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-dhelv-camera.js` | 2.6 | [web] | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world built, VIEWS, and the camera's names on core/host (the kit's 92-camera.js is left out) |
-| `src/92-dhelv-export.js` | 5.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the export to godot/data/dhelv (window._api): reads the data, holds none |
+| `src/92-dhelv-export.js` | 4.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the export to godot/data/dhelv (window._api): reads the data, holds none |
 | `src/93-dhelv-map.js` | 5.6 | [web] | 1 | 3 | 2 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/94-dhelv-light.js` | 8.4 | [web] | 14 | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/95-dhelv-life.js` | 8.7 | [web] | 12 | 0 | 2 | 2 | 1 | 3 | 0 | 2 | 2 | 0 | 0 | split: data inside host code |

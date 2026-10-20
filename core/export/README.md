@@ -498,3 +498,35 @@ frame where the page projects in the world. All checks pass in Godot 4.7.2, the 
 test also logs `get_meta` lookups for 'krator' on nodes that carry none, which do not fail it); `court_shot.gd` renders a
 piece of the case with the walls hidden, for a picture beside the page. The nightly runs the test. Until 2026-10-19 the box
 was the middle mixed street (-35,868,13,886), which has no Iziz court pieces.
+
+## The scene reader, and the isle demo (P8, 2026-10-20)
+
+**The scene reader** (`10-core-export-scene.js`, `EXPORT.sceneReader(o)`) is the half of Iziz's contributor that reads any
+page's three.js scene: the materials and textures (library maps by reference, procedural canvases as PNGs), every
+InstancedMesh as an item (the unit geometry once, the box's instances, a uid per instance where the item names a core/tags
+item set, an owner per instance), the plain meshes as buckets (one per material, triangles by centroid, the records they
+stand in). A page passes its own lookups (`name`, `scene`, `matKeys`, `kitOf`, `library`, `kmat`, `hooks`, `itemKit`,
+`itemMat`, `itemSet`, `tags`, `owner`, `ownerOf`, `skipInstanced`, `skipMesh`) and `more(ctx, C, own, out)` for its own items
+before the buckets. Iziz's `94-city-export.js` now calls it: the same box exported from the page before and after the lift
+is identical but for the clock-dependent sky panorama and atmosphere clock (world.glb byte for byte; items, buckets,
+materials, textures, fixtures and furniture equal). It loads with core/export where a build takes it (Iziz's city through
+`TARGET_CORE`, the isle demo's `CITY_EXPORT`); the biomes do not need it.
+
+**The isle demo: Kautoa's ceremonial centre** (`settlements/isle-demo/src/62-isle-export-scene.js` for the meshes, `50` for
+the sim):
+
+```
+python3 tools/harness.py export settlements/isle-demo/dist/isle-city.html --query "?town=Kautoa&simAt=362" --out godot/data/world-isle-kautoa --box=320,780,820,1220
+godot --headless --path godot --script res://tests/export/isle_test.gd
+```
+
+`?simAt=362` runs the sim to 06:02 first, people on their way to work. Before it reads, the page draws its near set over
+the whole box (every lot in full) and puts it back after; a kit piece's instance is owned by its lot's record (exactly,
+not by volume), the footings, compound walls and streets by the record whose footprint holds them. The sim section
+carries the motion of the 774 people who live or work in the box (`SIM.exportMotion`, in world metres, with the town's
+frame to subtract). 359 items (1,535 instances), the streets (one bucket), 56 materials, 22 textures, 89 records;
+world.json 6.9 MB, world.glb 37.1 MB (the Islanders' pieces are detailed). In Godot 4.7.2 every check passes: every
+instance where world.glb says, every kit piece owned by its lot's record at the piece, every record's uid recomputed,
+every sim place in the box joined to its record, 4,644 pose rows of 774 people (425 moving) replayed by `KSim.pose` with
+none differing, the citizens drawn as stand-ins, the canoes placed from the routes; each with a negative. Stage, fixtures,
+interiors and furniture are not filled yet.

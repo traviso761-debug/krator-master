@@ -166,16 +166,17 @@ SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town]
 
 
 # The export profile (P6b; PLAN.md section 7; core/export/README.md, "Profiles"). The case is Kautoa's ceremonial centre (the
-# palace, the square, the envoys' houses, the park and the streets round it), in the town's frame. EXPORT_TARGET is M6's
+# palace, the square, the envoys' houses, the park and the streets round it: 89 lots), in the town's frame; godot/data/
+# world-isle-kautoa is this box (tools/harness.py export ... --query "?town=Kautoa&simAt=362"; godot/tests/export/isle_test.gd). EXPORT_TARGET is M6's
 # whole list; EXPORT_PROFILE is what the page must fill now (verify --assert fails without it), the rest of the target
 # is reported section by section until each lands. --profile a,b,c checks a list for one run; --profile target checks
 # the whole target and fails on every section not yet filled (the proof the check bites).
-EXPORT_BOX = [-700, -700, 700, 700]
+EXPORT_BOX = [320, 780, 820, 1220]   # the ceremonial centre (P8, 2026-10-20; until then -700..700, which held 108 lots and none of the centre)
 EXPORT_TARGET = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain=field', 'city', 'fixtures', 'interiors',
                  'furniture', 'sim', 'stage', 'atmos']
 # met on 2026-10-19 (P6b): the registry (core/tags, the drawn town's), the KMAT materials, the terrain (sampled:
 # EXPORT.ground on the plan's ground; terrain=field waits for a KFIELD from the extracted heights, PLAN.md section 10)
-EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim']   # city: core/city's contributor, 2026-10-19; sim: src/50 (P7e, 2026-10-20)
+EXPORT_PROFILE = ['registry', 'materials', 'terrain', 'city', 'sim', 'items', 'buckets', 'textures']   # city: core/city's contributor, 2026-10-19; sim: src/50 (P7e, 2026-10-20)
 
 
 async def run_city(a):

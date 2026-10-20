@@ -309,7 +309,17 @@ declares both once they are planned, in one order whichever town it draws, and h
   warehouse stock equal to the place records, every load landed or at sea, each town's 31 goods balanced over the week
   (change = made + imported - exported - (used - bought + eaten)), and every answer (the checks, each good's residual,
   the counts) the page's; five negatives. It passes on Godot 4.7.2 and runs in `tools/test_all.py --nightly`. Rerun
-  the tool after a change to the economy (the files are the page's answers). Left of P8: both towns opened in Godot from
-  the canonical export with their citizens (the records, the uids), and a GDScript twin of the economy.
+  the tool after a change to the economy (the files are the page's answers).
+- **P8, Kautoa's ceremonial centre in Godot** (2026-10-20): the drawn town exports through core/export's scene reader
+  (`62`; `10-core-export-scene.js`, lifted from Iziz's contributor), the sim with the motion of the people who live or
+  work in the box (`50`; `SIM.exportMotion`, lifted from Dhelv's export). `godot/data/world-isle-kautoa` is the box
+  320,780,820,1220 (the palace, the ceremonial square, the governor's house, the five envoys' houses, the council hall:
+  89 lots) at 06:02 (`?simAt=362`); `godot/tests/export/isle_test.gd` opens it: 1,535 instances where world.glb says,
+  every kit piece owned by its lot's record at the piece, 89 uids recomputed, the sim's places joined to the records,
+  4,644 pose rows of 774 people replayed by `KSim.pose` with none differing (425 walking), 115 stand-ins drawn, the
+  three canoes placed from the routes (at sea at 06:02; a docked one is drawn at Kautoa's canoe stop); each with a
+  negative. The page's export box is now this one (it was -700..700, which held 108 lots and none of the centre), with
+  items, buckets and textures in the profile. Left of P8: Valapo's case, stage, fixtures and interiors, the Ring Sea
+  kit's lakatoi and real bodies in Godot, and a GDScript twin of the economy; then M7.
 
 See `KNOWN_ISSUES.md`.

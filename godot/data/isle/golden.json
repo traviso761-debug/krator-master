@@ -845,11 +845,13 @@
     ],
     "carriers": [
      {
+      "id": "lakatoi#0",
       "at": null,
       "to": null,
       "cargo": []
      },
      {
+      "id": "lakatoi#1",
       "at": null,
       "to": null,
       "cargo": []
@@ -867,6 +869,7 @@
     ],
     "carriers": [
      {
+      "id": "oruwa#0",
       "at": null,
       "to": null,
       "cargo": []
