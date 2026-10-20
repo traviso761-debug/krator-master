@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 133 (22%) | 7 (1%) | 82 (13%) | 46 (8%) | 345 (56%) |
+| KB | 133 (22%) | 7 (1%) | 82 (13%) | 46 (8%) | 343 (56%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -32,7 +32,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/64-cards.js` | 7.7 | [draw] | 10 | 3 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/65-gi-trades.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table GI_TRADES (2026-10-19): plain data, a row per census trade; checked by tools/check_trades.py |
 | `src/72-lights.js` | 3.4 | [G native] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/75-terrain.js` | 12.5 | [draw] | 22 | 0 | 0 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 | split: the ground and brook. terrGeo from terrainH (core/terrain bake), brookStations, brookLevelAt, brookBed and groundTone are [G data]; terrMat, waterUni and the water mesh are draw and [G shader] |
+| `src/75-terrain.js` | 8.7 | [draw] | 12 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | split: the ground and brook. terrGeo from terrainH (core/terrain bake), brookStations, brookLevelAt, brookBed and groundTone are [G data]; terrMat is draw and [G shader]; the brook's water left for `90w-brook-water.js` (2026-10-20) |
 | `src/78-life.js` | 60.8 | [G data] | 30 | 0 | 0 | 0 | 13 | 38 | 7 | 6 | 0 | 0 | 0 | split: life layer (GODOT-PLAN.md section 5, Phase 5; core/simulation/PLAN.md section 1). NAV use, lifeAstar, lifeActiveAt, LIFE_DEST, lifeChooseDest, the agent schedule and the lift sim are [G data]: they become SIM places, roles and routes. lifeGeo, lifeMesh, lifeHook are the draw adapter. performance.now and 12 Math.random calls at run time are not reproducible from the clock |
 | `src/80-camera.js` | 7.5 | [web] | 1 | 0 | 2 | 9 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | Girder on core/host (2026-10-15): what the rest of Girder and the hero still call by name (ctl over the host's orbit, applyCam, setView, VIEWS, keys, pickWorld) and the day/night slider; the camera, loop and panel are core/host's |
 | `src/81-glow.js` | 5.9 | [G native] | 13 | 2 | 0 | 0 | 0 | 2 | 3 | 2 | 0 | 0 | 0 | shader hook inside |
@@ -47,7 +47,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/86-inspect.js` | 4.0 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: Girder's words for core/host's inspector (the smallest SITES volume, its level, the record's KTAGS.label); the inspector itself is core/host 93 |
 | `src/87-pathviz.js` | 3.0 | [web] | 5 | 0 | 4 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-atmos-host.js` | 1.8 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | binds core/atmos (init, the frame hook, the sky's light): host shell, moves to core/host/ |
-| `src/98-start.js` | 8.2 | [web] | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take: Girder's views, records, inspector words, palette, editor world (pieces drawn on their own; batched ones deferred), cutaway units, minimap, and its own frame (the sky's clock and two-pass draw, the ticks, the sun, atmos): host shell |
+| `src/90w-brook-water.js` | 1.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the brook as a `WATER.flow` through `WATER.drawFlow` (core/water, 2026-10-20): the station line from 75-terrain's `brookStations` and `JUNGLE_BROOK.level` is data, the ribbon is core/water's draw; loads after `90-atmos-host.js` |
+| `src/98-start.js` | 7.9 | [web] | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take: Girder's views, records, inspector words, palette, editor world (pieces drawn on their own; batched ones deferred), cutaway units, minimap, and its own frame (the sky's clock and two-pass draw, the ticks, the sun, atmos): host shell |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes
