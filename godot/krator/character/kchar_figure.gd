@@ -543,8 +543,8 @@ const POSTURE_JOINTS := ["Spine", "Spine1", "Spine2", "Neck", "Head"]
 var posture := {}
 
 
-func _posture() -> void:
-	if player == null or not player.is_playing() or posture.is_empty():
+func _posture(force := false) -> void:
+	if posture.is_empty() or (not force and (player == null or not player.is_playing())):
 		return                              # the rest pose (the A-pose clothes are fitted in) stays as it is
 	var arms := {}
 	for n in ["LeftArm", "RightArm"]:
@@ -888,8 +888,8 @@ func _cloth_of(part: Dictionary) -> Dictionary:
 			skeleton.set_bone_parent(b, skeleton.find_bone(ch["parent"]) if k == 0 else list[k - 1])
 			c["by_name"][nm] = b
 			list.append(b)
-		c["chains"].append({"parent": skeleton.find_bone(ch["parent"]), "pts": ch["pts"], "bones": list, "p": [], "len": [],
-			"x": [], "xp": [], "tw": [], "q0": Quaternion(), "stiff": 0.1})
+		c["chains"].append({"parent": skeleton.find_bone(ch["parent"]), "pts": ch["pts"], "bw": ch.get("bw"), "bones": list,
+			"p": [], "r": [], "rest": [], "len": [], "x": [], "xp": [], "tw": [], "q0": Quaternion(), "stiff": 0.1})
 	# a layer within its slot's: a legs item's chains under a torso item's, under a head item's (as clothOf in 50-figure.js)
 	var rank: int = 3 * int(SLOT_RANK.get(it.get("slot", ""), 0))
 	for pt in c["parts"]:
@@ -937,41 +937,95 @@ func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
 						v += w[shapes[s]] * (o - base[int(i)] if b.get("whole", false) else o)
 				P.append(v)
 			ch["p"] = P
-			ch["len"] = []
-			for k in range(1, P.size()):
-				ch["len"].append((P[k] - P[k - 1]).length())
 			var bones: Array = ch["bones"]
 			for k in bones.size():
-				var t: Transform3D
-				if k == 0:
-					t = (pbind[ch["parent"]] as Transform3D) * Transform3D(Basis(), P[0])
-					ch["q0"] = t.basis.get_rotation_quaternion()
-				else:
-					t = Transform3D(Basis(), P[k] - P[k - 1])
-				skeleton.set_bone_rest(bones[k], t)
-				skeleton.set_bone_pose_position(bones[k], t.origin)
-				skeleton.set_bone_pose_rotation(bones[k], t.basis.get_rotation_quaternion())
 				for m in c["meshes"]:
 					for q in m.skin.get_bind_count():
 						if m.skin.get_bind_bone(q) == bones[k]:
 							m.skin.set_bind_pose(q, Transform3D(Basis(), -P[k]))
 			ch["pbind"] = pbind[ch["parent"]]
-		c["ring"] = []
-		for pt in c["parts"]:
-			var g: Array = pt["chains"]
-			var n := g.size()
-			for a in (n if pt["closed"] else n - 1):
-				var A: Dictionary = c["chains"][int(g[a])]
-				var Bc: Dictionary = c["chains"][int(g[(a + 1) % n])]
-				for k in range(1, mini(A["p"].size(), Bc["p"].size())):
-					c["ring"].append([A, Bc, k, (A["p"][k] - Bc["p"][k]).length()])
-		c["reset"] = true
+		_posed_rests(c, pbind)
+		c["posed"] = null
+		_place_chains(c, player != null and player.is_playing())
+
+
+# the chains' rest in the postured pose (as posedRests in 50-figure.js; HANDOFF-CLOTHING.md, 1): the skeleton at its
+# bind pose, postured; each chain point skinned by the garment's own body weights (kit bw) and carried back rigidly with
+# its chain's parent joint. The binds stay at the A-pose points
+func _posed_rests(c: Dictionary, pbind: Dictionary) -> void:
+	var any := false
+	for ch in c["chains"]:
+		any = any or ch.get("bw") != null
+	if not any:
+		for ch in c["chains"]:
+			ch["r"] = ch["p"]
+		return
+	var saved := []
+	for i in skeleton.get_bone_count():
+		saved.append(skeleton.get_bone_pose_rotation(i))
+		skeleton.set_bone_pose_rotation(i, skeleton.get_bone_rest(i).basis.get_rotation_quaternion())
+	_posture(true)
+	for ch in c["chains"]:
+		if ch.get("bw") == null:
+			ch["r"] = ch["p"]
+			continue
+		var Mi: Transform3D = (_gp(ch["parent"]) * (pbind[ch["parent"]] as Transform3D)).affine_inverse()
+		var R := []
+		for k in ch["p"].size():
+			var p: Vector3 = ch["p"][k]
+			var v := Vector3.ZERO
+			var tot := 0.0
+			for nw in ch["bw"][k]:
+				var j := skeleton.find_bone(String(nw[0]))
+				if j < 0 or not pbind.has(j):
+					continue
+				v += float(nw[1]) * ((_gp(j) * (pbind[j] as Transform3D)) * p)
+				tot += float(nw[1])
+			R.append(Mi * (v / tot) if tot > 0.0 else p)
+		ch["r"] = R
+	for i in skeleton.get_bone_count():
+		skeleton.set_bone_pose_rotation(i, saved[i])
+
+
+# the chains' bones at the postured rest while a clip plays, at the A-pose's otherwise (no posture there); the ring's
+# rest distances with them
+func _place_chains(c: Dictionary, posed: bool) -> void:
+	if c.get("posed") == posed:
+		return
+	c["posed"] = posed
+	for ch in c["chains"]:
+		var R: Array = ch["r"] if posed else ch["p"]
+		ch["rest"] = R
+		ch["len"] = []
+		for k in range(1, R.size()):
+			ch["len"].append((R[k] - R[k - 1]).length())
+		var bones: Array = ch["bones"]
+		for k in bones.size():
+			var t: Transform3D
+			if k == 0:
+				t = (ch["pbind"] as Transform3D) * Transform3D(Basis(), R[0])
+				ch["q0"] = t.basis.get_rotation_quaternion()
+			else:
+				t = Transform3D(Basis(), R[k] - R[k - 1])
+			skeleton.set_bone_rest(bones[k], t)
+			skeleton.set_bone_pose_position(bones[k], t.origin)
+			skeleton.set_bone_pose_rotation(bones[k], t.basis.get_rotation_quaternion())
+	c["ring"] = []
+	for pt in c["parts"]:
+		var g: Array = pt["chains"]
+		var n := g.size()
+		for a in (n if pt["closed"] else n - 1):
+			var A: Dictionary = c["chains"][int(g[a])]
+			var Bc: Dictionary = c["chains"][int(g[(a + 1) % n])]
+			for k in range(1, mini(A["rest"].size(), Bc["rest"].size())):
+				c["ring"].append([A, Bc, k, (A["rest"][k] - Bc["rest"][k]).length()])
+	c["reset"] = true
 
 
 func _rigid(ch: Dictionary) -> Transform3D:
 	var M: Transform3D = _gp(ch["parent"]) * (ch["pbind"] as Transform3D)
 	var tw := []
-	for p in ch["p"]:
+	for p in ch["rest"]:
 		tw.append(M * (p as Vector3))
 	ch["tw"] = tw
 	return M
@@ -1004,6 +1058,7 @@ func _cloth_step(dt: float) -> void:
 			wind = -KChar._v(cm["root_speed"])
 	var grav := Vector3(0, -C_GRAV / size, 0)            # in the skeleton's units: a giant's are twice a metre
 	for c in items:
+		_place_chains(c, player != null and player.is_playing())
 		for ch in c["chains"]:
 			_rigid(ch)
 			if c["reset"] or ch["x"].size() != ch["p"].size() or (ch["tw"][0] - ch["x"][0]).length() > 0.4:

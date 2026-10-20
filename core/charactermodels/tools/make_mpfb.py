@@ -551,6 +551,7 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
     aj, aw = j['accessors'][at['JOINTS_0']], j['accessors'][at['WEIGHTS_0']]
     JJ = glbio.accessor(j, bytes(b), at['JOINTS_0']).astype(int)
     WW = glbio.accessor(j, bytes(b), at['WEIGHTS_0']).astype(float)
+    JJ0, WW0 = JJ.copy(), WW.copy()              # the body's weights, before the chains take the cloth (rest_weights)
     by_part = {}
     for ci, ch in enumerate(chains):
         by_part.setdefault(ch['part'], []).append(ci)
@@ -666,7 +667,13 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
     for k in ('byteStride',):
         j['bufferViews'][aj['bufferView']].pop(k, None)
         j['bufferViews'][aw['bufferView']].pop(k, None)
-    return {'chains': [{'parent': ch['parent'], 'pts': ch['pts']} for ch in chains], 'parts': parts_out}
+    def rest_weights(gi):
+        # a chain point's weights on the body: the figure skins it with them in the postured bind pose to read the
+        # chain's rest there (50-figure.js clothRest), so the hanging cloth starts where the cloth around it is
+        tot = float(WW0[gi].sum()) or 1.0
+        return [[names[int(q)], round(float(w) / tot, 4)] for q, w in zip(JJ0[gi], WW0[gi]) if w > 1e-3 and int(q) < len(names)]
+    return {'chains': [{'parent': ch['parent'], 'pts': ch['pts'], 'bw': [rest_weights(g) for g in ch['pts']]} for ch in chains],
+            'parts': parts_out}
 
 
 # the capsules a garment's chains are kept out of: per joint pair, the base radius and how far each morph target moves

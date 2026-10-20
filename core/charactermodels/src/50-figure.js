@@ -519,8 +519,8 @@ function KCharFigure(body, sliders, load){
         c.byName[clothKey(b.name)] = c.bones.length;
         c.bones.push(b); list.push(b);
       }
-      c.chains.push({ parent:byName[ch.parent], pts:ch.pts, bones:list, p:[], len:[], x:[], xp:[], tw:[], q0:new THREE.Quaternion(),
-                      stiff:0.1 });
+      c.chains.push({ parent:byName[ch.parent], pts:ch.pts, bw:ch.bw || null, bones:list, p:[], r:[], rest:[], len:[], x:[], xp:[],
+                      tw:[], q0:new THREE.Quaternion(), stiff:0.1 });
     });
     // a layer within its slot's: whatever hangs from the legs lies under whatever hangs from the torso, which lies under
     // the head's (a breechcloth under a shirt's skirt: both were layer 1, so neither stayed outside the other)
@@ -541,28 +541,14 @@ function KCharFigure(body, sliders, load){
       var P = m.geometry.attributes.position.array, base = J.length;
       c.chains.forEach(function(ch){
         ch.p = ch.pts.map(function(i){ return new THREE.Vector3(P[3*i], P[3*i+1], P[3*i+2]); });
-        ch.len = ch.p.slice(1).map(function(q, k){ return q.distanceTo(ch.p[k]); });
-        var pinv = m.skeleton.boneInverses[ch.parent];
         ch.bones.forEach(function(b, k){
-          if(k === 0){
-            cM.copy(pinv).multiply(cM2.makeTranslation(ch.p[0].x, ch.p[0].y, ch.p[0].z));
-            cM.decompose(b.position, b.quaternion, cS);
-            ch.q0.copy(b.quaternion);
-          } else { b.position.subVectors(ch.p[k], ch.p[k - 1]); b.quaternion.identity(); }
           var bi = c.bones.indexOf(b);
           c.meshes.forEach(function(mm){ mm.skeleton.boneInverses[base + bi].makeTranslation(-ch.p[k].x, -ch.p[k].y, -ch.p[k].z); });
         });
       });
-      // neighbours round each part, for the spacing constraint: rest distances between chains' points
-      c.ring = [];
-      c.parts.forEach(function(pt){
-        var g = pt.chains, n = g.length;
-        for(var a = 0; a < (pt.closed ? n : n - 1); a++){
-          var A = c.chains[g[a]], Bc = c.chains[g[(a + 1) % n]], kk = Math.min(A.p.length, Bc.p.length);
-          for(var k = 1; k < kk; k++) c.ring.push([A, Bc, k, A.p[k].distanceTo(Bc.p[k])]);
-        }
-      });
-      c.reset = true;
+      posedRests(c, m);
+      c.posed = null;
+      placeChains(c, !!self.action);         // and the ring's rest distances (neighbours round each part)
     });
   }
   // a capsule's ends in the world: its joints, or (the seat's) rest points riding them
@@ -580,8 +566,64 @@ function KCharFigure(body, sliders, load){
   function rigidTargets(c, ch){
     var pb = bones[ch.parent];
     cM.multiplyMatrices(pb.matrixWorld, c.meshes[0].skeleton.boneInverses[ch.parent]);   // model -> world, riding the joint
-    for(var k = 0; k < ch.p.length; k++) (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).copy(ch.p[k]).applyMatrix4(cM);
+    for(var k = 0; k < ch.rest.length; k++) (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).copy(ch.rest[k]).applyMatrix4(cM);
     return cM;
+  }
+  /* the chains' rest in the postured pose (HANDOFF-CLOTHING.md, 1): posture() turns the spine and draws the shoulders
+     back after every clip, so a garment's true rest is the postured one. The skeleton is put in its bind pose and
+     postured, each chain point is skinned by the garment's own body weights there (kit cloth.chains bw: the weights
+     before the chains took the cloth), and carried back rigidly with its chain's parent joint (r). Read in the A-pose,
+     a mantle's chains held by the spine stayed where they were while the tunic under it followed the drawn-back
+     shoulders, and it tore at the shoulder blades. The inverse binds stay at the A-pose points (p) */
+  var prM = new THREE.Matrix4(), prS = new THREE.Matrix4(), prV = new THREE.Vector3();
+  function posedRests(c, m){
+    if(!c.chains.some(function(ch){ return ch.bw; })){ c.chains.forEach(function(ch){ ch.r = ch.p; }); return; }
+    var saved = bones.map(function(b){ return b.quaternion.clone(); });
+    bones.forEach(function(b, i){ b.quaternion.fromArray(J[i].r); });
+    self.group.updateMatrixWorld(true);
+    posture(true);
+    self.group.updateMatrixWorld(true);
+    var inv = m.skeleton.boneInverses;
+    c.chains.forEach(function(ch){
+      if(!ch.bw){ ch.r = ch.p; return; }
+      prM.multiplyMatrices(bones[ch.parent].matrixWorld, inv[ch.parent]).invert();
+      ch.r = ch.p.map(function(p, k){
+        var v = new THREE.Vector3(), tot = 0;
+        (ch.bw[k] || []).forEach(function(nw){
+          var j = byName[nw[0]]; if(j === undefined) return;
+          v.addScaledVector(prV.copy(p).applyMatrix4(prS.multiplyMatrices(bones[j].matrixWorld, inv[j])), nw[1]); tot += nw[1];
+        });
+        return tot > 0 ? v.divideScalar(tot).applyMatrix4(prM) : p.clone();
+      });
+    });
+    bones.forEach(function(b, i){ b.quaternion.copy(saved[i]); });
+    self.group.updateMatrixWorld(true);
+  }
+  // the chains' bones at the postured rest while a clip plays, at the A-pose's otherwise (no posture there)
+  function placeChains(c, posed){
+    if(c.posed === posed) return;
+    c.posed = posed;
+    var pinv = c.meshes[0].skeleton.boneInverses;
+    c.chains.forEach(function(ch){
+      var R = ch.rest = posed ? ch.r : ch.p;
+      ch.len = R.slice(1).map(function(q, k){ return q.distanceTo(R[k]); });
+      ch.bones.forEach(function(b, k){
+        if(k === 0){
+          cM.copy(pinv[ch.parent]).multiply(cM2.makeTranslation(R[0].x, R[0].y, R[0].z));
+          cM.decompose(b.position, b.quaternion, cS);
+          ch.q0.copy(b.quaternion);
+        } else { b.position.subVectors(R[k], R[k - 1]); b.quaternion.identity(); }
+      });
+    });
+    c.ring = [];
+    c.parts.forEach(function(pt){
+      var g = pt.chains, n = g.length;
+      for(var a = 0; a < (pt.closed ? n : n - 1); a++){
+        var A = c.chains[g[a]], Bc = c.chains[g[(a + 1) % n]], kk = Math.min(A.rest.length, Bc.rest.length);
+        for(var k = 1; k < kk; k++) c.ring.push([A, Bc, k, A.rest[k].distanceTo(Bc.rest[k])]);
+      }
+    });
+    c.reset = true;
   }
   function clothStep(dt){
     var items = Object.keys(clothItems).map(function(k){ return clothItems[k]; }).filter(function(c){ return c.on && c.chains.length && c.chains[0].p.length; });
@@ -605,6 +647,7 @@ function KCharFigure(body, sliders, load){
     var meta0 = self.action && meta[self.action.getClip().name], wind = new THREE.Vector3();
     if(meta0 && meta0.loop !== false && meta0.root_speed) wind.fromArray(meta0.root_speed).applyQuaternion(self.group.getWorldQuaternion(cQ3)).multiplyScalar(-sc);
     items.forEach(function(c){
+      placeChains(c, !!self.action);
       c.chains.forEach(function(ch){
         rigidTargets(c, ch);
         if(c.reset || ch.x.length !== ch.p.length || ch.tw[0].distanceTo(ch.x[0]) > 0.4){
@@ -970,8 +1013,8 @@ function KCharFigure(body, sliders, load){
   var POSTURE = Object.assign({ Spine:0, Spine1:0, Spine2:0, Neck:0, Head:0, drop:0, back:0 }, PD[kit.body] || PD.mpfb_male || {});
   var pAx = V(), pQ = Q(), pG = Q(), pW = [Q(), Q()];
   var pArms = ['LeftArm', 'RightArm'].map(function(n){ return byName[n] !== undefined ? byName[n] : -1; });
-  function posture(){
-    if(!self.action) return;             // the rest pose (the A-pose clothes are fitted in) stays as it is
+  function posture(force){
+    if(!self.action && !force) return;   // the rest pose (the A-pose clothes are fitted in) stays as it is
     self.group.getWorldQuaternion(pG);
     // the upper arms keep the way the clip points them: the torso straightens under them, and a thrust or a held
     // spear aims where the clip aims it
