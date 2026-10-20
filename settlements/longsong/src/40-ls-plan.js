@@ -316,6 +316,11 @@ P.PLACES=[
  {id:'lay-houses',activity:'REST',x:82,z:-128,y:'ward',r:12,cap:320,indoor:true,name:"The lay servants' houses"},
  {id:'tea',activity:'TEA',x:86,z:-96,y:'ward',r:12,cap:220,indoor:true,name:'The market hall and the tea houses'},
  {id:'caravanserai',activity:'REST_C',x:150,z:-170,y:'ward',r:20,cap:60,indoor:true,name:'The caravanserai'},
+ // the festival of the register (P.FESTIVAL): the forecourt at the stair's foot, where the house sees the great
+ // thangka unveiled (facing it); the pilgrims' camp ground; and the valley, where the festival's visitors are the rest of the week
+ {id:'forecourt',activity:'FESTIVAL',x:0,z:-34,y:'ward',r:40,cap:1600,face:[81,10],name:'The forecourt (the thangka unveiled)'},
+ {id:'camp',activity:'CAMP',x:148,z:-81,y:'ward',r:44,cap:260,name:"The pilgrims' camp ground"},
+ {id:'away',activity:'AWAY',x:0,z:-190,y:'ward',r:3,cap:400,indoor:true,name:'Home in the valley (out by the Great Gate)'},
  {id:'barracks',activity:'REST_W',x:-90,z:-110,y:'ward',r:15,cap:120,indoor:true,name:"The wardens' barracks"}];
 // the schedules by role: 24 entries, hour 0..23. A role may carry VARIANTS (a list of schedules, dealt to its people in
 // turn): the monks keep three, so a third of them debate, a third read and a third walk the kora at any hour of study
@@ -338,7 +343,35 @@ P.SCHEDULES={
  trader:S({0:'REST',6:'TRADE',12:'TEA',13:'TRADE',19:'TEA',21:'REST'}),
  // the caravan from Xanadu at the caravanserai: its goods to the market, its evenings in the tea houses
  caravan:S({0:'REST_C',7:'TRADE',12:'TEA',13:'TRADE',18:'TEA',20:'REST_C'}),
- pilgrim:S({0:'LODGE',6:'KORA',9:'PILGRIM',11:'KORA',13:'PILGRIM',15:'WALK',17:'KORA',19:'LODGE'})};
+ pilgrim:S({0:'LODGE',6:'KORA',9:'PILGRIM',11:'KORA',13:'PILGRIM',15:'WALK',17:'KORA',19:'LODGE'}),
+ festgoer:S({0:'AWAY'})};
+// THE FESTIVAL OF THE REGISTER: every seventh day (the seventh of each week, SIM.weekday 6: core/simulation's week).
+// At dawn the great thangka (the wheel and its eight seals) is unrolled down the White Palace's base and the whole house
+// gathers on the forecourt to see it; the elders hold the great debate; the procession walks the kora; it is rolled up
+// at dusk. The valley comes in for the day, and the pilgrims camp in the ward that night (the camp ground: its tents,
+// cook fires and trough are pitched only then). A role's festival schedule (FEST_SCHEDULES) replaces its day's.
+P.FESTIVAL={name:'The festival of the register',week:7,day:6,hung:[6,18.5]};
+P.isFestival=day=>((day%P.FESTIVAL.week)+P.FESTIVAL.week)%P.FESTIVAL.week===P.FESTIVAL.day;
+P.CAMP={x0:106,x1:192,z0:-88,z1:-75,name:"The pilgrims' camp ground (festival days)",trough:{x:149,z:-76.5,w:6,d:1.2},
+ // the tents: two rows of the valley's white cotton tents (a ridge, blue appliqué knots), each with its cook fire; placed
+ // from the camp's own stream, not the order of drawing
+ tents:(function(){const out=[];for(let row=0;row<2;row++)for(let i=0;i<10;i++){const u=KRAND.unit(KRAND.hash(5507,row,i)),v=KRAND.unit(KRAND.hash(5507,row,i,1));
+   out.push({x:110+i*8.4+u*2,z:row?-79.5:-84.5,ry:(row?0:Math.PI)+(v-.5)*.3,w:3.2+u*.8,d:4+v,h:2.3+v*.4,fire:i%2===row});}return out;})()};
+P.FEST_SCHEDULES={
+ monk:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'DEBATE',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',20:'STUDY_IN',22:'SLEEP'}),
+ novice:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'DEBATE',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',21:'SLEEP'}),
+ elder:S({0:'SLEEP',4:'PRAY',6:'FESTIVAL',9:'EAT',10:'DEBATE',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',21:'SLEEP'}),
+ operative:S({0:'SLEEP',4:'DRILL',6:'FESTIVAL',9:'EAT',10:'DRILL',13:'EAT',14:'KORA',17:'PRAY',19:'EAT',20:'SLEEP'}),
+ master:S({0:'SLEEP',3:'PRAY',6:'FESTIVAL',9:'DRILL',13:'STUDY',16:'DRILL',19:'PRAY',21:'SLEEP'}),
+ keeper:S({0:'TURN_WHEEL',3:'KEEP',6:'SLEEP',12:'TURN_WHEEL',15:'KEEP',18:'PRAY',20:'TURN_WHEEL'}),   // the wheel does not stop for a festival
+ warden:S({0:'GUARD',6:'FESTIVAL',9:'GUARD',18:'EAT',19:'REST_W',22:'GUARD'}),
+ servant:S({0:'REST',5:'WORK',6:'FESTIVAL',9:'WORK',14:'TRADE',18:'TEA',20:'REST'}),
+ scholar:S({0:'REST',6:'FESTIVAL',9:'TEA',10:'DEBATE',13:'TEA',14:'KORA',18:'TEA',20:'REST'}),
+ artisan:S({0:'REST',6:'FESTIVAL',9:'TRADE',13:'TEA',14:'KORA',17:'TRADE',20:'REST'}),
+ trader:S({0:'REST',5:'TRADE',22:'REST'}),
+ caravan:S({0:'REST_C',6:'FESTIVAL',9:'TRADE',13:'TEA',14:'TRADE',20:'TEA',22:'REST_C'}),
+ pilgrim:S({0:'LODGE',5:'FESTIVAL',9:'KORA',12:'CAMP',13:'PILGRIM',15:'KORA',18:'CAMP'}),
+ festgoer:S({0:'AWAY',5:'FESTIVAL',9:'TRADE',11:'KORA',13:'CAMP',15:'PILGRIM',17:'KORA',19:'CAMP'})};
 // the roll: who lives here, every one of them (the owner, 2026-10-19: a house of a thousand of the Order, its town in
 // the ward and a caravan; BLUEPRINT.md's numbers were a quarter of it)
 P.ROLES=[
@@ -354,10 +387,13 @@ P.ROLES=[
  {role:'artisan',n:80,faction:'Oidong',sub:'The ward\'s artisans (the presses, the smiths, the mill, the dairy)',job:'artisan',dress:'servant'},
  {role:'trader',n:20,faction:'Oidong',sub:'The market\'s keepers',job:'trader',dress:'servant'},
  {role:'caravan',n:24,faction:'Xanadu Sultanate',sub:'A caravan from Xanadu',job:'caravaneer',dress:'pilgrim'},
- {role:'pilgrim',n:50,faction:'Xanadu Sultanate',sub:'Pilgrims',job:'pilgrim',dress:'pilgrim'}];
+ {role:'pilgrim',n:50,faction:'Xanadu Sultanate',sub:'Pilgrims',job:'pilgrim',dress:'pilgrim'},
+ // the valley's folk, in for the festival day only (away the rest of the week; they camp in the ward that night)
+ {role:'festgoer',n:150,faction:'Oidong',sub:'The valley, come for the festival',job:'festival-goer',dress:'pilgrim'}];
 P.PEOPLE=(function(){const out=[];let k=0;
  P.ROLES.forEach(R=>{for(let i=0;i<R.n;i++){const seed=KRAND.hash(7401,k,i);
   out.push({id:'ls-'+R.role+'-'+String(i).padStart(2,'0'),role:R.role,faction:R.faction,sub:R.sub,job:R.job,dress:R.dress,seed,
+   variant:Array.isArray(P.SCHEDULES[R.role][0])?i%P.SCHEDULES[R.role].length:0,fest:P.FEST_SCHEDULES[R.role],
    schedule:Array.isArray(P.SCHEDULES[R.role][0])?P.SCHEDULES[R.role][i%P.SCHEDULES[R.role].length]:P.SCHEDULES[R.role]});k++;}});
  return out;})();
 P.placeOf=function(activity,seed){const L=P.PLACES.filter(p=>p.activity===activity);return L.length?L[seed%L.length]:null;};

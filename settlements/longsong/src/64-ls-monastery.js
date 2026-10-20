@@ -128,7 +128,12 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
  ARCH.box('paving',0,-1.95,-6,150,.5,12,{col:LSP.granite,sides:'n'});
  // the great thangka, hung on the base's face for the festival of the register: the wheel and its eight seals
  // (2026-10-19: east of the ramps, between the second turn's landing and the base's corner; it had hung behind the ramps)
- lsDecal(SIGNS.THANGKA,81,T-17,B0.z0+2.3,13,19.5,0,-1,{label:'The great thangka of the register (the wheel and its eight seals), hung for the festival'});})();
+ // (shown only on the festival day, dawn to dusk: 89y; LS_THANGKA is its handle)
+ // (2026-10-20: laid on the battered face, 15 cm off it: flat at z0+2.3 its lower two thirds were inside the wall; and
+ // on the blind wall under the windows, its top a metre below their first row: at T-17 it hung over two rows of them)
+ {const H0=B0.y0+1,HH=B0.y1-B0.y0-1,bt=3.2,yc=H0+5*HH/8-1-19.5/2,th=Math.atan2(bt,HH),zc=B0.z0+bt*(yc-H0)/HH-.15;
+  LS_THANGKA=lsDecal(SIGNS.THANGKA,81,yc,zc,13,19.5,0,-1,{label:'The great thangka of the register (the wheel and its eight seals), hung for the festival'});
+  LS_THANGKA.rotation.set(-th,Math.PI,0,'YXZ');}})();
 
 // ---------------------------------------------------------------- the White Palace round the Debate Court (L2-L4)
 (function(){const B=LS.building('white-palace'),T=LS.ROCK.top,C=B.court,st=B.storey,z0=21,z1=95;
@@ -474,6 +479,7 @@ function monasteryChecks(add){add('every building a core/tags record of the Orde
  if(typeof nightChecks==='function')nightChecks(add);
  if(typeof peopleChecks==='function')peopleChecks(add);
  if(typeof figureChecks==='function')figureChecks(add);
+ if(typeof festivalChecks==='function')festivalChecks(add);
  if(typeof vaultChecks==='function')vaultChecks(add);}
 function monasteryNegatives(add){add('a building recorded as an Ancients one',MCHK.records(LS.BUILDINGS.concat([{id:'not-recorded'}])));
  add('a rammed-earth granary',MCHK.noEarth([{id:'x',name:'a rammed-earth granary'}],['wall']));
@@ -484,5 +490,6 @@ function monasteryNegatives(add){add('a building recorded as an Ancients one',MC
  if(typeof nightNegatives==='function')nightNegatives(add);
  if(typeof peopleNegatives==='function')peopleNegatives(add);
  if(typeof figureNegatives==='function')figureNegatives(add);
+ if(typeof festivalNegatives==='function')festivalNegatives(add);
  if(typeof vaultNegatives==='function')vaultNegatives(add);}
 _mark('monastery');

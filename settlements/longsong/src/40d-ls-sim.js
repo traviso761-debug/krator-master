@@ -78,7 +78,7 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
    if(DOOR[pl.id])door=G.byId[DOOR[pl.id]];else door=G.near(x,z,y);
    if(!DOOR[pl.id]&&!pl.ring&&!pl.indoor){const inR=pl.line?(q=>Math.abs(q.x-x)<pl.r&&q.z>pl.line[0][1]&&q.z<pl.line[1][1]):(q=>Math.hypot(q.x-x,q.z-z)<pl.r);
     spots=[];for(const q of G.nodes)if(q.tag!=='door'&&q.tag!=='stair'&&Math.abs(q.y-y)<2&&inR(q))for(const [ox,oz] of [[-1,-1],[1,-1],[-1,1],[1,1]]){const sx=q.x+ox,sz=q.z+oz;
-     if(!FOOT.some(f=>q.y+.5>f.y0&&q.y+.5<f.y1&&inFoot(f,sx,sz,1.6)))spots.push([sx,sz,q.y]);}   // clear of the walls by more than the wander
+     if(!FOOT.some(f=>q.y+.5>f.y0&&q.y+.5<f.y1&&inFoot(f,sx,sz,1.6))&&!(pl.id==='camp'&&inTent(sx,sz)))spots.push([sx,sz,q.y]);}   // clear of the walls (and the tents) by more than the wander
     // the spots in an order of their own (a hash of the place and the node), so the first comers spread over the place
     spots.sort((a,b)=>KRAND.hash(pl.id.length,Math.round(a[0]*7),Math.round(a[1]*7))-KRAND.hash(pl.id.length,Math.round(b[0]*7),Math.round(b[1]*7)));}
    const indoor=!!pl.indoor;
@@ -86,24 +86,31 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
     activities:{[pl.activity]:pl.cap},indoor:indoor?true:{},spots:spots.length?spots:undefined,cap:pl.cap,r:DOOR[pl.id]&&!indoor?Math.min(pl.r,6):undefined,
     wander:indoor||STILL[pl.activity]?0:1.2,tags:{plan:pl.id}});}
   return out;};
+ // the camp's tents (pitched on festival days): no one stands in one
+ const inTent=(x,z)=>P.CAMP.tents.some(t=>Math.abs(x-t.x)<t.w/2+1.4&&Math.abs(z-t.z)<t.d/2+1.4);
  // ---------------------------------------------------------------- 4. the records
  O.HOME={monk:'cells',novice:'cells',elder:'cells',operative:'cells',master:'cells',keeper:'cells',warden:'barracks',
-  servant:'lay-houses',scholar:'lay-houses',artisan:'lay-houses',trader:'lay-houses',caravan:'caravanserai',pilgrim:'hostel'};
- O.world=function(){const acts=new Set();for(const Pn of P.PEOPLE)Pn.schedule.forEach(a=>acts.add(a));
+  servant:'lay-houses',scholar:'lay-houses',artisan:'lay-houses',trader:'lay-houses',caravan:'caravanserai',pilgrim:'hostel',festgoer:'away'};
+ O.world=function(){const acts=new Set();for(const Pn of P.PEOPLE)Pn.schedule.concat(Pn.fest).forEach(a=>acts.add(a));
   const ORG={'The Order of Historians':'order','Oidong':'town','Xanadu Sultanate':'pilgrims'};
-  return {activities:[...acts].sort().map(id=>({id,indoor:/^(SLEEP|EAT|STUDY_IN|WORK|REST|REST_W|REST_C|LODGE|TEA|PRAY)$/.test(id)})),
+  return {activities:[...acts].sort().map(id=>({id,indoor:/^(SLEEP|EAT|STUDY_IN|WORK|REST|REST_W|REST_C|LODGE|TEA|PRAY|AWAY)$/.test(id)})),
    factions:[{id:'historians',name:'The Order of Historians'},{id:'oidong',name:'The people of the Oidong Valley'},{id:'xanadu',name:'The Xanadu Sultanate'}],
    orgs:[{id:'order',faction:'historians',name:'The Order at Longsong'},{id:'town',faction:'oidong',name:'The town in the ward'},
     {id:'pilgrims',faction:'xanadu',name:'Pilgrims',resident:false},{id:'caravans',faction:'xanadu',name:'A caravan from Xanadu',resident:false}],
-   roles:P.ROLES.map(R=>({id:R.role,org:R.role==='caravan'?'caravans':ORG[R.faction],name:R.sub,sched:P.PEOPLE.find(q=>q.role===R.role).schedule,speed:R.role==='pilgrim'?.95:R.role==='operative'?1.3:1.1,
-    prefers:{SLEEP:{pin:'home'},REST:{pin:'home'},REST_W:{pin:'home'},REST_C:{pin:'home'},LODGE:{pin:'home'}}}))};};
+   // a role per schedule variant (O.roleOf), each on SIM's week: its day's schedule, and the festival's on the festival's weekday
+   roles:[...new Set(P.PEOPLE.map(O.roleOf))].map(id=>{const Pn=P.PEOPLE.find(q=>O.roleOf(q)===id),R=P.ROLES.find(q=>q.role===Pn.role),F=P.FESTIVAL;
+    return {id,org:R.role==='caravan'?'caravans':ORG[R.faction],name:R.sub,scheds:{day:Pn.schedule,fest:Pn.fest||Pn.schedule},
+     week:Array.from({length:F.week},(u,d)=>d===F.day?'fest':'day'),speed:R.role==='pilgrim'||R.role==='festgoer'?.95:R.role==='operative'?1.3:1.1,
+     prefers:{SLEEP:{pin:'home'},REST:{pin:'home'},REST_W:{pin:'home'},REST_C:{pin:'home'},LODGE:{pin:'home'},AWAY:{pin:'home'}}};})};};
+ O.roleOf=Pn=>Pn.role+'.'+(Pn.variant||0);
  // ---------------------------------------------------------------- the declaration (once; the host's clock)
  O.init=function(clock,o){if(O.inited)return O;O.inited=true;o=o||{};const t0=Date.now(),G=O.graph();
+  if(SIM.WEEK!==P.FESTIVAL.week)throw new Error('LSS: the festival is every '+P.FESTIVAL.week+' days; SIM.WEEK is '+SIM.WEEK);
   SIM.init({seed:7401,hour:()=>clock.hour,day:()=>clock.day||0,t:()=>clock.t,err:m=>O.problems.push(m)});
   SIM.nav.layer('pedestrian',{nodes:G.nodes,edges:o.edges?o.edges(G.edges):G.edges,cost:{stair:1.3,landing:1,floor:1,door:1},yWeight:4});
   O.loaded=SIM.load(O.world());
   for(const r of O.placeRecs()){SIM.place(r);O.places++;}
-  for(const Pn of P.PEOPLE)SIM.actor({id:Pn.id,role:Pn.role,home:O.HOME[Pn.role],sched:Pn.schedule});   // each its own variant
+  for(const Pn of P.PEOPLE)SIM.actor({id:Pn.id,role:O.roleOf(Pn),home:O.HOME[Pn.role]});   // its variant's role: the day's and the festival's schedules
   SIM.REF={layer:'pedestrian',x:0,z:-100};
   O.problems=O.problems.concat(SIM.check());O.ms=Date.now()-t0;return O;};
  return O;})();

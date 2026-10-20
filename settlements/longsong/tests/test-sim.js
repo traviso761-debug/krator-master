@@ -19,9 +19,11 @@ function world(breakIt) {
   return { ctx: ctx, clock: clock };
 }
 // a day: stepped a minute at a time from 03:30, sampled every 10 minutes
-function day(W) {
-  var SIM = W.ctx.SIM, LSS = W.ctx.LSS, C = W.clock, f0 = SIM.routeFail.length, M = SIM.minute(), seen = {}, hiddenStill = [], out = 0, moving = 0, stair = 0, acts = {};
-  SIM.jump();
+function day(W, d0) {
+  var SIM = W.ctx.SIM, LSS = W.ctx.LSS, C = W.clock;
+  if (d0 != null) { C.day = d0; C.hour = 3.5; }
+  var f0 = SIM.routeFail.length, M = SIM.minute(), seen = {}, hiddenStill = [], out = 0, moving = 0, stair = 0, acts = {};
+  SIM.jump(); M = SIM.minute(); var roles = {};
   for (var m = 0; m < 1440; m++) {
     M++; C.day = Math.floor(M / 1440); C.hour = (M % 1440 + .5) / 60; C.t += 3; SIM.step();
     if (m % 10) continue;
@@ -30,10 +32,10 @@ function day(W) {
       if (s.leg >= 0 && LSS.hidden(s.x, s.y, s.z)) return;   // walking through a room or the rock: unseen (68 hides it)
       if (s.moving) { moving++; if (s.y > 2 && s.y < 39) stair++; }
       else if (LSS.hidden(s.x, s.y, s.z) && a.activity !== 'KEEP' && a.activity !== 'TURN_WHEEL' && hiddenStill.length < 5) hiddenStill.push(a.id + ' ' + a.activity + ' at ' + [s.x, s.y, s.z].map(function (v) { return v.toFixed(0); }).join(','));
-      acts[a.activity] = (acts[a.activity] || 0) + 1; seen[a.id] = 1;
+      acts[a.activity] = (acts[a.activity] || 0) + 1; seen[a.id] = 1; var r = a.role.split('.')[0]; roles[r] = (roles[r] || 0) + 1;
     });
   }
-  return { fails: SIM.routeFail.slice(f0), problems: LSS.problems, out: out, moving: moving, stair: stair, hiddenStill: hiddenStill, seen: Object.keys(seen).length, acts: acts };
+  return { fails: SIM.routeFail.slice(f0), problems: LSS.problems, out: out, moving: moving, stair: stair, hiddenStill: hiddenStill, seen: Object.keys(seen).length, acts: acts, roles: roles };
 }
 if (require.main !== module) { module.exports = { world: world, day: day }; return; }
 var bad = 0;
@@ -42,15 +44,19 @@ function ok(name, pass, detail, negPass) {
   console.log((r ? 'PASS ' : 'FAIL ') + name + ': ' + detail + (negPass ? '  (the broken input passed too)' : ''));
   if (!r) bad++;
 }
-var W = world(), G = W.ctx.LSS.graph(), D = day(W);
+var W = world(), G = W.ctx.LSS.graph(), D = day(W, 0), Wf = world(), F = day(Wf, 6);
 console.log('graph: ' + G.nodes.length + ' nodes, ' + G.edges.length + ' edges; ' + W.ctx.LSS.places + ' places; ' + W.ctx.SIM.all('actor').length + ' people; declared in ' + W.ctx.LSS.ms + ' ms');
 console.log('the day: ' + JSON.stringify(D.acts));
+console.log('the festival: ' + JSON.stringify(F.acts));
 // the stair cut between its second and third flights: the rock is out of reach
 var Wb = world(function (E) { return E.filter(function (e) { return !(e.a === 's1_' + (Math.max(2, Math.round(130 / 8))) && e.b.indexOf('s2_') === 0); }); }), Db = day(Wb);
 ok('the world declares with no unknown reference', !D.problems.length, D.problems.length + ' problems' + (D.problems.length ? ': ' + D.problems.slice(0, 3).join('; ') : ''), false);
 ok('every route found through a day', !D.fails.length, D.fails.length + ' failed', !Db.fails.length);
 ok('the Great Stair is climbed', D.stair > 0, D.stair + ' walker-samples on the stair between the ward and the rock', false);
-ok('everyone out in the world at some hour', D.seen === W.ctx.SIM.all('actor').length, D.seen + ' of ' + W.ctx.SIM.all('actor').length + ' seen outside', false);
+var nFest = W.ctx.LS.PEOPLE.filter(function (P) { return P.role === 'festgoer'; }).length;
+ok('the festival day: the house on the forecourt, the valley in for it', F.acts.FESTIVAL > 0 && (F.roles.festgoer || 0) > 0 && !D.acts.FESTIVAL && !D.roles.festgoer && !F.fails.length,
+  'festival: ' + (F.acts.FESTIVAL || 0) + ' samples on the forecourt, ' + (F.roles.festgoer || 0) + ' of the valley\'s out, ' + (F.acts.CAMP || 0) + ' at the camp, ' + F.fails.length + ' routes failed; an ordinary day: ' + (D.acts.FESTIVAL || 0) + ' and ' + (D.roles.festgoer || 0), false);
+ok('everyone out in the world at some hour', D.seen + nFest === W.ctx.SIM.all('actor').length, D.seen + ' of ' + W.ctx.SIM.all('actor').length + ' seen outside on an ordinary day (the ' + nFest + ' from the valley come only for the festival)', false);
 ok('no one stands still inside a building or the rock', !D.hiddenStill.length, D.hiddenStill.join('; ') || 'none', false);
 console.log(bad ? 'test-sim: ' + bad + ' failed' : 'test-sim: all passed');
 process.exit(bad ? 1 : 0);

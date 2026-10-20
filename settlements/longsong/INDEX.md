@@ -20,17 +20,17 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-ls-plan.js` | 41 **big** | the site (PLAN.md section 1) (19); the rock: Longsong's hill (49); the ward and the grounds (71); the ways (85); the buildings (BLUEPRINT.md L0, L1-L4, R1-R3, LR (121); the sacred furniture of the grounds (187); the planted ground (the kit grows only here insi (205); the Vault (BLUEPRINT.md LV; LORE.md 6.15) (218); the people (the life layer's scaffold; README.md (291); zones (the inspector's words, the kit's mask) (374) |
+| `40-ls-plan.js` | 45 **big** | the site (PLAN.md section 1) (19); the rock: Longsong's hill (49); the ward and the grounds (71); the ways (85); the buildings (BLUEPRINT.md L0, L1-L4, R1-R3, LR (121); the sacred furniture of the grounds (187); the planted ground (the kit grows only here insi (205); the Vault (BLUEPRINT.md LV; LORE.md 6.15) (218); the people (the life layer's scaffold; README.md (291); zones (the inspector's words, the kit's mask) (410) |
 | `40b-ls-farms.js` | 13 | what the house needs (BLUEPRINT.md's numbers) (20); the fields outside the wall (ROOMS.md 5.1) (28); the gardens inside the wall (ROOMS.md 5.2) (42); the farm's works and marks (57); the cells: which strip, terrace, pool, bed or tr (79) |
 | `40c-ls-rooms.js` | 40 **big** | the shells (64-ls-monastery.js draws them; the r (58); L1: the base (two storeys under the rock top) an (70); L2: the School (storey 0, round the Debate Court (105); L3: the White Palace, lower (storey 1) (151); L4: the White Palace, upper (storey 2), the logg (178); R1: the Red Palace's first level (storeys 0-1) (203); R2: the Great Archive (storey 2) and the wings (230); R3: the Hall of Stillness, the Abbot, the Counci (244); LR: the roof: the Hall of Hours, the Observatory (264); LV: the forbidden depths (66-ls-vault.js's rooms (286) |
-| `40d-ls-sim.js` | 11 |  |
+| `40d-ls-sim.js` | 12 |  |
 | `40e-ls-kchar.js` | 2 |  |
 | `42-ls-world.js` | 1 |  |
 | `45-host-stage.js` | 19 | the land, cached (33); the plan's shapes on the land (51); the stream as a line (page metres), on a level t (71); the fields the Oidong kit reads (BIOME-API.md) (163); the host binding (189) |
 | `57a-ls-interiors.js` | 30 | the room kinds: the catalog kinds each may draw  (31); the layouts: what the Order arranges itself (wor (92); one room: its layout, then the placer (176); the checks (verify.py --assert, through 64's mon (230) |
 | `62-ls-arch.js` | 27 | the pieces (the vocabulary), in the kit's local  (111); the Order's own pieces (ROOMS.md section 1: the  (210) |
 | `63-ls-signs.js` | 8 |  |
-| `64-ls-monastery.js` | 50 **big** | the outer wall, its towers and gates (17); the Great Gate: the parabolic arch between two p (38); the ward: the terraces' retaining walls, the ave (73); the Great Stair and the White Palace's base (L1) (105); the White Palace round the Debate Court (L2-L4) (133); the drum halls: the Assembly, the Hall of Hours, (171); the Red Palace (R1-R3) and its wings; the gilded (183); the Eastern Watch: the Archive's louvre tower (203); the Lower Gate and its paired drums (L1) (227); the rock top's other houses: the Closed Ward, th (236) |
+| `64-ls-monastery.js` | 50 **big** | the outer wall, its towers and gates (17); the Great Gate: the parabolic arch between two p (38); the ward: the terraces' retaining walls, the ave (73); the Great Stair and the White Palace's base (L1) (105); the White Palace round the Debate Court (L2-L4) (138); the drum halls: the Assembly, the Hall of Hours, (176); the Red Palace (R1-R3) and its wings; the gilded (188); the Eastern Watch: the Archive's louvre tower (208); the Lower Gate and its paired drums (L1) (232); the rock top's other houses: the Closed Ward, th (241) |
 | `66-ls-vault.js` | 36 **big** | THE PROCRASTINATOR (119); the lights' arrays for the shader (fixed after t (275); the Vault's checks (verify.py --assert) (280) |
 | `68-ls-life.js` | 15 |  |
 | `69-ls-figures.js` | 7 |  |
@@ -41,5 +41,6 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `88-host-build.js` | 2 |  |
 | `89w-ls-water.js` | 7 | the water's checks (verify.py --assert; 64's mon (42) |
 | `89x-ls-night.js` | 8 |  |
-| `99-host-take.js` | 12 | the inspector's words: the record under the hit  (52); the camera: above the ground, or inside the Vaul (71); the probe's budgets and the page's checks (verif (82); the page, handed to the host (105) |
+| `89y-ls-festival.js` | 7 |  |
+| `99-host-take.js` | 13 | the inspector's words: the record under the hit  (54); the camera: above the ground, or inside the Vaul (73); the probe's budgets and the page's checks (verif (84); the page, handed to the host (107) |
 | `99-tail.html` | <1 |  |

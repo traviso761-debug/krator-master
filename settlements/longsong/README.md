@@ -80,7 +80,8 @@ lamps in the windows; `89x`).
 - **The people** (`68-ls-life.js`): 1,344 records (the owner, 2026-10-19: a house of a thousand of the Order: 600
   monks, 160 novices, 40 elders, 80 operatives from Keepwell, 8 masters of arms, 12 keepers, 100 wardens; its town in
   the ward: 120 lay servants, 50 lay scholars, 80 artisans, 20 market keepers; a caravan of 24 from Xanadu; 50
-  pilgrims) on their schedules (the monks on three variants, so the courts are not all asked for at once); at noon the operatives drill at lightning speed in the ward
+  pilgrims; and 150 of the valley's folk, who come only on the festival day) on their schedules (the monks on three
+  variants, so the courts are not all asked for at once); at noon the operatives drill at lightning speed in the ward
   (every strike leaves three afterimages), the master of arms stands in the drill ground's middle and every few seconds
   is simply somewhere else, and the petals falling round him stop in the air within his reach; monks debate in the
   court, pilgrims walk the kora clockwise, the keepers walk the wheel. They live on `core/simulation` (`40d-ls-sim.js`:
@@ -95,6 +96,12 @@ lamps in the windows; `89x`).
   placeholder figures. The pieces are sidecars beside the page (`dist/kchar/`, 52 scripts, about 48 MB, in LFS), each
   loaded the first time a figure needs it; `build.py` remakes them from `core/charactermodels/dist/pieces/` when that is
   built. `people-kchar.json` (`tools/kchar_people.js`) is every record, for Godot.
+- **The festival of the register** (`89y-ls-festival.js`; `?festival=1` opens on it): every seventh day (core/simulation's
+  week: each role carries its day's schedule and the festival's, `LS.FEST_SCHEDULES`). At dawn the great thangka (the
+  wheel and its eight seals) is unrolled on the White Palace's base, on the blind wall under its windows, and the house
+  gathers on the forecourt to see it; the elders hold the great debate, the procession walks the kora, the thangka is
+  rolled up at dusk. The valley comes in at five (from the Great Gate) and the pilgrims' camp is pitched in the ward
+  between the Geomancers' lodge and the infirmary: twenty white tents with blue knots, ten cook fires, the trough.
 - **The plants**: the Oidong kit (`biomes/oidong`, read in place) on the model's land, its fields bound here
   (`45-host-stage.js`: wet from the rain and the water, flow on the stream's banks, upland and cold over the floor,
   rock on the steeps and Longsong's rock, three raked gravel fans the stream left, a little mist over the stream);

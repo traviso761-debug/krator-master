@@ -53,7 +53,7 @@ const PEOPLE_DRAWN=(function(){
    // on the ward's terraces the drawn ground (the stage's relief) rather than the terrace's datum
    s.y=LS.inWard(q.x,q.z)&&Math.abs(q.y-LS.wardY(q.z))<.6?terrainH(q.x,q.z):q.y;
    // facing: walking, the way; arrived, the place's middle (the drill faces the master; debaters their partner)
-   const pl=s.place;s.ry=q.moving||!pl||pl.x==null?q.h:Math.atan2(pl.x-q.x,pl.z-q.z);
+   const pl=s.place,fc=pl&&(pl.face||(pl.x!=null?[pl.x,pl.z]:null));s.ry=q.moving||!fc?q.h:Math.atan2(fc[0]-q.x,fc[1]-q.z);   // a place may name what it faces (the forecourt: the thangka)
    if(act==='KORA'&&s.korT==null)s.korT=t;}
   out.shown=shown;}
  const POS=new Float32Array(N*4);

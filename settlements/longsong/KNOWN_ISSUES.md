@@ -1,5 +1,9 @@
 # Longsong — known issues
 
+- [ ] **The festival is the same every week** (`89y`): one festival schedule a role, the same tents in the same places;
+      the valley's folk walk in at five and out again at midnight (they are `AWAY`, out by the gate, the rest of the
+      week); the walk graph does not know the tents, so a walker may pass through one; the crowd on the forecourt faces
+      the thangka from the avenue's head, 80 m to its west. No cham dance yet, and no butter-lamp offering at night.
 - [ ] **Only the nearest 24 people are dressed** (`69`: core/charactermodels figures, each morphed on the CPU); the
       rest are placeholder figures (a robe, a head, two arms, a sash; instanced). core/charactermodels has no level of
       detail or instanced crowd yet, so a whole court cannot be drawn dressed; the figures pass through one another, and

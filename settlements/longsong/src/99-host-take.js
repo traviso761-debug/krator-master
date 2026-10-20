@@ -7,6 +7,8 @@ const VIEWS=(function(){const V={},PR=LS.PROCRASTINATOR,T=LS.ROCK.top;
  V['The White Palace from the avenue']=[0,gh(0,-120,1.7),-120,0,46,40];
  V['The Great Gate and the bridge']=[70,gh(70,-330,12),-330,0,gh(0,-200,8),-200];
  V['Over the ward from the Eastern Watch']=[96,T+11*4.5+5,112,-40,-4,-120];   // over its top (11 storeys), not inside its louvres
+ V['The festival: the great thangka from the forecourt']=[104,2,-44,78,14,10];   // ?festival=1 (east of the stair's landing, which hides it from the west)
+ V['The pilgrims\' camp (festival days)']=[110,-1.2,-69,150,-4.2,-82];   // between the dairy and the infirmary
  V['The Debate Court']=[16,T+32,34,-4,T+1,54];   // high over the court's south-east corner, clear of the ranges' roofs
  V['The roof: the gilded roofs and the Hall of Hours']=[-90,T+7*4.5+14,62,10,T+7*4.5+6,120];
  V['The drill ground (lightning hands)']=[LS.DRILL.x+26,gh(LS.DRILL.x,LS.DRILL.z,6),LS.DRILL.z-28,LS.DRILL.x,gh(LS.DRILL.x,LS.DRILL.z,1),LS.DRILL.z];
@@ -126,3 +128,5 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
   biome:()=>window._biome,far:()=>({rings:FAR.rings,around:FAR.around,water:FAR.water}),bridge:()=>BRIDGE,
   at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),zone:LS.zoneAt(x,z).zone};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});
+// ?festival=1: the page opens on the festival of the register (the seventh day of the week: 89y, 40d)
+if(new URLSearchParams(location.search).get('festival')==='1'&&_hostH&&_hostH.clock)_hostH.clock.day=LS.FESTIVAL.day;
