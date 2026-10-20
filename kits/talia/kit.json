@@ -21,8 +21,7 @@
  ],
  "external": [
   "settlements/iziz/targets/city/94-city-export.js",
-  "core/biome/44-core-stage.js",
-  "core/walk/20-core-walk.js"
+  "core/biome/44-core-stage.js"
  ],
  "pack": "talia",
  "furniture": [

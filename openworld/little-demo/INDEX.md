@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 5 |  |
-| `41-world-fields.js` | 39 **big** | the styles: how each biome's land is shaped (42); the rasters (73); sampling (98); the drainage network (140); the escarpments: cliffs at 1:1 (216); the roads: highways between the settlements (228); the towns: a built settlement's own ground (265); the height (306); the water: the sea and the lakes from the scale  (343); the water bodies (core/water: one surface each) (354) |
+| `41-world-fields.js` | 39 **big** | the styles: how each biome's land is shaped (42); the rasters (78); sampling (103); the drainage network (145); the escarpments: cliffs at 1:1 (221); the roads: highways between the settlements (233); the towns: a built settlement's own ground (270); the height (311); the water: the sea and the lakes from the scale  (348); the water bodies (core/water: one surface each) (359) |
 | `42-world-roads.js` | 10 |  |
 | `45-world-host.js` | 5 | the field sources (38) |
 | `46-world-config.js` | 1 |  |

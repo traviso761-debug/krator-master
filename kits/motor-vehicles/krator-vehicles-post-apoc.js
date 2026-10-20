@@ -19,8 +19,8 @@ VEHICLE_CULTURE('post-apoc', {
   lore: 'culture-neutral salvage society of the reclaimed arcologies and wreck towns',
   /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
   detail: {
-    rust: 'rust', rustDark: 'rust', rustLight: 'rust', rustBrown: 'rust', trackIron: 'rust',
-    olive: 'paintWorn', oliveDark: 'paintWorn', khaki: 'paintWorn', fadedTeal: 'paintWorn', fadedTealDark: 'paintWorn',
+    rust: 'rust', rustDark: 'rust', rustLight: 'rustB', rustBrown: 'rustC', steel: 'plate', steelDark: 'plate', trackIron: 'rust',
+    olive: 'paintFlake', oliveDark: 'paintWorn', khaki: 'paintWorn', fadedTeal: 'paintWorn', fadedTealDark: 'paintWorn',
     mustard: 'paintWorn', fadedRed: 'paintWorn', cream: 'paintWorn', jerryRed: 'paintWorn', jerryYellow: 'paintWorn',
     canvas: 'canvas', crate: 'wood', rubber: 'rubber', glass: null, domeGlass: null
   },

@@ -112,7 +112,7 @@ indexed batch) goes in the Beast Rider buildings file; the stall and the keeper'
 
 **Access** is the Riders' way: most traffic comes and goes by air; the Stair is for the farms, the market and
 strangers; the beast lift (Mav's cage lift on a capstan) hangs down the gorge face for loads a flyer cannot carry.
-The town is "un-assailable" the way Mav's gateway trees are: one stair, gated three times.
+The town is "un-assailable" the way Mav's gateway trees are: one stair, gated (at its head and its foot: the owner removed the middle gate, 2026-10-19).
 
 ## 3. The order of work
 
@@ -122,6 +122,51 @@ the settled plan; the Garden's mesa and the Heart; every mesa weathered as the o
 (flutes, gullies, a shoulder of ledges, the debris slope and its fallen blocks); `verify.py --assert` passes. The owner
 signed the rock off on 2026-10-19 ("I think we're in business"). The Stair (listed under P1) moves to P2 with the lifts and the rock-cut
 stair pieces (`kits/beast-riders`).
+
+**Status (2026-10-19, later): P2 is done** (README.md, "The roosts", "The flyers"): the roost plan as records
+(`src/43-pr-roosts.js`), a deck ring on each Wing's fin and the four ringed Garden pinnacles and a lookout ring on every
+fin (25 rings), 113 stalls in Girder's frame and record shape with their ways out proved, eleven keepers' shelters, a
+climb to every ring, four rope bridges within the groups, the beast lift on the gorge face and the capstan lift by the
+Stair, the Stair down the south nose gated at its head and foot; Girder's flyers read in place on them (`flyers/`): a quetzal sent
+in lands on an east fin's perch, and the roost traffic runs. Not as planned: the rings are drawn from their records on
+the page, not a catalog entry (a ring follows its stack's outline), and the Stair's flights have no notch cut over them
+(KNOWN_ISSUES.md). The owner's first look (2026-10-19) asked for more stalls on the platforms (113 now: stalls follow
+the edge round its bends), each Wing's beasts in its own stalls, the Stair attached to the face at every bed with its
+supports on the rock, its path clear of fallen blocks, and a cleared road to the beast lift (the lift road, to the
+north-west gate): all done. Next: P3.
+
+**Status (2026-10-19, P3a): the town on the top is laid and drawn** (README.md, "The town"): one `core/city` instance,
+steps 0-5 from the settled zones (`src/54-pr-town.js`), about 600 Beast Rider buildings on about 120 streets, the hall,
+the two markets, the shrine, the barracks, every trade the town carries; the town check and six negatives pass. Not as
+planned: no furniture or interiors yet, the hall at Girder's size, the speakers' stones and the fires to come (P4)
+(KNOWN_ISSUES.md). Next: P3b, the farms.
+
+**Status (2026-10-19, P3b): the farms are laid and drawn** (README.md, "The farms"): the ring inside the palisade in
+six terraces of about 640 field cells (`src/55-pr-farms.js`), orchards on the outer two, paddies by the spring, twelve
+farmhouses on the terrace way, the palisade with its four gates and fifteen watch posts, the tracks and the forest
+road; the farms check and six negatives pass. Next: P3c, the bands' grounds.
+
+**Status (2026-10-19, P3c): the bands' grounds are pitched** (README.md, "The bands' grounds"): eighteen grounds from
+the kit's `BR_CAMP` (nine on the top, moved in onto the usable cap; nine on the floor in their thorn hedges with their
+pastures), 222 tents and pens, banners, and a track from each floor camp to a palisade gate; the camps check and six
+negatives pass. Not as planned: the hedges' runs drawn as a light band (KNOWN_ISSUES.md). Next: P3d, the Deep Root cavern.
+
+**Status (2026-10-19, P3d): the Deep Root is cut** (README.md, "The Deep Root cavern"): the court, its stair, the
+passage of the tribes and the hall as a KCAVERN plan (`src/57-pr-cavern.js`), the light well, the kit's carved face,
+twelve tribes' niches, five lamp niches, ledges and the altar, the fig over the well in its ring of twelve stones, the
+processional; the cavern check and four negatives pass. Not as planned: the door's face scaled to the court (KNOWN_ISSUES.md).
+Next: P3e, the Garden's great-houses and the ways up.
+
+**Status (2026-10-19, P3e): P3 is laid** (README.md, "The Garden"): the Garden's stair and ramp and the stair up the
+Heart (the roost plan's ascents), two compounds, ten great-houses and rock longhouses round the Heart (`src/58-pr-garden.js`),
+its paths; the Garden check and four negatives pass. Not as planned: the ways up are timber galleries, not cut ways
+(KNOWN_ISSUES.md). P3 awaits the owner's look. Next: P4, the life.
+
+**The owner's first look at P3 (2026-10-19)**: the Deep Root now opens from the Garden's mesa's wall, its passage
+spiralling down and back out under the first mesa to the hall and the light well; storerooms cut in the Garden's mesa's
+wall; upper stall tiers on the Garden's pinnacles (113 stalls to 173); the Heart's climb started clear of its fused
+neighbours; the carved door's crossed arch legs fixed in the kit; the whole viewer (core/host FULL), core/walk, core/lod
+and core/water's still water taken.
 
 - **P0. The site and the harness.** Find the mesa (section 1), write the point back, `build.py` reading the catalog,
   Girder's flyers and `core/terrain` in place, the port lint, `verify.py` on `tools/harness.py`. Done when a bare red
@@ -134,9 +179,23 @@ stair pieces (`kits/beast-riders`).
   traffic runs.
 - **P3. The town and the farms.** `core/city` steps 0-12 on the top; the hall, the market, the barracks, the shrine;
   the farm ring and palisade below. Done when the town fills the top, the city test is green and the views of section
-  4 read.
+  4 read. In parts (2026-10-19):
+  - **P3a, the town on the top**: one `core/city` instance (`KCITY`, bundled as Verge and the isle demo bundle it) on the
+    mesa's top: steps 0-5 from the settled layout (the build zone is the drawn top less the 12 m rim band, the stacks'
+    feet and the climbs' starts, the Garden's mesa and its debris slope, the Deep Root precinct, the camp grounds, the
+    Stair's head and the lifts' tops; landmarks: the assembly hall and the market in the Crown, the Winged Ones' shrine
+    by its balanced rock, the three Wings' barracks; districts: the house quarter west, the trades east, the south
+    quarter by the Stair; avenues from the Stair's head to the Crown and the lift, a ring round the Garden's mesa),
+    steps 6-12 the module's builder; the Beast Riders kit's buildings (its houses and trades, and the ports of Girder's
+    and Mav's for the round huts, joglo, longhouses and the hall), each built once and instanced.
+  - **P3b, the farms**: the palisade and its gates, the contour terraces cut into field cells, the twelve farmhouses.
+  - **P3c, the bands' grounds**: the camps on the top and the floor (`BR_CAMP`), the pastures, the thorn hedges.
+  - **P3d, the Deep Root cavern** (`KCAVERN` with a KSTACKS hole, the kit's rock-cut dressing, the ring of stones).
+  - **P3e, the Garden's great-houses and the ways up** to the Garden's mesa and the Heart.
 - **P4. The life.** Riders and keepers (`core/charactermodels`, the beast-rider clothes), the Wings' banners (the
   claw, green), the night: fires on the Crown, lamps at the stall heads, the farms dark. Done when the night view reads.
+  **The night is done without the life** (owner, 2026-10-19: "add night mode alone ... full sim to come later"): the hour
+  slider, the light and the lamps (README, "The night"); the riders, the keepers, the banners and the simulation remain.
 - **P5. The record.** `README.md`, `KNOWN_ISSUES.md`, `PORT.md`, the gallery entry, the hash into `PORT-BASELINE.json`.
 
 ## 4. Views for the verify

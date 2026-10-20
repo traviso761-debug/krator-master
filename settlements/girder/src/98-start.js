@@ -55,10 +55,9 @@ var gCut = TOWERS.map(function(T){ return { id:'tower-'+T.id, name:T.name, x:T.x
 var gLast = performance.now(), gTmp = new THREE.Vector3();
 var GHOST = KHOST.take({
   build:'girder', title:'Girder', hint:'an outlying Beast Rider village in the central-crater hyperjungle',
-  scene:scene, camera:camera, renderer:renderer, ground:terrainH, clear:1.6, minR:4, maxR:5000,
+  scene:scene, camera:camera, renderer:renderer, ground:terrainH, walk:KWALK, walker:{ step:0.55, drop:1.4, r:0.28, h:1.75 }, clear:1.6, minR:4, maxR:5000,
   views:gViews, start:VIEWS[0][0],
   clock:{ hour:10, running:false, scale:1, speeds:[0, 1, 2, 4, 8] },   /* the world hour is the sky's own (21-sky.js, the slider below): no host hour */
-  keys:{ f:function(){ wkToggle(); } },                                /* F walks (the walk mode's own walker, 83-walk.js) */
   inspect:function(hit, hits, rec){ return inspectDescribe(hit, rec); },
   palette:{ items:gPal, build:function(key){ var b = KratorFurniture.batch({ indexed:true }); b.place(key, 0, 0, 0, 0, { variant:0, seed:1, wealth:0.5 }); return b.flush(); } },
   edits:{ world:GWORLD, log:GEDIT.log,
@@ -87,9 +86,6 @@ KHOST.on(function girderFrame(dtm, clock){
   skyAdvance(dt); updateSky(); updateDayNight();
   var hour = skyHour(), nk = DAYNIGHT_NIGHT_K;
   CLOTH_TIME.value += dt;
-  waterUni.uTime.value += dt; waterUni.uCam.value.copy(camera.position);
-  waterUni.uSun.value.copy(SKY_STATE.keyDir); waterUni.uFogCol.value.copy(scene.fog.color); waterUni.uFogDen.value = scene.fog.density;
-  waterUni.uDay.value = clamp(SKY_STATE.dayK, 0.12, 1);
   updateGlow(dt, hour, nk);
   for(var i=0;i<TICKS.length;i++){ try{ TICKS[i](dt, hour, nk); }catch(err){ if(!TICKS[i]._err){ TICKS[i]._err = 1; ERR('tick '+i+': '+(err&&err.stack||err)); } } }
   sun.position.copy(SKY_STATE.keyDir).multiplyScalar(2200).add(gTmp.set(ctl.tx, ctl.ty, ctl.tz));

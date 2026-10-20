@@ -45,7 +45,7 @@ function floorH(x,z){return floorBase(x,z);}
 const MOTHER={x:380,z:-420,r:230,h:38,peak:58,name:'The Mother Cushion (one plant over a knoll)'};
 const TARN={x:-760,z:180,r:120};
 // THE MELT POOLS in the windward (north-west) hollows of the top
-const POOLS=(function(){const o=[{x:TARN.x,z:TARN.z,r:TARN.r,bed:false,name:'The frozen tarn'}];
+const POOLS=(function(){const o=[{x:TARN.x,z:TARN.z,r:TARN.r,bed:false,ice:true,name:'The frozen tarn'}];   /* ice: 47 draws it as a plate of ice, not water */
  for(let i=0;i<7;i++){const r=KRAND.stream(KRAND.hash(8101,i,7)),a=r.range(Math.PI*.9,Math.PI*1.7),d=250+900*Math.sqrt(r.next()),x=Math.cos(a)*d,z=Math.sin(a)*d,pr=r.range(9,24);
   if(o.some(p=>Math.hypot(p.x-x,p.z-z)<p.r+pr+40)||Math.hypot(x-MOTHER.x,z-MOTHER.z)<MOTHER.r+pr+30)continue;o.push({x,z,r:pr,bed:false,name:'A melt pool'});}return o;})();
 const poolD=(x,z)=>{let m=1e9;for(const p of POOLS){const d=Math.hypot(x-p.x,z-p.z)-p.r;if(d<m)m=d;}return m;};
@@ -53,7 +53,7 @@ const motherK=(x,z)=>smooth(MOTHER.r*1.15,MOTHER.r*.55,Math.hypot(x-MOTHER.x,z-M
 
 // ---------------------------------------------------------------- the rock (KSTACKS records): the table is one body
 const ROCK=(function(){const K=KSTACKS,L=[];
- const add=(B,name)=>{B.name=name;L.push(B);return B;};
+ const add=(B,name)=>{B.name=B.plates?'A pile of plates (Roraima\'s kind: thin beds, deep partings, a top-heavy head)':name;L.push(B);return B;};   /* plates: KSTACKS, Roraima's piles */
  const T=add(K.make({id:'table',kind:'mesa',x:0,z:0,y0:-DROP-3,seed:8201,bed:[70,130],lobes:.24,weather:.9,tiers:[{h:DROP+3,r:1480,e:1.08,ry:.3}]}),'The hoar table (a tepui summit above the cloud)');
  // the knolls on its top: the Mother Cushion's and three more (the top's own relief: the pavement's hummocks)
  return L;})();
@@ -61,12 +61,17 @@ const TABLE=ROCK[0];
 // THE TOP's relief: KSTACKS tops are flat with a little roughness; the knolls and the pools' dips are added by the stage
 // through the layout's top (47 reads terrainH from NECANYONS.top): a hook the host gives the layout (STAGE.topExtra)
 const knolls=(x,z)=>{let h=0;[[380,-420,230,38],[-300,600,180,16],[700,500,150,12],[-900,-700,200,14]].forEach(k=>{const d=Math.hypot(x-k[0],z-k[1]);h+=k[3]*Math.pow(smooth(k[2],0,d),1.5);});
- return h+2.5*(fbm(x*.004+1,z*.004-2,81,3)-.5)*2-1.6*smooth(30,-6,poolD(x,z));};
+ /* a pool is a basin: its dip deeper for the tarn (3.6 m) than a melt pool (2), the pavement's roughness damped inside it so the
+    ice and the water show as plates with a rim (the owner, 2026-10-19: the frozen tarn did not read) */
+ const pd=poolD(x,z),td=Math.hypot(x-TARN.x,z-TARN.z)-TARN.r,inP=smooth(26,-8,pd),dip=mix(2,3.6,smooth(30,-10,td));
+ return h+2.5*(fbm(x*.004+1,z*.004-2,81,3)-.5)*2*(1-.8*inP)-dip*inP;};
 
 // ---------------------------------------------------------------- the station's say: STAGE (47 reads it)
 const STAGE={
  name:'Korona: the hoar table',R:TERR.R,bodies:ROCK,floor:floorH,capY:TABLE.top-80,seed:16,talusH:0,heroR:1600,
- stream:null,streamD:()=>1e9,pools:POOLS,topExtra:knolls,
+ air:{pressure:0.8},stream:null,streamD:()=>1e9,pools:POOLS,topExtra:knolls,
+ // THE ICEFALLS (47): the hanging gardens frozen: a fall of ice down the wall under every strong seep line
+ icefalls:{min:.4,every:2,len:s=>20+40*s,w:s=>6+10*s,label:'An icefall (a seep line frozen: the ice tribes\' hanging gardens)'},
  windward:(x,z)=>.55+.45*smooth(400,-400,(x+z)*Math.SQRT1_2),
  wetExtra:(x,z)=>.45*smooth(60,8,poolD(x,z)),
  // ET: nothing on the table is warm; the gorge floor below is in cloud and out of the page's life

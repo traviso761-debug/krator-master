@@ -139,6 +139,36 @@
     "sourceMean": 0.6288
    }
   },
+  "clothR": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "clothR.albedo.webp",
+    "normalMap": "clothR.normal.webp",
+    "roughnessMap": "clothR.rough.webp"
+   },
+   "lib": "patterns/canvas/stripe-red",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "f81b2139953a84a2e36ef1e17064ac67fd45b7e4",
+    "normal": "206d93d27c0189f4842c5617e72fce2cbe5b91d1",
+    "roughness": "3979ad96d1eb95759523f19c0715b7f2a1aee6f6"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4568561544141583,
+    "sourceMean": 0.4569
+   }
+  },
   "concrete": {
    "breakup": {
     "cell": 6,
@@ -439,6 +469,36 @@
     "sourceMean": 0.2171
    }
   },
+  "rlClothT": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rlClothT.albedo.webp",
+    "normalMap": "rlClothT.normal.webp",
+    "roughnessMap": "rlClothT.rough.webp"
+   },
+   "lib": "patterns/reedlake/chakana-textile-terracotta",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2f543de0b246848aa34fe655af79e116327ef150",
+    "normal": "e6e626501d9118ddb012066d11b78a0b1fbfb3c3",
+    "roughness": "0eee6f4e7245cba75096cae9ccfc757c4dd425fd"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.21892552874097637,
+    "sourceMean": 0.2189
+   }
+  },
   "rlFringe": {
    "breakup": null,
    "card": true,
@@ -561,6 +621,36 @@
     "keep": 0.0,
     "mean": 0.472,
     "sourceMean": 0.5107
+   }
+  },
+  "rlLily": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rlLily.albedo.webp",
+    "normalMap": "rlLily.normal.webp",
+    "roughnessMap": "rlLily.rough.webp"
+   },
+   "lib": "ground.lilypond",
+   "metal": 0,
+   "normalScale": 0.6,
+   "roughLift": 0.0,
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "605ff6653aa9d665d37749ad02a66b746f79fc24",
+    "normal": "b59ab259428661b0a84d5f563a2dc508a2cfae6c",
+    "roughness": "44e1d09eb242622e8e7fff4bfefa8f30597f4323"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4461039264663995,
+    "sourceMean": 0.4461
    }
   },
   "rlMat": {
@@ -812,7 +902,7 @@
     "normalMap": "shingle.normal.webp",
     "roughnessMap": "shingle.rough.webp"
    },
-   "lib": "roof.shingle.neutral",
+   "lib": "roof.shingle",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -822,16 +912,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "2e4595107e0ed58e8929be54384dd77342a86ca7",
+    "albedo": "b18b990449c071e333df2411eb8e480acadcb439",
     "normal": "41d3aae75ede8f6b9f20f5f7655928fa322c8f5d",
     "roughness": "dd07121049f9cb4514a0f3e1f76dceabe2f8fc2e"
    },
    "specular": 0.3,
    "tint": {
     "contrast": 1.0,
-    "keep": 0.0,
+    "keep": 0.25,
     "mean": 0.6,
-    "sourceMean": 0.6493
+    "sourceMean": 0.3639
    }
   },
   "stone": {

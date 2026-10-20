@@ -28,16 +28,16 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 8 | surfaces (1) |
-| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
+| `34-kitdefs.js` | 10 | kit definitions (shared geometry) (1); THE LEAF CARD (54) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
 | `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
-| `69d-dalab-mat.js` | 22 | textures (39); materials (177); geometry (202); kit items (209) |
-| `69e-dalab-helpers.js` | 26 | The God's light (night) and hearth fire (night) (16); relief, murals, banners, gates, steles (34); the sacred deco (round 4) (63); the round house (78); the earth mound (98); people (176); furniture (196); fauna (round 6) (222) |
+| `69d-dalab-mat.js` | 24 | textures (39); materials (179); geometry (216); kit items (223) |
+| `69e-dalab-helpers.js` | 27 | The God's light (night) and hearth fire (night) (16); relief, murals, banners, gates, steles (34); the sacred deco (round 4) (64); the round house (79); the earth mound (99); people (177); furniture (197); fauna (round 6) (223) |
 | `70-dalab-dwellings.js` | 12 | PEASANT (8); NOBLE (56) |
 | `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
 | `71-dalab-trade.js` | 18 |  |
@@ -52,6 +52,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `74-rep-dwell.js` | 33 **big** | R-A kit items and helpers (prefix hRA / hnRA) (9); POOR (65); MIDDLE (96); RICH (135); RICH (cont.) (237) |
 | `75-port-embassy.js` | 24 | textures (near-grey, tinted per instance; 128 px (10); materials (35); geometry (43); kit items (58); local helpers (vp prefix) (68); the embassy (84) |
 | `76-port-chapterhouse.js` | 17 |  |
+| `77-dalab-trades.js` | 5 |  |
 | `81-sky.js` | 10 |  |
 | `86-bio-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
 | `86-bio-20-core-kit.js` | 15 | merged buckets (46); indexed buckets (140); bake (163) |

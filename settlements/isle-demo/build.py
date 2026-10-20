@@ -332,7 +332,8 @@ def city_page():
     izp = os.path.join(ROOT, 'settlements', 'iziz')
     izfams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
     packs = (matlib_pack.fragment(os.path.join(ROOT, 'kits', 'islanders'), 'islanders', side=side) +
-             matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith(('fauna', 'city'))], side=side))
+             matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith(('fauna', 'city'))], side=side) +
+             matlib_pack.fragment(HERE, 'isle', side=side))
     data = raw_fragment() + dims_fragment() + trades_fragment() + site_fragment()
     core = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(p), NL, read(p), NL, NL) for p in CITY_CORE + CITY_SIM)
     mats = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(p), NL, read(p), NL, NL) for p in CITY_MAT + CITY_EXPORT) + packs

@@ -47,8 +47,10 @@ const VPDRUM=new THREE.CylinderGeometry(1,1,1,28).translate(0,.5,0);
 const VPDISC=new THREE.CylinderGeometry(1,1,1,24).rotateX(Math.PI/2);                        // a disc facing ±z, thickness = scale z
 const VPBANCO7=vnWedgeGeo(.93,.93), VPBANCO5=vnWedgeGeo(.55,.55), VPOBELISK=vnWedgeGeo(.42,.42);
 // a wall slab W x H x T with a PARABOLIC opening ow x oh (Yuni's arch), base at y=0, centred in x and z
-function vpArchGeo(W,H,T,ow,oh){const s=new THREE.Shape();s.moveTo(-W/2,0);s.lineTo(W/2,0);s.lineTo(W/2,H);s.lineTo(-W/2,H);s.lineTo(-W/2,0);
- const p=new THREE.Path();const n=18;p.moveTo(-ow/2,0);for(let i=1;i<n;i++){const x=-ow/2+ow*i/n;p.lineTo(x,oh*(1-Math.pow(2*x/ow,2)));}p.lineTo(ow/2,0);p.lineTo(-ow/2,0);s.holes.push(p);
+// (the opening is a notch in the outline, not a hole: a hole whose foot lay on the outline's foot was filled by the triangulator
+// with a bar across the doorway at the floor, a sill that fought the threshold; the owner, 2026-10-19)
+function vpArchGeo(W,H,T,ow,oh){const s=new THREE.Shape(),n=18;s.moveTo(-W/2,0);s.lineTo(-ow/2,0);
+ for(let i=1;i<n;i++){const x=-ow/2+ow*i/n;s.lineTo(x,oh*(1-Math.pow(2*x/ow,2)));}s.lineTo(ow/2,0);s.lineTo(W/2,0);s.lineTo(W/2,H);s.lineTo(-W/2,H);s.lineTo(-W/2,0);
  const g=new THREE.ExtrudeGeometry(s,{depth:T,bevelEnabled:false,curveSegments:8});g.translate(0,0,-T/2);g.computeVertexNormals();return g;}
 // an ARCHIVOLT: the parabolic ring `t` thick round an opening ow x oh (a horseshoe polygon, so no hole touches the outline), extruded T
 function vpArchRingGeo(ow,oh,t,T){const s=new THREE.Shape();const n=22,OW=ow+2*t,OH=oh+t;s.moveTo(-OW/2,0);for(let i=1;i<n;i++){const x=-OW/2+OW*i/n;s.lineTo(x,OH*(1-Math.pow(2*x/OW,2)));}s.lineTo(OW/2,0);s.lineTo(ow/2,0);
@@ -70,13 +72,13 @@ kdef('vpBanner',VPLANE,MAT.vpBanner);
 function vpHang(x,y,z,ry,w,h,c){kput('vpBanner',[x,y-h/2,z],vQ(ry,0,0),[w,h,1],c||null);}
 // a banner on a pole: post, cross-arm, hung cloth turned across the arm
 function vpBannerPole(x,y,z,ry,h,c){vPst('vPipe',x,y,z,.07,h,vC(0x3a2f22));const p=loc(x,z,.5,0,ry);vB('vIron',p[0],y+h-.25,p[1],1.0,.07,.07,ry,vC(0x3a2f22));vpHang(p[0],y+h-.3,p[1],ry+Math.PI/2,.85,2.6,c);}
-// Voth window: a dark recess with a stone sill and a lintel; `lit` swaps the recess for a warm pane (electric)
-function vpVWin(x,y,z,ry,w,h,c,lit){const f=loc(x,z,0,.04,ry);vB(lit?'vWinLit':'vDarkB',f[0],y,f[1],w,h,.12,ry);
+// Voth window: glass (a warm pane when electric; 69e5) with a stone sill and a lintel; `lit` swaps the recess for a warm pane (electric)
+function vpVWin(x,y,z,ry,w,h,c,lit){const f=loc(x,z,0,.04,ry);vnOpening(x,y,z,ry,w,h,lit?'glow':'win');
  const s=loc(x,z,0,.16,ry);vB('vStone',s[0],y-.24,s[1],w+.55,.24,.42,ry,c);vB('vStone',s[0],y+h,s[1],w+.4,.2,.3,ry,c);
  if(lit){vB('vStone',f[0],y,f[1],.07,h,.14,ry,c);}}
-// Voth door: recessed dark surround, leaf, stone lintel, one or two threshold steps, lamp if lit
-function vpVDoor(x,y,z,ry,w,h,c,steps){const a=loc(x,z,0,.22,ry);vB('vStone',a[0],y,a[1],w+1.1,h+.8,.5,ry,c.clone().multiplyScalar(.82));
- const f=loc(x,z,0,.4,ry);vB('vDarkB',f[0],y,f[1],w,h,.2,ry);const l=loc(x,z,-w*.06,.5,ry);kput('vWood',[l[0],y+h/2,l[1]],vQ(ry,0,0).multiply(qEuler(0,.2,0)),[w*.9,h-.05,.07],vC(0x1c1a16));
+// Voth door: a deep stone surround round a real leaf (69e5), stone lintel, one or two threshold steps, lamp if lit
+function vpVDoor(x,y,z,ry,w,h,c,steps){const sc=c.clone().multiplyScalar(.82);for(const s of[-1,1]){const a=loc(x,z,s*(w/2+.275),.22,ry);vB('vStone',a[0],y,a[1],.55,h+.8,.5,ry,sc);}
+ {const a=loc(x,z,0,.22,ry);vB('vStone',a[0],y+h,a[1],w+.02,.8,.5,ry,sc);}vnOpening(x,y,z,ry,w,h,'door',vC(0x1c1a16));
  const t=loc(x,z,0,.3,ry);vB('vStone',t[0],y+h+.8,t[1],w+1.5,.35,.7,ry,c.clone().multiplyScalar(.8));
  for(let k=0;k<(steps||2);k++){const s=loc(x,z,0,.7+k*.4,ry);vB('vStone',s[0],y-(k+1)*.2,s[1],w+1.0-k*.2,.2,.8,ry,c.clone().multiplyScalar(.75));}
  if(vLit()){const q=loc(x,z,-(w/2+.9),0,ry);vnLamp(q[0],y+h+.3,q[1],ry);}}
@@ -103,7 +105,7 @@ function buildVpEmbassy(G,o){reseed(7801+(o.v|0));
  // ---- corner bastions: tapered square towers oversailing the wall, cornice, cap, slits, a red clan banner on each
  for(const p of[[-1,-1],[1,-1],[-1,1],[1,1]]){const tx=p[0]*hx,tz=p[1]*hz,BH=9.4;kput('vBatterS',[tx,Y0,tz],null,[4.6,BH,4.6],st.clone().multiplyScalar(.96));
   vB('vStone',tx,Y0+BH-.05,tz,4.5,.4,4.5,0,cop);vB('vStone',tx,Y0+BH+.35,tz,3.9,.8,3.9,0,st);
-  for(const s of[-1,1]){vB('vDarkB',tx+s*1.98,Y0+5.6,tz,.24,1.3,.5,0);vB('vDarkB',tx,Y0+5.6,tz+s*1.98,.5,1.3,.24,0);vB('vDarkB',tx+s*1.7,Y0+BH+.5,tz+p[1]*1.98,.5,.55,.2,0);}
+  for(const s of[-1,1]){vnPlate(tx+s*1.98,Y0+5.6,tz,.24,1.3,.5,0);vnPlate(tx,Y0+5.6,tz+s*1.98,.5,1.3,.24,0);vnPlate(tx+s*1.7,Y0+BH+.5,tz+p[1]*1.98,.5,.55,.2,0);}
   vpBannerPole(tx,Y0+BH+1.15,tz,p[0]>0?-Math.PI/2:Math.PI/2,3.6,red);}
  // ---- gatehouse: a block across the wall line, dark arched-lintel passage, iron-studded leaves half open, lamps, banners red + purple
  {const gz=hz,GW=9.2,GD=4.2,GH=8.2;for(const s of[-1,1])vB('vStone',s*(GW/4+.9),Y0,gz,GW/2-1.8,4.6,GD,0,st);vB('vStone',0,Y0+4.6,gz,GW,GH-4.6,GD,0,st);   // piers + the storey over the passage: a REAL opening
@@ -138,13 +140,18 @@ function buildVpEmbassy(G,o){reseed(7801+(o.v|0));
    for(const ox of[-1.7,1.7])vBeam([tx+ox,yb,b0],[tx+ox,yb-1.1,b0+1.4],.3,timber);
    vB('vWood',tx,yb+.3,b0+1.55,4.6,.8,.14,0,timber);for(const ox of[-2.25,2.25])vB('vWood',tx+ox,yb+.3,b0+.8,.14,.8,1.6,0,timber);}
   // external stair up the left flank to a first-floor door, and a stone buttress at the back
-  {const sx=tx-faceAt(drums[0][0],drums[0][1],2)-.5;for(let i=0;i<7;i++)vB('vStone',sx+.08*i,Y0+i*.6,tz-3.2+i*.9,1.5,.6,1.0,0,st.clone().multiplyScalar(.9));
-   const fx=tx-faceAt(drums[0][0],drums[0][1],4.5);vB('vStone',(sx+fx)/2,Y0+4.2,tz-5.3,fx-sx+.6,.3,2.0,0,cop);vB('vDarkB',fx-.1,Y0+4.5,tz-5.3,.3,2.2,1.3,0);vB('vStone',fx-.15,Y0+6.7,tz-5.3,.4,.3,1.9,0,cop);vBeam([sx-.2,Y0+.9,tz-3.2],[sx+.5,Y0+5.4,tz+3.8],.08,timber,'vIron');
+  {const sx=tx-faceAt(drums[0][0],drums[0][1],2)-.5;
+   // (14 risers of 0.3 rising toward the landing, each a block from the ground: there were 7 of 0.6 floating, rising away from it;
+   // the owner, 2026-10-20) and the flight and the landing into core/walk
+   for(let i=0;i<14;i++)vB('vStone',sx+.04*i,Y0,tz-4.25+(13-i)*.45,1.5,(i+1)*.3,.46,0,st.clone().multiplyScalar(.9));
+   if(typeof KWALK!=='undefined'){const w3=(x3,y3,z3)=>{const v=IZDOOR._w(x3,y3,z3);return[v[0],v[2],v[1]];};KWALK.strip({a:w3(sx,Y0,tz-4.25+13*.45+.4),b:w3(sx+.52,Y0+4.2,tz-4.25),w:1.3,name:'embassy stair',tag:'interior:vern-stairs'});}
+   const fx=tx-faceAt(drums[0][0],drums[0][1],4.5);vB('vStone',(sx+fx)/2,Y0+4.2,tz-5.3,fx-sx+.6,.3,2.0,0,cop);IZDOOR.leaf(fx-.1,Y0+4.5,tz-5.3,-Math.PI/2,1.3,2.2,.3,vC(0x1c1a16),{locked:true});   /* facing its landing (-x) */
+   if(typeof KWALK!=='undefined'){const w3=(x3,y3,z3)=>{const v=IZDOOR._w(x3,y3,z3);return[v[0],v[2],v[1]];},xa=sx-.3,xb=fx+.3;KWALK.poly({pts:[[xa,tz-6.3],[xb,tz-6.3],[xb,tz-4.3],[xa,tz-4.3]].map(([a3,b3])=>w3(a3,Y0+4.5,b3)),name:'embassy landing',tag:'interior:vern-stairs'});}vB('vStone',fx-.15,Y0+6.7,tz-5.3,.4,.3,1.9,0,cop);vBeam([sx-.2,Y0+.9,tz-4.25+13*.45+.3],[sx+.5,Y0+5.1,tz-4.25],.08,timber,'vIron');
    kput('vBatterS',[tx,Y0,tz-4.4],null,[1.5,6.4,1.5],st.clone().multiplyScalar(.95));vB('vStone',tx,Y0+6.4,tz-4.4,1.7,.4,1.7,0,cop);}}
  // ---- hlaalu house, back-right: stacked shrinking flat blocks (stone below, pale plaster above), cornices, balcony, chimney
  {const lev=[];let jx=7.2,jz=-8.6,y=Y0,fw=12.5,fd=9.2;const hs=[6.0,4.8,3.6];
   vB('vStone',jx,Y0,jz,fw+.8,.4,fd+.8,0,stD);y+=.4;
-  hs.forEach((fh,i)=>{if(i>0){jx+=rr(-.5,.5);jz+=rr(-.4,.2);}const item=i===0?'vStone':'vPlaster',c=i===0?st:pl;vB(item,jx,y,jz,fw,fh,fd,0,c);
+  hs.forEach((fh,i)=>{if(i>0){jx+=rr(-.5,.5);jz+=rr(-.4,.2);}const item=i===0?'vStone':'vPlaster',c=i===0?st:pl;if(i===0)vnBody(item,jx,y,jz,fw,fh,fd,0,c,{t:.5,floor:'vStone',floorC:stD});else vB(item,jx,y,jz,fw,fh,fd,0,c);
    if(i>0)for(const sx of[-1,1])for(const sz of[-1,1])vB('vStone',jx+sx*(fw/2-.35),y,jz+sz*(fd/2-.35),.7,fh,.7,0,st.clone().multiplyScalar(.9));   // stone quoins on the plaster storeys
    vB('vStone',jx,y+fh-.28,jz,fw+.4,.36,fd+.4,0,cop);lev.push({x:jx,z:jz,y,w:fw,d:fd,h:fh});y+=fh;fw*=.8;fd*=.8;});
   const L0=lev[0],L1=lev[1],L2=lev[2];vB('vStone',L2.x,y,L2.z,L2.w*.9,.7,L2.d*.9,0,cop);
@@ -165,14 +172,14 @@ function buildVpEmbassy(G,o){reseed(7801+(o.v|0));
   vPst('vpDrumS',L2.x-L2.w/2+1.3,y+.7,L2.z,1.0,1.2,st);kput('vDomeP',[L2.x-L2.w/2+1.3,y+1.9,L2.z],null,[1.05,.8,1.05],dome);vBall('vpGilt',L2.x-L2.w/2+1.3,y+2.8,L2.z,.18);
   }
  // ---- service range (kitchen / stable) against the right wall: stone, dark pantile hip roof, chimney, stable door
- {const rx=13,rz=4,RW=5.6,RD=6.4,RH=3.4;vB('vStone',rx,Y0,rz,RW,RH,RD,0,st.clone().multiplyScalar(.95));vB('vStone',rx,Y0+RH-.1,rz,RW+.3,.28,RD+.3,0,cop);
+ {const rx=13,rz=4,RW=5.6,RD=6.4,RH=3.4;vnBody('vStone',rx,Y0,rz,RW,RH,RD,0,st.clone().multiplyScalar(.95),{t:.4,floor:'vStone',floorC:stD});vB('vStone',rx,Y0+RH-.1,rz,RW+.3,.28,RD+.3,0,cop);
   vnHipRoof('vpTileHip',rx,Y0+RH+.55,rz,RW,RD,2.0,0,tile,.8);vB('vStone',rx-1.8,Y0+RH,rz-2.2,.7,2.4,.7,0,stD);vB('vStone',rx-1.8,Y0+RH+2.4,rz-2.2,.95,.4,.95,0,cop);
-  vB('vDarkB',rx-RW/2-.02,Y0,rz+1.2,.2,2.4,1.8,0);kput('vWood',[rx-RW/2-.1,Y0+1.2,rz+1.2],qEuler(0,Math.PI/2,0),[1.7,2.3,.08],vC(0x2a221a));vpVWin(rx-RW/2,Y0+1.6,rz-1.6,-Math.PI/2,.9,1.0,st,false);vpVWin(rx,Y0+1.6,rz+RD/2,0,.9,1.0,st,false);
+  if(!vnHole(rx-RW/2,Y0,rz+1.2,-Math.PI/2,1.8,2.4,true))vB('vPlaster',rx-RW/2-.02,Y0,rz+1.2,.2,2.4,1.8,0,IZ_ROOMC);kput('vWood',[rx-RW/2-.1,Y0+1.2,rz+1.2],qEuler(0,Math.PI/2,0),[1.7,2.3,.08],vC(0x2a221a));vpVWin(rx-RW/2,Y0+1.6,rz-1.6,-Math.PI/2,.9,1.0,st,false);vpVWin(rx,Y0+1.6,rz+RD/2,0,.9,1.0,st,false);
   vnBarrel(rx-RW/2-1.0,Y0,rz-2.4,.38,.9,timber);vnCrate(rx-RW/2-1.2,Y0,rz+2.8,.8,.3,timber);} // ---- domed hall (the embassy's audience room), left of the court: corniced stone block, ribbed drum, gilt-ochre dome, lucarnes, corner urns
- {const hx2=-11,hz2=4.5,HW=8.4,HD=7.0,HH=5.6;vB('vStone',hx2,Y0,hz2,HW+.6,.4,HD+.6,0,stD);vB('vStone',hx2,Y0+.4,hz2,HW,HH,HD,0,st);
-  vB('vStone',hx2,Y0+.4+HH*.5,hz2,HW+.3,.26,HD+.3,0,cop);vB('vStone',hx2,Y0+.4+HH-.2,hz2,HW+.4,.4,HD+.4,0,cop);vB('vStone',hx2,Y0+.4+HH+.2,hz2,HW-.8,.5,HD-.8,0,st.clone().multiplyScalar(.95));
+ {const hx2=-11,hz2=4.5,HW=8.4,HD=7.0,HH=5.6;vB('vStone',hx2,Y0,hz2,HW+.6,.4,HD+.6,0,stD);vnBody('vStone',hx2,Y0+.4,hz2,HW,HH,HD,0,st,{t:.5,floor:'vStone',floorC:stD});
+  vnBand('vStone',hx2,Y0+.4+HH*.5,hz2,HW+.3,.26,HD+.3,0,cop,.65);vB('vStone',hx2,Y0+.4+HH-.2,hz2,HW+.4,.4,HD+.4,0,cop);vB('vStone',hx2,Y0+.4+HH+.2,hz2,HW-.8,.5,HD-.8,0,st.clone().multiplyScalar(.95));
   const dy=Y0+.4+HH+.7;vPst('vpDrumS',hx2,dy,hz2,2.7,2.4,st.clone().multiplyScalar(1.04));
-  for(let i=0;i<8;i++){const a=i/8*TAU;vB('vStone',hx2+Math.sin(a)*2.7,dy,hz2+Math.cos(a)*2.7,.3,2.4,.3,-a,cop);if(i%2===0)vB(vLit()?'vWinLit':'vDarkB',hx2+Math.sin(a)*2.68,dy+.7,hz2+Math.cos(a)*2.68,.9,1.2,.3,-a);}
+  for(let i=0;i<8;i++){const a=i/8*TAU;vB('vStone',hx2+Math.sin(a)*2.7,dy,hz2+Math.cos(a)*2.7,.3,2.4,.3,-a,cop);if(i%2===0)(vLit()?vnGlowPlate:vnPlate)(hx2+Math.sin(a)*2.68,dy+.7,hz2+Math.cos(a)*2.68,.9,1.2,.3,-a);}
   vB('vStone',hx2,dy+2.4,hz2,5.9,.3,5.9,0,cop);kput('vDomeP',[hx2,dy+2.7,hz2],null,[2.85,2.5,2.85],dome);vBall('vpGilt',hx2,dy+5.3,hz2,.36);
   for(const p of[[-1,-1],[1,-1],[-1,1],[1,1]]){const ux=hx2+p[0]*(HW/2-.6),uz=hz2+p[1]*(HD/2-.6);vB('vStone',ux,Y0+.4+HH+.2,uz,.9,.9,.9,0,cop);vBall('vpGilt',ux,Y0+.4+HH+1.4,uz,.32);}
   vpVDoor(hx2+HW/2,Y0+.4,hz2,Math.PI/2,1.6,2.6,st,1);   // door faces the court
@@ -180,12 +187,12 @@ function buildVpEmbassy(G,o){reseed(7801+(o.v|0));
   for(const z of[-2.2,0,2.2])vpVWin(hx2-HW/2,Y0+1.9,hz2+z,-Math.PI/2,1.1,1.6,st,false);for(const x of[-2.4,0,2.4]){vpVWin(hx2+x,Y0+1.9,hz2+HD/2,0,1.1,1.6,st,vLit());vpVWin(hx2+x,Y0+1.9,hz2-HD/2,Math.PI,1.1,1.6,st,false);}
   // a corbelled projecting bay on the front, as the domed townhouse has
   vB('vStone',hx2+2.4,Y0+3.2,hz2+HD/2+.7,2.8,2.4,1.4,0,st.clone().multiplyScalar(1.03));vB('vStone',hx2+2.4,Y0+5.6,hz2+HD/2+.7,3.1,.3,1.7,0,cop);vBeam([hx2+2.4,Y0+3.2,hz2+HD/2],[hx2+2.4,Y0+2.0,hz2+HD/2+1.2],.45,timber);
-  vB('vDarkB',hx2+2.4,Y0+3.8,hz2+HD/2+1.42,1.7,1.4,.1,0);}
+  vnPlate(hx2+2.4,Y0+3.8,hz2+HD/2+1.42,1.7,1.4,.1,0);}
  // ---- the court: paving, a paved way from the gate to the house, a shrine obelisk on a stepped base, a well, the emperor-mushroom sapling in a stone planter, lamps
  vnPaving(0,Y0+.02,2,26,22,0,st.clone().multiplyScalar(.9),40);
  vB('vFlag',0,Y0+.03,8.4,3.4,.1,9.6,0,cop);vB('vFlag',2.6,Y0+.03,-1.6,7.6,.1,2.6,0,cop);
  {const ox=0,oz=1.5;for(let k=0;k<3;k++)vB('vStone',ox,Y0+k*.3,oz,3.6-k*.8,.3,3.6-k*.8,0,k%2?st:stD);kput('vpObelisk',[ox,Y0+.9,oz],null,[1.15,6.2,1.15],st.clone().multiplyScalar(1.05));
-  kput('vPyrS',[ox,Y0+7.1,oz],null,[.5,.5,.5],cop);vBall('vpGilt',ox,Y0+7.7,oz,.16);for(let k=0;k<4;k++){const a=k*Math.PI/2;vB('vDarkB',ox+Math.sin(a)*.55,Y0+2.2,oz+Math.cos(a)*.55,.3,1.4,.06,-a);}
+  kput('vPyrS',[ox,Y0+7.1,oz],null,[.5,.5,.5],cop);vBall('vpGilt',ox,Y0+7.7,oz,.16);for(let k=0;k<4;k++){const a=k*Math.PI/2;vnPlate(ox+Math.sin(a)*.55,Y0+2.2,oz+Math.cos(a)*.55,.3,1.4,.06,-a);}
   if(vLit())for(const s of[-1,1]){vPst('vPipe',ox+s*1.35,Y0+.6,oz,.04,.5,iron);vBall('vBulb',ox+s*1.35,Y0+1.2,oz,.1);}}
  {const wx=8.5,wz=6.5;vPst('vpDrumS',wx,Y0,wz,1.5,.9,stD);vPst('vpDrumS',wx,Y0+.9,wz,1.3,.2,cop);vB('vDarkB',wx,Y0+1.1,wz,1.8,.06,1.8,0);
   for(const s of[-1,1])vPst('vPipe',wx+s*1.35,Y0+.9,wz,.09,2.4,iron);vB('vIron',wx,Y0+3.2,wz,2.9,.1,.1,0,iron);vPst('vRope',wx,Y0+1.3,wz,.02,1.9,vC(0x8a7a5a));vnBarrel(wx+.5,Y0+1.1,wz+.4,.2,.32,timber);}

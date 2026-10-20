@@ -48,7 +48,7 @@ function buildVernBakery(G,o){reseed(8101+(o.v|0));const W=10,D=8,H1=3.3,H2=2.9,
  // the bread oven: a brick dome on a clay base bulging from the +x wall, an iron ash door, its salvage-pipe flue strapped up past the eave
  {const ox=W/2+1.05,oz=-1.4;vB('vClayB',ox,0,oz,2.1,1.05,2.5,0,vC(0xf0c8a8));vB('vStone',ox,1.0,oz,2.3,.12,2.7,0,vC(vPick(VPAL.stoneDark)));
   kput('vDomeP',[ox-.1,1.1,oz],null,[1.05,1.05,1.2],brick);vB('vClayB',ox-.1,1.08,oz,2.1,.14,2.4,0,vC(0xe0b090));   // the dome and its ring course
-  vB('vIron',ox+1.06,.2,oz,.05,.55,.8,0,vC(0x2e2a26));vB('vDarkB',ox+1.07,.3,oz,.04,.32,.5,0);                    // the ash door
+  vB('vIron',ox+1.06,.2,oz,.05,.55,.8,0,vC(0x2e2a26));vB('vIron',ox+1.07,.3,oz,.04,.32,.5,0,vC(0x2a2622));                    // the ash door
   vnChimney(ox+.35,1.9,oz,7.8,.15,true);for(const y of[4.6,7.2])vB('vIron',(W/2+ox+.35)/2,y,oz,ox+.35-W/2,.06,.08,0,vC(0x2e2a26));
   for(let k=0;k<3;k++)kput('vSheet',[ox-.2+k*.4,1.9+k*.5,oz+rr(-.4,.4)],vQ(Math.PI/2,0,0),[.5,.5,1],vC(0x3a3430));   // soot on the dome's crown
   // the lean-to over oven and woodpile, the woodpile, the chopping block, the peel against the oven
@@ -127,7 +127,7 @@ function buildVernBrewery(G,o){reseed(8121+(o.v|0));const HX=-.8,W=15,D=8,H=4.2,
  // the tun loft: a boarded tower over the brewing floor, louvred on both long faces, its own cross gable
  {const LX=HX+3.0,LW=5.0,LD=5.6,LH=4.6;vB('vWood',LX,top-.1,0,LW,LH,LD,0,wood.clone().multiplyScalar(.82));
   for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPost',LX+sx*(LW/2-.02),top-.1,sz*(LD/2-.02),.13,LH,wood);
-  for(const s of[-1,1]){const z=s*LD/2;vB('vDarkB',LX,top+2.3,z+s*.03,LW-1.2,1.9,.1,0);
+  for(const s of[-1,1]){const z=s*LD/2;vnPlate(LX,top+2.3,z+s*.03,LW-1.2,1.9,.1,0);
    for(let k=0;k<7;k++)kput('vWood',[LX,top+2.42+k*.26,z+s*.12],vQ(0,s*-.55,0),[LW-1.0,.05,.26],wood);}
   vnGableRoof(LX,top+LH-.1,0,LD,LW,1.6,Math.PI/2,'vGableS',sh,.6,'vGableW',wood,.18);}
  // the copper kettle stack: the kettle's verdigris hood breaking the back slope, its stack, the rain cap on stays

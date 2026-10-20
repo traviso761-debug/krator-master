@@ -14,7 +14,7 @@ KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round
 // the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is Post-Apoc's adapter
 // onto it: its seed rule (the building's seed and the record's place in its list), the colliders, and the lights as halos
 const PAF=KFURN.create(Object.assign(KFURN.flags(false),{
- catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,
+ catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,walk:KWALK,
  seed:(o,ctx)=>ctx.pa.seed*100+ctx.pa.list.length+1,
  onRecord:(rec,ctx,o,A,d)=>{if(!PAF.NOCOLL[rec.key]&&d.h>=.3){const L=ctx.local;collSolid(L[0],L[1],L[2],d.w,d.h,d.d,L[3],'furniture');}},
  draw:(rec,ctx)=>{const r=KFURN.drawRec(PAF,rec,ctx.pa.wealth);

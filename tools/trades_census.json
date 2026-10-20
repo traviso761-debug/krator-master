@@ -1,0 +1,178 @@
+[
+ {
+  "trade": "bakers",
+  "voth": "voth_bldg_bakery"
+ },
+ {
+  "trade": "butchers",
+  "voth": "voth_bldg_butcher"
+ },
+ {
+  "trade": "weavers and dyers",
+  "voth": "voth_bldg_weaver"
+ },
+ {
+  "trade": "brewers",
+  "voth": "voth_bldg_brewery"
+ },
+ {
+  "trade": "tanners",
+  "voth": "voth_bldg_tannery"
+ },
+ {
+  "trade": "shipwrights and boatbuilders",
+  "voth": "voth_bldg_shipwright"
+ },
+ {
+  "trade": "innkeepers and grooms",
+  "voth": "voth_bldg_caravanserai"
+ },
+ {
+  "trade": "town guard",
+  "voth": "voth_bldg_watchhouse"
+ },
+ {
+  "trade": "coast guard",
+  "voth": "voth_bldg_coastguard_berth"
+ },
+ {
+  "trade": "temple priests and servants",
+  "voth": "voth_bldg_temple_ash"
+ },
+ {
+  "trade": "shrine keepers",
+  "voth": "village shrine"
+ },
+ {
+  "trade": "shopkeepers and assistants",
+  "voth": "voth_shop_trader"
+ },
+ {
+  "trade": "smiths and craftsmen",
+  "voth": "voth_shop_smithy"
+ },
+ {
+  "trade": "innkeepers and servers",
+  "voth": "voth_tavern_b"
+ },
+ {
+  "trade": "porters and warehousemen",
+  "voth": "voth_warehouse_b"
+ },
+ {
+  "trade": "industrial workers",
+  "voth": "industrial lot"
+ },
+ {
+  "trade": "power-house stokers and engineers",
+  "voth": "voth_generator"
+ },
+ {
+  "trade": "household service",
+  "voth": "rich house, manor, clan compound"
+ },
+ {
+  "trade": "soldiers",
+  "voth": "voth_barracks"
+ },
+ {
+  "trade": "teachers and scholars",
+  "voth": "voth_school"
+ },
+ {
+  "trade": "guild officers and clerks",
+  "voth": "voth_bldg_guild_hall"
+ },
+ {
+  "trade": "customs officers and clerks",
+  "voth": "customs house"
+ },
+ {
+  "trade": "healers and nurses",
+  "voth": "house of healing"
+ },
+ {
+  "trade": "priests and undertakers",
+  "voth": "funerary temple"
+ },
+ {
+  "trade": "lighthouse keepers",
+  "voth": "lighthouse"
+ },
+ {
+  "trade": "dockers and stevedores",
+  "voth": "harbour pier"
+ },
+ {
+  "trade": "river bargemen and quay hands",
+  "voth": "river quay"
+ },
+ {
+  "trade": "fishers",
+  "voth": "fishing dock"
+ },
+ {
+  "trade": "market traders",
+  "voth": "market stall"
+ },
+ {
+  "trade": "farmhands and ploughmen",
+  "voth": "fields"
+ },
+ {
+  "trade": "chinampa growers",
+  "voth": "chinampa bed"
+ },
+ {
+  "trade": "orchardmen",
+  "voth": "orchards"
+ },
+ {
+  "trade": "miners",
+  "voth": "mine"
+ },
+ {
+  "trade": "quarrymen and masons",
+  "voth": "quarry"
+ },
+ {
+  "trade": "granary keepers and millers",
+  "voth": "granary, windmill, watermill"
+ },
+ {
+  "trade": "beetle herders",
+  "voth": "beetle ranch"
+ },
+ {
+  "trade": "dairymen",
+  "voth": "dairy"
+ },
+ {
+  "trade": "swineherds and duck keepers",
+  "voth": "sty, coop"
+ },
+ {
+  "trade": "mushroom growers",
+  "voth": "mushroom farm"
+ },
+ {
+  "trade": "envoys and embassy staff",
+  "voth": "embassy"
+ },
+ {
+  "trade": "ferrymen",
+  "voth": "ferry, stop"
+ },
+ {
+  "trade": "elephant bug handlers and station hands",
+  "voth": "bug station"
+ },
+ {
+  "trade": "monks and lay brothers",
+  "voth": "monastery"
+ },
+ {
+  "trade": "palace and canton staffs",
+  "voth": "the cantons"
+ }
+]

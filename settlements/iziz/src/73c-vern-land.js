@@ -96,7 +96,7 @@ function buildVernFarmhouse(G,o){reseed(8501+(o.v|0));const W=12,D=8,H=3.2,FL=1.
  {const GX=-10,GZ=-6.2,GW=2.6;for(const sx of[-1,1])for(const sz of[-1,1]){vPst('vPostB',GX+sx*.95,0,GZ+sz*.95,.14,1.45,woodP);
    vPst('vStave',GX+sx*.95,1.45,GZ+sz*.95,.38,.1,vC(0x9a8a78));}
   vB('vWood',GX,1.56,GZ,GW,.14,GW,0,wood);vB('vWood',GX,1.7,GZ,GW-.1,1.8,GW-.1,0,woodP);
-  vnPyrRoof('vPyrT',GX,3.5,GZ,GW,GW,1.7,0,th,.55);vB('vDarkB',GX,2.0,GZ+GW/2-.03,.7,.9,.06,0);vB('vWood',GX+.38,2.0,GZ+GW/2,.06,.9,.08,0,wood);
+  vnPyrRoof('vPyrT',GX,3.5,GZ,GW,GW,1.7,0,th,.55);vB('vPlaster',GX,2.0,GZ+GW/2-.03,.7,.9,.06,0,IZ_ROOMC);vB('vWood',GX+.38,2.0,GZ+GW/2,.06,.9,.08,0,wood);
   vnLadder(GX,0,GZ+GW/2+.5,0,1.9,woodP);vnSacks(GX+1.8,0,GZ+.6,3);}
  // the vegetable plot: a fence with a gate, ridged beds, seed boxes, a scarecrow
  {const VX=7.4,VZ=5.6;vnFence(VX,0,VZ,7,5,0,woodP,1.3,1.1);
@@ -130,7 +130,7 @@ function buildVernByre(G,o){reseed(8511+(o.v|0));const BW=10,DW=4.4,D=7,H=3.1,Y0
  vnDoor(DX,Y0,D/2,0,1.0,2.1,'vWood',woodM,vC(0x4a6a6a),false);vnWin(DX+DW/2,Y0+1.1,.8,Math.PI/2,1.0,1.0,'open','vWood',woodM,true);
  vnWin(DX,Y0+1.3,-D/2,Math.PI,.9,.8,'shut','vWood',woodM);
  // the hay loft in the -x gable: its door, hay spilling out, a hoist beam over it, a ladder up
- {const xe=RX-RW/2;vB('vDarkB',xe-.04,Y0+H+.45,0,.1,1.3,1.5,0);vB('vWood',xe-.1,Y0+H+.38,0,.12,.1,1.7,0,woodM);
+ {const xe=RX-RW/2;vB('vThatchB',xe-.04,Y0+H+.45,0,.1,1.3,1.5,0,vC(0xc8a860));vB('vWood',xe-.1,Y0+H+.38,0,.12,.1,1.7,0,woodM);
   kput('vThatchB',[xe-.25,Y0+H+.75,0],qEuler(0,0,-.25),[.6,.5,1.3],hay);
   vBeam([xe+.3,Y0+H+2.3,0],[xe-1.3,Y0+H+2.3,0],.16,woodM);vBeam([xe-1.15,Y0+H+2.2,0],[xe-1.15,Y0+H+.9,0],.03,vC(0xb8a888),'vRope');
   kput('vThatchB',[xe-1.15,Y0+H+.65,0],qEuler(.2,0,.1),[.6,.5,.6],hay);vnLadder(xe-.75,0,1.9,-Math.PI/2,Y0+H+.4,woodM);}
@@ -181,7 +181,7 @@ function buildVernPens(G,o){reseed(8521+(o.v|0));const wood=vC(vPick(VPAL.woodPo
   for(let k=0;k<14;k++){const a=k/14*TAU;kput('vRock',[PX+Math.cos(a)*rr(2.7,3.1),0,PZ+Math.sin(a)*rr(1.6,1.9)],qEuler(rng(),rng(),0),[rr(.15,.3),rr(.1,.18),rr(.15,.3)],vC(vPick([0x8a8078,0x6a625a,0x9a9088])));}
   const CX=PX-.6,CZ=PZ-.2,FL=.95;for(const sx of[-1,1])for(const sz of[-1,1])vPst('vPostB',CX+sx*.75,-.2,CZ+sz*.55,.08,FL+.2,wood);
   vB('vWood',CX,FL-.1,CZ,1.9,.1,1.5,0,wood);vB('vWood',CX,FL,CZ,1.7,1.0,1.3,0,wood.clone().multiplyScalar(.92));
-  vnGableRoof(CX,FL+1.0,CZ,1.7,1.3,.8,0,'vThatchB',th,.35,'vGableW',wood,.22);vB('vDarkB',CX+.86,FL,CZ,.04,.45,.4,0);
+  vnGableRoof(CX,FL+1.0,CZ,1.7,1.3,.8,0,'vThatchB',th,.35,'vGableW',wood,.22);vB('vPlaster',CX+.86,FL,CZ,.04,.45,.4,0,IZ_ROOMC);
   {const a=[CX+.95,FL-.05,CZ],b=[CX+2.4,.05,CZ+.3];beam('vWood',a,b,.4,.05,wood);for(let k=1;k<5;k++){const t=k/5;vB('vWood',a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t+.02,a[2]+(b[2]-a[2])*t,.04,.04,.4,.2,wood);}}
   // the duck run: low wattle round the pond's landward side
   vldWattle([PX-3.6,PZ-2.3],[PX+3.6,PZ-2.3],0,.8,wood);vldWattle([PX-3.6,PZ-2.3],[PX-3.6,PZ+2.6],0,.8,wood);vldWattle([PX+3.6,PZ-2.3],[PX+3.6,PZ+1.0],0,.8,wood);

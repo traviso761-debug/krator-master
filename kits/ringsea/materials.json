@@ -150,6 +150,20 @@
    },
    "roughLift": 0.1,
    "specular": 0.4
+  },
+  "hullpaint": {
+   "lib": "patterns/common/hull-paint",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "metal": 0.2,
+   "roughLift": 0.1,
+   "specular": 0.3
   }
  }
 }

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 15 (3%) | 0 (0%) | 0 (0%) | 11 (2%) | 417 (94%) |
+| KB | 15 (3%) | 0 (0%) | 0 (0%) | 11 (2%) | 418 (94%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -19,9 +19,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/53-br-trades-c.js` | 32.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 168 | 0 | 0 | 0 | 0 | 0 | the civic, guard and signal trades |
 | `src/54-br-houses.js` | 25.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 113 | 0 | 0 | 0 | 0 | 0 | the larger houses and the farmhouse |
 | `src/55-br-rockcut.js` | 76.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 179 | 0 | 0 | 0 | 0 | 0 | the rock-cut pieces as ASSETs and their carving vocabulary (wall frame, rim, portal, beasts in relief); the tribes' and offerings' tables are data |
-| `src/56-br-rockcut-b.js` | 42.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 103 | 0 | 0 | 0 | 0 | 0 | split: the Deep Root cavern's pieces; BR_ROCK's dims/face/onWall/onStack maths is data, backOf and the sheet's backdrop are host |
+| `src/56-br-rockcut-b.js` | 42.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 103 | 0 | 0 | 0 | 0 | 0 | split: the Deep Root cavern's pieces; BR_ROCK's dims/face/onWall/onStack maths is data, backOf and the sheet's backdrop are host |
 | `src/60-br-ports.js` | 3.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the ports as ASSETs: copies of the sealed towns' groups (towns.py) |
-| `src/70-br-tent-kit.js` | 43.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 74 | 0 | 0 | 0 | 0 | 0 | the tent kit's builders (hide dome, barrel pavilion, guys, awnings, corrals, thorn); meshes through the core's _surfGeo and _matDbl; choices hashed with KRAND |
+| `src/70-br-tent-kit.js` | 44.6 | [draw] | 3 | 0 | 0 | 0 | 0 | 74 | 0 | 0 | 0 | 0 | 0 | the tent kit's builders (hide dome, barrel pavilion, guys, awnings, corrals, thorn); meshes through the core's _surfGeo and _matDbl; choices hashed with KRAND |
 | `src/71-br-tents-dwell.js` | 13.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 47 | 0 | 0 | 0 | 0 | 0 | the tents as ASSETs: dwellings, chief, council, shrine |
 | `src/72-br-tents-trade.js` | 15.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 48 | 0 | 0 | 0 | 0 | 0 | the tents as ASSETs: the Scyvoi set's trades |
 | `src/73-br-tents-pens.js` | 23.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 102 | 0 | 0 | 0 | 0 | 0 | the pens and trainer structures as ASSETs |

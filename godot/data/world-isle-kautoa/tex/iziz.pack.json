@@ -300,6 +300,36 @@
     "sourceMean": 0.6288
    }
   },
+  "clothR": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "clothR.albedo.webp",
+    "normalMap": "clothR.normal.webp",
+    "roughnessMap": "clothR.rough.webp"
+   },
+   "lib": "patterns/canvas/stripe-red",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "f81b2139953a84a2e36ef1e17064ac67fd45b7e4",
+    "normal": "206d93d27c0189f4842c5617e72fce2cbe5b91d1",
+    "roughness": "3979ad96d1eb95759523f19c0715b7f2a1aee6f6"
+   },
+   "specular": 0.15,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4568561544141583,
+    "sourceMean": 0.4569
+   }
+  },
   "concrete": {
    "breakup": {
     "cell": 6,
@@ -670,6 +700,36 @@
     "keep": 1.0,
     "mean": 0.5489009298167509,
     "sourceMean": 0.5489
+   }
+  },
+  "courtMosaicB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "courtMosaicB.albedo.webp",
+    "normalMap": "courtMosaicB.normal.webp",
+    "roughnessMap": "courtMosaicB.rough.webp"
+   },
+   "lib": "patterns/iziz/mosaic-b",
+   "metal": 0,
+   "normalScale": 0.4,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3541e801878572f3324b863aaf3491bd4686cc0c",
+    "normal": "555e21b2651e35e85922c38c1d35bb742fc3d664",
+    "roughness": "b6700df57fd5a8554509b02ac11033fafd88813b"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.45605972134160055,
+    "sourceMean": 0.4561
    }
   },
   "courtOpus": {

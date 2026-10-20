@@ -53,6 +53,12 @@ ENTRIES = [
      'The Pearl of Xanadu: a gilded valley city stepping up the hillsides, on the terrain of Travis\'s map.'),
     ('world', 'girder', 'settlements/girder/girder.html', 'Girder',
      'An outlying Beast Rider village in the central-crater hyperjungle: every tower home, shop, workshop, hut and the Assembly Hall planned into rooms and furnished from the catalog, doors open; press G to walk in.', 'new'),
+    ('world', 'pinnacle-rock', 'settlements/pinnacle-rock/dist/pinnacle-rock.html', 'Pinnacle Rock',
+     "The Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge: the stalls ringed round "
+     "its fins and pinnacles with their flyers, the Stair and the lifts, the town on the top (the Crown, the house and trade "
+     "quarters on core/city), the Garden's great-houses, the Deep Root cavern opening from the Garden's wall, the farm ring and "
+     "the bands' camps; the hour slider and N for the night (the Crown's fires, the stall lamps, the beacons). Walk mode, the "
+     "minimap (M) and the inspector.", 'new'),
     ('world', 'girder-hero', 'settlements/girder/hero/dist/girder-hero.html', 'Girder · Hero',
      'Girder with Styv, a third-person character you order about with the mouse, and people to talk to (Phil in the '
      'Assembly Hall). Same village, same rooms; the models slimmed to fit the gallery (MADE).', 'new'),
@@ -74,6 +80,8 @@ ENTRIES = [
 
     ('world', 'mungo', 'settlements/mungo/dist/mungo.html', 'Mungo',
      "A trade village on a salt lake in the Eastern Abyss: a floating reed village with its great tavern, Reed's Local, one pontoon to an abyssal town at a marshy river mouth, and the Geomancers' chapterhouse with their dune buggies. Its people live by core/simulation: fishers out at dawn, caravans and lizard riders stopping overnight, a buggy off the map and back.", 'new'),
+    ('world', 'pinnacle-rock', 'settlements/pinnacle-rock/dist/pinnacle-rock.html', 'Pinnacle Rock',
+     "The Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge, on the scale model's own land: the mesa 250 m over its south foot, ten fins round its rim, the Garden of stacks and the shrine's balanced rock, seven spurs, the dry gorge under the north rim, the canyons' plants on the walls and the hyperjungle on the floor, the far land to 60 km with the Inner Wall rising to the north. So far the rock and the site (P0 and P1); the roosts, the Stair, the town and the Deep Root cavern are to come.", 'new'),
 
     ('kit', 'jimjam-kit', 'settlements/jimjam/dist/jimjam-kit.html', 'Jimjam',
      'The exotic city of red and yellow brick with white marble trim: domes, thick staged spires, raised plazas, ornamental brick chimneys, and a temple whose arch frames the solstice sunset.'),
@@ -269,7 +277,13 @@ ENTRIES = [
     ('biome', 'ringisles', 'biomes/ringisles/dist/ringisles.html', 'Ring Sea isles', "One island of the Ring Sea archipelago at the sea's level: zones by the scale model's climate classes (hypertropic jungle under the mountain, monsoon forest, tall-grass and abyssal savanna, hot steppe, salt steppe and a salt pan), the beach, a mangrove lagoon, the reef flat and tide pools, a geyser field, and a village's gardens of the islanders' crops (coconut, mango, banana, coffee, cloves, breadfruit; rice, taro, sweet potato, kava, herbs, greens, sugar cane)."),
     ('biome', 'oidong', 'biomes/oidong/dist/oidong.html', 'The Oidong Valley', "The History Monks' country east of Xanadu, the safest ground on Krator and serene before anything else: a chilly high valley of mirror-still pools with giant lotuses, moss woods, cherry and haze blossom, a marble grove of swirled-pastel boles, chalice trees spilling water from their caps in the cataract's mist, bamboo, and pale flats the wind rakes round standing stones in threes, fives and sevens; the holy plants and the monks' physic grow wild (peyote in the gravel, sky poppies, snow lotus, bell-pod willows); Longsong's rock stands empty for the monastery.", 'new'),
     ('biome', 'geyser', 'biomes/geyser/dist/geyser.html', 'The geyser basin', "A basin in the Steampits cut into the hyperjungle: geysers erupting on their own clocks (Erupt buttons, a timetable), the Great Prism and its mat-banded run-off, mud pots and fumaroles, a dead forest drowned in silica, travertine pools stepping down to the sea; thermophile life.", 'new'),
-    ('biome', 'necanyons', 'biomes/necanyons/dist/necanyons.html', 'The north-eastern canyons', "The hyperjungle's transition to Korona's tepuis: red sandstone mesas, benches, buttes, towers and stacks rising out of the jungle (the Bench with its rim fins and its garden of spires and balanced rocks, the High Cap and its hoodoos), the forest filling the canyons between them and thinning northward, the tops bare and dry with pans and seeps; the first large carnivorous plants, their traps on their own cycles, none able to hold a person. Pinnacle Rock stands on the first of its mesas.", 'new'),
+    ('biome', 'necanyons', 'biomes/necanyons/dist/necanyons.html', 'The north-eastern canyons', "The hyperjungle's transition to Korona's tepuis: red sandstone mesas, benches, buttes, towers and stacks rising out of the jungle (the Bench with its rim fins and its garden of spires and balanced rocks, the High Cap and its hoodoos), the forest filling the canyons between them and thinning northward, the tops bare and dry with pans and seeps; the first large carnivorous plants, their traps on their own cycles, none able to hold a person. Pinnacle Rock stands on the first of its mesas. The hour slider and N for the night; the creek and the rain pools on core/water.", 'new'),
+    ('biome', 'korona', 'biomes/korona/dist/korona.html', 'Korona 1 · the tepui', "Korona, the north-east under the gas giant: a corona of ring ridges round a trench country, each ring wet on its windward face and desert on its lee, built as stations like the Throne. Station 1, the tepui: a table of weathered quartzite beds over its gorge, the summit pavement with sphagnum bogs, lace pitchers, rainbow fans in its soil pockets, coin trees in its cracks and storm pods on the rim; hanging gardens and staghorns on every seep line, the Hum's contour carvings on the wall; great sundews at the walls' feet and the first man-eaters on the poor wet floor.", 'new'),
+    ('biome', 'korona-hollow', 'biomes/korona/dist/korona-hollow.html', 'Korona 2 · the pitcher hollow', "Station 2, the pitcher hollow: a closed hollow with a wet acid floor where every plant is a trap (the moor of blood bulbs, man-eater pitchers with their lures, coil tendrils, ground stars, snare flowers, sucking pools with trap pads, the cobra meadow at the slopes' foot), one safe path lined with cairns; punji pits, bear-trap plants and numb thorns among the rest, the traps going off on their cycles.", 'new'),
+    ('biome', 'korona-basin', 'biomes/korona/dist/korona-basin.html', 'Korona 3 · the fertile basin', "Station 3, the fertile basin: the Tiers' lake, a closed basin in the eastern rings, its shore meadows of reagents, the rainforest behind, one bog corner.", 'new'),
+    ('biome', 'korona-trench', 'biomes/korona/dist/korona-trench.html', 'Korona 4 · the trenches', "Station 4, the trenches: a ring ridge's crest between two arms of the salt lake, wet and alive on its windward face, bare desert on its lee: the rule that carnivory follows poor x wet x warm, read across one ridge.", 'new'),
+    ('biome', 'korona-gorge', 'biomes/korona/dist/korona-gorge.html', 'Korona 5 · the lee gorge', "Station 5, the lee gorge: a dry gorge between two ring walls in a ring's rain shadow, the eastern desert's flora (the sedesert kit read in place) under the walls, one spring and every trap in Korona round it.", 'new'),
+    ('biome', 'korona-hoar', 'biomes/korona/dist/korona-hoar.html', 'Korona 6 · the hoar table', "Station 6, the hoar table: a tepui summit above 3,500 m in the high cold country (the eastern highlands kit read in place): cushions and snow wool leaning toward the giant, the Mother Cushion over a knoll, permanent snow in the lee hollows, melt pools with butterwort lawns, a cold sundew and the frost tank, the seep lines frozen to icefalls, the ice tribes' road-marks and cairns under the rim.", 'new'),
 ]
 
 
@@ -279,15 +293,18 @@ THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 # page above. One page joins its kind's section; several make a section of their own after it. Names come from the
 # pages' <title>s, the description from the build's README.md or INDEX.md. An ENTRIES line replaces all of that.
 KINDS = {'settlements': 'world', 'openworld': 'world', 'biomes': 'biome', 'kits': 'kit'}
-UNLISTED = {'settlements/isle-demo', 'settlements/pinnacle-rock'}   # build folders ('kits/furniture') never to list,
-# though they have pages; the isle demo's site planner is a tool that saves through its own serve.py; Pinnacle Rock
-# not until its town is built (the owner, 2026-10-19)
+UNLISTED = {'settlements/isle-demo'}   # build folders ('kits/furniture') never to list,
+# though they have pages; the isle demo's site planner is a tool that saves through its own serve.py. Pinnacle Rock
+# was listed once its town and its night were built (the owner, 2026-10-19)
 # Builds published as their own artifact, each with the script that makes its site: left out of the Krator Worlds
 # artifact (gallery/site/), whose index links to them instead (index.template.html), but kept in any other --out site
 # (the LAN host's), where size does not matter. The Throne's eleven stations are about 25 MB with their shared maps.
 ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
              # the Ancients kit (city kits and arcologies) and the Ancient Port: about 105 MB with their shared packs
-             'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py'}
+             'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py',
+             # Longsong: about 69 MB (its page, three packs and the dressed people's pieces, dist/kchar/), published as built
+             # from settlements/longsong/dist (gallery/README.md, "Longsong: its own artifact")
+             'settlements/longsong': 'settlements/longsong/build.py'}
 # Pages a build's own build.py does not write: made by another command in the build's folder, before the page is
 # copied. Girder Hero is too big for the gallery as build_hero.py writes it (20.5 MB, over 16 MB a file), so the
 # gallery takes the --slim one, written outside the committed pages (hero/dist/ is not committed).

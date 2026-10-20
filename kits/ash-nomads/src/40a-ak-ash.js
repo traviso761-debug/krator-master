@@ -41,6 +41,8 @@ function akMotif(m,cx,y0,y1,hw,col,z){const h=y1-y0,t=Math.max(.02,h*.09),X=u=>c
    and yellow on a black ground. o: {figs, z, skip(x), bg (false: no ground strip)} */
 /* a band of a sheet (patFret 2:1, patNazca 1:1) mapped once top to bottom and repeating along, its aspect kept for any height h:
    the strip from x0 to x1 in the local x-y plane at depth z */
+/* the blue or the plain-coloured take of a band's sheet: which one is a parity of where the band stands */
+function akSheetKey(mk,seed){return KIT_HAS(mk)&&KIT_HAS(mk+'R')&&(Math.abs(Math.round(seed))&1)?mk+'R':mk;}
 function akSheetStrip(mk,x0,x1,y,h,z){const tl=TILE[mk]||1;
  psurf(mk,(u,v)=>[lerp(x0,x1,u),y+v*h,z],Math.max(1,Math.round((x1-x0)/.4)),1,null,{uvf:(u,v)=>[u*tl,v*tl]});
  for(const yy of [y-.012,y+h+.012])beam('plain',[x0,yy,z+.006],[x1,yy,z+.006],.022,akC(AK_T),true,5);}   /* the red piping */
@@ -49,7 +51,7 @@ function akSheetRing(mk,r,y,h,asp,a0,a1){const tl=TILE[mk]||1,L=r*(a1-a0),reps=M
  psurf(mk,(u,v)=>{const a=lerp(a0,a1,u);return [Math.cos(a)*r,y+v*h,Math.sin(a)*r];},Math.max(2,Math.round(L/.35)),1,null,{uvf:(u,v)=>[u*reps*tl,v*tl]});
  const n=Math.max(8,Math.round(L/.3));for(const yy of [y-.012,y+h+.012]){const pts=[];for(let i=0;i<=n;i++){const a=lerp(a0,a1,i/n);pts.push([Math.cos(a)*(r+.008),yy,Math.sin(a)*(r+.008)]);}cord('plain',pts,.022,akC(AK_T));}}   /* the red piping */
 function akBand(L,y,h,o){o=o||{};const z=o.z===undefined?.014:o.z,figs=o.figs||['fret','bird','fret','spiral'],e=Math.max(.025,h*.08),pitch=h*1.25;
- {const mk=o.sheet||'patFret';if(KIT_HAS(mk)){const asp=mk==='patFret'?2:1,n2=Math.max(1,Math.round(L/(h*asp))),step=L/n2;   /* the owner's sheet, whole repeats */
+ {const mk=akSheetKey(o.sheet||'patFret',L*5+y*13+h*7);if(KIT_HAS(mk)){const asp=/^patFret/.test(mk)?2:1,n2=Math.max(1,Math.round(L/(h*asp))),step=L/n2;   /* the owner's sheet, whole repeats */
   for(let i=0;i<n2;i++){const x0=-L/2+i*step,x1=x0+step;if(o.skip&&(o.skip(x0+.02)||o.skip(x1-.02)||o.skip((x0+x1)/2)))continue;akSheetStrip(mk,x0,x1,y,h,z);}return;}}
  const ok=x=>!(o.skip&&o.skip(x));const strip=(x0,x1,y0,y1,c,dz)=>poly('plain',[[x0,y0,z+dz],[x1,y0,z+dz],[x1,y1,z+dz],[x0,y1,z+dz]],c,true);
  const n=Math.max(1,Math.floor(L/pitch)),p=L/n;
@@ -58,7 +60,7 @@ function akBand(L,y,h,o){o=o||{};const z=o.z===undefined?.014:o.z,figs=o.figs||[
   akMotif(figs[i%figs.length],cx,y+e*1.8,y+h-e*1.8,p*.4,akC(i%2?AK_Y:AK_P),z+.002);}}
 /* the band round a circular wall of radius r (outer face out), keeping clear of the door (+z) by `gap` radians */
 function akBandRing(r,y,h,o){o=o||{};const figs=o.figs||['fret','bird','fret','spiral','fret','beetle'],pitch=h*1.25,n=Math.max(6,Math.round(TAU*r/pitch)),p=TAU*r/n;
- {const mk=o.sheet||'patFret';if(KIT_HAS(mk)){const g=o.gap||0;akSheetRing(mk,r+.014,y,h,mk==='patFret'?2:1,PI/2+g,PI/2+TAU-g);return;}}   /* the owner's sheet */
+ {const mk=akSheetKey(o.sheet||'patFret',r*7+y*11+h*5);if(KIT_HAS(mk)){const g=o.gap||0;akSheetRing(mk,r+.014,y,h,/^patFret/.test(mk)?2:1,PI/2+g,PI/2+TAU-g);return;}}   /* the owner's sheet */
  for(let i=0;i<n;i++){const a=(i+.5)/n*TAU;if(o.gap&&tkNearDoor(a,o.gap))continue;
   W(Math.cos(a)*(r+.012),0,Math.sin(a)*(r+.012),Math.atan2(Math.cos(a),Math.sin(a)),()=>{const L=p*1.02,e=Math.max(.025,h*.08);
    poly('plain',[[-L/2,y,-.004],[L/2,y,-.004],[L/2,y+h,-.004],[-L/2,y+h,-.004]],akC(AK_K),true);

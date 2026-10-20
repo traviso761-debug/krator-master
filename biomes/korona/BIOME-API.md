@@ -5,7 +5,9 @@ Korona (`NOTES.md`: the corona country under the giant) is three kits on one pag
 flora and its harmless carnivores, and **KORONA**, this kit, with the summit's life and the man-eaters. One `src/`, one
 pack, one host; each station its own page (`build.py --station <name>`; `stations/<name>/` holds that station's host
 fragments, `station.json` its page name and, as the Throne's, any other kit it reads in place (`kits`: slot to path) and
-that kit's pack (`packs`): the lee gorge reads the **sedesert** kit so.
+that kit's pack (`packs`): the lee gorge and the trenches (on the rain shadow's scree) read the **sedesert** kit so, the hoar
+table the **ehighlands** kit, and the ecotones (`NOTES.md`, "The life") the fertile basin's lake shore the **nwlowlands** kit
+(bamboo, ferns, glow-willows) and the trenches' crest the **nhighlands** kit (crag pines, beard lichen).
 
 ## What the host gives the kits
 
@@ -17,22 +19,32 @@ The host's `45-host-stage.js` (one per station) ends in one object, **`STAGE`**,
 | `floor(x,z)` | the ground without the rock; `talusH` the scree banked against a wall's foot |
 | `capY` | a top at or above it is a `cap` (the necanyons zones, `46`), below it a `bench` |
 | `stream`, `streamD` | the stream (or null), and the distance to it |
-| `pools` | `[{x, z, r, bed}]`: standing pools; `bed` marks a sucking pool (the bladder bed, a trap) |
+| `pools` | `[{x, z, r, bed, ice, name}]`: standing pools; `bed` marks a sucking pool (the bladder bed, a trap); `ice` a frozen one, drawn as a plate of ice (the hoar table's tarn). Every other pool is a `core/water` still record, drawn by `89w-host-water.js` |
+| `air` | `{pressure}`: the station's air in atm (`NOTES.md`, "The ground"); a record, exported with the layout; nothing drawn reads it yet |
 | `path` | `[[x,z],...]`: the safe path (the hollow); traps keep off it, cairns line it |
 | `windward(x,z)` | 0..1: how much of the rain a point takes (the wind is from the north-west) |
 | `warm(x,z)`, `rich(x,z)` | the air's heat and density; the soil's silt (the fields below) |
 | `poorExtra`, `wetExtra`, `rockExtra` | a station's additions to those fields (the hollow's acid floor) |
 | `bogAt(x,z)` | the sphagnum on a top (the summit's wet hollows): the top mesh's second layer and the lace pitchers' ground |
-| `layers`, `layerCol`, `weights(x,z)` | the floor mesh's three layers (families of `materials.json`) and their vertex weights |
+| `layers`, `layerCol`, `weights(x,z)` | the floor mesh's three layers `a`, `b`, `c` (families of `materials.json`) and their vertex weights (`weights` returns `[wB, wC]`); an optional fourth `layers.d` takes a third weight (the trenches' sphagnum) |
+| `layerMul` | optional `[[r,g,b], ...]` per layer: a tint on the layer, on the library's own colour too (the trenches pull their windward litter and sphagnum green) |
 | `rockCol`, `waterCol`, labels | the procedural fallback's tints, the inspector's words |
 | `jungle(x,z)`, `jungleQ`, `necQ` | the hyperjungle's extra mask and the two borrowed kits' quality |
 | `bias` | `{plant: number | (x,z,Z)=>number}`: this station's say on each Korona plant's density (`57`, `60` multiply by it); `cobraMeadow` is an extra acceptance for the cobra lilies on the floor |
-| `carvings` | `{body, tier, a0, a1, y0, h, name}`: the Hum's contour carvings, a strip on that bed's face |
+| `icefalls` | optional `{min, every, len(seep), w(seep), label}`: on the hoar table, a strip of `ice` down the bed's face under every seep line (`NECANYONS.SEEPS`) of strength `min` or more, on the wall's profile, a ragged foot; a tag record `icefall` each (not a probe volume: one merged mesh) |
+| `carvings` | `{body, tier, a0, a1, y0, h, name}`: the Hum's contour carvings, a strip on that tier's face, its foot `y0` metres (eye height, 1.6) above the highest DRAWN ground along its arc (the talus and the apron banked against the wall included; `47` finds the bed). With an explicit `bed`, `y0` is above that bed's foot instead (the hoar table's rim marks) |
 | `spine` | the LOD origins |
 | `fields` | `{name: (x,z)=>v}`: a station's own fields, merged into the kit's (the gorge: `canyon`, `oasis`, `dune` for the sedesert kit) |
 | `desert(x,z)`, `desertQ` | where the sedesert kit may root (a station that reads it in place: `station.json` `kits` and `packs`), and its quality |
 | `bare(x,z)` | ground the station bars from every kit (the trenches' salt crust, the gorge's pool) |
 | `high(x,z)`, `highQ` | where the ehighlands kit may root on the tops (the hoar table), and its quality |
+| `shore(x,z)`, `shoreQ` | where the nwlowlands kit may root (the fertile basin's shore band), and its quality; the kit reads `wet`, `flow`, `upland` and the station's `tropic` and `dry` (`fields`) |
+| `shoreRows` | optional: the nwlowlands kit's `avenues` (rows of one species along a host path): the basin lines the water's edge with glow-willows |
+| `crest(x,z)`, `crestQ` | where the nhighlands kit may root (the trenches' crest and dry upper lee), and its quality; the kit reads `wet`, `flow`, `rock`, `upland` and the station's `cold` and `mist` (`fields`); its crag pines want `rock`, so the crest gives `rockExtra` |
+
+A kit that builds on the core's chunk ranges (`BIO.range`: the nwlowlands and nhighlands hero trees and their far stand-ins) needs
+the host to tick the runtime LOD every frame, or its stand-ins are drawn over its trees: the station's `99-host-take.js`
+subscribes `BIO.lodTick(camera)` on the loop's `view` phase (the basin's and the trenches' do; the kits' own pages do the same).
 | `topExtra(x,z)` | extra relief on every top (the hoar table's knolls): wrapped into `KSTACKS.topH`, so the beds' tops, the drawn mesh and every plant's foot move together |
 | `snowAt(x,z)` | snow on a top (the top mesh's third layer, `ground.snow`) |
 | `windows` | `BIO.init` windows (the Mother Cushion's) |

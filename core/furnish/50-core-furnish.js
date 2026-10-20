@@ -22,6 +22,7 @@
 // cfg: {
 //   catalog:   { has(key), entry(key), dims(entry, variant) }   (KFURN.catalogOf(KratorFurniture) makes it)
 //   interiors: KratorInteriors (for R.interior), optional
+//   walk:      a KWALK registry, optional: R.interior writes each placed building's floors, walls, stairs and entry flights into it
 //   on, interiorsOn: the page's switches (?furniture=0, ?interiors=: 53-core-furnish-host.js reads them)
 //   seed(o, ctx, R, x, y, z, loc) -> the seed when o.seed is not given. Each build keeps the rule its pieces were
 //              placed with, so moving onto this module moves nothing (README.md, "Seeds")
@@ -96,7 +97,7 @@ var KFURN = (function(){
      return [f.x - f.fz*lx + f.fx*lz, f.z + f.fx*lx + f.fz*lz, Math.atan2(f.fx, f.fz) + (lry||0)];
    };
    R.interior = function(item, x, z, ry, adapter, opt){
-     const r = cfg.interiors.sets.furnish(item, x, z, ry||0, adapter, opt);
+     const r = cfg.interiors.sets.furnish(item, x, z, ry||0, adapter, cfg.walk && !(opt && opt.walk) ? Object.assign({}, opt, { walk: cfg.walk }) : opt);
      const sum = { item: item.key, rooms: r.inst.rooms.length,
        pieces: Object.keys(r.plans).reduce(function(a, k){ return a + r.plans[k].placements.length; }, 0), residence: r.residence };
      R.buildings.push({ key: item.key, x: x, z: z, ry: ry||0, baseY: (opt && opt.baseY) || 0, interior: sum });

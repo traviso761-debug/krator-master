@@ -61,7 +61,7 @@ function buildXaGuildGold(G,o){reseed(31221+(o.v|0));const V=xV(o),W=14,D=11;
  if(V===2)xnDome(0,H.top-.6,0,3.6,'G',{drum:2.2,drumItem:'xDrumM',fin:1.8});else xnGiltRoof(0,H.top-.6,0,V===1?9:7.5,V===1?6.5:5.5,0,{frame:V===1?2.4:1.8,over:1.0});
  // the strong room: a blind dressed-stone tower with one barred slit and a gold bulb (v1: twice as tall)
  const SH=V===1?18:12;xnWall(-11,0,-2,5,SH,5,0,stone,'dressed');vB('vDarkB',-8.55,6,-2,.06,1.2,.3,0);for(let k=0;k<3;k++)vB('vIron',-8.52,6,-2-.1+k*.1,.04,1.2,.03,0,xC(0x2e2a26));
- vB('xFriezeB',-11,SH-.8,-2,4.6,.6,4.6,0);kput('xBulbG',[-11,SH+.2,-2],null,[2.2,2.6,2.2],gold);vBall('xGold',-11,SH+3,-2,.22,gold);
+ xvFr(-11,SH-.8,-2,4.6,.6,4.6,0);kput('xBulbG',[-11,SH+.2,-2],null,[2.2,2.6,2.2],gold);vBall('xGold',-11,SH+3,-2,.22,gold);
  vB('vWood',-8.6,H.S.y-1.4,-2,2.6,.2,1.6,0,tim);
  // the assay furnace and the display of ingots in the yard, lamps
  {const fx=7,fz=D/2+3;vB('xRubB',fx,0,fz,2.2,1.4,2.2,0,xC(xPick(XPAL.rubble)));kput('xDomeS',[fx,1.4,fz],null,[1.1,1.0,1.1],xC(xPick(XPAL.rubble)));vB('vDarkB',fx,.3,fz+1.1,.7,.6,.06,0);vBall('vEmber',fx,.55,fz+1.05,.22,null,.12);vnChimney(fx,2.4,fz-.4,1.6,.14,true);}
@@ -78,7 +78,7 @@ function buildXaGuildAlch(G,o){reseed(31231+(o.v|0));const V=xV(o),W=12,D=9,TX=-
  kput('xOctW',[TX,0,TZ],null,[4.6,TH,4.6],wash);kput('xOctS',[TX,0,TZ],null,[4.9,.8,4.9],stone);
  for(let k=0;k<8;k++){const a=k/8*TAU;if(k===0)continue;for(const y of(TH>14?[3,7.2,11.6]:[3,7.2])){const p=loc(TX,TZ,0,4.25,a);vB('vDarkB',p[0],y,p[1],1.0,1.8,.08,a);
   for(let r=0;r<3;r++)vB('xPaint',p[0],y+.1+r*.58,p[1],.8,.5,.06,a,xC(xPick([XPAL.turquoise,XPAL.red,XPAL.saffron,XPAL.lapis,XPAL.green])));vB('vStone',p[0],y-.1,p[1],1.2,.1,.2,a,stone);vB('vStone',p[0],y+1.8,p[1],1.2,.1,.2,a,stone);}}
- vB('xFriezeB',TX,TH-.8,TZ,9.4,.7,9.4,0);xnDome(TX,TH,TZ,4.2,V===2?'T':'M',{drum:1.4,drumItem:'xDrumM',fin:1.8});
+ xvFr(TX,TH-.8,TZ,9.4,.7,9.4,0);xnDome(TX,TH,TZ,4.2,V===2?'T':'M',{drum:1.4,drumItem:'xDrumM',fin:1.8});
  vPst('vPipeC',TX+2.4,TH-2,TZ+2.4,.22,4.5,copper);kput('xBulbG',[TX+2.4,TH+2.5,TZ+2.4],null,[.4,.5,.4],copper);
  vB('vWood',TX+5.3,H.S.y-1.2,TZ,1.8,.2,1.6,0,xC(xPick(XPAL.dark)));vnDoor(TX,.8,TZ+4.28,0,.9,2.1,'vStone',stone,xC(XPAL.turquoise),true);
  // the laboratory yard: retorts on iron stands, the copper still, a coal heap, a kiln

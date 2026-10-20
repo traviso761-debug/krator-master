@@ -28,6 +28,14 @@ const groundMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,verte
 {const L=KMAT.mode==='lib'?KMAT.packed('zeijani','basalt'):null;   /* the young flows' basalt (the kipuka's floor tinted soil; its forest floor covers it) */
  if(L){const T=KMAT.textures(L,{aniso:TEXANISO});const g=DH_GROUND;for(const t of [T.map,T.normalMap,T.roughnessMap])if(t)t.repeat.set((g.x1-g.x0)/L.scale[0],(g.z1-g.z0)/L.scale[1]);
   groundMat.map=T.map;groundMat.normalMap=T.normalMap;groundMat.roughnessMap=T.roughnessMap;matHook(groundMat,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}}
+/* cinder drifts (2026-10-19, ground.cinder: volcanic sand and gravel): patches ~60 m across where a slow noise runs high, read at 3 m a tile and
+   scaled to the vertex colour's brightness, so the young flows' dark and the soil apron's lighter ground each keep their value; the basalt map stays elsewhere */
+{const L=KMAT.mode==='lib'?KMAT.packed('zeijani','cinder'):null;
+ if(L){const T=KMAT.textures(L,{aniso:TEXANISO});const u={value:T.map};
+  matHook(groundMat,'cinder'+KMAT.libKey(L),sh=>{sh.uniforms.uCin=u;
+   sh.fragmentShader='uniform sampler2D uCin;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n{vec2 cp=vGW.xz*'+(1/L.scale[0]).toFixed(4)+';vec3 cn=pow(texture2D(uCin,cp).rgb,vec3(2.2));float lum=dot(diffuseColor.rgb,vec3(0.333));'+
+    'float cw=smoothstep(0.62,0.8,0.5+0.5*sin(vGW.x*0.013+2.0*sin(vGW.z*0.009))*sin(vGW.z*0.011+1.3));'+
+    'diffuseColor.rgb=mix(diffuseColor.rgb,cn*clamp(lum/0.1,0.5,1.6),cw*0.85);}');});}}
 /* the cut-away and the holes, as the kit sheet's ground (its uniforms: 40-zj-cave.js fills the holes and masses) */
 const ZJ_CUTSITES={value:[]};for(let i=0;i<32;i++)ZJ_CUTSITES.value.push(new THREE.Vector4(0,0,0,0));
 const ZJ_CUTTOP={value:new Array(32).fill(1e9)};   /* each cut site's top: the ground opens under it only */

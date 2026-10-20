@@ -64,7 +64,8 @@ The project's flora tags (climate, aridity, abyssal, riparian, koppen) plus `zon
 ```
 45-host-stage.js      HOST: renderer, light, the floor, the creek, the rock as KSTACKS records (the showcase's layout)
 46-biome-necanyons-layout.js   THE KIT's layout [G data]: zones, seeps, pans, potholes
-47-host-land.js       HOST: terrainH, waterH, fields, BIO.init, the ground and rock meshes, the water
+47-host-land.js       HOST: terrainH, waterH, fields, BIO.init, the ground and rock meshes, the water (core/water records:
+                      WATER_RECS {creek, pools}, when the page has core/water; else a plain ribbon)
 48a..48f              the hyperjungle, read in place (build.py)
 50-biome-necanyons-species.js  species, plants, traps, harvest, textures, materials, items
 55-biome-necanyons-trees.js    the placement grid, the six trees, impostors
@@ -73,5 +74,9 @@ The project's flora tags (climate, aridity, abyssal, riparian, koppen) plus `zon
 70-biome-necanyons.js          build / canopyH
 82-host-sky.js        the hyperjungle's sky, read in place
 88-host-build.js      HOST: this kit, then the hyperjungle on the floor, then one bake
+89-atmos-*            core/atmos: the core, presets, export, wave clock and sky light (the water's)
+89n-host-night.js     HOST: the night: the lights, the fog, the dome by the world hour (KHOST's sky.hour; N); read in
+                      place by Pinnacle Rock
+89w-host-water.js     HOST: the creek and the rain pools drawn on core/water
 99-host-take.js       HOST: views, inspector, checks, KHOST.take
 ```

@@ -97,7 +97,8 @@ python3 ../../tools/textures/pack.py kits/beast-riders   # (from the repo root) 
   - `_room_front` (apartment, store, workshop, a roost cell for the flyers: Mav's room fronts re-cut), `_shrine` (a
     wayside niche; a shrine front with pilasters, an entablature and stepped merlons), `_cistern` (a wall cistern under
     its rain channel and the Rain Mother's face; a stepped cistern);
-  - **the Deep Root cavern's dressing**: `_cavern_door` (the carved face round the cavern's door: the twelve tribes' beasts
+  - **the Deep Root cavern's dressing**: `_cavern_door` (two variants: the door shown dark, a facade; the door open, the
+    panel cut round its arched doorway for a passage behind it: Pinnacle Rock's; the carved face round the cavern's door: the twelve tribes' beasts
     on an arch of roundels in LORE.md 6.6's order, under the claw, the Deep Root's roots down the face, three orders to
     the door, steps, braziers, lamp niches, offerings), `_tribe_niche` (one variant a tribe, all twelve: its beast, its two
     colours, its people's offerings), `_lamp_niche` (one variant a shrine: First Bough, Rain Mother, Winged Ones, Deep

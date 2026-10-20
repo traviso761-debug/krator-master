@@ -6,7 +6,8 @@ own so its globals (MAT, REG, TAU, clamp, terrainH, WORLD, KIT...) meet neither 
                        resource nodes (kits/resources) and the farm animals (kits/fauna); ISK.proto(key, v) builds one
                        def at the origin into a group, ISK.dims() is the kit's isDims()
     izv_bundle()       IZV: the Iziz Vernacular with the Ancients core it draws through (settlements/iziz/src,
-                       core/materials), the same files settlements/verge/build.py's IZV takes; IZV.proto(key, v, w)
+                       core/materials), the same files settlements/verge/build.py's IZV takes plus Iziz's own
+                       88y-iziz-matlib.js (its library bind and material records); IZV.proto(key, v, w)
     ringsea_fragment() RINGSEA: the Ring Sea watercraft (kits/ringsea) through settlements/voth/ringsea.py, read in
                        place, with the isle demo's own vessel list (PLAN.md section 8a)
 
@@ -94,6 +95,14 @@ var KratorFurniture = { FURN_BY_KEY: {}, has: function () { return false; }, ent
 
 ISK_TAIL = r'''
 reportErr = function (m) { ISK_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('ISK: ' + m); };
+/* the material records for the export (core/materials/record), as the kit's own page registers them (93-anim.js, which the
+   bundle skips): every MAT key as one record on the page's KMAT; core/export's materials section reads every adapter */
+(function () { var recs = {}; for (var k in MAT) { var fam = SV_LIB[k], L = fam && KMAT.mode === 'lib' ? KMAT.packed(KIT.pack, fam) : null;
+  recs[k] = { id: KIT.pack + '.' + k, family: k, scale: [TILE[k] || 1, TILE[k] || 1], tint: true, roughness: MAT[k].roughness === undefined ? 1 : MAT[k].roughness, metal: MAT[k].metalness || 0,
+    specular: L ? L.specular : .5, breakup: L ? (L.breakup || null) : null, lib: L ? L.lib : null, doubleSided: MAT[k].side === THREE.DoubleSide,
+    hook: [SV_CLOTH[k] ? 'cloth-flutter' : null, SV_CUT[k] ? 'cut-away' : null, k === 'glow' ? 'unlit flicker' : null].filter(Boolean).join('+') || null,
+    note: L ? 'library set, tint keep ' + L.tint : 'vertex colour only' }; }
+  KMAT.adapter(KIT.pack, recs); })();
 /* ISK.proto(key, v): the def built once at the origin (y 0, front +z) into a new group, its buckets flushed, its sails and
    animals with it; nothing is registered (the city registered the lot in core/tags before drawing it) */
 function iskProto(key, v) {
@@ -152,10 +161,12 @@ def izv_files():
         return q if os.path.exists(q) else os.path.join(MATS, 'opt', f)
     names = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
              '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js', '69b-vern-mat.js',
-             '69c-vern-helpers.js', '69e-vern-hollow.js']
+             '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js']   # 69e5: real doors and glass (vnPlate, vnHole, IZDOOR), which the vernacular fragments call since 2026-10-19
     out = [iz(f) for f in names]
     # every vernacular building fragment in its file order: Verge's list stops at 74, and Iziz has since added 71a-c, 73b-c
     out += sorted(glob.glob(os.path.join(IZIZ, '7[0-4]*-vern-*.js')))
+    # Iziz's own library bind (its aliases and tiles) and its material records for the export (KMAT.adapter('iziz'))
+    out.append(os.path.join(IZIZ, '88y-iziz-matlib.js'))
     return out
 
 
@@ -168,7 +179,6 @@ var scene = new THREE.Group(), renderer = { capabilities: { getMaxAnisotropy: fu
 
 IZV_TAIL = r'''
 reportErr = function (m) { IZV_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('IZV: ' + m); };
-if (typeof KMAT !== 'undefined' && KMAT.bindMat) KMAT.bindMat('iziz', MAT, { tile: KMAT.ANCIENT_TILES });
 /* IZV.proto(key, v, w): the def built once at the origin on flat ground into a new group, its kit items baked. The kit's
    items are emptied before and after (30-kit.js kbake bakes every item put so far and keeps them: without this each piece
    carried every piece built before it, so a piece depended on the order the page built them in; fixed 2026-10-20) */
@@ -233,6 +243,16 @@ def _kf_tex():
     return js[js.index('=') + 1:].strip().rstrip(';')
 
 
+CAT_WINDOW = r'''
+/* the page's window, with one write kept off it: each sealed town loads core/materials/record/23-mat-record.js, whose
+   last line sets window.KMAT to the town's own KMAT, and the page's KMAT (the Islanders' and Iziz's packs registered on
+   it) was replaced by the last town's, so ISK and IZV, sealed after CAT, bound no library maps (2026-10-19: the towns
+   read pale; KNOWN_ISSUES.md). The towns' own KMAT stays their closures' lexical one */
+var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) { var v = t[k]; return typeof v === 'function' && !/^[A-Z]/.test(String(k)) ? v.bind(t) : v; },
+  set: function (t, k, v) { if (k === 'KMAT') return true; t[k] = v; return true; } });
+'''
+
+
 def cat_bundle(side=None):
     """CAT: the catalog's geometry kit, the Beast Riders kit's own buildings and its ports (the two towns sealed, their
     maps BR_TOWN_IMG: in side['brtowns'] when side is given, a sidecar file), sealed; CAT.proto(key, v) builds one at the
@@ -251,7 +271,7 @@ def cat_bundle(side=None):
                 "(the page\\'s .tex.kftex.js did not load)'), null);" + NL)
     return safe('/* CAT: the Beast Riders\' buildings in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/catalog, '
                 'kits/beast-riders and the towns (kits/beast-riders/towns.py). */' + NL +
-                'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + body(CAT_FILES) +
+                'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + CAT_WINDOW + body(CAT_FILES) +
                 '/* ---- the towns sealed (GENERATED: kits/beast-riders/towns.py) ---- */' + NL + tjs + NL + body([CAT_PORTS]) +
                 '/* ---- the detail maps (KF_TEX: kits/beast-riders/build.py kf_tex) and the catalog\'s detail code over a stand-in batch ---- */' + NL +
                 kfjs + 'var KF_API = { batch: function () { return { flush: function (p) { return p; } }; } };' + NL + body([CAT_DETAIL]) + CAT_TAIL +

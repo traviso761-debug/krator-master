@@ -35,26 +35,26 @@
    "files": {
     "map": "bark.aspen.albedo.webp"
    },
-   "lib": "bark.ghostwood",
+   "lib": "bark.birch.b",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
    "scale": [
-    1.4,
+    1.5,
     2.4
    ],
    "size": 512,
    "source": {
-    "albedo": "961bf086ae4afede561aa9eed0378ca7505852bd",
-    "normal": "613c7d436b7d2d2db02872544a7f167806c96a3f",
-    "roughness": "6c511dd52b8de70763bf68e4e2727123f89b096f"
+    "albedo": "6f4ffeb9b934b9cf298b412a343b065619556788",
+    "normal": "e178b6a9b55d2312efec8d14c3000503d87f21e8",
+    "roughness": "e2319efd2bf2b115ef511c969e0ebc4274f86fb7"
    },
    "specular": 0.25,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.6,
-    "sourceMean": 0.7076
+    "sourceMean": 0.7353
    }
   },
   "bark.juniper": {
@@ -141,6 +141,34 @@
     "sourceMean": 0.4128
    }
   },
+  "ground.caprock": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.caprock.albedo.webp"
+   },
+   "lib": "rock.sandstone_cracks",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "5beb637c4e4f2f8892489b4da32457a9e13f5a82",
+    "normal": "378e61bb11e322d03fe62b79b406c7de7e2aedf6",
+    "roughness": "62ecd6b85d25306415537683f1ca7e0b5f7da22a"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.6,
+    "mean": 0.76,
+    "sourceMean": 0.6583
+   }
+  },
   "ground.clay": {
    "breakup": null,
    "card": false,
@@ -223,6 +251,34 @@
     "keep": 0.6,
     "mean": 0.5557992341733446,
     "sourceMean": 0.5558
+   }
+  },
+  "ground.redwall": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.redwall.albedo.webp"
+   },
+   "lib": "rock.sandstone.red",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9687d63dd9794ab1f54783be497733d2251a2757",
+    "normal": "7297f60eca2234db3d50f8052742e801ba987a06",
+    "roughness": "e7729a397cee8ee8228dd7ab9af52f57f758843f"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.7,
+    "mean": 0.74,
+    "sourceMean": 0.3821
    }
   },
   "ground.sandstone": {

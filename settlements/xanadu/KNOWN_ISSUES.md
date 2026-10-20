@@ -96,3 +96,27 @@ thinning to ~34 m with alleys every ~40 m, the garden's stepped ground with reta
 standing the right way (verified: the garden renders as hanging terraces, the water falls), the stream into the
 Caves of Ice (verified), a third Palopó, quays facing the lake (verified), the lake at −0.5 m (verified, no
 z-fight), the Doors overlay.
+
+## Voth census trades (2026-10-19)
+
+The table `XA_TRADES` in `src/89-xa-trades.js` sets each of the Voth city's 44 census trades against this build's buildings (18 carried, 3 partly, 14 gaps, 9 na of 44). `tools/check_trades.py` and verify.py's `voth-trades` assert check it. Gaps to fill later:
+
+- [ ] bakers: a bakery
+- [ ] butchers: a butcher's shop
+- [ ] weavers and dyers: a weaver's and dyer's workshop
+- [ ] brewers: a brewhouse
+- [ ] tanners: a tannery
+- [ ] innkeepers and grooms: an inn or caravanserai with stables
+- [ ] shrine keepers: a wayside shrine
+- [ ] industrial workers: a works (smelter, mill or press) beyond the small workshops
+- [ ] teachers and scholars: a school or madrasa
+- [ ] healers and nurses: a hospital or healers' house (the baths are for bathing)
+- [ ] priests and undertakers: a funerary temple or burial court (partly carried: xa_temple)
+- [ ] fishers: a fishing dock on the bay
+- [ ] orchardmen: an orchard plot
+- [ ] miners: a mine head (only the Miners' Guild is drawn; the valley's gold mines are the lore) (partly carried: xa_guild_mine)
+- [ ] quarrymen and masons: a stone quarry (partly carried: xa_guild_mason)
+- [ ] dairymen: a dairy
+- [ ] swineherds and duck keepers: animal pens and a coop
+
+The `na` rows (sea trades on a landlocked build, trades the lore does not hold) are in the table with their reasons.

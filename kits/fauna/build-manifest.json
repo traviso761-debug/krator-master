@@ -11,7 +11,7 @@
  "bundle:kits/fauna/krator-fauna-abyss.js": "2da956fbc835",
  "bundle:kits/fauna/krator-fauna-ash.js": "38e891600379",
  "bundle:kits/fauna/krator-fauna-bay.js": "07ad8adabf94",
- "bundle:kits/fauna/krator-fauna-crawlers.js": "d6814d79900c",
+ "bundle:kits/fauna/krator-fauna-crawlers.js": "4331d57cbfeb",
  "bundle:kits/fauna/krator-fauna-desert.js": "eb13deb0f4da",
  "bundle:kits/fauna/krator-fauna-farm.js": "3c751278767b",
  "bundle:kits/fauna/krator-fauna-flyers.js": "52b1cd7930ca",
@@ -19,10 +19,10 @@
  "bundle:kits/fauna/krator-fauna-livestock.js": "6e4493a626bb",
  "bundle:kits/fauna/krator-fauna-mounts.js": "82741c1945c3",
  "bundle:kits/fauna/krator-fauna-pets.js": "d14d0951a479",
- "bundle:kits/fauna/krator-fauna-riders.js": "6db6d6136e89",
+ "bundle:kits/fauna/krator-fauna-riders.js": "91719c941d69",
  "bundle:kits/fauna/krator-fauna-ringsea.js": "02d3e0266884",
  "bundle:kits/fauna/krator-fauna-runtime.js": "69c757bf246e",
- "bundle:kits/fauna/krator-fauna-voth.js": "3b2b591ae50b",
+ "bundle:kits/fauna/krator-fauna-voth.js": "0b9e130cf6a8",
  "bundle:kits/fauna/krator-fauna-wild.js": "ef5cc3310915",
  "krator-asset-engine.js": "4fba01c91621"
 }

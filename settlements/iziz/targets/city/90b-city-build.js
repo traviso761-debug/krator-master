@@ -38,6 +38,19 @@ const KITCAT={
  fuel:{fn:buildFuelStation,name:'Fuel station',smax:.42,smin:.16,type:['industry','infrastructure'],kind:'industry'},
  amph:{fn:buildAmphitheater,name:'Amphitheatre',smax:.5,smin:.2,type:['civic'],kind:'civic'},
  bunker:{fn:buildBunker,name:'Bunker',smax:.45,smin:.2,type:['military'],kind:'military'},
+ // the owner's roster (2026-10-19, on the interiors sheet): the kit's houses and the terrace stack go; in come the
+ // alternates' undulant house, bridge house (its rehabilitated form throughout, rusted in a ruined quarter), fin apartments,
+ // star laboratory and undulant flatiron, the cultural centre (compact: IZS_HOLLOW.cultural), the hotel, and Apartments C2
+ // (the column cluster with columns made for rooms). Each has its interior (78w). The alternates count decay 2 as their
+ // lived-in ruin; the city gives them 1 (ruined) or 3 (rehabilitated), as every kit type
+ wave:{fn:buildAltWaveHouse,name:'The Undulant house',smax:1,smin:.45,type:['single-family dwelling'],kind:'house'},
+ bridge:{fn:(G,gx,gz,d)=>buildAltBridgeHouse(G,gx,gz,3),name:'The Bridge house',smax:1,smin:.45,type:['single-family dwelling'],kind:'house',rustRuin:true},
+ fins:{fn:buildAltFinApartments,name:'The Fin apartments',smax:1,smin:.4,type:['multi-family dwelling'],kind:'mid',rowPitch:200},
+ adlab:{fn:buildAltLab,name:'The Star laboratory',smax:1,smin:.4,type:['civic','industry'],kind:'civic'},
+ flat:{fn:buildAltFlat,name:'The Undulant flatiron',smax:.3,hmax:135,smin:.14,type:['multi-family dwelling','civic'],kind:'sky'},
+ hotel:{fn:buildHotel,name:'Hotel — the Terraces',smax:.45,smin:.15,type:['tavern/inn','civic'],kind:'civic'},
+ cultural:{fn:buildCultural,name:'Cultural centre — the Wheel',smax:.35,smin:.1,type:['civic'],kind:'civic'},
+ aptsC2:{fn:buildAptsC2,name:'Apartments C2 — the column cluster, rooms',smax:.5,smin:.2,type:['multi-family dwelling'],kind:'mid'},
 };
 const DEADLIGHT=new THREE.Color(0x4a4744);
 const CITY_DEAD={light:new THREE.MeshStandardMaterial({color:0x4a4744,roughness:.8}),_g:null,glass(){if(!this._g){const g=MAT.glass.clone();g.onBeforeCompile=MAT.glass.onBeforeCompile;g.emissiveIntensity=0;g.color=new THREE.Color(0x2a4a5e);this._g=g;}return this._g;}};
@@ -88,7 +101,7 @@ function placeKit(key,o,d,opt){const cat=KITCAT[key];if(!cat)return null;opt=opt
  const civic=cat.kind==='civic'||cat.kind==='military';const lit=opt.lit!=null?opt.lit:(d===0||(d===3&&(civic||(onHill(o.x,o.z)&&rng()<.5))));
  if(sky)citySkyPlinth(opt.plinth||o,y,lit);
  // Skyscraper D is bare concrete in the kit: its ruined and reclaimed skins go to rust-streaked steel here (Travis)
- if(key==='skyD'&&d>0)izsRustSkin(G);
+ if(key==='skyD'&&d>0||cat.rustRuin&&d===1)izsRustSkin(G);   // the bridge house in a ruined quarter: its rehabilitated form, rusted (the owner)
  if(!lit&&d===3){for(const n in KIT.items){if(!/^(strip|dot|cell|lampI|bulb|glow|izGlow|vBulb|tbulb)/.test(n))continue;const it=KIT.items[n];for(let i=snap[n]||0;i<it.length;i++)it[i].c=DEADLIGHT;}
   // and the MERGED light meshes (glass bands, strip runs) the kit builds outside the instancing: dead too (Round 3 issue)
   G.traverse(m=>{if(!m.isMesh)return;if(m.material===MAT.strip||m.material===MAT.dot||m.material===MAT.bulb||m.material===MAT.warmPane)m.material=CITY_DEAD.light;else if(m.material===MAT.glass)m.material=CITY_DEAD.glass();});}
@@ -99,6 +112,8 @@ function placeKit(key,o,d,opt){const cat=KITCAT[key];if(!cat)return null;opt=opt
  // level the ground under the plot (the terrain mesh is built after placement): no plinth floats or buries on a slope
  if(opt.level!==false)cityFlat(o.x,o.z,Math.hypot(o.hx,o.hz)*.95,8,y+.06);
  if(d===1)RUIN_GROUPS.push(G);   // the jungle dresses the ruins (pass 7)
+ if(/^sky[A-F]$/.test(key)&&typeof izTowerIx==='function')izTowerIx(key,G,d,r0);   // the slum, junk and rubble storeys (78v; 2026-10-19)
+ else if(typeof izAncIx==='function'&&typeof IZANC!=='undefined'&&IZANC.T[key]&&d!==2)izAncIx(key,G,d,r0,key==='cultural'&&typeof CULT_HALLS!=='undefined'?{halls:CULT_HALLS.slice()}:undefined);   // the other Ancient buildings' (78w; 2026-10-19)
  TSTAT.cur=null;o.built=key;occAdd(o);return G;}
 const RUIN_GROUPS=[];
 // the skyscraper plinth (Travis, round 3): a stepped square of board-formed concrete the size of one grid block, so
@@ -112,12 +127,13 @@ const TSCALE={dwelling:2.6,tall:2.6,hall:2.2};
 function placeTrans(kind,mode,o,seed,extra){const half=TREFHALF[kind];if(!half)return null;let rot=0;if((half[0]>=half[1])!==(o.hx>=o.hz))rot=Math.PI/2;const hx=rot?half[1]:half[0],hz=rot?half[0]:half[1];
  const fam=TKINDS.dwelling.includes(kind)?'dwelling':TKINDS.tall.includes(kind)?'tall':'hall';const scale=Math.min(TSCALE[fam],(o.hx-1.5)/hx,(o.hz-1.5)/hz);if(scale<.9)return null;
  const ry=(o.ry||0)+rot+(rng()<.5?Math.PI:0),y=groundY(o);TSTAT.cur='trans_'+kind+'/'+mode;
- const P=TRANS.place(scene,kind,mode,o.x,o.z,ry,scale,seed,extra,y);TSTAT.cur=null;o.built='trans_'+kind;occAdd(o);return P;}
+ const snap=kitSnapshot(),P=TRANS.place(scene,kind,mode,o.x,o.z,ry,scale,seed,extra,y);if(P&&typeof izTransIx==='function')izTransIx(kind,mode,P,REG.length-1,snap);   // its interior (78v; 2026-10-19)
+ TSTAT.cur=null;o.built='trans_'+kind;occAdd(o);return P;}
 // a vernacular building at a plot
 function placeVern(key,o,opt){opt=opt||{};const D=VERN.defs[key];if(!D)return null;const sc=opt.scale||1;o.hx=D.w/2*sc;o.hz=D.d/2*sc;const y=groundY(o);
  if(opt.lit==null&&D.tags.wealth==='rich')opt.lit=onHill(o.x,o.z)&&rng()<.5;   // the lighting rule: wealthy houses only on the hills, 50/50
  if(/^anc_|^port_|forgemasters|caravanserai|barracks|market|hospital|school|alchemist/.test(key))cityFlat(o.x,o.z,Math.hypot(o.hx,o.hz)*.95,8,y+.06);
- TSTAT.cur=key+'/'+(opt.v|0);const r0=REG.length;const G=VERN.place(scene,key,o.x,o.z,o.ry,{v:opt.v|0,scale:sc,y,lit:opt.lit});if(opt.lit!=null)for(let i=r0;i<REG.length;i++)REG[i].tags.lit=opt.lit;TSTAT.cur=null;o.built=key;occAdd(o);VERN_PLACED.push({key,o});return G;}
+ TSTAT.cur=key+'/'+(opt.v|0);const r0=REG.length;const G=VERN.place(scene,key,o.x,o.z,o.ry,{v:opt.v|0,scale:sc,y,lit:opt.lit});if(opt.lit!=null)for(let i=r0;i<REG.length;i++)REG[i].tags.lit=opt.lit;TSTAT.cur=null;o.built=key;occAdd(o);VERN_PLACED.push({key,o,y});return G;}
 const VERN_PLACED=[];
 const LANDMARKS=[];   // labelled on the map
 function landmark(name,G,o,h){LANDMARKS.push({name,x:o.x,z:o.z,h:h||18});if(o){let best=null;for(let i=Math.max(0,REG.length-60);i<REG.length;i++){const r=REG[i];if(Math.hypot(r.x-o.x,r.z-o.z)<=Math.max(o.hx,o.hz)+2&&(!best||r.r>best.r))best=r;}if(best){best.tags=best.tags||{};best.tags.landmark=true;best.name=name;}}return G;}
@@ -242,6 +258,12 @@ function fillTop(H,picks,n,rmin){reseed(SEED_CITY+21+Math.round(H.x));let k=0;fo
   if(Math.hypot(x-H.x,z-H.z)+Math.max(o.hx,o.hz)>H.r0-5)continue;if(!occFree(o,1.5))continue;
   let bad=false;for(const c of obbCorners(o,.5).concat([[x,z]])){const kk=klass(c[0],c[1]);if(kk>=3&&kk<=6||kk===KL.rock)bad=true;}if(bad)continue;
   placeVern(key,o,{v:Math.floor(rng()*6)});k++;}return k;}
+// a guild's interior (78v): the Ancient lab or station inside it is built open for it (IZS_HOLLOW.guilds, 77-anc-guilds.js), and
+// the interior's def is placed on the guild's own transform at scale 1, its furniture's parent the kit building's record (the
+// guild's widest). The stream is put back after it, so nothing placed later moves
+function guildIx(key,ixKey){if(!VERN.interiors)return;const P=VERN_PLACED.filter(q=>q.key===key).pop();if(!P)return;
+ let r0=-1;for(let i=0;i<REG.length;i++)if(REG[i].key===key&&(r0<0||REG[i].r>REG[r0].r))r0=i;
+ TSTAT.cur=ixKey+'/0';const s0=_seed;VERN.place(scene,ixKey,P.o.x,P.o.z,P.o.ry,{y:P.y,r0});_seed=s0;TSTAT.cur=null;}
 (function buildCivic(){reseed(SEED_CITY+10);const P=HILL.palace,T=HILL.temple,A=HILL.arena;
  const at=(H,a,r)=>[H.x+(H.ring+r)*Math.cos(a),H.z+(H.ring+r)*Math.sin(a)];const gate=(deg,inset)=>{const g=deg*Math.PI/180,R=wallR(g)-inset;return[R*Math.cos(g),R*Math.sin(g)];};
  let p;
@@ -254,8 +276,8 @@ function fillTop(H,picks,n,rmin){reseed(SEED_CITY+21+Math.round(H.x));let k=0;fo
  {const G=placeOnTop('port_order_chapterhouse',T,T.gate+1.75,68,{});if(G){const o=OCC.list[OCC.list.length-1];landmark('Order Chapterhouse',G,o,24);}}
  {const G=placeOnTop('vern_alchemist',T,T.gate-1.75,68,{});if(G){const o=OCC.list[OCC.list.length-1];landmark("Alchemist's compound",G,o,20);}}
  {const G=placeOnTop('vern_beast_hunters_guild',A,A.gate+2.62,72,{});if(G){const o=OCC.list[OCC.list.length-1];landmark("Beast Hunters' Guild",G,o,16);}}
- p=at(A,A.gate-1.6,40);landmark("Salvagers' Guild",placeNear('anc_salvagers_guild',p[0],p[1],{scale:.5,R:340,step:14}),p,46);
- p=gate(200,130);landmark('Mercenary Guild',placeNear('anc_mercenary_guild',p[0],p[1],{scale:.45,R:340,step:14}),p,24);
+ p=at(A,A.gate-1.6,40);landmark("Salvagers' Guild",placeNear('anc_salvagers_guild',p[0],p[1],{scale:.5,R:340,step:14}),p,46);guildIx('anc_salvagers_guild','anc_salvagers_ix');
+ p=gate(200,130);landmark('Mercenary Guild',placeNear('anc_mercenary_guild',p[0],p[1],{scale:.45,R:340,step:14}),p,24);guildIx('anc_mercenary_guild','anc_mercenary_ix');
  p=gate(90,110);landmark("Farmers' Guild",placeNear('vern_farmers_guild',p[0],p[1]),p,16);
  p=gate(200,60);landmark('Caravanserai (west)',placeNear('vern_caravanserai',p[0],p[1],{R:160}),p,14);
  p=gate(30,70);landmark('Caravanserai (east)',placeNear('vern_caravanserai',p[0],p[1],{v:1,R:160}),p,14);

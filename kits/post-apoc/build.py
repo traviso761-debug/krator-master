@@ -52,7 +52,7 @@ except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 CORE_SOCK = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'sockets')   # shared: the socket + culture system (core/sockets/README.md)
 CORE_FURNISH = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # shared: the furniture placement pass (core/furnish/README.md)
-CORE_TAGS = [os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', d) for d in ('rand', 'tags')]   # shared: KRAND and the tag registry the furniture is registered in (core/tags/README.md)
+CORE_TAGS = [os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', d) for d in ('rand', 'tags', 'walk')]   # shared: KRAND, the tag registry the furniture is registered in (core/tags/README.md), and KWALK (the interiors' floors, walls and stairs)
 OUT = os.path.join(DIST, 'post-apoc.html')
 ROOT = os.path.dirname(os.path.dirname(HERE))
 # GENERATED fragment: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure exposing KratorFurniture) and

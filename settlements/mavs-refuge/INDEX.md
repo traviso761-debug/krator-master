@@ -43,6 +43,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `60-trees.js` | 40 **big** | 14. TREES (1) |
 | `62-jungle.js` | 45 **big** | 15. JUNGLE (1) |
 | `63-trails.js` | 3 | 16b. GROUND TRAILS (1) |
+| `65-mr-trades.js` | 6 | = (1) |
 | `72-lights.js` | 3 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 6 | 20. EMIT + GROUND + RIVER (1) |
 | `78-life.js` | 51 **big** | 78. LIFE (2) |

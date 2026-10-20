@@ -21,18 +21,19 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
-| `26k-kit.js` | 6 |  |
+| `26k-kit.js` | 7 |  |
 | `27-mat.js` | 6 |  |
 | `28-is-paint.js` | 9 |  |
-| `30-geo.js` | 22 |  |
+| `30-geo.js` | 23 |  |
 | `36-def.js` | 6 |  |
-| `40-is-kit.js` | 14 |  |
+| `37-wk-rec.js` | 2 |  |
+| `40-is-kit.js` | 15 |  |
 | `41-is-roof.js` | 8 |  |
 | `42-is-dress.js` | 4 |  |
 | `43-is-yards.js` | 9 |  |
 | `50-iw-west.js` | 15 |  |
 | `52-iw-civic.js` | 16 |  |
-| `53-iw-trade.js` | 29 |  |
+| `53-iw-trade.js` | 30 |  |
 | `54-iw-harbour.js` | 16 |  |
 | `55-iw-defence.js` | 10 |  |
 | `56-sa-beasts.js` | 3 |  |

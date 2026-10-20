@@ -161,17 +161,17 @@
     bodies: [{ id: 'hall', poly: rect(16, 8, 0, -7), y: 0.5, levels: [{ h: 4.07 }, { h: 3.6 }], wall: 0.45, roof: 'hip',
       pitch: pt(2.6 / 3.8), doors: [{ at: [0, -3], w: 1.7 }], program: [['school', 'school'], ['library', 'study']] },
       { id: 'wing-w', poly: rect(7, 13, -10.5, 1.5), y: 0.5, levels: [{ h: 3.6 }], wall: 0.4, roof: 'flat',
-        doors: [{ at: [-7, -4.1], w: 1.2 }], program: ['school', 'school'] },
+        doors: [{ at: [-7, 1.5], w: 1.2 }], program: ['school', 'school'] },
       { id: 'wing-e', poly: rect(7, 13, 10.5, 1.5), y: 0.5, levels: [{ h: 3.6 }], wall: 0.4, roof: 'flat',
-        doors: [{ at: [7, -4.1], w: 1.2 }], program: ['school', 'school'] }],
+        doors: [{ at: [7, 1.5], w: 1.2 }], program: ['school', 'school'] }],
     note: 'the two-storey hall and the two classroom wings round the yard (their shed roofs planned flat); the bell tower and the ' +
       'yard shade are not planned' });
   add({ key: 'vern_hospital', name: 'Hospital', wealth: CIVIC, types: ['civic'], lot: [38, 28],
     bodies: [{ id: 'ward', poly: rect(26, 9, 0, -2), y: 0.7, levels: [{ h: 4.8 }], wall: 0.45, roof: 'gable', pitch: pt(2.6 / 4.5),
-      doors: [{ at: [-7.43, 2.5], w: 1.3 }, { at: [3.71, 2.5], w: 1.3 }, { at: [-7.43, -6.5], w: 1.3 }, { at: [3.71, -6.5], w: 1.3 }],
+      doors: [{ at: [-7.43, 2.5], w: 1.3 }, { at: [2.8, 2.5], w: 1.3 }, { at: [-7.43, -6.5], w: 1.3 }, { at: [3.71, -6.5], w: 1.3 }],
       program: ['dormitory', 'dormitory', 'dormitory', 'store'] },
       { id: 'pavilion', poly: rect(8, 5.7, 0, 5.35), y: 0.7, levels: [{ h: 4.87 }, { h: 3.0 }], wall: 0.45, roof: 'flat',
-        doors: [{ at: [0, 8.2], w: 1.9 }, { at: [3.71, 2.5], w: 1.3 }], program: [['antechamber', 'study'], ['study', 'library']] },
+        doors: [{ at: [0, 8.2], w: 1.9 }, { at: [2.8, 2.5], w: 1.3 }], program: [['antechamber', 'study'], ['study', 'library']] },
       { id: 'store', poly: rect(3.2, 5, 15.6, -2), y: 0.7, levels: [{ h: 3.2 }], wall: 0.4, roof: 'hip', pitch: pt(1.2 / 2.5),
         doors: [{ at: [15.6, 0.5], w: 1.0 }], program: ['store'] }],
     note: 'the long ward (its front door at x 3.7 opens into the domed entrance pavilion, which is planned as its own body up to the ' +

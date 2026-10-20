@@ -75,7 +75,10 @@ function pynPortCluster(x,y0,z,ry,w,h,count,rMax,ringC,fill,grille){const P=[];f
 function pynGrille(x,y,z,ry,w,h){if(!PYL_MATLIB.pyGrille)return;const g=loc(x,z,0,.08,ry);kput('pyGrille',[g[0],y+h/2,g[1]],vQ(ry,0,0),[w,h,1],null);}
 // hex paving: a slab w x d of the library's hex tile, laid flat, its top at y+.04, tinted c; it draws the five numbers vnPaving's
 // one flag drew, so the builder's stream goes on as before
-function pynHexPave(x,y,z,w,d,ry,c){if(!PYL_MATLIB.pyHexTile){vnPaving(x,y,z,w,d,ry,c,1);return;}for(let i=0;i<5;i++)rng();vB('pyHexTile',x,y-.04,z,w,.08,d,ry,c);}
+const PYTILES=['pyHexTile','pyTileLR','pyTileLS','pyTileLB','pyTileLC'];
+function pynHexPave(x,y,z,w,d,ry,c){if(!PYL_MATLIB.pyHexTile){vnPaving(x,y,z,w,d,ry,c,1);return;}for(let i=0;i<5;i++)rng();
+ const it=PYTILES[Math.abs(Math.round(x*3)+Math.round(z*5)+Math.round(w*7)+Math.round(d*11))%PYTILES.length],lat=it!=='pyHexTile'&&PYL_MATLIB[it];   // the hex tile takes the court's grey; a lattice tile is in its own colours
+ vB(lat?it:'pyHexTile',x,y-.04,z,w,.08,d,ry,lat?vC(0xffffff):c);}
 // a cantilevered slab off a face: w along the face, reaching d out, t thick, its top at y
 function pynCanopy(x,y,z,ry,w,d,t,c,item){const f=loc(x,z,0,d/2,ry);vB(item||'vPlaster',f[0],y-t,f[1],w,t,d,ry,c);}
 // a barrel vault: a half-vault of span w and rise over a run of `len` along the local axis turned by ry (ry = 0: the

@@ -1,4 +1,11 @@
 // ================================================================= HOTEL — "the Terraces"
+// IZS_HOLLOW.hotel (settlements/iziz 78w; 2026-10-19): the world's storeys are two of the hotel's (it is placed at about
+// half size): the even slabs they stand on are left out (below the top four in a decayed hotel, whose cut it cannot
+// know) and the odd ones kept only as the terrace in front of the back wall, the dark liner behind the glass
+// and the dark plates over each storey are left out: the world draws the floors, the stair and the rooms
+function hotelIx(){return typeof IZS_HOLLOW!=='undefined'&&!!IZS_HOLLOW.hotel;}
+// The reclaimed hotel the owner asked for (2026-10-19: "the hotel and c2 need versions with more intact walls"): with
+// IZS_HOLLOW.hotel at decay 3 its slabs keep whole and every bay of the glass front is filled (patchOpening, 69-mat-salvage)
 function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  REGISTER({name:'Hotel — the Terraces ('+STATE(d)+')',x:0,z:0,r:110,h:80});
  const NS=14,SH=4.2,R=90,a0=-.9,a1=.9;const depth=f=>34-f*1.9;   // crescent, each storey shallower (terraces step back uphill)
@@ -31,16 +38,17 @@ function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const SM=skySha
  const fl=u=>d===1&&u>.72?3+Math.floor((1-u)/.28*10*(.85+.3*fbm(u*9,1,2041,2))):99;
  const hConc=[],hBrick=[],hDark=[];   // one mesh per material for the whole crescent
  for(let f=0;f<=NS;f++){const y=f*SH;if(f>=cutTop)continue;
-  hConc.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);const r=lerp(deckR(f),R+1.5,v);return[Math.sin(a)*r,y,Math.cos(a)*r-R*.7];},80,3,{hole:d>0?(u,v)=>fbm(u*12,f,2000+f,2)<.14||f>fl(u):null}));
+  const hx=hotelIx()&&f<(d>0?10:14);if(!(hx&&f%2===0))hConc.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);const r=lerp(deckR(f),hx?wallR(f)+.2:R+1.5,v);return[Math.sin(a)*r,y,Math.cos(a)*r-R*.7];},80,3,{hole:d>0&&!(hotelIx()&&d===3)?(u,v)=>fbm(u*12,f,2000+f,2)<.14||f>fl(u):null}));
   if(f<NS){const WR=wallR(f);const rf=R-.8;
    if(d===0)mesh(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*rf,y+.5+v*(SH-.9),Math.cos(a)*rf-R*.7];},80,1,{}),MAT.glass,G);
-   else hDark.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*(rf-.5),y+.5+v*(SH-.9),Math.cos(a)*(rf-.5)-R*.7];},60,1,{hole:(u,v)=>fbm(u*9,f,2010,2)<.35||f>=fl(u)}));
+   else if(!hotelIx())hDark.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*(rf-.5),y+.5+v*(SH-.9),Math.cos(a)*(rf-.5)-R*.7];},60,1,{hole:(u,v)=>fbm(u*9,f,2010,2)<.35||f>=fl(u)}));
    // full storey height, so the wall meets the slab under it and the slab over
    // it instead of floating half a metre clear of both
    const lost=u=>f>=fl(u);
    hBrick.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[Math.sin(a)*WR,y+.2+v*SH,Math.cos(a)*WR-R*.7];},60,1,{uS:20,hole:d===1?u=>lost(u):null}));
-   hDark.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);const r=lerp(WR,R-1,v);return[Math.sin(a)*r,y+.4,Math.cos(a)*r-R*.7];},40,1,{hole:d===1?u=>lost(u):null}));
+   if(!hotelIx())hDark.push(gridSurface((u,v)=>{const a=lerp(a0,a1,u);const r=lerp(WR,R-1,v);return[Math.sin(a)*r,y+.4,Math.cos(a)*r-R*.7];},40,1,{hole:d===1?u=>lost(u):null}));
    for(let k=0;k<=24;k++){const a=lerp(a0,a1,k/24);if(lost(k/24)){if(k<24)rng();continue;}kput(d>0?'mullR':'mullW',[Math.sin(a)*rf,y+SH/2,Math.cos(a)*rf-R*.7],qEuler(0,a,0),[.5,SH-.8,.5],null);
+    if(k<24&&hotelIx()&&d===3){const am=lerp(a0,a1,(k+.5)/24),bw=rf*(a1-a0)/24-.55,ny=y+.5+(SH-.9)/2;patchOpening([Math.sin(am)*(rf+.05),ny,Math.cos(am)*(rf+.05)-R*.7],qFacing([Math.sin(am),0,Math.cos(am)]),bw,SH-.9,f*31+k);}
     if(k<24){const lit=d>0?rng()<.12:rng()<.7;kput('strip',[Math.sin(a+.035)*(rf-1.5),y+SH-.6,Math.cos(a+.035)*(rf-1.5)-R*.7],qEuler(0,a+.035,0),[4,1,1],lit?WARM:DEAD);}}
    // balcony parapet with planters; the terrace behind (roof of the storey below is the terrace of this one)
    for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;kput(BOXC(d),[Math.sin(a)*(R+1),y+.9,Math.cos(a)*(R+1)-R*.7],qEuler(0,a,0),[6.4,1,.4],null);

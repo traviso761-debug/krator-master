@@ -67,7 +67,7 @@ CHECKS = r"""(neg)=>{const K=window._kit,R=[],tol=1.6;
  R.push({name:'each rock-cut piece\'s back stays within its declared depth and behind the wall\'s face by no more than its embed',ok:rk.length>0&&badB.length===0,
    detail:badB.length?badB.slice(0,4).map(b=>b.key+' v'+b.v+(b.wrapped?' (wrapped '+b.wrapped+')':'')+' minZ '+b.rock.minZ+' (d/2 '+(b.decl.d/2).toFixed(2)+') minN '+b.rock.minN+' (embed '+b.rock.e+')').join('; '):rk.length+' rock-cut builds, '+rk.filter(b=>b.wrapped).length+' wrapped round a stack'});
  const vs=k=>new Set(rk.filter(b=>b.key===k&&!b.wrapped).map(b=>b.v)).size,cov={facade:vs('br_bldg_rock_facade'),tribes:vs('br_bldg_rock_tribe_niche'),shrines:vs('br_bldg_rock_lamp_niche')};
- R.push({name:'the rock-cut kinds: seven gate-tree facades, twelve tribes\' niches, five shrines\' lamp niches, the cavern door and altar',ok:cov.facade===7&&cov.tribes===12&&cov.shrines===5&&vs('br_bldg_rock_cavern_door')===1&&vs('br_bldg_rock_altar')===1,detail:JSON.stringify(cov)});
+ R.push({name:'the rock-cut kinds: seven gate-tree facades, twelve tribes\' niches, five shrines\' lamp niches, the cavern door and altar',ok:cov.facade===7&&cov.tribes===12&&cov.shrines===5&&vs('br_bldg_rock_cavern_door')===2&&vs('br_bldg_rock_altar')===1,detail:JSON.stringify(cov)});
  const rf=['sandstone','navajo'].filter(f=>fams.families.indexOf(f)<0);
  R.push({name:'the rock-cut surfaces attached (sandstone, navajo)',ok:rf.length===0,detail:rf.length?'missing '+rf.join(', '):'both'});
  const ports=built.filter(b=>b.port), off=(a,b)=>Math.max(...[0,1,2].map(i=>Math.max(Math.abs(a.min[i]-b.min[i]),Math.abs(a.max[i]-b.max[i]))));

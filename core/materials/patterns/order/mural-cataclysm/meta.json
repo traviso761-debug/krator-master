@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2172,
+    724
+   ],
+   "seam_after": [
+    1.441,
+    1.051
+   ],
+   "seam_before": [
+    2.886,
+    2.222
+   ],
+   "source_size": [
+    2172,
+    724
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.08,
+   "seam_axes": "none",
+   "size": 2048
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "order/mural-cataclysm",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "order-mural-cataclysm.png",
+  "generator": "ChatGPT image generation, Oct 2026 (the owner's longsong.zip, 2026-10-19: 3:1, kept whole)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, section 2 (Longsong), `patterns/order/mural-cataclysm`",
+  "reuse": "the inner kora's murals round Longsong's Hall of the Founders (one frieze, not repeating); the Order's chronicle anywhere",
+  "sha1": "22270b6ae4f52099028c37b6bf33f8d0ecc9ec4d"
+ }
+}

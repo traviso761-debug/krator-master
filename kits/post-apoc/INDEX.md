@@ -18,9 +18,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | 3 |  |
 | `10-core.js` | 2 | error panel (1); rng + noise (7) |
 | `20-tex.js` | 11 | procedural textures (1) |
-| `22-mat.js` | 8 | materials (1); the palette (culture-neutral) (40); animated materials (shader-side only: geometry a (56) |
+| `22-mat.js` | 8 | materials (1); the palette (culture-neutral) (43); animated materials (shader-side only: geometry a (59) |
 | `29y-pa-matlib.js` | <1 | the material library (core/materials/PLAN.md) (1) |
-| `30-geo.js` | 19 | geometry engine (1) |
+| `30-geo.js` | 20 | geometry engine (1) |
 | `32-cores.js` | 11 | the reclaimed large objects (1) |
 | `34-adds.js` | 23 | additions and recycled-material constructions (1); PLACEHOLDER FLORA (151); TYRE FURNITURE (stools, chairs, tables): stacked (179) |
 | `36-def.js` | 22 | registry, placement, cultural sockets (1); COLLISION: per-building colliders, walkable surf (40); NAV GRID: a coarse 2.5-D walk grid for the whole (112) |
@@ -39,6 +39,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `91-probe.js` | 4 | probe (window._api): everything a headless check (1) |
 | `91f-furnish.js` | 7 | furniture: PLACED from the catalog, not drawn (1) |
 | `91n-night.js` | 10 | NIGHT and dusk, and the invisible front-door mar (1) |
-| `92-camera.js` | 11 | camera, inspector, polygon tool, walk mode (1) |
+| `92-camera.js` | 12 | camera, inspector, polygon tool, walk mode (1) |
 | `93-anim.js` | 9 | ANIMATION: the clock, smoke, light volumes (1) |
 | `99-tail.html` | <1 |  |

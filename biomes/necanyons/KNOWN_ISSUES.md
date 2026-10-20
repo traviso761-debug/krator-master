@@ -12,8 +12,12 @@
       option on `HYPERJUNGLE.build` would change every build that reads the hyperjungle in place.
 - [ ] **No `dress()`**: the hanging gardens are placed from the kit's own seep lines and ledges (KSTACKS records), not
       sampled off a world's structures. A world that hands its own rock as geometry would need one.
-- [ ] **The water is plain** (the creek's ribbon and the rain pools are a Standard material), not `core/atmos`' wave field:
-      neither is open water.
+- [x] **The water is core/water's** (2026-10-19): the creek a flow line (`WATER.flow`, its surface the bed plus its depth
+      every 12 m) drawn as its ribbon, the rain pools still water (`WATER.still`, one mesh with `WATER.stillMaterial`),
+      on core/atmos's clock and sky light (`89w-host-water.js`); 47 makes the records, and draws the old plain ribbon only
+      on a page without core/water. The export's tile (the Bench's rim) holds neither, so its water section is empty there.
+- [ ] **The night has no lamps or life of its own** (`89n-host-night.js` eases the light, the fog and the dome by the world
+      hour; nothing glows): the canyons are wild. Pinnacle Rock adds its fires and lamps on core/atmos.
 - [ ] **Not in Godot yet**: the rock is meshes made from KSTACKS records (exported as `NECANYONS.records()`); a Godot port
       would port `footR`/`topH`/`mesh` (plain maths) or take the meshes.
 - [ ] **Pinnacle Rock does not take the kit yet** (its `PLAN.md` "Biome" row).

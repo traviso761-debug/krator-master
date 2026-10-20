@@ -90,6 +90,7 @@ PALETTE_FILE = '05-palette.js'
 DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js'}   # core/materials/record and the pack (no rnd())
 DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, brfMaterial): no generation of its own
 DETERMINISTIC |= {'57a-interiors.js', '57c-interiors-draw.js'}   # the rooms inside (data; drawing near the camera): no rnd()
+DETERMINISTIC.add('65-mr-trades.js')   # the Voth census table (plain data, no rnd())
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
 # continues. A part opens inside the fragment's IIFE, after its reseed(N): the rules read it joined to the fragment it

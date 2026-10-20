@@ -58,7 +58,7 @@ defBuilding({key:'ie-watchtower',name:'Watch tower (Kautoa)',seed:6403,cut:true,
    isLadder(.8,3.25,0,5.5,{lean:.7});W(.8,5.5,2.62,0,()=>isLadder(0,0,0,ph-5.5,{lean:.38}));});
   /* the platform and the lookout hut */
   isCutFloor(ph);isDeck(5.2,5.2,ph,{col:P('planks')});
-  isWalls(5,5,ph,1.1,'bamboo',P('bamboo'),{front:[],back:[],left:[],right:[]});
+  isWalls(5,5,ph,1.1,'bamboo',P('bamboo'),{front:[{x:.8,w:.9,y:.01,h:1.09}],back:[],left:[],right:[],shut:false});   /* the ladder arrives at the front: the parapet is open there (it was closed all round) */
   for(const [x,z,ry,L] of [[0,2.57,0,5],[0,-2.57,PI,5],[2.57,0,PI/2,5],[-2.57,0,-PI/2,5]])W(x,0,z,ry,()=>box('patWeave',0,ph+.08,0,L-.4,.85,.02,WHITE));
   for(const [sx,sz] of [[-1,-1],[1,-1],[-1,1],[1,1]])isPou(sx*2.42,ph,sz*2.42,2.4,.13,{mk:'carved',n:2,col:cv});
   ieRoofE({hw:3.2,hd:3.2,eY:ph+2.35,skirtH:1.0,skirtS:.55,towerH:4.0,towerS:.5,topSx:.22,topSz:.07,sq:6,th:.22,finial:'moon'});

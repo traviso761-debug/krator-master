@@ -59,6 +59,9 @@ TEX.hCaihua=canvasTex(512,64,(g,w,h)=>{const P={teal:'#2e9488',red:'#b3322a',whi
 MAT.hPlank=hStd({map:TEX.hPlank,roughness:.88});vWorldUV(MAT.hPlank,1);
 MAT.hLattA=hStd({map:TEX.hLattA,alphaTest:.5,roughness:.7});MAT.hLattB=hStd({map:TEX.hLattB,alphaTest:.5,roughness:.7});MAT.hLattC=hStd({map:TEX.hLattC,alphaTest:.5,roughness:.7});
 hWorldUV(MAT.hLattA,2,2);hWorldUV(MAT.hLattB,2,2);hWorldUV(MAT.hLattC,2,2);
+/* the library's four lattice screens (cream bars on black, opaque sheets): the black is keyed out on the map's luminance, so the bars hang in the opening as the alpha-map lattices above do; the procedural alpha map stands in under ?mat=proc */
+function hlLumaKey(m){const p=m.onBeforeCompile;m.onBeforeCompile=function(sh,r){if(p)p.call(this,sh,r);sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n#ifdef USE_MAP\ndiffuseColor.a*=smoothstep(.14,.3,dot(texture2D(map,vUv).rgb,vec3(.3333)));\n#endif');};m.needsUpdate=true;}
+for(const [k,t]of[['hLattG','hLattA'],['hLattF','hLattB'],['hLattL','hLattC'],['hLattT','hLattB']]){MAT[k]=hStd({map:TEX[t],alphaTest:.5,roughness:.7});hWorldUV(MAT[k],1,1);hlLumaKey(MAT[k]);kdef(k,VPLANE,MAT[k]);}
 MAT.hCaihua=hStd({map:TEX.hCaihua,roughness:.7});
 kdef('hPlankB',VBOX,MAT.hPlank);kdef('hLattA',VPLANE,MAT.hLattA);kdef('hLattB',VPLANE,MAT.hLattB);kdef('hLattC',VPLANE,MAT.hLattC);kdef('hCaihua',VPLANE,MAT.hCaihua);
 kdef('hCol',new THREE.CylinderGeometry(1,1,1,10).translate(0,.5,0),MAT.paint);    // lacquered round post, base at y=0
@@ -69,7 +72,7 @@ function hlFrameOf(){const c=VERN.cur;if(c.frame)return c.frame;const w=c.D.tags
  const st=rich?(rng()<.6?'lattice':'mixed'):w==='middle'?(rng()<.45?'mixed':'plank'):(rng()<.85?'plank':'mixed');
  c.frame={st,rich,poor:w==='poor',
   post:hC(vPick(w==='poor'?HFRAME.postPoor:HFRAME.post)),plank:hC(vPick(rich?HFRAME.plankRich:HFRAME.plank)),
-  caihua:rich||(w==='middle'&&rng()<.45),latt:vPick(rich?['hLattB','hLattC','hLattA']:['hLattA','hLattA','hLattB']),
+  caihua:rich||(w==='middle'&&rng()<.45),latt:vPick(rich?['hLattB','hLattC','hLattA','hLattF','hLattL','hLattT']:['hLattA','hLattA','hLattB','hLattG','hLattF']),
   gallery:rich?.55:w==='middle'?.35:.12,carved:rich?.6:w==='middle'?.25:0,galleryUsed:false,
   dutch:rich?.5:w==='middle'?.33:.1,roofC:hC(vPick(HPAL.slate))};
  return c.frame;}

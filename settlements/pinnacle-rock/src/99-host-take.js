@@ -14,6 +14,31 @@ const VIEWS=(function(){const V={},n0=_fin('fin-n0'),e1=_fin('fin-e1');
  V['The farm ring from the forest gate']=[0,12,PR.GATE.z+30,0,140,0];
  V['The gorge under the north rim']=[420,-20,PR.GORGE.z(420),-200,40,-700];
  V['The Inner Wall, north']=[0,_top+30,-560,0,1500,-40000];
+ // the roosts (P2)
+ {const R=ROOST.roosts.find(r=>r.plat==='deck-fin-e1')||ROOST.roosts.find(r=>/deck-fin-e/.test(r.plat));
+  if(R)V['A Quetzal stall on the east fins']=[R.fx+R.ox*34+R.oz*10,R.y+8,R.fz+R.oz*34-R.ox*10,R.fx,R.y+2.5,R.fz];}
+ {const G=ROOST.decks.find(d=>d.id==='deck-garden-2');if(G)V['The Garden\'s roost rings']=[G.x+150,G.y+30,G.z+120,G.x,G.y-10,G.z];}
+ {const L=ROOST.lifts.find(l=>l.id==='lift-north');if(L)V['The beast lift over the gorge']=[L.tip.x+90,L.tip.y-60,L.tip.z-90,L.tip.x,L.tip.y-90,L.tip.z];}
+ {const Rd=(ROOST.roads||[])[0];if(Rd){const m=Rd.pts[Math.floor(Rd.benchEnd*.45)];V['The lift road (cut along the debris slope)']=[m[0]-150,m[1]+70,m[2]-120,m[0],m[1],m[2]];}}
+ {const S=ROOST.stair;if(S&&S.landings.length){const m=S.pts[S.landings[0]];V['The Stair (its upper landing)']=[m[0]-30,m[1]+6,m[2]+45,m[0],m[1]-4,m[2]];}}
+ // THE TOWN (P3a): the Crown from the south-east, the house quarter from the Garden's mesa's foot, the Stair's head
+ if(typeof TOWN!=='undefined'&&TOWN){const H=TOWN.lots.find(l=>l.role==='hall');
+  if(H)V['The Crown (the assembly hall and the market)']=[H.x+150,_top+70,H.z+150,H.x,_top+8,H.z+20];
+  V['The house quarter (west of the Garden)']=[-120,_top+45,170,-260,_top+4,40];
+  const T=TOWN.lots.find(l=>l.role==='customs');if(T)V['The Stair\'s head (the toll house and the caravan market)']=[T.x-10,_top+42,T.z+95,T.x+10,_top+2,T.z-110];}
+ // THE FARMS (P3b): the terraces from over the south-west, a farmhouse among the paddies
+ if(typeof FARMS!=='undefined'&&FARMS){V['The terraces and the palisade (from the south-west)']=[-760,150,1250,-250,0,700];
+  const Hp=FARMS.houses.find(h=>h.v===2);if(Hp)V['A paddy farm by the spring']=[Hp.x+60,Hp.y+28,Hp.z+55,Hp.x,Hp.y+2,Hp.z];}
+ // THE BANDS' GROUNDS (P3c): the Quetzal's on the top by the east fins, a floor camp in its hedge
+ if(typeof CAMPS!=='undefined'&&CAMPS){const Q=CAMPS.grounds.find(g=>g.tribe==='quetzal'&&g.ground==='upper');if(Q)V['The Quetzal band\'s ground (by the east fins)']=[Q.ell.x-110,_top+45,Q.ell.z+90,Q.ell.x,_top+3,Q.ell.z];
+  const T=CAMPS.grounds.find(g=>g.tribe==='threehorn'&&g.ground==='lower');if(T)V['The Threehorn band\'s camp and pasture (in its thorn hedge)']=[T.ell.x+190,90,T.ell.z+260,T.ell.x-120,0,T.ell.z-60];}
+ // THE DEEP ROOT (P3d): the court and its carved face from over its stair; inside the hall, toward the altar
+ if(typeof CAVERN!=='undefined'&&CAVERN){const D=CAVERN,c=D.axis.c,u=D.axis.u,v=D.axis.v,P=(a,b,y)=>[c[0]+u[0]*a+v[0]*b,y,c[1]+u[1]*a+v[1]*b];
+  {const Dr=D.door,tt=[-Dr.n[1],Dr.n[0]];V['The Deep Root\'s door (in the Garden\'s mesa\'s wall)']=[Dr.x+Dr.n[0]*34+tt[0]*10,D.y.top+9,Dr.z+Dr.n[1]*34+tt[1]*10,Dr.x,D.y.top+6,Dr.z];}
+  {const e=P(D.wellA-21,0,D.y.hall+6),t=P(D.wellA+18,0,D.y.hall+4);V['Inside the hall of the Deep Root (the light well and the altar)']=[e[0],e[1],e[2],t[0],t[1],t[2]];}}
+ // THE GARDEN (P3e): its great-houses round the Heart, from over its ramp; the ramp up its west wall
+ if(typeof GARDEN_TOWN!=='undefined'&&GARDEN_TOWN&&GARDEN_B){V['The Garden\'s great-houses (round the Heart)']=[GARDEN_B.x-230,GARDEN_B.top+70,GARDEN_B.z+120,GARDEN_B.x,GARDEN_B.top+8,GARDEN_B.z];
+  const A=(ROOST.ascents||[]).find(a=>a.kind==='ramp');if(A){const m=A.pts[A.pts.length>>1];V['The Garden\'s ramp (up its north and east walls)']=[m[0]-80,m[1]+25,m[2]+60,m[0],m[1]-4,m[2]];}}
  return V;})();
 
 // ---------------------------------------------------------------- the inspector's words: the rock, the zone of the top or
@@ -31,9 +56,35 @@ function describe(hit){const p=hit.point,o=hit.object;
 // ---------------------------------------------------------------- the probe's budgets and the page's checks (verify.py --assert)
 const BUDGET={
  showcase:{tris:16000000,calls:240},
- cls:{pass:7000000,host:1600000},
+ cls:{pass:7000000,host:2600000},   // host: the rock, the roosts and the town (P3a: ~0.6 M, its buildings instanced)
  type:{'necanyons/trees':'pass','necanyons/carnivores':'pass','necanyons/floor':'pass','jungle/hyper':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/far':'pass','jungle/dress':'pass','jungle/fauna':'pass','pinnacle/talus':'pass','host':'host'},
 };
+// ---------------------------------------------------------------- THE DRAWN ROCK, measured by rays
+// What hangs on the rock is checked against the rock AS DRAWN (the merged meshes of 47-host-land.js), not against KSTACKS'
+// outline, which the mesh only approximates (its wall rings are at most 160 segments: on the mesa the drawn face stands up
+// to 12 m inside the outline). near(box) gathers the rock's triangles in a box into one small mesh to cast at;
+// gap(M, x, y, z, dx, dz) the distance along a level direction from the point to the drawn rock (cast from 8 m back:
+// positive in the air, negative in the rock, null when the point is deeper in than 8 m or nothing is there)
+const ROCKRAY=(function(){let meshes=null;const RC=new THREE.Raycaster(),CACHE=new Map();
+ function near(x0,x1,z0,z1,y0,y1){const key=[x0,x1,z0,z1,y0,y1].map(Math.round).join(',');let m=CACHE.get(key);if(m)return m;
+  if(!meshes){meshes=[];scene.traverse(o=>{if(o.isMesh&&o.userData.rock)meshes.push(o);});}
+  const pos=[];meshes.forEach(o=>{const g=o.geometry,P=g.attributes.position,I=g.index,n=I?I.count:P.count;
+   for(let t=0;t<n;t+=3){let inBox=false;const v=[];for(let k=0;k<3;k++){const i=I?I.getX(t+k):t+k,x=P.getX(i),y=P.getY(i),z=P.getZ(i);v.push(x,y,z);
+     if(x>=x0&&x<=x1&&z>=z0&&z<=z1&&y>=y0&&y<=y1)inBox=true;}if(inBox)for(const q of v)pos.push(q);}});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeBoundingSphere();
+  m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));m.updateMatrixWorld(true);CACHE.set(key,m);return m;}
+ function gap(M,x,y,z,dx,dz){const L=Math.hypot(dx,dz)||1;dx/=L;dz/=L;RC.set(new THREE.Vector3(x-dx*8,y,z-dz*8),new THREE.Vector3(dx,0,dz));RC.far=60;
+  const h=RC.intersectObject(M,false)[0];return h?h.distance-8:null;}
+ // the drawn surface under a point (the first rock a ray down from 30 m over it meets), or null
+ function under(M,x,y,z){RC.set(new THREE.Vector3(x,y+30,z),new THREE.Vector3(0,-1,0));RC.far=90;const h=RC.intersectObject(M,false)[0];return h?y+30-h.distance:null;}
+ // in the rock: (dx, dz) points at the rock the point hangs on; a ray from the point itself goes the OTHER way, out from
+ // it, and the first wall it meets (faces seen edge-on, a top's, skipped) faces away when the ray is leaving rock it
+ // started in (the rock's faces wind outward: KSTACKS.mesh), and faces it when the point is in the air (another body's
+ // wall across a cleft). Nothing met: in the air. The point's own position decides, not where a ray starts
+ function inRock(M,x,y,z,dx,dz){const L=Math.hypot(dx,dz)||1;dx=-dx/L;dz=-dz/L;RC.set(new THREE.Vector3(x,y,z),new THREE.Vector3(dx,0,dz));RC.far=60;
+  for(const h of RC.intersectObject(M,false)){const n=h.face&&h.face.normal;if(!n)continue;const d=n.x*dx+n.z*dz;if(Math.abs(d)<.05)continue;if(h.distance>12)return false;return d>0&&h.distance>.1;}   /* a wall over 12 m off is not the rock the point is in (a far body's back face past an edge-on one) */
+  return false;}
+ return {near,gap,under,inRock};})();
 // the plan's numbers (PLAN.md section 1, the settled layout)
 const HCHK={
  // the mesa: 250 m over its south foot, about 1.2 km north-south by 0.8 km
@@ -76,17 +127,327 @@ const HCHK={
  // the land is the scale model's: the page's floor at the knoll's middle and edge against WORLD.H (42)
  model(){const d=[[0,0],[1800,0],[-1800,0],[0,1800],[0,-1500]].map(q=>Math.abs(floorH(q[0],q[1])-(WORLD.H(q[0],q[1])-WORLD_H0)));
   const wall=WORLD.H(0,-48000)-WORLD_H0;
-  return{ok:Math.max(...d)<.01&&wall>2500,detail:'floor = the model ('+Math.max(...d).toFixed(3)+' m off); the Inner Wall '+wall.toFixed(0)+' m over the knoll 48 km north'};}};
+  return{ok:Math.max(...d)<.01&&wall>2500,detail:'floor = the model ('+Math.max(...d).toFixed(3)+' m off); the Inner Wall '+wall.toFixed(0)+' m over the knoll 48 km north'};},
+ // THE ROOSTS (P2). The decks: a stall deck on each Wing's fin (seven) and on the four ringed Garden pinnacles, a ring on
+ // every fin; no rock standing on a deck (its inner edge, its middle, its outer edge) from its own stack or any other
+ decks(D){const bad=[],K=KSTACKS;D.forEach(d=>{const own=ROCK.find(B=>B.id===d.stack),others=ROCK.filter(B=>B!==own&&B.top>d.y-2);
+   for(let i=0;i<d.inner.length;i+=2){const a=d.inner[i],b=d.outer[i],pts=[a,[(a[0]+b[0])/2,(a[1]+b[1])/2],b];
+    for(const p of pts){if(own&&K.topAt([own],p[0],p[1])>d.y-1||others.length&&K.topAt(others,p[0],p[1])>d.y-2){bad.push(d.id);return;}}}});
+  const all=D.filter(d=>d.level==='stall'),st=all.filter(d=>!(d.tier>1)),up=all.length-st.length,wingFins=st.filter(d=>d.group!=='garden').length,garden=st.filter(d=>d.group==='garden').length,fins=new Set(D.filter(d=>/^fin-/.test(d.stack)).map(d=>d.stack)).size;
+  return{ok:!bad.length&&wingFins===7&&garden===4&&fins===10,detail:st.length+' stall decks ('+wingFins+' on the Wings\' fins, '+garden+' in the Garden) and '+up+' upper tiers over them, '+(D.length-all.length)+' lookout rings; rings on '+fins+' fins'+(bad.length?'; rock on '+bad.slice(0,4).join(', '):'')};},
+ // the stalls: every Wing has eight or more, the east fins (the Quetzal's) some; every perch's way out (150 m straight
+ // out from its stall, the stall's width either side) has no rock within 10 m under the deck
+ stalls(R){const K=KSTACKS,bad=[],by={};R.forEach(r=>{by[r.wing]=(by[r.wing]||0)+1;const tx=-r.oz,tz=r.ox;
+   for(let e=4;e<=150&&bad.indexOf(r.id)<0;e+=6)for(const q of [-5.5,0,5.5]){const x=r.fx+r.ox*e+tx*q,z=r.fz+r.oz*e+tz*q;if(K.topAt(ROCK,x,z)>r.y-10){bad.push(r.id);break;}}});
+  const east=R.filter(r=>/deck-fin-e/.test(r.plat)).length;
+  return{ok:!bad.length&&(by.wingclaw||0)>=8&&(by.quetzal||0)>=8&&(by.nightwing||0)>=8&&east>=8,detail:R.length+' stalls: '+Object.keys(by).map(k=>k+' '+by[k]).join(', ')+'; '+east+' on the east fins'+(bad.length?'; blocked: '+bad.slice(0,4).join(', '):'')};},
+ // the bridges: four, each between the stall decks of one group's fins, under 90 m, each end on its deck
+ bridges(B,D){const bad=[];B.forEach(b=>{const da=D.find(d=>d.id===b.a.deck),db=D.find(d=>d.id===b.b.deck);
+   if(!da||!db||da.group!==db.group||da.level!=='stall'||db.level!=='stall'){bad.push(b.id+' joins two groups');return;}
+   if(b.L>90)bad.push(b.id+' '+b.L.toFixed(0)+' m');
+   [[b.a,da],[b.b,db]].forEach(q=>{const p=q[0],d=q[1],a=Math.atan2(p.z-d.z,p.x-d.x),i=Math.round(((a/TAU*PRR.N)%PRR.N+PRR.N)%PRR.N)%PRR.N,r=Math.hypot(p.x-d.x,p.z-d.z);
+    if(r>Math.hypot(d.outer[i][0]-d.x,d.outer[i][1]-d.z)+.5||r<Math.hypot(d.inner[i][0]-d.x,d.inner[i][1]-d.z))bad.push(b.id+' off its deck');});});
+  return{ok:B.length===4&&!bad.length,detail:B.length+' bridges ('+B.map(b=>b.id.replace(/^bridge-/,'')+' '+b.L.toFixed(0)+' m').join(', ')+')'+(bad.length?'; '+bad.join(', '):'')};},
+ // the lifts: the cable hangs 3 m or more clear of the wall all the way down, the landing on the ground under the tip
+ lifts(L){const bad=[];L.forEach(l=>{if(l.clear<3)bad.push(l.id+' '+l.clear.toFixed(1)+' m off the wall');if(Math.abs(l.foot.y-terrainH(l.foot.x,l.foot.z))>1.5)bad.push(l.id+' landing off the ground');});
+  return{ok:L.length===2&&!bad.length,detail:L.map(l=>l.id+': '+l.len.toFixed(0)+' m boom, '+l.clear.toFixed(1)+' m clear, '+(_top-l.foot.y).toFixed(0)+' m drop').join('; ')+(bad.length?'; '+bad.join(', '):'')};},
+ // the Stair: from the top to the fair ground, gated at its head and its foot (owner, 2026-10-19: no middle gate), no flight steeper than 35 degrees, and ON THE ROCK AT
+ // EVERY BED (owner, 2026-10-19: "check it is actually wrapping at each slice of the plateau"; "clips when there's an
+ // overhang"), measured against the DRAWN rock (ROCKRAY), tread by tread: CLEAR (the walkway's middle out of the rock
+ // .5, 1.3 and 2.1 m over the tread: no bed juts through it) and CARRIED (a cut tread's masonry meets the rock 2.7 m
+ // under it, a gallery's bracket 3.6 m under it); every landing's slab clear over its middle and carried at both ends and
+ // its middle; the head down the shoulder never over the drawn ledges. Reported bed by bed
+ stair(S){if(!S)return{ok:false,detail:'no Stair'};const P=S.pts,g=S.ground,end=g[g.length-1],Z=PR.zoneAt(end[0],end[2]).zone,cx=MESA_B.x,cz=MESA_B.z;
+  let steep=0;for(let i=S.shoulder;i+1<P.length;i++){const p=P[i],q=P[i+1],run=Math.hypot(q[0]-p[0],q[2]-p[2]);if(run>.05)steep=Math.max(steep,Math.abs(q[1]-p[1])/run);}
+  let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,y0=1e9,y1=-1e9;P.forEach(p=>{x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[2]);z1=Math.max(z1,p[2]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);});
+  const M=ROCKRAY.near(x0-40,x1+40,z0-40,z1+40,y0-12,y1+6);
+  /* a point dr out from p along its ray from the mesa's middle (dy up), and the gap from there inward to the drawn rock
+     (null: deeper in the rock than 8 m) */
+  const G=(p,dr,dy)=>{const a=Math.atan2(p[2]-cz,p[0]-cx);return ROCKRAY.gap(M,p[0]+Math.cos(a)*dr,p[1]+(dy||0),p[2]+Math.sin(a)*dr,-Math.cos(a),-Math.sin(a));};
+  const clipped=(p,h)=>{const a=Math.atan2(p[2]-cz,p[0]-cx);return ROCKRAY.inRock(M,p[0],p[1]+h,p[2],-Math.cos(a),-Math.sin(a));};   /* the walkway's middle h over the tread in the drawn rock */
+  const offRock=v=>v!=null&&v>.1;
+  const bedOf=y=>MESA_B.beds.findIndex(b=>y>=b.y&&y<b.y+b.h),passed=new Set(),loose=new Set(),why={clip:0,unsupported:0,bracket:0,landing:0,head:0};let worst=0;
+  const flag=(bi,k,v)=>{loose.add(bi);why[k]++;if(v!=null&&isFinite(v))worst=Math.max(worst,Math.abs(v));};
+  const lipR=P[S.shoulder-1][3];for(let i=0;i<S.shoulder;i++){const p=P[i];if(p[3]>lipR-1.6)continue;const u=ROCKRAY.under(M,p[0],p[1],p[2]);if(u!=null&&p[1]>u+.1)flag(bedOf(p[1]),'head',p[1]-u);}   /* the steps at the lip are the first flight's */
+  for(let i=S.shoulder;i<P.length;i++){const p=P[i],k=p[4],bi=bedOf(p[1]-.25);if(bi<0)continue;passed.add(bi);
+   for(const h of [.5,1.3,2.1]){if(clipped(p,h)){flag(bi,'clip',null);break;}}
+   if(!(p[5]>0)){flag(bi,'unsupported',null);continue;}
+   const v=Math.min(...[0,.3].map(dy=>G(p,p[5]-(k%2?.3:.2)-p[3],-(k%2?3.6:2.7)+dy)).map(x=>x==null?-1:x));
+   if(v>.1)flag(bi,k%2?'bracket':'unsupported',v);}
+  (S.slabs||[]).forEach(L=>{const bi=bedOf(L.y-.25),c=[cx+Math.cos(L.a)*(L.ends[1].inner+L.outer)/2,L.y,cz+Math.sin(L.a)*(L.ends[1].inner+L.outer)/2];
+   for(const h of [.5,1.3,2.1]){if(clipped(c,h)){flag(bi,'landing',null);break;}}
+   const f=[cx+Math.cos(L.a)*(L.rf-.2),L.y,cz+Math.sin(L.a)*(L.rf-.2)],vf=Math.min(...[0,.3].map(dy=>G(f,0,-3+dy)).map(x=>x==null?-1:x));if(!(L.rf>0)||vf>.1)flag(bi,'landing',vf);});
+  const ok=Math.abs(P[0][1]-_top)<1.5&&(Z==='fair'||PR.inEll(end[0],end[2],PR.FAIR,15))&&S.gates.length===2&&steep<.7&&!loose.size;
+  return{ok,detail:'from '+P[0][1].toFixed(0)+' m to the '+Z+'; '+S.flights+' flights, '+S.landings.length+' landings, '+S.gates.length+' gates; steepest '+(Math.atan(steep)*180/Math.PI).toFixed(0)+
+   ' degrees; clear and carried on the drawn rock at '+(passed.size-[...loose].filter(b=>passed.has(b)).length)+' of the '+passed.size+' beds it passes'+
+   (loose.size?' (fails at beds '+[...loose].slice(0,8).join(', ')+': '+Object.keys(why).filter(k=>why[k]).map(k=>why[k]+' '+k).join(', ')+'; worst '+worst.toFixed(2)+' m)':'')};},
+ // THE GATES: every gate's posts, open leaves and lintel out of the drawn rock, at the heights they stand; a gate on a
+ // landing with its leaves over the landing's platform (inside its span along the face and between its inner and outer
+ // edges), so they open flat onto it and touch no stair
+ gates(S){if(!S)return{ok:false,detail:'no Stair'};const cx=MESA_B.x,cz=MESA_B.z,bad=[];
+  S.gates.forEach(G=>{const c=Math.cos(G.ry),s=Math.sin(G.ry),L=(a,h,b)=>[G.x+c*a+s*b,G.y+h,G.z-s*a+c*b],hw=G.w/2,pts=[];
+   [-1,1].forEach(q=>{for(const h of [.3,2.4,4.4])pts.push(['post',L(q*(hw+.3),h,0)]);for(const b of [.4,.8,1.6])for(const h of [.3,1.8,3.4])pts.push(['leaf',L(q*(hw+.2)-q*.1*b/1.6,h,b)]);});
+   pts.push(['lintel',L(-hw-.9,4.4,0)],['lintel',L(hw+.9,4.4,0)]);
+   const M=ROCKRAY.near(G.x-30,G.x+30,G.z-30,G.z+30,G.y-10,G.y+10);
+   pts.forEach(([what,p])=>{const dx=cx-p[0],dz=cz-p[2];if(ROCKRAY.inRock(M,p[0],p[1],p[2],dx,dz))bad.push(G.id+' '+what+' in the rock');});
+   if(G.landing!=null){const Ld=S.slabs[G.landing];if(!Ld){bad.push(G.id+' no landing');return;}const E=Ld.ends,a0=Math.min(E[0].a,E[E.length-1].a),a1=Math.max(E[0].a,E[E.length-1].a),rin=Math.max(...E.map(e=>e.inner));
+    pts.filter(q=>q[0]==='leaf').forEach(([w,p])=>{const a=Math.atan2(p[2]-cz,p[0]-cx),r=Math.hypot(p[0]-cx,p[2]-cz);if(a<a0-.001||a>a1+.001||r<rin-.05||r>Ld.outer+.05)bad.push(G.id+' leaf off its landing');});}});
+  const u=[...new Set(bad)];return{ok:!u.length,detail:S.gates.length+' gates'+(u.length?': '+u.slice(0,6).join(', '):', clear of the rock')};},
+ // THE LIFT ROAD: from the beast lift's landing to the palisade (the north-west gate), no steeper than 1 in 7 where it is
+ // a road, through no band's ground nor the pond, and cleared: no plant of the rock's, nor anything of the forest within 6 m of the ground, on it (a crown beside it may overhang)
+ road(Rd,L){if(!Rd||!L)return{ok:false,detail:'no lift road'};const P=Rd.pts,s=P[0],e=P[P.length-1];let g=0,through=null;
+  for(let i=4;i<P.length;i++){const a=P[i-1],b=P[i],run=Math.hypot(b[0]-a[0],b[2]-a[2]);if(run>.5)g=Math.max(g,Math.abs(b[1]-a[1])/run);}
+  P.forEach(p=>{const z=PR.zoneAt(p[0],p[2]).zone;if(!through&&(z==='pasture'||z==='camp'||z==='hedged'||z==='pond'))through=z;});
+  const atGate=PR.PALISADE.some(q=>Math.hypot(q[0]-e[0],q[1]-e[2])<2),onIt=(x,z)=>{const wa=PR.wayAt(x,z,2);return wa&&wa.d<1;};
+  const trees=(NECANYONS.TREES||[]).filter(t=>onIt(t.x,t.z)).length,forest=_forestPts(true).filter(p=>onIt(p[0],p[1])).length;
+  return{ok:Math.hypot(s[0]-L.foot.x,s[2]-L.foot.z)<8&&atGate&&g<=1/7&&!through&&!trees&&!forest,
+   detail:Math.round(P.length*3)+' m from the landing ('+s[1].toFixed(0)+' m) to the north-west gate ('+e[1].toFixed(0)+' m)'+(atGate?'':' (NOT at the palisade)')+', '+(Rd.benchEnd*3)+' m of it a bench on the slope; steepest 1 in '+(1/Math.max(g,1e-6)).toFixed(1)+
+    (through?'; through the '+through:'')+'; '+trees+' plants and '+forest+' forest points on it'};},
+ // the climbs: every deck has one, from the ground at its stack's foot (or the deck under it) to its own height, and each
+ // ATTACHED, measured against the DRAWN rock (ROCKRAY): every tread's inner edge within .3 m of the drawn wall, every
+ // bracket's foot on or in it; every deck's struts find rock under it
+ // opt.span (the ascents, P3e): a run of up to that many treads off the drawn rock is a span across a gully or a notch of a
+ // weathered wall, carried by its brackets either side, and not counted; opt.brackets: that many brackets allowed off it
+ climbs(C,D,opt){const SPAN=opt&&opt.span||0,bad=[];let loose=0,all=0,feet=0,feetBad=0,worst=0,clip=0,spans=0;D.forEach(d=>{const c=C.find(c=>c.deck===d.id);if(!c){bad.push(d.id+' no climb');return;}const P=c.pts,last=P[P.length-1],S=ROCK.find(B=>B.id===d.stack);
+   if(Math.abs(last[1]-d.y)>.05)bad.push(d.id+' short');let st=0;for(let i=0;i+1<P.length;i++){const run=Math.hypot(P[i+1][0]-P[i][0],P[i+1][2]-P[i][2]);if(run>.05)st=Math.max(st,(P[i+1][1]-P[i][1])/run);}if(st>.66)bad.push(d.id+' steep');
+   const M=ROCKRAY.near(S.x-S.R-10,S.x+S.R+10,S.z-S.R-10,S.z+S.R+10,S.y0-5,S.top+5);let l=0;const offs=[];
+   P.forEach((p,i)=>{const q=P[Math.min(P.length-1,i+1)],r=P[Math.max(0,i-1)],tx=q[0]-r[0],tz=q[2]-r[2],tl=Math.hypot(tx,tz)||1;
+    /* the inward side: the side of the tread nearer the stack's middle at that height */
+    const cc=KSTACKS.ring(S,Math.min(p[1],S.top-.5),24);let mx=S.x,mz=S.z;if(cc){mx=0;mz=0;cc.forEach(v=>{mx+=v[0];mz+=v[1];});mx/=cc.length;mz/=cc.length;}
+    let nx=tz/tl,nz=-tx/tl;if(nx*(mx-p[0])+nz*(mz-p[2])<0){nx=-nx;nz=-nz;}
+    const gg=[-.2,-.5].map(dy=>ROCKRAY.gap(M,p[0]+nx*.9,p[1]+dy,p[2]+nz*.9,nx,nz)).map(v=>v==null?-1:v),gm=Math.min(...gg);all++;   /* the nearer of two heights: a ray through the seam between two beds' rows is not a gap */if(gm>.3&&!(i===0&&c.from!=='foot')){offs.push([i,gm]);}   /* a lookout's climb starts on the stall deck's walkway */
+    /* never under rock: the tread's middle 1 m and 1.8 m over it out of the drawn rock */
+    for(const h of [1,1.8]){if(ROCKRAY.inRock(M,p[0],p[1]+h,p[2],nx,nz)){clip++;const cl=bad._cl||(bad._cl={});if(!cl[d.id]&&bad.length<10){cl[d.id]=1;bad.push(d.id+' tread '+i+' under rock');}break;}}
+    if(p.length>=6){feet++;const gf=Math.min(...[0,.3].map(dy=>ROCKRAY.gap(M,p[3],p[4]+dy,p[5],mx-p[3],mz-p[5])).map(v=>v==null?-1:v));if(gf>.1)feetBad++;}});
+   {let run=[];const flush=()=>{if(!run.length)return;if(run.length>SPAN){l+=run.length;loose+=run.length;run.forEach(o=>worst=Math.max(worst,o[1]));}else spans++;run=[];};
+    offs.forEach(o=>{if(run.length&&o[0]!==run[run.length-1][0]+1)flush();run.push(o);});flush();}
+   if(l)bad.push(d.id+' off the rock at '+l+' of '+P.length+' treads');
+   const fe=(d.feet||[]).filter((f,i)=>i%3===0&&!(f[3]>0)).length;if(fe)bad.push(d.id+' '+fe+' struts on no rock');});
+  if(feetBad>(opt&&opt.brackets||0))bad.push(feetBad+' climb brackets off the rock');if(clip)bad.push(clip+' climb treads under rock');
+  return{ok:!bad.length,detail:C.length+' climbs for '+D.length+' decks, '+C.reduce((s,c)=>s+c.pts.length,0)+' steps, '+(all-loose)+' of '+all+' against the drawn rock'+(loose?' (worst '+worst.toFixed(2)+' m off)':'')+(spans?', '+spans+' short spans':'')+', '+(feet-feetBad)+' of '+feet+' brackets in it'+(bad.length?'; '+bad.slice(0,4).join(', '):'')};},
+ // THE TOWN (P3a: core/city on the top). Every building on the cap rock, 12 m in from its rim and off the rock standing
+ // on it (each footprint's corners and edges' middles under the mesa's own top: KSTACKS.at, the highest bed there); no two
+ // footprints overlapping (oriented boxes, a separating axis); none reaching a street's carriageway (the exact-streets
+ // rule); none in the Deep Root precinct or a band's ground (P3c, P3d), nor within 6 m of a lift's head, the Stair's head
+ // gate or a climb's start; standing on the ground (within 2.5 m of the cap); the landmarks the plan names (the hall, the
+ // shrine, each Wing's barracks, the toll house, the beast stage); and every trade the town carries with a building
+ town(T){if(!T)return{ok:false,detail:'no town'};const L=T.lots,K=KSTACKS,KL=KCITY.lib,bad=[],TP=PR.TOP;
+  const box=l=>{const c=Math.cos(l.ry),s=Math.sin(l.ry),u=[c,-s],v=[s,c],hw=l.w/2,hd=l.d/2;return {c:[l.x,l.z],u,v,hw,hd,C:[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[l.x+u[0]*hw*q[0]+v[0]*hd*q[1],l.z+u[1]*hw*q[0]+v[1]*hd*q[1]])};};
+  const B=L.map(box),ell=(E,x,z,p)=>((x-E.x)/(E.rx+p))**2+((z-E.z)/(E.rz+p))**2<1;
+  // apart, or touching within 15 cm (core/city's clash counts two boxes that touch as apart, and a float's worth more)
+  const sat=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const pr=P=>P.map(q=>q[0]*ax[0]+q[1]*ax[1]),A=pr(a.C),Bq=pr(b.C);if(Math.max(...A)<=Math.min(...Bq)+.15||Math.max(...Bq)<=Math.min(...A)+.15)return false;}return true;};
+  // the grid the overlap test buckets by (20 m)
+  const G=new Map();B.forEach((b,i)=>{const r=Math.hypot(b.hw,b.hd);for(let gx=Math.floor((b.c[0]-r)/20);gx<=Math.floor((b.c[0]+r)/20);gx++)for(let gz=Math.floor((b.c[1]-r)/20);gz<=Math.floor((b.c[1]+r)/20);gz++){const k=gx+','+gz;(G.get(k)||G.set(k,[]).get(k)).push(i);}});
+  let over=0,street=0,cap=0,res=0,nh=0,ground=0;const seen=new Set();
+  G.forEach(list=>{for(let a=0;a<list.length;a++)for(let b=a+1;b<list.length;b++){const i=list[a],j=list[b],k=i<j?i+'|'+j:j+'|'+i;if(seen.has(k))continue;seen.add(k);
+   if(sat(B[i],B[j])){over++;if(bad.length<8)bad.push('overlap '+(L[i].name||L[i].key)+' / '+(L[j].name||L[j].key));}}});
+  const W=T.ways.map(w=>{const P=w.closed?w.pts.concat([w.pts[0]]):w.pts;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;P.forEach(q=>{x0=Math.min(x0,q[0]);x1=Math.max(x1,q[0]);z0=Math.min(z0,q[1]);z1=Math.max(z1,q[1]);});return {P,hw:w.w/2,x0,x1,z0,z1,tag:w.tag,cls:w.cls};});
+  const heads=[];ROOST.lifts.forEach(l=>[l.root,l.capstan].forEach(q=>{if(q)heads.push([q.x,q.z]);}));ROOST.stair.gates.forEach(g=>{if(Math.abs(g.y-_top)<3)heads.push([g.x,g.z]);});
+  ROOST.climbs.forEach(c=>{const q=c.pts[0];if(Math.abs(q[1]-_top)<3)heads.push([q[0],q[2]]);});
+  B.forEach((b,i)=>{const l=L[i],r=Math.hypot(b.hw,b.hd),nm=l.name||l.key;
+   // the carriageway: a square's own stalls and hall stand on their square, not a street
+   for(const w of W){if(b.c[0]<w.x0-r-w.hw||b.c[0]>w.x1+r+w.hw||b.c[1]<w.z0-r-w.hw||b.c[1]>w.z1+r+w.hw)continue;let d=1e9;for(let k=1;k<w.P.length;k++)d=Math.min(d,KL.polySegDist(b.C,w.P[k-1],w.P[k]));
+    /* an interior alley (core/city's infill, 2.6 m) may run a quarter metre under an eave: core/city's exact rule holds for
+       the streets it lays before the infill (2026-10-19: one great-house 0.2 m over one) */
+    if(d<w.hw-(w.cls==='alley'?.25:.05)){street++;if(bad.length<8)bad.push(nm+' on '+(w.tag||'a street')+' ('+(w.hw-d).toFixed(1)+' m)');break;}}
+   const pts=b.C.concat(b.C.map((q,k)=>{const n=b.C[(k+1)%4];return[(q[0]+n[0])/2,(q[1]+n[1])/2];}));
+   if(pts.some(q=>{const a=K.at(ROCK,q[0],q[1]);return !a||a.S!==MESA_B||a.d>-PRT.RIM+.5||a.top<_top-5;})){cap++;if(bad.length<8)bad.push(nm+' off the cap (the rim band or the rock)');}
+   if(pts.some(q=>ell(TP.precinct,q[0],q[1],0)||TP.camps.some(c=>ell(c,q[0],q[1],0)))){res++;if(bad.length<8)bad.push(nm+' in a reserved ground');}
+   if(heads.some(hq=>KL.polySegDist(b.C,hq,hq)<6)){nh++;if(bad.length<8)bad.push(nm+' on a head');}
+   if(Math.abs(l.y-T.h(l.x,l.z))>2.5){ground++;if(bad.length<8)bad.push(nm+' '+(l.y-T.h(l.x,l.z)).toFixed(1)+' m off the ground');}});
+  const need=['hall','shrine','customs','stage'],roles=new Set(L.map(l=>l.role));need.forEach(r=>{if(!roles.has(r))bad.push('no '+r);});
+  ['wingclaw','quetzal','nightwing'].forEach(w=>{if(!L.some(l=>l.role==='barracks'&&l.name&&l.name.indexOf(w)>=0))bad.push('no '+w+' barracks');});
+  const tr=PRT.trades(CAT.TRADES,L),miss=tr.filter(t=>!t.n).map(t=>t.trade);if(miss.length)bad.push('no building for '+miss.slice(0,4).join(', '));
+  const lots=L.filter(l=>!l.landmark).length,ok=!bad.length&&lots>=400;
+  return{ok,detail:L.length+' buildings ('+(L.length-lots)+' landmarks), '+T.ways.length+' streets; '+tr.length+' trades carried'+
+   (bad.length?': '+bad.slice(0,8).join('; '):'; no overlap, none on a street, off the rim band and the rock, the grounds and the heads clear')+(lots<400?'; only '+lots+' lots':'')};},
+ // THE FARMS (P3b): six terraces of field cells inside the palisade, no two cells overlapping, every cell on farmland
+ // (corners, edges' middles, centre: PR.zoneAt 'farms', so off the road, the fair ground, the ways, the pond and the
+ // hedges), off the debris slope and the farm tracks; the orchards on the two outer terraces and only there; the paddies
+ // by the spring; twelve farmhouses, each wholly in its cell; the palisade unbroken from where the debris slope rises at
+ // one end to the other but at its gates and posts; the forest gate on the road and the north-west gate where the lift
+ // road comes in; a track from each other gate in to the terrace way
+ farms(F){if(!F)return{ok:false,detail:'no farms'};const bad=[],C=F.cells,SP=PR.SPRING;
+  const sat=(A,B)=>{const ax=P=>P.map((a,j)=>{const b=P[(j+1)%P.length];return[-(b[1]-a[1]),b[0]-a[0]];});for(const n of ax(A).concat(ax(B))){const pr=P=>P.map(q=>q[0]*n[0]+q[1]*n[1]),a=pr(A),b=pr(B);
+    if(Math.max(...a)<=Math.min(...b)+.05||Math.max(...b)<=Math.min(...a)+.05)return false;}return true;};
+  const G=new Map();C.forEach((c,i)=>{const k=Math.floor(c.x/60)+','+Math.floor(c.z/60);(G.get(k)||G.set(k,[]).get(k)).push(i);});
+  let over=0;C.forEach((c,i)=>{const gx=Math.floor(c.x/60),gz=Math.floor(c.z/60);for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)(G.get((gx+a)+','+(gz+b))||[]).forEach(j=>{if(j>i&&sat(c.corners,C[j].corners)){over++;if(bad.length<8)bad.push('cells overlap: '+c.id+' / '+C[j].id);}});});
+  const trackD=q=>{let d=1e9;F.tracks.forEach(T=>{for(let i=1;i<T.pts.length;i++){const a=T.pts[i-1],b=T.pts[i],dx=b[0]-a[0],dz=b[1]-a[1],L2=Math.max(1e-9,dx*dx+dz*dz),t=Math.max(0,Math.min(1,((q[0]-a[0])*dx+(q[1]-a[1])*dz)/L2));d=Math.min(d,Math.hypot(q[0]-a[0]-dx*t,q[1]-a[1]-dz*t)-T.w/2);}});return d;};
+  let off=0;C.forEach(c=>{const Q=c.corners,pts=Q.concat(Q.map((q,j)=>[(q[0]+Q[(j+1)%4][0])/2,(q[1]+Q[(j+1)%4][1])/2]),[[c.x,c.z]]);
+   const why=pts.map(q=>{const z=PR.zoneAt(q[0],q[1]).zone;return z!=='farms'?'on the '+z:groundH(q[0],q[1])-floorH(q[0],q[1])>.6?'on the debris slope':trackD(q)<.5?'on a track':null;}).find(Boolean);
+   if(why){off++;if(bad.length<8)bad.push(c.id+' '+why);}});
+  const per=[0,0,0,0,0,0];C.forEach(c=>per[c.k]++);per.forEach((n,k)=>{if(n<20)bad.push('terrace '+(k+1)+' has '+n+' cells');});
+  C.forEach(c=>{if((c.kind==='orchard')!==(c.k>=4)&&c.kind!=='farmstead'&&bad.length<12)bad.push(c.id+(c.kind==='orchard'?' an orchard on terrace '+(c.k+1):' not an orchard on terrace '+(c.k+1)));});
+  const pad=C.filter(c=>c.kind==='paddy');if(pad.length<10)bad.push('only '+pad.length+' paddies');pad.forEach(c=>{if(Math.hypot(c.x-SP.x,c.z-SP.z)>300&&bad.length<12)bad.push(c.id+' a paddy '+Math.round(Math.hypot(c.x-SP.x,c.z-SP.z))+' m from the spring');});
+  // the farmhouses: twelve, each wholly in its cell (its footprint's corners inside the cell's quad), none overlapping
+  const inQ=(q,Q)=>{let sg=0;for(let j=0;j<4;j++){const a=Q[j],b=Q[(j+1)%4],cr=(b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]);if(Math.abs(cr)<1e-6)continue;if(!sg)sg=Math.sign(cr);else if(Math.sign(cr)!==sg)return false;}return true;};
+  const fp=h=>{const u=[Math.cos(h.ry),-Math.sin(h.ry)],v=[Math.sin(h.ry),Math.cos(h.ry)];return[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[h.x+u[0]*h.w/2*q[0]+v[0]*h.d/2*q[1],h.z+u[1]*h.w/2*q[0]+v[1]*h.d/2*q[1]]);};
+  if(F.houses.length!==12)bad.push(F.houses.length+' farmhouses');
+  F.houses.forEach((h,i)=>{const c=C.find(c=>c.id===h.cell);if(!c||!fp(h).every(q=>inQ(q,c.corners)))bad.push(h.id+' not wholly in its cell');
+   F.houses.forEach((h2,j)=>{if(j>i&&sat(fp(h),fp(h2)))bad.push(h.id+' overlaps '+h2.id);});});
+  // the palisade: its runs and pieces cover the line from end to end, no gap over 2 m
+  const P=F.palisade,iv=P.runs.map(r=>[r.s0,r.s1]).concat(P.gates.concat(P.posts).map(g=>[g.s-g.w/2,g.s+g.w/2])).sort((a,b)=>a[0]-b[0]);
+  let reach=P.s0,gap=0;iv.forEach(q=>{if(q[0]>reach+2){gap++;if(bad.length<12)bad.push('a gap in the palisade at '+Math.round(reach)+'-'+Math.round(q[0])+' m');}reach=Math.max(reach,q[1]);});
+  if(reach<P.s1-2)bad.push('the palisade stops '+Math.round(P.s1-reach)+' m short');
+  const fg=P.gates.find(g=>g.road),nw=P.gates.find(g=>/north-west/.test(g.name));
+  if(!fg||Math.hypot(fg.x-PR.GATE.x,fg.z-PR.GATE.z)>8)bad.push('no forest gate on the road');
+  const Rd=(ROOST.roads||[])[0],re=Rd?Rd.pts[Rd.pts.length-1]:null;if(!nw||!re||Math.hypot(nw.x-re[0],nw.z-re[2])>10)bad.push('no north-west gate where the lift road comes in');
+  P.gates.filter(g=>!g.road).forEach(g=>{if(!F.tracks.some(T=>T.pts.some(q=>Math.hypot(q[0]-g.x,q[1]-g.z)<14)))bad.push('no track to '+g.name);});
+  if(!F.tracks.some(T=>/terrace way/.test(T.name)))bad.push('no terrace way');
+  const by={};C.forEach(c=>by[c.kind]=(by[c.kind]||0)+1);
+  return{ok:!bad.length,detail:C.length+' cells on '+per.filter(Boolean).length+' terraces ('+Object.keys(by).map(k=>by[k]+' '+k).join(', ')+'), '+F.houses.length+' farmhouses, '+P.gates.length+' gates, '+P.posts.length+' posts'+
+   (bad.length?': '+bad.slice(0,8).join('; '):'; no overlap, all on farmland, the palisade unbroken')};},
+ // THE BANDS' GROUNDS (P3c): a ground for each tribe as the kit's table has it (BR_CAMP: the flyers' only on the top, the
+ // Dragonfly's, the Spider's and the Mammoth's only on the floor), every tent and pen it names pitched, no two overlapping,
+ // each inside its ground (the top's on the cap 12 m in from the rim and off the rock; the floor's tents in the camp,
+ // its pens in the hedge), none on a town lot or street; every hedge closed (its pieces end to end) with its two gates,
+ // every pasture's fence with its gate; a banner on every ground; a track from every floor camp to a palisade gate,
+ // through no farm and no other band's hedge
+ camps(Cm){if(!Cm)return{ok:false,detail:'no camps'};const bad=[],G=Cm.grounds,K=KSTACKS,TOP=_top,ON=ROCK.filter(B=>B!==MESA_B&&Math.abs(B.y0-(TOP-1))<4);
+  const want=[];CAT.CAMP&&Object.keys(CAT.CAMP).forEach(t=>Object.keys(CAT.CAMP[t].grounds).forEach(gr=>want.push(t+'/'+gr)));
+  const have=G.map(g=>g.tribe+'/'+g.ground);want.forEach(w=>{if(have.indexOf(w)<0)bad.push('no '+w+' ground');});have.forEach(h=>{if(want.indexOf(h)<0)bad.push(h+': not in BR_CAMP');});
+  const box=it=>{const c=Math.cos(it.ry),sn=Math.sin(it.ry),u=[c,-sn],v=[sn,c];return {u,v,C:[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[it.x+u[0]*it.w/2*q[0]+v[0]*it.d/2*q[1],it.z+u[1]*it.w/2*q[0]+v[1]*it.d/2*q[1]])};};
+  const sat=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const pr=P=>P.map(q=>q[0]*ax[0]+q[1]*ax[1]),A=pr(a.C),B2=pr(b.C);if(Math.max(...A)<=Math.min(...B2)+.15||Math.max(...B2)<=Math.min(...A)+.15)return false;}return true;};
+  const all=[];G.forEach(g=>g.items.forEach(it=>all.push({g,it,b:box(it)})));
+  const inE=(E,q,k)=>((q[0]-E.x)/(E.rx*k))**2+((q[1]-E.z)/(E.rz*k))**2<=1;
+  const tl=TOWN?TOWN.lots.map(box):[];
+  G.forEach(g=>{const T=CAT.CAMP[g.tribe],gr=T&&T.grounds[g.ground];if(gr){const n=gr.tents.concat(gr.pens).reduce((s,e)=>s+e.n,0);if(g.items.length!==n)bad.push(g.tribe+'/'+g.ground+' '+g.items.length+' of '+n+' pitched');
+    if(!g.items.some(it=>/chief/.test(it.key)))bad.push(g.tribe+'/'+g.ground+' no chief');}
+   if(!g.banner)bad.push(g.tribe+'/'+g.ground+' no banner');});
+  for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++){const A=all[i],B=all[j];if(Math.hypot(A.it.x-B.it.x,A.it.z-B.it.z)>60)continue;if(sat(A.b,B.b)&&bad.length<10)bad.push('overlap: '+A.it.name+' / '+B.it.name);}
+  all.forEach(({g,it,b})=>{const pts=b.C.concat([[it.x,it.z]]);
+   if(g.ground==='upper'){if(pts.some(q=>{const a=K.at(ROCK,q[0],q[1]);if(!a||a.S!==MESA_B||a.d>-11.5||a.top<TOP-5)return true;const f=K.foot(ON,q[0],q[1]);return f&&f.d<5.5;})&&bad.length<12)bad.push(it.name+' off the cap or on the rock');
+    if(!pts.every(q=>inE(g.ell,q,1.02))&&bad.length<12)bad.push(it.name+' out of its ground');
+    if(tl.some(t=>Math.hypot(t.C[0][0]-it.x,t.C[0][1]-it.z)<60&&sat(t,b))&&bad.length<12)bad.push(it.name+' on a town lot');}
+   else{const i2=PR.CAMPS.findIndex(c=>c.tribe===g.tribe),H=PR.HEDGES[i2];if(H&&!pts.every(q=>PR.inPoly(q[0],q[1],H.pts))&&bad.length<12)bad.push(it.name+' out of its hedge');}});
+  if(TOWN){const W=TOWN.ways;all.filter(a=>a.g.ground==='upper').forEach(({it,b})=>{for(const w of W){const P=w.closed?w.pts.concat([w.pts[0]]):w.pts;for(let k=1;k<P.length;k++){if(KCITY.lib.polySegDist(b.C,P[k-1],P[k])<w.w/2-.05){if(bad.length<12)bad.push(it.name+' on '+(w.tag||'a street'));return;}}}});}
+  // the hedges and fences: closed, with their gates
+  G.filter(g=>g.ground==='lower').forEach(g=>{[['hedge',g.hedge,2],['fence',g.fence,1]].forEach(([nm,P,ng])=>{if(!P.length){if(nm==='hedge')bad.push(g.tribe+' no hedge');return;}
+    const ends=P.map(p=>{const ux=Math.cos(p.ry),uz=-Math.sin(p.ry);return [[p.x-ux*p.span/2,p.z-uz*p.span/2],[p.x+ux*p.span/2,p.z+uz*p.span/2]];});
+    let gap=0;ends.forEach((e,k)=>{const n=ends[(k+1)%ends.length];if(Math.hypot(e[1][0]-n[0][0],e[1][1]-n[0][1])>.5)gap++;});
+    if(gap)bad.push(g.tribe+' '+nm+': '+gap+' gaps');const gs=P.filter(p=>p.v===1).length;if(gs!==ng)bad.push(g.tribe+' '+nm+': '+gs+' gates (want '+ng+')');});
+   if(!g.track)bad.push(g.tribe+' no track');else{const P=g.track.pts;const e0=P[P.length-1];if(P.some(q=>Math.hypot(q[0]-e0[0],q[1]-e0[1])>4&&PR.inFarms(q[0],q[1])))bad.push(g.track.name+' through the farms');
+    const end=P[P.length-1];if(!FARMS||!FARMS.palisade.gates.some(G2=>Math.hypot(G2.x-end[0],G2.z-end[1])<3))bad.push(g.track.name+' does not reach a gate');
+    PR.HEDGES.forEach((H,k)=>{if(PR.CAMPS[k].tribe===g.tribe)return;if(P.some(q=>PR.inPoly(q[0],q[1],H.pts))&&bad.length<14)bad.push(g.track.name+' through the '+PR.CAMPS[k].tribe+' hedge');});}});
+  const up=G.filter(g=>g.ground==='upper').length,lo=G.length-up;
+  return{ok:!bad.length,detail:G.length+' grounds ('+up+' on the top, '+lo+' on the floor), '+all.length+' tents and pens'+(bad.length?': '+bad.slice(0,8).join('; '):'; every one pitched, apart, in its ground; the hedges closed, the gates and tracks there')};},
+ // THE DEEP ROOT (P3d): the court sunk 8 m and open to the sky, its stair cut down into it; the passage of the tribes
+ // joining it to the hall (open all the way along); the hall 44 by 26 m and 15 m to its crown, 2 m of rock or more over
+ // it (but at the light well); the light well open from the hall to the sky; no void open to the sky outside the two
+ // openings (KCAVERN's sky check); the cap drawn open over the court (a ray down meets the court's floor, not the cap);
+ // the carved face, the twelve tribes' niches (one of each), the five shrines' lamp niches, the altar; each piece's
+ // back in the rock and its front in the void; twelve standing stones round the well with nothing built inside
+ cavern(D){if(!D)return{ok:false,detail:'no cavern'};const C=D.C,bad=[],top=D.y.top,u=D.axis.u,v=D.axis.v,c=D.axis.c,P=(a,b)=>[c[0]+u[0]*a+v[0]*b,c[1]+u[1]*a+v[1]*b];
+  // THE DOOR in the Garden's mesa's wall (owner, 2026-10-19): the carved face there (its open variant), and the drawn wall
+  // open behind its doorway: a ray in from 4 m outside, 2 m over the sill, runs 10 m or more before it meets rock
+  const Dr=D.door,dp=D.dress.find(d=>d.key==='br_bldg_rock_cavern_door');if(!dp||dp.v!==1)bad.push('no open carved door');
+  {const ms=[];scene.traverse(o=>{if(o.isMesh&&o.userData.rock)ms.push(o);});const RC=new THREE.Raycaster(new THREE.Vector3(Dr.x+Dr.n[0]*4,D.y.door+2.2,Dr.z+Dr.n[1]*4),new THREE.Vector3(-Dr.n[0],0,-Dr.n[1]),0,60);
+   const h=RC.intersectObjects(ms,false)[0];if(h&&h.distance<14)bad.push('the wall shut behind the door (rock '+(h.distance-4).toFixed(1)+' m in)');}
+  // THE PASSAGE: open all its way (every metre of every leg, 1.6 m over its floor, in a void), down and round one and a
+  // half turns, and where it runs under the first mesa's top, 2 m of rock or more over it
+  const PP=D.path;let shut=null,turn=0,thinP=0;
+  for(let i=1;i<PP.length;i++){const a=PP[i-1],b=PP[i],L=Math.hypot(b[0]-a[0],b[2]-a[2]),n=Math.max(1,Math.ceil(L));
+   for(let k=0;k<n&&!shut;k++){const t=(k+.5)/n,x=a[0]+(b[0]-a[0])*t,z=a[2]+(b[2]-a[2])*t,y=a[1]+(b[1]-a[1])*t;if(C.voidSD(x,y+1.6,z)>-.3){shut='leg '+i+' at '+Math.round(t*100)+'%';break;}
+    const on=KSTACKS.at([MESA_B,GARDEN_B],x,z);if(on&&on.S===MESA_B&&Math.hypot(x-D.well.c[0],z-D.well.c[1])>D.well.r1+2){const ce=C.ceilingAt(x,z,y+1);if(ce!==null&&top-ce<2)thinP++;}}
+   if(i>=2&&i<PP.length-1){const p0=PP[i-2],h0=Math.atan2(a[2]-p0[2],a[0]-p0[0]),h1=Math.atan2(b[2]-a[2],b[0]-a[0]);let d=h1-h0;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;turn+=d;}}
+  if(shut)bad.push('the passage shut ('+shut+')');if(Math.abs(turn)<2.5*Math.PI)bad.push('the passage turns '+(Math.abs(turn)/(2*Math.PI)).toFixed(2)+' times');
+  if(thinP)bad.push(thinP+' places with under 2 m of rock over the passage');
+  if(PP[0][1]<top-.5||Math.abs(PP[PP.length-1][1]-D.hall.y)>.01)bad.push('the passage does not run from the door\'s sill to the hall\'s floor');
+  // nothing across the door's face: no way up passes within 12 m of it below the carved face's top and 4 m over
+  {const asc=(ROOST.ascents||[]).filter(A=>A.pts.some(q=>q[1]<top+19&&Math.hypot(q[0]-Dr.x,q[2]-Dr.z)<12));if(asc.length)bad.push((asc[0].name||asc[0].id)+' across the door');}
+  const hl=D.hall,H=hl.h+hl.rise;if(Math.abs(H-15)>.5)bad.push('the hall '+H+' m high');
+  {const xs=hl.poly.map(q=>q[0]),zs=hl.poly.map(q=>q[1]);const L=Math.hypot(hl.poly[1][0]-hl.poly[0][0],hl.poly[1][1]-hl.poly[0][1]),Wd=Math.hypot(hl.poly[3][0]-hl.poly[0][0],hl.poly[3][1]-hl.poly[0][1]);
+   if(Math.abs(L-44)>1||Math.abs(Wd-26)>1)bad.push('the hall '+L.toFixed(0)+' by '+Wd.toFixed(0)+' m');}
+  // the rock over the hall: the cap's top over the hall's vault, 2 m or more, every 3 m (the well's ring left out)
+  let thin=0;
+  {const h0=(hl.poly[0][0]-c[0])*u[0]+(hl.poly[0][1]-c[1])*u[1];for(let a=h0+2;a<h0+42;a+=3)for(let b=-11;b<=11;b+=3){const q=P(a,b);if(Math.hypot(q[0]-D.well.c[0],q[1]-D.well.c[1])<D.well.r1+2)continue;
+    const ce=C.ceilingAt(q[0],q[1],hl.y+1);if(ce===null){thin++;continue;}if(top-ce<2)thin++;}}
+  if(thin)bad.push(thin+' places with under 2 m of rock over the hall');
+  if(C.ceilingAt(D.well.c[0],D.well.c[1],hl.y+1)!==null)bad.push('the light well shut');
+  const leaks=C.skyLeaks(1.5);if(leaks.length)bad.push(leaks.length+' void points open to the sky outside the openings (first '+leaks[0][3]+')');
+  // the cap open over the light well: a ray down through its middle meets the rain pool's floor, not the cap
+  {const RC=new THREE.Raycaster(new THREE.Vector3(D.well.c[0],top+40,D.well.c[1]),new THREE.Vector3(0,-1,0),0,80),ms=[];scene.traverse(o=>{if(o.isMesh&&o.userData.rock)ms.push(o);});
+   const h=RC.intersectObjects(ms,false)[0];if(!h||h.point.y>top-4)bad.push('the cap drawn over the light well'+(h?' (hit at '+h.point.y.toFixed(1)+')':''));}
+  // the dressing
+  const nOf=k=>D.dress.filter(d=>d.key===k);const tn=nOf('br_bldg_rock_tribe_niche'),ln=nOf('br_bldg_rock_lamp_niche');
+  if(new Set(tn.map(d=>d.v)).size!==12)bad.push(new Set(tn.map(d=>d.v)).size+' of 12 tribes\' niches');if(new Set(ln.map(d=>d.v)).size!==5)bad.push(new Set(ln.map(d=>d.v)).size+' of 5 lamp niches');
+  if(!nOf('br_bldg_rock_altar').length)bad.push('no altar');if(!nOf('br_bldg_rock_cavern_door').length)bad.push('no carved door');
+  /* the door stands on the Garden's DRAWN wall (KSTACKS' mesh), the rest on the cavern's own: each judged on its own rock */
+  const DM=ROCKRAY.near(Dr.x-20,Dr.x+20,Dr.z-20,Dr.z+20,D.y.top-5,D.y.top+25);
+  D.dress.forEach(d=>{const n=[Math.sin(d.ry),Math.cos(d.ry)],t=[n[1],-n[0]],front=[d.x+n[0]*(d.d/2+.4),d.z+n[1]*(d.d/2+.4)],y=d.y+Math.min(1.5,d.h/2);
+   if(d.key==='br_bldg_rock_cavern_door'){[-1,1].forEach(sg=>{const g=ROCKRAY.gap(DM,d.x+t[0]*sg*(d.w/2-.5),y,d.z+t[1]*sg*(d.w/2-.5),-n[0],-n[1]);if((g==null||g>d.d/2+.6)&&bad.length<14)bad.push(d.name+': its back off the drawn wall ('+(g==null?'none':g.toFixed(1))+' m)');});return;}
+   const backs=[-1,1].map(sg=>[d.x-n[0]*(d.d/2+.2)+t[0]*sg*(d.w/2-.5),d.z-n[1]*(d.d/2+.2)+t[1]*sg*(d.w/2-.5)]);   /* at its two sides: a piece may stand over an opening (the door over the passage) */
+   if(backs.some(b=>!C.inRock(b[0],y,b[1]))&&bad.length<14)bad.push(d.name+': its back not in the rock');if(C.inRock(front[0],y,front[1])&&bad.length<14)bad.push(d.name+': its front in the rock');});
+  // the ring of stones, nothing built inside it
+  if(D.stones.length!==12)bad.push(D.stones.length+' standing stones');
+  const R=Math.max(...D.stones.map(st=>Math.hypot(st.x-D.well.c[0],st.z-D.well.c[1])));
+  const inside=[].concat(TOWN?TOWN.lots:[],CAMPS?[].concat(...CAMPS.grounds.map(g=>g.items)):[]).filter(L=>Math.hypot(L.x-D.well.c[0],L.z-D.well.c[1])<R+Math.hypot(L.w,L.d)/2);
+  if(inside.length)bad.push(inside.length+' built inside the ring ('+(inside[0].name||inside[0].key)+')');
+  return{ok:!bad.length,detail:'the door in the Garden\'s mesa, the passage '+PP.length+' points, turning '+(Math.abs(turn)/(2*Math.PI)).toFixed(2)+' times, the hall '+(hl.h+hl.rise)+' m high, '+D.dress.length+' carved pieces, '+D.stones.length+' stones'+(bad.length?': '+bad.slice(0,8).join('; '):'; open where it should be, shut where it should be, every piece on its wall')};},
+ // THE GARDEN (P3e). The ways up: the Garden's stair and ramp from the main top to the Garden's, the stair up the Heart
+ // from the Garden's top to its own, each starting on the ground at its foot and ending on the top, every tread against the
+ // drawn wall and clear of rock over it, every bracket in it (HCHK.climbs, as for the roosts' climbs), the ramp no steeper
+ // than 1 in 5. The houses: on the Garden's own top 8 m in from its rim, off the pinnacles' feet (6 m; a rock longhouse's
+ // back 1 m) and the Heart's (10 m), apart, off the paths; a chief's compound or two, great-houses, rock longhouses; a
+ // path round the Heart and one in from each way up
+ gardenTown(GT,AS){if(!GT)return{ok:false,detail:'no Garden town'};const bad=[],K=KSTACKS,G=GARDEN_B,H=HEART_B,ON=ROCK.filter(B=>/^garden-/.test(B.id)&&Math.abs(B.y0-(G.top-2))<5);
+  const want=[['garden-stair',MESA_B.top,G.top],['garden-ramp',MESA_B.top,G.top],['heart-stair',G.top,H.top]];
+  want.forEach(([id,y0,y1])=>{const A=(AS||[]).find(a=>a.deck===id);if(!A){bad.push('no '+id);return;}const P=A.pts;
+   if(Math.abs(P[0][1]-y0)>1)bad.push(id+' starts at '+P[0][1].toFixed(1));if(Math.abs(P[P.length-1][1]-y1)>.5)bad.push(id+' ends at '+P[P.length-1][1].toFixed(1)+' (want '+y1.toFixed(1)+')');
+   if(A.kind==='ramp'){let st=0;for(let i=0;i+1<P.length;i++){const run=Math.hypot(P[i+1][0]-P[i][0],P[i+1][2]-P[i][2]);if(run>.05)st=Math.max(st,(P[i+1][1]-P[i][1])/run);}if(st>.2)bad.push(id+' 1 in '+(1/st).toFixed(1));}});
+  const ac=HCHK.climbs(AS||[],(AS||[]).map(a=>({id:a.deck,y:a.pts[a.pts.length-1][1],stack:a.body,feet:[]})),{span:16,brackets:3});if(!ac.ok)bad.push('the ways up: '+ac.detail.split('; ').slice(1).join('; '));
+  const box=h=>{const c=Math.cos(h.ry),sn=Math.sin(h.ry),u=[c,-sn],v=[sn,c];return {u,v,C:[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[h.x+u[0]*h.w/2*q[0]+v[0]*h.d/2*q[1],h.z+u[1]*h.w/2*q[0]+v[1]*h.d/2*q[1]])};};
+  const sat=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const pr=P=>P.map(q=>q[0]*ax[0]+q[1]*ax[1]),A=pr(a.C),B2=pr(b.C);if(Math.max(...A)<=Math.min(...B2)+.15||Math.max(...B2)<=Math.min(...A)+.15)return false;}return true;};
+  const HS=GT.houses,BX=HS.map(box);
+  HS.forEach((h,i)=>{const pts=BX[i].C.concat([[h.x,h.z]]),back=h.key==='br_bldg_longhouse_block';
+   if(pts.some(q=>{const a=K.at(ROCK,q[0],q[1]);if(!a||a.S!==G||a.d>-7.5)return true;const f=K.foot(ON.concat([H]),q[0],q[1]);return f&&f.d<(f.S===H?9.5:back?1:5.5);})&&bad.length<12)bad.push(h.name+' off the Garden\'s top or on the rock');
+   for(let j=i+1;j<HS.length;j++)if(sat(BX[i],BX[j])&&bad.length<12)bad.push('overlap: '+h.name+' / '+HS[j].name);
+   for(const W of GT.ways){const P=W.closed?W.pts.concat([W.pts[0]]):W.pts;let hit=false;for(let k=1;k<P.length&&!hit;k++)hit=KCITY.lib.polySegDist(BX[i].C,P[k-1],P[k])<W.w/2-.05;if(hit){if(bad.length<12)bad.push(h.name+' on '+W.name);break;}}});
+  const n=k=>HS.filter(h=>h.key===k).length;if(n('br_bldg_great_house')<6)bad.push(n('br_bldg_great_house')+' great-houses');if(n('br_bldg_chief_compound')<1)bad.push('no chief\'s compound');
+  if(!GT.ways.some(W=>W.closed))bad.push('no path round the Heart');
+  // THE STOREROOMS cut in the Garden's mesa's wall (owner, 2026-10-19): ten or more, each against the drawn wall (its two
+  // sides' backs within 1.8 m of it), none overlapping another, none within 20 m of the Deep Root's door
+  const SR=GT.stores||[];if(SR.length<10)bad.push('only '+SR.length+' storerooms in the Garden\'s wall');
+  {const SB=SR.map(box);SR.forEach((h,i)=>{const n=[Math.sin(h.ry),Math.cos(h.ry)],t=[n[1],-n[0]],M=ROCKRAY.near(h.x-20,h.x+20,h.z-20,h.z+20,h.y-3,h.y+20);
+    [-1,1].forEach(sg=>{const g=ROCKRAY.gap(M,h.x+t[0]*sg*(h.w/2-.4),h.y+1.5,h.z+t[1]*sg*(h.w/2-.4),-n[0],-n[1]);if((g==null||g>h.d/2+1.8)&&bad.length<14)bad.push(h.name+' '+i+' off the wall ('+(g==null?'none':g.toFixed(1))+' m)');});
+    for(let j=i+1;j<SR.length;j++)if(sat(SB[i],SB[j])&&bad.length<14)bad.push('storerooms '+i+' and '+j+' overlap');
+    if(typeof CAVERN!=='undefined'&&CAVERN&&Math.hypot(h.x-CAVERN.door.x,h.z-CAVERN.door.z)<20&&bad.length<14)bad.push('a storeroom on the Deep Root\'s door');});}
+  return{ok:!bad.length,detail:HS.length+' houses on the Garden ('+n('br_bldg_great_house')+' great-houses, '+n('br_bldg_chief_compound')+' compounds, '+n('br_bldg_longhouse_block')+' rock longhouses), '+SR.length+' storerooms in its wall, '+(AS||[]).length+' ways up ('+(AS||[]).map(a=>a.deck+' '+a.pts.length+' treads').join(', ')+')'+
+   (bad.length?': '+bad.slice(0,8).join('; '):'; the ways on the drawn rock, the houses apart on the top')};},
+ // EACH WING'S BEASTS IN ITS OWN STALLS (owner, 2026-10-19): every beast on a perch, or coming in to one, is one its bay
+ // takes (the Quetzal's quetzalcoatlus, the Wingclaw's archaeopteryx, the Nightwing's bats; the Garden the three)
+ wings(list){if(!PRFLY)return{ok:false,detail:'no flyers'};const L=PRFLY.LABEL,bad=list.filter(a=>a.bay&&a.bay.allow&&a.bay.allow.indexOf(a.sp)<0),by={};
+  list.forEach(a=>{if(!a.bay||!a.bay.plat)return;const w=a.bay.plat.wing||'?',k=w+': '+L[a.sp];by[k]=(by[k]||0)+1;});
+  return{ok:!bad.length&&list.filter(a=>a.bay).length>20,detail:Object.keys(by).sort().map(k=>k+' '+by[k]).join(', ')+(bad.length?'; WRONG: '+bad.slice(0,4).map(a=>L[a.sp]+' in '+a.bay.id).join(', '):'')};},
+ // the flyers (Girder's, on these roosts): a quetzal sent in from 300 m out lands on an east fin's perch (P2's test), and
+ // in a minute and a half of traffic no beast aloft passes through the rock
+ flyers(decks){if(!PRFLY)return{ok:false,detail:'no flyers'};const F=PRFLY,sent=[];
+  decks.forEach(id=>{const a=F.land(id,F.SP.Q,12);if(a)sent.push(a);});
+  let inRock=0,samples=0;for(let k=0;k<180;k++){F.sim(.5,12);for(const a of F.list()){if(a.state!=='fly')continue;samples++;if(KSTACKS.topAt(ROCK,a.x,a.z)>a.y+.5)inRock++;}}
+  const landed=sent.filter(a=>a.state==='perch'&&a.bay&&/deck-fin-e/.test(a.bay.plat.id)),S=F.stats();
+  return{ok:landed.length>=1&&inRock===0&&S.usable>=60,detail:sent.length+' quetzals sent to the east fins, '+landed.length+' on a perch; '+S.usable+' of '+(S.bays.ok+S.bays.blocked)+' bays in use; '+
+   S.animals+' beasts, '+S.totals.arrivals+' arrivals and '+S.totals.departures+' departures so far; '+inRock+' of '+samples+' samples aloft in the rock'};}};
 // where the forest STANDS, sampled: the hyperjungle's instances (every 7th) and its merged meshes' vertices within 4 m of the
 // ground (a trunk's foot, a fern: a crown leaning over a hedge is not the forest inside it)
-function _forestPts(){const out=[],v=new THREE.Vector3(),M=new THREE.Matrix4();
+function _forestPts(low){const out=[],v=new THREE.Vector3(),M=new THREE.Matrix4();   /* low: only what stands within 6 m of the ground (not a crown overhanging) */
  scene.traverse(o=>{if(!o.userData||o.userData.kit!=='hyperjungle')return;
-  if(o.isInstancedMesh){for(let i=0;i<o.count;i+=7){o.getMatrixAt(i,M);v.setFromMatrixPosition(M);out.push([v.x,v.z]);}}
+  if(o.isInstancedMesh){for(let i=0;i<o.count;i+=low?1:7){o.getMatrixAt(i,M);v.setFromMatrixPosition(M);if(!low||v.y-terrainH(v.x,v.z)<6)out.push([v.x,v.z]);}}
   else if(o.isMesh&&o.geometry&&o.geometry.attributes.position){const P=o.geometry.attributes.position;
    for(let i=0;i<P.count;i+=13){v.fromBufferAttribute(P,i).applyMatrix4(o.matrixWorld);if(v.y-terrainH(v.x,v.z)<4)out.push([v.x,v.z]);}}});
  return out;}
 const _fins=()=>ROCK.filter(B=>/^fin-/.test(B.id)),_garden=()=>ROCK.filter(B=>/^garden-/.test(B.id));
+// the night (89n, 89y): midnight's key light is the giant's and dim, the dome and the fog dark, noon's the page's own; the
+// Crown's fires, a lamp at every stall's shelter, the beacons, the bands' fires and the Deep Root's lights all placed, and
+// at midnight lit (a brazier's flame shown, the glow layer's night up), at noon out
+HCHK.night=(N,L,stalls)=>{const h0=N.hourNow,flame=()=>{let k=0;if(typeof ATMOS!=='undefined'&&ATMOS.root)ATMOS.root.traverse(o=>{if(o.isMesh&&o.material&&o.material.color&&o.material.color.getHex()===0xffa040&&o.visible)k++;});return k;};
+ const tick=h=>{N.hour(h);if(typeof ATMOS!=='undefined'&&ATMOS.hooks)ATMOS.hooks.forEach(f=>f(0,h,0));};
+ tick(0);const n={i:sun.intensity,sky:sky.material.color.getHSL({}).l,fog:scene.fog.color.getHSL({}).l,f:N.f,lit:flame()};
+ tick(13);const d={i:sun.intensity,sky:sky.material.color.getHSL({}).l,f:N.f,lit:flame()};tick(h0);
+ const ok=n.f===1&&d.f===0&&n.i<d.i*.3&&n.sky<.3&&n.fog<.2&&d.sky>.9&&!!L&&L.braziers>=12&&L.stalls===stalls&&L.lamps>stalls&&L.beacons>=2&&L.halls===1&&n.lit===L.braziers&&d.lit===0;
+ return{ok,detail:'midnight: key '+n.i.toFixed(2)+', dome '+n.sky.toFixed(2)+', fog '+n.fog.toFixed(2)+', '+n.lit+' fires burning; noon: key '+d.i.toFixed(2)+', dome '+d.sky.toFixed(2)+', '+d.lit+' burning; '+
+  (L?L.braziers+' braziers, '+L.lamps+' lamps ('+(L.stalls||0)+' of '+stalls+' stall heads lit), '+L.beacons+' beacons, '+L.halls+' hall light':'no lights')};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
+ add('the night: the light, the dome, the fog, the fires and lamps',HCHK.night(NIGHT,NIGHT_LIGHTS,(ROOST.roosts||[]).length));
  add('the mesa: 250 m, 1.2 by 0.8 km',HCHK.mesa(MESA_B));
  add('ten fins on the rim, spread round it',HCHK.fins(_fins()));
  add('the Garden\'s mesa and its pinnacles',HCHK.garden(_garden(),GARDEN_B));
@@ -94,8 +455,26 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('no tree on the town\'s ground',HCHK.noTrees(NECANYONS.TREES||[]));
  add('the forest out of the farms and the grounds',HCHK.cleared(_forestPts()));
  add('the land is the scale model\'s',HCHK.model());
+ add('the roost decks: on the Wings\' fins and the Garden, clear of the rock',HCHK.decks(ROOST.decks));
+ add('the stalls: every Wing\'s, each with its way out open',HCHK.stalls(ROOST.roosts));
+ add('the bridges between a group\'s fins',HCHK.bridges(ROOST.bridges,ROOST.decks));
+ add('the lifts: the cables clear of the wall',HCHK.lifts(ROOST.lifts));
+ add('the Stair: the top to the fair ground, gated at head and foot',HCHK.stair(ROOST.stair));
+ add('a climb to every deck',HCHK.climbs(ROOST.climbs,ROOST.decks));
+ add('the flyers: a quetzal lands on an east fin',HCHK.flyers(['deck-fin-e0','deck-fin-e1','deck-fin-e2']));
+ add('each Wing\'s beasts in its own stalls',HCHK.wings(PRFLY?PRFLY.list():[]));
+ add('the gates: clear of the rock',HCHK.gates(ROOST.stair));
+ add('the town on the top: every building on the cap, apart, off the streets; every trade',HCHK.town(TOWN));
+ add('the farms: six terraces of fields, twelve farmhouses, the palisade and its gates',HCHK.farms(FARMS));
+ add('the bands\' grounds: every tribe\'s, pitched, hedged, with its track',HCHK.camps(CAMPS));
+ add('the Deep Root: its door in the Garden\'s mesa, the passage down and round, the hall, the light well, the ring',HCHK.cavern(CAVERN));
+ add('the Garden: its ways up, its great-houses round the Heart',HCHK.gardenTown(GARDEN_TOWN,ROOST.ascents));
+ add('the lift road: the beast lift to the north-west gate, cleared',HCHK.road((ROOST.roads||[])[0],ROOST.lifts.find(l=>l.id==='lift-north')));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),F=_fins();
+ add('a night that does not darken',HCHK.night({hourNow:12,f:0,hour(h){this.hourNow=h;this.f=h<6?1:0;}},NIGHT_LIGHTS,(ROOST.roosts||[]).length));
+ add('no beacons lit',HCHK.night(NIGHT,NIGHT_LIGHTS&&Object.assign({},NIGHT_LIGHTS,{beacons:0}),(ROOST.roosts||[]).length));
+ add('a stall head left dark',HCHK.night(NIGHT,NIGHT_LIGHTS&&Object.assign({},NIGHT_LIGHTS,{stalls:NIGHT_LIGHTS.stalls-1}),(ROOST.roosts||[]).length));
  add('the fins in one row on the north rim (as first drawn)',HCHK.fins(F.map((B,i)=>Object.assign({},B,{x:-270+i*60,z:-520}))));
  add('a fin over the edge',HCHK.fins(F.map((B,i)=>i?B:Object.assign({},B,{beds:[Object.assign({},B.beds[0],{cx:B.beds[0].cx*1.25,cz:B.beds[0].cz*1.25})]}))));
  add('a mesa 180 m high',HCHK.mesa(Object.assign({},MESA_B,{top:MESA_B.top-70})));
@@ -107,19 +486,82 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a Heart as tall as its pinnacles',HCHK.heart(Object.assign({},HEART_B,{top:HEART_B.top+110}),GARDEN_B,_garden(),PR.HEART_MESA,PR.GARDEN_MESA));
  add('a tree in the Crown',HCHK.noTrees((NECANYONS.TREES||[]).concat([{x:0,z:-300,y0:_top}])));
  add('a tree in the farms',HCHK.cleared(_forestPts().concat([[-400,800]])));   // in the fields west of the road
+ // the roosts' negatives
+ {const d=ROOST.decks.find(d=>d.id==='deck-fin-e1');if(d)add('a deck cut into its fin (its inner edge 3 m into the rock)',HCHK.decks(ROOST.decks.map(D=>D!==d?D:Object.assign({},D,{inner:D.inner.map(p=>{const dx=p[0]-D.x,dz=p[1]-D.z,l=Math.hypot(dx,dz);return [p[0]-dx/l*3.8,p[1]-dz/l*3.8];})}))));}
+ add('a perch facing its own fin',HCHK.stalls(ROOST.roosts.map((r,i)=>i?r:Object.assign({},r,{ox:-r.ox,oz:-r.oz}))));
+ {const n0=ROOST.decks.find(d=>d.id==='deck-fin-n0'),e0=ROOST.decks.find(d=>d.id==='deck-fin-e0');
+  if(n0&&e0)add('a bridge from the north fins to the east',HCHK.bridges(ROOST.bridges.map((b,i)=>i?b:Object.assign({},b,{b:{x:e0.outer[0][0],y:e0.y,z:e0.outer[0][1],deck:e0.id}})),ROOST.decks));}
+ add('a lift whose cable rubs the wall',HCHK.lifts(ROOST.lifts.map((l,i)=>i?l:Object.assign({},l,{clear:l.clear-6}))));
+ add('the Stair with one gate',HCHK.stair(Object.assign({},ROOST.stair,{gates:ROOST.stair.gates.slice(1)})));
+ add('the Stair ending in the gorge',HCHK.stair(Object.assign({},ROOST.stair,{ground:ROOST.stair.ground.concat([[0,0,PR.GORGE.z(0)]])})));
+ add('a deck with no climb',HCHK.climbs(ROOST.climbs.slice(1),ROOST.decks));
+ add('a quetzal sent to a lookout ring (no stalls)',HCHK.flyers(['deck-fin-ne-look']));
+ {const S=ROOST.stair;add('the Stair\'s flights 4 m out from the face',HCHK.stair(Object.assign({},S,{pts:S.pts.map((p,i)=>i<S.shoulder?p:[p[0]+(p[0]-MESA_B.x)/p[3]*4,p[1],p[2]+(p[2]-MESA_B.z)/p[3]*4,p[3]+4,p[4],p[5]-1e3])})));}
+ {const c0=ROOST.climbs[0];add('a climb 3 m out from its fin',HCHK.climbs(ROOST.climbs.map(c=>c!==c0?c:Object.assign({},c,{pts:c.pts.map(p=>{const S=ROCK.find(B=>'deck-'+B.id===c.deck),dx=p[0]-S.x,dz=p[2]-S.z,L=Math.hypot(dx,dz)||1;return [p[0]+dx/L*3,p[1],p[2]+dz/L*3];})})),ROOST.decks));}
+ if(PRFLY){const B=PRFLY.bays.find(b=>b.plat.wing==='quetzal');add('an archaeopteryx in a Quetzal stall',HCHK.wings(PRFLY.list().concat([{sp:PRFLY.SP.A,bay:B}])));}
+ add('a gate in the rock (the head gate sunk 3 m into the cap rock)',HCHK.gates(Object.assign({},ROOST.stair,{gates:ROOST.stair.gates.map((g,i)=>i?g:Object.assign({},g,{y:g.y-3}))})));
+ if(TOWN){const T=TOWN,i=T.lots.findIndex(l=>!l.landmark),L0=T.lots[i],mv=(f)=>Object.assign({},T,{lots:T.lots.map((l,k)=>k===i?Object.assign({},l,f(l)):l)});
+  const Wy=T.ways.find(w=>w.cls==='avenue'),q=Wy.pts[Math.floor(Wy.pts.length/2)],cg=PR.TOP.camps[0],cp=TOWN.cap[0];
+  add('a house on an avenue',HCHK.town(mv(()=>({x:q[0],z:q[1]}))));
+  add('a house in the Wingclaw band\'s ground',HCHK.town(mv(()=>({x:cg.x,z:cg.z}))));
+  add('a house on the rim',HCHK.town(mv(()=>({x:cp[0]*.985,z:cp[1]*.985}))));
+  add('two houses on one footprint',HCHK.town(Object.assign({},T,{lots:T.lots.concat([Object.assign({},L0,{x:L0.x+1,id:L0.id+'b'})])})));
+  add('no assembly hall',HCHK.town(Object.assign({},T,{lots:T.lots.filter(l=>l.role!=='hall')})));
+  add('no tannery (the tanners without a building)',HCHK.town(Object.assign({},T,{lots:T.lots.filter(l=>l.key!=='br_bldg_tannery')})));}
+ if(FARMS){const F=FARMS,c0=F.cells.find(c=>c.k===1&&c.kind==='crop'),or=F.cells.find(c=>c.k===0&&c.kind!=='farmstead'),h0=F.houses[0];
+  const mvCell=(c,dx,dz)=>Object.assign({},F,{cells:F.cells.map(x=>x!==c?x:Object.assign({},x,{x:x.x+dx,z:x.z+dz,corners:x.corners.map(q=>[q[0]+dx,q[1]+dz])}))});
+  if(c0){const q=PR.ROAD.pts[1];add('a field on the forest road',HCHK.farms(mvCell(c0,q[0]-c0.x,q[1]-c0.z)));}
+  if(or)add('an orchard on the first terrace',HCHK.farms(Object.assign({},F,{cells:F.cells.map(x=>x!==or?x:Object.assign({},x,{kind:'orchard'}))})));
+  if(h0)add('a farmhouse half off its cell',HCHK.farms(Object.assign({},F,{houses:F.houses.map(h=>h!==h0?h:Object.assign({},h,{x:h.x+16}))})));
+  add('a gap in the palisade',HCHK.farms(Object.assign({},F,{palisade:Object.assign({},F.palisade,{runs:F.palisade.runs.filter((r,i)=>i!==1)})})));
+  add('no forest gate',HCHK.farms(Object.assign({},F,{palisade:Object.assign({},F.palisade,{gates:F.palisade.gates.filter(g=>!g.road)})})));
+  {const pd=F.cells.find(c=>c.kind==='paddy');if(pd)add('a paddy by the east gate',HCHK.farms(Object.assign({},F,{cells:F.cells.map(x=>x.k===1&&x.kind==='crop'&&x.g<40?Object.assign({},x,{kind:'paddy'}):x)})));}}
+ if(CAMPS){const C=CAMPS,mv=(f)=>Object.assign({},C,{grounds:C.grounds.map(f)}),up=C.grounds.find(g=>g.ground==='upper'),lo=C.grounds.find(g=>g.ground==='lower');
+  if(up)add('a tent in the Crown',HCHK.camps(mv(g=>g!==up?g:Object.assign({},g,{items:g.items.map((it,i)=>i?it:Object.assign({},it,{x:0,z:-330}))}))));
+  if(lo)add('a gap in a thorn hedge',HCHK.camps(mv(g=>g!==lo?g:Object.assign({},g,{hedge:g.hedge.filter((p,i)=>i<5||i>8)}))));
+  if(lo)add('a hedge with no gates',HCHK.camps(mv(g=>g!==lo?g:Object.assign({},g,{hedge:g.hedge.map(p=>Object.assign({},p,{v:0}))}))));
+  if(up)add('a band\'s ground without its chief',HCHK.camps(mv(g=>g!==up?g:Object.assign({},g,{items:g.items.filter(it=>!/chief/.test(it.key))}))));
+  if(lo&&lo.track)add('a camp\'s track through the farms',HCHK.camps(mv(g=>g!==lo?g:Object.assign({},g,{track:Object.assign({},g.track,{pts:[[0,900]].concat(g.track.pts)})}))));
+  add('a flyer band camped on the floor',HCHK.camps(Object.assign({},C,{grounds:C.grounds.concat([Object.assign({},lo,{tribe:'quetzal'})])})));}
+ if(CAVERN){const D=CAVERN;
+  add('the passage carried 8 m into the rock at its turn',HCHK.cavern(Object.assign({},D,{path:D.path.map((q,i)=>i===10?[q[0]+8*D.axis.v[0],q[1],q[2]+8*D.axis.v[1],q[3]]:q)})));
+  add('a tribe\'s niche missing',HCHK.cavern(Object.assign({},D,{dress:D.dress.filter(d=>!(d.key==='br_bldg_rock_tribe_niche'&&d.v===3))})));
+  add('a lamp niche turned into its wall',HCHK.cavern(Object.assign({},D,{dress:D.dress.map(d=>d.key==='br_bldg_rock_lamp_niche'&&d.v===0?Object.assign({},d,{ry:d.ry+Math.PI}):d)})));
+  {const T0=TOWN;if(T0){const fake=Object.assign({},T0.lots[60],{x:D.well.c[0]+5,z:D.well.c[1]+5,name:'a house in the ring'});const save=T0.lots;T0.lots=save.concat([fake]);try{add('a house inside the ring of stones',HCHK.cavern(D));}finally{T0.lots=save;}}}}
+ if(GARDEN_TOWN){const GT=GARDEN_TOWN,AS=ROOST.ascents||[];
+  {const h=GT.houses.find(h=>h.key==='br_bldg_great_house'),S=ROCK.find(B=>B.id==='garden-0');if(h&&S)add('a great-house on a pinnacle\'s foot',HCHK.gardenTown(Object.assign({},GT,{houses:GT.houses.map(x=>x!==h?x:Object.assign({},x,{x:S.x,z:S.z}))}),AS));}
+  {const A=AS.find(a=>a.deck==='garden-stair');if(A)add('the Garden\'s stair stopping 10 m short',HCHK.gardenTown(GT,AS.map(a=>a!==A?a:Object.assign({},a,{pts:a.pts.filter(p=>p[1]<GARDEN_B.top-10)}))));}
+  {const A=AS.find(a=>a.kind==='ramp');if(A)add('the ramp 3 m out from the wall',HCHK.gardenTown(GT,AS.map(a=>a!==A?a:Object.assign({},a,{pts:a.pts.map(p=>{const dx=p[0]-GARDEN_B.x,dz=p[2]-GARDEN_B.z,l=Math.hypot(dx,dz)||1;return [p[0]+dx/l*3,p[1],p[2]+dz/l*3].concat(p.slice(3));})}))));}
+  add('no way up the Heart',HCHK.gardenTown(GT,AS.filter(a=>a.deck!=='heart-stair')));}
+ {const Rd=(ROOST.roads||[])[0];if(Rd)add('the lift road through the seep pond',HCHK.road(Object.assign({},Rd,{pts:Rd.pts.concat([[PR.POND.x,0,PR.POND.z]])}),ROOST.lifts.find(l=>l.id==='lift-north')));}
  return R;}
 
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
- hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock and the site; the town is to come)',
- scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
+ hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts, the town on the top, the Garden, the Deep Root, the farms and the bands\' grounds). N for night',
+ scene,camera,renderer,ground:terrainH,clear:1.8,
+ walk:typeof KWALK!=='undefined'?KWALK:null,   // the walker on the decks, the stairs, the bridges and in the Deep Root (89h, KCAVERN)
+ minimap:{frame:[-1450,1450,-950,1750],title:'Pinnacle Rock'},   // the plan from the records (core/minimap: M)
+ clampCam:(p,t)=>{if(typeof CAVERN!=='undefined'&&CAVERN&&p.y<MESA_B.top&&CAVERN.C.voidSD(p.x,p.y,p.z)<-.8)return;const g=terrainH(p.x,p.z)+1.8;if(p.y<g)p.y=g;},   // into the Deep Root's voids (P3d)
+registry:REG,views:VIEWS,ticks:TICKS,
+ hourTicks:[(dt,hour)=>{if(PRFLY)PRFLY.update(dt,hour);}],   // Girder's flyers on the roosts (89b, build.py flyers_fragment)
+ // the world hour (the panel's slider, ?hour=): the night's light, fog and dome (necanyons' 89n-host-night.js) and the fires and
+ // lamps on core/atmos (89y); N flips noon and midnight
+ sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},hour:h=>NIGHT.hour(h)},
+ clock:{hour:13},keys:{n:()=>NIGHT.flip()},
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
-  'the far land':{match:o=>!!(o.userData&&o.userData.far)},'sky':{objects:()=>[sky,giant,giantRing]}},
- exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR})},
+  'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the farms':{match:o=>!!(o.userData&&o.userData.farms)},'the camps':{match:o=>!!(o.userData&&o.userData.camps)},'the Deep Root':{match:o=>!!(o.userData&&o.userData.cavern)},'the Garden':{match:o=>!!(o.userData&&o.userData.garden)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
+  'the far land':{match:o=>!!(o.userData&&o.userData.far)},'the night\'s lights':{objects:()=>typeof ATMOS!=='undefined'&&ATMOS.root?[ATMOS.root]:[]},'sky':{objects:()=>[sky,giant,giantRing]}},
+ exporters:{biome:()=>BIO.export(),layout:()=>({rock:KSTACKS.export(ROCK),plan:PR,roosts:ROOST,town:TOWN?TOWN.K.export():null,farms:FARMS?{terraces:FARMS.terraces,cells:FARMS.cells,houses:FARMS.houses,palisade:FARMS.palisade,tracks:FARMS.tracks}:null,camps:CAMPS?{grounds:CAMPS.grounds,tracks:CAMPS.tracks}:null,cavern:CAVERN?Object.assign(CAVERN.C.export(),{dress:CAVERN.dress,stones:CAVERN.stones,fig:CAVERN.fig}):null,garden:GARDEN_TOWN?{houses:GARDEN_TOWN.houses,ways:GARDEN_TOWN.ways,ascents:ROOST.ascents}:null})},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
-  biome:()=>window._biome,jungle:()=>window._jungle,far:()=>({rings:FAR.rings,around:FAR.around,water:FAR.water})}});
+  biome:()=>window._biome,jungle:()=>window._jungle,far:()=>({rings:FAR.rings,around:FAR.around,water:FAR.water}),
+  town:()=>TOWN?{ms:TOWN.ms,lots:TOWN.lots.length,ways:TOWN.ways.length,log:TOWN.log,failed:TOWN.failed,missing:TOWN.missing,trades:TOWN.trades,draw:TOWN_DRAW}:null,
+  farms:()=>FARMS?{ms:FARMS.ms,cells:FARMS.cells.length,houses:FARMS.houses.length,log:FARMS.log,draw:FARMS_DRAW}:null,
+  camps:()=>CAMPS?{ms:CAMPS.ms,log:CAMPS.log,draw:CAMPS_DRAW}:null,
+  garden:()=>GARDEN_TOWN?{ms:GARDEN_TOWN.ms,log:GARDEN_TOWN.log,draw:GARDEN_DRAW}:null,
+  cavern:()=>CAVERN?{ms:CAVERN.ms,prims:CAVERN.C.prims.length,dress:CAVERN.dress.length,draw:CAVERN_DRAW}:null,
+  roosts:()=>({ms:ROOST.ms,decks:ROOST.decks.length,stalls:ROOST.roosts.length,bridges:ROOST.bridges.length,lifts:ROOST.lifts.length,climbs:ROOST.climbs.length,why:ROOST.why})}});

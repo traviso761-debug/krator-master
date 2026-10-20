@@ -11,8 +11,12 @@ const VQ_IRON=0x2e2a26,VQ_PALISADE=0x7a5a3e;
 // REGISTER land in the group frame (KXF carries the group transform), then the salvage dressing on the finished
 // group, then the kit's REG volumes moved into world space + tagged. `stripFlora` drops the trees a d>0 kit
 // builder scatters round itself (flora is never part of a building — the biome pass plants at placement time).
-function vqWrapKit(G,builder,nameFn,stripFlora,mossR,holes){const c=VERN.cur,r0=c.r0;const nT=KIT.items.trunk.length,nL=KIT.items.leafCard.length,nM=KIT.items.moss.length;
- HOLES=holes==null?.55:holes;let H=null;try{H=withFlatGround(()=>builder(G,0,0,3));}finally{HOLES=1;KOFF=[0,0,0];}
+// `hollow` names the kit builder's IZS_HOLLOW key ('lab', 'police'): set for this call when the world builds the guilds'
+// interiors (IZS_HOLLOW.guilds, targets/city 89z-rows.js; 78v draws them), so only the guild's shell is open, never the
+// kit's other labs and stations the city's ancient quarters place.
+function vqWrapKit(G,builder,nameFn,stripFlora,mossR,holes,hollow){const c=VERN.cur,r0=c.r0;const nT=KIT.items.trunk.length,nL=KIT.items.leafCard.length,nM=KIT.items.moss.length;
+ const HZ=hollow&&typeof IZS_HOLLOW!=='undefined'?IZS_HOLLOW:null,h0=HZ?HZ[hollow]:null;if(HZ)HZ[hollow]=!!HZ.guilds;
+ HOLES=holes==null?.55:holes;let H=null;try{H=withFlatGround(()=>builder(G,0,0,3));}finally{HOLES=1;KOFF=[0,0,0];if(HZ)HZ[hollow]=h0;}
  if(stripFlora){KIT.items.trunk.length=nT;KIT.items.leafCard.length=nL;}
  // the kit's ground-moss scatter runs far past the building (scatterMoss to r 120 on the lab): keep it within mossR of the plot
  if(mossR){const s=c.o.scale||1,R2=mossR*mossR*s*s,M=KIT.items.moss;let w=nM;for(let i=nM;i<M.length;i++){const dx=M[i].p[0]-c.x,dz=M[i].p[2]-c.z;if(dx*dx+dz*dz<=R2)M[w++]=M[i];}M.length=w;}
@@ -76,7 +80,7 @@ function vqBannerLine(x0,z0,x1,z1,y,h,n){const wood=vC(0x5a4632);for(const p of[
 // beyond the apron's toe (z 46..74, 60 m wide): sorted scrap heaps, gantry, scales, sorting shed on pipe posts,
 // carts, guild banners, palisade with a gate to the street, electric lamp posts (civic).
 function buildAncSalvagers(G,o){reseed(7901+(o.v|0));
- const LG=vqWrapKit(G,buildLab,n=>"Salvagers' Guild — "+n,true,62,0);   // rust-skinned but whole (Travis): the guild keeps its Reliquary in one piece
+ const LG=vqWrapKit(G,buildLab,n=>"Salvagers' Guild — "+n,true,62,0,'lab');   // rust-skinned but whole (Travis): the guild keeps its Reliquary in one piece
  // the DOME, repaired (Travis): the kit's repaired lab still breaks its lattice dome open (its collapse field ignores HOLES).
  // Find the shell (r 17, 22 high) and its dark liner, drop both, and put back the whole ribbed dome in rust with its
  // panels glazed again — a guild that salvages Ancient glass has re-glazed its own roof.
@@ -84,7 +88,7 @@ function buildAncSalvagers(G,o){reseed(7901+(o.v|0));
    if(Math.abs(h-22)<1.5&&w>28&&w<36&&Math.abs(b.min.y)<.5){dead.push(m);if(!dome||w>dome.w)dome={w,m,y:m.position.y,x:m.position.x,z:m.position.z,parent:m.parent};}});
   if(dome){for(const m of dead)m.parent.remove(m);const R=17,Hd=22,dR=y=>R*Math.pow(clamp(1-Math.pow(y/Hd,2),0,1),.62);
    mesh(lathe({rFn:dR,H:Hd,flutes:24,amp:.07,sharp:2,nu:120,nv:36,hole:(u,y)=>Math.cos(u*TAU*24)<.35&&y<Hd*.82&&y>1.5}),MAT.rust,dome.parent,dome.x,dome.y,dome.z);
-   mesh(lathe({rFn:y=>dR(y)*.94,H:Hd,nu:64,nv:24}),MAT.tGlassO||MAT.darkGlass,dome.parent,dome.x,dome.y,dome.z);}}
+   mesh(lathe({rFn:y=>dR(y)*.94,H:Hd,nu:64,nv:24}),MAT.glass,dome.parent,dome.x,dome.y,dome.z);}}
  reseed(7901+(o.v|0));   // the accretion runs on its own stream, so a kit change cannot move the yard about
  const wood=vC(vPick(VPAL.woodPoor)),iron=vC(VQ_IRON),org=vC(0xe07a2a);
  const YZ=60,YW=60,YD=28,YB=.2;   // yard centre z, width, depth, base height (a slab buries the apron's toe)
@@ -126,7 +130,7 @@ function buildAncSalvagers(G,o){reseed(7901+(o.v|0));
 // back and the palisade meets the pylons at x = ±46. NB the kit's pad is a 160 m concrete DISC (slabCR r 80): the
 // measured footprint is x ±80, z -80..90, and the def's w/d say so.
 function buildAncMercenaries(G,o){reseed(7911+(o.v|0));
- vqWrapKit(G,buildPolice,n=>"Mercenary Guild — "+n,true,0);
+ vqWrapKit(G,buildPolice,n=>"Mercenary Guild — "+n,true,0,null,'police');
  reseed(7911+(o.v|0));
  const wood=vC(vPick(VPAL.woodMid)),iron=vC(VQ_IRON),org=vC(0xe07a2a);
  // the kit's pad is a CYLINDER (slabCR, r 80, top at y .8), so the yard is a rectangular platform at the pad's height that

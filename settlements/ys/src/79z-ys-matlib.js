@@ -22,9 +22,9 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
   m.map=T.map;if(T.normalMap){m.normalMap=T.normalMap;m.normalScale=new THREE.Vector2(L.normalScale||1,L.normalScale||1);}
   if(T.roughnessMap){m.roughnessMap=T.roughnessMap;m.roughness=1;}m.metalnessMap=null;m.metalness=L.metal||0;
   hook(m,fam,L);m.needsUpdate=true;m.userData.lib=L.lib;YS_MATLIB.bound[fam]=L.lib;};   /* userData.lib: KMAT.bindMat below skips it */
- for(const k of ['hkShell','hkFloor','hkIn','hkBarn','hkBone','hkMosaic','hkNacre','hkCrust','hkVerd','hkWet','hkCloth']){const L=P(k);if(!L)continue;bind(MAT[k],k,L,4);bind(MAT[k+'I'],k,L,4);}
+ for(const k of ['hkShell','hkFloor','hkIn','hkBarn','hkBone','hkMosaic','hkBand','hkNacre','hkNacreB','hkNacreC','hkAbaloneC','hkAbaloneW','hkConchW','hkCrust','hkVerd','hkWet','hkCloth']){const L=P(k);if(!L)continue;bind(MAT[k],k,L,4);bind(MAT[k+'I'],k,L,4);}
  {const L=P('ground');if(L&&MAT.pkGround)bind(MAT.pkGround,'ground',L,18);}   /* no ground family yet: the karst wall's drips read as stripes on the flat (KNOWN_ISSUES) */
- {const L=P('sand');if(L&&typeof HAC_MAT!=='undefined'){bind(HAC_MAT.sand,'sand',L,null);bind(HAC_MAT.sandR,'sand',L,null);}}
+ {const L=P('sand'),R=P('sandR')||L;if(L&&typeof HAC_MAT!=='undefined'){bind(HAC_MAT.sand,'sand',L,null);bind(HAC_MAT.sandR,P('sandR')?'sandR':'sand',R,null);}}   /* the ruined arcade's sandstone is its own family (2026-10-19: rock.sandstone_blocks_04, weathered pale blocks) */
  {const L=P('trav');if(L&&typeof HBH_MAT!=='undefined'){bind(HBH_MAT.trav,'trav',L,null);bind(HBH_MAT.travR,'trav',L,null);}}
  {const L=P('verdigris');if(L&&MAT.verdigris)bind(MAT.verdigris,'verdigris',L,null);}
  // the cards: alpha cut-outs, mipmapped; the first kelp replaces the weed ribbons' texture (alpha-tested now)
@@ -34,7 +34,7 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
 })();
 // the records table for the export: every family as one record (GODOT-PLAN.md Phase 3)
 (function(){if(typeof KMAT==='undefined')return;const recs={};const P=f=>KMAT.packed('ys',f);
- const uv={hkShell:[4,4],hkFloor:[4,4],hkIn:[4,4],hkBarn:[4,4],hkBone:[4,4],hkMosaic:[4,4],hkNacre:[4,4],hkCrust:[4,4],hkVerd:[4,4],hkWet:[4,4],hkCloth:[4,4],hkWeed:[1,1],ground:[18,18],sand:[20,20],trav:[20,20],verdigris:[12,12]};
+ const uv={hkShell:[4,4],hkFloor:[4,4],hkIn:[4,4],hkBarn:[4,4],hkBone:[4,4],hkMosaic:[4,4],hkBand:[4,4],hkNacre:[4,4],hkCrust:[4,4],hkVerd:[4,4],hkWet:[4,4],hkCloth:[4,4],hkWeed:[1,1],ground:[18,18],sand:[20,20],sandR:[8,8],trav:[20,20],verdigris:[12,12]};
  for(const fam in uv){const L=YS_MATLIB.on?P(fam):null;recs[fam]={id:'ys.'+fam,family:fam,scale:L?L.scale:uv[fam],tint:true,roughness:1,metal:L?(L.metal||0):0,specular:L?L.specular:0.5,
    breakup:L?(L.breakup||null):null,lib:L?L.lib:null,bake:!L,hook:fam==='hkNacre'?'nacre':fam==='ground'?'planar-uv':'metre-uv',note:L?'library set, tint keep '+L.tint:'procedural canvas map, vertex-coloured'};}
  for(const [kind,n] of [['kelp',3]])for(let i=0;i<n;i++){const L=YS_MATLIB.on?P(kind+i):null;if(L)recs[kind+i]={id:'ys.'+kind+i,family:'card',scale:[1,1],tint:false,roughness:.9,alphaTest:.42,doubleSided:true,lib:L.lib,note:'card'};}

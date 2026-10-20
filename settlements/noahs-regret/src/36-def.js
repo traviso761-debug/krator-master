@@ -38,8 +38,9 @@ function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);r
  CURKEY=key;CURREC=rec;DOORS_CUR=[];if(keep.rec)keep.rec.children.push(rec);
  const bb=sbBegin();const t0=GSTAT.tris;
  reseed(d.seed+(o.v|0)*7);
+ const keepMat=MAT_ALT;MAT_ALT=KMAT.mode==='lib'?(KRAND.hash(0x15a7,d.seed|0,o.v|0,Math.round(org.x*4),Math.round(org.z*4))>>>1)|1:0;
  try{d.build(o);}catch(err){reportErr('build '+key+': '+(err.stack||err));}
- sbEnd();popM();const doors=DOORS_CUR;
+ sbEnd();popM();MAT_ALT=keepMat;const doors=DOORS_CUR;
  CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;CUTC=keep.cut;
  rec.bbox=bb;rec.tris=GSTAT.tris-t0;rec.front=svFront(d,doors,org,wry);rec.doorCount=doors.length;rec.r=Math.hypot(d.w,d.d)/2;rec.h=d.h;
  if(!PLACE_DRY)REG.push(rec);return rec;}

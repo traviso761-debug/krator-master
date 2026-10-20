@@ -1444,6 +1444,293 @@
    },
    "roughLift": 0,
    "specular": 0.2
+  },
+  "card.kelp3": {
+   "lib": "card.kelp.0",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp4": {
+   "lib": "card.kelp.2",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp5": {
+   "lib": "card.kelp.3",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp6": {
+   "lib": "card.kelp.5",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp7": {
+   "lib": "card.kelp.6",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.kelp8": {
+   "lib": "card.kelp.8",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "card.palm.coconut": {
+   "lib": "card.palm.coconut",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "bark.bracket": {
+   "lib": "organic.fungus.bracket",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.cratered": {
+   "lib": "bark.cratered",
+   "scale": [
+    1.4,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.shingle": {
+   "lib": "organic.chitin.shingle",
+   "scale": [
+    1.0,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.flesh": {
+   "lib": "bark.flesh.red",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.65
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.crust": {
+   "lib": "ground.lava.crust",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.cinder": {
+   "lib": "ground.cinder",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.obsidian": {
+   "lib": "ground.obsidian",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "mapOnly": true
+  },
+  "ground.mycgold": {
+   "lib": "ground.mycelium.gold",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.mycpale": {
+   "lib": "ground.mycelium.pale",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.toxic": {
+   "lib": "ground.mushroom.toxic",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.rock037": {
+   "lib": "rock.rock037",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.moss001": {
+   "lib": "ground.moss001",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.shingle": {
+   "lib": "ground.shingle",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "stone.petrified": {
+   "lib": "stone.petrified",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": false
   }
  }
 }

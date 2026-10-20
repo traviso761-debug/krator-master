@@ -1,0 +1,91 @@
+{
+ "build": "isle",
+ "note": "The isle demo's city page's ground and streets on the material library (core/materials/PLAN.md). Run python3 tools/textures/pack.py settlements/isle-demo after any change, then python3 build.py. ground.* are the town ground's layers (src/60-isle-draw.js DRAW.ground, a planar world-xz shader over the vertex colours): tilled (the farmland's parcels), damp (the beach below the tide line), sandrock (the upper beach, mossy rocks), shingle (the steep shore); path.* are the streets' surfaces by class (DRAW.streets): gravel (avenue, highway, main), grass (side, alley: the dry grass path).",
+ "size": 512,
+ "families": {
+  "ground.tilled": {
+   "lib": "ground.tilled",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.damp": {
+   "lib": "ground.damp_beach_sand",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.sandrock": {
+   "lib": "ground.coast_sand_rocks_02",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.shingle": {
+   "lib": "ground.shingle",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "path.gravel": {
+   "lib": "ground.gravel019",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "path.grass": {
+   "lib": "ground.pathway004",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  }
+ }
+}

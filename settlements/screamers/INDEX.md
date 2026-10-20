@@ -95,6 +95,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `92-camera.js` | 2 | what stays of the camera: setView, the title, LO (1) |
 | `94-life.js` | 11 |  |
 | `95-pathviz.js` | 4 |  |
+| `96s-screamers-trades.js` | 6 | THE VOTH CENSUS OF TRADES [G data] (1) |
 | `96t-screamers-tags.js` | 3 | CORE TAGS: THE SCREAMERS' REG (1) |
 | `99-start.js` | 2 | 99. the take: the Screamers on core/host (1) |
 | `99-tail.html` | <1 |  |

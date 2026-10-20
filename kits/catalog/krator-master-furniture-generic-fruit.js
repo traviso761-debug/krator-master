@@ -1018,7 +1018,7 @@ FURN({
 
 FURN({
   key: 'generic_fruit_cherry', name: 'Valley Cherries', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
   biome: 'oidong', source: ['cherry'],
   w: 0.24, d: 0.22, h: 0.12, variants: 2, variantNames: ['a sprig of cherries', 'a bowl of cherries'],
   variantDims: [{ w: 0.22, d: 0.14, h: 0.09 }, { w: 0.24, d: 0.24, h: 0.12 }],
@@ -1060,7 +1060,7 @@ FURN({
 
 FURN({
   key: 'generic_fruit_bell_pod', name: 'Bell-pod Beads', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
-  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'stone'],
   biome: 'oidong', source: ['bellpod'],
   w: 0.3, d: 0.2, h: 0.09, variants: 2, variantNames: ['strings of beads', 'dried bells on a tray'],
   variantDims: [{ w: 0.3, d: 0.2, h: 0.06 }, { w: 0.26, d: 0.2, h: 0.09 }],

@@ -30,7 +30,7 @@
    "roughLift": 0.3
   },
   "bk.fern": {
-   "lib": "bark.palm",
+   "lib": "bark.scales.hooked",
    "scale": [
     4,
     6
@@ -578,6 +578,126 @@
    },
    "mapOnly": true,
    "roughLift": 0.3
+  },
+  "under1": {
+   "lib": "card.jungle.clump.16",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.718
+   },
+   "size": 512,
+   "own": true
+  },
+  "under2": {
+   "lib": "card.jungle.clump.17",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.718
+   },
+   "size": 512,
+   "own": true
+  },
+  "hang1": {
+   "lib": "card.vine.hanging.7",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.718
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "own": true
+  },
+  "fungus": {
+   "lib": "organic.fungus.bracket",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "mapOnly": true,
+   "roughLift": 0.3,
+   "own": true
+  },
+  "bk.silver": {
+   "lib": "bark.bark_willow_02",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "lupin": {
+   "lib": "card.flower.bluebell",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ],
+   "size": 512
+  },
+  "ground.rainfloor": {
+   "lib": "ground.ground106",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.lawn": {
+   "lib": "ground.ground003",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

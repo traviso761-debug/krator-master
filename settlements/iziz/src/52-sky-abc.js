@@ -30,8 +30,9 @@ function toppleBreak(G,U,ang,s,r0,hc,partFn){const B=TOPPLE_BREAK,ux=s*Math.cos(
  useGroupXF(U2);partFn(U2,hc+t,null);endGroupXF();
  rubbleRing(bx,0,bz,r0*.3,r0*1.3,70,3);
  B.out={x:U2.position.x,z:U2.position.z,ux:u2x,uz:u2z,bx,bz};}
-function skyPlinth(G,d,R){mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kput('slab',[0,5,0],null,[R,.6,R],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
- for(let k=0;k<48;k++){const th=k/48*TAU,r=R*.93;if(d>0&&rng()<.2)continue;kput(d>0?'colR':'colW',[r*Math.cos(th),5,r*Math.sin(th)],null,[1.8,12,1.8],null);}
+function skyPlinth(G,d,R,doors){   // doors: the angles of street doors on the podium (C's legs): no column stands in front of one (skyIx)
+ mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kput('slab',[0,5,0],null,[R,.6,R],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
+ for(let k=0;k<48;k++){const th=k/48*TAU,r=R*.93;if(d>0&&rng()<.2)continue;if(doors&&skyIx()&&doors.some(a=>Math.abs(Math.atan2(Math.sin(th-a),Math.cos(th-a)))<.07))continue;kput(d>0?'colR':'colW',[r*Math.cos(th),5,r*Math.sin(th)],null,[1.8,12,1.8],null);}
  kput(d>0?'ringR':'ringW',[0,17.3,0],qEuler(Math.PI/2,0,0),[R*.94,R*.94,8],null);
  apron(G,0,0,R*1.02,R*1.5,d,1.4);   // graded skirt: the plinth met the ground on a hard line
  if(d>0){mossOnRing(0,5.3,0,R*.85,120,3);vinesOnRing(0,17.3,0,R*.94,40,14);scatterMoss(0,0,0,R+2,R+100,220,3.5);rubbleRing(0,0,0,R+2,R+80,120,3);trees(0,0,R+30,R+160,30);}}
@@ -74,6 +75,11 @@ function skyShards(m,frac){const K0=KOFF,X0=KXF;KOFF=[0,0,0];KXF=null;frac=frac=
 // .7 m under the next floor; the towers hang a soffit 1.2-1.5 m under each
 // plate, so the fitting goes under the soffit (`soff`). No rng().
 // o: {rFn(y) clear radius inside the lining, y0, y1, step, soff, hole(u,y), d, seed, rIn=.62, dens=7}
+// IZS_HOLLOW.sky (a world that builds the towers' interiors itself, settlements/iziz 78s/78v; 2026-10-19): the kit's floor
+// plates, soffits and skyRooms are left out of A-F (every rng() they draw is still drawn, so nothing else moves) and a
+// street door is cut at each tower's foot. skyDoor(h, uc, du, y0, y1): the hole predicate h, or the doorway round u = uc.
+function skyIx(){return typeof IZS_HOLLOW!=='undefined'&&!!IZS_HOLLOW.sky;}
+function skyDoor(h,uc,du,y0,y1){if(!skyIx())return h;return(u,y)=>(h&&h(u,y))||Math.min(Math.abs(u-uc),Math.abs(u-uc-1),Math.abs(u-uc+1))<du&&y>=y0&&y<y1;}
 function skyRooms(o){const rIn=o.rIn||.62,step=o.step,soff=o.soff||1.4,seed=o.seed||0,hole=o.hole,dd=o.d;if(!hole)return;
  const litP=dd>=3?.22:.05;
  for(let y=o.y0,f=0;y+step<o.y1;y+=step,f++){const ym=y+step*.5,R=o.rFn(ym),n=Math.max(10,Math.round(R*TAU/(o.dens||7)));
@@ -137,7 +143,7 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
  // The registered radius is set by the crown now (strut ring at ~95), 100.
  const SF=60,PR=70;
  skyPlinth(G,dd,PR);
- mesh(lathe({rFn:y=>22-4*y/Y0,H:Y0,nu:48,nv:6,hole:holeFn(dd*.5,3,null,1.5)}),skin,G,0,5,0);
+ mesh(lathe({rFn:y=>22-4*y/Y0,H:Y0,nu:48,nv:6,hole:skyDoor(holeFn(dd*.5,3,null,1.5),.25,.022,0,10)}),skin,G,0,5,0);
  const NS=24;for(let k=0;k<NS;k++){const th=(k+.5)/NS*TAU;const gone=dd>0&&(k===5||k===13||k===19);
   const a=[Math.cos(th)*SF,5,Math.sin(th)*SF],b=[Math.cos(th)*rFn(Y0)*.96,Y0+6,Math.sin(th)*rFn(Y0)*.96];
   if(!gone)beam(dd>0?'strutR':'strutW',a,b,5.5,4);else{beam('strutR',[a[0],2.6,a[2]],[(a[0]+b[0])/2+rr(-8,8),3.2,(a[2]+b[2])/2+rr(-8,8)],5.5,4);}
@@ -161,11 +167,11 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
    //     dark soffit 1.5 m under it, so the stack reads as floor/ceiling/void
    //     repeated rather than as a smear.
    mesh(lathe({rFn:y=>rFn(y+y0)*.9,H:H-y0,cut:oo.cut,jag:oo.jag,nu:80,nv:56,hole,seed:7}),MAT.guts,P);
-   for(let y=8;y<L-2;y+=8){const rp=rFn(y+y0);
+   if(!skyIx())for(let y=8;y<L-2;y+=8){const rp=rFn(y+y0);
     kput('slab',[0,y,0],null,[rp*.93,.7,rp*.93],new THREE.Color(0xbdb7ad));
     kput('slab',[0,y-1.5,0],null,[rp*.90,.8,rp*.90],new THREE.Color(0x191b1f));}
-   for(let k=0;k<60;k++){const th=rng()*TAU,yy=rr(10,L-10),r=rFn(yy+y0)*.86;kput('pipeR',[r*Math.cos(th),yy,r*Math.sin(th)],null,[.5,rr(8,30),.5],null);}
-   skyRooms({rFn:y=>rFn(y+y0)*.88,y0:8,y1:L-2,step:8,soff:1.5,hole,d,seed:7});}
+   for(let k=0;k<60;k++){const th=rng()*TAU,yy=rr(10,L-10),r=rFn(yy+y0)*.86,len=Math.min(rr(8,30),2*(L-20-yy));if(len>1.5)kput('pipeR',[r*Math.cos(th),yy,r*Math.sin(th)],null,[.5,len,.5],null);}   // none above the cut's teeth (it stood in the air over them)
+   if(!skyIx())skyRooms({rFn:y=>rFn(y+y0)*.88,y0:8,y1:L-2,step:8,soff:1.5,hole,d,seed:7});}
   // window cells — and, on Project A, the fires. 20 gangs over 32 bays and ~80
   // storeys lands at ~50% of cells; the mask and the tally are shared.
   const NB=32,NSTO=Math.ceil((L-20)/4.2);
@@ -205,7 +211,9 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
    if(upper&&Math.cos(th)>.2){beam('strutR',[Math.cos(th)*r0,L-6,Math.sin(th)*r0],[Math.cos(th)*(r0+3),L-6+5,Math.sin(th)*(r0+3)],3.2,2.4);continue;}
    beam(dx>0?'strutR':'strutW',[Math.cos(th)*r0,L-6,Math.sin(th)*r0],[Math.cos(th)*(r0+25),L-6+41,Math.sin(th)*(r0+25)],3.2,2.4);}
    if(dx===0){mesh(lathe({rFn:y=>rFn(H)*(1+.35*y/40)*(1-.15*Math.pow(y/40,3)),H:40,nu:64,nv:12}),MAT.glass,P,0,L-4,0);mesh(lathe({rFn:y=>12*Math.sqrt(clamp(1-Math.pow(y/16,2),0,1)),H:16,nu:32,nv:8}),SHELL(dx),P,0,L+34,0);kput('finial',[0,L+56,0],null,[5,9,5],null);}}
-  else if(!upper){for(let k=0;k<32;k++){const th=k/32*TAU;if(rng()<.5)continue;beam('strutR',[Math.cos(th)*rFn(cut)*1.02,L-6,Math.sin(th)*rFn(cut)*1.02],[Math.cos(th)*rFn(cut)*1.3,L-6+rr(8,26),Math.sin(th)*rFn(cut)*1.3],3.2,2.4);}}};
+  else if(!upper){// no struts at the cut: they were the crown's ring, which fell with it, and their stubs stood in the air over the
+   // cut's teeth (the owner, 2026-10-19: "Sky A pieces float"); the draws are kept so the rest of the tower is unchanged
+   for(let k=0;k<32;k++){if(rng()<.5)continue;rr(8,26);}}};
  const P=new THREE.Group();P.position.set(0,Y0,0);G.add(P);useGroupXF(P);
  if(d!==2)body(P,dd,Y0,null,false);else body(P,1,Y0,Y0+70,false);endGroupXF();
  if(d===2)toppledUpper(G,0,0,Y0+70,rFn(Y0+70),(U,dx,y0)=>body(U,1,Y0+70,null,true),d);
@@ -241,7 +249,7 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const SM=skyShar
  const LR=42,PR=54;
  skyPlinth(G,dd,PR);
  // core + 12 lobed legs raking out to the plinth
- mesh(lathe({rFn:y=>16,H:30,nu:32,nv:2}),skin,G,0,5,0);
+ mesh(lathe({rFn:y=>16,H:30,nu:32,nv:2,hole:skyDoor(null,.25,.03,0,10)}),skin,G,0,5,0);
  for(let k=0;k<NL;k++){const th=k/NL*TAU;const gone=dd>0&&(k===3||k===8);const c=Math.cos(th),s=Math.sin(th),rb=rFn(30)*1.15;
   const ux=(rb-LR),uy=27,ul=Math.hypot(ux,uy),ex=ux/ul,ey=uy/ul,a=[c*(LR-ex*7),5-ey*7,s*(LR-ex*7)],b=[c*(rb+ex*6),32+ey*6,s*(rb+ex*6)];
   if(!gone){const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(c*ex,ey,s*ex));kput(dd>0?'colR':'colW',a,q,[3.4,ul+13,3.4],null);}else rubbleRing(c*LR,5,s*LR,2,16,30,2.2);}
@@ -252,8 +260,8 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const SM=skyShar
   // the floors) on a grid that lines up with it, and each plate is pale with a
   // dark soffit under it instead of dark on a dark lining.
   if(dx>0){mesh(lathe({rFn:y=>rFn(y+y0)*.85,H:H-y0,cut:cut!=null?L:null,jag:cut?4:0,nu:72,nv:30,hole,seed:17}),MAT.guts,P);
-   for(let y=5;y<L-2;y+=5){const rp=rFn(y+y0);kput('slab',[0,y,0],null,[rp*.9,.5,rp*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1.2,0],null,[rp*.87,.6,rp*.87],new THREE.Color(0x191b1f));}
-   skyRooms({rFn:y=>rFn(y+y0)*.84,y0:5,y1:L-2,step:5,soff:1.2,hole,d,seed:17,dens:6});}
+   if(!skyIx())for(let y=5;y<L-2;y+=5){const rp=rFn(y+y0);kput('slab',[0,y,0],null,[rp*.9,.5,rp*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1.2,0],null,[rp*.87,.6,rp*.87],new THREE.Color(0x191b1f));}
+   if(!skyIx())skyRooms({rFn:y=>rFn(y+y0)*.84,y0:5,y1:L-2,step:5,soff:1.2,hole,d,seed:17,dens:6});}
   const bands=[];   // one mesh for the whole stack, not two per storey
   for(let s=0;s*5<L-4;s++){const y=s*5;const bh=dx>0?(u,v)=>fbm(u*10+s,2,18+s,2)<.25*dx||(d===1&&!upper&&hole(u,y)):null;
    bands.push(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(lobe(th,y+y0)*.97,lobe(th,y+y0)*1.1,v);return[r*Math.cos(th),y+3.9,r*Math.sin(th)];},144,2,{hole:bh}));
@@ -289,11 +297,11 @@ function buildSkyC(scene,gx,gz,d){reseed(9120+d);KOFF=[gx,0,gz];const SM=skyShar
  // (the group stays at y=5 on the leg's axis, which tripodLegR in
  // 77z-iziz-style.js reads), so the foot is buried in the podium all round.
  const LR=38,PR=66;
- skyPlinth(G,dd,PR);
+ skyPlinth(G,dd,PR,[Math.PI/6,5*Math.PI/6,3*Math.PI/2]);
  const legR=y=>15*Math.sqrt(1+1.2*Math.pow((y-YM*.5)/(YM*.5),2));
  for(let k=0;k<3;k++){const th=k/3*TAU+Math.PI/6;const Lg=new THREE.Group();Lg.position.set(Math.cos(th)*LR,5,Math.sin(th)*LR);const tilt=Math.atan2(LR-20,YM);Lg.rotation.set(0,-th,0);Lg.rotateZ(tilt);G.add(Lg);useGroupXF(Lg);
-  const LL=YM/Math.cos(tilt),sink=legR(0)*Math.tan(tilt)+1.5;mesh(lathe({rFn:y=>legR(Math.max(0,y-sink)),H:LL+sink,flutes:10,amp:.1,sharp:2,nu:60,nv:30,hole:holeFn(dd*.8,27+k,null,1.5)}),skin,Lg,0,-sink,0);
-  if(dd>0)mesh(lathe({rFn:y=>legR(Math.max(0,y-sink))*.85,H:LL+sink,nu:24,nv:4}),MAT.guts,Lg,0,-sink,0);
+  const LL=YM/Math.cos(tilt),sink=legR(0)*Math.tan(tilt)+1.5;mesh(lathe({rFn:y=>legR(Math.max(0,y-sink)),H:LL+sink,flutes:10,amp:.1,sharp:2,nu:60,nv:30,hole:skyDoor(holeFn(dd*.8,27+k,null,1.5),0,.02,sink,sink+10)}),skin,Lg,0,-sink,0);
+  if(dd>0)mesh(lathe({rFn:y=>legR(Math.max(0,y-sink))*.85,H:LL+sink,nu:24,nv:4,hole:skyDoor(null,0,.03,sink,sink+10)}),MAT.guts,Lg,0,-sink,0);
   for(let y=8;y<LL-8;y+=6)for(let j=0;j<10;j++){const u=(j+.5)/10;const a=u*TAU,r=legR(y)+.1;kput(dd>0?'winSmD':'winSmI',[r*Math.cos(a),y,r*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[1.6,2.4,1],null);}
   for(let yy=20;yy<LL-10;yy+=30)stripRing(0,yy,0,legR(yy)*.9,dd,20);endGroupXF();}
  // sky bridges between legs
@@ -304,8 +312,8 @@ function buildSkyC(scene,gx,gz,d){reseed(9120+d);KOFF=[gx,0,gz];const SM=skyShar
   const o={rFn:y=>rFn(y+y0),H:H-y0,cut:cut!=null?L:null,jag:cut?8:0,flutes:15,amp:.22,sharp:3,nu:120,nv:80,hole,seed:37};mesh(lathe(o),SHELL(dx),P);
   // the cut section, as on A and B: punched lining, pale plates, dark soffits
   if(dx>0){mesh(lathe({rFn:y=>rFn(y+y0)*.88,H:H-y0,cut:o.cut,jag:o.jag,nu:60,nv:40,hole,seed:37}),MAT.guts,P);
-   for(let y=7;y<L-2;y+=7){const rp=rFn(y+y0);kput('slab',[0,y,0],null,[rp*.9,.5,rp*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1.4,0],null,[rp*.87,.6,rp*.87],new THREE.Color(0x191b1f));}
-   skyRooms({rFn:y=>rFn(y+y0)*.86,y0:7,y1:L-2,step:7,soff:1.4,hole,d,seed:37});}
+   if(!skyIx())for(let y=7;y<L-2;y+=7){const rp=rFn(y+y0);kput('slab',[0,y,0],null,[rp*.9,.5,rp*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1.4,0],null,[rp*.87,.6,rp*.87],new THREE.Color(0x191b1f));}
+   if(!skyIx())skyRooms({rFn:y=>rFn(y+y0)*.86,y0:7,y1:L-2,step:7,soff:1.4,hole,d,seed:37});}
   windowsOnLathe({rFn:y=>rFn(y+y0),hole,cut:o.cut},dx,6,L-14,7,15,0,0,0,false);
   const scarY=d===1&&!upper?L*.4:1e9;
   for(let yy=14;yy<Math.min(L-16,scarY);yy+=21)stripRing(0,yy,0,rFn(yy+y0)*.9,dx,24);

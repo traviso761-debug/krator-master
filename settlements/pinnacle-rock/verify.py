@@ -44,7 +44,7 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # over EXPORT_BOX (the south nose and the farm ring below it). Sampled terrain (no krator-field). --profile a,b,c
 # replaces the list for one run.
 EXPORT_BOX = [-150, 450, 150, 750]
-EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
+EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water', 'city']   # atmos: the night's lights; water: the paddies and the spring
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
