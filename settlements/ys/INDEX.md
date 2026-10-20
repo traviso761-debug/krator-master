@@ -52,7 +52,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `65-hyk-spans.js` | 27 | shared bits (18); the rib bridges (51); the drawbridge (built DOWN: closed) (77); stairs (109); the ladder (140); the lily-pad landing (150); the grown walkway (152); the pontoon walkway (163) |
 | `66-hyk-furniture.js` | 26 | the helpers (all through F) (10); the pieces (70) |
 | `66-office-c.js` | 5 |  |
-| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (116); kit items (141) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `69e-vern-hollow.js` | 13 |  |

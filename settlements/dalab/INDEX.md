@@ -33,7 +33,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
 | `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
 | `69d-dalab-mat.js` | 24 | textures (39); materials (179); geometry (216); kit items (223) |
