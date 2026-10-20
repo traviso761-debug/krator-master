@@ -10,11 +10,11 @@
 // chorten in the square's middle. The kit's pending keys (core/hamlet's `xanadu` row: the pens, the corral, the dairy) are this
 // page's: the pens and the corral drystone rings, the dairy a whitewashed house. The walker
 // cannot walk through the buildings (core/walk blocks), and the flora roots off the plots and lanes (BIO's obstacles).
-const LSHAMLETS=(function(){const O={villages:[],buildings:0,people:0,errors:[],protos:0,meshes:0,tris:0,pending:0,bound:0};
+const LSHAMLETS=(function(){const O={villages:[],buildings:0,people:0,errors:[],protos:0,meshes:0,tris:0,pending:0,bound:0,glows:[],rotors:0};
  if(!LS.HAMLETS||typeof KHAMLET==='undefined'||typeof XAK==='undefined'||typeof isleFlatten==='undefined')return O;
  const KD=XAK.dims(),dims=k=>{const d=KD[k];return d?{w:d.w,d:d.d,h:d.h}:null;};
  try{const b=XAK.bind(typeof KMAT!=='undefined'?KMAT:null);O.bound=b?Object.keys(b).filter(k=>b[k]).length:0;}catch(e){O.errors.push('the kit\'s library maps: '+e.message);}
- const H=LS.HAMLETS.make(terrainH,waterH,dims);
+ const H=LS.HAMLETS.make(terrainH,waterH,dims),ROT=[];
  const WHITE=0xf0ebe0,BAND=LSP.maroon,STONE=0xb8b0a0,EARTH=0x9a8a6c,SQUARE=0xa89a7c,FOOT=0x8f8676;
  // the footprint's corners and centre: [x, z] in the world for the record r turned by ry, w x d about its centre
  const pts=(r,w,d)=>{const c=Math.cos(r.ry),s=Math.sin(r.ry);return [[-1,-1],[1,-1],[1,1],[-1,1],[0,0]].map(([u,v])=>[r.x+u*w/2*c+v*d/2*s,r.z-u*w/2*s+v*d/2*c]);};
@@ -23,7 +23,7 @@ const LSHAMLETS=(function(){const O={villages:[],buildings:0,people:0,errors:[],
  // ---------------------------------------------------------------- the kit's buildings: protos, flattened once each
  const PROTOS={};
  function proto(key,v,drop){const id=key+'#'+v+'@'+drop;if(id in PROTOS)return PROTOS[id];
-  const G=XAK.proto(key,v,{drop,footC:FOOT});let parts=null;
+  const G=XAK.proto(key,v,{drop,footC:FOOT,rotor:key==='xa_windmill'?false:undefined});   // (the windmill's rotors turn: drawn below)let parts=null;
   if(G){parts=isleFlatten(G);O.protos++;}else O.errors.push('the kit could not build '+key+' (variant '+v+')');
   return (PROTOS[id]=parts);}
  // ---------------------------------------------------------------- the page's own: the pending keys
@@ -81,14 +81,18 @@ const LSHAMLETS=(function(){const O={villages:[],buildings:0,people:0,errors:[],
   v.records.forEach(r=>{const K=KD[r.key],kit=!!K&&!r.pending,fw=kit?K.fw:r.w,fd=kit?K.fd:r.d;
    const hs=pts(r,fw,fd).map(([x,z])=>terrainH(x,z)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);
    const y=kit?top:low,nm=(kit?K.name:(KHAMLET.CULTURES.xanadu.pending[r.key]||{}).what||r.key)+' ('+spec.name.split(',')[0]+')';
-   REGISTER({name:nm,cls:'building',kind:r.key,key:'longsong_'+r.id,x:r.x,z:r.z,y:low-.5,r:Math.max(r.w,r.d)/2,h:r.h+(top-low)+1,
+   REGISTER({name:nm,cls:'building',kind:r.key,key:'longsong_'+r.id,x:r.x,z:r.z,y:low-.5,r:Math.max(r.w,r.d)/2+.6,   // (its doorstep or gate sill with it)
+    h:r.h+(top-low)+1,
     tags:{culture:'xanadu',kit:kit?'xanadu':'longsong',types:kit?K.types:[r.role==='house'?'dwelling-single':'farm']},note:'core/hamlet ('+spec.id+')'+(kit?'':': the kit has no '+r.key+' yet')});
    O.buildings++;OBSTACLES.push({x:r.x,z:r.z,r:Math.hypot(r.w,r.d)/2+1.5});   // the flora (planted after) keeps off the plot
    if(kit){const nv=Math.max(1,Math.min(3,K.variants|0)),vv=hash(r.id)%nv,drop=Math.max(1,Math.ceil(top-low+.4));
     const parts=proto(r.key,vv,drop);if(parts){const m=new THREE.Matrix4().compose(new THREE.Vector3(r.x,y,r.z),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),r.ry),new THREE.Vector3(1,1,1));
      copies.push({parts,m});V.kit++;
-     // its doorstep: a stone at the house's front (the kit's fw x fd), at its floor
-     const c=Math.cos(r.ry),sn=Math.sin(r.ry);steps.push([r.x+sn*(fd/2+.35),y-.16,r.z+c*(fd/2+.35),r.ry]);}}
+     // its doorstep: a stone at the house's front (the kit's fw x fd), at its floor (the pens' and the corral's: the sill
+     // of their gate); a house's lamp at its door after dusk (89x lights it on core/atmos's glow layer); a windmill's rotors
+     const c=Math.cos(r.ry),sn=Math.sin(r.ry);steps.push([r.x+sn*(fd/2+.35),y-.16,r.z+c*(fd/2+.35),r.ry]);
+     if(r.role==='house'||/dwelling/.test((K.types||[]).join(' ')))O.glows.push([r.x+sn*(fd/2+.5),y+1.6,r.z+c*(fd/2+.5)]);
+     if(XAK.rotors)XAK.rotors(r.key,vv).forEach(R=>{ROT.push({x:r.x+R.x*c+R.z*sn,y:y+R.y,z:r.z-R.x*sn+R.z*c,R});});}}
    else{O.pending++;V.pending++;
     if(r.key==='xa_pens'||r.key==='xa_corral')ring(r,r.key==='xa_corral'?1.3:1.5);
     else house(r,low,{curtain:0x4a3a2a});}
@@ -101,6 +105,24 @@ const LSHAMLETS=(function(){const O={villages:[],buildings:0,people:0,errors:[],
    im.name='longsong:hamlet-steps';im.userData.hamlet=true;im.userData.inspectLabel='A doorstep ('+spec.name.split(',')[0]+')';scene.add(im);}
   REGISTER({name:spec.name,cls:'settlement',kind:'village',key:'longsong_'+spec.id,x:v.site.x,z:v.site.z,y:terrainH(v.site.x,v.site.z)-2,r:120,h:14,
    tags:{culture:'xanadu',types:['dwelling-multi','farm']},note:'core/hamlet: '+v.census.pop+' people, '+v.census.households+' households'});});
+ // ---------------------------------------------------------------- the windmills' rotors, turning in the valley wind
+ // (the kit's own arms and sails, XAK.rotors: eight arms top and bottom, a reed sail on each; the kit leaves them out of the
+ // mill it builds for this page). One instanced set per rotor height; a turn about every 9 s, a little faster in a gust
+ if(ROT.length){const byH={};ROT.forEach(o=>{(byH[o.R.h]=byH[o.R.h]||[]).push(o);});
+  const wood=new THREE.Color(0x7a6a58).convertSRGBToLinear(),reed=new THREE.Color(0xc8b478).convertSRGBToLinear(),ims=[];
+  for(const h in byH){const L=byH[h],R=L[0].R,P=[],C=[],box=(cx,cy,cz,sx,sy,sz,a,col)=>{const g=new THREE.BoxGeometry(sx,sy,sz).toNonIndexed();
+    g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(cx,cy,cz),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),a),new THREE.Vector3(1,1,1)));
+    const q=g.attributes.position.array;for(let i=0;i<q.length;i++)P.push(q[i]);for(let i=0;i<q.length/3;i++)C.push(col.r,col.g,col.b);};
+   for(let k=0;k<8;k++){const a=k/8*Math.PI*2+.3,dx=Math.sin(a),dz=Math.cos(a);
+    for(const yy of R.arms)box(dx*R.R/2,yy-R.y,dz*R.R/2,.08,.08,R.R,a,wood);
+    box(dx*R.R*.55,R.sail[0]-R.y,dz*R.R*.55,.06,R.sail[1],R.R*.85,a,reed);}
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('color',new THREE.Float32BufferAttribute(C,3));g.computeVertexNormals();
+   const im=new THREE.InstancedMesh(g,new THREE.MeshLambertMaterial({vertexColors:true}),L.length);im.userData.hamlet=true;im.userData.inspectLabel='A windmill\'s rotor (the reed sails turning)';
+   im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(im);ims.push([im,L]);O.rotors+=L.length;}
+  const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Yx=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1),V3=new THREE.Vector3();
+  let ang=0,last=null;const turn=()=>{const t=performance.now()/1000,dt=last==null?0:Math.min(.1,t-last);last=t;ang+=dt*(.7+.25*Math.sin(t*.13));
+   ims.forEach(([im,L])=>{L.forEach((o,j)=>{M.compose(V3.set(o.x,o.y,o.z),Q.setFromAxisAngle(Yx,ang+j*.7),one);im.setMatrixAt(j,M);});im.instanceMatrix.needsUpdate=true;});};
+  turn();TICKS.push(turn);}
  O.kitErrors=XAK.errors;
  window._hamlets={get villages(){return O.villages.map(V=>Object.assign({},V));},get errors(){return O.errors.concat(XAK.errors);},buildings:O.buildings,people:O.people,
   protos:O.protos,meshes:O.meshes,tris:Math.round(O.tris),pending:O.pending,bound:O.bound};

@@ -146,4 +146,11 @@ window.LSFEST_NEXT=function(){const c=_hostH&&_hostH.clock;if(!c)return null;let
 {const at=document.getElementById('clk-hour')||document.getElementById('clk-speeds');
  if(at){const b=document.createElement('button');b.id='clk-festival';b.textContent='next festival';
   b.title='jump to the next festival of the register (every seventh day): the thangka hung, the camp pitched';
-  b.onclick=()=>LSFEST_NEXT();at.parentNode.insertBefore(b,at.nextSibling);}}
+  b.onclick=()=>LSFEST_NEXT();at.parentNode.insertBefore(b,at.nextSibling);
+  // the next season (2026-10-20): the clock to the first day of the farm year's next quarter (40b F.YEAR), the fields drawn
+  // as that day has them (85); its label names the season the clock is in
+  const sb=document.createElement('button');sb.id='clk-season';const FY=LS.FARMS.YEAR,q=FY.days/4;
+  const label=()=>{const c=_hostH&&_hostH.clock;sb.textContent=LS.FARMS.season(c?c.day||0:0)+' \u25b8';};
+  sb.title='jump to the next season of the farm year (ploughing, growing, harvest, winter stubble): '+FY.days+' days to the year';
+  sb.onclick=()=>{const c=_hostH&&_hostH.clock;if(!c)return;const d0=c.day||0,y=LS.FARMS.dayOfYear(d0);c.day=d0+(q-y%q);if(typeof placePeople==='function')placePeople(c.hour);label();};
+  label();setInterval(label,4000);b.parentNode.insertBefore(sb,b.nextSibling);}}

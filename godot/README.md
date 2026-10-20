@@ -25,6 +25,7 @@ godot --headless --path godot --script res://tests/export/world_test.gd   # M4: 
 godot --headless --path godot --script res://tests/export/iziz_test.gd    # M5: the world-iziz case: a city's records, fixtures, owners, materials and hooks
 godot --headless --path godot --script res://tests/export/yuni_test.gd    # the world-yuni case: Yuni's buildings and fixtures as records, against its own route
 godot --headless --path godot --script res://tests/export/yuni_interiors_test.gd   # the same case's interiors section: rooms, -col walls, links, and a path from room to room through the doors
+godot --headless --path godot --script res://tests/export/longsong_test.gd   # the world-longsong case: a city on the biome core (flora items, ARCH buckets by centroid, the sampled ground, stage, atmos, still water)
 godot --headless --path godot --script res://tests/shaders/library_test.gd   # the shader library: the hook table; world-sedesert's ground layers and pond
 godot --headless --path godot --script res://tests/water/water_test.gd     # KWater (core/water's twin) against WATER's own heights, frames, foam, bed
 xvfb-run -a godot --path godot --rendering-method gl_compatibility --rendering-driver opengl3 --script res://tests/shaders/library_gpu_check.gd   # the includes on a GPU

@@ -21,7 +21,9 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
  const B=P.BUILDINGS,ROCKY=P.ROCK.top;
  // a building's footprint (x0, x1, z0, z1, the heights it fills): drums by their radius, the rest by their sides
  // (the Debate Court's galleries ring the court: its open floor is not inside them)
- const FOOT=B.filter(o=>o.kind!=='gallery').map(o=>{const hw=o.r!=null?o.r:o.w/2,hd=o.r!=null?o.r:o.d/2;return {id:o.id,x0:o.x-hw,x1:o.x+hw,z0:o.z-hd,z1:o.z+hd,y0:P.baseY(o)-1,y1:P.topY(o)-.5,court:o.court||null};});
+ const FOOT=B.filter(o=>o.kind!=='gallery').map(o=>{const hw=o.r!=null?o.r:o.w/2,hd=o.r!=null?o.r:o.d/2;return {id:o.id,x0:o.x-hw,x1:o.x+hw,z0:o.z-hd,z1:o.z+hd,y0:P.baseY(o)-1,y1:P.topY(o)-.5,court:o.court||null,
+   // a ward court's yard and its galleries: open to the sky, in sight (the walk graph's are the yard's and galleries' records: 40c)
+   yard:o.kind==='court'&&o.base==='ward'?(dp=>({x0:o.x-o.w/2+dp,x1:o.x+o.w/2-dp,z0:o.z-o.d/2+dp,z1:o.z+o.d/2-dp}))(Math.min(10,o.d*.3)):null};});
  // the camp's tents (pitched on festival days) and its well: out of the walk graph, and no one stands in one
  const inTent=(x,z)=>P.CAMP.tents.some(t=>Math.abs(x-t.x)<t.w/2+1.4&&Math.abs(z-t.z)<t.d/2+1.4)||P.WELLS.some(W=>!W.court&&Math.hypot(x-W.x,z-W.z)<2.4);
  const inFoot=(f,x,z,m)=>x>f.x0-m&&x<f.x1+m&&z>f.z0-m&&z<f.z1+m&&!(f.court&&x>f.court.x0&&x<f.court.x1&&z>f.court.z0&&z<f.court.z1);
@@ -85,16 +87,27 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
   const rooms=R.list.filter(r=>r.furnish!=='vault'&&!r.roof&&r.building!=='vault'&&r.id!=='wp.court');   // (the court: its own floor's nodes)
   const rid=r=>'R:'+r.id,cx=r=>r.circle?r.circle.x:(r.x0+r.x1)/2,cz=r=>r.circle?r.circle.z:(r.z0+r.z1)/2;
   const mk=(id,x,y,z,tag,b)=>{if(!byId[id])node(id,x,y,z,tag);bld[id]=b;return id;};
-  rooms.forEach(r=>mk(rid(r),cx(r),r.y,cz(r),'room',r.building));
+  // a room's node: the hub of its walks when the host has them (57a's, from the bake: the free cell nearest its middle),
+  // else its middle; a door joins it along the walk from the door to the hub, round the furniture ('W:' nodes)
+  const WK={};rooms.forEach(r=>{const w=O.walkOf?O.walkOf(r.id):null;if(w)WK[r.id]=w;mk(rid(r),w?w.h[0]:cx(r),r.y,w?w.h[1]:cz(r),'room',r.building);});
+  const via=(r,j,dn)=>{const w=WK[r.id],pts=w&&w.d[j];if(!pts||pts.length<2){edge(rid(r),dn,'door',2);return;}
+   let prev=dn;for(let k=0;k<pts.length-1;k++){const id=mk('W:'+r.id+'#'+j+'#'+k,pts[k][0],r.y,pts[k][1],'aisle',r.building);edge(prev,id,k?'floor':'door',2);prev=id;}
+   edge(prev,rid(r),'floor',2);};
   // the doors between rooms (a shared door is one node, on both rooms' lists)
-  rooms.forEach(r=>r.doors.forEach(d=>{if(d.out)return;const q=R.byId[d.to];if(!q||!byId[rid(q)])return;
-   edge(rid(r),mk('D:'+d.id,d.x,r.y,d.z,'idoor',r.building),'door',2);}));
+  rooms.forEach(r=>r.doors.forEach((d,j)=>{if(d.out)return;const q=R.byId[d.to];if(!q||!byId[rid(q)])return;
+   via(r,j,mk('D:'+d.id,d.x,r.y,d.z,'idoor',r.building));}));
   // the stairs: each stair room to the stair room over it in its building (their boxes meet), or, on a storey with none
   // there, to the room the flight comes up into (the wings' third storey, the conservators' and the map room's), and
   // the same down
   const stairs=rooms.filter(r=>r.stair&&!r.circle),meets=(a,b)=>!b.circle&&Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0)>.5&&Math.min(a.z1,b.z1)-Math.max(a.z0,b.z0)>.5;
+  // a stair room with a flight (40c: r.flight) is climbed along it: its hub to the flight's foot, up the flight, its head
+  // to the room over it (87 draws the same flight)
+  const climb=(a,b)=>{const F=a.flight;if(!F||F.to!==b.id||!byId[rid(b)]){edge(rid(a),rid(b),'stair',2);return;}
+   const f0=mk('S:'+a.id+'#foot',F.a[0],a.y,F.a[1],'aisle',a.building),f1=mk('S:'+a.id+'#head',F.b[0],a.y+F.rise,F.b[1],'aisle',a.building);
+   edge(rid(a),f0,'floor',2);edge(f0,f1,'stair',2);edge(f1,rid(b),'floor',2);};
   stairs.forEach(a=>{for(const dk of [1,-1]){const k=a.storey+dk,on=rooms.filter(b=>b.building===a.building&&b.storey===k&&meets(a,b));
-    const b=on.find(q=>q.stair)||(dk<0&&stairs.some(q=>q.building===a.building&&q.storey===k)?null:on[0]);if(b)edge(rid(a),rid(b),'stair',2);}});
+    const b=on.find(q=>q.stair)||(dk<0&&stairs.some(q=>q.building===a.building&&q.storey===k)?null:on[0]);if(!b)continue;
+    if(dk>0)climb(a,b);else if(!(b.flight&&b.flight.to===a.id))edge(rid(a),rid(b),'stair',2);}});   // (down a flight: the room under's climb)
   // the room a door opens into from outside its own: the room a metre past its threshold, on the side the door is on
   const roomAt=(x,y,z,not)=>{for(const q of rooms){if(q===not||Math.abs(q.y-y)>1.2)continue;
    if(q.circle?Math.hypot(x-q.circle.x,z-q.circle.z)<q.circle.r:x>q.x0&&x<q.x1&&z>q.z0&&z<q.z1)return q;}return null;};
@@ -104,8 +117,13 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
   const nearOut=(x,y,z,max,dyMax)=>{let bn=null,bd=max;for(const q of outside){if(Math.abs(q.y-y)>dyMax)continue;const d=Math.hypot(q.x-x,q.z-z);if(d<bd){bd=d;bn=q;}}return bn;};
   // the doors out: to the ground outside, the depths, the roof, or a named stair's landing
   const CORE=new Map(),norm=s=>s.replace(/\s*\([^)]*\)/g,'').replace(/^the /i,'').trim();
-  rooms.forEach(r=>r.doors.forEach((d,j)=>{if(!d.out)return;const id=mk('O:'+r.id+'#'+j,d.x,r.y,d.z,'idoor',r.building);edge(rid(r),id,'door',2);
+  rooms.forEach(r=>r.doors.forEach((d,j)=>{if(!d.out)return;const id=mk('O:'+r.id+'#'+j,d.x,r.y,d.z,'idoor',r.building);via(r,j,id);
    if(/Deep Stair/.test(d.to)){edge(id,'deep-stair','stair',2);return;}
+   // a door whose record names the room it leads to (a stair head on a roof, a stair through a ceiling): to that room
+   if(d.room&&byId['R:'+d.room]){edge(id,'R:'+d.room,Math.abs(byId['R:'+d.room].y-r.y)>1?'stair':'door',2);return;}
+   // a stair no room records, down to a door at its foot (the Eastern Watch's): its foot, and the room or the ground there
+   if(d.foot){const f=mk('F:'+r.id+'#'+j,d.foot.x,d.foot.y,d.foot.z,'idoor',r.building);edge(id,f,'stair',2);
+    if(d.foot.room&&byId['R:'+d.foot.room]){edge(f,'R:'+d.foot.room,'door',2);return;}const o=nearOut(d.foot.x,d.foot.y,d.foot.z,16,3);if(o)edge(f,o.id,'door',2);return;}
    if(/roof/.test(d.to)&&r.building==='white-palace'){edge(id,'in-roof','stair',2);return;}
    // a door naming a room of its building (the stair hall of the upper palace): to that room
    const named=rooms.find(q=>q!==r&&q.building===r.building&&norm(q.name).toLowerCase()===norm(d.to).toLowerCase());
@@ -138,9 +156,9 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
    edge(best[0],best[1],Math.abs(byId[best[0]].y-byId[best[1]].y)>1?'stair':'floor',2);O.patched.push(best[0]+' - '+best[1]);
    (adj.get(best[0])||adj.set(best[0],[]).get(best[0])).push(best[1]);(adj.get(best[1])||adj.set(best[1],[]).get(best[1])).push(best[0]);
    comp.forEach(n=>seen.add(n));}
-  O.rooms={n:rooms.length,reached:rooms.filter(r=>seen.has(rid(r))).length};};
+  O.rooms={n:rooms.length,reached:rooms.filter(r=>seen.has(rid(r))).length,walks:Object.keys(WK).length};};
  // a walker out of sight: inside a building's footprint (between its floor and its roof), or under the rock
- O.hidden=function(x,y,z){for(const f of FOOT)if(y>f.y0&&y<f.y1&&inFoot(f,x,z,-.3))return true;const ry=P.rockY(x,z);return ry>-1e8&&y<ry-1.5;};
+ O.hidden=function(x,y,z){for(const f of FOOT)if(y>f.y0&&y<f.y1&&inFoot(f,x,z,-.3)&&!(f.yard&&x>f.yard.x0&&x<f.yard.x1&&z>f.yard.z0&&z<f.yard.z1))return true;const ry=P.rockY(x,z);return ry>-1e8&&y<ry-1.5;};
  // ---------------------------------------------------------------- 3. the places
  const yOf=pl=>pl.y==='rock'?ROCKY:pl.y==='ward'?P.wardY(pl.z==null?-100:pl.z):typeof pl.y==='number'?pl.y:P.wardY(pl.z);
  // which plan places sit inside (their walkers reach them by the rooms' doors, not the courts')
@@ -155,6 +173,8 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
   hostel:IN_B('hostel'),'lay-houses':IN_B('servants'),tea:IN_B('market'),caravanserai:IN_B('caravanserai'),barracks:IN_B('barracks')};
  function roomSpots(id){const f=ROOMS_OF[id];if(!f||!P.ROOMS)return null;const out=[];
   for(const r of P.ROOMS.list){if(!f(r)||r.outdoor)continue;
+   // the room's standing spots on its free cells (57a's walks, from the bake), clear of the furniture
+   const w=O.walkOf?O.walkOf(r.id):null;if(w&&w.s.length){w.s.forEach(q=>out.push([q[0],q[1],r.y,r.id]));continue;}
    if(r.circle){const C=r.circle;for(let rr=3;rr<C.r-1.2;rr+=1.8){const n=Math.floor(2*Math.PI*rr/1.6);for(let k=0;k<n;k++){const a=k/n*Math.PI*2;out.push([C.x+Math.cos(a)*rr,C.z+Math.sin(a)*rr,r.y,r.id]);}}continue;}
    if(r.cell||(r.x1-r.x0)*(r.z1-r.z0)<16){out.push([(r.x0+r.x1)/2,(r.z0+r.z1)/2,r.y,r.id]);continue;}
    const st=id==='refectory'?2:2.6;for(let x=r.x0+1;x<=r.x1-1;x+=st)for(let z=r.z0+1;z<=r.z1-1;z+=st)out.push([x,z,r.y,r.id]);}
@@ -162,6 +182,8 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
   out.sort((a,b)=>KRAND.hash(7,Math.round(a[0]*10),Math.round(a[1]*10))-KRAND.hash(7,Math.round(b[0]*10),Math.round(b[1]*10)));
   return out.length?out:null;}
  O.roomSpots=roomSpots;
+ // a room some indoor place stands in (57a bakes standing spots for these alone; the rest keep their hub)
+ O.placeRoom=r=>Object.keys(ROOMS_OF).some(k=>ROOMS_OF[k](r));
  // the activities whose people stand still at their spot (the life layer animates them: 68)
  const STILL={DRILL:1,DEBATE:1,GUARD:1,TURN_WHEEL:1,KEEP:1,CHAM:1,WATCH:1,FESTIVAL:1};
  O.placeRecs=function(){const G=O.graph(),out=[];
@@ -183,26 +205,33 @@ const LSS=(function(){const P=LS,O={inited:false,problems:[],places:0,CELL:4};
  // ---------------------------------------------------------------- 4. the records
  O.HOME={monk:'cells',novice:'cells',elder:'cells',operative:'cells',master:'cells',keeper:'cells',warden:'barracks',
   servant:'lay-houses',scholar:'lay-houses',artisan:'lay-houses',trader:'lay-houses',caravan:'caravanserai',pilgrim:'hostel',festgoer:'away'};
- O.world=function(){const acts=new Set();for(const Pn of P.PEOPLE)Pn.schedule.concat(Pn.fest).forEach(a=>acts.add(a));
+ O.world=function(){const acts=new Set(),F=P.FESTIVAL,NV=F.cycle;for(const Pn of P.PEOPLE){Pn.schedule.forEach(a=>acts.add(a));for(let v=0;v<NV;v++)festOf(Pn,v).forEach(a=>acts.add(a));}
   const ORG={'The Order of Historians':'order','Oidong':'town','Xanadu Sultanate':'pilgrims'};
   return {activities:[...acts].sort().map(id=>({id,indoor:/^(SLEEP|EAT|STUDY_IN|WORK|REST|REST_W|REST_C|LODGE|TEA|PRAY|AWAY)$/.test(id)})),
    factions:[{id:'historians',name:'The Order of Historians'},{id:'oidong',name:'The people of the Oidong Valley'},{id:'xanadu',name:'The Xanadu Sultanate'}],
    orgs:[{id:'order',faction:'historians',name:'The Order at Longsong'},{id:'town',faction:'oidong',name:'The town in the ward'},
     {id:'pilgrims',faction:'xanadu',name:'Pilgrims',resident:false},{id:'caravans',faction:'xanadu',name:'A caravan from Xanadu',resident:false}],
-   // a role per schedule variant (O.roleOf), each on SIM's week: its day's schedule, and the festival's on the festival's weekday
+   // a role per schedule variant (O.roleOf), each on SIM's week, which is the festival's whole cycle (F.cycle weeks): its
+   // day's schedule, and on each festival day that week's programme ('fest0' ..), or the day's for one of the valley who
+   // stays away that week (its actor's alias)
    roles:[...new Set(P.PEOPLE.map(O.roleOf))].map(id=>{const Pn=P.PEOPLE.find(q=>O.roleOf(q)===id),R=P.ROLES.find(q=>q.role===Pn.role),F=P.FESTIVAL;
-    return {id,org:R.role==='caravan'?'caravans':ORG[R.faction],name:R.sub,scheds:{day:Pn.schedule,fest:Pn.fest||Pn.schedule},
-     week:Array.from({length:F.week},(u,d)=>d===F.day?'fest':'day'),speed:R.role==='pilgrim'||R.role==='festgoer'?.95:R.role==='operative'?1.3:1.1,
+    return {id,org:R.role==='caravan'?'caravans':ORG[R.faction],name:R.sub,scheds:Object.assign({day:Pn.schedule},...Array.from({length:NV},(u,v)=>({['fest'+v]:festOf(Pn,v)}))),
+     week:Array.from({length:F.week*NV},(u,d)=>d%F.week===F.day?'fest'+Math.floor(d/F.week):'day'),speed:R.role==='pilgrim'||R.role==='festgoer'?.95:R.role==='operative'?1.3:1.1,
      prefers:{SLEEP:{pin:'home'},REST:{pin:'home'},REST_W:{pin:'home'},REST_C:{pin:'home'},LODGE:{pin:'home'},AWAY:{pin:'home'}}};})};};
- O.roleOf=Pn=>Pn.role+'.'+(Pn.variant||0)+(Pn.cham?'.cham':'');   // the cham's dancers: their own festival schedule
+ O.roleOf=Pn=>Pn.role+'.'+(Pn.variant||0)+(Pn.cham?'.cham':'');
+ // a person's festival schedule under programme v (the plan's variants of its role's)
+ function festOf(Pn,v){return P.festVariant(Pn.fest||Pn.schedule,v,Pn.cham?'cham':Pn.role);}
+ O.festOf=festOf;   // the cham's dancers: their own festival schedule
  // ---------------------------------------------------------------- the declaration (once; the host's clock)
  O.init=function(clock,o){if(O.inited)return O;O.inited=true;o=o||{};const t0=Date.now(),G=O.graph();
-  if(SIM.WEEK!==P.FESTIVAL.week)throw new Error('LSS: the festival is every '+P.FESTIVAL.week+' days; SIM.WEEK is '+SIM.WEEK);
+  // SIM's week: the festival's cycle (its programmes, a week each), so the week a day falls in is SIM.weekday's to say
+  SIM.WEEK=P.FESTIVAL.week*P.FESTIVAL.cycle;
   SIM.init({seed:7401,hour:()=>clock.hour,day:()=>clock.day||0,t:()=>clock.t,err:m=>O.problems.push(m)});
   SIM.nav.layer('pedestrian',{nodes:G.nodes,edges:o.edges?o.edges(G.edges):G.edges,cost:{stair:1.3,landing:1,floor:1,door:1},yWeight:4});
   O.loaded=SIM.load(O.world());
   for(const r of O.placeRecs()){SIM.place(r);O.places++;}
-  for(const Pn of P.PEOPLE)SIM.actor({id:Pn.id,role:O.roleOf(Pn),home:O.HOME[Pn.role]});   // its variant's role: the day's and the festival's schedules
+  for(const Pn of P.PEOPLE){const al={};(Pn.comes||[]).forEach((c,v)=>{if(!c)al['fest'+v]='day';});
+   SIM.actor({id:Pn.id,role:O.roleOf(Pn),home:O.HOME[Pn.role],alias:Pn.comes?al:undefined});}   // its variant's role: the day's and the festival's schedules
   SIM.REF={layer:'pedestrian',x:0,z:-100};
   O.problems=O.problems.concat(SIM.check());O.ms=Date.now()-t0;return O;};
  return O;})();

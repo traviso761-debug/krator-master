@@ -126,4 +126,24 @@ F.provision=function(){const ha={};for(const o of G){if(o.kind==='orchard'||o.ki
 // what the Oidong kit may plant: the wild edges of a garden a little, nothing on a field, pool or bed; the pasture is
 // the kit's ground, thinned (the herds graze it open); a grove's own trees are the farm's
 F.plant=function(x,z){const o=F.groupAt(x,z);if(!o)return null;if(o.kind==='pasture')return .3;if(o.kind==='orchard')return .12;return 0;};
+// ---------------------------------------------------------------- the year (2026-10-20): the fields through the seasons
+// The farm year, compressed: 84 days (twelve weeks; four festivals of the register to a season), spring the first 21,
+// then summer, autumn, winter. The world clock's day 0 is F.YEAR.start into it (high summer: the crops grown, as the
+// fields were drawn before the year turned). An annual crop is ploughed for, sown, grows, ripens, is cut and left in
+// stubble over the winter, each a few days apart from the next crop (a hash of its id: the barley is not cut the day the
+// flax is); a perennial (tea, saffron, the herbs, the groves) and the fallow stand as they are. F.stage(crop, day) ->
+// {h: the plants' height (0 .. 1 of grown), ripe: 0 .. 1 (green to straw), soil: 0 .. 1 (bare earth showing), name}
+F.YEAR={days:84,start:38,seasons:['spring','summer','autumn','winter']};
+F.PERENNIAL=new Set(['saffron','tea','monks-sage','broom','snow-lotus','valley-ginseng','camphor','chalice-grass','fiddlehead','umbel-seed','fallow']);
+F.dayOfYear=day=>{const Y=F.YEAR;return (((day+Y.start)%Y.days)+Y.days)%Y.days;};
+F.season=day=>F.YEAR.seasons[Math.floor(F.dayOfYear(day)/(F.YEAR.days/4))];
+F.stage=function(crop,day){if(!crop||F.PERENNIAL.has(crop))return {h:1,ripe:0,soil:0,name:'standing'};
+ let off=0;for(let i=0;i<crop.length;i++)off=(off*31+crop.charCodeAt(i))%5;
+ const d=(((F.dayOfYear(day)-off)%F.YEAR.days)+F.YEAR.days)%F.YEAR.days;
+ if(d<7)return {h:0,ripe:0,soil:1,name:'ploughed'};
+ if(d<14)return {h:.08,ripe:0,soil:1,name:'sown'};
+ if(d<39)return {h:.1+.9*(d-14)/25,ripe:0,soil:Math.max(0,1-(d-14)/10),name:'growing'};
+ if(d<53)return {h:1,ripe:(d-39)/14,soil:0,name:d<46?'ripening':'ripe'};
+ if(d<59)return {h:.16,ripe:1,soil:.15,name:'harvested'};
+ return {h:.1,ripe:1,soil:.45,name:'stubble'};};
 P.FARMS=F;})(LS);

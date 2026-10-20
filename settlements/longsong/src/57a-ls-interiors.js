@@ -91,7 +91,8 @@ const KINDS={
  'lv-closed':    K(['vault'],[{need:'sealed crates',types:['storage'],n:12}],[{types:['storage'],max:10}],2),
  'lv-open':      K(['vault','archive'],[],[{types:['storage'],max:8}],8),
  'lv-quiet':     K(['quiet cell'],[{need:'lead cases',types:['storage'],n:3}],[],6),
- 'lv-unmaking':  K(['unmaking'],[{need:'the furnace',types:['stove'],n:1}],[],8),
+ // the Unmaking Room: the furnace, and along its walls what waits to be unmade (the vault's sealed crates and lead cases)
+ 'lv-unmaking':  K(['unmaking','vault'],[{need:'the furnace',types:['stove'],n:1}],[{types:['storage'],max:5}],8),
  'lv-cistern':   K(['store','vault'],[{need:'jars',types:['storage','vessel'],n:2}],[{types:['storage','vessel'],max:4}],6)};
 for(const k in KINDS){IX.PROGRAMS[k]=KINDS[k].prog;IX.KIND_ALIAS[k]=KINDS[k].alias;}
 LSIX.KINDS=KINDS;
@@ -230,11 +231,26 @@ function decor(r,lay){if(r.circle)return [];const rich=r.tier>=3,out=[],long=(r.
  const nx=Math.max(1,Math.round((r.x1-r.x0)/8)),nz=Math.max(1,Math.round((r.z1-r.z0)/8));
  for(let i=0;i<nx;i++)for(let j=0;j<nz;j++)out.push(P(rich?'xanadu_court_hanging':'xanadu_common_hanging',0,r.x0+(i+.5)*(r.x1-r.x0)/nx,r.z0+(j+.5)*(r.z1-r.z0)/nz,0));
  return out;}
+// the room's walks, on the placer's grid (the cells it kept every door connected on): a hub (the free cell nearest the
+// room's middle that the doors reach), from each door the path to the hub round the pieces (smoothed: the corners a
+// straight walk cannot skip), and, in a room an indoor place stands in (LSS.placeRoom), standing spots on free cells
+// (1.6 m apart; a cell or a small room: the hub alone). 40d walks these, not the room's middle (LSS.walkOf); [x, z] to
+// 10 cm (the grid's cells are 12 and 25 cm)
+function walks(R,plan,r){const g=plan.grid;if(!g||!R.doors.length)return null;
+ const starts=R.doors.map(d=>g.doorCells(d)),B=g.bfs([].concat(...starts));
+ const cx=r.circle?r.circle.x:(r.x0+r.x1)/2,cz=r.circle?r.circle.z:(r.z0+r.z1)/2,R1=v=>Math.round(v*10)/10,P=c=>[R1(c[0]),R1(c[1])];
+ let hub=-1,bd=1e9;for(let k=0;k<g.nx*g.nz;k++){if(B.dist[k]<0)continue;const c=g.centre(k),d=Math.hypot(c[0]-cx,c[1]-cz);if(d<bd){bd=d;hub=k;}}
+ if(hub<0)return null;
+ const d=starts.map(st=>{if(!st.length)return null;const ks=g.route(st,[hub]);if(!ks)return null;return g.smooth(ks.map(k=>g.centre(k))).map(P);});
+ const sp=[];if(typeof LSS!=='undefined'&&LSS.placeRoom&&!LSS.placeRoom(r));else if(r.cell||r.area<16)sp.push(P(g.centre(hub)));
+ else{const step=1.6,taken=[];for(let k=0;k<g.nx*g.nz;k++){if(B.dist[k]<0)continue;const c=g.centre(k);
+   if(taken.some(t=>Math.abs(t[0]-c[0])<step&&Math.abs(t[1]-c[1])<step))continue;taken.push(c);sp.push(P(c));}}
+ return{h:P(g.centre(hub)),d,s:sp};}
 function compute(r){const t0=performance.now(),seed=parseInt(hash(r.id),16)%100000,lay0=layoutOf(r),full=FULL.has(r.layout);
  const lay=full?lay0.concat(decor(r,lay0)):lay0;
  const pieces=lay.map((p,i)=>{const dm=AD.dims(p.key,p.v),y=AD.anchorY(p.key,p.v,{floorY:r.y,ceilingY:r.y+r.h,surfaceY:r.y});
   return{id:r.id+'.L'+i,key:p.key,v:p.v,seed:seed+i,x:R3(p.x),y:R3(y),z:R3(p.z),ry:R3(p.ry),need:'layout',by:'layout',w:dm.w,d:dm.d,h:dm.h};});
- let report=null,lights=[];
+ let report=null,lights=[],walk=null;
  if(r.ix&&r.ix!=='none'&&IX.PROGRAMS[r.ix]){
   const fixtures=pieces.filter(p=>p.y<r.y+2.4).map(p=>({id:p.id,kind:'piece',x:p.x,z:p.z,ry:p.ry,w:p.w,d:p.d,h:p.h,clearance:{front:p.key.indexOf('cushion')>=0?.35:.5}}));
   // the columns of a hall (the Hall of Pillars) stand before anything is placed
@@ -245,13 +261,14 @@ function compute(r){const t0=performance.now(),seed=parseInt(hash(r.id),16)%1000
    const R=ROOM({building:r.building,kind:r.ix,poly:r.poly,y:r.y,h:r.h,doors,windows:[],culture:r.culture,wealth:r.wealth,id:r.id,seed,level:r.storey||0,fixtures});
    const big=r.area>260,plan=furnishRoom(R,AD,{seed:7,cell:big?.25:.12,agent:.25,passes:big?1:3,backtrack:big?0:24,optional:!full});
    report={missing:plan.report.missing.map(m=>m.need+':'+m.reason),placed:plan.report.placed,fallbacks:plan.report.fallbacks.length};
+   try{walk=walks(R,plan,r);}catch(e){LSIX.fails.push(r.id+': walks: '+(e.message||e));}
    plan.placements.forEach((q,i)=>{pieces.push({id:r.id+'.p'+i,key:q.key,v:q.variant,seed:q.seed,x:R3(q.x),y:R3(q.y),z:R3(q.z),ry:R3(q.ry),need:q.need||null,by:'placer'});});
   }catch(e){LSIX.fails.push(r.id+': '+(e.message||e));}}
  // the lights every piece carries (lamps, the altar's butter lamps, the coppers' fires), in world space
  pieces.forEach(p=>{const L=AD.lights(p.key,p.v)||[],c=Math.cos(p.ry),s=Math.sin(p.ry);L.forEach(l=>lights.push([R2(p.x+l.lx*c+l.lz*s),R2(p.y+l.ly),R2(p.z-l.lx*s+l.lz*c),l.intensity,l.distance]));});
  pieces.forEach(p=>{delete p.w;delete p.d;delete p.h;});
  LSIX.ms+=performance.now()-t0;LSIX.computed++;
- return{fp:LSIX.fingerprint(r),pieces,lights,report};}
+ return{fp:LSIX.fingerprint(r),pieces,lights,report,walk};}
 // the record of a room: the bake's when it holds the room unchanged, else computed now (and kept)
 // the rooms the placer furnishes: every furnished room, and the depths' that have a kind (66 draws those)
 const placed=r=>r.furnish===true||r.furnish==='vault'&&!!r.ix&&r.ix!=='none';LSIX.placed=placed;
@@ -259,13 +276,16 @@ LSIX.record=function(id){if(LSIX.rec[id])return LSIX.rec[id];const r=RM.byId[id]
  if(r.layout==='pillars'&&!r.columns)LAYOUTS.pillars(r);
  const B=LSIX.bake&&LSIX.bake.rooms[id];
  if(B&&B.fp===LSIX.fingerprint(r)){LSIX.fromBake++;return LSIX.rec[id]={fp:B.fp,pieces:B.p.map((a,i)=>({id:id+'.'+i,key:a[0],v:a[1],seed:a[2],x:a[3],y:a[4],z:a[5],ry:a[6],need:a[7]||null,by:a[8]?'layout':'placer'})),
-  lights:B.l||[],report:B.r||null,baked:true};}
+  lights:B.l||[],report:B.r||null,walk:B.w||null,baked:true};}
  return LSIX.rec[id]=compute(r);};
 // every furnished room, in the bake's compact form (bake_interiors.py calls it; build.py inlines what it writes)
 LSIX.bakeAll=function(){const out={kit:LSIX.kit,rooms:{}};LSIX.rec={};LSIX.bake=null;
  RM.list.forEach(r=>{if(!placed(r))return;const R=LSIX.record(r.id);
-  out.rooms[r.id]={fp:R.fp,p:R.pieces.map(p=>[p.key,p.v,p.seed,p.x,p.y,p.z,p.ry,p.need,p.by==='layout'?1:0]),l:R.lights,r:R.report};});
+  out.rooms[r.id]={fp:R.fp,p:R.pieces.map(p=>[p.key,p.v,p.seed,p.x,p.y,p.z,p.ry,p.need,p.by==='layout'?1:0]),l:R.lights,r:R.report,w:R.walk||undefined};});
  return out;};
+// a room's walks (above) when the bake holds the room unchanged; null otherwise (the walk graph then crosses the room
+// by its middle): never computed here, the graph is built on the first frame
+LSIX.walkOf=function(id){const B=LSIX.bake&&LSIX.bake.rooms[id],r=RM.byId[id];return B&&B.w&&r&&B.fp===LSIX.fingerprint(r)?B.w:null;};
 LSIX.adoptBake=function(bake,kit){LSIX.kit=kit;if(!bake){LSIX.bakeState='none';return;}
  if(bake.kit!==kit){LSIX.bakeState='stale';return;}LSIX.bake=bake;LSIX.bakeState='adopted';};
 

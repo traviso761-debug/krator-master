@@ -84,10 +84,23 @@ LS.BUILDINGS.forEach(B=>{const y=LS.baseY(B),r=B.r!=null?B.r:Math.hypot(B.w,B.d)
    lsDoor(B.x+nx*(B.w/2+.05),y,B.z,nx,0,1.8,2.9,{curtain:LSP.saffron});}
   else{const dp=Math.min(10,B.d*.3),R=[[B.x,B.z-B.d/2+dp/2,B.w,dp],[B.x,B.z+B.d/2-dp/2,B.w,dp],[B.x-B.w/2+dp/2,B.z,dp,B.d-2*dp],[B.x+B.w/2-dp/2,B.z,dp,B.d-2*dp]];
    R.forEach(([x,z,w,d],k)=>lsBlock(x,z,w,d,yg,y,B.floors,B.storey,{rich,roundels:rich,win:{spacing:4.6}}));
-   // the court: paved, a gallery of lacquered posts round it, a chorten or a well in the middle
+   // the court: paved, a gallery round it on lacquered posts (the deck 1.6 m deep at each upper storey, its rail, the
+   // eaves over the top one; 40c records the decks as the galleries the upper rooms open on), a stair from its
+   // north-west corner down the west side, a chorten or a well in the middle
    ARCH.box('paving',B.x,y-.4,B.z,B.w-2*dp,.52,B.d-2*dp,{col:LSP.granite,sides:''});
-   const ix=B.w/2-dp-1.6,iz=B.d/2-dp-1.6;for(let a=-ix;a<=ix+.01;a+=3.2)for(const s of [-1,1])ARCH.cyl('wood',B.x+a,y,B.z+s*iz,.18,.16,B.storey,{seg:6,col:LSP.wood});
-   ARCH.box('wood',B.x,y+B.storey,B.z,2*ix+1,.3,2*iz+1,{col:LSP.woodDark,top:false});
+   const GD=1.6,ix=B.w/2-dp-GD,iz=B.d/2-dp-GD,S=B.storey,H=B.floors*S,cx0=B.x-B.w/2+dp,cz0=B.z-B.d/2+dp;
+   for(let a=-ix;a<=ix+.01;a+=3.2)for(const s of [-1,1])ARCH.cyl('wood',B.x+a,y,B.z+s*iz,.18,.16,H,{seg:6,col:LSP.wood});
+   for(let a=-iz+3.2;a<=iz-3.19;a+=3.2)for(const s of [-1,1])ARCH.cyl('wood',B.x+s*ix,y,B.z+a,.18,.16,H,{seg:6,col:LSP.wood});
+   for(let k=1;k<=B.floors;k++){const yk=y+k*S,top=k===B.floors,th=top?.3:.22;
+    ARCH.box('wood',B.x,yk-th,B.z-iz-GD/2,2*ix+2*GD,th,GD,{col:LSP.woodDark});ARCH.box('wood',B.x,yk-th,B.z+iz+GD/2,2*ix+2*GD,th,GD,{col:LSP.woodDark});
+    ARCH.box('wood',B.x-ix-GD/2,yk-th,B.z,GD,th,2*iz,{col:LSP.woodDark});ARCH.box('wood',B.x+ix+GD/2,yk-th,B.z,GD,th,2*iz,{col:LSP.woodDark});
+    if(top)continue;
+    // the rail along the deck's inner edge (a gap at the stair's head)
+    ARCH.box('wood',B.x+.6,yk+.92,B.z-iz,2*ix-1.2,.08,.08,{col:LSP.wood});ARCH.box('wood',B.x,yk+.92,B.z+iz,2*ix,.08,.08,{col:LSP.wood});
+    ARCH.box('wood',B.x-ix,yk+.92,B.z,.08,.08,2*iz,{col:LSP.wood});ARCH.box('wood',B.x+ix,yk+.92,B.z,.08,.08,2*iz,{col:LSP.wood});
+    // the stair: down the west side from the north-west corner, a step every ~20 cm, on a solid stringer
+    const run=S/.62,n=Math.ceil(S/.2),y0=yk-S;
+    for(let i=0;i<n;i++)ARCH.box('wood',cx0+GD+.6,y0,cz0+GD+(i+.5)*run/n,1,S*(n-i)/n,run/n+.01,{col:LSP.wood});}
    if(LS.WELLS.some(W=>W.court===B.id))WELL_Y[B.id]=y+.12;else lsChorten(B.x,y,B.z,.35);   // a well (drawn below) or a chorten
    lsDoor(B.x+nx*(B.w/2+.05),y,B.z,nx,0,3,3.6,{curtain:LSP.saffron});}});
  // the Geomancers' lodge carries Yuni's colours on its door (the Order's friends)

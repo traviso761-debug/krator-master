@@ -16,7 +16,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 123 | 1582 | 485 | 24 | 54 | 129 | 890 | 8 | fixtures, atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 37 | 429 | 14 | 23 | 10 | 26 | 356 | 5 |  | yes | yes |
 | [`settlements/locus`](settlements/locus/PORT.md) | 66 | 972 | 101 | 5 | 16 | 165 | 685 | 9 | atmos | yes | yes |
-| [`settlements/longsong`](settlements/longsong/PORT.md) | 30 | 498 | 151 | 0 | 0 | 94 | 253 | 1 | biome, atmos | yes | yes |
+| [`settlements/longsong`](settlements/longsong/PORT.md) | 30 | 528 | 162 | 0 | 0 | 97 | 268 | 1 | biome, atmos | yes | yes |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/PORT.md) | 36 | 721 | 62 | 0 | 15 | 325 | 319 | 2 |  | yes | yes |
 | [`settlements/mungo`](settlements/mungo/PORT.md) | 21 | 217 | 117 | 0 | 5 | 60 | 35 | 4 | atmos | yes | yes |
 | [`settlements/noahs-regret`](settlements/noahs-regret/PORT.md) | 35 | 281 | 36 | 13 | 10 | 66 | 157 | 4 | atmos | yes | yes |
@@ -27,7 +27,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/shade`](settlements/shade/PORT.md) | 31 | 324 | 86 | 15 | 14 | 65 | 144 | 3 |  | yes | yes |
 | [`settlements/verge`](settlements/verge/PORT.md) | 19 | 280 | 108 | 12 | 6 | 105 | 49 | 1 | biome | yes | yes |
 | [`settlements/voth`](settlements/voth/PORT.md) | 111 | 2981 | 1190 | 0 | 106 | 469 | 1216 | 38 | own | yes | yes |
-| [`settlements/xanadu`](settlements/xanadu/PORT.md) | 69 | 951 | 470 | 19 | 10 | 62 | 391 | 6 | atmos | yes | yes |
+| [`settlements/xanadu`](settlements/xanadu/PORT.md) | 69 | 955 | 474 | 19 | 10 | 62 | 391 | 6 | atmos | yes | yes |
 | [`settlements/ys`](settlements/ys/PORT.md) | 145 | 2035 | 361 | 59 | 105 | 110 | 1400 | 8 | atmos | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 62 | 1073 | 129 | 13 | 16 | 157 | 758 | 11 | fixtures | yes | yes |
 | [`kits/ancients`](kits/ancients/PORT.md) | 222 | 2625 | 250 | 35 | 176 | 32 | 2131 | 12 |  | yes | yes |

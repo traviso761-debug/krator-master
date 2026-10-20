@@ -31,9 +31,11 @@ function link(a,b,u,w){a=typeof a==='string'?byId[a]:a;b=typeof b==='string'?byI
  let id=a.id+'>'+b.id;if(a.doors.some(d=>d.id===id))id+='#'+a.doors.length;a.doors.push({id,x:R2(at[0]),z:R2(at[1]),w,to:b.id});b.doors.push({id,x:R2(at[0]),z:R2(at[1]),w,to:a.id,shared:true});}
 // a door out of a room on side 'n' (z0) 's' (z1) 'w' (x0) 'e' (x1), at fraction u along it, to a place that is not a room
 // (a stair, the court, the gallery, a building the plan does not divide)
-function out(a,side,u,to,w){a=typeof a==='string'?byId[a]:a;u=u==null?.5:u;w=w==null?1.4:w;
+// (room: the id of the room the way out leads to when it is not beside the door: a stair head on a roof, a stair down
+// through a ceiling; the walk graph joins the two, 40d)
+function out(a,side,u,to,w,room){a=typeof a==='string'?byId[a]:a;u=u==null?.5:u;w=w==null?1.4:w;
  const at=side==='n'?[a.x0+(a.x1-a.x0)*u,a.z0]:side==='s'?[a.x0+(a.x1-a.x0)*u,a.z1]:side==='w'?[a.x0,a.z0+(a.z1-a.z0)*u]:[a.x1,a.z0+(a.z1-a.z0)*u];
- a.doors.push({id:a.id+'>'+to,x:R2(at[0]),z:R2(at[1]),w,to,out:true});}
+ const d={id:a.id+'>'+to,x:R2(at[0]),z:R2(at[1]),w,to,out:true};if(room)d.room=room;a.doors.push(d);return d;}
 // rooms side by side along an axis: [[id, name, use, ix, tier, size(m) or null (the rest), extra]], a door between neighbours
 function row(base,x0,x1,z0,z1,axis,specs,o0){o0=o0||{};const o=Object.assign({},o0);delete o.chain;const len=axis==='x'?x1-x0:z1-z0,fixed=specs.reduce((s,q)=>s+(q[5]||0),0),
   free=specs.filter(q=>!q[5]).length,rest=free?(len-fixed)/free:0,rooms=[];let c=axis==='x'?x0:z0;
@@ -198,7 +200,9 @@ P.SHELLS={front:FR,outerW:OW,outerE:OE,innerW:IW,innerE:IE,gate:GT,base:BS,rpIn,
  cells('wp.k2.cells-e',OE.x0,OE.x1,OE.z0,OE.z1,{name:'A monk\'s cell (east range)',use:'monk\'s cell',ix:'ls-cell',tier:1,ends:['the front range\'s east stair','the back stair'],extra:o,corrName:'The monks\' east corridor (L4)'});
  // the loggia: on the front range's roof, under the row of lacquered columns, over the Debate Court
  const yL=T+WP.ranges.front*ST;
- add({id:'wp.loggia',name:'The Loggia of the Court (benches over the Debate Court)',sheet:'L4',building:'white-palace',storey:WP.ranges.front,y:yL+.05,h:3.2,use:'loggia',ix:'ls-loggia',tier:2,outdoor:true,x0:-31,x1:31,z0:FR.z0,z1:FR.z0+3.6});}
+ add({id:'wp.loggia',name:'The Loggia of the Court (benches over the Debate Court)',sheet:'L4',building:'white-palace',storey:WP.ranges.front,y:yL+.05,h:3.2,use:'loggia',ix:'ls-loggia',tier:2,outdoor:true,x0:-31,x1:31,z0:FR.z0,z1:FR.z0+3.6});
+ // its way up: a stair from the copyists' hall under it, through the hall's ceiling to the loggia's back
+ out('wp.loggia','s',.5,'the copyists\' hall (the stair up through its ceiling)',1.2,'wp.k3.copyists');}
 
 // ---------------------------------------------------------------- R1: the Red Palace's first level (storeys 0-1)
 {const k=0,i=rpIn(1),o={sheet:'R1',building:'red-palace',storey:k},x0=RP.x-RP.w/2+i,x1=RP.x+RP.w/2-i,z0=96,z1=RP.z+RP.d/2-i;
@@ -359,7 +363,23 @@ for(const [k,spec] of [[3,{hall:['reading','The reading hall of the Archive','re
    for(const side in R){const [a0,a1,b0,b1,ax,inward]=box[side],i=inset(B,k),rooms=row('ward.'+id+'.k'+k+'.'+side,a0+i,a1-i,b0+i,b1-i,ax,R[side],o);
     rooms.forEach(r=>out(r,inward,.5,'the court',1.4));
     const av=east?'e':'w';if(side===av){const g=rooms.find(r=>/\.gate$/.test(r.id));if(g)out(g,av,.5,'the avenue',2.6);
-     if(k>0&&!g)out(rooms[0],inward,.2,'the stair down',1.2);}}});}
+     if(k>0&&!g)out(rooms[0],inward,.2,'the stair down',1.2);}}});
+  // the yard, open to the sky (walked, not furnished), and on each upper storey its gallery: a deck 1.6 m deep round the
+  // court on the lacquered posts (64 draws it), a side's length each, joined at the corners, a stair from its north-west
+  // corner down the west side to the storey under it. The ranges' doors on 'the court' open on the yard or the gallery
+  const cx0=B.x-B.w/2+dp,cx1=B.x+B.w/2-dp,cz0=B.z-B.d/2+dp,cz1=B.z+B.d/2-dp,GD=1.6,gal={};
+  const yard=add(Object.assign(oW(B),{id:'ward.'+id+'.yard',name:'The court of '+B.name.replace(/^The /,'the ')+' (open to the sky)',storey:0,y:R2(y0),h:R2(B.storey-SL),
+   use:'court',ix:'none',tier:1,furnish:false,outdoor:true,x0:R2(cx0),x1:R2(cx1),z0:R2(cz0),z1:R2(cz1)}));
+  for(let k=1;k<rng.length;k++){const o=Object.assign(oW(B),{storey:k,y:R2(y0+k*B.storey),h:R2(B.storey-SL),use:'gallery',ix:'none',tier:1,furnish:false,outdoor:true}),G={};
+   const box={n:[cx0,cx1,cz0,cz0+GD],s:[cx0,cx1,cz1-GD,cz1],w:[cx0,cx0+GD,cz0+GD,cz1-GD],e:[cx1-GD,cx1,cz0+GD,cz1-GD]};
+   for(const side of ['n','s','w','e']){if(!rng[k][side])continue;const b=box[side];
+    G[side]=add(Object.assign({},o,{id:'ward.'+id+'.k'+k+'.gallery-'+side,name:'The gallery round the court ('+{n:'north',s:'south',w:'west',e:'east'}[side]+', storey '+(k+1)+')',x0:R2(b[0]),x1:R2(b[1]),z0:R2(b[2]),z1:R2(b[3])}));}
+   for(const [a,b] of [['n','w'],['n','e'],['s','w'],['s','e']])if(G[a]&&G[b])link(G[a],G[b],a==='n'?0:1,1);
+   // the stair: from the gallery's north-west corner, down along the west side's inner edge to the storey under it
+   const top=G.n||G.w||G.s||G.e,run=R2(B.storey/.62),fx=R2(cx0+GD+.6),fz=R2(cz0+GD+run+.6),under=k===1?yard:gal[k-1]&&(gal[k-1].n||gal[k-1].w);
+   top.doors.push({id:top.id+'>stair',x:fx,z:R2(cz0+GD),w:1,to:'the gallery\'s stair (down to '+(k===1?'the court':'the gallery under it')+')',out:true,
+    foot:{x:fx,z:k===1?fz:R2(cz0+GD/2),y:R2(y0+(k-1)*B.storey),room:under?under.id:undefined}});
+   gal[k]=G;}}
  house('paper-mill',[[['vats','The vat room (the pulp beaten, the sheets lifted)','vat room','ls-workshop',1,24,{layout:'vatroom'}],['press','The paper press (the wet sheets pressed)','workshop','ls-workshop',1,12],
    ['pulp','The pulp store (bamboo, chalice-rim grass, lotus silk)','store','ls-store',0,null]],
   [['loft','The drying loft (the sheets on their racks)','drying loft','ls-store',0,null,{layout:'paperloft'}]]]);
@@ -415,21 +435,25 @@ for(const [k,spec] of [[3,{hall:['reading','The reading hall of the Archive','re
  const hh=P.building('hall-of-hours'),ob=P.building('observatory'),ew=P.building('eastern-watch');
  const a=add(Object.assign({id:'lr.hours',name:'The Hall of Hours (the water clock, the sand clocks, the Ancient clock under glass; the keepers\' bell schedule)',building:'hall-of-hours',storey:0,
   y:P.baseY(hh),h:H2,use:'hall of hours',ix:'ls-hours',tier:3,circle:{x:hh.x,z:hh.z,r:hh.r-.8,n:24},layout:'hours'},o));
- a.doors.push({id:'lr.hours>walk',x:hh.x,z:R2(hh.z-hh.r+.8),w:1.6,to:'the roof walk',out:true});
+ // the Hall of Hours and the Observatory stand on the wings' roofs: their doors open on the roof, by the head of the
+ // wing's stair (the west wing's for the Hall, the east wing's for the Observatory)
+ a.doors.push({id:'lr.hours>walk',x:hh.x,z:R2(hh.z-hh.r+.8),w:1.6,to:'the west wing\'s roof (its stair\'s head)',out:true,room:'rw.k5.horns-stair'});
  const b=add(Object.assign({id:'lr.observatory',name:'The Observatory (the dome\'s slit, the instruments, the star charts)',building:'observatory',storey:0,
   y:P.baseY(ob),h:H2,use:'observatory',ix:'ls-observatory',tier:3,circle:{x:ob.x,z:ob.z,r:ob.r-.8,n:24},layout:'observatory'},o));
- b.doors.push({id:'lr.observatory>walk',x:ob.x,z:R2(ob.z-ob.r+.8),w:1.4,to:'the roof walk',out:true});
+ b.doors.push({id:'lr.observatory>walk',x:ob.x,z:R2(ob.z-ob.r+.8),w:1.4,to:'the east wing\'s roof (its stair\'s head)',out:true,room:'rw.k5.upper-store-stair'});
  // the Eastern Watch's instrument room: the storey under its gallery, inside the drum's taper
  const yS=T+ew.floors*ew.storey*.68,yw=yS-4.8,rw=ew.r*(1-.1*(yw-T)/(yS-T))-.7;
  const c=add(Object.assign({id:'lr.watch',name:'The Eastern Watch (the needle, the chime, the slow pendulum)',building:'eastern-watch',storey:Math.floor((yw-T)/ST),
   y:R2(yw),h:4.3,use:'eastern watch',ix:'ls-watch',tier:3,circle:{x:ew.x,z:ew.z,r:R2(rw),n:20},layout:'watch'},o));
- c.doors.push({id:'lr.watch>stair',x:R2(ew.x-rw),z:ew.z,w:1.1,to:'the Watch\'s stair',out:true});
+ // the Watch's stair winds down the drum to its door at the foot, into the keepers' mess at the east wing's end (foot:
+ // where a stair no room records comes out, and the room it opens into; 40d)
+ c.doors.push({id:'lr.watch>stair',x:R2(ew.x-rw),z:ew.z,w:1.1,to:'the Watch\'s stair',out:true,foot:{x:R2(ew.x-ew.r),z:ew.z,y:P.baseY(ew),room:'rw.k0.mess'}});
  const yT=P.topY(RP)+1.4+.84,i=rpIn(RP.floors-1)+1;
  const w=add(Object.assign({id:'lr.roof-walk',name:'The roof walk (the parapet, the conch and horn players\' stations)',building:'red-palace',storey:RP.floors,y:R2(yT),h:3,use:'roof walk',ix:'ls-roofwalk',tier:2,outdoor:true,
   x0:RP.x-RP.w/2+i,x1:RP.x+RP.w/2-i-6,z0:RP.z-RP.d/2+i,z1:RP.z-RP.d/2+i+5,layout:'roofwalk'},o));
  // its east end is the stair house's (64 draws it: 4.2 m of roofed stair head, its door on the walk; 2026-10-20, the owner:
  // the walk had benches and no way up), the north-east victory banner past it on the corner
- out(w,'e',.5,'the stair house',1.2);
+ out(w,'e',.5,'the stair house (down to the eastern cells of the top storey)',1.2,'rp.k7.cells-e.a');
  // the gilded roofs: their bells and horns are the roofs' own (64); recorded so the sheet's rooms are all here
  ['gilt-chronicle','gilt-founders-w','gilt-founders-e'].forEach(id=>{const B=P.building(id);add(Object.assign({id:'lr.'+id,name:B.name,building:id,storey:0,y:P.baseY(B),h:B.storey,use:'gilded roof',ix:'none',tier:4,furnish:false,roof:true,
   x0:B.x-B.w/2,x1:B.x+B.w/2,z0:B.z-B.d/2,z1:B.z+B.d/2},o));});}
@@ -521,6 +545,18 @@ C.negatives=function(add2){
  add2('a door that is on one room\'s wall only',C.doors([{id:'a',x0:0,x1:4,z0:0,z1:4,doors:[{id:'d',x:2,z:6,w:1,to:'b'}]},{id:'b',x0:0,x1:4,z0:4,z1:8,doors:[{id:'d',x:2,z:6,w:1,to:'a'}]}],
   {a:{id:'a',x0:0,x1:4,z0:0,z1:4,doors:[{id:'d',x:2,z:6,w:1,to:'b'}]},b:{id:'b',x0:0,x1:4,z0:4,z1:8,doors:[{id:'d',x:2,z:6,w:1,to:'a'}]}}));
  const lone={id:'lone',x0:0,x1:1,z0:0,z1:1,doors:[]};add2('a room with no way in',C.reach([lone],{lone}));};
+
+// ---------------------------------------------------------------- the stairs' flights
+// a stair room's flight (r.flight): steps up its long axis from a metre in, along its far side, to the floor of the storey
+// over it (the stair room there whose box meets it, else the room the flight comes up into; a top stair room has none).
+// 87 draws it step for step; 40d's walkers climb it. {a: [x, z] its foot, b: [x, z] its head, w, n steps, rise, to: the
+// room at its head}
+L.forEach(a=>{if(!a.stair||a.circle||a.deep)return;
+ const up=L.filter(b=>b.building===a.building&&b.storey===a.storey+1&&!b.circle&&Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0)>.5&&Math.min(a.z1,b.z1)-Math.max(a.z0,b.z0)>.5);
+ if(!up.length)return;const top=up.find(q=>q.stair)||up[0],rise=R2(top.y-a.y);if(rise<1)return;
+ const alongZ=a.z1-a.z0>a.x1-a.x0,len=alongZ?a.z1-a.z0:a.x1-a.x0,w=Math.min(2.4,(alongZ?a.x1-a.x0:a.z1-a.z0)-.6);
+ const n=Math.max(4,Math.min(Math.ceil(rise/.17),Math.floor((len-2)/.25))),run=R2(n*Math.min(.3,(len-2)/n)),c=alongZ?a.x1-w/2-.3:a.z1-w/2-.3;
+ a.flight={a:alongZ?[R2(c),R2(a.z0+1)]:[R2(a.x0+1),R2(c)],b:alongZ?[R2(c),R2(a.z0+1+run)]:[R2(a.x0+1+run),R2(c)],w:R2(w),n,rise,to:top.id};});
 
 P.ROOMS={list:L,byId,named:NAMED,check:C,
  // the room at a point (x, y, z), or null

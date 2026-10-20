@@ -45,7 +45,8 @@ const PEOPLE_DRAWN=(function(){
  // the interiors' drawing (87 loads after this fragment: read on a frame, never before its declaration has run)
  const IXD=()=>{try{return LSIXD;}catch(e){return null;}};
  function simStart(){if(SIMS.on||SIMS.err)return SIMS.on;const C=clk();if(!C||typeof SIM==='undefined')return false;
-  try{LSS.init(C);SIM.jump();SIMS.last=SIM.minute();SIMS.actors=LS.PEOPLE.map(P=>SIM.get('actor',P.id));SIMS.on=true;}
+  // the rooms' walks round their furniture, from the bake (57a: LSIX.walkOf), before the graph is built
+  try{if(typeof LSIX!=='undefined'&&LSIX.walkOf)LSS.walkOf=LSIX.walkOf;LSS.init(C);SIM.jump();SIMS.last=SIM.minute();SIMS.actors=LS.PEOPLE.map(P=>SIM.get('actor',P.id));SIMS.on=true;}
   catch(e){SIMS.err=e;reportErr('people: core/simulation: '+(e.stack||e));}return SIMS.on;}
  // the slider moved the hour: everyone re-placed from the schedule (SIM.jump; a share of them mid-walk)
  function place(h){if(!SIMS.on)return;SIM.jump();SIMS.last=SIM.minute();S.forEach(s=>{s.korT=null;});}
@@ -64,11 +65,35 @@ const PEOPLE_DRAWN=(function(){
    if(act==='KORA'&&s.korT==null)s.korT=t;}
   out.shown=shown;}
  const POS=new Float32Array(N*4);
- // the cham's masks (the dancers: LS.PEOPLE's cham; their colours LS.FESTIVAL.cham.masks): drawn only while they dance
- const DANCERS=LS.PEOPLE.map((P,i)=>P.cham?i:-1).filter(i=>i>=0),maskG=new THREE.SphereGeometry(.2,12,9);maskG.scale(1,1.25,.8);
- const masks=mk(maskG,Math.max(1,DANCERS.length),new THREE.MeshLambertMaterial({color:0xffffff}));masks.userData.inspectLabel='A cham mask';
- DANCERS.forEach((i,k)=>{masks.setColorAt(k,new THREE.Color(LS.FESTIVAL.cham.masks[k%LS.FESTIVAL.cham.masks.length]).convertSRGBToLinear());});
- if(masks.instanceColor)masks.instanceColor.needsUpdate=true;const MASK=new Map(DANCERS.map((i,k)=>[i,k]));
+ // the cham's masks (the dancers: LS.PEOPLE's cham; the kinds LS.FESTIVAL.cham.masks, in turn): drawn only while they
+ // dance. Each kind its own shape, vertex-coloured, about the head's middle facing +z
+ const DANCERS=LS.PEOPLE.map((P,i)=>P.cham?i:-1).filter(i=>i>=0),KINDS=LS.FESTIVAL.cham.masks;
+ function part(parts,g,col,x,y,z,sx,sy,sz,rx,rz){const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion().setFromEuler(new THREE.Euler(rx||0,0,rz||0)),new THREE.Vector3(sx,sy,sz));
+  const q=(g.index?g.toNonIndexed():g.clone()).applyMatrix4(m),c=new THREE.Color(col).convertSRGBToLinear(),n=q.attributes.position.count,C=new Float32Array(n*3);
+  for(let k=0;k<n;k++){C[3*k]=c.r;C[3*k+1]=c.g;C[3*k+2]=c.b;}q.setAttribute('color',new THREE.BufferAttribute(C,3));q.deleteAttribute('uv');parts.push(q);}
+ function merged(parts){const P=[],Nn=[],C=[];parts.forEach(q=>{P.push(...q.attributes.position.array);Nn.push(...q.attributes.normal.array);C.push(...q.attributes.color.array);});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(Nn,3));
+  g.setAttribute('color',new THREE.Float32BufferAttribute(C,3));g.computeBoundingSphere();return g;}
+ const SPH=new THREE.SphereGeometry(1,12,9),CYL=new THREE.CylinderGeometry(1,1,1,14),CON=new THREE.ConeGeometry(1,1,14);
+ const MASKG={'black hat':(()=>{const p=[];part(p,SPH,0xb88a68,0,0,.02,.15,.19,.15);            // the dancer's own face
+   part(p,CYL,0x141414,0,.13,0,.4,.03,.4);part(p,CON,0x141414,0,.38,0,.15,.48,.15);part(p,SPH,0xd8a020,0,.64,0,.05,.05,.05);   // brim, crown, its gilt finial
+   part(p,CYL,0xb02818,0,.17,0,.17,.06,.17);return merged(p);})(),                             // the red band round the crown's foot
+  deer:(()=>{const p=[];part(p,SPH,0x9a3018,0,0,.03,.2,.24,.19);part(p,CON,0x9a3018,0,-.06,.2,.08,.18,.07,Math.PI/2);   // the red face, the muzzle
+   part(p,SPH,0xf2ede0,-.08,.06,.17,.04,.04,.03);part(p,SPH,0xf2ede0,.08,.06,.17,.04,.04,.03);                           // the eyes
+   for(const sd of [-1,1]){part(p,CYL,0xd8b060,sd*.14,.34,0,.025,.36,.025,0,-sd*.35);part(p,CYL,0xd8b060,sd*.25,.44,.02,.02,.2,.02,0,-sd*1.1);
+    part(p,CYL,0xd8b060,sd*.19,.5,0,.02,.18,.02,0,sd*.2);part(p,CON,0x9a3018,sd*.2,.14,-.02,.05,.12,.03,0,-sd*1.2);}   // the antlers, their tines; the ears
+   return merged(p);})(),
+  skull:(()=>{const p=[];part(p,SPH,0xf2ede0,0,0,.02,.2,.24,.18);
+   part(p,SPH,0x1a1410,-.075,.04,.15,.05,.055,.04);part(p,SPH,0x1a1410,.075,.04,.15,.05,.055,.04);part(p,SPH,0x1a1410,0,-.03,.17,.025,.03,.02);   // the sockets, the nose
+   part(p,CYL,0xf2ede0,0,-.13,.1,.11,.05,.06);part(p,CYL,0xd8a020,0,.2,0,.2,.04,.18);                                   // the jaw; the crown's gilt band
+   for(let k=0;k<5;k++){const a=(k-2)*.42;part(p,SPH,0xf2ede0,Math.sin(a)*.18,.27,Math.cos(a)*.15,.055,.065,.05);}       // the five little skulls
+   return merged(p);})()};
+ const MK={},SLOT=[];KINDS.forEach(kd=>{const n=DANCERS.filter((d,k)=>KINDS[k%KINDS.length]===kd).length;
+  MK[kd]=mk(MASKG[kd],Math.max(1,n),new THREE.MeshLambertMaterial({vertexColors:true}));MK[kd].userData.inspectLabel='A cham mask ('+kd+')';MK[kd].userData.n=0;});
+ DANCERS.forEach((d,k)=>{const kd=KINDS[k%KINDS.length];SLOT.push([MK[kd],MK[kd].userData.n++]);});
+ // the masks as one: the dancer's k-th slot, in its kind's mesh
+ const masks={setMatrixAt:(k,M)=>{const s=SLOT[k];s[0].setMatrixAt(s[1],M);},instanceMatrix:{set needsUpdate(v){for(const kd in MK)MK[kd].instanceMatrix.needsUpdate=v;}}};
+ const MASK=new Map(DANCERS.map((i,k)=>[i,k]));
  const out={shown:0,place,S,sim:SIMS,POS,dressed:new Set()};
  // the master of arms (the first master) stands in the drill ground's middle
  const MASTER=LS.PEOPLE.findIndex(P=>P.role==='master');
