@@ -97,9 +97,9 @@
       (8,450 actors, 2,839 places with their stores); the nav graph is left out.
 - [ ] **The Kautoa case's world.glb is 37 MB** (godot/data/world-isle-kautoa): the Islanders' pieces are detailed and
       each part is its own item (359). A level of detail in Godot, or the kits' simpler pieces for the export, would cut it.
-      The doors are at each building's front face, not the kit's own door offset (the kit's openings, windows and lamps
-      are drawn inside its pieces and not recorded on the city page: a kit change would record them); interiors and
-      furniture read empty (shells); the canoes are stand-in hulls and the citizens capsules in Godot (the Ring Sea kit's
+      The Islanders kit's doors, windows and lamps are exported (recorded while it builds); a building of the Iziz
+      Vernacular or the Beast Riders gets one door at its front face (their kits record no openings on this page);
+      interiors and furniture read empty (shells); the canoes are stand-in hulls and the citizens capsules in Godot (the Ring Sea kit's
       lakatoi is drawn on the page only while docked, and charactermodels has no crowd export yet).
 - [ ] **Valapo has no carver's workshop:** its stone and wooden tools and its jewellery come from Kautoa by the lakatoi
       (PLAN.md 9b); a carver's workshop in the Islanders kit and on Valapo's plan is owed.

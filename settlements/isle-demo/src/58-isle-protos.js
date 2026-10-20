@@ -2,7 +2,7 @@
 /* [web] A kit piece (ISK.proto, IZV.proto, CAT.proto: the bundles, bundles.py) built once at the origin and flattened into one
    geometry per material, ready to draw as InstancedMeshes. The city page (60-isle-draw.js DRAW) and the open world's
    hamlets (openworld/isle-demo/src/88h-world-hamlets.js) both read this file in place.
-   isleProto(kit, key, v, C) -> {id, parts: [{geo, mat, tris}], tris, ms, w, d, h} or null; C is the caller's cache
+   isleProto(kit, key, v, C) -> {id, parts: [{geo, mat, tris}], tris, ms, w, d, h, fixtures} or null; C is the caller's cache
    {protos, failed, built}. */
 function isleDenorm(a) {
   if (!a.normalized) return 1;
@@ -75,5 +75,6 @@ function isleProto(kit, key, v, C) {
   if (G.userData.port) islePortMats(G);
   var parts = isleFlatten(G), tris = parts.reduce(function (a, p) { return a + p.tris; }, 0);
   C.built++;
-  return (C.protos[id] = { id: id, parts: parts, tris: tris, ms: Math.round(performance.now() - t0), w: G.userData.w, d: G.userData.d, h: G.userData.h });
+  return (C.protos[id] = { id: id, parts: parts, tris: tris, ms: Math.round(performance.now() - t0), w: G.userData.w, d: G.userData.d, h: G.userData.h,
+    fixtures: G.userData.fixtures || null });   /* the Islanders kit's doors, windows and lamps in the piece's frame (ISK.proto) */
 }

@@ -32,8 +32,8 @@ registers the export's `city` section for every instance on a page.
    ceremonial centre opens in Godot** (2026-10-20): `godot/data/world-isle-kautoa`, `godot/tests/export/isle_test.gd`
    (buildings, records, sim joins, citizens replayed, canoes); core/export's scene reader (lifted from Iziz) and
    `SIM.exportMotion` (lifted from Dhelv) carry it; the stage, the doors (fixtures) and **Valapo's case**
-   (`godot/data/world-isle-valapo`) followed. Next: windows and lamps from the kit, the lakatoi and bodies in Godot,
-   then the open world (M7). A sea route
+   (`godot/data/world-isle-valapo`) followed, then the Islanders kit's own doors, windows and lamps (recorded while it
+   builds). Next: the lakatoi and bodies in Godot, then the open world (M7). A sea route
    (`SIM.transport` between the landings, `SIM.trade({line})` on it) comes with the open world. Any core/simulation
    change: diff Voth's whole `verify.py --assert` output against `main`'s page with the timings stripped (the method
    P7a used); the core work goes through the isle-demo build session.

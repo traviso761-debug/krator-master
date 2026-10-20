@@ -106,44 +106,61 @@ func _initialize() -> void:
 	var r0: Dictionary = tags.values()[0]
 	ok(KTags.uid(r0["class"], r0["key"], [float(r0["at"][0]) + 0.2, r0["at"][1], r0["at"][2]]) != r0["uid"], "negative: a record moved 20 cm has another uid")
 
-	# 2b. the doors: one for every building and landmark in the case, at its front face (local +z) at the ground, its uid
-	#     recomputed, a building's under its Building node; most within reach of the walking graph's entry the sim uses
+	# 2b. the fixtures: the Islanders kit's own doors, windows and lamps (another kit's building: one door at its front face),
+	#     every one within its building's footprint and its uid recomputed; every building and landmark has a door, a
+	#     building's fixtures are children of its Building node, and the door that carries the sim's entry is near it
 	var recs: Dictionary = rep.get("records", {})
 	var FX: Array = d["fixtures"]["records"]
-	var hosts := 0
+	var hosts := {}
 	var bld := 0
 	for id in tags:
 		var hr: Dictionary = tags[id]
 		if (hr["class"] == "building" or hr["class"] == "landmark") and hr.get("size") is Array:
-			hosts += 1
-			if hr["class"] == "building":
-				bld += 1
+			hosts[id] = 0
+	var kinds := {}
 	var fx_bad: Array = []
 	var fuid := 0
+	var on_bld := 0
+	var entries := 0
 	var near := 0
+	var kit_src := 0
 	for fr in FX:
 		var pr: Dictionary = tags.get(fr["parent"], {})
+		kinds[fr["kind"]] = int(kinds.get(fr["kind"], 0)) + 1
 		if pr.is_empty():
 			fx_bad.append(str(fr["id"]))
 			continue
+		if pr["class"] == "building":
+			on_bld += 1
+		if fr["kind"] == "door":
+			hosts[fr["parent"]] = int(hosts.get(fr["parent"], 0)) + 1
+		if fr.get("tags", {}).get("source") == "kit":
+			kit_src += 1
 		var dx := float(fr["at"][0]) - float(pr["at"][0])
 		var dz := float(fr["at"][2]) - float(pr["at"][2])
 		var c := cos(float(pr.get("ry", 0.0)))
 		var sn := sin(float(pr.get("ry", 0.0)))
-		if absf(dx * c - dz * sn) > 0.01 or absf(dx * sn + dz * c - float(pr["size"][1]) / 2.0) > 0.01:
+		if absf(dx * c - dz * sn) > float(pr["size"][0]) / 2.0 + 2.0 or absf(dx * sn + dz * c) > float(pr["size"][1]) / 2.0 + 2.0:
 			fx_bad.append(str(fr["id"]))
 		if KTags.uid("fixture", fr["key"], fr["at"]) == fr["uid"]:
 			fuid += 1
 		var e = fr.get("entry")
-		if e is Dictionary and Vector2(float(e["x"]) - float(fr["at"][0]), float(e["z"]) - float(fr["at"][2])).length() < 25.0:
-			near += 1
-	ok(FX.size() == hosts and fx_bad.is_empty(), "a door for each of the %d buildings and landmarks, at its front face%s" % [hosts, ("; OFF: " + ", ".join(fx_bad.slice(0, 3))) if not fx_bad.is_empty() else ""])
-	ok(fuid == FX.size(), "every door's uid recomputed: %d of %d" % [fuid, FX.size()])
-	ok(int(recs.get("fixtures_parented", 0)) == bld, "every building's door is a child of its Building node: %d of %d" % [int(recs.get("fixtures_parented", 0)), bld])
-	ok(near * 5 >= FX.size() * 4, "most doors are within 25 m of the walking graph's entry the sim's people use: %d of %d" % [near, FX.size()])
+		if e is Dictionary:
+			entries += 1
+			if Vector2(float(e["x"]) - float(fr["at"][0]), float(e["z"]) - float(fr["at"][2])).length() < 25.0:
+				near += 1
+	var no_door := 0
+	for id in hosts:
+		if int(hosts[id]) == 0:
+			no_door += 1
+	ok(FX.size() > 0 and fx_bad.is_empty(), "%d fixtures (%s, %d of them the kit's own), every one within its building's footprint%s" % [FX.size(), JSON.stringify(kinds), kit_src, ("; OFF: " + ", ".join(fx_bad.slice(0, 3))) if not fx_bad.is_empty() else ""])
+	ok(no_door == 0 and int(kinds.get("window", 0)) > 0 and kit_src > 0, "every one of the %d buildings and landmarks has a door; the kit's windows (%d) and lamps (%d) are there" % [hosts.size(), int(kinds.get("window", 0)), int(kinds.get("lamp", 0))])
+	ok(fuid == FX.size(), "every fixture's uid recomputed: %d of %d" % [fuid, FX.size()])
+	ok(int(recs.get("fixtures_parented", 0)) == on_bld, "every building's fixtures are children of its Building node: %d of %d" % [int(recs.get("fixtures_parented", 0)), on_bld])
+	ok(entries > 0 and near * 5 >= entries * 4, "the doors that carry the sim's entry are mostly within 25 m of it: %d of %d" % [near, entries])
 	var fk: Dictionary = (FX[0] as Dictionary).duplicate(true)
 	fk["at"] = [float(fk["at"][0]) + 0.2, fk["at"][1], fk["at"][2]]
-	ok(KTags.uid("fixture", fk["key"], fk["at"]) != fk["uid"], "negative: a door moved 20 cm has another uid")
+	ok(KTags.uid("fixture", fk["key"], fk["at"]) != fk["uid"], "negative: a fixture moved 20 cm has another uid")
 
 	# 3. the sim joins the registry: every place of the town whose record is in the case is that record, at it (the town's frame)
 	var S: Dictionary = d["sim"]

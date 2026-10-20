@@ -9,11 +9,11 @@
      ISLE.exportScene(ctx)   -> {items, buckets, materials, textures, dropped} for ctx.box
      ISLE.EXPORT_KIT         a proto's bundle prefix -> the item's kit (isk: the Islanders, izv: the Iziz Vernacular,
                              cat: the catalog's Beast Rider buildings)
-     ISLE.exportDoors(ctx)   the fixtures section: a door for every building and landmark in the box, at its front face
-                             (local +z: where its lot meets its street; 77 of the ceremonial centre's 89 enter from that side),
-                             at the ground, its `entry` the walking graph's node the sim's people come in by (the town's frame).
-                             The kit's own door offsets, windows and lamps are drawn inside its pieces and not recorded on
-                             the city page (KNOWN_ISSUES.md)
+     ISLE.exportFixtures(ctx) the fixtures section: every building and landmark in the box with the Islanders kit's own
+                             doors, windows and lamps (kits/islanders records them while it builds: 36-def.js door() and
+                             windowAt(), the lit points; ISK.proto hands them over in the piece's frame), turned onto its
+                             lot; a building of another kit gets one door at its front face (local +z, the street side). The
+                             door nearest the walking graph's entry node carries it (`entry`, the town's frame)
    And the stage (core/biome 44-core-stage.js KSTAGE: the lights, fog, sky panorama and the ground's look over the box);
    interiors and furniture answered empty (the city page draws the kit's buildings as shells, unfurnished). */
 ISLE.EXPORT_KIT = { isk: 'islanders', izv: 'iziz-vernacular', cat: 'catalog' };
@@ -45,20 +45,28 @@ ISLE.exportScene = function (ctx) {
     }).assemble(ctx);
   } finally { DRAW.nearR = keep.r; DRAW.nearMax = keep.n; DRAW.near(keep.at || [cx, cz], true); }
 };
-ISLE.exportDoors = function (ctx) {
-  var T = KTAGS.page; if (!T) return null;
-  var town = ISLE.cur && ISLE.cur.town, TS = town && ISLE.TUNE.sim.towns[town], S = ISLE.SIM, X = TS && S && S.towns[TS.id], F = X && X.frame, entry = {};
+ISLE.exportFixtures = function (ctx) {
+  var T = KTAGS.page; if (!T || !ISLE.cur) return null;
+  var town = ISLE.cur.town, TS = ISLE.TUNE.sim.towns[town], S = ISLE.SIM, X = TS && S && S.towns[TS.id], F = X && X.frame, entry = {}, lot = {};
   if (F) SIM.all('place').forEach(function (P) { if (P.settlement === TS.id && P.tags && P.tags.tag && P.door) entry[P.tags.tag] = { x: +(P.door.x - F.x).toFixed(2), y: +(P.door.y - F.sea).toFixed(2), z: +(P.door.z - F.z).toFixed(2), node: P.door.node || null }; });
-  var recs = [];
+  ISLE.cur.R.lots.forEach(function (L) { if (L.tag) lot[L.tag] = L; });
+  var side = function (yaw) { var a = Math.atan2(Math.sin(yaw), Math.cos(yaw)); return Math.abs(a) < Math.PI / 4 ? '+z' : Math.abs(a) > 3 * Math.PI / 4 ? '-z' : a > 0 ? '+x' : '-x'; };
+  var recs = [], n = { door: 0, window: 0, lamp: 0, front: 0 };
   T.records.forEach(function (r) {
     if ((r['class'] !== 'building' && r['class'] !== 'landmark') || r.removed || !r.at || !r.size || !ctx.inBox(r.at[0], r.at[2])) return;
-    var hd = r.size[1] / 2, c = Math.cos(r.ry || 0), s = Math.sin(r.ry || 0), at = [+(r.at[0] + hd * s).toFixed(3), r.at[1], +(r.at[2] + hd * c).toFixed(3)];   /* local (0, 0, d/2) turned by ry */
-    var key = 'door:' + r.key;
-    recs.push({ id: r.id + '/door', uid: KTAGS.uid ? KTAGS.uid('fixture', key, at) : null, 'class': 'fixture', kind: 'door', key: key, parent: r.id, at: at, ry: r.ry || 0,
-      size: [1.0, 1.9, 0.2], tags: {}, host: { wall: 'front', side: '+z', sill: 0 }, entry: entry[r.id] || null });
+    var c = Math.cos(r.ry || 0), s = Math.sin(r.ry || 0), L = lot[r.id], P = L && L.kit ? DRAW.proto(L.kit, L.key, L.v) : null, fx = P && P.fixtures;
+    var world = function (q) { return [+(r.at[0] + q.x * c + q.z * s).toFixed(3), +(r.at[1] + (q.y || 0)).toFixed(3), +(r.at[2] - q.x * s + q.z * c).toFixed(3)]; };   /* the piece's frame turned by ry */
+    var add = function (kind, i, q, o) { var at = world(q), key = kind + ':' + r.key;
+      recs.push(Object.assign({ id: r.id + '/' + kind + i, uid: KTAGS.uid('fixture', key, at), 'class': 'fixture', kind: kind, key: key, parent: r.id, at: at, ry: +((r.ry || 0) + (q.yaw || 0)).toFixed(4) }, o)); n[kind]++; };
+    var E = entry[r.id] || null, doors = fx && fx.doors.length ? fx.doors : null, best = -1, bd = Infinity;
+    if (doors && E) doors.forEach(function (q, i) { var w = world(q), d = Math.hypot(w[0] - E.x, w[2] - E.z); if (d < bd) { bd = d; best = i; } });
+    if (doors) doors.forEach(function (q, i) { add('door', i, q, { size: [q.w, q.h || 1.85, 0.1], tags: { source: 'kit', part: q.part }, host: { wall: side(q.yaw), side: side(q.yaw), sill: 0 }, entry: i === best ? E : null }); });
+    else { add('door', 0, { x: 0, y: 0, z: r.size[1] / 2, yaw: 0 }, { size: [1.0, 1.9, 0.2], tags: { source: 'front' }, host: { wall: 'front', side: '+z', sill: 0 }, entry: E }); n.front++; }
+    if (fx) fx.windows.forEach(function (q, i) { add('window', i, q, { size: [q.w, q.h, 0.1], tags: { source: 'kit', part: q.part }, host: { wall: side(q.yaw), side: side(q.yaw), sill: q.sill } }); });
+    if (fx) fx.lamps.forEach(function (q, i) { add('lamp', i, q, { size: [0.3, 0.3, 0.3], tags: { source: 'kit', colour: q.colour, big: q.big }, host: null }); });
   });
-  return { format: 'krator-fixtures', version: 1, build: T.build, records: recs,
-    note: "the isle demo's doors: one a building, at its front face (local +z, the street side) at the ground; entry: the walking graph's node the sim's people enter by (the town's frame). Windows and lamps are drawn inside the kit's pieces and not recorded on the city page" };
+  return { format: 'krator-fixtures', version: 1, build: T.build, records: recs, counts: n,
+    note: "the isle demo's doors, windows and lamps: the Islanders kit's own (every door() and window its walls cut, every lit point: lamps, hearths, fires; big = a fire), in each piece's frame turned onto its lot (ry: the way out); a building of another kit (the Vernacular, the Beast Riders) has one door at its front face (source 'front'); entry: the walking graph's node the sim's people enter by, on the door nearest it (the town's frame)" };
 };
 (function () {
   if (typeof EXPORT === 'undefined' || !EXPORT.sceneReader) return;
@@ -67,7 +75,7 @@ ISLE.exportDoors = function (ctx) {
   EXPORT.register('buckets', function (ctx) { return B(ctx).buckets; }, by);
   EXPORT.register('materials', function (ctx) { return B(ctx).materials; }, by);
   EXPORT.register('textures', function (ctx) { return B(ctx).textures; }, by);
-  EXPORT.register('fixtures', function (ctx) { return ISLE.exportDoors(ctx); }, by);
+  EXPORT.register('fixtures', function (ctx) { return ISLE.exportFixtures(ctx); }, by);
   EXPORT.register('stage', function (ctx) {
     if (typeof KSTAGE === 'undefined' || !ctx.box || !ISLE.cur) return null; var b = ctx.box, cx = (b[0] + b[2]) / 2, cz = (b[1] + b[3]) / 2, G = ISLE.cur.G;
     return KSTAGE.capture({ at: [cx, G.h(cx, cz) + 40, cz], sky: ctx.opt.sky == null ? 1024 : ctx.opt.sky, skyNear: Math.min(b[2] - b[0], b[3] - b[1]) / 2,

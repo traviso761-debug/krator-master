@@ -12,7 +12,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/girder`](settlements/girder/PORT.md) | 36 | 614 | 127 | 7 | 89 | 46 | 345 | 14 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 68 | 935 | 196 | 6 | 13 | 70 | 649 | 5 |  | yes | yes |
 | [`settlements/hook`](settlements/hook/PORT.md) | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
-| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 26 | 288 | 229 | 0 | 0 | 49 | 9 | 1 |  |  | yes |
+| [`settlements/isle-demo`](settlements/isle-demo/PORT.md) | 26 | 289 | 229 | 0 | 0 | 51 | 9 | 1 |  |  | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 104 | 1264 | 400 | 24 | 52 | 120 | 668 | 8 | fixtures, atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 36 | 423 | 9 | 23 | 10 | 26 | 355 | 5 |  | yes | yes |
 | [`settlements/locus`](settlements/locus/PORT.md) | 65 | 965 | 94 | 5 | 16 | 165 | 685 | 9 | atmos | yes | yes |
@@ -38,8 +38,8 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 25 | 159 | 30 | 6 | 10 | 24 | 88 | 2 | atmos | yes | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 234 | 121 | 0 | 10 | 66 | 37 | 1 |  |  | yes |
-| [`kits/islanders`](kits/islanders/PORT.md) | 38 | 410 | 27 | 6 | 10 | 24 | 343 | 3 | atmos | yes | yes |
-| [`kits/lizardmen`](kits/lizardmen/PORT.md) | 27 | 202 | 10 | 6 | 10 | 24 | 152 | 3 | atmos | yes | yes |
+| [`kits/islanders`](kits/islanders/PORT.md) | 38 | 411 | 27 | 6 | 10 | 24 | 344 | 3 | atmos | yes | yes |
+| [`kits/lizardmen`](kits/lizardmen/PORT.md) | 27 | 203 | 10 | 6 | 10 | 24 | 153 | 3 | atmos | yes | yes |
 | [`kits/mechs`](kits/mechs/PORT.md) | 7 | 38 | 0 | 0 | 10 | 28 | 0 | 0 |  |  | yes |
 | [`kits/motor-vehicles`](kits/motor-vehicles/PORT.md) | 15 | 156 | 0 | 10 | 10 | 20 | 116 | 6 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 27 | 390 | 2 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |

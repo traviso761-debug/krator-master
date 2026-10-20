@@ -532,4 +532,6 @@ none differing, the citizens drawn as stand-ins, the canoes placed from the rout
 stage (`KSTAGE`, core/biome 44, which the isle build takes standalone), a door fixture for every building and landmark
 (its front face; a building's under its Building node in Godot), interiors and furniture answered empty; and Valapo's
 case (`godot/data/world-isle-valapo`, box 106,-2075,506,-1675, `?town=Valapo&simAt=362`), the same test with
-`-- --case=world-isle-valapo --town=valapo`.
+`-- --case=world-isle-valapo --town=valapo`. The fixtures are the Islanders kit's own doors, windows and lamps since (kits/islanders records them while it builds;
+`ISK.proto` hands them over in the piece's frame): Kautoa's case 363, Valapo's 398, every one within its building's
+footprint and its uid recomputed in Godot.

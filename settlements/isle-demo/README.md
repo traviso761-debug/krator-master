@@ -325,8 +325,13 @@ declares both once they are planned, in one order whichever town it draws, and h
   the kit's buildings as shells); and **Valapo's case** (`godot/data/world-isle-valapo`: the village hall, the market,
   the caravanserai and the harbour, box 106,-2075,506,-1675, 132 lots, 1,941 instances, 708 people with 418 moving rows),
   the Godot test town-agnostic (`-- --case=world-isle-valapo --town=valapo`). The profile now asks for fixtures and
-  stage too (interiors and furniture may read empty). Left of P8: windows and lamps (drawn inside the kit's pieces, not
-  recorded on the city page), the Ring Sea kit's lakatoi and real bodies in Godot, a GDScript twin of the economy;
-  then M7.
+  stage too (interiors and furniture may read empty). **Windows and lamps** (2026-10-20, later): the Islanders kit now
+  records every door and window its walls cut and every lit point (kits/islanders 36-def.js `door()`/`windowAt()`,
+  40-is-kit.js `isWall`, `HALOS`), `ISK.proto` hands them over in the piece's frame, and `ISLE.exportFixtures` turns
+  them onto each lot: Kautoa's case 363 fixtures (135 doors, 217 windows, 11 lamps; 2 front-face doors for the
+  Vernacular's buildings, which record none), Valapo's 398 (134, 249, 15); every one within its building's footprint
+  and its uid recomputed in Godot, every building with a door, the door nearest the sim's entry carrying it. Left of P8:
+  the Vernacular's and the Beast Riders' openings, the Ring Sea kit's lakatoi and real bodies in Godot, a GDScript twin
+  of the economy; then M7.
 
 See `KNOWN_ISSUES.md`.

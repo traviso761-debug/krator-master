@@ -38,8 +38,8 @@ function isWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||IS_T,fr=o.frame===un
  const seg=(a,b,ya,yb)=>{if(b-a>.01&&yb-ya>.01)box(mk,(a+b)/2,y0+ya,0,b-a,yb-ya,t,col);};
  for(const q of opens){const a=q.x-q.w/2,b=q.x+q.w/2,sy=q.door?0:(q.y||.9);seg(x,a,0,h);seg(a,b,0,sy);seg(a,b,Math.min(h,sy+q.h),h);x=b;
   if(fr){for(const s of [a,b])box('wood',s,y0+sy,t*.6,.1,q.h,.06,fr);box('wood',q.x,y0+sy+q.h,t*.6,q.w+.2,.12,.07,fr);if(!q.door)box('wood',q.x,y0+sy-.08,t*.6,q.w+.16,.08,.1,fr);}
-  if(q.door)door(q.x,y0,t/2,0,q.w);
-  else if(o.shut!==false){for(const s of [-1,1])box(o.shutMk||'planks',q.x+s*(q.w*.75+.04),y0+sy,t*.5+.03,q.w/2,q.h,.04,o.shutCol||P('planks'));}}
+  if(q.door)door(q.x,y0,t/2,0,q.w,q.h);
+  else{windowAt(q.x,y0+sy,t/2,0,q.w,q.h,sy);if(o.shut!==false){for(const s of [-1,1])box(o.shutMk||'planks',q.x+s*(q.w*.75+.04),y0+sy,t*.5+.03,q.w/2,q.h,.04,o.shutCol||P('planks'));}}}
  seg(x,L/2,0,h);}
 /* four walls round a w x d room from y0 up h; o.front/back/left/right: openings for each side (isWall), o.mkf(side) a
    material per side, o.colf(side) its colour. The front faces +z; the side walls run between the front and back walls. */

@@ -106,8 +106,20 @@ function iskProto(key, v) {
   flushBuckets(GB, G, false);
   if (IE_MILLS.length) ieMillFlush(G);
   if (typeof saFlush === 'function') saFlush(G);
-  G.userData = { key: key, v: v | 0, tris: Math.round(GSTAT.tris), w: d.w, d: d.d, h: d.h, doors: rec ? rec.doorCount : 0 };
+  G.userData = { key: key, v: v | 0, tris: Math.round(GSTAT.tris), w: d.w, d: d.d, h: d.h, doors: rec ? rec.doorCount : 0, fixtures: iskFixtures(rec) };
   return G;
+}
+/* the building's openings and lights in its own frame (the proto stands at the origin, front +z): every door() and window
+   isWall cut (kits/islanders 36-def.js, 40-is-kit.js), its sub-buildings' too, and every lit point it recorded (HALOS: the
+   lamps, the hearths and the fires; big = a fire) */
+function iskFixtures(rec) {
+  var f = { doors: [], windows: [], lamps: [] }, r3 = function (v) { return +v.toFixed(3); };
+  (function walk(r) { if (!r) return;
+    (r.doors || []).forEach(function (q) { f.doors.push({ x: r3(q.wx), y: r3(q.wy), z: r3(q.wz), yaw: +q.yaw.toFixed(4), w: q.w, h: q.h || null, part: r.key }); });
+    (r.windows || []).forEach(function (q) { f.windows.push({ x: r3(q.wx), y: r3(q.wy), z: r3(q.wz), yaw: +q.yaw.toFixed(4), w: q.w, h: q.h, sill: q.sill, part: r.key }); });
+    (r.children || []).forEach(walk); })(rec);
+  HALOS.forEach(function (H) { f.lamps.push({ x: r3(H.x), y: r3(H.y), z: r3(H.z), colour: [+H.r.toFixed(3), +H.g.toFixed(3), +H.b.toFixed(3)], big: !!H.big }); });
+  return f;
 }
 return { proto: iskProto, dims: isDims, DEFS: DEFS, MAT: MAT, KIT: KIT, IS_TRADES: (typeof IS_TRADES !== 'undefined' ? IS_TRADES : null),
   RES: (typeof RES_NODES !== 'undefined' ? RES_NODES : null), errors: ISK_ERRS, ANIMU: ANIMU, FRAME_HOOKS: FRAME_HOOKS };
