@@ -1030,6 +1030,40 @@
     "sourceMean": 0.741
    }
   },
+  "sandR": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.08,
+    "mix": 0.5
+   },
+   "card": false,
+   "files": {
+    "map": "sandR.albedo.webp",
+    "normalMap": "sandR.normal.webp",
+    "roughnessMap": "sandR.rough.webp"
+   },
+   "lib": "rock.sandstone_blocks_04",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    8,
+    8
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "5553224292df8aa31be70b285e355bdb689adb23",
+    "normal": "04a733e81357c5c39efd57bbb863cfd0bc480227",
+    "roughness": "58c7b0747e17811f6f67f842ab9c2ff94b88d097"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.35,
+    "mean": 0.72,
+    "sourceMean": 0.6634
+   }
+  },
   "scale": {
    "breakup": {
     "cell": 6,

@@ -577,6 +577,34 @@
     "sourceMean": 0.5918
    }
   },
+  "ground.damp": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.damp.albedo.webp"
+   },
+   "lib": "ground.damp_beach_sand",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "88c19e99ef3d57556fcd770c88b9dc64a87dcc40",
+    "normal": "221a9e4fbaa1d2ef2d7d5e708a251850700c61a8",
+    "roughness": "0f76d4a765a9f16b07c7b3585572b8f244132966"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3820694093173158,
+    "sourceMean": 0.3821
+   }
+  },
   "ground.grass": {
    "breakup": null,
    "card": false,
@@ -743,6 +771,34 @@
     "keep": 1.0,
     "mean": 0.4540656136546415,
     "sourceMean": 0.4541
+   }
+  },
+  "ground.shingle": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.shingle.albedo.webp"
+   },
+   "lib": "ground.shingle",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "478dd96ba1c2106d148081e79a2317630a17592c",
+    "normal": "1daed4a82dec1983f6f73f961a5956ba2c7a7db2",
+    "roughness": "fb891a269efe64dce45251f9e4aa7fbb4e9f3ff8"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5735421724656049,
+    "sourceMean": 0.5735
    }
   },
   "ground.soil": {

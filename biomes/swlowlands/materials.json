@@ -657,6 +657,34 @@
    },
    "mapOnly": true,
    "roughLift": 0.3
+  },
+  "ground.bayoumud": {
+   "lib": "ground.ground095b",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.oaklitter": {
+   "lib": "ground.ground020",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

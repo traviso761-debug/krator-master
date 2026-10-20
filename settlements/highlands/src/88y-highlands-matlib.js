@@ -16,7 +16,8 @@ const MATLIB_ALIAS={hMazeBand:'hMaze'};
 const MATLIB_REPEAT={hTileD:[.8,.6],hTileS:[.8,.6],hTileT:[.8,.6],hTileW:[.8,.6],hHarlG:[.25,.25],hMazeBand:[1,1],
  hHarlR:[1/8,1/6],hHarlGt:[1/6,1/5],formF:[4,1]};
 const MATLIB_OLDREP={};for(const k in MATLIB_REPEAT)if(MAT[k]&&MAT[k].map)MATLIB_OLDREP[k]=MAT[k].map.repeat.clone();
-const MATLIB_BOUND=KMAT.bindMat('highlands',MAT,{tile:KMAT.ANCIENT_TILES,alias:MATLIB_ALIAS});
+/* the showcase ground (meadow, a plane whose uv runs 0..1 over 3200 m) takes the set at its own 8 m tile: tile = the plane's width */
+const MATLIB_BOUND=KMAT.bindMat('highlands',MAT,{tile:Object.assign({meadow:3200},KMAT.ANCIENT_TILES),alias:MATLIB_ALIAS});
 for(const k in MATLIB_REPEAT){if(!MATLIB_BOUND[k]||!MATLIB_OLDREP[k])continue;const m=MAT[k],o=MATLIB_OLDREP[k],f=MATLIB_REPEAT[k];
  [m.map,m.normalMap,m.roughnessMap].forEach(t=>{if(t)t.repeat.set(o.x*f[0],o.y*f[1]);});}
 (function(){const recs={};for(const k in MAT){const m=MAT[k];if(!m||!m.isMeshStandardMaterial)continue;const L=KMAT.packed('highlands',MATLIB_ALIAS[k]||k);

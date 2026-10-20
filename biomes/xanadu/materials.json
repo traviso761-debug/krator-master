@@ -628,6 +628,62 @@
     0.6667
    ],
    "size": 512
+  },
+  "ground.shore": {
+   "lib": "ground.ground093c",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.pebble": {
+   "lib": "rock.rock_wall_11",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "rock.rock_wall_12",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "rock.marble": {
+   "lib": "rock.marble012",
+   "scale": [
+    8.0,
+    8.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.7
+   },
+   "roughLift": 0.1,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

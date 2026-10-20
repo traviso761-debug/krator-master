@@ -687,6 +687,9 @@ if(LIBP('flesh.porous')){PAL.bell=[0xf4f0e6,0xfaf8f2,0xece6da];PAL.bellStreak=[0
   blob(W/2,H/2,W*.4,1);for(let k=0;k<7;k++){const a=k/7*TAU+h3(k,2,9),d=W*(.3+.1*h3(k,3,9));blob(W/2+Math.cos(a)*d,H/2+Math.sin(a)*d,W*(.06+.05*h3(k,4,9)),k+3);}});
  M.velvet.alphaMap.encoding=T3.LinearEncoding;THRONE.LIB.velvet=true;}}
 M.medusaT=capMat('cap.medusa','medusa');
+/* MOSS DOMES (HANDOFF-FLORA-REPORT): the library's moss over the dome, mapped from above, under the species' green; the lava casts' stone: petrified wood's agate bands */
+M.mossT=capMat('ground.moss001','mossdome');if(M.mossT)PAL.mossdome=[0xd0dca8,0xdce6b0,0xe4ecb8,0xc4d49c];   /* near white: the moss's own greens carry the dome */
+{const L=libMap('stone.petrified','cast');if(L){BIO.bucket('cast',BIO.barkMat(L.t),{label:'Lava cast (petrified stone)',uvScale:L.scale});THRONE.LIB.cast=true;}}
 {const t=libCard('card.lattice');if(t){t.wrapS=t.wrapT=T3.RepeatWrapping;THRONE.LATTICE=t;THRONE.LIB.lattice=true;}}
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
@@ -729,6 +732,7 @@ BIO.def('puff',G.puff(),M.vcol,{label:'Spore puffs'});
 BIO.def('fuzz',G.fuzz(),M.fuzz,{label:'Spore-puff fuzz'});
 BIO.def('hair',G.hair(),M.vcol,{label:'Spore-puff hairs'});
 BIO.def('brain',G.brain(),M.vcol,{label:'Brain caps'});
+BIO.def('mossdome',G.brain(),M.mossT||M.vcol,{label:'Moss domes'});
 BIO.def('column',G.column(),M.vcol,{label:'Vent coral'});
 BIO.def('ventcone',G.ventcone(),M.ventcone,{label:'The mat\'s vent cones'});
 BIO.def('bracket',G.bracket(),M.bracket,{label:'Lantern brackets'});

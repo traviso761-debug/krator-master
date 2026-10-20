@@ -424,6 +424,8 @@ const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{
 {const L=libMap('wood.char','wood');if(L)M.wood.map=L.t;BIO.bucket('wood',M.wood,{label:'Dead and charred wood',uvScale:L?L.scale:[3,4]});}
 // the granite (stone.granite): the boulders and stones, and the kopjes' ground (84 reads CRATERDRY.GRANITE)
 {const L=libMap('stone.granite','rock');if(L){M.rock.map=L.t;const m=CRATERDRY.LIBMEAN.rock;CRATERDRY.GRANITE={map:L.t,mean:m>0?m:.7};}}
+/* the granite's second delivery (stone.granite.b: finer grain, more lichen): the kopjes' ground blends it with the first by a macro noise (84), so a tor's slopes are not one grain */
+{const L=libMap('stone.granite.b','rockB');if(L){CRATERDRY.GRANITE_B={map:L.t,mean:CRATERDRY.LIBMEAN.rockB>0?CRATERDRY.LIBMEAN.rockB:.7};}}
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items

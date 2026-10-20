@@ -13,6 +13,7 @@
   "stone.granite": {"lib": "rock.granite.tor", "scale": [2.5, 2.5], "tint": {"keep": 0.5, "mean": 0.7}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
   "ground.sphagnum": {"lib": "ground.sphagnum", "scale": [2.6, 2.6], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
   "ground.moss": {"lib": "ground.moss002", "scale": [2.6, 2.6], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
-  "ground.paramo": {"lib": "ground.steppe", "scale": [3.2, 3.2], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true}
+  "ground.paramo": {"lib": "ground.steppe", "scale": [3.2, 3.2], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
+  "ground.wetmoss": {"lib": "ground.ground047", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true}
  }
 }

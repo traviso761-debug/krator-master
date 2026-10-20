@@ -514,8 +514,8 @@ THRONE.buildCasts=function(R,q){reseed(560047);q=q==null?1:q;let n=0;
  // landmarks, not a forest of them: a few tens on a map, only where the flow touched the trees
  BIO.grid(90,0,R,(x,z)=>{const Z=zones(x,z);return smooth(.15,.4,Z.knear)*(Z.young+Z.mature+Z.fresh*.6)*Z.wetW*.22*q;},(x,y,z)=>{if(blocked(x,z,2))return;
   const h=rr(2.5,11),r0=rr(.9,2.6),lean=rr(-.08,.08),la=rr(0,TAU),seg=12,P=[];
-  for(let k=0;k<=5;k++){const t=k/5,rk=r0*(1+.35*smooth(.3,0,t))*(1-.12*t);P.push({x:x+Math.cos(la)*lean*h*t,y:y-.6+(h+.6)*t,z:z+Math.sin(la)*lean*h*t,r:rk,col:shade(C(pick([0x4a4644,0x3e3a38,0x56504c])),rr(-.1,.05))});}
-  BIO.tube('bark1',P,P[0].col,{seg,cap:false,rfn:(i,a)=>1+.07*Math.sin(a*5+i)+(i===5?.18*Math.sin(a*3+x):0)});
+  for(let k=0;k<=5;k++){const t=k/5,rk=r0*(1+.35*smooth(.3,0,t))*(1-.12*t);P.push({x:x+Math.cos(la)*lean*h*t,y:y-.6+(h+.6)*t,z:z+Math.sin(la)*lean*h*t,r:rk,col:shade(C(pick(THRONE.LIB.cast?[0x8a8480,0x7a7470,0x948a84]:[0x4a4644,0x3e3a38,0x56504c])),rr(-.1,.05))});}
+  BIO.tube(THRONE.LIB.cast?'cast':'bark1',P,P[0].col,{seg,cap:false,rfn:(i,a)=>1+.07*Math.sin(a*5+i)+(i===5?.18*Math.sin(a*3+x):0)});
   // the hollow: an inner wall, dark, a little narrower (the burnt-out heart)
   const I=P.map(p=>({x:p.x,y:p.y,z:p.z,r:p.r*.72,col:C(0x161412)}));I[0].y+=1.2;BIO.tube('bark1',I,I[0].col,{seg:10,cap:false});
   // moss or lichen on its broken rim, rubble of its fallen crust at its foot (and the inspector's volume holds them)

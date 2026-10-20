@@ -63,7 +63,7 @@ const GROUNDU={uNight:{value:0}};
 // shores. ANTI-TILING: each layer is sampled twice, on its own tile and on a larger one turned 37 degrees, blended by a
 // macro noise. At night the veins, the glow carpet and the mycelium light by their own colours. Without the pack
 // (?mat=proc, or an open world) the ground is exactly the painted one, with the procedural mycelium veins.
-const GL_KEYS=['shoulder','ember','ash','ripples','mycelium','lava','veins','scoria','glowcarpet','sulphur','tufa'];
+const GL_KEYS=['shoulder','ember','ash','ripples','mycelium','lava','veins','scoria','glowcarpet','sulphur','tufa','obsidian'];
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k of GL_KEYS){const P=KMAT.packed('throne','ground.'+k);if(!P)return null;o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -74,7 +74,7 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};GL_KEYS.forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}else{sh.uniforms.uRock={value:THRONE.ROCKTEX};sh.uniforms.uVein={value:TEX_VEIN};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock,aGlow;varying float vRock,vGlow;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vGlow=aGlow;vL0=aL0;vL1=aL1;vL2=aL2;');
- const W={shoulder:'vL0.x',ember:'vL0.y',ash:'vL0.z',ripples:'vL0.w',mycelium:'vL1.x',lava:'vL1.y',veins:'vL1.z',scoria:'vL1.w',glowcarpet:'vL2.x',sulphur:'vL2.y',tufa:'vL2.z'};
+ const W={shoulder:'vL0.x',ember:'vL0.y',ash:'vL0.z',ripples:'vL0.w',mycelium:'vL1.x',lava:'vL1.y',veins:'vL1.z',scoria:'vL1.w',glowcarpet:'vL2.x',sulphur:'vL2.y',tufa:'vL2.z',obsidian:'vL2.w'};
  let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying float vRock,vGlow;varying vec4 vL0,vL1,vL2;',body,emit;
  if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}';
   body='{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
@@ -99,7 +99,7 @@ const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
   const n1=fbm(x*.006+3,z*.006-4,8431,2),n2=fbm(x*.011-7,z*.011+2,8432,2),soilK=1-onF*(S4.fresh+S4.young+.6*S4.mature);
   const W=[ (1-al)*soilK*.85, 4*al*(1-al)*soilK*.8, al*soilK*.8, al*smooth(.75,1,pl)*smooth(.45,.65,n1)*(1-smooth(.4,.7,slope))*soilK,
    al*soilK*smooth(.45,.65,n2)*(S4.mature+S4.old)*.85, onF*(S4.fresh+S4.young+.8*S4.mature+.45*S4.old), onF*S4.fresh*.85, smooth(.3,.7,cin)*.9,
-   Math.max(smooth(.78,.97,sky)*.85,smooth(.5,.85,gul)*al*.45), smooth(.45,.85,vent+(n2-.5)*.3)*.85, smooth(.35,.8,acid)*.85,0];
+   Math.max(smooth(.78,.97,sky)*.85,smooth(.5,.85,gul)*al*.45), smooth(.45,.85,vent+(n2-.5)*.3)*.85, smooth(.35,.8,acid)*.85,onF*S4.young*smooth(.5,.72,n2)*.6];
   for(let c=0;c<4;c++){L0[k*4+c]=W[c];L1[k*4+c]=W[4+c];L2[k*4+c]=W[8+c];}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}

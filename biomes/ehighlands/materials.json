@@ -158,6 +158,20 @@
     0.6667,
     0.6667
    ]
+  },
+  "ground.verge": {
+   "lib": "ground.ground013",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

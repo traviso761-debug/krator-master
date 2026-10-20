@@ -349,6 +349,62 @@
     0.3333
    ],
    "size": 512
+  },
+  "ground.dune": {
+   "lib": "ground.ground080",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.rim": {
+   "lib": "ground.ground093c",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.redwall": {
+   "lib": "rock.sandstone.red",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.78
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.ledge": {
+   "lib": "rock.sandstone_cracks",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.78
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

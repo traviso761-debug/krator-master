@@ -176,6 +176,14 @@ MAT.dirt.map=TEX.dGround;MAT.dirt.needsUpdate=true;
 
 // ---------------------------------------------------------------- materials
 MAT.dRammed=new THREE.MeshStandardMaterial({map:TEX.dRammed,color:0xffffff,roughness:.98,metalness:0,side:DS});vWorldUV(MAT.dRammed,.5);
+// four more library surfaces (2026-10-19), each its own material so the kit's other earth and stone keep theirs: eroded
+// banco (earth.banco.eroded.b) for the poor quarter's walls, rendered stone (stone.rendered) for the bath house's hot room,
+// ruined render (stone.rendered.ruined) for the watch tower's footing, sandstone blocks (rock.sandstone_blocks_04) for the
+// scribes' hall's podium. The procedural maps stand in under ?mat=proc.
+MAT.dBancoE=new THREE.MeshStandardMaterial({map:TEX.dRammed,color:0xffffff,roughness:.98,metalness:0,side:DS});vWorldUV(MAT.dBancoE,.5);
+MAT.dRender=new THREE.MeshStandardMaterial({map:TEX.stone,color:0xffffff,roughness:.96,metalness:0,side:DS});vWorldUV(MAT.dRender,.5);
+MAT.dRenderR=new THREE.MeshStandardMaterial({map:TEX.stone,color:0xffffff,roughness:.97,metalness:0,side:DS});vWorldUV(MAT.dRenderR,.5);
+MAT.dBlock=new THREE.MeshStandardMaterial({map:TEX.stone,color:0xffffff,roughness:.96,metalness:0,side:DS});vWorldUV(MAT.dBlock,.5);
 MAT.dRelief=new THREE.MeshStandardMaterial({map:TEX.dRelief,color:0xffffff,roughness:.95,metalness:0,side:DS});vWorldUV(MAT.dRelief,.25);
 MAT.dMural=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});vWorldUV(MAT.dMural,.5);   // boxes: a 2 m band shows the whole frieze and tiles along the wall
 MAT.dMuralP=new THREE.MeshStandardMaterial({map:TEX.dMural,color:0xffffff,roughness:.94,metalness:0,side:DS});                          // planes: one whole tile stretched to the plane (round-house facets)
@@ -209,6 +217,7 @@ const DDOMELOW=new THREE.SphereGeometry(1,24,8,0,TAU,0,Math.PI/2);
 // ---------------------------------------------------------------- kit items
 kdef('dEarth',VBOX,MAT.dRammed);kdef('dEarthBat',VBATTER,MAT.dRammed);kdef('dEarthDrum',DDRUM,MAT.dRammed);kdef('dEarthDrumB',DDRUMB,MAT.dRammed);kdef('dEarthDome',DDOMELOW,MAT.dRammed);
 kdef('dRelief',VBOX,MAT.dRelief);kdef('dReliefTq',VBOX,MAT.dReliefTq);kdef('dDecoPanel',VPLANE,MAT.dDecoPanel);kdef('dChecker',VBOX,MAT.dChecker);kdef('dReliefBat',VBATTER,MAT.dRelief);kdef('dReliefDrum',DDRUM,MAT.dRelief);
+kdef('dRenderDrum',DDRUM,MAT.dRender);kdef('dRenderRDrum',DDRUM,MAT.dRenderR);kdef('dBlockB',VBOX,MAT.dBlock);kdef('dEarthE',VBOX,MAT.dBancoE);kdef('dEarthBatE',VBATTER,MAT.dBancoE);
 kdef('dStoneDrum',DDRUM,MAT.stone);kdef('dStoneDrumB',DDRUMB,MAT.stone);kdef('dStoneDome',DDOMELOW,MAT.stone);kdef('dStonePyr',VPYR,MAT.stone);
 kdef('dMural',VPLANE,MAT.dMuralP);kdef('dMuralB',VBOX,MAT.dMural);for(const v of[1,2,3]){kdef('dMural'+v,VPLANE,MAT['dMuralP'+v]);kdef('dMuralB'+v,VBOX,MAT['dMural'+v]);}
 const DMURALS=['dMural','dMural1','dMural2','dMural3'],DMURALBS=['dMuralB','dMuralB1','dMuralB2','dMuralB3'];

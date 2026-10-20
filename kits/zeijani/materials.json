@@ -83,6 +83,20 @@
     "cell": 6
    }
   },
+  "cinder": {
+   "lib": "ground.cinder",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
   "basaltPol": {
    "lib": "stone.basalt.polished",
    "scale": [

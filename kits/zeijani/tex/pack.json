@@ -233,6 +233,34 @@
     "sourceMean": 0.4781
    }
   },
+  "cinder": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "cinder.albedo.webp"
+   },
+   "lib": "ground.cinder",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "ac79748740c9e67eebd3c27f6fd2759540e4195c",
+    "normal": "61c19098086d74b383506b84cf162310a8555672",
+    "roughness": "0ef07445150d4489988033f27b321ebd378ff62e"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.26587645804311716,
+    "sourceMean": 0.2659
+   }
+  },
   "earth": {
    "breakup": null,
    "card": false,

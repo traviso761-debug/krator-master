@@ -563,6 +563,36 @@
     "sourceMean": 0.5107
    }
   },
+  "rlLily": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rlLily.albedo.webp",
+    "normalMap": "rlLily.normal.webp",
+    "roughnessMap": "rlLily.rough.webp"
+   },
+   "lib": "ground.lilypond",
+   "metal": 0,
+   "normalScale": 0.6,
+   "roughLift": 0.0,
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "605ff6653aa9d665d37749ad02a66b746f79fc24",
+    "normal": "b59ab259428661b0a84d5f563a2dc508a2cfae6c",
+    "roughness": "44e1d09eb242622e8e7fff4bfefa8f30597f4323"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4461039264663995,
+    "sourceMean": 0.4461
+   }
+  },
   "rlMat": {
    "breakup": {
     "cell": 6,
