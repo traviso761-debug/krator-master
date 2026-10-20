@@ -19,7 +19,11 @@ through window._kchar:
                the bow's string is drawn in bow_scan
   random       the same seed gives the same stranger; every people's strangers keep its skin and ancestry ranges
 The Animation Lab (window._lab) is checked instead for: six figures dressed, each body's short one shorter than its
-neutral one and its tall one taller; a clip plays on all six in step; a review mark is kept.
+neutral one and its tall one taller; a clip plays on all six in step; a review mark is kept; and on the six, the hand
+props (the owner's review, 2026-10-20): the bucket hangs plumb in Carry bucket; Draw from quiver has the arrow on the
+string and the string hand at the jaw at 5 s, and no arrow after the loose (6.2 s, 7.69 s); the bow's limbs stay out of
+the legs in Bow aim and scan; Block 2's blade stays out of the head and neck; Two-handed parry's forearms stay apart;
+Drink brings the cup to the lips in the left hand.
 --out writes a screenshot of the default figure, a rolled stranger, and a stranger of every people per body (faces).
 """
 import asyncio, json, os, sys
@@ -215,6 +219,31 @@ LAB_CHECKS = r'''async () => {
   document.querySelector('.verdicts button[data-v="good"]').click();
   if (!(L.reviews().ual_chop && L.reviews().ual_chop.verdict === 'good')) out.push('lab: the mark was not kept');
   document.querySelector('.verdicts button[data-v="good"]').click();
+  // the hand props, on the six people: each clip stepped at 30 Hz from its start (the passes keep state between frames)
+  const six = f.slice(0, 6), V = () => new THREE.Vector3(), Q = () => new THREE.Quaternion();
+  const bone = (x, n) => x.bones.find(b => b.name === n);
+  async function run(clip, each){
+    await L.play(clip);
+    for (const x of six) { const d = x.action.getClip().duration; x.action.time = 0; x.update(0);
+      for (let t = 0; t < d; t += 1 / 30) { x.update(1 / 30); each(x, x.action.time); } }
+  }
+  function at(clip, t){ six.forEach(x => { x.action.time = Math.max(0, t - 1); for (let i = 0; i < 30; i++) x.update(1 / 30); x.action.time = t; x.update(0); }); }
+  await L.play('walk_bucket'); at('walk_bucket', 4);
+  six.forEach((x, i) => { const g = bone(x, 'RightHand').children.find(c => !c.isBone), pv = g && g.children[0];
+    const ax = pv && V().set(0, 0, 1).applyQuaternion(pv.getWorldQuaternion(Q()));
+    if (!ax || ax.y > -0.999) out.push('props: the bucket does not hang plumb on figure ' + i); });
+  await L.play('bow_draw'); at('bow_draw', 5);
+  six.forEach((x, i) => { const b = x.bowState(); if (!b || !b.arrow || x.faceW < 0.99) out.push('props: Draw from quiver at 5 s, figure ' + i + ': no arrow nocked or the hand not at the jaw'); });
+  for (const t of [6.2, 7.69]) { at('bow_draw', t); six.forEach((x, i) => { if (x.bowState().arrow) out.push('props: an arrow on the string after the loose (' + t + ' s), figure ' + i); }); }
+  let legs = 0; await run('bow_scan', x => { legs = Math.max(legs, x.bowState().inLegs); });
+  if (legs > 0.01) out.push('props: the bow goes ' + (legs * 100).toFixed(1) + ' cm into the legs in Bow aim and scan');
+  let blade = 0; await run('block_2', x => { const n = x.bladeNeed; if (n.length) blade = Math.max(blade, n[n.length - 1]); });
+  if (blade > 0.01) out.push('props: the blade of Block 2 goes ' + (blade * 100).toFixed(1) + ' cm into the head, neck or trunk');
+  function segd(p1, q1, p2, q2){ let best = 9; for (let i = 0; i <= 20; i++) for (let j = 0; j <= 20; j++) best = Math.min(best, p1.clone().lerp(q1, i / 20).distanceTo(p2.clone().lerp(q2, j / 20))); return best; }
+  let fore = 9; await run('parry_2h', x => { const P = n => bone(x, n).getWorldPosition(V()); fore = Math.min(fore, segd(P('LeftForeArm'), P('LeftHand'), P('RightForeArm'), P('RightHand'))); });
+  if (fore < 0.06) out.push('props: the forearms come ' + (fore * 100).toFixed(1) + ' cm apart in Two-handed parry');
+  await L.play('drink'); at('drink', 4);
+  six.forEach((x, i) => { if (x.held.L !== 'cup' || x.faceW < 0.99) out.push('props: Drink, figure ' + i + ': the cup not at the lips in the left hand'); });
   return out;
 }'''
 

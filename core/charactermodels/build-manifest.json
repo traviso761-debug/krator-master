@@ -1,6 +1,6 @@
 {
  "core/rand/08-core-rand.js": "4a3aa47f25da4c3f9e0dc101b42fdfb05e7af552",
- "data/clips.json": "2e86bdcd7016b5db736caa9c0c410c2ee2df5e1a",
+ "data/clips.json": "881dadf4b58f071f86b86a8d2a439c68ee09c2a1",
  "data/mpfb_female/kit.json": "e22270fd89fae425fa4fba0134ccad0d5c2b8430",
  "data/mpfb_female/skeleton.json": "36e08f068ea0fb9173cabd95bbbad7cc17f1839e",
  "data/mpfb_giant/kit.json": "9d9df4e3b9b59c310dfb8e0cd8d101d029813217",
@@ -9,10 +9,10 @@
  "data/mpfb_male/skeleton.json": "db2345d25bd7ce4ab9df0a692f22f2a47c82e91c",
  "data/peoples.json": "5accf5924da2e638f836e673702a63722099c6d5",
  "data/posture.json": "f6ce6fd87b4fd31d0b214acf3cc761dae0de402e",
- "data/props.json": "7325dd1aaea6684898eb2b122bbbb74ebbcd9b83",
+ "data/props.json": "772bf7e0e4a2f27291ce474f86430fa182202244",
  "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
- "dist/animation-lab.html": "37f3ed1e27af78fa46524359b13ff6f362ad4c5f",
- "dist/cosmetic-lab.html": "b6b26dd24e76200b108946953ac6425ee337c187",
+ "dist/animation-lab.html": "817fe68b4e6168fe0bc798a59816dcbddbd727cd",
+ "dist/cosmetic-lab.html": "fcfda801e874cd8c32498f8ff46d38bc219c29cc",
  "pieces/mpfb_female/AfroPonytail.glb": "4651cd4f23689b842b5486aa125918d800be59aa",
  "pieces/mpfb_female/AfroPonytail.morph.bin": "33fe464644e615b0bfa8c5643d5453743dcfe519",
  "pieces/mpfb_female/Afro_Ponytail_-_Slick_Down.glb": "635664da7ec18048859db725bdf567e0bca34aec",
@@ -761,11 +761,13 @@
  "pieces/mpfb_male/yuni_m_trade_slippers.morph.bin": "56d11df92c8098ac2e23072b95b725828519f30b",
  "pieces/mpfb_male/yuni_m_trade_trousers.glb": "382d2a1aca9ba5169f5d8389b79e8d3605ac2875",
  "pieces/mpfb_male/yuni_m_trade_trousers.morph.bin": "7610013f0479af99f7746ffa0b4d9734ae816a59",
+ "pieces/props/bowl.glb": "ff33b99ba4cc78e2f8b55d03585be71801c00ce3",
+ "pieces/props/bread.glb": "6cc30bac96c6d155a1d7ed78ea250e0b70b97c2c",
  "src/00-head.html": "e05b8873ed43a61f33cf13e47547d788c51ccb99",
  "src/01-animlab.html": "bed1d540e87b1f7301a95667df2e01568c74ca45",
  "src/10-rig.js": "7cef1beb401dd11fb74ce1d979845f672470004b",
- "src/50-figure.js": "f3dbbf79ad3052118854ff67a4f40f6d0e87d5d3",
+ "src/50-figure.js": "b994c0d2b4e0061728fe4430d201cfbb505c46b6",
  "src/60-crowd.js": "6adbd21cff4c89b94fd196e2e76c5d2f31592d7d",
- "src/90-editor.js": "e1b9dc5654a4baa3b435eb0de431cb218fe71bbd",
- "src/92-animlab.js": "7ff00a5281fa9e13390d0e04bd9568735ac0526c"
+ "src/90-editor.js": "e21984e0a3733a4a653d3ae510d45c284074aa23",
+ "src/92-animlab.js": "9f92a9615fb50ae8a286b58c4d908bc64e088cc1"
 }

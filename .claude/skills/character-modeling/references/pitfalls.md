@@ -266,6 +266,31 @@ area you are about to change.
   missed on the giant until multiplied by its scale.
 - **Wrong hand** (lantern) → the hold names a hand per clip; check `hold` in the clip data before touching the prop.
 - **Shield facing backward** → flip the prop's model, and check a low-hand variant separately.
+- **A bucket or a lantern follows the forearm** (it is modelled hanging along the fingers) → give the prop the axis that
+  should point down (`hang`) and turn it about the grip every frame so that axis points down; a bowl the same, up.
+- **Bow loosing at different times on different bodies, and the arrow coming back after the shot** → the string and
+  arrow were guessed from where the hand was (behind the bow, within a zone): long arms leave the zone early, and a
+  hand passing behind the bow on the way down draws again. Take when the arrow is on the string from the clip, as
+  spans of clip seconds read off the clip (hand speed and draw length over time), so all bodies loose at once.
+- **Draw to the chin, cup to the lips, bite to the mouth** → one pass: a hand's point (grip frame) moved onto a point of
+  the face (head-joint frame, turned with the head) by the arm's two-bone solve, the hand keeping its turn. Weight it
+  by time spans, not by how near the clip brings the hand: Bow shot's draw is 20 cm above the head, and the reach to the
+  quiver passes the face. Hold the weight to the loose and ease out after it, or the hand drifts off before the shot.
+- **A symmetric prop's "upright" chosen one way only flipped it 140 degrees** (the bow held top limb down) → take the
+  nearer of either end up.
+- **A keep-out pass that starts afresh each frame flips sides**: Block 2's sword, pushed out of the head by turning the
+  wrist, jumped across it between two frames (tip 40 m/s against the clip's 3). Start each frame from last frame's
+  correction, easing back to the clip's: the push stays on the side it went round. Check by tip speed against the
+  page before the change, over every clip that holds the prop.
+- **A head keep-out that is only the skull misses**: the blade went through the neck and out of the upper back. Use the
+  skull (with the hair), a taper down to the neck joint and the trunk's capsules, each widened by half the blade's width.
+- **Two-handed parry's wrists crossed** because the left hand was put below the right on a sword whose clip holds the
+  left above (toward the blade) → per clip `lead_left`: the prop slides up through the right hand, the left holds above.
+- **Check the twin by numbers**: the Godot figure can run with no clothes from a scratch folder (skeleton/kit json, the
+  data json, `anims.glb` and the props decoded from the published `.txt` pieces) and print the same measures as a page
+  probe (grips and head relative to the hips, the pass weights) at the same clip times; they agreed to the millimetre.
+- **Shots are minutes, not seconds, under SwiftShader**: headless Chromium renders on the GPU with `--use-angle=d3d11
+  --ignore-gpu-blocklist --enable-gpu` (`tools/lab_shots.py --gpu`).
 
 - **Headgear gets the shoulders' weights.** MakeHuman weights a garment from the nearest skin, so a broad brim, a wing
   or an ear flap reaching down beside the neck bends with the arms (a third of one headdress's weight was on them).

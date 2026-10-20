@@ -190,6 +190,51 @@ func _init() -> void:
 		for k in 3:
 			fig._process(0.1)
 		ok(fig.drawn and fig._bow["arrow"] != null and fig._bow["arrow"].visible, "bow_scan draws the string and nocks an arrow")
+		# the owner's review (2026-10-20), as verify.py checks the page: the arrow comes off at the loose, the string hand
+		# at the jaw at full draw, the bow's limbs out of the legs
+		fig.play("bow_draw")
+		fig.player.seek(4.0, true)
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		ok(fig.bow_state()["arrow"] and fig.face_w > 0.99, "bow_draw at 5 s: the arrow nocked, the string hand at the jaw (%.2f)" % fig.face_w)
+		fig.player.seek(6.2, true)
+		fig._process(0.0)
+		ok(not fig.bow_state()["arrow"], "bow_draw after the loose: no arrow")
+		fig.play("bow_scan")
+		var legs := 0.0
+		for k in 150:
+			fig._process(1.0 / 30.0)
+			legs = maxf(legs, fig.bow_state()["in_legs"])
+		ok(legs < 0.01, "bow_scan: the bow's limbs out of the legs (%.3f m in)" % legs)
+		# a bucket hangs plumb from its bail; a blade keeps out of the head; a two-handed parry's forearms stay apart
+		fig.hold({"R": "bucket", "L": null})
+		fig.play("walk_bucket")
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		var hg: Dictionary = fig._hangs["R"]
+		var gq: Quaternion = (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).basis.get_rotation_quaternion()
+		ok(((gq * (hg["pivot"] as Node3D).quaternion) * (hg["axis"] as Vector3)).y < -0.999, "walk_bucket: the bucket hangs plumb")
+		fig.hold({"R": "sword", "L": null})
+		fig.play("block_2")
+		var need := 0.0
+		for k in 47:
+			fig._process(1.0 / 30.0)
+			if fig.blade_need.size() > 0:
+				need = maxf(need, fig.blade_need[-1])
+		ok(need < 0.01, "block_2: the blade keeps out of the head and neck (%.3f m in)" % need)
+		fig.hold({"R": "sword", "L": null, "both": true})
+		fig.play("parry_2h")
+		var fore := 9.0
+		for k in 39:
+			fig._process(1.0 / 30.0)
+			var la: Vector3 = fig._gp(fig.skeleton.find_bone("LeftForeArm")).origin
+			var lb: Vector3 = fig._gp(fig.skeleton.find_bone("LeftHand")).origin
+			var ra: Vector3 = fig._gp(fig.skeleton.find_bone("RightForeArm")).origin
+			var rb: Vector3 = fig._gp(fig.skeleton.find_bone("RightHand")).origin
+			for i in 11:
+				for j in 11:
+					fore = minf(fore, la.lerp(lb, i / 10.0).distance_to(ra.lerp(rb, j / 10.0)))
+		ok(fore > 0.06, "parry_2h: the forearms stay apart (%.3f m)" % fore)
 		fig.hold({"R": null, "L": null})
 		# cloth: the court skirt's chains are bones of the skeleton, hang at rest, and swing in a walk
 		var rec2 := rec.duplicate(true)

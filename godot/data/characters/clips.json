@@ -1,5 +1,5 @@
 {
- "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering, pickaxe or straight thrusting clip, so some are made (derive, make_pieces.derived_clips): loop_of a one-shot that eases back to its first frame after its last; dig, both hands on a pickaxe or hoe swung over the shoulder and down in front (dig_loop: the heavy swing looped had the left arm across the chest); hammer, a procedural loop on the standing idle (hammer_loop); thrust, a straight thrust from the combat stance, one-handed or a spear underhand (thrust_clip: Meshy's 'Thrust Slash' stabbed overhand, the point up); carry, an entry's own Meshy action ('<key>@src') with the arms holding a spear at the thrust's guard (spear_carry: 'Spear Walk' held it behind the back). hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support).",
+ "about": "Clips beyond walk, run and the idles. meshy: a Meshy library action, fetched on the scout donor's rig by tools/meshy.py anims (donors/anims/actions*.glb). ual: '<file>:<clip>' from Quaternius's Universal Animation Library 1 and 2 (CC0, donors/anims/UAL*.glb). make_pieces.write_anims retargets both. loop: false plays once and returns to the idle. The libraries have no hoeing, hammering, pickaxe or straight thrusting clip, so some are made (derive, make_pieces.derived_clips): loop_of a one-shot that eases back to its first frame after its last; dig, both hands on a pickaxe or hoe swung over the shoulder and down in front (dig_loop: the heavy swing looped had the left arm across the chest); hammer, a procedural loop on the standing idle (hammer_loop); thrust, a straight thrust from the combat stance, one-handed or a spear underhand (thrust_clip: Meshy's 'Thrust Slash' stabbed overhand, the point up); carry, an entry's own Meshy action ('<key>@src') with the arms holding a spear at the thrust's guard (spear_carry: 'Spear Walk' held it behind the back). hold: per hand (R, L), the props (data/props.json) the clip may hold, the default first. two_hands: the held props the left hand also grips in this clip (data/props.json support). face: a hand brought to the face (KCharFigure toFace): hand R or L, at a point of data/clips.json faces (mouth, sip, anchor), point the hand's point (its grip frame) that goes there; when: spans of clip seconds it does so in (eased over ease; a span at a loop's start or end runs on round it), else only as near as the clip brings it (near: full within near[0] m, none beyond near[1]); level: the most degrees a bow's arrow may point up. nock: spans of clip seconds a bow's arrow is on the string (nocked to loosed). lead_left: a two-handed prop with a one-point support is held the other way round (the left hand above the right).",
  "groups": [
   {
    "id": "move",
@@ -334,6 +334,24 @@
     "L": [
      "bow"
     ]
+   },
+   "nock": [
+    [
+     1.35,
+     3.95
+    ]
+   ],
+   "face": {
+    "hand": "R",
+    "at": "anchor",
+    "level": 6,
+    "when": [
+     [
+      2.3,
+      3.95
+     ]
+    ],
+    "ease": 0.3
    }
   },
   {
@@ -346,6 +364,24 @@
     "L": [
      "bow"
     ]
+   },
+   "nock": [
+    [
+     1.85,
+     5.88
+    ]
+   ],
+   "face": {
+    "hand": "R",
+    "at": "anchor",
+    "level": 6,
+    "when": [
+     [
+      4.1,
+      5.88
+     ]
+    ],
+    "ease": 0.3
    }
   },
   {
@@ -358,6 +394,24 @@
     "L": [
      "bow"
     ]
+   },
+   "nock": [
+    [
+     0,
+     1.17
+    ]
+   ],
+   "face": {
+    "hand": "R",
+    "at": "anchor",
+    "level": 6,
+    "when": [
+     [
+      0,
+      1.17
+     ]
+    ],
+    "ease": 0.3
    }
   },
   {
@@ -370,6 +424,28 @@
     "L": [
      "bow"
     ]
+   },
+   "nock": [
+    [
+     0,
+     5.0
+    ]
+   ],
+   "face": {
+    "hand": "R",
+    "at": "anchor",
+    "level": 6,
+    "when": [
+     [
+      0,
+      0.9
+     ],
+     [
+      4.3,
+      5.0
+     ]
+    ],
+    "ease": 0.3
    }
   },
   {
@@ -531,7 +607,8 @@
     "axe",
     "mace",
     "warhammer"
-   ]
+   ],
+   "lead_left": true
   },
   {
    "key": "dodge_step",
@@ -748,9 +825,25 @@
    "group": "life",
    "loop": false,
    "hold": {
-    "R": [
+    "L": [
      "cup"
     ]
+   },
+   "face": {
+    "hand": "L",
+    "at": "sip",
+    "point": [
+     0.035,
+     0.06,
+     0
+    ],
+    "when": [
+     [
+      2.4,
+      5.2
+     ]
+    ],
+    "ease": 0.35
    }
   },
   {
@@ -908,7 +1001,25 @@
    "loop": false,
    "hold": {
     "R": [
-     "cup"
+     "bowl"
+    ],
+    "L": [
+     "bread"
+    ]
+   },
+   "face": {
+    "hand": "L",
+    "at": "sip",
+    "point": [
+     0.04,
+     0,
+     0.03
+    ],
+    "when": [
+     [
+      0.3,
+      1.1
+     ]
     ]
    }
   },
@@ -922,7 +1033,10 @@
     "R": [
      "pistol"
     ]
-   }
+   },
+   "two_hands": [
+    "pistol"
+   ]
   },
   {
    "key": "ual_pistol_aim",
@@ -934,7 +1048,10 @@
     "R": [
      "pistol"
     ]
-   }
+   },
+   "two_hands": [
+    "pistol"
+   ]
   },
   {
    "key": "ual_pistol_shoot",
@@ -1328,5 +1445,54 @@
     ]
    }
   }
- ]
+ ],
+ "faces": {
+  "about": "the face's points, metres from the head joint in the figure's frame at rest (x the figure's left, y up, z forward), turned with the head; the man's for a body without its own (a giant's times its scale). mouth: the lips; sip: a cup's or a bite's middle at the lips; anchor: a drawn bow's string hand, under the jaw; head: the skull's middle and its radius with the hair (weapons are kept out of it)",
+  "mpfb_male": {
+   "mouth": [
+    0,
+    0.01,
+    0.14
+   ],
+   "sip": [
+    0,
+    0.01,
+    0.18
+   ],
+   "anchor": [
+    -0.07,
+    -0.07,
+    0.07
+   ],
+   "head": [
+    0,
+    0.085,
+    0.035,
+    0.125
+   ]
+  },
+  "mpfb_female": {
+   "mouth": [
+    0,
+    0.01,
+    0.12
+   ],
+   "sip": [
+    0,
+    0.01,
+    0.16
+   ],
+   "anchor": [
+    -0.06,
+    -0.06,
+    0.06
+   ],
+   "head": [
+    0,
+    0.08,
+    0.035,
+    0.12
+   ]
+  }
+ }
 }
