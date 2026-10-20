@@ -6,6 +6,7 @@
 #   clip   a clip button's name (idle by default; 'none' for the A-pose); t the clip time in s (2 by default)
 #   yaw, pitch in radians (yaw 0 the front, 3.14 the back); dist, at in metres; cloth false hangs the chains rigid
 #   pre    JavaScript run before stepping, with f the figure
+#   morph  the body's morph sliders (record.morph, -1..1: height, weight, muscle...); the record's own by default
 # The page's own loop is held (_kchar.still) and the figure stepped here: the chains reset, the clip set 2 s before t
 # and run to it at 30 Hz from a stop, so a walk lands on the same frame with the same cloth every run.
 import asyncio, functools, http.server, json, os, socketserver, sys, threading
@@ -55,7 +56,8 @@ async def main(outdir, spec, page):
                 await pg.wait_for_function('window._kchar && window._kchar.fig', timeout=120000)
                 await pg.evaluate('window._kchar.ready')
             await pg.evaluate('window._kchar.still = true')
-            await pg.evaluate('(arm)=>{ var r = JSON.parse(JSON.stringify(window._kchar.record())); r.armour = arm; return window._kchar.set(r); }', s['armour'])
+            await pg.evaluate('([arm, mo])=>{ var r = JSON.parse(JSON.stringify(window._kchar.record())); r.armour = arm; if(mo) r.morph = mo; return window._kchar.set(r); }',
+                              [s['armour'], s.get('morph')])
             await pg.click('#clip-' + s.get('clip', 'idle'))
             await pg.evaluate(STEP, s)
             await pg.wait_for_timeout(400)       # the camera settles; the figure is held

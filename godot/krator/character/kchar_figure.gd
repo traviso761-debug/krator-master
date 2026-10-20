@@ -1474,9 +1474,11 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 	var pad := 0.0
 	var slot0: String = _item_of(part).get("over", part["slot"])     # pteruges push as the top they hang over does
 	if loose and slot0 == "torso":
-		pad = 0.02 + (0.035 if legs != null and not legs.get("loose", false) else 0.0)
+		pad = 0.02
+		if part["slot"] == "torso" and legs != null:          # not the pteruges themselves
+			pad += 0.035 if not legs.get("loose", false) else 0.02
 	elif loose:
-		pad = 0.015          # a skirt (PAD_SKIRT): at 0 a run's knee came through a wrap skirt
+		pad = 0.02           # a skirt, as a robe (PAD_SKIRT): at 0 a run's knee came through a wrap skirt
 	pm.set_shader_parameter("kcP", pad)
 	pm.set_shader_parameter("kcT", TUCK if slot0 == "legs" and top != null and top.get("tucks", false) else 0.0)
 	# trousers under a loose top are drawn in to the legs (SQUEEZE in 50-figure.js): all the way under one that reaches

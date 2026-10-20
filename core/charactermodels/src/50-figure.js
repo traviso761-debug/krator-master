@@ -263,7 +263,9 @@ function KCharFigure(body, sliders, load){
           pushU.kcSH.value = top && top.long ? 1e3 : top && top.hem != null ? top.hem : 0;
           // and boots under one, whatever the legs wear: their cuffs came through a kimono's hem at the shins
           pushU.kcSF.value = top && top.loose && top.long ? SQUEEZE_FEET : 0;
-          Object.keys(want).forEach(function(k){ var u = want[k].userData.pad; if(u && u.base) u.value = u.base + (legs && !legs.loose ? PAD_OVER : 0); });
+          // (a loose top over a loose skirt by the skirt's own pad more, so its hem stays outside it)
+          Object.keys(want).forEach(function(k){ var u = want[k].userData.pad, pt = want[k].userData.part;
+            if(u && u.base) u.value = u.base + (pt.slot !== 'torso' ? 0 : legs && !legs.loose ? PAD_OVER : legs && legs.loose ? PAD_SKIRT : 0); });
           var p = self.pose = KCHAR.pose(skel, sliders, kit.style === 'mpfb' ? {} : rec.sliders, head && head.face), mj = null;
           if(mpfb){
             var w = KCHAR.morphWeights(rec, kit), wkey = Array.prototype.join.call(w, ',');
@@ -878,7 +880,7 @@ function KCharFigure(body, sliders, load){
   var NCAP = 16, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
   var pushU = { kcA:{ value:capV() }, kcR:{ value:new Array(NCAP).fill(0) },
                 kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() },
-                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_SKIRT = 0.015, PAD_OVER = 0.035,
+                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_SKIRT = 0.02, PAD_OVER = 0.035,
       SQUEEZE = 0.008, SQUEEZE_FEET = 0.014;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in

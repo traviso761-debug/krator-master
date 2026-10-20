@@ -1268,7 +1268,7 @@ def _():
 def _():
     p = P('indigo', 0.07, [B('bottom', 0.0, 0.02, 'solid', 'cotton'), B('bottom', 0.025, 0.07, 'steps', 'cotton', 'indigo', 0.08),
                            B('top', 0.0, 0.05, 'solid', 'madder'), B('top', 0.012, 0.038, 'zigzag', 'ochre', 'madder', 0.04)])
-    return [torso_tube('voth_f_trade_skirt', WAIST + 0.02, ANKLE + 0.05, 0.007, p, hang_from=CROTCH + 0.06, flare=0.24, group_below=CROTCH + 0.04, rows=22, hull_from=WAIST)]
+    return [torso_tube('voth_f_trade_skirt', WAIST + 0.02, ANKLE + 0.05, 0.007, p, hang_from=WAIST - 0.03, flare=0.24, group_below=CROTCH + 0.04, rows=22, hull_from=WAIST)]
 
 
 for b, sex in (('male', 'm'), ('female', 'f')):
@@ -1302,7 +1302,7 @@ def _():
     apron = P('purple', 0.03, [B('bottom', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.02, 0.12, 'diamonds', 'ash', 'purple', 0.1),
                                B('top', 0.0, 0.015, 'solid', 'gold')])
     c = spine_at(WAIST - 0.05); h = first_hit(c, np.array([0, -1.0, 0]))
-    return [torso_tube('voth_m_noble_skirt', WAIST + 0.01, ANKLE + 0.04, 0.008, p, hang_from=CROTCH + 0.07, flare=0.26, group_below=CROTCH + 0.04, rows=24, hull_from=WAIST),
+    return [torso_tube('voth_m_noble_skirt', WAIST + 0.01, ANKLE + 0.04, 0.008, p, hang_from=WAIST - 0.03, flare=0.26, group_below=CROTCH + 0.04, rows=24, hull_from=WAIST),
             flap('voth_m_noble_skirt_apron', c + np.array([0, -1.0, 0]) * ((h or 0.12) + 0.03), 0.24, WAIST - 0.05 - (KNEE - 0.2), np.array([0, -1.0, 0]),
                  apron, cols=7, rows=14, ease=0.035, group_below=CROTCH + 0.04, sway=0.07)]
 
@@ -1657,7 +1657,8 @@ def _():
     cloak = P('sunorange', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'copper'), B('top', 0.0, 0.02, 'solid', 'copper')])
     # the tabard is woven in: a cream panel down the front (u 0.5), the sun repeating down it
     tabard = [PN(0.455, 0.545, 'sun', 'gold', 'cream', 0.2), PN(0.442, 0.455, 'solid', 'copper', 'copper'), PN(0.545, 0.558, 'solid', 'copper', 'copper')]
-    return [torso_tube(gid, TOP - 0.01, ANKLE + 0.07, 0.012, _sun_robe('verdigris', 'copper', tabard), hang_from=CHEST - 0.06, hang_side=WAIST, flare=0.12,
+    # from the waist as the monk's robe (from the chest it stood off the belly, and a run's thigh came out of its side)
+    return [torso_tube(gid, TOP - 0.01, ANKLE + 0.07, 0.012, _sun_robe('verdigris', 'copper', tabard), hang_from=WAIST - 0.03, hang_side=WAIST, flare=0.12,
                        group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
             izani_collar(gid, P('copper', 0.03, [B('top', 0.0, 0.01, 'solid', 'gold'), B('bottom', 0.0, 0.01, 'solid', 'gold')]), high=0.08),
             cape(gid + '_cape', KNEE - 0.12, cloak, flare=0.2, span=1.25, ease=0.034, top=TOP - 0.03)] + \
@@ -2092,7 +2093,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
             return trousers('yuni_m_peasant_trousers', P('sahel', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'mud')]), ease=0.008, ease_end=0.036, cuff=ANKLE + 0.04)
         return [torso_tube('yuni_f_peasant_wrapper', WAIST + 0.01, ANKLE + 0.06, 0.008, P('indigo', 0.05, [B('top', 0.0, 0.03, 'solid', 'yuniyellow'),
                            B('bottom', 0.0, 0.02, 'solid', 'yuniyellow'), B('bottom', 0.025, 0.12, 'bogolan', 'sahel', 'indigo', 0.07)]),
-                           hang_from=CROTCH + 0.06, flare=0.14, group_below=CROTCH + 0.04, rows=22, hull_from=WAIST)]
+                           hang_from=WAIST - 0.03, flare=0.14, group_below=CROTCH + 0.04, rows=22, hull_from=WAIST)]
     GARMENTS['yuni_%s_peasant_%s' % (sex, 'trousers' if sex == 'm' else 'wrapper')] = ('legs', b, 'Loose trousers' if sex == 'm' else 'Wrapper', _ylegs)
 
     def _ysand(sex=sex):
@@ -2152,7 +2153,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
                                        B('top', 0.02, 0.14, 'trencadis', 'tilegreen', 'yuniyellow', 0.07)])
         collar = P('tileblue', 0.02, [B('top', 0.0, 0.4, 'trencadis', 'coral', 'tileblue', 0.04), B('bottom', 0.0, 0.015, 'solid', 'yuniyellow')])
         sl = P('yuniyellow', 0.02, [B('bottom', 0.0, 0.08, 'trencadis', 'violet', 'yuniyellow', 0.05)])
-        return [torso_tube(gid, TOP, ANKLE + 0.04, 0.014, tiles, hang_from=CHEST - 0.04, hang_side=WAIST, flare=0.22, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+        return [torso_tube(gid, TOP, ANKLE + 0.04, 0.014, tiles, hang_from=WAIST - 0.03, hang_side=WAIST, flare=0.22, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                 collar_disc(gid + '_collar', 0.12, collar, drop=0.05, scallop=0.16)] + \
             sleeves(gid, 'wrist', 0.016, sl, ease_end=0.1, rows=10)
     GARMENTS['yuni_%s_noble_gown' % sex] = ('torso', b, 'Mosaic gown and collar', _ygown)
@@ -2256,7 +2257,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         if sex == 'm':
             return trousers('rep_m_trade_breeches', P('repgreyd', 0.06), ease=0.012, ease_end=0.02, cuff=KNEE - 0.08)
         return [torso_tube('rep_f_trade_skirt', WAIST + 0.01, ANKLE + 0.2, 0.01, P('repgreyd', 0.06, [B('bottom', 0.0, 0.015, 'solid', 'repblack')]),
-                           hang_from=CROTCH + 0.06, flare=0.12, group_below=CROTCH + 0.04, rows=18, hull_from=WAIST)]
+                           hang_from=WAIST - 0.03, flare=0.12, group_below=CROTCH + 0.04, rows=18, hull_from=WAIST)]
     GARMENTS['rep_%s_trade_%s' % (sex, 'breeches' if sex == 'm' else 'skirt')] = ('legs', b, 'Work breeches' if sex == 'm' else 'Work skirt', _rlegs2)
 
     def _rboot(sex=sex):
@@ -2300,7 +2301,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         if sex == 'm':
             return trousers('rep_m_noble_breeches', P('repgreyd', 0.04), ease=0.01, ease_end=0.016, cuff=KNEE - 0.1)
         return [torso_tube('rep_f_noble_skirt', WAIST + 0.01, ANKLE + 0.16, 0.01, P('repblack', 0.04, [B('bottom', 0.0, 0.006, 'solid', 'repred')]),
-                           hang_from=CROTCH + 0.06, flare=0.1, group_below=CROTCH + 0.04, rows=18, hull_from=WAIST)]
+                           hang_from=WAIST - 0.03, flare=0.1, group_below=CROTCH + 0.04, rows=18, hull_from=WAIST)]
     GARMENTS['rep_%s_noble_%s' % (sex, 'breeches' if sex == 'm' else 'skirt')] = ('legs', b, 'Officer\'s breeches' if sex == 'm' else 'Black skirt', _rnlegs)
 
     def _rnboot(sex=sex):
@@ -2392,7 +2393,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         if sex == 'm':
             return trousers('rep_m_fest_trade_breeches', P('umber', 0.06), ease=0.012, ease_end=0.02, cuff=KNEE - 0.08)
         return [torso_tube('rep_f_fest_trade_skirt', WAIST + 0.01, ANKLE + 0.05, 0.01, P('velvet', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'repochre'),
-                           B('bottom', 0.025, 0.11, 'rose', 'repred', 'velvet', 0.09)]), hang_from=CROTCH + 0.06, flare=0.16, group_below=CROTCH + 0.04,
+                           B('bottom', 0.025, 0.11, 'rose', 'repred', 'velvet', 0.09)]), hang_from=WAIST - 0.03, flare=0.16, group_below=CROTCH + 0.04,
                            rows=20, hull_from=WAIST)]
     GARMENTS['rep_%s_fest_trade_%s' % (sex, 'breeches' if sex == 'm' else 'skirt')] = ('legs', b, 'Brown breeches' if sex == 'm' else 'Black skirt', _frlegs2)
 
@@ -2669,7 +2670,9 @@ for b, sex in (('male', 'm'), ('female', 'f')):
 
     def _onskirt(sex=sex):
         p = P('omaroon', 0.05, [B('top', 0.0, 0.03, 'solid', 'yakbrown'), B('bottom', 0.0, 0.02, 'solid', 'osaffron')], fabric=WOOL)
-        return [torso_tube('order_%s_novice_skirt' % sex, WAIST + 0.01, ANKLE + 0.08, 0.009, p, hang_from=CROTCH + 0.06, flare=0.18,
+        # cut as the monk's robe below the waist (the owner, 2026-10-20: the monk's holds in a run): it falls from the
+        # waist, not the crotch, with its flare and ease; from the crotch a run's thigh came out of its side
+        return [torso_tube('order_%s_novice_skirt' % sex, WAIST + 0.01, ANKLE + 0.08, 0.012, p, hang_from=WAIST - 0.03, flare=0.16,
                            group_below=CROTCH + 0.04, rows=20, hull_from=WAIST)]
     GARMENTS['order_%s_novice_skirt' % sex] = ('legs', b, 'Novice\'s wrap skirt (shemdap)', _onskirt)
 
@@ -2693,7 +2696,7 @@ for b, sex in (('male', 'm'), ('female', 'f')):
         robe = P('omaroon', 0.04, [B('top', 0.0, 0.015, 'solid', 'gold'), B('bottom', 0.0, 0.025, 'solid', 'osaffron')], fabric=WOOL)
         zen = P('osaffron', 0.04, [B('top', 0.0, 0.02, 'solid', 'gold'), B('bottom', 0.0, 0.02, 'solid', 'gold')], fabric=COTTON)
         sl = P('omaroon', 0.04, [B('bottom', 0.0, 0.025, 'solid', 'osaffron')], fabric=WOOL)
-        return [torso_tube(gid, TOP, ANKLE + 0.04, 0.012, robe, hang_from=WAIST - 0.03, flare=0.18, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
+        return [torso_tube(gid, TOP, ANKLE + 0.04, 0.012, robe, hang_from=WAIST - 0.03, flare=0.16, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02),
                 band(gid + '_zen', CROTCH + 0.02, SHOULDER + 0.05, 0.16, 0.03, zen, high=math.pi / 2, rows=5),
                 torso_tube(gid + '_sash', WAIST + 0.035, WAIST - 0.03, 0.026, P('osaffron', 0.03, fabric=COTTON), rows=3, n=40, hull_from=WAIST + 0.1)] + \
             sleeves(gid, 'wrist', 0.018, sl, ease_end=0.08, rows=9)

@@ -438,7 +438,8 @@ went out of each sideways and its corners stood out like wings); a vertex inside
 it goes straight out that side (near the bone the way out from it is noise: a robe's front, left inside a raised thigh in a
 run, split left and right round the knee and showed it), and the side is the one the cloth faces (its skinned normal:
 a leg swung back has the body's axis in front of it, and a skirt's front sent out the back left the leg bare); a skirt
-is pushed 1.5 cm wider (`PAD_SKIRT`: at none a run's knee came through the novice's wrap skirt); and a
+is pushed 2 cm wider as a robe is (`PAD_SKIRT`: at none a run's knee came through the novice's wrap skirt), and a robe
+over one by that more; and a
 torso garment's shell is 2 cm wider (at 1.2 cm a bent knee's thigh came through a gown's front), so a robe's hem
 lies over the skirt under it, and 3.5 cm wider again over
 trousers (at 2 cm a stride's knee came through a deel's front; trousers stand further out of the capsules than a skirt's chains). The chains collide the same way,
