@@ -480,6 +480,44 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
 CONTACT = (0.04, 0.09)
 
 
+def hidden_under(j, b, prim, P, V, where, spec, chains, JJ, WW, names, body, blobs):
+    """under the fixed top of a mantle or a cape (layer 2: its rows above where its chains start), the garment's own
+    cloth is dropped: a triangle whose three vertices each have that top within 5 cm of them, outward of them (away
+    from the skin). Weights could not keep them apart there: the tunic's shoulder blades follow the shoulders, which
+    the clip and the posture pass draw back, and came out through the trader's mantle and the chief's cape. Cloth on
+    the arms is kept (a raised arm leaves the mantle's top behind)"""
+    if 'indices' not in prim:
+        return
+    lay = np.array([spec['parts'][where[int(v)][0]].get('layer', 0) if int(v) in where else -1 for v in V])
+    start = {}
+    for ch in chains:
+        start[ch['part']] = min(start.get(ch['part'], 1 << 30), ch['rows'][0])
+    top = np.array([lay[gi] == 2 and where[int(V[gi])][1] < start.get(where[int(V[gi])][0], 1 << 30)
+                    for gi in range(len(V))])
+    if not top.any():
+        return
+    arm = np.array([any(int(jj) < len(names) and ('Arm' in names[int(jj)] or 'Hand' in names[int(jj)]) and ww > 0.5
+                        for jj, ww in zip(JJ[gi], WW[gi])) for gi in range(len(V))])
+    cand = np.nonzero((lay != 2) & ~arm)[0]
+    if not len(cand):
+        return
+    d, k = cKDTree(P[top]).query(P[cand])
+    o = P[np.nonzero(top)[0][k]]
+    sk = body[0].data[body[0].query(P[cand])[1]]
+    out = P[cand] - sk
+    out /= np.maximum(np.linalg.norm(out, axis=1, keepdims=True), 1e-6)
+    hid = np.zeros(len(V), bool)
+    hid[cand[(d < 0.05) & (np.einsum('ij,ij->i', o - P[cand], out) > 0)]] = True
+    acc = j['accessors'][prim['indices']]
+    I = glbio.accessor(j, bytes(b), prim['indices']).reshape(-1, 3)
+    keep = ~hid[I].all(1)
+    if keep.all():
+        return
+    acc['count'] = int(keep.sum() * 3)
+    acc.pop('byteOffset', None)
+    blobs[acc['bufferView']] = I[keep].astype(glbio.CT[acc['componentType']]).tobytes()
+
+
 def cloth_bones(j, b, item, spec, blobs, body=None):
     """the garment's hanging parts as bone chains (spec: make_garments.py's, by the garment's own vertex order, which
     the export keeps as _VIDX). Per chain a joint per bone, named 'cloth:<item>:<chain>:<bone>', a child of the spine
@@ -653,6 +691,8 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
         JJ[gi] = [q for q, _ in top]
         WW[gi] = [x / tot for _, x in top]
     cover_weights(P, V, where, spec, JJ, WW, names)
+    if body is not None:
+        hidden_under(j, b, prim, P, V, where, spec, chains, JJ, WW, names, body, blobs)
     big = JJ.max() > 255
     jt = np.uint16 if big else glbio.CT[aj['componentType']]
     if big:

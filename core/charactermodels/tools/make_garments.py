@@ -693,14 +693,6 @@ def cloth_spec(p, offset, slot):
         for jn in SPINE:
             if J(jn)[2] <= z + 0.02: parent = jn
         if slot == 'head': parent = 'Head'
-        elif slot == 'torso' and p.cloth.get('layer') == 2 and parent == 'Spine2':
-            # a mantle's or a cape's chain that starts out over a shoulder hangs from that shoulder's collarbone joint:
-            # held by the spine, it stayed as the shoulders were drawn back after the clip (50-figure.js posture) and
-            # the tunic's shoulder blades came out through it
-            x0, xl = J('Spine2')[0], J('LeftArm')[0]
-            x = p.P[r0, col, 0]
-            if abs(x - x0) > 0.6 * abs(xl - x0):
-                parent = 'LeftShoulder' if (x - x0) * (xl - x0) > 0 else 'RightShoulder'
         chains.append({'col': col, 'rows': rows, 'parent': parent})
     if not chains: return None
     return {'name': p.name, 'offset': offset, 'rows': R, 'cols': Cn, 'closed': bool(p.closed), 'stiff': p.cloth['stiff'],
