@@ -283,12 +283,12 @@ ENTRIES = [
     ('biome', 'geyser', 'biomes/geyser/dist/geyser.html', 'The geyser basin', "A basin in the Steampits cut into the hyperjungle: geysers erupting on their own clocks (Erupt buttons, a timetable), the Great Prism and its mat-banded run-off, mud pots and fumaroles, a dead forest drowned in silica, travertine pools stepping down to the sea; thermophile life.", 'new'),
     ('biome', 'necanyons', 'biomes/necanyons/dist/necanyons.html', 'The north-eastern canyons', "The hyperjungle's transition to Korona's tepuis: red sandstone mesas, benches, buttes, towers and stacks rising out of the jungle (the Bench with its rim fins and its garden of spires and balanced rocks, the High Cap and its hoodoos), the forest filling the canyons between them and thinning northward, the tops bare and dry with pans and seeps; the first large carnivorous plants, their traps on their own cycles, none able to hold a person. Pinnacle Rock stands on the first of its mesas. The hour slider and N for the night; the creek and the rain pools on core/water.", 'new'),
     ('biome', 'guilin', 'biomes/guilin/dist/guilin.html', 'Guilin, the South China karst', "Guilin's tower karst on the Li River and the Stone Forest of Shilin on one misty plain: lone limestone towers and a fengcong's crowd of peaks, each a sheer grey cliff streaked black and ochre under a dome of scrub forest and Masson pines; nine hundred grey blades and pinnacles in the stone forest round a lotus pond; paddies along the river in every stage from flooded to ripe, bamboo on the banks, banyans, camphor and osmanthus groves, pomelo orchards; towers going on into the mist. N for the night.", 'new'),
-    ('biome', 'korona', 'biomes/korona/dist/korona.html', 'Korona 1 · the tepui', "Korona, the north-east under the gas giant: a corona of ring ridges round a trench country, each ring wet on its windward face and desert on its lee, built as stations like the Throne. Station 1, the tepui: a table of weathered quartzite beds over its gorge, the summit pavement with sphagnum bogs, lace pitchers, rainbow fans in its soil pockets, coin trees in its cracks and storm pods on the rim; hanging gardens and staghorns on every seep line, the Hum's contour carvings on the wall; great sundews at the walls' feet and the first man-eaters on the poor wet floor.", 'new'),
-    ('biome', 'korona-hollow', 'biomes/korona/dist/korona-hollow.html', 'Korona 2 · the pitcher hollow', "Station 2, the pitcher hollow: a closed hollow with a wet acid floor where every plant is a trap (the moor of blood bulbs, man-eater pitchers with their lures, coil tendrils, ground stars, snare flowers, sucking pools with trap pads, the cobra meadow at the slopes' foot), one safe path lined with cairns; punji pits, bear-trap plants and numb thorns among the rest, the traps going off on their cycles.", 'new'),
-    ('biome', 'korona-basin', 'biomes/korona/dist/korona-basin.html', 'Korona 3 · the fertile basin', "Station 3, the fertile basin: the Tiers' lake, a closed basin in the eastern rings, its shore meadows of reagents, the rainforest behind, one bog corner.", 'new'),
-    ('biome', 'korona-trench', 'biomes/korona/dist/korona-trench.html', 'Korona 4 · the trenches', "Station 4, the trenches: a ring ridge's crest between two arms of the salt lake, wet and alive on its windward face, bare desert on its lee: the rule that carnivory follows poor x wet x warm, read across one ridge.", 'new'),
-    ('biome', 'korona-gorge', 'biomes/korona/dist/korona-gorge.html', 'Korona 5 · the lee gorge', "Station 5, the lee gorge: a dry gorge between two ring walls in a ring's rain shadow, the eastern desert's flora (the sedesert kit read in place) under the walls, one spring and every trap in Korona round it.", 'new'),
-    ('biome', 'korona-hoar', 'biomes/korona/dist/korona-hoar.html', 'Korona 6 · the hoar table', "Station 6, the hoar table: a tepui summit above 3,500 m in the high cold country (the eastern highlands kit read in place): cushions and snow wool leaning toward the giant, the Mother Cushion over a knoll, permanent snow in the lee hollows, melt pools with butterwort lawns, a cold sundew and the frost tank, the seep lines frozen to icefalls, the ice tribes' road-marks and cairns under the rim.", 'new'),
+    ('korona', 'korona', 'biomes/korona/dist/korona.html', 'Korona 1 · the tepui', "Korona, the north-east under the gas giant: a corona of ring ridges round a trench country, each ring wet on its windward face and desert on its lee, built as stations like the Throne. Station 1, the tepui: a table of weathered quartzite beds over its gorge, the summit pavement with sphagnum bogs, lace pitchers, rainbow fans in its soil pockets, coin trees in its cracks and storm pods on the rim; hanging gardens and staghorns on every seep line, the Hum's contour carvings on the wall; great sundews at the walls' feet and the first man-eaters on the poor wet floor.", 'new'),
+    ('korona', 'korona-hollow', 'biomes/korona/dist/korona-hollow.html', 'Korona 2 · the pitcher hollow', "Station 2, the pitcher hollow: a closed hollow with a wet acid floor where every plant is a trap (the moor of blood bulbs, man-eater pitchers with their lures, coil tendrils, ground stars, snare flowers, sucking pools with trap pads, the cobra meadow at the slopes' foot), one safe path lined with cairns; punji pits, bear-trap plants and numb thorns among the rest, the traps going off on their cycles.", 'new'),
+    ('korona', 'korona-basin', 'biomes/korona/dist/korona-basin.html', 'Korona 3 · the fertile basin', "Station 3, the fertile basin: the Tiers' lake, a closed basin in the eastern rings, its shore meadows of reagents, the rainforest behind, one bog corner.", 'new'),
+    ('korona', 'korona-trench', 'biomes/korona/dist/korona-trench.html', 'Korona 4 · the trenches', "Station 4, the trenches: a ring ridge's crest between two arms of the salt lake, wet and alive on its windward face, bare desert on its lee: the rule that carnivory follows poor x wet x warm, read across one ridge.", 'new'),
+    ('korona', 'korona-gorge', 'biomes/korona/dist/korona-gorge.html', 'Korona 5 · the lee gorge', "Station 5, the lee gorge: a dry gorge between two ring walls in a ring's rain shadow, the eastern desert's flora (the sedesert kit read in place) under the walls, one spring and every trap in Korona round it.", 'new'),
+    ('korona', 'korona-hoar', 'biomes/korona/dist/korona-hoar.html', 'Korona 6 · the hoar table', "Station 6, the hoar table: a tepui summit above 3,500 m in the high cold country (the eastern highlands kit read in place): cushions and snow wool leaning toward the giant, the Mother Cushion over a knoll, permanent snow in the lee hollows, melt pools with butterwort lawns, a cold sundew and the frost tank, the seep lines frozen to icefalls, the ice tribes' road-marks and cairns under the rim.", 'new'),
 ]
 
 
@@ -316,6 +316,26 @@ ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
 # Pages a build's own build.py does not write: made by another command in the build's folder, before the page is
 # copied. Girder Hero is too big for the gallery as build_hero.py writes it (20.5 MB, over 16 MB a file), so the
 # gallery takes the --slim one, written outside the committed pages (hero/dist/ is not committed).
+# Builds published as their own artifact that still get a card in the parts (the owner, 2026-10-20): the card sorts
+# under its letter in its section like any other and opens the build's artifact (href) instead of a page in worlds/.
+# section, slug, name, blurb, the artifact, the build's files that make up its size (globs under the build folder)
+THRONE_URL = 'https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX'   # the Throne Stations (gallery/README.md)
+LINKED = {
+    'kits/eternian': ('kit', 'eternian', 'Eternian Kit',
+                      "The Eternal State of the north-western lowlands, where the True Heirs keep the Ancients' works: canal "
+                      "houses of every tier, the State's ministries and exam halls, the Clock, the hexagonal kilns, works and "
+                      "trades, the canals and the harbour, every building furnished, and closed-eyed faces in gold, bronze and "
+                      "lead. Its own artifact.",
+                      'https://claude.ai/artifact/VahvUzsCKyDZjtoZBu5Txu', ['dist/eternian.html', 'dist/eternian.tex.*.js']),
+    'settlements/longsong': ('world', 'longsong', 'Longsong',
+                             "The History Monks' monastery on its rock in the Oidong Valley: the White and Red Palaces "
+                             "furnished room by room, the ward, the farms, the forbidden depths and the Procrastinator turning "
+                             "under them; 1,494 people on their day (the nearest dressed and walking), day and night, and the "
+                             "festival with its great thangka. Its own artifact (its people's clothes and bodies need the room).",
+                             'https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY',
+                             ['dist/longsong.html', 'dist/longsong.tex.*.js', 'dist/kchar/*']),
+}
+
 MADE = {'settlements/girder/hero/dist/girder-hero.html':
         ['build_hero.py', '--slim', '--out', 'hero/dist/girder-hero.html']}
 
@@ -525,6 +545,26 @@ def main():
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
                       'mb': round(size / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})
+    for d, (section, slug, name, blurb, url, files) in LINKED.items():   # a card for each, opening its own artifact
+        if d not in skip:
+            continue
+        size = sum(os.path.getsize(f) for g in files for f in glob.glob(os.path.join(ROOT, d, g)))
+        items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb, 'mb': round(size / 1048576, 1),
+                      'source': d, 'tag': 'new', 'href': url})
+    if 'biomes/throne' in skip:   # the Throne's stations: a card each, in station order, opening the Throne's artifact
+        import build_throne
+        for n, pg, name, blurb in build_throne.stations():
+            src = os.path.join(ROOT, 'biomes/throne/dist', pg)
+            if not os.path.isfile(src):
+                continue
+            side = re.findall(r'<script src="([^"]+\.tex\.[\w-]+\.js)"></script>', open(src, encoding='utf-8').read())
+            size = os.path.getsize(src) + sum(os.path.getsize(os.path.join(ROOT, 'biomes/throne/dist', f)) for f in side
+                                              if os.path.isfile(os.path.join(ROOT, 'biomes/throne/dist', f)))
+            items.append({'section': 'throne', 'slug': 'throne-' + os.path.splitext(pg)[0],
+                          'name': 'Throne %d · %s' % (n, name[:1].lower() + name[1:]), 'blurb': blurb,
+                          'mb': round(size / 1048576, 1), 'source': 'biomes/throne/dist/' + pg, 'tag': None,
+                          'href': THRONE_URL, 'order': n})
+    items.sort(key=lambda i: (i.get('order', 0), alpha(i['name'])))   # the stations keep their order in their section
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     page = (tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
                .replace('/*SECTIONS*/[]', json.dumps(sections, ensure_ascii=False).replace('</', '<\\/')))
