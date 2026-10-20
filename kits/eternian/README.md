@@ -28,8 +28,21 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
   yard. Furnished from the catalog's new Eternian pieces.
 - The catalog culture file `kits/catalog/krator-master-furniture-eternian.js` (seven common-tier pieces) and the culture in
   `FURN_CULTURES` and `core/tags/52-core-tags-vocab.js`.
-- No library textures yet: the kit draws in vertex colours until P1's `materials.json` and the delivered sets
-  (`core/materials/PROMPTS-NEEDED.md` §8).
+## P1 (2026-10-20)
 
-Next: P1 (materials and the profile helpers: the pier bundle, the lancet bundle, the tracery grid, the pattern block),
-P2 (the head generator), P3 (the dwellings of every tier and the canal street). `PLAN.md` §11.
+- **The library:** `materials.json` maps every kit key to a library set (lime on white stucco, the block on cut stone,
+  pale brick, dark stone, grey roof tile, celadon glaze, timber, painted shutters, flagstones, reed, pale adobe, iron,
+  cast bronze, verdigris, gold) and the owner's Eternian sets (onyx, alabaster, the pierced screens, the circuit mazes, the
+  face frieze, the sign): 26 keys, packed beside the page (`tex/`, `dist/eternian.tex.eternian*.js`).
+- **Alternates:** a sheet's extra takes appear on different instances of the same building (the owner): `screen` has two
+  takes, `maze` three; `src/38-et-alt.js` picks the take per placed instance by a hash of its seed, variant and place.
+- **The profile helpers** (`src/41-et-profile.js`): the stepped pier bundle, the lancet and the lancet bundle, the
+  tracery grid, the cast pattern block, the pierced screen, the maze band, the frieze, the banner; a test row of samples
+  (`src/45-et-samples.js`).
+- **The trades** (the owner: the Islanders route, so the set of trade buildings is complete): `ET_TRADES`
+  (`src/68-et-trades.js`) in the repo's shape (`tools/check_trades.py`): all 44 trades of the Voth census, each `keys`
+  (the defs that carry it), a `gap` naming the def and phase that will, or `na` with the reason (the embassy tabled until
+  Farport's page). `verify.py --assert` `voth-trades` and `tools/test_all.py` run the shared check; KNOWN_ISSUES.md lists
+  the gaps; `node kits/eternian/tests/test-trades.js` checks each gap names its def and phase.
+
+Next: P2 (the head generator), P3 (the dwellings of every tier and the canal street). `PLAN.md` §11.

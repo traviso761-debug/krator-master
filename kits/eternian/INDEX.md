@@ -23,11 +23,16 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
 | `26k-kit.js` | 4 |  |
 | `27-mat.js` | 6 |  |
+| `28-et-mat.js` | <1 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 5 |  |
 | `37-wk-rec.js` | 2 |  |
+| `38-et-alt.js` | 2 |  |
 | `40-et-kit.js` | 9 |  |
+| `41-et-profile.js` | 8 |  |
+| `45-et-samples.js` | 3 |  |
 | `50-et-dwell.js` | 5 |  |
+| `68-et-trades.js` | 7 |  |
 | `81-sky.js` | 10 |  |
 | `89-rows.js` | <1 |  |
 | `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |

@@ -267,7 +267,7 @@ written when the owner agrees the list.
 | Phase | What | Done when |
 |---|---|---|
 | P0 | `kits/eternian` scaffold: the engine vendored, `build.py` (the port lint), `verify.py` on `tools/harness.py`, the sheet target, `INDEX.md`, `PORT.md`; `eternian` in the tags vocab | the sheet builds with the first building (`et_canal_house`) and `--assert` passes. **Done 2026-10-20** on the Scyvoi engine (question 1 below taken as the draft assumed): the canal house, the toolkit's first pieces, the catalog's Eternian common tier, the culture registered; textures and the socket pack wait for P1 (`KNOWN_ISSUES.md`) |
-| P1 | materials and kit items (`et*`), the profile helpers: the pier bundle, the lancet bundle, the oculus, the stepped head, the tracery grid, the pattern block; `materials.json` on the library | the helpers render on a test row; the texture gaps are listed |
+| P1 | materials and kit items (`et*`), the profile helpers: the pier bundle, the lancet bundle, the oculus, the stepped head, the tracery grid, the pattern block; `materials.json` on the library | the helpers render on a test row; the texture gaps are listed. **Done 2026-10-20**: `materials.json` (26 keys on the library and the owner's sets, alternates per instance), the helpers and their test row, `ET_TRADES` in the repo's shape with the shared `voth-trades` check (`tools/check_trades.py`; the owner's Islanders route): 41 gaps, each naming its def and phase; the core/sockets pack moves to P4 |
 | P2 | the head generator (section 5): heads, figures, masks, the closed-eye count in the verify | a row of fifty seeded heads reads as fifty people and four metals |
 | P3 | dwellings, all tiers, and the mixed canal street | the owner's eye-level review of the street |
 | P4 | the State: ministries, registry, examination hall, gate, wall, the Clock, the tube station and pipe, the relic hall, the ancestor gallery, the talking head | the civic row reads; the Clock animates |
@@ -290,9 +290,9 @@ the port and Ring Sea kits' grounded hulls), not a culture.
 ## 12. Open questions for the owner
 
 1. **The engine: settled** (the owner, 2026-10-20): the Islanders route, the Scyvoi engine vendored (P0 built on it),
-   because it ensures a complete set of trade buildings: like `IS_TRADES`, an `ET_TRADES` table lists every Voth census
-   trade and the defs that carry it (or `na` and why), and `verify.py --assert` `voth-trades` fails until each one has a
-   building. The table and the check go in with P1; the buildings fill it through P3 to P6.
+   because it ensures a complete set of trade buildings: `ET_TRADES` (P1) lists every Voth census trade in the repo's
+   shape (`tools/check_trades.py`), each carried, a gap naming the def and phase that will carry it, or na; the
+   buildings fill the gaps through P3 to P6, and KNOWN_ISSUES.md lists those still open.
 2. **The capital's site and name:** Centrum or Fulcrum; the city's own name; what the Eternians call the Sanctum.
 3. **`kept` as a new Ancients state** implemented in this kit as a pass over a body's record, or added to the Ancients
    kit itself for every build to use?
