@@ -32,7 +32,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `41-et-profile.js` | 8 |  |
 | `42-et-head.js` | 10 |  |
 | `43-et-statue.js` | 5 |  |
-| `44-et-roof.js` | 7 |  |
+| `44-et-roof.js` | 8 |  |
 | `45-et-samples.js` | 6 |  |
 | `50-et-dwell.js` | 12 | THE POOR (PLAN.md section 4): silt, reed and cas (68) |
 | `51-et-dwell-mid.js` | 7 |  |

@@ -13,11 +13,6 @@
       face's planes faintly through it, would read as cloth over a person.
 - [ ] **A figure's hands are blocks**: `etFigureGeo`'s arms are square beams ending in a flat block, read at the
       sheet's distance; a figure in a niche at eye level wants fingers or a sleeve's fold.
-- [ ] **Surfaces waiting on textures** (prompts in `core/materials/PROMPTS-NEEDED.md` section 8, 2026-10-20): the cast
-      block is plain cut stone (`concrete.block.relief`); the celadon roofs are a plain glaze with drawn tile rolls
-      (`roof.tile.celadon`; `etHip` `o.ribs` comes off when it lands); the furniture takes generic tinted maps: the
-      stove's plain glaze (`ceramic.celadon.crackle`), the reed mats' (`reed.mat.woven`, a new `f_thatch`), the cloth's
-      twill (`cloth.damask.maze`), the court's lacquer (`wood.timber.stringing`).
 - [ ] **The onyx furniture is cut stone**: the ancestor niche and the visor case draw their onyx on the furniture's
       `stone` surface, which takes `f_stone`; giving them the owner's onyx wants a `FAMILY_SPLITS` row for the palette key
       `onyx` in `kits/catalog/krator-furniture-core.js` (a catalog core change every furnished build rebuilds for).

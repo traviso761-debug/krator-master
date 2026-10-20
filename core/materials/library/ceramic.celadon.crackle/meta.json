@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.042,
+    1.175
+   ],
+   "seam_before": [
+    2.236,
+    2.547
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.03,
+   "mute": 0.0,
+   "normal_strength": 0.35,
+   "pattern": false,
+   "rough": 0.25,
+   "rough_var": 0.06,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ceramic",
+  "id": "ceramic.celadon.crackle",
+  "metal": 0,
+  "pattern": false,
+  "roughness": 0.25,
+  "scale": [
+   0.5,
+   0.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ceramic.celadon.crackle.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `ceramic.celadon.crackle` (celadon stoneware with a fine crackle)",
+  "reuse": "the Eternians' stoves and planters; any celadon ware",
+  "sha1": "b9dae1aa73f602db88064a3ce781f5509d8f077d"
+ }
+}

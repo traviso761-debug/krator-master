@@ -156,6 +156,81 @@ and interiors"). The register's plaques, boards and the dial stay painted in cod
 English legible.
 
 
+## Delivered 2026-10-20, the Eternian kit's furniture and common walls (pasted into the chat as WebP, 1254 px; batch `eternian-2026-10b-furniture.json`)
+
+The six prompts of `PROMPTS-NEEDED.md` section 8 (written at the kit's P3), ten images: the cast block came in five
+takes. Processed by `tools/textures/process.py`, wired in `kits/eternian/materials.json` and packed:
+
+| Set | Family | Where |
+|---|---|---|
+| `concrete.block.relief`, `.b`, `.c`, `.d`, `.e` | `block`, `blockB`-`blockE` | the cast pattern block, one take per placed instance (`src/38-et-alt.js` `ET_ALTS.block`): the block hut, the canal row's ground floor, the court house's screens, the corner turret's ground floor; 1.6 m to the tile (four 40 cm blocks). Take `.e` is a hexagonal interlace, for the civic buildings with hexagonal symmetry (the owner, 2026-10-20) |
+| `roof.tile.celadon` | `celadon` | the rich roofs (`etHip` maps each slope along its eave and up its fall; the drawn tile rolls came off), roughness lifted .45; 2.4 m to the tile |
+| `ceramic.celadon.crackle` | `glaze`, `f_ceramic` | the villa's planters (full colour); the furniture's ceramic (tinted: the stove's celadon, the masks' terracotta) |
+| `reed.mat.woven` | `f_thatch` (new) | the furniture's `thatch` surfaces: the poor's reed mats |
+| `cloth.damask.maze` | `f_cloth` | the furniture's cloth on the Eternian page (coverlets, cushions, linen), tinted |
+| `wood.timber.stringing` | `f_lacquer` | the court's lacquered pieces (the canopy bed), tinted |
+
+The prompts as written:
+
+### The Eternian kit (`kits/eternian`, P3, 2026-10-20)
+
+The furniture and the common town's walls (the owner: "don't be afraid to ask for textures to punch up the furniture").
+The kit's pieces draw on generic tinted detail maps today (`f_cloth` twill, `f_wood`, `f_lacquer`, `f_ceramic` plain
+glaze), and its cast block is plain cut stone, so up close the Eternian pieces read as painted boxes. Each lands as a
+family in `kits/eternian/materials.json` (no catalog core change), then `python3 tools/textures/pack.py kits/eternian`
+and a rebuild. `kits/eternian/KNOWN_ISSUES.md`, "Surfaces waiting on textures", names what each replaces.
+
+##### `concrete.block.relief`
+- Kind: surface, tintable. Replaces `block`'s `stone.cut`: the block hut, the canal row's ground floor, the court
+  house's screens and walls, the corner turret's ground floor, the cast-block bench. Reuse: any textile-block wall
+  (Highlands' Deco, Pylon's render). The biggest win for the poor and common tiers.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall of cast concrete blocks in the manner of Frank Lloyd Wright's textile blocks: a grid of exactly 4 x 4 square blocks with thin recessed mortar joints, every block cast with the same stepped geometric relief, concentric stepped squares crossed by short raised bars, sharp-edged and deep enough to read; purely geometric, no glyphs, no faces, no lettering. Fine sandy aggregate in the faces, a few small casting pores, the odd chipped arris. Near-colourless: pale grey-beige only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 1.6 metres (four 40 cm blocks).
+```
+
+##### `roof.tile.celadon`
+- Kind: surface, full colour. Replaces `celadon`'s `ceramic.glaze` on the roofs (the merchant's house, the villa's hall,
+  the ministries in P4); `etHip`'s drawn tile rolls (`o.ribs`) come off when it lands. Reuse: any glazed green roof.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a roof of glazed celadon barrel tiles seen from directly above, eight parallel rows of half-round tiles running top to bottom, laid in courses with each tile lapping the one below; the glaze a pale jade green #8fb8a0, pooling darker #6a9a82 in the channels between the rolls and thinning to #b4d0bc on their crowns, a fine crackle in the glaze, a few tiles a shade greener or greyer than their neighbours. Glossy glaze. One tile covers 2.4 metres.
+```
+
+##### `ceramic.celadon.crackle`
+- Kind: surface, full colour. Replaces `f_ceramic` (the celadon-tiled stove, the poor's clay pots keep terracotta) and
+  the garden's celadon planters. Reuse: any celadon ware.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: celadon-glazed stoneware, a thick smooth glaze in pale jade green #8fb8a0 drifting softly to #9cc4ac and #7fae96, crossed by a fine irregular crackle network of thin darker lines #5e8a76, a few tiny pinholes, the glaze pooling a little darker in faint ripples. Glossy. One tile covers 0.5 metres.
+```
+
+##### `reed.mat.woven`
+- Kind: surface, tintable. Lands as a new family `f_thatch` (the furniture's `thatch` surfaces: the poor's reed mat and
+  its bolster). Reuse: any woven floor mat or reed screen (the Islanders, Reedlake).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a floor mat woven of flat split reed strips about 2 cm wide in a herringbone twill, each strip with fine lengthwise fibres and a slightly glossy skin, a few broken strip ends and a few darker bruised strips. Near-colourless: pale straw only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.8 metres.
+```
+
+##### `cloth.damask.maze`
+- Kind: surface, tintable. Replaces `f_cloth`'s twill on the Eternian page (coverlets, cushions, the bed's panel, the
+  court's linen). Reuse: any brocade or damask; with the costume's circuit-maze brocade (LORE.md 6.19) for the
+  character kit.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: heavy silk damask, tone on tone: a satin ground woven with a circuit-maze figure, thin right-angled lines that turn, branch and end in small squares like a printed circuit or a key-fret maze, evenly spaced over the whole cloth, never letters or glyphs; the figure shows only by the change of sheen between satin and twill weave, the fine weave visible throughout. Near-colourless: pale grey-white only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.6 metres.
+```
+
+##### `wood.timber.stringing`
+- Kind: surface, full colour. Replaces `f_lacquer` (the court's pieces: the canopy bed, and the cabinets P4 adds).
+  Reuse: any Deco cabinetwork (Highlands' Republic, Pylon's offices).
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: dark stained hardwood veneer #4a3426 with a close straight grain running top to bottom under a thin satin lacquer, inlaid with thin straight brass stringing lines #b89a58 about 3 mm wide that divide the surface into tall rectangular panels, two across and three down, each panel's corners stepped inward in two small Art Deco steps; straight lines only, no curves, no figures. One tile covers 1 metre.
+```
+
+
 ## Delivered 2026-10-19, the Iziz palace (pasted into the chat as WebP, 1254 px, 1774 x 887 and 793 x 1983; batch `izpalace-2026-10-19.json`)
 
 The five the palace page had no set for, processed by `tools/textures/process.py` and packed into the palace's own pack

@@ -80,7 +80,9 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
 - **The catalog's poor and court pieces** (`kits/catalog/krator-master-furniture-eternian.js`): the reed mat, the
   cast-block bench, the clay hearth, the clay mask board; the alabaster lamp, the bronze gallery bench, the ancestor
   niche, the canopy bed, the visor case.
-- **Textures asked for:** six prompts for the furniture and the common walls (`core/materials/PROMPTS-NEEDED.md` §8).
+- **The owner's furniture and wall sets** (delivered the same day; `core/materials/PROMPTS-archived.md`): the cast
+  block in five relief takes, one per instance (`ET_ALTS.block`); the celadon barrel tile on the rich roofs; crackle
+  glaze; woven reed for the mats; maze damask for the cloth; brass stringing for the court's lacquer.
 
 Next: P4 (the State: ministries, registry, examination hall, gate, wall, the Clock, the tube station, the relic hall, the
 ancestor gallery, the talking head). `PLAN.md` §11.

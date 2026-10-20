@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.951,
+    0.918
+   ],
+   "seam_before": [
+    1.047,
+    1.411
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.6,
+   "normal_strength": 1.4,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.12,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "concrete",
+  "id": "concrete.block.relief",
+  "metal": 0,
+  "pattern": false,
+  "roughness": 0.9,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "concrete.block.relief.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `concrete.block.relief` (the cast textile block: stepped squares crossed by bars; the owner's take 1)",
+  "reuse": "the Eternians' cast pattern block (alternate takes per instance); any textile-block wall (Highlands' Deco, Pylon's render)",
+  "sha1": "af586ee51dd49480e1ce10272e849fcbe5906ed6"
+ }
+}

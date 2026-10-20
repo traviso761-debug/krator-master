@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.595,
+    0.442
+   ],
+   "seam_before": [
+    7.297,
+    2.715
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.04,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.12,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "wood.timber.stringing",
+  "metal": 0,
+  "pattern": false,
+  "roughness": 0.45,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "wood.timber.stringing.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `wood.timber.stringing` (dark veneer in panels of brass stringing with stepped corners)",
+  "reuse": "the Eternians' court cabinetwork; any Deco cabinetwork",
+  "sha1": "f01e56c4c6172d8febc3c4bc13dcaabd2561b423"
+ }
+}

@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.496,
+    0.829
+   ],
+   "seam_before": [
+    2.952,
+    3.403
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.35,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 1.2,
+   "pattern": false,
+   "rough": 0.3,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "roof",
+  "id": "roof.tile.celadon",
+  "metal": 0,
+  "pattern": false,
+  "roughness": 0.3,
+  "scale": [
+   2.4,
+   2.4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "roof.tile.celadon.webp",
+  "generator": "supplied by the owner (pasted, 2026-10-20), generated from core/materials/PROMPTS-NEEDED.md section 8",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md section 8, `roof.tile.celadon` (glazed celadon barrel tiles, eight rolls across)",
+  "reuse": "the Eternians' rich roofs and ministries; any glazed green roof",
+  "sha1": "f87044e431f5ada48069f96209d71ff19175bd2b"
+ }
+}

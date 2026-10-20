@@ -5,6 +5,16 @@
 // the current frame with the front toward +z, its eaves at y and its ridge h above, and maps the library sheets in metres
 // (TILE) so a tile course keeps its size on any roof.
 
+/* the vertex colour a key draws in: a full-colour library set (the celadon tile, the crackle glaze, the gilt scale) keeps
+   its own colour (white); a tinted set and ?mat=proc take the palette's */
+const ET_FULL={celadon:1,glaze:1,gilt:1,gold:1,terracotta:1,titanium:1};
+function etKeyCol(mk){return ET_FULL[mk]&&KIT_HAS(mk)?new THREE.Color(1,1,1):P(mk);}
+/* a flat outline with UVs given per point (in metres; divided by the key's tile here), drawn as etPoly draws */
+function etPolyUV(mk,pts,uvs,col){const tl=TILE[mk]||1,pos=[],nor=[],uv=[],idx=[];const a=pts[0],b=pts[1],c=pts[2];
+ const n=new THREE.Vector3().crossVectors(new THREE.Vector3(b[0]-a[0],b[1]-a[1],b[2]-a[2]),new THREE.Vector3(c[0]-a[0],c[1]-a[1],c[2]-a[2])).normalize();
+ pts.forEach((p,i)=>{pos.push(p[0],p[1],p[2]);nor.push(n.x,n.y,n.z);uv.push(uvs[i][0]/tl,uvs[i][1]/tl);});for(let i=1;i<pts.length-1;i++)idx.push(0,i,i+1);
+ emit(mk,fixWind(mkGeo(pos,nor,uv,idx)),null,col);}
+
 /* ---------------------------------------------------------------- a sheet: a slab th thick spanning p0->p1 and p0->p2, its
    faces' UVs in metres (plane4 maps one tile over the whole face) */
 function etSheet(mk,p0,p1,p2,th,col){const T=TILE[mk]||1;
@@ -21,7 +31,7 @@ function etPoly2(mk,pts,col,col2){etPoly(mk,pts,col);etPoly(mk,pts.slice().rever
    w x d under it; o.ov the eaves' overhang, o.gov the gables', o.th the sheet; o.ribs a tile course every o.ribs metres
    (the grey tile's and the celadon's rolls), o.gables false for no end walls, else the triangles in o.wallMk/o.wallCol;
    o.cap the ridge's colour */
-function etGable(w,d,y,h,o){o=o||{};const mk=o.mk||'tile',col=o.col||P(mk),ov=o.ov==null?.4:o.ov,gov=o.gov==null?.3:o.gov,th=o.th||.14;
+function etGable(w,d,y,h,o){o=o||{};const mk=o.mk||'tile',col=o.col||etKeyCol(mk),ov=o.ov==null?.4:o.ov,gov=o.gov==null?.3:o.gov,th=o.th||.14;
  const k=h/(d/2),ye=y-ov*k,ze=d/2+ov,W=w/2+gov;
  for(const s of [1,-1])etSheet(mk,[-W,ye,s*ze],[W,ye,s*ze],[-W,y+h,0],th,col);
  const cap=o.cap||new THREE.Color(col).multiplyScalar(.82);
@@ -35,11 +45,14 @@ function etGable(w,d,y,h,o){o=o||{};const mk=o.mk||'tile',col=o.col||P(mk),ov=o.
 /* ---------------------------------------------------------------- the hip: four slopes to a ridge (or a point), h above
    the eaves at y, over w x d; o.ov the overhang, o.under the soffit's colour, o.cap the hips' and ridge's, o.flare lifts the
    eaves' corners (the celadon roofs' turned-up tips), o.ribs the tile rolls' spacing */
-function etHip(w,d,y,h,o){o=o||{};const mk=o.mk||'celadon',col=o.col||P(mk),ov=o.ov==null?.5:o.ov;
+function etHip(w,d,y,h,o){o=o||{};const mk=o.mk||'celadon',col=o.col||etKeyCol(mk),ov=o.ov==null?.5:o.ov;
  const k=h/(Math.min(w,d)/2),ye=y-ov*k,X=w/2+ov,Z=d/2+ov,rx=Math.max(0,(w-d)/2),rz=Math.max(0,(d-w)/2),yr=y+h;
  const E=(sx,sz)=>[sx*X,ye,sz*Z],R=(sx,sz)=>[sx*rx,yr,sz*rz],un=o.under||P('timber');
- etPoly2(mk,[E(-1,1),E(1,1),R(1,1),R(-1,1)],col,un);etPoly2(mk,[E(1,-1),E(-1,-1),R(-1,-1),R(1,-1)],col,un);
- etPoly2(mk,[E(1,1),E(1,-1),R(1,-1),R(1,1)],col,un);etPoly2(mk,[E(-1,-1),E(-1,1),R(-1,1),R(-1,-1)],col,un);
+ /* each slope's UVs run along its eave (u) and up the slope (v), so a sheet's tile rolls run down every face */
+ const face=(pts,ax)=>{const uv=pts.map(p=>ax?[p[2],Math.hypot(X-Math.abs(p[0]),p[1]-ye)]:[p[0],Math.hypot(Z-Math.abs(p[2]),p[1]-ye)]);
+  etPolyUV(mk,pts,uv,col);etPoly(mk,pts.slice().reverse(),un);};
+ face([E(-1,1),E(1,1),R(1,1),R(-1,1)],0);face([E(1,-1),E(-1,-1),R(-1,-1),R(1,-1)],0);
+ face([E(1,1),E(1,-1),R(1,-1),R(1,1)],1);face([E(-1,-1),E(-1,1),R(-1,1),R(-1,-1)],1);
  const cap=o.cap||new THREE.Color(col).multiplyScalar(.8);
  for(const sx of [-1,1])for(const sz of [-1,1])beam(mk,E(sx,sz),R(sx,sz),.14,cap);
  if(rx>0||rz>0)beam(mk,R(-1,-1),R(1,1),.18,cap);
@@ -56,7 +69,7 @@ function etHip(w,d,y,h,o){o=o||{};const mk=o.mk||'celadon',col=o.col||P(mk),ov=o
 
 /* ---------------------------------------------------------------- the pent (a lean-to): one slope from y1 at the back
    (z = -d/2) to y0 at the front, w x d, overhanging o.ov at the front and o.gov at the sides */
-function etPent(w,d,y0,y1,o){o=o||{};const mk=o.mk||'tile',col=o.col||P(mk),ov=o.ov==null?.35:o.ov,gov=o.gov==null?.2:o.gov,th=o.th||.12;
+function etPent(w,d,y0,y1,o){o=o||{};const mk=o.mk||'tile',col=o.col||etKeyCol(mk),ov=o.ov==null?.35:o.ov,gov=o.gov==null?.2:o.gov,th=o.th||.12;
  const k=(y1-y0)/d,W=w/2+gov;etSheet(mk,[-W,y0-ov*k,d/2+ov],[W,y0-ov*k,d/2+ov],[-W,y1,-d/2],th,col);
  if(o.ribs){const n=Math.max(1,Math.round(2*W/o.ribs)),rc=o.ribCol||new THREE.Color(col).multiplyScalar(.84);
   for(let i=0;i<n;i++){const x=-W+(i+.5)*2*W/n;beam(mk,[x,y0-ov*k+th/2+.04,d/2+ov],[x,y1+th/2+.04,-d/2],.07,rc);}}}

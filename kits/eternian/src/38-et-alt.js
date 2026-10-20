@@ -4,7 +4,7 @@
 // the instance being placed. The take is a hash of the def's seed, the variant and the place (core/rand: KRAND.hash),
 // never a draw from the stream, so it is the same on every machine and in Godot, and placing another building moves no
 // other building's take. Two wraps, as 37-wk-rec.js wraps emit, so 30-geo.js and 36-def.js stay the vendored engine.
-const ET_ALTS={screen:['screen','screenB'],maze:['maze','mazeB','mazeC']};
+const ET_ALTS={screen:['screen','screenB'],maze:['maze','mazeB','mazeC'],block:['block','blockB','blockC','blockD','blockE']};
 let ET_ALT=0;   /* the placed instance's hash; 0 outside a place() (no swap) */
 const _etEmit0=emit;
 emit=function(mk,geo,lm,col,uvm){const v=ET_ALT&&ET_ALTS[mk];if(v){const k=v[ET_ALT%v.length];if(MAT[k])mk=k;}return _etEmit0(mk,geo,lm,col,uvm);};

@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 12 prompts: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`), 6 wanted for the Eternian kit's furniture and common walls (section 8), and 4 optional: the Beast Riders' `foliage.thorn.cut` and necanyons' `card.palm.fan`, `card.flametip`, `card.treelily` (each has a library fallback in use).** A short list at the end names gaps that have no prompt yet.
+**Count: 6 prompts: 1 redo (`patterns/tribal/formline`), 1 required (the Northern Highlands' `bark.alder.lichen`), and 4 optional: the Beast Riders' `foliage.thorn.cut` and necanyons' `card.palm.fan`, `card.flametip`, `card.treelily` (each has a library fallback in use).** A short list at the end names gaps that have no prompt yet.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -102,64 +102,6 @@ A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat mag
 ```
 A sheet of nine separate cut-out plant sprites in a 3x3 grid on a solid flat magenta background (#ff00ff), square, 2048x2048, each sprite centred in its cell with magenta all round it and nothing crossing into the next cell. Front-on, orthographic, flat even shadowless lighting, no cast shadows, no ground, no text. Each sprite: one branch tip of a tree-lily (Vellozia) standing on the bottom of its cell: a short thick stub shaggy with black fibrous old leaf bases (#2a2420), carrying a dense fountain of narrow, stiff, grass-like grey-green leaves (#7a8a6a, #8a9a78) radiating up and outward; on five of the nine, two to four large pale lilac six-petalled flowers (#b8a8d8) on short stalks rising out of the tuft. Full colour: not tinted. Hard clean edges against the magenta, no anti-aliased fringe of other colours. No magenta or hot pink anywhere in the subject.
 ```
-## 8. The Eternian kit (`kits/eternian`, P3, 2026-10-20)
-
-The furniture and the common town's walls (the owner: "don't be afraid to ask for textures to punch up the furniture").
-The kit's pieces draw on generic tinted detail maps today (`f_cloth` twill, `f_wood`, `f_lacquer`, `f_ceramic` plain
-glaze), and its cast block is plain cut stone, so up close the Eternian pieces read as painted boxes. Each lands as a
-family in `kits/eternian/materials.json` (no catalog core change), then `python3 tools/textures/pack.py kits/eternian`
-and a rebuild. `kits/eternian/KNOWN_ISSUES.md`, "Surfaces waiting on textures", names what each replaces.
-
-#### `concrete.block.relief`
-- Kind: surface, tintable. Replaces `block`'s `stone.cut`: the block hut, the canal row's ground floor, the court
-  house's screens and walls, the corner turret's ground floor, the cast-block bench. Reuse: any textile-block wall
-  (Highlands' Deco, Pylon's render). The biggest win for the poor and common tiers.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall of cast concrete blocks in the manner of Frank Lloyd Wright's textile blocks: a grid of exactly 4 x 4 square blocks with thin recessed mortar joints, every block cast with the same stepped geometric relief, concentric stepped squares crossed by short raised bars, sharp-edged and deep enough to read; purely geometric, no glyphs, no faces, no lettering. Fine sandy aggregate in the faces, a few small casting pores, the odd chipped arris. Near-colourless: pale grey-beige only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 1.6 metres (four 40 cm blocks).
-```
-
-#### `roof.tile.celadon`
-- Kind: surface, full colour. Replaces `celadon`'s `ceramic.glaze` on the roofs (the merchant's house, the villa's hall,
-  the ministries in P4); `etHip`'s drawn tile rolls (`o.ribs`) come off when it lands. Reuse: any glazed green roof.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a roof of glazed celadon barrel tiles seen from directly above, eight parallel rows of half-round tiles running top to bottom, laid in courses with each tile lapping the one below; the glaze a pale jade green #8fb8a0, pooling darker #6a9a82 in the channels between the rolls and thinning to #b4d0bc on their crowns, a fine crackle in the glaze, a few tiles a shade greener or greyer than their neighbours. Glossy glaze. One tile covers 2.4 metres.
-```
-
-#### `ceramic.celadon.crackle`
-- Kind: surface, full colour. Replaces `f_ceramic` (the celadon-tiled stove, the poor's clay pots keep terracotta) and
-  the garden's celadon planters. Reuse: any celadon ware.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: celadon-glazed stoneware, a thick smooth glaze in pale jade green #8fb8a0 drifting softly to #9cc4ac and #7fae96, crossed by a fine irregular crackle network of thin darker lines #5e8a76, a few tiny pinholes, the glaze pooling a little darker in faint ripples. Glossy. One tile covers 0.5 metres.
-```
-
-#### `reed.mat.woven`
-- Kind: surface, tintable. Lands as a new family `f_thatch` (the furniture's `thatch` surfaces: the poor's reed mat and
-  its bolster). Reuse: any woven floor mat or reed screen (the Islanders, Reedlake).
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a floor mat woven of flat split reed strips about 2 cm wide in a herringbone twill, each strip with fine lengthwise fibres and a slightly glossy skin, a few broken strip ends and a few darker bruised strips. Near-colourless: pale straw only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.8 metres.
-```
-
-#### `cloth.damask.maze`
-- Kind: surface, tintable. Replaces `f_cloth`'s twill on the Eternian page (coverlets, cushions, the bed's panel, the
-  court's linen). Reuse: any brocade or damask; with the costume's circuit-maze brocade (LORE.md 6.19) for the
-  character kit.
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: heavy silk damask, tone on tone: a satin ground woven with a circuit-maze figure, thin right-angled lines that turn, branch and end in small squares like a printed circuit or a key-fret maze, evenly spaced over the whole cloth, never letters or glyphs; the figure shows only by the change of sheen between satin and twill weave, the fine weave visible throughout. Near-colourless: pale grey-white only. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. One tile covers 0.6 metres.
-```
-
-#### `wood.timber.stringing`
-- Kind: surface, full colour. Replaces `f_lacquer` (the court's pieces: the canopy bed, and the cabinets P4 adds).
-  Reuse: any Deco cabinetwork (Highlands' Republic, Pylon's offices).
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: dark stained hardwood veneer #4a3426 with a close straight grain running top to bottom under a thin satin lacquer, inlaid with thin straight brass stringing lines #b89a58 about 3 mm wide that divide the surface into tall rectangular panels, two across and three down, each panel's corners stepped inward in two small Art Deco steps; straight lines only, no curves, no figures. One tile covers 1 metre.
-```
-
 ## Gaps with no prompt yet
 
 Owed, but a prompt needs work first; listed so they are not lost.

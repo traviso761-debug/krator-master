@@ -23,7 +23,7 @@ defBuilding({key:'et_merchant_house',name:"Merchant's house",seed:7007,cut:true,
   etLancet(0,F1+.4,D/2,.95,F2-F1+2.2,{light:'glass'});
   box('stone',0,G+2.98,D/2+.22,.75,.14,.44,sd);etHead(0,G+3.12,D/2+.24,.8,{metal:'gold'});
   box('stone',0,E-.32,0,W+.5,.32,D+.5,sd);
-  etHip(W,D,E,5.2,{mk:'celadon',ov:.7,flare:.45,ribs:.34,under:P('timber')});
+  etHip(W,D,E,5.2,{mk:'celadon',ov:.7,flare:.45,under:P('timber'),cap:P('celadon')});
   // the floors and the stair in the back right corner
   for(const F of [F1,F2]){box('timber',-.95,F-.2,0,7.5,.2,D-.6,P('timber'));box('timber',3.75,F-.2,1.6,1.9,.2,5.2,P('timber'));}
   etStair(3.75,G,-1.1,1.4,.195,-.155,20,P('timberL'));etStair(3.75,F1,-1.1,1.4,.19,-.155,20,P('timberL'));
@@ -53,7 +53,7 @@ defBuilding({key:'et_official_villa',name:"Official's villa",seed:7008,cut:true,
   // the garden court: the path, the basin, the trees
   box('paving',0,0,7.4,2.2,.06,4.6,P('paving'));box('paving',0,0,-.1,2.2,.06,4.0,P('paving'));
   box('paving',0,0,3.5,8.4,.06,4.4,P('paving'));box('stone',0,0,3.5,7.4,.45,3.6,sd);box('water',0,.05,3.5,7.0,.38,3.2,new THREE.Color(ET_WATER));
-  for(const x of [-3.9,3.9])for(const z of [.6,6.6]){cyl('celadon',x,0,z,.45,.6,P('celadon'),12);box('timber',x,.6,z,.12,.6,.12,P('timber'));
+  for(const x of [-3.9,3.9])for(const z of [.6,6.6]){cyl('glaze',x,0,z,.45,.6,etKeyCol('glaze'),12);box('timber',x,.6,z,.12,.6,.12,P('timber'));
    cone('plain',x,1.1,z,.75,2.1,new THREE.Color(0x3e5e3a),8);}
   // the hall on its podium
   pushM(TF(0,0,-5.6));const G=.6,HW=14,HD=7,HE=6.0;
@@ -64,7 +64,7 @@ defBuilding({key:'et_official_villa',name:"Official's villa",seed:7008,cut:true,
    for(const s of [-1,1])etLancets(s*3.9,G+.8,HD/2,{n:5,w:.6,gap:.2,h:3.6,step:.35,light:'glass',headMk:'brick',headCol:brD});
    box('stone',0,G+3.08,HD/2+.2,.7,.12,.4,sd);etHead(0,G+3.2,HD/2+.22,.75,{metal:'gold'});
    box('stone',0,HE-.3,0,HW+.4,.3,HD+.4,sd);
-   etHip(HW,HD,HE,4.4,{mk:'celadon',ov:.7,flare:.45,ribs:.34,under:P('timber')});
+   etHip(HW,HD,HE,4.4,{mk:'celadon',ov:.7,flare:.45,under:P('timber'),cap:P('celadon')});
   popM();
   // the register room on the left, its front to the court
   pushM(TF(-8,0,2.6,PI/2));

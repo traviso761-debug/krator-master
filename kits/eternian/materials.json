@@ -16,7 +16,7 @@
    "metal": 0
   },
   "block": {
-   "lib": "stone.cut",
+   "lib": "concrete.block.relief",
    "scale": [
     1.6,
     1.6
@@ -64,16 +64,17 @@
    "metal": 0
   },
   "celadon": {
-   "lib": "ceramic.glaze",
+   "lib": "roof.tile.celadon",
    "scale": [
-    1.2,
-    1.2
+    2.4,
+    2.4
    ],
    "tint": {
-    "keep": 0,
-    "mean": 0.75
+    "keep": 1,
+    "mean": null
    },
-   "metal": 0
+   "metal": 0,
+   "roughLift": 0.45
   },
   "timber": {
    "lib": "wood.timber",
@@ -332,10 +333,10 @@
    "metal": 0
   },
   "f_cloth": {
-   "lib": "cloth.weave.twill",
+   "lib": "cloth.damask.maze",
    "scale": [
-    1,
-    1
+    0.6,
+    0.6
    ],
    "tint": {
     "keep": 0,
@@ -356,14 +357,14 @@
    "metal": 0
   },
   "f_lacquer": {
-   "lib": "wood.lacquer",
+   "lib": "wood.timber.stringing",
    "scale": [
     1,
     1
    ],
    "tint": {
     "keep": 0,
-    "mean": 0.5
+    "mean": 0.45
    },
    "metal": 0
   },
@@ -416,10 +417,10 @@
    "metal": 0.5
   },
   "f_ceramic": {
-   "lib": "ceramic.glaze",
+   "lib": "ceramic.celadon.crackle",
    "scale": [
-    1,
-    1
+    0.5,
+    0.5
    ],
    "tint": {
     "keep": 0,
@@ -510,6 +511,79 @@
     "mean": null
    },
    "metal": 0.4
+  },
+  "blockB": {
+   "lib": "concrete.block.relief.b",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "blockC": {
+   "lib": "concrete.block.relief.c",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "blockD": {
+   "lib": "concrete.block.relief.d",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "blockE": {
+   "lib": "concrete.block.relief.e",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0
+  },
+  "glaze": {
+   "lib": "ceramic.celadon.crackle",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "roughLift": 0.3
+  },
+  "f_thatch": {
+   "lib": "reed.mat.woven",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.7
+   },
+   "metal": 0
   }
  }
 }
