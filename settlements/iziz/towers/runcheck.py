@@ -1,6 +1,6 @@
 """Run a check script in a built Iziz page headless and write what it returns to a file (verify.py --eval cuts at 3000
 characters). python3 towers/runcheck.py dist/iziz-ixtest.html out.txt "IZWALKCHECK({list:2000})" [more expressions...]
-Each expression runs after towers/walkcheck.js, doorcheck.js and zcheck.js are loaded; a value that is not a string is JSON."""
+Each expression runs after towers/walkcheck.js, doorcheck.js and zcheck.js are loaded; a value that is not a string is JSON; a promise is awaited."""
 import asyncio, json, os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools'))
 import harness  # noqa: E402
@@ -26,7 +26,7 @@ async def main(html, out, exprs):
             await pg.add_script_tag(content=zc)
             res = []
             for e in exprs:
-                v = await pg.evaluate("()=>{const v=(" + e + ");return typeof v==='string'?v:JSON.stringify(v,null,1);}")
+                v = await pg.evaluate("async ()=>{const v=await (" + e + ");return typeof v==='string'?v:JSON.stringify(v,null,1);}")
                 res.append('== ' + e + '\n' + v)
         await browser.close()
     with open(out, 'w', encoding='utf-8', newline='\n') as f:
