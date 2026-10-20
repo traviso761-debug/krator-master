@@ -452,6 +452,8 @@ func _tinted(mat: Material, role: String, part: Dictionary, rec: Dictionary, gai
 		var dye0 = rec.get("dye", {}).get(part["slot"])
 		m2.albedo_color = Color(dye0) if dye0 != null else Color.WHITE
 		return _garment(m2, part, rec)
+	if part["role"] == "armour" and part["slot"] == "feet":
+		return _garment(m2, part, rec)                  # boots: the squeeze under a long robe, no push
 	if role == "skin":
 		m2.albedo_color = _lin(rec.get("skin") if rec.get("skin") != null else "#d6ad8f", float(gain.get("skin", 1.0)))
 	elif role == "hair":
@@ -536,12 +538,13 @@ func hold(want: Dictionary) -> void:
 # posture (50-figure.js posture): after each clip Spine, Spine1, Spine2, Neck and Head are pitched (degrees in the
 # skeleton's frame, negative forward) and the shoulders dropped and drawn back, by data/posture.json's entry for this
 # body (the man's when it has none). The upper arms keep the way the clip points them
+const SLOT_RANK := {"legs": 0, "torso": 1, "head": 2}
 const POSTURE_JOINTS := ["Spine", "Spine1", "Spine2", "Neck", "Head"]
 var posture := {}
 
 
-func _posture() -> void:
-	if player == null or not player.is_playing() or posture.is_empty():
+func _posture(force := false) -> void:
+	if posture.is_empty() or (not force and (player == null or not player.is_playing())):
 		return                              # the rest pose (the A-pose clothes are fitted in) stays as it is
 	var arms := {}
 	for n in ["LeftArm", "RightArm"]:
@@ -568,6 +571,7 @@ func _after_clip(dt: float) -> void:
 	_posture()
 	_arms2(dt)
 	_body_fix()
+	_toes_flat()
 	_grip()
 	_two_hands(dt)
 	_cloth_step(dt)
@@ -612,6 +616,41 @@ func _support() -> Array:
 
 
 # turn bone b by q (in the skeleton's space) about its own origin
+# twin of toesFlat in 50-figure.js: a foot on its ball (the heel up) rolls there, its toe joint turned up until a point
+# TOE ahead of it along the toes' rest direction is no lower than the ground (they went into it, and a sole with them)
+const TOE := 0.06
+var _toe_local := {}
+
+
+func _toes_flat() -> void:
+	if player == null or not player.is_playing():
+		return
+	if _toe_local.is_empty():
+		for sd in ["Left", "Right"]:
+			var ti := skeleton.find_bone(sd + "ToeBase")
+			var fi := skeleton.find_bone(sd + "Foot")
+			if ti < 0 or fi < 0:
+				continue
+			var rt := skeleton.get_bone_global_rest(ti)
+			var fwd := rt.origin - skeleton.get_bone_global_rest(fi).origin
+			fwd.y = 0.0
+			_toe_local[sd] = rt.basis.get_rotation_quaternion().inverse() * fwd.normalized()
+	var ground := 0.004 / size - skeleton.position.y
+	for sd in _toe_local:
+		var b := skeleton.find_bone(sd + "ToeBase")
+		var g := _gp(b)
+		var d: Vector3 = g.basis.get_rotation_quaternion() * (_toe_local[sd] as Vector3)
+		var dy := (ground - g.origin.y) / TOE
+		if g.origin.y + d.y * TOE >= ground or absf(dy) >= 1.0:
+			continue
+		var t := Vector3(d.x, 0.0, d.z)
+		if t.length_squared() < 1e-8:
+			continue
+		t = t.normalized() * sqrt(1.0 - dy * dy)
+		t.y = dy
+		_turn(b, Quaternion(d.normalized(), t.normalized()))
+
+
 func _turn(b: int, q: Quaternion) -> void:
 	var par := skeleton.get_bone_parent(b)
 	var pq := _gp(par).basis.get_rotation_quaternion() if par >= 0 else Quaternion()
@@ -805,6 +844,13 @@ func _bow_string() -> void:
 # stiffness, under Krator's gravity and the dense air's drag (and the wind of a loop's root_speed), kept to its
 # length, near its neighbours, out of the body's capsules and above the floor; each bone turns to the next particle
 var cloth := true
+# the spike (REPORT.md): Godot's SpringBoneSimulator3D drives the chains instead of the Verlet below. Set before
+# apply(): each chain gets a tip bone, and one simulator (a setting per chain, the capsules as collision children)
+# is rebuilt on every apply. Off by default: the Verlet path is the twin of the page's
+var spring_sim := false
+var spring_opts := {}                    # the spike's switches: collide (bool), stiff_k, gravity, drag, radius
+var _sim: SpringBoneSimulator3D = null
+var _sim_caps := []                      # per collider: {cp, cap, sa, sb} (the capsule and its end spheres)
 const C_GRAV := 7.4
 const C_DRAG := 1.6
 const C_DAMP := 0.04
@@ -812,6 +858,15 @@ const C_STEP := 1.0 / 60.0
 const C_PAD := 0.022
 var _cloth := {}                         # part key -> {item, by_name, chains, parts, meshes, on, reset, ring}
 var _caps := []
+var _binds := {}
+
+
+# a capsule's ends in the skeleton's space: its joints, or (the seat's) rest points riding them
+func _cap_ends(cp: Dictionary) -> Array:
+	if cp.get("pa") == null or not _binds.has(cp["a"]) or not _binds.has(cp["b"]):
+		return [_gp(cp["a"]).origin, _gp(cp["b"]).origin]
+	return [(_gp(cp["a"]) * (_binds[cp["a"]] as Transform3D)) * (cp["pa"] as Vector3),
+		(_gp(cp["b"]) * (_binds[cp["b"]] as Transform3D)) * (cp["pb"] as Vector3)]
 var _cacc := 0.0
 
 
@@ -840,12 +895,22 @@ func _cloth_of(part: Dictionary) -> Dictionary:
 			skeleton.set_bone_parent(b, skeleton.find_bone(ch["parent"]) if k == 0 else list[k - 1])
 			c["by_name"][nm] = b
 			list.append(b)
-		c["chains"].append({"parent": skeleton.find_bone(ch["parent"]), "pts": ch["pts"], "bones": list, "p": [], "len": [],
-			"x": [], "xp": [], "tw": [], "q0": Quaternion(), "stiff": 0.1})
+		var rec := {"parent": skeleton.find_bone(ch["parent"]), "pts": ch["pts"], "bw": ch.get("bw"), "bones": list,
+			"p": [], "r": [], "rest": [], "len": [], "x": [], "xp": [], "tw": [], "q0": Quaternion(), "stiff": 0.1}
+		if spring_sim:
+			# the simulator's joints are bone origins, so the chain's last point needs a bone of its own (bound to nothing)
+			var tb := skeleton.get_bone_count()
+			skeleton.add_bone("cloth_%s_%d_tip" % [it["id"], g])
+			skeleton.set_bone_parent(tb, list[list.size() - 1])
+			rec["tip"] = tb
+		c["chains"].append(rec)
+	# a layer within its slot's: a legs item's chains under a torso item's, under a head item's (as clothOf in 50-figure.js)
+	# (an item worn over a higher slot's under-layers ranks with it: kit item over, pteruges)
+	var rank: int = 3 * int(SLOT_RANK.get(it.get("over", it.get("slot", "")), 0))
 	for pt in c["parts"]:
 		for g in pt["chains"]:
 			c["chains"][int(g)]["stiff"] = float(pt["stiff"])
-			c["chains"][int(g)]["layer"] = int(pt.get("layer", 0))
+			c["chains"][int(g)]["layer"] = rank + int(pt.get("layer", 0))
 	_cloth[part["key"]] = c
 	return c
 
@@ -853,6 +918,14 @@ func _cloth_of(part: Dictionary) -> Dictionary:
 # the chains' rest from the morphed garment (base positions plus the blend shapes' offsets)
 func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
 	_caps = KChar.colliders(skel, w)
+	# the joints' binds (morphed), for the seat's capsules: their rest ends ride a joint as a garment's chains do
+	_binds = {}
+	for m in want:
+		var mm := m as MeshInstance3D
+		if mm != null and mm.skin != null:
+			for k in mm.skin.get_bind_count():
+				_binds[mm.skin.get_bind_bone(k)] = mm.skin.get_bind_pose(k)
+			break
 	for key in _cloth:
 		var c: Dictionary = _cloth[key]
 		var mi: MeshInstance3D = null
@@ -879,44 +952,288 @@ func _cloth_rest(want: Dictionary, w: PackedFloat64Array) -> void:
 						v += w[shapes[s]] * (o - base[int(i)] if b.get("whole", false) else o)
 				P.append(v)
 			ch["p"] = P
-			ch["len"] = []
-			for k in range(1, P.size()):
-				ch["len"].append((P[k] - P[k - 1]).length())
-			var bones: Array = ch["bones"]
+			var bones: Array = ch["bones"].duplicate()
+			if ch.has("tip"):
+				bones.append(ch["tip"])
 			for k in bones.size():
-				var t: Transform3D
-				if k == 0:
-					t = (pbind[ch["parent"]] as Transform3D) * Transform3D(Basis(), P[0])
-					ch["q0"] = t.basis.get_rotation_quaternion()
-				else:
-					t = Transform3D(Basis(), P[k] - P[k - 1])
-				skeleton.set_bone_rest(bones[k], t)
-				skeleton.set_bone_pose_position(bones[k], t.origin)
-				skeleton.set_bone_pose_rotation(bones[k], t.basis.get_rotation_quaternion())
 				for m in c["meshes"]:
 					for q in m.skin.get_bind_count():
 						if m.skin.get_bind_bone(q) == bones[k]:
 							m.skin.set_bind_pose(q, Transform3D(Basis(), -P[k]))
 			ch["pbind"] = pbind[ch["parent"]]
-		c["ring"] = []
-		for pt in c["parts"]:
-			var g: Array = pt["chains"]
-			var n := g.size()
-			for a in (n if pt["closed"] else n - 1):
-				var A: Dictionary = c["chains"][int(g[a])]
-				var Bc: Dictionary = c["chains"][int(g[(a + 1) % n])]
-				for k in range(1, mini(A["p"].size(), Bc["p"].size())):
-					c["ring"].append([A, Bc, k, (A["p"][k] - Bc["p"][k]).length()])
-		c["reset"] = true
+			ch["binds"] = pbind
+		# a chain wholly above the hip joint follows the body point by point; one reaching below it, by its top point
+		var hip_y: float = (pbind[skeleton.find_bone("Hips")] as Transform3D).affine_inverse().origin.y
+		for ch in c["chains"]:
+			ch["whole"] = true
+			for q in ch["p"]:
+				if (q as Vector3).y <= hip_y:
+					ch["whole"] = false
+		_posed_rests(c, pbind)
+		c["posed"] = null
+		_place_chains(c, player != null and player.is_playing())
+	if spring_sim:
+		_sim_build()
 
 
+# ---- the spike: Godot's SpringBoneSimulator3D on the chains (REPORT.md) ----
+# One simulator under the skeleton, a setting per chain (root: the chain's first bone, end: its tip bone), the
+# Verlet's numbers mapped onto Godot's model, which pulls each joint a fixed distance a second along its rest
+# direction, damps its velocity by a fraction a frame (drag) and adds gravity as a displacement a second (not an
+# acceleration). The Verlet's lerp to the rigid rest is spring and damper at once, so the two are matched on their
+# linearised dynamics, a point displaced u from rest, over one SIM_FPS frame (two Verlet steps of C_STEP):
+#   Verlet, a step:  u' = (1 - s)(2 - D) u - (1 - s)(1 - D) u_prev      s = stiff, D = C_DAMP + C_DRAG h
+#   Godot, a frame:  u' = (2 - drag - k) u - (1 - drag) u_prev           k = stiffness dt / L
+# so drag = 1 - b1^2 and k = 2 - drag - 2 b1 cos(2 t1), with b1 = (1 - s)(1 - D) and cos t1 = (1 - s)(2 - D) / (2 sqrt b1):
+# the same decay and period a frame. Gravity gives the same sag at rest (g h^2 / s = gravity dt / k), and the root
+# speed's wind is external_force. The drag is a fraction a frame, so this holds at SIM_FPS only: Godot's model is
+# frame-rate dependent.
+# The colliders are its children: a capsule per collider (radius r, as the Verlet's), placed on the capsule's
+# joint a and moved each frame to the live ends (_cap_ends: the seat's ride the hips, the trunk's span a bent
+# spine); a plane at the ground. spring_opts.ends adds a sphere at each end with the push shader's end radii (ra,
+# rb): the chest's and hips' are so much wider than r that they throw a mantle off the back (REPORT.md)
+const SIM_FPS := 30.0
+func _sim_build() -> void:
+	if _sim != null:
+		_sim.queue_free()
+		_sim = null
+	_sim_caps = []
+	var chains := []
+	for key in _cloth:
+		if _cloth[key]["on"]:
+			for ch in _cloth[key]["chains"]:
+				if ch.has("tip"):
+					chains.append(ch)
+	if chains.is_empty():
+		return
+	skeleton.modifier_callback_mode_process = Skeleton3D.MODIFIER_CALLBACK_MODE_PROCESS_MANUAL
+	_sim = SpringBoneSimulator3D.new()
+	_sim.name = "KClothSim"
+	skeleton.add_child(_sim)
+	# no joint radius: with the Verlet's pad (C_PAD) too many rest points lie inside the trunk and thigh capsules, and
+	# this solver (push out, then clamp to length) walks a mantle off the back and bells a skirt from them (REPORT.md)
+	var jr: float = float(spring_opts.get("radius", 0.0)) / size
+	var stiff_k: float = float(spring_opts.get("stiff_k", 1.0))
+	for cp in (_caps if spring_opts.get("collide", true) else []):
+		if spring_opts.get("noarms", false) and skeleton.get_bone_name(cp["a"]).contains("Arm"):
+			continue
+		var cap := SpringBoneCollisionCapsule3D.new()
+		cap.bone_name = skeleton.get_bone_name(cp["a"])
+		cap.radius = float(cp["r"])
+		_sim.add_child(cap)
+		var ends := []
+		for e in [["sa", "ra"], ["sb", "rb"]]:
+			var s: SpringBoneCollisionSphere3D = null
+			if spring_opts.get("ends", false) and absf(float(cp[e[1]]) - float(cp["r"])) > 1e-4:
+				s = SpringBoneCollisionSphere3D.new()
+				s.bone_name = cap.bone_name
+				s.radius = float(cp[e[1]])
+				_sim.add_child(s)
+			ends.append(s)
+		_sim_caps.append({"cp": cp, "cap": cap, "sa": ends[0], "sb": ends[1]})
+	if spring_opts.get("collide", true):
+		var floor := SpringBoneCollisionPlane3D.new()
+		floor.position = Vector3(0, 0.008 - skeleton.position.y - jr, 0)   # the joints' radius above it: the Verlet's height
+		_sim.add_child(floor)
+	_sim.set_setting_count(chains.size())
+	for i in chains.size():
+		var ch: Dictionary = chains[i]
+		_sim.set_root_bone(i, ch["bones"][0])
+		_sim.set_end_bone(i, ch["tip"])
+		_sim.set_extend_end_bone(i, false)
+		# one value a chain (its joints are listed on a deferred update, so per-joint values cannot be set here)
+		_sim.set_individual_config(i, false)
+		var s := float(ch["stiff"])
+		var D := C_DAMP + C_DRAG * C_STEP
+		var b1 := (1.0 - s) * (1.0 - D)
+		var t1 := acos(clampf((1.0 - s) * (2.0 - D) / (2.0 * sqrt(b1)), -1.0, 1.0))
+		var drag := 1.0 - b1 * b1
+		var k := 2.0 - drag - 2.0 * b1 * cos(2.0 * t1)
+		var mean := 0.0
+		for L in ch["len"]:
+			mean += float(L) / ch["len"].size()
+		_sim.set_radius(i, jr)
+		_sim.set_drag(i, float(spring_opts.get("drag", drag)))
+		_sim.set_gravity(i, float(spring_opts.get("gravity", C_GRAV * C_STEP * C_STEP * SIM_FPS * k / s)) / size)
+		_sim.set_gravity_direction(i, Vector3.DOWN)
+		_sim.set_stiffness(i, k * mean * SIM_FPS * stiff_k)
+		if _sim.get_root_bone(i) < 0 or _sim.get_end_bone(i) < 0:
+			push_warning("KCharFigure: the simulator cannot see the chain's bones (is the figure in the tree? skeleton %s, root %d/%s end %d/%s)" % [_sim.get_skeleton(), _sim.get_root_bone(i), _sim.get_root_bone_name(i), _sim.get_end_bone(i), _sim.get_end_bone_name(i)])
+	_sim.reset()
+
+
+func _sim_step(dt: float, wind: Vector3) -> void:
+	if _sim == null:
+		return
+	if dt < 0.0 or not cloth:                # a still pose, or cloth off: the chains hang rigid
+		for key in _cloth:
+			for ch in _cloth[key]["chains"]:
+				for k in ch["bones"].size():
+					skeleton.set_bone_pose_rotation(ch["bones"][k], ch["q0"] if k == 0 else Quaternion())
+		if _sim.active:                      # (setting it resets the simulation: only on a change)
+			_sim.active = false
+		if dt < 0.0:
+			_sim.reset()
+		return
+	if not _sim.active:
+		_sim.active = true
+	for e in _sim_caps:
+		var cp: Dictionary = e["cp"]
+		var ends := _cap_ends(cp)
+		var inv: Transform3D = _gp(cp["a"]).affine_inverse()
+		var la: Vector3 = inv * (ends[0] as Vector3)
+		var lb: Vector3 = inv * (ends[1] as Vector3)
+		var cap: SpringBoneCollisionCapsule3D = e["cap"]
+		var d := lb - la
+		cap.position_offset = (la + lb) * 0.5
+		cap.rotation_offset = Quaternion(Vector3.UP, d.normalized()) if d.length() > 1e-6 else Quaternion()
+		cap.height = d.length() + 2.0 * cap.radius
+		if e["sa"] != null:
+			e["sa"].position_offset = la
+		if e["sb"] != null:
+			e["sb"].position_offset = lb
+	_sim.external_force = wind * C_DRAG * C_STEP
+	skeleton.advance(dt)
+
+
+# the chains' rest in the postured pose (as posedRests in 50-figure.js; HANDOFF-CLOTHING.md, 1): the skeleton at its
+# bind pose, postured; each chain point skinned by the garment's own body weights (kit bw) and carried back rigidly with
+# its chain's parent joint. The binds stay at the A-pose points
+func _posed_rests(c: Dictionary, pbind: Dictionary) -> void:
+	var any := false
+	for ch in c["chains"]:
+		any = any or ch.get("bw") != null
+	if not any:
+		for ch in c["chains"]:
+			ch["r"] = ch["p"]
+		return
+	var saved := []
+	for i in skeleton.get_bone_count():
+		saved.append(skeleton.get_bone_pose_rotation(i))
+		skeleton.set_bone_pose_rotation(i, skeleton.get_bone_rest(i).basis.get_rotation_quaternion())
+	_posture(true)
+	for ch in c["chains"]:
+		if ch.get("bw") == null:
+			ch["r"] = ch["p"]
+			continue
+		var Mi: Transform3D = (_gp(ch["parent"]) * (pbind[ch["parent"]] as Transform3D)).affine_inverse()
+		var R := []
+		for k in ch["p"].size():
+			var p: Vector3 = ch["p"][k]
+			var v := Vector3.ZERO
+			var tot := 0.0
+			for nw in ch["bw"][k]:
+				var j := skeleton.find_bone(String(nw[0]))
+				if j < 0 or not pbind.has(j):
+					continue
+				v += float(nw[1]) * ((_gp(j) * (pbind[j] as Transform3D)) * p)
+				tot += float(nw[1])
+			R.append(Mi * (v / tot) if tot > 0.0 else p)
+		ch["r"] = R
+	for i in skeleton.get_bone_count():
+		skeleton.set_bone_pose_rotation(i, saved[i])
+
+
+# the chains' bones at the postured rest while a clip plays, at the A-pose's otherwise (no posture there); the ring's
+# rest distances with them
+func _place_chains(c: Dictionary, posed: bool) -> void:
+	if c.get("posed") == posed:
+		return
+	c["posed"] = posed
+	for ch in c["chains"]:
+		var R: Array = ch["r"] if posed else ch["p"]
+		ch["rest"] = R
+		ch["len"] = []
+		for k in range(1, R.size()):
+			ch["len"].append((R[k] - R[k - 1]).length())
+		var bones: Array = ch["bones"].duplicate()
+		if ch.has("tip"):
+			bones.append(ch["tip"])              # the spring-bone spike's tip bone (REPORT.md)
+		for k in bones.size():
+			var t: Transform3D
+			if k == 0:
+				t = (ch["pbind"] as Transform3D) * Transform3D(Basis(), R[0])
+				ch["q0"] = t.basis.get_rotation_quaternion()
+			else:
+				t = Transform3D(Basis(), R[k] - R[k - 1])
+			skeleton.set_bone_rest(bones[k], t)
+			skeleton.set_bone_pose_position(bones[k], t.origin)
+			skeleton.set_bone_pose_rotation(bones[k], t.basis.get_rotation_quaternion())
+	c["ring"] = []
+	for pt in c["parts"]:
+		var g: Array = pt["chains"]
+		var n := g.size()
+		for a in (n if pt["closed"] else n - 1):
+			var A: Dictionary = c["chains"][int(g[a])]
+			var Bc: Dictionary = c["chains"][int(g[(a + 1) % n])]
+			for k in range(1, mini(A["rest"].size(), Bc["rest"].size())):
+				c["ring"].append([A, Bc, k, (A["rest"][k] - Bc["rest"][k]).length()])
+	c["reset"] = true
+
+
+const LEGJ := ["UpLeg", "Leg", "Foot", "Toe"]
+
+
+# twin of rigidTargets in 50-figure.js: riding the parent joint; while a clip plays, a chain's rest is where the
+# garment's own body weights (kit bw, not the legs') put its points in this pose (a chain wholly above the hip joint),
+# or its top point (one reaching below: the rest keeps the shape it hangs in from its parent and moves with that point)
 func _rigid(ch: Dictionary) -> Transform3D:
 	var M: Transform3D = _gp(ch["parent"]) * (ch["pbind"] as Transform3D)
 	var tw := []
-	for p in ch["p"]:
+	for p in ch["rest"]:
 		tw.append(M * (p as Vector3))
+	if ch.get("bw") == null or player == null or not player.is_playing():
+		ch["tw"] = tw
+		return M
+	var binds: Dictionary = ch["binds"]
+	var n: int = ch["p"].size() if ch["whole"] else 1
+	for k in n:
+		var v := Vector3.ZERO
+		var tot := 0.0
+		for nw in ch["bw"][k]:
+			var nm := String(nw[0])
+			var leg := false
+			for l in LEGJ:
+				leg = leg or (k > 0 and nm.contains(l))   # the top point with all its weights: it is the cloth's own vertex
+			var j := skeleton.find_bone(nm)
+			if leg or j < 0 or not binds.has(j):
+				continue
+			v += float(nw[1]) * ((_gp(j) * (binds[j] as Transform3D)) * (ch["p"][k] as Vector3))
+			tot += float(nw[1])
+		if tot > 0.0:
+			tw[k] = v / tot
+	var F := M
+	# a loose chain above the hips hangs: its fitted shape from its top point, turned with the hips' heading only, by how
+	# loose it is (rigidTargets in 50-figure.js: the Chichani tilma's front stood off like a shelf in the idle's lean)
+	var gw := clampf((0.3 - float(ch["stiff"])) / 0.2, 0.0, 1.0)
+	if ch["whole"] and gw > 0.0:
+		var hz: Vector3 = (_gp(skeleton.find_bone("Hips")) * (binds[skeleton.find_bone("Hips")] as Transform3D)).basis.z
+		var hb := Basis(Vector3.UP, atan2(hz.x, hz.z)).scaled(Vector3.ONE * hz.length())
+		var g: Vector3 = tw[0]
+		for k in range(1, tw.size()):
+			g += hb * ((ch["p"][k] as Vector3) - (ch["p"][k - 1] as Vector3))
+			tw[k] = (tw[k] as Vector3).lerp(g, gw)
+	if not ch["whole"]:
+		# the shape it was fitted in, turned with the hips, from its top point (turned with the spine joint it hangs
+		# from, which the clips pitch hard, a cape's hem swung 0.7 m off the body: the fold; rigidTargets in 50-figure.js)
+		var hi := skeleton.find_bone("Hips")
+		F = _gp(hi) * (binds[hi] as Transform3D)
+		# placed by the hips, turned with their heading only; the top point's own offset (the chest leans ahead of the
+		# hips) fades out down to the hip joint (rigidTargets in 50-figure.js: a back panel sank into the buttocks and the
+		# layering threw it out in front, through the body)
+		var fz: Vector3 = F.basis.z
+		var hb := Basis(Vector3.UP, atan2(fz.x, fz.z)).scaled(Vector3.ONE * fz.length())
+		var hm: Vector3 = (binds[hi] as Transform3D).affine_inverse().origin
+		F = Transform3D(hb, _gp(hi).origin - hb * hm)
+		var off: Vector3 = (tw[0] as Vector3) - F * (ch["p"][0] as Vector3)
+		var y0: float = (ch["p"][0] as Vector3).y
+		for k in range(1, tw.size()):
+			var fk := clampf(((ch["p"][k] as Vector3).y - hm.y) / maxf(1e-4, y0 - hm.y), 0.0, 1.0)
+			tw[k] = F * (ch["p"][k] as Vector3) + off * fk
 	ch["tw"] = tw
-	return M
+	# the root joint where its point is
+	skeleton.set_bone_pose_position(ch["bones"][0], _gp(ch["parent"]).affine_inverse() * (tw[0] as Vector3))
+	return F
 
 
 func _cloth_step(dt: float) -> void:
@@ -925,6 +1242,13 @@ func _cloth_step(dt: float) -> void:
 		if _cloth[key]["on"] and _cloth[key]["chains"].size():
 			items.append(_cloth[key])
 	if items.is_empty():
+		return
+	if spring_sim:
+		var w0 := Vector3.ZERO
+		for cm in skel.get("clips", []):
+			if cm["name"] == _clip and cm.get("loop", true) and cm.has("root_speed"):
+				w0 = -KChar._v(cm["root_speed"])
+		_sim_step(dt, w0)
 		return
 	if dt < 0.0:                         # a still pose: the chains hang rigid
 		for c in items:
@@ -935,7 +1259,18 @@ func _cloth_step(dt: float) -> void:
 		return
 	var W := []
 	for cp in _caps:
-		W.append({"a": _gp(cp["a"]).origin, "b": _gp(cp["b"]).origin, "r": float(cp["r"]) + C_PAD / size})
+		if "Arm" in String(skel["joints"][int(cp["a"])]["name"]):
+			continue                        # not the arms (an elbow at the waist pushed one chain of a cape out as a spike)
+		var ends := _cap_ends(cp)
+		var nm := skeleton.get_bone_name(cp["a"])
+		W.append({"a": ends[0], "b": ends[1], "r": float(cp["r"]) + C_PAD / size, "r0": float(cp["r"]),
+			"leg": nm.contains("Leg") or nm.contains("Foot") or nm.contains("Toe"), "seat": cp.get("pa") != null})
+	# the seat's two upright capsules as one across the buttocks, for the chains (a skirt's point at the back between them
+	# went out of one toward the other, sideways: the fold; clothStep in 50-figure.js)
+	var seats := W.filter(func(e): return e.get("seat", false))
+	if seats.size() == 2:
+		W = W.filter(func(e): return not e.get("seat", false))
+		W.append({"a": (seats[0]["a"] + seats[0]["b"]) * 0.5, "b": (seats[1]["a"] + seats[1]["b"]) * 0.5, "r": seats[0]["r"], "leg": false})
 	var ground := 0.008 - skeleton.position.y
 	var wind := Vector3.ZERO
 	for cm in skel.get("clips", []):
@@ -943,6 +1278,7 @@ func _cloth_step(dt: float) -> void:
 			wind = -KChar._v(cm["root_speed"])
 	var grav := Vector3(0, -C_GRAV / size, 0)            # in the skeleton's units: a giant's are twice a metre
 	for c in items:
+		_place_chains(c, player != null and player.is_playing())
 		for ch in c["chains"]:
 			_rigid(ch)
 			if c["reset"] or ch["x"].size() != ch["p"].size() or (ch["tw"][0] - ch["x"][0]).length() > 0.4:
@@ -1010,15 +1346,26 @@ func _cloth_step(dt: float) -> void:
 func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 	var x: Array = ch["x"]
 	var hip := _gp(_hips).origin
+	# across the hips, level: the side a leg's capsule lies on
+	var lat := _gp(skeleton.find_bone("LeftUpLeg")).origin - _gp(skeleton.find_bone("RightUpLeg")).origin
+	lat.y = 0.0
+	lat = lat.normalized()
 	for k in range(1, x.size()):
 		var p: Vector3 = x[k]
 		var up: Vector3 = x[k - 1]
+		var rw: Vector3 = ch["tw"][k]
 		for cp in W:
 			var ab: Vector3 = cp["b"] - cp["a"]
-			var t := clampf((p - cp["a"]).dot(ab) / maxf(1e-9, ab.length_squared()), 0.0, 1.0)
+			var lsq := maxf(1e-9, ab.length_squared())
+			# no further out than the point's own rest lies (a chain's root inside the trunk threw the point below it out
+			# sideways: the fold; collide() in 50-figure.js), but out of a leg at least to the bare limb (a skirt's rest
+			# follows the hips, and a thigh swung forward over it would take the cloth in)
+			var rq: Vector3 = cp["a"] + ab * clampf((rw - cp["a"]).dot(ab) / lsq, 0.0, 1.0)
+			var r := minf(float(cp["r"]), maxf(rw.distance_to(rq), float(cp.get("r0", 0.0)) if cp.get("leg", false) else 0.0))
+			var t := clampf((p - cp["a"]).dot(ab) / lsq, 0.0, 1.0)
 			var q: Vector3 = cp["a"] + ab * t
 			var dd := p.distance_to(q)
-			if dd < cp["r"] and dd > 1e-6:
+			if dd < r and dd > 1e-6:
 				# across a limb nearer level than upright (a seated thigh, a raised arm), out on the side of the point
 				# above, so the chain drapes over it; along an upright one, out the side away from the body's axis
 				# (collide() in 50-figure.js)
@@ -1027,13 +1374,18 @@ func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 				var o := (up - q) - ax * (up - q).dot(ax)
 				if absf(ax.y) < 0.7 and o.length() > 1e-4:
 					o = o.normalized()
-				else:
+				elif cp.get("leg", false) and (rw - q).dot(lat) * signf((q - hip).dot(lat)) > -0.5 * float(cp["r"]):
+					# the legs only (on the trunk's, the chest leaning forward of the hips, it threw a mantle's points at
+					# the back of the neck through the body to the front), and not for a point whose rest lies on the
+					# thigh's inner side, between the legs (a skirt's back centre, thrown out through the thigh: the fold)
 					o = Vector3(q.x - hip.x, 0.0, q.z - hip.z)
-					o = o.normalized() if o.length_squared() > 1e-8 else Vector3.ZERO
+					o = o.normalized() if o.length_squared() > 9e-4 else Vector3.ZERO
+				else:
+					o = Vector3.ZERO
 				var sd := d.dot(o)
 				if sd < 0.0:
 					d -= 2.0 * sd * o
-				p = q + d.normalized() * float(cp["r"])
+				p = q + d.normalized() * r
 		if p.y < ground:
 			p.y = ground
 		x[k] = p
@@ -1081,16 +1433,21 @@ func _layered(c: Dictionary, items: Array) -> void:
 var _push_mats := []
 
 
-func _is_loose(part: Dictionary) -> bool:
+func _item_of(part: Dictionary) -> Dictionary:
 	for x in kit["items"]:
 		if "pieces/%s.glb" % part["key"] == x["glb"]:
-			return x.get("loose", false)
-	return false
+			return x
+	return {}
+
+
+func _is_loose(part: Dictionary) -> bool:
+	return _item_of(part).get("loose", false)
 
 
 # a top or trousers as kchar_push.gdshader: the imported material's look, and the push and tuck (pushOut in 50-figure.js)
 const TUCK := 0.025
-const SQUEEZE := 0.006
+const SQUEEZE := 0.008
+const SQUEEZE_FEET := 0.014
 func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMaterial:
 	var pm := ShaderMaterial.new()
 	pm.shader = PUSH_SHADER
@@ -1112,17 +1469,26 @@ func _garment(m2: BaseMaterial3D, part: Dictionary, rec: Dictionary) -> ShaderMa
 			top = x
 		if x["id"] == rec.get("armour", {}).get("legs"):
 			legs = x
-	# a loose top pushes 1.2 cm further, so a robe's hem lies over the skirt it covers, and 2 cm more over trousers
+	# a loose top pushes 2 cm further, so a robe's hem lies over the skirt it covers, and 3.5 cm more over trousers
 	# (PAD_TOP, PAD_OVER in 50-figure.js)
 	var pad := 0.0
-	if loose and part["slot"] == "torso":
-		pad = 0.012 + (0.02 if legs != null and not legs.get("loose", false) else 0.0)
+	var slot0: String = _item_of(part).get("over", part["slot"])     # pteruges push as the top they hang over does
+	if loose and slot0 == "torso":
+		pad = 0.02
+		if part["slot"] == "torso" and legs != null:          # not the pteruges themselves
+			pad += 0.035 if not legs.get("loose", false) else 0.02
+	elif loose:
+		pad = 0.02           # a skirt, as a robe (PAD_SKIRT): at 0 a run's knee came through a wrap skirt
 	pm.set_shader_parameter("kcP", pad)
-	pm.set_shader_parameter("kcT", TUCK if part["slot"] == "legs" and top != null and top.get("tucks", false) else 0.0)
-	# trousers under a loose top that reaches below the knees are drawn in to the legs (SQUEEZE in 50-figure.js)
-	var squeeze: bool = part["slot"] == "legs" and top != null and top.get("loose", false) and top.get("long", false) \
+	pm.set_shader_parameter("kcT", TUCK if slot0 == "legs" and top != null and top.get("tucks", false) else 0.0)
+	# trousers under a loose top are drawn in to the legs (SQUEEZE in 50-figure.js): all the way under one that reaches
+	# below the knees, else down to its hem (kit item hem)
+	var squeeze: bool = slot0 == "legs" and top != null and top.get("loose", false) \
 		and legs != null and not legs.get("loose", false)
-	pm.set_shader_parameter("kcS", SQUEEZE if squeeze else 0.0)
+	# boots under one, whatever the legs wear (SQUEEZE_FEET)
+	var long_top: bool = top != null and top.get("loose", false) and top.get("long", false)
+	pm.set_shader_parameter("kcS", SQUEEZE if squeeze else SQUEEZE_FEET if part["slot"] == "feet" and long_top else 0.0)
+	pm.set_shader_parameter("kcSH", float(top.get("hem", 0.0)) if squeeze and not long_top else 1000.0)
 	_push_mats.append(pm)
 	return pm
 
@@ -1146,6 +1512,7 @@ func _leg_caps() -> void:
 		return
 	var A := []
 	var Bv := []
+	var R := PackedFloat32Array()
 	var legs := [["LeftUpLeg", "LeftLeg"], ["RightUpLeg", "RightLeg"], ["LeftLeg", "LeftFoot"], ["RightLeg", "RightFoot"],
 		["LeftFoot", "LeftToeBase"], ["RightFoot", "RightToeBase"], ["LeftArm", "LeftForeArm"], ["RightArm", "RightForeArm"],
 		["LeftForeArm", "LeftHand"], ["RightForeArm", "RightHand"],
@@ -1158,21 +1525,41 @@ func _leg_caps() -> void:
 		var ca := skeleton.find_bone(legs[i - 2][0]) if foot else a
 		var cb := a if foot else b
 		var r := 0.0
+		var re := 0.0
 		for cp in _caps:
 			if cp["a"] == ca and cp["b"] == cb:
-				r = float(cp["r"]) + 0.01
+				# the radius at each end (a foot takes its shin's at the ankle, all along); an arm keeps one radius
+				# (its taper measured the deltoid, and the hard push crushed a tunic and its mantle together)
+				r = float(cp["r"] if i >= 6 else cp["rb"] if foot else cp["ra"]) + 0.01
+				re = float(cp["r"] if i >= 6 else cp["rb"]) + 0.01
 		if b < 0 or a < 0 or (i >= 10 and not four_arms):        # no such joints, or a two-armed giant's lower pair
 			r = 0.0
+			re = 0.0
 			a = maxi(a, 0)
 			b = a
 		var pa := _gp(a).origin
 		var pb := _gp(b).origin
 		A.append(Vector4(pa.x, pa.y, pa.z, r))
 		Bv.append(Vector4(pb.x, pb.y, pb.z, 1.0 if i >= 6 else 0.0))
+		R.append(re)
+	# the seat (14, 15): soft, like the legs'
+	var seat := []
+	for cp in _caps:
+		if cp.get("pa") != null:
+			seat.append(cp)
+	for q in 2:
+		if q < seat.size():
+			var ends := _cap_ends(seat[q])
+			A.append(Vector4(ends[0].x, ends[0].y, ends[0].z, float(seat[q]["r"]) + 0.01))
+			Bv.append(Vector4(ends[1].x, ends[1].y, ends[1].z, 0.0))
+			R.append(float(seat[q]["r"]) + 0.01)
+		else:
+			A.append(Vector4(0, 0, 0, 0)); Bv.append(Vector4(0, 0, 0, 0)); R.append(0.0)
 	var hip := _gp(_hips).origin
 	for pm in _push_mats:
 		pm.set_shader_parameter("kcA", A)
 		pm.set_shader_parameter("kcB", Bv)
+		pm.set_shader_parameter("kcR", R)
 		pm.set_shader_parameter("kcH", hip)
 
 
@@ -1201,6 +1588,8 @@ func _body_fix() -> void:
 			var way := Vector3.ZERO
 			for cp in _caps:
 				if cp["a"] != hips_i and cp["a"] != sp1 and cp["a"] != th and cp["a"] != ua and cp["a"] != uf:
+					continue
+				if cp.get("pa") != null:            # the seat: the trunk's capsule is the pelvis here
 					continue
 				var a := _gp(cp["a"]).origin
 				var ab := _gp(cp["b"]).origin - a

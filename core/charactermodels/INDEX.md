@@ -4,7 +4,7 @@
 
 Characters: MakeHuman (MPFB2) bodies with morphing face, build and ancestry; library clothes, hair and beards that follow the morphs; skin and hair tint; peoples (data/peoples.json) that keep a culture's strangers in range; two pages: the Cosmetic Lab (one figure, every look; strangers in bulk for NPCs) and the Animation Lab (six bodies, every clip, a review mark per clip); a Godot twin (godot/krator/character/, behind).
 
-Docs: `CREDITS.md`, `KNOWN_ISSUES.md`, `PORT.md`, `README.md`, `prompt-clothes.md`
+Docs: `CREDITS.md`, `HANDOFF-CLIPPING.md`, `HANDOFF-CLOTHING.md`, `KNOWN_ISSUES.md`, `PORT.md`, `README.md`, `prompt-clothes.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/animation-lab.html`, `dist/cosmetic-lab.html`
 
@@ -18,7 +18,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | 13 |  |
 | `01-animlab.html` | 17 |  |
 | `10-rig.js` | 21 | KCHAR: the character record and its pose. [G dat (1) |
-| `50-figure.js` | 61 **big** | KCharFigure: one body's character, drawn from ki (1) |
+| `50-figure.js` | 81 **big** | KCharFigure: one body's character, drawn from ki (1) |
 | `60-crowd.js` | 7 | KCharCrowd: figures baked into still, instanced  (1) |
 | `90-editor.js` | 34 **big** | the Cosmetic Lab: stage, camera, panel. [web] (h (1) |
 | `92-animlab.js` | 32 **big** | the Animation Lab: six figures, one clip on all  (1) |

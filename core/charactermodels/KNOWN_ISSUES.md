@@ -2,13 +2,14 @@
 
 - **The Cosmetic Lab is full.** A published version holds at most 256 MiB and the lab is at about 245; the Order of
   Historians' and Xanadu's clothes (`order_`, `xan_`, 2026-10-19) went into a lab of their own (README, Publishing the
-  labs). The fix is to split the lab by people or by body (one page per body, sharing the code) before more clothes come.
+  labs); since 2026-10-20 the main lab carries them too (its stale `.morph.txt` files removed), and the Order's own lab
+  keeps the older page. The fix is to split the lab by people or by body (one page per body, sharing the code) before more clothes come.
 - **Trousers under a mid-calf hem look thin.** Under a loose top that reaches below the knees (kit item `long`) the
-  figure draws trousers in to 6 mm outside the legs' collision capsules (`50-figure.js` SQUEEZE, and the twin's shader),
+  figure draws trousers in to 8 mm outside the legs' collision capsules (`50-figure.js` SQUEEZE, and the twin's shader),
   which are slimmer than the calves; under an ankle-length robe that is hidden, but below a hem at mid-calf the shins
-  show thin (the owner, 2026-10-19, on Xanadu's jama, now cut to the ankle). A long top with a shorter hem needs the
-  squeeze limited to what the hem covers, or the skin's own radius.
-- **Merged garments hide no skin in Godot yet.** `make_mpfb.py --merge` (the Order's and Xanadu's clothes) packs the new
+  show thin (the owner, 2026-10-19, on Xanadu's jama, now cut to the ankle). A shorter top's squeeze already stops at
+  its hem (kit item `hem`); a long one's could too, if the boots' squeeze (`kcSF`) followed it.
+- **Merged garments hide no skin in Godot yet** (the Izani court robe and the grand boubous were merged on 2026-10-20). `make_mpfb.py --merge` (the Order's and Xanadu's clothes) packs the new
   items' own blend shapes but does not remake the base's cover regions (`base.gshapes.bin`): in the Godot twin the skin
   under them is still drawn (it is hidden on the page, which reads `hide` from kit.json). The next whole build
   (`mpfb_build.py` and `make_mpfb.py` on every item) fixes it.
@@ -33,10 +34,10 @@
   pick, not chopped short. Spear advance is Meshy's walk with the arms re-posed frame by frame, so its shoulders and
   spine still sway as the walk had them for the old grip. A crossbow shot still borrows the long-gun shot. Mixamo has
   most of these, but its clips can only be fetched by hand with an Adobe account.
-- **The Godot twin's robe chains fold.** In a walk some of the court robe's chain bones turn 1.6 to 2.5 rad from their
-  rest against the link above (26 of them on the man), and with cloth off the chains still jitter about 0.19 rad a frame
-  (0.28 with it on): the page's chains do not. `kchar_test.gd` measures the swing frame to frame, which still tells the
-  two apart; the folding itself is not fixed.
+- **The Izani court robe's orange front panel** still pokes through the robe or flares out in a walk (the robe chains'
+  fold itself is fixed: 0 segments past 1.5 rad in the page and 0 bones in kchar_test.gd's walk). After the build-time
+  settle (README, "Clothing fit."), the Voth noble robe's back hem band still breaks up over the skirt in places, and
+  a few light-blue specks of the Hykkousoi tunic skirt show through the pteruges.
 - **The posture fix is one rule for every clip.** The spine is bent forward and the shoulders dropped and drawn back
   by fixed angles (`data/posture.json`, set by hand in the Animation Lab's Posture panel) after each clip (README, Posture), the upper arms keeping the clip's direction: a clip that already
   stoops (the standing idle, the combat stance) stoops further. The cause, the retarget straightening MakeHuman's
@@ -58,7 +59,18 @@
   a shoulder (no capsule) can show through a mantle in a full overhead reach. A chain point inside a limb leaves on
   the side of the point above it, so a seated lap or a raised arm is draped, but only points collide: a 20 cm segment
   whose two ends are clear can still cut through a knee's corner. In a deep crouch or on a seat, a long robe's layers
-  can still show one through another for a frame or two where the chains swing.
+  can still show one through another for a frame or two where the chains swing. In a run, a long robe (the Order's,
+  the court robes, the kimono) has its back pierced by the shin as the trailing leg kicks up, and for a frame a patch at
+  the back of that hip can show: the push skips the back of a thigh's top third (the seat covers it at rest), and the
+  seat capsules do not swing with the thigh. A narrow ankle-length skirt (the Order novice's wrap) cannot cover a thigh
+  raised as high as a run's: at the top of the stride the leading thigh comes out of its side, cloth or no cloth (its
+  fitted shape is a tube; the chains and the push move it, they do not make more of it).
+- **Tall bodies tear long robes in a run.** The monk's robe (and the skirts now cut as it) holds in a run up to about
+  +0.7 height (the owner, 2026-10-20); taller, the thigh is up to 29% longer (44 to 57 cm) and its raised knee goes out
+  through the robe's side, and at +1 the walk and idle open small tears at the back of the thigh too. The push's capsules
+  are not the cause (their radii stay within a few millimetres of the skin's at every height: tools/shots.py with
+  `morph`); a 6 cm pad closes the run at +1 but tears the robe at the hips at height 0. A cut with more cloth for long
+  legs, or a pad that grows with the leg's length, is the likely fix.
   The headgear (a wrap, a quetzal headdress) is rigid: the headdress's fan swings, its band does not.
 - **The Izani clothing is generated too** (as the Voth, above): the hood is a stiff shell (no chains), the sun halo
   and the shoulder plate are rigid, pouches are simple solids, the boots are tubes (a toe shows a seam), and the hex

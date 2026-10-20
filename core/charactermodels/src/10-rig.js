@@ -333,12 +333,15 @@ var KCHAR = (function(){
   }
 
   /* colliders(skel, w): the capsules a garment's cloth chains are kept out of (skeleton.json colliders: per joint
-     pair a base radius and its change per morph target), their radii under morph weights w */
+     pair a base radius and its change per morph target), their radii under morph weights w. A capsule with pa and pb
+     (the seat's) has its ends at those rest points (the body's model space), carried by joints a and b */
   function colliders(skel, w){
     return (skel.colliders || []).map(function(c){
       var r = c.r;
       Object.keys(c.dr || {}).forEach(function(t){ r += (w[+t] || 0) * c.dr[t]; });
-      return { a:c.a, b:c.b, r:Math.max(0.01, r) };
+      var k = Math.max(0.01, r) / c.r;         // the push's end radii (ra, rb) scale with the capsule's
+      return { a:c.a, b:c.b, r:Math.max(0.01, r), pa:c.pa || null, pb:c.pb || null,
+               ra:(c.ra == null ? c.r : c.ra) * k, rb:(c.rb == null ? c.r : c.rb) * k };
     });
   }
 

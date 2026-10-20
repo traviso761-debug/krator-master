@@ -31,9 +31,12 @@ python3 tools/make_mpfb.py giant <the man's export dir>            # -> pieces/m
 blender -b --python tools/make_garments.py -- male --only <ids> [--render <dir>]
 blender -b --python tools/mpfb_build.py -- male <export dir> --only <ids>
 python3 tools/make_mpfb.py male <export dir> --merge                # -> pieces/mpfb_male/<id>.*, new entries in kit.json
+tools/rebuild.sh [--only <male ids> <female ids>]                  # all of the above in order, both bodies at once, then the pages
 python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
+python3 tools/shots.py <dir> tools/shots-clipping.json               # close-ups of the open clipping issues, the same every run
+python3 tools/ease.py /path/to/export male                           # under-items outside the item over them, per outfit
 node tests/make-golden.js && python3 ../../godot/tools/sync_core.py     # after a change to 10-rig.js, data/ or the pieces
 godot --headless --path ../../godot --script res://tests/character/kchar_test.gd
 ```
@@ -50,6 +53,24 @@ clothes (2026-10-19, 14 MB) are published in a lab of their own, "Cosmetic Lab: 
 hair and beards copied from the main lab on the server), until the main lab is split (KNOWN_ISSUES.md). `build.py`
 builds the page with whatever pieces this checkout has (`pieces/` is gitignored) and keeps the other pieces' hashes in
 `build-manifest.json`.
+
+**Clothing fit.** Measured on the exports (2026-10-20), before acting on HANDOFF-CLOTHING.md 1.2 and 1.3:
+- *Across slider ends* MPFB's refit already keeps every garment where the rest has it: over all 85 ends, a few dozen
+  vertices per item go 0.3 to 2 cm deeper into the body than at rest (boot soles at full height, hat rims at the pointed
+  ears), and the generated garments almost none. So 1.2 (a settle per slider end) is not built.
+- *At rest* garments lie outside the skin but for soles (by design), the four-armed giant tunics' armpits (up to 5 cm)
+  and two to eight vertices of a robe or tunic.
+- *Across items worn together* is where the fit fails: `python3 tools/ease.py <export dir> male|female` lists, for every
+  outfit in `data/peoples.json`, the under-items standing outside the item over them. 16 of 58 pairs on the man and
+  15 of 52 on the woman; the worst are the Hykkousoi pteruges outside the lorica (most of their vertices, 7 to 9 cm),
+  the Izani commoner's trousers outside the tunic (about 700 vertices, 1 to 1.5 cm), the Chichani noble's skirt outside
+  the robe (up to 5 cm) and trader's xicolli outside the head wrap (7 cm). These are the open clipping issues' causes,
+  fixed at build time: `make_garments.py` settles each garment over what is worn under it (`settle`: out along the
+  skin's normal to 6 mm past any lower layer of an item worn with it in an outfit, `tools/layers.py`; under-layers are
+  built first, and each garment leaves `<gid>.layers.npz` for the ones over it). After it, 1 to 21 edge vertices per
+  pair (the Chichani noble's skirt the worst, 1.8 cm). `--objs <MPFB clothes dir>` reads the generator's own output,
+  so a garment change is checked in minutes. An item can lie over a higher slot's under-layers: the Hykkousoi pteruges
+  (`layers.OVER`, kit item `over: 'torso'`) hang over the lorica's tunic skirt (layer 0) and under its cloak (2).
 
 ## A core module: where it goes next
 
@@ -343,19 +364,59 @@ reaches below the crotch hangs at the back from just under the seat, not from th
 never push through it), each chain hanging from
 the spine joint above it, and writes them beside the garment (`<id>.cloth.json`). `make_mpfb.py cloth_bones` turns
 them into joints of the garment's GLB ('cloth:<item>:<chain>:<bone>', inverse bind T(-p) at an anchor vertex) and
-weights the cloth below each chain's top to the two chains either side and the bone of its stretch; `kit.json` keeps
+weights the cloth below each chain's top to the two chains either side and the bone of its stretch, except cloth that
+lies on the body: within 4 cm of the skin it keeps the body's own weights, fading to the chains' by 9 cm (`CONTACT`),
+so a tilma lying on the back, a mantle over the shoulders and a skirt's band over the hips move with them (on chains
+held by the chest a cloak swung into the small of the back as the idle leaned forward); never over the legs, where a
+skirt lying on a thigh must leave it as the leg swings, nor for a legs item at all (a loincloth's back flap took each
+buttock's weights and pinched to a strip as the legs stood). A mantle or a cape (layer 2) lies on the garment's own
+layers under it as on the skin (over a tunic's shoulders or a bone plate it stood more than 4 cm off the skin, went to
+chains held by the spine, and the shoulders came out through it as the arms came down from the A-pose), and where it
+hangs clear of both it takes none of the arm's weight, the collarbone's instead (a cape's side edge took the A-posed
+upper arm's and swung out as the arm came down); within 1 cm of that cloth it takes its weights outright, fading out by
+5 cm, so the two move as one. Only cloth that does not hang counts (a tunic above its chains, a plate, a collar): a cape
+counted as lying on a robe's swinging back took the hips' and thighs' weights and the robe swung through it; nor does
+the skin of an arm (a cape's flared side near the A-posed forearm took its weights). `kit.json` keeps
 per chain its parent joint and anchor vertices, and `skeleton.json colliders` the body's capsules (thighs, shins,
-pelvis, chest, arms: a base radius and its change per morph target, `KCHAR.colliders`). The figure (`50-figure.js`
-cloth section; `kchar_figure.gd _cloth_*`) reads each chain's rest off the morphed garment, so a broad or tall body's
-skirt hangs from its own hips, then runs every chain point as a Verlet particle at 60 Hz: pulled to its rigid rest
+pelvis, chest, arms: a base radius and its change per morph target, `KCHAR.colliders`; for the push a radius at each
+end, `ra` and `rb`, since a limb tapers; and the seat, a pair of upright capsules behind the hip joints that cover the
+buttocks, whose ends are rest points carried by the Hips joint, `pa` and `pb`). The figure (`50-figure.js`
+cloth section; `kchar_figure.gd _cloth_*`) reads each chain's rest off the morphed garment. **The rest follows the
+body, not the A-pose** (`HANDOFF-CLOTHING.md`, 1): `kit.json` keeps per chain point the garment's own body weights
+from before the chains took the cloth (`bw`, `make_mpfb.py cloth_bones`), and while a clip plays a chain wholly above
+the hip joint rests where those weights (not the legs') put each of its points in the current pose, and one reaching
+below the hips keeps the shape it was fitted in, placed by the hips and turned with their heading only (cloth below
+them hangs, whatever the pelvis' tilt), its top point where its weights put it and that point's offset fading out down
+to the hip joint (`rigidTargets`, `_rigid`; the chain's root joint is placed there each frame). Turned with the whole
+pelvis and carried whole from its top point, a court robe's back panel hanging 1 m from the chest sank into the
+buttocks in an idle (the chest leans 10 cm ahead of the hips, the pelvis tilts back), and the layering threw it out
+in front, through the body, wide as a wing (the court robes, the chief's apron: half a metre off rest). A loose chain wholly above the hips (stiffness 0.1 and under; a blend up to 0.3, past which a mantle lying on the
+shoulders follows the body as above) hangs too: its fitted shape from its top point, turned with the heading only.
+Followed point by point, the Chichani tilma's front tilted out 45 degrees with the idle's forward lean and stood off
+like a shelf (its fitted shape hangs within 5). Held rigid by the chest, a mantle's back stayed where
+it was fitted while the spine under it bent in the clip and the posture pass drew the shoulders back, and the tunic it
+covers came out through it over the whole upper back; followed point by point below the hips, a robe's skirt bunched
+at the legs and its cape went round to the front in a stride. In the A-pose (no clip, no posture) the chains rest as
+fitted (`posedRests` also reads the postured bind rest, `placeChains`). So a broad or tall body's
+skirt hangs from its own hips, then runs every chain point as a Verlet particle at 60 Hz: pulled to its rest
 by the part's stiffness (mantles stiff, capes loose), under Krator's gravity (7.4 m/s²) and the drag of Voth's dense
 air, with the wind of a walk or run played in place (its `root_speed`), kept to its length, near its neighbours round
-a skirt, out of the capsules and above the floor; each bone then turns to the next point. A point inside a limb
+a skirt, out of the capsules (not the arms': an elbow hanging at the waist pushed one chain of a cape's edge out and
+the cloth below it swung away alone as a spike; the push keeps vertices out of the arms) and above the floor; each bone then turns to the next point. A point inside a limb
 that lies across the cloth's fall (a seated thigh, a raised arm) leaves on the side of the point above it, so the
-chain drapes over the limb; along an upright limb it leaves on the side away from the body's axis, so cloth never
-ends up behind a leg in a stride. `fig.cloth = false` hangs
+chain drapes over the limb; along an upright leg it leaves on the side away from the body's axis, so cloth never
+ends up behind a leg in a stride (the legs only: on the trunk, the chest leaning forward in a clip, that threw a mantle's
+points through the body; and not for a point whose rest lies on the thigh's inner side, between the legs, which it threw
+out through the thigh). A point is pushed no further out of a capsule than its own rest lies (a robe's chain roots sit
+inside the trunk's capsules, and a full push threw the point below each sideways: a Z at every chain's top, the fold),
+but out of a leg at least to the bare limb (a skirt's rest follows the hips, and a thigh swung forward over it would take
+the cloth in). The seat's two capsules count as one across the buttocks for the chains. `verify.py` measures the fold
+on the court robe and skirt (chain segments past 1.5 rad of their rest, idle and walk: 0) and `kchar_test.gd` the same
+in Godot. `fig.cloth = false` hangs
 them rigid (the Animation Lab's Cloth button). Each part has a `layer` (0 a skirt, 1 a robe's hem, a flap or a
-skirt's over-tier, 2 a cape, a mantle or headgear): a chain point stays 3 cm outside the lower layers' chains near it,
+skirt's over-tier, 2 a cape, a mantle or headgear), within its item's slot (legs under torso under head: the figure
+adds 3 x the slot's rank, so a breechcloth's flap stays under a shirt's skirt): a chain point stays 3 cm outside the
+lower layers' chains near it,
 measured out from the body's axis (`layered`). Inside one garment a skirt under an over-tier or apron goes further:
 `make_mpfb.py cover_weights` gives each covered vertex the weights of the outer part's nearest vertex, so where the
 two overlap they move as one and cannot cross. The same goes for a part that does not hang under one that hangs over
@@ -367,18 +428,57 @@ what lies outside the outer part (a belt across an open coat's gap) keep their o
 **Clipping** (both runtimes, every frame after the clip): a garment marked `loose` in the kit (the Voth tunics, robes
 and skirts, the kimono, the long skirts) has every vertex pushed out of the thighs, shins and feet on the GPU after
 skinning (`pushOut` / `kchar_push.gdshader`, which in Godot also carries the garment's own look: albedo, alpha
-cutoff, normal map), so a knee cannot come through between two chains. The upper arms and forearms are hard
+cutoff, normal map), so a knee cannot come through between two chains, and out of the seat, so a robe's back covers
+the buttocks. Each capsule's radius runs from `ra` to `rb` along it (the thigh from about 12 cm at the hip to 8 cm
+at the knee, the shin from 8.6 cm at the calf to 5.3 at the ankle on the man): at one radius the calves and the tops
+of the thighs came through the robes. The upper arms and forearms keep one radius (tapered, they drew a tunic's
+sleeve and the mantle over it into the same shell, and the mantle broke up jagged). They are hard
 capsules in the same pass (only what is inside them moves), so a raised arm lifts a mantle's or a cape's hem. The push is a soft
-shell, not a projection (a vertex d from the bone within r + 4 cm lands at r + d x 4 cm / (r + 4 cm)), so two tiers
-keep their order; a vertex inside a leg leaves on the side away from the body's axis, never behind the knee; and a
-torso garment's shell is 1.2 cm wider, so a robe's hem lies over the skirt under it, and 2 cm wider again over
-trousers (which stand further out of the capsules than a skirt's chains). The chains collide the same way,
+band, not a projection (a vertex d from the bone within r + 1.5 cm lands at r - 1.5 cm + d x 3 cm / (r + 1.5 cm)), so
+two tiers keep their order and cloth that already lies right barely moves (a 4 cm shell outside r moved everything
+within 4 cm of a capsule out by up to 3 cm, and a loincloth's flaps, a kilt's seat and a robe's back crumpled at
+rest); a thigh pushes nothing behind it in its top third (its capsule runs down the femur, toward the outside of the thigh,
+and at the radius that covers the flesh within it took in the buttock: the seat covers that), though in front it
+does (else a kimono showed wide harem pants at the hips); a garment of a band and flaps alone (`make_mpfb.py FLAPS`:
+the loincloth) is not pushed at all, its chains keep it off the legs (pushed, a flap between the thighs in a stride
+went out of each sideways and its corners stood out like wings); a vertex inside a leg leaves on the side away from the body's axis, never behind the knee, and the deeper it lies the more
+it goes straight out that side (near the bone the way out from it is noise: a robe's front, left inside a raised thigh in a
+run, split left and right round the knee and showed it), and the side is the one the cloth faces (its skinned normal:
+a leg swung back has the body's axis in front of it, and a skirt's front sent out the back left the leg bare); a skirt
+is pushed 2 cm wider as a robe is (`PAD_SKIRT`: at none a run's knee came through the novice's wrap skirt), and a robe
+over one by that more; and a
+torso garment's shell is 2 cm wider (at 1.2 cm a bent knee's thigh came through a gown's front), so a robe's hem
+lies over the skirt under it, and 3.5 cm wider again over
+trousers (at 2 cm a stride's knee came through a deel's front; trousers stand further out of the capsules than a skirt's chains). The chains collide the same way,
 and still do with cloth off (no swing then: each frame starts from the rigid rest). A top that closes round the waist
 (kit item `tucks`, `make_mpfb.py encloses()`: rays out from the hips meet it all round; an open cloak or a cropped top
 does not) has the trousers or skirt under it tucked: their band above the hips drawn in toward the body's axis by up
-to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top that reaches below the knees (kit item
-`long`: a robe, the kimono) trousers below the hips are drawn in to within 6 mm of the legs' capsules, so wide ones
-(harem pants) stay under it (`kcS`).
+to 2.5 cm, so a waistband stays under the top in any pose. Under a loose top trousers below the hips are drawn in
+to within 8 mm of the legs' capsules, all the way down under one that reaches below the knees (kit item `long`: a robe,
+the kimono), else down to its hem (kit item `hem`, `make_mpfb.py hem_depth`: a fraction of the hip-to-ankle length,
+measured down the leg, so a raised thigh keeps it; `kcSH`), below which they are as wide as they are (their
+tapered radii; each vertex to its nearest capsule only: drawn to all six, a shin's was pulled into a ball round the
+knee and the inside of each leg toward the other, and the court's legs came out thin), so wide ones (harem pants)
+stay under it (`kcS`): at one radius per capsule they sank into the calves
+and the court's legs read thin, and drawn in less (2.5 cm) they came out through the robes' knees. Boots under such a
+top are drawn in to within 1.4 cm (`kcSF`; Godot sets `kcS` on the feet part), whatever the legs wear: the hero boots'
+cuffs came through the kimono's hem at the shins. Breeches and braccae have legs, so like trousers they are not
+`loose` and their weights do not pool below the crotch (`make_mpfb.py hangs`): marked as skirts, the Republic's
+breeches and the giants' braccae were pushed off the thighs and swung as one sheet.
+**A garment's back faces** are drawn 1 cm further from the eye than they are (`BACK_DEPTH`, the fragment's depth; the
+twin's shader too): where the push or a chain folds the cloth over itself its inside lay at the outside's depth and
+showed through it in blue-grey patches (a shirt over the hips in a walk, the court robe's back); an inside nothing
+covers (in a sleeve, under a hem) still shows. **Belts round the hips** and what hangs from them (`make_garments.py`
+parts named `_belt`, `_trophy`; the `.cloth.json`'s `hips`) are weighted to the hips alone (`mods.pin_hips`): from
+the body they took the thighs' weights, and the chief's stack of four sheared into fins in a stride.
+**Headgear** moves with the head: `make_mpfb.py head_weights` gives every vertex of a head item above the neck the
+Head joint's weight alone (MakeHuman weights a garment from the skin nearest it, so a broad brim, a wing or an ear
+flap took the shoulders' and arms' weights and bent as they moved), and so does every piece of it that reaches no
+lower than the neck joint (the chieftess's wing tips and the bead strands under them hung below the cut and trailed
+out to the shoulders as long streamers); a hood's cowl and a headband's tails, lower, keep following the neck.
+**The feet roll on their balls**: `toesFlat` (`_toes_flat`) turns each toe joint up after the clip until a point 6
+cm ahead of it (scaled with the figure) is no lower than the ground, so a clip that stands on the ball of a foot does
+not push the toes, and a sandal's sole with them, down into it.
 `bodyFix` turns an upper arm or forearm out when the clip puts an elbow or hand inside the pelvis, chest or its own
 thigh (a heavy body in a clip made for a slight one), and turns two thighs apart when they overlap.
 
@@ -426,7 +526,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `src/01-animlab.html` | the Animation Lab's shell and styles | [web] |
 | `src/10-rig.js` | `KCHAR`: records, morph weights and joints, strangers, pose (the Meshy kit's sliders), parts, hidden skin. No three.js, no DOM | [G data], twin `godot/krator/character/kchar.gd` (held to it by `tests/golden-mpfb.json`) |
 | `src/50-figure.js` | `KCharFigure`: bones from `skeleton.json`, pieces bound to them, CPU morphs, tint, clips | [draw], twin `kchar_figure.gd` (blend shapes from `<piece>.gshapes.bin`) |
-| `src/90-editor.js` | the Cosmetic Lab: stage, camera, panel, strangers in bulk; `window._kchar` for `verify.py` | [web] |
+| `src/90-editor.js` | the Cosmetic Lab: stage, camera, panel, strangers in bulk; `window._kchar` for `verify.py` and `tools/shots.py` (`_kchar.still` holds the figure) | [web] |
 | `src/92-animlab.js` | the Animation Lab: the cast of six, the clip ledger, playback, review marks; `window._lab` for `verify.py` | [web] |
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
 | `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |
@@ -440,6 +540,9 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/mods.py`, `tools/arms2.py` | the body mods (flesh and cybernetic arms, rib gills), the lower-arm joints every body has, four-armed garments' weights | |
 | `tools/decimate.py` | fewer triangles for a dense item, on a subset of its own vertices (`make_mpfb.py DECIMATE`) | |
 | `tools/make_garments.py` | the Voth, Izani, Beast Rider, Hykkousoi, Dalab, Yuni, Iron Republic and Giants' clothing: lofted garments, their textures, written as MakeHuman clothes (run before `mpfb_build.py`) | |
+| `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |
+| `tools/ease.py` | under-items standing outside the item over them, per outfit (`--objs`: from the generator's output) | |
+| `tools/shots.py` | close-ups of the Cosmetic Lab, the same every run (`tools/shots-clipping.json`: the open clipping issues) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |

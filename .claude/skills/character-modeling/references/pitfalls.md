@@ -72,6 +72,58 @@ area you are about to change.
 - **Garment holes leave loose vertices** → delete loose vertices after cutting and record what was removed.
 - **More than 64 items overflowed a 64-bit hide mask** → name skin regions by the list of items that cover them.
 - **A random NPC wearing another culture's clothes** → tag every item with its culture and filter the wardrobe.
+- **Fitted cloth crumpling at rest under the GPU push** (a loincloth's flaps winged out, a kilt's seat torn down the
+  middle, a robe's back jagged) → before tuning, switch the push off and shoot: if rest is clean, the push is wrong,
+  not the mesh. Two causes: a soft shell *outside* the capsule (everything within 4 cm moved out up to 3 cm) → a thin
+  band either side of the surface (monotonic, so tiers keep order); and a thigh capsule on the femur, which sits toward
+  the outside of the thigh, so a radius covering the flesh within swallows the buttock and crotch → no push in the
+  thigh's top third (knees are what come through).
+- **Legs thin under a long robe** → a "draw in toward the capsules" pass that loops over every capsule pulls each
+  vertex toward all of them (a shin's into a ball at the knee, the inside of one leg toward the other) → draw to the
+  nearest capsule only.
+- **Breeches swinging as a sheet** → a name test for legged garments ("trousers") missed breeches and braccae; they
+  were marked loose and their weights pooled below the crotch like a skirt's.
+- **Boot cuffs through a long robe's hem** → squeeze the feet too under a loose long top, whatever the legs wear.
+- **Change one variable per shot, and shoot the A-pose too** → toggling the push, the cloth sim (rigid) and the posture
+  pass one at a time, A-pose against idle, told push, weights, chains and posture apart in a few shots; tuning blind
+  cost whole pipeline runs.
+- **A mantle torn at the shoulder blades** → colour the parts (vertex colours by `_vidx` range) before theorising:
+  the trader's mantle back had sunk into the body over the whole upper back, held rigid by the chest while the spine
+  bent in the clip and the posture. Weight tricks (contact, copied weights, chains on the collarbones) and reading the
+  chain rest in the postured bind pose alone did not close it. What did: a chain's rest follows the garment's own body
+  weights in the current pose (kit `bw`), whole for chains above the hip joint, by the top point for chains below
+  (point by point there a robe's skirt followed the thighs), never the legs' weights.
+- **Removing hidden triangles from a garment breaks Godot** → its glTF importer drops vertices no triangle uses, and the
+  morph data no longer lines up. Keep every vertex referenced.
+- **A cape's edge as a long spike at the idle** → a chain colliding with the arm (an elbow hangs at the waist) moves one
+  column alone; chains do not collide with arms, the per-vertex push keeps cloth out of them.
+- **A knee through a robe's front in a run, though the push covers it** → the robe's front lagged almost onto the
+  thigh's axis (1-3 cm from the bone), and "out along the line from the bone" is noise there: neighbouring vertices went
+  out left and right and the cloth split open round the knee. Blend the way out toward the leg's outward side the deeper
+  the vertex lies (`(1 - d/r)^2`). Find this kind of fault with a CPU replay of the shader on `boneTransform` positions
+  and a ray from each skin vertex out of its limb; pushing along the cloth's own normal measured worse.
+- **Blue-grey patches on a shirt or robe in a stride, trousers seeming to show through** → the cloth folded over itself
+  and its back faces lay at the front faces' depth (DoubleSide). Check by drawing the material FrontSide: clean means
+  it is this. Draw back faces a centimetre further from the eye (fragment depth from the view position); widening the
+  push or squeezing the trousers changed nothing.
+- **A sheet over the arms hung from the waist shows the tunic under it at the back** → its back falls inside the seat.
+  Hung from under the seat as robes are, it showed the tunic all over its back; cut the under-layer short instead (the
+  grand boubou's to the waist: no more of it is seen). Check the A-pose first: a fault there is the cut, not the motion.
+- **"Hang it from the waist as the monk's robe" is not for every robe** → it helped the skirts and the Yuni gown, but the
+  Izani court robe's woven tabard tore across the hips; shoot each one.
+- **Tall bodies tear a robe the default one wears well** → measure before blaming the capsules: the skin's distance from
+  each capsule's axis (median and 90th percentile, by morph) against the push radius. Here they matched within
+  millimetres; the thigh was 29% longer, and the robe's cut had no cloth for its stride.
+- **A skirt split down the side of a leg swung back** → pushing out "away from the body's axis" sends a skirt's front
+  out the back of a trailing leg; take the side the cloth faces (its skinned normal).
+- **Belts round the hips flaring into fins** → they took the thighs' skin weights from the body; weight them to the
+  hips alone (`.cloth.json` `hips`, `mods.pin_hips`).
+- **A flap that poofs out in a stride** → the per-vertex push sends cloth between the thighs out sideways; a garment of
+  flaps only is not pushed, its chains keep it off the legs.
+- **Fitting order between items** → each garment is fitted alone, so an under-item's flap 3 cm off the body stood
+  outside a shirt at 1.4 cm; check eases across items that are worn together.
+- **Long thin streamers from a hat** → part of a head item hung below the "above the neck → Head joint" cut and took
+  the shoulders' weights; give whole pieces (welded by position) that end above the neck joint to the Head.
 - **A hat across the eyes** → the head bone runs from the neck to the crown, so fraction 0.5 is eye level: a brow band or a
   turban's first row sits at about 0.62.
 - **A paint band painting a whole narrow part** → `B(where, a, b, ...)` takes metres, not fractions: a 0.15 band on a
@@ -100,12 +152,59 @@ area you are about to change.
 
 ## 5. Cloth chains
 
+- **Cloth that lies on the body must not hang on chains.** A cloak hung plumb from the shoulder blades stands 4-6 cm
+  off the small of the back; on chains held by the chest it swung into the back whenever the spine bent (holes with
+  blocky edges, which look like texture alpha but are geometry: check the material is opaque before chasing alpha).
+  Bind cloth within ~4 cm of the skin to the body's own weights, fading to the chains by ~9 cm, except over the legs
+  (a skirt on a thigh must leave it as the leg swings).
+- **The seat is in no limb's capsule.** A thigh capsule runs down the femur and the trunk's up the spine; the buttocks
+  sit between, and every robe's back tore there in an idle. Give the chains and the per-vertex push a seat capsule
+  per side, its ends rest points carried by the Hips joint.
+- **A capsule needs a radius per end.** One radius per limb (a median of the surface) let the calf and the top of the
+  thigh through long garments; measure the 90th percentile near each end, inside the limb (past its ends lie the foot,
+  the hand, the trunk), and interpolate along the capsule in the shader.
+- **The push and the trouser squeeze share a margin.** Drawing trousers in less put them out through the robe's knee;
+  pushing the robe further out makes spiky folds. Keep the squeeze tight (8 mm) and the loose top's pad ~2 cm.
+- **Layer order spans garments.** Chain layers were per garment, so a breechcloth flap (layer 1) and a shirt's skirt
+  (layer 1) crossed; rank by slot first (legs under torso under head).
 - Spring-bone chains on hanging garments (not trousers): roots pinned, collision against capsules on the legs and body.
 - **Collisions undone** → the final length-keeping pass must run before collision, not after.
 - **Robes crumpled onto the lap by a capsule lever** → reverted; simple capsules.
 - **A parent-side rule flipped a chain 137° in Godot's walk** → limit it to near-level limbs.
 - **Measuring swing in a test**: an angle metric saturates near π; measure frame-to-frame motion instead.
-- Robe chains in Godot still fold in a walk; recorded as a known issue rather than hidden.
+- **Robe chains Z-fold at their tops (bones past 1.5 rad)** → chain roots lie inside the body's capsules, and a push
+  out to the full radius throws the next point sideways. Push no further out than the point's own rest lies from the
+  capsule; on legs, floor that at the bare limb radius (a hips-following rest goes inside a thigh swung forward).
+- **"Away from the body's axis" flips are for legs only** → on trunk capsules a forward-leaning chest sends a mantle's
+  neck points through the body; on a leg, skip it for a point whose rest is on the thigh's inner side (a skirt's back
+  centre goes out through the thigh).
+- **Long chains rigid on spine joints** → clips pitch the spine hard and the hem's rest lands 0.7 m off; turn the chain's
+  bind shape by the Hips' frame from its root instead, and give the root all its weights.
+- **Finding which rule throws a point**: trace one chain's pushes per capsule (name, radius, before/after, rest) in
+  Godot headless; switching collision, ring and layering off one at a time names the stage first.
+- **Measure before baking fit into the pack** → a settle per slider end (the handoff's 1.2) would have moved almost
+  nothing: MPFB's refit already keeps garments at their rest depth across every end. The clipping was between items
+  worn together; `tools/ease.py` (height above the skin, under-item against over-item at the same spot) names the pairs.
+- **Garments built apart meet where they are worn together** (a tunic at 1.4 cm over trousers' seat at 1.6) → settle at
+  build time: under-layers first, each garment pushed out to a gap past every lower layer worn with it over the same
+  skin spot, the push spread over the part's grid (`settle` in make_garments.py). Measured 16 failing pairs of 58 to
+  edge vertices only. An item that lies between another's parts (pteruges between a tunic skirt and a cloak) needs
+  part layers and the other built twice.
+- **Robe panels flung out like wings at idle** → measure before toggling: per-chain drift from rest named a back panel
+  whose rest sat inside the buttocks (its shape carried whole from a chest root leaning 10 cm ahead, turned with the
+  tilted pelvis), and the layering pass threw it out through the body. Place hanging cloth by the hips with their
+  heading only, fading the top point's offset out to the hip joint. Shots alone misled: a variant that "looked" fixed
+  in one frame was just a calmer moment.
+- **Hanging cloth must hang** → a chain's rest that rotates with the pelvis or the chest (rigid, or point by point by
+  body weights) tilts with the clip's lean: a back panel sank into the buttocks, a cloak's front stood out like a shelf.
+  Below the hips: placed by the hips, heading only. Above them, loose cloth: its fitted shape from its top point,
+  heading only; stiff mantles that lie on the body keep following it.
+- **A pauldron (an arc round the arm) on the wrong side of one arm** → a frame chosen from the arm's direction is not
+  mirror-symmetric; centre the arc on the side facing up.
+- **Painted round things in a stretched cell** (buttons in a 3 x 7 cm cell) come out oval: draw them round in metres.
+- **Page shots of a walk were not repeatable** (the page's loop advanced the figure in real time between the script's
+  steps, and each clip faded in from the last shot's) → `tools/shots.py` holds the loop (`_kchar.still`), resets the
+  chains, starts the clip from a stop and steps it at 30 Hz: pixel-identical in any order. Use it for before/after.
 
 ## 6. Animation clips and per-frame passes
 
@@ -147,6 +246,9 @@ area you are about to change.
 - Five rounds of guessing angles from screenshots ended when the user got a Posture panel with Copy/Apply JSON. Build
   that kind of control first next time; keep the values in `data/posture.json`.
 
+- **A clip that stands on the ball of a foot pitches the toes into the ground**, and a sandal's flat sole with them
+  (it looked like a garment bug). After the clip, turn each toe joint up until a point ~6 cm ahead stays on the ground.
+
 ## 8. Props and hands
 
 - Measure each body's hand frame at rest (palm normal, finger direction) and define grips in it.
@@ -154,6 +256,10 @@ area you are about to change.
   missed on the giant until multiplied by its scale.
 - **Wrong hand** (lantern) → the hold names a hand per clip; check `hold` in the clip data before touching the prop.
 - **Shield facing backward** → flip the prop's model, and check a low-hand variant separately.
+
+- **Headgear gets the shoulders' weights.** MakeHuman weights a garment from the nearest skin, so a broad brim, a wing
+  or an ear flap reaching down beside the neck bends with the arms (a third of one headdress's weight was on them).
+  Weight everything of a head item above the neck to the Head joint; leave a hood's cowl below it alone.
 
 ## 9. Body mods, giants and extra arms
 
@@ -211,5 +317,10 @@ area you are about to change.
 - A JSON file reformatted by a load-and-dump → insert the entry textually instead.
 - A screenshot helper clicking a button that doesn't exist fails silently → check selectors first.
 - Tests that race a page re-dressing → wait for the loading overlay to hide.
+- **A pipeline reads each script when its step starts**, not when the run starts: an edit made mid-run may or may not
+  be in it. Check the output for the change (the colliders in skeleton.json, a weight table) before judging shots.
+- **Survey, don't spot-check.** One script that dresses every culture's outfits on the same body, holds the same clip
+  moment after letting the cloth settle (~2 s), and shoots back and front into one grid found more than the reports
+  did, and shows at a glance whether a shared fix helped everywhere.
 - **The port lint warns on numeric defaults written with `||`** in `[G data]` fragments (`it.arms || 2`: a 0 passed
   becomes the default) → write `x == null ? N : x`; regenerate the golden and confirm it is unchanged.

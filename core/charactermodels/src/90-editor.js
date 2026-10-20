@@ -136,7 +136,7 @@
   var hv = new THREE.Vector3();
   function frame(){
     var dt = Math.min(0.05, clock.getDelta());
-    if(fig) fig.update(dt);
+    if(fig && !(window._kchar && window._kchar.still)) fig.update(dt);   // still: tools/shots.py steps the figure itself
     if(cam.spin) cam.yaw += dt * 0.5;
     if(cam.face && fig){ fig.headWorld(hv); cam.want.ty = hv.y + 0.06; }
     else if(fig) cam.want.ty = 0.9 * fig.pose.root * figScale();
