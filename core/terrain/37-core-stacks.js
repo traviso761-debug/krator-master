@@ -14,7 +14,11 @@
 //                    tier's centre from the body's)}], bed:[lo,hi] (bed thickness, m), lobes (.16: how ragged the outline)
 //                    weather (.6; 0 clean-cut walls): flutes down the cliff, gullies notching the rim, each bed a metre or two
 //                    in or proud; shoulder {h, back, bed} (the top tier: thin beds stepping back, a 30-45 degree slope of ledges)
-//        spire/balanced/fin: H (height), r (radius at the foot), e (fin: 3..6), ry (strike), lean (radians), taper (.45)
+//        spire/balanced/fin: H (height), r (radius at the foot), e (fin: 3..6), ry (strike), lean (radians), taper (.45),
+//                    crown (the top bed's radius at its crest over its foot's: .8, a balanced cap .9; .5 a point, 1 a flat head)
+//                    plates:[lo,hi] (RORAIMA'S KIND: the stack is a pile of thin beds lo..hi m thick, each plate its own
+//                    width (jitter .25 of the radius), its parting weathered deep and its top rounded, knobbier outlines,
+//                    no run-on taper between plates, a top-heavy crown; the record carries plates:true)
 //        -> a record {id, kind, x, z, y0, seed, beds:[{k, y, h, cx, cz, rx, rz, ry, ch (chamfer), nt (notch), lob, ns, tier,
 //           tp, tx, tz (a stack's taper and lean up the bed, run on into the next: one column, not a pile of drums),
 //           wr, wn, gu (a mesa's weathering: the bed's own retreat in metres and its noise seed, its tier's gullies)}],
@@ -28,10 +32,18 @@
 //   KSTACKS.ring(S, y, n)      the outline at height y: n [x,z] points (the roost placer fits a deck to it), or null
 //   KSTACKS.mesh(S, opt)       {pos, uv, idx, part, bed, occ}: walls, tops and an overhang's underside; CCW from outside.
 //                              part 0 wall, 1 top, 2 underside; occ 0..1 (the notch and the underside dark); uv in metres
-//                              (walls: arc length and y; tops: x and z). opt.step (5 m: the wall's segment length)
+//                              (walls: arc length and y; tops: x and z). opt.step (5 m: the wall's segment length);
+//                              opt.topRings (5: rings in from a top's edge) and opt.segMax (160: the most segments round
+//                              a bed) for a top that carries relief of its own through a wrapped topH (finer than 5 rings)
 //   KSTACKS.row({id, seed, a:[x,z], b:[x,z], n, kind:'fin', H:[lo,hi], r:[lo,hi], e:[lo,hi], ground})   fins along a
 //                              strike: one line, one lean
 //   KSTACKS.cluster({id, seed, c:[x,z], rad, n, kinds:{spire,balanced,fin}, H, r, gap, ground, accept})   a garden of stacks
+//        VARIETY (both layouts, each optional; a layout without them draws exactly as before, so a page that does not ask
+//        for them does not move): taper:[lo,hi], lean:[lo,hi] (radians), e:[lo,hi] (a spire's elongation; a row's fins
+//        had e already), crown:[lo,hi], each drawn per stack from a stream of its own (hash(seed, i, 406)); plates:[lo,hi]
+//        with platesShare (.5): that share of the stacks are piles of plates (Roraima's kind); lift:(x,z,r)=>m
+//        adds metres to a stack's height (a stack on a slope: its foot is set under the lowest ground round it, so the
+//        uphill side buries that much of it; lift by the drop and the stack stands as tall above the uphill ground)
 //   KSTACKS.export(list) / KSTACKS.load(json)   {format:'krator-stacks', version:1, bodies}
 //   KSTACKS.hash(mesh)         a fingerprint of a mesh's arrays (determinism)
 (function(root){
@@ -105,24 +117,25 @@
     }else{
       var r=S(KR.hash(seed,0,202)),H=o.H==null?60:o.H,r0=o.r==null?12:o.r,e2=o.kind==='fin'?(o.e==null?4:o.e):(o.e==null?1.15:o.e);
       var ry2=o.ry==null?r.range(0,TAU):o.ry,lean=o.lean==null?r.range(0,.06):o.lean,la=o.kind==='fin'?ry2+(r.chance(.5)?0:Math.PI):r.range(0,TAU);
-      var taper=o.taper==null?(o.kind==='fin'?.35:.45):o.taper,n=Math.max(3,Math.round(H/r.range(12,20))),yy=y0,hs=[],sum=0,i;
-      for(i=0;i<n;i++){var w=r.range(.7,1.3);hs.push(w);sum+=w;}
-      var neck=o.kind==='balanced'?n-2:-1,lobS=o.kind==='fin'?.07:.1;
-      for(i=0;i<n;i++){var hh=H*hs[i]/sum,u=(yy-y0)/H,rr=r0*(1-taper*u)*r.range(.97,1.03),off=Math.tan(lean)*(yy-y0);
+      var PL=o.plates&&o.plates.length===2?o.plates:null,jit=o.jitter==null?(PL?.3:0):o.jitter;   // plates: Roraima's piles
+      var taper=o.taper==null?(o.kind==='fin'?.35:PL?.3:.45):o.taper,n=Math.max(3,Math.round(H/(PL?r.range(PL[0],PL[1]):r.range(12,20)))),yy=y0,hs=[],sum=0,i;
+      for(i=0;i<n;i++){var w=r.range(PL?.4:.7,PL?1.8:1.3);hs.push(w);sum+=w;}   // plates: thin and thick ones in one pile
+      var neck=o.kind==='balanced'?n-2:-1,lobS=o.kind==='fin'?.07:PL?.16:.1;
+      for(i=0;i<n;i++){var hh=H*hs[i]/sum,u=(yy-y0)/H,rr=r0*(1-taper*u)*(PL?r.range(1-jit,1+jit):r.range(.97,1.03)),off=Math.tan(lean)*(yy-y0);
         var ccx=x+Math.cos(la)*off,ccz=z+Math.sin(la)*off,cap=i===n-1;
         if(i===neck)rr*=r.range(.45,.6);
         if(cap&&o.kind==='balanced'){rr=r0*r.range(.95,1.25);hh=Math.max(hh,rr*r.range(.7,1.1));}
-        var rm=Math.max(rr*Math.sqrt(e2),rr/Math.sqrt(e2)),fine=i===neck||(cap&&o.kind==='balanced');   // metres again: a stack's partings are fine, a neck's deep
-        beds.push(bed(i,yy,hh,ccx,ccz,rr*Math.sqrt(e2),rr/Math.sqrt(e2),ry2+r.range(-.02,.02),(fine?r.range(.6,1.2):r.range(.15,.4))/rm,(fine?r.range(.5,1):r.range(.1,.35))/rm,lobS,KR.hash(seed,0,9),0));yy+=hh;}   // one outline up the stack (one noise seed, one tier): its beds differ in the fret only
+        var rm=Math.max(rr*Math.sqrt(e2),rr/Math.sqrt(e2)),fine=i===neck||(cap&&o.kind==='balanced');   // metres again: a stack's partings are fine, a neck's deep; a plate's deep and its top rounded
+        beds.push(bed(i,yy,hh,ccx,ccz,rr*Math.sqrt(e2),rr/Math.sqrt(e2),ry2+r.range(-.02,.02),(PL?r.range(.25,.7):fine?r.range(.6,1.2):r.range(.15,.4))/rm,(PL?r.range(1.2,2.8):fine?r.range(.5,1):r.range(.1,.35))/rm,lobS,KR.hash(seed,PL?i+1:0,9),0));yy+=hh;}   // a plate's outline is its own (its own noise seed): knobs, not one fret   // one outline up the stack (one noise seed, one tier): its beds differ in the fret only
       // the taper and the lean run on: each bed's top meets the next bed's foot (a balanced rock's neck keeps its own width
       // under the cap); the crest narrows (its shoulders weathered round)
       for(i=0;i<n;i++){var b0=beds[i],b1=beds[i+1];
-        if(b1&&!(o.kind==='balanced'&&i===n-2)){b0.tp=Math.min(b1.rx/b0.rx,1.15);b0.tx=b1.cx-b0.cx;b0.tz=b1.cz-b0.cz;}
-        else if(!b1)b0.tp=o.kind==='balanced'?.9:.8;}
+        if(b1&&!(o.kind==='balanced'&&i===n-2)){b0.tp=PL?1:Math.min(b1.rx/b0.rx,1.15);b0.tx=b1.cx-b0.cx;b0.tz=b1.cz-b0.cz;}   // a plate keeps its width: the parting steps
+        else if(!b1)b0.tp=o.crown==null?(o.kind==='balanced'?.9:PL?1:.8):o.crown;}
     }
     var R=0;beds.forEach(function(b){var m=Math.max(b.rx,b.rz)*(1+2.5*b.lob)+Math.hypot(b.cx-x,b.cz-z);if(m>R)R=m;});
     var tp=beds[beds.length-1];
-    return {id:String(o.id),kind:o.kind,x:x,z:z,y0:y0,seed:seed,beds:beds,top:tp.y+tp.h,R:R+2};
+    var rec={id:String(o.id),kind:o.kind,x:x,z:z,y0:y0,seed:seed,beds:beds,top:tp.y+tp.h,R:R+2};if(o.plates&&o.plates.length===2)rec.plates=true;return rec;
   }
 
   // ---------------------------------------------------------------- queries
@@ -149,19 +162,23 @@
   // Rows of `seg` vertices round a bed (the angle runs clockwise seen from above, rows rising or closing in, so the quads (a, a+1, b) are CCW from
   // outside: test-stacks.js checks the outward share); a seam column is duplicated so the arc-length uv does not wrap.
   function mesh(B,opt){opt=opt||{};var step=opt.step||5,pos=[],uv=[],idx=[],part=[],bedA=[],occ=[];
+    // the top function THROUGH THE EXPORT, so a host that wraps KSTACKS.topH (Korona's hoar table: knolls and the tarn's
+    // basin added to the tops) draws what its field says; unwrapped it is this module's own (the same mesh as before)
+    var TH=(root.KSTACKS&&root.KSTACKS.topH)||topH,NR=opt.topRings||5,SMAX=opt.segMax||160,rhos=[1,.8,.55,.3,.08];
+    if(NR!==5){rhos=[];for(var q=0;q<NR;q++)rhos.push(1-(q/(NR-1))*.98);}
     function grid(rows,seg,p,bk,flip){var base=pos.length/3;
       for(var r=0;r<rows.length;r++)for(var s=0;s<=seg;s++){var q=rows[r](s);pos.push(q[0],q[1],q[2]);uv.push(q[3],q[4]);part.push(p);bedA.push(bk);occ.push(q[5]);}
       for(r=0;r<rows.length-1;r++)for(s=0;s<seg;s++){var a=base+r*(seg+1)+s,c=a+seg+1;
         if(flip)idx.push(a,c,a+1,a+1,c,c+1);else idx.push(a,a+1,c,a+1,c+1,c);}}
-    for(var k=0;k<B.beds.length;k++){var b=B.beds[k],per=TAU*Math.max(b.rx,b.rz)*(1+b.lob),seg=Math.max(16,Math.min(160,Math.round(per/step)));
+    for(var k=0;k<B.beds.length;k++){var b=B.beds[k],per=TAU*Math.max(b.rx,b.rz)*(1+b.lob),seg=Math.max(16,Math.min(SMAX,Math.round(per/step)));
       var ang=function(s){return -s/seg*TAU;};                                        // clockwise from above
       var arc=[0];for(var s=1;s<=seg;s++){var a0=ang(s-1),a1=ang(s),r0=footR(b,a0),r1=footR(b,a1);arc.push(arc[s-1]+Math.hypot(Math.cos(a1)*r1-Math.cos(a0)*r0,Math.sin(a1)*r1-Math.sin(a0)*r0));}
       var us=[0,.06,.2,.5,.78,.9,1],c1=cAt(b,1),t1=tAt(b,1),wall=us.map(function(u){return function(s){var a=ang(s),c=cAt(b,u),R=footR(b,a)*prof(b,u)*tAt(b,u),y=b.y+u*b.h;
         return [c[0]+Math.cos(a)*R,y,c[1]+Math.sin(a)*R,arc[s],y,u<.2?.55+.45*(u/.2):1];};});
-      wall[wall.length-1]=(function(){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,topH(b,x,z),z,arc[s],b.y+b.h,1];};})();
+      wall[wall.length-1]=(function(){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,TH(b,x,z),z,arc[s],b.y+b.h,1];};})();
       grid(wall,seg,0,k,false);
       // the top: rings in from the chamfer's edge to the centre, on topH exactly
-      var tops=[1,.8,.55,.3,.08].map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1*rho,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,topH(b,x,z),z,x,z,1];};});
+      var tops=rhos.map(function(rho){return function(s){var a=ang(s),R=footR(b,a)*(1-b.ch)*t1*rho,x=c1[0]+Math.cos(a)*R,z=c1[1]+Math.sin(a)*R;return [x,TH(b,x,z),z,x,z,1];};});
       grid(tops,seg,1,k,false);
       // an overhang's underside (a balanced cap, a bed wider than the top below it): a disc facing down at its foot
       var below=k>0?B.beds[k-1]:null,over=false;
@@ -173,12 +190,19 @@
     return {pos:new Float32Array(pos),uv:new Float32Array(uv),idx:new Uint32Array(idx),part:new Uint8Array(part),bed:new Uint8Array(bedA),occ:new Float32Array(occ)};}
 
   // ---------------------------------------------------------------- layouts
+  // the optional variety of a layout's stack i (taper, lean, e, crown ranges; lift), from its own stream: nothing is drawn
+  // from it unless a range is given, and the layout's main stream is never touched
+  function variety(o,i,x,z,rad,into){var v=null,keys=['taper','lean','e','crown'];
+    for(var q=0;q<keys.length;q++){var k=keys[q],rg=o[k];if(!rg||rg.length!==2)continue;if(!v)v=S(KR.hash(o.seed,i,406));into[k]=v.range(rg[0],rg[1]);}
+    if(o.plates&&o.plates.length===2){if(!v)v=S(KR.hash(o.seed,i,406));if(v.chance(o.platesShare==null?.5:o.platesShare))into.plates=o.plates;}
+    if(o.lift)into.H+=o.lift(x,z,rad);return into;}
   function row(o){var n=o.n||5,a=o.a,b=o.b,out=[],str=Math.atan2(b[1]-a[1],b[0]-a[0]),g=o.ground||function(){return 0;};
     var lean=S(KR.hash(o.seed,0,303)).range(0,.07);
     for(var i=0;i<n;i++){var r=S(KR.hash(o.seed,i,304)),t=(i+.5+r.range(-.3,.3))/n,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;
       x+=Math.cos(str+Math.PI/2)*r.range(-1,1)*(o.jitter||8);z+=Math.sin(str+Math.PI/2)*r.range(-1,1)*(o.jitter||8);
-      out.push(make({id:o.id+'-'+i,kind:o.kind||'fin',x:x,z:z,y0:g(x,z)-1,seed:KR.hash(o.seed,i,305),H:r.range(o.H[0],o.H[1]),
-        r:r.range(o.r[0],o.r[1]),e:o.e?r.range(o.e[0],o.e[1]):4,ry:str+r.range(-.08,.08),lean:lean}));}
+      var HH=r.range(o.H[0],o.H[1]),rr=r.range(o.r[0],o.r[1]),spec={id:o.id+'-'+i,kind:o.kind||'fin',x:x,z:z,y0:g(x,z)-1,seed:KR.hash(o.seed,i,305),H:HH,
+        r:rr,e:o.e?r.range(o.e[0],o.e[1]):4,ry:str+r.range(-.08,.08),lean:lean};   // (the draws in their old order: H, r, e, ry)
+      out.push(make(variety({seed:o.seed,taper:o.taper,lean:o.lean,crown:o.crown,plates:o.plates,platesShare:o.platesShare,lift:o.lift},i,x,z,rr,spec)));}
     return out;}
   function cluster(o){var n=o.n||8,out=[],g=o.ground||function(){return 0;},K=o.kinds||{spire:.6,balanced:.25,fin:.15},keys=Object.keys(K),tot=0;
     keys.forEach(function(k){tot+=K[k];});
@@ -186,7 +210,7 @@
         var rad=r.range(o.r[0],o.r[1]),ok=!o.accept||o.accept(x,z,rad);
         for(var j=0;j<out.length&&ok;j++)if(Math.hypot(out[j].x-x,out[j].z-z)<rad+out[j]._r+(o.gap==null?6:o.gap))ok=false;
         if(!ok)continue;var u=r.next()*tot,kind=keys[0];for(var q=0;q<keys.length;q++){u-=K[keys[q]];if(u<=0){kind=keys[q];break;}}
-        var B=make({id:o.id+'-'+i,kind:kind,x:x,z:z,y0:g(x,z)-1,seed:KR.hash(o.seed,i,405),H:r.range(o.H[0],o.H[1]),r:rad});B._r=rad;out.push(B);break;}}
+        var B=make(variety(o,i,x,z,rad,{id:o.id+'-'+i,kind:kind,x:x,z:z,y0:g(x,z)-1,seed:KR.hash(o.seed,i,405),H:r.range(o.H[0],o.H[1]),r:rad}));B._r=rad;out.push(B);break;}}
     out.forEach(function(B){delete B._r;});return out;}
 
   function exp(list){return {format:'krator-stacks',version:1,bodies:list.map(function(B){return JSON.parse(JSON.stringify(B));})};}

@@ -22,7 +22,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `53-br-trades-c.js` | 33 **big** | = (2); the riders' inn (36); the barracks (125); the school (180); the temple (223); the toll house (288); the watch tower (350); the beacon (409) |
 | `54-br-houses.js` | 25 | = (2); the clan great-house (44); the chief's compound (90); the longhouse block against rock (162); the terrace row (210); the farmhouse (258) |
 | `55-br-rockcut.js` | 76 **big** | = (2); frames (75); the carving vocabulary (136); the beasts in relief (283); 1. the gate-tree carvings in sandstone (452); 2. door surrounds with beast heads (580); 3. window slots (648); 4. a balcony ledge cut from the face (gtBalcony) (690); 5. a stair cut into the face (741); 6. rock-cut room fronts (Mav's room fronts re-cu (784) |
-| `56-br-rockcut-b.js` | 42 **big** | = (2); 1. the carved face round the cavern's door (59); 2. a tribe's offering niche (one variant a tribe (148); 3. the five shrines' lamp niches (one each) (237); 4. a ledge of offerings (319); 5. the altar stone left standing (372); BR_ROCK: the rock-cut pieces for any world (430) |
+| `56-br-rockcut-b.js` | 43 **big** | = (2); 1. the carved face round the cavern's door (59); 2. a tribe's offering niche (one variant a tribe (151); 3. the five shrines' lamp niches (one each) (240); 4. a ledge of offerings (322); 5. the altar stone left standing (375); BR_ROCK: the rock-cut pieces for any world (433) |
 | `60-br-ports.js` | 4 | = (1) |
 | `70-br-tent-kit.js` | 44 **big** | = (2); THE HIDE DOME (123); THE BARREL PAVILION (313); FRAMES, FENCES, HEDGES (463) |
 | `71-br-tents-dwell.js` | 14 | = (2) |

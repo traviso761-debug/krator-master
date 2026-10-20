@@ -61,13 +61,13 @@ const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),
  g.putImageData(id,0,0);});
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('shigh',n);
- const m=P('ground.moss'),p=P('ground.paramo'),b=P('ground.sphagnum');if(!m||!p||!b)return null;
- return{moss:KMAT.textures(m,{aniso:8}).map,mossK:1/m.scale[0],par:KMAT.textures(p,{aniso:8}).map,parK:1/p.scale[0],bog:KMAT.textures(b,{aniso:8}).map,bogK:1/b.scale[0]};})();
+ const m=P('ground.moss'),p=P('ground.paramo'),b=P('ground.sphagnum'),w=P('ground.wetmoss');if(!m||!p||!b)return null;
+ return{moss:KMAT.textures(m,{aniso:8}).map,mossK:1/m.scale[0],par:KMAT.textures(p,{aniso:8}).map,parK:1/p.scale[0],bog:KMAT.textures(b,{aniso:8}).map,bogK:1/b.scale[0],wet:w?KMAT.textures(w,{aniso:8}).map:null,wetK:w?1/w.scale[0]:0};})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xaaa69e});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uGran={value:SHIGH.ROCKTEX};sh.uniforms.uTuft={value:TEX_TUFT};sh.uniforms.uMacro={value:TEX_MACRO};if(GLAY){sh.uniforms.uGMoss={value:GLAY.moss};sh.uniforms.uGPar={value:GLAY.par};sh.uniforms.uGBog={value:GLAY.bog};}
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uGran={value:SHIGH.ROCKTEX};sh.uniforms.uTuft={value:TEX_TUFT};sh.uniforms.uMacro={value:TEX_MACRO};if(GLAY){sh.uniforms.uGMoss={value:GLAY.moss};sh.uniforms.uGPar={value:GLAY.par};sh.uniforms.uGBog={value:GLAY.bog};if(GLAY.wet)sh.uniforms.uGWet={value:GLAY.wet};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aPar;varying float vPar;attribute vec3 aGL;varying vec3 vGL;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vPar=aPar;vGL=aGL;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uTuft;varying vec3 vGWP;varying float vRock;varying float vPar;varying vec3 vGL;uniform sampler2D uMacro;'+(GLAY?'uniform sampler2D uGMoss,uGPar,uGBog;'+
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uTuft;varying vec3 vGWP;varying float vRock;varying float vPar;varying vec3 vGL;uniform sampler2D uMacro;'+(GLAY?'uniform sampler2D uGMoss,uGPar,uGBog'+(GLAY.wet?',uGWet':'')+';'+
    // HEX TILING: the triangle grid (skewed space), each vertex's random rotation and offset, three samples with explicit
    // gradients, blended by sharpened barycentric weights; linear colour out (a custom sampler is not decoded from sRGB)
    'vec2 gkHash(vec2 v){return fract(sin(vec2(dot(v,vec2(127.1,311.7)),dot(v,vec2(269.5,183.3))))*43758.5453);}'+
@@ -88,6 +88,8 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
    'vec3 tm=gkLay(uGMoss,p,'+GLAY.mossK.toFixed(4)+')*tone*mix(vec3(1.0),hue,0.6);'+
    'vec3 tp=gkLay(uGPar,p,'+GLAY.parK.toFixed(4)+')*tone*mix(vec3(1.0),hue,0.5);'+
    'vec3 tb=gkLay(uGBog,p,'+GLAY.bogK.toFixed(4)+')*mix(0.62,1.25,mc2.b)*mix(vec3(1.22,0.88,0.78),vec3(0.82,1.12,0.86),smoothstep(0.3,0.7,mc2.r));'+
+   /* wet soil (library ground047, dark moss patches on wet earth): the cloud forest's hollows, where a macro noise runs high, and the bog's rim */
+   (GLAY.wet?'vec3 tw=gkLay(uGWet,p,'+GLAY.wetK.toFixed(4)+')*mix(0.8,1.15,mc2.b);float ww=smoothstep(0.5,0.72,mc2.g);tm=mix(tm,tw,clamp(ww*0.85,0.0,1.0));tb=mix(tb,tw*1.1,smoothstep(0.35,0.7,mc2.g)*0.35);':'')+
    'diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tm*1.3,0.55),vGL.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tp*1.3,0.5),vGL.y);'+
    'diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tb*1.3,0.85),vGL.z);}':'')+
   'diffuseColor.rgb*=mix(dt*dt2*1.12,gr*2.6,vRock*0.7);'+

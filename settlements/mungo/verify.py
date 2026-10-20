@@ -195,6 +195,9 @@ async def run(a):
                     print(("  PASS  " if r["ok"] else "  FAIL  ") + r["name"] + " : " + r["detail"])
                     if not r["ok"]:
                         fails.append("assert " + r["name"])
+                import check_trades; _ok, _d, _ = check_trades.trades_check(os.path.dirname(os.path.abspath(__file__)))   # the Voth census table (tools/check_trades.py)
+                print(("  PASS  " if _ok else "  FAIL  ") + "voth-trades : " + _d)
+                if not _ok: fails.append("assert voth-trades")
                 bg = await pg.evaluate(BUDGET_JS)
                 if bg:
                     print("\n--- budget ---")

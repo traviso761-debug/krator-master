@@ -52,6 +52,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `74-rep-dwell.js` | 33 **big** | R-A kit items and helpers (prefix hRA / hnRA) (9); POOR (65); MIDDLE (96); RICH (135); RICH (cont.) (237) |
 | `75-port-embassy.js` | 24 | textures (near-grey, tinted per instance; 128 px (10); materials (35); geometry (43); kit items (58); local helpers (vp prefix) (68); the embassy (84) |
 | `76-port-chapterhouse.js` | 17 |  |
+| `77-dalab-trades.js` | 5.2 | Voth census trades table (DALAB_TRADES) |
 | `81-sky.js` | 10 |  |
 | `86-bio-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
 | `86-bio-20-core-kit.js` | 15 | merged buckets (46); indexed buckets (140); bake (163) |

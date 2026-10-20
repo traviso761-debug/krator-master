@@ -670,6 +670,34 @@
     0.655,
     0.345
    ]
+  },
+  "ground.damp": {
+   "lib": "ground.damp_beach_sand",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.shingle": {
+   "lib": "ground.shingle",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
   }
  }
 }

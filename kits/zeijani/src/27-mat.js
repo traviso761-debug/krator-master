@@ -23,13 +23,13 @@ const ZJ_LIB={tuff:'tuff',tuffHewn:'tuffHewn',tuffPol:'tuffPol',plaster:'plaster
  ashlar:'ashlar',earth:'earth',paving:'paving',wood:'wood',log:'log',plank:'plank',carved:'carved',thatch:'thatch',hide:'hide',felt:'felt',
  ceramic:'ceramic',glaze:'glaze',ossuary:'ossuary',patLabyrinth:'patLabyrinth',patFrieze:'patFrieze',patFriezeB:'patFriezeB',patFriezeC:'patFriezeC',
  patSkel:'patSkel',patMural:'patMural',patMuralB:'patMuralB',patMuralC:'patMuralC',patTextile:'patTextile',patTextileB:'patTextileB',
- patGlazed:'patGlazed',patGlazedDfly:'patGlazedDfly',patGlazedBeetle:'patGlazedBeetle',jali:'jali'};
+ patGlazed:'patGlazed',patGlazedDfly:'patGlazedDfly',patGlazedBeetle:'patGlazedBeetle',jali:'jali',gate:'gate',toron:'toron',clayBlock:'clayBlock'};
 /* metres per tile when there is no pack (?mat=proc), so the UVs a later pass might use still mean something */
 const ZJ_TILE0={tuff:3,tuffHewn:1.5,tuffPol:2,plaster:2,basalt:1.3,basaltPol:1.5,lining:2,oxide:3,ashlar:2,earth:2.5,paving:2.5,wood:1.6,log:1.5,plank:2,
  carved:1.2,thatch:2,hide:.7,felt:.8,ceramic:1,glaze:1,ossuary:1.5,patLabyrinth:1.2,patFrieze:.9,patFriezeB:1.8,patFriezeC:1.8,patSkel:.8,patMural:3,
- patMuralB:3,patMuralC:3,patTextile:1,patTextileB:1,patGlazed:1.2,patGlazedDfly:1.2,patGlazedBeetle:1.2,jali:1};
+ patMuralB:3,patMuralC:3,patTextile:1,patTextileB:1,patGlazed:1.2,patGlazedDfly:1.2,patGlazedBeetle:1.2,jali:1,gate:1.5,toron:1.5,clayBlock:2};
 const ZJ_CLOTH={felt:1,hide:1,patTextile:1,patTextileB:1,flag:1};   /* thin sheets: double-sided; the flutter attribute (aFlut) */
-const ZJ_CUT={tuff:1,tuffHewn:1,tuffPol:1,plaster:1,basalt:1,basaltPol:1,ashlar:1,earth:1,wood:1,log:1,plank:1,carved:1,thatch:1,felt:1,hide:1,
+const ZJ_CUT={gate:1,toron:1,clayBlock:1,tuff:1,tuffHewn:1,tuffPol:1,plaster:1,basalt:1,basaltPol:1,ashlar:1,earth:1,wood:1,log:1,plank:1,carved:1,thatch:1,felt:1,hide:1,
  ceramic:1,glaze:1,patLabyrinth:1,patFrieze:1,patFriezeB:1,patFriezeC:1,patSkel:1,patMural:1,patMuralB:1,patMuralC:1,patTextile:1,patGlazed:1,
  plain:1,copper:1,bronze:1,bone:1,glass:1,flag:1};   /* buckets that carry the cut-away attribute (aCut) */
 let TEXANISO=4;   // 90-scene.js raises it to the renderer's maximum (capped at 8) and re-applies it

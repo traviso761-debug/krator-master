@@ -42,9 +42,10 @@ from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views, 
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
 # The export profile (core/export/README.md, "Profiles"): the sections a tile of this kit must fill, checked under --assert
 # over EXPORT_BOX (the Bench's southern rim and the floor below it). Sampled terrain (no krator-field). --profile a,b,c
-# replaces the list for one run.
+# replaces the list for one run. atmos: core/atmos (the water's clock and sky light); the box holds no creek or rain pool, so
+# its water section is empty (the creek and the pools are core/water records: the page's own check, 'on core/water').
 EXPORT_BOX = [150, 100, 450, 400]
-EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage']
+EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.

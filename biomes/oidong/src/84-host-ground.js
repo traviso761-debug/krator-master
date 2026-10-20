@@ -54,16 +54,16 @@ TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.Li
 // by the zones (aGL: moss under the woods, sand on the flats), hex-tiled (Mikkelsen 2022, as the southern highlands) so
 // no tile repeats; without the pack (?mat=proc, or an open world) the ground is exactly the painted one.
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('oidong',n);
- const m=P('ground.moss'),s=P('ground.sand');if(!m||!s)return null;
- return{moss:KMAT.textures(m,{aniso:8}).map,mossK:1/m.scale[0],sand:KMAT.textures(s,{aniso:8}).map,sandK:1/s.scale[0]};})();
+ const m=P('ground.moss'),s=P('ground.sand'),fo=P('ground.forest'),mb=P('stone.marblecliff');if(!m||!s)return null;
+ return{moss:KMAT.textures(m,{aniso:8}).map,mossK:1/m.scale[0],sand:KMAT.textures(s,{aniso:8}).map,sandK:1/s.scale[0],forest:fo?KMAT.textures(fo,{aniso:8}).map:null,forestK:fo?1/fo.scale[0]:0,marble:mb?KMAT.textures(mb,{aniso:8}).map:null,marbleK:mb?1/mb.scale[0]:0};})();
 // the standing-stone groups, for the raked rings: filled by 88-host-build.js after the floor is placed
 const NSTONE=32,STONE_U={value:Array.from({length:NSTONE},()=>new THREE.Vector3(1e6,1e6,0))};
 function setStones(groups){for(let i=0;i<NSTONE;i++){const G=groups[i];if(G)STONE_U.value[i].set(G.x,G.z,G.r);else STONE_U.value[i].set(1e6,1e6,0);}}
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xb4b0a8});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uGran={value:OIDONG.ROCKTEX};sh.uniforms.uMacro={value:TEX_MACRO};sh.uniforms.uStones=STONE_U;if(GLAY){sh.uniforms.uGMoss={value:GLAY.moss};sh.uniforms.uGSand={value:GLAY.sand};}
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uGran={value:OIDONG.ROCKTEX};sh.uniforms.uMacro={value:TEX_MACRO};sh.uniforms.uStones=STONE_U;if(GLAY){sh.uniforms.uGMoss={value:GLAY.moss};sh.uniforms.uGSand={value:GLAY.sand};if(GLAY.forest)sh.uniforms.uGFor={value:GLAY.forest};if(GLAY.marble)sh.uniforms.uGMar={value:GLAY.marble};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aFlat;varying float vFlat;attribute vec2 aGL;varying vec2 vGL;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vFlat=aFlat;vGL=aGL;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran;varying vec3 vGWP;varying float vRock;varying float vFlat;varying vec2 vGL;uniform sampler2D uMacro;uniform vec3 uStones['+NSTONE+'];'+(GLAY?'uniform sampler2D uGMoss,uGSand;'+
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran;varying vec3 vGWP;varying float vRock;varying float vFlat;varying vec2 vGL;uniform sampler2D uMacro;uniform vec3 uStones['+NSTONE+'];'+(GLAY?'uniform sampler2D uGMoss,uGSand'+(GLAY.forest?',uGFor':'')+(GLAY.marble?',uGMar':'')+';'+
    'vec2 gkHash(vec2 v){return fract(sin(vec2(dot(v,vec2(127.1,311.7)),dot(v,vec2(269.5,183.3))))*43758.5453);}'+
    'vec3 gkSample(sampler2D t,vec2 uv,vec2 dx,vec2 dy,vec2 v){vec2 h=gkHash(v);float a=h.x*6.2831853;mat2 R=mat2(cos(a),sin(a),-sin(a),cos(a));'+
    ' return pow('+(renderer.capabilities.isWebGL2?'textureGrad(t,R*uv+h,R*dx,R*dy)':'texture2D(t,R*uv+h)')+'.rgb,vec3(2.2));}'+
@@ -77,7 +77,10 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
    'float tone=mix(0.8,1.15,mc2.b);vec3 hue=mix(vec3(1.06,0.97,0.9),vec3(0.94,1.04,0.96),smoothstep(0.3,0.7,mc2.r));'+
    'vec3 tm=gkLay(uGMoss,p,'+GLAY.mossK.toFixed(4)+')*tone*mix(vec3(1.0),hue,0.5);'+
    'vec3 ts=gkLay(uGSand,p,'+GLAY.sandK.toFixed(4)+')*mix(0.9,1.08,mc2.b);'+
+   /* the dark forest floor (library ground106) breaks the moss where a macro noise runs high; the marble (library marble012) shows through the crags in veins of paler cliff */
+   (GLAY.forest?'vec3 tf=gkLay(uGFor,p,'+GLAY.forestK.toFixed(4)+')*mix(0.8,1.15,mc2.b);tm=mix(tm,tf,smoothstep(0.5,0.7,mc2.g)*0.8);':'')+
    'diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tm*1.2,0.42),vGL.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*ts*1.25,0.6),vGL.y);}':'')+
+  (GLAY.marble?'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkLay(uGMar,vGWP.xz+vec2(vGWP.y*0.7,0.0),'+GLAY.marbleK.toFixed(4)+')*1.5,vRock*smoothstep(0.42,0.62,texture2D(uMacro,vGWP.xz*0.0061+vec2(0.17,0.61)).g)*0.8);':'')+
   'diffuseColor.rgb*=mix(dt*dt2*1.12,gr*2.4,vRock*0.7);'+
   // THE RAKING: on the flats, parallel ripples combed by the wind (a slow bend so they are not ruled lines), and round
   // each standing-stone group concentric rings that win over the parallel ones within its reach

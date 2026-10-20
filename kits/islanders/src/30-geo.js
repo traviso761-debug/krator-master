@@ -40,7 +40,9 @@ let GSTAT={tris:0};
    scaled. A geometry with its own `color` attribute multiplies the tint per vertex (the salamanders' markings). */
 /* the gable sheets' alternative takes: a building with GABLE_ALT set (36-def.js) draws the other take of each */
 let GABLE_ALT=0;const GABLE_ALT_K={patGableW:'patGableW2',patGableW2:'patGableW',patGableE:'patGableE2',patGableE2:'patGableE'};
-function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk];_mm.copy(CM);if(lm)_mm.multiply(lm);
+/* a building's other materials (materials.json: shingle, ceramic, ropeT, tarredB, softwood, rattan, clayBlock): MAT_ALT is a hash of its seed, variant and place (36-def.js), the key's list is indexed by it, the first entry the usual material (repeats weight it) */
+let MAT_ALT=0;const MAT_VAR={thatch:['thatch','thatch','thatch','thatch','thatch','thatch','shingle','ceramic'],rope:['rope','ropeT'],tarred:['tarred','tarred','tarredB'],planks:['planks','planks','softwood'],mat:['mat','mat','rattan'],banco:['banco','banco','clayBlock']};
+function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk];if(MAT_ALT&&MAT_VAR[mk]&&MAT[MAT_VAR[mk][1]]){const v=MAT_VAR[mk];mk=v[MAT_ALT%v.length];}_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
  if(!b.f&&SV_CLOTH[mk])b.f=[];if(!b.k&&SV_CUT[mk])b.k=[];if(!b.w&&mk==='glow')b.w=[];if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);

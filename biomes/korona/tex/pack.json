@@ -329,6 +329,34 @@
     "sourceMean": 0.2896
    }
   },
+  "ground.redsoil": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.redsoil.albedo.webp"
+   },
+   "lib": "ground.redsoil",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "ce4539c8c3115ff1173a953474733f868bd1e67b",
+    "normal": "711aa0d549b4acd1571ab003600887bbfbb20fe5",
+    "roughness": "863a720b0727d366b01de3e39f399dba32a62352"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4164468683699065,
+    "sourceMean": 0.4164
+   }
+  },
   "ground.sand": {
    "breakup": null,
    "card": false,
@@ -437,6 +465,36 @@
     "keep": 1.0,
     "mean": 0.42958801059428897,
     "sourceMean": 0.4296
+   }
+  },
+  "ice": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ice.albedo.webp",
+    "normalMap": "ice.normal.webp",
+    "roughnessMap": "ice.rough.webp"
+   },
+   "lib": "ice.glacier",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "c2a6cbec8af2fd06b52042d7c1e3487f55862a12",
+    "normal": "e02fc510f584d78957e4d497a759ba702183849b",
+    "roughness": "fd64da737f1b3cbd00075ee20029a85f642816bc"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.8048622955561618,
+    "sourceMean": 0.8049
    }
   },
   "jaw": {

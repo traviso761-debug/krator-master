@@ -3,7 +3,7 @@
 // the stream's banks: its canyon flora and its carnivores; then KORONA's own (the summit's life, the man-eaters, the
 // hollow's floor); their trees become obstacles; then the HYPERJUNGLE plants the gorge floor (its mask: off the rock and
 // the walls' feet, out of the stream, thin where the ground is poor); then one bake.
-window._biome=null;window._jungle=null;window._korona=null;window._desert=null;window._high=null;
+window._biome=null;window._jungle=null;window._korona=null;window._desert=null;window._high=null;window._shore=null;window._crest=null;
 (function(){
  const t0=performance.now();
  const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
@@ -13,6 +13,15 @@ window._biome=null;window._jungle=null;window._korona=null;window._desert=null;w
  if(typeof KORONA!=='undefined'&&KORONA.build){try{window._korona=KORONA.build({R:STAGE.R-60,quality:q});}catch(e){reportErr('korona: '+e.stack);}
   (KORONA.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.6+1,y0:T.y0-3,y1:T.y0+T.H}));}
  _mark('korona');
+ // THE ECOTONES (NOTES.md, "The life"; KNOWN_ISSUES, closed 2026-10-19): the north-western lowlands' kit on the lake shore
+ // (station 3, the fertile basin: bamboo, ferns, glow-willows on the band the station gives it) and the northern highlands'
+ // kit on the dry crest (station 4, the trenches: crag pines and their beard lichen); each under its own mask, its trees
+ // obstacles to the kits that follow
+ if(STAGE.shore&&typeof NWLOW!=='undefined'){try{MASK=shoreMask;window._shore=NWLOW.build({R:STAGE.R-60,quality:q*(STAGE.shoreQ==null?.5:STAGE.shoreQ),avenues:STAGE.shoreRows||[]});}catch(e){reportErr('nwlowlands: '+e.stack);}finally{MASK=waterMask;}
+  (NWLOW.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.6+1,y0:T.y0-3,y1:T.y0+T.H}));}
+ if(STAGE.crest&&typeof NHL!=='undefined'){try{MASK=crestMask;window._crest=NHL.build({R:STAGE.R-60,quality:q*(STAGE.crestQ==null?.6:STAGE.crestQ),flora:false});}catch(e){reportErr('nhighlands: '+e.stack);}finally{MASK=waterMask;}
+  (NHL.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.6+1,y0:T.y0-3,y1:T.y0+T.H}));}
+ _mark('ecotone');
  // THE DESERT (station 5, the lee gorge): the eastern desert's kit read in place, on the floor the station gives it
  if(STAGE.desert&&typeof SEDESERT!=='undefined'){try{MASK=desertMask;window._desert=SEDESERT.build({R:STAGE.R-60,quality:q*(STAGE.desertQ==null?.8:STAGE.desertQ),fauna:!Q.has('nofauna')});}catch(e){reportErr('sedesert: '+e.stack);}finally{MASK=waterMask;}}
  // THE HIGH COLD (station 6, the hoar table): the eastern highlands' kit read in place, on the table's top

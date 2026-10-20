@@ -11,7 +11,11 @@
   50..79              THE KIT: species, trees, carnivores, floor, build
   82-host-sky         the hyperjungle's sky, read in place (the standard Krator sky with the giant)
   88-host-build       HOST: the build order
-  90..98              HOST (core/host: camera, loop, panel, probe, the authoring tools)
+  89-atmos-*          core/atmos's core, presets, export, wave clock and sky light (the water's)
+  89n-host-night      HOST: the night: the light, the fog and the dome by the world hour (N; the hour slider)
+  89w-host-water      HOST: the creek and the rain pools on core/water (records made in 47)
+  90..99              HOST (core/host's whole interface: camera, loop, panel, probe, inspector, marks, pictures,
+                      minimap, editor, cutaway; core/edits, core/minimap)
   99-host-take        the page handed to core/host
   99-tail.html        closes <script>
 
@@ -59,7 +63,7 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 CORE_TERRAIN=['37-core-stacks.js']   # KSTACKS: the mesas, buttes, spires and fins (core/terrain/37-core-stacks.js)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit. 35-core-anim: the hyperjungle's fauna
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']   # 44: KSTAGE, the export's light, air and sky
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
@@ -89,11 +93,19 @@ for f in CORE_EXPORT:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# core/water (core/water/README.md): the creek a flow line, the rain pools still water (records in 47-host-land.js, drawn
+# in 89w-host-water.js) on core/atmos's clock, wave chunk and sky light; 8-export so the export's atmos section fills
+CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
+for f in CORE_WATER:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+for f in CORE_ATMOS:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
 import host as khost
-CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
+CORE_HOST=khost.FULL   # the whole interface (core/host/README.md): the record-driven inspector, marks (which supersede the polygon tool), pictures, the minimap, the editor, the cutaway
 khost.resolve(PATH,CORE_HOST)
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
@@ -111,7 +123,8 @@ import matlib_pack as _mp
 SIDE=None if '--inline-packs' in sys.argv else {}
 # named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
 VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'necanyons',side=SIDE),
-         '44b-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE)}
+         '44b-host-matlib-pack-hyperjungle.js':_mp.fragment(HJ,'hyperjungle',side=SIDE),
+         khost.EDITS_JS:khost.edits_js(HERE,'necanyons')}   # the page's edits (edits.json or this browser's draft)
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]

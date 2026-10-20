@@ -1668,6 +1668,186 @@ const FK = (function () {
     F.lamp(0, 1.05, 0.1, 0.4, 3);
   };
 
+/* ======== Role builders: the works (FK.ROLES.works, the 2026-10-19 trades audit) ======== */
+  /* Work pieces for the trades the first trade set lacks: baking, butchery, healing, scribing, shipwrighting,
+     quarrying, customs and dairy. Registered per culture with FK.set({ roles: 'works', skip: [..] }) as
+     <culture>_works_<role>; each carries the job of its role (R.job). Like the trade set, every one is drawn in the
+     culture's own style sheet. */
+  /* a baker's oven: a stone plinth, a dome, a fire mouth with embers, a flue, a peel and loaves on a shelf */
+  B.breadOven = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, ember = P.ember || P.acc, flame = P.flame || P.acc;
+    F.box(0, 0, 0, W, 0.7, D, 0, P.stone, P.sf);
+    F.frustum(0, 0.7, -D * 0.05, W * 0.46, W * 0.34, 0.34, 0, F.shade(P.stone, 0.05), P.sf, 14);
+    F.frustum(0, 1.04, -D * 0.05, W * 0.34, W * 0.12, 0.3, 0, F.shade(P.stone, 0.1), P.sf, 14);
+    F.box(0, 0.78, D / 2 - 0.02, W * 0.4, 0.3, 0.06, 0, F.shade(P.stone, -0.5), P.sf);             /* the mouth */
+    for (let i = 0; i < 4; i++) F.ball(F.rr(-W * 0.12, W * 0.12), 0.8, D / 2 - 0.05, F.rr(0.03, 0.05), i % 2 ? ember : flame, 'glow');
+    F.box(W * 0.28, 1.34, -D * 0.2, 0.2, H - 1.34, 0.2, 0, F.shade(P.stone, -0.1), P.sf);          /* flue */
+    F.rod(-W / 2 - 0.02, 0.1, D / 2 - 0.1, -W / 2 + 0.1, 1.5, D / 2 - 0.2, 0.015, P.woodL, P.wf);   /* the peel */
+    F.box(-W / 2 + 0.1, 1.5, D / 2 - 0.2, 0.2, 0.02, 0.22, 0, P.woodL, P.wf);
+    F.box(0, 0.7, D / 2 - 0.1, W, 0.04, 0.2, 0, P.wood, P.wf);                                    /* the loading shelf */
+    for (let i = 0; i < 3; i++) F.blob(-W * 0.3 + i * 0.22, 0.74, D / 2 - 0.1, 0.08, 0.1, 0, P.clay, P.clf);
+    F.lamp(0, 0.9, D / 2 - 0.1, 0.7, 5);
+  };
+  /* a butcher's block: a stump, a cleaver stuck in it, a saw and an apron on a post, a blood tub */
+  B.butcherBlock = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h;
+    F.cyl(-W * 0.12, 0, 0, Math.min(0.34, D / 2 - 0.04), 0.82, 0, P.wood, P.wf);
+    F.cyl(-W * 0.12, 0.82, 0, Math.min(0.35, D / 2 - 0.03), 0.04, 0, P.woodL, P.wf);
+    F.box(-W * 0.12 + 0.1, 0.86, 0.04, 0.2, 0.12, 0.02, 0.4, P.metal, P.mf);                         /* cleaver */
+    F.box(-W * 0.12 + 0.03, 0.86, 0.1, 0.03, 0.03, 0.14, 0.4, P.woodD, P.wf);
+    F.box(W * 0.38, 0, -D * 0.3, 0.06, H, 0.06, 0, P.woodD, P.wf);                                   /* post */
+    F.box(W * 0.38, H * 0.65, -D * 0.3 + 0.04, 0.3, 0.4, 0.02, 0, F.shade(P.cloth[0], -0.1), P.cf);  /* apron */
+    F.rod(W * 0.38 - 0.1, H * 0.9, -D * 0.3 + 0.05, W * 0.38 + 0.1, H * 0.9, -D * 0.3 + 0.05, 0.015, P.metal, P.mf);
+    F.frustum(W * 0.3, 0, D * 0.25, 0.17, 0.2, 0.3, 0, P.woodD, P.wf, 12);                           /* tub */
+    F.cyl(W * 0.3, 0.26, D * 0.25, 0.17, 0.02, 0, F.shade(P.cloth[0], -0.3), 'glass');
+  };
+  /* a meat rack: posts and a beam with hooks, carcasses hung to dry or cool, a drip trough under */
+  B.meatRack = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, v = o.variant || 0;
+    for (const s of [-1, 1]) F.box(s * (W / 2 - 0.05), 0, 0, 0.08, H, 0.08, 0, P.woodD, P.wf);
+    F.box(0, H - 0.1, 0, W, 0.08, 0.08, 0, P.wood, P.wf);
+    F.box(0, 0, 0, W - 0.1, 0.1, D, 0, P.woodD, P.wf);                                                 /* drip trough */
+    const n = Math.max(3, Math.floor(W / 0.34)), m = F.shade(P.cloth[0], -0.2);
+    for (let i = 0; i < n; i++) {
+      const x = -W / 2 + 0.2 + i * (W - 0.4) / (n - 1), h = 0.5 + (i % 3) * 0.12;
+      F.rod(x, H - 0.1, 0, x, H - 0.26, 0, 0.01, P.metal, P.mf);
+      if (v === 1 && i % 2) { F.rod(x, H - 0.26, 0, x, H - 0.26 - h, 0, 0.035, m, P.cf); F.ball(x, H - 0.3 - h, 0, 0.05, F.shade(m, 0.1), P.cf); }   /* fowl and hares */
+      else F.blob(x, H - 0.28 - h, 0, 0.1, h, 0, i % 2 ? m : F.shade(m, 0.12), P.cf);                    /* sides of meat */
+    }
+  };
+  /* a healer's bench: a mortar and pestle, a balance, jars on a rail, bundles of herbs hung over it */
+  B.herbBench = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, zb = -D / 2;
+    F.box(0, 0.8, 0, W, 0.06, D, 0, P.wood, P.wf);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) F.box(sx * (W / 2 - 0.06), 0, sz * (D / 2 - 0.06), 0.06, 0.8, 0.06, 0, P.woodD, P.wf);
+    F.box(0, 0.4, 0, W - 0.1, 0.04, D - 0.1, 0, P.woodD, P.wf);
+    F.frustum(-W * 0.3, 0.86, 0, 0.09, 0.12, 0.1, 0, P.stone, P.sf, 12);                              /* mortar */
+    F.rod(-W * 0.3, 0.9, 0, -W * 0.3 + 0.1, 1.08, 0.04, 0.015, P.stoneL || P.woodL, P.wf);
+    F.rod(W * 0.05, 1.0, 0, W * 0.05, 0.86, 0, 0.012, P.metal, P.mf);                                 /* the balance */
+    F.rod(W * 0.05 - 0.15, 1.0, 0, W * 0.05 + 0.15, 1.0, 0, 0.01, P.metal, P.mf);
+    for (const s of [-1, 1]) F.frustum(W * 0.05 + s * 0.15, 0.9, 0, 0.06, 0.04, 0.02, 0, P.metal, P.mf, 10);
+    F.box(0, 1.15, zb + 0.06, W, 0.05, 0.12, 0, P.wood, P.wf);                                         /* the jar rail */
+    for (let i = 0; i < 5; i++) F.frustum(-W * 0.4 + i * (W * 0.8 / 4), 1.2, zb + 0.06, 0.05, 0.06, 0.12 + (i % 2) * 0.04, 0, P.clay, P.clf, 10);
+    F.box(0, H - 0.08, zb + 0.06, W, 0.04, 0.04, 0, P.woodD, P.wf);
+    for (let i = 0; i < 6; i++) {
+      const x = -W * 0.42 + i * (W * 0.84 / 5);
+      F.rod(x, H - 0.08, zb + 0.06, x, H - 0.3, zb + 0.06, 0.01, P.rope, 'rope');
+      F.blob(x, H - 0.52, zb + 0.06, 0.05, 0.22, 0, i % 2 ? P.acc : F.shade(P.clay, 0.1), 'plant');       /* herb bundles */
+    }
+  };
+  /* a sickbed: a low frame, a pallet and pillow, a folded blanket, a basin on the head board */
+  B.sickbed = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h;
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) F.box(sx * (W / 2 - 0.05), 0, sz * (D / 2 - 0.05), 0.07, 0.34, 0.07, 0, P.woodD, P.wf);
+    F.box(0, 0.34, 0, W, 0.08, D, 0, P.wood, P.wf);
+    F.box(0, 0.42, 0.04, W - 0.1, 0.1, D - 0.2, 0, P.cloth[0], P.cf);
+    F.box(0, 0.5, -D / 2 + 0.22, W - 0.3, 0.1, 0.3, 0, F.shade(P.cloth[0], 0.3), P.cf);
+    F.box(0, 0.52, D * 0.15, W - 0.12, 0.06, D * 0.4, 0, P.cloth[Math.min(1, P.cloth.length - 1)], P.cf);
+    F.box(0, 0.34, -D / 2, W, H - 0.34, 0.06, 0, P.woodD, P.wf);                                       /* head board */
+    F.frustum(W / 2 - 0.14, H - 0.1, -D / 2 + 0.03, 0.1, 0.06, 0.08, 0, P.clay, P.clf, 12);                 /* basin on the head board */
+  };
+  /* a scribe's desk: a sloped top in steps, an ink pot, quills, rolled documents, a sand tray */
+  B.scribeDesk = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h - 0.1;   /* the desk top; the lamp and quill rise 0.1 above it */
+    for (const sx of [-1, 1]) {
+      F.box(sx * (W / 2 - 0.05), 0, D / 2 - 0.06, 0.06, H - 0.3, 0.06, 0, P.woodD, P.wf);
+      F.box(sx * (W / 2 - 0.05), 0, -D / 2 + 0.06, 0.06, H, 0.06, 0, P.woodD, P.wf);
+    }
+    F.box(0, H - 0.3, D / 2 - 0.2, W, 0.04, 0.3, 0, P.wood, P.wf);
+    F.box(0, H - 0.2, 0, W, 0.04, D * 0.4, 0, P.wood, P.wf);
+    F.box(0, H - 0.1, -D / 2 + 0.16, W, 0.04, 0.3, 0, P.wood, P.wf);                                  /* the slope, in steps */
+    F.box(0, 0.35, 0, W - 0.1, 0.04, D - 0.2, 0, P.woodD, P.wf);
+    F.cyl(-W * 0.3, H - 0.06, -D / 2 + 0.16, 0.035, 0.07, 0, P.clay, P.clf);                             /* ink pot */
+    F.rod(-W * 0.3 + 0.07, H - 0.05, -D / 2 + 0.14, -W * 0.3 + 0.2, H + 0.1, -D / 2 + 0.2, 0.006, P.woodL, P.wf);
+    F.box(W * 0.1, H - 0.09, -D / 2 + 0.2, 0.34, 0.01, 0.24, 0.1, P.cloth[Math.min(2, P.cloth.length - 1)], P.cf);   /* a sheet */
+    for (let i = 0; i < 3; i++) F.rod(W * 0.28 + i * 0.05, H - 0.07, -D / 2 + 0.2, W * 0.28 + i * 0.05, H - 0.07, -D / 2 + 0.38, 0.025, F.shade(P.cloth[0], 0.35), P.cf);   /* rolls */
+    F.box(0, H - 0.33, D / 2 - 0.2, 0.22, 0.02, 0.18, 0, P.woodL, P.wf);
+    F.lamp(-W * 0.4, H, -D / 2 + 0.12, 0.5, 3);
+  };
+  /* a hull on its stocks: sleepers, a keel, paired ribs, two strakes, props and a mallet */
+  B.hullStocks = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, hw = D * 0.4;
+    for (const x of [-W * 0.38, 0, W * 0.38]) F.box(x, 0, 0, 0.14, 0.2, D, 0, P.woodD, P.wf);          /* sleepers */
+    F.box(0, 0.2, 0, W * 0.96, 0.14, 0.16, 0, P.wood, P.wf);                                           /* keel */
+    F.rod(-W * 0.48, 0.3, 0, -W * 0.48 - 0.05, H * 0.8, 0, 0.05, P.woodL, P.wf);                       /* stem and sternpost */
+    F.rod(W * 0.48, 0.3, 0, W * 0.48 + 0.05, H * 0.7, 0, 0.05, P.woodL, P.wf);
+    const n = 6;
+    for (let i = 0; i < n; i++) {
+      const x = -W * 0.38 + i * (W * 0.76 / (n - 1)), k = Math.sin(Math.PI * (i + 0.6) / (n + 0.2)), up = H * (0.45 + 0.45 * k);
+      for (const s of [-1, 1]) F.rod(x, 0.3, s * 0.04, x, up, s * hw * k, 0.025, P.wood, P.wf);
+    }
+    for (const s of [-1, 1]) {
+      F.rod(-W * 0.4, H * 0.5, s * hw * 0.5, W * 0.4, H * 0.62, s * hw * 0.9, 0.03, P.woodL, P.wf);   /* strakes */
+      F.rod(-W * 0.4, H * 0.7, s * hw * 0.55, W * 0.4, H * 0.82, s * hw * 0.95, 0.03, P.woodL, P.wf);
+      F.rod(-W * 0.2 * s, 0, s * D / 2, -W * 0.05 * s, H * 0.55, s * hw * 0.95, 0.03, P.woodD, P.wf);   /* props */
+    }
+    F.box(W * 0.36, 0, D / 2 - 0.1, 0.4, 0.1, 0.1, 0.4, P.woodL, P.wf);
+    F.rod(W * 0.25, 0.2, D / 2 - 0.1, W * 0.25, 0.5, D / 2 - 0.1, 0.02, P.rope, 'rope');
+  };
+  /* a quarry face piece: a block with a split line, wedges, a pry bar and a rolling sledge */
+  B.quarryBlock = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h;
+    for (const z of [-D * 0.3, 0, D * 0.3]) F.box(0, 0, z, W * 0.8, 0.1, 0.14, 0, P.woodD, P.wf);       /* sledge runners */
+    F.box(-W * 0.08, 0.1, 0, W * 0.62, H * 0.62, D * 0.7, 0, P.stone, P.sf);
+    F.box(W * 0.26, 0.1 + H * 0.62, 0, W * 0.2, H * 0.14, D * 0.5, 0, F.shade(P.stone, 0.08), P.sf);  /* the cap, split off */
+    F.box(-W * 0.08, 0.12 + H * 0.62, 0, W * 0.4, 0.02, 0.02, 0, F.shade(P.stone, -0.5), P.sf);        /* the split line */
+    for (let i = 0; i < 4; i++) F.box(-W * 0.24 + i * W * 0.14, 0.12 + H * 0.62, 0, 0.04, 0.06, 0.04, 0, P.metal, P.mf);   /* wedges */
+    F.rod(W * 0.38, 0.05, D * 0.34, W * 0.1, H * 0.9, D * 0.44, 0.02, P.metal, P.mf);                  /* pry bar */
+    F.box(-W * 0.44, 0, -D * 0.4, 0.3, 0.16, 0.2, 0.3, F.shade(P.stone, -0.1), P.sf);                  /* waste */
+    F.rod(W * 0.42, 0.12, -D * 0.35, W * 0.42, 0.12, -D * 0.1, 0.05, P.rope, 'rope');                   /* the haul rope, coiled */
+  };
+  /* the weigh-house scale: a post and beam, two pans on chains, a stack of weights and a stamp */
+  B.weighScale = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h;
+    F.box(0, 0, 0, 0.5, 0.1, D, 0, P.woodD, P.wf);
+    F.box(0, 0.1, 0, 0.1, H - 0.2, 0.1, 0, P.wood, P.wf);
+    F.box(0, H - 0.12, 0, W * 0.8, 0.05, 0.05, 0, P.metal, P.mf);                                       /* beam */
+    for (const s of [-1, 1]) {
+      const x = s * W * 0.38;
+      for (const dz of [-0.06, 0.06]) F.rod(x, H - 0.1, 0, x + s * 0.0, 0.6, dz * 1.4, 0.006, P.metal, P.mf);
+      F.frustum(x, 0.54, 0, 0.17, 0.13, 0.06, 0, s > 0 ? P.metal : F.shade(P.metal, -0.1), P.mf, 14);
+    }
+    for (let i = 0; i < 4; i++) F.cyl(-W * 0.38 + i * 0.07 - 0.1, 0.6, 0, 0.03, 0.03 + i * 0.012, 0, P.metal, P.mf);    /* weights in a pan */
+    F.box(W * 0.3, 0.1, D / 2 - 0.12, 0.18, 0.1, 0.12, 0, P.woodL, P.wf);
+  };
+  /* a tally board: a board on the wall with a ruled grid, notched sticks and strings of counters */
+  B.tallyBoard = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, zb = -D / 2;
+    F.box(0, 0.3, zb + D * 0.25, W, H - 0.3, D * 0.5, 0, P.wood, P.wf);
+    F.box(0, 0.3, zb + D * 0.75, W, 0.05, D * 0.5, 0, P.woodD, P.wf);
+    for (const s of [-1, 1]) F.box(s * (W / 2 - 0.03), 0.3, zb + D * 0.35, 0.06, H - 0.3, D * 0.7, 0, P.woodD, P.wf);
+    for (let r = 0; r < 4; r++) {
+      const y = H - 0.25 - r * 0.28;
+      F.box(0, y, zb + D * 0.5, W - 0.16, 0.012, 0.012, 0, P.woodD, P.wf);
+      F.rod(-W / 2 + 0.1, y - 0.04, zb + D * 0.5 + 0.02, W / 2 - 0.1, y - 0.04, zb + D * 0.5 + 0.02, 0.01, P.rope, 'rope');
+      for (let i = 0; i < 6 + r; i++) F.cyl(-W / 2 + 0.14 + i * (W - 0.3) / (5 + r), y - 0.09, zb + D * 0.5 + 0.02, 0.025, 0.02, 0, i % 3 ? P.woodL : P.acc, i % 3 ? P.wf : P.af);
+    }
+  };
+  /* a plunger churn: a tall staved barrel with hoops, a lid, a dasher, a pail beside */
+  B.churn = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, R = Math.min(D / 2 - 0.03, 0.27), X = -(0.14 + 0.13) / 2;   /* X centres the churn and its pail */
+    F.frustum(X, 0, 0, R, R * 0.7, H * 0.85, 0, P.wood, P.wf, 14);
+    for (const y of [0.1, 0.4, 0.7]) F.cyl(X, H * 0.85 * y, 0, R * (1 - 0.3 * y) + 0.012, 0.03, 0, P.metal, P.mf);
+    F.cyl(X, H * 0.85, 0, R * 0.7, 0.03, 0, P.woodL, P.wf);
+    F.rod(X + 0.02, H * 0.6, 0, X + 0.05, H, 0.01, 0.018, P.woodL, P.wf);                                /* the dasher */
+    F.box(X + 0.05, H - 0.02, 0.01, 0.12, 0.03, 0.03, 0, P.woodL, P.wf);
+    F.frustum(X + R + 0.14, 0, 0.04, 0.1, 0.13, 0.26, 0, P.woodD, P.wf, 12);
+  };
+  /* a cheese press: a bench with cheese wheels, a lever beam and a hanging stone weight */
+  B.cheesePress = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h;
+    F.box(0, 0.7, 0, W, 0.06, D, 0, P.wood, P.wf);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) F.box(sx * (W / 2 - 0.05), 0, sz * (D / 2 - 0.05), 0.06, 0.7, 0.06, 0, P.woodD, P.wf);
+    for (let i = 0; i < 3; i++) F.cyl(-W * 0.18, 0.76 + i * 0.07, 0, 0.17, 0.07, 0, i % 2 ? P.clay : F.shade(P.clay, 0.12), P.clf);
+    F.box(-W * 0.18, 0.97, 0, 0.36, 0.03, 0.2, 0, P.woodL, P.wf);                                        /* follower */
+    F.box(W * 0.42, 0.76, 0, 0.08, H - 0.76, 0.08, 0, P.wood, P.wf);                                     /* the upright */
+    F.box(0.1, H - 0.2, 0, W * 0.84, 0.06, 0.08, 0, P.woodD, P.wf);                                      /* the lever */
+    F.rod(W * 0.42, H - 0.17, 0, W * 0.42, H - 0.1, 0, 0.03, P.metal, P.mf);
+    F.rod(-W * 0.4, H - 0.2, 0, -W * 0.4, 0.8, 0, 0.008, P.rope, 'rope');
+    F.box(-W * 0.4, 0.68, 0, 0.2, 0.2, 0.2, 0, P.stone, P.sf);                                           /* the weight */
+    F.frustum(W * 0.1, 0.76, D * 0.2, 0.1, 0.13, 0.12, 0, P.woodD, P.wf, 12);                            /* whey bucket */
+  };
+
 /* ======== Roles per tier (FK.ROLES), materials and the registrar FK.set() ======== */
   /* ================================================================ roles and the registrar */
   const SIT = ['hall', 'tavern', 'court', 'bedroom', 'study', 'antechamber'];
@@ -1782,6 +1962,22 @@ const FK = (function () {
       { role: 'altar', type: 'altar', rooms: ['shrine'], clear: { front: 1.0 }, w: 1.4, d: 0.8, h: 1.25, uses: ['stone', 'wood', 'cloth', 'accent', 'clay'], fire: true, build: 'altar' },
       { role: 'barrel', type: 'storage', surface: false, rooms: ['tavern', 'store', 'kitchen', 'shop'], anchor: 'wall', clear: { front: 0.7 }, w: 1.8, d: 0.7, h: 1.3, uses: ['wood', 'metal', 'accent'], build: 'barrelRack' }
     ],
+    /* the works (2026-10-19 trades audit): the trades FK.ROLES.trade lacks, registered with
+       FK.set({ roles: 'works', skip: [..] }) as <culture>_works_<role>; each role carries its job (R.job) */
+    works: [
+      { role: 'bread_oven', type: 'stove', job: 'baking', setting: 'both', rooms: ['kitchen', 'shop', 'workshop', 'yard'], clear: { front: 1.0 }, w: 1.4, d: 1.4, h: 2.0, uses: ['stone', 'wood', 'clay', 'metal'], fire: true, build: 'breadOven' },
+      { role: 'butcher_block', type: 'workstation', job: 'butchery', setting: 'both', rooms: ['shop', 'kitchen', 'yard', 'market', 'store'], clear: { front: 0.8, back: 0.4 }, w: 1.1, d: 0.8, h: 1.2, uses: ['wood', 'metal', 'cloth'], glass: true, build: 'butcherBlock' },
+      { role: 'meat_rack', type: 'rack', job: 'butchery', setting: 'both', rooms: ['shop', 'store', 'yard', 'kitchen', 'market'], clear: { front: 0.7 }, w: 1.8, d: 0.6, h: 2.0, variants: 2, variantNames: ['sides of meat', 'fowl and hares'], uses: ['wood', 'metal', 'cloth'], build: 'meatRack' },
+      { role: 'herb_bench', type: 'workstation', job: 'healing', rooms: ['shop', 'workshop', 'study', 'hall', 'shrine'], anchor: 'wall', clear: { front: 0.8 }, w: 1.5, d: 0.7, h: 1.9, uses: ['wood', 'stone', 'clay', 'metal', 'accent', 'rope'], plant: true, build: 'herbBench' },
+      { role: 'sickbed', type: 'bed', job: 'healing', rooms: ['bedroom', 'dormitory', 'hall', 'shrine', 'shop'], clear: { front: 0.7 }, w: 0.9, d: 2.0, h: 0.8, uses: ['wood', 'cloth', 'clay'], build: 'sickbed' },
+      { role: 'scribe_desk', type: 'desk', job: 'scribing', rooms: ['study', 'library', 'hall', 'shop', 'antechamber', 'court'], clear: { front: 0.8 }, w: 1.2, d: 0.7, h: 1.3, uses: ['wood', 'cloth', 'clay'], build: 'scribeDesk' },
+      { role: 'hull_stocks', type: 'workstation', job: 'shipwrighting', setting: 'outdoor', rooms: ['yard', 'dock', 'workshop'], clear: { front: 1.2, back: 1.2, left: 0.8, right: 0.8 }, w: 3.4, d: 1.5, h: 1.6, uses: ['wood', 'rope'], build: 'hullStocks' },
+      { role: 'quarry_block', type: 'workstation', job: 'quarrying', setting: 'outdoor', rooms: ['yard', 'workshop', 'dock'], clear: { front: 0.8, back: 0.8, left: 0.6, right: 0.6 }, w: 1.8, d: 1.3, h: 1.2, uses: ['stone', 'wood', 'metal', 'rope'], build: 'quarryBlock' },
+      { role: 'weigh_scale', type: 'workstation', job: 'customs', setting: 'both', rooms: ['dock', 'market', 'store', 'shop', 'yard'], clear: { front: 0.7 }, w: 1.05, d: 0.5, h: 1.4, uses: ['wood', 'metal'], build: 'weighScale' },
+      { role: 'tally_board', type: 'board', job: 'customs', rooms: ['dock', 'market', 'store', 'shop', 'hall', 'study'], anchor: 'wall', clear: { front: 0.5 }, w: 1.3, d: 0.14, h: 1.5, uses: ['wood', 'accent', 'rope'], build: 'tallyBoard' },
+      { role: 'churn', type: 'vessel', job: 'dairy', setting: 'both', rooms: ['kitchen', 'store', 'yard', 'shop'], clear: { front: 0.5 }, w: 0.85, d: 0.6, h: 1.1, uses: ['wood', 'metal'], build: 'churn' },
+      { role: 'cheese_press', type: 'workstation', job: 'dairy', setting: 'both', rooms: ['kitchen', 'store', 'yard', 'shop'], clear: { front: 0.7 }, w: 1.1, d: 0.7, h: 1.3, uses: ['wood', 'stone', 'clay', 'metal', 'rope'], build: 'cheesePress' }
+    ],
     /* training furniture (2026-10): a melee and a ranged practice piece for every culture, registered with
        FK.set({ roles: 'training' }) as <culture>_training_<role>; their tasks are melee-training and ranged-training */
     training: [
@@ -1817,10 +2013,10 @@ const FK = (function () {
      registers every role of the tier as FURN entries keyed <culture>_<tier>_<role>; with
      roles: 'trade' it registers FK.ROLES.trade instead (keyed <culture>_trade_<role>) at the tier given. */
   /* the job (FURN_JOBS) of each trade role: the catalog's Jobs page groups work pieces by job. Roles left out
-     (bunk, locker, altar) are a trade set's household and shrine pieces: they keep a `Jobs · trade · <culture>` row. */
+     (bunk, locker) are a trade set's household and shrine pieces: they keep a `Jobs · trade · <culture>` row. */
   K.TRADE_JOB = { forge: 'smithing', anvil: 'smithing', grindstone: 'smithing', armour_stand: 'smithing', weapon_rack: 'smithing',
     trough: 'herding', hayrack: 'herding', stall: 'trading', display: 'trading', vat: 'weaving', still: 'brewing', barrel: 'brewing',
-    bin: 'warehousing', larder: 'warehousing', lathe: 'carpentry', press: 'milling', kiln: 'pottery' };
+    bin: 'warehousing', larder: 'warehousing', lathe: 'carpentry', press: 'milling', kiln: 'pottery', altar: 'worship' };
   K.set = function (spec) {
     const culture = spec.culture, tier = spec.tier || 'common', S = spec.S;
     const prefix = spec.prefix || (culture + '_' + (spec.roles || tier) + '_');

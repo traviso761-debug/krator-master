@@ -64,6 +64,10 @@ async def run(a):
         if a.assert_:
             for r in await pg.evaluate(ASSERT_JS):
                 print(('PASS ' if r['ok'] else 'FAIL ') + r['name'] + ' - ' + r['detail'][:700]); bad |= not r['ok']
+            sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
+            import check_trades   # the Voth census (tools/trades_census.json) against src/55-zj-trades.js
+            tok, tdet, _rep = check_trades.trades_check(os.path.dirname(os.path.abspath(__file__)))
+            print(('PASS ' if tok else 'FAIL ') + 'voth-trades - ' + tdet[:700]); bad |= not tok
         if a.cut: await pg.evaluate("cutSet(true)")
         if a.night: await pg.evaluate("nightSet(true)")
         if a.eval: print(json.dumps(await pg.evaluate(a.eval), indent=1)[:6000])

@@ -14,6 +14,7 @@ function dressTalus(q){
   const s=1-fd/TALUS.w,p=(.12+.5*s*s)*q;if(u(3)>p)continue;
   if(PR.inFarms(x,z)&&fd>TALUS.w*.6)continue;   // the farms' inner edge stays clear
   const r=(.6+u(4)*(1.2+7*s*s))*(u(5)<.06*s?1.8:1),y=terrainH(x,z);
+  if(!wayClear(x,z,r*1.3+1))continue;   // none on the Stair's path or the lift road (47b)
   E.set((u(6)-.5)*.8,u(7)*TAU,(u(8)-.5)*.8);const qt=new T.Quaternion().setFromEuler(E);
   BIO.put('talusblock',[x,y+r*.25,z],qt,[r*(.8+.5*u(9)),r*(.45+.35*u(10)),r*(.8+.5*u(11))],TINT[KRAND.hash(h,12)%TINT.length]);n++;}
  BIO.cur=null;return n;}

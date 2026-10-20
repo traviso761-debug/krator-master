@@ -159,6 +159,11 @@ async def run(a):
                     print(tag + r["name"] + " : " + r["detail"])
                     if not r["ok"] and not soft:
                         fails.append("assert " + r["name"])
+                from check_trades import trades_check
+                t_ok, t_detail, _t = trades_check(here)
+                print(("  PASS  " if t_ok else "  FAIL  ") + "voth-trades : " + t_detail)
+                if not t_ok:
+                    fails.append("assert voth-trades")
                 print("\n--- per type (scene triangles, instances, meshes) ---")
                 ts = await pg.evaluate("()=>window._api.typeStats()")
                 for k in sorted(ts, key=lambda k: -ts[k]["tris"]):

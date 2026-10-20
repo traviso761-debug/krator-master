@@ -52,6 +52,8 @@ MAT.pyLit=MAT.warmPane.clone();MAT.pyLit.side=THREE.DoubleSide;kdef('pyDiscL',PY
 MAT.pyHexTile=MAT.plaster.clone();vWorldUV(MAT.pyHexTile,1/1.2);
 const pyCard=()=>new THREE.MeshStandardMaterial({color:0xffffff,roughness:.7,metalness:.3,alphaTest:.5,side:THREE.DoubleSide});
 MAT.pyGrille=pyCard();vWorldUV(MAT.pyGrille,1/.8);MAT.pyGrilleD=pyCard();vWorldUV(MAT.pyGrilleD,2/.8);
+/* the library's four glazed floor tiles (patterns/common tile-lattice red, saffron, blue and tile-lotus-cross, a 1.6 m tile, full colour): second takes of a court's paving, one pick of the five by where the court stands (pynHexPave); the plaster map stands in under ?mat=proc */
+for(const k of['pyTileLR','pyTileLS','pyTileLB','pyTileLC']){MAT[k]=MAT.plaster.clone();vWorldUV(MAT[k],1/1.6);kdef(k,VBOX,MAT[k]);}
 kdef('pyHexTile',VBOX,MAT.pyHexTile);kdef('pyGrille',VPLANE,MAT.pyGrille);kdef('pyGrilleD',new THREE.CircleGeometry(1,24),MAT.pyGrilleD);
 
 // ---------------------------------------------------------------- doors in the profiles (the owner, 2026-10-18: no black voids)

@@ -564,6 +564,65 @@
    },
    "metal": 0,
    "normalScale": 0.7
+  },
+  "under1": {
+   "lib": "card.jungle.clump.14",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.693
+   },
+   "size": 512,
+   "own": true
+  },
+  "under2": {
+   "lib": "card.jungle.clump.15",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.693
+   },
+   "size": 512,
+   "own": true
+  },
+  "hang1": {
+   "lib": "card.vine.hanging.6",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.693
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "own": true
+  },
+  "fungus": {
+   "lib": "organic.fungus.bracket",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "mapOnly": true,
+   "roughLift": 0.3,
+   "own": true
   }
  }
 }

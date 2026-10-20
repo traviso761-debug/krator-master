@@ -394,3 +394,23 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.
 - [ ] **The Port kit takes the material library** (2026-10-06): containers (pkCont, metal.container) and paving (pkPave, concrete.slab), at
       their metre UVs (tiles 3 and 16 in the bind). The paving set's joints read fainter than the procedural 4 m grid; pkContR and pkPaveR stay procedural.
+
+## Voth census trades (2026-10-19)
+
+The table `YS_TRADES` (`src/89x-ys-trades.js`) says which building carries each of the Voth city's 44 trades (`tools/trades_census.json`); `verify.py --assert` checks it (`voth-trades`). 25 carried, 2 partly, 10 gaps, 7 na of 44.
+Ys: the city page (`dist/ys.html`) carries the table; the kit and mock pages do not.
+
+Missing buildings (gaps) and partly carried trades:
+
+- [ ] bakers: a bakehouse: hyk_shop_food sells food but bakes none (fire-cooked food is lore)
+- [ ] butchers: a butcher's and slaughter shed (the fishmonger hyk_fishmonger is the sea's counterpart)
+- [ ] brewers: a brewhouse or still
+- [ ] tanners: a tannery (hides, and the sharkskin and ray-leather the sea gives)
+- [ ] customs officers and clerks: a customs house on the main quay (the Treasury, hyk_treasury, is the Archon's)
+- [ ] healers and nurses: a Hykkousoi house of healing (the Ancient hospital is a ruin host, not a Hykkousoi building)
+- [ ] river bargemen and quay hands: a river quay and barge landing on the river that runs into the bay
+- [ ] orchardmen: an orchard on the north-west bay's land (the biome kit biomes/nwbay has the trees)
+- [ ] dairymen: a dairy byre behind the farmhouses
+- [ ] swineherds and duck keepers: a sty and duck coop beside the farmhouses
+- [ ] town guard: a watch house (the Ancient police station is a ruin host, not a Hykkousoi building)
+- [ ] priests and undertakers: no burial ground or undertaker (the most sacred sites lie on the sea bottom)

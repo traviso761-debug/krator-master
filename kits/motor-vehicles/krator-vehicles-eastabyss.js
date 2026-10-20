@@ -21,7 +21,7 @@ VEHICLE_CULTURE('eastabyss', {
   lore: 'salt-marsh scavengers and recyclers of the eastern Abyss; shade first, pride and colour; nothing electric',
   /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
   detail: {
-    sandPaint: 'paintWorn', sandPaintDark: 'paintWorn', tealPaint: 'paintWorn', tealPaintDark: 'paintWorn',
+    sandPaint: 'paintWorn', sandPaintDark: 'paintWorn', tealPaint: 'bluePlate', gold: 'gilt', steel: 'plate', tealPaintDark: 'paintWorn',
     jerryRed: 'paintWorn', jerryYellow: 'paintWorn', lacquer: 'paint',
     pastelTeal: 'tarp', pastelMint: 'tarp', pastelPink: 'tarp', pastelRose: 'tarp', pastelPeach: 'tarp', pastelYellow: 'tarp',
     saffron: 'tarp', canopyRed: 'tarp', canopyOrange: 'tarp', canvas: 'canvas', canvasDark: 'canvas', crate: 'wood',

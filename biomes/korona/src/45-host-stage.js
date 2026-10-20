@@ -59,7 +59,9 @@ function floorH(x,z){const b=floorBase(x,z),d=streamD(x,z),cut=smooth(STREAM.w+2
 // A body's foot is set under the lowest floor round it, so its wall always meets the ground.
 const ROCK=(function(){const K=KSTACKS,L=[];
  const footY=(x,z,r)=>{let m=1e9;for(let i=0;i<32;i++){const a=i/32*TAU;for(const k of [.4,.8,1.15])m=Math.min(m,floorH(x+Math.cos(a)*r*k,z+Math.sin(a)*r*k));}return m-3;};
- const add=(B,name)=>{B.name=name;L.push(B);return B;};
+ /* the ground's drop across a stack's foot (a stack on a slope: its foot is set under the lowest ground, so KSTACKS lifts it by this) */
+ const dropAt=(x,z,r)=>{let lo=1e9,hi=-1e9;for(let i=0;i<16;i++){const a=i/16*TAU,h=floorH(x+Math.cos(a)*r*1.15,z+Math.sin(a)*r*1.15);if(h<lo)lo=h;if(h>hi)hi=h;}return hi-lo;};
+ const add=(B,name)=>{B.name=B.plates?'A pile of plates (Roraima\'s kind: thin beds, deep partings, a top-heavy head)':name;L.push(B);return B;};   /* plates: KSTACKS, Roraima's piles */
  // THE TABLE: the body (380 m, beds 55 to 110 m thick: each parting a ledge) and the summit block set back on it; weathered
  // (KSTACKS weather: each bed retreats by its own metres, gullies notch the rim), so the walls are stepped and ragged, not drums
  add(K.make({id:'table',kind:'mesa',x:60,z:-120,y0:footY(60,-120,560),seed:2101,bed:[55,110],lobes:.3,weather:1,
@@ -69,7 +71,9 @@ const ROCK=(function(){const K=KSTACKS,L=[];
  const big=L.slice();
  const clear=(x,z,r,pad)=>{for(const B of big){const f=K.foot([B],x,z);if(f&&f.d<r+pad)return false;}return streamD(x,z)>r+40&&Math.hypot(x,z)<TERR.R*.9;};
  // THE STACKS on the floor east of the table: the remains of a fallen rim
- K.cluster({id:'gorgestack',seed:2201,c:[760,520],rad:480,n:5,H:[90,170],r:[14,26],gap:40,kinds:{spire:.6,fin:.25,balanced:.15},
+ // THE VARIETY of the stacks (the owner, 2026-10-19: no two neighbours alike): each draws its own taper, lean, girth and crown
+ // (KSTACKS cluster: taper, lean, e, crown ranges; lift for a stack on a slope)
+ K.cluster({id:'gorgestack',seed:2201,c:[760,520],rad:480,n:5,H:[70,190],r:[11,28],gap:40,kinds:{spire:.6,fin:.25,balanced:.15},taper:[.3,.6],lean:[0,.12],e:[1,1.6],crown:[.45,1],plates:[2,6],platesShare:.5,lift:dropAt,
   ground:(x,z)=>footY(x,z,24)+2,accept:(x,z,r)=>clear(x,z,r,80)}).forEach(B=>add(B,B.kind==='fin'?'A quartzite fin (a fallen rim)':B.kind==='balanced'?'A balanced rock':'A quartzite spire (a fallen rim)'));
  return L;})();
 const TABLE=ROCK[0];
@@ -82,7 +86,7 @@ TABLE.beds.forEach(b=>{const s=1-.022*b.k;b.rx*=s;b.rz*=s;});APRON_B=TABLE.beds[
 const windwardOf=(x,z)=>{const a=Math.atan2(z-TABLE.z,x-TABLE.x),w=Math.cos(a)*WIND[0]+Math.sin(a)*WIND[1];return smooth(-.55,.55,w);};
 const STAGE={
  name:'Korona: the tepui',R:TERR.R,bodies:ROCK,floor:floorH,capY:TABLE.y0+470,seed:11,talusH:30,heroR:1600,
- stream:STREAM,streamD,pools:[],
+ air:{pressure:1.3},stream:STREAM,streamD,pools:[],
  windward:windwardOf,
  // the dense hot air of the gorge (1.7 atm, 30 degC): 1 on the floor, falling up the wall to .25 on the summit
  warm:(x,z)=>1-.75*clamp((NECANYONS.top(x,z)-TABLE.y0)/530,0,1),
@@ -98,8 +102,9 @@ const STAGE={
  // the hyperjungle: on the gorge floor, off the walls' feet and the stream, thinner on the lee and on poor ground
  jungle:(x,z)=>mix(.5,1,windwardOf(x,z)),
  // THE CARVINGS: the Hum's contour carvings (LORE.md 6.18) on the summit block's lowest bed, above the shoulder, on the
- // dry lee face where the tribe's ledges are: angle band a0..a1 about the bed's centre, h tall, y0 above the bed's foot
- carvings:{body:'table',tier:1,a0:-1.1,a1:.35,y0:13,h:3.2,name:'Contour carvings: the Hum (one groove a syllable, above or below the line)'},
+ // dry lee face where the tribe's ledges are: angle band a0..a1 about the bed's centre, h tall, y0 above the DRAWN ground at
+ // the face (the shoulder here; 47 finds the bed: the owner, 2026-10-19, found carvings behind the talus)
+ carvings:{body:'table',tier:1,a0:-1.1,a1:.35,y0:1.6,h:3.2,name:'Contour carvings: the Hum (one groove a syllable, above or below the line)'},
  // the LOD spine: the table's rim all round, the shoulder, the summit, the stream, the outlier
  spine:(function(){const S=[];for(let k=0;k<10;k++){const a=k/10*TAU,b=TABLE.beds[0];S.push([b.cx+Math.cos(a)*KSTACKS.footR(b,a)*1.05,b.cz+Math.sin(a)*KSTACKS.footR(b,a)*1.05]);}
   S.push([TABLE.x,TABLE.z],[TABLE.x+120,TABLE.z-80],[STREAM.x(300),300],[STREAM.x(-600),-600],[-860,640],[760,520]);return S;})(),

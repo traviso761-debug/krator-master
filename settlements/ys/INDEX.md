@@ -121,6 +121,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `86-bio-75-biome-nwbay-fauna.js` | 13 | geometries (vertex-coloured, unit-sized) (31); the animated materials (53); the pass (67) |
 | `89-lab.js` | 7 |  |
 | `89m-sky-k.js` | 42 **big** |  |
+| `89x-ys-trades.js` | 6 |  |
 | `8aj-alt-a-bole.js` | 16 | THE BOLE (74) |
 | `8aj-alt-b-stack.js` | 10 |  |
 | `8aj-alt-c-hotel.js` | 8 |  |

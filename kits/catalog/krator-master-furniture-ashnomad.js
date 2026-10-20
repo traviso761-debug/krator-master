@@ -1715,3 +1715,7 @@ FURN({
 /* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed ashnomad_training_<role> */
 FK.set({ culture: 'ashnomad', tier: 'common', roles: 'training', prefix: 'ashnomad_training_', S: ASHNOMAD_COMMON, names: {
   training_dummy: 'Chitin-plated practice dummy', archery_butt: 'Painted hide target' } });
+
+/* butchery, healing and dairy pieces (FK.ROLES.works, the 2026-10-19 trades audit; the owner's scope for the nomad kits: tanning, brewing and smithing were here already). Keyed ashnomad_works_<role> */
+FK.set({ culture: 'ashnomad', tier: 'common', roles: 'works', prefix: 'ashnomad_works_', S: ASHNOMAD_COMMON, skip: ['bread_oven', 'scribe_desk', 'hull_stocks', 'quarry_block', 'weigh_scale', 'tally_board', 'churn', 'cheese_press'], names: {
+  butcher_block: 'Butcher\'s block', meat_rack: 'Drying meat rack', herb_bench: 'Healer\'s herb bench', sickbed: 'Healer\'s sickbed' } });

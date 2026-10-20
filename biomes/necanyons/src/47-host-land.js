@@ -47,7 +47,7 @@ BIO.setSun(SUN_POS);
 
 // ---------------------------------------------------------------- the library layers (or procedural without the pack)
 const LIB=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return {};const o={};
- ['ground.litter','ground.talus','ground.sand','rock.wall','rock.stack','rock.top'].forEach(k=>{const P=KMAT.packed('necanyons',k);
+ ['ground.litter','ground.talus','ground.sand','rock.wall','rock.stack','rock.top','rock.red','rock.bed','rock.cap'].forEach(k=>{const P=KMAT.packed('necanyons',k);
   if(P)o[k]=Object.assign({scale:P.scale[0]},KMAT.textures(P,{aniso:8}));});return o;})();
 const greyTex=(fn,S)=>BIO.canvasTex(S||256,S||256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=clamp(fn(x,y,w,h),0,255);d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}g.putImageData(id,0,0);},true);
@@ -60,8 +60,8 @@ const PROC={
  'rock.top':greyTex((x,y)=>185+26*(fbm(x/12,y/12,15,3)-.5)-60*smooth(.62,.7,fbm(x/24,y/24,16,2))+10*(BIO.fn.h3(x,y,17)-.5))};
 // the scale (m per tile) and the map of a layer; a library map carries its own colour, a procedural one is grey and tinted
 const layer=k=>LIB[k]?{map:LIB[k].map,normalMap:LIB[k].normalMap||null,roughnessMap:LIB[k].roughnessMap||null,s:LIB[k].scale,lib:true}:
- {map:PROC[k],normalMap:null,roughnessMap:null,s:{'ground.litter':3,'ground.talus':2.6,'ground.sand':2,'rock.wall':20,'rock.stack':12,'rock.top':4}[k],lib:false};
-['ground.litter','ground.talus','ground.sand','rock.wall','rock.stack','rock.top'].forEach(k=>{const t=layer(k).map;if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;}});
+ {map:PROC[k],normalMap:null,roughnessMap:null,s:{'ground.litter':3,'ground.talus':2.6,'ground.sand':2,'rock.wall':20,'rock.stack':12,'rock.top':4,'rock.red':14,'rock.bed':10,'rock.cap':4}[k],lib:false};
+['ground.litter','ground.talus','ground.sand','rock.wall','rock.stack','rock.top','rock.red','rock.bed','rock.cap'].forEach(k=>{const t=layer(k).map;if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;}});
 
 // ---------------------------------------------------------------- the floor (one mesh: litter, talus at the walls' feet, sand by the creek)
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
@@ -88,17 +88,22 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
 // walls of the mesas, buttes and towers (desert varnish), walls of the stacks (cross-bedded), and every top (slickrock).
 // Vertex colours: the beds' banding (brick, salmon, buff) and the notch's shade; a bench's top reddened by its soil.
 const ROCK_GEOS=[];
-(function(){const SMALL={spire:1,fin:1,balanced:1},Lw=layer('rock.wall'),Lk=layer('rock.stack'),Lt=layer('rock.top');
+(function(){const SMALL={spire:1,fin:1,balanced:1},Lw=layer('rock.wall'),Lk=layer('rock.stack'),Lt=layer('rock.top'),Lr=layer('rock.red'),Lb=layer('rock.bed'),Lc=layer('rock.cap');
  const BAND=[0xa8503a,0xc98468,0xd9b091,0xb4603e].map(h=>new THREE.Color(h)),WHITE=new THREE.Color(0xffffff),TOPC=new THREE.Color(0xc9906e),SOIL=new THREE.Color(0x9c5a40),c=new THREE.Color();
- const acc={wall:{pos:[],uv:[],col:[],idx:[]},stack:{pos:[],uv:[],col:[],idx:[]},top:{pos:[],uv:[],col:[],idx:[]}};
+ const acc={wall:{pos:[],uv:[],col:[],idx:[]},stack:{pos:[],uv:[],col:[],idx:[]},top:{pos:[],uv:[],col:[],idx:[]},wallR:{pos:[],uv:[],col:[],idx:[]},stackB:{pos:[],uv:[],col:[],idx:[]},topC:{pos:[],uv:[],col:[],idx:[]}};
  ROCK.forEach(B=>{const small=!!SMALL[B.kind],m=KSTACKS.mesh(B,{step:small?2.5:(LANDO.wallStep||6)}),nv=m.part.length;
   const remap={wall:new Int32Array(nv).fill(-1),stack:null,top:new Int32Array(nv).fill(-1)};
-  const wk=small?'stack':'wall',Lw2=small?Lk:Lw;remap[wk]=remap.wall;
-  for(let i=0;i<m.idx.length;i+=3){const a=m.idx[i],part=m.part[a],key=part===1?'top':wk,A=acc[key],R=remap[key==='top'?'top':wk];
+  // a third of the bodies take the library's other red sandstones (2026-10-19): the bedded red (rock.sandstone.bedded.red) for a
+  // mesa's walls (its courses read as great beds at 20 m), the layered red (rock.sandstone.red) for a spire's or a stack's, and another third the cracked
+  // sandstone (rock.sandstone_cracks) for a mesa's top; the rest keep the varnish, the Navajo and the slickrock
+  const hv=KRAND.hash(B.seed,6151)%3;
+  const wk=small?(hv===0&&LIB['rock.red']?'stackB':'stack'):(hv===0&&LIB['rock.bed']?'wallR':'wall'),tk=!small&&hv===1&&LIB['rock.cap']?'topC':'top',
+   Lw2=wk==='stack'?Lk:wk==='stackB'?Lr:wk==='wallR'?Lb:Lw,Lt2=tk==='topC'?Lc:Lt;
+  for(let i=0;i<m.idx.length;i+=3){const a=m.idx[i],part=m.part[a],isTop=part===1,key=isTop?tk:wk,A=acc[key],R=isTop?remap.top:remap.wall;
    for(let k=0;k<3;k++){const v=m.idx[i+k];if(R[v]<0){R[v]=A.pos.length/3;const x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2],b=B.beds[m.bed[v]];
      A.pos.push(x,y,z);
-     if(key==='top'){A.uv.push(m.uv[2*v]/Lt.s,m.uv[2*v+1]/Lt.s);const bench=!small&&y<NECANYONS.capY();
-      c.copy(Lt.lib?WHITE:TOPC).lerp(SOIL,bench?.35+.3*fbm(x*.01,z*.01,43,2):.05);}
+     if(isTop){A.uv.push(m.uv[2*v]/Lt2.s,m.uv[2*v+1]/Lt2.s);const bench=!small&&y<NECANYONS.capY();
+      c.copy(Lt2.lib?WHITE:TOPC).lerp(SOIL,bench?.35+.3*fbm(x*.01,z*.01,43,2):.05);}
      else{A.uv.push(m.uv[2*v]/Lw2.s,m.uv[2*v+1]/Lw2.s);const h=KRAND.hash(B.seed,b.k,77)%4;
       c.copy(Lw2.lib?WHITE:BAND[h]).lerp(BAND[h],Lw2.lib?(small?.05:.1):0).multiplyScalar(small?.82+.18*m.occ[v]:.62+.38*m.occ[v]);}
      A.col.push(c.r,c.g,c.b);}
@@ -113,11 +118,23 @@ const ROCK_GEOS=[];
  // (a mesh's box centre) would leave each body's registered volume to whatever grows on it
  {const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),ROCK.length),M4=new THREE.Matrix4();
   ROCK.forEach((B,i)=>{M4.makeTranslation(B.x,(B.y0+B.top)/2,B.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='rock anchors';A.frustumCulled=false;scene.add(A);}
+ const mkIf=(A,L,label)=>{if(A.idx.length)mk(A,L,label);};
+ mkIf(acc.wallR,Lb,'Bedded red sandstone (a mesa wall, in courses)');mkIf(acc.stackB,Lr,'Layered red sandstone (a stack)');mkIf(acc.topC,Lc,'Cracked sandstone (a mesa top)');
  mk(acc.wall,Lw,'Red sandstone (a mesa\'s wall, streaked with desert varnish)');mk(acc.stack,Lk,'Red sandstone (a stack, cross-bedded)');mk(acc.top,Lt,'Slickrock (a top: bare sandstone, black crust, lichen)');})();
 
-// ---------------------------------------------------------------- the water: the creek's ribbon and the rain pools
+// ---------------------------------------------------------------- the water: the creek and the rain pools
+// On a page with core/water (core/water/README.md) they are its records: the creek a flow line down the canyon (WATER.flow,
+// its surface the bed plus its depth every 12 m, from its high end), each rain pool on the slickrock still water
+// (WATER.still at the pool's level, its disc); WATER.heightAt and core/export read them, and the page's own water fragment
+// draws them on core/atmos (necanyons' and Pinnacle Rock's 89w-host-water.js). Without core/water, the plain ribbon below.
+const WATER_RECS=typeof WATER==='undefined'?null:(function(){
+ let creek=null;if(LANDO.creek!==false){const P=[];for(let z=-TERR.R*1.1;z<=TERR.R*1.1;z+=12)P.push([CREEK.x(z),z,creekBed(z)+CREEK.depth]);
+  if(P[0][2]<P[P.length-1][2])P.reverse();creek=WATER.flow({name:CREEK.name,pts:P,width:CREEK.w*2,speed:.6});}
+ const pools=NECANYONS.POTHOLES.map((p,i)=>{const poly=[];for(let k=0;k<14;k++){const a=k/14*TAU;poly.push([p.x+Math.cos(a)*p.r,p.z+Math.sin(a)*p.r]);}
+  return WATER.still({name:'A rain pool on the slickrock ('+i+')',level:p.y,poly});});
+ return {creek,pools};})();
 const MAT_WATER=new THREE.MeshStandardMaterial({color:0x2a3a34,roughness:.08,metalness:.3,transparent:true,opacity:.88});
-(function(){const pos=[];if(LANDO.creek!==false)for(let z=-TERR.R*1.1;z<TERR.R*1.1;z+=20){const a=[CREEK.x(z),z],b=[CREEK.x(z+20),z+20],ya=creekBed(a[1])+CREEK.depth,yb=creekBed(b[1])+CREEK.depth,w=CREEK.w;
+if(!WATER_RECS)(function(){const pos=[];if(LANDO.creek!==false)for(let z=-TERR.R*1.1;z<TERR.R*1.1;z+=20){const a=[CREEK.x(z),z],b=[CREEK.x(z+20),z+20],ya=creekBed(a[1])+CREEK.depth,yb=creekBed(b[1])+CREEK.depth,w=CREEK.w;
   pos.push(a[0]-w,ya,a[1],b[0]-w,yb,b[1],b[0]+w,yb,b[1],a[0]-w,ya,a[1],b[0]+w,yb,b[1],a[0]+w,ya,a[1]);}
  const P=NECANYONS.POTHOLES;P.forEach(p=>{const n=14;for(let k=0;k<n;k++){const a0=-k/n*TAU,a1=-(k+1)/n*TAU;pos.push(p.x,p.y,p.z,p.x+Math.cos(a0)*p.r,p.y,p.z+Math.sin(a0)*p.r,p.x+Math.cos(a1)*p.r,p.y,p.z+Math.sin(a1)*p.r);}});
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();

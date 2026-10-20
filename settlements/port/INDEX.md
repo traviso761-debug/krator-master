@@ -6,6 +6,8 @@ The Ancient Port kit (a kit, not a settlement, despite the folder): modular Anci
 
 Docs: `API.md`, `CONTRACT.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
+Built output (never open it; edit `src/` and rebuild): `dist/cgBox.html`, `dist/cgCrane.html`, `dist/cgEdges.html`, `dist/cgStore.html`, `dist/chHousing.html`, `dist/ddDock.html`, `dist/ddShed.html`, `dist/ddYard.html`, `dist/edges.html`, `dist/harbour.html`, `dist/hbEdges.html`, `dist/hbFish.html`, `dist/hbHaven.html`, `dist/hbMarina.html`, `dist/lbAuthority.html`, `dist/lbBlocks.html`, `dist/lbStores.html`, `dist/lbTanks.html`, `dist/segment.html`, `dist/showcase.html`, `dist/slBerth.html`, `dist/slCarrier.html`, `dist/slPen.html`, `dist/slSub.html`, `dist/spYard.html`, `dist/tmEdges.html`, `dist/tmHeli.html`, `dist/tmPass.html`, `dist/tmShip.html`, `dist/vsFeeder.html`, `dist/vsGiant.html`, `dist/vsPanamax.html`
+
 Build: `cd settlements/port && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
@@ -60,6 +62,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89a-ch-stack.js` | 32 **big** | materials and kit (28); small helpers (51); the container dwelling (94); the stacked tower (120); the block: ground, footways, sides (254); chStack: tall stacked towers (306) |
 | `89b-ch-court.js` | 13 | yard props (16); the compound (50); chCourt (125) |
 | `89c-ch-tank.js` | 16 |  |
+| `89x-port-trades.js` | 5 |  |
 | `89y-sp-1-yard.js` | 34 **big** | sides (47); stamps (89); small geometry (106); edges (116); containers (203); the warehouse (226); the yard office (273); the gantry (297); the reach stacker (328); floating things (d=3) (350) |
 | `90-scene.js` | 8 | scene (1); THE PORT (36) |
 | `91-probe.js` | 6 | probe (window._api) (1) |

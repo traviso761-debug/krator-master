@@ -707,6 +707,231 @@
    "specular": 0.2,
    "mapOnly": true,
    "size": 256
+  },
+  "wax": {
+   "lib": "wax.candle",
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "tallow": {
+   "lib": "wax.tallow",
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.75
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "ropeTwist": {
+   "lib": "fibre.rope.twist",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "linen": {
+   "lib": "cloth.fabric045",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0.1,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "canvasB": {
+   "lib": "cloth.canvas.b",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.65
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "brick": {
+   "lib": "paving.red_brick",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "scaleB": {
+   "lib": "organic.scale.b",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "scaleOlive": {
+   "lib": "organic.scale.olive",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "scaleOliveB": {
+   "lib": "organic.scale.olive.b",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "featherB": {
+   "lib": "feather.plumage.b",
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "abalone": {
+   "lib": "shell.abalone",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.65
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "abaloneSoft": {
+   "lib": "shell.abalone.soft",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.65
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "nacreB": {
+   "lib": "shell.nacre.b",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.65
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "nacreC": {
+   "lib": "shell.nacre.c",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.65
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
+  },
+  "shell": {
+   "lib": "shell.conch",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.65
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true,
+   "size": 256
   }
  }
 }

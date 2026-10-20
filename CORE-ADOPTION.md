@@ -45,6 +45,14 @@ Legend: `[x]` taken, `[ ]` appropriate and missing, `n/a` not appropriate (reaso
 - [ ] core/simulation (P7)
 - [ ] getImageData in src (1 file): check
 
+### pinnacle-rock (added 2026-10-19 with its merge; P3 and the night done, the life to come)
+- [x] city (the town on core/city: steps 0-5 the page's, 6-12 the module's), terrain (KSTACKS, KCAVERN), walk, lod, water
+  (still water: paddies, spring, pond, the Deep Root's pool, the rain pools), atmos (core, presets, lights, export, waves,
+  sky light: the night's fires and lamps), biome (with the stage), clock, export (profile with atmos and water), materials,
+  minimap, edits, space, tags, rand; the whole viewer (`khost.FULL`)
+- n/a mask (no canvas placement), furnish (no furnished interiors yet), hamlet (a town of its own)
+- [ ] core/simulation, core/sched, core/charactermodels (P4, the life: "full sim to come later", owner 2026-10-19)
+
 ## Tier 2: partial
 
 ### ys
@@ -188,7 +196,7 @@ Legend: `[x]` taken, `[ ]` appropriate and missing, `n/a` not appropriate (reaso
 
 ## Not built yet (no `build.py`)
 
-almua, ardent, dilihan, drum, longsong, pinnacle-rock, shim, torus, zeydanin. Plans only: start each on the modules above.
+almua, ardent, dilihan, drum, longsong, shim, torus, zeydanin. Plans only: start each on the modules above.
 
 ## Caveats
 
@@ -213,6 +221,12 @@ against its `README.md`. "Water" here means `core/water` (the CDLOD mesh), not `
 
 ### sedesert (the reference: takes everything optional)
 - [x] terrain field + carve, water, atmos, export
+
+### necanyons (added 2026-10-19)
+- [x] water (the creek a flow, the rain pools still water), atmos (core, presets, export, waves, sky light), materials,
+  export (profile with atmos), stage, terrain (KSTACKS: the rock bodies), the whole viewer (`khost.FULL`), the night
+  (`89n-host-night.js`, on the host's hour; Pinnacle Rock reads it in place)
+- n/a terrain field (the ground is the floor plus KSTACKS bodies, one footprint function for height and mesh)
 
 ### geyser
 - [x] atmos, water, materials
@@ -282,4 +296,11 @@ against its `README.md`. "Water" here means `core/water` (the CDLOD mesh), not `
 - [ ] **core/materials library**: about half (crater-drylands, ebadlands, ehighlands, geyser, oidong, ringisles, shighlands, throne).
 - [ ] **`getImageData`** hits (triage placement vs texture painter; placement goes to `core/mask`): nhighlands 3, hyperjungle 2, nwlowlands 2, swlowlands 2, and 1 each in eastabyss, nwbay, oidong, rift, swbay.
 - [ ] **Math.sin hash** (move to `core/rand`): crater-drylands, ehighlands, throne.
-- [ ] **korona** has no `build.py` (built by stations, `biomes/korona/NOTES.md`): audit separately.
+- [x] **korona** (audited and brought up 2026-10-19; it has a `build.py`, run plain and `--station <name>` for six pages):
+  biome, space, tags, rand, clock, export, host, materials (its own pack and four kits' packs as sidecars), terrain
+  (`37-core-stacks.js`: the tepui and the stacks are KSTACKS records), **atmos** and **water** (taken in the audit:
+  `src/89w-host-water.js`, the stream a flow, every pool a still record, the export's two sections). Placement reads
+  fields and `core/rand` streams, never a canvas, no `Math.sin` hash, no own PRNG (`tools/check_port.py` passes). n/a:
+  terrain field (its ground is the KSTACKS family plus a floor function; one export per terrain family is ROADMAP 11
+  item 3), carve, walk (no interiors), minimap and the full host (a kit on `khost.SHELL` plus the polygon tool;
+  necanyons took `khost.FULL` the same day), city, furnish, simulation. Open on the core's side: a `hazard` tag key (`core/tags/PROPOSAL.md`).

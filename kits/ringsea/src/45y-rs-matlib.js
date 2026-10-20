@@ -6,4 +6,4 @@
 // keeps the feature count (16 strakes, 8 thatch courses, 8 hexes across). The painted grain and the per-vessel sails stay
 // procedural. ?mat=proc binds nothing: the look before the library. [web]: three.js materials.
 const RS_MATLIB_BOUND=KMAT.bindMat('ringsea',RSMAT,{alias:{woodI:'wood'},
- tile:{wood:1,woodI:1,cloth:1,thatch:1,tile:1,hex:1,chitin:1,ancient:1,bronze:1}});
+ tile:{wood:1,woodI:1,cloth:1,thatch:1,tile:1,hex:1,chitin:1,ancient:1,bronze:1,hullpaint:1}});

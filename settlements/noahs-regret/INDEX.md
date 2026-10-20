@@ -44,6 +44,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `58-nr-anc-office.js` | 4 |  |
 | `60-nr-anc-lab.js` | 9 |  |
 | `62-nr-pirates.js` | 7 |  |
+| `63-nr-trades.js` | 6 |  |
 | `64-nr-flora.js` | 2 |  |
 | `70-nr-interiors.js` | 37 **big** | the CABINS (63); the SHIP'S ROOMS (89); the DECK BUILDINGS (129); the PUBLIC ROOMS: placed piece by piece, in the  (149); the pass (309) |
 | `81-sky.js` | 10 |  |

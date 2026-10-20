@@ -82,3 +82,24 @@
       triangles of hull, 0.16 M of batched furniture, and up to ~1 M of instanced furniture near the camera. A GPU loads
       it in seconds. The furnishing pass is ~9 s under SwiftShader (~120 template rooms).
 - [ ] The page is about 6 MB, 3.5 MB of it the inlined texture pack (26 families at 512 px).
+
+## Voth census trades (2026-10-19)
+
+The table `NR_TRADES` (`src/63-nr-trades.js`) says which building carries each of the Voth city's 44 trades (`tools/trades_census.json`); `verify.py --assert` checks it (`voth-trades`). 11 carried, 5 partly, 9 gaps, 19 na of 44.
+
+Missing buildings (gaps) and partly carried trades:
+
+- [ ] bakers: a bakery: the galleys cook but no ovens are drawn
+- [ ] butchers: a butchery or smokehouse
+- [ ] brewers: a still or brewhouse: the grog is only served (the forward hall)
+- [ ] tanners: a tannery
+- [ ] teachers and scholars: a school or a reading room: the Reliquary (nr-anc-reliquary) is the pirates' headquarters, not a library
+- [ ] lighthouse keepers: a keeper's room at the harbour-mouth beacons (drawn in 40-nr-hull.js, unmanned)
+- [ ] fishers: a fishing dock and drying racks on the inner quay
+- [ ] granary keepers and millers: a granary or mill: the forward store holds loot, not grain
+- [ ] ferrymen: a ferry stage on the pirates' floats (nr-pirate-float is a boat landing only)
+- [ ] weavers and dyers: no dye works; the sail loft stands for the cloth trade
+- [ ] shipwrights and boatbuilders: a slipway or boat yard: the harbour has no ships and the carpenter's and cooper's shops only repair
+- [ ] town guard: a watch house: the brig is the only guard post
+- [ ] smiths and craftsmen: a forge: the engine room holds only a pirates' workshop
+- [ ] priests and undertakers: no burial ground or undertaker

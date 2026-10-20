@@ -65,8 +65,10 @@ function brrSign(G, k, a, y, c, s, col, paint) {
    over the face and down the pilasters to the ground; lamp niches either side of the door, braziers on the steps,
    offerings on the threshold. */
 function brrCavernDoor(F) {
-  const K = brrK(F), col = BRR.dressed, hw = 7.4, top = brrTop(K, 0.9), yd = 0.54, ow = 3.0, ys = yd + 3.5, Rb = 5.45;
-  brrPanel(K, -hw, hw, 0, top, 0.08);
+  const K = brrK(F), col = BRR.dressed, hw = 7.4, top = brrTop(K, 0.9), yd = 0.54, ow = 3.0, ys = yd + 3.5, Rb = 5.45, open = F.variant === 1;
+  /* v1: the door open (the passage behind it is the world's): the panel cut round the doorway, its arched head */
+  if (!open) brrPanel(K, -hw, hw, 0, top, 0.08);
+  else { brrPanel(K, -hw, -1.5, 0, top, 0.08); brrPanel(K, 1.5, hw, 0, top, 0.08); brrPanel(K, -1.5, 1.5, ys + 1.5, top, 0.08); brrArchHead(K, 0, 3.0, ys, 1.5, ys + 1.5, -K.e, 0.08, col); }
   brrRim(K, -hw, hw, 0, top, 0.9, 1.35, 'lrt');
   /* the steps */
   K.slab(-3.9, 3.9, 0, 0.18, -K.e, 2.65, shade(col, -0.14), BRR_STONE);
@@ -83,7 +85,7 @@ function brrCavernDoor(F) {
     }
   };
   arcSlices(2.9, Rb + 0.9, ys, -K.e, 0.22, shade(col, -0.24), 0.16);
-  const A = K.gn(0, 0.22), arc = function (r) { const P = []; for (let i = 0; i <= 48; i++) { const a = Math.PI * i / 48; P.push([Math.cos(a) * r, ys + Math.sin(a) * r, 0]); } P.unshift([-r, yd, 0]); P.push([r, yd, 0]); return P; };
+  const A = K.gn(0, 0.22), arc = function (r) { const P = []; for (let i = 0; i <= 48; i++) { const a = Math.PI * i / 48; P.push([Math.cos(a) * r, ys + Math.sin(a) * r, 0]); } P.unshift([r, yd, 0]); P.push([-r, yd, 0]); return P; };   /* the arc runs right to left: each leg down its own side (they crossed the doorway) */
   A.tube(arc(Rb + 0.97), 0.075, BRM.red, BRR_STONE, { seg: 6 });
   A.tube(arc(Rb + 1.1), 0.04, BRM.gilt, BRR_STONE, { seg: 6 });
   for (const m of [-1, 1]) K.slab(m > 0 ? 2.9 : -(Rb + 0.9), m > 0 ? Rb + 0.9 : -2.9, yd, ys - yd, -K.e, 0.22, shade(col, -0.24), BRR_STONE);
@@ -95,10 +97,10 @@ function brrCavernDoor(F) {
     if (k === 0) for (const m of [-1, 1]) K.slab(m > 0 ? o[0] - 0.04 : -o[0], m > 0 ? o[0] : -o[0] + 0.04, yd, ys - yd, -K.e, o[2] + 0.02, BRM.gilt, BRR_STONE);
   });
   /* the passage: dark, the hall's glow far in, the leaves folded back against the inmost order */
-  K.slab(-1.5, 1.5, yd, ys - yd + 1.5, -K.e, 0.1, BRR.void, BRR_STONE);
-  const Gd = K.g(0);
-  Gd.box(0, yd + 0.6, 0.11, 1.2, 1.9, 0.01, 0, BRR_GLOW.dim, 'glow');
-  Gd.ell(0, yd + 2.55, 0.115, 0.6, 0.55, 0.01, 0, BRR_GLOW.dim, 'glow');
+  if (!open) { K.slab(-1.5, 1.5, yd, ys - yd + 1.5, -K.e, 0.1, BRR.void, BRR_STONE);
+    const Gd = K.g(0);
+    Gd.box(0, yd + 0.6, 0.11, 1.2, 1.9, 0.01, 0, BRR_GLOW.dim, 'glow');
+    Gd.ell(0, yd + 2.55, 0.115, 0.6, 0.55, 0.01, 0, BRR_GLOW.dim, 'glow'); }
   for (const m of [-1, 1]) {
     const L = K.g(m * 1.38, m * 1.25);
     L.box(0, yd, 0.5, 0.1, 3.3, 1.0, 0, shade(BRM.timber[2], -0.2), BRM_TIMBER);
@@ -141,7 +143,8 @@ function brrCavernDoor(F) {
 ASSET({
   key: 'br_bldg_rock_cavern_door', name: "The Deep Root cavern's carved door", culture: 'beast-rider',
   family: 'religious', types: ['religious'], districts: ['ridertown'], wealth: [0.5, 1],
-  w: 16.9, d: 3.2, h: 14.8, variants: 1,
+  w: 16.9, d: 3.2, h: 14.8, variants: 2, variantNames: ['the door shown dark (a facade on a wall)', 'the door open (a passage cut behind it: Pinnacle Rock\'s Deep Root)'],
+  variantDims: [{ w: 16.9, d: 3.2, h: 14.8 }, { w: 16.9, d: 3.2, h: 14.8 }],
   build: function (F) { brrCavernDoor(F); }
 });
 

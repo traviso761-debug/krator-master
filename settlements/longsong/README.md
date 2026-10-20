@@ -6,6 +6,9 @@ archival and containment house, built **in situ** on the scale model's land, on 
 every room and outbuilding before the interiors, and the exterior's revision toward the chapterhouses; `PLAN.md` is how the
 build reads it (the site, the decisions of 2026-10-19, the order of work); `KNOWN_ISSUES.md` is what is open.
 
+Published as its own artifact (2026-10-20), linked from every part of the Krator Worlds gallery:
+https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY (`gallery/README.md`, "Longsong: its own artifact", says how to update it).
+
 ```
 python3 build.py                                   # dist/longsong.html (+ its three texture sidecars: the library pack splits at its size cap)
 python3 verify.py dist/longsong.html --assert [--views "Longsong from across the stream (north),The Procrastinator"] [--out shots]

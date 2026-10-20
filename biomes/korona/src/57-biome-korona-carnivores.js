@@ -49,27 +49,36 @@ function maneater(x,y,z,lv,st,id){const H=rr(2.1,3.2),R=H*.42,a=rr(0,TAU),lean=r
  st.tris+=BIO.lathe('pitcher',outer,lv===2?16:10,2,1.4,(rg,ang)=>rg.r*(1+.05*Math.sin(ang*6+rg.yy*2)),(rg,ang)=>.8+.2*smooth(0,.4,rg.yy/H));
  const inner=prof.filter(([u])=>u>=.28).reverse().map(([u,k])=>ring(u,k,.9,thr));
  st.tris+=BIO.lathe('throat',inner,lv===2?14:8,1,1,(rg,ang)=>rg.r,(rg,ang)=>.55+.45*smooth(0,1,rg.yy/H));
- // the hood: a dome leaning back from the mouth's far side (open)
- const hood=[];for(let k=0;k<=4;k++){const t=k/4,back=R*(.4+.9*t),up=R*(.25+.95*t)*.8;hood.push({x:x+cx-Math.cos(a)*back,y:y+H+up,z:z+cz-Math.sin(a)*back,yy:H+up,r:R*1.08*Math.sqrt(Math.max(0,1-t*t))+.02,col:skin});}
- st.tris+=BIO.lathe('pitcher',hood,lv===2?12:8,2,1.4,(rg,ang)=>rg.r,null);
+ // THE LID (KNOWN_ISSUES, closed 2026-10-19: the lid now moves): an instanced card hinged on the back of the rim, on the
+ // trap cycle (50: 'hood', the hinge hook): up at `op` while the trap waits, dropped flat over the mouth when it shuts
+ const op=rr(.8,1.1),RL=R*1.12,hx=x+cx-Math.cos(a)*R*1.04,hz=z+cz-Math.sin(a)*R*1.04;
+ BIO.put('hood',[hx,y+H+.03,hz],qEuler(0,Math.PI/2-a,0),[RL*2,1,RL*2],KORONA.LIB.pitcher?C(0xe8e4d8):skin,{aTrap:[KTRAPS.phase(id),-1,op,0]});
  // the fluid in the throat (a dark disc half way down): the plant's own instance, inside its registered volume
  BIO.put('mouth',[x+cx*.5,y+H*.5,z+cz*.5],null,[R*1.7,1,R*1.7],C(0x1a2210));
  if(lv===2){const la=a+rr(1.2,2.4),d=R*1.15;lure(x+Math.cos(la)*d,BIO.terrainH(x+Math.cos(la)*d,z+Math.sin(la)*d),z+Math.sin(la)*d,rr(1.6,H+.4),st);}
  st.maneater++;return {R,H};}
 // THE COIL TENDRIL: a spiral lying on the floor, lifting at its end; a tube in the banded skin
-function tendril(x,y,z,lv,st,id){const n=lv===2?26:14,turns=rr(1.3,2),r0=rr(2,3.2),dir=rng()<.5?1:-1,a0=rr(0,TAU),pts=[];
- for(let i=0;i<=n;i++){const t=i/n,ang=a0+dir*t*TAU*turns,rho=r0*(1-.65*t),px=x+Math.cos(ang)*rho,pz=z+Math.sin(ang)*rho;
+function tendril(x,y,z,lv,st,id){const n=lv===2?26:14,turns=rr(1.3,2),r0=rr(2,3.2),dir=rng()<.5?1:-1,a0=rr(0,TAU),pts=[],T0=.76;
+ for(let i=0;i<=n;i++){const t=i/n*T0,ang=a0+dir*t*TAU*turns,rho=r0*(1-.65*t),px=x+Math.cos(ang)*rho,pz=z+Math.sin(ang)*rho;
   pts.push({x:px,y:BIO.terrainH(px,pz)+.14+2.4*t*t*t,z:pz,r:.24-.13*t});}
  st.tris+=BIO.tube('tendril',pts,col('tendril',PAL.tendril,1),{seg:lv===2?8:5,cap:true});
+ /* THE TIP (KNOWN_ISSUES, closed 2026-10-19: the tendril now lifts its end): the coil's last quarter is an instanced rod on
+    the trap cycle (50: 'tendriltip', the whip hook), lying on along the coil while the trap waits, standing up when it shuts */
+ const e=pts[n],pv=pts[n-1],L=clamp(r0*(1-.65*T0)*TAU*turns*(1-T0)*.5,1.1,2);
+ BIO.put('tendriltip',[e.x,e.y-.04,e.z],qEuler(0,Math.atan2(e.x-pv.x,e.z-pv.z),0),[.22,L,.22],KORONA.LIB.tendril?C(0xe8e4d8):col('tendril',PAL.tendril,1),{aTrap:[KTRAPS.phase(id),1,rr(1.1,1.35),0]});   /* an instanced rod takes its colour straight (the bucket lifts the tube's; FULL is for cards: a skin's pack tint is a number) */
  BIO.put('mouth',[x,y+.02,z],qEuler(0,rr(0,TAU),0),[.6,1,.6],C(0x1a2a12));st.tendril++;return r0;}
 // THE PUNJI PIT: a lid of dead leaves flush with the floor with the spikes just through it; a third stand open, the lid
 // thrown back, the mouth black, the spikes round its rim (the owner, 2026-10-19: a pitcher that lives under the ground)
 function punji(x,y,z,lv,st,id){const r=rr(.5,.85),open=KTRAPS.phase(id+'/o')<.35,bone=bright(pick([0xd8d0b8,0xc8c0a8,0xe0d8c0]),1),n=lv===2?ri(7,12):5;
+ /* the lid lifted to 1.8x (the owner, 2026-10-19: the pits read too dark; the litter card is dark and lies in the peat's shade) */
+ const lidCol=()=>col('lid',[0x6a5a38,0x7a6a48,0x5e4e30],1).multiplyScalar(1.8);
  const spike=(px,pz,py,h,tilt,ta)=>BIO.put('spike',[px,py+h*.5,pz],qEuler(tilt*Math.cos(ta),0,tilt*Math.sin(ta)),[.022,h,.022],bone);
- if(!open){BIO.put('lid',[x,y+.05,z],qEuler(0,rr(0,TAU),0),[r*2.1,1,r*2.1],col('lid',[0x3a3020,0x4a3a28,0x2e261a],1));
+ if(!open){BIO.put('lid',[x,y+.05,z],qEuler(0,rr(0,TAU),0),[r*2.1,1,r*2.1],lidCol());
   for(let k=0;k<n;k++){const a=rr(0,TAU),d=r*.75*Math.sqrt(rng()),h=rr(.22,.45);spike(x+Math.cos(a)*d,z+Math.sin(a)*d,y,h,rr(.05,.3),a+Math.PI);}}
  else{BIO.put('mouth',[x,y+.03,z],qEuler(0,rr(0,TAU),0),[r*1.9,1,r*1.9],C(0x07100a));const la=rr(0,TAU);
-  BIO.put('lid',[x+Math.cos(la)*r*1.05,y+r*.55,z+Math.sin(la)*r*1.05],qEuler(-1.15,-la+Math.PI/2,0),[r*2,1,r*2],col('lid',[0x3a3020,0x4a3a28],1));
+  /* the lid thrown back: lying on the ground beyond the rim, its near edge up on the rim (the owner, 2026-10-19: it floated) */
+  const lx=x+Math.cos(la)*r*1.9,lz=z+Math.sin(la)*r*1.9,ly=Math.max(BIO.terrainH(lx,lz),y-.1)+.09;
+  BIO.put('lid',[lx,ly,lz],qEuler(-.12,-la+Math.PI/2,0),[r*2,1,r*2],lidCol());
   for(let k=0;k<n;k++){const a=rr(0,TAU),h=rr(.3,.55);spike(x+Math.cos(a)*r*.92,z+Math.sin(a)*r*.92,y-.05,h,rr(.35,.6),a+Math.PI);}}
  st.punji++;return r;}
 // THE BEAR TRAP: two toothed jaws hinged on the ground, open nearly flat (aTrap: phase, side, open angle), a stub between

@@ -6,7 +6,7 @@ Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet an
 
 Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `API.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus.html`
+Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus-plants.html`, `locus.html`
 
 Build: `cd settlements/locus && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -74,6 +74,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `65-abyss-80-military.js` | 13 | 16X-M. ABYSS — military: the wall system, the fo (1) |
 | `65-abyss-90-farm.js` | 13 | 16X-G. ABYSS — farming and storage (1) |
 | `66-locus-furnish.js` | 11 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
+| `67-lo-trades.js` | 5 | LO_TRADES: the Voth census table (1) |
 | `68-place.js` | 17 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `68c-locus-crossings.js` | 10 | 18c. POOL CROSSINGS — LOCUS (2026-10-01) (1) |
 | `69b-locus-biohost.js` | 4 | 19H. LOCUS — the biome host binding (1) |

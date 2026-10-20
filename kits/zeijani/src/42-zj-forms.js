@@ -43,7 +43,7 @@ function zfColumn(mk,x,y,z,r,h,col,o){o=o||{};box(mk,x,y,z,r*2.6,.25,r*2.6,col);
 /* steps up to a door: n steps of rise and tread, width w, the top one at y, rising toward -z from z (+z the street) */
 function zfSteps(mk,x,y,z,w,n,col,rise,tread){rise=rise||.17;tread=tread||.32;for(let i=0;i<n;i++)box(mk,x,y-rise*(i+1),z+tread*i,w+.1*i,rise,tread,col);}
 /* a timber door leaf (closed) in a doorway of width w, height h, its face at z, slightly open by `open` radians toward -z */
-function zfLeaf(x,y,z,w,h,col,open){const m=TF(x-w/2,y,z,open||0);W(x-w/2,y,z,open||0,()=>{box('plank',w/2,0,-.03,w,h,.06,col);for(const yy of [h*.2,h*.75])box('wood',w/2,yy,-.07,w*.92,.1,.04,P('woodD'));});}
+function zfLeaf(x,y,z,w,h,col,open){const m=TF(x-w/2,y,z,open||0);W(x-w/2,y,z,open||0,()=>{box('gate',w/2,0,-.03,w,h,.06,col);for(const yy of [h*.2,h*.75])box('wood',w/2,yy,-.07,w*.92,.1,.04,P('woodD'));});}
 /* a lamp niche (a dark recess) on a face at z: w by h at height y */
 function zfNiche(x,y,z,w,h){box('basaltPol',x,y,z-.02,w,h,.04,P('soot'));box('tuffPol',x,y-.06,z+.03,w+.16,.06,.1,P('white'));}
 /* a carved block of host rock for a carved def on the sheet (cvMass): its plan [x0,x1] x [z0,z1] with the front at z1 */

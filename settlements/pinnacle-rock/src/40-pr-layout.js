@@ -18,8 +18,10 @@
 //   PR.FAIR, PR.ROAD, PR.GATE    the fair ground below the Stair, the forest road and its gate
 //   PR.POND, PR.SPRING, PR.GORGE the seep pond (west foot), the spring below the Stair, the dry gorge under the north rim
 //   PR.zoneAt(x, z)              the floor's zone at a point: farms, pasture, camp, fair, road, cleared, forest
-//   PR.forest(x, z)              0..1: how much forest the ground keeps there (0 in the farms, the grounds and the road;
-//                                remnant trees on the cleared ground; 1 in the forest)
+//   PR.forest(x, z)              0..1: how much forest the ground keeps there (0 in the farms, the grounds, the road and the
+//                                ways; remnant trees on the cleared ground; 1 in the forest)
+//   PR.LIFT_ROAD                 the lift road's waypoints over the floor (the slope's part is the roost plan's, 43)
+//   PR.addWay(W), PR.wayAt(x, z) the cleared ways the host adds from the roost plan (the Stair's path, the lift road)
 const PR = (function () {
   'use strict';
   const TAU = Math.PI * 2;
@@ -80,14 +82,21 @@ const PR = (function () {
     trade: E(185, 110, 90, 125, 'the east trades quarter'),
     south: E(0, 330, 140, 80, 'the south quarter (inns, the caravan market)'),
     precinct: E(-215, -205, 82, 66, 'the Deep Root precinct (the cavern; nothing built inside the stones)'),
-    camps: [['wingclaw', 165, -470, 62, 44], ['quetzal', 285, -255, 52, 58], ['nightwing', -300, 235, 50, 62],
-      ['threehorn', -165, -462, 44, 36], ['hardshell', 300, 270, 42, 40], ['staghorn', -200, 400, 42, 36],
-      ['longcrawler', -95, 495, 40, 34], ['raptor', 95, 495, 40, 34], ['tiger', 195, 400, 42, 36]]
+    // moved in from the diagram's places onto the usable cap (P3c, 2026-10-19: each ground 90% or more on the cap 12 m in
+    // from the rim and 6 m off the rock standing on it; the Hardshell's had stood over the rim)
+    camps: [['wingclaw', 145, -415, 62, 44], ['quetzal', 250, -225, 52, 58], ['nightwing', -300, 235, 50, 62],
+      ['threehorn', -153, -430, 44, 36], ['hardshell', 244, 220, 42, 40], ['staghorn', -190, 382, 42, 36],
+      ['longcrawler', -92, 480, 40, 34], ['raptor', 95, 495, 40, 34], ['tiger', 180, 370, 42, 36]]
       .map(c => Object.assign(E(c[1], c[2], c[3], c[4], 'the ' + c[0] + ' band\'s ground (the top)'), { tribe: c[0] })),
     barracks: [{ wing: 'wingclaw', x: 0, z: -476, w: 70, d: 22, ry: 0 }, { wing: 'quetzal', x: 301, z: -50, w: 70, d: 22, ry: Math.PI / 2 },
       { wing: 'nightwing', x: -301, z: 20, w: 70, d: 22, ry: Math.PI / 2 }],
     well: { x: -238, z: -190 }, court: { x: -189, z: -224 },   // the Deep Root cavern's light well (the stack fig) and its sunken court
     stairHead: { x: 0, z: 560 }, liftTop: { x: 0, z: -596 }, capstan: { x: 41, z: 582 } };
+  // THE DEEP ROOT'S DOOR (owner, 2026-10-19: the cavern opens from the Garden's mesa's wall): the bearing from the Garden's
+  // mesa's middle to the hall's door end (33.4 m from the court's old place toward the light well), where the door is cut
+  // (57-pr-cavern.js) and the ground before it kept clear (the town, the Garden's storerooms)
+  { const ux = TOP.well.x - TOP.court.x, uz = TOP.well.z - TOP.court.z, l = Math.hypot(ux, uz), ex = TOP.court.x + ux / l * 33.4, ez = TOP.court.z + uz / l * 33.4;
+    TOP.deepRoot = { hallAt: 33.4, a: Math.atan2(ez - GARDEN_MESA.z, ex - GARDEN_MESA.x) }; }
 
   // ---------------------------------------------------------------- the floor (the lower plan)
   // the palisade: the diagram's four cubic curves, sampled
@@ -117,8 +126,23 @@ const PR = (function () {
   const POND = E(-560, -90, 70, 45, 'the seep pond (the mesa\'s seep lines)');
   const SPRING = E(-180, 720, 40, 26, 'the spring below the Stair (the paddies\' water)');
   const GORGE = { z: x => -730 + 25 * Math.sin(x * .004), w: 55, depth: 60, x0: -1100, x1: 1150, name: 'the dry gorge (under the north rim)' };
+  // the lift road's way over the floor (owner, 2026-10-19: the beast lift wants a cleared road): from the debris slope's toe
+  // at the mesa's north-west, west of the seep pond, south to the palisade (the north-west gate). The slope's part is the
+  // roost plan's (43: it follows the rock)
+  const LIFT_ROAD = [[-705, -170], [-705, 10]];
   const CLEARED = E(-90, 260, 1460, 1360, 'cleared ground');
 
+  // the WAYS: cleared ground the host adds once the rock is planned (PRR, 43: the Stair's path down the debris slope, the
+  // lift road), each {id, name, pts:[[x,z]], w}, kept in chunks of 16 segments with their boxes; wayAt(x, z) -> {d (the
+  // distance past the way's edge, negative on it), W} for the nearest, or null
+  const WAYS = [];
+  function addWay(W) { const C = []; for (let i = 0; i + 1 < W.pts.length; i += 16) { const seg = W.pts.slice(i, Math.min(W.pts.length, i + 17)); let x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9;
+      seg.forEach(p => { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); z0 = Math.min(z0, p[1]); z1 = Math.max(z1, p[1]); }); C.push({ seg, x0, x1, z0, z1 }); }
+    WAYS.push(Object.assign({}, W, { chunks: C })); }
+  function wayAt(x, z, pad) { let best = null; const m = pad == null ? 30 : pad;
+    for (const W of WAYS) for (const C of W.chunks) { if (x < C.x0 - m || x > C.x1 + m || z < C.z0 - m || z > C.z1 + m) continue;
+      for (let k = 1; k < C.seg.length; k++) { const d = segD(x, z, C.seg[k - 1], C.seg[k]) - W.w / 2; if (!best || d < best.d) best = { d, W }; } }
+    return best; }
   // ---------------------------------------------------------------- queries
   function inPoly(x, z, P) { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) {
     const a = P[i], b = P[j]; if ((a[1] > z) !== (b[1] > z) && x < (b[0] - a[0]) * (z - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; }
@@ -134,6 +158,7 @@ const PR = (function () {
       : inEll(x, z, CAMPS[i]) ? { zone: 'camp', tribe: CAMPS[i].tribe, name: CAMPS[i].name } : { zone: 'hedged', tribe: PASTURES[i].tribe, name: 'inside the ' + PASTURES[i].tribe + ' band\'s hedge' };
     if (inEll(x, z, FAIR)) return { zone: 'fair', name: FAIR.name };
     if (roadD(x, z) < ROAD.w) return { zone: 'road', name: ROAD.name };
+    { const wa = wayAt(x, z, 2); if (wa && wa.d < 0) return { zone: 'road', name: wa.W.name }; }
     if (inEll(x, z, POND)) return { zone: 'pond', name: POND.name };
     if (inFarms(x, z)) return { zone: 'farms', name: 'the farms (inside the palisade)' };
     if (gorgeD(x, z) < GORGE.w && x > GORGE.x0 && x < GORGE.x1) return { zone: 'gorge', name: GORGE.name };
@@ -147,12 +172,13 @@ const PR = (function () {
     if (inFarms(x, z)) return 0;
     { let d = 1e9; for (let k = 1; k < PALISADE.length; k++) d = Math.min(d, segD(x, z, PALISADE[k - 1], PALISADE[k])); if (d < 25) return 0; }
     if (inEll(x, z, FAIR, 20) || roadD(x, z) < ROAD.w + 6) return 0;
+    { const wa = wayAt(x, z, 12); if (wa && wa.d < 9) return 0; }   // a fern's reach either side
     const e = ellD(x, z, CLEARED); return e < 1 ? .1 + .9 * sm(.9, 1, e) : 1; }
   function topZoneAt(x, z) {
     for (const k of ['precinct', 'crown', 'garden', 'house', 'trade', 'south']) if (inEll(x, z, TOP[k])) return { zone: k, name: TOP[k].name };
     for (const c of TOP.camps) if (inEll(x, z, c)) return { zone: 'camp', tribe: c.tribe, name: c.name };
     return { zone: 'margin', name: 'the top\'s open margin' }; }
   return { MESA, FINS, GARDEN_MESA, HEART_MESA, GARDEN, SHRINE_ROCK, SPURS, TOP, PALISADE, PASTURES, CAMPS, HEDGES, FAIR, ROAD, GATE, POND, SPRING, GORGE, CLEARED,
-    zoneAt, topZoneAt, forest, inFarms, inPoly, inEll, roadD, gorgeD };
+    LIFT_ROAD, WAYS, addWay, wayAt, zoneAt, topZoneAt, forest, inFarms, inPoly, inEll, roadD, gorgeD };
 })();
 if (typeof module !== 'undefined') module.exports = PR;

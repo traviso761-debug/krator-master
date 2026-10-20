@@ -227,7 +227,8 @@ function buildHlRepTownHall(G,o){reseed(20711+(o.v|0));const HX=-4,W=22,D=13,S=.
  hnStoneChimney(HX-8,y3+3,-2.5,5.8,.8);hnStoneChimney(HX+3,y3+3,-2.5,5.8,.8);
  hnRBClockTower(TX,TZ,{B,TH,roof,oak,tar,rub,ash});
  // the square: paving, a fountain, flags of the Republic, lamps
- vnPaving(HX+2,0,14,20,6,0,ash,14);
+ /* the square is cobbled (library rock_wall_12): loose slabs of the world-UV cobble field, as vnPaving lays flags */
+ for(let i=0;i<14;i++){const p=loc(HX+2,14,rr(-10,10),rr(-3,3),0);vB('hCobble',p[0],-.06,p[1],rr(1.1,2.2),.1,rr(.9,1.8),rr(-.1,.1),ash);}
  FURNISH('hl_rep_fountain',HX+2,0,14.2,0);
  for(const s of[-1,1])hnRBFlag(HX+s*5.2,0,11.2,0,8,hC(vPick([HPAL.red,HPAL.teal])));
  hnRBLamps([[HX-3.4,11],[HX+3.4,11],[TX,TZ+5.2]],3.4);

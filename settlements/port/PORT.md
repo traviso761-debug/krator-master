@@ -57,6 +57,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89a-ch-stack.js` | 32.0 | [draw] | 47 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89b-ch-court.js` | 12.9 | [draw] | 17 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89c-ch-tank.js` | 15.7 | [draw] | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89x-port-trades.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89y-sp-1-yard.js` | 33.7 | [draw] | 30 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-scene.js` | 7.5 | [web] | 15 | 1 | 1 | 0 | 0 | 5 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 5.9 | [web] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |

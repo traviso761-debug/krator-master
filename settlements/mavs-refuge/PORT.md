@@ -30,6 +30,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/60-trees.js` | 40.4 | [web] | 35 | 2 | 0 | 0 | 2 | 8 | 8 | 5 | 0 | 0 | 0 |  |
 | `src/62-jungle.js` | 45.3 | [draw] | 15 | 4 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/63-trails.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/65-mr-trades.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table MR_TRADES (2026-10-19): plain data, a row per census trade; checked by tools/check_trades.py |
 | `src/72-lights.js` | 3.0 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-terrain.js` | 6.1 | [draw] | 16 | 0 | 0 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/78-life.js` | 50.8 | [web] | 21 | 0 | 0 | 0 | 7 | 42 | 4 | 5 | 0 | 0 | 0 | split: data inside host code |

@@ -5,7 +5,7 @@
  ],
  "01-reedkit.html": [
   "virtual",
-  "de966d06a105"
+  "ff6654f5c49d"
  ],
  "01b-build-open.html": [
   "mungo",
@@ -13,7 +13,7 @@
  ],
  "05-palette.js": [
   "locus",
-  "d8eb42e7be31"
+  "b8da4cef18ae"
  ],
  "05b-mungo-palette.js": [
   "mungo",
@@ -145,7 +145,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
-  "95a602022661"
+  "2e547b68dbf1"
  ],
  "53-assets.js": [
   "locus",
@@ -233,7 +233,7 @@
  ],
  "64-locus-power.js": [
   "locus",
-  "9b3638af3b70"
+  "594b17f6fb38"
  ],
  "65-abyss-00-core.js": [
   "locus",
@@ -281,11 +281,11 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "a16bdb684f9f"
+  "e6b7831dc552"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "04e8d475cd4b"
+  "6277da977266"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -474,6 +474,10 @@
  "88c-mungo-minimap.js": [
   "mungo",
   "c6eafeffa678"
+ ],
+ "88d-mungo-trades.js": [
+  "mungo",
+  "deab75868f13"
  ],
  "89-atmos-0-core.js": [
   "core/atmos",
