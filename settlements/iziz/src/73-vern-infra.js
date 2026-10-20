@@ -12,7 +12,7 @@ function buildVernSilos(G,o){reseed(7601+(o.v|0));const wood=vC(vPick(VPAL.woodM
   vB('vWood',x,FL-.2,z,r*2.3,.2,r*2.3,0,wood);
   vPst('vStave',x,FL,z,r,H,stv.clone().multiplyScalar(rr(.9,1.08)));for(const yy of[.6,H*.45,H-.5])vBq('vHoop',x,FL+yy,z,r*1.02,r*1.02,1,qEuler(Math.PI/2,0,0),vC(0x2e2a26));
   vnThatchCone(x,FL+H,z,r,r*1.3,th);vB('vWood',x,FL+H+r*1.3-.3,z,.16,.9,.16,0,wood);
-  vB('vDarkB',x,FL+.6,z+r-.05,.8,.9,.2,0);vB('vWood',x,FL+.6,z+r+.05,.75,.85,.06,0,wood);      // hatch and its board
+  vB('vWood',x,FL+.6,z+r+.05,.75,.85,.06,0,wood);      // hatch and its board
   vnLadder(x+r*.55,0,z+r+.5,0,FL+.4,wood);});
  // covered loading deck in front of the row: a long thatch shed on posts, sacks and a cart-less pile
  vB('vWood',0,.9-.2,3.2,15,.2,3.2,0,wood);for(let i=0;i<=6;i++)vPst('vPostB',-7.5+15*i/6,-.1,4.7,.13,.9,wood);

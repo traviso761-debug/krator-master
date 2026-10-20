@@ -64,9 +64,9 @@ function buildAltFlat(scene,gx,gz,d){reseed(9830+d);KOFF=[gx,0,gz];
    const w=wall(u,yy)+.2,n=[p.nx,0,p.nz],q=qFacing(n),pp=[p.x+p.nx*w,yy,p.z+p.nz*w],ww=rr(1.8,2.6);
    kput('darkPane',pp,q,[ww,2.3,1],null);
    if(d===0){if(rng()<.3)kput('cell',[pp[0]+n[0]*.12,yy-.5,pp[2]+n[2]*.12],q,[ww*.8,1.1,1],CYAN.clone().multiplyScalar(.8));}
-   else altWin([pp[0]+n[0]*.12,yy,pp[2]+n[2]*.12],n,ww*.85,2.3,d);
+   else altWin([pp[0]+n[0]*.12,yy,pp[2]+n[2]*.12],n,ww*.85,2.16,d);   /* a little shorter than the pane: their tops and feet were one plane (z-fighting, 2026-10-19) */
    const e=edge(u,f);
-   if(e>2.4&&!(brk&&rng()<.45)){const E=[p.x+p.nx*(e-.15),y+.4,p.z+p.nz*(e-.15)],T=[p.tx*1.7,0,p.tz*1.7],iron=dd?'mullR':'boxD';
+   if(e>2.4&&!(brk&&rng()<.45)&&!(brk&&gone(u))){   /* none where the floor's edge has fallen: they hung in the air */const E=[p.x+p.nx*(e-.15),y+.4,p.z+p.nz*(e-.15)],T=[p.tx*1.7,0,p.tz*1.7],iron=dd?'mullR':'boxD';
     for(const h of[.35,.95])for(let k=-1;k<1;k++){const a=[E[0]+T[0]*k,E[1]+h+.25*Math.sin(k*2.4+f),E[2]+T[2]*k],b=[E[0]+T[0]*(k+1),E[1]+h-.25*Math.sin(k*2.4+f),E[2]+T[2]*(k+1)];
      beam(iron,a,b,.12,.12);}
     for(let k=-2;k<=2;k++)beam(iron,[E[0]+T[0]*k*.5,E[1],E[2]+T[2]*k*.5],[E[0]+T[0]*(k*.5+.15*Math.sin(k+f)),E[1]+1.15,E[2]+T[2]*(k*.5+.15*Math.sin(k+f))],.09,.09);}}}
@@ -75,7 +75,7 @@ function buildAltFlat(scene,gx,gz,d){reseed(9830+d);KOFF=[gx,0,gz];
   {uS:LP/8,vS:6,hole:brk?(u,v)=>topY(u)<HT+1&&v>.2+.5*fbm(u*20,3,9834,2):null});
  SK.push(roof);
  const roofPts=[];for(let i=0;i<16;i++){const u=(i+.5)/16;if(brk&&pdist(u)<60)continue;const p=P(u),t=rr(.45,.8);roofPts.push([lerp(CX,p.x,t),lerp(0,p.z,t)]);}
- roofPts.forEach((R,i)=>{if(brk&&rng()<.6){if(rng()<.5)kput(dd?'plateR':'plateW',[R[0]+rr(-2,2),HT+1.2,R[1]+rr(-2,2)],qEuler(rr(-1,1),rng()*3,1.4),[1.6,4,1.4],null);return;}
+ roofPts.forEach((R,i)=>{if(brk&&rng()<.6){if(rng()<.5&&!(brk&&pdist(Math.atan2(R[1],R[0]-CX)/TAU)<70))kput(dd?'plateR':'plateW',[R[0]+rr(-2,2),HT+1.2,R[1]+rr(-2,2)],qEuler(rr(-1,1),rng()*3,1.4),[1.6,4,1.4],null);return;}
   WH.push(lathe({rFn:y=>1.5+.5*Math.sin(y*.5),H:7,flutes:4,amp:.25,sharp:2,twist:.7,nu:16,nv:7}).translate(R[0],HT+.6,R[1]));
   kput('finial',[R[0],HT+8.4,R[1]],qEuler(0,i,0),[2.1,1.7,2.1],null);
   kput(dd?'boxR':'boxD',[R[0],HT+7.8,R[1]],qEuler(0,i*1.3,0),[3.4,.5,.6],null);});
@@ -83,13 +83,13 @@ function buildAltFlat(scene,gx,gz,d){reseed(9830+d);KOFF=[gx,0,gz];
   WH.push(lathe({rFn:y=>5.4*Math.pow(clamp(1-y/10,0,1),.55),H:10,flutes:10,amp:.05,nu:30,nv:8}).translate(x,HT+.6,z));
   kput(dd?'postR':'postW',[x,HT+12,z],null,[.3,4,.3],null);}
  if(!brk)for(let i=0;i<30;i++){const t=rng(),p=P(t),k=rr(.3,.85);kput('hedge',[lerp(CX,p.x,k),HT+1.1,lerp(0,p.z,k)],qEuler(0,rng()*3,0),[rr(1.5,3),1,1],null);}
- apron(G,CX,0,80,104,dd,.6);
+ apron(G,CX,0,58,66,dd,.6);   /* was 80-104: the plinth ran 40 m past the arcade (quality pass, 2026-10-19) */
  meshMerged(SK,stone,G);meshMerged(LIP,SHELL(d),G);meshMerged(WH,dd?MAT.whiteWorn||MAT.rust:MAT.white,G);meshMerged(DGL,MAT.darkGlass,G);
  if(FL.length)meshMerged(FL,MAT.concreteR,G);
  if(brk){// the prow heap, spilled out over the street
-  for(let i=0;i<60;i++){const a=rr(-.8,.8),r=rr(64,110);kput(i%3?'rubble':'boxCR',[r*Math.cos(a),rr(.5,4),r*Math.sin(a)],qEuler(rng()*3,rng()*3,rng()*3),[rr(1.5,5),rr(1,3),rr(1.5,5)],
+  for(let i=0;i<60;i++){const a=rr(-.8,.8),r=rr(58,80);kput(i%3?'rubble':'boxCR',[r*Math.cos(a),rr(.5,4),r*Math.sin(a)],qEuler(rng()*3,rng()*3,rng()*3),[rr(1.5,5),rr(1,3),rr(1.5,5)],
    i%3?new THREE.Color().setHSL(.07,.15,rr(.35,.5)):null);}
-  rubbleRing(CX,0,0,60,110,150,3.5);vinesFromLedge(LIP,0,0,0,160,18,CX,0);mossOnSurface([roof],0,0,0,80,2.5);
+  rubbleRing(CX,0,0,56,72,150,3.5);vinesFromLedge(LIP,0,0,0,160,18,CX,0);mossOnSurface([roof],0,0,0,80,2.5);
   trees(CX,0,85,170,30);}
  else{trees(CX,0,92,150,12);figures(CX,74,14,20);}
  if(rec){

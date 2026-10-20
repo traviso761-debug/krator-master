@@ -22,7 +22,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 8 | surfaces (1) |
-| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
+| `34-kitdefs.js` | 10 | kit definitions (shared geometry) (1); THE LEAF CARD (54) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `40-factory-extras.js` | 4 |  |
@@ -71,7 +71,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-70-biome-hyperjungle.js` | <1 |  |
 | `76-campus.js` | 11 |  |
 | `77-dam.js` | 13 |  |
-| `77z-iziz-style.js` | 53 **big** | ANCIENT IZIZ STYLE (1) |
+| `77z-iziz-style.js` | 54 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 8 |  |
 | `80-aa-battery.js` | 1 |  |

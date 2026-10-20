@@ -9,7 +9,10 @@ const VTAG_SF={type:['single-family dwelling']},VTAG_MF={type:['multi-family dwe
 // an opening on a hollow face that the builder draws as a dark plate (a shop front, a gable door): true when cut, so the
 // builder skips its plate; false = no hollow face here, draw the plate as before
 function vnHole(x,y,z,ry,w,h,door){const C=VERN.cur;if(!C||!C.hollow)return false;const F=vnFaceOf(x,y,z,ry);if(!F)return false;
- F.B.ops.push({face:F.face,u:F.u,w,y0:y-F.B.y,y1:y-F.B.y+h,door:!!door});return true;}
+ F.B.ops.push({face:F.face,u:F.u,w,y0:y-F.B.y,y1:y-F.B.y+h,door:!!door});
+ // a door: a second body's wall just behind it (a wing against the hall) is cut too, so it opens through both (69e5 vnDoor likewise)
+ if(door)for(const d of[.3,.6,.9,1.2]){const q=loc(x,z,0,-d,ry),F2=vnFaceOf(q[0],y,q[1],ry+Math.PI);if(F2&&F2.B!==F.B){F2.B.ops.push({face:F2.face,u:F2.u,w,y0:y-F2.B.y,y1:y-F2.B.y+h,door:true});break;}}
+ return true;}
 // vnPatch on a face with openings: hollow, a sheet that would cover a door or window (holes: [along, w, foot, head]) is
 // left off, drawing from the stream exactly as vnPatch does
 function vnPatchClear(x,y,z,ry,w,h,n,holes){const C=VERN.cur;if(!C||!C.hollow)return vnPatch(x,y,z,ry,w,h,n);const ITEMS=['vSheet','vSheet','vPlate','vPlateW','vBoard'];
@@ -207,7 +210,7 @@ function buildVernRichB(G,o){reseed(7311+(o.v|0));const W=12.4,D=11.6,H1=4.0,H2=
  vB('vStone',0,c2,0,W-.4,.6,D-.4,0,stD);                                                 // parapet
  for(const sx of[-1,1])for(const sz of[-1,1]){vB('vStone',sx*(W/2-1.2),c2,sz*(D/2-1.2),1.6,1.2,1.6,0,st);kput('vPyrCu',[sx*(W/2-1.2),c2+1.2,sz*(D/2-1.2)],null,[1.9,1.2,1.9],cu);}
  // drum + dome
- vPst('vPostS',0,c2+.4,0,3.9,1.7,st);vB('vStone',0,c2+2.1,0,8.4,.3,8.4,0,stD);for(let k=0;k<12;k++){const a=k/12*TAU;vB('vDarkB',Math.cos(a)*3.9,c2+.9,Math.sin(a)*3.9,.5,.8,.2,-a+Math.PI/2);}
+ vPst('vPostS',0,c2+.4,0,3.9,1.7,st);vB('vStone',0,c2+2.1,0,8.4,.3,8.4,0,stD);for(let k=0;k<12;k++){const a=k/12*TAU;vnPlate(Math.cos(a)*3.9,c2+.9,Math.sin(a)*3.9,.5,.8,.2,-a+Math.PI/2);}
  kput('vDomeC',[0,c2+2.4,0],null,[4.1,3.3,4.1],cu);vBall('vFinial',0,c2+5.8,0,.32);
  // loggia across the front: stone posts carrying a slab at c1
  {const lz=D/2+1.4;vB('vStone',0,Y0-.02,lz-.2,W-1,.3,2.8,0,stD);for(let i=0;i<=5;i++){const x=-(W-1.6)/2+(W-1.6)*i/5;vPst('vPostS',x,Y0,lz+.9,.24,H1-.2,st);vB('vStone',x,Y0+H1-.2,lz+.9,.7,.22,.7,0,stD);}

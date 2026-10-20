@@ -73,6 +73,8 @@ function wreck(P,root,ranges,mode,cx,cz,seed){reseed(seed);const rehab=mode==='r
   KIT.items[n]=keep;}
  root.updateMatrixWorld(true);P.updateMatrixWorld(true);
  const cutF=rehab?rr(.55,.85):rr(.4,.75);const cut=y0+H*cutF;const jag=(x,z)=>(fbm(x*.08+seed,z*.08,seed*.3,2)-.5)*H*.3;
+ // what an interior needs (settlements/iziz 78x): the cut, the jag, and the cut meshes this call adds to root (each with its source material)
+ const WR=P.userData.wreck={cut,H,y0,seed,jag,meshes:[]};
  const hf=clamp(2.6/R,.07,.5);const holeT=rehab?.17:.25;const hole=(x,y,z)=>fbm(x*hf+seed*.7,y*hf,z*hf,3)<holeT;let topKept=y0;
  const gone=[],cutGeos=[];
  for(const m of meshes){if(m.material===MAT.glass){m.parent.remove(m);continue;}
@@ -86,7 +88,7 @@ function wreck(P,root,ranges,mode,cx,cz,seed){reseed(seed);const rehab=mode==='r
    else if(y<cut+jag(x,z)-1&&gone.length<600&&rng()<.25){const ax=p[i+3]-p[i],ay=p[i+4]-p[i+1],az=p[i+5]-p[i+2],bx=p[i+6]-p[i],by=p[i+7]-p[i+1],bz=p[i+8]-p[i+2];const n=new THREE.Vector3(ay*bz-az*by,az*bx-ax*bz,ax*by-ay*bx);const L=n.length();if(L>0.05)gone.push([x,y,z,n.x/L,n.y/L,n.z/L,Math.sqrt(L)]);}}
   m.parent.remove(m);if(!np.length)continue;const ng=new THREE.BufferGeometry();ng.setAttribute('position',new THREE.Float32BufferAttribute(np,3));ng.setAttribute('uv',new THREE.Float32BufferAttribute(nu,2));ng.computeVertexNormals();
   const rm=rustify(m.material),uk=(rm&&rm.userData&&rm.userData.uvK)||.125;{const a=ng.attributes.uv.array;for(let k=0;k<a.length;k++)a[k]*=uk;}   // metres -> the material's tile
-  const nm=new THREE.Mesh(ng,rm);root.add(nm);cutGeos.push(ng);}
+  const nm=new THREE.Mesh(ng,rm);root.add(nm);cutGeos.push(ng);nm.userData.src=m.material;WR.meshes.push(nm);}
  const moves=[];for(const n in ranges){const it=KIT.items[n];const keep=it.slice(0,ranges[n]);for(let i=ranges[n];i<it.length;i++){const o=it[i];const p=o.p;
    const above=p[1]>cut+jag(p[0],p[2]);const lost=above||hole(p[0],p[1],p[2])||rng()<(rehab?.12:.25);
    if(lost){if(!above&&rng()<.2&&gone.length<600)gone.push([p[0],p[1],p[2],0,1,0,1.5]);continue;}
@@ -98,7 +100,8 @@ function wreck(P,root,ranges,mode,cx,cz,seed){reseed(seed);const rehab=mode==='r
  for(const [tn,o] of moves)KIT.items[tn].push(o);
  // decay dressing (world frame)
  const kx0=KXF;KXF=null;KOFF=[0,0,0];
- rubbleRing(cx,y0,cz,R*.6,R*1.6,rehab?18:Math.round(20+R*3),Math.min(2.5,.6+R*.08));scatterMoss(cx,y0,cz,R*.3,R*1.6,rehab?10:Math.round(10+R*2),Math.min(2,.5+R*.06));
+ // a rehabilitated building's people have cleared its rubble (the owner, 2026-10-19; a world with interiors, IZS_HOLLOW.trans)
+ if(!(rehab&&typeof IZS_HOLLOW!=='undefined'&&IZS_HOLLOW.trans))rubbleRing(cx,y0,cz,R*.6,R*1.6,rehab?18:Math.round(20+R*3),Math.min(2.5,.6+R*.08));scatterMoss(cx,y0,cz,R*.3,R*1.6,rehab?10:Math.round(10+R*2),Math.min(2,.5+R*.06));
  // vines hang off the CUT WALLS themselves (side faces of the new geometry), not off a ring in the air round the plot
  if(!rehab&&cutGeos.length){for(const f of sideFaces(cutGeos,Math.round(R*.6))){if(f.p[1]<y0+H*.3)continue;const L=Math.min(rr(3,H*.5),f.p[1]-y0-.3);
   kput('vine',[f.p[0]+f.n[0]*.2,f.p[1],f.p[2]+f.n[2]*.2],qEuler(rr(-.08,.08),0,rr(-.08,.08)),[1.8,L,1.8],null);}}
@@ -223,35 +226,45 @@ izsFamily('stall','Market stall',14,false,(P,x,z)=>{{mesh(lathe({rFn:yy=>.5*Math
 izsFamily('fountain','Fountain',18,false,(P,x,z)=>{{mesh(lathe({rFn:yy=>5*Math.sqrt(clamp(1-Math.pow(yy/1.2,2),0,1))+.4,H:1.2,flutes:8,amp:.08,nu:48,nv:4}),tsand(TPAL[7]),P,x,0,z);for(let k=0;k<8;k++){const th=k/8*TAU;beam('strutW',[x+Math.cos(th)*3.6,1,z+Math.sin(th)*3.6],[x+Math.cos(th)*.8,5,z+Math.sin(th)*.8],.35,.3,tC(TPAL[7],.9));}
   kput('finial',[x,5.4,z],null,[.9,1.5,.9],null);stripRing(x,1.3,z,3.8,0,16);}});
 izsFamily('temple','Temple — pyramid on legs',110,true,(P,x,z)=>{const tm=0xd9924a,tmD=0xb8742e;const LEG=18,BASE=52;const m=tsand(tm),mD=tsand(tmD);
+ // IZS_HOLLOW.temple (a world that builds the temple's interior, settlements/iziz 78t): no core behind the upper glass band (the
+ // second office level looks out through it), and the crown's front doorway is open for a real door instead of the arch
+ const HOLLOW=typeof IZS_HOLLOW!=='undefined'&&!!IZS_HOLLOW.temple;
  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c=>{beam('strutW',[x+c[0]*33,0,z+c[1]*33],[x+c[0]*22,LEG+1,z+c[1]*22],5.5,4.5,tC(tmD));beam('strutW',[x+c[0]*30,0,z+c[1]*36],[x+c[0]*21,LEG+1,z+c[1]*23],2.4,2,tC(tmD));beam('strutW',[x+c[0]*36,0,z+c[1]*30],[x+c[0]*23,LEG+1,z+c[1]*21],2.4,2,tC(tmD));});
  mesh(gridSurface((u,v)=>{const th=u*TAU;const r=(BASE/2+5)*se(th,4)*(1-.04*v);return[x+r*Math.cos(th),LEG-2+v*3.5,z+r*Math.sin(th)];},96,2,{uS:30,vS:2}),mD,P);
  mesh(gridSurface((u,v)=>{const th=u*TAU;const r=(BASE/2+5)*se(th,4)*v;return[x+r*Math.cos(th),LEG+1.5,z+r*Math.sin(th)];},48,4,{}),m,P);
  for(let i=-3;i<=3;i++){kput('strip',[x+i*7,LEG-2.2,z+BASE/2+5.2],null,[3,1,1],CYAN);kput('strip',[x+BASE/2+5.2,LEG-2.2,z+i*7],qEuler(0,Math.PI/2,0),[3,1,1],CYAN);}
  let w=BASE,y=LEG+1.5;for(let i=0;i<3;i++){const h=10;const w0=w;mesh(gridSurface((u,v)=>{const th=u*TAU;const r=w0/2*se(th,3.5)*(1-.16*v)*(1+.05*Math.pow(.5+.5*Math.cos(th*16),3));return[x+r*Math.cos(th),y+v*h,z+r*Math.sin(th)];},112,8,{uS:24,vS:5}),m,P);
-  kput('ringW',[x,y+h-.4,z],qEuler(Math.PI/2,0,0),[w0/2*.86,w0/2*.86,5],tC(0xf1dba6));if(i<2){const yy=y+h;mesh(lathe({rFn:()=>w0/2*.8*.98,H:2.2,nu:64,nv:1}),MAT.glass,P,x,yy,z);mesh(lathe({rFn:()=>w0/2*.76,H:2.2,nu:32,nv:1}),MAT.dark,P,x,yy,z);mullions(x,yy,z,w0/2*.8,2.2,24,0);stripRing(x,yy+1.2,z,w0/2*.7,0,24);}
+  kput('ringW',[x,y+h-.4,z],qEuler(Math.PI/2,0,0),[w0/2*.86,w0/2*.86,5],tC(0xf1dba6));if(i<2){const yy=y+h;mesh(lathe({rFn:()=>w0/2*.8*.98,H:2.2,nu:64,nv:1}),MAT.glass,P,x,yy,z);if(!(HOLLOW&&i===1))mesh(lathe({rFn:()=>w0/2*.76,H:2.2,nu:32,nv:1}),MAT.dark,P,x,yy,z);mullions(x,yy,z,w0/2*.8,2.2,24,0);stripRing(x,yy+1.2,z,w0/2*.7,0,24);}
   for(let k=0;k<12;k++){const th=(k+.5)/12*TAU;const r=w0/2*se(th,3.5)*(1-.08)+.1;kput('winI',[x+r*Math.cos(th),y+h*.5,z+r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[.7,.7,1],null);}
   y+=h+(i<2?2.2:0);w*=.72;}
- mesh(lathe({rFn:yy=>7*Math.pow(clamp(1-Math.pow(yy/9,2),0,1),.55),H:9,flutes:16,amp:.06,nu:48,nv:10,hole:(u,yy)=>Math.cos(u*TAU*16)<.3&&yy>1.5&&yy<7}),tsand(0xf1dba6),P,x,y,z);mesh(lathe({rFn:yy=>6.6*Math.pow(clamp(1-Math.pow(yy/9,2),0,1),.55),H:9,nu:32,nv:8}),MAT.glass,P,x,y,z);kput('finial',[x,y+10.5,z],null,[1.6,2.6,1.6],null);
- kput('archOpen',[x,y+3,z+6.6],qFacing([0,0,1]),[.7,.7,1],null);
+ mesh(lathe({rFn:yy=>7*Math.pow(clamp(1-Math.pow(yy/9,2),0,1),.55),H:9,flutes:16,amp:.06,nu:48,nv:10,hole:(u,yy)=>Math.cos(u*TAU*16)<.3&&yy>1.5&&yy<7||HOLLOW&&Math.abs(u-.25)<.036&&yy<4.3}),tsand(0xf1dba6),P,x,y,z);mesh(lathe({rFn:yy=>6.6*Math.pow(clamp(1-Math.pow(yy/9,2),0,1),.55),H:9,nu:32,nv:8,hole:HOLLOW?(u,yy)=>Math.abs(u-.25)<.036&&yy<4.3:undefined}),MAT.glass,P,x,y,z);kput('finial',[x,y+10.5,z],null,[1.6,2.6,1.6],null);
+ if(!HOLLOW)kput('archOpen',[x,y+3,z+6.6],qFacing([0,0,1]),[.7,.7,1],null);
  kput('slab',[x,.3,z],null,[24,.5,24],tC(0xf1dba6));mesh(lathe({rFn:yy=>4.5*(1-.15*yy/2.4),H:2.4,flutes:8,amp:.1,nu:32,nv:3}),mD,P,x,.5,z);kput('finial',[x,5,z],null,[1.6,1.6,1.6],null);kput('tube',[x,3.5,z],null,[.3,2,.3],null);
  for(let r=12;r<=20;r+=4)for(let i=0;i<Math.round(r*1.3);i++){const t=i/Math.round(r*1.3)*TAU;kput('boxW',[x+r*Math.cos(t),.85,z+r*Math.sin(t)],qEuler(0,-t,0),[2.4,.7,1],tC(tmD));}
  const top=[0,LEG+1.5+32,11.5],bot=[0,-.4,52];const rise=top[1]-bot[1],run=bot[2]-top[2];const th=Math.atan2(rise,run),Lr=Math.hypot(rise,run);kput('strutW',[x,bot[1]+rise/2,z+top[2]+run/2],qEuler(th,0,0),[9,1.2,Lr],tC(0xf1dba6));
  for(let k=1;k<6;k++){const t=k/6;const py=bot[1]+rise*t,pz=bot[2]-run*t;if(pz<BASE/2+5)continue;for(const s of [-1,1])beam('strutW',[x+s*6,0,z+pz+6],[x+s*3.6,py-.6,z+pz],1,.8,tC(tmD));}
  for(let k=0;k<10;k++){const t=(k+.5)/10;kput('strip',[x+4.6,bot[1]+rise*t+.2,z+bot[2]-run*t],null,[.4,1,1],CYAN);kput('strip',[x-4.6,bot[1]+rise*t+.2,z+bot[2]-run*t],null,[.4,1,1],CYAN);}});
 izsFamily('arena','Arena',130,true,(P,x,z)=>{const cc=0xd4a05a,ccL=0xe6bd7e;const A0=48,B0=40;const m=tsand(cc),mL=tsand(ccL);
- mesh(gridSurface((u,v)=>{const th=u*TAU;const s=1-.12*v+.05*Math.sin(Math.PI*v);return[x+A0*s*Math.cos(th)*(1+.03*Math.pow(.5+.5*Math.cos(th*24),3)),v*21,z+B0*s*Math.sin(th)];},144,10,{uS:40,vS:6,hole:(u,v)=>Math.abs(((u*24)%1)-.5)<.18&&v>.12&&v<.62}),m,P);
- mesh(gridSurface((u,v)=>{const th=u*TAU;const s=.86;return[x+A0*s*Math.cos(th),2+v*17,z+B0*s*Math.sin(th)];},96,2,{}),MAT.dark,P);
+ // IZS_HOLLOW.arena (a world that builds the ring of rooms behind the shell, settlements/iziz 78u): the four portals are cut
+ // through the shell for real gates instead of the arch plates
+ const HOLLOW=typeof IZS_HOLLOW!=='undefined'&&!!IZS_HOLLOW.arena;
+ mesh(gridSurface((u,v)=>{const th=u*TAU;const s=1-.12*v+.05*Math.sin(Math.PI*v);return[x+A0*s*Math.cos(th)*(1+.03*Math.pow(.5+.5*Math.cos(th*24),3)),v*21,z+B0*s*Math.sin(th)];},144,10,{uS:40,vS:6,hole:(u,v)=>Math.abs(((u*24)%1)-.5)<.18&&v>.12&&v<.62||HOLLOW&&v<.24&&[.125,.375,.625,.875].some(p=>Math.abs(u-p)<.0095)}),m,P);
+ // (HOLLOW: the wall behind the stands comes down to the ground, with a passage under the stands at each portal, so the gate
+ // halls lead to the arena's floor)
+ const GU=[.125,.375,.625,.875];
+ if(HOLLOW)mesh(gridSurface((u,v)=>{const th=u*TAU;const s=.86;return[x+A0*s*Math.cos(th),v*19,z+B0*s*Math.sin(th)];},192,19,{hole:(u,v)=>v*19<3.8&&GU.some(p=>Math.abs(u-p)<.011)}),MAT.dark,P);
+ else mesh(gridSurface((u,v)=>{const th=u*TAU;const s=.86;return[x+A0*s*Math.cos(th),2+v*17,z+B0*s*Math.sin(th)];},96,2,{}),MAT.dark,P);
  for(let k=0;k<36;k++){const th=k/36*TAU;beam('strutW',[x+(A0+8)*Math.cos(th),0,z+(B0+7)*Math.sin(th)],[x+A0*.9*Math.cos(th),21,z+B0*.9*Math.sin(th)],1.6,1.3,tC(cc,.85));}
  mesh(gridSurface((u,v)=>{const th=u*TAU;const s=lerp(.88,.98,v);return[x+A0*s*Math.cos(th),21+v*4,z+B0*s*Math.sin(th)];},96,2,{uS:40}),mL,P);
  for(let k=0;k<24;k++){const th=(k+.5)/24*TAU;kput('strip',[x+A0*.93*Math.cos(th),24.6,z+B0*.93*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[6,1,1],CYAN);}
- for(let k=0;k<6;k++){const a=A0-9-k*3.1,b=B0-8-k*2.7;mesh(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(a-3.1,a,v);return[x+r*Math.cos(th),12-k*2+(v<.5?2:0),z+r*b/a*Math.sin(th)];},96,2,{}),mL,P);}
- for(let k=0;k<8;k++){const th=(k+.5)/8*TAU;const px=x+A0*.72*Math.cos(th),pz=z+B0*.72*Math.sin(th);mesh(lathe({rFn:yy=>.5*Math.sqrt(1+2*Math.pow((yy-5)/5,2)),H:10,nu:12,nv:4}),mL,P,px,22,pz);
+ for(let k=0;k<6;k++){const a=A0-9-k*3.1,b=B0-8-k*2.7;mesh(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(a-3.1,a,v);return[x+r*Math.cos(th),12-k*2+(v<.5?2:0),z+r*b/a*Math.sin(th)];},HOLLOW?192:96,2,HOLLOW?{hole:(u,v)=>k===5&&GU.some(p=>Math.abs(u-p)<.02)||[0,.25,.5,.75,1].some(p=>Math.abs(u-p)<.006)}:{}),mL,P);}   // HOLLOW: the lowest tier is opened over the passages, and every tier over the four aisles (78u)
+ for(let k=0;k<8;k++){const th=(k+.5)/8*TAU;const px=x+A0*.72*Math.cos(th),pz=z+B0*.72*Math.sin(th);mesh(lathe({rFn:yy=>.5*Math.sqrt(1+2*Math.pow((yy-11)/11,2)),H:22,nu:12,nv:6}),mL,P,px,10,pz);   // the mast stands on the stands (the second tier's back, y 10): it began at 22, 10 m over them
   const Q=new THREE.Group();Q.position.set(px,31,pz);Q.rotation.y=-th;P.add(Q);petalRing(Q,3,.4,3,8,9,1.6,0,0,20+k,tsand(0xf1dba6),null);}
- kput('slab',[x,.2,z],null,[A0-28,.4,B0-24],tC(0xd8c090));for(let k=0;k<4;k++){const th=k/4*TAU+Math.PI/4;kput('archOpen',[x+A0*.98*Math.cos(th),5,z+B0*.98*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.4,1.1,2],null);}});
+ kput('slab',[x,.2,z],null,[A0-28,.4,B0-24],tC(0xd8c090));if(!HOLLOW)for(let k=0;k<4;k++){const th=k/4*TAU+Math.PI/4;kput('archOpen',[x+A0*.98*Math.cos(th),5,z+B0*.98*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[1.4,1.1,2],null);}});
 
 // ---- placing one family: mode 'intact' | 'ruin' | 'rehab'. The same steps as Iziz's TRANS.place (reseed, build in a
 // group under the nested transform, wreck() for the two decayed states, the dark-blue glass), plus a REG entry.
-MAT.izsGlass=new THREE.MeshStandardMaterial({color:0x2a4a66,metalness:.55,roughness:.18,emissive:0x0a1a2a,emissiveIntensity:.5,side:DS});
+MAT.izsGlass=new THREE.MeshStandardMaterial({color:0x2a4a66,metalness:.55,roughness:.18,emissive:0x0a1a2a,emissiveIntensity:.5,side:DS,transparent:true,opacity:.5,depthWrite:false});   // see-through (no dark voids, 2026-10-19)
 let IZS_ROOT=null;
 function izsPlace(scene,key,mode,x,z,ry,scale,seed,y){const p=IZS_BY[key];if(!p){reportErr('izsPlace: no family '+key);return null;}
  y=y||0;scale=scale||1;ry=ry||0;if(!IZS_ROOT){IZS_ROOT=new THREE.Group();scene.add(IZS_ROOT);}

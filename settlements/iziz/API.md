@@ -140,18 +140,21 @@ Vendor the builder fragment byte-identical from `../ancients/src/` and add it to
 
 ### Interiors: hollow bodies and furnished rooms — `69e-vern-hollow.js`, `95i-iziz-interiors.js` (2026-10-16)
 
-The residences and trade buildings have rooms you can see into (cutaway, X; `]` `[` the storeys). Civic buildings do not
-yet (the owner: "skip civic buildings for now"). Two parts:
+The residences, the trade buildings and (2026-10-19) the civic buildings have rooms you can see into (cutaway, X; `]` `[`
+the storeys). Two parts:
 
 * **The builder** draws every enclosed wall block with `vnBody(item,x,y,z,w,h,d,ry,c,{t, floor, floorC})` in place of
-  `vB(...)`, and a full-footprint slab between storeys with `vnBand(item,x,y,z,w,h,d,ry,c,t)`. With `VERN.interiors` on
+  `vB(...)`, and a full-footprint slab between storeys with `vnBand(item,x,y,z,w,h,d,ry,c,t)` (`vnCorniceBand` for a
+  stepped cornice). `{k}` gives a body a batter (the chapterhouse's banco: `.07`, as `vpBanco7`): each wall piece leans in
+  with the face, and an opening is found on the receding face. With `VERN.interiors` on
   and an item for the def in `kits/interiors/sets/iziz.js`, a body is four walls of thickness `t` cut where the
   builder's own `vnDoor`/`vnWin` calls on its faces open them, over a board floor; a band is a ring. Call `vnBody`
-  before the doors and windows on it. A door on a hollow face is drawn open (the leaf swung in); a window has no dark
-  backing plate. Once the builder returns, the item's planned storeys are drawn in the kit's items: the upper floors
+  before the doors and windows on it. A door on a hollow face is a shut leaf that opens (below, `69e5`); a window is
+  glass in the middle of the wall. Once the builder returns, the item's planned storeys are drawn in the kit's items: the upper floors
   with the stair's well, the partitions and their doorways, the stairs and ladders. **With interiors off, no item, a
-  `skip` item, or `o.scale` ≠ 1, `vnBody` and `vnBand` draw exactly the `vB` they replaced**: the city, Verge (which
-  takes 69e for this) and Ys build what they always did. `69c` is untouched (five builds vendor it): 69e wraps
+  `skip` item, or `o.scale` ≠ 1, `vnBody` and `vnBand` draw exactly the `vB` they replaced**: Verge (which takes 69e for
+  this) and Ys build what they always did. An item of explicit `rooms` and no `bodies` (an open-fronted hall the builder
+  draws as walls: the generator, the Forgemaster's hall, the Ancient interiors below) is planned without a hollow body. `69c` is untouched (five builds vendor it): 69e wraps
   `VERN.def`, `vnDoor` and `vnWin` by assignment, as `69f` does.
 * **The item** (`kits/interiors/sets/README.md`) says the rooms in the builder's frame: `bodies` for planned storeys
   (`poly` = the body's outer face, `y` its base, `levels` the clear heights so that each upper floor `y + h + 0.25`
@@ -167,7 +170,90 @@ a residence that fails the rule (a bed, a food and an item container per househo
 piece in core/tags (prefix `ixf`, class furniture, its building as parent) and hands the cutaway one unit per building.
 `window._interiors` reports it; `verify.py --assert` checks `interiors` (every building done, no residence failing) and
 `voth-trades` (below). The furniture and the interiors kit come in a generated fragment (`88z-iziz-furniture-bundle.js`,
-build.py `INTERIOR_TARGETS`: the vernacular sheet only; the city has none, and its buildings stay solid).
+build.py `INTERIOR_TARGETS`: the vernacular sheet and, since 2026-10-19, the city). **In the city** every placement
+with an item is hollow (its walls, storeys and stairs drawn, its rooms in core/walk, its doors working), but only the
+civic and Ancient ones are furnished at load (`izixFurnish`: an item typed civic, military or religious, or `ancient:
+true`); the rest are furnished near the camera (`IZIX.near` on the frame hook: within 85 m, two buildings a frame, one
+batch mesh per 100 m cell). `window._interiors.bare` counts them, `.near` says how many cells and buildings are done. Each local plan is made once per item (`VHOLLOW.plans`).
+
+### Openings and doors — `69e5-iziz-openings.js`, `95j-iziz-doors.js` (2026-10-19)
+
+The owner: "remove all dark voids and make all windows, doors, and portals actual doors or windows/portals that have
+transparency", and doors "that can open/shut with a keypress nearby or by npc". 69e5 wraps `vnDoor`, `vnWin` and
+`vnStrip` once more (before 69f notes them as fixtures):
+
+* a **door** is a shut leaf on its own instanced item (`vDoorLeaf`, kept out of core/lod: the leaves move), registered in `IZDOOR`: on a hollow face it swings
+  into the room on its -x jamb; on a solid body (nothing behind it) it is drawn shut and `locked`.
+* a **window** is clear glass (`vWinClear`, `MAT.izGlass`), a see-through warm pane when lit (`vWinLit`: `MAT.warmPane`
+  is transparent now, and the city's day/night swap still drives its colour), boards, or a clear hole. On a solid body the
+  pane stands before a room card (a `vPlaster` box tinted `IZ_ROOMC`: a dim plaster back, the colour of a room, never black).
+* `vnOpening(x,y,z,ry,w,h,kind,c)` is the same for an opening a builder draws as a plain box (kind `door`, `win`, `glow`,
+  `open`, `shut`); `vnPlate(x,y,z,w,h,d,ry)` / `vnGlowPlate` turn a window plate on a solid mass (a drum's ring, a slit)
+  into a room card in a glass box. `vDarkB` is left only where it is water, soot, a forge bed or a stain.
+
+`IZDOOR.leaf(x,y,z,ry,w,h,t,c,{locked,mirror,key})` draws and registers one (in the builder's frame; `mirror`: the right
+leaf of a double door). `IZDOOR.open(id,{by,auto})`, `close`, `toggle`, `nearest(x,y,z,r)` are for anyone (an NPC, a
+quest, the probe): `auto` shuts it again after that many seconds. 95j drops the doors of an unwound placement, writes each
+door's blocks into core/walk (a shut door blocks the gap its wall left, an open one does not: `KWALK.setBlock` when core/walk
+has it, else the block's heights), and eases the leaves on the frame hook. **E** near a door opens or shuts it (99-start;
+a hint shows when one is in reach). `window._doors` reports the count.
+
+### The Ancient civic interiors — `78t`, `78u`, `78v`, `kits/interiors/sets/iziz-ancient.js` (2026-10-19)
+
+A VERN def per shell, placed by the city on the shell's own transform (90a) at scale 1, its item in the `iziz-ancient`
+set in WORLD metres (the shell's scale applied). The shells open for them through `IZS_HOLLOW` (targets/city/89z-rows.js;
+kits/ancients 77z reads it): no core behind the temple's upper glass band and a doorway in its crown; the arena's four
+portals cut through its shell.
+
+* **The temple** (`iziz_temple_ix`, 78t): the sanctum in the glass crown on the terrace the ramp lands on, and a switchback
+  stair core down through three levels of four priests' offices each (L1 under the terrace, L2 behind the upper glass band,
+  L3 in the second tier), floors cut to the tiers' squircle, the offices running out to the leaning tier wall. Ramp,
+  steps, flights, landings, terrace, rails and parapet are in core/walk.
+* **The arena** (`iziz_arena_ix`, 78u): 24 bays at ground level between the shell and the wall behind the stands, one
+  behind each opening, every partition a door, the portals' bays merged into four gate halls with double gates.
+* **The skyscrapers** (78s, 78v; `towers/BLUEPRINT.md` and its sheets): every standing kit tower A-F gets its plan,
+  `IZTOWER.plan(key, d, s)` (plain data: storeys of 3.2 m at the tower's placed scale, a lobby at the foot or, C, a sky
+  lobby its three legs' stairs climb to, then 12 storeys of slum cells off a corridor round a switchback stair core, junk
+  storeys above with their partitions broken by the kit's hole rule; a ruined tower's and a toppled tower's upright storeys
+  rubble). `izTowerIx` (called by placeKit) draws it: merged floor slabs, scrap and panel walls and stubs, stairs and
+  rails, street doors and cell doors (IZDOOR), rubble heaps, and core/walk; each storey is a job in `IZTOWER_JOBS` that
+  95i's near pass furnishes. The kit's plates, soffits and skyRooms are left out (`IZS_HOLLOW.sky`) and the shells cut
+  for the street doors. `IZTX` counts what was drawn.
+* **The other Ancient buildings** (78w on 78s's engine, drawn by 78v; `towers/BLUEPRINT.md`, "The other Ancient
+  buildings", and `towers/floors/<type>.png`): `IZANC.plan(type, d, s, noise, extra)` -> `{type, name, d, s, masses:
+  [{id, at, plan}]}`, each mass an `IZTOWER.plan` on the building's own descriptor (`IZTOWER.plan(key, d, s, noise, K)`:
+  K's `levels`, `outline`, `rows` and `layout` 'ring' | 'slim' | 'rooms' | 'bar', see 78s's header), its coordinates in
+  world metres in the building's frame. Types: `aptsA`, `aptsC`, `honey`, `houseD`, `houseE`, `houseF`, `fuel` (the kit's,
+  drawn by `izAncIx(type, G, d, regIdx)` from placeKit) and `t_setback`, `t_setback2`, `t_pent`, `t_hept`, `t_wedge`,
+  `t_barrel`, `t_midrise` (the Ancients transplants, drawn by `izTransIx(kind, mode, P, regIdx, snap)` from placeTrans once
+  `wreck()` has cut them; `extra.top` is the cut). The same rules as the towers: a lobby at the foot, slum cells in a
+  reclaimed building (junk above the twelfth storey), rubble in a ruined one, partitions broken by the kit's hole rule.
+  `izIxDraw(P, G, d, regIdx, o)` is the drawer every plan goes through (the towers' too). The kit's hooks:
+  `IZS_HOLLOW.apts` (82-apartments: A's tray slabs, liners and rooms, B's mid-wall, plates, pillars and lit cells, C's solid
+  liners; street doors in A's stem, B's skin and each of C's drums), `.houses` (64-houses-def: D's liner holed like its
+  dome, E's and F's dark room blocks, the door plates), `.fuel` (84-fuel: the kiosk's arch cut through), `.trans` (the
+  transplants' post-wreck pass, 78v). Each keeps every rng draw.
+  The owner's roster (2026-10-19) adds `wave`, `bridge`, `fins`, `adlab`, `flat` (the alternates, vendored: 8aj-alt-a-bole,
+  8aj-alt-d-flat, 8ak-alt-a-houses, 8ak-alt-b-civic, 8ak-alt-c-works), `hotel` (75-hotel), `cultural` (67-cultural) and
+  `aptsC2` (82-apartments buildAptsC2). Hooks: `IZS_HOLLOW.alt` (the alternates' plates, liners, door plates; the lab's
+  doorways into its lobes and portal), `.hotel` (its world-storey slabs out, the others kept as terraces), `.cultural` (built
+  compact, its liners out, doors cut, its halls listed in `CULT_HALLS` for the plan: `izAncIx(..., {halls})`). 78w plans the
+  fin apartments and the hotel itself (`polar`: storeys on an arc), and after any plan lays every street door into its wall's
+  plane (`doorsInPlane`) and can leave out the cells of a fallen part (`cull`).
+* **The Voth embassy** and **the Order's chapterhouse** are VERN defs already: their items are in the same set, their
+  bodies hollow (the house's ground storey, the service range, the domed audience hall; the battered reading hall).
+* **The two guilds** (`anc_mercenary_ix`, `anc_salvagers_ix`, 78v): the Watch (the kit's police station at 0.45) and the
+  Reliquary (its laboratory at 0.5): on every level a stair hall with the temple's switchback core and its four walls run on
+  both ways to the shell, so eight rooms round it (an arm beside each hall wall, its door from the hall; a corner room off
+  each arm). The Watch has two storeys (18 rooms: vestibule, contract hall, armoury, kitchen, mess; study, archive,
+  dormitories and barrack rooms, the armourer), the Reliquary three levels (27 rooms) of
+  two kit storeys each (its storeys are 2.2 m at 0.5). The shells open only for the guilds: `IZS_HOLLOW.guilds` (89z-rows)
+  makes `vqWrapKit` (77-anc-guilds.js) set `IZS_HOLLOW.police` / `.lab` for that one call, so the kit's own stations and
+  labs in the ancient quarters stay solid. Hollow, the kit (73-police.js `policeShell`, 89-lab.js `labSkin`, both on
+  `gridAt`) draws the shell on lines through every window's edges, cuts each window (an arch: a rectangle to the springing,
+  steps into the arch, all inside the glass) and the front door through it, glazes the lab's arcade, clears the windows and
+  leaves out the core and the rings of rooms. The city places each interior on its guild's transform (90b `guildIx`), its
+  furniture's parent the guild's kit record.
 
 `python3 ixshot.py dist/iziz-vernacular.html --keys <k,..> | --all [--back] --out shots/ix` shoots each building at eye
 level and cut away at each storey, and prints its rooms, pieces and residence counts. `?interiors=0` turns it all off.

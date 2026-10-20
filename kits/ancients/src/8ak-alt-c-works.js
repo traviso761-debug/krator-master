@@ -193,7 +193,11 @@ function buildAltLab(scene,gx,gz,d){reseed(9895+d);KOFF=[gx,0,gz];
  REGISTER({name:'The Star laboratory ('+AD_STATE[d]+')',x:0,z:10,r:64,h:30});
  const DR=12,DHt=18,solid=[],hold=holeFn(dd,9895,null,2);
  kput(dd?'slabCR':'slabC',[0,.3,0],null,[36,.6,36],null);
- solid.push(lathe({rFn:()=>DR,H:DHt,nu:48,nv:4}));
+ // IZS_HOLLOW.alt (settlements/iziz 78w): a doorway through the drum into each lobe (its floor to 3 m above it) and the
+ // ramp's portal, so the drum's storeys reach them
+ const labDoor=(u,y)=>{if(!(typeof IZS_HOLLOW!=='undefined'&&!!IZS_HOLLOW.alt))return false;for(let i=0;i<6;i++){const a=Math.PI/2+Math.PI/6+i*Math.PI/3,ua=((a/TAU)%1+1)%1,f=i%2?7.2:.6;
+   if(Math.min(Math.abs(u-ua),1-Math.abs(u-ua))<.022&&y>f&&y<f+2.9)return true;}return Math.min(Math.abs(u-.25),1-Math.abs(u-.25))<.03&&y>8&&y<11.6||Math.abs(u-.75)<.035&&y<3.5;};   /* and a street door at the foot, -z */
+ solid.push(lathe({rFn:()=>DR,H:DHt,nu:96,nv:24,hole:labDoor}));
  solid.push(lathe({rFn:y=>DR*Math.sqrt(clamp(1-Math.pow(y/7,2),0,1))+.4,H:7,nu:48,nv:8,hole:hold?(u,y)=>hold(u,y*3):null}).translate(0,DHt,0));
  kput(dd?'ringR':'ringW',[0,DHt+6.6,0],qEuler(Math.PI/2,0,0),3,null);
  for(let i=0;i<24;i++){const a=i/24*TAU;kput(d===0?'ovalI':'ovalD',[(DR+.1)*Math.cos(a),DHt-2.2,(DR+.1)*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[.7,.7,1],null);}
@@ -232,7 +236,7 @@ function buildAltLab(scene,gx,gz,d){reseed(9895+d);KOFF=[gx,0,gz];
   const g=[];adBox(g,0,0,0,7,.8,8);const m=meshMerged(g,MAT.concreteR,G);m.position.set(1,0,40);m.rotation.set(.35,.1,.15);dropFragment(m,0,.1);}
  else ramp(64,DR-.5,.01,8);
  for(const s of[-1,1])adBox(solid,s*2.4,(8+(brk?0:0))/2,DR-.2,1.2,8,1.2);
- kput('archOpen',[0,10.3,DR+.2],null,[.7,.55,1],null);
+ if(!(typeof IZS_HOLLOW!=='undefined'&&!!IZS_HOLLOW.alt))kput('archOpen',[0,10.3,DR+.2],null,[.7,.55,1],null);
  meshMerged(solid,conc,G);
  if(brk){adRubbleArc(0,0,Math.PI/3-.3,Math.PI/3+.3,()=>14,14,40,1.4);}
  if(dd){mossOnSurface(G,0,0,0,50,1.2);vinesFromLedge(G,0,0,0,30,8,0,0);stainsFromLedge(G,0,0,0,24,8,0,0);}
